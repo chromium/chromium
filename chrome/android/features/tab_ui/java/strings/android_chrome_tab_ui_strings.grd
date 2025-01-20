@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- android_chrome_strings.grd contains strings for tab ui DFM of Chrome for Android. -->
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_chrome_tab_ui_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_chrome_tab_ui_strings.xml" lang="am" type="android" />
@@ -172,11 +172,6 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- In-Product Help strings -->
-      <message name="IDS_IPH_TAB_SWITCHER_FLOATING_ACTION_BUTTON" desc="This in-product help points to the new location of the new tab button which floats atop the tabs rather than being located in the toolbar. The text informs users they can use the button to open new tabs.">
-        You can now open a new tab here
-      </message>
-
       <!-- Undo Bar -->
       <message name="IDS_UNDO_BAR_GROUP_TAB_MESSAGE" desc="Message shown or announced when a group has been created with a single tab.">
         <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> tab grouped
@@ -204,6 +199,9 @@
       </message>
       <message name="IDS_TAB_GRID_MANAGE_BUTTON_TEXT" desc="Text for managing the sharing of the current tab group from the tab group dialog toolbar.">
         Manage
+      </message>
+      <message name="IDS_MANAGE_SHARING_CONTENT_DESCRIPTION" desc="Content description for the account avatar button that manages sharing for a shared tab group.">
+        Manage sharing
       </message>
 
       <!-- Bottom Tab Strip strings -->
@@ -660,9 +658,6 @@
       <message name="IDS_TAB_GROUP_CREATION_DIALOG_DESCRIPTION_TEXT_SYNC_OFF" desc="A subtitle on the dialog for new tab group creations. Explains the group automatically saves.">
         Your tab groups automatically save
       </message>
-      <message name="IDS_TAB_GROUP_CREATION_DIALOG_SHOW_SETTING_TEXT" desc="Content description for the switch in tabs settings to toggle showing the new tab group creation dialog. ">
-        Show dialog on new tab group creation
-      </message>
 
       <!-- Tab Group Pane and Sync Strings -->
       <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
@@ -725,17 +720,20 @@
       <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
         Delete
       </message>
+      <message name="IDS_DELETE_SHARED_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to delete a tab group that is shared with other users.">
+        Delete group?
+      </message>
       <message name="IDS_DELETE_SHARED_TAB_GROUP_DESCRIPTION" desc="Menu item text which will prompt a confirmation dialog to delete a tab group that is shared with other users.">
-        Everyone will immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group, and it will be deleted from all devices
+        Everyone will immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_MENU_ITEM" desc="Menu item text for an item which will leave a group the user does not own.">
         Leave
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to leave a shared tab group.">
-        Leave tab group?
+        Leave group?
       </message>
       <message name="IDS_LEAVE_TAB_GROUP_DESCRIPTION" desc="Description of the action of leaving a shared tab group, shown in a confirmation dialog.">
-        You’ll immediately lose access to the <ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph> tab group
+        You’ll immediately lose access to the "<ph name="GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices
       </message>
       <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
         Ungroup tab group?
@@ -791,13 +789,13 @@
         Close tab and delete group?
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking the user if they want to keep the tab group.">
-        Keep tab group?
+        Keep group?
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_OWNER" desc="Main text content of a dialog asking the owner of a shared group if they want to keep it. The &#10; is a newline character to force formatting.">
         Keep this group to add tabs later, or delete it if you no longer need it.&#10;&#10;If you delete it, everyone will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group, and it will be deleted from all devices.
       </message>
-      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave. The &#10; is a newline character to force formatting.">
-        Keep this group to add tabs later, or leave.&#10;&#10;If you leave, you will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group.
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave.">
+        Keep this group to add tabs later, or leave it if you no longer want access to it
       </message>
       <message name="IDS_KEEP_TAB_GROUP_DIALOG_KEEP_ACTION" desc="Action button to keep the tab group in the keep group dialog.">
         Keep group
@@ -825,6 +823,9 @@
       </message>
       <message name="IDS_REMOVE_LAST_TAB_ACTION" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around. Indicates removing this tab will also delete the group.">
         Remove tab and delete group
+      </message>
+      <message name="IDS_REMOVE_LAST_TAB_ACTION_MEMBER" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around and they are a member of a shared tab group. Indicates removing this tab will also trigger the leave shared group flow (with a confirmation dialog).">
+        Remove tab and leave group
       </message>
       <message name="IDS_TAB_GROUP_CREATION_DIALOG_SYNC_DESCRIPTION" desc="Description of tab group sync functionality shown for syncing users in the tab group creation dialog.">
         Your tab groups automatically save and update across all your signed-in devices
@@ -916,6 +917,12 @@
           =1 {Close after 1 day}
           other {Close after <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
         }
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_SUMMARY" desc="The summary for toggle to allow duplicate tabs to be archived.">
+        All duplicate tabs will now also be archived, with the exception of the most recently used copy.
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_TITLE" desc="The title for toggle to allow duplicate tabs to be archived.">
+        Archive duplicate tabs
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
         Inactive tabs will automatically be closed. You can always find them in History.

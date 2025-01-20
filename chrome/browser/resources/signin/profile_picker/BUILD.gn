@@ -19,7 +19,7 @@ build_webui("build") {
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",
     "navigation_mixin.ts",
-    "policy_helper.ts",
+    "profile_picker_flags.ts",
     "profile_card.html.ts",
     "profile_card.ts",
     "profile_card_menu.html.ts",
@@ -42,8 +42,8 @@ build_webui("build") {
     "profile_card.css",
     "profile_card_menu.css",
     "profile_creation_flow/profile_type_choice.css",
-    "profile_picker_main_view.css",
     "profile_picker_app.css",
+    "profile_picker_main_view.css",
     "profile_picker_shared.css",
     "profile_switch.css",
   ]

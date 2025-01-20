@@ -22,7 +22,7 @@
 class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
                                      public views::WidgetObserver {
  public:
-  OneClickSigninDialogViewTest() {}
+  OneClickSigninDialogViewTest() = default;
 
   OneClickSigninDialogViewTest(const OneClickSigninDialogViewTest&) = delete;
   OneClickSigninDialogViewTest& operator=(const OneClickSigninDialogViewTest&) =

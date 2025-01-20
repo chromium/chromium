@@ -30,10 +30,6 @@ constexpr char kTestDmToken[] = "TestDMToken";
 
 class TestTokenService : public TokenServiceInterface {
  public:
-  TestTokenService()
-      : enrollment_token_("TestEnrollmentToken"), dm_token_(kTestDmToken) {}
-  ~TestTokenService() override = default;
-
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "TestDeviceID"; }
 
@@ -61,8 +57,8 @@ class TestTokenService : public TokenServiceInterface {
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
-  std::string enrollment_token_;
-  std::string dm_token_;
+  std::string enrollment_token_ = "TestEnrollmentToken";
+  std::string dm_token_ = kTestDmToken;
 };
 
 }  // namespace

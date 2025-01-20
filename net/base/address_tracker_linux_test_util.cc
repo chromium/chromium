@@ -139,7 +139,7 @@ void MakeWirelessLinkMessage(uint16_t type,
   msg.ifi_flags = flags;
   msg.ifi_change = 0;
   nlmsg.AddPayload(msg);
-  char data[8] = {0};
+  char data[8] = {};
   nlmsg.AddAttribute(IFLA_WIRELESS, data, sizeof(data));
   if (clear_output) {
     output->clear();

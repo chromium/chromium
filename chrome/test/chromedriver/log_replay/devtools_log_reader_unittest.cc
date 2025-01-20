@@ -6,19 +6,26 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
+
 #include "chrome/test/chromedriver/log_replay/devtools_log_reader.h"
+
+#include <array>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 // Log files to test the reader against
-const char* const kTestDataPath[] = {"chrome", "test", "chromedriver",
-                                     "log_replay", "test_data"};
+const auto kTestDataPath = std::to_array<const char*>({
+    "chrome",
+    "test",
+    "chromedriver",
+    "log_replay",
+    "test_data",
+});
 const char kTestGetTitlePath[] = "testGetTitle_simple.log";
 const char kOneEntryPath[] = "oneDevToolsEntry.log";
 const char kBrowserEntryPath[] = "oneDevToolsBrowserEntry.log";

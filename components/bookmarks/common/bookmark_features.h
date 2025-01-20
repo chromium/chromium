@@ -11,6 +11,8 @@ namespace bookmarks {
 
 BASE_DECLARE_FEATURE(kAllBookmarksBaselineFolderVisibility);
 
+BASE_DECLARE_FEATURE(kBookmarksUseBinaryTreeInTitledUrlIndex);
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_FEATURES_H_

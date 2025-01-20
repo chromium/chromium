@@ -608,9 +608,9 @@ TEST_F(PinnedToolbarActionsContainerTest, ActiveActionSkipsExecution) {
   EXPECT_FALSE(pinned_button->ShouldSkipExecutionForTesting());
 
   pinned_button->SetIsActionShowingBubble(true);
-  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             0);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                gfx::Point(), ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);

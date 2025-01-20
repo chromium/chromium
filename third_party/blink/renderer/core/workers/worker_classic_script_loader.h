@@ -98,8 +98,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
       RejectCoepUnsafeNone reject_coep_unsafe_none =
           RejectCoepUnsafeNone(false),
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-          blob_url_loader_factory = {},
-      std::optional<uint64_t> main_script_identifier = std::nullopt);
+          blob_url_loader_factory = {});
 
   // This will immediately invoke |finishedCallback| if
   // LoadTopLevelScriptAsynchronously() is in progress.

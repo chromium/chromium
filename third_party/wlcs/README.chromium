@@ -4,8 +4,8 @@ URL: https://github.com/MirServer/wlcs
 Version: N/A
 Date: 2023-02-24
 Revision: 2930ad4b5ca602446ad211b49fb1827303ce9f4b
-License: GPL2 and GPL3
-License File: LICENSE
+License: GPL-2.0, GPL-3.0
+License File: src/COPYING.GPL2, src/COPYING.GPL3
 Security Critical: no
 Shipped: no
 

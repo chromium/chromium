@@ -51,10 +51,13 @@ dictionary AuctionAdConfig {
   long maxTrustedScoringSignalsURLLength;
   [RuntimeEnabled=FledgeTrustedSignalsKVv2Support]
   USVString trustedScoringSignalsCoordinator;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv1CreativeScanning]
+  boolean sendCreativeScanningMetadata;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;
 
+  [RuntimeEnabled=FledgeDirectFromSellerSignalsWebBundles]
   Promise<USVString?> directFromSellerSignals;
   [RuntimeEnabled=FledgeDirectFromSellerSignalsHeaderAdSlot]
   Promise<DOMString?> directFromSellerSignalsHeaderAdSlot;
@@ -87,7 +90,6 @@ dictionary AuctionAdConfig {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
   sequence<bigint> auctionReportBuyerKeys;
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
-  [RuntimeEnabled=PrivateAggregationAuctionReportBuyerDebugModeConfig]
   AuctionReportBuyerDebugModeConfig auctionReportBuyerDebugModeConfig;
   sequence<DOMString> requiredSellerCapabilities;
 

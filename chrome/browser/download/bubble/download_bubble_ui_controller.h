@@ -88,12 +88,6 @@ class DownloadBubbleUIController {
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();
 
-  // Opens the primary dialog to the item and scrolls to the item, and opens
-  // the security dialog if the item has a security warning. Returns whether
-  // bubble was opened to the requested item.
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id);
-
   // Schedules the ephemeral warning download to be hidden from the bubble, and
   // subsequently canceled. It will only be canceled if it continues to be an
   // ephemeral warning that hasn't been acted on when the scheduled time
@@ -129,8 +123,6 @@ class DownloadBubbleUIController {
   bool last_primary_view_was_partial() const {
     return last_primary_view_was_partial_;
   }
-
-  void SetDeepScanNoticeSeen();
 
   base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
 

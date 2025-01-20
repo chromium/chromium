@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 namespace shortcuts {
@@ -20,7 +18,7 @@ class ShortcutIntegrationInteractionTestPrivate;
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic to facilitate writing tests for the "Create Shortcut"
-// feature.
+// flow.
 class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
  public:
   ShortcutIntegrationInteractionTestApi();
@@ -65,8 +63,6 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
   static base::FilePath GetShortcutPath(ui::TrackedElement* element);
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kShortcutsNotApps};
-
   ShortcutIntegrationInteractionTestPrivate& test_impl();
 };
 

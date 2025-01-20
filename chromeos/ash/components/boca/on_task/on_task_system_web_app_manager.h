@@ -56,10 +56,13 @@ class OnTaskSystemWebAppManager {
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) = 0;
 
-  // Sets up the specified Boca SWA window for OnTask. This may remove all
-  // pre-existing content tabs except for the homepage one, normally required
-  // when the app instance was restored manually.
-  virtual void PrepareSystemWebAppWindowForOnTask(SessionID window_id) = 0;
+  // Sets up the specified Boca SWA window for OnTask. Setting
+  // `close_bundle_content` will remove all pre-existing content tabs except for
+  // the homepage one, normally required at the onset of a new session or when
+  // the app instance was restored manually in the middle of an active session.
+  virtual void PrepareSystemWebAppWindowForOnTask(
+      SessionID window_id,
+      bool close_bundle_content) = 0;
 
   // Returns a valid tab id associated with the active tab. If
   // there is no valid active tab, it returns `SessionID::InvalidValue()`.

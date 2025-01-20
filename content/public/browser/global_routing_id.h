@@ -34,7 +34,7 @@ struct CONTENT_EXPORT GlobalRoutingID {
       : child_id(child_id), route_id(route_id) {}
 
   // The unique ID of the child process (this is different from OS's PID / this
-  // should come from RenderProcessHost::GetID()).
+  // should come from RenderProcessHost::GetDeprecatedID()).
   int child_id = kInvalidChildProcessUniqueId;
 
   // The route ID.
@@ -68,7 +68,7 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   GlobalRenderFrameHostId& operator=(const GlobalRenderFrameHostId&) = default;
 
   // The unique ID of the child process (this is different from OS's PID / this
-  // should come from RenderProcessHost::GetID()).
+  // should come from RenderProcessHost::GetDeprecatedID()).
   int child_id = 0;
 
   // The route ID of a RenderFrame - should come from
@@ -94,7 +94,7 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
 //
 // These tokens can be considered to be unique for the lifetime of the browser
 // process.
-struct GlobalRenderFrameHostToken {
+struct CONTENT_EXPORT GlobalRenderFrameHostToken {
   GlobalRenderFrameHostToken() = default;
 
   // GlobalRenderFrameHostToken is copyable.
@@ -106,8 +106,13 @@ struct GlobalRenderFrameHostToken {
                              const blink::LocalFrameToken& frame_token)
       : child_id(child_id), frame_token(frame_token) {}
 
+  // Helpers to convert to and from `base::Pickle` objects.
+  base::Pickle ToPickle();
+  static std::optional<GlobalRenderFrameHostToken> FromPickle(
+      const base::Pickle& pickle);
+
   // The unique ID of the child process (this is different from OS's PID / this
-  // should come from RenderProcessHost::GetID()).
+  // should come from RenderProcessHost::GetDeprecatedID()).
   int child_id = kInvalidChildProcessUniqueId;
 
   // The `LocalFrameToken` of blink::WebLocalFrame - should come from

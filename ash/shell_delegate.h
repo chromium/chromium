@@ -6,6 +6,8 @@
 #define ASH_SHELL_DELEGATE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -23,6 +25,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+class AccountId;
 namespace aura {
 class Window;
 }
@@ -203,6 +206,18 @@ class ASH_EXPORT ShellDelegate {
   virtual void OpenFeedbackDialog(FeedbackSource source,
                                   const std::string& description_template,
                                   const std::string& category_tag) = 0;
+
+  // Uploads feedback about a specialized feature after redacting the given
+  // description using the given account ID.
+  // Returns false if there is no feedback uploader for the given account ID.
+  // See //chromeos/ash/components/specialized_features/feedback.h for more
+  // details.
+  virtual bool SendSpecializedFeatureFeedback(
+      const AccountId& account_id,
+      int product_id,
+      std::string description,
+      std::optional<std::string> image,
+      std::optional<std::string> image_mime_type) = 0;
 
   // Calls browser service to open the profile manager.
   virtual void OpenProfileManager() = 0;

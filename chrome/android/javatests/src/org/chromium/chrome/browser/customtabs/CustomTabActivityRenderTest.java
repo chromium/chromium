@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -44,6 +45,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
@@ -114,7 +116,7 @@ public class CustomTabActivityRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
                     .build();
 
@@ -202,6 +204,9 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testCctToolbarWithDefaultCloseButtonAndMaxTopActionItems() throws IOException {
         CustomTabTopActionIconHelper.addMaxTopActionIconToIntent(mIntent);
         startActivityAndRenderToolbar(
@@ -212,6 +217,9 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testCctToolbarWithCustomCloseButtonAndMaxTopActionItems() throws IOException {
         Bitmap closeIcon = createVectorDrawableBitmap(R.drawable.btn_back, 24, 24);
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);

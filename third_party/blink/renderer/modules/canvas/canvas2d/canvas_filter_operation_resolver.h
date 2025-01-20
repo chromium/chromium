@@ -31,7 +31,7 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
 
  public:
   static FilterOperations CreateFilterOperationsFromList(
-      const HeapVector<ScriptValue>& filters,
+      const HeapVector<ScriptObject>& filters,
       ExecutionContext& execution_context,
       ExceptionState& exception_state);
 

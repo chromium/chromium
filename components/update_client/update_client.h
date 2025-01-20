@@ -426,15 +426,15 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // the observers are being notified.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Installs the specified CRX. Calls back on |callback| after the
+  // Installs the specified CRX. Calls `callback` on the same sequence after the
   // update has been handled. Provides state change notifications through
-  // invocations of the optional |crx_state_change_callback| callback.
-  // The |error| parameter of the |callback| contains an error code in the case
+  // invocations of the optional `crx_state_change_callback` callback.
+  // The `error` parameter of the `callback` contains an error code in the case
   // of a run-time error, or 0 if the install has been handled successfully.
   // Overlapping calls of this function are executed concurrently, as long as
   // the id parameter is different, meaning that installs of different
   // components are parallelized.
-  // The |Install| function is intended to be used for foreground installs of
+  // The `Install` function is intended to be used for foreground installs of
   // one CRX. These cases are usually associated with on-demand install
   // scenarios, which are triggered by user actions. Installs are never
   // queued up.

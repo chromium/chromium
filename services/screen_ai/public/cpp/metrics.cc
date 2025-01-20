@@ -4,39 +4,33 @@
 
 #include "services/screen_ai/public/cpp/metrics.h"
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"
-#include "ui/accessibility/ax_tree_update.h"
 
 namespace screen_ai {
 
-void RecordMostDetectedLanguageInOcrData(
-    const std::string& metric_name,
-    const ui::AXTreeUpdate& tree_update_with_ocr_data) {
-  if (tree_update_with_ocr_data.nodes.empty()) {
-    return;
+std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
+    const chrome_screen_ai::VisualAnnotation& ocr_data) {
+  if (ocr_data.lines().empty()) {
+    return std::nullopt;
   }
 
-  // Count each detected language and find out the most detected language in
-  // OCR result. Then record the most detected language in UMA.
+  // Count each detected language.
   std::map<std::string, size_t> detected_language_count_map;
-  for (const auto& node : tree_update_with_ocr_data.nodes) {
-    // Count languages detected in OCR results. It will be used in UMA.
-    if (node.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
-      const std::string& detected_language =
-          node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
-      detected_language_count_map[detected_language]++;
+  for (const auto& line : ocr_data.lines()) {
+    for (const auto& word : line.words()) {
+      detected_language_count_map[word.language()]++;
     }
   }
 
-  // Get the most detected language and record it UMA.
+  // Get the most detected language.
   std::string most_detected_language;
   size_t most_detected_language_count = 0u;
   for (const auto& elem : detected_language_count_map) {
@@ -47,7 +41,7 @@ void RecordMostDetectedLanguageInOcrData(
   }
 
   if (most_detected_language_count == 0u) {
-    return;
+    return std::nullopt;
   }
 
   // Convert to a Chrome language code synonym. Then pass it to
@@ -65,7 +59,7 @@ void RecordMostDetectedLanguageInOcrData(
     language_to_log = lang_split[0];
   }
   language::ToChromeLanguageSynonym(&language_to_log);
-  base::UmaHistogramSparse(metric_name, base::HashMetricName(language_to_log));
+  return base::HashMetricName(language_to_log);
 }
 
 }  // namespace screen_ai

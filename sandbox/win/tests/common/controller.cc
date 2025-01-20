@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -94,7 +95,7 @@ namespace sandbox {
 
 // Constructs a full path to a file inside the system32 folder.
 std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
-  wchar_t windows_path[MAX_PATH] = {0};
+  wchar_t windows_path[MAX_PATH] = {};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
     return std::wstring();
 
@@ -112,7 +113,7 @@ std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
 
 // Constructs a full path to a file inside the syswow64 folder.
 std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
-  wchar_t windows_path[MAX_PATH] = {0};
+  wchar_t windows_path[MAX_PATH] = {};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
     return std::wstring();
 
@@ -146,7 +147,7 @@ class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
       base::OnceCallback<void(CreateTargetResult)> reply) override {
     // This function is only used for parallel launching and should not get
     // called.
-    CHECK(false);
+    NOTREACHED();
   }
 
   void BeforeTargetProcessCreateOnCreationThread(
@@ -154,6 +155,8 @@ class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
 
   void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                 DWORD process_id) override {}
+  void OnCreateThreadActionCreateFailure(DWORD last_error) override {}
+  void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {}
 };
 
 BrokerServices* GetBroker() {

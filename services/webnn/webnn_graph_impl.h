@@ -5,7 +5,6 @@
 #ifndef SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 
-#include <optional>
 #include <string>
 
 #include "base/component_export.h"

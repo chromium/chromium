@@ -90,8 +90,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest,
 
     // WebContentsObserver overrides:
     void DidFinishNavigation(content::NavigationHandle* handle) override {
-      if (handle->GetURL() != instant_ntp_url_)
+      if (handle->GetURL() != instant_ntp_url_) {
         return;
+      }
 
       did_finish_ = true;
       did_commit_ = handle->HasCommitted();

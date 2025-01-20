@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An interface that is notified of events and state changes related to gesture processing
  * from content layer.
  */
+@NullMarked
 public abstract class GestureStateListener {
     /** Called when the pinch gesture starts. */
     public void onPinchStarted() {}

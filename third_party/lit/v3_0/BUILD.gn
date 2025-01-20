@@ -34,7 +34,6 @@ ts_library("build_ts") {
     "//chrome/browser/resources/extensions:build_ts",
     "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
-    "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/management:build_ts",
@@ -48,6 +47,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
     "//chrome/browser/resources/search_engine_choice:build_ts",
+    "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
     "//chrome/browser/resources/side_panel/history_clusters:build_ts",
@@ -58,12 +58,13 @@ ts_library("build_ts") {
     "//chrome/browser/resources/signin/batch_upload:build_ts",
     "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
+    "//chrome/browser/resources/user_education_internals:build_ts",
     "//chrome/browser/resources/webui_gallery:build_ts",
-    "//chrome/browser/resources/welcome:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",
     "//chrome/test/data/pdf:build_ts",
     "//chrome/test/data/webui/app_home:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
+    "//chrome/test/data/webui/cr_components/cr_shortcut_input:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/history_clusters:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
@@ -73,13 +74,19 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/test/data/webui/signin:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
-    "//chrome/test/data/webui/welcome:build_ts",
+    "//components/chrome_urls_ui/resources:build_ts",
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
     "//components/flags_ui/resources:build_ts",
+    "//components/neterror/resources:build_ts",
+    "//components/ntp_tiles/webui/resources:build_ts",
+    "//components/signin/core/browser/resources:build_ts",
+    "//components/sync/service/resources:build_ts",
     "//content/browser/resources/indexed_db:build_ts",
+    "//content/browser/resources/service_worker:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ui/webui/resources/cr_components/cr_shortcut_input:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
@@ -187,6 +194,14 @@ bundle_js("build_bundle") {
 }
 
 minify_js("build_min_js") {
+  visibility = [
+    ":build_grdp",
+
+    # Expose target to //components/neterror only, which needs to include the
+    # Lit bundle in its own bundle unlike WebUIs that exclude it and therefore
+    # don't need to depend on this target.
+    "//components/neterror/resources:bundle_js",
+  ]
   deps = [ ":build_bundle" ]
   in_folder = "$target_gen_dir/bundled"
   in_files = [ "lit.rollup.js" ]

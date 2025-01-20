@@ -118,7 +118,7 @@ void LiveCaptionController::RegisterProfilePrefs(
       prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Flags for User Microphone Captioning are only available on ash.
   registry->RegisterBooleanPref(prefs::kLiveCaptionUserMicrophoneEnabled,
                                 false);
@@ -156,7 +156,7 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return enabled_for_babel_orca_ ||
          profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
 #else
@@ -194,7 +194,7 @@ void LiveCaptionController::OnSodaInstalled(
   bool is_language_code_for_live_caption =
       prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_language_code_for_babel_orca =
       prefs::IsLanguageCodeForMicrophoneCaption(language_code, profile_prefs_);
 
@@ -286,7 +286,7 @@ void LiveCaptionController::DestroyUI() {
 }
 
 const std::string LiveCaptionController::GetLanguageCode() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (enabled_for_babel_orca_) {
     return prefs::GetUserMicrophoneCaptionLanguage(profile_prefs_);
   }
@@ -350,7 +350,7 @@ void LiveCaptionController::OnToggleFullscreen(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LiveCaptionController::ToggleLiveCaptionForBabelOrca(bool enabled) {
   enabled_for_babel_orca_ = enabled;
   OnLiveCaptionEnabledChanged();

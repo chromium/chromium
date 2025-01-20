@@ -126,7 +126,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
                            md, nullptr)) {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
-    base::span<const uint8_t> digest = base::make_span(digest_buf, digest_len);
+    base::span<const uint8_t> digest = base::span(digest_buf, digest_len);
 
     std::optional<std::vector<uint8_t>> pss_storage;
     if (pss_fallback) {

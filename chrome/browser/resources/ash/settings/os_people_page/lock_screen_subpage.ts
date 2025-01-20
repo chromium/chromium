@@ -14,7 +14,6 @@
  * </settings-lock-screen-subpage>
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -34,7 +33,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -166,18 +165,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
-       * Whether switch from Gaia password factor to local password factor are
-       * allowed by the feature flag.
-       */
-      changePasswordFactorSetupEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * Whether the device account is managed.
        */
       deviceAccountManaged_: {
@@ -203,7 +190,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showPasswordSettings_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
-  private changePasswordFactorSetupEnabled_: boolean;
   private deviceAccountManaged_: boolean;
 
   static get observers() {
@@ -462,14 +448,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     const [
       { configured: hasGaiaPassword },
       { configured: hasLocalPassword },
-      { configured: hasPin },
+      { pinFactor },
     ] = await Promise.all([
       this.authFactorConfig.isConfigured(
         this.authToken, AuthFactor.kGaiaPassword),
       this.authFactorConfig.isConfigured(
         this.authToken, AuthFactor.kLocalPassword),
-      this.authFactorConfig.isConfigured(
-        this.authToken, AuthFactor.kPin),
+      PinFactorEditor.getRemote().getConfiguredPinFactor(this.authToken),
     ]);
 
     if (hasLocalPassword) {
@@ -478,11 +463,11 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       this.showPasswordSettings_ = true;
     } else if (!this.deviceAccountManaged_) {
       // Onto scenarios for non managed accounts now.
-      if (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword) {
+      if (hasGaiaPassword) {
         // If the gaia password is setup, for non managed users, we will allow
         // them to switch to local password.
         this.showPasswordSettings_ = true;
-      } else if (!hasGaiaPassword && hasPin) {
+      } else if (!hasGaiaPassword && pinFactor !== null) {
         // At this point we know the user does not have a password
         // and has a pin. We can allow them to set password.
         this.showPasswordSettings_ = true;

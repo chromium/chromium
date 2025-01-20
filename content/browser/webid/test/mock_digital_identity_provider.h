@@ -33,10 +33,17 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
                DigitalIdentityInterstitialCallback callback),
               (override));
   MOCK_METHOD(void,
-              Request,
+              Get,
               (WebContents*,
                const url::Origin& origin,
-               const base::Value request,
+               base::ValueView request,
+               DigitalIdentityCallback),
+              (override));
+  MOCK_METHOD(void,
+              Create,
+              (WebContents*,
+               const url::Origin& origin,
+               base::ValueView request,
                DigitalIdentityCallback),
               (override));
 };

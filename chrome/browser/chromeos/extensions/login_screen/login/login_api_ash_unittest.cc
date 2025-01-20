@@ -45,6 +45,7 @@
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -143,7 +144,7 @@ ash::UserContext GetPublicUserContext(const std::string& email) {
 }
 
 ash::UserContext GetRegularUserContext(const std::string& email,
-                                       const std::string& gaia_id) {
+                                       const GaiaId& gaia_id) {
   return ash::UserContext(user_manager::UserType::kRegular,
                           AccountId::FromUserEmailGaiaId(email, gaia_id));
 }
@@ -413,7 +414,8 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionNoActiveUser) {
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionNotManagedGuestSession) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  AccountId account_id =
+      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
@@ -527,7 +529,8 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNoActiveUser) {
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNotManagedGuestSession) {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  AccountId account_id =
+      AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
@@ -626,7 +629,7 @@ class LoginApiUserSessionUnittest : public LoginApiUnittest {
   std::unique_ptr<ScopedTestingProfile> AddRegularUser(
       const std::string& email) {
     auto* user = fake_chrome_user_manager_->AddUserWithAffiliation(
-        AccountId::FromUserEmailGaiaId(email, kGaiaId),
+        AccountId::FromUserEmailGaiaId(email, GaiaId(kGaiaId)),
         /* is_affiliated= */ true);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
 
@@ -649,7 +652,8 @@ TEST_F(LoginApiUserSessionUnittest, LaunchSamlUserSession) {
   ui::UserActivityDetector::Get()->set_now_for_test(now);
 
   std::unique_ptr<ScopedTestingProfile> profile = AddRegularUser(kEmail);
-  ash::UserContext user_context = GetRegularUserContext(kEmail, kGaiaId);
+  ash::UserContext user_context =
+      GetRegularUserContext(kEmail, GaiaId(kGaiaId));
 
   ash::Key key("password");
   key.SetLabel(ash::kCryptohomeGaiaKeyLabel);

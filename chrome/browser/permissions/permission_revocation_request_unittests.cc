@@ -473,7 +473,7 @@ class PermissionDisruptiveRevocationEnabledTest
  public:
   PermissionDisruptiveRevocationEnabledTest() {
     feature_list_.InitWithFeatures(
-        {features::kDisruptiveNotificationPermissionRevocation},
+        {},
         {features::kAbusiveNotificationPermissionRevocation});
   }
 
@@ -507,30 +507,4 @@ TEST_F(PermissionDisruptiveRevocationEnabledTest,
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
   EXPECT_TRUE(PermissionRevocationRequest::HasPreviouslyRevokedPermission(
       GetTestingProfile(), origin_to_revoke));
-}
-
-class PermissionDisruptiveRevocationDisabledTest
-    : public PermissionRevocationRequestTestBase {
- public:
-  PermissionDisruptiveRevocationDisabledTest() {
-    feature_list_.InitWithFeatures(
-        {features::kAbusiveNotificationPermissionRevocation},
-        {features::kDisruptiveNotificationPermissionRevocation});
-  }
-
-  ~PermissionDisruptiveRevocationDisabledTest() override = default;
-};
-
-TEST_F(PermissionDisruptiveRevocationDisabledTest,
-       PermissionDisruptiveRevocationDisabled) {
-  const GURL origin_to_revoke = GURL("https://origin.test/");
-
-  SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
-  AddToSafeBrowsingBlocklist(origin_to_revoke);
-  AddToPreloadDataBlocklist(origin_to_revoke,
-                            SiteReputation::DISRUPTIVE_BEHAVIOR,
-                            /*has_warning=*/false);
-  QueryAndExpectDecisionForUrl(origin_to_revoke,
-                               Outcome::PERMISSION_NOT_REVOKED);
-  VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
 }

@@ -4,6 +4,8 @@
 
 #include "content/browser/payments/stub_payment_credential.h"
 
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+
 namespace content {
 
 void StubPaymentCredential::Create(
@@ -32,6 +34,16 @@ void StubPaymentCredential::StorePaymentCredential(
     StorePaymentCredentialCallback callback) {
   std::move(callback).Run(
       payments::mojom::PaymentCredentialStorageStatus::SUCCESS);
+}
+
+void StubPaymentCredential::MakePaymentCredential(
+    blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    MakePaymentCredentialCallback callback) {
+  // This method on this stub is not implemented.
+  std::move(callback).Run(
+      blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR,
+      /*make_credential_authenticator_response_ptr=*/nullptr,
+      /*webauthn_dom_exception_details_ptr=*/nullptr);
 }
 
 }  // namespace content

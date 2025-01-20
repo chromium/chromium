@@ -1,5 +1,35 @@
 This is a testharness.js-based test.
 [FAIL] where float32 0D scalars
-  assert_true: assert_array_approx_equals_ulp: test where float32 actual -22.828125 should be close enough to expected -22.83924102783203 by the acceptable 0 ULP distance, but they have 5828 ULP distance expected true got false
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 1D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 2D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 3D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast condition 0D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast condition 1D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast condition 2D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast condition 3D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast condition 4D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast trueValues 2D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast trueValues 4D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast falseValues 3D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors only broadcast falseValues 4D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] where float32 4D tensors all broadcast 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'condition' data type uint8 must be one of [float32,float16,int32]."
 Harness: the test ran to completion.
 

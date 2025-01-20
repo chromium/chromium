@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">შეხებისას შესავსები ავტორიზაციის მონაცემების სია გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="5591247451101092906">გსურთ შენახული პაროლის ან წვდომის გასაღების გამოყენება?</translation>
 <translation id="5624120631404540903">პაროლების მართვა</translation>
+<translation id="592182999816790476"><ph name="USERNAME" />-ის პაროლი შეინახა <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="6560306912274274630">წვდომის გასაღები <ph name="USERNAME" />-ისთვის, გამოიყენეთ ეკრანის დაბლოკვის მეთოდი</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ახალი პაროლი ამ საიტისთვის}other{ახალი პაროლები ამ საიტისთვის}}</translation>
 <translation id="7286867818472074330">აირჩიეთ წვდომის გასაღები</translation>

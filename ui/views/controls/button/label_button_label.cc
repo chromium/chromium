@@ -21,8 +21,9 @@ LabelButtonLabel::~LabelButtonLabel() = default;
 
 void LabelButtonLabel::SetDisabledColor(SkColor color) {
   requested_disabled_color_ = color;
-  if (!GetEnabled())
+  if (!GetEnabled()) {
     Label::SetEnabledColor(color);
+  }
 }
 
 void LabelButtonLabel::SetDisabledColorId(std::optional<ui::ColorId> color_id) {
@@ -44,8 +45,9 @@ std::optional<ui::ColorId> LabelButtonLabel::GetDisabledColorId() const {
 
 void LabelButtonLabel::SetEnabledColor(SkColor color) {
   requested_enabled_color_ = color;
-  if (GetEnabled())
+  if (GetEnabled()) {
     Label::SetEnabledColor(color);
+  }
 }
 
 void LabelButtonLabel::SetEnabledColorId(std::optional<ui::ColorId> color_id) {

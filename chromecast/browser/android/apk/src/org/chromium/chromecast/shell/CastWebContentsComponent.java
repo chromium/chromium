@@ -305,10 +305,6 @@ public class CastWebContentsComponent {
         sendIntentSync(CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType));
     }
 
-    private static boolean sendIntent(Intent in) {
-        return CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcast(in);
-    }
-
     private static void sendIntentSync(Intent in) {
         CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(in);
     }

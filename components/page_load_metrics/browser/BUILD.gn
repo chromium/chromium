@@ -56,6 +56,7 @@ source_set("browser") {
     "observers/use_counter/at_most_once_enum_uma_deferrer.h",
     "observers/use_counter/ukm_features.cc",
     "observers/use_counter/webdev_metrics_ukm_features.cc",
+    "observers/use_counter/webdx_feature_maps.cc",
     "observers/use_counter_page_load_metrics_observer.cc",
     "observers/use_counter_page_load_metrics_observer.h",
     "observers/zstd_page_load_metrics_observer.cc",
@@ -88,7 +89,6 @@ source_set("browser") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core:core",
     "//components/metrics",

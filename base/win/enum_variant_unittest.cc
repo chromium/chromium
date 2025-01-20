@@ -83,8 +83,9 @@ TEST(EnumVariantTest, SimpleEnumVariant) {
   // Get all elements at once.
   VARIANT out_elements[3];
   ULONG out_received_multiple;
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     ::VariantInit(&out_elements[i]);
+  }
   EXPECT_EQ(S_OK, ev->Next(3, out_elements, &out_received_multiple));
   EXPECT_EQ(3u, out_received_multiple);
   EXPECT_EQ(VT_I4, out_elements[0].vt);
@@ -93,8 +94,9 @@ TEST(EnumVariantTest, SimpleEnumVariant) {
   EXPECT_EQ(20, out_elements[1].lVal);
   EXPECT_EQ(VT_I4, out_elements[2].vt);
   EXPECT_EQ(30, out_elements[2].lVal);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     ::VariantClear(&out_elements[i]);
+  }
 
   base::win::ScopedVariant placeholder_variant_multiple;
   EXPECT_EQ(S_FALSE,
@@ -118,8 +120,9 @@ TEST(EnumVariantTest, Clone) {
   EXPECT_TRUE(ev2 != nullptr);
 
   VARIANT out_elements[3];
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     ::VariantInit(&out_elements[i]);
+  }
   EXPECT_EQ(S_OK, ev2->Next(3, out_elements, nullptr));
   EXPECT_EQ(VT_I4, out_elements[0].vt);
   EXPECT_EQ(10, out_elements[0].lVal);
@@ -127,8 +130,9 @@ TEST(EnumVariantTest, Clone) {
   EXPECT_EQ(20, out_elements[1].lVal);
   EXPECT_EQ(VT_I4, out_elements[2].vt);
   EXPECT_EQ(30, out_elements[2].lVal);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     ::VariantClear(&out_elements[i]);
+  }
 }
 
 }  // namespace win

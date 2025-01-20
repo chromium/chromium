@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/quick_insert/model/quick_insert_link_suggester.h"
 #include "ash/quick_insert/quick_insert_clipboard_history_provider.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "base/functional/callback_forward.h"
@@ -42,6 +43,7 @@ class ASH_EXPORT QuickInsertSuggestionsController {
 
  private:
   raw_ptr<QuickInsertClient> client_;
+  QuickInsertLinkSuggester link_suggester_;
   QuickInsertClipboardHistoryProvider clipboard_provider_;
 };
 

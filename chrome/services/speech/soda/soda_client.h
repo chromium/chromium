@@ -5,8 +5,6 @@
 #ifndef CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 #define CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_native_library.h"
 #include "chrome/services/speech/soda/soda_async_impl.h"
 
 namespace soda {
@@ -28,63 +26,31 @@ enum class LoadSodaResultValue {
 // compatible and reflected in the Google3-side definition.
 class SodaClient {
  public:
-  // Takes in the fully-qualified path to the SODA binary.
-  explicit SodaClient(base::FilePath library_path);
-
-  SodaClient(const SodaClient&) = delete;
-  SodaClient& operator=(const SodaClient&) = delete;
-
-  ~SodaClient();
+  virtual ~SodaClient() = default;
 
   // Feeds raw audio to SODA in the form of a contiguous stream of characters.
-  void AddAudio(const char* audio_buffer, int audio_buffer_size);
+  virtual void AddAudio(const char* audio_buffer, int audio_buffer_size) = 0;
 
   // Notifies the client to finish transcribing.
-  void MarkDone();
+  virtual void MarkDone() = 0;
 
   // Checks whether the sample rate or channel count differs from the values
   // used to initialize the SODA instance.
-  bool DidAudioPropertyChange(int sample_rate, int channel_count);
+  virtual bool DidAudioPropertyChange(int sample_rate, int channel_count) = 0;
 
   // Resets the SODA instance, initializing it with the provided config.
-  void Reset(const SerializedSodaConfig config,
-             int sample_rate,
-             int channel_count);
+  virtual void Reset(const SerializedSodaConfig config,
+                     int sample_rate,
+                     int channel_count) = 0;
+
+  // Updates the recognition context for the current SODA instance.
+  virtual void UpdateRecognitionContext(const RecognitionContext context) = 0;
 
   // Returns a flag indicating whether the client has been initialized.
-  bool IsInitialized() { return is_initialized_; }
+  virtual bool IsInitialized() = 0;
 
-  bool BinaryLoadedSuccessfully() {
-    return load_soda_result_ == LoadSodaResultValue::kSuccess;
-  }
-
- private:
-  base::ScopedNativeLibrary lib_;
-
-  typedef void* (*CreateSodaFunction)(SerializedSodaConfig);
-  CreateSodaFunction create_soda_func_;
-
-  typedef void (*DeleteSodaFunction)(void*);
-  DeleteSodaFunction delete_soda_func_;
-
-  typedef void (*AddAudioFunction)(void*, const char*, int);
-  AddAudioFunction add_audio_func_;
-
-  typedef void (*MarkDoneFunction)(void*);
-  MarkDoneFunction mark_done_func_;
-
-  typedef void (*SodaStartFunction)(void*);
-  SodaStartFunction soda_start_func_;
-
-  // An opaque handle to the SODA async instance. While this class owns this
-  // handle, the handle is instantiated and deleted by the SODA library, so the
-  // pointer may dangle after DeleteExtendedSodaAsync is called.
-  raw_ptr<void, DisableDanglingPtrDetection> soda_async_handle_;
-
-  LoadSodaResultValue load_soda_result_ = LoadSodaResultValue::kUnknown;
-  bool is_initialized_;
-  int sample_rate_;
-  int channel_count_;
+  // Returns a flag indicating whether the binary was loaded successfully.
+  virtual bool BinaryLoadedSuccessfully() = 0;
 };
 
 }  // namespace soda

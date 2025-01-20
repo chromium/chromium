@@ -27,7 +27,7 @@ class DownloadItemView;
 namespace views {
 class ImageButton;
 class MdTextButton;
-}
+}  // namespace views
 
 // DownloadShelfView is a view that contains individual views for each download,
 // as well as a close button and a link to show all downloads.

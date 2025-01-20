@@ -38,19 +38,19 @@ const wchar_t kRegValueName[] = L"name";
 bool Install() {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
-    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    VLOG(1) << "Failed to retrieve the current executable's path.";
     return false;
   }
 
   const std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
-    LOG(ERROR) << "Failed to create temporary directory.";
+    VLOG(1) << "Failed to create temporary directory.";
     return false;
   }
 
@@ -70,9 +70,9 @@ bool Install() {
       L"" PRODUCT_FULLNAME_STRING, /*overwrite=*/true);
 
   if (!install_list->Do()) {
-    LOG(ERROR) << "Install failed, rolling back...";
+    VLOG(1) << "Install failed, rolling back...";
     install_list->Rollback();
-    LOG(ERROR) << "Rollback complete.";
+    VLOG(1) << "Rollback complete.";
     return false;
   }
 
@@ -91,13 +91,13 @@ bool Uninstall() {
 
   const std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
 
   base::FilePath cmd_exe_path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path)) {
-    LOG(ERROR) << "Failed to get System32 path.";
+    VLOG(1) << "Failed to get System32 path.";
     return false;
   }
   cmd_exe_path = cmd_exe_path.AppendASCII("cmd.exe");
@@ -115,7 +115,7 @@ bool Uninstall() {
   options.start_hidden = true;
   base::Process process = base::LaunchProcess(command_line, options);
   if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to create process " << command_line;
+    VLOG(1) << "Failed to create process " << command_line;
     return false;
   }
   return true;

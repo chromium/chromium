@@ -98,7 +98,8 @@ namespace sequence_manager::internal {
 class TaskQueueImpl;
 }
 
-template <typename T> class WeakPtr;
+template <typename T>
+class WeakPtr;
 
 namespace internal {
 // These classes are part of the WeakPtr implementation.
@@ -182,7 +183,8 @@ SafeRef<T> MakeSafeRefFromWeakPtrInternals(internal::WeakReference&& ref,
 
 }  // namespace internal
 
-template <typename T> class WeakPtrFactory;
+template <typename T>
+class WeakPtrFactory;
 
 // The WeakPtr class holds a weak reference to |T*|.
 //
@@ -286,7 +288,8 @@ class TRIVIAL_ABI WeakPtr {
   bool WasInvalidated() const { return ptr_ && !ref_.IsValid(); }
 
  private:
-  template <typename U> friend class WeakPtr;
+  template <typename U>
+  friend class WeakPtr;
   friend class WeakPtrFactory<T>;
   friend class WeakPtrFactory<std::remove_const_t<T>>;
 

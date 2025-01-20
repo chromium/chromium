@@ -12,12 +12,14 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -96,8 +98,8 @@ ChromeWebViewPermissionHelperDelegate::ChromeWebViewPermissionHelperDelegate(
 {
 }
 
-ChromeWebViewPermissionHelperDelegate::~ChromeWebViewPermissionHelperDelegate()
-{}
+ChromeWebViewPermissionHelperDelegate::
+    ~ChromeWebViewPermissionHelperDelegate() = default;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
@@ -131,8 +133,8 @@ void ChromeWebViewPermissionHelperDelegate::OnPermissionResponse(
     const std::string& input) {
   if (allow) {
     ChromePluginServiceFilter::GetInstance()->AuthorizeAllPlugins(
-        web_view_permission_helper()->web_view_guest()->web_contents(), true,
-        identifier);
+        web_view_permission_helper()->web_view_guest()->GetGuestMainFrame(),
+        true, identifier);
   }
 }
 
@@ -424,6 +426,19 @@ void ChromeWebViewPermissionHelperDelegate::RequestFullscreenPermission(
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, std::move(request_info),
       std::move(callback), /*allowed_by_default=*/false);
+}
+
+bool ChromeWebViewPermissionHelperDelegate::
+    ForwardEmbeddedMediaPermissionChecksAsEmbedder(
+        const url::Origin& embedder_origin) {
+  // Note that it probably makes sense for most WebUIs to forward approved media
+  // permissions as the embedder, but historically, the default has been to
+  // forward as the embedded origin.
+  // TODO(crbug.com/382773576): Change to true for all chrome:// origins, with
+  // the exception of chrome://chrome-signin and chrome://oobe, which needs the
+  // old behavior.
+  return embedder_origin.scheme() == content::kChromeUIScheme &&
+         embedder_origin.host() == chrome::kChromeUIGlicHost;
 }
 
 }  // namespace extensions

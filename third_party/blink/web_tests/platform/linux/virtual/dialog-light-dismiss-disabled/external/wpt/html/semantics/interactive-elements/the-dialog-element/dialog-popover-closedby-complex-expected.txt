@@ -1,0 +1,51 @@
+This is a testharness.js-based test.
+[FAIL] clicking outside all with modeless dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modeless dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modeless dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modeless dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modeless dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modeless dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modal dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modal dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modal dialogA and modeless dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modal dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modal dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modal dialogA and modal dialogB, normal DOM nesting
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modeless dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modeless dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modeless dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modeless dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modeless dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modeless dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modal dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modal dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modal dialogA and modeless dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking outside all with modal dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking popoverA with modal dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+[FAIL] clicking dialogA with modal dialogA and modal dialogB, same structure, but with shadow DOM slots
+  assert_equals: dialogB should be closed expected false but got true
+Harness: the test ran to completion.
+

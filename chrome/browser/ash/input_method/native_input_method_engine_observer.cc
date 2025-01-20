@@ -450,6 +450,28 @@ std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kF11;
     case ui::DomKey::F12:
       return mojom::NamedDomKey::kF12;
+    case ui::DomKey::BROWSER_BACK:
+      return mojom::NamedDomKey::kBrowserBack;
+    case ui::DomKey::BROWSER_FORWARD:
+      return mojom::NamedDomKey::kBrowserForward;
+    case ui::DomKey::BROWSER_REFRESH:
+      return mojom::NamedDomKey::kBrowserRefresh;
+    case ui::DomKey::ZOOM_TOGGLE:
+      // This the DomKey for the "full screen" key.
+      return mojom::NamedDomKey::kZoomToggle;
+    case ui::DomKey::LAUNCH_MY_COMPUTER:
+      // This the DomKey for the "Show all open windows" key.
+      return mojom::NamedDomKey::kLaunchMyComputer;
+    case ui::DomKey::BRIGHTNESS_DOWN:
+      return mojom::NamedDomKey::kBrightnessDown;
+    case ui::DomKey::BRIGHTNESS_UP:
+      return mojom::NamedDomKey::kBrightnessUp;
+    case ui::DomKey::AUDIO_VOLUME_MUTE:
+      return mojom::NamedDomKey::kAudioVolumeMute;
+    case ui::DomKey::AUDIO_VOLUME_DOWN:
+      return mojom::NamedDomKey::kAudioVolumeDown;
+    case ui::DomKey::AUDIO_VOLUME_UP:
+      return mojom::NamedDomKey::kAudioVolumeUp;
     default:
       return std::nullopt;
   }
@@ -1433,7 +1455,7 @@ void NativeInputMethodEngineObserver::DEPRECATED_ReportSuggestionOpportunity(
 void NativeInputMethodEngineObserver::ReportHistogramSample(
     base::Histogram* histogram,
     uint16_t value) {
-  histogram->Add(base::strict_cast<base::Histogram::Sample>(value));
+  histogram->Add(base::strict_cast<base::Histogram::Sample32>(value));
 }
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(

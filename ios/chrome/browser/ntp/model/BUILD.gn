@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("model") {
   sources = [
     "browser_policy_new_tab_page_rewriter.h",
@@ -54,6 +62,7 @@ source_set("set_up_list") {
     "set_up_list_item.mm",
   ]
   deps = [
+    ":features",
     ":set_up_list_item_type",
     ":set_up_list_metrics",
     ":set_up_list_prefs",
@@ -69,6 +78,7 @@ source_set("set_up_list") {
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model",
@@ -114,6 +124,7 @@ source_set("unit_tests") {
     "set_up_list_unittest.mm",
   ]
   deps = [
+    ":features",
     ":set_up_list",
     ":set_up_list_item_type",
     ":set_up_list_prefs",

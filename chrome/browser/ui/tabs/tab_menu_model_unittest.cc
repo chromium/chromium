@@ -294,7 +294,7 @@ class TabMenuModelCommerceProductSpecsTest : public TabMenuModelTest {
 
   void SetUp() override {
     TabMenuModelTest::SetUp();
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     account_checker_->SetPrefs(prefs_.get());
     auto* shopping_service = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));

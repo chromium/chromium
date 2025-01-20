@@ -236,6 +236,16 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION = 53;
   // Target for History query intent model.
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT = 54;
+  // Target for scam detection feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION = 55;
+  // Target for Permissions AI feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI = 56;
+  // Target for assessing embedding model performance.
+  OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER = 57;
+  // Target for segmentation: FedCM user.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
+  // Target for Writing Assistance APIs (Writer and Rewriter).
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API = 59;
 }
 
 // The model engine versions that can be used to do model inference.

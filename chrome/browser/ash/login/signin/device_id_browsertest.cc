@@ -36,6 +36,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -116,7 +117,7 @@ class DeviceIDTest : public OobeBaseTest,
   void SignInOnline(const std::string& user_id,
                     const std::string& password,
                     const std::string& refresh_token,
-                    const std::string& gaia_id) {
+                    const GaiaId& gaia_id) {
     cryptohome_mixin_.ApplyAuthConfigIfUserExists(
         AccountId::FromUserEmail(user_id),
         test::UserAuthConfig::Create(test::kDefaultAuthSetup));
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken1,
-               kSecondUserGaiaId);
+               GaiaId(kSecondUserGaiaId));
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken1);
 }
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken2,
-               kSecondUserGaiaId);
+               GaiaId(kSecondUserGaiaId));
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken2);
   EXPECT_NE(GetDeviceIdFromGAIA(kSecondUserRefreshToken1),

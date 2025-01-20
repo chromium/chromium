@@ -14,7 +14,7 @@ import "services/data_decoder/public/mojom/json_parser.mojom";
 import "services/data_decoder/public/mojom/structured_headers_parser.mojom";
 import "services/data_decoder/public/mojom/xml_parser.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "services/data_decoder/public/mojom/ble_scan_parser.mojom";
 
 // The main interface to the Data Decoder service.
@@ -39,7 +39,7 @@ interface DataDecoderService {
 
   // Binds an interface which can be used to parse raw BLE advertising packet
   // data.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindBleScanParser(pending_receiver<BleScanParser> receiver);
 
   // Binds an interface which can be used to parse structured headers.

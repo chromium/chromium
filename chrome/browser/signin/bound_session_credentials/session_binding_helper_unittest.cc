@@ -148,9 +148,8 @@ TEST_F(SessionBindingHelperTest, ReloadKeyAfterFailure) {
     base::test::TestFuture<
         base::expected<std::string, SessionBindingHelper::Error>>
         sign_future;
-    EXPECT_CALL(
-        mock_unexportable_key_service,
-        FromWrappedSigningKeySlowlyAsync(base::make_span(wrapped_key), _, _))
+    EXPECT_CALL(mock_unexportable_key_service,
+                FromWrappedSigningKeySlowlyAsync(base::span(wrapped_key), _, _))
         .WillOnce(RunOnceCallback<2>(base::unexpected(
             unexportable_keys::ServiceError::kCryptoApiFailed)));
     helper.GenerateBindingKeyAssertion(
@@ -164,9 +163,8 @@ TEST_F(SessionBindingHelperTest, ReloadKeyAfterFailure) {
     base::test::TestFuture<
         base::expected<std::string, SessionBindingHelper::Error>>
         sign_future;
-    EXPECT_CALL(
-        mock_unexportable_key_service,
-        FromWrappedSigningKeySlowlyAsync(base::make_span(wrapped_key), _, _))
+    EXPECT_CALL(mock_unexportable_key_service,
+                FromWrappedSigningKeySlowlyAsync(base::span(wrapped_key), _, _))
         .WillOnce(RunOnceCallback<2>(key_id));
     EXPECT_CALL(mock_unexportable_key_service, SignSlowlyAsync(key_id, _, _, _))
         .WillOnce(Invoke(

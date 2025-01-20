@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1066101356081285416">Chrome zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Sledovacie číslo zásielky a názov webu sa odošlú Googlu na účely poskytovania tejto funkcie a zlepšovania funkcií Nákupov Google pre každého. Kedykoľvek to môžete zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome automaticky otvára odkazy na YouTube v režime inkognito.</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
 <translation id="1143896152279775643">Heslo bude uložené do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvorenie novej karty v Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Chrome môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
 <translation id="1229222343402087523">Hľadať ${searchPhrase} v Chrome</translation>
 <translation id="1237769345474105984">Z Chromu</translation>
-<translation id="1240190568154816272">Tipy pre Chrome</translation>
 <translation id="124228879633599436">Váš Chrome je zastaraný. V záujme svojho bezpečia ho aktualizujte.</translation>
 <translation id="1333745675627230582">Hrať hru Chrome Dino</translation>
 <translation id="1352919863522755794">Správcovi hesiel Google sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Otvorí nastavenia Chromu, aby bolo možné Chrome nakonfigurovať ako predvolený prehliadač.</translation>
 <translation id="1670609221633730681">Tip pre Chrome: vyberte umiestnenie panela s adresou</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Ukladajte si heslá v Chrome</translation>
 <translation id="1790080846677398234">Pridá vložené webové adresy do záložiek v Chrome.</translation>
 <translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="3655656110921623717">Znamená to, že Chrome bude zakaždým žiadať o mobilný web.</translation>
 <translation id="3740397331642243698">Otvorí zadané webové adresy v prehliadači Google Chrome v režime inkognito.</translation>
 <translation id="3741995255368156336">Otvorí čitateľský zoznam v Chrome.</translation>
+<translation id="3808570423967020928">Získavajte prístup k Chromu rýchlejšie z Docku na ploche.</translation>
 <translation id="3827545470516145620">V tomto zariadení máte štandardnú bezpečnostnú ochranu</translation>
 <translation id="384394811301901750">Google Chrome momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="3863841106411295595">Pridá vložené webové adresy do vášho čitateľského zoznamu v Chrome.</translation>
@@ -125,6 +127,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="4636900170638246267">Prihláste sa na tomto webe a v Chrome.</translation>
 <translation id="4646014602299206846">Chrome zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých používateľov.</translation>
 <translation id="4647910807533196601">Otvorenie najnovšej karty v Chrome.</translation>
+<translation id="4693084815234024320">Ste v režime inkognito Chromu</translation>
 <translation id="4724297637870447613">Používajte Chrome kdekoľvek</translation>
 <translation id="4738647308035481133">Stránka prehliadača Google Chrome</translation>
 <translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>
@@ -219,9 +222,12 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 
 Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Odstránenie dát prehliadania v Chrome.</translation>
+<translation id="6924922227983877439">Otvárajte odkazy predvolene v Chrome</translation>
+<translation id="6931601805528922498">Prihlásením sa pridáte svoj účet do Chromu na prehliadanie súvisiace s prácou.</translation>
 <translation id="6975725306479268850">Ak chcete využívať automatické dopĺňanie, vyberte si Chrome</translation>
 <translation id="7056826488869329999">Otvorí a spustí kontrolu bezpečnosti v Chrome.</translation>
 <translation id="7061455974939528301">Pridržte ikonu Chromu a kliknite na Úprava plochy</translation>
+<translation id="7065813315247345131">Presuňte Chrome do ponuky aplikácií</translation>
 <translation id="7124339256045485976">Udržuje Chrome aktuálny</translation>
 <translation id="7161390184744336561">Prehliadač Google Chrome je zastaraný.</translation>
 <translation id="7165736900384873061">Začnite používať čítačku QR prehliadača Google Chrome</translation>

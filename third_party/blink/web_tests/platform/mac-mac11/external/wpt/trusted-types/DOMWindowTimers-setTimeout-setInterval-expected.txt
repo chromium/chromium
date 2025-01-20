@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] DedicatedWorkerGlobalScope.setTimeout assigned via default policy (successful Script transformation).
+  assert_equals: expected "Worker setTimeout" but got "WorkerGlobalScope setTimeout"
+[FAIL] DedicatedWorkerGlobalScope.setInterval assigned via default policy (successful Script transformation).
+  assert_equals: expected "Worker setInterval" but got "WorkerGlobalScope setInterval"
+[FAIL] SharedWorkerGlobalScope.setTimeout assigned via default policy (successful Script transformation).
+  assert_equals: expected "Worker setTimeout" but got "WorkerGlobalScope setTimeout"
+[FAIL] SharedWorkerGlobalScope.setInterval assigned via default policy (successful Script transformation).
+  assert_equals: expected "Worker setInterval" but got "WorkerGlobalScope setInterval"
+Harness: the test ran to completion.

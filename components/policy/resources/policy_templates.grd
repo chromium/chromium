@@ -15,7 +15,7 @@ during the build process.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="app/policy/translations/policy_templates_de-DE.json" type="policy_templates" lang="de" />
     <output filename="app/policy/translations/policy_templates_en-US.json" type="policy_templates" lang="en" />

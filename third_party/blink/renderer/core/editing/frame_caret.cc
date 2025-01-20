@@ -28,7 +28,6 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -134,8 +133,7 @@ PositionWithAffinity FrameCaret::UpdateAppearance() {
   SetBlinkingDisabled(false);
   if (RuntimeEnabledFeatures::CSSCaretAnimationEnabled() &&
       caret_position.AnchorNode() &&
-      caret_position.AnchorNode()
-              ->GetComputedStyleForElementOrLayoutObject()
+      GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode())
               ->CaretAnimation() == ECaretAnimation::kManual) {
     SetBlinkingDisabled(true);
   }

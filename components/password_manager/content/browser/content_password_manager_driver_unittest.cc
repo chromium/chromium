@@ -64,7 +64,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       delete;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (override));
+  MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (const override));
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   MOCK_METHOD(void,
@@ -118,7 +118,7 @@ class FakePasswordAutofillAgent
                const std::u16string&,
                const std::u16string&),
               (override));
-  MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
+  MOCK_METHOD(void, InformNoSavedCredentials, (), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,
               (bool, const std::u16string&),
@@ -132,6 +132,15 @@ class FakePasswordAutofillAgent
               (autofill::FieldRendererId,
                const std::u16string&,
                autofill::AutofillSuggestionTriggerSource),
+              (override));
+  MOCK_METHOD(void,
+              SubmitChangePasswordForm,
+              (autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               autofill::FieldRendererId,
+               const std::u16string&,
+               const std::u16string&,
+               SubmitChangePasswordFormCallback),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, KeyboardReplacingSurfaceClosed, (bool), (override));
@@ -181,10 +190,7 @@ class MockPasswordManager : public PasswordManager {
               OnPasswordFormCleared,
               (PasswordManagerDriver * driver, const autofill::FormData&),
               (override));
-  MOCK_METHOD(const PasswordFormCache*,
-              GetPasswordFormCache,
-              (),
-              (const override));
+  MOCK_METHOD(PasswordFormCache*, GetPasswordFormCache, (), (override));
 };
 
 class MockPasswordFormCache : public PasswordFormCache {
@@ -258,7 +264,7 @@ class ContentPasswordManagerDriverTest
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    ON_CALL(password_manager_client_, GetLogManager())
+    ON_CALL(password_manager_client_, GetCurrentLogManager())
         .WillByDefault(Return(&log_manager_));
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
@@ -306,7 +312,7 @@ TEST_P(ContentPasswordManagerDriverTest, SendLoggingStateInCtor) {
 
 TEST_P(ContentPasswordManagerDriverTest, SendLoggingStateAfterLogManagerReady) {
   const bool should_allow_logging = GetParam();
-  EXPECT_CALL(password_manager_client_, GetLogManager())
+  EXPECT_CALL(password_manager_client_, GetCurrentLogManager())
       .WillOnce(Return(nullptr));
   std::unique_ptr<ContentPasswordManagerDriver> driver(
       new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));
@@ -314,7 +320,7 @@ TEST_P(ContentPasswordManagerDriverTest, SendLoggingStateAfterLogManagerReady) {
   EXPECT_FALSE(WasLoggingActivationMessageSent(nullptr));
 
   // Log manager is ready, send logging state actually.
-  EXPECT_CALL(password_manager_client_, GetLogManager())
+  EXPECT_CALL(password_manager_client_, GetCurrentLogManager())
       .WillOnce(Return(&log_manager_));
   EXPECT_CALL(log_manager_, IsLoggingActive())
       .WillRepeatedly(Return(should_allow_logging));
@@ -374,7 +380,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
 
   driver->FillField(
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 1);
 
@@ -385,7 +391,7 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   driver->FillSuggestionById(
       autofill::FieldRendererId(), autofill::FieldRendererId(), u"username",
       u"password",
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 3);
 

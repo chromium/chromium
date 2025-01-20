@@ -21,6 +21,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 
 /**
@@ -70,7 +71,7 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /**
-     * Adds and signs in an account with the default name without sync consent.
+     * Adds and signs in an account with the default name.
      *
      * @deprecated Use the version with {@link AccountInfo}.
      */
@@ -83,11 +84,19 @@ public class SigninTestRule extends AccountManagerTestRule {
         return coreAccountInfo;
     }
 
-    /** Adds and signs in with the provided account without sync consent. */
+    /** Adds and signs in with the provided account. */
     public void addAccountThenSignin(AccountInfo accountInfo) {
         assert !mIsSignedIn : "An account is already signed in!";
         addAccount(accountInfo);
         SigninTestUtil.signin(accountInfo);
+        mIsSignedIn = true;
+    }
+
+    /** Adds and signs in with the provided account and opts into history sync. */
+    public void addAccountThenSigninAndEnableHistorySync(AccountInfo accountInfo) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        addAccount(accountInfo);
+        SigninTestUtil.signinAndEnableHistorySync(accountInfo);
         mIsSignedIn = true;
     }
 
@@ -109,15 +118,6 @@ public class SigninTestRule extends AccountManagerTestRule {
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
         mIsSignedIn = true;
         return coreAccountInfo;
-    }
-
-    /** Adds and signs in an account with the specified name and enables sync. */
-    public void addAccountThenSigninAndEnableSync(AccountInfo accountInfo) {
-        assert !mIsSignedIn : "An account is already signed in!";
-        addAccount(accountInfo);
-        SigninTestUtil.signinAndEnableSync(
-                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
-        mIsSignedIn = true;
     }
 
     /** Waits for the account corresponding to coreAccountInfo to finish signin. */
@@ -143,11 +143,7 @@ public class SigninTestRule extends AccountManagerTestRule {
         assert !mIsSignedIn : "An account is already signed in!";
 
         AccountInfo testChildAccount =
-                new AccountInfo.Builder(
-                                generateChildEmail("test@gmail.com"),
-                                FakeAccountManagerFacade.toGaiaId("test-gaia-id"))
-                        .fullName("ChildTest Full")
-                        .givenName("ChildTest Given")
+                new AccountInfo.Builder(TestAccounts.CHILD_ACCOUNT)
                         .accountCapabilities(builder.setIsSubjectToParentalControls(true).build())
                         .build();
 

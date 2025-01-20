@@ -16,23 +16,27 @@
 
 namespace web_app::test {
 
+struct IwaComponentMetadata {
+  base::Version version;
+  bool is_preloaded;
+};
+
 // Synchronously updates the key distribution info provider with data from
 // `path`.
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(const base::Version& version,
-                          const base::FilePath& path);
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
+    const base::Version& version,
+    const base::FilePath& path);
 
 // Synchronously updates the key distribution info provider with the given
 // `kd_proto`.
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(const base::Version& version,
-                          const IwaKeyDistribution& kd_proto);
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
+    const base::Version& version,
+    const IwaKeyDistribution& kd_proto);
 
 // Synchronously updates the key distribution info provider with a protobuf
 // that maps `web_bundle_id` to `expected_key`. If `expected_key` is a nullopt,
 // then the IWA with `web_bundle_id` will fail signature verification.
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
-UpdateKeyDistributionInfo(
+base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
@@ -41,17 +45,22 @@ UpdateKeyDistributionInfo(
 // triggers the registration process with the component updater. The directory
 // is deleted once IwaKeyDistributionInfoProvider has processed the update
 // (regardless of the outcome).
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+base::expected<void, IwaComponentUpdateError>
 InstallIwaKeyDistributionComponent(const base::Version& version,
                                    const IwaKeyDistribution& kd_proto);
 
 // A shortcut for the above function that populates only the key rotation part
 // of the proto.
-base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+base::expected<void, IwaComponentUpdateError>
 InstallIwaKeyDistributionComponent(
     const base::Version& version,
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
+
+// Synchronously registers the component with the component updater and waits
+// for the component updater to pick up the on-disk data in its folder.
+base::expected<IwaComponentMetadata, IwaComponentUpdateError>
+RegisterIwaKeyDistributionComponentAndWaitForLoad();
 
 }  // namespace web_app::test
 

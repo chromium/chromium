@@ -42,7 +42,7 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
   AppObserver(const AppObserver&) = delete;
   AppObserver& operator=(const AppObserver&) = delete;
 
-  ~AppObserver() override {}
+  ~AppObserver() override = default;
 
   // AppWindowRegistry::Observer overrides:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
@@ -78,8 +78,9 @@ MultiProfileSupport::~MultiProfileSupport() {
   // Remove all app observers.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // might be nullptr in unit tests.
-  if (!profile_manager)
+  if (!profile_manager) {
     return;
+  }
 
   std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
   for (auto it = profiles.begin(); it != profiles.end(); ++it) {
@@ -106,8 +107,9 @@ void MultiProfileSupport::Init() {
   // Add an app window observer & all already running apps.
   Profile* profile =
       multi_user_util::GetProfileFromAccountId(current_account_id);
-  if (profile)
+  if (profile) {
     AddUser(profile);
+  }
 }
 
 void MultiProfileSupport::AddUser(content::BrowserContext* context) {
@@ -115,8 +117,9 @@ void MultiProfileSupport::AddUser(content::BrowserContext* context) {
   const AccountId& account_id(
       multi_user_util::GetAccountIdFromProfile(profile));
   if (account_id_to_app_observer_.find(account_id) !=
-      account_id_to_app_observer_.end())
+      account_id_to_app_observer_.end()) {
     return;
+  }
 
   account_id_to_app_observer_[account_id] =
       std::make_unique<AppObserver>(account_id.GetUserEmail());
@@ -128,21 +131,24 @@ void MultiProfileSupport::AddUser(content::BrowserContext* context) {
       extensions::AppWindowRegistry::Get(profile)->app_windows();
   extensions::AppWindowRegistry::AppWindowList::const_iterator it =
       app_windows.begin();
-  for (; it != app_windows.end(); ++it)
+  for (; it != app_windows.end(); ++it) {
     account_id_to_app_observer_[account_id]->OnAppWindowAdded(*it);
+  }
 
   // Account all existing browser windows of this user accordingly.
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->IsSameOrParent(profile))
+    if (browser->profile()->IsSameOrParent(profile)) {
       OnBrowserAdded(browser);
+    }
   }
 }
 
 void MultiProfileSupport::OnBrowserAdded(Browser* browser) {
   // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
   // come here with no valid window.
-  if (!browser->window() || !browser->window()->GetNativeWindow())
+  if (!browser->window() || !browser->window()->GetNativeWindow()) {
     return;
+  }
   multi_user_window_manager_->SetWindowOwner(
       browser->window()->GetNativeWindow(),
       multi_user_util::GetAccountIdFromProfile(browser->profile()));
@@ -187,8 +193,9 @@ void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
   // Some unit tests have no ChromeShelfController.
-  if (!chrome_shelf_controller)
+  if (!chrome_shelf_controller) {
     return;
+  }
   chrome_shelf_controller->ActiveUserChanged(
       multi_user_window_manager_->CurrentAccountId());
 }

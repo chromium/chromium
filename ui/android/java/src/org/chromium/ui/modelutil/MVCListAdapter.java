@@ -7,8 +7,7 @@ package org.chromium.ui.modelutil;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
@@ -18,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
  * different types of views that can be shown by the list, i.e.:
  * {@link #registerType(int, ViewBuilder, ViewBinder)}.
  */
+@NullMarked
 public interface MVCListAdapter {
     /** A basic container for {@link PropertyModel}s with a type. */
     class ListItem {
@@ -50,7 +50,7 @@ public interface MVCListAdapter {
          * @param parent Parent view.
          * @return A new view to show in the list.
          */
-        T buildView(@NonNull ViewGroup parent);
+        T buildView(ViewGroup parent);
     }
 
     /**

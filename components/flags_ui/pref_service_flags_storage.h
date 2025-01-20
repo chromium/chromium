@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_storage.h"
 
 class PrefService;
@@ -44,9 +43,9 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   raw_ptr<PrefService, DanglingUntriaged> prefs_;

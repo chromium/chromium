@@ -16,14 +16,14 @@ namespace {
 class ChromeConstrainedWindowViewsClient
     : public constrained_window::ConstrainedWindowViewsClient {
  public:
-  ChromeConstrainedWindowViewsClient() {}
+  ChromeConstrainedWindowViewsClient() = default;
 
   ChromeConstrainedWindowViewsClient(
       const ChromeConstrainedWindowViewsClient&) = delete;
   ChromeConstrainedWindowViewsClient& operator=(
       const ChromeConstrainedWindowViewsClient&) = delete;
 
-  ~ChromeConstrainedWindowViewsClient() override {}
+  ~ChromeConstrainedWindowViewsClient() override = default;
 
  private:
   // ConstrainedWindowViewsClient:

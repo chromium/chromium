@@ -139,7 +139,11 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
     bool is_app_installed = false;
     auto* app_provider = WebAppProvider::GetForWebApps(profile);
     if (app_provider &&
-        app_provider->registrar_unsafe().IsInstalled(shortcut_info->app_id)) {
+        app_provider->registrar_unsafe().IsInstallState(
+            shortcut_info->app_id,
+            {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
       is_app_installed = true;
     }
 

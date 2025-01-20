@@ -72,10 +72,6 @@ public class CustomTabNightModeStateController implements DestroyObserver, Night
     }
 
     private int getRequestedColorScheme(Intent intent) {
-        if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
-            return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
-        }
-
         return IntentUtils.safeGetIntExtra(
                 intent, CustomTabsIntent.EXTRA_COLOR_SCHEME, CustomTabsIntent.COLOR_SCHEME_SYSTEM);
     }

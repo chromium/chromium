@@ -8,6 +8,7 @@
 #endif
 
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
@@ -173,14 +174,19 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
 
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo is nullptr");
-  RETURN_IF(create_info->applicationInfo.apiVersion != XR_CURRENT_API_VERSION,
+  RETURN_IF(create_info->applicationInfo.apiVersion != XR_API_VERSION_1_0,
             XR_ERROR_API_VERSION_UNSUPPORTED, "apiVersion unsupported");
 
   RETURN_IF(create_info->type != XR_TYPE_INSTANCE_CREATE_INFO,
             XR_ERROR_VALIDATION_FAILURE, "XrInstanceCreateInfo type invalid");
 
+#if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo next is not nullptr");
+#else
+  RETURN_IF(create_info->next == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfo next is nullptr");
+#endif
 
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo createFlags is not 0");
@@ -253,7 +259,7 @@ XrResult xrCreateSession(XrInstance instance,
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionCreateInfo createFlags is not 0");
   RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(create_info->systemId));
-
+#if BUILDFLAG(IS_WIN)
   const XrGraphicsBindingD3D11KHR* binding =
       static_cast<const XrGraphicsBindingD3D11KHR*>(create_info->next);
   RETURN_IF(binding->type != XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
@@ -265,6 +271,7 @@ XrResult xrCreateSession(XrInstance instance,
             "D3D11Device is nullptr");
 
   g_test_helper.SetD3DDevice(binding->device);
+#endif
   RETURN_IF(session == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSession is nullptr");
   RETURN_IF_XR_FAILED(g_test_helper.CreateSession(session));
@@ -289,9 +296,11 @@ XrResult xrCreateSwapchain(XrSession session,
             XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo usageFlags is not "
             "XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT");
+#if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->format != DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
             XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED,
             "XrSwapchainCreateInfo format unsupported");
+#endif
   RETURN_IF(create_info->sampleCount != OpenXrTestHelper::kSwapCount,
             XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo sampleCount invalid");
@@ -604,8 +613,10 @@ XrResult xrEnumerateSwapchainFormats(XrSession session,
             "format_capacity_input is less than required size");
   RETURN_IF(formats == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "Formats Array is nullptr");
+#if BUILDFLAG(IS_WIN)
   // This is what is hardcoded in `OpenXrGraphicsBindingD3D11`.
   formats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+#endif
 
   return XR_SUCCESS;
 }
@@ -634,6 +645,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
             "image_capacity_input is neither 0 or kMinSwapchainBuffering");
   RETURN_IF(images == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageBaseHeader is nullptr");
+#if BUILDFLAG(IS_WIN)
   const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>& textures =
       g_test_helper.GetSwapchainTextures();
   DCHECK_EQ(textures.size(), image_capacity_input);
@@ -650,6 +662,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
 
     image.texture = textures[i].Get();
   }
+#endif
 
   return XR_SUCCESS;
 }
@@ -808,6 +821,20 @@ XrResult xrGetCurrentInteractionProfile(
   return XR_SUCCESS;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+XrResult xrGetOpenGLESGraphicsRequirementsKHR(
+    XrInstance instance,
+    XrSystemId system_id,
+    XrGraphicsRequirementsOpenGLESKHR* graphics_requirements) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF(graphics_requirements == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "graphicsRequirements object must not be nullptr");
+  return XR_SUCCESS;
+}
+#endif
+
 XrResult xrGetReferenceSpaceBoundsRect(
     XrSession session,
     XrReferenceSpaceType refernece_space_type,
@@ -880,8 +907,6 @@ XrResult xrGetSystemProperties(XrInstance instance,
             "XrSystemProperties is nullptr");
   RETURN_IF(system_properties->type != XR_TYPE_SYSTEM_PROPERTIES,
             XR_ERROR_VALIDATION_FAILURE, "XrSystemProperties type invalid");
-  RETURN_IF(system_properties->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "XrSystemProperties next is not nullptr");
 
   *system_properties = g_test_helper.GetSystemProperties();
   system_properties->systemId = system_id;
@@ -1201,6 +1226,9 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   TRY_LOAD_METHOD(xrGetActionStateVector2f);
   TRY_LOAD_METHOD(xrGetActionStatePose);
   TRY_LOAD_METHOD(xrGetCurrentInteractionProfile);
+#if BUILDFLAG(IS_ANDROID)
+  TRY_LOAD_METHOD(xrGetOpenGLESGraphicsRequirementsKHR);
+#endif
   TRY_LOAD_METHOD(xrGetReferenceSpaceBoundsRect);
   TRY_LOAD_METHOD(xrGetViewConfigurationProperties);
   TRY_LOAD_METHOD(xrGetSystem);

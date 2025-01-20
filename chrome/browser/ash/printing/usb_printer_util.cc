@@ -359,8 +359,8 @@ void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
                                   PrinterDetector::DetectedPrinter* printer) {
   // If the IEEE1284 device info looks complete and doesn't match the USB
   // string descriptors, add an additional PPD search string.  In addition, if
-  // the USB make_and_model matches known generic strings, replace the entire
-  // device description with the values from the IEEE1284 info.
+  // the USB make_and_model is empty or matches known generic strings, replace
+  // the entire device description with the values from the IEEE1284 info.
   const std::string& usb_make = device_id.make();
   const std::string& usb_model = device_id.model();
   if (usb_make.empty() || usb_model.empty()) {
@@ -372,7 +372,10 @@ void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
     return;
   }
 
-  if (IsGenericUsbDescription(
+  if (base::TrimWhitespaceASCII(printer->printer.make_and_model(),
+                                base::TRIM_ALL)
+          .empty() ||
+      IsGenericUsbDescription(
           base::ToLowerASCII(printer->printer.make_and_model()))) {
     PRINTER_LOG(EVENT) << printer->printer.make_and_model()
                        << " replaced with USB device info: "

@@ -398,8 +398,8 @@ class MockCWSInfoService : public CWSInfoServiceInterface {
 
 class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
  public:
-  ExtensionAdminPolicyTest() {}
-  ~ExtensionAdminPolicyTest() override {}
+  ExtensionAdminPolicyTest() = default;
+  ~ExtensionAdminPolicyTest() override = default;
 
   void SetUpPolicyProvider() {
     provider_ = std::make_unique<StandardManagementPolicyProvider>(

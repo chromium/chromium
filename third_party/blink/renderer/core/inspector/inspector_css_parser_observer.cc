@@ -134,61 +134,6 @@ void InspectorCSSParserObserver::EndRuleBody(unsigned offset) {
 
 void InspectorCSSParserObserver::AddNewRuleToSourceTree(
     CSSRuleSourceData* rule) {
-  // After a rule is parsed, if it doesn't have a header range
-  // and if it is a style rule it means that this is a "nested group
-  // rule"[1][2]. When there are property declarations in this rule there is an
-  // implicit nested rule is created for this to hold these declarations[3].
-  // However, when there aren't any property declarations in this rule
-  // there won't be an implicit nested rule for it and it will only
-  // contain parsed child rules[3].
-  // So, for that case, we are not adding the source data for the non
-  // existent implicit nested rule since it won't exist in the parsed
-  // CSS rules from the parser itself.
-  //
-  // We're also not adding the source data for the non-existent
-  // implicit nested rule when there aren't any non-disabled properties
-  // inside the rule. A `disabled` property means that
-  // it is a commented out property and parsing it happens
-  // inside the inspector[4] and it is not a feature of the Blink CSS parser.
-  // So, even if there is a disabled property in the rule; the rule is not added
-  // as a CSSOM rule in the blink parser, because of this, we're not adding it
-  // as a rule to the source data as well.
-  //
-  //   NOTE: After the introduction of CSSNestedDeclarations, the implicit
-  //         wrapper rules are instead handled by ObserveNestedDeclarations.
-  //
-  // [1]: https://drafts.csswg.org/css-nesting-1/#nested-group-rules
-  // [2]:
-  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2122;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
-  // [3]:
-  // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/css/parser/css_parser_impl.cc;l=2131;drc=255b4e7036f1326f2219bd547d3d6dcf76064870
-  // [4]:
-  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_style_sheet.cc;l=484?q=f:inspector_style_sheet
-  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
-      rule->rule_header_range.length() == 0 &&
-      (rule->type == StyleRule::RuleType::kStyle)) {
-    // Check if there is an active property inside the style rule.
-    bool contains_active_property = false;
-    for (const auto& property_data : rule->property_data) {
-      if (!property_data.disabled) {
-        contains_active_property = true;
-        break;
-      }
-    }
-
-    // If there isn't any active property declaration
-    // there won't be an implicit nested rule created for this rule.
-    // So, we skip adding it here too and only add its child rules.
-    if (!contains_active_property) {
-      // Add the source data for the child rules since they exist in the
-      // rule data coming from the parser.
-      for (auto& child_rule : rule->child_rules) {
-        AddNewRuleToSourceTree(child_rule);
-      }
-      return;
-    }
-  }
-
   if (current_rule_data_stack_.empty()) {
     result_->push_back(rule);
   } else {
@@ -249,31 +194,6 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
   if (current_rule_data_stack_.empty()) {
     return;
   }
-  if (!current_rule_data_stack_.back()->HasProperties()) {
-    if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
-      // We normally don't allow rules with HasProperties()==false to hold
-      // properties directly.
-      return;
-    }
-    // However, with CSSNestedDeclarations enabled, we *can* see ObserveProperty
-    // calls for nested group rules, e.g. @media.
-    //
-    // Example:
-    //
-    //  div {
-    //    @media (width > 100px) {
-    //      width: 100px;
-    //      height: 100px;
-    //    }
-    //  }
-    //
-    // Here, the declarations appear directly within @media, and they are
-    // reported as such through the CSSParserObserver. We therefore allow
-    // properties (CSSPropertySourceData objects) to exist temporarily
-    // on rules with HasProperties()==false, with the expectation that
-    // an ObserveNestedDeclarations call will come later and erase those
-    // properties again.
-  }
 
   DCHECK_LE(end_offset, parsed_text_.length());
   if (end_offset < parsed_text_.length() &&
@@ -303,9 +223,8 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
   // Any property with is_parsed=false becomes a replaceable property.
   // A replaceable property can be replaced by a (valid) style rule
   // at the same offset.
-  replaceable_property_offset_ = is_parsed
-                                     ? std::optional<unsigned>()
-                                     : std::optional<unsigned>(start_offset);
+  replaceable_property_offset_ =
+      is_parsed ? std::nullopt : std::optional<unsigned>(start_offset);
 }
 
 void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
@@ -319,11 +238,6 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
 
   if (current_rule_data_stack_.empty() ||
       !current_rule_data_stack_.back()->rule_header_range.end) {
-    return;
-  }
-  if (!current_rule_data_stack_.back()->HasProperties() &&
-      !RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
-    // See comment for similar check in ObserveProperty.
     return;
   }
 

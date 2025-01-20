@@ -127,9 +127,6 @@
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title of the permission to allow embedded content to access cookies and site data [CHAR_LIMIT=32]">
     Embedded content
   </message>
-  <message name="IDS_TRACKING_PROTECTION_SETTINGS_TITLE" desc="Title of the Tracking Protection category in Site Settings [CHAR_LIMIT=32]">
-    Tracking Protection
-  </message>
 
   <!-- Site settings global toggles -->
 
@@ -248,14 +245,8 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW" desc="Summary text explaining that Chrome will allow a website to access some permission, e.g. JavaScript: allow.">
     Allow
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOWED_DSE" desc="Status message explaining that the default search engine is allowed to access this permission. Displayed in Site Settings page. e.g. Location: Allowed for current search engine">
-    Allowed for current search engine
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCKED_DSE" desc="Status message explaining that the default search engine is blocked from accessing this permission. Displayed in Site Settings page. e.g. Location: Blocked for current search engine">
-    Blocked for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
@@ -823,9 +814,6 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOTIFICATIONS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to send notifications. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to send notifications. When off, sites can’t send notifications.
-  </message>
-  <message name="IDS_NOTIFICATIONS_IPH" desc="A message that explains to the users that notification permission requests will appear as an infobar from now on because the user repeatedly denied the notification permission in the past.">
-    You usually block notifications. To allow, tap Details.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOTIFICATIONS_ASK" desc="Summary text explaining that sites need to ask for permission before sending notifications.">
     Sites can ask to send notifications

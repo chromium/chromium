@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1066101356081285416">Chrome ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦੇ ਟਰੈਕਿੰਗ ਨੰਬਰਾਂ ਦਾ ਪਤਾ ਲਗਾਵੇਗਾ ਅਤੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਤੁਹਾਨੂੰ ਪੈਕੇਜ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦਿਖਾਵੇਗਾ। ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਮੁਹੱਈਆ ਕਰਨ ਅਤੇ ਹਰ ਕਿਸੇ ਲਈ Google ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਨੰਬਰ ਅਤੇ ਵੈੱਬਸਾਈਟ ਦਾ ਨਾਮ Google ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="BEGIN_LINK" />ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="1076643793026027628">Chrome, YouTube ਦੇ ਇਨਕੋਗਨਿਟੋ ਲਿੰਕਾਂ ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="1086486568852410168">Google Lens ਨਾਲ ਖੋਜੋ</translation>
 <translation id="1143896152279775643">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ <ph name="EMAIL" /> ਲਈ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1146503048444965320">Chrome ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">ਸੁਨੇਹੇ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿਚਲੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1229222343402087523">${searchPhrase} ਨੂੰ Chrome ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="1237769345474105984">Chrome ਤੋਂ</translation>
-<translation id="1240190568154816272">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="124228879633599436">ਤੁਹਾਡੇ Chrome ਦਾ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ। ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਇਸਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="1333745675627230582">Chrome Dino ਗੇਮ ਖੇਡੋ</translation>
 <translation id="1352919863522755794">Google Password Manager ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੇਖੋ।</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਲਈ Chrome ਸੈਟਿੰਗ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="1670609221633730681">Chrome ਨੁਕਤਾ: ਆਪਣੀ ਪਤਾ ਬਾਰ ਸਥਿਤੀ ਚੁਣੋ</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chrome ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1790080846677398234">ਤੁਹਾਡੇ Chrome ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਇਨਪੁੱਟ ਕੀਤੇ URL ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ।</translation>
 <translation id="1799920918471566157">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1830634592642484976">ਇਹ ਪਤਾ ਫ਼ਿਲਹਾਲ Chrome 'ਤੇ ਰੱਖਿਅਤ ਹੈ। ਇਸਨੂੰ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ Chrome ਹਰ ਵਾਰ ਮੋਬਾਈਲ ਸਾਈਟ ਲਈ ਬੇਨਤੀ ਕਰੇਗਾ।</translation>
 <translation id="3740397331642243698">Google Chrome ਵਿੱਚ ਦਾਖਲ ਕੀਤੇ URL ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="3741995255368156336">Chrome ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
+<translation id="3808570423967020928">ਆਪਣੇ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chrome ਤੱਕ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="3827545470516145620">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="384394811301901750">Google Chrome ਇਸ ਵੇਲੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
 <translation id="3863841106411295595">ਤੁਹਾਡੇ Chrome ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਇਨਪੁੱਟ ਕੀਤੇ URL ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ।</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="4646014602299206846">Chrome ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦੇ ਪੈਕੇਜ ਟਰੈਕਿੰਗ ਨੰਬਰਾਂ ਦਾ ਪਤਾ ਲਗਾਏਗਾ ਅਤੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਤੁਹਾਨੂੰ ਪੈਕੇਜ ਸੰਬੰਧੀ ਅੱਪਡੇਟਾਂ ਦਿਖਾਏਗਾ। ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਅਤੇ ਹਰੇਕ ਲਈ ਖਰੀਦਦਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਾਸਤੇ, ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ Google ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4647910807533196601">Chrome ਵਿੱਚ 'ਮੇਰੀ ਨਵੀਨਤਮ ਟੈਬ' ਖੋਲ੍ਹੋ।</translation>
+<translation id="4693084815234024320">ਤੁਸੀਂ Chrome ਦੇ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੋ</translation>
 <translation id="4724297637870447613">ਹਰ ਥਾਂ 'ਤੇ Chrome ਵਰਤੋ</translation>
 <translation id="4738647308035481133">Google Chrome ਪੰਨਾ</translation>
 <translation id="4742795653798179840">Chrome ਡਾਟਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
@@ -219,9 +222,12 @@
 
 ਤੁਹਾਡੇ Chrome ਦੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਵਾਸਤੇ, <ph name="BEGIN_LINK" />Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="6922332667202044570">Chrome ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ।</translation>
+<translation id="6924922227983877439">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ Chrome ਵਿੱਚ ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
+<translation id="6931601805528922498">ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ, ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਕੰਮ-ਸੰਬੰਧੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਲਈ Chrome ਵਿੱਚ ਸ਼ਾਮਲ ਕਰ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6975725306479268850">ਆਟੋਫਿਲ ਲਈ Chrome ਚੁਣੋ</translation>
 <translation id="7056826488869329999">ਇਸ ਨਾਲ Chrome ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਖੁੱਲ੍ਹਦੀ ਅਤੇ ਚੱਲਦੀ ਹੈ।</translation>
 <translation id="7061455974939528301">Chrome ਪ੍ਰਤੀਕ ਨੂੰ ਦਬਾਈ ਰੱਖੋ ਅਤੇ "ਹੋਮ ਸਕ੍ਰੀਨ ਦਾ ਸੰਪਾਦਨ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="7065813315247345131">Chrome ਨੂੰ ਡੌਕ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="7124339256045485976">Chrome ਨੂੰ ਅੱਪ-ਟੂ-ਡੇਟ ਰੱਖੋ</translation>
 <translation id="7161390184744336561">Google Chrome ਦਾ ਇਹ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ</translation>
 <translation id="7165736900384873061">Google Chrome QR ਸਕੈਨਰ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>

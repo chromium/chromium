@@ -12,38 +12,23 @@
 
 namespace ash {
 
-namespace {
-
-std::u16string GetDismissText(const std::u16string& custom_dismiss_text,
-                              bool has_dismiss_button) {
-  if (!has_dismiss_button)
-    return {};
-
-  return !custom_dismiss_text.empty()
-             ? custom_dismiss_text
-             : l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON);
-}
-
-}  // namespace
-
 ToastData::ToastData(std::string id,
                      ToastCatalogName catalog_name,
                      const std::u16string& text,
                      base::TimeDelta duration,
                      bool visible_on_lock_screen,
-                     bool has_dismiss_button,
-                     const std::u16string& custom_dismiss_text,
-                     base::RepeatingClosure dismiss_callback,
-                     const gfx::VectorIcon& leading_icon)
+                     bool has_dismiss_button)
     : id(std::move(id)),
       catalog_name(catalog_name),
       text(text),
       duration(std::max(duration, kMinimumDuration)),
       visible_on_lock_screen(visible_on_lock_screen),
-      dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)),
-      dismiss_callback(std::move(dismiss_callback)),
-      leading_icon(&leading_icon),
-      time_created(base::TimeTicks::Now()) {}
+      time_created(base::TimeTicks::Now()) {
+  if (has_dismiss_button) {
+    button_type = ButtonType::kTextButton;
+    button_text = l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON);
+  }
+}
 
 ToastData::ToastData(ToastData&& other) = default;
 ToastData& ToastData::operator=(ToastData&& other) = default;

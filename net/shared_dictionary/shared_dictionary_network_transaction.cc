@@ -193,14 +193,14 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   if (!IsLocalhost(request_url)) {
     if (!base::FeatureList::IsEnabled(
             features::kCompressionDictionaryTransportOverHttp1) &&
-        negotiated_protocol_ != kProtoHTTP2 &&
-        negotiated_protocol_ != kProtoQUIC) {
+        negotiated_protocol_ != NextProto::kProtoHTTP2 &&
+        negotiated_protocol_ != NextProto::kProtoQUIC) {
       shared_dictionary_.reset();
       return;
     }
     if (!base::FeatureList::IsEnabled(
             features::kCompressionDictionaryTransportOverHttp2) &&
-        negotiated_protocol_ == kProtoHTTP2) {
+        negotiated_protocol_ == NextProto::kProtoHTTP2) {
       shared_dictionary_.reset();
       return;
     }

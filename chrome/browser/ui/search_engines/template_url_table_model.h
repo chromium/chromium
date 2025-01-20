@@ -32,7 +32,7 @@ enum class ChoiceMadeLocation;
 // together) and are followed by generated keywords.
 
 class TemplateURLTableModel : public ui::TableModel,
-                                     TemplateURLServiceObserver {
+                              TemplateURLServiceObserver {
  public:
   explicit TemplateURLTableModel(TemplateURLService* template_url_service);
 
@@ -126,6 +126,5 @@ class TemplateURLTableModel : public ui::TableModel,
   // group boundaries.
   size_t last_other_engine_index_;
 };
-
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_

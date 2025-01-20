@@ -72,9 +72,12 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
            source_ == kEncodingFromContentSniffing;
   }
 
-  String Decode(base::span<const char> data) override;
-  String Decode(base::span<const uint8_t> data) {
-    return Decode(base::as_chars(data));
+  String Decode(base::span<const char> data,
+                String* auto_detected_charset) override;
+  String Decode(base::span<const char> data) { return Decode(data, nullptr); }
+  String Decode(base::span<const uint8_t> data,
+                String* auto_detected_charset = nullptr) {
+    return Decode(base::as_chars(data), auto_detected_charset);
   }
   String Flush() override;
   WebEncodingData GetEncodingData() const override;
@@ -92,7 +95,8 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   bool CheckForCSSCharset(base::span<const char>);
   bool CheckForXMLCharset(base::span<const char>);
   void CheckForMetaCharset(base::span<const char>);
-  void AutoDetectEncodingIfAllowed(base::span<const char> data);
+  void AutoDetectEncodingIfAllowed(base::span<const char> data,
+                                   String* auto_detected_charset = nullptr);
 
   const TextResourceDecoderOptions options_;
 

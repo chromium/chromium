@@ -143,6 +143,11 @@ extern const char kPrefContentSettings[];
 // Extension-set incognito content settings.
 extern const char kPrefIncognitoContentSettings[];
 
+// Per-profile UUID to distinguish global shortcut sessions for
+// org.freedesktop.portal.GlobalShortcuts.
+inline constexpr char kGlobalShortcutsUuid[] =
+    "extensions.global_shortcuts.uuid";
+
 }  // namespace pref_names
 }  // namespace extensions
 

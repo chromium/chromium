@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
-import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';

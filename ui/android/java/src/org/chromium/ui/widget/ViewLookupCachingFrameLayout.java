@@ -11,10 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -35,6 +36,7 @@ import java.lang.ref.WeakReference;
  *     Use the same way that you would use a normal {@link android.widget.FrameLayout}, but instead
  *     of using {@link #findViewById(int)} to access views, use {@link #fastFindViewById(int)}.
  */
+@NullMarked
 public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
     /** A map containing views that have had lookup performed on them for quicker access. */
     private final SparseArray<WeakReference<View>> mCachedViews = new SparseArray<>();
@@ -73,7 +75,8 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
      * @param view The root of the tree to attach listeners to.
      * @param listener The listener to attach (null to unset).
      */
-    private void setHierarchyListenerOnTree(View view, OnHierarchyChangeListener listener) {
+    private void setHierarchyListenerOnTree(
+            View view, @Nullable OnHierarchyChangeListener listener) {
         if (!(view instanceof ViewGroup)) return;
 
         ViewGroup group = (ViewGroup) view;
@@ -90,8 +93,7 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
      * @param id The ID of the view to lookup.
      * @return The view if it exists.
      */
-    @Nullable
-    public View fastFindViewById(@IdRes int id) {
+    public @Nullable View fastFindViewById(@IdRes int id) {
         WeakReference<View> ref = mCachedViews.get(id);
         View view = null;
         if (ref != null) view = ref.get();

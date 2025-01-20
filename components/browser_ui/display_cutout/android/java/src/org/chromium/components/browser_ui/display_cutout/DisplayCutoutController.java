@@ -76,8 +76,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     public interface SafeAreaInsetsTracker {
 
-        /** @return whether this Tracker was created for a web page set to Cover. */
+        /**
+         * @return whether this Tracker was created for a web page set to Cover.
+         */
         boolean isViewportFitCover();
+
+        /** Return whether the safe area is constrained on the current web page. */
+        boolean hasSafeAreaConstraint();
     }
 
     /**
@@ -86,6 +91,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
         private boolean mIsViewportFitCover;
+        private boolean mHasSafeAreaConstraint;
 
         /** Sets whether this Tracker was created for a web page set to Cover. */
         public void setIsViewportFitCover(boolean isViewportFitCover) {
@@ -95,6 +101,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         @Override
         public boolean isViewportFitCover() {
             return mIsViewportFitCover;
+        }
+
+        /** Sets whether there are safe area constraint for the web page. */
+        public void setSafeAreaConstraint(boolean hasConstraint) {
+            mHasSafeAreaConstraint = hasConstraint;
+        }
+
+        @Override
+        public boolean hasSafeAreaConstraint() {
+            return mHasSafeAreaConstraint;
         }
     }
 
@@ -136,27 +152,14 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     // Helper implementation to observe fullscreen changes and trigger re-layout.
     private class FullscreenWebContentsObserver extends WebContentsObserver {
-        private boolean mIsDestroyed;
-
         FullscreenWebContentsObserver(WebContents webContents) {
             super(webContents);
-        }
-
-        @Nullable
-        WebContents getWebContents() {
-            return mIsDestroyed ? null : mWebContents.get();
         }
 
         @Override
         public void didToggleFullscreenModeForTab(
                 boolean enteredFullscreen, boolean willCauseResize) {
             maybeUpdateLayout();
-        }
-
-        @Override
-        public void destroy() {
-            mIsDestroyed = true;
-            super.destroy();
         }
     }
 
@@ -220,7 +223,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateInsetObserver(null);
         updateBrowserCutoutObserver(null);
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWindow = null;
@@ -261,21 +264,19 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     private void updateWebContentObserver(@Nullable WebContents webContents) {
-        if (webContents == null) {
-            if (mWebContentsObserver != null) {
-                mWebContentsObserver.destroy();
-                mWebContentsObserver = null;
-            }
+        if (mWebContentsObserver != null
+                && webContents != null
+                && mWebContentsObserver.getWebContents() == webContents) {
             return;
         }
 
-        if (mWebContentsObserver != null && mWebContentsObserver.mIsDestroyed) {
-            if (webContents.equals(mWebContentsObserver.getWebContents())) {
-                return;
-            } else {
-                mWebContentsObserver.destroy();
-            }
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
         }
+
+        if (webContents == null) return;
+
         mWebContentsObserver = new FullscreenWebContentsObserver(webContents);
     }
 
@@ -310,6 +311,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             // from recent tabs) the insets may be incorrect and outdated.
             maybePushSafeAreaInsets(mCachedSafeAreaInsets);
         }
+    }
+
+    /**
+     * Set whether there are safe area constraint on the current web page.
+     *
+     * @param hasConstraint whether the safe area is constrained on the current web page.
+     */
+    public void setSafeAreaConstraint(boolean hasConstraint) {
+        Log.i(TAG, "setSafeAreaConstraint: %b", hasConstraint);
+        mSafeAreaInsetsTracker.setSafeAreaConstraint(hasConstraint);
     }
 
     /**
@@ -377,7 +388,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
         }
 
-        if (mBrowserCutoutModeSupplier != null) {
+        if (mBrowserCutoutModeSupplier != null && mBrowserCutoutModeSupplier.hasValue()) {
             int browserCutoutMode = mBrowserCutoutModeSupplier.get();
             if (browserCutoutMode != LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT) {
                 return browserCutoutMode;

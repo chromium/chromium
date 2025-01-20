@@ -5,8 +5,10 @@
 
 from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
 
-import pandas
+# vpython-provided modules.
+import pandas  # pylint: disable=import-error
 
+# //testing imports.
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types

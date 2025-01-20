@@ -108,7 +108,7 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
   void BuildRootMenu(bool recurse);
 
   // Mark the bookmark menu as being invalid.
-  void InvalidateMenu()  { menuIsValid_ = false; }
+  void InvalidateMenu() { menuIsValid_ = false; }
   bool IsMenuValid() const { return menuIsValid_; }
 
   // Helper for adding the node as a submenu to the menu with the |node|'s title

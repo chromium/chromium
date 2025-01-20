@@ -4,8 +4,7 @@
 
 #include "chromeos/services/assistant/public/shared/constants.h"
 
-namespace chromeos {
-namespace assistant {
+namespace chromeos::assistant {
 
 const char kPayloadParamName[] = "";
 const char kKnowledgeApiEndpoint[] = "";
@@ -13,6 +12,6 @@ const char kSampleKnowledgeApiRequest[] = "";
 const char kServiceIdEndpoint[] = "";
 const char kSampleServiceIdRequest[] = "";
 const char kServiceIdRequestPayload[] = "";
+const char kEntryPointId[] = "";
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace chromeos::assistant

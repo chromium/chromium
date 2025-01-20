@@ -33,7 +33,7 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
   void GetStorageItems(
       const protocol::String& id,
       const protocol::String& storage_area,
-      protocol::Maybe<protocol::Array<protocol::String>> keys,
+      std::unique_ptr<protocol::Array<protocol::String>> keys,
       std::unique_ptr<GetStorageItemsCallback> callback) override;
   void OnGetStorageItemsFinished(
       std::unique_ptr<GetStorageItemsCallback> callback,

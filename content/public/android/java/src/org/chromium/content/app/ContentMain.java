@@ -9,6 +9,9 @@ import android.os.IBinder;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class is used to initialize all types of process. It corresponds to
  * content/public/app/content_main.h which is not used in Android as it has the different
@@ -19,6 +22,7 @@ import org.jni_zero.NativeMethods;
  * ContentMainRunner::Initialize.
  */
 @JNINamespace("content")
+@NullMarked
 public class ContentMain {
     /**
      * Sets a global set of IBinder refs in native code.
@@ -26,7 +30,7 @@ public class ContentMain {
      * @param binderBox A reference to a binder box which contains other binders packed by the
      *     parent process.
      */
-    public static void setBindersFromParent(IBinder binderBox) {
+    public static void setBindersFromParent(@Nullable IBinder binderBox) {
         ContentMainJni.get().setBindersFromParent(binderBox);
     }
 
@@ -41,7 +45,7 @@ public class ContentMain {
 
     @NativeMethods
     interface Natives {
-        void setBindersFromParent(IBinder binderBox);
+        void setBindersFromParent(@Nullable IBinder binderBox);
 
         int start(boolean startMinimalBrowser);
     }

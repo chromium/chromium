@@ -18,9 +18,9 @@ source_set("promo") {
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new:util",
   ]
 }
@@ -34,8 +34,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
     "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:features",

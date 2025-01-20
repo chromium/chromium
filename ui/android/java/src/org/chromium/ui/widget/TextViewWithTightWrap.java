@@ -9,11 +9,14 @@ import android.text.Layout;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A TextView with an accurate width calculation support for multilines.
  * This is used when we want no extra padding on a multiline TextView. The class perform the width
  * calculation in the overwritten OnMeasure() method.
  */
+@NullMarked
 public class TextViewWithTightWrap extends TextView {
     /** Constructing TextViewWithTightWrap programmatically is similar to a normal TextView. */
     public TextViewWithTightWrap(Context context) {

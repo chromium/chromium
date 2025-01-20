@@ -40,13 +40,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
@@ -58,10 +56,6 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-@EnableFeatures({
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-})
 // TODO(crbug.com/327387704): Add tests with this flag enabled.
 @Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerCoordinatorTest {
@@ -71,6 +65,8 @@ public class BookmarkManagerCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
     @Mock private FaviconHelperJni mFaviconHelperJni;
@@ -78,7 +74,6 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
-    @Mock private AccountManagerFacade mAccountManagerFacade;
     @Mock private IdentityManager mIdentityManager;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
@@ -103,7 +98,6 @@ public class BookmarkManagerCoordinatorTest {
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
@@ -124,7 +118,8 @@ public class BookmarkManagerCoordinatorTest {
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
                                             mSnackbarManager,
                                             mProfile,
-                                            mBookmarkUiPrefs);
+                                            mBookmarkUiPrefs,
+                                            /* bookmarkOpenedCallback= */ null);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }
@@ -143,6 +138,18 @@ public class BookmarkManagerCoordinatorTest {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
         assertNotNull(mCoordinator.buildLegacyPromoView(parent));
+        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
+        assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testCreateViewUNOPhase2FollowUpEnabled() {
+        FrameLayout parent = new FrameLayout(mActivity);
+        assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));

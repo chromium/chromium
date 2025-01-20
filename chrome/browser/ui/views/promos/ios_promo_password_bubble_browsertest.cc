@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/test/browser_test.h"
@@ -45,7 +47,7 @@ class IOSPromoPasswordBubbleTest : public DialogBrowserTest {
             ->toolbar_button_provider();
 
     IOSPromoPasswordBubble::ShowBubble(
-        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
+        button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage),
         button_provider->GetPageActionIconView(
             PageActionIconType::kManagePasswords),
         browser());

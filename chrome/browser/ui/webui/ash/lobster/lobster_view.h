@@ -35,7 +35,6 @@ class LobsterView : public WebUIBubbleDialogView {
   // screen coordinates. The bubble view will be positioned around this caret
   // bound.
   gfx::Rect caret_bounds_;
-  bool initial_bounds_set = false;
 };
 
 }  // namespace ash

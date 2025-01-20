@@ -33,8 +33,7 @@ class DigitalIdentitySafetyInterstitialControllerDesktop {
 
  private:
   class CloseOnNavigationObserver
-      : public web_modal::WebContentsModalDialogManager::
-            CloseOnNavigationObserver {
+      : public web_modal::WebContentsModalDialogManager::Observer {
    public:
     CloseOnNavigationObserver();
     ~CloseOnNavigationObserver() override;
@@ -47,8 +46,8 @@ class DigitalIdentitySafetyInterstitialControllerDesktop {
     // as a result of a page navigation.
     bool WillCloseOnNavigation() const { return will_close_due_to_navigation_; }
 
-    // CloseOnNavigationObserver:
-    void OnWillClose() override;
+    // WebContentsModalDialogManager::Observer:
+    void OnWillCloseOnNavigation() override;
 
    private:
     bool will_close_due_to_navigation_ = false;

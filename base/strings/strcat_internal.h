@@ -51,8 +51,9 @@ template <typename CharT, typename StringT>
 void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> pieces) {
   const size_t initial_size = dest.size();
   size_t total_size = initial_size;
-  for (const auto& cur : pieces)
+  for (const auto& cur : pieces) {
     total_size += cur.size();
+  }
 
   // Note: As opposed to `reserve()` calling `resize()` with an argument smaller
   // than the current `capacity()` does not result in the string releasing spare

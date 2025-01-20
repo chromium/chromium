@@ -38,7 +38,7 @@ class FakeIntersectionObserver implements InternalIntersectionObserver {
   hits(items: {target: Element, isIntersecting: boolean}[]): void {
     const entries: IntersectionObserverEntry[] = [];
     for (let item of items) {
-      entries.push(new IntersectionObserverEntry({
+      entries.push({
         boundingClientRect: {},
         intersectionRatio: item.isIntersecting ? 1 : 0,
         intersectionRect: {},
@@ -46,7 +46,7 @@ class FakeIntersectionObserver implements InternalIntersectionObserver {
         rootBounds: null,
         target: item.target,
         time: 0
-      }));
+      } as unknown as IntersectionObserverEntry);
     }
     this.callback(entries, null as unknown as IntersectionObserver);
   }

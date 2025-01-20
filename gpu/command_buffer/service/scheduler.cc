@@ -72,7 +72,7 @@ Scheduler::ScopedSetSequencePriority::ScopedSetSequencePriority(
     Scheduler* scheduler,
     SequenceId sequence_id,
     SchedulingPriority priority)
-    : scheduler_(scheduler), sequence_id_(sequence_id), priority_(priority) {
+    : scheduler_(scheduler), sequence_id_(sequence_id) {
   scheduler_->SetSequencePriority(sequence_id, priority);
 }
 Scheduler::ScopedSetSequencePriority::~ScopedSetSequencePriority() {

@@ -29,7 +29,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // The object can be monitored by the observer.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // The function is called when a candidate is committed.
     virtual void OnCandidateCommitted(int index) = 0;
   };

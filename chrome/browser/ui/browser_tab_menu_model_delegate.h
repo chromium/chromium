@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_TAB_MENU_MODEL_DELEGATE_H_
 
 #include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 

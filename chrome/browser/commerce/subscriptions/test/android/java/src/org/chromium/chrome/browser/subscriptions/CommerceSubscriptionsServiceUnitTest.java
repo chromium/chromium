@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -78,7 +80,6 @@ public class CommerceSubscriptionsServiceUnitTest {
     private SharedPreferencesManager mSharedPreferencesManager;
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setUp() {
@@ -99,12 +100,10 @@ public class CommerceSubscriptionsServiceUnitTest {
                                 CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds()));
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
-        mTestValues = new FeatureList.TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        FeatureList.setTestValues(mTestValues);
+        FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
 
         mMockNotificationManager = new MockNotificationManagerProxy();
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
@@ -114,6 +113,11 @@ public class CommerceSubscriptionsServiceUnitTest {
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mProfile);
         mService =
                 new CommerceSubscriptionsService(mShoppingService, mPriceDropNotificationManager);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test

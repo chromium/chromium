@@ -29,7 +29,7 @@ PredictorsHandler::PredictorsHandler(Profile* profile) {
       predictors::LoadingPredictorFactory::GetForProfile(profile);
 }
 
-PredictorsHandler::~PredictorsHandler() { }
+PredictorsHandler::~PredictorsHandler() = default;
 
 void PredictorsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -53,8 +53,7 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
     base::Value::List db;
     for (AutocompleteActionPredictor::DBCacheMap::const_iterator it =
              autocomplete_action_predictor_->db_cache_.begin();
-         it != autocomplete_action_predictor_->db_cache_.end();
-         ++it) {
+         it != autocomplete_action_predictor_->db_cache_.end(); ++it) {
       db.Append(
           base::Value::Dict()
               .Set("user_text", it->first.user_text)

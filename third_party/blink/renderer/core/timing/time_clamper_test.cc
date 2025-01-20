@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 
+#include <array>
 #include <cmath>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,7 +110,7 @@ void UniformityTest(int64_t time_microseconds,
   const int kBuckets = 5;
   const int kSampleCount = 10000;
   const int kTimeStep = interval / kBuckets;
-  int histogram[kBuckets] = {0};
+  std::array<int, kBuckets> histogram = {};
   TimeClamper clamper;
 
   // This test ensures the jitter thresholds are approximately uniformly

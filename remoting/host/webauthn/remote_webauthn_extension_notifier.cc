@@ -98,6 +98,8 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   dirs.push_back(
       base_path.Append("google-chrome-beta").Append(kStateChangeDirName));
   dirs.push_back(
+      base_path.Append("google-chrome-canary").Append(kStateChangeDirName));
+  dirs.push_back(
       base_path.Append("google-chrome-unstable").Append(kStateChangeDirName));
   dirs.push_back(base_path.Append("chromium").Append(kStateChangeDirName));
 #elif BUILDFLAG(IS_WIN)

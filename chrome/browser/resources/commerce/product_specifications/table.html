@@ -56,9 +56,10 @@
 
   .main-image {
     background-color: white;
-    border: 1px solid var(--color-sys-base-container);
+    border: 1px solid var(--color-sys-divider);
     border-radius: 8px;
     box-sizing: border-box;
+    cursor: pointer;
     height: 100%;
     padding: 8px 0;
     object-fit: contain;
@@ -156,7 +157,9 @@
           on-selected-url-change="onSelectedUrlChange_"
           on-remove-url="onUrlRemove_">
       </product-selector>
-      <div class="img-container" draggable="true">
+      <div class="img-container"
+          draggable="true"
+          on-click="onOpenTabButtonClick_">
         <template is="dom-if"
             if="[[column.selectedItem.imageUrl.length]]">
           <img class="main-image" is="cr-auto-img"
@@ -173,7 +176,6 @@
         <cr-icon-button class="open-tab-button icon-external"
             hidden$="[[!showOpenTabButton_(columnIndex,
                 draggingColumn, hoveredColumnIndex_)]]"
-            on-click="onOpenTabButtonClick_"
             title="$i18n{openProductPage}">
         </cr-icon-button>
       </div>

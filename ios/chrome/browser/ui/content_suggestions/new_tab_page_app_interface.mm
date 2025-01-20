@@ -7,7 +7,6 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
@@ -84,6 +83,10 @@ using set_up_list_prefs::SetUpListItemState;
                                   unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kNotifications,
                                   unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kDocking,
+                                  unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAddressBar,
+                                  unknown);
 }
 
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {
@@ -96,6 +99,18 @@ using set_up_list_prefs::SetUpListItemState;
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete {
   return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
              set_up_list::kAutofillItemID)
+      .complete;
+}
+
++ (BOOL)setUpListItemDockingInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kDockingItemID)
+      .complete;
+}
+
++ (BOOL)setUpListItemAddressBarInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kAddressBarItemID)
       .complete;
 }
 

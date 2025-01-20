@@ -4,6 +4,7 @@
 
 module ash.ime.mojom;
 
+// LINT.IfChange(JpPosType)
 enum JpPosType {
   kNoPos = 0,  // "品詞なし"
   kNoun = 1,                            // "名詞"
@@ -51,6 +52,7 @@ enum JpPosType {
   kFreeStandingWord = 43,               // "独立語"
   kSuppressionWord = 44,                // "抑制単語"
 };
+// LINT.ThenChange(//chrome/browser/resources/ash/settings/os_languages_page/os_japanese_dictionary_entry_row.ts:JpPosType)
 
 struct JapaneseDictionaryEntry {
   // The string tyat is typed in order to display the custom suggestion.

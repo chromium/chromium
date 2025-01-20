@@ -4,10 +4,13 @@
 
 #include "components/autofill/content/renderer/form_tracker.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -17,16 +20,15 @@
 namespace autofill {
 namespace {
 
-class MockFormTrackerObserver : public FormTracker::Observer {
- public:
-  // Not a mock method so that gmock ignores calls to this method.
-  void OnProvisionallySaveForm(const blink::WebFormElement&,
-                               const blink::WebFormControlElement&,
-                               SaveFormReason) override {}
+using ::testing::_;
 
-  MOCK_METHOD0(OnProbablyFormSubmitted, void());
-  MOCK_METHOD1(OnFormSubmitted, void(const blink::WebFormElement&));
-  MOCK_METHOD1(OnInferredFormSubmission, void(mojom::SubmissionSource));
+class MockFormTracker : public FormTracker {
+ public:
+  using FormTracker::FormTracker;
+  MOCK_METHOD((void),
+              FireFormSubmission,
+              (mojom::SubmissionSource, std::optional<blink::WebFormElement>),
+              (override));
 };
 
 class FormTrackerTest : public test::AutofillRendererTest,
@@ -35,9 +37,9 @@ class FormTrackerTest : public test::AutofillRendererTest,
   FormTrackerTest() {
     EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillFixFormTracking,
         features::kAutofillUseSubmittedFormInHtmlSubmission,
         features::kAutofillPreferSavedFormAsSubmittedForm,
+        features::kAutofillFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -47,6 +49,20 @@ class FormTrackerTest : public test::AutofillRendererTest,
         features.begin() + GetParam(), features.end());
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
+
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    auto tracker = std::make_unique<MockFormTracker>(GetMainRenderFrame(),
+                                                     autofill_agent());
+    tracker->SetUserGestureRequired(FormTracker::UserGestureRequired(true));
+    test_api(autofill_agent()).set_form_tracker(std::move(tracker));
+  }
+
+  MockFormTracker& form_tracker() {
+    return static_cast<MockFormTracker&>(
+        test_api(autofill_agent()).form_tracker());
+  }
+
   blink::WebFormControlElement GetFormControlById(const std::string& id) {
     return GetMainFrame()
         ->GetDocument()
@@ -71,23 +87,22 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
 
-  testing::StrictMock<MockFormTrackerObserver> observer;
-  test_api(autofill_agent()).form_tracker().AddObserver(&observer);
-
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  test_api(autofill_agent()).form_tracker().TextFieldDidChange(input1);
+  form_tracker().TextFieldValueChanged(input1);
 
   task_environment_.RunUntilIdle();
 
-  test_api(autofill_agent()).form_tracker().AjaxSucceeded();
+  form_tracker().AjaxSucceeded();
   task_environment_.RunUntilIdle();
   // FormTracker should not think there is a submission because the <input>s are
   // still visible.
 
   // FormTracker should detect a submission after the <input>s are hidden.
-  EXPECT_CALL(observer, OnInferredFormSubmission).Times(1);
+  EXPECT_CALL(form_tracker(),
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+      .Times(1);
   ExecuteJavaScriptForTests(
       R"(document.getElementById('input1').style.display = 'none';
          document.getElementById('input2').style.display = 'none';)");
@@ -103,13 +118,10 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
 
-  testing::StrictMock<MockFormTrackerObserver> observer;
-  test_api(autofill_agent()).form_tracker().AddObserver(&observer);
-
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
   ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
-  test_api(autofill_agent()).form_tracker().TextFieldDidChange(input1);
+  form_tracker().TextFieldValueChanged(input1);
   task_environment_.RunUntilIdle();
 
   ExecuteJavaScriptForTests(
@@ -121,8 +133,10 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   // done any XHRs.
 
   // FormTracker should detect a submission when the XHR succeeds.
-  EXPECT_CALL(observer, OnInferredFormSubmission).Times(1);
-  test_api(autofill_agent()).form_tracker().AjaxSucceeded();
+  EXPECT_CALL(form_tracker(),
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+      .Times(1);
+  form_tracker().AjaxSucceeded();
   task_environment_.RunUntilIdle();
 }
 

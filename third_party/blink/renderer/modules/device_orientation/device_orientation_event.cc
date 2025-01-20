@@ -74,8 +74,8 @@ bool DeviceOrientationEvent::absolute() const {
 }
 
 // static
-ScriptPromise<V8DeviceOrientationPermissionState>
-DeviceOrientationEvent::requestPermission(ScriptState* script_state) {
+ScriptPromise<V8PermissionState> DeviceOrientationEvent::requestPermission(
+    ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return EmptyPromise();
 

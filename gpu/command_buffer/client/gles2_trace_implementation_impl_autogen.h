@@ -1953,11 +1953,6 @@ void GLES2TraceImplementation::MemoryBarrierByRegion(GLbitfield barriers) {
   gl_->MemoryBarrierByRegion(barriers);
 }
 
-void GLES2TraceImplementation::SwapBuffers(GLuint64 swap_id, GLbitfield flags) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::SwapBuffers");
-  gl_->SwapBuffers(swap_id, flags);
-}
-
 GLuint GLES2TraceImplementation::GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                                              GLsizei count,
                                                              GLenum type,
@@ -2035,15 +2030,6 @@ void GLES2TraceImplementation::UnmapTexSubImage2DCHROMIUM(const void* mem) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::UnmapTexSubImage2DCHROMIUM");
   gl_->UnmapTexSubImage2DCHROMIUM(mem);
-}
-
-void GLES2TraceImplementation::ResizeCHROMIUM(GLuint width,
-                                              GLuint height,
-                                              GLfloat scale_factor,
-                                              GLcolorSpace color_space,
-                                              GLboolean alpha) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::ResizeCHROMIUM");
-  gl_->ResizeCHROMIUM(width, height, scale_factor, color_space, alpha);
 }
 
 const GLchar* GLES2TraceImplementation::GetRequestableExtensionsCHROMIUM() {

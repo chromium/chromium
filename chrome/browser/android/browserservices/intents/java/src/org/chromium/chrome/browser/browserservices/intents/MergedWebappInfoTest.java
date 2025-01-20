@@ -123,14 +123,4 @@ public class MergedWebappInfoTest {
     private MergedWebappInfo createMergedWebappInfo(WebappInfo oldInfo, WebappInfo newInfo) {
         return MergedWebappInfo.createForTesting(oldInfo, newInfo);
     }
-
-    /**
-     * Creates intent with url and id. If the url or id are not set createWebappInfo() returns null.
-     */
-    private Intent createIntentWithUrlAndId() {
-        Intent intent = new Intent();
-        intent.putExtra(WebappConstants.EXTRA_ID, "web app id");
-        intent.putExtra(WebappConstants.EXTRA_URL, "about:blank");
-        return intent;
-    }
 }

@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -171,6 +173,10 @@ class TabStripTestBase : public ChromeViewsTestBase {
     return tab->icon_->GetShowingAttentionIndicator();
   }
 
+  bool IsShowingAttentionIndicator(const tab_groups::TabGroupId& id) {
+    return tab_strip_->group_header(id)->GetShowingAttentionIndicator();
+  }
+
   void CompleteAnimationAndLayout() {
     // Complete animations and lay out *within the current tabstrip width*.
     tab_strip_->StopAnimating(true);
@@ -204,8 +210,9 @@ class TabStripTestBase : public ChromeViewsTestBase {
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
     for (auto const& group_view_pair :
-         tab_strip_->tab_container_->get_group_views_for_testing())
+         tab_strip_->tab_container_->get_group_views_for_testing()) {
       result.push_back(group_view_pair.second.get());
+    }
     return result;
   }
 
@@ -622,6 +629,32 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
 }
 
+// The tab group header can display an attention indicator.
+TEST_P(TabStripTest, TabGroupNeedsAttention) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {tab_groups::kTabGroupsSaveV2,
+       data_sharing::features::kDataSharingFeature},
+      {});
+  controller_->AddTab(0, TabActive::kInactive);
+  controller_->AddTab(1, TabActive::kActive);
+
+  auto group_id = tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(0, group_id);
+
+  // Collapse the group so it can accept attention state.
+  controller_->ToggleTabGroupCollapsedState(
+      group_id, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  tab_strip_->group_header(group_id)->VisualsChanged();
+  EXPECT_TRUE(controller_->IsGroupCollapsed(group_id));
+
+  tab_strip_->SetTabGroupNeedsAttention(group_id, true);
+  EXPECT_TRUE(IsShowingAttentionIndicator(group_id));
+
+  tab_strip_->SetTabGroupNeedsAttention(group_id, false);
+  EXPECT_FALSE(IsShowingAttentionIndicator(group_id));
+}
+
 // Closing tab should be targeted during event dispatching.
 TEST_P(TabStripTest, EventsOnClosingTab) {
   SetMaxTabStripWidth(200);
@@ -866,15 +899,17 @@ TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
   for (; invisible_tab_index < 100; ++invisible_tab_index) {
     controller_->AddTab(invisible_tab_index, TabActive::kInactive);
     CompleteAnimationAndLayout();
-    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
+    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible()) {
       break;
+    }
   }
   EXPECT_GT(invisible_tab_index, 0);
   EXPECT_LT(invisible_tab_index, 100);
 
   // The tabs before the invisible tab should still be visible.
-  for (int i = 0; i < invisible_tab_index; ++i)
+  for (int i = 0; i < invisible_tab_index; ++i) {
     EXPECT_TRUE(tab_strip_->tab_at(i)->GetVisible());
+  }
 
   // Enlarging the strip should result in the last tab becoming visible.
   SetMaxTabStripWidth(kInitialWidth * 2);
@@ -889,14 +924,16 @@ TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
   SetMaxTabStripWidth(kInitialWidth / 2);
   int i = 0;
   for (; i < invisible_tab_index; ++i) {
-    if (!tab_strip_->tab_at(i)->GetVisible())
+    if (!tab_strip_->tab_at(i)->GetVisible()) {
       break;
+    }
   }
   ASSERT_GT(i, 0);
   EXPECT_LT(i, invisible_tab_index);
   invisible_tab_index = i;
-  for (int j = invisible_tab_index + 1; j < tab_strip_->GetTabCount(); ++j)
+  for (int j = invisible_tab_index + 1; j < tab_strip_->GetTabCount(); ++j) {
     EXPECT_FALSE(tab_strip_->tab_at(j)->GetVisible());
+  }
 
   // When we're already in overflow, adding tabs at the beginning or end of
   // the strip should not change how many tabs are visible.
@@ -910,8 +947,9 @@ TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
   EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
 
   // If we remove enough tabs, all the tabs should be visible.
-  for (int j = tab_strip_->GetTabCount() - 1; j >= invisible_tab_index; --j)
+  for (int j = tab_strip_->GetTabCount() - 1; j >= invisible_tab_index; --j) {
     controller_->RemoveTab(j);
+  }
   CompleteAnimationAndLayout();
   EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->GetVisible());
 }
@@ -927,15 +965,17 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
   for (; invisible_tab_index < 100; ++invisible_tab_index) {
     controller_->AddTab(invisible_tab_index, TabActive::kInactive);
     CompleteAnimationAndLayout();
-    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
+    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible()) {
       break;
+    }
   }
   ASSERT_GT(invisible_tab_index, 0);
   ASSERT_LT(invisible_tab_index, 100);
 
   // The tabs before the invisible tab should still be visible.
-  for (int i = 0; i < invisible_tab_index; ++i)
+  for (int i = 0; i < invisible_tab_index; ++i) {
     ASSERT_TRUE(tab_strip_->tab_at(i)->GetVisible());
+  }
 
   // The group header of an invisible tab should not be visible.
   std::optional<tab_groups::TabGroupId> group1 =

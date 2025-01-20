@@ -27,7 +27,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
+#include "chromeos/ash/experiences/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -40,8 +40,9 @@
 namespace {
 
 Profile* GetProfileForWindow(const views::Widget* window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
   return reinterpret_cast<Profile*>(
       window->GetNativeWindowProperty(Profile::kProfileKey));
 }
@@ -87,8 +88,9 @@ void ChromeViewsDelegate::SaveWindowPlacement(
     const gfx::Rect& bounds,
     ui::mojom::WindowShowState show_state) {
   PrefService* prefs = GetPrefsForWindow(window);
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   std::unique_ptr<ScopedDictPrefUpdate> pref_update;
   base::Value::Dict& window_preferences =
@@ -116,8 +118,9 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   PrefService* prefs = g_browser_process->local_state();
-  if (!prefs)
+  if (!prefs) {
     return false;
+  }
 
   DCHECK(prefs->FindPreference(window_name));
   const base::Value::Dict& dictionary = prefs->GetDict(window_name);
@@ -125,8 +128,9 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
   std::optional<int> top = dictionary.FindInt("top");
   std::optional<int> right = dictionary.FindInt("right");
   std::optional<int> bottom = dictionary.FindInt("bottom");
-  if (!left || !top || !right || !bottom)
+  if (!left || !top || !right || !bottom) {
     return false;
+  }
 
   bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
@@ -204,13 +208,15 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
 
   // If we already have a native_widget, we don't have to try to come
   // up with one.
-  if (params->native_widget)
+  if (params->native_widget) {
     return;
+  }
 
   if (!native_widget_factory().is_null()) {
     params->native_widget = native_widget_factory().Run(*params, delegate);
-    if (params->native_widget)
+    if (params->native_widget) {
       return;
+    }
   }
 
   params->native_widget = CreateNativeWidget(params, delegate);

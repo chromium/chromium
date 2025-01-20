@@ -49,7 +49,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
         type: Boolean,
       },
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       /**
        * Whether the device should be indicated as managed rather than the
        * browser.
@@ -74,7 +74,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   protected isManaged_: boolean = loadTimeData.getBoolean('isManaged');
   protected managedByIcon_: string = loadTimeData.getString('managedByIcon');
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   showDeviceInfo: boolean = false;
   // </if>
 
@@ -87,7 +87,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
 
   /** @return Message to display to the user. */
   protected getManagementString_(): TrustedHTML {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     if (this.showDeviceInfo) {
       return this.i18nAdvanced('deviceManagedByOrg');
     }

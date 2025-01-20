@@ -124,7 +124,7 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
   TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
       delete;
 
-  ~TestNetworkChangeNotifier() override {}
+  ~TestNetworkChangeNotifier() override = default;
 
   net::NetworkChangeNotifier::ConnectionType GetCurrentConnectionType()
       const override {
@@ -149,7 +149,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
     virtual void OnComplete() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   explicit TestURLLoaderClient(Observer* observer) : observer_(observer) {}
@@ -157,7 +157,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   TestURLLoaderClient(const TestURLLoaderClient&) = delete;
   TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
 
-  ~TestURLLoaderClient() override {}
+  ~TestURLLoaderClient() override = default;
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
@@ -290,7 +290,7 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   OfflinePageRequestHandlerTest& operator=(
       const OfflinePageRequestHandlerTest&) = delete;
 
-  ~OfflinePageRequestHandlerTest() override {}
+  ~OfflinePageRequestHandlerTest() override = default;
 
   void SetUp() override;
   void TearDown() override;

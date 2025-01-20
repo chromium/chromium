@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
@@ -21,7 +20,12 @@
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/nearby/sharing/proto/device_rpc.pb.h"
@@ -30,18 +34,21 @@
 
 namespace {
 
-const char kFakeDeviceName[] = "My Cool Chromebook";
-const char kFakeEmptyDeviceName[] = "";
-const char kFakeFullName[] = "Barack Obama";
-const char16_t kFakeGivenName[] = u"Barack";
-const char kFakeIconUrl[] = "https://www.google.com";
-const char kFakeIconUrl2[] = "https://www.google.com/2";
-const char kFakeIconToken[] = "token";
-const char kFakeIconToken2[] = "token2";
-const char kFakeInvalidDeviceName[] = "\xC0";
-const char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
-const char16_t kFakeTooLongGivenName[] = u"this is a 33-byte string in utf-8";
-const char kFakeTooLongTruncatedDeviceName[] =
+constexpr char kFakeEmail[] = "test@test";
+constexpr char kFakeGaia[] = "fakegaia";
+constexpr char kFakeDeviceName[] = "My Cool Chromebook";
+constexpr char kFakeEmptyDeviceName[] = "";
+constexpr char kFakeFullName[] = "Barack Obama";
+constexpr char16_t kFakeGivenName[] = u"Barack";
+constexpr char kFakeIconUrl[] = "https://www.google.com";
+constexpr char kFakeIconUrl2[] = "https://www.google.com/2";
+constexpr char kFakeIconToken[] = "token";
+constexpr char kFakeIconToken2[] = "token2";
+constexpr char kFakeInvalidDeviceName[] = "\xC0";
+constexpr char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
+constexpr char16_t kFakeTooLongGivenName[] =
+    u"this is a 33-byte string in utf-8";
+constexpr char kFakeTooLongTruncatedDeviceName[] =
     "this is a 33-...'s Chrome device";
 
 nearby::sharing::proto::UpdateDeviceResponse CreateResponse(
@@ -106,17 +113,39 @@ class NearbyShareLocalDeviceDataManagerImplTest
   ~NearbyShareLocalDeviceDataManagerImplTest() override = default;
 
   void SetUp() override {
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    user_ = fake_user_manager_->AddGaiaUser(
+        AccountId::FromUserEmailGaiaId(kFakeEmail, GaiaId(kFakeGaia)),
+        user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(
+        user_->GetAccountId(),
+        user_manager::FakeUserManager::GetFakeUsernameHash(
+            user_->GetAccountId()),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
     RegisterNearbySharingPrefs(pref_service_.registry());
+    fake_user_manager_->OnUserProfileCreated(user_->GetAccountId(),
+                                             &pref_service_);
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(
         &scheduler_factory_);
     NearbyShareDeviceDataUpdaterImpl::Factory::SetFactoryForTesting(
         &updater_factory_);
-    profile_info_provider()->set_given_name(kFakeGivenName);
+    fake_user_manager_->UpdateUserAccountData(
+        user_->GetAccountId(), user_manager::UserManager::UserAccountData(
+                                   /*display_name=*/u"",
+                                   /*given_name=*/kFakeGivenName,
+                                   /*locale=*/""));
   }
 
   void TearDown() override {
+    manager_.reset();
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyShareDeviceDataUpdaterImpl::Factory::SetFactoryForTesting(nullptr);
+    fake_user_manager_->OnUserProfileWillBeDestroyed(user_->GetAccountId());
+    user_ = nullptr;
+    fake_user_manager_.Reset();
   }
 
   // NearbyShareLocalDeviceDataManager::Observer:
@@ -129,7 +158,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
 
   void CreateManager() {
     manager_ = NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-        &pref_service_, &http_client_factory_, &profile_info_provider_);
+        *user_, &http_client_factory_);
     manager_->AddObserver(this);
     ++num_manager_creations_;
     VerifyInitialization();
@@ -218,9 +247,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   NearbyShareLocalDeviceDataManager* manager() { return manager_.get(); }
-  FakeNearbyShareProfileInfoProvider* profile_info_provider() {
-    return &profile_info_provider_;
-  }
   const std::vector<ObserverNotification>& notifications() {
     return notifications_;
   }
@@ -232,6 +258,11 @@ class NearbyShareLocalDeviceDataManagerImplTest
         .at(prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName)
         .fake_scheduler;
   }
+
+  user_manager::FakeUserManager& fake_user_manager() {
+    return *fake_user_manager_;
+  }
+  user_manager::User& user() { return *user_; }
 
  private:
   void VerifyInitialization() {
@@ -254,11 +285,15 @@ class NearbyShareLocalDeviceDataManagerImplTest
     EXPECT_EQ(&pref_service_, device_data_scheduler_instance.pref_service);
   }
 
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+  raw_ptr<user_manager::User> user_ = nullptr;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+
   size_t num_manager_creations_ = 0;
   std::vector<ObserverNotification> notifications_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeNearbyShareClientFactory http_client_factory_;
-  FakeNearbyShareProfileInfoProvider profile_info_provider_;
   ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   FakeNearbyShareDeviceDataUpdaterFactory updater_factory_;
   std::unique_ptr<NearbyShareLocalDeviceDataManager> manager_;
@@ -283,14 +318,22 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
   CreateManager();
 
-  // If given name is null, only return the device type.
-  profile_info_provider()->set_given_name(std::nullopt);
+  // If given name is empty, only return the device type.
+  fake_user_manager().UpdateUserAccountData(
+      user().GetAccountId(), user_manager::UserManager::UserAccountData(
+                                 /*display_name=*/u"",
+                                 /*given_name=*/u"",
+                                 /*locale=*/""));
   EXPECT_EQ(base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             manager()->GetDeviceName());
 
   // Set given name and expect full default device name of the form
   // "<given name>'s <device type>."
-  profile_info_provider()->set_given_name(kFakeGivenName);
+  fake_user_manager().UpdateUserAccountData(
+      user().GetAccountId(), user_manager::UserManager::UserAccountData(
+                                 /*display_name=*/u"",
+                                 /*given_name=*/kFakeGivenName,
+                                 /*locale=*/""));
   EXPECT_EQ(
       l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME, kFakeGivenName,
                                 ui::GetChromeOSDeviceName()),
@@ -298,7 +341,11 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
 
   // Make sure that when we use a given name that is very long we truncate
   // correctly.
-  profile_info_provider()->set_given_name(kFakeTooLongGivenName);
+  fake_user_manager().UpdateUserAccountData(
+      user().GetAccountId(), user_manager::UserManager::UserAccountData(
+                                 /*display_name=*/u"",
+                                 /*given_name=*/kFakeTooLongGivenName,
+                                 /*locale=*/""));
   EXPECT_EQ(kFakeTooLongTruncatedDeviceName, manager()->GetDeviceName());
 }
 
@@ -318,7 +365,6 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
 
-  profile_info_provider()->set_given_name(kFakeGivenName);
   std::string expected_default_device_name =
       l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME, kFakeGivenName,
                                 ui::GetChromeOSDeviceName());

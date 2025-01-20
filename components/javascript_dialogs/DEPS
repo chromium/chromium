@@ -9,7 +9,6 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+ui/aura",
   "+ui/base",
-  "+ui/compositor",
   "+ui/gfx",
   "+ui/gfx/geometry",
 ]

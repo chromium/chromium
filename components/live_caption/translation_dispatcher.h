@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "components/live_caption/translation_util.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,8 +27,6 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace captions {
-
-using OnTranslateEventCallback = base::OnceCallback<void(const std::string&)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Translate Dispatcher
@@ -45,16 +45,19 @@ class TranslationDispatcher {
   void GetTranslation(const std::string& result,
                       std::string source_language,
                       std::string target_language,
-                      OnTranslateEventCallback callback);
+                      TranslateEventCallback callback);
 
  private:
   void ResetURLLoaderFactory();
-  void OnURLLoadComplete(OnTranslateEventCallback callback,
-                         std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(TranslateEventCallback callback,
+                         std::optional<std::string> response_body);
+
+  void EmitError(TranslateEventCallback callback,
+                 const std::string& string) const;
 
   // Called when the data decoder service provides parsed JSON data for a server
   // response.
-  void OnResponseJsonParsed(OnTranslateEventCallback callback,
+  void OnResponseJsonParsed(TranslateEventCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
   const std::string api_key_;

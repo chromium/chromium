@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/av1_builder.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +16,9 @@ class AV1BuilderTest : public ::testing::Test {
   AV1BitstreamBuilder::SequenceHeader MakeSequenceHeader() {
     AV1BitstreamBuilder::SequenceHeader seq_hdr;
     seq_hdr.profile = 1;
-    seq_hdr.level = 12;
-    seq_hdr.tier = 0;
+    seq_hdr.operating_points_cnt_minus_1 = 0;
+    seq_hdr.level.at(0) = 12;
+    seq_hdr.tier.at(0) = 0;
     seq_hdr.frame_width_bits_minus_1 = 15;
     seq_hdr.frame_height_bits_minus_1 = 15;
     seq_hdr.width = 1280;
@@ -53,8 +49,8 @@ class AV1BuilderTest : public ::testing::Test {
     pic_hdr.disable_frame_end_update_cdf = false;
     pic_hdr.base_qindex = 100;
     pic_hdr.order_hint = frame_id;
-    pic_hdr.filter_level[0] = 1;
-    pic_hdr.filter_level[1] = 1;
+    pic_hdr.filter_level.at(0) = 1;
+    pic_hdr.filter_level.at(1) = 1;
     pic_hdr.filter_level_u = 1;
     pic_hdr.filter_level_v = 1;
     pic_hdr.sharpness_level = 1;
@@ -68,10 +64,10 @@ class AV1BuilderTest : public ::testing::Test {
       ref_order_hint = 0;
     }
     for (int i = 0; i < 8; i++) {
-      pic_hdr.cdef_y_pri_strength[i] = 0;
-      pic_hdr.cdef_y_sec_strength[i] = 0;
-      pic_hdr.cdef_uv_pri_strength[i] = 0;
-      pic_hdr.cdef_uv_sec_strength[i] = 0;
+      pic_hdr.cdef_y_pri_strength.at(i) = 0;
+      pic_hdr.cdef_y_sec_strength.at(i) = 0;
+      pic_hdr.cdef_uv_pri_strength.at(i) = 0;
+      pic_hdr.cdef_uv_sec_strength.at(i) = 0;
     }
     pic_hdr.reduced_tx_set = true;
     pic_hdr.segmentation_enabled = false;
@@ -94,8 +90,21 @@ TEST_F(AV1BuilderTest, AV1BitstreamBuilderWriteOBUHeader) {
                                                      0b10100000};
   AV1BitstreamBuilder packed_obu_header;
   packed_obu_header.WriteOBUHeader(/*type=*/libgav1::kObuTemporalDelimiter,
-                                   /*extension_flag=*/false,
                                    /*has_size=*/true);
+  packed_obu_header.WriteValueInLeb128(3);
+  packed_obu_header.WriteBool(true);
+  packed_obu_header.Write(1, 2);
+  EXPECT_EQ(std::move(packed_obu_header).Flush(), expected_packed_data);
+}
+
+TEST_F(AV1BuilderTest, AV1BitstreamBuilderWriteTemporalOBUHeader) {
+  const std::vector<uint8_t> expected_packed_data = {0b00010110, 0b01000000,
+                                                     0b00000011, 0b10100000};
+  AV1BitstreamBuilder packed_obu_header;
+  packed_obu_header.WriteOBUHeader(/*type=*/libgav1::kObuTemporalDelimiter,
+                                   /*has_size=*/true,
+                                   /*extension_flag=*/true,
+                                   /*temporal_id=*/2);
   packed_obu_header.WriteValueInLeb128(3);
   packed_obu_header.WriteBool(true);
   packed_obu_header.Write(1, 2);
@@ -123,6 +132,24 @@ TEST_F(AV1BuilderTest, BuildSequenceHeaderOBU) {
       0b11001111, 0b11000000, 0b10100000};
   AV1BitstreamBuilder seq_header_obu =
       AV1BitstreamBuilder::BuildSequenceHeaderOBU(MakeSequenceHeader());
+
+  EXPECT_EQ(seq_header_obu.OutstandingBits() % 8, 0ull);
+  EXPECT_EQ(std::move(seq_header_obu).Flush(), expected_packed_data);
+}
+
+TEST_F(AV1BuilderTest, BuildTemporalSequenceHeaderOBU) {
+  const std::vector<uint8_t> expected_packed_data = {
+      0b00100000, 0b00100001, 0b00000111, 0b01100000, 0b01000000, 0b11011000,
+      0b00010000, 0b00010110, 0b00111111, 0b11000001, 0b00111111, 0b11000000,
+      0b10110011, 0b11011111, 0b11111100, 0b11111100, 0b00001010};
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeSequenceHeader();
+  seq_hdr.operating_points_cnt_minus_1 = 2;  // Set scalability mode to L1T3.
+  for (uint32_t i = 0; i <= seq_hdr.operating_points_cnt_minus_1; i++) {
+    seq_hdr.level.at(i) = 12;
+    seq_hdr.tier.at(i) = 0;
+  }
+  AV1BitstreamBuilder seq_header_obu =
+      AV1BitstreamBuilder::BuildSequenceHeaderOBU(seq_hdr);
 
   EXPECT_EQ(seq_header_obu.OutstandingBits() % 8, 0ull);
   EXPECT_EQ(std::move(seq_header_obu).Flush(), expected_packed_data);

@@ -9,9 +9,9 @@ assert(is_chromeos_ash)
 build_webui_tests("build") {
   files = [
     "arc_account_picker_page_test.ts",
+    "inline_login_signin_blocked_by_policy_page_test.ts",
     "inline_login_test.ts",
     "inline_login_test_util.ts",
-    "inline_login_signin_blocked_by_policy_page_test.ts",
     "inline_login_welcome_page_test.ts",
   ]
 
@@ -35,10 +35,10 @@ build_webui_tests("build") {
 
   ts_definitions = [
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
-    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
   ]
 

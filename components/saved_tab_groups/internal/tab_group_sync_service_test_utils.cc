@@ -38,8 +38,12 @@ std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupDataTypeConfiguration(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service) {
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  bool data_sharing_enabled =
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly);
+  if (!data_sharing_enabled) {
     return nullptr;
   }
 
@@ -62,8 +66,15 @@ class EmptyCollaborationFinder : public CollaborationFinder {
   // tab_groups::CollaborationFinder overrides.
   void SetClient(Client* client) override {}
   bool IsCollaborationAvailable(const std::string& collaboration_id) override {
-    return false;
+    return collaborations_available_.contains(collaboration_id);
   }
+  void SetCollaborationAvailableForTesting(
+      const std::string& collaboration_id) override {
+    collaborations_available_.insert(collaboration_id);
+  }
+
+ private:
+  std::set<std::string> collaborations_available_;
 };
 
 }  // namespace

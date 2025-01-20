@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_NET_LOG_NET_EXPORT_CSS" file="../net_log/resources/net_export.css" type="BINDATA" />
-  <include name="IDR_NET_LOG_NET_EXPORT_HTML" file="../net_log/resources/net_export.html" preprocess="true" type="BINDATA" />
-  <include name="IDR_NET_LOG_NET_EXPORT_JS" file="../net_log/resources/net_export.js" preprocess="true" type="BINDATA" />
-</grit-part>

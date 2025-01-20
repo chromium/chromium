@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,16 +51,28 @@ public class DefaultBrowserPromoUtils {
         int NUM_ENTRIES = 3;
     }
 
+    /**
+     * An interface for receiving updates related to the trigger state of the default browser promo.
+     */
+    public interface DefaultBrowserPromoTriggerStateListener {
+        /** Called when a default browser promo becomes visible to the user. */
+        void onDefaultBrowserPromoTriggered();
+    }
+
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
     private final DefaultBrowserStateProvider mStateProvider;
 
     private static DefaultBrowserPromoUtils sInstance;
+
+    private final ObserverList<DefaultBrowserPromoTriggerStateListener>
+            mDefaultBrowserPromoTriggerStateListeners;
 
     DefaultBrowserPromoUtils(
             DefaultBrowserPromoImpressionCounter impressionCounter,
             DefaultBrowserStateProvider stateProvider) {
         mImpressionCounter = impressionCounter;
         mStateProvider = stateProvider;
+        mDefaultBrowserPromoTriggerStateListeners = new ObserverList<>();
     }
 
     public static DefaultBrowserPromoUtils getInstance() {
@@ -85,11 +101,8 @@ public class DefaultBrowserPromoUtils {
      * @return True if promo dialog will be displayed.
      */
     public boolean prepareLaunchPromoIfNeeded(
-            Activity activity,
-            WindowAndroid windowAndroid,
-            Tracker tracker,
-            boolean ignoreMaxCount) {
-        if (!shouldShowRoleManagerPromo(activity, ignoreMaxCount)) return false;
+            Activity activity, WindowAndroid windowAndroid, Tracker tracker) {
+        if (!shouldShowRoleManagerPromo(activity)) return false;
         mImpressionCounter.onPromoShown();
         tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
@@ -125,6 +138,7 @@ public class DefaultBrowserPromoUtils {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (shouldShowNonRoleManagerPromo(context)
                 && tracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES)) {
+            notifyDefaultBrowserPromoVisible();
             DefaultBrowserPromoMessageController messageController =
                     new DefaultBrowserPromoMessageController(context, tracker);
             messageController.promo(dispatcher);
@@ -138,8 +152,8 @@ public class DefaultBrowserPromoUtils {
      * 3. Current default browser state satisfied the pre-defined conditions.
      */
     public boolean shouldShowNonRoleManagerPromo(Context context) {
-        return !shouldShowRoleManagerPromo(context, false)
-                && mImpressionCounter.shouldShowPromo(true)
+        return !shouldShowRoleManagerPromo(context)
+                && mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ true)
                 && mStateProvider.shouldShowPromo();
     }
 
@@ -148,16 +162,16 @@ public class DefaultBrowserPromoUtils {
      * the {@link RoleManager} is available, and both the impression count and current default
      * browser state satisfied the pre-defined conditions.
      */
-    public boolean shouldShowRoleManagerPromo(Context context, boolean ignoreMaxCount) {
+    public boolean shouldShowRoleManagerPromo(Context context) {
         if (!isFeatureEnabled()) return false;
 
-        if (!mStateProvider.isRoleAvailable(context)) {
+        if (!isRoleAvailableButNotHeld(context)) {
             // Returns false if RoleManager default app setting is not available in the current
-            // system.
+            // system, or the browser role is already held.
             return false;
         }
 
-        return mImpressionCounter.shouldShowPromo(ignoreMaxCount)
+        return mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ false)
                 && mStateProvider.shouldShowPromo();
     }
 
@@ -165,6 +179,43 @@ public class DefaultBrowserPromoUtils {
     public static void incrementSessionCount() {
         ChromeSharedPreferences.getInstance()
                 .incrementInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
+    }
+
+    /**
+     * Registers a {@link DefaultBrowserPromoTriggerStateListener} to receive updates when a default
+     * browser promo becomes visible to the user.
+     */
+    public void addListener(DefaultBrowserPromoTriggerStateListener listener) {
+        mDefaultBrowserPromoTriggerStateListeners.addObserver(listener);
+    }
+
+    /**
+     * Removes the given listener from the list of state listeners.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeListener(DefaultBrowserPromoTriggerStateListener listener) {
+        mDefaultBrowserPromoTriggerStateListeners.removeObserver(listener);
+    }
+
+    /** Notifies listeners that a default browser promo is now visible to the user. */
+    public void notifyDefaultBrowserPromoVisible() {
+        for (DefaultBrowserPromoTriggerStateListener listener :
+                mDefaultBrowserPromoTriggerStateListeners) {
+            listener.onDefaultBrowserPromoTriggered();
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private boolean isRoleAvailableButNotHeld(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return false;
+        }
+        RoleManager roleManager = (RoleManager) context.getSystemService(Context.ROLE_SERVICE);
+        if (roleManager == null) return false;
+        boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
+        boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
+        return isRoleAvailable && !isRoleHeld;
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

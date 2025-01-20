@@ -48,6 +48,7 @@ public class ClientDataJsonTest {
         payment.payeeOrigin.scheme = "https";
         payment.payeeOrigin.host = "test.example";
         payment.payeeOrigin.port = 443;
+        payment.browserBoundPublicKey = new byte[] {0x01, 0x02, 0x03, 0x04};
 
         byte[] challenge = new byte[3];
         String relyingPartyId = "subdomain.example.test";
@@ -83,5 +84,6 @@ public class ClientDataJsonTest {
                 output,
                 containsString(
                         String.format("\"displayName\":\"%s\"", payment.instrument.displayName)));
+        assertThat(output, containsString(String.format("\"browserBoundPublicKey\":\"AQIDBA\"")));
     }
 }

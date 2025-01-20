@@ -11,35 +11,19 @@ const char kCommerceLocalPDPDetectionDescription[] =
     "Allow Chrome to attempt to detect product pages on the client, without "
     "server support.";
 
-const char kCommercePriceTrackingName[] = "Price Tracking";
-const char kCommercePriceTrackingDescription[] =
-    "Allows users to track product prices through Chrome.";
-
-const char kPriceTrackingIconColorsName[] =
-    "Price Tracking Icon Tonal UI Colors";
-const char kPriceTrackingIconColorsDescription[] =
-    "Tonal colors for the expanded state of the price tracking chip on "
-    "desktop.";
-
 const char kProductSpecificationsName[] = "Product Specifications";
 const char kProductSpecificationsDescription[] =
     "Enable the Product Specifications feature.";
-
-const char kProductSpecificationsMultiSpecificsName[] =
-    "Product Specifications Multi Specifics";
-const char kProductSpecificationsMultiSpecificsDescription[] =
-    "Enable the Product Specifications backed by the sync multi specifics "
-    "representation.";
 
 const char kCompareConfirmationToastName[] = "Added to set confirmation toast";
 const char kCompareConfirmationToastDescription[] =
     "Enable to show the added to set confirmation in a toast.";
 
-const char kShoppingIconColorVariantName[] =
-    "Enable color variant for shopping icons";
-const char kShoppingIconColorVariantDescription[] =
-    "Enables a color variant for shopping page action icons (Price Insights & "
-    "Price Tracking)";
+const char kCompareManagementInterfaceName[] =
+    "Comparison table management from main Compare UI";
+const char kCompareManagementInterfaceDescription[] =
+    "Enable showing the comparison tables list in the Compare UI and enable "
+    "the new \"Comparison tables\" context menu under \"Bookmarks and Lists\".";
 
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";

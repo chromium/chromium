@@ -59,7 +59,6 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -76,7 +75,6 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
@@ -150,6 +148,7 @@ class CaretPositionFromPointOptions;
 class CDATASection;
 class CSSStyleSheet;
 class CanvasFontCache;
+class CharacterData;
 class CheckPseudoHasCacheScope;
 class ChromeClient;
 class Comment;
@@ -1058,6 +1057,7 @@ class CORE_EXPORT Document : public ContainerNode,
   inline bool HasExplicitlySetAttrElements() const {
     return !element_explicitly_set_attr_elements_map_.empty();
   }
+  bool HasExplicitlySetAttrElements(const Element* element) const;
 
   CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
   void MoveElementCachedAttrAssociatedElementsMapToNewDocument(
@@ -1924,6 +1924,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // NOTE: only for use in testing.
   bool IsAnimatedPropertyCounted(CSSPropertyID property) const;
   void ClearUseCounterForTesting(mojom::WebFeature);
+  void ClearWebDXFeatureCounterForTesting(mojom::blink::WebDXFeature);
 
   void UpdateForcedColors();
   bool InForcedColorsMode() const;
@@ -1957,11 +1958,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void MarkHasFindInPageBeforematchExpandedHiddenMatchable();
 
   void CancelPendingJavaScriptUrls();
-
-  HeapObserverList<SynchronousMutationObserver>&
-  SynchronousMutationObserverSet() {
-    return synchronous_mutation_observer_set_;
-  }
 
   void NotifyUpdateCharacterData(CharacterData* character_data,
                                  const TextDiffRange&);
@@ -2083,8 +2079,9 @@ class CORE_EXPORT Document : public ContainerNode,
     return disabled_fieldset_count_;
   }
 
-  // Updates app title based to the latest app title meta tag value.
-  void UpdateAppTitle();
+  // Updates application title based to the latest application title meta tag
+  // value.
+  void UpdateApplicationTitle();
 
   void ResetAgent(Agent& agent);
 
@@ -2199,6 +2196,22 @@ class CORE_EXPORT Document : public ContainerNode,
   FRIEND_TEST_ALL_PREFIXES(
       RangeTest,
       ContainerNodeRemovalWithSequentialFocusNavigationStartingPoint);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenRelAndHrefSetBeforeAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenHrefAndRelSetBeforeAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenRelAndHrefSetAfterAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkHandledWhenHrefAndRelSetAfterAppend);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenRelNotSet);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenHrefNotSet);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementTest,
+                           PaymentLinkNotHandledWhenNotAppended);
+  FRIEND_TEST_ALL_PREFIXES(HTMLLinkElementSimTest,
+                           PaymentLinkNotHandledWhenNotInTheMainFrame);
 
   // Listed elements that are not associated to a <form> element.
   class UnassociatedListedElementsList {
@@ -2860,9 +2873,6 @@ class CORE_EXPORT Document : public ContainerNode,
       element_explicitly_set_attr_elements_map_;
   HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
       element_cached_attr_associated_elements_map_;
-
-  HeapObserverList<SynchronousMutationObserver>
-      synchronous_mutation_observer_set_;
 
   Member<DisplayLockDocumentState> display_lock_document_state_;
 

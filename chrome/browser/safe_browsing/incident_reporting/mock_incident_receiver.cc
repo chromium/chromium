@@ -8,8 +8,8 @@
 
 namespace safe_browsing {
 
-MockIncidentReceiver::MockIncidentReceiver() {}
+MockIncidentReceiver::MockIncidentReceiver() = default;
 
-MockIncidentReceiver::~MockIncidentReceiver() {}
+MockIncidentReceiver::~MockIncidentReceiver() = default;
 
 }  // namespace safe_browsing

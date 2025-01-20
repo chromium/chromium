@@ -48,7 +48,8 @@ struct NavigationTransitionTestUtils {
 class ScopedScreenshotCapturedObserverForTesting {
  public:
   explicit ScopedScreenshotCapturedObserverForTesting(
-      int expected_nav_entry_index);
+      int expected_nav_entry_index,
+      bool expected_requested = true);
   ScopedScreenshotCapturedObserverForTesting(
       const ScopedScreenshotCapturedObserverForTesting&) = delete;
   ScopedScreenshotCapturedObserverForTesting& operator=(

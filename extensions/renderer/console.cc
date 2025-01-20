@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/renderer/get_script_context.h"
@@ -29,7 +30,7 @@ namespace {
 // Writes |message| to stack to show up in minidump, then crashes.
 void CheckWithMinidump(const std::string& message) {
   DEBUG_ALIAS_FOR_CSTR(minidump, message.c_str(), 1024);
-  CHECK(false) << message;
+  NOTREACHED() << message;
 }
 
 void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {

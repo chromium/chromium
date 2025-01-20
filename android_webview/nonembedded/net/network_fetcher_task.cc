@@ -51,8 +51,7 @@ void InvokePostRequest(
       env, reinterpret_cast<intptr_t>(&weak_ptr),
       reinterpret_cast<intptr_t>(task_runner.get()),
       url::GURLAndroid::FromNativeGURL(env, url),
-      base::android::ToJavaByteArray(env, post_data),
-      base::android::ConvertUTF8ToJavaString(env, content_type),
+      base::android::ToJavaByteArray(env, post_data), content_type,
       base::android::ToJavaArrayOfStrings(env, keys),
       base::android::ToJavaArrayOfStrings(env, values));
 }
@@ -65,8 +64,7 @@ void InvokeDownload(TaskWeakPtr weak_ptr,
   Java_NetworkFetcherTask_download(
       env, reinterpret_cast<intptr_t>(&weak_ptr),
       reinterpret_cast<intptr_t>(task_runner.get()),
-      url::GURLAndroid::FromNativeGURL(env, url),
-      base::android::ConvertUTF8ToJavaString(env, file_path.value()));
+      url::GURLAndroid::FromNativeGURL(env, url), file_path.value());
 }
 
 }  // namespace
@@ -128,8 +126,8 @@ void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     jlong task_runner,
     const base::android::JavaParamRef<jbyteArray>& response_body,
     jint network_error,
-    const base::android::JavaParamRef<jstring>& header_e_tag,
-    const base::android::JavaParamRef<jstring>& header_x_cup_server_proof,
+    std::string& header_e_tag,
+    std::string& header_x_cup_server_proof,
     jlong x_header_retry_after_sec) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
@@ -142,10 +140,7 @@ void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
       FROM_HERE,
       base::BindOnce(&NetworkFetcherTask::InvokePostRequestCompleteCallback,
                      *task, std::make_unique<std::string>(response_body_str),
-                     network_error,
-                     base::android::ConvertJavaStringToUTF8(env, header_e_tag),
-                     base::android::ConvertJavaStringToUTF8(
-                         env, header_x_cup_server_proof),
+                     network_error, header_e_tag, header_x_cup_server_proof,
                      x_header_retry_after_sec));
 }
 

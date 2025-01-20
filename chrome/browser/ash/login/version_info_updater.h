@@ -29,7 +29,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when OS version label should be updated.
     virtual void OnOSVersionLabelTextUpdated(

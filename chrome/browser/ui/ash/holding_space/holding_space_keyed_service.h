@@ -64,16 +64,14 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds multiple pinned file items identified by the provided file system
   // URLs. NOTE: No-op if the service has not been initialized.
   void AddPinnedFiles(
-      const std::vector<storage::FileSystemURL>& file_system_urls,
-      holding_space_metrics::EventSource event_source);
+      const std::vector<storage::FileSystemURL>& file_system_urls);
 
   // Removes multiple pinned file items identified by the provided file system
   // URLs. NOTE: No-ops if:
   // 1. The specified files are not present in the holding space; OR
   // 2. The service has not been initialized.
   void RemovePinnedFiles(
-      const std::vector<storage::FileSystemURL>& file_system_urls,
-      holding_space_metrics::EventSource event_source);
+      const std::vector<storage::FileSystemURL>& file_system_urls);
 
   // Returns whether the holding space contains a pinned file identified by a
   // file system URL.

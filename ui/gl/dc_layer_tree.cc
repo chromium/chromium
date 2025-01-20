@@ -13,6 +13,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -126,7 +128,8 @@ class SolidColorSurface final {
   }
 
   // Fill the surface with the opaque part of |color|.
-  bool FillColor(ID3D11Device* d3d11_device, SkColor4f color) {
+  base::expected<void, CommitError> FillColor(ID3D11Device* d3d11_device,
+                                              SkColor4f color) {
     HRESULT hr = S_OK;
     RECT update_rect = D2D1::Rect(0, 0, kSolidColorSurfaceSize.width(),
                                   kSolidColorSurfaceSize.height());
@@ -137,7 +140,8 @@ class SolidColorSurface final {
     if (FAILED(hr)) {
       LOG(ERROR) << "BeginDraw failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kSolidColorSurfaceBeginDraw, hr});
     }
 
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
@@ -146,7 +150,8 @@ class SolidColorSurface final {
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateRenderTargetView failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kSolidColorSurfaceCreateRenderTargetView, hr});
     }
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
@@ -157,12 +162,13 @@ class SolidColorSurface final {
     hr = surface_->EndDraw();
     if (FAILED(hr)) {
       LOG(ERROR) << "EndDraw failed: " << logging::SystemErrorCodeToString(hr);
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kSolidColorSurfaceEndDraw, hr});
     }
 
     color_ = color;
 
-    return true;
+    return base::ok();
   }
 
   // A surface with |DXGI_ALPHA_MODE_IGNORE|, filled with the opaque parts of
@@ -183,8 +189,8 @@ SolidColorSurfacePool::SolidColorSurfacePool(
 }
 SolidColorSurfacePool::~SolidColorSurfacePool() = default;
 
-IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
-    const SkColor4f& color) {
+base::expected<IDCompositionSurface*, CommitError>
+SolidColorSurfacePool::GetSolidColorSurface(const SkColor4f& color) {
   stats_since_last_trim_.num_surfaces_requested += 1;
 
   HRESULT hr = S_OK;
@@ -225,7 +231,8 @@ IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
     if (FAILED(hr)) {
       LOG(ERROR) << "CreateSurface failed: "
                  << logging::SystemErrorCodeToString(hr);
-      return nullptr;
+      return base::unexpected(CommitError{
+          CommitError::Reason::kSolidColorSurfacePoolCreateSurface, hr});
     }
 
     surface_to_fill_it = tracked_surfaces_.insert(
@@ -233,10 +240,7 @@ IDCompositionSurface* SolidColorSurfacePool::GetSolidColorSurface(
   }
 
   // The surface we want to use doesn't have the right color at this point.
-  if (!surface_to_fill_it->FillColor(d3d11_device_.Get(), color)) {
-    LOG(ERROR) << "Failed to fill solid color surface with color.";
-    return nullptr;
-  }
+  RETURN_IF_ERROR(surface_to_fill_it->FillColor(d3d11_device_.Get(), color));
 
   // Update the partitioning index after |FillColor| succeeds. In the case of
   // failure, |tracked_surfaces_[num_used_this_frame_]| will still have a valid
@@ -824,7 +828,7 @@ DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
 
 DCLayerTree::VisualTree::~VisualTree() = default;
 
-bool DCLayerTree::VisualTree::BuildTree(
+base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays) {
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
@@ -921,15 +925,12 @@ bool DCLayerTree::VisualTree::BuildTree(
     IDCompositionSurface* background_color_surface = nullptr;
     if (overlays[i]->background_color &&
         overlays[i]->background_color->fA != 0.0) {
-      background_color_surface =
+      // TODO(http://crbug.com/1380822): Refactor to remove early exits. They
+      // may leave visual_subtrees_ corrupted.
+      ASSIGN_OR_RETURN(
+          background_color_surface,
           dc_layer_tree_->solid_color_surface_pool_->GetSolidColorSurface(
-              overlays[i]->background_color.value());
-      if (!background_color_surface) {
-        DLOG(ERROR) << "Could not get solid color surface.";
-        // TODO(http://crbug.com/1380822): Refactor to remove early exits. They
-        // may leave visual_subtrees_ corrupted.
-        return false;
-      }
+              overlays[i]->background_color.value()));
     }
 
     VisualSubtree* visual_subtree = visual_subtrees[i].get();
@@ -976,10 +977,11 @@ bool DCLayerTree::VisualTree::BuildTree(
     HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
     if (FAILED(hr)) {
       DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;
-      return false;
+      return base::unexpected(
+          CommitError{CommitError::Reason::kIDCompositionDeviceCommit, hr});
     }
   }
-  return true;
+  return base::ok();
 }
 
 DCLayerTree::VisualTree::VisualSubtreeMap
@@ -1167,7 +1169,7 @@ void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
   }
 }
 
-bool DCLayerTree::CommitAndClearPendingOverlays(
+base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
@@ -1242,7 +1244,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       if (!video_swap_chain->PresentToSwapChain(*overlay, &transform,
                                                 &clip_rect)) {
         DLOG(ERROR) << "PresentToSwapChain failed";
-        return false;
+        return base::unexpected(
+            CommitError{CommitError::Reason::kPresentToSwapChain});
       }
       // |SwapChainPresenter| may have changed the size of the overlay's quad
       // rect, e.g. to present to a swap chain exactly the size of the display
@@ -1262,7 +1265,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     visual_tree_ = std::make_unique<VisualTree>(this);
   }
 
-  const bool status = visual_tree_->BuildTree(overlays);
+  const base::expected<void, CommitError> status =
+      visual_tree_->BuildTree(overlays);
 
   ink_renderer_->ReportPointsDrawn();
 

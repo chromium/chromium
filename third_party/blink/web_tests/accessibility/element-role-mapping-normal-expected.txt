@@ -81,13 +81,13 @@ AXRole: AXGenericContainer
         AXRole: AXRubyAnnotation "한국"
             AXRole: AXStaticText "한국"
     AXRole: AXDescriptionList
-        AXRole: AXTerm
+        AXRole: AXTerm "Coffee"
             AXRole: AXStaticText "Coffee"
                 AXRole: AXInlineTextBox "Coffee"
         AXRole: AXDefinition
             AXRole: AXStaticText "- black hot drink"
                 AXRole: AXInlineTextBox "- black hot drink"
-        AXRole: AXTerm
+        AXRole: AXTerm "Milk"
             AXRole: AXStaticText "Milk"
                 AXRole: AXInlineTextBox "Milk"
         AXRole: AXDefinition

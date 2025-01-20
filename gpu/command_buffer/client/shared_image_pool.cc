@@ -44,12 +44,18 @@ void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
   sync_token_ = std::move(release_sync_token);
 }
 
+const SharedImagePoolId& ClientImage::GetPoolIdForTesting() const {
+  return pool_id_;
+}
+
 SharedImagePoolBase::SharedImagePoolBase(
+    const SharedImagePoolId& pool_id,
     const ImageInfo& image_info,
     const scoped_refptr<SharedImageInterface> sii,
     std::optional<uint8_t> max_pool_size,
     std::optional<base::TimeDelta> unused_resource_expiration_time)
-    : image_info_(image_info),
+    : pool_id_(pool_id),
+      image_info_(image_info),
       sii_(std::move(sii)),
       max_pool_size_(std::move(max_pool_size)),
       unused_resource_expiration_time_(
@@ -103,6 +109,10 @@ void SharedImagePoolBase::ReleaseImageInternal(
   if (!image || (GetImageInfo(image) != image_info_)) {
     return;
   }
+
+  // Ensure that the |image| belongs to |this| pool.
+  CHECK_EQ(image->pool_id_.ToString(), pool_id_.ToString());
+
   // Ensure that there is only one reference which the current |image| and
   // clients are not accidentally keeping more references alive while releasing
   // this |image|.
@@ -122,6 +132,10 @@ void SharedImagePoolBase::ReleaseImageInternal(
 
 void SharedImagePoolBase::ClearInternal() {
   image_pool_.clear();
+  CHECK(sii_);
+  // A pool might contain several images. Hence Flush() to ensure that the
+  // deferred IPCs are sent to the GPU process and GPU memory is reclaimed.
+  sii_->Flush();
 }
 
 void SharedImagePoolBase::ReconfigureInternal(const ImageInfo& image_info) {

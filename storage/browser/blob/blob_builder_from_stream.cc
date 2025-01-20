@@ -315,10 +315,12 @@ class BlobBuilderFromStream::WritePipeToFutureDataHelper
                 uint64_t bytes_previously_written) override {
     if (item_->type() == BlobDataItem::Type::kBytesDescription)
       item_->AllocateBytes();
-    std::memcpy(item_->mutable_bytes()
-                    .subspan(bytes_previously_written, data.size())
-                    .data(),
-                data.data(), data.size());
+    std::memcpy(
+        item_->mutable_bytes()
+            .subspan(base::checked_cast<size_t>(bytes_previously_written),
+                     data.size())
+            .data(),
+        data.data(), data.size());
     return true;
   }
 

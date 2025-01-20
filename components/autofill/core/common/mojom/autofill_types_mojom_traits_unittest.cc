@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -126,16 +126,16 @@ void CheckEqualPassPasswordGenerationUIData(
   EXPECT_EQ(expected.is_generation_element_password_type,
             actual.is_generation_element_password_type);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
-  EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
-                  .SameFormAs(actual.form_data));
+  EXPECT_TRUE(FormData::DeepEqual(
+      test::WithoutUnserializedData(expected.form_data), actual.form_data));
 }
 
 void CheckEqualPasswordSuggestionRequest(
     const PasswordSuggestionRequest& expected,
     const PasswordSuggestionRequest& actual) {
   EXPECT_EQ(expected.element_id, actual.element_id);
-  EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
-                  .SameFormAs(actual.form_data));
+  EXPECT_TRUE(FormData::DeepEqual(
+      test::WithoutUnserializedData(expected.form_data), actual.form_data));
   EXPECT_EQ(expected.trigger_source, actual.trigger_source);
   EXPECT_EQ(expected.username_field_index, actual.username_field_index);
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);

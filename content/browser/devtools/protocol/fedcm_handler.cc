@@ -63,7 +63,8 @@ void FedCmHandler::Wire(UberDispatcher* dispatcher) {
   FedCm::Dispatcher::wire(dispatcher, this);
 }
 
-DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
+DispatchResponse FedCmHandler::Enable(
+    std::optional<bool> in_disableRejectionDelay) {
   auto* auth_request = GetFederatedAuthRequest();
   bool was_enabled = enabled_;
   enabled_ = true;
@@ -144,7 +145,7 @@ void FedCmHandler::DidShowDialog() {
 
   FedCm::DialogType dialog_type =
       ConvertDialogType(auth_request->GetDialogType());
-  Maybe<String> maybe_subtitle;
+  std::optional<String> maybe_subtitle;
   std::optional<std::string> subtitle = dialog->GetSubtitle();
   if (subtitle) {
     maybe_subtitle = *subtitle;
@@ -291,8 +292,9 @@ DispatchResponse FedCmHandler::ClickDialogButton(
   return DispatchResponse::InvalidParams("Invalid dialog button");
 }
 
-DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
-                                             Maybe<bool> in_triggerCooldown) {
+DispatchResponse FedCmHandler::DismissDialog(
+    const String& in_dialogId,
+    std::optional<bool> in_triggerCooldown) {
   if (in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");

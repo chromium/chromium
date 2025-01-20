@@ -59,11 +59,9 @@ ProxyEventRouter* ProxyEventRouter::GetInstance() {
   return base::Singleton<ProxyEventRouter>::get();
 }
 
-ProxyEventRouter::ProxyEventRouter() {
-}
+ProxyEventRouter::ProxyEventRouter() = default;
 
-ProxyEventRouter::~ProxyEventRouter() {
-}
+ProxyEventRouter::~ProxyEventRouter() = default;
 
 void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
   base::Value::List args;

@@ -15,12 +15,14 @@
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_vcn_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
@@ -32,6 +34,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -60,8 +63,9 @@ PaymentsNetworkInterface::PaymentsNetworkInterface(
 PaymentsNetworkInterface::~PaymentsNetworkInterface() = default;
 
 void PaymentsNetworkInterface::Prepare() {
-  if (access_token_.empty())
+  if (access_token_.empty()) {
     StartTokenFetch(false);
+  }
 }
 
 void PaymentsNetworkInterface::GetUnmaskDetails(
@@ -199,4 +203,39 @@ void PaymentsNetworkInterface::UpdateVirtualCardEnrollment(
       request_details, std::move(callback)));
 }
 
+void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
+    const GetDetailsForCreateBnplPaymentInstrumentRequestDetails&
+        request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            std::u16string context_token,
+                            std::unique_ptr<base::Value::Dict>)> callback) {
+  IssueRequest(
+      std::make_unique<GetDetailsForCreateBnplPaymentInstrumentRequest>(
+          request_details,
+          /*full_sync_enabled=*/
+          account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+          std::move(callback)));
+}
+
+void PaymentsNetworkInterface::CreateBnplPaymentInstrument(
+    const CreateBnplPaymentInstrumentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult, std::u16string instrument_id)>
+        callback) {
+  IssueRequest(std::make_unique<CreateBnplPaymentInstrumentRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
+void PaymentsNetworkInterface::GetBnplPaymentInstrumentForFetchingVcn(
+    GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const BnplFetchVcnResponseDetails&)> callback) {
+  IssueRequest(std::make_unique<GetBnplPaymentInstrumentForFetchingVcnRequest>(
+      request_details,
+      /*full_sync_enabled=*/
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
 }  // namespace autofill::payments

@@ -9,12 +9,6 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,10 +21,17 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -78,7 +79,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), "1234567890"));
+        profile_->GetProfileUserName(), GaiaId("1234567890")));
     auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
     fake_user_manager->AddUser(account_id);
@@ -343,6 +344,23 @@ TEST_F(ArcActivationNecessityCheckerTest, InactiveDays0DayDelayedV2) {
   EXPECT_FALSE(future.Get());
   histogram_tester.ExpectUniqueSample(
       "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
+}
+
+TEST_F(ArcActivationNecessityCheckerTest, ManagementTransition) {
+  profile_->GetPrefs()->SetInteger(
+      prefs::kArcManagementTransition,
+      int(ArcManagementTransition::CHILD_TO_REGULAR));
+
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ArcActivationNecessityCheckerTest, AlwaysOnVpn) {
+  profile_->GetPrefs()->SetString(prefs::kAlwaysOnVpnPackage, "vpn.app.fake");
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace

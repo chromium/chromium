@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
+
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
-#import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
@@ -174,8 +175,9 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(native_window());
     EXPECT_TRUE(browser_view);
-    if (!browser_view)
+    if (!browser_view) {
       return nil;
+    }
 
     BrowserFrameMac* browser_frame = static_cast<BrowserFrameMac*>(
         browser_view->frame()->native_browser_frame());

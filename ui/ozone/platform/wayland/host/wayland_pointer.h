@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POINTER_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_constants.h"
@@ -91,24 +92,12 @@ class WaylandPointer {
                              uint32_t axis,
                              int32_t value120);
 
-  void SetupStylus();
-
-  // zcr_pointer_stylus_v2_listener callbacks:
-  static void OnTool(void* data,
-                     struct zcr_pointer_stylus_v2* stylus,
-                     uint32_t y);
-  static void OnForce(void* data,
-                      struct zcr_pointer_stylus_v2* stylus,
-                      uint32_t y,
-                      wl_fixed_t z);
-  static void OnTilt(void* data,
-                     struct zcr_pointer_stylus_v2* stylus,
-                     uint32_t y,
-                     wl_fixed_t z,
-                     wl_fixed_t a);
+  void OnAxisImpl(double delta,
+                  uint32_t axis,
+                  std::optional<base::TimeTicks> timestamp,
+                  bool is_high_resolution);
 
   wl::Object<wl_pointer> obj_;
-  wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<Delegate> delegate_;
 
@@ -140,7 +129,8 @@ class WaylandPointer::Delegate {
                                     wl::EventDispatchPolicy dispatch_policy,
                                     bool is_synthesized) = 0;
   virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset,
-                                  base::TimeTicks timestamp) = 0;
+                                  std::optional<base::TimeTicks> timestamp,
+                                  bool is_high_resolution) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
   virtual void OnPointerAxisStopEvent(uint32_t axis,
@@ -149,9 +139,6 @@ class WaylandPointer::Delegate {
   virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
   virtual void ReleasePressedPointerButtons(WaylandWindow* window,
                                             base::TimeTicks timestamp) = 0;
-  virtual void OnPointerStylusToolChanged(EventPointerType pointer_type) = 0;
-  virtual void OnPointerStylusForceChanged(float force) = 0;
-  virtual void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) = 0;
 };
 
 }  // namespace ui

@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 
@@ -11,13 +13,14 @@ import org.chromium.content.browser.GestureListenerManagerImpl;
  * Manages the {@link GestureStateListener} instances observing various gesture
  * events notifications from content layer.
  */
+@NullMarked
 public interface GestureListenerManager {
     /**
      * @param webContents {@link WebContents} object.
      * @return {@link GestureListenerManager} object used for the give WebContents.
      *         Creates one if not present.
      */
-    static GestureListenerManager fromWebContents(WebContents webContents) {
+    static @Nullable GestureListenerManager fromWebContents(WebContents webContents) {
         return GestureListenerManagerImpl.fromWebContents(webContents);
     }
 

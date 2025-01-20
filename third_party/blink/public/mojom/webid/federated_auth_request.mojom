@@ -7,6 +7,7 @@ module blink.mojom;
 import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Implementation of the proposed FedCM API.
 //
@@ -74,15 +75,24 @@ struct IdentityProviderConfig {
   // Explicitly references a specific provider by a Config URL.
   url.mojom.Url config_url;
 
-  // Indirectly references providers that have been registered in the past
-  // rather than directly.
-  bool use_registered_config_urls;
+  // Whether this config comes from the IDP registration API.
+  bool from_idp_registration_api;
 
   // When using registered IDPs, this contains the type of IDP requested.
   string? type;
 
   // Can be an empty string to be omitted in the request sent to the provider.
   string client_id;
+};
+
+// The format of the token that the relying party is requesting.
+// The browser currently only supports SD-JWTs and opaque tokens,
+// typically a OIDC JWT or SAML response.
+// We expect to add support for different token formats that may have
+// different privacy properties (such as BBS) as well as different
+// ergonomic properties (e.g. ISO MDocs).
+enum Format {
+  kSdJwt,
 };
 
 // The request parameters for a navigator.credentials.get() FedCM call.
@@ -110,6 +120,12 @@ struct IdentityProviderRequestOptions {
   // the user's permission has been gathered.
   // null if not provided by the JS caller.
   string? params_json;
+
+  // Optionally, the format of the token that the RP is requesting.
+  // When undefined, the token is expected to have an opaque format for
+  // the browser (typically an OAuth access token, id token or a SAML
+  // response).
+  Format? format;
 };
 
 // The information passed in an IdentityProvider.disconnect() call.
@@ -126,6 +142,21 @@ struct IdentityUserInfo {
   string given_name;
   string name;
   string picture;
+};
+
+// Cached user information from a Login Status API call.
+struct LoginStatusAccount {
+  string id;
+  string email;
+  string name;
+  string? given_name;
+  url.mojom.Url? picture;
+};
+
+// List of accounts and the expiration date thereof for a Login Status API call.
+struct LoginStatusOptions {
+  array<LoginStatusAccount> accounts;
+  mojo_base.mojom.TimeDelta? expiration;
 };
 
 // The parameters for a get call for identity provider(s).

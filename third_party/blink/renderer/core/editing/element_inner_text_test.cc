@@ -60,6 +60,14 @@ TEST_F(ElementInnerTest, GetInnerTextWithoutUpdate) {
   EXPECT_EQ("abc", target.GetInnerTextWithoutUpdate());
 }
 
+// https://crbug.com/41399234
+TEST_F(ElementInnerTest, FirstLineWithTextTransform) {
+  InsertStyleElement("div::first-line { text-transform: uppercase; }");
+  SetBodyContent("<div id=target>abc<br/>def</div>");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ("ABC\ndef", target.innerText());
+}
+
 using VisitedNodes = HeapHashSet<Member<const Node>>;
 class TextVisitorImpl : public TextVisitor {
   STACK_ALLOCATED();

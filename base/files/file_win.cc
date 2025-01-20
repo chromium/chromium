@@ -41,8 +41,9 @@ PlatformFile File::TakePlatformFile() {
 }
 
 void File::Close() {
-  if (!file_.is_valid())
+  if (!file_.is_valid()) {
     return;
+  }
 
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   SCOPED_FILE_TRACE("Close");
@@ -58,8 +59,9 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   LARGE_INTEGER distance, res;
   distance.QuadPart = offset;
   DWORD move_method = static_cast<DWORD>(whence);
-  if (!SetFilePointerEx(file_.get(), distance, &res, move_method))
+  if (!SetFilePointerEx(file_.get(), distance, &res, move_method)) {
     return -1;
+  }
   return res.QuadPart;
 }
 
@@ -67,8 +69,9 @@ int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0 || offset < 0)
+  if (size < 0 || offset < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
 
@@ -86,8 +89,9 @@ int File::Read(int64_t offset, char* data, int size) {
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
-  if (ERROR_HANDLE_EOF == GetLastError())
+  if (ERROR_HANDLE_EOF == GetLastError()) {
     return 0;
+  }
 
   return -1;
 }
@@ -96,8 +100,9 @@ int File::ReadAtCurrentPos(char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
@@ -108,8 +113,9 @@ int File::ReadAtCurrentPos(char* data, int size) {
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
-  if (ERROR_HANDLE_EOF == GetLastError())
+  if (ERROR_HANDLE_EOF == GetLastError()) {
     return 0;
+  }
 
   return -1;
 }
@@ -130,8 +136,9 @@ int File::Write(int64_t offset, const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0 || offset < 0)
+  if (size < 0 || offset < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
 
@@ -144,8 +151,9 @@ int File::Write(int64_t offset, const char* data, int size) {
 
   DWORD bytes_written;
   if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
-                  &overlapped))
+                  &overlapped)) {
     return static_cast<int>(bytes_written);
+  }
 
   return -1;
 }
@@ -154,15 +162,17 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
   DWORD bytes_written;
   if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
-                  NULL))
+                  NULL)) {
     return static_cast<int>(bytes_written);
+  }
 
   return -1;
 }
@@ -179,8 +189,9 @@ int64_t File::GetLength() const {
   SCOPED_FILE_TRACE("GetLength");
 
   LARGE_INTEGER size;
-  if (!::GetFileSizeEx(file_.get(), &size))
+  if (!::GetFileSizeEx(file_.get(), &size)) {
     return -1;
+  }
 
   return static_cast<int64_t>(size.QuadPart);
 }
@@ -195,15 +206,17 @@ bool File::SetLength(int64_t length) {
   LARGE_INTEGER file_pointer;
   LARGE_INTEGER zero;
   zero.QuadPart = 0;
-  if (!::SetFilePointerEx(file_.get(), zero, &file_pointer, FILE_CURRENT))
+  if (!::SetFilePointerEx(file_.get(), zero, &file_pointer, FILE_CURRENT)) {
     return false;
+  }
 
   LARGE_INTEGER length_li;
   length_li.QuadPart = length;
   // If length > file size, SetFilePointerEx() should extend the file
   // with zeroes on all Windows standard file systems (NTFS, FATxx).
-  if (!::SetFilePointerEx(file_.get(), length_li, NULL, FILE_BEGIN))
+  if (!::SetFilePointerEx(file_.get(), length_li, NULL, FILE_BEGIN)) {
     return false;
+  }
 
   // Set the new file length and move the file pointer to its old position.
   // This is consistent with ftruncate()'s behavior, even when the file
@@ -235,8 +248,9 @@ bool File::GetInfo(Info* info) const {
   SCOPED_FILE_TRACE("GetInfo");
 
   BY_HANDLE_FILE_INFORMATION file_info;
-  if (!GetFileInformationByHandle(file_.get(), &file_info))
+  if (!GetFileInformationByHandle(file_.get(), &file_info)) {
     return false;
+  }
 
   ULARGE_INTEGER size;
   size.HighPart = file_info.nFileSizeHigh;
@@ -278,8 +292,9 @@ File::Error File::Lock(File::LockMode mode) {
       LockFileEx(file_.get(), LockFileFlagsForMode(mode), /*dwReserved=*/0,
                  /*nNumberOfBytesToLockLow=*/MAXDWORD,
                  /*nNumberOfBytesToLockHigh=*/MAXDWORD, &overlapped);
-  if (!result)
+  if (!result) {
     return GetLastFileError();
+  }
   return FILE_OK;
 }
 
@@ -293,14 +308,16 @@ File::Error File::Unlock() {
       UnlockFileEx(file_.get(), /*dwReserved=*/0,
                    /*nNumberOfBytesToLockLow=*/MAXDWORD,
                    /*nNumberOfBytesToLockHigh=*/MAXDWORD, &overlapped);
-  if (!result)
+  if (!result) {
     return GetLastFileError();
+  }
   return FILE_OK;
 }
 
 File File::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return File();
+  }
 
   SCOPED_FILE_TRACE("Duplicate");
 
@@ -310,7 +327,7 @@ File File::Duplicate() const {
                          GetPlatformFile(),
                          GetCurrentProcess(),  // hTargetProcessHandle
                          &other_handle,
-                         0,  // dwDesiredAccess ignored due to SAME_ACCESS
+                         0,      // dwDesiredAccess ignored due to SAME_ACCESS
                          FALSE,  // !bInheritHandle
                          DUPLICATE_SAME_ACCESS)) {
     return File(GetLastFileError());
@@ -375,8 +392,9 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
   DWORD disposition = 0;
 
-  if (flags & FLAG_OPEN)
+  if (flags & FLAG_OPEN) {
     disposition = OPEN_EXISTING;
+  }
 
   if (flags & FLAG_CREATE) {
     DCHECK(!disposition);
@@ -403,44 +421,56 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   CHECK(disposition);
 
   DWORD access = 0;
-  if (flags & FLAG_WRITE)
+  if (flags & FLAG_WRITE) {
     access = GENERIC_WRITE;
+  }
   if (flags & FLAG_APPEND) {
     DCHECK(!access);
     access = FILE_APPEND_DATA;
   }
-  if (flags & FLAG_READ)
+  if (flags & FLAG_READ) {
     access |= GENERIC_READ;
-  if (flags & FLAG_WRITE_ATTRIBUTES)
+  }
+  if (flags & FLAG_WRITE_ATTRIBUTES) {
     access |= FILE_WRITE_ATTRIBUTES;
+  }
   if (flags & FLAG_WIN_EXECUTE) {
     // Specifying both FLAG_WIN_EXECUTE and FLAG_WIN_NO_EXECUTE would
     // constitute a security risk, so deny the access here.
     CHECK_EQ(flags & FLAG_WIN_NO_EXECUTE, 0U);
     access |= GENERIC_EXECUTE;
   }
-  if (flags & FLAG_CAN_DELETE_ON_CLOSE)
+  if (flags & FLAG_CAN_DELETE_ON_CLOSE) {
     access |= DELETE;
+  }
 
   DWORD sharing = (flags & FLAG_WIN_EXCLUSIVE_READ) ? 0 : FILE_SHARE_READ;
-  if (!(flags & FLAG_WIN_EXCLUSIVE_WRITE))
+  if (!(flags & FLAG_WIN_EXCLUSIVE_WRITE)) {
     sharing |= FILE_SHARE_WRITE;
-  if (flags & FLAG_WIN_SHARE_DELETE)
+  }
+  if (flags & FLAG_WIN_SHARE_DELETE) {
     sharing |= FILE_SHARE_DELETE;
+  }
 
   DWORD create_flags = 0;
-  if (flags & FLAG_ASYNC)
+  if (flags & FLAG_ASYNC) {
     create_flags |= FILE_FLAG_OVERLAPPED;
-  if (flags & FLAG_WIN_TEMPORARY)
+  }
+  if (flags & FLAG_WIN_TEMPORARY) {
     create_flags |= FILE_ATTRIBUTE_TEMPORARY;
-  if (flags & FLAG_WIN_HIDDEN)
+  }
+  if (flags & FLAG_WIN_HIDDEN) {
     create_flags |= FILE_ATTRIBUTE_HIDDEN;
-  if (flags & FLAG_DELETE_ON_CLOSE)
+  }
+  if (flags & FLAG_DELETE_ON_CLOSE) {
     create_flags |= FILE_FLAG_DELETE_ON_CLOSE;
-  if (flags & FLAG_WIN_BACKUP_SEMANTICS)
+  }
+  if (flags & FLAG_WIN_BACKUP_SEMANTICS) {
     create_flags |= FILE_FLAG_BACKUP_SEMANTICS;
-  if (flags & FLAG_WIN_SEQUENTIAL_SCAN)
+  }
+  if (flags & FLAG_WIN_SEQUENTIAL_SCAN) {
     create_flags |= FILE_FLAG_SEQUENTIAL_SCAN;
+  }
 
   file_.Set(CreateFile(path.value().c_str(), access, sharing, NULL, disposition,
                        create_flags, NULL));
@@ -449,10 +479,11 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     error_details_ = FILE_OK;
     async_ = ((flags & FLAG_ASYNC) == FLAG_ASYNC);
 
-    if (flags & (FLAG_OPEN_ALWAYS))
+    if (flags & (FLAG_OPEN_ALWAYS)) {
       created_ = (ERROR_ALREADY_EXISTS != GetLastError());
-    else if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE))
+    } else if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE)) {
       created_ = true;
+    }
     if (flags & FLAG_WIN_NO_EXECUTE) {
       // These two DCHECKs make sure that no callers are trying to remove
       // execute permission from a file that might need to be mapped executable

@@ -16,18 +16,18 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -42,8 +42,6 @@
 using testing::_;
 using testing::SaveArg;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
-
-constexpr char kExampleSite[] = "https://example.com";
 
 namespace autofill {
 namespace {
@@ -66,8 +64,7 @@ class TestAccessManager : public CreditCardAccessManager {
   void FetchCreditCard(
       const CreditCard* card,
       OnCreditCardFetchedCallback on_credit_card_fetched) override {
-    std::move(on_credit_card_fetched)
-        .Run(CreditCardFetchResult::kSuccess, card);
+    std::move(on_credit_card_fetched).Run(CHECK_DEREF(card));
   }
 };
 
@@ -83,13 +80,15 @@ class MockAutofillDriver : public TestContentAutofillDriver {
               (override));
 };
 
-class PaymentMethodAccessoryControllerTest
+class PaymentMethodAccessoryControllerTestBase
     : public ChromeRenderViewHostTestHarness {
  public:
+  explicit PaymentMethodAccessoryControllerTestBase(GURL url) : url_(url) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    NavigateAndCommit(GURL(kExampleSite));
-    SetFormOrigin(GURL(kExampleSite));
+    NavigateAndCommit(url());
+    autofill_client().set_last_committed_primary_main_frame_url(url());
     FocusWebContentsOnMainFrame();
 
     test_api(autofill_manager())
@@ -111,19 +110,10 @@ class PaymentMethodAccessoryControllerTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  const GURL& url() const { return url_; }
+
   PaymentMethodAccessoryController* controller() {
     return PaymentMethodAccessoryControllerImpl::FromWebContents(web_contents());
-  }
-
-  void SetFormOrigin(GURL origin) {
-    FormData form;
-    form.set_renderer_id(FormRendererId(1));
-    form.set_action(origin);
-    form.set_main_frame_origin(url::Origin::Create(origin));
-    autofill_client().set_form_origin(origin);
-    // Promo codes are filtered by the last_committed_primary_main_frame_url.
-    autofill_client().set_last_committed_primary_main_frame_url(
-        GURL(kExampleSite));
   }
 
  protected:
@@ -152,12 +142,21 @@ class PaymentMethodAccessoryControllerTest
       filling_source_observer_;
 
  private:
+  GURL url_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
   TestAutofillDriverInjector<testing::NiceMock<MockAutofillDriver>>
       autofill_driver_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
+};
+
+// Test with a secure context ("https").
+class PaymentMethodAccessoryControllerTest
+    : public PaymentMethodAccessoryControllerTestBase {
+ public:
+  PaymentMethodAccessoryControllerTest()
+      : PaymentMethodAccessoryControllerTestBase(GURL("https://example.com")) {}
 };
 
 TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
@@ -191,10 +190,19 @@ TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
           .Build());
 }
 
-TEST_F(PaymentMethodAccessoryControllerTest, PreventsFillingInsecureContexts) {
+// Test with an insecure context ("ttps").
+class PaymentMethodAccessoryControllerTest_Insecure
+    : public PaymentMethodAccessoryControllerTestBase {
+ public:
+  PaymentMethodAccessoryControllerTest_Insecure()
+      : PaymentMethodAccessoryControllerTestBase(
+            GURL("http://insecure.http-site.com")) {}
+};
+
+TEST_F(PaymentMethodAccessoryControllerTest_Insecure,
+       PreventsFillingInsecureContexts) {
   CreditCard card = test::GetCreditCard();
   data_manager_.payments_data_manager().AddCreditCard(card);
-  SetFormOrigin(GURL("http://insecure.http-site.com"));
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -427,12 +435,55 @@ TEST_F(
           .Build());
 }
 
+// Test to ensure that cards enrolled in card info retrieval are unmasked
+// in the manual fallback bubble.
 TEST_F(PaymentMethodAccessoryControllerTest,
-       CardArtIsNotShownEvenWhenMetadataIsAvailableAndEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardArtImage);
+       RefreshSuggestion_CardInfoRetrievalCardsRemainUnmasked) {
+  // Add a masked card to PersonalDataManager.
+  CreditCard unmasked_card = test::GetCreditCard();
+  unmasked_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  data_manager_.payments_data_manager().AddCreditCard(unmasked_card);
+  // Update the record type and add it to the unmasked cards cache.
+  unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  std::u16string cvc = u"123";
+  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+      unmasked_card, cvc);
 
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  std::u16string card_number_for_display = unmasked_card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      unmasked_card.GetRawInfo(CREDIT_CARD_NUMBER);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PaymentMethodAccessorySheetDataBuilder()
+          .AddUserInfo(kVisaCard)
+          .AppendField(
+              /*suggestion_type=*/AccessorySuggestionType::kCreditCardNumber,
+              /*display_text=*/card_number_for_display,
+              /*text_to_fill=*/card_number_for_fill,
+              /*a11y_description=*/card_number_for_fill,
+              /*id=*/std::string(),
+              /*is_obfuscated=*/false,
+              /*selectable=*/true)
+          .AppendSimpleField(
+              AccessorySuggestionType::kCreditCardExpirationMonth,
+              unmasked_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardExpirationYear,
+                             unmasked_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardNameFull,
+                             unmasked_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardCvc, cvc)
+          .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest,
+       CardArtIsNotShownEvenWhenMetadataIsAvailable) {
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
@@ -456,37 +507,6 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
 }
 
-TEST_F(
-    PaymentMethodAccessoryControllerTest,
-    CapitalOneVirtualCardIconIsShownForVirtualCardsEvenWhenMetadataIsNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCardArtImage);
-
-  // Add a masked card to PersonalDataManager.
-  CreditCard masked_card = test::GetMaskedServerCard();
-  masked_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
-  masked_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  data_manager_.payments_data_manager().AddCreditCard(masked_card);
-
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
-  ASSERT_TRUE(controller());
-  controller()->RefreshSuggestions();
-
-  std::optional<AccessorySheetData> result = controller()->GetSheetData();
-  ASSERT_TRUE(result);
-  // Verify both the virtual card and the masked server card are in the
-  // suggestions.
-  EXPECT_EQ(result->user_info_list().size(), 2u);
-  // Verify the the Capital One virtual card icon is shown for the virtual card.
-  EXPECT_EQ(result->user_info_list()[0].icon_url(),
-            GURL(kCapitalOneCardArtUrl));
-  // Verify card art is not shown for the masked server card.
-  EXPECT_EQ(result->user_info_list()[1].icon_url(), GURL());
-}
-
 // Tests that promo codes are shown.
 TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsWithPromoCodeOffers) {
@@ -495,13 +515,13 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // Getting a promo code whose |merchant_origins| contains AutofillClient's
   // |last_committed_url_|.
   AutofillOfferData promo_code_valid = test::GetPromoCodeOfferData(
-      /*merchant_origin=*/GURL(kExampleSite),
+      /*origin=*/GURL(url()),
       /*is_expired=*/false);
   AutofillOfferData promo_code_origin_mismatch = test::GetPromoCodeOfferData(
       /*merchant_origin=*/GURL("https://someorigin.com"),
       /*is_expired=*/false);
   AutofillOfferData promo_code_expired = test::GetPromoCodeOfferData(
-      /*merchant_origin=*/GURL(kExampleSite),
+      /*origin=*/GURL(url()),
       /*is_expired=*/true);
   data_manager_.test_payments_data_manager().AddAutofillOfferData(
       promo_code_valid);

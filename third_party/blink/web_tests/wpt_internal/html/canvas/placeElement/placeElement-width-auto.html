@@ -3,11 +3,12 @@
 <head>
   <title>CanvasRenderingContext2D.PlaceElement()</title>
   <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
-  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
   <link rel="match" href="placeElement-ref.html">
+  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
+  <meta name="fuzzy" content="maxDifference=0-40; totalPixels=0-2">
   <style>
-    .fallback {
-      will-change: transform;
+    #fallback {
       background-color: green;
       width: auto;
     }
@@ -16,7 +17,7 @@
 
 <body>
   <canvas>
-    <div class="fallback" id="fallback">Placed Element</div>
+    <div id="fallback">Placed Element</div>
   </canvas>
 </body>
 

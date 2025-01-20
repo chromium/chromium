@@ -90,13 +90,16 @@ int LibraryRangeFinder::VisitLibraryPhdrs(dl_phdr_info* info,
         //     address == info->dlpi_addr + program_header->p_vaddr
         // that is, the p_vaddr fields is relative to the object base address.
         // See dl_iterate_phdr(3) for details.
-        if (lookup_address == info->dlpi_addr + phdr->p_vaddr)
+        if (lookup_address == info->dlpi_addr + phdr->p_vaddr) {
           is_matching = true;
+        }
 
-        if (phdr->p_vaddr < min_vaddr)
+        if (phdr->p_vaddr < min_vaddr) {
           min_vaddr = phdr->p_vaddr;
-        if (phdr->p_vaddr + phdr->p_memsz > max_vaddr)
+        }
+        if (phdr->p_vaddr + phdr->p_memsz > max_vaddr) {
           max_vaddr = phdr->p_vaddr + phdr->p_memsz;
+        }
         break;
       case PT_GNU_RELRO:
         min_relro_vaddr = PageStart(kPageSize, phdr->p_vaddr);
@@ -107,10 +110,12 @@ int LibraryRangeFinder::VisitLibraryPhdrs(dl_phdr_info* info,
         // the future. Include the RELRO segment as part of the 'load size'.
         // This way a potential future change in layout of LOAD segments would
         // not open address space for racy mmap(MAP_FIXED).
-        if (min_relro_vaddr < min_vaddr)
+        if (min_relro_vaddr < min_vaddr) {
           min_vaddr = min_relro_vaddr;
-        if (max_vaddr < max_relro_vaddr)
+        }
+        if (max_vaddr < max_relro_vaddr) {
           max_vaddr = max_relro_vaddr;
+        }
         break;
       default:
         break;

@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
@@ -22,6 +24,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 
 namespace {
 

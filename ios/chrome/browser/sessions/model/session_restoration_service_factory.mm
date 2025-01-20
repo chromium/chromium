@@ -11,7 +11,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/types/cxx23_to_underlying.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/sessions/model/legacy_session_restoration_service.h"
@@ -20,7 +19,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_impl.h"
 #import "ios/chrome/browser/sessions/model/session_service_ios.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/web_state_id.h"
@@ -31,7 +29,7 @@ namespace {
 using RequestedStorageFormat = SessionRestorationServiceFactory::StorageFormat;
 
 // Threshold before retrying to migration the session storage.
-constexpr base::TimeDelta kRetryMigrationThreshold = base::Days(3);
+constexpr base::TimeDelta kRetryMigrationThreshold = base::Days(1);
 
 // Value taken from Desktop Chrome.
 constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
@@ -233,8 +231,8 @@ void OnSessionMigrationDone(base::WeakPtr<ProfileIOS> weak_profile,
 // static
 SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SessionRestorationService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SessionRestorationService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -245,9 +243,8 @@ SessionRestorationServiceFactory::GetInstance() {
 }
 
 SessionRestorationServiceFactory::SessionRestorationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SessionRestorationService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SessionRestorationService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(WebSessionStateCacheFactory::GetInstance());
 }
 
@@ -387,11 +384,6 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<SessionRestorationServiceImpl>(
       kSaveDelay, IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(),
       storage_path, task_runner);
-}
-
-web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
 }
 
 void SessionRestorationServiceFactory::RegisterBrowserStatePrefs(

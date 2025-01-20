@@ -12,15 +12,12 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
 class LoginShelfViewPixelTestBase : public LoginTestBase {
  public:
-  LoginShelfViewPixelTestBase()
-      : scoped_features_(chromeos::features::kJelly) {}
+  LoginShelfViewPixelTestBase() = default;
 
   // Focuses on the login shelf's shutdown button.
   void FocusOnShutdownButton() {
@@ -53,11 +50,6 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
   }
 
   raw_ptr<views::View> primary_big_user_view_ = nullptr;
-
- private:
-  // TODO(b/291622042): Remove this when the Jelly feature can no longer be
-  // disabled.
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {

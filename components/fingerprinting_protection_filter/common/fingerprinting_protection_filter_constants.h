@@ -40,12 +40,30 @@ const char DocumentLoadRulesetIsAvailableHistogramName[] =
 const char RefreshCountHistogramName[] =
     "FingerprintingProtection.WebContentsObserver.RefreshCount";
 
+const char HasRefreshCountExceptionHistogramName[] =
+    "FingerprintingProtection.PageLoad.RefreshCount.SiteHasBreakageException";
+
+const char AddRefreshCountExceptionHistogramName[] =
+    "FingerprintingProtection.WebContentsObserver.RefreshCount."
+    "AddBreakageException";
+
+const char HasRefreshCountExceptionWallDurationHistogramName[] =
+    "FingerprintingProtection.PageLoad.RefreshCount."
+    "SiteHasBreakageExceptionWallDuration";
+
+const char AddRefreshCountExceptionWallDurationHistogramName[] =
+    "FingerprintingProtection.WebContentsObserver.RefreshCount."
+    "AddBreakageExceptionWallDuration";
+
 // Console messages
 // ----------------
 
 // Console message to be displayed on activation.
 constexpr char kActivationConsoleMessage[] =
-    "Fingerprinting protection active on the current page.";
+    "Fingerprinting protection is active on the current page. Please file bugs "
+    "at "
+    "https://issues.chromium.org/"
+    "issues?q=status:open%20componentid:1456351&s=created_time:desc";
 
 // Console message to be displayed on disallowing subframe.
 constexpr char kDisallowChildFrameConsoleMessageFormat[] =

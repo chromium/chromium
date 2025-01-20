@@ -205,8 +205,8 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
 
   while (total_deobfuscated_size < test_data.size()) {
     // Test that for partial writes, it reads the same obfuscated chunk.
-    auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
-        base::make_span(obfuscated.value()));
+    auto deobfuscated_chunk =
+        deobfuscator.GetNextDeobfuscatedChunk(base::span(obfuscated.value()));
     ASSERT_TRUE(deobfuscated_chunk.has_value());
 
     size_t bytes_to_read =
@@ -228,7 +228,7 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
   ASSERT_TRUE(empty_obfuscated.has_value());
 
   auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
-      base::make_span(empty_obfuscated.value()));
+      base::span(empty_obfuscated.value()));
   ASSERT_TRUE(deobfuscated_chunk.has_value());
   EXPECT_EQ(deobfuscated_chunk.value(), std::vector<uint8_t>());
 }

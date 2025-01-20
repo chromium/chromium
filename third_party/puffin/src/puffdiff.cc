@@ -77,7 +77,7 @@ bool CreatePatch(const Buffer& raw_patch,
   TEST_AND_RETURN_FALSE(header_size_long <= UINT32_MAX);
   const uint32_t header_size = header_size_long;
 
-  uint64_t offset = 0;
+  size_t offset = 0;
   patch->resize(kMagicLength + sizeof(header_size) + header_size +
                 raw_patch.size());
 

@@ -9,9 +9,10 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
  * adapter how to display a particular item. Updates to the {@link ListObservable} list provided in
  * the constructor will immediately be reflected in the list.
  */
+@NullMarked
 public class SimpleRecyclerViewAdapter
         extends RecyclerView.Adapter<SimpleRecyclerViewAdapter.ViewHolder>
         implements MVCListAdapter {
@@ -30,13 +32,14 @@ public class SimpleRecyclerViewAdapter
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         /** The model change processor currently associated with this view and model. */
-        private PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mCurrentMcp;
+        private @Nullable PropertyModelChangeProcessor<PropertyModel, View, PropertyKey>
+                mCurrentMcp;
 
         /** The view binder that knows how to apply a model to the view this holder owns. */
         private ViewBinder<PropertyModel, View, PropertyKey> mBinder;
 
         /** A handle to the model currently held by this view holder. */
-        public PropertyModel model;
+        public @Nullable PropertyModel model;
 
         /**
          * @param itemView The view to manage.
@@ -51,10 +54,10 @@ public class SimpleRecyclerViewAdapter
          * Set the model for this view holder to manage.
          * @param model The model that should be bound to the view.
          */
-        void setModel(PropertyModel model) {
+        void setModel(@Nullable PropertyModel model) {
             if (mCurrentMcp != null) mCurrentMcp.destroy();
             this.model = model;
-            if (this.model == null) return;
+            if (model == null) return;
             mCurrentMcp = PropertyModelChangeProcessor.create(model, itemView, mBinder);
         }
     }

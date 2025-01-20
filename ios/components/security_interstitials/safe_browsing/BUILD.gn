@@ -11,6 +11,8 @@ source_set("safe_browsing") {
     "safe_browsing_client.h",
     "safe_browsing_error.h",
     "safe_browsing_error.mm",
+    "safe_browsing_helper.cc",
+    "safe_browsing_helper.h",
     "safe_browsing_query_manager.h",
     "safe_browsing_query_manager.mm",
     "safe_browsing_service.h",
@@ -37,6 +39,7 @@ source_set("safe_browsing") {
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
+    "//components/safe_browsing/core/browser/utils:url_loader_factory_params",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/safe_browsing/ios/browser/password_protection",
@@ -53,8 +56,8 @@ source_set("safe_browsing") {
 
 source_set("util") {
   sources = [
-    "unsafe_resource_util.h",
-    "unsafe_resource_util.mm",
+    "ios_unsafe_resource_util.h",
+    "ios_unsafe_resource_util.mm",
   ]
 
   deps = [

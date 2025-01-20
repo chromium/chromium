@@ -2895,53 +2895,29 @@ TEST_F(DrawPropertiesTest, ClipRectOfSurfaceWhoseParentIsAClipChild) {
   auto* render_surface1 = GetRenderSurface(render_surface_layer1);
   EXPECT_TRUE(render_surface1->has_contributing_layer_that_escapes_clip());
   EXPECT_EQ(clip_layer->clip_tree_index(), render_surface1->ClipTreeIndex());
-  if (base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    EXPECT_EQ(clip_parent->clip_tree_index(),
-              render_surface1->common_ancestor_clip_id());
-    EXPECT_TRUE(render_surface1->is_clipped());
-    EXPECT_EQ(gfx::Rect(2, 2, 50, 50), render_surface1->clip_rect());
-  } else {
-    EXPECT_EQ(clip_layer->clip_tree_index(),
-              render_surface1->common_ancestor_clip_id());
-    EXPECT_FALSE(render_surface1->is_clipped());
-  }
+  EXPECT_EQ(clip_parent->clip_tree_index(),
+            render_surface1->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface1->is_clipped());
+  EXPECT_EQ(gfx::Rect(2, 2, 50, 50), render_surface1->clip_rect());
+
   auto* render_surface2 = GetRenderSurface(render_surface_layer2);
   EXPECT_FALSE(render_surface2->has_contributing_layer_that_escapes_clip());
   EXPECT_EQ(clip_parent->clip_tree_index(), render_surface2->ClipTreeIndex());
   EXPECT_EQ(clip_parent->clip_tree_index(),
             render_surface2->common_ancestor_clip_id());
-  if (base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    // render_surface2 has the same clip as render_surface1, so it doesn't need
-    // to clip.
-    EXPECT_FALSE(render_surface2->is_clipped());
-  } else {
-    EXPECT_TRUE(render_surface2->is_clipped());
-    EXPECT_EQ(gfx::Rect(50, 50), render_surface2->clip_rect());
-  }
+  // render_surface2 has the same clip as render_surface1, so it doesn't need
+  // to clip.
+  EXPECT_FALSE(render_surface2->is_clipped());
 
   device_scale_factor = 2.f;
   UpdateActiveTreeDrawProperties(device_scale_factor);
-  if (base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    EXPECT_TRUE(render_surface1->is_clipped());
-    EXPECT_EQ(gfx::Rect(4, 4, 100, 100), render_surface1->clip_rect());
-    EXPECT_FALSE(render_surface2->is_clipped());
-  } else {
-    EXPECT_FALSE(render_surface1->is_clipped());
-    EXPECT_TRUE(render_surface2->is_clipped());
-    EXPECT_EQ(gfx::Rect(100, 100), render_surface2->clip_rect());
-  }
+  EXPECT_TRUE(render_surface1->is_clipped());
+  EXPECT_EQ(gfx::Rect(4, 4, 100, 100), render_surface1->clip_rect());
+  EXPECT_FALSE(render_surface2->is_clipped());
 }
 
 TEST_F(DrawPropertiesTest,
        RenderSurfaceCommonAncestorClipOnChangeOfChildLayerClip) {
-  if (!base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    return;
-  }
-
   LayerImpl* root = root_layer();
   LayerImpl* clip_parent = AddLayerInActiveTree<LayerImpl>();
   LayerImpl* clip_layer = AddLayerInActiveTree<LayerImpl>();
@@ -4557,18 +4533,10 @@ TEST_F(DrawPropertiesTest,
   // instead it should rely on layer clipping.
   EXPECT_TRUE(render_surface1->has_contributing_layer_that_escapes_clip());
   EXPECT_EQ(clip_layer->clip_tree_index(), render_surface1->ClipTreeIndex());
-  if (base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    EXPECT_EQ(clip_parent->clip_tree_index(),
-              render_surface1->common_ancestor_clip_id());
-    EXPECT_TRUE(render_surface1->is_clipped());
-    EXPECT_EQ(gfx::Rect(0, 0, 10, 10), render_surface1->clip_rect());
-  } else {
-    EXPECT_EQ(clip_layer->clip_tree_index(),
-              render_surface1->common_ancestor_clip_id());
-    EXPECT_FALSE(render_surface1->is_clipped());
-    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), render_surface1->clip_rect());
-  }
+  EXPECT_EQ(clip_parent->clip_tree_index(),
+            render_surface1->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface1->is_clipped());
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), render_surface1->clip_rect());
 
   // That said, it should have grown to accommodate the unclipped descendant
   // and its own size.
@@ -7281,17 +7249,10 @@ TEST_F(DrawPropertiesTest, RenderSurfaceWithUnclippedDescendantsClipsSubtree) {
   EXPECT_TRUE(render_surface->has_contributing_layer_that_escapes_clip());
   EXPECT_EQ(between_clip_parent_and_child->clip_tree_index(),
             render_surface->ClipTreeIndex());
-  if (base::FeatureList::IsEnabled(
-          features::kRenderSurfaceCommonAncestorClip)) {
-    EXPECT_EQ(clip_parent->clip_tree_index(),
-              render_surface->common_ancestor_clip_id());
-    EXPECT_TRUE(render_surface->is_clipped());
-    EXPECT_EQ(gfx::Rect(2, 2, 30, 30), render_surface->clip_rect());
-  } else {
-    EXPECT_EQ(between_clip_parent_and_child->clip_tree_index(),
-              render_surface->common_ancestor_clip_id());
-    EXPECT_FALSE(render_surface->is_clipped());
-  }
+  EXPECT_EQ(clip_parent->clip_tree_index(),
+            render_surface->common_ancestor_clip_id());
+  EXPECT_TRUE(render_surface->is_clipped());
+  EXPECT_EQ(gfx::Rect(2, 2, 30, 30), render_surface->clip_rect());
   EXPECT_EQ(gfx::Rect(26, 26), render_surface->content_rect());
 }
 

@@ -43,10 +43,9 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   // Mutation methods (Java -> native).
   // Mutator methods that result in group metadata mutation.
-  ScopedJavaLocalRef<jstring> CreateGroup(
-      JNIEnv* env,
-      const JavaParamRef<jobject>& j_caller,
-      const JavaParamRef<jobject>& j_group_id);
+  void AddGroup(JNIEnv* env,
+                const JavaParamRef<jobject>& j_caller,
+                const JavaParamRef<jobject>& j_saved_tab_group);
 
   void RemoveGroupByLocalId(JNIEnv* env,
                             const JavaParamRef<jobject>& j_caller,
@@ -66,6 +65,16 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                           const JavaParamRef<jobject>& j_caller,
                           const JavaParamRef<jobject>& j_group_id,
                           const JavaParamRef<jstring>& j_collaboration_id);
+
+  void AboutToUnShareTabGroup(JNIEnv* env,
+                              const JavaParamRef<jobject>& j_caller,
+                              const JavaParamRef<jobject>& j_group_id,
+                              const JavaParamRef<jobject>& j_callback);
+
+  void OnTabGroupUnShareComplete(JNIEnv* env,
+                                 const JavaParamRef<jobject>& j_caller,
+                                 const JavaParamRef<jobject>& j_group_id,
+                                 const jboolean j_success);
 
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
@@ -95,10 +104,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                jint j_tab_id,
                int j_new_index_in_group);
 
-  void OnTabSelected(JNIEnv* env,
-                     const JavaParamRef<jobject>& j_caller,
-                     const JavaParamRef<jobject>& j_group_id,
-                     jint j_tab_id);
+  void SetTabSelected(JNIEnv* env,
+                      const JavaParamRef<jobject>& j_caller,
+                      const JavaParamRef<jobject>& j_group_id,
+                      jint j_tab_id);
 
   // Accessor methods.
   ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(

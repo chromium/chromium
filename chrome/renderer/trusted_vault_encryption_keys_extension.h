@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -48,7 +49,7 @@ class TrustedVaultEncryptionKeysExtension
   void SetClientEncryptionKeysContinue(
       gin::Arguments* args,
       v8::Local<v8::Function> callback,
-      std::string gaia_id,
+      GaiaId gaia_id,
       std::optional<
           base::flat_map<std::string,
                          std::vector<chrome::mojom::TrustedVaultKeyPtr>>>

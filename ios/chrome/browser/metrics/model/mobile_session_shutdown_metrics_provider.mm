@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 
-using previous_session_info_constants::DeviceBatteryState;
 using previous_session_info_constants::DeviceThermalState;
 
 namespace {
@@ -202,14 +201,6 @@ void LogApplicationBackgroundedTime(NSDate* session_end_time) {
       base::Seconds(background_time));
 }
 
-// Logs the device `battery_level` as a UTE stability metric.
-void LogBatteryCharge(float battery_level) {
-  int battery_charge = static_cast<int>(battery_level * 100);
-  UMA_STABILITY_HISTOGRAM_PERCENTAGE("Stability.iOS.UTE.BatteryCharge",
-                                     battery_charge);
-}
-
-
 // Logs the OS version change between `os_version` and the current os version.
 // Records whether the version is the same, if a minor version change occurred,
 // or if a major version change occurred.
@@ -245,8 +236,6 @@ void LogDeviceThermalState(DeviceThermalState thermal_state) {
 }
 
 }  // namespace
-
-const float kCriticallyLowBatteryLevel = 0.01;
 
 MobileSessionShutdownMetricsProvider::MobileSessionShutdownMetricsProvider(
     metrics::MetricsService* metrics_service)
@@ -304,9 +293,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
           SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING) {
     // Log UTE metrics only if the crash was classified as a UTE.
 
-    if (session_info.deviceBatteryState == DeviceBatteryState::kUnplugged) {
-      LogBatteryCharge(session_info.deviceBatteryLevel);
-    }
     if (session_info.OSVersion) {
       LogOSVersionChange(base::SysNSStringToUTF8(session_info.OSVersion));
     }

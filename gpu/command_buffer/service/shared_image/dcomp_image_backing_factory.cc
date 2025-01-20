@@ -76,33 +76,6 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
   }
 }
 
-std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    bool is_thread_safe,
-    base::span<const uint8_t> pixel_data) {
-  NOTREACHED();
-}
-
-std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool DCompImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,

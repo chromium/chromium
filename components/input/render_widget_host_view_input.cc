@@ -44,7 +44,7 @@ bool RenderWidgetHostViewInput::ScreenRectIsUnstableForIOv2For(
 }
 
 gfx::PointF RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(
-    const gfx::PointF& point) {
+    const gfx::PointF& point) const {
   return point;
 }
 

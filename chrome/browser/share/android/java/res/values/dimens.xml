@@ -18,9 +18,6 @@ found in the LICENSE file.
     <!-- IPH for Link Toggle -->
     <dimen name="toggle_iph_y_inset">8dp</dimen>
 
-    <!-- Android share sheet -->
-    <dimen name="share_preview_favicon_size">48dp</dimen>
-
     <!-- Page info bottom sheet -->
     <dimen name="page_info_container_corner_radius">24dp</dimen>
     <dimen name="page_info_bottom_sheet_padding">16dp</dimen>

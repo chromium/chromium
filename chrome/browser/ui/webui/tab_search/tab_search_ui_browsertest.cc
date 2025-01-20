@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,7 +44,7 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
     chrome::AddTabAt(browser(), GURL(url), -1, true);
   }
 
-  tabs::TabModel* GetActiveTab() {
+  tabs::TabInterface* GetActiveTab() {
     return browser()->tab_strip_model()->GetActiveTab();
   }
 
@@ -91,33 +92,29 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, MAYBE_SwitchToTabAction) {
   int tab_count = browser()->tab_strip_model()->GetTabCount();
-  int tab_id = browser()
-                   ->tab_strip_model()
-                   ->GetTabAtIndex(tab_count - 1)
-                   ->GetHandle()
-                   .raw_value();
-  ASSERT_EQ(tab_id, GetActiveTab()->GetHandle().raw_value());
+  tabs::TabHandle tab_id =
+      browser()->tab_strip_model()->GetTabAtIndex(tab_count - 1)->GetHandle();
+  ASSERT_EQ(tab_id, GetActiveTab()->GetHandle());
 
-  tab_id =
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  tab_id = browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   const std::string tab_item_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
       "    .querySelector('tab-search-page').shadowRoot"
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')",
-      base::NumberToString(tab_id).c_str());
+      base::NumberToString(tab_id.raw_value()).c_str());
   ASSERT_TRUE(content::ExecJs(webui_contents_.get(), tab_item_js + ".click()",
                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                               ISOLATED_WORLD_ID_CHROME_INTERNAL));
-  ASSERT_EQ(tab_id, GetActiveTab()->GetHandle().raw_value());
+  ASSERT_EQ(tab_id, GetActiveTab()->GetHandle());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
   ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
 
-  int tab_id =
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  tabs::TabHandle tab_id =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   const std::string tab_item_button_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
@@ -125,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')"
       "    .shadowRoot.getElementById('closeButton')",
-      base::NumberToString(tab_id).c_str());
+      base::NumberToString(tab_id.raw_value()).c_str());
   ASSERT_TRUE(content::ExecJs(webui_contents_.get(),
                               tab_item_button_js + ".click()",
                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
@@ -133,13 +130,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
   int tab_count = browser()->tab_strip_model()->GetTabCount();
   ASSERT_EQ(3, tab_count);
 
-  std::vector<int> open_tab_ids(tab_count);
+  std::vector<tabs::TabHandle> open_tab_ids(tab_count);
   for (int tab_index = 0; tab_index < tab_count; tab_index++) {
-    open_tab_ids.push_back(browser()
-                               ->tab_strip_model()
-                               ->GetTabAtIndex(tab_index)
-                               ->GetHandle()
-                               .raw_value());
+    open_tab_ids.push_back(
+        browser()->tab_strip_model()->GetTabAtIndex(tab_index)->GetHandle());
   }
   ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
 }
@@ -153,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(5, tab_strip_model->GetTabCount());
   content::WebContents* tab_contents = tab_strip_model->GetWebContentsAt(4);
-  const int tab_id = tab_strip_model->GetTabAtIndex(4)->GetHandle().raw_value();
+  const tabs::TabHandle tab_id = tab_strip_model->GetTabAtIndex(4)->GetHandle();
 
   // Finish loading after initializing.
   ASSERT_TRUE(content::WaitForLoadStop(tab_contents));
@@ -174,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                                            ->page_handler_for_testing();
   ASSERT_NE(nullptr, page_handler);
   content::WebContentsDestroyedWatcher close_observer(tab_contents);
-  page_handler->CloseTab(tab_id);
+  page_handler->CloseTab(tab_id.raw_value());
   tab_contents->DispatchBeforeUnload(false /* auto_cancel */);
   close_observer.Wait();
   ASSERT_EQ(4, tab_strip_model->GetTabCount());
@@ -184,10 +178,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   int tab_count = tab_strip_model->GetTabCount();
   ASSERT_EQ(4, tab_count);
 
-  std::vector<int> open_tab_ids(tab_count);
+  std::vector<tabs::TabHandle> open_tab_ids(tab_count);
   for (int tab_index = 0; tab_index < tab_count; tab_index++) {
     open_tab_ids.push_back(
-        tab_strip_model->GetTabAtIndex(tab_index)->GetHandle().raw_value());
+        tab_strip_model->GetTabAtIndex(tab_index)->GetHandle());
   }
   ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
 }

@@ -27,7 +27,7 @@ class ImporterProgressObserver {
   virtual void ImportEnded() = 0;
 
  protected:
-  virtual ~ImporterProgressObserver() {}
+  virtual ~ImporterProgressObserver() = default;
 };
 
 }  // namespace importer

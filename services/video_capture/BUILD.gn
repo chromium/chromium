@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -55,7 +54,6 @@ source_set("lib") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//media/capture:capture_lib",
     "//media/capture:capture_switches",
   ]
@@ -64,7 +62,7 @@ source_set("lib") {
     deps += [ "//chromeos/crosapi/mojom" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "ash/video_capture_device_ash.cc",
       "ash/video_capture_device_ash.h",
@@ -81,21 +79,6 @@ source_set("lib") {
     ]
 
     public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "lacros/device_factory_adapter_lacros.cc",
-      "lacros/device_factory_adapter_lacros.h",
-      "lacros/device_proxy_lacros.cc",
-      "lacros/device_proxy_lacros.h",
-      "lacros/video_buffer_adapters.cc",
-      "lacros/video_buffer_adapters.h",
-      "lacros/video_frame_handler_proxy_lacros.cc",
-      "lacros/video_frame_handler_proxy_lacros.h",
-    ]
-
-    deps += [ "//chromeos/lacros" ]
   }
 }
 
@@ -129,7 +112,6 @@ source_set("tests") {
   deps = [
     ":lib",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media/capture:test_support",
     "//media/capture/mojom:video_capture",
     "//services/video_capture/public/cpp:mocks",

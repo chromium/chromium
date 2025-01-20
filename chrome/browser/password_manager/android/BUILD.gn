@@ -20,6 +20,8 @@ android_library("android_backend_java_enums") {
 
 source_set("backend_public") {
   sources = [
+    "login_db_deprecation_runner_factory.cc",
+    "login_db_deprecation_runner_factory.h",
     "password_manager_settings_service_android_impl.cc",
     "password_manager_settings_service_android_impl.h",
   ]
@@ -31,6 +33,8 @@ source_set("backend_public") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content:content",
     "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs:prefs",
     "//components/sync/service",
@@ -47,8 +51,6 @@ source_set("backend") {
   ]
 
   sources = [
-    "android_backend_with_double_deletion.cc",
-    "android_backend_with_double_deletion.h",
     "built_in_backend_to_android_backend_migrator.cc",
     "built_in_backend_to_android_backend_migrator.h",
     "password_manager_lifecycle_helper.cc",
@@ -81,6 +83,8 @@ source_set("backend") {
     "password_store_android_local_backend.h",
     "password_store_backend_migration_decorator.cc",
     "password_store_backend_migration_decorator.h",
+    "password_store_empty_backend.cc",
+    "password_store_empty_backend.h",
     "password_store_proxy_backend.cc",
     "password_store_proxy_backend.h",
     "password_sync_controller_delegate_android.cc",
@@ -551,7 +555,6 @@ source_set("unit_tests") {
     "account_chooser_dialog_android_unittest.cc",
     "all_passwords_bottom_sheet_controller_unittest.cc",
     "all_passwords_bottom_sheet_helper_unittest.cc",
-    "android_backend_with_double_deletion_unittest.cc",
     "auto_signin_first_run_dialog_android_unittest.cc",
     "built_in_backend_to_android_backend_migrator_unittest.cc",
     "cred_man_controller_unittest.cc",
@@ -560,6 +563,7 @@ source_set("unit_tests") {
     "fake_password_manager_lifecycle_helper.h",
     "first_cct_page_load_marker_unittest.cc",
     "generated_password_saved_message_delegate_unittest.cc",
+    "login_db_deprecation_runner_factory_unittest.cc",
     "mock_password_checkup_launcher_helper.cc",
     "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",
@@ -569,7 +573,6 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.cc",
     "mock_password_sync_controller_delegate_bridge.h",
     "password_generation_controller_impl_unittest.cc",
-    "password_infobar_utils_unittest.cc",
     "password_manager_android_util_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
     "password_manager_eviction_util_unittest.cc",
@@ -580,6 +583,7 @@ source_set("unit_tests") {
     "password_store_android_backend_bridge_helper_impl_unittest.cc",
     "password_store_android_local_backend_unittest.cc",
     "password_store_backend_migration_decorator_unittest.cc",
+    "password_store_empty_backend_unittest.cc",
     "password_store_proxy_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
     "save_update_password_message_delegate_unittest.cc",

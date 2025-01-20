@@ -6,9 +6,7 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/browser/shortcuts_constants.h"
 #import "components/prefs/pref_service.h"
@@ -35,7 +33,7 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
 scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
     web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  return CreateShortcutsBackend(profile, false /* suppress_db */);
+  return CreateShortcutsBackend(profile, /*suppress_db=*/false);
 }
 
 }  // namespace
@@ -43,15 +41,15 @@ scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
 // static
 scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfile(
     ProfileIOS* profile) {
-  return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
-      GetInstance()->GetServiceForBrowserState(profile, true).get()));
+  return GetInstance()->GetServiceForProfileAs<ShortcutsBackend>(
+      profile, /*create=*/true);
 }
 
 // static
 scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
-      GetInstance()->GetServiceForBrowserState(profile, false).get()));
+  return GetInstance()->GetServiceForProfileAs<ShortcutsBackend>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -67,9 +65,9 @@ ShortcutsBackendFactory::GetDefaultFactory() {
 }
 
 ShortcutsBackendFactory::ShortcutsBackendFactory()
-    : RefcountedBrowserStateKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactoryIOS(
           "ShortcutsBackend",
-          BrowserStateDependencyManager::GetInstance()) {
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
@@ -80,10 +78,6 @@ scoped_refptr<RefcountedKeyedService>
 ShortcutsBackendFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildShortcutsBackend(context);
-}
-
-bool ShortcutsBackendFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

@@ -233,7 +233,7 @@ class Service::Context : public ServiceContext {
     return chromeos::PowerManagerClient::Get();
   }
 
-  std::string primary_account_gaia_id() override {
+  GaiaId primary_account_gaia_id() override {
     return parent_->RetrievePrimaryAccountInfo().gaia;
   }
 

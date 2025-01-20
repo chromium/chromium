@@ -8,7 +8,7 @@
 // Observes possible changes to TabModelList.
 class TabModelListObserver {
  public:
-  virtual ~TabModelListObserver() {}
+  virtual ~TabModelListObserver() = default;
 
   // Called after a TabModel is added.
   virtual void OnTabModelAdded() = 0;

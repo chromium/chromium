@@ -48,14 +48,16 @@ class CORE_EXPORT PopStateEvent final : public Event {
                                const PopStateEventInit* initializer);
   static PopStateEvent* Create(
       scoped_refptr<SerializedScriptValue> serialized_state,
-      History* history);
+      History* history,
+      bool has_ua_visual_transition);
 
   PopStateEvent() = default;
   PopStateEvent(ScriptState* script_state,
                 const AtomicString& type,
                 const PopStateEventInit* initializer);
   PopStateEvent(scoped_refptr<SerializedScriptValue> serialized_state,
-                History* history);
+                History* history,
+                bool has_ua_visual_transition);
   ~PopStateEvent() override = default;
 
   ScriptValue state(ScriptState* script_state, ExceptionState& exception_state);

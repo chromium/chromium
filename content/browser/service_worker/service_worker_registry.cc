@@ -42,13 +42,6 @@ namespace content {
 
 namespace {
 
-// When this is enabled, the browser will schedule
-// ServiceWorkerStorageControl's response in a kHighest priority
-// queue during startup. After startup, it has a normal priority.
-BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
-             "ServiceWorkerStorageControlResponseQueue",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   switch (status) {
@@ -1078,7 +1071,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
           base::MakeRefCounted<PolicyContainerHost>(
               PolicyContainerPolicies(*data.policy_container_policies)));
     }
-    if (data.router_rules && version->IsStaticRouterEnabled()) {
+    if (data.router_rules) {
       auto error = version->SetupRouterEvaluator(*data.router_rules);
       DCHECK_EQ(error, ServiceWorkerRouterEvaluatorErrorEnums::kNoError)
           << "Failed to setup RouterEvaluator from the provided "
@@ -1837,11 +1830,8 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
   if (!remote_storage_control_.is_bound()) {
     context_->wrapper()->BindStorageControl(
         remote_storage_control_.BindNewPipeAndPassReceiver(
-            base::FeatureList::IsEnabled(
-                kServiceWorkerStorageControlResponseQueue)
-                ? GetUIThreadTaskRunner(
-                      {BrowserTaskType::kServiceWorkerStorageControlResponse})
-                : base::SequencedTaskRunner::GetCurrentDefault()));
+            GetUIThreadTaskRunner(
+                {BrowserTaskType::kServiceWorkerStorageControlResponse})));
     DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,

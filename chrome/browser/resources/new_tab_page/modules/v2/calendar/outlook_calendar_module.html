@@ -5,7 +5,8 @@
     more-actions-text="${this.i18nRecursive('',
                           'modulesMoreActions',
                           'modulesOutlookCalendarTitle')}"
-    @disable-button-click="${this.onDisableButtonClick_}">
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}">
 </ntp-module-header-v2>
 <ntp-calendar id="outlook-calendar"
     .events="${this.events_}"

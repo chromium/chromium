@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/component_export.h"
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -16,7 +18,8 @@ namespace download {
 // Contains the configuration used by this DownloadService for internal download
 // operations.  Meant to be used by Clients for any tweaking they might want to
 // do based on the configuration parameters.
-class ServiceConfig {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    ServiceConfig {
  public:
   virtual ~ServiceConfig() = default;
 

@@ -29,10 +29,10 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
@@ -389,9 +389,9 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     }
   }
   // Do a case-insensitive search for |lookup_text|.
-  std::u16string::const_iterator lookup_position = base::ranges::search(
-      match_contents_, lookup_text, SimpleCaseInsensitiveCompareUCS2());
-  if (!allow_bolding_all && (lookup_position == match_contents_.end())) {
+  auto lookup_result = std::ranges::search(match_contents_, lookup_text,
+                                           SimpleCaseInsensitiveCompareUCS2());
+  if (!allow_bolding_all && lookup_result.empty()) {
     // Bail if the code below to update the bolding would bold the whole
     // string.  Note that the string may already be entirely bolded; if
     // so, leave it as is.
@@ -680,6 +680,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
     if (std::optional<int> relevance =
             extras.FindInt("google:verbatimrelevance")) {
       results->verbatim_relevance = *relevance;
+    }
+
+    if (const std::string* gws_event_id_hash_str =
+            extras.FindString("google:suggesteventid")) {
+      int64_t gws_event_id_hash;
+      if (base::StringToInt64(*gws_event_id_hash_str, &gws_event_id_hash)) {
+        results->gws_event_id_hashes.push_back(gws_event_id_hash);
+      }
     }
 
     // Check if the active suggest field trial (if any) has triggered either

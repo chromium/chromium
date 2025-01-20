@@ -718,16 +718,17 @@ void TracingHandler::OnTraceToStreamComplete(const std::string& stream_handle) {
                              stream_compression);
 }
 
-void TracingHandler::Start(Maybe<std::string> categories,
-                           Maybe<std::string> options,
-                           Maybe<double> buffer_usage_reporting_interval,
-                           Maybe<std::string> transfer_mode,
-                           Maybe<std::string> transfer_format,
-                           Maybe<std::string> transfer_compression,
-                           Maybe<Tracing::TraceConfig> config,
-                           Maybe<Binary> perfetto_config,
-                           Maybe<std::string> tracing_backend,
-                           std::unique_ptr<StartCallback> callback) {
+void TracingHandler::Start(
+    std::optional<std::string> categories,
+    std::optional<std::string> options,
+    std::optional<double> buffer_usage_reporting_interval,
+    std::optional<std::string> transfer_mode,
+    std::optional<std::string> transfer_format,
+    std::optional<std::string> transfer_compression,
+    std::unique_ptr<Tracing::TraceConfig> config,
+    std::optional<Binary> perfetto_config,
+    std::optional<std::string> tracing_backend,
+    std::unique_ptr<StartCallback> callback) {
   bool return_as_stream = transfer_mode.value_or("") ==
                           Tracing::Start::TransferModeEnum::ReturnAsStream;
   bool gzip_compression =
@@ -1000,8 +1001,8 @@ void TracingHandler::OnCategoriesReceived(
 }
 
 void TracingHandler::RequestMemoryDump(
-    Maybe<bool> deterministic,
-    Maybe<std::string> level_of_detail,
+    std::optional<bool> deterministic,
+    std::optional<std::string> level_of_detail,
     std::unique_ptr<RequestMemoryDumpCallback> callback) {
   if (!IsTracing()) {
     callback->sendFailure(Response::ServerError("Tracing is not started"));

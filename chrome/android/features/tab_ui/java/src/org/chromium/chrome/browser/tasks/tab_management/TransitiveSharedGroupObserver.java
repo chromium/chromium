@@ -12,9 +12,12 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.List;
 import java.util.Objects;
 
 /** A wrapper for {@link SharedGroupObserver} that supports changing the observed tab group id. */
@@ -23,28 +26,39 @@ public class TransitiveSharedGroupObserver implements Destroyable {
             new ObservableSupplierImpl<>();
     private final TransitiveObservableSupplier<SharedGroupObserver, Integer>
             mGroupSharedStateSupplier;
+    private final TransitiveObservableSupplier<SharedGroupObserver, List<GroupMember>>
+            mGroupMembersSupplier;
     private final TransitiveObservableSupplier<SharedGroupObserver, String>
             mCollaborationIdSupplier;
-    private final DataSharingService mDataSharingService;
     private final TabGroupSyncService mTabGroupSyncService;
+    private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
 
     private @Nullable Token mCurrentTabGroupId;
 
     /**
      * @param tabGroupSyncService Used to fetch the current collaboration id of the group.
-     * @param dataSharingService Used to fetch and observe current share data.
+     * @param dataSharingService Used to observe current share data.
+     * @param collaborationService Used to fetch current shared data.
      */
     public TransitiveSharedGroupObserver(
             @NonNull TabGroupSyncService tabGroupSyncService,
-            @NonNull DataSharingService dataSharingService) {
+            @NonNull DataSharingService dataSharingService,
+            @NonNull CollaborationService collaborationService) {
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
 
         mGroupSharedStateSupplier =
                 new TransitiveObservableSupplier<>(
                         mCurrentSharedGroupObserverSupplier,
                         sharedGroupStateObserver ->
                                 sharedGroupStateObserver.getGroupSharedStateSupplier());
+        mGroupMembersSupplier =
+                new TransitiveObservableSupplier<>(
+                        mCurrentSharedGroupObserverSupplier,
+                        sharedGroupStateObserver ->
+                                sharedGroupStateObserver.getGroupMembersSupplier());
         mCollaborationIdSupplier =
                 new TransitiveObservableSupplier<>(
                         mCurrentSharedGroupObserverSupplier,
@@ -69,7 +83,10 @@ public class TransitiveSharedGroupObserver implements Destroyable {
                 tabGroupId == null
                         ? null
                         : new SharedGroupObserver(
-                                tabGroupId, mTabGroupSyncService, mDataSharingService);
+                                tabGroupId,
+                                mTabGroupSyncService,
+                                mDataSharingService,
+                                mCollaborationService);
 
         swapSharedGroupObserver(newObserver);
     }
@@ -77,6 +94,11 @@ public class TransitiveSharedGroupObserver implements Destroyable {
     /** The held value corresponds to {@link GroupSharedState}. */
     public ObservableSupplier<Integer> getGroupSharedStateSupplier() {
         return mGroupSharedStateSupplier;
+    }
+
+    /** The held value corresponds to the list of {@link GroupMember} for the group. */
+    public ObservableSupplier<List<GroupMember>> getGroupMembersSupplier() {
+        return mGroupMembersSupplier;
     }
 
     /** The held value corresponds to the collaboration id for the group. */

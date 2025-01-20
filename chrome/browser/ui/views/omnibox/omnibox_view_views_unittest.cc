@@ -184,8 +184,9 @@ std::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
   for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
-    if (range == other_range)
+    if (range == other_range) {
       return color;
+    }
   }
   return std::nullopt;
 }
@@ -195,8 +196,9 @@ TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
   for (const auto& [style, value, other_range] :
        base::Reversed(range_styles_)) {
-    if (range == other_range)
+    if (range == other_range) {
       return std::make_pair(style, value);
+    }
   }
   return std::nullopt;
 }
@@ -468,8 +470,9 @@ void OmniboxViewViewsTest::SetUp() {
 
 void OmniboxViewViewsTest::TearDown() {
   // Clean ourselves up as the text input client.
-  if (omnibox_view_->GetInputMethod())
+  if (omnibox_view_->GetInputMethod()) {
     omnibox_view_->GetInputMethod()->DetachTextInputClient(omnibox_view_);
+  }
 
   location_bar()->set_omnibox_view(nullptr);
   omnibox_view_ = nullptr;
@@ -739,6 +742,36 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
 
   EXPECT_EQ(u"https://permanent-text.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
+}
+
+TEST_F(OmniboxViewViewsTest, AccessibleTextSelectBoundTest) {
+  ui::AXNodeData data;
+  gfx::Range range(4, 10);
+
+  omnibox_view()->SetTextAndSelectedRanges(u"AccessibleTextSelectBoundTest",
+                                           {range});
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 10);
+
+  omnibox_view()->SetUserText(u"Hello there", false);
+  data = ui::AXNodeData();
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
+
+  omnibox_view()->RevertAll();
+  data = ui::AXNodeData();
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
+
+  omnibox_view()->SetUserText(u"Testing selectAll", false);
+  omnibox_view()->SelectAll(false);
+  data = ui::AXNodeData();
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 17);
 }
 
 TEST_F(OmniboxViewViewsTest, ShiftEscapeDoesNotSkipDefaultProcessing) {
@@ -1126,8 +1159,9 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
   GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
   std::u16string expected_text;
-  if (clipboard_command == ui::TextEditCommand::COPY)
+  if (clipboard_command == ui::TextEditCommand::COPY) {
     expected_text = u"https://test.com/";
+  }
   EXPECT_EQ(expected_text, omnibox_view()->GetText());
 
   // Make sure the plain text format is available, but the HTML one isn't.
@@ -1165,8 +1199,9 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
   ui::TextEditCommand clipboard_command = GetParam();
   GetTextfieldTestApi().ExecuteTextEditCommand(clipboard_command);
 
-  if (clipboard_command == ui::TextEditCommand::CUT)
+  if (clipboard_command == ui::TextEditCommand::CUT) {
     EXPECT_EQ(std::u16string(), omnibox_view()->GetText());
+  }
 
   // Make sure HTML format isn't written. See
   // BookmarkNodeData::WriteToClipboard() for details.

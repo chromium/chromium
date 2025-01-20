@@ -74,7 +74,6 @@ AISummarizer::~AISummarizer() {
 }
 
 void AISummarizer::ModelExecutionCallback(
-    const std::string& input,
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   blink::mojom::ModelStreamingResponder* responder =
@@ -92,7 +91,9 @@ void AISummarizer::ModelExecutionCallback(
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
-    responder->OnStreaming(response->value());
+    responder->OnStreaming(
+        response->value(),
+        blink::mojom::ModelStreamingResponderAction::kReplace);
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);
@@ -136,5 +137,5 @@ void AISummarizer::Summarize(
   summarize_session_->ExecuteModel(
       request,
       base::BindRepeating(&AISummarizer::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), input, responder_id));
+                          weak_ptr_factory_.GetWeakPtr(), responder_id));
 }

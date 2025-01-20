@@ -4,9 +4,11 @@
 
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 
+#include <optional>
 #include <queue>
 #include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/break_iterator.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_ocr_helper.h"
@@ -15,6 +17,8 @@
 #include "pdf/pdf_features.h"
 #include "services/strings/grit/services_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -297,12 +301,84 @@ size_t NormalizeTextRunIndex(uint32_t object_end_text_run_index,
       current_text_run_index ? current_text_run_index - 1 : 0);
 }
 
+// Please keep the below map as close as possible to the list defined in the PDF
+// Specification, ISO 32000-1:2008, table 333.
+ax::mojom::Role StructureElementTypeToAccessibilityRole(
+    const std::string& element_type) {
+  static constexpr auto kStructureElementTypeToAccessibilityRoleMap =
+      base::MakeFixedFlatMap<std::string_view, ax::mojom::Role>(
+          {{"Document", ax::mojom::Role::kDocument},
+           {"Part", ax::mojom::Role::kDocPart},
+           {"Art", ax::mojom::Role::kArticle},
+           {"Sect", ax::mojom::Role::kSection},
+           {"Div", ax::mojom::Role::kGenericContainer},
+           {"BlockQuote", ax::mojom::Role::kBlockquote},
+           {"Caption", ax::mojom::Role::kCaption},
+           {"TOC", ax::mojom::Role::kDocToc},
+           {"TOCI", ax::mojom::Role::kListItem},
+           {"Index", ax::mojom::Role::kDocIndex},
+           {"P", ax::mojom::Role::kParagraph},
+           {"H", ax::mojom::Role::kHeading},
+           {"H1", ax::mojom::Role::kHeading},
+           {"H2", ax::mojom::Role::kHeading},
+           {"H3", ax::mojom::Role::kHeading},
+           {"H4", ax::mojom::Role::kHeading},
+           {"H5", ax::mojom::Role::kHeading},
+           {"H6", ax::mojom::Role::kHeading},
+           {"L", ax::mojom::Role::kList},
+           {"LI", ax::mojom::Role::kListItem},
+           {"Lbl", ax::mojom::Role::kListMarker},
+           {"LBody", ax::mojom::Role::kNone},  // Presentational.
+           {"Table", ax::mojom::Role::kTable},
+           {"TR", ax::mojom::Role::kRow},
+           {"TH", ax::mojom::Role::kRowHeader},
+           {"THead", ax::mojom::Role::kRowGroup},
+           {"TBody", ax::mojom::Role::kRowGroup},
+           {"TFoot", ax::mojom::Role::kRowGroup},
+           {"TD", ax::mojom::Role::kCell},
+           {"Span", ax::mojom::Role::kStaticText},
+           {"Link", ax::mojom::Role::kLink},
+           {"Figure", ax::mojom::Role::kFigure},
+           {"Formula", ax::mojom::Role::kMath},
+           {"Form", ax::mojom::Role::kForm}});
+
+  if (auto iter =
+          kStructureElementTypeToAccessibilityRoleMap.find(element_type);
+      iter != kStructureElementTypeToAccessibilityRoleMap.end()) {
+    return iter->second;
+  }
+  // Return something that could at least make some sense, other than
+  // `kUnknown`.
+  return ax::mojom::Role::kParagraph;
+}
+
+std::optional<uint32_t> StructureElementTypeToHeadingLevel(
+    const std::string& element_type) {
+  if (StructureElementTypeToAccessibilityRole(element_type) ==
+      ax::mojom::Role::kHeading) {
+    if (element_type == "H" || element_type == "H1") {
+      return 1;
+    } else if (element_type == "H2") {
+      return 2;
+    } else if (element_type == "H3") {
+      return 3;
+    } else if (element_type == "H4") {
+      return 4;
+    } else if (element_type == "H5") {
+      return 5;
+    } else if (element_type == "H6") {
+      return 6;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 namespace pdf {
 
 PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
-    base::WeakPtr<PdfAccessibilityTree> pdf_accessibility_tree,
+    bool mark_headings_using_heuristic,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     const chrome_pdf::AccessibilityPageObjects& page_objects,
@@ -321,7 +397,7 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
     bool has_accessible_text
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     )
-    : pdf_accessibility_tree_(std::move(pdf_accessibility_tree)),
+    : mark_headings_using_heuristic_(mark_headings_using_heuristic),
       text_runs_(text_runs),
       chars_(chars),
       links_(page_objects.links),
@@ -370,7 +446,7 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
                                        &heading_font_size_threshold_,
                                        &paragraph_spacing_threshold_);
 
-  ui::AXNodeData* para_node = nullptr;
+  ui::AXNodeData* block_node = nullptr;
   ui::AXNodeData* static_text_node = nullptr;
   ui::AXNodeData* previous_on_line_node = nullptr;
   std::string static_text;
@@ -389,16 +465,16 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
     bool ocr_block_start = text_run.is_searchified && !ocr_block;
     bool ocr_block_end = !text_run.is_searchified && ocr_block;
     if (ocr_block_start || ocr_block_end) {
-      // If already inside a paragraph, end it.
+      // If already inside a block, end it.
       // The searchifier adds the text at the exact position that it is seen in
       // the image and does not deal with paragraphs or other structures.
       // The function that creates the text runs only considers text positions
       // and separates the blocks based on that. Therefore there can be cases
-      // that OCR text will be added in the middle of a paragraph.
+      // that OCR text will be added in the middle of a block.
       // TODO(crbug.com/360803943): Add browser tests to verify.
-      if (para_node) {
+      if (block_node) {
         BuildStaticNode(&static_text_node, &static_text);
-        para_node = nullptr;
+        block_node = nullptr;
       }
       CHECK(ocr_block_start || text_run_index);
       gfx::PointF position =
@@ -411,21 +487,21 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
       has_ocr_text = true;
     }
 
-    // If we don't have a paragraph, create one.
-    if (!para_node) {
-      para_node =
-          CreateParagraphNode((*text_runs_)[text_run_index].style.font_size);
-      page_node_->child_ids.push_back(para_node->id);
+    // If we don't have a block level node, create one.
+    if (!block_node) {
+      block_node =
+          CreateBlockLevelNode(text_run.tag_type, text_run.style.font_size);
+      page_node_->child_ids.push_back(block_node->id);
     }
 
     // If the `text_run_index` is less than or equal to the link's
-    // `text_run_index`, then push the link node in the paragraph.
+    // `text_run_index`, then push the link node in the block.
     if (IsObjectWithRangeInTextRun(*links_, current_link_index_,
                                    text_run_index)) {
       BuildStaticNode(&static_text_node, &static_text);
       const chrome_pdf::AccessibilityLinkInfo& link =
           (*links_)[current_link_index_++];
-      AddLinkToParaNode(link, para_node, &previous_on_line_node,
+      AddLinkToParaNode(link, block_node, &previous_on_line_node,
                         &text_run_index);
 
       if (link.text_range.count == 0) {
@@ -435,27 +511,27 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
     } else if (IsObjectInTextRun(*images_, current_image_index_,
                                  text_run_index)) {
       BuildStaticNode(&static_text_node, &static_text);
-      AddImageToParaNode((*images_)[current_image_index_++], para_node,
+      AddImageToParaNode((*images_)[current_image_index_++], block_node,
                          &text_run_index);
       continue;
     } else if (IsObjectWithRangeInTextRun(
                    *highlights_, current_highlight_index_, text_run_index)) {
       BuildStaticNode(&static_text_node, &static_text);
       AddHighlightToParaNode((*highlights_)[current_highlight_index_++],
-                             para_node, &previous_on_line_node,
+                             block_node, &previous_on_line_node,
                              &text_run_index);
     } else if (IsObjectInTextRun(*text_fields_, current_text_field_index_,
                                  text_run_index) &&
                pdf_forms_enabled) {
       BuildStaticNode(&static_text_node, &static_text);
       AddTextFieldToParaNode((*text_fields_)[current_text_field_index_++],
-                             para_node, &text_run_index);
+                             block_node, &text_run_index);
       continue;
     } else if (IsObjectInTextRun(*buttons_, current_button_index_,
                                  text_run_index) &&
                pdf_forms_enabled) {
       BuildStaticNode(&static_text_node, &static_text);
-      AddButtonToParaNode((*buttons_)[current_button_index_++], para_node,
+      AddButtonToParaNode((*buttons_)[current_button_index_++], block_node,
                           &text_run_index);
       continue;
     } else if (IsObjectInTextRun(*choice_fields_, current_choice_field_index_,
@@ -463,17 +539,17 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
                pdf_forms_enabled) {
       BuildStaticNode(&static_text_node, &static_text);
       AddChoiceFieldToParaNode((*choice_fields_)[current_choice_field_index_++],
-                               para_node, &text_run_index);
+                               block_node, &text_run_index);
       continue;
     } else {
       chrome_pdf::PageCharacterIndex page_char_index = {
           page_index_, text_run_start_indices_[text_run_index]};
 
-      // This node is for the text inside the paragraph, it includes
-      // the text of all of the text runs.
+      // This node is for the text inside the block, it includes the text of all
+      // of the text runs.
       if (!static_text_node) {
         static_text_node = CreateStaticTextNode(page_char_index);
-        para_node->child_ids.push_back(static_text_node->id);
+        block_node->child_ids.push_back(static_text_node->id);
       }
 
       // Add this text run to the current static text node.
@@ -484,7 +560,7 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
       static_text += inline_text_box_node->GetStringAttribute(
           ax::mojom::StringAttribute::kName);
 
-      para_node->relative_bounds.bounds.Union(
+      block_node->relative_bounds.bounds.Union(
           inline_text_box_node->relative_bounds.bounds);
       static_text_node->relative_bounds.bounds.Union(
           inline_text_box_node->relative_bounds.bounds);
@@ -517,7 +593,7 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
       if (BreakParagraph(*text_runs_, text_run_index,
                          paragraph_spacing_threshold_)) {
         BuildStaticNode(&static_text_node, &static_text);
-        para_node = nullptr;
+        block_node = nullptr;
       }
     }
   }
@@ -530,7 +606,7 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
             ->id);
   }
 
-  AddRemainingAnnotations(para_node, has_ocr_text);
+  AddRemainingAnnotations(block_node, has_ocr_text);
 }
 
 void PdfAccessibilityTreeBuilder::AddWordStartsAndEnds(
@@ -575,23 +651,31 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateAndAppendNode(
   return node_ptr;
 }
 
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateParagraphNode(
+ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateBlockLevelNode(
+    const std::string& text_run_type,
     float font_size) {
-  ui::AXNodeData* para_node = CreateAndAppendNode(
-      ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly);
-  para_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                              true);
-
-  // If font size exceeds the `heading_font_size_threshold_`, then classify
-  // it as a Heading.
-  if (heading_font_size_threshold_ > 0 &&
-      font_size > heading_font_size_threshold_) {
-    para_node->role = ax::mojom::Role::kHeading;
-    para_node->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
-    para_node->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h2");
+  ui::AXNodeData* block_node = CreateAndAppendNode(
+      StructureElementTypeToAccessibilityRole(text_run_type),
+      ax::mojom::Restriction::kReadOnly);
+  block_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  if (std::optional<uint32_t> level =
+          StructureElementTypeToHeadingLevel(text_run_type);
+      level) {
+    block_node->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
+                                *level);
+    // TODO(crbug.com/40707542): Set the HTML tag to "h*" by creating a helper
+    // in `AXEnumUtils`.
   }
 
-  return para_node;
+  if (mark_headings_using_heuristic_ && heading_font_size_threshold_ > 0 &&
+      font_size > heading_font_size_threshold_) {
+    block_node->role = ax::mojom::Role::kHeading;
+    block_node->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
+    block_node->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h2");
+  }
+
+  return block_node;
 }
 
 ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNode() {

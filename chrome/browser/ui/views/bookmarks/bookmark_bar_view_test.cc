@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -158,17 +159,16 @@ class DialogWaiter : public aura::EnvObserver, public views::WidgetObserver {
 // Waits for a dialog to terminate.
 class DialogCloseWaiter : public views::WidgetObserver {
  public:
-  explicit DialogCloseWaiter(views::Widget* dialog) : dialog_closed_(false) {
+  explicit DialogCloseWaiter(views::Widget* dialog) {
     dialog->AddObserver(this);
   }
 
   DialogCloseWaiter(const DialogCloseWaiter&) = delete;
   DialogCloseWaiter& operator=(const DialogCloseWaiter&) = delete;
 
-  ~DialogCloseWaiter() override {
-    // It is not necessary to remove |this| from the dialog's observer, since
-    // the dialog is destroyed before this waiter.
-  }
+  // It is not necessary to remove |this| from the dialog's observer, since the
+  // dialog is destroyed before this waiter.
+  ~DialogCloseWaiter() override = default;
 
   void WaitForDialogClose() {
     if (dialog_closed_) {
@@ -188,15 +188,14 @@ class DialogCloseWaiter : public views::WidgetObserver {
     }
   }
 
-  bool dialog_closed_;
+  bool dialog_closed_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
 // Waits for a views::Widget to receive a Tab key.
 class TabKeyWaiter : public ui::EventHandler {
  public:
-  explicit TabKeyWaiter(views::Widget* widget)
-      : widget_(widget), received_tab_(false) {
+  explicit TabKeyWaiter(views::Widget* widget) : widget_(widget) {
     widget_->GetNativeWindow()->AddPreTargetHandler(this);
   }
 
@@ -229,7 +228,7 @@ class TabKeyWaiter : public ui::EventHandler {
   }
 
   raw_ptr<views::Widget> widget_;
-  bool received_tab_;
+  bool received_tab_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
@@ -247,12 +246,12 @@ void MoveMouseAndPress(const gfx::Point& screen_pos,
 // PageNavigator implementation that records the URL.
 class TestingPageNavigator : public PageNavigator {
  public:
-  TestingPageNavigator() {}
+  TestingPageNavigator() = default;
 
   TestingPageNavigator(const TestingPageNavigator&) = delete;
   TestingPageNavigator& operator=(const TestingPageNavigator&) = delete;
 
-  ~TestingPageNavigator() override {}
+  ~TestingPageNavigator() override = default;
 
   WebContents* OpenURL(const OpenURLParams& params,
                        base::OnceCallback<void(content::NavigationHandle&)>
@@ -423,12 +422,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
       size.set_width(size.width() - 25);
       bb_view_->SetBounds(0, 0, size.width(), size.height());
       bb_view_->DeprecatedLayoutImmediately();
-    } while (bb_view_->bookmark_buttons_[6]->GetVisible());
+    } while (bb_view_->bookmark_buttons_[6].first->GetVisible());
     return size;
   }
 
   const views::LabelButton* GetBookmarkButton(size_t view_index) const {
-    return bb_view_->bookmark_buttons_[view_index];
+    return bb_view_->bookmark_buttons_[view_index].first;
   }
   views::LabelButton* GetBookmarkButton(size_t view_index) {
     return const_cast<views::LabelButton*>(
@@ -1021,7 +1020,8 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
     const views::View* target_view;
     const auto* controller =
         static_cast<const BookmarkMenuController*>(drop_menu->GetDelegate());
-    if (controller->node() == model_->other_node()) {
+    if (controller->folder().as_permanent_folder() ==
+        BookmarkParentFolder::PermanentFolderType::kOtherNode) {
       // Now drag back over first menu.
       target_view = GetBookmarkButton(0);
     } else {
@@ -1522,8 +1522,7 @@ VIEW_TEST(BookmarkBarViewTest14, MAYBE_ContextMenus2)
 class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest15()
-      : deleted_menu_id_(0),
-        observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
+      : observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
 
  protected:
   void DoTestOnMessageLoop() override {
@@ -1574,14 +1573,13 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
     Done();
   }
 
-  int deleted_menu_id_;
+  int deleted_menu_id_ = 0;
   BookmarkContextMenuNotificationObserver observer_;
 };
 
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_MenuStaysVisibleAfterDelete \
-    DISABLED_MenuStaysVisibleAfterDelete
+#define MAYBE_MenuStaysVisibleAfterDelete DISABLED_MenuStaysVisibleAfterDelete
 #else
 #define MAYBE_MenuStaysVisibleAfterDelete MenuStaysVisibleAfterDelete
 #endif
@@ -1737,10 +1735,10 @@ class BookmarkBarViewTest18 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest18_SiblingMenu \
-    DISABLED_BookmarkBarViewTest18_SiblingMenu
+  DISABLED_BookmarkBarViewTest18_SiblingMenu
 #else
 #define MAYBE_BookmarkBarViewTest18_SiblingMenu \
-    BookmarkBarViewTest18_SiblingMenu
+  BookmarkBarViewTest18_SiblingMenu
 #endif
 VIEW_TEST(BookmarkBarViewTest18, MAYBE_BookmarkBarViewTest18_SiblingMenu)
 
@@ -1801,10 +1799,10 @@ class BookmarkBarViewTest19 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest19_SiblingMenu \
-    DISABLED_BookmarkBarViewTest19_SiblingMenu
+  DISABLED_BookmarkBarViewTest19_SiblingMenu
 #else
 #define MAYBE_BookmarkBarViewTest19_SiblingMenu \
-    BookmarkBarViewTest19_SiblingMenu
+  BookmarkBarViewTest19_SiblingMenu
 #endif
 VIEW_TEST(BookmarkBarViewTest19, MAYBE_BookmarkBarViewTest19_SiblingMenu)
 
@@ -2258,10 +2256,10 @@ class BookmarkBarViewTest27 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-    DISABLED_MiddleClickOnFolderOpensAllBookmarks
+  DISABLED_MiddleClickOnFolderOpensAllBookmarks
 #else
 #define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-    MiddleClickOnFolderOpensAllBookmarks
+  MiddleClickOnFolderOpensAllBookmarks
 #endif
 VIEW_TEST(BookmarkBarViewTest27, MAYBE_MiddleClickOnFolderOpensAllBookmarks)
 
@@ -2293,10 +2291,10 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-    DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
+  DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
 #else
 #define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-    ClickWithModifierOnFolderOpensAllBookmarks
+  ClickWithModifierOnFolderOpensAllBookmarks
 #endif
 
 VIEW_TEST(BookmarkBarViewTest28,

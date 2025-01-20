@@ -60,9 +60,12 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/test/test_extension_dir.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace site_settings {
@@ -941,8 +944,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*chooser_exception_details=*/exception_details,
         /*profile=*/nullptr);
     ExpectValidChooserExceptionObject(
-        exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, chooser_object);
+        exception, /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(
@@ -998,10 +1001,10 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details,
         /*profile=*/nullptr);
-    ExpectValidChooserExceptionObject(exception,
-                                      /*chooser_type=*/kUsbChooserGroupName,
-                                      /*display_name=*/kObjectName,
-                                      chooser_object);
+    ExpectValidChooserExceptionObject(
+        exception,
+        /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     // The set sorts the sites by origin, but the CreateChooserExceptionObject
     // method sorts the sites further by the source. Therefore, policy granted
@@ -1036,8 +1039,8 @@ TEST_F(SiteSettingsHelperTest, ShowAutograntedRWSPermissions) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraint.set_decided_by_related_website_sets(true);
   constexpr char kToplevelURL[] = "https://firstparty.com";
   constexpr char kEmbeddedURL[] = "https://embedded.com";
   map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
@@ -1065,8 +1068,8 @@ TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraint.set_decided_by_related_website_sets(true);
   constexpr char kToplevelURL[] = "https://firstparty.com";
   constexpr char kEmbeddedURL[] = "https://embedded.com";
   map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
@@ -1557,20 +1560,27 @@ TEST_F(SiteSettingsHelperExtensionTest,
 
 class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
  protected:
-  void InstallIsolatedWebApp(const GURL& url, const std::string& name) {
+  void SetUp() override {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
-    web_app::AddDummyIsolatedAppToRegistry(&testing_profile_, url, name);
+  }
+
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      const std::string& name) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder().SetName(name))
+            .BuildBundle();
+    bundle->FakeInstallPageState(profile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(profile());
   }
 
   Profile* profile() { return &testing_profile_; }
 
-  const GURL kAppUrl{
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"};
   const std::string kAppName = "test IWA Name";
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   TestingProfile testing_profile_;
 };
 
@@ -1581,16 +1591,16 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
   auto kPreferenceSource = SiteSettingSource::kPreference;
   const std::u16string& kObjectName = u"Gadget";
 
-  InstallIsolatedWebApp(kAppUrl, kAppName);
+  web_app::IsolatedWebAppUrlInfo app_url_info = InstallIsolatedWebApp(kAppName);
 
   // Create a chooser object for testing.
   base::Value::Dict chooser_object;
   chooser_object.Set("name", kObjectName);
 
-  // Add a user permission for an origin of |kAppUrl|.
+  // Add a user permission for an origin of `app_url_info`.
   ChooserExceptionDetails exception_details;
-  exception_details.insert({kAppUrl.DeprecatedGetOriginAsURL(),
-                            kPreferenceSource, /*incognito=*/false});
+  exception_details.insert(
+      {app_url_info.origin().GetURL(), kPreferenceSource, /*incognito=*/false});
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
@@ -1599,14 +1609,14 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
         /*chooser_exception_details=*/exception_details,
         /*profile=*/profile());
     ExpectValidChooserExceptionObject(
-        exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, chooser_object);
+        exception, /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(
         /*actual_site_object=*/sites_list[0],
         /*display_name=*/kAppName,
-        /*origin=*/kAppUrl,
+        /*origin=*/app_url_info.origin().GetURL(),
         /*source=*/kPreferenceSource,
         /*incognito=*/false);
   }
@@ -1616,16 +1626,17 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
   base::test::ScopedFeatureList feature_list{
       features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;
-  InstallIsolatedWebApp(kAppUrl, kAppName);
+  web_app::IsolatedWebAppUrlInfo app_url_info = InstallIsolatedWebApp(kAppName);
 
   // Automatic Fullscreen is visible for IWAs, even with default BLOCK values.
   SiteSettingSource source;
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSetting content_setting =
-      GetContentSettingForOrigin(profile(), map, kAppUrl, type, &source);
+  ContentSetting content_setting = GetContentSettingForOrigin(
+      profile(), map, app_url_info.origin().GetURL(), type, &source);
   EXPECT_EQ(SiteSettingSource::kDefault, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
-  const auto types = GetVisiblePermissionCategories(kAppUrl.spec(), profile());
+  const auto types = GetVisiblePermissionCategories(
+      app_url_info.origin().GetURL().spec(), profile());
   EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
 }
 

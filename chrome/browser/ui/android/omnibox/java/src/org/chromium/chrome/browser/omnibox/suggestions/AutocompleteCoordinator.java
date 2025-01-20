@@ -362,7 +362,7 @@ public class AutocompleteCoordinator
 
     /** Notify the Autocomplete about Omnibox text change. */
     public void onTextChanged(String textWithoutAutocomplete) {
-        mMediator.onTextChanged(textWithoutAutocomplete);
+        mMediator.onTextChanged(textWithoutAutocomplete, false);
     }
 
     /** Trigger autocomplete for the given query. */

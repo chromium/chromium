@@ -43,7 +43,7 @@ LookalikeUrlControllerClient::LookalikeUrlControllerClient(
       request_url_(request_url),
       safe_url_(safe_url) {}
 
-LookalikeUrlControllerClient::~LookalikeUrlControllerClient() {}
+LookalikeUrlControllerClient::~LookalikeUrlControllerClient() = default;
 
 void LookalikeUrlControllerClient::GoBack() {
   // We don't offer 'go back', but rather redirect to the legitimate site.

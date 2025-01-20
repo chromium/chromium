@@ -109,7 +109,7 @@ FileSystemBackend::FileSystemBackend(
       mount_points_(mount_points),
       system_mount_points_(system_mount_points) {}
 
-FileSystemBackend::~FileSystemBackend() {}
+FileSystemBackend::~FileSystemBackend() = default;
 
 // static
 FileSystemBackend* FileSystemBackend::Get(

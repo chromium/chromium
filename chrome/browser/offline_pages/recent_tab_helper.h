@@ -56,7 +56,7 @@ class RecentTabHelper
   // Default implementation lives in .cc file, while tests provide an override.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual std::unique_ptr<OfflinePageArchiver> CreatePageArchiver(
         content::WebContents* web_contents) = 0;
     // There is no expectations that tab_id is always present.

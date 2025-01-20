@@ -74,26 +74,31 @@ class PermissionsPolicyTest : public testing::Test {
   std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent,
       ParsedPermissionsPolicy header_policy,
-      const url::Origin& origin) {
+      const url::Origin& origin,
+      bool headerless = false) {
     ParsedPermissionsPolicy empty_container_policy;
     return PermissionsPolicy::CreateFromParentPolicy(
-        parent, header_policy, empty_container_policy, origin, feature_list_);
+        parent, header_policy, empty_container_policy, origin, feature_list_,
+        headerless);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
-      const url::Origin& origin) {
-    return PermissionsPolicy::CreateFromParsedPolicy(
-        parsed_policy, std::nullopt, origin, feature_list_);
+      const url::Origin& origin,
+      const std::optional<ParsedPermissionsPolicy>& base_policy =
+          std::nullopt) {
+    return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, base_policy,
+                                                     origin, feature_list_);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
       const PermissionsPolicy* parent,
       ParsedPermissionsPolicy header_policy,
       const ParsedPermissionsPolicy& frame_policy,
-      const url::Origin& origin) {
+      const url::Origin& origin,
+      bool headerless = false) {
     return PermissionsPolicy::CreateFromParentPolicy(
-        parent, header_policy, frame_policy, origin, feature_list_);
+        parent, header_policy, frame_policy, origin, feature_list_, headerless);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
@@ -201,6 +206,7 @@ TEST_F(PermissionsPolicyTest, TestInitialSameOriginChildPolicy) {
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_a_);
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOnFeature));
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
 }
@@ -407,6 +413,122 @@ TEST_F(PermissionsPolicyTest,
                                          /*matches_opaque_src=*/false}}},
                                       frame_policy, origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestSameOriginChildWithParentEnabledCanAllowHeaderless) {
+  // +-----------------------------------------------+
+  // |(1) Origin A                                   |
+  // |Permissions-Policy: default-off=self           |
+  // | <iframe allow="default-off OriginA">          |
+  // | +--------------------------------------+      |
+  // | |(2) Origin A                          |      |
+  // | |Headerless                            |      |
+  // | +--------------------------------------+      |
+  // | <iframe>                                      |
+  // | +--------------------------------------+      |
+  // | |(3) Origin A                          |      |
+  // | |Headerless                            |      |
+  // | +--------------------------------------+      |
+  // +-----------------------------------------------+
+  // Features enabled in the parent should be able to be enabled in a headerless
+  // subframe.
+  std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
+      nullptr,
+      {{{kDefaultOffFeature,
+         /*allowed_origins=*/
+         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+             origin_a_,
+             /*has_subdomain_wildcard=*/false)},
+         /*self_if_matches=*/origin_a_,
+         /*matches_all_origins=*/false,
+         /*matches_opaque_src=*/false}}},
+      origin_a_);
+  ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+
+  {
+    ParsedPermissionsPolicy frame_policy = {{
+        {kDefaultOffFeature, /*allowed_origins=*/
+         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+             origin_a_,
+             /*has_subdomain_wildcard=*/false)},
+         /*self_if_matches=*/std::nullopt,
+         /*matches_all_origins=*/false,
+         /*matches_opaque_src=*/false},
+    }};
+
+    std::unique_ptr<PermissionsPolicy> policy2 =
+        CreateFromParentWithFramePolicy(policy1.get(), /*header_policy=*/{},
+                                        frame_policy, origin_a_, true);
+    EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+    EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOnFeature));
+    EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  }
+  {
+    std::unique_ptr<PermissionsPolicy> policy2 =
+        CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_a_);
+    EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+    EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOnFeature));
+    EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  }
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestSameOriginChildWithParentDisabledCannotAllowHeaderless) {
+  // +--------------------------------------------------------------+
+  // |(1) Origin A                                                  |
+  // |Permissions-Policy: default-on=OriginB default-self=OriginB   |
+  // | <iframe allow="default-off *; default-on *; default-self *"> |
+  // | +--------------------------------------+                     |
+  // | |(2) Origin A                          |                     |
+  // | |Headerless                            |                     |
+  // | +--------------------------------------+                     |
+  // +--------------------------------------------------------------+
+  // Features disabled in the parent should not be enabled in a headerless
+  // subframe.
+  ParsedPermissionsPolicy header_policy = {{
+      {kDefaultOnFeature, /*allowed_origins=*/
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+           origin_b_,
+           /*has_subdomain_wildcard=*/false)},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {kDefaultSelfFeature, /*allowed_origins=*/
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+           origin_b_,
+           /*has_subdomain_wildcard=*/false)},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+  }};
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, header_policy, origin_a_);
+  ASSERT_FALSE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+
+  {
+    ParsedPermissionsPolicy frame_policy = {{
+        {kDefaultOffFeature, /*allowed_origins=*/{},
+         /*self_if_matches=*/std::nullopt,
+         /*matches_all_origins=*/true,
+         /*matches_opaque_src=*/false},
+        {kDefaultOnFeature, /*allowed_origins=*/{},
+         /*self_if_matches=*/std::nullopt,
+         /*matches_all_origins=*/true,
+         /*matches_opaque_src=*/false},
+        {kDefaultSelfFeature, /*allowed_origins=*/{},
+         /*self_if_matches=*/std::nullopt,
+         /*matches_all_origins=*/true,
+         /*matches_opaque_src=*/false},
+    }};
+
+    std::unique_ptr<PermissionsPolicy> policy2 =
+        CreateFromParentWithFramePolicy(policy1.get(), /*header_policy=*/{},
+                                        frame_policy, origin_a_, true);
+    EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+    EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOnFeature));
+    EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  }
 }
 
 TEST_F(PermissionsPolicyTest,
@@ -2981,6 +3103,146 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithEmptyAllowlist) {
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
+  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/
+        {
+            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+                origin_a_,
+                /*has_subdomain_wildcard=*/false),
+            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+                origin_b_,
+                /*has_subdomain_wildcard=*/false),
+        },
+        /*self_if_matches=*/origin_self,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/
+        {
+            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+                origin_b_,
+                /*has_subdomain_wildcard=*/false),
+            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+                origin_c_,
+                /*has_subdomain_wildcard=*/false),
+        },
+        /*self_if_matches=*/origin_self,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_self, base_policy);
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_self));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
+}
+
+TEST_F(PermissionsPolicyTest,
+       CreateFromParsedPolicyWithBasePolicyExcludingSelf) {
+  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/origin_a_,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithoutSelfWithBasePolicy) {
+  url::Origin origin_self = url::Origin::Create(GURL("https://example.edu/"));
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/origin_a_,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+}
+
+TEST_F(PermissionsPolicyTest,
+       CreateFromParsedPolicyWildcardWithMoreRestrictiveBasePolicy) {
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/
+        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/origin_a_,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithWildcardBasePolicy) {
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/
+        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_a_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
+  EXPECT_TRUE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
+}
+
+TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithMissingBasePolicy) {
+  // Tests a parsed policy that includes an allowlist for a feature not
+  // declared in the base policy.
+  ParsedPermissionsPolicy base_policy = {
+      {{kDefaultOnFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true,
+        /*matches_opaque_src=*/false}}};
+  ParsedPermissionsPolicy parsed_policy = {
+      {{kDefaultSelfFeature, /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true,
+        /*matches_opaque_src=*/false}}};
+  auto policy = CreateFromParsedPolicy(parsed_policy, origin_a_, base_policy);
+  EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(kDefaultOnFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
+}
+
 TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   // We can construct a policy, set/overwrite the same header, and then check.
   auto policy1 = CreateFromParentPolicy(
@@ -3351,4 +3613,16 @@ TEST_F(PermissionsPolicyTest,
     EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(disallowed_testing_origin));
   }
 }
+
+TEST_F(PermissionsPolicyTest, Headerless) {
+  EXPECT_FALSE(
+      PermissionsPolicy::IsHeaderlessUrl(GURL("http://www.test.com/")));
+  EXPECT_FALSE(
+      PermissionsPolicy::IsHeaderlessUrl(GURL("https://www.test.com/")));
+  EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("about:srcdoc")));
+  EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("about:blank")));
+  EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("data:abc")));
+  EXPECT_TRUE(PermissionsPolicy::IsHeaderlessUrl(GURL("blob:abc")));
+}
+
 }  // namespace blink

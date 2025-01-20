@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -174,8 +175,16 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_EQ(num_profiles_before, num_profiles_after);
 }
 
+// TODO(https://crbug.com/385383226): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InterceptionCreatesNewProfileIfAccepted \
+  DISABLED_InterceptionCreatesNewProfileIfAccepted
+#else
+#define MAYBE_InterceptionCreatesNewProfileIfAccepted \
+  InterceptionCreatesNewProfileIfAccepted
+#endif
 TEST_F(ProfileTokenWebSigninInterceptorTest,
-       InterceptionCreatesNewProfileIfAccepted) {
+       MAYBE_InterceptionCreatesNewProfileIfAccepted) {
   const int num_profiles_before = TestingBrowserProcess::GetGlobal()
                                       ->profile_manager()
                                       ->GetNumberOfProfiles();
@@ -203,8 +212,16 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_EQ(num_profiles_before + 1, num_profiles_after);
 }
 
+// TODO(https://crbug.com/385383226): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId \
+  DISABLED_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId
+#else
+#define MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId \
+  InterceptionCreatesEphemeralProfileIfAcceptedWithNoId
+#endif
 TEST_F(ProfileTokenWebSigninInterceptorTest,
-       InterceptionCreatesEphemeralProfileIfAcceptedWithNoId) {
+       MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId) {
   const int num_profiles_before = TestingBrowserProcess::GetGlobal()
                                       ->profile_manager()
                                       ->GetNumberOfProfiles();

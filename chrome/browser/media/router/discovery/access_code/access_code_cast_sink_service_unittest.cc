@@ -38,7 +38,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
-#include "components/media_router/common/test/test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -72,6 +71,9 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
  public:
   AccessCodeCastSinkServiceTest()
       : task_runner_(task_environment_.GetMainThreadTaskRunner()),
+        dial_media_sink_service_(
+            base::DoNothing(),
+            base::SequencedTaskRunner::GetCurrentDefault()),
         mock_cast_socket_service_(
             std::make_unique<cast_channel::MockCastSocketService>(
                 task_runner_)),
@@ -81,7 +83,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
                 mock_sink_discovered_cb_.Get(),
                 mock_cast_socket_service_.get(),
                 discovery_network_monitor_.get(),
-                &dual_media_sink_service_)) {}
+                &dial_media_sink_service_)) {}
 
   AccessCodeCastSinkServiceTest(AccessCodeCastSinkServiceTest&) = delete;
   AccessCodeCastSinkServiceTest& operator=(AccessCodeCastSinkServiceTest&) =
@@ -264,7 +266,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
 
-  TestMediaSinkService dual_media_sink_service_;
+  DialMediaSinkServiceImpl dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
   testing::NiceMock<cast_channel::MockCastMessageHandler> message_handler_;

@@ -48,8 +48,9 @@ void InitializeTimeout(const char* switch_name,
   DCHECK(value);
   base::TimeDelta command_line_timeout;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switch_name)) {
-    std::string string_value(base::CommandLine::ForCurrentProcess()->
-         GetSwitchValueASCII(switch_name));
+    std::string string_value(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switch_name));
     int command_line_timeout_ms = 0;
     if (!base::StringToInt(string_value, &command_line_timeout_ms)) {
       LOG(FATAL) << "Timeout value \"" << string_value << "\" was parsed as "
@@ -121,7 +122,8 @@ void TestTimeouts::Initialize() {
 
   const bool being_debugged = base::debug::BeingDebugged();
   if (being_debugged) {
-    fprintf(stdout,
+    fprintf(
+        stdout,
         "Detected presence of a debugger, running without test timeouts.\n");
   }
 

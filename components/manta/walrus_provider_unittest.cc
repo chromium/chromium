@@ -319,4 +319,79 @@ TEST_F(WalrusProviderTest, SmallerImageIsNotDownscaled) {
   ASSERT_EQ(resized_image.height(), 12);
 }
 
+// Test the response when the generated region is provided.
+TEST_F(WalrusProviderTest, GeneratedRegion) {
+  std::string generated_region_image_bytes = "generated_region_image_bytes";
+  manta::proto::Response response;
+  auto* output_data = response.add_output_data();
+  output_data->set_text("text prompt");
+
+  output_data = response.add_output_data();
+  // Aratea should return the tag instead of image
+  output_data->set_text("generated_region");
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
+                          net::OK);
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
+  auto quit_closure = task_environment_.QuitClosure();
+  std::optional<std::string> text_prompt = "text pompt";
+  std::vector<std::vector<uint8_t>> images = {
+      std::vector<uint8_t>(generated_region_image_bytes.begin(),
+                           generated_region_image_bytes.end())};
+  std::vector<manta::WalrusProvider::ImageType> image_types = {
+      manta::WalrusProvider::ImageType::kGeneratedRegion};
+
+  walrus_provider->Filter(
+      text_prompt, images, image_types,
+      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
+                                                 MantaStatus manta_status) {
+        // Even though the response has text and image, walrus just
+        // returns the status code
+        ASSERT_EQ(MantaStatusCode::kOk, manta_status.status_code);
+        ASSERT_TRUE(response.empty());
+        quit_closure.Run();
+      }));
+  task_environment_.RunUntilQuit();
+}
+
+// Test the response when the image type argument size mismatch with number of
+// images.
+TEST_F(WalrusProviderTest, ImageTypeSizeMismatch) {
+  std::string generated_region_image_bytes = "generated_region_image_bytes";
+  manta::proto::Response response;
+  auto* output_data = response.add_output_data();
+  output_data->set_text("text prompt");
+
+  output_data = response.add_output_data();
+  // Aratea should return the tag instead of image
+  output_data->set_text("output_image");
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
+                          net::OK);
+  std::unique_ptr<FakeWalrusProvider> walrus_provider = CreateWalrusProvider();
+  auto quit_closure = task_environment_.QuitClosure();
+  std::optional<std::string> text_prompt = "text pompt";
+  std::vector<std::vector<uint8_t>> images = {
+      std::vector<uint8_t>(generated_region_image_bytes.begin(),
+                           generated_region_image_bytes.end())};
+  std::vector<manta::WalrusProvider::ImageType> image_types = {
+      manta::WalrusProvider::ImageType::kOutputImage,
+      manta::WalrusProvider::ImageType::kGeneratedRegion};
+
+  walrus_provider->Filter(
+      text_prompt, images, image_types,
+      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
+                                                 MantaStatus manta_status) {
+        EXPECT_EQ(manta_status.status_code, MantaStatusCode::kInvalidInput);
+        quit_closure.Run();
+      }));
+  task_environment_.RunUntilQuit();
+}
+
 }  // namespace manta

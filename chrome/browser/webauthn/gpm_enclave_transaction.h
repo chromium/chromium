@@ -41,8 +41,9 @@ class WebauthnCredentialSpecifics;
 // EnclaveUserVerificationMethod enumerates the possible ways that user
 // verification will be performed for an enclave transaction.
 enum class EnclaveUserVerificationMethod {
-  // No user verification will be performed.
-  kNone,
+  // No user verification will be performed. The user acknowledged the operation
+  // in browser UI.
+  kUserPresenceOnly,
   // The user will enter a GPM PIN.
   kPIN,
   // User verification is satisfied because the user performed account recovery.
@@ -57,6 +58,10 @@ enum class EnclaveUserVerificationMethod {
   // then allow signing
   // with the UV key.
   kUVKeyWithChromeUI,
+  // A 'silent' request. No user verification is performed, and the user did not
+  // explicitly acknowledge the operation in browser UI either. This is only
+  // used for passkey upgrades (i.e. registration with mediation=conditional).
+  kNoUserVerificationAndNoUserPresence,
   // The request cannot be satisfied.
   kUnsatisfiable,
 };

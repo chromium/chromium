@@ -13,10 +13,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -98,8 +96,6 @@ class AcceleratorLookupTest : public AshTestBase {
   ~AcceleratorLookupTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kShortcutCustomization);
     AshTestBase::SetUp();
     config_ = Shell::Get()->ash_accelerator_configuration();
     accelerator_lookup_ = Shell::Get()->accelerator_lookup();
@@ -112,7 +108,6 @@ class AcceleratorLookupTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<AshAcceleratorConfiguration> config_;
   raw_ptr<AcceleratorLookup> accelerator_lookup_;
 };

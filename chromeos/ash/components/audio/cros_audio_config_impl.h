@@ -53,8 +53,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetInputGainPercent(uint8_t gain) override;
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
-  void RefreshVoiceIsolationState() override;
-  void RefreshVoiceIsolationPreferredEffect() override;
+  void RecordVoiceIsolationEnabledChange() override;
+  void RecordVoiceIsolationPreferredEffectChange(
+      audio_config::mojom::AudioEffectType preferred_effect) override;
   void SetNoiseCancellationEnabled(bool enabled) override;
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;

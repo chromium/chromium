@@ -285,7 +285,7 @@ class EditableCombobox::EditableComboboxMenuModel final
   // The strategy used to customize the display of the dropdown menu.
   std::unique_ptr<MenuDecorationStrategy> decoration_strategy_;
 
-  raw_ptr<EditableCombobox> owner_;            // Weak. Owns |this|.
+  raw_ptr<EditableCombobox> owner_;  // Weak. Owns |this|.
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
 
   // Whether to adapt the items shown to the textfield content.

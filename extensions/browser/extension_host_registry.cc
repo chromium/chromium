@@ -32,7 +32,7 @@ class ExtensionHostRegistryFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
@@ -59,9 +59,10 @@ content::BrowserContext* ExtensionHostRegistryFactory::GetBrowserContextToUse(
       context);
 }
 
-KeyedService* ExtensionHostRegistryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionHostRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionHostRegistry();
+  return std::make_unique<ExtensionHostRegistry>();
 }
 
 }  // namespace

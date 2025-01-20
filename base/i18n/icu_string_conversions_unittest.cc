@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <sstream>
 
@@ -69,14 +70,15 @@ std::u16string BuildString16(const wchar_t* s) {
 // To avoid the clutter, |u16_wide| will be set to NULL
 // if it's identical to |wide| on *all* platforms.
 
-static const struct {
+struct ConvertCodepageCases {
   const char* codepage_name;
   const char* encoded;
   OnStringConversionError::Type on_error;
   bool success;
   const wchar_t* wide;
   const wchar_t* u16_wide;
-} kConvertCodepageCases[] = {
+};
+static const auto kConvertCodepageCases = std::to_array<ConvertCodepageCases>({
     // Test a case where the input cannot be decoded, using SKIP, FAIL
     // and SUBSTITUTE error handling rules. "A7 41" is valid, but "A6" isn't.
     {"big5", "\xA7\x41\xA6", OnStringConversionError::FAIL, false, L"",
@@ -164,25 +166,25 @@ static const struct {
      L"\x0E2A\x0E27\x0E31\x0E2A\x0E14\x0E35"
      L"\x0E04\x0E23\x0e31\x0E1A",
      nullptr},
-};
+});
 
 TEST(ICUStringConversionsTest, ConvertBetweenCodepageAndUTF16) {
   for (size_t i = 0; i < std::size(kConvertCodepageCases); ++i) {
-    SCOPED_TRACE(base::StringPrintf(
-                     "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
-                     kConvertCodepageCases[i].encoded,
-                     kConvertCodepageCases[i].codepage_name));
+    SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS
+                                    "]: <encoded: %s> <codepage: %s>",
+                                    i, kConvertCodepageCases[i].encoded,
+                                    kConvertCodepageCases[i].codepage_name));
 
     std::u16string utf16;
     bool success = CodepageToUTF16(kConvertCodepageCases[i].encoded,
                                    kConvertCodepageCases[i].codepage_name,
-                                   kConvertCodepageCases[i].on_error,
-                                   &utf16);
+                                   kConvertCodepageCases[i].on_error, &utf16);
     std::u16string utf16_expected;
-    if (kConvertCodepageCases[i].u16_wide == nullptr)
+    if (kConvertCodepageCases[i].u16_wide == nullptr) {
       utf16_expected = BuildString16(kConvertCodepageCases[i].wide);
-    else
+    } else {
       utf16_expected = BuildString16(kConvertCodepageCases[i].u16_wide);
+    }
     EXPECT_EQ(kConvertCodepageCases[i].success, success);
     EXPECT_EQ(utf16_expected, utf16);
 
@@ -200,33 +202,35 @@ TEST(ICUStringConversionsTest, ConvertBetweenCodepageAndUTF16) {
   }
 }
 
-static const struct {
+struct ConvertAndNormalizeCases {
   const char* encoded;
   const char* codepage_name;
   bool expected_success;
   const char* expected_value;
-} kConvertAndNormalizeCases[] = {
-  {"foo-\xe4.html", "iso-8859-1", true, "foo-\xc3\xa4.html"},
-  {"foo-\xe4.html", "iso-8859-7", true, "foo-\xce\xb4.html"},
-  {"foo-\xe4.html", "foo-bar", false, ""},
-  // HTML Encoding spec treats US-ASCII as synonymous with windows-1252
-  {"foo-\xff.html", "ascii", true, "foo-\xc3\xbf.html"},
-  {"foo.html", "ascii", true, "foo.html"},
-  {"foo-a\xcc\x88.html", "utf-8", true, "foo-\xc3\xa4.html"},
-  {"\x95\x32\x82\x36\xD2\xBB", "gb18030", true, "\xF0\xA0\x80\x80\xE4\xB8\x80"},
-  {"\xA7\x41\xA6\x6E", "big5", true, "\xE4\xBD\xA0\xE5\xA5\xBD"},
-  // Windows-1258 does have a combining character at xD2 (which is U+0309).
-  // The sequence of (U+00E2, U+0309) is also encoded as U+1EA9.
-  {"foo\xE2\xD2", "windows-1258", true, "foo\xE1\xBA\xA9"},
-  {"", "iso-8859-1", true, ""},
 };
+const auto kConvertAndNormalizeCases = std::to_array<ConvertAndNormalizeCases>({
+    {"foo-\xe4.html", "iso-8859-1", true, "foo-\xc3\xa4.html"},
+    {"foo-\xe4.html", "iso-8859-7", true, "foo-\xce\xb4.html"},
+    {"foo-\xe4.html", "foo-bar", false, ""},
+    // HTML Encoding spec treats US-ASCII as synonymous with windows-1252
+    {"foo-\xff.html", "ascii", true, "foo-\xc3\xbf.html"},
+    {"foo.html", "ascii", true, "foo.html"},
+    {"foo-a\xcc\x88.html", "utf-8", true, "foo-\xc3\xa4.html"},
+    {"\x95\x32\x82\x36\xD2\xBB", "gb18030", true,
+     "\xF0\xA0\x80\x80\xE4\xB8\x80"},
+    {"\xA7\x41\xA6\x6E", "big5", true, "\xE4\xBD\xA0\xE5\xA5\xBD"},
+    // Windows-1258 does have a combining character at xD2 (which is U+0309).
+    // The sequence of (U+00E2, U+0309) is also encoded as U+1EA9.
+    {"foo\xE2\xD2", "windows-1258", true, "foo\xE1\xBA\xA9"},
+    {"", "iso-8859-1", true, ""},
+});
 TEST(ICUStringConversionsTest, ConvertToUtf8AndNormalize) {
   std::string result;
   for (size_t i = 0; i < std::size(kConvertAndNormalizeCases); ++i) {
-    SCOPED_TRACE(base::StringPrintf(
-                     "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
-                     kConvertAndNormalizeCases[i].encoded,
-                     kConvertAndNormalizeCases[i].codepage_name));
+    SCOPED_TRACE(
+        base::StringPrintf("Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
+                           kConvertAndNormalizeCases[i].encoded,
+                           kConvertAndNormalizeCases[i].codepage_name));
 
     bool success = ConvertToUtf8AndNormalize(
         kConvertAndNormalizeCases[i].encoded,

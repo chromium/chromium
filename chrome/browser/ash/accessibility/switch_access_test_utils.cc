@@ -17,7 +17,7 @@
 
 namespace {
 constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/switch_access/"
+    "chrome/browser/resources/chromeos/accessibility/switch_access/mv2/"
     "test_support.js";
 }  // namespace
 
@@ -29,7 +29,7 @@ SwitchAccessTestUtils::SwitchAccessTestUtils(Profile* profile) {
       profile_, extension_misc::kSwitchAccessExtensionId);
 }
 
-SwitchAccessTestUtils::~SwitchAccessTestUtils() {}
+SwitchAccessTestUtils::~SwitchAccessTestUtils() = default;
 
 void SwitchAccessTestUtils::EnableSwitchAccess(
     const std::set<int>& select_key_codes,

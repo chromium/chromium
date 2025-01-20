@@ -17,8 +17,8 @@
 #import "net/base/mime_util.h"
 #import "ui/base/webui/resource_path.h"
 #import "ui/base/webui/web_ui_util.h"
-#import "ui/resources/grit/webui_resources.h"
-#import "ui/resources/grit/webui_resources_map.h"
+#import "ui/webui/resources/grit/webui_resources.h"
+#import "ui/webui/resources/grit/webui_resources_map.h"
 
 namespace web {
 

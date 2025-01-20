@@ -5,10 +5,14 @@
 #include "components/collaboration/internal/collaboration_service_impl.h"
 
 #include "components/collaboration/internal/collaboration_controller.h"
+#include "components/collaboration/internal/metrics.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
 
 namespace collaboration {
 
@@ -17,6 +21,7 @@ using data_sharing::GroupId;
 using data_sharing::GroupMember;
 using data_sharing::GroupToken;
 using data_sharing::MemberRole;
+using Flow = CollaborationController::Flow;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -28,18 +33,13 @@ CollaborationServiceImpl::CollaborationServiceImpl(
       identity_manager_(identity_manager),
       sync_service_(sync_service) {
   // Initialize ServiceStatus.
-  current_status_.collaboration_status = CollaborationStatus::kDisabled;
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
-    current_status_.collaboration_status =
-        CollaborationStatus::kEnabledCreateAndJoin;
-  } else if (base::FeatureList::IsEnabled(
-                 data_sharing::features::kDataSharingJoinOnly)) {
-    current_status_.collaboration_status = CollaborationStatus::kAllowedToJoin;
-  }
+  current_status_.collaboration_status = GetCollaborationStatus();
 
-  // TODO(b/360184707): Add identity manager and sync service to observe state
-  // changes.
+  current_status_.sync_status = GetSyncStatus();
+  sync_observer_.Observe(sync_service_);
+
+  current_status_.signin_status = GetSigninStatus();
+  identity_manager_observer_.Observe(identity_manager_);
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
@@ -48,6 +48,16 @@ CollaborationServiceImpl::~CollaborationServiceImpl() {
 
 bool CollaborationServiceImpl::IsEmptyService() {
   return false;
+}
+
+void CollaborationServiceImpl::AddObserver(
+    CollaborationService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CollaborationServiceImpl::RemoveObserver(
+    CollaborationService::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void CollaborationServiceImpl::StartJoinFlow(
@@ -61,26 +71,49 @@ void CollaborationServiceImpl::StartJoinFlow(
     token = parse_result.value();
   }
 
-  if (join_controllers_.find(token) != join_controllers_.end()) {
-    // TODO(crbug.com/345856704): Find the controller, and tell the controller
-    // to promote the current screen.
+  if (join_controllers_.contains(token)) {
+    auto it = join_controllers_.find(token);
+    it->second->PromoteCurrentSession();
     return;
   }
+
+  ExitConflictingFlows();
+
+  metrics::RecordJoinEvent(metrics::CollaborationServiceJoinEvent::kStarted);
 
   // Invalid url parsing will start a new join flow with empty GroupToken. This
   // is needed in order to show the url parsing error message to the user.
   join_controllers_.insert(
       {token, std::make_unique<CollaborationController>(
-                  CollaborationController::Flow::kJoin, token, this,
+                  Flow(FlowType::kJoin, token), this,
                   data_sharing_service_.get(), tab_group_sync_service_.get(),
-                  std::move(delegate),
-                  base::BindOnce(&CollaborationServiceImpl::FinishFlow,
+                  sync_service_.get(), std::move(delegate),
+                  base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
                                  weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
-void CollaborationServiceImpl::StartShareFlow(
+void CollaborationServiceImpl::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    tab_groups::EitherGroupID group_id) {}
+    const tab_groups::EitherGroupID& group_id) {
+  auto it = share_controllers_.find(group_id);
+  if (it != share_controllers_.end()) {
+    it->second->delegate()->PromoteCurrentScreen();
+    return;
+  }
+
+  ExitConflictingFlows();
+
+  // Invalid url parsing will start a new join flow with empty GroupToken. This
+  // is needed in order to show the url parsing error message to the user.
+  share_controllers_.insert(
+      {group_id,
+       std::make_unique<CollaborationController>(
+           Flow(FlowType::kShareOrManage, group_id), this,
+           data_sharing_service_.get(), tab_group_sync_service_.get(),
+           sync_service_.get(), std::move(delegate),
+           base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,
+                          weak_ptr_factory_.GetWeakPtr(), group_id))});
+}
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
   return current_status_;
@@ -113,15 +146,130 @@ MemberRole CollaborationServiceImpl::GetCurrentUserRoleForGroup(
   return MemberRole::kUnknown;
 }
 
+std::optional<data_sharing::GroupData> CollaborationServiceImpl::GetGroupData(
+    const data_sharing::GroupId& group_id) {
+  return data_sharing_service_->ReadGroup(group_id);
+}
+
+void CollaborationServiceImpl::OnStateChanged(syncer::SyncService* sync) {
+  RefreshServiceStatus();
+}
+
+void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observer_.Reset();
+}
+
+void CollaborationServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  RefreshServiceStatus();
+}
+
+void CollaborationServiceImpl::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  RefreshServiceStatus();
+}
+
+void CollaborationServiceImpl::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  RefreshServiceStatus();
+}
+
+void CollaborationServiceImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observer_.Reset();
+}
+
 const std::map<data_sharing::GroupToken,
                std::unique_ptr<CollaborationController>>&
 CollaborationServiceImpl::GetJoinControllersForTesting() {
   return join_controllers_;
 }
 
-void CollaborationServiceImpl::FinishFlow(
+void CollaborationServiceImpl::FinishJoinFlow(
     const data_sharing::GroupToken& token) {
   join_controllers_.erase(join_controllers_.find(token));
+}
+
+void CollaborationServiceImpl::FinishShareFlow(
+    const tab_groups::EitherGroupID& group_id) {
+  share_controllers_.erase(share_controllers_.find(group_id));
+}
+
+SyncStatus CollaborationServiceImpl::GetSyncStatus() {
+  syncer::DataTypeSet data_types = sync_service_->GetActiveDataTypes();
+  if (data_types.Has(syncer::DataType::SAVED_TAB_GROUP) &&
+      data_types.Has(syncer::DataType::COLLABORATION_GROUP)) {
+    return SyncStatus::kSyncEnabled;
+  }
+
+  if (sync_service_->IsSyncFeatureEnabled()) {
+    // Sync-the-feature is enabled, but the required data types are not.
+    // The user needs to enable them in settings.
+    return SyncStatus::kSyncWithoutTabGroup;
+  } else {
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      // Sync-the-feature is not required, but the user needs to enable
+      // the required data types in settings.
+      return SyncStatus::kSyncWithoutTabGroup;
+    } else {
+      // The user needs to enable Sync-the-feature.
+      return SyncStatus::kNotSyncing;
+    }
+  }
+}
+
+SigninStatus CollaborationServiceImpl::GetSigninStatus() {
+  SigninStatus status = SigninStatus::kNotSignedIn;
+
+  if (identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
+    status = SigninStatus::kSignedIn;
+  } else if (identity_manager_->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    status = SigninStatus::kSignedInPaused;
+  }
+
+  return status;
+}
+
+CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
+  // TODO(haileywang): Support collaboration status updates.
+  CollaborationStatus status = CollaborationStatus::kDisabled;
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    status = CollaborationStatus::kEnabledCreateAndJoin;
+  } else if (base::FeatureList::IsEnabled(
+                 data_sharing::features::kDataSharingJoinOnly)) {
+    status = CollaborationStatus::kAllowedToJoin;
+  }
+
+  return status;
+}
+
+void CollaborationServiceImpl::RefreshServiceStatus() {
+  ServiceStatus new_status;
+  new_status.sync_status = GetSyncStatus();
+  new_status.signin_status = GetSigninStatus();
+  new_status.collaboration_status = GetCollaborationStatus();
+
+  if (new_status != current_status_) {
+    CollaborationService::Observer::ServiceStatusUpdate update;
+    update.new_status = new_status;
+    update.old_status = current_status_;
+    current_status_ = new_status;
+    observers_.Notify(&CollaborationService::Observer::OnServiceStatusChanged,
+                      update);
+  }
+}
+
+void CollaborationServiceImpl::ExitConflictingFlows() {
+  for (const auto& [token, controller] : join_controllers_) {
+    controller->Exit();
+  }
+  for (const auto& [id, controller] : share_controllers_) {
+    controller->Exit();
+  }
 }
 
 }  // namespace collaboration

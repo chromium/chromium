@@ -64,6 +64,7 @@ std::optional<PasswordHashData> GetPasswordFromPref(
     TestingPrefServiceSimple& prefs) {
   HashPasswordManager hash_password_manager;
   hash_password_manager.set_prefs(&prefs);
+  hash_password_manager.set_local_prefs(&prefs);
 
   return hash_password_manager.RetrievePasswordHash(username, is_gaia_password);
 }
@@ -394,7 +395,7 @@ TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
                                               enterprise_password);
   std::optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
-                          prefs());
+                          local_prefs());
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that enterprise password reuse is found.
@@ -416,7 +417,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
                                               enterprise_password);
   std::optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
-                          prefs());
+                          local_prefs());
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that no enterprise password reuse is found after clearing the
@@ -618,7 +619,7 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
   // Check that right pref has been saved.
   PasswordHashData password_hash_data =
       ConvertToPasswordHashData(
-          prefs().GetList(prefs::kPasswordHashDataList)[0])
+          local_prefs().GetList(prefs::kLocalPasswordHashDataList)[0])
           .value();
   EXPECT_FALSE(password_hash_data.is_gaia_password);
 }

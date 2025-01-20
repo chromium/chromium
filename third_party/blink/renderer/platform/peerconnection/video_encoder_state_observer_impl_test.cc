@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
+#include <array>
 #include <queue>
 
 #include "base/functional/bind.h"
@@ -319,7 +320,7 @@ TEST_F(
 
   CreateObserver(media::VP8PROFILE_ANY);
   const auto codec = VP8VideoCodec(kSimulcasts, kTemporalLayers);
-  webrtc::VideoCodec codec_params[kSimulcasts];
+  std::array<webrtc::VideoCodec, kSimulcasts> codec_params;
   for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
     codec_params[stream_idx] =
         CreateStreamCodec(codec, stream_idx, stream_idx == kSimulcasts - 1);
@@ -418,7 +419,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
   constexpr int kSimulcasts = 3;
   constexpr int kTemporalLayers = 3;
   const auto codec = VP8VideoCodec(kSimulcasts, kTemporalLayers);
-  webrtc::VideoCodec codec_params[kSimulcasts];
+  std::array<webrtc::VideoCodec, kSimulcasts> codec_params;
 
   CreateObserver(media::VP8PROFILE_ANY);
 
@@ -521,7 +522,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
 
   CreateObserver(media::VP8PROFILE_ANY);
 
-  webrtc::VideoCodec codec_params[kSimulcasts];
+  std::array<webrtc::VideoCodec, kSimulcasts> codec_params;
   for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
     codec_params[stream_idx] =
         CreateStreamCodec(codec, stream_idx, stream_idx == kSimulcasts - 1);

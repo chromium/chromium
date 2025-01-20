@@ -16,6 +16,8 @@ namespace viz {
 class TestSharedImageInterfaceProvider : public SharedImageInterfaceProvider {
  public:
   TestSharedImageInterfaceProvider();
+  TestSharedImageInterfaceProvider(
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   ~TestSharedImageInterfaceProvider() override;
 
   gpu::SharedImageInterface* GetSharedImageInterface() override;

@@ -223,7 +223,7 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
 
   // Second line of the text content, the "Card" indicator label.
   card_text_view->AddChildView(std::make_unique<views::Label>(
-      controller_->GetVirtualCardIndicatorLabel(),
+      controller_->GetCardIndicatorLabel(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
 }
 

@@ -66,6 +66,7 @@ NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
+NSString* const kEnterpriseSigninBannerSymbol = @"enterprise_signin_banner";
 NSString* const kEnterpriseSymbol = @"enterprise";
 NSString* const kPasswordManagerSymbol = @"password_manager";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
@@ -275,6 +276,8 @@ NSString* const kPlayButton = @"play.circle";
 NSString* const kFolderSymbol = @"folder";
 NSString* const kCartSymbol = @"cart";
 NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
+NSString* const kArrowUTurnForwardCircleFillSymbol =
+    @"arrow.uturn.forward.circle.fill";
 NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
 NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
 

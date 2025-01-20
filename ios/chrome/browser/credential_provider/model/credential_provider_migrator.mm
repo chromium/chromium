@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
@@ -21,6 +23,9 @@ NSErrorDomain const kCredentialProviderMigratorErrorDomain =
 typedef enum : NSInteger {
   CredentialProviderMigratorErrorAlreadyRunning,
 } CredentialProviderMigratorErrors;
+
+// Name of the passkey migration related histogram.
+static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
 @interface CredentialProviderMigrator () {
   // Passkey store.
@@ -109,11 +114,20 @@ typedef enum : NSInteger {
           _passkeyStore->UpdatePasskeyTimestamp(
               credentialId, base::Time::FromDeltaSinceWindowsEpoch(
                                 base::Microseconds(credential.lastUsedTime)));
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyUpdated);
         }
       } else {
         sync_pb::WebauthnCredentialSpecifics passkey =
             PasskeyFromCredential(credential);
-        _passkeyStore->CreatePasskey(passkey);
+        if (webauthn::passkey_model_utils::IsPasskeyValid(passkey)) {
+          _passkeyStore->CreatePasskey(passkey);
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyCreated);
+        } else {
+          base::UmaHistogramEnumeration(
+              kPasskeysIOSMigration, PasskeysMigrationStatus::kInvalidPasskey);
+        }
       }
     } else {
       password_manager::PasswordForm form =

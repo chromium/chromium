@@ -524,10 +524,7 @@ void PrivateAggregationBindings::ContributeToHistogram(
 
     // Note: alphabetical to match WebIDL.
     contribution_converter.GetRequired("bucket", idl_bucket);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      contribution_converter.GetOptional("filteringId", idl_filtering_id);
-    }
+    contribution_converter.GetOptional("filteringId", idl_filtering_id);
     contribution_converter.GetRequired("value", idl_value);
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
@@ -606,7 +603,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
   args_converter.ConvertArg(0, "event", event_type_str);
 
   // Arg 1 is:
-  // https://patcg-individual-drafts.github.io/private-aggregation-api/#dictdef-paextendedhistogramcontribution
+  // https://wicg.github.io/turtledove/#dictdef-paextendedhistogramcontribution
   //
   // dictionary PAExtendedHistogramContribution {
   //   required (PASignalValue or bigint) bucket;
@@ -632,10 +629,7 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: ",
             "bucket", bucket_val, contribution_converter, bucket);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      contribution_converter.GetOptional("filteringId", filtering_id);
-    }
+    contribution_converter.GetOptional("filteringId", filtering_id);
     contribution_converter.GetRequired("value", value_val) &&
         ConvertToPASignalValueOr<int32_t>(
             v8_helper, time_limit_scope,

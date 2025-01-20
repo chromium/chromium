@@ -26,8 +26,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,18 +34,6 @@ import java.util.Set;
 
 /** Utility methods for the Minimized Custom Tab feature. */
 public class MinimizedFeatureUtils {
-    public static final IntCachedFieldTrialParameter ICON_VARIANT =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_MINIMIZED, "icon_variant", 0);
-
-    // Devices from this OEM--and potentially others--sometimes crash when we call
-    // `Activity#enterPictureInPictureMode` on Android R. So, we disable the feature on those
-    // devices. See: https://crbug.com/1519164.
-    public static final StringCachedFieldTrialParameter MANUFACTURER_EXCLUDE_LIST =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_MINIMIZED_ENABLED_BY_DEFAULT,
-                    "manufacturer_exclude_list",
-                    "xiaomi");
 
     private static Set<String> sManufacturerExcludeList;
 
@@ -151,7 +137,8 @@ public class MinimizedFeatureUtils {
 
     private static boolean isDeviceExcluded() {
         sManufacturerExcludeList = new HashSet<>();
-        String listStr = MANUFACTURER_EXCLUDE_LIST.getValue();
+        String listStr =
+                ChromeFeatureList.sCctMinimizedEnabledByDefaultManufacturerExcludeList.getValue();
         if (!TextUtils.isEmpty(listStr)) {
             Collections.addAll(sManufacturerExcludeList, listStr.split(","));
         }
@@ -167,7 +154,9 @@ public class MinimizedFeatureUtils {
     }
 
     public static @DrawableRes int getMinimizeIcon() {
-        return ICON_VARIANT.getValue() == 1 ? R.drawable.ic_pip_24dp : R.drawable.ic_minimize;
+        return ChromeFeatureList.sCctMinimizedIconVariant.getValue() == 1
+                ? R.drawable.ic_pip_24dp
+                : R.drawable.ic_minimize;
     }
 
     /**

@@ -186,8 +186,9 @@ void TestMediaRouteProvider::SendRouteBinaryMessage(
 
 void TestMediaRouteProvider::StartObservingMediaSinks(
     const std::string& media_source) {
-  if (base::Contains(unsupported_media_sources_, media_source))
+  if (base::Contains(unsupported_media_sources_, media_source)) {
     sinks_ = {};
+  }
   media_router_->OnSinksReceived(kProviderId, media_source, sinks_, {});
 }
 
@@ -201,8 +202,6 @@ void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
       route_id, blink::mojom::PresentationConnectionCloseReason::CLOSED,
       "Close route");
 }
-
-void TestMediaRouteProvider::EnableMdnsDiscovery() {}
 
 void TestMediaRouteProvider::DiscoverSinksNow() {}
 
@@ -242,13 +241,15 @@ bool TestMediaRouteProvider::HasRoutes() const {
 void TestMediaRouteProvider::TearDown() {
   // An OffscreenTab observes its Profile*, and must be destroyed before
   // Profiles.
-  if (offscreen_tab_)
+  if (offscreen_tab_) {
     offscreen_tab_.reset();
+  }
 }
 
 void TestMediaRouteProvider::DestroyTab(OffscreenTab* tab) {
-  if (offscreen_tab_ && offscreen_tab_.get() == tab)
+  if (offscreen_tab_ && offscreen_tab_.get() == tab) {
     offscreen_tab_.reset();
+  }
 }
 
 }  // namespace media_router

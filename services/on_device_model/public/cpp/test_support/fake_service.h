@@ -71,7 +71,6 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               const std::string& adaptation_model_weight,
                                FakeOnDeviceModel* model);
   ~FakeOnDeviceSession() override;
 
@@ -83,8 +82,6 @@ class FakeOnDeviceSession final : public mojom::Session {
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
-  void GetSizeInTokensDeprecated(const std::string& text,
-                                 GetSizeInTokensCallback callback) override;
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
 
@@ -111,10 +108,12 @@ class FakeOnDeviceSession final : public mojom::Session {
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
   struct Data {
+    std::string base_weight = "";
     std::string adaptation_model_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
-                             Data&& data);
+                             Data&& data,
+                             ml::ModelPerformanceHint performance_hint);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
@@ -134,9 +133,16 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
       mojo::PendingReceiver<on_device_model::mojom::Session> receiver,
       std::unique_ptr<FakeOnDeviceSession> session);
 
+  const Data& data() const { return data_; }
+
+  ml::ModelPerformanceHint performance_hint() const {
+    return performance_hint_;
+  }
+
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   Data data_;
+  ml::ModelPerformanceHint performance_hint_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;

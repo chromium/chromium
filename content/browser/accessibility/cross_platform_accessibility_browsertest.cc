@@ -19,7 +19,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -2009,10 +2008,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                 .ToString());
 }
 
-// Flaky on Lacros: https://crbug.com/1292527
 // TODO(crbug.com/40835208): Enable on Fuchsia when content_browsertests
 // runs in non-headless mode.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ControlsIdsForDateTimePopup DISABLED_ControlsIdsForDateTimePopup
 #else
 #define MAYBE_ControlsIdsForDateTimePopup ControlsIdsForDateTimePopup

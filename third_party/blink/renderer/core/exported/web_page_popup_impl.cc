@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
@@ -687,7 +686,7 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
   if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
     Element* focused_element = FocusedElement();
     if (event.windows_key_code == VKEY_TAB && focused_element &&
-        focused_element->IsKeyboardFocusable()) {
+        focused_element->IsKeyboardFocusableSlow()) {
       // If the tab key is pressed while a keyboard focusable element is
       // focused, we should not send a corresponding keypress event.
       suppress_next_keypress_event_ = true;
@@ -710,7 +709,7 @@ void WebPagePopupImpl::OnCommitRequested() {
   }
 }
 
-void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
+void WebPagePopupImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
   if (!page_)
     return;
   // FIXME: This should use lastFrameTimeMonotonic but doing so
@@ -927,7 +926,7 @@ void WebPagePopupImpl::UpdateVisualProperties(
   widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
       combined_scale_factor, visual_properties.is_pinch_gesture_active);
 
-  Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
+  Resize(visual_properties.new_size_device_px);
 }
 
 gfx::Rect WebPagePopupImpl::ViewportVisibleRect() {

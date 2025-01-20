@@ -33,27 +33,6 @@ CFRange CFStringGetRangeOfCharacterClusterAtIndex(
 
 namespace views {
 
-const int PlatformStyle::kMinLabelButtonWidth = 32;
-const int PlatformStyle::kMinLabelButtonHeight = 30;
-const bool PlatformStyle::kDialogDefaultButtonCanBeCancel = false;
-const bool PlatformStyle::kSelectWordOnRightClick = true;
-const bool PlatformStyle::kSelectAllOnRightClickWhenUnfocused = true;
-const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = false;
-const bool PlatformStyle::kTableViewSupportsKeyboardNavigationByCell = false;
-const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
-const bool PlatformStyle::kUseRipples = false;
-const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = true;
-const bool PlatformStyle::kAdjustBubbleIfOffscreen = true;
-const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
-    View::FocusBehavior::ACCESSIBLE_ONLY;
-
-const Button::KeyClickAction PlatformStyle::kKeyClickActionOnSpace =
-    Button::KeyClickAction::kOnKeyPress;
-
-// On Mac, the Return key is used to perform the default action even when a
-// control is focused.
-const bool PlatformStyle::kReturnClicksFocusedControl = false;
-
 // static
 std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(
     ScrollBar::Orientation orientation) {
@@ -68,8 +47,9 @@ void PlatformStyle::OnTextfieldEditFailed() {
 // static
 gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
                                                  size_t cursor_position) {
-  if (cursor_position == 0)
+  if (cursor_position == 0) {
     return gfx::Range();
+  }
 
   base::apple::ScopedCFTypeRef<CFStringRef> cf_string(
       CFStringCreateWithCharacters(
@@ -79,8 +59,9 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
       cf_string.get(), base::checked_cast<CFIndex>(cursor_position - 1),
       kCFStringBackwardDeletionCluster);
 
-  if (range_to_delete.location == NSNotFound)
+  if (range_to_delete.location == NSNotFound) {
     return gfx::Range();
+  }
 
   // The range needs to be reversed to undo correctly.
   return gfx::Range(base::checked_cast<size_t>(range_to_delete.location +

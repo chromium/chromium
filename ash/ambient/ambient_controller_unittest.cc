@@ -196,7 +196,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
   // AmbientAshTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> features_to_enable =
-        personalization_app::GetTimeOfDayEnabledFeatures();
+        personalization_app::GetTimeOfDayFeatures();
     feature_list_.InitWithFeatures(features_to_enable, {});
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
@@ -511,7 +511,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
   base::OnceClosure closure = base::MakeExpectedRunClosure(FROM_HERE);
   base::RunLoop run_loop;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
@@ -552,7 +552,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
   base::OnceClosure closure = base::MakeExpectedRunClosure(FROM_HERE);
   base::RunLoop run_loop_1;
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_EQ(access_token_fetched, TestAmbientClient::kTestAccessToken);
 
         std::move(closure).Run();
@@ -568,7 +568,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 
   closure = base::MakeExpectedRunClosure(FROM_HERE);
   ambient_controller()->RequestAccessToken(base::BindLambdaForTesting(
-      [&](const std::string& gaia_id, const std::string& access_token_fetched) {
+      [&](const GaiaId& gaia_id, const std::string& access_token_fetched) {
         EXPECT_TRUE(access_token_fetched.empty());
 
         std::move(closure).Run();
@@ -2043,7 +2043,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 
   // Simulate user session start (e.g. user login)
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // Confirm that ambient mode is not shown if disabled. (disabled by default)
   FastForwardByLockScreenInactivityTimeout();
@@ -2093,7 +2093,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Simulate login
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   SetAmbientModeManagedScreensaverEnabled(true);
@@ -2126,7 +2126,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Simulate login
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   SetAmbientModeManagedScreensaverEnabled(true);

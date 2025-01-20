@@ -59,7 +59,8 @@ ActiveAccountAccessTokenFetcherImpl::ActiveAccountAccessTokenFetcherImpl(
   access_token_request_ = token_service->StartAccessTokenRequest(scopes, this);
 }
 
-ActiveAccountAccessTokenFetcherImpl::~ActiveAccountAccessTokenFetcherImpl() {}
+ActiveAccountAccessTokenFetcherImpl::~ActiveAccountAccessTokenFetcherImpl() =
+    default;
 
 void ActiveAccountAccessTokenFetcherImpl::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,

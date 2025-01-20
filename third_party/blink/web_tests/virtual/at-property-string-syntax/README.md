@@ -1,1 +1,0 @@
-This directory is for testing <string> syntax in @property when CSSAtPropertyStringSyntax flag is disabled (https://crbug.com/357751736).

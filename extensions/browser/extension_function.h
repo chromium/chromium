@@ -64,7 +64,17 @@ class ExtensionFunctionDispatcher;
     }                                     \
   } while (0)
 #else   // NDEBUG
-#define EXTENSION_FUNCTION_VALIDATE(test) CHECK(test)
+// TODO(pbos): This works around that CHECK(false) is [[noreturn]]. Instead we
+// should try to not build any functions that should never be called. See
+// ChromeOS-only LanguageSettingsPrivateGetInputMethodListsFunction and other
+// instances of EXTENSION_FUNCTION_VALIDATE(false).
+namespace extensions {
+inline bool FunctionValidateInternalReturnParam(bool param) {
+  return param;
+}
+}  // namespace extensions
+#define EXTENSION_FUNCTION_VALIDATE(test) \
+  CHECK(extensions::FunctionValidateInternalReturnParam((test) ? true : false))
 #endif  // NDEBUG
 
 #ifdef NDEBUG

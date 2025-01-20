@@ -32,13 +32,13 @@ class RTCStatsReport final : public ScriptWrappable,
       ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   ScriptValue&,
+                   ScriptObject&,
                    ExceptionState&) override;
 
  private:
   bool GetMapEntryIdl(ScriptState*,
                       const String& key,
-                      ScriptValue&,
+                      ScriptObject&,
                       ExceptionState&);
 
   std::unique_ptr<RTCStatsReportPlatform> report_;

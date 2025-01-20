@@ -154,7 +154,7 @@ class HardwareRenderer {
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;
 
-  const bool report_rendering_threads_;
+  bool report_rendering_threads_ = false;
 
   base::TimeDelta preferred_frame_interval_;
 };

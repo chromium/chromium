@@ -38,7 +38,6 @@ component_with_jni("stack_unwinder") {
   deps = [
     ":jni_headers",
     "//base",
-    "//base:native_unwinder_android",
     "//chrome/android/features/stack_unwinder/public:native",
     "//third_party/jni_zero",
   ]
@@ -50,17 +49,4 @@ component_with_jni("stack_unwinder") {
   manual_jni_registration = true
   namespace = "stack_unwinder"
   module_name = "stack_unwinder"
-}
-
-# Since loading of a partitioned library is not supported in an APK, a separate
-# target without partition is necessary for testing.
-source_set("stack_unwinder_for_testing") {
-  testonly = true
-  sources = [ "stack_unwinder_module_contents_impl.cc" ]
-  deps = [
-    ":jni_headers",
-    "//base",
-    "//base:native_unwinder_android",
-    "//chrome/android/features/stack_unwinder/public:native",
-  ]
 }

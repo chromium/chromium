@@ -52,10 +52,6 @@ public class HistoryAdapterTest {
         doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
     }
 
-    private void initializeAdapter() {
-        mAdapter.startLoadingItems();
-    }
-
     private boolean showSourceApp() {
         return mAdapter.showSourceAppForTest();
     }

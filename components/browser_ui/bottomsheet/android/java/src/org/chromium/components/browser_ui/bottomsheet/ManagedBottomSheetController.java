@@ -44,9 +44,13 @@ public interface ManagedBottomSheetController
 
     /**
      * Set the hidden ratio of the browser controls.
+     *
      * @param ratio The hidden ratio of the browser controls in range [0, 1].
      */
     void setBrowserControlsHiddenRatio(float ratio);
+
+    /** Set the current height of the bottom controls. */
+    void setBottomControlsHeight(int bottomControlsHeight);
 
     /** Clean up any state maintained by the controller. */
     void destroy();

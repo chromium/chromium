@@ -59,5 +59,23 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeValueArgument) {
   }
 }
 
+TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeLockName) {
+  std::string success_originals[] = {std::string(), std::string("a"),
+                                     std::string("abc")};
+  for (auto& original : success_originals) {
+    std::string copied;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::LockName>(original, copied));
+    EXPECT_EQ(original, copied);
+  }
+
+  std::string failure_originals[] = {std::string("-"), std::string("-a")};
+  for (auto& original : failure_originals) {
+    std::string copied;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<mojom::LockName>(original, copied));
+  }
+}
+
 }  // namespace
 }  // namespace network

@@ -58,6 +58,7 @@
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -212,6 +213,9 @@ PaletteTray::PaletteTray(Shelf* shelf)
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 
   shelf->AddObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
 }
 
 PaletteTray::~PaletteTray() {
@@ -397,10 +401,6 @@ void PaletteTray::OnThemeChanged() {
   UpdateTrayIcon();
 }
 
-std::u16string PaletteTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
-}
-
 void PaletteTray::HandleLocaleChange() {
   icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
 }
@@ -467,7 +467,7 @@ void PaletteTray::BubbleViewDestroyed() {
 }
 
 std::u16string PaletteTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
 }
 
 bool PaletteTray::ShouldEnableExtraKeyboardAccessibility() {
@@ -614,10 +614,10 @@ void PaletteTray::UpdateTrayIcon() {
   color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  icon_->SetImage(CreateVectorIcon(
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, color));
+      color, kTrayIconSize));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

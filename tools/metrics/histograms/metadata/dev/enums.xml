@@ -1105,6 +1105,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
   <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
   <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
+  <int value="86"
+      label="SelectElementAccessibilityIssue::DisallowedSelectChild"/>
+  <int value="87"
+      label="SelectElementAccessibilityIssue::DisallowedOptGroupChild"/>
+  <int value="88"
+      label="SelectElementAccessibilityIssue::NonPhrasingContentOptionChild"/>
+  <int value="89"
+      label="SelectElementAccessibilityIssue::InteractiveContentOptionChild"/>
+  <int value="90"
+      label="SelectElementAccessibilityIssue::InteractiveContentLegendChild"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
@@ -1350,36 +1360,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="82" label="zu - Zulu"/>
 </enum>
 
-<enum name="DevToolsLegacyResourceTypeFilterItemSelected">
-  <int value="0" label="All"/>
-  <int value="1" label="Document"/>
-  <int value="2" label="JavaScript"/>
-  <int value="3" label="Fetch and XHR"/>
-  <int value="4" label="CSS"/>
-  <int value="5" label="Font"/>
-  <int value="6" label="Image"/>
-  <int value="7" label="Media"/>
-  <int value="8" label="Manifest"/>
-  <int value="9" label="WebSocket"/>
-  <int value="10" label="WebAssembly"/>
-  <int value="11" label="Other"/>
-</enum>
-
-<enum name="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
-  <int value="6" label="6"/>
-  <int value="7" label="7"/>
-  <int value="8" label="8"/>
-  <int value="9" label="9"/>
-  <int value="10" label="10"/>
-  <int value="11" label="11"/>
-</enum>
-
 <enum name="DevToolsLighthouseCategoryUsed">
   <int value="0" label="Performance"/>
   <int value="1" label="Accessibility"/>
@@ -1394,15 +1374,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1" label="Timespan"/>
   <int value="2" label="Snapshot"/>
   <int value="3" label="LegacyNavigation"/>
-</enum>
-
-<enum name="DevToolsManifestSection">
-  <int value="0" label="Other section selected"/>
-  <int value="1" label="Identity section selected"/>
-  <int value="2" label="Presentation section selected"/>
-  <int value="3" label="Protocol Handlers section selected"/>
-  <int value="4" label="Icons section selected"/>
-  <int value="5" label="Window Controls Overlay section selected"/>
 </enum>
 
 <enum name="DevToolsMediaType">
@@ -1730,36 +1701,6 @@ Called by update_protocol_commands_enum.py.-->
 <enum name="DevToolsRecordingToggled">
   <int value="1" label="Recording started"/>
   <int value="2" label="Recording finished"/>
-</enum>
-
-<enum name="DevToolsResourceTypeFilterItemSelected">
-  <int value="0" label="All"/>
-  <int value="1" label="Document"/>
-  <int value="2" label="JavaScript"/>
-  <int value="3" label="Fetch and XHR"/>
-  <int value="4" label="CSS"/>
-  <int value="5" label="Font"/>
-  <int value="6" label="Image"/>
-  <int value="7" label="Media"/>
-  <int value="8" label="Manifest"/>
-  <int value="9" label="WebSocket"/>
-  <int value="10" label="WebAssembly"/>
-  <int value="11" label="Other"/>
-</enum>
-
-<enum name="DevToolsResourceTypeFilterNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
-  <int value="6" label="6"/>
-  <int value="7" label="7"/>
-  <int value="8" label="8"/>
-  <int value="9" label="9"/>
-  <int value="10" label="10"/>
-  <int value="11" label="11"/>
 </enum>
 
 <enum name="DevToolsSidebarPane">

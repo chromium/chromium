@@ -145,7 +145,7 @@ ProgramCompare::ProgramCompare(const base::FilePath& path_to_match)
   }
 }
 
-ProgramCompare::~ProgramCompare() {}
+ProgramCompare::~ProgramCompare() = default;
 
 bool ProgramCompare::Evaluate(const std::wstring& value) const {
   // Suss out the exe portion of the value, which is expected to be a command

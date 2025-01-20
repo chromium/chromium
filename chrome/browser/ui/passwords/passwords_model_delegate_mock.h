@@ -115,15 +115,6 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               AuthenticateUserWithMessage,
               (const std::u16string& message, AvailabilityCallback callback),
               (override));
-  MOCK_METHOD(void,
-              AuthenticateUserForAccountStoreOptInAndSavePassword,
-              (const std::u16string&, const std::u16string&),
-              (override));
-  MOCK_METHOD(
-      void,
-      AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
-      (),
-      (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
   MOCK_METHOD(void,
               ShowMovePasswordBubble,
@@ -136,6 +127,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
   MOCK_METHOD(void, RelaunchChrome, (), (override));
+  MOCK_METHOD(PasswordChangeDelegate*,
+              GetPasswordChangeDelegate,
+              (),
+              (const override));
 
   base::WeakPtr<PasswordsModelDelegateMock> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

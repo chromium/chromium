@@ -55,9 +55,7 @@ class BASE_EXPORT ScopedAuthorizationRef {
     return authorization_ != that;
   }
 
-  operator AuthorizationRef() const {
-    return authorization_;
-  }
+  operator AuthorizationRef() const { return authorization_; }
 
   explicit operator bool() const { return authorization_ != nullptr; }
 
@@ -69,9 +67,7 @@ class BASE_EXPORT ScopedAuthorizationRef {
     return &authorization_;
   }
 
-  AuthorizationRef get() const {
-    return authorization_;
-  }
+  AuthorizationRef get() const { return authorization_; }
 
   // ScopedAuthorizationRef::release() is like std::unique_ptr<>::release. It is
   // NOT a wrapper for AuthorizationFree(). To force a ScopedAuthorizationRef

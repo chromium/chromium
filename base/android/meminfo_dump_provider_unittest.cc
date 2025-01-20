@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/android/meminfo_dump_provider.h"
-#include "base/android/build_info.h"
-#include "base/trace_event/base_tracing.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 #include <cstdint>
 #include <map>
 #include <string>
+
+#include "base/android/build_info.h"
+#include "base/trace_event/base_tracing.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::android {
 

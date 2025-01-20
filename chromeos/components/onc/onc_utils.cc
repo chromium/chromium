@@ -18,9 +18,9 @@
 #include "chromeos/components/onc/onc_validator.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "components/device_event_log/device_event_log.h"
-#include "crypto/encryptor.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/hmac.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/kdf.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/pki/pem.h"
 
@@ -614,8 +614,7 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
 
 }  // namespace
 
-std::optional<base::Value::Dict> ReadDictionaryFromJson(
-    const std::string& json) {
+std::optional<base::Value::Dict> ReadDictionaryFromJson(std::string_view json) {
   if (json.empty()) {
     // Policy may contain empty values, just log a debug message.
     NET_LOG(DEBUG) << "Empty json string";
@@ -636,11 +635,20 @@ std::optional<base::Value::Dict> ReadDictionaryFromJson(
   return std::move(*parsed_json).TakeDict();
 }
 
-std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
-  const int kKeySizeInBits = 256;
+struct UnpackedMessage {
+  std::vector<uint8_t> salt;
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv;
+  std::vector<uint8_t> ciphertext;
+  std::array<uint8_t, crypto::hash::kSha1Size> hmac;
+  crypto::kdf::Pbkdf2HmacSha1Params kdf_params;
+};
+
+// Unpack the passed-in JSON message into either a correctly-formed message to
+// be decrypted, or a std::nullopt.
+std::optional<UnpackedMessage> UnpackMessage(const base::Value::Dict& root) {
   const int kMaxIterationCount = 500000;
   std::string onc_type;
-  std::string initial_vector;
+  std::string iv;
   std::string salt;
   std::string cipher;
   std::string stretch_method;
@@ -653,7 +661,7 @@ std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
       !GetString(root, ::onc::encrypted::kCipher, &cipher) ||
       !GetString(root, ::onc::encrypted::kHMAC, &hmac) ||
       !GetString(root, ::onc::encrypted::kHMACMethod, &hmac_method) ||
-      !GetString(root, ::onc::encrypted::kIV, &initial_vector) ||
+      !GetString(root, ::onc::encrypted::kIV, &iv) ||
       !GetInt(root, ::onc::encrypted::kIterations, &iterations) ||
       !GetString(root, ::onc::encrypted::kSalt, &salt) ||
       !GetString(root, ::onc::encrypted::kStretch, &stretch_method) ||
@@ -683,49 +691,56 @@ std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
     return std::nullopt;
   }
 
-  if (!base::Base64Decode(salt, &salt)) {
+  if (!base::Base64Decode(salt, &salt) || !base::Base64Decode(iv, &iv) ||
+      !base::Base64Decode(ciphertext, &ciphertext) ||
+      !base::Base64Decode(hmac, &hmac) ||
+      iv.length() != crypto::aes_cbc::kBlockSize) {
     NET_LOG(ERROR) << kUnableToDecode;
     return std::nullopt;
   }
 
-  std::unique_ptr<crypto::SymmetricKey> key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, std::string() /* no passphrase */, salt,
-          iterations, kKeySizeInBits));
+  UnpackedMessage m;
+  m.salt.assign(salt.begin(), salt.end());
+  std::copy(iv.begin(), iv.end(), m.iv.begin());
+  m.ciphertext.assign(ciphertext.begin(), ciphertext.end());
+  std::copy(hmac.begin(), hmac.end(), m.hmac.begin());
+  m.kdf_params.iterations = iterations;
+  return m;
+}
 
-  if (!base::Base64Decode(initial_vector, &initial_vector)) {
-    NET_LOG(ERROR) << kUnableToDecode;
-    return std::nullopt;
-  }
-  if (!base::Base64Decode(ciphertext, &ciphertext)) {
-    NET_LOG(ERROR) << kUnableToDecode;
-    return std::nullopt;
-  }
-  if (!base::Base64Decode(hmac, &hmac)) {
-    NET_LOG(ERROR) << kUnableToDecode;
+crypto::SubtlePassKey MakeCryptoPassKey() {
+  return crypto::SubtlePassKey{};
+}
+
+// Given a message (passed in as a base::Value::Dict), unpack and validate it,
+// check the HMAC on its contained ciphertext, deobfuscate, then unpack the
+// deobfuscated plaintext as a JSON dictionary and return it. If any of these
+// steps fails, returns std::nullopt.
+std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
+  const size_t kKeyBytes = 32;
+  std::optional<UnpackedMessage> m = UnpackMessage(root);
+  if (!m) {
     return std::nullopt;
   }
 
-  crypto::HMAC hmac_verifier(crypto::HMAC::SHA1);
-  if (!hmac_verifier.Init(key.get()) ||
-      !hmac_verifier.Verify(ciphertext, hmac)) {
+  std::array<uint8_t, kKeyBytes> key;
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1(m->kdf_params,
+                                       base::span<const uint8_t>(), m->salt,
+                                       key, MakeCryptoPassKey());
+
+  if (!crypto::hmac::VerifySha1(key, m->ciphertext, m->hmac)) {
     NET_LOG(ERROR) << kUnableToDecrypt;
     return std::nullopt;
   }
 
-  crypto::Encryptor decryptor;
-  if (!decryptor.Init(key.get(), crypto::Encryptor::CBC, initial_vector)) {
+  auto plaintext = crypto::aes_cbc::Decrypt(key, m->iv, m->ciphertext);
+  if (!plaintext) {
     NET_LOG(ERROR) << kUnableToDecrypt;
     return std::nullopt;
   }
 
-  std::string plaintext;
-  if (!decryptor.Decrypt(ciphertext, &plaintext)) {
-    NET_LOG(ERROR) << kUnableToDecrypt;
-    return std::nullopt;
-  }
-
-  std::optional<base::Value::Dict> new_root = ReadDictionaryFromJson(plaintext);
+  std::optional<base::Value::Dict> new_root =
+      ReadDictionaryFromJson(base::as_string_view(*plaintext));
   if (!new_root) {
     NET_LOG(ERROR) << "Property dictionary malformed.";
   }

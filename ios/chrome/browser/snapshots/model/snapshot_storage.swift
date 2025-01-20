@@ -4,10 +4,10 @@
 
 import UIKit
 
-// Maximum size in number of elements that the LRU cache can hold before starting to evict elements.
-let kLRUCacheMaxCapacity = 6
+// Base size in number of elements that the LRU cache can hold before starting to evict elements.
+let kLRUCacheBaseCapacity = 6
 
-// Maximum size in number of elements that the LRU cache can hold before starting to evict elements
+// Additional capacity of elements that the LRU cache can hold before starting to evict elements
 // when PinnedTabs feature is enabled.
 //
 // To calculate the cache size number we'll start with the assumption that currently snapshot
@@ -16,7 +16,13 @@ let kLRUCacheMaxCapacity = 6
 // snapshots to be used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
 // kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed for pinned tabs
 // feature.
-let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
+let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
+
+// Additional capacity of elements that the LRU cache can hold before starting to evict elements
+// when the Tab Group feature is enabled.
+//
+// A tab group cell requests up to 7 snapshots from the first item.
+let kLRUCacheAdditionalCapacityForTabGroupEnabled = 7
 
 // A class providing an in-memory and on-disk storage of tab snapshots.
 // A snapshot is a full-screen image of the contents of the page at the current scroll offset and
@@ -48,13 +54,19 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
   // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
   // migrated.
   init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
-    // Use the different size of LRUCache when the pinned tabs feature is enabled.
-    // The pinned tabs feature is fully enabled on iPhone and disabled on iPad. The condition to
-    // determine the cache size should sync with IsPinnedTabsEnabled() in
-    // ios/chrome/browser/tabs/model/features.h.
-    self.lruCache = SnapshotLRUCache(
-      size: UIDevice.current.userInterfaceIdiom != .pad
-        ? kLRUCacheMaxCapacityForPinnedTabsEnabled : kLRUCacheMaxCapacity)
+    var cacheSize = kLRUCacheBaseCapacity
+    if UIDevice.current.userInterfaceIdiom != .pad {
+      // Add more capacity to LRUCache when the pinned tabs feature is enabled.
+      // The pinned tabs feature is fully enabled on iPhone and disabled on iPad. The condition to
+      // determine the cache size should sync with IsPinnedTabsEnabled() in
+      // ios/chrome/browser/tabs/model/features.h.
+      cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled
+    }
+    if IsLargeCapacityInSnapshotLRUCacheEnabled() {
+      // Add more capacity to LRUCache when the feature flag is enabled. The feature depends on the tab group feature.
+      cacheSize += kLRUCacheAdditionalCapacityForTabGroupEnabled
+    }
+    self.lruCache = SnapshotLRUCache(size: cacheSize)
     self.fileManager = ImageFileManager(
       storageDirectoryUrl: storageDirectoryUrl, legacyDirectoryUrl: legacyDirectoryUrl)
     self.observers = []

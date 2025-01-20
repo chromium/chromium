@@ -2417,45 +2417,41 @@ TEST_P(SSLClientSocketVersionTest, ExportKeyingMaterial) {
 
   const int kKeyingMaterialSize = 32;
   const char kKeyingLabel1[] = "client-socket-test-1";
-  const char kKeyingContext1[] = "";
-  unsigned char client_out1[kKeyingMaterialSize];
-  memset(client_out1, 0, sizeof(client_out1));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, false, kKeyingContext1,
-                                   client_out1, sizeof(client_out1));
+  std::array<uint8_t, kKeyingMaterialSize> client_out1;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, std::nullopt, client_out1);
   EXPECT_EQ(rv, OK);
 
   const char kKeyingLabel2[] = "client-socket-test-2";
-  unsigned char client_out2[kKeyingMaterialSize];
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, false, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  std::array<uint8_t, kKeyingMaterialSize> client_out2;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, std::nullopt, client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   const char kKeyingContext2[] = "context";
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext2,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(
+      kKeyingLabel1, base::as_byte_span(kKeyingContext2), client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   // Prior to TLS 1.3, using an empty context should give different key material
   // from not using a context at all. In TLS 1.3, the distinction is deprecated
   // and they are the same.
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, base::span<const uint8_t>(),
+                                   client_out2);
   EXPECT_EQ(rv, OK);
   if (version() >= SSL_PROTOCOL_VERSION_TLS1_3) {
-    EXPECT_EQ(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_EQ(client_out1, client_out2);
   } else {
-    EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_NE(client_out1, client_out2);
   }
 }
 
 TEST(SSLClientSocket, SerializeNextProtos) {
   NextProtoVector next_protos;
-  next_protos.push_back(kProtoHTTP11);
-  next_protos.push_back(kProtoHTTP2);
+  next_protos.push_back(NextProto::kProtoHTTP11);
+  next_protos.push_back(NextProto::kProtoHTTP2);
   static std::vector<uint8_t> serialized =
       SSLClientSocket::SerializeNextProtos(next_protos);
   ASSERT_EQ(12u, serialized.size());
@@ -3002,14 +2998,14 @@ TEST_F(SSLClientSocketTest, SessionResumptionAlpn) {
 
   // First, perform a full handshake.
   SSLConfig ssl_config;
-  ssl_config.alpn_protos.push_back(kProtoHTTP2);
+  ssl_config.alpn_protos.push_back(NextProto::kProtoHTTP2);
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   SSLInfo ssl_info;
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
-  EXPECT_EQ(kProtoHTTP2, sock_->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, sock_->GetNegotiatedProtocol());
 
   // TLS 1.2 with False Start and TLS 1.3 cause the ticket to arrive later, so
   // use the socket to ensure the session ticket has been picked up.
@@ -3017,12 +3013,12 @@ TEST_F(SSLClientSocketTest, SessionResumptionAlpn) {
 
   // The next connection should resume; ALPN should be renegotiated.
   ssl_config.alpn_protos.clear();
-  ssl_config.alpn_protos.push_back(kProtoHTTP11);
+  ssl_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
-  EXPECT_EQ(kProtoHTTP11, sock_->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP11, sock_->GetNegotiatedProtocol());
 }
 
 // Tests that the session cache is not sharded by NetworkAnonymizationKey if the
@@ -3239,7 +3235,7 @@ TEST_F(SSLClientSocketFalseStartTest, FalseStartEnabled) {
   server_config.cipher_suite_for_testing = kModernTLS12Cipher;
   server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
   ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, true));
 }
 
@@ -3260,7 +3256,7 @@ TEST_F(SSLClientSocketFalseStartTest, RSA) {
   server_config.cipher_suite_for_testing = kRSACipher;
   server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
   ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, false));
 }
 
@@ -3271,7 +3267,7 @@ TEST_F(SSLClientSocketFalseStartTest, NoAEAD) {
   server_config.cipher_suite_for_testing = kCBCCipher;
   server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
   ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, false));
 }
 
@@ -3283,7 +3279,7 @@ TEST_F(SSLClientSocketFalseStartTest, SessionResumption) {
   server_config.cipher_suite_for_testing = kModernTLS12Cipher;
   server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
 
   // Let a full handshake complete with False Start.
   ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, true));
@@ -3313,7 +3309,7 @@ TEST_F(SSLClientSocketFalseStartTest, CompleteHandshakeWithoutRequest) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
 
   // Start a handshake up to the server Finished message.
   TestCompletionCallback callback;
@@ -3359,7 +3355,7 @@ TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBeforeFinished) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
 
   // Start a handshake up to the server Finished message.
   TestCompletionCallback callback;
@@ -3412,7 +3408,7 @@ TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBadFinished) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
 
   // Start a handshake up to the server Finished message.
   TestCompletionCallback callback;
@@ -3470,14 +3466,14 @@ TEST_F(SSLClientSocketTest, Alpn) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
-  client_config.alpn_protos.push_back(kProtoHTTP11);
-  client_config.alpn_protos.push_back(kProtoHTTP2);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP11);
+  client_config.alpn_protos.push_back(NextProto::kProtoHTTP2);
 
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsOk());
 
-  EXPECT_EQ(kProtoHTTP2, sock_->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, sock_->GetNegotiatedProtocol());
 }
 
 // If the server supports ALPN but the client does not, then ALPN is not used.
@@ -3493,7 +3489,7 @@ TEST_F(SSLClientSocketTest, AlpnClientDisabled) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsOk());
 
-  EXPECT_EQ(kProtoUnknown, sock_->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoUnknown, sock_->GetNegotiatedProtocol());
 }
 
 // Client certificates are disabled on iOS.
@@ -5860,7 +5856,7 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
   // Enable all test features in the server.
   SSLServerConfig server_config;
   server_config.early_data_enabled = true;
-  server_config.alpn_protos = {kProtoHTTP11};
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
@@ -5874,7 +5870,7 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
   client_config.version_max_override = GetParam().version;
   client_config.early_data_enabled = GetParam().early_data;
   if (GetParam().alpn) {
-    client_config.alpn_protos = {kProtoHTTP11};
+    client_config.alpn_protos = {NextProto::kProtoHTTP11};
   }
 
   SSLVersion version;
@@ -6250,9 +6246,9 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
   const std::string client_data = "client also sends some data";
 
   SSLServerConfig server_config;
-  server_config.alpn_protos = {kProtoHTTP2};
+  server_config.alpn_protos = {NextProto::kProtoHTTP2};
   if (server_alps_enabled()) {
-    server_config.application_settings[kProtoHTTP2] =
+    server_config.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(server_data.begin(), server_data.end());
   }
   // Configure the server to support whichever ALPS codepoint the client sent.
@@ -6272,9 +6268,9 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
-  client_config.alpn_protos = {kProtoHTTP2};
+  client_config.alpn_protos = {NextProto::kProtoHTTP2};
   if (client_alps_enabled()) {
-    client_config.application_settings[kProtoHTTP2] =
+    client_config.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(client_data.begin(), client_data.end());
   }
 
@@ -6288,7 +6284,7 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
             SSLConnectionStatusToVersion(info.connection_status));
   EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, info.handshake_type);
 
-  EXPECT_EQ(kProtoHTTP2, sock_->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2, sock_->GetNegotiatedProtocol());
 
   // ALPS is negotiated only if ALPS is enabled both on client and server.
   const auto alps_data_received_by_client = sock_->GetPeerApplicationSettings();
@@ -6308,9 +6304,9 @@ TEST_P(SSLClientSocketAlpsTest, UnusedProtocols) {
   }
 
   SSLConfig client_config;
-  client_config.alpn_protos = {kProtoHTTP2};
-  client_config.application_settings[kProtoHTTP2] = {};
-  client_config.application_settings[kProtoHTTP11] = {};
+  client_config.alpn_protos = {NextProto::kProtoHTTP2};
+  client_config.application_settings[NextProto::kProtoHTTP2] = {};
+  client_config.application_settings[NextProto::kProtoHTTP11] = {};
 
   // Configure the server to check the ClientHello is as we expected.
   SSLServerConfig server_config;

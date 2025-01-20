@@ -34,7 +34,6 @@ static_library("status_collector") {
 
   deps = [
     "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -74,6 +73,7 @@ static_library("status_collector") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus/power",
@@ -172,6 +172,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/child_accounts/time_limits",

@@ -80,14 +80,14 @@ bool MayHaveWindowsHelloCredentials(
 void FilterFoundCredentials(
     std::vector<DiscoverableCredentialMetadata>* found_creds,
     const std::vector<PublicKeyCredentialDescriptor>& allow_list_creds) {
-  auto remove_it = base::ranges::remove_if(
+  auto removed = std::ranges::remove_if(
       *found_creds, [&allow_list_creds](const auto& found_cred) {
         return base::ranges::none_of(
             allow_list_creds, [&found_cred](const auto& allow_list_cred) {
               return allow_list_cred.id == found_cred.cred_id;
             });
       });
-  found_creds->erase(remove_it, found_creds->end());
+  found_creds->erase(removed.begin(), removed.end());
 }
 
 void SignalUnknownCredentialBlocking(WinWebAuthnApi* api,

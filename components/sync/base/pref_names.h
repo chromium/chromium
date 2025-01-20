@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_BASE_PREF_NAMES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace syncer::prefs {
 

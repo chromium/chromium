@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/android/hats/hats_service_android.h"
@@ -34,6 +35,7 @@ HatsServiceFactory::HatsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(GoogleGroupsManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>

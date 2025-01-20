@@ -66,6 +66,8 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
           return this.i18n('seaPenFreeformErrorUnsupportedLanguage');
         case MantaStatusCode.kBlockedOutputs:
           return this.i18n('seaPenFreeformErrorBlockedOutputs');
+        case MantaStatusCode.kImageHasPerson:
+          return this.i18n('seaPenFreeformErrorPerson');
       }
     }
     return this.i18n('seaPenErrorGeneric');

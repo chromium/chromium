@@ -73,10 +73,10 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
   const ui::AXSelection GetUnignoredSelection() const override;
+  const ui::AXSelection GetHypertextSelection() const override;
   ui::AXNodePosition::AXPositionInstance CreatePositionAt(
       int offset,
-      ax::mojom::TextAffinity affinity =
-          ax::mojom::TextAffinity::kDownstream) const override;
+      ax::mojom::TextAffinity affinity) const override;
   ui::AXNodePosition::AXPositionInstance CreateTextPositionAt(
       int offset,
       ax::mojom::TextAffinity affinity) const override;
@@ -153,7 +153,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // during the constructor.
   virtual void Init();
 
-  ui::AXNodeData data() { return data_; }
+  const ui::AXNodeData& data() const { return data_; }
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
 
   // Manager for the accessibility tree for this view. The tree will only have

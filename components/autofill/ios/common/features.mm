@@ -30,6 +30,13 @@ BASE_FEATURE(kAutofillPaymentsSheetV2Ios,
              "AutofillPaymentsSheetV2Ios",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the 3rd version of the payments suggestion bottom sheet that can
+// directly pick the Autofill suggestions provider instead of intermediating via
+// the FormSuggestionController.
+BASE_FEATURE(kAutofillPaymentsSheetV3Ios,
+             "AutofillPaymentsSheetV3Ios",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or
 // load a new page from the omnibox). This includes the infobar UI and the

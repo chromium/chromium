@@ -6,7 +6,10 @@
 
 #include "base/files/file.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "services/passage_embeddings/passage_embedder.h"
+#endif
 
 namespace passage_embeddings {
 
@@ -17,20 +20,23 @@ PassageEmbeddingsService::PassageEmbeddingsService(
 PassageEmbeddingsService::~PassageEmbeddingsService() = default;
 
 void PassageEmbeddingsService::LoadModels(
-    mojom::PassageEmbeddingsLoadModelsParamsPtr params,
-    mojo::PendingReceiver<mojom::PassageEmbedder> model,
+    mojom::PassageEmbeddingsLoadModelsParamsPtr model_params,
+    mojom::PassageEmbedderParamsPtr embedder_params,
+    mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
     LoadModelsCallback callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  embedder_ = std::make_unique<PassageEmbedder>(std::move(model));
+  embedder_ = std::make_unique<PassageEmbedder>(std::move(receiver),
+                                                std::move(embedder_params));
 
   // Load the model files.
-  if (params->input_window_size == 0 ||
-      !embedder_->LoadModels(&params->embeddings_model, &params->sp_model)) {
+  if (model_params->input_window_size == 0 ||
+      !embedder_->LoadModels(&model_params->embeddings_model,
+                             &model_params->sp_model,
+                             model_params->input_window_size)) {
     embedder_.reset();
     std::move(callback).Run(false);
     return;
   }
-  embedder_->SetEmbeddingsModelInputWindowSize(params->input_window_size);
 
   std::move(callback).Run(true);
 #else

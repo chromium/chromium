@@ -80,8 +80,9 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
       cgroup_filepath.Append(FILE_PATH_LITERAL("chrome")), thread_type);
 
   // Silently ignore request if cgroup directory doesn't exist.
-  if (!DirectoryExists(cgroup_directory))
+  if (!DirectoryExists(cgroup_directory)) {
     return;
+  }
 
   SetThreadCgroup(thread_id, cgroup_directory);
 }
@@ -208,8 +209,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall
   // to stop working.
-  if (PlatformThread::CurrentId() == getpid())
+  if (PlatformThread::CurrentId() == getpid()) {
     return;
+  }
 
   // http://0pointer.de/blog/projects/name-your-threads.html
   // Set the name for the LWP (which gets truncated to 15 characters).
@@ -218,8 +220,9 @@ void PlatformThreadBase::SetName(const std::string& name) {
   // that it can set the name of threads other than the current thread.
   int err = prctl(PR_SET_NAME, name.c_str());
   // We expect EPERM failures in sandboxed processes, just ignore those.
-  if (err < 0 && errno != EPERM)
+  if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 
 // static

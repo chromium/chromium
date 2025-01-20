@@ -28,8 +28,7 @@ items:
   name: Docked
   value: 2
 owners:
-- amraboelkher@chromium.org
-- emaxx@chromium.org
+- file://components/policy/OWNERS
 schema:
   enum:
   - 0

@@ -8,7 +8,6 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

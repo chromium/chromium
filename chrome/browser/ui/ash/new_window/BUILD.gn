@@ -14,7 +14,7 @@ static_library("new_window") {
 
   public_deps = [
     "//ash/public/cpp",
-    "//components/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//url",
   ]
 

@@ -9,7 +9,12 @@ class Profile;
 
 namespace customize_chrome {
 
+// Whether the wallpaper search feature is available for |profile|.
 bool IsWallpaperSearchEnabledForProfile(Profile* profile);
+
+// Whether the wallpaper search feature should be shown in settings for
+// |profile|.
+bool IsWallpaperSearchSettingVisibleForProfile(Profile* profile);
 
 }  // namespace customize_chrome
 

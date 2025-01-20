@@ -127,8 +127,9 @@ template <bool for_testing>
 __attribute__((always_inline, no_instrument_function)) void RecordAddress(
     size_t address) {
   int index = g_data_index.load(std::memory_order_relaxed);
-  if (index >= kPhases)
+  if (index >= kPhases) {
     return;
+  }
 
   const size_t start =
       for_testing ? kStartOfTextForTesting : base::android::kStartOfText;
@@ -171,12 +172,14 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
   // allows the cache line to remain shared acoss CPUs in this case.
   uint32_t value = element->load(std::memory_order_relaxed);
   uint32_t mask = 1 << (offset_index % 32);
-  if (value & mask)
+  if (value & mask) {
     return;
+  }
 
   auto before = element->fetch_or(mask, std::memory_order_relaxed);
-  if (before & mask)
+  if (before & mask) {
     return;
+  }
 
   // We were the first one to set the element, record it in the ordered
   // elements list.
@@ -214,8 +217,9 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path,
     // visible in this thread yet. Safe to skip, also because the function at
     // the start of text is never called.
     auto offset = data.ordered_offsets[i].load(std::memory_order_relaxed);
-    if (!offset)
+    if (!offset) {
       continue;
+    }
     auto offset_str = base::StringPrintf("%" PRIuS "\n", offset);
     if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(offset_str))) {
       // If the file could be opened, but writing has failed, it's likely that
@@ -236,8 +240,9 @@ NO_INSTRUMENT_FUNCTION void StopAndDumpToFile(int pid,
 
   for (int phase = 0; phase < kPhases; phase++) {
     std::string tag_str;
-    if (!tag.empty())
+    if (!tag.empty()) {
       tag_str = base::StringPrintf("%s-", tag.c_str());
+    }
     auto path = base::StringPrintf(
         "/data/local/tmp/chrome/orderfile/profile-hitmap-%s%d-%" PRIu64
         ".txt_%d",
@@ -286,8 +291,9 @@ NO_INSTRUMENT_FUNCTION void StartDelayedDump() {
   // Using std::thread and not using base::TimeTicks() in order to to not call
   // too many base:: symbols that would pollute the reached symbol dumps.
   struct timespec ts;
-  if (clock_gettime(CLOCK_MONOTONIC, &ts))
+  if (clock_gettime(CLOCK_MONOTONIC, &ts)) {
     PLOG(FATAL) << "clock_gettime.";
+  }
   uint64_t start_ns_since_epoch =
       static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 + ts.tv_nsec;
   int pid = getpid();
@@ -343,8 +349,9 @@ NO_INSTRUMENT_FUNCTION std::vector<size_t> GetOrderedOffsetsForTesting() {
   size_t max_index = g_data[0].index.load(std::memory_order_relaxed);
   for (size_t i = 0; i < max_index; ++i) {
     auto value = g_data[0].ordered_offsets[i].load(std::memory_order_relaxed);
-    if (value)
+    if (value) {
       result.push_back(value);
+    }
   }
   return result;
 }

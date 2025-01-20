@@ -46,7 +46,7 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog(const TestDialog&) = delete;
   TestDialog& operator=(const TestDialog&) = delete;
 
-  ~TestDialog() override {}
+  ~TestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
@@ -242,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, ClosesOnEscape) {
   // On Mac, animations cause this test to be flaky.
   dialog->GetWidget()->SetVisibilityChangedAnimationsEnabled(false);
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE,
-                                              false, false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
   content::RunAllPendingInMessageLoop();
   EXPECT_EQ(nullptr, tracker.view());
 }

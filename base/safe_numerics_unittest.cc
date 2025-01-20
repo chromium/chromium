@@ -43,8 +43,7 @@
 #include <mmintrin.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 using std::numeric_limits;
 
@@ -1394,6 +1393,21 @@ struct CastTest2 {
   static constexpr T Underflow() { return lowest(); }
 };
 
+TEST(CheckedNumeric, AddendOutOfRange) {
+  // When adding a value that doesn't fit in the CheckedNumeric, the result
+  // should not depend on the addend's type, but should work as if the math was
+  // done without checking/clamping and then checked_cast back to the right
+  // value.
+  CheckedNumeric<int64_t> n1(std::numeric_limits<int64_t>::lowest() + 2);
+  n1 += std::numeric_limits<uint64_t>::max() - 5;
+  EXPECT_EQ(std::numeric_limits<int64_t>::max() - 3, n1.ValueOrDefault(0));
+
+  // The same procedure shouldn't work if the result wouldn't have fit, though.
+  CheckedNumeric<int64_t> n2(-2);
+  n2 += (static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + 5);
+  EXPECT_FALSE(n2.IsValid());
+}
+
 TEST(SafeNumerics, CastTests) {
 // MSVC catches and warns that we're forcing saturation in these tests.
 // Since that's intentional, we need to shut this warning off.
@@ -1414,6 +1428,8 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_EQ(0, strict_cast<int>(static_cast<char>(0)));
   EXPECT_EQ(0, strict_cast<int>(static_cast<unsigned char>(0)));
   EXPECT_EQ(0U, strict_cast<unsigned>(static_cast<unsigned char>(0)));
+  EXPECT_EQ(0U,
+            strict_cast<unsigned>(std::integral_constant<unsigned char, 0>()));
   EXPECT_EQ(1ULL, static_cast<uint64_t>(StrictNumeric<size_t>(1U)));
   EXPECT_EQ(1ULL, static_cast<uint64_t>(SizeT(1U)));
   EXPECT_EQ(1U, static_cast<size_t>(StrictNumeric<unsigned>(1U)));
@@ -1433,12 +1449,6 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_FALSE(IsValueNegative(numeric_limits<int>::max()));
   EXPECT_FALSE(IsValueNegative(numeric_limits<unsigned>::max()));
   EXPECT_FALSE(IsValueNegative(numeric_limits<double>::max()));
-
-  // These casts and coercions will fail to compile:
-  // EXPECT_EQ(0, strict_cast<int>(static_cast<size_t>(0)));
-  // EXPECT_EQ(0, strict_cast<size_t>(static_cast<int>(0)));
-  // EXPECT_EQ(1ULL, StrictNumeric<size_t>(1));
-  // EXPECT_EQ(1, StrictNumeric<size_t>(1U));
 
   // Test various saturation corner cases.
   EXPECT_EQ(saturated_cast<int>(small_negative),
@@ -1938,5 +1948,4 @@ TEST(SafeNumerics, StrictNumeric_SupportsAssignment) {
 #pragma clang diagnostic pop  // -Winteger-overflow
 #endif
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -183,6 +183,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
     return BlockNode(DynamicTo<LayoutBlock>(box_->GetScrollMarkerGroup()));
   }
 
+  // Search for scroll markers in `scroller` and attach them to this scroll
+  // marker group. Any existing scroll markers will first be removed.
+  void PopulateScrollMarkerGroup(const BlockNode& scroller) const;
+
   // Populate with scroll markers (and relayout if necessary)
   // the::scroll-marker-group associated with this node, if any.
   void HandleScrollMarkerGroup() const;

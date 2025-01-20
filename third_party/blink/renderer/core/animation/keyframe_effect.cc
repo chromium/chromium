@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -300,7 +299,7 @@ void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
 // normal keyframe data combined with the computed offset for the given
 // keyframe.
 // https://w3.org/TR/web-animations-1/#dom-keyframeeffect-getkeyframes
-HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
+HeapVector<ScriptObject> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
@@ -309,7 +308,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     }
   }
 
-  HeapVector<ScriptValue> computed_keyframes;
+  HeapVector<ScriptObject> computed_keyframes;
   if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 
@@ -332,7 +331,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     keyframes[indices[i]]->AddKeyframePropertiesToV8Object(object_builder,
                                                            target());
     object_builder.AddNumber("computedOffset", computed_offsets[indices[i]]);
-    computed_keyframes.push_back(object_builder.GetScriptValue());
+    computed_keyframes.push_back(object_builder.ToScriptObject());
   }
 
   return computed_keyframes;
@@ -450,7 +449,8 @@ bool KeyframeEffect::HasActiveAnimationsOnCompositor() const {
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor(
     const PropertyHandle& property) const {
-  return HasActiveAnimationsOnCompositor() && Affects(property);
+  return HasActiveAnimationsOnCompositor() &&
+         model_->EnsureDynamicProperties().Contains(property);
 }
 
 bool KeyframeEffect::CancelAnimationOnCompositor(

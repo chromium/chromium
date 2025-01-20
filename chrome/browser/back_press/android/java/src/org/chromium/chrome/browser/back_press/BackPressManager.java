@@ -46,13 +46,13 @@ public class BackPressManager implements Destroyable {
         // map.put(Type.VR_DELEGATE, 1);
         // map.put(Type.AR_DELEGATE, 2);
         map.put(Type.SCENE_OVERLAY, 3);
-        map.put(Type.START_SURFACE, 4);
+        // map.put(Type.START_SURFACE, 4);
         map.put(Type.SELECTION_POPUP, 5);
         map.put(Type.MANUAL_FILLING, 6);
         map.put(Type.FULLSCREEN, 7);
         map.put(Type.BOTTOM_SHEET, 8);
         map.put(Type.TAB_MODAL_HANDLER, 9);
-        map.put(Type.TAB_SWITCHER, 10);
+        // map.put(Type.TAB_SWITCHER, 10);
         map.put(Type.CLOSE_WATCHER, 11);
         map.put(Type.TAB_HISTORY, 12);
         // map.put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
@@ -98,7 +98,7 @@ public class BackPressManager implements Destroyable {
                     mLastCalledHandlerType = index;
                     if (result == BackPressResult.FAILURE) {
                         BackPressManager.this.handleBackPress();
-                    } else {
+                    } else if (result != BackPressResult.IGNORED) {
                         record(index);
                     }
                 } else {
@@ -166,13 +166,6 @@ public class BackPressManager implements Destroyable {
     private int mLastCalledHandlerType = -1;
     private Runnable mOnBackPressed;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
-
-    /**
-     * @return True if the tab navigation should be corrected on fallback callback.
-     */
-    public static boolean correctTabNavigationOnFallback() {
-        return false;
-    }
 
     /**
      * Record when the back press is consumed by a certain feature.
@@ -353,7 +346,7 @@ public class BackPressManager implements Destroyable {
                 if (res == BackPressResult.FAILURE) {
                     failed.add(i + "");
                     recordFailure(i);
-                } else {
+                } else if (res != BackPressResult.IGNORED) {
                     record(i);
                     assertListOfFailedHandlers(failed, i);
                     return;
@@ -361,7 +354,11 @@ public class BackPressManager implements Destroyable {
             }
         }
         if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
-        assertListOfFailedHandlers(failed, -1);
+        // The fallback is valid when the flag is enabled because we are triggering a failure when
+        // swiping semantically backward when canGoBack == false.
+        if (!ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled()) {
+            assertListOfFailedHandlers(failed, -1);
+        }
         assert !failed.isEmpty() : "Callback is enabled but no handler consumed back gesture.";
     }
 

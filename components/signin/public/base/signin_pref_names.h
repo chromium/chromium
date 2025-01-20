@@ -8,11 +8,10 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 
 namespace prefs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceLogoutUnauthenticatedUserEnabled[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -60,6 +59,8 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninAllowed[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieLastListAccountsData[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kGaiaCookieLastListAccountsBinaryData[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninAllowedOnNextStartup[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

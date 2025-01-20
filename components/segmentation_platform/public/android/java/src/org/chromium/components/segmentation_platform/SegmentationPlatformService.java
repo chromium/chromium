@@ -6,15 +6,18 @@ package org.chromium.components.segmentation_platform;
 
 import org.chromium.base.Callback;
 
+import java.util.Set;
+
 /**
- * SegmentationPlatformService is the core class for segmentation platform.
- * It represents a native SegmentationPlatformService object in Java.
+ * SegmentationPlatformService is the core class for segmentation platform. It represents a native
+ * SegmentationPlatformService object in Java.
  */
 public interface SegmentationPlatformService {
     /**
      * Called to get the segment selection result asynchronously from the backend.
+     *
      * @param segmentationKey The key to be used to distinguish between different segmentation
-     *         usages.
+     *     usages.
      * @param callback The callback that contains the result of segmentation.
      */
     void getSelectedSegment(String segmentationKey, Callback<SegmentSelectionResult> callback);
@@ -37,11 +40,20 @@ public interface SegmentationPlatformService {
 
     /**
      * Called to get the segment selection result synchronously from the backend.
+     *
      * @deprecated in favor of {@link getSelectedSegment}.
      * @param segmentationKey The key to be used to distinguish between different segmentation
-     *         usages.
+     *     usages.
      * @return The result of segment selection
      */
     @Deprecated
     SegmentSelectionResult getCachedSegmentResult(String segmentationKey);
+
+    /**
+     * Gets the list of input keys needed for a segmentation key.
+     *
+     * @param segmentationKey The key to fetch keys for.
+     * @param callback Callback with the list of input keys.
+     */
+    void getInputKeysForModel(String segmentationKey, Callback<Set<String>> callback);
 }

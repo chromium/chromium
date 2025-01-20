@@ -24,7 +24,7 @@ namespace {
 using PerformanceManagerFreezingBrowserTest =
     PerformanceManagerBrowserTestHarness;
 
-class PageLifecycleWaiter : public PageNode::ObserverDefaultImpl {
+class PageLifecycleWaiter : public PageNodeObserver {
  public:
   PageLifecycleWaiter() = default;
 

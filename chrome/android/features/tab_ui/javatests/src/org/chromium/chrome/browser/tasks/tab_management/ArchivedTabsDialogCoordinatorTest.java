@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -42,7 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -138,7 +138,9 @@ public class ArchivedTabsDialogCoordinatorTest {
         mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mArchivedTabModel
+                            .getTabRemover()
+                            .forceCloseTabs(TabClosureParams.closeAllTabs().build());
                     mTabArchiveSettings.resetSettingsForTesting();
                 });
     }
@@ -562,6 +564,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertNull(mActivityTestRule.getActivity().findViewById(R.id.archived_tabs_dialog));
     }
 
     @Test
@@ -773,12 +776,6 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(mTimesShown, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));
     }
 
-    private @TabListCoordinator.TabListMode int getMode() {
-        return SysUtils.isLowEndDevice()
-                ? TabListCoordinator.TabListMode.LIST
-                : TabListCoordinator.TabListMode.GRID;
-    }
-
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -790,14 +787,6 @@ public class ArchivedTabsDialogCoordinatorTest {
                                         TabLaunchType.FROM_RESTORE,
                                         null,
                                         mArchivedTabModel.getCount()));
-    }
-
-    private void removeArchivedTab(Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mArchivedTabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
-                    return null;
-                });
     }
 
     private void waitForArchivedTabModelsToLoad(

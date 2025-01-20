@@ -11,6 +11,8 @@
 #include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 

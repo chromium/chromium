@@ -35,7 +35,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -70,9 +69,7 @@ static const char kPermissionDeniedErrorMessage[] =
     "The user denied permission to access the database.";
 
 IDBFactory::IDBFactory(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
-      remote_(context),
-      feature_observer_(context) {}
+    : ExecutionContextLifecycleObserver(context), remote_(context) {}
 IDBFactory::~IDBFactory() = default;
 
 static bool IsContextValid(ExecutionContext* context) {
@@ -90,7 +87,6 @@ void IDBFactory::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(remote_);
-  visitor->Trace(feature_observer_);
   visitor->Trace(weak_factory_);
 }
 
@@ -290,7 +286,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state, callbacks_remote.InitWithNewEndpointAndPassReceiver(),
       std::move(transaction_remote), transaction_id, version,
-      std::move(metrics), CreatePendingRemoteFeatureObserver());
+      std::move(metrics));
 
   auto do_open = WTF::BindOnce(
       &IDBFactory::OpenInternalImpl,
@@ -396,8 +392,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       script_state,
       /*callbacks_receiver=*/mojo::NullAssociatedReceiver(),
       IDBTransaction::TransactionMojoRemote(context), 0,
-      IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
-      CreatePendingRemoteFeatureObserver());
+      IDBDatabaseMetadata::kDefaultVersion, std::move(metrics));
 
   auto do_delete = WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
                                  WrapPersistent(weak_factory_.GetWeakCell()),
@@ -517,22 +512,6 @@ IDBFactory::CreatePendingRemote(
       pending_factory_client.InitWithNewEndpointAndPassReceiver(),
       GetTaskRunner());
   return pending_factory_client;
-}
-
-mojo::PendingRemote<mojom::blink::ObservedFeature>
-IDBFactory::CreatePendingRemoteFeatureObserver() {
-  if (!feature_observer_) {
-    mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
-    GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-        feature_observer.InitWithNewPipeAndPassReceiver());
-    feature_observer_.Bind(std::move(feature_observer), GetTaskRunner());
-  }
-
-  mojo::PendingRemote<mojom::blink::ObservedFeature> feature;
-  feature_observer_->Register(
-      feature.InitWithNewPipeAndPassReceiver(),
-      mojom::blink::ObservedFeatureType::kIndexedDBConnection);
-  return feature;
 }
 
 }  // namespace blink

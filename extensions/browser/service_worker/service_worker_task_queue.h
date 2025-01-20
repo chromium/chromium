@@ -187,18 +187,22 @@ class ServiceWorkerTaskQueue
 
     void SetWorkerId(const WorkerId& worker_id,
                      ProcessManager* process_manager);
+    void ResetWorkerId() { worker_id_.reset(); }
+    void SetBrowserState(BrowserState browser_state) {
+      browser_state_ = browser_state;
+    }
+    void SetRendererState(RendererState renderer_state) {
+      renderer_state_ = renderer_state;
+    }
 
     bool ready() const;
 
     BrowserState browser_state() const { return browser_state_; }
+    RendererState renderer_state() const { return renderer_state_; }
 
     const std::optional<WorkerId>& worker_id() const { return worker_id_; }
 
    private:
-    // TODO(crbug.com/40936639): Remove this friend class reference now that
-    // there are accessors for the class members.
-    friend class ServiceWorkerTaskQueue;
-
     BrowserState browser_state_ = BrowserState::kInitial;
     RendererState renderer_state_ = RendererState::kInitial;
 
@@ -286,7 +290,10 @@ class ServiceWorkerTaskQueue
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // content::ServiceWorkerContextObserverSynchronous:
-
+  // Listens to worker stopping and removes tracking of worker state if found.
+  void OnStopping(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& worker_info) override;
   // Listens to worker stops and removes tracking of this worker if found.
   void OnStopped(int64_t version_id,
                  const content::ServiceWorkerRunningInfo& worker_info) override;
@@ -381,6 +388,12 @@ class ServiceWorkerTaskQueue
   // KeyedService:
   void Shutdown() override;
 
+  // Untracks the service worker from any state that believe the worker in ready
+  // to receive extension events.
+  void UntrackServiceWorkerState(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& worker_info);
+
   void RegisterServiceWorker(RegistrationReason reason,
                              const SequencedContextId& context_id,
                              const Extension& extension);
@@ -419,7 +432,7 @@ class ServiceWorkerTaskQueue
                               int thread_id);
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           base::Time start_time,
-                          blink::ServiceWorkerStatusCode status_code);
+                          content::StatusCodeResponse status);
 
   bool IsStartWorkerFailureUnexpected(
       blink::ServiceWorkerStatusCode status_code);

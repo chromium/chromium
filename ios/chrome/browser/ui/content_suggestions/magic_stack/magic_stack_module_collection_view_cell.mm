@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_collection_view_cell.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -32,6 +33,9 @@ const float kCornerRadius = 24;
     UIContextMenuInteractionDelegate>
 
 @property(nonatomic, assign) ContentSuggestionsModuleType type;
+
+// Indicates whether the user has chosen to hide this module type.
+@property(nonatomic, assign) BOOL shouldHide;
 
 @end
 
@@ -83,6 +87,7 @@ const float kCornerRadius = 24;
     [self removeInteraction:_contextMenuInteraction];
     _contextMenuInteraction = nil;
   }
+  _shouldHide = NO;
   [_moduleContainer resetView];
 }
 
@@ -102,6 +107,18 @@ const float kCornerRadius = 24;
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (configuration && _shouldHide) {
+    __weak MagicStackModuleCollectionViewCell* weakSelf = self;
+
+    [animator addCompletion:^{
+      [weakSelf.delegate neverShowModuleType:weakSelf.type];
+    }];
+  }
 }
 
 #pragma mark - Helpers
@@ -132,14 +149,17 @@ const float kCornerRadius = 24;
 // Returns the menu action to hide this module type.
 - (UIAction*)hideAction {
   __weak __typeof(self) weakSelf = self;
+
   UIAction* hideAction = [UIAction
       actionWithTitle:[self contextMenuHideDescription]
                 image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
            identifier:nil
               handler:^(UIAction* action) {
-                [weakSelf.delegate neverShowModuleType:weakSelf.type];
+                weakSelf.shouldHide = YES;
               }];
+
   hideAction.attributes = UIMenuElementAttributesDestructive;
+
   return hideAction;
 }
 
@@ -168,12 +188,15 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kMostVisited:
       return YES;
     default:
       return NO;
@@ -213,9 +236,11 @@ const float kCornerRadius = 24;
            identifier:nil
               handler:^(UIAction* action) {
                 if (optedIn) {
-                  [weakSelf.delegate disableNotifications:weakSelf.type];
+                  [weakSelf.delegate disableNotifications:weakSelf.type
+                                           viaContextMenu:YES];
                 } else {
-                  [weakSelf.delegate enableNotifications:weakSelf.type];
+                  [weakSelf.delegate enableNotifications:weakSelf.type
+                                          viaContextMenu:YES];
                 }
               }];
 }
@@ -277,7 +302,7 @@ const float kCornerRadius = 24;
   // per-profile notification settings is being introduced, ensure a `gaia_id`
   // is passed to `GetMobileNotificationPermissionStatusForClient()` below.
   return push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(clientId, "");
+      GetMobileNotificationPermissionStatusForClient(clientId, GaiaId());
 }
 
 // Title string for the context menu of this container.
@@ -303,6 +328,9 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kTips:
       return l10n_util::GetNSString(
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION);
+    case ContentSuggestionsModuleType::kMostVisited:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_CONTEXT_MENU_DESCRIPTION);
     default:
       NOTREACHED();
   }
@@ -321,6 +349,8 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       return l10n_util::GetNSStringF(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
@@ -345,6 +375,9 @@ const float kCornerRadius = 24;
           IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS,
           base::SysNSStringToUTF16(
               l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE)));
+    case ContentSuggestionsModuleType::kMostVisited:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD);
     default:
       NOTREACHED();
   }

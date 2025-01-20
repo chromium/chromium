@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         base::BindLambdaForTesting(
-            [](content::WebContents*,
+            [](base::WeakPtr<WebAppScreenshotFetcher>, content::WebContents*,
                std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
                WebAppInstallationAcceptanceCallback acceptance_callback) {
               web_app_info->user_display_mode = mojom::UserDisplayMode::kTabbed;

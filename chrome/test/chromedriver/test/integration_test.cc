@@ -90,9 +90,7 @@ void IntegrationTest::SetUp() {
 
 void IntegrationTest::TearDown() {
   if (browser_client_) {
-    Status status =
-        browser_client_->SendCommand("Browser.close", base::Value::Dict());
-    EXPECT_TRUE(StatusOk(status));
+    browser_client_->SendCommand("Browser.close", base::Value::Dict());
   }
 
   browser_client_.reset();

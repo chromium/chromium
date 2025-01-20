@@ -57,6 +57,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-10-x86-fyi-rel",
+    mirrors = [
+        "ci/android-10-x86-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-10-x86-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-11-x86-rel",
     mirrors = [
         "ci/android-11-x86-rel",
@@ -180,6 +195,7 @@ try_.builder(
 
 try_.builder(
     name = "android-14-tablet-landscape-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-14-tablet-landscape-arm64-rel",
     ],
@@ -260,6 +276,8 @@ try_.builder(
 
 try_.builder(
     name = "android-15-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 15 emulator.",
     mirrors = [
         "ci/android-15-x64-rel",
     ],
@@ -282,6 +300,53 @@ try_.builder(
         configs = [
             "ci/android-15-x64-fyi-rel",
             "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-16-x64-fyi-rel",
+    mirrors = [
+        "ci/android-16-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-16-x64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-15-tablet-x64-dbg",
+    mirrors = [
+        "ci/Android x64 Builder (dbg)",
+        "ci/android-15-tablet-x64-dbg-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Android x64 Builder (dbg)",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-15-tablet-landscape-x64-dbg",
+    mirrors = [
+        "ci/Android x64 Builder (dbg)",
+        "ci/android-15-tablet-landscape-x64-dbg-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Android x64 Builder (dbg)",
+            "debug_try_builder",
         ],
     ),
     contact_team_email = "clank-engprod@google.com",
@@ -321,7 +386,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.compilator_can_outlive_parent": 100,
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # b/346598710
@@ -357,20 +421,6 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(crbug.com/40240078): Reenable this builder once the reboot issue is resolved.
-# try_.builder(
-#     name = "android-asan",
-#     mirrors = ["ci/android-asan"],
-#     gn_args = gn_args.config(
-#         configs = [
-#             "ci/android-asan",
-#             "release_try_builder",
-#             "minimal_symbols",
-#         ],
-#     ),
-#     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-# )
-
 try_.builder(
     name = "android-bfcache-rel",
     mirrors = [
@@ -402,8 +452,6 @@ try_.builder(
             # Allows the bot to measure low-end arm32 and high-end arm64 using
             # a single build.
             "android_low_end_secondary_toolchain",
-            # Disable PGO due to too much volatility: https://crbug.com/344608183
-            "pgo_phase_0",
         ],
     ),
     builderless = not settings.is_main,
@@ -1108,12 +1156,12 @@ try_.orchestrator_builder(
     description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
         "ci/android-12l-x64-rel-cq",
-        "ci/android-13-x64-rel",
+        "ci/android-15-x64-rel",
         "ci/android-webview-13-x64-hostside-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-13-x64-rel",
+            "ci/android-15-x64-rel",
             "release_try_builder",
             "use_clang_coverage",
             "use_java_coverage",
@@ -1286,6 +1334,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1306,6 +1356,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1326,6 +1378,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1346,6 +1400,8 @@ try_.builder(
     contact_team_email = "cast-eng@google.com",
     tryjob = try_.job(
         location_filters = [
+            "build/android/.+",
+            "build/config/android/.+",
             "chromecast/.+",
             "components/cast/.+",
             "components/cast_receiver/.+",
@@ -1519,7 +1575,7 @@ try_.gpu.optional_tests_builder(
             "gpu_pixel_4_stable",
         ],
         per_test_modifications = {
-            "expected_color_pixel_passthrough_test": targets.mixin(
+            "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",
@@ -1531,7 +1587,7 @@ try_.gpu.optional_tests_builder(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "pixel_skia_gold_passthrough_test": targets.mixin(
+            "pixel_skia_gold_passthrough_ganesh_test": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",
@@ -1543,7 +1599,7 @@ try_.gpu.optional_tests_builder(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "screenshot_sync_passthrough_tests": targets.mixin(
+            "screenshot_sync_passthrough_ganesh_tests": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",

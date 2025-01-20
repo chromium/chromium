@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -37,7 +35,6 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -69,12 +66,6 @@ using ::testing::MockFunction;
 using ::testing::Return;
 
 namespace {
-
-bool MatchPrimaryPattern(const ContentSettingsPattern& expected_primary,
-                         const ContentSettingsPattern& primary_pattern,
-                         const ContentSettingsPattern& secondary_pattern) {
-  return expected_primary == primary_pattern;
-}
 
 base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
                                       GURL primary_url,
@@ -312,7 +303,8 @@ TEST_F(HostContentSettingsMapTest, IndividualSettings) {
 
 TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   TestingProfile profile;
-  GURL hosts[] = {GURL("https://example1.com/"), GURL("https://example2.com/")};
+  auto hosts = std::to_array<GURL>(
+      {GURL("https://example1.com/"), GURL("https://example2.com/")});
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
@@ -1576,8 +1568,10 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
 
   // First, test that we clear only COOKIES (not APP_BANNER), and pattern2.
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::COOKIES, base::Time(), base::Time::Max(),
-      base::BindRepeating(&MatchPrimaryPattern, pattern2));
+      ContentSettingsType::COOKIES,
+      [&](const ContentSettingPatternSource& setting) {
+        return setting.primary_pattern == pattern2;
+      });
   ContentSettingsForOneType host_settings =
       host_content_settings_map->GetSettingsForOneType(
           ContentSettingsType::COOKIES);
@@ -1622,8 +1616,10 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   ContentSettingsPattern http_pattern =
       ContentSettingsPattern::FromURLNoWildcard(url3_origin_only);
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::SITE_ENGAGEMENT, base::Time(), base::Time::Max(),
-      base::BindRepeating(&MatchPrimaryPattern, http_pattern));
+      ContentSettingsType::SITE_ENGAGEMENT,
+      [&](const ContentSettingPatternSource& setting) {
+        return setting.primary_pattern == http_pattern;
+      });
   // Verify we only have one, and it's url1.
   host_settings = host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::SITE_ENGAGEMENT);
@@ -2256,8 +2252,6 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
 
   content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
   ReloadProviders(profile.GetPrefs(), map);
-  const std::string kActiveExpiryHistogramName =
-      "ContentSettings.ActiveExpiry.PrefProvider.ContentSettingsType";
 
   // The following type is used as a sample of the persistent permission
   // type. It can be replaced with any other type if required.
@@ -2323,7 +2317,6 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
 
   RunExpirationMechanismIfFeatureEnabled(map,
                                          ContentSettingsType::STORAGE_ACCESS);
-  t.ExpectTotalCount(kActiveExpiryHistogramName, 0);
 
   // If we Fastforward by 101 seconds we should see only our first setting is
   // expired, we now retrieve 1 less setting and the rest are okay.
@@ -2337,13 +2330,6 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
       persistent_type, content_settings::mojom::SessionModel::USER_SESSION);
   ASSERT_EQ(2u, settings.size());
 
-  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 1 : 0);
-  t.ExpectUniqueSample(
-      kActiveExpiryHistogramName,
-      content_settings_uma_util::ContentSettingTypeToHistogramValue(
-          ContentSettingsType::STORAGE_ACCESS),
-      GetParam() ? 1 : 0);
-
   // If we fast forward again we should expire our second setting and drop if
   // from our retrieval list now.
   FastForwardTime(base::Seconds(101));
@@ -2356,14 +2342,6 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
       persistent_type, content_settings::mojom::SessionModel::USER_SESSION);
   ASSERT_EQ(1u, settings.size());
 
-  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 2 : 0);
-
-  t.ExpectUniqueSample(
-      kActiveExpiryHistogramName,
-      content_settings_uma_util::ContentSettingTypeToHistogramValue(
-          ContentSettingsType::STORAGE_ACCESS),
-      GetParam() ? 2 : 0);
-
   // If we fast forwarding much further it shouldn't make a difference as our
   // last setting and the default setting should never expire.
   FastForwardTime(base::Minutes(100));
@@ -2375,13 +2353,6 @@ TEST_P(HostContentSettingsMapActiveExpirationTest,
   settings = map->GetSettingsForOneType(
       persistent_type, content_settings::mojom::SessionModel::USER_SESSION);
   ASSERT_EQ(1u, settings.size());
-
-  t.ExpectTotalCount(kActiveExpiryHistogramName, GetParam() ? 2 : 0);
-  t.ExpectUniqueSample(
-      kActiveExpiryHistogramName,
-      content_settings_uma_util::ContentSettingTypeToHistogramValue(
-          ContentSettingsType::STORAGE_ACCESS),
-      GetParam() ? 2 : 0);
 }
 
 TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {

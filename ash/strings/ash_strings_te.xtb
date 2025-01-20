@@ -64,7 +64,7 @@
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
 <translation id="1195412055398077112">ఓవర్‌స్కాన్</translation>
 <translation id="1195667586424773550">ట్యాబ్ యొక్క అడ్రస్‌ బార్‌లోకి లింక్‌ను లాగండి</translation>
-<translation id="119944043368869598">అన్ని క్లియర్ చేయండి</translation>
+<translation id="119944043368869598">అన్నీ క్లియర్ చేయండి</translation>
 <translation id="1199716647557067911">స్విచ్ యాక్సెస్‌ను మీరు ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1210557957257435379">స్క్రీన్ రికార్డింగ్</translation>
@@ -274,6 +274,7 @@
 <translation id="1908992311423394684">కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1918022425394817322">కెమెరా ఎగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
+<translation id="1920390473494685033">కాంటాక్ట్‌లు</translation>
 <translation id="1923539912171292317">ఆటోమేటిక్‌ క్లిక్‌లు</translation>
 <translation id="1925320505152357008">1 నిమి. కంటే తక్కువ</translation>
 <translation id="1928739107511554905">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించడం కోసం టచ్‌స్క్రీన్‌ను ఉపయోగించండి.</translation>
@@ -281,6 +282,7 @@
 <translation id="1948405482892809935">తర్వాతి యూజర్‌కు మారండి</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">స్క్రీన్ రికార్డింగ్ పూర్తయింది</translation>
+<translation id="1956087014741188812">మౌస్ కీల ఫీచర్‌ను పాజ్ చేయండి</translation>
 <translation id="1957958912175573503">మీ భాషని సెట్ చేయండి</translation>
 <translation id="1961239773406905488">కెమెరా ప్రివ్యూ దాచబడింది</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -349,6 +351,7 @@
 <translation id="225680501294068881">పరికరాల కోసం స్కాన్ చేస్తోంది...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" />‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఏదో తప్పు జరిగింది</translation>
 <translation id="2258734398699965611">సూచించిన ఫైల్స్</translation>
+<translation id="2266607665880926261">మౌస్ కీలు పాజ్ చేయబడింది</translation>
 <translation id="2268130516524549846">బ్లూటూత్‌ నిలిపివేయబడింది</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> దశలలో <ph name="STEP" />వ దానిని చూడండి. లాంచర్ యాక్టివేట్ అయిన తర్వాత, మీకు మెరుగైన సెర్చ్ బార్ అందుబాటులోకి వస్తుంది. మీరు మీ ఫైల్స్, యాప్‌లు మరిన్నింటి కోసం సెర్చ్ చేయడానికి టైప్ చేయడం ప్రారంభించవచ్చు. మీ <ph name="PRODUCT_NAME" />ను గురించిన ప్రశ్నలకు మీరు సమాధానాలను కూడా పొందవచ్చు.</translation>
 <translation id="2268813581635650749">అన్నీ సైన్అవుట్ చేయి</translation>
@@ -361,6 +364,7 @@
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
 <translation id="2302092602801625023">ఈ ఖాతా Family Link ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="2303600792989757991">విండో స్థూలదృష్టిని టోగుల్ చేయి</translation>
+<translation id="2304702218354340897">మీరు ఖచ్చితంగా ఫేస్ కంట్రోల్‌ను ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="2305738328104302723">Google టాస్క్ లిస్ట్: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: ఇటీవలి స్క్రీన్ క్యాప్చర్‌లు, డౌన్‌లోడ్‌లు, ఇంకా పిన్ చేయబడిన ఫైళ్లు</translation>
 <translation id="2318576281648121272">ఈ రోజు <ph name="TODAY_DATE" /></translation>
@@ -387,6 +391,7 @@
 <translation id="2370971919968699910">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 <ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి.</translation>
 <translation id="2386292613071805067">పేజీలో ఉన్న మొత్తాన్ని ఎంచుకోండి</translation>
+<translation id="2389423187722941333">Geminiని టోగుల్ చేయండి</translation>
 <translation id="2392659840443812875">అందుబాటులో ఉన్న హాట్‌స్పాట్ ఏదీ లేదు. మీ పరికరం సమీపంలో ఉందని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="2397416548179033562">Chrome మెనూను చూపు</translation>
 <translation id="240006516586367791">మీడియా నియంత్రణలు</translation>
@@ -394,6 +399,7 @@
 <translation id="2402411679569069051">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ వేలిముద్రను ఉపయోగించండి లేదా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="240545663114741956">సైన్ అవుట్ చేయడానికి <ph name="ACCELERATOR" />‌ను రెండుసార్లు నొక్కండి.</translation>
 <translation id="2405664212338326887">కనెక్ట్ చేయబడలేదు</translation>
+<translation id="2406710117564540804">'అంతరాయం కలిగించవద్దు'ను ఆన్/ఆఫ్ చేయండి</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2412593942846481727">అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="2416438829169535743">వీక్షణ నుండి ఎగ్జిట్ అవ్వాలా?</translation>
@@ -527,6 +533,7 @@
 <translation id="2847759467426165163">దీనికి ప్రసారం చేయండి</translation>
 <translation id="2848120746144143659">ఫుల్ స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="2849936225196189499">క్లిష్టమైన</translation>
+<translation id="2850207700020959936">యాప్‌లు కెమెరాను యాక్సెస్ చేయగలవు</translation>
 <translation id="2860184359326882502">బాగా మ్యాచ్ అయ్యే సెర్చ్ ఫలితాలు</translation>
 <translation id="2865888419503095837">నెట్‌వర్క్ సమాచారం</translation>
 <translation id="2869095047958348710">గత <ph name="DAY_OF_WEEK" /></translation>
@@ -535,6 +542,7 @@
 <translation id="2876338922445400217">స్క్రీన్‌పై జూమ్ ఇన్ చేయండి</translation>
 <translation id="2878884018241093801">ఇటీవలి ఐటెమ్‌లు ఏవీ లేవు</translation>
 <translation id="2880541185262491188">చాలా ఎక్కువ సార్లు PINను ఎంటర్ చేసే ప్రయత్నం చేశారు. <ph name="TIME_LEFT" /> సమయం వేచి ఉండి, మళ్లీ ట్రై చేయండి</translation>
+<translation id="2883271196820422439">మౌస్ కీల ఫీచర్‌ను కొనసాగించండి</translation>
 <translation id="2885950158625301909">మరింత తెలుసుకోండి</translation>
 <translation id="2891209721153296020">"ఎంపిక రద్దు"</translation>
 <translation id="2894949423239620203">పనితీరును కేబుల్ ప్రభావితం చేయవచ్చు</translation>
@@ -581,6 +589,7 @@
 <translation id="304417730895741346">మీరు పిన్ చేసిన, తెరిచిన యాప్‌లు షెల్ఫ్‌లో ఉన్నాయి. యాప్‌ను షెల్ఫ్‌కి పిన్ చేయడానికి, యాప్‌పై కుడి క్లిక్ చేయండి లేదా రెండు వేళ్లతో మీ టచ్‌ప్యాడ్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="3045488863354895414">గుడ్ ఆఫ్టర్‌నూన్,</translation>
 <translation id="3047761520276763270">ఇలా చెప్పి ట్రై చేయండి:</translation>
+<translation id="3053407068093039599">కెమెరా యాక్సెస్‌ను ఆన్/ఆఫ్ చేయండి</translation>
 <translation id="3055162170959710888">మీరు ఈ పరికరాన్ని ఈ రోజు <ph name="USED_TIME" /> పాటు ఉపయోగించారు</translation>
 <translation id="3062298103034426069">సపోర్ట్ చేయనివి</translation>
 <translation id="3068622547379332530">వెర్షన్ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -721,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> హాట్‌స్పాట్</translation>
 <translation id="3540893133818942399">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="3542066395059568317">మీకు సిఫార్సులు కనిపిస్తాయి, కాబట్టి మీరు ఆపివేసిన చోటు నుండే కొనసాగించవచ్చు. మీరు కుడి క్లిక్ ఇచ్చి, సిఫార్సులను తీసివేయవచ్చు.</translation>
+<translation id="3545224667633138205">'మౌస్ కీలు' తిరిగి ప్రారంభించబడింది</translation>
 <translation id="3552189655002856821">Wi-Fi ఆఫ్ చేయబడింది</translation>
 <translation id="3554215588514239132">డెవలపర్ టూల్స్ ప్యానెల్‌ను చూడండి లేదా దాచండి</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> పిన్ చేయబడింది</translation>
@@ -795,6 +805,7 @@
 <translation id="3727231512028252576">ఐటెమ్‌లను లోడ్ చేయడం సాధ్యం కాలేదు. ఆన్‌లైన్‌లోకి వచ్చినప్పుడు మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3735740477244556633">క్రమపద్ధతి</translation>
 <translation id="3738664582935948253">మీరు స్క్రీన్ రికార్డింగ్‌లలో ఇప్పుడు క్లిక్‌లను, కీబోర్డ్ షార్ట్‌కట్‌లను చూపవచ్చు</translation>
+<translation id="3741482431277446954">కుడి మౌస్ బటన్</translation>
 <translation id="3742055079367172538">స్క్రీన్‌షాట్ తీసినప్పుడు</translation>
 <translation id="3743775386021959186">ఫోకస్ ఆన్‌లో ఉంది, <ph name="REMAINING_TIME" /> సమయం మిగిలివుంది</translation>
 <translation id="3750403286520637847">వాతావరణ సూచనను దాచండి</translation>
@@ -853,7 +864,6 @@
 <translation id="3958714870339660776">రోజు మొత్తం</translation>
 <translation id="3962859241508114581">మునుపటి ట్రాక్</translation>
 <translation id="3963124517343721543">మీ మునుపటి విండోలు, ట్యాబ్‌లను తెరవడం ద్వారా మీరు ఎక్కడ ఆపారో అక్కడి నుండి సులభంగా కొనసాగించండి. మీరు తర్వాత చేయవలసిన పనుల కోసం వ్యక్తిగతీకరించిన సూచనలను కూడా చూస్తారు.</translation>
-<translation id="396506362088290977">మీ మైక్ సౌండ్‌ను టెస్ట్ చేయండి</translation>
 <translation id="3969043077941541451">ఆఫ్</translation>
 <translation id="3970324493235864154">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను చూడండి</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
@@ -868,7 +878,6 @@
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="40062176907008878">చేతిరాత</translation>
 <translation id="4011112806063830608">'అంతరాయం కలిగించవద్దు' ఫీచర్ ఆన్‌లో ఉంది.</translation>
-<translation id="4015144849380506405">మౌస్ కీలు ఆన్‌లో ఉన్నప్పుడు పాజ్ చేయండి/కొనసాగించండి</translation>
 <translation id="4017989525502048489">లేజర్ పాయింటర్</translation>
 <translation id="401993194061514265">మార్కర్ అందుబాటులో లేదు. స్క్రీన్‌కాస్ట్‌ను మళ్లీ తెరవండి.</translation>
 <translation id="4021716437419160885">కిందికి స్క్రోల్ చేయి</translation>
@@ -882,6 +891,7 @@
 <translation id="4042660782729322247">మీరు మీ స్క్రీన్‌ను షేర్ చేస్తున్నారు</translation>
 <translation id="404437169852192935">అప్‌డేట్‌లు ముగిశాయి</translation>
 <translation id="4049230407053723315">క్విక్ సెట్టింగ్‌లు</translation>
+<translation id="4054070260844648638">ప్రతిఒక్కరికీ కనిపిస్తుంది</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వ బ్రౌజర్ ట్యాబ్. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">తర్వాత చేయవలసిన పనుల కోసం వ్యక్తిగతీకరించిన సూచనలను చూడటానికి, ఓవర్‌వ్యూ కీని నొక్కండి</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ఒక యాప్‌కు ఆఫ్}other{# యాప్‌లకు ఆఫ్}}</translation>
@@ -900,6 +910,7 @@
 <translation id="4119928251231465047">చాలా ఎక్కువ సార్లు PINను ఎంటర్ చేసే ప్రయత్నం చేశారు</translation>
 <translation id="412298498316631026">విండో</translation>
 <translation id="4123259114412175274">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ ఫోన్ బ్లూటూత్ ఆన్‌లో ఉందని నిర్ధారించుకోండి</translation>
+<translation id="4123868835475902435">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త <ph name="PRODUCT_NAME" /> ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="4125970834901680537">టాబ్లెట్ మోడ్‌లో యాప్‌లను స్ట్రీమ్ చేయడం సాధ్యం కాదు. ల్యాప్‌టాప్ మోడ్‌లో మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4131973331381812765">ఉష్ణోగ్రత: <ph name="TEMPERATURE" />°C - ప్రస్తుత వేగం: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">సూర్యోదయం వరకు ఆన్‌లో ఉంటుంది</translation>
@@ -1020,8 +1031,8 @@
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
 <translation id="4485506555414638855">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="4491109536499578614">చిత్రం</translation>
-<translation id="4493452241184130939">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, సిఫార్సు చేసిన యాప్‌లు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త <ph name="PRODUCT_NAME" /> ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="450584155212756404">డెవలపర్ ఛానెల్</translation>
+<translation id="4513044611477939680">క్విక్ షేర్</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4527045527269911712">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది.</translation>
@@ -1073,6 +1084,7 @@
 <translation id="4672539464599646374">బ్యాటరీ సేవర్ ఆన్ చేయబడింది</translation>
 <translation id="4673427585974421255">ఆన్‌లోనే ఉంచండి</translation>
 <translation id="4677040906536311086">Google షీట్</translation>
+<translation id="468019262817532242">మీతో ఎవ్వరు షేర్ చేయలేరు</translation>
 <translation id="468293128311738995">మీ ఫోన్‌లోని యాప్‌లు</translation>
 <translation id="4690510401873698237">అర కింది భాగంలో ఉంది</translation>
 <translation id="4696813013609194136">తల్లి/తండ్రి కోడ్‌తో పరికరాన్ని అన్‌లాక్ చేయండి</translation>
@@ -1083,7 +1095,6 @@
 <translation id="4708065238214351979">కీబోర్డ్‌ను మరింత ప్రకాశవంతంగా చేయండి</translation>
 <translation id="4708185346211948049">వచ్చే <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">మీ USB-C కేబుల్ USB4ను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" />లో ప్రారంభించడానికి 6 చిట్కాలు</translation>
 <translation id="4730374152663651037">తరచుగా ఉపయోగించేవి</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ఎడమ)</translation>
@@ -1105,6 +1116,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant డెమో సెషన్‌లో అందుబాటులో లేదు.</translation>
+<translation id="4785412405516449976">Google ఖాతాతో ఉన్న మీ కాంటాక్ట్‌లు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="4789348252524569426">స్పీచ్ ఫైల్స్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యం కాదు. మీ పరికరాన్ని అప్‌డేట్ చేయాలి. మీ పరికరాన్ని రీస్టార్ట్ చేసి, ఆపై మళ్లీ ట్రై చేయండి.</translation>
 <translation id="478959186716341421">ప్రసారం చేస్తున్నాము</translation>
 <translation id="4798403412327076414">మీరు తదుపరిసారి సైన్ ఇన్ చేసినప్పుడు గతంలో తెరిచిన విండోలు, యాప్‌లు మీకు కనిపిస్తాయి</translation>
@@ -1146,7 +1158,6 @@
 <translation id="4902797682482387055">ఫోకస్ చేయమని సూచించిన టాస్క్</translation>
 <translation id="490375751687810070">నిలువుగా ఉంది</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ</translation>
-<translation id="4911191962826748981">ఇది ప్రయోగాత్మక AI ఫీచర్, ఇది ఇచ్చే సమాధానాలు ప్రతిసారీ కరెక్ట్‌గానే ఉంటాయని చెప్పలేము.</translation>
 <translation id="491504982845934899">పరికరాన్ని సెటప్ చేసిన తర్వాత <ph name="NETWORK_NAME" />ను యాక్టివేట్ చేయండి</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
@@ -1234,6 +1245,7 @@
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="5187627942836026988">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్‌ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు.</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
+<translation id="5198039720391525849">ఫీచర్ చేసిన GIFలు</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్‌లు</translation>
 <translation id="5198715732953550718">కొత్త ఫోల్డర్‌ను క్రియేట్ చేయడం కోసం <ph name="MOVED_APP_NAME" /> అనేది <ph name="IN_PLACE_APP" />తో కలపబడింది.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1253,6 +1265,7 @@
 <translation id="5245201184978705914">టైప్ చేసిన మాటల ఫైల్‌‌ను జెనరేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="5251174953851719648">కంటెంట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న పరికరానికి కనెక్ట్ చేయబడింది, బ్యాటరీ<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">మీ మైక్‌ను టెస్ట్ చేయండి</translation>
 <translation id="5258528442992323769">సేవ్ చేసిన డెస్క్‌లు లేవు</translation>
 <translation id="5260676007519551770">డెస్క్ 4</translation>
 <translation id="5265391159779542051">ఫలితాలు లోడ్ అయ్యాయి</translation>
@@ -1292,7 +1305,6 @@
 <translation id="536019650977002321">మీ అడ్మినిస్ట్రేటర్ ఆడియో క్యాప్చర్‌ను అనుమతించలేదు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్స్ పాక్షికంగా డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ఈ ట్యాబ్‌కు వెళ్లండి</translation>
-<translation id="5363835273551457276">మీ మైక్రోఫోన్ సౌండ్‌ను మీరు టెస్ట్ చేయవచ్చు. ఆపడానికి ప్యానెల్‌ను మూసివేయండి.</translation>
 <translation id="5364693579536176785">స్టోరేజ్ స్పేస్</translation>
 <translation id="5369573834963677938">ఫేస్ కంట్రోల్ పరికరంలోని ఇతర యూజర్‌లకు అందుబాటులో ఉంటుంది</translation>
 <translation id="5369717264580061086">Files యాప్‌లో ఫైల్ ప్రివ్యూను చూడండి</translation>
@@ -1310,7 +1322,6 @@
 <translation id="5409208741270395213">టాస్క్ పూర్తయినట్లు మార్క్ చేయండి</translation>
 <translation id="5413656666631274079">సెట్టింగ్‌ల పేజీ</translation>
 <translation id="5414198321558177633">ప్రొఫైల్ లిస్ట్‌ను రిఫ్రెష్ చేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" />ను ఎలా ఉపయోగించాలో తెలుసుకోవడానికి ఒక క్విక్ టూర్ చేయండి</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
 <translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించండి</translation>
 <translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
@@ -1407,12 +1418,12 @@
 <translation id="5727460725221669831">మీరు మీ పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="5733630091161562207">స్వాగత నోటిఫికేషన్</translation>
 <translation id="573413375004481890">ఈ పరికరం మీ అన్ని ప్రదర్శన స్క్రీన్‌లకు మద్దతు ఇవ్వలేదు, కాబట్టి ఒకటి డిస్‌కనెక్ట్ చేయబడింది</translation>
-<translation id="5740328398383587084">సమీప షేరింగ్</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5744083938413354016">నొక్కి లాగండి</translation>
 <translation id="5745612484876805746">సూర్యాస్తమయ సమయానికి రాత్రి కాంతి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="5750765938512549687">బ్లూటూత్ ఆఫ్ చేయబడింది</translation>
 <translation id="5758114525425072423">ఫోకస్ చేయడం ప్రారంభించండి. <ph name="FOCUS_DURATION" />‌కు టైమర్ సెట్ చేయబడింది.</translation>
+<translation id="5759522586053040964">ఇతరులకు మీ గొంతు ఎలా వినిపిస్తుందో వినండి. ఆపడానికి, టెస్ట్ చిహ్నాన్ని క్లిక్ చేయండి లేదా వీడియో కాల్ ప్యానెల్‌ను మూసివేయండి.</translation>
 <translation id="5760866832697883462">మీ <ph name="NAME" />‌ను కనెక్ట్ చేయండి</translation>
 <translation id="5762420912707163638">మార్కర్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /> ట్రాక్‌ప్యాడ్, టచ్‌స్క్రీన్, లేదా స్క్రీన్‌పై డ్రా చేయడానికి స్టైలస్‌ను ఉపయోగించండి.</translation>
 <translation id="576341972084747908">ప్రమాదకరమైన <ph name="FILENAME" /> ఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
@@ -1484,6 +1495,7 @@
 <translation id="5990992855591814753">వ్యక్తిగతీకరించిన ఫోకస్ ప్లేలిస్ట్‌లను ట్రాక్ చేస్తూ ఉండండి. ఎటువంటి ఛార్జీ లేకుండా 3 నెలల పాటు YouTube Premiumతో యాడ్స్-లేని YouTube Music, YouTubeలను పొందండి. నియమాలు వర్తిస్తాయి.</translation>
 <translation id="5998374579424866922">గేమ్ కంట్రోల్స్‌ను ఆఫ్ చేయండి</translation>
 <translation id="6000279412553873020">కీలు, బటన్‌లు అలాగే మరిన్ని</translation>
+<translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />లో <ph name="SELECTED_PAGE" />వ పేజీ</translation>
 <translation id="601304062528754300">షెల్ఫ్‌లో తర్వాతి ఐటెమ్‌ను హైలైట్ చేయండి</translation>
 <translation id="6015573907265691211">పూర్తయిందని మార్క్ చేయండి</translation>
@@ -1503,7 +1515,7 @@
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6043212731627905357">మీ <ph name="DEVICE_TYPE" />తో ఈ మానిటర్ పని చేయడం లేదు (మానిటర్‌కు మద్దతు లేదు).</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
-<translation id="6045629311476491587"><ph name="APP_COUNT" /> యాప్‌ల ద్వారా ఉపయోగించబడింది</translation>
+<translation id="6045629311476491587"><ph name="APP_COUNT" /> యాప్‌లు ఉపయోగించాయి</translation>
 <translation id="6045998054441862242">అధిక కాంట్రాస్ట్ మోడ్‌ని ఆన్ చేయండి</translation>
 <translation id="6047696787498798094">మీరు మరొక వినియోగదారుకు మారినప్పుడు స్క్రీన్ షేర్‌ ఆపివేయబడుతుంది. మీరు కొనసాగించాలని అనుకుంటున్నారా?</translation>
 <translation id="6052614013050385269">లింక్‌ను కుడి-క్లిక్ చేయండి</translation>
@@ -1530,7 +1542,7 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
-<translation id="6129953537138746214">ఖాళీ</translation>
+<translation id="6129953537138746214">స్పేస్</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141205840878048728">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు?</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
@@ -1556,6 +1568,7 @@
 <translation id="6199775032047436064">ప్రస్తుత పేజీని మళ్ళీ లోడ్ చేయి</translation>
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>
+<translation id="6212580734499190393">10 నిమిషాలకు</translation>
 <translation id="6213808132343683860">పాక్షిక స్క్రీన్‌షాట్ తీయండి లేదా స్క్రీన్ రికార్డింగ్ చేయండి</translation>
 <translation id="621606890568890214">Google Classroomను విస్తరించండి</translation>
 <translation id="6216759484154215561">మరింత తెలుసుకోండి అనే లింక్ బ్రౌజర్‌లో తెరుచుకుంది</translation>
@@ -1648,6 +1661,7 @@
 <translation id="6539852571005954999">డౌన్‌లోడ్ చేయడానికి <ph name="FILENAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
 <translation id="6542891623636520977">ఎమోజీలు, GIFలు, మరెన్నో</translation>
+<translation id="6543942526104794893">మీరు ఖచ్చితంగా ముఖ సంజ్ఞలను ఆఫ్ చేయాలని అనుకుంటున్నారా?</translation>
 <translation id="6545382064335350438">మీ PINను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6555373427270923730">అడ్ర‌స్ బార్‌లో వెబ్ అడ్రస్‌ను టైప్ చేసి, <ph name="MODIFIER" /><ph name="KEY" />‌ను నొక్కండి</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -1668,7 +1682,6 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">కెమెరా దిగువ ఎడమ మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="6605415194043280389">ఫోకస్ ఆన్‌లో ఉంది</translation>
-<translation id="660846213831377756">మౌస్ కీలు</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6612802754306526077">స్క్రీన్ రికార్డింగ్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="6612889377159412215">సబ్‌టాస్క్</translation>
@@ -1799,6 +1812,7 @@
 <translation id="7034025838182392395"><ph name="APP_NAME" /> యాప్ <ph name="DEVICE_NAME" />‌ను ఉపయోగించాలనుకుంటుంది. మీ పరికరం తాలూకు ఫిజికల్ <ph name="DEVICE_NAME" /> స్విచ్‌ను ఆన్ చేయండి.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">స్టేటస్ ప్రాంతాన్ని కుదించండి</translation>
+<translation id="7042593542151411225">యాప్‌లు కెమెరాను యాక్సెస్ చేయలేవు</translation>
 <translation id="7045033600005038336">టెంప్లేట్‌ను రీప్లేస్ చేయాలా?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> డిస్‌కనెక్ట్ అయింది</translation>
 <translation id="7055910611768509537">ఒక వారం నుండి స్టయిలస్ ఉపయోగించబడలేదు</translation>
@@ -1821,6 +1835,7 @@
 <translation id="7118268675952955085">స్క్రీన్‌షాట్</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" />‌ను తెరవండి</translation>
 <translation id="7119327711295338600">తర్వాతి పదాన్ని లేదా అక్షరాన్ని ఎంచుకోండి</translation>
+<translation id="7124556000457919678">ఆన్ అయినప్పుడు, మౌస్ కీల ఫీచర్‌ను పాజ్ చేయండి, కొనసాగించండి</translation>
 <translation id="7126996685418858413">గత వారంలో తెరిచారు</translation>
 <translation id="7130207228079676353">అత్యంత ఇష్టపడేవి</translation>
 <translation id="7131634465328662194">మీరు ఆటోమేటిక్‌గా సైన్ అవుట్ చేయబడతారు.</translation>
@@ -1842,6 +1857,7 @@
 <translation id="7198435252016571249">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="7219573373513695352">పరికరాలు ఏవీ కనెక్ట్ కాలేదు</translation>
 <translation id="7229029500464092426">మెమరీ <ph name="AVAILABLE_MEMORY" /> | మొత్తం <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">రెండు మౌస్ బటన్లు</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది. మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ఒక అప్‌డేట్‌ను వర్తింపజేయడానికి ఈ Chromebookను రీస్టార్ట్ చేయాలి. దీనికి 1 నిమిషం వరకు పట్టవచ్చు.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -1947,6 +1963,7 @@
 <translation id="7599378375976398913">ఎంచుకున్న ఫలితాన్ని ఇన్సర్ట్ చేస్తోంది</translation>
 <translation id="7600875258240007829">అన్ని నోటిఫికేషన్‌లను చూడండి</translation>
 <translation id="7601417191446344542">మైక్ మ్యూట్ అలర్ట్‌ను ఆన్ చేయాలా?</translation>
+<translation id="7602187221150705972">ఎమోజీలను, GIFలను, ఇంకా మరిన్నింటిని సెర్చ్ చేయండి</translation>
 <translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
 <translation id="7609951632080598826">క్యాలెండర్ వీక్షణ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">కెమెరా తిరిగి కనెక్ట్ చేయబడింది.</translation>
@@ -2010,7 +2027,6 @@
 <translation id="780301667611848630">వద్దు</translation>
 <translation id="7807067443225230855">శోధన మరియు అసిస్టెంట్</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> మరియు <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">'బాగుంది' అనే ఆప్షన్, ఈ సూచనను మీరు లైక్ చేశారనే ఫీడ్‌బ్యాక్‌ను సబ్మిట్ చేస్తుంది</translation>
 <translation id="7825412704590278437">రాబోయే క్యాలెండర్ ఈవెంట్ నుండి</translation>
 <translation id="7829386189513694949">సిగ్నల్ దృఢంగా ఉంది</translation>
 <translation id="7830453190047749513">మీ <ph name="PERIPHERAL_NAME" /> కోసం మీరు బటన్ చర్యలను, కర్సర్ వేగాన్ని, ఇంకా మరిన్నింటిని వ్యక్తిగతీకరించవచ్చు</translation>
@@ -2043,6 +2059,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">ఫోకస్ చేస్తున్నప్పుడు <ph name="TIME" /> వరకు నోటిఫికేషన్‌లు మ్యూట్ చేయబడతాయి</translation>
+<translation id="7901010467630324625"><ph name="EMAIL" />‌తో సైన్ ఇన్ చేసిన పరికరాలు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="7901190436359881020">విండోలను స్వాప్ చేయండి</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>
@@ -2101,6 +2118,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> పేరు ఉన్న టెంప్లేట్ ఇప్పటికే ఉంది</translation>
 <translation id="8052898407431791827">క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="8054466585765276473">బ్యాటరీ సమయాన్ని లెక్కిస్తోంది.</translation>
+<translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8079538659226626406">స్క్రీన్ షేర్</translation>
 <translation id="8083540854303889870">తర్వాత ఉపయోగించడానికి సేవ్ చేయబడింది</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2125,6 +2143,7 @@
 <translation id="8142699993796781067">ప్రైవే. నెట్‌వర్క్</translation>
 <translation id="8144760705599030999">మీ ఇతర పరికరాలతో ఫాస్ట్ పెయిరింగ్ కోసం మీ <ph name="NAME" />ను <ph name="EMAIL" />కు సేవ్ చేయండి</translation>
 <translation id="8144914663975476336">రికార్డింగ్ ఫార్మాట్‌ను ఎంచుకోండి</translation>
+<translation id="8145272500474066209">జెనరేటివ్ AI ఇచ్చే సమాధానాలు కరెక్ట్‌గా ఉండకపోవచ్చు,వ్యక్తులకు సంబంధించిన సమాచారం విషయంలో కూడా ఇదే వర్తిస్తుంది, కాబట్టి దాన్ని డబుల్-చెక్ చేయండి. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">బ్లూటూత్ సెట్టింగ్‌లను చూడండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">మూసివేయడానికి Ctrl + W నొక్కండి.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ఆటోఫిల్</translation>
@@ -2140,6 +2159,7 @@
 <translation id="8203224998425013577">మరిన్ని ఎమోజీలను, GIFలను చూడండి</translation>
 <translation id="8203795194971602413">కుడి క్లిక్</translation>
 <translation id="8205469348819768313">Page Downను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
+<translation id="8213376797713070611">ఎడమ మౌస్ బటన్</translation>
 <translation id="8214996719228530800">కెనరీ ఛానెల్</translation>
 <translation id="8219451629189078428">ఈ సమయంలో మీ Chromebook ఆన్‌లో ఉండాలి, పవర్‌కు కనెక్ట్ అయ్యి ఉండాలి. మీ Chromebook, పవర్ అవుట్‌లెట్ రెండింటికీ ఛార్జర్ లేదా అడాప్టర్ కేబుల్‌లు పూర్తిగా ప్లగ్-ఇన్ అయ్యాయని నిర్ధారించుకోండి. మీ Chromebookను ఆఫ్ చేయవద్దు.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" />‌ను జోడించండి</translation>
@@ -2150,7 +2170,6 @@
 <translation id="8238817965863339552"><ph name="PRODUCT_NAME" />ను ఎలా ఉపయోగించాలో తెలుసుకోవడానికి ఒక క్విక్ టూర్ చేయండి. కేవలం 5 దశల్లో సెటప్ చేసి, దీనిని ఉపయోగించండి.</translation>
 <translation id="8239034820133090126">కుడి వైపున ఉన్న డెస్క్‌ను యాక్టివేట్ చేయండి</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, యాప్</translation>
 <translation id="825129991941217170">Google Drive కంటెంట్ అంతటినీ చూపండి</translation>
 <translation id="8257510091797044096">మీ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
@@ -2165,7 +2184,6 @@
 <translation id="830868413617744215">బీటా</translation>
 <translation id="8314772463905284467">Caps Lock ఆన్‌లో ఉంది</translation>
 <translation id="8315514906653279104">ఆన్ అవుతోంది...</translation>
-<translation id="8319634750346253957">'బాగా లేదు' ఆప్షన్, మీరు ఈ సూచనను డిస్‌లైక్ చేశారనే ఫీడ్‌బ్యాక్‌ను సబ్మిట్ చేస్తుంది</translation>
 <translation id="8331351032546853669">డౌన్‌లోడ్ పెండింగ్‌లో ఉంది</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2219,7 +2237,6 @@
 <translation id="851458219935658693">ప్రస్తుత డెస్క్ నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>
 <translation id="851660987304951246">త్వరగా కంటెంట్ సారాంశాన్ని పొందడానికి లేదా ప్రశ్నలను అడగడానికి 'చదవడంలో నాకు సహాయం చేయి' ఫీచర్‌ను ఉపయోగించండి</translation>
 <translation id="8517041960877371778">మీ <ph name="DEVICE_TYPE" /> ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ద్వారా మైక్ ఇన్‌పుట్ కంట్రోల్ చేయబడుతుంది}other{# యాప్‌ల ద్వారా మైక్ ఇన్‌పుట్ కంట్రోల్ చేయబడుతుంది}}</translation>
 <translation id="8535393432370007982">రంగు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
 <translation id="8541078764854166027">కామ్ ఫ్రేమింగ్</translation>
 <translation id="8542053257095774575">సేవ్ చేసిన డెస్క్‌లు లేదా టెంప్లేట్‌లు లేవు</translation>
@@ -2314,6 +2331,7 @@
 <translation id="8855885154700222542">పూర్తిస్క్రీన్ కీ</translation>
 <translation id="8858369206579825206">గోప్యతా కంట్రోల్స్</translation>
 <translation id="8860366331836346216">eSIMను జోడించండి</translation>
+<translation id="8869149849311827122">మీరు ఖచ్చితంగా మౌస్ కర్సర్ కంట్రోల్‌ను ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
 <translation id="8873203135446552888">మీరు బిల్ట్-ఇన్ టచ్‌ప్యాడ్‌ను డిజేబుల్ చేయాలనుకుంటున్నారని నిర్ధారించండి</translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>
@@ -2365,6 +2383,7 @@
 <translation id="9034924485347205037">Linux ఫైళ్లు</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="9050012935252397793">బ్లూటూత్ అందుబాటులో లేదు</translation>
+<translation id="9050999376345823055">విడుదల చేయడానికి "." నొక్కండి</translation>
 <translation id="906458777597946297">విండోను విస్తరించు</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9070640332319875144">అసిస్టెంట్ సెట్టింగ్‌లు</translation>
@@ -2373,6 +2392,7 @@
 <translation id="9074432941673450836">మీ <ph name="PRODUCT_NAME" />లో మీ అవసరానికి తగిన విధంగా ప్రతి పనిని చేయడానికి యాప్‌లను ఉపయోగించండి. మీరు లాంచర్‌లో మీ యాప్‌లను కనుగొనవచ్చు. మీరు కీబోర్డ్‌లోని లాంచర్ కీని (ఎడమ షిఫ్ట్ కీ పైన) కూడా నొక్కవచ్చు.</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9077515519330855811">మీడియా కంట్రోల్‌లు, <ph name="MEDIA_TITLE" /> ప్రస్తుతం ప్లే అవుతోంది</translation>
+<translation id="9079012373317704997">కెమెరా యాక్సెస్‌ను రిమోట్‌గా ఆన్ చేయలేరు</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">కెమెరా ఎగువ ఎడమ మూలకు స్నాప్ చేయబడింది</translation>
 <translation id="9080132581049224423">హోమ్‌కు వెళ్లడానికి పైకి స్వైప్ చేయండి</translation>

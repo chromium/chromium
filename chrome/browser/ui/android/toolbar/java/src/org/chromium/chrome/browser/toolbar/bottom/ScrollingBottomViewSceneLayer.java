@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -122,8 +123,13 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        // The composited shadow should be visible if the Android toolbar's isn't.
-        boolean isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
+        boolean isShadowVisible;
+        if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
+            isShadowVisible = true;
+        } else {
+            // The composited shadow should be visible if the Android toolbar's isn't.
+            isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
+        }
 
         ScrollingBottomViewSceneLayerJni.get()
                 .updateScrollingBottomViewLayer(

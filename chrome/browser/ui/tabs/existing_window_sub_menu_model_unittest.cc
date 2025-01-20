@@ -76,7 +76,7 @@ TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
 
 class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
-  ExistingWindowSubMenuModelTest() : BrowserWithTestWindowTest() {}
+  ExistingWindowSubMenuModelTest() = default;
 
  protected:
   std::unique_ptr<Browser> CreateTestBrowser(bool incognito, bool popup);

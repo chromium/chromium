@@ -315,6 +315,13 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     return;
   }
 
+  // Schedule the next serialization to come immediately after the action is
+  // complete, even if the document is still loading.
+  // Do this scheduling now, because in some cases performing the action
+  // could cause script to run that destroys the frame, which destroys |this|,
+  // and ax_context_ is no longer at a valid memory address.
+  ScheduleImmediateAXUpdate();
+
   // TODO: think about how to handle this without holding onto a plugin tree
   // source.
   std::unique_ptr<ui::AXActionTarget> target =
@@ -396,10 +403,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kLongClick:
       break;
   }
-
-  // Ensure the next serialization comes immediately after the action is
-  // complete, even if the document is still loading.
-  ScheduleImmediateAXUpdate();
 }
 
 void RenderAccessibilityImpl::Reset(uint32_t reset_token) {
@@ -640,13 +643,6 @@ void RenderAccessibilityImpl::ConnectionClosed() {
   // This can happen when a navigation occurs with a serialization is in flight.
   // There is nothing special to do here.
   ax_context_->OnSerializationCancelled();
-}
-
-void RenderAccessibilityImpl::RecordInaccessiblePdfUkm() {
-  ukm::builders::Accessibility_InaccessiblePDFs(
-      GetMainDocument().GetUkmSourceId())
-      .SetSeen(true)
-      .Record(ukm_recorder_.get());
 }
 
 void RenderAccessibilityImpl::SetPluginAXTreeActionTargetAdapter(

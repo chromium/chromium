@@ -250,7 +250,7 @@ BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
   browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
-BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() {}
+BrowserAddedForProfileObserver::~BrowserAddedForProfileObserver() = default;
 
 void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
   if (browser_) {

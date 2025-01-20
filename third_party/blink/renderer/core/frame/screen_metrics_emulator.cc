@@ -178,7 +178,7 @@ void ScreenMetricsEmulator::UpdateVisualProperties(
   DCHECK(!frame_widget_->AutoResizeMode());
 
   original_screen_infos_ = visual_properties.screen_infos;
-  original_widget_size_ = visual_properties.new_size;
+  original_widget_size_ = visual_properties.new_size_device_px;
   original_visible_viewport_size_ = visual_properties.visible_viewport_size;
   original_root_viewport_segments_ =
       visual_properties.root_widget_viewport_segments;

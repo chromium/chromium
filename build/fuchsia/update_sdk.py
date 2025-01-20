@@ -58,7 +58,11 @@ def _GetCurrentVersionFromManifest() -> Optional[str]:
   if not os.path.exists(_VERSION_FILE):
     return None
   with open(_VERSION_FILE) as f:
-    return json.load(f)['id']
+    data = json.load(f)
+    if not data:
+      logging.warning('Unexpected empty manifest.json file.')
+      return None
+    return data['id']
 
 
 def main():

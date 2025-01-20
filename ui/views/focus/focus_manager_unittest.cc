@@ -607,8 +607,9 @@ class FocusManagerArrowKeyTraversalTest
   void SetUp() override {
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       is_rtl_ = GetParam();
-      if (is_rtl_)
+      if (is_rtl_) {
         base::i18n::SetICUDefaultLocale("he");
+      }
     }
 
     FocusManagerTest::SetUp();
@@ -619,8 +620,6 @@ class FocusManagerArrowKeyTraversalTest
  private:
   // Restores the locale to default when the destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  bool previous_arrow_key_traversal_enabled_ = false;
 };
 
 // Instantiate the Boolean which is used to toggle RTL in

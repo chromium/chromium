@@ -306,102 +306,25 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
-  if (pending_input_) {
-    pending_input_.reset();
-  }
-  pending_input_ = std::move(input_element);
-}
-
-void Action::BindPending() {
-  // Check whether position is adjusted.
-  if (pending_position_) {
-    current_positions_[0] = *pending_position_;
-    pending_position_.reset();
-    UpdateTouchDownPositions();
-  }
-
-  // Check whether input is changed.
-  if (!pending_input_) {
-    return;
-  }
-
+void Action::BindInput(std::unique_ptr<InputElement> input_element) {
   current_input_.reset();
-  current_input_ = std::move(pending_input_);
-  DCHECK(!pending_input_);
+  current_input_ = std::move(input_element);
 }
 
-void Action::CancelPendingBind() {
-  // Clear the pending positions.
-  bool canceled = false;
-  if (pending_position_) {
-    pending_position_.reset();
-    canceled = true;
-  }
-  // Clear the pending input.
-  if (pending_input_) {
-    pending_input_.reset();
-    canceled = true;
-  }
+void Action::BindPosition(const gfx::Point& new_touch_center) {
+  Position new_position = Position(PositionType::kDefault);
+  new_position.Normalize(new_touch_center, touch_injector_->content_bounds_f());
 
-  // For unit test, `action_view_` could be nullptr.
-  if (!action_view_ || !canceled) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kCurrent);
-}
-
-void Action::ResetPendingBind() {
-  pending_position_.reset();
-  pending_input_.reset();
-}
-
-void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
-  DCHECK(!current_positions().empty());
-
-  if (pending_position_) {
-    pending_position_.reset();
-  }
-
-  // Keep the customized position to default type.
-  pending_position_ = std::make_unique<Position>(PositionType::kDefault);
-  pending_position_->Normalize(new_touch_center,
-                               touch_injector_->content_bounds_f());
-
-  BindPending();
-}
-
-void Action::RestoreToDefault() {
-  bool restored = false;
-  if (GetCurrentDisplayedInput() != *original_input_) {
-    pending_input_.reset();
-    pending_input_ = std::make_unique<InputElement>(*original_input_);
-    restored = true;
-  }
-  if (GetCurrentDisplayedPosition() != original_positions_[0]) {
-    pending_position_.reset();
-    pending_position_ = std::make_unique<Position>(original_positions_[0]);
-    restored = true;
-  }
-
-  // For unit test, `action_view_` could be nullptr.
-  if (!action_view_ || !restored) {
-    return;
-  }
-
-  action_view_->SetViewContent(BindingOption::kPending);
-  // Set to `DisplayMode::kRestore` to clear the focus even the current
-  // binding is same as original binding.
-  action_view_->SetDisplayMode(DisplayMode::kRestore);
+  current_positions_[0] = std::move(new_position);
+  UpdateTouchDownPositions();
 }
 
 const InputElement& Action::GetCurrentDisplayedInput() {
   DCHECK(current_input_);
-  return pending_input_ ? *pending_input_ : *current_input_;
+  return *current_input_;
 }
 
 bool Action::IsOverlapped(const InputElement& input_element) {
-  DCHECK(current_input_);
   if (!current_input_) {
     return false;
   }
@@ -415,10 +338,8 @@ const Position& Action::GetCurrentDisplayedPosition() {
   // supporting mouse.
   DCHECK(!original_positions_.empty());
 
-  return pending_position_
-             ? *pending_position_
-             : (!current_positions_.empty() ? current_positions_[0]
-                                            : original_positions_[0]);
+  return (!current_positions_.empty() ? current_positions_[0]
+                                      : original_positions_[0]);
 }
 
 std::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
@@ -651,13 +572,10 @@ void Action::CreateTouchEvent(ui::EventType type,
       .set_target(touch_injector_->window());
 }
 
-void Action::PrepareToBindPositionForTesting(
-    std::unique_ptr<Position> position) {
-  if (pending_position_) {
-    pending_position_.reset();
-  }
+void Action::BindPositionForTesting(std::unique_ptr<Position> position) {
   // Now it only supports changing the first touch position.
-  pending_position_ = std::move(position);
+  current_positions_[0] = std::move(*position);
+  UpdateTouchDownPositions();
 }
 
 }  // namespace arc::input_overlay

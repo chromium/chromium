@@ -43,7 +43,7 @@ class DiagnosticsModel {
   // calling model->GetTest(id).
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // Called when a test has finished, regardless of outcome.
     virtual void OnTestFinished(int index, DiagnosticsModel* model) = 0;
     // Called once all the test are run.
@@ -57,7 +57,7 @@ class DiagnosticsModel {
   // Encapsulates what you can know about a given test.
   class TestInfo {
    public:
-    virtual ~TestInfo() {}
+    virtual ~TestInfo() = default;
     // A numerical id for this test. Must be a unique number among all the
     // tests.
     virtual int GetId() const = 0;
@@ -82,7 +82,7 @@ class DiagnosticsModel {
     virtual base::Time GetEndTime() const = 0;
   };
 
-  virtual ~DiagnosticsModel() {}
+  virtual ~DiagnosticsModel() = default;
   // Returns how many tests have been run.
   virtual int GetTestRunCount() const = 0;
   // Returns how many tests are available. This value never changes.

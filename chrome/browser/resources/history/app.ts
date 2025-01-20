@@ -9,7 +9,6 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import './history_embeddings_promo.js';
 import './history_list.js';
@@ -359,6 +358,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
     this.browserService_!.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
+
+    const mediaQuery = window.matchMedia('(max-width: 1023px)');
+    this.hasDrawer_ = mediaQuery.matches;
+    this.eventTracker_.add(
+        mediaQuery, 'change',
+        (e: MediaQueryListEvent) => this.hasDrawer_ = e.matches);
   }
 
   override ready() {
@@ -388,6 +393,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private getShowResultsByGroup_() {
     return this.selectedPage_ === Page.HISTORY_CLUSTERS;
+  }
+
+  private getShowHistoryList_() {
+    return this.selectedPage_ === Page.HISTORY;
   }
 
   private onShowResultsByGroupChanged_(e: CustomEvent<{value: boolean}>) {
@@ -701,8 +710,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private updateTabsContentPage_() {
-    this.tabsContentPage_ = (this.selectedPage_ === Page.HISTORY_CLUSTERS &&
-                             this.historyClustersEnabled_) ?
+    this.tabsContentPage_ =
+        (this.selectedPage_ === Page.HISTORY_CLUSTERS &&
+         this.historyClustersEnabled_ && this.historyClustersVisible_) ?
         Page.HISTORY_CLUSTERS :
         Page.HISTORY;
   }

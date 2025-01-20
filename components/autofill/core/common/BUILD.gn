@@ -53,6 +53,7 @@ static_library("common") {
     "password_form_generation_data.h",
     "password_generation_util.cc",
     "password_generation_util.h",
+    "plus_address_survey_type.h",
     "save_password_progress_logger.cc",
     "save_password_progress_logger.h",
     "signatures.cc",
@@ -73,11 +74,9 @@ static_library("common") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/variations",
-    "//crypto",
     "//google_apis:google_apis",
     "//ui/base",
     "//ui/gfx/geometry",
@@ -123,10 +122,7 @@ component("features") {
     "autofill_payments_features.h",
   ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -156,7 +152,6 @@ source_set("unit_tests") {
     "autocomplete_parsing_util_unittest.cc",
     "autofill_internals/log_message_unittest.cc",
     "autofill_internals/logging_scope_unittest.cc",
-    "autofill_prefs_unittest.cc",
     "autofill_regexes_unittest.cc",
     "autofill_util_unittest.cc",
     "credit_card_number_validation_unittest.cc",

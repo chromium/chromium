@@ -61,7 +61,7 @@ class MediaCaptureDevicesDispatcher
     virtual void OnCreatingAudioStream(int render_process_id,
                                        int render_frame_id) {}
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   static MediaCaptureDevicesDispatcher* GetInstance();

@@ -158,15 +158,17 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
 
 bool OnTaskLockedSessionNavigationThrottle::
     ShouldBlockSensitiveUrlNavigation() {
-  // Block download urls, files, urls via post request, blob urls, non-boca app
-  // chrome urls, and other local schemes.
+  // Block download urls, files, urls via post request (form submission being
+  // an exception), blob urls, non-boca app chrome urls, and other local
+  // schemes.
   const GURL& url = navigation_handle()->GetURL();
   bool is_boca_app_host_url =
       (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
        url.host() == boca::kChromeBocaAppHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
-           net::HttpRequestHeaders::kGetMethod) ||
+               net::HttpRequestHeaders::kGetMethod &&
+           !navigation_handle()->IsFormSubmission()) ||
           (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url));
 }
 

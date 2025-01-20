@@ -86,8 +86,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
     net::MutableNetworkTrafficAnnotationTag traffic_annotation;
   };
 
-  // Bitfield that is used with |SimulateResponseForPendingRequest()| to
-  // control which request is selected.
+  // Bitfield that is used with `SimulateResponseForPendingRequest()` and
+  // `WaitForRequest()` to control which request is selected.
   enum ResponseMatchFlags : uint32_t {
     kMatchDefault = 0x0,
     kUrlMatchPrefix = 0x1,   // Whether URLs are a match if they start with the
@@ -159,6 +159,10 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   // or null if not existing.
   PendingRequest* GetPendingRequest(size_t index);
 
+  // Waits until there's a PendingRequest for `url`. Note that PendingRequests
+  // will not be made for requests handled by a previous AddResponse() call.
+  void WaitForRequest(const GURL& url);
+
   // Sends a response for the first (oldest) pending request with URL |url|.
   // Returns false if no such pending request exists.
   // |flags| can be used to change the default behavior:
@@ -229,8 +233,12 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   bool CreateLoaderAndStartInternal(const GURL& url,
                                     mojom::URLLoaderClient* client);
 
+  // If `keep_request` is true, only waits for the request rather than returning
+  // it. Only makes sense with ResponseMatchFlags::kWaitForRequest.
   std::optional<network::TestURLLoaderFactory::PendingRequest>
-  FindPendingRequest(const GURL& url, ResponseMatchFlags flags);
+  FindPendingRequest(const GURL& url,
+                     ResponseMatchFlags flags,
+                     bool keep_request = false);
 
   static void SimulateResponse(mojom::URLLoaderClient* client,
                                Redirects redirects,

@@ -220,7 +220,7 @@ bool WaylandWindowDragController::StartDragSession(
 
   data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           /*icon_surface=*/nullptr, this);
-  pointer_grab_owner_ = origin_window_;
+  events_grabber_ = origin_window_;
   should_process_drag_motion_events_ = false;
   has_received_enter_ = false;
   nested_dispatcher_ =
@@ -265,8 +265,7 @@ void WaylandWindowDragController::StopDragging() {
   // snapped into a tab strip. So switch to |kAttached| state, store the focused
   // window as the pointer grabber and ask to quit the nested loop.
   state_ = State::kAttaching;
-  pointer_grab_owner_ =
-      window_manager_->GetCurrentPointerOrTouchFocusedWindow();
+  events_grabber_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   VLOG(1) << "Quiting Loop : StopDragging";
   QuitLoop();
 }
@@ -276,8 +275,8 @@ bool WaylandWindowDragController::IsDragInProgress() const {
 }
 
 bool WaylandWindowDragController::IsDragSource() const {
-  CHECK(data_source_);
-  return true;
+  CHECK(!IsDragInProgress() || !!data_source_) << " state=" << state_;
+  return IsDragInProgress();
 }
 
 // Icon drawing and update for window/tab dragging is handled by buffer manager.
@@ -356,15 +355,10 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
   if (state_ == State::kAttaching)
     return;
 
-  // Forward cursor location update info to the input handling delegate.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  should_process_drag_motion_events_ = false;
-#else
-  // non-lacros platforms never use global coordinates so they always process
-  // drag events.
+  // Always process drag events.
   should_process_drag_motion_events_ = true;
-#endif
 
+  // Forward cursor location update info to the input handling delegate.
   pointer_location_ = location;
 
   if (*drag_source_ == DragEventSource::kMouse) {
@@ -551,14 +545,7 @@ uint32_t WaylandWindowDragController::DispatchEvent(
        event->type() == EventType::kMouseDragged ||
        event->type() == EventType::kTouchMoved)) {
     HandleMotionEvent(event->AsLocatedEvent());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (event->type() != EventType::kTouchMoved) {
-      // Pass through touch so that touch position will be updated.
-      return POST_DISPATCH_STOP_PROPAGATION;
-    }
-#else
     return POST_DISPATCH_STOP_PROPAGATION;
-#endif
   }
   return POST_DISPATCH_PERFORM_DEFAULT;
 }
@@ -579,8 +566,8 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
     should_cancel_drag = true;
   }
 
-  if (window == pointer_grab_owner_) {
-    pointer_grab_owner_ = nullptr;
+  if (window == events_grabber_) {
+    events_grabber_ = nullptr;
   }
 
   if (window == origin_window_) {
@@ -627,7 +614,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 void WaylandWindowDragController::HandleDropAndResetState(
     base::TimeTicks timestamp) {
   DCHECK(state_ == State::kDropped || state_ == State::kCancelled);
-  VLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
+  VLOG(1) << "Notifying drop. window=" << events_grabber_;
 
   // StopDragging() may get called in response to bogus input events, eg:
   // wl_pointer.button release, which would imply in multiple calls to this
@@ -650,11 +637,12 @@ void WaylandWindowDragController::HandleDropAndResetState(
   // wl_data_source.dnd_finished event.
   if (state_ == State::kCancelled && IsWindowDragProtocolAvailable()) {
     VLOG(1) << "Dispatching cancellation event.";
-    keyboard_delegate_->OnSynthesizedKeyPressEvent(DomCode::ESCAPE, timestamp);
+    keyboard_delegate_->OnSynthesizedKeyPressEvent(events_grabber_,
+                                                   DomCode::ESCAPE, timestamp);
   } else {
     if (*drag_source_ == DragEventSource::kMouse) {
-      if (pointer_grab_owner_) {
-        pointer_delegate_->ReleasePressedPointerButtons(pointer_grab_owner_,
+      if (events_grabber_) {
+        pointer_delegate_->ReleasePressedPointerButtons(events_grabber_,
                                                         timestamp);
       }
     } else {
@@ -667,7 +655,7 @@ void WaylandWindowDragController::HandleDropAndResetState(
     }
   }
 
-  pointer_grab_owner_ = nullptr;
+  events_grabber_ = nullptr;
   state_ = State::kIdle;
   drag_source_.reset();
 }
@@ -736,13 +724,13 @@ void WaylandWindowDragController::DumpState(std::ostream& out) const {
        {State::kCancelled, "canceled"},
        {State::kAttaching, "attaching"}});
 
-  out << "WaylandWindowDragController:"
-      << " state=" << GetMapValueOrDefault(kStateToString, state_)
+  out << "WaylandWindowDragController:" << " state="
+      << GetMapValueOrDefault(kStateToString, state_)
       << ", drag_offset=" << drag_offset_.ToString()
       << ", pointer_position=" << pointer_location_.ToString()
       << ", data_source=" << !!data_source_
       << ", dragged_window=" << GetWindowName(dragged_window_.get())
-      << ", pointer_grab_owner=" << GetWindowName(pointer_grab_owner_.get())
+      << ", events_grabber=" << GetWindowName(events_grabber_.get())
       << ", origin_window=" << GetWindowName(origin_window_.get())
       << ", drag_target_window=" << GetWindowName(drag_target_window_.get())
       << ", nested_dispatcher=" << !!nested_dispatcher_;

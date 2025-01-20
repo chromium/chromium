@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -108,18 +109,34 @@ class StubResolveFunction
   size_t& call_count_;
 };
 
+class ScriptValueWrapper : public GarbageCollected<ScriptValueWrapper> {
+ public:
+  const ScriptValue& value() const { return value_; }
+  void set_value(ScriptValue& value) { value_ = value; }
+
+  void Trace(Visitor* v) const { v->Trace(value_); }
+
+ private:
+  ScriptValue value_;
+};
+
 class StubRejectFunction : public ThenCallable<IDLAny, StubRejectFunction> {
  public:
-  StubRejectFunction(ScriptValue& value, size_t& call_count)
+  StubRejectFunction(ScriptValueWrapper* value, size_t& call_count)
       : value_(value), call_count_(call_count) {}
 
   void React(ScriptState*, ScriptValue arg) {
-    value_ = arg;
+    value_->set_value(arg);
     call_count_++;
   }
 
+  void Trace(Visitor* v) const final {
+    v->Trace(value_);
+    ThenCallable<IDLAny, StubRejectFunction>::Trace(v);
+  }
+
  private:
-  ScriptValue& value_;
+  Member<ScriptValueWrapper> value_;
   size_t& call_count_;
 };
 
@@ -227,7 +244,8 @@ class ScriptPromisePropertyTestBase {
     return MakeGarbageCollected<StubResolveFunction<IDLType, ValueType>>(
         value, call_count);
   }
-  StubRejectFunction* StubReject(ScriptValue& value, size_t& call_count) {
+  StubRejectFunction* StubReject(ScriptValueWrapper* value,
+                                 size_t& call_count) {
     return MakeGarbageCollected<StubRejectFunction>(value, call_count);
   }
 
@@ -456,7 +474,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
   GetProperty()->Reject(reason);
   EXPECT_EQ(Property::kRejected, GetProperty()->GetState());
 
-  ScriptValue actual, other_actual;
+  ScriptValueWrapper* actual = MakeGarbageCollected<ScriptValueWrapper>();
+  ScriptValueWrapper* other_actual = MakeGarbageCollected<ScriptValueWrapper>();
   size_t n_reject_calls = 0;
   size_t n_other_reject_calls = 0;
   {
@@ -477,10 +496,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
 
   PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_reject_calls);
-  EXPECT_EQ(Wrap(MainWorld(), reason), actual);
+  EXPECT_EQ(Wrap(MainWorld(), reason), actual->value());
   EXPECT_EQ(1u, n_other_reject_calls);
-  EXPECT_NE(actual, other_actual);
-  EXPECT_EQ(Wrap(OtherWorld(), reason), other_actual);
+  EXPECT_NE(actual->value(), other_actual->value());
+  EXPECT_EQ(Wrap(OtherWorld(), reason), other_actual->value());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Promise_DeadContext) {
@@ -516,7 +535,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   ScriptState::Scope scope(MainScriptState());
 
   ScriptPromise<GarbageCollectedScriptWrappable> old_promise, new_promise;
-  ScriptValue new_actual;
+  ScriptValueWrapper* new_actual = MakeGarbageCollected<ScriptValueWrapper>();
   GarbageCollectedScriptWrappable* old_value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("old");
   GarbageCollectedScriptWrappable* new_value =
@@ -550,8 +569,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   EXPECT_EQ(1u, n_new_reject_calls);
   EXPECT_NE(old_promise, new_promise);
   EXPECT_EQ(old_value, old_reaction->Result());
-  EXPECT_EQ(Wrap(MainWorld(), new_value), new_actual);
-  EXPECT_NE(Wrap(MainWorld(), old_reaction->Result()), new_actual);
+  EXPECT_EQ(Wrap(MainWorld(), new_value), new_actual->value());
+  EXPECT_NE(Wrap(MainWorld(), old_reaction->Result()), new_actual->value());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {

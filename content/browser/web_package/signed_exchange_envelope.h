@@ -56,7 +56,7 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   scoped_refptr<net::HttpResponseHeaders> BuildHttpResponseHeaders() const;
 
   const base::span<const uint8_t> cbor_header() const {
-    return base::make_span(cbor_header_);
+    return base::span(cbor_header_);
   }
   void set_cbor_header(base::span<const uint8_t> data);
 

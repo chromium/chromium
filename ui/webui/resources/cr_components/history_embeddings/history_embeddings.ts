@@ -14,6 +14,7 @@ import './icons.html.js';
 import './result_image.js';
 
 import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -127,7 +128,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       },
       showRelativeTimes: {type: Boolean, value: false},
       otherHistoryResultClicked: {type: Boolean, value: false},
-      inSidePanel: {type: Boolean, value: false},
+      inSidePanel: {type: Boolean, value: false, reflectToAttribute: true},
     };
   }
 
@@ -234,12 +235,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       case AnswerStatus.kExecutionCanceled:
       case AnswerStatus.kUnanswerable:
       case AnswerStatus.kFiltered:
+      case AnswerStatus.kModelUnavailable:
         // Still loading or answer section is not displayed.
         return undefined;
       case AnswerStatus.kSuccess:
         return this.searchResult_.answer;
-      case AnswerStatus.kModelUnavailable:
-        return this.i18n('historyEmbeddingsAnswererErrorModelUnavailable');
       case AnswerStatus.kExecutionFailure:
         return this.i18n('historyEmbeddingsAnswererErrorTryAgain');
       default:
@@ -319,8 +319,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return false;
     }
 
-    return this.searchResult_.answerStatus === AnswerStatus.kModelUnavailable ||
-        this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
+    return this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
   }
 
   private onFeedbackSelectedOptionChanged_(
@@ -488,6 +487,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return;
     }
 
+    const isNewQuery = this.searchResult_?.query !== result.query;
+    const hasResults = result.items.length > 0;
+    const hasNewResults =
+        this.searchResult_?.items.length !== result.items.length;
+    const shouldAnnounceForResults =
+        (isNewQuery && hasResults) || (!isNewQuery && hasNewResults);
+
     // Reset feedback state for new results.
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.searchResult_ = result;
@@ -495,6 +501,16 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     this.loadingAnswer_ = result.answerStatus === AnswerStatus.kLoading;
 
     this.resultPendingMetricsTimestamp_ = performance.now();
+
+    if (shouldAnnounceForResults) {
+      const resultsLabelId = result.items.length === 1 ?
+          'historyEmbeddingsMatch' :
+          'historyEmbeddingsMatches';
+      const message = loadTimeData.getStringF(
+          'foundSearchResults', result.items.length,
+          loadTimeData.getString(resultsLabelId), result.query);
+      getAnnouncerInstance().announce(message);
+    }
   }
 
   private showAnswerSection_(): boolean {
@@ -510,7 +526,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // loading state to show.
       return this.searchResult_.answerStatus !== AnswerStatus.kUnspecified &&
           this.searchResult_.answerStatus !== AnswerStatus.kUnanswerable &&
-          this.searchResult_.answerStatus !== AnswerStatus.kFiltered;
+          this.searchResult_.answerStatus !== AnswerStatus.kFiltered &&
+          this.searchResult_.answerStatus !== AnswerStatus.kModelUnavailable;
     }
   }
 

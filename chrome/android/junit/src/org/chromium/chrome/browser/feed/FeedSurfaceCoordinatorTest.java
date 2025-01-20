@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -91,12 +90,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -114,8 +111,7 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.FEED_CONTAINMENT
 })
 @EnableFeatures({
-    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT
 })
 public class FeedSurfaceCoordinatorTest {
@@ -154,12 +150,6 @@ public class FeedSurfaceCoordinatorTest {
         @Override
         public void addObserver(TabModelObserver observer) {
             mObservers.add(observer);
-        }
-
-        void selectTab() {
-            for (TabModelObserver observer : mObservers) {
-                observer.didSelectTab(null, 0, 0);
-            }
         }
     }
 
@@ -479,32 +469,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    public void testIsPrimaryAccountSupervisedForChildUser() {
-        AccountInfo account = TestAccounts.CHILD_ACCOUNT;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        when(mProfileMock.isChild()).thenReturn(true);
-
-        assertTrue(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForRegularUser() {
-        AccountInfo account = TestAccounts.ACCOUNT1;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForSignedOutUser() {
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testTabStripHeightChangeCallback() {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -610,6 +574,7 @@ public class FeedSurfaceCoordinatorTest {
     private FeedSurfaceCoordinator createCoordinator(RecyclerView recyclerview) {
         when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), anyInt()))
                 .thenReturn(recyclerview);
+        when(mRenderer.getAdapter()).thenReturn(mAdapter);
         return new FeedSurfaceCoordinator(
                 mActivity,
                 mSnackbarManager,

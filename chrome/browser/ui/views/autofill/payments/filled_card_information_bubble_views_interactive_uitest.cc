@@ -22,9 +22,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
-                       CopyFieldValue) {
+                       CopyFieldValueVirtualCard) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
 
@@ -291,6 +291,89 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   // CVC:
   ClickOnField(FilledCardInformationBubbleField::kCvc);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"345");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::kCVC, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       CopyFieldValueServerCard) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string clipboard_text;
+
+  CreditCard card;
+  test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
+  card.set_record_type(CreditCard::RecordType::kFullServerCard);
+  card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  ShowBubble(&card, u"345");
+
+  // Verify the displayed text. We change the format of card number in the ui.
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardNumber),
+            u"5454 5454 5454 5454");
+  EXPECT_EQ(
+      GetValueForField(FilledCardInformationBubbleField::kExpirationMonth),
+      base::ASCIIToUTF16(test::NextMonth().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kExpirationYear),
+            base::ASCIIToUTF16(test::NextYear().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardholderName),
+            u"John Smith");
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCvc), u"345");
+
+  // Simulate clicking on each field in the bubble, ensuring that it was
+  // copied to the clipboard and the selection was logged in UMA.
+  base::HistogramTester histogram_tester;
+
+  // Card number (also ensure it doesn't contain spaces):
+  ClickOnField(FilledCardInformationBubbleField::kCardNumber);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"5454545454545454");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::kCardNumber,
+      1);
+
+  // Expiration month:
+  ClickOnField(FilledCardInformationBubbleField::kExpirationMonth);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
+          kExpirationMonth,
+      1);
+
+  // Expiration year:
+  ClickOnField(FilledCardInformationBubbleField::kExpirationYear);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
+          kExpirationYear,
+      1);
+
+  // Cardholder name:
+  ClickOnField(FilledCardInformationBubbleField::kCardholderName);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"John Smith");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FilledCardInformationBubble.FieldClicked",
+      autofill_metrics::FilledCardInformationBubbleFieldClicked::
+          kCardholderName,
+      1);
+
+  // CVC:
+  ClickOnField(FilledCardInformationBubbleField::kCvc);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, u"345");
   histogram_tester.ExpectBucketCount(

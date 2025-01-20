@@ -6,6 +6,6 @@
 
 BrowserProcess* g_browser_process = nullptr;
 
-BrowserProcess::BrowserProcess() {}
+BrowserProcess::BrowserProcess() = default;
 
-BrowserProcess::~BrowserProcess() {}
+BrowserProcess::~BrowserProcess() = default;

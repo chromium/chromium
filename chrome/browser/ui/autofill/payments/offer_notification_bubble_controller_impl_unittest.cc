@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -60,10 +59,6 @@ class OfferNotificationBubbleControllerImplTest
     BrowserWithTestWindowTest::SetUp();
     AddTab(GURL("about:blank"));
     TestOfferNotificationBubbleControllerImpl::CreateForTesting(web_contents());
-    static_cast<TestOfferNotificationBubbleControllerImpl*>(
-        TestOfferNotificationBubbleControllerImpl::FromWebContents(
-            web_contents()))
-        ->coupon_service_ = &mock_coupon_service_;
   }
 
   content::WebContents* web_contents() {
@@ -75,16 +70,6 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
-  class MockCouponService : public CouponService {
-   public:
-    MOCK_METHOD(void,
-                RecordCouponDisplayTimestamp,
-                (const autofill::AutofillOfferData& offer));
-    MOCK_METHOD(base::Time,
-                GetCouponDisplayTimestamp,
-                (const autofill::AutofillOfferData& offer));
-  };
-
   void ShowBubble(const AutofillOfferData& offer,
                   bool expand_notification_icon = false) {
     controller()->ShowOfferNotificationIfApplicable(
@@ -137,14 +122,6 @@ class OfferNotificationBubbleControllerImplTest
         TestOfferNotificationBubbleControllerImpl::FromWebContents(
             web_contents()));
   }
-
-  void SetCouponServiceForController(
-      TestOfferNotificationBubbleControllerImpl* controller,
-      CouponService* coupon_service) {
-    controller->coupon_service_ = coupon_service;
-  }
-
-  MockCouponService mock_coupon_service_;
 
  private:
   CreditCard card_ = test::GetCreditCard();
@@ -201,7 +178,6 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
       /*promo_code=*/"FREEFALL5678");
   ShowBubble(offer);
 
-  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(

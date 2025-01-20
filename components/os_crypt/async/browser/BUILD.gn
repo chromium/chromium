@@ -27,7 +27,10 @@ source_set("test_support") {
     "test_utils.h",
   ]
   deps = [ "//crypto" ]
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//components/os_crypt/async/common:test_support",
+  ]
 }
 
 source_set("key_provider_interface") {
@@ -68,15 +71,33 @@ if (is_linux && use_dbus) {
     deps = [
       ":key_provider_interface",
       "//base",
-      "//components/dbus/properties",
-      "//components/dbus/thread_linux",
-      "//components/dbus/utils",
+      "//components/dbus",
       "//components/os_crypt/async/common",
       "//components/os_crypt/sync",
       "//components/prefs",
       "//crypto",
       "//dbus",
     ]
+  }
+
+  source_set("freedesktop_secret_key_provider") {
+    sources = [
+      "fallback_linux_key_provider.cc",
+      "fallback_linux_key_provider.h",
+      "freedesktop_secret_key_provider.cc",
+      "freedesktop_secret_key_provider.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/dbus",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/sync",
+      "//crypto",
+      "//dbus",
+    ]
+    public_deps = [ "//build:branding_buildflags" ]
   }
 
   source_set("test_secret_portal") {
@@ -91,8 +112,7 @@ if (is_linux && use_dbus) {
       ":key_provider_interface",
       ":secret_portal_key_provider",
       "//base",
-      "//components/dbus/properties",
-      "//components/dbus/utils",
+      "//components/dbus",
       "//components/os_crypt/async/common",
       "//dbus",
       "//testing/gtest",
@@ -125,11 +145,15 @@ source_set("unit_tests") {
   }
 
   if (is_linux && use_dbus) {
-    sources += [ "secret_portal_key_provider_unittest.cc" ]
+    sources += [
+      "freedesktop_secret_key_provider_compat_unittest.cc",
+      "freedesktop_secret_key_provider_unittest.cc",
+      "secret_portal_key_provider_unittest.cc",
+    ]
     deps += [
+      ":freedesktop_secret_key_provider",
       ":secret_portal_key_provider",
-      "//components/dbus/properties",
-      "//components/dbus/utils",
+      "//components/dbus",
       "//components/prefs:test_support",
       "//dbus:test_support",
       "//testing/gmock",

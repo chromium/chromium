@@ -24,7 +24,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -87,7 +86,6 @@ public class BindingManagerTest {
     @After
     public void tearDown() {
         LauncherThread.setLauncherThreadAsLauncherThread();
-        FeatureList.setTestValues(null);
     }
 
     private void setupBindingType(boolean useNotPerceptibleBinding) {

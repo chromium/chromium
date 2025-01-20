@@ -24,8 +24,8 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/plus_addresses/features.h"
@@ -155,8 +155,13 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
   FillValueIntoField(focused_field_id, selection.display_text());
   if (selection.suggestion_type() == AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
-    plus_address_service_->DidFillPlusAddress(
-        /*did_show_email_suggestion=*/false, /*is_manual_fallback=*/true);
+    plus_address_service_->DidFillPlusAddress();
+    if (autofill::ContentAutofillClient* autofill_client =
+            autofill::ContentAutofillClient::FromWebContents(
+                &GetWebContents())) {
+      autofill_client->TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
+    }
   }
 }
 

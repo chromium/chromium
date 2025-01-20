@@ -130,10 +130,11 @@ void MessageTracker::StopTrackingMessagingStage(
     return;
   }
 
+  // Emit overall metric for all channel types and then for the specific type.
+  base::UmaHistogramEnumeration(tracked_stage->metric_name(), result);
   const std::string metric_name = base::StringPrintf(
       "%s.%s", tracked_stage->metric_name(),
       GetChannelTypeMetricSuffix(tracked_stage->channel_type()));
-
   base::UmaHistogramEnumeration(metric_name, result);
 
   tracked_stages_.erase(message_id);
@@ -174,11 +175,15 @@ void MessageTracker::OnMessageTimeoutElapsed(
     return;
   }
 
+  // Message is delayed too long so emit fail metrics and cleanup from tracking.
+
+  // Emit overall metric for all channel types and then for the specific type.
+  base::UmaHistogramEnumeration(tracked_stage->metric_name(),
+                                OpenChannelMessagePipelineResult::kHung);
   const std::string metric_name = base::StringPrintf(
       "%s.%s", tracked_stage->metric_name(),
       GetChannelTypeMetricSuffix(tracked_stage->channel_type()));
 
-  // Message is delayed too long so emit fail metrics and cleanup from tracking.
   base::UmaHistogramEnumeration(metric_name,
                                 OpenChannelMessagePipelineResult::kHung);
   tracked_stages_.erase(message_id);

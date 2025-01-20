@@ -16,8 +16,7 @@
 // CrAppControlProtocol. This can be used in tests that need an
 // NSApplication and use a runloop, or which need a ScopedSendingEvent
 // when handling a nested event loop.
-@interface MockCrApp : NSApplication<CrAppProtocol,
-                                     CrAppControlProtocol> {
+@interface MockCrApp : NSApplication <CrAppProtocol, CrAppControlProtocol> {
  @private
   BOOL _handlingSendEvent;
 }

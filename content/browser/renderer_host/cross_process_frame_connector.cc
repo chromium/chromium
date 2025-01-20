@@ -123,13 +123,13 @@ void CrossProcessFrameConnector::RenderProcessGone() {
   has_crashed_ = true;
 
   RenderFrameHostImpl* current_child_rfh = current_child_frame_host();
-  int process_id = current_child_rfh->GetProcess()->GetID();
+  int process_id = current_child_rfh->GetProcess()->GetDeprecatedID();
 
   // If a parent, outer document or embedder of `current_child_rfh` has crashed
   // and has the same RPH, we only want to record the crash once.
   for (auto* rfh = current_child_rfh->GetParentOrOuterDocumentOrEmbedder(); rfh;
        rfh = rfh->GetParentOrOuterDocumentOrEmbedder()) {
-    if (rfh->GetProcess()->GetID() == process_id) {
+    if (rfh->GetProcess()->GetDeprecatedID() == process_id) {
       // The crash will be already logged by the ancestor - ignore this crash in
       // the current instance of the CrossProcessFrameConnector.
       is_crash_already_logged_ = true;
@@ -380,8 +380,11 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
   // the visibility. The Show/Hide methods will not be called if an inner
   // WebContents exists since the corresponding WebContents will itself call
   // Show/Hide on all the RenderWidgetHostViews (including this) one.
-  if (view_->host()->delegate()->OnRenderFrameProxyVisibilityChanged(
-          frame_proxy_in_parent_renderer_, visibility_)) {
+  if (view_->host()
+          ->frame_tree()
+          ->delegate()
+          ->OnRenderFrameProxyVisibilityChanged(frame_proxy_in_parent_renderer_,
+                                                visibility_)) {
     return;
   }
 
@@ -602,20 +605,24 @@ void CrossProcessFrameConnector::DelegateWasShown() {
 }
 
 bool CrossProcessFrameConnector::IsVisible() {
-  if (visibility_ == blink::mojom::FrameVisibility::kNotRendered)
+  if (visibility_ == blink::mojom::FrameVisibility::kNotRendered ||
+      intersection_state().viewport_intersection.IsEmpty()) {
     return false;
-  if (intersection_state().viewport_intersection.IsEmpty())
-    return false;
+  }
 
-  if (!current_child_frame_host())
+  if (!current_child_frame_host()) {
     return true;
+  }
 
-  Visibility embedder_visibility =
-      current_child_frame_host()->delegate()->GetVisibility();
-  if (embedder_visibility != Visibility::VISIBLE)
+  if (EmbedderVisibility() != Visibility::VISIBLE) {
     return false;
+  }
 
   return true;
+}
+
+Visibility CrossProcessFrameConnector::EmbedderVisibility() {
+  return current_child_frame_host()->delegate()->GetVisibility();
 }
 
 RenderFrameHostImpl* CrossProcessFrameConnector::current_child_frame_host()

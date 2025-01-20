@@ -314,14 +314,17 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
       scene_service_->GetCurrentBrowser()->GetProfile();
 
   // Two UrlLoadingServices exist per scene, normal and incognito.  Handle two
-  // special cases that need to be sent up to the SceneUrlLoadingService: 1) The
-  // URL needs to be loaded by the UrlLoadingService for the other mode. 2) The
-  // URL will be loaded in a foreground tab by this UrlLoadingService, but the
-  // UI associated with this UrlLoadingService is not currently visible, so the
-  // SceneUrlLoadingService needs to switch modes before loading the URL.
-  if (params.in_incognito != profile->IsOffTheRecord() ||
-      (!params.in_background() &&
-       params.in_incognito != active_profile->IsOffTheRecord())) {
+  // special cases that need to be sent up to the SceneUrlLoadingService:
+  // 1) The URL needs to be loaded by the UrlLoadingService for the other mode.
+  if (params.in_incognito != profile->IsOffTheRecord()) {
+    scene_service_->GetBrowserAgent(params.in_incognito)->Load(params);
+    return;
+  }
+  // 2) The URL will be loaded in a foreground tab by this UrlLoadingService,
+  // but the UI associated with this UrlLoadingService is not currently visible,
+  // so the SceneUrlLoadingService needs to switch modes before loading the URL.
+  if (params.switch_mode_if_needed && !params.in_background() &&
+      params.in_incognito != active_profile->IsOffTheRecord()) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
     // currently selected in the other mode. This is done with the `append_to`
@@ -351,13 +354,27 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
       hint = browser_->GetWebStateList()->GetActiveWebState();
     }
 
-    [delegate_ animateOpenBackgroundTabFromParams:params
-                                       completion:^{
-                                         if (weak_ptr) {
-                                           weak_ptr->LoadUrlInNewTabImpl(
-                                               saved_params, hint);
-                                         }
-                                       }];
+    // If the tab should open in background in a different mode, dispatch the
+    // load to ensure that if there are several tabs opened at the same time the
+    // foreground one has time to be opened first.
+    bool should_dispatch_load =
+        params.in_incognito != active_profile->IsOffTheRecord();
+
+    auto load_url_block = ^{
+      if (weak_ptr) {
+        weak_ptr->LoadUrlInNewTabImpl(saved_params, hint);
+      }
+    };
+    [delegate_
+        animateOpenBackgroundTabFromParams:params
+                                completion:^{
+                                  if (should_dispatch_load) {
+                                    dispatch_async(dispatch_get_main_queue(),
+                                                   load_url_block);
+                                  } else {
+                                    load_url_block();
+                                  }
+                                }];
   }
 }
 

@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Snackbars -->
   <dimen name="snackbar_background_tablet_elev">@dimen/default_elevation_4</dimen>
+  <dimen name="snackbar_surface_elevation">@dimen/default_elevation_5</dimen>
 </resources>

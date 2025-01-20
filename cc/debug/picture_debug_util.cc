@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace cc {
 
@@ -25,7 +25,7 @@ void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
     // Note: if the picture contains texture-backed (gpu) images, they will fail
     // to be read-back and therefore fail to be encoded unless we can thread the
     // correct GrDirectContext through to here.
-    return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+    return skia::EncodePngAsSkData(nullptr, img);
   }};
   sk_sp<SkData> data = picture->serialize(&procs);
   *output = base::Base64Encode(

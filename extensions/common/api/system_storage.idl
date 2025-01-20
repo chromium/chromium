@@ -37,7 +37,7 @@ namespace system.storage {
     double availableCapacity;
   };
 
-  [inline_doc] enum EjectDeviceResultCode {
+  enum EjectDeviceResultCode {
     // The ejection command is successful -- the application can prompt the user
     // to remove the device.
     success,

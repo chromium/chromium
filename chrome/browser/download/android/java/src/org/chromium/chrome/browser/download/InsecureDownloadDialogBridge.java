@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.download.dialogs.InsecureDownloadDialog;
@@ -35,6 +36,7 @@ public class InsecureDownloadDialogBridge {
 
     /**
      * Called to show a warning dialog for insecure download.
+     *
      * @param windowAndroid Window to show the dialog.
      * @param fileName Name of the download file.
      * @param totalBytes Total bytes of the file.
@@ -42,7 +44,10 @@ public class InsecureDownloadDialogBridge {
      */
     @CalledByNative
     private void showDialog(
-            WindowAndroid windowAndroid, String fileName, long totalBytes, long callbackId) {
+            WindowAndroid windowAndroid,
+            @JniType("std::u16string") String fileName,
+            long totalBytes,
+            long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onConfirmed(callbackId, false);

@@ -296,8 +296,9 @@ void InSessionAuthDialogClient::OnAuthVerified(
     std::move(pending_auth_state_->callback).Run(false);
   } else {
     // TODO(b:241256423): Tell cryptohome to release WebAuthN secret.
-    if (authenticated_by_password)
+    if (authenticated_by_password) {
       OnPasswordAuthSuccess(*user_context_);
+    }
     std::move(pending_auth_state_->callback).Run(true);
   }
 
@@ -309,8 +310,9 @@ void InSessionAuthDialogClient::OnPasswordAuthSuccess(
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForAccountId(
           user_context.GetAccountId());
-  if (quick_unlock_storage)
+  if (quick_unlock_storage) {
     quick_unlock_storage->MarkStrongAuth();
+  }
 }
 
 void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
@@ -321,8 +323,9 @@ void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
 
 void InSessionAuthDialogClient::OnFingerprintScan(
     const ::user_data_auth::FingerprintScanResult& result) {
-  if (!fingerprint_scan_done_callback_)
+  if (!fingerprint_scan_done_callback_) {
     return;
+  }
 
   switch (result) {
     case user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS:

@@ -9,6 +9,8 @@
 
 #include "device/gamepad/public/cpp/gamepad_mojom_traits.h"
 
+#include <array>
+
 #include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -64,9 +66,23 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
     wgp.angular_acceleration = wgv;
   }
 
-  constexpr char16_t kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
-                                        L't', L'i', L'c', L'k', L' ',
-                                        L'3', L'0', L'0', L'0', L'\0'};
+  constexpr auto kTestIdString = std::to_array<char16_t>({
+      L'M',
+      L'o',
+      L'c',
+      L'k',
+      L'S',
+      L't',
+      L'i',
+      L'c',
+      L'k',
+      L' ',
+      L'3',
+      L'0',
+      L'0',
+      L'0',
+      L'\0',
+  });
   constexpr size_t kTestIdStringLength = std::size(kTestIdString);
 
   Gamepad send;

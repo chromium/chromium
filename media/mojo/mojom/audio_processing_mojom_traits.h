@@ -48,15 +48,9 @@ struct StructTraits<media::mojom::AudioProcessingSettingsDataView,
   static bool automatic_gain_control(const media::AudioProcessingSettings& s) {
     return s.automatic_gain_control;
   }
-  static bool high_pass_filter(const media::AudioProcessingSettings& s) {
-    return s.high_pass_filter;
-  }
   static bool multi_channel_capture_processing(
       const media::AudioProcessingSettings& s) {
     return s.multi_channel_capture_processing;
-  }
-  static bool stereo_mirroring(const media::AudioProcessingSettings& s) {
-    return s.stereo_mirroring;
   }
   static bool Read(media::mojom::AudioProcessingSettingsDataView input,
                    media::AudioProcessingSettings* out_settings);

@@ -39,7 +39,6 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void StartPrefetch(const GURL& url) {
@@ -56,8 +55,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
                  network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.push_back(std::move(candidate));
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates);
   }
 
   RenderFrameHostImpl& GetPrimaryMainFrameHost() {
@@ -88,13 +86,13 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_ukm_entry_builder_;
   // Disable sampling for UKM preloading logs.
   test::PreloadingConfigOverride preloading_config_override_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 
   base::Lock lock_;
 };
@@ -123,8 +121,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh);
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Wait for a new request, and respond to it.
   response2.WaitForRequest();

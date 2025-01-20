@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -272,46 +272,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
   EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
       /*index=*/0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
-}
-
-// Tests that the correct metrics are logged when the confirmation dialog for
-// deleting an Autofill profile is cancelled.
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       MetricsAfterAddressDeletionDeclined) {
-  ShowAutofillProfileSuggestion();
-  ASSERT_TRUE(client().popup_view());
-
-  base::HistogramTester histogram;
-  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
-      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
-  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
-                               1);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 1);
-}
-
-// Tests that no metrics are logged when the confirmation dialog for deleting a
-// credit card is cancelled.
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       MetricsAfterCreditCardDeletionDeclined) {
-  ShowLocalCardSuggestion();
-  ASSERT_TRUE(client().popup_view());
-
-  base::HistogramTester histogram;
-  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
-      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
-  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
-                               0);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 0);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,

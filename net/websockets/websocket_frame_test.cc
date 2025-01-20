@@ -305,8 +305,8 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
               std::min(chunk_size, aligned_len - chunk_start);
           MaskWebSocketFramePayload(
               masking_key, frame_offset + chunk_start,
-              base::as_writable_bytes(base::make_span(
-                  aligned_scratch + chunk_start, this_chunk_size)));
+              base::as_writable_bytes(
+                  base::span(aligned_scratch + chunk_start, this_chunk_size)));
         }
         // Stop the test if it fails, since we don't want to spew thousands of
         // failures.

@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
-
-#include "base/gtest_prod_util.h"
 #include "components/prefs/pref_member.h"
 
 class BrowserDesktopWindowTreeHostLinux;

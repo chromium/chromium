@@ -37,7 +37,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -198,9 +198,8 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
 
   EXPECT_CALL(
       mock_delegate,
-      SelectZeroStateResult(VariantWith<ash::QuickInsertDriveFileResult>(
-          Field("title", &ash::QuickInsertDriveFileResult::title,
-                u"test drive file"))))
+      SelectZeroStateResult(VariantWith<QuickInsertDriveFileResult>(Field(
+          "title", &QuickInsertDriveFileResult::title, u"test drive file"))))
       .Times(1);
 
   ASSERT_THAT(
@@ -232,9 +231,8 @@ TEST_F(QuickInsertZeroStateViewTest,
           &submenu_controller_, &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(
-      mock_delegate,
-      SelectZeroStateResult(VariantWith<ash::QuickInsertLocalFileResult>(_)))
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(VariantWith<QuickInsertLocalFileResult>(_)))
       .Times(1);
 
   ASSERT_THAT(
@@ -340,10 +338,9 @@ TEST_F(QuickInsertZeroStateViewTest,
   task_environment()->AdvanceClock(base::Seconds(1));
   task_environment()->RunUntilIdle();
 
-  EXPECT_CALL(
-      mock_delegate,
-      SelectZeroStateResult(VariantWith<ash::QuickInsertCapsLockResult>(
-          Field("enabled", &ash::QuickInsertCapsLockResult::enabled, true))))
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(VariantWith<QuickInsertCapsLockResult>(
+                  Field("enabled", &QuickInsertCapsLockResult::enabled, true))))
       .Times(1);
 
   QuickInsertItemView* item_view =
@@ -381,10 +378,9 @@ TEST_F(QuickInsertZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
           &preview_controller_));
   widget->Show();
 
-  EXPECT_CALL(
-      mock_delegate,
-      SelectZeroStateResult(VariantWith<ash::QuickInsertCapsLockResult>(
-          Field("enabled", &ash::QuickInsertCapsLockResult::enabled, true))))
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(VariantWith<QuickInsertCapsLockResult>(
+                  Field("enabled", &QuickInsertCapsLockResult::enabled, true))))
       .Times(1);
 
   QuickInsertItemView* item_view = view->category_section_views_for_testing()
@@ -539,7 +535,7 @@ TEST_F(QuickInsertZeroStateViewTest, ShowLobsterCategoryAsListItem) {
                            l10n_util::GetStringUTF16(
                                IDS_PICKER_LOBSTER_SELECTION_LABEL)
 #else
-                           u""
+                           u"Lobster"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
                                )))))))));
 }

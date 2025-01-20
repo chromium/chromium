@@ -48,8 +48,8 @@ FeaturePromoController20::FeaturePromoController20(
                                    help_bubble_registry,
                                    storage_service,
                                    session_policy,
-                                   tutorial_service,
-                                   messaging_controller),
+                                   tutorial_service),
+      messaging_controller_(messaging_controller),
       in_iph_demo_mode_(
           base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)) {}
 
@@ -128,12 +128,7 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   // Check the lifecycle, but only if not in demo mode. This is especially
   // important for snoozeable, app, and legal notice promos. This will determine
   // if the promo is even eligible to show.
-  auto lifecycle = std::make_unique<FeaturePromoLifecycle>(
-      storage_service(), params.key, &*params.feature, spec->promo_type(),
-      spec->promo_subtype(), spec->rotating_promos().size());
-  if (spec->reshow_delay()) {
-    lifecycle->SetReshowPolicy(*spec->reshow_delay(), spec->max_show_count());
-  }
+  auto lifecycle = CreateLifecycleFor(*spec, params);
   if (!for_demo && !in_iph_demo_mode_) {
     if (const auto result = lifecycle->CanShow(); !result) {
       return result;
@@ -185,7 +180,7 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   }
 
   // Promos are blocked if some other critical user messaging is queued.
-  if (messaging_controller()->has_pending_notices() &&
+  if (messaging_controller_->has_pending_notices() &&
       !messaging_priority_handle_) {
     return FeaturePromoResult::kBlockedByPromo;
   }
@@ -249,6 +244,15 @@ void FeaturePromoController20::MaybeShowPromo(FeaturePromoParams params) {
 
 void FeaturePromoController20::MaybeShowPromoForDemoPage(
     FeaturePromoParams params) {
+  // Override all queued promos.
+  for (auto& data : queued_promos_) {
+    auto& cb = data.params.show_promo_result_callback;
+    if (cb) {
+      std::move(cb).Run(FeaturePromoResult::kBlockedByPromo);
+    }
+  }
+  queued_promos_.clear();
+
   auto callback = std::move(params.show_promo_result_callback);
   PostShowPromoResult(std::move(callback),
                       MaybeShowPromoImpl(std::move(params), ShowSource::kDemo));
@@ -338,7 +342,7 @@ void FeaturePromoController20::MaybeShowQueuedPromo() {
 
   // Coordinate with the product messaging system to make sure a promo will not
   // attempt to be shown over a non-IPH legal notice.
-  if (messaging_controller()->has_pending_notices()) {
+  if (messaging_controller_->has_pending_notices()) {
     // Does the FeaturePromoController have messaging priority?
     if (!messaging_priority_handle_) {
       // No, which means another non-IPH promo does. Request priority and quit
@@ -355,7 +359,7 @@ void FeaturePromoController20::MaybeShowQueuedPromo() {
       // additional pending non-IPH notices. This may show another notice, but
       // it will be deferred a frame.
       messaging_priority_handle_.Release();
-      if (messaging_controller()->has_pending_notices()) {
+      if (messaging_controller_->has_pending_notices()) {
         // Register again to be given priority after all remaining notices are
         // shown. This will not cause a race because the method below queues a
         // request that must be processed only after all other requests to show
@@ -424,10 +428,7 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
   }
 
   // If the session policy allows overriding other help bubbles, close them.
-  if (auto* const help_bubble = bubble_factory_registry()->GetHelpBubble(
-          outputs.anchor_element->context())) {
-    help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
-  }
+  CloseHelpBubbleIfPresent(outputs.anchor_element->context());
 
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
@@ -491,6 +492,7 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoImpl(
   }
   return result;
 }
+
 // Returns whether `iph_feature` is queued to be shown.
 bool FeaturePromoController20::IsPromoQueued(
     const base::Feature& iph_feature) const {
@@ -530,11 +532,11 @@ void FeaturePromoController20::FailQueuedPromos() {
 }
 
 void FeaturePromoController20::MaybeRequestMessagePriority() {
-  if (!messaging_controller()->IsNoticeQueued(kFeaturePromoControllerNotice)) {
+  if (!messaging_controller_->IsNoticeQueued(kFeaturePromoControllerNotice)) {
     // Queues a request to be notified when all other notices have been
     // processed. This prevents the promo controller from immediately being
     // given priority again.
-    messaging_controller()->QueueRequiredNotice(
+    messaging_controller_->QueueRequiredNotice(
         kFeaturePromoControllerNotice,
         base::BindOnce(&FeaturePromoController20::OnMessagePriority,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -555,6 +557,12 @@ base::WeakPtr<FeaturePromoController> FeaturePromoController20::GetAsWeakPtr() {
 base::WeakPtr<FeaturePromoControllerCommon>
 FeaturePromoController20::GetCommonWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool FeaturePromoController20::CanShowPromoForElement(
+    ui::TrackedElement* anchor_element) const {
+  // Default implementation for testing.
+  return true;
 }
 
 }  // namespace user_education

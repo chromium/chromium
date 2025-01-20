@@ -82,15 +82,15 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
                              FieldRendererId field_id,
                              const gfx::Rect& caret_bounds) override {}
 
-  void TextFieldDidChange(const FormData& form,
-                          FieldRendererId field_id,
-                          base::TimeTicks timestamp) override {}
+  void TextFieldValueChanged(const FormData& form,
+                             FieldRendererId field_id,
+                             base::TimeTicks timestamp) override {}
 
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override {}
 
-  void SelectControlDidChange(const FormData& form,
-                              FieldRendererId field_id) override {
+  void SelectControlSelectionChanged(const FormData& form,
+                                     FieldRendererId field_id) override {
     select_control_changed_ = std::make_unique<FormData>(form);
   }
 
@@ -491,12 +491,12 @@ TEST_F(FormAutocompleteTest, SelectControlChanged) {
       "var color = document.getElementById('color');"
       "color.selectedIndex = 1;";
 
+  // The click simulation is necessary to give the frame transient user
+  // activation, otherwise the select value-change event will be ignored by the
+  // agent.
+  SimulateElementClick(
+      GetMainFrame()->GetDocument().GetElementById(blink::WebString("color")));
   ExecuteJavaScriptForTests(change_value.c_str());
-  WebElement element =
-      GetMainFrame()->GetDocument().GetElementById(blink::WebString("color"));
-  static_cast<blink::WebAutofillClient*>(autofill_agent_)
-      ->SelectControlDidChange(
-          *reinterpret_cast<blink::WebFormControlElement*>(&element));
   base::RunLoop().RunUntilIdle();
 
   const FormData* form = fake_driver_.select_control_changed();
@@ -514,9 +514,9 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
   FormAutocompleteSubmissionTest() {
     EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillFixFormTracking,
         features::kAutofillUseSubmittedFormInHtmlSubmission,
         features::kAutofillPreferSavedFormAsSubmittedForm,
+        features::kAutofillFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 

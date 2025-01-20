@@ -10,9 +10,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/signin/public/base/consent_level.h"
@@ -20,22 +20,8 @@
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
-
-void SignInAndEnableAccountBookmarkNodes(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "foo@gmail.com", signin::ConsentLevel::kSignin);
-  signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                    "https://avatar.com/avatar.png",
-                                    gfx::test::CreateImage(/*size=*/32));
-  // Normally done by sync, but sync is not fully up in this test.
-  BookmarkModelFactory::GetForBrowserContext(profile)
-      ->CreateAccountPermanentFolders();
-}
 
 // Tests that show the dialog, take a screenshot and compare against a baseline.
 // Click handling is tested in a different suite.

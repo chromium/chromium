@@ -56,11 +56,12 @@ bool ShouldPreferCompositingForLayoutView(const LayoutView& layout_view) {
 CompositingReasons BackfaceInvisibility3DAncestorReason(
     const PaintLayer& layer) {
   if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled()) {
-    if (auto* compositing_container = layer.CompositingContainer()) {
-      if (compositing_container->GetLayoutObject()
+    if (auto* painting_container = layer.PaintingContainer()) {
+      if (painting_container->GetLayoutObject()
               .StyleRef()
-              .BackfaceVisibility() == EBackfaceVisibility::kHidden)
+              .BackfaceVisibility() == EBackfaceVisibility::kHidden) {
         return CompositingReason::kBackfaceInvisibility3DAncestor;
+      }
     }
   }
   return CompositingReason::kNone;
@@ -232,6 +233,10 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   if (layout_object.StyleRef().IsFixedToBottom()) {
     reasons |= CompositingReason::kFixedPosition |
                CompositingReason::kAffectedByOuterViewportBoundsDelta;
+
+    if (layout_object.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+      reasons |= CompositingReason::kAffectedBySafeAreaBottom;
+    }
   }
 
   return reasons;

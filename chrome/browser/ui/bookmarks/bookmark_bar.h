@@ -22,10 +22,7 @@ class BookmarkBar {
 
   // Used when the state changes to indicate if the transition should be
   // animated.
-  enum AnimateChangeType {
-    ANIMATE_STATE_CHANGE,
-    DONT_ANIMATE_STATE_CHANGE
-  };
+  enum AnimateChangeType { ANIMATE_STATE_CHANGE, DONT_ANIMATE_STATE_CHANGE };
 
   BookmarkBar() = delete;
   BookmarkBar(const BookmarkBar&) = delete;

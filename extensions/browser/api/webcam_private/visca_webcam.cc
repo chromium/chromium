@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/webcam_private/visca_webcam.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -116,9 +112,10 @@ const uint8_t kPTRightCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
 const uint8_t kPTStopCommand[] = {0x81, 0x01, 0x06, 0x01, 0x03,
                                   0x03, 0x03, 0x03, 0xFF};
 
-#define CHAR_VECTOR_FROM_ARRAY(array)                     \
-  std::vector<char>(reinterpret_cast<const char*>(array), \
-                    reinterpret_cast<const char*>(array + std::size(array)))
+template <size_t N>
+std::vector<char> ToVector(const uint8_t (&array)[N]) {
+  return std::vector<char>(std::begin(array), std::end(array));
+}
 
 int ShiftResponseLowerBits(char c, size_t shift) {
   return static_cast<int>(c & 0x0F) << shift;
@@ -196,7 +193,7 @@ void ViscaWebcam::OnConnected(const OpenCompleteCallback& open_callback,
     return;
   }
 
-  Send(CHAR_VECTOR_FROM_ARRAY(kSetAddressCommand),
+  Send(ToVector(kSetAddressCommand),
        base::BindRepeating(&ViscaWebcam::OnAddressSetCompleted,
                            base::Unretained(this), open_callback));
 }
@@ -211,7 +208,7 @@ void ViscaWebcam::OnAddressSetCompleted(
     return;
   }
 
-  Send(CHAR_VECTOR_FROM_ARRAY(kClearAllCommand),
+  Send(ToVector(kClearAllCommand),
        base::BindRepeating(&ViscaWebcam::OnClearAllCompleted,
                            base::Unretained(this), open_callback));
 }
@@ -364,25 +361,25 @@ void ViscaWebcam::ProcessNextCommand() {
 }
 
 void ViscaWebcam::GetPan(const GetPTZCompleteCallback& callback) {
-  Send(CHAR_VECTOR_FROM_ARRAY(kGetPanTiltCommand),
+  Send(ToVector(kGetPanTiltCommand),
        base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
                            base::Unretained(this), INQUIRY_PAN, callback));
 }
 
 void ViscaWebcam::GetTilt(const GetPTZCompleteCallback& callback) {
-  Send(CHAR_VECTOR_FROM_ARRAY(kGetPanTiltCommand),
+  Send(ToVector(kGetPanTiltCommand),
        base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
                            base::Unretained(this), INQUIRY_TILT, callback));
 }
 
 void ViscaWebcam::GetZoom(const GetPTZCompleteCallback& callback) {
-  Send(CHAR_VECTOR_FROM_ARRAY(kGetZoomCommand),
+  Send(ToVector(kGetZoomCommand),
        base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
                            base::Unretained(this), INQUIRY_ZOOM, callback));
 }
 
 void ViscaWebcam::GetFocus(const GetPTZCompleteCallback& callback) {
-  Send(CHAR_VECTOR_FROM_ARRAY(kGetFocusCommand),
+  Send(ToVector(kGetFocusCommand),
        base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
                            base::Unretained(this), INQUIRY_FOCUS, callback));
 }
@@ -394,7 +391,7 @@ void ViscaWebcam::SetPan(int value,
       CalculateSpeed(pan_speed, kMaxPanSpeed, kDefaultPanSpeed);
   pan_ = value;
 
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetPanTiltCommand);
+  std::vector<char> command = ToVector(kSetPanTiltCommand);
   command[4] |= actual_pan_speed;
   command[5] |= kDefaultTiltSpeed;
   ResponseToCommand(&command, 6, static_cast<uint16_t>(pan_));
@@ -410,7 +407,7 @@ void ViscaWebcam::SetTilt(int value,
       CalculateSpeed(tilt_speed, kMaxTiltSpeed, kDefaultTiltSpeed);
   tilt_ = value;
 
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetPanTiltCommand);
+  std::vector<char> command = ToVector(kSetPanTiltCommand);
   command[4] |= kDefaultPanSpeed;
   command[5] |= actual_tilt_speed;
   ResponseToCommand(&command, 6, static_cast<uint16_t>(pan_));
@@ -421,7 +418,7 @@ void ViscaWebcam::SetTilt(int value,
 
 void ViscaWebcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
   int actual_value = std::max(value, 0);
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetZoomCommand);
+  std::vector<char> command = ToVector(kSetZoomCommand);
   ResponseToCommand(&command, 4, actual_value);
   Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
                                     base::Unretained(this), callback));
@@ -429,7 +426,7 @@ void ViscaWebcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
 
 void ViscaWebcam::SetFocus(int value, const SetPTZCompleteCallback& callback) {
   int actual_value = std::max(value, 0);
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetFocusCommand);
+  std::vector<char> command = ToVector(kSetFocusCommand);
   ResponseToCommand(&command, 4, actual_value);
   Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
                                     base::Unretained(this), callback));
@@ -439,9 +436,9 @@ void ViscaWebcam::SetAutofocusState(AutofocusState state,
                                     const SetPTZCompleteCallback& callback) {
   std::vector<char> command;
   if (state == AUTOFOCUS_ON) {
-    command = CHAR_VECTOR_FROM_ARRAY(kSetAutoFocusCommand);
+    command = ToVector(kSetAutoFocusCommand);
   } else {
-    command = CHAR_VECTOR_FROM_ARRAY(kSetManualFocusCommand);
+    command = ToVector(kSetManualFocusCommand);
   }
   Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
                                     base::Unretained(this), callback));
@@ -452,17 +449,18 @@ void ViscaWebcam::SetPanDirection(PanDirection direction,
                                   const SetPTZCompleteCallback& callback) {
   int actual_pan_speed =
       CalculateSpeed(pan_speed, kMaxPanSpeed, kDefaultPanSpeed);
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kPTStopCommand);
+  std::vector<char> command;
   switch (direction) {
     case PAN_STOP:
+      command = ToVector(kPTStopCommand);
       break;
     case PAN_RIGHT:
-      command = CHAR_VECTOR_FROM_ARRAY(kPTRightCommand);
+      command = ToVector(kPTRightCommand);
       command[4] |= actual_pan_speed;
       command[5] |= kDefaultTiltSpeed;
       break;
     case PAN_LEFT:
-      command = CHAR_VECTOR_FROM_ARRAY(kPTLeftCommand);
+      command = ToVector(kPTLeftCommand);
       command[4] |= actual_pan_speed;
       command[5] |= kDefaultTiltSpeed;
       break;
@@ -476,17 +474,18 @@ void ViscaWebcam::SetTiltDirection(TiltDirection direction,
                                    const SetPTZCompleteCallback& callback) {
   int actual_tilt_speed =
       CalculateSpeed(tilt_speed, kMaxTiltSpeed, kDefaultTiltSpeed);
-  std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kPTStopCommand);
+  std::vector<char> command;
   switch (direction) {
     case TILT_STOP:
+      command = ToVector(kPTStopCommand);
       break;
     case TILT_UP:
-      command = CHAR_VECTOR_FROM_ARRAY(kPTUpCommand);
+      command = ToVector(kPTUpCommand);
       command[4] |= kDefaultPanSpeed;
       command[5] |= actual_tilt_speed;
       break;
     case TILT_DOWN:
-      command = CHAR_VECTOR_FROM_ARRAY(kPTDownCommand);
+      command = ToVector(kPTDownCommand);
       command[4] |= kDefaultPanSpeed;
       command[5] |= actual_tilt_speed;
       break;
@@ -501,7 +500,7 @@ void ViscaWebcam::Reset(bool pan,
                         const SetPTZCompleteCallback& callback) {
   // pan and tilt are always reset together in Visca Webcams.
   if (pan || tilt) {
-    Send(CHAR_VECTOR_FROM_ARRAY(kResetPanTiltCommand),
+    Send(ToVector(kResetPanTiltCommand),
          base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
                              base::Unretained(this), callback));
   }

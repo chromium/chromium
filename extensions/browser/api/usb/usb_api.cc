@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/usb/usb_api.h"
 
 #include <algorithm>
@@ -1288,7 +1283,7 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
   buffer.reserve(length);
 
   UsbTransferStatus status = UsbTransferStatus::COMPLETED;
-  const char* data_ptr = reinterpret_cast<const char*>(data.data());
+  size_t index = 0;
   for (const auto& packet : packets) {
     // Capture the error status of the first unsuccessful packet.
     if (status == UsbTransferStatus::COMPLETED &&
@@ -1296,9 +1291,10 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
       status = packet->status;
     }
 
-    buffer.insert(buffer.end(), data_ptr,
-                  data_ptr + packet->transferred_length);
-    data_ptr += packet->length;
+    buffer.insert(buffer.end(), reinterpret_cast<const char*>(&data[index]),
+                  reinterpret_cast<const char*>(
+                      &data[index + packet->transferred_length]));
+    index += packet->transferred_length;
   }
 
   base::Value::Dict transfer_info;

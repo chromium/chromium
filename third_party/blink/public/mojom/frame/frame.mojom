@@ -433,10 +433,11 @@ interface LocalFrameHost {
   UpdateTitle(mojo_base.mojom.String16? title,
               mojo_base.mojom.TextDirection title_direction);
 
-  // Updates the app title for a document. If non-empty, a web app displayed in an app
-  // window may use this string instead of the regular title.
-  // See https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  UpdateAppTitle(mojo_base.mojom.String16 app_title);
+  // Updates the application title for a document. If non-empty, a web app
+  // displayed in an app window may use this string instead of the regular
+  // title. See
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  UpdateApplicationTitle(mojo_base.mojom.String16 application_title);
 
   // Indicates that the user activation state in the current frame has been
   // updated, so the replicated states need to be synced (in the browser process
@@ -533,7 +534,6 @@ interface LocalFrameHost {
   // The popup menu is hidden when the mojo channel is closed.
   ShowPopupMenu(pending_remote<PopupMenuClient> popup_client,
                 gfx.mojom.Rect bounds,
-                int32 item_height,
                 double font_size,
                 int32 selected_item,
                 array<MenuItem> menu_items,

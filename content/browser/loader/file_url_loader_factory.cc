@@ -55,7 +55,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -596,9 +596,8 @@ class FileURLLoader : public network::mojom::URLLoader {
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
 
     // Request the larger size data pipe for file:// URL loading.
-    uint32_t data_pipe_size =
-        network::features::GetDataPipeDefaultAllocationSize(
-            network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+    uint32_t data_pipe_size = network::GetDataPipeDefaultAllocationSize(
+        network::DataPipeAllocationSize::kLargerSizeIfPossible);
     // This should already be static_asserted in network::features, but good
     // to double-check.
     DCHECK(data_pipe_size >= net::kMaxBytesToSniff)

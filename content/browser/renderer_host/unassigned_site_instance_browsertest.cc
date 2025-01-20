@@ -409,8 +409,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+  }
 
   // In the popup, do a renderer-initiated navigation to an unassigned url. We
   // should reuse the SiteInstance.
@@ -442,8 +443,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+  }
 
   // In the popup, do a browser-initiated navigation to an unassigned url. We
   // should reuse the SiteInstance.
@@ -474,8 +476,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+  }
 
   // In the popup, do a renderer-initiated navigation to an embedder-defined
   // unassigned url. We use another related SiteInstance. Note that contrary to
@@ -510,8 +513,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+  }
 
   // In the popup, do a browser-initiated navigation to an embedder-defined
   // unassigned url. We swap browsing instance because the navigation is
@@ -608,8 +612,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(iframe_si->HasSite());
   EXPECT_EQ(iframe_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(iframe_si->IsDefaultSiteInstance());
+  }
 
   // In the iframe, navigate to an unassigned url. We reuse the SiteInstance.
   EXPECT_TRUE(NavigateToURLFromRenderer(iframe_rfh, unassigned_url()));
@@ -641,8 +646,9 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(iframe_si->HasSite());
   EXPECT_EQ(iframe_si, original_si);
 
-  if (AreDefaultSiteInstancesEnabled())
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(iframe_si->IsDefaultSiteInstance());
+  }
 
   // In the iframe, navigate to an embedder defined unassigned url. We use a new
   // related SiteInstance because the navigation is considered cross-site.
@@ -651,15 +657,15 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
       original_rfh->child_at(0)->current_frame_host()->GetSiteInstance();
 
-  // On Android, we sometimes do not get a related SiteInstance, but the same
-  // default SiteInstance to reduce memory footprint.
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_FALSE(post_navigation_si->HasSite());
+    EXPECT_TRUE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
+  } else {
+    // On Android, we sometimes do not get a related SiteInstance, but the same
+    // default SiteInstance to reduce memory footprint.
     EXPECT_TRUE(post_navigation_si->IsDefaultSiteInstance());
     EXPECT_TRUE(post_navigation_si->HasSite());
     EXPECT_EQ(post_navigation_si, original_si);
-  } else {
-    EXPECT_FALSE(post_navigation_si->HasSite());
-    EXPECT_TRUE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
   }
 }
 
@@ -683,10 +689,10 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_EQ(instance1,
             web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_TRUE(instance1->HasSite());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(RegularUrlOriginMaybeWithPort(), instance1->GetSiteURL());
+  } else {
+    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
   }
 
   // The previously committed entry should get a new, related instance to avoid
@@ -717,7 +723,10 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), other_regular_url));
   exit_observer.Wait();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(instance1,
+              web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  } else {
     // Verify that the new navigation also results in a default SiteInstance,
     // and verify that it is not related to |instance1| because the navigation
     // swapped to a new BrowsingInstance.
@@ -727,9 +736,6 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                     ->IsDefaultSiteInstance());
     EXPECT_FALSE(instance1->IsRelatedSiteInstance(
         web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
-  } else {
-    EXPECT_NE(instance1,
-              web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   }
 
   // At this point, process1 is deleted, and the first entry is unfortunately
@@ -739,17 +745,12 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
     // In site-per-process, we cannot use foo.com's SiteInstance for a.com.
     EXPECT_FALSE(instance1->IsSuitableForUrlInfo(
         UrlInfo::CreateForTesting(embedder_defined_unassigned_url())));
-  } else if (AreDefaultSiteInstancesEnabled()) {
+  } else {
     // Since |instance1| is a default SiteInstance AND this test explicitly
     // ensures that ShouldAssignSiteForURL(url1) will return false, |url1|
     // cannot be placed in the default SiteInstance. This also means that |url1|
     // cannot be placed in the same process as the default SiteInstance.
     EXPECT_FALSE(instance1->IsSuitableForUrlInfo(
-        UrlInfo::CreateForTesting(embedder_defined_unassigned_url())));
-  } else {
-    // If neither foo.com nor a.com require dedicated processes, then we can use
-    // the same process.
-    EXPECT_TRUE(instance1->IsSuitableForUrlInfo(
         UrlInfo::CreateForTesting(embedder_defined_unassigned_url())));
   }
 
@@ -772,11 +773,11 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   RenderProcessHost* new_process = new_instance->GetProcess();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetID(),
+      new_process->GetDeprecatedID(),
       url::Origin::Create(embedder_defined_unassigned_url()),
       ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
   EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetID(), url::Origin::Create(regular_url()),
+      new_process->GetDeprecatedID(), url::Origin::Create(regular_url()),
       ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
 }
 
@@ -904,7 +905,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(ProcessLock::FromSiteInfo(SiteInfo::CreateForTesting(
                 IsolationContext(browser_context), regular_url())),
-            policy->GetProcessLock(process2->GetID()));
+            policy->GetProcessLock(process2->GetDeprecatedID()));
 
   // Ensure also that the regular url process didn't change midway through the
   // navigation.

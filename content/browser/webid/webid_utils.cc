@@ -314,6 +314,10 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return "The requested IdP type did not match the registered IdP.";
     }
+    case FederatedAuthRequestResult::kUiDismissedNoEmbargo: {
+      return "Prompt dismissed. API exponential cool down not "
+             "triggered.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }
@@ -391,13 +395,6 @@ std::string GetDisconnectConsoleErrorMessage(
       return "The provider's config file URL is not potentially trustworthy.";
     }
   }
-}
-
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
-                                                const url::Origin& idp_origin) {
-  // TODO(crbug.com/40283354): Remove this function in favor of
-  // GetFedCmIdpSigninStatusFlag.
-  return GetFedCmIdpSigninStatusFlag();
 }
 
 std::string FormatUrlForDisplay(const GURL& url) {

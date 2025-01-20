@@ -69,18 +69,16 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       const viz::SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
       return nullptr;
     }
-    auto client_shared_image = sii->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-         alpha_type, usage, "WebRTCVideoFramePool"},
-        gpu_memory_buffer->CloneHandle());
+    auto client_shared_image =
+        sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
+                                color_space, usage, "WebRTCVideoFramePool"},
+                               gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
     return client_shared_image;
@@ -91,18 +89,15 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       gfx::BufferUsage buffer_usage,
       const viz::SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
       return nullptr;
     }
-    auto client_shared_image =
-        sii->CreateSharedImage({si_format, size, color_space, surface_origin,
-                                alpha_type, usage, "WebRTCVideoFramePool"},
-                               gpu::kNullSurfaceHandle, buffer_usage);
+    auto client_shared_image = sii->CreateSharedImage(
+        {si_format, size, color_space, usage, "WebRTCVideoFramePool"},
+        gpu::kNullSurfaceHandle, buffer_usage);
     if (!client_shared_image) {
       return nullptr;
     }
@@ -118,6 +113,10 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
     shared_image->UpdateDestructionSyncToken(sync_token);
+  }
+
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return SharedImageInterface()->GetCapabilities();
   }
 
  private:
@@ -411,6 +410,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::ScaledBuffer(
 rtc::scoped_refptr<webrtc::I420BufferInterface>
 WebRtcVideoFrameAdapter::ScaledBuffer::ToI420() {
   return parent_->GetOrCreateFrameBufferForSize(size_)->ToI420();
+}
+
+scoped_refptr<media::VideoFrame>
+WebRtcVideoFrameAdapter::ScaledBuffer::getMediaVideoFrame() const {
+  return parent_->getMediaVideoFrame();
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -454,6 +455,16 @@ const CacheControlHeader& ResourceRequestHead::GetCacheControlHeader() const {
         http_header_fields_.Get(http_names::kPragma));
   }
   return cache_control_header_cache_;
+}
+
+void ResourceRequestHead::SetFetchIntegrity(const String& integrity) {
+  fetch_integrity_ = integrity;
+
+  IntegrityMetadataSet metadata;
+  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata);
+  for (const auto& signature : metadata.signatures) {
+    expected_signatures_.push_back(signature.first);
+  }
 }
 
 bool ResourceRequestHead::CacheControlContainsNoCache() const {

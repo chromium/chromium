@@ -261,8 +261,8 @@ DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::MediaPathFilterWrapper()
     : media_path_filter_(new MediaPathFilter) {
 }
 
-DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::~MediaPathFilterWrapper() {
-}
+DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::~MediaPathFilterWrapper() =
+    default;
 
 AsyncFileUtil::EntryList
 DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::FilterMediaEntries(
@@ -283,8 +283,7 @@ bool DeviceMediaAsyncFileUtil::MediaPathFilterWrapper::CheckFilePath(
   return media_path_filter_->Match(path);
 }
 
-DeviceMediaAsyncFileUtil::~DeviceMediaAsyncFileUtil() {
-}
+DeviceMediaAsyncFileUtil::~DeviceMediaAsyncFileUtil() = default;
 
 // static
 std::unique_ptr<DeviceMediaAsyncFileUtil> DeviceMediaAsyncFileUtil::Create(

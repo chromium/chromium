@@ -48,15 +48,35 @@ TEST_F(WhatsNewStorageServiceTest, StoresModulesData) {
   // Modules does not exist.
   EXPECT_EQ(-1, storage_service_->GetModuleQueuePosition("ModuleC"));
 
-  storage_service_->ClearModule("ModuleA");
+  storage_service_->ClearModules({"ModuleA"});
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
   EXPECT_EQ("ModuleB", storage_service_->ReadModuleData()[0]);
 
-  storage_service_->ClearModule("ModuleC");
+  storage_service_->ClearModules({"ModuleC"});
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
 
-  storage_service_->ClearModule("ModuleB");
+  storage_service_->ClearModules({"ModuleB"});
   EXPECT_EQ(static_cast<size_t>(0), storage_service_->ReadModuleData().size());
+  EXPECT_TRUE(storage_service_->ReadModuleData().empty());
+}
+
+TEST_F(WhatsNewStorageServiceTest, ClearsMultipleModulesData) {
+  EXPECT_TRUE(storage_service_->ReadModuleData().empty());
+
+  storage_service_->SetModuleEnabled("ModuleA");
+  storage_service_->SetModuleEnabled("ModuleB");
+  storage_service_->SetModuleEnabled("ModuleC");
+  EXPECT_EQ(static_cast<size_t>(3), storage_service_->ReadModuleData().size());
+
+  storage_service_->ClearModules({"ModuleA", "ModuleB"});
+  EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
+
+  storage_service_->SetModuleEnabled("ModuleD");
+  storage_service_->SetModuleEnabled("ModuleE");
+  storage_service_->SetModuleEnabled("ModuleF");
+  EXPECT_EQ(static_cast<size_t>(4), storage_service_->ReadModuleData().size());
+
+  storage_service_->ClearModules({"ModuleC", "ModuleD", "ModuleE", "ModuleF"});
   EXPECT_TRUE(storage_service_->ReadModuleData().empty());
 }
 
@@ -87,7 +107,7 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsData) {
   EXPECT_TRUE(storage_service_->IsUsedEdition("EditionA"));
   EXPECT_FALSE(storage_service_->IsUsedEdition("UnusedEditionC"));
 
-  storage_service_->ClearEdition("EditionA");
+  storage_service_->ClearEditions({"EditionA"});
   EXPECT_TRUE(storage_service_->ReadEditionData().empty());
   EXPECT_EQ(static_cast<size_t>(0), storage_service_->ReadEditionData().size());
   EXPECT_EQ(nullptr, storage_service_->ReadEditionData().Find("EditionA"));
@@ -105,7 +125,7 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsDataWithPreviousData) {
   EXPECT_EQ(CHROME_VERSION_MAJOR,
             *storage_service_->ReadEditionData().Find("EditionA"));
 
-  storage_service_->ClearEdition("EditionA");
+  storage_service_->ClearEditions({"EditionA"});
   EXPECT_EQ(static_cast<size_t>(2), storage_service_->ReadEditionData().size());
   EXPECT_EQ(nullptr, storage_service_->ReadEditionData().Find("EditionA"));
 

@@ -25,6 +25,7 @@
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "media/parsers/h264_parser.h"
+#include "media/parsers/vp9_parser.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -256,6 +257,26 @@ class NdkVideoEncoderAcceleratorTest
         }
         break;
       }
+      case VideoCodec::kVP9: {
+        Vp9Parser parser(true);
+        parser.SetStream(data.data(), data.size(), nullptr);
+
+        int num_parsed_frames = 0;
+        while (true) {
+          Vp9FrameHeader frame;
+          gfx::Size size;
+          std::unique_ptr<DecryptConfig> frame_decrypt_config;
+          Vp9Parser::Result res =
+              parser.ParseNextFrame(&frame, &size, &frame_decrypt_config);
+          if (res == Vp9Parser::kEOStream) {
+            EXPECT_GT(num_parsed_frames, 0);
+            break;
+          }
+          EXPECT_EQ(res, Vp9Parser::kOk);
+          ++num_parsed_frames;
+        }
+        break;
+      }
       default: {
         EXPECT_TRUE(
             base::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
@@ -354,13 +375,16 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   // is unreliable in inserting keyframes at our request we can't test
   // for it. In practice it usually works, just not always.
 
+  std::vector<uint8_t> stream;
   for (auto& output : outputs_) {
     auto& mapping = id_to_buffer_[output.id]->GetMapping();
     EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
     EXPECT_GT(output.md.payload_size_bytes, 0u);
-    auto span = mapping.GetMemoryAsSpan<uint8_t>();
-    ValidateStream(span);
+    auto span =
+        mapping.GetMemoryAsSpan<uint8_t>().first(output.md.payload_size_bytes);
+    stream.insert(stream.end(), span.begin(), span.end());
   }
+  ValidateStream(stream);
 }
 
 std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
@@ -376,6 +400,10 @@ std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
 VideoParams kParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
     {H264PROFILE_HIGH, PIXEL_FORMAT_I420},

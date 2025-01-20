@@ -7,12 +7,13 @@ package org.chromium.components.feature_engagement;
 import android.text.TextUtils;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * CppWrappedTestTracker is a Java implementation of a {@link Tracker} object that is encapsulated
@@ -27,6 +28,7 @@ import org.chromium.base.Callback;
  * <p>For example usage in tests, see below.
  */
 @JNINamespace("feature_engagement")
+@NullMarked
 public class CppWrappedTestTracker implements Tracker {
     // Example usage in tests:
     //
@@ -41,7 +43,7 @@ public class CppWrappedTestTracker implements Tracker {
 
     private String mOurFeature;
     private boolean mWasDismissed;
-    private String mLastEvent;
+    private @Nullable String mLastEvent;
 
     public CppWrappedTestTracker(String feature) {
         mOurFeature = feature;
@@ -51,7 +53,7 @@ public class CppWrappedTestTracker implements Tracker {
         return mWasDismissed;
     }
 
-    public String getLastEvent() {
+    public @Nullable String getLastEvent() {
         return mLastEvent;
     }
 
@@ -112,9 +114,8 @@ public class CppWrappedTestTracker implements Tracker {
     }
 
     @CheckResult
-    @Nullable
     @Override
-    public DisplayLockHandle acquireDisplayLock() {
+    public @Nullable DisplayLockHandle acquireDisplayLock() {
         assert false : "This should only be called on a production tracker";
         return () -> {};
     }
@@ -123,8 +124,7 @@ public class CppWrappedTestTracker implements Tracker {
     public void setPriorityNotification(String feature) {}
 
     @Override
-    @Nullable
-    public String getPendingPriorityNotification() {
+    public @Nullable String getPendingPriorityNotification() {
         return null;
     }
 

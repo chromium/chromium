@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,23 +31,15 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
       : dm_client_(std::move(dm_client)),
         shutdown_callback_(std::move(shutdown_callback)),
         event_logger_(event_logger) {}
-  ~EnterpriseCompanionServiceImpl() override = default;
 
   // Overrides for EnterpriseCompanionService.
   void Shutdown(base::OnceClosure callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
 
-    event_logger_->Flush(base::BindOnce(
-        [](base::OnceClosure callback, base::OnceClosure shutdown_callback) {
-          std::move(callback)
-              .Then(base::BindPostTaskToCurrentDefault(
-                  std::move(shutdown_callback)))
-              .Run();
-        },
-        std::move(callback),
+    event_logger_->Flush(base::BindOnce(std::move(callback).Then(
         shutdown_callback_ ? std::move(shutdown_callback_)
-                           : base::DoNothing()));
+                           : base::DoNothing())));
   }
 
   void FetchPolicies(StatusCallback callback) override {

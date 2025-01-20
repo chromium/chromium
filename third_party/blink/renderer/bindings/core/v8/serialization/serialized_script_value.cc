@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
 #include <memory>
@@ -113,8 +108,9 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     const String& data) {
   base::CheckedNumeric<size_t> data_buffer_size = data.length();
   data_buffer_size *= 2;
-  if (!data_buffer_size.IsValid())
+  if (!data_buffer_size.IsValid()) {
     return Create();
+  }
 
   DataBufferPtr data_buffer = AllocateBuffer(data_buffer_size.ValueOrDie());
   // TODO(danakj): This cast is valid, since it's at the start of the allocation
@@ -122,9 +118,11 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   // byte pointers to other types is problematic and can cause UB. String should
   // provide a way to copy directly to a byte array without forcing the caller
   // to do this case.
-  data.CopyTo(
-      base::span(reinterpret_cast<UChar*>(data_buffer.data()), data.length()),
-      0);
+  // SAFETY: The preceding code ensures that `data.length()` matches
+  // `data_buffer.data()` as a `UChar*`.
+  data.CopyTo(UNSAFE_BUFFERS(base::span(
+                  reinterpret_cast<UChar*>(data_buffer.data()), data.length())),
+              0);
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
@@ -174,39 +172,30 @@ inline static bool IsByteSwappedWiredData(base::span<const uint8_t> data) {
   // v1-16 (byte-swapped) - [v,    0xFF, ...], v = version (1 <= v <= 16)
   // v17+                 - [0xFF, v,    ...], v = first byte of version varint
 
-  if (data[0] == kVersionTag) {
-    // The only case where byte-swapped data can have 0xFF in byte zero is
-    // version 0. This can only happen if byte one is a tag (supported in
-    // version 0) that takes in extra data, and the first byte of extra data is
-    // 0xFF. These tags cannot be used as version numbers in the Blink-side SSV
-    // envelope.
-    //
-    // Why we care about version 0:
-    //
-    // IndexedDB stores values using the SSV format. Currently, IndexedDB does
-    // not do any sort of migration, so a value written with a SSV version will
-    // be stored with that version until it is removed via an update or delete.
-    //
-    // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
-    // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
-    // which was released on September 16, 2011.
-    static_assert(
-        !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
-        "Using a burned version will prevent us from reading SSV version 0");
-    // TODO(pwnall): Add UMA metric here.
-    return IsV0VersionTag(data[1]);
+  if (data[0] != kVersionTag) {
+    // Pre-version 17, thus byte-swapped.
+    return true;
   }
 
-  if (data[1] == kVersionTag) {
-    // The last SSV format that used byte-swapping was version 16. The version
-    // number is stored (before byte-swapping) after a serialization tag, which
-    // is 0xFF.
-    return data[0] != kVersionTag;
-  }
-
-  // If kVersionTag isn't in any of the first two bytes, this is SSV version 0,
-  // which was byte-swapped.
-  return true;
+  // The only case where byte-swapped data can have 0xFF in byte zero is version
+  // 0. This can only happen if byte one is a tag (supported in version 0) that
+  // takes in extra data, and the first byte of extra data is 0xFF. These tags
+  // cannot be used as version numbers in the Blink-side SSV envelope.
+  //
+  // Why we care about version 0:
+  //
+  // IndexedDB stores values using the SSV format. Currently, IndexedDB does not
+  // do any sort of migration, so a value written with a SSV version will be
+  // stored with that version until it is removed via an update or delete.
+  //
+  // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
+  // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
+  // which was released on September 16, 2011.
+  static_assert(
+      !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
+      "Using a burned version will prevent us from reading SSV version 0");
+  // TODO(pwnall): Add UMA metric here.
+  return IsV0VersionTag(data[1]);
 }
 
 static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
@@ -218,9 +207,9 @@ static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
     return;
   }
 
-  static_assert(sizeof(UChar) == 2u);
-  for (size_t i = 0u; i < buffer.size(); i += 2u) {
-    std::swap(buffer[i], buffer[i + 1u]);
+  static_assert(sizeof(UChar) == 2);
+  for (size_t i = 0; i < buffer.size(); i += 2) {
+    std::swap(buffer[i], buffer[i + 1]);
   }
 }
 
@@ -478,11 +467,10 @@ void SerializedScriptValue::CloneSharedArrayBuffers(
 
   HeapHashSet<Member<DOMArrayBufferBase>> visited;
   shared_array_buffers_contents_.Grow(array_buffers.size());
-  wtf_size_t i = 0;
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMSharedArrayBuffer* shared_array_buffer = *it;
-    if (visited.Contains(shared_array_buffer))
+  for (wtf_size_t i = 0; const auto& shared_array_buffer : array_buffers) {
+    if (visited.Contains(shared_array_buffer)) {
       continue;
+    }
     visited.insert(shared_array_buffer);
     shared_array_buffer->ShareContentsWith(shared_array_buffers_contents_[i]);
     i++;
@@ -516,23 +504,22 @@ bool SerializedScriptValue::HasPackedContents() const {
 
 bool SerializedScriptValue::ExtractTransferables(
     v8::Isolate* isolate,
-    const HeapVector<ScriptValue>& object_sequence,
+    const HeapVector<ScriptObject>& object_sequence,
     Transferables& transferables,
     ExceptionState& exception_state) {
   auto& factory = SerializedScriptValueFactory::Instance();
   wtf_size_t i = 0;
-  for (const auto& script_value : object_sequence) {
-    v8::Local<v8::Value> value = script_value.V8Value();
+  for (const auto& script_object : object_sequence) {
     // Validation of non-null objects, per HTML5 spec 10.3.3.
-    if (IsUndefinedOrNull(value)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "Value at index " + String::Number(i) + " is an untransferable " +
-              (value->IsUndefined() ? "'undefined'" : "'null'") + " value.");
+    if (script_object.IsNull()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                        "Value at index " + String::Number(i) +
+                                            " is an untransferable " +
+                                            "'null' value.");
       return false;
     }
-    if (!factory.ExtractTransferable(isolate, value, i, transferables,
-                                     exception_state)) {
+    if (!factory.ExtractTransferable(isolate, script_object.V8Object(), i,
+                                     transferables, exception_state)) {
       if (!exception_state.HadException()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,
@@ -576,17 +563,15 @@ SerializedScriptValue::TransferArrayBufferContents(
   if (!array_buffers.size())
     return ArrayBufferContentsArray();
 
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer = *it;
+  for (wtf_size_t i = 0; const auto& array_buffer : array_buffers) {
     if (array_buffer->IsDetached()) {
-      wtf_size_t index =
-          static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "ArrayBuffer at index " +
-                                            String::Number(index) +
+                                            String::Number(i) +
                                             " is already detached.");
       return ArrayBufferContentsArray();
     }
+    i++;
   }
 
   contents.Grow(array_buffers.size());
@@ -601,14 +586,12 @@ SerializedScriptValue::TransferArrayBufferContents(
       static_cast<HeapHashSet<Member<DOMArrayBufferBase>>*>(buffer)->clear();
     }
   } promptly_free_array_buffers{&visited};
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer_base = *it;
+  for (wtf_size_t i = 0; auto& array_buffer_base : array_buffers) {
+    auto index = i++;
     if (visited.Contains(array_buffer_base))
       continue;
     visited.insert(array_buffer_base);
 
-    wtf_size_t index =
-        static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
     if (array_buffer_base->IsShared()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "SharedArrayBuffer at index " +
@@ -617,7 +600,7 @@ SerializedScriptValue::TransferArrayBufferContents(
       return ArrayBufferContentsArray();
     } else {
       DOMArrayBuffer* array_buffer =
-          static_cast<DOMArrayBuffer*>(array_buffer_base);
+          static_cast<DOMArrayBuffer*>(array_buffer_base.Get());
 
       if (!array_buffer->IsDetachable(isolate)) {
         exception_state.ThrowTypeError(

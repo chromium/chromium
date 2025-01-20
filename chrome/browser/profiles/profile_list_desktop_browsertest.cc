@@ -29,7 +29,7 @@
 
 class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
  public:
-  ProfileListDesktopBrowserTest() {}
+  ProfileListDesktopBrowserTest() = default;
 
   ProfileListDesktopBrowserTest(const ProfileListDesktopBrowserTest&) = delete;
   ProfileListDesktopBrowserTest& operator=(

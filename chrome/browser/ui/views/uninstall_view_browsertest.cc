@@ -12,7 +12,7 @@
 
 class UninstallViewBrowserTest : public DialogBrowserTest {
  public:
-  UninstallViewBrowserTest() {}
+  UninstallViewBrowserTest() = default;
 
   UninstallViewBrowserTest(const UninstallViewBrowserTest&) = delete;
   UninstallViewBrowserTest& operator=(const UninstallViewBrowserTest&) = delete;

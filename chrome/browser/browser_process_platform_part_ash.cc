@@ -40,6 +40,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -82,7 +83,7 @@ class PrimaryProfileServicesShutdownNotifierFactory
   PrimaryProfileServicesShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PrimaryProfileServices") {}
-  ~PrimaryProfileServicesShutdownNotifierFactory() override {}
+  ~PrimaryProfileServicesShutdownNotifierFactory() override = default;
 };
 
 }  // namespace
@@ -113,9 +114,10 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
 void BrowserProcessPlatformPart::InitializeUserManager() {
   DCHECK(!user_manager_);
   CHECK(session_manager_);
+  auto* local_state = g_browser_process->local_state();
   user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
-      std::make_unique<ash::UserManagerDelegateImpl>(),
-      g_browser_process->local_state(), ash::CrosSettings::Get());
+      std::make_unique<ash::UserManagerDelegateImpl>(), local_state,
+      ash::CrosSettings::Get());
   profile_user_manager_controller_ =
       std::make_unique<ash::ProfileUserManagerController>(
           g_browser_process->profile_manager(), user_manager_.get());
@@ -126,6 +128,9 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
           browser_policy_connector_ash()->GetMinimumVersionPolicyHandler());
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
+  multi_user_sign_in_policy_controller_ =
+      std::make_unique<user_manager::MultiUserSignInPolicyController>(
+          local_state, user_manager_.get());
   session_manager_->OnUserManagerCreated(user_manager_.get());
   // LoginState and DeviceCloudPolicyManager outlives UserManager, so on
   // their initialization, there's no way to start observing UserManager.
@@ -156,6 +161,7 @@ void BrowserProcessPlatformPart::DestroyUserManager() {
     login_state->OnUserManagerWillBeDestroyed(user_manager_.get());
   }
 
+  multi_user_sign_in_policy_controller_.reset();
   user_image_manager_registry_.reset();
   profile_user_manager_controller_.reset();
   user_manager_.reset();
@@ -281,8 +287,12 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
         primary_profile);
   }
 
+  // The current sesison may be guest session, where the Profile is
+  // an OTR one. Take the original profile for the case.
+  auto* user = user_manager::UserManager::Get()->FindUserAndModify(CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(primary_profile->GetOriginalProfile())));
   secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-      g_browser_process->local_state(), primary_profile->GetPrefs(),
+      g_browser_process->local_state(), CHECK_DEREF(user),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 }
 
@@ -335,16 +345,6 @@ void BrowserProcessPlatformPart::StartTearDown() {
   timezone_resolver_manager_.reset();
   profile_helper_.reset();
   browser_context_flusher_.reset();
-}
-
-void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
-  // Request Lacros terminate early during shutdown to give it the opportunity
-  // to shutdown gracefully. Check to make sure `browser_manager` is available
-  // as it may be null in tests.
-  if (auto* browser_manager = crosapi::BrowserManager::Get())
-    browser_manager->Shutdown();
-
-  BrowserProcessPlatformPartChromeOS::AttemptExit(try_to_quit_application);
 }
 
 ash::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {

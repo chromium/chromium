@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ai_prototyping_service_impl.h",
+    "ai_prototyping_service_impl.mm",
+    "tab_organization_service_impl.h",
+    "tab_organization_service_impl.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}

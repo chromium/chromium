@@ -101,12 +101,12 @@ class CloseObserver : public content::WebContentsObserver {
 
 class PopupBlockerBrowserTest : public InProcessBrowserTest {
  public:
-  PopupBlockerBrowserTest() {}
+  PopupBlockerBrowserTest() = default;
 
   PopupBlockerBrowserTest(const PopupBlockerBrowserTest&) = delete;
   PopupBlockerBrowserTest& operator=(const PopupBlockerBrowserTest&) = delete;
 
-  ~PopupBlockerBrowserTest() override {}
+  ~PopupBlockerBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -219,8 +219,9 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
       new_browser = BrowserList::GetInstance()->GetLastActive();
       EXPECT_NE(browser, new_browser);
       web_contents = new_browser->tab_strip_model()->GetActiveWebContents();
-      if (what_to_expect == kExpectNewWindow)
+      if (what_to_expect == kExpectNewWindow) {
         EXPECT_TRUE(new_browser->is_type_normal());
+      }
     } else {
       tab_add.Wait();
       new_browser = browser;
@@ -602,8 +603,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(dialog);
 #if !BUILDFLAG(IS_MAC)
-  if (chrome::FindLastActive() != browser())
+  if (chrome::FindLastActive() != browser()) {
     alert_waiter.WaitForActivation();
+  }
 #endif
 
 // Verify that after the dialog is closed, the popup is in front again.
@@ -792,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
                                           ->tab_strip_model()
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame());
-  int process_id = rfh->GetProcess()->GetID();
+  int process_id = rfh->GetProcess()->GetDeprecatedID();
   int frame_routing_id = rfh->GetRoutingID();
 
   // Navigate to another page on the same domain. This will trigger a check on

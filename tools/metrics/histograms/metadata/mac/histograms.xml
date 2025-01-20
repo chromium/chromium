@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
-    enum="CodeSigningOSStatus" expires_after="2025-05-11">
+    enum="CodeSigningOSStatus" expires_after="2025-07-13">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.LocationBarViewScreenY" units="px"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OmniboxPopupTargetScreenY" units="px"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OverlayNSWindowScreenY" units="px"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.Fullscreen.OverlayWidgetScreenY" units="px"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>kerenzhu@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>

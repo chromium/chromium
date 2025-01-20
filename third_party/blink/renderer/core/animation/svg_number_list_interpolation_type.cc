@@ -108,7 +108,7 @@ SVGPropertyBase* SVGNumberListInterpolationType::AppliedSVGValue(
   for (wtf_size_t i = 0; i < list.length(); i++) {
     result->Append(MakeGarbageCollected<SVGNumber>(
         To<InterpolableNumber>(list.Get(i))
-            ->Value(CSSToLengthConversionData())));
+            ->Value(CSSToLengthConversionData(/*element=*/nullptr))));
   }
   return result;
 }

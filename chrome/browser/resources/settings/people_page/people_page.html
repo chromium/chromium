@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared iron-flex">
+    <style include="cr-shared-style settings-shared">
       .sync-row {
         align-items: center;
         flex: auto;
@@ -14,6 +14,15 @@
 
       #sync-setup {
         --cr-secondary-text-color: var(--settings-error-color);
+      }
+
+      #sync-not-allowed {
+        border-top: var(--cr-separator-line);
+        background:  var(--google-grey-100);
+      }
+
+      #sync-not-allowed-text {
+        margin-left: 8px;
       }
 
       cr-link-row {
@@ -48,6 +57,12 @@
       settings-sync-account-control[showing-promo]::part(title) {
         font-size: 1.1rem;
         line-height: 1.625rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #sync-not-allowed {
+          background:  var(--google-grey-800);
+        }
       }
     </style>
     <settings-animated-pages id="pages" section="people"
@@ -133,6 +148,17 @@ shown on non-ChromeOS platforms -->
             on-click="onImportDataClick_"></cr-link-row>
 </if>
 
+<if expr="not is_chromeos">
+        <template is="dom-if" if="[[isDasherlessProfile_]]">
+          <div id="sync-not-allowed" class="cr-row continuation">
+            <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
+            <div id="sync-not-allowed-text" class="flex cr-padded-text">
+              $i18n{syncUnavailableForNonGoogleAccount}
+            </div>
+          </div>
+        </template>
+</if>
+
       </div>
       <template is="dom-if" route-path="/syncSetup">
         <settings-subpage
@@ -153,14 +179,6 @@ shown on non-ChromeOS platforms -->
             learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
           <settings-sync-controls sync-status="[[syncStatus]]">
           </settings-sync-controls>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" route-path="/syncSetup/pageContent">
-        <settings-subpage page-title="$i18n{pageContentPageTitle}"
-            associated-control="[[$$('#sync-setup')]]">
-          <settings-page-content-page prefs="{{prefs}}">
-          </settings-page-content-page>
         </settings-subpage>
       </template>
 

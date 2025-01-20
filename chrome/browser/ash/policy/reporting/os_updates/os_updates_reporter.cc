@@ -93,9 +93,12 @@ void OsUpdatesReporter::MaybeReportEvent(
 
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
-  auto log_upload_id = NotifyOsUpdateFailed();
-  if (log_upload_id.has_value()) {
-    record.set_log_upload_id(log_upload_id.value());
+  if (record.os_operation_type() == ash::reporting::OsOperationType::FAILURE) {
+    // Trigger log upload only on a case of failure.
+    auto log_upload_id = NotifyOsUpdateFailed();
+    if (log_upload_id.has_value()) {
+      record.set_log_upload_id(log_upload_id.value());
+    }
   }
 
   helper_->ReportEvent(

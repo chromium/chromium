@@ -42,8 +42,12 @@ const char kPathParameter[] = "path";
 const char kScaleFactorParameter[] = "scale";
 
 IconLoader::IconSize SizeStringToIconSize(std::string_view size_string) {
-  if (size_string == "small") return IconLoader::SMALL;
-  if (size_string == "large") return IconLoader::LARGE;
+  if (size_string == "small") {
+    return IconLoader::SMALL;
+  }
+  if (size_string == "large") {
+    return IconLoader::LARGE;
+  }
   // We default to NORMAL if we don't recognize the size_string. Including
   // size_string=="normal".
   return IconLoader::NORMAL;
@@ -72,8 +76,9 @@ void ParseQueryParams(const std::string& path,
 FileIconSource::IconRequestDetails::IconRequestDetails() = default;
 FileIconSource::IconRequestDetails::IconRequestDetails(
     IconRequestDetails&& other) = default;
-FileIconSource::IconRequestDetails& FileIconSource::IconRequestDetails::
-operator=(IconRequestDetails&& other) = default;
+FileIconSource::IconRequestDetails&
+FileIconSource::IconRequestDetails::operator=(IconRequestDetails&& other) =
+    default;
 FileIconSource::IconRequestDetails::~IconRequestDetails() = default;
 
 FileIconSource::FileIconSource() = default;

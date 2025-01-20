@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.accessibility.hierarchysnapshotter;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Base class for defining methods where different behavior is required by downstream targets for
  * the HierarchySnapshotter.
  */
+@NullMarked
 public class HierarchySnapshotterDelegate {
     /**
      * @see {@link HierarchySnapshotter#initialize()}

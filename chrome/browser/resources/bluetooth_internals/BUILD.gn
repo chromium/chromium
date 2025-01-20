@@ -30,6 +30,7 @@ build_webui("build") {
   non_web_component_files = [
     "adapter_broker.js",
     "adapter_page.js",
+    "bluetooth_internals.js",
     "characteristic_list.js",
     "debug_log_page.js",
     "descriptor_list.js",
@@ -38,10 +39,9 @@ build_webui("build") {
     "device_details_page.js",
     "device_utils.js",
     "devices_page.js",
-    "bluetooth_internals.js",
     "main.js",
-    "page_manager.js",
     "page.js",
+    "page_manager.js",
     "service_list.js",
     "sidebar.js",
   ]
@@ -55,10 +55,10 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/adapter.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/device.mojom-webui.ts",
-    "$root_gen_dir/device/bluetooth/public/mojom/uuid.mojom-webui.ts",
-    "$root_gen_dir/device/bluetooth/public/mojom/gatt_characteristic_properties.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/gatt_characteristic_permissions.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/gatt_characteristic_properties.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/gatt_service_error_code.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/uuid.mojom-webui.ts",
   ]
 
   ts_composite = true

@@ -13,4 +13,6 @@ const char kAllowlistCheckLatencyHistogram[] =
 const char kSuspiciousScoreHistogram[] =
     "SafeBrowsing.NotificationContentDetection.SuspiciousScore";
 
+const char kIsAllowlistedByUserKey[] = "is-allowlisted-by-user";
+
 }  // namespace safe_browsing

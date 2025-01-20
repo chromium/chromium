@@ -69,7 +69,7 @@ public class AcknowledgeGroupedCredentialSheetRenderTest {
 
     private BottomSheetController mBottomSheetController;
     private AcknowledgeGroupedCredentialSheetController mController;
-    @Mock private Callback<Boolean> mOnDismissedCallback;
+    @Mock private Callback<Integer> mOnDismissedCallback;
     private static final String CURRENT_DOMAIN = "current.com";
     private static final String CREDENTIAL_DOMAIN = "credential.com";
 

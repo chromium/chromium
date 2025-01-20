@@ -41,7 +41,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
   BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
 
-  ~BrowserLiveTabContext() override {}
+  ~BrowserLiveTabContext() override = default;
 
   // Overridden from LiveTabContext:
   void ShowBrowserWindow() override;

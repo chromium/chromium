@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef DEVICE_VR_TEST_TEST_HOOK_H_
 #define DEVICE_VR_TEST_TEST_HOOK_H_
 
@@ -89,14 +84,16 @@ struct ViewData {
 };
 
 struct PoseFrameData {
-  float device_to_origin[16];
+  std::array<float, 16> device_to_origin;
   bool is_valid;
 };
 
 struct DeviceConfig {
   float interpupillary_distance;
-  float viewport_left[4];   // raw projection left {left, right, top, bottom}
-  float viewport_right[4];  // raw projection right {left, right, top, bottom}
+  std::array<float, 4>
+      viewport_left;  // raw projection left {left, right, top, bottom}
+  std::array<float, 4>
+      viewport_right;  // raw projection right {left, right, top, bottom}
 };
 
 struct ControllerAxisData {
@@ -140,10 +137,10 @@ struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   uint64_t buttons_pressed = 0;
   uint64_t buttons_touched = 0;
   uint64_t supported_buttons = 0;
-  ControllerAxisData axis_data[kMaxNumAxes];
+  std::array<ControllerAxisData, kMaxNumAxes> axis_data;
   PoseFrameData pose_data = {};
   ControllerRole role = kControllerRoleInvalid;
-  XRHandJointData hand_data[kNumJointsForTest];
+  std::array<XRHandJointData, kNumJointsForTest> hand_data;
   bool has_hand_data = false;
   bool is_valid = false;
 
@@ -159,7 +156,7 @@ inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {
   // we're given data in column-major order. Construct in column-major order and
   // transpose since it looks cleaner than manually transposing the arguments
   // passed to the constructor.
-  float* t = data.device_to_origin;
+  auto& t = data.device_to_origin;
   return gfx::Transform::ColMajor(t[0], t[1], t[2], t[3], t[4], t[5], t[6],
                                   t[7], t[8], t[9], t[10], t[11], t[12], t[13],
                                   t[14], t[15]);

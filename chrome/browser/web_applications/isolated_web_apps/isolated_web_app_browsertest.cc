@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace web_app {
 
@@ -379,13 +381,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CrossOriginWindowOpen) {
   }
 }
 
-// TODO(b/366524200): Find out why the navigation isn't opening in an IWA window
 IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserTest,
-    DISABLED_OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
+    OmniboxNavigationOpensStandaloneWindowEvenIfDisplayModeIsBrowser) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder())
-          .AddFileFromDisk("/", "web_apps/simple_isolated_app/index.html")
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetDisplayMode(blink::mojom::DisplayMode::kBrowser))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
                        app->TrustBundleAndInstall(profile()));
@@ -395,14 +396,14 @@ IN_PROC_BROWSER_TEST_F(
       .SetAppUserDisplayModeForTesting(url_info.app_id(),
                                        mojom::UserDisplayMode::kBrowser);
 
-  GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
+  GURL app_url = url_info.origin().GetURL();
   auto* app_frame =
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
   // The browser shouldn't have opened the app's page.
   EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
 
-  // The app's frame should belong to an isolated PWA browser window.
+  // The app's frame should belong to an IWA window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
@@ -410,6 +411,63 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
   EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppBrowserTest,
+    OmniboxNavigationOpensStandaloneWindowEvenIfDisplayModeIsMinimalUi) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetDisplayMode(
+                                blink::mojom::DisplayMode::kMinimalUi))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
+  GURL app_url = url_info.origin().GetURL();
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  // The app's frame should belong to an IWA window.
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
+  EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
+  EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       OpeningNonexistentPathShowsError) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
+  const GURL app_url =
+      url_info.origin().GetURL().Resolve("/does_not_exist.html");
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
+
+  // Because we accessed a nonexistent path, we should get a
+  // window with error message instead of the actual IWA
+  EXPECT_NE(content::WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(EvalJs(app_frame,
+                     "document.body.textContent.includes("
+                     "'No webpage was found for the web address')")
+                  .ExtractBool());
 }
 
 // Tests that the app menu doesn't have an 'Open in Chrome' option.
@@ -594,6 +652,46 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
     });
   )";
   EXPECT_EQ("message body", EvalJs(app_frame, js));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kPageVisits, 0);
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  EXPECT_TRUE(app_frame);
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kPageVisits, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       PermissionsPolicyCannotBeExpanded) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddResource("/", "Test IWA",
+                       {{"Content-Type", "text/html"},
+                        {"Permissions-Policy", "direct-sockets=(self)"}})
+          .BuildBundle();
+
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  std::string openSocketJs = R"(
+    (async function() {
+      const socket = new TCPSocket("localhost", 0);
+      await socket.opened;
+    })();
+  )";
+  EXPECT_THAT(EvalJs(app_frame, openSocketJs).error,
+              HasSubstr("Permissions-Policy: direct-sockets are disabled."));
 }
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {

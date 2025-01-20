@@ -54,7 +54,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
         fake_update_engine_client_(nullptr),
         user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
-  ~VersionUpdaterCrosTest() override {}
+  ~VersionUpdaterCrosTest() override = default;
 
   void SetUp() override {
     fake_update_engine_client_ =
@@ -69,9 +69,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
     ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
-    service_test->AddService("/service/eth",
-                             "eth" /* guid */,
-                             "eth",
+    service_test->AddService("/service/eth", "eth" /* guid */, "eth",
                              shill::kTypeEthernet, shill::kStateOnline,
                              true /* visible */);
     base::RunLoop().RunUntilIdle();

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -21,15 +22,28 @@
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "base/test/scoped_feature_list.h"
-#include "cc/test/pixel_test_utils.h"                      // nogncheck
-#include "components/enterprise/watermarking/features.h"   // nogncheck
+#include "cc/test/pixel_test_utils.h"                     // nogncheck
+#include "components/enterprise/watermarking/features.h"  // nogncheck
+#include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
+#include "components/enterprise/watermarking/watermark_test_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #endif
 
 namespace printing {
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+
+namespace {
+
+constexpr SkSize kWatermarkSize{200, 200};
+constexpr char kWatermarkText[] = "example-watermark";
+
+}  // namespace
+
+#endif
 
 struct TestRequestData {
   uint64_t frame_guid;
@@ -97,19 +111,19 @@ class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
   MockPrintCompositorImplEnterpriseWatermark()
       : PrintCompositorImpl(mojo::NullReceiver(),
                             /*initialize_environment=*/false,
-                            /*io_task_runner=*/nullptr) {}
+                            /*io_task_runner=*/nullptr) {
+    SetWatermarkBlock(enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize));
+  }
+
   ~MockPrintCompositorImplEnterpriseWatermark() override = default;
 
-  static constexpr SkSize kSize{200, 200};
-  static constexpr char kWatermarkText[] = "example-watermark";
-
-  void DrawPage(SkDocument* doc,
-                const SkDocumentPage& page,
-                const std::string& watermark_text) override {
-    bitmap_.allocN32Pixels(kSize.fWidth, kSize.fHeight);
+  void DrawPage(SkDocument* doc, const SkDocumentPage& page) override {
+    bitmap_.allocN32Pixels(kWatermarkSize.fWidth, kWatermarkSize.fHeight);
     SkCanvas canvas(bitmap_);
     canvas.clear(SK_ColorBLACK);
-    DrawEnterpriseWatermark(&canvas, kSize, watermark_text);
+    DrawEnterpriseWatermark(&canvas, kWatermarkSize,
+                            watermark_block_for_testing());
   }
 
   const SkBitmap& bitmap() const { return bitmap_; }
@@ -190,16 +204,13 @@ class PrintCompositorImplEnterpriseWatermarkTest
     }
 
     // Create reference bitmap.
-    reference_watermark_.allocN32Pixels(
-        MockPrintCompositorImplEnterpriseWatermark::kSize.fWidth,
-        MockPrintCompositorImplEnterpriseWatermark::kSize.fHeight);
+    reference_watermark_.allocN32Pixels(kWatermarkSize.fWidth,
+                                        kWatermarkSize.fHeight);
     SkCanvas canvas(reference_watermark_);
     canvas.clear(SK_ColorBLACK);
-    enterprise_watermark::DrawWatermark(
-        &canvas, MockPrintCompositorImplEnterpriseWatermark::kSize,
-        MockPrintCompositorImplEnterpriseWatermark::kWatermarkText,
-        PrintCompositorImpl::kWatermarkBlockWidth,
-        PrintCompositorImpl::kWatermarkTextSize);
+    const auto watermark_block = enterprise_watermark::MakeTestWatermarkBlock(
+        kWatermarkText, kWatermarkSize);
+    DrawWatermarkBlockForTesting(&canvas, kWatermarkSize, watermark_block);
   }
 
   const SkBitmap& reference_watermark() const { return reference_watermark_; }
@@ -211,8 +222,7 @@ class PrintCompositorImplEnterpriseWatermarkTest
 
 TEST_P(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
   MockPrintCompositorImplEnterpriseWatermark compositor;
-  compositor.DrawPage(
-      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+  compositor.DrawPage(nullptr, {});
 
   // If the feature is enabled, the watermark will equal the reference.
   bool enterprise_watermark_enabled = GetParam();
@@ -220,12 +230,10 @@ TEST_P(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
                               cc::ExactPixelComparator()),
             enterprise_watermark_enabled);
 }
-
 TEST_P(PrintCompositorImplEnterpriseWatermarkTest,
        IsPageBlankWhenWatermarkingDisabled) {
   MockPrintCompositorImplEnterpriseWatermark compositor;
-  compositor.DrawPage(
-      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+  compositor.DrawPage(nullptr, {});
   // If the feature is disabled, the page rendered will be blank.
   bool enterprise_watermark_enabled = GetParam();
   base::FilePath path =

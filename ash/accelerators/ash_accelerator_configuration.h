@@ -134,6 +134,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   // Returns true if the `id` is a valid ash accelerator ID.
   bool IsValid(uint32_t id) const;
 
+  bool HasCustomAccelerators();
+
  private:
   friend class AshAcceleratorConfigurationTest;
 

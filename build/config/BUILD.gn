@@ -271,6 +271,15 @@ group("common_deps_without_libcxx") {
     # be present on bots that run exes or load DLLs. This also includes
     # debugging DLLs in all builds.
     data_deps = [ "//build/win:runtime_libs" ]
+
+    if (host_os == "win") {
+      # In order to ensure the ACLing is applied to every binary loaded in an
+      # app container sandbox, run the ACL step before any binary is built. We
+      # do this because the tool is subject to race conditions if a binary is
+      # placed in the out folder while it is running.
+      public_deps +=
+          [ "//build/config/win:maybe_set_appcontainer_acls($host_toolchain)" ]
+    }
   }
 }
 

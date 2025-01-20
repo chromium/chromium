@@ -428,8 +428,8 @@ bool QueryParser::ParseQueryImpl(const std::u16string& query,
     // is not necessarily a word, but could also be a sequence of punctuation
     // or whitespace.
     if (iter.IsWord()) {
-      std::unique_ptr<QueryNodeWord> word_node =
-          std::make_unique<QueryNodeWord>(iter.GetString(), matching_algorithm);
+      auto word_node = std::make_unique<QueryNodeWord>(
+          std::u16string(iter.GetString()), matching_algorithm);
       if (in_quotes)
         word_node->set_literal(true);
       query_stack.back()->AddChild(std::move(word_node));
@@ -470,10 +470,10 @@ void QueryParser::ExtractQueryWords(const std::u16string& text,
     // is not necessarily a word, but could also be a sequence of punctuation
     // or whitespace.
     if (iter.IsWord()) {
-      std::u16string word = iter.GetString();
+      std::u16string_view word = iter.GetString();
       if (!word.empty()) {
         words->push_back(QueryWord());
-        words->back().word = word;
+        words->back().word = std::u16string(word);
         words->back().position = iter.prev();
      }
     }

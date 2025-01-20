@@ -41,8 +41,9 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
 
   // ChromeKeyboardControllerClient::Observer
   void OnKeyboardVisibilityChanged(bool visible) override {
-    if (visible == visible_)
+    if (visible == visible_) {
       run_loop_.QuitWhenIdle();
+    }
   }
 
  private:
@@ -105,7 +106,7 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
 
   explicit KeyboardEndToEndTest(const base::FilePath& test_file)
       : test_file_(test_file) {}
-  ~KeyboardEndToEndTest() override {}
+  ~KeyboardEndToEndTest() override = default;
 
   // Get the value of the attribute attribute |attribute| on the DOM element
   // with the given |id|.
@@ -158,7 +159,7 @@ class KeyboardEndToEndFormTest : public KeyboardEndToEndTest {
   KeyboardEndToEndFormTest(const KeyboardEndToEndFormTest&) = delete;
   KeyboardEndToEndFormTest& operator=(const KeyboardEndToEndFormTest&) = delete;
 
-  ~KeyboardEndToEndFormTest() override {}
+  ~KeyboardEndToEndFormTest() override = default;
 
  protected:
 };
@@ -264,7 +265,7 @@ class KeyboardEndToEndFocusTest : public KeyboardEndToEndTest {
   KeyboardEndToEndFocusTest& operator=(const KeyboardEndToEndFocusTest&) =
       delete;
 
-  ~KeyboardEndToEndFocusTest() override {}
+  ~KeyboardEndToEndFocusTest() override = default;
 
  protected:
 };
@@ -339,7 +340,7 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
   KeyboardEndToEndOverscrollTest& operator=(
       const KeyboardEndToEndOverscrollTest&) = delete;
 
-  ~KeyboardEndToEndOverscrollTest() override {}
+  ~KeyboardEndToEndOverscrollTest() override = default;
 
   void FocusAndShowKeyboard() { ClickElementWithId(web_contents_, "username"); }
 

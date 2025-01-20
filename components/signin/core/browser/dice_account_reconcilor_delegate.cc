@@ -76,16 +76,18 @@ void RevokeAllSecondaryTokens(
     bool is_primary_account =
         !primary_account.empty() && account == primary_account;
 
-    if (is_primary_account)
+    if (is_primary_account) {
       continue;
+    }
 
     bool should_revoke =
         !revoke_only_if_in_error ||
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             account);
 
-    if (should_revoke)
+    if (should_revoke) {
       accounts_mutator->RemoveAccount(account, source);
+    }
   }
 }
 
@@ -135,8 +137,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
     bool first_execution) const {
   std::vector<CoreAccountId> valid_gaia_accounts_ids;
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
-    if (gaia_account.valid)
+    if (gaia_account.valid) {
       valid_gaia_accounts_ids.push_back(gaia_account.id);
+    }
   }
 
   bool primary_account_has_token = false;
@@ -145,11 +148,13 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
         base::Contains(chrome_accounts, primary_account);
     bool primary_account_has_cookie =
         base::Contains(valid_gaia_accounts_ids, primary_account);
-    if (primary_account_has_token && !primary_account_has_cookie)
+    if (primary_account_has_token && !primary_account_has_cookie) {
       return InconsistencyReason::kMissingSyncCookie;
+    }
 
-    if (!primary_account_has_token && primary_account_has_cookie)
+    if (!primary_account_has_token && primary_account_has_cookie) {
       return InconsistencyReason::kSyncAccountAuthError;
+    }
   }
 
   bool missing_first_web_account_token =
@@ -157,8 +162,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
       gaia_accounts[0].valid &&
       !base::Contains(chrome_accounts, gaia_accounts[0].id);
 
-  if (missing_first_web_account_token)
+  if (missing_first_web_account_token) {
     return InconsistencyReason::kMissingFirstWebAccountToken;
+  }
 
   std::sort(valid_gaia_accounts_ids.begin(), valid_gaia_accounts_ids.end());
   std::vector<CoreAccountId> sorted_chrome_accounts(chrome_accounts);
@@ -168,18 +174,22 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   bool missing_cookie =
       !base::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
 
-  if (missing_token && missing_cookie)
+  if (missing_token && missing_cookie) {
     return InconsistencyReason::kCookieTokenMismatch;
+  }
 
-  if (missing_token)
+  if (missing_token) {
     return InconsistencyReason::kMissingSecondaryToken;
+  }
 
-  if (missing_cookie)
+  if (missing_cookie) {
     return InconsistencyReason::kMissingSecondaryCookie;
+  }
 
   if (first_execution && primary_account_has_token &&
-      gaia_accounts[0].id != primary_account && gaia_accounts[0].valid)
+      gaia_accounts[0].id != primary_account && gaia_accounts[0].valid) {
     return InconsistencyReason::kSyncCookieNotFirst;
+  }
 
   return InconsistencyReason::kNone;
 }
@@ -194,8 +204,10 @@ bool DiceAccountReconcilorDelegate::ShouldDeleteAccountsFromGaia(
   // A valid Gaia account should be deleted if it does not have a Chrome
   // account.
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
-    if (gaia_account.valid && !base::Contains(chrome_accounts, gaia_account.id))
+    if (gaia_account.valid &&
+        !base::Contains(chrome_accounts, gaia_account.id)) {
       return true;
+    }
   }
   return false;
 }

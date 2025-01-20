@@ -8,16 +8,17 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
-#include "services/video_effects/video_effects_processor_impl.h"
+#include "base/observer_list.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 
 namespace video_effects {
 
-class VizGpuChannelHostProvider : public video_effects::GpuChannelHostProvider {
+class VizGpuChannelHostProvider : public GpuChannelHostProvider,
+                                  public gpu::GpuChannelLostObserver,
+                                  public viz::ContextLostObserver {
  public:
   explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu);
-  ~VizGpuChannelHostProvider() override;
 
   // GpuChannelHostProvider:
   scoped_refptr<viz::ContextProviderCommandBuffer> GetWebGpuContextProvider()
@@ -26,17 +27,38 @@ class VizGpuChannelHostProvider : public video_effects::GpuChannelHostProvider {
       override;
   scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface()
       override;
+  void AddObserver(Observer& observer) override;
+  void RemoveObserver(Observer& observer) override;
 
  protected:
+  ~VizGpuChannelHostProvider() override;
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:
+  void Reset();
+
+  // gpu::GpuChannelLostObserver:
+  void OnGpuChannelLost() override;
+
+  // viz::ContextLostObserver:
+  void OnContextLost() override;
+
+  // Called by `OnGpuChannelLost()` and `OnContextLost()`.
+  void HandleContextLost();
+
+  bool HasPermanentError();
+
   std::unique_ptr<viz::Gpu> viz_gpu_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
   scoped_refptr<viz::ContextProviderCommandBuffer> webgpu_context_provider_;
   scoped_refptr<viz::ContextProviderCommandBuffer>
       raster_interface_context_provider_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+
+  int num_context_lost_ = 0;
+
+  base::ObserverList<Observer, true /*check_empty*/, false /*allow_reentrancy*/>
+      observers_;
 };
 
 }  // namespace video_effects

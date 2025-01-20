@@ -47,7 +47,6 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     icon_background_ = AddChildView(std::make_unique<views::View>());
     if (item_in_folder_icon_) {
       icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-      icon_background_->layer()->SetFillsBoundsOpaquely(false);
     } else {
       const int background_diameter =
           app_list_config->GetShortcutBackgroundContainerDimension();
@@ -65,7 +64,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size_));
   auto icon_image = std::make_unique<views::ImageView>();
-  icon_image->SetImage(resized);
+  icon_image->SetImage(ui::ImageModel::FromImageSkia(resized));
   icon_ = AddChildView(std::move(icon_image));
   if (icon_background_ && icon_background_->layer()) {
     icon_->SetPaintToLayer();
@@ -91,8 +90,9 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     const gfx::Size badge_icon_size =
         gfx::Size(app_list_config->shortcut_host_badge_icon_dimension(),
                   app_list_config->shortcut_host_badge_icon_dimension());
-    badge_icon_view->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size));
+    badge_icon_view->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size)));
   }
 
   auto title_label = std::make_unique<views::Label>();

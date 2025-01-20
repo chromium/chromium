@@ -26,17 +26,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/wm/public/activation_change_observer.h"
-#include "ui/wm/public/activation_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class Browser;
 class Profile;
-
-namespace aura {
-class Window;
-}
 
 namespace apps {
 
@@ -112,7 +103,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
  private:
   class WebContentsObserver;
   friend class BrowserAppInstanceRegistry;
-  friend class BrowserAppInstanceTrackerLacros;
 
   // Called by TabStripModelChanged().
   void OnTabStripModelChangeInsert(Browser* browser,
@@ -207,55 +197,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 };
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/332628771): Remove this class 2 mile stones from this patch.
-// Now that activation is observed by Ash even for Lacros windows,
-// |BrowserAppInstanceTracker| no longer needs to observe activation changes.
-// However to support older Ash, |BrowserAppInstanceTrackerLacros| adds
-// |ActivationChangeObserver| functionality to |BrowserAppInstanceTracker| and
-// notifies Ash.
-class BrowserAppInstanceTrackerLacros : public BrowserAppInstanceTracker,
-                                        public wm::ActivationChangeObserver {
- public:
-  BrowserAppInstanceTrackerLacros(Profile* profile,
-                                  AppRegistryCache& app_registry_cache);
-  ~BrowserAppInstanceTrackerLacros() override;
-  BrowserAppInstanceTrackerLacros(const BrowserAppInstanceTrackerLacros&) =
-      delete;
-  BrowserAppInstanceTrackerLacros& operator=(
-      const BrowserAppInstanceTrackerLacros&) = delete;
-
-  // wm::ActivationChangeObserver overrides:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
- private:
-  // Updates the browser instance with the new attributes and notifies
-  // observers, if it was updated.
-  void MaybeUpdateBrowserWindowInstance(BrowserWindowInstance& instance,
-                                        Browser* browser);
-  // Called on browser window changes. Sends update events for all open tabs.
-  void OnBrowserWindowUpdated(Browser* browser);
-
-  bool IsActivationClientTracked(wm::ActivationClient* client) const;
-
-  // In addition to calling
-  // |BrowserAppInstanceTracker::OnBrowserFirstTabAttached| starts observing
-  // |ActivationClient| corresponding to |browser|.
-  void OnBrowserFirstTabAttached(Browser* browser) override;
-  // In addition to calling
-  // |BrowserAppInstanceTracker::OnBrowserLastTabDetached| stops observing
-  // |ActivationClient| corresponding to |browser|.
-  void OnBrowserLastTabDetached(Browser* browser) override;
-
-  // A set of observed activation clients for all browser's windows.
-  base::ScopedMultiSourceObservation<wm::ActivationClient,
-                                     wm::ActivationChangeObserver>
-      activation_client_observations_{this};
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps
 

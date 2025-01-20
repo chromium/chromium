@@ -83,8 +83,9 @@ bool GetString(const base::Value::Dict& value,
                const std::string& key,
                std::string* out) {
   const std::string* string = value.FindString(key);
-  if (!string)
+  if (!string) {
     return false;
+  }
 
   *out = *string;
   return !out->empty();
@@ -102,8 +103,9 @@ void CopyValue(const base::Value::Dict& from,
                const std::string& key,
                base::Value::Dict& to) {
   const base::Value* value = from.Find(key);
-  if (value)
+  if (value) {
     to.Set(key, value->Clone());
+  }
 }
 
 CastInternalMessage::Type CastInternalMessageTypeFromString(
@@ -175,10 +177,11 @@ blink::mojom::PresentationConnectionMessagePtr CreateMessageCommon(
 
   // When `payload` is empty, we want to set `message` to null instead of {} in
   // the JSON that is generated.
-  if (payload.empty())
+  if (payload.empty()) {
     message.Set("message", base::Value());
-  else
+  } else {
     message.Set("message", std::move(payload));
+  }
 
   if (sequence_number) {
     message.Set("sequenceNumber", base::Value(*sequence_number));
@@ -534,18 +537,24 @@ blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
 
 base::Value::List SupportedMediaCommandsToListValue(int media_commands) {
   base::Value::List value;
-  if (media_commands & static_cast<int>(MediaCommand::kPause))
+  if (media_commands & static_cast<int>(MediaCommand::kPause)) {
     value.Append(kMediaCommandPause);
-  if (media_commands & static_cast<int>(MediaCommand::kSeek))
+  }
+  if (media_commands & static_cast<int>(MediaCommand::kSeek)) {
     value.Append(kMediaCommandSeek);
-  if (media_commands & static_cast<int>(MediaCommand::kStreamVolume))
+  }
+  if (media_commands & static_cast<int>(MediaCommand::kStreamVolume)) {
     value.Append(kMediaCommandStreamVolume);
-  if (media_commands & static_cast<int>(MediaCommand::kStreamMute))
+  }
+  if (media_commands & static_cast<int>(MediaCommand::kStreamMute)) {
     value.Append(kMediaCommandStreamMute);
-  if (media_commands & static_cast<int>(MediaCommand::kQueueNext))
+  }
+  if (media_commands & static_cast<int>(MediaCommand::kQueueNext)) {
     value.Append(kMediaCommandQueueNext);
-  if (media_commands & static_cast<int>(MediaCommand::kQueuePrev))
+  }
+  if (media_commands & static_cast<int>(MediaCommand::kQueuePrev)) {
     value.Append(kMediaCommandQueuePrev);
+  }
   return value;
 }
 

@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Simple EnterpriseInfo that always invokes callbacks asynchronously. When created, it will store
- * any requests for enterprise info, until {@link FakeEnterpriseInfo#initialize(OwnedState)} is
- * called, at which point it will run all old and new callbacks.
+ * Simple EnterpriseInfo implementation. When created, it will store any requests for enterprise
+ * info, until {@link FakeEnterpriseInfo#initialize(OwnedState)} is called, at which point it will
+ * run all old and new callbacks.
  */
 public class FakeEnterpriseInfo extends EnterpriseInfo {
     private final List<Callback<OwnedState>> mCallbackList = new ArrayList<>();
@@ -31,6 +31,11 @@ public class FakeEnterpriseInfo extends EnterpriseInfo {
         } else {
             mCallbackList.add(callback);
         }
+    }
+
+    @Override
+    public OwnedState getDeviceEnterpriseInfoSync() {
+        return mOwnedState;
     }
 
     @Override

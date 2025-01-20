@@ -183,7 +183,7 @@ NaClDesc* MakeNaClDescQuota(
     quota_interface->file_io = file_io;
     // Create the NaClDescQuota.
     NaClDescQuota* desc = static_cast<NaClDescQuota*>(malloc(sizeof *desc));
-    uint8_t unused_id[NACL_DESC_QUOTA_FILE_ID_LEN] = {0};
+    uint8_t unused_id[NACL_DESC_QUOTA_FILE_ID_LEN] = {};
     if (desc && NaClDescQuotaCtor(desc,
                                   wrapped_desc,
                                   unused_id,

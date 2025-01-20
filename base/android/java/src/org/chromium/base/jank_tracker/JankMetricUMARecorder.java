@@ -7,7 +7,10 @@ package org.chromium.base.jank_tracker;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Sends Android jank metrics to native to be recorded using UMA. */
+@NullMarked
 @JNINamespace("base::android")
 public class JankMetricUMARecorder {
     public static void recordJankMetricsToUMA(

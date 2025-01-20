@@ -121,7 +121,6 @@ void CreateSessionDoesNotCrash(int int_init_data_type,
       break;
     default:
       NOTREACHED();
-      return;
   }
 
   // Create an AesDecryptor. Ignore any messages that may be generated.

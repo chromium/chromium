@@ -17,16 +17,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
-#include "media/base/video_frame.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -114,8 +113,7 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // dequeued through |V4L2ReadableBufferRef::GetFrameResource()|.
   // |frame_resource| is thus guaranteed to be alive until either all the
   // |V4L2ReadableBufferRef| from the dequeued buffer get out of scope, or
-  // |V4L2Queue::Streamoff()| is called. Usage must not be mixed with
-  // |QueueDMABuf(scoped_refptr<VideoFrame>)|.
+  // |V4L2Queue::Streamoff()| is called.
   [[nodiscard]] bool QueueDMABuf(scoped_refptr<FrameResource> frame_resource,
                                  V4L2RequestRef* request_ref = nullptr) &&;
   // Queue a DMABUF with the corresponding |secure_handle|. This is used during
@@ -504,7 +502,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // different frames passed to this method does not exceed the number of V4L2
   // buffers allocated on the queue.
   [[nodiscard]] std::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
-      const gfx::GenericSharedMemoryId& id);
+      const base::UnguessableToken& id);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
   // available.
@@ -596,7 +594,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
   // Dictionary of queue buffers (indexed 0... |buffers_| size), indexed by the
   // unique frame id (be that a GpuMemoryBuffer ID or a DmaBuf ID).
-  std::map<gfx::GenericSharedMemoryId, size_t> free_buffers_indexes_
+  std::map<base::UnguessableToken, size_t> free_buffers_indexes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // List of the allocated secure buffers.

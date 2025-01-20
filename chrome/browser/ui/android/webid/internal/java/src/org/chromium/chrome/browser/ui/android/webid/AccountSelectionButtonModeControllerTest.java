@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -244,6 +245,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // permission is false. Since this is a new account and request permission is false, we need
         // to show UI without disclosure text so we show the account chooser.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(mSheetAccountItems.size(), 1);
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
     }
 
     @Test
@@ -261,6 +264,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         // this is a returning account, we cannot skip directly to signing in because we have to
         // show browser UI in the flow so we show the account chooser.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(mSheetAccountItems.size(), 1);
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
     }
 
     @Test

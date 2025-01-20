@@ -55,7 +55,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ReleaseLayerTreeFrameSink() override;
   void SetVisible(bool visible) override;
   void SetShouldWarmUp() override;
-  void SetNeedsAnimate() override;
+  void SetNeedsAnimate(bool urgent) override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
@@ -73,7 +73,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool CommitRequested() const override;
   void Start() override;
   void Stop() override;
-  void QueueImageDecode(int request_id, const PaintImage& image) override;
+  void QueueImageDecode(int request_id, const DrawImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
@@ -107,7 +107,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
-  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;
@@ -131,9 +130,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override;
-  void SetNeedsCommitOnImplThread() override;
+  void SetNeedsCommitOnImplThread(bool urgent) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
   bool IsInsideDraw() override;
@@ -161,7 +159,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       ElementListType element_list_type) override;
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override;
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override;
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) override;

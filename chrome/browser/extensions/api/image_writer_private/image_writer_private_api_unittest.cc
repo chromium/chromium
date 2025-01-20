@@ -21,7 +21,7 @@ namespace extensions {
 using api::image_writer_private::RemovableStorageDevice;
 class ImageWriterPrivateApiUnittest : public ExtensionApiUnittest {
  public:
-  ImageWriterPrivateApiUnittest() {}
+  ImageWriterPrivateApiUnittest() = default;
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();

@@ -40,6 +40,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -363,6 +364,26 @@ int CompareResourcePriorities(const ResourcePriority& a,
     return a.is_lcp_resource ? 1 : -1;
   }
   return a.intra_priority_value - b.intra_priority_value;
+}
+
+Resource* PopHighestPriorityDecodableResource(
+    HeapHashSet<WeakMember<Resource>>& resources) {
+  Resource* result = nullptr;
+  for (Resource* resource : resources) {
+    const ResourcePriority& priority = resource->PriorityFromObservers().first;
+    if (priority.visibility != ResourcePriority::kVisible ||
+        !resource->HasNonDegenerateSizeForDecode()) {
+      continue;
+    }
+    if (!result || CompareResourcePriorities(
+                       priority, result->PriorityFromObservers().first) > 0) {
+      result = resource;
+    }
+  }
+  if (result) {
+    resources.erase(result);
+  }
+  return result;
 }
 
 }  // namespace
@@ -926,13 +947,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                   resource->GetResponse());
   }
 
-  // Only call ResourceLoadObserver callbacks for placeholder images when
-  // devtools is opened to get maximum performance.
-  // TODO(crbug.com/41496436): Explore optimizing this in general for
-  // `is_static_data`.
-  if (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
-      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) ||
-      (resource_load_observer_->InterestedInAllRequests())) {
+  // Only call ResourceLoadObserver callbacks when devtools is opened to get
+  // maximum performance.
+  if (!(RuntimeEnabledFeatures::SkipCallbacksWhenDevToolsNotOpenEnabled() ||
+        (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+         request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) ||
+      resource_load_observer_->InterestedInAllRequests()) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
         resource->Options(), render_blocking_behavior, resource);
@@ -1103,8 +1123,8 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
       break;
 
     default:
-      CHECK(false) << "Unexpected resource status: "
-                   << (int)resource->GetStatus();
+      NOTREACHED() << "Unexpected resource status: "
+                   << static_cast<int>(resource->GetStatus());
   }
 
   AddToMemoryCacheIfNeeded(params, resource);
@@ -2757,18 +2777,18 @@ void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {
   }
 }
 
-void ResourceFetcher::UpdateAllImageResourcePriorities() {
-  TRACE_EVENT0(
-      "blink",
-      "ResourceLoadPriorityOptimizer::updateAllImageResourcePriorities");
+void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
+  TRACE_EVENT0("blink",
+               "ResourceLoadPriorityOptimizer::"
+               "UpdateImagePrioritiesAndSpeculativeDecodes");
 
-  // Force all images to update their LastComputedPriority.
+  // Update ResourcePriority for all resources.
   for (Resource* resource : speculative_decode_candidate_images_) {
-    resource->PriorityFromObservers();
+    resource->UpdateResourceInfoFromObservers();
   }
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
-        return resource->LastComputedPriority().visibility ==
+        return resource->PriorityFromObservers().first.visibility ==
                ResourcePriority::kNotVisible;
       });
   MaybeStartSpeculativeImageDecode();
@@ -2784,6 +2804,7 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
       continue;
     }
 
+    resource->UpdateResourceInfoFromObservers();
     auto priorities = resource->PriorityFromObservers();
     ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
@@ -3165,25 +3186,19 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
     return;
   }
   // Find the highest priority image to decode.
-  Resource* image_to_decode = nullptr;
-  for (Resource* resource : speculative_decode_candidate_images_) {
-    const ResourcePriority& priority = resource->LastComputedPriority();
-    if (priority.visibility != ResourcePriority::kVisible) {
-      continue;
+  while (true) {
+    Resource* image_to_decode = PopHighestPriorityDecodableResource(
+        speculative_decode_candidate_images_);
+    if (!image_to_decode) {
+      break;
     }
-    if (!image_to_decode ||
-        CompareResourcePriorities(
-            priority, image_to_decode->LastComputedPriority()) > 0) {
-      image_to_decode = resource;
+    if (Context().StartSpeculativeImageDecode(
+            image_to_decode,
+            WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
+                          WrapWeakPersistent(this)))) {
+      speculative_decode_in_flight_ = true;
+      break;
     }
-  }
-  if (image_to_decode) {
-    speculative_decode_candidate_images_.erase(image_to_decode);
-    Context().StartSpeculativeImageDecode(
-        image_to_decode,
-        WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
-                      WrapWeakPersistent(this)));
-    speculative_decode_in_flight_ = true;
   }
 }
 

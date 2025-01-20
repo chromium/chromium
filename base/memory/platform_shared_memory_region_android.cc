@@ -42,14 +42,17 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!fd.is_valid())
+  if (!fd.is_valid()) {
     return {};
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
+  }
 
   CHECK(CheckPlatformHandlePermissionsCorrespondToMode(fd.get(), mode, size));
 
@@ -65,8 +68,9 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -81,8 +85,9 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -90,8 +95,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   ScopedFD handle_copy(handle_.release());
 
   int prot = GetAshmemRegionProtectionMask(handle_copy.get());
-  if (prot < 0)
+  if (prot < 0) {
     return false;
+  }
 
   prot &= ~PROT_WRITE;
   int ret = ashmem_set_prot_region(handle_copy.get(), prot);
@@ -106,8 +112,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";
@@ -158,8 +165,9 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     Mode mode,
     size_t size) {
   int prot = GetAshmemRegionProtectionMask(handle);
-  if (prot < 0)
+  if (prot < 0) {
     return false;
+  }
 
   bool is_read_only = (prot & PROT_WRITE) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;

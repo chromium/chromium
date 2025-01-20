@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kPdfPaintManagerDrawsBackground);
 BASE_DECLARE_FEATURE(kPdfPartialLoading);
 BASE_DECLARE_FEATURE(kPdfPortfolio);
 BASE_DECLARE_FEATURE(kPdfSearchify);
+BASE_DECLARE_FEATURE(kPdfSearchifySave);
+BASE_DECLARE_FEATURE(kPdfTags);
 BASE_DECLARE_FEATURE(kPdfUseShowSaveFilePicker);
 BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
@@ -38,6 +40,9 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled);
 // Returns whether the OOPIF PDF viewer should be used, otherwise the GuestView
 // PDF viewer should be used.
 bool IsOopifPdfEnabled();
+
+// Returns whether PDF Searchify and PDF Searchify Save features are enabled.
+bool IsPdfSearchifySaveEnabled();
 
 }  // namespace chrome_pdf::features
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -566,7 +567,7 @@ void SubAppsServiceImpl::RemoveSubApp(
   // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !provider->registrar_unsafe().IsInstalled(sub_app_id)) {
+      !provider->registrar_unsafe().IsInRegistrar(sub_app_id)) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }

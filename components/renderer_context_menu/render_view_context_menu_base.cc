@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -123,12 +122,18 @@ void AddCustomItemsToMenu(
           }
         }
         break;
-      case blink::mojom::CustomContextMenuItemType::kCheckableOption:
+      case blink::mojom::CustomContextMenuItemType::kCheckableOption: {
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
         break;
+      }
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
         NOTREACHED();
@@ -186,7 +191,7 @@ RenderViewContextMenuBase::RenderViewContextMenuBase(
       menu_model_(this),
       render_frame_id_(render_frame_host.GetRoutingID()),
       render_frame_token_(render_frame_host.GetFrameToken()),
-      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      render_process_id_(render_frame_host.GetProcess()->GetDeprecatedID()),
       site_instance_(render_frame_host.GetSiteInstance()),
       command_executed_(false) {}
 
@@ -286,7 +291,7 @@ void RenderViewContextMenuBase::UpdateMenuIcon(int command_id,
     return;
 
   menu_model_.SetIcon(index.value(), icon);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (toolkit_delegate_)
     toolkit_delegate_->RebuildMenu();
 #endif
@@ -443,7 +448,8 @@ void RenderViewContextMenuBase::MenuClosed(ui::SimpleMenuModel* source) {
     return;
 
   source_web_contents_->SetShowingContextMenu(false);
-  source_web_contents_->NotifyContextMenuClosed(params_.link_followed);
+  source_web_contents_->NotifyContextMenuClosed(params_.link_followed,
+                                                params_.impression);
   for (auto& observer : observers_) {
     observer.OnMenuClosed();
   }

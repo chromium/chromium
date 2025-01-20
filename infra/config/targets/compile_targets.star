@@ -228,6 +228,13 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "cronet_gn2bp_aosp_feedback_loop",
+    label = "//components/cronet/android:cronet_gn2bp_aosp_feedback_loop",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
     name = "cronet_package",
     label = "//components/cronet:cronet_package",
     # All references have been moved to starlark
@@ -417,6 +424,8 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome/updater:all",
     label = "//chrome/updater:all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

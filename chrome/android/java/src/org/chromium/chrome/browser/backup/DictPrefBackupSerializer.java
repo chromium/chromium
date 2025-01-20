@@ -8,8 +8,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.sync.internal.SyncPrefNames;
 
 import java.util.Set;
@@ -35,14 +33,6 @@ class DictPrefBackupSerializer extends PrefBackupSerializer {
     @Override
     protected void setPrefValueFromSerializedBytes(
             PrefService prefService, String prefName, byte[] bytes) {
-        if (prefName.equals(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT)
-                && !SigninFeatureMap.isEnabled(
-                        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
-            // In this case the pref is not restored and this is not exposed to tryDeserialize()
-            // but that doesn't affect the restore in any significant way and this code is going
-            // away when the restore flag is cleaned up.
-            return;
-        }
         DictPrefBackupSerializerJni.get().setDict(prefService, prefName, new String(bytes));
     }
 

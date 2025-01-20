@@ -1,6 +1,10 @@
 Tests that Runtime.exceptionThrown comes with a CORS issue summary.
 Exception: {
     issueId : <string>
+    issueSummary : Request mode is "same-origin" but the URL's origin is not same as the request origin http://127.0.0.1:8000.
+}
+Exception: {
+    issueId : <string>
     issueSummary : Access blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
     requestId : <string>
 }

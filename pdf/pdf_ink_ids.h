@@ -14,7 +14,7 @@
 
 namespace chrome_pdf {
 
-// Identifies ink::ModeledShape objects.
+// Identifies ink::PartitionedMesh objects.
 using InkModeledShapeId = base::StrongAlias<class InkModeledShapeIdTag, size_t>;
 
 // Identifies ink::Stroke objects.

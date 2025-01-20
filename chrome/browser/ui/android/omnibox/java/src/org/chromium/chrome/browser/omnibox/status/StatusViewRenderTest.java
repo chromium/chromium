@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -18,6 +19,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
@@ -45,14 +50,20 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 
 /** Render tests for {@link StatusView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
+public class StatusViewRenderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -69,9 +80,13 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     private PropertyModel mStatusModel;
     private LocationBarModel mLocationBarModel;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
@@ -80,17 +95,17 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
 
         runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup view = new LinearLayout(getActivity());
+                    ViewGroup view = new LinearLayout(sActivity);
 
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                    getActivity().setContentView(view, params);
+                    sActivity.setContentView(view, params);
 
                     mStatusView =
-                            getActivity()
+                            sActivity
                                     .getLayoutInflater()
                                     .inflate(R.layout.location_status, view, true)
                                     .findViewById(R.id.location_bar_status);
@@ -202,9 +217,9 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                 () -> {
                     Drawable storeIconDrawable =
                             ResourcesCompat.getDrawable(
-                                    getActivity().getResources(),
+                                    sActivity.getResources(),
                                     R.drawable.ic_storefront_blue,
-                                    getActivity().getTheme());
+                                    sActivity.getTheme());
                     StatusIconResource statusIcon =
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);

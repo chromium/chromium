@@ -41,35 +41,6 @@ enum class AppInitStage {
   // on this because the policies might have an effect on later init stages.
   kEnterprise,
 
-  // TODO(crbug.com/353683675): All follow-up stage will eventually become
-  // ProfileInitStage and will disappear. And corresponding code should move
-  // from MainController to ProfileController.
-
-  // TODO(crbug.com/333863468): code should no longer check this enum value,
-  // instead it should use ProfileInitStage::kPrepareUI. The enum will be
-  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
-  kLoadProfiles,
-
-  // TODO(crbug.com/333863468): code should no longer check this enum value,
-  // instead it should use ProfileInitStage::kPrepareUI. The enum will be
-  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
-  kBrowserObjectsForUI,
-
-  // TODO(crbug.com/333863468): code should no longer check this enum value,
-  // instead it should use ProfileInitStage::kUIReady. The enum will be
-  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
-  kNormalUI,
-
-  // TODO(crbug.com/333863468): code should no longer check this enum value,
-  // instead it should use ProfileInitStage::kFirstRun. The enum will be
-  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
-  kFirstRun,
-
-  // TODO(crbug.com/333863468): code should no longer check this enum value,
-  // instead it should use ProfileInitStage::kChoiceScreen. The enum will be
-  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
-  kChoiceScreen,
-
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
   // The value may change when inserting enum items between Start and Final.

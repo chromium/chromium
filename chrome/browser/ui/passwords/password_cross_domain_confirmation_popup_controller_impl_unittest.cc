@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -19,6 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace password_manager {
 namespace {
@@ -29,12 +32,12 @@ class MockPasswordCrossDomainConfirmationPopupView
   MockPasswordCrossDomainConfirmationPopupView(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback)
       : delegate_(delegate),
         domain_(domain),
-        password_origin_(password_origin),
+        password_hostname_(password_hostname),
         confirmation_callback_(std::move(confirmation_callback)),
         cancel_callback_(std::move(cancel_callback)) {}
 
@@ -44,7 +47,7 @@ class MockPasswordCrossDomainConfirmationPopupView
 
   const GURL& domain() const { return domain_; }
 
-  const std::u16string& password_origin() const { return password_origin_; }
+  const std::u16string& password_hostname() const { return password_hostname_; }
 
   base::OnceClosure& confirmation_callback() { return confirmation_callback_; }
 
@@ -60,7 +63,7 @@ class MockPasswordCrossDomainConfirmationPopupView
  private:
   base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate_;
   GURL domain_;
-  std::u16string password_origin_;
+  std::u16string password_hostname_;
   base::OnceClosure confirmation_callback_;
   base::OnceClosure cancel_callback_;
 
@@ -109,23 +112,24 @@ class PasswordCrossDomainConfirmationPopupControllerImplTest
             base::i18n::TextDirection text_direction =
                 base::i18n::TextDirection::LEFT_TO_RIGHT,
             const GURL& domain = GURL(u"google.com"),
-            const std::u16string& password_origin = u"google.de",
-            base::OnceClosure confirmation_callback = base::DoNothing()) {
-    controller().Show(element_bounds, text_direction, domain, password_origin,
-                      std::move(confirmation_callback));
+            const std::u16string& password_hostname = u"google.de",
+            base::OnceClosure confirmation_callback = base::DoNothing(),
+            bool show_warning_text = false) {
+    controller().Show(element_bounds, text_direction, domain, password_hostname,
+                      std::move(confirmation_callback), show_warning_text);
   }
 
  private:
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> CreateView(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback) {
     last_created_view_ =
         std::make_unique<MockPasswordCrossDomainConfirmationPopupView>(
-            delegate, domain, password_origin, std::move(confirmation_callback),
-            std::move(cancel_callback));
+            delegate, domain, password_hostname,
+            std::move(confirmation_callback), std::move(cancel_callback));
     return last_created_view_->GetWeakPtr();
   }
 
@@ -143,15 +147,15 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
 
   gfx::RectF element_bounds(100, 100, 1000, 1000);
   GURL domain(u"google.com");
-  std::u16string password_origin(u"google.de");
+  std::u16string password_hostname(u"google.de");
   auto text_direction(base::i18n::TextDirection::LEFT_TO_RIGHT);
 
-  Show(element_bounds, text_direction, domain, password_origin,
+  Show(element_bounds, text_direction, domain, password_hostname,
        base::DoNothing());
 
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_EQ(last_created_view()->domain(), domain);
-  EXPECT_EQ(last_created_view()->password_origin(), password_origin);
+  EXPECT_EQ(last_created_view()->password_hostname(), password_hostname);
   EXPECT_EQ(controller().element_bounds(), element_bounds);
   EXPECT_EQ(controller().GetElementTextDirection(), text_direction);
 }
@@ -253,6 +257,22 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
       1);
 
   ::testing::Mock::VerifyAndClearExpectations(last_created_view());
+}
+
+// Checks that `IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION` is shown
+// if `show_warning_text` equals true.
+TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
+       PopupBodyTextIfWarning) {
+  GURL domain(u"google.com");
+  std::u16string password_hostname(u"google.de");
+  Show(gfx::RectF(100, 100, 1000, 1000),
+       base::i18n::TextDirection::LEFT_TO_RIGHT, domain, password_hostname,
+       base::DoNothing(), /*show_warning_text=*/true);
+
+  EXPECT_EQ(controller().GetBodyText(),
+            l10n_util::GetStringFUTF16(
+                IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION,
+                password_hostname, base::UTF8ToUTF16(domain.host())));
 }
 
 }  // namespace password_manager

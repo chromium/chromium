@@ -42,6 +42,7 @@ const char kLinkColorChange[] = "LinkColorChange";
 const char kNodeInserted[] = "Node was inserted into tree";
 const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
+const char kPlaceElement[] = "placeElement";
 const char kPluginChanged[] = "Plugin Changed";
 const char kPopoverVisibilityChange[] = "Popover Visibility Change";
 const char kPositionTryChange[] = "@position-try change";
@@ -65,17 +66,17 @@ const char kZoom[] = "Zoom";
 }  // namespace style_change_reason
 
 namespace style_change_extra_data {
-DEFINE_GLOBAL(AtomicString, g_active);
-DEFINE_GLOBAL(AtomicString, g_active_view_transition);
-DEFINE_GLOBAL(AtomicString, g_active_view_transition_type);
-DEFINE_GLOBAL(AtomicString, g_disabled);
-DEFINE_GLOBAL(AtomicString, g_drag);
-DEFINE_GLOBAL(AtomicString, g_focus);
-DEFINE_GLOBAL(AtomicString, g_focus_visible);
-DEFINE_GLOBAL(AtomicString, g_focus_within);
-DEFINE_GLOBAL(AtomicString, g_hover);
-DEFINE_GLOBAL(AtomicString, g_past);
-DEFINE_GLOBAL(AtomicString, g_unresolved);
+DEFINE_GLOBAL(, AtomicString, g_active);
+DEFINE_GLOBAL(, AtomicString, g_active_view_transition);
+DEFINE_GLOBAL(, AtomicString, g_active_view_transition_type);
+DEFINE_GLOBAL(, AtomicString, g_disabled);
+DEFINE_GLOBAL(, AtomicString, g_drag);
+DEFINE_GLOBAL(, AtomicString, g_focus);
+DEFINE_GLOBAL(, AtomicString, g_focus_visible);
+DEFINE_GLOBAL(, AtomicString, g_focus_within);
+DEFINE_GLOBAL(, AtomicString, g_hover);
+DEFINE_GLOBAL(, AtomicString, g_past);
+DEFINE_GLOBAL(, AtomicString, g_unresolved);
 
 void Init() {
   DCHECK(IsMainThread());

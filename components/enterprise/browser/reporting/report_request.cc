@@ -14,7 +14,7 @@ ReportRequest::ReportRequest(ReportType type) {
   switch (type) {
     case ReportType::kFull:
     case ReportType::kBrowserVersion:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       proto_.emplace<em::ChromeOsUserReportRequest>();
 #else
       proto_.emplace<em::ChromeDesktopReportRequest>();

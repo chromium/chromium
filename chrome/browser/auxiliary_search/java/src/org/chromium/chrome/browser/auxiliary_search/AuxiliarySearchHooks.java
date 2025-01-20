@@ -32,4 +32,18 @@ public interface AuxiliarySearchHooks {
      */
     default void setSchemaTypeVisibilityForPackage(
             @NonNull SetDocumentClassVisibilityForPackageCallback callback) {}
+
+    /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
+    default boolean isSettingDefaultEnabledByOs() {
+        return false;
+    }
+
+    /** Sets whether the current device is a tablet. */
+    default void setIsTablet(boolean isTablet) {}
+
+    /** Returns the package name of the supported app which reads the donated Tabs. */
+    @Nullable
+    default String getSupportedPackageName() {
+        return null;
+    }
 }

@@ -11,6 +11,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_hand_joint.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -25,9 +26,10 @@ class DOMPointReadOnly;
 class ExecutionContext;
 class WebGLRenderingContextBase;
 
-DOMFloat32Array* transformationMatrixToDOMFloat32Array(const gfx::Transform&);
+NotShared<DOMFloat32Array> transformationMatrixToDOMFloat32Array(
+    const gfx::Transform&);
 
-gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array*);
+gfx::Transform DOMFloat32ArrayToTransform(NotShared<DOMFloat32Array>);
 
 gfx::Transform WTFFloatVectorToTransform(const Vector<float>&);
 

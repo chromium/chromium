@@ -506,10 +506,6 @@ public class AwVariationsSeedFetcher extends JobService {
         ResettersForTesting.register(() -> sDateForTesting = null);
     }
 
-    private static long getCurrentTimestamp() {
-        return sDateForTesting != null ? sDateForTesting.getTime() : new Date().getTime();
-    }
-
     /** Determines whether the currently scheduled job is in Fast Mode and periodic. */
     @VisibleForTesting
     public static boolean periodicFastModeJobScheduled() {

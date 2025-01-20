@@ -57,10 +57,7 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
 
   const base::FilePath directory = file_path.DirName();
   if (!base::DirectoryExists(directory)) {
-    bool success = base::CreateDirectory(directory);
-    if (!success) {
-      DLOG(ERROR) << "Error creating session cache directory "
-                  << directory.AsUTF8Unsafe();
+    if (!base::CreateDirectory(directory)) {
       return;
     }
   }
@@ -70,13 +67,7 @@ void WriteSessionData(NSData* session_data, base::FilePath file_path) {
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   NSString* file_path_string = base::apple::FilePathToNSString(file_path);
-  NSError* error = nil;
-  if (![session_data writeToFile:file_path_string
-                         options:options
-                           error:&error]) {
-    DLOG(WARNING) << "Error writing session data: "
-                  << base::SysNSStringToUTF8(file_path_string) << ": "
-                  << base::SysNSStringToUTF8([error description]);
+  if (![session_data writeToFile:file_path_string options:options error:nil]) {
     // If -writeToFile failed, this session data is now stale. Delete it and
     // revert to legacy session restore.
     base::DeleteFile(file_path);

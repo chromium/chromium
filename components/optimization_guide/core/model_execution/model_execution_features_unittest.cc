@@ -16,7 +16,9 @@ using features::internal::GetAllowedFeaturesForUnsignedUser;
 using testing::UnorderedElementsAre;
 
 TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
-  EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(), UnorderedElementsAre());
+  // The kHistorySearch feature launched with `allow_unsigned_user` true.
+  EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
+              UnorderedElementsAre(UserVisibleFeatureKey::kHistorySearch));
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeaturesAndParameters(
@@ -26,13 +28,16 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
           {{"allow_unsigned_user", "true"}}}},
         {});
     EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
-                UnorderedElementsAre(UserVisibleFeatureKey::kCompose,
+                UnorderedElementsAre(UserVisibleFeatureKey::kHistorySearch,
+                                     UserVisibleFeatureKey::kCompose,
                                      UserVisibleFeatureKey::kTabOrganization));
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeaturesAndParameters(
-        {{features::internal::kComposeSettingsVisibility,
+        {{features::internal::kHistorySearchSettingsVisibility,
+          {{"allow_unsigned_user", "false"}}},
+         {features::internal::kComposeSettingsVisibility,
           {{"allow_unsigned_user", "false"}}},
          {features::internal::kTabOrganizationSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},

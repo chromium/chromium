@@ -5,6 +5,8 @@
 #ifndef MEDIA_BASE_VIDEO_TRANSFORMATION_H_
 #define MEDIA_BASE_VIDEO_TRANSFORMATION_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "media/base/media_export.h"

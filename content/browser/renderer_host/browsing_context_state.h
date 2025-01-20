@@ -76,8 +76,7 @@ class CONTENT_EXPORT BrowsingContextState
  public:
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
-                         std::unique_ptr<RenderFrameProxyHost>,
-                         SiteInstanceGroupId::Hasher>;
+                         std::unique_ptr<RenderFrameProxyHost>>;
 
   // Currently `browsing_instance_id` and `coop_related_group_id` will be null
   // iff the legacy mode is enabled, as the legacy mode BrowsingContextState is

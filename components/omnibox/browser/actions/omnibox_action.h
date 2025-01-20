@@ -16,7 +16,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/search_engines/template_url.h"
-#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
@@ -121,8 +120,7 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
                                 bool destination_url_entered_with_http_scheme,
                                 const std::u16string&,
                                 const AutocompleteMatch&,
-                                const AutocompleteMatch&,
-                                IDNA2008DeviationCharacter)>;
+                                const AutocompleteMatch&)>;
 
     ExecutionContext(Client& client,
                      OpenUrlCallback callback,

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -25,10 +26,12 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -37,6 +40,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -339,7 +344,7 @@ class DiceWebSigninInterceptionBubblePixelTest
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo intercepted_account;
     intercepted_account.account_id =
-        CoreAccountId::FromGaiaId("intercepted_ID");
+        CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
     intercepted_account.given_name = GivenNameFromNameFormat();
     intercepted_account.full_name = intercepted_account.given_name + " Sample";
     intercepted_account.email = "sam.sample@intercepted.com";
@@ -355,7 +360,8 @@ class DiceWebSigninInterceptionBubblePixelTest
     }
 
     AccountInfo primary_account;
-    primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
+    primary_account.account_id =
+        CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
     primary_account.given_name = "Tessa";
     primary_account.full_name = "Tessa Tester";
     primary_account.email = "tessa.tester@primary.com";
@@ -384,6 +390,13 @@ class DiceWebSigninInterceptionBubblePixelTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
                        InvokeUi_default) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam().test_suffix == "EnterpriseManagedIntercepted") {
+    // TODO(crbug.com/389737045): Enable for this variation once pixel tests
+    // are corrected.
+    GTEST_SKIP();
+  }
+#endif
   ShowAndVerifyUi();
 }
 

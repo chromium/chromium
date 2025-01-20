@@ -36,7 +36,7 @@ class InputStream final : public media::mojom::AudioInputStream,
                           public InputController::EventHandler {
  public:
   using CreatedCallback =
-      base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr,
+      base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr,
                               bool,
                               const std::optional<base::UnguessableToken>&)>;
   using DeleteCallback = base::OnceCallback<void(InputStream*)>;

@@ -28,7 +28,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 
 namespace tracing::mojom {
@@ -156,9 +156,9 @@ class BackgroundTracingManagerImpl
   CONTENT_EXPORT std::vector<std::string> GetEnabledScenarios() const;
 
   bool HasTraceToUpload() override;
-  void GetTraceToUpload(
-      base::OnceCallback<void(std::optional<std::string>,
-                              std::optional<std::string>)>) override;
+  void GetTraceToUpload(base::OnceCallback<void(std::optional<std::string>,
+                                                std::optional<std::string>,
+                                                base::OnceClosure)>) override;
   void SetSystemProfileRecorder(
       base::RepeatingCallback<std::string()> recorder) override;
 
@@ -247,7 +247,7 @@ class BackgroundTracingManagerImpl
                               bool success);
   void OnTraceDatabaseUpdated(ScenarioCountMap scenario_saved_counts);
   void OnTraceSaved(const std::string& scenario_name,
-                    std::optional<NewTraceReport> trace_to_upload,
+                    std::optional<BaseTraceReport> trace_to_upload,
                     bool success);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
@@ -287,7 +287,7 @@ class BackgroundTracingManagerImpl
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  std::optional<NewTraceReport> trace_report_to_upload_;
+  std::optional<BaseTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

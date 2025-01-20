@@ -123,13 +123,16 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
-        @ColorInt int scrimColor = mActivity.getColor(R.color.default_scrim_color);
         mScrim =
                 new ScrimCoordinator(
                         mActivity,
                         new ScrimCoordinator.SystemUiScrimDelegate() {
                             @Override
                             public void setStatusBarScrimFraction(float scrimFraction) {
+                                // TODO(skym): Once the ability to get the current scrim color is
+                                // added, this should be updated to use that instead.
+                                @ColorInt int scrimColor = mScrim.getDefaultScrimColor();
+
                                 // Update the status bar color to match the currently shown scrim
                                 // color when the latter is changed.
                                 float alpha = ((float) Color.alpha(scrimColor)) * scrimFraction;
@@ -142,12 +145,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                             public void setScrimColor(@ColorInt int scrimColor) {
                                 mDelegate.setScrimColor(scrimColor);
                             }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
                         },
-                        (ViewGroup) sheetContainer.getParent(),
-                        scrimColor);
+                        (ViewGroup) sheetContainer.getParent());
 
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
@@ -198,7 +197,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     /** Implements {@link AccountPickerDelegate}. */
     @Override
     public boolean canHandleAddAccount() {
-        return SigninUtils.shouldShowNewSigninFlow();
+        return true;
     }
 
     /** Implements {@link AccountPickerDelegate}. */

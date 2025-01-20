@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sanitizer.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_attribute_namespace.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
@@ -15,12 +15,12 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
-Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
-                             const SanitizerConfig* sanitizer_config,
+Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
                              ExceptionState& exception_state) {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   if (!sanitizer_config) {
@@ -106,7 +106,25 @@ void Sanitizer::setDataAttributes(bool data_attributes) {
 }
 
 void Sanitizer::removeUnsafe() {
-  NOTREACHED();
+  const Sanitizer* baseline = SanitizerBuiltins::GetBaseline();
+
+  // Below, we rely on the baseline being expressed as allow-lists. Ensure that
+  // this is so, given how important `removeUnsafe` is for the Sanitizer.
+  CHECK(!baseline->remove_elements_.empty());
+  CHECK(!baseline->remove_attrs_.empty());
+  CHECK(baseline->allow_elements_.empty());
+  CHECK(baseline->replace_elements_.empty());
+  CHECK(baseline->allow_attrs_.empty());
+  CHECK(baseline->replace_elements_.empty());
+  CHECK(baseline->allow_attrs_per_element_.empty());
+  CHECK(baseline->remove_attrs_per_element_.empty());
+
+  for (const QualifiedName& name : baseline->remove_elements_) {
+    RemoveElement(name);
+  }
+  for (const QualifiedName& name : baseline->remove_attrs_) {
+    RemoveAttribute(name);
+  }
 }
 
 SanitizerConfig* Sanitizer::get() const {
@@ -247,6 +265,120 @@ void Sanitizer::RemoveAttribute(const QualifiedName& name) {
   remove_attrs_.insert(name);
 }
 
+void Sanitizer::SanitizeElement(Element* element) const {
+  const auto allow_per_element_iter =
+      allow_attrs_per_element_.find(element->TagQName());
+  const SanitizerNameSet* allow_per_element =
+      (allow_per_element_iter == allow_attrs_per_element_.end())
+          ? nullptr
+          : &allow_per_element_iter->value;
+  const auto remove_per_element_iter =
+      remove_attrs_per_element_.find(element->TagQName());
+  const SanitizerNameSet* remove_per_element =
+      (remove_per_element_iter == remove_attrs_per_element_.end())
+          ? nullptr
+          : &remove_per_element_iter->value;
+  for (const QualifiedName& name : element->getAttributeQualifiedNames()) {
+    bool keep = false;
+    if (allow_attrs_.Contains(name)) {
+      keep = true;
+    } else if (remove_attrs_.Contains(name)) {
+      keep = false;
+    } else if (allow_per_element && allow_per_element->Contains(name)) {
+      keep = true;
+    } else if (remove_per_element && remove_per_element->Contains(name)) {
+      keep = false;
+    } else {
+      keep = allow_attrs_.empty() &&
+             (!allow_per_element || allow_per_element->empty());
+      if (!keep && allow_data_attrs_ && name.NamespaceURI().IsNull() &&
+          name.LocalName().StartsWith("data-")) {
+        keep = true;
+      }
+    }
+    if (!keep) {
+      element->removeAttribute(name);
+    }
+  }
+}
+
+void Sanitizer::SanitizeSafe(Node* root) const {
+  // TODO(vogelheim): This is hideously inefficient, but very easy to implement.
+  // We'll use this for now, so we can fully build out tests & other
+  // infrastructure, and worry about efficiency later.
+  Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
+  safe->setFrom(*this);
+  safe->removeUnsafe();
+  safe->SanitizeUnsafe(root);
+}
+
+void Sanitizer::SanitizeUnsafe(Node* root) const {
+  enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
+
+  Node* node = NodeTraversal::Next(*root);
+  while (node) {
+    switch (node->getNodeType()) {
+      case Node::NodeType::kElementNode: {
+        Element* element = To<Element>(node);
+        if (allow_elements_.Contains(element->TagQName())) {
+          action = kKeepElement;
+        } else if (replace_elements_.Contains(element->TagQName())) {
+          action = kReplaceWithChildren;
+        } else if (allow_elements_.empty() &&
+                   !remove_elements_.Contains(element->TagQName())) {
+          action = kKeepElement;
+        } else {
+          action = kDrop;
+        }
+        break;
+      }
+      case Node::NodeType::kTextNode:
+        action = kKeep;
+        break;
+      case Node::NodeType::kCommentNode:
+        action = allow_comments_ ? kKeep : kDrop;
+        break;
+
+      default:
+        NOTREACHED();
+    }
+
+    switch (action) {
+      case kKeepElement: {
+        CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
+        SanitizeElement(To<Element>(node));
+        node = NodeTraversal::Next(*node);
+        break;
+      }
+      case kKeep: {
+        CHECK_NE(node->getNodeType(), Node::NodeType::kElementNode);
+        node = NodeTraversal::Next(*node);
+        break;
+      }
+      case kReplaceWithChildren: {
+        CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
+        Node* next_node = node->firstChild();
+        if (!next_node) {
+          next_node = NodeTraversal::Next(*node);
+        }
+        ContainerNode* parent = node->parentNode();
+        while (Node* child = node->firstChild()) {
+          parent->InsertBefore(child, node);
+        }
+        node->remove();
+        node = next_node;
+        break;
+      }
+      case kDrop: {
+        Node* next_node = NodeTraversal::NextSkippingChildren(*node);
+        node->parentNode()->removeChild(node);
+        node = next_node;
+        break;
+      }
+    }
+  }
+}
+
 bool Sanitizer::setFrom(const SanitizerConfig* config) {
   // This method assumes a newly constructed instance.
   CHECK(allow_elements_.empty());
@@ -289,6 +421,18 @@ bool Sanitizer::setFrom(const SanitizerConfig* config) {
     setDataAttributes(config->dataAttributes());
   }
   return true;
+}
+
+void Sanitizer::setFrom(const Sanitizer& other) {
+  allow_elements_ = other.allow_elements_;
+  remove_elements_ = other.remove_elements_;
+  replace_elements_ = other.replace_elements_;
+  allow_attrs_ = other.allow_attrs_;
+  remove_attrs_ = other.remove_attrs_;
+  allow_attrs_per_element_ = other.allow_attrs_per_element_;
+  remove_attrs_per_element_ = other.remove_attrs_per_element_;
+  allow_data_attrs_ = other.allow_data_attrs_;
+  allow_comments_ = other.allow_comments_;
 }
 
 QualifiedName Sanitizer::getFrom(const String& name,

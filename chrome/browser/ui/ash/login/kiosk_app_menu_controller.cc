@@ -94,6 +94,7 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 KioskAppMenuController::KioskAppMenuController() {
   kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
   kiosk_observations_.AddObservation(WebKioskAppManager::Get());
+  // TODO(crbug.com/372847595): Add IWA manager
 }
 
 KioskAppMenuController::~KioskAppMenuController() = default;

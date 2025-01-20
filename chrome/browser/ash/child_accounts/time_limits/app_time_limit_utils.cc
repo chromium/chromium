@@ -18,8 +18,6 @@ enterprise_management::App::AppType AppTypeForReporting(apps::AppType type) {
   switch (type) {
     case apps::AppType::kArc:
       return enterprise_management::App::ARC;
-    case apps::AppType::kBuiltIn:
-      return enterprise_management::App::BUILT_IN;
     case apps::AppType::kCrostini:
       return enterprise_management::App::CROSTINI;
     case apps::AppType::kChromeApp:

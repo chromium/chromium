@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "pdf/buildflags.h"
@@ -133,15 +134,18 @@ class Handler : public content::WebContentsObserver {
 
  private:
   // This class manages its own lifetime.
-  ~Handler() override {}
+  ~Handler() override = default;
 
   // content::WebContentsObserver:
   // TODO(devlin): Could we just rely on the RenderFrameDeleted() notification?
   // If so, we could remove this.
   void WebContentsDestroyed() override {
     for (content::RenderFrameHost* frame : pending_render_frames_) {
-      UpdateResultWithErrorFormat(
-          frame, "Tab containing frame with ID %d was removed.");
+      ScriptExecutor::FrameResult& frame_result =
+          GetFrameResult(frame->GetFrameToken());
+      frame_result.error =
+          base::StringPrintf("Tab containing frame with ID %d was removed.",
+                             frame_result.frame_id);
     }
     pending_render_frames_.clear();
     Finish();
@@ -150,12 +154,14 @@ class Handler : public content::WebContentsObserver {
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
     int erased_count = std::erase(pending_render_frames_, render_frame_host);
-    DCHECK_LE(erased_count, 1);
     if (erased_count == 0)
       return;
+    CHECK_EQ(erased_count, 1);
 
-    UpdateResultWithErrorFormat(render_frame_host,
-                                "Frame with ID %d was removed.");
+    ScriptExecutor::FrameResult& frame_result =
+        GetFrameResult(render_frame_host->GetFrameToken());
+    frame_result.error = base::StringPrintf("Frame with ID %d was removed.",
+                                            frame_result.frame_id);
     if (pending_render_frames_.empty())
       Finish();
   }
@@ -233,14 +239,6 @@ class Handler : public content::WebContentsObserver {
       frame_result.value = std::move(*result);
   }
 
-  void UpdateResultWithErrorFormat(content::RenderFrameHost* render_frame_host,
-                                   const char* format) {
-    ScriptExecutor::FrameResult& frame_result =
-        GetFrameResult(render_frame_host->GetFrameToken());
-    frame_result.error =
-        base::StringPrintfNonConstexpr(format, frame_result.frame_id);
-  }
-
   ScriptExecutor::FrameResult& GetFrameResult(
       const blink::LocalFrameToken& frame_token) {
     DCHECK(base::Contains(results_, frame_token));
@@ -274,7 +272,7 @@ class Handler : public content::WebContentsObserver {
         .ExecuteCode(std::move(params),
                      base::BindOnce(&Handler::OnExecuteCodeFinished,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    frame->GetProcess()->GetID(),
+                                    frame->GetProcess()->GetDeprecatedID(),
                                     frame->GetRoutingID()));
   }
 
@@ -390,15 +388,16 @@ std::string ScriptExecutor::GenerateInjectionKey(const mojom::HostID& host_id,
                             host_id.id.c_str(), base::FastHash(source));
 }
 
-void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
-                                   mojom::CodeInjectionPtr injection,
-                                   ScriptExecutor::FrameScope frame_scope,
-                                   const std::set<int>& frame_ids,
-                                   ScriptExecutor::MatchAboutBlank about_blank,
-                                   mojom::RunLocation run_at,
-                                   ScriptExecutor::ProcessType process_type,
-                                   const GURL& webview_src,
-                                   ScriptFinishedCallback callback) {
+void ScriptExecutor::ExecuteScript(
+    const mojom::HostID& host_id,
+    mojom::CodeInjectionPtr injection,
+    ScriptExecutor::FrameScope frame_scope,
+    const std::set<int>& frame_ids,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback_behavior,
+    mojom::RunLocation run_at,
+    ScriptExecutor::ProcessType process_type,
+    const GURL& webview_src,
+    ScriptFinishedCallback callback) {
   if (host_id.type == mojom::HostID::HostType::kExtensions) {
     // Don't execute if the extension has been unloaded.
     const Extension* extension =
@@ -431,7 +430,7 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();
   params->injection = std::move(injection);
-  params->match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
+  params->match_origin_as_fallback_behavior = match_origin_as_fallback_behavior;
   params->run_at = run_at;
   params->is_web_view = (process_type == WEB_VIEW_PROCESS);
   params->webview_src = webview_src;

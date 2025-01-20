@@ -13,18 +13,18 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
-/**
- * Class for listening to Android MediaServer crashes to throttle media decoding
- * when needed.
- */
+/** Class for listening to Android MediaServer crashes to throttle media decoding when needed. */
 @JNINamespace("media")
+@NullMarked
 public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
     private static final String TAG = "crMediaCrashListener";
     private static final long UNKNOWN_TIME = -1;
 
     // Watchdog player. Used to listen to all media server crashes.
-    private MediaPlayer mPlayer;
+    private @Nullable MediaPlayer mPlayer;
 
     // Approximate time necessary for the MediaServer to restart after a crash.
     private static final int APPROX_MEDIA_SERVER_RESTART_TIME_IN_MS = 5000;

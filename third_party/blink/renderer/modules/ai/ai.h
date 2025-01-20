@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_factory.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -37,6 +38,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   AIRewriterFactory* rewriter();
   AIWriterFactory* writer();
   AILanguageDetectorFactory* languageDetector();
+  AITranslatorFactory* translator();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
 
@@ -50,6 +52,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   Member<AIWriterFactory> ai_writer_factory_;
   Member<AIRewriterFactory> ai_rewriter_factory_;
   Member<AILanguageDetectorFactory> ai_language_detector_factory_;
+  Member<AITranslatorFactory> ai_translator_factory_;
 };
 
 }  // namespace blink

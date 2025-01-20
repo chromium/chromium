@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime
 from requests.exceptions import HTTPError
-from typing import Iterator, List, Mapping, Optional, Tuple
+from typing import Iterator, List, Mapping, Tuple
 from urllib.parse import urlencode, urlsplit, urlunsplit, quote
 
 from blinkpy.common.host import Host
@@ -35,7 +35,6 @@ class OutputOption(enum.Flag):
     DETAILED_ACCOUNTS = enum.auto()
     MESSAGES = enum.auto()
     ALL_REVISIONS = enum.auto()
-    SKIP_DIFFSTAT = enum.auto()
 
     def __iter__(self) -> Iterator['OutputOption']:
         # TODO(crbug.com/40631540): Remove this handcrafted `__iter__` after
@@ -57,21 +56,17 @@ class GerritAPI:
                       | OutputOption.COMMIT_FOOTERS
                       | OutputOption.DETAILED_ACCOUNTS)
 
-    def __init__(self,
-                 host,
-                 user: Optional[str] = None,
-                 token: Optional[str] = None):
+    def __init__(self, host, user, token):
         self.host = host
         self.project_config = host.project_config
-        # Authentication is only needed for mutating CLs (e.g., commenting).
         self.user = user
         self.token = token
 
     @classmethod
     def from_credentials(cls, host: Host,
                          credentials: Mapping[str, str]) -> 'GerritAPI':
-        return cls(host, credentials.get('GERRIT_USER'),
-                   credentials.get('GERRIT_TOKEN'))
+        return cls(host, credentials['GERRIT_USER'],
+                   credentials['GERRIT_TOKEN'])
 
     def get(self,
             path: str,
@@ -125,13 +120,9 @@ class GerritAPI:
         output_options: OutputOption = DEFAULT_OUTPUT,
     ) -> 'GerritCL':
         """Queries a commit information from Gerrit."""
-        # Gerrit can uniquely identify CLs by number (i.e., crrev.com/c/<n>) or
-        # by `Change-Id` commit footer (i.e., a hex string prepended by "I"):
-        # https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-id
-        change_id_parts = [self.escaped_repo, change_id]
-        if not change_id.isdigit():
-            change_id_parts.insert(1, self.project_config.gerrit_branch)
-        path = '/changes/' + '~'.join(change_id_parts)
+        path = (
+            f'/changes/{self.escaped_repo}~{self.project_config.gerrit_branch}'
+            f'~{change_id}')
         query_params = [('o', option.name) for option in output_options]
         try:
             cl_data = self.get(path, query_params, return_none_on_404=True)

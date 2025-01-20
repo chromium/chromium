@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.notifications.channels;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
 import org.chromium.chrome.browser.notifications.R;
@@ -41,7 +39,6 @@ import java.util.Set;
  * <br>
  * See the README.md in this directory for more information before adding or changing any channels.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 public class ChromeChannelDefinitions extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the

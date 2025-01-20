@@ -5,11 +5,15 @@ include_rules = [
   "+cc/paint",
   "+components/access_code_cast",
   "+components/account_id",
+  "+components/history",
+  "+components/favicon",
+  "+components/favicon_base",
   "+components/app_constants",
   "+components/app_restore",
   "+components/desks_storage",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
+  "+components/feedback",
   "+components/fullscreen_control",
   "+components/global_media_controls",
   "+components/language/core/browser/pref_names.h",
@@ -43,6 +47,7 @@ include_rules = [
   "+crypto",
   "+dbus",
   "+extensions/common/constants.h",
+  "+google_apis/gaia/gaia_id.h",
   "+gpu/config",
   "+media",
   "+mojo/public",
@@ -81,6 +86,7 @@ include_rules = [
   "+chromeos/ash/components/auth_panel",
   "+chromeos/ash/components/channel",
   "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/editor_menu",
   "+chromeos/ash/components/emoji",
   "+chromeos/ash/components/feature_usage",
   "+chromeos/ash/components/human_presence",
@@ -94,7 +100,6 @@ include_rules = [
   "+chromeos/ash/components/proximity_auth",
   "+chromeos/ash/components/string_matching",
   "+chromeos/ash/components/system",
-  "+chromeos/components/editor_menu",
   "+chromeos/components/magic_boost",
   "+chromeos/components/mahi",
   "+chromeos/components/quick_answers",
@@ -157,6 +162,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "ash_prefs\.cc": [
+    "+components/user_manager/user_manager.h",
+  ],
   "keyboard_capability_unittest\.cc": [
     "+device/udev_linux/fake_udev_loader.h",
   ],

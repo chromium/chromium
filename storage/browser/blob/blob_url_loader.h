@@ -50,13 +50,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
  private:
   BlobURLLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      std::unique_ptr<BlobDataHandle> blob_handle);
-  BlobURLLoader(
-      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       std::unique_ptr<BlobDataHandle> blob_handle);
 

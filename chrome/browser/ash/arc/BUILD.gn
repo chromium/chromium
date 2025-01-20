@@ -12,6 +12,8 @@ static_library("arc") {
   sources = [
     "arc_demo_mode_delegate_impl.cc",
     "arc_demo_mode_delegate_impl.h",
+    "arc_dlc_install_notification_delegate_impl.cc",
+    "arc_dlc_install_notification_delegate_impl.h",
     "arc_migration_constants.h",
     "arc_migration_guide_notification.cc",
     "arc_migration_guide_notification.h",
@@ -164,7 +166,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
-    "//components/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",
@@ -186,6 +187,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/input_overlay:unit_tests",
     "//chrome/browser/ash/arc/instance_throttle:unit_tests",
     "//chrome/browser/ash/arc/intent_helper:unit_tests",
+    "//chrome/browser/ash/arc/keymint:unit_tests",
     "//chrome/browser/ash/arc/memory_pressure:unit_tests",
     "//chrome/browser/ash/arc/nearby_share:unit_tests",
     "//chrome/browser/ash/arc/net:unit_tests",
@@ -242,8 +244,8 @@ source_set("arc_util") {
   sources = [ "arc_util.h" ]
 
   public_deps = [
-    "//ash/components/arc/session:arc_base_enums",
     "//base",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//storage/browser",
   ]
 }

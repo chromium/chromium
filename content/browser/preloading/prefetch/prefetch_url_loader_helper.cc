@@ -318,7 +318,7 @@ void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
 
 void OnGotPrefetchToServe(
     FrameTreeNodeId frame_tree_node_id,
-    const network::ResourceRequest& tentative_resource_request,
+    const GURL& tentative_resource_request_url,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback,
     PrefetchContainer::Reader reader) {
   // TODO(crbug.com/40274818): With multiple prefetches matching, we should
@@ -326,15 +326,14 @@ void OnGotPrefetchToServe(
   // Why ? Because we might be able to serve a different prefetch if the
   // prefetch in the `reader` cannot be served.
 
-  // The |tentative_resource_request.url| might be different from
-  // |GetCurrentURLToServe()| because of No-Vary-Search non-exact url
-  // match.
+  // The `tentative_resource_request_url` might be different from
+  // `GetCurrentURLToServe()` because of No-Vary-Search non-exact url match.
 #if DCHECK_IS_ON()
   if (reader) {
     GURL::Replacements replacements;
     replacements.ClearRef();
     replacements.ClearQuery();
-    DCHECK_EQ(tentative_resource_request.url.ReplaceComponents(replacements),
+    DCHECK_EQ(tentative_resource_request_url.ReplaceComponents(replacements),
               reader.GetCurrentURLToServe().ReplaceComponents(replacements));
   }
 #endif
@@ -369,7 +368,7 @@ void OnGotPrefetchToServe(
   // done.
   ContinueOnGotPrefetchToServe(base::WrapUnique(new OnGotPrefetchToServeState{
       .frame_tree_node_id = frame_tree_node_id,
-      .tentative_url = tentative_resource_request.url,
+      .tentative_url = tentative_resource_request_url,
       .callback = std::move(get_prefetch_callback),
       .reader = std::move(reader)}));
 }

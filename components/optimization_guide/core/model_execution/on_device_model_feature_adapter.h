@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -41,12 +42,15 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
-  bool ShouldParseResponse(bool is_complete) const;
+  bool ShouldParseResponse(ResponseCompleteness completeness) const;
 
   // Converts model response into this feature's expected response type.
   // Replies with std::nullopt on error.
+  // The `previous_response_pos` might be used by the parser to determine which
+  // part of the response to return to the responder.
   void ParseResponse(const google::protobuf::MessageLite& request,
                      const std::string& model_response,
+                     size_t previous_response_pos,
                      ResponseParser::ResultCallback callback) const;
 
   // Constructs the request for text safety server fallback.
@@ -57,7 +61,7 @@ class OnDeviceModelFeatureAdapter final
 
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
 
-  std::optional<SamplingParams> MaybeSamplingParams() const;
+  std::optional<SamplingParamsConfig> MaybeSamplingParamsConfig() const;
 
   const proto::Any& GetFeatureMetadata() const;
 
@@ -78,6 +82,7 @@ class OnDeviceModelFeatureAdapter final
   proto::OnDeviceModelExecutionFeatureConfig config_;
   TokenLimits token_limits_;
   Redactor redactor_;
+  proto::ResponseStreamingMode response_streaming_mode_;
   std::unique_ptr<ResponseParser> parser_;
 };
 

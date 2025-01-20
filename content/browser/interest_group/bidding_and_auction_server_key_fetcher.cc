@@ -142,13 +142,6 @@ BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
     default;
 
 void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
-  // We only prefetch keys if the prefetching is enabled and if
-  // kFledgeBiddingAndAuctionServer is enabled. We don't need to check
-  // kFledgeBiddingAndAuctionServer because if it's not enabled
-  // fetcher_state_map_ would have no keys.
-  if (!base::FeatureList::IsEnabled(features::kFledgePrefetchBandAKeys)) {
-    return;
-  }
   // We only want to prefetch once.
   if (did_prefetch_keys_) {
     return;
@@ -345,8 +338,6 @@ void BiddingAndAuctionServerKeyFetcher::CacheKeysAndRunAllCallbacks(
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   state.keys = keys;
   state.expiration = expiration;
-  base::UmaHistogramTimes("Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime2",
-                          base::TimeTicks::Now() - state.fetch_start);
 
   while (!state.queue.empty()) {
     // We call the callback *before* removing the current request from the list.

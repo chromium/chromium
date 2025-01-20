@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -12,6 +13,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import java.util.Map;
 
 /** The parameters of PaymentRequest specified by the merchant. */
+@MockedInTests  // Tell R8 not to break the ability to mock the class.
 public interface PaymentRequestParams {
     /**
      * @return Whether or not the payment request is being aborted. Other methods should not get

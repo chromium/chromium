@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "google_apis/gaia/gaia_id.h"
 
 enum AuthenticationErrorCategory {
   // Unknown errors.
@@ -35,7 +37,7 @@ class DeviceAccountsProvider {
  public:
   // Account information.
   struct AccountInfo {
-    std::string gaia;
+    GaiaId gaia;
     std::string email;
     std::string hosted_domain;
   };
@@ -44,6 +46,14 @@ class DeviceAccountsProvider {
   struct AccessTokenInfo {
     std::string token;
     base::Time expiration_time;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    virtual void OnAccountsOnDeviceChanged() {}
   };
 
   // Result of GetAccessToken() passed to the callback. Contains either
@@ -58,16 +68,20 @@ class DeviceAccountsProvider {
   DeviceAccountsProvider() = default;
   virtual ~DeviceAccountsProvider() = default;
 
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
   // Returns the IDs of all accounts that are assigned to the current profile.
   virtual std::vector<AccountInfo> GetAccountsForProfile() const;
 
   // Returns the IDs of all accounts that exist on the device, including the
-  // ones that are assigned to different profiles.
+  // ones that are assigned to different profiles, in the order in which they're
+  // provided by the SystemIdentityManager.
   virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
 
   // Starts fetching an access token for the account with id |gaia_id| with
   // the given |scopes|. Once the token is obtained, |callback| is called.
-  virtual void GetAccessToken(const std::string& gaia_id,
+  virtual void GetAccessToken(const GaiaId& gaia_id,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);

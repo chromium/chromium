@@ -52,3 +52,8 @@ cr-expand-button {
   margin-left: calc(var(--depth) * var(--margin-per-depth) +
       var(--base-margin));
 }
+
+.bookmark-icon {
+  height: 20px;
+  width: 20px;
+}

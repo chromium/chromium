@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -36,6 +37,7 @@ import org.chromium.chrome.test.transit.edge_to_edge.EdgeToEdgeBottomChinFacilit
 import org.chromium.chrome.test.transit.edge_to_edge.ViewportFitCoverPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -124,6 +126,7 @@ public class EdgeToEdgePTTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE})
+    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void fromNtpToTabSwitcher() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mInitialStateRule.startOnNtp();

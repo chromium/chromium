@@ -122,7 +122,8 @@ BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
     history_observation_.Observe(history_service);
 }
 
-BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() {}
+BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() =
+    default;
 
 void BrowsingDataHistoryObserverService::OnHistoryDeletions(
     history::HistoryService* history_service,

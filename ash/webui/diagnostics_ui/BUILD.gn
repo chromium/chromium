@@ -34,9 +34,9 @@ static_library("diagnostics_ui") {
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos/strings:strings_provider",
-    "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

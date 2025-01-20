@@ -11,7 +11,8 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -19,7 +20,7 @@ namespace autofill {
 struct PaymentsMetadata;
 
 // A form group that stores IBAN information.
-class Iban : public AutofillDataModel {
+class Iban : public FormGroup {
  public:
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
@@ -243,6 +244,9 @@ class Iban : public AutofillDataModel {
   // this IBAN.
   bool MatchesPrefixAndSuffix(const Iban& iban) const;
 
+  UsageHistoryInformation& usage_history();
+  const UsageHistoryInformation& usage_history() const;
+
  private:
   // To distinguish between local IBANs, utilize the Guid as the identifier. For
   // server-based IBANs, they are uniquely identified by the InstrumentId, a
@@ -264,6 +268,8 @@ class Iban : public AutofillDataModel {
   // but all characters between them stay masked.
   std::u16string prefix_;
   std::u16string suffix_;
+
+  UsageHistoryInformation usage_history_information_;
 };
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban);

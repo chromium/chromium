@@ -117,6 +117,8 @@ cros_events::PickerAction ConvertToCrosEventAction(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       return cros_events::PickerAction::OPEN_EXPRESSIONS;
+    case QuickInsertCategory::kGifs:
+      return cros_events::PickerAction::OPEN_GIFS;
     case QuickInsertCategory::kClipboard:
       return cros_events::PickerAction::OPEN_CLIPBOARD;
     case QuickInsertCategory::kDriveFiles:

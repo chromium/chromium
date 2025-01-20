@@ -111,10 +111,6 @@ if (target_os == "android") {
     "-a",
     target_cpu,
   ]
-
-  if (defined(final_android_sdk) && !final_android_sdk) {
-    _script_arguments += [ "--next" ]
-  }
 }
 
 _script_arguments += [

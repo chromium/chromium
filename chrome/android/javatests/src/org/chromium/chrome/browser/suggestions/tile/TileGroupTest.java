@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -47,6 +48,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -127,7 +129,7 @@ public class TileGroupTest {
         final View tileView = getNonNullTileViewFor(siteToDismiss);
 
         // Dismiss the tile using the context menu.
-        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
+        removeTileFromContextMenu(tileView);
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(new GURL(mSiteSuggestionUrls[0])));
 
         // Ensure that the removal is reflected in the ui.
@@ -166,7 +168,7 @@ public class TileGroupTest {
         Assert.assertEquals(3, tileContainer.getChildCount());
 
         // Dismiss the tile using the context menu.
-        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
+        removeTileFromContextMenu(tileView);
 
         // Ensure that the removal update goes through.
         ThreadUtils.runOnUiThreadBlocking(
@@ -224,6 +226,15 @@ public class TileGroupTest {
                 InstrumentationRegistry.getInstrumentation()
                         .invokeContextMenuAction(
                                 sActivityTestRule.getActivity(), contextMenuItemId, 0));
+    }
+
+    private void removeTileFromContextMenu(View view) throws ExecutionException {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
+            ListMenuTestUtils.longClickAndWaitForListMenu(view);
+            ListMenuTestUtils.invokeMenuItem("Remove");
+        } else {
+            invokeContextMenu(view, ContextMenuManager.ContextMenuItemId.REMOVE);
+        }
     }
 
     /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */

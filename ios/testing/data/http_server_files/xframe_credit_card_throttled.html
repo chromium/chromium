@@ -1,0 +1,69 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<!--
+Page for testing Autofill Across Iframes with throttling.
+-->
+
+<body>
+  Autofill Test - Xframe Credit Card - Frame Limit Exceeded<br>
+
+  <h3>Credit Card Info</h3>
+  <form name="cc1.1"
+        id="cc1"
+        action="destination.html"
+        method="POST">
+    <!-- Credit Card Fields -->
+
+    Name on card: <input type="text"
+           autocomplete="cc-name"
+           name="CCName"
+           id="CCName"><br><br>
+    Credit card number: <iframe id='cc-number-frame'
+            srcdoc='<input type="text" name="CCNo" id="CCNo" autocomplete="cc-number">'></iframe><br>
+    Expiry Date: <iframe id='cc-exp-frame'
+            srcdoc='<input type="text" name="CCExpiresMonth" id="CCExpiresMonth" autocomplete="cc-month-exp"> / <input type="text" name="CCExpiresYear" id="CCExpiresYear" autocomplete="cc-year-exp">'></iframe><br>
+    CVC: <iframe id='cc-cvc'
+            srcdoc='<input type="text" name="cvc" id="cvc" autocomplete="cc-csc">'></iframe><br><br>
+    <input type="reset"
+           value="Reset"
+           id="cc-form-reset">
+    <input type="submit"
+           value="Submit"
+           id="cc-form-submit">
+
+    <!-- Add up iframes to 21 to bust the limit and have iframes ignored -->
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+
+    <iframe></iframe>
+    <iframe></iframe>
+    <iframe></iframe>
+
+  </form><br>
+
+</body>
+
+</html>

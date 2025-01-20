@@ -15,6 +15,7 @@ build_webui("build") {
   static_files = [
     "alert_indicators/tab_audio_muting_rounded.svg",
     "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_glic_active.svg",
     "alert_indicators/tab_media_recording.svg",
     "tab_search.html",
   ]
@@ -24,11 +25,6 @@ build_webui("build") {
   non_web_component_files = [
     "app.html.ts",
     "app.ts",
-    "lazy_list.ts",
-    "selectable_lazy_list.ts",
-    "search.ts",
-    "tab_data.ts",
-    "tab_group_color_helper.ts",
     "auto_tab_groups/auto_tab_groups_failure.html.ts",
     "auto_tab_groups/auto_tab_groups_failure.ts",
     "auto_tab_groups/auto_tab_groups_group.html.ts",
@@ -38,21 +34,27 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_new_badge.html.ts",
     "auto_tab_groups/auto_tab_groups_new_badge.ts",
     "auto_tab_groups/auto_tab_groups_not_started.html.ts",
+    "auto_tab_groups/auto_tab_groups_not_started.ts",
     "auto_tab_groups/auto_tab_groups_not_started_image.html.ts",
     "auto_tab_groups/auto_tab_groups_not_started_image.ts",
-    "auto_tab_groups/auto_tab_groups_not_started.ts",
     "auto_tab_groups/auto_tab_groups_page.html.ts",
     "auto_tab_groups/auto_tab_groups_page.ts",
-    "auto_tab_groups/auto_tab_groups_results_actions.html.ts",
-    "auto_tab_groups/auto_tab_groups_results_actions.ts",
     "auto_tab_groups/auto_tab_groups_results.html.ts",
     "auto_tab_groups/auto_tab_groups_results.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.html.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.ts",
     "declutter/declutter_page.html.ts",
     "declutter/declutter_page.ts",
-    "tab_organization_selector_button.html.ts",
-    "tab_organization_selector_button.ts",
+    "lazy_list.ts",
+    "search.ts",
+    "selectable_lazy_list.ts",
+    "tab_data.ts",
+    "tab_group_color_helper.ts",
     "tab_organization_selector.html.ts",
     "tab_organization_selector.ts",
+    "tab_organization_selector_button.html.ts",
+    "tab_organization_selector_button.ts",
+    "tab_search.ts",
     "tab_search_api_proxy.ts",
     "tab_search_group_item.html.ts",
     "tab_search_group_item.ts",
@@ -61,17 +63,12 @@ build_webui("build") {
     "tab_search_page.html.ts",
     "tab_search_page.ts",
     "tab_search_sync_browser_proxy.ts",
-    "tab_search.ts",
     "tab_search_utils.ts",
     "title_item.ts",
   ]
 
   css_files = [
     "app.css",
-    "lazy_list.css",
-    "selectable_lazy_list.css",
-    "tab_search_page.css",
-    "tab_group_shared_vars.css",
     "auto_tab_groups/auto_tab_groups_failure.css",
     "auto_tab_groups/auto_tab_groups_group.css",
     "auto_tab_groups/auto_tab_groups_in_progress.css",
@@ -79,14 +76,18 @@ build_webui("build") {
     "auto_tab_groups/auto_tab_groups_not_started.css",
     "auto_tab_groups/auto_tab_groups_not_started_image.css",
     "auto_tab_groups/auto_tab_groups_page.css",
-    "auto_tab_groups/auto_tab_groups_results_actions.css",
     "auto_tab_groups/auto_tab_groups_results.css",
+    "auto_tab_groups/auto_tab_groups_results_actions.css",
     "auto_tab_groups/auto_tab_groups_shared_style.css",
     "declutter/declutter_page.css",
-    "tab_organization_selector_button.css",
+    "lazy_list.css",
+    "selectable_lazy_list.css",
+    "tab_group_shared_vars.css",
     "tab_organization_selector.css",
+    "tab_organization_selector_button.css",
     "tab_search_group_item.css",
     "tab_search_item.css",
+    "tab_search_page.css",
   ]
 
   mojo_files_deps = [
@@ -104,8 +105,8 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

@@ -943,7 +943,16 @@ ax::mojom::DescriptionFrom AXPlatformNodeDelegate::GetDescriptionFrom() const {
 
 const AXSelection AXPlatformNodeDelegate::GetUnignoredSelection() const {
   if (node_)
-    return node_->GetUnignoredSelection();
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ false);
+
+  NOTIMPLEMENTED();
+  return AXSelection();
+}
+
+const AXSelection AXPlatformNodeDelegate::GetHypertextSelection() const {
+  if (node_) {
+    return node_->GetUnignoredSelection(/*non_text_endpoints*/ true);
+  }
 
   NOTIMPLEMENTED();
   return AXSelection();
@@ -1028,6 +1037,20 @@ std::vector<int32_t> AXPlatformNodeDelegate::GetRowHeaderNodeIds(
     int row_index) const {
   if (node_)
     return node_->GetTableRowHeaderNodeIds(row_index);
+  return {};
+}
+
+std::vector<int32_t> AXPlatformNodeDelegate::GetRowNodeIds() const {
+  if (node_) {
+    return node_->GetTableRowNodeIds();
+  }
+  return {};
+}
+
+std::vector<int32_t> AXPlatformNodeDelegate::GetTableUniqueCellIds() const {
+  if (node_) {
+    return node_->GetTableUniqueCellIds();
+  }
   return {};
 }
 

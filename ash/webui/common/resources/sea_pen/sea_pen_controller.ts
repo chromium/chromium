@@ -262,6 +262,33 @@ export async function closeSeaPenIntroductionDialog(
       seaPenAction.setShouldShowSeaPenIntroductionDialogAction(false));
 }
 
+export async function getShouldShowSeaPenFreeformIntroductionDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  const {shouldShowFreeformDialog} =
+      await provider.shouldShowSeaPenFreeformIntroductionDialog();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenFreeformIntroductionDialogAction(
+          shouldShowFreeformDialog));
+}
+
+export async function closeSeaPenFreeformIntroductionDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  if (!store.data.shouldShowSeaPenFreeformIntroductionDialog) {
+    // Do nothing if the introduction dialog is already closed;
+    return;
+  }
+
+  await provider.handleSeaPenFreeformIntroductionDialogClosed();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenFreeformIntroductionDialogAction(false));
+}
+
 /**
  * Check whether to show fullscreen preview while selecting a SeaPen image
  * as wallpaper.

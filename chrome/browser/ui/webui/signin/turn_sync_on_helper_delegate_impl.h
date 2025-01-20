@@ -20,7 +20,7 @@ struct AccountInfo;
 namespace policy {
 class ProfileSeparationPolicies;
 class UserCloudSigninRestrictionPolicyFetcher;
-}
+}  // namespace policy
 
 // Default implementation for TurnSyncOnHelper::Delegate.
 class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
@@ -68,12 +68,10 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnProfileSigninRestrictionsFetched(
       const AccountInfo& account_info,
       signin::SigninChoiceCallback callback,
       const policy::ProfileSeparationPolicies& profile_separation_policies);
-#endif  //! BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void OnProfileCheckComplete(const AccountInfo& account_info,
                               signin::SigninChoiceCallback callback,
@@ -82,13 +80,11 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Used to fetch the cloud user level policy value of
   // ManagedAccountsSigninRestriction. This can only fetch one policy value for
   // one account at the time.
   std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
       account_level_signin_restriction_policy_fetcher_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>

@@ -16,7 +16,7 @@ FakeAutoEnrollmentClient::FactoryImpl::FactoryImpl(
         fake_client_created_callback)
     : fake_client_created_callback_(fake_client_created_callback) {}
 
-FakeAutoEnrollmentClient::FactoryImpl::~FactoryImpl() {}
+FakeAutoEnrollmentClient::FactoryImpl::~FactoryImpl() = default;
 
 std::unique_ptr<AutoEnrollmentClient>
 FakeAutoEnrollmentClient::FactoryImpl::CreateForFRE(
@@ -53,7 +53,7 @@ FakeAutoEnrollmentClient::FakeAutoEnrollmentClient(
     const ProgressCallback& progress_callback)
     : progress_callback_(progress_callback) {}
 
-FakeAutoEnrollmentClient::~FakeAutoEnrollmentClient() {}
+FakeAutoEnrollmentClient::~FakeAutoEnrollmentClient() = default;
 
 void FakeAutoEnrollmentClient::Start() {}
 

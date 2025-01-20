@@ -30,9 +30,7 @@ enum class Usage {
   INPUT_PORT_ADDED,
   OUTPUT_PORT_ADDED,
   ERROR_OBSERVED,
-
-  // New items should be inserted here, and |MAX| should point the last item.
-  MAX = ERROR_OBSERVED,
+  kMaxValue = ERROR_OBSERVED,
 };
 
 // Used to count events for transaction usage histogram. The item order should
@@ -42,14 +40,11 @@ enum class SendReceiveUsage {
   SENT,
   RECEIVED,
   SENT_AND_RECEIVED,
-
-  // New items should be inserted here, and |MAX| should point the last item.
-  MAX = SENT_AND_RECEIVED,
+  kMaxValue = SENT_AND_RECEIVED,
 };
 
 void ReportUsage(Usage usage) {
-  UMA_HISTOGRAM_ENUMERATION("Media.Midi.Usage", usage,
-                            static_cast<Sample>(Usage::MAX) + 1);
+  UMA_HISTOGRAM_ENUMERATION("Media.Midi.Usage", usage);
 }
 
 }  // namespace
@@ -75,8 +70,7 @@ MidiManager::~MidiManager() {
       data_sent_ ? (data_received_ ? SendReceiveUsage::SENT_AND_RECEIVED
                                    : SendReceiveUsage::SENT)
                  : (data_received_ ? SendReceiveUsage::RECEIVED
-                                   : SendReceiveUsage::NO_USE),
-      static_cast<Sample>(SendReceiveUsage::MAX) + 1);
+                                   : SendReceiveUsage::NO_USE));
 }
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && \

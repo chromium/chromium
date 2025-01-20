@@ -95,7 +95,7 @@ void CRLSetData::UpdateCRLSetOnUI(const std::string& crl_set_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::GetCertVerifierServiceFactory()->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)), base::DoNothing());
+      base::as_byte_span(crl_set_bytes), base::DoNothing());
 }
 
 }  // namespace

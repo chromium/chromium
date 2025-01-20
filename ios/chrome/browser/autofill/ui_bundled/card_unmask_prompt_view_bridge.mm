@@ -7,15 +7,15 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_controller.h"
 
 namespace autofill {
 
@@ -101,10 +101,9 @@ void CardUnmaskPromptViewBridge::PerformClose() {
 UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
   // Firstly check if card art image is available.
   const CreditCard& credit_card = GetController()->GetCreditCard();
-  gfx::Image* image =
-      personal_data_manager_->payments_data_manager()
-          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
-  if (image) {
+  if (const gfx::Image* const image =
+          personal_data_manager_->payments_data_manager()
+              .GetCachedCardArtImageForUrl(credit_card.card_art_url())) {
     return image->ToUIImage();
   }
 

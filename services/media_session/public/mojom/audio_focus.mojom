@@ -7,7 +7,7 @@ module media_session.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 // These are the different modes the AudioFocusManager can enforce audio focus.
 [Stable, Extensible]
@@ -167,6 +167,21 @@ interface AudioFocusManager {
   // |RequestGroupedAudioFocus()|.
   [MinVersion=8] RequestIdReleased@9(
       mojo_base.mojom.UnguessableToken request_id);
+
+  // Begins ducking all audio focus sessions, except the one associated with the
+  // optionally provided request ID. This ignores the audio focus enforcement
+  // mode to enforce ducking regardless. If there is already an audio ducking
+  // request, this request will supersede the previous one.
+  [MinVersion=10] StartDuckingAllAudio@10(
+      mojo_base.mojom.UnguessableToken? exempted_request_id);
+
+  // Stops ducking that was started via `StartDuckingAllAudio()`. Does nothing
+  // if audio is not currently being ducked.
+  [MinVersion=10] StopDuckingAllAudio@11();
+
+  // Flushes messages to observers and the audio focus stack. Calls the given
+  // callback once flushing has occurred. For testing only.
+  [MinVersion=10] FlushForTesting@12() => ();
 };
 
 // Provides debug information about audio focus requests.

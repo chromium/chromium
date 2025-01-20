@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -58,12 +59,14 @@ public class DownloadNotificationServiceTest {
                     mDownloadNotificationService.setDownloadForegroundServiceManager(
                             mDownloadForegroundServiceManager);
                 });
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
     }
 
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS);
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test

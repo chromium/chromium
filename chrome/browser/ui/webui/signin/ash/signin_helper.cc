@@ -15,6 +15,7 @@
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -46,8 +47,9 @@ bool SigninHelper::ArcHelper::IsAvailableInArc() const {
 void SigninHelper::ArcHelper::OnAccountAdded(
     const account_manager::Account& account) {
   // Don't change ARC availability after reauthentication.
-  if (!is_account_addition_)
+  if (!is_account_addition_) {
     return;
+  }
 
   account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                          is_available_in_arc_);
@@ -61,7 +63,7 @@ SigninHelper::SigninHelper(
         show_signin_error,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<ArcHelper> arc_helper,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id)
@@ -70,7 +72,7 @@ SigninHelper::SigninHelper(
       arc_helper_(std::move(arc_helper)),
       close_dialog_closure_(close_dialog_closure),
       show_signin_error_(show_signin_error),
-      account_key_(gaia_id, account_manager::AccountType::kGaia),
+      account_key_(account_manager::AccountKey::FromGaiaId(gaia_id)),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
@@ -251,7 +253,7 @@ bool SigninHelper::IsInitialPrimaryAccount() {
   return user_manager::UserManager::Get()
              ->GetPrimaryUser()
              ->GetAccountId()
-             .GetGaiaId() == account_key_.id();
+             .GetGaiaId() == GaiaId(account_key_.id());
 }
 
 account_manager::AccountManager* SigninHelper::GetAccountManager() {

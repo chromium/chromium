@@ -35,8 +35,9 @@ ScrollBarButton::~ScrollBarButton() = default;
 
 gfx::Size ScrollBarButton::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return gfx::Size();
+  }
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }

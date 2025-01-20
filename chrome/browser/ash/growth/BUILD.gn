@@ -117,6 +117,7 @@ if (!is_chromeos_device) {
     deps = [
       ":growth",
       "//ash",
+      "//ash/app_list",
       "//ash/constants",
       "//base",
       "//base/test:test_support",

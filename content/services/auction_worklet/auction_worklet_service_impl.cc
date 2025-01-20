@@ -339,6 +339,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     mojom::TrustedSignalsPublicKeyPtr public_key,
     mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
         load_seller_worklet_client) {
@@ -356,7 +357,7 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
       std::move(auction_network_events_handler), GetTrustedSignalsKVv2Manager(),
       decision_logic_url, trusted_scoring_signals_url, top_window_origin,
       std::move(permissions_policy_state), experiment_group_id,
-      std::move(public_key),
+      send_creative_scanning_metadata, std::move(public_key),
       base::BindRepeating(
           &AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex,
           base::Unretained(this)),

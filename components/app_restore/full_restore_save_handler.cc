@@ -14,7 +14,6 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -61,9 +60,6 @@ void FullRestoreSaveHandler::InsertIgnoreApplicationId(
 void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   arc_save_handler_ = std::make_unique<ArcSaveHandler>(profile_path);
-  if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-    lacros_save_handler_ = std::make_unique<LacrosSaveHandler>(profile_path);
-  }
 }
 
 void FullRestoreSaveHandler::SetActiveProfilePath(
@@ -155,8 +151,10 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
           if (it->second->GetAppType(app_id) == apps::AppType::kWeb ||
               it->second->GetAppType(app_id) == apps::AppType::kSystemWeb) {
             // Use the correct app_id instead of the chrome app id for system
-            // web apps. SWAs have app type `kSystemWeb` with Lacros or `kWeb`
-            // otherwise.
+            // web apps. kSystemWeb was mostly used by lacros, and while SWA's
+            // are mostly deprecated, a few internal apps like Settings are
+            // still implemented as SWA's. So, this case must be also handled
+            // here.
             it->second->ForOneApp(app_id, [&app_launch_info, app_id](
                                               const apps::AppUpdate& update) {
               if (update.InstallReason() == apps::InstallReason::kSystem) {
@@ -336,20 +334,6 @@ void FullRestoreSaveHandler::SaveRemovingDeskGuid(
   pending_save_profile_paths_.insert(active_profile_path_);
 
   MaybeStartSaveTimer(active_profile_path_);
-}
-
-void FullRestoreSaveHandler::OnLacrosChromeAppWindowAdded(
-    const std::string& app_id,
-    const std::string& window_id) {
-  if (lacros_save_handler_)
-    lacros_save_handler_->OnAppWindowAdded(app_id, window_id);
-}
-
-void FullRestoreSaveHandler::OnLacrosChromeAppWindowRemoved(
-    const std::string& app_id,
-    const std::string& window_id) {
-  if (lacros_save_handler_)
-    lacros_save_handler_->OnAppWindowRemoved(app_id, window_id);
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
@@ -532,12 +516,6 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
     return iter != window_id_to_app_restore_info_.end() ? iter->second.second
                                                         : std::string();
   }
-}
-
-int FullRestoreSaveHandler::GetLacrosChromeAppWindowId(
-    aura::Window* window) const {
-  DCHECK(lacros_save_handler_);
-  return lacros_save_handler_->GetLacrosChromeAppWindowId(window);
 }
 
 std::unique_ptr<app_restore::AppLaunchInfo>

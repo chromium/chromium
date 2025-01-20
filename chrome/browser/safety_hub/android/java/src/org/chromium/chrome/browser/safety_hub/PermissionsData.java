@@ -35,7 +35,7 @@ public class PermissionsData {
     @CalledByNative
     static PermissionsData create(
             @JniType("std::string") String origin,
-            @JniType("std::vector<int32_t>") int[] permissions,
+            @JniType("std::vector<int32_t>") @ContentSettingsType.EnumType int[] permissions,
             @JniType("std::int64_t") long expiration,
             @JniType("std::int64_t") long lifetime) {
         return new PermissionsData(origin, permissions, expiration, lifetime);

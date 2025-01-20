@@ -69,6 +69,49 @@
     }, "Modifying a ShadowRoot's referenceTarget also updates the accessibility object.");
   </script>
 
+  <script>
+    customElements.define(
+      "x-input",
+      class FancyInput extends HTMLElement {
+        static observedAttributes = ["fancylistbox"];
+
+        constructor() {
+          super();
+          this.shadowRoot_ = this.attachShadow({
+            mode: "closed",
+          });
+          this.shadowRoot_.innerHTML = `<input id="real-input">`;
+          this.realInput_ = this.shadowRoot_.getElementById("real-input");
+        }
+
+        attributeChangedCallback(attr, oldValue, newValue) {
+          if (attr === "fancylistbox") {
+            const fancyListbox = newValue ? document.getElementById(newValue) : null;
+            this.realInput_.ariaActiveDescendantElement = fancyListbox;
+          }
+        }
+      }
+    );
+  </script>
+  <div class="container">
+    <x-listbox2 id="fancy-listbox" role="listbox"></x-listbox2>
+    <x-input fancylistbox="fancy-listbox"></x-input>
+  </div>
+
+  <script>
+    test(function (t) {
+      const axRealInput = accessibilityController.accessibleElementById("real-input");
+      assert_equals(axRealInput.activeDescendant.name, "Option C");
+    }, "aria-activedescendant works when the linkage is created across two sibling shadow trees.");
+
+    test(function (t) {
+      const axRealInput = accessibilityController.accessibleElementById("real-input");
+      assert_equals(axRealInput.activeDescendant.name, "Option C");
+      const fancyListbox = document.getElementById("fancy-listbox");
+      fancyListbox.setReferenceTarget("option-b");
+      assert_equals(axRealInput.activeDescendant.name, "Option B");
+    }, "Modifying a ShadowRoot's referenceTarget also updates the accessibility object when the linkage is created across two sibling shadow trees.");
+  </script>
 </body>
 
 </html>

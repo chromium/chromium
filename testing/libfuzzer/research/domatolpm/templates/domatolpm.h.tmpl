@@ -7,8 +7,27 @@
 #include <string>
 
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
-#include "{{basename}}.pb.h"
+
+{% for include in includes %}
+#include "{{include}}"
+{% endfor %}
+
+namespace {{cpp_ns}}::internal {
+{% for func in functions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+{% for func in oneoffunctions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+{% for func in stfunctions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+}
+
+{% if generate_root %}
 
 namespace {{cpp_ns}} {
   bool {{root.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{root.proto_type}});
 } // {{cpp_ns}}
+
+{% endif %}

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_CERTIFICATE_MANAGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_CERTIFICATE_MANAGER_H_
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
@@ -75,7 +77,8 @@ class NearbyShareCertificateManager {
   // Creates a hash of the |authentication_token| using the currently valid
   // private certificate. Returns std::nullopt if there is no valid private
   // certificate with |visibility|.
-  std::optional<std::vector<uint8_t>>
+  std::optional<
+      std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>>
   HashAuthenticationTokenWithPrivateCertificate(
       nearby_share::mojom::Visibility visibility,
       base::span<const uint8_t> authentication_token) const;

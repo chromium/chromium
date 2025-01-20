@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 
 #include <stddef.h>
@@ -47,7 +52,7 @@
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 #endif
 
@@ -67,7 +72,7 @@ const uint8_t kWidevineSha2Hash[] = {
 static_assert(std::size(kWidevineSha2Hash) == crypto::kSHA256Length,
               "Wrong hash length");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS the component updated CDM comes as a disk image which must be
 // registered and then mounted in order to access the files. The startup
 // script that mounts the image (widevine-cdm.conf) also uses this name.
@@ -141,7 +146,7 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
   return cdm_path;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This is called when ImageLoaderClient::RegisterComponent() is done.
 void OnImageRegistered(std::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -239,7 +244,7 @@ void LoadImage() {
   loader->LoadComponent(ImageLoaderComponentName,
                         base::BindOnce(&OnImageLoaded));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -251,8 +256,6 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
       const WidevineCdmComponentInstallerPolicy&) = delete;
   WidevineCdmComponentInstallerPolicy& operator=(
       const WidevineCdmComponentInstallerPolicy&) = delete;
-
-  ~WidevineCdmComponentInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.
@@ -297,12 +300,12 @@ WidevineCdmComponentInstallerPolicy::OnCustomInstall(
   DVLOG(1) << __func__ << ": install_dir=" << install_dir
            << ", manifest=" << manifest;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ASH ChromeOS, anything downloaded by Component Updater is an image
-  // that needs to be mounted before the files it contains can be used. So
-  // simply register the image, so that it can be mounted next time the
-  // device boots. It will also be mounted by UpdateCdmPath() so that the hint
-  // file can be updated.
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, anything downloaded by Component Updater is an image that
+  // needs to be mounted before the files it contains can be used. So simply
+  // register the image, so that it can be mounted next time the device boots.
+  // It will also be mounted by UpdateCdmPath() so that the hint file can be
+  // updated.
   auto* version = manifest.FindString("version");
   if (!version) {
     return update_client::CrxInstaller::Result(
@@ -341,7 +344,7 @@ void WidevineCdmComponentInstallerPolicy::ComponentReady(
 bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, what gets downloaded is an image rather than the directory
   // structure expected. As a result, we can not check that there is an
   // library contained until the image is loaded. But on all other systems
@@ -398,7 +401,7 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
     return;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   VLOG(1) << "Updating hint file with Widevine CDM " << cdm_version;
 
   // This is running on a thread that allows IO, so simply update the hint file.
@@ -406,8 +409,8 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
     PLOG(WARNING) << "Failed to update Widevine CDM hint path.";
   }
 
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS ASH, the selected CDM could be the bundled CDM or an image
+#elif BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the selected CDM could be the bundled CDM or an image
   // containing the CDM downloaded by CU. As the CDM is loaded when Chrome
   // starts, there is no need to register it as the new version can't be
   // used until the device restarts. However, we do want to update the hint

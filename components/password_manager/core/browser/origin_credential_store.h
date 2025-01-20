@@ -25,6 +25,7 @@ class UiCredential {
   UiCredential(std::u16string username,
                std::u16string password,
                url::Origin origin,
+               std::string display_name,
                password_manager_util::GetLoginMatchType match_type,
                base::Time last_used);
   UiCredential(const PasswordForm& form, const url::Origin& affiliated_origin);

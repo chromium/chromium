@@ -16,10 +16,10 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace web_app {
 
@@ -39,30 +39,6 @@ constexpr std::string_view kTestManifest = R"({
         }
       ]
     })";
-
-constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
-    0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
-    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
-
-constexpr std::array<uint8_t, 64> kEd25519PrivateKey = {
-    0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
-    0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
-    0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
-    // public key (part of the private key)
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51, 0x66,
-    0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02, 0x72, 0xFE,
-    0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
-
-constexpr std::array<uint8_t, 33> kEcdsaP256PublicKey = {
-    0x03, 0x0A, 0x22, 0xFC, 0x5C, 0x0B, 0x1E, 0x14, 0x85, 0x90, 0xE1,
-    0xF9, 0x87, 0xCC, 0x4E, 0x0D, 0x49, 0x2E, 0xF8, 0xE5, 0x1E, 0x23,
-    0xF9, 0xB3, 0x63, 0x75, 0xE1, 0x52, 0xB2, 0x4A, 0xEC, 0xA5, 0xE6};
-
-constexpr std::array<uint8_t, 32> kEcdsaP256PrivateKey = {
-    0x24, 0xAB, 0xA9, 0x6A, 0x44, 0x4B, 0xEB, 0xE9, 0x3C, 0xD2, 0x88,
-    0x47, 0x22, 0x63, 0x02, 0xB8, 0xE4, 0xA0, 0x16, 0x1A, 0x0E, 0x95,
-    0xAA, 0x36, 0x95, 0x26, 0x83, 0x49, 0xEE, 0xCD, 0x27, 0x1A};
 
 // Returns the value of `web_bundle_id` if specified, or generates a fallback ID
 // from `key_pair`'s public key.
@@ -84,33 +60,11 @@ web_package::SignedWebBundleId GetWebBundleIdWithFallback(
 namespace test {
 
 std::string EncodeAsPng(const SkBitmap& bitmap) {
-  SkDynamicMemoryWStream stream;
-  CHECK(SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}));
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
+  sk_sp<SkData> icon_skdata = skia::EncodePngAsSkData(bitmap.pixmap());
+  CHECK(icon_skdata);
   return std::string(static_cast<const char*>(icon_skdata->data()),
                      icon_skdata->size());
 }
-
-web_package::test::Ed25519KeyPair GetDefaultEd25519KeyPair() {
-  return web_package::test::Ed25519KeyPair(kEd25519PublicKey,
-                                           kEd25519PrivateKey);
-}
-
-web_package::SignedWebBundleId GetDefaultEd25519WebBundleId() {
-  return web_package::SignedWebBundleId::CreateForPublicKey(
-      GetDefaultEd25519KeyPair().public_key);
-}
-
-web_package::test::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair() {
-  return web_package::test::EcdsaP256KeyPair(kEcdsaP256PublicKey,
-                                             kEcdsaP256PrivateKey);
-}
-
-web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId() {
-  return web_package::SignedWebBundleId::CreateForPublicKey(
-      GetDefaultEcdsaP256KeyPair().public_key);
-}
-
 }  // namespace test
 
 TestSignedWebBundle::TestSignedWebBundle(

@@ -7,19 +7,22 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,10 +37,8 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::RecordAction;
@@ -101,15 +102,16 @@ using base::UserMetricsAction;
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:accountManagerService
-                          authService:AuthenticationServiceFactory::
-                                          GetForProfile(profile)
-                          prefService:profile->GetPrefs()
-                          syncService:syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_NTP_FEED_TOP_PROMO
-                      signinPresenter:self
-             accountSettingsPresenter:nil];
+         initWithIdentityManager:identityManager
+           accountManagerService:accountManagerService
+                     authService:AuthenticationServiceFactory::GetForProfile(
+                                     profile)
+                     prefService:profile->GetPrefs()
+                     syncService:syncService
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_NTP_FEED_TOP_PROMO
+                 signinPresenter:self
+        accountSettingsPresenter:nil];
 
     self.signinPromoMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;
@@ -191,6 +193,7 @@ using base::UserMetricsAction;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = NotificationOptInAccessPoint::kFeed;
   _optInAlertCoordinator.clientIds = std::vector{
       PushNotificationClientId::kContent, PushNotificationClientId::kSports};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(

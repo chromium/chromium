@@ -689,7 +689,6 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
       case RoutineVerdict.kProblem:
         return 'Failed';
     }
-    return 'Unknown';
   }
 }
 

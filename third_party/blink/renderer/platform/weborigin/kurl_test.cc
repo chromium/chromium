@@ -33,6 +33,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // Basic tests that verify our KURL's interface behaves the same as the
 // original KURL's.
 
@@ -68,7 +70,8 @@ TEST(KURLTest, Getters) {
     const char* query;
     const char* fragment_identifier;
     bool has_fragment_identifier;
-  } cases[] = {
+  };
+  auto cases = std::to_array<GetterCase>({
       {"http://www.google.com/foo/blah?bar=baz#ref", "http", "www.google.com",
        0, nullptr, nullptr, "/foo/blah", "blah", "bar=baz", "ref", true},
       {// Non-ASCII code points in the fragment part. fragmentIdentifier()
@@ -96,7 +99,7 @@ TEST(KURLTest, Getters) {
        "http://\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd/", "http",
        "xn--6qqa088eba", 0, nullptr, nullptr, "/", nullptr, nullptr, nullptr,
        false},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     const GetterCase& c = cases[i];
@@ -171,7 +174,8 @@ TEST(KURLTest, Setters) {
 
     const char* query;
     const char* expected_query;
-  } cases[] = {
+  };
+  auto cases = std::to_array<ExpectedComponentCase>({
       {"http://www.google.com/",
        // protocol
        "https", "https://www.google.com/",
@@ -202,7 +206,7 @@ TEST(KURLTest, Setters) {
        "/", "http://goo.com:92/?f#b",
        // query
        nullptr, "http://goo.com:92/#b"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     KURL kurl(cases[i].url);
@@ -238,7 +242,8 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   struct DecodeCase {
     const char* input;
     const char* output;
-  } decode_cases[] = {
+  };
+  auto decode_cases = std::to_array<DecodeCase>({
       {"hello, world", "hello, world"},
       {"%01%02%03%04%05%06%07%08%09%0a%0B%0C%0D%0e%0f/",
        "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0B\x0C\x0D\x0e\x0f/"},
@@ -258,7 +263,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
        "pqrstuvwxyz{|}~\x7f/"},
       // Test un-UTF-8-ization.
       {"%e4%bd%a0%e5%a5%bd", "\xe4\xbd\xa0\xe5\xa5\xbd"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(decode_cases); i++) {
     String input(decode_cases[i].input);
@@ -291,7 +296,8 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   struct EncodeCase {
     const char* input;
     const char* output;
-  } encode_cases[] = {
+  };
+  auto encode_cases = std::to_array<EncodeCase>({
       {"hello, world", "hello%2C%20world"},
       {"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F",
        "%01%02%03%04%05%06%07%08%09%0A%0B%0C%0D%0E%0F"},
@@ -303,7 +309,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
       {"PQRSTUVWXYZ[\\]^_", "PQRSTUVWXYZ%5B%5C%5D%5E_"},
       {"`abcdefghijklmno", "%60abcdefghijklmno"},
       {"pqrstuvwxyz{|}~\x7f", "pqrstuvwxyz%7B%7C%7D~%7F"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(encode_cases); i++) {
     String input(encode_cases[i].input);
@@ -1125,8 +1131,8 @@ TEST(KURLTest, HasIDNA2008DeviationCharacters) {
   // Copying the URL from a canonical string presently doesn't copy the boolean.
   KURL url1(u"http://\u03b2\u03cc\u03bb\u03bf\u03c2.com/path");
   std::string url_string = url1.GetString().Utf8();
-  KURL url2(AtomicString::FromUTF8(url_string.data(), url_string.length()),
-            url1.GetParsed(), url1.IsValid());
+  KURL url2(AtomicString::FromUTF8(url_string), url1.GetParsed(),
+            url1.IsValid());
   EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
 }
 

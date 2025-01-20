@@ -26,6 +26,9 @@ content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test);
 // window created by tests, more specific behaviour requires other means.
 Profile* GetProfile(PlatformBrowserTest* browser_test);
 
+// Returns the test data path used by the embedded test server.
+base::FilePath GetChromeTestDataDir();
+
 }  // namespace chrome_test_utils
 
 #endif  // CHROME_TEST_BASE_CHROME_TEST_UTILS_H_

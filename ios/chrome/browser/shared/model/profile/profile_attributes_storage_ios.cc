@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -25,33 +26,40 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
     sorted_keys_.push_back(pair.first);
   }
   base::ranges::sort(sorted_keys_);
+
+  // If the personal profile name is set, ensure a profile entry with that name
+  // actually exists. Note: Can't use `GetPersonalProfileName()` since that
+  // DCHECKs that the entry exists.
+  const std::string& personal_profile =
+      prefs_->GetString(prefs::kPersonalProfileName);
+  if (!personal_profile.empty() && !HasProfileWithName(personal_profile)) {
+    AddProfile(personal_profile);
+  }
 }
 
 ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 
 void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts the profile name in sorted position.
-  auto iterator = base::ranges::upper_bound(sorted_keys_, name);
+  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
   CHECK(iterator == sorted_keys_.end() || *iterator != name);
   sorted_keys_.insert(iterator, std::string(name));
 
   // Inserts an empty dictionary for the profile in the preferences.
   {
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, base::Value::Dict());
+    ProfileAttributesIOS profile = ProfileAttributesIOS::CreateNew(name);
+    update->Set(name, std::move(profile).GetStorage());
   }
 
   // Update the number of created profile.
   prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
-
-  // Insert the newly created profile in the list of last active profiles.
-  {
-    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
-    update->Append(base::Value(name));
-  }
 }
 
 void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
+  // The personal profile must always exist, and thus mustn't be deleted.
+  DCHECK_NE(name, GetPersonalProfileName());
+
   // Remove the profile name from the sorted dictionary.
   auto iterator = base::ranges::find(sorted_keys_, name);
   CHECK(iterator != sorted_keys_.end() && *iterator == name);
@@ -69,12 +77,6 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
     }
 
     *update = std::move(dict);
-  }
-
-  // Remove the profile from the list of last active profiles (if present).
-  {
-    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
-    update->EraseValue(base::Value(name));
   }
 
   // Update the number of created profile.
@@ -99,25 +101,40 @@ bool ProfileAttributesStorageIOS::HasProfileWithName(
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
     size_t index) const {
-  DCHECK_LT(index, sorted_keys_.size());
-  const std::string& profile_name = sorted_keys_[index];
-  return ProfileAttributesIOS(
-      profile_name,
-      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(profile_name));
+  CHECK_LT(index, sorted_keys_.size());
+  return GetAttributesForProfileWithName(sorted_keys_[index]);
 }
 
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
     std::string_view name) const {
-  const size_t index = GetIndexOfProfileWithName(name);
-  return GetAttributesForProfileAtIndex(index);
+  const base::Value::Dict& values =
+      CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
+  return ProfileAttributesIOS::WithAttrs(name, values);
+}
+
+void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
+    size_t index,
+    ProfileAttributesCallback callback) {
+  CHECK_LT(index, sorted_keys_.size());
+  UpdateAttributesForProfileWithName(sorted_keys_[index], std::move(callback));
 }
 
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
     std::string_view name,
     ProfileAttributesCallback callback) {
-  const size_t index = GetIndexOfProfileWithName(name);
-  UpdateAttributesForProfileAtIndex(index, std::move(callback));
+  const base::Value::Dict& values =
+      CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
+
+  base::Value::Dict updated_values =
+      std::move(callback)
+          .Run(ProfileAttributesIOS::WithAttrs(name, values))
+          .GetStorage();
+
+  if (values != updated_values) {
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    update->Set(name, std::move(updated_values));
+  }
 }
 
 void ProfileAttributesStorageIOS::SetProfileNameForSceneID(
@@ -147,11 +164,15 @@ const std::string& ProfileAttributesStorageIOS::GetProfileNameForSceneID(
 }
 
 const std::string& ProfileAttributesStorageIOS::GetPersonalProfileName() const {
-  return prefs_->GetString(prefs::kPersonalProfileName);
+  const std::string& name = prefs_->GetString(prefs::kPersonalProfileName);
+  DCHECK(name.empty() || HasProfileWithName(name));
+  return name;
 }
 
 void ProfileAttributesStorageIOS::SetPersonalProfileName(
     std::string_view profile_name) {
+  DCHECK(!profile_name.empty());
+  DCHECK(HasProfileWithName(profile_name));
   prefs_->SetString(prefs::kPersonalProfileName, profile_name);
 }
 
@@ -162,22 +183,6 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
-}
-
-void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
-    size_t index,
-    ProfileAttributesCallback callback) {
-  DCHECK_LT(index, sorted_keys_.size());
-  const std::string& name = sorted_keys_[index];
-  const base::Value::Dict* values =
-      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name);
-
-  base::Value::Dict updated_values =
-      std::move(callback).Run(ProfileAttributesIOS(name, values)).GetStorage();
-  if (!values || *values != updated_values) {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, std::move(updated_values));
-  }
 }
 
 size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(

@@ -179,12 +179,16 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  // Record the following blink feature usage cookie metrics.
-  std::vector<blink::mojom::WebFeature> third_party_cookie_features;
-  if (is_blocked_by_experiment) {
-    third_party_cookie_features.push_back(
-        blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
+  if (!is_blocked_by_experiment) {
+    return;
   }
+
+  // Record the following blink feature usage cookie metrics when the 3PCD
+  // experiment is actual block third party cookies, which means tracking
+  // protection is onboard.
+  std::vector<blink::mojom::WebFeature> third_party_cookie_features;
+  third_party_cookie_features.push_back(
+      blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
 
   switch (allow_mechanism) {
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:

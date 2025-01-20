@@ -61,6 +61,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheFetcher
 
   base::WeakPtr<CodeCacheHost> code_cache_host_;
   mojom::blink::CodeCacheType code_cache_type_;
+  base::TimeTicks time_of_last_fetch_start_;
 
   // The initial URL used for code cache fetching, prior to redirects. This
   // should match the initial URL for script fetching.

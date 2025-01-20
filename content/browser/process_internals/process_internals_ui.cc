@@ -40,8 +40,7 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIProcessInternalsHost);
 
-  source->AddResourcePaths(
-      base::make_span(kProcessResources, kProcessResourcesSize));
+  source->AddResourcePaths(kProcessResources);
   source->SetDefaultResource(IDR_PROCESS_PROCESS_INTERNALS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

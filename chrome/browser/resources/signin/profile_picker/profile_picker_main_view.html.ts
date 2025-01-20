@@ -4,17 +4,21 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {isGlicVersion} from './profile_picker_flags.js';
 import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
 
 export function getHtml(this: ProfilePickerMainViewElement) {
   return html`<!--_html_template_start_-->
 <div class="flex-container">
   <div class="title-container">
-    <img id="product-logo" @click="${this.onProductLogoClick_}"
-        srcset="chrome://theme/current-channel-logo@1x 1x,
-                chrome://theme/current-channel-logo@2x 2x"
-        role="presentation">
-    <h1 class="title">$i18n{mainViewTitle}</h1>
+    <div id="images-container">
+      <img id="product-logo" @click="${this.onProductLogoClick_}"
+          srcset="chrome://theme/current-channel-logo@1x 1x,
+                  chrome://theme/current-channel-logo@2x 2x"
+          role="presentation">
+      <img id="glic-logo" ?hidden="${!isGlicVersion()}" role="presentation">
+    </div>
+    <h1 class="title">$i18nRaw{mainViewTitle}</h1>
     <div class="subtitle">$i18n{mainViewSubtitle}</div>
   </div>
   <div id="wrapper">
@@ -27,6 +31,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       `)}
       <cr-button id="addProfile" class="profile-item"
           @click="${this.onAddProfileClick_}"
+          ?hidden="${!this.profileCreationAllowed_}"
           aria-labelledby="addProfileButtonLabel">
         <div id="addProfileButtonLabel"
             class="profile-card-info prominent-text">
@@ -37,9 +42,13 @@ export function getHtml(this: ProfilePickerMainViewElement) {
     </div>
   </div>
 </div>
+<div id="footer-text" ?hidden="${!isGlicVersion()}">
+  $i18nRaw{glicAddProfileHelper}
+</div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"
-      @click="${this.onLaunchGuestProfileClick_}">
+      @click="${this.onLaunchGuestProfileClick_}"
+      ?hidden="${!this.guestModeEnabled_}">
     <cr-icon icon="profiles:account-circle" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>

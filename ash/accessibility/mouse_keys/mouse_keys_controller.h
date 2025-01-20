@@ -5,7 +5,10 @@
 #ifndef ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 #define ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/timer/timer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -13,6 +16,8 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace ash {
+
+class MouseKeysBubbleController;
 
 // Mouse keys is an accessibility feature that allows you to control your mouse
 // cursor with the keyboard.  To do this, MouseKeysController ingests key events
@@ -48,8 +53,11 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   // Returns true if the event should be cancelled.
   bool RewriteEvent(const ui::Event& event);
 
-  void set_enabled(bool enabled) { enabled_ = enabled; }
+  void set_enabled(bool enabled);
   bool enabled() { return enabled_; }
+
+  void set_paused(bool paused) { paused_ = paused; }
+  bool paused() { return paused_; }
 
   void set_use_primary_keys(bool use_primary_keys) {
     use_primary_keys_ = use_primary_keys;
@@ -62,6 +70,10 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void set_acceleration(double acceleration) { acceleration_ = acceleration; }
   void SetMaxSpeed(double factor) {
     max_speed_ = factor * kBaseSpeedDIPPerSecond * kUpdateFrequencyInSeconds;
+  }
+
+  gfx::Point GetLastMousePositionDips() const {
+    return last_mouse_position_dips_;
   }
 
   enum MouseKey {
@@ -90,6 +102,8 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kBoth,
   };
 
+  MouseKeysBubbleController* GetMouseKeysBubbleControllerForTest();
+
  private:
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -105,11 +119,15 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
                                    ui::DomCode input,
                                    MouseKey output);
   void PressKey(MouseKey key);
-  void ReleaseKey(MouseKey key);
-  void SelectNextButton();
   void RefreshVelocity();
-  void UpdateState();
+  void ReleaseKey(MouseKey key);
   void ResetMovement();
+  void SelectNextButton();
+  void UpdateCurrentMouseButton(MouseButton mouse_button);
+  void UpdateMouseKeysBubble(bool visible,
+                             MouseKeysBubbleIconType icon,
+                             const int name_resource_id);
+  void UpdateState();
 
   bool enabled_ = false;
   bool paused_ = false;
@@ -126,6 +144,9 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);
   int event_flags_ = 0;
   base::RepeatingTimer update_timer_;
+
+  // Used to control the MouseKeys bubble UI.
+  std::unique_ptr<MouseKeysBubbleController> mouse_keys_bubble_controller_;
 };
 
 }  // namespace ash

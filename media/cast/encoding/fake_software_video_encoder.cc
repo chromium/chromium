@@ -14,19 +14,15 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
-
-using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media::cast {
 
 FakeSoftwareVideoEncoder::FakeSoftwareVideoEncoder(
-    const FrameSenderConfig& video_config)
+    const FrameSenderConfig& video_config,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider)
     : video_config_(video_config),
-      next_frame_is_key_(true),
-      frame_id_(FrameId::first()),
-      frame_size_(0u) {
-  DCHECK_GT(video_config_.max_frame_rate, 0);
+      metrics_provider_(std::move(metrics_provider)) {
+  CHECK_GT(video_config_.max_frame_rate, 0);
 }
 
 FakeSoftwareVideoEncoder::~FakeSoftwareVideoEncoder() = default;
@@ -37,20 +33,21 @@ void FakeSoftwareVideoEncoder::Encode(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time,
     SenderEncodedFrame* encoded_frame) {
-  DCHECK(encoded_frame);
+  CHECK(encoded_frame);
 
   if (video_frame->visible_rect().size() != last_frame_size_) {
     next_frame_is_key_ = true;
     last_frame_size_ = video_frame->visible_rect().size();
+    metrics_provider_->Initialize(VIDEO_CODEC_PROFILE_UNKNOWN, last_frame_size_,
+                                  /*is_hardware_encoder=*/false);
   }
 
   encoded_frame->frame_id = frame_id_++;
+  encoded_frame->is_key_frame = next_frame_is_key_;
   if (next_frame_is_key_) {
-    encoded_frame->dependency = Dependency::kKeyFrame;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     next_frame_is_key_ = false;
   } else {
-    encoded_frame->dependency = Dependency::kDependent;
     encoded_frame->referenced_frame_id = encoded_frame->frame_id - 1;
   }
   encoded_frame->rtp_timestamp =
@@ -59,7 +56,7 @@ void FakeSoftwareVideoEncoder::Encode(
 
   const auto values =
       base::Value::Dict()
-          .Set("key", encoded_frame->dependency == Dependency::kKeyFrame)
+          .Set("key", encoded_frame->is_key_frame)
           .Set("ref", static_cast<int>(
                           encoded_frame->referenced_frame_id.lower_32_bits()))
           .Set("id", static_cast<int>(encoded_frame->frame_id.lower_32_bits()))
@@ -73,13 +70,15 @@ void FakeSoftwareVideoEncoder::Encode(
   encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(
       base::as_bytes(base::span(raw_data)));
 
-  if (encoded_frame->dependency == Dependency::kKeyFrame) {
+  if (encoded_frame->is_key_frame) {
     encoded_frame->encoder_utilization = 1.0;
     encoded_frame->lossiness = 6.0;
   } else {
     encoded_frame->encoder_utilization = 0.8;
     encoded_frame->lossiness = 0.8;
   }
+
+  metrics_provider_->IncrementEncodedFrameCount();
 }
 
 void FakeSoftwareVideoEncoder::UpdateRates(uint32_t new_bitrate) {

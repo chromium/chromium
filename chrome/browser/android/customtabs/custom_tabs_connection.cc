@@ -47,8 +47,7 @@ void NotifyClientOfDetachedRequestCompletion(
     int net_error) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CustomTabsConnection_notifyClientOfDetachedRequestCompletion(
-      env, session, base::android::ConvertUTF8ToJavaString(env, url.spec()),
-      net_error);
+      env, session, url.spec(), net_error);
 }
 
 // Notify client of text fragment look up completion.
@@ -70,7 +69,7 @@ void NotifyClientOfTextFragmentLookupCompletion(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CustomTabsConnection_notifyClientOfTextFragmentLookupCompletion(
-      env, session, base::android::ConvertUTF8ToJavaString(env, state_key),
+      env, session, state_key,
       base::android::ToJavaArrayOfStrings(env, found_fragments));
 }
 
@@ -80,23 +79,17 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     JNIEnv* env,
     Profile* native_profile,
     const base::android::JavaParamRef<jobject>& session,
-    const base::android::JavaParamRef<jstring>& package_name,
-    const base::android::JavaParamRef<jstring>& url,
-    const base::android::JavaParamRef<jstring>& origin,
+    std::string& package_name,
+    std::string& url,
+    std::string& origin,
     jint referrer_policy,
     jint motivation) {
   DCHECK(native_profile);
-  DCHECK(url);
-  DCHECK(origin);
 
-  GURL native_url(base::android::ConvertJavaStringToUTF8(env, url));
-  GURL native_origin(base::android::ConvertJavaStringToUTF8(env, origin));
+  GURL native_url(url);
+  GURL native_origin(origin);
   DCHECK(native_url.is_valid());
   DCHECK(native_origin.is_valid());
-
-  std::string native_package;
-  if (!package_name.is_null())
-    base::android::ConvertJavaStringToUTF8(env, package_name, &native_package);
 
   // Java only knows about the blink referrer policy.
   net::ReferrerPolicy url_request_referrer_policy =
@@ -114,24 +107,24 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
 
   DetachedResourceRequest::CreateAndStart(
       native_profile, native_url, native_origin, url_request_referrer_policy,
-      request_motivation, native_package, std::move(cb));
+      request_motivation, package_name, std::move(cb));
 }
 
 static void JNI_CustomTabsConnection_SetClientDataHeader(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jstring>& jheader) {
+    std::string& jheader) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   ClientDataHeaderWebContentsObserver::CreateForWebContents(web_contents);
   ClientDataHeaderWebContentsObserver::FromWebContents(web_contents)
-      ->SetHeader(base::android::ConvertJavaStringToUTF8(jheader));
+      ->SetHeader(jheader);
 }
 
 static void JNI_CustomTabsConnection_TextFragmentLookup(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& session,
     const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jstring>& jstate_key,
+    std::string& state_key,
     const base::android::JavaParamRef<jobjectArray>& jtext_fragments) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
@@ -145,8 +138,7 @@ static void JNI_CustomTabsConnection_TextFragmentLookup(
   TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
   TextFragmentLookupStateTracker::FromWebContents(web_contents)
       ->LookupTextFragment(
-          base::android::ConvertJavaStringToUTF8(jstate_key),
-          ConvertJavaStringArrayToListValue(env, jtext_fragments),
+          state_key, ConvertJavaStringArrayToListValue(env, jtext_fragments),
           std::move(cb));
 }
 
@@ -154,13 +146,12 @@ static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& session,
     const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jstring>& jtext_fragment) {
+    std::string& text_fragment) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
   TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
   TextFragmentLookupStateTracker::FromWebContents(web_contents)
-      ->FindScrollAndHighlight(
-          base::android::ConvertJavaStringToUTF8(jtext_fragment));
+      ->FindScrollAndHighlight(text_fragment);
 }
 
 }  // namespace customtabs

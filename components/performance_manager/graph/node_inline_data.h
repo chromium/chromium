@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 
+#include <tuple>
 #include <utility>
 
 #include "base/types/pass_key.h"
@@ -99,8 +100,14 @@ class NodeInlineData {
   template <class NodeImplClass>
   static const T& Get(const NodeImplClass* node);
 
-  // Creates the instance.
+  // Creates the instance. `args` is passed as arguments to the constructor of
+  // `T`. If `T`'s first argument is the node type, `node` is also passed as an
+  // argument to the constructor.
   template <class NodeImplClass, class... Args>
+    requires std::is_constructible_v<T, Args...>
+  static T& Create(NodeImplClass* node, Args&&... args);
+  template <class NodeImplClass, class... Args>
+    requires std::is_constructible_v<T, NodeImplClass*, Args...>
   static T& Create(NodeImplClass* node, Args&&... args);
 
   // Destroys the instance associated with `node`. Asserts that it exists. Note
@@ -180,8 +187,17 @@ const T& NodeInlineData<T>::Get(const NodeImplClass* node) {
 // static
 template <class T>
 template <class NodeImplClass, class... Args>
+  requires std::is_constructible_v<T, Args...>
 T& NodeInlineData<T>::Create(NodeImplClass* node, Args&&... args) {
   return node->CreateNodeData(PassKey(), std::forward<Args>(args)...);
+}
+
+// static
+template <class T>
+template <class NodeImplClass, class... Args>
+  requires std::is_constructible_v<T, NodeImplClass*, Args...>
+T& NodeInlineData<T>::Create(NodeImplClass* node, Args&&... args) {
+  return node->CreateNodeData(PassKey(), node, std::forward<Args>(args)...);
 }
 
 // static

@@ -48,8 +48,9 @@ base::Time GetTimeStamp(const base::Value::Dict& dictionary) {
   std::string timestamp_str;
   const std::string* timestamp_str_ptr =
       dictionary.FindString(kLastModifiedPath);
-  if (timestamp_str_ptr)
+  if (timestamp_str_ptr) {
     timestamp_str = *timestamp_str_ptr;
+  }
   int64_t timestamp = 0;
   base::StringToInt64(timestamp_str, &timestamp);
   base::Time last_modified = base::Time::FromInternalValue(timestamp);
@@ -76,7 +77,7 @@ ChromeZoomLevelPrefs::ChromeZoomLevelPrefs(
   partition_key_ = GetPartitionKey(partition_relative_path);
 }
 
-ChromeZoomLevelPrefs::~ChromeZoomLevelPrefs() {}
+ChromeZoomLevelPrefs::~ChromeZoomLevelPrefs() = default;
 
 std::string ChromeZoomLevelPrefs::GetPartitionKeyForTesting(
     const base::FilePath& relative_path) {
@@ -94,8 +95,9 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
   // set this manually.
   host_zoom_map_->SetDefaultZoomLevel(level);
   default_zoom_changed_callbacks_.Notify();
-  if (zoom_event_manager_)
+  if (zoom_event_manager_) {
     zoom_event_manager_->OnDefaultZoomLevelChanged();
+  }
 }
 
 double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
@@ -115,11 +117,13 @@ void ChromeZoomLevelPrefs::OnZoomLevelChanged(
   // If there's a manager to aggregate ZoomLevelChanged events, pass this event
   // along. Since we already hold a subscription to our associated HostZoomMap,
   // we don't need to create a separate subscription for this.
-  if (zoom_event_manager_)
+  if (zoom_event_manager_) {
     zoom_event_manager_->OnZoomLevelChanged(change);
+  }
 
-  if (change.mode != content::HostZoomMap::ZOOM_CHANGED_FOR_HOST)
+  if (change.mode != content::HostZoomMap::ZOOM_CHANGED_FOR_HOST) {
     return;
+  }
   double level = change.zoom_level;
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kPartitionPerHostZoomLevels);
@@ -153,18 +157,17 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     const base::Value::Dict& host_zoom_dictionary,
     bool sanitize_partition_host_zoom_levels) {
   std::vector<std::string> keys_to_remove;
-  base::Value::Dict host_zoom_dictionary_copy = host_zoom_dictionary.Clone();
-  for (auto [host, value] : host_zoom_dictionary_copy) {
+  for (auto [host, value] : host_zoom_dictionary) {
     std::optional<double> maybe_zoom;
     base::Time last_modified;
 
-    if (value.is_dict()) {
-      base::Value::Dict& dict = value.GetDict();
-      if (dict.empty())
+    if (const base::Value::Dict* dict = value.GetIfDict()) {
+      if (dict->empty()) {
         continue;
+      }
 
-      maybe_zoom = dict.FindDouble(kZoomLevelKey);
-      last_modified = GetTimeStamp(dict);
+      maybe_zoom = dict->FindDouble(kZoomLevelKey);
+      last_modified = GetTimeStamp(*dict);
     } else {
       // Old zoom level that is stored directly as a double.
       maybe_zoom = value.GetIfDouble();
@@ -193,8 +196,9 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
   // per-host zoom level dictionaries is different from the legacy profile
   // per-host zoom level dictionaries, the following code will fail if run
   // on the legacy dictionaries.
-  if (!sanitize_partition_host_zoom_levels)
+  if (!sanitize_partition_host_zoom_levels) {
     return;
+  }
 
   // Sanitize prefs to remove entries that match the default zoom level and/or
   // have an empty host.
@@ -204,8 +208,9 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     base::Value::Dict& host_zoom_dictionaries = update.Get();
     base::Value::Dict* partition_dictionary =
         host_zoom_dictionaries.FindDict(partition_key_);
-    for (const std::string& s : keys_to_remove)
+    for (const std::string& s : keys_to_remove) {
       partition_dictionary->Remove(s);
+    }
   }
 }
 

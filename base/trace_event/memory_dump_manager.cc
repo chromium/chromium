@@ -19,7 +19,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -39,18 +39,13 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/java_heap_dump_provider_android.h"
 
-#if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
-#include "base/trace_event/cfi_backtrace_android.h"
-#endif
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/trace_event/address_space_dump_provider.h"
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -88,8 +83,9 @@ const char* const MemoryDumpManager::kSystemAllocatorPoolName =
 
 // static
 MemoryDumpManager* MemoryDumpManager::GetInstance() {
-  if (g_memory_dump_manager_for_testing)
+  if (g_memory_dump_manager_for_testing) {
     return g_memory_dump_manager_for_testing;
+  }
 
   return Singleton<MemoryDumpManager,
                    LeakySingletonTraits<MemoryDumpManager>>::get();
@@ -184,8 +180,9 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
     const char* name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options) {
-  if (dumper_registrations_ignored_for_testing_)
+  if (dumper_registrations_ignored_for_testing_) {
     return;
+  }
 
   // Only a handful of MDPs are required to compute the memory metrics. These
   // have small enough performance overhead that it is reasonable to run them
@@ -201,8 +198,9 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
     bool already_registered = !dump_providers_.insert(mdpinfo).second;
     // This actually happens in some tests which don't have a clean tear-down
     // path for RenderThreadImpl::Init().
-    if (already_registered)
+    if (already_registered) {
       return;
+    }
   }
 }
 
@@ -219,19 +217,22 @@ void MemoryDumpManager::UnregisterDumpProviderInternal(
     MemoryDumpProvider* mdp,
     bool take_mdp_ownership_and_delete_async) {
   std::unique_ptr<MemoryDumpProvider> owned_mdp;
-  if (take_mdp_ownership_and_delete_async)
+  if (take_mdp_ownership_and_delete_async) {
     owned_mdp.reset(mdp);
+  }
 
   AutoLock lock(lock_);
 
   auto mdp_iter = dump_providers_.begin();
   for (; mdp_iter != dump_providers_.end(); ++mdp_iter) {
-    if ((*mdp_iter)->dump_provider == mdp)
+    if ((*mdp_iter)->dump_provider == mdp) {
       break;
+    }
   }
 
-  if (mdp_iter == dump_providers_.end())
+  if (mdp_iter == dump_providers_.end()) {
     return;  // Not registered / already unregistered.
+  }
 
   if (take_mdp_ownership_and_delete_async) {
     // The MDP will be deleted whenever the MDPInfo struct will, that is either:
@@ -270,8 +271,9 @@ bool MemoryDumpManager::IsDumpProviderRegisteredForTesting(
   AutoLock lock(lock_);
 
   for (const auto& info : dump_providers_) {
-    if (info->dump_provider == provider)
+    if (info->dump_provider == provider) {
       return true;
+    }
   }
   return false;
 }
@@ -290,8 +292,9 @@ MemoryDumpManager::GetDumpThreadTaskRunner() {
 
 scoped_refptr<base::SequencedTaskRunner>
 MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
-  if (dump_thread_)
+  if (dump_thread_) {
     return dump_thread_->task_runner();
+  }
 
   dump_thread_ = std::make_unique<Thread>("MemoryInfra");
   bool started = dump_thread_->Start();
@@ -303,7 +306,7 @@ MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
 void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                           ProcessMemoryDumpCallback callback) {
   char guid_str[20];
-  snprintf(guid_str, std::size(guid_str), "0x%" PRIx64, args.dump_guid);
+  base::SpanPrintf(guid_str, "0x%" PRIx64, args.dump_guid);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTraceCategory, "ProcessMemoryDump",
                                     TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
                                     TRACE_STR_COPY(guid_str));
@@ -340,10 +343,6 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
 void MemoryDumpManager::ContinueAsyncProcessDump(
     ProcessMemoryDumpAsyncState* owned_pmd_async_state) {
   HEAP_PROFILER_SCOPED_IGNORE;
-  // Initalizes the ThreadLocalEventBuffer to guarantee that the TRACE_EVENTs
-  // in the PostTask below don't end up registering their own dump providers
-  // (for discounting trace memory overhead) while holding the |lock_|.
-  TraceLog::GetInstance()->InitializeThreadLocalEventBufferIfSupported();
 
   // In theory |owned_pmd_async_state| should be a unique_ptr. The only reason
   // why it isn't is because of the corner case logic of |did_post_task|
@@ -447,8 +446,9 @@ void MemoryDumpManager::InvokeOnMemoryDump(MemoryDumpProviderInfo* mdpinfo,
       DLOG(ERROR) << "Disabling MemoryDumpProvider \"" << mdpinfo->name
                   << "\". Dump failed multiple times consecutively.";
     }
-    if (mdpinfo->disabled)
+    if (mdpinfo->disabled) {
       return;
+    }
 
     is_thread_bound = mdpinfo->task_runner != nullptr;
   }  // AutoLock lock(lock_);
@@ -550,5 +550,4 @@ MemoryDumpManager::ProcessMemoryDumpAsyncState::ProcessMemoryDumpAsyncState(
 MemoryDumpManager::ProcessMemoryDumpAsyncState::~ProcessMemoryDumpAsyncState() =
     default;
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

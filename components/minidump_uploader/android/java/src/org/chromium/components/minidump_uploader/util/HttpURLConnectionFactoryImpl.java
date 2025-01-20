@@ -4,6 +4,8 @@
 
 package org.chromium.components.minidump_uploader.util;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 
@@ -12,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** Default implementation of HttpURLConnectionFactory. */
+@NullMarked
 public class HttpURLConnectionFactoryImpl implements HttpURLConnectionFactory {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
@@ -36,7 +39,7 @@ public class HttpURLConnectionFactoryImpl implements HttpURLConnectionFactory {
                     }""");
 
     @Override
-    public HttpURLConnection createHttpURLConnection(String url) {
+    public @Nullable HttpURLConnection createHttpURLConnection(String url) {
         try {
             return (HttpURLConnection)
                     ChromiumNetworkAdapter.openConnection(new URL(url), TRAFFIC_ANNOTATION);

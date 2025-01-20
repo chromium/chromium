@@ -17,14 +17,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -57,24 +55,12 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     public @Nullable Intent createBottomSheetSigninIntentOrShowError(
             @NonNull Context context,
             @NonNull Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @HistorySyncConfig.OptInMode int historyOptInMode,
-            @AccessPoint int accessPoint,
-            @Nullable CoreAccountId selectedCoreAccountId) {
+            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            @AccessPoint int accessPoint) {
 
         if (canStartSigninAndHistorySyncOrShowError(
-                context, profile, historyOptInMode, accessPoint)) {
-            return SigninAndHistorySyncActivity.createIntent(
-                    context,
-                    bottomSheetStrings,
-                    noAccountSigninMode,
-                    withAccountSigninMode,
-                    historyOptInMode,
-                    accessPoint,
-                    selectedCoreAccountId);
+                context, profile, config.historyOptInMode, accessPoint)) {
+            return SigninAndHistorySyncActivity.createIntent(context, config, accessPoint);
         }
 
         return null;
@@ -95,7 +81,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
+                    "Signin.SigninDisabledNotificationShown", accessPoint,
+                    SigninAccessPoint.MAX_VALUE);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         // TODO(crbug.com/376251506): Add generic error UI.

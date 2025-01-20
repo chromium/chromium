@@ -9,18 +9,24 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
-#include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "base/memory/weak_ptr.h"
 #include "net/base/proxy_delegate.h"
-#include "net/proxy_resolution/proxy_list.h"
-#include "net/proxy_resolution/proxy_retry_info.h"
+
+class GURL;
 
 namespace net {
+
 class HttpRequestHeaders;
 class ProxyResolutionService;
+class ProxyList;
+struct ProxyRetryInfo;
+
 }  // namespace net
 
 namespace ip_protection {
+
+class IpProtectionCore;
+enum class ProxyResolutionResult;
 
 // IpProtectionProxyDelegate is used to support IP protection, by injecting
 // proxies for requests where IP should be protected.

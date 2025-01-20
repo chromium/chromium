@@ -191,7 +191,7 @@ void RecordDownloadInterrupted(DownloadInterruptReason reason,
                                       is_parallel_download_enabled);
   }
 
-  std::vector<base::HistogramBase::Sample> samples =
+  std::vector<base::HistogramBase::Sample32> samples =
       base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.InterruptedReason", reason,
                                    samples);
@@ -222,7 +222,7 @@ void RecordDownloadInterrupted(DownloadInterruptReason reason,
 }
 
 void RecordDownloadRetry(DownloadInterruptReason reason) {
-  std::vector<base::HistogramBase::Sample> samples =
+  std::vector<base::HistogramBase::Sample32> samples =
       base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
                                    samples);
@@ -249,53 +249,54 @@ int GetMimeTypeMatch(const std::string& mime_type_string,
 static std::map<std::string, DownloadContent>
 getMimeTypeToDownloadContentMap() {
   return {
-      {"application/octet-stream", DownloadContent::OCTET_STREAM},
-      {"binary/octet-stream", DownloadContent::OCTET_STREAM},
-      {"application/pdf", DownloadContent::PDF},
-      {"application/msword", DownloadContent::DOCUMENT},
+      {"application/octet-stream", DownloadContent::kOctetStream},
+      {"binary/octet-stream", DownloadContent::kOctetStream},
+      {"application/pdf", DownloadContent::kPdf},
+      {"application/msword", DownloadContent::kDocument},
       {"application/"
        "vnd.openxmlformats-officedocument.wordprocessingml.document",
-       DownloadContent::DOCUMENT},
-      {"application/rtf", DownloadContent::DOCUMENT},
-      {"application/vnd.oasis.opendocument.text", DownloadContent::DOCUMENT},
-      {"application/vnd.google-apps.document", DownloadContent::DOCUMENT},
-      {"application/vnd.ms-excel", DownloadContent::SPREADSHEET},
+       DownloadContent::kDocument},
+      {"application/rtf", DownloadContent::kDocument},
+      {"application/vnd.oasis.opendocument.text", DownloadContent::kDocument},
+      {"application/vnd.google-apps.document", DownloadContent::kDocument},
+      {"application/vnd.ms-excel", DownloadContent::kSpreadSheet},
       {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-       DownloadContent::SPREADSHEET},
+       DownloadContent::kSpreadSheet},
       {"application/vnd.oasis.opendocument.spreadsheet",
-       DownloadContent::SPREADSHEET},
-      {"application/vnd.google-apps.spreadsheet", DownloadContent::SPREADSHEET},
-      {"application/vns.ms-powerpoint", DownloadContent::PRESENTATION},
+       DownloadContent::kSpreadSheet},
+      {"application/vnd.google-apps.spreadsheet",
+       DownloadContent::kSpreadSheet},
+      {"application/vns.ms-powerpoint", DownloadContent::kPresentation},
       {"application/"
        "vnd.openxmlformats-officedocument.presentationml.presentation",
-       DownloadContent::PRESENTATION},
+       DownloadContent::kPresentation},
       {"application/vnd.oasis.opendocument.presentation",
-       DownloadContent::PRESENTATION},
+       DownloadContent::kPresentation},
       {"application/vnd.google-apps.presentation",
-       DownloadContent::PRESENTATION},
-      {"application/zip", DownloadContent::ARCHIVE},
-      {"application/x-gzip", DownloadContent::ARCHIVE},
-      {"application/x-rar-compressed", DownloadContent::ARCHIVE},
-      {"application/x-tar", DownloadContent::ARCHIVE},
-      {"application/x-bzip", DownloadContent::ARCHIVE},
-      {"application/x-bzip2", DownloadContent::ARCHIVE},
-      {"application/x-7z-compressed", DownloadContent::ARCHIVE},
-      {"application/x-exe", DownloadContent::EXECUTABLE},
-      {"application/java-archive", DownloadContent::EXECUTABLE},
-      {"application/vnd.apple.installer+xml", DownloadContent::EXECUTABLE},
-      {"application/x-csh", DownloadContent::EXECUTABLE},
-      {"application/x-sh", DownloadContent::EXECUTABLE},
-      {"application/x-apple-diskimage", DownloadContent::DMG},
-      {"application/x-chrome-extension", DownloadContent::CRX},
-      {"application/xhtml+xml", DownloadContent::WEB},
-      {"application/xml", DownloadContent::WEB},
-      {"application/javascript", DownloadContent::WEB},
-      {"application/json", DownloadContent::WEB},
-      {"application/typescript", DownloadContent::WEB},
-      {"application/vnd.mozilla.xul+xml", DownloadContent::WEB},
-      {"application/vnd.amazon.ebook", DownloadContent::EBOOK},
-      {"application/epub+zip", DownloadContent::EBOOK},
-      {"application/vnd.android.package-archive", DownloadContent::APK}};
+       DownloadContent::kPresentation},
+      {"application/zip", DownloadContent::kArchive},
+      {"application/x-gzip", DownloadContent::kArchive},
+      {"application/x-rar-compressed", DownloadContent::kArchive},
+      {"application/x-tar", DownloadContent::kArchive},
+      {"application/x-bzip", DownloadContent::kArchive},
+      {"application/x-bzip2", DownloadContent::kArchive},
+      {"application/x-7z-compressed", DownloadContent::kArchive},
+      {"application/x-exe", DownloadContent::kExecutable},
+      {"application/java-archive", DownloadContent::kExecutable},
+      {"application/vnd.apple.installer+xml", DownloadContent::kExecutable},
+      {"application/x-csh", DownloadContent::kExecutable},
+      {"application/x-sh", DownloadContent::kExecutable},
+      {"application/x-apple-diskimage", DownloadContent::kDmg},
+      {"application/x-chrome-extension", DownloadContent::kCrx},
+      {"application/xhtml+xml", DownloadContent::kWeb},
+      {"application/xml", DownloadContent::kWeb},
+      {"application/javascript", DownloadContent::kWeb},
+      {"application/json", DownloadContent::kWeb},
+      {"application/typescript", DownloadContent::kWeb},
+      {"application/vnd.mozilla.xul+xml", DownloadContent::kWeb},
+      {"application/vnd.amazon.ebook", DownloadContent::kEbook},
+      {"application/epub+zip", DownloadContent::kEbook},
+      {"application/vnd.android.package-archive", DownloadContent::kApk}};
 }
 
 // NOTE: Keep in sync with DownloadImageType in
@@ -481,7 +482,7 @@ const char* GetDownloadValidationMetricName(
 
 DownloadContent DownloadContentFromMimeType(const std::string& mime_type_string,
                                             bool record_content_subcategory) {
-  DownloadContent download_content = DownloadContent::UNRECOGNIZED;
+  DownloadContent download_content = DownloadContent::kUnrecognized;
   for (const auto& entry : getMimeTypeToDownloadContentMap()) {
     if (entry.first == mime_type_string) {
       download_content = entry.second;
@@ -489,30 +490,30 @@ DownloadContent DownloadContentFromMimeType(const std::string& mime_type_string,
   }
 
   // Do partial matches.
-  if (download_content == DownloadContent::UNRECOGNIZED) {
+  if (download_content == DownloadContent::kUnrecognized) {
     if (base::StartsWith(mime_type_string, "text/",
                          base::CompareCase::SENSITIVE)) {
-      download_content = DownloadContent::TEXT;
+      download_content = DownloadContent::kText;
       if (record_content_subcategory)
         RecordDownloadTextType(mime_type_string);
     } else if (base::StartsWith(mime_type_string, "image/",
                                 base::CompareCase::SENSITIVE)) {
-      download_content = DownloadContent::IMAGE;
+      download_content = DownloadContent::kImage;
       if (record_content_subcategory)
         RecordDownloadImageType(mime_type_string);
     } else if (base::StartsWith(mime_type_string, "audio/",
                                 base::CompareCase::SENSITIVE)) {
-      download_content = DownloadContent::AUDIO;
+      download_content = DownloadContent::kAudio;
       if (record_content_subcategory)
         RecordDownloadAudioType(mime_type_string);
     } else if (base::StartsWith(mime_type_string, "video/",
                                 base::CompareCase::SENSITIVE)) {
-      download_content = DownloadContent::VIDEO;
+      download_content = DownloadContent::kVideo;
       if (record_content_subcategory)
         RecordDownloadVideoType(mime_type_string);
     } else if (base::StartsWith(mime_type_string, "font/",
                                 base::CompareCase::SENSITIVE)) {
-      download_content = DownloadContent::FONT;
+      download_content = DownloadContent::kFont;
     }
   }
 
@@ -523,13 +524,12 @@ void RecordDownloadMimeType(const std::string& mime_type_string,
                             bool is_transient) {
   DownloadContent download_content =
       DownloadContentFromMimeType(mime_type_string, true);
-  base::UmaHistogramEnumeration("Download.Start.ContentType", download_content,
-                                DownloadContent::MAX);
+  base::UmaHistogramEnumeration("Download.Start.ContentType", download_content);
 #if BUILDFLAG(IS_ANDROID)
   base::UmaHistogramEnumeration(
       base::StrCat({"Download.Start.ContentType.",
                     is_transient ? "Transient" : "NonTransient"}),
-      download_content, DownloadContent::MAX);
+      download_content);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -538,12 +538,12 @@ void RecordDownloadMimeTypeForNormalProfile(const std::string& mime_type_string,
   DownloadContent download_content =
       DownloadContentFromMimeType(mime_type_string, false);
   base::UmaHistogramEnumeration("Download.Start.ContentType.NormalProfile",
-                                download_content, DownloadContent::MAX);
+                                download_content);
 #if BUILDFLAG(IS_ANDROID)
   base::UmaHistogramEnumeration(
       base::StrCat({"Download.Start.ContentType.NormalProfile.",
                     is_transient ? "Transient" : "NonTransient"}),
-      download_content, DownloadContent::MAX);
+      download_content);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -618,8 +618,7 @@ void RecordDownloadValidationMetrics(DownloadMetricsCallsite callsite,
                                      DownloadConnectionSecurity state,
                                      DownloadContent file_type) {
   base::UmaHistogramEnumeration(
-      GetDownloadValidationMetricName(callsite, state), file_type,
-      DownloadContent::MAX);
+      GetDownloadValidationMetricName(callsite, state), file_type);
 }
 
 void RecordDownloadHttpResponseCode(int response_code,

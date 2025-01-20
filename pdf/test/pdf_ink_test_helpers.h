@@ -6,7 +6,6 @@
 #define PDF_TEST_PDF_INK_TEST_HELPERS_H_
 
 #include <optional>
-#include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -47,7 +46,7 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
 base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
-    const std::string& type,
+    std::string_view type,
     double size,
     const TestAnnotationBrushMessageParams* params);
 

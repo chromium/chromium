@@ -28,15 +28,17 @@ using SigninCompletionBlock = void (^)(id<SystemIdentity>, NSError*);
 // The activity will be displayed in `viewController`, if `userEmail` is set
 // it will be used for re-authentication and will be pre-entered in the screen
 // presented. The `completion` will be invoked on the calling sequence when
-// the activity completes.
+// the starting activity completes.
 // `completion` must not be `nullptr`.
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion;
 
 // Cancels and dismisses any currently active operation. `animated` controls
-// whether the dimissal is animated or not. The `completion` will be invoked
-// on the calling sequence when the operation completes.
+// whether the dimissal is animated or not.
+// If kIOSInterruptibleCoordinatorStoppedSynchronously is disabled, `completion`
+// will be invoked asynchronously. Otherwise, `completion` is expected to be
+// `nil`.
 - (void)cancelAuthActivityAnimated:(BOOL)animated
                         completion:(ProceduralBlock)completion;
 

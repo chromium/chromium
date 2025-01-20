@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -35,9 +36,7 @@ class FileProxyTest : public testing::Test {
  public:
   FileProxyTest()
       : task_environment_(test::TaskEnvironment::MainThreadType::IO),
-        file_thread_("FileProxyTestFileThread"),
-        error_(File::FILE_OK),
-        bytes_written_(-1) {}
+        file_thread_("FileProxyTestFileThread") {}
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -107,11 +106,11 @@ class FileProxyTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   Thread file_thread_;
 
-  File::Error error_;
+  File::Error error_ = File::FILE_OK;
   FilePath path_;
   File::Info file_info_;
   base::HeapArray<char> buffer_;
-  int bytes_written_;
+  int bytes_written_ = -1;
   WeakPtrFactory<FileProxyTest> weak_factory_{this};
 };
 
@@ -238,11 +237,12 @@ TEST_F(FileProxyTest, CreateTemporary) {
   // Try a few times because files may be locked by anti-virus or other.
   bool deleted_temp_file = false;
   for (int i = 0; !deleted_temp_file && i < 3; ++i) {
-    if (base::DeleteFile(path_))
+    if (base::DeleteFile(path_)) {
       deleted_temp_file = true;
-    else
+    } else {
       // Wait one second and then try again
       PlatformThread::Sleep(Seconds(1));
+    }
   }
   EXPECT_TRUE(deleted_temp_file);
 }
@@ -254,7 +254,7 @@ TEST_F(FileProxyTest, SetAndTake) {
   EXPECT_FALSE(proxy.IsValid());
   proxy.SetFile(std::move(file));
   EXPECT_TRUE(proxy.IsValid());
-  EXPECT_FALSE(file.IsValid());
+  EXPECT_FALSE(file.IsValid());  // NOLINT(bugprone-use-after-move)
 
   file = proxy.TakeFile();
   EXPECT_FALSE(proxy.IsValid());
@@ -349,7 +349,7 @@ TEST_F(FileProxyTest, WriteAndFlush) {
   EXPECT_EQ(File::FILE_OK, error_);
 
   // Verify the written data.
-  char read_buffer[10];
+  std::array<char, 10> read_buffer;
   EXPECT_GE(std::size(read_buffer), write_span.size());
   EXPECT_EQ(write_span.size(), base::ReadFile(TestPath(), read_buffer));
   for (size_t i = 0; i < write_span.size(); ++i) {
@@ -415,11 +415,12 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(7, info.size);
 
-  char buffer[7];
+  std::array<char, 7> buffer;
   EXPECT_EQ(7, base::ReadFile(TestPath(), buffer));
   int i = 0;
-  for (; i < 7; ++i)
+  for (; i < 7; ++i) {
     EXPECT_EQ(kTestData[i], buffer[i]);
+  }
 }
 
 TEST_F(FileProxyTest, SetLength_Expand) {
@@ -443,13 +444,15 @@ TEST_F(FileProxyTest, SetLength_Expand) {
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(53, info.size);
 
-  char buffer[53];
+  std::array<char, 53> buffer;
   EXPECT_EQ(53, base::ReadFile(TestPath(), buffer));
   int i = 0;
-  for (; i < 10; ++i)
+  for (; i < 10; ++i) {
     EXPECT_EQ(kTestData[i], buffer[i]);
-  for (; i < 53; ++i)
+  }
+  for (; i < 53; ++i) {
     EXPECT_EQ(0, buffer[i]);
+  }
 }
 
 }  // namespace base

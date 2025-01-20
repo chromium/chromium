@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -542,7 +543,7 @@ TEST_P(ChromeSigninClientMetricsTest, ExentsionsAndBookmarkCount) {
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   signin::ConsentLevel consent_level = std::get<0>(GetParam());
@@ -671,7 +672,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // State goes from no account to an account with `kSync` set.
@@ -796,7 +797,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // Simulating revoking Signin consent.
@@ -837,7 +838,7 @@ TEST_F(ChromeSigninClientMetricsTest,
 
   CoreAccountInfo account;
   account.email = "example@example.com";
-  account.gaia = "gaia_example";
+  account.gaia = GaiaId("gaia_example");
   ASSERT_FALSE(account.IsEmpty());
 
   // Simulating signing in update.

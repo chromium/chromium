@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
+#include <array>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
@@ -51,10 +47,12 @@ constexpr char kHost5[] = "www.foo5.com";
 constexpr char kHost6[] = "www.foo6.com";
 
 Topic ExpectedRandomTopic(size_t index) {
-  Topic kExpectedRandomTopicsForTaxonomyV1[5] = {
-      Topic(101), Topic(102), Topic(103), Topic(104), Topic(105)};
-  Topic kExpectedRandomTopicsForTaxonomyV2[5] = {
-      Topic(176), Topic(177), Topic(180), Topic(183), Topic(184)};
+  std::array<Topic, 5> kExpectedRandomTopicsForTaxonomyV1 = {
+      Topic(101), Topic(102), Topic(103), Topic(104), Topic(105),
+  };
+  std::array<Topic, 5> kExpectedRandomTopicsForTaxonomyV2 = {
+      Topic(176), Topic(177), Topic(180), Topic(183), Topic(184),
+  };
 
   if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
     return kExpectedRandomTopicsForTaxonomyV1[index];

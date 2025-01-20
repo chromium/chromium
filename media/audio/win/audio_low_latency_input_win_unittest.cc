@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -120,17 +121,16 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
   ~WriteToFileAudioSink() override {
     size_t bytes_written = 0;
     while (bytes_written < bytes_to_write_) {
-      const uint8_t* chunk;
-      int chunk_size;
-
       // Stop writing if no more data is available.
-      if (!buffer_.GetCurrentChunk(&chunk, &chunk_size))
+      const base::span<const uint8_t> chunk = buffer_.GetCurrentChunk();
+      if (chunk.empty()) {
         break;
+      }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      fwrite(chunk, 1, chunk_size, binary_file_);
-      buffer_.Seek(chunk_size);
-      bytes_written += chunk_size;
+      fwrite(chunk.data(), 1, chunk.size(), binary_file_);
+      buffer_.Seek(chunk.size());
+      bytes_written += chunk.size();
     }
     base::CloseFile(binary_file_);
   }
@@ -141,17 +141,16 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
               double volume,
               const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
-    auto interleaved = std::make_unique<int16_t[]>(num_samples);
-    const int bytes_per_sample = sizeof(interleaved[0]);
+    auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.get());
+                                                    interleaved.data());
 
     // Store data data in a temporary buffer to avoid making blocking
     // fwrite() calls in the audio callback. The complete buffer will be
     // written to file in the destructor.
-    const int size = bytes_per_sample * num_samples;
-    if (buffer_.Append((const uint8_t*)interleaved.get(), size)) {
-      bytes_to_write_ += size;
+    const auto byte_span = base::as_bytes(interleaved.as_span());
+    if (buffer_.Append(byte_span)) {
+      bytes_to_write_ += byte_span.size();
     }
   }
 

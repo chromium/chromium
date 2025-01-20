@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest, HitOK) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UpgradeContainerSource",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           crostini::CrostiniUISurface::kAppList),
       1);
 }
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.UpgradeContainerSource",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           crostini::CrostiniUISurface::kAppList),
       1);
 }

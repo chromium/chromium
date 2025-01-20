@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
@@ -170,8 +171,13 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
   }
 
   output_wrapper_->set_frames(number_of_frames);
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    output_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
+  for (size_t i = 0; i < audio_data.size(); ++i) {
+    // TODO(crbug.com/375449662): Spanify `audio_data` parameter.
+    output_wrapper_->SetChannelData(
+        static_cast<int>(i),
+        UNSAFE_TODO(base::span(audio_data[i],
+                               base::checked_cast<size_t>(number_of_frames))));
+  }
 
   base::AutoLock auto_lock(lock_);
   if (!audio_converter_)
@@ -212,7 +218,7 @@ double WebAudioMediaStreamAudioSink::ProvideInput(
       media::AudioTimestampHelper::FramesToTime(
           frames_delayed + fifo_->frames(), source_params_.sample_rate())
           .InMillisecondsF());
-  if (fifo_->frames() >= audio_bus->frames()) {
+  if (fifo_->frames() >= static_cast<size_t>(audio_bus->frames())) {
     fifo_->Consume(audio_bus, 0, audio_bus->frames());
     TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                       "WebAudioMediaStreamAudioSink fifo space", this,

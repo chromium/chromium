@@ -96,7 +96,7 @@ class CastHandlerTest : public ChromeRenderViewHostTestHarness {
               }
               return true;
             }));
-    handler_->Enable(protocol::Maybe<std::string>());
+    handler_->Enable(std::nullopt);
   }
 
   std::unique_ptr<CastHandler> handler_;

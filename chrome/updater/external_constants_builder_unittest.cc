@@ -58,13 +58,13 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
-  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
-  base::Value::Dict group_policies;
-  group_policies.Set("a", 1);
-  group_policies.Set("b", 2);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+  dict_policies.Set("b", 2);
 
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
@@ -74,7 +74,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetUseCUP(false)
       .SetInitialDelay(base::Seconds(123))
       .SetServerKeepAliveTime(base::Seconds(2))
-      .SetGroupPolicies(group_policies)
+      .SetDictPolicies(dict_policies)
       .SetOverinstallTimeout(base::Seconds(3))
       .SetIdleCheckPeriod(base::Seconds(4))
       .SetMachineManaged(std::make_optional(true))
@@ -97,7 +97,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://applogo.example.com/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(2));
-  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 2U);
   EXPECT_EQ(verifier->OverinstallTimeout(), base::Seconds(3));
   EXPECT_EQ(verifier->IdleCheckPeriod(), base::Seconds(4));
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
@@ -130,7 +130,7 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
-  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
@@ -151,7 +151,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearUseCUP()
                   .ClearInitialDelay()
                   .ClearServerKeepAliveSeconds()
-                  .ClearGroupPolicies()
+                  .ClearDictPolicies()
                   .ClearOverinstallTimeout()
                   .ClearIdleCheckPeriod()
                   .ClearMachineManaged()
@@ -174,15 +174,15 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
-  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 0U);
   EXPECT_FALSE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
-  base::Value::Dict group_policies;
-  group_policies.Set("a", 1);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
 
   EXPECT_TRUE(
       ExternalConstantsBuilder()
@@ -194,7 +194,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(2))
           .SetMachineManaged(std::make_optional(true))
-          .SetGroupPolicies(group_policies)
+          .SetDictPolicies(dict_policies)
           .SetEnableDiffUpdates(false)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetCrashUploadURL("https://crash.example.com")
@@ -223,7 +223,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://applogo.example.com/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(937.6));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
-  EXPECT_EQ(verifier->GroupPolicies().size(), 1U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 1U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
@@ -233,9 +233,9 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ExternalConstantsBuilder builder;
 
-  base::Value::Dict group_policies;
-  group_policies.Set("a", 1);
-  group_policies.Set("b", 2);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+  dict_policies.Set("b", 2);
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
@@ -246,7 +246,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
-          .SetGroupPolicies(group_policies)
+          .SetDictPolicies(dict_policies)
           .SetMachineManaged(std::make_optional(true))
           .SetEnableDiffUpdates(true)
           .SetCecaConnectionTimeout(base::Seconds(5))
@@ -267,14 +267,14 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://applogo.google.com/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
-  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 2U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_TRUE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(5));
 
-  base::Value::Dict group_policies2;
-  group_policies2.Set("b", 2);
+  base::Value::Dict dict_policies2;
+  dict_policies2.Set("b", 2);
 
   // But now we can use the builder again:
   EXPECT_TRUE(builder.SetInitialDelay(base::Seconds(92.3))
@@ -283,7 +283,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .ClearCrashUploadURL()
                   .ClearDeviceManagementURL()
                   .ClearAppLogoURL()
-                  .SetGroupPolicies(group_policies2)
+                  .SetDictPolicies(dict_policies2)
                   .ClearMachineManaged()
                   .SetEnableDiffUpdates(false)
                   .ClearCecaConnectionTimeout()
@@ -307,7 +307,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier2->InitialDelay(),
             base::Seconds(92.3));  // Updated; update should be seen.
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(4));
-  EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
+  EXPECT_EQ(verifier2->DictPolicies().size(), 1U);
   EXPECT_FALSE(verifier2->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier2->EnableDiffUpdates());
   EXPECT_EQ(verifier2->CecaConnectionTimeout(), kCecaConnectionTimeout);
@@ -316,9 +316,9 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ExternalConstantsBuilder builder;
 
-  base::Value::Dict group_policies;
-  group_policies.Set("a", 1);
-  group_policies.Set("b", 2);
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+  dict_policies.Set("b", 2);
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
@@ -332,7 +332,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           .SetCrashUploadURL("https://crash.example.com")
           .SetDeviceManagementURL("https://dm.example.com")
           .SetAppLogoURL("https://applogo.example.com/")
-          .SetGroupPolicies(group_policies)
+          .SetDictPolicies(dict_policies)
           .SetMachineManaged(std::make_optional(false))
           .SetEnableDiffUpdates(true)
           .SetCecaConnectionTimeout(base::Seconds(55))
@@ -353,7 +353,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://applogo.example.com/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
-  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+  EXPECT_EQ(verifier->DictPolicies().size(), 2U);
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
@@ -362,10 +362,10 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   // Now we use a new builder to modify just the group policies.
   ExternalConstantsBuilder builder2;
 
-  base::Value::Dict group_policies2;
-  group_policies2.Set("b", 2);
+  base::Value::Dict dict_policies2;
+  dict_policies2.Set("b", 2);
 
-  EXPECT_TRUE(builder2.SetGroupPolicies(group_policies2).Modify());
+  EXPECT_TRUE(builder2.SetDictPolicies(dict_policies2).Modify());
 
   // We need a new overrider to verify because it only loads once.
   scoped_refptr<ExternalConstantsOverrider> verifier2 =
@@ -373,7 +373,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           CreateDefaultExternalConstants());
 
   // Only the group policies are different.
-  EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
+  EXPECT_EQ(verifier2->DictPolicies().size(), 1U);
 
   // All the values below are unchanged.
   EXPECT_FALSE(verifier2->UseCUP());

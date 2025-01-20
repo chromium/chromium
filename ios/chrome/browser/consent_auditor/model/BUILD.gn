@@ -10,12 +10,12 @@ source_set("model") {
   deps = [
     "//base",
     "//components/consent_auditor",
-    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/sync/model",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
     "//ios/web/public",

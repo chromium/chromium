@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TabData} from '../tab_data.js';
 
@@ -26,37 +26,68 @@ export function getHtml(this: DeclutterPageElement) {
         </cr-icon-button>
       ` :
                             ''}
-      <div id="headerText">
+      ${
+      this.dedupeEnabled ? html`
         <div class="title">$i18n{declutterTitle}</div>
-        ${this.staleTabDatas_.length === 0 ? '' : html`
-          <div class="subheading">$i18n{declutterBody}</div>
-        `}
-      </div>
+      ` :
+                           html`
+        <div class="header-text">
+          <div class="title">$i18n{declutterInactiveTitleNoDedupe}</div>
+            ${this.staleTabDatas_.length === 0 ? '' : html`
+              <div class="subheading">$i18n{declutterInactiveBody}</div>
+            `}
+        </div>
+      `}
     </div>
     ${
-      this.staleTabDatas_.length === 0 ?
+      (this.staleTabDatas_.length === 0 &&
+       this.duplicateTabDatas_.length === 0) ?
           html`
       <div class="empty-content">
         <div class="empty-title">$i18n{declutterEmptyTitle}</div>
-        <div class="empty-subheading">$i18n{declutterEmptyBody}</div>
+        <div class="empty-subheading">${
+              this.dedupeEnabled ?
+                  html`$i18n{declutterEmptyBody}` :
+                  html`$i18n{declutterEmptyBodyNoDedupe}`}</div>
       </div>
     ` :
           html`
       <div id="scrollable">
-        <div id="staleTabList" class="tabList">
-          ${
-              this.staleTabDatas_.map(
-                  (item) => getTabSearchItem.bind(this)(
-                      item, DeclutterType.STALE_TABS))}
-        </div>
         ${
-              this.dedupeEnabled_ ?
+              this.staleTabDatas_.length > 0 ?
                   html`
-          <div id="duplicateTabList" class="tabList">
+          <div class="card">
             ${
-                      this.getDuplicateTabDataList_().map(
+                      this.dedupeEnabled ? html`
+              <div class="header-text">
+                <div class="title">$i18n{declutterInactiveTitle}</div>
+                <div class="subheading">$i18n{declutterInactiveBody}</div>
+              </div>
+            ` :
+                                           ''}
+            <div id="staleTabList" class="tab-list">
+              ${
+                      this.staleTabDatas_.map(
+                          (item) => getTabSearchItem.bind(this)(
+                              item, DeclutterType.STALE_TABS))}
+            </div>
+          </div>
+        ` :
+                  ''}
+        ${
+              this.dedupeEnabled && this.duplicateTabDatas_.length > 0 ?
+                  html`
+          <div class="card">
+            <div class="header-text">
+              <div class="title">$i18n{declutterDuplicateTitle}</div>
+              <div class="subheading">$i18n{declutterDuplicateBody}</div>
+            </div>
+            <div id="duplicateTabList" class="tab-list">
+              ${
+                      this.duplicateTabDatas_.map(
                           (item) => getTabSearchItem.bind(this)(
                               item, DeclutterType.DUPLICATE_TABS))}
+            </div>
           </div>
         ` :
                   ''}
@@ -79,10 +110,11 @@ function getTabSearchItem(
         role="option"
         @keydown="${this.onTabKeyDown_}"
         @close="${
-      declutterType === DeclutterType.STALE_TABS ? this.onStaleTabRemove_ :
-                                                   this.onDuplicateTabRemove_}"
+      declutterType === DeclutterType.STALE_TABS ? this.onStaleTabExclude_ :
+                                                   this.onDuplicateTabExclude_}"
         @focus="${this.onTabFocus_}"
         @blur="${this.onTabBlur_}"
+        compact=${this.dedupeEnabled || nothing}
         hide-url>
     </tab-search-item>
   `;

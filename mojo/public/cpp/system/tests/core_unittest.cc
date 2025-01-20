@@ -145,7 +145,7 @@ TEST(CoreCppTest, Basic) {
     EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
               WriteMessageRaw(h_invalid, nullptr, 0, nullptr, 0,
                               MOJO_WRITE_MESSAGE_FLAG_NONE));
-    char buffer[10] = {0};
+    char buffer[10] = {};
     EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
               WriteMessageRaw(h_invalid, buffer, sizeof(buffer), nullptr, 0,
                               MOJO_WRITE_MESSAGE_FLAG_NONE));

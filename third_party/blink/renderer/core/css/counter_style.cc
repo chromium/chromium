@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -91,7 +92,9 @@ String SymbolToString(const CSSValue& value) {
   return To<CSSCustomIdentValue>(value).Value();
 }
 
-std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
+std::pair<int, int> BoundsToIntegerPair(
+    const CSSValuePair& bounds,
+    const CSSLengthResolver& length_resolver) {
   int lower_bound, upper_bound;
   if (bounds.First().IsIdentifierValue()) {
     DCHECK_EQ(CSSValueID::kInfinite,
@@ -99,7 +102,8 @@ std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
     lower_bound = std::numeric_limits<int>::min();
   } else {
     DCHECK(bounds.First().IsPrimitiveValue());
-    lower_bound = To<CSSPrimitiveValue>(bounds.First()).GetIntValue();
+    lower_bound =
+        To<CSSPrimitiveValue>(bounds.First()).ComputeInteger(length_resolver);
   }
   if (bounds.Second().IsIdentifierValue()) {
     DCHECK_EQ(CSSValueID::kInfinite,
@@ -107,7 +111,8 @@ std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
     upper_bound = std::numeric_limits<int>::max();
   } else {
     DCHECK(bounds.Second().IsPrimitiveValue());
-    upper_bound = To<CSSPrimitiveValue>(bounds.Second()).GetIntValue();
+    upper_bound =
+        To<CSSPrimitiveValue>(bounds.Second()).ComputeInteger(length_resolver);
   }
   return std::make_pair(lower_bound, upper_bound);
 }
@@ -682,6 +687,11 @@ CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
 
 CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     : style_rule_(rule), style_rule_version_(rule.GetVersion()) {
+  // TODO(sesse): Send the LocalFrame down here, so that we can use
+  // MediaValues::CreateDynamicIfFrameExists() instead, which includes
+  // the effects of local font settings.
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>();
+
   if (const CSSValue* system = rule.GetSystem()) {
     system_ = ToCounterStyleSystemEnum(system);
 
@@ -690,7 +700,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       extends_name_ = To<CSSCustomIdentValue>(second).Value();
     } else if (system_ == CounterStyleSystem::kFixed && system->IsValuePair()) {
       const auto& second = To<CSSValuePair>(system)->Second();
-      first_symbol_value_ = To<CSSPrimitiveValue>(second).GetIntValue();
+      first_symbol_value_ =
+          To<CSSPrimitiveValue>(second).ComputeInteger(*media_values);
     }
   }
 
@@ -703,7 +714,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       for (const auto& symbol : To<CSSValueList>(*rule.GetAdditiveSymbols())) {
         const auto& pair = To<CSSValuePair>(*symbol.Get());
         additive_weights_.push_back(
-            To<CSSPrimitiveValue>(pair.First()).GetIntValue());
+            To<CSSPrimitiveValue>(pair.First()).ComputeInteger(*media_values));
         symbols_.push_back(SymbolToString(pair.Second()));
       }
     } else {
@@ -724,7 +735,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
 
   if (const CSSValue* pad = rule.GetPad()) {
     const CSSValuePair& pair = To<CSSValuePair>(*pad);
-    pad_length_ = To<CSSPrimitiveValue>(pair.First()).GetIntValue();
+    pad_length_ =
+        To<CSSPrimitiveValue>(pair.First()).ComputeInteger(*media_values);
     pad_symbol_ = SymbolToString(pair.Second());
   }
 
@@ -734,7 +746,8 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
       // Empty |range_| already means 'auto'.
     } else {
       for (const CSSValue* bounds : To<CSSValueList>(*range)) {
-        range_.push_back(BoundsToIntegerPair(To<CSSValuePair>(*bounds)));
+        range_.push_back(
+            BoundsToIntegerPair(To<CSSValuePair>(*bounds), *media_values));
       }
     }
   }

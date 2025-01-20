@@ -25,8 +25,7 @@ void CreateAndAddWebRTCInternalsHTMLSource(BrowserContext* browser_context) {
       browser_context, kChromeUIWebRTCInternalsHost);
 
   source->UseStringsJs();
-  source->AddResourcePaths(base::make_span(kWebrtcInternalsResources,
-                                           kWebrtcInternalsResourcesSize));
+  source->AddResourcePaths(kWebrtcInternalsResources);
   source->SetDefaultResource(IDR_WEBRTC_INTERNALS_WEBRTC_INTERNALS_HTML);
 }
 

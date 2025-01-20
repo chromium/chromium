@@ -11,6 +11,7 @@ include_rules = [
   "+components/viz/common",
   "+components/viz/host",
   "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test",
+  "+gpu/ipc/common/surface_handle.h",
   "+services/viz/public/mojom",
   "+skia/ext",
   "+third_party/android_opengl/etc1",

@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -166,6 +167,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     std::optional<int> index = menu_model->GetIndexOfCommandId(command_id);
     CHECK(index);
 
+    menu_model->SetMayHaveMnemonicsAt(index.value(), false);
+
     if (tab_group->is_shared_tab_group()) {
       menu_model->SetMinorIcon(index.value(),
                                ui::ImageModel::FromVectorIcon(
@@ -205,7 +208,7 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
 
   submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   int parent_command_id = parent->GetCommand();
-  auto group_id = GetTabGroupIdFromCommandId(parent_command_id);
+  base::Uuid group_id = GetTabGroupIdFromCommandId(parent_command_id);
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
@@ -278,17 +281,31 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
   command_id_to_action_.emplace(
       latest_command_id, Action{Action::Type::PIN_OR_UNPIN_GROUP, group_id});
 
-  // Add item: delete group.
   latest_command_id = GetAndIncrementLatestCommandId();
-  submenu_model_->AddItemWithStringIdAndIcon(
-      latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
-      ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon, ui::kColorMenuIcon,
-                                     kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      SavedTabGroupUtils::kDeleteGroupMenuItem);
-  command_id_to_action_.emplace(latest_command_id,
-                                Action{Action::Type::DELETE_GROUP, group_id});
+  if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
+                                                  group_id)) {
+    // Add item: delete group.
+    submenu_model_->AddItemWithStringIdAndIcon(
+        latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    submenu_model_->SetElementIdentifierAt(
+        submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
+        SavedTabGroupUtils::kDeleteGroupMenuItem);
+    command_id_to_action_.emplace(latest_command_id,
+                                  Action{Action::Type::DELETE_GROUP, group_id});
+  } else {
+    // Add item: leave group.
+    submenu_model_->AddItemWithStringIdAndIcon(
+        latest_command_id, IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    submenu_model_->SetElementIdentifierAt(
+        submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
+        SavedTabGroupUtils::kLeaveGroupMenuItem);
+    command_id_to_action_.emplace(latest_command_id,
+                                  Action{Action::Type::LEAVE_GROUP, group_id});
+  }
 
   // Add a separator and title.
   submenu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -359,13 +376,27 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
     switch (type) {
       case Action::Type::OPEN_IN_BROWSER: {
         base::RecordAction(base::UserMetricsAction(
-            "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
+            "TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu"));
         TabGroupSyncService* tab_group_service =
             tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                 browser_->profile());
+
+        bool will_open_shared_group = false;
+        if (std::optional<tab_groups::SavedTabGroup> saved_group =
+                tab_group_service->GetGroup(uuid)) {
+          will_open_shared_group = !saved_group->local_group_id().has_value() &&
+                                   saved_group->is_shared_tab_group();
+        }
+
         tab_group_service->OpenTabGroup(
             uuid, std::make_unique<TabGroupActionContextDesktop>(
                       browser_, OpeningSource::kOpenedFromRevisitUi));
+
+        if (will_open_shared_group) {
+          saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+              saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+                  kOpenedFromSubmenu);
+        }
         break;
       }
       case Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
@@ -377,23 +408,49 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
       case Action::Type::DELETE_GROUP:
         SavedTabGroupUtils::DeleteSavedGroup(browser_, uuid);
         break;
-      default:
+      case Action::Type::LEAVE_GROUP:
+        SavedTabGroupUtils::LeaveSharedGroup(browser_, uuid);
+        break;
+      case Action::Type::OPEN_URL:
+      case Action::Type::DEFAULT:
         break;
     }
   } else if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
-    base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu"));
+    if (show_submenu_) {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_"
+          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_"
+          "2"));
+    }
+
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
     base::RecordAction(base::UserMetricsAction(
-        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
+        "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     TabGroupSyncService* tab_group_service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
             browser_->profile());
+
+    bool will_open_shared_group = false;
+    if (std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(group_id)) {
+      will_open_shared_group = !saved_group->local_group_id().has_value() &&
+                               saved_group->is_shared_tab_group();
+    }
+
     tab_group_service->OpenTabGroup(
         group_id, std::make_unique<TabGroupActionContextDesktop>(
                       browser_, OpeningSource::kOpenedFromRevisitUi));
+
+    if (will_open_shared_group) {
+      saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+          saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+              kOpenedFromEverythingMenu);
+    }
   }
 }
 

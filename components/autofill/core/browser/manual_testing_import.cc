@@ -18,12 +18,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 
 namespace autofill {
 
@@ -154,16 +154,15 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
   return card;
 }
 
-// Removes all AutofillProfiles from the `pdm`. Since `PDM::RemoveByGUID()`
-// invalidates the pointers returned by `PDM::GetProfiles()`, this is done by
+// Removes all AutofillProfiles from the `adm`. Since `ADM::RemoveProfile()`
+// invalidates the pointers returned by `ADM::GetProfiles()`, this is done by
 // collecting all GUIDs to remove first.
-void RemoveAllExistingProfiles(PersonalDataManager& pdm) {
+void RemoveAllExistingProfiles(AddressDataManager& adm) {
   std::vector<std::string> existing_guids;
-  base::ranges::transform(pdm.address_data_manager().GetProfiles(),
-                          std::back_inserter(existing_guids),
+  base::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
                           &AutofillProfile::guid);
   for (const std::string& guid : existing_guids) {
-    pdm.RemoveByGUID(guid);
+    adm.RemoveProfile(guid);
   }
 }
 
@@ -184,7 +183,7 @@ void SetData(
   // If a list in `profiles_or_credit_cards` is empty, do not trigger the PDM
   // because this will clear all corresponding existing data.
   if (!profiles_or_credit_cards->profiles->empty()) {
-    RemoveAllExistingProfiles(*pdm);
+    RemoveAllExistingProfiles(pdm->address_data_manager());
     for (const AutofillProfile& profile : *profiles_or_credit_cards->profiles) {
       pdm->address_data_manager().AddProfile(profile);
     }

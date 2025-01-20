@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -111,12 +111,10 @@ public class MerchantTrustMessageSchedulerTest {
 
     @Test
     public void testSchedule_DisableMessageForImpactStudy() throws TimeoutException {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM,
-                "true");
-        FeatureList.setTestValues(testValues);
+                true);
 
         MerchantTrustSignalsCallbackHelper callbackHelper =
                 new MerchantTrustSignalsCallbackHelper();

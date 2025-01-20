@@ -75,7 +75,7 @@ void RTCRtpTransport::createProcessor(ScriptState* script_state,
 void RTCRtpTransport::createProcessor(ScriptState* script_state,
                                       DedicatedWorker* worker,
                                       const ScriptValue& options,
-                                      HeapVector<ScriptValue> transfer,
+                                      HeapVector<ScriptObject> transfer,
                                       ExceptionState& exception_state) {
   worker->PostCustomEvent(
       TaskType::kInternalMediaRealTime, script_state,

@@ -44,6 +44,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
  public:
   using KeystoreType = mojom::KeystoreType;
   using SigningScheme = mojom::KeystoreSigningScheme;
+  using KeystoreKeyAttributeType = mojom::KeystoreKeyAttributeType;
 
   explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
@@ -101,6 +102,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void CanUserGrantPermissionForKey(
       const std::vector<uint8_t>& public_key,
       CanUserGrantPermissionForKeyCallback callback) override;
+  void SetAttributeForKey(KeystoreType keystore,
+                          const std::vector<uint8_t>& public_key,
+                          KeystoreKeyAttributeType attribute_type,
+                          const std::vector<uint8_t>& attribute_value,
+                          SetAttributeForKeyCallback callback) override;
 
   // DEPRECATED, use `GenerateKey` instead.
   void DEPRECATED_ExtensionGenerateKey(
@@ -193,6 +199,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                             chromeos::platform_keys::Status status);
   static void DidAddKeyTags(AddKeyTagsCallback callback,
                             chromeos::platform_keys::Status status);
+  static void DidSetAttributeForKey(SetAttributeForKeyCallback callback,
+                                    chromeos::platform_keys::Status status);
 
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in

@@ -21,8 +21,9 @@ include_rules = [
 
 specific_include_rules = {
   "system_log_apitest\.cc": [
-    "+chrome/browser/ash/login/test",
+    "+chrome/browser/ash/login",
     "+chrome/browser/ash/policy/core",
     "+chrome/browser/ash/policy/test_support",
+    "+chrome/browser/ash/settings",
   ],
 }

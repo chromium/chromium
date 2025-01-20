@@ -1992,8 +1992,6 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   NearbyFilesHoldingSpaceTest()
       : session_controller_(std::make_unique<TestSessionController>()),
         user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
-
     holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();
     constexpr char kEmail[] = "test@test";
@@ -2023,7 +2021,6 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;

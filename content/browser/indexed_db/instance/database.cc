@@ -163,10 +163,26 @@ PartitionedLockManager& Database::lock_manager() {
   return bucket_context_->lock_manager();
 }
 
+bool Database::OnlyHasOneClient() const {
+  if (connections_.empty()) {
+    return true;
+  }
+
+  const base::UnguessableToken& token = (*connections_.begin())->client_token();
+  return std::all_of(connections_.begin(), connections_.end(),
+                     [&token](Connection* connection) {
+                       return connection->client_token() == token;
+                     });
+}
+
 void Database::RequireBlockingTransactionClientsToBeActive(
     Transaction* current_transaction,
     std::vector<PartitionedLockManager::PartitionedLockRequest>&
         lock_requests) {
+  if (OnlyHasOneClient()) {
+    return;
+  }
+
   std::vector<PartitionedLockId> blocked_lock_ids =
       lock_manager().GetUnacquirableLocks(lock_requests);
 

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 

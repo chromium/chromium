@@ -50,6 +50,7 @@ schema:
   - rootfs
   type: string
 supported_on:
-- chrome_os:112-
+- chrome_os:112-130
 tags: []
 type: string-enum
+deprecated: true

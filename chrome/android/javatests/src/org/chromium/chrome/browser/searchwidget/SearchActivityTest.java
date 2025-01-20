@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -44,7 +43,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
@@ -615,27 +613,5 @@ public class SearchActivityTest {
                     Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
                 });
         mActivityTestRule.setActivity(cta);
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void setUrlBarText(final Activity activity, final String url) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    UrlBar urlBar = activity.findViewById(R.id.url_bar);
-                    try {
-                        Criteria.checkThat(
-                                "UrlBar not focusable", urlBar.isFocusable(), Matchers.is(true));
-                        Criteria.checkThat(
-                                "UrlBar does not have focus", urlBar.hasFocus(), Matchers.is(true));
-                    } catch (CriteriaNotSatisfiedException ex) {
-                        urlBar.requestFocus();
-                        throw ex;
-                    }
-                });
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    UrlBar urlBar = activity.findViewById(R.id.url_bar);
-                    urlBar.setText(url);
-                });
     }
 }

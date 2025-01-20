@@ -27,7 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -200,10 +200,10 @@ constexpr struct ModifierRemapping {
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
       VKEY_ASSISTANT}},
     {EF_NONE,
-     ui::mojom::ModifierKey::kRightAlt,
+     ui::mojom::ModifierKey::kQuickInsert,
      nullptr,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
-      VKEY_RIGHT_ALT}},
+      VKEY_QUICK_INSERT}},
     {EF_FUNCTION_DOWN,
      ui::mojom::ModifierKey::kFunction,
      nullptr,
@@ -1238,11 +1238,11 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
   if (key_event.properties()) {
     key_event_ptr->SetProperties(*key_event.properties());
   }
-  // Rewrite to VKEY_RIGHT_ALT and set the property on the event to mark it as
-  // being VKEY_RIGHT_ALT.
-  if (state.key_code == VKEY_RIGHT_ALT) {
+  // Rewrite to VKEY_QUICK_INSERT and set the property on the event to mark it
+  // as being VKEY_QUICK_INSERT.
+  if (state.key_code == VKEY_QUICK_INSERT) {
     key_event_ptr->set_key_code(VKEY_ASSISTANT);
-    SetRightAltProperty(key_event_ptr.get());
+    SetQuickInsertProperty(key_event_ptr.get());
   }
   *rewritten_event = std::move(key_event_ptr);
 }
@@ -1394,9 +1394,9 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
                          prefs::kLanguageRemapBackspaceKeyTo, delegate_);
       break;
     case DomCode::LAUNCH_ASSISTANT:
-      if (keyboard_capability_->HasRightAltKey(device_id)) {
-        remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kRightAlt,
-                                      "", delegate_);
+      if (keyboard_capability_->HasQuickInsertKey(device_id)) {
+        remapped_key = GetRemappedKey(
+            device_id, mojom::ModifierKey::kQuickInsert, "", delegate_);
         break;
       }
       remapped_key =
@@ -1477,7 +1477,8 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // current key is already pressed or not.
     bool is_repeat = base::ranges::find(
                          pressed_key_states_,
-                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                         std::tuple(key_event.code(),
+                                    DomKey::Base{key_event.GetDomKey()},
                                     key_event.key_code()),
                          [](auto entry) {
                            return std::tuple(entry.first.code, entry.first.key,
@@ -1694,7 +1695,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
         if (should_record_modifier_key_press_metrics) {
           RecordModifierKeyPressedAfterRemapping(
               *keyboard_capability_, device_id, state.code, key_event.code(),
-              state.key_code == VKEY_RIGHT_ALT);
+              state.key_code == VKEY_QUICK_INSERT);
         }
         // Early exit with completed event.
         BuildRewrittenKeyEvent(key_event, state, rewritten_event);
@@ -1707,7 +1708,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   if (should_record_modifier_key_press_metrics) {
     RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
                                            state.code, key_event.code(),
-                                           state.key_code == VKEY_RIGHT_ALT);
+                                           state.key_code == VKEY_QUICK_INSERT);
   }
 
   if (delegate_ &&

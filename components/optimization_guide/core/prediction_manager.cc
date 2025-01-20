@@ -720,6 +720,21 @@ PredictionManager::GetDownloadedModelsInfoForWebUI() const {
   return downloaded_models_info;
 }
 
+base::flat_map<std::string, bool>
+PredictionManager::GetOnDeviceSupplementaryModelsInfoForWebUI() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<proto::OptimizationTarget> supp_targets = {
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION};
+  base::flat_map<std::string, bool> supp_models_info;
+  for (const auto target : supp_targets) {
+    supp_models_info[optimization_guide::proto::OptimizationTarget_Name(
+        target)] = optimization_target_model_info_map_.contains(target);
+  }
+
+  return supp_models_info;
+}
+
 void PredictionManager::NotifyObserversOfNewModel(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {

@@ -65,12 +65,12 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
 
 class ExtensionBindingsApiTest : public ExtensionApiTest {
  public:
-  ExtensionBindingsApiTest() {}
+  ExtensionBindingsApiTest() = default;
 
   ExtensionBindingsApiTest(const ExtensionBindingsApiTest&) = delete;
   ExtensionBindingsApiTest& operator=(const ExtensionBindingsApiTest&) = delete;
 
-  ~ExtensionBindingsApiTest() override {}
+  ~ExtensionBindingsApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

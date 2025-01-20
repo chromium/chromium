@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -31,8 +32,17 @@ const char* const kSupportedSandboxTokens[] = {
     "allow-top-navigation",
     "allow-top-navigation-by-user-activation"};
 
+// TODO (https://crbug.com/372894175) move this into |kSupportedSandboxTokens|
+// when feature is enabled by default.
+constexpr char kAllowSameSiteNoneCookiesSandboxToken[] =
+    "allow-same-site-none-cookies";
+
 bool IsTokenSupported(const AtomicString& token) {
-  return base::Contains(kSupportedSandboxTokens, token);
+  if (base::Contains(kSupportedSandboxTokens, token)) {
+    return true;
+  }
+  return token == kAllowSameSiteNoneCookiesSandboxToken &&
+         RuntimeEnabledFeatures::AllowSameSiteNoneCookiesInSandboxEnabled();
 }
 
 }  // namespace

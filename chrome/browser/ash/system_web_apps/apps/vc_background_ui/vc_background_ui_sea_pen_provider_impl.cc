@@ -147,6 +147,22 @@ void VcBackgroundUISeaPenProviderImpl::
       contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog);
 }
 
+void VcBackgroundUISeaPenProviderImpl::
+    ShouldShowSeaPenFreeformIntroductionDialogInternal(
+        ShouldShowSeaPenIntroductionDialogCallback callback) {
+  std::move(callback).Run(contextual_tooltip::ShouldShowNudge(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog,
+      /*recheck_delay=*/nullptr));
+}
+
+void VcBackgroundUISeaPenProviderImpl::
+    HandleSeaPenFreeformIntroductionDialogClosedInternal() {
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenVcBackgroundIntroDialog);
+}
+
 void VcBackgroundUISeaPenProviderImpl::DeleteRecentSeaPenImage(
     const uint32_t id,
     DeleteRecentSeaPenImageCallback callback) {

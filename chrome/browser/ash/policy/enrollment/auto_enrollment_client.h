@@ -46,7 +46,7 @@ class AutoEnrollmentClient {
   // Creates |AutoEnrollmentClient| instances.
   class Factory {
    public:
-    virtual ~Factory() {}
+    virtual ~Factory() = default;
 
     // |progress_callback| will be invoked whenever some significant event
     // happens as part of the protocol, after Start() is invoked. The result of
@@ -76,7 +76,7 @@ class AutoEnrollmentClient {
         ash::OobeConfiguration* oobe_config) = 0;
   };
 
-  virtual ~AutoEnrollmentClient() {}
+  virtual ~AutoEnrollmentClient() = default;
 
   // Starts the auto-enrollment check protocol with the device management
   // service. Subsequent calls drop any previous requests. Notice that this

@@ -57,11 +57,13 @@ bool MessagePumpFuchsia::ZxHandleWatchController::StopWatchingZxHandle() {
   }
 
   // If the pump is gone then there is nothing to cancel.
-  if (!weak_pump_)
+  if (!weak_pump_) {
     return true;
+  }
 
-  if (!is_active())
+  if (!is_active()) {
     return true;
+  }
 
   async_wait_t::handler = nullptr;
 
@@ -112,13 +114,15 @@ void MessagePumpFuchsia::ZxHandleWatchController::HandleSignal(
 
   controller->watcher_->OnZxHandleSignalled(wait->object, signal->observed);
 
-  if (was_stopped)
+  if (was_stopped) {
     return;
+  }
 
   controller->was_stopped_ = nullptr;
 
-  if (controller->persistent_)
+  if (controller->persistent_) {
     controller->WaitBegin();
+  }
 }
 
 void MessagePumpFuchsia::FdWatchController::OnZxHandleSignalled(
@@ -143,10 +147,12 @@ void MessagePumpFuchsia::FdWatchController::OnZxHandleSignalled(
   // can use that to detect being stopped mid-callback and avoid doing further
   // work that would touch |this|.
   bool* was_stopped = was_stopped_;
-  if (filtered_events & FDIO_EVT_WRITABLE)
+  if (filtered_events & FDIO_EVT_WRITABLE) {
     watcher_->OnFileCanWriteWithoutBlocking(fd_);
-  if (!*was_stopped && (filtered_events & FDIO_EVT_READABLE))
+  }
+  if (!*was_stopped && (filtered_events & FDIO_EVT_READABLE)) {
     watcher_->OnFileCanReadWithoutBlocking(fd_);
+  }
 
   // Don't add additional work here without checking |*was_stopped_| again.
 }
@@ -297,8 +303,9 @@ void MessagePumpFuchsia::Run(Delegate* delegate) {
 
     bool attempt_more_work =
         next_work_info.is_immediate() || did_handle_io_event;
-    if (attempt_more_work)
+    if (attempt_more_work) {
       continue;
+    }
 
     delegate->DoIdleWork();
     if (run_state.should_quit) {

@@ -28,10 +28,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
@@ -54,12 +54,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Test focus on verifying UI elements in the download location dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
 public class DownloadLocationDialogTest {
     private static final long TOTAL_BYTES = 1024L;
     private static final String SUGGESTED_PATH = "download.png";
@@ -102,9 +101,6 @@ public class DownloadLocationDialogTest {
                             return new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
                         });
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS, false);
-        FeatureList.setTestFeatures(features);
 
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_INITIAL);
         ThreadUtils.runOnUiThreadBlocking(

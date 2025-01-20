@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">Consulter la règle de l'administrateur</translation>
 <translation id="158849752021629804">Réseau domestique requis</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Po</translation>
+<translation id="1601786938618212857">Compresser</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="162175252992296058">Portugais avec clavier international américain</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas disponible pour l'authentification réseau.</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">Cet élément se trouve dans la corbeille</translation>
 <translation id="4186579485882418952">Activer le mode hors connexion</translation>
 <translation id="4193154014135846272">Document Google</translation>
-<translation id="4197674956721858839">Compresser les fichiers sélectionnés au format .zip</translation>
 <translation id="4202378258276439759">Espagnol (Amérique latine)</translation>
 <translation id="4202977638116331303">Géorgien</translation>
 <translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
@@ -1077,7 +1077,7 @@
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">Code PIN incorrect. Il vous reste 1 tentative.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>
-<translation id="9171921933192916600">Ver de livre</translation>
+<translation id="9171921933192916600">Mange-livres</translation>
 <translation id="9172592259078059678">Gujarati (translittération)</translation>
 <translation id="9173120999827300720">Anglais (États-Unis) avec clavier international</translation>
 <translation id="9183302530794969518">Google Docs</translation>

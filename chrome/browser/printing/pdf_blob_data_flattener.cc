@@ -59,7 +59,7 @@ void PdfBlobDataFlattener::ReadAndFlattenPdf(
 void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
                                      std::string data,
                                      int64_t /*blob_total_size*/) {
-  if (!LooksLikePdf(base::as_bytes(base::make_span(data)))) {
+  if (!LooksLikePdf(base::as_byte_span(data))) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }

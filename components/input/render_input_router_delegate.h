@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "cc/trees/render_frame_metadata.h"
-#include "components/input/peak_gpu_memory_tracker.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/delegated_ink_point.h"
@@ -25,9 +25,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   virtual ~RenderInputRouterDelegate() = default;
 
   virtual RenderWidgetHostViewInput* GetPointerLockView() = 0;
-  // TODO(b/331419617): Use a new FrameMetadataBase class instead of
-  // RenderFrameMetadata.
-  virtual const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() = 0;
+
+  virtual std::optional<bool> IsDelegatedInkHovering() = 0;
 
   virtual std::unique_ptr<RenderInputRouterIterator>
   GetEmbeddedRenderInputRouters() = 0;
@@ -62,8 +61,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   // creation of a TouchEmulator.
   virtual TouchEmulator* GetTouchEmulator(bool create_if_necessary) = 0;
 
-  virtual std::unique_ptr<input::PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
-      input::PeakGpuMemoryTracker::Usage usage) = 0;
+  virtual std::unique_ptr<viz::PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
+      viz::PeakGpuMemoryTracker::Usage usage) = 0;
 
   // Called upon event ack receipt from the renderer.
   virtual void OnWheelEventAck(

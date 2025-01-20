@@ -93,7 +93,7 @@ class VideoEncodeAcceleratorAdapterTest
   scoped_refptr<VideoFrame> CreateGreenGpuFrame(gfx::Size size,
                                                 base::TimeDelta timestamp) {
     // Define shared image usage for a mappable shared image.
-    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = sii_->CreateSharedImage(
         {viz::MultiPlaneFormat::kNV12, size, kYUVColorSpace,
@@ -259,10 +259,14 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
         outputs_count++;
       });
 
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  expected_input_format = PIXEL_FORMAT_NV12;
+#endif
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
         EXPECT_EQ(keyframe, true);
-        EXPECT_EQ(frame->format(), pixel_format);
+        EXPECT_EQ(frame->format(), expected_input_format);
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
@@ -364,10 +368,15 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
         outputs_count++;
       });
 
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  expected_input_format = PIXEL_FORMAT_NV12;
+#endif
+
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
         EXPECT_EQ(keyframe, true);
-        EXPECT_EQ(frame->format(), pixel_format);
+        EXPECT_EQ(frame->format(), expected_input_format);
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
@@ -459,7 +468,6 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
 
   VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (pixel_format != PIXEL_FORMAT_I420 || !small_frame->IsMappable())
     expected_input_format = PIXEL_FORMAT_NV12;
 #endif
   const gfx::ColorSpace expected_color_space =
@@ -665,10 +673,14 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
         output_count_after_change++;
       });
 
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  expected_input_format = PIXEL_FORMAT_NV12;
+#endif
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
         EXPECT_EQ(keyframe, true);
-        EXPECT_EQ(frame->format(), pixel_format);
+        EXPECT_EQ(frame->format(), expected_input_format);
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));

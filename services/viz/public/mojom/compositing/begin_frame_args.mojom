@@ -12,13 +12,18 @@ enum BeginFrameArgsType {
   MISSED
 };
 
+// viz::BeginFrameId
+struct BeginFrameId {
+  uint64 source_id;
+  uint64 sequence_number;
+};
+
 // See components/viz/common/frame_sinks/begin_frame_args.h.
 struct BeginFrameArgs {
   mojo_base.mojom.TimeTicks frame_time;
   mojo_base.mojom.TimeTicks deadline;
   mojo_base.mojom.TimeDelta interval;
-  uint64 source_id;
-  uint64 sequence_number;
+  BeginFrameId frame_id;
   uint64 frames_throttled_since_last;
   int64 trace_id;
   mojo_base.mojom.TimeTicks dispatch_time;

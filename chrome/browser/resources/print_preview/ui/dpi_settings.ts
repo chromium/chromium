@@ -54,6 +54,7 @@ export class PrintPreviewDpiSettingsElement extends
   capability: DpiCapability;
   disabled: boolean;
   private capabilityWithLabels_: DpiCapability;
+  private lastSelectedValue_: DpiOption;
 
   /**
    * Adds default labels for each option.
@@ -93,14 +94,22 @@ export class PrintPreviewDpiSettingsElement extends
           dpiValue.vendor_id === dpiOption.vendor_id) {
         this.shadowRoot!.querySelector('print-preview-settings-select')!
             .selectValue(JSON.stringify(option));
+        this.lastSelectedValue_ = dpiValue;
         return;
       }
     }
 
-    const defaultOption =
-        this.capabilityWithLabels_.option.find(o => !!o.is_default) ||
-        this.capabilityWithLabels_.option[0];
-    this.setSetting('dpi', defaultOption);
+    // If the sticky settings are not compatible with the initially selected
+    // printer, reset this setting to the printer default. Only do this when
+    // the setting changes, as occurs for sticky settings, and not for a printer
+    // change which can also trigger this observer. The model is responsible for
+    // setting a compatible media size value after printer changes.
+    if (dpiValue !== this.lastSelectedValue_) {
+      const defaultOption =
+          this.capabilityWithLabels_.option.find(o => !!o.is_default) ||
+          this.capabilityWithLabels_.option[0];
+      this.setSetting('dpi', defaultOption, /*noSticky=*/ true);
+    }
   }
 }
 

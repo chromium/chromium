@@ -129,20 +129,6 @@ public class FileUtilsTest {
     }
 
     /**
-     * Helper to get the absolute path strings of multiple temp paths created for testing.
-     *
-     * @param relPathnames Relative names of temp files or directories (does not need to exist).
-     */
-    private ArrayList<String> getPathNames(String... relPathNames) {
-        Path rootDir = temporaryFolder.getRoot().toPath();
-        ArrayList<String> ret = new ArrayList<String>();
-        for (String relPathName : relPathNames) {
-            ret.add(rootDir.resolve(relPathName).toString());
-        }
-        return ret;
-    }
-
-    /**
      * Helper to get the {@link File} object of a temp paths created for testing.
      *
      * @param relPathname The relative name of a temp file or directory (does not need to exist).

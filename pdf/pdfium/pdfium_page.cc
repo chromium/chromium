@@ -79,6 +79,21 @@ enum class Rotation {
   kRotate270 = 3,
 };
 
+std::optional<Rotation> GetRotationFromRawValue(int rotation) {
+  switch (rotation) {
+    case 0:
+      return Rotation::kRotate0;
+    case 1:
+      return Rotation::kRotate90;
+    case 2:
+      return Rotation::kRotate180;
+    case 3:
+      return Rotation::kRotate270;
+    default:
+      return std::nullopt;
+  }
+}
+
 gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
   int output_height = FPDF_GetPageHeightF(page);
@@ -746,9 +761,14 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
     return gfx::RectF();
   }
 
+  std::optional<Rotation> rotation =
+      GetRotationFromRawValue(FPDFPage_GetRotation(page));
+  if (!rotation.has_value()) {
+    return gfx::RectF();
+  }
+
   // Page width and height are already swapped based on page rotation.
   gfx::SizeF page_size(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
-  Rotation rotation = static_cast<Rotation>(FPDFPage_GetRotation(page));
 
   // Start with bounds with the left and bottom values at the max possible
   // bounds and the right and top values at the min possible bounds. Bounds are
@@ -779,10 +799,10 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
   }
 
   gfx::RectF bounding_box =
-      GetRotatedRectF(rotation, page_size, largest_bounds);
+      GetRotatedRectF(rotation.value(), page_size, largest_bounds);
 
   gfx::RectF effective_crop_box =
-      GetEffectiveCropBox(page, rotation, page_size);
+      GetEffectiveCropBox(page, rotation.value(), page_size);
 
   // If the bounding box is empty, default to the effective crop box.
   if (bounding_box.IsEmpty()) {
@@ -854,7 +874,6 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
     return image_info;
 
   CalculateImages();
-
   image_info.reserve(images_.size());
   for (const Image& image : images_) {
     AccessibilityImageInfo cur_info;
@@ -974,6 +993,49 @@ std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo(
     text_field_info.push_back(std::move(cur_info));
   }
   return text_field_info;
+}
+
+void PDFiumPage::PopulateTextRunTypeAndImageAltText(
+    std::vector<AccessibilityTextRunInfo>& text_runs) {
+  CalculateImages();
+  ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(GetPage()));
+  if (!struct_tree) {
+    return;
+  }
+
+  // TODO(crbug.com/40707542): Consolidate `Accessibility"TextRunInfo` building
+  // logic into this class and remove the following block.
+  MarkedContentIdToTextRunInfoMap marked_content_id_text_run_info_map;
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+    FPDF_TEXTPAGE text_page = GetTextPage();
+    uint32_t char_index = 0;
+    for (auto& text_run : text_runs) {
+      FPDF_PAGEOBJECT text_object =
+          FPDFText_GetTextObject(text_page, char_index);
+      int marked_content_id = FPDFPageObj_GetMarkedContentID(text_object);
+      if (marked_content_id == -1) {
+        continue;
+      }
+      auto [iter, _] = marked_content_id_text_run_info_map.emplace(
+          marked_content_id, std::vector<raw_ptr<AccessibilityTextRunInfo>>());
+      iter->second.push_back(&text_run);
+      char_index += text_run.len;
+    }
+  }
+
+  if (marked_content_id_text_run_info_map.empty() &&
+      marked_content_id_image_map_.empty()) {
+    return;
+  }
+
+  std::set<FPDF_STRUCTELEMENT> visited_elements;
+  int tree_children_count = FPDF_StructTree_CountChildren(struct_tree.get());
+  for (int i = 0; i < tree_children_count; ++i) {
+    FPDF_STRUCTELEMENT current_element =
+        FPDF_StructTree_GetChildAtIndex(struct_tree.get(), i);
+    PopulateTextRunTypeAndImageAltTextForStructElement(
+        current_element, visited_elements, marked_content_id_text_run_info_map);
+  }
 }
 
 PDFiumPage::Area PDFiumPage::GetLinkTargetAtIndex(int link_index,
@@ -1365,8 +1427,6 @@ void PDFiumPage::CalculateImages() {
   calculated_images_ = true;
   FPDF_PAGE page = GetPage();
   int page_object_count = FPDFPage_CountObjects(page);
-  MarkedContentIdToImageMap marked_content_id_image_map;
-  bool is_tagged = FPDFCatalog_IsTagged(engine_->doc());
   for (int i = 0; i < page_object_count; ++i) {
     FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, i);
     if (FPDFPageObj_GetType(page_object) != FPDF_PAGEOBJ_IMAGE)
@@ -1383,7 +1443,7 @@ void PDFiumPage::CalculateImages() {
     image.bounding_rect = PageToScreen(gfx::Point(), 1.0, left, top, right,
                                        bottom, PageOrientation::kOriginal);
 
-    if (is_tagged) {
+    if (engine_->IsTagged()) {
       // Collect all marked content IDs for image objects so that they can
       // later be used to retrieve alt text from struct tree for the page.
       FPDF_IMAGEOBJ_METADATA image_metadata;
@@ -1392,64 +1452,65 @@ void PDFiumPage::CalculateImages() {
         if (marked_content_id >= 0) {
           // If `marked_content_id` is already present, ignore the one being
           // inserted.
-          marked_content_id_image_map.insert(
+          marked_content_id_image_map_.insert(
               {marked_content_id, images_.size()});
         }
       }
     }
     images_.push_back(image);
   }
-
-  if (!marked_content_id_image_map.empty())
-    PopulateImageAltText(marked_content_id_image_map);
 }
 
-void PDFiumPage::PopulateImageAltText(
-    const MarkedContentIdToImageMap& marked_content_id_image_map) {
-  ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(GetPage()));
-  if (!struct_tree)
-    return;
-
-  std::set<FPDF_STRUCTELEMENT> visited_elements;
-  int tree_children_count = FPDF_StructTree_CountChildren(struct_tree.get());
-  for (int i = 0; i < tree_children_count; ++i) {
-    FPDF_STRUCTELEMENT current_element =
-        FPDF_StructTree_GetChildAtIndex(struct_tree.get(), i);
-    PopulateImageAltTextForStructElement(marked_content_id_image_map,
-                                         current_element, &visited_elements);
-  }
-}
-
-void PDFiumPage::PopulateImageAltTextForStructElement(
-    const MarkedContentIdToImageMap& marked_content_id_image_map,
+void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
     FPDF_STRUCTELEMENT current_element,
-    std::set<FPDF_STRUCTELEMENT>* visited_elements) {
-  if (!current_element)
+    std::set<FPDF_STRUCTELEMENT>& visited_elements,
+    MarkedContentIdToTextRunInfoMap& marked_content_id_text_run_info_map) {
+  if (!current_element) {
     return;
+  }
 
-  bool inserted = visited_elements->insert(current_element).second;
-  if (!inserted)
+  bool inserted = visited_elements.insert(current_element).second;
+  if (!inserted) {
     return;
+  }
 
-  int marked_content_id =
-      FPDF_StructElement_GetMarkedContentID(current_element);
+  int marked_content_id = -1;
+  if (FPDF_StructElement_GetMarkedContentIdCount(current_element)) {
+    marked_content_id =
+        FPDF_StructElement_GetMarkedContentIdAtIndex(current_element, 0);
+  }
   if (marked_content_id >= 0) {
-    auto it = marked_content_id_image_map.find(marked_content_id);
-    if (it != marked_content_id_image_map.end() &&
-        images_[it->second].alt_text.empty()) {
-      images_[it->second].alt_text =
+    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+      auto text_runs_iter =
+          marked_content_id_text_run_info_map.find(marked_content_id);
+      if (text_runs_iter != marked_content_id_text_run_info_map.end()) {
+        std::vector<raw_ptr<AccessibilityTextRunInfo>>& text_runs =
+            text_runs_iter->second;
+        for (raw_ptr<AccessibilityTextRunInfo>& text_run : text_runs) {
+          text_run->tag_type = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+              base::BindRepeating(&FPDF_StructElement_GetType, current_element),
+              /*check_expected_size=*/true));
+        }
+      }
+    }
+
+    auto image_iter = marked_content_id_image_map_.find(marked_content_id);
+    if (image_iter != marked_content_id_image_map_.end() &&
+        images_[image_iter->second].alt_text.empty()) {
+      images_[image_iter->second].alt_text =
           base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
               base::BindRepeating(&FPDF_StructElement_GetAltText,
                                   current_element),
               /*check_expected_size=*/true));
     }
   }
+
   int children_count = FPDF_StructElement_CountChildren(current_element);
   for (int i = 0; i < children_count; ++i) {
     FPDF_STRUCTELEMENT child =
         FPDF_StructElement_GetChildAtIndex(current_element, i);
-    PopulateImageAltTextForStructElement(marked_content_id_image_map, child,
-                                         visited_elements);
+    PopulateTextRunTypeAndImageAltTextForStructElement(
+        child, visited_elements, marked_content_id_text_run_info_map);
   }
 }
 

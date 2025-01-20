@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// This proto contains metadata about the specific collaboration. Each
+// CollaborationGroupMetadata should be mapped to a specific CollaborationGroup,
+// though the mapping happens outside of Chrome Sync.
+message CollaborationGroupMetadata {
+  // The current version of a collaboration group. This is used for ensuring
+  // that old and new clients can enable or disable functionality based on:
+  // (1) The value of this field.
+  // (2) What that specific version of Chrome supports.
+  optional int64 version = 1;
+}

@@ -121,9 +121,9 @@ void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
   DCHECK_EQ(WORKER_NOT_READY, state_);
   DCHECK(worker_host_);
   state_ = WORKER_READY;
-  GetRendererChannel()->SetRenderer(std::move(agent_remote),
-                                    std::move(agent_host_receiver),
-                                    worker_host_->GetProcessHost()->GetID());
+  GetRendererChannel()->SetRenderer(
+      std::move(agent_remote), std::move(agent_host_receiver),
+      worker_host_->GetProcessHost()->GetDeprecatedID());
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetReloadedAfterCrash();
 }

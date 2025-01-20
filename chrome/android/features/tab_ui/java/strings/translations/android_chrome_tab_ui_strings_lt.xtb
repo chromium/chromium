@@ -76,8 +76,8 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="427987768447457592">Nauja skirtukų grupė</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Pakeistas <ph name="ONE_CHANGED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}one{Pakeistas <ph name="MANY_CHANGED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}few{Pakeisti <ph name="MANY_CHANGED" /> skirtukai, uždaryta: <ph name="ANY_CLOSED" />}many{Pakeista <ph name="MANY_CHANGED" /> skirtuko, uždaryta: <ph name="ANY_CLOSED" />}other{Pakeista <ph name="MANY_CHANGED" /> skirtukų, uždaryta: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktyvus</translation>
+<translation id="4431937619879060901">Iš karto neteksite prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų jūsų įrenginių</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
-<translation id="4590027107044272416">Dabar čia galite atidaryti naują skirtuką</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Uždaryti vieną neaktyvų skirtuką?}one{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvų skirtuką?}few{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvius skirtukus?}many{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvaus skirtuko?}other{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvių skirtukų?}}</translation>
 <translation id="4686942373615810936">Ką tik sukurta</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Uždaryti po 1 dienos}one{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}few{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}many{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}other{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>
@@ -98,16 +98,16 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas}few{Pridėti <ph name="MANY_ADDED" /> skirtukai}many{Pridėta <ph name="MANY_ADDED" /> skirtuko}other{Pridėta <ph name="MANY_ADDED" /> skirtukų}}</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
+<translation id="5380159289133845234">Archyvuoti tikslias skirtukų kopijas</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
+<translation id="5446043142172831860">Pašalinti skirtuką ir išeiti iš grupės</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
-<translation id="5615302411300498438">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba išeikite.
-
-Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="5627941783489838464">Nėra skirtukų atnaujinimų</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Atkurti skirtuką}one{Atkurti skirtukus}few{Atkurti skirtukus}many{Atkurti skirtukus}other{Atkurti skirtukus}}</translation>
+<translation id="5647702255748985085">Išeiti iš grupės?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nuoroda iš „Chrome“}one{<ph name="TABS_COUNT_MANY" /> nuoroda iš „Chrome“}few{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}many{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}other{<ph name="TABS_COUNT_MANY" /> nuorodų iš „Chrome“}}</translation>
 <translation id="58326064309361797">Vilkite skirtukus, kad juos sugrupuotumėte</translation>
 <translation id="5901630391730855834">Geltona</translation>
@@ -116,7 +116,7 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6051432659151380973">Skirtukų grupės išsaugomos automatiškai</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Iš karto neteksite prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6271513594716432922">Uždaryti visus neaktyvius skirtukus</translation>
@@ -143,9 +143,10 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="731648547091221002">Pasirinkta: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Peržiūrėkite grąžinimo politiką ir kt.</translation>
 <translation id="7352298686197644113">Žr., kurio elemento jūsų atidarytuose skirtukuose kaina žemesnė</translation>
-<translation id="7421293530411019405">Išeiti iš skirtukų grupės?</translation>
+<translation id="742664698522525515">Palikti grupę?</translation>
 <translation id="7452985128687107478">Skirtukų grupės automatiškai išsaugomos ir atnaujinamos visuose įrenginiuose</translation>
 <translation id="747459581954555080">Atkurti viską</translation>
+<translation id="750886945254958667">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba išeikite, jei nebenorite jos pasiekti</translation>
 <translation id="753732157349120914">Skirtukų perjungiklis</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> apžvalga iš „Google“}one{<ph name="REVIEWS_COUNT_MANY" /> apžvalga iš „Google“}few{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}many{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}other{<ph name="REVIEWS_COUNT_MANY" /> apžvalgų iš „Google“}}</translation>
 <translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>
@@ -175,9 +176,7 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}few{Pridėti <ph name="MANY_ADDED" /> skirtukai, uždaryta: <ph name="ANY_CLOSED" />}many{Pridėta <ph name="MANY_ADDED" /> skirtuko, uždaryta: <ph name="ANY_CLOSED" />}other{Pridėta <ph name="MANY_ADDED" /> skirtukų, uždaryta: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>
 <translation id="8633025649649592204">Naujausia veikla</translation>
-<translation id="8635399646025169806">Išsaugoti skirtukų grupę?</translation>
 <translation id="870736955561925754">Uždaryti skirtuką ir ištrinti grupę?</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8730621377337864115">Atlikta</translation>
@@ -188,10 +187,11 @@ Jei išeisite, iš karto neteksite prieigos prie skirtukų grupės „<ph name="
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
-<translation id="9111228330448174435">Rodyti dialogo langą kuriant naują skirtukų grupę</translation>
 <translation id="9114502155681725011">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
+<translation id="9169141410816678175">Visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o ji bus ištrinta iš visų įrenginių</translation>
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
 <translation id="9216898458513705996">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Išskleisti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">Ištrinti grupę?</translation>
 <translation id="992256792861109788">Rožinė</translation>
 </translationbundle>

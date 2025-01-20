@@ -5,6 +5,7 @@
 #include "device/fido/credential_management_handler.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -409,7 +410,7 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
       {{1}, "bob", "Bob"},
   };
 
-  uint8_t credential_id[] = {0};
+  auto credential_id = std::to_array<uint8_t>({0});
   for (const auto& rp : rps) {
     for (const auto& user : users) {
       ASSERT_TRUE(virtual_device_factory_.mutable_state()->InjectResidentKey(

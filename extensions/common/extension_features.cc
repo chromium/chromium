@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/common/extension_features.h"
+
 #include "base/feature_list.h"
 
 namespace extensions_features {
@@ -25,15 +26,19 @@ BASE_FEATURE(kApiEnterpriseKioskInput,
 
 BASE_FEATURE(kApiRuntimeActionData,
              "ApiRuntimeActionData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kApiPermissionsHostAccessRequests,
+             "ApiPermissionsHostAccessRequests",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApiPermissionsSiteAccessRequests,
-             "ApiPermissionsSiteAccessRequests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kApiUserScriptsExecute,
+             "ApiUserScriptsExecute",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiUserScriptsMultipleWorlds,
              "ApiUserScriptsMultipleWorlds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiOdfsConfigPrivate,
              "ApiOdfsConfigPrivate",
@@ -49,17 +54,9 @@ BASE_FEATURE(kApiEnterpriseReportingPrivateReportDataMaskingEvent,
 
 // For historical reasons, this includes some APIs. Please don't add more.
 
-BASE_FEATURE(kAllowSharedArrayBuffersUnconditionally,
-             "AllowSharedArrayBuffersUnconditionally",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall,
              "AllowWithholdingExtensionPermissionsOnInstall",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAvoidEarlyExtensionScriptContextCreation,
-             "AvoidEarlyExtensionScriptContextCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs,
              "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
@@ -138,10 +135,6 @@ BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
              "LaunchWindowsNativeHostsDirectly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewExtensionFaviconHandling,
-             "ExtensionsNewFaviconHandling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_FEATURE(kReportKeepaliveUkm,
              "ReportKeepaliveUkm",
@@ -171,6 +164,10 @@ BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExperimentalOmniboxLabs,
+             "ExperimentalOmniboxLabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
              "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -195,8 +192,12 @@ BASE_FEATURE(kSilentDebuggerExtensionAPI,
              "SilentDebuggerExtensionAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseReadyToCommitForExtensionFrameSetup,
-             "UseReadyToCommitForExtensionFrameSetup",
+BASE_FEATURE(kRemoveCoreSiteInstance,
+             "RemoveCoreSiteInstance",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUserScriptUserExtensionToggle,
+             "UserScriptUserExtensionToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

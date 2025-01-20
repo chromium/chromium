@@ -103,13 +103,13 @@ const int kDefaultLaunchPercentageOnBeta = 50;
 // If brand_name[.]com is not valid for any brand name, each brand name should
 // be mapped to a valid url manually and the data structure of
 //  ForCSQ should be changed accordingly.
-// In each element of kBrandNamesForCSQ, first string is an original brand name
-// and second string is its skeleton.
-// If you are adding a brand name here, you can generate its skeleton using the
-// format_url binary (components/url_formatter/tools/format_url.cc)
+// In each element of `kBrandNamesForCSQ`, first string is an original brand
+// name and second string is its skeleton. If you are adding a brand name here,
+// you can generate its skeleton using the format_url binary
+// (components/url_formatter/tools/format_url.cc)
 // TODO(crbug.com/40855941): Generate skeletons of hard coded brand names in
 // Chrome initialization and remove manual adding of skeletons to this list.
-constexpr std::pair<const char*, const char*> kBrandNamesForCSQ[] = {
+constexpr std::string_view kBrandNamesForCSQ[][2] = {
     {"adobe", "adobe"},
     {"airbnb", "airbnb"},
     {"alibaba", "alibaba"},
@@ -161,14 +161,13 @@ constexpr std::pair<const char*, const char*> kBrandNamesForCSQ[] = {
     {"youtube", "youtube"},
     {"zillow", "zillow"}};
 
-// Each element in kSkeletonsOfPopularKeywordsForCSQ is a skeleton of a popular
-// keyword. In contrast to kBrandNamesForCSQ, the original keywords are not
-// included. Because in kBrandNamesForCSQ, original brand names are used to
-// generate the matched domain, and original keywords are not needed for that
-// process.
-// If you are adding a keyword here, you can generate its skeleton
+// Each element in `kSkeletonsOfPopularKeywordsForCSQ` is a skeleton of a
+// popular keyword. In contrast to `kBrandNamesForCSQ`, the original keywords
+// are not included. Because in `kBrandNamesForCSQ`, original brand names are
+// used to generate the matched domain, and original keywords are not needed for
+// that process. If you are adding a keyword here, you can generate its skeleton
 // using the format_url binary (components/url_formatter/tools/format_url.cc)
-const char* kSkeletonsOfPopularKeywordsForCSQ[] = {
+constexpr std::string_view kSkeletonsOfPopularKeywordsForCSQ[] = {
     // Security
     "account",  "activate", "adrnin",   "coin",   "crypto",  "login", "logout",
     "password", "secure",   "security", "signin", "signout", "wallet"};
@@ -177,10 +176,8 @@ const char* kSkeletonsOfPopularKeywordsForCSQ[] = {
 const size_t kMinBrandNameLengthForComboSquatting = 4;
 
 ComboSquattingParams* GetComboSquattingParams() {
-  static ComboSquattingParams params{
-      kBrandNamesForCSQ, std::size(kBrandNamesForCSQ),
-      kSkeletonsOfPopularKeywordsForCSQ,
-      std::size(kSkeletonsOfPopularKeywordsForCSQ)};
+  static ComboSquattingParams params{kBrandNamesForCSQ,
+                                     kSkeletonsOfPopularKeywordsForCSQ};
   return &params;
 }
 
@@ -707,8 +704,7 @@ bool IsComboSquatting(
         continue;
       }
 
-      for (size_t j = 0; j < combo_squatting_params.num_popular_keywords; j++) {
-        auto* const keyword = combo_squatting_params.popular_keywords[j];
+      for (auto keyword : combo_squatting_params.popular_keywords) {
         size_t keyword_pos = skeleton.find(keyword);
         if (keyword_pos == std::string::npos) {
           // Keyword not found, ignore.
@@ -724,7 +720,7 @@ bool IsComboSquatting(
         if ((keyword_pos > brand_skeleton_pos &&
              keyword_pos < brand_skeleton_pos + brand_skeleton.size()) ||
             (brand_skeleton_pos > keyword_pos &&
-             brand_skeleton_pos < keyword_pos + strlen(keyword))) {
+             brand_skeleton_pos < keyword_pos + keyword.size())) {
           // Keyword and brand overlap, ignore.
           continue;
         }
@@ -1412,9 +1408,7 @@ void SetComboSquattingParamsForTesting(const ComboSquattingParams& params) {
 
 void ResetComboSquattingParamsForTesting() {
   ComboSquattingParams* params = GetComboSquattingParams();
-  *params = {kBrandNamesForCSQ, std::size(kBrandNamesForCSQ),
-             kSkeletonsOfPopularKeywordsForCSQ,
-             std::size(kSkeletonsOfPopularKeywordsForCSQ)};
+  *params = {kBrandNamesForCSQ, kSkeletonsOfPopularKeywordsForCSQ};
 }
 
 ComboSquattingType GetComboSquattingType(
@@ -1426,8 +1420,8 @@ ComboSquattingType GetComboSquattingType(
 
   // First check Combo Squatting with hard coded brand names.
   std::vector<std::pair<std::string, std::string>> brand_names;
-  for (size_t i = 0; i < combo_squatting_params->num_brand_names; i++) {
-    brand_names.emplace_back(combo_squatting_params->brand_names[i]);
+  for (auto* it : combo_squatting_params->brand_names) {
+    brand_names.emplace_back(std::string(it[0]), std::string(it[1]));
   }
   if (IsComboSquatting(brand_names, *combo_squatting_params, navigated_domain,
                        engaged_sites, matched_domain,

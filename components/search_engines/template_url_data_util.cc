@@ -11,9 +11,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -214,9 +214,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     }
   }
 
-  result->created_by_policy = static_cast<TemplateURLData::CreatedByPolicy>(
-      dict.FindInt(DefaultSearchManager::kCreatedByPolicy)
-          .value_or(static_cast<int>(result->created_by_policy)));
+  result->policy_origin = static_cast<TemplateURLData::PolicyOrigin>(
+      dict.FindInt(DefaultSearchManager::kPolicyOrigin)
+          .value_or(static_cast<int>(result->policy_origin)));
   result->created_from_play_api =
       dict.FindBool(DefaultSearchManager::kCreatedFromPlayAPI)
           .value_or(result->created_from_play_api);
@@ -306,8 +306,8 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
     encodings.Append(input_encoding);
   url_dict.Set(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
-  url_dict.Set(DefaultSearchManager::kCreatedByPolicy,
-               static_cast<int>(data.created_by_policy));
+  url_dict.Set(DefaultSearchManager::kPolicyOrigin,
+               static_cast<int>(data.policy_origin));
   url_dict.Set(DefaultSearchManager::kCreatedFromPlayAPI,
                data.created_from_play_api);
   url_dict.Set(DefaultSearchManager::kFeaturedByPolicy,

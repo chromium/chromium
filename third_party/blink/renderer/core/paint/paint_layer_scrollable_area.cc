@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1100,14 +1099,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     ApplyScrollStart();
   }
 
-  ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
-  if (GetScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update = GetScrollAnimator().DesiredTargetOffset();
-  } else if (GetProgrammaticScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update =
-        GetProgrammaticScrollAnimator().TargetOffset();
-  }
-  UpdateScrollMarkers(offset_for_scroll_marker_update);
+  UpdateScrollMarkers();
 }
 
 Element* PaintLayerScrollableArea::GetElementForScrollStart() const {
@@ -1150,8 +1142,8 @@ bool PaintLayerScrollableArea::IsApplyingScrollStart() const {
     if (element->HasBeenExplicitlyScrolled()) {
       return false;
     }
-    if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled() &&
-        GetScrollStartTarget()) {
+    if (RuntimeEnabledFeatures::CSSScrollInitialTargetEnabled() &&
+        GetScrollInitialTarget()) {
       return true;
     }
     return RuntimeEnabledFeatures::CSSScrollStartEnabled() &&
@@ -1205,8 +1197,15 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChangeInternal() {
   if (ScrollOriginChanged()) {
     SetScrollOffsetUnconditionally(ClampScrollOffset(GetScrollOffset()));
   } else {
+    // Avoid unpinning the associated scroll-marker group's selected marker by
+    // indicating that this is a |targeted_scroll| if the group's selected
+    // marker is currently pinned.
+    ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
+    bool targeted_scroll = group && group->SelectedMarkerIsPinned();
     ScrollableArea::SetScrollOffset(GetScrollOffset(),
-                                    mojom::blink::ScrollType::kClamping);
+                                    mojom::blink::ScrollType::kClamping,
+                                    mojom::blink::ScrollBehavior::kInstant,
+                                    ScrollCallback(), targeted_scroll);
   }
 
   SetNeedsScrollOffsetClamp(false);
@@ -2453,7 +2452,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
     if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-      SetScrollOffset(new_scroll_offset, params->type, behavior);
+      SetScrollOffset(new_scroll_offset, params->type, behavior,
+                      ScrollCallback(), true);
     } else {
       CHECK(GetSmoothScrollSequencer());
       DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
@@ -2463,7 +2463,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     }
   } else {
     SetScrollOffset(new_scroll_offset, params->type,
-                    mojom::blink::ScrollBehavior::kInstant);
+                    mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
+                    true);
   }
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.
@@ -3404,17 +3405,37 @@ void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
   EnsureRareData().snapped_query_target_ids_ = ids;
 }
 
-void PaintLayerScrollableArea::UpdateScrollMarkers(const ScrollOffset& offset) {
+ScrollOffset PaintLayerScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
+  ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
+  if (GetScrollAnimator().HasRunningAnimation()) {
+    offset_for_scroll_marker_update = GetScrollAnimator().DesiredTargetOffset();
+  } else if (GetProgrammaticScrollAnimator().HasRunningAnimation()) {
+    offset_for_scroll_marker_update =
+        GetProgrammaticScrollAnimator().TargetOffset();
+  }
+  return offset_for_scroll_marker_update;
+}
+
+ScrollMarkerGroupPseudoElement* PaintLayerScrollableArea::GetScrollMarkerGroup()
+    const {
   if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
     if (PseudoElement* before =
             element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
-      group_before->UpdateSelectedScrollMarker(offset);
+      return group_before;
     } else if (PseudoElement* after =
                    element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
       auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
-      group_after->UpdateSelectedScrollMarker(offset);
+      return group_after;
     }
+  }
+  return nullptr;
+}
+
+void PaintLayerScrollableArea::UpdateScrollMarkers() {
+  if (ScrollMarkerGroupPseudoElement* marker_group = GetScrollMarkerGroup()) {
+    ScrollOffset scroll_offset = GetScrollOffsetForScrollMarkerUpdate();
+    marker_group->UpdateSelectedScrollMarker(scroll_offset);
   }
 }
 

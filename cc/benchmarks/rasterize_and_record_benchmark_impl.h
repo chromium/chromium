@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
@@ -38,8 +40,8 @@ class RasterizeAndRecordBenchmarkImpl : public MicroBenchmarkImpl {
     int pixels_rasterized;
     int pixels_rasterized_with_non_solid_color;
     int pixels_rasterized_as_opaque;
-    int visible_pixels_by_lcd_text_disallowed_reason
-        [kLCDTextDisallowedReasonCount];
+    std::array<int, kLCDTextDisallowedReasonCount>
+        visible_pixels_by_lcd_text_disallowed_reason;
     base::TimeDelta total_best_time;
     int total_layers;
     int total_picture_layers;

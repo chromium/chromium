@@ -34,7 +34,10 @@ enum class LoadTranslateKitResult {
   // Success to load TranslateKit binary but fails due to invalid function
   // pointers.
   kInvalidFunctionPointer = 3,
-  kMaxValue = kInvalidFunctionPointer,
+  // Success to load TranslateKit binary but the binary version is invalid.
+  kInvalidVersion = 4,
+
+  kMaxValue = kInvalidVersion,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ai/enums.xml:LoadTranslateKitResult)
 
@@ -121,6 +124,9 @@ class TranslateKitClient {
   // are valid. And sets the `maybe_kit_ptr_` to the error code if any.
   LoadTranslateKitResult CheckLoadTranslateKitResult();
 
+  // Checks if the loaded TranslateKit version is valid.
+  bool IsTranslateKitVersionValid();
+
   // Initializes the TranslateKit instance only when first needed, provided the
   // underlying library has loaded successfully. Returns true if initialization
   // was successful, false otherwise.
@@ -136,6 +142,9 @@ class TranslateKitClient {
   // WARNING:
   // Changes to the below interfaces must be backwards compatible and
   // reflected in the Google3-side definition.
+  typedef bool (*GetTranslateKitVersionFn)(TranslateKitVersion* version);
+  GetTranslateKitVersionFn get_translate_kit_version_func_;
+
   typedef void (*InitializeStorageBackendFn)(
       FileExistsFn file_exists,
       OpenForReadOnlyMemoryMapFn open_for_read_only_memory_map,

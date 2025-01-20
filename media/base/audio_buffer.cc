@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
@@ -30,25 +31,6 @@ AudioBuffer::ExternalMemory::ExternalMemory(const ExternalMemory&) = default;
 AudioBuffer::ExternalMemory::ExternalMemory(ExternalMemory&&) = default;
 
 namespace {
-
-// TODO(crbug.com/41258600): Use vector instructions to speed this up.
-template <class SourceSampleTypeTraits>
-void CopyConvertFromInterleaved(
-    const typename SourceSampleTypeTraits::ValueType* source_buffer,
-    int num_frames_to_write,
-    const std::vector<float*> dest) {
-  const int channels = dest.size();
-  for (int ch = 0; ch < channels; ++ch) {
-    float* dest_data = dest[ch];
-    for (int target_frame_index = 0, read_pos_in_source = ch;
-         target_frame_index < num_frames_to_write;
-         ++target_frame_index, read_pos_in_source += channels) {
-      auto source_value = source_buffer[read_pos_in_source];
-      dest_data[target_frame_index] =
-          SourceSampleTypeTraits::ToFloat(source_value);
-    }
-  }
-}
 
 class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
@@ -177,15 +159,26 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
 
   if (sample_format == kSampleFormatIECDts) {
     // Allocate a contiguous buffer for IEC61937 encapsulated Bitstream.
-    data_size_ = frame_count * bytes_per_channel * channel_count_;
+    const size_t forced_data_size =
+        frame_count * bytes_per_channel * channel_count_;
+    CHECK_LE(data_size, forced_data_size);
+    data_size_ = forced_data_size;
     data_ =
         pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
     channel_data_.push_back(data_->span().data());
 
+    auto needs_zeroing = data_->span();
+
     // Copy data
     if (data) {
-      memcpy(channel_data_[0], data[0], data_size);
+      // Note: `data_size` is the external data size, not `data_size_`.
+      auto [data_portion, zero_portion] = data_->span().split_at(data_size);
+
+      data_portion.copy_from_nonoverlapping(base::span(data[0], data_size));
+      needs_zeroing = zero_portion;
     }
+
+    std::ranges::fill(needs_zeroing, 0u);
     return;
   }
   int data_size_per_channel = frame_count * bytes_per_channel;
@@ -320,8 +313,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   DCHECK(channel_count);
 
   std::vector<const uint8_t*> data(channel_count);
-  for (int ch = 0; ch < channel_count; ch++)
-    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch));
+  for (int ch = 0; ch < channel_count; ch++) {
+    data[ch] =
+        reinterpret_cast<const uint8_t*>(audio_bus->channel_span(ch).data());
+  }
 
   return CopyFrom(kSampleFormatPlanarF32, channel_layout, channel_count,
                   sample_rate, audio_bus->frames(), data.data(), timestamp,
@@ -447,12 +442,13 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
   if (audiobus_compatible) {
     auto audio_bus = AudioBus::CreateWrapper(channels);
 
+    audio_bus->set_frames(frames);
+
     for (int ch = 0; ch < channels; ++ch) {
       audio_bus->SetChannelData(
-          ch, reinterpret_cast<float*>(buffer->channel_data()[ch]));
+          ch, base::span(reinterpret_cast<float*>(buffer->channel_data()[ch]),
+                         base::checked_cast<size_t>(buffer->frame_count())));
     }
-
-    audio_bus->set_frames(frames);
 
     // Keep |buffer| alive as long as |audio_bus|.
     audio_bus->SetWrappedDataDeleter(
@@ -494,17 +490,20 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // For bitstream formats, we only support 2 modes: 1) Overwrite the data to
     // the beginning of the destination buffer. 2) Append new data to the end of
     // the existing data.
-    DCHECK(!source_frame_offset);
-    DCHECK(!dest_frame_offset ||
-           dest_frame_offset == dest->GetBitstreamFrames());
+    CHECK(!source_frame_offset);
+    CHECK(!dest_frame_offset ||
+          dest_frame_offset == dest->GetBitstreamFrames());
 
-    size_t bitstream_size =
-        dest_frame_offset ? dest->GetBitstreamDataSize() : 0;
-    uint8_t* dest_data =
-        reinterpret_cast<uint8_t*>(dest->channel(0)) + bitstream_size;
+    const bool append_data = dest_frame_offset == dest->GetBitstreamFrames();
+    const size_t dest_size = append_data ? dest->bitstream_data().size() : 0u;
+    const size_t new_dest_size = dest_size + data_size();
 
-    memcpy(dest_data, channel_data_[0], data_size());
-    dest->SetBitstreamDataSize(bitstream_size + data_size());
+    dest->SetBitstreamSize(new_dest_size);
+
+    auto dest_span = dest->bitstream_data().subspan(dest_size, data_size());
+    dest_span.copy_from_nonoverlapping(
+        base::span(channel_data_[0], data_size()));
+
     dest->SetBitstreamFrames(dest_frame_offset + frame_count());
     return;
   }
@@ -515,11 +514,13 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     return;
   }
 
+  const size_t dest_offset = base::checked_cast<size_t>(dest_frame_offset);
+
   // Note: The conversion steps below will clip values to [1.0, -1.0f].
 
   if (sample_format_ == kSampleFormatPlanarF32) {
     for (int ch = 0; ch < channel_count_; ++ch) {
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       const float* source_data =
           reinterpret_cast<const float*>(channel_data_[ch]) +
           source_frame_offset;
@@ -533,7 +534,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // into output channel data.
     for (int ch = 0; ch < channel_count_; ++ch) {
       const uint8_t* source_data = channel_data_[ch] + source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = UnsignedInt8SampleTypeTraits::ToFloat(source_data[i]);
     }
@@ -547,7 +548,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int16_t* source_data =
           reinterpret_cast<const int16_t*>(channel_data_[ch]) +
           source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
     }
@@ -561,7 +562,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int32_t* source_data =
           reinterpret_cast<const int32_t*>(channel_data_[ch]) +
           source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = SignedInt32SampleTypeTraits::ToFloat(source_data[i]);
     }

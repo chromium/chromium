@@ -105,16 +105,17 @@ void NavigateTabAndWaitForScreenshotCached(WebContents* tab,
 
 // Identical functionalities as `NavigateTabAndWaitForScreenshotCached`, except
 // for a history navigation.
-void HistoryNavigateTabAndWaitForScreenshotCached(
+void HistoryNavigateTabAndWaitForScreenshotCachedOrSkipped(
     WebContents* tab,
     NavigationControllerImpl& controller,
     int offset,
-    bool same_doc_nav = false) {
+    bool same_doc_nav,
+    bool cached) {
   const int num_request_before_nav =
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting();
   const int entries_count_before_nav = controller.GetEntryCount();
   ScopedScreenshotCapturedObserverForTesting observer(
-      controller.GetLastCommittedEntryIndex());
+      controller.GetLastCommittedEntryIndex(), cached);
   ASSERT_TRUE(HistoryGoToOffset(tab, offset));
   if (!same_doc_nav) {
     WaitForCopyableViewInWebContents(tab);
@@ -123,7 +124,25 @@ void HistoryNavigateTabAndWaitForScreenshotCached(
   ASSERT_EQ(controller.GetEntryCount(), entries_count_before_nav);
   ASSERT_EQ(
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
-      num_request_before_nav + 1);
+      num_request_before_nav + (cached ? 1 : 0));
+}
+
+void HistoryNavigateTabAndWaitForScreenshotCached(
+    WebContents* tab,
+    NavigationControllerImpl& controller,
+    int offset,
+    bool same_doc_nav = false) {
+  HistoryNavigateTabAndWaitForScreenshotCachedOrSkipped(
+      tab, controller, offset, same_doc_nav, /*cached=*/true);
+}
+
+void HistoryNavigateTabAndWaitForScreenshotSkipped(
+    WebContents* tab,
+    NavigationControllerImpl& controller,
+    int offset,
+    bool same_doc_nav = false) {
+  HistoryNavigateTabAndWaitForScreenshotCachedOrSkipped(
+      tab, controller, offset, same_doc_nav, /*cached=*/false);
 }
 
 struct ScreenshotCaptureTestNavigationType {
@@ -195,6 +214,11 @@ class HostGetterCrossOrigin : public HostGetter {
 
  private:
   int index_ = 1;
+};
+
+class NoSupportForwardTransitionDelegate : public WebContentsDelegate {
+ public:
+  bool SupportsForwardTransitionAnimation() override { return false; }
 };
 
 }  // namespace
@@ -335,7 +359,8 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
     for (int index = 0; index < controller.GetEntryCount(); ++index) {
       auto* entry = controller.GetEntryAtIndex(index);
       EXPECT_EQ(entry->navigation_transition_data().cache_hit_or_miss_reason(),
-                expected_reasons[index]);
+                expected_reasons[index])
+          << "at index=" << index;
     }
   }
 
@@ -1996,6 +2021,76 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
         controller,
         {std::nullopt, SK_ColorGREEN, SK_ColorBLUE, std::nullopt, SK_ColorRED});
     ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
+                       BasicNavigationsNoSupportForForwardTransition) {
+  NoSupportForwardTransitionDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("[red*] -> [red&, green*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/green.html"));
+    AssertCacheHitOrMissReasonsAre(
+        controller, {CacheHitOrMissReason::kCacheHit, std::nullopt});
+    AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
+  }
+  {
+    SCOPED_TRACE("[red&, green*] -> [red&, green&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/blue.html"));
+    AssertCacheHitOrMissReasonsAre(
+        controller, {CacheHitOrMissReason::kCacheHit,
+                     CacheHitOrMissReason::kCacheHit, std::nullopt});
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  }
+  {
+    SCOPED_TRACE("[red&, green&, blue*] -> [red&, green*, blue]");
+    HistoryNavigateTabAndWaitForScreenshotSkipped(web_contents(), controller,
+                                                  -1);
+    AssertCacheHitOrMissReasonsAre(
+        controller,
+        {CacheHitOrMissReason::kCacheHit, std::nullopt,
+         CacheHitOrMissReason::kForwardTransitionAnimationNotSupported});
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, std::nullopt, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
+  }
+  {
+    SCOPED_TRACE("[red&, green*, blue] -> [red*, green, blue]");
+    HistoryNavigateTabAndWaitForScreenshotSkipped(web_contents(), controller,
+                                                  -1);
+    AssertCacheHitOrMissReasonsAre(
+        controller,
+        {std::nullopt,
+         CacheHitOrMissReason::kForwardTransitionAnimationNotSupported,
+         CacheHitOrMissReason::kForwardTransitionAnimationNotSupported});
+    AssertOrderedScreenshotsAre(controller,
+                                {std::nullopt, std::nullopt, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 0 * page_size);
+  }
+  {
+    SCOPED_TRACE("[red*, green, blue] -> [red&, green*, blue]");
+    HistoryNavigateTabAndWaitForScreenshotCached(web_contents(), controller, 1);
+    AssertCacheHitOrMissReasonsAre(
+        controller,
+        {CacheHitOrMissReason::kCacheHit,
+         CacheHitOrMissReason::kForwardTransitionAnimationNotSupported,
+         CacheHitOrMissReason::kForwardTransitionAnimationNotSupported});
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, std::nullopt, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
   }
 }
 

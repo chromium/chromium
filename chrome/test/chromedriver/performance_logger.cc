@@ -98,6 +98,10 @@ Status PerformanceLogger::OnConnected(DevToolsClient* client) {
       return Status(kOk);
     return StartTrace();
   }
+  if (client->IsTabTarget()) {
+    // Tab Targets do not support Network.enable
+    return Status(kOk);
+  }
   return EnableInspectorDomains(client);
 }
 
@@ -118,9 +122,9 @@ Status PerformanceLogger::OnEvent(DevToolsClient* client,
                       "missing target ID in Target.attachedToTarget event");
       }
 
-      std::list<std::string> webview_ids;
-      Status status = session_->chrome->GetWebViewIds(&webview_ids,
-                                                      session_->w3c_compliant);
+      std::list<std::string> tabview_ids;
+      Status status = session_->chrome->GetTopLevelWebViewIds(
+          &tabview_ids, session_->w3c_compliant);
       if (status.IsError())
         return status;
 

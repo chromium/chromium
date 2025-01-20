@@ -9,6 +9,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
@@ -27,6 +28,7 @@ namespace {
 bool g_metrics_enabled = false;
 
 chrome_test_util::HistogramTester* g_histogram_tester = nullptr;
+base::UserActionTester* g_user_action_tester = nullptr;
 
 PrefService* GetLocalState() {
   return GetApplicationContext()->GetLocalState();
@@ -250,6 +252,42 @@ metrics::MetricsService* GetMetricsService() {
             @"Sum of histogram %@ mismatch. Expected %ld, Observed: %ld",
             histogram, static_cast<long>(sum),
             static_cast<long>(samples->sum())]);
+  }
+  return nil;
+}
+
++ (NSError*)setupUserActionTester {
+  if (g_user_action_tester) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Cannot setup two user action testers.");
+  }
+  g_user_action_tester = new base::UserActionTester();
+  return nil;
+}
+
++ (NSError*)releaseUserActionTester {
+  if (!g_user_action_tester) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Cannot release user action tester.");
+  }
+  delete g_user_action_tester;
+  g_user_action_tester = nullptr;
+  return nil;
+}
+
++ (NSError*)expectCount:(int)expectedCount forUserAction:(NSString*)userAction {
+  if (!g_user_action_tester) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"setupHistogramTester must be called before testing metrics.");
+  }
+
+  int count =
+      g_user_action_tester->GetActionCount(base::SysNSStringToUTF8(userAction));
+  if (expectedCount != count) {
+    NSString* errorString =
+        [NSString stringWithFormat:@"Expected %i count of %@. Got %i instead.",
+                                   expectedCount, userAction, count];
+    return testing::NSErrorWithLocalizedDescription(errorString);
   }
   return nil;
 }

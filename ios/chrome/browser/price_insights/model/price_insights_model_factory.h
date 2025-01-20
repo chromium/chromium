@@ -6,21 +6,16 @@
 #define IOS_CHROME_BROWSER_PRICE_INSIGHTS_MODEL_PRICE_INSIGHTS_MODEL_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class PriceInsightsModel;
-class ProfileIOS;
 
 // Singleton that owns all PriceInsightsModels and associates them with
 // profile.
-class PriceInsightsModelFactory : public BrowserStateKeyedServiceFactory {
+class PriceInsightsModelFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static PriceInsightsModel* GetForProfile(ProfileIOS* profile);
   static PriceInsightsModelFactory* GetInstance();
-
-  PriceInsightsModelFactory(const PriceInsightsModelFactory&) = delete;
-  PriceInsightsModelFactory& operator=(const PriceInsightsModelFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<PriceInsightsModelFactory>;

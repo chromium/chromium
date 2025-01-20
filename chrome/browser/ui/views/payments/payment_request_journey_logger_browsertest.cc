@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -220,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(2U, buckets.size());
-  base::HistogramBase::Sample shown;
-  base::HistogramBase::Sample could_not_show;
+  base::HistogramBase::Sample32 shown;
+  base::HistogramBase::Sample32 could_not_show;
   // Order of histogram recording is non-deterministic. So use EVENT_SHOWN bit
   // to differentiate between the two histograms.
   if (buckets[0].min & toInt(Event2::kShown)) {

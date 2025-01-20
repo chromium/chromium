@@ -30,8 +30,9 @@ PasswordGenerationEditingPopupViewAndroid::
 void PasswordGenerationEditingPopupViewAndroid::Dismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  if (controller_)
+  if (controller_) {
     controller_->ViewDestroyed();
+  }
 
   delete this;
 }
@@ -42,17 +43,20 @@ PasswordGenerationEditingPopupViewAndroid::
 bool PasswordGenerationEditingPopupViewAndroid::Show() {
   ui::ViewAndroid* view_android = controller_->container_view();
 
-  if (!view_android)
+  if (!view_android) {
     return false;
+  }
 
   popup_ = view_android->AcquireAnchorView();
   const ScopedJavaLocalRef<jobject> view = popup_.view();
-  if (view.is_null())
+  if (view.is_null()) {
     return false;
+  }
 
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return false;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_PasswordGenerationPopupBridge_create(
@@ -76,16 +80,19 @@ void PasswordGenerationEditingPopupViewAndroid::Hide() {
 void PasswordGenerationEditingPopupViewAndroid::UpdateState() {}
 
 bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
-  if (java_object_.is_null())
+  if (java_object_.is_null()) {
     return false;
+  }
 
   const ScopedJavaLocalRef<jobject> view = popup_.view();
-  if (view.is_null())
+  if (view.is_null()) {
     return false;
+  }
 
   ui::ViewAndroid* view_android = controller_->container_view();
-  if (!view_android)
+  if (!view_android) {
     return false;
+  }
 
   view_android->SetAnchorRect(view, controller_->element_bounds());
   JNIEnv* env = base::android::AttachCurrentThread();

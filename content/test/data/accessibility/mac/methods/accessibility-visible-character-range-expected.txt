@@ -1,0 +1,1 @@
+input.accessibilityVisibleCharacterRange={loc: 0, len: 11}

@@ -110,7 +110,7 @@ public class WebPageStation extends PageStation {
             FakeOmniboxSuggestions fakeSuggestions) {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ mIncognito, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility(mActivityElement);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), URL_BAR::click);
         return Pair.create(omniboxFacility, softKeyboard);
     }

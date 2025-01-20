@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/layers/picture_layer_impl.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <set>
@@ -53,6 +49,8 @@
 
 namespace cc {
 namespace {
+
+using ::testing::ElementsAre;
 
 #define EXPECT_BOTH_EQ(expression, x)          \
   do {                                         \
@@ -3408,12 +3406,11 @@ TEST_F(LegacySWPictureLayerImplTest,
   SetWillChangeTransform(active_layer(), true);
   SetWillChangeTransform(pending_layer(), true);
   layer_bounds = gfx::Size(200, 200);
-  Region invalidation;
   // UpdateRasterSource() requires that the pending tree doesn't have tiles.
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
+  pending_layer()->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(layer_bounds));
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
@@ -3677,7 +3674,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
       all_tiles);
 
   std::set<Tile*> unique_tiles;
-  float expected_scales[] = {low_res_factor, 1.f};
+  auto expected_scales = std::to_array<float>({low_res_factor, 1.f});
   size_t scale_index = 0;
   bool reached_visible = false;
   PrioritizedTile last_tile;
@@ -4000,12 +3997,11 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // Raster source size change forces adjustment of raster scale.
   layer_bounds = gfx::Size(200, 200);
-  Region invalidation;
   // UpdateRasterSource() requires that the pending tree doesn't have tiles.
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
+  pending_layer()->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(layer_bounds));
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
@@ -4970,9 +4966,12 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
 
   // The expected number of occluded tiles on each of the 2 tilings for each of
   // the 3 tree priorities.
-  size_t expected_occluded_tile_count_on_pending[] = {4u, 0u};
-  size_t expected_occluded_tile_count_on_active[] = {12u, 3u};
-  size_t total_expected_occluded_tile_count_on_trees[] = {15u, 4u};
+  auto expected_occluded_tile_count_on_pending =
+      std::to_array<size_t>({4u, 0u});
+  auto expected_occluded_tile_count_on_active =
+      std::to_array<size_t>({12u, 3u});
+  auto total_expected_occluded_tile_count_on_trees =
+      std::to_array<size_t>({15u, 4u});
 
   // Verify number of occluded tiles on the pending layer for each tiling.
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -6690,15 +6689,26 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   auto active_image_map = active_layer()->discardable_image_map();
   EXPECT_TRUE(pending_image_map);
   EXPECT_EQ(pending_image_map, active_image_map);
+  EXPECT_THAT(pending_image_map->GetRectsForImage(image.stable_id()),
+              ElementsAre(gfx::Rect(-1, -1, 202, 202)));
 
-  // Invalidating scroll_element_id1 will invalidate both scroll visual rect
-  // and the discardable image map.
+  // Simulate a raster-inducing scroll.
+  host_impl()
+      ->pending_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .GetOrCreateSyncedScrollOffsetForTesting(scroll_element_id1)
+      ->SetCurrent(gfx::PointF(0, 100));
+  // Invalidating scroll_element_id1 will invalidate scroll visual rect.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});
   EXPECT_EQ(info1.visual_rect, pending_layer()->invalidation().bounds());
   EXPECT_TRUE(active_layer()->invalidation().IsEmpty());
+  // And regenerate discardable image map with updated image rects.
   pending_image_map = pending_layer()->discardable_image_map();
   EXPECT_EQ(active_image_map, active_layer()->discardable_image_map());
   EXPECT_NE(pending_image_map, active_image_map);
+  EXPECT_THAT(pending_image_map->GetRectsForImage(image.stable_id()),
+              ElementsAre(gfx::Rect(-1, -1, 202, 102)));
 
   ActivateTree();
   SetupPendingTreeWithInvalidation(raster, Region());
@@ -6720,7 +6730,7 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   EXPECT_TRUE(pending_layer()->invalidation().IsEmpty());
   EXPECT_EQ(info2.visual_rect, active_layer()->invalidation().bounds());
   EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
-  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+  EXPECT_EQ(pending_image_map, active_layer()->discardable_image_map());
 }
 
 enum {
@@ -6758,8 +6768,7 @@ class LCDTextTest : public PictureLayerImplTest,
     descendant_->SetContentsOpaque(true);
     descendant_->SetDrawsContent(true);
     descendant_->SetBounds(gfx::Size(200, 200));
-    Region invalidation;
-    descendant_->UpdateRasterSource(raster_source, &invalidation);
+    descendant_->SetRasterSourceForTesting(raster_source);
     ASSERT_TRUE(layer_->CanHaveTilings());
 
     CreateTransformNode(layer_);

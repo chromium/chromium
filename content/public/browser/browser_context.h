@@ -27,9 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -205,7 +203,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void StartBrowserPrefetchRequest(
       const GURL& url,
       bool javascript_enabled,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
 
@@ -327,6 +325,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Deprecated. Do not add new callers.
   // TODO(crbug.com/40604019): Get rid of ResourceContext.
   ResourceContext* GetResourceContext() const;
+
+  // Grant third-party cookie access to certain sites that the user visited in
+  // the past, according to the popup heuristics described at
+  // https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md
+  void BackfillPopupHeuristicGrants(base::OnceCallback<void(bool)> callback);
 
   base::WeakPtr<BrowserContext> GetWeakPtr();
 
@@ -466,6 +469,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the OriginTrialsControllerDelegate associated with the context if
   // any, nullptr otherwise.
   virtual OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns extra request headers to be set when navigation happens for `url`.
+  // This function is designed for the headers provided by WebView.loadUrl().
+  virtual std::string GetExtraHeadersForUrl(const GURL& url);
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // Please don't add more fields to BrowserContext.

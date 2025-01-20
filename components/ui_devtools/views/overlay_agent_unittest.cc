@@ -266,8 +266,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
     child_1->SetBoundsRect(test_case.first_element_bounds);
     child_2->SetBoundsRect(test_case.second_element_bounds);
 
-    overlay_agent()->setInspectMode(
-        "searchForNode", protocol::Maybe<protocol::Overlay::HighlightConfig>());
+    overlay_agent()->setInspectMode("searchForNode", nullptr);
     ui::test::EventGenerator generator(GetRootWindow(widget()));
 
     // Highlight child 1.
@@ -292,8 +291,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
     // If we don't explicitly stop inspecting, we'll leave ourselves as
     // a pretarget handler for the root window and UAF in the next test.
     // TODO(lgrey): Fix this when refactoring to support Mac.
-    overlay_agent()->setInspectMode(
-        "none", protocol::Maybe<protocol::Overlay::HighlightConfig>());
+    overlay_agent()->setInspectMode("none", nullptr);
   }
 }
 
@@ -311,8 +309,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
 
   EXPECT_EQ(0, GetOverlayInspectNodeRequestedCount(node_id));
   EXPECT_EQ(0, GetOverlayNodeHighlightRequestedCount(node_id));
-  overlay_agent()->setInspectMode(
-      "searchForNode", protocol::Maybe<protocol::Overlay::HighlightConfig>());
+  overlay_agent()->setInspectMode("searchForNode", nullptr);
 
   // Moving the mouse cursor over the widget bounds should request a node
   // highlight.
@@ -352,8 +349,7 @@ TEST_F(OverlayAgentTest, MouseEventsGenerateFEEventsInInspectMode) {
   EXPECT_EQ(kBackgroundColor, highlighting_layer->GetTargetColor());
   EXPECT_TRUE(highlighting_layer->visible());
 #else
-  overlay_agent()->setInspectMode(
-      "none", protocol::Maybe<protocol::Overlay::HighlightConfig>());
+  overlay_agent()->setInspectMode("none", nullptr);
 #endif
 
   int highlight_notification_count =

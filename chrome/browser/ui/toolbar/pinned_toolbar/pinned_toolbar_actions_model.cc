@@ -83,19 +83,23 @@ void PinnedToolbarActionsModel::UpdatePinnedState(
   const bool is_pinned = Contains(action_id);
   const std::optional<std::string> metrics_name =
       actions::ActionIdMap::ActionIdToString(action_id);
-  CHECK(metrics_name.has_value());
-  if (!is_pinned && should_pin) {
-    PinAction(action_id);
-    base::RecordComputedAction(base::StrCat(
-        {"Actions.PinnedToolbarButton.Pinned.", metrics_name.value()}));
-    base::RecordAction(
-        base::UserMetricsAction("Actions.PinnedToolbarButton.Pinned"));
-  } else if (is_pinned && !should_pin) {
-    UnpinAction(action_id);
-    base::RecordComputedAction(base::StrCat(
-        {"Actions.PinnedToolbarButton.Unpinned.", metrics_name.value()}));
-    base::RecordAction(
-        base::UserMetricsAction("Actions.PinnedToolbarButton.Unpinned"));
+  // ActionIdToStringMappings are not initialized in unit tests, therefore will
+  // not have a value. In the normal case, `metrics_name` should always have a
+  // value.
+  if (metrics_name.has_value()) {
+    if (!is_pinned && should_pin) {
+      PinAction(action_id);
+      base::RecordComputedAction(base::StrCat(
+          {"Actions.PinnedToolbarButton.Pinned.", metrics_name.value()}));
+      base::RecordAction(
+          base::UserMetricsAction("Actions.PinnedToolbarButton.Pinned"));
+    } else if (is_pinned && !should_pin) {
+      UnpinAction(action_id);
+      base::RecordComputedAction(base::StrCat(
+          {"Actions.PinnedToolbarButton.Unpinned.", metrics_name.value()}));
+      base::RecordAction(
+          base::UserMetricsAction("Actions.PinnedToolbarButton.Unpinned"));
+    }
   }
 }
 

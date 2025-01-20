@@ -17,7 +17,8 @@
 namespace media {
 
 // A simple buffer that takes ownership of the given data pointer or allocates
-// as necessary.
+// as necessary. The capacity of the buffer is constant and set at construction,
+// and its size may fluctuate as data is written to the buffer.
 //
 // Unlike DecoderBuffer, allocations are assumed to be allocated with the
 // default memory allocator (i.e., new uint8_t[]).
@@ -25,12 +26,17 @@ namespace media {
 // NOTE: It is illegal to call any method when end_of_stream() is true.
 class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
  public:
-  // Allocates buffer of size |buffer_size| >= 0.
-  explicit DataBuffer(int buffer_size);
+  // Constructs an empty buffer with max `capacity`, uninitialized `data_` and
+  // a size of zero.
+  explicit DataBuffer(size_t capacity);
 
+  // Constructs a filled buffer by moving `buffer` into the `data_` property,
+  // with a size of `buffer.size()`.
   explicit DataBuffer(base::HeapArray<uint8_t> buffer);
 
+  DataBuffer(DataBuffer&&) = delete;
   DataBuffer(const DataBuffer&) = delete;
+  DataBuffer& operator=(DataBuffer&&) = delete;
   DataBuffer& operator=(const DataBuffer&) = delete;
 
   // Create a DataBuffer whose |data_| is copied from |data|.
@@ -42,50 +48,69 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   // is disallowed.
   static scoped_refptr<DataBuffer> CreateEOSBuffer();
 
+  // Convenience method for initializing `data_` to zero. By default, data_
+  // is constructed with its value uninitialized.
+  void FillWithZeroes() {
+    CHECK(!end_of_stream());
+    std::fill(data_.begin(), data_.end(), 0);
+  }
+
   base::TimeDelta timestamp() const {
-    DCHECK(!end_of_stream());
+    CHECK(!end_of_stream());
     return timestamp_;
   }
 
   void set_timestamp(const base::TimeDelta& timestamp) {
-    DCHECK(!end_of_stream());
+    CHECK(!end_of_stream());
     timestamp_ = timestamp;
   }
 
   base::TimeDelta duration() const {
-    DCHECK(!end_of_stream());
+    CHECK(!end_of_stream());
     return duration_;
   }
 
   void set_duration(const base::TimeDelta& duration) {
-    DCHECK(!end_of_stream());
+    CHECK(!end_of_stream());
     duration_ = duration;
   }
 
-  // TODO(b/335662415): Change data(), writable_data() so they always return a
-  // span to remove no data_size() member.
-  const uint8_t* data() const {
-    DCHECK(!end_of_stream());
-    return data_.data();
+  // The capacity of the buffer, set at construction.
+  size_t capacity() const {
+    CHECK(!end_of_stream());
+    return data_.size();
   }
 
-  uint8_t* writable_data() {
-    DCHECK(!end_of_stream());
-    return data_.data();
+  // Adds the elements from data to the beginning of the free space within the
+  // buffer, and updates `size_`. Caller is responsible for ensuring there is
+  // enough space for this method to succeed.
+  void Append(base::span<const uint8_t> data);
+
+  // Returns a span over `data_` that is truncated by the valid size().
+  base::span<const uint8_t> data() const {
+    CHECK(!end_of_stream());
+    return data_.first(size_);
+  }
+
+  // Returns a span over `data_`, including any initialized portion. Care should
+  // be taken that uninitialized memory is written to before being accessed.
+  base::span<uint8_t> writable_data() {
+    CHECK(!end_of_stream());
+    return data_;
   }
 
   // The size of valid data in bytes.
   //
-  // Setting this value beyond the buffer size is disallowed.
-  int data_size() const {
-    DCHECK(!end_of_stream());
-    return data_size_;
+  // Setting this value beyond the buffer capacity is disallowed.
+  size_t size() const {
+    CHECK(!end_of_stream());
+    return size_;
   }
 
-  void set_data_size(size_t data_size) {
-    DCHECK(!end_of_stream());
-    CHECK_LE(data_size, data_.size());
-    data_size_ = data_size;
+  void set_size(size_t size) {
+    CHECK(!end_of_stream());
+    CHECK_LE(size, data_.size());
+    size_ = size;
   }
 
   bool end_of_stream() const { return is_end_of_stream_; }
@@ -106,7 +131,7 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   base::TimeDelta duration_;
 
   base::HeapArray<uint8_t> data_;
-  int data_size_;
+  size_t size_ = 0;
   const bool is_end_of_stream_ = false;
 };
 

@@ -29,7 +29,9 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -43,7 +45,7 @@ void UpdateAccountsPrefs(
     return;
   }
 
-  base::flat_set<std::string> account_ids_in_chrome =
+  base::flat_set<GaiaId> account_ids_in_chrome =
       signin::GetAllGaiaIdsForKeyedPreferences(&identity_manager,
                                                accounts_in_cookie_jar_info);
 
@@ -55,11 +57,7 @@ void UpdateAccountsPrefs(
 
   SigninPrefs signin_prefs(pref_service);
   size_t removed_count = signin_prefs.RemoveAllAccountPrefsExcept(
-      // Convert `std::string` to `SigninPrefs::GaiaId`.
-      base::ToVector(account_ids_in_chrome,
-                     [](const std::string& gaia_id) -> SigninPrefs::GaiaId {
-                       return gaia_id;
-                     }));
+      base::ToVector(account_ids_in_chrome));
 
   if (removed_count > 0) {
     // There is a maximum of 10 Gaia accounts on the web. If we add the Chrome
@@ -146,6 +144,11 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
     entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
                           info.account_image);
   }
+
+  // Treat `signin::Tribool::kUnknown` as ineligible.
+  entry->SetIsGlicEligible(
+      info.capabilities.can_use_model_execution_features() ==
+      signin::Tribool::kTrue);
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
@@ -169,11 +172,12 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   if (!entry) {
     return;
   }
-  gaia_id_of_profile_attribute_entry_ = "";
+  gaia_id_of_profile_attribute_entry_ = GaiaId();
   entry->SetGAIAName(std::u16string());
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
+  entry->SetIsGlicEligible(false);
 }
 
 void GAIAInfoUpdateService::Shutdown() {

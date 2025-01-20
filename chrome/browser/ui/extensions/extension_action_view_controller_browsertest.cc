@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -31,7 +27,6 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/user_script_listener.h"
-#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -576,12 +571,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerGrayscaleTest,
 
     // Note: Action can only have a blocked decoration if the feature is
     // disabled.
-    static struct {
+    struct TestCases {
       ActionState action_state;
       PageAccessStatus page_access;
       Coloring expected_coloring;
       BlockedDecoration expected_blocked_decoration;
-    } test_cases[] = {
+    };
+    static auto test_cases = std::to_array<TestCases>({
         {ActionState::kEnabled, PageAccessStatus::kNone, Coloring::kFull,
          BlockedDecoration::kNotPainted},
         {ActionState::kEnabled, PageAccessStatus::kWithheld, Coloring::kFull,
@@ -601,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerGrayscaleTest,
                             : BlockedDecoration::kPainted},
         {ActionState::kDisabled, PageAccessStatus::kGranted, Coloring::kFull,
          BlockedDecoration::kNotPainted},
-    };
+    });
 
     ExtensionActionViewController* const controller =
         GetViewControllerForId(extension->id());

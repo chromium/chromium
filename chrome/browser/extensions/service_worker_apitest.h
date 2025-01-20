@@ -68,7 +68,7 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
   ServiceWorkerBasedBackgroundTest& operator=(
       const ServiceWorkerBasedBackgroundTest&) = delete;
 
-  ~ServiceWorkerBasedBackgroundTest() override {}
+  ~ServiceWorkerBasedBackgroundTest() override = default;
 
   void SetUpOnMainThread() override;
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/browser/content_settings_utils.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
@@ -27,14 +23,14 @@ namespace content_settings {
 namespace {
 
 // clang-format off
-const char* const kContentSettingNames[] = {
+const auto kContentSettingNames = std::to_array<const char *>({
   "default",
   "allow",
   "block",
   "ask",
   "session_only",
   "detect_important_content",
-};
+});
 // clang-format on
 
 static_assert(std::size(kContentSettingNames) == CONTENT_SETTING_NUM_SETTINGS,

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
+
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -35,7 +32,7 @@ const char kColor2GreenBright[] = "\x1b[1;32m";
 const char kColor3Yellow[] = "\x1b[33m";
 const char kColor5Purple[] = "\x1b[35m";
 const char kEraseInLine[] = "\x1b[K";
-const char kSpinnerCharacters[] = "|/-\\";
+constexpr std::array kSpinnerCharacters = {'|', '/', '-', '\\'};
 
 std::string MoveForward(int i) {
   return base::StringPrintf("\x1b[%dC", i);

@@ -52,8 +52,6 @@ using DownloadToFileCompleteCallback =
 
 class UpdaterNetworkTest : public ::testing::Test {
  public:
-  ~UpdaterNetworkTest() override = default;
-
   void StartedCallback(int response_code, int64_t content_length) {
     EXPECT_EQ(response_code, 200);
   }
@@ -136,8 +134,6 @@ class UpdaterNetworkTest : public ::testing::Test {
 // embedded test server running on localhost.
 class UpdaterDownloadTest : public ::testing::Test {
  protected:
-  ~UpdaterDownloadTest() override = default;
-
   base::FilePath dest_;
   GURL gurl_;
 

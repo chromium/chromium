@@ -81,7 +81,7 @@ class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
-  SessionRestoreObserverTest() {}
+  SessionRestoreObserverTest() = default;
 
   SessionRestoreObserverTest(const SessionRestoreObserverTest&) = delete;
   SessionRestoreObserverTest& operator=(const SessionRestoreObserverTest&) =

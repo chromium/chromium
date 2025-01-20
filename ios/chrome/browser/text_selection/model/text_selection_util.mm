@@ -10,7 +10,7 @@ const char kTextClassifierEmailParameterName[] = "TCEmailOneTap";
 
 BASE_FEATURE(kEnableExpKitTextClassifier,
              "EnableExpKitTextClassifier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableExpKitTextClassifierDate,
              "EnableExpKitTextClassifierDate",
@@ -18,7 +18,7 @@ BASE_FEATURE(kEnableExpKitTextClassifierDate,
 
 BASE_FEATURE(kEnableExpKitTextClassifierAddress,
              "EnableExpKitTextClassifierAddress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableExpKitTextClassifierPhoneNumber,
              "EnableExpKitTextClassifierPhoneNumber",

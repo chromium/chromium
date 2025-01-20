@@ -365,14 +365,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     }
   }
   if (pseudo_element) {
-    if (pseudo_element->GetPseudoId() == kPseudoIdCheck) {
-      class_names.Append("::check");
+    if (pseudo_element->GetPseudoId() == kPseudoIdCheckMark) {
+      class_names.Append("::checkmark");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
       class_names.Append("::before");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
       class_names.Append("::after");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdSelectArrow) {
-      class_names.Append("::select-arrow");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdPickerIcon) {
+      class_names.Append("::picker-icon");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdMarker) {
       class_names.Append("::marker");
     } else if (pseudo_element->GetPseudoIdForStyling() ==
@@ -380,10 +380,17 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollNextButton) {
-      class_names.Append("::scroll-next-button");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollPrevButton) {
-      class_names.Append("::scroll-prev-button");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonBlockStart) {
+      class_names.Append("::scroll-button(block-start)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineStart) {
+      class_names.Append("::scroll-button(inline-start)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
+      class_names.Append("::scroll-button(block-end)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineEnd) {
+      class_names.Append("::scroll-button(inline-end)");
     }
   }
   if (!class_names.empty())
@@ -404,7 +411,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   element_info->setString("nodeHeight", String::Number(bounding_box.height()));
 
   element_info->setBoolean("isKeyboardFocusable",
-                           element->IsKeyboardFocusable());
+                           element->IsKeyboardFocusableSlow());
   element_info->setString("accessibleName",
                           element->ComputedNameNoLifecycleUpdate());
   element_info->setString("accessibleRole",
@@ -1050,15 +1057,19 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
 
     if (auto* repeated_values =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(list_value.Get())) {
-      size_t repetitions = repeated_values->Repetitions();
-      for (size_t i = 0; i < repetitions; ++i) {
-        for (auto repeated_value : *repeated_values) {
-          if (repeated_value->IsGridLineNamesValue())
-            continue;
-          result.push_back(repeated_value->CssText());
+      std::optional<wtf_size_t> repetitions =
+          repeated_values->GetRepetitionsIfKnown();
+      if (repetitions.has_value()) {
+        for (size_t i = 0; i < *repetitions; ++i) {
+          for (auto repeated_value : *repeated_values) {
+            if (repeated_value->IsGridLineNamesValue()) {
+              continue;
+            }
+            result.push_back(repeated_value->CssText());
+          }
         }
+        continue;
       }
-      continue;
     }
 
     if (list_value->IsGridLineNamesValue())
@@ -1822,10 +1833,11 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
     } else {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
-            kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
-            kPseudoIdSelectArrow, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker, kPseudoIdScrollNextButton,
-            kPseudoIdScrollPrevButton}) {
+            kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
+            kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
+            kPseudoIdScrollMarker, kPseudoIdScrollButtonBlockStart,
+            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonBlockEnd,
+            kPseudoIdScrollButtonInlineEnd}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

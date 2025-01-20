@@ -15,9 +15,10 @@ import android.view.ViewGroup;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -30,16 +31,19 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -118,7 +122,7 @@ public class ToolbarSwipeLayout extends Layout {
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier,
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier,
             ViewGroup contentContainer) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
@@ -193,6 +197,17 @@ public class ToolbarSwipeLayout extends Layout {
 
     @Override
     public void doneHiding() {
+        // Native pages already had thumbnails captured in `show()` so repeat work can be bypassed
+        // by hiding the tab early. This also fixes a blank NTP from being captured after Feed
+        // memory optimizations.
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab != null && currentTab.isNativePage()) {
+            // Use type CHANGED_TABS here as it triggers side-effects in observers that we want to
+            // maintain. This is the type that would be set in `selectTabById` after thumbnail
+            // capture.
+            currentTab.hide(TabHidingType.CHANGED_TABS);
+        }
+
         TabModelUtils.selectTabById(mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER);
         super.doneHiding();
     }
@@ -227,11 +242,13 @@ public class ToolbarSwipeLayout extends Layout {
                     && !lastTab.canGoForward()) {
                 mTabModelSelector
                         .getModel(lastTab.isIncognito())
+                        .getTabRemover()
                         .closeTabs(
                                 TabClosureParams.closeTab(lastTab)
                                         .recommendedNextTab(tab)
                                         .allowUndo(false)
-                                        .build());
+                                        .build(),
+                                /* allowDialog= */ false);
             }
 
             mIsSwitchToStaticTab = false;
@@ -265,8 +282,9 @@ public class ToolbarSwipeLayout extends Layout {
     }
 
     /**
-     * Prepare the tabs sliding animations. This method need to be called before
-     * {@link #doTabSwitchAnimation(int, float, float, long)}.
+     * Prepare the tabs sliding animations. This method need to be called before {@link
+     * #doTabSwitchAnimation(int, float, float, long)}.
+     *
      * @param direction The direction of the slide.
      * @param fromIndex The index of the tab which will be switched from.
      * @param toIndex The index of the tab which will be switched to.
@@ -308,13 +326,13 @@ public class ToolbarSwipeLayout extends Layout {
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-                && visibleTabs.stream()
-                        .anyMatch(
-                                tabId ->
-                                        model.getTabById(tabId) != null
-                                                && model.getTabById(tabId)
-                                                        .getTabHasSensitiveContent())) {
+                && TabUiUtils.anySensitiveContent(
+                        TabModelUtils.getTabsById(visibleTabs, model, /* allowClosing= */ true))) {
             mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "SensitiveContent.SensitiveTabSwitchingAnimations",
+                    SensitiveContentClient.TabSwitchingAnimation.TOP_TOOLBAR_SWIPE,
+                    SensitiveContentClient.TabSwitchingAnimation.COUNT);
         }
 
         mToTab = null;
@@ -587,6 +605,7 @@ public class ToolbarSwipeLayout extends Layout {
     /**
      * Perform the tabs sliding animations. If the new tab's index is smaller than the old one, new
      * tab slide in from left, and old one slide out to right, and vice versa.
+     *
      * @param toTabId The id of the next tab which will be switched to.
      * @param fromTabId The id of the previous tab which will be switched out.
      */

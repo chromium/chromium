@@ -8,7 +8,7 @@
 #include "base/functional/bind.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 
 namespace autofill {
 

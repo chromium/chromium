@@ -222,8 +222,9 @@ struct MD5CE {
     for (uint32_t offset = 0; offset < m; offset += 64) {
       RoundData data = GetRoundData(message, m, offset);
       IntermediateData intermediate1 = intermediate0;
-      for (uint32_t i = 0; i < 64; ++i)
+      for (uint32_t i = 0; i < 64; ++i) {
         intermediate1 = ApplyStep(i, data, intermediate1);
+      }
       intermediate0 = Add(intermediate0, intermediate1);
     }
     return intermediate0;

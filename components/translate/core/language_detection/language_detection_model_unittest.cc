@@ -15,9 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace translate {
@@ -56,46 +56,6 @@ void pad(std::u16string& s, size_t len) {
   }
 }
 
-// This directly tests the sampling method for longer strings. We have 1 piece
-// of text that is unambiguously EN and one that is mixes AR and ZH. We combine
-// these so that they become the samples. Since EN is unambiguous, the result
-// should be EN.
-// This test is highly dependent on the sampling implementation.
-// See https://crbug.com/378011996
-TEST_F(LanguageDetectionModelValidTest, DetectLanguageSampling) {
-  // If this changes, this test needs to be rewritten.
-  ASSERT_EQ(kNumTextSamples, 3);
-  std::string predicted_language;
-  std::u16string en_sample = u"This is a page apparently written in English.";
-  pad(en_sample, kTextSampleLength);
-  std::u16string ar_zh_sample =
-      u"متصفح الويب أو مستعرض الويب هو تطبيق برمجي لاسترجاع المعلومات "
-      "产品的简报和公告 提交该申请后无法进行更改 请确认您的选择是正确的 ";
-  pad(ar_zh_sample, kTextSampleLength);
-
-  ASSERT_EQ(en_sample.length(), kTextSampleLength);
-  ASSERT_EQ(ar_zh_sample.length(), kTextSampleLength);
-
-  // Test against strings where the EN string in the `pos`th sample.
-  for (int pos = 0; pos < 3; pos++) {
-    SCOPED_TRACE(pos);
-    std::u16string s1 = pos == 0 ? en_sample : ar_zh_sample;
-    std::u16string s2 = pos == 1 ? en_sample : ar_zh_sample;
-    std::u16string s3 = pos == 2 ? en_sample : ar_zh_sample;
-    // Construct a string that starts with s1, has s2 starting at mid-point
-    // and then ends with s3. The string will of length `6*kTextSampleLength`.
-    std::u16string contents = s1;
-    pad(contents, kTextSampleLength * 3);
-    contents += s2;
-    pad(contents, kTextSampleLength * 5);
-    contents += s3;
-    ASSERT_EQ(contents.length(), 6 * kTextSampleLength);
-    language_detection::Prediction prediction =
-        language_detection_model_->DetectLanguage(contents);
-    EXPECT_EQ("en", prediction.language);
-  }
-}
-
 TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
@@ -106,7 +66,7 @@ TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("en", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
@@ -157,7 +117,7 @@ TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
-  EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
   // Rely on the provided language code if the mode is unreliable.
   EXPECT_EQ("ja", language);
   histogram_tester_.ExpectUniqueSample(
@@ -217,7 +177,7 @@ TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("zh-CN", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }

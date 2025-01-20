@@ -45,7 +45,6 @@
 // static
 constexpr int BrowserNonClientFrameView::kMinimumDragHeight;
 
-
 BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
                                                      BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
@@ -54,16 +53,18 @@ BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
 
   // The profile manager may by null in tests.
   if (g_browser_process->profile_manager()) {
-    g_browser_process->profile_manager()->
-        GetProfileAttributesStorage().AddObserver(this);
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .AddObserver(this);
   }
 }
 
 BrowserNonClientFrameView::~BrowserNonClientFrameView() {
   // The profile manager may by null in tests.
   if (g_browser_process->profile_manager()) {
-    g_browser_process->profile_manager()->
-        GetProfileAttributesStorage().RemoveObserver(this);
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .RemoveObserver(this);
   }
 }
 
@@ -72,10 +73,11 @@ void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
 }
 
 void BrowserNonClientFrameView::OnFullscreenStateChanged() {
-  if (frame_->IsFullscreen())
+  if (frame_->IsFullscreen()) {
     browser_view_->HideDownloadShelf();
-  else
+  } else {
     browser_view_->UnhideDownloadShelf();
+  }
 }
 
 bool BrowserNonClientFrameView::CaptionButtonsOnLeadingEdge() const {
@@ -112,8 +114,9 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     // the frame; but to detect this we'd need to do some kind of aligned
     // rendering comparison, which seems not worth it.
     const ui::ThemeProvider* tp = GetThemeProvider();
-    if (tp->HasCustomImage(bg_id.value()))
+    if (tp->HasCustomImage(bg_id.value())) {
       return true;
+    }
 
     // Inactive tab background images are copied from the active ones, so in the
     // inactive case, check the active image as well.
@@ -121,8 +124,9 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
       const int active_id = browser_view_->GetIncognito()
                                 ? IDR_THEME_TAB_BACKGROUND_INCOGNITO
                                 : IDR_THEME_TAB_BACKGROUND;
-      if (tp->HasCustomImage(active_id))
+      if (tp->HasCustomImage(active_id)) {
         return true;
+      }
     }
 
     // The tab image is a tinted version of the frame image.  Tabs are visible
@@ -171,9 +175,9 @@ std::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
   const bool active = ShouldPaintAsActive(active_state);
   const int active_id =
       incognito ? IDR_THEME_TAB_BACKGROUND_INCOGNITO : IDR_THEME_TAB_BACKGROUND;
-  const int inactive_id =
-      incognito ? IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE
-                : IDR_THEME_TAB_BACKGROUND_INACTIVE;
+  const int inactive_id = incognito
+                              ? IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE
+                              : IDR_THEME_TAB_BACKGROUND_INACTIVE;
   const int id = active ? active_id : inactive_id;
 
   // tp->HasCustomImage() will only return true if the supplied ID has been
@@ -197,8 +201,9 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
   // nothing if the window is not visible.  So even if we've already gotten the
   // up-to-date decoration, we need to run the update procedure again here when
   // the window becomes visible.
-  if (is_visible)
+  if (is_visible) {
     OnProfileAvatarChanged(base::FilePath());
+  }
 }
 
 gfx::Insets BrowserNonClientFrameView::RestoredMirroredFrameBorderInsets()
@@ -248,8 +253,9 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
-  if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType())
+  if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType()) {
     return gfx::ImageSkia();
+  }
 
   const ui::ThemeProvider* tp = GetThemeProvider();
   const int frame_overlay_image_id = ShouldPaintAsActive(active_state)
@@ -308,8 +314,9 @@ void BrowserNonClientFrameView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 int BrowserNonClientFrameView::GetSystemMenuY() const {
-  if (!browser_view()->GetTabStripVisible())
+  if (!browser_view()->GetTabStripVisible()) {
     return GetTopInset(false);
+  }
   return GetBoundsForTabStripRegion(
              browser_view()->tab_strip_region_view()->GetMinimumSize())
              .bottom() -

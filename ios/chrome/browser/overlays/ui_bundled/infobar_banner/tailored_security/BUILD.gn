@@ -11,6 +11,7 @@ source_set("tailored_security") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
@@ -18,7 +19,6 @@ source_set("tailored_security") {
     "//ios/chrome/browser/safe_browsing/model/tailored_security:infobar_delegates",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
-    "//ios/chrome/browser/ui/infobars/banners",
   ]
 }
 
@@ -28,12 +28,12 @@ source_set("unit_tests") {
   deps = [
     ":tailored_security",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/ui_bundled/banners/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/safe_browsing/model/tailored_security/test",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners/test",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -29,8 +29,7 @@ class PermissionIndicatorsInteractiveUITest : public InteractiveBrowserTest {
  public:
   PermissionIndicatorsInteractiveUITest() {
     scoped_feature_list_.InitWithFeatures(
-        {content_settings::features::kImprovedSemanticsActivityIndicators},
-        {content_settings::features::kLeftHandSideActivityIndicators});
+        {}, {content_settings::features::kLeftHandSideActivityIndicators});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }

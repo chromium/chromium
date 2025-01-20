@@ -46,7 +46,7 @@ OidcManagedProfileCreationDelegate::~OidcManagedProfileCreationDelegate() =
 void OidcManagedProfileCreationDelegate::SetManagedAttributesForProfile(
     ProfileAttributesEntry* entry) {
   CHECK(entry);
-  if (!id_token_.empty() && !auth_token_.empty()) {
+  if (!id_token_.empty()) {
     entry->SetProfileManagementOidcTokens(ProfileManagementOidcTokens(
         auth_token_, id_token_, base::UTF8ToUTF16(user_display_name_)));
     entry->SetDasherlessManagement(!dasher_based_);

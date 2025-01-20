@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
@@ -69,71 +70,68 @@ PreferenceObject::PreferenceObject(ExecutionContext* executionContext,
 
 PreferenceObject::~PreferenceObject() = default;
 
-std::optional<AtomicString> PreferenceObject::override(
-    ScriptState* script_state) {
+AtomicString PreferenceObject::override(ScriptState* script_state) {
   CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
-    return std::nullopt;
+    return g_null_atom;
   }
   auto* execution_context = ExecutionContext::From(script_state);
   if (!execution_context || execution_context->IsContextDestroyed()) {
-    return std::nullopt;
+    return g_null_atom;
   }
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (!window) {
-    return std::nullopt;
+    return g_null_atom;
   }
 
   const PreferenceOverrides* overrides =
       window->GetFrame()->GetPage()->GetPreferenceOverrides();
 
   if (!overrides) {
-    return std::nullopt;
+    return g_null_atom;
   }
 
   if (name_ == preference_names::kColorScheme) {
     std::optional<mojom::blink::PreferredColorScheme> color_scheme =
         overrides->GetPreferredColorScheme();
     if (!color_scheme.has_value()) {
-      return std::nullopt;
+      return g_null_atom;
     }
 
-    return std::make_optional(ColorSchemeToString(color_scheme.value()));
+    return ColorSchemeToString(color_scheme.value());
   } else if (name_ == preference_names::kContrast) {
     std::optional<mojom::blink::PreferredContrast> contrast =
         overrides->GetPreferredContrast();
     if (!contrast.has_value()) {
-      return std::nullopt;
+      return g_null_atom;
     }
 
-    return std::make_optional(ContrastToString(contrast.value()));
+    return ContrastToString(contrast.value());
   } else if (name_ == preference_names::kReducedMotion) {
     std::optional<bool> reduced_motion = overrides->GetPrefersReducedMotion();
     if (!reduced_motion.has_value()) {
-      return std::nullopt;
+      return g_null_atom;
     }
 
-    return std::make_optional(reduced_motion.value()
-                                  ? preference_values::kReduce
-                                  : preference_values::kNoPreference);
+    return reduced_motion.value() ? preference_values::kReduce
+                                  : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedTransparency) {
     std::optional<bool> reduced_transparency =
         overrides->GetPrefersReducedTransparency();
     if (!reduced_transparency.has_value()) {
-      return std::nullopt;
+      return g_null_atom;
     }
 
-    return std::make_optional(reduced_transparency.value()
-                                  ? preference_values::kReduce
-                                  : preference_values::kNoPreference);
+    return reduced_transparency.value() ? preference_values::kReduce
+                                        : preference_values::kNoPreference;
   } else if (name_ == preference_names::kReducedData) {
     std::optional<bool> reduced_data = overrides->GetPrefersReducedData();
     if (!reduced_data.has_value()) {
-      return std::nullopt;
+      return g_null_atom;
     }
 
-    return std::make_optional(reduced_data ? preference_values::kReduce
-                                           : preference_values::kNoPreference);
+    return reduced_data ? preference_values::kReduce
+                        : preference_values::kNoPreference;
   } else {
     NOTREACHED();
   }

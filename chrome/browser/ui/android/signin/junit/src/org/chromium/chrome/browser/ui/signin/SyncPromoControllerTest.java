@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -24,7 +23,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -43,20 +41,14 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
-import java.util.List;
 import java.util.Set;
 
 /** Tests for {@link SyncPromoController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)
-@EnableFeatures({
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-})
 public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS =
             SyncPromoController.NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS;
@@ -96,8 +88,6 @@ public class SyncPromoControllerTest {
 
     @Mock private HistorySyncHelper mHistorySyncHelper;
 
-    @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
-
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     private final SharedPreferencesManager mSharedPreferencesManager =
@@ -125,7 +115,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
     }
 
@@ -142,7 +131,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
 
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
@@ -155,8 +143,8 @@ public class SyncPromoControllerTest {
 
     @Test
     public void shouldShowPromoForNtpWhenDefaultAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
@@ -172,8 +160,8 @@ public class SyncPromoControllerTest {
     @Test
     public void
             shouldShowPromoForNtpWhenSecondaryAccountCannotShowHistoryOptInWithoutRestrictions() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }
@@ -297,7 +285,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
@@ -312,7 +299,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
@@ -329,7 +315,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
@@ -345,7 +330,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
@@ -361,7 +345,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
@@ -378,7 +361,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
@@ -395,7 +377,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
@@ -412,7 +393,6 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
@@ -429,26 +409,8 @@ public class SyncPromoControllerTest {
                         mProfile,
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
-                        mSyncConsentActivityLauncher,
                         mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void shouldLaunchBookmarksSigninFlowReturnsTrue() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        Assert.assertTrue(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(TestAccounts.ACCOUNT1),
-                        mPrefService));
     }
 
     private void disableNtpSyncPromoBySettingLimits(long firstShownTime, long lastShownTime) {

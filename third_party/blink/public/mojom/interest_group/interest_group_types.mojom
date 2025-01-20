@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -41,6 +42,12 @@ struct InterestGroupAd {
   // receive reports with macros. All origins must be HTTPS. Only meaningful in
   // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
   array<url.mojom.Origin>? allowed_reporting_origins;
+
+  // Optional metadata sent to trusted seller signals server in V1 protocol,
+  // ostensively to help do things like scan creatives against malware.
+  // This is opaque to Chrome, and will be passed to the server URL verbatim
+  // (modulo escaping required by being a query param).
+  string? creative_scanning_metadata;
 };
 
 // The maximum size of a valid interest group in bytes.
@@ -656,6 +663,10 @@ struct AuctionAdConfig {
   // Origin for the Coordinator to be used for the seller's Private Aggregation
   // requests.
   url.mojom.Origin? aggregation_coordinator_origin;
+
+  // If true, data from creative_scanning_metadata field of interest groups
+  // will be sent to V1 trusted seller signals server.
+  bool? send_creative_scanning_metadata;
 };
 
 // Per-buyer config for GetInterestGroupAdAuctionData().
@@ -672,4 +683,17 @@ struct AuctionDataConfig {
 
   // Maximum size to make the returned encrypted request.
   uint32? request_size;
+};
+
+union AdAuctionRequestOrError {
+  mojo_base.mojom.BigBuffer request;
+  string error;
+};
+
+// The per seller ad auction data for running an external auction on a bidding
+// and auction server. Upon success, `data` will contain the encrypted ad
+// auction data, or an error message upon failure.
+struct AdAuctionPerSellerRequest {
+  url.mojom.Origin seller;
+  AdAuctionRequestOrError data;
 };

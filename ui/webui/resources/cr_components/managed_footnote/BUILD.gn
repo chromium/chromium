@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "cr_components_managed_footnote"
 
   non_web_component_files = [
-    "managed_footnote.ts",
     "managed_footnote.html.ts",
+    "managed_footnote.ts",
   ]
   css_files = [ "managed_footnote.css" ]
 

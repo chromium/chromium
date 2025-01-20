@@ -217,16 +217,16 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleSetVmDeviceShared,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
-    web_ui()->RegisterMessageCallback(
-        "requestBruschettaInstallerView",
-        base::BindRepeating(
-            &CrostiniHandler::HandleRequestBruschettaInstallerView,
-            handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
-        "requestBruschettaUninstallerView",
-        base::BindRepeating(
-            &CrostiniHandler::HandleRequestBruschettaUninstallerView,
-            handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestBruschettaInstallerView",
+      base::BindRepeating(
+          &CrostiniHandler::HandleRequestBruschettaInstallerView,
+          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestBruschettaUninstallerView",
+      base::BindRepeating(
+          &CrostiniHandler::HandleRequestBruschettaUninstallerView,
+          handler_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniHandler::OnJavascriptAllowed() {

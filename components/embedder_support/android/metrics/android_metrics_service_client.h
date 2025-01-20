@@ -129,6 +129,9 @@ class AndroidMetricsServiceClient
   // of IsOffTheRecordSessionActive().
   void UpdateUkmService();
 
+  // Updates the state of the DWA service if it's running.
+  void UpdateDwaService();
+
   // Whether or not consent state has been determined, regardless of whether
   // it is positive or negative.
   bool IsConsentDetermined() const;
@@ -163,6 +166,7 @@ class AndroidMetricsServiceClient
       const MetricsLogUploader::UploadCallback& on_upload_complete) override;
   base::TimeDelta GetStandardUploadInterval() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool ShouldStartUpFastForTesting() const override;
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
@@ -275,6 +279,7 @@ class AndroidMetricsServiceClient
 
   void RegisterMetricsProvidersAndInitState();
   void CreateUkmService();
+  void CreateDwaService();
 
   void OnApplicationNotIdle();
   void OnDidStartLoading();
@@ -288,6 +293,7 @@ class AndroidMetricsServiceClient
       synthetic_trial_observation_{&synthetic_trial_observer_};
   std::unique_ptr<MetricsService> metrics_service_;
   std::unique_ptr<ukm::UkmService> ukm_service_;
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       host_observation_{this};

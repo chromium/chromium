@@ -6,10 +6,10 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -143,6 +143,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   NSLayoutConstraint* _iconVisibleConstraint;
   NSLayoutConstraint* _iconCenterAlignment;
   NSLayoutConstraint* _iconTopAlignment;
+  NSLayoutConstraint* _textTopAlignment;
   NSLayoutConstraint* _iconBackgroundDefaultWidthConstraint;
   NSLayoutConstraint* _iconBackgroundCustomWidthConstraint;
 
@@ -218,6 +219,13 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                        constant:kIconTopAlignmentVerticalSpacing];
     [self updateIconAlignment];
 
+    // This constraint is not enabled by default and is set by
+    // `setTextLabelMarginTop`.
+    _textLabelMarginTop = 0.;
+    _textTopAlignment = [self.textLabel.topAnchor
+        constraintEqualToAnchor:_textStackView.topAnchor
+                       constant:_textLabelMarginTop];
+
     _iconBackgroundDefaultWidthConstraint = [_iconBackground.widthAnchor
         constraintEqualToConstant:kTableViewIconImageSize];
     _iconBackgroundDefaultWidthConstraint.active = YES;
@@ -270,6 +278,14 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     }
   }
   return self;
+}
+
+- (void)setTextLabelMarginTop:(CGFloat)marginTop {
+  _textLabelMarginTop = marginTop;
+  _textTopAlignment.constant = _textLabelMarginTop;
+  _textTopAlignment.active = YES;
+  [self.textLabel setNeedsUpdateConstraints];
+  [self.textStackView setNeedsLayout];
 }
 
 - (void)setIconImage:(UIImage*)image
@@ -400,6 +416,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   [self setDetailText:nil];
   [self setBadgeType:BadgeType::kNone];
   [self updateIconBackgroundWidthToFitContent:NO];
+  _textTopAlignment.active = NO;
 }
 
 #pragma mark - Private

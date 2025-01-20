@@ -29,13 +29,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
+#include "sql/sql_name_variants.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
@@ -207,6 +210,12 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
   // statements targeting views fail.
   bool enable_views_discouraged = false;
+
+  // If non-null, specifies the vfs implementation for the database to look for.
+  // Most use-cases do not require the use of a
+  // VFS(https://www.sqlite.org/vfs.html). This option should only be used when
+  // there is a clear need for it.
+  const char* vfs_name_discouraged = nullptr;
 };
 
 // Holds database diagnostics in a structured format.
@@ -267,23 +276,55 @@ class COMPONENT_EXPORT(SQL) Database {
   class StatementRef;  // Forward declaration, see real one below.
 
  public:
+  // A convenience struct to
+  // 1. Convert (often implicitly) a static const char* string to a database tag
+  // to pass to the Database constructors
+  // 2. Check that the tag is in the DatabaseTag histogram variant list, at
+  // compile time.
+  //
+  // There is nothing special to do to use this struct. For example, the
+  // following works out of the box:
+  //
+  // Database db(DatabaseOptions{}, "TagName");
+  //
+  // However, if the database is a unique_ptr created with make_unique,
+  // explicitly invoking the constructor is necessary:
+  //
+  // auto db = std::make_unique<Database>(
+  //   DatabaseOptions{},
+  //   Database::Tag("TagName"));
+  struct Tag {
+    // Purposely not explicit to avoid requiring callers to wrap their tag
+    // string.
+    consteval Tag(const char* tag_value) : value(tag_value) {
+      if (!sql_metrics::IsValidDatabaseTag(tag_value)) {
+        // This will never actually invoke what's under NOTREACHED(), but
+        // NOTREACHED() is invalid in a consteval context so compilation will
+        // fail iff the string is invalid.
+        NOTREACHED() << "Invalid database tag. Did you add it to the "
+                        "DatabaseTag variant in sql/histograms.xml?";
+      }
+    }
+
+    std::string_view value;
+  };
+
   // Creates an instance that can receive Open() / OpenInMemory() calls.
   //
   // Some `options` members are only applied to newly created databases.
   //
   // Most operations on the new instance will fail until Open() / OpenInMemory()
   // is called.
-  explicit Database(DatabaseOptions options);
+  //
+  // `tag` is a string uniquely identifying this database for metrics. This
+  // class automatically uses `tag` to determine which histogram to record to
+  // for timing and error histograms. Tests that don't care about those
+  // histograms values can use `sql::test::kTestTag` from
+  // sql/test/test_helpers.h.
+  Database(DatabaseOptions options, Tag tag);
 
-  // This constructor is deprecated.
-  //
-  // When transitioning away from this default constructor, consider setting
-  // DatabaseOptions::explicit_locking to true. For historical reasons, this
-  // constructor results in DatabaseOptions::explicit_locking set to false.
-  //
-  // TODO(crbug.com/40148370): Remove this constructor after migrating all
-  //                          uses to the explicit constructor below.
-  Database();
+  // Convenience constructor for callers that use default options.
+  explicit Database(Tag tag);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
@@ -331,12 +372,6 @@ class COMPONENT_EXPORT(SQL) Database {
   }
   void reset_error_callback() { error_callback_.Reset(); }
   bool has_error_callback() const { return !error_callback_.is_null(); }
-
-  // Developer-friendly database ID used in logging output and memory dumps.
-  void set_histogram_tag(const std::string& histogram_tag) {
-    DCHECK(!is_open());
-    histogram_tag_ = histogram_tag;
-  }
 
   const std::string& histogram_tag() const { return histogram_tag_; }
 
@@ -734,6 +769,27 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
+  // A scoped utility to setup error reporting during the `Open()` operation
+  class ScopedOpenErrorReporter {
+   public:
+    // db: the database to instrument. Must outlive `this`
+    // histogram: the histogram to record the error code into. Will
+    // automatically be suffixed with `Database::histogram_tag()` if it's
+    // specified, "NoTag" otherwise.
+    ScopedOpenErrorReporter(Database* db, std::string_view histogram);
+    ~ScopedOpenErrorReporter();
+
+   private:
+    // The callback that will be invoked by the database in case of an error.
+    void OnErrorDuringOpen(SqliteResultCode code);
+
+    raw_ptr<Database> db_;
+    std::string_view histogram_;
+  };
+
+  // Invoke `open_error_reporting_callback_` if it's set.
+  void MaybeReportErrorDuringOpen(SqliteResultCode code);
+
   // Implements Open(), OpenInMemory().
   //
   // `db_file_path` is a UTF-8 path to the file storing the database pages. If
@@ -944,6 +1000,19 @@ class COMPONENT_EXPORT(SQL) Database {
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();
 
+  // Records a histogram named `name_prefix` suffixed with this database's
+  // histogram tag (or "NoTag" if the tag isn't set). For instance,
+  // `RecordTimingHistogram("Foo.", ...)` called on a database with the tag
+  // "Bar" will record into "Foo.Bar". This function chooses reasonable
+  // bucketing parameters for typical database operations timing and reports in
+  // microseconds.
+  void RecordTimingHistogram(std::string_view name_prefix,
+                             base::TimeDelta timing) const;
+
+  // Returns the name of the track in which to record this database's events
+  // based on its histogram tag.
+  perfetto::NamedTrack GetTracingNamedTrack() const;
+
   void SetEnableVirtualTablesForTesting(bool enable) {
     enable_virtual_tables_ = enable;
   }
@@ -1018,8 +1087,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // Developer-friendly database ID used in logging output and memory dumps.
   std::string histogram_tag_;
 
+  // Persist the track name as a member since perfetto needs the original string
+  // for the name to remain alive (without taking ownership of it).
+  std::string tracing_track_name_;
+
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+
+  // If set, this callback will be invoked when an sqlite error is triggered
+  // during `OpenInternal` or `Execute`s triggered from `Open`.
+  base::RepeatingCallback<void(SqliteResultCode)>
+      open_error_reporting_callback_;
 
   // Vends WeakPtr<Database> for internal scoping helpers.
   base::WeakPtrFactory<Database> weak_factory_{this};

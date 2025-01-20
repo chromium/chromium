@@ -19,13 +19,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mock_video_capture_client.h"
 #include "media/capture/video/chromeos/stream_buffer_manager.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,16 +80,26 @@ const VideoCaptureFormat kDefaultCaptureFormat(gfx::Size(1280, 720),
 class FakeCameraBufferFactory : public CameraBufferFactory {
  public:
   FakeCameraBufferFactory() {
-    gpu_memory_buffer_manager_ =
-        std::make_unique<unittest_internal::MockGpuMemoryBufferManager>();
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   }
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
-    return unittest_internal::MockGpuMemoryBufferManager::
-        CreateFakeGpuMemoryBuffer(size, format, usage, gpu::kNullSurfaceHandle,
-                                  nullptr);
+      gfx::BufferUsage usage,
+      const gfx::ColorSpace& color_space) override {
+    // Setting some default usage in order to get a mappable shared image.
+    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::GetSharedImageFormat(format), size, color_space,
+         gpu::SharedImageUsageSet(si_usage), "FakeCameraBufferFactory"},
+        gpu::kNullSurfaceHandle, usage);
+    if (!shared_image) {
+      LOG(ERROR) << "Failed to create shared image.";
+    }
+    return shared_image;
   }
 
   ChromiumPixelFormat ResolveStreamBufferFormat(
@@ -99,8 +110,7 @@ class FakeCameraBufferFactory : public CameraBufferFactory {
   }
 
  private:
-  std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
-      gpu_memory_buffer_manager_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 }  // namespace

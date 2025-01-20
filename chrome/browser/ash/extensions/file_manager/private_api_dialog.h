@@ -12,7 +12,7 @@
 
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 
 namespace ui {
 struct SelectedFileInfo;

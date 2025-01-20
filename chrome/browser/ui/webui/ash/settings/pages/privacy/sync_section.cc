@@ -6,11 +6,11 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -18,6 +18,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/google/core/common/google_util.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
@@ -27,11 +28,10 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kPeopleSectionPath;
 using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kSyncControlsSubpagePath;
 using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
 using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
-using ::chromeos::settings::mojom::kSyncSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -85,11 +85,11 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
 base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SYNC,
-       mojom::kSyncSubpagePath,
+       mojom::kSyncControlsSubpagePath,
        mojom::SearchResultIcon::kSync,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSync}},
+       {.subpage = mojom::Subpage::kSyncControls}},
   });
   return tags;
 }
@@ -103,7 +103,8 @@ SyncSection::SyncSection(Profile* profile,
   CHECK(search_tag_registry);
 
   // No search tags are registered if in guest mode.
-  if (IsGuestModeActive()) {
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (IsGuestModeActive(user)) {
     return;
   }
 
@@ -148,14 +149,9 @@ int SyncSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section SyncSection::GetSection() const {
-  // Note: This is a subsection that exists under People or Privacy and
-  // Security. This section will no longer exist under the People section once
-  // the OsSettingsRevampWayfinding feature is fully launched. This is not a
-  // top-level section and does not have a respective declaration in
-  // chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kPrivacyAndSecurity
-             : mojom::Section::kPeople;
+  // Note: This is not a top-level section and does not have a respective
+  // declaration in chromeos::settings::mojom::Section.
+  return mojom::Section::kPrivacyAndSecurity;
 }
 
 mojom::SearchResultIcon SyncSection::GetSectionIcon() const {
@@ -163,9 +159,7 @@ mojom::SearchResultIcon SyncSection::GetSectionIcon() const {
 }
 
 const char* SyncSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kPrivacyAndSecuritySectionPath
-             : mojom::kPeopleSectionPath;
+  return mojom::kPrivacyAndSecuritySectionPath;
 }
 
 bool SyncSection::LogMetric(mojom::Setting setting, base::Value& value) const {
@@ -197,11 +191,11 @@ void SyncSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Page with OS-specific sync data types.
   generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSync,
+      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSyncControls,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncSubpagePath);
+      mojom::kSyncControlsSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,
-                                   mojom::Subpage::kSync);
+                                   mojom::Subpage::kSyncControls);
 }
 
 }  // namespace ash::settings

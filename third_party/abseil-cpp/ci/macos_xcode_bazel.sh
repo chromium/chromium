@@ -24,7 +24,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 # If we are running on Kokoro, check for a versioned Bazel binary.
-KOKORO_GFILE_BAZEL_BIN="bazel-7.0.0-darwin-x86_64"
+KOKORO_GFILE_BAZEL_BIN="bazel-8.0.0-darwin-x86_64"
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f ${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN} ]]; then
   BAZEL_BIN="${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN}"
   chmod +x ${BAZEL_BIN}
@@ -51,6 +51,9 @@ cd ${ABSEIL_ROOT}
 if [[ -n "${ALTERNATE_OPTIONS:-}" ]]; then
   cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
 fi
+
+# Avoid using the system version of google-benchmark.
+brew uninstall google-benchmark
 
 ${BAZEL_BIN} test ... \
   --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \

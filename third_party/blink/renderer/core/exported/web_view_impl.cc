@@ -1132,12 +1132,13 @@ void WebViewImpl::DisablePopupMouseWheelEventListener() {
   DCHECK(popup_mouse_wheel_event_listener_);
   Document* document =
       local_root_with_empty_mouse_wheel_listener_->GetDocument();
-  DCHECK(document);
-  // Document may have already removed the event listener, for instance, due
-  // to a navigation, but remove it anyway.
-  document->removeEventListener(event_type_names::kMousewheel,
-                                popup_mouse_wheel_event_listener_.Release(),
-                                false);
+  if (document) {
+    // Document may have already removed the event listener, for instance, due
+    // to a navigation, but remove it anyway.
+    document->removeEventListener(event_type_names::kMousewheel,
+                                  popup_mouse_wheel_event_listener_.Release(),
+                                  false);
+  }
   local_root_with_empty_mouse_wheel_listener_ = nullptr;
 }
 
@@ -1310,11 +1311,17 @@ void WebViewImpl::DidUpdateBrowserControls() {
     visual_viewport.SetBrowserControlsAdjustment(
         GetBrowserControls().UnreportedSizeAdjustment());
   }
+}
 
-  if (GetPage()->GetSettings().GetDynamicSafeAreaInsetsEnabled() &&
-      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled()) {
-    GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls());
+void WebViewImpl::DidUpdateMaxSafeAreaInsets(
+    const gfx::InsetsF& max_safe_area_insets) {
+  WebLocalFrameImpl* main_frame = MainFrameImpl();
+  if (!main_frame || !main_frame->IsOutermostMainFrame()) {
+    return;
   }
+
+  WebFrameWidgetImpl* widget = main_frame->LocalRootFrameWidget();
+  widget->SetMaxSafeAreaInsets(max_safe_area_insets);
 }
 
 BrowserControls& WebViewImpl::GetBrowserControls() {
@@ -1584,11 +1591,16 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.target_blank_implies_no_opener_enabled_will_be_removed);
   settings->SetAllowNonEmptyNavigatorPlugins(
       prefs.allow_non_empty_navigator_plugins);
-  RuntimeEnabledFeatures::SetDatabaseEnabled(prefs.databases_enabled);
   settings->SetShouldProtectAgainstIpcFlooding(
       !prefs.disable_ipc_flooding_protection);
   settings->SetHyperlinkAuditingEnabled(prefs.hyperlink_auditing_enabled);
   settings->SetCookieEnabled(prefs.cookie_enabled);
+
+  // By default, allow Android WebView to enable WebSQL. Rollout for disabling
+  // will happen via Finch.
+  if (base::FeatureList::IsEnabled(blink::features::kWebSQLWebViewAccess)) {
+    RuntimeEnabledFeatures::SetDatabaseEnabled(prefs.databases_enabled);
+  }
 
   // By default, allow_universal_access_from_file_urls is set to false and thus
   // we mitigate attacks from local HTML files by not granting file:// URLs

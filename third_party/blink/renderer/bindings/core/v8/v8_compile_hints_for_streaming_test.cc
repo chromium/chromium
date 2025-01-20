@@ -139,8 +139,8 @@ TEST_F(CompileHintsForStreamingTest, ConsumeLocalNoMagicComment) {
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(100);
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   base::HistogramTester histogram_tester;
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
@@ -166,8 +166,8 @@ TEST_F(CompileHintsForStreamingTest, ConsumeLocalMagicCommentAlways) {
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(100);
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   base::HistogramTester histogram_tester;
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
@@ -196,8 +196,8 @@ TEST_F(CompileHintsForStreamingTest, ConsumeLocalMagicComment) {
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(100);
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   base::HistogramTester histogram_tester;
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
@@ -225,8 +225,8 @@ TEST_F(CompileHintsForStreamingTest,
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(1);  // Too small.
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
   EXPECT_TRUE(compile_hints_for_streaming);
@@ -247,8 +247,8 @@ TEST_F(CompileHintsForStreamingTest,
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(1);  // Too small.
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
   EXPECT_TRUE(compile_hints_for_streaming);
@@ -269,8 +269,8 @@ TEST_F(CompileHintsForStreamingTest,
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> dummy_data(1);  // Too small.
-  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
-      kCacheTagCompileHints, dummy_data.data(), dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kCacheTagCompileHints, dummy_data, kDummyTag);
   auto compile_hints_for_streaming =
       std::move(builder).Build(std::move(metadata), /*has_hot_timestamp=*/true);
   EXPECT_TRUE(compile_hints_for_streaming);
@@ -289,8 +289,7 @@ TEST_F(CompileHintsForStreamingTest, ConsumeCrowdsourcedHintNoMagicComment) {
   auto* crowdsourced_compile_hints_consumer =
       &page->GetV8CrowdsourcedCompileHintsConsumer();
   Vector<int64_t> dummy_data(kBloomFilterInt32Count / 2);
-  crowdsourced_compile_hints_consumer->SetData(dummy_data.data(),
-                                               dummy_data.size());
+  crowdsourced_compile_hints_consumer->SetData(dummy_data);
 
   auto builder = CompileHintsForStreaming::Builder(
       crowdsourced_compile_hints_producer, crowdsourced_compile_hints_consumer,
@@ -321,15 +320,13 @@ TEST_F(CompileHintsForStreamingTest, PreferCrowdsourcedHints) {
   auto* crowdsourced_compile_hints_consumer =
       &page->GetV8CrowdsourcedCompileHintsConsumer();
   Vector<int64_t> dummy_data(kBloomFilterInt32Count / 2);
-  crowdsourced_compile_hints_consumer->SetData(dummy_data.data(),
-                                               dummy_data.size());
+  crowdsourced_compile_hints_consumer->SetData(dummy_data);
 
   const uint32_t kCacheTagCompileHints = 2;
   const uint64_t kDummyTag = 1;
   Vector<uint8_t> local_dummy_data(100);
-  scoped_refptr<CachedMetadata> metadata =
-      CachedMetadata::Create(kCacheTagCompileHints, local_dummy_data.data(),
-                             local_dummy_data.size(), kDummyTag);
+  scoped_refptr<CachedMetadata> metadata = CachedMetadata::Create(
+      kCacheTagCompileHints, local_dummy_data, kDummyTag);
 
   base::HistogramTester histogram_tester;
   auto builder = CompileHintsForStreaming::Builder(

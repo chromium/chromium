@@ -25,6 +25,7 @@ static_library("status_area_internals") {
     "//components/prefs:prefs",
     "//content/public/browser",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

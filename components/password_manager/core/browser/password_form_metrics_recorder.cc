@@ -20,6 +20,7 @@
 #include "base/time/default_clock.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -132,7 +133,9 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
     bool manually_filled = field.properties_mask() &
                            FieldPropertiesFlags::kAutofilledOnUserTrigger;
     bool automatically_filled =
-        field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad;
+        (field.properties_mask() &
+         (FieldPropertiesFlags::kAutofilledOnPageLoad |
+          FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad));
     result.manual_fallback_used |=
         field.properties_mask() &
         FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback;
@@ -650,7 +653,7 @@ void PasswordFormMetricsRecorder::RecordFirstWaitForUsernameReason(
 
 void PasswordFormMetricsRecorder::RecordMatchedFormType(
     const PasswordForm& form) {
-  if (std::exchange(recorded_preferred_matched_password_type, true)) {
+  if (std::exchange(recorded_preferred_matched_password_type_, true)) {
     return;
   }
 
@@ -682,11 +685,29 @@ void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
   if (!form_type) {
     return;
   }
-  if (std::exchange(recorded_potential_preferred_matched_password_type, true)) {
+  if (std::exchange(recorded_potential_preferred_matched_password_type_,
+                    true)) {
     return;
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
                             form_type.value());
+}
+
+void PasswordFormMetricsRecorder::RecordFillSuggestionHasGroupedMatch(
+    base::span<const PasswordForm> best_matches) {
+  // Do not record the UMA if there is nothing to fill.
+  if (best_matches.empty()) {
+    return;
+  }
+  if (std::exchange(recorded_fill_suggestion_has_grouped_match_, true)) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "PasswordManager.FillSuggestionsHasGroupedMatch",
+      base::ranges::find_if(best_matches, [](const PasswordForm& match) {
+        return password_manager_util::GetMatchType(match) ==
+               password_manager_util::GetLoginMatchType::kGrouped;
+      }) != best_matches.end());
 }
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
@@ -952,11 +973,12 @@ void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
   bool had_focus = false;
   bool had_user_input_or_autofill_on_password = false;
   for (const auto& field : submitted_form.fields()) {
-    if (field.HadFocus()) {
+    if (field.properties_mask() & autofill::kHadFocus) {
       had_focus = true;
     }
     if (field.IsPasswordInputElement() &&
-        (field.DidUserType() || field.WasPasswordAutofilled())) {
+        (field.properties_mask() &
+         (autofill::kUserTyped | autofill::kAutofilled))) {
       had_user_input_or_autofill_on_password = true;
     }
   }
@@ -977,10 +999,11 @@ void PasswordFormMetricsRecorder::CalculateAutomationRate(
     }
 
     // The field was never filled or typed in, ignore it.
-    if (!field.DidUserType() && !field.WasPasswordAutofilled()) {
+    if (!(field.properties_mask() &
+          (autofill::kUserTyped | autofill::kAutofilled))) {
       continue;
     }
-    if (field.WasPasswordAutofilled()) {
+    if (field.properties_mask() & autofill::kAutofilled) {
       total_length_autofilled_fields += field.value().size();
     }
     total_length += field.value().size();
@@ -1092,6 +1115,9 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::MANUAL_PASSKEY_UPDATED_CONFIRMATION:
     case metrics_util::AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE:
     case metrics_util::MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE:
+    case metrics_util::AUTOMATIC_PASSKEY_UPGRADE_BUBBLE:
+    case metrics_util::MANUAL_PASSKEY_UPGRADE_BUBBLE:
+    case metrics_util::PASSWORD_CHANGE_BUBBLE:
       // Do nothing.
       return;
 

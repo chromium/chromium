@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -108,7 +109,7 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
   ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
       const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
 
-  ~ManagementSetEnabledFunctionInstallPromptDelegate() override {}
+  ~ManagementSetEnabledFunctionInstallPromptDelegate() override = default;
 
  private:
   void OnInstallPromptDone(
@@ -177,7 +178,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   ManagementUninstallFunctionUninstallDialogDelegate& operator=(
       const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
 
-  ~ManagementUninstallFunctionUninstallDialogDelegate() override {}
+  ~ManagementUninstallFunctionUninstallDialogDelegate() override = default;
 
   // ExtensionUninstallDialog::Delegate implementation.
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
@@ -202,12 +203,12 @@ void OnGenerateAppForLinkCompleted(
 
 class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
  public:
-  ChromeAppForLinkDelegate() {}
+  ChromeAppForLinkDelegate() = default;
 
   ChromeAppForLinkDelegate(const ChromeAppForLinkDelegate&) = delete;
   ChromeAppForLinkDelegate& operator=(const ChromeAppForLinkDelegate&) = delete;
 
-  ~ChromeAppForLinkDelegate() override {}
+  ~ChromeAppForLinkDelegate() override = default;
 
   void OnFaviconForApp(
       extensions::ManagementGenerateAppForLinkFunction* function,
@@ -257,8 +258,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     extensions::api::management::ExtensionInfo info;
     info.id = app_id;
     info.name = registrar.GetAppShortName(app_id);
-    info.enabled = registrar.IsInstallState(
-        app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION});
+    info.enabled = registrar.GetInstallState(app_id) ==
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION;
     info.install_type =
         extensions::api::management::ExtensionInstallType::kOther;
     info.is_app = true;

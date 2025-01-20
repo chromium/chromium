@@ -73,7 +73,7 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
                                       primary_language_name,
                                       mask_offensive_words),
       binary_path_(binary_path) {
-  cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
+  cros_soda_client_ = std::make_unique<::soda::CrosSodaClient>();
 }
 
 chromeos::machine_learning::mojom::SodaMultilangConfigPtr

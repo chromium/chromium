@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.PageTransition;
 
@@ -69,6 +68,7 @@ public class UkmTest {
     @SmallTest
     // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
+    // LINT.IfChange(ConsentAddedButNoSyncCheck)
     public void consentAddedButNoSyncCheck() throws Exception {
         // Keep in sync with UkmBrowserTest.ConsentAddedButNoSyncCheck in
         // chrome/browser/metrics/ukm_browsertest.cc.
@@ -85,24 +85,26 @@ public class UkmTest {
         Assert.assertFalse("UKM Enabled:", isUkmEnabled(normalTab));
 
         // Finally, sync and UKM is enabled.
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
     }
+
+    // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ConsentAddedButNoSyncCheck)
 
     @Test
     @SmallTest
     // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
+
+    // LINT.IfChange(SingleSyncSignoutCheck)
     public void singleSyncSignoutCheck() throws Exception {
-        // Keep in sync with UkmBrowserTest.SingleSyncSignoutCheck in
-        // chrome/browser/metrics/ukm_browsertest.cc.
         // Make sure that UKM is disabled when an explicit passphrase is set.
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(true));
 
         // Enable a Syncing account.
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 
@@ -116,4 +118,5 @@ public class UkmTest {
         // Client ID should have been reset.
         Assert.assertNotEquals("Client id:", clientId, getUkmClientId(normalTab));
     }
+    // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:SingleSyncSignoutCheck)
 }

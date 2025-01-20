@@ -23,13 +23,13 @@ class AutofillKeyboardAccessoryController;
 // A suggestion view that acts as an alternative to the field-attached popup
 // window. This view appears above the keyboard and spans the width of the
 // screen, condensing rather than overlaying the content area.
-class AutofillKeyboardAccessoryViewImpl
-    : public AutofillKeyboardAccessoryView {
+class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
  public:
   explicit AutofillKeyboardAccessoryViewImpl(
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
-  AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) = delete;
+  AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) =
+      delete;
   AutofillKeyboardAccessoryViewImpl& operator=(
       const AutofillKeyboardAccessoryViewImpl&) = delete;
 

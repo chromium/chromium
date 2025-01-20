@@ -57,7 +57,7 @@ std::optional<ProcessContext> ProcessContext::FromRenderProcessHost(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(host);
-  RenderProcessHostId id(host->GetID());
+  RenderProcessHostId id(host->GetDeprecatedID());
   CHECK(!id.is_null());
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(host);

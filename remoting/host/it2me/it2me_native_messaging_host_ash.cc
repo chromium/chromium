@@ -73,10 +73,6 @@ bool ShouldTerminateUponInput(
 bool ShouldCurtainLocalUserSession(
     const mojom::SupportSessionParams& params,
     const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (!base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
-    return false;
-  }
-
   if (enterprise_params.has_value()) {
     return enterprise_params->curtain_local_user_session;
   }

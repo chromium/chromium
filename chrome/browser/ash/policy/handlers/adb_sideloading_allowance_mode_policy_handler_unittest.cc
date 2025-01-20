@@ -25,6 +25,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -99,7 +100,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   void CreateUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
   }

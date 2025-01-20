@@ -36,6 +36,8 @@ class VIEWS_EXPORT ClientView : public View {
   // ClientView subclasses can override this default behavior to allow the
   // close to be blocked until the user corrects mistakes, accepts a warning
   // dialog, etc.
+  //
+  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous().
   virtual CloseRequestResult OnWindowCloseRequested();
 
   // Notification that the widget is closing.

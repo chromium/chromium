@@ -20,11 +20,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -151,20 +146,20 @@ bool HasValidAvgCharWidth(const Font& font) {
     return false;
   }
 
-  static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
-      nullptr;
-
   const AtomicString& family = font.GetFontDescription().Family().FamilyName();
   if (family.empty()) {
     return false;
   }
 
+  static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
+      nullptr;
   if (!font_families_with_invalid_char_width_map) {
     font_families_with_invalid_char_width_map = new HashSet<AtomicString>;
-
-    for (size_t i = 0; i < std::size(kFontFamiliesWithInvalidCharWidth); ++i) {
+    font_families_with_invalid_char_width_map->ReserveCapacityForSize(
+        std::size(kFontFamiliesWithInvalidCharWidth));
+    for (const auto* font_family : kFontFamiliesWithInvalidCharWidth) {
       font_families_with_invalid_char_width_map->insert(
-          AtomicString(kFontFamiliesWithInvalidCharWidth[i]));
+          AtomicString(font_family));
     }
   }
 
@@ -185,7 +180,7 @@ float GetAvgCharWidth(const ComputedStyle& style) {
   }
 
   const UChar kCh = '0';
-  return ComputeTextWidth(StringView(&kCh, 1u), style);
+  return ComputeTextWidth(StringView(base::span_from_ref(kCh)), style);
 }
 
 }  // namespace layout_text_control

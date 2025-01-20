@@ -9,9 +9,9 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/geometry_export.h"
 
 #if BUILDFLAG(IS_WIN)
 typedef struct tagSIZE SIZE;
@@ -22,7 +22,7 @@ typedef struct CGSize CGSize;
 namespace gfx {
 
 // A size has width and height values.
-class GEOMETRY_EXPORT Size {
+class COMPONENT_EXPORT(GEOMETRY) Size {
  public:
   constexpr Size() : width_(0), height_(0) {}
   constexpr Size(int width, int height)
@@ -105,18 +105,18 @@ inline Size operator-(Size lhs, const Size& rhs) {
 void PrintTo(const Size& size, ::std::ostream* os);
 
 // Helper methods to scale a gfx::Size to a new gfx::Size.
-GEOMETRY_EXPORT Size ScaleToCeiledSize(const Size& size,
-                                       float x_scale,
-                                       float y_scale);
-GEOMETRY_EXPORT Size ScaleToCeiledSize(const Size& size, float scale);
-GEOMETRY_EXPORT Size ScaleToFlooredSize(const Size& size,
-                                        float x_scale,
-                                        float y_scale);
-GEOMETRY_EXPORT Size ScaleToFlooredSize(const Size& size, float scale);
-GEOMETRY_EXPORT Size ScaleToRoundedSize(const Size& size,
-                                        float x_scale,
-                                        float y_scale);
-GEOMETRY_EXPORT Size ScaleToRoundedSize(const Size& size, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToCeiledSize(const Size& size, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToCeiledSize(const Size& size, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToFlooredSize(const Size& size, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToFlooredSize(const Size& size, float scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToRoundedSize(const Size& size, float x_scale, float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Size ScaleToRoundedSize(const Size& size, float scale);
 
 inline Size TransposeSize(const Size& s) {
   return Size(s.height(), s.width());

@@ -23,13 +23,12 @@ struct FilledCardInformationBubbleOptions {
 
   bool IsValid() const;
 
-  // The descriptive name of the masked server card that the `filled_card` is
-  // tied to.
+  // The descriptive name of the card that the `filled_card` is tied to.
   std::u16string masked_card_name;
 
-  // The last four digits of the card number of the masked server card that the
-  // `filled_card` is tied to. Note that this string also contains the leading
-  // unicode ellipsis dots, so an example value is "•••• 1234".
+  // The last four digits of the card number of the card that the `filled_card`
+  // is tied to. Note that this string also contains the leading unicode
+  // ellipsis dots, so an example value is "•••• 1234".
   std::u16string masked_card_number_last_four;
 
   // The credit card object containing information (other than CVC) for the

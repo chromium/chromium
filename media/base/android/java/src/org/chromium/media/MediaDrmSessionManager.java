@@ -8,6 +8,8 @@ import android.media.MediaDrm;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.media.MediaDrmStorageBridge.PersistentInfo;
 
 import java.nio.ByteBuffer;
@@ -28,6 +30,7 @@ import java.util.UUID;
  * <p>For persistent session, it also talks to persistent storage when loading information back to
  * memory and updating changes to disk.
  */
+@NullMarked
 class MediaDrmSessionManager {
     /**
      * The class groups drm session ID, eme session ID and key set ID. It hides the conversion among
@@ -45,15 +48,15 @@ class MediaDrmSessionManager {
 
         // Temporary ID used by MediaDrm session, returned by
         // MediaDrm.openSession.
-        private byte[] mDrmId;
+        private byte @Nullable [] mDrmId;
 
         // Persistent ID used by MediaDrm to identify persistent licenses,
         // returned by MediaDrm.provideKeyResponse.
-        private byte[] mKeySetId;
+        private byte @Nullable [] mKeySetId;
 
         /**
-         *  Convert byte array to hex string for logging.
-         *  This is modified from BytesToHexString() in url/url_canon_unittest.cc.
+         * Convert byte array to hex string for logging. This is modified from BytesToHexString() in
+         * url/url_canon_unittest.cc.
          */
         static String toHexString(byte[] bytes) {
             StringBuilder hexString = new StringBuilder();
@@ -96,16 +99,13 @@ class MediaDrmSessionManager {
             return createTemporarySessionId(new byte[0]);
         }
 
-        private SessionId(byte[] emeId, byte[] drmId, byte[] keySetId) {
-            assert emeId != null;
-            assert drmId != null || keySetId != null;
-
+        private SessionId(byte[] emeId, byte @Nullable [] drmId, byte @Nullable [] keySetId) {
             mEmeId = emeId;
             mDrmId = drmId;
             mKeySetId = keySetId;
         }
 
-        byte[] drmId() {
+        byte @Nullable [] drmId() {
             return mDrmId;
         }
 
@@ -113,11 +113,11 @@ class MediaDrmSessionManager {
             return mEmeId;
         }
 
-        byte[] keySetId() {
+        byte @Nullable [] keySetId() {
             return mKeySetId;
         }
 
-        private void setKeySetId(byte[] keySetId) {
+        private void setKeySetId(byte @Nullable [] keySetId) {
             mKeySetId = keySetId;
         }
 
@@ -244,19 +244,17 @@ class MediaDrmSessionManager {
 
     /** Set key set ID. It should only be called for persistent license session. */
     void setKeySetId(SessionId sessionId, byte[] keySetId, Callback<Boolean> callback) {
-        assert get(sessionId) != null;
-        assert get(sessionId).keyType() == MediaDrm.KEY_TYPE_OFFLINE;
+        SessionInfo info = get(sessionId);
+        assert info != null;
+        assert info.keyType() == MediaDrm.KEY_TYPE_OFFLINE;
         assert sessionId.keySetId() == null;
 
         sessionId.setKeySetId(keySetId);
 
-        mStorage.saveInfo(get(sessionId).toPersistentInfo(), callback);
+        mStorage.saveInfo(info.toPersistentInfo(), callback);
     }
 
-    /**
-     * Mark key as released. It should only be called for persistent license
-     * session.
-     */
+    /** Mark key as released. It should only be called for persistent license session. */
     void setKeyType(SessionId sessionId, int keyType, Callback<Boolean> callback) {
         SessionInfo info = get(sessionId);
 
@@ -267,7 +265,7 @@ class MediaDrmSessionManager {
     }
 
     /** Load |emeId|'s session data from persistent storage. */
-    void load(byte[] emeId, final Callback<SessionId> callback) {
+    void load(byte[] emeId, final Callback<@Nullable SessionId> callback) {
         mStorage.loadInfo(
                 emeId,
                 new Callback<PersistentInfo>() {
@@ -320,6 +318,7 @@ class MediaDrmSessionManager {
         return sessionIds;
     }
 
+    @Nullable
     SessionInfo get(SessionId sessionId) {
         return mEmeSessionInfoMap.get(ByteBuffer.wrap(sessionId.emeId()));
     }
@@ -333,17 +332,20 @@ class MediaDrmSessionManager {
         }
     }
 
+    @Nullable
     SessionId getSessionIdByEmeId(byte[] emeId) {
         return getSessionIdFromMap(mEmeSessionInfoMap, emeId);
     }
 
+    @Nullable
     SessionId getSessionIdByDrmId(byte[] drmId) {
         return getSessionIdFromMap(mDrmSessionInfoMap, drmId);
     }
 
     // Private methods
 
-    private SessionId getSessionIdFromMap(HashMap<ByteBuffer, SessionInfo> map, byte[] id) {
+    private @Nullable SessionId getSessionIdFromMap(
+            HashMap<ByteBuffer, SessionInfo> map, byte[] id) {
         SessionInfo info = map.get(ByteBuffer.wrap(id));
         if (info == null) {
             return null;

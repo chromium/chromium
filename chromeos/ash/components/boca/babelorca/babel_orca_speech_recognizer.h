@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace media {
 struct SpeechRecognitionResult;
@@ -22,6 +23,8 @@ class BabelOrcaSpeechRecognizer {
   using TranscriptionResultCallback =
       base::RepeatingCallback<void(const media::SpeechRecognitionResult& result,
                                    const std::string& source_language)>;
+  using LanguageIdentificationEventCallback = base::RepeatingCallback<void(
+      const media::mojom::LanguageIdentificationEventPtr& event)>;
 
   BabelOrcaSpeechRecognizer(const BabelOrcaSpeechRecognizer&) = delete;
   BabelOrcaSpeechRecognizer& operator=(const BabelOrcaSpeechRecognizer&) =
@@ -31,9 +34,11 @@ class BabelOrcaSpeechRecognizer {
 
   virtual void Start() = 0;
   virtual void Stop() = 0;
-  virtual void ObserveTranscriptionResult(
-      TranscriptionResultCallback transcription_result_callback) = 0;
-  virtual void RemoveTranscriptionResultObservation() = 0;
+  virtual void ObserveSpeechRecognition(
+      TranscriptionResultCallback transcription_result_callback,
+      LanguageIdentificationEventCallback
+          language_identification_event_callback) = 0;
+  virtual void RemoveSpeechRecognitionObservation() = 0;
 
  protected:
   BabelOrcaSpeechRecognizer() = default;

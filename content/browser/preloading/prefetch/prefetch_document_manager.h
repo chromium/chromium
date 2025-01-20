@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info.h"
-#include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/common/features.h"
 #include "content/public/browser/document_user_data.h"
@@ -54,15 +53,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // prefetched. Any candidates that can be prefetched are removed from
   // |candidates|, and a prefetch for the URL of the candidate is started.
   void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
   // Attempts to prefetch the given candidate. Returns true if a new prefetch
   // for the candidate's URL is started.
-  bool MaybePrefetch(
-      blink::mojom::SpeculationCandidatePtr candidate,
-      const PreloadingPredictor& enacting_predictor,
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
+  bool MaybePrefetch(blink::mojom::SpeculationCandidatePtr candidate,
+                     const PreloadingPredictor& enacting_predictor);
 
   void PrefetchAheadOfPrerender(
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -70,15 +66,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const PreloadingPredictor& enacting_predictor);
 
   // Starts the process to prefetch |url| with the given |prefetch_type|.
-  void PrefetchUrl(
-      const GURL& url,
-      const PrefetchType& prefetch_type,
-      const PreloadingPredictor& enacting_predictor,
-      PreloadingType planned_max_preloading_type,
-      const blink::mojom::Referrer& referrer,
-      const network::mojom::NoVarySearchPtr& no_vary_search_expected,
-      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
+  void PrefetchUrl(const GURL& url,
+                   const PrefetchType& prefetch_type,
+                   const PreloadingPredictor& enacting_predictor,
+                   PreloadingType planned_max_preloading_type,
+                   const blink::mojom::Referrer& referrer,
+                   const network::mojom::NoVarySearchPtr& no_vary_search_hint,
+                   scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
 
   // Checking the canary cache can be a slow and blocking operation (see
   // crbug.com/1266018), so we only do this for the first non-decoy prefetch we
@@ -124,6 +118,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   }
 
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
+
+  void ResetPrefetchAheadOfPrerenderIfExist(const GURL& url);
 
  private:
   explicit PrefetchDocumentManager(RenderFrameHost* rfh);

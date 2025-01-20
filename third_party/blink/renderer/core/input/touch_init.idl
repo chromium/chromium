@@ -17,8 +17,4 @@ dictionary TouchInit {
              float       radiusY = 0;
              float       rotationAngle = 0;
              float       force = 0;
-
-             // Canvas Hit Regions
-             // https://github.com/whatwg/html/issues/547
-             DOMString? region = null;
 };

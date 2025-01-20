@@ -96,7 +96,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   DelayLoadStartAndExecuteJavascript& operator=(
       const DelayLoadStartAndExecuteJavascript&) = delete;
 
-  ~DelayLoadStartAndExecuteJavascript() override {}
+  ~DelayLoadStartAndExecuteJavascript() override = default;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -161,7 +161,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
    public:
     explicit WillStartRequestObserverThrottle(content::NavigationHandle* handle)
         : NavigationThrottle(handle) {}
-    ~WillStartRequestObserverThrottle() override {}
+    ~WillStartRequestObserverThrottle() override = default;
 
     const char* GetNameForLogging() override {
       return "WillStartRequestObserverThrottle";
@@ -260,7 +260,7 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,

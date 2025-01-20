@@ -18,6 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -495,7 +496,7 @@ public class TabResumptionModuleMediator {
     private SuggestionBundle makeSuggestionBundle(List<SuggestionEntry> suggestions) {
         long currentTimeMs = TabResumptionModuleUtils.getCurrentTimeMs();
         SuggestionBundle bundle = new SuggestionBundle(currentTimeMs);
-        int maxTilesNumber = TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.getValue();
+        int maxTilesNumber = ChromeFeatureList.sTabResumptionModuleAndroidMaxTilesNumber.getValue();
         boolean hasLocalTab = false;
         for (SuggestionEntry entry : suggestions) {
             // At most one local Tab can be shown on the Tab resumption module.

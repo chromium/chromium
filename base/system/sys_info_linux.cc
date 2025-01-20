@@ -28,8 +28,9 @@ namespace {
 uint64_t AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
-  if (pages < 0 || page_size < 0)
+  if (pages < 0 || page_size < 0) {
     return 0;
+  }
   return static_cast<uint64_t>(pages) * static_cast<uint64_t>(page_size);
 }
 
@@ -53,8 +54,9 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
 // static
 uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfoKB info;
-  if (!GetSystemMemoryInfo(&info))
+  if (!GetSystemMemoryInfo(&info)) {
     return 0;
+  }
   return AmountOfAvailablePhysicalMemory(info);
 }
 
@@ -112,14 +114,16 @@ std::string SysInfo::CPUModelName() {
   // Iterate through until one with jep106:XXYY:ZZZZ is found.
   for (int soc_instance = 0;; ++soc_instance) {
     if (!PathExists(
-            FilePath(base::StringPrintf(kSocIdDirectory, soc_instance))))
+            FilePath(base::StringPrintf(kSocIdDirectory, soc_instance)))) {
       break;
+    }
 
     std::string soc_id;
     ReadFileToString(FilePath(base::StringPrintf(kSocIdFile, soc_instance)),
                      &soc_id);
-    if (soc_id.find(kJEP106) == 0)
+    if (soc_id.find(kJEP106) == 0) {
       return soc_id;
+    }
   }
 #endif
 

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_suite.h"
-
 #include "build/build_config.h"
 
 #if defined(USE_AURA)

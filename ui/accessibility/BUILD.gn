@@ -130,12 +130,6 @@ component("ax_base") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
-
-  if (is_android) {
-    sources += [ "android/accessibility_features_map.cc" ]
-
-    deps += [ ":ax_base_jni_headers" ]
-  }
 }
 
 #if (is_win) {
@@ -209,8 +203,6 @@ component("accessibility_internal") {
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
-    "test_single_ax_tree_manager.cc",
-    "test_single_ax_tree_manager.h",
   ]
 
   deps = [
@@ -254,6 +246,8 @@ if (is_android || is_chromeos) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ax_enum_test_util.cc",
+    "ax_enum_test_util.h",
     "platform/ax_platform_for_test.cc",
     "platform/ax_platform_for_test.h",
     "platform/ax_platform_node_test_helper.cc",
@@ -270,6 +264,8 @@ static_library("test_support") {
     "test_ax_node_helper.h",
     "test_ax_tree_update.cc",
     "test_ax_tree_update.h",
+    "test_single_ax_tree_manager.cc",
+    "test_single_ax_tree_manager.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
@@ -337,6 +333,7 @@ test("accessibility_unittests") {
     "platform/inspect/ax_property_node_unittest.cc",
     "platform/inspect/ax_script_instruction_unittest.cc",
     "run_all_unittests.cc",
+    "test_ax_tree_update_unittest.cc",
   ]
 
   deps = [
@@ -422,6 +419,7 @@ test("accessibility_unittests") {
     if (is_mac) {
       sources += [
         "platform/ax_platform_node_cocoa_unittest.mm",
+        "platform/browser_accessibility_cocoa_unittest.mm",
         "platform/browser_accessibility_mac_unittest.mm",
         "platform/inspect/ax_element_wrapper_mac_unittest.mm",
       ]
@@ -498,10 +496,6 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 
-  generate_jni("ax_base_jni_headers") {
-    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
-  }
-
   generate_jni("ax_jni_headers") {
     sources = [
       "android/java/src/org/chromium/ui/accessibility/AccessibilityAutofillHelper.java",
@@ -517,16 +511,6 @@ if (is_android) {
     deps = [
       ":ax_jni_headers",
       "//base",
-    ]
-  }
-
-  android_library("accessibility_features_native_map_java") {
-    srcjar_deps = [ ":ax_base_jni_headers" ]
-
-    sources = [ "android/java/src/org/chromium/ui/accessibility/AccessibilityFeaturesMap.java" ]
-    deps = [
-      "//base:base_java",
-      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

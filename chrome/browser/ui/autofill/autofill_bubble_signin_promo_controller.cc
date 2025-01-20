@@ -8,20 +8,38 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/service/sync_service.h"
+
+namespace {
+
+syncer::DataType GetDataTypeFromAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+      return syncer::PASSWORDS;
+    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      return syncer::CONTACT_INFO;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 namespace autofill {
 
 AutofillBubbleSignInPromoController::AutofillBubbleSignInPromoController(
     content::WebContents& web_contents,
     signin_metrics::AccessPoint access_point,
-    base::OnceCallback<void(content::WebContents*)> move_callback)
-    : move_callback_(std::move(move_callback)),
+    syncer::LocalDataItemModel::DataId data_id)
+    : data_id_(std::move(data_id)),
       web_contents_(web_contents.GetWeakPtr()),
       access_point_(access_point) {}
 
@@ -34,16 +52,29 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
+  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  // TODO(crbug.com/367263145): If a sign in tab already exists, it should
+  // update its access point.
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
 
   signin_util::SignedInState signed_in_state = signin_util::GetSignedInState(
       IdentityManagerFactory::GetForProfile(profile));
 
+  auto maybe_move_data = base::BindOnce(
+      [](Profile* profile, syncer::DataType data_type,
+         syncer::LocalDataItemModel::DataId data_id) {
+        SyncServiceFactory::GetForProfile(profile)
+            ->SelectTypeAndMigrateLocalDataItemsWhenActive(
+                data_type, {std::move(data_id)});
+      },
+      profile, GetDataTypeFromAccessPoint(access_point_), std::move(data_id_));
+
   // If the sign in was already successful, move the data directly.
   if (signed_in_state == signin_util::SignedInState::kSignedIn) {
-    std::move(move_callback_).Run(web_contents_.get());
+    std::move(maybe_move_data).Run();
     return;
   }
 
@@ -54,8 +85,6 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
     return;
   }
 
-  // TODO(crbug.com/319411636): Investigate how we could get the sign in tab
-  // differently.
   content::WebContents* sign_in_tab_contents =
       signin_ui_util::GetSignInTabWithAccessPoint(
           tabs::TabInterface::GetFromContents(web_contents_.get())
@@ -70,7 +99,8 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
 
   autofill::AutofillSigninPromoTabHelper::GetForWebContents(
       *sign_in_tab_contents)
-      ->InitializeDataMoveAfterSignIn(std::move(move_callback_), access_point_);
+      ->InitializeDataMoveAfterSignIn(std::move(maybe_move_data),
+                                      access_point_);
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }

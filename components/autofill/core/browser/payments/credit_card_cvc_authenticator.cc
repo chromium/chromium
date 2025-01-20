@@ -7,9 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/check_deref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -23,22 +24,19 @@ CreditCardCvcAuthenticator::CvcAuthenticationResponse::
     ~CvcAuthenticationResponse() = default;
 
 CreditCardCvcAuthenticator::CreditCardCvcAuthenticator(AutofillClient* client)
-    : client_(client) {}
+    : client_(CHECK_DEREF(client)) {}
 
 CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() = default;
 
 void CreditCardCvcAuthenticator::Authenticate(
     const CreditCard& card,
     base::WeakPtr<Requester> requester,
-    PersonalDataManager* personal_data_manager,
     std::optional<std::string> context_token,
     std::optional<CardUnmaskChallengeOption> selected_challenge_option) {
   requester_ = requester;
 
-  full_card_request_ = std::make_unique<payments::FullCardRequest>(
-      client_,
-      client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
-      personal_data_manager);
+  full_card_request_ =
+      std::make_unique<payments::FullCardRequest>(&client_.get());
 
   CreditCard::RecordType card_record_type = card.record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
@@ -162,10 +160,8 @@ payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
   // CreditCardAccessManager to retrieve cards from payments instead of calling
   // this function directly.
   if (!full_card_request_) {
-    full_card_request_ = std::make_unique<payments::FullCardRequest>(
-        client_,
-        client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
-        client_->GetPersonalDataManager());
+    full_card_request_ =
+        std::make_unique<payments::FullCardRequest>(&client_.get());
   }
   return full_card_request_.get();
 }

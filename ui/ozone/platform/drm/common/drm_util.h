@@ -158,6 +158,10 @@ ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
                                      drmModeObjectProperties* properties,
                                      const char* name);
 
+bool GetConnectorPropertyValue(const drmModeConnector* const connector,
+                               const uint32_t prop_id,
+                               uint64_t* const prop_value);
+
 bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc);
 
 bool MatchMode(const display::DisplayMode& display_mode,

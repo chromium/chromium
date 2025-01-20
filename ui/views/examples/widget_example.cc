@@ -81,8 +81,9 @@ void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
       std::make_unique<Label>(GetStringUTF16(IDS_WIDGET_FOOTNOTE_LABEL)));
   dialog->AddChildView(std::make_unique<Label>(
       GetStringUTF16(IDS_WIDGET_DIALOG_CONTENTS_LABEL)));
-  if (modal)
+  if (modal) {
     dialog->SetModalType(ui::mojom::ModalType::kWindow);
+  }
   DialogDelegate::CreateDialogWidget(dialog.release(), nullptr,
                                      sender->GetWidget()->GetNativeView())
       ->Show();

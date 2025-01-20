@@ -8,13 +8,12 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
+#include "base/base_robolectric_jni/TokenBase_jni.h"         // nogncheck
 #include "base/base_robolectric_jni/UnguessableToken_jni.h"  // nogncheck
 #else
 #include "base/base_jni/TokenBase_jni.h"
 #include "base/base_jni/UnguessableToken_jni.h"
 #endif
-
 
 namespace base {
 namespace android {

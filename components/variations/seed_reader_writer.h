@@ -17,16 +17,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/version_info/channel.h"
 
 class PrefService;
 
 namespace variations {
 
+class EntropyProviders;
+
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V3";
-const char kSeedFilesGroup[] = "SeedFiles_V3";
+const char kControlGroup[] = "Control_V7";
+const char kSeedFilesGroup[] = "SeedFiles_V7";
 
 // Represents a seed and its storage format where clients using
 // seed-file-based seeds store compressed data and those using
@@ -50,11 +53,17 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // `seed_pref` is a variations pref (kVariationsCompressedSeed or
   // kVariationsSafeCompressed) denoting the type of seed handled by this
   // SeedReaderWriter.
+  // `channel` describes the release channel of the browser.
+  // `entropy_providers` is used to provide entropy when setting up the seed
+  // file field trial. If null, the client will not participate in the
+  // experiment.
   // `file_task_runner` handles IO-related tasks. Must not be null.
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
                    base::FilePath::StringPieceType seed_filename,
                    std::string_view seed_pref,
+                   version_info::Channel channel,
+                   const EntropyProviders* entropy_providers,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                        base::ThreadPool::CreateSequencedTaskRunner(
                            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -93,10 +102,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void DeleteSeedFile();
 
   // Reads seed data from a seed file, and if the read is successful,
-  // populates `seed_data_`. May also schedule a seed file write for
-  // some clients on the first run and for clients that are in the seed
-  // file experiment's treatment group for the first time.
+  // populates `seed_data_`. May also schedule a seed file write for some
+  // clients on the first run and for clients that are in the seed file
+  // experiment's treatment group for the first time. If `seed_pref_` is present
+  // in `local state_`, additionally clears it.
   void ReadSeedFile();
+
+  // Returns true if a seed file should be used.
+  bool ShouldUseSeedFile() const;
 
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;

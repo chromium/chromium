@@ -74,8 +74,9 @@ struct StateTransitions {
   // Returns a list of states that are valid to transition to from |source|.
   const std::vector<State>& GetValidTransitions(const State& source) const {
     for (const StateTransition& state_transition : state_transitions) {
-      if (state_transition.source == source)
+      if (state_transition.source == source) {
         return state_transition.destinations;
+      }
     }
     static const base::NoDestructor<std::vector<State>> no_transitions;
     return *no_transitions;
@@ -93,6 +94,12 @@ struct StateTransitions {
 // according to |transitions|.
 #define DCHECK_STATE_TRANSITION(transitions, old_state, new_state)   \
   DCHECK((transitions)->IsTransitionValid((old_state), (new_state))) \
+      << "Invalid transition: " << old_state << " -> " << new_state
+
+// CHECK if transitioning from |old_state| to |new_state| is not valid
+// according to |transitions|.
+#define CHECK_STATE_TRANSITION(transitions, old_state, new_state)   \
+  CHECK((transitions)->IsTransitionValid((old_state), (new_state))) \
       << "Invalid transition: " << old_state << " -> " << new_state
 
 }  // namespace base

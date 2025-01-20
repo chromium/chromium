@@ -17,6 +17,8 @@ proto_library("protocol") {
 # together with the "protocol" target and simplify things.
 static_library("util") {
   sources = [
+    "collaboration_metadata.cc",
+    "collaboration_metadata.h",
     "data_type_state_helper.cc",
     "data_type_state_helper.h",
     "entity_data.cc",
@@ -33,6 +35,7 @@ static_library("util") {
   public_deps = [
     "//base",
     "//components/sync/base",
+    "//google_apis",
   ]
 }
 

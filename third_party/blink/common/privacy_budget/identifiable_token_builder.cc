@@ -124,7 +124,7 @@ void IdentifiableTokenBuilder::DigestBlock(ConstFullBlockSpan block) {
   // study has more-or-less accepted for some metrics and is dealt with during
   // the analysis phase.
   chaining_value_ =
-      base::legacy::CityHash64WithSeed(base::make_span(block), chaining_value_);
+      base::legacy::CityHash64WithSeed(base::span(block), chaining_value_);
 }
 
 size_t IdentifiableTokenBuilder::PartialSize() const {
@@ -135,7 +135,7 @@ size_t IdentifiableTokenBuilder::PartialSize() const {
 IdentifiableTokenBuilder::ConstFullBlockSpan
 IdentifiableTokenBuilder::TakeCompletedBlock() {
   DCHECK(position_ == partial_.end());
-  auto buffer = base::make_span(partial_);
+  auto buffer = base::span(partial_);
   position_ = partial_.begin();
   return buffer;
 }

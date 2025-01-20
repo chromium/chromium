@@ -203,7 +203,6 @@ using HTMLImageElementSimTest = SimTest;
 
 TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   SimRequest main_resource("https://example.com/index.html", "text/html");
   SimSubresourceRequest image_resource("https://example.com/foo.png",
                                        "image/png");
@@ -221,7 +220,6 @@ TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
 TEST_F(HTMLImageElementSimTest,
        Sharedstoragewritable_InsecureContext_NotAllowed) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   SimRequest main_resource("http://example.com/index.html", "text/html");
   SimSubresourceRequest image_resource("http://example.com/foo.png",
                                        "image/png");

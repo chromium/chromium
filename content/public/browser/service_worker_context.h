@@ -20,6 +20,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/service_worker/extended_service_worker_status_code.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-forward.h"
@@ -49,6 +50,12 @@ class ServiceWorkerContextObserver;
 
 struct ServiceWorkerRunningInfo;
 struct StorageUsageInfo;
+
+struct StatusCodeResponse {
+  blink::ServiceWorkerStatusCode status_code;
+  std::optional<blink::ExtendedServiceWorkerStatusCode> extended_status_code =
+      std::nullopt;
+};
 
 enum class ServiceWorkerCapability {
   NO_SERVICE_WORKER,
@@ -85,6 +92,9 @@ using ServiceWorkerScriptExecutionCallback =
 // synchronously with changes in //content.
 class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
  public:
+  // Called when the service worker with id `version_id` will be stopped.
+  virtual void OnStopping(int64_t version_id,
+                          const ServiceWorkerRunningInfo& worker_info) {}
   // Called when the service worker with id `version_id` has stopped running.
   virtual void OnStopped(int64_t version_id,
                          const ServiceWorkerRunningInfo& worker_info) {}
@@ -116,6 +126,9 @@ class CONTENT_EXPORT ServiceWorkerContext {
 
   using StatusCodeCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
+
+  using StatusCodeResponseCallback =
+      base::OnceCallback<void(StatusCodeResponse)>;
 
   using StartServiceWorkerForNavigationHintCallback = base::OnceCallback<void(
       StartServiceWorkerForNavigationHintResult result)>;
@@ -251,10 +264,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   //
   // There is no guarantee about whether the callback is called synchronously or
   // asynchronously.
-  virtual void StartWorkerForScope(const GURL& scope,
-                                   const blink::StorageKey& key,
-                                   StartWorkerCallback info_callback,
-                                   StatusCodeCallback failure_callback) = 0;
+  virtual void StartWorkerForScope(
+      const GURL& scope,
+      const blink::StorageKey& key,
+      StartWorkerCallback info_callback,
+      StatusCodeResponseCallback failure_callback) = 0;
 
   // Starts the active worker of the registration for the given `scope` and
   // `key` and dispatches the given `message` to the service worker.

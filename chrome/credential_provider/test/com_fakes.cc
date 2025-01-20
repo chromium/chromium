@@ -4,14 +4,13 @@
 
 #include "chrome/credential_provider/test/com_fakes.h"
 
-#include <sddl.h>  // For ConvertSidToStringSid()
+#include <sddl.h>
 
 #include "base/check.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_other_user.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reauth_credential.h"
-#include "chrome/credential_provider/gaiacp/stdafx.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,7 +114,7 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderUser)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FakeCredentialProviderUserArray::FakeCredentialProviderUserArray() {}
+FakeCredentialProviderUserArray::FakeCredentialProviderUserArray() = default;
 
 FakeCredentialProviderUserArray::~FakeCredentialProviderUserArray() {
   EXPECT_EQ(ref_count_, 1u);
@@ -150,7 +149,7 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderUserArray)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-FakeCredentialProviderEvents::FakeCredentialProviderEvents() {}
+FakeCredentialProviderEvents::FakeCredentialProviderEvents() = default;
 
 FakeCredentialProviderEvents::~FakeCredentialProviderEvents() {
   EXPECT_EQ(ref_count_, 1u);
@@ -167,10 +166,10 @@ IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderEvents)
 ///////////////////////////////////////////////////////////////////////////////
 
 FakeCredentialProviderCredentialEvents::
-    FakeCredentialProviderCredentialEvents() {}
+    FakeCredentialProviderCredentialEvents() = default;
 
 FakeCredentialProviderCredentialEvents::
-    ~FakeCredentialProviderCredentialEvents() {}
+    ~FakeCredentialProviderCredentialEvents() = default;
 
 HRESULT FakeCredentialProviderCredentialEvents::AppendFieldComboBoxItem(
     ICredentialProviderCredential* pcpc,
@@ -290,7 +289,7 @@ CTestGaiaCredentialProvider::CTestGaiaCredentialProvider() {
       });
 }
 
-CTestGaiaCredentialProvider::~CTestGaiaCredentialProvider() {}
+CTestGaiaCredentialProvider::~CTestGaiaCredentialProvider() = default;
 
 const CComBSTR& CTestGaiaCredentialProvider::username() const {
   return username_;

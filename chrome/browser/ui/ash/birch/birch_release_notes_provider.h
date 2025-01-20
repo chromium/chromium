@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_BIRCH_BIRCH_RELEASE_NOTES_PROVIDER_H_
 
 #include <optional>
+
 #include "ash/birch/birch_data_provider.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"

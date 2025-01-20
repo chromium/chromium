@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.bookmarks.bar.BookmarkBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/bookmark_bar_padding"
+    android:background="@macro/default_bg_color"
+    android:gravity="center_vertical|end"
+    android:orientation="horizontal">
+
+  <View
+      android:layout_width="@dimen/bookmark_bar_divider_width"
+      android:layout_height="@dimen/bookmark_bar_divider_height"
+      android:layout_marginHorizontal="@dimen/bookmark_bar_spacing"
+      android:background="@macro/divider_line_bg_color" />
+
+  <include
+      android:id="@+id/bookmark_bar_all_bookmarks_button"
+      layout="@layout/bookmark_bar_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+</org.chromium.chrome.browser.bookmarks.bar.BookmarkBar>

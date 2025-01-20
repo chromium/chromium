@@ -45,6 +45,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupSyncIdUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupTitleUtils.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelActionListener.java",
@@ -69,10 +70,8 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:base_shared_preferences_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:features_java",
@@ -112,6 +111,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupSyncIdUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupTitleUtilsUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
@@ -121,6 +121,7 @@ robolectric_library("junit") {
   deps = [
     ":factory_java",
     ":java",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -136,6 +137,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/tab_groups:tab_groups_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_test_core_java",
@@ -147,6 +149,20 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}
+
+robolectric_library("test_support_java") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/TabUiUnitTestUtils.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//content/public/android:content_full_java",
+    "//third_party/mockito:mockito_java",
     "//url:url_java",
   ]
 }

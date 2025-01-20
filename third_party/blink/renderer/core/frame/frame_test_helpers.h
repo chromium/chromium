@@ -278,6 +278,9 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
     return last_overscroll_;
   }
 
+  void RequestDecode(const cc::DrawImage&,
+                     base::OnceCallback<void(bool)>) override;
+
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
  protected:

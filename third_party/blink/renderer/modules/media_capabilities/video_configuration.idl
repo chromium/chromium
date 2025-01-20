@@ -14,9 +14,9 @@ dictionary VideoConfiguration {
     required unsigned long height;
     required unsigned long bitrate;
     required double framerate;
-    [RuntimeEnabled=MediaCapabilitiesDynamicRange] HdrMetadataType hdrMetadataType;
-    [RuntimeEnabled=MediaCapabilitiesDynamicRange] ColorGamut colorGamut;
-    [RuntimeEnabled=MediaCapabilitiesDynamicRange] TransferFunction transferFunction;
+    HdrMetadataType hdrMetadataType;
+    ColorGamut colorGamut;
+    TransferFunction transferFunction;
     DOMString scalabilityMode;
     boolean spatialScalability;
 };

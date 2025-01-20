@@ -97,11 +97,6 @@ class FakeDownloadDisplay : public DownloadDisplay {
   void AnnounceAccessibleAlertNow(const std::u16string& alert_text) override {
     ++announcement_count_;
   }
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) override {
-    detail_shown_ = true;
-    return true;
-  }
   bool IsFullscreenWithParentViewHidden() const override {
     return is_fullscreen_;
   }

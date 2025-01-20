@@ -87,8 +87,7 @@ ExtensionInstallPrompt::Prompt::Prompt(PromptType type)
   DCHECK_NE(type_, NUM_PROMPT_TYPES);
 }
 
-ExtensionInstallPrompt::Prompt::~Prompt() {
-}
+ExtensionInstallPrompt::Prompt::~Prompt() = default;
 
 void ExtensionInstallPrompt::Prompt::AddPermissionSet(
     const PermissionSet& permissions) {
@@ -440,8 +439,7 @@ ExtensionInstallPrompt::ExtensionInstallPrompt(Profile* profile,
           new ExtensionInstallPromptShowParams(profile, native_window)),
       did_call_show_dialog_(false) {}
 
-ExtensionInstallPrompt::~ExtensionInstallPrompt() {
-}
+ExtensionInstallPrompt::~ExtensionInstallPrompt() = default;
 
 void ExtensionInstallPrompt::ShowDialog(
     DoneCallback done_callback,

@@ -8,9 +8,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-class FilePath;
-}
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -32,8 +29,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs);
 // time, long deprecated prefs should be removed as new ones are added, but this
 // call should never go away (even if it becomes an empty call for some time) as
 // it should remain *the* place to drop deprecated profile's prefs at.
-void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
-                                 PrefService* prefs);
+void MigrateObsoleteProfilePrefs(PrefService* prefs);
 
 // Migrate/cleanup deprecated prefs from the standard NSUserDefault store. Over
 // time, long deprecated prefs should be removed as new ones are added, but this

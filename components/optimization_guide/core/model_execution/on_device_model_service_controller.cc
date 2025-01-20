@@ -110,17 +110,20 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
 
   if (!model_metadata_) {
     if (!on_device_component_state_manager_) {
-      return OnDeviceModelEligibilityReason::kModelNotAvailable;
+      return OnDeviceModelEligibilityReason::kModelNotEligible;
     }
 
     switch (on_device_component_state_manager_->GetOnDeviceModelStatus()) {
       case optimization_guide::OnDeviceModelStatus::kNotEligible:
-        return OnDeviceModelEligibilityReason::kModelNotAvailable;
+        return OnDeviceModelEligibilityReason::kModelNotEligible;
+      case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
+        return OnDeviceModelEligibilityReason::kInsufficientDiskSpace;
       case optimization_guide::OnDeviceModelStatus::kInstallNotComplete:
       case optimization_guide::OnDeviceModelStatus::
           kModelInstallerNotRegisteredForUnknownReason:
       case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
       case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
+      case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
         return OnDeviceModelEligibilityReason::kModelToBeInstalled;
       case optimization_guide::OnDeviceModelStatus::kReady:
         // The model is downloaded but the installation is not completed yet.
@@ -129,13 +132,13 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
   }
 
   // Check feature config.
-  auto adapter = GetFeatureAdapter(feature);
-  if (!adapter) {
+  auto* metadata = GetFeatureMetadata(feature);
+  if (!metadata) {
     return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
   // Check safety info.
-  auto checker =
-      safety_client_.MakeSafetyChecker(feature, adapter->CanSkipTextSafety());
+  auto checker = safety_client_.MakeSafetyChecker(
+      feature, metadata->adapter()->CanSkipTextSafety());
   if (!checker.has_value()) {
     return checker.error();
   }
@@ -170,41 +173,33 @@ OnDeviceModelServiceController::CreateSession(
 
   CHECK(model_metadata_);
   on_device_model::ModelAssetPaths model_paths = PopulateModelPaths();
+  CHECK(features::internal::GetOptimizationTargetForCapability(feature));
+  auto* adaptation_metadata = GetFeatureMetadata(feature);
+  CHECK(adaptation_metadata);
 
-  auto adapter = GetFeatureAdapter(feature);
-  CHECK(adapter);
-
-  std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
-  std::optional<int64_t> adaptation_version;
-  auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
-  if (adaptation_metadata_it != model_adaptation_metadata_.end()) {
-    CHECK(features::internal::GetOptimizationTargetForCapability(feature));
-    adaptation_assets =
-        base::OptionalFromPtr(adaptation_metadata_it->second.asset_paths());
-    adaptation_version = adaptation_metadata_it->second.version();
-  }
-
-  SessionImpl::OnDeviceOptions opts;
+  OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
-      feature, weak_ptr_factory_.GetWeakPtr(), model_paths, adaptation_assets);
-  opts.model_versions =
-      GetModelVersions(*model_metadata_, safety_client_, adaptation_version);
+      feature, weak_ptr_factory_.GetWeakPtr(), model_paths,
+      base::OptionalFromPtr(adaptation_metadata->asset_paths()));
+  opts.model_versions = GetModelVersions(*model_metadata_, safety_client_,
+                                         adaptation_metadata->version());
   opts.safety_checker = std::move(
-      safety_client_.MakeSafetyChecker(feature, adapter->CanSkipTextSafety())
+      safety_client_
+          .MakeSafetyChecker(
+              feature, adaptation_metadata->adapter()->CanSkipTextSafety())
           .value());
-  opts.token_limits = adapter->GetTokenLimits();
-  opts.adapter = std::move(adapter);
+  opts.token_limits = adaptation_metadata->adapter()->GetTokenLimits();
+  opts.adapter = adaptation_metadata->adapter();
 
-  base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
+  opts.logger = optimization_guide_logger;
+  opts.log_uploader =
       (config_params && config_params->logging_mode ==
                             SessionConfigParams::LoggingMode::kAlwaysDisable
            ? nullptr
            : model_quality_uploader_service);
 
-  has_started_session_ = true;
   return std::make_unique<SessionImpl>(
-      feature, std::move(opts), std::move(execute_remote_fn),
-      optimization_guide_logger, log_uploader, config_params);
+      feature, std::move(opts), std::move(execute_remote_fn), config_params);
 }
 
 // static
@@ -283,6 +278,10 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
+  if (on_device_component_state_manager_ &&
+      on_device_component_state_manager_->IsLowTierDevice()) {
+    params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
+  }
   service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
       base::DoNothingAs<void(on_device_model::mojom::LoadModelResult)>());
@@ -292,11 +291,13 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.SetLanguageDetectionModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.MaybeUpdateSafetyModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 on_device_model::ModelAssetPaths
@@ -313,13 +314,10 @@ void OnDeviceModelServiceController::UpdateModel(
   base_model_remote_.reset();
   base_model_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
   model_metadata_ = std::move(model_metadata);
-  has_started_session_ = false;
   model_validator_ = nullptr;
 
   if (did_model_change) {
-    for (const auto& entry : model_availability_change_observers_) {
-      NotifyModelAvailabilityChange(entry.first);
-    }
+    NotifyModelAvailabilityChanges();
   }
 
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
@@ -343,8 +341,8 @@ void OnDeviceModelServiceController::UpdateModel(
 }
 
 void OnDeviceModelServiceController::StartValidation() {
-  // Skip validation if a session has started to avoid interrupting.
-  if (has_started_session_) {
+  // Skip validation if the base model is already in use to avoid interrupting.
+  if (base_model_remote_) {
     return;
   }
 
@@ -447,6 +445,12 @@ OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
 
+std::unique_ptr<OnDeviceOptions::Client>
+OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
+  return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
+      feature_, controller_, model_paths_, adaptation_assets_);
+}
+
 bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
   return controller_ &&
          controller_->access_controller_->ShouldStartNewSession() ==
@@ -466,23 +470,14 @@ void OnDeviceModelServiceController::OnDeviceModelClient::
   }
 }
 
-void OnDeviceModelServiceController::OnDeviceModelClient::OnSessionTimedOut() {
-  if (controller_) {
-    controller_->access_controller_->OnSessionTimedOut();
-  }
-}
-
-scoped_refptr<const OnDeviceModelFeatureAdapter>
-OnDeviceModelServiceController::GetFeatureAdapter(
+OnDeviceModelAdaptationMetadata*
+OnDeviceModelServiceController::GetFeatureMetadata(
     ModelBasedCapabilityKey feature) {
-  // Take the feature config from adaptation model metadata or base model
-  // metadata.
-  auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
-  if (adaptation_metadata_it != model_adaptation_metadata_.end() &&
-      adaptation_metadata_it->second.adapter()) {
-    return adaptation_metadata_it->second.adapter();
+  if (auto it = model_adaptation_metadata_.find(feature);
+      it != model_adaptation_metadata_.end()) {
+    return &it->second;
   }
-  return model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
+  return nullptr;
 }
 
 void OnDeviceModelServiceController::AddOnDeviceModelAvailabilityChangeObserver(
@@ -498,6 +493,12 @@ void OnDeviceModelServiceController::
         OnDeviceModelAvailabilityObserver* observer) {
   DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_availability_change_observers_[feature].RemoveObserver(observer);
+}
+
+void OnDeviceModelServiceController::NotifyModelAvailabilityChanges() {
+  for (const auto& entry : model_availability_change_observers_) {
+    NotifyModelAvailabilityChange(entry.first);
+  }
 }
 
 void OnDeviceModelServiceController::NotifyModelAvailabilityChange(

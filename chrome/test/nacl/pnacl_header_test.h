@@ -33,7 +33,7 @@ TestDispatcherHostDelegate& operator=(const TestDispatcherHostDelegate&) =
 delete;
 
 
-  ~TestDispatcherHostDelegate() override {}
+  ~TestDispatcherHostDelegate() override = default;
 
   void RequestBeginning(net::URLRequest* request,
                         content::ResourceContext* resource_context,

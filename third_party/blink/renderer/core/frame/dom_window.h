@@ -29,6 +29,7 @@ class DOMWrapperWorld;
 class InputDeviceCapabilitiesConstants;
 class LocalDOMWindow;
 class Location;
+class ScriptObject;
 class ScriptValue;
 class SecurityOrigin;
 class SerializedScriptValue;
@@ -114,7 +115,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   void postMessage(v8::Isolate*,
                    const ScriptValue& message,
                    const String& target_origin,
-                   HeapVector<ScriptValue> transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
 
   void postMessage(v8::Isolate*,

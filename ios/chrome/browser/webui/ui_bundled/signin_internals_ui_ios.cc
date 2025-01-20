@@ -8,7 +8,8 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/signin_internals_resources.h"
+#include "components/grit/signin_internals_resources_map.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -25,9 +26,8 @@ web::WebUIIOSDataSource* CreateSignInInternalsHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUISignInInternalsHost);
 
   source->UseStringsJs();
-  source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
-  source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
-  source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
+  source->AddResourcePaths(kSigninInternalsResources);
+  source->AddResourcePath("", IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
 
   return source;
 }

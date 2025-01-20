@@ -277,13 +277,13 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   // Start with a browser window with 2 tabs.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, true);
-  tabs::TabModel* initial_tab_model = tab_strip_model->GetTabAtIndex(1);
+  tabs::TabInterface* const initial_tab = tab_strip_model->GetTabAtIndex(1);
   EXPECT_EQ(2, tab_strip_model->count());
 
   base::MockCallback<tabs::TabInterface::WillDetach> tab_detached_callback;
 
   base::CallbackListSubscription tab_subscription =
-      initial_tab_model->RegisterWillDetach(tab_detached_callback.Get());
+      initial_tab->RegisterWillDetach(tab_detached_callback.Get());
   WebContentsRemovedObserver removed_observer;
   tab_strip_model->AddObserver(&removed_observer);
 

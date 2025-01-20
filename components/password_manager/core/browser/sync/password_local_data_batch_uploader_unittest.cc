@@ -570,7 +570,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload with an empty list.
-  uploader.TriggerLocalDataMigration({});
+  uploader.TriggerLocalDataMigrationForItems({});
   RunUntilIdle();
 
   // All passwords still in profile store.
@@ -588,7 +588,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for password 0 and 2.
-  uploader.TriggerLocalDataMigration({
+  uploader.TriggerLocalDataMigrationForItems({
       PasswordFormUniqueKey(passwords[0]),
       PasswordFormUniqueKey(passwords[2]),
   });
@@ -618,9 +618,9 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for all passwords with their keys.
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[1]),
-                                      PasswordFormUniqueKey(passwords[2])});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(passwords[0]), PasswordFormUniqueKey(passwords[1]),
+       PasswordFormUniqueKey(passwords[2])});
   RunUntilIdle();
 
   EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
@@ -644,9 +644,9 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Trigger upload for the same key multiple times. Only password 0.
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[0]),
-                                      PasswordFormUniqueKey(passwords[0])});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(passwords[0]), PasswordFormUniqueKey(passwords[0]),
+       PasswordFormUniqueKey(passwords[0])});
   RunUntilIdle();
 
   // Only password 0 should be uploaded.
@@ -674,7 +674,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   PasswordForm password_not_in_local_store =
       CreatePasswordForm("http://password_not_local.com");
   // Trigger upload for password 0 and a password not in profile store.
-  uploader.TriggerLocalDataMigration(
+  uploader.TriggerLocalDataMigrationForItems(
       {PasswordFormUniqueKey(passwords[0]),
        PasswordFormUniqueKey(password_not_in_local_store)});
   RunUntilIdle();
@@ -705,7 +705,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
 
   // Trigger upload for local password 0 and a account password 0 already in
   // account store.
-  uploader.TriggerLocalDataMigration(
+  uploader.TriggerLocalDataMigrationForItems(
       {PasswordFormUniqueKey(local_passwords[0]),
        PasswordFormUniqueKey(account_passwords[0])});
   RunUntilIdle();
@@ -749,7 +749,8 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
                   Pair(common_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(common_password)))));
 
-  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(common_password)});
+  uploader.TriggerLocalDataMigrationForItems(
+      {PasswordFormUniqueKey(common_password)});
   RunUntilIdle();
 
   // Common password should be removed from the profile store and not duplicated

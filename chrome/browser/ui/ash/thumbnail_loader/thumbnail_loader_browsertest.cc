@@ -53,8 +53,9 @@ class ScopedExternalMountPoint {
  public:
   ScopedExternalMountPoint(Profile* profile, const std::string& name)
       : name_(name) {
-    if (!temp_dir_.CreateUniqueTempDir())
+    if (!temp_dir_.CreateUniqueTempDir()) {
       return;
+    }
 
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         name_, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),

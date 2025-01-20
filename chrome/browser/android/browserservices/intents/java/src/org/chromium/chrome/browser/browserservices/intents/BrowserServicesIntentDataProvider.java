@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
@@ -47,7 +46,8 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.READER_MODE,
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
         CustomTabsUiType.OFFLINE_PAGE,
-        CustomTabsUiType.AUTH_TAB
+        CustomTabsUiType.AUTH_TAB,
+        CustomTabsUiType.NETWORK_BOUND_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
@@ -59,6 +59,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int OFFLINE_PAGE = 5;
         int READ_LATER = 6;
         int AUTH_TAB = 7;
+        int NETWORK_BOUND_TAB = 8;
     }
 
     // The type of Disclosure for TWAs to use.
@@ -125,7 +126,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The session specified in the intent, or null.
      */
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<?> getSession() {
         return null;
     }
 

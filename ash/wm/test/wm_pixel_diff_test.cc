@@ -93,7 +93,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
-      /*revision_number=*/16, desk_widget, overview_widget1, overview_widget2,
+      /*revision_number=*/17, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
 }
 
@@ -172,7 +172,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/22, widget));
+      /*revision_number=*/23, widget));
 }
 
 TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {

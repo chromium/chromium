@@ -224,7 +224,9 @@ class PasswordFormMetricsRecorder
     // A credential with a different domain was grouped with the current domain
     // by the `AffiliationService`.
     kGroupedMatch = 13,
-    kMaxValue = kGroupedMatch,
+    // A form on a page is a single username form.
+    kSingleUsernameForm = 14,
+    kMaxValue = kSingleUsernameForm,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -322,7 +324,7 @@ class PasswordFormMetricsRecorder
     // Neither user input nor filling.
     kNoUserInputNoFillingOfUsername = 7,
     // Whether the user used manual fallback to fill a form.
-    kManualFallbackUsed = 9,
+    kManualFallbackUsed = 8,
     kMaxValue = kManualFallbackUsed,
   };
 
@@ -472,6 +474,10 @@ class PasswordFormMetricsRecorder
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
   void RecordMatchedFormType(const PasswordForm& form);
   void RecordPotentialPreferredMatch(std::optional<MatchedFormType> form_type);
+
+  // Records whether there was at least one grouped match in fill suggestions.
+  void RecordFillSuggestionHasGroupedMatch(
+      base::span<const PasswordForm> best_matches);
 
   // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(
@@ -648,9 +654,11 @@ class PasswordFormMetricsRecorder
 
   bool recorded_wait_for_username_reason_ = false;
 
-  bool recorded_preferred_matched_password_type = false;
+  bool recorded_preferred_matched_password_type_ = false;
 
-  bool recorded_potential_preferred_matched_password_type = false;
+  bool recorded_potential_preferred_matched_password_type_ = false;
+
+  bool recorded_fill_suggestion_has_grouped_match_ = false;
 
   absl::variant<absl::monostate,
                 FillingAssistance,

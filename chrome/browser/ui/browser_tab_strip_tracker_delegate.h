@@ -13,7 +13,7 @@ class BrowserTabStripTrackerDelegate {
   virtual bool ShouldTrackBrowser(Browser* browser) = 0;
 
  protected:
-  virtual ~BrowserTabStripTrackerDelegate() {}
+  virtual ~BrowserTabStripTrackerDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_DELEGATE_H_

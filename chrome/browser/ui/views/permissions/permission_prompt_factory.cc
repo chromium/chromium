@@ -23,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -38,12 +39,14 @@ bool IsFullScreenMode(Browser* browser) {
   DCHECK(browser);
 
   // PWA uses the title bar as a substitute for LocationBarView.
-  if (web_app::AppBrowserController::IsWebApp(browser))
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
     return false;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
+  if (!browser_view) {
     return false;
+  }
 
   LocationBarView* location_bar = browser_view->GetLocationBarView();
 
@@ -81,7 +84,7 @@ bool ShouldIgnorePermissionRequest(
   LensOverlayController* lens_overlay_controller =
       browser->tab_strip_model()
           ->GetActiveTab()
-          ->tab_features()
+          ->GetTabFeatures()
           ->lens_overlay_controller();
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
@@ -98,8 +101,9 @@ bool ShouldIgnorePermissionRequest(
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
   // Permission request chip should not be shown if `delegate->Requests()` were
   // requested without a user gesture.
-  if (!permissions::PermissionUtil::HasUserGesture(delegate))
+  if (!permissions::PermissionUtil::HasUserGesture(delegate)) {
     return false;
+  }
 
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests = delegate->Requests();
@@ -131,26 +135,6 @@ bool ShouldCurrentRequestUseQuietChip(
       });
 }
 
-bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
-    permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    return false;
-  }
-
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return (request->request_type() ==
-                    permissions::RequestType::kCameraStream ||
-                request->request_type() ==
-                    permissions::RequestType::kGeolocation ||
-                request->request_type() ==
-                    permissions::RequestType::kMicStream) &&
-               request->IsEmbeddedPermissionElementInitiated();
-      });
-}
-
 bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
@@ -168,7 +152,8 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+  if (permissions::PermissionUtil::
+          ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
     return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
                                                       delegate);
   } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
@@ -189,7 +174,9 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
     return std::make_unique<ExclusiveAccessPermissionPrompt>(
         browser, web_contents, delegate);
-  } else if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+  } else if (permissions::PermissionUtil::
+                 ShouldCurrentRequestUsePermissionElementSecondaryUI(
+                     delegate)) {
     return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
                                                       delegate);
   } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {

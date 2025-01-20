@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -33,7 +35,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -102,6 +103,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     [dispatcher_ startDispatchingToTarget:coordinator_
                               forProtocol:@protocol(LensOverlayCommands)];
+
+    lens_commands_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:lens_commands_handler_
+                     forProtocol:@protocol(LensCommands)];
 
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -196,6 +202,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   raw_ptr<LensOverlayTabHelper> tab_helper_;
   id<ApplicationCommands> application_handler_;
   id<LoadQueryCommands> load_query_handler_;
+  id<LensCommands> lens_commands_handler_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
@@ -275,9 +282,10 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
 }
 
 // Hiding the overlay should trigger dismissing the container VC.
@@ -293,16 +301,28 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
 
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+  __block BOOL completion_called = NO;
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO
+                                                        completion:^{
+                                                          completion_called =
+                                                              YES;
+                                                        }];
 
   // The presented view controller is set to `nil` when the dismiss is over.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return base_view_controller_.presentedViewController == nil;
   }));
+
+  // The completion is called.
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return completion_called;
+      }));
 }
 
 // When the UI is created but not shown, then the memory warning should destroy
@@ -329,10 +349,20 @@ TEST_F(LensOverlayCoordinatorTest,
   // Then the UI should appear created.
   EXPECT_TRUE([coordinator_ isUICreated]);
 
+  __block bool completion_called = NO;
+
   // Given a hidden lens overlay.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO
+                                                        completion:^{
+                                                          completion_called =
+                                                              YES;
+                                                        }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return base_view_controller_.presentedViewController == nil;
+  }));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return completion_called;
   }));
 
   // When UIKit delivers a low-memory warning notification.

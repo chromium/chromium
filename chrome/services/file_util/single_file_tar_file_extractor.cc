@@ -42,7 +42,7 @@ class TarExtractorInner {
       }
 
       base::span<const uint8_t> output_file_content;
-      if (!tar_reader_.ExtractChunk(base::make_span(tar_buffer),
+      if (!tar_reader_.ExtractChunk(base::span(tar_buffer),
                                     output_file_content)) {
         return chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile;
       }

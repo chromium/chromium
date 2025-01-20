@@ -56,7 +56,7 @@ class RealtimeReportingClientBase : public KeyedService,
   // verifications and initialize the profile reporting client. Returns a policy
   // client description and a client, which can be nullptr if it can't be
   // initialized.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   virtual std::pair<std::string, policy::CloudPolicyClient*>
   InitProfileReportingClient(const std::string& dm_token) = 0;
 #endif

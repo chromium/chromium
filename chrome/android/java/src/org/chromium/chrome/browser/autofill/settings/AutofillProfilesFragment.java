@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -43,6 +44,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -244,6 +246,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public static void setObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
         EditorDialogView.setEditorObserverForTest(sObserverForTest);
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     @Override
@@ -255,6 +258,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
         if (preference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
             PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
+            PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
             return;
         }
 
@@ -304,10 +308,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             return false;
         }
         if (profile.getRecordType() == RecordType.ACCOUNT) {
-            return false;
-        }
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());

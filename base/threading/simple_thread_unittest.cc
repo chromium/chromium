@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/threading/simple_thread.h"
+
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
@@ -10,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gtest_util.h"
-#include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -19,7 +20,7 @@ namespace {
 
 class SetIntRunner : public DelegateSimpleThread::Delegate {
  public:
-  SetIntRunner(int* ptr, int val) : ptr_(ptr), val_(val) { }
+  SetIntRunner(int* ptr, int val) : ptr_(ptr), val_(val) {}
 
   SetIntRunner(const SetIntRunner&) = delete;
   SetIntRunner& operator=(const SetIntRunner&) = delete;
@@ -72,7 +73,7 @@ class ControlledRunner : public DelegateSimpleThread::Delegate {
 
 class WaitEventRunner : public DelegateSimpleThread::Delegate {
  public:
-  explicit WaitEventRunner(WaitableEvent* event) : event_(event) { }
+  explicit WaitEventRunner(WaitableEvent* event) : event_(event) {}
 
   WaitEventRunner(const WaitEventRunner&) = delete;
   WaitEventRunner& operator=(const WaitEventRunner&) = delete;
@@ -91,7 +92,7 @@ class WaitEventRunner : public DelegateSimpleThread::Delegate {
 
 class SeqRunner : public DelegateSimpleThread::Delegate {
  public:
-  explicit SeqRunner(AtomicSequenceNumber* seq) : seq_(seq) { }
+  explicit SeqRunner(AtomicSequenceNumber* seq) : seq_(seq) {}
 
   SeqRunner(const SeqRunner&) = delete;
   SeqRunner& operator=(const SeqRunner&) = delete;
@@ -107,9 +108,8 @@ class SeqRunner : public DelegateSimpleThread::Delegate {
 // have all threads outstanding until we hit our expected thread pool size.
 class VerifyPoolRunner : public DelegateSimpleThread::Delegate {
  public:
-  VerifyPoolRunner(AtomicSequenceNumber* seq,
-                   int total, WaitableEvent* event)
-      : seq_(seq), total_(total), event_(event) { }
+  VerifyPoolRunner(AtomicSequenceNumber* seq, int total, WaitableEvent* event)
+      : seq_(seq), total_(total), event_(event) {}
 
   VerifyPoolRunner(const VerifyPoolRunner&) = delete;
   VerifyPoolRunner& operator=(const VerifyPoolRunner&) = delete;

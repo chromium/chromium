@@ -129,6 +129,9 @@ AidaClient::Availability AidaClient::CanUseAida(Profile* profile) {
       IsLoggingDisabledByGeo(country_code);
   result.blocked = result.blocked_by_age ||
                    result.blocked_by_enterprise_policy || result.blocked_by_geo;
+  result.enterprise_policy_value =
+      static_cast<DevToolsGenAiEnterprisePolicyValue>(
+          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings));
 
   return result;
 #else

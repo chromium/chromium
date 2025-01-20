@@ -100,7 +100,7 @@ StringView HyphenationMinikin::WordToHyphenate(
       --end;
     *num_leading_chars_out = static_cast<unsigned>(begin - text.Characters8());
     CHECK_GE(end, begin);
-    return StringView(begin, static_cast<unsigned>(end - begin));
+    return StringView(base::span(begin, end));
   }
   const UChar* begin = text.Characters16();
   int index = 0;
@@ -123,7 +123,7 @@ StringView HyphenationMinikin::WordToHyphenate(
   }
   *num_leading_chars_out = index;
   CHECK_GE(len, index);
-  return StringView(begin + index, len - index);
+  return StringView(text, index, len - index);
 }
 
 Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {

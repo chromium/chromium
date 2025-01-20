@@ -58,8 +58,7 @@ source_set("content") {
     "//ios/web/public/security:security",
     "//ios/web/public/session:session",
     "//ios/web/public/session/proto",
-    "//ios/web/text_fragments:text_fragments",
-    "//ios/web/web_view:util",
+    "//ios/web/util",
     "//ios/web/webui",
   ]
 }

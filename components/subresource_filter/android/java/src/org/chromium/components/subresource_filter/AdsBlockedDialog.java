@@ -26,11 +26,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
- * Java part of AdsBlockedDialog pair providing communication between native ads blocked
- * delegate code and Java ads blocked dialog UI components.
+ * Java part of AdsBlockedDialog pair providing communication between native ads blocked delegate
+ * code and Java ads blocked dialog UI components.
  */
 public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     private long mNativeDialog;
@@ -85,7 +85,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     void show(boolean shouldPostDialog) {
         Resources resources = mContext.getResources();
         mClickableSpan =
-                new NoUnderlineClickableSpan(
+                new ChromeClickableSpan(
                         mContext,
                         (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
         mDialogModel =

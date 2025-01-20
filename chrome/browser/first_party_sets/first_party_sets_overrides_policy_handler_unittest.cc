@@ -97,7 +97,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest()),
+  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest(),
+                                    policy::PolicyMap::MessageType::kWarning),
             u"Schema validation error: Unknown property: unknown");
 }
 
@@ -120,7 +121,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings will return true, but output an unknown property error.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest()),
+  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest(),
+                                    policy::PolicyMap::MessageType::kWarning),
             GetPolicyError(u".replacements[0]: Schema validation error: "
                            u"Unknown property: unknown"));
 }
@@ -144,7 +146,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings will return true, but output an unknown property error.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest()),
+  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest(),
+                                    policy::PolicyMap::MessageType::kWarning),
             GetPolicyError(u".additions[0]: Schema validation error: Unknown "
                            u"property: unknown"));
 }
@@ -363,7 +366,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings returns true, and errors on the last unknown property.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest()),
+  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest(),
+                                    policy::PolicyMap::MessageType::kWarning),
             u"Schema validation error: Unknown property: unknown3");
 }
 
@@ -623,7 +627,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest()),
+  EXPECT_EQ(errors.GetErrorMessages(GetPolicyUnderTest(),
+                                    policy::PolicyMap::MessageType::kWarning),
             GetPolicyError(u".replacements[0].ccTLDs.https://not_in_set.test: "
                            u"Schema validation error: This \"ccTLDs\" entry is "
                            u"ignored since this key is not in the set."));
@@ -651,7 +656,8 @@ TEST_P(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrorMessages(GetPolicyUnderTest()),
+      errors.GetErrorMessages(GetPolicyUnderTest(),
+                              policy::PolicyMap::MessageType::kWarning),
       GetPolicyError(u".replacements[0].ccTLDs.https://primary1.test[0]: "
                      u"Schema validation error: This \"ccTLD\" is ignored "
                      u"since it differs from its key by more than eTLD."));

@@ -12,22 +12,22 @@ build_webui("build") {
   static_files = [ "private_state_tokens.html" ]
 
   non_web_component_files = [
-    "app.ts",
     "app.html.ts",
-    "list_container.ts",
-    "list_container.html.ts",
-    "navigation.ts",
-    "navigation.html.ts",
+    "app.ts",
     "browser_proxy.ts",
-    "list_item.ts",
+    "list_container.html.ts",
+    "list_container.ts",
     "list_item.html.ts",
-    "metadata.ts",
+    "list_item.ts",
     "metadata.html.ts",
+    "metadata.ts",
+    "navigation.html.ts",
+    "navigation.ts",
     "private_state_tokens.ts",
-    "sidebar.ts",
     "sidebar.html.ts",
-    "toolbar.ts",
+    "sidebar.ts",
     "toolbar.html.ts",
+    "toolbar.ts",
     "types.ts",
   ]
 

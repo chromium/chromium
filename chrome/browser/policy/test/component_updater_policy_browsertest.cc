@@ -115,7 +115,7 @@ ComponentUpdaterPolicyTest::ComponentUpdaterPolicyTest()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-ComponentUpdaterPolicyTest::~ComponentUpdaterPolicyTest() {}
+ComponentUpdaterPolicyTest::~ComponentUpdaterPolicyTest() = default;
 
 void ComponentUpdaterPolicyTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -153,7 +153,7 @@ ComponentUpdaterPolicyTest::MakeComponentRegistration(
     bool supports_group_policy_enable_component_updates) {
   class MockInstaller : public update_client::CrxInstaller {
    public:
-    MockInstaller() {}
+    MockInstaller() = default;
 
     void Install(const base::FilePath& unpack_path,
                  const std::string& public_key,
@@ -173,7 +173,7 @@ ComponentUpdaterPolicyTest::MakeComponentRegistration(
     MOCK_METHOD0(Uninstall, bool());
 
    private:
-    ~MockInstaller() override {}
+    ~MockInstaller() override = default;
   };
 
   // component id "jebgalgnebhfojomionfpkfelancnnkf".

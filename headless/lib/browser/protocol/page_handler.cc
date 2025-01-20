@@ -16,13 +16,6 @@
 namespace headless {
 namespace protocol {
 
-#if BUILDFLAG(ENABLE_PRINTING)
-template <typename T>
-std::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
-  return maybe.has_value() ? std::optional<T>(maybe.value()) : std::nullopt;
-}
-#endif
-
 PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          content::WebContents* web_contents)
     : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
@@ -39,23 +32,23 @@ Response PageHandler::Disable() {
   return Response::Success();
 }
 
-void PageHandler::PrintToPDF(Maybe<bool> landscape,
-                             Maybe<bool> display_header_footer,
-                             Maybe<bool> print_background,
-                             Maybe<double> scale,
-                             Maybe<double> paper_width,
-                             Maybe<double> paper_height,
-                             Maybe<double> margin_top,
-                             Maybe<double> margin_bottom,
-                             Maybe<double> margin_left,
-                             Maybe<double> margin_right,
-                             Maybe<String> page_ranges,
-                             Maybe<String> header_template,
-                             Maybe<String> footer_template,
-                             Maybe<bool> prefer_css_page_size,
-                             Maybe<String> transfer_mode,
-                             Maybe<bool> generate_tagged_pdf,
-                             Maybe<bool> generate_document_outline,
+void PageHandler::PrintToPDF(std::optional<bool> landscape,
+                             std::optional<bool> display_header_footer,
+                             std::optional<bool> print_background,
+                             std::optional<double> scale,
+                             std::optional<double> paper_width,
+                             std::optional<double> paper_height,
+                             std::optional<double> margin_top,
+                             std::optional<double> margin_bottom,
+                             std::optional<double> margin_left,
+                             std::optional<double> margin_right,
+                             std::optional<String> page_ranges,
+                             std::optional<String> header_template,
+                             std::optional<String> footer_template,
+                             std::optional<bool> prefer_css_page_size,
+                             std::optional<String> transfer_mode,
+                             std::optional<bool> generate_tagged_pdf,
+                             std::optional<bool> generate_document_outline,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   DCHECK(callback);
 
@@ -68,21 +61,10 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
   absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
       print_pages_params = print_to_pdf::GetPrintPagesParams(
           web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
-          OptionalFromMaybe<bool>(landscape),
-          OptionalFromMaybe<bool>(display_header_footer),
-          OptionalFromMaybe<bool>(print_background),
-          OptionalFromMaybe<double>(scale),
-          OptionalFromMaybe<double>(paper_width),
-          OptionalFromMaybe<double>(paper_height),
-          OptionalFromMaybe<double>(margin_top),
-          OptionalFromMaybe<double>(margin_bottom),
-          OptionalFromMaybe<double>(margin_left),
-          OptionalFromMaybe<double>(margin_right),
-          OptionalFromMaybe<std::string>(header_template),
-          OptionalFromMaybe<std::string>(footer_template),
-          OptionalFromMaybe<bool>(prefer_css_page_size),
-          OptionalFromMaybe<bool>(generate_tagged_pdf),
-          OptionalFromMaybe<bool>(generate_document_outline));
+          landscape, display_header_footer, print_background, scale,
+          paper_width, paper_height, margin_top, margin_bottom, margin_left,
+          margin_right, header_template, footer_template, prefer_css_page_size,
+          generate_tagged_pdf, generate_document_outline);
   if (absl::holds_alternative<std::string>(print_pages_params)) {
     callback->sendFailure(
         Response::InvalidParams(absl::get<std::string>(print_pages_params)));
@@ -122,8 +104,7 @@ void PageHandler::PDFCreated(bool return_as_stream,
     std::string handle = agent_host_->CreateIOStreamFromData(data);
     callback->sendSuccess(protocol::Binary(), handle);
   } else {
-    callback->sendSuccess(protocol::Binary::fromRefCounted(data),
-                          Maybe<std::string>());
+    callback->sendSuccess(protocol::Binary::fromRefCounted(data), std::nullopt);
   }
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)

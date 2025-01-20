@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -27,8 +28,10 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -290,7 +293,7 @@ gpu::ContextResult GLES2Implementation::Initialize(
   util_.set_num_shader_binary_formats(
       gl_capabilities_.num_shader_binary_formats);
 
-  texture_units_ = std::make_unique<TextureUnit[]>(
+  texture_units_ = base::HeapArray<internal::TextureUnit>::WithSize(
       gl_capabilities_.max_combined_texture_image_units);
 
   buffer_tracker_ = std::make_unique<BufferTracker>(mapped_memory_.get());
@@ -1593,27 +1596,6 @@ GLuint GLES2Implementation::GetLastFlushIdCHROMIUM() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glGetLastFlushIdCHROMIUM()");
   return flush_id_;
-}
-
-void GLES2Implementation::SwapBuffers(uint64_t swap_id, GLbitfield flags) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glSwapBuffers()");
-  // TODO(piman): Strictly speaking we'd want to insert the token after the
-  // swap, but the state update with the updated token might not have happened
-  // by the time the SwapBuffer callback gets called, forcing us to synchronize
-  // with the GPU process more than needed. So instead, make it happen before.
-  // All it means is that we could be slightly looser on the kMaxSwapBuffers
-  // semantics if the client doesn't use the callback mechanism, and by chance
-  // the scheduler yields between the InsertToken and the SwapBuffers.
-  swap_buffers_tokens_.push(helper_->InsertToken());
-  helper_->SwapBuffers(swap_id, flags);
-  helper_->CommandBufferHelper::Flush();
-  // Wait if we added too many swap buffers. Add 1 to kMaxSwapBuffers to
-  // compensate for TODO above.
-  if (swap_buffers_tokens_.size() > kMaxSwapBuffers + 1) {
-    helper_->WaitForToken(swap_buffers_tokens_.front());
-    swap_buffers_tokens_.pop();
-  }
 }
 
 void GLES2Implementation::BindAttribLocation(GLuint program,
@@ -4715,10 +4697,18 @@ void GLES2Implementation::WritePixelsYUVINTERNAL(
   // pixels_offset_plane4: stores source pixels for plane 4
 
   const int kMaxPlanes = 4;
-  GLuint src_sizes[kMaxPlanes] = {src_size_plane1, src_size_plane2,
-                                  src_size_plane3, src_size_plane4};
-  const void* src_pixels[kMaxPlanes] = {src_pixels_plane1, src_pixels_plane2,
-                                        src_pixels_plane3, src_pixels_plane4};
+  std::array<GLuint, kMaxPlanes> src_sizes = {
+      src_size_plane1,
+      src_size_plane2,
+      src_size_plane3,
+      src_size_plane4,
+  };
+  std::array<const void*, kMaxPlanes> src_pixels = {
+      src_pixels_plane1,
+      src_pixels_plane2,
+      src_pixels_plane3,
+      src_pixels_plane4,
+  };
 
   GLuint total_size =
       base::bits::AlignUp(sizeof(gpu::Mailbox), sizeof(uint64_t));
@@ -4748,7 +4738,7 @@ void GLES2Implementation::WritePixelsYUVINTERNAL(
   GLuint mailbox_offset = 0;
   memcpy(static_cast<uint8_t*>(address), mailbox, sizeof(gpu::Mailbox));
 
-  GLuint pixel_offsets[kMaxPlanes] = {};
+  std::array<GLuint, kMaxPlanes> pixel_offsets = {};
   // Calculate first plane offset based on mailbox.
   pixel_offsets[0] =
       mailbox_offset + static_cast<GLuint>(base::bits::AlignUp(
@@ -4860,7 +4850,12 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
   if (!*readback_result) {
     return GL_FALSE;
   }
-  memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing into
+  // memory observed by JS at the same time.
+  auto dst = base::span(static_cast<uint8_t*>(pixels), dst_size);
+  auto src =
+      base::span(static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
   return GL_TRUE;
 }
 
@@ -5378,7 +5373,7 @@ void GLES2Implementation::BindSamplerHelper(GLuint unit, GLuint sampler) {
 void GLES2Implementation::BindTextureHelper(GLenum target, GLuint texture) {
   // TODO(gman): See note #1 above.
   bool changed = false;
-  TextureUnit& unit = texture_units_[active_texture_unit_];
+  internal::TextureUnit& unit = texture_units_[active_texture_unit_];
   switch (target) {
     case GL_TEXTURE_2D:
       if (unit.bound_texture_2d != texture) {
@@ -5575,7 +5570,7 @@ void GLES2Implementation::UnbindTexturesHelper(GLsizei n,
   for (GLsizei ii = 0; ii < n; ++ii) {
     for (GLint tt = 0; tt < gl_capabilities_.max_combined_texture_image_units;
          ++tt) {
-      TextureUnit& unit = texture_units_[tt];
+      internal::TextureUnit& unit = texture_units_[tt];
       if (textures[ii] == unit.bound_texture_2d) {
         unit.bound_texture_2d = 0;
       }
@@ -6194,40 +6189,6 @@ void GLES2Implementation::UnmapTexSubImage2DCHROMIUM(const void* mem) {
   CheckGLError();
 }
 
-void GLES2Implementation::ResizeCHROMIUM(GLuint width,
-                                         GLuint height,
-                                         float scale_factor,
-                                         GLcolorSpace gl_color_space,
-                                         GLboolean alpha) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glResizeCHROMIUM(" << width << ", "
-                     << height << ", " << scale_factor << ", " << alpha << ")");
-  // Including gfx::ColorSpace would bring Skia and a lot of other code into
-  // NaCl's IRT, so just leave the color space unspecified.
-#if !defined(__native_client__) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
-  if (gl_color_space) {
-    gfx::ColorSpace gfx_color_space =
-        *reinterpret_cast<const gfx::ColorSpace*>(gl_color_space);
-    base::Pickle color_space_data;
-    IPC::ParamTraits<gfx::ColorSpace>::Write(&color_space_data,
-                                             gfx_color_space);
-    ScopedTransferBufferPtr buffer(color_space_data.size(), helper_,
-                                   transfer_buffer_);
-    if (!buffer.valid() || buffer.size() < color_space_data.size()) {
-      SetGLError(GL_OUT_OF_MEMORY, "GLES2::ResizeCHROMIUM", "out of memory");
-      return;
-    }
-    memcpy(buffer.address(), color_space_data.data(), color_space_data.size());
-    helper_->ResizeCHROMIUM(width, height, scale_factor, alpha, buffer.shm_id(),
-                            buffer.offset(), color_space_data.size());
-    CheckGLError();
-    return;
-  }
-#endif
-  helper_->ResizeCHROMIUM(width, height, scale_factor, alpha, 0, 0, 0);
-  CheckGLError();
-}
-
 const GLchar* GLES2Implementation::GetRequestableExtensionsCHROMIUM() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix()
@@ -6267,15 +6228,13 @@ void GLES2Implementation::RequestExtensionCHROMIUM(const char* extension) {
     const char* extension;
     raw_ptr<ExtensionStatus> status;
   };
-  const ExtensionCheck checks[] = {
+  const auto checks = std::to_array<ExtensionCheck>({
       {
           "GL_CHROMIUM_framebuffer_multisample",
           &chromium_framebuffer_multisample_,
       },
-  };
-  const size_t kNumChecks = sizeof(checks) / sizeof(checks[0]);
-  for (size_t ii = 0; ii < kNumChecks; ++ii) {
-    const ExtensionCheck& check = checks[ii];
+  });
+  for (const ExtensionCheck& check : checks) {
     if (*check.status == kUnavailableExtensionStatus &&
         !strcmp(extension, check.extension)) {
       *check.status = kUnknownExtensionStatus;

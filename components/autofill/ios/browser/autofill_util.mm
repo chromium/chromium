@@ -121,7 +121,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     bool filtered,
     const std::u16string& form_name,
     const GURL& main_frame_url,
-    const GURL& frame_origin,
+    const url::Origin& frame_origin,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame) {
@@ -160,7 +160,7 @@ std::optional<FormData> ExtractFormData(
     bool filtered,
     const std::u16string& form_name,
     const GURL& main_frame_url,
-    const GURL& form_frame_origin,
+    const url::Origin& form_frame_origin,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame) {
@@ -184,7 +184,7 @@ std::optional<FormData> ExtractFormData(
 
   // Use GURL object to verify origin of host frame URL.
   form_data.set_url(GURL(origin));
-  if (form_data.url().DeprecatedGetOriginAsURL() != form_frame_origin) {
+  if (!form_frame_origin.IsSameOriginWith(form_data.url())) {
     return std::nullopt;
   }
 
@@ -192,8 +192,7 @@ std::optional<FormData> ExtractFormData(
       base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos);
 
   const url::Origin frame_origin_object =
-      include_frame_metadata ? url::Origin::Create(form_frame_origin)
-                             : url::Origin();
+      include_frame_metadata ? form_frame_origin : url::Origin();
 
   // Frame ID of the frame containing this form is mandatory.
   const std::string* host_frame_param = form.FindString("host_frame");

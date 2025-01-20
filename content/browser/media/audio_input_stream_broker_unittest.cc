@@ -69,7 +69,7 @@ class MockRendererAudioInputStreamFactoryClient
       mojo::PendingRemote<media::mojom::AudioInputStream> input_stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe,
       bool initially_muted,
       const std::optional<base::UnguessableToken>& stream_id) override {
     EXPECT_TRUE(stream_id.has_value());
@@ -111,7 +111,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     const media::AudioParameters params;
     uint32_t shared_memory_count;
     bool enable_agc;
-    base::ReadOnlySharedMemoryRegion key_press_count_buffer;
     media::mojom::AudioProcessingConfigPtr processing_config;
     CreateInputStreamCallback created_callback;
   };
@@ -134,7 +133,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc,
-      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     // No way to cleanly exit the test here in case of failure, so use CHECK.
@@ -148,8 +146,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     stream_request_data_->log.Bind(std::move(log));
     stream_request_data_->shared_memory_count = shared_memory_count;
     stream_request_data_->enable_agc = enable_agc;
-    stream_request_data_->key_press_count_buffer =
-        std::move(key_press_count_buffer);
     stream_request_data_->processing_config = std::move(processing_config);
     stream_request_data_->created_callback = std::move(created_callback);
   }
@@ -227,8 +223,7 @@ TEST(AudioInputStreamBrokerTest, StreamCreationSuccess_Propagates) {
   base::SyncSocket socket1, socket2;
   base::SyncSocket::CreatePair(&socket1, &socket2);
   std::move(stream_request_data.created_callback)
-      .Run({std::in_place,
-            base::ReadOnlySharedMemoryRegion::Create(shmem_size).region,
+      .Run({std::in_place, base::UnsafeSharedMemoryRegion::Create(shmem_size),
             mojo::PlatformHandle(socket1.Take())},
            kInitiallyMuted, base::UnguessableToken::Create());
 

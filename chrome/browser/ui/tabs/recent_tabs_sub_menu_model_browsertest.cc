@@ -64,7 +64,7 @@ namespace {
 class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
  public:
   explicit TestRecentTabsMenuModelDelegate(ui::MenuModel* model)
-      : model_(model), got_changes_(false) {
+      : model_(model) {
     model_->SetMenuModelDelegate(this);
   }
 
@@ -87,7 +87,7 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
  private:
   raw_ptr<ui::MenuModel> model_;
-  bool got_changes_;
+  bool got_changes_ = false;
 };
 
 struct ModelData {

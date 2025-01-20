@@ -10,17 +10,17 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -74,7 +74,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
       expectTotalCount:count
           forHistogram:
               @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 
   error = [MetricsAppInterface
        expectCount:count
@@ -82,7 +82,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
                                         kPasswordDetails)
       forHistogram:
           @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
-  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Verifies that the number of accepted suggestions recorded for the given
@@ -128,8 +128,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // enabled by default.
   [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -140,8 +140,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [PasswordSuggestionBottomSheetAppInterface removeMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 

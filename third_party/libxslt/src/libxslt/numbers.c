@@ -63,12 +63,37 @@ static char alpha_lower_list[] = "abcdefghijklmnopqrstuvwxyz";
 static xsltFormatToken default_token;
 
 /*
- * **** Start temp insert ****
- *
- * The following routine xsltUTF8Charcmp will be replaced with calls to
- * the corresponding libxml routine at a later date (when other
- * inter-library dependencies require it).
+ * Helper functions copied from libxml2
  */
+
+/**
+ * xsltCopyCharMultiByte:
+ * @out:  pointer to an array of xmlChar
+ * @val:  the char value
+ *
+ * append the char value in the array
+ *
+ * Returns the number of xmlChar written
+ */
+static int
+xsltCopyCharMultiByte(xmlChar *out, int val) {
+    if ((out == NULL) || (val < 0)) return(0);
+    if  (val >= 0x80) {
+	xmlChar *savedout = out;
+	int bits;
+	if (val <   0x800) { *out++= (val >>  6) | 0xC0;  bits=  0; }
+	else if (val < 0x10000) { *out++= (val >> 12) | 0xE0;  bits=  6;}
+	else if (val < 0x110000)  { *out++= (val >> 18) | 0xF0;  bits=  12; }
+	else {
+	    return(0);
+	}
+	for ( ; bits >= 0; bits-= 6)
+	    *out++= ((val >> bits) & 0x3F) | 0x80 ;
+	return (out - savedout);
+    }
+    *out = val;
+    return 1;
+}
 
 /**
  * xsltUTF8Charcmp
@@ -98,7 +123,6 @@ xsltIsLetterDigit(int val) {
            xmlIsDigitQ(val);
 }
 
-/***** Stop temp insert *****/
 /************************************************************************
  *									*
  *			Utility functions				*
@@ -174,7 +198,7 @@ xsltNumberFormatDecimal(xmlBufferPtr buffer,
 		break;
 	    }
 	    pointer -= groupingCharacterLen;
-	    xmlCopyCharMultiByte(pointer, groupingCharacter);
+	    xsltCopyCharMultiByte(pointer, groupingCharacter);
 	}
 
 	val = digit_zero + (int)fmod(number, 10.0);
@@ -192,7 +216,7 @@ xsltNumberFormatDecimal(xmlBufferPtr buffer,
 	 * it is.  So, we generate it into the buffer temp_char, then
 	 * copy from there into temp_string.
 	 */
-	    len = xmlCopyCharMultiByte(temp_char, val);
+	    len = xsltCopyCharMultiByte(temp_char, val);
 	    if ( (pointer - len) < temp_string ) {
 	        i = -1;
 		break;

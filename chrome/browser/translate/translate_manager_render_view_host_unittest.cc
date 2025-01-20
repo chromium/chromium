@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -364,8 +360,18 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
 // display names in English locale. To save space, Chrome's copy of ICU
 // does not have the display name for a language unless it's in the
 // Accept-Language list.
-static const char* kServerLanguageList[] = {"ak",    "af", "en-CA", "zh", "yi",
-                                            "fr-FR", "tl", "iw",    "hz", "xx"};
+auto kServerLanguageList = std::to_array<const char*>({
+    "ak",
+    "af",
+    "en-CA",
+    "zh",
+    "yi",
+    "fr-FR",
+    "tl",
+    "iw",
+    "hz",
+    "xx",
+});
 
 // Test the fetching of languages from the translate server
 TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {

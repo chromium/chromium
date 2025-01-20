@@ -4,6 +4,8 @@
 
 package org.chromium.device.nfc;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.mojom.Nfc;
 import org.chromium.device.mojom.NfcProvider;
 import org.chromium.mojo.bindings.InterfaceRequest;
@@ -11,10 +13,11 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /** Android implementation of the NfcProvider Mojo interface. */
+@NullMarked
 public class NfcProviderImpl implements NfcProvider {
     private static final String TAG = "NfcProviderImpl";
     private NfcDelegate mDelegate;
-    private NfcImpl mNfcImpl;
+    private @Nullable NfcImpl mNfcImpl;
 
     public NfcProviderImpl(NfcDelegate delegate) {
         mDelegate = delegate;

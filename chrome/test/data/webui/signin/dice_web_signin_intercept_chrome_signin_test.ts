@@ -24,6 +24,7 @@ const PARAMETERS: ChromeSigninInterceptionParameters = {
   email: 'email@example.com',
   pictureUrl: AVATAR_URL,
   managedUserBadge: '',
+  userBadgeAltText: '',
 };
 
 suite('DiceWebSigninInterceptChromeSigninTest', function() {
@@ -46,6 +47,12 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
     assertTrue(img != null);
     assertEquals(expectedUrl, img.src);
+  }
+
+  function checkAltText(elementId: string, expectedAltText: string) {
+    const badge = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
+    assertTrue(badge != null);
+    assertEquals(expectedAltText, badge.alt);
   }
 
   test('ClickAccept', function() {
@@ -104,23 +111,27 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     // Set Supervised user badge source. The badge becomes visible.
     let newParams = {
       ...PARAMETERS,
-      managedUserBadge: 'cr20:kite',
+      managedUserBadge: 'cr:kite',
+      userBadgeAltText: 'Managed by your parent',
     };
     webUIListenerCallback(
         'interception-chrome-signin-parameters-changed', newParams);
     await microtasksFinished();
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
     assertTrue(isChildVisible(app, badgeSelector));
+    checkAltText(iconSelector, newParams.userBadgeAltText);
 
     // Un-set Supervised user badge source. The badge becomes hidden.
     newParams = {
       ...PARAMETERS,
       managedUserBadge: '',
+      userBadgeAltText: '',
     };
     webUIListenerCallback(
         'interception-chrome-signin-parameters-changed', newParams);
     await microtasksFinished();
     assertFalse(isChildVisible(app, badgeSelector));
+    checkAltText(iconSelector, newParams.userBadgeAltText);
   });
 
 });

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/webui_url_hashes.h"
+
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/webui/webui_url_hashes.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(WebUIUrlHashesBrowserTest, UrlsInHistogram) {
     std::string url = config_info.origin.Serialize() + "/";
     uint32_t hash = base::Hash(url);
     std::string hash_string =
-        base::NumberToString(static_cast<base::HistogramBase::Sample>(hash));
+        base::NumberToString(static_cast<base::HistogramBase::Sample32>(hash));
     if (!webui_metrics::IsValidWebUIUrlHashes(hash_string)) {
       missing_entries.push_back(base::StrCat(
           {"  <int value=\"", hash_string, "\" label=\"", url, "\"/>"}));

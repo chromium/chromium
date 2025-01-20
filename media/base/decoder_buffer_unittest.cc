@@ -113,7 +113,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
@@ -163,7 +163,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
 TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
@@ -197,7 +197,7 @@ TEST(DecoderBufferTest, FromExternalMemory) {
   constexpr size_t kDataSize = std::size(kData);
 
   auto external_memory = std::make_unique<ExternalMemoryAdapterForTesting>(
-      base::make_span(kData, kDataSize));
+      base::span(kData, kDataSize));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());
   EXPECT_EQ(buffer->size(), kDataSize);
@@ -256,7 +256,7 @@ TEST(DecoderBufferTest, IsKeyFrame) {
 
 TEST(DecoderBufferTest, SideData) {
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
-  EXPECT_FALSE(buffer->has_side_data());
+  EXPECT_FALSE(buffer->side_data());
 
   constexpr uint64_t kSecureHandle = 42;
   const std::vector<uint32_t> kSpatialLayers = {1, 2, 3};
@@ -266,7 +266,7 @@ TEST(DecoderBufferTest, SideData) {
   buffer->WritableSideData().spatial_layers = kSpatialLayers;
   buffer->WritableSideData().alpha_data =
       base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
-  EXPECT_TRUE(buffer->has_side_data());
+  EXPECT_TRUE(buffer->side_data());
   EXPECT_EQ(buffer->side_data()->secure_handle, kSecureHandle);
   EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
   EXPECT_EQ(buffer->side_data()->alpha_data.as_span(), base::span(kAlphaData));
@@ -281,7 +281,7 @@ TEST(DecoderBufferTest, SideData) {
             cloned_side_data->alpha_data.as_span());
 
   buffer->set_side_data(nullptr);
-  EXPECT_FALSE(buffer->has_side_data());
+  EXPECT_FALSE(buffer->side_data());
 }
 
 TEST(DecoderBufferTest, IsEncrypted) {

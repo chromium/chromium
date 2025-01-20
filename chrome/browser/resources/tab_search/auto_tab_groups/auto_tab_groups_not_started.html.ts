@@ -13,6 +13,10 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
   return html`<!--_html_template_start_-->
 <div class="auto-tab-groups-container">
   <auto-tab-groups-not-started-image></auto-tab-groups-not-started-image>
+  ${this.tabOrganizationUserInstructionEnabled_ ? html`
+    <input id="userInstructionInput"
+    @input="${this.onUserInstructionInputChange_}">
+  ` : ''}
   <div class="auto-tab-groups-text-container">
     <div class="auto-tab-groups-body">
       ${this.getBody_()}
@@ -40,7 +44,8 @@ export function getHtml(this: AutoTabGroupsNotStartedElement) {
         <a class="auto-tab-groups-link"
             role="link"
             tabindex="0"
-            @click="${this.onLearnMoreClick_}">
+            @click="${this.onLearnMoreClick_}"
+            @keydown="${this.onLearnMoreKeyDown_}">
           $i18n{learnMore}
         </a>
       ` : ''}

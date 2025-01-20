@@ -244,17 +244,6 @@ public class GeolocationHeaderTest {
                 });
     }
 
-    private void checkHeaderWithLocation(final long locationTime, final boolean shouldBeNull) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    setMockLocation(locationTime);
-                    String header =
-                            GeolocationHeader.getGeoHeader(
-                                    SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
-                    assertHeaderState(header, locationTime, shouldBeNull);
-                });
-    }
-
     private void checkHeaderPriming(boolean shouldPrimeHeader) {
         sActivityTestRule.loadUrlInNewTab("about:blank", false);
         mOmniboxTestUtils.requestFocus();

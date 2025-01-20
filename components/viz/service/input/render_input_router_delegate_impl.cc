@@ -8,6 +8,7 @@
 
 #include "base/notimplemented.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/viz/service/input/peak_gpu_memory_tracker_impl.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -26,7 +27,7 @@ RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl(
     scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
     Delegate& delegate,
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id)
+    const base::UnguessableToken& grouping_id)
     : rwhier_(std::move(rwhier)),
       delegate_(delegate),
       frame_sink_id_(frame_sink_id),
@@ -51,10 +52,8 @@ RenderInputRouterDelegateImpl::GetPointerLockView() {
   NOTREACHED();
 }
 
-const cc::RenderFrameMetadata&
-RenderInputRouterDelegateImpl::GetLastRenderFrameMetadata() {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTREACHED();
+std::optional<bool> RenderInputRouterDelegateImpl::IsDelegatedInkHovering() {
+  return delegate_->IsDelegatedInkHovering(frame_sink_id_);
 }
 
 std::unique_ptr<input::RenderInputRouterIterator>
@@ -69,9 +68,9 @@ RenderInputRouterDelegateImpl::GetInputEventRouter() {
 
 bool RenderInputRouterDelegateImpl::IsIgnoringWebInputEvents(
     const blink::WebInputEvent& event) const {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(377625588): Implement notifying Viz of WebContentsImpl's ignoring
+  // input events.
+  return is_blocked_;
 }
 
 bool RenderInputRouterDelegateImpl::PreHandleGestureEvent(
@@ -123,12 +122,11 @@ void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
   delegate_->OnInvalidInputEventSource(frame_sink_id_, grouping_id_);
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<PeakGpuMemoryTracker>
 RenderInputRouterDelegateImpl::MakePeakGpuMemoryTracker(
-    input::PeakGpuMemoryTracker::Usage usage) {
-  // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
-  NOTIMPLEMENTED();
-  return nullptr;
+    PeakGpuMemoryTracker::Usage usage) {
+  return std::make_unique<PeakGpuMemoryTrackerImpl>(usage,
+                                                    delegate_->GetGpuService());
 }
 
 }  // namespace viz

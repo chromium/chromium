@@ -219,7 +219,6 @@ std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
   rc_cfg.num_temporal_layers = num_temporal_layers;
   // Type of the video content (camera or display).
   rc_cfg.content_type = encode_params.content_type;
-  rc_cfg.fixed_delta_qp = false;
   rc_cfg.ease_hrd_reduction = true;
 
   // Fill temporal layers variables.
@@ -1107,7 +1106,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
                           &packed_slice_param_buffer});
     va_buffers.push_back({VAEncPackedHeaderDataBufferType,
                           packed_slice_header.BytesInBuffer(),
-                          packed_slice_header.data()});
+                          packed_slice_header.data().data()});
   }
 
   return vaapi_wrapper_->SubmitBuffers(va_buffers);
@@ -1131,11 +1130,11 @@ bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
       {{VAEncPackedHeaderParameterBufferType, sizeof(packed_sps_param),
         &packed_sps_param},
        {VAEncPackedHeaderDataBufferType, packed_sps.BytesInBuffer(),
-        packed_sps.data()},
+        packed_sps.data().data()},
        {VAEncPackedHeaderParameterBufferType, sizeof(packed_pps_param),
         &packed_pps_param},
        {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
-        packed_pps.data()}});
+        packed_pps.data().data()}});
 }
 
 void H264VaapiVideoEncoderDelegate::BitrateControlUpdate(

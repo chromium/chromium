@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/file_system/file_system_api.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -168,16 +164,16 @@ bool GetFileTypesFromAcceptOption(
 
 // Key for the path of the directory of the file last chosen by the user in
 // response to a chrome.fileSystem.chooseEntry() call.
-const char kLastChooseEntryDirectory[] = "last_choose_file_directory";
+constexpr char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
-const int kGraylistedPaths[] = {
+const auto kGraylistedPaths = std::to_array<int>({
     base::DIR_HOME,
 #if BUILDFLAG(IS_WIN)
     base::DIR_PROGRAM_FILES,
     base::DIR_PROGRAM_FILESX86,
     base::DIR_WINDOWS,
 #endif
-};
+});
 
 using FileInfoOptCallback =
     base::OnceCallback<void(std::unique_ptr<base::File::Info>)>;
@@ -551,12 +547,15 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     return;
   }
 
-  for (size_t i = 0; i < std::size(kGraylistedPaths); i++) {
+  for (const int graylisted_path_key : kGraylistedPaths) {
     base::FilePath graylisted_path;
-    if (!base::PathService::Get(kGraylistedPaths[i], &graylisted_path))
+    if (!base::PathService::Get(graylisted_path_key, &graylisted_path)) {
       continue;
-    if (check_path != graylisted_path && !check_path.IsParent(graylisted_path))
+    }
+    if (check_path != graylisted_path &&
+        !check_path.IsParent(graylisted_path)) {
       continue;
+    }
 
     if (g_test_options && g_test_options->skip_directory_confirmation) {
       if (g_test_options->allow_directory_access) {

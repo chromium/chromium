@@ -73,6 +73,10 @@ class PrivacySandboxSurveyDesktopControllerTest : public testing::Test {
   }
   TestingPrefServiceSimple* prefs() { return &prefs_; }
   TestingProfile* profile() { return &profile_; }
+  void TriggerSurvey() {
+    survey_desktop_controller_->OnNewTabPageSeen();
+    survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -87,11 +91,22 @@ class PrivacySandboxSurveyDesktopControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PrivacySandboxSurveyDesktopControllerTest, SurveyIsLaunched) {
+TEST_F(PrivacySandboxSurveyDesktopControllerTest, SentimentSurveyIsLaunched) {
   EXPECT_CALL(
       *mock_hats_service_,
       LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(), _));
+  TriggerSurvey();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+}
 
+TEST_F(PrivacySandboxSurveyDesktopControllerTest,
+       SentimentSurveyIsNotLaunched) {
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(_, _, _, survey_service()->GetSentimentSurveyPsb(), _))
+      .Times(0);
+
+  // Survey should not launch since we haven't seen a NTP.
   survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
 }
@@ -106,7 +121,7 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest, EmitsSurveyShownHistogram) {
         // Force a failure by calling the failure callback.
         std::move(success_callback).Run();
       }));
-  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
@@ -125,7 +140,7 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest,
         // Force a failure by calling the failure callback.
         std::move(failure_callback).Run();
       }));
-  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
@@ -152,7 +167,7 @@ class PrivacySandboxSurveyDesktopControllerNullHatsService
 
 TEST_F(PrivacySandboxSurveyDesktopControllerNullHatsService,
        EmitsHatsServiceFailedHistogram) {
-  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
@@ -173,7 +188,7 @@ class PrivacySandboxSurveyDesktopControllerFeatureDisabledTest
 
 TEST_F(PrivacySandboxSurveyDesktopControllerFeatureDisabledTest,
        EmitsFeatureDisabledHistogram) {
-  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  TriggerSurvey();
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.SentimentSurvey.Status",
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::

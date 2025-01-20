@@ -81,7 +81,7 @@ ClipboardExtensionHelper::ClipboardExtensionHelper() {
       std::make_unique<ClipboardImageDataDecoder>(this);
 }
 
-ClipboardExtensionHelper::~ClipboardExtensionHelper() {}
+ClipboardExtensionHelper::~ClipboardExtensionHelper() = default;
 
 void ClipboardExtensionHelper::DecodeAndSaveImageData(
     std::vector<uint8_t> data,

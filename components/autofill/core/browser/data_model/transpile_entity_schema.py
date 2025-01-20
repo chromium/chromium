@@ -1,0 +1,238 @@
+#!/usr/bin/env python
+
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""Generates C++ code from an Autofill AI schema definition.
+
+See go/forms-ai:data-model.
+TODO(crbug.com/388590912): Add more details.
+"""
+
+import argparse
+import io
+import json
+import re
+import sys
+
+# For 'foo bar' returns 'kFooBar', which is the conventional format of C++
+# constants.
+def name_to_constant(str):
+  return 'k' + ''.join([s.capitalize() for s in str.split(' ')])
+
+# The enum constant's name of an entity type.
+def entity_name(entity, qualified = True):
+  prefix = 'EntityTypeName::' if qualified else ''
+  return prefix + name_to_constant(entity)
+
+# The enum constant's name of an attribute type.
+def attribute_name(entity, attribute, qualified = True):
+  prefix = 'AttributeTypeName::' if qualified else ''
+  return prefix + name_to_constant(entity +' '+ attribute)
+
+# Adds to list of unqualified enum constant values a `kMaxValue` constant.
+def add_kMaxValue(constants):
+  constants = list(constants)
+  return constants + ['kMaxValue = '+ constants[-1]]
+
+# An expression that creates a DenseSet of attribute type names.
+def attribute_dense_set(entity, attributes):
+  names = (attribute_name(entity, attribute) for attribute in attributes)
+  return f'DenseSet{{{", ".join((f"AttributeType({name})" for name in names))}}}'
+
+# Generates entity and attribute type name enum definitions.
+def generate_cpp_enums(schema):
+  entities = (entity_name(entity['name'], qualified=False) for entity in schema)
+  attributes = (
+      attribute_name(entity['name'], attribute, qualified=False)
+      for entity in schema
+      for attribute in entity['attributes']
+  )
+  yield f'enum class EntityTypeName {{ {", ".join(add_kMaxValue(entities))} }};'
+  yield ''
+  yield f'enum class AttributeTypeName {{ {", ".join(add_kMaxValue(attributes))} }};'
+
+# Generates the function implementations.
+def generate_cpp_functions(schema):
+  yield 'bool IsValidEntityTypeName(EntityTypeName t) {'
+  yield '  switch (t) {'
+  for entity in (entity['name'] for entity in schema):
+    yield f'    case {entity_name(entity)}:'
+  yield f'      return true;'
+  yield '  }'
+  yield '  return false;'
+  yield '}'
+  yield ''
+  yield 'bool IsValidAttributeTypeName(AttributeTypeName a) {'
+  yield '  switch (a) {'
+  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity, attribute)}:'
+  yield f'      return true;'
+  yield '  }'
+  yield '  return false;'
+  yield '}'
+  yield ''
+  yield 'EntityTypeName AttributeTypeNameToEntityTypeName(AttributeTypeName a) {'
+  yield '  switch (a) {'
+  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity, attribute)}:'
+    yield f'      return {entity_name(entity)};'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'std::string_view AttributeType::name_as_string() const {'
+  yield '  switch (name_) {'
+  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity, attribute)}:'
+    yield f'      return "{attribute}";'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'std::string_view EntityType::name_as_string() const {'
+  yield '  switch (name_) {'
+  for entity in (entity['name'] for entity in schema):
+    yield f'    case {entity_name(entity)}:'
+    yield f'      return "{entity}";'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'DenseSet<AttributeType> EntityType::attributes() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}:'
+    yield f'      return {attribute_dense_set(entity["name"], entity["attributes"])};'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::unique_keys() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}: {{'
+    yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity["unique keys"])}}};'
+    yield f'      return as;'
+    yield f'    }}'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::required_attributes() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}: {{'
+    yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity["required attributes"])}}};'
+    yield f'      return as;'
+    yield f'    }}'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'bool EntityType::syncable() const {'
+  yield '  switch (name_) {'
+  for entity, syncable in ((entity['name'], entity['syncable']) for entity in schema):
+    yield f'    case {entity_name(entity)}:'
+    yield f'      return {"true" if syncable else "false"};'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'bool AttributeType::DisambiguationComparator::operator()(const AttributeType& lhs, const AttributeType& rhs) const {'
+  yield '  constexpr auto rank = [](const AttributeType& a) {'
+  yield '    static constexpr auto ranks = [] {'
+  yield '      std::array<int, base::to_underlying(AttributeTypeName::kMaxValue)> ranks{};'
+  for entity, order in ((entity['name'], entity.get('disambiguation order', [])) for entity in schema):
+    for rank, attribute in enumerate(order):
+      yield f'      ranks[base::to_underlying({attribute_name(entity, attribute)})] = {rank+1};'
+  yield '      return ranks;'
+  yield '    }();'
+  yield '    auto r = ranks[base::to_underlying(a.name())];'
+  yield '    return r > 0 ? r : std::numeric_limits<decltype(r)>::max();'
+  yield '  };'
+  yield '  return rank(lhs) < rank(rhs);'
+  yield '}'
+
+def generate_cpp_enums_header(schema, include_guard):
+  yield f"""// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef {include_guard}
+#define {include_guard}
+
+namespace autofill {{
+"""
+  yield from generate_cpp_enums(schema)
+  yield f"""
+}}  // namespace autofill
+
+#endif  // {include_guard}"""
+
+def generate_cpp_functions_header(schema, include_guard):
+  yield f"""// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <array>
+#include <limits>
+#include <string>
+
+#include "base/containers/span.h"
+#include "base/notreached.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/common/dense_set.h"
+
+namespace autofill {{
+"""
+  yield from generate_cpp_functions(schema)
+  yield f"""
+}}  // namespace autofill"""
+
+def parse_schema(input_file, output_files):
+  schema = {}
+  with io.open(input_file, 'r', encoding='utf-8') as input_handle:
+    schema = json.load(input_handle)
+
+  def write_to_handle(generator, output_file):
+    include_guard = re.sub(r'\W', '_', output_file.upper()) +'_'
+    with io.open(output_file, 'w', encoding='utf-8') as output_handle:
+      for line in generator(schema, include_guard):
+        line += '\n'
+        # unicode() exists and is necessary only in Python 2, not in Python 3.
+        if sys.version_info[0] < 3:
+          line = unicode(s, 'utf-8')
+        output_handle.write(line)
+
+  write_to_handle(generate_cpp_enums_header, output_files[0])
+  write_to_handle(generate_cpp_functions_header, output_files[1])
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(
+      description='Transpiles an Autofill AI schema from JSON to C++.')
+  parser.add_argument(
+      '--input',
+      metavar='schema.json',
+      required=True,
+      type=str,
+      help='JSON file containing the schema')
+  parser.add_argument(
+      '--output',
+      metavar='out.h',
+      required=True,
+      type=str,
+      nargs=2,
+      help=(
+          'C++ files to be generated: first the header for the'
+          ' entity/attribute-type enums and second the source file for the'
+          ' function implementations'
+      ),
+  )
+  args = parser.parse_args()
+  if not args.input or not args.output:
+    parser.print_help()
+  else:
+    parse_schema(args.input, args.output)

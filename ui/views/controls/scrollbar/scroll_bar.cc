@@ -49,8 +49,9 @@ void ScrollBar::SetThumb(BaseScrollBarThumb* thumb) {
 
 bool ScrollBar::ScrollByAmount(ScrollAmount amount) {
   auto desired_offset = GetDesiredScrollOffset(amount);
-  if (!desired_offset)
+  if (!desired_offset) {
     return false;
+  }
 
   SetContentsScrollOffset(desired_offset.value());
   ScrollContentsToOffset();
@@ -68,8 +69,9 @@ void ScrollBar::ScrollToThumbPosition(int thumb_position,
 bool ScrollBar::ScrollByContentsOffset(int contents_offset) {
   int old_offset = contents_scroll_offset_;
   SetContentsScrollOffset(contents_scroll_offset_ - contents_offset);
-  if (old_offset == contents_scroll_offset_)
+  if (old_offset == contents_scroll_offset_) {
     return false;
+  }
 
   ScrollContentsToOffset();
   return true;
@@ -91,8 +93,9 @@ int ScrollBar::GetPosition() const {
 // ScrollBar, View implementation:
 
 bool ScrollBar::OnMousePressed(const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
+  if (event.IsOnlyLeftMouseButton()) {
     ProcessPressEvent(event);
+  }
   return true;
 }
 
@@ -167,8 +170,9 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   if (event->type() == ui::EventType::kGestureScrollUpdate) {
-    if (scroll_status_ == ScrollStatus::kScrollStarted)
+    if (scroll_status_ == ScrollStatus::kScrollStarted) {
       scroll_status_ = ScrollStatus::kScrollInProgress;
+    }
 
     float scroll_amount_f;
     int scroll_amount;
@@ -181,8 +185,9 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
       scroll_amount = base::ClampRound(scroll_amount_f);
       roundoff_error_.set_y(scroll_amount - scroll_amount_f);
     }
-    if (ScrollByContentsOffset(scroll_amount))
+    if (ScrollByContentsOffset(scroll_amount)) {
       event->SetHandled();
+    }
     return;
   }
 
@@ -197,6 +202,11 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
             : event->details().velocity_y());
     event->SetHandled();
   }
+}
+
+void ScrollBar::OnThemeChanged() {
+  View::OnThemeChanged();
+  SchedulePaint();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,8 +377,9 @@ void ScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
       scroll_status_ = ScrollStatus::kScrollStarted;
       break;
     case ui::EventType::kScroll:
-      if (scroll_status_ == ScrollStatus::kScrollStarted)
+      if (scroll_status_ == ScrollStatus::kScrollStarted) {
         scroll_status_ = ScrollStatus::kScrollInProgress;
+      }
       break;
     case ui::EventType::kScrollFlingStart:
       scroll_status_ = ScrollStatus::kScrollEnded;
@@ -396,8 +407,9 @@ ScrollAnimator* ScrollBar::GetOrCreateScrollAnimator() {
 void ScrollBar::SetFlingMultiplier(float fling_multiplier) {
   fling_multiplier_ = fling_multiplier;
   // `scroll_animator_` is lazily created when needed.
-  if (!scroll_animator_)
+  if (!scroll_animator_) {
     return;
+  }
 
   GetOrCreateScrollAnimator()->set_velocity_multiplier(fling_multiplier_);
 }
@@ -480,10 +492,12 @@ int ScrollBar::CalculateContentsOffset(float thumb_position,
                                        bool scroll_to_middle) const {
   float thumb_size = static_cast<float>(thumb_->GetLength());
   int track_size = GetTrackSize();
-  if (track_size == thumb_size)
+  if (track_size == thumb_size) {
     return 0;
-  if (scroll_to_middle)
+  }
+  if (scroll_to_middle) {
     thumb_position = thumb_position - (thumb_size / 2);
+  }
   float result = (thumb_position * (contents_size_ - viewport_size_)) /
                  (track_size - thumb_size);
   return base::ClampRound(result);

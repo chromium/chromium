@@ -78,6 +78,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -93,6 +94,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node2->SetProcessWithPid(kProcessId2, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
@@ -106,6 +108,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node3->SetProcessWithPid(kProcessId3, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node3 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node3->SetType(PageType::kTab);
   auto main_frame_node3 =
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
@@ -119,6 +122,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node4->SetProcessWithPid(kProcessId4, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node4 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node4->SetType(PageType::kTab);
   auto main_frame_node4 =
       CreateFrameNodeAutoId(process_node4.get(), page_node4.get());
   testing::MakePageNodeDiscardable(page_node4.get(), task_env());
@@ -132,6 +136,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node5->SetProcessWithPid(kProcessId5, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node5 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node5->SetType(PageType::kTab);
   auto main_frame_node5 =
       CreateFrameNodeAutoId(process_node5.get(), page_node5.get());
   testing::MakePageNodeDiscardable(page_node5.get(), task_env());
@@ -143,6 +148,7 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   process_node6->SetProcessWithPid(kProcessId6, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node6 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node6->SetType(PageType::kTab);
   auto main_frame_node6 =
       CreateFrameNodeAutoId(process_node6.get(), page_node6.get());
   testing::MakePageNodeDiscardable(page_node6.get(), task_env());
@@ -191,6 +197,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestSamePagesAreNotReportedTwice) {
   process_node1->SetProcessWithPid(1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -214,6 +221,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestPageStateChangesCausesNewReport) {
   process_node1->SetProcessWithPid(1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -238,6 +246,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestAddingPageCausesNewReport) {
   process_node1->SetProcessWithPid(1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -255,6 +264,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestAddingPageCausesNewReport) {
   process_node2->SetProcessWithPid(2, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
@@ -270,6 +280,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestRemovingPageCausesNewReport) {
   process_node1->SetProcessWithPid(1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -289,6 +300,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestRemovingPageCausesNewReport) {
     process_node2->SetProcessWithPid(2, base::Process::Current(),
                                      /* launch_time=*/base::TimeTicks::Now());
     auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+    page_node2->SetType(PageType::kTab);
     auto main_frame_node2 =
         CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
     testing::MakePageNodeDiscardable(page_node2.get(), task_env());
@@ -311,6 +323,7 @@ TEST_F(ReportPageProcessesPolicyTest, TestZeroTabsIsReported) {
     process_node1->SetProcessWithPid(1, base::Process::Current(),
                                      /* launch_time=*/base::TimeTicks::Now());
     auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+    page_node1->SetType(PageType::kTab);
     auto main_frame_node1 =
         CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
     testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -335,6 +348,7 @@ TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
   process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -350,6 +364,7 @@ TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
   process_node2->SetProcessWithPid(kProcessId2, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
@@ -380,6 +395,7 @@ TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimeCurrent) {
   process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
@@ -410,6 +426,7 @@ TEST_F(ReportPageProcessesPolicyTest, LastVisibleTimePast) {
   process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
                                    /* launch_time=*/base::TimeTicks::Now());
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node1->SetType(PageType::kTab);
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());

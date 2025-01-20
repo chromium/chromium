@@ -12,3 +12,8 @@ specific_include_rules = {
     ],
 }
 
+specific_include_rules = {
+    "web_string.cc": [
+        "+base/strings/latin1_string_conversions.h",
+    ],
+}

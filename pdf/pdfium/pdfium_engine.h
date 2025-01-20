@@ -62,7 +62,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_ids.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -219,8 +219,13 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void RotateCounterclockwise();
   bool IsReadOnly() const;
   void SetReadOnly(bool read_only);
+  bool IsTagged() const;
   void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
   void DisplayAnnotations(bool display);
+
+  // Returns the text contained on the given page. The caller is responsible for
+  // passing a valid `page_index`.
+  std::u16string GetPageText(int page_index);
 
   // Applies the document layout options proposed by a call to
   // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
@@ -404,8 +409,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // PDFium page object.
   //
   // Virtual to support testing.
-  virtual std::map<InkModeledShapeId, ink::ModeledShape> LoadV2InkPathsForPage(
-      int page_index);
+  virtual std::map<InkModeledShapeId, ink::PartitionedMesh>
+  LoadV2InkPathsForPage(int page_index);
 
   // Modifies an existing shape identified by `id` on the page at `page_index`
   // to become either active or inactive. The caller must pass the same
@@ -486,6 +491,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Sets whether form highlight should be enabled or cleared.
   virtual void SetFormHighlight(bool enable_form);
+
+  // Attempts to render highlights for all of the fragments provided in
+  // `text_fragments`. If a fragment is not found, it is skipped and the
+  // engine will attempt to find and highlight the next fragment in the list.
+  virtual void HighlightTextFragments(
+      base::span<const std::string> text_fragments);
 
  private:
   // This helper class is used to detect the difference in selection between

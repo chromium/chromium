@@ -49,50 +49,50 @@ class CORE_EXPORT InspectorEmulationAgent final
   protocol::Response setDocumentCookieDisabled(bool disabled) override;
   protocol::Response setTouchEmulationEnabled(
       bool enabled,
-      protocol::Maybe<int> max_touch_points) override;
+      std::optional<int> max_touch_points) override;
   protocol::Response setEmulatedMedia(
-      protocol::Maybe<String> media,
-      protocol::Maybe<protocol::Array<protocol::Emulation::MediaFeature>>
+      std::optional<String> media,
+      std::unique_ptr<protocol::Array<protocol::Emulation::MediaFeature>>
           features) override;
   protocol::Response setEmulatedVisionDeficiency(const String&) override;
   protocol::Response setCPUThrottlingRate(double) override;
   protocol::Response setFocusEmulationEnabled(bool) override;
-  protocol::Response setAutoDarkModeOverride(protocol::Maybe<bool>) override;
+  protocol::Response setAutoDarkModeOverride(std::optional<bool>) override;
   protocol::Response setVirtualTimePolicy(
       const String& policy,
-      protocol::Maybe<double> virtual_time_budget_ms,
-      protocol::Maybe<int> max_virtual_time_task_starvation_count,
-      protocol::Maybe<double> initial_virtual_time,
+      std::optional<double> virtual_time_budget_ms,
+      std::optional<int> max_virtual_time_task_starvation_count,
+      std::optional<double> initial_virtual_time,
       double* virtual_time_ticks_base_ms) override;
   protocol::Response setTimezoneOverride(const String& timezone_id) override;
   protocol::Response setNavigatorOverrides(const String& platform) override;
   protocol::Response setDefaultBackgroundColorOverride(
-      protocol::Maybe<protocol::DOM::RGBA>) override;
+      std::unique_ptr<protocol::DOM::RGBA>) override;
   protocol::Response setDeviceMetricsOverride(
       int width,
       int height,
       double device_scale_factor,
       bool mobile,
-      protocol::Maybe<double> scale,
-      protocol::Maybe<int> screen_width,
-      protocol::Maybe<int> screen_height,
-      protocol::Maybe<int> position_x,
-      protocol::Maybe<int> position_y,
-      protocol::Maybe<bool> dont_set_visible_size,
-      protocol::Maybe<protocol::Emulation::ScreenOrientation>,
-      protocol::Maybe<protocol::Page::Viewport>,
-      protocol::Maybe<protocol::Emulation::DisplayFeature>,
-      protocol::Maybe<protocol::Emulation::DevicePosture>) override;
+      std::optional<double> scale,
+      std::optional<int> screen_width,
+      std::optional<int> screen_height,
+      std::optional<int> position_x,
+      std::optional<int> position_y,
+      std::optional<bool> dont_set_visible_size,
+      std::unique_ptr<protocol::Emulation::ScreenOrientation>,
+      std::unique_ptr<protocol::Page::Viewport>,
+      std::unique_ptr<protocol::Emulation::DisplayFeature>,
+      std::unique_ptr<protocol::Emulation::DevicePosture>) override;
   protocol::Response clearDeviceMetricsOverride() override;
   protocol::Response setHardwareConcurrencyOverride(
       int hardware_concurrency) override;
   protocol::Response setUserAgentOverride(
       const String& user_agent,
-      protocol::Maybe<String> accept_language,
-      protocol::Maybe<String> platform,
-      protocol::Maybe<protocol::Emulation::UserAgentMetadata>
+      std::optional<String> accept_language,
+      std::optional<String> platform,
+      std::unique_ptr<protocol::Emulation::UserAgentMetadata>
           ua_metadata_override) override;
-  protocol::Response setLocaleOverride(protocol::Maybe<String>) override;
+  protocol::Response setLocaleOverride(std::optional<String>) override;
   protocol::Response setDisabledImageTypes(
       std::unique_ptr<protocol::Array<protocol::Emulation::DisabledImageType>>)
       override;

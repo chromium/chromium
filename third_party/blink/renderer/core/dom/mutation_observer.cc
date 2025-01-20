@@ -327,10 +327,12 @@ static void ActivateObserver(MutationObserver* observer) {
 
 void MutationObserver::EnqueueMutationRecord(MutationRecord* mutation) {
   DCHECK(IsMainThread());
+  if (records_.empty()) {
+    async_task_context_.Schedule(delegate_->GetExecutionContext(),
+                                 mutation->type());
+  }
   records_.push_back(mutation);
   ActivateObserver(this);
-  mutation->async_task_context()->Schedule(delegate_->GetExecutionContext(),
-                                           mutation->type());
 }
 
 void MutationObserver::SetHasTransientRegistration() {
@@ -362,9 +364,7 @@ void MutationObserver::ContextDestroyed() {
 }
 
 void MutationObserver::CancelInspectorAsyncTasks() {
-  for (auto& record : records_) {
-    record->async_task_context()->Cancel();
-  }
+  async_task_context_.Cancel();
 }
 
 void MutationObserver::Deliver() {
@@ -390,7 +390,7 @@ void MutationObserver::Deliver() {
 
   // Report the first (earliest) stack as the async cause.
   probe::AsyncTask async_task(delegate_->GetExecutionContext(),
-                              records.front()->async_task_context());
+                              &async_task_context_);
   delegate_->Deliver(records, *this);
 }
 

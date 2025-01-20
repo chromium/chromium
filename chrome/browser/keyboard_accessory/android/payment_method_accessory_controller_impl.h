@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ManualFillingController;
@@ -82,8 +82,7 @@ class PaymentMethodAccessoryControllerImpl
 
   // `OnFillingTriggered()` fetches the credit card and calls this function
   // once the `credit_card` is available. If successful, it fills it.
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card);
+  void OnCreditCardFetched(const CreditCard& credit_card);
 
   // Applies the given `value` to the `last_focused_field_id_` if applicable.
   void ApplyToField(const std::u16string& value);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/components/components_ui.h"
 
 #include <stddef.h>
@@ -20,11 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/components/components_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/components_resources.h"
@@ -36,8 +29,9 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -53,24 +47,19 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
   source->EnableReplaceI18nInJS();
 
   static constexpr webui::LocalizedString kStrings[] = {
-    {"componentsTitle", IDS_COMPONENTS_TITLE},
-    {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
-    {"componentVersion", IDS_COMPONENTS_VERSION},
-    {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
-    {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
-    {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
-    {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
-#if BUILDFLAG(IS_CHROMEOS)
-    {"os-components-text1", IDS_COMPONENTS_OS_TEXT1_LABEL},
-    {"os-components-text2", IDS_COMPONENTS_OS_TEXT2_LABEL},
-    {"os-components-link", IDS_COMPONENTS_OS_LINK},
-#endif
+      {"componentsTitle", IDS_COMPONENTS_TITLE},
+      {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
+      {"componentVersion", IDS_COMPONENTS_VERSION},
+      {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
+      {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
+      {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
+      {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(
       "isGuest",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()
 #else
@@ -78,8 +67,7 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
 #endif
   );
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kComponentsResources, kComponentsResourcesSize));
+  source->AddResourcePaths(kComponentsResources);
   source->SetDefaultResource(IDR_COMPONENTS_COMPONENTS_HTML);
 }
 
@@ -99,7 +87,7 @@ ComponentsUI::ComponentsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   CreateAndAddComponentsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
-ComponentsUI::~ComponentsUI() {}
+ComponentsUI::~ComponentsUI() = default;
 
 // static
 base::RefCountedMemory* ComponentsUI::GetFaviconResourceBytes(

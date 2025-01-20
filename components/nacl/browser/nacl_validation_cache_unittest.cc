@@ -161,9 +161,9 @@ TEST_F(NaClValidationCacheTest, SerializeDeserializeTruncated) {
 
   base::Pickle pickle;
   cache1.Serialize(&pickle);
-  base::span<const uint8_t> full_payload = base::make_span(pickle);
+  base::span<const uint8_t> full_payload = base::span(pickle);
   base::span<const uint8_t> truncated_payload =
-      full_payload.subspan(0, full_payload.size() - 20);
+      full_payload.first(full_payload.size() - 20);
   base::Pickle truncated = base::Pickle::WithUnownedBuffer(truncated_payload);
   ASSERT_FALSE(cache2.Deserialize(&truncated));
   ASSERT_EQ(0u, cache2.size());

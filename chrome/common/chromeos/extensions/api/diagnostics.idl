@@ -186,7 +186,7 @@ namespace os.diagnostics {
   dictionary NetworkBandwidthRoutineRunningInfo {
     // The type of test that routine is running.
     NetworkBandwidthRoutineRunningType type;
-    // The current network speed in Kbps.
+    // The current network speed in Kbit/s.
     double speedKbps;
   };
 

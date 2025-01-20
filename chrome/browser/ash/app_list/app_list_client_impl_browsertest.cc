@@ -31,10 +31,13 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -71,6 +74,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -79,6 +83,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -89,7 +94,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -104,6 +110,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -111,6 +118,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/wm/core/window_util.h"
+#include "url/gurl.h"
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
@@ -1276,7 +1284,8 @@ class AppListClientNewUserTest : public InProcessBrowserTest,
 
   // Sets up profile and user manager. Should be called only once on test setup.
   void SetUpEnvironment() {
-    account_id_ = AccountId::FromUserEmailGaiaId("test@test-user", "gaia-id");
+    account_id_ =
+        AccountId::FromUserEmailGaiaId("test@test-user", GaiaId("gaia-id"));
 
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
@@ -1561,7 +1570,7 @@ class AppListModifiedDefaultAppOrderTest
         app_list_features::kAppsCollections,
         {{"is-counterfactual", "false"},
          {"is-modified-order",
-          IsModifiedOrderExperimentalArm() ? "true" : "false"}});
+          base::ToString(IsModifiedOrderExperimentalArm())}});
   }
   ~AppListModifiedDefaultAppOrderTest() override = default;
 
@@ -1699,4 +1708,59 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   EXPECT_EQ(camera_ordinal, new_camera_ordinal);
   EXPECT_EQ(youtube_ordinal, new_youtube_ordinal);
   EXPECT_EQ(calculator_ordinal, new_calculator_ordinal);
+}
+
+class AppListClientImplAssistantNewEntryPointTest
+    : public AppListClientImplBrowserPromiseAppTest {
+ protected:
+  static constexpr char kTestAppName[] = "test app";
+  const GURL kTestAppUrl = GURL("https://example.com/path");
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::assistant::features::kEnableNewEntryPoint};
+};
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplAssistantNewEntryPointTest, Eligible) {
+  webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
+
+  AssistantBrowserDelegateImpl* delegate =
+      static_cast<AssistantBrowserDelegateImpl*>(
+          ash::assistant::AssistantBrowserDelegate::Get());
+  ASSERT_TRUE(delegate);
+  delegate->OverrideEntryPointIdForTesting(app_id);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+
+  base::test::TestFuture<bool> eligibility_future;
+  client->GetAssistantNewEntryPointEligibility(
+      eligibility_future.GetCallback());
+  EXPECT_TRUE(eligibility_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplAssistantNewEntryPointTest, Name) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+
+  EXPECT_EQ(std::nullopt, client->GetAssistantNewEntryPointName())
+      << "Querying new entry point name before it's installed will return "
+         "std::nullopt";
+
+  webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
+
+  AssistantBrowserDelegateImpl* delegate =
+      static_cast<AssistantBrowserDelegateImpl*>(
+          ash::assistant::AssistantBrowserDelegate::Get());
+  ASSERT_TRUE(delegate);
+  delegate->OverrideEntryPointIdForTesting(app_id);
+
+  base::test::TestFuture<bool> eligibility_future;
+  client->GetAssistantNewEntryPointEligibility(
+      eligibility_future.GetCallback());
+  EXPECT_TRUE(eligibility_future.Get());
+
+  EXPECT_EQ(kTestAppName, client->GetAssistantNewEntryPointName());
 }

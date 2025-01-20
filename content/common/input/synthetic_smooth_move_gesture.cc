@@ -398,16 +398,11 @@ void SyntheticSmoothMoveGesture::ComputeNextMoveSegment() {
   DCHECK_LT(current_move_segment_, static_cast<int>(params().distances.size()));
   // Percentage based scrolls do not require velocity and are delivered in a
   // single segment. No need to compute another segment
-  if (params().granularity == ui::ScrollGranularity::kScrollByPercentage) {
-    current_move_segment_start_time_ = current_move_segment_stop_time_;
-  } else {
-    const auto duration = base::Seconds(
-        double{params().distances[current_move_segment_].Length()} /
-        params().speed_in_pixels_s);
-    current_move_segment_start_time_ = current_move_segment_stop_time_;
-    current_move_segment_stop_time_ =
-        current_move_segment_start_time_ + duration;
-  }
+  const auto duration =
+      base::Seconds(double{params().distances[current_move_segment_].Length()} /
+                    params().speed_in_pixels_s);
+  current_move_segment_start_time_ = current_move_segment_stop_time_;
+  current_move_segment_stop_time_ = current_move_segment_start_time_ + duration;
 }
 
 base::TimeTicks SyntheticSmoothMoveGesture::ClampTimestamp(

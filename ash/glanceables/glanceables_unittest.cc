@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
@@ -59,7 +60,7 @@ class ResizeAnimationWaiter {
     // Force frames and wait for all throughput trackers to be gone to allow
     // animation throughput data to be passed from cc to ui.
     ui::Compositor* compositor = bubble_view_->GetWidget()->GetCompositor();
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -79,7 +80,7 @@ class GlanceablesBaseTest : public AshTestBase {
     AshTestBase::SetUp();
 
     const auto account_id =
-        AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+        AccountId::FromUserEmailGaiaId("test_user@gmail.com", GaiaId("123456"));
     SimulateUserLogin(account_id);
 
     classroom_client_ = std::make_unique<FakeGlanceablesClassroomClient>();

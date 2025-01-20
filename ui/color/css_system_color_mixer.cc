@@ -97,12 +97,10 @@ void AddCssSystemColorMixer(ColorProvider* provider,
       break;
     }
     case ColorProviderKey::ForcedColors::kNone:
+    case ColorProviderKey::ForcedColors::kActive:
       CompleteDefaultCssSystemColorDefinition(
           mixer,
           /*dark_mode=*/key.color_mode == ColorProviderKey::ColorMode::kDark);
-      MapNativeColorsToCssSystemColors(mixer, key);
-      break;
-    case ColorProviderKey::ForcedColors::kActive:
       MapNativeColorsToCssSystemColors(mixer, key);
       break;
     case ColorProviderKey::ForcedColors::kDusk:

@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <array>
 #include <vector>
 
 #include "base/memory/page_size.h"
@@ -148,7 +149,7 @@ BPF_TEST(Syscall,
   // additional tests to try other types. What we will see depends on
   // implementation details of kernel BPF filters and we will need to document
   // the expected behavior very clearly.
-  int syscall_args[6];
+  std::array<int, 6> syscall_args;
   for (size_t i = 0; i < std::size(syscall_args); ++i) {
     syscall_args[i] = kExpectedValue + i;
   }

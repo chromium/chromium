@@ -30,7 +30,7 @@ enum NavigationEntropy {
     readonly attribute DOMHighResTimeStamp loadEventEnd;
     readonly attribute NavigationTimingType type;
     readonly attribute unsigned short redirectCount;
-    [RuntimeEnabled=BackForwardCacheNotRestoredReasons] readonly attribute NotRestoredReasons? notRestoredReasons;
+    [RuntimeEnabled=BackForwardCacheNotRestoredReasons, MeasureAs="WebDXFeature::kBfcacheBlockingReasons"] readonly attribute NotRestoredReasons? notRestoredReasons;
     [RuntimeEnabled=PerformanceNavigateSystemEntropy] readonly attribute NavigationEntropy systemEntropy;
     [RuntimeEnabled=PerformanceNavigationTimingConfidence] readonly attribute PerformanceTimingConfidence confidence;
     [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp criticalCHRestart;

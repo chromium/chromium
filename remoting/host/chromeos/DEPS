@@ -3,7 +3,8 @@ include_rules = [
   "+ui/wm",
   "+components/prefs",
   "+components/viz/common",
-  "+components/viz/host"
+  "+components/viz/host",
+  "+services/viz/privileged/mojom/compositing"
 ]
 
 specific_include_rules = {

@@ -47,8 +47,9 @@ component("native_theme") {
 
   if (is_mac) {
     frameworks = [
-      "CoreGraphics.framework",
+      "Accessibility.framework",
       "AppKit.framework",
+      "CoreGraphics.framework",
       "MediaAccessibility.framework",
     ]
     sources += [

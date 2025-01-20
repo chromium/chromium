@@ -532,7 +532,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, Simple) {
           "<body><link rel='prefetch' href='%s'></body>", target_path)));
   RegisterResponse(
       target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+      ResponseEntry("<head><title>Prefetch Target</title></head>", "text/html",
+                    {{"cache-control", "public, max-age=3600"}}));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(
@@ -569,7 +570,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, DoublePrefetch) {
                                       target_path, target_path)));
   RegisterResponse(
       target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+      ResponseEntry("<head><title>Prefetch Target</title></head>", "text/html",
+                    {{"cache-control", "public, max-age=3600"}}));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(
@@ -634,14 +636,14 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, NoCacheAndNoStore) {
   EXPECT_EQ(1, nostore_request_counter->GetRequestCount());
   EXPECT_EQ(2, GetPrefetchURLLoaderCallCount());
 
-  // Subsequent navigation to the no-cache URL wouldn't hit the network, because
-  // no-cache resource is kept available up to kPrefetchReuseMins.
+  // Subsequent navigation to the no-cache URL do hit the network, because
+  // prefetch respects cache semantics.
   NavigateToURLAndWaitTitle(embedded_test_server()->GetURL(nocache_path),
                             "NoCache Target");
-  EXPECT_EQ(1, nocache_request_counter->GetRequestCount());
+  EXPECT_EQ(2, nocache_request_counter->GetRequestCount());
 
-  // Subsequent navigation to the no-store URL hit the network again, because
-  // no-store resource is not cached even for prefetch.
+  // Subsequent navigation to the no-store URL hit the network again, for the
+  // same reason.
   NavigateToURLAndWaitTitle(embedded_test_server()->GetURL(nostore_path),
                             "NoStore Target");
   EXPECT_EQ(2, nostore_request_counter->GetRequestCount());
@@ -662,7 +664,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, WithPreload) {
       ResponseEntry("<head><title>Prefetch Target</title><script "
                     "src=\"./preload.js\"></script></head>",
                     "text/html",
-                    {{"link", "</preload.js>;rel=\"preload\";as=\"script\""}}));
+                    {{"link", "</preload.js>;rel=\"preload\";as=\"script\""},
+                     {"cache-control", "public, max-age=600"}}));
   RegisterResponse(preload_path,
                    ResponseEntry("document.title=\"done\";", "text/javascript",
                                  {{"cache-control", "public, max-age=600"}}));
@@ -1170,11 +1173,13 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
   const char* target_path = "/target.html";
-  RegisterResponse(target_path,
-                   ResponseEntry("<head><title>Prefetch Target</title></head>",
-                                 // The empty content type prevents this
-                                 // response from being blocked by ORB.
-                                 /*content_types=*/""));
+  RegisterResponse(
+      target_path,
+      ResponseEntry("<head><title>Prefetch Target</title></head>",
+                    // The empty content type prevents this
+                    // response from being blocked by ORB.
+                    /*content_types=*/"",
+                    {{"cache-control", "public, max-age=31536000"}}));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(

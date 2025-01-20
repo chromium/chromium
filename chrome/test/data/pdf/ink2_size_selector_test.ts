@@ -6,7 +6,7 @@ import type {InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeoj
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertSelectedSize, getSizeButtons} from './test_util.js';
+import {assertLabels, assertSelectedSize, getSizeButtons} from './test_util.js';
 
 function createSelector(): InkSizeSelectorElement {
   const selector = document.createElement('ink-size-selector');
@@ -156,6 +156,20 @@ chrome.test.runTests([
 
     await testSizeKeyboardEvent(
         sizeButtons, sizeButtons[0], 'ArrowUp', /*expectedButtonIndex=*/ 4);
+
+    chrome.test.succeed();
+  },
+
+  // Test the labels for each size button.
+  function testLabels() {
+    const selector = createSelector();
+    const sizeButtons = getSizeButtons(selector);
+
+    assertLabels(sizeButtons[0], 'Extra thin');
+    assertLabels(sizeButtons[1], 'Thin');
+    assertLabels(sizeButtons[2], 'Medium');
+    assertLabels(sizeButtons[3], 'Thick');
+    assertLabels(sizeButtons[4], 'Extra thick');
 
     chrome.test.succeed();
   },

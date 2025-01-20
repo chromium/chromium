@@ -47,7 +47,7 @@ struct DecorationInfo {
   raw_ptr<views::View> view;
 
   // The width computed by the layout process.
-  double computed_width;
+  double computed_width = 0;
 };
 
 DecorationInfo::DecorationInfo(int y,
@@ -63,8 +63,7 @@ DecorationInfo::DecorationInfo(int y,
       max_fraction(max_fraction),
       intra_item_padding(intra_item_padding),
       edge_item_padding(edge_item_padding),
-      view(view),
-      computed_width(0) {
+      view(view) {
   DCHECK((max_fraction == 0.0) || (!auto_collapse && (max_fraction > 0.0)));
 }
 
@@ -73,7 +72,7 @@ DecorationInfo::DecorationInfo(int y,
 LocationBarLayout::LocationBarLayout(Position position, int item_edit_padding)
     : position_(position), item_edit_padding_(item_edit_padding) {}
 
-LocationBarLayout::~LocationBarLayout() {}
+LocationBarLayout::~LocationBarLayout() = default;
 
 void LocationBarLayout::AddDecoration(int y,
                                       int height,
@@ -91,8 +90,9 @@ void LocationBarLayout::LayoutPass1(int* entry_width, int reserved_width) {
   bool first_item = true;
   for (const auto& decoration : decorations_) {
     // Autocollapsing decorations are ignored in this pass.
-    if (first_item && !decoration->auto_collapse)
+    if (first_item && !decoration->auto_collapse) {
       *entry_width -= decoration->edge_item_padding;
+    }
     if (!first_item) {
       *entry_width -= decoration->intra_item_padding;
     }
@@ -135,8 +135,9 @@ void LocationBarLayout::LayoutPass3(gfx::Rect* bounds, int* available_width) {
     if (decoration->auto_collapse) {
       // Try preferred size, if it fails try minimum size, if it fails collapse.
       decoration->computed_width = decoration->view->GetPreferredSize().width();
-      if (decoration->computed_width + padding > *available_width)
+      if (decoration->computed_width + padding > *available_width) {
         decoration->computed_width = decoration->view->GetMinimumSize().width();
+      }
       if (decoration->computed_width + padding > *available_width) {
         decoration->computed_width = 0;
         decoration->view->SetVisible(false);
@@ -154,10 +155,12 @@ void LocationBarLayout::LayoutPass3(gfx::Rect* bounds, int* available_width) {
     decoration->view->SetBounds(x, decoration->y, decoration->computed_width,
                                 decoration->height);
     bounds->set_width(bounds->width() - padding - decoration->computed_width);
-    if (position_ == Position::kLeftEdge)
+    if (position_ == Position::kLeftEdge) {
       bounds->set_x(bounds->x() + padding + decoration->computed_width);
+    }
   }
   bounds->set_width(bounds->width() - item_edit_padding_);
-  if (position_ == Position::kLeftEdge)
+  if (position_ == Position::kLeftEdge) {
     bounds->set_x(bounds->x() + item_edit_padding_);
+  }
 }

@@ -136,8 +136,9 @@ std::string AEDescToString(const AEDesc* aedesc) {
 
         result += AEDescToString(value_desc);
 
-        if (i < list_count - 1)
+        if (i < list_count - 1) {
           result += ", ";
+        }
       }
 
       result += is_record ? " }" : " ]";
@@ -150,7 +151,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
   }
 }
 
-class AppleEventUtilTest : public CocoaTest { };
+class AppleEventUtilTest : public CocoaTest {};
 
 struct TestCase {
   const char* json_input;
@@ -160,69 +161,69 @@ struct TestCase {
 
 TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
   const struct TestCase cases[] = {
-    { "null",         "'msng'",             typeType },
-    { "-1000",        "-1000",              typeSInt32 },
-    { "0",            "0",                  typeSInt32 },
-    { "1000",         "1000",               typeSInt32 },
-    { "-1e100",       "-1e+100",            typeIEEE64BitFloatingPoint },
-    { "0.0",          "0",                  typeIEEE64BitFloatingPoint },
-    { "1e100",        "1e+100",             typeIEEE64BitFloatingPoint },
-    { "\"\"",         "'utxt'(\"\")",       typeUnicodeText },
-    { "\"string\"",   "'utxt'(\"string\")", typeUnicodeText },
-    { "{}",           "{ 'usrf':[  ] }",    typeAERecord },
-    { "[]",           "[  ]",               typeAEList },
-    { "{\"Image\": {"
-      "\"Width\": 800,"
-      "\"Height\": 600,"
-      "\"Title\": \"View from 15th Floor\","
-      "\"Thumbnail\": {"
-      "\"Url\": \"http://www.example.com/image/481989943\","
-      "\"Height\": 125,"
-      "\"Width\": \"100\""
-      "},"
-      "\"IDs\": [116, 943, 234, 38793]"
-      "}"
-      "}",
-      "{ 'usrf':[ 'utxt'(\"Image\"), { 'usrf':[ 'utxt'(\"Height\"), 600, "
-      "'utxt'(\"IDs\"), [ 116, 943, 234, 38793 ], 'utxt'(\"Thumbnail\"), "
-      "{ 'usrf':[ 'utxt'(\"Height\"), 125, 'utxt'(\"Url\"), "
-      "'utxt'(\"http://www.example.com/image/481989943\"), 'utxt'(\"Width\"), "
-      "'utxt'(\"100\") ] }, 'utxt'(\"Title\"), "
-      "'utxt'(\"View from 15th Floor\"), 'utxt'(\"Width\"), 800 ] } ] }",
-      typeAERecord },
-    { "["
-      "{"
-      "\"precision\": \"zip\","
-      "\"Latitude\": 37.7668,"
-      "\"Longitude\": -122.3959,"
-      "\"Address\": \"\","
-      "\"City\": \"SAN FRANCISCO\","
-      "\"State\": \"CA\","
-      "\"Zip\": \"94107\","
-      "\"Country\": \"US\""
-      "},"
-      "{"
-      "\"precision\": \"zip\","
-      "\"Latitude\": 37.371991,"
-      "\"Longitude\": -122.026020,"
-      "\"Address\": \"\","
-      "\"City\": \"SUNNYVALE\","
-      "\"State\": \"CA\","
-      "\"Zip\": \"94085\","
-      "\"Country\": \"US\""
-      "}"
-      "]",
-      "[ { 'usrf':[ 'utxt'(\"Address\"), 'utxt'(\"\"), 'utxt'(\"City\"), "
-      "'utxt'(\"SAN FRANCISCO\"), 'utxt'(\"Country\"), 'utxt'(\"US\"), "
-      "'utxt'(\"Latitude\"), 37.7668, 'utxt'(\"Longitude\"), -122.3959, "
-      "'utxt'(\"State\"), 'utxt'(\"CA\"), 'utxt'(\"Zip\"), 'utxt'(\"94107\"), "
-      "'utxt'(\"precision\"), 'utxt'(\"zip\") ] }, { 'usrf':[ "
-      "'utxt'(\"Address\"), 'utxt'(\"\"), 'utxt'(\"City\"), "
-      "'utxt'(\"SUNNYVALE\"), 'utxt'(\"Country\"), 'utxt'(\"US\"), "
-      "'utxt'(\"Latitude\"), 37.371991, 'utxt'(\"Longitude\"), -122.02602, "
-      "'utxt'(\"State\"), 'utxt'(\"CA\"), 'utxt'(\"Zip\"), 'utxt'(\"94085\"), "
-      "'utxt'(\"precision\"), 'utxt'(\"zip\") ] } ]",
-      typeAEList },
+      {"null", "'msng'", typeType},
+      {"-1000", "-1000", typeSInt32},
+      {"0", "0", typeSInt32},
+      {"1000", "1000", typeSInt32},
+      {"-1e100", "-1e+100", typeIEEE64BitFloatingPoint},
+      {"0.0", "0", typeIEEE64BitFloatingPoint},
+      {"1e100", "1e+100", typeIEEE64BitFloatingPoint},
+      {"\"\"", "'utxt'(\"\")", typeUnicodeText},
+      {"\"string\"", "'utxt'(\"string\")", typeUnicodeText},
+      {"{}", "{ 'usrf':[  ] }", typeAERecord},
+      {"[]", "[  ]", typeAEList},
+      {"{\"Image\": {"
+       "\"Width\": 800,"
+       "\"Height\": 600,"
+       "\"Title\": \"View from 15th Floor\","
+       "\"Thumbnail\": {"
+       "\"Url\": \"http://www.example.com/image/481989943\","
+       "\"Height\": 125,"
+       "\"Width\": \"100\""
+       "},"
+       "\"IDs\": [116, 943, 234, 38793]"
+       "}"
+       "}",
+       "{ 'usrf':[ 'utxt'(\"Image\"), { 'usrf':[ 'utxt'(\"Height\"), 600, "
+       "'utxt'(\"IDs\"), [ 116, 943, 234, 38793 ], 'utxt'(\"Thumbnail\"), "
+       "{ 'usrf':[ 'utxt'(\"Height\"), 125, 'utxt'(\"Url\"), "
+       "'utxt'(\"http://www.example.com/image/481989943\"), 'utxt'(\"Width\"), "
+       "'utxt'(\"100\") ] }, 'utxt'(\"Title\"), "
+       "'utxt'(\"View from 15th Floor\"), 'utxt'(\"Width\"), 800 ] } ] }",
+       typeAERecord},
+      {"["
+       "{"
+       "\"precision\": \"zip\","
+       "\"Latitude\": 37.7668,"
+       "\"Longitude\": -122.3959,"
+       "\"Address\": \"\","
+       "\"City\": \"SAN FRANCISCO\","
+       "\"State\": \"CA\","
+       "\"Zip\": \"94107\","
+       "\"Country\": \"US\""
+       "},"
+       "{"
+       "\"precision\": \"zip\","
+       "\"Latitude\": 37.371991,"
+       "\"Longitude\": -122.026020,"
+       "\"Address\": \"\","
+       "\"City\": \"SUNNYVALE\","
+       "\"State\": \"CA\","
+       "\"Zip\": \"94085\","
+       "\"Country\": \"US\""
+       "}"
+       "]",
+       "[ { 'usrf':[ 'utxt'(\"Address\"), 'utxt'(\"\"), 'utxt'(\"City\"), "
+       "'utxt'(\"SAN FRANCISCO\"), 'utxt'(\"Country\"), 'utxt'(\"US\"), "
+       "'utxt'(\"Latitude\"), 37.7668, 'utxt'(\"Longitude\"), -122.3959, "
+       "'utxt'(\"State\"), 'utxt'(\"CA\"), 'utxt'(\"Zip\"), 'utxt'(\"94107\"), "
+       "'utxt'(\"precision\"), 'utxt'(\"zip\") ] }, { 'usrf':[ "
+       "'utxt'(\"Address\"), 'utxt'(\"\"), 'utxt'(\"City\"), "
+       "'utxt'(\"SUNNYVALE\"), 'utxt'(\"Country\"), 'utxt'(\"US\"), "
+       "'utxt'(\"Latitude\"), 37.371991, 'utxt'(\"Longitude\"), -122.02602, "
+       "'utxt'(\"State\"), 'utxt'(\"CA\"), 'utxt'(\"Zip\"), 'utxt'(\"94085\"), "
+       "'utxt'(\"precision\"), 'utxt'(\"zip\") ] } ]",
+       typeAEList},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {

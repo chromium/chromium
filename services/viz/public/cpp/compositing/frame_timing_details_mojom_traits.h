@@ -40,6 +40,11 @@ struct StructTraits<viz::mojom::FrameTimingDetailsDataView,
     return frame_timing_details.presentation_feedback;
   }
 
+  static viz::BeginFrameId frame_id(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.frame_id;
+  }
+
   static bool Read(viz::mojom::FrameTimingDetailsDataView data,
                    viz::FrameTimingDetails* out);
 };

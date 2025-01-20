@@ -8,6 +8,7 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -220,8 +221,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
 TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {
   // Create a configuration with an identifier.
   auto browser_state1 = std::make_unique<FakeBrowserState>();
-  browser_state1->SetWebKitStorageID(
-      base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  browser_state1->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
   WKWebViewConfigurationProvider* provider1 =
       &GetProvider(browser_state1.get());
   WKWebViewConfiguration* config1 = provider1->GetWebViewConfiguration();
@@ -230,8 +230,7 @@ TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {
 
   // Create another configuration with another identifier.
   auto browser_state2 = std::make_unique<FakeBrowserState>();
-  browser_state2->SetWebKitStorageID(
-      base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  browser_state2->SetWebKitStorageID(base::Uuid::GenerateRandomV4());
   WKWebViewConfigurationProvider* provider2 =
       &GetProvider(browser_state2.get());
   WKWebViewConfiguration* config2 = provider2->GetWebViewConfiguration();
@@ -255,7 +254,7 @@ TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {
 // Tests that WKWebViewConfiguration has the same data store if browser state
 // returns the same storage ID.
 TEST_F(WKWebViewConfigurationProviderTest, SameDataStoreForSameID) {
-  std::string uuid = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
 
   // Create a configuration with an identifier.
   auto browser_state1 = std::make_unique<FakeBrowserState>();

@@ -64,7 +64,7 @@ class CORE_EXPORT TreeScopeStyleSheetCollection : public StyleSheetCollection {
   void ApplyActiveStyleSheetChanges(StyleSheetCollection&);
 
   Member<TreeScope> tree_scope_;
-  TreeOrderedList style_sheet_candidate_nodes_;
+  TreeOrderedList<Node> style_sheet_candidate_nodes_;
 
  private:
   friend class TreeScopeStyleSheetCollectionTest;

@@ -42,16 +42,16 @@ suite('CrComponentsCellularSetupTest', function() {
 
   function init() {
     networkConfigRemote.setDeviceStateForTest({
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: null,
       scanning: false,
-      simLockStatus: undefined,
+      simLockStatus: null,
       inhibitReason: InhibitReason.kNotInhibited,
       simAbsent: false,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
       type: NetworkType.kCellular,

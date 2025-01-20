@@ -11,14 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -165,31 +163,6 @@ class FullRestoreSaveHandlerTestApi {
 
   void CheckArcTasks() { arc_save_handler()->CheckTasksForAppLaunching(); }
 
-  const LacrosSaveHandler* GetLacrosSaveHander() const {
-    DCHECK(save_handler_);
-    return save_handler_->lacros_save_handler_.get();
-  }
-
-  const std::map<std::string, LacrosSaveHandler::WindowData>&
-  GetLacrosWindowCandidates() const {
-    const auto* lacros_save_handler = GetLacrosSaveHander();
-    DCHECK(lacros_save_handler);
-    return lacros_save_handler->window_candidates_;
-  }
-
-  const std::map<std::string, std::string>& GetLacrosWindowIdToAppIdMap()
-      const {
-    const auto* lacros_save_handler = GetLacrosSaveHander();
-    DCHECK(lacros_save_handler);
-    return lacros_save_handler->lacros_window_id_to_app_id_;
-  }
-
-  int32_t GetLacrosWindowId(std::string lacros_window_id) const {
-    const auto& window_candidates = GetLacrosWindowCandidates();
-    auto it = window_candidates.find(lacros_window_id);
-    return it != window_candidates.end() ? it->second.window_id : -1;
-  }
-
   void ClearRestoreData() {
     save_handler_->profile_path_to_restore_data_.clear();
   }
@@ -215,7 +188,6 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFullRestoreForLacros);
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     aura_test_helper_.SetUp();
@@ -353,8 +325,6 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir tmp_dir_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<app_restore::RestoreData> restore_data_;
 

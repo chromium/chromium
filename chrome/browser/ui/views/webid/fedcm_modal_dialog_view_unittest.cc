@@ -12,6 +12,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
 
+namespace webid {
 class FedCmModalDialogView;
 
 namespace {
@@ -85,8 +86,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
                                              /*observer=*/nullptr);
   histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
-  content::WebContents* web_contents =
-      popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
@@ -105,8 +106,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {
                                              /*observer=*/nullptr);
   histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
-  content::WebContents* web_contents =
-      popup_window_view->ShowPopupWindow(GURL(u"invalid"));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"invalid"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
@@ -131,8 +132,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedForOtherReasons) {
                                              /*observer=*/nullptr);
   histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult", 0);
-  content::WebContents* web_contents =
-      popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(0, delegate.opened());
   ASSERT_FALSE(web_contents);
@@ -150,8 +151,8 @@ TEST_F(FedCmModalDialogViewTest, IdpInitiatedCloseMetric) {
   std::unique_ptr<FedCmModalDialogView> popup_window =
       std::make_unique<FedCmModalDialogView>(web_contents(),
                                              /*observer=*/nullptr);
-  content::WebContents* web_contents =
-      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+  content::WebContents* web_contents = popup_window->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
@@ -176,8 +177,8 @@ TEST_F(FedCmModalDialogViewTest, PopupWindowDestroyedMetric) {
   std::unique_ptr<FedCmModalDialogView> popup_window =
       std::make_unique<FedCmModalDialogView>(web_contents(),
                                              /*observer=*/nullptr);
-  content::WebContents* web_contents =
-      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+  content::WebContents* web_contents = popup_window->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
@@ -206,8 +207,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowWithCustomYPosition) {
   int custom_y_position = 1;
   popup_window_view->SetCustomYPosition(custom_y_position);
 
-  content::WebContents* web_contents =
-      popup_window_view->ShowPopupWindow(GURL(u"https://example.com"));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
@@ -225,7 +226,8 @@ TEST_F(FedCmModalDialogViewTest, LoadingStatePopupInteractionMetric) {
     popup_window = std::make_unique<FedCmModalDialogView>(web_contents(),
                                                           /*observer=*/nullptr);
     popup_window->SetActiveModeSheetType(AccountSelectionView::LOADING);
-    popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+    popup_window->ShowPopupWindow(GURL(u"https://example.com"),
+                                  /*user_close_cancels_flow=*/true);
   });
 
   auto CheckForSampleAndReset(
@@ -280,7 +282,8 @@ TEST_F(FedCmModalDialogViewTest, UseOtherAccountPopupInteractionMetric) {
                                                           /*observer=*/nullptr);
     popup_window->SetActiveModeSheetType(
         AccountSelectionView::ACCOUNT_SELECTION);
-    popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+    popup_window->ShowPopupWindow(GURL(u"https://example.com"),
+                                  /*user_close_cancels_flow=*/true);
   });
 
   auto CheckForSampleAndReset(
@@ -322,3 +325,5 @@ TEST_F(FedCmModalDialogViewTest, UseOtherAccountPopupInteractionMetric) {
   CheckForSampleAndReset(FedCmModalDialogView::PopupInteraction::
                              kLosesFocusAndPopupWindowDestroyed);
 }
+
+}  // namespace webid

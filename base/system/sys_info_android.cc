@@ -43,10 +43,12 @@ void GetOsVersionStringAndNumbers(std::string* version_string,
 
     if (num_read > 0) {
       // If we don't have a full set of version numbers, make the extras 0.
-      if (num_read < 2)
+      if (num_read < 2) {
         *minor_version = 0;
-      if (num_read < 3)
+      }
+      if (num_read < 3) {
         *bugfix_version = 0;
+      }
       *version_string = std::string(os_version_str);
       return;
     }
@@ -134,8 +136,9 @@ bool SysInfo::IsLowEndDeviceImpl() {
   // implementations which could give different results.
   // Also the Java code cannot depend on the native code
   // since it might not be loaded yet.
-  if (!base::android::IsVMInitialized())
+  if (!base::android::IsVMInitialized()) {
     return false;
+  }
   return g_lazy_low_end_device.Get().value();
 }
 

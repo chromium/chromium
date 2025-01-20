@@ -13,6 +13,7 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/parsers/vp9_parser.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -64,13 +65,17 @@ class MEDIA_GPU_EXPORT SVCLayers {
 
   explicit SVCLayers(const Config& config);
 
+  std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>>
+  RecreateSVCLayersIfNeeded(VideoBitrateAllocation& bitrate_allocation);
+
   // These functions are constant functions. Unless Reset() or PostEncode() is
   // called, these functions returns the same result as the previous result.
   // Returns whether the current frame shall encoded as key frame.
   bool IsKeyFrame() const;
   // Gets PictureParam and fill the metadata for the current frame.
-  void GetPictureParamAndMetadata(PictureParam& picture_param,
-                                  Vp9Metadata& metadata) const;
+  void GetPictureParamAndMetadata(
+      PictureParam& picture_param,
+      absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata) const;
 
   // Resets the current spatial layer stream.
   // This can be called before encoding the SVC frame.
@@ -88,13 +93,13 @@ class MEDIA_GPU_EXPORT SVCLayers {
  private:
   // Fill metadata for the first frame, i.e. frame_num=0.
   void FillMetadataForFirstFrame(
-      Vp9Metadata& metadata,
+      absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
       bool& key_frame,
       uint8_t& refresh_frame_flags,
       std::vector<uint8_t>& reference_frame_indices) const;
   // Fill metadata for the second and later frames, i.e. frame_num != 0.
   void FillMetadataForNonFirstFrame(
-      Vp9Metadata& metadata,
+      absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
       uint8_t& refresh_frame_flags,
       std::vector<uint8_t>& reference_frame_indices) const;
 

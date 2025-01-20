@@ -90,7 +90,7 @@ RelatedAppRowView::RelatedAppRowView(
   // facts, we will continue using registrar_unsafe(), and add a sanity check
   // here that the app_id we're trying to make a view for is still in the
   // registrar since we last checked. If it's not, early return an empty view.
-  if (registrar.IsNotInRegistrar(app_id_)) {
+  if (!registrar.IsInRegistrar(app_id_)) {
     return;
   }
   web_app::WebAppIconManager& icon_manager = provider->icon_manager();
@@ -102,7 +102,7 @@ RelatedAppRowView::RelatedAppRowView(
   auto* app_icon_image =
       AddChildView(std::make_unique<NonAccessibleImageView>());
   app_icon_image->SetImage(
-      ui::ImageModel::FromImageSkia(icon_manager.GetFaviconImageSkia(app_id)));
+      ui::ImageModel::FromImageSkia(icon_manager.GetFaviconImageSkia(app_id_)));
 
   auto* app_name_label = AddChildView(std::make_unique<views::Label>(
       base::UTF8ToUTF16(registrar.GetAppShortName(app_id_))));

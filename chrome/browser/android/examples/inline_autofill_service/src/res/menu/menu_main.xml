@@ -1,0 +1,15 @@
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.chromium.example.autofill_service.MainActivity">
+  <item
+      android:id="@+id/action_settings"
+      android:orderInCategory="100"
+      android:title="@string/action_settings"
+      app:showAsAction="never" />
+</menu>

@@ -79,6 +79,7 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
       media::mojom::RecognizerClientType::kLiveCaption;
   options->skip_continuously_empty_audio = true;
   options->language = config_.language;
+  options->recognition_context = config_.recognition_context;
 
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
@@ -157,14 +158,16 @@ void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionRecognitionEvent(
 }
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionError() {
-  Abort(media::mojom::SpeechRecognitionErrorCode::kNoSpeech);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
 }
 
 void SodaSpeechRecognitionEngineImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {}
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionStopped() {
-  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
+  delegate_->OnSpeechRecognitionEngineResults(
+      std::vector<media::mojom::WebSpeechRecognitionResultPtr>());
+  Abort(media::mojom::SpeechRecognitionErrorCode::kNone);
 }
 
 void SodaSpeechRecognitionEngineImpl::

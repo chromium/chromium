@@ -65,7 +65,7 @@ class SuggestionListViewBinder {
                             model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
-                view.dropdown.emitWindowContentChanged();
+                view.dropdown.emitWindowContentChangedAnnouncement();
             }
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);

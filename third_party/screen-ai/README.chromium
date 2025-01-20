@@ -22,7 +22,7 @@ Name: Eigen
 Short Name: eigen
 URL: https://gitlab.com/libeigen/eigen
 Version: 3.4
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Shipped: yes
 Security Critical: no

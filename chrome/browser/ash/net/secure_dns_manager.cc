@@ -101,11 +101,12 @@ void MigrateDnsOverHttpsPrefs(PrefService* from_local_state,
 namespace ash {
 
 SecureDnsManager::SecureDnsManager(PrefService* local_state,
-                                   PrefService* profile_prefs,
+                                   user_manager::User& user,
                                    bool is_profile_managed)
     : local_state_(local_state),
-      profile_prefs_(profile_prefs),
+      user_(user),
       is_profile_managed_(is_profile_managed) {
+  auto* profile_prefs = user.GetProfilePrefs();
   if (!is_profile_managed) {
     CHECK(profile_prefs) << "Profile prefs cannot be empty for unmanaged users";
     MigrateDnsOverHttpsPrefs(local_state, profile_prefs);
@@ -153,11 +154,12 @@ void SecureDnsManager::SetPrimaryProfilePropertiesForTesting(
 }
 
 void SecureDnsManager::MonitorUserPrefs() {
-  profile_prefs_->SetDefaultPrefValue(
+  auto* profile_prefs = user_->GetProfilePrefs();
+  profile_prefs->SetDefaultPrefValue(
       ::prefs::kDnsOverHttpsMode,
       local_state_->GetDefaultPrefValue(::prefs::kDnsOverHttpsMode)->Clone());
 
-  profile_prefs_registrar_.Init(profile_prefs_);
+  profile_prefs_registrar_.Init(profile_prefs);
   profile_prefs_registrar_.Add(
       ::prefs::kDnsOverHttpsMode,
       base::BindRepeating(&SecureDnsManager::OnPrefChanged,
@@ -305,9 +307,9 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
 }
 
 void SecureDnsManager::OnPrefChanged() {
-  CHECK(profile_prefs_);
-  UpdateDoHConfig(profile_prefs_->GetString(::prefs::kDnsOverHttpsMode),
-                  profile_prefs_->GetString(::prefs::kDnsOverHttpsTemplates));
+  const auto* profile_prefs = user_->GetProfilePrefs();
+  UpdateDoHConfig(profile_prefs->GetString(::prefs::kDnsOverHttpsMode),
+                  profile_prefs->GetString(::prefs::kDnsOverHttpsTemplates));
 }
 
 void SecureDnsManager::OnLocalStatePrefsChanged() {
@@ -451,7 +453,7 @@ void SecureDnsManager::UpdateChromeDoHConfig(
 }
 
 void SecureDnsManager::UpdateTemplateUri() {
-  doh_templates_uri_resolver_->Update(local_state_);
+  doh_templates_uri_resolver_->Update(*local_state_, user_.get());
 
   std::string new_templates =
       doh_templates_uri_resolver_->GetEffectiveTemplates();

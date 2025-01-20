@@ -10,18 +10,18 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #import "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -395,16 +395,16 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 + (void)clearProfilesStore {
   ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
-  autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForProfile(profileIOS);
+  autofill::AddressDataManager& addressDataManager =
+      autofill::PersonalDataManagerFactory::GetForProfile(profileIOS)
+          ->address_data_manager();
   for (const autofill::AutofillProfile* profile :
-       personalDataManager->address_data_manager().GetProfiles()) {
-    personalDataManager->RemoveByGUID(profile->guid());
+       addressDataManager.GetProfiles()) {
+    addressDataManager.RemoveProfile(profile->guid());
   }
 
   ConditionBlock conditionBlock = ^bool {
-    return 0 ==
-           personalDataManager->address_data_manager().GetProfiles().size();
+    return 0 == addressDataManager.GetProfiles().size();
   };
   CHECK(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, conditionBlock));
@@ -429,12 +429,12 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)clearCreditCardStore {
-  autofill::PersonalDataManager* personalDataManager =
-      [self personalDataManager];
+  autofill::PaymentsDataManager& paymentsDataManager =
+      [self personalDataManager]->payments_data_manager();
   for (const autofill::CreditCard* creditCard :
-       personalDataManager->payments_data_manager().GetCreditCards()) {
+       paymentsDataManager.GetCreditCards()) {
     // This will not remove server cards, as they have no guid.
-    personalDataManager->RemoveByGUID(creditCard->guid());
+    paymentsDataManager.RemoveByGUID(creditCard->guid());
   }
 
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();

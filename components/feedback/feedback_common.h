@@ -65,9 +65,9 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // Mahi feature has the dedicated product id.
   static int GetMahiProductId();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static int GetChromeOSProductId();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Getters
   const std::optional<std::string>& mac_address() const { return mac_address_; }
@@ -76,6 +76,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   const std::string& description() const { return description_; }
   const std::string& user_email() const { return user_email_; }
   const std::string& image() const { return image_; }
+  const std::string& image_mime_type() const { return image_mime_type_; }
   const SystemLogsMap* sys_info() const { return &logs_; }
   int32_t product_id() const { return product_id_; }
   std::string user_agent() const { return user_agent_; }
@@ -105,6 +106,9 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
     user_email_ = user_email;
   }
   void set_image(std::string image) { image_ = std::move(image); }
+  void set_image_mime_type(std::string image_mime_type) {
+    image_mime_type_ = std::move(image_mime_type);
+  }
   void set_product_id(int32_t product_id) { product_id_ = product_id; }
   void set_user_agent(const std::string& user_agent) {
     user_agent_ = user_agent;
@@ -159,6 +163,8 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   std::string ai_metadata_;
 
   std::string image_;
+  // If empty, assumed to be PNG.
+  std::string image_mime_type_;
 
   // It is possible that multiple attachment add calls are running in
   // parallel, so synchronize access.

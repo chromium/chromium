@@ -26,8 +26,11 @@ message SessionStartEvent {
 
   // Time that the session ended.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
-  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
-  optional int64 timestamp_micro = 2;
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
 }
 
 // Represents the end of a user session. Recorded when a user logs out or locks
@@ -45,8 +48,11 @@ message SessionEndEvent {
 
   // Time that the session ended.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
-  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
-  optional int64 timestamp_micro = 2;
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
 }
 
 // Captures whether the user is active or idle on the device during a session.
@@ -63,8 +69,11 @@ message ActiveIdleState {
 
   // Time that the state was recorded.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds
-  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
-  optional int64 timestamp_micro = 2;
+  optional int64 timestamp_micro = 2
+  // copybara:datapol_begin
+  // [(datapol.semantic_type) = ST_SENSITIVE_TIMESTAMP]
+  // copybara:datapol_end
+  ;
 }
 
 // Captures session start/end events and active/idle states during a user

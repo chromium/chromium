@@ -81,7 +81,6 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
     return test_service;
   }
 
-  // iOS platform doesn't have HaTS surveys.
   std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressServiceImpl>(
           profile->GetPrefs(), identity_manager,
@@ -90,8 +89,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
               identity_manager, profile->GetSharedURLLoaderFactory()),
           ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service, std::move(feature_check),
-          /*launch_hats_survey=*/base::DoNothing());
+          affiliation_service, std::move(feature_check));
 
   affiliation_service->RegisterSource(
       std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(

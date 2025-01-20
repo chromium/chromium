@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
+
 #include <string>
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
@@ -11,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -129,7 +131,7 @@ class MockMagnificationObserver {
   MockMagnificationObserver& operator=(const MockMagnificationObserver&) =
       delete;
 
-  virtual ~MockMagnificationObserver() {}
+  virtual ~MockMagnificationObserver() = default;
 
   bool observed() const { return observed_; }
   bool observed_enabled() const { return observed_enabled_; }
@@ -154,12 +156,12 @@ class MockMagnificationObserver {
 
 class MagnificationManagerTest : public InProcessBrowserTest {
  protected:
-  MagnificationManagerTest() {}
+  MagnificationManagerTest() = default;
 
   MagnificationManagerTest(const MagnificationManagerTest&) = delete;
   MagnificationManagerTest& operator=(const MagnificationManagerTest&) = delete;
 
-  ~MagnificationManagerTest() override {}
+  ~MagnificationManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kLoginManager);
@@ -175,7 +177,7 @@ class MagnificationManagerTest : public InProcessBrowserTest {
   }
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
 };
 
 IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, PRE_LoginOffToOff) {

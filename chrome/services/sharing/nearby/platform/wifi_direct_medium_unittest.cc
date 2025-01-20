@@ -85,9 +85,9 @@ class FakeWifiDirectConnection
 class FakeWifiDirectManager
     : public ash::wifi_direct::mojom::WifiDirectManager {
  public:
-  FakeWifiDirectManager() {}
+  FakeWifiDirectManager() = default;
 
-  ~FakeWifiDirectManager() override {}
+  ~FakeWifiDirectManager() override = default;
 
   void CreateWifiDirectGroup(
       ash::wifi_direct::mojom::WifiCredentialsPtr credentials,

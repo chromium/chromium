@@ -9,13 +9,11 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -28,13 +26,18 @@ namespace {
 class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~BitmapSoftwareBacking() override {
-    if (shared_image) {
-      auto sii = frame_sink->shared_image_interface();
-      if (sii) {
-        sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
-      }
-    } else {
-      frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
+    DCHECK(shared_image);
+
+    shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
+    mapping.reset();
+    shared_image.reset();
+    // |shared_image_interface| might be null when
+    // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
+    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
+    // itself. We need a flush here to trigger IPC. Without the flush, there
+    // will be memory regressions in tiles.
+    if (frame_sink->shared_image_interface()) {
+      frame_sink->shared_image_interface()->Flush();
     }
   }
 
@@ -43,12 +46,11 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, mapping.guid(),
-                                           importance);
+    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
   }
 
   raw_ptr<LayerTreeFrameSink> frame_sink;
-  base::WritableSharedMemoryMapping mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {
@@ -60,7 +62,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
                          uint64_t previous_content_id)
       : resource_size_(size),
         color_space_(color_space),
-        pixels_(backing->mapping.memory()),
+        pixels_(backing->mapping->GetMemoryForPlane(0).data()),
         resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id),
         backing_(backing) {}
@@ -84,9 +86,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         << "Why are we rastering a tile that's not dirty?";
 
     size_t stride = 0u;
-    viz::SharedImageFormat format = backing_->shared_image
-                                        ? viz::SinglePlaneFormat::kBGRA_8888
-                                        : viz::SinglePlaneFormat::kRGBA_8888;
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
     RasterBufferProvider::PlaybackToMemory(
         pixels_, format, resource_size_, stride, raster_source,
         raster_full_rect, playback_rect, transform, color_space_,
@@ -111,7 +111,10 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
 BitmapRasterBufferProvider::BitmapRasterBufferProvider(
     LayerTreeFrameSink* frame_sink)
-    : frame_sink_(frame_sink) {}
+    : frame_sink_(frame_sink) {
+  auto sii = frame_sink_->shared_image_interface();
+  CHECK(sii) << "::BitmapRasterBufferProvider() SharedImageInterface is null!";
+}
 
 BitmapRasterBufferProvider::~BitmapRasterBufferProvider() = default;
 
@@ -123,9 +126,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  DCHECK_EQ(resource.format(), frame_sink_->shared_image_interface()
-                                   ? viz::SinglePlaneFormat::kBGRA_8888
-                                   : viz::SinglePlaneFormat::kRGBA_8888);
+  DCHECK_EQ(resource.format(), viz::SinglePlaneFormat::kBGRA_8888);
 
   const gfx::Size& size = resource.size();
   const gfx::ColorSpace& color_space = resource.color_space();
@@ -133,23 +134,15 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     auto backing = std::make_unique<BitmapSoftwareBacking>();
     backing->frame_sink = frame_sink_;
     auto sii = frame_sink_->shared_image_interface();
-    if (sii) {
-      auto shared_image_mapping = sii->CreateSharedImage(
-          {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider"});
-      backing->shared_image = std::move(shared_image_mapping.shared_image);
-      CHECK(backing->shared_image);
-      backing->mapping = std::move(shared_image_mapping.mapping);
-      backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
-    } else {
-      backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
-      base::MappedReadOnlyRegion shm =
-          viz::bitmap_allocation::AllocateSharedBitmap(
-              size, viz::SinglePlaneFormat::kRGBA_8888);
-      backing->mapping = std::move(shm.mapping);
-      frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
-                                           backing->shared_bitmap_id);
-    }
+    CHECK(sii) << "SharedImageInterface is null!";
+
+    backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
+        {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "BitmapRasterBufferProvider"});
+    CHECK(backing->shared_image);
+
+    backing->mapping = backing->shared_image->Map();
+    backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
 
     resource.set_software_backing(std::move(backing));
   }
@@ -163,9 +156,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
 void BitmapRasterBufferProvider::Flush() {}
 
 viz::SharedImageFormat BitmapRasterBufferProvider::GetFormat() const {
-  return frame_sink_->shared_image_interface()
-             ? viz::SinglePlaneFormat::kBGRA_8888
-             : viz::SinglePlaneFormat::kRGBA_8888;
+  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 bool BitmapRasterBufferProvider::IsResourcePremultiplied() const {

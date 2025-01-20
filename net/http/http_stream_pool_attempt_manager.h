@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,9 +19,11 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_export.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -32,6 +35,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -45,10 +49,37 @@ class HttpNetworkSession;
 class NetLog;
 class HttpStreamKey;
 
-// Maintains in-flight Jobs. Peforms DNS resolution.
+// Drives connection attempts for a single destination.
+//
+// Maintains multiple in-flight Jobs for a single destination keyed by
+// HttpStreamKey. Peforms DNS resolution and manages connection attempts.
+// Delegates QUIC connection attempts to QuicTask. Upon successful HttpStream
+// creations or fatal error occurrence, notify jobs of success or failure.
+//
+// Created by an HttpStreamPool::Group when new connection attempts are needed
+// and destroyed when all jobs, in-flight attempts, and the QuicTask are
+// completed.
 class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
+  class NET_EXPORT_PRIVATE QuicTask;
+
+  // The state of an IPEndPoint. There is no success state. The absence of a
+  // state for an endpoint means that we haven't yet attempted to connect to the
+  // endpoint, or that a connection to the endpoint was successfully completed
+  // and was not slow. Public for testing.
+  enum class IPEndPointState {
+    // The endpoint has failed.
+    kFailed,
+    // The endpoint is considered slow and haven't timed out yet.
+    kSlowAttempting,
+    // The endpoint was slow to connect, but the connection establishment
+    // completed successfully.
+    kSlowSucceeded,
+  };
+
+  using IPEndPointStateMap = std::map<IPEndPoint, IPEndPointState>;
+
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
   // establishments. See https://crbug.com/718576
@@ -64,13 +95,9 @@ class HttpStreamPool::AttemptManager
 
   Group* group() { return group_; }
 
-  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
-    return service_endpoint_request_.get();
-  }
+  bool is_failing() const { return is_failing_; }
 
-  bool is_service_endpoint_request_finished() const {
-    return service_endpoint_request_finished_;
-  }
+  int final_error_to_notify_jobs() const;
 
   base::TimeTicks dns_resolution_start_time() const {
     return dns_resolution_start_time_;
@@ -86,11 +113,9 @@ class HttpStreamPool::AttemptManager
   void StartJob(Job* job,
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                RespectLimits respect_limits,
-                bool enable_ip_based_pooling,
-                bool enable_alternative_services,
                 quic::ParsedQuicVersion quic_version,
-                const NetLogWithSource& net_log);
+                const NetLogWithSource& request_net_log,
+                const NetLogWithSource& job_controller_net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
@@ -99,6 +124,7 @@ class HttpStreamPool::AttemptManager
   // callbacks are invoked when one stream/session is established (not two).
   int Preconnect(size_t num_streams,
                  quic::ParsedQuicVersion quic_version,
+                 const NetLogWithSource& job_controller_net_log,
                  CompletionOnceCallback callback);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
@@ -108,20 +134,28 @@ class HttpStreamPool::AttemptManager
   // Tries to process a single pending request/preconnect.
   void ProcessPendingJob();
 
-  // Returns the number of total jobs in this manager.
+  // Returns the number of jobs that haven't yet been notified success or
+  // failure.
   size_t JobCount() const { return jobs_.size(); }
+
+  // Returns the number of jobs that have already been notified success or
+  // failure.
+  size_t NotifiedJobCount() const { return notified_jobs_.size(); }
 
   // Returns the number of in-flight attempts.
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
 
   // Cancels all in-flight attempts.
-  void CancelInFlightAttempts();
+  void CancelInFlightAttempts(StreamSocketCloseReason reason);
 
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);
 
   // Cancels all jobs.
   void CancelJobs(int error);
+
+  // Cancels the QuicTask if it exists.
+  void CancelQuicTask(int error);
 
   // Returns the number of pending jobs/preconnects. The number is
   // calculated by subtracting the number of in-flight attempts (excluding slow
@@ -156,14 +190,28 @@ class HttpStreamPool::AttemptManager
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
   // Retrieves information on the current state of `this` as a base::Value.
-  base::Value::Dict GetInfoAsValue();
-
-  std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+  base::Value::Dict GetInfoAsValue() const;
 
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
 
+  std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+
+  void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
+
+  QuicTask* quic_task_for_testing() const { return quic_task_.get(); }
+
+  IPEndPointStateMap& ip_endpoint_states_for_testing() {
+    return ip_endpoint_states_;
+  }
+  const IPEndPointStateMap& ip_endpoint_states_for_testing() const {
+    return ip_endpoint_states_;
+  }
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
+                           GetIPEndPointToAttempt);
+
   // Represents failure of connection attempts. Used to notify job of completion
   // for failure cases.
   enum class FailureKind {
@@ -187,13 +235,20 @@ class HttpStreamPool::AttemptManager
     kNotStarted,
     kAttempting,
     kSucceededAtLeastOnce,
-    kAllAttemptsFailed,
+    kAllEndpointsFailed,
   };
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
   class InFlightAttempt;
   struct PreconnectEntry;
+
+  static std::string_view CanAttemptResultToString(CanAttemptResult result);
+
+  static std::string_view TcpBasedAttemptStateToString(
+      TcpBasedAttemptState state);
+
+  static std::string_view IPEndPointStateToString(IPEndPointState state);
 
   const HttpStreamKey& stream_key() const;
 
@@ -208,7 +263,15 @@ class HttpStreamPool::AttemptManager
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
 
-  int WaitForSSLConfigReady(CompletionOnceCallback callback);
+  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
+    return service_endpoint_request_.get();
+  }
+
+  bool is_service_endpoint_request_finished() const {
+    return service_endpoint_request_finished_;
+  }
+
+  int WaitForSSLConfigReady();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
       InFlightAttempt* attempt);
@@ -228,14 +291,10 @@ class HttpStreamPool::AttemptManager
   // Called when service endpoint results have changed or finished.
   void ProcessServiceEndpointChanges();
 
-  // Returns true when there is an active SPDY session that can be used for
+  // Returns true when there is an active SPDY/QUIC session that can be used for
   // on-going jobs after service endpoint results has changed. May notify jobs
   // of stream ready.
   bool CanUseExistingSessionAfterEndpointChanges();
-
-  // Runs the stream attempt delay timer if stream attempts are blocked and the
-  // timer is not running.
-  void MaybeRunStreamAttemptDelayTimer();
 
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
@@ -246,9 +305,11 @@ class HttpStreamPool::AttemptManager
   void MaybeAttemptQuic();
 
   // Attempts connections if there are pending jobs and IPEndPoints that
-  // haven't failed. If `max_attempts` is given, attempts connections up to
+  // haven't failed. If `exclude_ip_endpoint` is given, exclude the IPEndPoint
+  // from attempts. If `max_attempts` is given, attempts connections up to
   // `max_attempts`.
   void MaybeAttemptConnection(
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt,
       std::optional<size_t> max_attempts = std::nullopt);
 
   // Returns true if there are pending jobs and the pool and the group
@@ -259,25 +320,54 @@ class HttpStreamPool::AttemptManager
 
   // Actual implementation of IsConnectionAttemptReady(), without having side
   // effects.
-  CanAttemptResult CanAttemptConnection();
+  CanAttemptResult CanAttemptConnection() const;
+
+  // Returns true only when there are no jobs that ignore the pool and group
+  // limits.
+  bool ShouldRespectLimits() const;
+
+  // Returns true only when there are no jobs that disable IP based pooling.
+  bool IsIpBasedPoolingEnabled() const;
+
+  // Returns true only when there are no jobs that disable alternative services.
+  bool IsAlternativeServiceEnabled() const;
 
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
-  bool ShouldThrottleAttemptForSpdy();
+  bool ShouldThrottleAttemptForSpdy() const;
+
+  // Calculates the maximum streams counts requested by preconnects.
+  size_t CalculateMaxPreconnectCount() const;
 
   // Helper method to calculate pending jobs/preconnects.
   size_t PendingCountInternal(size_t pending_count) const;
 
-  std::optional<IPEndPoint> GetIPEndPointToAttempt();
-  std::optional<IPEndPoint> FindPreferredIPEndpoint(
-      const std::vector<IPEndPoint>& ip_endpoints);
+  // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
+  // given, exclude the endpoint. Brief summary of the behavior are:
+  //  * Try preferred address family first.
+  //  * Prioritize unattempted or fast endpoints.
+  //  * Fall back to slow but succeeded endpoints.
+  //  * Use slow and attempting endpoints as the last option.
+  //  * For a slow endpoint, skip the endpoint if there are enough attempts for
+  //    the endpoint.
+  // TODO(crbug.com/383606724): The current logic relies on rather naive and not
+  // very well-founded heuristics. Write a design document and implement more
+  // appropriate algorithm to pick an IPEndPoint.
+  std::optional<IPEndPoint> GetIPEndPointToAttempt(
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
+  void FindBetterIPEndPoint(const std::vector<IPEndPoint>& ip_endpoints,
+                            std::optional<IPEndPoint> exclude_ip_endpoint,
+                            std::optional<IPEndPointState>& current_state,
+                            std::optional<IPEndPoint>& current_endpoint);
+  bool HasEnoughAttemptsForSlowIPEndPoint(const IPEndPoint& ip_endpoint);
+
+  // Called when this gets a fatal error. Notifies all jobs of the failure and
+  // cancels in-flight TCP-based attempts and QuicTask's, if they exist.
+  void HandleFinalError(int error);
 
   // Calculate the failure kind to notify jobs of failure. Used to call one of
   // the job's methods.
   FailureKind DetermineFailureKind();
-
-  // Notifies a failure to all jobs.
-  void NotifyFailure();
 
   // Notifies a failure to a single job. Used by NotifyFailure().
   void NotifyJobOfFailure();
@@ -285,10 +375,17 @@ class HttpStreamPool::AttemptManager
   // Notifies all preconnects of completion.
   void NotifyPreconnectsComplete(int rv);
 
-  // Called after completion of a connection attempt to decriment stream
+  // Called after completion of a connection attempt to decrement stream
   // counts in preconnect entries. Invokes the callback of an entry when the
-  // entry's stream counts becomes zero (i.e., `this` has enough streams).
-  void ProcessPreconnectsAfterAttemptComplete(int rv);
+  // entry's stream counts is less than or equal to `active_stream_count`
+  // (i.e., `this` has enough streams).
+  void ProcessPreconnectsAfterAttemptComplete(int rv,
+                                              size_t active_stream_count);
+
+  // Helper methods to post a task to invoke `callback`. If `this` is deleted
+  // `callback` is canceled.
+  void InvokePreconnectCallbackLater(CompletionOnceCallback callback, int rv);
+  void InvokePreconnectCallback(CompletionOnceCallback callback, int rv);
 
   // Creates a text based stream and notifies the highest priority job.
   void CreateTextBasedStreamAndNotify(
@@ -305,15 +402,20 @@ class HttpStreamPool::AttemptManager
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleSpdySessionReady();
+  void HandleSpdySessionReady(StreamSocketCloseReason refresh_group_reason);
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleQuicSessionReady();
+  void HandleQuicSessionReady(StreamSocketCloseReason refresh_group_reason);
 
   // Extracts an entry from `jobs_` of which priority is highest. The ownership
   // of the entry is moved to `notified_jobs_`.
   Job* ExtractFirstJobToNotify();
+
+  // Remove the pointeee of `job_pointer` from `jobs_`. May cancel in-flight
+  // attempts when there are no limit ignoring jobs after removing the job and
+  // in-flight attempts count is larger than the limit.
+  raw_ptr<Job> RemoveJobFromQueue(JobQueue::Pointer job_pointer);
 
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
   void OnInFlightAttemptTcpHandshakeComplete(InFlightAttempt* raw_attempt,
@@ -331,6 +433,14 @@ class HttpStreamPool::AttemptManager
   // Updates whether stream attempts should be blocked or not. May cancel
   // `stream_attempt_delay_timer_`.
   void UpdateStreamAttemptState();
+
+  // Runs the stream attempt delay timer if stream attempts are blocked and the
+  // timer is not running. StreamAttemptDelayBehavior specifies when this method
+  // is called.
+  void MaybeRunStreamAttemptDelayTimer();
+
+  // Cancels `stream_attempt_delay_timer_`.
+  void CancelStreamAttemptDelayTimer();
 
   // Called when `stream_attempt_delay_timer_` is fired.
   void OnStreamAttemptDelayPassed();
@@ -355,19 +465,20 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
-  base::Value::Dict GetStatesAsNetLogParams();
+  base::Value::Dict GetStatesAsNetLogParams() const;
 
+  // Returns true when this can complete.
+  bool CanComplete() const;
+
+  // Notifies `group_` that `this` has completed and can be destroyed.
   void MaybeComplete();
+
+  // If `this` is ready to complete, posts a task to call MaybeComplete().
+  void MaybeCompleteLater();
 
   const raw_ptr<Group> group_;
 
   const NetLogWithSource net_log_;
-
-  RespectLimits respect_limits_ = RespectLimits::kRespect;
-
-  bool enable_ip_based_pooling_ = true;
-
-  bool enable_alternative_services_ = true;
 
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
@@ -377,9 +488,16 @@ class HttpStreamPool::AttemptManager
   // dangling pointers.
   std::set<raw_ptr<Job>> notified_jobs_;
 
+  base::flat_set<raw_ptr<Job>> limit_ignoring_jobs_;
+
+  base::flat_set<raw_ptr<Job>> ip_based_pooling_disabling_jobs_;
+
+  base::flat_set<raw_ptr<Job>> alternative_service_disabling_jobs_;
+
   // Holds preconnect requests.
   std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>
       preconnects_;
+  size_t notifying_preconnect_completion_count_ = 0;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;
@@ -399,9 +517,13 @@ class HttpStreamPool::AttemptManager
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
 
-  // Set to an error from the latest stream attempt failure or network change
-  // events. Used to notify delegates when all attempts failed.
-  int error_to_notify_ = ERR_FAILED;
+  // An error code to notify jobs when `this` cannot make any further progress.
+  // Set to an error from service endpoint resolution failure, the last stream
+  // attempt failure, network change events, or QUIC task failure.
+  std::optional<int> final_error_to_notify_jobs_;
+
+  // Set to the most recent TCP-based attempt failure, if any.
+  std::optional<int> most_recent_tcp_error_;
 
   // Set to a SSLInfo when an attempt has failed with a certificate error. Used
   // to notify jobs.
@@ -418,7 +540,6 @@ class HttpStreamPool::AttemptManager
   // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
   // support multiple HTTPS RR that have different service endpoints.
   std::optional<SSLConfig> ssl_config_;
-  std::vector<CompletionOnceCallback> ssl_config_waiting_callbacks_;
 
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
       in_flight_attempts_;
@@ -428,14 +549,14 @@ class HttpStreamPool::AttemptManager
   base::OneShotTimer spdy_throttle_timer_;
   bool spdy_throttle_delay_passed_ = false;
 
+  // True when the destination supports SPDY.
+  bool supports_spdy_ = false;
+
   // When true, try to use IPv6 for the next attempt first.
   bool prefer_ipv6_ = true;
-  // Updated when a stream attempt failed. Used to calculate next IPEndPoint to
-  // attempt.
-  std::set<IPEndPoint> failed_ip_endpoints_;
-  // Updated when a stream attempt is considered slow. Used to calculate next
-  // IPEndPoint to attempt.
-  std::set<IPEndPoint> slow_ip_endpoints_;
+  // Updated when a stream attempt is completed or considered slow. Used to
+  // calculate next IPEndPoint to attempt.
+  IPEndPointStateMap ip_endpoint_states_;
 
   // The current state of TCP/TLS connection attempts.
   TcpBasedAttemptState tcp_based_attempt_state_ =

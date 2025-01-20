@@ -408,7 +408,7 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   // generated content) and unsnapped for content that has intrinsic
   // dimensions. Once we choose here we stop tracking whether the tile size is
   // snapped or unsnapped.
-  IntrinsicSizingInfo sizing_info = image->GetNaturalSizingInfo(
+  NaturalSizingInfo sizing_info = image->GetNaturalSizingInfo(
       style.EffectiveZoom(), style.ImageOrientation());
   PhysicalSize image_aspect_ratio =
       PhysicalSize::FromSizeFFloor(sizing_info.aspect_ratio);

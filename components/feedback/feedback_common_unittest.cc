@@ -4,8 +4,12 @@
 
 #include "components/feedback/feedback_common.h"
 
+#include <cstdint>
+#include <string>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/proto/common.pb.h"
 #include "components/feedback/proto/dom.pb.h"
@@ -22,12 +26,18 @@ constexpr char kFour[] = "four";
 constexpr char kLongLog[] = TEN_LINES TEN_LINES TEN_LINES TEN_LINES TEN_LINES;
 constexpr char kLogsAttachmentName[] = "system_logs.zip";
 constexpr int kTestProductId = 3490;
+constexpr uint8_t kPngBytes[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A,
+                                 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+                                 0x49, 0x48, 0x44, 0x52};
+constexpr uint8_t kJpegBytes[] = {0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10,
+                                  0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
+                                  0x01, 0x00, 0x00, 0x01};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kDefaultProductId = 208;  // ChromeOS default product ID.
 #else
 constexpr int kDefaultProductId = 237;  // Chrome default product ID.
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 class FeedbackCommonTest : public testing::Test {
@@ -146,4 +156,26 @@ TEST_F(FeedbackCommonTest, AiMetadata) {
   EXPECT_EQ(1, report_.web_data().product_specific_data_size());
   EXPECT_EQ("log_id", report_.web_data().product_specific_data(0).key());
   EXPECT_EQ("TEST_ID", report_.web_data().product_specific_data(0).value());
+}
+
+TEST_F(FeedbackCommonTest, ImageMimeTypeNoImage) {
+  feedback_->PrepareReport(&report_);
+
+  EXPECT_FALSE(report_.screenshot().has_mime_type());
+}
+
+TEST_F(FeedbackCommonTest, ImageMimeTypeNotSpecified) {
+  feedback_->set_image(std::string(base::as_string_view(kPngBytes)));
+  feedback_->PrepareReport(&report_);
+
+  EXPECT_EQ(report_.screenshot().mime_type(), "image/png");
+}
+
+TEST_F(FeedbackCommonTest, ImageMimeTypeSpecified) {
+  constexpr std::string_view kMimeType = "image/jpeg";
+  feedback_->set_image(std::string(base::as_string_view(kJpegBytes)));
+  feedback_->set_image_mime_type(std::string(kMimeType));
+  feedback_->PrepareReport(&report_);
+
+  EXPECT_EQ(report_.screenshot().mime_type(), kMimeType);
 }

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
@@ -148,14 +147,5 @@ public class TabGroupCreationDialogManager {
 
     ModalDialogProperties.Controller getDialogControllerForTesting() {
         return mTabGroupCreationDialogController;
-    }
-
-    /**
-     * Returns whether the group creation dialog should be shown based on the setting switch for
-     * auto showing under tab settings. If it is not enabled, return true since that is the default
-     * case for all callsites.
-     */
-    public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
-        return TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch();
     }
 }

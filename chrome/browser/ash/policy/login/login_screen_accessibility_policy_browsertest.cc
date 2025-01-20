@@ -73,10 +73,10 @@ class LoginScreenAccessibilityPolicyBrowsertest
 };
 
 LoginScreenAccessibilityPolicyBrowsertest::
-    LoginScreenAccessibilityPolicyBrowsertest() {}
+    LoginScreenAccessibilityPolicyBrowsertest() = default;
 
 LoginScreenAccessibilityPolicyBrowsertest::
-    ~LoginScreenAccessibilityPolicyBrowsertest() {}
+    ~LoginScreenAccessibilityPolicyBrowsertest() = default;
 
 void LoginScreenAccessibilityPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();

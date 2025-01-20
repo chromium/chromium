@@ -8,13 +8,17 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** An ActivityLifecycleCallbacks that routes all methods to a single onStateChanged(). */
+@NullMarked
 public abstract class ActivityLifecycleCallbacksAdapter
         implements Application.ActivityLifecycleCallbacks {
     public abstract void onStateChanged(Activity activity, @ActivityState int newState);
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
         onStateChanged(activity, ActivityState.CREATED);
     }
 

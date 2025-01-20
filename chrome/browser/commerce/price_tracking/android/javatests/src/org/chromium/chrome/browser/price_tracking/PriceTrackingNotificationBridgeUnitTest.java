@@ -33,8 +33,8 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedVi
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
-import org.chromium.components.payments.CurrencyFormatter;
-import org.chromium.components.payments.CurrencyFormatterJni;
+import org.chromium.components.payments.ui.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatterJni;
 
 /** Unit test for {@link PriceDropNotifier}. */
 @RunWith(BaseRobolectricTestRunner.class)

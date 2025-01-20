@@ -21,7 +21,7 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   // The methods for the observer will be called on the UI thread.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void OnSessionStarted(base::TimeTicks session_start) {}
     virtual void OnSessionEnded(base::TimeDelta session_length,
                                 base::TimeTicks session_end) {}

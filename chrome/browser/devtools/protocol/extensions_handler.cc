@@ -204,7 +204,7 @@ void ExtensionsHandler::OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
 void ExtensionsHandler::GetStorageItems(
     const protocol::String& id,
     const protocol::String& storage_area,
-    protocol::Maybe<protocol::Array<protocol::String>> keys,
+    std::unique_ptr<protocol::Array<protocol::String>> keys,
     std::unique_ptr<ExtensionsHandler::GetStorageItemsCallback> callback) {
   GetExtensionAndStorageFrontendResult result =
       GetExtensionAndStorageFrontend(target_id_, id, storage_area);

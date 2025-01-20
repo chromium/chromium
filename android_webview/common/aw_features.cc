@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "android_webview/common/aw_features.h"
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "services/network/public/cpp/features.h"
@@ -29,21 +30,21 @@ BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows JS DataTransfer Files from content URIs in drag-drop.
-BASE_FEATURE(kWebViewDragDropFiles,
-             "WebViewDragDropFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable JS FileSystemAccess API.
-// TODO(b/364980165): Add targetSdkVersion checks before enabling.
-BASE_FEATURE(kWebViewFileSystemAccess,
-             "WebViewFileSystemAccess",
+// Disables MSAA and default sharpening when rendering scaled elements. This is
+// often preferable when rendering images/video but can have adverse effects for
+// text on some displays.
+BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
+             "WebViewDisableSharpeningAndMSAA",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
-// the app's theme is dark.
-BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
-             "WebViewForceDarkModeMatchTheme",
+// Enable JS FileSystemAccess API.
+// This flag is set by WebView internal code based on an app's targetSdkVersion.
+// It is enabled for version B+. The default value here is not relevant, and is
+// not expected to be manually changed.
+// TODO(b/364980165): Flag can be removed when SDK versions prior to B are no
+// longer supported.
+BASE_FEATURE(kWebViewFileSystemAccess,
+             "WebViewFileSystemAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature parameter for `network::features::kMaskedDomainList` that sets the
@@ -55,11 +56,6 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
     &network::features::kMaskedDomainList,
     "WebViewIpProtectionExclusionCriteria",
     /*WebviewExclusionPolicy::kNone*/ 0};
-
-// Enable display cutout support for Android P and above.
-BASE_FEATURE(kWebViewDisplayCutout,
-             "WebViewDisplayCutout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
@@ -115,15 +111,11 @@ BASE_FEATURE(kWebViewSupervisedUserSiteDetection,
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
              "WebViewSupervisedUserSiteBlock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
-// is not same origin with the main frame.
-BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
-             "WebViewSuppressDifferentOriginSubframeJSDialogs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// A Feature used for WebView variations tests. Not used in production.
+// A Feature used for WebView variations tests. Not used in production. Please
+// do not clean up this stale feature: we intentionally keep this feature flag
+// around for testing purposes.
 BASE_FEATURE(kWebViewTestFeature,
              "WebViewTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -235,12 +227,26 @@ BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Auto-grants the `SANITIZED_CLIPBOARD_WRITE` permission.
-// This flag is introduced as a kill-switch in case the change leads
-// to problems.
-// TODO(https://crbug.com/362460435) Remove after launch.
-BASE_FEATURE(kWebViewAutoGrantSanitizedClipboardWrite,
-             "WebViewAutoGrantSanitizedClipboardWrite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// When enabled, WebView performs normal processing work for cookie request
+// headers and response headers for the shouldInterceptRequest API. However,
+// whether the app is provided the cookie jar contents is controlled by
+// WebViewInterceptedCookieHeaderReadWrite. Whether Set-Cookie headers
+// affect the cookie jar is also controlled by
+// WebViewInterceptedCookieHeaderReadWrite. When that flag is disabled,
+// set-cookie headers are ignored and the response headers passed to the
+// app remain unchanged.
+BASE_FEATURE(kWebViewInterceptedCookieHeader,
+             "WebViewInterceptedCookieHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled in conjunction with WebViewInterceptedCookieHeader flag, the
+// cookie header in the request headers will be included for
+// shouldInterceptRequest. Also, the set-cookie header in the response headers
+// will be processed and stored in the cookie jar for shouldInterceptRequest.
+// When disabled while WebViewInterceptedCookieHeader is enabled, the response
+// headers passed to the app remain unchanged. Also, the set-cookie
+// header has no effect on the cookie jar.
+BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
+             "WebViewInterceptedCookieHeaderReadWrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

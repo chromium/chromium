@@ -26,13 +26,7 @@
 namespace update_client {
 
 class UnpackerTest : public testing::Test {
- public:
-  UnpackerTest() = default;
-  ~UnpackerTest() override = default;
-
-  void UnpackComplete(const Unpacker::Result& result);
-
- protected:
+ private:
   base::test::TaskEnvironment env_;
 };
 

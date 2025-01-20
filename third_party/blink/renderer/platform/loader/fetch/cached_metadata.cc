@@ -29,38 +29,26 @@ bool CheckSizeAndMarker(const DataType& data) {
 }
 
 Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
-                                  const uint8_t* data,
-                                  wtf_size_t size,
+                                  base::span<const uint8_t> data,
                                   uint64_t tag) {
   // Don't allow an ID of 0, it is used internally to indicate errors.
   DCHECK(data_type_id);
-  DCHECK(data);
+  DCHECK(data.data());
 
   Vector<uint8_t> vector =
-      CachedMetadata::GetSerializedDataHeader(data_type_id, size, tag);
-  vector.Append(data, size);
+      CachedMetadata::GetSerializedDataHeader(data_type_id, data.size(), tag);
+  vector.AppendSpan(data);
   return vector;
 }
 
 }  // namespace
 
-scoped_refptr<CachedMetadata> CachedMetadata::Create(uint32_t data_type_id,
-                                                     const uint8_t* data,
-                                                     size_t size,
-                                                     uint64_t tag) {
-  return base::MakeRefCounted<CachedMetadata>(
-      data_type_id, data, base::checked_cast<wtf_size_t>(size), tag,
-      base::PassKey<CachedMetadata>());
-}
-
-scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
-    const uint8_t* data,
-    size_t size) {
-  if (size > std::numeric_limits<wtf_size_t>::max())
-    return nullptr;
-  Vector<uint8_t> copied_data;
-  copied_data.Append(data, static_cast<wtf_size_t>(size));
-  return CreateFromSerializedData(std::move(copied_data));
+scoped_refptr<CachedMetadata> CachedMetadata::Create(
+    uint32_t data_type_id,
+    base::span<const uint8_t> data,
+    uint64_t tag) {
+  return base::MakeRefCounted<CachedMetadata>(data_type_id, data, tag,
+                                              base::PassKey<CachedMetadata>());
 }
 
 scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
@@ -73,11 +61,13 @@ scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
 }
 
 scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
-    mojo_base::BigBuffer& data) {
-  if (!CheckSizeAndMarker(data)) {
+    mojo_base::BigBuffer& data,
+    uint32_t offset) {
+  if (data.size() < offset ||
+      !CheckSizeAndMarker(base::as_byte_span(data).subspan(offset))) {
     return nullptr;
   }
-  return base::MakeRefCounted<CachedMetadata>(std::move(data),
+  return base::MakeRefCounted<CachedMetadata>(std::move(data), offset,
                                               base::PassKey<CachedMetadata>());
 }
 
@@ -86,22 +76,26 @@ CachedMetadata::CachedMetadata(Vector<uint8_t> data,
     : buffer_(std::move(data)) {}
 
 CachedMetadata::CachedMetadata(uint32_t data_type_id,
-                               const uint8_t* data,
-                               wtf_size_t size,
+                               base::span<const uint8_t> data,
                                uint64_t tag,
                                base::PassKey<CachedMetadata>)
-    : buffer_(GetSerializedData(data_type_id, data, size, tag)) {}
+    : buffer_(GetSerializedData(data_type_id, data, tag)) {}
 
 CachedMetadata::CachedMetadata(mojo_base::BigBuffer data,
+                               uint32_t offset,
                                base::PassKey<CachedMetadata>)
-    : buffer_(std::move(data)) {}
+    : buffer_(std::move(data)), offset_(offset) {}
 
 base::span<const uint8_t> CachedMetadata::SerializedData() const {
+  base::span<const uint8_t> span_including_offset;
   if (absl::holds_alternative<Vector<uint8_t>>(buffer_)) {
-    return absl::get<Vector<uint8_t>>(buffer_);
+    span_including_offset = absl::get<Vector<uint8_t>>(buffer_);
+  } else {
+    CHECK(absl::holds_alternative<mojo_base::BigBuffer>(buffer_));
+    span_including_offset = absl::get<mojo_base::BigBuffer>(buffer_);
   }
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(buffer_));
-  return absl::get<mojo_base::BigBuffer>(buffer_);
+  CHECK_GE(span_including_offset.size(), offset_);
+  return span_including_offset.subspan(offset_);
 }
 
 absl::variant<Vector<uint8_t>, mojo_base::BigBuffer>

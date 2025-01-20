@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -39,13 +38,10 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -278,7 +274,6 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent_incognito() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
@@ -364,11 +359,6 @@ public class AppLaunchDrawBlockerUnitTest {
         }
 
         verify(mIncognitoRestoreAppLaunchDrawBlockerMock, times(1)).shouldBlockDraw();
-        assertEquals(
-                "Duration not recorded.",
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth", 10));
     }
 
     private void validateConstructorAndCaptureObservers() {

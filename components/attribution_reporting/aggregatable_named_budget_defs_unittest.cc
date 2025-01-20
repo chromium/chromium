@@ -5,11 +5,9 @@
 #include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,8 +20,6 @@ using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 
 TEST(AggregatableNamedBudgetDefsTest, Parse) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableNamedBudgets);
   EXPECT_THAT(AggregatableNamedBudgetDefs::FromJSON(/*value=*/nullptr),
               ValueIs(AggregatableNamedBudgetDefs()));
   const struct {

@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
@@ -82,15 +81,13 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
 
   ~MediaBufferScopedPointer();
 
-  uint8_t* get() { return buffer_; }
+  raw_ptr<uint8_t, AllowPtrArithmetic> get() { return buffer_; }
   DWORD current_length() const { return current_length_; }
   DWORD max_length() const { return max_length_; }
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION uint8_t* buffer_;
+  raw_ptr<uint8_t, AllowPtrArithmetic> buffer_;
   DWORD max_length_;
   DWORD current_length_;
 };
@@ -216,6 +213,18 @@ MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
     DWORD buffer_alignment,
     IMFSample** sample_out);
+
+class CommandBufferHelper;
+typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
+                                Microsoft::WRL::ComPtr<IMFSample>,
+                                HRESULT)>
+    SampleAvailableCB;
+
+MEDIA_EXPORT void GenerateSampleFromSharedImageVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
+    scoped_refptr<CommandBufferHelper> command_buffer_helper,
+    SampleAvailableCB sample_available_cb);
 
 }  // namespace media
 

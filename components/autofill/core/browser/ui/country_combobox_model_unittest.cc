@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
@@ -21,29 +21,26 @@ class CountryComboboxModelTest : public testing::Test {
  public:
   CountryComboboxModelTest()
       : pref_service_(autofill::test::PrefServiceForTesting()) {
-    manager_.SetPrefService(pref_service_.get());
+    adm_.SetPrefService(pref_service_.get());
     model_ = std::make_unique<CountryComboboxModel>();
     model_->SetCountries(
-        manager_, base::RepeatingCallback<bool(const std::string&)>(), "en-US");
+        adm(), base::RepeatingCallback<bool(const std::string&)>(), "en-US");
   }
 
-  void TearDown() override { manager_.SetPrefService(nullptr); }
+  void TearDown() override { adm_.SetPrefService(nullptr); }
 
-  TestPersonalDataManager* manager() { return &manager_; }
+  TestAddressDataManager& adm() { return adm_; }
   CountryComboboxModel* model() { return model_.get(); }
 
  private:
-  TestPersonalDataManager manager_;
+  TestAddressDataManager adm_;
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<CountryComboboxModel> model_;
 };
 
 TEST_F(CountryComboboxModelTest, DefaultCountryCode) {
   std::string default_country = model()->GetDefaultCountryCode();
-  EXPECT_EQ(manager()
-                ->address_data_manager()
-                .GetDefaultCountryCodeForNewAddress()
-                .value(),
+  EXPECT_EQ(adm().GetDefaultCountryCodeForNewAddress().value(),
             default_country);
 
   AutofillCountry country(default_country, "en-US");

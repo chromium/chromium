@@ -9,6 +9,11 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 function createSidenav(): ViewerPdfSidenavElement {
   document.body.innerHTML = '';
   const sidenav = document.createElement('viewer-pdf-sidenav');
+  sidenav.strings = {
+    'tooltipThumbnails': 'Thumbnails',
+    'tooltipDocumentOutline': 'Document outline',
+    'tooltipAttachments': 'Attachments',
+  };
   document.body.appendChild(sidenav);
   return sidenav;
 }
@@ -53,6 +58,11 @@ const tests = [
         'pdf:doc-outline', outlineButton.getAttribute('iron-icon'));
     chrome.test.assertEq(
         'pdf:attach-file', attachmentButton.getAttribute('iron-icon'));
+
+    // Verify button titles.
+    chrome.test.assertEq('Thumbnails', thumbnailButton.title);
+    chrome.test.assertEq('Document outline', outlineButton.title);
+    chrome.test.assertEq('Attachments', attachmentButton.title);
 
     function assertThumbnailView() {
       chrome.test.assertTrue(

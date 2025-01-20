@@ -37,6 +37,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -447,8 +448,7 @@ std::u16string FindChildTextWithIgnoreList(
 
 struct InferredLabel {
   // Returns an `InferredLabel` if `label` contains at least one character that
-  // is neither whitespace nor "*:-–()" (or "*:" if
-  // kAutofillConsiderPhoneNumberSeparatorsValidLabels is enabled).
+  // is neither whitespace nor "+*:-–()".
   static std::optional<InferredLabel> BuildIfValid(
       std::u16string label,
       FormFieldData::LabelSource source);
@@ -1079,8 +1079,11 @@ std::optional<InferredLabel> InferLabelForElement(
   if (auto r = InferLabelFromPrevious(element)) {
     return r;
   }
-  if (auto r = InferLabelFromPlaceholder(element)) {
-    return r;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport)) {
+    if (auto r = InferLabelFromPlaceholder(element)) {
+      return r;
+    }
   }
   if (auto r = InferLabelFromOverlayingSuccessor(element)) {
     return r;
@@ -1323,7 +1326,7 @@ void FillFormField(const FormFieldData::FillData& data,
   if (IsTextInput(field)) {
     field_data_manager.UpdateFieldDataMap(
         GetFieldRendererId(field), data.value.substr(0, field.MaxLength()),
-        FieldPropertiesFlags::kAutofilled);
+        FieldPropertiesFlags::kAutofilledOnUserTrigger);
   }
 
   field.SetAutofillValue(WebString::FromUTF16(data.value), new_autofill_state);
@@ -1983,7 +1986,9 @@ void WebFormControlElementToFormField(
   if (auto input_element = element.DynamicTo<WebInputElement>()) {
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
-    if (extract_options.contains(ExtractOption::kDatalist)) {
+    if (extract_options.contains(ExtractOption::kDatalist) ||
+        base::FeatureList::IsEnabled(
+            features::kAutofillOptimizeFormExtraction)) {
       field->set_datalist_options(GetDataListOptions(input_element));
     }
   } else if (IsTextAreaElement(element)) {
@@ -1993,7 +1998,8 @@ void WebFormControlElementToFormField(
     DCHECK(IsSelectElement(element));
     field->set_options(GetSelectOptions(element.To<WebSelectElement>()));
   }
-  if (extract_options.contains(ExtractOption::kBounds)) {
+  if (extract_options.contains(ExtractOption::kBounds) ||
+      base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
       if (auto* render_frame =
               content::RenderFrame::FromWebFrame(local_frame)) {
@@ -2042,8 +2048,26 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
 
   std::vector<WebFormControlElement> control_elements =
       GetOwnedAutofillableFormControls(document, form_element);
+  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction) &&
+      control_elements.size() > kMaxExtractableFields) {
+    return std::nullopt;
+  }
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
+    std::erase_if(iframe_elements, [](const WebElement& iframe_element) {
+      WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
+      return !iframe ||
+             (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
+    });
+    if (iframe_elements.size() > kMaxExtractableChildFrames) {
+      iframe_elements.clear();
+    }
+    if (control_elements.empty() && iframe_elements.empty()) {
+      return std::nullopt;
+    }
+  }
 
   // Extracts fields from `control_elements` into `fields` and sets
   // `child_frames[i].predecessor` to the field index of the last field that
@@ -2113,25 +2137,31 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     } else if (iframe && iframe->IsWebRemoteFrame()) {
       child_frames[i].token = RemoteFrameToken(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
+    } else if (base::FeatureList::IsEnabled(
+                   features::kAutofillOptimizeFormExtraction)) {
+      NOTREACHED();
     }
   }
-  std::erase_if(child_frames, [](const auto& child_frame) {
-    return absl::visit([](const auto& token) { return token.is_empty(); },
-                       child_frame.token);
-  });
-  if (child_frames.size() > kMaxExtractableChildFrames) {
-    child_frames.clear();
-  }
-  const bool success = (!fields.empty() || !child_frames.empty()) &&
-                       fields.size() < kMaxExtractableFields;
-  if (!success) {
-    return std::nullopt;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillOptimizeFormExtraction)) {
+    std::erase_if(child_frames, [](const auto& child_frame) {
+      return absl::visit([](const auto& token) { return token.is_empty(); },
+                         child_frame.token);
+    });
+    if (child_frames.size() > kMaxExtractableChildFrames) {
+      child_frames.clear();
+    }
+    const bool success = (!fields.empty() || !child_frames.empty()) &&
+                         fields.size() <= kMaxExtractableFields;
+    if (!success) {
+      return std::nullopt;
+    }
   }
 
-  base::UmaHistogramCounts100(!form_element
-                                  ? "Autofill.ExtractFormUnowned.FieldCount"
-                                  : "Autofill.ExtractFormOwned.FieldCount",
-                              fields.size());
+  base::UmaHistogramCounts1000(!form_element
+                                   ? "Autofill.ExtractFormUnowned.FieldCount2"
+                                   : "Autofill.ExtractFormOwned.FieldCount2",
+                               fields.size());
   FormData form;
   if (!form_element) {
     DCHECK(form.renderer_id().is_null());
@@ -2173,10 +2203,7 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
                                                          LabelSource source) {
   // List of characters a label can't be entirely made of (this list can grow).
   const std::u16string_view invalid_chars =
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"*:"
-          : u"*:-\u2013()";  // U+2013 is the En Dash "–".
+      u"+*:-\u2013()";  // U+2013 is the En Dash "–".
   auto is_valid_label_character = [&invalid_chars](char16_t c) {
     return !base::Contains(invalid_chars, c) &&
            !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
@@ -2354,36 +2381,13 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
   return elements;
 }
 
-WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
-  CHECK(form_control);
-  // The owning form is the furthest ancestor form element, if there is one.
-  WebFormElement owner;
-  // Look for ancestors of the associated form of `form_control` inside the
-  // same tree.
-  for (WebNode same_dom_ancestor = form_control.Form();  // nocheck
-       same_dom_ancestor; same_dom_ancestor = same_dom_ancestor.ParentNode()) {
-    if (auto form = same_dom_ancestor.DynamicTo<WebFormElement>()) {
-      owner = form;
-    }
-  }
-
-  // If `form_control` is inside Shadow DOM, also consider ancestors of
-  // `form_control`.
-  for (WebNode ancestor = form_control.OwnerShadowHost(); ancestor;
-       ancestor = ancestor.ParentOrShadowHostNode()) {
-    if (auto form = ancestor.DynamicTo<WebFormElement>()) {
-      owner = form;
-    }
-  }
-  return owner;
-}
-
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    DenseSet<ExtractOption> extract_options) {
+    DenseSet<ExtractOption> extract_options,
+    const SynchronousFormCache& form_cache) {
   DCHECK(element);
 
   if (!element.IsConnected() || !IsAutofillableElement(element)) {
@@ -2391,8 +2395,8 @@ FindFormAndFieldForFormControlElement(
   }
 
   WebDocument document = element.GetDocument();
-  WebFormElement owning_form = GetOwningForm(element);
-  std::optional<FormData> form = ExtractFormData(
+  WebFormElement owning_form = element.GetOwningFormForAutofill();
+  std::optional<FormData> form = form_cache.GetOrExtractForm(
       document, owning_form, field_data_manager, timer_state, extract_options);
   const bool extract_form_data_succeeded = form.has_value();
 
@@ -2414,11 +2418,14 @@ FindFormAndFieldForFormControlElement(
   }
 
   // This is not reachable if the following holds:
-  // `base::Contains(GetOwnedFormControls(GetOwningForm(element)), element)`.
-  // This does not hold if `element` is an unowned element in a shadow DOM and
-  // kAutofillIncludeShadowDomInUnassociatedListedElements is disabled. Then
-  // `GetOwningForm(element)` returns the unowned form, but
-  // `GetOwnedFormControls()` does not include the field.
+  // ```
+  // base::Contains(GetOwnedFormControls(element.GetOwningFormForAutofill()),
+  //                element)
+  // ```
+  // This does not hold if `element` is an unowned element in a
+  // shadow DOM and kAutofillIncludeShadowDomInUnassociatedListedElements is
+  // disabled. Then `element.GetOwningFormForAutofill()` returns the unowned
+  // form, but `GetOwnedFormControls()` does not include the field.
   // See crbug.com/347059988 for more details.
   GURL url;
   if (WebDocument doc = element.GetDocument()) {
@@ -2480,7 +2487,7 @@ FindFormAndFieldForFormControlElement(
   SCOPED_CRASH_KEYS_FOR_FORM(owng, owning_form);
 #undef FORM_CRASH_KEYS
   // clang-format on
-  NOTREACHED(base::NotFatalUntil::M134);
+  NOTREACHED(base::NotFatalUntil::M137);
   return std::nullopt;
 }
 
@@ -2840,8 +2847,7 @@ void TraverseDomForFourDigitCombinations(
     }
   }
 
-  std::move(potential_matches)
-      .Run(std::vector<std::string>(matches.begin(), matches.end()));
+  std::move(potential_matches).Run(std::move(matches).extract());
 }
 
 std::string ExtractFinalCheckoutAmountFromDom(

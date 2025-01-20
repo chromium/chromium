@@ -34,7 +34,7 @@ CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
   // the inter-module spacing so the UICollectionView renders the adjacent
   // module(s).
   return isLargerWidthLayout ? kMagicStackPeekInsetLandscape
-                             : kMagicStackSpacing + 1;
+                             : kMagicStackPeekInset;
 }
 
 bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
@@ -47,7 +47,7 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
          !push_notification_settings::
              GetMobileNotificationPermissionStatusForClient(
                  PushNotificationClientId::kCommerce,
-                 base::SysNSStringToUTF8(identity.gaiaID)) &&
+                 GaiaId(identity.gaiaID)) &&
          !pref_service->GetBoolean(kPriceTrackingPromoDisabled) &&
          (service->IsShoppingListEligible() ||
           (base::GetFieldTrialParamByFeatureAsString(
@@ -58,4 +58,33 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                "") == segmentation_platform::kPriceTrackingNotificationPromo &&
            base::ToLowerASCII(GetCurrentCountryCode(
                GetApplicationContext()->GetVariationsService())) == "us"));
+}
+
+bool isContentOversized(id<UITraitEnvironment> trait_environment) {
+  // The preferred content size of the user's device.
+  NSString* preferred_content_size =
+      trait_environment.traitCollection.preferredContentSizeCategory;
+  NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
+      preferred_content_size, UIContentSizeCategoryAccessibilityMedium);
+  return result != NSOrderedAscending;
+}
+
+CGFloat GetMagicStackHeight(id<UITraitEnvironment> trait_environment) {
+  // The preferred content size of the user's device.
+  NSString* preferred_content_size =
+      trait_environment.traitCollection.preferredContentSizeCategory;
+  if (isContentOversized(trait_environment)) {
+    // The maximum Magic Stack height in px.
+    return 190;
+  } else if (preferred_content_size ==
+             UIContentSizeCategoryExtraExtraExtraLarge) {
+    return 180;
+  } else if (preferred_content_size == UIContentSizeCategoryExtraExtraLarge) {
+    return 170;
+  } else if (preferred_content_size == UIContentSizeCategoryExtraLarge) {
+    return 160;
+  } else {
+    // The minimum Magic Stack height in px.
+    return 150;
+  }
 }

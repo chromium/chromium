@@ -43,14 +43,16 @@
   </iron-a11y-keys>
   <cr-button id="shuffle"
       class="shuffle"
+      aria-label="$i18n{seaPenFreeformAriaLabelShuffleSuggestions}"
       on-click="onShuffleClicked_">
-    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
     <iron-icon icon="personalization-shared:refresh"></iron-icon>
   </cr-button>
   <iron-selector
       id="suggestionSelector"
       selected="0"
       selected-item="{{ironSelectedSuggestion_}}"
+      aria-label="$i18n{seaPenFreeformAriaLabelSuggestions}"
+      aria-setsize$="[[selectableSuggestions_.length]]"
       role="radiogroup">
     <template is="dom-repeat" items="[[selectableSuggestions_]]" as="suggestion">
       <cr-button

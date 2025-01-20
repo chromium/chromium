@@ -34,7 +34,7 @@ class DownloadCommandsTest : public testing::Test {
       : model_(std::make_unique<DownloadItemModel>(&item_)),
         commands_(model_->GetWeakPtr()) {}
 
-  ~DownloadCommandsTest() override {}
+  ~DownloadCommandsTest() override = default;
 
  protected:
   // Sets up defaults for the download item.

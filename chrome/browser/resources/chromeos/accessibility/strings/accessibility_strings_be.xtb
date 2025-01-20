@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">Каб спыніць зачытванне тэксту ўголас, дакраніцеся да экрана двума пальцамі</translation>
 <translation id="2573256689920773241">Асноўныя спосабы навігацыі</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2577127557293415225">Ненадоўга закрыйце вочы</translation>
 <translation id="2582407057977008361">Збоку</translation>
 <translation id="2592212930811759050">Дакраніцеся двойчы, каб пачаць рэдагаваць</translation>
 <translation id="2598495320872286378">Граматычная памылка</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">слп</translation>
 <translation id="6387719785439924554">збоку</translation>
 <translation id="6393014464788431702">Выключыць усе фільтры падзей</translation>
+<translation id="6406989068857078334">Хуткасць мышы паменшана. Каб націснуць на кнопку, паўтарыце наступны жэст: <ph name="GESTURE" />.</translation>
 <translation id="6411569524720229058">Восень</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{двукроп’е}one{# двукроп’е}few{# двукроп’і}many{# двукроп’яў}other{# двукроп’я}}</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8205922869661890178">Адкрыць старонку журнала распрацоўшчыка</translation>
 <translation id="8212109599554677485">Змяніць стыль паказу на паралельны</translation>
 <translation id="8215202828671303819">Множны выбар</translation>
+<translation id="822316432305106615">Дакладны націск</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, непразрыстасць <ph name="OPACITY_PERCENTAGE" /> %</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="826825447994856889">Уводзіны</translation>

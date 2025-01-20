@@ -195,6 +195,7 @@
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
+            "cores": "12",
             "cpu": "x86-64",
             "os": "Mac-12"
           },
@@ -1545,7 +1546,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1566,7 +1567,7 @@
             "os": "Mac-12"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 18
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"

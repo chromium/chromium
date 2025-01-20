@@ -20,6 +20,15 @@ DedicatedWorkerDevToolsAgentHost* DedicatedWorkerDevToolsAgentHost::GetFor(
   return WorkerDevToolsManager::GetInstance().GetDevToolsHost(host);
 }
 
+// static
+void DedicatedWorkerDevToolsAgentHost::AddAllAgentHosts(
+    DevToolsAgentHost::List* result) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    return;
+  }
+  WorkerDevToolsManager::GetInstance().AddAllAgentHosts(result);
+}
+
 DedicatedWorkerDevToolsAgentHost::DedicatedWorkerDevToolsAgentHost(
     int process_id,
     const GURL& url,

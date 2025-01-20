@@ -93,7 +93,7 @@ class ResetDataInstallableManager : public InstallableManager {
  public:
   explicit ResetDataInstallableManager(content::WebContents* web_contents)
       : InstallableManager(web_contents) {}
-  ~ResetDataInstallableManager() override {}
+  ~ResetDataInstallableManager() override = default;
 
   void SetQuitClosure(base::RepeatingClosure quit_closure) {
     quit_closure_ = quit_closure;
@@ -375,7 +375,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckNoManifest) {
+// TODO(crbug.com/379660142) Re-enable this test once the flakiness is fixed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CheckNoManifest DISABLED_CheckNoManifest
+#else
+#define MAYBE_CheckNoManifest CheckNoManifest
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckNoManifest) {
   // Ensure that a page with no manifest returns the appropriate error and with
   // null fields for everything.
   base::HistogramTester histograms;
@@ -1308,7 +1314,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, DebugModeWithNoManifest) {
+#if defined(ARCH_CPU_X86)
+#define MAYBE_DebugModeWithNoManifest DISABLED_DebugModeWithNoManifest
+#else
+#define MAYBE_DebugModeWithNoManifest DebugModeWithNoManifest
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       MAYBE_DebugModeWithNoManifest) {
   // Ensure that a page with no manifest stops with NO_MANIFEST in debug mode.
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(

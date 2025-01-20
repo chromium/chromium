@@ -62,7 +62,7 @@ public class Colors {
         bar.setProgressTintList(
                 ColorStateList.valueOf(
                         ColorUtils.inNightMode(context)
-                                ? context.getColor(R.color.baseline_primary_80)
+                                ? SemanticColorUtils.getDefaultIconColorAccent1(context)
                                 : SemanticColorUtils.getDefaultIconColor(context)));
     }
 

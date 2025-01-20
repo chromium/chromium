@@ -34,6 +34,9 @@ proto::Any CreateOnDeviceBaseModelMetadata(
   proto::OnDeviceBaseModelMetadata model_metadata;
   model_metadata.set_base_model_name(model_spec.model_name);
   model_metadata.set_base_model_version(model_spec.model_version);
+  *model_metadata.mutable_supported_performance_hints() = {
+      model_spec.supported_performance_hints.begin(),
+      model_spec.supported_performance_hints.end()};
 
   std::string serialized_metadata;
   model_metadata.SerializeToString(&serialized_metadata);
@@ -82,8 +85,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::internal::kOnDeviceModelTestFeature,
-          {{"enable_adaptation", "true"}}},
+        {{features::internal::kOnDeviceModelTestFeature, {}},
          {features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel, {}}},
         {});
@@ -178,7 +180,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelIncompatible) {
   TestModelInfoBuilder model_info_builder;
   model_info_builder
       .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
-          {"different_base_model_name", kBaseModelVersion}))
+          {"different_base_model_name", kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -198,8 +200,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
@@ -224,8 +226,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -252,8 +254,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
@@ -283,8 +285,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValid) {
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
@@ -314,8 +316,8 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValidWithoutWeights) {
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
       });
@@ -340,7 +342,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
        AdaptationModelDownloadRegisteredWhenFeatureFirstUsed) {
   // With the feature as not used yet, model observer won't be registered.
   local_state_.ClearPref(
-      model_execution::prefs::localstate::kLastTimeTestFeatureWasUsed);
+      model_execution::prefs::localstate::kLastUsageByFeature);
   SetBaseModelStateChanged();
   EXPECT_FALSE(model_provider_.optimization_target_);
   histogram_tester_.ExpectUniqueSample(
@@ -349,17 +351,16 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed, 1);
 
   // When the feature is used, observer will be registered.
-  local_state_.SetTime(
-      model_execution::prefs::localstate::kLastTimeTestFeatureWasUsed,
-      base::Time::Now());
+  model_execution::prefs::RecordFeatureUsage(&local_state_,
+                                             ModelBasedCapabilityKey::kTest);
   InvokeOnDeviceEligibleFeatureFirstUsed();
   EXPECT_EQ(proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
             model_provider_.optimization_target_);
 
   TestModelInfoBuilder model_info_builder;
   model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
+      .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
+          {kBaseModelName, kBaseModelVersion, {}}))
       .SetAdditionalFiles({
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),

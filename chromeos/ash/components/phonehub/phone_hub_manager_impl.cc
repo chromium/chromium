@@ -196,11 +196,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                                      std::move(camera_roll_download_manager))
                                : nullptr),
       feature_setup_response_processor_(
-          features::IsPhoneHubFeatureSetupErrorHandlingEnabled()
-              ? std::make_unique<FeatureSetupResponseProcessor>(
-                    message_receiver_.get(),
-                    multidevice_feature_access_manager_.get())
-              : nullptr),
+          std::make_unique<FeatureSetupResponseProcessor>(
+              message_receiver_.get(),
+              multidevice_feature_access_manager_.get())),
       ping_manager_(features::IsPhoneHubPingOnBubbleOpenEnabled()
                         ? std::make_unique<PingManagerImpl>(
                               connection_manager_.get(),

@@ -78,7 +78,9 @@ class ElementData : public GarbageCollected<ElementData> {
 
   const CSSPropertyValueSet* InlineStyle() const { return inline_style_.Get(); }
 
-  const CSSPropertyValueSet* PresentationAttributeStyle() const;
+  const CSSPropertyValueSet* PresentationAttributeStyle() const {
+    return presentation_attribute_style_.Get();
+  }
 
   AttributeCollection Attributes() const;
 
@@ -136,6 +138,7 @@ class ElementData : public GarbageCollected<ElementData> {
   BitField bit_field_;
 
   mutable Member<CSSPropertyValueSet> inline_style_;
+  mutable Member<CSSPropertyValueSet> presentation_attribute_style_;
   mutable SpaceSplitString class_names_;
   mutable AtomicString id_for_style_resolution_;
 
@@ -209,11 +212,6 @@ class UniqueElementData final : public ElementData {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  // FIXME: We might want to support sharing element data for elements with
-  // presentation attribute style. Lots of table cells likely have the same
-  // attributes. Most modern pages don't use presentation attributes though
-  // so this might not make sense.
-  mutable Member<CSSPropertyValueSet> presentation_attribute_style_;
   AttributeVector attribute_vector_;
 };
 
@@ -223,13 +221,6 @@ struct DowncastTraits<UniqueElementData> {
     return data.bit_field_.get<ElementData::IsUniqueFlag>();
   }
 };
-
-inline const CSSPropertyValueSet* ElementData::PresentationAttributeStyle()
-    const {
-  if (!bit_field_.get<IsUniqueFlag>())
-    return nullptr;
-  return To<UniqueElementData>(this)->presentation_attribute_style_.Get();
-}
 
 inline AttributeCollection ElementData::Attributes() const {
   if (auto* unique_element_data = DynamicTo<UniqueElementData>(this))

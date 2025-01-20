@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,22 +19,19 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/webgpu_device.h"
 #include "services/viz/public/mojom/gpu.mojom-forward.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
-namespace viz {
-class ContextProviderCommandBuffer;
-}
-
 namespace video_effects {
 
 class VideoEffectsProcessorImpl;
-class GpuChannelHostProvider;
 
-class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
+class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
+                                public GpuChannelHostProvider::Observer {
  public:
   // Similarly to `VideoCaptureServiceImpl`, `VideoEfffectsServiceImpl` needs
   // to receive something that returns `gpu::GpuChannelHost` instances in order
@@ -57,10 +55,13 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   void SetBackgroundSegmentationModel(base::File model_file) override;
 
  private:
+  // GpuChannelHostProvider::Observer:
+  void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
+  void OnContextLost(scoped_refptr<GpuChannelHostProvider>) override;
+
   // Creates `webgpu_device_` and initializes it asynchronously.  On completion,
   // invokes `FinishCreatingEffectsProcessors()`.
-  void CreateWebGpuDeviceAndEffectsProcessors(
-      scoped_refptr<viz::ContextProviderCommandBuffer> context_provider);
+  void CreateWebGpuDeviceAndEffectsProcessors();
 
   // Callback functions for WebGpuDevice.
   void OnDeviceCreated(wgpu::Device device);
@@ -75,12 +76,16 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   void FinishCreatingEffectsProcessor(
       const std::string& device_id,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
-      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider);
+      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver);
 
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
   // no longer functional.
   void RemoveProcessor(const std::string& id);
+
+  // Destroy all processors (pending and live).
+  void Cleanup();
+
+  std::unique_ptr<base::MemoryMappedFile> model_;
 
   // Holder of wgpu::Device instance.
   std::unique_ptr<WebGpuDevice> webgpu_device_;
@@ -109,11 +114,13 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
 
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote;
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver;
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider;
   };
 
   // Mapping of device ID to pending requests to create effects processors.
   base::flat_map<std::string, PendingEffectsProcessor> pending_processors_;
+
+  // Provides GPU context objects as needed and monitors context lost events.
+  scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

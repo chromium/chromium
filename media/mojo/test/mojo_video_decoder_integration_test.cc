@@ -318,7 +318,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     auto buffer = CreateKeyframe(timestamp_ms);
 
     const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-    const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+    const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {};
     buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
         std::string(reinterpret_cast<const char*>(kFakeKeyId),
                     std::size(kFakeKeyId)),

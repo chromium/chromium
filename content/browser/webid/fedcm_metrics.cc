@@ -284,7 +284,10 @@ void FedCmMetrics::RecordRequestTokenStatus(
     const std::vector<GURL>& requested_providers,
     int num_idps_mismatch,
     const std::optional<GURL>& selected_idp_config_url,
-    const RpMode& rp_mode) {
+    const RpMode& rp_mode,
+    std::optional<FedCmUseOtherAccountResult> use_other_account_result,
+    std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
+    FedCmThirdPartyCookiesStatus tpc_status) {
   // The following check is to avoid double recording in the following scenario:
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
@@ -311,6 +314,16 @@ void FedCmMetrics::RecordRequestTokenStatus(
     ukm_builder.SetNumIdpsRequested(num_idps_requested);
     ukm_builder.SetNumIdpsMismatch(num_idps_mismatch);
     ukm_builder.SetRpMode(static_cast<int>(rp_mode));
+    ukm_builder.SetThirdPartyCookiesStatus(
+        std::underlying_type_t<FedCmThirdPartyCookiesStatus>(tpc_status));
+    if (use_other_account_result.has_value()) {
+      ukm_builder.SetUseOtherAccountResult(
+          static_cast<int>(*use_other_account_result));
+    }
+    if (verifying_dialog_result.has_value()) {
+      ukm_builder.SetVerifyingDialogResult(
+          static_cast<int>(*verifying_dialog_result));
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -339,6 +352,14 @@ void FedCmMetrics::RecordRequestTokenStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
                                 requirement);
   base::UmaHistogramEnumeration("Blink.FedCm.RpMode", rp_mode);
+  if (use_other_account_result.has_value()) {
+    base::UmaHistogramEnumeration("Blink.FedCm.UseOtherAccountResult",
+                                  *use_other_account_result);
+  }
+  if (verifying_dialog_result.has_value()) {
+    base::UmaHistogramEnumeration("Blink.FedCm.VerifyingDialogResult",
+                                  *verifying_dialog_result);
+  }
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;
 }
@@ -731,6 +752,21 @@ void FedCmMetrics::RecordNumMatchingAccounts(size_t accounts_remaining,
   fedcm_builder.Record(ukm::UkmRecorder::Get());
 }
 
+void FedCmMetrics::RecordMultipleRequestsFromDifferentIdPs(
+    bool from_different_idps) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetMultipleRequestsFromDifferentIdPs(from_different_idps);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  base::UmaHistogramBoolean("Blink.FedCm.MultipleRequestsFromDifferentIdPs",
+                            from_different_idps);
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {
@@ -811,6 +847,11 @@ void RecordReadyToShowAccountsSize(int size) {
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.ReadyToShow", size,
                                  /*min=*/1,
                                  /*exclusive_max=*/10, /*buckets=*/10);
+}
+
+void RecordIdentityProvidersCount(int count) {
+  CHECK_GT(count, 0);
+  base::UmaHistogramCounts100("Blink.FedCm.IdentityProvidersCount", count);
 }
 
 }  // namespace content

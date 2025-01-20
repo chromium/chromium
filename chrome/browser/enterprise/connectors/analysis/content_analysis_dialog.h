@@ -55,7 +55,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // observer by using SetObserverForTesting.
   class TestObserver {
    public:
-    virtual ~TestObserver() {}
+    virtual ~TestObserver() = default;
 
     // Called at the start of ContentAnalysisDialog's constructor. `dialog` is
     // a pointer to the newly constructed ContentAnalysisDialog and should be

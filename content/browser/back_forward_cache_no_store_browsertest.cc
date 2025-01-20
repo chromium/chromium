@@ -137,11 +137,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
   const char script[] = R"(
       new Promise(resolve => {
         const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve());
+        socket.addEventListener('open', () => resolve(42));
       });)";
-  ASSERT_TRUE(
-      ExecJs(rfh_a.get(),
-             JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(42, EvalJs(rfh_a.get(),
+                       JsReplace(script,
+                                 ws_server.GetURL("echo-with-no-extension"))));
 
   // 2. Navigate away and expect frame to be deleted.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));

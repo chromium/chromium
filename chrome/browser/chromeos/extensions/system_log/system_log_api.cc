@@ -8,6 +8,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/system_log.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "extensions/common/extension.h"
@@ -71,11 +72,12 @@ ExtensionFunction::ResponseAction SystemLogAddFunction::Run() {
 
   std::string log_message =
       FormatLogMessage(extension_id(), profile, options.message);
-  auto is_outside_user_session =
-      chromeos::IsManagedGuestSession() || IsSigninProfileCheck(profile);
   // Only add logs to system log if the policy allows this and we are not in a
   // user session.
-  if (IsDeviceExtensionsSystemLogEnabled() && is_outside_user_session) {
+  auto is_allowed_session_type = chromeos::IsManagedGuestSession() ||
+                                 IsSigninProfileCheck(profile) ||
+                                 chromeos::IsKioskSession();
+  if (IsDeviceExtensionsSystemLogEnabled() && is_allowed_session_type) {
     SYSLOG(INFO) << base::StringPrintf("extensions: %s", log_message.c_str());
     // Will not be added to feedback reports to avoid duplication.
     EXTENSIONS_LOG(DEBUG) << log_message;

@@ -33,7 +33,8 @@ void MessagePort::DispatchOnConnect(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    std::optional<url::Origin> source_origin) {}
+    std::optional<url::Origin> source_origin,
+    const std::set<base::UnguessableToken>& open_channel_tracking_ids) {}
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 

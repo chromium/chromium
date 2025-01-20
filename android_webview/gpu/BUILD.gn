@@ -9,6 +9,7 @@ source_set("gpu") {
   ]
 
   deps = [
+    "//android_webview/common:common",
     "//base",
     "//content/public/gpu",
   ]

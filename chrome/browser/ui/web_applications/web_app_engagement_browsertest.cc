@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <bitset>
 #include <vector>
 
@@ -76,8 +72,8 @@ enum HistogramIndex {
   kHistogramMaxValue
 };
 
-// The order (indices) must match HistogramIndex enum above:
-const char* kHistogramNames[] = {
+// The order (indices) must match HistogramIndex enum above
+auto kHistogramNames = std::to_array<const char*>({
     "WebApp.Engagement.InTab",
     "WebApp.Engagement.InWindow",
     "WebApp.Engagement.DefaultInstalled.InTab",
@@ -90,7 +86,8 @@ const char* kHistogramNames[] = {
     "WebApp.Engagement.UserInstalled.Crafted.InWindow",
     "WebApp.Engagement.MoreThanThreeUserInstalledApps",
     "WebApp.Engagement.UpToThreeUserInstalledApps",
-    "WebApp.Engagement.NoUserInstalledApps"};
+    "WebApp.Engagement.NoUserInstalledApps",
+});
 
 const char* HistogramEnumIndexToStr(int histogram_index) {
   DCHECK_GE(histogram_index, 0);
@@ -619,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -678,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -727,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   {
     // From startup_browser_creator_impl.cc:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }

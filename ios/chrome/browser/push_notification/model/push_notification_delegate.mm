@@ -13,12 +13,12 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
@@ -59,6 +60,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 // The time range's expected min and max values for custom histograms.
@@ -85,35 +87,48 @@ enum class PushNotificationLifecycleEvent {
 // This function creates a dictionary that maps signed-in user's GAIA IDs to a
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
-GaiaIdToPushNotificationPreferenceMapFromCache(
-    ProfileAttributesStorageIOS* storage) {
-  const size_t number_of_profiles = storage->GetNumberOfProfiles();
+GaiaIdToPushNotificationPreferenceMapFromCache() {
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+  ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  PushNotificationAccountContextManager* account_context_manager =
+      service->GetAccountContextManager();
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
+  const size_t number_of_profiles = storage->GetNumberOfProfiles();
   for (size_t i = 0; i < number_of_profiles; i++) {
     ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
     if (attr.GetGaiaId().empty()) {
       continue;
     }
 
-    PrefService* pref_service = GetApplicationContext()
-                                    ->GetProfileManager()
-                                    ->GetProfileWithName(attr.GetProfileName())
-                                    ->GetPrefs();
+    const base::Value::Dict* permissions = attr.GetNotificationPermissions();
+    if (!permissions) {
+      std::string profile_name = attr.GetProfileName();
+      ProfileIOS* profile = manager->GetProfileWithName(profile_name);
+      if (profile) {
+        [account_context_manager setAttributesForProfile:profile_name
+                                               fromPrefs:profile->GetPrefs()];
+        permissions = attr.GetNotificationPermissions();
+      }
+    }
+
+    if (!permissions) {
+      // Either the profile is not loaded, or there was not
+      // permissions in the profile prefs.
+      continue;
+    }
 
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =
         [[NSMutableDictionary alloc] init];
-    const base::Value::Dict& permissions =
-        pref_service->GetDict(prefs::kFeaturePushNotificationPermissions);
-
-    for (const auto pair : permissions) {
+    for (const auto pair : *permissions) {
       preference_map[base::SysUTF8ToNSString(pair.first)] =
           [NSNumber numberWithBool:pair.second.GetBool()];
     }
 
-    account_preference_map[base::SysUTF8ToNSString(attr.GetGaiaId())] =
-        preference_map;
+    account_preference_map[attr.GetGaiaId().ToNSString()] = preference_map;
   }
 
   return account_preference_map;
@@ -241,12 +256,8 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
                                profile:(ProfileIOS*)profile {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-
   GaiaIdToPushNotificationPreferenceMap* accountPreferenceMap =
-      GaiaIdToPushNotificationPreferenceMapFromCache(storage);
+      GaiaIdToPushNotificationPreferenceMapFromCache();
 
   // Return early if no accounts are signed into Chrome.
   if (!accountPreferenceMap.count) {
@@ -482,8 +493,7 @@ void SendNAUFConfigurationForProfileWithSettings(
           prefs::kSendTabNotificationsPreviouslyDisabled) ||
       push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kSendTab,
-              base::SysNSStringToUTF8(gaiaID))) {
+              PushNotificationClientId::kSendTab, GaiaId(gaiaID))) {
     return;
   }
 

@@ -18,8 +18,8 @@ build_webui("build_ts") {
   icons_html_files = [ "personalization_shared_icons.html" ]
 
   css_files = [
-    "cros_button_style.css",
     "common.css",
+    "cros_button_style.css",
     "wallpaper.css",
   ]
 

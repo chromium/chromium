@@ -75,20 +75,20 @@ const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
 
 std::vector<LabInfo> TestLabInfo() {
   std::vector<LabInfo> test_feature_info;
-  test_feature_info.emplace_back(LabInfo(kFirstTestFeatureId, u"", u"", "",
-                                         version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kFirstTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
   std::vector<std::u16string> variation_descriptions = {u"Description"};
 
-  test_feature_info.emplace_back(LabInfo(kTestFeatureWithVariationId, u"", u"",
-                                         "", version_info::Channel::STABLE,
-                                         variation_descriptions));
+  test_feature_info.emplace_back(kTestFeatureWithVariationId, u"", u"", "",
+                                 version_info::Channel::STABLE,
+                                 variation_descriptions);
 
-  test_feature_info.emplace_back(LabInfo(kThirdTestFeatureId, u"", u"", "",
-                                         version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kThirdTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
-  test_feature_info.emplace_back(LabInfo(kExpiredFlagTestFeatureId, u"", u"",
-                                         "", version_info::Channel::STABLE));
+  test_feature_info.emplace_back(kExpiredFlagTestFeatureId, u"", u"", "",
+                                 version_info::Channel::STABLE);
 
   return test_feature_info;
 }
@@ -264,6 +264,13 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
     flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
         TestingBrowserProcess::GetGlobal()->local_state());
 #endif
+
+    if (features::IsToolbarPinningEnabled()) {
+      browser_view()
+          ->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+    }
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
         std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(),

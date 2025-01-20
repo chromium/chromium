@@ -140,7 +140,7 @@ bool RenderFrameHostIsActive(
 
 FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
     FileSystemAccessObserverHost* host,
-    std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation,
+    std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation,
     mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
     absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle)
@@ -185,8 +185,7 @@ const storage::FileSystemURL& FileSystemAccessObserverObservation::handle_url()
 }
 
 void FileSystemAccessObserverObservation::OnChanges(
-    const std::optional<
-        std::list<FileSystemAccessWatcherManager::Observation::Change>>&
+    const std::optional<std::list<FileSystemAccessObservationGroup::Change>>&
         changes_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -1,7 +1,6 @@
 {
   "description": "Limits for aggregatable debug reports",
   "api_config": {
-    "needs_aggregatable_debug": true,
     "max_aggregatable_debug_reports_per_source": "2",
     "max_aggregatable_debug_budget_per_context_site": "65537"
   },

@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
-#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
@@ -35,9 +34,6 @@
 #include "url/gurl.h"
 
 namespace whats_new {
-const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
-const char kChromeWhatsNewStagingURL[] =
-    "https://chrome-staging.corp.google.com/chrome/whats-new/";
 const char kChromeWhatsNewV2URL[] =
     "https://www.google.com/chrome/v2/whats-new/";
 const char kChromeWhatsNewV2StagingURL[] =
@@ -77,17 +73,6 @@ GURL GetV2ServerURLForRender(const WhatsNewRegistry& whats_new_registry,
   return net::AppendQueryParameter(url, "internal", "true");
 }
 
-GURL GetServerURL(bool may_redirect, bool is_staging) {
-  const GURL base_url =
-      is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
-  const GURL url =
-      may_redirect
-          ? net::AppendQueryParameter(
-                base_url, "version", base::NumberToString(CHROME_VERSION_MAJOR))
-          : base_url.Resolve(base::StringPrintf("m%d", CHROME_VERSION_MAJOR));
-  return net::AppendQueryParameter(url, "internal", "true");
-}
-
 namespace {
 
 class WhatsNewFetcher : public BrowserListObserver {
@@ -95,12 +80,7 @@ class WhatsNewFetcher : public BrowserListObserver {
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
 
-    GURL server_url;
-    if (user_education::features::IsWhatsNewV2()) {
-      server_url = GetV2ServerURL();
-    } else {
-      server_url = GetServerURL(false);
-    }
+    GURL server_url = GetV2ServerURL();
     startup_url_ = GetWebUIStartupURL();
 
     if (IsRemoteContentDisabled()) {
@@ -237,17 +217,12 @@ class WhatsNewFetcher : public BrowserListObserver {
     base::UmaHistogramSparse("WhatsNew.LoadResponseCode",
                              error_or_response_code);
 
-    if (user_education::features::IsWhatsNewV2()) {
-      // In V2, the server may respond with a 302 to indicate the requested
-      // page version does not exist but a suitable page has been found.
-      // This should not result in an error since the auto-opened page
-      // can still access a relevant resource.
-      success = success && error_or_response_code >= 200 &&
-                error_or_response_code <= 302 && body;
-    } else {
-      success = success && error_or_response_code >= 200 &&
-                error_or_response_code <= 299 && body;
-    }
+    // The server may respond with a 302 to indicate the requested
+    // page version does not exist but a suitable page has been found.
+    // This should not result in an error since the auto-opened page
+    // can still access a relevant resource.
+    success = success && error_or_response_code >= 200 &&
+              error_or_response_code <= 302 && body;
 
     // If the browser was closed or moved to the background while What's New was
     // loading, return early before recording that the user saw the page.

@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -1731,6 +1732,11 @@ void FeatureInfo::InitializeFeatures() {
       feature_flags_.angle_blob_cache = true;
     }
   }
+
+  if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_OES_required_internalformat")) {
+    AddExtensionString("GL_OES_required_internalformat");
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
@@ -1888,12 +1894,22 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
       // range of formats supported by EXT_color_buffer_float
       if (status_rgba == GL_FRAMEBUFFER_COMPLETE && enable_es3) {
         bool full_float_support = true;
-        const GLenum kInternalFormats[] = {
-            GL_R16F, GL_RG16F, GL_RGBA16F, GL_R32F, GL_RG32F, GL_R11F_G11F_B10F,
-        };
-        const GLenum kFormats[] = {
-            GL_RED, GL_RG, GL_RGBA, GL_RED, GL_RG, GL_RGB,
-        };
+        const auto kInternalFormats = std::to_array<GLenum>({
+            GL_R16F,
+            GL_RG16F,
+            GL_RGBA16F,
+            GL_R32F,
+            GL_RG32F,
+            GL_R11F_G11F_B10F,
+        });
+        const auto kFormats = std::to_array<GLenum>({
+            GL_RED,
+            GL_RG,
+            GL_RGBA,
+            GL_RED,
+            GL_RG,
+            GL_RGB,
+        });
         DCHECK_EQ(std::size(kInternalFormats), std::size(kFormats));
         for (size_t i = 0; i < std::size(kFormats); ++i) {
           glTexImage2D(GL_TEXTURE_2D, 0, kInternalFormats[i], width, width, 0,

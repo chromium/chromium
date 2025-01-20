@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "ash/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"

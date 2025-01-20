@@ -121,17 +121,18 @@ class BuildConfigGenerator extends DefaultTask {
      * than fix the underlying issue (which is we should always use the snapshot
      * versions of androidx deps when possible). A better solution could be to
      * add it in //third_party/androidx/build.gradle.template
+     *
+     * If running fetch_all.py, you must first run fetch_all_androidx.py for
+     * changes to its build.gradle.template to take effect.
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
       'androidx_compose_material_material_icons_core_android',
       'androidx_constraintlayout',
-      'androidx_credentials_credentials',
-      'androidx_documentfile',
       'androidx_legacy',
       'androidx_localbroadcastmanager_localbroadcastmanager',
       'androidx_media3_media3',
       'androidx_multidex_multidex',
-      'androidx_print',
+      'androidx_pdf_pdf',
       'androidx_privacysandbox_ads_ads_adservices',
       'androidx_test',
     ]
@@ -213,10 +214,20 @@ class BuildConfigGenerator extends DefaultTask {
             switch (license.name) {
                 case 'The Apache License, Version 2.0':
                 case 'The Apache Software License, Version 2.0':
-                    licenseStrings.add('Apache Version 2.0')
+                case 'Apache 2.0':
+                case 'Apache License 2.0':
+                case 'Apache License, Version 2.0':
+                case 'Apache Version 2.0':
+                    licenseStrings.add('Apache-2.0')
+                    break
+                case 'BSD':
+                    licenseStrings.add('BSD-3-Clause')
+                    break
+                case 'The MIT License':
+                    licenseStrings.add('MIT')
                     break
                 case 'GNU General Public License, version 2, with the Classpath Exception':
-                    licenseStrings.add('GPL v2 with the classpath exception')
+                    licenseStrings.add('GPL-2.0-with-classpath-exception')
                     break
                 default:
                     licenseStrings.add(license.name)
@@ -705,7 +716,6 @@ class BuildConfigGenerator extends DefaultTask {
         if (dependencyExtension == 'jar' && (
                 dependencyId.startsWith('io_grpc_') ||
                 dependencyId == 'com_google_firebase_firebase_encoders' ||
-                dependencyId == 'com_google_dagger_hilt_core' ||
                 dependencyId == 'com_google_guava_guava_android')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
@@ -805,14 +815,6 @@ class BuildConfigGenerator extends DefaultTask {
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
                 break
-            case 'com_google_dagger_hilt_core':
-                sb.append('\n')
-                sb.append('  # Google3 organizes targets differently from maven. Restrict to the only classes we use.\n')
-                sb.append('  jar_included_patterns = [\n')
-                sb.append('    "dagger/hilt/internal/GeneratedComponentManager.class",\n')
-                sb.append('    "dagger/hilt/internal/GeneratedComponentManagerHolder.class",\n')
-                sb.append('  ]\n')
-                break
             case 'com_google_auto_service_auto_service_annotations_java':
                 sb.append('  preferred_dep = true\n')
                 break
@@ -861,6 +863,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('\n')
                 sb.append('  # Because of dep on byte_buddy_android_java.\n')
                 sb.append('  bypass_platform_checks = true\n')
+                break
+            case 'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
+                sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]')
                 break
         }
     }

@@ -287,8 +287,7 @@ void WebFrameSerializerImpl::EncodeAndFlushBuffer(
 
   // Send result to the client.
   client_->DidSerializeDataForFrame(
-      WebVector<char>(encoded_content.c_str(), encoded_content.length()),
-      status);
+      WebVector<char>(base::span(encoded_content)), status);
 }
 
 // TODO(yosin): We should utilize |MarkupFormatter| here to share code,

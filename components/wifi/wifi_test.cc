@@ -28,6 +28,8 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
+#elif BUILDFLAG(IS_WIN)
+#include <windows.h>
 #endif
 
 namespace wifi {

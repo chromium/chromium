@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 
 #include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/audio_resources.h"
 #include "chrome/grit/audio_resources_map.h"
@@ -21,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -35,9 +30,8 @@ AudioUI::AudioUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIAudioHost);
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kAudioResources, kAudioResourcesSize),
-      IDR_AUDIO_AUDIO_HTML);
+  webui::SetupWebUIDataSource(html_source, kAudioResources,
+                              IDR_AUDIO_AUDIO_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AudioUI)

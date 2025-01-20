@@ -139,6 +139,17 @@ std::string DataKeyDebugStringVisitor::operator()<
   return debug_string.str();
 }
 
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<net::device_bound_sessions::SessionKey>(
+    const net::device_bound_sessions::SessionKey& session_key) {
+  std::stringstream debug_string;
+  debug_string << "net::device_bound_sessions::SessionKey: ";
+  debug_string << "{site: " << session_key.site;
+  debug_string << " id: " << session_key.id.value() << "}";
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);

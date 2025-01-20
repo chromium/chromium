@@ -1232,7 +1232,7 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
                    ->needs_descendant_dependent_flags_update_);
 }
 
-TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
+TEST_P(PaintLayerTest, PaintingContainerStackedFloatUnderStackingInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1245,10 +1245,10 @@ TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
-TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
+TEST_P(PaintLayerTest, PaintingContainerColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
     <div>
       <div id='multicol' style='columns: 1; position: relative'>
@@ -1261,13 +1261,13 @@ TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
 
   PaintLayer* columnSpan = GetPaintLayerByElementId("columnSpan");
   EXPECT_EQ(GetPaintLayerByElementId("paintContainer"),
-            columnSpan->CompositingContainer());
+            columnSpan->PaintingContainer());
   EXPECT_EQ(GetPaintLayerByElementId("multicol"),
             columnSpan->ContainingLayer());
 }
 
 TEST_P(PaintLayerTest,
-       CompositingContainerStackedFloatUnderStackingCompositedInline) {
+       PaintingContainerStackedFloatUnderStackingCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1281,10 +1281,10 @@ TEST_P(PaintLayerTest,
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
-  EXPECT_EQ(span, target->CompositingContainer());
+  EXPECT_EQ(span, target->PaintingContainer());
 }
 
-TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
+TEST_P(PaintLayerTest, PaintingContainerNonStackedFloatUnderStackingInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1297,11 +1297,11 @@ TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest,
-       CompositingContainerNonStackedFloatUnderStackingCompositedInline) {
+       PaintingContainerNonStackedFloatUnderStackingCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1314,11 +1314,10 @@ TEST_P(PaintLayerTest,
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
-TEST_P(PaintLayerTest,
-       CompositingContainerStackedUnderFloatUnderStackingInline) {
+TEST_P(PaintLayerTest, PaintingContainerStackedUnderFloatUnderStackingInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1333,11 +1332,11 @@ TEST_P(PaintLayerTest,
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest,
-       CompositingContainerStackedUnderFloatUnderStackingCompositedInline) {
+       PaintingContainerStackedUnderFloatUnderStackingCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1353,11 +1352,11 @@ TEST_P(PaintLayerTest,
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
-  EXPECT_EQ(span, target->CompositingContainer());
+  EXPECT_EQ(span, target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest,
-       CompositingContainerNonStackedUnderFloatUnderStackingInline) {
+       PaintingContainerNonStackedUnderFloatUnderStackingInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1372,11 +1371,11 @@ TEST_P(PaintLayerTest,
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest,
-       CompositingContainerNonStackedUnderFloatUnderStackingCompositedInline) {
+       PaintingContainerNonStackedUnderFloatUnderStackingCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1391,7 +1390,7 @@ TEST_P(PaintLayerTest,
   )HTML");
 
   PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest, FloatLayerAndAbsoluteUnderInlineLayer) {
@@ -1530,7 +1529,7 @@ TEST_P(PaintLayerTest, LayerUnderFloatUnderInlineLayer) {
   EXPECT_EQ(span, child->ContainingLayer());
 }
 
-TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
+TEST_P(PaintLayerTest, PaintingContainerFloatingIframe) {
   SetBodyInnerHTML(R"HTML(
     <div id='compositedContainer' style='position: relative;
         will-change: transform'>
@@ -1549,7 +1548,7 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
   // A non-positioned iframe still gets a PaintLayer because PaintLayers are
   // forced for all LayoutEmbeddedContent objects. However, such PaintLayers are
   // not stacked.
-  EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
 TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
@@ -1613,21 +1612,21 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
 
   // Target layer is self painting because it is relatively positioned.
   EXPECT_TRUE(target_layer->IsSelfPaintingLayer());
-  EXPECT_EQ(span_layer, target_layer->CompositingContainer());
+  EXPECT_EQ(span_layer, target_layer->PaintingContainer());
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
 
   // Removing position:relative makes target layer no longer self-painting,
-  // and change its compositing container. The original compositing container
+  // and change its painting container. The original painting container
   // span_layer should be marked SelfNeedsRepaint.
   target_element->setAttribute(html_names::kStyleAttr,
                                AtomicString("overflow: hidden; float: left"));
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
-  EXPECT_EQ(span_layer, target_layer->CompositingContainer());
+  EXPECT_EQ(span_layer, target_layer->PaintingContainer());
   EXPECT_TRUE(target_layer->SelfNeedsRepaint());
-  EXPECT_TRUE(target_layer->CompositingContainer()->SelfNeedsRepaint());
+  EXPECT_TRUE(target_layer->PaintingContainer()->SelfNeedsRepaint());
   EXPECT_TRUE(span_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
 }
@@ -1643,11 +1642,11 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
-  // |container| is not the CompositingContainer of |target| because |target|
+  // |container| is not the PaintingContainer of |target| because |target|
   // is stacked but |container| is not a stacking context.
   EXPECT_TRUE(target_layer->GetLayoutObject().IsStacked());
-  EXPECT_NE(body_layer, target_layer->CompositingContainer());
-  auto* old_compositing_container = target_layer->CompositingContainer();
+  EXPECT_NE(body_layer, target_layer->PaintingContainer());
+  auto* old_painting_container = target_layer->PaintingContainer();
 
   body->setAttribute(html_names::kStyleAttr, AtomicString("margin-top: 0"));
   target_element->setAttribute(html_names::kStyleAttr, AtomicString("top: 0"));
@@ -1655,7 +1654,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
 
   EXPECT_FALSE(target_object->HasLayer());
   EXPECT_TRUE(body_layer->SelfNeedsRepaint());
-  EXPECT_TRUE(old_compositing_container->DescendantNeedsRepaint());
+  EXPECT_TRUE(old_painting_container->DescendantNeedsRepaint());
 
   UpdateAllLifecyclePhasesForTest();
 }

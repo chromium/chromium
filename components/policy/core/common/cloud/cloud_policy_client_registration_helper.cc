@@ -141,6 +141,7 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
     const std::string& client_id,
     const std::string& state,
     const base::TimeDelta& timeout_duration,
+    bool is_token_encrypted,
     CloudPolicyClient::ResultCallback callback) {
   DVLOG_POLICY(1, POLICY_AUTH)
       << "Starting profile registration with Oidc tokens";
@@ -158,7 +159,7 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
 
   client_->RegisterWithOidcResponse(register_user, oauth_token, id_token,
                                     client_id, timeout_duration,
-                                    std::move(callback));
+                                    is_token_encrypted, std::move(callback));
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(

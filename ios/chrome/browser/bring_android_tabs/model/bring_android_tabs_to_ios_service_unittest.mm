@@ -344,7 +344,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
       histogram_tester_.ExpectBucketCount(
           bring_android_tabs::kPromptAttemptStatusHistogramName,
-          static_cast<base::HistogramBase::Sample>(prompt_attempt_status), 1);
+          static_cast<base::HistogramBase::Sample32>(prompt_attempt_status), 1);
     }
   }
 

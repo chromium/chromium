@@ -14,11 +14,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/cookie_access_result.h"
 
 class GaiaAuthFetcher;
@@ -42,7 +44,7 @@ class BoundSessionOAuthMultiLoginDelegate;
 // It is safe to delete this object from within the callbacks.
 class OAuthMultiloginHelper : public GaiaAuthConsumer {
  public:
-  using AccountIdGaiaIdPair = std::pair<CoreAccountId, std::string>;
+  using AccountIdGaiaIdPair = std::pair<CoreAccountId, GaiaId>;
 
   OAuthMultiloginHelper(
       SigninClient* signin_client,
@@ -58,6 +60,10 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   OAuthMultiloginHelper& operator=(const OAuthMultiloginHelper&) = delete;
 
   ~OAuthMultiloginHelper() override;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  void SetEphemeralKeyForTesting(HybridEncryptionKey ephemeral_key);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
   // Starts fetching tokens with OAuthMultiloginTokenFetcher.
@@ -103,6 +109,14 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // OAuth tokens for each account ID in `accounts_`, or empty if is not
   // populated yet.
   base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens_;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Token binding challenges received from Gaia. Chrome should try to sign over
+  // each challenge no more than once.
+  base::flat_map<CoreAccountId, std::string> token_binding_challenges_;
+  // Ephemeral key that could be used for cookie encryption. Reset at every
+  // request retry.
+  std::optional<HybridEncryptionKey> ephemeral_key_;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;

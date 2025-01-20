@@ -20,7 +20,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -70,7 +69,6 @@ class OsSettingsAnimatedPagesElement extends
   private lightDomReady_: boolean = false;
   private queuedRouteChange_: {oldRoute?: Route, newRoute: Route}|null = null;
   private lightDomObserver_: FlattenedNodesObserver|null;
-  private isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
 
   constructor() {
     super();
@@ -155,11 +153,10 @@ class OsSettingsAnimatedPagesElement extends
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.previousRoute_ = oldRoute || null;
 
-    // When the OsSettingsRevampWayfinding feature is enabled, only one section
-    // shows at a time. Avoid unnecessarily changing the active page for this
-    // section if the active route belongs to an unrelated section.
-    if (this.isRevampWayfindingEnabled_ && newRoute.section !== null &&
-        newRoute.section !== this.section) {
+    // Given only one section shows at a time, avoid unnecessarily
+    // changing the active page for this section if the active route belongs
+    // to a different section.
+    if (newRoute.section !== null && newRoute.section !== this.section) {
       return;
     }
 

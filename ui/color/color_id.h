@@ -437,6 +437,7 @@
   E_CPONLY(kColorTabBackgroundHighlightedFocused) \
   E_CPONLY(kColorTabBorderSelected) \
   E_CPONLY(kColorTabContentSeparator) \
+  E_CPONLY(kColorTabForegroundDisabled) \
   E_CPONLY(kColorTabForeground) \
   E_CPONLY(kColorTabForegroundSelected) \
   E_CPONLY(kColorTableBackground) \
@@ -450,6 +451,7 @@
   E_CPONLY(kColorTableHeaderBackground) \
   E_CPONLY(kColorTableHeaderForeground) \
   E_CPONLY(kColorTableHeaderSeparator) \
+  E_CPONLY(kColorTableRowHighlight) \
   E_CPONLY(kColorSuggestionChipBorder) \
   E_CPONLY(kColorSuggestionChipIcon) \
   E_CPONLY(kColorTextfieldBackground) \

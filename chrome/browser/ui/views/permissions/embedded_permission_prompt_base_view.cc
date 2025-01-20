@@ -23,6 +23,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -81,6 +82,20 @@ int GetPermissionIconSize() {
   return 20;
 }
 
+float GetScreenScaleFactor(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  return browser_view ? display::Screen::GetScreen()
+                            ->GetPreferredScaleFactorForWindow(
+                                browser_view->GetNativeWindow())
+                            .value_or(1.0f)
+                      : 1.0f;
+}
+
+views::View* GetContentsWebView(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  return browser_view ? browser_view->contents_web_view() : nullptr;
+}
+
 }  // namespace
 
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
@@ -94,6 +109,9 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
   CHECK_GT(delegate_->Requests().size(), 0u);
   element_rect_ = delegate_->Requests()[0]->GetAnchorElementPosition().value_or(
       gfx::Rect());
+
+  // Convert the element position to root coordinate space (in case the element
+  // was inside cross-origin frame).
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       delegate_->Requests()[0]->get_requesting_frame_id());
   if (rfh && rfh->GetView()) {
@@ -101,6 +119,14 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
         rfh->GetView()->TransformPointToRootCoordSpace(element_rect_.origin()),
         element_rect_.size());
   }
+
+  // Scale the element position according to the device scale factor.
+  element_rect_ = gfx::ScaleToEnclosedRect(element_rect_,
+                                           1.f / GetScreenScaleFactor(browser));
+
+  // Convert the position into screen coordinates.
+  auto* content_view = GetContentsWebView(browser);
+  views::View::ConvertRectToScreen(content_view, &element_rect_);
 }
 
 EmbeddedPermissionPromptBaseView::~EmbeddedPermissionPromptBaseView() = default;
@@ -345,12 +371,18 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
   if (GetPromptPosition() == PermissionElementPromptPosition::kNearElement) {
     // First, attempt to position the prompt below the PEPC, if it would not
     // overflow the container bounds.
-    prompt_bounds =
-        gfx::Rect(default_bounds.x() + element_rect_.bottom_center().x() -
-                      default_bounds.width() / 2,
-                  default_bounds.y() + element_rect_.bottom_center().y() +
-                      default_bounds.height(),
-                  default_bounds.width(), default_bounds.height());
+    prompt_bounds = gfx::Rect(
+        element_rect_.bottom_center().x() - default_bounds.width() / 2,
+        element_rect_.bottom_center().y(), default_bounds.width(),
+        default_bounds.height());
+
+    if (prompt_bounds.x() < container_bounds.x()) {
+      // Align the prompt on the left side of the element.
+      prompt_bounds.set_x(element_rect_.x());
+    } else if (prompt_bounds.right() > container_bounds.right()) {
+      // Align the prompt on the right side of the element.
+      prompt_bounds.set_x(element_rect_.right() - default_bounds.width());
+    }
 
     if (container_bounds.Contains(prompt_bounds)) {
       return prompt_bounds;
@@ -359,10 +391,17 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
     // Second, attempt to position the prompt above the PEPC, if it would not
     // overflow the container bounds.
     prompt_bounds =
-        gfx::Rect(default_bounds.x() + element_rect_.top_center().x() -
-                      default_bounds.width() / 2,
-                  default_bounds.y() + element_rect_.top_center().y(),
+        gfx::Rect(element_rect_.top_center().x() - default_bounds.width() / 2,
+                  element_rect_.top_center().y() - default_bounds.height(),
                   default_bounds.width(), default_bounds.height());
+
+    if (prompt_bounds.x() < container_bounds.x()) {
+      // Align the prompt on the left side of the element.
+      prompt_bounds.set_x(element_rect_.x());
+    } else if (prompt_bounds.right() > container_bounds.right()) {
+      // Align the prompt on the right side of the element.
+      prompt_bounds.set_x(element_rect_.right() - default_bounds.width());
+    }
 
     if (container_bounds.Contains(prompt_bounds)) {
       return prompt_bounds;

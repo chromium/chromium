@@ -89,11 +89,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash',
         'ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
     }
-    if host_information.IsMac():
-      serial_tests |= {
-          # crbug.com/338574390, flaky on Mac/ASan.
-          'ContextLost_WebGLContextRestoredInHiddenTab',
-      }
     if host_information.IsMac() or host_information.IsWindows():
       serial_tests |= {
           # Flaky timeout http://crbug.com/352077583

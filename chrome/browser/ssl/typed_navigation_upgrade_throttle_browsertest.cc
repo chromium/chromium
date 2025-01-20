@@ -1168,9 +1168,18 @@ IN_PROC_BROWSER_TEST_P(
 // 5. The http:// URL of the original hostname also redirects to the broken
 //    HTTPS URL in step 3.
 // 6. The navigation ends up showing an interstitial.
+
+// TODO(crbug.com/378576546): Re-enable this test on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback \
+  DISABLED_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback
+#else
+#define MAYBE_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback \
+  UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback
+#endif
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleRedirectBrowserTest,
-    UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback) {
+    MAYBE_UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }

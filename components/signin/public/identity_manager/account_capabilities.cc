@@ -4,12 +4,13 @@
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/containers/heap_array.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -32,18 +33,18 @@ AccountCapabilities& AccountCapabilities::operator=(
     AccountCapabilities&& other) noexcept = default;
 
 // static
-const std::vector<std::string>&
+base::span<const std::string_view>
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
-  static base::NoDestructor<std::vector<std::string>> kCapabilityNames{{
+  static constexpr auto kCapabilityNames = std::to_array<std::string_view>({
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, value) cpp_label,
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
-  }};
-  return *kCapabilityNames;
+  });
+  return kCapabilityNames;
 }
 
 bool AccountCapabilities::AreAnyCapabilitiesKnown() const {
-  for (const std::string& capability_name :
+  for (std::string_view capability_name :
        GetSupportedAccountCapabilityNames()) {
     if (GetCapabilityByName(capability_name) != signin::Tribool::kUnknown) {
       return true;
@@ -53,7 +54,7 @@ bool AccountCapabilities::AreAnyCapabilitiesKnown() const {
 }
 
 bool AccountCapabilities::AreAllCapabilitiesKnown() const {
-  for (const std::string& capability_name :
+  for (std::string_view capability_name :
        GetSupportedAccountCapabilityNames()) {
     if (GetCapabilityByName(capability_name) == signin::Tribool::kUnknown) {
       return false;
@@ -63,7 +64,7 @@ bool AccountCapabilities::AreAllCapabilitiesKnown() const {
 }
 
 signin::Tribool AccountCapabilities::GetCapabilityByName(
-    const std::string& name) const {
+    std::string_view name) const {
   const auto iterator = capabilities_map_.find(name);
   if (iterator == capabilities_map_.end()) {
     return signin::Tribool::kUnknown;
@@ -152,15 +153,21 @@ signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
   return GetCapabilityByName(kCanUseGenerativeAiInRecorderApp);
 }
 
+signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
+    const {
+  return GetCapabilityByName(kCanUseGenerativeAiPhotoEditing);
+}
+
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
   bool modified = false;
 
-  for (const std::string& name : GetSupportedAccountCapabilityNames()) {
+  for (std::string_view name : GetSupportedAccountCapabilityNames()) {
     signin::Tribool other_capability = other.GetCapabilityByName(name);
     signin::Tribool current_capability = GetCapabilityByName(name);
     if (other_capability != signin::Tribool::kUnknown &&
         other_capability != current_capability) {
-      capabilities_map_[name] = other_capability == signin::Tribool::kTrue;
+      capabilities_map_[std::string(name)] =
+          other_capability == signin::Tribool::kTrue;
       modified = true;
     }
   }
@@ -169,7 +176,7 @@ bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
 }
 
 bool AccountCapabilities::operator==(const AccountCapabilities& other) const {
-  for (const std::string& name : GetSupportedAccountCapabilityNames()) {
+  for (std::string_view name : GetSupportedAccountCapabilityNames()) {
     if (GetCapabilityByName(name) != other.GetCapabilityByName(name)) {
       return false;
     }
@@ -183,13 +190,13 @@ AccountCapabilities AccountCapabilities::ConvertFromJavaAccountCapabilities(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& account_capabilities) {
   AccountCapabilities capabilities;
-  for (const std::string& name : GetSupportedAccountCapabilityNames()) {
+  for (std::string_view name : GetSupportedAccountCapabilityNames()) {
     signin::Tribool capability_state = static_cast<signin::Tribool>(
         signin::Java_AccountCapabilities_getCapabilityByName(
             env, account_capabilities,
             base::android::ConvertUTF8ToJavaString(env, name)));
     if (capability_state != signin::Tribool::kUnknown) {
-      capabilities.capabilities_map_[name] =
+      capabilities.capabilities_map_[std::string(name)] =
           capability_state == signin::Tribool::kTrue;
     }
   }

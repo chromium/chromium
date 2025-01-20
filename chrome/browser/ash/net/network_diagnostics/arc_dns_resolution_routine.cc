@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
+
 #include <algorithm>
 #include <utility>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace ash {

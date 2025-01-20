@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +36,7 @@
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -337,8 +337,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "bluetoothRevampHatsSurveyFlag",
       base::FeatureList::IsEnabled(
           ::features::kHappinessTrackingSystemBluetoothRevamp));
-  html_source->AddBoolean("bluetoothDisconnectWarningFlag",
-                          features::IsBluetoothDisconnectWarningEnabled());
   bluetooth::AddLoadTimeData(html_source);
 }
 

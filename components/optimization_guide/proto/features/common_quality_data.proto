@@ -159,6 +159,7 @@ message AXRelativeBounds {
   repeated float transform = 6;
 }
 
+// Next ID: 11
 message PageContext {
   // The URL of the page that the form is on.
   string url = 1;
@@ -176,11 +177,187 @@ message PageContext {
   // The offset of the focused element into the |inner_text|.
   uint64 inner_text_offset = 5;
 
+  // The text passages of the page. Those passages are the result of the
+  // HtmlChunker algorithm implemented in Chrome (used by the History Search
+  // feature). See
+  // https://github.com/google/labs-prototypes/tree/main/seeds/chunker-python
+  repeated string page_passages = 9;
+
   // A base64 encoded PNG of the tab screenshot.
   string tab_screenshot = 6;
 
   // The base64 encoded PDF representation of the page.
   string pdf_data = 7;
+
+  // The page content represented as a tree of semantic chunks and (in the
+  // future) annotated with additional information about the page.
+  AnnotatedPageContent annotated_page_content = 8;
+}
+
+// The page content represented as a tree of semantic chunks and (in the
+// future) annotated with additional information about the page.
+// Next ID: 3
+message AnnotatedPageContent {
+  AnnotatedPageContentVersion version = 1;
+
+  ContentNode root_node = 2;
+}
+
+// The ContentNode tree is a sparse representation of the DOM tree for a web
+// page, i.e., not every DOM node generates a ContentNode. For example, a `div`
+// used only for styling or layout the subtree will not generate a ContentNode.
+//
+// The ContentNode is roughly 1:1 with a DOM node but there are exceptions:
+//
+// - Some DOM nodes can generate multiple ContentNodes. For example, a
+//   `::before` pseudo-element would have text and image ContentNodes for it's
+//   content specified in CSS.
+//
+// - A form with `<input type="image">` will have ContentNodes for the input
+//   element and it's image.
+//
+// - We currently don't coalesce text content from multiple DOM nodes into a
+//   single ContentNode but that maybe added in the future.
+//
+// Note: The ContentNode tree including content from all embedded iframes.
+// Next ID: 3
+message ContentNode {
+  // Note: CONTENT_ATTRIBUTE_TEXT and CONTENT_ATTRIBUTE_IMAGE are leaf nodes
+  // which don't have any children nodes.
+  repeated ContentNode children_nodes = 1;
+
+  ContentAttributes content_attributes = 2;
+}
+
+// Next ID: 19
+message ContentAttributes {
+  oneof content_data {
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
+    TextInfo text_data = 10;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_IMAGE.
+    ImageInfo image_data = 11;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_ANCHOR.
+    AnchorData anchor_data = 14;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_FORM.
+    FormData form_data = 7;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE.
+    TableData table_data = 8;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_IFRAME.
+    IframeData iframe_data = 9;
+
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE_ROW.
+    TableRowData table_row_data = 13;
+  }
+
+  // The IDs of the DOM nodes whose content is represented by this ContentNode.
+  // This is used to map the results of the receiver's action back to the
+  // original DOM node.
+  repeated int32 dom_node_ids = 1;
+
+  // If this content node has the content of an entire subtree, this is the ID
+  // of the common ancestor of all the nodes in the subtree.
+  int32 common_ancestor_dom_node_id = 2;
+
+  ContentAttributeType attribute_type = 3;
+
+  // This is the geometry of the common_ancestor_dom_node_id.
+  Geometry geometry = 4;
+
+  // These can come from the aria role, the html tag, or are assumed from some
+  // properties of the page.
+  repeated AnnotatedRole annotated_roles = 15;
+
+  // A text "label" for the content node, e.g. for a "Submit" button this would
+  // be "Submit".
+  string label = 16;
+
+  string tag_name = 17; // HTML tag name.
+
+  string type = 18; // HTML type attribute.
+
+  reserved 5, 6;
+}
+
+// The geometry of the content, in the page coordinate system.
+// Next ID: 6
+// NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
+// it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
+// for details.
+message Geometry {
+  // The bounding box of the content node, in the page coordinate system. This
+  // roughly corresponds to the element's local box used for hit testing.
+  BoundingRect outer_bounding_box = 1;
+
+  // Denotes which subset of this node is visible, in the page coordinate
+  // system. If the content is offscreen, this field will be empty.
+  BoundingRect visible_bounding_box = 2;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position = 3;
+
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x = 4;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y = 5;
+}
+
+message BoundingRect {
+  int32 x = 1;
+
+  int32 y = 2;
+
+  int32 width = 3;
+
+  int32 height = 4;
+}
+
+// Next ID: 5
+message TextInfo {
+  string text_content = 1;
+
+  TextStyle text_style = 3;
+
+  reserved 2, 4;
+}
+
+// Next ID: 5
+message TextStyle {
+  // A crude approximation of text size. The default is M. An ML model doesn't
+  // need to know the precise size of the text; it just needs to know whether
+  // it's relatively small or large. The default is M.
+  TextSize text_size = 1;
+
+  // Whether the text has inline semantics that denote emphasis. For example:
+  // bold, italics, underline, super/subscript, etc. An ML model doesn't need
+  // to know which specific semantic was used; only that the website author
+  // chose to emphasize the text in some way. The default is false.
+  bool has_emphasis = 2;
+}
+
+// Information about the image. In the future, this may include a pixmap.
+// Next ID: 4
+message ImageInfo {
+  string image_caption = 2;
+
+  // Provides the URL for this image if available. For example, data: URLs for
+  // inline images will be skipped.
+  string source_url = 3;
+
+  reserved 1;
+}
+
+message AnchorData {
+  string url = 1;
+
+  // The relationship between the linked URL and the current document.
+  repeated AnchorRel rel = 2;
 }
 
 message FormData {
@@ -246,6 +423,30 @@ message SelectOption {
   string text = 2;
 }
 
+message TableData {
+  // The name of the table, coming from the caption.
+  string table_name = 1;
+
+  reserved 2, 3, 4;
+}
+
+message IframeData {
+  // The URL of the iframe.
+  string url = 1;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame = 2;
+}
+
+message TableRowData {
+  TableRowType type = 1;
+}
+
+message TableRow {
+  repeated ContentNode cells = 1;
+}
+
 message UserAnnotationsEntry {
   // The row ID of this entry from the user annotations database. This is
   // immutable except when retrieving the row from the database.
@@ -296,45 +497,6 @@ message SiteEngagementEntry {
 message SiteEngagement {
   // The site engagement information for the user.
   repeated SiteEngagementEntry entries = 1;
-}
-
-// All the information collected from the browser along with the user input
-// (for features like Compose).
-message BrowserCollectedInformation {
-  // The page context of the page the model is acting on.
-  PageContext page_context = 1;
-
-  // Deprecated, but still sent by older clients. Use page_context instead.
-  string inner_text = 2;
-
-  // Deprecated, but still sent by older clients. Use page_context instead.
-  uint64 inner_text_offset = 3;
-
-  // Custom text that a prototyper can inject into prompts. If the browser
-  // collected information is not sufficient, an early stage prototype can
-  // build a string in Chrome/colab to be used in the prompt. This allows
-  // separation of prompt definition and call specific data.
-  repeated string custom_data = 4;
-
-  // The form to predict values for. It is expected for the values for each
-  // field to be empty.
-  FormData form_data = 5;
-
-  // The current entries in the user annotations database helpful for filling
-  // out this form.
-  repeated UserAnnotationsEntry entries = 6;
-
-  // The ungrouped tabs that are requested to be organized.
-  repeated Tab tabs = 7;
-
-  // The tab that was active at the time the user requested tab organization.
-  int64 active_tab_id = 8;
-
-  // All pre-existing tab groups.
-  repeated TabGroup pre_existing_tab_groups = 9;
-
-  // The site engagement information for the user.
-  SiteEngagement site_engagement = 10;
 }
 
 // Selection text affinity, part of the a11y snapshot.
@@ -778,7 +940,7 @@ enum AXRole {
 }
 
 // AX String attribute enum.
-// Next ID: 42
+// Next ID: 43
 enum AXStringAttribute {
   AX_SA_NONE = 0;
 
@@ -863,6 +1025,8 @@ enum AXStringAttribute {
   AX_SA_ARIACELLROWINDEXTEXT = 40;
 
   AX_SA_DATETIME = 41;
+
+  AX_SA_HTMLINPUTNAME = 42;
 }
 
 // AX Int attribute enum.
@@ -1153,6 +1317,90 @@ enum AXStringListAttribute {
   AX_SLA_ARIANOTIFICATIONIDS = 3;
 }
 
+// This will be updated when there is a significant change in the parsing logic.
+// Next ID: 3
+enum AnnotatedPageContentVersion {
+  ANNOTATED_PAGE_CONTENT_VERSION_UNKNOWN = 0;
+
+  ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
+
+  ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0 = 2;
+}
+
+// Indicates the structure of the ContentNode. Suggests which type of
+// content_data will be found in the ContentNode.
+// When adding new types, please also update AIPageContentAttributeType in
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
+// See crrev.com/c/6072788 for an example.
+// Next ID: 24;
+enum ContentAttributeType {
+  CONTENT_ATTRIBUTE_UNKNOWN = 0;
+
+  CONTENT_ATTRIBUTE_ROOT = 1;
+
+  CONTENT_ATTRIBUTE_CONTAINER = 2;
+
+  CONTENT_ATTRIBUTE_IFRAME = 3;
+
+  // Text chunks.
+  CONTENT_ATTRIBUTE_PARAGRAPH = 4;
+
+  CONTENT_ATTRIBUTE_HEADING = 5;
+
+  CONTENT_ATTRIBUTE_TEXT = 20;
+
+  CONTENT_ATTRIBUTE_ANCHOR = 22;
+
+  // Image chunks.
+  CONTENT_ATTRIBUTE_IMAGE = 9;
+
+  // Structured chunks.
+  CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
+
+  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7;
+
+  CONTENT_ATTRIBUTE_LIST_ITEM = 23;
+
+  CONTENT_ATTRIBUTE_FORM = 8;
+
+  CONTENT_ATTRIBUTE_TABLE = 10;
+
+  CONTENT_ATTRIBUTE_TABLE_ROW = 21;
+
+  CONTENT_ATTRIBUTE_TABLE_CELL = 11;
+
+  reserved 12, 13, 14, 15, 16, 17, 18, 19;
+}
+
+// Next ID: 5
+enum TextSize {
+  TEXT_SIZE_M_DEFAULT = 0;
+
+  TEXT_SIZE_XS = 1;
+
+  TEXT_SIZE_S = 2;
+
+  TEXT_SIZE_L = 3;
+
+  TEXT_SIZE_XL = 4;
+}
+
+// The relationship between the linked URL and the current document.
+// https://html.spec.whatwg.org/multipage/links.html#linkTypes
+enum AnchorRel {
+  ANCHOR_REL_UNKNOWN = 0;
+
+  ANCHOR_REL_NO_REFERRER = 1;
+
+  ANCHOR_REL_NO_OPENER = 2;
+
+  ANCHOR_REL_OPENER = 3;
+
+  ANCHOR_REL_PRIVACY_POLICY = 4;
+
+  ANCHOR_REL_TERMS_OF_SERVICE = 5;
+}
+
 // Matches FormControlType in mojo, but off by one, because this list contains
 // an "UNSPECIFIED" value at 0.
 // https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=17;drc=105770df485ace262780d95126bb60b1a16ec340;bpv=1;bpt=1
@@ -1186,6 +1434,55 @@ enum FormControlType {
   FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
+}
+
+enum TableRowType {
+  TABLE_ROW_TYPE_UNKNOWN = 0;
+
+  TABLE_ROW_TYPE_HEADER = 1;
+
+  TABLE_ROW_TYPE_BODY = 2;
+
+  TABLE_ROW_TYPE_FOOTER = 3;
+}
+
+// Indicates the semantic role of the content. These can come from the aria
+// role, the html tag, or are assumed from some properties of the page.
+// When adding new roles, please also update AIPageContentAnnotatedRole in
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
+// Next ID: 14
+enum AnnotatedRole {
+  ANNOTATED_ROLE_UNKNOWN = 0;
+
+  // Landmark/section chunks.
+  ANNOTATED_ROLE_HEADER = 5;
+
+  ANNOTATED_ROLE_NAV = 6;
+
+  ANNOTATED_ROLE_SEARCH = 7;
+
+  ANNOTATED_ROLE_MAIN = 8;
+
+  ANNOTATED_ROLE_ARTICLE = 9;
+
+  ANNOTATED_ROLE_SECTION = 10;
+
+  ANNOTATED_ROLE_ASIDE = 11;
+
+  ANNOTATED_ROLE_FOOTER = 12;
+
+  // Indicates that the subtree for this ContentNode is hidden from the user but
+  // accessible via features like find-in-page. See `hidden=until-found` in
+  // https://developer.mozilla.org/en-US/docs/Wecrbug.com/HTML/Global_attributes/hidden
+  // for details.
+  //
+  // Note: This is different from Geometry.visible_bounding_box being empty
+  // which indicates whether the content is offscreen. The visible_bounding_box
+  // for nodes in a hidden subtree may be non-empty, depending on whether the
+  // content would be in the viewport if the user searched for it.
+  ANNOTATED_ROLE_CONTENT_HIDDEN = 13;
+
+  reserved 1 to 4;
 }
 
 // Whether or not status of the model's output is a success (i.e "is good") or

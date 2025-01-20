@@ -38,6 +38,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -67,7 +68,7 @@ class SessionControllerClientImplTest : public testing::Test {
 
  protected:
   SessionControllerClientImplTest() = default;
-  ~SessionControllerClientImplTest() override {}
+  ~SessionControllerClientImplTest() override = default;
 
   void SetUp() override {
     ash::LoginState::Initialize();
@@ -137,7 +138,7 @@ class SessionControllerClientImplTest : public testing::Test {
   // Adds a regular user with a profile.
   TestingProfile* InitForMultiProfile() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+        AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
     const user_manager::User* user = user_manager()->AddUser(account_id);
 
     // Note that user profiles are created after user login in reality.
@@ -179,8 +180,8 @@ class SessionControllerClientImplTest : public testing::Test {
 
 // Make sure that cycling one user does not cause any harm.
 TEST_F(SessionControllerClientImplTest, CyclingOneUser) {
-  UserAddedToSession(
-      AccountId::FromUserEmailGaiaId("firstuser@test.com", "1111111111"));
+  UserAddedToSession(AccountId::FromUserEmailGaiaId("firstuser@test.com",
+                                                    GaiaId("1111111111")));
 
   EXPECT_EQ("firstuser@test.com", GetActiveUserEmail());
   SessionControllerClientImpl::DoCycleActiveUser(ash::CycleUserDirection::NEXT);
@@ -197,12 +198,12 @@ TEST_F(SessionControllerClientImplTest, CyclingThreeUsers) {
   TestSessionController session_controller;
   client.Init();
 
-  const AccountId first_user =
-      AccountId::FromUserEmailGaiaId("firstuser@test.com", "1111111111");
-  const AccountId second_user =
-      AccountId::FromUserEmailGaiaId("seconduser@test.com", "2222222222");
-  const AccountId third_user =
-      AccountId::FromUserEmailGaiaId("thirduser@test.com", "3333333333");
+  const AccountId first_user = AccountId::FromUserEmailGaiaId(
+      "firstuser@test.com", GaiaId("1111111111"));
+  const AccountId second_user = AccountId::FromUserEmailGaiaId(
+      "seconduser@test.com", GaiaId("2222222222"));
+  const AccountId third_user = AccountId::FromUserEmailGaiaId(
+      "thirduser@test.com", GaiaId("3333333333"));
   UserAddedToSession(first_user);
   UserAddedToSession(second_user);
   UserAddedToSession(third_user);
@@ -234,13 +235,13 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
@@ -260,7 +261,7 @@ TEST_F(SessionControllerClientImplTest,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("child@gmail.com", "12345678"));
+      AccountId::FromUserEmailGaiaId("child@gmail.com", GaiaId("12345678")));
   UserAddedToSession(account_id, /*is_child=*/true);
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
@@ -273,10 +274,10 @@ TEST_F(SessionControllerClientImplTest,
        MultiProfileAllowedWithPolicyCertificates) {
   TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -284,8 +285,6 @@ TEST_F(SessionControllerClientImplTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           user_profile, base::BindRepeating(&CreateTestPolicyCertService)));
-  policy::PolicyCertServiceFactory::GetForProfile(user_profile)
-      ->SetUsedPolicyCertificates();
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -300,10 +299,10 @@ TEST_F(SessionControllerClientImplTest,
        MultiProfileDisallowedByPrimaryUserCertificatesInMemory) {
   TestingProfile* user_profile = InitForMultiProfile();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -335,11 +334,12 @@ TEST_F(SessionControllerClientImplTest,
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
-  AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+  AccountId account_id(
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   while (user_manager()->GetLoggedInUsers().size() <
          session_manager::kMaximumNumberOfUserSessions) {
-    account_id = AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444");
+    account_id = AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444"));
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
   }
@@ -356,9 +356,10 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
-  UserAddedToSession(AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+  UserAddedToSession(
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -371,14 +372,14 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   user_profile->GetPrefs()->SetString(
       user_manager::prefs::kMultiProfileUserBehaviorPref,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -392,11 +393,11 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
   user_manager()->LoginUser(account_id);
   session_termination_manager().SetDeviceLockedToSingleUser();
   user_manager()->AddUser(
-      AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+      AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -412,7 +413,7 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
 
   // Simulate login.
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   CreateTestingProfile(user);
   session_manager().CreateSession(account_id, user->username_hash(), false);
@@ -439,8 +440,8 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
   EXPECT_EQ(0, session_controller.set_user_session_order_count());
 
   // Simulate a not-signed-in user has the user image changed.
-  const AccountId not_signed_in(
-      AccountId::FromUserEmailGaiaId("not_signed_in@test.com", "12345"));
+  const AccountId not_signed_in(AccountId::FromUserEmailGaiaId(
+      "not_signed_in@test.com", GaiaId("12345")));
   user_manager::User* not_signed_in_user =
       user_manager()->AddUser(not_signed_in);
   user_manager()->NotifyUserImageChanged(*not_signed_in_user);
@@ -450,7 +451,7 @@ TEST_F(SessionControllerClientImplTest, SetUserSessionOrder) {
 
   // Simulate login.
   UserAddedToSession(
-      AccountId::FromUserEmailGaiaId("signed_in@test.com", "67890"));
+      AccountId::FromUserEmailGaiaId("signed_in@test.com", GaiaId("67890")));
 
   // User session order is sent after the sign-in.
   EXPECT_EQ(1, session_controller.set_user_session_order_count());
@@ -464,7 +465,7 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
 
   // Simulate login.
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   session_manager().CreateSession(account_id, user->username_hash(), false);
 

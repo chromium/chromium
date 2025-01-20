@@ -84,7 +84,7 @@ class WebAuthFlow : public content::WebContentsObserver {
         content::NavigationHandle* navigation_handle) {}
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates an instance with the given parameters.

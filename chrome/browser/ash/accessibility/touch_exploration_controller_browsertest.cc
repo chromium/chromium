@@ -39,7 +39,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
   TouchExplorationTest(const TouchExplorationTest&) = delete;
   TouchExplorationTest& operator=(const TouchExplorationTest&) = delete;
 
-  ~TouchExplorationTest() override {}
+  ~TouchExplorationTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {

@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 
 /**
  * View shown to a user who has removed the device lock to inform them that their private data will
@@ -69,7 +71,11 @@ public class MissingDeviceLockView extends LinearLayout {
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
         mButtonBar.addView(mCreateDeviceLockButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
+        } else {
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
+        }
     }
 
     TextView getTitle() {

@@ -86,6 +86,11 @@ void NetworkChangeNotifierDelegateAndroid::JavaLongArrayToNetworkMap(
 }
 
 NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
+    : NetworkChangeNotifierDelegateAndroid(ForceUpdateNetworkState::kEnabled) {}
+
+NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid(
+    net::NetworkChangeNotifierDelegateAndroid::ForceUpdateNetworkState
+        force_update_network_state)
     : java_network_change_notifier_(Java_NetworkChangeNotifier_init(
           base::android::AttachCurrentThread())),
       register_network_callback_failed_(
@@ -103,7 +108,8 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
           env, java_network_change_notifier_)));
   auto connection_subtype = ConvertConnectionSubtype(
       Java_NetworkChangeNotifier_getCurrentConnectionSubtype(
-          env, java_network_change_notifier_));
+          env, java_network_change_notifier_,
+          force_update_network_state == ForceUpdateNetworkState::kEnabled));
   SetCurrentConnectionSubtype(connection_subtype);
   SetCurrentMaxBandwidth(
       NetworkChangeNotifierAndroid::GetMaxBandwidthMbpsForConnectionSubtype(
@@ -146,14 +152,8 @@ NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionCost() {
 
 NetworkChangeNotifier::ConnectionSubtype
 NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionSubtype() const {
-  if (base::FeatureList::IsEnabled(net::features::kStoreConnectionSubtype)) {
     base::AutoLock auto_lock(connection_lock_);
     return connection_subtype_;
-  }
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return ConvertConnectionSubtype(
-      Java_NetworkChangeNotifier_getCurrentConnectionSubtype(
-          base::android::AttachCurrentThread(), java_network_change_notifier_));
 }
 
 void NetworkChangeNotifierDelegateAndroid::

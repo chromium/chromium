@@ -223,7 +223,8 @@ bool ServiceWorkerBasedBackgroundTest::ExtensionHasRenderProcessHost(
   content::RenderProcessHost::iterator it =
       content::RenderProcessHost::AllHostsIterator();
   while (!it.IsAtEnd()) {
-    if (process_map->Contains(extension_id, it.GetCurrentValue()->GetID())) {
+    if (process_map->Contains(extension_id,
+                              it.GetCurrentValue()->GetDeprecatedID())) {
       return true;
     }
     it.Advance();
@@ -234,7 +235,7 @@ bool ServiceWorkerBasedBackgroundTest::ExtensionHasRenderProcessHost(
 class ServiceWorkerBasedBackgroundTestWithNotification
     : public ServiceWorkerBasedBackgroundTest {
  public:
-  ServiceWorkerBasedBackgroundTestWithNotification() {}
+  ServiceWorkerBasedBackgroundTestWithNotification() = default;
 
   ServiceWorkerBasedBackgroundTestWithNotification(
       const ServiceWorkerBasedBackgroundTestWithNotification&) = delete;
@@ -850,14 +851,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
 class ServiceWorkerBackgroundSyncTest : public ServiceWorkerTest {
  public:
-  ServiceWorkerBackgroundSyncTest() {}
+  ServiceWorkerBackgroundSyncTest() = default;
 
   ServiceWorkerBackgroundSyncTest(const ServiceWorkerBackgroundSyncTest&) =
       delete;
   ServiceWorkerBackgroundSyncTest& operator=(
       const ServiceWorkerBackgroundSyncTest&) = delete;
 
-  ~ServiceWorkerBackgroundSyncTest() override {}
+  ~ServiceWorkerBackgroundSyncTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // ServiceWorkerRegistration.sync requires experimental flag.
@@ -888,7 +889,7 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   ServiceWorkerPushMessagingTest& operator=(
       const ServiceWorkerPushMessagingTest&) = delete;
 
-  ~ServiceWorkerPushMessagingTest() override {}
+  ~ServiceWorkerPushMessagingTest() override = default;
 
   void GrantNotificationPermissionForTest(const GURL& url) {
     NotificationPermissionContext::UpdatePermission(
@@ -952,7 +953,7 @@ class ServiceWorkerLazyBackgroundTest : public ServiceWorkerTest {
   ServiceWorkerLazyBackgroundTest& operator=(
       const ServiceWorkerLazyBackgroundTest&) = delete;
 
-  ~ServiceWorkerLazyBackgroundTest() override {}
+  ~ServiceWorkerLazyBackgroundTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ServiceWorkerTest::SetUpCommandLine(command_line);

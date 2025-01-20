@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -18,23 +17,6 @@ namespace features {
 BASE_FEATURE(kAlignSurfaceLayerImplToPixelGrid,
              "AlignSurfaceLayerImplToPixelGrid",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Uses the Resume method instead of the Catch-up method for animated images.
-// - Catch-up behavior tries to keep animated images in pace with wall-clock
-//   time. This might require decoding several animation frames if the
-//   animation has fallen behind.
-// - Resume behavior presents what would have been the next presented frame.
-//   This means it might only decode one frame, resuming where it left off.
-//   However, if the animation updates faster than the display's refresh rate,
-//   it is possible to decode more than a single frame.
-BASE_FEATURE(kAnimatedImageResume,
-             "AnimatedImageResume",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The feature is deprecated. The code removal is tracked in crbug.com/359747082
-bool IsImpulseScrollAnimationEnabled() {
-  return false;
-}
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
@@ -48,11 +30,6 @@ BASE_FEATURE(kSynchronizedScrolling,
 
 BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
              "MainRepaintScrollPrefersNewContent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-
-BASE_FEATURE(kRenderSurfaceCommonAncestorClip,
-             "RenderSurfaceCommonAncestorClip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferImplInvalidation,
@@ -72,14 +49,6 @@ BASE_FEATURE(kUseDMSAAForTiles,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_ANDROID)
-// This flag controls the DMSAA for tile raster on Android GL backend whereas
-// above flag UseDMSAAForTiles controls the launch on Vulkan backend.
-BASE_FEATURE(kUseDMSAAForTilesAndroidGL,
-             "UseDMSAAForTilesAndroidGL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              "UIEnableSharedImageCacheForGpu",
@@ -138,10 +107,6 @@ BASE_FEATURE(kMetricsTracingCalculationReduction,
              "MetricsTracingCalculationReduction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMetricsBackfillAdjustmentHoldback,
-             "MetricsBackfillAdjustmentHoldback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWaitForLateScrollEvents,
              "WaitForLateScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -178,12 +143,19 @@ constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
     "UseScrollPredictorForEmptyQueue";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
     "UseScrollPredictorForDeadline";
+constexpr const char
+    kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[] =
+        "DispatchScrollEventsUntilDeadline";
 const base::FeatureParam<std::string> kScrollEventDispatchMode(
     &kWaitForLateScrollEvents,
     "mode",
     kScrollEventDispatchModeDispatchScrollEventsImmediately);
 
-BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTreesInViz, "TreesInViz", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTreeAnimationsInViz,
+             "kTreeAnimationsInViz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
              "SendExplicitDecodeRequestsImmediately",
@@ -214,6 +186,18 @@ bool MultiImplOnlyScrollAnimationsSupported() {
 
 BASE_FEATURE(kPreventDuplicateImageDecodes,
              "PreventDuplicateImageDecodes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kInitImageDecodeLastUseTime,
+             "InitImageDecodeLastUseTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
+             "DynamicSafeAreaInsetsSupportedByCC",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kThrottleMainFrameTo60Hz,
+             "ThrottleMainFrameTo60Hz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -21,8 +21,9 @@ Process SpawnMultiProcessTestChild(const std::string& procname,
   // TODO(viettrungluu): See comment above |MakeCmdLine()| in the header file.
   // This is a temporary hack, since |MakeCmdLine()| has to provide a full
   // command line.
-  if (!command_line.HasSwitch(switches::kTestChildProcess))
+  if (!command_line.HasSwitch(switches::kTestChildProcess)) {
     command_line.AppendSwitchASCII(switches::kTestChildProcess, procname);
+  }
 
   return LaunchProcess(command_line, options);
 }

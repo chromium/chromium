@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +27,7 @@ MojoResult CreateDataPipe(mojo::ScopedDataPipeProducerHandle& producer_handle,
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize();
+  options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize();
 
   return mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
 }
@@ -290,7 +289,7 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
 };
 
 TEST_F(ServiceWorkerRaceNetworkRequestURLLoaderClientTest, Basic) {
-  SetUpURLLoaderClient(network::features::GetDataPipeDefaultAllocationSize());
+  SetUpURLLoaderClient(network::GetDataPipeDefaultAllocationSize());
 
   const std::string kExpectedBody = "abc";
   WriteData(kExpectedBody);

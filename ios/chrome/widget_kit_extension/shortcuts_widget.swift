@@ -27,6 +27,9 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
+  // Profile avatar (to be used when multiprofile flag is enabled).
+  let avatar: Image?
+
 }
 
 // Advises WidgetKit when to update a widget’s display.
@@ -38,82 +41,8 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   // Provides a timeline entry representing a placeholder version of the widget.
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
-      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil)
-  }
-
-  // Return an Entry with the most visited sites
-  func loadMostVisitedSitesEntry(isPreview: Bool) -> Entry {
-
-    // A constant of an empty entry
-    let emptyEntry = Entry(
-      date: Date(),
-      mostVisitedSites: [:],
-      isPreview: isPreview,
-      isExpired: false,
-      expirationDate: nil
-    )
-    // A constant of an expired entry
-    let expiredEntry = Entry(
-      date: Date(),
-      mostVisitedSites: [:],
-      isPreview: isPreview,
-      isExpired: true,
-      expirationDate: nil
-    )
-    // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery
-    if isPreview {
-      return emptyEntry
-    }
-
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
-      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
-        as? Date
-    else {
-      return emptyEntry
-    }
-
-    let extensionsFlags =
-      sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
-    let fiveMinutestoRefreshTestFlag =
-      extensionsFlags["WidgetKitRefreshFiveMinutes"] as? [String: Any] ?? [:]
-    // A constant to know the status of WidgetKitRefreshFiveMinutes Test Flag
-    let fiveMinutestoRefreshTestValue =
-      fiveMinutestoRefreshTestFlag["FieldTrialValue"] as? Bool ?? false
-
-    // A constant to get the number of seconds of the last modification date of the installed widget
-    let numberOfSecondsSinceLastModification = Date.now.timeIntervalSince(lastModificationDate)
-    // A constant to get the number of seconds to refresh the widget after it has been closed
-    let numberOfSecondsFromLastModificationToExpiration =
-      fiveMinutestoRefreshTestValue ? Constants.secondsInFiveMinutes : Constants.secondsInFourWeeks
-
-    let expirationDate = lastModificationDate.advanced(
-      by: numberOfSecondsFromLastModificationToExpiration)
-
-    // Return an Expired entry in the case of passing the limit of refreshing seconds
-    if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
-      return expiredEntry
-    }
-
-    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
-      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else { return emptyEntry }
-
-    unarchiver.requiresSecureCoding = false
-
-    guard
-      let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
-        as? [NSURL: NTPTile]
-    else {
-      return emptyEntry
-    }
-
-    return Entry(
-      date: Date(),
-      mostVisitedSites: mostVisitedSites,
-      isPreview: isPreview,
-      isExpired: false,
-      expirationDate: expirationDate
-    )
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+      avatar: nil)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -164,6 +93,155 @@ struct ShortcutsWidget: Widget {
     .crContentMarginsDisabled()
     .crContainerBackgroundRemovable(false)
   }
+}
+
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  // Provides the configuration and content of a widget to display on the Home screen.
+  struct ShortcutsWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "ShortcutsWidget"
+    let deviceModel = UIDevice.current.model
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind,
+        intent: SelectProfileIntent.self,
+        provider: ConfigurableShortcutsWidgetEntryProvider()
+      ) { entry in
+        ShortcutsWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME")
+      )
+      .description(
+        deviceModel == "iPhone"
+          ? Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE")
+          : Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD")
+      )
+      .supportedFamilies([.systemMedium])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
+    }
+  }
+
+  // Advises WidgetKit when to update a widget’s display.
+  @available(iOS 17, *)
+  struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
+
+    // A type that specifies the entry of the configured timeline entry of the widget.
+    typealias Entry = ConfigureShortcutsWidgetEntry
+
+    // Provides a timeline entry representing a placeholder version of the widget.
+    func placeholder(in context: TimelineProviderContext) -> Entry {
+      return Entry(
+        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+        avatar: nil)
+    }
+
+    // Provides a timeline entry that represents the current time and state of a widget.
+    func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
+
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
+      return entry
+    }
+
+    // Provides an array of timeline entries for the current time.
+    func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
+      Entry
+    > {
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let entry = loadMostVisitedSitesEntry(isPreview: context.isPreview, avatar: avatar)
+      let entries = [entry]
+      let timeline = Timeline(
+        entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
+      return timeline
+    }
+  }
+#endif
+
+// Return ConfigureShortcutsWidgetEntry with the most visited sites
+func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil)
+  -> ConfigureShortcutsWidgetEntry
+{
+  // A type that specifies the entry of the configured timeline entry of the widget.
+  typealias Entry = ConfigureShortcutsWidgetEntry
+
+  // A constant of an empty entry.
+  let emptyEntry = Entry(
+    date: Date(),
+    mostVisitedSites: [:],
+    isPreview: isPreview,
+    isExpired: false,
+    expirationDate: nil,
+    avatar: avatar
+  )
+  // A constant of an expired entry.
+  let expiredEntry = Entry(
+    date: Date(),
+    mostVisitedSites: [:],
+    isPreview: isPreview,
+    isExpired: true,
+    expirationDate: nil,
+    avatar: avatar
+  )
+  // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
+  if isPreview {
+    return emptyEntry
+  }
+
+  guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+    let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
+      as? Date
+  else {
+    return emptyEntry
+  }
+
+  let extensionsFlags =
+    sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
+  let fiveMinutestoRefreshTestFlag =
+    extensionsFlags["WidgetKitRefreshFiveMinutes"] as? [String: Any] ?? [:]
+  // A constant to know the status of WidgetKitRefreshFiveMinutes Test Flag.
+  let fiveMinutestoRefreshTestValue =
+    fiveMinutestoRefreshTestFlag["FieldTrialValue"] as? Bool ?? false
+
+  // A constant to get the number of seconds of the last modification date of the installed widget.
+  let numberOfSecondsSinceLastModification = Date.now.timeIntervalSince(lastModificationDate)
+  // A constant to get the number of seconds to refresh the widget after it has been closed.
+  let numberOfSecondsFromLastModificationToExpiration =
+    fiveMinutestoRefreshTestValue ? Constants.secondsInFiveMinutes : Constants.secondsInFourWeeks
+
+  let expirationDate = lastModificationDate.advanced(
+    by: numberOfSecondsFromLastModificationToExpiration)
+
+  // Return an Expired entry in the case of passing the limit of refreshing seconds.
+  if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
+    return expiredEntry
+  }
+
+  guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
+    let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+  else { return emptyEntry }
+
+  unarchiver.requiresSecureCoding = false
+
+  guard
+    let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
+      as? [NSURL: NTPTile]
+  else {
+    return emptyEntry
+  }
+
+  return Entry(
+    date: Date(),
+    mostVisitedSites: mostVisitedSites,
+    isPreview: isPreview,
+    isExpired: false,
+    expirationDate: expirationDate,
+    avatar: avatar
+  )
 }
 
 // Presents the shortcuts widget with SwiftUI views.
@@ -232,6 +310,18 @@ struct ShortcutsWidgetEntryView: View {
             .font(.subheadline)
             .foregroundColor(Colors.widgetTextColor)
           Spacer()
+          #if IOS_ENABLE_WIDGETS_FOR_MIM
+            // Only show the avatar if there is one.
+            if let avatar = entry.avatar {
+              avatar
+                .resizable()
+                .clipShape(Circle())
+                .unredacted()
+                .scaledToFill()
+                .frame(width: 35, height: 35)
+                .padding(.trailing, padding)
+            }
+          #endif
         }
       }
       .frame(minWidth: 0, maxWidth: .infinity)
@@ -346,7 +436,7 @@ struct ShortcutsWidgetEntryView: View {
 }
 
 // Adds the comparable conformance to NTPTile
-// to sort the NTPTiles
+// to sort the NTPTiles.
 extension NTPTile: Comparable {
   public static func < (lhs: NTPTile, rhs: NTPTile) -> Bool {
     return lhs.position < rhs.position

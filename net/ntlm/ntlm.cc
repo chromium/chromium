@@ -11,6 +11,9 @@
 
 #include <string.h>
 
+#include <algorithm>
+#include <array>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -96,13 +99,11 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
   }
 
   if (is_epa_enabled) {
-    std::vector<uint8_t> channel_bindings_hash(kChannelBindingsHashLen, 0);
+    std::array<uint8_t, kChannelBindingsHashLen> channel_bindings_hash = {};
 
     // Hash the channel bindings if they exist otherwise they remain zeros.
     if (!channel_bindings.empty()) {
-      GenerateChannelBindingHashV2(
-          channel_bindings, *base::span(channel_bindings_hash)
-                                 .to_fixed_extent<kChannelBindingsHashLen>());
+      GenerateChannelBindingHashV2(channel_bindings, channel_bindings_hash);
     }
 
     av_pairs->emplace_back(TargetInfoAvId::kChannelBindings,
@@ -274,9 +275,9 @@ void GenerateNtlmResponseV1WithSessionSecurity(
   GenerateSessionHashV1WithSessionSecurity(server_challenge, client_challenge,
                                            session_hash);
 
-  GenerateResponseDesl(
-      ntlm_hash, base::make_span(session_hash).subspan<0, kChallengeLen>(),
-      ntlm_response);
+  GenerateResponseDesl(ntlm_hash,
+                       base::span(session_hash).first<kChallengeLen>(),
+                       ntlm_response);
 }
 
 void GenerateResponsesV1WithSessionSecurity(
@@ -322,7 +323,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   DCHECK_EQ(sizeof(v1_hash), outlen);
 }
 
-std::vector<uint8_t> GenerateProofInputV2(
+std::array<uint8_t, kProofInputLenV2> GenerateProofInputV2(
     uint64_t timestamp,
     base::span<const uint8_t, kChallengeLen> client_challenge) {
   NtlmBufferWriter writer(kProofInputLenV2);
@@ -332,7 +333,9 @@ std::vector<uint8_t> GenerateProofInputV2(
                 writer.IsEndOfBuffer();
 
   DCHECK(result);
-  return writer.Pass();
+  std::array<uint8_t, kProofInputLenV2> ret;
+  std::ranges::copy(writer.Pass(), ret.begin());
+  return ret;
 }
 
 void GenerateNtlmProofV2(

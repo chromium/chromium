@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
+class NavigationThrottle;
 class StoragePartitionConfig;
 }
 
@@ -52,7 +53,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // potentially be created and destroyed in JavaScript before getting a
   // GuestViewBase instance.
   static void CleanUp(content::BrowserContext* browser_context,
-                      int embedder_process_id,
+                      content::ChildProcessId embedder_process_id,
                       int view_instance_id);
 
   static const char Type[];
@@ -63,6 +64,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // returned.
   static std::string GetPartitionID(
       content::RenderProcessHost* render_process_host);
+
+  // Create a throttle deferring navigation until attachment.
+  static std::unique_ptr<content::NavigationThrottle>
+  MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
 
   // Returns the stored rules registry ID of the given webview. Will generate
   // an ID for the first query.
@@ -130,6 +135,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // subsequent guest navigations.
   void SetUserAgentOverride(const std::string& ua_string_override);
 
+  // Sets whether a special brand list is used in client hints. This currently
+  // affects <controlledframe> and has no affect on <webview>
+  void SetClientHintsEnabled(bool enable);
+
   // Stop loading the guest.
   void Stop();
 
@@ -185,6 +194,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // GuestViewBase implementation.
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
@@ -213,10 +223,33 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsPermissionRequestable(ContentSettingsType type) const final;
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type) const final;
+  void GuestViewDocumentOnLoadCompleted() final;
+  void GuestViewDidChangeLoadProgress(double progress) final;
+  void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;
+  content::GuestPageHolder* GuestCreateNewWindow(
+      WindowOpenDisposition disposition,
+      const GURL& url,
+      const std::string& main_frame_name,
+      content::RenderFrameHost* opener,
+      scoped_refptr<content::SiteInstance> site_instance) final;
+  void GuestOpenURL(const content::OpenURLParams& params,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback) final;
+  void GuestClose() final;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) final;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -279,9 +312,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
-  void LoadProgressChanged(double progress) final;
-  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
-  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) final;
@@ -298,6 +328,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) final;
   void WebContentsDestroyed() final;
+
+  void CreateInnerPageWithSiteInstance(
+      std::unique_ptr<GuestViewBase> owned_this,
+      scoped_refptr<content::SiteInstance> guest_site_instance,
+      const base::Value::Dict& create_params,
+      GuestPageCreatedCallback callback);
 
   // Informs the embedder of a frame name change.
   void ReportFrameNameChange(const std::string& name);
@@ -331,7 +367,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Creates a new guest window owned by this WebViewGuest.
   void CreateNewGuestWebViewWindow(const content::OpenURLParams& params);
 
-  void NewGuestWebViewCallback(const content::OpenURLParams& params,
+  void NewGuestWebViewCallback(WindowOpenDisposition disposition,
+                               const GURL& url,
+                               const std::string& frame_name,
                                std::unique_ptr<GuestViewBase> guest);
 
   bool HandleKeyboardShortcuts(const input::NativeWebKeyboardEvent& event);
@@ -345,6 +383,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const base::Value::Dict& create_params,
       GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
+
+  void UpdateUserAgentMetadata();
+  bool HasOpener();
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;
@@ -397,6 +438,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
     ~NewWindowInfo();
   };
 
+  class CreateWindowThrottle;
+
   using PendingWindowMap = std::map<WebViewGuest*, NewWindowInfo>;
   PendingWindowMap pending_new_windows_;
 
@@ -419,6 +462,19 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Used to delay the navigation of a recreated guest contents until later in
   // the attachment process when state related to the WebRequest API is set up.
   base::OnceClosure recreate_initial_nav_;
+
+  // The current UA override.
+  blink::UserAgentOverride ua_override_;
+
+  // Set when `LoadURLWithParams` is called before a guest is attached, in
+  // order to run it after the guest attaches. Note: If this method is called
+  // multiple times, we replace the callback; i.e. we drop the previous
+  // navigations.
+  base::OnceClosure pending_first_navigation_;
+
+  // This throttle prevents this WebViewGuest from doing its first navigation
+  // until it is attached.
+  base::WeakPtr<CreateWindowThrottle> create_window_throttle_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

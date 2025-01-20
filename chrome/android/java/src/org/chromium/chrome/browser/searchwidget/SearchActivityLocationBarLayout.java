@@ -141,13 +141,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else {
             mUrlBar.setHint(R.string.omnibox_empty_hint);
         }
+
         // Clear the text regardless of the promo decision.  This allows the user to enter text
         // before native has been initialized and have it not be cleared one the delayed beginQuery
         // logic is performed.
         mUrlCoordinator.setUrlBarData(
                 UrlBarData.forNonUrlText(optionalText == null ? "" : optionalText),
                 UrlBar.ScrollType.NO_SCROLL,
-                SelectionState.SELECT_ALL);
+                SelectionState.SELECT_END);
 
         if (mPendingSearchPromoDecision || (searchType != SearchType.TEXT && !mNativeInitialized)) {
             mPendingBeginQuery = true;
@@ -207,6 +208,11 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     void clearOmniboxFocus() {
         mUrlBar.clearFocus();
+    }
+
+    @Override
+    public boolean shouldClearTextOnFocus() {
+        return false;
     }
 
     @Override

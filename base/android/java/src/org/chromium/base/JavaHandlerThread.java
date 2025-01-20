@@ -13,14 +13,18 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 
 /** Thread in Java with an Android Handler. This class is not thread safe. */
+@NullMarked
 @JNINamespace("base::android")
 public class JavaHandlerThread {
     private final HandlerThread mThread;
 
-    private Throwable mUnhandledException;
+    private @Nullable Throwable mUnhandledException;
 
     /**
      * Construct a java-only instance. Can be connected with native side later.
@@ -111,7 +115,7 @@ public class JavaHandlerThread {
     }
 
     @CalledByNative
-    private Throwable getUncaughtExceptionIfAny() {
+    private @Nullable Throwable getUncaughtExceptionIfAny() {
         return mUnhandledException;
     }
 

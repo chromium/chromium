@@ -50,7 +50,8 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
          content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
-MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() {}
+MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() =
+    default;
 
 ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,

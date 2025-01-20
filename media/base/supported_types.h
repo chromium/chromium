@@ -20,15 +20,21 @@ MEDIA_EXPORT bool IsEncoderSupportedVideoType(const VideoType& type);
 
 // These functions describe what media/ alone supports. They do not call out to
 // MediaClient and do not describe media/ embedder customization. Callers should
-// generally prefer the non-Default APIs above.
+// generally prefer the non-default APIs above.
 MEDIA_EXPORT bool IsDefaultDecoderSupportedAudioType(const AudioType& type);
 MEDIA_EXPORT bool IsDefaultDecoderSupportedVideoType(const VideoType& type);
 MEDIA_EXPORT bool IsDefaultEncoderSupportedVideoType(const VideoType& type);
 
+// Returns true if a software video encoder for `type` is built into the binary.
+MEDIA_EXPORT bool IsEncoderBuiltInVideoType(const VideoType& type);
+
+// Returns true if the specific video encoder `type` doesn't have a software
+// video encoder but may have platform optional encoder support.
+MEDIA_EXPORT bool IsEncoderOptionalVideoType(const VideoType& type);
+
 // This function describe if the specific video decoder codec is a built into
 // the binary or not.
 MEDIA_EXPORT bool IsDecoderBuiltInVideoCodec(VideoCodec codec);
-MEDIA_EXPORT bool IsEncoderBuiltInVideoCodec(VideoCodec codec);
 
 // This function describe if the specific video encoder codec is likely to have
 // a platform software encoder, and we also allow to select this encoder.

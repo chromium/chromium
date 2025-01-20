@@ -33,6 +33,7 @@ class TestTabModel : public TabModel {
 
   TabAndroid* GetTabAt(int index) const override;
   void SetActiveIndex(int index) override;
+  void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
@@ -76,7 +77,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return true;
   }
 
-  // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
+  // Filters more than |policy::kMaxUrlFiltersPerPolicy| are ignored, add a
   // warning message.
   if (url_blocklist->GetList().size() + disabled_schemes_entries >
       kMaxUrlFiltersPerPolicy) {

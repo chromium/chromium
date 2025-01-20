@@ -6,7 +6,10 @@ package org.chromium.components.browser_ui.desktop_windowing;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface to observe and retrieve desktop windowing mode state and updates. */
+@NullMarked
 public interface DesktopWindowStateManager {
 
     interface AppHeaderObserver {

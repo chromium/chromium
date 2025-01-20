@@ -214,17 +214,19 @@ bool TestURLLoaderFactory::CreateLoaderAndStartInternal(
 
 std::optional<network::TestURLLoaderFactory::PendingRequest>
 TestURLLoaderFactory::FindPendingRequest(const GURL& url,
-                                         ResponseMatchFlags flags) {
+                                         ResponseMatchFlags flags,
+                                         bool keep_request) {
   const bool url_match_prefix = flags & kUrlMatchPrefix;
   const bool reverse = flags & kMostRecentMatch;
   const bool wait_for_request = flags & kWaitForRequest;
+  // `keep_request` only makes sense if `wait_for_request` is also true.
+  CHECK(!keep_request || wait_for_request);
 
   // Give any cancellations a chance to happen...
   base::RunLoop().RunUntilIdle();
 
   network::TestURLLoaderFactory::PendingRequest request;
   while (true) {
-    bool found_request = false;
     for (int i = (reverse ? static_cast<int>(pending_requests_.size()) - 1 : 0);
          reverse ? i >= 0 : i < static_cast<int>(pending_requests_.size());
          reverse ? --i : ++i) {
@@ -237,14 +239,13 @@ TestURLLoaderFactory::FindPendingRequest(const GURL& url,
           (url_match_prefix &&
            base::StartsWith(pending_requests_[i].request.url.spec(), url.spec(),
                             base::CompareCase::INSENSITIVE_ASCII))) {
+        if (keep_request) {
+          return std::nullopt;
+        }
         request = std::move(pending_requests_[i]);
         pending_requests_.erase(pending_requests_.begin() + i);
-        found_request = true;
-        break;
+        return request;
       }
-    }
-    if (found_request) {
-      return request;
     }
     if (wait_for_request) {
       base::test::TestFuture<void> future;
@@ -257,6 +258,11 @@ TestURLLoaderFactory::FindPendingRequest(const GURL& url,
       return std::nullopt;
     }
   }
+}
+
+void TestURLLoaderFactory::WaitForRequest(const GURL& url) {
+  FindPendingRequest(url, ResponseMatchFlags::kWaitForRequest,
+                     /*keep_request=*/true);
 }
 
 bool TestURLLoaderFactory::SimulateResponseForPendingRequest(

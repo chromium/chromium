@@ -32,6 +32,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 namespace {
@@ -60,8 +61,9 @@ std::string GetPlatformKeybindingKeyForAccelerator(
   // shortcut (1-to-1 relationship). That means two or more extensions can
   // register for the same media key so the extension ID needs to be added to
   // the key to make sure the key is unique.
-  if (Command::IsMediaKey(accelerator))
+  if (accelerator.IsMediaKey()) {
     key += ":" + extension_id;
+  }
 
   return key;
 }
@@ -125,7 +127,7 @@ CommandService* CommandService::Get(content::BrowserContext* context) {
 bool CommandService::GetNamedCommands(const ExtensionId& extension_id,
                                       QueryType type,
                                       CommandScope scope,
-                                      CommandMap* command_map) const {
+                                      ui::CommandMap* command_map) const {
   const Extension* extension =
       GetExtensionInEnabledOrDisabledExtensions(extension_id);
   if (!extension) {
@@ -133,7 +135,7 @@ bool CommandService::GetNamedCommands(const ExtensionId& extension_id,
   }
 
   command_map->clear();
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
+  const ui::CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (!commands)
     return false;
 
@@ -146,7 +148,7 @@ bool CommandService::GetNamedCommands(const ExtensionId& extension_id,
     if (type == ACTIVE && shortcut_assigned.key_code() == ui::VKEY_UNKNOWN)
       continue;
 
-    Command command = named_command.second;
+    ui::Command command = named_command.second;
     if (scope != ANY_SCOPE && ((scope == GLOBAL) != saved_command.global()))
       continue;
 
@@ -176,7 +178,7 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
     return true;
 
   // Media Keys are allowed to be used by named command only.
-  DCHECK(!Command::IsMediaKey(accelerator) ||
+  DCHECK(!accelerator.IsMediaKey() ||
          !Command::IsActionRelatedCommand(command_name));
 
   ScopedDictPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
@@ -353,14 +355,14 @@ void CommandService::UpdateKeybindings(const Extension* extension) {
 void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
   // Remove keybindings if they have been removed by the extension and the user
   // has not modified them.
-  CommandMap existing_command_map;
+  ui::CommandMap existing_command_map;
   if (GetNamedCommands(extension->id(),
                        CommandService::ACTIVE,
                        CommandService::REGULAR,
                        &existing_command_map)) {
-    const CommandMap* new_command_map =
+    const ui::CommandMap* new_command_map =
         CommandsInfo::GetNamedCommands(extension);
-    for (CommandMap::const_iterator it = existing_command_map.begin();
+    for (ui::CommandMap::const_iterator it = existing_command_map.begin();
          it != existing_command_map.end(); ++it) {
       std::string command_name = it->first;
       if (new_command_map->find(command_name) == new_command_map->end() &&
@@ -436,12 +438,12 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
 }
 
 void CommandService::AssignKeybindings(const Extension* extension) {
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
+  const ui::CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (!commands)
     return;
 
   for (const auto& named_command : *commands) {
-    const Command command = named_command.second;
+    const ui::Command command = named_command.second;
     if (CanAutoAssign(command, extension)) {
       AddKeybindingPref(command.accelerator(),
                         extension->id(),
@@ -481,7 +483,7 @@ void CommandService::AssignKeybindings(const Extension* extension) {
   }
 }
 
-bool CommandService::CanAutoAssign(const Command &command,
+bool CommandService::CanAutoAssign(const ui::Command& command,
                                    const Extension* extension) {
   // Extensions are allowed to auto-assign updated keys if the user has not
   // changed from the previous value.
@@ -489,8 +491,9 @@ bool CommandService::CanAutoAssign(const Command &command,
     return false;
 
   // Media Keys are non-exclusive, so allow auto-assigning them.
-  if (Command::IsMediaKey(command.accelerator()))
+  if (command.accelerator().IsMediaKey()) {
     return true;
+  }
 
   if (command.global()) {
     if (Command::IsActionRelatedCommand(command.command_name()))
@@ -522,10 +525,10 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
     const Extension* extension) {
   base::Value::Dict suggested_key_prefs;
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
+  const ui::CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (commands) {
     for (const auto& named_command : *commands) {
-      const Command command = named_command.second;
+      const ui::Command command = named_command.second;
       base::Value::Dict command_keys;
       command_keys.Set(kSuggestedKey,
                        Command::AcceleratorToString(command.accelerator()));
@@ -571,7 +574,7 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
   if (current_prefs) {
     base::Value::Dict suggested_key_prefs = current_prefs->Clone();
 
-    const CommandMap* named_commands =
+    const ui::CommandMap* named_commands =
         CommandsInfo::GetNamedCommands(extension);
 
     const Command* browser_action_command =

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -102,13 +102,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
-            TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
-            TabGroupTitleEditor tabGroupTitleEditor,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
@@ -170,7 +168,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         new SharedImageTilesCoordinator(
                                 activity,
                                 SharedImageTilesType.DEFAULT,
-                                SharedImageTilesColor.DYNAMIC,
+                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
                                 dataSharingService);
             }
 
@@ -185,7 +183,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             this,
                             mModel,
                             currentTabGroupModelFilterSupplier,
-                            tabCreatorManager,
                             resetHandler,
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,
@@ -227,6 +224,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
+                            /* backgroundColorSupplier= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
@@ -272,7 +270,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // This is always created post-native so calling these immediately is safe.
             // TODO(crbug.com/40894893): Consider inlining these behaviors in their respective
             // constructors if possible.
-            mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
+            mMediator.initWithNative(this::getTabListEditorController);
             mTabListCoordinator.initWithNative(originalProfile);
 
             CollaborationService collaborationService =
@@ -360,7 +358,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     }
                 };
 
-        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         mColorPickerCoordinator =
                 new ColorPickerCoordinator(
                         mActivity,

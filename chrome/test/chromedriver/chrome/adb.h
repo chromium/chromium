@@ -12,7 +12,7 @@ class Status;
 
 class Adb {
  public:
-  virtual ~Adb() {}
+  virtual ~Adb() = default;
 
   virtual Status GetDevices(std::vector<std::string>* devices) = 0;
   virtual Status ForwardPort(const std::string& device_serial,

@@ -33,7 +33,7 @@ class NoneNeededTransportStrategy : public BlobTransportStrategy {
       const mojo::Remote<blink::mojom::BytesProvider>& data) override {
     DCHECK(bytes->embedded_data);
     DCHECK_EQ(bytes->length, bytes->embedded_data->size());
-    builder_->AppendData(base::make_span(*bytes->embedded_data));
+    builder_->AppendData(base::span(*bytes->embedded_data));
   }
 
   void BeginTransport(
@@ -85,7 +85,7 @@ class ReplyTransportStrategy : public BlobTransportStrategy {
           .Run(BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
       return;
     }
-    bool populate_result = future_data.Populate(base::make_span(data), 0);
+    bool populate_result = future_data.Populate(base::span(data), 0);
     DCHECK(populate_result);
 
     if (++num_resolved_requests_ == requests_.size())

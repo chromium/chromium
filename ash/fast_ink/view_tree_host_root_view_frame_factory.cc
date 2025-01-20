@@ -288,7 +288,6 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                        /*needs_blending=*/true, resource.id,
                        /*premultiplied=*/true, uv_crop.origin(),
                        uv_crop.bottom_right(), SkColors::kTransparent,
-                       /*flipped=*/false,
                        /*nearest=*/false,
                        /*secure_output=*/false,
                        gfx::ProtectedVideoType::kClear);

@@ -56,24 +56,23 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
                              base::SPLIT_WANT_NONEMPTY);
   }
 
-  void RunAriaTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "aria");
+  void RunBaseTest(const base::FilePath::CharType* file_path,
+                   const char* qualifier) {
+    base::FilePath test_path = GetTestFilePath("accessibility", qualifier);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
     }
-    base::FilePath aria_file = test_path.Append(base::FilePath(file_path));
-    RunTest(aria_file, "accessibility/aria", FILE_PATH_LITERAL("node"));
+    base::FilePath full_file_path = test_path.Append(base::FilePath(file_path));
+    std::string dir(std::string() + "accessibility/" + qualifier);
+    RunTest(full_file_path, dir.c_str(), FILE_PATH_LITERAL("node"));
   }
 
+  void RunAriaTest(const base::FilePath::CharType* file_path) {
+    RunBaseTest(file_path, "aria");
+  }
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "html");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-    RunTest(html_file, "accessibility/html", FILE_PATH_LITERAL("node"));
+    RunBaseTest(file_path, "html");
   }
 };
 
@@ -101,24 +100,24 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
     return property_filters;
   }
 
-  void RunAccNameTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "accname");
+  void RunAccTest(const base::FilePath::CharType* file_path,
+                  const char* qualifier) {
+    base::FilePath test_path = GetTestFilePath("accessibility", qualifier);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
     }
     base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(accname_file, "accessibility/accname");
+
+    std::string dir(std::string() + "accessibility/" + qualifier);
+    RunTest(accname_file, dir.c_str());
+  }
+
+  void RunAccNameTest(const base::FilePath::CharType* file_path) {
+    RunAccTest(file_path, "accname");
   }
   void RunAccDescTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "accdescription");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(accname_file, "accessibility/accdescription");
+    RunAccTest(file_path, "accdescription");
   }
 };
 
@@ -633,6 +632,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContent) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-content.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentDfn) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-content-dfn.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentOfLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-content-of-label.html"));
 }
@@ -647,6 +650,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameFromContentOfLabelledbyElementsOneOfWhichIsHidden) {
   RunAccNameTest(FILE_PATH_LITERAL(
       "name-from-content-of-labelledby-elements-one-of-which-is-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentTermRole) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-content-term-role.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
@@ -819,6 +826,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameLinkMixedContent) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameLinkMultipleSources) {
   RunAccNameTest(FILE_PATH_LITERAL("name-link-multiple-sources.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameLinkTermDefinition) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-link-term-definition.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,

@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 
 namespace aura {

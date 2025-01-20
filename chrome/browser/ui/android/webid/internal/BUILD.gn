@@ -33,6 +33,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
+    "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
@@ -151,7 +152,7 @@ android_library("javatests") {
 
     # TODO(majidvp): Remove this dependency after test clean up. https://crbug.com/1214820
     "//chrome/android:chrome_java",
-    "//chrome/android:chrome_test_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

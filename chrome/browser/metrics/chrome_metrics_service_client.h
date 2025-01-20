@@ -43,6 +43,10 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#endif
+
 class BrowserActivityWatcher;
 class Profile;
 class ProfileManager;
@@ -95,6 +99,7 @@ class ChromeMetricsServiceClient
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::dwa::DwaService* GetDwaService() override;
   IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
@@ -117,11 +122,13 @@ class ChromeMetricsServiceClient
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
+  std::optional<base::TimeDelta> GetCustomUploadInterval() const override;
   void LoadingStateChanged(bool is_loading) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsOnCellularConnection() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetAppPackageNameIfLoggable() override;
   std::string GetUploadSigningKey() override;
@@ -267,6 +274,9 @@ class ChromeMetricsServiceClient
   // The UkmService that |this| is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
+  // The DwaService that |this| is a client of.
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;
 
@@ -301,6 +311,12 @@ class ChromeMetricsServiceClient
   // system.
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
+
+  // Manages the consent of UMA before the user has been created. This object is
+  // only created during OOBE before the primary user has given intent to
+  // metrics consent.
+  std::unique_ptr<metrics::CrOSPreConsentMetricsManager>
+      cros_pre_consent_manager_;
 #endif
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

@@ -57,8 +57,9 @@ void CustomHttpResponse::SendResponse(
   // HTTP code is used.
   // TODO(crbug.com/40209048): Make GetHttpReasonPhrase support custom codes
   // instead.
-  if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()) !=
-      std::ranges::end(kStandardHttpStatusCodes)) {
+  if (std::find(std::begin(kStandardHttpStatusCodes),
+                std::end(kStandardHttpStatusCodes),
+                code()) != std::end(kStandardHttpStatusCodes)) {
     reason = BasicHttpResponse::reason();
   }
   delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),

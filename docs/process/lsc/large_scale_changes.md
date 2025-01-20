@@ -26,6 +26,8 @@ For example, while cosmetic changes have some positive value, we want reviewers 
 
 Additionally, if a cross-cutting change reasonably fits into a small number of CLs, this LSC process is unnecessary. Just [use Owners-Override](/docs/code_reviews.md#global-approvals) to keep the reviewers to a minimum.
 
+Finally, LSCs resulting from C++ style and formatting changes are not required to use this process (though they may do so). For more details, see the C++ Style Changes [process documentation](https://chromium.googlesource.com/chromium/src/+/main/docs/process/c++_style_changes.md).
+
 ## Who uses it? {#who-uses-it}
 
 Anyone making "large" changes. (Currently this is roughly defined as changes covering more than 10 distinct directories with OWNERS files.) We are aiming to enable a process where the processes and practices (using [`git cl split`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/git-cl.html)) for making sweeping changes are more broadly accessible enabling teams to more readily change the APIs they export while keeping a bound on how much time is spent coping with codebase churn.

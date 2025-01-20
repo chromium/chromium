@@ -69,7 +69,7 @@ ChromeAndroidMetricsProvider::ChromeAndroidMetricsProvider(
     PrefService* local_state)
     : local_state_(local_state) {}
 
-ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() {}
+ChromeAndroidMetricsProvider::~ChromeAndroidMetricsProvider() = default;
 
 // static
 void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {

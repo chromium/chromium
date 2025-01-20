@@ -6,17 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_BUTTON_PSEUDO_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 
 namespace blink {
 
-class ScrollMarkerGroupPseudoElement;
-
-class ScrollButtonPseudoElement : public PseudoElement {
+class ScrollButtonPseudoElement : public PseudoElement,
+                                  public ScrollSnapshotClient {
  public:
-  ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id)
-      : PseudoElement(originating_element, pseudo_id) {
-    SetTabIndexExplicitly();
-  }
+  ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id);
 
   bool IsScrollButtonPseudoElement() const final { return true; }
 
@@ -25,18 +22,23 @@ class ScrollButtonPseudoElement : public PseudoElement {
   bool HasActivationBehavior() const final { return true; }
   bool WillRespondToMouseClickEvents() override { return true; }
   Node* InnerNodeForHitTesting() final { return this; }
-  void SetScrollMarkerGroup(
-      ScrollMarkerGroupPseudoElement* scroll_marker_group) {
-    scroll_marker_group_ = scroll_marker_group;
-  }
-  ScrollMarkerGroupPseudoElement* ScrollMarkerGroup() const {
-    return scroll_marker_group_;
-  }
+
+  bool IsEnabled() const { return enabled_; }
+
+  // ScrollSnapshotClient:
+  void UpdateSnapshot() override;
+  bool ValidateSnapshot() override;
+  bool ShouldScheduleNextService() override;
 
   void Trace(Visitor* v) const final;
 
  private:
-  WeakMember<ScrollMarkerGroupPseudoElement> scroll_marker_group_;
+  bool UpdateSnapshotInternal();
+
+  bool enabled_ = true;
+  // As per https://drafts.csswg.org/css-overflow-5/#scroll-buttons
+  // defines a "page" size to be 85% of the scrollport size.
+  static constexpr double PageSizePercent = 0.85;
 };
 
 template <>

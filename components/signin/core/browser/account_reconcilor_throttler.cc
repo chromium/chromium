@@ -17,8 +17,9 @@ MultiloginRequestType GetMultiloginRequestType(
   // Update mode.
   DCHECK_EQ(params.mode,
             gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
-  if (params.accounts_to_send.size())
+  if (params.accounts_to_send.size()) {
     return MultiloginRequestType::kUpdateCookieAccountsOrder;
+  }
 
   // Accounts to send is empty.
   return MultiloginRequestType::kLogoutAllAccounts;
@@ -54,8 +55,9 @@ bool AccountReconcilorThrottler::IsDifferentRequest(
 
 bool AccountReconcilorThrottler::TryMultiloginOperation(
     const signin::MultiloginParameters& params) {
-  if (IsDifferentRequest(params))
+  if (IsDifferentRequest(params)) {
     Reset();
+  }
 
   RefillAllowedRequests();
   if (available_requests_bucket_ < 1.0) {
@@ -87,8 +89,9 @@ void AccountReconcilorThrottler::RefillAllowedRequests() {
 }
 
 void AccountReconcilorThrottler::RecordAndResetNumberOfRejectedRequests() {
-  if (!consecutive_rejected_requests_)
+  if (!consecutive_rejected_requests_) {
     return;
+  }
 
   DCHECK(last_request_params_.has_value());
   switch (GetMultiloginRequestType(last_request_params_.value())) {

@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.components.sync.protocol.GroupMember;
+import org.chromium.url.GURL;
 
 /** Config class for the Data Sharing Manage UI. */
 public class DataSharingManageUiConfig {
@@ -17,6 +18,7 @@ public class DataSharingManageUiConfig {
 
     // --- Manage Usage Config ---
     private ManageCallback mManageCallback;
+    private GURL mLearnAboutBlockedAccounts;
     private DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing Manage UI events. */
@@ -25,9 +27,12 @@ public class DataSharingManageUiConfig {
 
         default void onShareInviteLinkClicked(GroupToken groupToken) {}
 
-        default void onStopSharingInitiated(GroupData groupData, Callback<Boolean> readyToStop) {}
+        default void onShareInviteLinkClickedWithWait(
+                GroupToken groupToken, Callback<Boolean> onShareDone) {}
 
-        default void onStopSharingSuccess(GroupData groupData) {}
+        default void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {}
+
+        default void onStopSharingCompleted(boolean success) {}
 
         default void onMemberRemoved(GroupMember member) {}
 
@@ -41,10 +46,15 @@ public class DataSharingManageUiConfig {
         default void onLeaveGroup() {}
 
         default void getDataSharingUrl(GroupToken groupToken, Callback<String> url) {}
+
+        // This will always be called when user exits the managing the group,
+        // ui closes, or session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingManageUiConfig(Builder builder) {
         this.mGroupToken = builder.mGroupToken;
+        this.mLearnAboutBlockedAccounts = builder.mLearnAboutBlockedAccounts;
         this.mManageCallback = builder.mManageCallback;
         this.mCommonConfig = builder.mCommonConfig;
     }
@@ -57,6 +67,10 @@ public class DataSharingManageUiConfig {
         return mManageCallback;
     }
 
+    public GURL getLearnAboutBlockedAccounts() {
+        return mLearnAboutBlockedAccounts;
+    }
+
     public DataSharingUiConfig getCommonConfig() {
         return mCommonConfig;
     }
@@ -64,6 +78,7 @@ public class DataSharingManageUiConfig {
     // Builder class
     public static class Builder {
         private GroupToken mGroupToken;
+        private GURL mLearnAboutBlockedAccounts;
         private ManageCallback mManageCallback;
         private DataSharingUiConfig mCommonConfig;
 
@@ -84,6 +99,16 @@ public class DataSharingManageUiConfig {
          */
         public Builder setManageCallback(ManageCallback manageCallback) {
             this.mManageCallback = manageCallback;
+            return this;
+        }
+
+        /**
+         * Sets the hyperlink for "learn about blocked accounts".
+         *
+         * @param learnAboutBlockedAccounts The hyperlink to learn about blocked accounts.
+         */
+        public Builder setLearnAboutBlockedAccounts(GURL learnAboutBlockedAccounts) {
+            this.mLearnAboutBlockedAccounts = learnAboutBlockedAccounts;
             return this;
         }
 

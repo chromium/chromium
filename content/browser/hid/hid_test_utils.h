@@ -51,36 +51,43 @@ class MockHidDelegate : public HidDelegate {
   void OnPermissionRevoked(const url::Origin& origin);
   void OnHidManagerConnectionError();
 
-  MOCK_METHOD0(RunChooserInternal,
-               std::vector<device::mojom::HidDeviceInfoPtr>());
-  MOCK_METHOD2(CanRequestDevicePermission,
-               bool(BrowserContext* browser_context,
-                    const url::Origin& origin));
-  MOCK_METHOD4(HasDevicePermission,
-               bool(BrowserContext* browser_context,
-                    RenderFrameHost* render_frame_host,
-                    const url::Origin& origin,
-                    const device::mojom::HidDeviceInfo& device));
-  MOCK_METHOD4(RevokeDevicePermission,
-               void(BrowserContext* browser_context,
-                    RenderFrameHost* render_frame_host,
-                    const url::Origin& origin,
-                    const device::mojom::HidDeviceInfo& device));
-  MOCK_METHOD1(GetHidManager,
-               device::mojom::HidManager*(BrowserContext* browser_context));
-  MOCK_METHOD2(
-      GetDeviceInfo,
-      const device::mojom::HidDeviceInfo*(BrowserContext* browser_context,
-                                          const std::string& guid));
-  MOCK_METHOD2(IsFidoAllowedForOrigin,
-               bool(BrowserContext* browser_context,
-                    const url::Origin& origin));
-  MOCK_METHOD1(IsServiceWorkerAllowedForOrigin,
-               bool(const url::Origin& origin));
-  MOCK_METHOD2(IncrementConnectionCount,
-               void(BrowserContext*, const url::Origin&));
-  MOCK_METHOD2(DecrementConnectionCount,
-               void(BrowserContext*, const url::Origin&));
+  MOCK_METHOD(std::vector<device::mojom::HidDeviceInfoPtr>,
+              RunChooserInternal,
+              ());
+  MOCK_METHOD(bool,
+              CanRequestDevicePermission,
+              (BrowserContext*, const url::Origin&));
+  MOCK_METHOD(bool,
+              HasDevicePermission,
+              (BrowserContext*,
+               RenderFrameHost*,
+               const url::Origin&,
+               const device::mojom::HidDeviceInfo&));
+  MOCK_METHOD(void,
+              RevokeDevicePermission,
+              (BrowserContext*,
+               RenderFrameHost*,
+               const url::Origin&,
+               const device::mojom::HidDeviceInfo&));
+  MOCK_METHOD(device::mojom::HidManager*, GetHidManager, (BrowserContext*));
+  MOCK_METHOD(const device::mojom::HidDeviceInfo*,
+              GetDeviceInfo,
+              (BrowserContext*, const std::string& guid));
+  MOCK_METHOD(bool,
+              IsFidoAllowedForOrigin,
+              (BrowserContext*, const url::Origin& origin));
+  MOCK_METHOD(bool,
+              IsKnownSecurityKey,
+              (BrowserContext*, const device::mojom::HidDeviceInfo&));
+  MOCK_METHOD(bool,
+              IsServiceWorkerAllowedForOrigin,
+              (const url::Origin& origin));
+  MOCK_METHOD(void,
+              IncrementConnectionCount,
+              (BrowserContext*, const url::Origin& origin));
+  MOCK_METHOD(void,
+              DecrementConnectionCount,
+              (BrowserContext*, const url::Origin& origin));
 
   const base::ObserverList<Observer>& observer_list() { return observer_list_; }
 

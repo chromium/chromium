@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -132,8 +131,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       const ChromeTailoredSecurityServiceTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kTailoredSecurityRetryForSyncUsers);
     SetUpPrerequisites(/* history_sync_enabled= */ true,
                        /* policy_controlled_sb_enabled= */ false);
   }
@@ -280,7 +277,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         original_tailored_security_service_value);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -304,25 +300,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       chrome_tailored_security_service_;
   bool profile_manager_needs_setup_ = true;
   int profiles_created_count_ = 0;
-};
-
-class ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest
-    : public ChromeTailoredSecurityServiceTest {
- public:
-  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest() = default;
-  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest(
-      const ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest&) =
-      delete;
-  ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest& operator=(
-      const ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest&) =
-      delete;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        safe_browsing::kTailoredSecurityRetryForSyncUsers);
-    SetUpPrerequisites(/* history_sync_enabled= */ false,
-                       /* policy_controlled_sb_enabled= */ false);
-  }
 };
 
 // Some of the test names are shorted using "Ts" for Tailored Security, "Ep"
@@ -927,36 +904,6 @@ TEST_F(ChromeTailoredSecurityServiceTest, WhenNoRetryNeededDoesNotRetry) {
       ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
 
   // Verify that notification was not shown.
-  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-            initial_times_displayed);
-}
-
-TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
-       OnSuccessDoesNotUpdateRetryStatePref) {
-  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-  auto original_value =
-      prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState);
-  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                   base::Time::Now());
-  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-            original_value);
-}
-
-TEST_F(ChromeTailoredSecurityServiceRetryForSyncUsersDisabledTest,
-       WhenRetryForSyncUsersIsDisabledDoesNotRunRetryLogicAfterStartupDelay) {
-  const GURL google_url("https://www.google.com");
-  AddTab(google_url);
-  SetAccountTailoredSecurityTimestamp(base::Time::Now());
-  tailored_security_service()->SetTailoredSecurityServiceValue(true);
-  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-  int initial_times_displayed =
-      tailored_security_service()->times_dialog_displayed();
-
-  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                      safe_browsing::RETRY_NEEDED);
-  task_environment_.FastForwardBy(
-      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
-
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed);
 }

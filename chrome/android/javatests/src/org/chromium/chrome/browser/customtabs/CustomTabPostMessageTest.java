@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,8 +118,10 @@ public class CustomTabPostMessageTest {
         ChromeTabUtils.waitForTitle(currentTab, newTitle);
     }
 
-    private void setCanUseHiddenTabForSession(CustomTabsSessionToken token, boolean useHiddenTab) {
-        CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, useHiddenTab);
+    private void setCanUseHiddenTabForSession(
+            SessionHolder<?> sessionHolder, boolean useHiddenTab) {
+        CustomTabsConnection.getInstance()
+                .setCanUseHiddenTabForSession(sessionHolder, useHiddenTab);
     }
 
     private static void ensureCompletedSpeculationForUrl(final String url) {
@@ -409,7 +412,7 @@ public class CustomTabPostMessageTest {
         final CallbackHelper messageChannelHelper = new CallbackHelper();
         final String url =
                 mWebServer.setResponse("/test.html", TITLE_FROM_POSTMESSAGE_TO_CHANNEL, null);
-        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        CustomTabsTestUtils.warmUpAndWait();
 
         final CustomTabsSession session =
                 CustomTabsTestUtils.bindWithCallback(
@@ -427,7 +430,7 @@ public class CustomTabPostMessageTest {
                 new ComponentName(
                         ApplicationProvider.getApplicationContext(), ChromeLauncherActivity.class));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
 
         boolean channelRequested = false;
         String titleString = "";
@@ -438,7 +441,7 @@ public class CustomTabPostMessageTest {
             Assert.assertTrue(channelRequested);
         }
 
-        setCanUseHiddenTabForSession(token, true);
+        setCanUseHiddenTabForSession(sessionHolder, true);
         session.mayLaunchUrl(Uri.parse(url), null, null);
         ensureCompletedSpeculationForUrl(url);
 

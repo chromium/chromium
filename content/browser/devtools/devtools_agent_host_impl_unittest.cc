@@ -237,15 +237,12 @@ TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
   TestDevToolsClientHost client_host;
   client_host.InspectAgentHost(agent_host.get());
 
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message1", strlen("message1"))));
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message2", strlen("message2"))));
-  agent_host->DispatchProtocolMessage(
-      &client_host,
-      base::as_bytes(base::make_span("message2", strlen("message2"))));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message1"));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message2"));
+  agent_host->DispatchProtocolMessage(&client_host,
+                                      base::byte_span_from_cstring("message2"));
 
   client_host.Close();
 }

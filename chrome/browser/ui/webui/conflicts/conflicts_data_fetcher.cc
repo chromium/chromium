@@ -29,14 +29,17 @@ namespace {
 std::string GetProcessTypesString(const ModuleInfoData& module_data) {
   uint32_t process_types = module_data.process_types;
 
-  if (!process_types)
+  if (!process_types) {
     return "None";
+  }
 
   std::string result;
-  if (process_types & ProcessTypeToBit(content::PROCESS_TYPE_BROWSER))
+  if (process_types & ProcessTypeToBit(content::PROCESS_TYPE_BROWSER)) {
     result.append("B");
-  if (process_types & ProcessTypeToBit(content::PROCESS_TYPE_RENDERER))
+  }
+  if (process_types & ProcessTypeToBit(content::PROCESS_TYPE_RENDERER)) {
     result.append("R");
+  }
   // TODO(pmonette): Add additional process types as more get supported.
 
   return result;
@@ -66,8 +69,9 @@ constexpr char kAllowedSameDirectory[] =
 #endif
 
 void AppendString(std::string_view input, std::string* output) {
-  if (!output->empty())
+  if (!output->empty()) {
     *output += ", ";
+  }
   output->append(input);
 }
 
@@ -79,14 +83,17 @@ std::string GetBlockingStatusString(
 
   // Output status regarding the blocklist cache, current blocking, and
   // load status.
-  if (blocking_state.was_blocked)
+  if (blocking_state.was_blocked) {
     status = "Blocked";
-  if (!blocking_state.was_loaded)
+  }
+  if (!blocking_state.was_loaded) {
     AppendString(kNotLoaded, &status);
-  else if (blocking_state.was_in_blocklist_cache)
+  } else if (blocking_state.was_in_blocklist_cache) {
     AppendString("Bypassed blocking", &status);
-  if (blocking_state.was_in_blocklist_cache)
+  }
+  if (blocking_state.was_in_blocklist_cache) {
     AppendString("In blocklist cache", &status);
+  }
 
   return status;
 }
@@ -124,8 +131,9 @@ std::string GetBlockingDecisionString(
       // This is a module explicitly allowed to load by the Module List
       // component. But it is still valid for a potential warning, and so the
       // warning status is used instead.
-      if (incompatible_applications_updater)
+      if (incompatible_applications_updater) {
         break;
+      }
       return "Tolerated - Will be blocked in the future";
     case BlockingDecision::kDisallowedExplicit:
       return "Disallowed - Explicitly blocklisted";
@@ -183,8 +191,9 @@ std::string GetModuleStatusString(
     const ModuleInfoKey& module_key,
     IncompatibleApplicationsUpdater* incompatible_applications_updater,
     ModuleBlocklistCacheUpdater* module_blocklist_cache_updater) {
-  if (!incompatible_applications_updater && !module_blocklist_cache_updater)
+  if (!incompatible_applications_updater && !module_blocklist_cache_updater) {
     return std::string();
+  }
 
   std::string status;
 
@@ -261,8 +270,9 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
     }
   }
 
-  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled())
+  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled()) {
     return kPolicyDisabled;
+  }
 
   if (!IncompatibleApplicationsUpdater::IsWarningEnabled() &&
       !ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
@@ -337,8 +347,9 @@ void OnModuleDataFetched(ConflictsDataFetcher::OnConflictsDataFetchedCallback
 ConflictsDataFetcher::~ConflictsDataFetcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (module_list_.has_value())
+  if (module_list_.has_value()) {
     ModuleDatabase::GetInstance()->RemoveObserver(this);
+  }
 }
 
 // static
@@ -434,8 +445,9 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   std::string type_string;
-  if (module_data.module_properties & ModuleInfoData::kPropertyShellExtension)
+  if (module_data.module_properties & ModuleInfoData::kPropertyShellExtension) {
     type_string = "Shell extension";
+  }
   data.Set("type_description", type_string);
 
   const auto& inspection_result = *module_data.inspection_result;

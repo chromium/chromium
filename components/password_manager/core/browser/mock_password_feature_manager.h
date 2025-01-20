@@ -18,11 +18,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
 
   MOCK_METHOD(bool, IsGenerationEnabled, (), (override, const));
   MOCK_METHOD(bool, IsOptedInForAccountStorage, (), (override, const));
-  MOCK_METHOD(bool, ShouldShowAccountStorageOptIn, (), (override, const));
-  MOCK_METHOD(bool,
-              ShouldShowAccountStorageReSignin,
-              (const GURL&),
-              (override, const));
   MOCK_METHOD(PasswordForm::Store,
               GetDefaultPasswordStore,
               (),
@@ -41,11 +36,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, OptInToAccountStorage, (), (override));
   MOCK_METHOD(void, OptOutOfAccountStorage, (), (override));
-  MOCK_METHOD(void, OptOutOfAccountStorageAndClearSettings, (), (override));
-  MOCK_METHOD(bool,
-              ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
-              (),
-              (override, const));
   MOCK_METHOD(void,
               SetDefaultPasswordStore,
               (const PasswordForm::Store& store),

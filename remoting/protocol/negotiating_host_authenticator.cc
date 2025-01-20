@@ -56,11 +56,13 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   std::string method_attr = message->Attr(kMethodAttributeQName);
   AuthenticationMethod method = ParseAuthenticationMethodString(method_attr);
 
-  // If the host has already chosen a method, it can't be changed by the client.
   if (current_method_ != AuthenticationMethod::INVALID &&
       method != current_method_) {
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ = RejectionDetails(
+        "The host has already chosen an authentication method. "
+        "The client cannot change it.");
     std::move(resume_callback).Run();
     return;
   }
@@ -75,9 +77,11 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     std::string supported_methods_attr =
         message->Attr(kSupportedMethodsAttributeQName);
     if (supported_methods_attr.empty()) {
-      // Message contains neither method nor supported-methods attributes.
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_details_ = RejectionDetails(
+          "Message contains neither the 'method' nor the 'supported-methods' "
+          "attributes.");
       std::move(resume_callback).Run();
       return;
     }
@@ -97,9 +101,10 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     }
 
     if (method == AuthenticationMethod::INVALID) {
-      // Failed to find a common auth method.
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::NO_COMMON_AUTH_METHOD;
+      rejection_details_ = RejectionDetails(
+          "No common authentication method found between client and host.");
       std::move(resume_callback).Run();
       return;
     }

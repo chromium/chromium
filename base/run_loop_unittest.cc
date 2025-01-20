@@ -68,8 +68,9 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        base::TimeDelta delay) override {
-    if (delay.is_positive())
+    if (delay.is_positive()) {
       return false;
+    }
     AutoLock auto_lock(tasks_lock_);
     pending_tasks_.push(std::move(task));
     return true;
@@ -89,8 +90,9 @@ class SimpleSingleThreadTaskRunner : public SingleThreadTaskRunner {
     OnceClosure task;
     {
       AutoLock auto_lock(tasks_lock_);
-      if (pending_tasks_.empty())
+      if (pending_tasks_.empty()) {
         return false;
+      }
       task = std::move(pending_tasks_.front());
       pending_tasks_.pop();
     }
@@ -126,8 +128,9 @@ class InjectableTestDelegate : public RunLoop::Delegate {
 
   bool RunInjectedClosure() {
     AutoLock auto_lock(closure_lock_);
-    if (closure_.is_null())
+    if (closure_.is_null()) {
       return false;
+    }
     std::move(closure_).Run();
     return true;
   }
@@ -164,14 +167,18 @@ class TestBoundDelegate final : public InjectableTestDelegate {
     nested_run_allowing_tasks_incoming_ = false;
 
     while (!should_quit_) {
-      if (application_tasks_allowed && simple_task_runner_->ProcessSingleTask())
+      if (application_tasks_allowed &&
+          simple_task_runner_->ProcessSingleTask()) {
         continue;
+      }
 
-      if (ShouldQuitWhenIdle())
+      if (ShouldQuitWhenIdle()) {
         break;
+      }
 
-      if (RunInjectedClosure())
+      if (RunInjectedClosure()) {
         continue;
+      }
 
       PlatformThread::YieldCurrentThread();
     }

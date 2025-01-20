@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -68,12 +69,13 @@ class SubgriddedItemData {
   }
 
  private:
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const GridItemData* item_data_in_parent_{nullptr};
   const GridLayoutData* parent_layout_data_{nullptr};
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
 
-constexpr SubgriddedItemData kNoSubgriddedItemData;
+inline constexpr SubgriddedItemData kNoSubgriddedItemData;
 
 // This class represents a grid tree (see `grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.
@@ -210,7 +212,7 @@ class GridSizingSubtree
   }
 };
 
-constexpr GridSizingSubtree kNoGridSizingSubtree;
+inline constexpr GridSizingSubtree kNoGridSizingSubtree;
 
 }  // namespace blink
 

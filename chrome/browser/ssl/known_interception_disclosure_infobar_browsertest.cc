@@ -78,7 +78,7 @@ class KnownInterceptionDisclosureInfobarTest : public InProcessBrowserTest {
     }
     base::RunLoop run_loop;
     content::GetCertVerifierServiceFactory()->UpdateCRLSet(
-        base::as_bytes(base::make_span(crl_set_bytes)), run_loop.QuitClosure());
+        base::as_byte_span(crl_set_bytes), run_loop.QuitClosure());
     run_loop.Run();
   }
 

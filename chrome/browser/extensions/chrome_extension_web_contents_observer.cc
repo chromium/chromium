@@ -35,7 +35,8 @@ ChromeExtensionWebContentsObserver::ChromeExtensionWebContentsObserver(
       content::WebContentsUserData<ChromeExtensionWebContentsObserver>(
           *web_contents) {}
 
-ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() {}
+ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() =
+    default;
 
 // static
 void ChromeExtensionWebContentsObserver::CreateForWebContents(
@@ -103,7 +104,7 @@ void ChromeExtensionWebContentsObserver::SetUpRenderFrameHost(
     return;
   }
 
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
 
   // Components of chrome that are implemented as extensions or platform apps

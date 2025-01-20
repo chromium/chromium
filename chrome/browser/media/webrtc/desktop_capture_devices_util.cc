@@ -224,7 +224,7 @@ std::string DeviceNamePrefix(
   // dialog for DISPLAY_VIDEO_CAPTURE_THIS_TAB could still return something
   // other than the current tab - be it a screen, window, or another tab.
   if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID() ==
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID() ==
           media_id.web_contents_id.render_process_id &&
       web_contents->GetPrimaryMainFrame()->GetRoutingID() ==
           media_id.web_contents_id.main_render_frame_id) {

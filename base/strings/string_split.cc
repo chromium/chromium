@@ -40,7 +40,7 @@ bool AppendStringKeyValue(std::string_view input,
   size_t end_key_pos = input.find_first_of(delimiter);
   if (end_key_pos == std::string::npos) {
     DVLOG(1) << "cannot find delimiter in: " << input;
-    return false;    // No delimiter.
+    return false;  // No delimiter.
   }
   result_pair.first = std::string(input.substr(0, end_key_pos));
 
@@ -50,7 +50,7 @@ bool AppendStringKeyValue(std::string_view input,
   size_t begin_value_pos = remains.find_first_not_of(delimiter);
   if (begin_value_pos == std::string_view::npos) {
     DVLOG(1) << "cannot parse value from input: " << input;
-    return false;   // No value.
+    return false;  // No value.
   }
 
   result_pair.second = std::string(

@@ -12,10 +12,10 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -268,7 +268,7 @@ TEST_F(
   };
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry},
-                  AutofillSuggestionTriggerSource::kTextFieldDidChange);
+                  AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   assert_popup_interaction_metrics_are_empty();
 
   ShowSuggestions(
@@ -404,8 +404,9 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
 
 TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry},
-                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  ShowSuggestions(
+      manager(), {SuggestionType::kAddressEntry},
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just
@@ -819,7 +820,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
@@ -839,7 +840,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
   // Also no autofill metrics are emitted.
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
@@ -893,7 +894,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
@@ -913,7 +914,7 @@ TEST_F(AutofillPopupControllerImplTest,
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
       SingleEntryRemovalMethod::kKeyboardShiftDeletePressed, 0);
   histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
+      "Autocomplete.Events3",
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
   histogram_tester.ExpectUniqueSample(

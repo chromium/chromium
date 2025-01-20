@@ -61,7 +61,7 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
   // `js_result` for the JavaScript function call "findInString.findString".
   std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
       base::Value* js_result) {
-    auto frame = FakeWebFrame::CreateMainWebFrame(GURL());
+    auto frame = FakeWebFrame::CreateMainWebFrame();
     frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
     frame->set_browser_state(GetBrowserState());
     return frame;
@@ -71,7 +71,7 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
   // `js_result` for the JavaScript function call "findInString.findString".
   std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
       base::Value* js_result) {
-    auto frame = FakeWebFrame::CreateChildWebFrame(GURL());
+    auto frame = FakeWebFrame::CreateChildWebFrame();
     frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
     frame->set_browser_state(GetBrowserState());
     return frame;

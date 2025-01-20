@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +35,8 @@ public class NotificationService extends SplitCompatIntentService {
             BroadcastReceiver receiver =
                     (BroadcastReceiver)
                             BundleUtils.newInstance(
-                                    context,
-                                    "org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver");
+                                    "org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver",
+                                    CHROME_SPLIT_NAME);
             receiver.onReceive(context, intent);
         }
     }

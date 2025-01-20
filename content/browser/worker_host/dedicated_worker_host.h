@@ -312,8 +312,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   void OnMojoDisconnect();
 
-  // Returns whether creator and worker's COEP values are compatible.
-  bool CheckCrossOriginEmbedderPolicy();
+  // Returns whether creator and worker's COEP and Document-Isolation-Policy
+  // values are compatible.
+  bool CheckWebSecurityPolicies();
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> GetWorkerCoepReporter();
 

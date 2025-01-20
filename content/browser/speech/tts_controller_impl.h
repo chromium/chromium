@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
@@ -30,7 +29,7 @@
 namespace content {
 class BrowserContext;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TtsControllerDelegate;
 #endif
 
@@ -111,8 +110,6 @@ class CONTENT_EXPORT TtsControllerImpl
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override;
 
-  void SetRemoteTtsEngineDelegate(RemoteTtsEngineDelegate* delegate) override;
-
  protected:
   TtsControllerImpl();
   ~TtsControllerImpl() override;
@@ -123,12 +120,6 @@ class CONTENT_EXPORT TtsControllerImpl
  private:
   friend class TestTtsControllerImpl;
   friend struct base::DefaultSingletonTraits<TtsControllerImpl>;
-
-  void GetVoicesInternal(BrowserContext* browser_context,
-                         const GURL& source_url,
-                         std::vector<VoiceData>* out_voices);
-
-  void SpeakOrEnqueueInternal(std::unique_ptr<TtsUtterance> utterance);
 
   // Get the platform TTS implementation (or injected mock).
   TtsPlatform* GetTtsPlatform();
@@ -210,14 +201,11 @@ class CONTENT_EXPORT TtsControllerImpl
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TtsControllerDelegate* GetTtsControllerDelegate();
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   raw_ptr<TtsControllerDelegate, DanglingUntriaged> delegate_ = nullptr;
 #endif
-
-  raw_ptr<RemoteTtsEngineDelegate, DanglingUntriaged> remote_engine_delegate_ =
-      nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 

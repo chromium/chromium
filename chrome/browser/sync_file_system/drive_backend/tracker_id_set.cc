@@ -15,7 +15,7 @@ TrackerIDSet::TrackerIDSet() : active_tracker_(0) {}
 
 TrackerIDSet::TrackerIDSet(const TrackerIDSet& other) = default;
 
-TrackerIDSet::~TrackerIDSet() {}
+TrackerIDSet::~TrackerIDSet() = default;
 
 void TrackerIDSet::Insert(const FileTracker& tracker) {
   if (tracker.active())

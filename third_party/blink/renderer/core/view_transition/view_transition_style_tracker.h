@@ -255,7 +255,7 @@ class ViewTransitionStyleTracker
       const AtomicString& name,
       const StyleViewTransitionGroup& group) const;
 
-  AtomicString GenerateAutoName(Element&, const TreeScope*);
+  AtomicString GenerateAutoName(Element&, const TreeScope*, bool allow_from_id);
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
@@ -329,6 +329,11 @@ class ViewTransitionStyleTracker
     // Whether effects and box decorations are captured as style or as part of
     // the snapshot. See https://github.com/w3c/csswg-drafts/issues/10585
     bool use_layered_capture;
+
+    // Whether this name was auto-generated via auto/match-element.
+    // Auto-generated names do not appear in reflection methods such as
+    // getAnimations.
+    bool is_generated_name;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the

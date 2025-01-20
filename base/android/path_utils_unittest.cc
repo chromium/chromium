@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/android/path_utils.h"
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -44,8 +44,7 @@ TEST_F(PathUtilsTest, TestGetCacheDirectory) {
   FilePath path;
   GetCacheDirectory(&path);
   ExpectEither("/data/data/org.chromium.native_test/cache",
-               "/data/user/0/org.chromium.native_test/cache",
-               path.value());
+               "/data/user/0/org.chromium.native_test/cache", path.value());
 }
 
 TEST_F(PathUtilsTest, TestGetNativeLibraryDirectory) {

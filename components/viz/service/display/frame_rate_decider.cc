@@ -54,9 +54,13 @@ FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
       surface_manager_(surface_manager),
       client_(client),
       hw_support_for_multiple_refresh_rates_(
-          hw_support_for_multiple_refresh_rates),
+          hw_support_for_multiple_refresh_rates)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_MAC)
+      ,
       output_surface_supports_set_frame_rate_(
-          output_surface_supports_set_frame_rate) {
+          output_surface_supports_set_frame_rate)
+#endif
+{
   surface_manager_->AddObserver(this);
 }
 

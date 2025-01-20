@@ -5,12 +5,11 @@
 package org.chromium.chrome.browser.notifications;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.NotificationManagerCompat;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
  * Utility for determining whether the user has disabled all of Chrome's notifications using the
@@ -51,9 +50,7 @@ public class NotificationSystemStatusUtil {
     @CalledByNative
     @VisibleForTesting
     static int getAppNotificationStatus() {
-        NotificationManagerCompat manager =
-                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-        return manager.areNotificationsEnabled()
+        return NotificationProxyUtils.areNotificationsEnabled()
                 ? APP_NOTIFICATIONS_STATUS_ENABLED
                 : APP_NOTIFICATIONS_STATUS_DISABLED;
     }

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
@@ -313,8 +312,8 @@ LayoutObject* TextFieldInputType::CreateLayoutObject(
   return MakeGarbageCollected<LayoutTextControlSingleLine>(&GetElement());
 }
 
-ControlPart TextFieldInputType::AutoAppearance() const {
-  return kTextFieldPart;
+AppearanceValue TextFieldInputType::AutoAppearance() const {
+  return AppearanceValue::kTextField;
 }
 
 bool TextFieldInputType::IsInnerEditorValueEmpty() const {
@@ -556,8 +555,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 
 HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     bool is_suggested_value) {
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return nullptr;
   }
   if (!SupportsPlaceholder()) {

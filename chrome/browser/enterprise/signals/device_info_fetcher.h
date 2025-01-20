@@ -57,6 +57,10 @@ class DeviceInfoFetcher {
   // return a stubbed instance. Used for testing.
   static void SetForceStubForTesting(bool should_force);
 
+  // Sets a value controlling whether DeviceInfoFetcher returns duplicate mac
+  // addresses. Used for testing.
+  static void SetForceDuplicateMacAddressesForTesting(bool should_force);
+
   // Fetches the device information for the current platform.
   virtual DeviceInfo Fetch() = 0;
 

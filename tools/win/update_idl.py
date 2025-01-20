@@ -92,8 +92,7 @@ class IDLUpdater:
         # Exclude blank lines.
         lines = list(filter(None, stdout.splitlines()))
 
-        if (len(lines) < 3
-                or 'ninja: build stopped: subcommand failed.' not in lines[-1]
+        if (len(lines) < 3 or 'build stopped' not in lines[-1]
                 or 'copy /y' not in lines[-2]
                 or 'To rebaseline:' not in lines[-3]):
             print('-' * 80)
@@ -103,6 +102,10 @@ class IDLUpdater:
             print('STDERR:')
             print(stderr)
             print('-' * 80)
+            print('LINE:')
+            print(lines[-1])
+            print(lines[-2])
+            print(lines[-3])
 
             raise IDLUpdateError(
                 'Unexpected autoninja error (see output above). Update this '
@@ -142,6 +145,7 @@ def main():
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
                 'chrome/windows_services/service_program:test_service_idl',
+                'components/tracing:tracing_service_idl',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',
                 'iaccessible2',

@@ -5,6 +5,8 @@
 #include "headless/lib/browser/headless_screen_orientation_delegate.h"
 
 #include "base/check_deref.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_screen.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
@@ -16,15 +18,23 @@ namespace headless {
 
 namespace {
 
-display::mojom::ScreenOrientation GetNaturalScreenOrientation() {
+int64_t GetDisplayIdFromWebContents(content::WebContents* web_contents) {
+  content::RenderWidgetHost* rwh =
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
+  return rwh ? rwh->GetScreenInfo().display_id : display::kInvalidDisplayId;
+}
+
+display::mojom::ScreenOrientation GetNaturalScreenOrientation(
+    int64_t display_id) {
   auto& headless_screen =
       CHECK_DEREF(static_cast<HeadlessScreen*>(display::Screen::GetScreen()));
-  return headless_screen.IsNaturalPortrait()
+  return headless_screen.IsNaturalPortrait(display_id)
              ? display::mojom::ScreenOrientation::kPortraitPrimary
              : display::mojom::ScreenOrientation::kLandscapePrimary;
 }
 
 display::mojom::ScreenOrientation GetScreenOrientationFromLockOrientation(
+    int64_t display_id,
     device::mojom::ScreenOrientationLockType lock_orientation) {
   switch (lock_orientation) {
     case device::mojom::ScreenOrientationLockType::PORTRAIT:
@@ -40,7 +50,7 @@ display::mojom::ScreenOrientation GetScreenOrientationFromLockOrientation(
       return display::mojom::ScreenOrientation::kLandscapeSecondary;
 
     case device::mojom::ScreenOrientationLockType::NATURAL:
-      return GetNaturalScreenOrientation();
+      return GetNaturalScreenOrientation(display_id);
 
     case device::mojom::ScreenOrientationLockType::ANY:
     case device::mojom::ScreenOrientationLockType::DEFAULT:
@@ -68,9 +78,11 @@ bool HeadlessScreenOrientationDelegate::FullScreenRequired(
 void HeadlessScreenOrientationDelegate::Lock(
     content::WebContents* web_contents,
     device::mojom::ScreenOrientationLockType lock_orientation) {
+  int64_t display_id = GetDisplayIdFromWebContents(web_contents);
   display::mojom::ScreenOrientation screen_orientation =
-      GetScreenOrientationFromLockOrientation(lock_orientation);
-  HeadlessScreen::UpdateScreenSizeForScreenOrientation(screen_orientation);
+      GetScreenOrientationFromLockOrientation(display_id, lock_orientation);
+  HeadlessScreen::UpdateScreenSizeForScreenOrientation(display_id,
+                                                       screen_orientation);
 }
 
 bool HeadlessScreenOrientationDelegate::ScreenOrientationProviderSupported(

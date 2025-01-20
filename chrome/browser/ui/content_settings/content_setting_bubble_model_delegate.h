@@ -28,7 +28,7 @@ class ContentSettingBubbleModelDelegate {
   virtual void ShowLearnMorePage(ContentSettingsType type) = 0;
 
  protected:
-  virtual ~ContentSettingBubbleModelDelegate() {}
+  virtual ~ContentSettingBubbleModelDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_

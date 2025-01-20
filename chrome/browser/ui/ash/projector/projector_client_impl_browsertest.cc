@@ -334,8 +334,9 @@ class ProjectorClientManagedTest
   ProjectorClient* client() { return ProjectorClient::Get(); }
 
   std::string GetPolicy() {
-    if (is_child())
+    if (is_child()) {
       return prefs::kProjectorDogfoodForFamilyLinkEnabled;
+    }
     return prefs::kProjectorAllowByPolicy;
   }
 
@@ -380,8 +381,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   ui_test_utils::BrowserChangeObserver browser_opened(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   client()->OpenProjectorApp();
-  if (!is_child())
+  if (!is_child()) {
     browser_opened.Wait();
+  }
 
   // Verify that Projector App is opened.
   Browser* app_browser =

@@ -32,7 +32,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -165,7 +164,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     // Force a cache reset for mutable cached object properties. Any property
     // values cached while the tree is frozen is valid until the next thaw.
     IncrementGenerationalCacheId();
-    ResetActiveBlockFlowContainer();
 
     CHECK(FocusedObject());
     DUMP_WILL_BE_CHECK(!IsDirty());
@@ -275,6 +273,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // changed.
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
+
+  // Called when fragments in the LayoutBlockFlow changed.
+  void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) override;
 
   void DocumentTitleChanged() override;
 
@@ -624,7 +625,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   bool SerializeUpdatesAndEvents();
 
-  void ResetActiveBlockFlowContainer();
   const AXBlockFlowData* GetBlockFlowData(const AXObject* ax_object);
 
   // Returns the `TextChangedOperation` associated with the `id` from the
@@ -663,7 +663,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   // This is called after a node's included status changes, to update the
   // included_node_count_ which is used to debug tree mismatches between the the
   // AXObjectCache and AXTreeSerializer.
@@ -681,7 +681,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // TODO(accessibility) Use for more things that have 0% false positives, such
   // as focusable objects requiring a name.
   bool IsInternalUICheckerOn(const AXObject& obj) const;
-#endif  // DCHECK_IS_ON()
+#endif  // AX_FAIL_FAST_BUILD()
 
   // Used to turn on accessibility checks for internal Web UI, e.g. history,
   // preferences, etc. Will trigger DCHECKS so that WebUI with basic a11y errors
@@ -985,7 +985,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   size_t included_node_count_ = 0;
   size_t plugin_included_node_count_ = 0;
 #endif
@@ -1015,7 +1015,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // If > 0, tree is frozen.
   int frozen_count_ = 0;  // Used with Freeze(), Thaw() and IsFrozen() above.
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   bool updating_layout_and_ax_ = false;
   int tree_check_counter_ = 0;
   base::Time last_tree_check_time_stamp_ = base::Time::Now();
@@ -1227,11 +1227,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
   HashMap<AXID, AriaNotifications> aria_notifications_;
 
-  // Collect information for generation of inline text boxes at the block flow
-  // container level.
-  Member<LayoutObject> active_block_flow_container_;
-  Member<AXBlockFlowData> active_block_flow_data_;
-
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =
       ax::mojom::blink::EventFrom::kNone;
@@ -1276,6 +1271,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, Member<const LayoutObject>>
       previous_on_line_map_;
   HeapHashSet<Member<const LayoutBlockFlow>> processed_blocks_;
+
+  HeapHashMap<Member<const LayoutBlockFlow>, Member<AXBlockFlowData>>
+      block_flow_data_cache_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,

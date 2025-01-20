@@ -76,8 +76,12 @@ bool ProfileManagementFlowController::IsStepInitialized(Step step) const {
   return initialized_steps_.contains(step) && initialized_steps_.at(step);
 }
 
+bool ProfileManagementFlowController::HasFlowExited() const {
+  return clear_host_callback_.value().is_null();
+}
+
 void ProfileManagementFlowController::ExitFlow() {
-  DCHECK(clear_host_callback_.value());
+  CHECK(!HasFlowExited());
   std::move(clear_host_callback_.value()).Run();
 }
 

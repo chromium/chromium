@@ -273,7 +273,9 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kSwitch);
+  auto& view_accessibility = GetViewAccessibility();
+  view_accessibility.SetRole(ax::mojom::Role::kSwitch);
+  view_accessibility.SetCheckedState(ax::mojom::CheckedState::kFalse);
 }
 
 ToggleButton::~ToggleButton() {
@@ -492,6 +494,12 @@ void ToggleButton::StateChanged(ButtonState old_state) {
     }
     UpdateThumb();
   }
+}
+
+void ToggleButton::UpdateAccessibleCheckedState() {
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 SkPath ToggleButton::GetFocusRingPath() const {

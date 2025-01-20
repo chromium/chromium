@@ -41,7 +41,7 @@ namespace extensions {
 namespace keys = tabs_constants;
 namespace utils = api_test_utils;
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using ExtensionTabsTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {

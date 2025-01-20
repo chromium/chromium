@@ -69,10 +69,6 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     InitializeCallback success_callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(config.input_format == PIXEL_FORMAT_I420 ||
-         config.input_format == PIXEL_FORMAT_NV12)
-      << "Only I420 or NV12 format supported, got "
-      << VideoPixelFormatToString(config.input_format);
   TRACE_EVENT1("media", "MojoVideoEncodeAcceleratorService::Initialize",
                "config", config.AsHumanReadableString());
 

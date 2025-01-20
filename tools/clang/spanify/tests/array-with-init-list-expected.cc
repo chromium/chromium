@@ -4,6 +4,7 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -28,42 +29,42 @@ void test_with_structs() {
   buf0[index].a = 0;
 
   // Expected rewrite:
-  // auto buf1 = std::to_array<Aggregate, 2>({
+  // std::array<Aggregate, 2> buf1 = {
   //     Build(1, 2, 3),
   //     Build(4, 5, 6),
-  // });
-  auto buf1 = std::to_array<Aggregate, 2>({
+  // };
+  std::array<Aggregate, 2> buf1 = {
       Build(1, 2, 3),
       Build(4, 5, 6),
-  });
+  };
   buf1[index].a = 0;
 
   // Expected rewrite:
-  // auto buf2 = std::to_array<Aggregate, 3>({
+  // std::array<Aggregate, 3> buf2 = {{
   //     Build(1, 2, 3),
   //     {1, 2, 3},
   //     Build(4, 5, 6),
-  // });
-  auto buf2 = std::to_array<Aggregate, 3>({
+  // }};
+  std::array<Aggregate, 3> buf2 = {{
       Build(1, 2, 3),
       {1, 2, 3},
       Build(4, 5, 6),
-  });
+  }};
   buf2[index].a = 0;
 }
 
 void test_with_arrays() {
   // Expected rewrite:
-  // auto buf0 = std::to_array<std::array<int, 3>, 3>({
+  // std::array<std::array<int, 3>, 3> buf0 = {{
   //     {0, 1, 2},
   //     {3, 4, 5},
   //     {6, 7, 8},
-  // });
-  auto buf0 = std::to_array<std::array<int, 3>, 3>({
+  // }};
+  std::array<std::array<int, 3>, 3> buf0 = {{
       {0, 1, 2},
       {3, 4, 5},
       {6, 7, 8},
-  });
+  }};
   buf0[0][0] = 0;
 
   // Since function returning array is not allowed, we don't need to
@@ -81,4 +82,114 @@ void test_with_strings() {
   // auto buf0 = std::to_array<std::string>({"1", "2", "3"});
   auto buf0 = std::to_array<std::string>({"1", "2", "3"});
   buf0[index] = "4";
+}
+
+void test_with_const() {
+  // Expected rewrite:
+  // const auto data = std::to_array<bool>({false, true});
+  const auto data = std::to_array<bool>({false, true});
+  (void)data[0];
+}
+
+void test_with_static() {
+  // Expected rewrite:
+  // static auto data = std::to_array<int>({1, 2, 3});
+  static auto data = std::to_array<int>({1, 2, 3});
+  (void)data[0];
+}
+
+void test_with_constexpr() {
+  // Expected rewrite:
+  // constexpr const auto data = std::to_array<int>({1, 2, 3});
+  constexpr const auto data = std::to_array<int>({1, 2, 3});
+  (void)data[0];
+}
+
+void test_with_volatile() {
+  // Expected rewrite:
+  // auto data = std::to_array<volatile int>({1, 2, 3});
+  auto data = std::to_array<volatile int>({1, 2, 3});
+  (void)data[0];
+}
+
+void test_with_all_qualifiers() {
+  // Expected rewrite:
+  // static const auto data = std::to_array<volatile int>({1, 2, 3});
+  static const auto data = std::to_array<volatile int>({1, 2, 3});
+  (void)data[0];
+}
+
+void test_with_const_char() {
+  // Expected rewrite:
+  // static auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  static auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  (void)data[0];
+}
+
+void test_with_constant_const_char() {
+  // Expected rewrite:
+  // static const auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  static const auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  (void)data[0];
+}
+
+void test_with_computed_size() {
+  // Expected rewrite:
+  // std::array<int, 2 + 2> data = {1, 2, 3, 4};
+  std::array<int, 2 + 2> data = {1, 2, 3, 4};
+  std::ignore = data[0];
+}
+
+void test_with_constexpr_size() {
+  constexpr int size = 2 + 2;
+  // Expected rewrite:
+  // std::array<int, size> data = {1, 2, 3, 4};
+  std::array<int, size> data = {1, 2, 3, 4};
+  std::ignore = data[0];
+}
+
+void test_with_const_size() {
+  const int size = 2 + 2;
+  // Expected rewrite:
+  // std::array<int, size> data = {1, 2, 3, 4};
+  std::array<int, size> data = {1, 2, 3, 4};
+  std::ignore = data[0];
+}
+
+void test_brace_elision_computed_size() {
+  constexpr int size = 2;
+  struct Aggregate {
+    int a;
+    int b;
+  };
+  // Expected rewrite:
+  // std::array<Aggregate, size> buffer = {{{1, 2}, {3, 4}}};
+  std::array<Aggregate, size> buffer = {{{1, 2}, {3, 4}}};
+  std::ignore = buffer[0];
+}
+
+void test_with_nested_vector() {
+  // Expected rewrite:
+  // auto data = std::to_array<std::vector<int>>({
+  //     {1, 2, 3},
+  //     {4, 5, 6},
+  // });
+  auto data = std::to_array<std::vector<int>>({
+      {1, 2, 3},
+      {4, 5, 6},
+  });
+  std::ignore = data[0];
+}
+
+void test_with_nested_vector_const_size() {
+  // Expected rewrite:
+  // std::array<std::vector<int>, 2> data = {{
+  //    {1, 2, 3},
+  //    {4, 5, 6},
+  // }};
+  std::array<std::vector<int>, 2> data = {{
+      {1, 2, 3},
+      {4, 5, 6},
+  }};
+  std::ignore = data[0];
 }

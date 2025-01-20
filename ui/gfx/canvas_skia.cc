@@ -156,16 +156,7 @@ void Canvas::SizeStringFloat(const std::u16string& text,
   }
 }
 
-void Canvas::DrawStringRectWithFlags(const std::u16string& text,
-                                     const FontList& font_list,
-                                     SkColor color,
-                                     const Rect& text_bounds,
-                                     int flags) {
-  if (!IntersectsClipRect(RectToSkRect(text_bounds)))
-    return;
-
-  canvas_->save();
-
+void Canvas::AdjustClipRectForTextBounds(const Rect& text_bounds) {
   gfx::RectF clip_rect(text_bounds);
 
   // Pixels on the border of `text_bounds` will get clipped if the
@@ -176,6 +167,20 @@ void Canvas::DrawStringRectWithFlags(const std::u16string& text,
     clip_rect.Outset(0.5f);
   }
   ClipRect(clip_rect);
+}
+
+void Canvas::DrawStringRectWithFlags(const std::u16string& text,
+                                     const FontList& font_list,
+                                     SkColor color,
+                                     const Rect& text_bounds,
+                                     int flags) {
+  if (!IntersectsClipRect(RectToSkRect(text_bounds)))
+    return;
+
+  canvas_->save();
+
+  AdjustClipRectForTextBounds(text_bounds);
+
   Rect rect(text_bounds);
 
   std::unique_ptr<RenderText> render_text = RenderText::CreateRenderText();

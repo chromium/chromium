@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -313,6 +316,30 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   auto bubble_delegate =
       std::make_unique<ControlledHomeBubbleDelegate>(browser());
   EXPECT_FALSE(bubble_delegate->ShouldShow());
+}
+
+TEST_F(ControlledHomeBubbleDelegateTest, LongExtensionNameIsTruncated) {
+  const std::u16string long_name =
+      u"This extension name should be longer than our truncation threshold "
+      "to test that the bubble can handle long names";
+  const std::u16string truncated_name =
+      extensions::util::GetFixupExtensionNameForUIDisplay(long_name);
+  ASSERT_LT(truncated_name.size(), long_name.size());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadExtensionOverridingHome(base::UTF16ToUTF8(long_name));
+  ASSERT_TRUE(extension);
+
+  auto bubble_delegate =
+      std::make_unique<ControlledHomeBubbleDelegate>(browser());
+  EXPECT_TRUE(bubble_delegate->ShouldShow());
+
+  // Extension name is only shown if the dialog is not anchored to an action.
+  std::u16string bubble_text =
+      bubble_delegate->GetBodyText(/*anchored_to_action=*/false);
+
+  EXPECT_FALSE(base::Contains(bubble_text, long_name));
+  EXPECT_TRUE(base::Contains(bubble_text, truncated_name));
 }
 
 TEST_F(ControlledHomeBubbleDelegateTest,

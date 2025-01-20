@@ -45,17 +45,9 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 // Generates the signature during the passkey assertion process by decrypting
 // the passkey using the security domain secret and then using the decrypted
 // passkey to call passkey_model_utils's GenerateEcSignature function.
-NSData* GenerateSignature(id<Credential> credential,
-                          NSData* authenticator_data,
+NSData* GenerateSignature(NSData* authenticator_data,
                           NSData* client_data_hash,
-                          NSArray<NSData*>* security_domain_secrets) {
-  std::string private_key =
-      DecryptPrivateKey(credential, security_domain_secrets);
-
-  if (private_key.empty()) {
-    return nil;
-  }
-
+                          const std::string& private_key) {
   // Prepare the signed data.
   std::vector<uint8_t> signed_over_data;
   Append(signed_over_data, authenticator_data);
@@ -146,10 +138,11 @@ UserVerificationPreference UserVerificationPreferenceFromString(
 
 }  // namespace
 
-std::string DecryptPrivateKey(id<Credential> credential,
-                              NSArray<NSData*>* security_domain_secrets) {
+std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
+DecryptCredentialSecrets(id<Credential> credential,
+                         NSArray<NSData*>* security_domain_secrets) {
   if ([security_domain_secrets count] == 0) {
-    return std::string();
+    return std::nullopt;
   }
 
   // Decrypt the private key using the security domain secret.
@@ -161,21 +154,21 @@ std::string DecryptPrivateKey(id<Credential> credential,
     credential_specifics.set_encrypted(credential.encrypted.bytes,
                                        credential.encrypted.length);
   } else {
-    return std::string();
+    return std::nullopt;
   }
 
-  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   for (NSData* security_domain_secret in security_domain_secrets) {
     std::vector<uint8_t> trusted_vault_key;
     Append(trusted_vault_key, security_domain_secret);
 
+    sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
             trusted_vault_key, credential_specifics, &credential_secrets)) {
-      return std::move(credential_secrets.private_key());
+      return credential_secrets;
     }
   }
 
-  return std::string();
+  return std::nullopt;
 }
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
@@ -205,8 +198,8 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
               rp_id_str,
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
-              trusted_vault_key,
-              /*trusted_vault_key_version=*/0);
+              trusted_vault_key, /*trusted_vault_key_version=*/0,
+              /*generate_hmac_secret=*/false);
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
@@ -248,10 +241,17 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     return nil;
   }
 
+  std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
+      credential_secrets =
+          DecryptCredentialSecrets(credential, security_domain_secrets);
+  if (!credential_secrets) {
+    return nil;
+  }
+
   NSData* authenticatorData =
       MakeAuthenticatorDataForAssertion(credential.rpId);
-  NSData* signature = GenerateSignature(
-      credential, authenticatorData, client_data_hash, security_domain_secrets);
+  NSData* signature = GenerateSignature(authenticatorData, client_data_hash,
+                                        credential_secrets->private_key());
 
   if (!signature) {
     return nil;

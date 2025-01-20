@@ -7,9 +7,9 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 
@@ -87,7 +87,7 @@ void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigration() {
   TriggerLocalDataMigration(GetAllLocalAutofillProfilesEligibleForMigration());
 }
 
-void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigration(
+void ContactInfoLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
   // Read `syncer::LocalDataItemModel::DataId` as `std::string` as the Id type
   // used. The set of `std::string_view` is used to efficiently search in the

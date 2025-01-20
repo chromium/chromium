@@ -307,6 +307,13 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(::switches::kForceAppMode);
+
+  // Disables installation of preinstalled apps in kiosk sessions as
+  // `UserManager::Observer::OnUserLoggedIn` is called before `Profile` creation
+  // and `WebAppProvider::Start`.
+  // TODO(crbug.com/385072112): Replace cmd line switch with proper filtering.
+  command_line->AppendSwitch(::switches::kDisableDefaultApps);
+
   // This happens in Web kiosks.
   if (!kiosk_app_id.empty()) {
     command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);

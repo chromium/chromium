@@ -15,8 +15,13 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -37,6 +42,19 @@ const char kNonUtf8ResponseBody[] = "\xc3";
 
 const char kAsciiCharset[] = "us-ascii";
 const char kUtf8Charset[] = "utf-8";
+
+const char kCachedTrustedBiddingSignalsAge[] =
+    "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2";
+
+// Creates a URLResponseHeadPtr that the AuctionDownloader will accept as a
+// valid set of headers for a response.
+network::mojom::URLResponseHeadPtr CreateResponseHead() {
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\n"
+      "Ad-Auction-Allowed: true\r\n");
+  return response_head;
+}
 
 class AuctionDownloaderTest
     : public testing::TestWithParam<AuctionDownloader::DownloadMode> {
@@ -116,7 +134,7 @@ class AuctionDownloaderTest
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
         std::move(post_body), std::move(content_type),
-        response_started_callback_,
+        is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -141,7 +159,6 @@ class AuctionDownloaderTest
     return error_.value_or("Not an error.");
   }
 
- protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
                                 scoped_refptr<net::HttpResponseHeaders> headers,
                                 std::optional<std::string> error) {
@@ -154,7 +171,9 @@ class AuctionDownloaderTest
     run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   GURL url_ = GURL("https://url.test/script.js");
 
@@ -179,6 +198,8 @@ class AuctionDownloaderTest
 
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       response_started_callback_;
+
+  bool is_trusted_bidding_signals_kvv1_download_ = false;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -240,13 +261,30 @@ TEST_P(AuctionDownloaderTest, HttpError) {
 }
 
 TEST_P(AuctionDownloaderTest, Timeout) {
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, kAllowFledgeHeader,
-              net::HTTP_REQUEST_TIMEOUT);
-  EXPECT_FALSE(RunRequest());
+  // Set up and start the downloader inline, since can't use RunRequest() in
+  // this test.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  // Run until just before the timeout duration. The request should not time
+  // out.
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+  task_environment_.FastForwardBy(AuctionDownloader::kRequestTimeout -
+                                  kTinyTime);
+  EXPECT_FALSE(run_loop_->AnyQuitCalled());
+
+  // Wait until the timeout duration has passed. The request should have timed
+  // out.
+  task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_TRUE(run_loop_->AnyQuitCalled());
   EXPECT_EQ(
-      "Failed to load https://url.test/script.js HTTP status = 408 Request "
-      "Timeout.",
+      "Failed to load https://url.test/script.js error = net::ERR_TIMED_OUT.",
       last_error_msg());
 }
 
@@ -823,6 +861,147 @@ TEST_P(AuctionDownloaderTest, Charset) {
         "charset.",
         last_error_msg());
   }
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  response_head->was_fetched_via_cache = true;
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
+                                      base::Minutes(2).InMilliseconds(), 1);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = false;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  response_head->was_fetched_via_cache = true;
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+}
+
+TEST_P(AuctionDownloaderTest, StaleWhileRevalidate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeAuctionDownloaderStaleWhileRevalidate);
+  network::URLLoaderCompletionStatus status;
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->async_revalidation_requested = true;
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\nAd-Auction-Allowed: true");
+
+  url_loader_factory_.ClearResponses();
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  EXPECT_EQ(url_loader_factory_.total_requests(), 1u);
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  network::ResourceRequest initial_request =
+      url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_EQ(initial_request.url, url_);
+  EXPECT_TRUE(net::LOAD_SUPPORT_ASYNC_REVALIDATION &
+              initial_request.load_flags);
+
+  EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
+      url_, status, std::move(response_head), kAsciiResponseBody));
+
+  // There should be another request to revalidate. It should not have the
+  // async revalidaiton load flag. Other than that, it should have the same
+  // fields as the previous request.
+  EXPECT_EQ(url_loader_factory_.total_requests(), 2u);
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  network::ResourceRequest revalidation_request =
+      url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_FALSE(net::LOAD_SUPPORT_ASYNC_REVALIDATION &
+               revalidation_request.load_flags);
+  EXPECT_EQ(revalidation_request.url, url_);
+  revalidation_request.load_flags = initial_request.load_flags;
+  EXPECT_TRUE(revalidation_request.EqualsForTesting(initial_request));
+}
+
+TEST_P(AuctionDownloaderTest, DoNotSupportRevalidateOnPostRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFledgeAuctionDownloaderStaleWhileRevalidate);
+  network::URLLoaderCompletionStatus status;
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\nAd-Auction-Allowed: true");
+
+  url_loader_factory_.ClearResponses();
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/"post_body", /*content_type=*/"text/javascript",
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  // The LOAD_SUPPORT_ASYNC_REVALIDATION flag was not used.
+  EXPECT_EQ(url_loader_factory_.total_requests(), 1u);
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  EXPECT_FALSE(net::LOAD_SUPPORT_ASYNC_REVALIDATION &
+               url_loader_factory_.GetPendingRequest(0)->request.load_flags);
+}
+
+TEST_P(AuctionDownloaderTest, DoNotSupportStaleWhileRevalidateWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFledgeAuctionDownloaderStaleWhileRevalidate);
+  network::URLLoaderCompletionStatus status;
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\nAd-Auction-Allowed: true");
+
+  url_loader_factory_.ClearResponses();
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  // The LOAD_SUPPORT_ASYNC_REVALIDATION flag was not used.
+  EXPECT_EQ(url_loader_factory_.total_requests(), 1u);
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  EXPECT_FALSE(net::LOAD_SUPPORT_ASYNC_REVALIDATION &
+               url_loader_factory_.GetPendingRequest(0)->request.load_flags);
 }
 
 INSTANTIATE_TEST_SUITE_P(

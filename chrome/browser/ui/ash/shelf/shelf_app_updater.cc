@@ -8,4 +8,4 @@ ShelfAppUpdater::ShelfAppUpdater(Delegate* delegate,
                                  content::BrowserContext* browser_context)
     : delegate_(delegate), browser_context_(browser_context) {}
 
-ShelfAppUpdater::~ShelfAppUpdater() {}
+ShelfAppUpdater::~ShelfAppUpdater() = default;

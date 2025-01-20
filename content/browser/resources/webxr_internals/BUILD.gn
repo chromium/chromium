@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "webxr_internals"
 
   static_files = [
-    "webxr_internals.html",
     "webxr_internals.css",
+    "webxr_internals.html",
   ]
 
   web_component_files = [

@@ -6,27 +6,28 @@
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_H_
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
-#include <stdint.h>
+#import <stddef.h>
+#import <stdint.h>
 
-#include <map>
-#include <memory>
-#include <optional>
-#include <string>
-#include <string_view>
-#include <vector>
+#import <map>
+#import <memory>
+#import <optional>
+#import <string>
+#import <string_view>
+#import <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/time/time.h"
-#include "base/values.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/sequence_checker.h"
+#import "base/time/time.h"
+#import "base/values.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 @class CRWSessionStorage;
 @class CRWWebController;
@@ -400,6 +401,9 @@ class WebStateImpl final : public WebState {
   // Send global creation event. Needs to be the last method called in
   // the constructor.
   void SendGlobalCreationEvent();
+
+  // WebState is sequence-affine.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Stores whether the web state is currently being destroyed. This is not
   // stored in RealizedWebState/SerializedData as a WebState can be destroyed

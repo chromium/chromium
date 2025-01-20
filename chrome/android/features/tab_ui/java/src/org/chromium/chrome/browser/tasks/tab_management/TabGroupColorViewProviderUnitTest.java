@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -62,12 +63,12 @@ public class TabGroupColorViewProviderUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
-    private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
     private TabGroupColorViewProvider mRegularColorViewProvider;
     private TabGroupColorViewProvider mIncognitoColorViewProvider;
@@ -76,8 +77,7 @@ public class TabGroupColorViewProviderUnitTest {
     public void setUp() {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
-
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }

@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
@@ -84,6 +85,8 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCIPHandlingPolicy", prefs::kWebRTCIPHandlingPolicy,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"webRTCIPHandlingUrl", prefs::kWebRTCIPHandlingUrl,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCUDPPortRange", prefs::kWebRTCUDPPortRange,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"relatedWebsiteSetsEnabled",
@@ -104,9 +107,6 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
     {"caretHighlight", chromeos::prefs::kAccessibilityCaretHighlightEnabled,
-     APIPermissionID::kAccessibilityFeaturesRead,
-     APIPermissionID::kAccessibilityFeaturesModify},
-    {"cursorColor", chromeos::prefs::kAccessibilityCursorColorEnabled,
      APIPermissionID::kAccessibilityFeaturesRead,
      APIPermissionID::kAccessibilityFeaturesModify},
     {"cursorHighlight", chromeos::prefs::kAccessibilityCursorHighlightEnabled,

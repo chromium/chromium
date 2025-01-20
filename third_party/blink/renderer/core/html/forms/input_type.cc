@@ -36,7 +36,6 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
@@ -71,6 +70,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -764,7 +764,7 @@ bool InputType::CanSetStringValue() const {
   NOTREACHED();
 }
 
-bool InputType::IsKeyboardFocusable(
+bool InputType::IsKeyboardFocusableSlow(
     Element::UpdateBehavior update_behavior) const {
   // Inputs are always keyboard focusable if they are focusable at all,
   // and don't have a negative tabindex set.
@@ -1103,9 +1103,7 @@ void InputType::ApplyStep(const Decimal& current,
   // a number to a string, as defined for the input element's type attribute's
   // current state, on value.
   // 12. Set the value of the element to value as string.
-  if (RuntimeEnabledFeatures::
-          DispatchBeforeInputForSpinButtonInteractionsEnabled() &&
-      event_behavior == TextFieldEventBehavior::kDispatchChangeEvent &&
+  if (event_behavior == TextFieldEventBehavior::kDispatchChangeEvent &&
       DispatchBeforeInputInsertText(
           EventTargetNodeForDocument(&GetElement().GetDocument()),
           new_value.ToString()) != DispatchEventResult::kNotCanceled) {

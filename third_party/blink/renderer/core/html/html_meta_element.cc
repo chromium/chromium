@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -444,7 +439,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
 }
 
 static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
-  static const char* const kErrors[] = {
+  static constexpr auto kErrors = std::to_array<const char*>({
       "The key \"%replacement1\" is not recognized and ignored.",
       "The value \"%replacement1\" for key \"%replacement2\" is invalid, and "
       "has been ignored.",
@@ -454,8 +449,7 @@ static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
       "been clamped.",
       "The key \"target-densitydpi\" is not supported.",
       "The value \"%replacement1\" for key \"viewport-fit\" is not supported.",
-  };
-
+  });
   return kErrors[error_code];
 }
 
@@ -557,8 +551,8 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "app-title")) {
-    GetDocument().UpdateAppTitle();
+             EqualIgnoringASCIICase(name_value, "application-title")) {
+    GetDocument().UpdateApplicationTitle();
   }
 }
 
@@ -733,9 +727,9 @@ void HTMLMetaElement::ProcessContent() {
                         WebFeature::kHTMLMetaElementMonetization);
     }
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
-             EqualIgnoringASCIICase(name_value, "app-title")) {
+             EqualIgnoringASCIICase(name_value, "application-title")) {
     UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
-    GetDocument().UpdateAppTitle();
+    GetDocument().UpdateApplicationTitle();
   }
 }
 

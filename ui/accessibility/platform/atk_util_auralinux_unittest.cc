@@ -58,10 +58,11 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
 };
 
 TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {
-  AtkKeySnoopFunc key_snoop_func = reinterpret_cast<AtkKeySnoopFunc>(
-      +[](AtkKeyEventStruct* key_event, int* keyval_seen) {
-        *keyval_seen = key_event->keyval;
-      });
+  AtkKeySnoopFunc key_snoop_func = [](AtkKeyEventStruct* key_event,
+                                      void* keyval_seen) -> int {
+    *static_cast<int*>(keyval_seen) = key_event->keyval;
+    return FALSE;
+  };
 
   int keyval_seen = 0;
   guint listener_id = atk_add_key_event_listener(key_snoop_func, &keyval_seen);
@@ -111,8 +112,8 @@ TEST_F(AtkUtilAuraLinuxTest, AtSpiReady) {
   // In a normal browser execution, when a key event listener is added it means
   // the AT-SPI bridge has done it as part of its initialization, so it is set
   // as enabled.
-  AtkKeySnoopFunc key_snoop_func =
-      reinterpret_cast<AtkKeySnoopFunc>(+[](AtkKeyEventStruct* key_event) {});
+  AtkKeySnoopFunc key_snoop_func = [](AtkKeyEventStruct* key_event,
+                                      void* user_data) -> int { return FALSE; };
   atk_add_key_event_listener(key_snoop_func, nullptr);
 
   EXPECT_TRUE(atk_util->IsAtSpiReady());

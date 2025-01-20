@@ -10,13 +10,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/device_id_helper.h"
-#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -155,7 +153,8 @@ ProfileOAuth2TokenService::StartRequest(
 
 void ProfileOAuth2TokenService::StartRequestForMultilogin(
     signin::OAuthMultiloginTokenRequest& request,
-    const std::string& token_binding_challenge) {
+    const std::string& token_binding_challenge,
+    const std::string& ephemeral_public_key) {
   std::string refresh_token =
       delegate_->GetTokenForMultilogin(request.account_id());
   if (refresh_token.empty()) {
@@ -172,8 +171,7 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
   // Sign `token_binding_challenge` asynchronously if it's required.
   if (is_bound && !token_binding_challenge.empty()) {
     auto create_response_callback = base::BindOnce(
-        [](std::string token, std::string assertion,
-           std::optional<HybridEncryptionKey> ephemeral_key) {
+        [](std::string token, std::string assertion) {
           if (assertion.empty()) {
             // Even if the assertion failed, we want to make a server request
             // because the server doesn't verify assertions during dark launch.
@@ -181,8 +179,8 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
             // feature is fully launched.
             assertion = kTokenBindingAssertionFailedPlaceholder;
           }
-          return signin::OAuthMultiloginTokenResponse(
-              std::move(token), std::move(assertion), std::move(ephemeral_key));
+          return signin::OAuthMultiloginTokenResponse(std::move(token),
+                                                      std::move(assertion));
         },
         std::move(refresh_token));
     auto notify_request_callback =
@@ -190,7 +188,7 @@ void ProfileOAuth2TokenService::StartRequestForMultilogin(
             &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
             request.AsWeakPtr()));
     delegate_->GenerateRefreshTokenBindingKeyAssertionForMultilogin(
-        request.account_id(), token_binding_challenge,
+        request.account_id(), token_binding_challenge, ephemeral_public_key,
         std::move(create_response_callback)
             .Then(std::move(notify_request_callback)));
     return;
@@ -437,7 +435,7 @@ bool ProfileOAuth2TokenService::HasLoadCredentialsFinishedWithNoErrors() {
 
 void ProfileOAuth2TokenService::RecreateDeviceIdIfNeeded() {
 // On ChromeOS the device ID is not managed by the token service.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (AreAllCredentialsLoaded() && HasLoadCredentialsFinishedWithNoErrors() &&
       GetAccounts().empty()) {
     signin::RecreateSigninScopedDeviceId(user_prefs_);

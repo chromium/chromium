@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 
 #include <cstdlib>
@@ -15,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
@@ -45,7 +39,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -58,6 +51,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/experiences/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -219,8 +213,7 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
   base::Value::List args;
   args.Append(terminal_id);
   args.Append(output_type);
-  args.Append(base::Value(base::make_span(
-      reinterpret_cast<const uint8_t*>(&output[0]), output.size())));
+  args.Append(base::Value(base::as_byte_span(output)));
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);
@@ -742,18 +735,13 @@ ExtensionFunction::ResponseAction
 TerminalPrivateOpenSettingsSubpageFunction::Run() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // Ignore params->subpage for now, and always open crostini.
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
-    } else {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
-          chromeos::settings::mojom::Setting::kSetUpCrostini);
-    }
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
   } else {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, chromeos::settings::mojom::kCrostiniSectionPath);
+        profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
+        chromeos::settings::mojom::Setting::kSetUpCrostini);
   }
   return RespondNow(NoArguments());
 }

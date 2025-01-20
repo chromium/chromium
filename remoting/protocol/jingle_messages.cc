@@ -292,6 +292,18 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     }
   }
 
+  const XmlElement* error_details_tag =
+      jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "error-details"));
+  if (error_details_tag) {
+    error_details = error_details_tag->BodyText();
+  }
+
+  const XmlElement* error_location_tag =
+      jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "error-location"));
+  if (error_location_tag) {
+    error_location = error_location_tag->BodyText();
+  }
+
   if (action == SESSION_TERMINATE) {
     return true;
   }
@@ -394,6 +406,20 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
           new XmlElement(QName(kChromotingXmlNamespace, "error-code"));
       jingle_tag->AddElement(error_code_tag);
       error_code_tag->SetBodyText(ErrorCodeToString(error_code));
+    }
+
+    if (!error_details.empty()) {
+      XmlElement* error_details_tag =
+          new XmlElement(QName(kChromotingXmlNamespace, "error-details"));
+      jingle_tag->AddElement(error_details_tag);
+      error_details_tag->SetBodyText(error_details);
+    }
+
+    if (!error_location.empty()) {
+      XmlElement* error_location_tag =
+          new XmlElement(QName(kChromotingXmlNamespace, "error-location"));
+      jingle_tag->AddElement(error_location_tag);
+      error_location_tag->SetBodyText(error_location);
     }
   }
 

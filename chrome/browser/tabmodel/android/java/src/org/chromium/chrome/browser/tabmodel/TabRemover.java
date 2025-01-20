@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -36,16 +37,35 @@ public interface TabRemover {
 
     /**
      * {@link #closeTabs(TabClosureParams, boolean, TabModelActionListener)} without the {@code
-     * listener}.
+     * listener} or {@code performActionOverride}.
      */
     default void closeTabs(@NonNull TabClosureParams tabClosureParams, boolean allowDialog) {
         closeTabs(tabClosureParams, allowDialog, /* listener= */ null);
     }
 
     /**
-     * Closes tabs bypassing any dialogs and data sharing protections. This should only be used by
-     * {@link TabGroupSyncService} to forcibly close tab groups due to sync updates.
+     * Prepares to close tabs based on the provided parameters. This is similar to {@link
+     * closeTabs}. However, it doesn't close the tabs. Instead the final {@link TabClosureParams}
+     * are supplied to the {@code onPreparedCallback}. This allows a caller to then perform
+     * additional actions before committing to close the tabs with {@link forceCloseTabs} or {@link
+     * closeTabs} with {@code allowDialog = false}.
+     *
+     * @param tabClosureParams The parameters to follow when closing tabs.
+     * @param allowDialog Whether the operation is allowed to show a dialog if it is determined that
+     *     the operation is destructive to a tab group. Prefer to pass true here unless there is
+     *     reason to believe the action is not user visible or not user controllable.
+     * @param listener A {@link TabModelActionListener} that receives updates about the closure
+     *     process.
+     * @param onPreparedCallback A callback invoked with {@code tabClosureParams} that should be
+     *     used to close the tabs.
      */
+    void prepareCloseTabs(
+            @NonNull TabClosureParams tabClosureParams,
+            boolean allowDialog,
+            @Nullable TabModelActionListener listener,
+            @NonNull Callback<TabClosureParams> onPreparedCallback);
+
+    /** Closes tabs bypassing any dialogs and data sharing protections. */
     void forceCloseTabs(@NonNull TabClosureParams tabClosureParams);
 
     /**

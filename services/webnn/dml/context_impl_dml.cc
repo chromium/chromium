@@ -13,6 +13,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,7 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -36,6 +38,8 @@ namespace webnn::dml {
 using Microsoft::WRL::ComPtr;
 
 namespace {
+
+ContextImplDml::BackendForTesting* g_backend_for_testing = nullptr;
 
 void HandleTensorCreationFailure(
     const std::string& error_message,
@@ -89,9 +93,15 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
+  // The element count will not exceed `UINT_MAX / sizeof(DataType)` when the
+  // tensor byte length is `UINT_MAX` (DML element count limit).
+  static constexpr uint64_t kTensorByteLengthLimit =
+      std::numeric_limits<uint32_t>::max();
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
@@ -122,49 +132,55 @@ ContextProperties ContextImplDml::GetProperties(
        /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
-       /*add_input=*/kFloat16To32Ints32,
+       /*add_input=*/{kFloat16To32Ints32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_subtract_operator_desc#tensor-support
-       /*sub_input=*/kFloat16To32Ints32,
+       /*sub_input=*/{kFloat16To32Ints32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_multiply_operator_desc#tensor-support
-       /*mul_input=*/kFloat16To32Ints32,
+       /*mul_input=*/{kFloat16To32Ints32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_divide_operator_desc#tensor-support
-       /*div_input=*/kFloat16To32Ints32,
+       /*div_input=*/{kFloat16To32Ints32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_max_operator_desc#tensor-support
-       /*max_input=*/kFloat16To32Ints8To32,
+       /*max_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_min_operator_desc#tensor-support
-       /*min_input=*/kFloat16To32Ints8To32,
+       /*min_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_pow_operator_desc#tensor-support
-       /*pow_input=*/kFloat16To32Ints8To32,
+       /*pow_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_equals_operator_desc#tensor-support
-       /*equal_input=*/kFloat16To32Ints8To32,
+       /*equal_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_greater_than_operator_desc#tensor-support
-       /*greater_input=*/kFloat16To32Ints8To32,
+       /*greater_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_greater_than_or_equal_operator_desc#tensor-support
-       /*greater_or_equal_input=*/kFloat16To32Ints8To32,
+       /*greater_or_equal_input=*/
+       {kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_less_than_operator_desc#tensor-support
-       /*lesser_input=*/kFloat16To32Ints8To32,
+       /*lesser_input=*/{kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_less_than_or_equal_operator_desc#tensor-support
-       /*lesser_or_equal_input=*/kFloat16To32Ints8To32,
+       /*lesser_or_equal_input=*/
+       {kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
+
+       // NotEqual is emulated by DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS and
+       // DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT.
+       /*not_equal_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_and_operator_desc#tensor-support
-       /*logical_and_input=*/kUint8To32,
+       /*logical_and_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_or_operator_desc#tensor-support
-       /*logical_or_input=*/kUint8To32,
+       /*logical_or_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_xor_operator_desc#tensor-support
-       /*logical_xor_input=*/kUint8To32,
+       /*logical_xor_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_not_operator_desc#tensor-support
        /*logical_not_input=*/kUint8To32,
@@ -267,8 +283,10 @@ ContextProperties ContextImplDml::GetProperties(
        /*lstm_input=*/DataTypeConstraint::kFloat16To32,
        /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
 
-       // Matmul is emulated by gemm.
-       /*matmul_input=*/DataTypeConstraint::kFloat16To32,
+       // Matmul is emulated by gemm however inputs are flattened to support
+       // ranks greater than 4.
+       /*matmul_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_padding_operator_desc#tensor-support
        /*pad_input=*/kFloat16To32Ints8To32,
@@ -309,6 +327,9 @@ ContextProperties ContextImplDml::GetProperties(
 
        // Reshape is emulated by identity.
        /*reshape_input=*/kFloat16To32Ints8To32,
+
+       // Reverse is emulated by slice.
+       /*reverse_input=*/kFloat16To32Ints8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_operator_desc#tensor-support
        /*scatter_elements_input=*/kFloat16To32Ints8To32,
@@ -362,21 +383,21 @@ ContextProperties ContextImplDml::GetProperties(
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
     properties.data_type_limits.concat_inputs =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.add_input =
+    properties.data_type_limits.add_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.sub_input =
+    properties.data_type_limits.sub_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.mul_input =
+    properties.data_type_limits.mul_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.equal_input =
+    properties.data_type_limits.equal_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.greater_input =
+    properties.data_type_limits.greater_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.greater_or_equal_input =
+    properties.data_type_limits.greater_or_equal_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.lesser_input =
+    properties.data_type_limits.lesser_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.lesser_or_equal_input =
+    properties.data_type_limits.lesser_or_equal_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.abs_input = kFloat16To32Int8To64;
     properties.data_type_limits.identity_input =
@@ -389,7 +410,11 @@ ContextProperties ContextImplDml::GetProperties(
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.gather_nd_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.not_equal_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reshape_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reverse_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.scatter_elements_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
@@ -412,9 +437,9 @@ ContextProperties ContextImplDml::GetProperties(
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.cumulative_sum_input =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.max_input =
+    properties.data_type_limits.max_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.min_input =
+    properties.data_type_limits.min_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.pad_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
@@ -435,13 +460,13 @@ ContextProperties ContextImplDml::GetProperties(
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {
-    properties.data_type_limits.add_input =
+    properties.data_type_limits.add_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.sub_input =
+    properties.data_type_limits.sub_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.mul_input =
+    properties.data_type_limits.mul_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
-    properties.data_type_limits.div_input = kFloat16To32Ints8To32;
+    properties.data_type_limits.div_input.data_types = kFloat16To32Ints8To32;
     properties.data_type_limits.prelu_input =
         DataTypeConstraint::kFloat16To32Int8To32;
     properties.data_type_limits.relu_input =
@@ -451,7 +476,7 @@ ContextProperties ContextImplDml::GetProperties(
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
-    properties.data_type_limits.div_input =
+    properties.data_type_limits.div_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.dequantize_linear_scale =
         DataTypeConstraint::kFloat16To32;
@@ -498,12 +523,24 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+void ContextImplDml::SetBackendForTesting(
+    BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
+}
+
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateGraphImpl(
+        this, std::move(compute_resource_info), std::move(callback));
+    return;
+  }
+
   GraphImplDml::CreateAndBuild(
       adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
       std::move(compute_resource_info), std::move(constant_operands),
@@ -516,6 +553,12 @@ void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateTensorImpl(
+        this, std::move(receiver), std::move(tensor_info), std::move(callback));
+    return;
+  }
+
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
@@ -659,7 +702,7 @@ void ContextImplDml::OnReadbackComplete(
     return;
   }
 
-  mojo_base::BigBuffer dst_buffer(base::make_span(
+  mojo_base::BigBuffer dst_buffer(base::span(
       static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
 
   download_buffer->Unmap(0, nullptr);
@@ -768,7 +811,7 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
 }
 
 void ContextImplDml::HandleRecordingError(std::string_view error_message,
-                                       HRESULT hr) {
+                                          HRESULT hr) {
   command_recorder_.reset();
   HandleContextLostOrCrash(error_message, hr);
 }
@@ -809,6 +852,16 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
 
   OnLost(base::StrCat({"WebNN context is lost due to ", message_for_promise}));
   CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_RESET);
+}
+
+void ContextImplDml::RemoveDeviceForTesting() {
+  CHECK_IS_TEST();
+
+  ComPtr<ID3D12Device5> d3d12_device_5;
+  CHECK_EQ(
+      adapter_->d3d12_device()->QueryInterface(IID_PPV_ARGS(&d3d12_device_5)),
+      S_OK);
+  d3d12_device_5->RemoveDevice();
 }
 
 }  // namespace webnn::dml

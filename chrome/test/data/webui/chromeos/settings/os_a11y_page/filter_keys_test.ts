@@ -40,7 +40,8 @@ suite('<filter-keys>', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
-      isAccessibilityFilterKeysEnabled: true,
+      isAccessibilityBounceKeysEnabled: true,
+      isAccessibilitySlowKeysEnabled: true,
     });
     Router.getInstance().navigateTo(routes.A11Y_KEYBOARD_AND_TEXT_INPUT);
   });
@@ -51,9 +52,45 @@ suite('<filter-keys>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('feature disabled shows no filter keys rows', async () => {
+  test(
+      'bounce keys and slow keys features disabled shows no rows', async () => {
+        loadTimeData.overrideValues({
+          isAccessibilityBounceKeysEnabled: false,
+          isAccessibilitySlowKeysEnabled: false,
+        });
+        await initPage();
+
+        assertFalse(
+            !!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                `#${slowKeysToggleId}`));
+        assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+            `#${slowKeysDelaySliderId}`));
+        assertFalse(
+            !!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                `#${bounceKeysToggleId}`));
+        assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+            `#${bounceKeysDelaySliderId}`));
+      });
+
+  test('bounce keys feature disabled shows no bounce keys rows', async () => {
     loadTimeData.overrideValues({
-      isAccessibilityFilterKeysEnabled: false,
+      isAccessibilityBounceKeysEnabled: false,
+    });
+    await initPage();
+
+    assertTrue(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        `#${slowKeysToggleId}`));
+    assertTrue(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+        `#${slowKeysDelaySliderId}`));
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        `#${bounceKeysToggleId}`));
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+        `#${bounceKeysDelaySliderId}`));
+  });
+
+  test('slow keys feature disabled shows no slow keys rows', async () => {
+    loadTimeData.overrideValues({
+      isAccessibilitySlowKeysEnabled: false,
     });
     await initPage();
 
@@ -61,9 +98,9 @@ suite('<filter-keys>', () => {
         `#${slowKeysToggleId}`));
     assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
         `#${slowKeysDelaySliderId}`));
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    assertTrue(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         `#${bounceKeysToggleId}`));
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+    assertTrue(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
         `#${bounceKeysDelaySliderId}`));
   });
 

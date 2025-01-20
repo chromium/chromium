@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -13,7 +14,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_view_controller.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface LensPromoCoordinator () <ConfirmationAlertActionHandler,

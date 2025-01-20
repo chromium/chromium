@@ -583,7 +583,7 @@ TEST_F(URLLoaderTest, SyncLengths) {
   sync_load_response.error_code = net::OK;
   sync_load_response.url = GURL(url);
   sync_load_response.data =
-      SharedBuffer::Create(kBodyData, sizeof(kBodyData) - 1);
+      SharedBuffer::Create(base::span_from_cstring(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data->size());
   sync_load_response.head->encoded_body_length =
       network::mojom::EncodedBodyLength::New(kEncodedBodyLength);

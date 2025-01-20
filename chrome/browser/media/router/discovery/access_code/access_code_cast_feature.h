@@ -19,7 +19,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kAccessCodeCastRememberDevices);
 BASE_DECLARE_FEATURE(kAccessCodeCastTabSwitchingUI);
 BASE_DECLARE_FEATURE(kAccessCodeCastFreezeUI);
-}
+}  // namespace features
 
 namespace media_router {
 

@@ -8,11 +8,16 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+namespace ui {
+class MouseEvent;
+}  // namespace ui
 
 namespace views {
 class ImageView;
@@ -29,7 +34,8 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(FaceGazeBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  FaceGazeBubbleView();
+  explicit FaceGazeBubbleView(
+      const base::RepeatingCallback<void()>& on_mouse_entered);
   FaceGazeBubbleView(const FaceGazeBubbleView&) = delete;
   FaceGazeBubbleView& operator=(const FaceGazeBubbleView&) = delete;
   ~FaceGazeBubbleView() override;
@@ -40,6 +46,9 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   void OnThemeChanged() override;
 
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+
   const std::u16string& GetTextForTesting() const;
 
  private:
@@ -47,6 +56,10 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
 
   // Updates color of this view.
   void UpdateColor(bool is_warning);
+
+  // Custom callback that is called whenever the mouse enters or exits this
+  // view.
+  const base::RepeatingCallback<void()> on_mouse_entered_;
 
   // An image that displays the FaceGaze logo.
   raw_ptr<views::ImageView> image_ = nullptr;

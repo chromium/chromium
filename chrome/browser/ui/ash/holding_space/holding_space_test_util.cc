@@ -118,8 +118,9 @@ void WaitForSuggestionsInModel(
     HoldingSpaceModel* model,
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         expected_suggestions) {
-  if (GetSuggestionsInModel(*model) == expected_suggestions)
+  if (GetSuggestionsInModel(*model) == expected_suggestions) {
     return;
+  }
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>

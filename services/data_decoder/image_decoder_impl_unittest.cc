@@ -9,6 +9,7 @@
 
 #include "services/data_decoder/image_decoder_impl.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -139,9 +140,16 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
   int base_msg_size = sizeof(skia::mojom::BitmapN32::Data_);
 
   // Sizes which should trigger dimension-halving 0, 1 and 2 times
-  int heights[] = {max_height_for_msg - 10, max_height_for_msg + 10,
-                   2 * max_height_for_msg + 10};
-  int widths[] = {heights[0] * 3 / 2, heights[1] * 3 / 2, heights[2] * 3 / 2};
+  auto heights = std::to_array<int>({
+      max_height_for_msg - 10,
+      max_height_for_msg + 10,
+      2 * max_height_for_msg + 10,
+  });
+  auto widths = std::to_array<int>({
+      heights[0] * 3 / 2,
+      heights[1] * 3 / 2,
+      heights[2] * 3 / 2,
+  });
   for (size_t i = 0; i < std::size(heights); i++) {
     std::optional<std::vector<uint8_t>> jpg =
         CreateJPEGImage(widths[i], heights[i], SK_ColorRED);
@@ -183,12 +191,11 @@ TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
 }
 
 TEST_F(ImageDecoderImplTest, DecodeAnimationFailed) {
-  base::span<const uint8_t> data = base::as_bytes(
-      base::make_span("this ASCII text is *defintely* an animation"));
+  auto data = base::as_byte_span("this ASCII text is *defintely* an animation");
 
   std::vector<mojom::AnimationFramePtr> frames;
   decoder()->DecodeAnimation(
-      data, false, kTestMaxImageSize,
+      {data}, false, kTestMaxImageSize,
       base::BindLambdaForTesting(
           [&frames](std::vector<mojom::AnimationFramePtr> result) {
             frames = std::move(result);

@@ -9,17 +9,19 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -49,7 +51,8 @@ ResetSection::ResetSection(Profile* profile,
                            SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  if (IsPowerwashAllowed()) {
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (IsPowerwashAllowed(user)) {
     updater.AddSearchTags(GetResetSearchConcept());
 
     updater.AddSearchTags(GetPowerwashSearchConcept());
@@ -60,7 +63,7 @@ ResetSection::~ResetSection() = default;
 
 void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"resetPageTitle", IDS_OS_SETTINGS_REVAMP_RESET_TITLE},
+      {"resetPageTitle", IDS_OS_SETTINGS_RESET_TITLE},
       {"powerwashTitle", IDS_SETTINGS_FACTORY_RESET},
       {"powerwashDialogTitle", IDS_SETTINGS_FACTORY_RESET_HEADING},
       {"powerwashDialogButton", IDS_SETTINGS_RESTART},
@@ -91,17 +94,18 @@ void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("allowPowerwash", IsPowerwashAllowed());
-  html_source->AddBoolean("allowSanitize", IsSanitizeAllowed());
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  html_source->AddBoolean("allowPowerwash", IsPowerwashAllowed(user));
+  html_source->AddBoolean("allowSanitize", IsSanitizeAllowed(user));
 
   html_source->AddBoolean(
       "showResetProfileBanner",
       ::settings::ResetSettingsHandler::ShouldShowResetProfileBanner(
           profile()));
 
-  html_source->AddString("powerwashDescription",
-                         l10n_util::GetStringUTF16(
-                             IDS_OS_SETTINGS_REVAMP_FACTORY_RESET_DESCRIPTION));
+  html_source->AddString(
+      "powerwashDescription",
+      l10n_util::GetStringUTF16(IDS_OS_SETTINGS_FACTORY_RESET_DESCRIPTION));
 }
 
 void ResetSection::AddHandlers(content::WebUI* web_ui) {

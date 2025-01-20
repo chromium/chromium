@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,8 +77,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
 
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleFactoryWebUIInteractiveUiTest() {
-  }
+  HelpBubbleFactoryWebUIInteractiveUiTest() = default;
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
 
   // Opens the side panel and instruments the Read Later WebContents as
@@ -142,7 +142,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                       has_help_bubble)
                       .SetDescription(base::StringPrintf(
                           "CheckHandlerHasHelpBubble(%s)",
-                          has_help_bubble ? "true" : "false"))));
+                          base::ToString(has_help_bubble)))));
   }
 
   auto Cleanup() {
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       // Verify that the handler believes that the anchor has a help bubble.
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,

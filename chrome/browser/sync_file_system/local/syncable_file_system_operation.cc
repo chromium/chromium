@@ -76,7 +76,7 @@ class SyncableFileSystemOperation::QueueableTask
   const std::vector<FileSystemURL> target_paths_;
 };
 
-SyncableFileSystemOperation::~SyncableFileSystemOperation() {}
+SyncableFileSystemOperation::~SyncableFileSystemOperation() = default;
 
 void SyncableFileSystemOperation::CreateFile(const FileSystemURL& url,
                                              bool exclusive,

@@ -216,8 +216,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "DriveFilePickerIOS";
       case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
         return "ShareGroupCollaboration";
-      case AccessPoint::ACCESS_POINT_MAX:
-        NOTREACHED();
     }
   }
 };

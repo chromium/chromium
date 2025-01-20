@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_entrypoints.h"
-#include "components/lens/lens_rendering_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -75,17 +74,13 @@ class CoreTabHelper : public content::WebContentsObserver,
   // force_open_in_new_tab is set.
   void SearchWithLens(content::RenderFrameHost* render_frame_host,
                       const GURL& src_url,
-                      lens::EntryPoint entry_point,
-                      bool is_image_translate,
-                      bool force_open_in_new_tab);
+                      lens::EntryPoint entry_point);
 
   // Opens the Lens experience for an `image`, which will be resized if needed.
   // If the search engine supports opening requests in side panel, then the
   // request will open in the side panel instead of a new tab, unless
   // force_open_in_new_tab is set.
-  void SearchWithLens(const gfx::Image& image,
-                      lens::EntryPoint entry_point,
-                      bool force_open_in_new_tab);
+  void SearchWithLens(const gfx::Image& image, lens::EntryPoint entry_point);
 
   // Performs an image search for the image that triggered the context menu. The
   // `src_url` is passed to the search request and is not used directly to fetch
@@ -93,11 +88,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   // panel, then the request will open in the side panel instead of a new tab.
   void SearchByImage(content::RenderFrameHost* render_frame_host,
                      const GURL& src_url);
-
-  // Same as above, with ability to specify that the image should be translated.
-  void SearchByImage(content::RenderFrameHost* render_frame_host,
-                     const GURL& src_url,
-                     bool is_image_translate);
 
   // Performs an image search for the provided `image`, which will be resized if
   // needed. If the search engine supports opening requests in side panel, then
@@ -131,8 +121,6 @@ class CoreTabHelper : public content::WebContentsObserver,
           chrome_render_frame,
       const GURL& src_url,
       const std::string& additional_query_params,
-      bool use_side_panel,
-      bool is_image_translate,
       int thumbnail_min_area,
       int thumbnail_max_width,
       int thumbnail_max_height,
@@ -140,8 +128,6 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void DoSearchByImage(const GURL& src_url,
                        const std::string& additional_query_params,
-                       bool use_side_panel,
-                       bool is_image_translate,
                        const std::vector<unsigned char>& thumbnail_data,
                        const std::string& content_type,
                        const gfx::Size& original_size,
@@ -158,12 +144,8 @@ class CoreTabHelper : public content::WebContentsObserver,
       std::string& content_type,
       lens::mojom::ImageFormat& image_format);
 
-  // Posts the bytes and content type to the specified URL If |use_side_panel|
-  // is true, the content will open in a side panel, otherwise it will open in
-  // a new tab.
-  void PostContentToURL(TemplateURLRef::PostContent post_content,
-                        GURL url,
-                        bool use_side_panel);
+  // Posts the bytes and content type to the specified URL in a new tab.
+  void PostContentToURL(TemplateURLRef::PostContent post_content, GURL url);
 
   // Creates a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
@@ -175,19 +157,11 @@ class CoreTabHelper : public content::WebContentsObserver,
                          int thumbnail_min_area,
                          int thumbnail_max_width,
                          int thumbnail_max_height,
-                         const std::string& additional_query_params,
-                         bool use_side_panel,
-                         bool is_image_translate);
+                         const std::string& additional_query_params);
 
   // Searches the `original_image`, which will be downscaled if needed.
   void SearchByImageImpl(const gfx::Image& original_image,
-                         const std::string& additional_query_params,
-                         bool use_side_panel);
-
-  // Sets search args used for image translation if the current page is
-  // currently being translated.
-  void MaybeSetSearchArgsForImageTranslate(
-      TemplateURLRef::SearchTermsArgs& search_args);
+                         const std::string& additional_query_params);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.

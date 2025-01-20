@@ -2,44 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/app/application_context.h"
 
-#include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/no_destructor.h"
-#include "base/path_service.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/component_updater/component_updater_service.h"
-#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
-#include "components/component_updater/timer_update_scheduler.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
+#import "base/base_paths.h"
+#import "base/command_line.h"
+#import "base/functional/bind.h"
+#import "base/no_destructor.h"
+#import "base/path_service.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/component_updater/component_updater_service.h"
+#import "components/component_updater/installer_policies/autofill_states_component_installer.h"
+#import "components/component_updater/timer_update_scheduler.h"
+#import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/os_crypt/async/browser/os_crypt_async.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_service_factory.h"
-#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#import "components/prefs/json_pref_store.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/pref_service_factory.h"
+#import "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #import "components/sessions/core/session_id_generator.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/translate/core/browser/translate_download_manager.h"
-#include "components/update_client/update_client.h"
-#include "components/variations/net/variations_http_headers.h"
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "ios/web_view/internal/app/web_view_io_thread.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/translate/core/browser/translate_download_manager.h"
+#import "components/update_client/update_client.h"
+#import "components/variations/net/variations_http_headers.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/app/web_view_io_thread.h"
 #import "ios/web_view/internal/component_updater/web_view_component_updater_configurator.h"
 #import "ios/web_view/internal/cwv_flags_internal.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "net/log/net_log.h"
-#include "net/socket/client_socket_pool_manager.h"
-#include "services/network/network_change_manager.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/network_context.mojom.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "mojo/public/cpp/bindings/pending_receiver.h"
+#import "net/log/net_log.h"
+#import "net/socket/client_socket_pool_manager.h"
+#import "services/network/network_change_manager.h"
+#import "services/network/public/cpp/network_connection_tracker.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/mojom/network_context.mojom.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace ios_web_view {
 namespace {
@@ -251,6 +252,8 @@ SafeBrowsingService* ApplicationContext::GetSafeBrowsingService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+    safe_browsing_service_->Initialize(
+        base::PathService::CheckedGet(base::DIR_APP_DATA));
   }
   return safe_browsing_service_.get();
 }

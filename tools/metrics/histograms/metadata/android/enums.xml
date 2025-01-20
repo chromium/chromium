@@ -86,6 +86,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Site settings exception list"/>
 </enum>
 
+<enum name="AndroidChildProcessConnectionEvents">
+  <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
+  <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>
+  <int value="2" label="FALLBACK_ON_TIMEOUT_SANDBOXED"/>
+  <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
+</enum>
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <int value="0" label="No Default"/>
   <int value="1" label="Other Default"/>
@@ -268,6 +275,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chrome Link"/>
   <int value="4" label="Chrome Image"/>
 </enum>
+
+<!-- LINT.IfChange(AndroidUidType) -->
+
+<enum name="AndroidUidType">
+  <int value="0" label="root"/>
+  <int value="1" label="system"/>
+  <int value="2" label="phone"/>
+  <int value="3" label="nfc"/>
+  <int value="4" label="bluetooth"/>
+  <int value="5" label="wifi"/>
+  <int value="6" label="shell"/>
+  <int value="7" label="Other non-app UID"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java:UidType)-->
 
 <enum name="AndroidWebViewCrashCollectionState">
   <int value="0" label="ENABLED_BY_COMMANDLINE">
@@ -588,6 +610,12 @@ chromium-metrics-reviews@google.com.
   <int value="111" label="Profile.cancelPrefetch"/>
   <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
   <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
+  <int value="114" label="WebViewCompat.startUpWebView"/>
+  <int value="115" label="WebViewCompat.prerenderUrl"/>
+  <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
+  <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
+  <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
+  <int value="119" label="Profile.setSpeculativeLoadingConfig"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -683,13 +711,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(XX) VR_DELEGATE (Deprecated)"/>
   <int value="2" label="(XX) AR_DELEGATE (Deprecated)"/>
   <int value="3" label="(02) SCENE_OVERLAY"/>
-  <int value="4" label="(05) START_SURFACE (with tab switcher if enabled)"/>
+  <int value="4"
+      label="(XX) START_SURFACE (with tab switcher if enabled. Deprecated)"/>
   <int value="5" label="(10) SELECTION_POPUP"/>
   <int value="6" label="(11) MANUAL_FILLING"/>
   <int value="7" label="(09) FULLSCREEN"/>
   <int value="8" label="(03) BOTTOM_SHEET"/>
   <int value="9" label="(13) TAB_MODAL_HANDLER"/>
-  <int value="10" label="(08) TAB_SWITCHER (if Start surface is disabled)"/>
+  <int value="10"
+      label="(XX) TAB_SWITCHER (if Start surface is disabled. Deprecated)"/>
   <int value="11" label="(14) CLOSE_WATCHER"/>
   <int value="12" label="(17) TAB_HISTORY"/>
   <int value="13" label="(XX) TAB_RETURN_TO_CHROME_START_SURFACE (Deprecated)"/>
@@ -747,6 +777,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Not Multi-Window, Edge-to-Edge"/>
   <int value="2" label="Multi-Window, not Edge-to-Edge"/>
   <int value="3" label="Neither Multi-Window nor Edge-to-Edge"/>
+</enum>
+
+<enum name="CaptureNativeViewResult">
+  <int value="0" label="Not captured: Null WindowAndroid"/>
+  <int value="1" label="Not captured: View not laid out"/>
+  <int value="2" label="Not catpured: Between native pages"/>
+  <int value="3" label="Will capture a screenshot"/>
 </enum>
 
 <enum name="ChromeActivityType">
@@ -820,6 +857,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="FailedNullInputTransferToken"/>
   <int value="5" label="FailedNullCallbacks"/>
   <int value="6" label="SuccessfulButNullTransferToken"/>
+  <int value="7" label="ReuseExistingInputReceiver"/>
 </enum>
 
 <enum name="DebuggingEnabled">
@@ -831,15 +869,12 @@ chromium-metrics-reviews@google.com.
              of the setWebContentsDebuggingEnabled value."/>
 </enum>
 
-<enum name="DesktopWindowHeuristicResult">
+<enum name="DesktopWindowHeuristicResult2">
   <int value="0" label="Invalid result."/>
   <int value="1" label="The app is in a desktop window."/>
-  <int value="2" label="The app is not in multi-window mode."/>
-  <int value="3" label="Navigation bar bottom insets are present."/>
-  <int value="4"
-      label="Caption bar insets hold an unexpected number of bounding rects."/>
-  <int value="5" label="Caption bar top insets are not present."/>
-  <int value="6" label="Caption bar bounding rect has an invalid height."/>
+  <int value="2" label="Caption bar top insets are not present."/>
+  <int value="3" label="Caption bar bounding rect has an invalid height."/>
+  <int value="4" label="Caption bar customizable space unavailable."/>
 </enum>
 
 <enum name="DesktopWindowModeState">
@@ -1058,6 +1093,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Tab groups"/>
   <int value="4" label="Cross device"/>
+  <int value="5" label="History"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
@@ -1205,10 +1241,32 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device lock restored"/>
 </enum>
 
+<enum name="MotionEventAction">
+  <int value="0" label="NONE"/>
+  <int value="1" label="DOWN"/>
+  <int value="2" label="UP"/>
+  <int value="3" label="MOVE"/>
+  <int value="4" label="CANCEL"/>
+  <int value="5" label="POINTER_DOWN"/>
+  <int value="6" label="POINTER_UP"/>
+  <int value="7" label="HOVER_ENTER"/>
+  <int value="8" label="HOVER_EXIT"/>
+  <int value="9" label="HOVER_MOVE"/>
+  <int value="10" label="BUTTON_PRESS"/>
+  <int value="11" label="BUTTON_RELEASE"/>
+</enum>
+
 <enum name="MultipleUserProfilesState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Single user profile"/>
   <int value="2" label="Multiple user profiles"/>
+</enum>
+
+<enum name="NavigationDirection">
+  <summary>The direction of the navigation.</summary>
+  <int value="0" label="ForwardNavigation"/>
+  <int value="1" label="BackwardNavigation"/>
+  <int value="2" label="DifferentTab"/>
 </enum>
 
 <enum name="NavigationInterceptResult">
@@ -1428,9 +1486,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Custom Tab"/>
   <int value="4" label="Hub"/>
   <int value="5" label="Launcher"/>
+  <int value="6" label="WebSearch / External"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/searchactivityutils/java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java:IntentOrigin) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:IntentOriginVariants) -->
 
 <enum name="SearchActivitySearchType">
   <int value="0" label="Text"/>
@@ -1442,13 +1501,14 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchActivityTerminationReason">
   <int value="0" label="Navigation"/>
-  <int value="1" label="Unspecified termination"/>
+  <int value="1" label="Unspecified Termination"/>
   <int value="2" label="Tap Outside"/>
   <int value="3" label="Back Key Pressed"/>
   <int value="4" label="Omnibox Focus Lost"/>
   <int value="5" label="Activity Focus Lost"/>
   <int value="6" label="FRE Not Completed"/>
   <int value="7" label="Custom back arrow"/>
+  <int value="8" label="Bring Tab To Front"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java:TerminationReason) -->
@@ -1788,6 +1848,67 @@ chromium-metrics-reviews@google.com.
              WebChromeClient$FileChooserParams)"/>
   <int value="28" label="void openFileChooser(ValueCallback, String, String)"/>
   <int value="29" label="void setupAutoFill(Message)"/>
+</enum>
+
+<enum name="WebPageContentProviderEvent">
+  <int value="0" label="GET_CONTENT_URI_FAILED">
+    WebPageContentProvider failed to generate a URI for the current web page,
+    nothing will be attached to AssistContent
+  </int>
+  <int value="1" label="QUERY">
+    WebPageContentProvider received a query by an external app
+  </int>
+  <int value="2" label="QUERY_FAILED_CURRENT_TAB_CHANGED">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because the current tab no longer matches
+  </int>
+  <int value="3" label="QUERY_FAILED_INVALID_URI">
+    WebPageContentProvider threw an error while processing a query because it
+    had an invalid URI
+  </int>
+  <int value="4" label="QUERY_FAILED_INVALID_ID">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because the URI had an invalid id (e.g. non existing or no longer valid).
+  </int>
+  <int value="5" label="QUERY_FAILED_TO_GET_CURRENT_TAB">
+    WebPageContentProvider returned an empty cursor while processing a query
+    because we failed to get the current tab from the browser process
+  </int>
+  <int value="6" label="QUERY_SUCCEEDED_ALREADY_EXTRACTING (Deprecated)">
+    WebPageContentProvider returned a cursor with a pending result for a page
+    extraction task that was already running
+  </int>
+  <int value="7" label="QUERY_SUCCEEDED_RETURNED_EXTRACTED">
+    WebPageContentProvider returned a cursor with page contents successfully
+  </int>
+  <int value="8" label="QUERY_SUCCEEDED_STARTED_EXTRACTION (Deprecated)">
+    WebPageContentProvider successfully started a page extraction task and
+    returned a cursor with a pending result
+  </int>
+  <int value="9" label="TEXT_EXTRACTION_FAILED_EMPTY_RESULT">
+    WebPageContentProvider's page extraction task failed to execute
+  </int>
+  <int value="10" label="TEXT_EXTRACTION_FAILED_TAB_CHANGED (Deprecated)">
+    WebPageContentProvider's page extraction task succeeded, but the result was
+    discarded because the tab is no longer current
+  </int>
+  <int value="11" label="TEXT_EXTRACTION_SUCCEEDED (Deprecated)">
+    WebPageContentProvider's page extraction task completed successfully and
+    observers were notified
+  </int>
+  <int value="12" label="TIMEOUT">
+    The last URI generated by WebPageContentProvider was not queried on time and
+    it's no longer valid.
+  </int>
+  <int value="13" label="QUERY_FAILED_INTERRUPTED">
+    Asynchronous text extraction task was interrupted, query call failed.
+  </int>
+  <int value="14" label="QUERY_FAILED_TIMED_OUT">
+    Asynchronous text extraction task timed out, query call failed.
+  </int>
+  <int value="15" label="QUERY_FAILED_EXCEPTION">
+    An exception was thrown while extracting text, query call failed.
+  </int>
 </enum>
 
 <enum name="WebViewApiCall">
@@ -2281,6 +2402,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="getDefaultWebStorage"/>
   <int value="8" label="getDefaultWebViewDatabase"/>
   <int value="9" label="getTracingController"/>
+  <int value="10" label="asyncWebViewStartUp"/>
 </enum>
 
 <enum name="WebViewUrlScheme">
@@ -2309,6 +2431,16 @@ chromium-metrics-reviews@google.com.
 <enum name="WebViewVisibility">
   <int value="0" label="Visible"/>
   <int value="1" label="NotVisible"/>
+</enum>
+
+<enum name="WindowingMode">
+  <int value="0" label="Mode is unknown."/>
+  <int value="1" label="The app is running in a fullscreen window."/>
+  <int value="2" label="The app is running in a picture-in-picture window."/>
+  <int value="3" label="The app is running in a desktop window."/>
+  <int value="4"
+      label="The app is running in a multi-windowing mode not equivalent to
+             any of the other modes."/>
 </enum>
 
 </enums>

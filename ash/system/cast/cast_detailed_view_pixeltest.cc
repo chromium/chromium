@@ -10,8 +10,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,9 +17,7 @@ namespace {
 
 class CastDetailedViewPixelTest : public AshTestBase {
  public:
-  CastDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
-  }
+  CastDetailedViewPixelTest() = default;
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -29,7 +25,6 @@ class CastDetailedViewPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   TestCastConfigController cast_config_;
 };
 

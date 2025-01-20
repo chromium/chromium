@@ -103,7 +103,7 @@ public class ReaderModePreferencesDialog extends CarryOn {
         drop(Espresso::pressBack);
     }
 
-    public static ReaderModePreferencesDialog open(ChromeActivity<?> activity) {
+    public static ReaderModePreferencesDialog open(ChromeActivity activity) {
         return CarryOn.pickUp(
                 new ReaderModePreferencesDialog(),
                 () ->

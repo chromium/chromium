@@ -65,10 +65,6 @@ namespace {
 // The remaining time for a download item if it cannot be calculated.
 constexpr int64_t kUnknownRemainingTime = -1;
 
-// Finch flag for controlling auto resumption limit.
-int kDefaultAutoResumptionLimit = 5;
-const char kAutoResumptionLimitParamName[] = "AutoResumptionLimit";
-
 bool ShouldShowDownloadItem(download::DownloadItem* item) {
   return !item->IsTemporary() && !item->IsTransient();
 }
@@ -185,7 +181,7 @@ static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
 DownloadManagerService::DownloadManagerService()
     : is_manager_initialized_(false), is_pending_downloads_loaded_(false) {}
 
-DownloadManagerService::~DownloadManagerService() {}
+DownloadManagerService::~DownloadManagerService() = default;
 
 void DownloadManagerService::Init(JNIEnv* env,
                                   jobject obj,
@@ -710,15 +706,4 @@ jboolean JNI_DownloadManagerService_IsSupportedMimeType(
     JNIEnv* env,
     std::string& mime_type) {
   return blink::IsSupportedMimeType(mime_type);
-}
-
-// static
-jint JNI_DownloadManagerService_GetAutoResumptionLimit(JNIEnv* env) {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kDownloadAutoResumptionThrottling,
-      kAutoResumptionLimitParamName);
-  int auto_resumption_limit;
-  return base::StringToInt(value, &auto_resumption_limit)
-             ? auto_resumption_limit
-             : kDefaultAutoResumptionLimit;
 }

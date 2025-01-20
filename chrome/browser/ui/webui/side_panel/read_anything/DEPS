@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/common/read_anything",
+  "+components/language_detection/core",
 ]
 
 specific_include_rules = {
@@ -13,5 +14,6 @@ specific_include_rules = {
   "read_anything_screenshotter\.*": [
     "+components/paint_preview/common/recording_map.h",
     "+components/paint_preview/public/paint_preview_compositor_service.h",
+    "+skia/rusty_png_feature.h",
   ],
 }

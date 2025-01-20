@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
+Regular profiles start at bucket 1. Incognito profiles count towards the original profile. -->
+
+<!-- LINT.IfChange(Profile) -->
+
+<variants name="ProfileBucketName">
+  <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
+  <variant name="Profile_2" summary="Profile bucket 2 for a client."/>
+  <variant name="Profile_3" summary="Profile bucket 3 for a client."/>
+  <variant name="Profile_4" summary="Profile bucket 4 for a client."/>
+  <variant name="Profile_5" summary="Profile bucket 5 for a client."/>
+  <variant name="Profile_6" summary="Profile bucket 6 for a client."/>
+  <variant name="Profile_7" summary="Profile bucket 7 for a client."/>
+  <variant name="Profile_8" summary="Profile bucket 8 for a client."/>
+  <variant name="Profile_9" summary="Profile bucket 9 for a client."/>
+  <variant name="Profile_10" summary="Profile bucket 10 for a client."/>
+  <variant name="Profile_11+"
+      summary="All profiles with a bucket of 11+ will be bucketed here, 11
+               inclusive."/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/histograms.xml:Profile) -->
+
 <variants name="SafetyHubDashboardModuleType">
   <variant name="BrowserState"/>
   <variant name="NotificationReview"/>
@@ -162,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
-    enum="BooleanEnabled" expires_after="2025-04-13">
+    enum="BooleanEnabled" expires_after="2025-06-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -172,26 +195,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.ClearBrowsingData.Advanced.TimePeriod"
-    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2025-05-11">
+    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2025-07-13">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog advanced tab. Users in the CbdTimeframeRequired experiment record
-    this only for the first deletion.
+    dialog advanced tab.
   </summary>
 </histogram>
 
 <histogram name="Settings.ClearBrowsingData.Basic.TimePeriod"
-    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2025-05-11">
+    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2025-07-13">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog basic tab. Users in the CbdTimeframeRequired experiment record this
-    only for the first deletion.
+    dialog basic tab.
   </summary>
 </histogram>
 
@@ -204,8 +225,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.Cookies.TrackingProtectionRedirect"
+    enum="BooleanRedirected" expires_after="2025-11-20">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Whether or not navigations to the cookies page occured because the user was
+    redirected from the deprecated tracking protections page. Records true on
+    redirect from chrome://settings/trackingProtection to
+    chrome://settings/cookies. Records false on standard navigation to
+    chrome://settings/cookies.
+  </summary>
+</histogram>
+
 <histogram name="Settings.DefaultBrowserFromSource"
-    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2025-03-23">
+    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2025-06-22">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -216,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.FingerprintingProtection.Enabled"
-    enum="BooleanEnabled" expires_after="2025-04-20">
+    enum="BooleanEnabled" expires_after="2025-06-22">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -227,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>alimariam@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -269,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>bttk@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -297,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.HoverCards.ImagePreview.Enabled"
-    enum="BooleanEnabled" expires_after="2025-04-13">
+    enum="BooleanEnabled" expires_after="2025-06-22">
   <owner>charlesmeng@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <summary>
@@ -307,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.IpProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -327,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2025-05-11">
+    enum="BooleanEnabled" expires_after="2025-07-13">
   <owner>charlesmeng@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <summary>
@@ -340,7 +374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="2025-04-24">
+    expires_after="2025-06-29">
   <owner>antrim@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <owner>cros-lurs@google.com</owner>
@@ -351,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -363,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="2025-04-13">
+    enum="SettingsPrivacyElementInteractions" expires_after="2025-06-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -374,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.EntryExit"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2025-04-13">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2025-06-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -385,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
-    expires_after="2025-02-10">
+    expires_after="2025-06-22">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -397,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.NextNavigation"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2025-04-13">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2025-06-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -407,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.SettingsStates"
-    enum="SettingsPrivacyGuideSettingsStates" expires_after="2025-04-01">
+    enum="SettingsPrivacyGuideSettingsStates" expires_after="2025-06-22">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -420,7 +454,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -432,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
-    enum="BooleanEnabled" expires_after="2025-03-30">
+    enum="BooleanEnabled" expires_after="2025-06-01">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -476,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2025-03-30">
+    expires_after="2025-06-01">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -486,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.NoticeCheckIsMismatched"
-    enum="Boolean" expires_after="2025-05-04">
+    enum="Boolean" expires_after="2025-07-06">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -528,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
-    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2025-05-11">
+    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2025-07-13">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -557,7 +591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -566,8 +600,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.{Profile}.PromptStartupState"
+    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2025-11-11">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the startup state of the privacy sandbox prompt on a {Profile} for
+    Privacy Sandbox GA M1. This is recorded during the prompt start up.
+  </summary>
+  <token key="Profile" variants="ProfileBucketName"/>
+</histogram>
+
 <histogram name="Settings.SafetyCheck.Interactions"
-    enum="SettingsSafetyCheckInteractions" expires_after="2025-05-11">
+    enum="SettingsSafetyCheckInteractions" expires_after="2025-07-13">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>anaudrey@chromium.org</owner>
@@ -578,46 +623,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.NotificationsListCount"
-    units="suggestions" expires_after="2025-03-01">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    The number of suggestions of notification permissions to revoke, recorded
-    when the notification permission list is initialized for the SafetyCheck
-    notifications module.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SafetyCheck.NotificationsModuleEntryPointShown"
-    enum="BooleanVisible" expires_after="2024-12-01">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Captures whether the entry point for the notification module of Safety Check
-    is shown to the user, i.e. whether it is enabled and at least one
-    notification permission met the criteria for review. Recorded whenever the
-    user visits the Safety Check page in Chrome Settings.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SafetyCheck.NotificationsModuleInteractions"
-    enum="SafetyCheckNotificationsModuleInteractions"
-    expires_after="2024-11-03">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    The user actions taken on the notifications module in safety check in Chrome
-    settings. Recorded every time the user interacts with the respective UI
-    element.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.PasswordsResult2"
-    enum="SafetyCheckPasswordsStatus" expires_after="2025-04-13">
+    enum="SafetyCheckPasswordsStatus" expires_after="2025-06-22">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -636,7 +643,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays"
-    units="days" expires_after="2025-05-11">
+    units="days" expires_after="2025-07-13">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -648,19 +655,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.UnusedSitePermissionsListCount"
-    units="suggestions" expires_after="2024-11-03">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    The number of suggestions of unused site permissions to revoke, recorded
-    when the list of sites with revoked permissions is initialized when the user
-    opens the SafetyCheck unused site permissions module.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsMigrationFail"
-    units="type" expires_after="2025-03-30">
+    units="type" expires_after="2025-06-08">
   <owner>alimariam@google.com</owner>
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -672,23 +668,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown"
-    enum="BooleanVisible" expires_after="2025-03-09">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Captures whether the entry point for the unused site permissions module of
-    Safety Check is shown to the user, i.e. whether it is enabled and at least
-    one site permission has been revoked. Recorded whenever the user visits the
-    Safety Check page in Chrome Settings.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2025-05-04">
+    expires_after="2025-07-06">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -771,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed"
-    enum="BooleanEnabled" expires_after="2025-04-06">
+    enum="BooleanEnabled" expires_after="2025-06-08">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -782,8 +764,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-06-22">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether auto-revocation is enabled for unused site permissions.
+    Recorded when the SafetyHubFetchService is created on browser start up.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.Dashboard.Interactions"
-    enum="SafetyHubDashboardInteractions" expires_after="2025-04-06">
+    enum="SafetyHubDashboardInteractions" expires_after="2025-06-08">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -805,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.EntryPointImpression"
-    enum="SafetyHubEntryPoint" expires_after="2025-03-23">
+    enum="SafetyHubEntryPoint" expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -815,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.EntryPointInteraction"
-    enum="SafetyHubEntryPoint" expires_after="2025-03-23">
+    enum="SafetyHubEntryPoint" expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -827,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.ExternalInteractions"
-    enum="SafetyHubExternalInteractions" expires_after="2025-04-06">
+    enum="SafetyHubExternalInteractions" expires_after="2025-06-08">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -838,7 +832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.HasDashboardShowAnyWarning"
-    enum="BooleanVisible" expires_after="2025-03-23">
+    enum="BooleanVisible" expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -859,7 +853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.Interaction" enum="SafetyHubSurfaces"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -869,8 +863,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.MagicStack.StateOnStartup"
+    enum="BooleanEnabled" expires_after="2025-06-22">
+  <owner>fsenra@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures whether the Safety Hub Magic Stack module is enabled. Recorded when
+    the SafetyHubMagicStackBuilder is created on browser start up. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.MenuNotificationClicked"
-    enum="SafetyHubModuleType" expires_after="2025-03-23">
+    enum="SafetyHubModuleType" expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -881,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.MenuNotificationImpression"
-    enum="SafetyHubModuleType" expires_after="2025-03-23">
+    enum="SafetyHubModuleType" expires_after="2025-05-25">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -893,7 +897,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.Interactions"
     enum="SafetyCheckNotificationsModuleInteractions"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -905,7 +909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.ListCount"
-    units="suggestions" expires_after="2025-04-13">
+    units="suggestions" expires_after="2025-06-22">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -916,7 +920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-04-27">
+    enum="SafetyHubCardState" expires_after="2025-06-29">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -927,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-04-27">
+    enum="SafetyHubCardState" expires_after="2025-06-29">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -953,7 +957,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -965,7 +969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
-    units="suggestions" expires_after="2025-04-13">
+    units="suggestions" expires_after="2025-06-22">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -976,7 +980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2025-05-04">
+    enum="SafetyHubCardState" expires_after="2025-07-06">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -987,7 +991,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.{ModuleType}.{LifecycleEvent}"
-    enum="SafetyHubModuleState" expires_after="2025-04-06">
+    enum="SafetyHubModuleState" expires_after="2025-06-08">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -999,7 +1003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SearchEngines.Interactions"
-    enum="SettingsSearchEnginesInteractions" expires_after="2025-05-11">
+    enum="SettingsSearchEnginesInteractions" expires_after="2025-07-13">
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1050,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings2" enum="SessionStartupPref"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>mpearson@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1073,8 +1077,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2025-03-30">
-  <owner>drubery@chromium.org</owner>
+    expires_after="2026-01-06">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
+  <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has been changed since the last
@@ -1148,8 +1155,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
-    expires_after="2025-04-13">
-  <owner>drubery@chromium.org</owner>
+    expires_after="2025-06-22">
+  <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>
@@ -1186,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2025-04-13">
+    enum="TrackedPreference" expires_after="2025-06-22">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1196,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackingProtection.BlockAllThirdParty" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1207,24 +1214,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackingProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
     Records the state of the pref that represents whether the user has the new
     Tracking Protection prefs and UX. Logged on startup.
-  </summary>
-</histogram>
-
-<histogram name="Settings.TrackingProtection.Redirect" enum="BooleanRedirected"
-    expires_after="2025-05-04">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether or not navigations to the tracking protection page occured because
-    the user was redirected from the cookies page. Records true on redirect from
-    chrome://settings/cookies to chrome://settings/trackingProtection. Records
-    false on standard navigation to chrome://settings/trackingProtection.
   </summary>
 </histogram>
 

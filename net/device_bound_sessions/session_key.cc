@@ -16,4 +16,12 @@ SessionKey& SessionKey::operator=(const SessionKey&) = default;
 SessionKey::SessionKey(SessionKey&&) = default;
 SessionKey& SessionKey::operator=(SessionKey&&) = default;
 
+bool SessionKey::operator==(const SessionKey& other) const = default;
+bool SessionKey::operator<(const SessionKey& other) const {
+  if (site != other.site) {
+    return site < other.site;
+  }
+  return id.value() < other.id.value();
+}
+
 }  // namespace net::device_bound_sessions

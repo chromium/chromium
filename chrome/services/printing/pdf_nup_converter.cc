@@ -51,7 +51,7 @@ void RunCallbackWithConversionResult(Callback callback,
 
 PdfNupConverter::PdfNupConverter() = default;
 
-PdfNupConverter::~PdfNupConverter() {}
+PdfNupConverter::~PdfNupConverter() = default;
 
 void PdfNupConverter::NupPageConvert(
     uint32_t pages_per_sheet,

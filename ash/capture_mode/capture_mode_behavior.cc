@@ -108,6 +108,11 @@ class DefaultBehavior : public CaptureModeBehavior {
     return controller->type() == CaptureModeType::kImage &&
            controller->source() == CaptureModeSource::kRegion;
   }
+  bool ShouldShowGlowWhileProcessingCaptureType(
+      PerformCaptureType capture_type) const override {
+    return CanPaintRegionOverlay() && Shell::Get()->scanner_controller() &&
+           capture_type == PerformCaptureType::kScanner;
+  }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
   bool CanShowSmartActionsButton() const override {
     auto* scanner_controller = Shell::Get()->scanner_controller();
@@ -115,12 +120,21 @@ class DefaultBehavior : public CaptureModeBehavior {
   }
   bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjusted() override {
-    if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
-        features::IsScannerEnabled()) {
-      // Perform text detection to determine whether the copy text and scanner
-      // actions buttons should be shown.
-      CaptureModeController::Get()->PerformCapture(
-          PerformCaptureType::kTextDetection);
+    if (ShouldShowDefaultActionButtonsAfterRegionSelected()) {
+      auto* capture_mode_controller = CaptureModeController::Get();
+      if (features::IsCaptureModeOnDeviceOcrEnabled()) {
+        // Perform text detection to determine whether the copy text and smart
+        // actions buttons should be shown.
+        capture_mode_controller->PerformCapture(
+            PerformCaptureType::kTextDetection);
+      } else if (features::IsScannerEnabled()) {
+        // Show the smart actions button regardless of whether there is text
+        // in the selected area or not.
+        BaseCaptureModeSession* session =
+            capture_mode_controller->capture_mode_session();
+        CHECK(session);
+        session->AddSmartActionsButton();
+      }
     }
   }
 };
@@ -352,6 +366,10 @@ class SunfishBehavior : public CaptureModeBehavior {
     return IsSunfishAllowedAndEnabled();
   }
   bool CanPaintRegionOverlay() const override { return true; }
+  bool ShouldShowGlowWhileProcessingCaptureType(
+      PerformCaptureType capture_type) const override {
+    return CanPaintRegionOverlay();
+  }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture(
       PerformCaptureType capture_type) const override {
@@ -379,9 +397,12 @@ class SunfishBehavior : public CaptureModeBehavior {
     return std::make_unique<SunfishCaptureBarView>();
   }
   void OnRegionSelectedOrAdjusted() override {
+    auto* controller = CaptureModeController::Get();
+    controller->MaybeUpdateSearchResultsPanelBounds();
+
     // `CaptureModeController` will perform DLP restriction checks and determine
     // whether the image can be sent for search.
-    CaptureModeController::Get()->PerformCapture(PerformCaptureType::kSunfish);
+    controller->PerformCapture(PerformCaptureType::kSunfish);
   }
   void OnEnterKeyPressed() override {}
 };
@@ -435,6 +456,11 @@ bool CaptureModeBehavior::ShouldRegionOverlayBeAllowed() const {
 }
 
 bool CaptureModeBehavior::CanPaintRegionOverlay() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldShowGlowWhileProcessingCaptureType(
+    PerformCaptureType capture_type) const {
   return false;
 }
 
@@ -568,12 +594,7 @@ void CaptureModeBehavior::CreateCaptureFolder(
 
 std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
     const {
-  std::vector<RecordingType> supported_recording_types;
-  supported_recording_types.push_back(RecordingType::kWebM);
-  if (features::IsGifRecordingEnabled()) {
-    supported_recording_types.push_back(RecordingType::kGif);
-  }
-  return supported_recording_types;
+  return {RecordingType::kWebM, RecordingType::kGif};
 }
 
 void CaptureModeBehavior::SetPreSelectedWindow(

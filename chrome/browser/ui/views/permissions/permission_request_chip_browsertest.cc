@@ -56,8 +56,7 @@ LocationBarView* GetLocationBarView(Browser* browser) {
 }  // namespace
 
 class PermissionRequestChipGestureSensitiveBrowserTest
-    : public InProcessBrowserTest {
-};
+    : public InProcessBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        ChipFinalizedWhenInteractingWithOmnibox) {
@@ -295,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 }
 
 class PermissionRequestChipGestureInsensitiveBrowserTest
-    : public InProcessBrowserTest {
-};
+    : public InProcessBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
                        CallbacksResetWhenInteractingWithOmnibox) {

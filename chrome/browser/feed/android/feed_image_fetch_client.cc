@@ -45,7 +45,7 @@ FeedApi* GetFeedStream() {
 
 jint JNI_FeedImageFetchClient_SendRequest(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
+    std::string& url,
     const JavaParamRef<jobject>& j_response_callback) {
   // Keep the callback as a ScopedJavaGlobalRef to enable binding it for use
   // with OnFetchFinished.
@@ -58,7 +58,7 @@ jint JNI_FeedImageFetchClient_SendRequest(
   }
 
   return stream
-      ->FetchImage(GURL(base::android::ConvertJavaStringToUTF8(env, j_url)),
+      ->FetchImage(GURL(url),
                    base::BindOnce(&OnFetchFinished, env, std::move(callback)))
       .GetUnsafeValue();
 }

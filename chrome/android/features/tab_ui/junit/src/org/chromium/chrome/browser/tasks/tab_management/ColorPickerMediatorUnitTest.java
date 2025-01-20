@@ -9,19 +9,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.widget.FrameLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -31,20 +30,17 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ColorPickerMediatorUnitTest {
-    @Mock private ColorPickerContainer mContainerView;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
     private ColorPickerMediator mMediator;
     private List<Integer> mColorIds;
     private List<PropertyModel> mColorItems = new ArrayList<>();
 
-    @Captor ArgumentCaptor<List<FrameLayout>> mColorViewsCaptor;
-
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mColorIds = ColorPickerUtils.getTabGroupColorIdList();
+        mColorIds = TabGroupColorUtils.getTabGroupColorIdList();
 
         for (int color : mColorIds) {
             PropertyModel model =

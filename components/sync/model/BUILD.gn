@@ -16,6 +16,8 @@ static_library("model") {
     "data_batch.h",
     "data_type_activation_request.cc",
     "data_type_activation_request.h",
+    "data_type_controller_delegate.cc",
+    "data_type_controller_delegate.h",
     "data_type_local_change_processor.h",
     "data_type_store.h",
     "data_type_store_backend.cc",

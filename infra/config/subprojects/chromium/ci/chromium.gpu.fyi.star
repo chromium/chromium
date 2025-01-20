@@ -272,7 +272,7 @@ ci.thin_tester(
             "gpu_pixel_4_stable",
         ],
         per_test_modifications = {
-            "expected_color_pixel_passthrough_test": targets.mixin(
+            "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to
@@ -292,7 +292,7 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "pixel_skia_gold_passthrough_test": targets.mixin(
+            "pixel_skia_gold_passthrough_ganesh_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to
@@ -312,7 +312,7 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "screenshot_sync_passthrough_tests": targets.mixin(
+            "screenshot_sync_passthrough_ganesh_tests": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to
@@ -473,51 +473,6 @@ ci.thin_tester(
     list_view = "chromium.gpu.experimental",
 )
 
-ci.thin_tester(
-    name = "Android FYI Release (Motorola Moto G Power 5G)",
-    description_html = "Runs GPU tests on Motorola Moto G Power 5G phones",
-    triggered_by = ["GPU FYI Android arm64 Builder"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "arm64_builder_rel_mb",
-        ),
-        run_tests_serially = True,
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_noop_sleep_telemetry_test",
-        ],
-        mixins = [
-            "has_native_resultdb_integration",
-            "motorola_moto_g_power_5g",
-            "limited_capacity_bot",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-        use_android_merge_script_by_default = False,
-    ),
-    # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Android|T64|IMG",
-    #     short_name = "MGP",
-    # ),
-    list_view = "chromium.gpu.experimental",
-)
-
-# TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",
     triggered_by = ["GPU FYI Android arm Builder"],
@@ -797,6 +752,37 @@ ci.gpu.linux_builder(
             "chromeos",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "gpu_fyi_chromeos_release_gtests_volteer_skylab",
+                    "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
+                ],
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+        per_test_modifications = {
+            "expected_color_pixel_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM": targets.mixin(
+                args = [
+                    "--service-account=/creds/service_accounts/skylab-drone.json",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM": targets.mixin(
+                args = [
+                    "--service-account=/creds/service_accounts/skylab-drone.json",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.CROS_CHROME,
+        os_type = targets.os_type.CROS,
+        use_android_merge_script_by_default = False,
+        use_swarming = False,
     ),
     # TODO(crbug.com/40942991): This config is experimental and currently
     # is too difficult for gardeners to keep green.
@@ -2353,6 +2339,27 @@ ci.thin_tester(
             "tab_capture_end2end_tests": targets.remove(
                 reason = "Run these only on Release bots.",
             ),
+            # TODO(crbug.com/380431384): Re-enable when fixed
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = [
+                    "crbug.com/380431384 flaky crashes in random tests",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -2586,9 +2593,7 @@ ci.thin_tester(
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (NVIDIA)'
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -2600,10 +2605,10 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|10|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 
@@ -2793,6 +2798,42 @@ ci.thin_tester(
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
             ),
+            # TODO(crbug.com/380431384): Re-enable when fixed
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = [
+                    "crbug.com/380431384 flaky crashes in random tests",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -2832,7 +2873,7 @@ ci.thin_tester(
             "gpu_fyi_win_optional_isolated_scripts",
         ],
         mixins = [
-            "win10_nvidia_rtx_4070_super_stable",
+            "win11_nvidia_rtx_4070_super_stable",
             "limited_capacity_bot",
         ],
     ),
@@ -2841,7 +2882,7 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
+        category = "Windows|11|x64|Nvidia",
         short_name = "4070",
     ),
 )
@@ -2917,6 +2958,42 @@ ci.thin_tester(
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
+            ),
+            # TODO(crbug.com/380431384): Re-enable when fixed
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = [
+                    "crbug.com/380431384 flaky crashes in random tests",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
             ),
         },
     ),
@@ -3092,7 +3169,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x86",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3128,7 +3204,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3161,7 +3236,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Debug",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3196,7 +3270,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "rel",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3230,7 +3303,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "dbg",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3270,5 +3342,4 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|XR",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )

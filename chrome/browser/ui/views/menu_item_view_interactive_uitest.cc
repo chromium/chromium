@@ -105,12 +105,13 @@ class MenuItemViewTestInsert : public MenuTestBase {
     ASSERT_FALSE(submenu->IsShowing());
     ASSERT_EQ(3u, submenu->GetMenuItems().size());
 
-    if (SELECT_INDEX == INSERT_INDEX)
+    if (SELECT_INDEX == INSERT_INDEX) {
       ASSERT_EQ(1000, last_command());
-    else if (SELECT_INDEX < INSERT_INDEX)
+    } else if (SELECT_INDEX < INSERT_INDEX) {
       ASSERT_EQ(SELECT_INDEX + 1, last_command());
-    else
+    } else {
       ASSERT_EQ(SELECT_INDEX, last_command());
+    }
 
     LOG(ERROR) << "\nDone\n";
     Done();
@@ -282,10 +283,11 @@ class MenuItemViewTestRemove : public MenuTestBase {
     ASSERT_FALSE(submenu->IsShowing());
     ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
-    if (SELECT_INDEX < REMOVE_INDEX)
+    if (SELECT_INDEX < REMOVE_INDEX) {
       ASSERT_EQ(SELECT_INDEX + 1, last_command());
-    else
+    } else {
       ASSERT_EQ(SELECT_INDEX + 2, last_command());
+    }
 
     Done();
   }

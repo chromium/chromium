@@ -64,7 +64,7 @@ class LoginFeedbackTest : public LoginManagerTest {
   LoginFeedbackTest(const LoginFeedbackTest&) = delete;
   LoginFeedbackTest& operator=(const LoginFeedbackTest&) = delete;
 
-  ~LoginFeedbackTest() override {}
+  ~LoginFeedbackTest() override = default;
 
  private:
   LoginManagerMixin login_mixin_{&mixin_host_};

@@ -6,6 +6,7 @@
 #define COMPONENTS_MIRRORING_SERVICE_RPC_DISPATCHER_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/component_export.h"

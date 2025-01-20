@@ -16,7 +16,7 @@ class FilePath;
 namespace url {
 struct Component;
 struct Parsed;
-}
+}  // namespace url
 
 // These methods process user typed input that is meant to be a URL - like user
 // typing in the URL bar or command line switches. The output is NOT guaranteed

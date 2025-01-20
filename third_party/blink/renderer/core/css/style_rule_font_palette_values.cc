@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
@@ -67,7 +69,8 @@ FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
 }
 
 Vector<FontPalette::FontPaletteOverride>
-StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
+StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
+    const Document& document) const {
   const CSSValue* override_colors = GetOverrideColors();
   if (!override_colors || !override_colors->IsValueList()) {
     return {};
@@ -97,6 +100,9 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
     return css_color.Value();
   };
 
+  MediaValues* media_values =
+      MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
+
   Vector<FontPalette::FontPaletteOverride> return_overrides;
   const CSSValueList& overrides_list = To<CSSValueList>(*override_colors);
   for (auto& item : overrides_list) {
@@ -109,7 +115,8 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
     const Color override_color = ConvertToColor(override_pair);
 
     FontPalette::FontPaletteOverride palette_override{
-        palette_index.GetValue<uint16_t>(), override_color};
+        ClampTo<uint16_t>(palette_index.ComputeInteger(*media_values)),
+        override_color};
     return_overrides.push_back(palette_override);
   }
 

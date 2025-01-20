@@ -123,10 +123,7 @@ suite('<settings-device-page> Input settings', () => {
         routeName: 'OS_LANGUAGES_EDIT_DICTIONARY',
         elementTagName: 'os-settings-edit-dictionary-page',
       },
-      {
-        routeName: 'OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY',
-        elementTagName: 'os-settings-japanese-manage-user-dictionary-page',
-      },
+      // TODO(crbug.com/388646690): Add test for Japanese Dictionary Editor
     ];
     inputSubpages.forEach(({routeName, elementTagName}) => {
       test(

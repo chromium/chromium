@@ -90,7 +90,7 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     ScriptState* script_state,
     DedicatedWorker* worker,
     const ScriptValue& message,
-    HeapVector<ScriptValue> transfer,
+    HeapVector<ScriptObject> transfer,
     ExceptionState& exception_state) {
   auto* transform = MakeGarbageCollected<RTCRtpScriptTransform>();
   worker->PostCustomEvent(

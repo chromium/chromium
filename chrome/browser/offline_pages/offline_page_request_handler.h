@@ -114,7 +114,7 @@ class OfflinePageRequestHandler {
     virtual TabIdGetter GetTabIdGetter() const = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   class ThreadSafeArchiveValidator final

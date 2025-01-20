@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // This file is used for the webtest
+      //../media-playback-while-not-visible-permission-policy-interrupt-when-hidden.
+      // This file describes a document that contains an AudioContext and that
+      // can communicate with its embedder by using `postMessage`. The embedder
+      // can send messages to the document to query the state of the
+      // AudioContext, to resume it or to suspend it. Likewise, this document
+      // can send messages to the embedder to notify it of state changes in the
+      // AudioContext.
+      let audioCtx = new AudioContext();
+      audioCtx.addEventListener('statechange', () => {
+        if (window.parent !== window){
+          window.parent.postMessage({
+            operation: 'statechange', value: audioCtx.state
+          }, '*');
+        }
+      });
+
+      window.addEventListener('message', (event) => {
+        if (event.data === 'getState') {
+          window.parent.postMessage({
+            operation: 'getState', value: audioCtx.state
+          }, '*');
+        } else if (event.data === 'resume') {
+          audioCtx.resume()
+          .then(() => {
+            window.parent.postMessage({operation: 'resume', value: null}, '*')
+          }).catch((e) => {
+            window.parent.postMessage({operation: 'resume', value: null}, '*');
+          });
+        } else if (event.data === 'suspend') {
+          audioCtx.suspend().then(() => {
+            window.parent.postMessage({operation: 'suspend', value: null}, '*');
+          });
+        }
+      });
+
+      const oscillator = audioCtx.createOscillator();
+      oscillator.connect(audioCtx.destination);
+      oscillator.start();
+    </script>
+  </body>
+</html>

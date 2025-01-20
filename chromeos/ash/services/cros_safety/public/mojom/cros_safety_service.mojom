@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module ash.cros_safety.mojom;
 
@@ -23,6 +23,11 @@ enum GetCloudSafetySessionResult {
 enum GetOnDeviceSafetySessionResult {
   kOk = 0,
   [Default] kGenericError = 1,
+  [MinVersion=2] kArcNotAllowed = 2,  // Cannot run on this device/user.
+  [MinVersion=2] kArcDisabledByUser = 3,  // Inform the user to enable arc.
+  [MinVersion=2] kHadesNotAvailable = 4,  // The Hades system has an error.
+  // Temporary issue (loading, downloading, etc).
+  [MinVersion=2] kHadesNotReady = 5,
 };
 
 // CrosSafetyService runs in Chrome which is the entry point of both creating

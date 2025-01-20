@@ -17,12 +17,6 @@
 #include "components/update_client/crx_update_item.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/common/webui_url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 ComponentsHandler::ComponentsHandler(
     component_updater::ComponentUpdateService* component_updater)
     : component_updater_(component_updater) {
@@ -39,13 +33,6 @@ void ComponentsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "checkUpdate", base::BindRepeating(&ComponentsHandler::HandleCheckUpdate,
                                          base::Unretained(this)));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  web_ui()->RegisterMessageCallback(
-      "crosUrlComponentsRedirect",
-      base::BindRepeating(&ComponentsHandler::HandleCrosUrlComponentsRedirect,
-                          base::Unretained(this)));
-#endif
 }
 
 void ComponentsHandler::OnJavascriptAllowed() {
@@ -63,15 +50,6 @@ void ComponentsHandler::HandleRequestComponentsData(
 
   base::Value::Dict result;
   result.Set("components", LoadComponents());
-
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
-#else
-  const bool showSystemFlagsLink = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  result.Set("showOsLink", showSystemFlagsLink);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ResolveJavascriptCallback(callback_id, result);
 }
@@ -132,17 +110,6 @@ std::u16string ComponentsHandler::ServiceStatusToString(
   }
   return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ComponentsHandler::HandleCrosUrlComponentsRedirect(
-    const base::Value::List& args) {
-  // Note: This will only be called by the UI when Lacros is available.
-  DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->SwitchToTab(
-      GURL(chrome::kChromeUIComponentsUrl),
-      /*path_behavior=*/NavigateParams::RESPECT);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ComponentsHandler::OnDemandUpdate(const std::string& component_id) {
   component_updater_->GetOnDemandUpdater().OnDemandUpdate(

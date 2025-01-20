@@ -55,10 +55,10 @@ AppDragIconProxy::AppDragIconProxy(
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
 
   if (badge_icon.isNull()) {
-    drag_image->SetImage(icon);
+    drag_image->SetImage(ui::ImageModel::FromImageSkia(icon));
   } else {
-    drag_image->SetImage(
-        gfx::ImageSkiaOperations::CreateIconWithBadge(icon, badge_icon));
+    drag_image->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateIconWithBadge(icon, badge_icon)));
   }
   gfx::Size size = drag_image->GetPreferredSize();
 

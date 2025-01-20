@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_OBSERVERS_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_OBSERVERS_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "components/performance_manager/public/performance_manager_observer.h"
 
 namespace performance_manager {
 
@@ -43,15 +43,14 @@ enum class LoadType {
 
 // PageLoadMetricsObserver records detailed metrics to explain what is included
 // in the "Total Pageloads" presented on stability dashboards.
-class PageLoadMetricsObserver
-    : public PerformanceManagerMainThreadObserverDefaultImpl {
+class PageLoadMetricsObserver : public PerformanceManagerObserverDefaultImpl {
  public:
   PageLoadMetricsObserver();
   ~PageLoadMetricsObserver() override;
   PageLoadMetricsObserver(const PageLoadMetricsObserver& other) = delete;
   PageLoadMetricsObserver& operator=(const PageLoadMetricsObserver&) = delete;
 
-  // PerformanceManagerMainThreadObserver:
+  // PerformanceManagerObserver:
   void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) override;
 };

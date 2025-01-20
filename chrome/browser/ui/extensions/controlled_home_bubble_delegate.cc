@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -152,7 +153,9 @@ std::u16string ControlledHomeBubbleDelegate::GetBodyText(
   body = anchored_to_action
              ? l10n_util::GetStringUTF16(first_line_id)
              : l10n_util::GetStringFUTF16(
-                   first_line_id, base::UTF8ToUTF16(extension_->name()));
+                   first_line_id,
+                   extensions::util::GetFixupExtensionNameForUIDisplay(
+                       extension_->name()));
   if (second_line_id) {
     body += l10n_util::GetStringUTF16(second_line_id);
   }

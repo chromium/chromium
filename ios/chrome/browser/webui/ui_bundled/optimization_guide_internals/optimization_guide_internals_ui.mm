@@ -28,9 +28,8 @@ web::WebUIIOSDataSource* CreateOptimizationGuideInternalsHTMLSource() {
   source->SetDefaultResource(
       IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
   source->UseStringsJs();
-  const base::span<const webui::ResourcePath> resources =
-      base::make_span(kOptimizationGuideInternalsResources,
-                      kOptimizationGuideInternalsResourcesSize);
+  const base::span<const webui::ResourcePath> resources(
+      kOptimizationGuideInternalsResources);
   for (const auto& resource : resources)
     source->AddResourcePath(resource.path, resource.id);
 

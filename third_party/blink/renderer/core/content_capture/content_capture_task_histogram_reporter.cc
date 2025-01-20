@@ -11,7 +11,6 @@ namespace blink {
 
 // static
 constexpr char ContentCaptureTaskHistogramReporter::kCaptureContentTime[];
-constexpr char ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime[];
 constexpr char ContentCaptureTaskHistogramReporter::kSendContentTime[];
 constexpr char ContentCaptureTaskHistogramReporter::kSentContentCount[];
 constexpr char ContentCaptureTaskHistogramReporter::kTaskDelayInMs[];
@@ -24,13 +23,6 @@ ContentCaptureTaskHistogramReporter::ContentCaptureTaskHistogramReporter()
 
 ContentCaptureTaskHistogramReporter::~ContentCaptureTaskHistogramReporter() =
     default;
-
-void ContentCaptureTaskHistogramReporter::OnContentChanged() {
-  if (content_change_time_) {
-    return;
-  }
-  content_change_time_ = base::TimeTicks::Now();
-}
 
 void ContentCaptureTaskHistogramReporter::OnTaskScheduled(
     bool record_task_delay) {
@@ -55,14 +47,8 @@ void ContentCaptureTaskHistogramReporter::OnCaptureContentStarted() {
 void ContentCaptureTaskHistogramReporter::OnCaptureContentEnded(
     size_t captured_content_count) {
   if (!captured_content_count) {
-    // We captured nothing for the recorded content change, reset the time to
-    // start again.
-    content_change_time_.reset();
     return;
   }
-  // Gives content_change_time_ to the change occurred while sending the
-  // content.
-  captured_content_change_time_ = std::move(content_change_time_);
   base::TimeDelta delta = base::TimeTicks::Now() - capture_content_start_time_;
   capture_content_time_histogram_.CountMicroseconds(delta);
 }
@@ -73,18 +59,10 @@ void ContentCaptureTaskHistogramReporter::OnSendContentStarted() {
 
 void ContentCaptureTaskHistogramReporter::OnSendContentEnded(
     size_t sent_content_count) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (captured_content_change_time_) {
-    base::TimeTicks content_change_time = captured_content_change_time_.value();
-    captured_content_change_time_.reset();
-    base::UmaHistogramCustomTimes(
-        kCaptureContentDelayTime, now - content_change_time,
-        base::Milliseconds(500), base::Seconds(30), 50);
-  }
   if (!sent_content_count) {
     return;
   }
-  send_content_time_histogram_.CountMicroseconds(now -
+  send_content_time_histogram_.CountMicroseconds(base::TimeTicks::Now() -
                                                  send_content_start_time_);
 }
 

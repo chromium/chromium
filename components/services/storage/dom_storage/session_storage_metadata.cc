@@ -98,10 +98,9 @@ SessionStorageMetadata::SetupNewDatabase() {
   tasks.push_back(base::BindOnce(
       [](int64_t next_map_id, leveldb::WriteBatch* batch,
          const DomStorageDatabase& db) {
-        batch->Put(
-            leveldb_env::MakeSlice(base::make_span(kDatabaseVersionBytes)),
-            leveldb_env::MakeSlice(LatestDatabaseVersionAsVector()));
-        batch->Put(leveldb_env::MakeSlice(base::make_span(kNextMapIdKeyBytes)),
+        batch->Put(leveldb_env::MakeSlice(base::span(kDatabaseVersionBytes)),
+                   leveldb_env::MakeSlice(LatestDatabaseVersionAsVector()));
+        batch->Put(leveldb_env::MakeSlice(base::span(kNextMapIdKeyBytes)),
                    leveldb_env::MakeSlice(NumberToValue(next_map_id)));
       },
       next_map_id_));
@@ -129,11 +128,11 @@ bool SessionStorageMetadata::ParseDatabaseVersion(
   }
   if (initial_database_version_from_disk_ < kMinSessionStorageSchemaVersion)
     return false;
-  upgrade_tasks->push_back(base::BindOnce([](leveldb::WriteBatch* batch,
-                                             const DomStorageDatabase& db) {
-    batch->Put(leveldb_env::MakeSlice(base::make_span(kDatabaseVersionBytes)),
-               leveldb_env::MakeSlice(LatestDatabaseVersionAsVector()));
-  }));
+  upgrade_tasks->push_back(base::BindOnce(
+      [](leveldb::WriteBatch* batch, const DomStorageDatabase& db) {
+        batch->Put(leveldb_env::MakeSlice(base::span(kDatabaseVersionBytes)),
+                   leveldb_env::MakeSlice(LatestDatabaseVersionAsVector()));
+      }));
   return true;
 }
 
@@ -249,7 +248,7 @@ bool SessionStorageMetadata::ParseNamespaces(
         [](std::vector<DomStorageDatabase::Key> prefix_keys_to_delete,
            leveldb::WriteBatch* batch, const DomStorageDatabase& db) {
           batch->Delete(
-              leveldb_env::MakeSlice(base::make_span(kNamespacePrefixBytes)));
+              leveldb_env::MakeSlice(base::span(kNamespacePrefixBytes)));
           // Remove all the refcount storage.
           for (const auto& key : prefix_keys_to_delete)
             batch->Delete(leveldb_env::MakeSlice(key));
@@ -303,7 +302,7 @@ SessionStorageMetadata::RegisterNewMap(
       [](int64_t new_map_id, DomStorageDatabase::Key storage_key_key,
          DomStorageDatabase::Value storage_key_map_number,
          leveldb::WriteBatch* batch, const DomStorageDatabase& db) {
-        batch->Put(leveldb_env::MakeSlice(base::make_span(kNextMapIdKeyBytes)),
+        batch->Put(leveldb_env::MakeSlice(base::span(kNextMapIdKeyBytes)),
                    leveldb_env::MakeSlice(NumberToValue(new_map_id)));
         batch->Put(leveldb_env::MakeSlice(storage_key_key),
                    leveldb_env::MakeSlice(storage_key_map_number));

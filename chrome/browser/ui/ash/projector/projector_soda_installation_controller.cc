@@ -26,8 +26,9 @@ inline const std::string& GetLocale() {
 inline bool IsLanguageSupported(const speech::LanguageCode languageCode) {
   auto* soda_installer = speech::SodaInstaller::GetInstance();
   for (auto const& language : soda_installer->GetAvailableLanguages()) {
-    if (speech::GetLanguageCode(language) == languageCode)
+    if (speech::GetLanguageCode(language) == languageCode) {
       return true;
+    }
   }
   return false;
 }
@@ -56,8 +57,9 @@ void ProjectorSodaInstallationController::InstallSoda(
   pref_service->SetString(ash::prefs::kProjectorCreationFlowLanguage, language);
   soda_installer->Init(pref_service, g_browser_process->local_state());
 
-  if (!soda_installer->IsSodaDownloading(languageCode))
+  if (!soda_installer->IsSodaDownloading(languageCode)) {
     soda_installer->InstallLanguage(language, g_browser_process->local_state());
+  }
 }
 
 bool ProjectorSodaInstallationController::ShouldDownloadSoda(
@@ -75,8 +77,9 @@ bool ProjectorSodaInstallationController::IsSodaAvailable(
 void ProjectorSodaInstallationController::OnSodaInstalled(
     speech::LanguageCode language_code) {
   // Check that language code matches the selected language for projector.
-  if (language_code != speech::GetLanguageCode(GetLocale()))
+  if (language_code != speech::GetLanguageCode(GetLocale())) {
     return;
+  }
   projector_controller_->OnSpeechRecognitionAvailabilityChanged();
   app_client_->OnSodaInstalled();
 }

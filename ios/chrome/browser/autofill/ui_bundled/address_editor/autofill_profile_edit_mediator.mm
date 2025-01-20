@@ -6,12 +6,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/autofill_address_util.h"
-#import "components/autofill/core/browser/autofill_data_util.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/profile_requirement_utils.h"
+#import "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
@@ -341,7 +341,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 // Loads the country codes and names and sets the default selected country code.
 - (void)loadCountries {
   autofill::CountryComboboxModel countryModel;
-  countryModel.SetCountries(*_personalDataManager,
+  countryModel.SetCountries(_personalDataManager->address_data_manager(),
                             base::RepeatingCallback<bool(const std::string&)>(),
                             GetApplicationContext()->GetApplicationLocale());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =

@@ -32,6 +32,9 @@ const char kMagicStackScrollToIndexHistogram[] =
     "IOS.MagicStack.ScrollActionToIndex";
 const float kMaxModuleHistogramIndex = 50;
 
+// Constants for the removal animation of a Magic Stack module.
+static const CGFloat kMagicStackModuleRemovalAnimationDuration = 0.5;
+
 }  // namespace
 
 typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
@@ -52,6 +55,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
   BOOL _hasSeenEphemeralCard;
+  NSLayoutConstraint* _heightConstraint;
 }
 
 - (void)loadView {
@@ -60,9 +64,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self populateWithPlaceholders];
 
   self.view = _collectionView;
-  [NSLayoutConstraint
-      activateConstraints:@[ [_collectionView.heightAnchor
-                              constraintEqualToConstant:kModuleMaxHeight] ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateCardHeightOnTraitChange)];
+  }
+}
+
+- (void)viewDidLoad {
+  _heightConstraint = [_collectionView.heightAnchor
+      constraintEqualToConstant:GetMagicStackHeight(self.view)];
+
+  [NSLayoutConstraint activateConstraints:@[ _heightConstraint ]];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -87,6 +102,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       }
                       completion:nil];
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateCardHeightOnTraitChange];
+  }
+}
+#endif
 
 #pragma mark - Public
 
@@ -162,7 +191,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                intoSectionWithIdentifier:kMagicStackSectionIdentifier];
   }
   [self.diffableDataSource applySnapshot:snapshot
-                    animatingDifferences:YES
+                    animatingDifferences:NO
                               completion:nil];
 }
 
@@ -190,15 +219,50 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
-- (void)removeItem:(MagicStackModule*)item {
+- (void)removeItem:(MagicStackModule*)item
+           animate:(BOOL)animate
+    withCompletion:(ProceduralBlock)completion {
   NSIndexPath* existingItemIndexPath =
       [self.diffableDataSource indexPathForItemIdentifier:item];
+
   if (!existingItemIndexPath) {
     return;
   }
-  MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
-  [snapshot deleteItemsWithIdentifiers:@[ item ]];
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock deleteItemFromDataSource = ^{
+    MagicStackSnapshot* snapshot = [weakSelf.diffableDataSource snapshot];
+    [snapshot deleteItemsWithIdentifiers:@[ item ]];
+    [weakSelf.diffableDataSource applySnapshot:snapshot
+                          animatingDifferences:animate
+                                    completion:completion];
+  };
+
+  // Get the cell to animate.
+  MagicStackModuleCollectionViewCell* cell =
+      (MagicStackModuleCollectionViewCell*)[_collectionView
+          cellForItemAtIndexPath:existingItemIndexPath];
+
+  if (!cell || !animate) {
+    deleteItemFromDataSource();
+    return;
+  }
+
+  CGFloat verticalOffset = -self.view.frame.size.height / 2.0;
+
+  // Perform the floating up and fade out animation.
+  [UIView animateWithDuration:kMagicStackModuleRemovalAnimationDuration
+      animations:^{
+        cell.transform = CGAffineTransformMakeTranslation(0, verticalOffset);
+        cell.alpha = 0;
+      }
+      completion:^(BOOL finished) {
+        if (finished) {
+          // Remove the item from the data source after the animation completes.
+          deleteItemFromDataSource();
+        }
+      }];
 }
 
 - (void)reconfigureItem:(MagicStackModule*)item {
@@ -441,12 +505,22 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       return NO;
   }
+}
+
+// Resizes the Magic Stack card height.
+- (void)updateCardHeightOnTraitChange {
+  _heightConstraint.constant = GetMagicStackHeight(self.view);
+
+  [_magicStackCollectionViewLayoutConfigurator
+          .magicStackCompositionalLayout invalidateLayout];
 }
 
 @end

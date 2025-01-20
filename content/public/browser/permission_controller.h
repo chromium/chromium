@@ -145,17 +145,4 @@ class CONTENT_EXPORT PermissionController
 
 }  // namespace content
 
-namespace std {
-
-template <>
-struct hash<content::PermissionController::SubscriptionId> {
-  std::size_t operator()(
-      const content::PermissionController::SubscriptionId& v) const {
-    content::PermissionController::SubscriptionId::Hasher hasher;
-    return hasher(v);
-  }
-};
-
-}  // namespace std
-
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_

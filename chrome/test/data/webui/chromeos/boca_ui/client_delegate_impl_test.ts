@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
-import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {CaptionConfig, Config, Course, Identity, OnTaskConfig, PageHandlerRemote, RemoveStudentError, SessionResult, SubmitAccessCodeError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import {Url} from 'chrome-untrusted://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class MockRemoteHandler extends PageHandlerRemote {
   override getWindowsTabsList(): Promise<{windowList: Window[]}> {
-    const url1 = new Url();
-    url1.url = 'http://foo1';
-    const url2 = new Url();
-    url2.url = 'http://foo2';
-    const url3 = new Url();
-    url3.url = 'http://foo3';
+    const url1: Url = {
+      url: 'http://foo1',
+    };
+    const url2: Url = {
+      url: 'http://foo2',
+    };
+    const url3: Url = {
+      url: 'http://foo3',
+    };
     return Promise.resolve({
       windowList: [
         {
@@ -29,8 +32,12 @@ class MockRemoteHandler extends PageHandlerRemote {
     });
   }
   override listCourses(): Promise<{courses: Course[]}> {
-    return Promise.resolve(
-        {courses: [{id: '1', name: 'course1'}, {id: '2', name: 'course2'}]});
+    return Promise.resolve({
+      courses: [
+        {id: '1', name: 'course1', section: 'period1'},
+        {id: '2', name: 'course2', section: ''}
+      ]
+    });
   }
   override listStudents(id: string): Promise<{students: Identity[]}> {
     // Dummy action get around with unused variable check.
@@ -106,9 +113,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           sessionDuration: {
             microseconds: 120000000n,
           },
-          sessionStartTime: {
-            msec: 1000000,
-          },
+          sessionStartTime: new Date(1000000),
           teacher: {
             id: '0',
             name: 'teacher',
@@ -228,6 +233,14 @@ class MockRemoteHandler extends PageHandlerRemote {
       return Promise.resolve({error: SubmitAccessCodeError.kInvalid});
     }
   }
+  override viewStudentScreen(id: string):
+      Promise<{error: ViewStudentScreenError | null}> {
+    id;
+    return Promise.resolve({error: null});
+  }
+  override authenticateWebview() {
+    return Promise.resolve({success: true});
+  }
 }
 
 suite('ClientDelegateTest', function() {
@@ -271,7 +284,7 @@ suite('ClientDelegateTest', function() {
         const result = await clientDelegateImpl.getInstance().getCourseList();
         assertDeepEquals(
             [
-              {id: '1', name: 'course1', section: ''},
+              {id: '1', name: 'course1', section: 'period1'},
               {id: '2', name: 'course2', section: ''},
             ],
             result);
@@ -395,9 +408,7 @@ suite('ClientDelegateTest', function() {
           sessionDuration: {
             microseconds: 120000000n,
           },
-          sessionStartTime: {
-            msec: 1000000,
-          },
+          sessionStartTime: new Date(1000000),
           students: [],
           studentsJoinViaCode: [],
           onTaskConfig: {isLocked: false, tabs: []},
@@ -500,7 +511,8 @@ suite('ClientDelegateTest', function() {
               activeTab: 'google',
               isCaptionEnabled: false,
               isHandRaised: false,
-              joinMethod: 0
+              joinMethod: 0,
+              viewScreenSessionCode: 'abcd'
             }
           },
           {
@@ -510,7 +522,8 @@ suite('ClientDelegateTest', function() {
               activeTab: 'youtube',
               isCaptionEnabled: false,
               isHandRaised: false,
-              joinMethod: 1
+              joinMethod: 1,
+              viewScreenSessionCode: null
             }
           }
         ];
@@ -524,7 +537,8 @@ suite('ClientDelegateTest', function() {
                   activeTab: 'google',
                   isCaptionEnabled: false,
                   isHandRaised: false,
-                  joinMethod: 0
+                  joinMethod: 0,
+                  viewScreenSessionCode: 'abcd'
                 }
               },
               {
@@ -534,7 +548,8 @@ suite('ClientDelegateTest', function() {
                   activeTab: 'youtube',
                   isCaptionEnabled: false,
                   isHandRaised: false,
-                  joinMethod: 1
+                  joinMethod: 1,
+                  viewScreenSessionCode: undefined
                 }
               }
             ],
@@ -585,4 +600,20 @@ suite('ClientDelegateTest', function() {
         ],
         result);
   });
+
+  test(
+      'client delegate should translate data for view student screen',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().viewStudentScreen('1');
+        assertTrue(result);
+      });
+
+  test(
+      'client delegate should respond correctly for authenticateWebview',
+      async () => {
+        const result =
+            await clientDelegateImpl.getInstance().authenticateWebview();
+        assertTrue(result);
+      });
 });

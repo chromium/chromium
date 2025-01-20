@@ -276,7 +276,7 @@ std::unique_ptr<VideoPacket> VideoEncoderVpx::Encode(
   vpx_active_map_t act_map;
   act_map.rows = active_map_size_.height();
   act_map.cols = active_map_size_.width();
-  act_map.active_map = active_map_.get();
+  act_map.active_map = active_map_.data();
   if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
     LOG(ERROR) << "Unable to apply active map";
   }
@@ -348,8 +348,8 @@ void VideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   active_map_size_ = webrtc::DesktopSize(
       (size.width() + kMacroBlockSize - 1) / kMacroBlockSize,
       (size.height() + kMacroBlockSize - 1) / kMacroBlockSize);
-  active_map_.reset(
-      new uint8_t[active_map_size_.width() * active_map_size_.height()]);
+  active_map_ = base::HeapArray<uint8_t>::Uninit(active_map_size_.width() *
+                                                 active_map_size_.height());
 
   // TODO(wez): Remove this hack once VPX can handle frame size reconfiguration.
   // See https://code.google.com/p/webm/issues/detail?id=912.
@@ -481,7 +481,7 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
 void VideoEncoderVpx::SetActiveMapFromRegion(
     const webrtc::DesktopRegion& updated_region) {
   // Clear active map first.
-  memset(active_map_.get(), 0,
+  memset(active_map_.data(), 0,
          active_map_size_.width() * active_map_size_.height());
 
   // Mark updated areas active.
@@ -495,7 +495,7 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
     DCHECK_LT(right, active_map_size_.width());
     DCHECK_LT(bottom, active_map_size_.height());
 
-    uint8_t* map = active_map_.get() + top * active_map_size_.width();
+    uint8_t* map = active_map_.data() + top * active_map_size_.width();
     for (int y = top; y <= bottom; ++y) {
       for (int x = left; x <= right; ++x) {
         map[x] = 1;
@@ -507,7 +507,7 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
 
 void VideoEncoderVpx::UpdateRegionFromActiveMap(
     webrtc::DesktopRegion* updated_region) {
-  const uint8_t* map = active_map_.get();
+  const uint8_t* map = active_map_.data();
   for (int y = 0; y < active_map_size_.height(); ++y) {
     for (int x0 = 0; x0 < active_map_size_.width();) {
       int x1 = x0;

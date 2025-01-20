@@ -12,6 +12,16 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:focusable="false">
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/address_bar_settings_description"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      app:leading="@dimen/text_size_medium_leading"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingStart="@dimen/radio_button_with_description_lateral_padding"
+      android:paddingEnd="@dimen/radio_button_with_description_lateral_padding"
+      android:text="@string/address_bar_settings_description"/>
+
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/address_bar_radio_group"
         android:layout_width="match_parent"

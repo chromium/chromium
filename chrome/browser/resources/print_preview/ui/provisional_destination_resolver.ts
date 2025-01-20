@@ -17,7 +17,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {Destination} from '../data/destination.js';
+import type {Destination} from '../data/destination_cros.js';
 import type {DestinationStore} from '../data/destination_store.js';
 
 import {getTemplate} from './provisional_destination_resolver.html.js';

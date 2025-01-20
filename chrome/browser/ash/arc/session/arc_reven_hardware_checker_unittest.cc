@@ -25,8 +25,6 @@ constexpr uint64_t kStorageSizeBelowRequirementInBytes =
 constexpr uint64_t kVendorId = 0x8086;
 // ID for a supported GPU device.
 constexpr uint64_t kAllowGpuDeviceId = 0x9a49;
-// ID for a supported WiFi device.
-constexpr uint64_t kAllowWiFiDeviceId = 0x095a;
 constexpr uint64_t kNotAllowGpuDeviceId = 0x0001;
 constexpr char kFakeUnusedStrValue[] = "fake_string";
 constexpr bool kMeetHwRequirement = true;
@@ -124,14 +122,10 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
         std::move(error));
   }
 
-  mojom::BusResultPtr CreateBusResult(uint64_t gpu_device_id,
-                                      uint64_t wifi_device_id) {
+  mojom::BusResultPtr CreateBusResult(uint64_t gpu_device_id) {
     std::vector<mojom::BusDevicePtr> bus_devices;
-    auto wifi_device = CreateBusDevice(
-        mojom::BusDeviceClass::kWirelessController, kVendorId, wifi_device_id);
     auto gpu_device = CreateBusDevice(mojom::BusDeviceClass::kDisplayController,
                                       kVendorId, gpu_device_id);
-    bus_devices.push_back(std::move(wifi_device));
     bus_devices.push_back(std::move(gpu_device));
     return mojom::BusResult::NewBusDevices(std::move(bus_devices));
   }
@@ -189,6 +183,7 @@ TEST_F(ArcRevenHardwareCheckerTest, StorageRequirementNotMet) {
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
   info->block_device_result =
       CreateBlockDeviceResult(kStorageSizeBelowRequirementInBytes);
+  info->bus_result = CreateBusResult(kAllowGpuDeviceId);
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kNotMeetHwRequirement);
 }
@@ -200,7 +195,7 @@ TEST_F(ArcRevenHardwareCheckerTest, BusRequirementNotMet) {
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
   info->block_device_result =
       CreateBlockDeviceResult(kStorageSizeMeetsRequirementInBytes);
-  info->bus_result = CreateBusResult(kNotAllowGpuDeviceId, kAllowWiFiDeviceId);
+  info->bus_result = CreateBusResult(kNotAllowGpuDeviceId);
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kNotMeetHwRequirement);
 }
@@ -211,7 +206,7 @@ TEST_F(ArcRevenHardwareCheckerTest, AllHardwareRequirementMet) {
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
   info->block_device_result =
       CreateBlockDeviceResult(kStorageSizeMeetsRequirementInBytes);
-  info->bus_result = CreateBusResult(kAllowGpuDeviceId, kAllowWiFiDeviceId);
+  info->bus_result = CreateBusResult(kAllowGpuDeviceId);
 
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kMeetHwRequirement);

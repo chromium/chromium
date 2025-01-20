@@ -10,9 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/session/connection_holder.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_notifications_instance.h"
 #include "ash/public/cpp/arc_app_id_provider.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "base/functional/callback.h"
@@ -20,6 +17,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_notifications_instance.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"

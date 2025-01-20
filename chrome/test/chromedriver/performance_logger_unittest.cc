@@ -40,7 +40,9 @@ struct DevToolsCommand {
 
 class FakeDevToolsClient : public StubDevToolsClient {
  public:
-  explicit FakeDevToolsClient(const std::string& id) : id_(id) {}
+  explicit FakeDevToolsClient(const std::string& id, bool is_tab) : id_(id) {
+    is_tab_ = is_tab;
+  }
   ~FakeDevToolsClient() override = default;
 
   bool PopSentCommand(DevToolsCommand** out_command) {
@@ -50,6 +52,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
     }
     return false;
   }
+
+  int GetSentCommandsCount() { return sent_commands_.size(); }
 
   Status TriggerEvent(const std::string& method,
                       const base::Value::Dict& params) {
@@ -190,7 +194,7 @@ void ExpectEnableDomains(FakeDevToolsClient* client) {
 }  // namespace
 
 TEST(PerformanceLogger, OneWebView) {
-  FakeDevToolsClient client("webview-1");
+  FakeDevToolsClient client("webview-1", /*is_tab=*/false);
   FakeLog log;
   Session session("test");
   PerformanceLogger logger(&log, &session);
@@ -209,9 +213,23 @@ TEST(PerformanceLogger, OneWebView) {
   client.RemoveListener(&logger);
 }
 
+TEST(PerformanceLogger, TabViewGetsNoEnable) {
+  FakeDevToolsClient client("webview-1", /*is_tab=*/true);
+  FakeLog log;
+  Session session("test");
+  PerformanceLogger logger(&log, &session);
+
+  client.AddListener(&logger);
+
+  // Tab targets dont support most domains.
+  logger.OnConnected(&client);
+  ASSERT_EQ(0, client.GetSentCommandsCount());
+  client.RemoveListener(&logger);
+}
+
 TEST(PerformanceLogger, TwoWebViews) {
-  FakeDevToolsClient client1("webview-1");
-  FakeDevToolsClient client2("webview-2");
+  FakeDevToolsClient client1("webview-1", /*is_tab=*/false);
+  FakeDevToolsClient client2("webview-2", /*is_tab=*/false);
   FakeLog log;
   Session session("test");
   PerformanceLogger logger(&log, &session);
@@ -239,7 +257,7 @@ TEST(PerformanceLogger, TwoWebViews) {
 }
 
 TEST(PerformanceLogger, PerfLoggingPrefs) {
-  FakeDevToolsClient client("webview-1");
+  FakeDevToolsClient client("webview-1", /*is_tab=*/false);
   FakeLog log;
   Session session("test");
   PerfLoggingPrefs prefs;
@@ -262,7 +280,8 @@ namespace {
 class FakeBrowserwideClient : public FakeDevToolsClient {
  public:
   FakeBrowserwideClient()
-      : FakeDevToolsClient(DevToolsClientImpl::kBrowserwideDevToolsClientId) {}
+      : FakeDevToolsClient(DevToolsClientImpl::kBrowserwideDevToolsClientId,
+                           /*is_tab=*/false) {}
   ~FakeBrowserwideClient() override = default;
 
   bool events_handled() const {

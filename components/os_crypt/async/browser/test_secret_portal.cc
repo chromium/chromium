@@ -46,34 +46,19 @@ void TestSecretPortal::RetrieveSecret(
   base::ScopedFD write_fd;
   EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
 
-  base::WriteFileDescriptor(write_fd.get(), "secret");
+  EXPECT_TRUE(base::WriteFileDescriptor(write_fd.get(), "secret"));
   write_fd.reset();
 
-  dbus::ObjectPath response_path;
-  dbus::MessageReader dict_reader(nullptr);
-  EXPECT_TRUE(reader.PopArray(&dict_reader));
-  std::optional<std::string> token;
-  while (dict_reader.HasMoreData()) {
-    dbus::MessageReader dict_entry_reader(nullptr);
-    EXPECT_TRUE(dict_reader.PopDictEntry(&dict_entry_reader));
-    std::string key;
-    std::string value;
-    EXPECT_TRUE(dict_entry_reader.PopString(&key));
-    if (key == "handle_token") {
-      EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&value));
-      auto bus_name = method_call->GetSender();
-      response_path = dbus::ObjectPath(
-          base::nix::XdgDesktopPortalRequestPath(bus_name, value));
-    }
-    if (key == "token") {
-      EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&value));
-      EXPECT_EQ(value, "the_token");
-      token = value;
-    }
-  }
+  DbusDictionary options;
+  EXPECT_TRUE(options.Read(&reader));
+  auto* handle_token = options.GetAs<DbusString>("handle_token");
+  ASSERT_TRUE(handle_token);
+  dbus::ObjectPath response_path(base::nix::XdgDesktopPortalRequestPath(
+      method_call->GetSender(), handle_token->value()));
   auto* exported_response = bus_->GetExportedObject(response_path);
 
-  EXPECT_TRUE(!pre_test_ || !token.has_value());
+  auto* token = options.GetAs<DbusString>("token");
+  EXPECT_TRUE(!pre_test_ || !token);
 
   auto response = dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
@@ -84,9 +69,7 @@ void TestSecretPortal::RetrieveSecret(
                       SecretPortalKeyProvider::kSignalResponse);
   dbus::MessageWriter signal_writer(&signal);
   signal_writer.AppendUint32(0);
-  DbusDictionary dict;
-  dict.Put("token", MakeDbusVariant(DbusString("the_token")));
-  dict.Write(&signal_writer);
+  MakeDbusDictionary("token", DbusString("the_token")).Write(&signal_writer);
   exported_response->SendSignal(&signal);
 }
 

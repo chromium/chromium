@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.nfc.FormatException;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefRecordTypeCategory;
@@ -26,6 +28,7 @@ import java.util.Locale;
  * Utility class that provides conversion between Android NdefMessage and Mojo NdefMessage data
  * structures.
  */
+@NullMarked
 public final class NdefMessageUtils {
     public static final String RECORD_TYPE_EMPTY = "empty";
     public static final String RECORD_TYPE_TEXT = "text";
@@ -123,7 +126,7 @@ public final class NdefMessageUtils {
      * |record.data| can safely be treated as "UTF-8" encoding bytes for non text records, this is
      * guaranteed by the sender (Blink).
      */
-    private static android.nfc.NdefRecord toNdefRecord(NdefRecord record)
+    private static android.nfc.@Nullable NdefRecord toNdefRecord(NdefRecord record)
             throws InvalidNdefMessageException,
                     IllegalArgumentException,
                     UnsupportedEncodingException {
@@ -191,7 +194,7 @@ public final class NdefMessageUtils {
     }
 
     /** Converts android.nfc.NdefRecord to mojo NdefRecord */
-    private static NdefRecord toNdefRecord(android.nfc.NdefRecord ndefRecord)
+    private static @Nullable NdefRecord toNdefRecord(android.nfc.NdefRecord ndefRecord)
             throws UnsupportedEncodingException {
         NdefRecord record = null;
         switch (ndefRecord.getTnf()) {
@@ -240,7 +243,7 @@ public final class NdefMessageUtils {
     }
 
     /** Constructs url NdefRecord */
-    private static NdefRecord createURLRecord(Uri uri, boolean isAbsUrl) {
+    private static @Nullable NdefRecord createURLRecord(Uri uri, boolean isAbsUrl) {
         if (uri == null) return null;
         NdefRecord nfcRecord = new NdefRecord();
         nfcRecord.category = NdefRecordTypeCategory.STANDARDIZED;
@@ -264,7 +267,8 @@ public final class NdefMessageUtils {
     }
 
     /** Constructs TEXT NdefRecord */
-    private static NdefRecord createTextRecord(byte[] text) throws UnsupportedEncodingException {
+    private static @Nullable NdefRecord createTextRecord(byte[] text)
+            throws UnsupportedEncodingException {
         // Check that text byte array is not empty.
         if (text.length == 0) {
             return null;
@@ -310,7 +314,7 @@ public final class NdefMessageUtils {
     }
 
     /** Constructs well known type (TEXT, URI or local type) NdefRecord */
-    private static NdefRecord createWellKnownRecord(android.nfc.NdefRecord record)
+    private static @Nullable NdefRecord createWellKnownRecord(android.nfc.NdefRecord record)
             throws UnsupportedEncodingException {
         if (Arrays.equals(record.getType(), android.nfc.NdefRecord.RTD_URI)) {
             return createURLRecord(record.toUri(), /* isAbsUrl= */ false);
@@ -358,7 +362,7 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_WELL_KNOWN + RTD_URI or TNF_ABSOLUTE_URI android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformUrlRecord(
-            byte[] url, String id, boolean isAbsUrl) throws UnsupportedEncodingException {
+            byte[] url, @Nullable String id, boolean isAbsUrl) throws UnsupportedEncodingException {
         Uri uri = Uri.parse(new String(url, "UTF-8"));
         assert uri != null;
         uri = uri.normalizeScheme();
@@ -397,7 +401,7 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_WELL_KNOWN + RTD_TEXT android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformTextRecord(
-            String id, String lang, String encoding, byte[] text)
+            @Nullable String id, @Nullable String lang, @Nullable String encoding, byte[] text)
             throws UnsupportedEncodingException {
         // Blink always send us valid |lang| and |encoding|, we check them here against compromised
         // data.
@@ -431,7 +435,7 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_MIME_MEDIA android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformMimeRecord(
-            String mimeType, String id, byte[] payload) {
+            @Nullable String mimeType, @Nullable String id, byte[] payload) {
         // Already verified by NdefMessageValidator.
         assert mimeType != null && !mimeType.isEmpty();
 
@@ -456,7 +460,10 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_EXTERNAL_TYPE android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformExternalRecord(
-            String recordType, String id, byte[] payload, NdefMessage payloadMessage) {
+            String recordType,
+            @Nullable String id,
+            byte[] payload,
+            @Nullable NdefMessage payloadMessage) {
         // Already guaranteed by the caller.
         assert recordType != null && !recordType.isEmpty();
 
@@ -480,7 +487,8 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_WELL_KNOWN + RTD_SMART_POSTER android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformSmartPosterRecord(
-            String id, NdefMessage payloadMessage) throws InvalidNdefMessageException {
+            @Nullable String id, @Nullable NdefMessage payloadMessage)
+            throws InvalidNdefMessageException {
         if (payloadMessage == null) {
             throw new InvalidNdefMessageException();
         }
@@ -549,7 +557,10 @@ public final class NdefMessageUtils {
 
     /** Creates a TNF_WELL_KNOWN + |recordType| android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformLocalRecord(
-            String recordType, String id, byte[] payload, NdefMessage payloadMessage) {
+            String recordType,
+            @Nullable String id,
+            byte[] payload,
+            @Nullable NdefMessage payloadMessage) {
         // Already guaranteed by the caller.
         assert recordType != null && !recordType.isEmpty();
 
@@ -618,7 +629,7 @@ public final class NdefMessageUtils {
      * Tries to construct a android.nfc.NdefMessage from the raw bytes |payload| then converts it to
      * a Mojo NdefMessage and returns. Returns null for anything wrong.
      */
-    private static NdefMessage getNdefMessageFromPayloadBytes(byte[] payload) {
+    private static @Nullable NdefMessage getNdefMessageFromPayloadBytes(byte[] payload) {
         try {
             android.nfc.NdefMessage payloadMessage = new android.nfc.NdefMessage(payload);
             return toNdefMessage(payloadMessage);
@@ -631,7 +642,7 @@ public final class NdefMessageUtils {
      * Tries to convert the Mojo NdefMessage |payloadMessage| to an android.nfc.NdefMessage then
      * returns its raw bytes. Returns null for anything wrong.
      */
-    private static byte[] getBytesFromPayloadNdefMessage(NdefMessage payloadMessage) {
+    private static byte @Nullable [] getBytesFromPayloadNdefMessage(NdefMessage payloadMessage) {
         try {
             android.nfc.NdefMessage message = toNdefMessage(payloadMessage);
             return message.toByteArray();

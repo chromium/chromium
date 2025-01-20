@@ -20,6 +20,22 @@
 
 namespace gl {
 
+// Wrapper for DCompositionWaitForCompositorClock Win32 dcomp.h function
+HRESULT DCompositionWaitForCompositorClock(UINT count,
+                                           const HANDLE* handles,
+                                           DWORD timeoutInMs);
+
+// Wrapper for DcompositionGetFrameId Win32 dcomp.h function
+HRESULT DCompositionGetFrameId(COMPOSITION_FRAME_ID_TYPE frameIdType,
+                               COMPOSITION_FRAME_ID* frameId);
+
+// Wrapper for DCompositionGetStatistics Win32 dcomp.h function
+HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
+                                  COMPOSITION_FRAME_STATS* frameStats,
+                                  UINT targetIdCount,
+                                  COMPOSITION_TARGET_ID* targetIds,
+                                  UINT* actualTargetIdCount);
+
 // Initialize direct composition with the given d3d11 device.
 GL_EXPORT void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);

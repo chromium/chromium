@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -70,7 +71,7 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() {}
+LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() = default;
 
 void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
   SetPeopleAPIResponseLocale("en");

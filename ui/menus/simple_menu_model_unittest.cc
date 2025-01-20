@@ -273,7 +273,7 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
   EXPECT_TRUE(simple_menu_model.GetIconAt(0).IsEmpty());
 
   gfx::PathElement path[] = {gfx::CommandType::CIRCLE, 24, 18, 5};
-  gfx::VectorIconRep rep[] = {{path, 4}};
+  gfx::VectorIconRep rep[] = {{path}};
   gfx::VectorIcon circle_icon = {rep, 1, "circle"};
 
   simple_menu_model.AddItemWithIcon(

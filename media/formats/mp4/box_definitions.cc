@@ -742,7 +742,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
   if (profile_indication == 100 || profile_indication == 110 ||
       profile_indication == 122 || profile_indication == 144) {
-    if (!ParseREXT(reader, media_log)) {
+    if (!reader->HasBytes(4) || !ParseREXT(reader, media_log)) {
       DVLOG(2) << __func__ << ": avcC REXT is missing or invalid";
       chroma_format = 0;
       bit_depth_luma_minus8 = 0;

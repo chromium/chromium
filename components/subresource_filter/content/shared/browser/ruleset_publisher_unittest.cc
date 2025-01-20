@@ -228,7 +228,7 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
   const base::FilePath version_dir_path =
       IndexedRulesetLocator::GetSubdirectoryPathForVersion(base_dir,
                                                            current_version);
-  ASSERT_EQ(RulesetService::IndexAndWriteRulesetResult::SUCCESS,
+  ASSERT_EQ(RulesetService::IndexAndWriteRulesetResult::kSuccess,
             RulesetService::WriteRuleset(version_dir_path,
                                          /* license_path =*/base::FilePath(),
                                          ruleset.indexed.contents));

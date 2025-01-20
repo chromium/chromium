@@ -71,7 +71,7 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
     const std::string& data = *result()->FindString("data");
     ASSERT_TRUE(base::Base64Decode(data, &pdf_data_));
 
-    pdf_span_ = base::as_bytes(base::make_span(pdf_data_));
+    pdf_span_ = base::as_byte_span(pdf_data_);
 
     ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span_, &pdf_num_pages_, nullptr));
     ASSERT_GE(pdf_num_pages_, 1);

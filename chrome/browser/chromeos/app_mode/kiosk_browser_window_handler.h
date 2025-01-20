@@ -32,8 +32,8 @@ enum class KioskBrowserWindowType {
   kOpenedDevToolsBrowser = 3,
   kOpenedTroubleshootingNormalBrowser = 4,
   kOpenedSystemWebApp = 5,
-  kClosedAshBrowserWithLacrosEnabled = 6,
-  kMaxValue = kClosedAshBrowserWithLacrosEnabled,
+  // Removed: kClosedAshBrowserWithLacrosEnabled = 6,
+  kMaxValue = kOpenedSystemWebApp
 };
 
 // This class monitors for the addition and removal of new browser windows

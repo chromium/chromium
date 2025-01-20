@@ -224,8 +224,6 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
       TRACE_EVENT_FLAG_FLOW_IN, "state", state_);
 
   if (request_.keepalive && !for_cors_preflight_) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.WebRequest.KeepaliveRequestState",
-                              state_);
     if (base::FeatureList::IsEnabled(
             extensions_features::kReportKeepaliveUkm)) {
       ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(

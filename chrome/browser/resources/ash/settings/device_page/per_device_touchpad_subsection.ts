@@ -415,7 +415,12 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   }
 
   private onDisabledTouchpadSettingsClick_(): void {
-    Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD);
+    const urlParams =
+        new URLSearchParams({settingId: Setting.kDisableTouchpad.toString()});
+    Router.getInstance().navigateTo(
+        routes.A11Y_CURSOR_AND_TOUCHPAD,
+        /* dynamicParams */ urlParams,
+    );
   }
 
   private isMouseConnected_(): boolean {

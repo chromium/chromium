@@ -14,20 +14,17 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import dagger.Lazy;
-
 import org.chromium.base.BuildInfo;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-
-import javax.inject.Inject;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
  * Determines which of the versions of the "Running in Chrome" UI is displayed to the user.
@@ -37,24 +34,23 @@ import javax.inject.Inject;
  * * The new Notification. (When notifications are enabled.) <br>
  * * The new Snackbar. (A Snackbar dismisses automatically, this one after 7 seconds.)
  */
-@ActivityScope
 public class DisclosureUiPicker implements NativeInitObserver {
-    private final Lazy<DisclosureInfobar> mDisclosureInfobar;
-    private final Lazy<DisclosureSnackbar> mDisclosureSnackbar;
-    private final Lazy<DisclosureNotification> mDisclosureNotification;
+    private final Supplier<DisclosureInfobar> mDisclosureInfobar;
+    private final Supplier<DisclosureSnackbar> mDisclosureSnackbar;
+    private final Supplier<DisclosureNotification> mDisclosureNotification;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Inject
     public DisclosureUiPicker(
-            Lazy<DisclosureInfobar> disclosureInfobar,
-            Lazy<DisclosureSnackbar> disclosureSnackbar,
-            Lazy<DisclosureNotification> disclosureNotification,
-            BaseCustomTabActivity activity) {
+            Supplier<DisclosureInfobar> disclosureInfobar,
+            Supplier<DisclosureSnackbar> disclosureSnackbar,
+            Supplier<DisclosureNotification> disclosureNotification,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mDisclosureInfobar = disclosureInfobar;
         mDisclosureSnackbar = disclosureSnackbar;
         mDisclosureNotification = disclosureNotification;
-        mIntentDataProvider = activity.getIntentDataProvider();
-        activity.getLifecycleDispatcher().register(this);
+        mIntentDataProvider = intentDataProvider;
+        lifecycleDispatcher.register(this);
     }
 
     @Override
@@ -76,7 +72,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
     }
 
     private boolean areHeadsUpNotificationsEnabled() {
-        if (!NotificationManagerProxyImpl.getInstance().areNotificationsEnabled()) return false;
+        if (!NotificationProxyUtils.areNotificationsEnabled()) return false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
         // Android Automotive doesn't currently allow heads-up notifications.
         if (BuildInfo.getInstance().isAutomotive) return false;

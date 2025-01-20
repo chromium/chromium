@@ -12,12 +12,14 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/unique_cookie_key.h"
 
 namespace ash::floating_sso {
 
@@ -176,6 +178,35 @@ std::unique_ptr<net::CanonicalCookie> FromSyncProto(
   return cookie;
 }
 
+std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie) {
+  base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                 std::string>
+      serialized_partition_key =
+          net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+  if (!serialized_partition_key.has_value()) {
+    return std::nullopt;
+  }
+
+  const net::UniqueCookieKey strict_unique_key = cookie.StrictlyUniqueKey();
+  const std::string& name = strict_unique_key.name();
+  const std::string& domain = strict_unique_key.domain();
+  const std::string& path = strict_unique_key.path();
+  // `source_scheme()` and `port()` are guaranteed to return non-nullopt values,
+  // since we created the key via StrictlyUniqueKey.
+  const net::CookieSourceScheme source_scheme =
+      strict_unique_key.source_scheme().value();
+  const int source_port = strict_unique_key.port().value();
+
+  // We just concatenate all involved strings.
+  std::string serialized_key = base::StrCat(
+      {serialized_partition_key->TopLevelSite(),
+       base::ToString(serialized_partition_key->has_cross_site_ancestor()),
+       name, domain, path,
+       base::NumberToString(static_cast<int>(source_scheme)),
+       base::NumberToString(source_port)});
+  return serialized_key;
+}
+
 std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     const net::CanonicalCookie& cookie) {
   base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
@@ -186,23 +217,13 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     return std::nullopt;
   }
 
-  // Serialize StrictlyUniqueKey: it will be written to specifics proto
-  // and used as a client tag.
-  // TODO(b/318391357): move serialization of the key elsewhere when
-  // implementing CookieSyncBridge. We should guarantee that we don't update it
-  // for existing entities.
-  net::CookieBase::StrictlyUniqueCookieKey key = cookie.StrictlyUniqueKey();
-  const auto& [partition_key, name, domain, path, source_scheme, source_port] =
-      key;
-  std::string serialized_key = base::StrCat(
-      {serialized_partition_key->TopLevelSite(),
-       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
-       name, domain, path,
-       base::NumberToString(static_cast<int>(source_scheme)),
-       base::NumberToString(source_port)});
+  std::optional<std::string> serialized_key = SerializedKey(cookie);
+  // The only way for this to not have value is when partition key can't
+  // be serialized, but we already handled it above.
+  CHECK(serialized_key.has_value());
 
   sync_pb::CookieSpecifics proto;
-  proto.set_unique_key(serialized_key);
+  proto.set_unique_key(serialized_key.value());
   proto.set_name(cookie.Name());
   proto.set_value(cookie.Value());
   proto.set_domain(cookie.Domain());

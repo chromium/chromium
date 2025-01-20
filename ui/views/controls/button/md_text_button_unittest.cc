@@ -33,8 +33,9 @@ TEST_F(MdTextButtonTest, CustomPadding) {
 TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   // Test whether the button's background color changes when its containing
   // widget's activation changes.
-  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+  if constexpr (!PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
+  }
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -108,12 +109,16 @@ TEST_F(MdTextButtonActionViewInterfaceTest,
   ASSERT_NE(corner_radius_1, corner_radius_2);
 
   md_text_button->SetBoundsRect(gfx::Rect(kSize1));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_1);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_1);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_1));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_1));
 
   md_text_button->SetBoundsRect(gfx::Rect(kSize2));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_2);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_2);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_2));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(corner_radius_2));
 }
 
 TEST_F(MdTextButtonActionViewInterfaceTest,
@@ -123,11 +128,24 @@ TEST_F(MdTextButtonActionViewInterfaceTest,
 
   constexpr int kCustomCornerRadius = 1234;
   md_text_button->SetCornerRadius(kCustomCornerRadius);
-  ASSERT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
+  ASSERT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
 
   md_text_button->SetBoundsRect(gfx::Rect(50, 50));
-  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
-  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), kCustomCornerRadius);
+  EXPECT_EQ(md_text_button->GetCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(),
+            gfx::RoundedCornersF(kCustomCornerRadius));
+}
+
+TEST_F(MdTextButtonActionViewInterfaceTest, CustomCornerRadii) {
+  auto md_text_button = std::make_unique<MdTextButton>();
+  md_text_button->SetBoundsRect(gfx::Rect(100, 100));
+
+  gfx::RoundedCornersF kCustomCornerRadii(1, 5, 10, 20);
+  md_text_button->SetCornerRadii(kCustomCornerRadii);
+  EXPECT_EQ(md_text_button->GetCornerRadii(), kCustomCornerRadii);
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadii(), kCustomCornerRadii);
 }
 
 TEST_F(MdTextButtonTest, StrokeColorIdOverride) {

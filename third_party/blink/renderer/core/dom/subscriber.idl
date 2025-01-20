@@ -4,7 +4,7 @@
 
 // https://github.com/WICG/observable
 
-[Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
+[Exposed=(Window,Worker,ShadowRealm), RuntimeEnabled=ObservableAPI] // TODO(crbug.com/40282760): This should be Exposed=*
 interface Subscriber {
   void next(any result);
   [CallWith=ScriptState] void error(any error);

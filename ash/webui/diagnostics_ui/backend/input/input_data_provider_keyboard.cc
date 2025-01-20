@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 
 #include <fcntl.h>
 #include <linux/input.h>
@@ -21,10 +20,12 @@
 #include "ash/shell.h"
 #include "ash/system/diagnostics/mojom/input.mojom-shared.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
+#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -247,10 +248,13 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
       return mojom::TopRowKey::kPlayPause;
     case ui::TopRowActionKey::kPrivacyScreenToggle:
       return mojom::TopRowKey::kPrivacyScreenToggle;
+    case ui::TopRowActionKey::kDictation:
+      return mojom::TopRowKey::kDictation;
+    case ui::TopRowActionKey::kAccessibility:
+      return mojom::TopRowKey::kAccessibility;
     case ui::TopRowActionKey::kAllApplications:
     case ui::TopRowActionKey::kEmojiPicker:
-    case ui::TopRowActionKey::kDictation:
-    case ui::TopRowActionKey::kAccessibility:
+    case ui::TopRowActionKey::kDoNotDisturb:
     case ui::TopRowActionKey::kUnknown:
       return mojom::TopRowKey::kUnknown;
     case ui::TopRowActionKey::kNone:
@@ -465,6 +469,10 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
 
   result->has_assistant_key =
       device_info->event_device_info.HasKeyEvent(KEY_ASSISTANT);
+
+  result->bottom_left_layout = device_info->bottom_left_layout;
+  result->bottom_right_layout = device_info->bottom_right_layout;
+  result->numpad_layout = device_info->numpad_layout;
 
   return result;
 }

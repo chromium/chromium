@@ -15,10 +15,8 @@ enum class LevelDBScopeDeletionMode {
   // The range will be deleted eventually. All future access to this range is
   // undefined - the data may or may not still exist, even after Chrome
   // restarts. So only do this for ranges that are known to never be used again.
-  // This mode treats the 'end' of the range as exclusive.
-  kDeferred,
-  // Same as |kDeferred|, except the range will also be compacted afterwards
-  // to further ensure the data is deleted.
+  // The range will also be compacted afterwards to further ensure the data is
+  // deleted.
   // This mode treats the 'end' of the range as exclusive.
   kDeferredWithCompaction
 };

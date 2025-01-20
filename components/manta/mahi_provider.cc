@@ -140,6 +140,7 @@ MahiProvider::~MahiProvider() = default;
 
 void MahiProvider::Summarize(const std::string& input,
                              const std::string& title,
+                             const std::optional<std::string>& context,
                              const std::optional<std::string>& url,
                              MantaGenericCallback done_callback) {
   proto::Request request;
@@ -153,6 +154,12 @@ void MahiProvider::Summarize(const std::string& input,
     input_data = request.add_input_data();
     input_data->set_tag("title");
     input_data->set_text(title);
+  }
+
+  if (context.has_value() && !context->empty()) {
+    input_data = request.add_input_data();
+    input_data->set_tag("context");
+    input_data->set_text(context.value());
   }
 
   if (url.has_value() && !url->empty()) {

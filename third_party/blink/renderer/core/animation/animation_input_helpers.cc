@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
@@ -265,7 +266,13 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
     exception_state.ThrowTypeError("Easing may not be set to a list of values");
     return nullptr;
   }
-  return CSSToStyleMap::MapAnimationTimingFunction(value_list->Item(0));
+  // TODO(sesse): Are there situations where we're being called, but where
+  // we should use a length resolver related to a specific element's computed
+  // style?
+  MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(
+      document ? document->GetFrame() : nullptr);
+  return CSSToStyleMap::MapAnimationTimingFunction(*media_values,
+                                                   value_list->Item(0));
 }
 
 String AnimationInputHelpers::PropertyHandleToKeyframeAttribute(

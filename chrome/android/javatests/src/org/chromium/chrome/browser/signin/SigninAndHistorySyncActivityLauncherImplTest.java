@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,20 +37,19 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -61,10 +59,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests {@link SigninAndHistorySyncActivityLauncherImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    SigninFeatures.PUT_PARCELABLE_SIGNIN_CONFIG_IN_EXTRA
-})
 public class SigninAndHistorySyncActivityLauncherImplTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -77,8 +71,15 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
             new AccountPickerBottomSheetStrings.Builder(
                             R.string.signin_account_picker_bottom_sheet_title)
                     .build();
-    private static final FullscreenSigninAndHistorySyncConfig CONFIG =
+    private static final FullscreenSigninAndHistorySyncConfig FULLSCREEN_CONFIG =
             new FullscreenSigninAndHistorySyncConfig.Builder().build();
+    private static final BottomSheetSigninAndHistorySyncConfig BOTTOM_SHEET_CONFIG =
+            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                            BOTTOM_SHEET_STRINGS,
+                            NoAccountSigninMode.BOTTOM_SHEET,
+                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            HistorySyncConfig.OptInMode.REQUIRED)
+                    .build();
 
     @Mock private Context mContextMock;
     @Mock private IdentityServicesProvider mIdentityProviderMock;
@@ -97,7 +98,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateBottomSheetSigninIntentOrShowErrorWhenSigninIsAllowed() {
+    public void testCreateBottomSheetSigninIntentOrShowError() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -108,48 +109,42 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            BOTTOM_SHEET_CONFIG,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNotNull(intent);
                 });
     }
 
     @Test
     @MediumTest
-    public void testCreateBottomSheetSigninIntentOrShowErrorWithSpecifiedAccountId() {
+    public void testCreateBottomSheetSigninIntentOrShowError_withAccountId() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .selectedCoreAccountId(TestAccounts.ACCOUNT1.getId())
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            TestAccounts.ACCOUNT1.getId());
+                                            config,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNotNull(intent);
                 });
     }
 
     @Test
     @MediumTest
-    public void testCreateBottomSheetSigninIntentOrShowErrorWhenHistorySyncIsAllowed() {
+    public void testCreateBottomSheetSigninIntentOrShowError_signedInHistorySyncAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -163,51 +158,19 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            BOTTOM_SHEET_CONFIG,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNotNull(intent);
                 });
     }
 
     @Test
     @MediumTest
-    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsAllowed() {
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @Nullable
-                    Intent intent =
-                            SigninAndHistorySyncActivityLauncherImpl.get()
-                                    .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
-                                            mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.RECENT_TABS,
-                                            null);
-                    assertNotNull(intent);
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testCreateBottomSheetSigninIntentOrShowErrorWhenSigninIsNotPossible() {
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+    public void testCreateBottomSheetSigninIntentOrShowError_signinNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -218,108 +181,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
-                    assertNull(intent);
-                });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
-    }
-
-    @Test
-    @MediumTest
-    public void
-            testCreateBottomSheetSigninIntentOrShowErrorWhenSigninAndHistorySyncAreNotAllowed() {
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
-        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @Nullable
-                    Intent intent =
-                            SigninAndHistorySyncActivityLauncherImpl.get()
-                                    .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
-                                            mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
-                    assertNull(intent);
-                });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
-    }
-
-    @Test
-    @MediumTest
-    public void
-            testCreateBottomSheetSigninIntentOrShowErrorWhenSigninIsNotAllowedAndHistorySyncIsSuppressed() {
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @Nullable
-                    Intent intent =
-                            SigninAndHistorySyncActivityLauncherImpl.get()
-                                    .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
-                                            mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
-                    assertNull(intent);
-                });
-        // TODO(crbug.com/376251506): Verify that error UI is shown.
-    }
-
-    @Test
-    @MediumTest
-    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsNotAllowed() {
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
-        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    @Nullable
-                    Intent intent =
-                            SigninAndHistorySyncActivityLauncherImpl.get()
-                                    .createBottomSheetSigninIntentOrShowError(
-                                            mContextMock,
-                                            mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.RECENT_TABS,
-                                            null);
+                                            BOTTOM_SHEET_CONFIG,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -328,43 +191,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     @Test
     @MediumTest
     // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
-    public void testCreateBottomSheetSigninIntentOrShowErrorWhenSigninIsDisabledByPolicy() {
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
-        HistogramWatcher watchSigninDisabledToastShownHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SigninDisabledNotificationShown",
-                        SigninAccessPoint.NTP_SIGNED_OUT_ICON);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SigninAndHistorySyncActivityLauncherImpl.get()
-                            .createBottomSheetSigninIntentOrShowError(
-                                    mActivityTestRule.getActivity(),
-                                    mProfileMock,
-                                    BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.NONE,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                    /* selectedCoreAccountId= */ null);
-                });
-
-        onView(withText(R.string.managed_by_your_organization))
-                .inRoot(
-                        withDecorView(
-                                not(mActivityTestRule.getActivity().getWindow().getDecorView())))
-                .check(matches(isDisplayed()));
-        watchSigninDisabledToastShownHistogram.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
-    public void testLaunchActivityForHistorySyncRequiredFlowWhenSigninIsDisabledByPolicy() {
+    public void testCreateBottomSheetSigninIntentOrShowError_signinDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
@@ -379,20 +206,68 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                             .createBottomSheetSigninIntentOrShowError(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
-                                    BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.REQUIRED,
-                                    SigninAccessPoint.RECENT_TABS,
-                                    null);
+                                    BOTTOM_SHEET_CONFIG,
+                                    SigninAccessPoint.RECENT_TABS);
                 });
 
         onView(withText(R.string.managed_by_your_organization))
                 .inRoot(withDecorView(allOf(withId(R.id.toast_text))))
                 .check(matches(isDisplayed()));
         watchSigninDisabledToastShownHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateBottomSheetSigninIntentOrShowError_signedInAndHistorySyncSuppressed() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    @Nullable
+                    Intent intent =
+                            SigninAndHistorySyncActivityLauncherImpl.get()
+                                    .createBottomSheetSigninIntentOrShowError(
+                                            mContextMock,
+                                            mProfileMock,
+                                            BOTTOM_SHEET_CONFIG,
+                                            SigninAccessPoint.RECENT_TABS);
+                    assertNull(intent);
+                });
+        // TODO(crbug.com/376251506): Verify that error UI is shown.
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateBottomSheetSigninIntentOrShowError_signedInAndNoHistorySync() {
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.NONE)
+                                    .build();
+                    @Nullable
+                    Intent intent =
+                            SigninAndHistorySyncActivityLauncherImpl.get()
+                                    .createBottomSheetSigninIntentOrShowError(
+                                            mContextMock,
+                                            mProfileMock,
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                    assertNull(intent);
+                });
+        // TODO(crbug.com/376251506): Verify that error UI is shown.
     }
 
     @Test
@@ -409,7 +284,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntent(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
@@ -417,7 +292,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentWhenSigninNotAllowed() {
+    public void testCreateFullscreenSigninIntent_signinNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(false);
@@ -432,7 +307,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntent(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
@@ -440,7 +315,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentWhenAlreadySignedIn() {
+    public void testCreateFullscreenSigninIntent_alreadySignedIn() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -457,7 +332,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntent(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
@@ -465,7 +340,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentWhenSignedInAndHistorySyncNotAllowed() {
+    public void testCreateFullscreenSigninIntent_signedInAndHistorySyncNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -481,7 +356,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntent(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
@@ -489,7 +364,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentWhenSignedInAndHistorySyncDeclinedOften() {
+    public void testCreateFullscreenSigninIntent_signedInAndHistorySyncDeclinedOften() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -505,7 +380,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntent(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
@@ -525,7 +400,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
@@ -533,7 +408,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentOrShowErrorWhenSigninNotAllowed() {
+    public void testCreateFullscreenSigninIntentOrShowError_signinNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(false);
@@ -548,7 +423,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
@@ -557,7 +432,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentOrShowErrorWhenAlreadySignedIn() {
+    public void testCreateFullscreenSigninIntentOrShowError_alreadySignedIn() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -574,7 +449,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
@@ -582,7 +457,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testCreateFullscreenSigninIntentOrShowErrorWhenSignedInAndHistorySyncNotAllowed() {
+    public void testCreateFullscreenSigninIntentOrShowError_signedInAndHistorySyncNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -598,7 +473,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });
@@ -607,8 +482,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void
-            testCreateFullscreenSigninIntentOrShowErrorWhenSignedInAndHistorySyncDeclinedOften() {
+    public void testCreateFullscreenSigninIntentOrShowError_signedInAndHistorySyncDeclinedOften() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -624,7 +498,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     .createFullscreenSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            CONFIG,
+                                            FULLSCREEN_CONFIG,
                                             SigninAccessPoint.SIGNIN_PROMO);
                     assertNull(intent);
                 });

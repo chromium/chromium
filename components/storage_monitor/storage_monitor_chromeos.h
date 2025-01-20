@@ -9,12 +9,6 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_CHROMEOS_H_
 #define COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_CHROMEOS_H_
 
-#include "build/chromeos_buildflags.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Should only be used on ChromeOS."
-#endif
-
 #include <map>
 #include <memory>
 #include <string>
@@ -26,6 +20,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#error "Should only be used on ChromeOS."
+#endif
 
 namespace storage_monitor {
 

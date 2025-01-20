@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/search_results_panel.h"
 
+#include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
@@ -22,6 +23,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -29,13 +31,13 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 
 namespace {
 
-// TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr int kPanelPaddingSize = 16;
@@ -50,6 +52,13 @@ inline constexpr gfx::Insets kSearchImageSpacing =
 inline constexpr gfx::Insets kSearchTextfieldSpacing =
     gfx::Insets::TLBR(14, 0, 14, 16);
 inline constexpr gfx::Insets kHeaderIconSpacing = gfx::Insets::TLBR(0, 2, 0, 8);
+
+// Returns the target container window for the panel widget.
+aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
+  return Shell::GetContainer(
+      root, is_active ? kShellWindowId_CaptureModeSearchResultsPanel
+                      : kShellWindowId_SystemModalContainer);
+}
 
 }  // namespace
 
@@ -116,7 +125,7 @@ class SunfishSearchBoxView : public views::View,
     // Resize the image to fit in the searchbox, keeping the same aspect ratio.
     const int target_height = height();
     const int target_width = (image.width() * target_height) / image.height();
-    image_view_->SetImage(image);
+    image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
     image_view_->SetImageSize(gfx::Size(target_width, target_height));
   }
 
@@ -150,7 +159,7 @@ BEGIN_METADATA(SunfishSearchBoxView)
 END_METADATA
 
 SearchResultsPanel::SearchResultsPanel() {
-  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(features::IsSunfishFeatureEnabled());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -222,18 +231,16 @@ SearchResultsPanel::SearchResultsPanel() {
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(
-    aura::Window* root,
-    const gfx::Rect& bounds) {
+views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
+                                                        bool is_active) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  // TODO(b/362284723): Ensure tooltips are visible over overlay container.
-  params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
-  params.bounds = bounds;
+  params.parent = GetParentContainer(root, is_active);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
+  params.name = "SearchResultsPanelWidget";
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());
   return widget;
@@ -255,6 +262,15 @@ void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
   search_box_view_->textfield_->SetText(text);
 }
 
+void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
+  aura::Window* native_window = GetWidget()->GetNativeWindow();
+  // While the capture mode session is active, we parent the panel to its own
+  // container, else we parent it to the system modal container.
+  aura::Window* new_parent = GetParentContainer(
+      new_root ? new_root : native_window->GetRootWindow(), !!new_root);
+  views::Widget::ReparentNativeView(native_window, new_parent);
+}
+
 bool SearchResultsPanel::HasFocus() const {
   // Returns true if `this` or any of its child views has focus.
   const views::FocusManager* focus_manager = GetFocusManager();
@@ -270,10 +286,51 @@ bool SearchResultsPanel::HasFocus() const {
   return Contains(focused_view);
 }
 
+void SearchResultsPanel::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
+void SearchResultsPanel::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+  RefreshPanelBounds();
+}
+
 void SearchResultsPanel::OnCloseButtonPressed() {
   CHECK(GetWidget());
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void SearchResultsPanel::RefreshPanelBounds() {
+  views::Widget* widget = GetWidget();
+
+  // First attempt to restore the preferred size. This is needed because when
+  // the display is zoomed in, the widget may be cropped to fit within the
+  // screen. On zoom out, the widget should return to its preferred size.
+  gfx::Rect widget_bounds_in_screen(
+      widget->GetWindowBoundsInScreen().origin(),
+      gfx::Size(capture_mode::kSearchResultsPanelWidth,
+                capture_mode::kSearchResultsPanelHeight));
+
+  // Adjust the preferred size and bounds based on the current display.
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          widget->GetNativeWindow());
+  const gfx::Rect work_area_in_screen(display.work_area());
+  if (!work_area_in_screen.Contains(widget_bounds_in_screen)) {
+    widget_bounds_in_screen.AdjustToFit(work_area_in_screen);
+  }
+  widget->SetBounds(widget_bounds_in_screen);
 }
 
 BEGIN_METADATA(SearchResultsPanel)

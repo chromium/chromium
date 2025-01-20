@@ -45,7 +45,7 @@ PendingExtensionManager::PendingExtensionManager(
     content::BrowserContext* context)
     : context_(context) {}
 
-PendingExtensionManager::~PendingExtensionManager() {}
+PendingExtensionManager::~PendingExtensionManager() = default;
 
 const PendingExtensionInfo* PendingExtensionManager::GetById(
     const std::string& id) const {

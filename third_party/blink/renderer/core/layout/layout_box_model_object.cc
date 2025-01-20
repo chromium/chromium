@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 
 #include "cc/input/main_thread_scrolling_reason.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -124,8 +123,8 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
                                            const ComputedStyle& new_style) {
   NOT_DESTROYED();
   // Change of stacked/stacking context status may cause change of this or
-  // descendant PaintLayer's CompositingContainer, so we need to eagerly
-  // invalidate the current compositing container chain which may have painted
+  // descendant PaintLayer's PaintingContainer, so we need to eagerly
+  // invalidate the current PaintingContainer chain which may have painted
   // cached subsequences containing this object or descendant objects.
   if (Style() &&
       (IsStacked() != IsStacked(new_style) ||
@@ -266,10 +265,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Layer()) {
-    // The previous CompositingContainer chain was marked for repaint via
+    // The previous PaintingContainer chain was marked for repaint via
     // |LayoutBoxModelObject::StyleWillChange| but changes to stacking can
-    // change the compositing container so we need to ensure the new
-    // CompositingContainer is also marked for repaint.
+    // change the PaintingContainer so we need to ensure the new
+    // PaintingContainer is also marked for repaint.
     if (old_style &&
         (IsStacked() != IsStacked(*old_style) ||
          IsStackingContext() != IsStackingContext(*old_style)) &&
@@ -454,14 +453,16 @@ bool LayoutBoxModelObject::ShouldBeHandledAsInline(
 
 void LayoutBoxModelObject::UpdateFromStyle() {
   NOT_DESTROYED();
-  const ComputedStyle& style_to_use = StyleRef();
-  SetHasBoxDecorationBackground(style_to_use.HasBoxDecorationBackground());
-  SetInline(ShouldBeHandledAsInline(style_to_use));
-  SetPositionState(style_to_use.GetPosition());
-  SetHorizontalWritingMode(style_to_use.IsHorizontalWritingMode());
+  const ComputedStyle& style = StyleRef();
+  SetHasBoxDecorationBackground(style.HasBoxDecorationBackground());
+  SetInline(ShouldBeHandledAsInline(style));
+  SetPositionState(style.GetPosition());
+  SetHorizontalWritingMode(style.IsHorizontalWritingMode());
+
+  const bool is_fixed_container = ComputeIsFixedContainer(style);
+  SetCanContainFixedPositionObjects(is_fixed_container);
   SetCanContainAbsolutePositionObjects(
-      ComputeIsAbsoluteContainer(&style_to_use));
-  SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
+      ComputeIsAbsoluteContainer(style, is_fixed_container));
   SetIsBackgroundAttachmentFixedObject(
       !BackgroundTransfersToView() &&
       StyleRef().HasFixedAttachmentBackgroundImage());

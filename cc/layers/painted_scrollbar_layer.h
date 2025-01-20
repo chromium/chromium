@@ -39,9 +39,6 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   bool OpacityCanAnimateOnImplThread() const override;
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   const gfx::Size& internal_content_bounds() const {
     return internal_content_bounds_.Read(*this);
@@ -52,6 +49,12 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  protected:
   explicit PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
   ~PaintedScrollbarLayer() override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
   // For unit tests
   UIResourceId track_and_buttons_resource_id() {
@@ -71,7 +74,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  private:
   gfx::Size LayerSizeToContentSize(const gfx::Size& layer_size) const;
   bool UpdateThumbIfNeeded();
-  bool UpdateTrackAndButtonsIfNeeded();
+  bool UpdateTrackAndButtonsIfNeeded(bool force_repaint_for_nine_patch);
 
   template <typename T>
   bool UpdateProperty(T value, T* prop) {

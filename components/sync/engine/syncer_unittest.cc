@@ -499,11 +499,19 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
   EXPECT_EQ(2, GetProcessor(PREFERENCES)->GetLocalChangesCallCount());
 
   histogram_tester.ExpectBucketCount("Sync.CommitResponse.PREFERENCE",
-                                     SyncerErrorValueForUma::kSyncServerError,
+                                     SyncerErrorValueForUma::kHttpError,
                                      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Sync.CommitResponse",
-                                     SyncerErrorValueForUma::kSyncServerError,
+                                     SyncerErrorValueForUma::kHttpError,
                                      /*expected_count=*/1);
+
+  // Latency is not recorded for failed commits (only 1 commit succeeded).
+  histogram_tester.ExpectBucketCount("Sync.CommitResponse",
+                                     SyncerErrorValueForUma::kSyncerOk,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.CommitLatency", /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.CommitLatency.PREFERENCE",
+                                    /*expected_count=*/1);
 }
 
 // Test that a single conflict response from the server will cause us to exit

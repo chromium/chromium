@@ -14,10 +14,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -361,6 +363,28 @@ TEST_P(URLBlocklistParamTest, Filtering) {
   blocklist.Allow(allowed);
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("devtools://something.com")));
   EXPECT_TRUE(blocklist.IsURLBlocked(GURL("https://something.com")));
+}
+
+TEST_F(URLBlocklistManagerTest, PolicyListLimit) {
+  URLBlocklist blocklist;
+  size_t url_filter_list_limit = kMaxUrlFiltersPerPolicy + 5;
+  base::Value::List url_filter_list;
+  for (size_t i = 0; i < url_filter_list_limit; ++i) {
+    url_filter_list.Append(base::StringPrintf("https://example-%d.com", i));
+  }
+
+  blocklist.Block(url_filter_list);
+  for (size_t i = 0; i < kMaxUrlFiltersPerPolicy; ++i) {
+    EXPECT_TRUE(blocklist.IsURLBlocked(GURL(url_filter_list[i].GetString())));
+  }
+  for (size_t i = kMaxUrlFiltersPerPolicy; i < url_filter_list_limit; ++i) {
+    EXPECT_FALSE(blocklist.IsURLBlocked(GURL(url_filter_list[i].GetString())));
+  }
+
+  blocklist.Allow(url_filter_list);
+  for (const base::Value& url : url_filter_list) {
+    EXPECT_FALSE(blocklist.IsURLBlocked(GURL(url.GetString())));
+  }
 }
 
 TEST_F(URLBlocklistManagerTest, QueryParameters) {

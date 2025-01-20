@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/js_runner.h"
 
+#include "base/containers/span.h"
 #include "base/supports_user_data.h"
 #include "gin/per_context_data.h"
 
@@ -75,9 +76,8 @@ JSRunner* JSRunner::GetInstanceForTesting() {
 
 void JSRunner::RunJSFunction(v8::Local<v8::Function> function,
                              v8::Local<v8::Context> context,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) {
-  RunJSFunction(function, context, argc, argv, ResultCallback());
+                             base::span<v8::Local<v8::Value>> args) {
+  RunJSFunction(function, context, args, ResultCallback());
 }
 
 }  // namespace extensions

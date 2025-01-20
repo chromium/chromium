@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." current_release="1" latest_public_release="0"
-      output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
+      enc_check="möl" source_lang_id="en">
   <outputs>
     <output filename="_locales/af/messages.json.gz" type="chrome_messages_json_gzip" lang="af"/>
     <output filename="_locales/am/messages.json.gz" type="chrome_messages_json_gzip" lang="am"/>

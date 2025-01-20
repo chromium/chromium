@@ -7,12 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "cronet_c.h"
+#include "components/cronet/native/engine.h"
+
+#include <array>
 
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
-#include "components/cronet/native/engine.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
+#include "cronet_c.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cronet {
@@ -92,7 +94,7 @@ TEST(EngineUnitTest, RequestFinishedInfoListeners) {
   Cronet_EnginePtr engine = Cronet_Engine_Create();
   Cronet_EngineParamsPtr engine_params = Cronet_EngineParams_Create();
 
-  Cronet_RequestFinishedInfoListenerPtr listeners[kNumListeners];
+  std::array<Cronet_RequestFinishedInfoListenerPtr, kNumListeners> listeners;
   Cronet_ExecutorPtr executor =
       Cronet_Executor_CreateWith(TestExecutor_Execute);
   for (int i = 0; i < kNumListeners; ++i) {

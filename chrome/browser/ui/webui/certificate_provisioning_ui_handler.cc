@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
+
+#include <string>
 
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -121,8 +121,9 @@ std::u16string MakeStatusMessage(
 // "5 minutes ago".
 std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
   const base::Time now = base::Time::NowFromSystemTime();
-  if (last_update_time.is_null() || last_update_time > now)
+  if (last_update_time.is_null() || last_update_time > now) {
     return std::u16string();
+  }
   const base::TimeDelta elapsed_time = now - last_update_time;
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);
@@ -130,8 +131,9 @@ std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
 
 std::u16string GetMessageFromBackendError(
     const crosapi::mojom::CertProvisioningBackendServerErrorPtr& call_info) {
-  if (!call_info)
+  if (!call_info) {
     return std::u16string();
+  }
 
   std::u16string time_u16 =
       base::UTF8ToUTF16(base::TimeFormatHTTP(call_info->time));
@@ -189,8 +191,9 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
 void CertificateProvisioningUiHandler::OnStateChanged() {
   // If Javascript is not allowed yet, the UI will request a refresh during its
   // first message to the handler.
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   RefreshCertificateProvisioningProcesses();
 }

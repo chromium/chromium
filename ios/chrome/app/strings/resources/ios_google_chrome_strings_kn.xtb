@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1066101356081285416">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ಪ್ಯಾಕೇಜ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. ಈ ಫೀಚರ್ ಅನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಪ್ರತಿಯೊಬ್ಬರಿಗೂ Google ಶಾಪಿಂಗ್ ಫೀಚರ್‌ಗಳನ್ನು ಸುಧಾರಿಸಲು ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆ ಮತ್ತು ವೆಬ್‌ಸೈಟ್ ಹೆಸರನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ <ph name="BEGIN_LINK" />ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬಹುದು.</translation>
+<translation id="1076643793026027628">Chrome ಸ್ವಯಂಚಾಲಿತವಾಗಿ YouTube ಅಜ್ಞಾತ ಲಿಂಕ್‌ಗಳನ್ನು ಅಜ್ಞಾತದಲ್ಲಿ ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="1086486568852410168">Google Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಿ</translation>
 <translation id="1143896152279775643">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1146503048444965320">Chrome ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">ಸಂದೇಶಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1229222343402087523">Chrome ನಲ್ಲಿ ${searchPhrase} ಹುಡುಕಿ</translation>
 <translation id="1237769345474105984">Chrome ನಿಂದ</translation>
-<translation id="1240190568154816272">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="124228879633599436">ನಿಮ್ಮ Chrome ಹಳೆಯ ಆವೃತ್ತಿಯದ್ದಾಗಿದೆ. ಸುರಕ್ಷಿತವಾಗಿರಲು ಅದನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ.</translation>
 <translation id="1333745675627230582">Chrome Dino ಗೇಮ್ ಆಡಿರಿ</translation>
 <translation id="1352919863522755794">Google Password Manager ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
@@ -19,7 +19,7 @@
 <translation id="1407843355326180937">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಈ ಸೈಟ್ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="1426599484714342603">Chrome ಶಾಪಿಂಗ್‌ನ ಪವರ್ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1462727070346936664">Chrome ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನ ಪಡೆದುಕೊಳ್ಳಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
-<translation id="1493827051843127077">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡಲು Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
+<translation id="1493827051843127077">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡಲು Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="1504372625950710826">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
 <translation id="1516692594929310090">Chrome ಟ್ಯಾಬ್ ಗ್ರಿಡ್ ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="1526327845902180576">ಆನ್ ಆಗಿದ್ದಾಗ:
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್‌ ಆಗಿ ಸೆಟ್‌ ಮಾಡಲು Chrome ಸೆಟ್ಟಿಂಗ್‌ ಅನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="1670609221633730681">Chrome ಸಲಹೆ: ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಆರಿಸಿ</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="1790080846677398234">Chrome ನಲ್ಲಿರುವ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಇನ್‌ಪುಟ್ ಮಾಡಲಾದ URL ಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
 <translation id="1799920918471566157">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1830634592642484976">ಈ ವಿಳಾಸವನ್ನು ಪ್ರಸ್ತುತವಾಗಿ Chrome ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">ಇದರರ್ಥ Chrome ಪ್ರತಿ ಬಾರಿ ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="3740397331642243698">Google Chrome ನ ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಇನ್‌ಪುಟ್ ಮಾಡಿದ URL ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="3741995255368156336">Chrome ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
+<translation id="3808570423967020928">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಡಾಕ್‌ನಿಂದ Chrome ಅನ್ನು ವೇಗವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
 <translation id="3827545470516145620">ಈ ಸಾಧನದಲ್ಲಿ ನೀವು ಪ್ರಮಾಣಿತ ಭದ್ರತಾ ರಕ್ಷಣೆಯನ್ನು ಪಡೆಯುತ್ತಿರುವಿರಿ</translation>
 <translation id="384394811301901750">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಇದೀಗ Google Chrome ಗೆ ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3863841106411295595">Chrome ನಲ್ಲಿರುವ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಇನ್‌ಪುಟ್ ಮಾಡಲಾದ URL ಗಳನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">ಈ ಸೈಟ್‌ಗೆ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="4646014602299206846">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ಪ್ಯಾಕೇಜ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದಲ್ಲಿ ನಿಮಗೆ ಪ್ಯಾಕೇಜ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. ಈ ಫೀಚರ್‌ ಅನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಎಲ್ಲರಿಗಾಗಿ ಶಾಪಿಂಗ್ ಅನ್ನು ಸುಧಾರಿಸಲು ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="4647910807533196601">Chrome ನಲ್ಲಿ ನನ್ನ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ.</translation>
+<translation id="4693084815234024320">ನೀವು Chrome ಅಜ್ಞಾತದಲ್ಲಿರುವಿರಿ</translation>
 <translation id="4724297637870447613">ಎಲ್ಲೆಡೆ Chrome ಬಳಸಿ</translation>
 <translation id="4738647308035481133">Google Chrome ಪುಟ</translation>
 <translation id="4742795653798179840">Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
@@ -168,7 +171,7 @@
 <translation id="5661521615548540542">Google Password Manager ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5690398455483874150">{count,plural, =1{ಈಗ 1 Chrome ವಿಂಡೋವನ್ನು ತೋರಿಸುತ್ತಿದೆ}one{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}other{ಈಗ {count} Chrome ವಿಂಡೋಗಳನ್ನು ತೋರಿಸುತ್ತಿದೆ}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5709557627224531708">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ರೂಪದಲ್ಲಿ ಹೊಂದಿಸಿ</translation>
+<translation id="5709557627224531708">Chrome ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ರೂಪದಲ್ಲಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="571296537125272375">ಆಫ್‌ಲೈನ್, ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5716154293141027663">ಇತರ ಆ್ಯಪ್‌ಗಳ ಲಿಂಕ್‌ಗಳನ್ನು ನೀವು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ Chrome ತೆರೆಯಿರಿ</translation>
 <translation id="5772407442571703917">Chrome ಅನ್ನು ಇಲ್ಲಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ.</translation>
@@ -219,9 +222,12 @@
 
 ನಿಮ್ಮ Chrome ಅನುಭವವನ್ನು ಸುಧಾರಿಸಲು ಡೇಟಾವನ್ನು ಬಳಸುವ ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ, <ph name="BEGIN_LINK" />Google ಸೇವೆಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="6922332667202044570">Chrome ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ.</translation>
+<translation id="6924922227983877439">ಡೀಫಾಲ್ಟ್ ಆಗಿ Chrome ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="6931601805528922498">ಸೈನ್ ಇನ್ ಮಾಡುವುದರಿಂದ ಕೆಲಸಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಬ್ರೌಸಿಂಗ್‌ಗಾಗಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು Chrome ಗೆ ಸೇರಿಸುತ್ತದೆ.</translation>
 <translation id="6975725306479268850">ಆಟೋಫಿಲ್‌ಗಾಗಿ Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7056826488869329999">Chrome ನಲ್ಲಿ ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆಯನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ರನ್ ಮಾಡಿ.</translation>
 <translation id="7061455974939528301">Chrome ಐಕಾನ್ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ ಮತ್ತು "ಹೋಮ್‌ ಸ್ಕ್ರೀನ್‌ ಎಡಿಟ್‌ ಮಾಡಿ" ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="7065813315247345131">Chrome ಅನ್ನು ಡಾಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="7124339256045485976">Chrome ಅನ್ನು ಅಪ್ ಟು ಡೇಟ್ ಆಗಿರಿಸಿ</translation>
 <translation id="7161390184744336561">Google Chrome ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="7165736900384873061">Google Chrome QR ಸ್ಕ್ಯಾನರ್ ಬಳಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>

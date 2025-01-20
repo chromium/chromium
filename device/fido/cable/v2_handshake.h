@@ -26,11 +26,8 @@ class GURL;
 
 namespace device::cablev2 {
 
-// The different types of digital credential requests. Current only presentment
-// is supported.
-enum CredentialRequestType {
-  kPresentation,
-};
+// The different types of digital credential requests.
+enum CredentialRequestType { kPresentation, kIssuance };
 using RequestType = absl::variant<FidoRequestType, CredentialRequestType>;
 
 namespace tunnelserver {

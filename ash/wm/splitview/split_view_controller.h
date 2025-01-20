@@ -57,27 +57,21 @@ class SplitViewOverviewSessionTest;
 // in different UI modes (clamshell UI mode and tablet UI mode), and how the
 // window snapping interacts with the overview mode. There is an instance for
 // each display.
-// The window snapping behaviors in clamshell mode:
-// 1. If the feature flag `kSnapGroup` is enabled, once a window is snapped to
-// one side of the screen, Overview will open automatically on the other side of
-// the screen for the user to decide a 2nd window to snap. On window selected,
-// the two windows will then be in one snap group. `SplitViewController` will
-// observe the two snapped windows and control their behaviors until the two
-// windows are no longer in a snap group. The two snapped windows and the split
-// view divider are placed side-by-side with no overlap in the split screen (see
-// `SnapGroup` for more details). User is able to resize the two windows with
-// the `split_view_divider_`.  When the user explicitly ends split view mode,
-// two windows will be restored to their previous bounds and the
-// `split_view_divider_` will be reset. `SplitViewController` will no longer
-// observe and manage the two windows.
-// 2. If in overview mode and on one window snapped, the overview grid will show
-// up on the other half of the screen for user to choose the other to-be-snapped
-// window. The overview session won't show on the other half of the screen
-// if there is no window can be shown in overview.
-// 3. For other cases in clamshell mode, the snapping behaviors are not managed
-// by `SplitViewController`.
+// **Clamshell Mode
+//   **Faster Split Screen:** When a window is snapped to one side of the
+//   screen from certain snap action sources, this class automatically triggers
+//   the window overview on the other side, allowing the user to select a second
+//   window to complete the split screen. Once a second window is chosen, a
+//   `SnapGroup` is created to manage the window group.
+//   **Split Screen from Overview:** If the user starts snapping a window while
+//   already in the window overview, this class will display the overview on the
+//   other side of the screen to allow selection of the second window for the
+//   split screen. However, if there are no other windows available to snap,
+//   the overview will not be shown.
+//   **Other Cases:**  This class does not handle snapping behavior for other
+//   scenarios in clamshell mode.
 //
-// The window snapping behaviors in tablet mode:
+// **Tablet Mode:**
 // The window snapping behaviors in tablet mode will be managed by
 // `SplitViewController`. On one window snapped in the tablet mode, the overview
 // session will show up on the other half of the screen for user to choose the
@@ -575,10 +569,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Split view divider which is a black bar stretching from one edge of the
   // screen to the other, containing a small white drag bar in the middle. As
   // the user presses on it and drag it to horizontally or vertically, the
-  // windows will be resized either horizontally or vertically accordingly. It
-  // will be used in these two cases:
-  // 1. Tablet splitview mode;
-  // 2. Clamshell splitview mode when `kSnapGroup` is enabled.
+  // windows will be resized either horizontally or vertically accordingly.
   SplitViewDivider split_view_divider_;
 
   // A black scrim layer that fades in over a window when its width drops under
@@ -594,7 +585,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current
   // `SplitViewDivider::divider_position_`. Used to update
   // `SplitViewDivider::divider_position_` on work area changes.
-  // TODO(sophiewen | michelefan): Move this variable to `SplitViewDivider`.
   float divider_closest_ratio_ = std::numeric_limits<float>::quiet_NaN();
 
   // The animation that animates the divider to a fixed position after resizing.

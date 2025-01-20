@@ -18,10 +18,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  if (loadTimeData.getBoolean('enableSafetyHub')) {
+  const visibility = pageVisibility || {};
+
+  if (visibility.safetyHub !== false) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
-  } else {
-    r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
   }
 
   if (loadTimeData.getBoolean('showPrivacyGuide')) {
@@ -88,13 +88,13 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
   }
+  // <if expr="is_chromeos">
   if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
     r.SITE_SETTINGS_SMART_CARD_READERS =
         r.SITE_SETTINGS.createChild('smartCardReaders');
   }
-  if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
-    r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
-  }
+  // </if>
+  r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
       loadTimeData.getBoolean('enableComposeProactiveNudge')) {
     r.OFFER_WRITING_HELP = r.SITE_SETTINGS.createChild('offerWritingHelp');
@@ -194,9 +194,6 @@ function createRoutes(): SettingsRoutes {
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
-    if (loadTimeData.getBoolean('enablePageContentSetting')) {
-      r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
-    }
     if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
         loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
@@ -245,10 +242,17 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    if (loadTimeData.getBoolean('autofillPredictionImprovementsEnabled')) {
-      r.AUTOFILL_PREDICTION_IMPROVEMENTS =
-          r.AUTOFILL.createChild('/autofillPredictionImprovements');
+    if (loadTimeData.getBoolean('autofillAiEnabled')) {
+      r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
     }
+
+    // <if expr="enable_glic">
+    if (visibility.glic !== false &&
+        loadTimeData.getBoolean('showGlicSettings')) {
+      r.GLIC = r.BASIC.createSection(
+          '/glic', 'glic', loadTimeData.getString('glicPageTitle'));
+    }
+    // </if>
 
     // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');

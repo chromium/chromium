@@ -78,7 +78,7 @@ const char* kCounterPrefsBasic[] = {
     browsing_data::prefs::kDeleteCacheBasic,
 };
 
-} // namespace
+}  // namespace
 
 namespace settings {
 
@@ -113,8 +113,9 @@ void ClearBrowsingDataHandler::RegisterMessages() {
 }
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
-  if (sync_service_)
+  if (sync_service_) {
     sync_service_observation_.Observe(sync_service_.get());
+  }
 
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
@@ -178,12 +179,14 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
     switch (*data_type) {
       case BrowsingDataType::HISTORY:
-        if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory))
+        if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory)) {
           remove_mask |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
+        }
         break;
       case BrowsingDataType::DOWNLOADS:
-        if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory))
+        if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory)) {
           remove_mask |= content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
+        }
         break;
       case BrowsingDataType::CACHE:
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
@@ -307,7 +310,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   if (toast_features::IsEnabled(toast_features::kClearBrowsingDataToast)) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
-    if (tab && tab->IsInForeground()) {
+    if (tab && tab->IsActivated()) {
       CHECK(tab->GetBrowserWindowInterface());
       ToastController* const toast_controller =
           tab->GetBrowserWindowInterface()->GetFeatures().toast_controller();

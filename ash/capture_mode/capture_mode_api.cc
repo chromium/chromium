@@ -21,37 +21,38 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
-bool IsSunfishFeatureEnabledWithFeatureKey() {
-  const bool is_sunfish_feature_enabled =
-      base::FeatureList::IsEnabled(features::kSunfishFeature);
-  // Allow Google accounts to bypass the secret key check.
-  if (Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
-      shell && shell->session_controller() &&
-      gaia::IsGoogleInternalAccountEmail(
-          shell->session_controller()->GetActiveAccountId().GetUserEmail())) {
-    return is_sunfish_feature_enabled;
-  }
-
-  return is_sunfish_feature_enabled && switches::IsSunfishSecretKeyMatched();
-}
-
 bool IsSunfishOrScannerEnabled() {
   // Returns true if sunfish session can be started, which is true if either the
-  // Sunfish or Scanner feature flag is enabled. Note Scanner operations will
-  // only be available if the secret key is matched.
-  return IsSunfishFeatureEnabledWithFeatureKey() ||
-         features::IsScannerEnabled();
+  // Sunfish or Scanner feature flag is enabled.
+  return features::IsSunfishFeatureEnabled() || features::IsScannerEnabled();
 }
 
 bool IsSunfishAllowedAndEnabled() {
+  if (!IsSunfishOrScannerEnabled()) {
+    return false;
+  }
+
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
-  return IsSunfishOrScannerEnabled() &&
-         // When `AppListControllerImpl` is initialised and indirectly calls
-         // this function, the active user session has not been started yet.
-         // Gracefully handle this case.
-         shell && shell->session_controller()->IsActiveUserSessionStarted() &&
-         capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-             prefs::kSunfishEnabled);
+  if (!shell) {
+    return false;
+  }
+
+  // Order here matters: When `AppListControllerImpl` is initialised and
+  // indirectly calls this function, the active user session has not been
+  // started yet. Gracefully handle this case.
+  auto* session_controller = shell->session_controller();
+  if (!session_controller ||
+      !session_controller->IsActiveUserSessionStarted()) {
+    return false;
+  }
+
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
+  if (!pref_service || !pref_service->GetBoolean(prefs::kSunfishEnabled)) {
+    return false;
+  }
+
+  auto* controller = CaptureModeController::Get();
+  return controller && controller->IsSearchAllowedByPolicy();
 }
 
 }  // namespace ash

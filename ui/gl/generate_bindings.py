@@ -2924,7 +2924,7 @@ def GenerateStubHeader(file, functions):
       file.write(';\n');
 
   file.write('\n')
-  file.write('#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_')
+  file.write('#endif  // UI_GL_GL_STUB_AUTOGEN_GL_H_')
 
 def GenerateStubSource(file, functions):
   """Generates gl_stub_autogen_gl.cc"""
@@ -2963,6 +2963,7 @@ def GenerateSource(file, functions, set_name, used_extensions,
                    'ui/gl/gl_context.h',
                    'ui/gl/gl_implementation.h',
                    'ui/gl/gl_version_info.h',
+                   'ui/gl/startup_trace.h',
                    set_header_name ]
 
   includes_string = "\n".join(["#include \"{0}\"".format(h)
@@ -2981,7 +2982,7 @@ namespace gl {
 
   file.write('\n')
   if set_name != 'gl':
-    file.write('Driver%s g_driver_%s;  // Exists in .bss\n' % (
+    file.write('Driver%s g_driver_%s = {};\n' % (
         set_name.upper(), set_name.lower()))
   file.write('\n')
 
@@ -3006,14 +3007,9 @@ namespace gl {
   file.write('\n')
   file.write('void Driver%s::InitializeStaticBindings() {\n' %
              set_name.upper())
-  file.write('#if DCHECK_IS_ON()\n')
-  file.write('  // Ensure struct has been zero-initialized.\n')
-  file.write('  auto bytes = base::byte_span_from_ref(*this);\n')
-  file.write('  for (auto byte : bytes) {\n');
-  file.write('    DCHECK_EQ(0, byte);\n')
-  file.write('  };\n')
-  file.write('#endif\n')
-  file.write('\n')
+
+  file.write('  GPU_STARTUP_TRACE_EVENT("Driver%s::InitializeStaticBindings");'
+             '\n' % (set_name.upper()))
 
   def BindingsAreAllStatic(api_set_name):
     return api_set_name == 'egl'
@@ -3103,6 +3099,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   elif set_name == 'egl':
     file.write("""\
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -3143,6 +3140,7 @@ void Driver%s::InitializeExtensionBindings() {
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
@@ -3161,8 +3159,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
   # Write function to clear all function pointers.
   file.write('\n')
   file.write("""void Driver%s::ClearBindings() {
-  auto bytes = base::byte_span_from_ref(*this);
-  std::ranges::fill(bytes, 0);
+  *this = {};
 }
 """ % set_name.upper())
 
@@ -3519,7 +3516,7 @@ static constexpr EnumToString kEnumToStringTable[] = {
 
 }  // namespace
 
-#endif  //  UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
+#endif  // UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 """)
 
 

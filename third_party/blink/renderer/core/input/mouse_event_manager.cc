@@ -154,15 +154,12 @@ void MouseEventManager::Clear() {
   ClearDragDataTransfer();
 }
 
-MouseEventManager::~MouseEventManager() = default;
-
 void MouseEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(scroll_manager_);
   visitor->Trace(element_under_mouse_);
   visitor->Trace(mouse_press_node_);
   visitor->Trace(mousedown_element_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 MouseEventManager::MouseEventBoundaryEventDispatcher::
@@ -226,7 +223,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
         mouse_event_type == event_type_names::kAuxclick) {
       click_count = click_count_;
     }
-    std::unique_ptr<EventTiming> event_timing;
+    std::optional<EventTiming> event_timing;
     bool should_dispatch =
         !check_for_listener || target->HasEventListeners(mouse_event_type);
     if (mouse_event_type == event_type_names::kContextmenu ||
@@ -243,8 +240,10 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
+      if (frame_ && frame_->DomWindow()) {
+        event_timing =
+            EventTiming::TryCreate(frame_->DomWindow(), *event, target);
+      }
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
@@ -259,8 +258,10 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      if (frame_ && frame_->DomWindow())
-        event_timing = EventTiming::Create(frame_->DomWindow(), *event, target);
+      if (frame_ && frame_->DomWindow()) {
+        event_timing =
+            EventTiming::TryCreate(frame_->DomWindow(), *event, target);
+      }
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
@@ -531,25 +532,18 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
 
   Element* element = element_under_mouse_;
-
-  if (!RuntimeEnabledFeatures::LabelAndDelegatesFocusNewHandlingEnabled()) {
-    // When clicking on a <label> for a form associated custom element with
-    // delegatesFocus, we should focus the custom element's focus delegate.
-    if (auto* label = DynamicTo<HTMLLabelElement>(element)) {
-      auto* control = label->Control();
-      if (control && control->IsShadowHostWithDelegatesFocus()) {
-        element = control;
-      }
-    }
-  }
-
-  for (; element; element = element->ParentOrShadowHostElement()) {
+  while (element) {
     if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;
     }
     if (element->IsMouseFocusable() ||
         element->IsShadowHostWithDelegatesFocus()) {
       break;
+    }
+    if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
+      element = FlatTreeTraversal::ParentElement(*element);
+    } else {
+      element = element->ParentOrShadowHostElement();
     }
   }
   DCHECK(!element || element->IsMouseFocusable() ||
@@ -811,8 +805,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event) {
   TRACE_EVENT0("blink", "MouseEventManager::handleMouseDraggedEvent");
 
-  bool is_pen = event.Event().pointer_type ==
-                blink::WebPointerProperties::PointerType::kPen;
+  bool is_pen = (event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kPen ||
+                 event.Event().pointer_type ==
+                     blink::WebPointerProperties::PointerType::kEraser);
 
   WebPointerProperties::Button pen_drag_button =
       WebPointerProperties::Button::kLeft;
@@ -1225,11 +1221,6 @@ void MouseEventManager::SetMousePressNode(Node* node) {
 }
 
 void MouseEventManager::SetMouseDownElement(Element* element) {
-  // TODO(mustaq): Why is SetDocument() not called earlier at
-  // LocalFrame::DidAttachDocument()?  Because this is delayed call, the methods
-  // MouseEventManager::WillBeRemoved() are not called until a mouse-press or
-  // tap!
-  SetDocument(element ? element->ownerDocument() : nullptr);
   mousedown_element_ = element;
 }
 

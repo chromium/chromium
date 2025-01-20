@@ -20,7 +20,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
@@ -155,7 +156,7 @@ void SVGPathElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGPathElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*path_, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }

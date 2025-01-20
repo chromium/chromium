@@ -210,6 +210,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
+  // Called when the assistant new entry point button within the search box gets
+  // pressed.
+  void AssistantNewEntryPointButtonPressed();
+
   // Called when the sunfish launcher button within the search box gets pressed.
   void SunfishButtonPressed();
 
@@ -256,6 +260,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
+  void ShowAssistantNewEntryPointChanged() override;
   void ShowSunfishChanged() override;
 
   // Updates the visibility of an IPH view.
@@ -321,9 +326,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The corner radius of the search box background.
   int corner_radius_ = 0;
 
-  // Whether an IPH is allowed to be shown or not.
-  bool is_iph_allowed_ = false;
-
   // The category filter menu adapter and model that handles the menu life cycle
   // and command execution.
   std::unique_ptr<ui::SimpleMenuModel> filter_menu_model_;
@@ -346,8 +348,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // If true, `SelectPlaceholderText()` always returns a fixed placeholder text
   // instead of the one picked randomly.
   bool use_fixed_placeholder_text_for_test_ = false;
-
-  const bool is_jelly_enabled_ = false;
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};

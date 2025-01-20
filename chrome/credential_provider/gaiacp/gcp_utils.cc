@@ -13,26 +13,17 @@
 #include <winsock2.h>
 
 #include <iphlpapi.h>
-#include <wincred.h>  // For <ntsecapi.h>
-#include <winternl.h>
-
-#include <string>
-#include <string_view>
-
-#include "base/values.h"
-
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <malloc.h>
 #include <memory.h>
-#include <ntsecapi.h>  // For LsaLookupAuthenticationPackage()
-#include <sddl.h>      // For ConvertSidToStringSid()
-#include <security.h>  // For NEGOSSP_NAME_A
+#include <sddl.h>
+#include <security.h>
 #include <stdlib.h>
-#include <wbemidl.h>
 
 #include <algorithm>
 #include <iomanip>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -50,10 +41,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/current_module.h"
 #include "base/win/embedded_i18n/language_selector.h"
+#include "base/win/ntsecapi_shim.h"
+#include "base/win/wbemidl_shim.h"
 #include "base/win/win_util.h"
+#include "base/win/wincred_shim.h"
 #include "base/win/wmi.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_version.h"
@@ -372,9 +367,9 @@ void DeleteVersionsExcept(const base::FilePath& gcp_path,
 
 // StdParentHandles ///////////////////////////////////////////////////////////
 
-StdParentHandles::StdParentHandles() {}
+StdParentHandles::StdParentHandles() = default;
 
-StdParentHandles::~StdParentHandles() {}
+StdParentHandles::~StdParentHandles() = default;
 
 // ScopedStartupInfo //////////////////////////////////////////////////////////
 
@@ -1309,9 +1304,9 @@ HRESULT GetGCPWDmToken(const std::wstring& sid, std::wstring* token) {
   return GetGCPWDmTokenInternal(sid, token, false);
 }
 
-FakesForTesting::FakesForTesting() {}
+FakesForTesting::FakesForTesting() = default;
 
-FakesForTesting::~FakesForTesting() {}
+FakesForTesting::~FakesForTesting() = default;
 
 GURL GetGcpwServiceUrl() {
   std::wstring dev = GetGlobalFlagOrDefault(kRegDeveloperMode, L"");

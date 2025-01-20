@@ -7,13 +7,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 
 @protocol LensOverlayDetentsChangeObserver;
 
 // Manages the detents for a given bottom sheet.
-@interface LensOverlayDetentsManager
-    : NSObject <LensOverlayBottomSheetPresentationDelegate>
+@interface LensOverlayDetentsManager : NSObject
 
 @property(nonatomic, weak) id<LensOverlayDetentsChangeObserver> observer;
 

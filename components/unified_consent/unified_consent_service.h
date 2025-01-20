@@ -32,14 +32,14 @@ class SyncService;
 
 namespace unified_consent {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 enum class MigrationState : int {
   kNotInitialized = 0,
   kInProgressWaitForSyncInit = 1,
   // Reserve space for other kInProgress* entries to be added here.
   kCompleted = 10,
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A browser-context keyed service that is used to manage the user consent
 // when UnifiedConsent feature is enabled.
@@ -127,7 +127,7 @@ class UnifiedConsentService
   void StopObservingServicePrefChanges();
   void ServicePrefChanged(const std::string& name);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Migration helpers.
   MigrationState GetMigrationState();
   void SetMigrationState(MigrationState migration_state);

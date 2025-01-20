@@ -30,9 +30,6 @@ suite('<main-page-container> Route Navigation', () => {
   let browserProxy: TestAccountManagerBrowserProxy;
 
   suiteSetup(async () => {
-    // Simulate feature flag enabled for CSS styling purposes.
-    document.body.classList.add('revamp-wayfinding-enabled');
-
     // Setup test fixtures
     fakeContactManager = new FakeContactManager();
     setContactManagerForTesting(fakeContactManager);

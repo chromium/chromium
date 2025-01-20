@@ -12,6 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "google_apis/common/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -81,12 +83,12 @@ TEST_F(DriveApiUrlGeneratorTest, GetFilePatchUrl) {
     bool update_viewed_date;
     const std::string expected_query;
   };
-  const TestPattern kTestPatterns[] = {
+  const auto kTestPatterns = std::to_array<TestPattern>({
       {false, true, ""},
       {true, true, "&setModifiedDate=true"},
       {false, false, "&updateViewedDate=false"},
       {true, false, "&setModifiedDate=true&updateViewedDate=false"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestPatterns); ++i) {
     EXPECT_EQ(
@@ -150,7 +152,7 @@ TEST_F(DriveApiUrlGeneratorTest, GetFilesListUrl) {
     const std::string q;
     const std::string expected_query;
   };
-  const TestPattern kTestPatterns[] = {
+  const auto kTestPatterns = std::to_array<TestPattern>({
       {100, "", "", ""},
       {150, "", "", "maxResults=150"},
       {10, "", "", "maxResults=10"},
@@ -163,7 +165,7 @@ TEST_F(DriveApiUrlGeneratorTest, GetFilesListUrl) {
       {100, "token", "query", "pageToken=token&q=query"},
       {150, "token", "query", "maxResults=150&pageToken=token&q=query"},
       {10, "token", "query", "maxResults=10&pageToken=token&q=query"},
-  };
+  });
   const std::string kV2FilesUrlPrefixWithTeamDrives =
       "https://www.example.com/drive/v2/files?supportsTeamDrives=true&"
       "includeTeamDriveItems=true&corpora=default%2CallTeamDrives";
@@ -243,7 +245,7 @@ TEST_F(DriveApiUrlGeneratorTest, GetChangesListUrl) {
     int64_t start_change_id;
     const std::string expected_query;
   };
-  const TestPattern kTestPatterns[] = {
+  const auto kTestPatterns = std::to_array<TestPattern>({
       {true, 100, "", 0, ""},
       {false, 100, "", 0, "includeDeleted=false"},
       {true, 150, "", 0, "maxResults=150"},
@@ -282,7 +284,7 @@ TEST_F(DriveApiUrlGeneratorTest, GetChangesListUrl) {
       {false, 10, "token", 12345,
        "includeDeleted=false&maxResults=10&pageToken=token"
        "&startChangeId=12345"},
-  };
+  });
 
   const std::string kV2ChangesUrlPrefixWithTeamDrives =
       "https://www.example.com/drive/v2/changes?"

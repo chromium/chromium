@@ -544,8 +544,7 @@ SyncStatusCode MetadataDatabase::CreateForTesting(
   return status;
 }
 
-MetadataDatabase::~MetadataDatabase() {
-}
+MetadataDatabase::~MetadataDatabase() = default;
 
 // static
 void MetadataDatabase::ClearDatabase(

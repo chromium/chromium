@@ -56,6 +56,9 @@ class USER_MANAGER_EXPORT UserImage {
       const gfx::ImageSkia& image,
       ImageFormat image_format);
 
+  // Returns a stub image.
+  static std::unique_ptr<UserImage> CreateStub();
+
   // Choose the image format suitable for the given bitmap. Returns
   // FORMAT_PNG if the bitmap contains transparent/translucent
   // pixels. Otherwise, returns FORMAT_JPEG.

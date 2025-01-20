@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -67,6 +68,7 @@ public class AuxiliarySearchControllerImplUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private AuxiliarySearchHooks mHooks;
 
     @Captor private ArgumentCaptor<Callback<List<Tab>>> mCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteCallbackCaptor;
@@ -93,6 +95,7 @@ public class AuxiliarySearchControllerImplUnitTest {
     @After
     public void tearDown() {
         mFakeTime.resetTimes();
+        mAuxiliarySearchControllerImpl.destroy();
     }
 
     @Test
@@ -124,12 +127,31 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
+    public void testOnResumeWithNative_Disabled() {
+        AuxiliarySearchUtils.setSharedTabsWithOs(false);
+        mAuxiliarySearchControllerImpl =
+                new AuxiliarySearchControllerImpl(
+                        mContext,
+                        mProfile,
+                        mAuxiliarySearchProvider,
+                        mAuxiliarySearchDonor,
+                        mFaviconHelper);
+        mAuxiliarySearchControllerImpl.onResumeWithNative();
+
+        verify(mAuxiliarySearchDonor).deleteAllTabs(any(Callback.class));
+        assertFalse(mAuxiliarySearchControllerImpl.getHasDeletingTaskForTesting());
+
+        AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
     public void testOnPauseWithNative() {
         int timeDelta = 50;
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.AuxiliarySearch.QueryTime.Tabs", timeDelta)
                         .build();
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
         mAuxiliarySearchControllerImpl.onPauseWithNative();
 
         verify(mAuxiliarySearchProvider).getTabsSearchableDataProtoAsync(mCallbackCaptor.capture());
@@ -140,15 +162,26 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
+    public void testOnPauseWithNative_Disabled() {
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(false);
+        mAuxiliarySearchControllerImpl.onPauseWithNative();
+
+        verify(mAuxiliarySearchProvider, never())
+                .getTabsSearchableDataProtoAsync(any(Callback.class));
+    }
+
+    @Test
     public void testOnDestroy() {
+        assertEquals(1, AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
         mAuxiliarySearchControllerImpl.register(mActivityLifecycleDispatcher);
 
         mAuxiliarySearchControllerImpl.destroy();
 
         verify(mActivityLifecycleDispatcher).unregister(eq(mAuxiliarySearchControllerImpl));
-        verify(mAuxiliarySearchDonor).destroy();
 
         verify(mFaviconHelper).destroy();
+
+        assertEquals(0, AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
     }
 
     @Test
@@ -178,10 +211,20 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 20;
+
+        // Verifies that Donor won't donate if it can't.
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(false);
+        mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
+                entries, map, Mockito.mock(Callback.class), now);
+
+        verify(mAuxiliarySearchDonor, never()).donateFavicons(any(), eq(map), any(Callback.class));
+
+        // Verifies that Donor will donate if it can.
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Search.AuxiliarySearch.Schedule.DonateTime", timeDelta)
                         .build();
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
         mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
                 entries, map, Mockito.mock(Callback.class), now);
 
@@ -264,5 +307,46 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         mDonationCompleteCallbackCaptor.getValue().onResult(true);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON)
+    public void testOnNonSensitiveTabsAvailable_AfterDestroy() {
+        long now = TimeUtils.uptimeMillis();
+        int timeDelta = 50;
+
+        when(mTab1.getId()).thenReturn(TAB_ID_1);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.getTitle()).thenReturn("Title1");
+        when(mTab1.getTimestampMillis()).thenReturn(now - 2);
+
+        when(mTab2.getId()).thenReturn(TAB_ID_2);
+        when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        when(mTab2.getTitle()).thenReturn("Title2");
+        when(mTab2.getTimestampMillis()).thenReturn(now - 1);
+
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTab1);
+        tabs.add(mTab2);
+
+        when(mAuxiliarySearchDonor.canDonate()).thenReturn(true);
+        mAuxiliarySearchControllerImpl.onPauseWithNative();
+
+        verify(mAuxiliarySearchProvider).getTabsSearchableDataProtoAsync(mCallbackCaptor.capture());
+
+        mAuxiliarySearchControllerImpl.destroy();
+        mFakeTime.advanceMillis(timeDelta);
+        mCallbackCaptor.getAllValues().get(0).onResult(tabs);
+
+        verify(mAuxiliarySearchDonor, never()).donateTabs(any(List.class), any(Callback.class));
+    }
+
+    @Test
+    public void testOnConfigChanged() {
+        mAuxiliarySearchControllerImpl.onConfigChanged(false);
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(false), any(Callback.class));
+
+        mAuxiliarySearchControllerImpl.onConfigChanged(true);
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), any(Callback.class));
     }
 }

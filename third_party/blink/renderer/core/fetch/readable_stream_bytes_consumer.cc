@@ -70,9 +70,8 @@ ReadableStreamBytesConsumer::ReadableStreamBytesConsumer(
   DCHECK(!ReadableStream::IsLocked(stream));
 
   // Since the stream is not locked, AcquireDefaultReader cannot fail.
-  NonThrowableExceptionState exception_state(__FILE__, __LINE__);
   reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,
-                                                 exception_state);
+                                                 ASSERT_NO_EXCEPTION);
 }
 
 ReadableStreamBytesConsumer::~ReadableStreamBytesConsumer() {}
@@ -105,8 +104,7 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     ScriptState::Scope scope(script_state_);
     DCHECK(reader_);
 
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    ExceptionState exception_state(script_state_->GetIsolate());
     auto* read_request = MakeGarbageCollected<BytesConsumerReadRequest>(this);
     ReadableStreamDefaultReader::Read(script_state_, reader_, read_request,
                                       exception_state);
@@ -153,8 +151,7 @@ void ReadableStreamBytesConsumer::Cancel() {
   // ReadableStreamDefaultReader::cancel in such a case.
   if (!ScriptForbiddenScope::IsScriptForbidden()) {
     ScriptState::Scope scope(script_state_);
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    ExceptionState exception_state(script_state_->GetIsolate());
     reader_->cancel(script_state_, exception_state);
     // We ignore exceptions as we can do nothing here.
   }

@@ -140,7 +140,7 @@ class WebAppPolicyManager {
     std::optional<std::vector<blink::Manifest::ImageResource>> icons;
   };
 
-  void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
+  void InitChangeRegistrarAndRefreshPolicy();
 
   void RefreshPolicyInstalledApps(bool allow_close_and_relaunch = false);
   void ParsePolicySettings();

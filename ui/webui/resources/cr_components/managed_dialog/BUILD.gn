@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "cr_components_managed_dialog"
 
   non_web_component_files = [
-    "managed_dialog.ts",
     "managed_dialog.html.ts",
+    "managed_dialog.ts",
   ]
   css_files = [ "managed_dialog.css" ]
 

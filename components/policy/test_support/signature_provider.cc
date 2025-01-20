@@ -103,7 +103,7 @@ std::unique_ptr<crypto::RSAPrivateKey> DecodePrivateKey(
   }
 
   return crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
-      base::as_bytes(base::make_span(to_decrypt)));
+      base::as_byte_span(to_decrypt));
 }
 
 bool ExportPublicKeyAsString(const crypto::RSAPrivateKey& private_key,

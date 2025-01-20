@@ -117,6 +117,11 @@ bool PageNodeImpl::HasPictureInPicture() const {
   return has_picture_in_picture_.value();
 }
 
+bool PageNodeImpl::HasFreezingOriginTrialOptOut() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return has_freezing_origin_trial_opt_out_.value();
+}
+
 bool PageNodeImpl::IsOffTheRecord() const {
   return is_off_the_record_;
 }
@@ -141,9 +146,9 @@ bool PageNodeImpl::IsHoldingWebLock() const {
   return is_holding_weblock_.value();
 }
 
-bool PageNodeImpl::IsHoldingIndexedDBLock() const {
+bool PageNodeImpl::IsHoldingBlockingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock_.value();
+  return is_holding_blocking_indexeddb_lock_.value();
 }
 
 bool PageNodeImpl::UsesWebRTC() const {
@@ -164,7 +169,7 @@ const std::string& PageNodeImpl::GetContentsMimeType() const {
 std::optional<blink::mojom::PermissionStatus>
 PageNodeImpl::GetNotificationPermissionStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return notification_permission_status_;
+  return notification_permission_status_.value();
 }
 
 base::TimeDelta PageNodeImpl::GetTimeSinceLastNavigation() const {
@@ -344,8 +349,9 @@ void PageNodeImpl::SetMainFrameRestoredState(
     blink::mojom::PermissionStatus notification_permission_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(main_frame_url_.value().is_empty());
-  notification_permission_status_ = notification_permission_status;
   main_frame_url_.SetAndMaybeNotify(this, url);
+  notification_permission_status_.SetAndMaybeNotify(
+      this, notification_permission_status);
 }
 
 void PageNodeImpl::OnMainFrameNavigationCommitted(
@@ -364,8 +370,9 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
   navigation_committed_time_ = navigation_committed_time;
   navigation_id_ = navigation_id;
   contents_mime_type_ = contents_mime_type;
-  notification_permission_status_ = notification_permission_status;
   main_frame_url_.SetAndMaybeNotify(this, url);
+  notification_permission_status_.SetAndMaybeNotify(
+      this, notification_permission_status);
 
   // No mainframe document change notification on same-document navigations.
   if (same_document) {
@@ -380,7 +387,7 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
 void PageNodeImpl::OnNotificationPermissionStatusChange(
     blink::mojom::PermissionStatus permission_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  notification_permission_status_ = permission_status;
+  notification_permission_status_.SetAndMaybeNotify(this, permission_status);
 }
 
 FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
@@ -496,7 +503,7 @@ void PageNodeImpl::set_has_nonempty_beforeunload(
   has_nonempty_beforeunload_ = has_nonempty_beforeunload;
 }
 
-void PageNodeImpl::OnJoiningGraph() {
+void PageNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make sure all weak pointers, even `weak_this_` that was created on the UI
@@ -523,28 +530,32 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_EQ(0u, frame_node_count_);
 }
 
-void PageNodeImpl::RemoveNodeAttachedData() {
+void PageNodeImpl::CleanUpNodeState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
 }
 
 const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || !opener_frame_node());
   return opener_frame_node();
 }
 
 const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || !embedder_frame_node());
   return embedder_frame_node();
 }
 
 const FrameNode* PageNodeImpl::GetMainFrameNode() const {
+  CHECK(graph()->NodeEdgesArePublic(this) || !main_frame_node());
   return main_frame_node();
 }
 
 PageNode::NodeSetView<const FrameNode*> PageNodeImpl::GetMainFrameNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || main_frame_nodes_.empty());
   return NodeSetView<const FrameNode*>(main_frame_nodes_);
 }
 
@@ -558,9 +569,11 @@ void PageNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
   is_holding_weblock_.SetAndMaybeNotify(this, is_holding_weblock);
 }
 
-void PageNodeImpl::SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock) {
+void PageNodeImpl::SetIsHoldingBlockingIndexedDBLock(
+    bool is_holding_blocking_indexeddb_lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_holding_indexeddb_lock_.SetAndMaybeNotify(this, is_holding_indexeddb_lock);
+  is_holding_blocking_indexeddb_lock_.SetAndMaybeNotify(
+      this, is_holding_blocking_indexeddb_lock);
 }
 
 void PageNodeImpl::SetUsesWebRTC(bool uses_web_rtc) {
@@ -576,6 +589,13 @@ void PageNodeImpl::SetHadFormInteraction(bool had_form_interaction) {
 void PageNodeImpl::SetHadUserEdits(bool had_user_edits) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   had_user_edits_.SetAndMaybeNotify(this, had_user_edits);
+}
+
+void PageNodeImpl::SetHasFreezingOriginTrialOptOut(
+    bool has_freezing_origin_trial_opt_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  has_freezing_origin_trial_opt_out_.SetAndMaybeNotify(
+      this, has_freezing_origin_trial_opt_out);
 }
 
 }  // namespace performance_manager

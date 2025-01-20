@@ -65,6 +65,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDesktopMediaPickerDescriptionLabel] = {
       ui::kColorSysOnSurfaceSubtle};
 
+  // Desktop to iOS promo bubble colors.
+  mixer[kColorDesktopToIOSPromoFooterSubtitleLabel] = {
+      ui::kColorSysOnSurfaceSubtle};
+
   // Download bubble colors.
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {
@@ -152,6 +156,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchImageWindowFrame] = {ui::kColorSysInversePrimary};
   mixer[kColorTabSearchMediaIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchMediaRecordingIcon] = {ui::kColorSysError};
+  mixer[kColorTabSearchMediaGlicActiveIcon] = {ui::kColorSysPrimary};
   mixer[kColorTabSearchPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchSelected] = {ui::kColorSysPrimary};

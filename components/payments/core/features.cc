@@ -5,7 +5,6 @@
 #include "components/payments/core/features.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "third_party/blink/public/common/features_generated.h"
@@ -61,10 +60,6 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kPaymentHandlerRequireLinkHeader,
-             "PaymentHandlerRequireLinkHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(USE_BLINK)
 const base::FeatureParam<std::string>

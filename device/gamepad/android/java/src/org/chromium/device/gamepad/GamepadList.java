@@ -4,6 +4,8 @@
 
 package org.chromium.device.gamepad;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.input.InputManager;
@@ -18,23 +20,25 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
-
-import java.util.Objects;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 /**
  * Class to manage connected gamepad devices list.
  *
- * It is a Java counterpart of GamepadPlatformDataFetcherAndroid and feeds Gamepad API with input
+ * <p>It is a Java counterpart of GamepadPlatformDataFetcherAndroid and feeds Gamepad API with input
  * data.
  */
 @JNINamespace("device")
+@NullMarked
 public class GamepadList {
     private static final int MAX_GAMEPADS = 4;
 
     private final Object mLock = new Object();
 
-    private final GamepadDevice[] mGamepadDevices = new GamepadDevice[MAX_GAMEPADS];
-    private InputManager mInputManager;
+    private final @Nullable GamepadDevice[] mGamepadDevices = new GamepadDevice[MAX_GAMEPADS];
+    private @Nullable InputManager mInputManager;
     private int mAttachedToWindowCounter;
     private boolean mIsGamepadAPIActive;
     private InputDeviceListener mInputDeviceListener;
@@ -60,13 +64,14 @@ public class GamepadList {
                 };
     }
 
+    @RequiresNonNull("mInputManager")
     private void initializeDevices() {
         // Get list of all the attached input devices.
         int[] deviceIds = mInputManager.getInputDeviceIds();
         for (int i = 0; i < deviceIds.length; i++) {
-            InputDevice inputDevice = InputDevice.getDevice(deviceIds[i]);
+            InputDevice inputDevice = getGamepadInputDevice(deviceIds[i]);
             // Check for gamepad device
-            if (isGamepadDevice(inputDevice)) {
+            if (inputDevice != null) {
                 // Register a new gamepad device.
                 registerGamepad(inputDevice);
             }
@@ -109,7 +114,7 @@ public class GamepadList {
                     mGamepadDevices[i] = null;
                 }
             }
-            mInputManager.unregisterInputDeviceListener(mInputDeviceListener);
+            assumeNonNull(mInputManager).unregisterInputDeviceListener(mInputDeviceListener);
             mInputManager = null;
         }
     }
@@ -117,8 +122,8 @@ public class GamepadList {
     // ------------------------------------------------------------
 
     private void onInputDeviceChangedImpl(int deviceId) {
-        InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        if (!isGamepadDevice(inputDevice)) return;
+        InputDevice inputDevice = getGamepadInputDevice(deviceId);
+        if (inputDevice == null) return;
         synchronized (mLock) {
             unregisterGamepad(inputDevice.getId());
             registerGamepad(inputDevice);
@@ -132,8 +137,8 @@ public class GamepadList {
     }
 
     private void onInputDeviceAddedImpl(int deviceId) {
-        InputDevice inputDevice = InputDevice.getDevice(deviceId);
-        if (!isGamepadDevice(inputDevice)) return;
+        InputDevice inputDevice = getGamepadInputDevice(deviceId);
+        if (inputDevice == null) return;
         synchronized (mLock) {
             registerGamepad(inputDevice);
         }
@@ -145,24 +150,7 @@ public class GamepadList {
         return LazyHolder.INSTANCE;
     }
 
-    private int getDeviceCount() {
-        int count = 0;
-        for (int i = 0; i < MAX_GAMEPADS; i++) {
-            if (getDevice(i) != null) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private boolean isDeviceConnected(int index) {
-        if (index < MAX_GAMEPADS && getDevice(index) != null) {
-            return true;
-        }
-        return false;
-    }
-
-    private GamepadDevice getDeviceById(int deviceId) {
+    private @Nullable GamepadDevice getDeviceById(int deviceId) {
         for (int i = 0; i < MAX_GAMEPADS; i++) {
             GamepadDevice gamepad = mGamepadDevices[i];
             if (gamepad != null && gamepad.getId() == deviceId) {
@@ -172,7 +160,7 @@ public class GamepadList {
         return null;
     }
 
-    private GamepadDevice getDevice(int index) {
+    private @Nullable GamepadDevice getDevice(int index) {
         // Maximum 4 Gamepads can be connected at a time starting at index zero.
         assert index >= 0 && index < MAX_GAMEPADS;
         return mGamepadDevices[index];
@@ -246,17 +234,20 @@ public class GamepadList {
         mGamepadDevices[index] = null;
     }
 
-    private static boolean isGamepadDevice(InputDevice inputDevice) {
-        if (inputDevice == null) return false;
-
-        // The fingerprint sensor is a SOURCE_JOYSTICK but is not a gamepad.
-        if (Objects.equals(inputDevice.getName(), "uinput-fpc")) return false;
-
-        return ((inputDevice.getSources() & InputDevice.SOURCE_JOYSTICK)
-                == InputDevice.SOURCE_JOYSTICK);
+    private static @Nullable InputDevice getGamepadInputDevice(int deviceId) {
+        InputDevice inputDevice = InputDevice.getDevice(deviceId);
+        if (inputDevice != null
+                &&
+                // The fingerprint sensor is a SOURCE_JOYSTICK but is not a gamepad.
+                !"uinput-fpc".equals(inputDevice.getName())
+                && ((inputDevice.getSources() & InputDevice.SOURCE_JOYSTICK)
+                        == InputDevice.SOURCE_JOYSTICK)) {
+            return inputDevice;
+        }
+        return null;
     }
 
-    private GamepadDevice getGamepadForEvent(InputEvent event) {
+    private @Nullable GamepadDevice getGamepadForEvent(InputEvent event) {
         return getDeviceById(event.getDeviceId());
     }
 
@@ -377,7 +368,7 @@ public class GamepadList {
     private void doVibration(int index, double strongMagnitude, double weakMagnitude) {
         GamepadDevice device;
         synchronized (mLock) {
-            device = getDevice(index);
+            device = assumeNonNull(getDevice(index));
         }
         device.doVibration(strongMagnitude, weakMagnitude);
     }
@@ -390,7 +381,7 @@ public class GamepadList {
     private void cancelVibration(int index) {
         GamepadDevice device;
         synchronized (mLock) {
-            device = getDevice(index);
+            device = assumeNonNull(getDevice(index));
         }
         device.cancelVibration();
     }
@@ -407,12 +398,12 @@ public class GamepadList {
                 int index,
                 boolean mapping,
                 boolean connected,
-                String devicename,
+                @Nullable String devicename,
                 int vendorId,
                 int productId,
                 long timestamp,
-                float[] axes,
-                float[] buttons,
+                float @Nullable [] axes,
+                float @Nullable [] buttons,
                 int buttonsLength,
                 boolean supportsDualRumble);
     }

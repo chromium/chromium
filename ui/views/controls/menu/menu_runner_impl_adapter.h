@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 #include "ui/views/views_export.h"
 
@@ -38,15 +39,16 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   // MenuRunnerImplInterface:
   bool IsRunning() const override;
   void Release() override;
-  void RunMenuAt(Widget* parent,
-                 MenuButtonController* button_controller,
-                 const gfx::Rect& bounds,
-                 MenuAnchorPosition anchor,
-                 int32_t types,
-                 gfx::NativeView native_view_for_gestures,
-                 std::optional<gfx::RoundedCornersF> corners = std::nullopt,
-                 std::optional<std::string> show_menu_host_duration_histogram =
-                     std::nullopt) override;
+  void RunMenuAt(
+      Widget* parent,
+      MenuButtonController* button_controller,
+      const gfx::Rect& bounds,
+      MenuAnchorPosition anchor,
+      ui::mojom::MenuSourceType source_type,
+      int32_t run_types,
+      gfx::NativeView native_view_for_gestures,
+      std::optional<gfx::RoundedCornersF> corners,
+      std::optional<std::string> show_menu_host_duration_histogram) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 

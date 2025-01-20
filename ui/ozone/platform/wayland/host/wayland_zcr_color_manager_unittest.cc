@@ -32,8 +32,6 @@ using ::testing::Values;
 namespace ui {
 namespace {
 
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
-
 base::ScopedFD MakeFD() {
   base::FilePath temp_path;
   EXPECT_TRUE(base::CreateTemporaryFile(&temp_path));
@@ -131,7 +129,6 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_CreateColorManagementSurface) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
@@ -181,7 +178,6 @@ TEST_P(WaylandZcrColorManagerTest, DISABLED_DoNotSetInvaliColorSpace) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.

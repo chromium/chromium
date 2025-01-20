@@ -78,7 +78,7 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
   switch (element.type_) {
     case FormDataElement::kData:
       result.type = HTTPBodyElementType::kTypeData;
-      result.data.Assign(element.data_.data(), element.data_.size());
+      result.data.Assign(base::as_byte_span(element.data_));
       break;
     case FormDataElement::kEncodedFile:
       result.type = HTTPBodyElementType::kTypeFile;

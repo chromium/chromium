@@ -9,6 +9,7 @@
 #define BASE_TEST_TEST_TRACE_PROCESSOR_IMPL_H_
 
 #include <memory>
+
 #include "test_trace_processor_export.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

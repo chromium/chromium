@@ -142,7 +142,7 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   bool record = IsGeminiAppPreinstallEnabled() && !IsProfileOffTheRecord();
   for (const auto& [url, page] : page_urls) {
     auto histogram_buckets_it = base::ranges::find(
-        histogram_buckets, static_cast<base::HistogramBase::Sample>(page),
+        histogram_buckets, static_cast<base::HistogramBase::Sample32>(page),
         &Bucket::min);
     {
       // Check exact page match.

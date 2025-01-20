@@ -40,8 +40,9 @@ bool IsAppBrowser(const Browser* browser) {
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
+    if (browser->tab_strip_model() == tab_strip_model) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -112,9 +113,6 @@ void BrowserStatusMonitor::Initialize() {
 }
 
 void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    return;
-  }
   // When the active profile changes, all windowed and tabbed apps owned by the
   // newly selected profile are added to the shelf, and the ones owned by other
   // profiles are removed.
@@ -164,7 +162,6 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
 
 void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
                                               bool remove) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   DCHECK(contents);
   DCHECK(initialized_);
   // It is possible to come here from Browser::SwapTabContent where the contents
@@ -178,7 +175,6 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
 }
 
 void BrowserStatusMonitor::UpdateBrowserItemState() {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   DCHECK(initialized_);
   shelf_controller_->UpdateBrowserItemState();
 }
@@ -190,11 +186,9 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
   DCHECK(insert_result.second);
 #endif
 
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    if (IsAppBrowser(browser) &&
-        multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      AddAppBrowserToShelf(browser);
-    }
+  if (IsAppBrowser(browser) &&
+      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+    AddAppBrowserToShelf(browser);
   }
 }
 
@@ -205,16 +199,16 @@ void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
   DCHECK_EQ(num_removed, 1U);
 #endif
 
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    if (IsAppBrowser(browser) &&
-        multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      RemoveAppBrowserFromShelf(browser);
-    }
-
-    UpdateBrowserItemState();
+  if (IsAppBrowser(browser) &&
+      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+    RemoveAppBrowserFromShelf(browser);
   }
-  if (app_service_instance_helper_)
+
+  UpdateBrowserItemState();
+
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnBrowserRemoved();
+  }
 }
 
 void BrowserStatusMonitor::OnTabStripModelChanged(
@@ -246,9 +240,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
         OnTabInserted(tab_strip_model, contents.contents);
       }
     }
-    if (!web_app::IsWebAppsCrosapiEnabled()) {
-      UpdateBrowserItemState();
-    }
+    UpdateBrowserItemState();
   } else if (change.type() == TabStripModelChange::kRemoved) {
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
@@ -282,15 +274,16 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
                   replace->new_contents);
   }
 
-  if (tab_strip_model->empty())
+  if (tab_strip_model->empty()) {
     return;
+  }
 
-  if (selection.active_tab_changed())
+  if (selection.active_tab_changed()) {
     OnActiveTabChanged(selection.old_contents, selection.new_contents);
+  }
 }
 
 void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
@@ -307,7 +300,6 @@ void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
 }
 
 void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
@@ -315,22 +307,22 @@ void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
   if (iter != browser_to_app_id_map_.end()) {
     std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
-    if (!IsAppBrowserInShelfWithAppId(app_id))
+    if (!IsAppBrowserInShelfWithAppId(app_id)) {
       shelf_controller_->SetAppStatus(app_id, ash::STATUS_CLOSED);
+    }
   }
 }
 
 bool BrowserStatusMonitor::IsAppBrowserInShelf(Browser* browser) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   return browser_to_app_id_map_.find(browser) != browser_to_app_id_map_.end();
 }
 
 bool BrowserStatusMonitor::IsAppBrowserInShelfWithAppId(
     const std::string& app_id) {
-  DCHECK(!web_app::IsWebAppsCrosapiEnabled());
   for (const auto& iter : browser_to_app_id_map_) {
-    if (iter.second == app_id)
+    if (iter.second == app_id) {
       return true;
+    }
   }
   return false;
 }
@@ -338,24 +330,22 @@ bool BrowserStatusMonitor::IsAppBrowserInShelfWithAppId(
 void BrowserStatusMonitor::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    Browser* browser = nullptr;
-    // Use |new_contents|. |old_contents| could be nullptr.
-    DCHECK(new_contents);
-    browser = chrome::FindBrowserWithTab(new_contents);
+  Browser* browser = nullptr;
+  // Use |new_contents|. |old_contents| could be nullptr.
+  DCHECK(new_contents);
+  browser = chrome::FindBrowserWithTab(new_contents);
 
-    // Update immediately on a tab change.
-    if (old_contents &&
-        (TabStripModel::kNoTab !=
-         browser->tab_strip_model()->GetIndexOfWebContents(old_contents))) {
-      UpdateAppItemState(old_contents, false /*remove*/);
-    }
+  // Update immediately on a tab change.
+  if (old_contents &&
+      (TabStripModel::kNoTab !=
+       browser->tab_strip_model()->GetIndexOfWebContents(old_contents))) {
+    UpdateAppItemState(old_contents, false /*remove*/);
+  }
 
-    if (new_contents) {
-      UpdateAppItemState(new_contents, false /*remove*/);
-      UpdateBrowserItemState();
-      SetShelfIDForBrowserWindowContents(browser, new_contents);
-    }
+  if (new_contents) {
+    UpdateAppItemState(new_contents, false /*remove*/);
+    UpdateBrowserItemState();
+    SetShelfIDForBrowserWindowContents(browser, new_contents);
   }
 
   if (app_service_instance_helper_) {
@@ -367,59 +357,59 @@ void BrowserStatusMonitor::OnActiveTabChanged(
 void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
                                          content::WebContents* old_contents,
                                          content::WebContents* new_contents) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    DCHECK(old_contents && new_contents);
-    Browser* browser = chrome::FindBrowserWithTab(new_contents);
+  DCHECK(old_contents && new_contents);
+  Browser* browser = chrome::FindBrowserWithTab(new_contents);
 
-    UpdateAppItemState(old_contents, true /*remove*/);
-    RemoveWebContentsObserver(old_contents);
+  UpdateAppItemState(old_contents, true /*remove*/);
+  RemoveWebContentsObserver(old_contents);
 
-    UpdateAppItemState(new_contents, false /*remove*/);
-    UpdateBrowserItemState();
+  UpdateAppItemState(new_contents, false /*remove*/);
+  UpdateBrowserItemState();
 
-    if (browser && IsAppBrowserInShelf(browser) &&
-        multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      shelf_controller_->SetAppStatus(
-          web_app::GetAppIdFromApplicationName(browser->app_name()),
-          ash::STATUS_RUNNING);
-    }
-
-    if (tab_strip_model->GetActiveWebContents() == new_contents)
-      SetShelfIDForBrowserWindowContents(browser, new_contents);
-
-    AddWebContentsObserver(new_contents);
+  if (browser && IsAppBrowserInShelf(browser) &&
+      multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+    shelf_controller_->SetAppStatus(
+        web_app::GetAppIdFromApplicationName(browser->app_name()),
+        ash::STATUS_RUNNING);
   }
 
-  if (app_service_instance_helper_)
+  if (tab_strip_model->GetActiveWebContents() == new_contents) {
+    SetShelfIDForBrowserWindowContents(browser, new_contents);
+  }
+
+  AddWebContentsObserver(new_contents);
+
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabReplaced(old_contents, new_contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
                                          content::WebContents* contents) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    UpdateAppItemState(contents, false /*remove*/);
-    // If the visible navigation entry is the initial entry, wait until a
-    // navigation status changes before setting the browser window Shelf ID
-    // (done by the web contents observer added by AddWebContentsObserver()).
-    if (tab_strip_model->GetActiveWebContents() == contents &&
-        !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
-      Browser* browser = chrome::FindBrowserWithTab(contents);
-      SetShelfIDForBrowserWindowContents(browser, contents);
-    }
-
-    AddWebContentsObserver(contents);
+  UpdateAppItemState(contents, false /*remove*/);
+  // If the visible navigation entry is the initial entry, wait until a
+  // navigation status changes before setting the browser window Shelf ID
+  // (done by the web contents observer added by AddWebContentsObserver()).
+  if (tab_strip_model->GetActiveWebContents() == contents &&
+      !contents->GetController().GetVisibleEntry()->IsInitialEntry()) {
+    Browser* browser = chrome::FindBrowserWithTab(contents);
+    SetShelfIDForBrowserWindowContents(browser, contents);
   }
-  if (app_service_instance_helper_)
+
+  AddWebContentsObserver(contents);
+
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabInserted(contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabClosing(content::WebContents* contents) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    UpdateAppItemState(contents, true /*remove*/);
-    RemoveWebContentsObserver(contents);
-  }
-  if (app_service_instance_helper_)
+  UpdateAppItemState(contents, true /*remove*/);
+  RemoveWebContentsObserver(contents);
+
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabClosing(contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabMoved(TabStripModel* tab_strip_model,
@@ -430,9 +420,6 @@ void BrowserStatusMonitor::OnTabMoved(TabStripModel* tab_strip_model,
 
 void BrowserStatusMonitor::OnTabNavigationFinished(
     content::WebContents* contents) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    return;
-  }
   UpdateAppItemState(contents, false /*remove*/);
   UpdateBrowserItemState();
 
@@ -463,10 +450,7 @@ void BrowserStatusMonitor::RemoveWebContentsObserver(
 void BrowserStatusMonitor::SetShelfIDForBrowserWindowContents(
     Browser* browser,
     content::WebContents* web_contents) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    shelf_controller_->SetShelfIDForBrowserWindowContents(browser,
-                                                          web_contents);
-  }
+  shelf_controller_->SetShelfIDForBrowserWindowContents(browser, web_contents);
 
   if (app_service_instance_helper_) {
     app_service_instance_helper_->OnSetShelfIDForBrowserWindowContents(

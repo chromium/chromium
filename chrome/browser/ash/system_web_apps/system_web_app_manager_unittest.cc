@@ -182,11 +182,9 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsInstalled(const GURL& install_url) {
-    return provider().registrar_unsafe().IsInstallState(
-        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url),
-        {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-         web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-         web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+    return provider().registrar_unsafe().GetInstallState(web_app::GenerateAppId(
+               /*manifest_id=*/std::nullopt, install_url)) ==
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   }
 
   void StartAndWaitForAppsToSynchronize() {
@@ -605,7 +603,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 0);
     histograms.ExpectTotalCount(profile_install_result_histogram, 0);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 0);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 0);
 
     StartAndWaitForAppsToSynchronize();
 
@@ -623,7 +621,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         profile_install_result_histogram,
         webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 
   externally_managed_app_manager().SetHandleInstallRequestCallback(
@@ -673,7 +671,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 2);
     histograms.ExpectBucketCount(
         settings_app_install_result_histogram,
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
@@ -703,7 +701,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     // If install was interrupted by shutdown, do not report duration.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 2);
   }
 }
 
@@ -787,7 +785,7 @@ TEST_F(SystemWebAppManagerTest,
     // The install duration histogram should be recorded, because the first
     // install happens on a clean profile.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 
   {
@@ -806,7 +804,7 @@ TEST_F(SystemWebAppManagerTest,
     // Don't record install duration histogram, because this time we don't ask
     // to force install all apps.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 }
 
@@ -1557,14 +1555,6 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
 // Checks that SWA manager is not created in Kiosk sessions.
 TEST_F(SystemWebAppManagerInKioskTest, ShouldNotCreateManagerByDefault) {
   EXPECT_FALSE(SystemWebAppManager::Get(profile()));
-}
-
-// Checks that SWA manager is created in Kiosk sessions if the feature is
-// enabled.
-TEST_F(SystemWebAppManagerInKioskTest, ShouldCreateManagerIfEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::features::kKioskEnableSystemWebApps);
-  EXPECT_TRUE(SystemWebAppManager::Get(profile()));
 }
 
 }  // namespace ash

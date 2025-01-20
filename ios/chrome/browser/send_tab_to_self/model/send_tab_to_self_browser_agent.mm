@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <string>
 #import <vector>
-
-#import <Foundation/Foundation.h>
 
 #import "base/check.h"
 #import "base/notreached.h"

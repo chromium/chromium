@@ -38,14 +38,12 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi",
-  "+chrome/browser/ash/net",
   "+chrome/browser/ash/network_change_manager",
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/passkeys",
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/policy/multi_screen_capture",
   "+chrome/browser/ash/printing",
@@ -54,8 +52,6 @@ include_rules = [
   "+chrome/browser/ash/remote_apps",
   "+chrome/browser/ash/scanning",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/ash/smart_reader",
-  "+chrome/browser/ash/sync",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ash/video_conference",
@@ -67,7 +63,6 @@ include_rules = [
   "+chrome/browser/chromeos/extensions/file_system_provider",
   "+chrome/browser/chromeos/extensions/login_screen/login",
   "+chrome/browser/chromeos/platform_keys",
-  "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/component_updater",
   "+chrome/browser/device_identity",
   "+chrome/browser/extensions/api/image_writer_private",
@@ -137,9 +132,6 @@ specific_include_rules = {
   "crosapi_ash\.h": [
     "+media/gpu/buildflags.h",
   ],
-  "eye_dropper_ash\.cc": [
-    "+components/eye_dropper",
-  ],
   "message_center_ash(\.cc|_unittest\.cc)": [
     # Provides a mojo interface around the message center, but lives in this
     # directory for consistency with other crosapi classes.
@@ -153,9 +145,6 @@ specific_include_rules = {
   "remoting_ash\.cc": [
     # For remote support functionality.
     "+remoting/host/chromeos",
-  ],
-  "screen_manager_ash\.cc": [
-    "+services/video_capture/ash",
   ],
   "select_file_ash\.cc": [
     # For Chrome OS-specific file manager parameters.

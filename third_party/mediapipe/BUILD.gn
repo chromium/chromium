@@ -4,17 +4,10 @@
 
 import("//build/buildflag_header.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
-
-declare_args() {
-  mediapipe_build_with_gpu_support = false
-  if (is_win || is_linux || is_mac) {
-    # To be set to true after integration with VideoEffectsService.
-    mediapipe_build_with_gpu_support = false
-  }
-}
 
 # Generate a buildflag header for compile-time checking of MediaPipe GPU support.
 buildflag_header("buildflags") {
@@ -113,6 +106,11 @@ proto_library("mediapipe_proto") {
   cc_generator_options = "lite=true:"
   deps = [ ":any_lite_proto_impl" ]
   sources = [
+    "src/mediapipe/calculators/audio/mfcc_mel_calculators.proto",
+    "src/mediapipe/calculators/audio/rational_factor_resample_calculator.proto",
+    "src/mediapipe/calculators/audio/spectrogram_calculator.proto",
+    "src/mediapipe/calculators/audio/stabilized_log_calculator.proto",
+    "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
     "src/mediapipe/calculators/internal/callback_packet_calculator.proto",
@@ -131,6 +129,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/formats/annotation/rasterization.proto",
     "src/mediapipe/framework/formats/classification.proto",
     "src/mediapipe/framework/formats/detection.proto",
+    "src/mediapipe/framework/formats/time_series_header.proto",
     "src/mediapipe/framework/formats/image_format.proto",
     "src/mediapipe/framework/formats/location_data.proto",
     "src/mediapipe/framework/formats/matrix_data.proto",
@@ -186,11 +185,66 @@ source_set("mediapipe_shims") {
   deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
+
+
+# Start: Audio dependencies for audio calculators.
+source_set("com_google_audio_tools_portable") {
+    sources = [
+            "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/portable/number_util.c",
+    ]
+        include_dirs = [ "src/third_party/com_google_audio_tools" ]
+}
+source_set("com_google_audio_tools") {
+    sources = [
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mel_filterbank.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mel_filterbank.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mfcc.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mfcc.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/dct.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/mfcc/dct.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/number_util.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/number_util.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/bessel_functions.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/bessel_functions.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/window_functions.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/window_functions.cc",
+      "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.h",
+      "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.cc",
+    ]
+    deps = [
+      ":com_google_audio_tools_portable",
+      ":mediapipe_shims"
+    ]
+    if (is_win) {
+      cflags = [
+        "-permissive",
+      ]
+      defines = [
+        "_USE_MATH_DEFINES"
+      ]
+    }
+    public_deps = [
+       "//third_party/abseil-cpp:absl",
+    ]
+    include_dirs = [ "src/third_party/com_google_audio_tools"]
+     configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [
+        "//build/config/compiler:no_chromium_code",
+        ":mediapipe_internal_config",
+        ":mediapipe_config"
+      ]
+}
+# End: Audio dependencies for audio calculators.
+
 # These calculators are found at runtime and must be linked in, despite not
 # being explicitly referenced.
 # See src/docs/getting_started/troubleshooting.md
 tflite_source_set("mediapipe_tasks_always_link") {
   sources = [
+    "src/mediapipe/calculators/audio/mfcc_mel_calculators.cc",
+    "src/mediapipe/calculators/audio/spectrogram_calculator.cc",
+    "src/mediapipe/calculators/audio/stabilized_log_calculator.cc",
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.cc",
     "src/mediapipe/calculators/tensor/inference_calculator.cc",
     "src/mediapipe/calculators/tensor/inference_calculator_cpu.cc",
@@ -218,6 +272,9 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/util/tflite/tflite_signature_reader.h",
     "src/mediapipe/util/tflite/utils.cc",
     "src/mediapipe/util/tflite/utils.h",
+    "src/mediapipe/util/time_series_util.h",
+    "src/mediapipe/util/time_series_util.cc",
+
   ]
 
   # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
@@ -238,11 +295,12 @@ tflite_source_set("mediapipe_tasks_always_link") {
       "src/mediapipe/gpu/webgpu/image_to_tensor_converter_webgpu_texture.h",
     ]
   }
-
+  include_dirs = [ "src/third_party/com_google_audio_tools" ]
   deps = [
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
+    ":com_google_audio_tools",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",

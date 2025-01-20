@@ -30,6 +30,7 @@
 #include "components/sync/test/forwarding_data_type_local_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -483,7 +484,7 @@ class HistorySyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   sql::MetaTable meta_table_;
   HistorySyncMetadataDatabase metadata_db_;
 

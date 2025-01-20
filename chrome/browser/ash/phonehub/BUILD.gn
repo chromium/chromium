@@ -95,7 +95,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/components/phonehub:test_support",
     "//chromeos/ash/components/phonehub/proto",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/services/device_sync",
     "//chromeos/ash/services/device_sync:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",

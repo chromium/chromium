@@ -2197,7 +2197,7 @@ class GENnHandler(TypeHandler):
     """Overrriden from TypeHandler."""
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  GLuint ids[2] = { 0, };
+  GLuint ids[2] = {};
   struct Cmds {
     cmds::%(name)sImmediate gen;
     GLuint data[2];
@@ -3302,7 +3302,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       return;
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count)d] = {0};
+  %(type)s data[%(count)d] = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
     %(type)s data[%(count)d];
@@ -3507,7 +3507,7 @@ TEST_P(%(test_name)s, %(name)sValidArgsCountTooLarge) {
 TEST_P(%(test_name)s, %(name)sValidArgs) {
   cmds::%(name)s& cmd = *GetImmediateAs<cmds::%(name)s>();
   SpecializedSetup<cmds::%(name)s, 0>(true);
-  %(data_type)s temp[%(data_count)s * 2] = { 0, };
+  %(data_type)s temp[%(data_count)s * 2] = {};
   EXPECT_CALL(
       *gl_,
       %(gl_func_name)s(%(gl_args)s,
@@ -3540,7 +3540,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
   cmds::%(name)s& cmd = *GetImmediateAs<cmds::%(name)s>();
   EXPECT_CALL(*gl_, %(gl_func_name)s(%(gl_any_args)s, _)).Times(0);
   SpecializedSetup<cmds::%(name)s, 0>(false);
-  %(data_type)s temp[%(data_count)s * 2] = { 0, };
+  %(data_type)s temp[%(data_count)s * 2] = {};
   cmd.Init(%(all_but_last_args)s, &temp[0]);
   EXPECT_EQ(error::%(parse_result)s,
             ExecuteImmediateCmd(cmd, sizeof(temp)));%(gl_error_test)s
@@ -3602,7 +3602,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
 
     code = """
 TEST_F(%(prefix)sImplementationTest, %(name)s) {
-  %(type)s data[%(count_param)d][%(count)d] = {{0}};
+  %(type)s data[%(count_param)d][%(count)d] = {};
   struct Cmds {
     cmds::%(name)sImmediate cmd;
     %(type)s data[%(count_param)d][%(count)d];
@@ -3658,7 +3658,7 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     code = """
 TEST_F(%(prefix)sImplementationTest,
        %(name)sInvalidConstantArg%(invalid_index)d) {
-  %(type)s data[%(count_param)d][%(count)d] = {{0}};
+  %(type)s data[%(count_param)d][%(count)d] = {};
   for (int ii = 0; ii < %(count_param)d; ++ii) {
     for (int jj = 0; jj < %(count)d; ++jj) {
       data[ii][jj] = static_cast<%(type)s>(ii * %(count)d + jj);

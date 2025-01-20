@@ -707,7 +707,6 @@ Both methods and attribute/constant getters annotated with this attribute are wi
 ```webidl
 [HighEntropy] attribute Node interestingAttribute;
 [HighEntropy] Node getInterestingNode();
-[HighEntropy] const INTERESTING_CONSTANT = 1;
 ```
 
 Attributes and methods labeled with `[HighEntropy=Direct]` are simple surfaces which can be expressed as a sequence of bytes without any need for additional parsing logic.
@@ -764,7 +763,7 @@ The generated feature name must be added to `WebFeature` (in [blink/public/mojom
 ```webidl
 [Measure] attribute Node interestingAttribute;
 [Measure] Node getInterestingNode();
-[Measure] const INTERESTING_CONSTANT = 1;
+// Note that Measure is longer supported on constants.
 ```
 
 ### [MeasureAs]
@@ -781,7 +780,7 @@ The value must match one of the enumeration values in `WebFeature` (in [blink/pu
 ```webidl
 [MeasureAs=AttributeWeAreInterestedIn] attribute Node interestingAttribute;
 [MeasureAs=MethodsAreInterestingToo] Node getInterestingNode();
-[MeasureAs=EvenSomeConstantsAreInteresting] const INTERESTING_CONSTANT = 1;
+// Note that MeasureAs is longer supported on constants.
 ```
 
 ### [NotEnumerable]
@@ -1316,12 +1315,6 @@ These extended attributes are _discouraged_ - they are not deprecated, but they 
 Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
 
 Consult with the bindings team before you use this extended attribute.
-
-### [IDLTypeImplementedAsV8Promise]
-
-Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromise<>` type.
-
-This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 
 ### [NodeWrapInOwnContext]
 

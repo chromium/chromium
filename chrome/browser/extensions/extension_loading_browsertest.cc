@@ -44,7 +44,7 @@ namespace {
 
 constexpr char kChangeBackgroundScriptTypeExtensionId[] =
     "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionLoadingTest : public ExtensionBrowserTest {
 };

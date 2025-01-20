@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationState;
@@ -263,6 +264,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
 
         boolean isCacheInitializedAndroid(long nativePaintPreviewTabService);
 
+        @JniType("std::string")
         String getPathAndroid(long nativePaintPreviewTabService);
     }
 }

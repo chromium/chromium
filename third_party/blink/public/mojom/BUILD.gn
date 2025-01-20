@@ -57,6 +57,7 @@ mojom("mojom_platform") {
     "compute_pressure/web_pressure_manager.mojom",
     "compute_pressure/web_pressure_manager_automation.mojom",
     "confidence_level.mojom",
+    "content_extraction/ai_page_content.mojom",
     "content_extraction/inner_html.mojom",
     "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",
@@ -180,6 +181,8 @@ mojom("mojom_platform") {
     "parakeet/ad_request.mojom",
     "payments/payment_app.mojom",
     "peerconnection/peer_connection_tracker.mojom",
+    "peerconnection/webrtc_ip_handling_policy.mojom",
+    "peerconnection/webrtc_ip_handling_url_entry.mojom",
     "performance_manager/v8_detailed_memory_reporter.mojom",
     "permissions/permission.mojom",
     "permissions/permission_automation.mojom",
@@ -297,6 +300,8 @@ mojom("mojom_platform") {
     "//cc/mojom",
     "//components/attribution_reporting:data_host_mojom",
     "//components/attribution_reporting:mojom",
+    "//components/content_settings/core/common:content_settings_types",
+    "//components/content_settings/core/common:mojo_bindings",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
@@ -476,6 +481,15 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/widget/visual_properties_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.WebRtcIpHandlingUrlEntry"
+          cpp = "::blink::WebRtcIpHandlingUrlEntry"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/peerconnection/webrtc_ip_handling_url_entry_mojom_traits.h" ]
     },
     {
       types = [
@@ -716,6 +730,24 @@ mojom("mojom_platform") {
     },
   ]
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.mojom.LoginStatusOptions"
+          cpp = "::blink::common::webid::LoginStatusOptions"
+        },
+        {
+          mojom = "blink.mojom.LoginStatusAccount"
+          cpp = "::blink::common::webid::LoginStatusAccount"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/webid/federated_auth_request_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/common/webid/federated_auth_request_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//third_party/blink/public/common:headers",
+        "//url/mojom:mojom_traits",
+      ]
+    },
     {
       types = [
         {
@@ -1647,6 +1679,7 @@ mojom("mojom_modules") {
   overridden_deps_blink = [
     ":android_mojo_bindings",
     ":mojom_core",
+    "//services/network/public/mojom:mojom_shared_storage",
   ]
   component_deps_blink = [ "//third_party/blink/renderer/core" ]
 

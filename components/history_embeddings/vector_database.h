@@ -16,11 +16,15 @@
 
 namespace history_embeddings {
 
+// Hash function used for query filtering.
+uint32_t HashString(std::string_view str);
+
 struct ScoredUrl {
   ScoredUrl(history::URLID url_id,
             history::VisitID visit_id,
             base::Time visit_time,
-            float score);
+            float score,
+            float word_match_score);
   ~ScoredUrl();
   ScoredUrl(ScoredUrl&&);
   ScoredUrl& operator=(ScoredUrl&&);
@@ -36,12 +40,19 @@ struct ScoredUrl {
   // the single best embedding score plus a word match boost from text search
   // across all passages.
   float score;
+
+  // This is the score computed by word match text search. It's included in
+  // the total `score`, but is also kept separate for second-chance word
+  // match result filling.
+  float word_match_score;
 };
 
 struct SearchParams {
   SearchParams();
+  SearchParams(const SearchParams&);
   SearchParams(SearchParams&&);
   ~SearchParams();
+  SearchParams& operator=(const SearchParams&);
 
   // Portions of lower-cased query representing terms usable for text search.
   // Owned std::string instances are used instead of std::string_view into
@@ -74,7 +85,15 @@ struct SearchParams {
 
   // If true, any non-ASCII characters in queries or passages will be erased
   // instead of ignoring such queries or passages entirely.
-  bool erase_non_ascii = false;
+  bool erase_non_ascii_characters = false;
+
+  // If true, word match text search can still be applied for passages with
+  // non-ASCII characters; similar to `erase_non_ascii_characters` but for word
+  // match text search only.
+  bool word_match_search_non_ascii_passages = false;
+
+  // If true, answering step will be skipped even if the query is answerable.
+  bool skip_answering = false;
 };
 
 struct SearchInfo {
@@ -82,8 +101,12 @@ struct SearchInfo {
   SearchInfo(SearchInfo&&);
   ~SearchInfo();
 
-  // Result of the search, the best scored URLs.
+  // Result of the search, the best scored URLs considering total score.
   std::vector<ScoredUrl> scored_urls;
+
+  // Secondary results of the search, the best scored URLs considering
+  // word match text search score.
+  std::vector<ScoredUrl> word_match_scored_urls;
 
   // The number of URLs searched to find this result.
   size_t searched_url_count = 0u;
@@ -107,23 +130,6 @@ struct SearchInfo {
   base::TimeDelta total_search_time;
   base::TimeDelta scoring_time;
   base::TimeDelta passage_scanning_time;
-};
-
-struct UrlPassages {
-  UrlPassages(history::URLID url_id,
-              history::VisitID visit_id,
-              base::Time visit_time);
-  ~UrlPassages();
-  UrlPassages(const UrlPassages&);
-  UrlPassages& operator=(const UrlPassages&);
-  UrlPassages(UrlPassages&&);
-  UrlPassages& operator=(UrlPassages&&);
-  bool operator==(const UrlPassages&) const;
-
-  history::URLID url_id;
-  history::VisitID visit_id;
-  base::Time visit_time;
-  proto::PassagesValue passages;
 };
 
 class Embedding {
@@ -164,48 +170,36 @@ class Embedding {
   size_t passage_word_count_ = 0;
 };
 
-struct UrlEmbeddings {
-  UrlEmbeddings();
-  UrlEmbeddings(history::URLID url_id,
-                history::VisitID visit_id,
-                base::Time visit_time);
-  explicit UrlEmbeddings(const UrlPassages& url_passages);
-  ~UrlEmbeddings();
-  UrlEmbeddings(UrlEmbeddings&&);
-  UrlEmbeddings& operator=(UrlEmbeddings&&);
-  UrlEmbeddings(const UrlEmbeddings&);
-  UrlEmbeddings& operator=(const UrlEmbeddings&);
-  bool operator==(const UrlEmbeddings&) const;
+struct UrlScore {
+  float score;
+  float word_match_score;
+};
+
+struct UrlData {
+  UrlData(history::URLID url_id,
+          history::VisitID visit_id,
+          base::Time visit_time);
+  UrlData(const UrlData&);
+  UrlData(UrlData&&);
+  UrlData& operator=(const UrlData&);
+  UrlData& operator=(UrlData&&);
+  ~UrlData();
+
+  bool operator==(const UrlData&) const;
 
   // Finds score of embedding nearest to query, also taking passages
   // into consideration since some should be skipped. The passages
   // correspond to the embeddings 1:1 by index.
-  float BestScoreWith(SearchInfo& search_info,
-                      const SearchParams& search_params,
-                      const Embedding& query_embedding,
-                      const proto::PassagesValue& passages,
-                      size_t search_minimum_word_count) const;
+  UrlScore BestScoreWith(SearchInfo& search_info,
+                         const SearchParams& search_params,
+                         const Embedding& query_embedding,
+                         size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
   base::Time visit_time;
+  proto::PassagesValue passages;
   std::vector<Embedding> embeddings;
-};
-
-struct UrlPassagesEmbeddings {
-  UrlPassagesEmbeddings(history::URLID url_id,
-                        history::VisitID visit_id,
-                        base::Time visit_time);
-  UrlPassagesEmbeddings(const UrlPassagesEmbeddings&);
-  UrlPassagesEmbeddings(UrlPassagesEmbeddings&&);
-  UrlPassagesEmbeddings& operator=(const UrlPassagesEmbeddings&);
-  UrlPassagesEmbeddings& operator=(UrlPassagesEmbeddings&&);
-  ~UrlPassagesEmbeddings();
-
-  bool operator==(const UrlPassagesEmbeddings&) const;
-
-  UrlPassages url_passages;
-  UrlEmbeddings url_embeddings;
 };
 
 // This base class decouples storage classes and inverts the dependency so that
@@ -219,7 +213,7 @@ class VectorDatabase {
     // Returns nullptr if none remain; otherwise advances the iterator
     // and returns a pointer to the next instance (which may be owned
     // by the iterator itself).
-    virtual const UrlPassagesEmbeddings* Next() = 0;
+    virtual const UrlData* Next() = 0;
   };
 
   virtual ~VectorDatabase() = default;
@@ -229,7 +223,7 @@ class VectorDatabase {
 
   // Insert or update all embeddings for a URL's full set of passages.
   // Returns true on success.
-  virtual bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) = 0;
+  virtual bool AddUrlData(UrlData url_data) = 0;
 
   // Create an iterator that steps through database items.
   // Null may be returned if there are none.
@@ -259,12 +253,12 @@ class VectorDatabaseInMemory : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  bool AddUrlData(UrlData url_data) override;
   std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
  private:
-  std::vector<UrlPassagesEmbeddings> data_;
+  std::vector<UrlData> data_;
 };
 
 // Utility method to split a query into separate query terms for search.

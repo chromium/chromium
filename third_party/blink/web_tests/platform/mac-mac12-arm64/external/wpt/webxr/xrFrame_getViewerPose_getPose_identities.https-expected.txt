@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] XRFrame getViewerPose(viewerSpace) & getPose(space, space) return identity even during tracking loss - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRFrame getViewerPose(viewerSpace) & getPose(space, space) return identity even during tracking loss - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

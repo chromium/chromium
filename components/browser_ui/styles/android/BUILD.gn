@@ -22,6 +22,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/anim-v33/shared_x_axis_close_enter.xml",
+    "java/res/anim-v33/shared_x_axis_close_exit.xml",
+    "java/res/anim-v33/shared_x_axis_open_enter.xml",
+    "java/res/anim-v33/shared_x_axis_open_exit.xml",
     "java/res/anim/shared_x_axis_close_enter.xml",
     "java/res/anim/shared_x_axis_close_exit.xml",
     "java/res/anim/shared_x_axis_open_enter.xml",
@@ -52,7 +56,6 @@ android_resources("java_resources") {
     "java/res/color/icon_animated_faded_color_list.xml",
     "java/res/color/progress_bar_bg_color_list.xml",
     "java/res/color/selection_control_button_tint_list.xml",
-    "java/res/color/target_view_color_list.xml",
     "java/res/color/text_button_ripple_color_list.xml",
     "java/res/color/text_highlight_color.xml",
     "java/res/color/toolbar_button_highlight_color.xml",
@@ -229,6 +232,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_warning_red_16dp.xml",
     "java/res/drawable/ic_warning_red_24dp.xml",
     "java/res/drawable/ic_warning_red_outline_32dp.xml",
+    "java/res/drawable/report_octagon.xml",
     "java/res/drawable/smartphone_black_24dp.xml",
     "java/res/drawable/star_outline_24dp.xml",
     "java/res/drawable/toolbar_hairline.xml",

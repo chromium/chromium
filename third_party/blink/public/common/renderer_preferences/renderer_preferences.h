@@ -14,21 +14,16 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_url_entry.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "ui/gfx/font_render_params.h"
 
 namespace blink {
 
 // Note: these must match the values in renderer_preferences.mojom.
 constexpr uint32_t kDefaultActiveSelectionBgColor = 0xFF1967D2;
-#if BUILDFLAG(IS_ANDROID)
-// See crbug.com/1445053, but on Android, the selection background color is
-// not used, and a much lighter shade of blue is used instead. Therefore, the
-// foreground color needs to be dark/black to ensure contrast.
-constexpr uint32_t kDefaultActiveSelectionFgColor = 0xFF000000;
-#else
 constexpr uint32_t kDefaultActiveSelectionFgColor = 0xFFFFFFFF;
-#endif
 constexpr uint32_t kDefaultInactiveSelectionBgColor = 0xFFC8C8C8;
 constexpr uint32_t kDefaultInactiveSelectionFgColor = 0xFF323232;
 
@@ -61,7 +56,9 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 #if BUILDFLAG(IS_CHROMEOS)
   bool use_overlay_scrollbar{false};
 #endif
-  std::string webrtc_ip_handling_policy;
+  blink::mojom::WebRtcIpHandlingPolicy webrtc_ip_handling_policy =
+      blink::mojom::WebRtcIpHandlingPolicy::kDefault;
+  std::vector<WebRtcIpHandlingUrlEntry> webrtc_ip_handling_urls;
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
   std::vector<std::string> webrtc_local_ips_allowed_urls;
@@ -92,6 +89,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 #endif
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
+  bool uses_platform_autofill{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
 
   RendererPreferences();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/backend/cups_printer.h"
 
 #include <cups/cups.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -169,9 +165,13 @@ class CupsPrinterImpl : public CupsPrinter {
     printer_info->options[kDriverInfoTagName] = make_and_model;
 
     // Store printer options.
-    for (int opt_index = 0; opt_index < printer->num_options; ++opt_index) {
-      printer_info->options[printer->options[opt_index].name] =
-          printer->options[opt_index].value;
+    if (printer->num_options > 0) {
+      // SAFETY: Required from CUPS.
+      auto options = UNSAFE_BUFFERS(base::span<const cups_option_t>(
+          printer->options, static_cast<size_t>(printer->num_options)));
+      for (const auto& option : options) {
+        printer_info->options[option.name] = option.value;
+      }
     }
 
     return true;

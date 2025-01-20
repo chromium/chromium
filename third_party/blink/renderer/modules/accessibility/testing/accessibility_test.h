@@ -43,7 +43,8 @@ class AccessibilityTest : public RenderingTest {
   // Returns the object with the accessibility focus.
   AXObject* GetAXFocusedObject() const;
 
-  AXObject* GetAXObjectByElementId(const char* id) const;
+  AXObject* GetAXObjectByElementId(const char* id,
+                                   PseudoId = kPseudoIdNone) const;
 
   std::string PrintAXTree() const;
 

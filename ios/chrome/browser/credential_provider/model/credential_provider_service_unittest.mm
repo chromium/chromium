@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
@@ -156,6 +157,8 @@ class CredentialProviderServiceTest : public PlatformTest {
                                   /*affiliated_match_helper=*/nullptr);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
+    testing_pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnablePasskeys, true);
   }
 
   void TearDown() override {
@@ -168,6 +171,11 @@ class CredentialProviderServiceTest : public PlatformTest {
   }
 
   void CreateCredentialProviderService(bool with_account_store = false) {
+    // Make sure to shut down the previous instance before creating a new one.
+    if (credential_provider_service_) {
+      credential_provider_service_->Shutdown();
+    }
+
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         &testing_pref_service_, password_store_,
         with_account_store ? account_password_store_ : nullptr,
@@ -353,7 +361,7 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
   // NSUserDefaults value is also true.
   EXPECT_TRUE([[app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()]
       boolValue]);
 
   // Change the pref value to false.
@@ -363,7 +371,7 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
   // Make sure the NSUserDefaults value is now false.
   EXPECT_FALSE([[app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()]
       boolValue]);
 }
 
@@ -425,6 +433,32 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
 
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+}
+
+// Tests that the CredentialProviderService correctly stores the enabled state
+// of the Passkeys M2 feature.
+TEST_F(CredentialProviderServiceTest, PasskeysM2Availability) {
+  {
+    // Enable the `kIOSPasskeysM2` feature.
+    base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
+
+    CreateCredentialProviderService();
+
+    EXPECT_TRUE([[app_group::GetGroupUserDefaults()
+        objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
+        boolValue]);
+  }
+  {
+    // Disable the `kIOSPasskeysM2` feature.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kIOSPasskeysM2);
+
+    CreateCredentialProviderService();
+
+    EXPECT_FALSE([[app_group::GetGroupUserDefaults()
+        objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
+        boolValue]);
+  }
 }
 
 TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {

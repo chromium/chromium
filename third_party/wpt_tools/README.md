@@ -38,7 +38,7 @@ for self-signed CA. By default, WPTServe generates these files using the
 "openssl" command, but we check in pre-generated files to avoid "openssl"
 dependency.
 
-These certificates will expire in January 2025. Here is an instruction to
+These certificates will expire in February 2033. Here is an instruction to
 re-generate them:
 
 1. Make sure the following commands are in $PATH.
@@ -49,13 +49,10 @@ re-generate them:
  - sed
 2. Run update_certs.py
 3. Look at the "Not After" date in the output of the command, and update
-  "January 2025" in this document and expiration_date in wptserve.py to new
+  "February 2033" in this document and expiration_date in wptserve.py to new
   expiration date.
-4. Update certs/127.0.0.1.sxg.\*.
-  Please refer to
-  //third_party/blink/web_tests/http/tests/loading/sxg/resources/README.md
-5. git commit
-6. git cl upload, etc.
+4. git commit
+5. git cl upload, etc.
 
 Rolling in WPT
 ==============

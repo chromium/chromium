@@ -28,7 +28,12 @@ public interface ModuleDelegate {
         ModuleType.PRICE_CHANGE,
         ModuleType.TAB_RESUMPTION,
         ModuleType.SAFETY_HUB,
-        ModuleType.EDUCATIONAL_TIP,
+        ModuleType.DEPRECATED_EDUCATIONAL_TIP,
+        ModuleType.AUXILIARY_SEARCH,
+        ModuleType.DEFAULT_BROWSER_PROMO,
+        ModuleType.TAB_GROUP_PROMO,
+        ModuleType.TAB_GROUP_SYNC_PROMO,
+        ModuleType.QUICK_DELETE_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -37,8 +42,13 @@ public interface ModuleDelegate {
         int PRICE_CHANGE = 1;
         int TAB_RESUMPTION = 2;
         int SAFETY_HUB = 3;
-        int EDUCATIONAL_TIP = 4;
-        int NUM_ENTRIES = 5;
+        int DEPRECATED_EDUCATIONAL_TIP = 4;
+        int AUXILIARY_SEARCH = 5;
+        int DEFAULT_BROWSER_PROMO = 6;
+        int TAB_GROUP_PROMO = 7;
+        int TAB_GROUP_SYNC_PROMO = 8;
+        int QUICK_DELETE_PROMO = 9;
+        int NUM_ENTRIES = 10;
     }
 
     /**
@@ -79,9 +89,8 @@ public interface ModuleDelegate {
      * Called when the user clicks a module.
      *
      * @param moduleType The type of the module clicked.
-     * @param modulePosition The position of the module clicked.
      */
-    void onModuleClicked(@ModuleType int moduleType, int modulePosition);
+    void onModuleClicked(@ModuleType int moduleType);
 
     /** Gets the instance of the module {@link ModuleProvider} of the given type. */
     ModuleProvider getModuleProvider(@ModuleType int moduleType);

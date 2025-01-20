@@ -115,7 +115,7 @@ class BufferQueueTest : public ::testing::Test {
     // damage rects.
     auto mailbox = buffer_queue_->GetCurrentBuffer();
     buffer_queue_->SwapBuffers(damage);
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
     return mailbox;
   }
 
@@ -279,7 +279,7 @@ TEST_F(BufferQueueTest, CheckDoubleBuffering) {
   buffer_queue_->SwapBuffers(screen_rect);
 
   EXPECT_EQ(1U, in_flight_buffers().size());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   EXPECT_EQ(0U, in_flight_buffers().size());
   EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
@@ -292,7 +292,7 @@ TEST_F(BufferQueueTest, CheckDoubleBuffering) {
   EXPECT_TRUE(CheckUnique());
   EXPECT_EQ(1U, in_flight_buffers().size());
   EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_TRUE(CheckUnique());
   EXPECT_EQ(0U, in_flight_buffers().size());
   EXPECT_EQ(1U, available_buffers().size());
@@ -314,7 +314,7 @@ TEST_F(BufferQueueTest, CheckTripleBuffering) {
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_FALSE(displayed_frame());
   buffer_queue_->SwapBuffers(screen_rect);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   buffer_queue_->SwapBuffers(screen_rect);
 
@@ -326,7 +326,7 @@ TEST_F(BufferQueueTest, CheckTripleBuffering) {
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(1U, in_flight_buffers().size());
   EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_TRUE(CheckUnique());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(0U, in_flight_buffers().size());
@@ -353,17 +353,17 @@ TEST_F(BufferQueueTest, CheckEmptySwap) {
   EXPECT_NE(mailbox, new_mailbox);
 
   EXPECT_EQ(1U, in_flight_buffers().size());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   buffer_queue_->SwapBuffers(gfx::Rect());
   // Test SwapBuffers() without calling GetCurrentBuffer().
   buffer_queue_->SwapBuffers(gfx::Rect());
   EXPECT_EQ(2U, in_flight_buffers().size());
 
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(1U, in_flight_buffers().size());
 
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(0U, in_flight_buffers().size());
 }
 
@@ -380,7 +380,7 @@ TEST_F(BufferQueueTest, CheckCorrectBufferOrdering) {
   EXPECT_EQ(kSwapCount, in_flight_buffers().size());
   for (size_t i = 0; i < kSwapCount; ++i) {
     gpu::Mailbox next_mailbox = in_flight_buffers().front()->mailbox;
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
     EXPECT_EQ(displayed_frame()->mailbox, next_mailbox);
   }
 }
@@ -405,7 +405,7 @@ TEST_F(BufferQueueTest, ReshapeWithInFlightBuffers) {
   EXPECT_EQ(6, CountBuffers());
 
   for (size_t i = 0; i < kSwapCount; ++i) {
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
     EXPECT_FALSE(displayed_frame());
   }
 
@@ -434,7 +434,7 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
   EXPECT_EQ(2 * kSwapCount, in_flight_buffers().size());
 
   for (size_t i = 0; i < kSwapCount; ++i) {
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
     EXPECT_FALSE(displayed_frame());
   }
 
@@ -442,7 +442,7 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
 
   for (size_t i = 0; i < kSwapCount; ++i) {
     gpu::Mailbox next_mailbox = in_flight_buffers().front()->mailbox;
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
     EXPECT_EQ(displayed_frame()->mailbox, next_mailbox);
     EXPECT_TRUE(displayed_frame());
   }
@@ -450,11 +450,11 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
   for (size_t i = 0; i < kSwapCount; ++i) {
     EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
     buffer_queue_->SwapBuffers(screen_rect);
-    buffer_queue_->SwapBuffersComplete();
+    buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   }
 }
 
-TEST_F(BufferQueueTest, SwapBuffersSkipped) {
+TEST_F(BufferQueueTest, SwapBuffersSkippedByDisplay) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
                                      RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
@@ -474,10 +474,41 @@ TEST_F(BufferQueueTest, SwapBuffersSkipped) {
 
   // Swap on the next frame with no additional damage.
   buffer_queue_->SwapBuffers(gfx::Rect());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   // The next frame has the damage from the last SwapBuffersSkipped().
   EXPECT_EQ(buffer_queue_->CurrentBufferDamage(), large_damage);
+}
+
+TEST_F(BufferQueueTest, SwapBuffersSkippedByGpuThread) {
+  EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
+                                     kBufferQueueFormat));
+
+  // Start with a partially damaged frame.
+  SendDamagedFrame(small_damage);
+  SendDamagedFrame(small_damage);
+  SendDamagedFrame(small_damage);
+  EXPECT_EQ(buffer_queue_->CurrentBufferDamage(), small_damage);
+
+  // Start two swaps to use up the remaining available buffers.
+  auto mailbox1 = buffer_queue_->GetCurrentBuffer();
+  buffer_queue_->SwapBuffers(small_damage);
+  buffer_queue_->GetCurrentBuffer();
+  buffer_queue_->SwapBuffers(small_damage);
+
+  // There are no more available buffers at this point. Have the fist swap
+  // be skipped by the  GPU thread. After that verify that mailbox1 has been
+  // recycled and is available for the next swap
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/false);
+  EXPECT_EQ(mailbox1, buffer_queue_->GetCurrentBuffer());
+
+  // The second pending swap also fails since it didn't have full damage.
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/false);
+
+  // Have a swap complete successfully since it now has full damage.
+  buffer_queue_->SwapBuffers(gfx::Rect(screen_size));
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 }
 
 TEST_F(BufferQueueTest, EnsureMinNumberOfBuffers) {
@@ -546,14 +577,14 @@ TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
   EXPECT_EQ(last_swapped1, buffer_queue_->GetLastSwappedBuffer());
   buffer_queue_->SwapBuffers(screen_rect);
   EXPECT_EQ(last_swapped1, buffer_queue_->GetLastSwappedBuffer());
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
 
   // Swap another frame. Last swapped only updates after SwapBuffersComplete().
   gpu::Mailbox mailbox2 = buffer_queue_->GetCurrentBuffer();
   buffer_queue_->SwapBuffers(screen_rect);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox2);
 
   // Swap a third frame. Last swapped only updates after SwapBuffersComplete().
@@ -562,20 +593,20 @@ TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
   EXPECT_EQ(mailbox3, last_swapped1);
   buffer_queue_->SwapBuffers(screen_rect);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox2);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
 
   // Empty swap, Last swapped stays the same.
   buffer_queue_->SwapBuffers(gfx::Rect());
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
 
   // Swap a fourth frame. Last swapped only updates after SwapBuffersComplete().
   EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mailbox1);
   buffer_queue_->SwapBuffers(screen_rect);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
 }
 
@@ -594,19 +625,19 @@ TEST_F(BufferQueueTest, RecreateBuffers) {
   buffer_queue_->SwapBuffers(small_damage);
 
   buffer_queue_->RecreateBuffers();
-  buffer_queue_->SwapBuffersComplete();  // mb1
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);  // mb1
 
   auto mb4 = buffer_queue_->GetCurrentBuffer();
   EXPECT_THAT(original_buffers, Not(Contains(mb4)));
   buffer_queue_->SwapBuffers(small_damage);
 
-  buffer_queue_->SwapBuffersComplete();  // mb2
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);  // mb2
 
   auto mb5 = buffer_queue_->GetCurrentBuffer();
   EXPECT_THAT(original_buffers, Not(Contains(mb5)));
   buffer_queue_->SwapBuffers(small_damage);
-  buffer_queue_->SwapBuffersComplete();  // mb4
-  buffer_queue_->SwapBuffersComplete();  // mb5
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);  // mb4
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);  // mb5
 
   auto mb6 = SendDamagedFrame(small_damage);
   EXPECT_THAT(original_buffers, Not(Contains(mb6)));
@@ -634,7 +665,7 @@ TEST_F(BufferQueueTest, DestroyBuffers) {
   // All buffers are destroyed, and GetLastSwappedBuffer should not recreate
   // them.
   EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
-  buffer_queue_->SwapBuffersComplete();  // mb1
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);  // mb1
   EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
   // Reshape should not reallocate buffers.
   EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(20, 20), kBufferQueueColorSpace,
@@ -675,19 +706,19 @@ TEST_F(BufferQueueTest, SetPurgeable) {
 
   // When the next swap finishes `mb3` is available and gets marked purgeable.
   EXPECT_CALL(mock, Call(mb3, true));
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mb1);
 
   // When the next swap finishes `mb1` is available and gets marked purgeable.
   EXPECT_CALL(mock, Call(mb1, true));
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mb2);
 
   // `mb2` is last swapped buffer now and there are no pending swaps. Push an
   // empty swap and complete that so `mb2` is available.
   EXPECT_CALL(mock, Call(mb2, true));
   buffer_queue_->SwapBuffers(small_damage);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   // The next non-delegated draw will get a primary plane buffer. This will
   // cause all three buffers to be marked as not purgeable anymore.
@@ -718,7 +749,7 @@ TEST_F(BufferQueueTest, SetPurgeableThenReshape) {
   buffer_queue_->SwapBuffers(small_damage);
   buffer_queue_->GetCurrentBuffer();
   buffer_queue_->SwapBuffers(small_damage);
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   buffer_queue_->GetCurrentBuffer();
   buffer_queue_->SwapBuffers(small_damage);
   EXPECT_FALSE(buffer_queue_->GetLastSwappedBuffer().IsZero());
@@ -733,8 +764,8 @@ TEST_F(BufferQueueTest, SetPurgeableThenReshape) {
 
   // Complete the last two swaps. Since the reshape deleted all the buffers
   // they will not be marked as purgeable.
-  buffer_queue_->SwapBuffersComplete();
-  buffer_queue_->SwapBuffersComplete();
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   // Reset callback since it points to stack allocated mock.
   skia_output_surface_->SetSharedImagePurgeableCallback({});

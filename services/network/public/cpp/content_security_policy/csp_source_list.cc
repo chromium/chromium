@@ -239,10 +239,7 @@ CSPCheckResult CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
       return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
     }
     if (url.SchemeIs("ftp")) {
-      return base::FeatureList::IsEnabled(
-                 features::kCspStopMatchingWildcardDirectivesToFtp)
-                 ? CSPCheckResult::Blocked()
-                 : CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
+      return CSPCheckResult::Blocked();
     }
   }
 

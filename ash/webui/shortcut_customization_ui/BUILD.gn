@@ -34,8 +34,8 @@ static_library("shortcut_customization_ui") {
     "//components/keyed_service/content:content",
     "//components/user_prefs",
     "//content/public/browser",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
+    "//ui/webui/resources:resources_grit",
   ]
 }
 
@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/cpp:cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/ash/components/local_search_service/public/mojom:mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//content/test:test_support",
     "//device/udev_linux:test_support",
     "//mojo/public/cpp/bindings:bindings",

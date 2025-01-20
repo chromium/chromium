@@ -32,8 +32,7 @@ namespace {
 
 bool Accepts(AppType app_type) {
   return app_type == AppType::kUnknown || app_type == AppType::kArc ||
-         app_type == AppType::kWeb || app_type == AppType::kSystemWeb ||
-         app_type == AppType::kStandaloneBrowserChromeApp;
+         app_type == AppType::kWeb || app_type == AppType::kSystemWeb;
 }
 
 std::optional<AppInstallSurface> AppInstallSurfaceFromCrosapi(

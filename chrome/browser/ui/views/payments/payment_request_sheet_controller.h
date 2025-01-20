@@ -19,7 +19,7 @@ class Event;
 namespace views {
 class MdTextButton;
 class View;
-}
+}  // namespace views
 
 namespace payments {
 

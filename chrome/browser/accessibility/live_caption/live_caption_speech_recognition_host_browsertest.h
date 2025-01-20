@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_BROWSERTEST_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_BROWSERTEST_H_
 
-#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
-
 #include <string>
 #include <vector>
 
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +20,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
@@ -60,7 +60,7 @@ class MockLiveTranslateController : public LiveTranslateController {
   void GetTranslation(const std::string& result,
                       std::string source_language,
                       std::string target_language,
-                      OnTranslateEventCallback callback) override;
+                      TranslateEventCallback callback) override;
 
   // Returns a collection of strings passed into `GetTranslation()`.
   std::vector<std::string> GetTranslationRequests();

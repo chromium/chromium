@@ -38,9 +38,6 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
   void SetOpacity(float opacity) override;
   void SetNeedsDisplayRect(const gfx::Rect& rect) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   int thumb_thickness() const { return thumb_thickness_; }
   int track_start() const { return track_start_; }
@@ -49,6 +46,13 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
   SkColor4f color() const { return color_.Read(*this); }
 
   ScrollbarLayerType GetScrollbarLayerType() const override;
+
+ protected:
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   SolidColorScrollbarLayer(ScrollbarOrientation orientation,

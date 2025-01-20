@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -113,7 +114,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check,
       bool check_allowlist_before_hash_database,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
   SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =
@@ -353,6 +355,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // The current tab ID. Used sometimes for identifying the referrer chain for
   // URL real-time lookups. Can be |SessionID::InvalidValue()|.
   SessionID tab_id_;
+
+  // The Android app that launched Chrome.
+  std::optional<internal::ReferringAppInfo> referring_app_info_;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

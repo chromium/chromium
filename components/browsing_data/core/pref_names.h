@@ -37,16 +37,6 @@ inline constexpr char kDeleteTimePeriod[] = "browser.clear_data.time_period";
 inline constexpr char kDeleteTimePeriodBasic[] =
     "browser.clear_data.time_period_basic";
 
-// Clear browsing data deletion time period experiment. This experiment requires
-// users to interact with timeframe drop down menu in the clear browsing data
-// dialog. It also adds a new 'Last 15 minutes' value to the list. Until the
-// user has made their 1st time period selection, the UI shows 'Select a time
-// range'.
-inline constexpr char kDeleteTimePeriodV2[] =
-    "browser.clear_data.time_period_v2";
-inline constexpr char kDeleteTimePeriodV2Basic[] =
-    "browser.clear_data.time_period_v2_basic";
-
 // Clear Browsing Data dialog datatype preferences.
 inline constexpr char kDeleteBrowsingHistory[] =
     "browser.clear_data.browsing_history";

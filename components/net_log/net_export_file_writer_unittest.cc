@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/net_log/net_export_file_writer.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -27,7 +23,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_change_notifier.h"
@@ -537,14 +532,17 @@ TEST_F(NetExportFileWriterTest, InitWithExistingLog) {
 }
 
 TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
-  const net::NetLogCaptureMode capture_modes[3] = {
+  const std::array<net::NetLogCaptureMode, 3> capture_modes = {
       net::NetLogCaptureMode::kDefault,
       net::NetLogCaptureMode::kIncludeSensitive,
-      net::NetLogCaptureMode::kEverything};
+      net::NetLogCaptureMode::kEverything,
+  };
 
-  const std::string capture_mode_strings[3] = {
-      kCaptureModeDefaultString, kCaptureModeIncludeSensitiveString,
-      kCaptureModeIncludeEverythingString};
+  const std::array<std::string, 3> capture_mode_strings = {
+      kCaptureModeDefaultString,
+      kCaptureModeIncludeSensitiveString,
+      kCaptureModeIncludeEverythingString,
+  };
 
   ASSERT_TRUE(InitializeThenVerifyNewState(true, false));
 

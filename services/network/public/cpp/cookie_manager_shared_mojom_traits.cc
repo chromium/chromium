@@ -103,8 +103,20 @@ bool StructTraits<network::mojom::CookieInclusionStatusDataView,
          net::CookieInclusionStatus* out) {
   net::CookieInclusionStatus::ExemptionReason exemption_reason;
 
-  out->set_exclusion_reasons(status.exclusion_reasons());
-  out->set_warning_reasons(status.warning_reasons());
+  for (size_t i = 0;
+       i < net::CookieInclusionStatus::ExclusionReasonBitset().size(); ++i) {
+    if (status.exclusion_reasons() & (1 << i)) {
+      out->AddExclusionReason(
+          static_cast<net::CookieInclusionStatus::ExclusionReason>(i));
+    }
+  }
+  for (size_t i = 0;
+       i < net::CookieInclusionStatus::WarningReasonBitset().size(); ++i) {
+    if (status.warning_reasons() & (1 << i)) {
+      out->AddWarningReason(
+          static_cast<net::CookieInclusionStatus::WarningReason>(i));
+    }
+  }
   if (!status.ReadExemptionReason(&exemption_reason)) {
     return false;
   }

@@ -44,7 +44,7 @@ class CORE_EXPORT MathMLElement : public Element {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   enum class AllowPercentages { kYes, kNo };
   const CSSPrimitiveValue* ParseMathLength(

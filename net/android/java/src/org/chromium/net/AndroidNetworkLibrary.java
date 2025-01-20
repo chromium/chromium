@@ -35,6 +35,8 @@ import org.jni_zero.CalledByNativeUnchecked;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -56,13 +58,14 @@ import java.util.Enumeration;
 import java.util.List;
 
 /** This class implements net utilities required by the net component. */
+@NullMarked
 class AndroidNetworkLibrary {
     private static final String TAG = "AndroidNetworkLibrary";
 
     // Cached value indicating if app has ACCESS_NETWORK_STATE permission.
-    private static Boolean sHaveAccessNetworkState;
+    private static @Nullable Boolean sHaveAccessNetworkState;
     // Cached value indicating if app has ACCESS_WIFI_STATE permission.
-    private static Boolean sHaveAccessWifiState;
+    private static @Nullable Boolean sHaveAccessWifiState;
 
     /**
      * @return the mime type (if any) that is associated with the file
@@ -216,7 +219,7 @@ class AndroidNetworkLibrary {
      * WifiManager} for earlier versions. Otherwise, we try to get the WifiInfo via broadcast (Note
      * that this approach does not work on Android P and above).
      */
-    private static WifiInfo getWifiInfo() {
+    private static @Nullable WifiInfo getWifiInfo() {
         if (haveAccessWifiState()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
@@ -435,7 +438,7 @@ class AndroidNetworkLibrary {
      */
     @RequiresApi(Build.VERSION_CODES.P)
     @CalledByNative
-    public static DnsStatus getDnsStatusForNetwork(long networkHandle) {
+    public static @Nullable DnsStatus getDnsStatusForNetwork(long networkHandle) {
         // In case the network handle is invalid don't crash, instead return an empty DnsStatus and
         // let native code handle that.
         try {
@@ -452,7 +455,7 @@ class AndroidNetworkLibrary {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
-    public static DnsStatus getCurrentDnsStatus() {
+    public static @Nullable DnsStatus getCurrentDnsStatus() {
         return getDnsStatus(null);
     }
 
@@ -461,7 +464,7 @@ class AndroidNetworkLibrary {
      * network. If |network| is null, uses the active network.
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    public static DnsStatus getDnsStatus(Network network) {
+    public static @Nullable DnsStatus getDnsStatus(@Nullable Network network) {
         if (!haveAccessNetworkState()) {
             return null;
         }

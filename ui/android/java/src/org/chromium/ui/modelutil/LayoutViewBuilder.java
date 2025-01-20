@@ -10,12 +10,15 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
 
 /** Helper class that inflates view from XML layout. */
+@NullMarked
 public class LayoutViewBuilder<T extends View> implements ViewBuilder<T> {
     @LayoutRes private final int mLayoutResId;
-    private LayoutInflater mInflater;
+    private @Nullable LayoutInflater mInflater;
 
     public LayoutViewBuilder(@LayoutRes int res) {
         mLayoutResId = res;

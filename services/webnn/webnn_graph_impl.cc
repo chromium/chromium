@@ -18,10 +18,6 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "services/webnn/dml/graph_impl_dml.h"
-#endif
-
 namespace webnn {
 
 namespace {

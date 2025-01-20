@@ -9,8 +9,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Parcel;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import com.google.android.gms.tasks.Task;
 
 import org.jni_zero.CalledByNative;
@@ -21,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.webauthn.Fido2ApiCall;
 
@@ -61,7 +60,7 @@ public class CableAuthenticatorModuleProvider {
             return false;
         }
 
-        return NotificationManagerCompat.from(context).areNotificationsEnabled();
+        return NotificationProxyUtils.areNotificationsEnabled();
     }
 
     /** Calls back into native code with whether we are running in a work profile. */

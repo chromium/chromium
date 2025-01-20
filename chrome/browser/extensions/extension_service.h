@@ -482,7 +482,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
-    FinishInstallation(extension);
+    extension_registrar_.FinishInstallation(extension);
   }
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
@@ -541,10 +541,19 @@ class ExtensionService : public ExtensionServiceInterface,
   void PostActivateExtension(scoped_refptr<const Extension> extension) override;
   void PostDeactivateExtension(
       scoped_refptr<const Extension> extension) override;
+  void PreUninstallExtension(scoped_refptr<const Extension> extension) override;
+  void PostUninstallExtension(scoped_refptr<const Extension> extension,
+                              base::OnceClosure done_callback) override;
+  void PostNotifyUninstallExtension(
+      scoped_refptr<const Extension> extension) override;
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
       const base::FilePath& path,
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
+  void ShowExtensionDisabledError(const Extension* extension,
+                                  bool is_remote_install) override;
+  void FinishDelayedInstallationsIfAny() override;
+  bool CanAddExtension(const Extension* extension) override;
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
@@ -586,9 +595,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                 const std::string& install_parameter,
                                 base::Value::Dict ruleset_install_prefs);
 
-  // Common helper to finish installing the given extension.
-  void FinishInstallation(const Extension* extension);
-
   // Disables the extension if the privilege level has increased
   // (e.g., due to an upgrade).
   void CheckPermissionsIncrease(const Extension* extension,
@@ -601,9 +607,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // A return value of disable_reason::DISABLE_NONE indicates that we should
   // enable this extension initially.
   int GetDisableReasonsOnInstalled(const Extension* extension);
-
-  // Helper method to determine if an extension can be blocked.
-  bool CanBlockExtension(const Extension* extension) const;
 
   // Helper to determine if installing an extensions should proceed immediately,
   // or if we should delay the install until further notice, or if the install

@@ -140,7 +140,7 @@ export class PinDialogApi {
     // This sleep shouldn't be here, but appears to be necessary because PIN
     // dialogs can't immediately submit after their PIN values have changed.
     // Consider removing this check and fixing PIN dialog logic.
-    await sleep(2000);
+    await sleep(10);
     (await retry(() => this.submitButton())).click();
   }
 

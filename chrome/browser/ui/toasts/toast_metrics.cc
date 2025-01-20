@@ -14,6 +14,10 @@ void RecordToastTriggeredToShow(ToastId toast_id) {
   base::UmaHistogramEnumeration("Toast.TriggeredToShow", toast_id);
 }
 
+void RecordToastFailedToShow(ToastId toast_id) {
+  base::UmaHistogramEnumeration("Toast.FailedToShow", toast_id);
+}
+
 void RecordToastActionButtonClicked(ToastId toast_id) {
   base::RecordComputedAction(
       base::StrCat({"Toast.ActionButtonClicked.", GetToastName(toast_id)}));
@@ -29,4 +33,11 @@ void RecordToastDismissReason(ToastId toast_id,
   base::UmaHistogramEnumeration(
       base::StrCat({"Toast.", GetToastName(toast_id), ".Dismissed"}),
       close_reason);
+}
+
+void RecordToastDismissMenuClicked(ToastId toast_id,
+                                   toasts::ToastDismissMenuEntries command_id) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Toast.", GetToastName(toast_id), ".DismissMenuClicked"}),
+      command_id);
 }

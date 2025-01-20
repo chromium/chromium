@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_IPH_SESSION_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_IPH_SESSION_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -17,7 +18,7 @@ namespace scalable_iph {
 // with ScalableIph framework via `IphSession` object which is passed from the
 // service. UI code should not query/interact directly with `ScalableIph` keyed
 // service.
-class IphSession {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) IphSession {
  public:
   class Delegate {
    public:

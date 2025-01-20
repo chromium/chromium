@@ -403,7 +403,8 @@ bool WebContentsDelegate::IsBackForwardCacheSupported(
 }
 
 PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
-    WebContents& web_contents) {
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
@@ -448,6 +449,10 @@ bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool WebContentsDelegate::SupportsForwardTransitionAnimation() {
+  return true;
+}
+
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();
 }

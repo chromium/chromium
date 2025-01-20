@@ -30,7 +30,8 @@ class BASE_EXPORT PeriodicSamplingScheduler {
   virtual ~PeriodicSamplingScheduler();
 
   // Returns the amount of time between now and the next collection.
-  TimeDelta GetTimeToNextCollection();
+  // Virtual to provide dependency injection for test use.
+  virtual TimeDelta GetTimeToNextCollection();
 
  protected:
   // Virtual to provide seams for test use.

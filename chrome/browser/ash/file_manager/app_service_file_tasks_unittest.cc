@@ -43,6 +43,7 @@
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -937,7 +938,7 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTest {
     AppServiceFileTasksTest::SetUp();
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(

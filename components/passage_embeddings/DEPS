@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+mojo/public/cpp/bindings",
+  "+services/passage_embeddings/public/mojom",
+]

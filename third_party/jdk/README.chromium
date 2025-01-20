@@ -1,7 +1,7 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: 21
+Version: 23
 License: GPL v2
 Security Critical: no
 Shipped: no
@@ -26,14 +26,25 @@ This Package is Auto-Rolled:
    https://skia-autoroll.corp.goog/r/jdk-chromium
 
 To roll to a new JDK major version:
+ * File a bug under "Build > Android" to tag the roll commit with.
+   * File a bug blocked on the first one under "Infra > Codesearch" to ask the team to verify Codesearch does not break from the roll.
+   * Check for problems locally by:
+     1) Download the new JDK to //third_party/jdk/current
+     2) Add 'checkout_android_prebuilts_build_tools': True, to your .gclient custom_vars
+     3) Use the GN args from https://ci.chromium.org/ui/p/infra/builders/codesearch/codesearch-gen-chromium-android
+     4) Build: cd out/kythe; KYTHE_CORPUS=foo KYTHE_OUTPUT_DIRECTORY=$PWD KYTHE_ROOT_DIRECTORY=$PWD/../.. autoninja base:base_java
+     5) Build: third_party/android_deps/fetch_all.py --ignore-vulnerabilities --local
+        * If this fails, see: https://docs.gradle.org/current/userguide/compatibility.html
  * Test locally that builds (with Errorprone enabled) work.
- * Get confirmation from chops-source-team@google.com that Kythe supports the new version.
- * Pause the auto-roller (via the web UI)
+ * Pause the auto-roller: https://skia-autoroll.corp.goog/r/jdk-chromium
  * Change the package in 3pp/fetch.py
  * Wait for the 3pp packager to create a new package
  * Land a manual roll by:
    * Updating Instance ID in //DEPS
+     * Make sure to run the codesearch trybots "gen-android-try" and "gen-webview-try"
+     * And also the 3pp trybot: "3pp-linux-amd64-packager"
    * Updating Version: at the top of this file.
+ * Unpause the auto-roller.
 
 Local Modifications:
 None

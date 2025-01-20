@@ -9,10 +9,6 @@
 
 @implementation TestLensOverlayController
 
-- (BOOL)isPanningSelectionUI {
-  return NO;
-}
-
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate {
   // NO-OP
 }
@@ -40,6 +36,10 @@
 }
 
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
+- (void)hideUserSelection {
   // NO-OP
 }
 

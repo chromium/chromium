@@ -280,8 +280,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleLongModification) {
   // Write the modification at the end so it's not overlapping relocations
   const size_t modification_offset = mem_code_data.size() - kModificationSize;
   ScopedModuleModifier<kModificationSize> mod(
-      *mem_code_data.subspan(modification_offset, kModificationSize)
-           .to_fixed_extent<kModificationSize>());
+      mem_code_data.subspan(modification_offset).first<kModificationSize>());
 
   state.Clear();
   num_bytes_different = 0;

@@ -131,11 +131,6 @@ void DownloadBubbleUIController::HandleButtonPressed() {
   display_controller_->HandleButtonPressed();
 }
 
-bool DownloadBubbleUIController::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  return display_controller_->OpenMostSpecificDialog(content_id);
-}
-
 void DownloadBubbleUIController::OnOfflineItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
   display_controller_->OnNewItem(/*show_animation=*/false);
@@ -436,9 +431,4 @@ void DownloadBubbleUIController::RecordDangerousDownloadShownToUser(
 base::WeakPtr<DownloadBubbleUIController>
 DownloadBubbleUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void DownloadBubbleUIController::SetDeepScanNoticeSeen() {
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
 }

@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import collections
 import contextlib
 import errno
 import json
@@ -22,8 +23,6 @@ repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
 sys.path.insert(0, repo_root)
 from tools import localpaths  # noqa: F401
-
-from wptserve.handlers import StringHandler
 
 serve = None
 
@@ -98,7 +97,7 @@ class TestEnvironment:
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
                  enable_webtransport=False, mojojs_path=None, inject_script=None,
-                 suppress_handler_traceback=None):
+                 suppress_handler_traceback=None, ws_extra=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -116,6 +115,7 @@ class TestEnvironment:
         mp_context = mpcontext.get_context()
         self._stack = contextlib.ExitStack()
         self.cache_manager = mp_context.Manager()
+        self.screenshot_caches = collections.defaultdict(self.cache_manager.dict)
         self.stash = serve.stash.StashServer(mp_context=mp_context)
         self.env_extras = env_extras
         self.env_extras_cms = None
@@ -124,6 +124,7 @@ class TestEnvironment:
         self.mojojs_path = mojojs_path
         self.inject_script = inject_script
         self.suppress_handler_traceback = suppress_handler_traceback
+        self.ws_extra = ws_extra
 
     def __enter__(self):
         server_log_handler = self._stack.enter_context(self.server_logging_ctx)
@@ -166,6 +167,12 @@ class TestEnvironment:
         self._stack.__exit__(exc_type, exc_val, exc_tb)
         self.env_extras_cms = None
 
+    def reset(self):
+        """Reset state between retry attempts to isolate failures."""
+        for cache in self.screenshot_caches.values():
+            cache.clear()
+        # TODO: Clear the stash.
+
     @contextlib.contextmanager
     def ignore_interrupts(self):
         prev_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -177,7 +184,7 @@ class TestEnvironment:
     def build_config(self):
         override_path = os.path.join(serve_path(self.test_paths), "config.json")
 
-        config = serve.ConfigBuilder(self.server_logger)
+        config = serve.ConfigBuilder(self.server_logger, ws_extra=self.ws_extra)
 
         ports = {
             "http": [8000, 8001],
@@ -225,28 +232,46 @@ class TestEnvironment:
             self.config.aliases,
             self.config)
 
+        testharnessreport_format_args = {
+            "output": self.pause_after_test,
+            "timeout_multiplier": self.testharness_timeout_multipler,
+            "explicit_timeout": "true" if self.debug_info is not None else "false",
+            "debug": "true" if self.debug_test else "false",
+        }
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
                 ("print_pdf_runner.html", {}, "text/html", "/print_pdf_runner.html"),
-                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), None,
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.js"), {},
                  "text/javascript", "/_pdf_js/pdf.js"),
-                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), None,
+                (os.path.join(here, "..", "..", "third_party", "pdf_js", "pdf.worker.js"), {},
                  "text/javascript", "/_pdf_js/pdf.worker.js"),
-                (self.options.get("testharnessreport", "testharnessreport.js"),
-                 {"output": self.pause_after_test,
-                  "timeout_multiplier": self.testharness_timeout_multipler,
-                  "explicit_timeout": "true" if self.debug_info is not None else "false",
-                  "debug": "true" if self.debug_test else "false"},
-                 "text/javascript;charset=utf8",
-                 "/resources/testharnessreport.js")]:
-            path = os.path.normpath(os.path.join(here, path))
+                (
+                    self.options.get("testharnessreport", [
+                        # All testharness tests, even those that don't use testdriver, require
+                        # `message-queue.js` to signal completion.
+                        os.path.join("executors", "message-queue.js"),
+                        "testharnessreport.js"]),
+                    testharnessreport_format_args,
+                    "text/javascript;charset=utf8",
+                    "/resources/testharnessreport.js",
+                ),
+                (
+                    [os.path.join(repo_root, "resources", "testdriver.js"),
+                     # Include `message-queue.js` to support testdriver in non-testharness tests.
+                     os.path.join("executors", "message-queue.js"),
+                     "testdriver-extra.js"],
+                    {},
+                    "text/javascript",
+                    "/resources/testdriver.js",
+                ),
+        ]:
+            paths = [path] if isinstance(path, str) else path
+            abs_paths = [os.path.normpath(os.path.join(here, path)) for path in paths]
             # Note that .headers. files don't apply to static routes, so we need to
             # readd any static headers here.
             headers = {"Cache-Control": "max-age=3600"}
-            route_builder.add_static(path, format_args, content_type, route,
+            route_builder.add_static(abs_paths, format_args, content_type, route,
                                      headers=headers)
-
-        route_builder.add_handler("GET", "/resources/testdriver.js", TestdriverLoader())
 
         for url_base, test_root in self.test_paths.items():
             if url_base == "/":
@@ -313,27 +338,6 @@ class TestEnvironment:
                         s.close()
 
         return failed, pending
-
-
-class TestdriverLoader:
-    """A special static handler for serving `/resources/testdriver.js`.
-
-    This handler lazily reads `testdriver{,-extra}.js` so that wptrunner doesn't
-    need to pass the entire file contents to child `wptserve` processes, which
-    can slow `wptserve` startup by several seconds (crbug.com/1479850).
-    """
-    def __init__(self):
-        self._handler = None
-
-    def __call__(self, request, response):
-        if not self._handler:
-            data = b""
-            with open(os.path.join(repo_root, "resources", "testdriver.js"), "rb") as fp:
-                data += fp.read()
-            with open(os.path.join(here, "testdriver-extra.js"), "rb") as fp:
-                data += fp.read()
-            self._handler = StringHandler(data, "text/javascript")
-        return self._handler(request, response)
 
 
 def wait_for_service(logger: StructuredLogger,

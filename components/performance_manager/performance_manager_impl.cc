@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -19,9 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/delayed_task_handle.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -29,7 +26,6 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/system_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -50,16 +46,6 @@ PerformanceManagerImpl* g_performance_manager = nullptr;
 // |g_performance_manager|. Should only be accessed on the main thread.
 bool g_pm_is_available = false;
 
-constexpr base::TaskPriority kPmTaskPriority = base::TaskPriority::USER_VISIBLE;
-
-// Task traits appropriate for the PM task runner.
-// NOTE: The PM task runner has to block shutdown as some of the tasks posted to
-// it should be guaranteed to run before shutdown (e.g. removing some entries
-// from the site data store).
-constexpr base::TaskTraits kPMTaskTraits = {
-    kPmTaskPriority, base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-    base::MayBlock()};
-
 // Builds a UI task runner with the appropriate traits for the PM.
 // TODO(crbug.com/40755583): The PM task runner has to block shutdown as some of
 // the tasks posted to it should be guaranteed to run before shutdown (e.g.
@@ -67,7 +53,7 @@ constexpr base::TaskTraits kPMTaskTraits = {
 // MayBlock and TaskShutdownBehavior, so these tasks and any blocking tasks must
 // be found and migrated to a worker thread.
 scoped_refptr<base::SequencedTaskRunner> GetUITaskRunner() {
-  return content::GetUIThreadTaskRunner({kPmTaskPriority});
+  return content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});
 }
 
 // A `TaskRunner` which runs callbacks synchronously when they're posted with no
@@ -183,6 +169,13 @@ PerformanceManagerImpl::~PerformanceManagerImpl() {
   g_performance_manager = nullptr;
   if (on_destroyed_callback_)
     std::move(on_destroyed_callback_).Run();
+}
+
+// static
+GraphImpl* PerformanceManagerImpl::GetGraphImpl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(g_pm_is_available);
+  return &g_performance_manager->graph_;
 }
 
 // static
@@ -346,14 +339,7 @@ PerformanceManagerImpl::PerformanceManagerImpl() {
 // static
 scoped_refptr<base::SequencedTaskRunner>
 PerformanceManagerImpl::GetTaskRunner() {
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
-    return TaskRunnerWithSynchronousRunOnUIThread::GetInstance();
-  }
-
-  static base::LazyThreadPoolSequencedTaskRunner
-      performance_manager_task_runner =
-          LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(kPMTaskTraits);
-  return performance_manager_task_runner.Get();
+  return TaskRunnerWithSynchronousRunOnUIThread::GetInstance();
 }
 
 PerformanceManagerImpl* PerformanceManagerImpl::GetInstance() {

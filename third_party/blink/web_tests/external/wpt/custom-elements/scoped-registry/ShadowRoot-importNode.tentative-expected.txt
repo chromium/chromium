@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] ShadowRoot.importNode: an upgrade candidate from document
+  shadowRoot.importNode is not a function
+[FAIL] ShadowRoot.importNode: a custom element from another shadow tree
+  shadowRoot2.importNode is not a function
+[FAIL] ShadowRoot.importNode: a template content from document
+  shadowRoot.importNode is not a function
+Harness: the test ran to completion.

@@ -1,9 +1,9 @@
 Name: serde_derive
 URL: https://crates.io/crates/serde_derive
-Version: 1.0.214
-Revision: 418062165f9fe395461db9f61569c3142c584854
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.214/LICENSE-APACHE
+Version: 1.0.217
+Revision: 930401b0dd58a809fce34da091b8aa3d6083cb33
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.217/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class BringAndroidTabsToIOSService;
 class ProfileIOS;
@@ -18,17 +18,12 @@ class ProfileIOS;
 // mode, the factory should only create and store services for regular browser
 // states.
 class BringAndroidTabsToIOSServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   static BringAndroidTabsToIOSService* GetForProfile(ProfileIOS* profile);
   static BringAndroidTabsToIOSService* GetForProfileIfExists(
       ProfileIOS* profile);
   static BringAndroidTabsToIOSServiceFactory* GetInstance();
-
-  BringAndroidTabsToIOSServiceFactory(
-      const BringAndroidTabsToIOSServiceFactory&) = delete;
-  BringAndroidTabsToIOSServiceFactory& operator=(
-      const BringAndroidTabsToIOSServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<BringAndroidTabsToIOSServiceFactory>;

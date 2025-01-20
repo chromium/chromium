@@ -18,8 +18,6 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -29,6 +27,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/dips_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -80,12 +79,12 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
 
   // This initialization of the DIPS service will instantiate a copy of the
   // detector under test.
-  void InitDIPSService() {
-    DIPSBrowserSigninDetectorFactory::GetInstance()
+  void InitBtmService() {
+    BtmBrowserSigninDetectorFactory::GetInstance()
         ->EnableWaitForServiceForTesting();
-    dips_service_ = DIPSService::Get(profile_.get());
+    dips_service_ = content::BtmService::Get(profile_.get());
     EXPECT_NE(dips_service_, nullptr);
-    DIPSBrowserSigninDetectorFactory::GetInstance()->WaitForServiceForTesting(
+    BtmBrowserSigninDetectorFactory::GetInstance()->WaitForServiceForTesting(
         profile_.get());
   }
 
@@ -99,7 +98,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
     return identity_test_environment_profile_adaptor_->identity_test_env();
   }
 
-  DIPSService* dips_service() { return dips_service_; }
+  content::BtmService* dips_service() { return dips_service_; }
 
   GURL GetURL(std::string_view domain) {
     return GURL(base::StrCat({"http://", domain}));
@@ -132,18 +131,15 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
       base::StrCat({"foo@", kIdentityProviderDomain}), kIdentityProviderDomain};
 
  private:
-  ScopedInitFeature feature_{features::kDIPS,
-                             /*enable:*/ true,
-                             /*params:*/ {{"persist_database", "true"}}};
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_profile_adaptor_;
-  raw_ptr<DIPSService> dips_service_;
+  raw_ptr<content::BtmService> dips_service_;
 };
 
 TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {
-  InitDIPSService();
+  InitBtmService();
 
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kNonEnterpriseAccount.email, signin::ConsentLevel::kSignin);
@@ -160,7 +156,7 @@ TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
-  InitDIPSService();
+  InitBtmService();
 
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kNonEnterpriseAccount.email, signin::ConsentLevel::kSignin);
@@ -179,7 +175,7 @@ TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
-  InitDIPSService();
+  InitBtmService();
 
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kEnterpriseAccount.email, signin::ConsentLevel::kSignin);
@@ -203,7 +199,7 @@ TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
 
 TEST_F(BrowserSigninDetectorServiceTest,
        EnterpriseIdentityProviderDomainAccount) {
-  InitDIPSService();
+  InitBtmService();
 
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kEnterpriseIdentityProviderDomainAccount.email,
@@ -239,7 +235,7 @@ TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
 
   // The initialization will instantiate a detector at this moment to simulate a
   // late detection.
-  InitDIPSService();
+  InitBtmService();
 
   // There should be a recorded interaction for the `kIdentityProviderDomain`.
   EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));

@@ -5,6 +5,7 @@
 #ifndef NET_BASE_SCHEMEFUL_SITE_H_
 #define NET_BASE_SCHEMEFUL_SITE_H_
 
+#include <compare>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -148,11 +149,7 @@ class NET_EXPORT SchemefulSite {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  bool operator==(const SchemefulSite& other) const;
-
-  bool operator!=(const SchemefulSite& other) const;
-
-  bool operator<(const SchemefulSite& other) const;
+  std::strong_ordering operator<=>(const SchemefulSite& other) const = default;
 
  private:
   // IPC serialization code needs to access internal origin.
@@ -205,7 +202,7 @@ class NET_EXPORT SchemefulSite {
   // Returns the host of the underlying `origin`, which will usually be the
   // registrable domain. This is private because if it were public, it would
   // trivially allow circumvention of the "Schemeful"-ness of this class.
-  std::string registrable_domain_or_host() const {
+  const std::string& registrable_domain_or_host() const {
     return site_as_origin_.host();
   }
 

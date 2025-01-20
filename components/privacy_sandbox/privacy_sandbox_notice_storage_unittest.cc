@@ -294,6 +294,9 @@ TEST_F(PrivacySandboxNoticeStorageTest, UpdateNoticeShownValue) {
   EXPECT_EQ(base::Milliseconds(100), actual->notice_shown_duration);
 
   histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShownForFirstTime.TopicsConsentDesktopModal",
+      true, 1);
+  histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kAck, 1);
   histogram_tester_.ExpectTimeBucketCount(
@@ -312,6 +315,10 @@ TEST_F(PrivacySandboxNoticeStorageTest, UpdateNoticeShownValue) {
       prefs(), kTopicsConsentModal,
       base::Time::FromMillisecondsSinceUnixEpoch(150));
   actual = notice_storage()->ReadNoticeData(prefs(), kTopicsConsentModal);
+  // Sets twice in SaveNoticeData(...) and then once again above.
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShownForFirstTime.TopicsConsentDesktopModal",
+      false, 2);
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
             actual->notice_first_shown);
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(150),

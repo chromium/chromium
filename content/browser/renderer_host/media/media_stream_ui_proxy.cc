@@ -159,8 +159,11 @@ void MediaStreamUIProxy::Core::RequestAccess(
     return;
   }
 
+  RenderFrameHostImpl* host = RenderFrameHostImpl::FromID(
+      request->render_process_id, request->render_frame_id);
+
   render_delegate->RequestMediaAccessPermission(
-      *request,
+      host, *request,
       base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
                      request->render_process_id, request->render_frame_id));
 }

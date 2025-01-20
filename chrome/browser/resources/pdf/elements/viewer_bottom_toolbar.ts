@@ -7,6 +7,7 @@ import './ink_size_selector.js';
 import './viewer_bottom_toolbar_dropdown.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -45,6 +46,7 @@ export class ViewerBottomToolbarElement extends CrLitElement {
       currentColor: {type: Object},
       currentSize: {type: Number},
       currentType: {type: String},
+      strings: {type: Object},
     };
   }
 
@@ -63,6 +65,7 @@ export class ViewerBottomToolbarElement extends CrLitElement {
   currentColor?: Color;
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+  strings?: {[key: string]: string};
 
   protected getSizeIcon_(): string {
     let options: SizeOption[];
@@ -85,6 +88,14 @@ export class ViewerBottomToolbarElement extends CrLitElement {
     assert(option);
 
     return 'pdf:' + option.icon;
+  }
+
+  protected getSizeTitle_(): string {
+    return this.strings ? loadTimeData.getString('ink2Size') : '';
+  }
+
+  protected getColorTitle_(): string {
+    return this.strings ? loadTimeData.getString('ink2Color') : '';
   }
 
   private onCurrentColorUpdated_(): void {

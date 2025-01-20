@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
@@ -16,12 +17,15 @@
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/feedback/feedback_constants.h"
 
 namespace ash {
 
@@ -44,6 +48,14 @@ base::FilePath CreateDownloadFilePath(const base::FilePath& download_dir,
       base::FeatureList::IsEnabled(features::kLobsterFileNamingImprovement)
           ? file_name
           : "");
+}
+
+std::string BuildFeedbackDescription(std::string_view query,
+                                     std::string_view model_version,
+                                     std::string_view user_description) {
+  return base::StringPrintf(
+      "model_input: %s\nmodel_version: %s\nuser_description: %s", query,
+      model_version, user_description);
 }
 
 }  // namespace
@@ -248,10 +260,13 @@ bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
   }
   // Submit feedback along with the preview image.
   // TODO: b/362403784 - add the proper version.
-  return client_->SubmitFeedback(/*query=*/candidate->query,
-                                 /*model_version=*/"dummy_version",
-                                 /*description=*/description,
-                                 /*image_bytes=*/candidate->image_bytes);
+  std::string feedback_description = BuildFeedbackDescription(
+      candidate->query, /*model_version=*/"dummy_version", description);
+
+  return Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
+      client_->GetAccountId(), feedback::kLobsterFeedbackProductId,
+      std::move(feedback_description), std::move(candidate->image_bytes),
+      /*image_mime_type=*/std::nullopt);
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
@@ -265,8 +280,9 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
 }
 
 void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
-                                LobsterMode mode) {
-  client_->LoadUI(query, mode);
+                                LobsterMode mode,
+                                const gfx::Rect& caret_bounds) {
+  client_->LoadUI(query, mode, caret_bounds);
 }
 
 void LobsterSessionImpl::ShowUI() {

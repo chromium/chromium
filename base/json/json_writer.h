@@ -61,15 +61,7 @@ BASE_EXPORT std::optional<std::string> WriteJsonWithOptions(
 
 class BASE_EXPORT JSONWriter {
  public:
-  using Options = JsonOptions;
-  // TODO: Once we support c++20 we replace these with
-  // `using enum ::JsonOptions`.
-  static constexpr auto OPTIONS_OMIT_BINARY_VALUES =
-      JsonOptions::OPTIONS_OMIT_BINARY_VALUES;
-  static constexpr auto OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION =
-      JsonOptions::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION;
-  static constexpr auto OPTIONS_PRETTY_PRINT =
-      JsonOptions::OPTIONS_PRETTY_PRINT;
+  using enum JsonOptions;
 
   JSONWriter(const JSONWriter&) = delete;
   JSONWriter& operator=(const JSONWriter&) = delete;

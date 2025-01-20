@@ -701,7 +701,6 @@ RenderWidgetHostImpl* RenderWidgetHostViewIOS::GetActiveWidget() {
 
 void RenderWidgetHostViewIOS::OnFirstResponderChanged() {
   bool is_first_responder = [ui_view_->view_ isFirstResponder] ||
-                            [[ui_view_->view_ textInput] isFirstResponder] ||
                             (IsTesting() && is_getting_focus_);
 
   if (is_first_responder_ == is_first_responder) {
@@ -721,15 +720,14 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
     RenderWidgetHostViewBase* updated_view,
     bool did_update_state) {
   if (text_input_manager->GetActiveWidget()) {
-    [[ui_view_->view_ textInput]
+    [ui_view_->view_
         onUpdateTextInputState:*text_input_manager->GetTextInputState()
                     withBounds:[ui_view_->view_ bounds]];
   } else {
     // If there are no active widgets, the TextInputState.type should be
     // reported as none.
-    [[ui_view_->view_ textInput]
-        onUpdateTextInputState:ui::mojom::TextInputState()
-                    withBounds:[ui_view_->view_ bounds]];
+    [ui_view_->view_ onUpdateTextInputState:ui::mojom::TextInputState()
+                                 withBounds:[ui_view_->view_ bounds]];
   }
 }
 
@@ -740,8 +738,8 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
   const TextInputManager::TextSelection* selection =
       text_input_manager->GetTextSelection(updated_view);
   if (selection && selection->selected_text().length()) {
-    [ui_view_->view_.textInteraction refreshKeyboardUI];
-    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+    [[ui_view_->view_ textInteraction] refreshKeyboardUI];
+    [[ui_view_->view_ textInteraction] textSelectionDisplayInteraction]
         .activated = YES;
 
     // This seems like a bug. BETextInput always sets the
@@ -749,7 +747,7 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     // the entire web content to be transformed down for some reason. Instead,
     // scale it down here with a very naive implementation.
     UITextSelectionDisplayInteraction* textSelectionDisplayInteraction =
-        ui_view_->view_.textInteraction.textSelectionDisplayInteraction;
+        [ui_view_->view_ textInteraction].textSelectionDisplayInteraction;
     NSArray<UIView<UITextSelectionHandleView>*>* handleViews =
         textSelectionDisplayInteraction.handleViews;
 
@@ -763,14 +761,14 @@ void RenderWidgetHostViewIOS::OnTextSelectionChanged(
     handleViews[1].subviews[1].layer.transform =
         CATransform3DMakeScale(shrink, shrink, 1);
   } else {
-    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+    [[ui_view_->view_ textInteraction] textSelectionDisplayInteraction]
         .activated = NO;
   }
 }
 void RenderWidgetHostViewIOS::OnSelectionBoundsChanged(
     TextInputManager* text_input_manager,
     RenderWidgetHostViewBase* updated_view) {
-  [ui_view_->view_.textInteraction
+  [[ui_view_->view_ textInteraction]
           .textSelectionDisplayInteraction setNeedsSelectionUpdate];
 }
 
@@ -886,6 +884,16 @@ void RenderWidgetHostViewIOS::ContentInsetChanged() {
   }
   if (!is_scrolling_) {
     host()->SynchronizeVisualProperties();
+  }
+}
+
+void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
+  if (auto* widget_host = GetActiveWidget()) {
+    auto* input_handler = widget_host->GetFrameWidgetInputHandler();
+    if (!input_handler) {
+      return;
+    }
+    input_handler->DeleteSurroundingTextInCodePoints(before, after);
   }
 }
 

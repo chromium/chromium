@@ -41,6 +41,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -201,7 +202,7 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
 
   // Shared account ID usable in each test.
   const AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("email", "123456");
+      AccountId::FromUserEmailGaiaId("email", GaiaId("123456"));
 
   // The uptime is read in the blocking thread pool and then processed on the
   // UI thread. This causes the UI thread to start processing the uptime when it
@@ -282,8 +283,8 @@ TestAutomaticRebootManagerTaskRunner::TestAutomaticRebootManagerTaskRunner()
     : uptime_provider_(new MockUptimeProvider(this)) {
 }
 
-TestAutomaticRebootManagerTaskRunner::~TestAutomaticRebootManagerTaskRunner() {
-}
+TestAutomaticRebootManagerTaskRunner::~TestAutomaticRebootManagerTaskRunner() =
+    default;
 
 void TestAutomaticRebootManagerTaskRunner::OnBeforeSelectingTask() {
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -328,8 +329,7 @@ AutomaticRebootManagerBasicTest::AutomaticRebootManagerBasicTest()
       single_thread_task_runner_current_default_handle_override_(task_runner_),
       user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
-AutomaticRebootManagerBasicTest::~AutomaticRebootManagerBasicTest() {
-}
+AutomaticRebootManagerBasicTest::~AutomaticRebootManagerBasicTest() = default;
 
 void AutomaticRebootManagerBasicTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -625,8 +625,7 @@ AutomaticRebootManagerTest::AutomaticRebootManagerTest() {
   }
 }
 
-AutomaticRebootManagerTest::~AutomaticRebootManagerTest() {
-}
+AutomaticRebootManagerTest::~AutomaticRebootManagerTest() = default;
 
 // Chrome is showing the login screen. The current uptime is 12 hours.
 // Verifies that the idle timer is running. Further verifies that when a kiosk

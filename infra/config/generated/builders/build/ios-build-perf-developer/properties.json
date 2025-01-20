@@ -51,9 +51,7 @@
     "scandeps_server": true
   },
   "$build/siso": {
-    "configs": [
-      "remote-link"
-    ],
+    "configs": [],
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [
@@ -70,5 +68,5 @@
   },
   "builder_group": "chromium.build",
   "recipe": "chrome_build/build_perf_developer",
-  "xcode_build_version": "16b40"
+  "xcode_build_version": "16c5032a"
 }

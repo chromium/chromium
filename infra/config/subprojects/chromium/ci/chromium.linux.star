@@ -368,6 +368,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
+    siso_remote_linking = True,
 )
 
 ci.builder(
@@ -923,6 +924,51 @@ ci.builder(
         short_name = "gcc",
     ),
     contact_team_email = "build@chromium.org",
+)
+
+ci.builder(
+    name = "linux-modules-compile-fyi-rel",
+    branch_selector = branches.selector.MAIN,
+    description_html = "Experimental compile with use_libcxx_modules=true.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "libcxx_modules",
+            "linux",
+            "no_siso",
+            "release_builder",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
+    cores = 32,
+    ssd = True,
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        console_view = "chromium.fyi",
+        category = "linux",
+        short_name = "mod",
+    ),
+    main_console_view = None,
+    contact_team_email = "chrome-build-team@google.com",
+    execution_timeout = 6 * time.hour,
+    notifies = args.ignore_default([]),
+    siso_keep_going = True,
 )
 
 ci.builder(

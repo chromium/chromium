@@ -171,6 +171,9 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(TilingWindowResizeDown)                     \
   ACCELERATOR_ACTION_ENTRY(ToggleMouseKeys)                            \
   ACCELERATOR_ACTION_ENTRY(ResizePipWindow)                            \
+  ACCELERATOR_ACTION_ENTRY(ToggleGeminiApp)                            \
+  ACCELERATOR_ACTION_ENTRY(ToggleDoNotDisturb)                         \
+  ACCELERATOR_ACTION_ENTRY(ToggleCameraAllowed)                        \
   /* Debug actions are kept at an offset.*/                            \
   /* This offset should be kept consistent with the enum*/             \
   /* `AcceleratorAction` in*/                                          \

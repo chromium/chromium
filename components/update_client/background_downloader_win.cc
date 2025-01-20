@@ -743,7 +743,6 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
       },
       bits_manager_, &jobs);
   if (SUCCEEDED(hr) && !jobs.empty()) {
-    metrics::RecordBDWExistingJobUsed(true);
     *job = jobs.front();
     return S_FALSE;
   }
@@ -764,7 +763,6 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
     return hr;
   }
 
-  metrics::RecordBDWExistingJobUsed(false);
   *job = local_job;
   return S_OK;
 }
@@ -896,7 +894,6 @@ void BackgroundDownloader::CleanupStaleJobs() {
       },
       bits_manager_, &jobs);
 
-  metrics::RecordBDWNumJobsCleaned(jobs.size());
   for (const auto& job : jobs) {
     CleanupJob(job);
   }
@@ -912,7 +909,6 @@ void BackgroundDownloader::CleanupStaleDownloads() {
         base::File::Info info;
         if (base::GetFileInfo(dir, &info) &&
             info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
-          metrics::RecordBDWStaleDownloadAge(now - info.creation_time);
           RetryDeletePathRecursively(dir);
         }
       });

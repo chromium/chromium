@@ -186,7 +186,11 @@ The new tests can be triggered by adding the path to `browser_tests` or `sync_in
 
 To help debug or explore further, please see the [`graph_cli_tool.py`](graph_cli_tool.py) script which includes a number of command line utilities to process the various files.
 
-Both this file and the [`generate_framework_tests_and_coverage.py`](generate_framework_tests_and_coverage.py) file support the `-v` option to print out informational logging.
+Both this file and the [`generate_framework_tests_and_coverage.py`][generate-script] file support the `-v` option to print out informational logging.
+
+### Uploading test CLs
+
+Once the tests have been generated from the CUJs, always run [`generate_framework_tests_and_coverage.py`][generate-script] as a sanity check to ensure that this outputs nothing in the terminal. This means that the [critical user journeys][cuj-spreadsheet] and the generated tests across all files are in sync and no new tests need to be generated. If this outputs something on the terminal, perform the debugging steps outlined above to understand why the two converge.
 
 ## [`WebAppIntegrationTestDriver`][test-driver] and Browsertest Implementation
 
@@ -243,6 +247,10 @@ Running tests on these bots MAY have other random failures happening. That is no
 ### Disabling a Test
 
 Tests can be disabled in the same manner that other integration/browser tests are disabled, using macros. See [on disabling tests](/docs/testing/on_disabling_tests.md) for more information.
+
+### Modifying a test
+
+If you need to modify a test, that means you are changing a critical user journey on the platform. If that is intentional, then modifications must be done to the [critical-user-journey markdown file][cuj-spreadsheet], and not the tests - they are generated from this markdown and should always stay in-sync.
 
 ## Understanding and Implementing Test Cases
 

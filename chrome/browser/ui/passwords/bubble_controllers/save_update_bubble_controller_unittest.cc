@@ -315,8 +315,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInLocalStore) {
                                         pending_password().password_value));
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndSavePassword)
-      .Times(0);
   controller()->OnSaveClicked();
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
 }
@@ -330,7 +328,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
   PretendPasswordWaiting();
 
   EXPECT_FALSE(controller()->IsCurrentStateUpdate());
-  EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
               RemoveSiteStats(GURL(kSiteOrigin).DeprecatedGetOriginAsURL()));
@@ -339,31 +336,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileOptedIn) {
                                         pending_password().password_value));
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndSavePassword)
-      .Times(0);
-  controller()->OnSaveClicked();
-  DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
-}
-
-TEST_F(SaveUpdateBubbleControllerTest, ClickSaveInAccountStoreWhileNotOptedIn) {
-  ON_CALL(*password_feature_manager(), GetDefaultPasswordStore)
-      .WillByDefault(
-          Return(password_manager::PasswordForm::Store::kAccountStore));
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-  PretendPasswordWaiting();
-
-  EXPECT_FALSE(controller()->IsCurrentStateUpdate());
-  EXPECT_TRUE(controller()->IsAccountStorageOptInRequiredBeforeSave());
-
-  EXPECT_CALL(*mock_smart_bubble_stats_store(),
-              RemoveSiteStats(GURL(kSiteOrigin).DeprecatedGetOriginAsURL()));
-  EXPECT_CALL(*delegate(), SavePassword).Times(0);
-  EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
-  EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndSavePassword(
-                               pending_password().username_value,
-                               pending_password().password_value));
   controller()->OnSaveClicked();
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
 }
@@ -379,7 +351,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
   PretendUpdatePasswordWaiting();
 
   EXPECT_TRUE(controller()->IsCurrentStateUpdate());
-  EXPECT_FALSE(controller()->IsAccountStorageOptInRequiredBeforeSave());
 
   EXPECT_CALL(*mock_smart_bubble_stats_store(),
               RemoveSiteStats(GURL(kSiteOrigin).DeprecatedGetOriginAsURL()));
@@ -387,8 +358,6 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickUpdateWhileNotOptedIn) {
                                         pending_password().password_value));
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   EXPECT_CALL(*delegate(), OnNopeUpdateClicked()).Times(0);
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndSavePassword)
-      .Times(0);
   controller()->OnSaveClicked();
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_ACCEPT);
 }

@@ -31,6 +31,8 @@ namespace ash {
 
 namespace {
 
+constexpr base::TimeDelta kAutoconfiguredTimeout = base::Seconds(30);
+
 // Convenience method for creating a CupsAddManuallyConfiguredPrinterRequest.
 printscanmgr::CupsAddManuallyConfiguredPrinterRequest
 CreateCupsAddManuallyConfiguredPrinterRequest() {
@@ -169,7 +171,7 @@ class PrintscanmgrClientTest : public testing::Test {
     EXPECT_CALL(*mock_proxy_.get(),
                 DoCallMethodWithErrorResponse(
                     HasMember(printscanmgr::kCupsAddAutoConfiguredPrinter),
-                    dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                    kAutoconfiguredTimeout.InMilliseconds(), _))
         .WillOnce(Invoke(
             this, &PrintscanmgrClientTest::OnCallCupsAddAutoConfiguredPrinter));
   }

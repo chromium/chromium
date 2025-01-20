@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/async_iterator_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/platform/bindings/async_iterator_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 
 namespace blink {
@@ -24,11 +24,8 @@ class CORE_EXPORT AsyncIterationSourceBase
   ~AsyncIterationSourceBase() override = default;
 
   // https://webidl.spec.whatwg.org/#es-asynchronous-iterator-prototype-object
-  v8::Local<v8::Promise> Next(ScriptState* script_state,
-                              ExceptionState& exception_state) final;
-  v8::Local<v8::Promise> Return(ScriptState* script_state,
-                                v8::Local<v8::Value> value,
-                                ExceptionState& exception_state) final;
+  ScriptPromise<IDLAny> Next(ScriptState*) final;
+  ScriptPromise<IDLAny> Return(ScriptState*, ScriptValue) final;
 
   void Trace(Visitor* visitor) const override;
 

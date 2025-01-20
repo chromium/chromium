@@ -215,7 +215,7 @@ void SVGGradientElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*gradient_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }

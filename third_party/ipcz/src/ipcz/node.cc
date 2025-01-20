@@ -129,16 +129,15 @@ IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
   IpczResult result = NodeConnector::ConnectNode(
       WrapRefCounted(this), transport, flags, routers,
       [flags, node = WrapRefCounted(this)](Ref<NodeLink> link) {
-        const bool is_broker = flags & IPCZ_CONNECT_NODE_TO_BROKER;
-        if (!link && is_broker) {
+        // If we fail to connect to a broker and we're not a broker ourselves,
+        // we won't have luck communicating with anyone else either.
+        const bool is_remote_broker = flags & IPCZ_CONNECT_NODE_TO_BROKER;
+        const bool is_local_broker = node->type() == Type::kBroker;
+        if (!link && is_remote_broker && !is_local_broker) {
           node->NotifyBrokerLinkDropped();
         }
       });
   if (result != IPCZ_RESULT_OK) {
-    // On failure the caller retains ownership of `driver_transport`. Release
-    // it here so it doesn't get closed when `transport` is destroyed.
-    transport->Release();
-
     // Wipe out the routers we created, since they are invalid and effectively
     // not returned to the caller on failure.
     for (Ref<Router>& router : routers) {

@@ -19,6 +19,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/permissions/request_type.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/disable_reason.h"
@@ -301,9 +302,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 }
 
 // Tests that an extension popup does not close on deactivation when it shows
-// a JS alert dialog.
+// an app modal dialog. The JS alert dialog is used as surrogate.
 IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
-                       ExtensionPopupDoesNotCloseWhileShowingJSAlert) {
+                       ExtensionPopupDoesNotCloseWhileShowingAppModal) {
   // Install a test extension that opens an alert() dialog.
   static constexpr char kManifest[] =
       R"({
@@ -349,9 +350,77 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   ExpectWidgetDestroy(extension_popup_widget);
 }
 
+// TODO(crbug.com/378966968): timeout on win-rel but not reproducible locally.
+#if !BUILDFLAG(IS_WIN)
+// Tests that an extension popup does not close on deactivation when it shows
+// an web modal dialog. The webauthn dialog is used as surrogate.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       ExtensionPopupDoesNotCloseWhileShowingWebModal) {
+  // Install a test extension that opens an alert() dialog.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+  // Use setTimeout() to create the Webauthn dialog because this dialog
+  // requests the web contents to be in focus.
+  static constexpr char kPageJS[] =
+      R"(function createCreds() {
+          navigator.credentials.create({ publicKey: {
+          rp: { name: "" },
+          user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+          pubKeyCredParams: [{type: "public-key", alg: -7}],
+          challenge: new Uint8Array([0]),
+          timeout: 10000,
+          userVerification: 'discouraged',}});
+         }
+         window.onload = () => setTimeout(createCreds, 0);
+        )";
+  static constexpr char kHTML[] =
+      R"(<html><script src="page.js"></script></html>)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJS);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kHTML);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  base::WeakPtr<views::Widget> extension_popup_widget =
+      OpenExtensionPopup(browser(), extension);
+
+  content::WebContents* extension_contents =
+      ExtensionPopup::last_popup_for_testing()->host()->host_contents();
+  ASSERT_TRUE(extension_contents);
+  extension_contents->Focus();
+
+  // Wait until the web modal dialog is shown.
+  ui_test_utils::WaitForWebModalDialog(extension_contents);
+  // The extension popup should be still showing.
+  ASSERT_TRUE(extension_popup_widget);
+  EXPECT_TRUE(extension_popup_widget->IsVisible());
+
+  // Close the JS dialog and deactivate the extension popup.
+  web_modal::WebContentsModalDialogManager* modal_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          extension_contents);
+  ASSERT_TRUE(modal_manager);
+  web_modal::WebContentsModalDialogManager::TestApi(modal_manager)
+      .CloseAllDialogs();
+  // Activating the browser window should cause the extension popup to be
+  // deactivated and closed.
+  browser()->window()->Activate();
+
+  // The extension popup should close.
+  ExpectWidgetDestroy(extension_popup_widget);
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
 // Tests that an extension popup is closed when a web dialog is shown as active.
 // In this test the web dialog is not initiated by the extension popup (see
-// ExtensionPopupDoesNotCloseWhileShowingJSAlert for showing an extension-owned
+// ExtensionPopupDoesNotCloseWhileShowingAppModal for showing an extension-owned
 // dialog).
 // This prevents the extension from occluding the web dialog, which can be
 // dangerous when the web dialog is a security-related dialog (e.g. screen

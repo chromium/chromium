@@ -52,4 +52,11 @@ std::vector<ActivityLogItem> EmptyMessagingBackendService::GetActivityLog(
   return std::vector<ActivityLogItem>();
 }
 
+void EmptyMessagingBackendService::ClearDirtyTabMessagesForGroup(
+    tab_groups::EitherGroupID group_id) {}
+
+void EmptyMessagingBackendService::AddActivityLogForTesting(
+    data_sharing::GroupId collaboration_id,
+    const std::vector<ActivityLogItem>& activity_log) {}
+
 }  // namespace collaboration::messaging

@@ -453,10 +453,8 @@ AshNotificationView::AshNotificationView(
       is_grouped_parent_view_(notification.group_parent()),
       is_grouped_child_view_(notification.group_child()),
       shown_in_popup_(shown_in_popup) {
-  if (features::IsNotificationImageDragEnabled()) {
-    set_drag_controller(
-        Shell::Get()->message_center_controller()->drag_controller());
-  }
+  set_drag_controller(
+      Shell::Get()->message_center_controller()->drag_controller());
 
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug.com/40780100): fix views and layout to match spec.
@@ -681,7 +679,6 @@ void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
 }
 
 std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -695,7 +692,6 @@ std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
 }
 
 std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -740,7 +736,6 @@ void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
 
 bool AshNotificationView::IsDraggable() const {
   // A notification view is draggable only when it contains a large image.
-  DCHECK(features::IsNotificationImageDragEnabled());
   return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
 }
 
@@ -970,7 +965,7 @@ void AshNotificationView::RemoveGroupNotification(
     return;
   }
 
-  auto on_notification_slid_out = base::BindRepeating(
+  auto on_notification_slid_out = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -990,7 +985,7 @@ void AshNotificationView::RemoveGroupNotification(
       },
       weak_factory_.GetWeakPtr(), notification_id);
 
-  auto on_animation_aborted = base::BindRepeating(
+  auto on_animation_aborted = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -1016,13 +1011,14 @@ void AshNotificationView::RemoveGroupNotification(
   // slide out if there is no transform.
   if (to_be_removed && to_be_removed->layer()->transform().IsIdentity()) {
     message_center_utils::SlideOutView(
-        to_be_removed.get(), on_notification_slid_out, on_animation_aborted,
+        to_be_removed.get(), std::move(on_notification_slid_out),
+        std::move(on_animation_aborted),
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
         gfx::Tween::LINEAR,
         "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
   } else {
-    on_notification_slid_out.Run();
+    std::move(on_notification_slid_out).Run();
   }
 }
 

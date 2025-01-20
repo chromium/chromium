@@ -461,12 +461,13 @@ class OidcAuthenticationSigninInterceptorTest
     auto* mock_client_ptr = mock_client.get();
 
     if (expect_registration_attempt == RegistrationResult::kFailure) {
-      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
-                                        _, kExampleOidcTokens.auth_token,
-                                        kExampleOidcTokens.id_token, _, _, _))
+      EXPECT_CALL(
+          *mock_client_ptr,
+          RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
+                                   kExampleOidcTokens.id_token, _, _, _, _))
           .WillOnce(Invoke([&](const RegistrationParameters&,
                                const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&,
+                               const std::string&, const base::TimeDelta&, bool,
                                CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
@@ -475,12 +476,13 @@ class OidcAuthenticationSigninInterceptorTest
             register_run_loop.Quit();
           }));
     } else if (expect_registration_attempt == RegistrationResult::kTimeout) {
-      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
-                                        _, kExampleOidcTokens.auth_token,
-                                        kExampleOidcTokens.id_token, _, _, _))
+      EXPECT_CALL(
+          *mock_client_ptr,
+          RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
+                                   kExampleOidcTokens.id_token, _, _, _, _))
           .WillOnce(Invoke([&](const RegistrationParameters&,
                                const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&,
+                               const std::string&, const base::TimeDelta&, bool,
                                CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
@@ -490,12 +492,13 @@ class OidcAuthenticationSigninInterceptorTest
             register_run_loop.Quit();
           }));
     } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
-      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
-                                        _, kExampleOidcTokens.auth_token,
-                                        kExampleOidcTokens.id_token, _, _, _))
+      EXPECT_CALL(
+          *mock_client_ptr,
+          RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
+                                   kExampleOidcTokens.id_token, _, _, _, _))
           .WillOnce(Invoke([&](const RegistrationParameters&,
                                const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&,
+                               const std::string&, const base::TimeDelta&, bool,
                                CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetDMToken(kExampleDmToken);
             mock_client_ptr->SetStatus(policy::DM_STATUS_SUCCESS);

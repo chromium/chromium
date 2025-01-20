@@ -381,6 +381,16 @@ found in the LICENSE file.
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
     </style>
 
+    <!-- PopupWindowAnimationStyle -->
+    <style name="PopupWindowAnimDropdown">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_dropdown</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_dropdown</item>
+    </style>
+    <style name="PopupWindowAnimRaiseup">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_raiseup</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_raiseup</item>
+    </style>
+
     <!-- ListMenuButton -->
     <style name="ListMenuItemStyle">
         <item name="android:paddingStart">@dimen/list_menu_item_horizontal_padding</item>

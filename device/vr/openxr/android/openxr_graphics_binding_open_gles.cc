@@ -200,7 +200,7 @@ base::span<SwapChainInfo> OpenXrGraphicsBindingOpenGLES::GetSwapChainImages() {
 }
 
 bool OpenXrGraphicsBindingOpenGLES::CanUseSharedImages() const {
-  return XrImageTransportBase::UseSharedBuffer();
+  return true;
 }
 
 // This is more or less copied from XrImageTransportBase::ResizeSharedBuffer,
@@ -285,8 +285,7 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
     return;
   }
 
-  swap_chain_info.shared_buffer_texture.target =
-      XrImageTransportBase::SharedBufferTextureTarget();
+  swap_chain_info.shared_buffer_texture.target = GL_TEXTURE_2D;
   glGenTextures(1, &swap_chain_info.shared_buffer_texture.id);
   glBindTexture(swap_chain_info.shared_buffer_texture.target,
                 swap_chain_info.shared_buffer_texture.id);
@@ -369,8 +368,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
     }
 
     if (!overlay_texture_.id) {
-      overlay_texture_.target =
-          XrImageTransportBase::SharedBufferTextureTarget();
+      overlay_texture_.target = GL_TEXTURE_2D;
       glGenTextures(1, &overlay_texture_.id);
     }
 

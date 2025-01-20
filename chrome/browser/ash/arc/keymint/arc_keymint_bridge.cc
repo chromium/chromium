@@ -5,10 +5,11 @@
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "mojo/core/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
@@ -46,6 +47,12 @@ BrowserContextKeyedServiceFactory* ArcKeyMintBridge::GetFactory() {
 ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcKeyMintBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcKeyMintBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcKeyMintBridge::ArcKeyMintBridge(content::BrowserContext* context,
@@ -90,6 +97,37 @@ void ArcKeyMintBridge::UpdatePlaceholderKeysAfterBootstrap(
   }
 }
 
+void ArcKeyMintBridge::SetSerialNumberInKeyMint(
+    const std::string& serial_number) {
+  if (serial_number.empty()) {
+    LOG(ERROR) << "Failed to set an empty serial number.";
+    return;
+  }
+  // Cannot set the serial number more than once for the same user.
+  if (arcvm_serial_number_.has_value()) {
+    return;
+  }
+  arcvm_serial_number_ = serial_number;
+}
+
+void ArcKeyMintBridge::SendSerialNumberToKeyMint() {
+  if (!arcvm_serial_number_.has_value()) {
+    LOG(ERROR) << "Failed to send serial number as it is empty.";
+    return;
+  }
+
+  cert_store_bridge_->SetSerialNumber(arcvm_serial_number_.value());
+}
+
+void ArcKeyMintBridge::SendSerialNumberToKeyMintForTesting() {
+  SendSerialNumberToKeyMint();
+}
+
+void ArcKeyMintBridge::SetCertStoreBridgeForTesting(
+    std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge) {
+  cert_store_bridge_ = std::move(cert_store_bridge);
+}
+
 void ArcKeyMintBridge::GetServer(GetServerCallback callback) {
   if (keymint_server_proxy_.is_bound()) {
     std::move(callback).Run(keymint_server_proxy_.Unbind());
@@ -113,6 +151,7 @@ void ArcKeyMintBridge::OnBootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback,
     bool result) {
   if (result) {
+    SendSerialNumberToKeyMint();
     DVLOG(1) << "Success bootstrapping Mojo in arc-keymintd.";
   } else {
     LOG(ERROR) << "Error bootstrapping Mojo in arc-keymintd.";
@@ -138,6 +177,9 @@ void ArcKeyMintBridge::BootstrapMojoConnection(
     LOG(ERROR) << "ArcKeyMintBridge could not bind to invitation";
     std::move(callback).Run(false);
     return;
+  }
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
   }
 
   // Bootstrap cert_store channel attached to the same invitation.

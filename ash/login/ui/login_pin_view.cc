@@ -16,7 +16,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/functional/bind.h"
@@ -114,6 +113,8 @@ class BasePinButton : public views::View {
     SetPreferredSize(size);
     SetBackground(holding_space_util::CreateCircleBackground(
         cros_tokens::kCrosSysSystemBaseElevated, kButtonBackgroundDiameter));
+
+    SetCachedTooltipText(accessible_name);
 
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical);
@@ -301,10 +302,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
 
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
     return this;
-  }
-
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return GetViewAccessibility().GetCachedName();
   }
 
   void OnEnabledChanged() {

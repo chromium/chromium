@@ -7936,16 +7936,7 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
   DrawVisualText();
 #endif
 
-#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kSubpixelAntiAlias);
-#else
-  if (!base::FeatureList::IsEnabled(features::kCr2023MacFontSmoothing)) {
-    EXPECT_EQ(GetRendererFont().getEdging(), SkFont::Edging::kAntiAlias);
-  } else {
-    EXPECT_EQ(GetRendererFont().getEdging(),
-              SkFont::Edging::kSubpixelAntiAlias);
-  }
-#endif
 
   render_text->set_subpixel_rendering_suppressed(true);
   DrawVisualText();

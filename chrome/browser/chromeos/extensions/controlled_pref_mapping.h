@@ -31,8 +31,6 @@ inline constexpr const char* kAccessibilityAutoclickEnabled =
     ash::prefs::kAccessibilityAutoclickEnabled;
 inline constexpr const char* kAccessibilityCaretHighlightEnabled =
     ash::prefs::kAccessibilityCaretHighlightEnabled;
-inline constexpr const char* kAccessibilityCursorColorEnabled =
-    ash::prefs::kAccessibilityCursorColorEnabled;
 inline constexpr const char* kAccessibilityCursorHighlightEnabled =
     ash::prefs::kAccessibilityCursorHighlightEnabled;
 inline constexpr const char* kAccessibilityDictationEnabled =
@@ -62,8 +60,6 @@ inline constexpr const char* kAccessibilityAutoclickEnabled =
     ::prefs::kLacrosAccessibilityAutoclickEnabled;
 inline constexpr const char* kAccessibilityCaretHighlightEnabled =
     ::prefs::kLacrosAccessibilityCaretHighlightEnabled;
-inline constexpr const char* kAccessibilityCursorColorEnabled =
-    ::prefs::kLacrosAccessibilityCursorColorEnabled;
 inline constexpr const char* kAccessibilityCursorHighlightEnabled =
     ::prefs::kLacrosAccessibilityCursorHighlightEnabled;
 inline constexpr const char* kAccessibilityDictationEnabled =

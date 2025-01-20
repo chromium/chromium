@@ -333,6 +333,7 @@ struct WebHidInvalidPolicyTestData {
   const char* pref_name;
   const char* policy;
   const char16_t* expected_errors;
+  const char16_t* expected_warnings;
   const char* expected_pref;
 };
 
@@ -357,6 +358,9 @@ TEST_P(WebHidInvalidPolicyTest, CheckPolicySettingsWithInvalidPolicy) {
   EXPECT_EQ(success, test_data.expected_pref != nullptr);
   EXPECT_EQ(test_data.expected_errors,
             errors.GetErrorMessages(test_data.policy_name));
+  EXPECT_EQ(test_data.expected_warnings,
+            errors.GetErrorMessages(test_data.policy_name,
+                                    policy::PolicyMap::MessageType::kWarning));
 
   EXPECT_FALSE(store_->GetValue(test_data.pref_name, /*result=*/nullptr));
 
@@ -386,6 +390,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0]: Schema validation error: "
         u"Missing or invalid required property: devices",
         "[]",
@@ -403,6 +408,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0]: Schema validation error: "
         u"Missing or invalid required property: urls",
         "[]",
@@ -424,6 +430,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0].devices[0]: Schema validation "
         u"error: Unknown property: serial_number",
         R"(
@@ -456,6 +463,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0].devices[0].vendor_id: Schema "
         u"validation error: Invalid value for integer",
         R"(
@@ -485,6 +493,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0].devices[0].product_id: Schema "
         u"validation error: Invalid value for integer",
         R"(
@@ -513,6 +522,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0].devices[0]: Schema validation "
         u"error: Missing or invalid required property: vendor_id",
         R"(
@@ -542,6 +552,7 @@ WebHidInvalidPolicyTestData kTestData[]{
           }
         ])",
         u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Invalid URL.",
+        u"",
         R"(
         [
           {
@@ -573,6 +584,7 @@ WebHidInvalidPolicyTestData kTestData[]{
           }
         ])",
         u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Invalid URL.",
+        u"",
         R"(
         [
           {
@@ -606,6 +618,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         ])",
         u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Invalid URL.\n"
         u"Error at WebHidAllowDevicesForUrls[0].urls[1]: Invalid URL.",
+        u"",
         R"(
         [
           {
@@ -637,10 +650,10 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Invalid URL.",
         u"Error at WebHidAllowDevicesForUrls[0].urls[0]: Schema validation "
         u"error: Policy type mismatch: expected: \"string\", actual: "
-        u"\"integer\".\nError at WebHidAllowDevicesForUrls[0].urls[0]: Invalid "
-        u"URL.",
+        u"\"integer\".",
         R"(
         [
           {
@@ -660,6 +673,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         R"(
         [123]
         )",
+        u"",
         u"Error at WebHidAllowDevicesForUrls[0]: Schema validation error: "
         u"Policy type mismatch: expected: \"dictionary\", actual: \"integer\".",
         R"(
@@ -677,6 +691,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0]: Schema "
         u"validation error: Missing or invalid required property: usages",
         "[]",
@@ -694,6 +709,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0]: Schema "
         u"validation "
         u"error: Missing or invalid required property: urls",
@@ -716,6 +732,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].usages[0]: "
         u"Schema "
         u"validation error: Unknown property: serial_number",
@@ -749,6 +766,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at "
         u"WebHidAllowDevicesWithHidUsagesForUrls[0].usages[0].usage_page: "
         u"Schema validation error: Invalid value for integer",
@@ -779,6 +797,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].usages[0].usage: "
         u"Schema validation error: Invalid value for integer",
         R"(
@@ -807,6 +826,7 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].usages[0]: Schema "
         u"validation error: Missing or invalid required property: usage_page",
         R"(
@@ -837,6 +857,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         ])",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Invalid "
         u"URL.",
+        u"",
         R"(
         [
           {
@@ -869,6 +890,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         ])",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Invalid "
         u"URL.",
+        u"",
         R"(
         [
           {
@@ -904,6 +926,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         u"URL.\n"
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[1]: Invalid "
         u"URL.",
+        u"",
         R"(
         [
           {
@@ -935,10 +958,11 @@ WebHidInvalidPolicyTestData kTestData[]{
             ]
           }
         ])",
+        u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Invalid "
+        u"URL.",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Schema "
         u"validation error: Policy type mismatch: expected: \"string\", "
-        u"actual: \"integer\".\nError at "
-        u"WebHidAllowDevicesWithHidUsagesForUrls[0].urls[0]: Invalid URL.",
+        u"actual: \"integer\".",
         R"(
         [
           {
@@ -958,6 +982,7 @@ WebHidInvalidPolicyTestData kTestData[]{
         R"(
         [123]
         )",
+        u"",
         u"Error at WebHidAllowDevicesWithHidUsagesForUrls[0]: Schema "
         u"validation error: Policy type mismatch: expected: \"dictionary\", "
         u"actual: \"integer\".",

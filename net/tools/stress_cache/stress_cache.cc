@@ -103,7 +103,7 @@ int MasterCode() {
 std::string GenerateStressKey() {
   char key[20 * 1024];
   size_t size = 50 + rand() % 20000;
-  CacheTestFillBuffer(key, size, true);
+  CacheTestFillBuffer(base::as_writable_byte_span(key).first(size), true);
 
   key[size - 1] = '\0';
   return std::string(key);

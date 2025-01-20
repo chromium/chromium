@@ -732,16 +732,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Returns true if the LayoutObject is rendered in the top layer or the layer
   // for view transitions. Such objects are rendered as subsequent siblings of
   // the root element box and have specific stacking requirements.
-  bool IsInTopOrViewTransitionLayer() const {
-    NOT_DESTROYED();
-    if (IsViewTransitionRoot()) {
-      return true;
-    }
-    if (Element* element = DynamicTo<Element>(GetNode())) {
-      return StyleRef().IsRenderedInTopLayer(*element);
-    }
-    return false;
-  }
+  bool IsInTopOrViewTransitionLayer() const;
 
   void NotifyPriorityScrollAnchorStatusChanged();
 
@@ -1072,14 +1063,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   inline bool IsCheckContent() const;
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
-  inline bool IsSelectArrowContent() const;
+  inline bool IsPickerIconContent() const;
   inline bool IsMarkerContent() const;
   inline bool IsBeforeOrAfterContent() const;
   static inline bool IsAfterContent(const LayoutObject* obj) {
     return obj && obj->IsAfterContent();
   }
-  static inline bool IsSelectArrowContent(const LayoutObject* obj) {
-    return obj && obj->IsSelectArrowContent();
+  static inline bool IsPickerIconContent(const LayoutObject* obj) {
+    return obj && obj->IsPickerIconContent();
   }
 
   // Returns true if the text is generated (from, e.g., list marker,
@@ -1677,6 +1668,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsScrollMarkerGroup() const;
   bool IsScrollMarkerGroupBefore() const;
   LayoutObject* GetScrollMarkerGroup() const;
+  LayoutBlock* ScrollerFromScrollMarkerGroup() const;
 
   // Returns true if this object represents ::marker for the first SUMMARY
   // child of a DETAILS, and list-style-type is disclosure-*.
@@ -1852,17 +1844,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            (position == EPosition::kFixed && CanContainFixedPositionObjects());
   }
 
-  // Returns true if style would make this object an absolute container. This
-  // value gets cached by bitfields_.can_contain_absolute_position_objects_.
-  //
-  // `style` should be the current :first-line style or the current normal
-  // style. This function doesn't work for old_style in StyleDidChange().
-  // Use CanContainAbsolutePositionObjects() for old_style.
-  bool ComputeIsAbsoluteContainer(const ComputedStyle* style) const;
-
   // Returns true if style would make this object a fixed container.
   // This value gets cached by bitfields_.can_contain_fixed_position_objects_.
-  bool ComputeIsFixedContainer(const ComputedStyle* style) const;
+  //
+  // This function doesn't work for old_style in StyleDidChange(). Use
+  // CanContainFixedPositionObjects() for old_style.
+  bool ComputeIsFixedContainer(const ComputedStyle& style) const;
+
+  // Returns true if style would make this object an absolute container. This
+  // value gets cached by bitfields_.can_contain_absolute_position_objects_.
+  bool ComputeIsAbsoluteContainer(const ComputedStyle& style,
+                                  bool is_fixed_container) const;
 
   // If |base| is provided, then this function will not return an Element which
   // is closed shadow hidden from |base|.
@@ -2667,6 +2659,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void NotifyImageFullyRemoved(ImageResourceContent*) override;
   bool WillRenderImage() final;
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
+  InterpolationQuality GetSpeculativeDecodeQuality() const final;
 
   void Remove() {
     NOT_DESTROYED();
@@ -3339,6 +3332,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.SVGDescendantMayHaveTransformRelatedAnimation();
   }
   void SetSVGDescendantMayHaveTransformRelatedAnimation();
+
+  bool HasViewportDependence() const {
+    NOT_DESTROYED();
+    return bitfields_.HasViewportDependence();
+  }
+  void SetHasViewportDependence(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetHasViewportDependence(b);
+  }
 
   bool SVGSelfOrDescendantHasViewportDependency() const {
     NOT_DESTROYED();
@@ -4053,6 +4055,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                          SVGDescendantMayHaveTransformRelatedAnimation);
 
     // For SVG objects, indicates if this object or any descendant depends on
+    // the dimensions of the viewport. Updated during layout.
+    ADD_BOOLEAN_BITFIELD(has_viewport_dependence_, HasViewportDependence);
+
+    // For SVG objects, indicates if this object or any descendant depends on
     // the dimensions of the viewport.
     ADD_BOOLEAN_BITFIELD(svg_self_or_descendant_has_viewport_dependency_,
                          SVGSelfOrDescendantHasViewportDependency);
@@ -4159,7 +4165,7 @@ inline bool LayoutObject::DocumentBeingDestroyed() const {
 }
 
 inline bool LayoutObject::IsCheckContent() const {
-  if (StyleRef().StyleType() != kPseudoIdCheck) {
+  if (StyleRef().StyleType() != kPseudoIdCheckMark) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.
@@ -4187,8 +4193,8 @@ inline bool LayoutObject::IsAfterContent() const {
   return true;
 }
 
-inline bool LayoutObject::IsSelectArrowContent() const {
-  if (StyleRef().StyleType() != kPseudoIdSelectArrow) {
+inline bool LayoutObject::IsPickerIconContent() const {
+  if (StyleRef().StyleType() != kPseudoIdPickerIcon) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.

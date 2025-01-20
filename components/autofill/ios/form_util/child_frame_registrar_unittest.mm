@@ -90,8 +90,7 @@ TEST_F(ChildFrameRegistrarTest, CleanUpStaleLocalFrameTokens) {
   // Add a frame to the page content world manager.
   const std::string local_frame_id1 = std::string(32, 'a');
   page_frames_manager_->AddWebFrame(
-      web::FakeWebFrame::Create(local_frame_id1, /*is_main_frame=*/true,
-                                /*security_origin=*/GURL()));
+      web::FakeWebFrame::Create(local_frame_id1, /*is_main_frame=*/true));
 
   autofill::LocalFrameToken local_token1(
       *DeserializeJavaScriptFrameId(local_frame_id1));
@@ -127,8 +126,7 @@ TEST_F(ChildFrameRegistrarTest, CleanUpStaleLocalFrameTokens) {
 
   // Test the same in the isolated world.
   isolated_frames_manager_->AddWebFrame(
-      web::FakeWebFrame::Create(local_frame_id1, /*is_main_frame=*/true,
-                                /*security_origin=*/GURL()));
+      web::FakeWebFrame::Create(local_frame_id1, /*is_main_frame=*/true));
 
   // Map two remote tokens to the frame id.
   registrar()->RegisterMapping(remote_token1, local_token1);

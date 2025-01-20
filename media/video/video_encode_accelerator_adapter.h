@@ -94,7 +94,6 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   class ReadOnlyRegionPool;
   enum class State {
     kNotInitialized,
-    kWaitingForFirstFrame,
     kInitializing,
     kReadyToEncode,
     kFlushing,
@@ -116,7 +115,6 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                                      EncoderInfoCB info_cb,
                                      OutputCB output_cb,
                                      EncoderStatusCB done_cb);
-  void InitializeInternalOnAcceleratorThread();
   void EncodeOnAcceleratorThread(scoped_refptr<VideoFrame> frame,
                                  EncodeOptions encode_options,
                                  EncoderStatusCB done_cb);
@@ -162,7 +160,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // Color space associated w/ the last frame sent to accelerator for encoding.
   gfx::ColorSpace last_frame_color_space_;
 
-  std::unique_ptr<PendingOp> pending_flush_;
+  EncoderStatusCB pending_flush_callback_;
+  EncoderStatusCB pending_initialize_callback_;
 
   // For calling accelerator_ methods
   scoped_refptr<base::SequencedTaskRunner> accelerator_task_runner_;
@@ -171,7 +170,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // For calling user provided callbacks
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
-  State state_ = State::kNotInitialized;
+  State state_ GUARDED_BY_CONTEXT(accelerator_sequence_checker_) =
+      State::kNotInitialized;
   std::optional<bool> flush_support_;
 
   // True if underlying instance of VEA can handle GPU backed frames with a
@@ -181,7 +181,6 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // These are encodes that have not been sent to the accelerator.
   std::vector<std::unique_ptr<PendingEncode>> pending_encodes_;
 
-  VideoPixelFormat format_;
   InputBufferKind input_buffer_preference_ = InputBufferKind::Any;
   VideoFrameConverter frame_converter_;
 
@@ -199,6 +198,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoEncodeAccelerator::Config::EncoderType required_encoder_type_ =
       VideoEncodeAccelerator::Config::EncoderType::kHardware;
   bool supports_frame_size_change_ = false;
+  bool supports_gpu_shared_images_ = false;
 };
 
 }  // namespace media

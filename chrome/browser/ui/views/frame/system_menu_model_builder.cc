@@ -5,13 +5,11 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -63,10 +61,11 @@ void SystemMenuModelBuilder::Init() {
 void SystemMenuModelBuilder::BuildMenu(ui::SimpleMenuModel* model) {
   // We add the menu items in reverse order so that insertion_index never needs
   // to change.
-  if (browser()->is_type_normal())
+  if (browser()->is_type_normal()) {
     BuildSystemMenuForBrowserWindow(model);
-  else
+  } else {
     BuildSystemMenuForAppOrPopupWindow(model);
+  }
 }
 
 void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
@@ -81,10 +80,6 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
   model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringId(IDC_COMPACT_MODE, IDS_COMPACT_MODE);
-  }
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU, IDS_TASK_MANAGER);
@@ -177,8 +172,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   gfx::NativeWindow window =
       menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window))
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
@@ -205,15 +201,17 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
   }
 
   // Don't show the menu for incognito windows.
-  if (browser()->profile()->IsOffTheRecord())
+  if (browser()->profile()->IsOffTheRecord()) {
     return;
+  }
 
   // To show the menu we need at least two logged in users.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::UserList logged_in_users =
       user_manager->GetLRULoggedInUsers();
-  if (logged_in_users.size() <= 1u)
+  if (logged_in_users.size() <= 1u) {
     return;
+  }
 
   // If this does not belong to a profile or there is no window, or the window
   // is not owned by anyone, we don't show the menu addition.
@@ -222,8 +220,9 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
   aura::Window* window = browser()->window()->GetNativeWindow();
   if (!account_id.is_valid() || !window ||
-      !window_manager->GetWindowOwner(window).is_valid())
+      !window_manager->GetWindowOwner(window).is_valid()) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   int command_id = IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT;

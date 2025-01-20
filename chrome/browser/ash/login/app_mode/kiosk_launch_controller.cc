@@ -115,8 +115,8 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
       base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Web", duration);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361019026): add a separate uma value for IWA.
-      NOTIMPLEMENTED();
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.IsolatedWebApp",
+                                  duration);
       break;
   }
 }

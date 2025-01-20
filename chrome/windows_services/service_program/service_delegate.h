@@ -33,7 +33,7 @@ class ServiceDelegate {
   virtual uint32_t GetLogEventMessageId();
 
   // Performs any service-specific processing prior to registering the service's
-  // COM classes. Called on the service's main thread. Implementations should:
+  // COM classes. Called on the program's main thread. Implementations should:
   // * return `false` to rely on the `Service` to register/unregister COM
   //   classes (including calling `CreateClassFactories` and calling `PostRun`),
   //   and run a `RunLoop` on behalf of the `ServiceDelegate`.
@@ -44,7 +44,8 @@ class ServiceDelegate {
 
   // Only invoked by the `Service` if `PreRun` returns `true`. This method is
   // called by the `Service` to delegate all the logic of
-  // registering/unregistering classes and running the COM server.
+  // registering/unregistering classes and running the COM server. The service
+  // is stopped when this method returns.
   virtual HRESULT Run(const base::CommandLine& command_line);
 
   // This method is only called if `PreRun` returns `false`, see `PreRun` above
@@ -57,7 +58,7 @@ class ServiceDelegate {
   // is called from the service control dispatcher thread.
   virtual void OnServiceControlStop() {}
 
-  // Called on the service's main thread, and can be used to perform any
+  // Called on the program's main thread, and can be used to perform any
   // service-specific processing after the service is done running, including
   // done with deregistering the service's COM classes.
   virtual void PostRun() {}

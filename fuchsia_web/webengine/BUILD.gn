@@ -438,8 +438,8 @@ executable("web_engine_exe") {
 }
 
 source_set("webui_resources") {
-  data = [ "$root_gen_dir/ui/resources/webui_resources.pak" ]
-  deps = [ "//ui/resources" ]
+  data = [ "$root_gen_dir/ui/webui/resources/webui_resources.pak" ]
+  deps = [ "//ui/webui/resources:resources_grit" ]
 }
 
 _web_engine_excluded_files = [

@@ -22,6 +22,10 @@ BASE_FEATURE(kEnableHeuristicPalmDetectionFilter,
              "EnableHeuristicPalmDetectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableKeyboardUsedPalmSuppression,
+             "EnableKeyboardUsedPalmSuppression",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableNeuralPalmDetectionFilter,
              "EnableNeuralPalmDetectionFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);

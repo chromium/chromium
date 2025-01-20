@@ -10,7 +10,6 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +17,8 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,12 +28,14 @@ import java.util.List;
  * Wrapper to get the process exit reason of a dead process with same UID as current from
  * ActivityManager, and record to UMA.
  */
+@NullMarked
 public class ProcessExitReasonFromSystem {
-    private static ActivityManager sActivityManager;
+    private static @Nullable ActivityManager sActivityManager;
 
     /**
      * Get the exit reason of the most recent chrome process that died and had |pid| as the process
      * ID. Only available on R+ devices, returns -1 otherwise.
+     *
      * @return ApplicationExitInfo.Reason
      */
     @RequiresApi(Build.VERSION_CODES.R)
@@ -71,7 +74,11 @@ public class ProcessExitReasonFromSystem {
         ExitReason.REASON_SIGNALED,
         ExitReason.REASON_UNKNOWN,
         ExitReason.REASON_USER_REQUESTED,
-        ExitReason.REASON_USER_STOPPED
+        ExitReason.REASON_USER_STOPPED,
+        ExitReason.REASON_API_FAILED,
+        ExitReason.REASON_FREEZER,
+        ExitReason.REASON_PACKAGE_STATE_CHANGE,
+        ExitReason.REASON_PACKAGE_UPDATED,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExitReason {
@@ -89,7 +96,11 @@ public class ProcessExitReasonFromSystem {
         int REASON_UNKNOWN = 11;
         int REASON_USER_REQUESTED = 12;
         int REASON_USER_STOPPED = 13;
-        int NUM_ENTRIES = 14;
+        int REASON_API_FAILED = 14;
+        int REASON_FREEZER = 15;
+        int REASON_PACKAGE_STATE_CHANGE = 16;
+        int REASON_PACKAGE_UPDATED = 17;
+        int NUM_ENTRIES = 18;
     }
 
     @CalledByNative
@@ -112,6 +123,9 @@ public class ProcessExitReasonFromSystem {
     public static @Nullable Integer convertToExitReason(int systemReason) {
         @ExitReason Integer reason = null;
         switch (systemReason) {
+            case -1:
+                reason = ExitReason.REASON_API_FAILED;
+                break;
             case ApplicationExitInfo.REASON_ANR:
                 reason = ExitReason.REASON_ANR;
                 break;
@@ -154,7 +168,14 @@ public class ProcessExitReasonFromSystem {
             case ApplicationExitInfo.REASON_USER_STOPPED:
                 reason = ExitReason.REASON_USER_STOPPED;
                 break;
-            default:
+            case ApplicationExitInfo.REASON_FREEZER:
+                reason = ExitReason.REASON_FREEZER;
+                break;
+            case ApplicationExitInfo.REASON_PACKAGE_STATE_CHANGE:
+                reason = ExitReason.REASON_PACKAGE_STATE_CHANGE;
+                break;
+            case ApplicationExitInfo.REASON_PACKAGE_UPDATED:
+                reason = ExitReason.REASON_PACKAGE_UPDATED;
                 break;
         }
 

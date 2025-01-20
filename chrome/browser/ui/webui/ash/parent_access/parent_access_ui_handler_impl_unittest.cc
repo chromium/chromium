@@ -211,12 +211,12 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, GetOauthTokenError) {
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
+      supervised_user::ParentAccessWidgetError::kOAuthError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase,
           GetTestedFlowType()),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
+      supervised_user::ParentAccessWidgetError::kOAuthError, 1);
 }
 
 // Verifies that only one access token fetch is possible at a time.
@@ -470,12 +470,12 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, ConsentDeclinedParsed) {
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+      supervised_user::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase,
           GetTestedFlowType()),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+      supervised_user::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
 // Verifies that the OnPageSizeChanged status is ignored.
@@ -508,12 +508,12 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, OnPageSizeChangedIgnored) {
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+      supervised_user::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase,
           GetTestedFlowType()),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+      supervised_user::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
 // Verifies that the OnCommunicationEstablished status is ignored.
@@ -548,7 +548,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
+      supervised_user::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
 // Verifies metric is recorded for no delegate error.
@@ -575,8 +575,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDelegateNotAvailable,
-      1);
+      supervised_user::ParentAccessWidgetError::kDelegateNotAvailable, 1);
 }
 
 TEST_P(ParentAccessUiHandlerImplTestParameterized,
@@ -596,12 +595,12 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
+      supervised_user::ParentAccessWidgetError::kDecodingError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase,
           GetTestedFlowType()),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
+      supervised_user::ParentAccessWidgetError::kDecodingError, 1);
 }
 
 // Verifies metric is recorded when received callback cannot be parsed to proto.
@@ -622,12 +621,12 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, ParsingErrorMetricRecorded) {
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
+      supervised_user::ParentAccessWidgetError::kParsingError, 1);
   histogram_tester.ExpectUniqueSample(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetErrorHistogramBase,
           GetTestedFlowType()),
-      ParentAccessUiHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
+      supervised_user::ParentAccessWidgetError::kParsingError, 1);
 }
 
 class ExtensionApprovalsDisabledTest

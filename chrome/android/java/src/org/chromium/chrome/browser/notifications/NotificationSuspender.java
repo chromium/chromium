@@ -30,14 +30,14 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class that suspends and revives notifications.
  *
- * All calls must be made on the UI thread, and the full browser must be started before using this
- * class.
+ * <p>All calls must be made on the UI thread, and the full browser must be started before using
+ * this class.
  */
 public class NotificationSuspender {
     private final Profile mProfile;
@@ -136,13 +136,13 @@ public class NotificationSuspender {
         if (origins.isEmpty()) {
             return;
         }
+        int size = origins.size();
+        String[] originStrs = new String[size];
+        for (int i = 0; i < size; ++i) {
+            originStrs[i] = origins.get(i).toString();
+        }
 
-        NotificationSuspenderJni.get()
-                .reDisplayNotifications(
-                        mProfile,
-                        origins.stream()
-                                .map((origin) -> origin.toString())
-                                .collect(Collectors.toList()));
+        NotificationSuspenderJni.get().reDisplayNotifications(mProfile, originStrs);
     }
 
     /**
@@ -163,7 +163,7 @@ public class NotificationSuspender {
      *
      * @param notificationIds The IDs of notifications to cancel.
      */
-    public void cancelNotificationsWithIds(List<String> notificationIds) {
+    public void cancelNotificationsWithIds(Collection<String> notificationIds) {
         for (String notificationId : notificationIds) {
             mNotificationManager.cancel(
                     /* tag= */ notificationId, NotificationPlatformBridge.PLATFORM_ID);
@@ -246,6 +246,6 @@ public class NotificationSuspender {
         // Displays all suspended notifications for the given |origins|.
         void reDisplayNotifications(
                 @JniType("Profile*") Profile profile,
-                @JniType("std::vector<std::string>") List<String> origins);
+                @JniType("std::vector<std::string>") String[] origins);
     }
 }

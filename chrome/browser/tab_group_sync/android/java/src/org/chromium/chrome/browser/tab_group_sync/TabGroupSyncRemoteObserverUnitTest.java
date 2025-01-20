@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
@@ -190,6 +190,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
         verify(mLocalMutationHelper, never()).updateTabGroup(any());
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.LOCAL);
         verify(mLocalMutationHelper, never()).closeTabGroup(any(), anyInt());
+    }
+
+    @Test
+    public void testOnLocalObservationModeChanged() {
+        Assert.assertTrue(mEnabledLocalObservers);
+        mRemoteObserver.onLocalObservationModeChanged(false);
+        Assert.assertFalse(mEnabledLocalObservers);
+        mRemoteObserver.onLocalObservationModeChanged(true);
+        Assert.assertTrue(mEnabledLocalObservers);
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {

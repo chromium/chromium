@@ -19,9 +19,17 @@ public class CommerceFeatureUtils {
                         .isShoppingListEligible(shoppingService.getNativePtr());
     }
 
+    public static boolean isPriceAnnotationsEnabled(ShoppingService shoppingService) {
+        return shoppingService != null
+                && CommerceFeatureUtilsJni.get()
+                        .isPriceAnnotationsEnabled(shoppingService.getNativePtr());
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         boolean isShoppingListEligible(long shoppingServicePtr);
+
+        boolean isPriceAnnotationsEnabled(long shoppingServicePtr);
     }
 }

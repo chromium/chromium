@@ -255,26 +255,31 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          bool is_child) {
   // Please keep the implementation in sync with FakeUserManager::UserLoggedIn.
   // We're in process to merge.
-  for (user_manager::User* user : users_) {
+  for (auto& user : user_storage_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);
-      logged_in_users_.push_back(user);
+      logged_in_users_.push_back(user.get());
       if (!primary_user_) {
-        primary_user_ = user;
+        primary_user_ = user.get();
       }
       if (active_user_) {
-        NotifyUserAddedToSession(user);
+        NotifyUserAddedToSession(user.get());
       } else {
-        active_user_ = user;
+        active_user_ = user.get();
       }
       break;
     }
   }
 
   if (!active_user_ && IsEphemeralAccountId(account_id)) {
-    RegularUserLoggedInAsEphemeral(account_id,
-                                   user_manager::UserType::kRegular);
+    // TODO(crbug.com/278643115): Temporarily duplicate the logic
+    // of ephemeral user creation. This class should be migrated into
+    // FakeUserManager.
+    active_user_ =
+        AddEphemeralUser(account_id, user_manager::UserType::kRegular);
+    SetIsCurrentUserNew(true);
+    is_current_user_ephemeral_regular_user_ = true;
   }
 
   NotifyOnLogin();

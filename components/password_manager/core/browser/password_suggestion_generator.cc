@@ -9,11 +9,11 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -65,39 +65,6 @@ Suggestion CreateGenerationEntry() {
       l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
       /*label=*/"", Suggestion::Icon::kKey,
       SuggestionType::kGeneratePasswordEntry);
-}
-
-// Entry for opting in to password account storage and then filling.
-Suggestion CreateEntryToOptInToAccountStorageThenFill() {
-#if BUILDFLAG(IS_IOS)
-  const bool webauthn_sync_credentials =
-      syncer::IsWebauthnCredentialSyncEnabled();
-#else
-  constexpr bool webauthn_sync_credentials = true;
-#endif  // BUILDFLAG(IS_IOS)
-  return Suggestion(
-      l10n_util::GetStringUTF8(
-          webauthn_sync_credentials
-              ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
-              : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
-      /*label=*/"", Suggestion::Icon::kGoogle,
-      SuggestionType::kPasswordAccountStorageOptIn);
-}
-
-// Entry for opting in to password account storage and then generating password.
-Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
-  return Suggestion(
-      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
-      /*label=*/"", Suggestion::Icon::kKey,
-      SuggestionType::kPasswordAccountStorageOptInAndGenerate);
-}
-
-// Entry for sigining in again which unlocks the password account storage.
-Suggestion CreateEntryToReSignin() {
-  return Suggestion(
-      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_RE_SIGNIN_ACCOUNT_STORE),
-      /*label=*/"", Suggestion::Icon::kGoogle,
-      SuggestionType::kPasswordAccountStorageReSignin);
 }
 
 void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
@@ -300,13 +267,6 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     ShowPasswordSuggestions show_password_suggestions,
     ShowWebAuthnCredentials show_webauthn_credentials) const {
   std::vector<Suggestion> suggestions;
-  bool show_account_storage_optin =
-      password_client_ && password_client_->GetPasswordFeatureManager()
-                              ->ShouldShowAccountStorageOptIn();
-  bool show_account_storage_resignin =
-      password_client_ && password_client_->GetPasswordFeatureManager()
-                              ->ShouldShowAccountStorageReSignin(
-                                  password_client_->GetLastCommittedURL());
 
   // Add WebAuthn credentials suitable for an ongoing request if available.
   WebAuthnCredentialsDelegate* delegate =
@@ -337,8 +297,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
         });
   }
 
-  if (!fill_data.has_value() && !show_account_storage_optin &&
-      !show_account_storage_resignin && !uses_passkeys && suggestions.empty()) {
+  if (!fill_data.has_value() && !uses_passkeys && suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
     return suggestions;
   }
@@ -354,9 +313,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #if !BUILDFLAG(IS_IOS)
     const bool passkey_from_another_device_in_autofill =
         !(base::FeatureList::IsEnabled(
-              features::kPasswordManualFallbackAvailable) &&
-          base::FeatureList::IsEnabled(
-              features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
 #else
     const bool passkey_from_another_device_in_autofill = true;
 #endif  //! BUILDFLAG(IS_IOS)
@@ -371,21 +328,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   // Add password generation entry, if available.
   if (offers_generation) {
-    suggestions.emplace_back(
-        show_account_storage_optin
-            ? CreateEntryToOptInToAccountStorageThenGenerate()
-            : CreateGenerationEntry());
-  }
-
-  // Add button to opt into using the account storage for passwords and then
-  // suggest.
-  if (show_account_storage_optin) {
-    suggestions.emplace_back(CreateEntryToOptInToAccountStorageThenFill());
-  }
-
-  // Add button to sign-in which unlocks the previously used account store.
-  if (show_account_storage_resignin) {
-    suggestions.emplace_back(CreateEntryToReSignin());
+    suggestions.emplace_back(CreateGenerationEntry());
   }
 
   // Add "Manage all passwords" link to settings.

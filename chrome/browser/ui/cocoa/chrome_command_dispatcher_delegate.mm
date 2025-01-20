@@ -23,8 +23,9 @@
                                    (ui::AcceleratorManager::HandlerPriority)
                                        priority {
   NSWindow* window = [event window];
-  if (!window)
+  if (!window) {
     return NO;
+  }
 
   // Logic for handling Views windows.
   //
@@ -101,13 +102,15 @@
     return ui::PerformKeyEquivalentResult::kDrop;
   }
 
-  if (!result.found())
+  if (!result.found()) {
     return ui::PerformKeyEquivalentResult::kUnhandled;
+  }
 
   auto* bridge =
       remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
-  if (bridge == nullptr)
+  if (bridge == nullptr) {
     return ui::PerformKeyEquivalentResult::kUnhandled;
+  }
 
   bool will_execute = false;
   const bool kIsBeforeFirstResponder = true;
@@ -123,8 +126,9 @@
   // window bridge side. Now that we know the command will be executed by
   // the window bridge we'll manually flash the menu title. This also causes
   // VoiceOver to speak the command, which wasn't happening before this change.
-  if (will_execute)
+  if (will_execute) {
     [NSMenu flashMenuForChromeCommand:result.chrome_command];
+  }
 
   bool was_executed = false;
   bridge->host()->ExecuteCommand(result.chrome_command,

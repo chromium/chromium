@@ -140,8 +140,9 @@ void CrostiniUninstallerView::RecordUninstallResultHistogram(
   // or the dialog being closed. The simplest way to prevent metrics being
   // erroneously logged for user cancellation is to only record the first
   // metric.
-  if (has_logged_result_)
+  if (has_logged_result_) {
     return;
+  }
 
   base::UmaHistogramEnumeration(kCrostiniUninstallResultHistogram, result,
                                 UninstallResult::kCount);

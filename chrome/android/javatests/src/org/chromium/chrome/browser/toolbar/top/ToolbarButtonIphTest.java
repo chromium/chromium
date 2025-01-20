@@ -28,17 +28,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -84,30 +79,6 @@ public class ToolbarButtonIphTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
-    public void testPriceDropIph() throws InterruptedException {
-        setPriceTrackingFeatures();
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.PRICE_DROP_NTP_FEATURE))
-                .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.PRICE_DROP_NTP_FEATURE))
-                .thenReturn(new TriggerDetails(true, false));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChromeActivity activity = mActivityTestRule.getActivity();
-                    ToolbarManager toolbarManager = activity.getToolbarManager();
-                    toolbarManager.showPriceDropIph();
-                });
-
-        ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));
-        toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
-
-        toolbarTabButtonInteraction.perform(ViewActions.click());
-        toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(false)));
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({DeviceFormFactor.PHONE})
     public void testTabSwitcherEventEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -134,21 +105,5 @@ public class ToolbarButtonIphTest {
         toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
 
         toolbarTabButtonInteraction.perform(ViewActions.click());
-    }
-
-    private void setPriceTrackingFeatures() {
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-
-        // Enables price tracking.
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-
-        // Enables the price tracking IPH.
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM,
-                String.valueOf(true));
-        FeatureList.setTestValues(testValues);
     }
 }

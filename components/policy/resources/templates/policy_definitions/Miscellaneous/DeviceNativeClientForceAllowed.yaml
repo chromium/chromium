@@ -1,5 +1,5 @@
 caption: Forces Native Client (NaCl) to be allowed to run on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
-default: true
+default: false
 desc: |-
   Setting the policy to True allows Native Client to continue to run even if the default behavior is that Native Client is disabled.
   Setting the policy to False or leaving it unset will use the default behavior.

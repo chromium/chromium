@@ -51,7 +51,7 @@ std::unique_ptr<FlingingRenderer> FlingingRenderer::Create(
     return nullptr;
 
   auto flinging_controller = presentation_delegate->GetFlingingController(
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), presentation_id);
 
   if (!flinging_controller)

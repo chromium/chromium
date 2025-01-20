@@ -165,6 +165,7 @@ All changes to this list should go through Blink's feature review process: http:
     direction
     display
     dominant-baseline
+    dynamic-range-limit
     empty-cells
     field-sizing
     fill
@@ -324,6 +325,7 @@ All changes to this list should go through Blink's feature review process: http:
     ry
     scale
     scroll-behavior
+    scroll-initial-target
     scroll-margin-block-end
     scroll-margin-block-start
     scroll-margin-bottom
@@ -369,6 +371,8 @@ All changes to this list should go through Blink's feature review process: http:
     text-align
     text-align-last
     text-anchor
+    text-box-edge
+    text-box-trim
     text-combine-upright
     text-decoration-color
     text-decoration-line
@@ -769,6 +773,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-timeline
         scroll-timeline-axis
         scroll-timeline-name
+    text-box
+        text-box-edge
+        text-box-trim
     text-decoration
         text-decoration-color
         text-decoration-line

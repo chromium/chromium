@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Pulls the latest revisions of the wpt tooling."""
 
+import glob
 import os
 import shutil
 import subprocess
@@ -11,16 +12,16 @@ import sys
 import time
 
 BUG_QUERY_URLS = ["https://issues.chromium.org/issues?"
-                  "q=status:open%20componentid:1456176%20customfield1223031:%20WPT-Tooling-Roll",
+                  "q=status:open%20componentid:1456176%20customfield1223031:WPT-Tooling-Roll",
                   "https://issues.chromium.org/issues?"
-                  "q=status:open%20componentid:1456176%20customfield1223031:%20WPT-JS-Roll"]
+                  "q=status:open%20componentid:1456176%20customfield1223031:WPT-JS-Roll"]
 
 
 def main():
     current_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     current_branch = current_branch.rstrip().decode('utf-8')
     print("Roll wpt on branch: %s" % current_branch)
-    print("Are there outstanding bugs at %s (Y/n)?" % BUG_QUERY_URLS[0],
+    print("Are there outstanding bugs at %s (Y/n)? " % BUG_QUERY_URLS[0],
           end='', flush=True)
     yesno = sys.stdin.readline().strip()
     if yesno not in ['N', 'n']:
@@ -47,6 +48,7 @@ def main():
     path_to_checkout = os.path.join(path_to_wpt_tools_dir, "checkout.sh")
     print("Call %s\n" % path_to_checkout)
     subprocess.check_output([path_to_checkout, remote_head])
+    patch(path_to_wpt_tools_dir)
 
     change_files = subprocess.check_output(['git',
                                             'diff',
@@ -83,7 +85,7 @@ def main():
     print("Please consider update WPTIncludeList in such case.")
 
     print("\n\nNow roll wpt javascript")
-    print("Are there outstanding bugs at %s (Y/n)?" % BUG_QUERY_URLS[1],
+    print("Are there outstanding bugs at %s (Y/n)? " % BUG_QUERY_URLS[1],
           end='', flush=True)
     yesno = sys.stdin.readline().strip()
     if yesno not in ['N', 'n']:
@@ -139,6 +141,25 @@ def main():
     subprocess.check_call(['git', 'checkout', current_branch])
     subprocess.check_call(['git', 'branch', '-D', javascript_branch])
     return 0
+
+
+def patch(path_to_wpt_tools_dir: str):
+    """Apply Chromium-specific patches on top of vendored `wpt/tools`.
+
+    Patching should be a last resort workaround when Chromium's infrastructure
+    is incompatible with those of WPT/other vendors (e.g., Python dependency
+    cannot be upgraded). Patches should contain paths relative to
+    `//third_party/wpt_tools/wpt/` so that they are easy to upstream to the
+    GitHub repo if needed. For example,
+      $ cd third_party/wpt_tools/wpt
+      $ git diff --relative HEAD^ > ../patches/0001-description.patch
+    """
+    path_to_wpt_tools_dir = os.path.abspath(path_to_wpt_tools_dir)
+    patch_pattern = os.path.join(path_to_wpt_tools_dir, 'patches', '*.patch')
+    for patch_path in sorted(filter(os.path.isfile, glob.iglob(patch_pattern))):
+        subprocess.check_call(['patch', '-p1', '--fuzz=0', f'--input={patch_path}'],
+                              cwd=os.path.join(path_to_wpt_tools_dir, 'wpt'))
+
 
 if __name__ == '__main__':
     sys.exit(main())

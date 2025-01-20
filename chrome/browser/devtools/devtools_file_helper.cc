@@ -174,7 +174,7 @@ std::string RegisterFileSystem(WebContents* web_contents,
       content::ChildProcessSecurityPolicy::GetInstance();
   RenderViewHost* render_view_host =
       web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
-  int renderer_id = render_view_host->GetProcess()->GetID();
+  int renderer_id = render_view_host->GetProcess()->GetDeprecatedID();
   policy->GrantReadFileSystem(renderer_id, file_system.id());
   policy->GrantWriteFileSystem(renderer_id, file_system.id());
   policy->GrantCreateFileForFileSystem(renderer_id, file_system.id());

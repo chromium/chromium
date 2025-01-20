@@ -21,11 +21,6 @@ MediaSessionUmaHelper::MediaSessionUmaHelper()
 MediaSessionUmaHelper::~MediaSessionUmaHelper()
 {}
 
-void MediaSessionUmaHelper::RecordSessionSuspended(
-    MediaSessionSuspendedSource source) const {
-  UMA_HISTOGRAM_ENUMERATION("Media.Session.Suspended", source);
-}
-
 void MediaSessionUmaHelper::RecordEnterPictureInPicture(
     EnterPictureInPictureType type) const {
   base::UmaHistogramEnumeration("Media.Session.EnterPictureInPicture", type);

@@ -199,34 +199,6 @@ TEST_P(InterceptNavigationThrottleTest, PostNavigationCancelledAtStart) {
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE, result);
 }
 
-// Regression test for https://crbug.com/856737. There is some java code that
-// runs in the CheckCallback that can synchronously tear down the navigation
-// while the throttle is running.
-// TODO(csharrison): We should probably make that code async to avoid these
-// sorts of situations. However, it might not be possible if we implement
-// WebViewClient#shouldOverrideUrlLoading with this class which can end up
-// calling loadUrl() within the callback. See https://crbug.com/794020 for more
-// details.
-TEST_P(InterceptNavigationThrottleTest, IgnoreCallbackDeletesNavigation) {
-  NavigateAndCommit(GURL("about:blank"));
-
-  auto ignore_callback = [](content::NavigationHandle* handle) {
-    handle->GetWebContents()->GetController().GoToIndex(0);
-    return true;
-  };
-  auto inserter = std::make_unique<content::TestNavigationThrottleInserter>(
-      web_contents(),
-      base::BindRepeating(&InterceptNavigationThrottleTest::CreateThrottle,
-                          base::BindRepeating(ignore_callback)));
-
-  // Intercepting a navigation and forcing a synchronous re-navigation should
-  // not crash.
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("https://intercept.test/"), web_contents());
-  navigation->Start();
-  base::RunLoop().RunUntilIdle();
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          InterceptNavigationThrottleTest,
                          testing::Values(true, false));

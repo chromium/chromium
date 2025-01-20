@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -29,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -55,25 +55,6 @@ const ClipboardHistoryItem* GetClipboardHistoryItemImpl(
   const auto& item_iter =
       base::ranges::find(items, item_id, &ClipboardHistoryItem::id);
   return item_iter == items.cend() ? nullptr : &(*item_iter);
-}
-
-const gfx::Insets GetDeleteButtonMargins(
-    crosapi::mojom::ClipboardHistoryDisplayFormat display_format) {
-  // When the refresh is enabled, delete buttons are fully top-right aligned.
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    return gfx::Insets();
-  }
-
-  switch (display_format) {
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED();
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      return ClipboardHistoryViews::kTextItemDeleteButtonMargins;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
-      return ClipboardHistoryViews::kBitmapItemDeleteButtonMargins;
-  }
 }
 
 // Creates a label with the text "Ctrl+V" to be displayed under the contents of
@@ -124,73 +105,56 @@ class ClipboardHistoryItemView::DisplayView
     // Add an icon portraying the item's type if `this` is meant to display one.
     const auto* const item = container->GetClipboardHistoryItem();
     CHECK(item);
-    if (item->display_format() ==
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kFile ||
-        chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-      CHECK(item->icon());
-      AddChildView(views::Builder<views::ImageView>()
-                       .SetImageSize(ClipboardHistoryViews::kIconSize)
-                       .SetProperty(views::kMarginsKey,
-                                    ClipboardHistoryViews::kIconMargins)
-                       .SetImage(*item->icon())
-                       .Build());
-    }
 
-    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-      // Add the item's contents and a delete button occupying the same space.
-      AddChildView(
-          views::Builder<views::View>()
-              .SetLayoutManager(std::make_unique<views::FillLayout>())
-              .SetProperty(views::kBoxLayoutFlexKey,
-                           views::BoxLayoutFlexSpecification())
-              .AddChildren(
-                  views::Builder<views::BoxLayoutView>()
-                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                      .SetBetweenChildSpacing(
-                          ClipboardHistoryViews::kCtrlVLabelPadding)
-                      .AddChildren(
-                          views::Builder<views::View>(
-                              container->CreateContentsView())
-                              .CopyAddressTo(&contents_view_),
-                          views::Builder<views::Label>(CreateCtrlVLabel())
-                              .CopyAddressTo(&container->ctrl_v_label_)
-                              // The Ctrl+V label is hidden by default.
-                              // `ShowCtrlVLabel()` will be called on the menu's
-                              // first item to make its label visible.
-                              .SetVisible(false)),
-                  views::Builder<views::View>(container->CreateDeleteButton()))
-              .Build());
+    CHECK(item->icon());
+    AddChildView(views::Builder<views::ImageView>()
+                     .SetImageSize(ClipboardHistoryViews::kIconSize)
+                     .SetProperty(views::kMarginsKey,
+                                  ClipboardHistoryViews::kIconMargins)
+                     .SetImage(*item->icon())
+                     .Build());
 
-      // `CreateDeleteButton()` already calls `CopyAddressTo()` when building
-      // the delete button, so it will not copy the right address if called
-      // again. Therefore, we cache `delete_button_` outside of the builder.
-      delete_button_ = container->delete_button_.get();
+    // Add the item's contents and a delete button occupying the same space.
+    AddChildView(
+        views::Builder<views::View>()
+            .SetLayoutManager(std::make_unique<views::FillLayout>())
+            .SetProperty(views::kBoxLayoutFlexKey,
+                         views::BoxLayoutFlexSpecification())
+            .AddChildren(
+                views::Builder<views::BoxLayoutView>()
+                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                    .SetBetweenChildSpacing(
+                        ClipboardHistoryViews::kCtrlVLabelPadding)
+                    .AddChildren(
+                        views::Builder<views::View>(
+                            container->CreateContentsView())
+                            .CopyAddressTo(&contents_view_),
+                        views::Builder<views::Label>(CreateCtrlVLabel())
+                            .CopyAddressTo(&container->ctrl_v_label_)
+                            // The Ctrl+V label is hidden by default.
+                            // `ShowCtrlVLabel()` will be called on the menu's
+                            // first item to make its label visible.
+                            .SetVisible(false)),
+                views::Builder<views::View>(container->CreateDeleteButton()))
+            .Build());
 
-      // `contents_view_` observes `delete_button_` so that the former can be
-      // clipped to avoid overlapping with the latter.
-      delete_button_->AddObserver(
-          views::AsViewClass<ContentsView>(contents_view_));
-    } else {
-      // Add the item's contents and a delete button that, when visible, takes
-      // away some of the contents' horizontal space.
-      AddChildView(views::Builder<views::BoxLayoutView>()
-                       .SetOrientation(views::LayoutOrientation::kVertical)
-                       .AddChild(views::Builder<views::View>(
-                                     container->CreateContentsView())
-                                     .AddChild(views::Builder<views::View>(
-                                         container->CreateDeleteButton())))
-                       .Build());
-    }
+    // `CreateDeleteButton()` already calls `CopyAddressTo()` when building
+    // the delete button, so it will not copy the right address if called
+    // again. Therefore, we cache `delete_button_` outside of the builder.
+    delete_button_ = container->delete_button_.get();
+
+    // `contents_view_` observes `delete_button_` so that the former can be
+    // clipped to avoid overlapping with the latter.
+    delete_button_->AddObserver(
+        views::AsViewClass<ContentsView>(contents_view_));
   }
 
   DisplayView(const DisplayView& rhs) = delete;
   DisplayView& operator=(const DisplayView& rhs) = delete;
 
   ~DisplayView() override {
-    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-      delete_button_->RemoveObserver(
-          views::AsViewClass<ContentsView>(contents_view_));
-    }
+    delete_button_->RemoveObserver(
+        views::AsViewClass<ContentsView>(contents_view_));
   }
 
  private:
@@ -479,8 +443,8 @@ std::unique_ptr<views::View> ClipboardHistoryItemView::CreateDeleteButton() {
       .AddChild(views::Builder<views::Button>(
                     std::make_unique<ClipboardHistoryDeleteButton>(
                         this, item->display_text()))
-                    .SetProperty(views::kMarginsKey,
-                                 GetDeleteButtonMargins(item->display_format()))
+                    // Delete buttons are fully top-right aligned.
+                    .SetProperty(views::kMarginsKey, gfx::Insets())
                     .CopyAddressTo(&delete_button_))
       .Build();
 }

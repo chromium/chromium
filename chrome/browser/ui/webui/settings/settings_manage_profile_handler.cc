@@ -51,7 +51,7 @@ const char kProfileShortcutNotFound[] = "profileShortcutNotFound";
 ManageProfileHandler::ManageProfileHandler(Profile* profile)
     : profile_(profile) {}
 
-ManageProfileHandler::~ManageProfileHandler() {}
+ManageProfileHandler::~ManageProfileHandler() = default;
 
 void ManageProfileHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -100,8 +100,9 @@ void ManageProfileHandler::OnJavascriptDisallowed() {
 
 void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
-  if (profile_path != profile_->GetPath())
+  if (profile_path != profile_->GetPath()) {
     return;
+  }
 
   // GAIA image is loaded asynchronously.
   FireWebUIListener(
@@ -111,8 +112,9 @@ void ManageProfileHandler::OnProfileHighResAvatarLoaded(
 
 void ManageProfileHandler::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
-  if (profile_path != profile_->GetPath())
+  if (profile_path != profile_->GetPath()) {
     return;
+  }
 
   // This is necessary to send the potentially updated GAIA photo.
   FireWebUIListener(
@@ -206,8 +208,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
                      weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void ManageProfileHandler::OnHasProfileShortcuts(
-    const std::string& callback_id, bool has_shortcuts) {
+void ManageProfileHandler::OnHasProfileShortcuts(const std::string& callback_id,
+                                                 bool has_shortcuts) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ResolveJavascriptCallback(
       base::Value(callback_id),
@@ -229,7 +231,7 @@ void ManageProfileHandler::HandleRemoveProfileShortcut(
     const base::Value::List& args) {
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
   ProfileShortcutManager* shortcut_manager =
-    g_browser_process->profile_manager()->profile_shortcut_manager();
+      g_browser_process->profile_manager()->profile_shortcut_manager();
   DCHECK(shortcut_manager);
 
   shortcut_manager->RemoveProfileShortcuts(profile_->GetPath());

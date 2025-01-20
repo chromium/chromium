@@ -142,6 +142,7 @@ class CORE_EXPORT CompositorAnimations {
       PropertyHandleSet* unsupported_properties = nullptr);
   static bool CompositorPropertyAnimationsHaveNoEffect(
       const Element& target_element,
+      const Animation* animation,
       const EffectModel& effect,
       const PaintArtifactCompositor*);
   static void CancelIncompatibleAnimationsOnCompositor(const Element&,

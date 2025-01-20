@@ -405,12 +405,15 @@ CrosAudioConfigImpl::GetVoiceIsolationUIAppearance() const {
   return mojom_appearance;
 }
 
-void CrosAudioConfigImpl::RefreshVoiceIsolationState() {
-  CrasAudioHandler::Get()->RefreshVoiceIsolationState();
+void CrosAudioConfigImpl::RecordVoiceIsolationEnabledChange() {
+  CrasAudioHandler::Get()->RecordVoiceIsolationEnabledChangeSource(
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
 }
 
-void CrosAudioConfigImpl::RefreshVoiceIsolationPreferredEffect() {
-  CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();
+void CrosAudioConfigImpl::RecordVoiceIsolationPreferredEffectChange(
+    audio_config::mojom::AudioEffectType preferred_effect) {
+  CrasAudioHandler::Get()->RecordVoiceIsolationPreferredEffectChange(
+      preferred_effect);
 }
 
 void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {

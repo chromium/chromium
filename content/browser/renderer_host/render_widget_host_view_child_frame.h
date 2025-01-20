@@ -146,7 +146,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   bool HasSize() const override;
   double GetCSSZoomFactor() const override;
   gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) override;
+      const gfx::PointF& point) const override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,
@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       blink::mojom::IntrinsicSizingInfoPtr sizing_info) override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
-  bool IsRenderWidgetHostViewChildFrame() override;
+  bool IsRenderWidgetHostViewChildFrame() const override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
 
 #if BUILDFLAG(IS_MAC)
@@ -316,8 +316,16 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
 
+  // TODO(crbug.com/375388841): Remove these once Aura also uses
+  // TouchSelectionControllerInputObserver. These are not needed on Android
+  // since it uses TouchSelectionControllerInputObserver.
+#if !BUILDFLAG(IS_ANDROID)
   // Performs gesture ack handling needed for swipe-to-move-cursor gestures.
   void HandleSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
+
+  // Whether a swipe-to-move-cursor gesture is activated.
+  bool swipe_to_move_cursor_activated_ = false;
+#endif
 
   std::vector<base::OnceClosure> frame_swapped_callbacks_;
 
@@ -330,9 +338,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   std::unique_ptr<TouchSelectionControllerClientChildFrame>
       selection_controller_client_;
-
-  // Whether a swipe-to-move-cursor gesture is activated.
-  bool swipe_to_move_cursor_activated_ = false;
 
   // If a new RWHVCF is created for a cross-origin navigation, the parent
   // will typically not notice and will not transmit a full complement of

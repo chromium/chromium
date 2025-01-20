@@ -158,8 +158,9 @@ void LocalCardMigrationBubbleViews::WindowClosing() {
 
 void LocalCardMigrationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
-  if (!widget->IsClosed())
+  if (!widget->IsClosed()) {
     return;
+  }
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
 }

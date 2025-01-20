@@ -16,7 +16,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Provides common default colors for Chrome UI. */
+@NullMarked
 public class ChromeColors {
     private static final String TAG = "ChromeColors";
 

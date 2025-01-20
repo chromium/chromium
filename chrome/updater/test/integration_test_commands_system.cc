@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -48,7 +49,7 @@ std::string StringFromValue(const base::Value& value) {
 }
 
 std::string BoolToString(const bool value) {
-  return value ? "true" : "false";
+  return base::ToString(value);
 }
 
 std::string RegistrationRequestToString(
@@ -109,32 +110,31 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         {Param("switches", StringFromValue(base::Value(switches.Clone())))});
   }
 
-  void InstallUpdaterAndApp(
-      const std::string& app_id,
-      const bool is_silent_install,
-      const std::string& tag,
-      const std::string& child_window_text_to_find,
-      const bool always_launch_cmd,
-      const bool verify_app_logo_loaded,
-      const bool expect_success,
-      const bool wait_for_the_installer,
-      const base::Value::List& additional_switches) const override {
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install,
+                            const std::string& tag,
+                            const std::string& child_window_text_to_find,
+                            const bool always_launch_cmd,
+                            const bool verify_app_logo_loaded,
+                            const bool expect_success,
+                            const bool wait_for_the_installer,
+                            const int expected_exit_code,
+                            const base::Value::List& additional_switches,
+                            const base::FilePath& updater_path) const override {
     RunCommand(
         "install_updater_and_app",
-        {
-            Param("app_id", app_id),
-            Param("is_silent_install", BoolToString(is_silent_install)),
-            Param("tag", tag),
-            Param("child_window_text_to_find", child_window_text_to_find),
-            Param("always_launch_cmd", BoolToString(always_launch_cmd)),
-            Param("verify_app_logo_loaded",
-                  BoolToString(verify_app_logo_loaded)),
-            Param("expect_success", BoolToString(expect_success)),
-            Param("wait_for_the_installer",
-                  BoolToString(wait_for_the_installer)),
-            Param("additional_switches",
-                  StringFromValue(base::Value(additional_switches.Clone()))),
-        });
+        {Param("app_id", app_id),
+         Param("is_silent_install", BoolToString(is_silent_install)),
+         Param("tag", tag),
+         Param("child_window_text_to_find", child_window_text_to_find),
+         Param("always_launch_cmd", BoolToString(always_launch_cmd)),
+         Param("verify_app_logo_loaded", BoolToString(verify_app_logo_loaded)),
+         Param("expect_success", BoolToString(expect_success)),
+         Param("wait_for_the_installer", BoolToString(wait_for_the_installer)),
+         Param("expected_exit_code", base::NumberToString(expected_exit_code)),
+         Param("additional_switches",
+               StringFromValue(base::Value(additional_switches.Clone()))),
+         Param("updater_path", updater_path.MaybeAsASCII())});
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }
@@ -167,8 +167,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }
 
-  void SetGroupPolicies(const base::Value::Dict& values) const override {
-    RunCommand("set_group_policies",
+  void SetDictPolicies(const base::Value::Dict& values) const override {
+    RunCommand("set_dict_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 
@@ -221,20 +221,20 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                              to_version, updater_version);
   }
 
-  void ExpectUpdateSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const override {
+  void ExpectUpdateSequence(ScopedServer* test_server,
+                            const std::string& app_id,
+                            const std::string& install_data_index,
+                            UpdateService::Priority priority,
+                            const base::Version& from_version,
+                            const base::Version& to_version,
+                            bool do_fault_injection,
+                            bool skip_download,
+                            const base::Version& updater_version,
+                            const std::string& event_regex) const override {
     updater::test::ExpectUpdateSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
         from_version, to_version, do_fault_injection, skip_download,
-        updater_version);
+        updater_version, event_regex);
   }
 
   void ExpectUpdateSequenceBadHash(
@@ -249,20 +249,20 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         from_version, to_version);
   }
 
-  void ExpectInstallSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const override {
+  void ExpectInstallSequence(ScopedServer* test_server,
+                             const std::string& app_id,
+                             const std::string& install_data_index,
+                             UpdateService::Priority priority,
+                             const base::Version& from_version,
+                             const base::Version& to_version,
+                             bool do_fault_injection,
+                             bool skip_download,
+                             const base::Version& updater_version,
+                             const std::string& event_regex) const override {
     updater::test::ExpectInstallSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
         from_version, to_version, do_fault_injection, skip_download,
-        updater_version);
+        updater_version, event_regex);
   }
 
   void ExpectEnterpriseCompanionAppOTAInstallSequence(
@@ -374,6 +374,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void CheckForUpdate(const std::string& app_id) const override {
     RunCommand("check_for_update", {Param("app_id", app_id)});
+  }
+
+  void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const override {
+    RunCommand("expect_check_for_update_opposite_scope_fails",
+               {Param("app_id", app_id)});
   }
 
   void Update(const std::string& app_id,

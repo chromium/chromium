@@ -37,16 +37,19 @@
 
 namespace blink {
 
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_stretch_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fit_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_max_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_content_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_intrinsic_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_auto_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fill_available_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_stretch_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fit_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_max_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_content_length);
+DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_intrinsic_length);
 
 // static
 void Length::Initialize() {
   new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_fill_available_length)
+      Length(kFillAvailable);
   new (WTF::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
   new (WTF::NotNullTag::kNotNull, (void*)&g_fit_content_length)
       Length(kFitContent);
@@ -248,14 +251,15 @@ bool Length::HasPercentOrStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasPercentOrStretch();
   }
-  return GetType() == kPercent || GetType() == kStretch;
+  return GetType() == kPercent || GetType() == kStretch ||
+         GetType() == kFillAvailable;
 }
 
 bool Length::HasStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasStretch();
   }
-  return GetType() == kStretch;
+  return GetType() == kStretch || GetType() == kFillAvailable;
 }
 
 bool Length::HasMinContent() const {
@@ -290,8 +294,8 @@ String Length::ToString() const {
   builder.Append("Length(");
   static const auto kTypeNames = std::to_array<const char* const>(
       {"Auto", "Percent", "Fixed", "MinContent", "MaxContent", "MinIntrinsic",
-       "Stretch", "FitContent", "Calculated", "Flex", "ExtendToZoom",
-       "DeviceWidth", "DeviceHeight", "None", "Content"});
+       "FillAvailable", "Stretch", "FitContent", "Calculated", "Flex",
+       "ExtendToZoom", "DeviceWidth", "DeviceHeight", "None", "Content"});
   if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else

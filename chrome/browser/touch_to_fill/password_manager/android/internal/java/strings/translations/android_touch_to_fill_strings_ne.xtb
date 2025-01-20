@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">छुँदाखेरि भरिने प्रमाणहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="5591247451101092906">सेभ गरिएको पासवर्ड वा पासकी प्रयोग गर्ने हो?</translation>
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> को <ph name="WEBSITE" /> को सेभ गरिएको पासवर्ड</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> को पासकी, आफ्नो स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{यो साइटको नयाँ पासवर्ड}other{यो साइटका नयाँ पासवर्डहरू}}</translation>
 <translation id="7286867818472074330">पासकी चयन गर्नुहोस्</translation>

@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"

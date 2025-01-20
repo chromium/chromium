@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
@@ -32,13 +31,7 @@ class SigninUIError;
 class TurnSyncOnHelperPolicyFetchTracker;
 class AccountSelectionInProgressHandle;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceSignedInProfileCreator;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class ProfilePickerLacrosSignInProvider;
-#endif
 
 namespace signin {
 class IdentityManager;
@@ -68,7 +61,7 @@ class TurnSyncOnHelper {
   // Delegate implementing the UI prompts.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Shows a login error to the user.
     virtual void ShowLoginError(const SigninUIError& error) = 0;
@@ -285,16 +278,11 @@ class TurnSyncOnHelper {
 
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
   std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
-#endif
 
   // The initial primary account is restored if the flow aborts. This is only
-  // needed on Lacros or if UNO Desktop is enabled, because the `SigninManager`
-  // does it automatically on DICE platforms.
+  // needed if UNO Desktop is enabled, because the `SigninManager` does it
+  // automatically on DICE platforms.
   CoreAccountId initial_primary_account_;
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;

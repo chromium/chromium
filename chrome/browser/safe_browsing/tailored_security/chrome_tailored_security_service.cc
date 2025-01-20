@@ -69,15 +69,11 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
                               profile->GetPrefs()),
       profile_(profile) {
   AddObserver(this);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    if (HistorySyncEnabledForUser() &&
-        !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-            prefs())) {
-      retry_timer_.Start(
-          FROM_HERE, kRetryAttemptStartupDelay, this,
-          &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
-    }
+  if (HistorySyncEnabledForUser() &&
+      !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          prefs())) {
+    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
+                       &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
   }
 }
 
@@ -94,26 +90,14 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
 #if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = GetWebContentsForProfile(profile_);
   if (!web_contents) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kTailoredSecurityObserverRetries)) {
-      RegisterObserver();
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
-          kRetryMechanismTriggered);
-      return;
-    }
-    if (is_enabled) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
-    }
-    return;
-  }
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityObserverRetries)) {
+    RegisterObserver();
     base::UmaHistogramBoolean(
         "SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
-        kRetryMechanismNotTriggered);
+        kRetryMechanismTriggered);
+    return;
   }
+  base::UmaHistogramBoolean("SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
+                            kRetryMechanismNotTriggered);
 
   // Since the Android UX is a notice, we simply set Safe Browsing state.
   SetSafeBrowsingState(profile_->GetPrefs(),
@@ -254,11 +238,8 @@ ChromeTailoredSecurityService::GetURLLoaderFactory() {
 
 void ChromeTailoredSecurityService::SaveRetryState(
     TailoredSecurityRetryState state) {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                                     state);
-  }
+  profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                                   state);
 }
 
 void ChromeTailoredSecurityService::MaybeRetryForSyncUsers() {

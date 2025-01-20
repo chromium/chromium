@@ -22,14 +22,14 @@ build_webui("build") {
   grd_prefix = "cr_components_help_bubble"
 
   non_web_component_files = [
-    "help_bubble.ts",
     "help_bubble.html.ts",
+    "help_bubble.ts",
+    "help_bubble_controller.ts",
     "help_bubble_mixin.ts",
     "help_bubble_mixin_lit.ts",
     "help_bubble_proxy.ts",
-    "help_bubble_controller.ts",
-    "new_badge.ts",
     "new_badge.html.ts",
+    "new_badge.ts",
   ]
 
   css_files = [

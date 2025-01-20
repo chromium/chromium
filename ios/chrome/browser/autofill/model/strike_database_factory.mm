@@ -4,19 +4,15 @@
 
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 
-#import <utility>
-
-#import "base/no_destructor.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace autofill {
 
 // static
 StrikeDatabase* StrikeDatabaseFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<StrikeDatabase*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<StrikeDatabase>(profile,
+                                                               /*create=*/true);
 }
 
 // static
@@ -26,11 +22,9 @@ StrikeDatabaseFactory* StrikeDatabaseFactory::GetInstance() {
 }
 
 StrikeDatabaseFactory::StrikeDatabaseFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutofillStrikeDatabase",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("AutofillStrikeDatabase") {}
 
-StrikeDatabaseFactory::~StrikeDatabaseFactory() {}
+StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {

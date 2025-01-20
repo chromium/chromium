@@ -69,9 +69,6 @@ component("quiche") {
               "overrides/quiche_platform_impl/quiche_url_utils_impl.h",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
               "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
-              "src/quiche/common/platform/default/quiche_platform_impl/quiche_mutex_impl.cc",
-              "src/quiche/common/platform/default/quiche_platform_impl/quiche_mutex_impl.h",
-              "src/quiche/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
               "src/quiche/http2/hpack/hpack_static_table_entries.inc",
             ] + quiche_core_hdrs + quiche_core_srcs + binary_http_srcs +
             binary_http_hdrs + oblivious_http_srcs + oblivious_http_hdrs
@@ -275,9 +272,6 @@ static_library("quiche_test_support") {
   cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
               "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
-              "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
-              "overrides/quiche_platform_impl/quiche_test_helpers_impl.cc",
-              "overrides/quiche_platform_impl/quiche_test_helpers_impl.h",
               "overrides/quiche_platform_impl/quiche_test_impl.cc",
               "overrides/quiche_platform_impl/quiche_test_impl.h",
               "overrides/quiche_platform_impl/quiche_test_output_impl.cc",
@@ -512,6 +506,8 @@ source_set("quiche_tests") {
     "src/quiche/http2/adapter/recording_http2_visitor_test.cc",
     "src/quiche/http2/adapter/window_manager_test.cc",
     "src/quiche/http2/core/array_output_buffer_test.cc",
+    "src/quiche/http2/core/http2_constants_test.cc",
+    "src/quiche/http2/core/http2_structures_test.cc",
     "src/quiche/http2/core/priority_write_scheduler_test.cc",
     "src/quiche/http2/core/spdy_alt_svc_wire_format_test.cc",
     "src/quiche/http2/core/spdy_frame_builder_test.cc",
@@ -559,8 +555,6 @@ source_set("quiche_tests") {
     "src/quiche/http2/hpack/varint/hpack_varint_decoder_test.cc",
     "src/quiche/http2/hpack/varint/hpack_varint_encoder_test.cc",
     "src/quiche/http2/hpack/varint/hpack_varint_round_trip_test.cc",
-    "src/quiche/http2/http2_constants_test.cc",
-    "src/quiche/http2/http2_structures_test.cc",
     "src/quiche/http2/test_tools/hpack_block_builder_test.cc",
     "src/quiche/http2/test_tools/hpack_example_test.cc",
     "src/quiche/http2/test_tools/http2_frame_builder_test.cc",

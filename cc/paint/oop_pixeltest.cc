@@ -76,6 +76,11 @@
 
 namespace cc {
 namespace {
+
+SkV4 SkColorToSkV4(SkColor4f color) {
+  return SkV4{color.fR, color.fG, color.fB, color.fA};
+}
+
 scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -2913,6 +2918,66 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
 
 INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
+
+TEST_F(OopPixelTest, SkSLCommandShader) {
+  // Draws a red square.
+  const std::string_view kDrawRedRect(R"(
+    uniform float u_border_alpha;
+    uniform float2 u_top_left;
+    uniform float2 u_btm_right;
+    uniform vec4 u_border_color;
+    uniform vec4 u_center_color;
+
+    vec4 main(float2 coord) {
+      if (all(greaterThanEqual(coord, u_top_left)) &&
+          all(lessThan(coord, u_btm_right))) {
+        return u_center_color;
+      } else {
+        return vec4(u_border_color.xyz, u_border_alpha);
+      }
+    }
+  )");
+  auto shader = PaintShader::MakeSkSLCommand(
+      kDrawRedRect,
+      /*float_uniforms=*/{{.name = SkString("u_border_alpha"), .value = 0.5f}},
+      /*float2_uniforms=*/
+      {{.name = SkString("u_top_left"), .value = SkV2{25.f, 25.f}},
+       {.name = SkString("u_btm_right"), .value = SkV2{75.f, 75.f}}},
+      /*float4_uniforms=*/
+      {{.name = SkString("u_border_color"),
+        .value = SkColorToSkV4(SkColors::kRed)},
+       {.name = SkString("u_center_color"),
+        .value = SkColorToSkV4(SkColors::kGreen)}});
+  ASSERT_TRUE(shader);
+
+  const gfx::Size rect(100, 100);
+  RasterOptions options(rect);
+  options.preclear = true;
+  options.preclear_color = SkColors::kWhite;
+  PaintFlags flags;
+  flags.setShader(std::move(shader));
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  display_item_list->push<DrawRectOp>(gfx::RectToSkRect(gfx::Rect(rect)),
+                                      flags);
+  display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
+  display_item_list->Finalize();
+
+  auto actual = Raster(display_item_list, options);
+
+  SkBitmap expected = MakeSolidColorBitmap(rect, SkColors::kWhite);
+  SkCanvas canvas(expected, SkSurfaceProps{});
+  SkPaint red;
+  red.setColor(SkColors::kRed);
+  red.setAlphaf(0.5f);
+  canvas.drawRect(SkRect::MakeXYWH(0, 0, 100, 100), red);
+  SkPaint green;
+  green.setColor(SkColors::kGreen);
+  canvas.drawRect(SkRect::MakeXYWH(25, 25, 50, 50), green);
+
+  EXPECT_TRUE(MatchesBitmap(actual, expected,
+                            ManhattanDistancePixelComparator(/*tolerance=*/5)));
+}
 
 }  // namespace
 }  // namespace cc

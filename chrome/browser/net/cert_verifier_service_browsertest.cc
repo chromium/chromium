@@ -236,10 +236,12 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
         ->WaitUntilNextUpdateForTesting(
             cert_verifier_service_update_waiter.GetCallback());
     base::test::TestFuture<bool> future;
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(std::move(cert_info));
     net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
         browser()->profile())
-        ->AddOrUpdateUserCertificate(std::move(cert_info),
-                                     future.GetCallback());
+        ->AddOrUpdateUserCertificates(std::move(cert_infos),
+                                      future.GetCallback());
     if (!future.Get()) {
       return testing::AssertionFailure() << "database update failed";
     }
@@ -267,13 +269,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest, TestUserSettingsUsed) {
 
   {
     scoped_refptr<net::X509Certificate> root_cert = https_test_server.GetRoot();
-    net::ServerCertificateDatabase::CertInformation user_root_info;
-    user_root_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+    net::ServerCertificateDatabase::CertInformation user_root_info(
+        root_cert->cert_span());
     user_root_info.cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::CertificateTrust::
             CERTIFICATE_TRUST_TYPE_TRUSTED);
-    user_root_info.der_cert = base::ToVector(root_cert->cert_span());
 
     ASSERT_TRUE(AddCertificateToDatabaseAndWaitForVerifierUpdate(
         std::move(user_root_info)));
@@ -281,13 +281,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest, TestUserSettingsUsed) {
   {
     scoped_refptr<net::X509Certificate> hint_cert =
         https_test_server.GetGeneratedIntermediate();
-    net::ServerCertificateDatabase::CertInformation user_hint_info;
-    user_hint_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(hint_cert->cert_span()));
+    net::ServerCertificateDatabase::CertInformation user_hint_info(
+        hint_cert->cert_span());
     user_hint_info.cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::CertificateTrust::
             CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
-    user_hint_info.der_cert = base::ToVector(hint_cert->cert_span());
 
     ASSERT_TRUE(AddCertificateToDatabaseAndWaitForVerifierUpdate(
         std::move(user_hint_info)));
@@ -317,15 +315,13 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
     scoped_refptr<net::X509Certificate> root_cert =
         net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
     ASSERT_TRUE(root_cert);
-    net::ServerCertificateDatabase::CertInformation user_root_info;
-    user_root_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+    net::ServerCertificateDatabase::CertInformation user_root_info(
+        root_cert->cert_span());
     user_root_info.cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::CertificateTrust::
             CERTIFICATE_TRUST_TYPE_TRUSTED);
     user_root_info.cert_metadata.mutable_constraints()->add_dns_names(
         "localhost");
-    user_root_info.der_cert = base::ToVector(root_cert->cert_span());
 
     ASSERT_TRUE(AddCertificateToDatabaseAndWaitForVerifierUpdate(
         std::move(user_root_info)));
@@ -355,15 +351,13 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
     scoped_refptr<net::X509Certificate> root_cert =
         net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
     ASSERT_TRUE(root_cert);
-    net::ServerCertificateDatabase::CertInformation user_root_info;
-    user_root_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+    net::ServerCertificateDatabase::CertInformation user_root_info(
+        root_cert->cert_span());
     user_root_info.cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::CertificateTrust::
             CERTIFICATE_TRUST_TYPE_TRUSTED);
     user_root_info.cert_metadata.mutable_constraints()->add_dns_names(
         "cruddyhost");
-    user_root_info.der_cert = base::ToVector(root_cert->cert_span());
 
     ASSERT_TRUE(AddCertificateToDatabaseAndWaitForVerifierUpdate(
         std::move(user_root_info)));
@@ -391,13 +385,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
   ASSERT_TRUE(root_cert);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      root_cert->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_DISTRUSTED);
-  cert_info.der_cert = base::ToVector(root_cert->cert_span());
 
   ASSERT_TRUE(
       AddCertificateToDatabaseAndWaitForVerifierUpdate(std::move(cert_info)));
@@ -423,13 +415,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
       net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
   ASSERT_TRUE(root_cert);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      root_cert->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_DISTRUSTED);
-  cert_info.der_cert = base::ToVector(root_cert->cert_span());
 
   ASSERT_TRUE(
       AddCertificateToDatabaseAndWaitForVerifierUpdate(std::move(cert_info)));
@@ -457,13 +447,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
       https_test_server.GetCertificate();
   ASSERT_TRUE(leaf_cert);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256Hash(leaf_cert->cert_span()));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      leaf_cert->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_TRUSTED);
-  cert_info.der_cert = base::ToVector(leaf_cert->cert_span());
 
   // Sanity check.
   ASSERT_EQ(net::ServerCertificateDatabase::GetUserCertificateTrust(cert_info),
@@ -496,13 +484,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
       https_test_server.GetCertificate();
   ASSERT_TRUE(leaf_cert);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256Hash(leaf_cert->cert_span()));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      leaf_cert->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_TRUSTED);
-  cert_info.der_cert = base::ToVector(leaf_cert->cert_span());
 
   // Sanity check.
   ASSERT_EQ(net::ServerCertificateDatabase::GetUserCertificateTrust(cert_info),
@@ -534,13 +520,11 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
   scoped_refptr<net::X509Certificate> root_cert = https_test_server.GetRoot();
   ASSERT_TRUE(root_cert);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      root_cert->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_TRUSTED);
-  cert_info.der_cert = base::ToVector(root_cert->cert_span());
 
   // Sanity check.
   ASSERT_EQ(net::ServerCertificateDatabase::GetUserCertificateTrust(cert_info),
@@ -633,14 +617,9 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
   // server cert db.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   // Migration pref should be true now.
@@ -704,14 +683,9 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // is no longer used.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",

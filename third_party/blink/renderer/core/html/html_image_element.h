@@ -226,13 +226,13 @@ class CORE_EXPORT HTMLImageElement
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   // For mapping attributes from the <source> element, if any.
   bool HasExtraStyleForPresentationAttribute() const override {
     return source_ != nullptr;
   }
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   void SetLayoutDisposition(LayoutDisposition, bool force_reattach = false);
 
   void AttachLayoutTree(AttachContext&) override;

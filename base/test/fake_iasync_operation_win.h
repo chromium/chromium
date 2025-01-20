@@ -69,8 +69,9 @@ class FakeIAsyncOperation final
       ADD_FAILURE() << "GetResults called on incomplete IAsyncOperation.";
       return E_PENDING;
     }
-    if (status_ != AsyncStatus::Completed && !results_includes_failure_)
+    if (status_ != AsyncStatus::Completed && !results_includes_failure_) {
       return E_UNEXPECTED;
+    }
     return base::win::internal::CopyTo(results_, results);
   }
 
@@ -139,8 +140,9 @@ class FakeIAsyncOperation final
         << "Attempted to invoke completion on an already "
            "completed IAsyncOperation.";
     is_complete_ = true;
-    if (handler_)
+    if (handler_) {
       handler_->Invoke(this, status_);
+    }
   }
 
   HRESULT error_code_ = S_OK;

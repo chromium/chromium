@@ -169,7 +169,7 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
   void OnHistogramRecorded(const base::RepeatingClosure& quit_closure,
                            const char* histogram_name,
                            uint64_t name_hash,
-                           base::HistogramBase::Sample sample) {
+                           base::HistogramBase::Sample32 sample) {
     quit_closure.Run();
   }
 

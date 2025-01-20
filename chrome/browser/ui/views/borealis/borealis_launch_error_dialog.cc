@@ -186,20 +186,20 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
           profile, chromeos::settings::mojom::kStorageSubpagePath);
     } else if (failure_ == FailureType::FAILURE_RETRY) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](Profile* profile) {
-                           // Technically "retry" should re-do whatever the user
-                           // originally tried. For simplicity we just retry the
-                           // client app.
-                           ::borealis::BorealisServiceFactory::GetForProfile(
-                               profile)
-                               ->AppLauncher()
-                               .Launch(::borealis::kClientAppId,
-                                       ::borealis::BorealisLaunchSource::
-                                           kErrorDialogRetryButton,
-                                       base::DoNothing());
-                         },
-                         profile));
+          FROM_HERE,
+          base::BindOnce(
+              [](Profile* profile) {
+                // Technically "retry" should re-do whatever the user
+                // originally tried. For simplicity we just retry the
+                // client app.
+                ::borealis::BorealisServiceFactory::GetForProfile(profile)
+                    ->AppLauncher()
+                    .Launch(::borealis::kClientAppId,
+                            ::borealis::BorealisLaunchSource::
+                                kErrorDialogRetryButton,
+                            base::DoNothing());
+              },
+              profile));
     }
   }
 

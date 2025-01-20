@@ -18,9 +18,11 @@
 namespace blink {
 class LayoutBoxModelObject;
 class LocalFrameView;
+class PaintTimingCallbackManager;
 class PropertyTreeStateOrAlias;
 class TextElementTiming;
 class TracedValue;
+struct DOMPaintTimingInfo;
 
 class TextRecord final : public GarbageCollected<TextRecord> {
  public:
@@ -29,11 +31,13 @@ class TextRecord final : public GarbageCollected<TextRecord> {
              const gfx::RectF& element_timing_rect,
              const gfx::Rect& frame_visual_rect,
              const gfx::RectF& root_visual_rect,
-             uint32_t frame_index)
+             uint32_t frame_index,
+             bool is_needed_for_element_timing)
       : node_(&node),
         recorded_size(new_recorded_size),
         frame_index_(frame_index),
-        element_timing_rect_(element_timing_rect) {
+        element_timing_rect_(element_timing_rect),
+        is_needed_for_element_timing_(is_needed_for_element_timing) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
           frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
@@ -51,6 +55,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
   base::TimeTicks paint_time = base::TimeTicks();
+  DOMPaintTimingInfo paint_timing_info;
+  bool is_needed_for_element_timing_ = false;
 };
 
 class CORE_EXPORT LargestTextPaintManager final
@@ -129,9 +135,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   friend class TextPaintTimingDetectorTest;
 
  public:
-  explicit TextPaintTimingDetector(LocalFrameView*,
-                                   PaintTimingDetector*,
-                                   PaintTimingCallbackManager*);
+  explicit TextPaintTimingDetector(LocalFrameView*, PaintTimingDetector*);
   TextPaintTimingDetector(const TextPaintTimingDetector&) = delete;
   TextPaintTimingDetector& operator=(const TextPaintTimingDetector&) = delete;
 
@@ -139,13 +143,16 @@ class CORE_EXPORT TextPaintTimingDetector final
   void RecordAggregatedText(const LayoutBoxModelObject& aggregator,
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
-  void OnPaintFinished();
+  std::optional<base::OnceCallback<void(const base::TimeTicks&,
+                                        const DOMPaintTimingInfo&)>>
+  TakePaintTimingCallback();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void StopRecordingLargestTextPaint();
   void RestartRecordingLargestTextPaint();
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
+
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
@@ -153,17 +160,14 @@ class CORE_EXPORT TextPaintTimingDetector final
     return ltp_manager_->UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();
-  void ReportPresentationTime(uint32_t frame_index, base::TimeTicks timestamp);
   void Trace(Visitor*) const;
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  void RegisterNotifyPresentationTime(
-      PaintTimingCallbackManager::LocalThreadCallback callback);
-
   void AssignPaintTimeToQueuedRecords(uint32_t frame_index,
-                                      const base::TimeTicks&);
+                                      const base::TimeTicks&,
+                                      const DOMPaintTimingInfo&);
   void MaybeRecordTextRecord(
       const LayoutObject& object,
       const uint64_t& visual_size,

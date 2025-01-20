@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -91,8 +92,11 @@ void WebAudioMediaStreamSource::ConsumeAudio(
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
   for (wtf_size_t i = 0; i < audio_data.size(); ++i) {
-    wrapper_bus_->SetChannelData(static_cast<int>(i),
-                                 const_cast<float*>(audio_data[i]));
+    // TODO(crbug.com/375449662): Spanify `audio_data`.
+    wrapper_bus_->SetChannelData(
+        static_cast<int>(i),
+        UNSAFE_TODO(base::span(const_cast<float*>(audio_data[i]),
+                               base::checked_cast<size_t>(number_of_frames))));
   }
 
   // The following will result in zero, one, or multiple synchronous calls to

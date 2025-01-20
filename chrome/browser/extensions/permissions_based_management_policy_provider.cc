@@ -21,7 +21,7 @@ PermissionsBasedManagementPolicyProvider::
     : settings_(settings) {}
 
 PermissionsBasedManagementPolicyProvider::
-    ~PermissionsBasedManagementPolicyProvider() {}
+    ~PermissionsBasedManagementPolicyProvider() = default;
 
 std::string
 PermissionsBasedManagementPolicyProvider::GetDebugPolicyProviderName() const {

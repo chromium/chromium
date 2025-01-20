@@ -32,9 +32,9 @@ class DOMHandler : public DevToolsDomainHandler,
 
   Response SetFileInputFiles(
       std::unique_ptr<protocol::Array<std::string>> files,
-      Maybe<DOM::NodeId> node_id,
-      Maybe<DOM::BackendNodeId> backend_node_id,
-      Maybe<String> in_object_id) override;
+      std::optional<DOM::NodeId> node_id,
+      std::optional<DOM::BackendNodeId> backend_node_id,
+      std::optional<String> in_object_id) override;
 
  private:
   raw_ptr<RenderFrameHostImpl> host_;

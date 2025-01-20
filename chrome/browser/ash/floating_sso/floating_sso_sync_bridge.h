@@ -8,8 +8,10 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -77,6 +79,10 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Cookie corresponding to `storage_key` will not be overridden by remote
+  // cookie on initial merge of Sync data.
+  void AddToLocallyPreferredCookies(const std::string& storage_key);
+
   // Assumes that the `store_` is initialized.
   const CookieSpecificsEntries& CookieSpecificsInStore() const;
   bool IsInitialDataReadFinishedForTest() const;
@@ -108,6 +114,10 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
   // processor are not ready.
   std::map<std::string, sync_pb::CookieSpecifics> deferred_cookie_additions_;
   std::set<std::string> deferred_cookie_deletions_;
+
+  // Storage keys of cookies for which we should always prefer local version
+  // during conflict resolution.
+  base::flat_set<std::string> keep_local_cookie_keys_;
 
   // Observers which are notified about all incoming remote changes.
   base::ObserverList<Observer> observers_;

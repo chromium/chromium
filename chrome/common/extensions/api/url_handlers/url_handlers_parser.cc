@@ -53,19 +53,15 @@ const UrlHandlerInfo* GetMatchingUrlHandler(const Extension* extension,
 namespace mkeys = manifest_keys;
 namespace merrors = manifest_errors;
 
-UrlHandlerInfo::UrlHandlerInfo() {
-}
+UrlHandlerInfo::UrlHandlerInfo() = default;
 
 UrlHandlerInfo::UrlHandlerInfo(UrlHandlerInfo&& other) = default;
 
-UrlHandlerInfo::~UrlHandlerInfo() {
-}
+UrlHandlerInfo::~UrlHandlerInfo() = default;
 
-UrlHandlers::UrlHandlers() {
-}
+UrlHandlers::UrlHandlers() = default;
 
-UrlHandlers::~UrlHandlers() {
-}
+UrlHandlers::~UrlHandlers() = default;
 
 // static
 const std::vector<UrlHandlerInfo>* UrlHandlers::GetUrlHandlers(
@@ -101,11 +97,9 @@ const UrlHandlerInfo* UrlHandlers::GetMatchingPlatformAppUrlHandler(
   return GetMatchingUrlHandler(app, url);
 }
 
-UrlHandlersParser::UrlHandlersParser() {
-}
+UrlHandlersParser::UrlHandlersParser() = default;
 
-UrlHandlersParser::~UrlHandlersParser() {
-}
+UrlHandlersParser::~UrlHandlersParser() = default;
 
 bool ParseUrlHandler(const std::string& handler_id,
                      const base::Value::Dict& handler_info,

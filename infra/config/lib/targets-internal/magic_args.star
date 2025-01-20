@@ -151,7 +151,7 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     so multiple found vendors is an error.
     """
     if _is_skylab(settings):
-        return _gpu_expected_vendor_id_skylab(settings)
+        return _gpu_expected_vendor_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
 
     # We don't specify GPU on things like Android and certain CrOS devices, so
@@ -291,6 +291,7 @@ def _gpu_telemetry_no_root_for_unrooted_devices(_, settings, spec_value):
 
     unrooted_devices = (
         "a13",
+        "a13ve",
         "a23",
         "dm1q",  # Samsung S23.
         "devonn",  # Motorola Moto G Power 5G.

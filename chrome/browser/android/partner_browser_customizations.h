@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_PARTNER_BROWSER_CUSTOMIZATIONS_H_
 #define CHROME_BROWSER_ANDROID_PARTNER_BROWSER_CUSTOMIZATIONS_H_
 
-namespace chrome {
 namespace android {
 
 class PartnerBrowserCustomizations {
@@ -20,6 +19,5 @@ class PartnerBrowserCustomizations {
 };
 
 }  // namespace android
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ANDROID_PARTNER_BROWSER_CUSTOMIZATIONS_H_

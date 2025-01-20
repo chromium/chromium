@@ -164,6 +164,8 @@ public class TabListCoordinator
      * @param emptyHeadingStringResId String resource for empty heading.
      * @param emptySubheadingStringResId String resource for empty subheading.
      * @param onTabGroupCreation Runnable invoked on tab group creation
+     * @param backgroundColorSupplier The supplier of the list UI's background color. Should be
+     *     non-null for TabListMode.STRIP.
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      */
     TabListCoordinator(
@@ -191,6 +193,7 @@ public class TabListCoordinator
             @StringRes int emptyHeadingStringResId,
             @StringRes int emptySubheadingStringResId,
             @Nullable Runnable onTabGroupCreation,
+            @Nullable ObservableSupplier<Integer> backgroundColorSupplier,
             boolean allowDragAndDrop) {
         mMode = mode;
         mTabActionState = initialTabActionState;
@@ -381,7 +384,8 @@ public class TabListCoordinator
                             updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.STRIP) {
             mTabStripSnapshotter =
-                    new TabStripSnapshotter(onModelTokenChange, mModelList, mRecyclerView);
+                    new TabStripSnapshotter(
+                            onModelTokenChange, mModelList, mRecyclerView, backgroundColorSupplier);
         }
 
         mHasEmptyView = hasEmptyView;
@@ -650,13 +654,6 @@ public class TabListCoordinator
     }
 
     /**
-     * @return The editor {@link TabGroupTitleEditor} that is used to update tab group title.
-     */
-    TabGroupTitleEditor getTabGroupTitleEditor() {
-        return mMediator.getTabGroupTitleEditor();
-    }
-
-    /**
      * @see TabListMediator#resetWithListOfTabs(List, boolean)
      */
     boolean resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
@@ -665,10 +662,6 @@ public class TabListCoordinator
 
     void softCleanup() {
         mMediator.softCleanup();
-    }
-
-    void hardCleanup() {
-        mMediator.hardCleanup();
     }
 
     private void registerLayoutChangeListener() {
@@ -695,7 +688,6 @@ public class TabListCoordinator
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
         mRecyclerView.setupCustomItemAnimator();
-        mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
     private void initializeEmptyStateView() {

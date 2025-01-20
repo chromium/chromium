@@ -32,10 +32,10 @@ class NET_EXPORT SSLInfo {
 
   SSLInfo();
   SSLInfo(const SSLInfo& info);
-  ~SSLInfo();
+  SSLInfo(SSLInfo&& info);
   SSLInfo& operator=(const SSLInfo& info);
-
-  void Reset();
+  SSLInfo& operator=(SSLInfo&& info);
+  ~SSLInfo();
 
   bool is_valid() const { return cert.get() != nullptr; }
 

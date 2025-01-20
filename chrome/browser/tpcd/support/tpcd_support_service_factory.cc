@@ -28,8 +28,7 @@ TpcdTrialService* TpcdTrialServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 ProfileSelections TpcdTrialServiceFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(net::features::kTpcdTrialSettings) ||
-      !base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
+  if (!base::FeatureList::IsEnabled(net::features::kTpcdTrialSettings)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 
@@ -52,10 +51,11 @@ TpcdTrialServiceFactory::TpcdTrialServiceFactory()
 
 TpcdTrialServiceFactory::~TpcdTrialServiceFactory() = default;
 
-KeyedService* TpcdTrialServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TpcdTrialServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return new TpcdTrialService(context);
+  return std::make_unique<TpcdTrialService>(context);
 }
 
 }  // namespace tpcd::trial

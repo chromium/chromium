@@ -20,7 +20,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
   DelegateImpl(const DelegateImpl&) = delete;
   DelegateImpl& operator=(const DelegateImpl&) = delete;
 
-  ~DelegateImpl() override {}
+  ~DelegateImpl() override = default;
 
  private:
   bool ShouldShow() override { return !parent_->shown_; }
@@ -35,9 +35,10 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
   }
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
   GetExtraViewInfo() override {
-    if (parent_->info_)
+    if (parent_->info_) {
       return std::make_unique<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>(
           *parent_->info_);
+    }
     return nullptr;
   }
   std::string GetAnchorActionId() override { return parent_->action_id_; }

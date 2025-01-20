@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.content.Context;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,14 +11,23 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -65,6 +73,9 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     private final Runnable mCloseContextMenuCallback;
     private final String mUserActionPrefix;
     private View mAnchorView;
+
+    // Not null after showListContextMenu.
+    private @Nullable ListMenuHost mListContextMenu;
 
     /** Defines callback to configure the context menu and respond to user interaction. */
     public interface Delegate {
@@ -163,11 +174,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
             if (!shouldShowItem(itemId, delegate)) continue;
 
-            menu.add(
-                            Menu.NONE,
-                            itemId,
-                            Menu.NONE,
-                            getResourceIdForMenuItem(associatedView.getContext(), itemId))
+            menu.add(Menu.NONE, itemId, Menu.NONE, getResourceIdForMenuItem(itemId))
                     .setOnMenuItemClickListener(listener);
             hasItems = true;
         }
@@ -196,6 +203,79 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 });
 
         notifyContextMenuShown(delegate);
+    }
+
+    /**
+     * Show the context menu using a {@link ListMenu}.
+     *
+     * @param associatedView The tile view associated with context menu.
+     * @param delegate Delegate that defines the configuration of the menu and what to do when items
+     *     are tapped.
+     * @return Whether menu is shown.
+     */
+    public boolean showListContextMenu(View associatedView, Delegate delegate) {
+        MVCListAdapter.ModelList menuModel = new MVCListAdapter.ModelList();
+        for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
+            if (!shouldShowItem(itemId, delegate)) continue;
+
+            menuModel.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            /* titleId= */ getResourceIdForMenuItem(itemId),
+                            /* menuId= */ itemId,
+                            /* startIconId= */ 0));
+        }
+
+        if (menuModel.isEmpty()) {
+            return false;
+        }
+
+        // Now show the anchored popup window representing the list menu.
+        mTouchEnabledDelegate.setTouchEnabled(false);
+        mAnchorView = associatedView;
+
+        ListMenu menu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        mAnchorView.getContext(),
+                        menuModel,
+                        model ->
+                                handleMenuItemClick(
+                                        model.get(ListMenuItemProperties.MENU_ITEM_ID), delegate));
+        mListContextMenu = new ListMenuHost(mAnchorView, null);
+        mListContextMenu.setMenuMaxWidth(
+                mAnchorView.getResources().getDimensionPixelSize(R.dimen.menu_width));
+        mListContextMenu.tryToFitLargestItem(true);
+        mListContextMenu.setDelegate(
+                new ListMenuDelegate() {
+                    @Override
+                    public ListMenu getListMenu() {
+                        return menu;
+                    }
+
+                    @Override
+                    public RectProvider getRectProvider(View view) {
+                        ViewRectProvider rectProvider = new ViewRectProvider(view);
+                        rectProvider.setUseCenter(true);
+                        return rectProvider;
+                    }
+                },
+                /* overrideOnClickListener= */ false);
+        mListContextMenu.addPopupListener(
+                new ListMenuHost.PopupMenuShownListener() {
+                    @Override
+                    public void onPopupMenuShown() {}
+
+                    @Override
+                    public void onPopupMenuDismissed() {
+                        mAnchorView = null;
+                        mListContextMenu = null;
+                        mTouchEnabledDelegate.setTouchEnabled(true);
+                        mCloseContextMenuCallback.run();
+                    }
+                });
+        mListContextMenu.showMenu();
+        notifyContextMenuShown(delegate);
+
+        return true;
     }
 
     @Override
@@ -257,9 +337,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
     /**
      * Returns resource id of a string that should be displayed for menu item with given item id.
-     * @param context The activity context.
      */
-    protected @StringRes int getResourceIdForMenuItem(Context context, @ContextMenuItemId int id) {
+    protected @StringRes int getResourceIdForMenuItem(@ContextMenuItemId int id) {
         switch (id) {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
                 return R.string.contextmenu_open_in_new_tab;
@@ -313,6 +392,10 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             default:
                 return false;
         }
+    }
+
+    public ListMenuHost getListMenuForTesting() {
+        return mListContextMenu;
     }
 
     private class ItemClickListener implements OnMenuItemClickListener {

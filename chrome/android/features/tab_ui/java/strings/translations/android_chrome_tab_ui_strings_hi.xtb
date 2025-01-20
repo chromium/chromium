@@ -76,8 +76,8 @@
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> टैब बदला गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}one{<ph name="MANY_CHANGED" /> टैब बदला गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}other{<ph name="MANY_CHANGED" /> टैब बदले गए, <ph name="ANY_CLOSED" /> टैब बंद किए गए}}</translation>
 <translation id="4371591986692297148">चालू नहीं है</translation>
+<translation id="4431937619879060901">आपके लिए "<ph name="GROUP_NAME" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
-<translation id="4590027107044272416">यहां से एक नया टैब खोला जा सकता है</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{क्या आपको 1 इनऐक्टिव टैब बंद करना है?}one{क्या आपको <ph name="TAB_COUNT_MANY" /> इनऐक्टिव टैब बंद करना है?}other{क्या आपको <ph name="TAB_COUNT_MANY" /> इनऐक्टिव टैब बंद करने हैं?}}</translation>
 <translation id="4686942373615810936">अभी-अभी बनाया गया</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 दिन बाद बंद हो जाएंगे}one{<ph name="DAY_COUNT_MANY" /> दिन बाद बंद हो जाएंगे}other{<ph name="DAY_COUNT_MANY" /> दिनों बाद बंद हो जाएंगे}}</translation>
@@ -98,16 +98,16 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टैब जोड़ा गया}one{<ph name="MANY_ADDED" /> टैब जोड़ा गया}other{<ph name="MANY_ADDED" /> टैब जोड़े गए}}</translation>
 <translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
+<translation id="5380159289133845234">डुप्लीकेट टैब संग्रहित करें</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
+<translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बंद करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}}</translation>
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
-<translation id="5615302411300498438">बाद में टैब जोड़ने के लिए, इस ग्रुप को बनाए रखें या छोड़ दें.
-
-ग्रुप छोड़ने पर, आपके लिए "<ph name="TITLE_OF_GROUP" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा.</translation>
 <translation id="5627941783489838464">टैब के बारे में कोई अपडेट नहीं है</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{टैब को वापस लाएं}one{टैब को वापस लाएं}other{टैब को वापस लाएं}}</translation>
+<translation id="5647702255748985085">क्या आपको टैब ग्रुप छोड़ना है?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome का <ph name="TABS_COUNT_ONE" /> लिंक}one{Chrome का <ph name="TABS_COUNT_MANY" /> लिंक}other{Chrome के <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
 <translation id="58326064309361797">टैब को समूह में जोड़ने के लिए उन्हें खींचें और छोड़ें</translation>
 <translation id="5901630391730855834">पीला</translation>
@@ -116,7 +116,7 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6051432659151380973">आपके टैब ग्रुप अपने-आप सेव होते हैं</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
-<translation id="6082313992897617440">आपके लिए <ph name="GROUP_NAME" /> टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा</translation>
+<translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6271513594716432922">सभी इनऐक्टिव टैब बंद करें</translation>
@@ -143,9 +143,10 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> को चुना गया</translation>
 <translation id="7326879924029668159">सामान लौटाने की नीति वगैरह देखें</translation>
 <translation id="7352298686197644113">देखें कि आपके खोले गए टैब में मौजूद किस आइटम की कीमत कम हुई है</translation>
-<translation id="7421293530411019405">क्या आपको टैब ग्रुप से बाहर निकलना है?</translation>
+<translation id="742664698522525515">क्या आपको टैब ग्रुप सेव करना है?</translation>
 <translation id="7452985128687107478">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
+<translation id="750886945254958667">बाद में टैब जोड़ने के लिए, इस ग्रुप को बनाए रखें या छोड़ दें</translation>
 <translation id="753732157349120914">टैब बदलने की सुविधा</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google से मिली <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>
@@ -175,9 +176,7 @@
 <translation id="8398929769197326728">नया फ़ोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}one{<ph name="MANY_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CLOSED" /> टैब बंद किए गए}other{<ph name="MANY_ADDED" /> टैब जोड़े गए, <ph name="ANY_CLOSED" /> टैब बंद किए गए}}</translation>
-<translation id="8631711675211020168">सभी लोगों के लिए <ph name="GROUP_NAME" /> टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="8633025649649592204">हाल की गतिविधि</translation>
-<translation id="8635399646025169806">क्या आपको टैब ग्रुप सेव करना है?</translation>
 <translation id="870736955561925754">क्या टैब बंद करके ग्रुप मिटाना है?</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8730621377337864115">हो गया</translation>
@@ -188,10 +187,11 @@
 <translation id="8887921976452567404">बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं.</translation>
 <translation id="8915916167043355778">सभी बंद करें</translation>
 <translation id="9090098097337832354">इस स्टोर के बारे में जानकारी दिखाने वाली स्क्रीन बंद हो गई है</translation>
-<translation id="9111228330448174435">नया टैब ग्रुप बनाने पर डायलॉग दिखाएं</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रंग में मौजूद टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें.</translation>
+<translation id="9169141410816678175">सभी लोगों के लिए "<ph name="GROUP_NAME" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
 <translation id="9216898458513705996">ये टैब इस डिवाइस में खुले रहेंगे, लेकिन <ph name="USER_EMAIL" /> में साइन इन किए गए सभी डिवाइसों से यह ग्रुप मिटा दिया जाएगा</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें.}}</translation>
+<translation id="94870150074703282">क्या आपको टैब ग्रुप मिटाना है?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

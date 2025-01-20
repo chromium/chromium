@@ -38,9 +38,11 @@ bool WebFrame::Swap(
         remote_frame_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
         remote_frame_receiver,
-    blink::mojom::FrameReplicationStatePtr replicated_state) {
+    blink::mojom::FrameReplicationStatePtr replicated_state,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   bool res = ToCoreFrame(*this)->Swap(frame, std::move(remote_frame_host),
-                                      std::move(remote_frame_receiver));
+                                      std::move(remote_frame_receiver),
+                                      devtools_frame_token);
   if (!res)
     return false;
 

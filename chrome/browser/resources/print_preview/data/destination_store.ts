@@ -14,11 +14,14 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 // </if>
 import type {Cdd, MediaSizeOption} from './cdd.js';
+
+// <if expr="not is_chromeos">
 import type {RecentDestination} from './destination.js';
 import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination.js';
-
+// </if>
 // <if expr="is_chromeos">
-import {DestinationProvisionalType} from './destination.js';
+import type {RecentDestination} from './destination_cros.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, DestinationProvisionalType, GooglePromotedDestinationId, isPdfPrinter, PDF_DESTINATION_KEY, PrinterType} from './destination_cros.js';
 // </if>
 
 import {DestinationMatch} from './destination_match.js';

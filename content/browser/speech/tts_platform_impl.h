@@ -31,8 +31,6 @@ class TtsPlatformImpl : public TtsPlatform {
   void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override;
   void RefreshVoices() override {}
 
-  ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
-
  protected:
   TtsPlatformImpl() {}
 

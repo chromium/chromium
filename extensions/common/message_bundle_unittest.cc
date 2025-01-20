@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/message_bundle.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -335,46 +331,45 @@ TEST(MessageBundle, ReplaceMessagesInText) {
   const char* kPlaceholderBegin = MessageBundle::kPlaceholderBegin;
   const char* kPlaceholderEnd = MessageBundle::kPlaceholderEnd;
 
-  static ReplaceVariables test_cases[] = {
-    // Message replacement.
-    { "This is __MSG_siMPle__ message", "This is simple message",
-      "", kMessageBegin, kMessageEnd, true },
-    { "This is __MSG_", "This is __MSG_",
-      "", kMessageBegin, kMessageEnd, true },
-    { "This is __MSG__simple__ message", "This is __MSG__simple__ message",
-      "Variable __MSG__simple__ used but not defined.",
-      kMessageBegin, kMessageEnd, false },
-    { "__MSG_LoNg__", "A pretty long replacement",
-      "", kMessageBegin, kMessageEnd, true },
-    { "A __MSG_SimpLE__MSG_ a", "A simpleMSG_ a",
-      "", kMessageBegin, kMessageEnd, true },
-    { "A __MSG_simple__MSG_long__", "A simpleMSG_long__",
-      "", kMessageBegin, kMessageEnd, true },
-    { "A __MSG_simple____MSG_long__", "A simpleA pretty long replacement",
-      "", kMessageBegin, kMessageEnd, true },
-    { "__MSG_d1g1ts_are_ok__", "I are d1g1t",
-      "", kMessageBegin, kMessageEnd, true },
-    // Placeholder replacement.
-    { "This is $sImpLe$ message", "This is simple message",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "This is $", "This is $",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "This is $$sIMPle$ message", "This is $simple message",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "$LONG_V$", "A pretty long replacement",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "A $simple$$ a", "A simple$ a",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "A $simple$long_v$", "A simplelong_v$",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "A $simple$$long_v$", "A simpleA pretty long replacement",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "This is $bad name$", "This is $bad name$",
-       "", kPlaceholderBegin, kPlaceholderEnd, true },
-    { "This is $missing$", "This is $missing$",
-       "Variable $missing$ used but not defined.",
-       kPlaceholderBegin, kPlaceholderEnd, false },
-  };
+  static auto test_cases = std::to_array<ReplaceVariables>({
+      // Message replacement.
+      {"This is __MSG_siMPle__ message", "This is simple message", "",
+       kMessageBegin, kMessageEnd, true},
+      {"This is __MSG_", "This is __MSG_", "", kMessageBegin, kMessageEnd,
+       true},
+      {"This is __MSG__simple__ message", "This is __MSG__simple__ message",
+       "Variable __MSG__simple__ used but not defined.", kMessageBegin,
+       kMessageEnd, false},
+      {"__MSG_LoNg__", "A pretty long replacement", "", kMessageBegin,
+       kMessageEnd, true},
+      {"A __MSG_SimpLE__MSG_ a", "A simpleMSG_ a", "", kMessageBegin,
+       kMessageEnd, true},
+      {"A __MSG_simple__MSG_long__", "A simpleMSG_long__", "", kMessageBegin,
+       kMessageEnd, true},
+      {"A __MSG_simple____MSG_long__", "A simpleA pretty long replacement", "",
+       kMessageBegin, kMessageEnd, true},
+      {"__MSG_d1g1ts_are_ok__", "I are d1g1t", "", kMessageBegin, kMessageEnd,
+       true},
+      // Placeholder replacement.
+      {"This is $sImpLe$ message", "This is simple message", "",
+       kPlaceholderBegin, kPlaceholderEnd, true},
+      {"This is $", "This is $", "", kPlaceholderBegin, kPlaceholderEnd, true},
+      {"This is $$sIMPle$ message", "This is $simple message", "",
+       kPlaceholderBegin, kPlaceholderEnd, true},
+      {"$LONG_V$", "A pretty long replacement", "", kPlaceholderBegin,
+       kPlaceholderEnd, true},
+      {"A $simple$$ a", "A simple$ a", "", kPlaceholderBegin, kPlaceholderEnd,
+       true},
+      {"A $simple$long_v$", "A simplelong_v$", "", kPlaceholderBegin,
+       kPlaceholderEnd, true},
+      {"A $simple$$long_v$", "A simpleA pretty long replacement", "",
+       kPlaceholderBegin, kPlaceholderEnd, true},
+      {"This is $bad name$", "This is $bad name$", "", kPlaceholderBegin,
+       kPlaceholderEnd, true},
+      {"This is $missing$", "This is $missing$",
+       "Variable $missing$ used but not defined.", kPlaceholderBegin,
+       kPlaceholderEnd, false},
+  });
 
   MessageBundle::SubstitutionMap messages;
   messages.insert(std::make_pair("simple", "simple"));
@@ -383,16 +378,13 @@ TEST(MessageBundle, ReplaceMessagesInText) {
   messages.insert(std::make_pair("bad name", "Doesn't matter"));
   messages.insert(std::make_pair("d1g1ts_are_ok", "I are d1g1t"));
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    std::string text = test_cases[i].original;
+  for (const auto& entry : test_cases) {
+    std::string text = entry.original;
     std::string error;
-    EXPECT_EQ(test_cases[i].pass,
-              MessageBundle::ReplaceVariables(messages,
-                                              test_cases[i].begin_delimiter,
-                                              test_cases[i].end_delimiter,
-                                              &text,
-                                              &error));
-    EXPECT_EQ(test_cases[i].result, text);
+    EXPECT_EQ(entry.pass, MessageBundle::ReplaceVariables(
+                              messages, entry.begin_delimiter,
+                              entry.end_delimiter, &text, &error));
+    EXPECT_EQ(entry.result, text);
   }
 }
 

@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/permissions/features.h"
@@ -310,6 +309,30 @@ class PermissionsClient {
   // necessary permission(s) needed to provide a particular permission-gated
   // capability to sites.
   virtual bool CanRequestDevicePermission(ContentSettingsType type) const;
+
+  // Returns true if the |type| can be blocked by device policy, for example, by
+  // the custodian of a supervised user.
+  virtual bool IsPermissionBlockedByDevicePolicy(
+      content::WebContents* web_contents,
+      ContentSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const;
+
+  // Returns true if the |type| can be allowed by device policy, for example
+  // admins can use the whitelist to allow device access without prompt.
+  virtual bool IsPermissionAllowedByDevicePolicy(
+      content::WebContents* web_contents,
+      ContentSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const;
+
+  // Returns true if the system blocks the access to the specified content type
+  // permission.
+  virtual bool IsSystemDenied(ContentSettingsType type) const;
+
+  // Returns `true` if Chrome can request system-level permission. Returns
+  // `false` otherwise.
+  virtual bool CanPromptSystemPermission(ContentSettingsType type) const;
 
   virtual favicon::FaviconService* GetFaviconService(
       content::BrowserContext* browser_context);

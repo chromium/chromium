@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/style/typography.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -275,12 +276,15 @@ int GetButtonsViewOcclusion(Design design) {
 }
 
 views::Builder<views::Label> GetRefreshUiHeader() {
-  int line_height = GetCrosAnnotation1LineHeight();
+  int line_height = ash::TypographyProvider::Get()->ResolveLineHeight(
+      ash::TypographyToken::kCrosAnnotation1);
   int vertical_padding = std::max(0, (20 - line_height) / 2);
 
   return views::Builder<views::Label>()
-      .SetFontList(GetCrosAnnotation1FontList().DeriveWithWeight(
-          gfx::Font::Weight::MEDIUM))
+      .SetFontList(
+          ash::TypographyProvider::Get()
+              ->ResolveTypographyToken(ash::TypographyToken::kCrosAnnotation1)
+              .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
       .SetLineHeight(line_height)
       .SetProperty(
           views::kMarginsKey,
@@ -298,7 +302,8 @@ views::Builder<views::Label> GetRefreshUiHeader() {
 }
 
 views::Builder<views::BoxLayoutView> GetMagicBoostHeader() {
-  int line_height = GetCrosAnnotation1LineHeight();
+  int line_height = ash::TypographyProvider::Get()->ResolveLineHeight(
+      ash::TypographyToken::kCrosAnnotation1);
   int vertical_padding = std::max(0, (20 - line_height) / 2);
 
   return views::Builder<views::BoxLayoutView>()
@@ -324,8 +329,10 @@ views::Builder<views::BoxLayoutView> GetMagicBoostHeader() {
               .SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(vertical_padding, 0))
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-              .SetFontList(GetCrosAnnotation1FontList().DeriveWithWeight(
-                  gfx::Font::Weight::MEDIUM)))
+              .SetFontList(ash::TypographyProvider::Get()
+                               ->ResolveTypographyToken(
+                                   ash::TypographyToken::kCrosAnnotation1)
+                               .DeriveWithWeight(gfx::Font::Weight::MEDIUM)))
       .AddChild(views::Builder<chromeos::ExperimentBadge>());
 }
 

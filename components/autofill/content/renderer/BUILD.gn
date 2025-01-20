@@ -35,6 +35,8 @@ static_library("renderer") {
     "renderer_save_password_progress_logger.h",
     "suggestion_properties.cc",
     "suggestion_properties.h",
+    "synchronous_form_cache.cc",
+    "synchronous_form_cache.h",
     "timing.cc",
     "timing.h",
   ]
@@ -71,7 +73,6 @@ static_library("test_support") {
     "autofill_renderer_test.h",
     "focus_test_utils.cc",
     "focus_test_utils.h",
-    "form_cache_test_api.h",
     "form_tracker_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",

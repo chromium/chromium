@@ -195,7 +195,11 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
+  base::FieldTrialParams feature_parameters{
+      {web::features::kOneTapForMapsConsentModeParamTitle,
+       web::features::kOneTapForMapsConsentModeDefaultParam}};
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      web::features::kOneTapForMaps, feature_parameters);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));

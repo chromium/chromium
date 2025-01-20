@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 
 namespace extensions {
@@ -116,6 +117,10 @@ void ShellExtensionLoader::FinishExtensionReload(
   keep_alive_requester_.StopTrackingReload(old_extension_id);
 }
 
+bool ShellExtensionLoader::CanAddExtension(const Extension* extension) {
+  return true;
+}
+
 void ShellExtensionLoader::PreAddExtension(const Extension* extension,
                                            const Extension* old_extension) {
   if (old_extension)
@@ -143,6 +148,16 @@ void ShellExtensionLoader::PostActivateExtension(
 void ShellExtensionLoader::PostDeactivateExtension(
     scoped_refptr<const Extension> extension) {}
 
+void ShellExtensionLoader::PreUninstallExtension(
+    scoped_refptr<const Extension> extension) {}
+
+void ShellExtensionLoader::PostUninstallExtension(
+    scoped_refptr<const Extension> extension,
+    base::OnceClosure done_callback) {}
+
+void ShellExtensionLoader::PostNotifyUninstallExtension(
+    scoped_refptr<const Extension> extension) {}
+
 void ShellExtensionLoader::LoadExtensionForReload(
     const ExtensionId& extension_id,
     const base::FilePath& path,
@@ -155,6 +170,12 @@ void ShellExtensionLoader::LoadExtensionForReload(
                      weak_factory_.GetWeakPtr(), extension_id));
   did_schedule_reload_ = true;
 }
+
+void ShellExtensionLoader::ShowExtensionDisabledError(
+    const Extension* extension,
+    bool is_remote_install) {}
+
+void ShellExtensionLoader::FinishDelayedInstallationsIfAny() {}
 
 bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
   return true;

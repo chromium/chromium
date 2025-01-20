@@ -17,6 +17,7 @@ using mojom::blink::ModelStreamingResponseStatus;
 extern const char kExceptionMessageSessionDestroyed[];
 extern const char kExceptionMessageInvalidTemperatureAndTopKFormat[];
 extern const char kExceptionMessageUnableToCreateSession[];
+extern const char kExceptionMessageInitialPromptTooLarge[];
 extern const char kExceptionMessageUnableToCloneSession[];
 extern const char kExceptionMessageRequestAborted[];
 extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];

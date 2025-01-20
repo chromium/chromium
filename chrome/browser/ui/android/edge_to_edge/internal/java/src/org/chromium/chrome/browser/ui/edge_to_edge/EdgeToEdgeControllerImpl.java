@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -68,6 +69,7 @@ public class EdgeToEdgeControllerImpl
     private final Callback<LayoutManager> mOnLayoutManagerCallback =
             new ValueChangedCallback<>(this::updateLayoutStateProvider);
     private final FullscreenManager mFullscreenManager;
+    private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private final int mEdgeToEdgeToken;
 
@@ -98,6 +100,13 @@ public class EdgeToEdgeControllerImpl
      */
     private boolean mIsPageOptedIntoEdgeToEdge;
 
+    /**
+     * Whether the page should constrain the safe area, which requires the page to be retained
+     * within the safe area region. This essentially opts the page out of edge-to-edge, regardless
+     * of other flags and values (e.g. |mIsPageOptedIntoEdgeToEdge|)
+     */
+    private boolean mHasSafeAreaConstraint;
+
     private InsetObserver mInsetObserver;
     private @NonNull Insets mSystemInsets;
     private Insets mAppliedContentViewPadding;
@@ -115,8 +124,8 @@ public class EdgeToEdgeControllerImpl
      * @param tabObservableSupplier A supplier for Tab changes so this implementation can adjust
      *     whether to draw under or not for each page.
      * @param edgeToEdgeOsWrapper An optional wrapper for OS calls for testing etc.
-     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
-     *     draw edge-to-edge.
+     * @param edgeToEdgeManager Provides the edge-to-edge state and allows for requests to draw
+     *     edge-to-edge.
      * @param browserControlsStateProvider Provides the state of the BrowserControls for Totally
      *     Edge to Edge.
      * @param layoutManagerSupplier The supplier to {@link LayoutManager} for checking the active
@@ -128,7 +137,7 @@ public class EdgeToEdgeControllerImpl
             @NonNull WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOsWrapper,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ObservableSupplier<LayoutManager> layoutManagerSupplier,
             @NonNull FullscreenManager fullscreenManager) {
@@ -136,7 +145,7 @@ public class EdgeToEdgeControllerImpl
         mWindowAndroid = windowAndroid;
         mEdgeToEdgeOsWrapper =
                 edgeToEdgeOsWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOsWrapper;
-        mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
+        mEdgeToEdgeManager = edgeToEdgeManager;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mTabSupplierObserver =
                 new TabSupplierObserver(tabObservableSupplier) {
@@ -192,6 +201,7 @@ public class EdgeToEdgeControllerImpl
                 : "The inset observer should have non-null insets by the time the"
                         + " EdgeToEdgeControllerImpl is initialized.";
         mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
+        mEdgeToEdgeStateProvider = mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
         mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
         drawToEdge(
                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
@@ -267,9 +277,11 @@ public class EdgeToEdgeControllerImpl
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         updateBrowserControlsVisibility(
                 mBottomControlsHeight > 0 && bottomOffset < mBottomControlsHeight);
@@ -322,7 +334,7 @@ public class EdgeToEdgeControllerImpl
      * @param tab The {@link Tab} whose {@link WebContents} we want to observe.
      */
     private void updateWebContentsObserver(Tab tab) {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mWebContentsObserver =
                 new WebContentsObserver(tab.getWebContents()) {
                     @Override
@@ -330,6 +342,16 @@ public class EdgeToEdgeControllerImpl
                         drawToEdge(
                                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab, value),
                                 /* changedWindowState= */ false);
+                    }
+
+                    @Override
+                    public void safeAreaConstraintChanged(boolean hasConstraint) {
+                        if (mHasSafeAreaConstraint == hasConstraint) return;
+
+                        mHasSafeAreaConstraint = hasConstraint;
+                        for (var observer : mEdgeChangeObservers) {
+                            observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
+                        }
                     }
                 };
     }
@@ -363,10 +385,16 @@ public class EdgeToEdgeControllerImpl
         boolean shouldDrawToEdge =
                 EdgeToEdgeUtils.shouldDrawToEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
+        // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
+        // #drawToEdge is called due to tab switching)
+        boolean hasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
+
         boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
         boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
+        boolean changedSafeAreaConstraint = mHasSafeAreaConstraint != hasSafeAreaConstraint;
         mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
         mIsDrawingToEdge = shouldDrawToEdge;
+        mHasSafeAreaConstraint = hasSafeAreaConstraint;
 
         if (changedPageOptedIn) {
             Log.v(
@@ -388,6 +416,12 @@ public class EdgeToEdgeControllerImpl
             for (var observer : mEdgeChangeObservers) {
                 observer.onToEdgeChange(
                         mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
+            }
+        }
+
+        if (changedSafeAreaConstraint) {
+            for (var observer : mEdgeChangeObservers) {
+                observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
             }
         }
     }
@@ -467,6 +501,11 @@ public class EdgeToEdgeControllerImpl
      * transparency of the Nav Bar, etc.
      */
     private void adjustEdgePaddings() {
+        // TODO(crbug.com/377959835): Move padding logic to the EdgeToEdgeManager, to be triggered
+        //  by calls to this #setContentFitsWindow() method.
+        // Content should fit within the window insets if the activity is not drawing edge-to-edge.
+        mEdgeToEdgeManager.setContentFitsWindowInsets(!isDrawingToEdge());
+
         View contentView = getContentView();
         assert contentView != null : "Root view for Edge To Edge not found!";
 
@@ -485,12 +524,9 @@ public class EdgeToEdgeControllerImpl
         // In fullscreen mode, there are cases the content isn't being drawn under the system
         // bar (e.g. during multi-window mode). In this case, adjust the padding based on the
         // visibility rects. See https://crbug.com/359659885
-        // The exception of this workaround is in PiP mode. See https://crbug.com/377809718.
-        if (mFullscreenManager.getPersistentFullscreenMode()
-                && !mActivity.isInPictureInPictureMode()) {
-            topPadding = Math.max(0, mCachedWindowVisibleRect.top - mCachedContentVisibleRect.top);
-            bottomPadding =
-                    Math.max(0, mCachedContentVisibleRect.bottom - mCachedWindowVisibleRect.bottom);
+        if (mFullscreenManager.getPersistentFullscreenMode()) {
+            topPadding = 0;
+            bottomPadding = 0;
         }
 
         // Use Insets to store the paddings as it is immutable.
@@ -528,7 +564,7 @@ public class EdgeToEdgeControllerImpl
     @Override
     public void destroy() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
@@ -585,6 +621,10 @@ public class EdgeToEdgeControllerImpl
 
     void setKeyboardInsetsForTesting(Insets keyboardInsetsForTesting) {
         mKeyboardInsets = keyboardInsetsForTesting;
+    }
+
+    public boolean getHasSafeAreaConstraintForTesting() {
+        return mHasSafeAreaConstraint;
     }
 
     private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {

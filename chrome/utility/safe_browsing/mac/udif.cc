@@ -14,6 +14,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -117,7 +118,10 @@ static void ConvertBigEndian(UDIFResourceFile* file) {
   ConvertBigEndian(&file->code_signature_length);
   ConvertBigEndian(&file->main_checksum);
   ConvertBigEndian(&file->image_variant);
-  ConvertBigEndian(&file->sector_count);
+  // `sector_count` is never consulted, so do not swap.
+  // Note: If this is ever needed in the future, one must make a copy when byte
+  // swapping to avoid unaligned access.
+
   // Reserved fields are skipped.
 }
 
@@ -187,6 +191,8 @@ static void ConvertBigEndian(UDIFBlockData* block) {
   ConvertBigEndian(&block->checksum);
   ConvertBigEndian(&block->chunk_count);
 }
+
+#pragma pack(pop)
 
 // UDIFBlock takes a raw, big-endian block data pointer and stores, in host
 // endian, the data for both the block and the chunk.
@@ -278,8 +284,6 @@ class UDIFBlock {
   std::vector<UDIFBlockChunk> chunks_;
 };
 
-#pragma pack(pop)
-
 namespace {
 
 const size_t kSectorSize = 512;
@@ -363,7 +367,7 @@ UDIFParser::UDIFParser(ReadStream* stream)
       blocks_(),
       block_size_(kSectorSize) {}
 
-UDIFParser::~UDIFParser() {}
+UDIFParser::~UDIFParser() = default;
 
 bool UDIFParser::Parse() {
   if (!ParseBlkx())
@@ -619,7 +623,7 @@ UDIFPartitionReadStream::UDIFPartitionReadStream(
       chunk_stream_() {
 }
 
-UDIFPartitionReadStream::~UDIFPartitionReadStream() {}
+UDIFPartitionReadStream::~UDIFPartitionReadStream() = default;
 
 bool UDIFPartitionReadStream::Read(base::span<uint8_t> buf,
                                    size_t* bytes_read) {
@@ -746,8 +750,7 @@ UDIFBlockChunkReadStream::UDIFBlockChunkReadStream(ReadStream* stream,
   CHECK(length_in_bytes_ == 0 || length_in_bytes_ >= block_size);
 }
 
-UDIFBlockChunkReadStream::~UDIFBlockChunkReadStream() {
-}
+UDIFBlockChunkReadStream::~UDIFBlockChunkReadStream() = default;
 
 bool UDIFBlockChunkReadStream::Read(base::span<uint8_t> buf,
                                     size_t* bytes_read) {

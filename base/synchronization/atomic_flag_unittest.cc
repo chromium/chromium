@@ -27,14 +27,17 @@ void ExpectSetFlagDeath(AtomicFlag* flag) {
 // defeat the purpose of testing atomics) until |tested_flag| is set and then
 // verifies that non-atomic |*expected_after_flag| is true and sets |*done_flag|
 // before returning if it's non-null.
-void BusyWaitUntilFlagIsSet(AtomicFlag* tested_flag, bool* expected_after_flag,
+void BusyWaitUntilFlagIsSet(AtomicFlag* tested_flag,
+                            bool* expected_after_flag,
                             AtomicFlag* done_flag) {
-  while (!tested_flag->IsSet())
+  while (!tested_flag->IsSet()) {
     PlatformThread::YieldCurrentThread();
+  }
 
   EXPECT_TRUE(*expected_after_flag);
-  if (done_flag)
+  if (done_flag) {
     done_flag->Set();
+  }
 }
 
 }  // namespace
@@ -89,8 +92,9 @@ TEST(AtomicFlagTest, ReadFromDifferentThread) {
 
   // Use |reset_flag| to confirm that the above completed (which the rest of
   // this test assumes).
-  while (!reset_flag.IsSet())
+  while (!reset_flag.IsSet()) {
     PlatformThread::YieldCurrentThread();
+  }
 
   tested_flag.UnsafeResetForTesting();
   EXPECT_FALSE(tested_flag.IsSet());

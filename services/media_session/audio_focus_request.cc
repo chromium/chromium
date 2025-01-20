@@ -175,6 +175,10 @@ void AudioFocusRequest::GetMediaImageBitmap(
                      base::Unretained(this), std::move(callback)));
 }
 
+void AudioFocusRequest::FlushForTesting() {
+  session_.FlushForTesting();  // IN-TEST
+}
+
 void AudioFocusRequest::SetSessionInfo(
     mojom::MediaSessionInfoPtr session_info) {
   bool is_controllable_changed =

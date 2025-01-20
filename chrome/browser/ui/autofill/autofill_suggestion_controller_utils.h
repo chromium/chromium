@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
 namespace content {
 class RenderFrameHost;

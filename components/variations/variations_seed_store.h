@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -25,9 +24,9 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/variations_safe_seed_store.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefService;
 class PrefRegistrySimple;
@@ -45,6 +44,9 @@ struct ValidatedSeed {
   // Move-only to avoid expensive copies of seed data.
   ValidatedSeed(ValidatedSeed&& other);
   ValidatedSeed& operator=(ValidatedSeed&& other);
+
+  // Returns whether a seed matches an already stored seed.
+  bool MatchesStoredSeed(const StoredSeed& stored_seed) const;
 
   // Gzipped and base-64 encoded serialized VariationsSeed.
   std::string base64_seed_data;
@@ -75,15 +77,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // |use_first_run_prefs|, if true (default), facilitates modifying Java
   // SharedPreferences ("first run prefs") on Android. If false,
   // SharedPreferences are not accessed.
-  VariationsSeedStore(
-      PrefService* local_state,
-      std::unique_ptr<SeedResponse> initial_seed,
-      bool signature_verification_enabled,
-      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
-      version_info::Channel channel,
-      const base::FilePath& seed_file_dir,
-      const variations::EntropyProviders* entropy_providers = nullptr,
-      bool use_first_run_prefs = true);
+  VariationsSeedStore(PrefService* local_state,
+                      std::unique_ptr<SeedResponse> initial_seed,
+                      bool signature_verification_enabled,
+                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
+                      version_info::Channel channel,
+                      const base::FilePath& seed_file_dir,
+                      const EntropyProviders* entropy_providers = nullptr,
+                      bool use_first_run_prefs = true);
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
   VariationsSeedStore& operator=(const VariationsSeedStore&) = delete;
@@ -401,7 +402,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Handles reads and writes to seed files.
   std::unique_ptr<SeedReaderWriter> seed_reader_writer_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets the combined server and client state used for early boot variations
   // platform disaster recovery.
   featured::SeedDetails GetSafeSeedStateForPlatform(
@@ -421,7 +422,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // A counter that keeps track of how many times the current safe seed is sent
   // to platform.
   size_t send_seed_to_platform_attempts_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

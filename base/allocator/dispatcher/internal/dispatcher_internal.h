@@ -16,7 +16,7 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_allocation_data.h"
+#include "partition_alloc/partition_alloc_allocation_data.h"  // nogncheck
 #endif
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

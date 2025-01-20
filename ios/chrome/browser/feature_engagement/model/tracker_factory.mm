@@ -6,12 +6,17 @@
 
 #import "base/no_destructor.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace feature_engagement {
+
+// static
+feature_engagement::Tracker* TrackerFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<feature_engagement::Tracker>(
+      profile, /*create=*/true);
+}
 
 // static
 TrackerFactory* TrackerFactory::GetInstance() {
@@ -19,31 +24,15 @@ TrackerFactory* TrackerFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-feature_engagement::Tracker* TrackerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return static_cast<feature_engagement::Tracker*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
+// Use the same tracker for regular and off-the-record Profiles.
 TrackerFactory::TrackerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "feature_engagement::Tracker",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("feature_engagement::Tracker",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 TrackerFactory::~TrackerFactory() = default;
 
 std::unique_ptr<KeyedService> TrackerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return CreateFeatureEngagementTracker(context);
+  return CreateFeatureEngagementTracker(ProfileIOS::FromBrowserState(context));
 }
-
-// Finds which browser state to use. If `context` is an incognito browser
-// state, it returns the non-incognito state. Thus, feature engagement events
-// are tracked even in incognito tabs.
-web::BrowserState* TrackerFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
 }  // namespace feature_engagement

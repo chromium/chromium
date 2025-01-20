@@ -76,6 +76,11 @@ class PersonalizationAppSeaPenProviderImpl
 
   void HandleSeaPenIntroductionDialogClosedInternal() override;
 
+  void ShouldShowSeaPenFreeformIntroductionDialogInternal(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
+
+  void HandleSeaPenFreeformIntroductionDialogClosedInternal() override;
+
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,

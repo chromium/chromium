@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -82,7 +83,7 @@ class SQLTableBuilderTest : public testing::Test {
   // statement details.
   void PrintDBError(int code, sql::Statement* statement);
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   SQLTableBuilder builder_;
   SQLTableBuilder child_builder_;
 };

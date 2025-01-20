@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -61,15 +62,164 @@ namespace {
 // `usage`.
 void EnforceSharedImageUsage(const SharedImageBacking& backing,
                              SharedImageUsageSet usage) {
-  if (!(backing.usage() & usage)) {
+  if (!backing.usage().HasAny(usage)) {
     SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "debug_label",
                               backing.debug_label());
     SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "name", backing.GetName());
     SCOPED_CRASH_KEY_NUMBER("SharedImageUsage", "required_usage",
-                            static_cast<int>(usage));
+                            static_cast<uint32_t>(usage));
     SCOPED_CRASH_KEY_NUMBER("ShareDImageUsage", "actual_usage",
-                            backing.usage());
+                            static_cast<uint32_t>(backing.usage()));
     base::debug::DumpWithoutCrashing();
+  }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used for logging values to GPU.SharedImage.SharedImageFormat UMA.
+enum class SharedImageFormatUMA {
+  kRGBA_8888 = 0,
+  kRGBA_4444 = 1,
+  kBGRA_8888 = 2,
+  kALPHA_8 = 3,
+  kLUMINANCE_8 = 4,
+  kRGB_565 = 5,
+  kBGR_565 = 6,
+  kETC1 = 7,
+  kR_8 = 8,
+  kRG_88 = 9,
+  kLUMINANCE_F16 = 10,
+  kRGBA_F16 = 11,
+  kR_16 = 12,
+  kRG_1616 = 13,
+  kRGBX_8888 = 14,
+  kBGRX_8888 = 15,
+  kRGBA_1010102 = 16,
+  kBGRA_1010102 = 17,
+  kR_F16 = 18,
+  kYV12 = 19,
+  kNV12 = 20,
+  kNV12A = 21,
+  kP010 = 22,
+  kNV16 = 23,
+  kNV24 = 24,
+  kP210 = 25,
+  kP410 = 26,
+  kI420 = 27,
+  kI420A = 28,
+  kI422 = 29,
+  kI444 = 30,
+  kYUV420P10 = 31,
+  kYUV422P10 = 32,
+  kYUV444P10 = 33,
+  kYUV420P16 = 34,
+  kYUV422P16 = 35,
+  kYUV444P16 = 36,
+  kOther = 37,
+  kMaxValue = kOther
+};
+
+SharedImageFormatUMA GetSharedImageFormatUMA(viz::SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+      return SharedImageFormatUMA::kRGBA_8888;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_4444) {
+      return SharedImageFormatUMA::kRGBA_4444;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+      return SharedImageFormatUMA::kBGRA_8888;
+    } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
+      return SharedImageFormatUMA::kALPHA_8;
+    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+      return SharedImageFormatUMA::kLUMINANCE_8;
+    } else if (format == viz::SinglePlaneFormat::kRGB_565) {
+      return SharedImageFormatUMA::kRGB_565;
+    } else if (format == viz::SinglePlaneFormat::kBGR_565) {
+      return SharedImageFormatUMA::kBGR_565;
+    } else if (format == viz::SinglePlaneFormat::kETC1) {
+      return SharedImageFormatUMA::kETC1;
+    } else if (format == viz::SinglePlaneFormat::kR_8) {
+      return SharedImageFormatUMA::kR_8;
+    } else if (format == viz::SinglePlaneFormat::kRG_88) {
+      return SharedImageFormatUMA::kRG_88;
+    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+      return SharedImageFormatUMA::kLUMINANCE_F16;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      return SharedImageFormatUMA::kRGBA_F16;
+    } else if (format == viz::SinglePlaneFormat::kR_16) {
+      return SharedImageFormatUMA::kR_16;
+    } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+      return SharedImageFormatUMA::kRG_1616;
+    } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+      return SharedImageFormatUMA::kRGBX_8888;
+    } else if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+      return SharedImageFormatUMA::kBGRX_8888;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+      return SharedImageFormatUMA::kRGBA_1010102;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+      return SharedImageFormatUMA::kBGRA_1010102;
+    } else {
+      DCHECK_EQ(format, viz::SinglePlaneFormat::kR_F16);
+      return SharedImageFormatUMA::kR_F16;
+    }
+  }
+
+  using PlaneConfig = viz::SharedImageFormat::PlaneConfig;
+  using Subsampling = viz::SharedImageFormat::Subsampling;
+  using ChannelFormat = viz::SharedImageFormat::ChannelFormat;
+
+  if (format == viz::MultiPlaneFormat::kYV12) {
+    return SharedImageFormatUMA::kYV12;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    return SharedImageFormatUMA::kNV12;
+  } else if (format == viz::MultiPlaneFormat::kNV12A) {
+    return SharedImageFormatUMA::kNV12A;
+  } else if (format == viz::MultiPlaneFormat::kP010) {
+    return SharedImageFormatUMA::kP010;
+  } else if (format == viz::MultiPlaneFormat::kNV16) {
+    return SharedImageFormatUMA::kNV16;
+  } else if (format == viz::MultiPlaneFormat::kNV24) {
+    return SharedImageFormatUMA::kNV24;
+  } else if (format == viz::MultiPlaneFormat::kP210) {
+    return SharedImageFormatUMA::kP210;
+  } else if (format == viz::MultiPlaneFormat::kP410) {
+    return SharedImageFormatUMA::kP410;
+  } else if (format == viz::MultiPlaneFormat::kI420A) {
+    return SharedImageFormatUMA::kI420A;
+  } else if (format.is_multi_plane() &&
+             format.plane_config() == PlaneConfig::kY_U_V) {
+    // Y_U_V planar formats are usually used by software video frames.
+    switch (format.channel_format()) {
+      case ChannelFormat::k8:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kI420;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kI422;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kI444;
+        }
+      case ChannelFormat::k10:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kYUV420P10;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kYUV422P10;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kYUV444P10;
+        }
+      case ChannelFormat::k16:
+      case ChannelFormat::k16F:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kYUV420P16;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kYUV422P16;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kYUV444P16;
+        }
+    }
+  } else {
+    return SharedImageFormatUMA::kOther;
   }
 }
 
@@ -160,6 +310,8 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   }
 
   UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing->GetType());
+  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.SharedImageFormat",
+                            GetSharedImageFormatUMA(backing->format()));
 
   // TODO(jonross): Determine how the direct destruction of a
   // SharedImageRepresentationFactoryRef leads to ref-counting issues as

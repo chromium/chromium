@@ -76,7 +76,7 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
                    .ShouldAllowNavigation());
   histogram_tester_.ExpectUniqueSample(
       lookalikes::kInterstitialHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           lookalikes::NavigationSuggestionEvent::kMatchSkeletonTop500),
       1);
 

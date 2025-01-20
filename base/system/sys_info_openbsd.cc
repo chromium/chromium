@@ -18,8 +18,9 @@ namespace {
 uint64_t AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
-  if (pages < 0 || page_size < 0)
+  if (pages < 0 || page_size < 0) {
     return 0;
+  }
   return static_cast<uint64_t>(pages) * static_cast<uint64_t>(page_size);
 }
 

@@ -67,11 +67,13 @@ constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
 constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
+constexpr char kVcIssuanceEndpoint[] = "vc_issuance_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kModesKey[] = "modes";
 constexpr char kTypesKey[] = "types";
+constexpr char kFormatsKey[] = "formats";
 
 // Keys in the 'accounts' dictionary
 constexpr char kIncludeKey[] = "include";
@@ -193,7 +195,6 @@ GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
     return GURL();
   }
   GURL url = GURL(*response_url);
-  // TODO(crbug.com/40280145): Allow localhost URLs
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return GURL();
   }
@@ -335,7 +336,8 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
 
 GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
                              int brand_icon_ideal_size,
-                             int brand_icon_minimum_size) {
+                             int brand_icon_minimum_size,
+                             const GURL& config_url) {
   std::vector<blink::Manifest::ImageResource> icons;
   for (const base::Value& icon_value : *icons_value) {
     const base::Value::Dict* icon_value_dict = icon_value.GetIfDict();
@@ -349,7 +351,13 @@ GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
     }
 
     blink::Manifest::ImageResource icon;
-    icon.src = GURL(*icon_src);
+
+    if (!config_url.is_empty()) {
+      icon.src = config_url.Resolve(*icon_src);
+    } else {
+      icon.src = GURL(*icon_src);
+    }
+
     if (!icon.src.is_valid() || !icon.src.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
@@ -385,8 +393,9 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
     return;
   }
 
-  idp_metadata.brand_icon_url = FindBestMatchingIconUrl(
-      icons_value, brand_icon_ideal_size, brand_icon_minimum_size);
+  idp_metadata.brand_icon_url =
+      FindBestMatchingIconUrl(icons_value, brand_icon_ideal_size,
+                              brand_icon_minimum_size, idp_metadata.config_url);
 }
 
 // This method follows https://mimesniff.spec.whatwg.org/#json-mime-type.
@@ -493,6 +502,12 @@ void OnWellKnownParsed(
       ExtractEndpoint(well_known_url, *dict, kAccountsEndpointKey);
   well_known.login_url = ExtractEndpoint(well_known_url, *dict, kLoginUrlKey);
 
+  if (!well_known.accounts.is_empty() && !well_known.login_url.is_empty() &&
+      !dict->Find(kProviderUrlListKey)) {
+    std::move(callback).Run(fetch_status, std::move(well_known));
+    return;
+  }
+
   const base::Value::List* list = dict->FindList(kProviderUrlListKey);
   if (!list) {
     std::move(callback).Run(
@@ -553,6 +568,7 @@ void OnConfigParsed(const GURL& provider,
   endpoints.metrics = ExtractEndpoint(provider, response, kMetricsEndpoint);
   endpoints.disconnect =
       ExtractEndpoint(provider, response, kDisconnectEndpoint);
+  endpoints.issuance = ExtractEndpoint(provider, response, kVcIssuanceEndpoint);
 
   const base::Value::Dict* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
@@ -565,6 +581,18 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
+
+  if (IsFedCmIdPRegistrationEnabled()) {
+    const base::Value::List* formats = response.FindList(kFormatsKey);
+    if (formats) {
+      for (const auto& format : *formats) {
+        if (format.is_string()) {
+          idp_metadata.formats.push_back(format.GetString());
+        }
+      }
+    }
+  }
+
   if (IsFedCmIdPRegistrationEnabled()) {
     const base::Value::List* types = response.FindList(kTypesKey);
     if (types) {
@@ -627,8 +655,9 @@ void OnClientMetadataParsed(
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
-    data.brand_icon_url = FindBestMatchingIconUrl(
-        icons_value, rp_brand_icon_ideal_size, rp_brand_icon_minimum_size);
+    data.brand_icon_url =
+        FindBestMatchingIconUrl(icons_value, rp_brand_icon_ideal_size,
+                                rp_brand_icon_minimum_size, GURL());
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -1047,15 +1076,25 @@ void IdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
+    bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
-          token_url,
-          base::FeatureList::IsEnabled(features::kFedCmIdAssertionCORS)
-              ? CredentialedResourceRequestType::kOriginWithCORS
-              : CredentialedResourceRequestType::kOriginWithoutCORS);
+          token_url, idp_blindness
+                         ? CredentialedResourceRequestType::kNoOrigin
+                         : CredentialedResourceRequestType::kOriginWithCORS);
+
+  if (idp_blindness) {
+    // IdP blindness can only be used when the feature is enabled.
+    DCHECK(IsFedCmIdPRegistrationEnabled());
+    // We have to set this to a Origin: null because the underlying loader
+    // will  not let us send a request without Origin header if the request
+    // method is POST.
+    resource_request->request_initiator = url::Origin();
+  }
+
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
@@ -1070,6 +1109,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
@@ -1078,34 +1118,46 @@ void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
       "time_to_show_ui=%d"
       "&time_to_continue=%d"
       "&time_to_receive_token=%d"
-      "&turnaround_time=%d",
+      "&turnaround_time=%d"
+      "&did_show_ui=%s",
       static_cast<int>(api_call_to_show_dialog_time.InMilliseconds()),
       static_cast<int>(show_dialog_to_continue_clicked_time.InMilliseconds()),
       static_cast<int>(
           account_selected_to_token_response_time.InMilliseconds()),
-      static_cast<int>(api_call_to_token_response_time.InMilliseconds()));
+      static_cast<int>(api_call_to_token_response_time.InMilliseconds()),
+      did_show_ui ? "true" : "false");
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
           metrics_endpoint_url,
           CredentialedResourceRequestType::kOriginWithoutCORS);
-  DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
-                       IdpNetworkRequestManager::ParseJsonCallback(),
-                       maxResponseSizeInKiB * 1024);
+  // Typically, this IdpNetworkRequestManager will be destroyed after
+  // we return, but because the SimpleURLLoader is owned by the callback
+  // object, the load will not be aborted.
+  // The result of the download is not important, so we pass an empty
+  // DownloadCallback.
+  DownloadUrl(std::move(resource_request), url_encoded_post_data,
+              DownloadCallback(), maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     MetricsEndpointErrorCode error_code) {
-  std::string url_encoded_post_data =
-      base::StringPrintf("error_code=%d", static_cast<int>(error_code));
+  std::string url_encoded_post_data = base::StringPrintf(
+      "error_code=%d&did_show_ui=%s", static_cast<int>(error_code),
+      did_show_ui ? "true" : "false");
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(metrics_endpoint_url,
                                           /*send_origin=*/false);
 
-  DownloadJsonAndParse(std::move(resource_request), url_encoded_post_data,
-                       IdpNetworkRequestManager::ParseJsonCallback(),
-                       maxResponseSizeInKiB * 1024);
+  // Typically, this IdpNetworkRequestManager will be destroyed after
+  // we return, but because the SimpleURLLoader is owned by the callback
+  // object, the load will not be aborted.
+  // The result of the download is not important, so we pass an empty
+  // DownloadCallback.
+  DownloadUrl(std::move(resource_request), url_encoded_post_data,
+              DownloadCallback(), maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
@@ -1200,6 +1252,10 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     IdpNetworkRequestManager::DownloadCallback callback,
     std::unique_ptr<std::string> response_body) {
+  if (!callback) {
+    // For the metrics endpoint, we do not care about the result.
+    return;
+  }
   auto* response_info = url_loader->ResponseInfo();
   // Use the HTTP response code, if available. If it is not available, use the
   // NetError(). Note that it is acceptable to put these in the same int because
@@ -1315,20 +1371,9 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
 
-  if (IsFedCmSameSiteNoneEnabled()) {
-    // Setting the initiator to relying_party_origin_ ensures that we don't send
-    // SameSite=Strict cookies.
-    resource_request->request_initiator = relying_party_origin_;
-  } else {
-    // We set the initiator to nullopt to denote browser-initiated so that this
-    // request is considered first-party. We want to send first-party cookies
-    // because this is not a real third-party request as it is mediated by the
-    // browser, and third-party cookies will be going away with 3pc deprecation,
-    // but we still need to send cookies in these requests.
-    // We use nullopt instead of target_origin because we want to send a
-    // `Sec-Fetch-Site: none` header instead of `Sec-Fetch-Site: same-origin`.
-    resource_request->request_initiator = std::nullopt;
-  }
+  // Setting the initiator to relying_party_origin_ ensures that we don't send
+  // SameSite=Strict cookies.
+  resource_request->request_initiator = relying_party_origin_;
 
   resource_request->destination =
       network::mojom::RequestDestination::kWebIdentity;

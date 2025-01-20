@@ -17,17 +17,14 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
 namespace views {
 class Checkbox;
 class ImageButton;
 class Label;
 class MdTextButton;
 }  // namespace views
+
+namespace webid {
 
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
@@ -48,19 +45,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   ~AccountSelectionBubbleView() override;
 
   // AccountSelectionViewBase:
-  void InitDialogWidget() override;
-
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       bool show_back_button,
       bool is_choose_an_account) override;
-  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+  void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
 
-  void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
-      bool show_back_button) override;
+  void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
+                                      bool show_back_button) override;
 
   void ShowFailureDialog(
       const std::u16string& idp_for_display,
@@ -71,29 +65,22 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                        const std::optional<TokenError>& error) override;
 
   void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) override;
+      const IdentityRequestAccountPtr& account) override;
 
   void ShowSingleReturningAccountDialog(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
-  void ShowLoadingDialog() override;
-
-  void CloseDialog() override;
-
-  void UpdateDialogPosition() override;
-
   void OnAnchorBoundsChanged() override;
 
   std::string GetDialogTitle() const override;
 
+  // views::BubbleDialogDelegateView:
+  gfx::Rect GetBubbleBounds() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
                            WebContentsLargeEnoughToFitDialog);
-
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
 
   // Returns a View containing the logo of the identity provider. Creates the
   // `header_icon_view_` if `has_idp_icon` is true.
@@ -103,7 +90,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // information, disclosure text and a button for the user to confirm the
   // selection.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account);
+      const IdentityRequestAccountPtr& account);
 
   // Adds a separator as well as a multiple account chooser. The chooser
   // contains the info for each account in a button, so the user can pick an
@@ -160,10 +147,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 
-  // Whether the dialog has been populated via either ShowMultiAccountPicker()
-  // or ShowVerifyingSheet().
-  bool has_sheet_{false};
-
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_ = nullptr;
 
@@ -189,5 +172,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionBubbleView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_

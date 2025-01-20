@@ -63,8 +63,8 @@ QuickInsertClipboardHistoryProvider::~QuickInsertClipboardHistoryProvider() =
 void QuickInsertClipboardHistoryProvider::FetchResults(
     OnFetchResultsCallback callback,
     std::u16string_view query) {
-  ash::ClipboardHistoryController* clipboard_history_controller =
-      ash::ClipboardHistoryController::Get();
+  ClipboardHistoryController* clipboard_history_controller =
+      ClipboardHistoryController::Get();
   if (clipboard_history_controller) {
     clipboard_history_controller->GetHistoryValues(
         base::BindOnce(&QuickInsertClipboardHistoryProvider::OnFetchHistory,

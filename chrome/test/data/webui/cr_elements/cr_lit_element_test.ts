@@ -6,7 +6,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {html as polymerHtml, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -104,10 +104,48 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
 customElements.define(
     CrDummyPropertiesWithNotifyElement.is, CrDummyPropertiesWithNotifyElement);
 
+class CrDummyPropertiesWithReflectElement extends CrLitElement {
+  static get is() {
+    return 'cr-dummy-properties-with-reflect' as const;
+  }
+
+  static override get properties() {
+    return {
+      prop1: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      prop2WithSuffix: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      prop3: {type: Boolean},
+
+      propFour: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
+
+  prop1: boolean = false;
+  prop2WithSuffix: boolean = false;
+  prop3: boolean = false;
+  propFour: boolean = false;
+}
+
+customElements.define(
+    CrDummyPropertiesWithReflectElement.is,
+    CrDummyPropertiesWithReflectElement);
+
 declare global {
   interface HTMLElementTagNameMap {
     [CrDummyLitElement.is]: CrDummyLitElement;
     [CrDummyPropertiesWithNotifyElement.is]: CrDummyPropertiesWithNotifyElement;
+    [CrDummyPropertiesWithReflectElement.is]:
+        CrDummyPropertiesWithReflectElement;
   }
 }
 
@@ -464,5 +502,43 @@ suite('CrLitElement', function() {
     assertTrue(event.bubbles);
     assertTrue(event.composed);
     assertEquals(dummyPayload, event.detail);
+  });
+
+  // Checks that properties and attributes map correctly for various cases.
+  test('Property to attribute mapping', async function() {
+    const element = document.createElement('cr-dummy-properties-with-reflect');
+    document.body.appendChild(element);
+
+    assertFalse(element.hasAttribute('prop1'));
+    assertFalse(element.hasAttribute('prop2-with-suffix'));
+    assertFalse(element.hasAttribute('prop-four'));
+
+    // Property -> attribute
+    element.prop1 = true;
+    element.prop2WithSuffix = true;
+    element.propFour = true;
+    await microtasksFinished();
+
+    assertTrue(element.hasAttribute('prop1'));
+    assertTrue(element.hasAttribute('prop2-with-suffix'));
+    assertTrue(element.hasAttribute('prop-four'));
+
+    // Attribute -> property
+    element.toggleAttribute('prop1', false);
+    element.toggleAttribute('prop2-with-suffix', false);
+    element.toggleAttribute('prop-four', false);
+    await microtasksFinished();
+
+    assertFalse(element.prop1);
+    assertFalse(element.prop2WithSuffix);
+    assertFalse(element.propFour);
+
+    // Non-reflected property doesn't show up in attribute, but should observe
+    // attribute changes.
+    assertFalse(element.hasAttribute('prop3'));
+    assertFalse(element.prop3);
+    element.toggleAttribute('prop3', true);
+    await microtasksFinished();
+    assertTrue(element.prop3);
   });
 });

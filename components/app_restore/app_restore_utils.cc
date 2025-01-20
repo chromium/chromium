@@ -205,18 +205,6 @@ std::string GetAppIdFromAppName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
-const std::string GetLacrosWindowId(aura::Window* window) {
-  const std::string* lacros_window_id =
-      window->GetProperty(app_restore::kLacrosWindowId);
-  DCHECK(lacros_window_id);
-  return *lacros_window_id;
-}
-
-int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
-  return full_restore::FullRestoreReadHandler::GetInstance()
-      ->GetLacrosRestoreWindowId(lacros_window_id);
-}
-
 std::tuple<int, int, int> GetWindowAndTabCount(
     const RestoreData& restore_data) {
   int window_count = 0;

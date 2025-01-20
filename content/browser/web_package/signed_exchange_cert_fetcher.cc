@@ -223,7 +223,7 @@ void SignedExchangeCertFetcher::OnDataComplete() {
 
   std::unique_ptr<SignedExchangeCertificateChain> cert_chain =
       SignedExchangeCertificateChain::Parse(
-          base::as_bytes(base::make_span(body_string_)), devtools_proxy_);
+          base::as_bytes(base::span(body_string_)), devtools_proxy_);
   body_string_.clear();
   if (!cert_chain) {
     signed_exchange_utils::ReportErrorAndTraceEvent(

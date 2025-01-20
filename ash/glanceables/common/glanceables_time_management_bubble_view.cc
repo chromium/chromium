@@ -438,7 +438,7 @@ void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(
   }
 
   resize_throughput_tracker_.emplace(
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
   resize_throughput_tracker_->Start(
       ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
           [](const std::string& histogram_name, int smoothness) {

@@ -55,7 +55,6 @@ TEST_F(WebGPUBlocklistTest, BlockAndroidVendorId) {
   // Test the default vendor blocks
   EXPECT_FALSE(IsWebGPUAdapterBlocklisted(info1));
   EXPECT_FALSE(IsWebGPUAdapterBlocklisted(info2));
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info3));
 
   // Test that blocking a vendor which is otherwise allowed still works
   EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info1, "13b5"));

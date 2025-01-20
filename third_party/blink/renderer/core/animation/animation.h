@@ -142,8 +142,8 @@ class CORE_EXPORT Animation : public EventTarget,
 
   std::optional<AnimationTimeDelta> UnlimitedCurrentTime() const;
 
-  // https://drafts.csswg.org/web-animations-2/#the-progress-of-an-animation
-  std::optional<double> progress() const;
+  // https://drafts.csswg.org/web-animations-2/#the-overall-progress-of-an-animation
+  std::optional<double> overallProgress() const;
 
   // https://w3.org/TR/web-animations-1/#play-states
   V8AnimationPlayState::Enum CalculateAnimationPlayState() const;
@@ -303,7 +303,12 @@ class CORE_EXPORT Animation : public EventTarget,
                            // including keyframes or active interval.
     kPendingCancel,        // Animation has been canceled, but could restart
                            // conditions permitting.
-    kPendingRestart        // Animation is to be restarted.
+    kPendingRestart,       // Animation is to be restarted.
+    kPaintWorkletImageCreated,  // A compositable animation was held in limbo
+                                // awaiting paint of the paint worklet image. It
+                                // can now be started on the compositor.
+    kPendingDowngrade  // Paint is forcing the animation to downgrade to
+                       // run on the main thread.
   };
   void SetCompositorPending(CompositorPendingReason reason);
 
@@ -381,6 +386,11 @@ class CORE_EXPORT Animation : public EventTarget,
   }
   bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
 
+  // A native paint worklet animation has no visible effect until the deferred
+  // paint image has been generated. If the animation is not currently
+  // composited we need to restart it on the compositor.
+  void OnPaintWorkletImageCreated();
+
   bool WaitingOnDeferredStartTime() {
     return !start_time_ && (pending_play_ || pending_pause_);
   }
@@ -392,6 +402,15 @@ class CORE_EXPORT Animation : public EventTarget,
       AnimationTimeDelta start_time = AnimationTimeDelta()) {
     start_time_ = start_time;
   }
+
+  enum NativePaintWorkletProperties {
+    kNoPaintWorklet = 0,
+    kBackgroundColorPaintWorklet = 1,
+    kClipPathPaintWorklet = 2
+  };
+
+  using NativePaintWorkletReasons = uint32_t;
+  NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -582,6 +601,16 @@ class CORE_EXPORT Animation : public EventTarget,
   Member<Event> pending_cancelled_event_;
 
   Member<Event> pending_remove_event_;
+
+  // Cache whether animation can potentially have native paint worklets.
+  // In the event of the keyframes changing, we need a new evaluation, of
+  // the composited status for native paint worklet eligible properties.
+  // A change in the playState can also necessitate a composited style update.
+  mutable std::optional<NativePaintWorkletReasons>
+      native_paint_worklet_reasons_;
+  mutable std::optional<NativePaintWorkletReasons>
+      prior_native_paint_worklet_reasons_;
+  Member<Element> prior_native_paint_worklet_target_;
 
   // TODO(crbug.com/960944): Consider reintroducing kPause and cleanup use of
   // mutually exclusive pending_play_ and pending_pause_ flags.

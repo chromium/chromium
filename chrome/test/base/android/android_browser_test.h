@@ -43,6 +43,14 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
 
+  // Counts the number of "PRE_" prefixes in the test name. This is used to
+  // differentiate between different PRE tests in browser test constructors
+  // and setup functions.
+  static size_t GetTestPreCount();
+
+  // Returns the test data path used by the embedded test server.
+  base::FilePath GetChromeTestDataDir() const;
+
  private:
   // Temporary user data directory. Used only when a user data directory is not
   // specified in the command line.

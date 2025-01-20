@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class DeviceAuthenticatorProxy;
 class IOSDeviceAuthenticator;
@@ -22,7 +22,7 @@ class DeviceAuthParams;
 
 // Singleton that owns all DeviceAuthenticatorProxy and associates them with
 // profiles.
-class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
+class DeviceAuthenticatorProxyFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static DeviceAuthenticatorProxy* GetForProfile(ProfileIOS* profile);
   static DeviceAuthenticatorProxyFactory* GetInstance();
@@ -30,18 +30,11 @@ class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
  private:
   friend class base::NoDestructor<DeviceAuthenticatorProxyFactory>;
 
-  friend std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
-      id<ReauthenticationProtocol> reauth_module,
-      ProfileIOS* profile,
-      const device_reauth::DeviceAuthParams& params);
-
   DeviceAuthenticatorProxyFactory();
   ~DeviceAuthenticatorProxyFactory() override;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

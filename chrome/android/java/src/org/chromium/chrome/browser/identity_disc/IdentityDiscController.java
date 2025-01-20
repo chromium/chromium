@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -37,8 +36,9 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -323,13 +323,7 @@ public class IdentityDiscController
 
     private String getContentDescription(@Nullable String email) {
         if (email == null) {
-            if (SigninUtils.shouldShowNewSigninFlow()) {
-                return mContext.getString(
-                        R.string.accessibility_toolbar_btn_signed_out_identity_disc);
-            } else {
-                return mContext.getString(
-                        R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc);
-            }
+            return mContext.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
         }
 
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(email);
@@ -356,38 +350,33 @@ public class IdentityDiscController
         }
         recordIdentityDiscUsed();
 
+        Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
         SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                IdentityServicesProvider.get().getSigninManager(originalProfile);
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
-            if (SigninUtils.shouldShowNewSigninFlow()) {
-                AccountPickerBottomSheetStrings bottomSheetStrings =
-                        new AccountPickerBottomSheetStrings.Builder(
-                                        R.string.signin_account_picker_bottom_sheet_title)
-                                .setSubtitleStringId(
-                                        R.string
-                                                .signin_account_picker_bottom_sheet_benefits_subtitle)
-                                .build();
-                @Nullable
-                Intent intent =
-                        SigninAndHistorySyncActivityLauncherImpl.get()
-                                .createBottomSheetSigninIntentOrShowError(
-                                        mContext,
-                                        mProfileSupplier.get().getOriginalProfile(),
-                                        bottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .NoAccountSigninMode.BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.OPTIONAL,
-                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                        /* selectedCoreAccountId= */ null);
-                if (intent != null) {
-                    mContext.startActivity(intent);
-                }
-            } else {
-                SyncConsentActivityLauncherImpl.get()
-                        .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string.signin_account_picker_bottom_sheet_title)
+                            .setSubtitleStringId(
+                                    R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                            .build();
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    bottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    HistorySyncConfig.OptInMode.OPTIONAL)
+                            .build();
+            @Nullable
+            Intent intent =
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .createBottomSheetSigninIntentOrShowError(
+                                    mContext,
+                                    originalProfile,
+                                    config,
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            if (intent != null) {
+                mContext.startActivity(intent);
             }
         } else {
             SettingsNavigation settingsNavigation =

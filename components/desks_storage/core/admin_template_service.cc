@@ -195,13 +195,7 @@ bool AdminTemplateService::WillAppRegistryCacheResolveAppIds() {
 
   const std::set<apps::AppType>& initialized_types =
       cache->InitializedAppTypes();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return initialized_types.contains(apps::AppType::kStandaloneBrowser);
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return initialized_types.contains(apps::AppType::kChromeApp);
-#endif
 }
 
 }  // namespace desks_storage

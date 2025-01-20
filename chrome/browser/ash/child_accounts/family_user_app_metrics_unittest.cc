@@ -37,8 +37,6 @@ namespace {
 
 constexpr base::TimeDelta kOneDay = base::Days(1);
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
-constexpr int kStart = static_cast<int>(apps::AppType::kUnknown);  // 0
-constexpr int kEnd = static_cast<int>(apps::AppType::kSystemWeb);  // max_value
 
 apps::AppPtr MakeApp(const char* app_id,
                      const char* name,
@@ -49,6 +47,48 @@ apps::AppPtr MakeApp(const char* app_id,
   app->last_launch_time = last_launch_time;
   return app;
 }
+
+// Safer cast to AppType from an integer.
+// Casiting an invalid value (such as removed value) will return std::nullopt.
+inline constexpr std::optional<apps::AppType> ToAppType(int value) {
+  switch (auto app_type = static_cast<apps::AppType>(value); app_type) {
+    case apps::AppType::kUnknown:
+    case apps::AppType::kArc:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kWeb:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kSystemWeb:
+    case apps::AppType::kExtension:
+    case apps::AppType::kBruschetta:
+      return app_type;
+  }
+  return std::nullopt;
+}
+
+// Holds all valid AppType values.
+constexpr auto kAllAppTypes = []() {
+  constexpr size_t kSize = []() {
+    size_t result = 0;
+    for (int i = 0; i <= static_cast<int>(apps::AppType::kMaxValue); ++i) {
+      if (ToAppType(i).has_value()) {
+        ++result;
+      }
+    }
+    return result;
+  }();
+
+  std::array<apps::AppType, kSize> result;
+  size_t current = 0;
+  for (int i = 0; i <= static_cast<int>(apps::AppType::kMaxValue); ++i) {
+    if (auto app_type = ToAppType(i); app_type.has_value()) {
+      result[current++] = *app_type;
+    }
+  }
+  return result;
+}();
 
 }  // namespace
 
@@ -61,8 +101,9 @@ class FamilyUserAppMetricsDerivedForTest : public FamilyUserAppMetrics {
   void OnNewDay() override { FamilyUserAppMetrics::OnNewDay(); }
 
   void InitializeAppTypes() {
-    for (int app_type = kStart; app_type <= kEnd; app_type++)
-      InitializeAppType(static_cast<apps::AppType>(app_type));
+    for (auto app_type : kAllAppTypes) {
+      InitializeAppType(app_type);
+    }
   }
 
   void InitializeAppType(apps::AppType app_type) {
@@ -153,9 +194,6 @@ class FamilyUserAppMetricsTest
         MakeApp(/*app_id=*/"a", /*app_name=*/"arc",
                 /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
                 apps::AppType::kArc));
-    deltas.push_back(MakeApp(/*app_id=*/"bu", /*app_name=*/"builtin",
-                             /*last_launch_time=*/base::Time::Now(),
-                             apps::AppType::kBuiltIn));
     deltas.push_back(MakeApp(/*app_id=*/"c", /*app_name=*/"crostini",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::AppType::kCrostini));
@@ -170,14 +208,6 @@ class FamilyUserAppMetricsTest
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kPluginVm));
     deltas.push_back(MakeApp(
-        /*app_id=*/"l", /*app_name=*/"lacros",
-        /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::AppType::kStandaloneBrowser));
-    deltas.push_back(MakeApp(
-        /*app_id=*/"lca", /*app_name=*/"lacros chrome app",
-        /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::AppType::kStandaloneBrowserChromeApp));
-    deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::AppType::kRemote));
@@ -187,6 +217,13 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(/*app_id=*/"s", /*app_name=*/"systemweb",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::AppType::kSystemWeb));
+    deltas.push_back(MakeApp(/*app_id=*/"e", /*app_name=*/"extension",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::AppType::kExtension));
+    deltas.push_back(MakeApp(/*app_id=*/"br", /*app_name=*/"bruschetta",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::AppType::kBruschetta));
+
     proxy->OnApps(std::move(deltas), apps::AppType::kUnknown,
                   false /* should_notify_initialized */);
 
@@ -247,8 +284,7 @@ TEST_P(FamilyUserAppMetricsTest, CountRecentlyUsedApps) {
   family_user_app_metrics_->OnNewDay();
   family_user_app_metrics_->InitializeAppTypes();
 
-  for (int i = kStart; i <= kEnd; i++) {
-    apps::AppType app_type = static_cast<apps::AppType>(i);
+  for (auto app_type : kAllAppTypes) {
     const std::string histogram_name =
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
     histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/1,
@@ -263,8 +299,7 @@ TEST_P(FamilyUserAppMetricsTest, UninitializedAppTypeNotReportedOnNewDay) {
   InstallApps();
   family_user_app_metrics_->OnNewDay();
 
-  for (int i = kStart; i <= kEnd; i++) {
-    apps::AppType app_type = static_cast<apps::AppType>(i);
+  for (auto app_type : kAllAppTypes) {
     const std::string histogram_name =
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
     histogram_tester.ExpectTotalCount(histogram_name, /*expected_count=*/0);
@@ -300,16 +335,13 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
         /*sample=*/3, /*expected_count=*/1);
   }
 
-  const apps::AppType fresh_app_types[7] = {
-      apps::AppType::kUnknown,   apps::AppType::kArc,
-      apps::AppType::kBuiltIn,   apps::AppType::kCrostini,
-      apps::AppType::kChromeApp, apps::AppType::kWeb,
-      apps::AppType::kBorealis,
+  constexpr apps::AppType fresh_app_types[] = {
+      apps::AppType::kUnknown,   apps::AppType::kArc, apps::AppType::kCrostini,
+      apps::AppType::kChromeApp, apps::AppType::kWeb, apps::AppType::kBorealis,
   };
   // Launched over 28 days ago and dropped from the count.
-  const apps::AppType stale_app_types[3] = {
+  constexpr apps::AppType stale_app_types[] = {
       apps::AppType::kPluginVm,
-      apps::AppType::kStandaloneBrowser,
       apps::AppType::kRemote,
   };
   for (apps::AppType app_type : fresh_app_types) {
@@ -332,22 +364,29 @@ TEST_P(FamilyUserAppMetricsTest, OnlyReportSingleInitilizedAppTypeOnNewDay) {
   InstallApps();
   family_user_app_metrics_->OnNewDay();
 
-  for (int curr_app_type = kStart; curr_app_type <= kEnd; curr_app_type++) {
+  for (auto app_type : kAllAppTypes) {
+    // Extensions are recorded separately.
+    if (app_type == apps::AppType::kExtension) {
+      continue;
+    }
+
     base::HistogramTester histogram_tester;
     // Only report one app type.
-    apps::AppType app_type = static_cast<apps::AppType>(curr_app_type);
     family_user_app_metrics_->InitializeAppType(app_type);
-    std::string reported_app_type =
-        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
-    ASSERT_FALSE(reported_app_type.empty());
-    histogram_tester.ExpectUniqueSample(reported_app_type, /*sample=*/1,
-                                        /*expected_count=*/1);
-    for (int other_app_type = kStart;
-         other_app_type <= kEnd && other_app_type != curr_app_type;
-         other_app_type++) {
-      app_type = static_cast<apps::AppType>(other_app_type);
-      reported_app_type =
+    {
+      std::string reported_app_type =
           FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
+      ASSERT_FALSE(reported_app_type.empty());
+      histogram_tester.ExpectUniqueSample(reported_app_type, /*sample=*/1,
+                                          /*expected_count=*/1);
+    }
+    for (auto other_app_type : kAllAppTypes) {
+      if (static_cast<int>(app_type) <= static_cast<int>(other_app_type)) {
+        break;
+      }
+      std::string reported_app_type =
+          FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(
+              other_app_type);
       ASSERT_FALSE(reported_app_type.empty());
       histogram_tester.ExpectTotalCount(reported_app_type,
                                         /*expected_count=*/0);

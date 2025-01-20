@@ -584,15 +584,10 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
 
 void HotseatWidget::DelegateView::UpdateHighlightBorder(
     bool update_corner_radius) {
-  const bool is_jelly_enabled = chromeos::features::IsJellyrollEnabled();
-  views::HighlightBorder::Type border_type;
-  if (!is_jelly_enabled) {
-    border_type = views::HighlightBorder::Type::kHighlightBorder1;
-  } else {
-    border_type = shadow_->GetLayer()->visible()
-                      ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-                      : views::HighlightBorder::Type::kHighlightBorderNoShadow;
-  }
+  views::HighlightBorder::Type border_type =
+      shadow_->GetLayer()->visible()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorderNoShadow;
 
   if (GetBorder() && !update_corner_radius && border_type_ == border_type) {
     return;

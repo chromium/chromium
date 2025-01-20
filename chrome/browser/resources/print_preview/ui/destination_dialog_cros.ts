@@ -28,8 +28,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {Destination} from '../data/destination.js';
-import {GooglePromotedDestinationId} from '../data/destination.js';
+import type {Destination} from '../data/destination_cros.js';
+import {GooglePromotedDestinationId} from '../data/destination_cros.js';
 import type {DestinationStore} from '../data/destination_store.js';
 import {DestinationStoreEventType} from '../data/destination_store.js';
 import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';

@@ -12,13 +12,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class CanvasResource;
-class CanvasResourceDispatcher;
 
 class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   DISALLOW_NEW();
@@ -32,7 +32,8 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
       base::WeakPtr<CanvasResourceDispatcher>,
       scoped_refptr<base::SingleThreadTaskRunner>);
 
-  void SetSuspendOffscreenCanvasAnimation(bool);
+  void SetSuspendOffscreenCanvasAnimation(
+      CanvasResourceDispatcher::AnimationState requested_state);
 
   static OffscreenCanvasPlaceholder* GetPlaceholderCanvasById(
       unsigned placeholder_id);
@@ -47,13 +48,15 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     return placeholder_id_ != kNoPlaceholderId;
   }
 
-  void UpdateOffscreenCanvasFilterQuality(
-      cc::PaintFlags::FilterQuality filter_quality);
-
   virtual bool HasCanvasCapture() const { return false; }
 
+  CanvasResourceDispatcher::AnimationState GetAnimationStateForTesting() const {
+    return current_animation_state_;
+  }
+
  private:
-  bool PostSetSuspendAnimationToOffscreenCanvasThread(bool suspend);
+  bool PostSetAnimationStateToOffscreenCanvasThread(
+      CanvasResourceDispatcher::AnimationState animation_state);
 
   // Information about the Offscreen Canvas:
   scoped_refptr<CanvasResource> placeholder_frame_;
@@ -65,13 +68,15 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   };
   int placeholder_id_ = kNoPlaceholderId;
 
-  enum AnimationState {
-    kActiveAnimation,
-    kSuspendedAnimation,
-    kShouldSuspendAnimation,
-    kShouldActivateAnimation,
-  };
-  AnimationState animation_state_ = kActiveAnimation;
+  // If an animation state change was requested, but we couldn't update it
+  // immediately, then this holds the most recent request.
+  std::optional<CanvasResourceDispatcher::AnimationState>
+      deferred_animation_state_;
+
+  // Most recent animation state sent to the dispatcher.
+  CanvasResourceDispatcher::AnimationState current_animation_state_ =
+      CanvasResourceDispatcher::AnimationState::kActive;
+
   std::optional<cc::PaintFlags::FilterQuality> filter_quality_ = std::nullopt;
 };
 

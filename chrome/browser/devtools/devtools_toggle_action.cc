@@ -11,8 +11,7 @@ DevToolsToggleAction::RevealParams::RevealParams(const std::u16string& url,
                                                  size_t column_number)
     : url(url), line_number(line_number), column_number(column_number) {}
 
-DevToolsToggleAction::RevealParams::~RevealParams() {
-}
+DevToolsToggleAction::RevealParams::~RevealParams() = default;
 
 DevToolsToggleAction::DevToolsToggleAction(Type type) : type_(type) {
 }
@@ -31,8 +30,7 @@ void DevToolsToggleAction::operator=(const DevToolsToggleAction& rhs) {
     params_ = std::make_unique<RevealParams>(*rhs.params_);
 }
 
-DevToolsToggleAction::~DevToolsToggleAction() {
-}
+DevToolsToggleAction::~DevToolsToggleAction() = default;
 
 // static
 DevToolsToggleAction DevToolsToggleAction::Show() {

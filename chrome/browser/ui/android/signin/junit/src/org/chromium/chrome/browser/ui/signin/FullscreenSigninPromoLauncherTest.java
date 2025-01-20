@@ -247,10 +247,10 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Test
     public void whenHasNewAccountShouldReturnTrue() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
-                        AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
-                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+                        TestAccounts.AADC_ADULT_ACCOUNT.getEmail()))
+                .thenReturn(TestAccounts.AADC_ADULT_ACCOUNT);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));
@@ -270,10 +270,10 @@ public class FullscreenSigninPromoLauncherTest {
     @Test
     public void whenHasNewAccountOnAutoShouldReturnFalse() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
-                        AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
-                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+                        TestAccounts.AADC_ADULT_ACCOUNT.getEmail()))
+                .thenReturn(TestAccounts.AADC_ADULT_ACCOUNT);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));

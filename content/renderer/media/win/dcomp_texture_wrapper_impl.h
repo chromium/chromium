@@ -88,7 +88,6 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
 
   std::unique_ptr<DCOMPTextureHost> dcomp_texture_host_;
 
-  bool mailbox_added_ = false;
   gpu::Mailbox mailbox_;
 
   CreateVideoFrameCB create_video_frame_cb_;

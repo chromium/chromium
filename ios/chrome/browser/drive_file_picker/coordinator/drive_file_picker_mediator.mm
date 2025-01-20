@@ -15,6 +15,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
@@ -24,11 +26,11 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -57,6 +59,8 @@ constexpr int kThumbnailResizeDimension = 64;
 // Prefix of links to icons in the Drive third-party icon repository.
 NSString* kDriveIconRepositoryPrefix =
     @"https://drive-thirdparty.googleusercontent.com/";
+// MIME type for folder items.
+NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 }  // namespace
 
@@ -76,6 +80,7 @@ NSString* kDriveIconRepositoryPrefix =
   // If `_collectionType` is `kFolder`, identifier of that folder.
   NSString* _folderIdentifier;
   std::vector<DriveItem> _fetchedDriveItems;
+  raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveFilePickerItem`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
@@ -156,6 +161,7 @@ NSString* kDriveIconRepositoryPrefix =
           sortingCriteria:(DriveItemsSortingType)sortingCriteria
          sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
+          identityManager:(signin::IdentityManager*)identityManager
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
@@ -165,12 +171,14 @@ NSString* kDriveIconRepositoryPrefix =
     CHECK(webState);
     CHECK(identity);
     CHECK(driveService);
+    CHECK(identityManager);
     CHECK(accountManagerService);
     CHECK(imagesPending);
     CHECK(imageCache);
     _webState = webState->GetWeakPtr();
     _identity = identity;
     _driveService = driveService;
+    _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _title = [title copy];
     _collectionType = collectionType;
@@ -220,6 +228,7 @@ NSString* kDriveIconRepositoryPrefix =
   _driveList = nullptr;
   _driveDownloader = nullptr;
   _accountManagerService = nullptr;
+  _identityManager = nullptr;
   _imageFetcher = nullptr;
   _imageTranscoder = nullptr;
 }
@@ -302,10 +311,25 @@ NSString* kDriveIconRepositoryPrefix =
 #pragma mark - DriveFilePickerMutator
 
 - (void)selectOrDeselectDriveItem:(NSString*)driveItemIdentifier {
+  // `driveItem` is null if the `DriveFilePickerItem` that was selected does not
+  // correspond to a `DriveItem` that was fetched i.e. it corresponds to a
+  // virtual collection.
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
-  // If this is a real file, select and download it.
-  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive) {
+  BOOL driveItemIsShortcutToFolder =
+      driveItem && driveItem->is_shortcut &&
+      [driveItem->shortcut_target_mime_type isEqualToString:kFolderMIMEType];
+
+  // Types of items are handled in the following order:
+  // I. Real items (items for which `driveItem` is not null)
+  //    1. Files and shortcuts to files are handled first,
+  //    2. Real collections i.e. shared drives, folders or shortcuts to folders.
+  // II. Virtual items
+  //    1. Virtual collections i.e. "My Drive", "Starred items", etc.
+
+  // I.1. If this is a file or shortcut to a file, select and download it.
+  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive &&
+      !driveItemIsShortcutToFolder) {
     // Unfocusing the search bar so the confirmation button can become visible.
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:_searchText];
@@ -317,10 +341,24 @@ NSString* kDriveIconRepositoryPrefix =
   // an item is already selected, clear the selection.
   [self setSelectedFiles:{}];
 
-  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
+  // I.2. Handle real collections i.e. shared drives, folders or shortcuts to
+  // folders.
+  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive ||
+                    driveItemIsShortcutToFolder)) {
     if (_collectionType == DriveFilePickerCollectionType::kRoot &&
         _shouldShowSearchItems) {
       _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSearch;
+    }
+    NSString* folderIdentifier = nil;
+    if (driveItem->is_folder || driveItem->is_shared_drive) {
+      folderIdentifier = driveItem->identifier;
+    } else if (driveItemIsShortcutToFolder) {
+      folderIdentifier = driveItem->shortcut_target_identifier;
+    }
+    if (!folderIdentifier) {
+      // If no appropriate folder identifier could be retrieved from `driveItem`
+      // then do nothing.
+      return;
     }
     // If this is a real folder or shared drive, then open it.
     [self.delegate
@@ -329,7 +367,7 @@ NSString* kDriveIconRepositoryPrefix =
                             imagesPending:_imagesPending
                                imageCache:_imageCache
                            collectionType:DriveFilePickerCollectionType::kFolder
-                         folderIdentifier:driveItem->identifier
+                         folderIdentifier:folderIdentifier
                                    filter:_filter
                       ignoreAcceptedTypes:_ignoreAcceptedTypes
                           sortingCriteria:_sortingCriteria
@@ -337,7 +375,7 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
 
-  // Handle browsing to virtual collections.
+  // II.1. Handle browsing to virtual collections.
   DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
   DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
   DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
@@ -891,7 +929,8 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
   CHECK(!_downloadingQueue.empty());
-  CHECK([fileIdentifier isEqualToString:_downloadingQueue.front().identifier]);
+  const DriveItem& fileToDequeue = _downloadingQueue.front();
+  CHECK([fileIdentifier isEqualToString:fileToDequeue.identifier]);
 
   if (readyForSelection) {
     // If there is a copy of the file ready, dequeue the file.
@@ -904,8 +943,18 @@ NSString* kDriveIconRepositoryPrefix =
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kInProgress];
   __weak __typeof(self) weakSelf = self;
   _downloadingFileIdentifier = [fileIdentifier copy];
+
+  // The file to download might be different from the file in the queue i.e. if
+  // the file in the queue is a shortcut to a real file, then the real file
+  // should be downloaded instead. Only the identifier should matter to use the
+  // downloader so a new DriveItem is created with only `identifier` set to the
+  // correct value.
+  DriveItem fileToDownload;
+  fileToDownload.identifier = fileToDequeue.is_shortcut
+                                  ? fileToDequeue.shortcut_target_identifier
+                                  : fileToDequeue.identifier;
   _downloadingFileDownloadID = _driveDownloader->DownloadFile(
-      _downloadingQueue.front(), fileURL,
+      fileToDownload, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
       }),
@@ -1187,8 +1236,9 @@ NSString* kDriveIconRepositoryPrefix =
   };
   // TODO(crbug.com/344812396): Add the identites block.
   UIMenuElement* identitiesMenu = [actionFactory
-      menuToSelectDriveIdentityWithIdentities:_accountManagerService
-                                                  ->GetAllIdentities()
+      menuToSelectDriveIdentityWithIdentities:signin::GetIdentitiesOnDevice(
+                                                  _identityManager,
+                                                  _accountManagerService)
                               currentIdentity:_identity
                                         block:actionResult];
   // TODO(crbug.com/344812396): Add the new account block.

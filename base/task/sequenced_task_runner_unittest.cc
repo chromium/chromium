@@ -41,8 +41,9 @@ class FlagOnDelete {
   ~FlagOnDelete() {
     EXPECT_FALSE(*deleted_);
     *deleted_ = true;
-    if (expected_deletion_sequence_)
+    if (expected_deletion_sequence_) {
       EXPECT_TRUE(expected_deletion_sequence_->RunsTasksInCurrentSequence());
+    }
   }
 
  private:

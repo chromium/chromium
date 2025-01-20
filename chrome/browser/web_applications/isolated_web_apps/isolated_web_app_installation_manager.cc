@@ -25,8 +25,8 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
@@ -165,15 +165,6 @@ void IsolatedWebAppInstallationManager::Start() {
   if (!HasIwaInstallSwitch(command_line)) {
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsWebAppsCrosapiEnabled()) {
-    // If Lacros manages Web Apps, then Ash only manages System Web Apps. Thus,
-    // do not attempt to install IWAs in Ash, because Lacros will take care of
-    // that.
-    return;
-  }
-#endif
 
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     ReportInstallationResult(base::unexpected(

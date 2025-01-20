@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
-#include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +20,7 @@ namespace media_router {
 class MockDnsSdDeviceLister : public DnsSdDeviceLister {
  public:
   MockDnsSdDeviceLister() : DnsSdDeviceLister(nullptr, nullptr, "") {}
-  ~MockDnsSdDeviceLister() override {}
+  ~MockDnsSdDeviceLister() override = default;
 
   MOCK_METHOD0(Discover, void());
 };
@@ -27,15 +28,16 @@ class MockDnsSdDeviceLister : public DnsSdDeviceLister {
 class TestDnsSdRegistry : public DnsSdRegistry {
  public:
   TestDnsSdRegistry() : DnsSdRegistry(nullptr), delegate_(nullptr) {}
-  ~TestDnsSdRegistry() override {}
+  ~TestDnsSdRegistry() override = default;
 
   MockDnsSdDeviceLister* GetListerForService(const std::string& service_type) {
     return listers_[service_type];
   }
 
   int GetServiceListenerCount(const std::string& service_type) {
-    if (service_data_map_.find(service_type) == service_data_map_.end())
+    if (service_data_map_.find(service_type) == service_data_map_.end()) {
       return 0;
+    }
 
     return service_data_map_[service_type]->GetListenerCount();
   }
@@ -77,8 +79,8 @@ class MockDnsSdObserver : public DnsSdRegistry::DnsSdObserver {
 
 class DnsSdRegistryTest : public testing::Test {
  public:
-  DnsSdRegistryTest() {}
-  ~DnsSdRegistryTest() override {}
+  DnsSdRegistryTest() = default;
+  ~DnsSdRegistryTest() override = default;
 
   void SetUp() override {
     registry_ = std::make_unique<TestDnsSdRegistry>();

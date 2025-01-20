@@ -7,6 +7,9 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
@@ -175,7 +178,7 @@ std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
                                     &ssl_info.connection_status);
   ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
-  stream->set_ssl_info(ssl_info);
+  stream->set_ssl_info(std::move(ssl_info));
   return stream;
 }
 
@@ -224,6 +227,20 @@ bool FakeStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
+StreamKeyBuilder& StreamKeyBuilder::from_key(const HttpStreamKey& key) {
+  destination_ = key.destination();
+  privacy_mode_ = key.privacy_mode();
+  secure_dns_policy_ = key.secure_dns_policy();
+  disable_cert_network_fetches_ = key.disable_cert_network_fetches();
+  return *this;
+}
+
+HttpStreamKey StreamKeyBuilder::Build() const {
+  return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
+                       NetworkAnonymizationKey(), secure_dns_policy_,
+                       disable_cert_network_fetches_);
+}
+
 HttpStreamKey GroupIdToHttpStreamKey(
     const ClientSocketPool::GroupId& group_id) {
   return HttpStreamKey(group_id.destination(), group_id.privacy_mode(),
@@ -231,5 +248,79 @@ HttpStreamKey GroupIdToHttpStreamKey(
                        group_id.secure_dns_policy(),
                        group_id.disable_cert_network_fetches());
 }
+
+TestJobDelegate::TestJobDelegate(std::optional<HttpStreamKey> stream_key) {
+  if (stream_key.has_value()) {
+    key_builder_.from_key(*stream_key);
+  } else {
+    key_builder_.set_destination(kDefaultDestination);
+  }
+}
+
+TestJobDelegate::~TestJobDelegate() = default;
+
+void TestJobDelegate::CreateAndStartJob(HttpStreamPool& pool) {
+  CHECK(!job_);
+  job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
+             .CreateJob(this, quic_version_, expected_protocol_,
+                        /*request_net_log=*/NetLogWithSource());
+  job_->Start();
+}
+
+void TestJobDelegate::OnStreamReady(HttpStreamPool::Job* job,
+                                    std::unique_ptr<HttpStream> stream,
+                                    NextProto negotiated_protocol) {
+  negotiated_protocol_ = negotiated_protocol;
+  SetResult(OK);
+}
+
+RequestPriority TestJobDelegate::priority() const {
+  return RequestPriority::DEFAULT_PRIORITY;
+}
+
+HttpStreamPool::RespectLimits TestJobDelegate::respect_limits() const {
+  return HttpStreamPool::RespectLimits::kRespect;
+}
+
+const std::vector<SSLConfig::CertAndStatus>&
+TestJobDelegate::allowed_bad_certs() const {
+  return allowed_bad_certs_;
+}
+
+bool TestJobDelegate::enable_ip_based_pooling() const {
+  return true;
+}
+
+bool TestJobDelegate::enable_alternative_services() const {
+  return true;
+}
+
+bool TestJobDelegate::is_http1_allowed() const {
+  return true;
+}
+
+const ProxyInfo& TestJobDelegate::proxy_info() const {
+  return proxy_info_;
+}
+
+const NetLogWithSource& TestJobDelegate::net_log() const {
+  return net_log_;
+}
+
+void TestJobDelegate::OnStreamFailed(HttpStreamPool::Job* job,
+                                     int status,
+                                     const NetErrorDetails& net_error_details,
+                                     ResolveErrorInfo resolve_error_info) {
+  SetResult(status);
+}
+
+void TestJobDelegate::OnCertificateError(HttpStreamPool::Job* job,
+                                         int status,
+                                         const SSLInfo& ssl_info) {
+  SetResult(status);
+}
+
+void TestJobDelegate::OnNeedsClientAuth(HttpStreamPool::Job* job,
+                                        SSLCertRequestInfo* cert_info) {}
 
 }  // namespace net

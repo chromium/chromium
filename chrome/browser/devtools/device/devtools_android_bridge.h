@@ -77,7 +77,7 @@ class DevToolsAndroidBridge : public KeyedService {
    public:
     virtual void DeviceListChanged(const RemoteDevices& devices) = 0;
    protected:
-    virtual ~DeviceListListener() {}
+    virtual ~DeviceListListener() = default;
   };
 
   explicit DevToolsAndroidBridge(Profile* profile);
@@ -92,7 +92,7 @@ class DevToolsAndroidBridge : public KeyedService {
    public:
     virtual void DeviceCountChanged(int count) = 0;
    protected:
-    virtual ~DeviceCountListener() {}
+    virtual ~DeviceCountListener() = default;
   };
 
   void AddDeviceCountListener(DeviceCountListener* listener);
@@ -111,7 +111,7 @@ class DevToolsAndroidBridge : public KeyedService {
 
     virtual void PortStatusChanged(const ForwardingStatus&) = 0;
    protected:
-    virtual ~PortForwardingListener() {}
+    virtual ~PortForwardingListener() = default;
   };
 
   void AddPortForwardingListener(PortForwardingListener* listener);

@@ -78,7 +78,6 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   bool Equals(const CSSValueList&) const;
   unsigned CustomHash() const;
 
-  const CSSValue* UntaintedCopy() const;
   const CSSValueList& PopulateWithTreeScope(const TreeScope*) const;
 
   bool HasFailedOrCanceledSubresources() const;

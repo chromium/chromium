@@ -4,9 +4,9 @@
 
 package org.chromium.ui.modaldialog;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -14,16 +14,17 @@ import org.chromium.ui.modelutil.PropertyModel;
  *
  * The result of the dialog is passed back via a Callback.
  */
+@NullMarked
 public class SimpleModalDialogController implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
-    private Callback<Integer> mActionCallback;
+    private @Nullable Callback<Integer> mActionCallback;
 
     /**
      * @param modalDialogManager the dialog manager where the dialog will be shown.
      * @param action a callback which will be run with the result of the confirmation.
      */
     public SimpleModalDialogController(
-            ModalDialogManager modalDialogManager, @NonNull Callback<Integer> action) {
+            ModalDialogManager modalDialogManager, Callback<Integer> action) {
         mModalDialogManager = modalDialogManager;
         mActionCallback = action;
     }
@@ -40,6 +41,7 @@ public class SimpleModalDialogController implements ModalDialogProperties.Contro
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
         Callback<Integer> action = mActionCallback;
+        assert action != null;
         mActionCallback = null;
         action.onResult(dismissalCause);
     }

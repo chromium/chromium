@@ -597,12 +597,6 @@ public class KeyboardAccessoryControllerTest {
         when(mMockTabSwitchingDelegate.hasTabs()).thenReturn(true);
     }
 
-    private void setActiveTab(KeyboardAccessoryData.Tab tab) {
-        when(mMockTabSwitchingDelegate.getActiveTab()).thenReturn(tab);
-        when(mMockTabSwitchingDelegate.hasTabs()).thenReturn(true);
-        mCoordinator.getMediatorForTesting().onActiveTabChanged(0);
-    }
-
     private AutofillBarItem getAutofillItemAt(int position) {
         return (AutofillBarItem) mModel.get(BAR_ITEMS).get(position);
     }

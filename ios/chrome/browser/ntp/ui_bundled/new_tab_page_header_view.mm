@@ -12,10 +12,15 @@
 #import "base/feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_container_view.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
@@ -23,19 +28,14 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/lens/lens_availability.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
-#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -59,20 +59,15 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
-const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
+const CGFloat kEndButtonWithBadgeTrailingSpace = 7.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
 const CGFloat kHintLabelFakeboxLeadingSpace = 26.0;
 const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
 
-// The amount to inset the Fakebox from the rest of the modules on Home, when
-// Large Fakebox is enabled.
-const CGFloat kLargeFakeboxHorizontalMargin = 8.0;
-
-// The constants for the constraints affecting the separation between the Lens
-// and Voice Search buttons.
-const CGFloat kEndButtonSeparation = 19.0;
+// The spacing between the items in the button stack.
+const CGFloat kButtonSpacing = 9.0;
 
 // The height of the divider between the mic and lens icons.
 const CGFloat kIconDividerHeight = 13.0;
@@ -89,9 +84,6 @@ const CGFloat kCustomizationNewBadgeOffset = 14.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
-  if (IsSplitToolbarMode(environment) && IsIOSLargeFakeboxEnabled()) {
-    return kLargeFakeboxHorizontalMargin;
-  }
   return 0.0;
 }
 
@@ -186,9 +178,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
-// Constraint for positioning the end button away from the fake box rounded
-// rectangle.
-@property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
 // View used to add on-touch highlight to the fake omnibox.
 @property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 // View used to simulate the top toolbar when the header is stuck to the top of
@@ -212,6 +201,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIImageView* _accountDiscParticleBadgeImageView;
   // The New Feature badge on the customization menu's entrypoint.
   UIView* _customizationNewFeatureBadge;
+  // A view to contain all the buttons on the trailing side of the fakebox.
+  UIStackView* _buttonStack;
 
   // Constraints to update the `toolbarView`'s postion according to the
   // `tabGroupIndicatorView`'s visibility.
@@ -357,21 +348,35 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+  _buttonStack = [[UIStackView alloc] init];
+  _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _buttonStack.alignment = UIStackViewAlignmentCenter;
+  _buttonStack.spacing = kButtonSpacing;
+  _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      0, 0, 0, [self endButtonFakeboxTrailingSpace]);
+  _buttonStack.layoutMarginsRelativeArrangement = true;
+  [searchField addSubview:_buttonStack];
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonStack.trailingAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor],
+    [_buttonStack.centerYAnchor
+        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+  ]];
+
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [searchField addSubview:self.voiceSearchButton];
-  UIButton* endButton = self.voiceSearchButton;
+  [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::NewTabPage, self.isGoogleDefaultSearchEngine);
   if (useLens) {
+    [self addVoiceAndLensDivider];
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [searchField addSubview:self.lensButton];
-    endButton = self.lensButton;
+    [_buttonStack addArrangedSubview:self.lensButton];
     if (_useNewBadgeForLensButton) {
       [self.lensButton addTarget:self
                           action:@selector(lensButtonWithNewBadgeTapped:)
@@ -402,24 +407,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  // If the Lens button was created, layout the header with the Lens button on
-  // the end.
-  if (self.lensButton) {
-    [self addVoiceAndLensDivider];
-    [NSLayoutConstraint activateConstraints:@[
-      // Lens button constraints.
-      [self.lensButton.leadingAnchor
-          constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
-                         constant:kEndButtonSeparation],
-      [self.lensButton.centerYAnchor
-          constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
-    ]];
-  }
-
-  self.endButtonTrailingConstraint = [endButton.trailingAnchor
-      constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                     constant:-[self endButtonFakeboxTrailingSpace]];
-
   // The voice search button is always on the leading side, even if the Lens
   // button is visible.
   self.hintLabelTrailingConstraint = [self.searchHintLabel.trailingAnchor
@@ -429,15 +416,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.voiceSearchButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
-    self.endButtonTrailingConstraint,
   ]];
 }
 
 - (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
-  const BOOL darkModeEnabled = (style == UIUserInterfaceStyleDark);
-  const BOOL useColorIcon =
-      !darkModeEnabled && base::FeatureList::IsEnabled(kOmniboxColorIcons);
-
+  const BOOL useColorIcon = (style != UIUserInterfaceStyleDark);
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
   if (self.lensButton) {
@@ -504,7 +487,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
   }
 
@@ -593,11 +576,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
-  // Adjust the position of the search field's subviews by adjusting their
-  // constraint constant value.
-  self.endButtonTrailingConstraint.constant =
-      -Interpolate([self endButtonFakeboxTrailingSpace],
-                   kEndButtonOmniboxTrailingSpace, percent);
+  // Adjust the position of the search field's subviews.
+  CGFloat endButtonInset = Interpolate([self endButtonFakeboxTrailingSpace],
+                                       kEndButtonOmniboxTrailingSpace, percent);
+  _buttonStack.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, 0, 0, endButtonInset);
   self.hintLabelLeadingConstraint.constant =
       hintLabelScalingExtraOffset + Interpolate(kHintLabelFakeboxLeadingSpace,
                                                 kHintLabelOmniboxLeadingSpace,
@@ -625,18 +608,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                          [UIColor colorWithWhite:0 alpha:alpha];
                    }
                    completion:nil];
-}
-
-- (void)hideFakeboxButtons {
-  self.separator.alpha = 0;
-  self.voiceSearchButton.alpha = 0;
-  self.lensButton.alpha = 0;
-}
-
-- (void)showFakeboxButtons {
-  self.separator.alpha = 1;
-  self.voiceSearchButton.alpha = 1;
-  self.lensButton.alpha = 1;
 }
 
 - (void)setIdentityDiscErrorBadge {
@@ -725,8 +696,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
-  CHECK(IsTabGroupIndicatorEnabled());
-
+  CHECK(IsTabGroupInGridEnabled());
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
   _tabGroupIndicatorView.available = isAvailable;
@@ -747,6 +717,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     _toolbarNoTabGroupIndicartorConstraint.active = NO;
     _toolbarTabGroupIndicartorConstraint.active = YES;
   }
+}
+
+- (UIView*)fakeboxButtonsSnapshot {
+  return [_buttonStack snapshotViewAfterScreenUpdates:NO];
 }
 
 #pragma mark - UITraitEnvironment
@@ -788,7 +762,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Sets tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupInGridEnabled());
   _tabGroupIndicatorView = view;
   _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -906,18 +880,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
   divider.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dividerWidth = 1.0 / [[UIScreen mainScreen] scale];
-  [self.lensButton.superview addSubview:divider];
 
   [NSLayoutConstraint activateConstraints:@[
-    [divider.leadingAnchor
-        constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
-                       constant:kEndButtonSeparation / 2],
-    [divider.centerYAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     [divider.heightAnchor constraintEqualToConstant:kIconDividerHeight],
     [divider.widthAnchor constraintEqualToConstant:dividerWidth],
   ]];
   self.voiceAndLensDivider = divider;
+  [_buttonStack addArrangedSubview:divider];
 }
 
 // Handles a lens button with new badge tap. Registers that the tap has occurred
@@ -937,9 +906,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Returns end button fakebox trailing space depending on fakebox size and
 // whether the new badge is displayed.
 - (CGFloat)endButtonFakeboxTrailingSpace {
-  // If normal sized fakebox and new bade is showing, reduce trailing space.
-  if (_useNewBadgeForLensButton && !IsIOSLargeFakeboxEnabled()) {
-    return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
+  // If new bade is showing, reduce trailing space.
+  if (_useNewBadgeForLensButton) {
+    return kEndButtonWithBadgeTrailingSpace;
   }
   // Common trailing space.
   return kEndButtonFakeboxTrailingSpace;

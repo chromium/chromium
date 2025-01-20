@@ -98,11 +98,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const = 0;
 
-  // Returns an identifier based on the frame data's underlying storage. This
-  // returns consistent results even if the frame gets wrapped. Returns an
-  // invalid GenericSharedMemoryId if an identifier cannot be determined.
-  virtual gfx::GenericSharedMemoryId GetSharedMemoryId() const = 0;
-
   virtual const VideoFrameLayout& layout() const = 0;
 
   virtual VideoPixelFormat format() const = 0;
@@ -141,7 +136,7 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
   // An UnguessableToken that identifies unique frames regardless of wrapping.
   // The returned UnguessableToken is guaranteed to be non-empty.
-  const base::UnguessableToken& tracking_token() const;
+  virtual const base::UnguessableToken& tracking_token() const = 0;
 
   virtual base::TimeDelta timestamp() const = 0;
   virtual void set_timestamp(base::TimeDelta timestamp) = 0;

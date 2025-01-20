@@ -23,7 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -204,15 +204,16 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
 
     /**
      * Construct and return help message to be displayed on R.id.sad_tab_message.
+     *
      * @param context Context of the resulting Sad Tab view. This is needed to load the strings.
-     * @param suggestionAction Action to be executed when user clicks "try these suggestions"
-     *                         or "learn more".
+     * @param suggestionAction Action to be executed when user clicks "try these suggestions" or
+     *     "learn more".
      * @return Help message to be displayed on R.id.sad_tab_message.
      */
     private static CharSequence getHelpMessage(
             Context context, final Runnable suggestionAction, final boolean showSendFeedback) {
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
                         context,
                         (view) -> {
                             recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);

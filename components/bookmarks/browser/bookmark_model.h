@@ -36,6 +36,7 @@
 
 namespace base {
 class FilePath;
+class Location;
 }  // namespace base
 
 namespace favicon_base {
@@ -192,6 +193,18 @@ class BookmarkModel : public BookmarkUndoProvider,
               metrics::BookmarkEditSource source,
               const base::Location& location);
 
+  // Removes the last child under `parent`. This is identical to invoking
+  // `Remove()` for the actual child, i.e.
+  // `Remove(parent->children()[parent->children().size() - 1].get())`. The
+  // only difference is that `RemoveLastChild()` is guaranteed to require
+  // constant time, for advanced cases where performance is a concern (to be
+  // more accurate, it exhibits logarithmic runtime complexity with respect to
+  // the tree depth, excluding the cost incurred in observers, which may
+  // implement arbitrary logic outside BookmarkModel's control).
+  void RemoveLastChild(const BookmarkNode* parent,
+                       metrics::BookmarkEditSource source,
+                       const base::Location& location);
+
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
   // notification for individual node removals. `location` is used for logging
@@ -202,12 +215,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   //
   // Note: this might cause UUIDs to get reassigned for `node` or its
   // descendants, when the node is moved between local and account storages.
+  //
+  // `new_parent` may be the same as `node`'s current parent, in which case the
+  // semantics are "insert before the element currently at `index`". Suppose the
+  // initial current children of new_parent are ordered [A, B, C]:
+  // * Move(B, new_parent, 0) -> [B, A, C]
+  // * Move(B, new_parent, 1) -> [A, B, C]
+  // * Move(B, new_parent, 2) -> [A, B, C]
+  // * Move(B, new_parent, 3) -> [A, C, B]
   void Move(const BookmarkNode* node,
-            const BookmarkNode* new_parent,
-            size_t index);
-
-  // Inserts a copy of `node` into `new_parent` at `index`.
-  void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
 
@@ -472,11 +488,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   void AddNodeToIndicesRecursive(const BookmarkNode* node,
                                  NodeTypeForUuidLookup type_for_uuid_lookup);
 
-  // Removes `node` and notifies its observers, returning and transferring
-  // ownership of the node removed. The caller is responsible for allowing undo,
-  // if applicable.
-  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node,
-                                           const base::Location& location);
+  // Removes a child under `parent` at position `index` and notifies its
+  // observers. `is_undoable` determines whether the deletion should be
+  // propagated via BookmarkClient to the undo stack.
+  void RemoveChildAt(const BookmarkNode* parent,
+                     size_t index,
+                     const base::Location& location,
+                     std::optional<metrics::BookmarkEditSource> source,
+                     bool is_undoable);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.
@@ -485,6 +504,15 @@ class BookmarkModel : public BookmarkUndoProvider,
   void RemoveNodeFromIndicesRecursive(
       BookmarkNode* node,
       NodeTypeForUuidLookup type_for_uuid_lookup);
+
+  // Updates the UUID index to ensure that `node`, whose former type was
+  // `old_type_for_uuid_lookup`, is instead indexed under type
+  // `new_type_for_uuid_lookup`. This is exercised when a node is moved across
+  // type boundaries, which requires updating the UUID index.
+  void UpdateUuidIndexUponNodeMoveRecursive(
+      const BookmarkNode* node,
+      NodeTypeForUuidLookup old_type_for_uuid_lookup,
+      NodeTypeForUuidLookup new_type_for_uuid_lookup);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);

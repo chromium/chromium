@@ -11,10 +11,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <variant>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/to_address.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -28,7 +30,7 @@
 namespace views {
 class NativeWindowTracker;
 class View;
-}
+}  // namespace views
 
 namespace views::test {
 
@@ -126,14 +128,16 @@ class InteractiveViewsTestPrivate
 };
 
 template <typename T>
-concept IsView = std::derived_from<T, View>;
+concept IsView = std::convertible_to<std::remove_cvref_t<T>*, View*>;
 
 template <size_t N,
           typename F,
-          typename V = std::remove_cv_t<
-              std::remove_pointer_t<ui::test::internal::NthArgumentOf<N, F>>>>
-  requires IsView<V>
-using ViewArgType = V;
+          typename V = ui::test::internal::NthArgumentOf<N, F>>
+  requires requires(V v) {
+    { *base::to_address(v) } -> IsView;
+  }
+using ViewArgType =
+    std::remove_cv_t<typename std::pointer_traits<V>::element_type>;
 
 }  // namespace internal
 

@@ -8,25 +8,18 @@
       }
     </style>
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
-      <template is="dom-if" if="[[enableSafetyHub_]]">
-        <div class="cr-row first">
-          <h2>$i18n{safetyHub}</h2>
-        </div>
-        <settings-safety-hub-module id="safetyHubModule"
-            header="[[unusedSitePermissionsHeader_]]"
-            subheader="[[unusedSitePermissionsSubheader_]]"
-            header-icon="cr:security" header-icon-color="blue">
-          <cr-button id="safetyHubButton" slot="button-container"
-              class="action-button" on-click="onSafetyHubButtonClick_">
-            $i18n{safetyHubEntryPointButtonLabel}
-          </cr-button>
-        </settings-safety-hub-module>
-      </template>
-      <!-- TODO(crbug.com/40277421): Remove after SafetyHub launched. -->
-      <template is="dom-if" if="[[!enableSafetyHub_]]">
-        <settings-unused-site-permissions>
-        </settings-unused-site-permissions>
-      </template>
+      <div class="cr-row first">
+        <h2>$i18n{safetyHub}</h2>
+      </div>
+      <settings-safety-hub-module id="safetyHubModule"
+          header="[[unusedSitePermissionsHeader_]]"
+          subheader="[[unusedSitePermissionsSubheader_]]"
+          header-icon="cr:security" header-icon-color="blue">
+        <cr-button id="safetyHubButton" slot="button-container"
+            class="action-button" on-click="onSafetyHubButtonClick_">
+          $i18n{safetyHubEntryPointButtonLabel}
+        </cr-button>
+      </settings-safety-hub-module>
     </template>
     <div class="cr-row first">
       <h2>$i18n{siteSettingsRecentPermissionsSectionLabel}</h2>
@@ -77,13 +70,11 @@
           focus-config="[[focusConfig]]">
       </settings-site-settings-list>
     </cr-collapse>
-    <template is="dom-if" if="[[enableSafetyHub_]]">
-      <settings-toggle-button
-          id="unusedSitePermissionsRevocationToggle"
-          pref="{{
-              prefs.safety_hub.unused_site_permissions_revocation.enabled}}"
-          label="$i18n{safetyCheckUnusedSitePermissionsSettingLabel}"
-          sub-label=
-              "$i18n{safetyCheckUnusedSitePermissionsSettingSublabel}">
-      </settings-toggle-button>
-    </template>
+    <settings-toggle-button
+        id="unusedSitePermissionsRevocationToggle"
+        pref="{{
+            prefs.safety_hub.unused_site_permissions_revocation.enabled}}"
+        label="$i18n{safetyHubUnusedSitePermissionsSettingLabel}"
+        sub-label=
+            "$i18n{safetyHubUnusedSitePermissionsSettingSublabel}">
+    </settings-toggle-button>

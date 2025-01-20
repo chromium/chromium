@@ -5,7 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_INSETS_F_H_
 #define UI_GFX_GEOMETRY_INSETS_F_H_
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/insets_outsets_f_base.h"
 
 namespace gfx {
@@ -13,7 +13,7 @@ namespace gfx {
 class OutsetsF;
 
 // A floating point version of gfx::Insets.
-class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
+class COMPONENT_EXPORT(GEOMETRY) InsetsF : public InsetsOutsetsFBase<InsetsF> {
  public:
   using InsetsOutsetsFBase::InsetsOutsetsFBase;
 

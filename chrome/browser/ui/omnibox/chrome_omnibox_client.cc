@@ -234,8 +234,9 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(
 }
 
 gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
-  if (icon.IsEmpty())
+  if (icon.IsEmpty()) {
     return icon;
+  }
 
   const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
   // In touch mode, icons are 20x20. FaviconCache and ExtensionIconManager both
@@ -282,27 +283,25 @@ const gfx::VectorIcon& ChromeOmniboxClient::GetVectorIcon() const {
   return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
-bool ChromeOmniboxClient::ProcessExtensionKeyword(
+void ChromeOmniboxClient::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
-  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION)
-    return false;
+  // Strip the keyword + leading space (if present) off the input.
+  std::u16string remaining_input;
+  AutocompleteInput::SplitKeywordFromInput(match.fill_into_edit, true,
+                                           &remaining_input);
 
-  // Strip the keyword + leading space off the input, but don't exceed
-  // fill_into_edit.  An obvious case is that the user may not have entered
-  // a leading space and is asking to launch this extension without any
-  // additional input.
-  size_t prefix_length =
-      std::min(match.keyword.length() + 1, match.fill_into_edit.length());
+  // In unscoped mode, the input is sent verbatim. In scoped (keyword) mode, the
+  // keyword and input are split, and only the input after the keyword is sent.
+  std::string input =
+      match.provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION
+          ? base::UTF16ToUTF8(match.fill_into_edit)
+          : base::UTF16ToUTF8(remaining_input);
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      location_bar_->GetWebContents(), template_url->GetExtensionId(),
-      base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
+      location_bar_->GetWebContents(), template_url->GetExtensionId(), input,
       disposition);
-
-  OnSuccessfulNavigation(profile_, text, match);
-  return true;
 }
 
 void ChromeOmniboxClient::OnInputStateChanged() {
@@ -356,9 +355,7 @@ void ChromeOmniboxClient::OnResultChanged(
     }
 
     request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(), base::BindOnce(&ChromeOmniboxClient::OnBitmapFetched,
-                                         weak_factory_.GetWeakPtr(),
-                                         on_bitmap_fetched, result_index)));
+        match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
   }
 }
 
@@ -373,8 +370,9 @@ gfx::Image ChromeOmniboxClient::GetFaviconForDefaultSearchProvider(
     FaviconFetchedCallback on_favicon_fetched) {
   const TemplateURL* const default_provider =
       GetTemplateURLService()->GetDefaultSearchProvider();
-  if (!default_provider)
+  if (!default_provider) {
     return gfx::Image();
+  }
 
   return favicon_cache_.GetFaviconForIconUrl(default_provider->favicon_url(),
                                              std::move(on_favicon_fetched));
@@ -383,8 +381,9 @@ gfx::Image ChromeOmniboxClient::GetFaviconForDefaultSearchProvider(
 gfx::Image ChromeOmniboxClient::GetFaviconForKeywordSearchProvider(
     const TemplateURL* template_url,
     FaviconFetchedCallback on_favicon_fetched) {
-  if (!template_url)
+  if (!template_url) {
     return gfx::Image();
+  }
 
   return favicon_cache_.GetFaviconForIconUrl(template_url->favicon_url(),
                                              std::move(on_favicon_fetched));
@@ -417,12 +416,14 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
       // It's possible that there is no current page, for instance if the tab
       // has been closed or on return from a sleep state.
       // (http://crbug.com/105689)
-      if (!CurrentPageExists())
+      if (!CurrentPageExists()) {
         break;
+      }
       // Ask for prerendering if the destination URL is different than the
       // current URL.
-      if (current_match.destination_url != GetURL())
+      if (current_match.destination_url != GetURL()) {
         DoPrerender(current_match);
+      }
       break;
     case AutocompleteActionPredictor::ACTION_PRECONNECT:
       DoPreconnect(current_match);
@@ -516,8 +517,7 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
+    const AutocompleteMatch& alternative_nav_match) {
   TRACE_EVENT("omnibox", "ChromeOmniboxClient::OnAutocompleteAccept", "text",
               text, "match", match, "alternative_nav_match",
               alternative_nav_match);
@@ -532,17 +532,6 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
     auto navigation = chrome::OpenCurrentURL(browser_);
     ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
                                             match, alternative_nav_match);
-
-    // If this navigation was typed by the user and the hostname contained an
-    // IDNA 2008 deviation character, record a UKM. See idn_spoof_checker.h
-    // for details about deviation characters.
-    if (deviation_char_in_hostname != IDNA2008DeviationCharacter::kNone) {
-      ukm::SourceId source_id = ukm::ConvertToSourceId(
-          navigation->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-      ukm::builders::Navigation_IDNA2008Transition(source_id)
-          .SetCharacter(static_cast<int>(deviation_char_in_hostname))
-          .Record(ukm::UkmRecorder::Get());
-    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -593,8 +582,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = location_bar_->GetWebContents();
 
   // Don't prerender when DevTools is open in this tab.
-  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
+  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents)) {
     return;
+  }
 
   // TODO(crbug.com/40208255): Refactor relevant code to reuse common
   // code, and ensure metrics are correctly recorded.
@@ -606,8 +596,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
-  if (match.destination_url.SchemeIs(extensions::kExtensionScheme))
+  if (match.destination_url.SchemeIs(extensions::kExtensionScheme)) {
     return;
+  }
 
   auto* loading_predictor =
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
@@ -622,12 +613,6 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   // the OS DNS cache could suffer eviction problems for minimal gain.
 }
 
-void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
-                                          int result_index,
-                                          const SkBitmap& bitmap) {
-  callback.Run(result_index, bitmap);
-}
-
 // static
 void ChromeOmniboxClient::OnSuccessfulNavigation(
     Profile* profile,
@@ -635,8 +620,9 @@ void ChromeOmniboxClient::OnSuccessfulNavigation(
     const AutocompleteMatch& match) {
   auto shortcuts_backend = ShortcutsBackendFactory::GetForProfile(profile);
   // Can be null in incognito.
-  if (!shortcuts_backend)
+  if (!shortcuts_backend) {
     return;
+  }
 
   shortcuts_backend->AddOrUpdateShortcut(text, match);
 }

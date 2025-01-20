@@ -8,8 +8,7 @@
 
 class GeolocationApiTest : public extensions::ExtensionApiTest {
  public:
-  GeolocationApiTest() {
-  }
+  GeolocationApiTest() = default;
 
   // InProcessBrowserTest
   void SetUpOnMainThread() override {

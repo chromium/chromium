@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/wrapped_window_proc.h"
@@ -105,7 +106,7 @@ void CreateWindowsOnThread(base::WaitableEvent* event,
   if (!window) {
     logging::SystemErrorCode error = logging::GetLastSystemErrorCode();
     base::debug::Alias(&error);
-    CHECK(false);
+    NOTREACHED();
   }
   *child_window = window;
   event->Signal();

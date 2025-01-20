@@ -301,8 +301,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   // use RM" empty state screen to show.
   // TODO(crbug.com/40802192): Remove when Screen2x doesn't return just
   // headings.
-  if (features::IsReadAnythingWithAlgorithmEnabled() &&
-      ContentNodesOnlyContainHeadings()) {
+  if (ContentNodesOnlyContainHeadings()) {
     return;
   }
 

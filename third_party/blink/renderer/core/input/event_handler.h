@@ -85,6 +85,14 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void Clear();
 
+  void NodeChildrenWillBeRemoved(ContainerNode& container) {
+    mouse_event_manager_->NodeChildrenWillBeRemoved(container);
+  }
+  void NodeWillBeRemoved(Node& node) {
+    mouse_event_manager_->NodeWillBeRemoved(node);
+    pointer_event_manager_->NodeWillBeRemoved(node);
+  }
+
   void UpdateSelectionForMouseDrag();
   void StartMiddleClickAutoscroll(LayoutObject*);
 
@@ -208,7 +216,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Returns whether pointerId is active or not
   bool IsPointerEventActive(PointerId);
 
-  void SetPointerCapture(PointerId, Element*, bool explicit_capture = false);
+  void SetPointerCapture(PointerId, Element*);
   void ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
   bool HasPointerCapture(PointerId, const Element*) const;

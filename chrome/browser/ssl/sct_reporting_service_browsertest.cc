@@ -406,8 +406,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
     base::Value::List suffixes;
     for (const auto& suffix : suffix_list_) {
-      suffixes.Append(
-          base::Base64Encode(base::as_bytes(base::make_span(suffix))));
+      suffixes.Append(base::Base64Encode(base::as_byte_span(suffix)));
     }
     response.Set("hashSuffix", std::move(suffixes));
 
@@ -932,10 +931,10 @@ class SCTHashdanceBrowserTest : public SCTReportingServiceBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, ReportSCTNotFound) {
   SetHashdanceSuffixList(
-      {base::HexEncode(base::as_bytes(base::make_span(
-           "000000000000000000000000000000000000000000000000000000000000"))),
-       base::HexEncode(base::as_bytes(base::make_span(
-           "0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")))});
+      {base::HexEncode(base::as_byte_span(
+           "000000000000000000000000000000000000000000000000000000000000")),
+       base::HexEncode(base::as_byte_span(
+           "0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"))});
 
   // Visit an HTTPS page and wait for the lookup query to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

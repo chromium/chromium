@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
@@ -550,7 +551,7 @@ void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
     base::CommandLine command_line =
         base::CommandLine(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
-                                   policy_required ? "true" : "false");
+                                   base::ToString(policy_required));
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
     DCHECK_EQ(1u, flags.size());

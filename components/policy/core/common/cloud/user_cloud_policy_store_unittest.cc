@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -425,8 +426,8 @@ TEST_F(UserCloudPolicyStoreTest, StoreUnsigned) {
 }
 
 TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
-  AccountId other_account_id =
-      AccountId::FromUserEmailGaiaId("foobar@foobar.com", "another-gaia-id");
+  AccountId other_account_id = AccountId::FromUserEmailGaiaId(
+      "foobar@foobar.com", GaiaId("another-gaia-id"));
   // Force a validation error by changing the account id after policy is stored.
   StorePolicyAndEnsureLoaded(policy_.policy());
 

@@ -106,10 +106,9 @@ window.onload = () => {
     await clickScroll(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y,
                       standardDivFast);
 
-    const EXPECTED_SCROLL = getScrollbarButtonScrollDelta(standardDivFast).y;
     assert_approx_equals(
-        standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
-        "Pressing the down arrow didn't scroll.");
+        standardDivFast.scrollTop, SCROLLBAR_SCROLL_PIXELS,
+        1 / window.devicePixelRatio, "Pressing the down arrow didn't scroll.");
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
 
   promise_test (async () => {

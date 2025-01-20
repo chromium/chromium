@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
@@ -101,7 +102,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"TestProfileName";
-  params.gaia_id = kGaiaId;
+  params.gaia_id = GaiaId(kGaiaId);
   params.user_name = kGaiaEmail16;
   profile_storage->AddProfile(std::move(params));
 
@@ -117,7 +118,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
 CoreAccountId PasswordManagerSigninInterceptTestHelper::AddGaiaAccountToProfile(
     Profile* profile,
     const std::string& email,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   auto* accounts_mutator =
       IdentityManagerFactory::GetForProfile(profile)->GetAccountsMutator();
   return accounts_mutator->AddOrUpdateAccount(
@@ -141,6 +142,6 @@ std::string PasswordManagerSigninInterceptTestHelper::gaia_email() const {
   return kGaiaEmail;
 }
 
-std::string PasswordManagerSigninInterceptTestHelper::gaia_id() const {
-  return kGaiaId;
+GaiaId PasswordManagerSigninInterceptTestHelper::gaia_id() const {
+  return GaiaId(kGaiaId);
 }

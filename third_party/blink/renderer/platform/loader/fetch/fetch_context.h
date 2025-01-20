@@ -176,7 +176,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       ResourceRequest&,
       const ResourceLoaderOptions&);
 
-  virtual void StartSpeculativeImageDecode(Resource* resource,
+  virtual bool StartSpeculativeImageDecode(Resource* resource,
                                            base::OnceClosure callback);
 
   // Called when the underlying context is detached. Note that some
@@ -238,6 +238,13 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual void AddLcpPredictedCallback(base::OnceClosure callback) {
     NOTIMPLEMENTED();
   }
+
+  virtual HashSet<HashAlgorithm> CSPHashesToReport() const {
+    return HashSet<HashAlgorithm>();
+  }
+  virtual void AddCSPHashReport(
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) {}
 
  protected:
   const Vector<KURL> empty_unused_preloads_;

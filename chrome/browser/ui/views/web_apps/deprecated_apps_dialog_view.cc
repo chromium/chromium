@@ -155,14 +155,16 @@ DeprecatedAppsDialogView::DeprecatedAppsDialogView(
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(web_contents_->GetBrowserContext())
             ->GetInstalledExtension(optional_launched_extension_id);
-    launched_extension_name_ = base::UTF8ToUTF16(extension->name());
+    launched_extension_name_ =
+        extensions::util::GetFixupExtensionNameForUIDisplay(extension->name());
   }
   if (deprecated_app_ids_.size() == 1) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(web_contents_->GetBrowserContext())
             ->GetInstalledExtension(*deprecated_app_ids_.begin());
     DCHECK(extension);
-    single_app_name_ = base::UTF8ToUTF16(extension->name());
+    single_app_name_ =
+        extensions::util::GetFixupExtensionNameForUIDisplay(extension->name());
   }
   deprecated_apps_table_model_ = std::make_unique<DeprecatedAppsTableModel>(
       deprecated_app_ids, web_contents,
@@ -223,7 +225,7 @@ void DeprecatedAppsDialogView::InitDialog() {
 
   // Set up the table view.
   std::vector<ui::TableColumn> columns;
-  columns.emplace_back(ui::TableColumn());
+  columns.emplace_back();
 
   auto table = std::make_unique<views::TableView>(
       deprecated_apps_table_model_.get(), columns,

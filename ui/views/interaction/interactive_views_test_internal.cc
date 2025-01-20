@@ -250,8 +250,9 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
   }
 
   void SetWindow(gfx::NativeWindow window) {
-    if (window_ == window)
+    if (window_ == window) {
       return;
+    }
     window_ = window;
     tracker_ = window ? views::NativeWindowTracker::Create(window) : nullptr;
   }
@@ -303,8 +304,9 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetWindowHintFor(
 
   // If not, see if the window can be extracted from the context (perhaps via
   // the cache).
-  if (!window)
+  if (!window) {
     window = GetNativeWindowFromContext(el->context());
+  }
 
   // If a window was found, then a cache entry may need to be inserted/updated.
   if (window) {
@@ -327,11 +329,13 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromElement(
     window = widget->GetNativeWindow();
     // Most of those that don't are sub-widgets that are hard-parented to
     // another widget.
-    if (!window && widget->parent())
+    if (!window && widget->parent()) {
       window = widget->parent()->GetNativeWindow();
+    }
     // At worst case, fall back to the primary window.
-    if (!window)
+    if (!window) {
       window = widget->GetPrimaryWindowWidget()->GetNativeWindow();
+    }
   }
   return window;
 }

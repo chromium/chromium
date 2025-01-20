@@ -312,11 +312,6 @@ export class CastFeedbackUiElement extends CrLitElement {
   private getProductSpecificData_(): Array<{key: string, value: string}> {
     const data = [
       {
-        key: 'global_media_controls_cast_start_stop',
-        value: String(
-            !!loadTimeData.getBoolean('globalMediaControlsCastStartStop')),
-      },
-      {
         key: 'feedbackUserCtlConsent',
         value: String(!!this.allowContactByEmail_),
       },

@@ -317,26 +317,30 @@ InkDropImpl::HideHighlightOnRippleHiddenState::HideHighlightOnRippleHiddenState(
       highlight_after_ripple_timer_(nullptr) {}
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::ShowOnHoverChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightHiddenState::ShowOnHoverChanged();
 }
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::OnHoverChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightHiddenState::OnHoverChanged();
 }
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::ShowOnFocusChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightHiddenState::ShowOnFocusChanged();
 }
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::OnFocusChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightHiddenState::OnFocusChanged();
 }
 
@@ -350,8 +354,9 @@ void InkDropImpl::HideHighlightOnRippleHiddenState::AnimationStarted(
     // issue instead. See https://crbug.com/663335.
     InkDropImpl* ink_drop = GetInkDrop();
     HighlightStateFactory* highlight_state_factory = state_factory();
-    if (ink_drop->ink_drop_ripple_)
+    if (ink_drop->ink_drop_ripple_) {
       ink_drop->ink_drop_ripple_->SnapToHidden();
+    }
     // |this| may be destroyed after SnapToHidden(), so be sure not to access
     // |any members.
     ink_drop->SetHighlightState(
@@ -478,26 +483,30 @@ InkDropImpl::ShowHighlightOnRippleVisibleState::
                                                animation_duration) {}
 
 void InkDropImpl::ShowHighlightOnRippleVisibleState::ShowOnHoverChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightVisibleState::ShowOnHoverChanged();
 }
 
 void InkDropImpl::ShowHighlightOnRippleVisibleState::OnHoverChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightVisibleState::OnHoverChanged();
 }
 
 void InkDropImpl::ShowHighlightOnRippleVisibleState::ShowOnFocusChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightVisibleState::ShowOnFocusChanged();
 }
 
 void InkDropImpl::ShowHighlightOnRippleVisibleState::OnFocusChanged() {
-  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN)
+  if (GetInkDrop()->GetTargetInkDropState() != InkDropState::HIDDEN) {
     return;
+  }
   NoAutoHighlightVisibleState::OnFocusChanged();
 }
 
@@ -610,8 +619,9 @@ void InkDropImpl::HostTransformChanged(const gfx::Transform& new_transform) {
 }
 
 InkDropState InkDropImpl::GetTargetInkDropState() const {
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     return InkDropState::HIDDEN;
+  }
   return ink_drop_ripple_->target_ink_drop_state();
 }
 
@@ -619,12 +629,14 @@ void InkDropImpl::AnimateToState(InkDropState ink_drop_state) {
   // Never animate hidden -> hidden, since that will add layers which may never
   // be needed. Other same-state transitions may restart animations.
   if (ink_drop_state == InkDropState::HIDDEN &&
-      GetTargetInkDropState() == InkDropState::HIDDEN)
+      GetTargetInkDropState() == InkDropState::HIDDEN) {
     return;
+  }
 
   DestroyHiddenTargetedAnimations();
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     CreateInkDropRipple();
+  }
   ink_drop_ripple_->AnimateToState(ink_drop_state);
 }
 
@@ -638,15 +650,17 @@ void InkDropImpl::UseDefaultHoverHighlightFadeDuration() {
 
 void InkDropImpl::SnapToActivated() {
   DestroyHiddenTargetedAnimations();
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     CreateInkDropRipple();
+  }
   ink_drop_ripple_->SnapToActivated();
 }
 
 void InkDropImpl::SnapToHidden() {
   DestroyHiddenTargetedAnimations();
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     return;
+  }
   ink_drop_ripple_->SnapToHidden();
 }
 
@@ -693,8 +707,9 @@ void InkDropImpl::CreateInkDropRipple() {
 }
 
 void InkDropImpl::DestroyInkDropRipple() {
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     return;
+  }
 
   // Ensures no observer callback happens from removing from |root_layer_|
   // or destroying |ink_drop_ripple_|. Speculative fix for crashes in
@@ -715,8 +730,9 @@ void InkDropImpl::CreateInkDropHighlight() {
 
   // If the platform provides HC colors, we need to show them fully on hover and
   // press.
-  if (views::UsingPlatformHighContrastInkDrop(ink_drop_host_->host_view()))
+  if (views::UsingPlatformHighContrastInkDrop(ink_drop_host_->host_view())) {
     highlight_->set_visible_opacity(1.0f);
+  }
 
   highlight_->set_observer(this);
   root_layer_->Add(highlight_->layer());
@@ -724,8 +740,9 @@ void InkDropImpl::CreateInkDropHighlight() {
 }
 
 void InkDropImpl::DestroyInkDropHighlight() {
-  if (!highlight_)
+  if (!highlight_) {
     return;
+  }
 
   // Ensures no observer callback happens from removing from |root_layer_|
   // or destroying |highlight_|. Speculative fix for crashes in
@@ -767,11 +784,13 @@ void InkDropImpl::AnimationEnded(InkDropState ink_drop_state,
                                  InkDropAnimationEndedReason reason) {
   highlight_state_->AnimationEnded(ink_drop_state, reason);
   NotifyInkDropRippleAnimationEnded(ink_drop_state);
-  if (reason != InkDropAnimationEndedReason::SUCCESS)
+  if (reason != InkDropAnimationEndedReason::SUCCESS) {
     return;
+  }
   // |ink_drop_ripple_| might be null during destruction.
-  if (!ink_drop_ripple_)
+  if (!ink_drop_ripple_) {
     return;
+  }
   if (ShouldAnimateToHidden(ink_drop_state)) {
     ink_drop_ripple_->AnimateToState(views::InkDropState::HIDDEN);
   } else if (ink_drop_state == views::InkDropState::HIDDEN) {
@@ -800,8 +819,9 @@ void InkDropImpl::AnimationEnded(InkDropHighlight::AnimationType animation_type,
 
 void InkDropImpl::SetHighlight(bool should_highlight,
                                base::TimeDelta animation_duration) {
-  if (IsHighlightFadingInOrVisible() == should_highlight)
+  if (IsHighlightFadingInOrVisible() == should_highlight) {
     return;
+  }
 
   if (should_highlight) {
     CreateInkDropHighlight();

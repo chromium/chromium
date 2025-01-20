@@ -4,10 +4,6 @@
 
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 
-// Copyright 2024 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include <memory>
 #include <string>
 
@@ -27,6 +23,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -36,7 +33,7 @@ namespace ash::boca {
 
 GetSessionRequest::GetSessionRequest(google_apis::RequestSender* sender,
                                      bool is_producer,
-                                     std::string gaia_id,
+                                     GaiaId gaia_id,
                                      Callback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
@@ -54,7 +51,7 @@ void GetSessionRequest::OverrideURLForTesting(std::string url) {
 
 GURL GetSessionRequest::GetURL() const {
   auto url = GURL(url_base_).Resolve(base::ReplaceStringPlaceholders(
-      kGetSessionUrlTemplate, {gaia_id_}, nullptr));
+      kGetSessionUrlTemplate, {gaia_id_.ToString(), device_id_}, nullptr));
   return url;
 }
 

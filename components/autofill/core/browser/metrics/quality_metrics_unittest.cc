@@ -4,18 +4,20 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,9 +25,8 @@
 namespace autofill::autofill_metrics {
 
 // This is defined in the prediction_quality_metrics.cc implementation file.
-int GetFieldTypeGroupPredictionQualityMetric(
-    FieldType field_type,
-    autofill_metrics::FieldTypeQualityMetric metric);
+int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
+                                             FieldTypeQualityMetric metric);
 
 namespace {
 
@@ -91,8 +92,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
       .renderer_id = test::MakeFormRendererId(),
-      .main_frame_origin =
-          url::Origin::Create(autofill_client_->form_origin())};
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -161,6 +161,62 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
             histogram_tester.GetAllSamples(
                 "Autofill.FieldPredictionQuality.ByFieldType.Overall"));
 }
+
+struct AlternativeNameFieldValueCharacterSetTestRecord {
+  std::u16string name;
+  std::optional<AutofillAlternativeNameFieldValueCharacterSet>
+      expected_character_set;
+};
+
+class AlternativeNameFieldValueCharacterSetTest
+    : public QualityMetricsTest,
+      public testing::WithParamInterface<
+          AlternativeNameFieldValueCharacterSetTestRecord> {};
+
+// Test that the metric for the alternative name field value character set is
+// recorded correctly.
+TEST_P(AlternativeNameFieldValueCharacterSetTest, LoggedCorrectly) {
+  base::test::ScopedFeatureList features{
+      autofill::features::kAutofillSupportPhoneticNameForJP};
+
+  test::FormDescription form_description = {
+      .fields = {{.role = ALTERNATIVE_FULL_NAME,
+                  .value = GetParam().name,
+                  .is_autofilled = true}},
+      .renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
+
+  FormData form = GetAndAddSeenForm(form_description);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+
+  if (GetParam().expected_character_set.has_value()) {
+    // Check for the expected enum value in the histogram
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+        GetParam().expected_character_set.value(), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SubmittedAlternativeNameFieldValueCharacterSet", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LoggedCorrectly,
+    AlternativeNameFieldValueCharacterSetTest,
+    testing::Values(
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"ヤマモト アオイ",
+            AutofillAlternativeNameFieldValueCharacterSet::kKatakana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"やまもと あおい",
+            AutofillAlternativeNameFieldValueCharacterSet::kHiragana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"Elvis Aaron Presley",
+            AutofillAlternativeNameFieldValueCharacterSet::kOther},
+        // If value was empty metric should not be recorded.
+        AlternativeNameFieldValueCharacterSetTestRecord{u""}));
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
@@ -708,13 +764,13 @@ TEST_F(QualityMetricsTest, NoSubmission) {
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
   // Changes the name field to match the full name.
-  SimulateUserChangedTextFieldTo(form, form.fields()[0],
-                                 u"Elvis Aaron Presley");
+  SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley");
 
   base::HistogramTester histogram_tester;
 
   // Triggers the metrics.
-  test_api(autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
 
   auto Buck = [](FieldType field_type, FieldTypeQualityMetric metric,
                  size_t n) {
@@ -875,15 +931,16 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   // The `FormFieldData::label_source` of the fields is set manually, since
   // this test doesn't run label inference.
   FormFieldData name_field;
-  name_field.set_value(
-      profile.GetInfo(NAME_FULL, personal_data().app_locale()));
+  name_field.set_value(profile.GetInfo(
+      NAME_FULL, personal_data().address_data_manager().app_locale()));
   name_field.set_label_source(FormFieldData::LabelSource::kUnknown);
   FormFieldData street_field;
   street_field.set_value(u"unknown");
   street_field.set_label_source(FormFieldData::LabelSource::kForId);
   FormFieldData country_field;
   country_field.set_value(
-      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale()));
+      profile.GetInfo(ADDRESS_HOME_COUNTRY,
+                      personal_data().address_data_manager().app_locale()));
   country_field.set_label_source(FormFieldData::LabelSource::kLabelTag);
   const FormData form = CreateForm({name_field, street_field, country_field});
   autofill_manager().AddSeenForm(

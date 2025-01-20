@@ -6,16 +6,16 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHOOSER_H_
 
 #include <string>
+#include <vector>
 
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/file_system_access_entry_factory.h"
-#include "storage/browser/file_system/isolated_context.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -69,6 +69,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     std::vector<std::u16string> mime_types_;
 #endif
     std::u16string title_;
+    // Combination of optional default_directory and optional suggested_name.
+    // Wiill end with a trailing separator if suggested_name is empty.
     base::FilePath default_path_;
   };
 
@@ -98,8 +100,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const ui::SelectFileDialog::Type type_;
   ResultCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  ui::SelectFileDialog::Type type_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ScopedClosureRunner fullscreen_block_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
@@ -122,30 +123,16 @@ class MessageSender : public ExtensionHostRegistry::Observer {
 
 class MessagingApiTest : public ExtensionApiTest {
  public:
-  explicit MessagingApiTest(
-      bool enable_back_forward_cache = true,
-      bool disconnect_extension_port_when_page_enters_bfcache = true) {
+  explicit MessagingApiTest(bool enable_back_forward_cache = true) {
     if (!enable_back_forward_cache) {
       feature_list_.InitWithFeaturesAndParameters(
           {}, {features::kBackForwardCache});
       return;
     }
 
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        content::GetBasicBackForwardCacheFeatureForTesting();
-    std::vector<base::test::FeatureRef> disabled_features =
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-
-    if (disconnect_extension_port_when_page_enters_bfcache) {
-      enabled_features.push_back(
-          {features::kDisconnectExtensionMessagePortWhenPageEntersBFCache, {}});
-    } else {
-      disabled_features.push_back(
-          features::kDisconnectExtensionMessagePortWhenPageEntersBFCache);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetBasicBackForwardCacheFeatureForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   MessagingApiTest(const MessagingApiTest&) = delete;
@@ -163,13 +150,11 @@ class MessagingApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest
-    : public MessagingApiTest {
+class MessagingApiWithBackForwardCacheTest : public MessagingApiTest {
  public:
-  MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest()
+  MessagingApiWithBackForwardCacheTest()
       : MessagingApiTest(
-            /*enable_back_forward_cache=*/true,
-            /*disconnect_extension_port_when_page_enters_bfcache=*/false) {}
+            /*enable_back_forward_cache=*/true) {}
 };
 
 class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
@@ -180,14 +165,6 @@ class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(
-    MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest,
-    Messaging) {
-  ASSERT_TRUE(RunExtensionTest("messaging/connect",
-                               {.custom_arg = "bfcache/without_disconnection"}))
       << message_;
 }
 
@@ -357,8 +334,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
                                           const char* message) {
     std::string command = base::StringPrintf(
         "assertions.canConnectAndSendMessages('%s', %s, %s)",
-        extension->id().c_str(),
-        extension->is_platform_app() ? "true" : "false",
+        extension->id().c_str(), base::ToString(extension->is_platform_app()),
         message ? base::StringPrintf("'%s'", message).c_str() : "undefined");
     int result = content::EvalJs(frame, command).ExtractInt();
     return static_cast<Result>(result);
@@ -620,7 +596,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
                                            bool include_tls_channel_id,
                                            const char* message) {
     std::string args = "'" + extension->id() + "', ";
-    args += include_tls_channel_id ? "true" : "false";
+    args += base::ToString(include_tls_channel_id);
     if (message)
       args += std::string(", '") + message + "'";
     return content::EvalJs(
@@ -1216,14 +1192,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
 class ExternallyConnectableMessagingTestNoChannelID
     : public ExternallyConnectableMessagingTest {
  public:
-  ExternallyConnectableMessagingTestNoChannelID() {}
+  ExternallyConnectableMessagingTestNoChannelID() = default;
 
   ExternallyConnectableMessagingTestNoChannelID(
       const ExternallyConnectableMessagingTestNoChannelID&) = delete;
   ExternallyConnectableMessagingTestNoChannelID& operator=(
       const ExternallyConnectableMessagingTestNoChannelID&) = delete;
 
-  ~ExternallyConnectableMessagingTestNoChannelID() override {}
+  ~ExternallyConnectableMessagingTestNoChannelID() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExternallyConnectableMessagingTest::SetUpCommandLine(command_line);

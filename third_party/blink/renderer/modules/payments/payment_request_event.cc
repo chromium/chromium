@@ -140,8 +140,8 @@ const HeapVector<Member<PaymentMethodData>>& PaymentRequestEvent::methodData()
   return method_data_;
 }
 
-const ScriptValue PaymentRequestEvent::total(ScriptState* script_state) const {
-  return ScriptValue::From(script_state, total_.Get());
+const ScriptObject PaymentRequestEvent::total(ScriptState* script_state) const {
+  return ScriptObject::From(script_state, total_.Get());
 }
 
 const HeapVector<Member<PaymentDetailsModifier>>&
@@ -153,11 +153,13 @@ const String& PaymentRequestEvent::instrumentKey() const {
   return instrument_key_;
 }
 
-const ScriptValue PaymentRequestEvent::paymentOptions(
+const ScriptObject PaymentRequestEvent::paymentOptions(
     ScriptState* script_state) const {
-  if (!payment_options_)
-    return ScriptValue::CreateNull(script_state->GetIsolate());
-  return ScriptValue::From(script_state, payment_options_.Get());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (!payment_options_) {
+    return ScriptObject::CreateNull(isolate);
+  }
+  return ScriptObject::From(script_state, payment_options_.Get());
 }
 
 std::optional<HeapVector<Member<PaymentShippingOption>>>
@@ -215,7 +217,7 @@ PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
 ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>>
 PaymentRequestEvent::changePaymentMethod(ScriptState* script_state,
                                          const String& method_name,
-                                         const ScriptValue& method_details,
+                                         const ScriptObject& method_details,
                                          ExceptionState& exception_state) {
   if (change_payment_request_details_resolver_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -233,7 +235,6 @@ PaymentRequestEvent::changePaymentMethod(ScriptState* script_state,
 
   auto method_data = payments::mojom::blink::PaymentHandlerMethodData::New();
   if (!method_details.IsNull()) {
-    DCHECK(!method_details.IsEmpty());
     PaymentsValidators::ValidateAndStringifyObject(
         script_state->GetIsolate(), method_details,
         method_data->stringified_data, exception_state);
@@ -419,7 +420,8 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
           change_payment_request_details_resolver_.Clear();
           return;
         }
-        mod->setData(ScriptValue(script_state->GetIsolate(), parsed_value));
+        CHECK(parsed_value->IsObject());
+        mod->setData(ScriptObject(script_state->GetIsolate(), parsed_value));
         modifiers.emplace_back(mod);
       }
     }
@@ -455,8 +457,9 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
       change_payment_request_details_resolver_.Clear();
       return;
     }
+    CHECK(parsed_value->IsObject());
     dictionary->setPaymentMethodErrors(
-        ScriptValue(script_state->GetIsolate(), parsed_value));
+        ScriptObject(script_state->GetIsolate(), parsed_value));
   }
 
   if (response->shipping_address_errors) {

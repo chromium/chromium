@@ -89,7 +89,7 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(
     content::RenderFrameHost* frame_host)
-    : render_process_id_(frame_host->GetProcess()->GetID()),
+    : render_process_id_(frame_host->GetProcess()->GetDeprecatedID()),
       render_frame_id_(frame_host->GetRoutingID()) {
   // Get the PreconnectManager for this process.
   auto* render_process_host = frame_host->GetProcess();

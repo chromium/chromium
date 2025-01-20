@@ -17,6 +17,8 @@ extern NSString* const kChromeCapabilitiesPreference = @"Chrome.Capabilities";
 
 extern NSString* const kChromeShowDefaultBrowserPromoCapability =
     @"ShowDefaultBrowserPromo";
+extern NSString* const kChromeSupportOpenLinksParametersFromCapability =
+    @"SupportOpenLinksParametersFrom";
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
@@ -47,8 +49,6 @@ const char kChromeAppGroupSupportsSearchByImage[] = "supportsSearchByImage";
 const char kChromeAppGroupIsGoogleDefaultSearchEngine[] =
     "isGoogleDefaultSearchEngine";
 const char kChromeAppGroupEnableLensInWidget[] = "enableLensInWidget";
-const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[] =
-    "enableColorLensAndVoiceIconsInWidget";
 
 const char kChromeAppClientID[] = "ClientID";
 const char kUserMetricsEnabledDate[] = "UserMetricsEnabledDate";
@@ -88,6 +88,12 @@ NSString* const kOpenExtensionOutcomeFailureOpenInNotFound =
     @"OpenExtensionOutcomeFailureOpenInNotFound";
 NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
     @"OpenExtensionOutcomeFailureUnsupportedScheme";
+
+NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
+NSString* const kHostedDomain = @"hosted_domain";
+NSString* const kEmail = @"email";
+
+NSString* const kYoutubeBundleID = @"com.google.youtube";
 
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];
@@ -153,8 +159,12 @@ NSURL* ExternalCommandsItemsFolder() {
   return externalCommandsURL;
 }
 
-NSURL* ContentWidgetFaviconsFolder() {
+NSURL* ShortcutsWidgetFaviconsFolder() {
   return [AppGroupHelper widgetsFaviconsFolder];
+}
+
+NSURL* WidgetsAvatarFolder() {
+  return [AppGroupHelper widgetsAvatarFolder];
 }
 
 NSURL* SharedFaviconAttributesFolder() {

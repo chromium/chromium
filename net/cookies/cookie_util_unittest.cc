@@ -67,9 +67,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_NonASCII) {
   feature_list.InitAndEnableFeature(features::kCookieDomainRejectNonASCII);
 
   CookieInclusionStatus status;
-  std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://éxample.com"), "éxample.com", status, &result));
+      GURL("http://éxample.com"), "éxample.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII}));
 }
@@ -77,11 +76,10 @@ TEST(CookieUtilTest, GetCookieDomainWithString_NonASCII) {
 // An empty domain string results in the domain from the URL.
 TEST(CookieUtilTest, GetCookieDomainWithString_Empty) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("http://example.com"),
-                                                     "", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://example.com"),
+                                                   "", status),
+            "example.com");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "example.com");
 }
 
 // An empty domain string results in the domain from the URL, which has been
@@ -90,50 +88,45 @@ TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonCanonical) {
   // `GURL` doesn't canonicalize the below URL, since it doesn't recognize the
   // scheme. So we ensure that `GetCookieDomainWithString` recanonicalizes it.
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("foo://LOCALhost"),
-                                                     "", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("foo://LOCALhost"), "",
+                                                   status),
+            "localhost");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "localhost");
 }
 
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
 TEST(CookieUtilTest, GetCookieDomainWithString_IP) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://192.0.2.3"), "192.0.2.3", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://192.0.2.3"),
+                                                   "192.0.2.3", status),
+            "192.0.2.3");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "192.0.2.3");
 }
 
 // A cookie domain string equal to a dot prefixed to the URL host, when that is
 // an IP, results in the IP, without the dot.
 TEST(CookieUtilTest, GetCookieDomainWithString_DotIP) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://192.0.2.3"), ".192.0.2.3", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://192.0.2.3"),
+                                                   ".192.0.2.3", status),
+            "192.0.2.3");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "192.0.2.3");
 }
 
 // A cookie domain string containing %-encoding is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_PercentEncoded) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://a.test"), "a%2Etest", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://a.test"),
+                                                      "a%2Etest", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
 // A cookie domain string that cannot be canonicalized is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_UnCanonicalizable) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://a.test"), "a^test", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://a.test"),
+                                                      "a^test", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
@@ -141,41 +134,37 @@ TEST(CookieUtilTest, GetCookieDomainWithString_UnCanonicalizable) {
 // domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://gov.uk"), "gov.uk", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://gov.uk"),
+                                                   "gov.uk", status),
+            "gov.uk");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "gov.uk");
 }
 
 // A cookie domain that is an eTLD but matches the URL results in a host cookie
 // domain, even if it is given with a dot prefix.
 TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl_DotPrefix) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://gov.uk"), ".gov.uk", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://gov.uk"),
+                                                   ".gov.uk", status),
+            "gov.uk");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "gov.uk");
 }
 
 // A cookie domain that is an eTLD but matches the URL results in a host cookie
 // domain, even if its capitalization is non-canonical.
 TEST(CookieUtilTest, GetCookieDomainWithString_ETldMatchesUrl_NonCanonical) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://gov.uk"), "GoV.Uk", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://gov.uk"),
+                                                   "GoV.Uk", status),
+            "gov.uk");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, "gov.uk");
 }
 
 // A cookie domain that is an eTLD but does not match the URL is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_ETldDifferentUrl) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://nhs.gov.uk"), "gov.uk", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://nhs.gov.uk"),
+                                                      "gov.uk", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
@@ -183,50 +172,45 @@ TEST(CookieUtilTest, GetCookieDomainWithString_ETldDifferentUrl) {
 // from the URL is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_DifferentOrgHost) {
   CookieInclusionStatus status;
-  std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://portal.globex.com"), "portal.initech.com", status, &result));
+      GURL("http://portal.globex.com"), "portal.initech.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
 // A cookie domain that matches the URL results in a domain cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_MatchesUrl) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://globex.com"), "globex.com", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://globex.com"),
+                                                   "globex.com", status),
+            ".globex.com");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, ".globex.com");
 }
 
 // A cookie domain that matches the URL but has a `.` prefix results in a domain
 // cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_MatchesUrlWithDot) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://globex.com"), ".globex.com", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://globex.com"),
+                                                   ".globex.com", status),
+            ".globex.com");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, ".globex.com");
 }
 
 // A cookie domain that is a subdomain of the URL host is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_Subdomain) {
   CookieInclusionStatus status;
-  std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://globex.com"), "mail.globex.com", status, &result));
+      GURL("http://globex.com"), "mail.globex.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
 // A URL that is a subdomain of the cookie domain results in a domain cookie.
 TEST(CookieUtilTest, GetCookieDomainWithString_UrlSubdomain) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://mail.globex.com"), "globex.com", status, &result));
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(
+                GURL("http://mail.globex.com"), "globex.com", status),
+            ".globex.com");
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_EQ(result, ".globex.com");
 }
 
 // A URL of which the cookie domain is a substring, but not a dotted suffix,
@@ -235,7 +219,7 @@ TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
   CookieInclusionStatus status;
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://myglobex.com"), "globex.com", status, &result));
+      GURL("http://myglobex.com"), "globex.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
@@ -243,22 +227,20 @@ TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
 // not allowed, regardless of which hostname is longer.
 TEST(CookieUtilTest, GetCookieDomainWithString_DifferentSubdomain) {
   CookieInclusionStatus status;
-  std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://l.globex.com"), "portal.globex.com", status, &result));
+      GURL("http://l.globex.com"), "portal.globex.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://portal.globex.com"), "l.globex.com", status, &result));
+      GURL("http://portal.globex.com"), "l.globex.com", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
 // A URL without a host can set a "host" cookie with no cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_NoUrlHost) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("file:///C:/bar.html"), "", status, &result));
-  EXPECT_EQ(result, "");
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("file:///C:/bar.html"),
+                                                   "", status),
+            "");
 }
 
 // A URL with two trailing dots (which is an invalid hostname per
@@ -266,9 +248,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_NoUrlHost) {
 // string) is not allowed.
 TEST(CookieUtilTest, GetCookieDomainWithString_TrailingDots) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://foo.com../"), "foo.com..", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com../"),
+                                                      "foo.com..", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
@@ -277,12 +258,11 @@ TEST(CookieUtilTest, GetCookieDomainWithString_TrailingDots) {
 TEST(CookieUtilTest,
      GetCookieDomainWithString_TrailingDots_NotMatchingUrlHost) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://foo.com/"), ".foo.com..", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
+                                                      ".foo.com..", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
-  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
-      GURL("http://foo.com/"), ".foo.com.", status, &result));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
+                                                      ".foo.com.", status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
 }
 
@@ -290,30 +270,27 @@ TEST(CookieUtilTest,
 // domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_UrlHostIP) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://192.0.2.3/"), "192.0.2.3", status, &result));
-  EXPECT_EQ(result, "192.0.2.3");
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://192.0.2.3/"),
+                                                   "192.0.2.3", status),
+            "192.0.2.3");
 }
 
 // A cookie domain with a dot-prefixed IP is allowed, if the IP matches
 // the URL, but is transformed to a host cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_UrlHostIP_DomainCookie) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(
-      GURL("http://192.0.2.3/"), ".192.0.2.3", status, &result));
-  EXPECT_EQ(result, "192.0.2.3");  // No dot.
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://192.0.2.3/"),
+                                                   ".192.0.2.3", status),
+            "192.0.2.3");  // No dot.
 }
 
 // A URL containing a TLD that is unknown as a registry is allowed, if it
 // matches the cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_UnknownRegistry) {
   CookieInclusionStatus status;
-  std::string result;
-  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("http://bar/"), "bar",
-                                                     status, &result));
-  EXPECT_EQ(result, "bar");
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("http://bar/"), "bar",
+                                                   status),
+            "bar");
 }
 
 TEST(CookieUtilTest, TestCookieDateParsing) {
@@ -692,13 +669,6 @@ MATCHER_P5(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
 
   if (metadata.redirect_type_bug_1221316 != redirect_type_with_chain)
     return false;
-
-  // http_method_bug_1221316 is only set when there is a context downgrade.
-  if (metadata.cross_site_redirect_downgrade !=
-          ContextDowngradeType::kNoDowngrade &&
-      metadata.http_method_bug_1221316 != method) {
-    return false;
-  }
 
   switch (metadata.cross_site_redirect_downgrade) {
     case ContextDowngradeType::kNoDowngrade:
@@ -1814,8 +1784,9 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                                             ::testing::Bool()));
 
 TEST(CookieUtilTest, IsCookieAccessResultInclude) {
-  EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult(
-      CookieInclusionStatus(CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
+  EXPECT_FALSE(cookie_util::IsCookieAccessResultInclude(
+      CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
+          /*exclusions=*/{CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
 
   EXPECT_TRUE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult()));
 }

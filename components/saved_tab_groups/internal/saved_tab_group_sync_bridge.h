@@ -20,6 +20,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class PrefService;
 
@@ -95,7 +96,7 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Returns the account ID from the change processor if metadata is tracked,
   // otherwise returns a nullopt.
-  std::optional<std::string> GetTrackedAccountId() const;
+  std::optional<GaiaId> GetTrackedAccountId() const;
 
   // Whether the sync is currently enabled and syncing for saved tab groups.
   // False before bridge initialization is completed.
@@ -123,6 +124,9 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // Updates and/or adds the specifics into the DataTypeStore.
   void UpsertEntitySpecific(const proto::SavedTabGroupData& data,
                             syncer::DataTypeStore::WriteBatch* write_batch);
+  void UpsertEntitySpecific(const proto::SavedTabGroupData& data,
+                            syncer::DataTypeStore::WriteBatch* write_batch,
+                            bool send_to_sync);
 
   // Removes the specifics pointed to by `guid` from the DataTypeStore.
   void RemoveEntitySpecific(const base::Uuid& guid,

@@ -53,7 +53,7 @@ bool IsModelFileContentReadable(base::File& file) {
     return false;
   }
   std::vector<uint8_t> buffer(file_size);
-  return file.ReadAndCheck(0, base::make_span(buffer));
+  return file.ReadAndCheck(0, base::span(buffer));
 }
 
 // The name of the file that contains the list of files that are downloaded with
@@ -224,8 +224,6 @@ ScreenAIServiceRouter::GetAllPendingStatusServices() {
 void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
   switch (state) {
     case ScreenAIInstallState::State::kNotDownloaded:
-      ABSL_FALLTHROUGH_INTENDED;
-
     case ScreenAIInstallState::State::kDownloading:
       return;
 

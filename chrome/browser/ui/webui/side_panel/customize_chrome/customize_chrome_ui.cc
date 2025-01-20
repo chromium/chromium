@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 
 #include <optional>
@@ -16,7 +11,6 @@
 #include "base/rand_util.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -35,7 +29,6 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
@@ -51,6 +44,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -78,9 +72,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
-      module_id_names_(
-          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
-                                 profile_)),
+      module_id_details_(
+          ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
+                                   profile_)),
       page_factory_receiver_(this),
       id_(RandInt64()) {
   const bool wallpaper_search_enabled =
@@ -107,6 +101,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
+      {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
@@ -253,7 +248,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "modulesEnabled",
-      ntp::HasModulesEnabled(module_id_names_,
+      ntp::HasModulesEnabled(module_id_details_,
                              IdentityManagerFactory::GetForProfile(profile_)));
 
   source->AddBoolean("showDeviceThemeToggle",
@@ -286,12 +281,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                          ntp_features::kNtpBackgroundImageErrorDetection));
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelCustomizeChromeResources,
-                      kSidePanelCustomizeChromeResourcesSize),
+      source, kSidePanelCustomizeChromeResources,
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
@@ -398,7 +390,7 @@ void CustomizeChromeUI::CreatePageHandler(
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
-      module_id_names_);
+      module_id_details_);
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();

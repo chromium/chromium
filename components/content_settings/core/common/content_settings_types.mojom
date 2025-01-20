@@ -463,5 +463,17 @@ enum ContentSettingsType {
   // Content settings for private network access in the context of the
   // Direct Sockets API.
   DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+
+  // Content settings for legacy cookie scope.
+  // Checks whether cookies scope is handled according to origin-bound cookies
+  // or legacy behavior.
+  LEGACY_COOKIE_SCOPE,
+
+  // Website setting to indicate whether the user has allowlisted suspicious
+  // notifications for the origin.
+  ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+
+  // Content settings for access to the Controlled Frame API.
+  CONTROLLED_FRAME,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

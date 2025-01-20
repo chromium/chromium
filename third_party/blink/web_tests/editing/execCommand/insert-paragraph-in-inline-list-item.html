@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  [
+    '<div contenteditable>',
+      '<ul><li style="display: inline-block;">',
+        'hello |world',
+      '</li></ul>',
+    '</div>',
+  ],
+  'insertParagraph',
+  [
+    '<div contenteditable>',
+      '<ul><li style="display: inline-block;">',
+        'hello <br>|world',
+      '</li></ul>',
+    '</div>',
+  ],
+  'InsertParagraph in the inline list item'
+);
+</script>

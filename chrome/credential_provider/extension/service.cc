@@ -40,7 +40,7 @@ Service::Service()
       SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PRESHUTDOWN;
 }
 
-Service::~Service() {}
+Service::~Service() = default;
 
 DWORD Service::RunAsService() {
   LOGFN(VERBOSE);

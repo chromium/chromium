@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
 #include <vector>
@@ -89,7 +94,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     IvfFrameHeader ivf_frame_header;
     const uint8_t* ivf_payload;
     ASSERT_TRUE(ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_payload));
-    buffers[i] = base::make_span(ivf_payload, ivf_frame_header.frame_size);
+    buffers[i] = base::span(ivf_payload, ivf_frame_header.frame_size);
   }
 
   std::vector<uint32_t> frame_sizes;

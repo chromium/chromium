@@ -96,7 +96,6 @@ class CallbackCookieSettings : public CookieSettingsBase {
 
  private:
   GetSettingCallback callback_;
-  ContentSettingsType type_;
 };
 
 class CookieSettingsBaseTest : public testing::Test {

@@ -24,7 +24,6 @@ static_library("nearby_share") {
     "//chrome/browser/resources/chromeos/nearby_share:resources",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui:webui_util",
     "//ui/webui",
   ]
 }

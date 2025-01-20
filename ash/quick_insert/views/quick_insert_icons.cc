@@ -36,6 +36,9 @@ const gfx::VectorIcon& GetVectorIconForQuickInsertCategory(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       return kQuickInsertEmojiIcon;
+    case QuickInsertCategory::kGifs:
+      // GIFs category has no icon.
+      NOTREACHED();
     case QuickInsertCategory::kLinks:
       return kQuickInsertBrowsingHistoryIcon;
     case QuickInsertCategory::kClipboard:

@@ -8,6 +8,7 @@
 
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/common/features.h"
@@ -85,7 +86,7 @@ void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
 
 void RenderAccessibilityManager::FatalError() {
   NO_CODE_FOLDING();
-  CHECK(false) << "Invalid accessibility tree.";
+  NOTREACHED() << "Invalid accessibility tree.";
 }
 
 void RenderAccessibilityManager::HitTest(

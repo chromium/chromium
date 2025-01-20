@@ -26,6 +26,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
@@ -101,7 +102,7 @@ class LeakySingleton {
     __cpp_lib_atomic_value_initialization < 201911L
   alignas(T) uint8_t instance_buffer_[sizeof(T)];
 #else
-  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {0};
+  alignas(T) uint8_t instance_buffer_[sizeof(T)] = {};
 #endif
   std::atomic<bool> initialization_lock_;
 };
@@ -148,7 +149,6 @@ class MainPartitionConstructor {
     // the decision to turn the thread cache on until then.
     // Also tests, such as the ThreadCache tests create a thread cache.
     opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-    opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
     opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
     auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
 
@@ -612,6 +612,7 @@ void EnablePartitionAllocMemoryReclaimer() {
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
+    size_t brp_extra_extras_size,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,
@@ -619,6 +620,7 @@ void ConfigurePartitions(
     size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    FewerMemoryRegions fewer_memory_regions,
     UsePoolOffsetFreelists use_pool_offset_freelists,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
   // Calling Get() is actually important, even if the return value isn't
@@ -640,7 +642,6 @@ void ConfigurePartitions(
         // another partition will have the thread cache enabled, by calling
         // EnableThreadCacheIfSupported().
         opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr =
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
@@ -652,6 +653,9 @@ void ConfigurePartitions(
             eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
+        opts.fewer_memory_regions =
+            fewer_memory_regions ? partition_alloc::PartitionOptions::kEnabled
+                                 : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine =
             scheduler_loop_quarantine
                 ? partition_alloc::PartitionOptions::kEnabled

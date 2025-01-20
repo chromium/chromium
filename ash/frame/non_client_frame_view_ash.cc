@@ -309,10 +309,10 @@ void NonClientFrameViewAsh::ClearToggleResizeLockMenuCallback() {
 void NonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
                                                     const void* key,
                                                     intptr_t old) {
-  // ChromeOS has rounded frames for certain window states. If these states
+  // ChromeOS has rounded windows for certain window states. If these states
   // changes, we need to update the rounded corners of the frame associate with
   // the `window`accordingly.
-  if (chromeos::CanPropertyEffectFrameRadius(key)) {
+  if (chromeos::CanPropertyEffectWindowRadius(key)) {
     UpdateWindowRoundedCorners();
 
     bool fills_bounds_opaquely = true;
@@ -340,7 +340,7 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
 
   aura::Window* frame_window = GetWidget()->GetNativeWindow();
 
-  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  const int corner_radius = chromeos::GetWindowCornerRadius(frame_window);
   frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
                             corner_radius);
 

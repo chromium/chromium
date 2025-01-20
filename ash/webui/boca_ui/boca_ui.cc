@@ -12,6 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/url_constants.h"
+#include "ash/webui/boca_ui/webview_auth_delegate.h"
+#include "ash/webui/boca_ui/webview_auth_handler.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
@@ -36,12 +38,10 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       browser_context, kChromeBocaAppUntrustedURL);
 
   source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
-  source->AddResourcePaths(
-      base::make_span(kAshBocaUiResources, kAshBocaUiResourcesSize));
+  source->AddResourcePaths(kAshBocaUiResources);
 
   // Resources obtained from CIPD.
-  source->AddResourcePaths(base::make_span(
-      kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosBocaAppBundleResources);
   return source;
 }
 
@@ -61,6 +61,11 @@ BocaUI::BocaUI(content::WebUI* web_ui,
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
+
+  // Need to explicitly set |worker-src| because CSP falls back to |child-src|
+  // which is none.
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
 
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
@@ -121,11 +126,19 @@ void BocaUI::BindInterface(
 void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
+  content::BrowserContext* context =
+      web_ui()->GetWebContents()->GetBrowserContext();
+  CHECK(context);
+  const std::string host_name =
+      web_ui()->GetWebContents()->GetVisibleURL().host();
+  auto auth_handler = std::make_unique<WebviewAuthHandler>(
+      std::make_unique<WebviewAuthDelegate>(), context, host_name);
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
-      std::make_unique<ClassroomPageHandlerImpl>(),
+      std::move(auth_handler), std::make_unique<ClassroomPageHandlerImpl>(),
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       is_producer_);
+  page_handler_impl_->SetSpotlightService(&spotlight_service_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)

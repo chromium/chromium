@@ -207,7 +207,12 @@ message ServiceWorkerRegistrationData {
       }
       message Source {
         message NetworkSource {}
-        message RaceSource {}
+        message RaceSource {
+          enum Target {
+            kNetworkAndFetchHandler = 0;
+          }
+          optional Target target = 1;
+        }
         message FetchEventSource {}
         message CacheSource {
           optional string cache_name = 1;

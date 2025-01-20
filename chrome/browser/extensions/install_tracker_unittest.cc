@@ -48,7 +48,7 @@ class InstallTrackerTest : public testing::Test {
     tracker_ = base::WrapUnique(new InstallTracker(profile_.get(), nullptr));
   }
 
-  ~InstallTrackerTest() override {}
+  ~InstallTrackerTest() override = default;
 
  protected:
   Profile* profile() { return profile_.get(); }

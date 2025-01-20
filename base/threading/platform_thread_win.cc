@@ -24,7 +24,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/threading_features.h"
 #include "base/time/time_override.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -37,21 +36,7 @@
 
 namespace base {
 
-BASE_FEATURE(kUseThreadPriorityLowest,
-             "UseThreadPriorityLowest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAboveNormalCompositingBrowserWin,
-             "AboveNormalCompositingBrowserWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-
-// Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
-// |kUseThreadPriorityLowest| Feature.
-std::atomic<bool> g_use_thread_priority_lowest{false};
-// Flag used to map Compositing ThreadType |THREAD_PRIORITY_ABOVE_NORMAL| on the
-// UI thread for |kAboveNormalCompositingBrowserWin| Feature.
-std::atomic<bool> g_above_normal_compositing_browser{true};
 
 // These values are sometimes returned by ::GetThreadPriority().
 constexpr int kWinDisplayPriority1 = 5;
@@ -62,10 +47,10 @@ constexpr int kWinDisplayPriority2 = 6;
 const DWORD kVCThreadNameException = 0x406D1388;
 
 typedef struct tagTHREADNAME_INFO {
-  DWORD dwType;  // Must be 0x1000.
-  LPCSTR szName;  // Pointer to name (in user addr space).
+  DWORD dwType;      // Must be 0x1000.
+  LPCSTR szName;     // Pointer to name (in user addr space).
   DWORD dwThreadID;  // Thread ID (-1=caller thread).
-  DWORD dwFlags;  // Reserved for future use, must be zero.
+  DWORD dwFlags;     // Reserved for future use, must be zero.
 } THREADNAME_INFO;
 
 // The SetThreadDescription API was brought in version 1607 of Windows 10.
@@ -97,23 +82,21 @@ struct ThreadParams {
 DWORD __stdcall ThreadFunc(void* params) {
   ThreadParams* thread_params = static_cast<ThreadParams*>(params);
   PlatformThread::Delegate* delegate = thread_params->delegate;
-  if (!thread_params->joinable)
+  if (!thread_params->joinable) {
     base::DisallowSingleton();
+  }
 
-  if (thread_params->thread_type != ThreadType::kDefault)
+  if (thread_params->thread_type != ThreadType::kDefault) {
     internal::SetCurrentThreadType(thread_params->thread_type,
                                    thread_params->message_pump_type);
+  }
 
   // Retrieve a copy of the thread handle to use as the key in the
   // thread name mapping.
   PlatformThreadHandle::Handle platform_handle;
-  BOOL did_dup = DuplicateHandle(GetCurrentProcess(),
-                                GetCurrentThread(),
-                                GetCurrentProcess(),
-                                &platform_handle,
-                                0,
-                                FALSE,
-                                DUPLICATE_SAME_ACCESS);
+  BOOL did_dup = DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
+                                 GetCurrentProcess(), &platform_handle, 0,
+                                 FALSE, DUPLICATE_SAME_ACCESS);
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated();
@@ -143,8 +126,9 @@ DWORD __stdcall ThreadFunc(void* params) {
   // destruction. Thread destruction on Windows holds the LdrLock while
   // performing TLS destruction which causes hangs if performed at background
   // priority (priority inversion) (see: http://crbug.com/1096203).
-  if (::GetThreadPriority(::GetCurrentThread()) < THREAD_PRIORITY_NORMAL)
+  if (::GetThreadPriority(::GetCurrentThread()) < THREAD_PRIORITY_NORMAL) {
     PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
+  }
 
   return 0;
 }
@@ -167,17 +151,19 @@ bool CreateThreadInternal(size_t stack_size,
     // 1MB for the address space pressure.
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
     static BOOL is_wow64 = -1;
-    if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64))
+    if (is_wow64 == -1 && !IsWow64Process(GetCurrentProcess(), &is_wow64)) {
       is_wow64 = FALSE;
+    }
     // When is_wow64 is set that means we are running on 64-bit Windows and we
     // get 4 GiB of address space. In that situation we can afford to use 1 MiB
     // of address space for stacks. When running on 32-bit Windows we only get
     // 2 GiB of address space so we need to conserve. Typically stack usage on
     // these threads is only about 100 KiB.
-    if (is_wow64)
+    if (is_wow64) {
       stack_size = 1024 * 1024;
-    else
+    } else {
       stack_size = 512 * 1024;
+    }
 #endif
   }
 
@@ -217,10 +203,11 @@ bool CreateThreadInternal(size_t stack_size,
     return false;
   }
 
-  if (out_thread_handle)
+  if (out_thread_handle) {
     *out_thread_handle = PlatformThreadHandle(thread_handle);
-  else
+  } else {
     CloseHandle(thread_handle);
+  }
   return true;
 }
 
@@ -296,8 +283,9 @@ void PlatformThread::SetName(const std::string& name) {
 
   // The debugger needs to be around to catch the name in the exception.  If
   // there isn't a debugger, we are just needlessly throwing an exception.
-  if (!::IsDebuggerPresent())
+  if (!::IsDebuggerPresent()) {
     return;
+  }
 
   SetNameInternal(CurrentId(), name.c_str());
 }
@@ -339,8 +327,9 @@ void PlatformThread::Join(PlatformThreadHandle thread_handle) {
   DWORD thread_id = 0;
   thread_id = ::GetThreadId(thread_handle.platform_handle());
   DWORD last_error = 0;
-  if (!thread_id)
+  if (!thread_id) {
     last_error = ::GetLastError();
+  }
 
   // Record information about the exiting thread in case joining hangs.
   base::debug::Alias(&thread_id);
@@ -370,19 +359,10 @@ namespace {
 
 void SetCurrentThreadPriority(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  if (thread_type == ThreadType::kDisplayCritical &&
-      pump_type_hint == MessagePumpType::UI &&
-      !g_above_normal_compositing_browser) {
-    // Ignore kDisplayCritical thread type for UI thread as Windows has a
-    // priority boost mechanism. See
-    // https://docs.microsoft.com/en-us/windows/win32/procthread/priority-boosts
-    return;
-  }
-
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
-  if (!g_use_thread_priority_lowest && thread_type != ThreadType::kBackground) {
+  if (thread_type != ThreadType::kBackground) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
     ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
@@ -401,10 +381,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
       // MSDN recommends THREAD_MODE_BACKGROUND_BEGIN for threads that perform
       // background work, as it reduces disk and memory priority in addition to
       // CPU priority.
-      desired_priority =
-          g_use_thread_priority_lowest.load(std::memory_order_relaxed)
-              ? THREAD_PRIORITY_LOWEST
-              : THREAD_MODE_BACKGROUND_BEGIN;
+      desired_priority = THREAD_MODE_BACKGROUND_BEGIN;
       break;
     case ThreadType::kUtility:
       desired_priority = THREAD_PRIORITY_BELOW_NORMAL;
@@ -438,7 +415,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
         << "Set thread memory priority failed.";
   }
 
-  if (!g_use_thread_priority_lowest && thread_type == ThreadType::kBackground) {
+  if (thread_type == ThreadType::kBackground) {
     // In a background process, THREAD_MODE_BACKGROUND_BEGIN lowers the memory
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
@@ -531,8 +508,9 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   // -6 when THREAD_MODE_BACKGROUND_* is used. THREAD_PRIORITY_IDLE,
   // THREAD_PRIORITY_LOWEST and THREAD_PRIORITY_BELOW_NORMAL are other possible
   // negative values.
-  if (priority < THREAD_PRIORITY_BELOW_NORMAL)
+  if (priority < THREAD_PRIORITY_BELOW_NORMAL) {
     return ThreadPriorityForTest::kBackground;
+  }
 
   switch (priority) {
     case THREAD_PRIORITY_BELOW_NORMAL:
@@ -553,15 +531,6 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   }
 
   NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
-}
-
-void InitializePlatformThreadFeatures() {
-  g_use_thread_priority_lowest.store(
-      FeatureList::IsEnabled(kUseThreadPriorityLowest),
-      std::memory_order_relaxed);
-  g_above_normal_compositing_browser.store(
-      FeatureList::IsEnabled(kAboveNormalCompositingBrowserWin),
-      std::memory_order_relaxed);
 }
 
 // static

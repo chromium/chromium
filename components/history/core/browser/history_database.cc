@@ -83,7 +83,8 @@ HistoryDatabase::HistoryDatabase(
     DownloadInterruptReason download_interrupt_reason_crash)
     : DownloadDatabase(download_interrupt_reason_none,
                        download_interrupt_reason_crash),
-      db_({// Note that we don't set exclusive locking here. That's done by
+      db_(
+          {// Note that we don't set exclusive locking here. That's done by
            // BeginExclusiveMode below which is called later (we have to be in
            // shared mode to start out for the in-memory backend to read the
            // data).
@@ -97,14 +98,13 @@ HistoryDatabase::HistoryDatabase(
            // Set the cache size. The page size, plus a little extra, times this
            // value, tells us how much memory the cache will use maximum.
            // 1000 * 4kB = 4MB
-           .cache_size = 1000}),
+           .cache_size = 1000},
+          /*tag=*/"History"),
       history_metadata_db_(&db_, &meta_table_) {}
 
 HistoryDatabase::~HistoryDatabase() = default;
 
 sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
-  db_.set_histogram_tag("History");
-
   if (!db_.Open(history_name))
     return LogInitFailure(InitStep::OPEN);
 

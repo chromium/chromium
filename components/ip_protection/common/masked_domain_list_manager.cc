@@ -5,11 +5,14 @@
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <set>
+#include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -25,22 +28,6 @@ using ::masked_domain_list::PublicSuffixListRule;
 using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
-
-// Returns a `ResourceOwner` identical to the input `resource_owner` but without
-// any `owned_resource` exactly matching a private domain listed in the PSL.
-ResourceOwner RemovePslPrivateDomainsFromOwnedResources(
-    const std::set<std::string>& psl_private_domains,
-    const ResourceOwner& resource_owner) {
-  ResourceOwner res = resource_owner;
-  res.clear_owned_resources();
-  for (const Resource& owned_resource : resource_owner.owned_resources()) {
-    if (psl_private_domains.contains(owned_resource.domain())) {
-      continue;
-    }
-    *res.add_owned_resources() = owned_resource;
-  }
-  return res;
-}
 
 }  // namespace
 
@@ -115,9 +102,9 @@ bool MaskedDomainListManager::Matches(
   switch (proxy_bypass_policy_) {
     case IpProtectionProxyBypassPolicy::kNone:
     case IpProtectionProxyBypassPolicy::kExclusionList:
-      match_result =
-          url_matcher_with_bypass_.Matches(request_url_ref, top_frame_site,
-                                           /*skip_bypass_check=*/true);
+      match_result = url_matcher_with_bypass_.Matches(
+          request_url_ref, top_frame_site, MdlType::kDefault,
+          /*skip_bypass_check=*/true);
       break;
     case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
       if (!top_frame_site.has_value()) {
@@ -154,7 +141,7 @@ bool MaskedDomainListManager::Matches(
       // opaque), we should skip the first party check and match only on the
       // request_url.
       match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site,
+          request_url_ref, top_frame_site, MdlType::kDefault,
           network_anonymization_key.IsTransient());
       break;
   }
@@ -173,41 +160,6 @@ bool MaskedDomainListManager::Matches(
   }
 }
 
-std::set<std::string> MaskedDomainListManager::ExcludeDomainsFromMDL(
-    const std::set<std::string>& mdl_domains,
-    const std::set<std::string>& excluded_domains) {
-  if (excluded_domains.empty()) {
-    return mdl_domains;
-  }
-
-  std::set<std::string> mdl_domains_after_exclusions;
-  for (const auto& mdl_domain : mdl_domains) {
-    std::string mdl_superdomain(mdl_domain);
-    bool shouldInclude = true;
-
-    // Check if any super domains exist in the exclusion set
-    // For example, mdl_domain W.X.Y.Z should be excluded if exclusion set
-    // contains super domains W.X.Y.Z or X.Y.Z or Y.Z or Z
-
-    // TODO(crbug/326399905): Add logic for excluding a domain X if any other
-    // domain owned by X's resource owner is on the exclusion list.
-
-    while (!mdl_superdomain.empty()) {
-      if (base::Contains(excluded_domains, mdl_superdomain)) {
-        shouldInclude = false;
-        break;
-      }
-      mdl_superdomain = net::GetSuperdomain(mdl_superdomain);
-    }
-
-    if (shouldInclude) {
-      mdl_domains_after_exclusions.insert(mdl_domain);
-    }
-  }
-
-  return mdl_domains_after_exclusions;
-}
-
 void MaskedDomainListManager::UpdateMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl,
     const std::vector<std::string>& exclusion_list) {
@@ -217,24 +169,25 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
     creation_time_for_mdl_update_metric_.reset();
   }
 
-  const int experiment_group_id =
-      network::features::kMaskedDomainListExperimentGroup.Get();
-  // Clients are in the default group if the experiment_group_id is the
-  // default value of 0.
-  const bool in_default_group = (experiment_group_id == 0);
+  // Clear the existing matchers.
+  url_matcher_with_bypass_.Clear();
+  public_suffix_list_matcher_.Clear();
 
-  // All Resources are used by the default group unless they are explicitly
-  // excluded. For a client in the experiment group to use a Resource, the
-  // Resource must explicitly list the experiment group.
-  auto is_eligible = [&](masked_domain_list::Resource resource) {
-    if (in_default_group) {
-      return !resource.exclude_default_group();
-    }
-    return base::Contains(resource.experiment_group_ids(), experiment_group_id);
-  };
+  // Only construct the exclusion set if the policy is kExclusionList.
+  const std::unordered_set<std::string> exclusion_set =
+      proxy_bypass_policy_ == IpProtectionProxyBypassPolicy::kExclusionList
+          ? std::unordered_set<std::string>(exclusion_list.begin(),
+                                            exclusion_list.end())
+          : std::unordered_set<std::string>();
 
-  const std::set<std::string> exclusion_set(exclusion_list.begin(),
-                                            exclusion_list.end());
+  for (const ResourceOwner& owner : mdl.resource_owners()) {
+    // Only create a bypass matcher if the policy is
+    // kFirstPartyToTopLevelFrame.
+    url_matcher_with_bypass_.AddRules(
+        owner, exclusion_set,
+        /*create_bypass_matcher=*/proxy_bypass_policy_ ==
+            IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame);
+  }
 
   // Collect the PSL private domains in a set for efficient querying.
   std::set<std::string> psl_private_domains;
@@ -243,47 +196,8 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
       mdl.public_suffix_list_rules().end(),
       std::inserter(psl_private_domains, psl_private_domains.end()),
       [](const PublicSuffixListRule& pslr) { return pslr.private_domain(); });
-
-  url_matcher_with_bypass_.Clear();
-  public_suffix_list_matcher_.Clear();
-  for (const ResourceOwner& owner : mdl.resource_owners()) {
-    // Group domains by partition first so that only one set of the owner's
-    // bypass rules are created per partition.
-    std::set<std::string> eligible_domains;
-
-    // Domains that are listed in the public suffix list should not be added to
-    // url_matcher_with_bypass_, because they are not actually owned.
-    // TODO(b/328788380): Client-side removal is only temporarily necessary,
-    // until support for the new PSL field in the MDL is rolled out to chrome
-    // stable and the adjustments to the MDL can be made at source.
-    const ResourceOwner owner_without_psl_owned_properties =
-        RemovePslPrivateDomainsFromOwnedResources(psl_private_domains, owner);
-
-    for (const Resource& resource :
-         owner_without_psl_owned_properties.owned_resources()) {
-      if (is_eligible(resource)) {
-        eligible_domains.insert(resource.domain());
-      }
-    }
-
-    switch (proxy_bypass_policy_) {
-      case IpProtectionProxyBypassPolicy::kNone: {
-        url_matcher_with_bypass_.AddRulesWithoutBypass(eligible_domains);
-        break;
-      }
-      case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame: {
-        url_matcher_with_bypass_.AddMaskedDomainListRules(
-            eligible_domains, owner_without_psl_owned_properties);
-        break;
-      }
-      case IpProtectionProxyBypassPolicy::kExclusionList: {
-        url_matcher_with_bypass_.AddRulesWithoutBypass(
-            ExcludeDomainsFromMDL(eligible_domains, exclusion_set));
-        break;
-      }
-    }
-  }
   AddPublicSuffixListRules(psl_private_domains);
+
   Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
 }
 

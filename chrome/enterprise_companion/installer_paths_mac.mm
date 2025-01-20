@@ -23,7 +23,7 @@ std::optional<base::FilePath> GetInstallDirectory() {
   base::FilePath application_support_path;
   if (!base::apple::GetLocalDirectory(NSApplicationSupportDirectory,
                                       &application_support_path)) {
-    LOG(ERROR) << "Could not get NSApplicationSupportDirectory path";
+    VLOG(1) << "Could not get NSApplicationSupportDirectory path";
     return std::nullopt;
   }
   return application_support_path.AppendASCII(COMPANY_SHORTNAME_STRING)

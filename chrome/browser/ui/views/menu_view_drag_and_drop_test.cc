@@ -50,11 +50,9 @@ class TestDragView : public views::View {
                      ui::OSExchangeData* data) override;
 };
 
-TestDragView::TestDragView() {
-}
+TestDragView::TestDragView() = default;
 
-TestDragView::~TestDragView() {
-}
+TestDragView::~TestDragView() = default;
 
 int TestDragView::GetDragOperations(const gfx::Point& point) {
   return ui::DragDropTypes::DRAG_MOVE;
@@ -322,8 +320,8 @@ bool MenuViewDragAndDropTest::CanDrag(views::MenuItemView* menu) {
   return true;
 }
 
-void MenuViewDragAndDropTest::WriteDragData(
-    views::MenuItemView* sender, ui::OSExchangeData* data) {
+void MenuViewDragAndDropTest::WriteDragData(views::MenuItemView* sender,
+                                            ui::OSExchangeData* data) {
   data->SetString(kTestTopLevelDragData);
 }
 
@@ -381,7 +379,12 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
   EXPECT_TRUE(performed_in_menu_drop());
   EXPECT_FALSE(target_view()->dropped());
   EXPECT_TRUE(asked_to_close());
-  EXPECT_FALSE(menu()->GetSubmenu()->IsShowing());
+
+// TODO(crbug.com/375959961): For X11, the menu is always closed on drag
+// completion because the native widget's state is not properly updated.
+#if !BUILDFLAG(IS_OZONE_X11)
+  EXPECT_TRUE(menu()->GetSubmenu()->IsShowing());
+#endif
 
   Done();
 }
@@ -613,8 +616,8 @@ VIEW_TEST(MenuViewDragAndDropTestNestedDrag,
 
 class MenuViewDragAndDropForDropStayOpen : public MenuViewDragAndDropTest {
  public:
-  MenuViewDragAndDropForDropStayOpen() {}
-  ~MenuViewDragAndDropForDropStayOpen() override {}
+  MenuViewDragAndDropForDropStayOpen() = default;
+  ~MenuViewDragAndDropForDropStayOpen() override = default;
 
  private:
   // MenuViewDragAndDropTest:
@@ -644,8 +647,8 @@ VIEW_TEST(MenuViewDragAndDropForDropStayOpen, MenuViewStaysOpenForNestedDrag)
 
 class MenuViewDragAndDropForDropCancel : public MenuViewDragAndDropTest {
  public:
-  MenuViewDragAndDropForDropCancel() {}
-  ~MenuViewDragAndDropForDropCancel() override {}
+  MenuViewDragAndDropForDropCancel() = default;
+  ~MenuViewDragAndDropForDropCancel() override = default;
 
  private:
   // MenuViewDragAndDropTest:

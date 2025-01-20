@@ -21,8 +21,7 @@ namespace web_app {
 
 WebAppIconHealthChecks::WebAppIconHealthChecks(Profile* profile)
     : profile_(profile),
-      app_type_(WebAppPublisherHelper::GetWebAppType()),
-      web_apps_published_event_(profile, app_type_) {}
+      web_apps_published_event_(profile, apps::AppType::kWeb) {}
 
 WebAppIconHealthChecks::~WebAppIconHealthChecks() = default;
 
@@ -71,8 +70,9 @@ void WebAppIconHealthChecks::SaveDiagnosticForApp(
     webapps::AppId app_id,
     std::optional<WebAppIconDiagnosticResult> result) {
   apps_running_icon_diagnostics_.erase(app_id);
-  if (result)
+  if (result) {
     results_.push_back(*std::move(result));
+  }
   run_complete_callback_.Run();
 }
 

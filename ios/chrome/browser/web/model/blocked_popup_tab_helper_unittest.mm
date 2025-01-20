@@ -171,7 +171,7 @@ TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
   ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
   histogram_tester.ExpectUniqueSample(
       "Mobile.Messages.Confirm.Event.ConfirmInfobarTypeBlockPopups",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           MobileMessagesConfirmInfobarEvents::Presented),
       1);
 
@@ -180,7 +180,7 @@ TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
   GetInfobarManager()->infobars()[0]->delegate()->InfoBarDismissed();
   histogram_tester.ExpectBucketCount(
       kInfobarTypeBlockPopupsEventHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           MobileMessagesConfirmInfobarEvents::Dismissed),
       1);
 }
@@ -206,7 +206,7 @@ TEST_F(BlockedPopupTabHelperTest, RecordAcceptMetrics) {
   delegate->Accept();
   histogram_tester.ExpectBucketCount(
       kInfobarTypeBlockPopupsEventHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           MobileMessagesConfirmInfobarEvents::Accepted),
       1);
 }

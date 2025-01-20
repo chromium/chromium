@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -40,8 +41,13 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
         mExtendedReportingPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mPasswordLeakDetectionPreference = findPreference(PREF_PASSWORD_LEAK_DETECTION);
-        mPasswordLeakDetectionPreference.setOnPreferenceChangeListener(this);
-        mPasswordLeakDetectionPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
+            mPasswordLeakDetectionPreference.setOnPreferenceChangeListener(this);
+            mPasswordLeakDetectionPreference.setManagedPreferenceDelegate(
+                    mManagedPreferenceDelegate);
+        } else {
+            mPasswordLeakDetectionPreference.setVisible(false);
+        }
 
         updateLeakDetectionAndExtendedReportingPreferences();
     }
@@ -76,15 +82,17 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
                 is_standard_protection && !extended_reporting_disabled_by_delegate);
         mExtendedReportingPreference.setChecked(extended_reporting_checked);
 
-        boolean leak_detection_enabled =
-                mPrefService.getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
-        boolean leak_detection_disabled_by_delegate =
-                mManagedPreferenceDelegate.isPreferenceClickDisabled(
-                        mPasswordLeakDetectionPreference);
-        mPasswordLeakDetectionPreference.setEnabled(
-                is_standard_protection && !leak_detection_disabled_by_delegate);
-        mPasswordLeakDetectionPreference.setChecked(
-                is_enhanced_protection || (is_standard_protection && leak_detection_enabled));
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
+            boolean leak_detection_enabled =
+                    mPrefService.getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
+            boolean leak_detection_disabled_by_delegate =
+                    mManagedPreferenceDelegate.isPreferenceClickDisabled(
+                            mPasswordLeakDetectionPreference);
+            mPasswordLeakDetectionPreference.setEnabled(
+                    is_standard_protection && !leak_detection_disabled_by_delegate);
+            mPasswordLeakDetectionPreference.setChecked(
+                    is_enhanced_protection || (is_standard_protection && leak_detection_enabled));
+        }
     }
 
     @Override

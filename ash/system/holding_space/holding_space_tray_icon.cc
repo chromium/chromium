@@ -80,7 +80,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
         target_size_(target_size),
         animation_(this),
         animation_throughput_tracker_(
-            icon->GetWidget()->GetCompositor()->RequestNewThroughputTracker()) {
+            icon->GetWidget()
+                ->GetCompositor()
+                ->RequestNewCompositorMetricsTracker()) {
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *

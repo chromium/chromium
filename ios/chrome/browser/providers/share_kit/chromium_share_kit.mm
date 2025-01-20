@@ -17,9 +17,16 @@ class ChromiumShareKitService final : public ShareKitService {
   // ShareKitService.
   bool IsSupported() const override { return false; }
   void PrimaryAccountChanged() override {}
-  void ShareGroup(ShareKitShareGroupConfiguration* config) override {}
-  void ManageGroup(ShareKitManageConfiguration* config) override {}
-  void JoinGroup(ShareKitJoinConfiguration* config) override {}
+  void CancelSession(NSString* session_id) override {}
+  NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config) override {
+    return nil;
+  }
+  NSString* ManageTabGroup(ShareKitManageConfiguration* config) override {
+    return nil;
+  }
+  NSString* JoinTabGroup(ShareKitJoinConfiguration* config) override {
+    return nil;
+  }
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override {
     return nil;
   }

@@ -92,7 +92,7 @@ std::optional<gfx::Rect> DummyTextInputClient::GetProximateCharacterBounds(
 }
 
 std::optional<size_t> DummyTextInputClient::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     IndexFromPointFlags flags) const {
   return std::nullopt;
 }

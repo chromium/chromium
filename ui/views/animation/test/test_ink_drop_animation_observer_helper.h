@@ -90,8 +90,9 @@ class TestInkDropAnimationObserverHelper {
   // Passes *_TRUE assertions when an AnimationStarted() event has NOT been
   // observed.
   testing::AssertionResult AnimationHasNotStarted() {
-    if (last_animation_started_ordinal() < 0)
+    if (last_animation_started_ordinal() < 0) {
       return testing::AssertionSuccess();
+    }
     return testing::AssertionFailure()
            << "Animations were started at ordinal="
            << last_animation_started_ordinal() << ".";
@@ -110,8 +111,9 @@ class TestInkDropAnimationObserverHelper {
   // Passes *_TRUE assertions when an AnimationEnded() event has NOT been
   // observed.
   testing::AssertionResult AnimationHasNotEnded() {
-    if (last_animation_ended_ordinal() < 0)
+    if (last_animation_ended_ordinal() < 0) {
       return testing::AssertionSuccess();
+    }
     return testing::AssertionFailure() << "Animations were ended at ordinal="
                                        << last_animation_ended_ordinal() << ".";
   }
@@ -142,18 +144,21 @@ class TestInkDropAnimationObserverHelper {
               : (testing::AssertionFailure() << "Expected != Actual: {");
     for (auto eit = expected_contexts.begin(), ait = actual_contexts.begin();
          eit != expected_contexts.end() || ait != actual_contexts.end();) {
-      if (eit != expected_contexts.begin())
+      if (eit != expected_contexts.begin()) {
         result << ", ";
+      }
       const bool eexists = eit != expected_contexts.end();
       const bool aexists = ait != actual_contexts.end();
       const bool item_match = eexists && aexists && *eit == *ait;
       result << (eexists ? ToString(*eit) : "<none>")
              << (item_match ? " == " : " != ")
              << (aexists ? ToString(*ait) : "<none>");
-      if (eexists)
+      if (eexists) {
         eit++;
-      if (aexists)
+      }
+      if (aexists) {
         ait++;
+      }
     }
     result << "}";
     return result;

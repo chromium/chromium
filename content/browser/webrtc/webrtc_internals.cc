@@ -642,8 +642,8 @@ void WebRTCInternals::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  OnRendererExit(host->GetID());
-  render_process_id_set_.erase(host->GetID());
+  OnRendererExit(host->GetDeprecatedID());
+  render_process_id_set_.erase(host->GetDeprecatedID());
   host->RemoveObserver(this);
 }
 

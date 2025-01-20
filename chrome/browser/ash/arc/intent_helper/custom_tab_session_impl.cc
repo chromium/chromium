@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 

@@ -11,16 +11,17 @@ import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,8 +29,8 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 
 /** Unit Tests for {@link TabUiFeatureUtilities}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 public class TabUiFeatureUtilitiesUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private void setAccessibilityEnabledForTesting(Boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -38,7 +39,6 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setAccessibilityEnabledForTesting(false);
     }
 
@@ -77,23 +77,14 @@ public class TabUiFeatureUtilitiesUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withAllowlistedOEM_FFDisabled() {
+    public void testTabDragToCreateInstance_withAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFEnabled() {
+    public void testTabDragToCreateInstance_withNonAllowlistedOEM() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
         assertTrue(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-    public void testTabDragToCreateInstance_withNonAllowlistedOEM_FFDisabled() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "other");
-        assertFalse(TabUiFeatureUtilities.isTabDragToCreateInstanceSupported());
     }
 }

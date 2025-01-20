@@ -193,6 +193,11 @@ void IpProtectionTelemetryUma::TokenBatchGenerationComplete(
       "NetworkService.IpProtection.TokenBatchGenerationTime", duration);
 }
 
+void IpProtectionTelemetryUma::TryGetAuthTokensError(uint32_t hash) {
+  base::UmaHistogramSparse("NetworkService.IpProtection.TryGetAuthTokensErrors",
+                           hash);
+}
+
 void IpProtectionTelemetryUma::GeoChangeTokenPresence(bool tokens_present) {
   base::UmaHistogramBoolean(
       "NetworkService.IpProtection.GeoChangeTokenPresence", tokens_present);
@@ -257,6 +262,11 @@ void IpProtectionTelemetryUma::AndroidAuthClientAuthAndSignTime(
 void IpProtectionTelemetryUma::MdlFirstUpdateTime(base::TimeDelta duration) {
   base::UmaHistogramTimes("NetworkService.MaskedDomainList.FirstUpdateTime",
                           duration);
+}
+
+void IpProtectionTelemetryUma::MdlMatchesTime(base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "NetworkService.MaskedDomainList.MatchesTime", duration);
 }
 
 }  // namespace ip_protection

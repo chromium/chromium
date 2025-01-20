@@ -1,7 +1,11 @@
 include_rules = [
   "+gpu/config",
   "+sandbox/policy/linux",
+  "+skia/public",
   "+third_party/dawn/include/dawn",
+  "+third_party/re2",
+  "+third_party/skia",
+  "+components/crash/core/common/crash_key.h",
   "+components/optimization_guide/core/optimization_guide_features.h",
 ]
 

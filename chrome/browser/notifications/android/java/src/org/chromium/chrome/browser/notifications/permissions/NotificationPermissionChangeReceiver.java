@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
  * A {@link android.content.BroadcastReceiver} that detects when our App level notifications are
@@ -26,6 +27,7 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
                 && intent.hasExtra(NotificationManager.EXTRA_BLOCKED_STATE)) {
             boolean blockedState =
                     intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+            NotificationProxyUtils.setNotificationEnabled(!blockedState);
             NotificationUmaTracker.getInstance()
                     .onNotificationPermissionSettingChange(blockedState);
         }

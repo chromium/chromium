@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "components/performance_manager/public/performance_manager_observer.h"
 #include "content/public/browser/devtools_agent_host.h"
 
 namespace performance_manager {
@@ -19,7 +19,7 @@ class ActiveTabObserver;
 
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
-      public PerformanceManagerMainThreadObserverDefaultImpl,
+      public PerformanceManagerObserverDefaultImpl,
       public content::DevToolsAgentHostObserver {
  public:
   PageLiveStateDecoratorHelper();
@@ -47,7 +47,7 @@ class PageLiveStateDecoratorHelper
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
-  // PerformanceManagerMainThreadObserver:
+  // PerformanceManagerObserver:
   void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) override;
 

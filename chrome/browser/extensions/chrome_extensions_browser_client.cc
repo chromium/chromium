@@ -49,6 +49,7 @@
 #include "chrome/browser/extensions/favicon/favicon_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/pref_mapping.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
@@ -84,7 +85,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
@@ -225,7 +225,7 @@ ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
       std::make_unique<ChromeComponentExtensionResourceManager>();
 }
 
-ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() {}
+ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() = default;
 
 void ChromeExtensionsBrowserClient::StartTearDown() {
   user_script_listener_.StartTearDown();
@@ -322,6 +322,15 @@ bool ChromeExtensionsBrowserClient::AreExtensionsDisabledForContext(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+bool ChromeExtensionsBrowserClient::IsActiveContext(
+    content::BrowserContext* browser_context) const {
+  // Since we are creating one instance per profile / user, we should be fine
+  // comparing against the active user. That said - if we ever change that,
+  // this code will need to be changed.
+  return static_cast<Profile*>(browser_context)
+      ->IsSameOrParent(ProfileManager::GetActiveUserProfile());
+}
+
 std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   return ash::ProfileHelper::GetUserIdHashFromProfile(
@@ -766,9 +775,17 @@ bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
 
 bool ChromeExtensionsBrowserClient::IsValidTabId(
     content::BrowserContext* context,
-    int tab_id) const {
-  return ExtensionTabUtil::GetTabById(
-      tab_id, context, true /* include_incognito */, nullptr /* contents */);
+    int tab_id,
+    bool include_incognito,
+    content::WebContents** web_contents) const {
+  return ExtensionTabUtil::GetTabById(tab_id, context, include_incognito,
+                                      web_contents);
+}
+
+ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
+    content::WebContents& web_contents) {
+  TabHelper* tab_helper = TabHelper::FromWebContents(&web_contents);
+  return tab_helper ? tab_helper->script_executor() : nullptr;
 }
 
 void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
@@ -778,9 +795,7 @@ void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryTabsExecuteScriptSignal)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
 
@@ -837,43 +852,6 @@ void ChromeExtensionsBrowserClient::
       CreateDeclarativeNetRequestRedirectActionSignal(extension_id, request_url,
                                                       redirect_url);
   telemetry_service->AddSignal(std::move(signal));
-}
-
-void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const GURL& url) const {
-  // Collect only if new interception feature is disabled to avoid duplicates.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::
-              kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-    return;
-  }
-
-  safe_browsing::RemoteHostInfo::ProtocolType protocol =
-      safe_browsing::RemoteHostInfo::UNSPECIFIED;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryReportContactedHosts) &&
-      url.SchemeIsHTTPOrHTTPS()) {
-    protocol = safe_browsing::RemoteHostInfo::HTTP_HTTPS;
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::
-                     kExtensionTelemetryReportHostsContactedViaWebSocket) &&
-             url.SchemeIsWSOrWSS()) {
-    protocol = safe_browsing::RemoteHostInfo::WEBSOCKET;
-  } else {
-    return;
-  }
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
-    return;
-  }
-  auto remote_host_signal =
-      std::make_unique<safe_browsing::RemoteHostContactedSignal>(extension_id,
-                                                                 url, protocol);
-  telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 
 // static

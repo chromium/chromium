@@ -29,14 +29,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -50,6 +49,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -200,19 +200,11 @@ void OsIntegrationManager::Start() {
   CHECK(provider_);
   CHECK(file_handler_manager_);
 
-  // Profile manager can be null in unit tests.
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
-    profile_manager_observation_.Observe(profile_manager);
-  }
   file_handler_manager_->Start();
   if (protocol_handler_manager_) {
     protocol_handler_manager_->Start();
   }
   UpdateShortcutsForAllAppsIfNeeded();
-}
-
-void OsIntegrationManager::Shutdown() {
-  profile_manager_observation_.Reset();
 }
 
 void OsIntegrationManager::Synchronize(
@@ -382,21 +374,19 @@ FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
   return nullptr;
 }
 
-void OsIntegrationManager::OnProfileMarkedForPermanentDeletion(
-    Profile* profile_to_be_deleted) {
-  if (profile_ != profile_to_be_deleted) {
-    return;
-  }
-
-  WebAppRegistrar& registrar = provider_->registrar_unsafe();
-
-  for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-    UnregisterOsIntegrationOnProfileMarkedForDeletion(app_id);
-  }
-}
-
-void OsIntegrationManager::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
+void OsIntegrationManager::UnregisterOsIntegrationOnProfileMarkedForDeletion(
+    base::PassKey<WebAppProfileDeletionManager>,
+    const webapps::AppId& app_id) {
+  CHECK_OS_INTEGRATION_ALLOWED();
+  // This is used to keep the profile from being deleted while doing a
+  // ForceUnregister when profile deletion is started.
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
+  ForceUnregisterOsIntegrationOnSubManager(
+      app_id, 0,
+      base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(profile_keep_alive)));
 }
 
 void OsIntegrationManager::SetForceUnregisterCalledForTesting(
@@ -479,20 +469,6 @@ void OsIntegrationManager::WriteStateToDB(
   }
 
   std::move(callback).Run();
-}
-
-void OsIntegrationManager::UnregisterOsIntegrationOnProfileMarkedForDeletion(
-    const webapps::AppId& app_id) {
-  CHECK_OS_INTEGRATION_ALLOWED();
-  // This is used to keep the profile from being deleted while doing a
-  // ForceUnregister when profile deletion is started.
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
-  ForceUnregisterOsIntegrationOnSubManager(
-      app_id, 0,
-      base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(profile_keep_alive)));
 }
 
 void OsIntegrationManager::SubManagersUnregistered(

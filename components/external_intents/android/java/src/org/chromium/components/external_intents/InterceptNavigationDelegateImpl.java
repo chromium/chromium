@@ -181,8 +181,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
-        mClient.onNavigationStarted(navigationHandle);
-
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
 
         OverrideUrlLoadingResult result =
@@ -197,13 +195,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         navigationHandle.isInPrimaryMainFrame(),
                         navigationHandle.getInitiatorOrigin(),
                         navigationHandle.isExternalProtocol(),
-                        mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
                         this::onDidAsyncActionInMainFrame,
                         hiddenCrossFrame,
                         isSandboxedFrame,
                         navigationHandle.getNavigationId());
-
-        mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -256,7 +251,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         /* isInPrimaryMainFrame= */ false,
                         initiatorOrigin,
                         /* isExternalProtocol= */ true,
-                        /* areIntentLaunchesAllowedInHiddenTabsForNavigation= */ false,
                         this::onDidAsyncActionInSubFrame,
                         /* hiddenCrossFrame= */ false,
                         /* isSandboxedMainFrame= */ false,
@@ -289,7 +283,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean isInPrimaryMainFrame,
             Origin initiatorOrigin,
             boolean isExternalProtocol,
-            boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean hiddenCrossFrame,
             boolean isSandboxedMainFrame,
@@ -299,7 +292,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 pageTransition,
                 isRedirect,
                 hasUserGesture,
-                mClient.getLastUserInteractionTime(),
                 getLastCommittedEntryIndex(),
                 initialNavigation,
                 isRendererInitiated);
@@ -321,8 +313,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setRedirectHandler(redirectHandler)
                         .setOpenInNewTab(onInitialNavigationChain)
                         .setIsBackgroundTabNavigation(!isWebContentsVisible)
-                        .setIntentLaunchesAllowedInBackgroundTabs(
-                                areIntentLaunchesAllowedInHiddenTabsForNavigation)
                         .setIsMainFrame(isInPrimaryMainFrame)
                         .setHasUserGesture(hasUserGesture)
                         .setIsRendererInitiated(isRendererInitiated)
@@ -387,13 +377,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         @PageTransition int transition = PageTransition.LINK;
         mClient.getOrCreateRedirectHandler()
                 .updateNewUrlLoading(
-                        transition,
-                        false,
-                        true,
-                        mClient.getLastUserInteractionTime(),
-                        getLastCommittedEntryIndex(),
-                        false,
-                        true);
+                        transition, false, true, getLastCommittedEntryIndex(), false, true);
     }
 
     /**
@@ -538,13 +522,23 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .getLastCommittedEntryIndexBeforeStartingNavigation();
         if (getLastCommittedEntryIndex() <= lastCommittedEntryIndexBeforeNavigation) return;
 
-        // http://crbug/426679 : we want to go back to the last committed entry index which
-        // was saved before this navigation, and remove the empty entries from the
-        // navigation history.
-        mClearAllForwardHistoryRequired = true;
-        mClient.getWebContents()
-                .getNavigationController()
-                .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
+        // Like clobbering below, changing navigation index could cancel the current navigation and
+        // delete the NavigationThrottle calling this code, leading to UAFs. Do the navigation
+        // asynchronously to avoid that.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // http://crbug.com/426679 : we want to go back to the last committed entry
+                        // index which was saved before this navigation, and remove the empty
+                        // entries from the navigation history.
+                        mClearAllForwardHistoryRequired = true;
+                        mClient.getWebContents()
+                                .getNavigationController()
+                                .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
+                    }
+                });
     }
 
     private void clobberMainFrame(GURL targetUrl, ExternalNavigationParams params) {

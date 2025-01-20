@@ -9,6 +9,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace security_interstitials {
 
 #if BUILDFLAG(IS_IOS)
@@ -32,9 +36,9 @@ void SetInsecureFormPortsForTesting(int source_url_port_treated_as_secure,
 
 // Returns true if submitting a form with the given source and action urls is
 // insecure.
-// `source_url` is the URL of the page that submits the form.
+// `source_origin` is the Origin of the page that submits the form.
 // `action_url` is the URL of the form's action attribute.
-bool IsInsecureFormActionOnSecureSource(const GURL& source_url,
+bool IsInsecureFormActionOnSecureSource(const url::Origin& source_origin,
                                         const GURL& action_url);
 
 // Returns true if submitting a form with the given action url is insecure.

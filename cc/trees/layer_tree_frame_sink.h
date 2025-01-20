@@ -17,7 +17,6 @@
 #include "cc/cc_export.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
-#include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -48,8 +47,7 @@ class LayerTreeHostImpl;
 // If a context_provider() is present, frames should be submitted with
 // OpenGL resources (created with the context_provider()). If not, then
 // SharedMemory resources should be used.
-class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
-                                     public viz::ContextLostObserver,
+class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
                                      public gpu::GpuChannelLostObserver {
  public:
   // Constructor for a frame sink local to the GPU process.
@@ -62,9 +60,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // Optional and won't be used unless |worker_context_provider_wrapper| is
   // present.
   //
-  // |gpu_memory_buffer_manager| and |shared_bitmap_manager| must outlive the
-  // LayerTreeFrameSink. |shared_bitmap_manager| is optional (won't be used) if
-  // |context_provider| is present. |gpu_memory_buffer_manager| is optional
+  // |gpu_memory_buffer_manager|  must outlive the
+  // LayerTreeFrameSink. |gpu_memory_buffer_manager| is optional
   // (won't be used) unless |context_provider| is present.
   LayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
@@ -150,12 +147,6 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   virtual std::unique_ptr<LayerContext> CreateLayerContext(
       LayerTreeHostImpl& host_impl);
 
-  // viz::SharedBitmapReporter implementation.
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override = 0;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override = 0;
-
- protected:
   class ContextLostForwarder;
 
   // viz::ContextLostObserver:
@@ -166,6 +157,10 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
 
   void GpuChannelLostOnClientThread();
 
+  // Causes gpu crash for testing.
+  void CrashGpuProcessForTesting();
+
+ protected:
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;

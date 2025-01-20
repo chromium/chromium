@@ -36,8 +36,6 @@ export {ExtensionsReviewPanelElement} from './review_panel.js';
 export {ExtensionsRuntimeHostPermissionsElement} from './runtime_host_permissions.js';
 export {ExtensionsRuntimeHostsDialogElement, getMatchingUserSpecifiedSites, getPatternFromSite} from './runtime_hosts_dialog.js';
 export {Service, ServiceInterface} from './service.js';
-export {ExtensionsShortcutInputElement} from './shortcut_input.js';
-export {isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
 export {ExtensionsSidebarElement} from './sidebar.js';
 export {ExtensionsSitePermissionsElement} from './site_permissions/site_permissions.js';
 export {ExtensionsSitePermissionsBySiteElement} from './site_permissions/site_permissions_by_site.js';

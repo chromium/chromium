@@ -80,10 +80,11 @@ void MediaStringView::OnThemeChanged() {
   const bool dark_mode_enabled =
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   DCHECK(icon_);
-  icon_->SetImage(gfx::CreateVectorIcon(
-      kMusicNoteIcon, kMusicNoteIconSizeDip,
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kMusicNoteIcon,
       dark_mode_enabled ? delegate_->GetSettings().icon_dark_mode_color
-                        : delegate_->GetSettings().icon_light_mode_color));
+                        : delegate_->GetSettings().icon_light_mode_color,
+      kMusicNoteIconSizeDip));
   DCHECK(media_text_);
   media_text_->SetEnabledColor(
       dark_mode_enabled ? delegate_->GetSettings().text_dark_mode_color

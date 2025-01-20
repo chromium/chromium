@@ -12,6 +12,7 @@ import android.os.RemoteException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -257,9 +258,29 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 });
     }
 
-    /** Shut down the server.
+    /**
+     * Get the request headers observed on the server for the given relative URL.
      *
-     *  @return Whether the server was successfully shut down.
+     * @param relativeUrl The relative URL for which request headers should be returned.
+     * @return The vector alternates between header names (even indices) and their corresponding
+     *     values (odd indices).
+     */
+    @Override
+    public String[] getRequestHeadersForUrl(final String relativeUrl) {
+        return runOnHandlerThread(
+                new Callable<String[]>() {
+                    @Override
+                    public String[] call() {
+                        return EmbeddedTestServerImplJni.get()
+                                .getRequestHeadersForUrl(mNativeEmbeddedTestServer, relativeUrl);
+                    }
+                });
+    }
+
+    /**
+     * Shut down the server.
+     *
+     * @return Whether the server was successfully shut down.
      */
     @Override
     public boolean shutdownAndWaitUntilComplete() {
@@ -362,5 +383,8 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 long nativeEmbeddedTestServerAndroid, String hostName, String relativeUrl);
 
         void serveFilesFromDirectory(long nativeEmbeddedTestServerAndroid, String directoryPath);
+
+        @JniType("std::vector<std::string>")
+        String[] getRequestHeadersForUrl(long nativeEmbeddedTestServerAndroid, String relativeUrl);
     }
 }

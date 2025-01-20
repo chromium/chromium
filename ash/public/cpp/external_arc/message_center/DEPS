@@ -1,12 +1,15 @@
 include_rules = [
   "+ash/components/arc/mojom/notifications.mojom.h",
-  "+ash/components/arc/session/connection_holder.h",
-  "+ash/components/arc/session/connection_observer.h",
-  "+ash/components/arc/session/mojo_channel.h",
-  "+ash/system/message_center/message_center_constants.h"
+  "+ash/system/message_center/message_center_constants.h",
   "+ash/system/message_center/message_view_factory.h",
   "+ash/system/notification_center/message_center_utils.h",
-  "+components/arc/metrics/arc_metrics_constants.h",
-  "+components/arc/test/connection_holder_util.h",
-  "+components/arc/test/fake_notifications_instance.h",
+
+  # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+  # from here for arc directory migration. Fix this later.
+  "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
+  "+chromeos/ash/experiences/arc/session/connection_holder.h",
+  "+chromeos/ash/experiences/arc/session/connection_observer.h",
+  "+chromeos/ash/experiences/arc/session/mojo_channel.h",
+  "+chromeos/ash/experiences/arc/test/connection_holder_util.h",
+  "+chromeos/ash/experiences/arc/test/fake_notifications_instance.h",
 ]

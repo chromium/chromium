@@ -40,7 +40,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
@@ -871,10 +870,9 @@ GetCertVerifierServiceFactory() {
       !factory_remote_storage.is_connected()) {
     factory_remote_storage.reset();
 #if BUILDFLAG(IS_CHROMEOS)
-    // In-process CertVerifierService in Ash and Lacros should run on the IO
-    // thread because it interacts with IO-bound NSS and ChromeOS user slots.
-    // See for example InitializeNSSForChromeOSUser() or
-    // CertDbInitializerIOImpl.
+    // In-process CertVerifierService should run on the IO thread because it
+    // interacts with IO-bound NSS and ChromeOS user slots. See for example
+    // InitializeNSSForChromeOSUser() or CertDbInitializerIOImpl.
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RunInProcessCertVerifierServiceFactory,

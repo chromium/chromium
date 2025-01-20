@@ -23,8 +23,7 @@ TabStripModelStatsRecorder::TabStripModelStatsRecorder()
   browser_tab_strip_tracker_->Init();
 }
 
-TabStripModelStatsRecorder::~TabStripModelStatsRecorder() {
-}
+TabStripModelStatsRecorder::~TabStripModelStatsRecorder() = default;
 
 class TabStripModelStatsRecorder::TabInfo
     : public base::SupportsUserData::Data {
@@ -45,34 +44,35 @@ class TabStripModelStatsRecorder::TabInfo
   }
 
  private:
-  TabState current_state_ = TabState::INITIAL;
+  TabState current_state_ = TabState::kInitial;
 
   static const char kKey[];
 };
 
 const char TabStripModelStatsRecorder::TabInfo::kKey[] = "WebContents TabInfo";
 
-TabStripModelStatsRecorder::TabInfo::~TabInfo() {}
+TabStripModelStatsRecorder::TabInfo::~TabInfo() = default;
 
 void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
-  if (new_state == current_state_)
+  if (new_state == current_state_) {
     return;
+  }
 
-  // Avoid state transition from CLOSED.
+  // Avoid state transition from kClosed.
   // When tab is closed, we receive TabStripModelObserver::TabClosingAt and then
   // TabStripModelStatsRecorder::ActiveTabChanged.
-  // Here we ignore CLOSED -> INACTIVE state transition from last
+  // Here we ignore kClosed -> kInactive state transition from last
   // ActiveTabChanged.
-  if (current_state_ == TabState::CLOSED)
+  if (current_state_ == TabState::kClosed) {
     return;
+  }
 
   switch (current_state_) {
-    case TabState::INITIAL:
-    case TabState::ACTIVE:
-    case TabState::INACTIVE:
+    case TabState::kInitial:
+    case TabState::kActive:
+    case TabState::kInactive:
       break;
-    case TabState::CLOSED:
-    case TabState::MAX:
+    case TabState::kClosed:
       NOTREACHED();
   }
 
@@ -80,7 +80,7 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
 }
 
 void TabStripModelStatsRecorder::OnTabClosing(content::WebContents* contents) {
-  TabInfo::Get(contents)->UpdateState(TabState::CLOSED);
+  TabInfo::Get(contents)->UpdateState(TabState::kClosed);
 
   // Avoid having stale pointer in active_tab_history_
   std::replace(active_tab_history_.begin(), active_tab_history_.end(), contents,
@@ -96,19 +96,21 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
     return;
   }
 
-  if (old_contents)
-    TabInfo::Get(old_contents)->UpdateState(TabState::INACTIVE);
+  if (old_contents) {
+    TabInfo::Get(old_contents)->UpdateState(TabState::kInactive);
+  }
 
   DCHECK(new_contents);
   TabInfo* tab_info = TabInfo::Get(new_contents);
-  tab_info->UpdateState(TabState::ACTIVE);
+  tab_info->UpdateState(TabState::kActive);
 
   // A UMA Histogram must be bounded by some number.
   // We chose 64 as our bound as 99.5% of the users open <64 tabs.
   const int kMaxTabHistory = 64;
   active_tab_history_.insert(active_tab_history_.begin(), new_contents);
-  if (active_tab_history_.size() > kMaxTabHistory)
+  if (active_tab_history_.size() > kMaxTabHistory) {
     active_tab_history_.resize(kMaxTabHistory);
+  }
 }
 
 void TabStripModelStatsRecorder::OnTabReplaced(
@@ -127,16 +129,19 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& contents : change.GetRemove()->contents) {
-      if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
+      if (contents.remove_reason ==
+          TabStripModelChange::RemoveReason::kDeleted) {
         OnTabClosing(contents.contents);
+      }
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {
     auto* replace = change.GetReplace();
     OnTabReplaced(replace->old_contents, replace->new_contents);
   }
 
-  if (!selection.active_tab_changed() || tab_strip_model->empty())
+  if (!selection.active_tab_changed() || tab_strip_model->empty()) {
     return;
+  }
 
   OnActiveTabChanged(selection.old_contents, selection.new_contents,
                      selection.reason);

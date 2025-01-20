@@ -24,6 +24,9 @@ component("compositor") {
     "compositor_export.h",
     "compositor_lock.cc",
     "compositor_lock.h",
+    "compositor_metrics_tracker.cc",
+    "compositor_metrics_tracker.h",
+    "compositor_metrics_tracker_host.h",
     "compositor_observer.h",
     "compositor_switches.cc",
     "compositor_switches.h",
@@ -71,9 +74,6 @@ component("compositor") {
     "scoped_animation_duration_scale_mode.h",
     "scoped_layer_animation_settings.cc",
     "scoped_layer_animation_settings.h",
-    "throughput_tracker.cc",
-    "throughput_tracker.h",
-    "throughput_tracker_host.h",
     "total_animation_throughput_reporter.cc",
     "total_animation_throughput_reporter.h",
     "transform_animation_curve_adapter.cc",
@@ -125,10 +125,12 @@ component("compositor") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "test/animation_throughput_reporter_test_base.cc",
-    "test/animation_throughput_reporter_test_base.h",
     "test/begin_main_frame_waiter.cc",
     "test/begin_main_frame_waiter.h",
+    "test/compositor_metrics_report_checker.cc",
+    "test/compositor_metrics_report_checker.h",
+    "test/compositor_metrics_reporter_test_base.cc",
+    "test/compositor_metrics_reporter_test_base.h",
     "test/direct_layer_tree_frame_sink.cc",
     "test/direct_layer_tree_frame_sink.h",
     "test/draw_waiter_for_test.cc",
@@ -160,8 +162,6 @@ static_library("test_support") {
     "test/test_suite.h",
     "test/test_utils.cc",
     "test/test_utils.h",
-    "test/throughput_report_checker.cc",
-    "test/throughput_report_checker.h",
   ]
 
   if (is_android) {
@@ -229,6 +229,7 @@ test("compositor_unittests") {
     "callback_layer_animation_observer_unittest.cc",
     "canvas_painter_unittest.cc",
     "compositor_lock_unittest.cc",
+    "compositor_metrics_tracker_unittest.cc",
     "compositor_unittest.cc",
     "layer_animation_element_unittest.cc",
     "layer_animation_sequence_unittest.cc",
@@ -237,7 +238,6 @@ test("compositor_unittests") {
     "layer_unittest.cc",
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
-    "throughput_tracker_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 

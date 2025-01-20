@@ -8,7 +8,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
@@ -81,10 +80,7 @@ void ExtensionWebRequestReporterImpl::SendWebRequestData(
     mojom::WebRequestContactInitiatorType contact_initiator_type) {
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(profile_);
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::
-              kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
 

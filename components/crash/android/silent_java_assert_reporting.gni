@@ -7,7 +7,8 @@ declare_args() {
   # Whether java assertions should be silently reported to Crash, instead of
   # being removed or fully enabled. This overrides any value set for
   # enable_java_asserts.
-  enable_silent_java_assert_reporting = android_channel == "canary"
+  enable_silent_java_assert_reporting =
+      android_channel == "canary" && !is_java_debug
 }
 
 if (enable_silent_java_assert_reporting) {

@@ -28,6 +28,8 @@ source_set("core") {
     "reporting_constants.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
+    "reporting_utils.cc",
+    "reporting_utils.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
@@ -39,6 +41,7 @@ source_set("core") {
     "//build:blink_buildflags",
     "//components/enterprise",
     "//components/enterprise/buildflags",
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/device_trust",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -50,6 +53,7 @@ source_set("core") {
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/strings:components_strings_grit",
+    "//components/url_matcher:url_matcher",
     "//ui/base",
     "//ui/gfx/range",
   ]
@@ -73,8 +77,11 @@ source_set("test_support") {
 
   deps = [
     ":core",
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
     "//components/prefs",
+    "//testing/gmock:gmock",
   ]
 }
 
@@ -86,6 +93,7 @@ source_set("unit_tests") {
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
     "reporting_service_settings_unittest.cc",
+    "reporting_utils_unittest.cc",
     "service_provider_config_unittest.cc",
   ]
 
@@ -93,6 +101,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

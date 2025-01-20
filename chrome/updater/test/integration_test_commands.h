@@ -41,7 +41,7 @@ class IntegrationTestCommands
                              base::TimeDelta server_keep_alive_time,
                              base::TimeDelta ceca_connection_timeout) const = 0;
   virtual void ExitTestMode() const = 0;
-  virtual void SetGroupPolicies(const base::Value::Dict& values) const = 0;
+  virtual void SetDictPolicies(const base::Value::Dict& values) const = 0;
   virtual void SetPlatformPolicies(const base::Value::Dict& values) const = 0;
   virtual void SetMachineManaged(bool is_managed_device) const = 0;
   virtual void Clean() const = 0;
@@ -58,7 +58,9 @@ class IntegrationTestCommands
       bool verify_app_logo_loaded,
       bool expect_success,
       bool wait_for_the_installer,
-      const base::Value::List& additional_switches) const = 0;
+      int expected_exit_code,
+      const base::Value::List& additional_switches,
+      const base::FilePath& updater_path) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
@@ -81,16 +83,16 @@ class IntegrationTestCommands
       const base::Version& from_version,
       const base::Version& to_version,
       const base::Version& updater_version) const = 0;
-  virtual void ExpectUpdateSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const = 0;
+  virtual void ExpectUpdateSequence(ScopedServer* test_server,
+                                    const std::string& app_id,
+                                    const std::string& install_data_index,
+                                    UpdateService::Priority priority,
+                                    const base::Version& from_version,
+                                    const base::Version& to_version,
+                                    bool do_fault_injection,
+                                    bool skip_download,
+                                    const base::Version& updater_version,
+                                    const std::string& event_regex) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
       ScopedServer* test_server,
       const std::string& app_id,
@@ -98,16 +100,16 @@ class IntegrationTestCommands
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const = 0;
-  virtual void ExpectInstallSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const = 0;
+  virtual void ExpectInstallSequence(ScopedServer* test_server,
+                                     const std::string& app_id,
+                                     const std::string& install_data_index,
+                                     UpdateService::Priority priority,
+                                     const base::Version& from_version,
+                                     const base::Version& to_version,
+                                     bool do_fault_injection,
+                                     bool skip_download,
+                                     const base::Version& updater_version,
+                                     const std::string& event_regex) const = 0;
   virtual void ExpectEnterpriseCompanionAppOTAInstallSequence(
       ScopedServer* test_server) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
@@ -141,6 +143,8 @@ class IntegrationTestCommands
 
   virtual void RegisterApp(const RegistrationRequest& registration) const = 0;
   virtual void CheckForUpdate(const std::string& app_id) const = 0;
+  virtual void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const = 0;
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;

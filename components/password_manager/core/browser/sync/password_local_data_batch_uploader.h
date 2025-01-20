@@ -32,7 +32,7 @@ class PasswordLocalDataBatchUploader
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
-  void TriggerLocalDataMigration(
+  void TriggerLocalDataMigrationForItems(
       std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
   // Test-only APIs.

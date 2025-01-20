@@ -70,7 +70,7 @@ bool AreShellOperationsAllowed() {
 
 }  // namespace internal
 
-void OpenItem(Profile* profile,
+void OpenItem(Profile*,
               const base::FilePath& full_path,
               OpenItemType item_type,
               OpenOperationCallback callback) {

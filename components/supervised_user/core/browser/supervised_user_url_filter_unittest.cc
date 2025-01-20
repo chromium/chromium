@@ -13,23 +13,29 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
+namespace {
+
+using safe_search_api::ClassificationDetails;
 
 class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
+    RegisterProfilePrefs(registry);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
@@ -39,37 +45,34 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   ~SupervisedUserURLFilterTest() override { filter_.RemoveObserver(this); }
 
   // SupervisedUserURLFilter::Observer:
-  void OnURLChecked(const GURL& url,
-                    supervised_user::FilteringBehavior behavior,
-                    supervised_user::FilteringBehaviorDetails details) override {
-    behavior_ = behavior;
-    reason_ = details.reason;
+  void OnURLChecked(SupervisedUserURLFilter::Result result) override {
+    behavior_ = result.behavior;
+    reason_ = result.reason;
   }
 
  protected:
   bool IsURLAllowlisted(const std::string& url) {
-    return filter_.GetFilteringBehaviorForURL(GURL(url)) ==
-           FilteringBehavior::kAllow;
+    return filter_.GetFilteringBehavior(GURL(url)).IsAllowed();
   }
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, FilteringBehavior::kAllow,
-                          supervised_user::FilteringBehaviorReason::DEFAULT);
+                          FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInDefaultDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, FilteringBehavior::kBlock,
-                          supervised_user::FilteringBehaviorReason::DEFAULT);
+                          FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInManualAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, FilteringBehavior::kAllow,
-                          supervised_user::FilteringBehaviorReason::MANUAL);
+                          FilteringBehaviorReason::MANUAL);
   }
 
   void ExpectURLInManualDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, FilteringBehavior::kBlock,
-                          supervised_user::FilteringBehaviorReason::MANUAL);
+                          FilteringBehaviorReason::MANUAL);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -77,18 +80,16 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,
                               std::make_unique<FakeURLFilterDelegate>());
-  supervised_user::FilteringBehavior behavior_;
-  supervised_user::FilteringBehaviorReason reason_;
+  FilteringBehavior behavior_;
+  FilteringBehaviorReason reason_;
 
  private:
-  void ExpectURLCheckMatches(
-      const std::string& url,
-      supervised_user::FilteringBehavior expected_behavior,
-      supervised_user::FilteringBehaviorReason expected_reason,
-      bool skip_manual_parent_filter = false) {
-    bool called_synchronously =
-        filter_.GetFilteringBehaviorForURLWithAsyncChecks(
-            GURL(url), base::DoNothing(), skip_manual_parent_filter);
+  void ExpectURLCheckMatches(const std::string& url,
+                             FilteringBehavior expected_behavior,
+                             FilteringBehaviorReason expected_reason,
+                             bool skip_manual_parent_filter = false) {
+    bool called_synchronously = filter_.GetFilteringBehaviorWithAsyncChecks(
+        GURL(url), base::DoNothing(), skip_manual_parent_filter);
     ASSERT_TRUE(called_synchronously);
 
     EXPECT_EQ(behavior_, expected_behavior);
@@ -490,15 +491,15 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
   EXPECT_TRUE(
       IsURLAllowlisted("https://play.google/intl/pt-BR_pt/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted(
+  EXPECT_FALSE(IsURLAllowlisted(
       "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/index.html"));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsURLAllowlisted("https://play.google.com/about/play-terms/index.html"));
   EXPECT_FALSE(IsURLAllowlisted("http://play.google/play-terms/"));
   EXPECT_FALSE(IsURLAllowlisted("http://play.google.com/about/play-terms/"));
@@ -511,6 +512,32 @@ TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
 }
 
+TEST_F(SupervisedUserURLFilterTest, IsGwsRedirectorExemptedFromApprovals) {
+  base::test::ScopedFeatureList feature_list{
+      kExemptGuardianApprovalOnGwsRedirector};
+
+  CHECK(filter_.GetDefaultFilteringBehavior() == FilteringBehavior::kBlock);
+
+  EXPECT_TRUE(IsURLAllowlisted(
+      "http://www.google.com/url?q=http://example.com&source=test"));
+  EXPECT_FALSE(
+      IsURLAllowlisted("http://www.google.com/url?q=http://example.com"))
+      << "GWS urls without source are not exempted.";
+  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/url?source=test"))
+      << "GWS urls without destination are not exempted.";
+  EXPECT_FALSE(IsURLAllowlisted("http://google.com/url?source=test"))
+      << "GWS urls without www are not exempted.";
+}
+
+TEST_F(SupervisedUserURLFilterTest, IsGwsRedirectorDenied) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kExemptGuardianApprovalOnGwsRedirector);
+
+  CHECK(filter_.GetDefaultFilteringBehavior() == FilteringBehavior::kBlock);
+  EXPECT_FALSE(IsURLAllowlisted(
+      "http://www.google.com/url?q=http://example.com&source=test"));
+}
+
 class SupervisedUserURLFilteringWithConflictsTest
     : public testing::TestWithParam<std::tuple<
           std::map<std::string, bool>,
@@ -519,7 +546,7 @@ class SupervisedUserURLFilteringWithConflictsTest
  public:
   SupervisedUserURLFilteringWithConflictsTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
+    RegisterProfilePrefs(registry);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
@@ -529,8 +556,7 @@ class SupervisedUserURLFilteringWithConflictsTest
   bool IsURLAllowlisted(const std::string& url) {
     GURL gurl = GURL(url);
     CHECK(gurl.is_valid());
-    return filter_.GetFilteringBehaviorForURL(gurl) ==
-           FilteringBehavior::kAllow;
+    return filter_.GetFilteringBehavior(gurl).IsAllowed();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -689,4 +715,287 @@ INSTANTIATE_TEST_SUITE_P(
                  {"*.google.*", false}}),
             SupervisedUserURLFilter::FilteringSubdomainConflictType::
                 kTrivialSubdomainConflictAndOtherConflict)));
+
+struct MetricTestParam {
+  // Context of filtering
+  FilteringContext context;
+
+  // Name of the histogram to emit that is specific for context (alongside
+  // aggregated and legacy histograms).
+  std::string context_specific_histogram;
+
+  // Human-readable label of test case.
+  std::string label;
+};
+
+class SupervisedUserURLFilterMetricsTest
+    : public ::testing::TestWithParam<MetricTestParam> {
+ protected:
+  void EnableSafeSites() {
+    RegisterProfilePrefs(pref_service_.registry());
+    pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+    pref_service_.SetString(prefs::kSupervisedUserId, kChildAccountSUID);
+  }
+
+  base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple pref_service_;
+  SupervisedUserURLFilter filter_{pref_service_,
+                                  std::make_unique<FakeURLFilterDelegate>()};
+};
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForBlockNotInAllowlist) {
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
+  filter_.SetManualHosts({{"http://example.com", true}});
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kAllow, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForBlockManual) {
+  filter_.SetManualHosts({{"http://example.com", false}});
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
+
+  ASSERT_TRUE(filter_.GetFilteringBehaviorWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockManual, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForAsyncBlock) {
+  EnableSafeSites();
+  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
+      std::make_unique<safe_search_api::FakeURLCheckerClient>();
+  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
+  filter_.SetURLCheckerClient(std::move(client));
+
+  ASSERT_FALSE(filter_.GetFilteringBehaviorWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+  client_ptr->RunCallback(safe_search_api::ClientClassification::kRestricted);
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
+}
+
+TEST_P(SupervisedUserURLFilterMetricsTest,
+       RecordsTopLevelMetricsForAsyncAllow) {
+  EnableSafeSites();
+  std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
+      std::make_unique<safe_search_api::FakeURLCheckerClient>();
+  safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
+  filter_.SetURLCheckerClient(std::move(client));
+
+  ASSERT_FALSE(filter_.GetFilteringBehaviorWithAsyncChecks(
+      GURL("http://example.com"), base::DoNothing(), false,
+      GetParam().context));
+  client_ptr->RunCallback(safe_search_api::ClientClassification::kAllowed);
+
+  if (GetParam().context == FilteringContext::kNavigationThrottle) {
+    histogram_tester_.ExpectBucketCount(
+        "ManagedUsers.TopLevelFilteringResult",
+        SupervisedUserFilterTopLevelResult::kAllow, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "ManagedUsers.TopLevelFilteringResult2",
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetParam().context_specific_histogram,
+      SupervisedUserFilterTopLevelResult::kAllow, 1);
+}
+
+const MetricTestParam kMetricTestParams[] = {
+    {.context = FilteringContext::kNavigationThrottle,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.NavigationThrottle",
+     .label = "NavigationThrottleContext"},
+    {.context = FilteringContext::kDefault,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.Default",
+     .label = "DefaultContext"},
+    {.context = FilteringContext::kNavigationObserver,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.NavigationObserver",
+     .label = "NavigationObserverContext"},
+    {.context = FilteringContext::kFamilyLinkSettingsUpdated,
+     .context_specific_histogram =
+         "ManagedUsers.TopLevelFilteringResult2.FamilyLinkSettingsUpdated",
+     .label = "FamilyLinkSettingsUpdated"},
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserURLFilterMetricsTest,
+                         testing::ValuesIn(kMetricTestParams),
+                         [](const auto& info) { return info.param.label; });
+
+TEST(SupervisedUserURLFilterResultTest, IsFromManualList) {
+  SupervisedUserURLFilter::Result allow{GURL("http://example.com"),
+                                        FilteringBehavior::kAllow,
+                                        FilteringBehaviorReason::MANUAL};
+  SupervisedUserURLFilter::Result block{GURL("http://example.com"),
+                                        FilteringBehavior::kBlock,
+                                        FilteringBehaviorReason::MANUAL};
+  SupervisedUserURLFilter::Result invalid{GURL("http://example.com"),
+                                          FilteringBehavior::kInvalid,
+                                          FilteringBehaviorReason::MANUAL};
+
+  EXPECT_TRUE(allow.IsFromManualList());
+  EXPECT_TRUE(block.IsFromManualList());
+  EXPECT_TRUE(invalid.IsFromManualList());
+
+  EXPECT_FALSE(allow.IsFromDefaultSetting());
+  EXPECT_FALSE(block.IsFromDefaultSetting());
+  EXPECT_FALSE(invalid.IsFromDefaultSetting());
+}
+
+TEST(SupervisedUserURLFilterResultTest, IsFromDefaultSetting) {
+  SupervisedUserURLFilter::Result allow{GURL("http://example.com"),
+                                        FilteringBehavior::kAllow,
+                                        FilteringBehaviorReason::DEFAULT};
+  SupervisedUserURLFilter::Result block{GURL("http://example.com"),
+                                        FilteringBehavior::kBlock,
+                                        FilteringBehaviorReason::DEFAULT};
+  SupervisedUserURLFilter::Result invalid{GURL("http://example.com"),
+                                          FilteringBehavior::kInvalid,
+                                          FilteringBehaviorReason::DEFAULT};
+
+  EXPECT_TRUE(allow.IsFromDefaultSetting());
+  EXPECT_TRUE(block.IsFromDefaultSetting());
+  EXPECT_TRUE(invalid.IsFromDefaultSetting());
+
+  EXPECT_FALSE(allow.IsFromManualList());
+  EXPECT_FALSE(block.IsFromManualList());
+  EXPECT_FALSE(invalid.IsFromManualList());
+}
+
+TEST(SupervisedUserURLFilterResultTest, IsClassificationSuccessful) {
+  SupervisedUserURLFilter::Result allow_from_list{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::MANUAL};
+  SupervisedUserURLFilter::Result allow_from_settings{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::DEFAULT};
+  SupervisedUserURLFilter::Result allow_from_server{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFreshServerResponse})};
+  SupervisedUserURLFilter::Result allow_from_cache{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kCachedResponse})};
+
+  SupervisedUserURLFilter::Result block_from_list{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::MANUAL};
+  SupervisedUserURLFilter::Result block_from_settings{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::DEFAULT};
+  SupervisedUserURLFilter::Result block_from_server{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFreshServerResponse})};
+  SupervisedUserURLFilter::Result block_from_cache{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kCachedResponse})};
+
+  EXPECT_TRUE(allow_from_list.IsClassificationSuccessful());
+  EXPECT_TRUE(allow_from_settings.IsClassificationSuccessful());
+  EXPECT_TRUE(allow_from_server.IsClassificationSuccessful());
+  EXPECT_TRUE(allow_from_cache.IsClassificationSuccessful());
+  EXPECT_TRUE(block_from_list.IsClassificationSuccessful());
+  EXPECT_TRUE(block_from_settings.IsClassificationSuccessful());
+  EXPECT_TRUE(block_from_server.IsClassificationSuccessful());
+  EXPECT_TRUE(block_from_cache.IsClassificationSuccessful());
+}
+
+TEST(SupervisedUserURLFilterResultTest, IsClassificationNotSuccessful) {
+  SupervisedUserURLFilter::Result allow_from_server{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
+  SupervisedUserURLFilter::Result allow_from_cache{
+      GURL("http://example.com"), FilteringBehavior::kAllow,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
+
+  SupervisedUserURLFilter::Result block_from_server{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
+  SupervisedUserURLFilter::Result block_from_cache{
+      GURL("http://example.com"), FilteringBehavior::kBlock,
+      FilteringBehaviorReason::ASYNC_CHECKER,
+      std::optional<ClassificationDetails>(
+          {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
+
+  EXPECT_FALSE(allow_from_server.IsClassificationSuccessful());
+  EXPECT_FALSE(allow_from_cache.IsClassificationSuccessful());
+  EXPECT_FALSE(block_from_server.IsClassificationSuccessful());
+  EXPECT_FALSE(block_from_cache.IsClassificationSuccessful());
+}
+
+}  // namespace
 }  // namespace supervised_user

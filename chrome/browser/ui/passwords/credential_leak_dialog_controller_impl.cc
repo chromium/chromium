@@ -22,16 +22,18 @@ CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
       leak_dialog_traits_(CreateDialogTraits(details.leak_type)),
       url_(std::move(details.origin)),
       username_(std::move(details.username)),
+      password_(std::move(details.password)),
+      change_password_supported_(
+          password_manager::IsPasswordChangeSupported(details.leak_type)),
       metrics_recorder_(std::move(metrics_recorder)) {}
 
-CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
-  ResetDialog();
-}
+CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() =
+    default;
 
 void CredentialLeakDialogControllerImpl::ShowCredentialLeakPrompt(
-    CredentialLeakPrompt* dialog) {
+    std::unique_ptr<CredentialLeakPrompt> dialog) {
   DCHECK(dialog);
-  credential_leak_dialog_ = dialog;
+  credential_leak_dialog_ = std::move(dialog);
   credential_leak_dialog_->ShowCredentialLeakPrompt();
 }
 
@@ -51,6 +53,9 @@ void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
         LeakDialogDismissalReason::kClickedCheckPasswords);
     delegate_->NavigateToPasswordCheckup(
         password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
+  } else if (change_password_supported_) {
+    // TODO(crbug.com/375564659): Remove once a new dedicated dialog is added.
+    delegate_->ChangePassword(url_, username_, password_);
   } else {
     metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
         LeakDialogDismissalReason::kClickedOk);
@@ -65,10 +70,7 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
 }
 
 void CredentialLeakDialogControllerImpl::ResetDialog() {
-  if (credential_leak_dialog_) {
-    credential_leak_dialog_->ControllerGone();
-    credential_leak_dialog_ = nullptr;
-  }
+  credential_leak_dialog_.reset();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()

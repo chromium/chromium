@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_UPLOAD_SERVICE_H_
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
@@ -13,7 +14,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -186,6 +186,10 @@ class BinaryUploadService : public KeyedService {
     void set_printer_type(
         enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
             printer_type);
+    void set_clipboard_source_type(
+        enterprise_connectors::ContentMetaData::CopiedTextSource::
+            CopiedTextSourceType source_type);
+    void set_clipboard_source_url(const std::string& url);
     void set_password(const std::string& password);
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);

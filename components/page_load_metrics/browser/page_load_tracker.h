@@ -286,6 +286,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
+  bool ShouldObserveScheme(std::string_view scheme) const override;
   int64_t GetNavigationId() const override;
 
   // The following methods are called on navigation related events.

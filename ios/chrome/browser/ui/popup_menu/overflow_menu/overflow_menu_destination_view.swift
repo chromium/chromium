@@ -117,6 +117,8 @@ struct OverflowMenuDestinationView: View {
 
   @State private var isPressed = false
 
+  @State private var hideBadge = false
+
   @State private var iconFrame: CGRect = .zero
 
   weak var metricsHandler: PopupMenuMetricsHandler?
@@ -140,6 +142,10 @@ struct OverflowMenuDestinationView: View {
             }
           }
         }
+        .simultaneousGesture(
+          LongPressGesture(minimumDuration: 0).onEnded { _ in
+            hideBadge = true
+          })
       }
       .accessibilityIdentifier(accessibilityIdentifier)
       .accessibilityLabel(Text(accessibilityLabel))
@@ -284,12 +290,14 @@ struct OverflowMenuDestinationView: View {
   @ViewBuilder
   func iconBuilder(interiorPadding: CGFloat, image: Image) -> some View {
     let configuredImage = image.overlay {
-      if destination.badge == .error {
-        circleBadge.foregroundColor(.red500)
-      } else if destination.badge == .promo {
-        circleBadge.foregroundColor(.blue600)
-      } else if destination.badge == .new {
-        sealBadge
+      if !hideBadge {
+        if destination.badge == .error {
+          circleBadge.foregroundColor(.red500)
+        } else if destination.badge == .promo {
+          circleBadge.foregroundColor(.blue600)
+        } else if destination.badge == .new {
+          sealBadge
+        }
       }
     }
     .frame(width: Dimensions.imageWidth, height: Dimensions.imageWidth)

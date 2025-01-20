@@ -31,6 +31,7 @@
 // This file would be called String.h, but that conflicts with <string.h>
 // on systems without case-sensitive file systems.
 
+#include <array>
 #include <iosfwd>
 #include <string_view>
 #include <type_traits>
@@ -50,12 +51,9 @@ namespace WTF {
 
 class CodePointIterator;
 
-#define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
-  ((caseSensitivity == kTextCaseSensitive)              \
-       ? op args                                        \
-       : (caseSensitivity == kTextCaseASCIIInsensitive) \
-             ? op##IgnoringASCIICase args               \
-             : op##IgnoringCase args)
+#define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
+  ((case_sensitivity == kTextCaseSensitive) ? op args \
+                                            : op##IgnoringASCIICase args)
 
 // You can find documentation about this class in README.md in this directory.
 class WTF_EXPORT String {
@@ -185,7 +183,7 @@ class WTF_EXPORT String {
   [[nodiscard]] std::string Ascii() const;
   [[nodiscard]] std::string Latin1() const;
   [[nodiscard]] std::string Utf8(
-      UTF8ConversionMode mode = kLenientUTF8Conversion) const {
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
   }
 
@@ -233,10 +231,12 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  wtf_size_t Find(
-      const StringView& value,
-      wtf_size_t start = 0,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  wtf_size_t Find(const StringView& value, wtf_size_t start = 0) const {
+    return impl_ ? impl_->Find(value, start) : kNotFound;
+  }
+  wtf_size_t Find(const StringView& value,
+                  wtf_size_t start,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
                : kNotFound;
@@ -244,10 +244,10 @@ class WTF_EXPORT String {
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
-  // platform features.
-  wtf_size_t FindIgnoringCase(const StringView& value,
-                              unsigned start = 0) const {
-    return impl_ ? impl_->FindIgnoringCase(value, start) : kNotFound;
+  // platform features.  See crbug.com/40476285.
+  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
+                                        unsigned start = 0) const {
+    return impl_ ? impl_->DeprecatedFindIgnoringCase(value, start) : kNotFound;
   }
 
   // ASCII case insensitive string matching.
@@ -277,15 +277,21 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
-  bool StartsWith(
-      const StringView& prefix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool StartsWith(const StringView& prefix) const {
+    return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
+  }
+  bool StartsWith(const StringView& prefix,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
                : prefix.empty();
   }
-  bool StartsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedStartsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedStartsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool StartsWithIgnoringCaseAndAccents(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringCaseAndAccents(prefix)
@@ -298,14 +304,20 @@ class WTF_EXPORT String {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 
-  bool EndsWith(
-      const StringView& suffix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool EndsWith(const StringView& suffix) const {
+    return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
+  }
+  bool EndsWith(const StringView& suffix,
+                TextCaseSensitivity case_sensitivity) const {
     return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
                  : suffix.empty();
   }
-  bool EndsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringCase(prefix) : prefix.empty();
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedEndsWithIgnoringCase(const StringView& prefix) const {
+    return impl_ ? impl_->DeprecatedEndsWithIgnoringCase(prefix)
+                 : prefix.empty();
   }
   bool EndsWithIgnoringASCIICase(const StringView& prefix) const {
     return impl_ ? impl_->EndsWithIgnoringASCIICase(prefix) : prefix.empty();
@@ -431,10 +443,6 @@ class WTF_EXPORT String {
   void AppendTo(BufferType&,
                 unsigned start = 0,
                 unsigned length = UINT_MAX) const;
-  template <typename BufferType>
-  void PrependTo(BufferType&,
-                 unsigned start = 0,
-                 unsigned length = UINT_MAX) const;
 
   // Convert the string into a number.
 
@@ -627,11 +635,7 @@ inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (Is8Bit())
     return true;
 
-  const UChar* characters = Characters16();
-  UChar ored = 0;
-  for (wtf_size_t i = 0; i < impl_->length(); ++i)
-    ored |= characters[i];
-  return !(ored & 0xFF00);
+  return base::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
 }
 
 #ifdef __OBJC__
@@ -672,15 +676,6 @@ void String::AppendTo(BufferType& result,
   impl_->AppendTo(result, position, length);
 }
 
-template <typename BufferType>
-void String::PrependTo(BufferType& result,
-                       unsigned position,
-                       unsigned length) const {
-  if (!impl_)
-    return;
-  impl_->PrependTo(result, position, length);
-}
-
 template <typename T>
 struct HashTraits;
 // Defined in string_hash.h.
@@ -698,19 +693,18 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
   // The constant is kept small to minimize the overhead of the table (496
   // bytes).
   static constexpr size_t kTableSize = 32;
+  using TableType = std::array<String, kTableSize>;
 
   static void Init();
 
   static inline String GetStringForLength(size_t string_length) {
-    DCHECK_NE(string_length, 0u);
-    DCHECK_LT(string_length, kTableSize);
     return g_table_[string_length];
   }
 
   static bool IsNewlineThenWhitespaces(const StringView& view);
 
  private:
-  static const String (&g_table_)[kTableSize];
+  static const TableType& g_table_;
 };
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
@@ -731,13 +725,12 @@ inline StringView::StringView(const String& string LIFETIME_BOUND)
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String)
 
-using WTF::kStrictUTF8Conversion;
-using WTF::kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD;
-using WTF::String;
-using WTF::g_empty_string;
-using WTF::g_empty_string16_bit;
 using WTF::Equal;
 using WTF::Find;
+using WTF::g_empty_string;
+using WTF::g_empty_string16_bit;
+using WTF::String;
+using WTF::Utf8ConversionMode;
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

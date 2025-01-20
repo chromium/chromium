@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="WebAudioCallbackAggregationDuration">
+  <variant name=".Intervals"
+      summary="Streams ran for more than 1 interval (1000 callbacks)"/>
+  <variant name=".Short" summary="Streams ran for less than 1000 callbacks"/>
+</variants>
+
+<variants name="WebAudioLatencyTag">
+  <variant name="" summary="All latencies combined"/>
+  <variant name=".LatencyBalanced"/>
+  <variant name=".LatencyExactMs"/>
+  <variant name=".LatencyInteractive"/>
+  <variant name=".LatencyPlayback"/>
+  <variant name=".LatencyUnknown"/>
+</variants>
+
 <histogram name="WebAudio.AudioBuffer.Length" units="frames"
     expires_after="2025-06-01">
   <owner>mjwilson@chromium.org</owner>
@@ -177,6 +192,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioDestination.FIFODelay{LatencyTag}" units="ms"
+    expires_after="2025-06-01">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The audio delay in milliseconds based on the number of available frames of
+    the PushPUllFIFO in AudioDestination. Measured and reported at every render
+    callback.
+  </summary>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.FIFOUnderrunCount{Duration}{LatencyTag}"
+    units="underruns" expires_after="2025-06-01">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The number of times the PushPullFIFO in AudioDestination experienced an
+    underrun. The &quot;Intervals&quot; duration indicates that the metric is
+    measured and logged every 1000 audio render callbacks. For
+    &quot;Short&quot;, it is logged at the end of the audio stream.
+  </summary>
+  <token key="Duration" variants="WebAudioCallbackAggregationDuration"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
 <histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
     expires_after="2025-06-01">
   <owner>mjwilson@chromium.org</owner>
@@ -198,6 +242,18 @@ chromium-metrics-reviews@google.com.
     runtime but the metric is collected only once at the first platform audio
     callback after an AudioContext is created.
   </summary>
+</histogram>
+
+<histogram name="WebAudio.AudioDestination.TotalPlayoutDelay{LatencyTag}"
+    units="ms" expires_after="2025-06-01">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The audio delay in milliseconds that covers the whole pipeline from the
+    WebAudio graph to the speaker.
+  </summary>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
 </histogram>
 
 <histogram name="WebAudio.AudioWorklet.PeakDedicatedBackingThreadCount"

@@ -12,10 +12,9 @@ import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.TextAppearanceInfo;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.gfx.mojom.Rect;
 
@@ -24,6 +23,7 @@ import org.chromium.gfx.mojom.Rect;
  * {@link InputMethodManager#updateCursorAnchorInfo(View, CursorAnchorInfo)}. This interface is also
  * used in unit tests to mock out {@link CursorAnchorInfo}.
  */
+@NullMarked
 final class CursorAnchorInfoController {
     /** An interface to mock out {@link View#getLocationOnScreen(int[])} for testing. */
     public interface ViewDelegate {
@@ -32,6 +32,7 @@ final class CursorAnchorInfoController {
 
     /** An interface to mock out composing text retrieval from ImeAdapter. */
     public interface ComposingTextDelegate {
+        @Nullable
         CharSequence getText();
 
         int getSelectionStart();
@@ -59,22 +60,21 @@ final class CursorAnchorInfoController {
     private float mInsertionMarkerTop;
     private float mInsertionMarkerBottom;
 
-    @Nullable private CursorAnchorInfo mLastCursorAnchorInfo;
+    private @Nullable CursorAnchorInfo mLastCursorAnchorInfo;
 
     // Data which has come through the new code path from the renderer. Eventually, other data like
     // visible line bounds, composition bounds and editor bounds will be removed in favour of this.
-    @Nullable private InputCursorAnchorInfo mInputCursorAnchorInfo;
+    private @Nullable InputCursorAnchorInfo mInputCursorAnchorInfo;
 
-    @NonNull private final Matrix mMatrix = new Matrix();
-    @NonNull private final int[] mViewOrigin = new int[2];
+    private final Matrix mMatrix = new Matrix();
+    private final int[] mViewOrigin = new int[2];
 
-    @NonNull
     private final CursorAnchorInfo.Builder mCursorAnchorInfoBuilder =
             new CursorAnchorInfo.Builder();
 
-    @Nullable private InputMethodManagerWrapper mInputMethodManagerWrapper;
-    @Nullable private final ComposingTextDelegate mComposingTextDelegate;
-    @NonNull private final ViewDelegate mViewDelegate;
+    private @Nullable InputMethodManagerWrapper mInputMethodManagerWrapper;
+    private final ComposingTextDelegate mComposingTextDelegate;
+    private final ViewDelegate mViewDelegate;
 
     private CursorAnchorInfoController(
             InputMethodManagerWrapper inputMethodManagerWrapper,
@@ -128,7 +128,7 @@ final class CursorAnchorInfoController {
      */
     // TODO(crbug.com/40940885): Remove this method once it is no longer used.
     public void setBounds(
-            @Nullable float[] characterBounds, @Nullable float[] lineBounds, View view) {
+            float @Nullable [] characterBounds, float @Nullable [] lineBounds, View view) {
         if (!mIsEditable) return;
         boolean shouldUpdate = false;
         if (mInputCursorAnchorInfo == null) {
@@ -171,7 +171,7 @@ final class CursorAnchorInfoController {
      * @param view The attached view.
      */
     // TODO(crbug.com/40940885): Remove this method and call sites.
-    public void updateWithEditorBoundsInfo(EditorBoundsInfo editorBoundsInfo, View view) {
+    public void updateWithEditorBoundsInfo(@Nullable EditorBoundsInfo editorBoundsInfo, View view) {
         if (!mIsEditable) return;
         mLastCursorAnchorInfo = null;
         updateCursorAnchorInfo(view);
@@ -196,7 +196,7 @@ final class CursorAnchorInfoController {
             float insertionMarkerHorizontal,
             float insertionMarkerTop,
             float insertionMarkerBottom,
-            @NonNull View view) {
+            View view) {
         if (!mIsEditable) return;
 
         // Reuse {@param #mViewOrigin} to avoid object creation, as this method is supposed to be

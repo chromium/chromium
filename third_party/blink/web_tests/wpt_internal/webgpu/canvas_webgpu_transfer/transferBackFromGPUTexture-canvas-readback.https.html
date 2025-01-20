@@ -20,7 +20,7 @@ runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
  */
 for (const [pixelFormat, contextOptions] of [
   ['rgb8', {}],
-  ['float16', {colorSpace: 'srgb', pixelFormat: 'float16'}],
+  ['float16', {colorSpace: 'srgb', colorType: 'float16'}],
 ]) {
   canvasPromiseTest(async (canvas) => {
     const adapter = await getWebGPUAdapter();

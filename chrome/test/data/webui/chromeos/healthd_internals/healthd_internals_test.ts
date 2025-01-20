@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 suite('healthdInternalsTestSuite', function() {
   let healthdInternalsApp: HealthdInternalsAppElement;
   // The expected number of navigation items in the sidebar.
-  const navItemsNumber: number = 8;
+  const navItemsNumber: number = 4;
   // The expected number of card components in the telemetry page.
   const cardsNumberTelemetryPage: number = 5;
 
@@ -73,19 +73,19 @@ suite('healthdInternalsTestSuite', function() {
     const sidebarToggleButton = strictQuery(
         '#sidebarToggleButton', healthdInternalsApp.shadowRoot, HTMLElement);
 
-    // Sidebar is displyed by default.
-    assertEquals(sidebar.hidden, false);
+    // Sidebar is displayed by default.
+    assertEquals(sidebar.classList.contains('collapsed'), false);
     assertEquals(sidebarToggleButton.innerText, '<');
 
     for (let index = 0; index < 10; index++) {
       // Hide the sidebar and check.
       sidebarToggleButton.click();
-      assertEquals(sidebar.hidden, true);
+      assertEquals(sidebar.classList.contains('collapsed'), true);
       assertEquals(sidebarToggleButton.innerText, '>');
 
       // Show the sidebar and check.
       sidebarToggleButton.click();
-      assertEquals(sidebar.hidden, false);
+      assertEquals(sidebar.classList.contains('collapsed'), false);
       assertEquals(sidebarToggleButton.innerText, '<');
     }
   });

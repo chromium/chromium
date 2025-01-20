@@ -45,12 +45,14 @@ void NativeViewHost::Attach(gfx::NativeView native_view) {
   // updates the visibility of the NativeView. The call to Layout() only happens
   // if |this| is drawn. Call hide if not drawn as otherwise the NativeView
   // could be visible when |this| is not.
-  if (!IsDrawn())
+  if (!IsDrawn()) {
     native_wrapper_->HideWidget();
+  }
 
   Widget* widget = Widget::GetWidgetForNativeView(native_view);
-  if (widget)
+  if (widget) {
     widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, this);
+  }
 }
 
 void NativeViewHost::Detach() {
@@ -58,14 +60,16 @@ void NativeViewHost::Detach() {
 }
 
 void NativeViewHost::SetParentAccessible(gfx::NativeViewAccessible accessible) {
-  if (!native_wrapper_)
+  if (!native_wrapper_) {
     return;
+  }
   native_wrapper_->SetParentAccessible(accessible);
 }
 
 gfx::NativeViewAccessible NativeViewHost::GetParentAccessible() {
-  if (!native_wrapper_)
+  if (!native_wrapper_) {
     return nullptr;
+  }
   return native_wrapper_->GetParentAccessible();
 }
 
@@ -82,8 +86,9 @@ int NativeViewHost::GetHitTestTopInset() const {
 }
 
 void NativeViewHost::SetNativeViewSize(const gfx::Size& size) {
-  if (native_view_size_ == size)
+  if (native_view_size_ == size) {
     return;
+  }
   native_view_size_ = size;
   InvalidateLayout();
 }
@@ -111,8 +116,9 @@ ui::Layer* NativeViewHost::GetUILayer() {
 // NativeViewHost, View overrides:
 
 void NativeViewHost::Layout(PassKey) {
-  if (!native_view_ || !native_wrapper_.get())
+  if (!native_view_ || !native_wrapper_.get()) {
     return;
+  }
 
   gfx::Rect vis_bounds = GetVisibleBounds();
   bool visible = !vis_bounds.IsEmpty();
@@ -177,9 +183,15 @@ void NativeViewHost::OnPaint(gfx::Canvas* canvas) {
 }
 
 void NativeViewHost::VisibilityChanged(View* starting_from, bool is_visible) {
-  // This does not use InvalidateLayout() to ensure the visibility state is
-  // correctly set (if this View isn't visible, Layout() won't be called).
-  DeprecatedLayoutImmediately();
+  if (is_visible) {
+    // This does not use InvalidateLayout() to ensure the visibility state is
+    // correctly set.
+    DeprecatedLayoutImmediately();
+  } else {
+    if (native_view_ && native_wrapper_) {
+      native_wrapper_->HideWidget();
+    }
+  }
 }
 
 bool NativeViewHost::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -209,8 +221,9 @@ void NativeViewHost::ViewHierarchyChanged(
   }
 
   if (details.is_add && this_widget) {
-    if (!native_wrapper_.get())
+    if (!native_wrapper_.get()) {
       native_wrapper_.reset(NativeViewHostWrapper::CreateWrapper(this));
+    }
     native_wrapper_->AddedToWidget();
   } else if (!details.is_add && native_wrapper_) {
     native_wrapper_->RemovedFromWidget();
@@ -218,8 +231,9 @@ void NativeViewHost::ViewHierarchyChanged(
 }
 
 void NativeViewHost::OnFocus() {
-  if (native_view_)
+  if (native_view_) {
     native_wrapper_->SetFocus();
+  }
   NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
 }
 
@@ -227,8 +241,9 @@ gfx::NativeViewAccessible NativeViewHost::GetNativeViewAccessible() {
   if (native_wrapper_.get()) {
     gfx::NativeViewAccessible accessible_view =
         native_wrapper_->GetNativeViewAccessible();
-    if (accessible_view)
+    if (accessible_view) {
       return accessible_view;
+    }
   }
 
   return View::GetNativeViewAccessible();
@@ -239,8 +254,9 @@ ui::Cursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
 }
 
 void NativeViewHost::SetVisible(bool visible) {
-  if (native_view_)
+  if (native_view_) {
     native_wrapper_->SetVisible(visible);
+  }
   View::SetVisible(visible);
 }
 
@@ -265,8 +281,9 @@ void NativeViewHost::Detach(bool destroyed) {
   if (native_view_) {
     if (!destroyed) {
       Widget* widget = Widget::GetWidgetForNativeView(native_view_);
-      if (widget)
+      if (widget) {
         widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, nullptr);
+      }
       ClearFocus();
     }
     native_wrapper_->NativeViewDetaching(destroyed);
@@ -276,15 +293,17 @@ void NativeViewHost::Detach(bool destroyed) {
 
 void NativeViewHost::ClearFocus() {
   FocusManager* focus_manager = GetFocusManager();
-  if (!focus_manager || !focus_manager->GetFocusedView())
+  if (!focus_manager || !focus_manager->GetFocusedView()) {
     return;
+  }
 
   Widget::Widgets widgets;
   Widget::GetAllChildWidgets(native_view(), &widgets);
   for (Widget* widget : widgets) {
     focus_manager->ViewRemoved(widget->GetRootView());
-    if (!focus_manager->GetFocusedView())
+    if (!focus_manager->GetFocusedView()) {
       return;
+    }
   }
 }
 

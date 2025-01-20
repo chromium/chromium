@@ -7,6 +7,7 @@
 #include <functional>
 #include <iterator>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -39,12 +40,12 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/tab_matcher.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -88,11 +89,16 @@ constexpr size_t kMaxPedalMatchIndex =
 }  // namespace
 
 // static
-size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
+size_t AutocompleteResult::GetMaxMatches(
+    bool is_zero_suggest,
+    AutocompleteInput::FeaturedKeywordMode featured_keyword_mode) {
   constexpr size_t kDefaultMaxAutocompleteMatches =
       is_android ? 10 : (is_ios ? 10 : 8);
   constexpr size_t kDefaultMaxZeroSuggestMatches =
       is_android ? 15 : (is_ios ? 20 : 8);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  constexpr size_t kMaxFeaturedKeywordAutocompleteMatches = 9;
+#endif
 #if BUILDFLAG(IS_IOS)
   // By default, iPad has the same max as iPhone.
   // `kDefaultMaxAutocompleteMatches` defines a hard limit on the number of
@@ -105,16 +111,38 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   // and 10 on iPad.
   size_t kMaxZeroSuggestMatchesOnIPad = OmniboxFieldTrial::kIpadZPSLimit.Get();
 #endif
-  static_assert(kMaxAutocompletePositionValue > kDefaultMaxAutocompleteMatches,
-                "kMaxAutocompletePositionValue must be larger than the largest "
-                "possible autocomplete result size.");
-  static_assert(kMaxAutocompletePositionValue > kDefaultMaxZeroSuggestMatches,
-                "kMaxAutocompletePositionValue must be larger than the largest "
-                "possible zero suggest autocomplete result size.");
-  static_assert(kDefaultMaxAutocompleteMatches != 0,
-                "Default number of suggestions must be non-zero");
-  static_assert(kDefaultMaxZeroSuggestMatches != 0,
-                "Default number of zero-prefix suggestions must be non-zero");
+
+  // Verify possible return values are between (0,
+  // `kMaxAutocompletePositionValue`).
+  static_assert(
+      kDefaultMaxAutocompleteMatches > 0 &&
+          kDefaultMaxAutocompleteMatches < kMaxAutocompletePositionValue,
+      "Bad kDefaultMaxAutocompleteMatches.");
+  static_assert(
+      kDefaultMaxZeroSuggestMatches > 0 &&
+          kDefaultMaxZeroSuggestMatches < kMaxAutocompletePositionValue,
+      "Bad kDefaultMaxZeroSuggestMatches.");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  static_assert(kMaxFeaturedKeywordAutocompleteMatches > 0 &&
+                    kMaxFeaturedKeywordAutocompleteMatches <
+                        kMaxAutocompletePositionValue,
+                "Bad kMaxFeaturedKeywordAutocompleteMatches.");
+#endif
+#if BUILDFLAG(IS_IOS)
+  static_assert(
+      kMaxAutocompleteMatchesOnIPad > 0 &&
+          kMaxAutocompleteMatchesOnIPad < kMaxAutocompletePositionValue,
+      "Bad kMaxAutocompleteMatchesOnIPad.");
+  CHECK(kMaxZeroSuggestMatchesOnIPad > 0 &&
+        kMaxZeroSuggestMatchesOnIPad < kMaxAutocompletePositionValue)
+      << "Bad kMaxZeroSuggestMatchesOnIPad.";
+#endif
+
+// When the user types '@', show 9, instead of the usual 8, matches on desktop.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (featured_keyword_mode == AutocompleteInput::FeaturedKeywordMode::kExact)
+    return kMaxFeaturedKeywordAutocompleteMatches;
+#endif
 
   // If we're interested in the zero suggest match limit, and one has been
   // specified, return it.
@@ -123,18 +151,18 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
         omnibox::kMaxZeroSuggestMatches,
         OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
         kDefaultMaxZeroSuggestMatches);
-    DCHECK(kMaxAutocompletePositionValue > field_trial_value);
 #if BUILDFLAG(IS_IOS)
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       field_trial_value =
           std::min(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
     }
 #endif
+    DCHECK(kMaxAutocompletePositionValue > field_trial_value);
     return field_trial_value;
   }
 
-  //  Otherwise, i.e. if no zero suggest specific limit has been specified or
-  //  the input is not from omnibox focus, return the general max matches limit.
+  // Otherwise, i.e. if no zero suggest specific limit has been specified or the
+  // input is not from omnibox focus, return the general max matches limit.
   size_t field_trial_value = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kUIExperimentMaxAutocompleteMatches,
       OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam,
@@ -161,10 +189,7 @@ size_t AutocompleteResult::GetDynamicMaxMatches() {
 }
 
 AutocompleteResult::AutocompleteResult() {
-  // Reserve enough space for the maximum number of matches we'll show in either
-  // on-focus or prefix-suggest mode.
-  matches_.reserve(std::max(GetMaxMatches(), GetMaxMatches(true)));
-  // Add default static suggestion groups.
+  matches_.reserve(kMaxAutocompletePositionValue);
 }
 
 AutocompleteResult::~AutocompleteResult() {
@@ -268,12 +293,23 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
 
 void AutocompleteResult::AppendMatches(const ACMatches& matches) {
   for (const auto& match : matches) {
+    std::stringstream debug_stream;
+    debug_stream << "Contents: " << match.contents;
+    debug_stream << ", Description: " << match.description;
+    debug_stream << ", Type: " << AutocompleteMatchType::ToString(match.type);
+    std::string provider_name =
+        match.provider ? match.provider->GetName() : "None";
+    debug_stream << ", Provider: " << provider_name;
+
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents), match.contents)
-        << "description: " << match.description
-        << ", match type: " << match.type;
+        << debug_stream.str();
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.description),
               match.description)
-        << "contents: " << match.contents << ", match type: " << match.type;
+        << debug_stream.str();
+    const bool valid_destination_url =
+        match.destination_url.is_valid() || match.destination_url.is_empty();
+    DCHECK(valid_destination_url) << debug_stream.str();
+
     matches_.push_back(match);
   }
 }
@@ -364,8 +400,8 @@ void AutocompleteResult::SortAndCull(
 
   MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',
-  // they only assign IDs when their ID isn't obvious from the match type.
-  // Most matches will instead set IDs here to keep providers 'dumb' and the
+  // they only assign IDs when their ID isn't obvious from the match type. Most
+  // matches will instead set IDs here to keep providers 'dumb' and the
   // type->group mapping consistent between providers.
   if (use_grouping) {
     base::ranges::for_each(matches_, [&](auto& match) {
@@ -382,9 +418,8 @@ void AutocompleteResult::SortAndCull(
                   [&](const auto& match) { return match.relevance == 0; });
   }
 
-  // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled
-  // and the current input & platform are supported, delegate to the
-  // framework.
+  // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled and the
+  // current input & platform are supported, delegate to the framework.
   if (is_zero_suggest) {
     PSections sections;
     if constexpr (is_android) {
@@ -537,7 +572,9 @@ void AutocompleteResult::SortAndCull(
 
     // Limit URL matches per OmniboxMaxURLMatches.
     size_t max_url_count = 0;
-    if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
+    if (input.GetFeaturedKeywordMode() !=
+            AutocompleteInput::FeaturedKeywordMode::kExact &&
+        OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
         (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0) {
       LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
                              comparing_object);
@@ -547,7 +584,8 @@ void AutocompleteResult::SortAndCull(
     // and feature configs such as OmniboxUIExperimentMaxAutocompleteMatches,
     // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
     const size_t num_matches =
-        CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
+        CalculateNumMatches(is_zero_suggest, input.GetFeaturedKeywordMode(),
+                            matches_, comparing_object);
 
     // Group and trim suggestions to the given limit.
     if (!is_zero_suggest) {
@@ -602,7 +640,7 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   // Platform rules:
   // Mobile:
   // - First position allow all types of OmniboxActionId (ACTION_IN_SUGGEST and
-  // ANSWER_ACTION are preferred over PEDAL)
+  //   ANSWER_ACTION are preferred over PEDAL)
   // - Third slot permits only PEDALs or ANSWER_ACTION.
   // - Slots 4 and beyond only permit ANSWER_ACTION.
   // - TAB_SWITCH actions are not considered because they're never attached.
@@ -1026,8 +1064,7 @@ bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
           return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
         });
 
-    if (top_match_has_actions &&
-        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get()) {
+    if (top_match_has_actions) {
       matches->insert(std::next(matches->begin()),
                       std::move(non_entity_match_copy));
     } else {
@@ -1043,15 +1080,20 @@ bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
 // static
 size_t AutocompleteResult::CalculateNumMatches(
     bool is_zero_suggest,
+    AutocompleteInput::FeaturedKeywordMode featured_keyword_mode,
     const ACMatches& matches,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
   // Use alternative CalculateNumMatchesPerUrlCount if applicable.
   if (!is_zero_suggest &&
-      base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
+      featured_keyword_mode != AutocompleteInput::FeaturedKeywordMode::kExact &&
+      base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete)) {
     return CalculateNumMatchesPerUrlCount(matches, comparing_object);
+  }
+
   // In the process of trimming, drop all matches with a demoted relevance
   // score of 0.
-  size_t max_matches_by_policy = GetMaxMatches(is_zero_suggest);
+  size_t max_matches_by_policy =
+      GetMaxMatches(is_zero_suggest, featured_keyword_mode);
   size_t num_matches = 0;
   while (num_matches < matches.size() &&
          comparing_object.GetDemotedRelevance(matches[num_matches]) > 0) {
@@ -1103,9 +1145,14 @@ void AutocompleteResult::ClearMatches() {
 #endif
 }
 
+AutocompleteResult::SessionData::SessionData() = default;
+
+AutocompleteResult::SessionData::~SessionData() = default;
+
 void AutocompleteResult::SessionData::Reset() {
   zero_prefix_enabled_ = false;
   num_zero_prefix_suggestions_shown_ = 0u;
+  gws_event_id_hashes_.clear();
 }
 
 void AutocompleteResult::SwapMatchesWith(AutocompleteResult* other) {

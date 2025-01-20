@@ -97,7 +97,7 @@ void FakeServiceWorkerContext::StartWorkerForScope(
     const GURL& scope,
     const blink::StorageKey& key,
     ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StatusCodeCallback failure_callback) {
+    ServiceWorkerContext::StatusCodeResponseCallback failure_callback) {
   NOTREACHED();
 }
 

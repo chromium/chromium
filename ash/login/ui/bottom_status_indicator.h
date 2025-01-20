@@ -5,7 +5,6 @@
 #ifndef ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 #define ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 
-#include "ash/style/ash_color_id.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"

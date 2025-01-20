@@ -316,7 +316,7 @@ base::Value ResultAnalyzer::GetResult() {
 // Returns the path containing test input files,
 // components/test/data/autofill/heuristics-json/.
 const base::FilePath& GetInputDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
@@ -371,6 +371,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 
   if (const std::string* label = field_dict.FindString("label_attr")) {
     field.set_label(base::UTF8ToUTF16(*label));
+    // Unfortunately, the data doesn't include the label source.
+    field.set_label_source(FormFieldData::LabelSource::kForId);
   }
   field.set_form_control_type(FormControlType::kInputText);
   if (const std::string* json_type = field_dict.FindString("type_attr")) {
@@ -638,11 +640,19 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUseITAddressModel,
       features::kAutofillUseNLAddressModel,
       features::kAutofillUsePLAddressModel,
+      features::kAutofillSupportPhoneticNameForJP,
       features::kAutofillEnableExpirationDateImprovements,
+      features::kAutofillSupportLastNamePrefix,
       // Other improvements.
       features::kAutofillEnableCacheForRegexMatching,
-      features::kAutofillEnableSupportForParsingWithSharedLabels};
-  std::vector<base::test::FeatureRef> disabled_features = {};
+      features::kAutofillEnableSupportForParsingWithSharedLabels,
+      features::kAutofillUseNegativePatternForAllAttributes,
+  };
+  std::vector<base::test::FeatureRef> disabled_features = {
+      // TODO(crbug.com/320965828): Understand the changes to the expectations
+      // caused by this feature.
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport,
+  };
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
     if (value) {

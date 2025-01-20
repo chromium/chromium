@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
@@ -29,8 +28,7 @@ using media::AudioLatency;
 
 namespace audio {
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 constexpr double kBufferDurationPercent = 0.95;
 #else
 constexpr double kBufferDurationPercent = 0.5;
@@ -54,9 +52,9 @@ SyncReader::SyncReader(
       latency_tag_(params.latency_tag()),
       mute_audio_for_testing_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMuteAudio)),
-      output_bus_buffer_size_(
+      output_bus_buffer_size_(base::checked_cast<uint32_t>(
           media::AudioBus::CalculateMemorySize(params.channels(),
-                                               params.frames_per_buffer())),
+                                               params.frames_per_buffer()))),
       maximum_wait_time_(params.GetBufferDuration() * kBufferDurationPercent),
       read_timeout_glitch_{.duration = params.GetBufferDuration(), .count = 1},
       glitch_counter_(std::move(glitch_counter)) {
@@ -194,14 +192,12 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
         shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
     uint32_t data_size = buffer->params.bitstream_data_size;
     uint32_t bitstream_frames = buffer->params.bitstream_frames;
-    // |bitstream_frames| is cast to int below, so it must fit.
-    if (data_size > output_bus_buffer_size_ ||
-        !base::IsValueInRangeForNumericType<int>(bitstream_frames)) {
+    if (data_size > output_bus_buffer_size_) {
       // Received data doesn't fit in the buffer, shouldn't happen.
       dest->Zero();
       return true;
     }
-    output_bus_->SetBitstreamDataSize(data_size);
+    output_bus_->SetBitstreamSize(data_size);
     output_bus_->SetBitstreamFrames(bitstream_frames);
     output_bus_->CopyTo(dest);
     return true;

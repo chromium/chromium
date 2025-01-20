@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -72,32 +71,57 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseState(ParsingContext& context, AutofillScanner* scanner);
 
-  // Parses the current field pointed to by |scanner|, if it exists, and tries
+  bool ParseStreetLocation(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseStreetName(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseHouseNumber(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseApartmentNumber(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseBetweenStreetsOrLandmark(ParsingContext& context,
+                                     AutofillScanner* scanner);
+
+  bool ParseOverflowAndLandmark(ParsingContext& context,
+                                AutofillScanner* scanner);
+
+  bool ParseOverflow(ParsingContext& context, AutofillScanner* scanner);
+
+  bool ParseBetweenStreetsFields(ParsingContext& context,
+                                 AutofillScanner* scanner);
+
+  // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
   // dependent locality, city, state, country, zip, landmark, between streets,
   // admin level 2 or none of those.
   bool ParseAddressField(ParsingContext& context, AutofillScanner* scanner);
 
-  // Parses the current field pointed to by |scanner|, if it exists, and tries
+  // Starting from the current field pointed to by `scanner`, tries to parse
+  // sequence of house number followed by either a street name, an apartment
+  // number, or both. Rewind the cursor if the sequence could not be parsed. It
+  // is currently only supported in NL.
+  bool ParseHouseNumAptNumStreetNameSequence(ParsingContext& context,
+                                             AutofillScanner* scanner);
+
+  // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to match house_number_and_apt field type.
   bool ParseFieldSpecificsForHouseNumberAndApt(ParsingContext& context,
                                                AutofillScanner* scanner);
 
-  // Like ParseField(), but applies `pattern` against the name and
-  // label of the current field separately. If the return value is
+  // Like ParseField(), but applies pattern named with `regex_name` against the
+  // name and label of the current field separately. If the return value is
   // RESULT_MATCH_NAME_LABEL, then `scanner` advances and `match` is filled if
   // it is non-NULL. Otherwise `scanner` does not advance and `match` does not
   // change.
   static ParseNameLabelResult ParseNameAndLabelSeparately(
       ParsingContext& context,
       AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      std::optional<FieldAndMatchInfo>* match,
-      const char* regex_name);
+      const char* regex_name,
+      std::optional<FieldAndMatchInfo>* match);
 
   // Run matches on the name and label separately. If the return result is
-  // RESULT_MATCH_NAME_LABEL, then |scanner| advances and the field is set.
-  // Otherwise |scanner| rewinds and the field is cleared.
+  // RESULT_MATCH_NAME_LABEL, then `scanner` advances and the field is set.
+  // Otherwise `scanner` rewinds and the field is cleared.
   ParseNameLabelResult ParseNameAndLabelForZipCode(ParsingContext& context,
                                                    AutofillScanner* scanner);
 

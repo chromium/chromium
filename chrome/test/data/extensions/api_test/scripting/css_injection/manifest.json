@@ -3,10 +3,14 @@
   "manifest_version": 3,
   "version": "0.1",
   "permissions": ["scripting", "tabs", "webNavigation"],
-  "background": {"service_worker": "worker.js"},
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
   "host_permissions": [
     "http://example.com/*",
     "http://subframes.example/*",
-    "http://b.com/*"
+    "http://b.com/*",
+    "http://subframes-sandboxed.example/*"
   ]
 }

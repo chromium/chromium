@@ -33,7 +33,7 @@ class H264RateCtrlRTCTest : public testing::Test {
         VideoEncodeAccelerator::Config::ContentType::kCamera;
     rate_control_config_rtc_.frame_size.SetSize(kCommonFrameWidth,
                                                 kCommonFrameHeight);
-    rate_control_config_rtc_.fixed_delta_qp = true;
+    rate_control_config_rtc_.fixed_delta_qp = 0;
     rate_control_config_rtc_.ease_hrd_reduction = true;
     rate_control_config_rtc_.num_temporal_layers = 2;
     rate_control_config_rtc_.gop_max_duration = kCommonGopMaxDuration;

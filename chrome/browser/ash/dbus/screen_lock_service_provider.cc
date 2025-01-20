@@ -12,7 +12,7 @@
 
 namespace ash {
 
-ScreenLockServiceProvider::ScreenLockServiceProvider() {}
+ScreenLockServiceProvider::ScreenLockServiceProvider() = default;
 
 ScreenLockServiceProvider::~ScreenLockServiceProvider() = default;
 

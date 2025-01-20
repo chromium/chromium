@@ -95,6 +95,11 @@ class PersonalizationAppSeaPenProviderBase
 
   void HandleSeaPenIntroductionDialogClosed() override;
 
+  void ShouldShowSeaPenFreeformIntroductionDialog(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
+
+  void HandleSeaPenFreeformIntroductionDialogClosed() override;
+
   void IsInTabletMode(IsInTabletModeCallback callback) override;
 
   void MakeTransparent() override;
@@ -124,6 +129,11 @@ class PersonalizationAppSeaPenProviderBase
       ShouldShowSeaPenIntroductionDialogCallback callback) = 0;
 
   virtual void HandleSeaPenIntroductionDialogClosedInternal() = 0;
+
+  virtual void ShouldShowSeaPenFreeformIntroductionDialogInternal(
+      ShouldShowSeaPenFreeformIntroductionDialogCallback callback) = 0;
+
+  virtual void HandleSeaPenFreeformIntroductionDialogClosedInternal() = 0;
 
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,

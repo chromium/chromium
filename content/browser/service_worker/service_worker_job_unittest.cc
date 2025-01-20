@@ -1509,7 +1509,7 @@ void WriteResponse(
 void WriteStringResponse(
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter>& writer,
     const std::string& body) {
-  mojo_base::BigBuffer body_buffer(base::as_bytes(base::make_span(body)));
+  mojo_base::BigBuffer body_buffer(base::as_bytes(base::span(body)));
   const char kHttpHeaders[] = "HTTP/1.0 200 HONKYDORY\0\0";
   std::string headers(kHttpHeaders, std::size(kHttpHeaders));
   WriteResponse(writer, headers, std::move(body_buffer));

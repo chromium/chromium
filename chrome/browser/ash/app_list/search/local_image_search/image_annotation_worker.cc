@@ -515,6 +515,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   if (use_ocr_ && use_ica_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
     LogIndexingUma(IndexingStatus::kIcaStart);
+    LogIcaUma(IcaStatus::kStartWithOcr);
     optical_character_recognizer_->PerformOCR(
         *image_skia.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
@@ -539,6 +540,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
 
   if (use_ica_) {
     LogIndexingUma(IndexingStatus::kIcaStart);
+    LogIcaUma(IcaStatus::kStartWithoutOcr);
     image_content_annotator_.AnnotateEncodedImage(
         image_info.path,
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
@@ -562,6 +564,7 @@ void ImageAnnotationWorker::OnPerformOcr(
     ImageInfo image_info,
     screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
   LogIndexingUma(IndexingStatus::kOcrSucceed);
+  LogIcaUma(IcaStatus::kOcrSucceed);
   if (search_features::IsLauncherImageSearchDebugEnabled()) {
     LOG(ERROR) << "OnPerformOcr with line size: "
                << visual_annotation->lines.size();
@@ -581,9 +584,11 @@ void ImageAnnotationWorker::OnPerformOcr(
   // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
   annotation_storage_->Insert(std::move(image_info), IndexingSource::kOcr);
+  LogIcaUma(IcaStatus::kOcrInserted);
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
+    LogIcaUma(IcaStatus::kIcaDisabled);
     MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
   }
 }
@@ -594,6 +599,9 @@ void ImageAnnotationWorker::OnPerformIca(
   if (ptr->status ==
       chromeos::machine_learning::mojom::ImageAnnotationResult::Status::OK) {
     LogIndexingUma(IndexingStatus::kIcaSucceed);
+    LogIcaUma(IcaStatus::kIcaSucceed);
+  } else {
+    LogIcaUma(IcaStatus::kIcaFailed);
   }
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
@@ -634,6 +642,7 @@ void ImageAnnotationWorker::OnPerformIca(
   // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
   annotation_storage_->Insert(image_info, IndexingSource::kIca);
+  LogIcaUma(IcaStatus::kIcaInserted);
 
   // ICA is the last in the pipeline.
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
@@ -669,6 +678,10 @@ void ImageAnnotationWorker::OnImageProcessTimeout(
     const base::FilePath& file_path) {
   LOG(ERROR) << "Annotators timed out.";
   LogStatusUma(Status::kImageProcessingTimeOut);
+  LogIcaUma(IcaStatus::kTimeout);
+  base::UmaHistogramCustomCounts(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Timeout",
+      num_indexing_images_, 0, 501, 50);
   // Sends the last processed file path to indicate if it is still up-to-date
   // and we need to continue file processing.
   MaybeProcessNextItem(file_path);

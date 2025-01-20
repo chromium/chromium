@@ -9,19 +9,26 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -88,6 +95,7 @@ public class PermissionDialogController
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
+    private ModalDialogManagerObserver mModalDialogManagerObserver;
 
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
@@ -127,7 +135,16 @@ public class PermissionDialogController
         PermissionDialogController.getInstance().queueDialog(delegate);
     }
 
-    /** @param observer An observer to be notified of changes. */
+    /** Called by native code to update the current permission dialog with new screen variant. */
+    @CalledByNative
+    private static void updateDialogWithNewScreenVariant(
+            PermissionDialogDelegate delegate, @EmbeddedPromptVariant int variant) {
+        PermissionDialogController.getInstance().updateCustomView(delegate, variant);
+    }
+
+    /**
+     * @param observer An observer to be notified of changes.
+     */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
@@ -138,10 +155,28 @@ public class PermissionDialogController
     }
 
     /**
+     * Update the custom view for the given native delegate, if the delegate points to the current
+     * displaying dialog.
+     *
+     * @param delegate The wrapper for the native-side permission delegate.
+     * @param variant The screent variant we want to display.
+     */
+    private void updateCustomView(
+            PermissionDialogDelegate delegate, @EmbeddedPromptVariant int variant) {
+        delegate.setEmbeddedPromptVariant(variant);
+        if (mDialogDelegate != delegate) {
+            return;
+        }
+        // TODO(crbug.com/388407665): Setup and bind layout based on the variant
+        mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, setupCustomView());
+    }
+
+    /**
      * Queues a modal permission dialog for display. If there are currently no dialogs on screen, it
      * will be displayed immediately. Otherwise, it will be displayed as soon as the user responds
      * to the current dialog.
-     * @param context  The context to use to get the dialog layout.
+     *
+     * @param context The context to use to get the dialog layout.
      * @param delegate The wrapper for the native-side permission delegate.
      */
     private void queueDialog(PermissionDialogDelegate delegate) {
@@ -163,13 +198,17 @@ public class PermissionDialogController
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
+            // If this dialog comes from a embedded permission request, it might have multiple of
+            // different screens showing up. It makes more sense to notify the observers (in this
+            // case to change the icon) after all the screens have appeared.
+            if (!isEmbeddedPromptScreenVariant()) {
+                notifyObservers(ContentSettingValues.ALLOW);
+            }
             if (mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT) {
                 mDialogDelegate.onAccept();
-                destroyDelegate(ContentSettingValues.ALLOW);
             } else {
                 // State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
                 mDialogDelegate.onAcceptThisTime();
-                destroyDelegate(ContentSettingValues.ALLOW);
             }
         }
         scheduleDisplay();
@@ -184,45 +223,21 @@ public class PermissionDialogController
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
+            notifyObservers(ContentSettingValues.DEFAULT);
             // The user accepted the site-level prompt but denied the app-level prompt.
             // No content setting should be set.
             mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_OS_DENIED);
-            destroyDelegate(ContentSettingValues.DEFAULT);
         }
         scheduleDisplay();
     }
 
-    /** Shows the dialog asking the user for a web API permission. */
-    public void dequeueDialog() {
-        assert mState == State.NOT_SHOWING;
-
-        mDialogDelegate = mRequestQueue.remove(0);
+    /**
+     * Setup a custom view for permission dialog, also set up the MVC model for the dialog's custom
+     * view.
+     */
+    private View setupCustomView() {
         Context context = getContext();
-
-        // It's possible for the context to be null if we reach here just after the user
-        // backgrounds the browser and cleanup has happened. In that case, we can't show a prompt,
-        // so act as though the user dismissed it.
-        if (context == null) {
-            // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
-            // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
-            mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_CONTEXT);
-            destroyDelegate(ContentSettingValues.DEFAULT);
-            return;
-        }
-
-        mModalDialogManager = mDialogDelegate.getWindow().getModalDialogManager();
-
-        // The tab may have navigated or been closed while we were waiting for Chrome Home to close.
-        // For some embedders (e.g. WebEngine) the layout might not be inflated and so the
-        // ModalDialogManager is not available.
-        if (mDialogDelegate == null || mModalDialogManager == null) {
-            mState = State.NOT_SHOWING;
-            scheduleDisplay();
-            return;
-        }
-
-        // Setting up the MVC model for the dialog's custom view. One time prompts don't share the
-        // same layout.
+        // One time prompts don't share the same layout.
         View customView =
                 mDialogDelegate.canShowEphemeralOption()
                         ? LayoutInflaterUtils.inflate(
@@ -237,17 +252,106 @@ public class PermissionDialogController
                         mDialogDelegate.canShowEphemeralOption()
                                 ? PermissionOneTimeDialogCustomViewBinder::bind
                                 : PermissionDialogCustomViewBinder::bind);
+        return customView;
+    }
+
+    /** Shows the dialog asking the user for a web API permission. */
+    public void dequeueDialog() {
+        assert mState == State.NOT_SHOWING;
+
+        mDialogDelegate = mRequestQueue.remove(0);
+        Context context = getContext();
+
+        // It's possible for the context to be null if we reach here just after the user
+        // backgrounds the browser and cleanup has happened. In that case, we can't show a prompt,
+        // so act as though the user dismissed it.
+        if (context == null) {
+            notifyObservers(ContentSettingValues.DEFAULT);
+            // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
+            // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
+            mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_CONTEXT);
+            return;
+        }
+
+        mModalDialogManager = mDialogDelegate.getWindow().getModalDialogManager();
+
+        // The tab may have navigated or been closed while we were waiting for Chrome Home to close.
+        // For some embedders (e.g. WebEngine) the layout might not be inflated and so the
+        // ModalDialogManager is not available.
+        if (mDialogDelegate == null || mModalDialogManager == null) {
+            mState = State.NOT_SHOWING;
+            scheduleDisplay();
+            return;
+        }
 
         // Setting up the Permission's dialog.
         mDialogModel =
                 PermissionDialogModelFactory.getModel(
                         this,
                         mDialogDelegate,
-                        customView,
+                        setupCustomView(),
                         () -> showFilteredTouchEventDialog(context));
 
+        mModalDialogManagerObserver =
+                new ModalDialogManagerObserver() {
+                    @Override
+                    public void onDialogShown(View dialogView) {
+                        // If the negative button is shown, it will be the last button.
+                        ViewGroup buttonGroup = dialogView.findViewById(R.id.button_group);
+                        if (buttonGroup == null || buttonGroup.getChildCount() == 0) {
+                            return;
+                        }
+                        View lastView = buttonGroup.getChildAt(buttonGroup.getChildCount() - 1);
+                        assert lastView instanceof Button;
+                        Button lastButton = (Button) lastView;
+                        if (lastButton.getVisibility() == View.GONE
+                                || lastButton.getText()
+                                        != mDialogDelegate.getNegativeButtonText()) {
+                            return;
+                        }
+
+                        // When `showDialog` is called and triggered this callback, the button
+                        // visibility is VISIBLE but the button might not been laid out yet. If that
+                        // is the case, we try again after the next layout.
+                        if (lastButton.isLaidOut()) {
+                            recordOutOfScreenNegativeButton(lastButton);
+                            return;
+                        }
+                        lastButton
+                                .getViewTreeObserver()
+                                .addOnGlobalLayoutListener(
+                                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                                            @Override
+                                            public void onGlobalLayout() {
+                                                if (!lastButton.isLaidOut()) {
+                                                    return;
+                                                }
+                                                lastButton
+                                                        .getViewTreeObserver()
+                                                        .removeOnGlobalLayoutListener(this);
+                                                recordOutOfScreenNegativeButton(lastButton);
+                                            }
+                                        });
+                    }
+                };
+        mModalDialogManager.addObserver(mModalDialogManagerObserver);
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
+    }
+
+    /** Record histogram if a button is rendered out of screen. */
+    private void recordOutOfScreenNegativeButton(Button button) {
+        int[] loc = new int[2];
+        button.getLocationOnScreen(loc);
+        int x = loc[0];
+        int y = loc[1];
+        DimensionCompat dimension =
+                DimensionCompat.create(ContextUtils.activityFromContext(button.getContext()), null);
+
+        boolean outOfScreen =
+                x < 0 || y < 0 || x > dimension.getWindowWidth() || y > dimension.getWindowHeight();
+        RecordHistogram.recordBooleanHistogram(
+                "Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen", outOfScreen);
     }
 
     /**
@@ -314,7 +418,12 @@ public class PermissionDialogController
             assert mRequestQueue.contains(delegate);
             mRequestQueue.remove(delegate);
         }
-        delegate.destroy();
+        if (delegate != null) {
+            delegate.destroy();
+            delegate = null;
+        }
+
+        mState = State.NOT_SHOWING;
     }
 
     public void updateIcon(Bitmap icon) {
@@ -346,6 +455,10 @@ public class PermissionDialogController
         // When the dialog is dismissed, the delegate's native pointers are
         // freed, and the next queued dialog (if any) is displayed.
         mDialogModel = null;
+        if (mModalDialogManagerObserver != null) {
+            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
+            mModalDialogManagerObserver = null;
+        }
         mCustomViewModel = null;
         mCustomViewModelChangeProcessor.destroy();
         if (mDialogDelegate == null) {
@@ -355,41 +468,22 @@ public class PermissionDialogController
             return;
         }
         if (mState == State.PROMPT_ACCEPTED || mState == State.PROMPT_ACCEPTED_THIS_TIME) {
-            if (mState == State.PROMPT_ACCEPTED) {
-                mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT;
-            } else {
-                mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
-            }
-
-            // Request Android permissions if necessary. This will call back into
-            // either onAndroidPermissionAccepted or onAndroidPermissionCanceled,
-            // which will schedule the next permission dialog. If it returns false,
-            // no system level permissions need to be requested, so just run the
-            // accept callback.
-            if (!AndroidPermissionRequester.requestAndroidPermissions(
-                    mDialogDelegate.getWindow(),
-                    mDialogDelegate.getContentSettingsTypes(),
-                    PermissionDialogController.this)) {
-                onAndroidPermissionAccepted();
-            }
+            requestAndroidPermissionsIfNecessary();
         } else {
             // Otherwise, run the necessary delegate callback immediately and
             // schedule the next dialog.
             if (mState == State.PROMPT_DENIED) {
+                notifyObservers(ContentSettingValues.BLOCK);
                 mDialogDelegate.onCancel();
-                destroyDelegate(ContentSettingValues.BLOCK);
             } else {
-                assert mState == State.PROMPT_OPEN;
-
                 @DismissalType int type = DismissalType.UNSPECIFIED;
                 if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK) {
                     type = DismissalType.NAVIGATE_BACK;
                 } else if (dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
                     type = DismissalType.TOUCH_OUTSIDE;
                 }
+                notifyObservers(ContentSettingValues.DEFAULT);
                 mDialogDelegate.onDismiss(type);
-
-                destroyDelegate(ContentSettingValues.DEFAULT);
             }
             scheduleDisplay();
         }
@@ -401,13 +495,11 @@ public class PermissionDialogController
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE -> {
                 mState = State.PROMPT_ACCEPTED;
-                mModalDialogManager.dismissDialog(
-                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                handlePositiveButtonClicked(model);
             }
             case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL -> {
                 mState = State.PROMPT_ACCEPTED_THIS_TIME;
-                mModalDialogManager.dismissDialog(
-                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                handlePositiveButtonClicked(model);
             }
             case ModalDialogProperties.ButtonType.NEGATIVE -> {
                 mState = State.PROMPT_DENIED;
@@ -420,7 +512,7 @@ public class PermissionDialogController
         }
     }
 
-    private void destroyDelegate(@ContentSettingValues int result) {
+    public void notifyObservers(@ContentSettingValues int result) {
         if (result != ContentSettingValues.DEFAULT) {
             WindowAndroid currentWindow = mDialogDelegate.getWindow();
             for (Observer obs : mObservers) {
@@ -428,9 +520,47 @@ public class PermissionDialogController
                         currentWindow, mDialogDelegate.getContentSettingsTypes().clone(), result);
             }
         }
+    }
+
+    public void destroyDelegate(@ContentSettingValues int result) {
+        notifyObservers(result);
         mDialogDelegate.destroy();
         mDialogDelegate = null;
-        mState = State.NOT_SHOWING;
+    }
+
+    private void handlePositiveButtonClicked(PropertyModel model) {
+        if (!isEmbeddedPromptScreenVariant()) {
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        } else {
+            requestAndroidPermissionsIfNecessary();
+        }
+    }
+
+    /** Request Android permissions if necessary, after user accepted the dialog */
+    private void requestAndroidPermissionsIfNecessary() {
+        assert mState == State.PROMPT_ACCEPTED || mState == State.PROMPT_ACCEPTED_THIS_TIME;
+        if (mState == State.PROMPT_ACCEPTED) {
+            mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT;
+        } else {
+            mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
+        }
+
+        // This will call back into either onAndroidPermissionAccepted or
+        // onAndroidPermissionCanceled, which will schedule the next permission dialog. If it
+        // returns false, no system level permissions need to be requested, so just run the accept
+        // callback.
+        if (!AndroidPermissionRequester.requestAndroidPermissions(
+                mDialogDelegate.getWindow(),
+                mDialogDelegate.getContentSettingsTypes(),
+                PermissionDialogController.this)) {
+            onAndroidPermissionAccepted();
+        }
+    }
+
+    private boolean isEmbeddedPromptScreenVariant() {
+        return mDialogDelegate != null
+                && mDialogDelegate.getEmbeddedPromptVariant()
+                        != EmbeddedPromptVariant.UNINITIALIZED;
     }
 
     public boolean isDialogShownForTest() {

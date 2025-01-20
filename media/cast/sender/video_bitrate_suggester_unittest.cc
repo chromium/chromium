@@ -32,7 +32,6 @@ static const FrameSenderConfig kVideoConfig{
     kFirstSsrc + 3,
     base::Milliseconds(100),
     kDefaultTargetPlayoutDelay,
-    RtpPayloadType::VIDEO_VP8,
     /* use_hardware_encoder= */ false,
     kRtpTimebase,
     /* channels = */ 1,
@@ -55,7 +54,7 @@ class VideoBitrateSuggesterTest : public ::testing::Test {
 
  protected:
   VideoBitrateSuggesterTest() {
-    video_bitrate_suggester_ = std::make_unique<VideoBitrateSuggester>(
+    suggester_ = std::make_unique<VideoBitrateSuggester>(
         kVideoConfig,
         base::BindRepeating(&VideoBitrateSuggesterTest::get_suggested_bitrate,
                             // Safe because we destroy the audio sender before
@@ -64,14 +63,12 @@ class VideoBitrateSuggesterTest : public ::testing::Test {
   }
 
   void RecordShouldDropNextFrame(bool should_drop) {
-    video_bitrate_suggester_->RecordShouldDropNextFrame(should_drop);
+    suggester_->RecordShouldDropNextFrame(should_drop);
   }
 
   void set_suggested_bitrate(int bitrate) { suggested_bitrate_ = bitrate; }
 
-  VideoBitrateSuggester& video_bitrate_suggester() {
-    return *video_bitrate_suggester_;
-  }
+  VideoBitrateSuggester& suggester() { return *suggester_; }
 
   void UseExponentialAlgorithm() {
     feature_list_.InitAndEnableFeature(
@@ -84,10 +81,18 @@ class VideoBitrateSuggesterTest : public ::testing::Test {
   }
 
  private:
-  std::unique_ptr<VideoBitrateSuggester> video_bitrate_suggester_;
+  std::unique_ptr<VideoBitrateSuggester> suggester_;
   base::test::ScopedFeatureList feature_list_;
   int suggested_bitrate_ = 0;
 };
+
+TEST_F(VideoBitrateSuggesterTest, StaysWithinBounds) {
+  set_suggested_bitrate(10000000);
+  EXPECT_EQ(kDefaultMaxVideoBitrate, suggester().GetSuggestedBitrate());
+
+  set_suggested_bitrate(1);
+  EXPECT_EQ(kDefaultMinVideoBitrate, suggester().GetSuggestedBitrate());
+}
 
 TEST_F(VideoBitrateSuggesterTest,
        SuggestsBitratesCorrectlyWithExponentialAlgorithm) {
@@ -95,7 +100,7 @@ TEST_F(VideoBitrateSuggesterTest,
 
   // We should start with the maximum video bitrate.
   set_suggested_bitrate(5000001);
-  EXPECT_EQ(5000000, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(kDefaultMaxVideoBitrate, suggester().GetSuggestedBitrate());
 
   // After a period with multiple frame drops, this should go down.
   RecordShouldDropNextFrame(true);
@@ -104,44 +109,42 @@ TEST_F(VideoBitrateSuggesterTest,
     RecordShouldDropNextFrame(false);
   }
 
-  // It should now go down.
-  EXPECT_EQ(4000000, video_bitrate_suggester().GetSuggestedBitrate());
-
   // It should continue to go down to the minimum as long as frames are being
   // dropped.
-  int last_suggestion = 4685120;
-  for (int i = 0; i < 12; ++i) {
+  int last_suggestion = suggester().GetSuggestedBitrate();
+  EXPECT_EQ(3500000, last_suggestion);
+  while (last_suggestion > kDefaultMinVideoBitrate) {
     RecordShouldDropNextFrame(true);
     for (int j = 0; j < 29; ++j) {
       RecordShouldDropNextFrame(false);
     }
 
     // It should drop every time.
-    const int suggestion = video_bitrate_suggester().GetSuggestedBitrate();
+    const int suggestion = suggester().GetSuggestedBitrate();
     EXPECT_LT(suggestion, last_suggestion);
     last_suggestion = suggestion;
   }
 
   // And then stabilize at the bottom.
-  EXPECT_EQ(300000, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(kDefaultMinVideoBitrate, suggester().GetSuggestedBitrate());
 
   // It should increase once we stop dropping frames.
-  last_suggestion = 300000;
-  for (int i = 0; i < 30; ++i) {
+  last_suggestion = kDefaultMinVideoBitrate;
+  while (last_suggestion < kDefaultMaxVideoBitrate) {
     for (int j = 0; j < 30; ++j) {
       RecordShouldDropNextFrame(false);
     }
-    const int suggestion = video_bitrate_suggester().GetSuggestedBitrate();
+    const int suggestion = suggester().GetSuggestedBitrate();
     EXPECT_GT(suggestion, last_suggestion);
     last_suggestion = suggestion;
   }
 
   // And stop at the maximum.
-  EXPECT_EQ(5000000, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(kDefaultMaxVideoBitrate, suggester().GetSuggestedBitrate());
 
   // Finally, it should cap at the bitrate suggested by Open Screen.
   set_suggested_bitrate(4998374);
-  EXPECT_EQ(4998374, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(4998374, suggester().GetSuggestedBitrate());
 }
 
 TEST_F(VideoBitrateSuggesterTest,
@@ -150,7 +153,7 @@ TEST_F(VideoBitrateSuggesterTest,
 
   // We should start with the maximum video bitrate.
   set_suggested_bitrate(5000001);
-  EXPECT_EQ(5000000, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(kDefaultMaxVideoBitrate, suggester().GetSuggestedBitrate());
 
   // After a period with multiple frame drops, this should go down.
   RecordShouldDropNextFrame(true);
@@ -160,42 +163,40 @@ TEST_F(VideoBitrateSuggesterTest,
   }
 
   // It should now go down.
-  EXPECT_EQ(4412500, video_bitrate_suggester().GetSuggestedBitrate());
+  int last_suggestion = suggester().GetSuggestedBitrate();
+  EXPECT_EQ(4412500, last_suggestion);
 
   // It should continue to go down to the minimum as long as frames are being
   // dropped.
-  int last_suggestion = 4412500;
-  for (int i = 0; i < 7; ++i) {
+  while (last_suggestion > kDefaultMinVideoBitrate) {
     RecordShouldDropNextFrame(true);
     for (int j = 0; j < 99; ++j) {
       RecordShouldDropNextFrame(false);
     }
 
     // It should drop every time.
-    const int suggestion = video_bitrate_suggester().GetSuggestedBitrate();
+    const int suggestion = suggester().GetSuggestedBitrate();
     EXPECT_LT(suggestion, last_suggestion);
     last_suggestion = suggestion;
   }
 
-  // And then stabilize at the bottom.
-  EXPECT_EQ(300000, video_bitrate_suggester().GetSuggestedBitrate());
-
   // It should increase once we stop dropping frames.
-  last_suggestion = 300000;
-  for (int i = 0; i < 8; ++i) {
+  last_suggestion = suggester().GetSuggestedBitrate();
+  EXPECT_EQ(kDefaultMinVideoBitrate, last_suggestion);
+  while (last_suggestion < kDefaultMaxVideoBitrate) {
     for (int j = 0; j < 100; ++j) {
       RecordShouldDropNextFrame(false);
     }
-    const int suggestion = video_bitrate_suggester().GetSuggestedBitrate();
+    const int suggestion = suggester().GetSuggestedBitrate();
     EXPECT_GT(suggestion, last_suggestion);
     last_suggestion = suggestion;
   }
 
   // And stop at the maximum.
-  EXPECT_EQ(5000000, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(kDefaultMaxVideoBitrate, suggester().GetSuggestedBitrate());
 
   // Finally, it should cap at the bitrate suggested by Open Screen.
   set_suggested_bitrate(4998374);
-  EXPECT_EQ(4998374, video_bitrate_suggester().GetSuggestedBitrate());
+  EXPECT_EQ(4998374, suggester().GetSuggestedBitrate());
 }
 }  // namespace media::cast

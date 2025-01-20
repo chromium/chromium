@@ -168,25 +168,24 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
     std::string_view response_body) {
-  std::optional<base::Value> maybe_value =
-      base::JSONReader::Read(response_body);
-  if (!maybe_value)
+  std::optional<base::Value::Dict> maybe_value =
+      base::JSONReader::ReadDict(response_body);
+  if (!maybe_value) {
     return nullptr;
+  }
 
-  return ParseSingleIssuer(std::move(*maybe_value));
+  return ParseSingleIssuer(base::Value(std::move(*maybe_value)));
 }
 
 std::unique_ptr<base::flat_map<SuitableTrustTokenOrigin,
                                mojom::TrustTokenKeyCommitmentResultPtr>>
 TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
     std::string_view response_body) {
-  std::optional<base::Value> maybe_value =
-      base::JSONReader::Read(response_body);
-  if (!maybe_value)
+  std::optional<base::Value::Dict> maybe_value =
+      base::JSONReader::ReadDict(response_body);
+  if (!maybe_value) {
     return nullptr;
-
-  if (!maybe_value->is_dict())
-    return nullptr;
+  }
 
   // The configuration might contain conflicting lists of keys for issuers with
   // the same canonicalized URLs but different string representations provided
@@ -197,7 +196,7 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
 
   std::vector<Entry> parsed_entries;
 
-  for (auto kv : maybe_value->GetDict()) {
+  for (auto kv : *maybe_value) {
     const std::string& raw_key_from_json = kv.first;
     std::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(raw_key_from_json));

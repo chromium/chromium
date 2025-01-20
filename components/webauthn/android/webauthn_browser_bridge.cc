@@ -6,10 +6,19 @@
 
 #include <jni.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+#include <vector>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -69,8 +78,8 @@ void OnWebauthnCredentialSelected(
     const base::android::JavaRef<jobject>& jcallback,
     const std::vector<uint8_t>& credential_id) {
   base::android::RunObjectCallbackAndroid(
-      jcallback, base::android::ToJavaByteArray(jni_zero::AttachCurrentThread(),
-                                                credential_id));
+      jcallback, base::android::ToJavaByteArray(
+                     base::android::AttachCurrentThread(), credential_id));
 }
 
 void OnHybridAssertionInvoked(

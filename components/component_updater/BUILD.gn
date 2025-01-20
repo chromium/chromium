@@ -2,12 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("component_updater_paths") {
+component("component_updater_paths") {
+  defines = [ "IS_COMPONENT_UPDATER_PATHS_IMPL" ]
+
   sources = [
     "component_updater_paths.cc",
     "component_updater_paths.h",
   ]
-  deps = [ "//base" ]
+
+  public_deps = [ "//base" ]
 }
 
 static_library("component_updater") {
@@ -41,7 +44,6 @@ static_library("component_updater") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/crx_file",
     "//components/prefs",
     "//components/update_client",

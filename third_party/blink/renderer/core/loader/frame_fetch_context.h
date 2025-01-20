@@ -108,7 +108,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
 
-  void StartSpeculativeImageDecode(Resource* resource,
+  bool StartSpeculativeImageDecode(Resource* resource,
                                    base::OnceClosure callback) override;
 
   bool IsPrerendering() const override;
@@ -200,6 +200,10 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   String GetUserAgent() const;
   std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const PermissionsPolicy* GetPermissionsPolicy() const override;
+  HashSet<HashAlgorithm> CSPHashesToReport() const override;
+  void AddCSPHashReport(
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
   String GetReducedAcceptLanguage() const;

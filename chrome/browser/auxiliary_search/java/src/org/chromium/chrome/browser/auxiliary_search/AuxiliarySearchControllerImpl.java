@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS;
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
@@ -30,7 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 /** The Controller to handle the communication between Chrome and {@link AuxiliarySearchDonor}. */
-public class AuxiliarySearchControllerImpl implements AuxiliarySearchController {
+public class AuxiliarySearchControllerImpl
+        implements AuxiliarySearchController,
+                AuxiliarySearchConfigManager.ShareTabsWithOsStateListener {
     private static final String TAG = "AuxiliarySearch";
     private final @NonNull Context mContext;
     private final @NonNull Profile mProfile;
@@ -44,6 +47,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
+    private CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -59,10 +63,11 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
         mFaviconHelper = faviconHelper;
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
 
-        mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber =
+                sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
-        mDonor.createSessionAndInit();
+        AuxiliarySearchConfigManager.getInstance().addListener(this);
     }
 
     /**
@@ -78,7 +83,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
                 context,
                 profile,
                 new AuxiliarySearchProvider(context, profile, tabModelSelector),
-                new AuxiliarySearchDonor(context),
+                AuxiliarySearchDonor.getInstance(),
                 new FaviconHelper());
     }
 
@@ -93,17 +98,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
 
     @Override
     public void onResumeWithNative() {
-        long startTimeMs = TimeUtils.uptimeMillis();
-
-        mDonor.deleteAllTabs(
-                (success) -> {
-                    mHasDeletingTask = false;
-                    AuxiliarySearchMetrics.recordDeleteTime(
-                            TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
-                    AuxiliarySearchMetrics.recordDeletionRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
-                            AuxiliarySearchDataType.TAB);
-                });
+        deleteAllTabs();
     }
 
     @Override
@@ -113,13 +108,17 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
 
     @Override
     public void destroy() {
+        if (mCallbackController == null) return;
+
+        mCallbackController.destroy();
+        mCallbackController = null;
+        AuxiliarySearchConfigManager.getInstance().removeListener(this);
+
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
-        if (mDonor != null) {
-            mDonor.destroy();
-        }
+
         mFaviconHelper.destroy();
     }
 
@@ -129,6 +128,9 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
             @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
+        if (!mDonor.canDonate()) return;
+
+        // mDonor will cache the donation list if the initialization of the donor is in progress.
         mDonor.donateFavicons(
                 tabs,
                 tabIdToFaviconMap,
@@ -139,12 +141,20 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
                 });
     }
 
+    // AuxiliarySearchConfigManager.ShareTabsWithOsStateListener implementations.
+    @Override
+    public void onConfigChanged(boolean enabled) {
+        long startTimeMs = TimeUtils.uptimeMillis();
+        mDonor.onConfigChanged(enabled, (success) -> onAllTabDeleted(success, startTimeMs));
+    }
+
     private void tryDonateTabs() {
-        if (mHasDeletingTask) return;
+        if (mHasDeletingTask || !mDonor.canDonate()) return;
 
         long startTime = TimeUtils.uptimeMillis();
         mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
-                (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime));
+                mCallbackController.makeCancelable(
+                        (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime)));
     }
 
     /**
@@ -225,7 +235,33 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
 
             // Schedules a background task to donate favicons of the remaining tabs.
             mAuxiliarySearchProvider.scheduleBackgroundTask(
-                    SCHEDULE_DELAY_TIME_MS.getValue(), TimeUtils.uptimeMillis());
+                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
+                    TimeUtils.uptimeMillis());
         }
+    }
+
+    private void deleteAllTabs() {
+        long startTimeMs = TimeUtils.uptimeMillis();
+
+        mHasDeletingTask = true;
+        if (!mDonor.deleteAllTabs(
+                (success) -> {
+                    onAllTabDeleted(success, startTimeMs);
+                })) {
+            mHasDeletingTask = false;
+        }
+    }
+
+    private void onAllTabDeleted(boolean success, long startTimeMs) {
+        mHasDeletingTask = false;
+        AuxiliarySearchMetrics.recordDeleteTime(
+                TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
+        AuxiliarySearchMetrics.recordDeletionRequestStatus(
+                success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
+                AuxiliarySearchDataType.TAB);
+    }
+
+    public boolean getHasDeletingTaskForTesting() {
+        return mHasDeletingTask;
     }
 }

@@ -53,6 +53,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -147,8 +148,8 @@ void EncodeAndSaveImage(const base::FilePath& file_path, gfx::Image image) {
       image, gfx::Size(informed_restore::kPreviewContainerWidth,
                        resized_image_height));
   auto png_bytes = resized_image.As1xPNGBytes();
-  auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
-  if (!base::WriteFile(file_path, raw_data)) {
+  if (!base::WriteFile(file_path,
+                       base::span(png_bytes->data(), png_bytes->size()))) {
     LOG(ERROR) << "Failed to write informed restore image to "
                << file_path.MaybeAsASCII();
   }
@@ -341,7 +342,7 @@ void LockStateController::StartLockAnimation() {
     views::Widget* owner = active_menu_controller->owner();
     SCOPED_CRASH_KEY_STRING256("LockStateController", "StartLockAnimation",
                                owner ? owner->GetName() : "ownerless");
-    CHECK(false);
+    NOTREACHED();
   }
 
   animating_lock_ = true;

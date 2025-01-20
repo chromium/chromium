@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1066101356081285416">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。為提供此功能，系統會將包裹追蹤編號和網站名稱傳送給 Google，為所有人改善購物功能。你可隨時在「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」進行更新。</translation>
+<translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕連結。</translation>
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1143896152279775643">系統會將密碼儲存在 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="1146503048444965320">在 Chrome 中開啟新分頁</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">隨時使用 Chrome 開啟訊息和其他應用程式中的連結。</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1237769345474105984">來自 Chrome</translation>
-<translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="124228879633599436">Chrome 版本過舊，請更新以確保安全。</translation>
 <translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1352919863522755794">「Google 密碼管理工具」無法檢查您的密碼。請檢查互聯網連線。</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">開啟 Chrome 設定，將 Chrome 設定為預設瀏覽器。</translation>
 <translation id="1670609221633730681">Chrome 提示：選擇網址列位置</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">在 Chrome 中儲存密碼</translation>
 <translation id="1790080846677398234">將輸入的網址新增至 Chrome 書籤。</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">這代表 Chrome 每次都會要求取得流動網站。</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以無痕模式開啟已輸入的網址。</translation>
 <translation id="3741995255368156336">開啟 Chrome 閱讀清單。</translation>
+<translation id="3808570423967020928">從主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="3827545470516145620">此裝置即將啟用標準安全保護功能保護</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用您的相機</translation>
 <translation id="3863841106411295595">將輸入的網址新增至 Chrome 閱讀清單。</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">登入此網站和 Chrome。</translation>
 <translation id="4646014602299206846">當你瀏覽網站時，Chrome 會在網站上偵測是否有包裹追蹤編號，並在新分頁顯示包裹最新消息。系統將與 Google 分享你的資料，以提供此功能，並為所有使用者改善「購物」功能。</translation>
 <translation id="4647910807533196601">在 Chrome 中開啟我的最新分頁。</translation>
+<translation id="4693084815234024320">你正在使用 Chrome 無痕模式</translation>
 <translation id="4724297637870447613">隨時隨地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
@@ -219,9 +222,12 @@
 
 如需其他會運用資料提升 Chrome 體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6922332667202044570">刪除 Chrome 中的瀏覽資料。</translation>
+<translation id="6924922227983877439">預設在 Chrome 中開啟連結</translation>
+<translation id="6931601805528922498">登入即可將帳戶新增至 Chrome，方便瀏覽工作相關內容。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="7056826488869329999">在 Chrome 中開啟並執行「安全檢查」。</translation>
 <translation id="7061455974939528301">按住 Chrome 圖示，然後按一下 [編輯主畫面]</translation>
+<translation id="7065813315247345131">將 Chrome 移至 Dock</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>

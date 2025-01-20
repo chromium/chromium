@@ -38,7 +38,7 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
   MultiUserContextMenuChromeos& operator=(const MultiUserContextMenuChromeos&) =
       delete;
 
-  ~MultiUserContextMenuChromeos() override {}
+  ~MultiUserContextMenuChromeos() override = default;
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override { return false; }
@@ -62,8 +62,9 @@ void OnAcceptTeleportWarning(const AccountId& account_id,
                              aura::Window* window_,
                              bool accepted,
                              bool no_show_again) {
-  if (!accepted)
+  if (!accepted) {
     return;
+  }
 
   PrefService* pref = ProfileManager::GetActiveUserProfile()->GetPrefs();
   pref->SetBoolean(user_manager::prefs::kMultiProfileWarningShowDismissed,
@@ -85,8 +86,9 @@ std::unique_ptr<ui::MenuModel> CreateMultiUserContextMenu(
     // If this window is not owned, we don't show the menu addition.
     auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
     const AccountId& account_id = window_manager->GetWindowOwner(window);
-    if (!account_id.is_valid() || !window)
+    if (!account_id.is_valid() || !window) {
       return model;
+    }
     auto* menu = new MultiUserContextMenuChromeos(window);
     model.reset(menu);
     int command_id = IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT;

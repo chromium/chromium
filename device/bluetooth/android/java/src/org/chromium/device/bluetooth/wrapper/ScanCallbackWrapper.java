@@ -4,11 +4,14 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
  * Wraps android.bluetooth.le.ScanCallback, being called by ScanCallbackImpl.
  */
+@NullMarked
 public interface ScanCallbackWrapper {
     public void onBatchScanResult(List<ScanResultWrapper> results);
 

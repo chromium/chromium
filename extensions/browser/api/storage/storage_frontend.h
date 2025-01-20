@@ -72,6 +72,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       content::BrowserContext* context);
 
+  explicit StorageFrontend(content::BrowserContext* context);
   StorageFrontend(const StorageFrontend&) = delete;
   StorageFrontend& operator=(const StorageFrontend&) = delete;
 
@@ -161,9 +162,6 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   typedef std::map<settings_namespace::Namespace,
                    raw_ptr<ValueStoreCache, CtnExperimental>>
       CacheMap;
-
-  // Constructor for normal BrowserContextKeyedAPI usage.
-  explicit StorageFrontend(content::BrowserContext* context);
 
   // Constructor for tests.
   StorageFrontend(scoped_refptr<value_store::ValueStoreFactory> storage_factory,

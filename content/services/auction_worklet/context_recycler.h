@@ -115,7 +115,7 @@ class CONTENT_EXPORT ContextRecycler {
     return register_ad_macro_bindings_.get();
   }
 
-  void AddReportBindings();
+  void AddReportBindings(bool queue_report_aggregate_win_allowed);
   ReportBindings* report_bindings() { return report_bindings_.get(); }
 
   void AddSetBidBindings();

@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,6 +19,8 @@ import android.view.Window;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -26,6 +29,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -43,6 +47,7 @@ public class BottomSheetControllerImplUnitTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private BottomSheet mBottomSheet;
+    @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private BottomSheetControllerImpl mController;
     private final OneshotSupplierImpl<ScrimCoordinator> mScrimCoordinatorSupplier =
@@ -90,7 +95,8 @@ public class BottomSheetControllerImplUnitTest {
                         mKeyboardVisibilityDelegate,
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
-                        APP_HEADER_HEIGHT);
+                        APP_HEADER_HEIGHT,
+                        0);
     }
 
     @Test
@@ -122,4 +128,39 @@ public class BottomSheetControllerImplUnitTest {
         mController.onAppHeaderStateChanged(newAppHeaderState);
         verify(mBottomSheet, times(1)).onAppHeaderHeightChanged(APP_HEADER_HEIGHT);
     }
+
+    @Test
+    public void testScrimZOrdering() {
+        mController.runSheetInitializerForTesting();
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+
+        mController.scrimVisibilityChanged(true);
+        verify(mRoot).setZ(1.0f);
+
+        mController.scrimVisibilityChanged(false);
+        verify(mRoot).setZ(0.0f);
+    }
+
+    @Test
+    public void testBottomControlsHeight() {
+        mController.runSheetInitializerForTesting();
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+        mController.setBottomControlsHeight(100);
+
+        verify(mBottomSheet).setBottomMargin(100);
+
+        mController.scrimVisibilityChanged(true);
+        verify(mBottomSheet).setBottomMargin(0);
+    }
+
+    @Test
+    public void testScrimStartsVisible() {
+        doReturn(true).when(mScrimCoordinator).isShowingScrim();
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        verify(mRoot).setZ(1.0f);
+   }
 }

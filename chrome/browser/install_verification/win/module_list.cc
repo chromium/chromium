@@ -62,4 +62,4 @@ void ModuleList::GetModuleInfoSet(std::set<ModuleInfo>* module_info_set) {
   }
 }
 
-ModuleList::ModuleList() {}
+ModuleList::ModuleList() = default;

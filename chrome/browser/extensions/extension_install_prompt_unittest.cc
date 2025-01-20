@@ -59,7 +59,7 @@ class ExtensionInstallPromptUnitTest : public testing::Test {
   ExtensionInstallPromptUnitTest& operator=(
       const ExtensionInstallPromptUnitTest&) = delete;
 
-  ~ExtensionInstallPromptUnitTest() override {}
+  ~ExtensionInstallPromptUnitTest() override = default;
 
   // testing::Test:
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }

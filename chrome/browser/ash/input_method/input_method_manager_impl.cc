@@ -332,8 +332,7 @@ void InputMethodManagerImpl::StateImpl::DisableNonLockScreenLayouts() {
     // Skip if it's not a keyboard layout. Drop input methods including
     // extension ones. We need to keep all IMEs to support inputting on inline
     // reply on a notification if notifications on lock screen is enabled.
-    if ((!ash::features::IsLockScreenInlineReplyEnabled() &&
-         !manager_->IsLoginKeyboard(input_method_id)) ||
+    if (!manager_->IsLoginKeyboard(input_method_id) ||
         added_ids.count(input_method_id)) {
       continue;
     }

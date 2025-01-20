@@ -180,9 +180,9 @@ class CompoundBufferTest : public testing::Test {
     const char* data = kTestData.data();
     for (int i = 0; i < segments; ++i) {
       size_t size = i % 2 == 0 ? 1 : 2;
-      result->Append(base::MakeRefCounted<net::WrappedIOBuffer>(
-                         base::make_span(data, size)),
-                     size);
+      result->Append(
+          base::MakeRefCounted<net::WrappedIOBuffer>(base::span(data, size)),
+          size);
       data += size;
     }
     result->Lock();

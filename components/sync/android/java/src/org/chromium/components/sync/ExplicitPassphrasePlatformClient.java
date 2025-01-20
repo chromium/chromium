@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -29,7 +30,8 @@ public abstract class ExplicitPassphrasePlatformClient {
             CoreAccountInfo account, NigoriKey nigoriKey);
 
     @CalledByNative
-    private static void setExplicitDecryptionPassphrase(CoreAccountInfo account, byte[] nigoriKey) {
+    private static void setExplicitDecryptionPassphrase(
+            @JniType("CoreAccountInfo") CoreAccountInfo account, byte[] nigoriKey) {
         NigoriKey parsedKey;
         try {
             parsedKey = NigoriKey.parseFrom(nigoriKey);

@@ -1233,6 +1233,26 @@ TEST_P(OverviewSessionTest, SkipOverviewWindow) {
   EXPECT_TRUE(window2->IsVisible());
 }
 
+// Tests that showing the non-forcefully hidden windows will not crash. The
+// regression test of crbug.com/372335240.
+TEST_P(OverviewSessionTest, NoCrashOnShowingNonForceHiddenWindows) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  window->SetProperty(kHideInOverviewKey, true);
+
+  // Enter overview.
+  ToggleOverview();
+
+  // The second window should be hidden.
+  EXPECT_FALSE(window->IsVisible());
+
+  // Showing and focusing on the second window should exit Overview without
+  // crash. Here we simulate the process of `SystemWebDialogDelegate::Focus`.
+  window->Show();
+  window->Focus();
+  EXPECT_FALSE(InOverviewSession());
+  EXPECT_TRUE(window->IsVisible());
+}
+
 // Tests that a minimized window's visibility and layer visibility
 // stay invisible (A minimized window is cloned during overview).
 TEST_P(OverviewSessionTest, MinimizedWindowState) {
@@ -7216,8 +7236,6 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
 
   // Returns the expected overview bounds including the hotseat inset. See
   // `ShrinkBoundsByHotseatInset()`.
-  // TODO(sophiewen): Refactor this for both `SplitViewOverviewSessionTest`
-  // and `FasterSplitScreenSetupTest` and make this work for multi-display.
   gfx::Rect GetExpectedOverviewBounds() {
     aura::Window* root_window = Shell::GetPrimaryRootWindow();
     gfx::Rect overview_bounds(GetWorkAreaInScreen(root_window));
@@ -9433,8 +9451,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  // Maximize `window3` as `window1` and `window3` may form a Snap Group with
-  // `kSnapGroup` enabled.
+  // Maximize `window3` as `window1` and `window3` may form a Snap Group.
   WindowState::Get(window3.get())->Maximize();
 
   // 4. Test if one window is snapped, the other windows are showing in

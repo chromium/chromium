@@ -163,6 +163,10 @@ ASAP so that it can be included in the next release built from the branch; if
 you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
+**NOTE:**  Ensure you link to the bug that has merge approval for the relevant
+milestone (Using `Bug=<bug id>` in your commit description). Not linking to a
+bug that has approval can cause delay to your CL landing.
+
 Once the cherry-pick has landed, a bot will update the *Merge* field with
 *Merged-###* label and remove *Approved-###* if the commit references the issue.
 If for some reason the commit did not reference the issue, manually update the

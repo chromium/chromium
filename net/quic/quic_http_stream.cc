@@ -303,7 +303,7 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
 
 bool QuicHttpStream::GetAlternativeService(
     AlternativeService* alternative_service) const {
-  alternative_service->protocol = kProtoQUIC;
+  alternative_service->protocol = NextProto::kProtoQUIC;
   const url::SchemeHostPort& destination = quic_session()->destination();
   alternative_service->host = destination.host();
   alternative_service->port = destination.port();
@@ -348,20 +348,22 @@ std::string_view QuicHttpStream::GetAcceptChViaAlps() const {
   return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
-std::optional<HttpStream::QuicErrorDetails>
-QuicHttpStream::GetQuicErrorDetails() const {
-  QuicErrorDetails details;
+std::optional<HttpStream::QuicConnectionDetails>
+QuicHttpStream::GetQuicConnectionDetails() const {
+  QuicConnectionDetails details;
   if (stream_) {
-    details.connection_error = stream_->connection_error();
-    details.stream_error = stream_->stream_error();
-    details.connection_wire_error = stream_->connection_wire_error();
-    details.ietf_application_error = stream_->ietf_application_error();
+    details.error.connection_error = stream_->connection_error();
+    details.error.stream_error = stream_->stream_error();
+    details.error.connection_wire_error = stream_->connection_wire_error();
+    details.error.ietf_application_error = stream_->ietf_application_error();
   } else {
-    details.connection_error = connection_error_;
-    details.stream_error = stream_error_;
-    details.connection_wire_error = connection_wire_error_;
-    details.ietf_application_error = ietf_application_error_;
+    details.error.connection_error = connection_error_;
+    details.error.stream_error = stream_error_;
+    details.error.connection_wire_error = connection_wire_error_;
+    details.error.ietf_application_error = ietf_application_error_;
   }
+  details.connection_migration_info =
+      quic_session()->GetConnectionMigrationInfoSinceInit();
   return details;
 }
 

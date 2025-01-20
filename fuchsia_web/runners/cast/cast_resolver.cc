@@ -81,7 +81,7 @@ void CastResolver::Resolve(CastResolver::ResolveRequest& request,
                   .source = Ref::WithParent({}),
                   .source_name = "svc",
                   .target_path = "/svc",
-                  .rights = fuchsia_io::kRwStarDir,
+                  .rights = fuchsia_io::wire::kRStarDir,
                   .dependency_type =
                       fuchsia_component_decl::DependencyType::kStrong,
               }}),

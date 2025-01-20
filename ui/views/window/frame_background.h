@@ -18,7 +18,7 @@ class Canvas;
 namespace ui {
 class ColorProvider;
 class NativeTheme;
-}
+}  // namespace ui
 
 namespace views {
 

@@ -152,8 +152,7 @@ void MediaNotificationProviderImpl::OnPrimaryUserSessionStarted() {
           GetProfile());
   AddMediaItemManagerToCastService(item_manager_.get());
 
-  if (!media_router::GlobalMediaControlsCastStartStopEnabled(GetProfile()) ||
-      !crosapi::CrosapiManager::IsInitialized()) {
+  if (!crosapi::CrosapiManager::IsInitialized()) {
     return;
   }
   supplemental_device_picker_producer_ =

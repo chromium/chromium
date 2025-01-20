@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h"
@@ -24,9 +25,12 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
+  // SAFETY: Just wraps the data from libFuzzer in a span.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription::VariantLigatures ligatures;
-  Font math = test::CreateTestFont(AtomicString("MathTestFont"), data, size,
+  Font math = test::CreateTestFont(AtomicString("MathTestFont"), data_span,
                                    kFontSize, &ligatures);
 
   // TODO(crbug.com/1340884): This is only testing API for three characters.

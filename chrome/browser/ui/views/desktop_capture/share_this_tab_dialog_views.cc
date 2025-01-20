@@ -77,7 +77,7 @@ bool ShouldAutoAcceptThisTabCapture() {
 
 ShareThisTabDialogView::ShareThisTabDialogView(
     const DesktopMediaPicker::Params& params,
-    ShareThisTabDialogViews* parent)
+    ShareThisTabMediaPicker* parent)
     : web_contents_(params.web_contents->GetWeakPtr()),
       app_name_(params.app_name),
       parent_(parent),
@@ -218,7 +218,9 @@ bool ShareThisTabDialogView::Accept() {
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents_->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
             web_contents_->GetPrimaryMainFrame()->GetRoutingID()));
     desktop_media_id.audio_share =
         audio_toggle_button_ && audio_toggle_button_->GetIsOn();
@@ -342,11 +344,11 @@ bool ShareThisTabDialogView::ShouldAutoReject() const {
 BEGIN_METADATA(ShareThisTabDialogView)
 END_METADATA
 
-ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
+ShareThisTabMediaPicker::ShareThisTabMediaPicker() : dialog_(nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ShareThisTabDialogViews::~ShareThisTabDialogViews() {
+ShareThisTabMediaPicker::~ShareThisTabMediaPicker() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
     dialog_->RecordUmaDismissal();
@@ -355,7 +357,7 @@ ShareThisTabDialogViews::~ShareThisTabDialogViews() {
   }
 }
 
-void ShareThisTabDialogViews::Show(
+void ShareThisTabMediaPicker::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
@@ -368,7 +370,7 @@ void ShareThisTabDialogViews::Show(
   dialog_ = new ShareThisTabDialogView(params, this);
 }
 
-void ShareThisTabDialogViews::NotifyDialogResult(
+void ShareThisTabMediaPicker::NotifyDialogResult(
     const content::DesktopMediaID& source) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

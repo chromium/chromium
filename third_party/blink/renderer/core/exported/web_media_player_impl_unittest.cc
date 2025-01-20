@@ -1007,9 +1007,10 @@ TEST_F(WebMediaPlayerImplTest, LoadAndDestroy) {
   // usage to ensure we're getting audio buffer and demuxer usage too.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_GT(
-      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
-      data_source_size);
+  EXPECT_GT(V8ExternalMemoryAccounterBase::
+                GetTotalAmountOfExternalAllocatedMemoryForTesting(
+                    task_environment_.isolate()),
+            data_source_size);
 }
 
 // Verify LoadAndWaitForCurrentData() functions without issue.
@@ -1112,9 +1113,10 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(
-      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
-      data_source_size);
+  EXPECT_EQ(V8ExternalMemoryAccounterBase::
+                GetTotalAmountOfExternalAllocatedMemoryForTesting(
+                    task_environment_.isolate()),
+            data_source_size);
 }
 
 // Verify that Play() before kReadyStateHaveEnough doesn't increase buffer size.
@@ -1191,9 +1193,10 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(
-      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
-      data_source_size);
+  EXPECT_EQ(V8ExternalMemoryAccounterBase::
+                GetTotalAmountOfExternalAllocatedMemoryForTesting(
+                    task_environment_.isolate()),
+            data_source_size);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
@@ -1235,9 +1238,10 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspendNoVideoMemoryUsage) {
   // usage to ensure there's no other memory usage.
   const int64_t data_source_size = GetDataSourceMemoryUsage();
   EXPECT_GT(data_source_size, 0);
-  EXPECT_EQ(
-      task_environment_.isolate()->AdjustAmountOfExternalAllocatedMemory(0),
-      data_source_size);
+  EXPECT_EQ(V8ExternalMemoryAccounterBase::
+                GetTotalAmountOfExternalAllocatedMemoryForTesting(
+                    task_environment_.isolate()),
+            data_source_size);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }

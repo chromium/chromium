@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/test_context_provider.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <set>
@@ -38,16 +34,18 @@ namespace {
 
 // Various tests rely on functionality (capabilities) enabled by these extension
 // strings.
-const char* const kExtensions[] = {"GL_ARB_texture_rectangle",
-                                   "GL_EXT_stencil_wrap",
-                                   "GL_EXT_texture_format_BGRA8888",
-                                   "GL_OES_rgb8_rgba8",
-                                   "GL_EXT_texture_norm16",
-                                   "GL_CHROMIUM_framebuffer_multisample",
-                                   "GL_CHROMIUM_renderbuffer_format_BGRA8888",
-                                   "GL_OES_texture_half_float",
-                                   "GL_OES_texture_half_float_linear",
-                                   "GL_EXT_color_buffer_half_float"};
+const auto kExtensions = std::to_array<const char*>({
+    "GL_ARB_texture_rectangle",
+    "GL_EXT_stencil_wrap",
+    "GL_EXT_texture_format_BGRA8888",
+    "GL_OES_rgb8_rgba8",
+    "GL_EXT_texture_norm16",
+    "GL_CHROMIUM_framebuffer_multisample",
+    "GL_CHROMIUM_renderbuffer_format_BGRA8888",
+    "GL_OES_texture_half_float",
+    "GL_OES_texture_half_float_linear",
+    "GL_EXT_color_buffer_half_float",
+});
 
 class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
  public:

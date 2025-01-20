@@ -16,6 +16,7 @@ class MallSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   bool ShouldCaptureNavigations() const override;
+  gfx::Size GetMinimumWindowSize() const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MALL_SYSTEM_WEB_APP_INFO_H_

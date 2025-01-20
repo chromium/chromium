@@ -14,7 +14,7 @@
 
 class NearbyShareResourceGetterTest : public ::testing::Test {
  public:
-  NearbyShareResourceGetterTest() {}
+  NearbyShareResourceGetterTest() = default;
 
   ~NearbyShareResourceGetterTest() override = default;
 };

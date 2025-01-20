@@ -79,7 +79,8 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
+  EXPECT_EQ(Color::FromRGBAFloat(1.0f - 0.1f, 1.0f - 0.1f, 1.0f - 0.1f, 1.0f),
+            colors.at(0));
   EXPECT_EQ(1.0f, fg_opacity);
 }
 
@@ -95,7 +96,8 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
+  EXPECT_EQ(Color::FromRGBAFloat(1.0f - 0.1f, 1.0f - 0.1f, 1.0f - 0.1f, 1.0f),
+            colors.at(0));
   EXPECT_EQ(0.1f, fg_opacity);
 }
 

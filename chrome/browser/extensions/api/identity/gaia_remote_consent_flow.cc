@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 
+#include <algorithm>
+
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
@@ -14,6 +17,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/url_constants.h"
@@ -58,18 +63,25 @@ void GaiaRemoteConsentFlow::Start() {
                                       WebAuthFlow::INTERACTIVE, user_gesture_);
   }
 
+  if (resolution_data_.cookies.empty()) {
+    OnResolutionDataCookiesSet({});
+    return;
+  }
+
   network::mojom::CookieManager* cookie_manager =
       GetCookieManagerForPartition();
   net::CookieOptions options;
+  base::RepeatingCallback<void(net::CookieAccessResult)> cookie_set_callback =
+      base::BarrierCallback<net::CookieAccessResult>(
+          resolution_data_.cookies.size(),
+          base::BindOnce(&GaiaRemoteConsentFlow::OnResolutionDataCookiesSet,
+                         weak_factory.GetWeakPtr()));
   for (const auto& cookie : resolution_data_.cookies) {
     cookie_manager->SetCanonicalCookie(
         cookie,
         net::cookie_util::SimulatedCookieSource(cookie, url::kHttpsScheme),
-        options, network::mojom::CookieManager::SetCanonicalCookieCallback());
+        options, cookie_set_callback);
   }
-
-  web_flow_->Start();
-  web_flow_started_ = true;
 }
 
 void GaiaRemoteConsentFlow::Stop() {
@@ -82,7 +94,7 @@ void GaiaRemoteConsentFlow::Stop() {
 void GaiaRemoteConsentFlow::ReactToConsentResult(
     const std::string& consent_result) {
   bool consent_approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   if (!gaia::ParseOAuth2MintTokenConsentResult(consent_result,
                                                &consent_approved, &gaia_id)) {
     GaiaRemoteConsentFlowFailed(GaiaRemoteConsentFlow::INVALID_CONSENT_RESULT);
@@ -133,6 +145,22 @@ void GaiaRemoteConsentFlow::SetWebAuthFlowForTesting(
 
 WebAuthFlow* GaiaRemoteConsentFlow::GetWebAuthFlowForTesting() const {
   return web_flow_.get();
+}
+
+void GaiaRemoteConsentFlow::OnResolutionDataCookiesSet(
+    const std::vector<net::CookieAccessResult>& cookie_set_result) {
+  bool cookies_set_failed = std::ranges::any_of(
+      cookie_set_result, [](const net::CookieAccessResult& result) {
+        return !result.status.IsInclude();
+      });
+
+  if (cookies_set_failed) {
+    GaiaRemoteConsentFlowFailed(SET_RESOLUTION_COOKIES_FAILED);
+    return;
+  }
+
+  web_flow_->Start();
+  web_flow_started_ = true;
 }
 
 void GaiaRemoteConsentFlow::GaiaRemoteConsentFlowFailed(Failure failure) {

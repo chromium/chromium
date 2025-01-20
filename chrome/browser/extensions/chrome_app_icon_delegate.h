@@ -16,7 +16,7 @@ class ChromeAppIconDelegate {
   virtual void OnIconUpdated(ChromeAppIcon* icon) = 0;
 
  protected:
-  virtual ~ChromeAppIconDelegate() {}
+  virtual ~ChromeAppIconDelegate() = default;
 };
 
 }  // namespace extensions

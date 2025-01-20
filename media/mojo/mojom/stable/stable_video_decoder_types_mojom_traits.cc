@@ -12,6 +12,8 @@
 #include "media/gpu/v4l2/v4l2_status.h"
 #elif BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_status.h"
+#else
+#include "base/notreached.h"
 #endif
 
 // This file contains a variety of conservative compile-time assertions that
@@ -331,7 +333,7 @@ std::vector<uint8_t> StructTraits<media::stable::mojom::DecoderBufferDataView,
   // need to convert the side data to a raw format. We only care about spatial
   // layers since alpha data isn't used by HW decoders and the secure handle is
   // only going to used in new code going forward.
-  if (!input->has_side_data() || input->side_data()->spatial_layers.empty()) {
+  if (!input->side_data() || input->side_data()->spatial_layers.empty()) {
     return {};
   }
   std::vector<uint8_t> raw_data;
@@ -417,7 +419,7 @@ StructTraits<media::stable::mojom::DecoderBufferDataView,
       "Unexpected type for input->side_data(). If you need to change this "
       "assertion, please contact chromeos-gfx-video@google.com.");
 
-  if (input->end_of_stream() || !input->has_side_data()) {
+  if (input->end_of_stream() || !input->side_data()) {
     return nullptr;
   }
   return input->side_data()->Clone();
@@ -494,7 +496,7 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
   // TODO(b/269383891): Remove this in M120.
   // If the input is an older version than us, then it may have |raw_side_data|
   // set and we need to copy that into the potential values in |side_data|.
-  if (!raw_side_data.empty() && !decoder_buffer->has_side_data()) {
+  if (!raw_side_data.empty() && !decoder_buffer->side_data()) {
     // Spatial layers is always a multiple of 4 with a max size of 12.
     // HW decoders don't use alpha data, so we can ignore that case.
     if (raw_side_data.size() % sizeof(uint32_t) != 0 ||
@@ -1044,8 +1046,11 @@ std::optional<media::internal::StatusData> StructTraits<
     // TODO(b/217970098): allow building the VaapiStatusTraits and
     // V4L2StatusTraits without USE_VAAPI/USE_V4L2_CODEC so these guards could
     // be removed.
-    CHECK(false);
+    NOTREACHED();
 #endif
+
+    // Only include this for non-NOTREACHED() cases to avoid dead-code warnings.
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
     // Let's translate anything other than a VA-API or V4L2 "ok" cause (i.e.,
     // all of them per the CHECK()s above) to
     // DecoderStatusTraits::Codes::kFailed.
@@ -1053,6 +1058,7 @@ std::optional<media::internal::StatusData> StructTraits<
         media::DecoderStatusTraits::Codes::kFailed);
     output_cause.group = std::string(media::DecoderStatusTraits::Group());
     return output_cause;
+#endif
   }
   return std::nullopt;
 }

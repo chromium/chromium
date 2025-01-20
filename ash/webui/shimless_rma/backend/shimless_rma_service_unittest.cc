@@ -282,8 +282,7 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   }
 
   FakeRmadClientForTest* fake_rmad_client_() {
-    return google::protobuf::down_cast<FakeRmadClientForTest*>(
-        rmad_client_.get());
+    return static_cast<FakeRmadClientForTest*>(rmad_client_.get());
   }
 
   void SetupWiFiNetwork(const std::string& guid) {

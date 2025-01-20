@@ -231,8 +231,9 @@ cbor::Value::MapValue EncodeCOSEPublicKey(
   cose_key.emplace(3 /* algorithm */,
                    -25 /* ECDH, ephemeral–static, HKDF-SHA-256 */);
   cose_key.emplace(-1 /* curve */, 1 /* P-256 */);
-  cose_key.emplace(-2 /* x */, x962.subspan(1, 32));
-  cose_key.emplace(-3 /* y */, x962.subspan(33, 32));
+  const auto [x, y] = x962.subspan<1>().split_at<32>();
+  cose_key.emplace(-2 /* x */, x);
+  cose_key.emplace(-3 /* y */, y);
 
   return cose_key;
 }

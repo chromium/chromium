@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 
@@ -14,6 +16,7 @@ import java.util.concurrent.Executor;
  * connection without a try-with-resources statement. If the callsite isn't using try-with-resources
  * mechanism, it needs to call close() explicitly.
  */
+@NullMarked
 class AutoCloseableRouter implements Router {
     /** The underlying router. */
     private final Router mRouter;
@@ -31,7 +34,7 @@ class AutoCloseableRouter implements Router {
     private boolean mClosed;
 
     /** Constructor. */
-    public AutoCloseableRouter(Core core, Router router) {
+    public AutoCloseableRouter(@Nullable Core core, Router router) {
         mRouter = router;
         mExecutor = ExecutorFactory.getExecutorForCurrentThread(core);
         mAllocationException = new Exception("AutocloseableRouter allocated at:");

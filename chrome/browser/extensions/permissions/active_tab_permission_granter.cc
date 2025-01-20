@@ -122,7 +122,7 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
-ActiveTabPermissionGranter::~ActiveTabPermissionGranter() {}
+ActiveTabPermissionGranter::~ActiveTabPermissionGranter() = default;
 
 void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   if (granted_extensions_.Contains(extension->id())) {

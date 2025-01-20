@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -143,8 +145,7 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     base::OnceClosure finished_callback,
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-        blob_url_loader_factory,
-    std::optional<uint64_t> main_script_identifier) {
+        blob_url_loader_factory) {
   DCHECK(fetch_client_settings_object_fetcher);
   DCHECK(response_callback || finished_callback);
   response_callback_ = std::move(response_callback);
@@ -164,15 +165,12 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   if (worker_main_script_load_params) {
     auto* worker_global_scope = DynamicTo<WorkerGlobalScope>(execution_context);
     DCHECK(worker_global_scope);
-    if (main_script_identifier.has_value()) {
-      worker_global_scope->SetMainResoureIdentifier(
-          main_script_identifier.value());
-      request.SetInspectorId(main_script_identifier.value());
-    } else {
-      request.SetInspectorId(CreateUniqueIdentifier());
-    }
+    auto identifier = CreateUniqueIdentifier();
+    worker_global_scope->SetMainResoureIdentifier(identifier);
+    request.SetInspectorId(identifier);
     request.SetReferrerString(Referrer::NoReferrer());
     request.SetPriority(ResourceLoadPriority::kHigh);
+    probe::WillSendWorkerMainRequest(worker_global_scope, identifier, url);
     FetchParameters fetch_params(
         std::move(request),
         ResourceLoaderOptions(execution_context.GetCurrentWorld()));

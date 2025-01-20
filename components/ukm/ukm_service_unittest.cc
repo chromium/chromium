@@ -2213,9 +2213,7 @@ TEST_F(UkmServiceTest, NotifyObserverOnShutdown) {
   ukm::UkmRecorder::Get()->AddObserver(&observer);
   EXPECT_CALL(observer, OnStartingShutdown()).Times(1);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 class UkmServiceTestWithIndependentAppKM
@@ -2402,7 +2400,7 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockUkmRecorder : public ukm::UkmRecorder {
  public:

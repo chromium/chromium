@@ -34,15 +34,16 @@ Response DOMHandler::Disable() {
 
 Response DOMHandler::SetFileInputFiles(
     std::unique_ptr<protocol::Array<std::string>> files,
-    Maybe<DOM::NodeId> node_id,
-    Maybe<DOM::BackendNodeId> backend_node_id,
-    Maybe<String> in_object_id) {
+    std::optional<DOM::NodeId> node_id,
+    std::optional<DOM::BackendNodeId> backend_node_id,
+    std::optional<String> in_object_id) {
   if (!allow_file_access_)
     return Response::ServerError("Not allowed");
   if (host_) {
     for (const std::string& file : *files) {
       ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-          host_->GetProcess()->GetID(), base::FilePath::FromUTF8Unsafe(file));
+          host_->GetProcess()->GetDeprecatedID(),
+          base::FilePath::FromUTF8Unsafe(file));
     }
   }
   return Response::FallThrough();

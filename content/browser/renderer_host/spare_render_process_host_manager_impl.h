@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -15,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
+#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
 
 namespace content {
 
@@ -34,7 +36,8 @@ enum class SpareRendererDispatchResult {
   kDestroyedProcessLimit,
   kProcessExited,
   kProcessHostDestroyed,
-  kMaxValue = kProcessHostDestroyed
+  kMemoryPressure,
+  kMaxValue = kMemoryPressure
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareRendererDispatchResult)
 
@@ -51,13 +54,16 @@ enum class NoSpareRendererReason {
   kMemoryPressure,
   kProcessExited,
   kProcessHostDestroyed,
-  kMaxValue = kProcessHostDestroyed
+  kNotYetCreatedFirstLaunch,
+  kNotYetCreatedAfterWarmup,
+  kMaxValue = kNotYetCreatedAfterWarmup
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
 
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
-      public RenderProcessHostObserver {
+      public RenderProcessHostObserver,
+      public blink::performance_scenarios::PerformanceScenarioObserver {
  public:
   SpareRenderProcessHostManagerImpl();
   ~SpareRenderProcessHostManagerImpl() override;
@@ -74,7 +80,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void RemoveObserver(Observer* observer) override;
   void WarmupSpare(BrowserContext* browser_context) override;
   const std::vector<RenderProcessHost*>& GetSpares() override;
-  std::vector<int> GetSpareIds() override;
+  std::vector<ChildProcessId> GetSpareIds() override;
   void CleanupSparesForTesting() override;
 
   // Start a spare renderer immediately, only if there is none.
@@ -128,6 +134,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void SetDeferTimerTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  void SetIsBrowserIdleForTesting(bool is_browser_idle);
+
  private:
   // Release ownership of a spare renderer. Called when the spare has either
   // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
@@ -140,6 +148,14 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
+  // blink::performance_scenarios::PerformanceScenarioObserver:
+  void OnLoadingScenarioChanged(
+      blink::performance_scenarios::ScenarioScope scope,
+      blink::performance_scenarios::LoadingScenario old_scenario,
+      blink::performance_scenarios::LoadingScenario new_scenario) override;
+
+  void SetIsBrowserIdle(bool is_browser_idle);
+
   // Start a spare renderer at a later time if there isn't one.
   // This is to avoid resource contention between existing renderers and a
   // new spare renderer.
@@ -150,6 +166,30 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void StartDestroyTimer(std::optional<base::TimeDelta> timeout);
 
   bool DestroyTimerWillFireBefore(base::TimeDelta timeout);
+
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
+  // When the system is under memory pressure, this function is called every 5
+  // minutes to determine when it ends.
+  void CheckIfMemoryPressureEnded();
+
+  // Returns true if an extra spare should be created.
+  bool ShouldCreateExtraSpare() const;
+
+  // Creates an extra spare, if ShouldCreateExtraSpare() returns true. This
+  // function is responsible for the creation of all the extra spares.
+  // `WarmupSpare()` is still responsible for creating the first one.
+  void MaybeCreateExtraSpare();
+
+  // Records heartbeat metrics for the spare RPHs. Called every 2 minutes.
+  void OnMetricsHeartbeatTimerFired();
+
+  base::MemoryPressureListener memory_pressure_listener_;
+
+  // If this timer is running, then the system is under memory pressure.
+  // TODO(380805024): Remove the polling timer when possible.
+  base::RepeatingTimer check_memory_pressure_timer_;
 
   // The clients who want to know when the spare render process host has
   // changed.
@@ -176,7 +216,12 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   // The reason for there being no spare render process present.
   NoSpareRendererReason no_spare_renderer_reason_ =
-      NoSpareRendererReason::kNotYetCreated;
+      NoSpareRendererReason::kNotYetCreatedFirstLaunch;
+
+  // Indicates if the browser is not currently loading content.
+  bool is_browser_idle_ = true;
+
+  base::RepeatingTimer metrics_heartbeat_timer_;
 };
 
 }  // namespace content

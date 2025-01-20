@@ -46,11 +46,12 @@ long g_retry_delay_ms = 25000;
 
 }  // namespace
 
-UploadJobImpl::Delegate::~Delegate() {}
+UploadJobImpl::Delegate::~Delegate() = default;
 
-UploadJobImpl::MimeBoundaryGenerator::~MimeBoundaryGenerator() {}
+UploadJobImpl::MimeBoundaryGenerator::~MimeBoundaryGenerator() = default;
 
-UploadJobImpl::RandomMimeBoundaryGenerator::~RandomMimeBoundaryGenerator() {}
+UploadJobImpl::RandomMimeBoundaryGenerator::~RandomMimeBoundaryGenerator() =
+    default;
 
 // multipart/form-data POST request to upload the data. A DataSegment
 // corresponds to one "Content-Disposition" in the "multipart" request.

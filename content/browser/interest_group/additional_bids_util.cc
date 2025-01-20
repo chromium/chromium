@@ -336,8 +336,23 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     }
   }
 
-  std::vector<blink::AdDescriptor> ad_components;
+  std::optional<std::string> aggregate_win_signals;
+  const base::Value* aggregate_win_signals_val =
+      bid_dict->Find("aggregateWinSignals");
+  if (aggregate_win_signals_val) {
+    std::optional<std::string> serialized_aggregate_win_signals =
+        base::WriteJson(*aggregate_win_signals_val);
+    if (serialized_aggregate_win_signals) {
+      aggregate_win_signals =
+          std::move(serialized_aggregate_win_signals).value();
+    } else {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to invalid aggregateWinSignals."}));
+    }
+  }
   const base::Value* ad_components_val = bid_dict->Find("adComponents");
+  std::vector<InterestGroupAuction::Bid::ComponentAdInfo> ad_components;
   if (ad_components_val) {
     const base::Value::List* ad_components_list =
         ad_components_val->GetIfList();
@@ -364,10 +379,18 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
             {"Additional bid on auction with seller '", seller.Serialize(),
              "' rejected due to invalid entry in adComponents."}));
       }
-      ad_components.emplace_back(ad_component_url);
-      // TODO(http://crbug.com/1464874): What's the story with dimensions?
+
       synth_interest_group.interest_group.ad_components->emplace_back(
-          std::move(ad_component_url), /*metadata=*/std::nullopt);
+          ad_component_url, /*metadata=*/std::nullopt);
+
+      InterestGroupAuction::Bid::ComponentAdInfo component_ad_info;
+      // TODO(http://crbug.com/40275797): What's the story with dimensions?
+      component_ad_info.ad_descriptor =
+          blink::AdDescriptor(std::move(ad_component_url));
+      // The pointer to InterestGroup::Ad will be filled in below once the IG
+      // is in its final place.
+      component_ad_info.ad = nullptr;
+      ad_components.push_back(std::move(component_ad_info));
     }
   }
 
@@ -447,6 +470,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   const blink::InterestGroup::Ad* bid_ad =
       &result.bid_state->bidder->interest_group.ads.value()[0];
+
+  for (size_t i = 0; i < ad_components.size(); ++i) {
+    ad_components[i].ad =
+        &result.bid_state->bidder->interest_group.ad_components.value()[i];
+  }
+
   result.bid = std::make_unique<InterestGroupAuction::Bid>(
       auction_worklet::mojom::BidRole::kBothKAnonModes, ad_metadata, *bid_val,
       /*bid_currency=*/bid_currency,
@@ -455,6 +484,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       /*ad_component_descriptors=*/std::move(ad_components),
       /*modeling_signals=*/
       static_cast<std::optional<uint16_t>>(modeling_signals),
+      /*aggregate_wins_signals=*/std::move(aggregate_win_signals),
       /*bid_duration=*/base::TimeDelta(),
       /*bidding_signals_data_version=*/std::nullopt, bid_ad,
       /*selected_buyer_and_seller_reporting_id=*/std::nullopt,

@@ -10,8 +10,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRANSFORM_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRANSFORM_VIEW_H_
 
+#include <stddef.h>
+
 #include <concepts>
 #include <iterator>
+#include <utility>
 
 namespace blink::bindings {
 

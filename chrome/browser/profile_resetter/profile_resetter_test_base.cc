@@ -20,9 +20,9 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "content/public/browser/browser_context.h"
 
-ProfileResetterMockObject::ProfileResetterMockObject() {}
+ProfileResetterMockObject::ProfileResetterMockObject() = default;
 
-ProfileResetterMockObject::~ProfileResetterMockObject() {}
+ProfileResetterMockObject::~ProfileResetterMockObject() = default;
 
 void ProfileResetterMockObject::RunLoop() {
   EXPECT_CALL(*this, Callback());
@@ -37,9 +37,9 @@ void ProfileResetterMockObject::StopLoop() {
   runner_->Quit();
 }
 
-ProfileResetterTestBase::ProfileResetterTestBase() {}
+ProfileResetterTestBase::ProfileResetterTestBase() = default;
 
-ProfileResetterTestBase::~ProfileResetterTestBase() {}
+ProfileResetterTestBase::~ProfileResetterTestBase() = default;
 
 void ProfileResetterTestBase::ResetAndWait(
     ProfileResetter::ResettableFlags resettable_flags) {

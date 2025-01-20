@@ -1704,18 +1704,7 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int>(blink::mojom::PushEventStatus::SUCCESS), 1);
 }
 
-class PushMessagingBrowserTestWithNotificationTriggersEnabled
-    : public PushMessagingBrowserTestBase {
- public:
-  PushMessagingBrowserTestWithNotificationTriggersEnabled() {
-    feature_list_.InitAndEnableFeature(features::kNotificationTriggers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestWithNotificationTriggersEnabled,
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestBase,
                        PushEventIgnoresScheduledNotificationsForEnforcement) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   PushMessagingAppIdentifier app_identifier =

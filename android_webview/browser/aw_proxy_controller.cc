@@ -48,7 +48,7 @@ void ProxyOverrideChanged(const JavaRef<jobject>& obj,
 
 }  // namespace
 
-ScopedJavaLocalRef<jstring> JNI_AwProxyController_SetProxyOverride(
+std::string JNI_AwProxyController_SetProxyOverride(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobjectArray>& jurl_schemes,
@@ -80,7 +80,7 @@ ScopedJavaLocalRef<jstring> JNI_AwProxyController_SetProxyOverride(
                      ScopedJavaGlobalRef<jobject>(env, obj),
                      ScopedJavaGlobalRef<jobject>(env, listener),
                      ScopedJavaGlobalRef<jobject>(env, executor)));
-  return base::android::ConvertUTF8ToJavaString(env, result);
+  return result;
 }
 
 void JNI_AwProxyController_ClearProxyOverride(

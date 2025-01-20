@@ -7,12 +7,13 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/autofill_manager.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager_observer.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
@@ -21,9 +22,11 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
@@ -44,6 +47,13 @@ namespace {
 // preventing clickjacking by giving more time to the user to understand what
 // the bottom sheet does.
 base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
+
+// Returns true if the payments bottom sheet is at V3.
+bool IsV3() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
+         base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
+}
+
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetMediator () <
@@ -249,26 +259,34 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
     return;
   }
 
-  FormSuggestionTabHelper* tabHelper =
+  if (_viewDidAppearTimestamp) {
+    base::UmaHistogramTimes("IOS.PaymentsBottomSheet.TimeToSelection",
+                            base::TimeTicks::Now() - *_viewDidAppearTimestamp);
+  }
+
+  FormSuggestionTabHelper* formSuggestionTabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
-  DCHECK(tabHelper);
+  CHECK(formSuggestionTabHelper, base::NotFatalUntil::M137);
 
-  id<FormInputSuggestionsProvider> provider =
-      tabHelper->GetAccessoryViewProvider();
-  DCHECK(provider);
+  id<FormInputSuggestionsProvider> crossProvider =
+      formSuggestionTabHelper->GetAccessoryViewProvider();
+  CHECK(crossProvider, base::NotFatalUntil::M137);
 
-  if (provider.type != SuggestionProviderTypeAutofill) {
-    // Last resort safety exit: On the unlikely event that the provider was set
-    // incorrectly (for example if local predictions and server predictions are
-    // different), simply exit and open the keyboard.
+  if (crossProvider.type != SuggestionProviderTypeAutofill && !IsV3()) {
+    // Last resort safety exit: On the unlikely event that the provider was
+    // set incorrectly (for example if local predictions and server
+    // predictions are different), simply exit and open the keyboard.
+    // That last resort exit is only required before V3 where the type of the
+    // current provider matters.
     [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
   }
+
   [self disableBottomSheetAndRefocus:NO];
 
-  // Create a form suggestion containing the selected credit card's backend id
-  // so that the suggestion provider can properly fill the form.
+  // Create a form suggestion containing the selected credit card's backend
+  // id so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
               suggestionWithValue:nil
                        minorValue:nil
@@ -290,7 +308,24 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
            base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
                IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [provider didSelectSuggestion:suggestion atIndex:index params:_params];
+  // Attach the extra contextual information to the suggestion when using the
+  // V3 sheet which will be used once the FormSuggestionController becomes
+  // stateless.
+  if (IsV3()) {
+    AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
+    // At this point we know that there is a valid active webstate so there must
+    // be an autofill tab helper. Also, the bottom sheet can only be triggered
+    // when this helper exists.
+    CHECK(autofillTabHelper);
+
+    // Attach
+    id<FormSuggestionProvider> autofillProvider =
+        autofillTabHelper->GetSuggestionProvider();
+    suggestion = [FormSuggestion copy:suggestion
+                         andSetParams:_params
+                             provider:autofillProvider];
+  }
+  [crossProvider didSelectSuggestion:suggestion atIndex:index params:_params];
 }
 
 - (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus {
@@ -409,9 +444,9 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
   GURL cardArtURL =
       _personalDataManager->payments_data_manager().GetCardArtURL(*creditCard);
   if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
-    gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
-    if (image) {
+    if (const gfx::Image* const image =
+            _personalDataManager->payments_data_manager()
+                .GetCachedCardArtImageForUrl(cardArtURL)) {
       return image->ToUIImage();
     }
   }
@@ -446,6 +481,14 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
 // Returns the currently active WebState. Returns nullptr if there is none.
 - (web::WebState*)getActiveWebState {
   return _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+}
+
+// Returns the AutofillTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillTabHelper*)autofillTabHelper {
+  web::WebState* activeWebState = [self getActiveWebState];
+  return activeWebState ? AutofillTabHelper::FromWebState(activeWebState)
+                        : nullptr;
 }
 
 @end

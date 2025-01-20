@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -946,7 +944,6 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<base::RunLoop> run_loop_;
   // Only accessed on the UI thread.
@@ -970,7 +967,6 @@ CaptivePortalBrowserTest::CaptivePortalBrowserTest()
       scoped_domain_(false),
 #endif
       browser_list_(BrowserList::GetInstance()) {
-  feature_list_.InitAndEnableFeature(kCaptivePortalInterstitial);
 }
 
 CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;

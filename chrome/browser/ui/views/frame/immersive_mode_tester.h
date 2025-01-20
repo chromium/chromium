@@ -48,10 +48,11 @@ template <bool kEnabled, class BaseTest>
 class WebUiTabStripOverrideTest : public BaseTest {
  public:
   WebUiTabStripOverrideTest() {
-    if (kEnabled)
+    if (kEnabled) {
       feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
-    else
+    } else {
       feature_override_.InitAndDisableFeature(features::kWebUITabStrip);
+    }
   }
   ~WebUiTabStripOverrideTest() override = default;
 

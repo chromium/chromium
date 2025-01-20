@@ -30,9 +30,8 @@ class TabInterface;
 }
 
 // Provides an interface for getting Organizations for tabs.
-class TabOrganizationService
-    : public KeyedService,
-      public TabStripModelObserver {
+class TabOrganizationService : public KeyedService,
+                               public TabStripModelObserver {
  public:
   using BrowserSessionMap =
       std::unordered_map<const Browser*,

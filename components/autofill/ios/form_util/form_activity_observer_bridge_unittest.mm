@@ -94,7 +94,7 @@ TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   ASSERT_FALSE([observer_ submitDocumentInfo]);
   autofill::FormData kTestFormData;
   bool has_user_gesture = true;
-  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   observer_bridge_.DocumentSubmitted(&fake_web_state_, sender_frame.get(),
                                      kTestFormData, has_user_gesture);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
@@ -109,7 +109,7 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   ASSERT_FALSE([observer_ formActivityInfo]);
 
   autofill::FormActivityParams params;
-  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   params.form_name = "form-name";
   params.field_type = "field-type";
   params.type = "type";
@@ -134,7 +134,7 @@ TEST_F(FormActivityObserverBridgeTest, FormRemovalRegistered) {
   ASSERT_FALSE([observer_ formRemovalInfo]);
 
   autofill::FormRemovalParams params;
-  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
+  auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   params.removed_forms = {autofill::FormRendererId(1)};
   observer_bridge_.FormRemoved(&fake_web_state_, sender_frame.get(), params);
   ASSERT_TRUE([observer_ formRemovalInfo]);

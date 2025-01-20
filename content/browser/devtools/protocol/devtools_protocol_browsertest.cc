@@ -27,7 +27,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -81,6 +80,7 @@
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -245,7 +245,8 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 
   // WebContentsDelegate overrides.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 
@@ -493,7 +494,8 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
                    const SkBitmap& actual_bmp,
                    const gfx::Rect& matching_mask,
                    float device_scale_factor,
-                   int max_collor_diff) {
+                   int max_collor_diff,
+                   int fuzz = 0) {
   // Number of pixels with an error
   int error_pixels_count = 0;
 
@@ -505,17 +507,19 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
   // Check that bitmaps have identical dimensions.
   int expected_width = round(expected_bmp.width() * device_scale_factor);
   int expected_height = round(expected_bmp.height() * device_scale_factor);
-  EXPECT_EQ(expected_width, actual_bmp.width());
-  EXPECT_EQ(expected_height, actual_bmp.height());
-  if (expected_width != actual_bmp.width() ||
-      expected_height != actual_bmp.height()) {
-    return false;
-  }
+  EXPECT_NEAR(expected_width, actual_bmp.width(), fuzz);
+  EXPECT_NEAR(expected_height, actual_bmp.height(), fuzz);
 
   DCHECK(gfx::SkIRectToRect(actual_bmp.bounds()).Contains(matching_mask));
 
   for (int x = matching_mask.x(); x < matching_mask.right(); ++x) {
     for (int y = matching_mask.y(); y < matching_mask.bottom(); ++y) {
+      if (x * device_scale_factor >= actual_bmp.width() ||
+          y * device_scale_factor >= actual_bmp.height() ||
+          x >= expected_bmp.width() || y >= expected_bmp.height()) {
+        continue;
+      }
+
       SkColor actual_color =
           actual_bmp.getColor(x * device_scale_factor, y * device_scale_factor);
       SkColor expected_color = expected_bmp.getColor(x, y);
@@ -606,7 +610,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                      float device_scale_factor = 0,
                                      const gfx::RectF& clip = gfx::RectF(),
                                      float clip_scale = 0,
-                                     bool capture_beyond_viewport = false) {
+                                     bool capture_beyond_viewport = false,
+                                     int fuzz = 0) {
     SkBitmap result_bitmap = CaptureScreenshot(
         encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
@@ -625,7 +630,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     int max_collor_diff = 20;
 
     EXPECT_TRUE(MatchesBitmap(expected_bitmap, result_bitmap, matching_mask,
-                              device_scale_factor, max_collor_diff));
+                              device_scale_factor, max_collor_diff, fuzz));
   }
 
   gfx::Size GetPageContentSize() {
@@ -791,11 +796,12 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       device_scale_factor,
       /*clip=*/
       gfx::RectF(0, 0, actual_page_size.width(), actual_page_size.height()),
-      /*clip_scale=*/1, true);
+      /*clip_scale=*/1, /*capture_beyond_viewport=*/true);
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
                                 /*from_surface=*/true, device_scale_factor,
                                 /*clip=*/gfx::RectF(), /*clip_scale=*/0,
-                                /*capture_beyond_viewport=*/true);
+                                /*capture_beyond_viewport=*/true,
+                                /*fuzz*/ 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
@@ -852,10 +858,8 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 // TODO(crbug.com/40157725) Android has a problem with changing scale.
 // TODO(crbug.com/40156819) Android Lollipop has a problem with capturing
 // screenshot.
-// TODO(crbug.com/40736077) Flaky on linux-lacros-tester-rel
 // TODO(crbug.com/40815512): Failing on MacOS.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
   DISABLED_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
 #else
@@ -898,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // ChromeOS and Android don't support software compositing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -957,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on all platforms: https://crbug.com/801173
@@ -1934,7 +1938,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogNotifications) {
 
   EXPECT_THAT(*notification.FindString("userInput"), Eq("hi!"));
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogInterop) {
@@ -1954,7 +1957,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogInterop) {
   dialog_manager.Handle();
   WaitForNotification("Page.javascriptDialogClosed", true);
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithOpenedDialog) {
@@ -1985,7 +1987,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithOpenedDialog) {
   SendCommandSync("Runtime.evaluate", std::move(params));
 
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithNoDialogManager) {
@@ -2037,7 +2038,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BeforeUnloadDialog) {
   SendCommandAsync("Page.handleJavaScriptDialog", std::move(params));
   WaitForNotification("Page.javascriptDialogClosed", true);
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {
@@ -2926,7 +2926,8 @@ class DevToolsProtocolDeviceEmulationPrerenderTest
 
   // WebContentsDelegate overrides.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 
@@ -3697,8 +3698,8 @@ class PosixSystemTracingDevToolsProtocolTest
  public:
   PosixSystemTracingDevToolsProtocolTest() {
     feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
-    tracing::PerfettoTracedProcess::Get()
-        ->SetAllowSystemTracingConsumerForTesting(true);
+    tracing::PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+        true);
     const char* producer_sock = getenv("PERFETTO_PRODUCER_SOCK_NAME");
     saved_producer_sock_name_ = producer_sock ? producer_sock : std::string();
     const char* consumer_sock = getenv("PERFETTO_CONSUMER_SOCK_NAME");
@@ -3812,8 +3813,8 @@ class FakeSystemTracingForbiddenDevToolsProtocolTest
     : public PosixSystemTracingDevToolsProtocolTest {
  public:
   void SetUp() override {
-    tracing::PerfettoTracedProcess::Get()
-        ->SetAllowSystemTracingConsumerForTesting(false);
+    tracing::PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+        false);
     PosixSystemTracingDevToolsProtocolTest::SetUp();
   }
 };

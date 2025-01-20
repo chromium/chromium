@@ -94,6 +94,69 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "desks_client_browsertest.cc" ]
+
+  deps = [
+    ":desks",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_restore:test_support",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/base/ash/util:test_support",
+    "//chromeos/constants",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//components/desks_storage",
+    "//components/desks_storage:test_support",
+    "//components/keep_alive_registry",
+    "//components/policy:generated",
+    "//components/services/app_service",
+    "//components/tab_groups",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//ui/aura",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/display:display_manager_test_api",
+    "//ui/events:test_support",
+    "//ui/gfx/range",
+    "//ui/views",
+    "//url",
+  ]
+}
+
 if (!is_chromeos_device) {
   source_set("interactive_ui_tests") {
     testonly = true

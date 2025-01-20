@@ -53,18 +53,21 @@ std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function{
 // TimeDelta ------------------------------------------------------------------
 
 TimeDelta TimeDelta::CeilToMultiple(TimeDelta interval) const {
-  if (is_inf() || interval.is_zero())
+  if (is_inf() || interval.is_zero()) {
     return *this;
+  }
   const TimeDelta remainder = *this % interval;
-  if (delta_ < 0)
+  if (delta_ < 0) {
     return *this - remainder;
+  }
   return remainder.is_zero() ? *this
                              : (*this - remainder + interval.magnitude());
 }
 
 TimeDelta TimeDelta::FloorToMultiple(TimeDelta interval) const {
-  if (is_inf() || interval.is_zero())
+  if (is_inf() || interval.is_zero()) {
     return *this;
+  }
   const TimeDelta remainder = *this % interval;
   if (delta_ < 0) {
     return remainder.is_zero() ? *this
@@ -74,10 +77,12 @@ TimeDelta TimeDelta::FloorToMultiple(TimeDelta interval) const {
 }
 
 TimeDelta TimeDelta::RoundToMultiple(TimeDelta interval) const {
-  if (is_inf() || interval.is_zero())
+  if (is_inf() || interval.is_zero()) {
     return *this;
-  if (interval.is_inf())
+  }
+  if (interval.is_inf()) {
     return TimeDelta();
+  }
   const TimeDelta half = interval.magnitude() / 2;
   return (delta_ < 0) ? (*this - half).CeilToMultiple(interval)
                       : (*this + half).FloorToMultiple(interval);
@@ -109,8 +114,9 @@ Time Time::Midnight(bool is_local) const {
   exploded.second = 0;
   exploded.millisecond = 0;
   Time out_time;
-  if (FromExploded(is_local, exploded, &out_time))
+  if (FromExploded(is_local, exploded, &out_time)) {
     return out_time;
+  }
 
   // Reaching here means 00:00:00am of the current day does not exist (due to
   // Daylight Saving Time in some countries where clocks are shifted at
@@ -138,15 +144,16 @@ bool Time::FromStringInternal(const char* time_string,
   DCHECK(time_string);
   DCHECK(parsed_time);
 
-  if (time_string[0] == '\0')
+  if (time_string[0] == '\0') {
     return false;
+  }
 
   PRTime result_time = 0;
-  PRStatus result = PR_ParseTimeString(time_string,
-                                       is_local ? PR_FALSE : PR_TRUE,
-                                       &result_time);
-  if (result != PR_SUCCESS)
+  PRStatus result = PR_ParseTimeString(
+      time_string, is_local ? PR_FALSE : PR_TRUE, &result_time);
+  if (result != PR_SUCCESS) {
     return false;
+  }
 
   *parsed_time = UnixEpoch() + Microseconds(result_time);
   return true;
@@ -256,8 +263,9 @@ TimeTicks TimeTicks::SnappedToNextTick(TimeTicks tick_phase,
   // If |this| is exactly on the interval (i.e. offset==0), don't adjust.
   // Otherwise, if |tick_phase| was in the past, adjust forward to the next
   // tick after |this|.
-  if (!interval_offset.is_zero() && tick_phase < *this)
+  if (!interval_offset.is_zero() && tick_phase < *this) {
     interval_offset += tick_interval;
+  }
   return *this + interval_offset;
 }
 

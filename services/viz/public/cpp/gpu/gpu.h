@@ -13,7 +13,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,20 +20,12 @@
 #include "services/viz/public/cpp/gpu/client_gpu_memory_buffer_manager.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 
-namespace service_manager {
-class Connector;
-}
-
 namespace viz {
 
 class Gpu : public gpu::GpuChannelEstablishFactory {
  public:
   // The Gpu has to be initialized in the main thread before establishing
   // the gpu channel.
-  static std::unique_ptr<Gpu> Create(
-      service_manager::Connector* connector,
-      const std::string& service_name,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   static std::unique_ptr<Gpu> Create(
       mojo::PendingRemote<mojom::Gpu> remote,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
@@ -48,11 +39,11 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
     return gpu_memory_buffer_manager_.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver);

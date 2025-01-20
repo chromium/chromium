@@ -41,7 +41,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -52,6 +51,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -254,8 +254,8 @@ class LockDebugView::DebugDataDispatcherTransformer
         users[i].basic_user_info.account_id = AccountId::FromUserEmailGaiaId(
             users[i].basic_user_info.account_id.GetUserEmail() +
                 base::NumberToString(i),
-            users[i].basic_user_info.account_id.GetGaiaId() +
-                base::NumberToString(i));
+            GaiaId(users[i].basic_user_info.account_id.GetGaiaId().ToString() +
+                   base::NumberToString(i)));
       }
 
       // Setup user data based on the user type in debug_users_.

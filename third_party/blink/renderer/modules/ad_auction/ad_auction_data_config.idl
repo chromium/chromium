@@ -5,19 +5,44 @@
 // Information about a Bidding and Auction server style auction.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
 
+dictionary AdAuctionOneSeller {
+  required USVString seller;
+  USVString coordinatorOrigin;
+};
+
 dictionary AdAuctionDataBuyerConfig {
   unsigned long targetSize;
 };
 
 dictionary AdAuctionDataConfig {
-  required USVString seller;
-  // TODO(crbug.com/40278958): Make `coordinator` required.
+  // One of `seller` and `sellers` must be provided, but not both.
+  // `coordinatorOrigin` can only be provided when `seller` is provided.
+  // TODO(crbug.com/40278958): Make `coordinator` required when `seller` is
+  // provided.
+  USVString seller;
   USVString coordinatorOrigin;
+  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPIMultiSeller]
+  sequence<AdAuctionOneSeller> sellers;
+
   unsigned long requestSize;
   record<USVString, AdAuctionDataBuyerConfig> perBuyerConfig;
 };
 
+// TODO(qingxinwu): make this a union that only one of `request` and `error` can
+// be set.
+dictionary AdAuctionPerSellerData {
+  required USVString seller;
+  // Only one of `request` and `error` can be set.
+  Uint8Array request;
+  DOMString error;
+};
+
 dictionary AdAuctionData {
-  required Uint8Array request;
   required USVString requestId;
+
+  // Required When `AdAuctionDataConfig.seller` is provided.
+  Uint8Array request;
+  // Required When `AdAuctionDataConfig.sellers` is provided.
+  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPIMultiSeller]
+  sequence<AdAuctionPerSellerData> requests;
 };

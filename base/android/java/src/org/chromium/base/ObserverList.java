@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +30,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  *
  * @param <E> The type of observers that this list should hold.
  */
+@NullMarked
 @NotThreadSafe
 public class ObserverList<E> implements Iterable<E> {
     /** Extended iterator interface that provides rewind functionality. */

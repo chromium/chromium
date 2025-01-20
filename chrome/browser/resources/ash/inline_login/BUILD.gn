@@ -25,8 +25,8 @@ build_webui("build") {
   ts_definitions = [
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
-    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
   ]
   ts_deps = [

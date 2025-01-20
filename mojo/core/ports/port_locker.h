@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "mojo/core/ports/port_ref.h"
 
 namespace mojo {
@@ -30,6 +30,8 @@ class PortRef;
 // Port locks are acquired upon construction of this object and released upon
 // destruction.
 class PortLocker {
+  STACK_ALLOCATED();
+
  public:
   // Constructs a PortLocker over a sequence of |num_ports| contiguous
   // |PortRef*|s. The sequence may be reordered by this constructor, and upon
@@ -72,15 +74,14 @@ class PortLocker {
   const base::AutoReset<const PortLocker*> resetter_;
 #endif
 
-  // `port_refs_` is not a raw_ptr<T> for performance reasons: PortLocker is
-  // usually short-lived (e.g. allocated on the stack) + the stack (not on the
-  // heap).
-  RAW_PTR_EXCLUSION const PortRef** const port_refs_;
+  const PortRef** const port_refs_;
   const size_t num_ports_;
 };
 
 // Convenience wrapper for a PortLocker that locks a single port.
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) SinglePortLocker {
+  STACK_ALLOCATED();
+
  public:
   explicit SinglePortLocker(const PortRef* port_ref);
 
@@ -92,9 +93,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) SinglePortLocker {
   Port* port() const { return locker_.GetPort(*port_ref_); }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const PortRef* port_ref_;
+  const PortRef* port_ref_;
   PortLocker locker_;
 };
 

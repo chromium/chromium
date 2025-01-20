@@ -37,8 +37,8 @@ struct AffectedCookie {
 };
 
 struct AffectedRequest {
-  string request_id;
-  string? url;
+  string? request_id;
+  string url;
 };
 
 struct AffectedFrame {
@@ -254,6 +254,7 @@ enum FederatedAuthRequestResult {
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,
   kError,
+  kUiDismissedNoEmbargo,
 };
 
 struct FederatedAuthRequestIssueDetails {

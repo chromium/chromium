@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -19,23 +21,24 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * The properties controlling the state of the list menu items. Any given list item can have either
  * one start icon or one end icon but not both.
  */
+@NullMarked
 public class ListMenuItemProperties {
     // TODO(crbug.com/40738791): Consider passing menu item title through TITLE property instead of
     // TITLE_ID.
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     // A11y content description of menu item
-    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+    public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
-    public static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
+    public static final WritableObjectPropertyKey<@Nullable Drawable> START_ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey GROUP_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
-    public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
+    public static final WritableObjectPropertyKey<View.@Nullable OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Intent> INTENT =
+    public static final WritableObjectPropertyKey<@Nullable Intent> INTENT =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey ICON_TINT_COLOR_STATE_LIST_ID =

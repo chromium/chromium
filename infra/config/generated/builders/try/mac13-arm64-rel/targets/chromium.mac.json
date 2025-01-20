@@ -1506,7 +1506,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "ci_only": true,
         "merge": {
@@ -1527,7 +1527,7 @@
             "os": "Mac-13"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 18
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"

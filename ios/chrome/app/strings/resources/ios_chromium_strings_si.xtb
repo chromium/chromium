@@ -19,6 +19,7 @@
 <translation id="146407871188825689">පෙරනිමියෙන් iPad මත Chromium භාවිතා කරන්න</translation>
 <translation id="1471084500615228555">Chromium තුළ බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
 <translation id="1472013873724362412">ඔබේ ගිණුම Chromium තුළ ක්‍රියා නොකරයි. කරුණාකර ඔබේ වසම් පරිපාලක අමතන්න, නැතහොත් නිතර භාවිත කරන Google ගිණුමකින් පුරන්න.</translation>
+<translation id="148576268809812097">Chromium හි ඔබේ මුරපද සුරකින්න</translation>
 <translation id="1501302548410882220">සැම තැනම Chromium භාවිත කරන්න</translation>
 <translation id="1503199973012840174">ඔබේ Chromium යල් පැන ඇත. ආරක්ෂිතව සිටීමට එය යාවත්කාලීන කරන්න.</translation>
 <translation id="1515748263297244785">පෙරනිමියෙන් iPad සඳහා Chromium භාවිත කරන්න</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">ඔබගේ මුරපදය ඔබගේ ගිණුම තුළ සුරැකිනු ඇත (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">පුද්ගලායන සහ අනෙකුත් විශේෂාංග ලබා ගැනීමට, <ph name="FEATURE_NAME_1" /> සහ <ph name="FEATURE_NAME_2" /> තුළ Chromium ඇතුළු කරන්න</translation>
 <translation id="1838412507805038478">මෙම අඩවියේ සහතිකය <ph name="ISSUER" /> නිකුත් කළ බවට Chromium විසින් තහවුරු කරන ලදී.</translation>
+<translation id="1839447949248872139">Chromium හි පෙරනිමියෙන් සබැඳි විවෘත කරන්න</translation>
 <translation id="1843424232666537147">Chromium සතුව ඔබේ අන්තර්ජාල දත්ත සහ ඔබට කොතරම් ඉක්මනින් වෙබ් පිටු පූරණය කළ හැකිද යන්න කළමනාකරණය කිරීමට උදවු වන විශේෂාංග ඇත.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium තුළ සිතියම්</translation>
@@ -53,6 +55,7 @@
 <translation id="2236584955986023187">මෙයින් අදහස් කරන්නේ Chromium සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
 <translation id="2270466829363945454">සාප්පු යන්න</translation>
 <translation id="2313870531055795960">Chromium තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි. අඩවියක් ඔබගේ මුරපදය සොරා ගැනීමට උත්සාහ කරන්නේ නම්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chromium පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL සුරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවීමටද හැකිය.</translation>
+<translation id="2314220608288760290">Chromium ස්වයංක්‍රීයව YouTube අප්‍රසිද්ධ සබැඳි අප්‍රසිද්ධ තුළ විවෘත කරයි.</translation>
 <translation id="231828342043114302">ඔබේ ලැදිකම් මත පදනම්ව පුද්ගලායනය කළ අන්තර්ගතය ලබා ගැනීමට, Chromium වෙත පුරන්න.</translation>
 <translation id="2326738825692478496">ඔබේ Chromium දත්ත සමහරක් තවම ඔබේ Google ගිණුම තුළ සුරැකී නැත.
 
@@ -81,7 +84,6 @@
 <translation id="2832168932648876507">Chromium තුළ Voice සමග සොයන්න.</translation>
 <translation id="2843571538056574338">ස්වයං පිරවීම සඳහා Chromium භාවිතා කරන්න</translation>
 <translation id="2918709798697875261">ඔබගේ සංවිධානයට ඔබ Chromium වෙතින් වරා සිටීම අවශ්‍ය වේ.</translation>
-<translation id="2930158679684712936">Chromium ඉඟි</translation>
 <translation id="2942241131342758843">සබැඳි විවෘත කිරීමට, විජට්වලින් සෙවීමට සහ වෙනත් යෙදුම්වල මුරපද ස්වයං පිරවීමට පෙරනිමියෙන් Chromium භාවිත කරන්න</translation>
 <translation id="2977470724722393594">Chromium යාවත්කාලීනයි</translation>
 <translation id="3044857325852340337">මකන ලද Chromium දත්ත</translation>
@@ -150,6 +152,7 @@
 <translation id="4790638144988730920">ඔබේ Google ගිණුම තුළ Chromium දත්ත දිගටම භාවිත කරන්න</translation>
 <translation id="4828317641996116749">Chromium හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4856138222358683580">Chromium ක්‍රියා</translation>
+<translation id="4863800915967098115">පුරනය වීම වැඩ සම්බන්ධ බ්‍රවුස් කිරීම සඳහා Chromium වෙත ඔබේ ගිණුම එක් කරයි.</translation>
 <translation id="4904452304169763785">Chromium ඔබ වෙනුවෙන් අනාවරණය කරන ඕනෑම පෞද්ගලිකත්ව හෝ ආරක්ෂක ගැටලු පිළිබඳ ඇඟවීම්.</translation>
 <translation id="4962295957157529683">ඔබේ අනෙක් විවෘත Chromium කවුළුව තුළ ඔබ කරමින් සිටි දේ අවසන් කරන්න.</translation>
 <translation id="4985291216379576555">නොබැඳිය, Chromium හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකිය</translation>
@@ -160,6 +163,7 @@
 <translation id="5048795749726991615">ඔබේ සුරැකි මුරපද ඔබේ අනෙකුත් යෙදුම්වල පහසුවෙන් ලබා ගැනීම සඳහා, ස්වයං පිරවීම සඳහා Chromium භාවිතා කරන්න</translation>
 <translation id="5053429694249468757">Chromium දත්ත මකමින්…</translation>
 <translation id="5071749685031362629">iOS සඳහා Chromium</translation>
+<translation id="5088872414922783602">ඔබේ මුල් තිර ඩොක් එකෙන් Chromium වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="5124429847818367226">ඔබට දැන් ඔබ පණිවිඩ, ලේඛන සහ වෙනත් යෙදුම්වල සබැඳි බ්‍රවුස් කරන හෝ තට්ටු කරන ඕනෑම වේලාවක Chromium භාවිත කළ හැක.</translation>
 <translation id="5131565040785979529">ඔබේ සංවිධාන වන <ph name="DOMAIN" /> ඔබ පුරනය වන ගිණුම සහ Chromium භාවිත කරනු ලබන ආකාරය කළමනා කරයි.</translation>
 <translation id="5224391634244552924">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද පරීක්‍ෂා කරන විට Chromium හට ඒවා පරීක්‍ෂා කළ හැක.</translation>
@@ -273,6 +277,7 @@
 <translation id="800380310260616129">Chromium මෙතැනින් බාගන්න.</translation>
 <translation id="8013573822802650211">ඔබ Chromium භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, ඔබේ සියලු උපාංගවල පුරන්න</translation>
 <translation id="8014091604604659473">Chromium වරනය වී ඇත</translation>
+<translation id="8035379487371146621">Chromium ඩොකය වෙත ගෙන යන්න</translation>
 <translation id="8104697640054703121">භයානක අඩවි වලින් Chromium හි ශක්තිමත්ම ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="8119542592987737574">ඔබේ iPhone හි මුල් තිර ඩොකය වෙතින් Chromium වෙත වේගයෙන් ප්‍රවේශ වන්න.</translation>
 <translation id="8164086860209325020">Chromium සැකසීම් වෙත යන්න</translation>
@@ -280,6 +285,7 @@
 <translation id="8240981428553046115">Chromium හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="8254729934443216898">ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට උදවු වන නව විශේෂාංග ගවේෂණය කරන්න.</translation>
 <translation id="829047622686389424">ඔබ වෙනුවෙන් සාදන ලද අභිරුචි සංග්‍රහයක්.</translation>
+<translation id="8293572045658095405">ඔබ Chromium අප්‍රසිද්ධව සිටී</translation>
 <translation id="830951810931292870">අප්‍රසිද්ධ තුළ Chromium හි ආදානය කළ URLs විවෘත කරයි.</translation>
 <translation id="8409374867500149834">ඔබට හානිකර වෙබ් අඩවිවලට එරෙහිව Chromium හි ශක්තිමත්ම ආරක්ෂාව ඇත</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{මෙය Chromium {THRESHOLD} විනාඩියක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}one{මෙය Chromium විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}other{මෙය Chromium විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}}</translation>

@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
@@ -129,7 +128,7 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
@@ -157,13 +156,7 @@ namespace {
 // to reallocate an LSI for the UI compositor.
 BASE_FEATURE(kRenderWidgetHostHiddenCheck,
              "RenderWidgetHostHiddenCheck",
-// TODO(b/338354134): LaCrOs video is triggering the associated CHECK. Disable
-// for that configuration.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 }  // namespace
 
 // We need to watch for mouse events outside a Web Popup or its parent
@@ -742,10 +735,10 @@ bool RenderWidgetHostViewAura::ShouldSkipCursorUpdate() const {
   if (!window || window->GetRootWindow() != root_window) {
     return true;
   }
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !BUILDFLAG(IS_CHROMEOS)
   if (!screen->IsWindowUnderCursor(root_window))
     return true;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   return false;
 }
 
@@ -761,8 +754,6 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 
   SkColor color = *GetBackgroundColor();
-  bool opaque = SkColorGetA(color) == SK_AlphaOPAQUE;
-  window_->layer()->SetFillsBoundsOpaquely(opaque);
   window_->layer()->SetColor(color);
 }
 
@@ -1505,6 +1496,16 @@ gfx::Rect RenderWidgetHostViewAura::ConvertRectToScreen(
                    base::ClampSub(end.y(), origin.y()));
 }
 
+gfx::Point RenderWidgetHostViewAura::ConvertPointFromScreen(
+    const gfx::Point& screen_point_in_dips) const {
+  gfx::Point result = screen_point_in_dips;
+  if (window_->GetRootWindow() &&
+      aura::client::GetScreenPositionClient(window_->GetRootWindow())) {
+    wm::ConvertPointFromScreen(window_, &result);
+  }
+  return result;
+}
+
 gfx::Rect RenderWidgetHostViewAura::ConvertRectFromScreen(
     const gfx::Rect& rect) const {
   gfx::Rect result = rect;
@@ -1550,17 +1551,103 @@ gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
 #if BUILDFLAG(IS_WIN)
 std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
     const gfx::Range& range) const {
-  // TODO(crbug.com/355578906): Implement character bounds collection to satisfy
-  // ITextStoreACP::GetTextExt.
-  return std::nullopt;
+  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
+    return std::nullopt;
+  }
+  if (range.is_reversed()) {
+    return std::nullopt;
+  }
+  const blink::mojom::ProximateCharacterRangeBounds* proximate =
+      text_input_manager_->GetProximateCharacterBoundsInfo(*this);
+  if (!proximate || !proximate->range.Contains(range)) {
+    return std::nullopt;
+  }
+  std::optional<gfx::Rect> result;
+  for (size_t i = range.start(); i < range.end(); ++i) {
+    const gfx::Rect& rect_for_index =
+        proximate->widget_bounds_in_dips[i - proximate->range.start()];
+    if (result.has_value()) {
+      result->UnionEvenIfEmpty(rect_for_index);
+    } else {
+      result.emplace(rect_for_index);
+    }
+  }
+  if (result.has_value()) {
+    result = ConvertRectToScreen(result.value());
+  }
+  return result;
 }
 
 std::optional<size_t>
 RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     ui::IndexFromPointFlags flags) const {
-  // TODO(crbug.com/355578906): Implement point to character offset collection
-  // to satisfy ITextStoreACP::GetACPFromPoint.
+  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
+    return std::nullopt;
+  }
+  const blink::mojom::ProximateCharacterRangeBounds* proximate =
+      text_input_manager_->GetProximateCharacterBoundsInfo(*this);
+  if (!proximate) {
+    return std::nullopt;
+  }
+
+  const bool nearest_to_contained_point =
+      (flags & ui::IndexFromPointFlags::kNearestToContainedPoint) ==
+      ui::IndexFromPointFlags::kNearestToContainedPoint;
+  const bool nearest_to_uncontained_point =
+      (flags & ui::IndexFromPointFlags::kNearestToUncontainedPoint) ==
+      ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+
+  bool any_contain_point = false;
+  size_t nearest_index = 0U;
+  int64_t nearest_distance_sq = std::numeric_limits<int64_t>::max();
+
+  const gfx::Point widget_point_in_dips =
+      ConvertPointFromScreen(screen_point_in_dips);
+  for (size_t i = 0; i < proximate->widget_bounds_in_dips.size(); ++i) {
+    const gfx::Rect& bounds = proximate->widget_bounds_in_dips[i];
+    if (!any_contain_point) {
+      any_contain_point = bounds.Contains(widget_point_in_dips);
+    }
+    // When kNearestToContainedPoint is included, this can't early return
+    // because we need to check to see if there's a character that's closer to
+    // the point. kNearestToUncontainedPoint only applies when a character
+    // doesn't contain `widget_point_in_dips`, so this can early return when
+    // kNearestToContainedPoint isn't included.
+    if (any_contain_point && !nearest_to_contained_point) {
+      return proximate->range.start() + i;
+    }
+
+    // When either flag is provided, we need to perform distance checks in case
+    // either of them apply. Ideally this wouldn't need to iterate over all
+    // characters to determine whether one of them contains
+    // `widget_point_in_dips`, but the current implementation lacks any form of
+    // acceleration structures or such as spatial partitioning which could make
+    // this faster. There's no guarantee that character indices will be laid out
+    // spatially contiguously, so it's also not possible to reliably perform a
+    // any sort of binary search based on the character bounds. For example,
+    // nested `float: right;` text.
+    if (flags != ui::IndexFromPointFlags::kNone) {
+      // For kNearestToContainedPoint, it's unclear from the API documentation
+      // whether this expects the "nearest" to only consider characters on the
+      // same line that contains the point. Using `left_center` should be a good
+      // approximation. If text is laid out contiguously with the same
+      // font-size / line-height, this should always find a character on the
+      // same line that was hit, however since line height may vary between
+      // lines it's possible that a character offset for an adjacent line of
+      // text may be picked.
+      const int64_t distance_sq =
+          (bounds.left_center() - widget_point_in_dips).LengthSquared();
+      if (distance_sq < nearest_distance_sq) {
+        nearest_index = proximate->range.start() + i;
+        nearest_distance_sq = distance_sq;
+      }
+    }
+  }
+  if ((!any_contain_point && nearest_to_uncontained_point) ||
+      (any_contain_point && nearest_to_contained_point)) {
+    return nearest_index;
+  }
   return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1737,7 +1824,7 @@ void RenderWidgetHostViewAura::EnsureCaretNotInRect(
   }
 
   aura::Window* top_level_window = window_->GetToplevelWindow();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   wm::EnsureWindowNotInRect(top_level_window, keyboard_occluded_bounds_);
 #endif
 
@@ -1949,7 +2036,7 @@ void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 ui::TextInputClient::EditingContext
 RenderWidgetHostViewAura::GetTextEditingContext() {
   ui::TextInputClient::EditingContext editing_context;
@@ -2022,7 +2109,7 @@ gfx::Size RenderWidgetHostViewAura::GetMinimumSize() const {
   return gfx::Size();
 }
 
-gfx::Size RenderWidgetHostViewAura::GetMaximumSize() const {
+std::optional<gfx::Size> RenderWidgetHostViewAura::GetMaximumSize() const {
   return gfx::Size();
 }
 
@@ -2078,7 +2165,6 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
   if (!window_->GetRootWindow())
     return;
 
-  // TODO(crbug.com/40268472): Add unittest for lacros.
   if (needs_to_update_display_metrics_ ||
       old_device_scale_factor != new_device_scale_factor) {
     ProcessDisplayMetricsChanged();
@@ -2231,6 +2317,13 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
         "StylusHandwritingControllerWin instance is nullptr");
     return;
   }
+
+  if (!last_stylus_handwriting_properties_.has_value()) {
+    mojo::ReportBadMessage(
+        "OnStartStylusWriting(): unexpected state. "
+        "Last stylus handwriting properties are empty");
+    return;
+  }
   // Call Windows Text Services Framework Shell Handwriting API.
   // Will call ITfHandwriting::RequestHandwritingForPointer to
   // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
@@ -2248,7 +2341,6 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   // on content eligible for handwriting with the RECT provided by
   // GetPointerTargetInfo, then focus will fallback to the eligible element
   // that was initially tapped.
-  // TODO(crbug.com/355578906): Propagate valid pointer and stroke ids.
   // TODO(crbug.com/355578906): Pass and save the identifier of the currently
   // focused RWHA in case the views focus is changed while we waiting for the
   // callback response from the renderer process. This will be used to discard
@@ -2256,7 +2348,8 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   handwriting_controller->OnStartStylusWriting(
       base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
                           weak_ptr_factory_.GetWeakPtr()),
-      /*pointer_id=*/0, /*stroke_id=*/0, *this);
+      last_stylus_handwriting_properties_.value(), *this);
+  last_stylus_handwriting_properties_.reset();
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
@@ -2294,22 +2387,23 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
     return;
   }
 
-  if (!focus_result) {
-    handwriting_controller->OnFocusFailed(*this);
-    return;
-  }
+  UpdateProximateCharacterBounds(
+      focus_result ? std::move(focus_result->proximate_bounds) : nullptr);
 
-  UpdateProximateCharacterBounds(std::move(focus_result->proximate_bounds));
-  handwriting_controller->OnFocusHandled(*this);
+  if (focus_result) {
+    handwriting_controller->OnFocusHandled(*this);
+  } else {
+    handwriting_controller->OnFocusFailed(*this);
+  }
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
-    const gfx::Rect& rect_in_screen,
-    const gfx::Size& distance_tolerance) {
-  // TODO(crbug.com/355578906): Consider `distance_tolerance`.
+    const gfx::Rect& focus_screen_rect_in_dips,
+    const gfx::Size& tolerance_screen_distance_in_dips) {
+  // TODO(crbug.com/355578906): Consider `tolerance_screen_distance_in_dips`.
   if (host()) {
     host()->UpdateElementFocusForStylusWriting(
-        ConvertRectFromScreen(rect_in_screen));
+        ConvertRectFromScreen(focus_screen_rect_in_dips));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -2736,7 +2830,7 @@ bool RenderWidgetHostViewAura::NeedsInputGrab() {
 }
 
 bool RenderWidgetHostViewAura::NeedsMouseCapture() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   return NeedsInputGrab();
 #else
   return false;
@@ -2889,9 +2983,9 @@ void RenderWidgetHostViewAura::DetachFromInputMethod(bool is_removed) {
   ui::InputMethod* input_method = GetInputMethod();
   if (input_method) {
     input_method->DetachTextInputClient(this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     wm::RestoreWindowBoundsOnClientFocusLost(window_->GetToplevelWindow());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
 #if BUILDFLAG(IS_WIN)

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,12 +16,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,34 +34,11 @@
 using base::Bucket;
 using testing::ElementsAre;
 
-namespace {
-
-class WebContentsNonEmptyPaintWaiter : public content::WebContentsObserver {
- public:
-  explicit WebContentsNonEmptyPaintWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  void Wait() {
-    if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  // WebContentsObserver:
-  void DidFirstVisuallyNonEmptyPaint() override { run_loop_.Quit(); }
-
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
 namespace webui {
 
 class LogWebUIUrlTest : public InProcessBrowserTest {
  public:
-  LogWebUIUrlTest() {}
+  LogWebUIUrlTest() = default;
 
   LogWebUIUrlTest(const LogWebUIUrlTest&) = delete;
   LogWebUIUrlTest& operator=(const LogWebUIUrlTest&) = delete;
@@ -138,15 +115,37 @@ IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, ShownWebUI) {
               ElementsAre(Bucket(origin_hash, 1)));
   // The content is not visible before attaching it to the browser.
   EXPECT_THAT(
+      histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 1);
+}
+
+// Tests that WebUI.ShownURL is logged after showing a preloaded WebUI.
+IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, ShownWebUIForPreloadedPage) {
+  // Only top-chrome WebUIs are preloaded. Use Tab Search as an example.
+  const GURL url(chrome::kChromeUITabSearchURL);
+  uint32_t origin_hash = base::Hash(url.DeprecatedGetOriginAsURL().spec());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
+              ::testing::IsEmpty());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUIShownUrl),
+              ::testing::IsEmpty());
+
+  // Preload the WebUI. The WebUI is created but not shown.
+  WebUIContentsPreloadManagerTestAPI preload_test_api;
+  preload_test_api.PreloadUrl(browser()->profile(), url);
+  EXPECT_TRUE(
+      content::WaitForLoadStop(preload_test_api.GetPreloadedWebContents()));
+  EXPECT_THAT(histogram_tester().GetBucketCount(webui::kWebUICreatedForUrl,
+                                                origin_hash),
+              1);
+  EXPECT_THAT(
       histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 0);
 
-  content::WebContents* web_contents_ptr = web_contents.get();
-  browser()->tab_strip_model()->InsertWebContentsAt(0, std::move(web_contents),
-                                                    AddTabTypes::ADD_ACTIVE);
-
-  WebContentsNonEmptyPaintWaiter(web_contents_ptr).Wait();
-  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUIShownUrl),
-              ElementsAre(Bucket(origin_hash, 1)));
+  // Show the WebUI.
+  std::unique_ptr<content::WebContents> web_contents =
+      std::move(preload_test_api.preload_manager()
+                    ->Request(url, browser()->profile())
+                    .web_contents);
+  EXPECT_THAT(
+      histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 1);
 }
 
 }  // namespace webui

@@ -7,11 +7,16 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 source_set("android") {
-  sources = [ "task_manager_service_bridge.cc" ]
+  sources = [
+    "task_manager_observer_android.cc",
+    "task_manager_observer_android.h",
+    "task_manager_service_bridge.cc",
+  ]
 
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/task_manager",
   ]
 }
 

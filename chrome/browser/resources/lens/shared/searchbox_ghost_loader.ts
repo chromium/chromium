@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_spinner_style.css.js';
 import '/strings.m.js';
 import './searchbox_shared_style.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,10 +15,15 @@ import {getTemplate} from './searchbox_ghost_loader.html.js';
 import {BrowserProxyImpl} from './searchbox_ghost_loader_browser_proxy.js';
 import type {BrowserProxy} from './searchbox_ghost_loader_browser_proxy.js';
 
+const SearchboxGhostLoaderElementBase = I18nMixin(PolymerElement);
+
 // Displays a loading preview while waiting on autocomplete to return matches.
-export class SearchboxGhostLoaderElement extends PolymerElement {
+export class SearchboxGhostLoaderElement extends
+    SearchboxGhostLoaderElementBase {
   static get is() {
+    // LINT.IfChange(GhostLoaderTagName)
     return 'cr-searchbox-ghost-loader';
+    // LINT.ThenChange(/ui/webui/resources/cr_components/searchbox/searchbox.ts:GhostLoaderTagName)
   }
 
   static get template() {
@@ -43,6 +49,7 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
   // Whether the autocomplete stop timer has triggered. If it has, we should
   // hide the ghost loader. We also show the error text in this case.
   private showErrorState: boolean;
+  private showContextualSearchboxLoadingState: boolean;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
 
@@ -51,7 +58,7 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
-      callbackRouter.notifyAutocompleteStopTimerTriggered.addListener(() => {
+      callbackRouter.showErrorState.addListener(() => {
         this.showErrorState = true;
       }),
     ];
@@ -63,6 +70,20 @@ export class SearchboxGhostLoaderElement extends PolymerElement {
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
   }
+
+  // LINT.IfChange(GhostLoaderText)
+  getText(): string {
+    if (!this.showContextualSearchboxLoadingState) {
+      return this.i18n('searchboxGhostLoaderNoSuggestText');
+    }
+
+    if (this.showErrorState) {
+      return this.i18n('searchboxGhostLoaderErrorText');
+    }
+
+    return this.i18n('searchboxGhostLoaderHintTextPrimary');
+  }
+  // LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.html:GhostLoaderText)
 
   showErrorStateForTesting() {
     this.showErrorState = true;

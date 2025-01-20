@@ -38,14 +38,19 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
 
  private:
   class TabAppSelectionItemView;
+  class UserFeedbackView;
+
   FRIEND_TEST_ALL_PREFIXES(CoralPixelDiffTest, CoralSelectorView);
   FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, CloseSelectorItems);
+  FRIEND_TEST_ALL_PREFIXES(TabAppSelectionViewTest, RecordsHistogram);
 
   // We don't use an enum class to avoid too many explicit casts at callsites.
   enum ViewID : int {
     kTabSubtitleID = 1,
     kAppSubtitleID,
     kCloseButtonID,
+    kThumbsUpID,
+    kThumbsDownID,
   };
 
   void AdvanceSelection(bool reverse);

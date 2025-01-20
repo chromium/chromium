@@ -227,7 +227,7 @@ void WebSocketMockClientSocketFactoryMaker::SetExpectations(
                                 sequence++);
   }
   auto socket_data = std::make_unique<SequencedSocketData>(
-      detail_->reads, base::make_span(&detail_->write, 1u));
+      detail_->reads, base::span(&detail_->write, 1u));
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
   AddRawExpectations(std::move(socket_data));
 }

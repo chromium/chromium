@@ -130,8 +130,7 @@ class BrowsingTopicsServiceImpl
 
   void ScheduleBrowsingTopicsCalculation(bool is_manually_triggered,
                                          int previous_timeout_count,
-                                         base::TimeDelta delay,
-                                         bool persist_calculation_time);
+                                         base::TimeDelta delay);
 
   // Initialize `topics_calculator_` to start calculating this epoch's top
   // topics and context observed topics. `is_manually_triggered`  is true if

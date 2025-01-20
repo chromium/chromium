@@ -35,7 +35,7 @@ TEST(EtwTraceProviderTest, ToleratesPreCreateInvocations) {
   // it be possible to use static provider instances without regard to
   // whether they've been constructed or destructed.
   // The interface of the class is designed to tolerate this usage.
-  char buf[sizeof(EtwTraceProvider)] = {0};
+  char buf[sizeof(EtwTraceProvider)] = {};
   EtwTraceProvider& provider = reinterpret_cast<EtwTraceProvider&>(buf);
 
   EXPECT_EQ(0u, provider.registration_handle());

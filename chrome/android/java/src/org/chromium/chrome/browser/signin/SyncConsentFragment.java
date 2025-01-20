@@ -141,7 +141,7 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                histogram, mSigninAccessPoint, SigninAccessPoint.MAX);
+                histogram, mSigninAccessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     private void recordSigninStartedHistogramAccountInfo() {
@@ -167,7 +167,7 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                histogram, mSigninAccessPoint, SigninAccessPoint.MAX);
+                histogram, mSigninAccessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     @Override

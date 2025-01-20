@@ -8,9 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,8 +64,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
     TestAccessor();
     ~TestAccessor();
 
-    void OnCreditCardFetched(CreditCardFetchResult result,
-                             const CreditCard* card);
+    void OnCreditCardFetched(const CreditCard& card);
 
     base::WeakPtr<TestAccessor> GetWeakPtr() {
       return weak_ptr_factory_.GetWeakPtr();
@@ -74,11 +74,8 @@ class CreditCardAccessManagerTestBase : public testing::Test {
     std::u16string cvc() { return cvc_; }
     std::u16string expiry_month() { return expiry_month_; }
     std::u16string expiry_year() { return expiry_year_; }
-    CreditCardFetchResult result() { return result_; }
 
    private:
-    // The result of the credit card fetching.
-    CreditCardFetchResult result_ = CreditCardFetchResult::kNone;
     // The card number returned from OnCreditCardFetched().
     std::u16string number_;
     // The returned CVC, if any.
@@ -109,11 +106,18 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 
   void ClearCards();
 
-  void CreateLocalCard(std::string guid, std::string number = std::string());
+  void CreateLocalCard(std::string guid,
+                       std::string number = std::string(),
+                       const char16_t* cvc = kTestCvc16);
 
-  CreditCard* CreateServerCard(std::string guid,
-                               std::string number = std::string(),
-                               std::string server_id = std::string());
+  const CreditCard* CreateServerCard(
+      std::string guid,
+      std::string number = std::string(),
+      std::string server_id = std::string(),
+      const char16_t* cvc = kTestCvc16,
+      CreditCard::RecordType record_type =
+          CreditCard::RecordType::kMaskedServerCard,
+      bool is_card_info_retrieval_enrolled = false);
 
   CreditCardCvcAuthenticator& GetCvcAuthenticator();
 
@@ -169,7 +173,9 @@ class CreditCardAccessManagerTestBase : public testing::Test {
       bool fido_authenticator_is_user_opted_in,
       bool is_user_verifiable,
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
-      int selected_index);
+      int selected_index,
+      CreditCard::RecordType record_type,
+      bool is_card_info_retrieval_enrolled = false);
 
   void VerifyOnSelectChallengeOptionInvoked();
 
@@ -178,6 +184,9 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   TestCreditCardFidoAuthenticator& fido_authenticator();
 #endif
+  payments::TestPaymentsAutofillClient& payments_autofill_client() {
+    return *autofill_client_.GetPaymentsAutofillClient();
+  }
   payments::TestPaymentsNetworkInterface& payments_network_interface();
   TestPersonalDataManager& personal_data();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

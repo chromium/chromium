@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -218,6 +219,11 @@ bool BrowserAccessibility::IsIgnoredForTextNavigation() const {
 
 bool BrowserAccessibility::IsLineBreakObject() const {
   return node()->IsLineBreak();
+}
+
+bool BrowserAccessibility::HasDefaultAction() const {
+  return node()->data().GetDefaultActionVerb() !=
+         ax::mojom::DefaultActionVerb::kNone;
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
@@ -830,7 +836,13 @@ bool BrowserAccessibility::IsOffscreen() const {
 }
 
 bool BrowserAccessibility::IsWebContent() const {
-  return true;
+  AXPlatformTreeManagerDelegate* delegate =
+      manager_->GetDelegateFromRootManager();
+  if (!delegate) {
+    return false;
+  }
+
+  return delegate->AccessibilityIsWebContentSource();
 }
 
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
@@ -1223,6 +1235,11 @@ bool BrowserAccessibility::AccessibilityPerformAction(
         selection_manager = manager_;
       }
       DCHECK(selection_manager);
+
+      if (selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
+        selection_manager->SetSelection(selection);
+        return true;
+      }
 
       // "data.anchor_offset" and "data.focus_offset" might need to be adjusted
       // if the anchor or the focus nodes include ignored children.

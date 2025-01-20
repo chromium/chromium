@@ -158,7 +158,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
   // Read existing load commands.
   std::vector<uint8_t> commands(header.sizeofcmds);
-  if (!executable_file.ReadAtCurrentPosAndCheck(base::make_span(commands))) {
+  if (!executable_file.ReadAtCurrentPosAndCheck(base::span(commands))) {
     LOG(ERROR) << "Failed to read load commands from " << executable_path;
     return false;
   }
@@ -191,8 +191,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
       // Write the updated header and commands back to the file.
       if (!executable_file.WriteAndCheck(0, base::byte_span_from_ref(header)) ||
-          !executable_file.WriteAndCheck(sizeof header,
-                                         base::make_span(commands))) {
+          !executable_file.WriteAndCheck(sizeof header, base::span(commands))) {
         LOG(ERROR) << "Failed to write updated load commands to "
                    << executable_path;
         return false;
@@ -663,9 +662,7 @@ bool WebAppShortcutCreator::BuildShortcut(
 
 #if defined(ADDRESS_SANITIZER)
   const base::FilePath asan_library_path =
-      framework_bundle_path.Append("Versions")
-          .Append("Current")
-          .Append("libclang_rt.asan_osx_dynamic.dylib");
+      framework_bundle_path.Append("libclang_rt.asan_osx_dynamic.dylib");
   if (!base::CopyFile(asan_library_path, destination_executable_path.Append(
                                              asan_library_path.BaseName()))) {
     LOG(ERROR) << "Failed to copy asan library: " << asan_library_path;

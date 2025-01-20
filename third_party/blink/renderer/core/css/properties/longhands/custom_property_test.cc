@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -103,8 +102,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
@@ -114,8 +113,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
@@ -125,8 +124,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(
-      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
+  EXPECT_EQ(100, primitive_value->ComputeLength<double>(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueEmptyInitial) {
@@ -154,7 +153,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNumberCalc) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsNumericLiteralValue());
   const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-  EXPECT_DOUBLE_EQ(2.4, numeric_literal->GetDoubleValue());
+  EXPECT_DOUBLE_EQ(2.4, numeric_literal->DoubleValue());
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
@@ -164,7 +163,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsNumericLiteralValue());
   const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-  EXPECT_DOUBLE_EQ(2.0, numeric_literal->GetDoubleValue());
+  EXPECT_DOUBLE_EQ(2.0, numeric_literal->DoubleValue());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
@@ -197,7 +196,7 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
   EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
-                     CSSToLengthConversionData()));
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());
@@ -319,6 +318,16 @@ TEST_F(CustomPropertyTest, ValueMode) {
     EXPECT_TRUE(
         style->GetVariableData(AtomicString("--x"))->IsAnimationTainted());
   }
+}
+
+TEST_F(CustomPropertyTest, SelectionPropertyUseCounted) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
+  GetDocument().body()->setInnerHTML(
+      "<style>div::selection { --x: black; background-color: var(--x); "
+      "}</style> <div id='target'></div>");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSelectionCustomProperty));
 }
 
 }  // namespace blink

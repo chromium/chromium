@@ -22,7 +22,10 @@ source_set("utils") {
   ]
   deps = [
     ":constants",
+    "//google_apis",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ui/base",
@@ -30,6 +33,20 @@ source_set("utils") {
   frameworks = [
     "UserNotifications.framework",
     "Foundation.framework",
+  ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "test_utils.h",
+    "test_utils.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:test_support",
   ]
 }
 

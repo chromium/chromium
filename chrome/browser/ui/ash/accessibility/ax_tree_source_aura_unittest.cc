@@ -47,8 +47,9 @@ size_t GetSize(AXAuraObjWrapper* tree) {
   std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>> out_children;
   tree->GetChildren(&out_children);
 
-  for (size_t i = 0; i < out_children.size(); ++i)
+  for (size_t i = 0; i < out_children.size(); ++i) {
     count += GetSize(out_children[i]);
+  }
 
   return count;
 }
@@ -58,12 +59,12 @@ size_t GetSize(AXAuraObjWrapper* tree) {
 // AXTreeSourceViewsTest.
 class AXTreeSourceAuraTest : public ChromeViewsTestBase {
  public:
-  AXTreeSourceAuraTest() {}
+  AXTreeSourceAuraTest() = default;
 
   AXTreeSourceAuraTest(const AXTreeSourceAuraTest&) = delete;
   AXTreeSourceAuraTest& operator=(const AXTreeSourceAuraTest&) = delete;
 
-  ~AXTreeSourceAuraTest() override {}
+  ~AXTreeSourceAuraTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -137,8 +138,9 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
   // Try walking up the tree to the root.
   AXAuraObjWrapper* test_root = nullptr;
   for (AXAuraObjWrapper* root_finder = ax_tree.GetParent(content); root_finder;
-       root_finder = ax_tree.GetParent(root_finder))
+       root_finder = ax_tree.GetParent(root_finder)) {
     test_root = root_finder;
+  }
   ASSERT_EQ(ax_tree.GetRoot(), test_root);
 }
 
@@ -205,8 +207,9 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   int text_field_update_index = -1;
   for (size_t i = 0; i < node_count; ++i) {
-    if (textfield_wrapper->GetUniqueId() == out_update2.nodes[i].id)
+    if (textfield_wrapper->GetUniqueId() == out_update2.nodes[i].id) {
       text_field_update_index = i;
+    }
   }
 
   ASSERT_NE(-1, text_field_update_index);

@@ -54,9 +54,10 @@ class ReloadButton : public ToolbarButton,
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   bool ShouldShowMenu() override;
   void ShowDropDownMenu(ui::mojom::MenuSourceType source_type) override;
+
+  void UpdateCachedTooltipText();
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -68,6 +69,8 @@ class ReloadButton : public ToolbarButton,
 
  private:
   friend class ReloadButtonTest;
+  FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipText);
+  FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipTextAccessibility);
 
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 

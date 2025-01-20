@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
@@ -396,7 +401,6 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
   LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
-  ~LibcurlNetworkFetcher() override = default;
 
   explicit LibcurlNetworkFetcher(CurlUniquePtr curl);
 

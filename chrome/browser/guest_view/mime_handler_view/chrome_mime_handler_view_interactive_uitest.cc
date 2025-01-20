@@ -146,6 +146,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
   ASSERT_TRUE(guest_view);
 
   auto* guest_rwh = guest_view->GetGuestMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(guest_rwh);
 
   // Wait for fullscreen mode.
   fullscreen_waiter.Wait();

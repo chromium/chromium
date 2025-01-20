@@ -182,7 +182,7 @@ class TestBrowserCloseManager : public BrowserCloseManager {
   }
 
  protected:
-  ~TestBrowserCloseManager() override {}
+  ~TestBrowserCloseManager() override = default;
 
   void ConfirmCloseWithPendingDownloads(
       int download_count,
@@ -214,7 +214,7 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       : ChromeDownloadManagerDelegate(profile) {
     GetDownloadIdReceiverCallback().Run(download::DownloadItem::kInvalidId + 1);
   }
-  ~TestDownloadManagerDelegate() override {}
+  ~TestDownloadManagerDelegate() override = default;
 
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
@@ -1188,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 class BrowserCloseManagerWithBackgroundModeBrowserTest
     : public BrowserCloseManagerBrowserTest {
  public:
-  BrowserCloseManagerWithBackgroundModeBrowserTest() {}
+  BrowserCloseManagerWithBackgroundModeBrowserTest() = default;
 
   BrowserCloseManagerWithBackgroundModeBrowserTest(
       const BrowserCloseManagerWithBackgroundModeBrowserTest&) = delete;

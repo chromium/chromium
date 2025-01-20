@@ -227,7 +227,8 @@ std::optional<size_t> FindIndexInEnumStringTable(
     const StringView& str_value,
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
-    if (Equal(str_value, enum_value_table[i])) {
+    // Avoid operator== because of the strlen inside a StringView construction.
+    if (WTF::EqualToCString(str_value, enum_value_table[i])) {
       return i;
     }
   }
@@ -391,24 +392,20 @@ template <typename IDLType,
           void (Element::*MemFunc)(const QualifiedName&, ArgType)>
 void PerformAttributeSetCEReactionsReflect(
     const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attribute,
-    const char* interface_name,
-    const char* attribute_name) {
+    const QualifiedName& content_attribute) {
   v8::Isolate* isolate = info.GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kAttributeSet,
-                                 interface_name, attribute_name);
   if (info.Length() < 1) [[unlikely]] {
-    exception_state.ThrowTypeError(
-        ExceptionMessages::NotEnoughArguments(1, info.Length()));
+    V8ThrowException::ThrowTypeError(
+        isolate, ExceptionMessages::NotEnoughArguments(1, info.Length()));
     return;
   }
 
   CEReactionsScope ce_reactions_scope;
 
   Element* blink_receiver = V8Element::ToWrappableUnsafe(isolate, info.This());
-  auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(isolate, info[0],
-                                                             exception_state);
-  if (exception_state.HadException()) [[unlikely]] {
+  auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(
+      isolate, info[0], PassThroughException(isolate));
+  if (isolate->HasPendingException()) [[unlikely]] {
     return;
   }
 
@@ -417,43 +414,35 @@ void PerformAttributeSetCEReactionsReflect(
 
 void PerformAttributeSetCEReactionsReflectTypeBoolean(
     const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attribute,
-    const char* interface_name,
-    const char* attribute_name) {
+    const QualifiedName& content_attribute) {
   PerformAttributeSetCEReactionsReflect<IDLBoolean, bool,
                                         &Element::SetBooleanAttribute>(
-      info, content_attribute, interface_name, attribute_name);
+      info, content_attribute);
 }
 
 void PerformAttributeSetCEReactionsReflectTypeString(
     const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attribute,
-    const char* interface_name,
-    const char* attribute_name) {
+    const QualifiedName& content_attribute) {
   PerformAttributeSetCEReactionsReflect<IDLString, const AtomicString&,
                                         &Element::setAttribute>(
-      info, content_attribute, interface_name, attribute_name);
+      info, content_attribute);
 }
 
 void PerformAttributeSetCEReactionsReflectTypeStringLegacyNullToEmptyString(
     const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attribute,
-    const char* interface_name,
-    const char* attribute_name) {
+    const QualifiedName& content_attribute) {
   PerformAttributeSetCEReactionsReflect<IDLStringLegacyNullToEmptyString,
                                         const AtomicString&,
                                         &Element::setAttribute>(
-      info, content_attribute, interface_name, attribute_name);
+      info, content_attribute);
 }
 
 void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
     const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attribute,
-    const char* interface_name,
-    const char* attribute_name) {
+    const QualifiedName& content_attribute) {
   PerformAttributeSetCEReactionsReflect<
       IDLNullable<IDLString>, const AtomicString&, &Element::setAttribute>(
-      info, content_attribute, interface_name, attribute_name);
+      info, content_attribute);
 }
 
 CORE_EXPORT void CountWebDXFeature(v8::Isolate* isolate, WebDXFeature feature) {

@@ -16,14 +16,15 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -32,7 +33,6 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -287,6 +287,9 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "ServerCardUnmask";
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
+    case AutofillProgressDialogType::
+        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+      return "CardInfoRetrievalEnrolledUnmask";
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return "3dsFetchVirtualCard";
     case AutofillProgressDialogType::kUnspecified:
@@ -536,7 +539,8 @@ void AutofillMetrics::LogDeveloperEngagementMetric(
 
 // static
 void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field) {
   AutofilledFieldUserEditingStatusMetric editing_metric =
@@ -556,7 +560,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
                                        editing_metric));
 
   // Record the metric for FormsAI specific fields.
-  if (field.filling_product() == FillingProduct::kPredictionImprovements) {
+  if (field.filling_product() == FillingProduct::kAutofillAi) {
     base::UmaHistogramEnumeration(
         "Autofill.FormsAI.EditedAutofilledFieldAtSubmission", editing_metric);
   }
@@ -576,8 +580,8 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
   // If the field was edited, record the event to UKM.
   if (editing_metric ==
       AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED) {
-    form_interactions_ukm_logger->LogEditedAutofilledFieldAtSubmission(form,
-                                                                       field);
+    form_interactions_ukm_logger.LogEditedAutofilledFieldAtSubmission(
+        source_id, form, field);
   }
 }
 
@@ -675,7 +679,8 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   // Iterate over all of the cards and gather metrics.
   const base::Time now = AutofillClock::Now();
   for (const CreditCard* card : credit_cards) {
-    const base::TimeDelta time_since_last_use = now - card->use_date();
+    const base::TimeDelta time_since_last_use =
+        now - card->usage_history().use_date();
     const int days_since_last_use = time_since_last_use.InDays();
     const int disused_delta =
         (time_since_last_use > disused_data_threshold) ? 1 : 0;
@@ -978,12 +983,14 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
                               bool only_after_security_policy,
                               bool only_visible_fields) {
     FieldTypeSet autofilled_types;
-    for (const auto& field : *p.form) {
+    for (const auto& field : p.form) {
       FieldGlobalId id = field->global_id();
-      if (only_newly_filled_fields && !p.newly_filled_fields->contains(id))
+      if (only_newly_filled_fields && !p.newly_filled_fields.contains(id)) {
         continue;
-      if (only_after_security_policy && !p.safe_fields->contains(id))
+      }
+      if (only_after_security_policy && !p.safe_fields.contains(id)) {
         continue;
+      }
       if (only_visible_fields && !field->is_visible()) {
         continue;
       }
@@ -999,6 +1006,9 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
                                   s.BitmaskExclusiveMax());
   };
 
+  ukm::builders::Autofill_CreditCardFill builder(p.source_id);
+  builder.SetFormSignature(HashFormSignature(p.form.form_signature()));
+
   // Note that `GetSeamlessness(false, true, *)` are not called because the
   // Fillable.AtFillingAfterSecurityPolicy variants are not recorded, since the
   // available information are not enough to infer these metrics.
@@ -1007,38 +1017,37 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
   // the fields that were actually filled).
   if (auto s = GetSeamlessness(false, false, false)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy", s);
-    p.builder->SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
-    p.builder->SetFillable_BeforeSecurity_Qualitative(
-        s.QualitativeMetricAsInt());
-    p.event_logger->Log(s.QualitativeFillableFormEvent(), *p.form);
+    builder.SetFillable_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    builder.SetFillable_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.event_logger.Log(s.QualitativeFillableFormEvent(), p.form);
   }
   if (auto s = GetSeamlessness(true, false, false)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy", s);
-    p.builder->SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
-    p.builder->SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
+    builder.SetFilled_BeforeSecurity_Bitmask(s.BitmaskMetric());
+    builder.SetFilled_BeforeSecurity_Qualitative(s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, true, false)) {
     RecordUma("Fills.AtFillTimeAfterSecurityPolicy", s);
-    p.builder->SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
-    p.builder->SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
-    p.event_logger->Log(s.QualitativeFillFormEvent(), *p.form);
+    builder.SetFilled_AfterSecurity_Bitmask(s.BitmaskMetric());
+    builder.SetFilled_AfterSecurity_Qualitative(s.QualitativeMetricAsInt());
+    p.event_logger.Log(s.QualitativeFillFormEvent(), p.form);
   }
   if (auto s = GetSeamlessness(false, false, true)) {
     RecordUma("Fillable.AtFillTimeBeforeSecurityPolicy.Visible", s);
-    p.builder->SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder->SetFillable_BeforeSecurity_Visible_Qualitative(
+    builder.SetFillable_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    builder.SetFillable_BeforeSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, false, true)) {
     RecordUma("Fills.AtFillTimeBeforeSecurityPolicy.Visible", s);
-    p.builder->SetFilled_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder->SetFilled_BeforeSecurity_Visible_Qualitative(
+    builder.SetFilled_BeforeSecurity_Visible_Bitmask(s.BitmaskMetric());
+    builder.SetFilled_BeforeSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
   if (auto s = GetSeamlessness(true, true, true)) {
     RecordUma("Fills.AtFillTimeAfterSecurityPolicy.Visible", s);
-    p.builder->SetFilled_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
-    p.builder->SetFilled_AfterSecurity_Visible_Qualitative(
+    builder.SetFilled_AfterSecurity_Visible_Bitmask(s.BitmaskMetric());
+    builder.SetFilled_AfterSecurity_Visible_Qualitative(
         s.QualitativeMetricAsInt());
   }
 
@@ -1069,8 +1078,8 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
           return true;
       }
     };
-    const url::Origin& main_origin = p.form->main_frame_origin();
-    const url::Origin& triggered_origin = p.field->origin();
+    const url::Origin& main_origin = p.form.main_frame_origin();
+    const url::Origin& triggered_origin = p.field.origin();
     return field.origin() != triggered_origin &&
            (field.origin() != main_origin ||
             IsSensitiveFieldType(field.Type().GetStorableType())) &&
@@ -1079,10 +1088,10 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 
   bool some_field_needs_shared_autofill = false;
   bool some_field_has_shared_autofill = false;
-  for (const auto& field : *p.form) {
+  for (const auto& field : p.form) {
     if (RequiresSharedAutofill(*field) &&
-        p.newly_filled_fields->contains(field->global_id())) {
-      if (!p.safe_fields->contains(field->global_id())) {
+        p.newly_filled_fields.contains(field->global_id())) {
+      if (!p.safe_fields.contains(field->global_id())) {
         some_field_needs_shared_autofill = true;
       } else {
         some_field_has_shared_autofill = true;
@@ -1096,15 +1105,17 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     kSharedAutofillDidHelp = 2,
   };
   if (some_field_needs_shared_autofill) {
-    p.builder->SetSharedAutofill(kSharedAutofillWouldHelp);
-    p.event_logger->Log(
+    builder.SetSharedAutofill(kSharedAutofillWouldHelp);
+    p.event_logger.Log(
         autofill_metrics::FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL,
-        *p.form);
+        p.form);
   } else if (some_field_has_shared_autofill) {
-    p.builder->SetSharedAutofill(kSharedAutofillDidHelp);
+    builder.SetSharedAutofill(kSharedAutofillDidHelp);
   } else {
-    p.builder->SetSharedAutofill(kSharedAutofillIsIrrelevant);
+    builder.SetSharedAutofill(kSharedAutofillIsIrrelevant);
   }
+
+  builder.Record(p.ukm_recorder);
 }
 
 // static
@@ -1150,6 +1161,12 @@ void AutofillMetrics::LogAutocompleteDaysSinceLastUse(size_t days) {
 }
 
 // static
+void AutofillMetrics::LogUnacceptedAutocompleteSuggestionDaysSinceLastUse(
+    size_t days) {
+  UMA_HISTOGRAM_COUNTS_1000("Autocomplete.Unaccepted.DaysSinceLastUse", days);
+}
+
+// static
 void AutofillMetrics::OnAutocompleteSuggestionsShown() {
   AutofillMetrics::LogAutocompleteEvent(
       AutocompleteEvent::AUTOCOMPLETE_SUGGESTIONS_SHOWN);
@@ -1167,7 +1184,7 @@ void AutofillMetrics::OnAutocompleteSuggestionDeleted(
 // static
 void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  base::UmaHistogramEnumeration("Autocomplete.Events2", event,
+  base::UmaHistogramEnumeration("Autocomplete.Events3", event,
                                 NUM_AUTOCOMPLETE_EVENTS);
 }
 

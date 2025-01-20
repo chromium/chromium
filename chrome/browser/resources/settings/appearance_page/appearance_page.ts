@@ -66,8 +66,6 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeRow: HTMLElement,
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
-    showSavedTabGroups: SettingsToggleButtonElement,
-    autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
     tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
@@ -205,20 +203,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showSavedTabGroupsInBookmarksBar_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
-      showAutoPinNewTabGroups_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
       toolbarPinningEnabled_: {
         type: Boolean,
         value() {
@@ -311,8 +295,6 @@ export class SettingsAppearancePageElement extends
   private focusConfig_: Map<string, string>;
   private isForcedTheme_: boolean;
   private showHoverCardImagesOption_: boolean;
-  private showSavedTabGroupsInBookmarksBar_: boolean;
-  private showAutoPinNewTabGroups_: boolean;
   private showResetPinnedActionsButton_: boolean;
   private toolbarPinningEnabled_: boolean;
 

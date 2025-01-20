@@ -14,7 +14,7 @@
 #include "dbus/exported_object.h"
 
 // https://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-properties
-class COMPONENT_EXPORT(DBUS) DbusProperties {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusProperties {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
 

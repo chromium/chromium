@@ -162,7 +162,7 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
     if (!signature_holder.has_value()) {
       return std::nullopt;
     }
-    signature = base::make_span(*signature_holder);
+    signature = base::span(*signature_holder);
   }
 
   return base::StrCat(

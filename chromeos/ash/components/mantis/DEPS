@@ -3,4 +3,6 @@ include_rules = [
   # Individual components must explicitly declare their dependencies
   # on other components.
   "+chromeos/ash/components/mojo_service_manager",
+  "+chromeos/ash/components/specialized_features",
+  "+components/signin/public/identity_manager",
 ]

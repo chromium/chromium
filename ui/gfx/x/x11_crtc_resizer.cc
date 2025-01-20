@@ -192,9 +192,9 @@ void X11CrtcResizer::AddActiveCrtc(
 }
 
 void X11CrtcResizer::RemoveActiveCrtc(x11::RandR::Crtc crtc) {
-  auto iter = base::ranges::remove(active_crtcs_, crtc, &CrtcInfo::crtc);
-  DCHECK(iter != active_crtcs_.end());
-  active_crtcs_.erase(iter, active_crtcs_.end());
+  auto to_remove = std::ranges::remove(active_crtcs_, crtc, &CrtcInfo::crtc);
+  DCHECK(!to_remove.empty());
+  active_crtcs_.erase(to_remove.begin(), to_remove.end());
 }
 
 void X11CrtcResizer::RelayoutCrtcs(x11::RandR::Crtc crtc_to_resize,

@@ -5,12 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_H_
 
-#include <cstdint>
+#include <stdint.h>
+
+#include <concepts>
 #include <string_view>
 #include <type_traits>
 
+#include "base/bit_cast.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 
@@ -71,8 +75,8 @@ namespace blink {
 //   1. Use an existing byte span representation.
 //
 //      E.g.: Assuming |v| is a WTF::Vector
-//          IdentifiabilityMetricBuilder(...).Set(...,
-//              base::as_bytes(base::make_span(v.Data(), v.Size())));
+//          IdentifiabilityMetricBuilder(...).Set(
+//              ..., base::as_byte_span(v.Data(), v.Size()));
 //
 //      Note again that serializing to a stream of bytes may not be sufficient
 //      if the underlying types don't have a unique representation.
@@ -109,20 +113,18 @@ class IdentifiableToken {
 
   // Integers, big and small. Includes char.
   template <typename T,
-            typename U = std::remove_cvref_t<T>,
-            typename std::enable_if_t<std::is_integral<U>::value>* = nullptr>
+            typename U = std::remove_cvref_t<T>>
+    requires std::integral<U>
   constexpr IdentifiableToken(T in)  // NOLINT(google-explicit-constructor)
       : value_(base::IsValueInRangeForNumericType<TokenType, U>(in)
                    ? in
                    : internal::DigestOfObjectRepresentation<U>(in)) {}
 
   // Enums. Punt to the underlying type.
-  template <typename T,
-            // Set dummy type before U to avoid GCC compile errors
-            typename std::enable_if_t<std::is_enum<T>::value>* = nullptr,
-            typename U = typename std::underlying_type<T>::type>
+  template <typename T>
+    requires std::is_enum_v<std::remove_cvref_t<T>>
   constexpr IdentifiableToken(T in)  // NOLINT(google-explicit-constructor)
-      : IdentifiableToken(static_cast<U>(in)) {}
+      : IdentifiableToken(base::to_underlying(in)) {}
 
   // All floating point values get converted to double before encoding.
   //
@@ -133,13 +135,17 @@ class IdentifiableToken {
   // only 10 of those bytes are initialized. If the whole sizeof(long double)
   // buffer were to be ingested, then the uninitialized memory will cause the
   // resulting digest to be useless.
-  template <
-      typename T,
-      typename U = std::remove_cvref_t<T>,
-      typename std::enable_if_t<std::is_floating_point<U>::value>* = nullptr>
+  //
+  // Furthermore, `DigestOfObjectRepresentation()` requires
+  // `std::has_unique_object_representations_v<>`, which doesn't hold for
+  // floating-point values. Work around by reinterpreting as an integral type of
+  // the same size, without changing the underlying bit pattern.
+  static_assert(sizeof(double) == sizeof(int64_t));
+  template <typename T>
+    requires std::floating_point<std::remove_cvref_t<T>>
   constexpr IdentifiableToken(T in)  // NOLINT(google-explicit-constructor)
-      : value_(internal::DigestOfObjectRepresentation<double>(
-            static_cast<double>(in))) {}
+      : value_(internal::DigestOfObjectRepresentation(
+            base::bit_cast<int64_t>(static_cast<double>(in)))) {}
 
   // StringPiece. Decays to base::span<> but requires an explicit constructor
   // invocation.
@@ -148,31 +154,25 @@ class IdentifiableToken {
   // there's not privacy expectation in the resulting token value. If the string
   // used as an input is privacy sensitive, it should not be passed in as-is.
   explicit IdentifiableToken(std::string_view s)
-      : IdentifiableToken(base::as_bytes(base::make_span(s))) {
+      : IdentifiableToken(base::as_byte_span(s)) {
     // The cart is before the horse, but it's a static_assert<>.
     static_assert(
-        std::is_same<ByteSpan,
-                     decltype(base::as_bytes(base::make_span(s)))>::value,
+        std::is_same<ByteSpan, decltype(base::as_byte_span(s))>::value,
         "base::as_bytes() doesn't return ByteSpan");
   }
 
   // Span of known trivial types except for BytesSpan, which is the base case.
-  template <typename T,
-            size_t Extent,
-            typename U = std::remove_cvref_t<T>,
-            typename std::enable_if_t<
-                std::is_arithmetic<U>::value &&
-                !std::is_same<ByteSpan::element_type, T>::value>* = nullptr>
+  template <typename T, size_t Extent>
+    requires(!std::same_as<ByteSpan::element_type, T> &&
+             std::has_unique_object_representations_v<std::remove_cvref_t<T>>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   IdentifiableToken(base::span<T, Extent> span)
       : IdentifiableToken(base::as_bytes(span)) {}
 
   // A span of non-trivial things where each thing can be digested individually.
-  template <typename T,
-            size_t Extent,
-            typename std::enable_if_t<
-                !std::is_arithmetic<T>::value &&
-                !std::is_same<ByteSpan::element_type, T>::value>* = nullptr>
+  template <typename T, size_t Extent>
+    requires(!std::same_as<ByteSpan::element_type, T> &&
+             !std::has_unique_object_representations_v<std::remove_cvref_t<T>>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   IdentifiableToken(base::span<T, Extent> span) {
     TokenType cur_digest = 0;
@@ -180,8 +180,7 @@ class IdentifiableToken {
       TokenType digests[2];
       digests[0] = cur_digest;
       digests[1] = IdentifiableToken(element).value_;
-      cur_digest = IdentifiabilityDigestOfBytes(
-          base::as_bytes(base::make_span(digests)));
+      cur_digest = IdentifiabilityDigestOfBytes(base::as_byte_span(digests));
     }
     value_ = cur_digest;
   }
@@ -193,7 +192,7 @@ class IdentifiableToken {
     TokenType samples[] = {IdentifiableToken(first).value_,
                            IdentifiableToken(second).value_,
                            (IdentifiableToken(rest).value_)...};
-    value_ = IdentifiableToken(base::make_span(samples)).value_;
+    value_ = IdentifiableToken(base::span(samples)).value_;
   }
 
   constexpr bool operator<(const IdentifiableToken& that) const {

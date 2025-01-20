@@ -69,7 +69,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
           successful_presentation_callbacks,
       const viz::FrameTimingDetails& frame_timing_details);
-  void NotifyThroughputTrackerResults(CustomTrackerResults results);
+  void NotifyCompositorMetricsTrackerResults(CustomTrackerResults results);
   void DidObserveFirstScrollDelay(int source_frame_number,
                                   base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
@@ -95,7 +95,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       LayerTreeFrameSink* layer_tree_frame_sink) override;
   void SetVisible(bool visible) override;
   void SetShouldWarmUp() override;
-  void SetNeedsAnimate() override;
+  void SetNeedsAnimate(bool urgent) override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
@@ -113,7 +113,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool CommitRequested() const override;
   void Start() override;
   void Stop() override;
-  void QueueImageDecode(int request_id, const PaintImage& image) override;
+  void QueueImageDecode(int request_id, const DrawImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
@@ -138,8 +138,8 @@ class CC_EXPORT ProxyMain : public Proxy {
 
   // Returns |true| if the request was actually sent, |false| if one was
   // already outstanding.
-  bool SendCommitRequestToImplThreadIfNeeded(
-      CommitPipelineStage required_stage);
+  bool SendCommitRequestToImplThreadIfNeeded(CommitPipelineStage required_stage,
+                                             bool urgent);
   bool IsMainThread() const;
   bool IsImplThread() const;
   base::SingleThreadTaskRunner* ImplThreadTaskRunner();
@@ -169,6 +169,11 @@ class CC_EXPORT ProxyMain : public Proxy {
   // The final_pipeline_stage_ that was requested before the last commit was
   // deferred.
   CommitPipelineStage deferred_final_pipeline_stage_;
+
+  // Commit requests are deduplicated, however if we requested a regular commit
+  // request, then get an "urgent" request later, we should inform impl that the
+  // request became urgent.
+  bool has_sent_urgent_commit_request_ = false;
 
   // Set when the Proxy is started using Proxy::Start() and reset when it is
   // stopped using Proxy::Stop().

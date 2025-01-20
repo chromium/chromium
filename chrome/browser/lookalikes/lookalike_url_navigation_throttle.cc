@@ -106,7 +106,7 @@ LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
       profile_(Profile::FromBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext())) {}
 
-LookalikeUrlNavigationThrottle::~LookalikeUrlNavigationThrottle() {}
+LookalikeUrlNavigationThrottle::~LookalikeUrlNavigationThrottle() = default;
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
   if (profile_->AsTestingProfile())

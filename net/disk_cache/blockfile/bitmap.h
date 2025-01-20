@@ -2,32 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DISK_CACHE_BLOCKFILE_BITMAP_H_
 #define NET_DISK_CACHE_BLOCKFILE_BITMAP_H_
 
 #include <stdint.h>
 #include <string.h>
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/net_export.h"
 
 namespace disk_cache {
 
 // This class provides support for simple maps of bits.
+// The memory for the bitmap may be owned by the consumer of the class,
+// or by the instance of the class itself.
 class NET_EXPORT_PRIVATE Bitmap {
  public:
   Bitmap();
 
   // This constructor will allocate on a uint32_t boundary. If |clear_bits| is
   // false, the bitmap bits will not be initialized.
+  // The memory for the bitmap will be owned by the instance of the class.
   Bitmap(int num_bits, bool clear_bits);
 
   // Constructs a Bitmap with the actual storage provided by the caller. |map|
@@ -44,18 +42,17 @@ class NET_EXPORT_PRIVATE Bitmap {
   // If |num_bits| < Size(), the extra bits will be discarded.
   // If |num_bits| > Size(), the extra bits will be filled with zeros if
   // |clear_bits| is true.
-  // This object cannot be using memory provided during construction.
   void Resize(int num_bits, bool clear_bits);
 
   // Returns the number of bits in the bitmap.
   int Size() const { return num_bits_; }
 
   // Returns the number of 32-bit words in the bitmap.
-  int ArraySize() const { return array_size_; }
+  int ArraySize() const { return map_.size(); }
 
   // Sets all the bits to true or false.
   void SetAll(bool value) {
-    memset(map_, (value ? 0xFF : 0x00), array_size_ * sizeof(*map_));
+    base::ranges::fill(map_, (value ? 0xFFFFFFFFu : 0x00u));
   }
 
   // Clears all bits in the bitmap
@@ -78,13 +75,8 @@ class NET_EXPORT_PRIVATE Bitmap {
   // to set from |map|. If  |size| > array_size(), it ignores the end of |map|.
   void SetMap(const uint32_t* map, int size);
 
-  // Gets a pointer to the internal map.
-  const uint32_t* GetMap() const { return map_; }
-
   // Gets a span describing the internal map.
-  base::span<const uint32_t> GetSpan() const {
-    return base::make_span(GetMap(), static_cast<size_t>(ArraySize()));
-  }
+  base::span<const uint32_t> GetSpan() const { return map_; }
 
   // Sets a range of bits to |value|.
   void SetRange(int begin, int end, bool value);
@@ -134,6 +126,9 @@ class NET_EXPORT_PRIVATE Bitmap {
     return (num_bits + kIntBits - 1) >> kLogIntBits;
   }
 
+  // Gets a pointer to the internal map.
+  const uint32_t* GetMapForTesting() const { return map_.data(); }
+
  private:
   static const int kIntBits = sizeof(uint32_t) * 8;
   static const int kLogIntBits = 5;  // 2^5 == 32 bits per word.
@@ -143,9 +138,8 @@ class NET_EXPORT_PRIVATE Bitmap {
   void SetWordBits(int start, int len, bool value);
 
   int num_bits_ = 0;    // The upper bound of the bitmap.
-  int array_size_ = 0;  // The physical size (in uint32s) of the bitmap.
-  std::unique_ptr<uint32_t[]> allocated_map_;  // The allocated data.
-  raw_ptr<uint32_t, AllowPtrArithmetic> map_ = nullptr;  // The bitmap.
+  base::HeapArray<uint32_t> allocated_map_;  // The allocated data.
+  base::raw_span<uint32_t> map_;             // The bitmap.
 };
 
 }  // namespace disk_cache

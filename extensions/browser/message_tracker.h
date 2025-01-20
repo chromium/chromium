@@ -30,10 +30,41 @@ class MessageTracker : public KeyedService {
  public:
   enum class OpenChannelMessagePipelineResult {
     kUnknown = 0,
+
+    // At least one endpoint accepted the connection and the channel was opened.
     kOpened = 1,
+
+    // Multi-use value meaning that the stage did not occur before
+    // stage_timeout_ was reached.
     kHung = 2,
+
+    // The channel was not opened due to one of theses issues. See enums.xml for
+    // more details (part 1).
     kNoReceivers = 3,
-    kMaxValue = kNoReceivers,
+    kOpenChannelToNonEnabledExtension = 4,
+    kNotExternallyConnectable = 5,
+    kWorkerStarted = 6,
+    kWillNotOpenChannel = 7,
+    kOpenChannelReceiverInvalidPort = 8,
+    kOpenChannelDispatchNoReceivers = 9,
+
+    // The DispatchConnect IPC was acknowledged back to the browser.
+    kOpenChannelAcked = 10,
+    // The DispatchConnect IPC was not acknowledged because the remote
+    // (renderer) was disconnected.
+    kOpenChannelPortDisconnectedBeforeResponse = 11,
+    // The DispatchConnect IPC was not acknowledged because the channel closed.
+    kOpenChannelClosedBeforeResponse = 12,
+
+    // The channel was not opened due to one of theses issues. See enums.xml for
+    // more details (part 2).
+    kOpenChannelSourceEndpointInvalid = 13,
+    kOpenChannelOpenerPortInvalid = 14,
+    kOnOpenChannelSourceInvalid = 15,
+    kOnOpenChannelOpenerPortInvalid = 16,
+    kOnOpenChannelExtensionNotEnabled = 17,
+
+    kMaxValue = kOnOpenChannelExtensionNotEnabled,
   };
 
   class TestObserver {

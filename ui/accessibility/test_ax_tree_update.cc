@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "ui/accessibility/ax_enum_test_util.h"
 
 namespace ui {
 
@@ -124,6 +125,32 @@ void ParseAndAddNodeProperties(
       DCHECK(int_value) << "Formatting error or non integer passed as node ID.";
       node_data.AddIntAttribute(StringToIntAttribute(int_attribute_vector[0]),
                                 int_value);
+
+    } else if (property == "intListAttribute" ||
+               property == "IntListAttribute" ||
+               property == "intlistattribute") {
+      std::vector<std::string> int_list_attribute_vector =
+          base::SplitStringUsingSubstr(property_vector[1], ",",
+                                       base::KEEP_WHITESPACE,
+                                       base::SPLIT_WANT_ALL);
+      DCHECK(int_list_attribute_vector.size() >= 2)
+          << "Int list attribute in string must always be formed: "
+             "intListAttribute=<intListAttributeType>,<intAttributeListValue>[,"
+             "<intAttributeListValue>]";
+
+      std::vector<int> ids;
+      for (auto it = int_list_attribute_vector.begin() + 1;
+           it != int_list_attribute_vector.end(); ++it) {
+        int int_value = 0;
+        base::StringToInt(*it, &int_value);
+        DCHECK(int_value) << "Int list attribute formatting error or non "
+                             "integer passed as node ID.";
+        if (int_value) {
+          ids.push_back(int_value);
+        }
+      }
+      node_data.AddIntListAttribute(
+          StringToIntListAttribute(int_list_attribute_vector[0]), ids);
 
     } else if (property == "stringAttribute" || property == "StringAttribute" ||
                property == "stringattribute") {

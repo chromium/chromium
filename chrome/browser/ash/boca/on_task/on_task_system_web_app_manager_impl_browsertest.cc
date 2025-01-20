@@ -17,15 +17,21 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 using ::boca::LockedNavigationOptions;
@@ -42,11 +48,13 @@ constexpr char kTestUrl[] = "https://www.test.com";
 class LockedSessionWindowTrackerMock : public LockedSessionWindowTracker {
  public:
   explicit LockedSessionWindowTrackerMock(Profile* profile)
-      : LockedSessionWindowTracker(std::make_unique<OnTaskBlocklist>(
-            std::make_unique<policy::URLBlocklistManager>(
-                profile->GetPrefs(),
-                policy::policy_prefs::kUrlBlocklist,
-                policy::policy_prefs::kUrlAllowlist))) {}
+      : LockedSessionWindowTracker(
+            std::make_unique<OnTaskBlocklist>(
+                std::make_unique<policy::URLBlocklistManager>(
+                    profile->GetPrefs(),
+                    policy::policy_prefs::kUrlBlocklist,
+                    policy::policy_prefs::kUrlAllowlist)),
+            profile) {}
   ~LockedSessionWindowTrackerMock() override = default;
 
   MOCK_METHOD(void,
@@ -143,6 +151,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/true, boca_app_browser->session_id());
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
   EXPECT_TRUE(boca_app_browser->window()->IsToolbarVisible());
 }
 
@@ -166,6 +176,34 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/false, boca_app_browser->session_id());
   content::RunAllTasksUntilIdle();
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       UnpinSystemWebAppWindowWhenInFullscreenMode) {
+  // Launch Boca app and pin it for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Toggle fullscreen mode but do not pin the window.
+  auto* const fullscreen_controller =
+      boca_app_browser->exclusive_access_manager()->fullscreen_controller();
+  fullscreen_controller->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
+  ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // Attempt to unpin the Boca app and verify result.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/false, boca_app_browser->session_id());
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
@@ -284,9 +322,39 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Verify that the tab is cleaned up after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
-      boca_app_browser->session_id());
+      boca_app_browser->session_id(), /*close_bundle_content=*/true);
   EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
+      boca_app_browser->window()->GetNativeWindow());
+  // TODO (b/382277303): Verify if resize is disabled in locked fullscreen mode.
+  EXPECT_TRUE(widget->widget_delegate()->CanResize());
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PreparingSystemWebAppWindowAndPreservingContent) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Create tab so we can verify it does not get cleaned up after window prep.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->session_id(), GURL(kTestUrl),
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+
+  // Verify that the tab is not destroyed after window prep.
+  system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
+      boca_app_browser->session_id(), /*close_bundle_content=*/false);
+  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 }
 
 }  // namespace

@@ -11,8 +11,6 @@ import android.content.pm.PackageManager;
 import android.util.Pair;
 import android.view.Surface;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -20,6 +18,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -32,6 +32,7 @@ import java.util.WeakHashMap;
 
 /** This is the implementation of the C++ counterpart ScreenOrientationProvider. */
 @JNINamespace("content")
+@NullMarked
 public class ScreenOrientationProviderImpl
         implements ActivityStateListener, ScreenOrientationProvider {
     private static class Holder {
@@ -45,7 +46,7 @@ public class ScreenOrientationProviderImpl
     private static final boolean LOCK = true;
     private static final boolean UNLOCK = false;
 
-    private ScreenOrientationDelegate mDelegate;
+    private @Nullable ScreenOrientationDelegate mDelegate;
 
     /**
      * The keys of the map are the activities for which screen orientation are
@@ -90,7 +91,7 @@ public class ScreenOrientationProviderImpl
         }
 
         @Override
-        public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+        public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
             if (newWindowAndroid == null) return;
 
             if (mLockOrUnlock) {

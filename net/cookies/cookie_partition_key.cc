@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include <compare>
 #include <ostream>
 #include <tuple>
 
@@ -99,27 +100,20 @@ CookiePartitionKey& CookiePartitionKey::operator=(CookiePartitionKey&& other) =
 CookiePartitionKey::~CookiePartitionKey() = default;
 
 bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
-  AncestorChainBit this_bit = MaybeAncestorChainBit();
-  AncestorChainBit other_bit = other.MaybeAncestorChainBit();
-
-  return std::tie(site_, nonce_, this_bit) ==
-         std::tie(other.site_, other.nonce_, other_bit);
+  return (*this <=> other) == 0;
 }
 
-bool CookiePartitionKey::operator!=(const CookiePartitionKey& other) const {
-  return !(*this == other);
-}
-
-bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
+std::strong_ordering CookiePartitionKey::operator<=>(
+    const CookiePartitionKey& other) const {
   AncestorChainBit this_bit = MaybeAncestorChainBit();
   AncestorChainBit other_bit = other.MaybeAncestorChainBit();
-  return std::tie(site_, nonce_, this_bit) <
+  return std::tie(site_, nonce_, this_bit) <=>
          std::tie(other.site_, other.nonce_, other_bit);
 }
 
 // static
 base::expected<CookiePartitionKey::SerializedCookiePartitionKey, std::string>
-CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
+CookiePartitionKey::Serialize(base::optional_ref<const CookiePartitionKey> in) {
   if (!in) {
     return base::ok(SerializedCookiePartitionKey(
         base::PassKey<CookiePartitionKey>(), kEmptyCookiePartitionKey, true));
@@ -180,11 +174,12 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
 std::optional<CookiePartitionKey> CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
     AncestorChainBit ancestor_chain_bit,
-    const std::optional<base::UnguessableToken>& nonce) {
+    base::optional_ref<const base::UnguessableToken> nonce) {
   if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
     return std::nullopt;
   }
-  return CookiePartitionKey::FromWire(site, ancestor_chain_bit, nonce);
+  return CookiePartitionKey::FromWire(site, ancestor_chain_bit,
+                                      nonce.CopyAsOptional());
 }
 
 // static

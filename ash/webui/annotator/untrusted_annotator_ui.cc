@@ -32,23 +32,16 @@ namespace ash {
 
 namespace {
 
-void CreateAndAddAnnotatorHTMLSource(
-    content::WebUI* web_ui,
-    UntrustedAnnotatorUIDelegate* delegate) {
+void CreateAndAddAnnotatorHTMLSource(content::WebUI* web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIUntrustedAnnotatorUrl);
 
   // TODO(b/216523790): Split untrusted annotator resources into a separate
   // bundle.
-  source->AddResourcePaths(
-      base::make_span(kAshAnnotatorUntrustedResources,
-                      kAshAnnotatorUntrustedResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kChromeosProjectorAppBundleResources,
-                      kChromeosProjectorAppBundleResourcesSize));
-  source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
-                                           kAshProjectorCommonResourcesSize));
+  source->AddResourcePaths(kAshAnnotatorUntrustedResources);
+  source->AddResourcePaths(kChromeosProjectorAppBundleResources);
+  source->AddResourcePaths(kAshProjectorCommonResources);
   source->AddResourcePath("",
                           IDR_ASH_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
 
@@ -93,17 +86,14 @@ void CreateAndAddAnnotatorHTMLSource(
   // Loading WASM in chrome-untrusted://projector-annotator/annotator/ink.js is
   // not compatible with trusted types.
   source->DisableTrustedTypesCSP();
-  delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
 }
 
 }  // namespace
 
-UntrustedAnnotatorUI::UntrustedAnnotatorUI(
-    content::WebUI* web_ui,
-    UntrustedAnnotatorUIDelegate* delegate)
+UntrustedAnnotatorUI::UntrustedAnnotatorUI(content::WebUI* web_ui)
     : UntrustedWebUIController(web_ui) {
-  CreateAndAddAnnotatorHTMLSource(web_ui, delegate);
+  CreateAndAddAnnotatorHTMLSource(web_ui);
 }
 
 UntrustedAnnotatorUI::~UntrustedAnnotatorUI() = default;

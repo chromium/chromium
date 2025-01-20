@@ -23,7 +23,7 @@ ChromeSitePerProcessTest::ChromeSitePerProcessTest() {
       /*disabled_features=*/{features::kHttpsUpgrades});
 }
 
-ChromeSitePerProcessTest::~ChromeSitePerProcessTest() {}
+ChromeSitePerProcessTest::~ChromeSitePerProcessTest() = default;
 
 void ChromeSitePerProcessTest::SetUpCommandLine(
     base::CommandLine* command_line) {

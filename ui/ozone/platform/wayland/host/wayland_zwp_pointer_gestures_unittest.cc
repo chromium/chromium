@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
+
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <wayland-util.h>
 
-#include "build/chromeos_buildflags.h"
+#include <array>
+
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
-#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -121,9 +123,10 @@ TEST_F(WaylandPointerGesturesTest, PinchZoomScale) {
                                             /* fingers */ 2);
   });
 
-  constexpr double kScales[] = {1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.4,
-                                1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7,
-                                0.6, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  constexpr auto kScales = std::to_array<double>({
+      1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.4, 1.3, 1.2, 1.1, 1.0,
+      0.9, 0.8, 0.7, 0.6, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,
+  });
   [[maybe_unused]] auto previous_scale = kScales[0];
   for (auto scale : kScales) {
     PostToServerAndWait([scale](wl::TestWaylandServerThread* server) {
@@ -133,17 +136,12 @@ TEST_F(WaylandPointerGesturesTest, PinchZoomScale) {
           pinch, /* time */ 0, /* dx */ 0, /* dy */ 0,
           wl_fixed_from_double(scale), /* rotation */ 0);
     });
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_FLOAT_EQ(observer.latest_scale_update(),
-                    wl_fixed_to_double(wl_fixed_from_double(scale)));
-#else
     // The conversion from double to fixed and back is necessary because it
     // happens during the roundtrip, and it creates significant error.
     EXPECT_FLOAT_EQ(
         observer.latest_scale_update(),
         wl_fixed_to_double(wl_fixed_from_double(scale)) / previous_scale);
     previous_scale = wl_fixed_to_double(wl_fixed_from_double(scale));
-#endif
   }
 }
 

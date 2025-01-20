@@ -529,12 +529,14 @@ const std::u16string& NavigationEntryImpl::GetTitle() {
   return title_;
 }
 
-void NavigationEntryImpl::SetAppTitle(const std::u16string& app_title) {
-  app_title_ = app_title;
+void NavigationEntryImpl::SetApplicationTitle(
+    const std::u16string& application_title) {
+  application_title_ = application_title;
 }
 
-const std::optional<std::u16string>& NavigationEntryImpl::GetAppTitle() {
-  return app_title_;
+const std::optional<std::u16string>&
+NavigationEntryImpl::GetApplicationTitle() {
+  return application_title_;
 }
 
 void NavigationEntryImpl::SetPageState(const blink::PageState& state,

@@ -10,9 +10,8 @@
     android:id="@+id/container"
     android:orientation="horizontal"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/price_change_indicator_card_height"
     android:gravity="center"
-    android:paddingVertical="4dp"
     android:background="@drawable/shopping_accessory_view_background">
     <ImageView
         android:id="@+id/price_tracked_icon"
@@ -26,18 +25,18 @@
         android:id="@+id/normal_price_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
     <TextView
         android:id="@+id/price_drop_text"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.ShoppingPriceDropText"
+        android:textAppearance="@style/TextAppearance.ShoppingPriceDropSmallText"
         android:layout_marginEnd="4dp" />
     <TextView
         android:id="@+id/original_price_text"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 </LinearLayout>

@@ -55,7 +55,7 @@ const char* const Partitions::kAllocatedObjectPoolName =
 
 BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
              "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -114,7 +114,6 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
   // be handled in ReconfigureAfterFeatureListInit().
   PartitionOptions opts;
-  opts.star_scan_quarantine = PartitionOptions::kAllowed;
   opts.backup_ref_ptr = brp_setting;
   opts.memory_tagging = {.enabled = memory_tagging};
   opts.use_pool_offset_freelists = use_pool_offset_freelists;
@@ -189,7 +188,6 @@ void Partitions::InitializeArrayBufferPartition() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       array_buffer_allocator([]() {
         partition_alloc::PartitionOptions opts;
-        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
         // When the V8 virtual memory cage is enabled, the ArrayBuffer
         // partition must be placed inside of it. For that, PA's

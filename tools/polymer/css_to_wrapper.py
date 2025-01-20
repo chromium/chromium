@@ -59,6 +59,24 @@ export function getCss() {
   return instance || (instance = [...[%(deps)s], css`%(content)s`]);
 }"""
 
+# TODO(crbug.com/384446045): Remove when the oldest supported iOS version is
+# 16.4 or above. CSSStyleSheet constructor is not supported before that.
+_LIT_VARS_IOS_TEMPLATE = """%(imports)s
+export {};
+
+const css = `%(content)s`;
+
+try {
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(css);
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+} catch (e) {
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+"""
+
 # Map holding all the different types of CSS files to generate wrappers for.
 _TEMPLATE_MAP = {
     'style': _POLYMER_STYLE_TEMPLATE,
@@ -183,6 +201,7 @@ def main(argv):
   parser.add_argument('--in_files', required=True, nargs="*")
   parser.add_argument('--minify', action='store_true')
   parser.add_argument('--use_js', action='store_true')
+  parser.add_argument('--is_ios', action='store_true')
   args = parser.parse_args(argv)
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
@@ -310,7 +329,12 @@ def main(argv):
       }
 
     assert substitutions
-    wrapper = _TEMPLATE_MAP[metadata['type']] % substitutions
+
+    template = _TEMPLATE_MAP[metadata['type']]
+    if args.is_ios and metadata['type'] == 'vars-lit':
+      template = _LIT_VARS_IOS_TEMPLATE
+
+    wrapper = template % substitutions
 
     out_folder_for_file = path.join(out_folder, path.dirname(in_file))
     makedirs(out_folder_for_file, exist_ok=True)

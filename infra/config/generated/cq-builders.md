@@ -92,6 +92,36 @@ builder.
   Location filters:
   * [`//infra/config/generated/cq-usage/full.cfg`](https://cs.chromium.org/search?q=+file:infra/config/generated/cq-usage/full.cfg)
 
+* [optimization_guide-linux](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-linux) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-linux""))
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
+  This builder is only run when the CL owner is in the group:
+  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+
+* [optimization_guide-mac-arm64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-mac-arm64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-mac-arm64""))
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
+  This builder is only run when the CL owner is in the group:
+  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+
+* [optimization_guide-win64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-win64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-win64""))
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
+  This builder is only run when the CL owner is in the group:
+  * [`optimization-guide-try-opt-in`](https://chrome-infra-auth.appspot.com/auth/lookup?p=optimization-guide-try-opt-in)
+
 ### chromium
 * [3pp-linux-amd64-packager](https://ci.chromium.org/p/chromium/builders/try/3pp-linux-amd64-packager) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""3pp-linux-amd64-packager""))
 
@@ -103,6 +133,8 @@ builder.
 * [android-cast-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm-dbg""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -113,6 +145,8 @@ builder.
 * [android-cast-arm-rel](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm-rel""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -123,6 +157,8 @@ builder.
 * [android-cast-arm64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm64-dbg""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -133,6 +169,8 @@ builder.
 * [android-cast-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm64-rel""))
 
   Location filters:
+  * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
+  * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
   * [`//components/cast/.+`](https://cs.chromium.org/chromium/src/components/cast/)
   * [`//components/cast_receiver/.+`](https://cs.chromium.org/chromium/src/components/cast_receiver/)
@@ -571,6 +609,7 @@ builder.
   * [`//chrome/browser/.+(ui|browser)test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/.+(ui|browser)test)
   * [`//chrome/browser/ui/views/.+test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/ui/views/.+test)
   * [`//chrome/browser/ui/views/tabs/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/tabs/)
+  * [`//testing/xvfb\.py`](https://cs.chromium.org/search?q=+file:testing/xvfb\.py)
   * [`//third_party/wayland/.+`](https://cs.chromium.org/chromium/src/third_party/wayland/)
   * [`//third_party/wayland-protocols/.+`](https://cs.chromium.org/chromium/src/third_party/wayland-protocols/)
   * [`//ui/ozone/platform/wayland/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/wayland/)
@@ -773,6 +812,9 @@ as required builders.
   Location filters:
   * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
 
+* [compile-size](https://ci.chromium.org/p/chromium/builders/try/compile-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""compile-size""))
+  * Experiment percentage: 100.0
+
 * [dawn-android-arm64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm64-deps-rel""))
   * Experiment percentage: 100.0
 
@@ -796,7 +838,7 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
-  * Experiment percentage: 100.0
+  * Experiment percentage: 75.0
 
 
 ## Mega CQ builders

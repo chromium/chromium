@@ -6,6 +6,7 @@ source_set("price_tracking_promo") {
   sources = [
     "price_tracking_promo_action_delegate.h",
     "price_tracking_promo_commands.h",
+    "price_tracking_promo_favicon_consumer_source.h",
     "price_tracking_promo_item.h",
     "price_tracking_promo_item.mm",
     "price_tracking_promo_mediator.h",
@@ -33,6 +34,7 @@ source_set("price_tracking_promo") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
     "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/public/commands:commands",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -43,7 +45,6 @@ source_set("price_tracking_promo") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
-    "//ios/chrome/browser/ui/settings/notifications:utils",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/elements:elements",
     "//ios/chrome/common/ui/favicon",
@@ -108,8 +109,8 @@ source_set("eg2_tests") {
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public:public",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/push_notification/ui_bundled:test_support",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/push_notification:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

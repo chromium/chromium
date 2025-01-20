@@ -53,11 +53,10 @@ views::View* ItemInColumnWithIndexClosestTo(views::View* column,
   }
 }
 
-std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
+std::unique_ptr<views::View> CreateListItemView() {
   auto view = std::make_unique<views::View>();
   view->SetUseDefaultFillLayout(true);
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
-  view->GetViewAccessibility().SetPosInSet(pos_in_set);
   // Setting the hierarchical level explicitly allows the SetSize to be
   // overridden later.
   view->GetViewAccessibility().SetHierarchicalLevel(1);
@@ -66,12 +65,10 @@ std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
 
 }  // namespace
 
-QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width)
-    : grid_width_(grid_width),
-      focus_search_(std::make_unique<FocusSearch>(
-          this,
-          base::BindRepeating(&QuickInsertImageItemGridView::GetFocusableItems,
-                              base::Unretained(this)))) {
+QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width,
+                                                           bool has_top_margin)
+    : column_width_(
+          (grid_width - kImageGridPadding - kImageGridMargin.width()) / 2) {
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kCenter,
                   /*v_align=*/views::LayoutAlignment::kStretch,
@@ -89,18 +86,17 @@ QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
                /*height=*/0);
 
-  SetProperty(views::kMarginsKey, kImageGridMargin);
+  gfx::Insets margins = kImageGridMargin;
+  if (!has_top_margin) {
+    margins.set_top(0);
+  }
+  SetProperty(views::kMarginsKey, margins);
 
   AddChildView(CreateImageGridColumn());
   AddChildView(CreateImageGridColumn());
 }
 
 QuickInsertImageItemGridView::~QuickInsertImageItemGridView() = default;
-
-views::FocusTraversable*
-QuickInsertImageItemGridView::GetPaneFocusTraversable() {
-  return focus_search_.get();
-}
 
 views::View* QuickInsertImageItemGridView::GetTopItem() {
   views::View* column = children().front();
@@ -186,80 +182,26 @@ QuickInsertImageItemView* QuickInsertImageItemGridView::AddImageItem(
                           return v->GetPreferredSize().height();
                         });
   QuickInsertImageItemView* new_item =
-      shortest_column
-          ->AddChildView(CreateListItemView(focusable_items_.size() + 1))
+      shortest_column->AddChildView(CreateListItemView())
           ->AddChildView(std::move(image_item));
-  focusable_items_.push_back(new_item);
-
-  // Update the SetSize for all items.
-  for (views::View* view : focusable_items_) {
-    view->parent()->GetViewAccessibility().SetSetSize(focusable_items_.size());
+  new_item->FitToWidth(column_width_);
+  // Only the first item in the grid should be focusable.
+  if (num_items_ > 0) {
+    new_item->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
+  ++num_items_;
 
-  return new_item;
-}
-
-QuickInsertImageItemGridView::FocusSearch::FocusSearch(
-    views::View* view,
-    const GetFocusableViewsCallback& callback)
-    : views::FocusSearch(/*root=*/view,
-                         /*cycle=*/true,
-                         /*accessibility_mode=*/true),
-      view_(view),
-      get_focusable_views_callback_(callback) {}
-
-QuickInsertImageItemGridView::FocusSearch::~FocusSearch() = default;
-
-views::View* QuickInsertImageItemGridView::FocusSearch::FindNextFocusableView(
-    views::View* starting_view,
-    SearchDirection search_direction,
-    TraversalDirection traversal_direction,
-    StartingViewPolicy check_starting_view,
-    AnchoredDialogPolicy can_go_into_anchored_dialog,
-    views::FocusTraversable** focus_traversable,
-    views::View** focus_traversable_view) {
-  // The callback polls the currently focusable views.
-  const views::View::Views& focusable_views =
-      get_focusable_views_callback_.Run();
-  if (focusable_views.empty()) {
-    return nullptr;
-  }
-
-  int delta =
-      search_direction == FocusSearch::SearchDirection::kForwards ? 1 : -1;
-  int focusable_views_size = static_cast<int>(focusable_views.size());
-  for (int i = 0; i < focusable_views_size; ++i) {
-    // If current view from the set is found to be focused, return the view
-    // next (or previous) to it as next focusable view.
-    if (focusable_views[i] == starting_view) {
-      const int next_index = i + delta;
-      if (next_index >= 0 && next_index < focusable_views_size) {
-        return focusable_views[next_index];
-      } else {
-        return nullptr;
-      }
+  // Update the PosInSet and SetSize for all items, column by column.
+  size_t pos_in_set = 1;
+  for (views::View* column : children()) {
+    for (views::View* item : column->children()) {
+      item->GetViewAccessibility().SetPosInSet(pos_in_set);
+      item->GetViewAccessibility().SetSetSize(num_items_);
+      ++pos_in_set;
     }
   }
 
-  // Case when none of the views are already focused.
-  return (search_direction == FocusSearch::SearchDirection::kForwards)
-             ? focusable_views.front()
-             : focusable_views.back();
-}
-
-views::FocusSearch*
-QuickInsertImageItemGridView::FocusSearch::GetFocusSearch() {
-  return this;
-}
-
-views::FocusTraversable*
-QuickInsertImageItemGridView::FocusSearch::GetFocusTraversableParent() {
-  return nullptr;
-}
-
-views::View*
-QuickInsertImageItemGridView::FocusSearch::GetFocusTraversableParentView() {
-  return nullptr;
+  return new_item;
 }
 
 views::View* QuickInsertImageItemGridView::GetColumnContaining(
@@ -267,11 +209,6 @@ views::View* QuickInsertImageItemGridView::GetColumnContaining(
   views::View* column =
       item->parent() == nullptr ? nullptr : item->parent()->parent();
   return column && column->parent() == this ? column : nullptr;
-}
-
-const views::View::Views& QuickInsertImageItemGridView::GetFocusableItems()
-    const {
-  return focusable_items_;
 }
 
 BEGIN_METADATA(QuickInsertImageItemGridView)

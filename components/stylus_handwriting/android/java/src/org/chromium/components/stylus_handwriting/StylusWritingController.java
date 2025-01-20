@@ -25,7 +25,7 @@ public class StylusWritingController {
     private boolean mIconFetched;
     private boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
-    private boolean mIsFocused;
+    private boolean mIsWindowFocused;
 
     @Nullable private AndroidStylusWritingHandler mAndroidHandler;
     @Nullable private DirectWritingTrigger mDirectWritingTrigger;
@@ -143,8 +143,10 @@ public class StylusWritingController {
      */
     public void onWindowFocusChanged(boolean hasFocus) {
         // This notification is used to determine if the Stylus writing feature is enabled or not
-        // from System settings as it can be changed while Chrome is in background.
-        mIsFocused = hasFocus;
+        // from System settings as it can be changed while Chrome is in background. If caching of
+        // stylus settings is enabled, we need to store the current focus state and send it when
+        // settings change is observed.
+        mIsWindowFocused = hasFocus;
         updateStylusState();
     }
 
@@ -170,9 +172,7 @@ public class StylusWritingController {
 
     private void updateStylusState() {
         StylusApiOption handler = getHandler();
-        // TODO(crbug.com/372430494): Refactor handler to have a dedicated method to update state
-        // instead of calling onWindowFocusChanged.
-        handler.onWindowFocusChanged(mContext, mIsFocused);
+        handler.updateHandlerState(mContext, mIsWindowFocused);
 
         if (mCurrentWebContents == null) return;
         handler.onWebContentsChanged(mContext, mCurrentWebContents);

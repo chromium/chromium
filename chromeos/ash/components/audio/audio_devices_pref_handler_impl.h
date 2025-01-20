@@ -178,6 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Notifies the AudioPrefObserver for audio policy pref changes.
   void NotifyAudioPolicyChange();
+  void NotifyVoiceIsolationChange();
 
   base::Value::Dict device_mute_settings_;
   base::Value::Dict device_volume_settings_;

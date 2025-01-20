@@ -107,6 +107,7 @@ void ViewAndroid::SetDelegate(const JavaRef<jobject>& delegate) {
   // available parent's delegate.
   JNIEnv* env = base::android::AttachCurrentThread();
   delegate_ = JavaObjectWeakGlobalRef(env, delegate);
+  observer_list_.Notify(&ViewAndroidObserver::OnDelegateSet);
 }
 
 void ViewAndroid::UpdateFrameInfo(const FrameInfo& frame_info) {
@@ -150,9 +151,9 @@ void ViewAndroid::AddChild(ViewAndroid* child) {
 
   // Empty view size also need not propagating down in order to prevent
   // spurious events with empty size from being sent down.
-  if (child->match_parent() && !bounds_.IsEmpty() &&
-      child->GetSize() != bounds_.size()) {
-    child->OnSizeChangedInternal(bounds_.size());
+  if (child->match_parent() && !bounds_device_px_.IsEmpty() &&
+      child->GetSizeDevicePx() != bounds_device_px_.size()) {
+    child->OnSizeChangedInternal(bounds_device_px_.size());
     child->DispatchOnSizeChanged();
   }
 
@@ -492,25 +493,32 @@ void ViewAndroid::OnSizeChanged(int width, int height) {
   // Match-parent view must not receive size events.
   DCHECK(!match_parent());
 
-  float scale = GetDipScale();
-  gfx::Size size(std::ceil(width / scale), std::ceil(height / scale));
-  if (bounds_.size() == size)
-    return;
+  gfx::Size size_device_px(width, height);
 
-  OnSizeChangedInternal(size);
+  if (bounds_device_px_.size() == size_device_px) {
+    return;
+  }
+
+  OnSizeChangedInternal(size_device_px);
 
   // Signal resize event after all the views in the tree get the updated size.
   DispatchOnSizeChanged();
 }
 
-void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size) {
-  if (bounds_.size() == size)
+void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size_device_px) {
+  if (bounds_device_px_.size() == size_device_px) {
     return;
+  }
 
-  bounds_.set_size(size);
+  bounds_device_px_.set_size(size_device_px);
+
+  float scale = GetDipScale();
+  bounds_dips_.set_size(gfx::Size(std::ceil(size_device_px.width() / scale),
+                                  std::ceil(size_device_px.height() / scale)));
+
   for (ViewAndroid* child : children_) {
     if (child->match_parent())
-      child->OnSizeChangedInternal(size);
+      child->OnSizeChangedInternal(size_device_px);
   }
 }
 
@@ -553,8 +561,12 @@ gfx::Size ViewAndroid::GetPhysicalBackingSize() const {
   return physical_size_;
 }
 
-gfx::Size ViewAndroid::GetSize() const {
-  return bounds_.size();
+gfx::Size ViewAndroid::GetSizeDIPs() const {
+  return bounds_dips_.size();
+}
+
+gfx::Size ViewAndroid::GetSizeDevicePx() const {
+  return bounds_device_px_.size();
 }
 
 bool ViewAndroid::OnDragEvent(const DragEventAndroid& event) {
@@ -684,7 +696,7 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,
                           const gfx::PointF& point) {
   if (event_handler_) {
-    if (bounds_.origin().IsOrigin()) {  // (x, y) == (0, 0)
+    if (bounds_dips_.origin().IsOrigin()) {  // (x, y) == (0, 0)
       if (handler_callback.Run(event_handler_.get(), event))
         return true;
     } else {
@@ -696,14 +708,14 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
 
   if (!children_.empty()) {
     gfx::PointF offset_point(point);
-    offset_point.Offset(-bounds_.x(), -bounds_.y());
+    offset_point.Offset(-bounds_dips_.x(), -bounds_dips_.y());
     gfx::Point int_point = gfx::ToFlooredPoint(offset_point);
 
     // Match from back to front for hit testing.
     for (ViewAndroid* child : base::Reversed(children_)) {
       bool matched = child->match_parent();
       if (!matched)
-        matched = child->bounds_.Contains(int_point);
+        matched = child->bounds_dips_.Contains(int_point);
       if (matched && child->HitTest(handler_callback, event, offset_point))
         return true;
     }
@@ -712,7 +724,8 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
 }
 
 void ViewAndroid::SetLayoutForTesting(int x, int y, int width, int height) {
-  bounds_.SetRect(x, y, width, height);
+  bounds_dips_.SetRect(x, y, width, height);
+  bounds_device_px_.SetRect(x, y, width, height);
 }
 
 size_t ViewAndroid::GetChildrenCountForTesting() const {

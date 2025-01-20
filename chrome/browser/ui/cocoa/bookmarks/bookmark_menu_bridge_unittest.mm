@@ -69,7 +69,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   // derived test classes have access to protected methods.
   void ClearBookmarkMenu() { bridge_->ClearBookmarkMenu(); }
 
-  void InvalidateMenu()  { bridge_->InvalidateMenu(); }
+  void InvalidateMenu() { bridge_->InvalidateMenu(); }
   bool menu_is_valid() { return bridge_->IsMenuValid(); }
 
   void AddNodeToMenu(BookmarkMenuBridge* bridge,
@@ -83,12 +83,13 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
     return bridge->MenuItemForNode(node);
   }
 
-  NSMenuItem* AddTestMenuItem(NSMenu *menu, NSString *title, SEL selector) {
+  NSMenuItem* AddTestMenuItem(NSMenu* menu, NSString* title, SEL selector) {
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
                                                   action:nullptr
                                            keyEquivalent:@""];
-    if (selector)
+    if (selector) {
       [item setAction:selector];
+    }
     [menu addItem:item];
     return item;
   }
@@ -184,9 +185,9 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 
   const char* short_url = "http://foo/";
   const char* long_url = "http://super-duper-long-url--."
-    "that.cannot.possibly.fit.even-in-80-columns"
-    "or.be.reasonably-displayed-in-a-menu"
-    "without.looking-ridiculous.com/"; // 140 chars total
+                         "that.cannot.possibly.fit.even-in-80-columns"
+                         "or.be.reasonably-displayed-in-a-menu"
+                         "without.looking-ridiculous.com/";  // 140 chars total
 
   // 3 nodes; middle one has a child, last one has a HUGE URL
   // Set their titles to be the same as the URLs
@@ -214,8 +215,9 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   // Now confirm we have 1 submenu (the one we added, and not "other")
   int subs = 0;
   for (item in [menu_ itemArray]) {
-    if ([item hasSubmenu])
+    if ([item hasSubmenu]) {
       subs++;
+    }
   }
   EXPECT_EQ(1, subs);
 

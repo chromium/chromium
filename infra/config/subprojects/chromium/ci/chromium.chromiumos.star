@@ -573,6 +573,27 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "arm64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "chromeos_jacuzzi_rel_skylab_tests",
+                ],
+                mixins = targets.mixin(
+                    skylab = targets.skylab(
+                        cros_board = "jacuzzi",
+                    ),
+                ),
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.CROS,
+        use_swarming = False,
+    ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
     gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
@@ -632,6 +653,27 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             "remoteexec",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "chromeos_octopus_rel_skylab_tests",
+                ],
+                mixins = targets.mixin(
+                    skylab = targets.skylab(
+                        cros_board = "octopus",
+                    ),
+                ),
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.CROS,
+        use_swarming = False,
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
     gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
@@ -736,6 +778,7 @@ ci.builder(
         ),
     }),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_linking = True,
 )
 
 ci.builder(

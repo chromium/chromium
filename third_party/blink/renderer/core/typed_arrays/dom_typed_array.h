@@ -23,7 +23,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
-  typedef T ValueType;
+  using ValueType = T;
 
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,
@@ -37,8 +37,14 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return Create(buffer, 0, length);
   }
 
-  static ThisType* Create(base::span<const ValueType> array) {
-    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(base::as_bytes(array));
+  static ThisType* Create(base::span<const ValueType> array)
+    requires std::is_trivially_copyable_v<ValueType>
+  {
+    // Intentionally avoids using `as_bytes`, since that requires
+    // `std::has_unique_object_representations_v<ValueType>`, which we neither
+    // need here nor can guarantee.
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::Create(array.data(), array.size_bytes());
     return Create(buffer, 0, array.size());
   }
 
@@ -48,9 +54,14 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  static ThisType* CreateOrNull(base::span<const ValueType> array) {
+  static ThisType* CreateOrNull(base::span<const ValueType> array)
+    requires std::is_trivially_copyable_v<ValueType>
+  {
+    // Intentionally avoids using `as_bytes`, since that requires
+    // `std::has_unique_object_representations_v<ValueType>`, which we neither
+    // need here nor can guarantee.
     DOMArrayBuffer* buffer =
-        DOMArrayBuffer::CreateOrNull(base::as_bytes(array));
+        DOMArrayBuffer::CreateOrNull(array.data(), array.size_bytes());
     return buffer ? Create(buffer, 0, array.size()) : nullptr;
   }
 

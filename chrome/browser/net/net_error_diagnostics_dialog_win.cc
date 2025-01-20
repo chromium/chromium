@@ -34,13 +34,13 @@ namespace {
 
 class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  public:
-  NetErrorDiagnosticsDialog() {}
+  NetErrorDiagnosticsDialog() = default;
 
   NetErrorDiagnosticsDialog(const NetErrorDiagnosticsDialog&) = delete;
   NetErrorDiagnosticsDialog& operator=(const NetErrorDiagnosticsDialog&) =
       delete;
 
-  ~NetErrorDiagnosticsDialog() override {}
+  ~NetErrorDiagnosticsDialog() override = default;
 
   // NetErrorDiagnosticsDialog implementation.
   void Show(content::WebContents* web_contents,

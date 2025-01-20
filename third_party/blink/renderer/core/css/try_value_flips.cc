@@ -122,9 +122,6 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
   add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-  if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
-    add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
-  }
 
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
@@ -645,8 +642,7 @@ const CSSValue* TransformPositionArea(
   return MakeGarbageCollected<CSSValuePair>(
       CSSIdentifierValue::Create(first_value_transformed),
       CSSIdentifierValue::Create(second_value_transformed),
-      pair->KeepIdenticalValues() ? CSSValuePair::kKeepIdenticalValues
-                                  : CSSValuePair::kDropIdenticalValues);
+      CSSValuePair::kKeepIdenticalValues);
 }
 
 }  // namespace
@@ -669,8 +665,7 @@ const CSSValue* TryValueFlips::FlipValue(
     return TransformSelfAlignment(value, logical_axis, transform,
                                   writing_direction);
   }
-  if (from_property == CSSPropertyID::kPositionArea ||
-      from_property == CSSPropertyID::kInsetArea) {
+  if (from_property == CSSPropertyID::kPositionArea) {
     return TransformPositionArea(value, transform, writing_direction);
   }
   return value;

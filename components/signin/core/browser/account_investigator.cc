@@ -39,16 +39,18 @@ bool AreSame(const CoreAccountInfo& info, const ListedAccount& account) {
 AccountInfo GetExtendedAccountInfo(signin::IdentityManager* identity_manager) {
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (account_id.empty())
+  if (account_id.empty()) {
     return AccountInfo();
+  }
   return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
 // Returns true if there is primary account (no consent required) but no
 // extended info, yet.
 bool WaitingForExtendedInfo(signin::IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
+  }
   return GetExtendedAccountInfo(identity_manager).IsEmpty();
 }
 
@@ -80,8 +82,9 @@ void AccountInvestigator::Initialize() {
   // instead.
   Time previous = Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kGaiaCookiePeriodicReportTime));
-  if (previous.is_null())
+  if (previous.is_null()) {
     previous = Time::Now();
+  }
   const base::TimeDelta delay =
       CalculatePeriodicDelay(previous, Time::Now(), kPeriodicReportingInterval);
   timer_.Start(FROM_HERE, delay, this, &AccountInvestigator::TryPeriodicReport);
@@ -139,8 +142,9 @@ void AccountInvestigator::OnAccountsInCookieUpdated(
 
 void AccountInvestigator::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (periodic_pending_)
+  if (periodic_pending_) {
     TryPeriodicReport();
+  }
 }
 
 // static
@@ -256,8 +260,9 @@ void AccountInvestigator::SharedCookieJarReport(
   const Time last_changed = Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kGaiaCookieChangedTime));
   base::TimeDelta stable_age;
-  if (!last_changed.is_null())
+  if (!last_changed.is_null()) {
     stable_age = std::max(now - last_changed, base::TimeDelta());
+  }
   signin_metrics::LogCookieJarStableAge(stable_age, type);
 
   int signed_in_count = signed_in_accounts.size();

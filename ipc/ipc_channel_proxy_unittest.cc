@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,7 +80,7 @@ class QuitListener : public IPC::Listener {
 
   void OnBadMessage(const BadType& bad_type) {
     // Should never be called since IPC wouldn't be deserialized correctly.
-    CHECK(false);
+    NOTREACHED();
   }
 
   bool bad_message_received_ = false;
@@ -206,7 +207,7 @@ class MessageCountFilter : public IPC::MessageFilter {
 
   void OnBadMessage(const BadType& bad_type) {
     // Should never be called since IPC wouldn't be deserialized correctly.
-    CHECK(false);
+    NOTREACHED();
   }
 
   bool GetSupportedMessageClasses(

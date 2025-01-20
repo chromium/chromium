@@ -57,7 +57,8 @@ ProfilePicker::Params& ProfilePicker::Params::operator=(
 ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
     EntryPoint entry_point) {
   // Use specialized constructors when available.
-  DCHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
+  CHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
+  CHECK_NE(entry_point, EntryPoint::kGlicManager);
   return ProfilePicker::Params(entry_point, GetPickerProfilePath());
 }
 
@@ -82,12 +83,26 @@ ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
   return params;
 }
 
+// static
+ProfilePicker::Params ProfilePicker::Params::ForGlicManager(
+    base::OnceCallback<void(Profile*)> picked_profile_callback) {
+  Params params(EntryPoint::kGlicManager, GetPickerProfilePath());
+  params.picked_profile_callback_ = std::move(picked_profile_callback);
+  return params;
+}
+
 void ProfilePicker::Params::NotifyFirstRunExited(
     FirstRunExitStatus exit_status) {
   if (!first_run_exited_callback_) {
     return;
   }
   std::move(first_run_exited_callback_).Run(exit_status);
+}
+
+void ProfilePicker::Params::NotifyProfilePicked(Profile* profile) {
+  CHECK(picked_profile_callback_);
+  CHECK_EQ(entry_point_, EntryPoint::kGlicManager);
+  std::move(picked_profile_callback_).Run(profile);
 }
 
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
@@ -97,10 +112,10 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
 
   // Some entry points have specific UIs that cannot be reused for other entry
   // points.
-  //
-  // TODO(crbug.com/373891721): The flat_set below has a single entry. Simplify
-  // its use.
-  base::flat_set<EntryPoint> exclusive_entry_points = {EntryPoint::kFirstRun};
+  base::flat_set<EntryPoint> exclusive_entry_points = {
+      EntryPoint::kFirstRun,
+      EntryPoint::kGlicManager,
+  };
   if (entry_point_ != other.entry_point_ &&
       (exclusive_entry_points.contains(entry_point_) ||
        exclusive_entry_points.contains(other.entry_point_))) {

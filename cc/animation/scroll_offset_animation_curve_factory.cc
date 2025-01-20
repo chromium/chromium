@@ -6,8 +6,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "cc/base/features.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace cc {
 namespace {
@@ -31,11 +29,9 @@ std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateAnimation(
     const gfx::PointF& target_value,
     ScrollType scroll_type) {
-  if (scroll_type == ScrollType::kAutoScroll)
+  if (scroll_type == ScrollType::kAutoScroll) {
     return CreateLinearAnimation(target_value);
-
-  if (features::IsImpulseScrollAnimationEnabled())
-    return CreateImpulseAnimation(target_value);
+  }
 
   return CreateEaseInOutAnimation(
       target_value, GetDurationBehaviorFromScrollType(scroll_type));
@@ -58,13 +54,6 @@ ScrollOffsetAnimationCurveFactory::CreateLinearAnimationForTesting(
 
 // static
 std::unique_ptr<ScrollOffsetAnimationCurve>
-ScrollOffsetAnimationCurveFactory::CreateImpulseAnimationForTesting(
-    const gfx::PointF& target_value) {
-  return CreateImpulseAnimation(target_value);
-}
-
-// static
-std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimation(
     const gfx::PointF& target_value,
     ScrollOffsetAnimationCurve::DurationBehavior duration_behavior) {
@@ -81,11 +70,4 @@ ScrollOffsetAnimationCurveFactory::CreateLinearAnimation(
       target_value, ScrollOffsetAnimationCurve::AnimationType::kLinear));
 }
 
-// static
-std::unique_ptr<ScrollOffsetAnimationCurve>
-ScrollOffsetAnimationCurveFactory::CreateImpulseAnimation(
-    const gfx::PointF& target_value) {
-  return base::WrapUnique(new ScrollOffsetAnimationCurve(
-      target_value, ScrollOffsetAnimationCurve::AnimationType::kImpulse));
-}
 }  // namespace cc

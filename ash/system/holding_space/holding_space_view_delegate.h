@@ -40,10 +40,6 @@ namespace ash {
 class HoldingSpaceItemView;
 class HoldingSpaceTrayBubble;
 
-namespace holding_space_metrics {
-enum class EventSource;
-}  // namespace holding_space_metrics
-
 // A delegate for holding space views which implements context menu,
 // drag-and-drop, and selection functionality. Only a single delegate instance
 // exists at a time and is shared by all existing holding space views in order
@@ -193,8 +189,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // Attempts to open the holding space items associated with the given `views`.
   // Schedules the bubble to close regardless of attempt success.
   void OpenItemsAndScheduleClose(
-      const std::vector<const HoldingSpaceItemView*>& views,
-      holding_space_metrics::EventSource event_source);
+      const std::vector<const HoldingSpaceItemView*>& views);
 
   const raw_ptr<HoldingSpaceTrayBubble> bubble_;
 

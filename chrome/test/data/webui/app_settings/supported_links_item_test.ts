@@ -66,7 +66,7 @@ suite('SupportedLinksItemElement', function() {
     assertFalse(isVisible(supportedLinksItem));
   });
 
-  test('Window/Tab mode', async () => {
+  test('Tab mode works', async () => {
     const appOptions = {
       type: AppType.kWeb,
       isPreferredApp: true,
@@ -75,14 +75,11 @@ suite('SupportedLinksItemElement', function() {
     };
 
     await setUpSupportedLinksComponent('app1', appOptions);
-    assertTrue(!!supportedLinksItem.shadowRoot!.querySelector(
-        '#disabledExplanationText'));
-
     const radioGroup =
         supportedLinksItem.shadowRoot!.querySelector<CrRadioGroupElement>(
             '#radioGroup');
     assertTrue(!!radioGroup);
-    assertTrue(!!radioGroup.disabled);
+    assertFalse(!!radioGroup.disabled);
   });
 
   test('can open and close supported links list dialog', async () => {

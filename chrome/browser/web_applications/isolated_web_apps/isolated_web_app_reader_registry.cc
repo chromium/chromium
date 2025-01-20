@@ -19,8 +19,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
@@ -184,7 +184,12 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
 // corresponding to bundles that might be affected by key rotation. These
 // requests will be fulfilled once the app closes.
 void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
-    const base::Version& component_version) {
+    const base::Version& version,
+    bool is_preloaded) {
+  if (is_preloaded) {
+    return;
+  }
+
   auto* provider = WebAppProvider::GetForWebApps(&profile_.get());
   base::flat_map<web_package::SignedWebBundleId,
                  std::reference_wrapper<const WebApp>>

@@ -208,7 +208,7 @@ class InputDeviceSettings {
         const = 0;
   };
 
-  virtual ~InputDeviceSettings() {}
+  virtual ~InputDeviceSettings() = default;
 
   // Returns current instance of InputDeviceSettings.
   static InputDeviceSettings* Get();

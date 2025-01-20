@@ -6,6 +6,6 @@
 
 #include "services/device/public/mojom/usb_device.mojom.h"
 
-MockDeviceObserver::MockDeviceObserver() {}
+MockDeviceObserver::MockDeviceObserver() = default;
 
-MockDeviceObserver::~MockDeviceObserver() {}
+MockDeviceObserver::~MockDeviceObserver() = default;

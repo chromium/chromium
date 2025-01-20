@@ -45,7 +45,7 @@
 <translation id="134645005685694099">Η συσκευή σας δεν διαθέτει αρκετό αποθηκευτικό χώρο για να παραμείνει ενεργοποιημένος ο συγχρονισμός αρχείων. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
-<translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1363028406613469049">Παρακολούθηση</translation>
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
 <translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
@@ -74,6 +74,7 @@
 <translation id="1577977504532381335">Έλεγχος πολιτικής διαχειριστή</translation>
 <translation id="158849752021629804">Απαιτείται εγχώριο δίκτυο</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Ταχυδρομικός κώδικας</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="162175252992296058">Πορτογαλικά με πληκτρολόγιο Διεθνές ΗΠΑ</translation>
 <translation id="1629521517399325891">Το πιστοποιητικό χρήστη δεν είναι διαθέσιμο για έλεγχο ταυτότητας δικτύου.</translation>
@@ -402,7 +403,6 @@
 <translation id="4179621117429069925">Αυτό το στοιχείο βρίσκεται στον κάδο</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
-<translation id="4197674956721858839">Επιλογή για δημιουργία συμπιεσμένου αρχείου</translation>
 <translation id="4202378258276439759">Ισπανικά (Λατινική Αμερική)</translation>
 <translation id="4202977638116331303">Γεωργιανά</translation>
 <translation id="421017592316736757">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτό το αρχείο.</translation>
@@ -637,7 +637,7 @@
 <translation id="5760252553414789727">Επιλέχθηκαν <ph name="SELECTED_FILES_COUNT" /> στοιχεία</translation>
 <translation id="5763377084591234761">Γερμανικά (Ελβετία)</translation>
 <translation id="5769519078756170258">Κεντρικός υπολογιστής ή τομέας προς εξαίρεση</translation>
-<translation id="5775750595919327203">Ουρντού</translation>
+<translation id="5775750595919327203">Ούρντου</translation>
 <translation id="5776325638577448643">Διαγραφή και διαμόρφωση</translation>
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5788127256798019331">Αρχεία Play</translation>
@@ -677,7 +677,7 @@
 <translation id="6096979789310008754">Έγινε κατάργηση του κειμένου αναζήτησης, εμφανίζονται όλα τα αρχεία και οι φάκελοι.</translation>
 <translation id="610101264611565198">Μετακίνηση αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Κείμενο CSV</translation>
-<translation id="6129953537138746214">Κενό</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">Μετακίνηση αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="6133877453787250710">Ο διαχειριστής παρακολουθεί:</translation>
 <translation id="613750717151263950">Ιαπωνικά με πληκτρολόγιο ΗΠΑ</translation>

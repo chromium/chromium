@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,8 @@ import org.robolectric.Shadows;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -49,6 +52,7 @@ public class BottomAttachedUiObserverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int BOTTOM_CONTROLS_HEIGHT = 100;
+    private static final int BOTTOM_CONTROLS_MIN_HEIGHT_MULTIPLE_LAYER = 80;
     private static final int BOTTOM_CHIN_HEIGHT = 60;
     private static final int BROWSER_CONTROLS_COLOR = Color.RED;
     private static final int SNACKBAR_COLOR = Color.GREEN;
@@ -141,6 +145,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
     public void testAdaptsColorToBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -154,16 +159,16 @@ public class BottomAttachedUiObserverTest {
 
         // Scroll off bottom controls partway.
         mBottomAttachedUiObserver.onControlsOffsetChanged(
-                0, 0, BOTTOM_CONTROLS_HEIGHT / 2, 0, false, false);
+                0, 0, false, BOTTOM_CONTROLS_HEIGHT / 2, 0, false, false, false);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         // Scroll off bottom controls fully.
         mBottomAttachedUiObserver.onControlsOffsetChanged(
-                0, 0, BOTTOM_CONTROLS_HEIGHT, 0, false, false);
+                0, 0, false, BOTTOM_CONTROLS_HEIGHT, 0, false, false, false);
         mColorChangeObserver.assertState(null, false, false);
 
         // Scroll bottom controls back.
-        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         // Hide bottom controls.
@@ -181,6 +186,133 @@ public class BottomAttachedUiObserverTest {
         // Show bottom controls, but only with the bottom chin.
         mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CHIN_HEIGHT, 0);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
+    })
+    public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinNonScrollable() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+
+        when(mBottomControlsStacker.isLayerNonScrollable(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        when(mBottomControlsStacker.hasMultipleNonScrollableLayer()).thenReturn(false);
+
+        // Show bottom controls, bottom chin is non-scrollable.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(
+                BOTTOM_CONTROLS_HEIGHT, BOTTOM_CHIN_HEIGHT);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        // Scroll off bottom controls fully. Browser controls should no longer be used.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0,
+                0,
+                false,
+                BOTTOM_CONTROLS_HEIGHT - BOTTOM_CHIN_HEIGHT,
+                BOTTOM_CHIN_HEIGHT,
+                false,
+                false,
+                false);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
+    })
+    public void testAdaptsColorToBrowserControls_bottomChinConstraint_multipleNonScrollableLayer() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+
+        when(mBottomControlsStacker.isLayerNonScrollable(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        when(mBottomControlsStacker.hasMultipleNonScrollableLayer()).thenReturn(true);
+
+        // Show bottom controls, but only with the bottom chin. Color should be null.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(
+                BOTTOM_CONTROLS_HEIGHT, BOTTOM_CONTROLS_MIN_HEIGHT_MULTIPLE_LAYER);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        // Scroll off bottom controls fully. Browser controls should still be used.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0,
+                0,
+                false,
+                BOTTOM_CONTROLS_HEIGHT - BOTTOM_CONTROLS_MIN_HEIGHT_MULTIPLE_LAYER,
+                BOTTOM_CONTROLS_MIN_HEIGHT_MULTIPLE_LAYER,
+                false,
+                false,
+                false);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
+    })
+    public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinScrollable() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+
+        when(mBottomControlsStacker.isLayerNonScrollable(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(false);
+        when(mBottomControlsStacker.hasMultipleNonScrollableLayer()).thenReturn(false);
+
+        // Show bottom controls. Color should be BROWSER_CONTROLS_COLOR.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        // Scroll off bottom controls fully. Browser controls should no longer be used.
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0, 0, false, BOTTOM_CONTROLS_HEIGHT, 0, false, false, false);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
+    })
+    public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinOnly() {
+        mColorChangeObserver.assertState(null, false, false);
+        when(mBottomControlsStacker.isLayerNonScrollable(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        when(mBottomControlsStacker.hasMultipleNonScrollableLayer()).thenReturn(false);
+
+        // Assume some other browser controls were visible, but then is removed.
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(
+                BOTTOM_CONTROLS_HEIGHT, BOTTOM_CHIN_HEIGHT);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        // Then the control is removed, the chin is set as the only layer
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(false);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(
+                BOTTOM_CHIN_HEIGHT, BOTTOM_CHIN_HEIGHT);
         mColorChangeObserver.assertState(null, false, false);
     }
 
@@ -217,6 +349,15 @@ public class BottomAttachedUiObserverTest {
         // Hide the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
         mColorChangeObserver.assertState(null, false, false);
+    }
+
+    /*
+    Tests that when floating snackbar is enabled, we do not add BottomAttachedUiObserver.
+    */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testDoesNotAddBottomAttachedUiObserver() {
+        verify(mSnackbarManager, never()).addObserver(eq(mBottomAttachedUiObserver));
     }
 
     @Test

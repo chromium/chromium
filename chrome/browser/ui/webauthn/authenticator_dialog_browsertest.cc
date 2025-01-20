@@ -2,12 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -15,20 +30,21 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
@@ -36,6 +52,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -43,6 +60,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -65,9 +83,19 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
   void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // DialogBrowserTest:
@@ -256,8 +284,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       std::vector<device::AuthenticatorGetAssertionResponse> responses;
 
       for (const auto& info : infos) {
-        static const uint8_t kAppParam[32] = {0};
-        static const uint8_t kSignatureCounter[4] = {0};
+        static const uint8_t kAppParam[32] = {};
+        static const uint8_t kSignatureCounter[4] = {};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
                                             kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(
@@ -321,8 +349,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       std::vector<device::AuthenticatorGetAssertionResponse> responses;
 
       for (const auto& info : infos) {
-        static const uint8_t kAppParam[32] = {0};
-        static const uint8_t kSignatureCounter[4] = {0};
+        static const uint8_t kAppParam[32] = {};
+        static const uint8_t kSignatureCounter[4] = {};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
                                             kSignatureCounter, std::nullopt);
         device::AuthenticatorGetAssertionResponse response(
@@ -589,12 +617,21 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 //   --ui=GPMPasskeysAuthenticatorDialogTest.InvokeUi_${test_name}
 //
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
-class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
+class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // AuthenticatorDialogTest:

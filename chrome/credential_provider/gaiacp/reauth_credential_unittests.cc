@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/atl.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -27,6 +28,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -543,7 +545,8 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, UserGaiaIdMismatch) {
   // kUiecEMailMissmatch exit code when this happens. This will test whether
   // the credential can perform necessary validation in case the GLS ever
   // does not do the validation for us.
-  test->SetGaiaIdOverride(unexpected_gaia_id, /*ignore_expected_gaia_id=*/true);
+  test->SetGaiaIdOverride(GaiaId(unexpected_gaia_id),
+                          /*ignore_expected_gaia_id=*/true);
 
   // The logon should have failed with an error about another user already
   // associated to this Google account.
@@ -807,7 +810,7 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, GaiaIdMismatch) {
   ASSERT_EQ(S_OK, cred.As(&test));
 
   ASSERT_EQ(S_OK, test->SetGlsEmailAddress(std::string()));
-  ASSERT_EQ(S_OK, test->SetGaiaIdOverride(unexpected_gaia_id,
+  ASSERT_EQ(S_OK, test->SetGaiaIdOverride(GaiaId(unexpected_gaia_id),
                                           /*ignore_expected_gaia_id=*/false));
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());

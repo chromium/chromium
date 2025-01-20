@@ -666,7 +666,7 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
                   policy_value));
 // ChromeOS guest sessions don't have the capability to
 // do ambient authentications.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(
         AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
             CreateGuestBrowser()->profile()),
@@ -718,7 +718,7 @@ class ProfileNetworkContextServiceDiskCacheBrowsertest
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
-  ~ProfileNetworkContextServiceDiskCacheBrowsertest() override {}
+  ~ProfileNetworkContextServiceDiskCacheBrowsertest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchPath(switches::kDiskCacheDir,
@@ -845,19 +845,7 @@ INSTANTIATE_TEST_SUITE_P(
 class ProfileNetworkContextTrustTokensBrowsertest
     : public ProfileNetworkContextServiceBrowsertest {
  public:
-  ProfileNetworkContextTrustTokensBrowsertest() {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
-    feature_list_.InitWithFeaturesAndParameters(
-        // Enabled Features:
-        {{network::features::kPrivateStateTokens,
-          {{field_trial_param.name,
-            field_trial_param.GetName(
-                network::features::TrustTokenOriginTrialSpec::
-                    kOriginTrialNotRequired)}}}},
-        // Disabled Features:
-        {});
-  }
+  ProfileNetworkContextTrustTokensBrowsertest() = default;
   ~ProfileNetworkContextTrustTokensBrowsertest() override = default;
 
   void SetUpOnMainThread() override {
@@ -909,12 +897,10 @@ class ProfileNetworkContextTrustTokensBrowsertest
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   network::test::TrustTokenRequestHandler request_handler_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
                        TrustTokenBlocked) {
-  base::test::ScopedFeatureList feature_list_;
   ProvideRequestHandlerKeyCommitmentsToNetworkService("a.test");
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());

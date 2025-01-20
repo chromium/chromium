@@ -64,7 +64,7 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
   set_allow_web_contents_creation(false);
 }
 
-LoginWebDialog::~LoginWebDialog() {}
+LoginWebDialog::~LoginWebDialog() = default;
 
 void LoginWebDialog::Show() {
   dialog_window_ =

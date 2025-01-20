@@ -9,6 +9,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/focus/scoped_arrow_key_traversal_controller.h"
 #include "ash/shell.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/views/focus/focus_manager.h"
@@ -34,7 +35,7 @@ class PostTargetAcceleratorHandler : public views::FocusManagerDelegate {
   // views::FocusManagerDelegate overrides:
   bool ProcessAccelerator(const ui::Accelerator& accelerator) override;
   bool IsArrowKeyTraversalEnabled() override {
-    return ArrowKeyTraversalController::Get()->enabled();
+    return ash::IsArrowKeyTraversalEnabled();
   }
 };
 

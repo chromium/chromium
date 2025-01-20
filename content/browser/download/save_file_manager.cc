@@ -296,7 +296,7 @@ void SaveFileManager::SaveURL(
       auto partition_domain =
           rfh->GetSiteInstance()->GetPartitionDomain(storage_partition_impl);
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
-          rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
+          rfh->GetProcess()->GetDeprecatedID(), rfh->GetFrameTreeNodeId(),
           storage_partition->GetFileSystemContext(), partition_domain,
           static_cast<RenderFrameHostImpl*>(rfh)->GetStorageKey()));
       factory = factory_remote.get();

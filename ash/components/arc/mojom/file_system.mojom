@@ -392,7 +392,7 @@ interface FileSystemHost {
 
 // The browser process is using this interface in ArcFileSystemOperationRunner,
 // the ARC process implements this interface used by ArcFileSystemService.
-// Deprecated method IDs: 2, 5, 18
+// Deprecated method IDs: 2, 5, 11, 18
 // Next method ID: 27
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
@@ -551,10 +551,6 @@ interface FileSystemInstance {
   // Searches for the removed files/directories under the given
   // |directory_paths| (non-recursively) in MediaStore and removes them.
   [MinVersion=14] RequestFileRemovalScan@20(array<string> directory_paths);
-
-  // DEPRECATED. Use OpenUrlsWithPermissionAndWindowInfo() instead.
-  [MinVersion=8] DEPRECATED_OpenUrlsWithPermission@11(OpenUrlsRequest request)
-      => ();
 
   // Opens URLs by sending an intent to the specified activity with a specific
   // launch window info.

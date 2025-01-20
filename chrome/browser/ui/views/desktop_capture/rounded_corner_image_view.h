@@ -13,12 +13,12 @@ class RoundedCornerImageView : public views::ImageView {
   METADATA_HEADER(RoundedCornerImageView, views::ImageView)
 
  public:
-  RoundedCornerImageView() = default;
+  RoundedCornerImageView();
+
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
 
-  // views::ImageView:
-  bool GetCanProcessEventsWithinSubtree() const override;
+  ~RoundedCornerImageView() override = default;
 
  protected:
   // views::ImageView:

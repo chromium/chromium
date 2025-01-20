@@ -46,16 +46,8 @@ BASE_DECLARE_FEATURE(kNonUserVisibleDebug);
 // Does nothing if `kJourneys` is disabled.
 BASE_DECLARE_FEATURE(kUserVisibleDebug);
 
-// This flag is to enable us to turn on persisting context annotations WITHOUT
-// exposing the Journeys UI in general. If EITHER this flag or `kJourneys` is
-// enabled, users will have context annotations persisted into their History DB.
-BASE_DECLARE_FEATURE(kPersistContextAnnotationsInHistoryDb);
-
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
-
-// Enables use of task runner with trait CONTINUE_ON_SHUTDOWN.
-BASE_DECLARE_FEATURE(kHistoryClustersUseContinueOnShutdown);
 
 // Enables use of additional keyword filtering operations on clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
@@ -63,19 +55,9 @@ BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
 // Enables experimentation for how to dedupe visits in clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
 
-// Persist keyword caches via pref service.
-BASE_DECLARE_FEATURE(kJourneysPersistCachesToPrefs);
-
 // Enables context clustering to be performed at navigation time rather than in
 // batches.
 BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
-
-// Enables Journeys creating new tab groups that have names derived from the
-// cluster title. If disabled, new tab groups are anonymous.
-BASE_DECLARE_FEATURE(kJourneysNamedNewTabGroups);
-
-// Enables filtering of the zero-state Journeys WebUI.
-BASE_DECLARE_FEATURE(kJourneysZeroStateFiltering);
 
 // Order consistently with config.h.
 

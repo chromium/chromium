@@ -24,8 +24,9 @@ export class IconsetMap extends EventTarget {
   }
 
   set(id: string, iconset: CrIconsetElement) {
-    assert(!this.iconsets_.has(id),
-           'Tried to add a second iconset with id ' + id);
+    assert(
+        !this.iconsets_.has(id),
+        `Tried to add a second iconset with id '${id}'`);
     this.iconsets_.set(id, iconset);
     this.dispatchEvent(new CustomEvent('cr-iconset-added', {detail: id}));
   }

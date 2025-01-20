@@ -18,7 +18,7 @@ function testCursor()
 {
     debug("");
     debug("testCursor:");
-    evalAndLog("transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    evalAndLog("transaction = db.transaction('store', 'readwrite')");
 
     evalAndLog("store = transaction.objectStore('store')");
     request = evalAndLog("store.add('value1', 'key1')");

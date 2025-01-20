@@ -10,8 +10,8 @@ include_rules = [
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h",
   "+ios/chrome/browser/translate/model/translate_infobar_metrics_recorder.h",
-  "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/infobars/infobar_constants.h",
-  "+ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h",
-  "+ios/chrome/browser/ui/presenters",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/infobars/ui_bundled/infobar_constants.h",
+  "+ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h",
+  "+ios/chrome/browser/presenters/ui_bundled",
 ]

@@ -11,8 +11,6 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
@@ -42,11 +40,7 @@ void EmplaceBackIf(std::vector<std::string>& container,
 // Base class for pixel tests of `HelpBubbleViewAsh`.
 class HelpBubbleViewAshPixelTestBase : public HelpBubbleViewAshTestBase {
  public:
-  HelpBubbleViewAshPixelTestBase() {
-    // Features using help bubble views are not launching until post-Jelly, so
-    // ensure that benchmark images are taken with the Jelly flag enabled.
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  HelpBubbleViewAshPixelTestBase() = default;
 
  private:
   // HelpBubbleViewAshTestBase:
@@ -54,10 +48,6 @@ class HelpBubbleViewAshPixelTestBase : public HelpBubbleViewAshTestBase {
       const override {
     return pixel_test::InitParams();
   }
-
-  // Used to enable the Jelly flag so that benchmark images accurately reflect
-  // the state of the world when features using help bubble views launch.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // HelpBubbleViewPixelTest -----------------------------------------------------

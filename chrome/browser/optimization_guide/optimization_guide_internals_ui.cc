@@ -20,7 +20,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/webui/webui_util.h"
 
 bool OptimizationGuideInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -49,9 +49,7 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
       web_ui->GetWebContents()->GetBrowserContext(),
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost);
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kOptimizationGuideInternalsResources,
-                      kOptimizationGuideInternalsResourcesSize),
+      source, kOptimizationGuideInternalsResources,
       IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
 }
 

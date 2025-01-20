@@ -75,7 +75,7 @@ ContentCaptureReceiver::ContentCaptureReceiver(content::RenderFrameHost* rfh)
 ContentCaptureReceiver::~ContentCaptureReceiver() = default;
 
 int64_t ContentCaptureReceiver::GetIdFrom(content::RenderFrameHost* rfh) {
-  return static_cast<int64_t>(rfh->GetProcess()->GetID()) << 32 |
+  return static_cast<int64_t>(rfh->GetProcess()->GetDeprecatedID()) << 32 |
          (rfh->GetRoutingID() & 0xFFFFFFFF);
 }
 

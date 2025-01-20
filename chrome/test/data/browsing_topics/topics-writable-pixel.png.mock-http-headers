@@ -1,0 +1,4 @@
+HTTP/1.1 {{STATUS}}
+Access-Control-Allow-Origin: *
+{{OBSERVE_BROWSING_TOPICS_HEADER}}
+{{REDIRECT_HEADER}}

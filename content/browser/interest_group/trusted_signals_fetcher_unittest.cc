@@ -21,21 +21,28 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -44,9 +51,16 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -147,7 +161,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
   //       "id": 0,
   //       "arguments": [
   //         {
-  //           "tags": [ "renderUrls" ],
+  //           "tags": [ "renderURLs" ],
   //           "data": [ "https://render_url.test/foo" ]
   //         }
   //       ]
@@ -158,7 +172,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
       "00000000A0A3686D65746164617461A168686F73746E616D6569686F73742E746573746A"
       "706172746974696F6E7381A36269640069617267756D656E747381A2646461746181781B"
       "68747470733A2F2F72656E6465725F75726C2E746573742F666F6F6474616773816A7265"
-      "6E64657255726C7372636F6D7072657373696F6E47726F75704964007161636365707443"
+      "6E64657255524C7372636F6D7072657373696F6E47726F75704964007161636365707443"
       "6F6D7072657373696F6E82646E6F6E6564677A6970000000000000000000000000000000"
       "000000000000000000000000000000000000000000";
 
@@ -260,7 +274,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+        GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -289,7 +305,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultHostname, GetScriptOrigin(), url,
+        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+        GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -399,6 +417,14 @@ class TrustedSignalsFetcherTest : public testing::Test {
     ValidateFetchResult(result, expected_result);
   }
 
+  // Sets response headers (other than Content-Type) for responses.
+  void SetResponseHeaders(
+      const std::vector<std::pair<std::string, std::string>>&
+          response_headers) {
+    base::AutoLock auto_lock(lock_);
+    response_headers_ = response_headers;
+  }
+
  protected:
   std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
       const net::test_server::HttpRequest& request) {
@@ -504,6 +530,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
       response->set_content_type(response_mime_type_);
       response->set_code(response_status_code_);
       response->set_content(response_body);
+
+      for (const auto& pair : response_headers_) {
+        response->AddCustomHeader(pair.first, pair.second);
+      }
+
       return response;
     }
     return nullptr;
@@ -528,7 +559,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // fixture to keep them alive, since the returned BiddingPartition holds onto
   // non-owning raw pointers.
 
-  const std::string kDefaultHostname{"host.test"};
+  const url::Origin kDefaultMainFrameOrigin =
+      url::Origin::Create(GURL("https://host.test"));
   const base::Value::Dict kDefaultAdditionalParams;
 
   // Default values used by CreateBasicBiddingSignalsRequest().
@@ -543,6 +575,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // `kTrustedBiddingSignalsPath`.
   std::string response_mime_type_{TrustedSignalsFetcher::kResponseMediaType};
   net::HttpStatusCode response_status_code_{net::HTTP_OK};
+
+  base::UnguessableToken network_partition_nonce_ =
+      base::UnguessableToken::Create();
 
   base::Lock lock_;
 
@@ -570,6 +605,11 @@ class TrustedSignalsFetcherTest : public testing::Test {
   // error.
   bool use_cleartext_response_body_ GUARDED_BY(lock_) = false;
 
+  // Header values to include in the response. Default value is needed to allow
+  // response to be used at all.
+  std::vector<std::pair<std::string, std::string>> response_headers_
+      GUARDED_BY(lock_){{"Ad-Auction-Allowed", "true"}};
+
   net::test_server::EmbeddedTestServer embedded_test_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -585,12 +625,43 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignals404) {
   response_status_code_ = net::HTTP_NOT_FOUND;
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error(),
-      base::StringPrintf(
-          "Failed to load %s error = net::ERR_HTTP_RESPONSE_CODE_FAILURE.",
-          TrustedBiddingSignalsUrl().spec().c_str()));
+  EXPECT_EQ(result.error(),
+            base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                               TrustedBiddingSignalsUrl().spec().c_str()));
   ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+}
+
+// Test various permutations of the "Ad-Auction-Allowed" and "X-Allow-FLEDGE"
+// header being present and absent.
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsAdAuctionAllowed) {
+  const struct {
+    std::vector<std::pair<std::string, std::string>> headers;
+    bool expect_success;
+  } kTestCases[] = {
+      {{{"Ad-Auction-Allowed", "true"}}, true},
+      {{{"X-Allow-FLEDGE", "true"}}, true},
+      {{}, false},
+      {{{"Ad-Auction-Allowed", "false"}}, false},
+      {{{"X-Allow-FLEDGE", "false"}}, false},
+  };
+
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  for (const auto& test_case : kTestCases) {
+    SetResponseHeaders(test_case.headers);
+
+    auto result =
+        RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+    EXPECT_EQ(result.has_value(), test_case.expect_success);
+
+    if (!result.has_value()) {
+      EXPECT_EQ(result.error(),
+                base::StringPrintf(
+                    "Rejecting load of %s due to lack of Ad-Auction-Allowed: "
+                    "true (or the deprecated X-Allow-FLEDGE: true).",
+                    TrustedBiddingSignalsUrl().spec().c_str()));
+    }
+  }
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
@@ -630,11 +701,14 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCanSetNoCookies) {
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request,
                                                       set_cookie_url);
 
-  // Request should have failed due to a missing MIME type.
-  EXPECT_EQ(
-      result.error(),
-      base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
-                         set_cookie_url.spec().c_str()));
+  // Specific failure reason doesn't really matter for this test, or even that
+  // it failed. What does matter is the fetch response was successfully
+  // received, so best to test the request completed in the expected manner.
+  EXPECT_EQ(result.error(),
+            base::StringPrintf(
+                "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
+                "(or the deprecated X-Allow-FLEDGE: true).",
+                set_cookie_url.spec().c_str()));
 
   // Make sure no cookie was set.
   base::RunLoop run_loop;
@@ -893,11 +967,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdComponentRenderUrl) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component.test/bar" ]
               }
             ]
@@ -933,11 +1007,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdComponentRenderUrls) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component1.test/",
                   "https://component1.test/bar",
@@ -975,7 +1049,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdditionalParam) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1013,7 +1087,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdditionalParams) {
             },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1201,7 +1275,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsRequestPadding) {
                                           "id": 0,
                                           "arguments": [
                                             {
-                                              "tags": [ "renderUrls" ],
+                                              "tags": [ "renderURLs" ],
                                               "data": [ $1 ]
                                             }
                                           ]
@@ -1828,7 +1902,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1839,11 +1913,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url2.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component2.test/" ]
               }
             ]
@@ -1854,11 +1928,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "metadata": { "foo2": "bar2"  },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url3.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component3.test/bar",
                   "https://component3.test/foo"
@@ -2053,7 +2127,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -2064,11 +2138,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url2.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component2.test/" ]
               }
             ]
@@ -2079,11 +2153,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "metadata": { "foo2": "bar2" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url3.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component3.test/bar",
                   "https://component3.test/foo"
@@ -2281,6 +2355,234 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOrigin) {
              "content", base::Milliseconds(0)));
   ValidateFetchResult(result, expected_result);
   ValidateRequestBodyHex(kBasicScoringSignalsRequestBody);
+}
+
+// Tests that the correct IsolationInfo is used.
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
+  // Unlike other tests, use a TestURLLoaderFactory, which intercepts requests
+  // and lets their fields be examined directly, rather than a
+  // TestSharedURLLoaderFactory, which makes real requests. This allows directly
+  // inspecting the created IsolationInfo. Validating the of the IsolationInfo
+  // value on actual results is, unfortunately, just too difficult to be
+  // practical.
+  network::TestURLLoaderFactory url_loader_factory;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchBiddingSignals(
+      &url_loader_factory, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+      GetScriptOrigin(), TrustedBiddingSignalsUrl(),
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      CreateBasicBiddingSignalsRequest(),
+      base::BindLambdaForTesting(
+          [](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ADD_FAILURE() << "This callback should not be invoked";
+          }));
+
+  url_loader_factory.WaitForRequest(TrustedBiddingSignalsUrl());
+  ASSERT_EQ(url_loader_factory.NumPending(), 1);
+  const auto* request = url_loader_factory.GetPendingRequest(0);
+  EXPECT_EQ(request->request.url, TrustedBiddingSignalsUrl());
+  ASSERT_TRUE(request->request.trusted_params);
+  const net::IsolationInfo& isolation_info =
+      request->request.trusted_params->isolation_info;
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
+      kDefaultMainFrameOrigin, net::SiteForCookies(),
+      network_partition_nonce_)));
+}
+
+// Tests that the correct IsolationInfo is used.
+TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
+  // Unlike other tests, use a TestURLLoaderFactory, which intercepts requests
+  // and lets their fields be examined directly, rather than a
+  // TestSharedURLLoaderFactory, which makes real requests. This allows directly
+  // inspecting the created IsolationInfo. Validating the of the IsolationInfo
+  // value on actual results is, unfortunately, just too difficult to be
+  // practical.
+  network::TestURLLoaderFactory url_loader_factory;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchScoringSignals(
+      &url_loader_factory, kDefaultMainFrameOrigin,
+      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
+      GetScriptOrigin(), TrustedScoringSignalsUrl(),
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      CreateBasicScoringSignalsRequest(),
+      base::BindLambdaForTesting(
+          [](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ADD_FAILURE() << "This callback should not be invoked";
+          }));
+
+  url_loader_factory.WaitForRequest(TrustedScoringSignalsUrl());
+  ASSERT_EQ(url_loader_factory.NumPending(), 1);
+  const auto* request = url_loader_factory.GetPendingRequest(0);
+  EXPECT_EQ(request->request.url, TrustedScoringSignalsUrl());
+  ASSERT_TRUE(request->request.trusted_params);
+  const net::IsolationInfo& isolation_info =
+      request->request.trusted_params->isolation_info;
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, kDefaultMainFrameOrigin,
+      kDefaultMainFrameOrigin, net::SiteForCookies(),
+      network_partition_nonce_)));
+}
+
+// Tests that IPAddressInfo is passed through, and the rest of the
+// ClientSecurityState is generated correctly.
+TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
+  for (bool enable_blocking : {false, true}) {
+    SCOPED_TRACE(enable_blocking);
+    base::test::ScopedFeatureList feature_list;
+    if (enable_blocking) {
+      feature_list.InitAndEnableFeature(
+          features::kPrivateNetworkAccessRespectPreflightResults);
+    } else {
+      feature_list.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              features::kPrivateNetworkAccessRespectPreflightResults,
+              features::kPrivateNetworkAccessSendPreflights});
+    }
+
+    for (network::mojom::IPAddressSpace ip_address_space :
+         {network::mojom::IPAddressSpace::kLocal,
+          network::mojom::IPAddressSpace::kPrivate,
+          network::mojom::IPAddressSpace::kPublic}) {
+      SCOPED_TRACE(static_cast<int>(ip_address_space));
+
+      // Unlike other tests, use a TestURLLoaderFactory, which intercepts
+      // requests and lets their fields be examined directly, rather than a
+      // TestSharedURLLoaderFactory, which makes real requests. This allows
+      // directly inspecting passed in arguments. Validating them based on
+      // actual returned results is, unfortunately, just too difficult to be
+      // practical.
+      network::TestURLLoaderFactory url_loader_factory;
+      TrustedSignalsFetcher trusted_signals_fetcher;
+      trusted_signals_fetcher.FetchScoringSignals(
+          &url_loader_factory, kDefaultMainFrameOrigin, ip_address_space,
+          network_partition_nonce_, GetScriptOrigin(),
+          TrustedScoringSignalsUrl(),
+          BiddingAndAuctionServerKey{
+              std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                          sizeof(kTestPublicKey)),
+              kKeyId},
+          CreateBasicScoringSignalsRequest(),
+          base::BindLambdaForTesting(
+              [](TrustedSignalsFetcher::SignalsFetchResult result) {
+                ADD_FAILURE() << "This callback should not be invoked";
+              }));
+
+      url_loader_factory.WaitForRequest(TrustedScoringSignalsUrl());
+      ASSERT_EQ(url_loader_factory.NumPending(), 1);
+      const auto* request = url_loader_factory.GetPendingRequest(0);
+      EXPECT_EQ(request->request.url, TrustedScoringSignalsUrl());
+
+      ASSERT_TRUE(request->request.trusted_params);
+      auto* client_security_state =
+          request->request.trusted_params->client_security_state.get();
+      ASSERT_TRUE(client_security_state);
+
+      EXPECT_EQ(client_security_state->ip_address_space, ip_address_space);
+      EXPECT_EQ(
+          client_security_state->private_network_request_policy,
+          enable_blocking
+              ? network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock
+              : network::mojom::PrivateNetworkRequestPolicy::kAllow);
+      EXPECT_EQ(client_security_state->is_web_secure_context, true);
+
+      // These should all be defaults, per the spec.
+
+      EXPECT_EQ(client_security_state->cross_origin_embedder_policy.value,
+                network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->cross_origin_embedder_policy
+                       .reporting_endpoint.has_value());
+      EXPECT_EQ(
+          client_security_state->cross_origin_embedder_policy.report_only_value,
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->cross_origin_embedder_policy
+                       .report_only_reporting_endpoint.has_value());
+
+      EXPECT_EQ(client_security_state->document_isolation_policy.value,
+                network::mojom::DocumentIsolationPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->document_isolation_policy
+                       .reporting_endpoint.has_value());
+      EXPECT_EQ(
+          client_security_state->document_isolation_policy.report_only_value,
+          network::mojom::DocumentIsolationPolicyValue::kNone);
+      EXPECT_FALSE(client_security_state->document_isolation_policy
+                       .report_only_reporting_endpoint.has_value());
+    }
+  }
+}
+
+// Test that the request timeout (which should use the value of
+// AuctionDownloader::kRequestTimeout) is respected. Unfortunately, can't use
+// MOCK_TIME with TrustedSignalsFetcherTest test fixture, since the embedded
+// test server uses its own independent thread, so the task environment may
+// think it's idle and automatically advance the time while spinning the message
+// loop. Even if it did use a task-environment thread, though, the platform
+// socket APIs may not guarantee that socket operations occur before the task
+// environment notices it has no pending events, and thus advances the time.
+TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // URLLoaderFactory that's never configured to return any results, so requests
+  // to it hang.
+  network::TestURLLoaderFactory url_loader_factory;
+
+  // None of the parameters for this test actually matter, apart from needing to
+  // be valid.
+  const GURL kSignalsUrl("https://a.test/");
+  const url::Origin kSignalsOrigin = url::Origin::Create(kSignalsUrl);
+  const std::set<std::string> kInterestGroupNames{"group1"};
+  const std::set<std::string> kKeys;
+  const base::Value::Dict kAdditionalParams;
+  std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
+  bidding_partitions.emplace_back(
+      /*partition_id=*/0, &kInterestGroupNames, &kKeys, &kAdditionalParams);
+  std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+      bidding_signals_request;
+  bidding_signals_request.emplace(0, std::move(bidding_partitions));
+
+  // Start a request that should complete with a timeout error.
+  base::RunLoop run_loop;
+  TrustedSignalsFetcher::SignalsFetchResult out;
+  TrustedSignalsFetcher trusted_signals_fetcher;
+  trusted_signals_fetcher.FetchBiddingSignals(
+      &url_loader_factory, /*main_frame_origin=*/kSignalsOrigin,
+      network::mojom::IPAddressSpace::kPublic,
+      /*network_partition_nonce=*/base::UnguessableToken::Create(),
+      kSignalsOrigin, kSignalsUrl,
+      BiddingAndAuctionServerKey{
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          kKeyId},
+      bidding_signals_request,
+      base::BindLambdaForTesting(
+          [&](TrustedSignalsFetcher::SignalsFetchResult result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      base::StringPrintf(
+                          "Failed to load %s error = net::ERR_TIMED_OUT.",
+                          kSignalsUrl.spec().c_str()));
+            run_loop.Quit();
+          }));
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  // Run until just before the timeout duration. The request should not time
+  // out.
+  task_environment.FastForwardBy(
+      auction_worklet::AuctionDownloader::kRequestTimeout - kTinyTime);
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+
+  // Wait until the timeout duration has passed. The request should have timed
+  // out.
+  task_environment.FastForwardBy(kTinyTime);
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
 }
 
 }  // namespace

@@ -23,11 +23,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 
 #include <algorithm>
@@ -97,7 +92,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -117,8 +111,9 @@ namespace blink {
 
 #if BUILDFLAG(IS_WIN)
 // Defined in v8_initializer_win.cc.
-bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
-                                   const std::string& json_payload);
+v8::FilterETWSessionByURLResult FilterETWSessionByURLCallback(
+    v8::Local<v8::Context> context,
+    const std::string& json_payload);
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -149,6 +144,18 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
       NOTREACHED();
   }
   return level;
+}
+
+String ToBlinkString(v8::Local<v8::Context> context,
+                     v8::Local<v8::String> source) {
+  v8::String::Value source_str(context->GetIsolate(), source);
+  size_t len = std::min(ContentSecurityPolicy::kMaxSampleLength,
+                        static_cast<size_t>(source_str.length()));
+  // SAFETY: v8::String::Value guarantees *source_str has source_str.length()
+  // length and we guarantee len is equal to or less than source_str.length().
+  const auto snippet = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const UChar*>(*source_str), len));
+  return String(snippet);
 }
 
 // NOTE: when editing this, please also edit the error messages we throw when
@@ -394,14 +401,9 @@ void V8Initializer::FailedAccessCheckCallbackInMainThread(
     v8::Local<v8::Object> holder,
     v8::AccessType type,
     v8::Local<v8::Value> data) {
-  // FIXME: This is the access check callback of last resort. We should modify
-  // V8 to pass in more contextual information, so that we can build a full
-  // ExceptionState.
-  ExceptionState exception_state(
-      holder->GetIsolate(), v8::ExceptionContext::kUnknown, nullptr, nullptr);
-  BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
-                                        WrapperTypeInfo::Unwrap(data), holder,
-                                        exception_state);
+  BindingSecurity::FailedAccessCheckFor(
+      holder->GetIsolate(), WrapperTypeInfo::Unwrap(data), holder,
+      PassThroughException(holder->GetIsolate()));
 }
 
 // Check whether Content Security Policy allows script execution.
@@ -417,15 +419,9 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
     if (ContentSecurityPolicy* policy =
             execution_context->GetContentSecurityPolicyForCurrentWorld()) {
       v8::Context::Scope scope(context);
-      v8::String::Value source_str(context->GetIsolate(), source);
-      UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
-      size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
-                            static_cast<size_t>(source_str.length()));
-      memcpy(snippet, *source_str, len * sizeof(UChar));
-      snippet[len] = 0;
       return policy->AllowEval(ReportingDisposition::kReport,
                                ContentSecurityPolicy::kWillThrowException,
-                               snippet);
+                               ToBlinkString(context, source));
     }
   }
   return false;
@@ -510,18 +506,10 @@ bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(
     return false;
   }
   ContentSecurityPolicy* policy = execution_context->GetContentSecurityPolicy();
-  if (!policy) {
-    return false;
-  }
-  v8::String::Value source_str(context->GetIsolate(), source);
-  UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
-  size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
-                        static_cast<size_t>(source_str.length()));
-  memcpy(snippet, *source_str, len * sizeof(UChar));
-  snippet[len] = 0;
-  if (!policy->AllowWasmCodeGeneration(
-          ReportingDisposition::kReport,
-          ContentSecurityPolicy::kWillThrowException, snippet)) {
+  if (!policy || !policy->AllowWasmCodeGeneration(
+                     ReportingDisposition::kReport,
+                     ContentSecurityPolicy::kWillThrowException,
+                     ToBlinkString(context, source))) {
     return false;
   }
 
@@ -753,6 +741,10 @@ void HostGetImportMetaProperties(v8::Local<v8::Context> context,
   meta->CreateDataProperty(context, resolve_key, resolve_value).ToChecked();
 }
 
+bool IsDOMExceptionWrapper(v8::Isolate* isolate, v8::Local<v8::Object> object) {
+  return V8DOMException::HasInstance(isolate, object);
+}
+
 struct PrintV8OOM {
   const char* location;
   const v8::OOMDetails& details;
@@ -794,10 +786,11 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
+  isolate->SetIsJSApiWrapperNativeErrorCallback(IsDOMExceptionWrapper);
   isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
 #if BUILDFLAG(IS_WIN)
-  isolate->SetFilterETWSessionByURLCallback(FilterETWSessionByURLCallback);
+  isolate->SetFilterETWSessionByURL2Callback(FilterETWSessionByURLCallback);
 #endif  // BUILDFLAG(IS_WIN)
 
   V8ContextSnapshot::EnsureInterfaceTemplates(isolate);
@@ -910,10 +903,11 @@ void V8Initializer::InitializeIsolateHolder(
     const intptr_t* reference_table,
     const std::string& js_command_line_flags) {
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
-  gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 &array_buffer_allocator, reference_table,
-                                 js_command_line_flags, ReportV8FatalError,
-                                 ReportV8OOMError);
+  gin::IsolateHolder::Initialize(
+      gin::IsolateHolder::kNonStrictMode, &array_buffer_allocator,
+      reference_table, js_command_line_flags,
+      Platform::Current()->DisallowV8FeatureFlagOverrides(), ReportV8FatalError,
+      ReportV8OOMError);
 }
 
 v8::Isolate* V8Initializer::InitializeMainThread() {

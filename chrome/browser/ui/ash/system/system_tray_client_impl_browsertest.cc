@@ -55,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -108,9 +109,7 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeviceTest, WithNoLicense) {
 
 class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
-  EnterpriseManagedTest() {
-    device_state_.set_skip_initial_policy_setup(true);
-  }
+  EnterpriseManagedTest() { device_state_.set_skip_initial_policy_setup(true); }
   ~EnterpriseManagedTest() override = default;
   EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
   void operator=(const EnterpriseManagedTest&) = delete;
@@ -318,9 +317,9 @@ class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
   }
 
   const ash::LoginManagerMixin::TestUserInfo unmanaged_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
+      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user_.account_id};
   ash::LoginManagerMixin login_mixin_{&mixin_host_,

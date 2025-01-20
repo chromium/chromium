@@ -48,25 +48,29 @@ class TrackingProtectionSettings : public KeyedService {
   // Returns whether IP protection is enabled.
   bool IsIpProtectionEnabled() const;
 
-  // Adds a Tracking Protection site-scoped (wildcarded) exception for a given
-  // url. `is_user_bypass_exception` should be true if the exception was set via
-  // user bypass and will therefore be temporary.
-  void AddTrackingProtectionException(const GURL& first_party_url,
-                                      bool is_user_bypass_exception = false);
+  // Returns whether fingerprinting protection is enabled.
+  bool IsFpProtectionEnabled() const;
 
-  // Removes a Tracking Protection exception for a given url.
-  // This removes both site-scoped (wildcarded) and origin-scoped exceptions.
+  // Adds a site-scoped TRACKING_PROTECTION content setting equal to ALLOW for
+  // `first_party_url`.
+  void AddTrackingProtectionException(const GURL& first_party_url);
+
+  // Resets the TRACKING_PROTECTION content setting for `first_party_url`.
+  // Can reset both site-scoped (wildcarded) and origin-scoped exceptions.
   void RemoveTrackingProtectionException(const GURL& first_party_url);
 
-  // Returns the tracking protection setting for `first_party_url`. This will be
-  // BLOCK unless the user has made an explicit exception for `first_party_url`.
-  ContentSetting GetTrackingProtectionSetting(
+  // Returns true if the user has a TRACKING_PROTECTION content setting equal to
+  // ALLOW, indicating ACT features should be disabled on `first_party_url`.
+  // NOTE: the default for TRACKING_PROTECTION is BLOCK and cannot be changed,
+  // meaning this function will only return true for site-level content settings
+  // (i.e. exceptions). To check whether individual ACT features are
+  // enabled/disabled please use the functions specific to those features.
+  bool HasTrackingProtectionException(
       const GURL& first_party_url,
       content_settings::SettingInfo* info = nullptr) const;
 
  private:
   void OnEnterpriseControlForPrefsChanged();
-  void MaybeInitializeIppPref();
   void MigrateUserBypassExceptions(ContentSettingsType from,
                                    ContentSettingsType to);
 
@@ -75,6 +79,7 @@ class TrackingProtectionSettings : public KeyedService {
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();
+  void OnFpProtectionPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;

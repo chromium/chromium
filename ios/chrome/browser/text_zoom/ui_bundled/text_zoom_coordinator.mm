@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_mediator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_view_controller.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_coordinator_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

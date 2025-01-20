@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_canvas.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -176,7 +175,7 @@ class PrintRenderFrameHelper
   // asynchronously by a PrintRenderer.
   enum class CreatePreviewDocumentResult {
     kSuccess = 0,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     kInProgress = 1,
 #endif
     kFail = 2,
@@ -267,7 +266,7 @@ class PrintRenderFrameHelper
   void SetPrintPreviewUI(
       mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) override;
   void InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
       bool has_selection) override;
@@ -301,7 +300,7 @@ class PrintRenderFrameHelper
   // Finalize the print ready preview document.
   bool FinalizePrintReadyDocument();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called after a preview document has been created by a PrintRenderer.
   void OnPreviewDocumentCreated(
       int document_cookie,
@@ -454,7 +453,7 @@ class PrintRenderFrameHelper
   // Used to check the prerendering status.
   const std::unique_ptr<Delegate> delegate_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Settings used by a PrintRenderer to create a preview document.
   base::Value::Dict print_renderer_job_settings_;
 
@@ -525,7 +524,7 @@ class PrintRenderFrameHelper
     // Helper functions
     uint32_t GetNextPageIndex();
     bool IsRendering() const;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool IsForArc() const;
 #endif
     bool IsPlugin() const;
@@ -535,7 +534,7 @@ class PrintRenderFrameHelper
     bool IsFinalPageRendered() const;
 
     // Setters
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     void SetIsForArc(bool is_for_arc);
 #endif
     void set_error(PrintPreviewErrorBuckets error);
@@ -558,6 +557,7 @@ class PrintRenderFrameHelper
     size_t pages_rendered_count() const;
     MetafileSkia* metafile();
     ContentProxySet* typeface_content_info();
+    ContentProxySet* image_content_info();
 
    private:
     enum class State {
@@ -581,6 +581,9 @@ class PrintRenderFrameHelper
     // The typefaces encountered in the content during document serialization.
     ContentProxySet typeface_content_info_;
 
+    // The images encountered in the content during document serialization.
+    ContentProxySet image_content_info_;
+
     // A document metafile is needed when not using the print compositor.
     std::unique_ptr<MetafileSkia> metafile_;
 
@@ -599,7 +602,7 @@ class PrintRenderFrameHelper
     // True, if the document source is modifiable. e.g. HTML and not PDF.
     bool is_modifiable_ = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // True, if the document source is from ARC.
     bool is_for_arc_ = false;
 #endif

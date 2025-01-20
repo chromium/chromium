@@ -141,6 +141,8 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
           is_copied_from_embedder
               ? CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder
               : CacheHitOrMissReason::kCapturedEmptyBitmapFromWebPage);
+      entry->navigation_transition_data().set_is_copied_from_embedder(
+          is_copied_from_embedder);
     }
     return;
   }
@@ -330,6 +332,16 @@ bool NavigationTransitionUtils::
 
   if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
+    return false;
+  }
+
+  if (navigation_request.IsHistory() &&
+      navigation_request.GetNavigationEntryOffset() < 0 &&
+      !navigation_request.GetDelegate()->SupportsForwardTransitionAnimation()) {
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kForwardTransitionAnimationNotSupported);
     return false;
   }
 

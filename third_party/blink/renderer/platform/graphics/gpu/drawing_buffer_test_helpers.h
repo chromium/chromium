@@ -20,9 +20,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -326,6 +326,9 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   void DrawingBufferClientRestorePixelLocalStorage() override {
     // Not unit tested yet. Tested with end-to-end tests.
   }
+  void DrawingBufferClientInitializeLayer(cc::Layer* layer) override {
+    // Not unit tested yet. Tested with end-to-end tests.
+  }
 
   // Testing methods.
   gpu::SyncToken MostRecentlyWaitedSyncToken() const {
@@ -463,7 +466,6 @@ class DrawingBufferForTests : public DrawingBuffer {
             false /* wantDepth */,
             false /* wantStencil */,
             DrawingBuffer::kAllowChromiumImage /* ChromiumImageUsage */,
-            cc::PaintFlags::FilterQuality::kLow,
             PredefinedColorSpace::kSRGB,
             gl::GpuPreference::kHighPerformance),
         live_(nullptr) {}
@@ -484,7 +486,9 @@ class DrawingBufferForTests : public DrawingBuffer {
 
   raw_ptr<bool> live_;
 
-  int RecycledBitmapCount() { return recycled_bitmaps_.size(); }
+  int RecycledSoftwareResourceCount() {
+    return recycled_software_resources_.size();
+  }
 };
 
 }  // blink

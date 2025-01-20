@@ -13,6 +13,10 @@
 
 namespace enterprise_commands {
 
+BASE_FEATURE(kUserRemoteCommands,
+             "kUserRemoteCommands",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 UserRemoteCommandsServiceFactory*
 UserRemoteCommandsServiceFactory::GetInstance() {
@@ -29,6 +33,10 @@ UserRemoteCommandsService* UserRemoteCommandsServiceFactory::GetForProfile(
 std::unique_ptr<KeyedService>
 UserRemoteCommandsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(kUserRemoteCommands)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   // UserCloudPolicyManager doesn't exist for Lacros main profile or in some
   // test environments. In those cases, we skip the creation of KeyedService

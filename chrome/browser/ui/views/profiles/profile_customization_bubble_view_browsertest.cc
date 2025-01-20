@@ -23,9 +23,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -57,7 +57,7 @@ class ProfileCustomizationBrowserTest
 
   bool IsSupervisedUser() {
     return GetSupervisionSignInMode() ==
-                supervised_user::SupervisionMixin::SignInMode::kSupervised;
+           supervised_user::SupervisionMixin::SignInMode::kSupervised;
   }
 
  private:

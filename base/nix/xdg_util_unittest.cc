@@ -24,8 +24,7 @@ using ::testing::Eq;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
-namespace base {
-namespace nix {
+namespace base::nix {
 
 namespace {
 
@@ -516,5 +515,4 @@ TEST(XDGUtilTest, LaunchOptionsWithXdgActivation) {
   EXPECT_TRUE(received_launch_options_with_test_token);
 }
 
-}  // namespace nix
-}  // namespace base
+}  // namespace base::nix

@@ -85,7 +85,7 @@ class VersionUpdater {
   // Used to show or hide the promote UI elements. Mac-only.
   typedef base::RepeatingCallback<void(PromotionState)> PromoteCallback;
 
-  virtual ~VersionUpdater() {}
+  virtual ~VersionUpdater() = default;
 
   // Sub-classes must implement this method to create the respective
   // specialization. |web_contents| may be null, in which case any required UX

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,16 +48,18 @@ LockScreenStartReauthDialog* g_dialog = nullptr;
 bool IsDialogLoaded(bool is_loaded,
                     base::OnceClosure& on_loaded_callback,
                     base::OnceClosure callback) {
-  if (is_loaded)
+  if (is_loaded) {
     return true;
+  }
   DCHECK(!on_loaded_callback);
   on_loaded_callback = std::move(callback);
   return false;
 }
 
 void OnDialogLoaded(bool& is_loaded, base::OnceClosure& on_loaded_callback) {
-  if (is_loaded)
+  if (is_loaded) {
     return;
+  }
   is_loaded = true;
   if (on_loaded_callback) {
     std::move(on_loaded_callback).Run();
@@ -84,23 +85,13 @@ class LockScreenStartReauthDialog::ModalDialogManagerCleanup
   void WebContentsDestroyed() override { ResetDelegate(); }
 
   void ResetDelegate() {
-    if (!web_contents())
+    if (!web_contents()) {
       return;
+    }
     web_modal::WebContentsModalDialogManager::FromWebContents(web_contents())
         ->SetDelegate(nullptr);
   }
 };
-
-// static
-gfx::Size LockScreenStartReauthDialog::CalculateLockScreenReauthDialogSize(
-    bool is_new_layout_enabled) {
-  if (!is_new_layout_enabled) {
-    return kBaseLockDialogSize;
-  }
-
-  // LockscreenReauth Dialog size should match OOBE Dialog size.
-  return CalculateOobeDialogSizeForPrimaryDisplay();
-}
 
 void LockScreenStartReauthDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
@@ -160,8 +151,9 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
 // static
 void LockScreenStartReauthDialog::Dismiss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_dialog)
+  if (g_dialog) {
     g_dialog->Close();
+  }
 }
 
 // static
@@ -177,14 +169,16 @@ int LockScreenStartReauthDialog::GetDialogWidth() const {
 
 content::WebContents* LockScreenStartReauthDialog::GetWebContents() {
   auto* web_ui = webui();
-  if (!web_ui)
+  if (!web_ui) {
     return nullptr;
+  }
   return web_ui->GetWebContents();
 }
 
 void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {
-  if (!lock_screen_network_dialog_)
+  if (!lock_screen_network_dialog_) {
     return;
+  }
   lock_screen_network_dialog_.reset();
   if (is_network_dialog_visible_) {
     is_network_dialog_visible_ = false;
@@ -224,14 +218,16 @@ void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenCaptivePortalDialog() {
-  if (captive_portal_dialog_)
+  if (captive_portal_dialog_) {
     captive_portal_dialog_->Dismiss();
+  }
 }
 
 void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   TerminateAutoReload();
-  if (lock_screen_network_dialog_)
+  if (lock_screen_network_dialog_) {
     return;
+  }
   DCHECK(profile_);
   is_network_dialog_visible_ = true;
   lock_screen_network_dialog_ =
@@ -276,8 +272,7 @@ void LockScreenStartReauthDialog::OnCaptivePortalDialogReadyForTesting() {
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
     : BaseLockDialog(GURL(chrome::kChromeUILockScreenStartReauthURL),
-                     CalculateLockScreenReauthDialogSize(
-                         features::IsNewLockScreenReauthLayoutEnabled())),
+                     CalculateOobeDialogSizeForPrimaryDisplay()),
       network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
   network_state_informer_->Init();
   scoped_observation_.Observe(network_state_informer_.get());
@@ -320,8 +315,9 @@ void LockScreenStartReauthDialog::ReactivateAutoReload() {
 
 void LockScreenStartReauthDialog::UpdateState(
     NetworkError::ErrorReason reason) {
-  if (is_proxy_auth_in_progress_)
+  if (is_proxy_auth_in_progress_) {
     return;
+  }
 
   const NetworkStateInformer::State state = network_state_informer_->state();
 
@@ -362,8 +358,9 @@ void LockScreenStartReauthDialog::UpdateState(
 
 bool LockScreenStartReauthDialog::IsLoadedForTesting(
     base::OnceClosure callback) {
-  if (is_dialog_loaded_for_testing_)
+  if (is_dialog_loaded_for_testing_) {
     return true;
+  }
   DCHECK(!on_dialog_loaded_callback_for_testing_);
   on_dialog_loaded_callback_for_testing_ = std::move(callback);
   return false;
@@ -371,16 +368,18 @@ bool LockScreenStartReauthDialog::IsLoadedForTesting(
 
 bool LockScreenStartReauthDialog::IsClosedForTesting(
     base::OnceClosure callback) {
-  if (!is_dialog_loaded_for_testing_)
+  if (!is_dialog_loaded_for_testing_) {
     return true;
+  }
   DCHECK(!on_dialog_closed_callback_for_testing_);
   on_dialog_closed_callback_for_testing_ = std::move(callback);
   return false;
 }
 
 void LockScreenStartReauthDialog::OnReadyForTesting() {
-  if (is_dialog_loaded_for_testing_)
+  if (is_dialog_loaded_for_testing_) {
     return;
+  }
   is_dialog_loaded_for_testing_ = true;
   if (on_dialog_loaded_callback_for_testing_) {
     std::move(on_dialog_loaded_callback_for_testing_).Run();

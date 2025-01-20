@@ -71,7 +71,7 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
     bool is_websocket,
     bool enable_ip_based_pooling,
     NetLog* net_log,
-    NextProto alternative_protocol = kProtoUnknown,
+    NextProto alternative_protocol = NextProto::kProtoUnknown,
     quic::ParsedQuicVersion quic_version =
         quic::ParsedQuicVersion::Unsupported()) {
   auto job = std::make_unique<MockHttpStreamFactoryJob>(

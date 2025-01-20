@@ -85,6 +85,9 @@ inline constexpr const char kGetNullReportsDataKeysSql[] =
 inline constexpr const char kGetRateLimitDataKeysSql[] =
     "SELECT reporting_origin FROM rate_limits";
 
+inline constexpr const char kGetAggregatableDebugRateLimitDataKeysSql[] =
+    "SELECT reporting_origin FROM aggregatable_debug_rate_limits";
+
 static_assert(static_cast<int>(
                   attribution_reporting::mojom::ReportType::kEventLevel) == 0,
               "update `report_type=0` clause below");

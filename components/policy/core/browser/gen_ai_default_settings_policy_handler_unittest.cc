@@ -112,11 +112,37 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, FeatureDisabled) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NotCloud) {
+  policy::PolicyErrorMap errors;
   SetGenAiDefaultPolicy(base::Value(kDefaultValue), POLICY_SOURCE_PLATFORM);
-  EXPECT_FALSE(handler_->CheckPolicySettings(policies_, nullptr));
+  EXPECT_FALSE(handler_->CheckPolicySettings(policies_, &errors));
   SetGenAiDefaultPolicy(base::Value(kDefaultValue));
-  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, nullptr));
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
 }
 #endif // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, DefaultControlMessage) {
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  policy::PolicyErrorMap errors;
+
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is controlling the default behavior of the following "
+            u"policies: GenAiPolicy4");
+}
+
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NoDefaultControlWarning) {
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  policy::PolicyErrorMap errors;
+
+  // Setting `GenAiPolicy4` so that the metapolicy has no policies to control.
+  policies_.Set(kGenAiPolicy4Name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                POLICY_SOURCE_PLATFORM, base::Value(1), nullptr);
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, &errors));
+  EXPECT_EQ(errors.GetErrorMessages(key::kGenAiDefaultSettings,
+                                    policy::PolicyMap::MessageType::kInfo),
+            u"This policy is not controlling the default behavior of any other "
+            u"policies.");
+}
 
 }  // namespace policy

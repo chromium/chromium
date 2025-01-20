@@ -13,7 +13,10 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/local_data_description.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -21,6 +24,9 @@
 #endif
 
 namespace {
+
+constexpr char kFolderIconUrl[] =
+    "chrome://resources/images/icon_folder_open.svg";
 
 // The subtitle of the dialog depends on which type of data is shown and the
 // number of different types.
@@ -50,9 +56,51 @@ std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
         IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS, first_type_item_count);
   }
 
+  if (first_type == syncer::DataType::BOOKMARKS) {
+    if (number_of_types > 1) {
+      // Returns "bookmarks + other items" combo string.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO,
+          first_type_item_count);
+    }
+    // Returns the bookmarks only string.
+    return l10n_util::GetPluralStringFUTF8(
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS, first_type_item_count);
+  }
+
   // Returns the generic items string.
   return l10n_util::GetPluralStringFUTF8(
       IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
+}
+
+GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
+  if (absl::holds_alternative<syncer::LocalDataItemModel::NoIcon>(icon)) {
+    return GURL();
+  }
+
+  if (const GURL* page_url =
+          absl::get_if<syncer::LocalDataItemModel::PageUrlIcon>(&icon)) {
+    // Add the http:// scheme if a scheme is not already present.
+    GURL::Replacements replace_scheme;
+    replace_scheme.SetSchemeStr(url::kHttpScheme);
+    GURL page_url_with_scheme =
+        page_url->has_scheme() ? *page_url
+                               : page_url->ReplaceComponents(replace_scheme);
+
+    // Build up the final chrome://favicon2 URL. See `chrome::FaviconUrlFormat`.
+    GURL favicon_url("chrome://favicon2/");
+    favicon_url = net::AppendQueryParameter(favicon_url, "pageUrl",
+                                            page_url_with_scheme.spec());
+    favicon_url = net::AppendQueryParameter(favicon_url, "size", "24");
+    favicon_url = net::AppendQueryParameter(favicon_url, "scaleFactor", "1x");
+    return favicon_url;
+  }
+
+  if (absl::holds_alternative<syncer::LocalDataItemModel::FolderIcon>(icon)) {
+    return GURL(kFolderIconUrl);
+  }
+
+  NOTREACHED() << "Unsupported icon type, index: " << icon.index();
 }
 
 }  // namespace
@@ -210,7 +258,7 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
       // mapping in the Mojo model.
       internal_data_item_id_mapping.insert_or_assign(current_id, data_item.id);
       data_item_mojo->id = current_id.value();
-      data_item_mojo->icon_url = data_item.icon_url.spec();
+      data_item_mojo->icon_url = ComputeIconUrl(data_item.icon).spec();
       data_item_mojo->title = data_item.title;
       data_item_mojo->subtitle = data_item.subtitle;
 
@@ -239,6 +287,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
   switch (type) {
     case syncer::DataType::PASSWORDS:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS;
+    case syncer::DataType::BOOKMARKS:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
     default:

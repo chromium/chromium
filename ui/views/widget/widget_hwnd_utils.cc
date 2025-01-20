@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -31,24 +32,33 @@ void CalculateWindowStylesFromInitParams(
   *ex_style = 0;
   *class_style = CS_DBLCLKS;
 
+  if (features::ShouldRemoveRedirectionBitmap()) {
+    *ex_style |= WS_EX_NOREDIRECTIONBITMAP;
+  }
+
   // Set type-independent style attributes.
-  if (params.child)
+  if (params.child) {
     *style |= WS_CHILD;
+  }
   if (params.show_state == ui::mojom::WindowShowState::kMaximized) {
     *style |= WS_MAXIMIZE;
   }
   if (params.show_state == ui::mojom::WindowShowState::kMinimized) {
     *style |= WS_MINIMIZE;
   }
-  if (!params.accept_events)
+  if (!params.accept_events) {
     *ex_style |= WS_EX_TRANSPARENT;
+  }
   DCHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable);
-  if (params.activatable == Widget::InitParams::Activatable::kNo)
+  if (params.activatable == Widget::InitParams::Activatable::kNo) {
     *ex_style |= WS_EX_NOACTIVATE;
-  if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal)
+  }
+  if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal) {
     *ex_style |= WS_EX_TOPMOST;
-  if (params.shadow_type == Widget::InitParams::ShadowType::kDrop)
+  }
+  if (params.shadow_type == Widget::InitParams::ShadowType::kDrop) {
     *class_style |= CS_DROPSHADOW;
+  }
 
   // Set type-dependent style attributes.
   switch (params.type) {
@@ -57,14 +67,18 @@ void CalculateWindowStylesFromInitParams(
       //   WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU |
       //   WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
       *style |= WS_OVERLAPPEDWINDOW;
-      if (!widget_delegate->CanMaximize())
+      if (!widget_delegate->CanMaximize()) {
         *style &= static_cast<DWORD>(~WS_MAXIMIZEBOX);
-      if (!widget_delegate->CanMinimize())
+      }
+      if (!widget_delegate->CanMinimize()) {
         *style &= static_cast<DWORD>(~WS_MINIMIZEBOX);
-      if (!widget_delegate->CanResize())
+      }
+      if (!widget_delegate->CanResize()) {
         *style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_MAXIMIZEBOX));
-      if (params.remove_standard_frame)
+      }
+      if (params.remove_standard_frame) {
         *style &= static_cast<DWORD>(~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
+      }
 
       if (native_widget_delegate->IsDialogBox()) {
         *style |= DS_MODALFRAME;
@@ -83,8 +97,9 @@ void CalculateWindowStylesFromInitParams(
           native_widget_delegate->IsDialogBox() ? WS_EX_DLGMODALFRAME : 0;
 
       // See layered window comment below.
-      if (is_translucent)
+      if (is_translucent) {
         *style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_CAPTION));
+      }
       break;
     }
     case Widget::InitParams::TYPE_CONTROL:
@@ -93,26 +108,38 @@ void CalculateWindowStylesFromInitParams(
     case Widget::InitParams::TYPE_BUBBLE:
       *style |= WS_POPUP;
       *style |= WS_CLIPCHILDREN;
-      if (!params.force_show_in_taskbar)
+      if (!params.force_show_in_taskbar) {
         *ex_style |= WS_EX_TOOLWINDOW;
+      }
       break;
     case Widget::InitParams::TYPE_POPUP:
       *style |= WS_POPUP;
-      if (!params.force_show_in_taskbar)
+      if (!params.force_show_in_taskbar) {
         *ex_style |= WS_EX_TOOLWINDOW;
+      }
       break;
     case Widget::InitParams::TYPE_MENU:
       *style |= WS_POPUP;
       if (params.remove_standard_frame) {
         *style |= WS_THICKFRAME;
       }
-      if (!params.force_show_in_taskbar)
+      if (!params.force_show_in_taskbar) {
         *ex_style |= WS_EX_TOOLWINDOW;
+      }
       break;
     case Widget::InitParams::TYPE_DRAG:
     case Widget::InitParams::TYPE_TOOLTIP:
     case Widget::InitParams::TYPE_WINDOW_FRAMELESS:
       *style |= WS_POPUP;
+#if BUILDFLAG(IS_WIN)
+      if (params.dont_show_in_taskbar) {
+        *ex_style |= WS_EX_TOOLWINDOW;
+      }
+      if (params.force_system_menu_for_frameless &&
+          params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS) {
+        *style |= WS_SYSMENU;
+      }
+#endif  // BUILDFLAG(IS_WIN)
       break;
     default:
       NOTREACHED();

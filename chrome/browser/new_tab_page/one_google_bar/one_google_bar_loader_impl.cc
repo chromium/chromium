@@ -18,8 +18,10 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -93,7 +95,8 @@ bool GetStyleSheet(const base::Value::Dict& dict,
 
 }  // namespace safe_html
 
-std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
+std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
+                                              bool expect_async_bar_parts) {
   if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return std::nullopt;
@@ -112,16 +115,19 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
     language_code = *maybe_language;
   }
 
-  const base::Value::Dict* one_google_bar = update->FindDict("ogb");
+  OneGoogleBarData result;
+  result.language_code = language_code;
+
+  const base::Value::Dict* one_google_bar =
+      update->FindDict(expect_async_bar_parts ? "ogb_parts" : "ogb");
   if (!one_google_bar) {
     DVLOG(1) << "Parse error: no ogb";
     return std::nullopt;
   }
 
-  OneGoogleBarData result;
-  result.language_code = language_code;
-
-  if (!safe_html::GetHtml(*one_google_bar, "html", &result.bar_html)) {
+  if (!safe_html::GetHtml(*one_google_bar,
+                          expect_async_bar_parts ? "right_html" : "html",
+                          &result.bar_html)) {
     DVLOG(1) << "Parse error: no html";
     return std::nullopt;
   }
@@ -215,7 +221,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
       chrome_connected_header_helper.BuildRequestHeader(
           /*is_header_request=*/true, api_url_,
           // Gaia ID is only needed for (drive|docs).google.com.
-          /*gaia_id=*/std::string(),
+          GaiaId(),
           /*is_child_account=*/signin::Tribool::kUnknown, profile_mode,
           signin::kChromeMirrorHeaderSource,
           /*force_account_consistency=*/false);
@@ -283,8 +289,9 @@ OneGoogleBarLoaderImpl::OneGoogleBarLoaderImpl(
     bool account_consistency_mirror_required)
     : url_loader_factory_(url_loader_factory),
       application_locale_(application_locale),
-      account_consistency_mirror_required_(
-          account_consistency_mirror_required) {}
+      account_consistency_mirror_required_(account_consistency_mirror_required),
+      async_bar_parts_(base::FeatureList::IsEnabled(
+          ntp_features::kNtpOneGoogleBarAsyncBarParts)) {}
 
 OneGoogleBarLoaderImpl::~OneGoogleBarLoaderImpl() = default;
 
@@ -336,6 +343,9 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
   if (additional_query_params_.find("&async=") == std::string::npos) {
     query += "&async=fixed:0";
   }
+  if (async_bar_parts_) {
+    query += "&expflags=OgbModule__use_async_bar_parts:true";
+  }
   if (query.at(0) == '&') {
     query = query.substr(1);
   }
@@ -379,7 +389,8 @@ void OneGoogleBarLoaderImpl::JsonParsed(
     return;
   }
 
-  std::optional<OneGoogleBarData> data = JsonToOGBData(*result);
+  std::optional<OneGoogleBarData> data =
+      JsonToOGBData(*result, async_bar_parts_);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 

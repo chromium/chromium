@@ -11,15 +11,16 @@
 #include <variant>
 
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -51,7 +52,7 @@ class CORE_EXPORT ObjectPaintProperties
 
   void Trace(Visitor* visitor) const { visitor->Trace(nodes_); }
 
- public:
+ private:
 // Preprocessor macro declarations.
 //
 // The following defines 3 functions and one variable:
@@ -87,8 +88,7 @@ class CORE_EXPORT ObjectPaintProperties
 
 #define ADD_ALIAS_NODE(type, function, field_id)                        \
  public:                                                                \
-  static_assert(field_id >= NodeId::kFirst##type);                      \
-  static_assert(field_id <= NodeId::kLast##type);                       \
+  static_assert(field_id == NodeId::k##type##Alias);                    \
                                                                         \
   const type##PaintPropertyNodeOrAlias* function() const {              \
     return GetNode<type##PaintPropertyNodeAlias>(field_id);             \
@@ -110,32 +110,37 @@ class CORE_EXPORT ObjectPaintProperties
   // Identifier used for indexing into the sparse vector of nodes. NOTE: when
   // adding a new node to this list, make sure to do the following. Update
   // the kLast<NodeType> value to reflect the value you added, and renumber all
-  // higher value enums. The HasNodeTypeInRange() method assumes that  all nodes
-  // of NodeType are bounded between kFirst<NodeType>() and kLast<NodeType>, and
-  // there are no other types of nodes in that range.
+  // higher value enums. All nodes of NodeType should be bounded between
+  // kFirst<NodeType>() and kLast<NodeType> (both inclusive), and the alias
+  // node id should be after kLast<NodeType>.
   enum class NodeId : unsigned {
     // Transforms
-    kPaintOffsetTranslation = 0,
+    kFirstTransform = 0,
+    kPaintOffsetTranslation = kFirstTransform,
     kStickyTranslation = 1,
     kAnchorPositionScrollTranslation = 2,
-    kTranslate = 3,
+    // Transform nodes for CSS transform operations.
+    kFirstCSSTransform = 3,
+    kTranslate = kFirstCSSTransform,
     kRotate = 4,
     kScale = 5,
     kOffset = 6,
     kTransform = 7,
+    kLastCSSTransform = kTransform,
+    // End of Transform nodes for CSS transform operations.
     kPerspective = 8,
     kReplacedContentTransform = 9,
     kScrollTranslation = 10,
+    kLastTransform = kScrollTranslation,
     kTransformAlias = 11,
-    kFirstTransform = kPaintOffsetTranslation,
-    kLastTransform = kTransformAlias,
 
     kScroll = 12,
     kFirstScroll = kScroll,
     kLastScroll = kScroll,
 
     // Effects
-    kElementCaptureEffect = 13,
+    kFirstEffect = 13,
+    kElementCaptureEffect = kFirstEffect,
     kViewTransitionSubframeRootEffect = 14,
     kViewTransitionEffect = 15,
     kEffect = 16,
@@ -144,13 +149,13 @@ class CORE_EXPORT ObjectPaintProperties
     kClipPathMask = 19,
     kVerticalScrollbarEffect = 20,
     kHorizontalScrollbarEffect = 21,
-    kScrollCorner = 22,
+    kScrollCornerEffect = 22,
+    kLastEffect = kScrollCornerEffect,
     kEffectAlias = 23,
-    kFirstEffect = kElementCaptureEffect,
-    kLastEffect = kEffectAlias,
 
     // Clips
-    kClipPathClip = 24,
+    kFirstClip = 24,
+    kClipPathClip = kFirstClip,
     kMaskClip = 25,
     kCssClip = 26,
     kOverflowControlsClip = 27,
@@ -159,13 +164,63 @@ class CORE_EXPORT ObjectPaintProperties
     kInnerBorderRadiusClip = 30,
     kOverflowClip = 31,
     kCssClipFixedPosition = 32,
+    kLastClip = kCssClipFixedPosition,
     kClipAlias = 33,
-    kFirstClip = kClipPathClip,
-    kLastClip = kClipAlias,
 
     // Should be updated whenever a higher value NodeType is added.
-    kNumFields = kLastClip + 1
+    kNumFields = kClipAlias + 1,
   };
+
+  template <typename NodeType>
+  struct NodeIdRange {};
+
+  template <>
+  struct NodeIdRange<PaintPropertyNode> {
+    static constexpr NodeId kFirst = NodeId::kFirstTransform;
+    static constexpr NodeId kLast = NodeId::kClipAlias;
+  };
+  template <>
+  struct NodeIdRange<TransformPaintPropertyNodeOrAlias> {
+    static constexpr NodeId kFirst = NodeId::kFirstTransform;
+    static constexpr NodeId kLast = NodeId::kTransformAlias;
+  };
+  template <>
+  struct NodeIdRange<TransformPaintPropertyNode> {
+    static constexpr NodeId kFirst = NodeId::kFirstTransform;
+    static constexpr NodeId kLast = NodeId::kLastTransform;
+  };
+  template <>
+  struct NodeIdRange<ScrollPaintPropertyNode> {
+    static constexpr NodeId kFirst = NodeId::kFirstScroll;
+    static constexpr NodeId kLast = NodeId::kLastScroll;
+  };
+  template <>
+  struct NodeIdRange<EffectPaintPropertyNodeOrAlias> {
+    static constexpr NodeId kFirst = NodeId::kFirstEffect;
+    static constexpr NodeId kLast = NodeId::kEffectAlias;
+  };
+  template <>
+  struct NodeIdRange<EffectPaintPropertyNode> {
+    static constexpr NodeId kFirst = NodeId::kFirstEffect;
+    static constexpr NodeId kLast = NodeId::kLastEffect;
+  };
+  template <>
+  struct NodeIdRange<ClipPaintPropertyNodeOrAlias> {
+    static constexpr NodeId kFirst = NodeId::kFirstClip;
+    static constexpr NodeId kLast = NodeId::kClipAlias;
+  };
+  template <>
+  struct NodeIdRange<ClipPaintPropertyNode> {
+    static constexpr NodeId kFirst = NodeId::kFirstClip;
+    static constexpr NodeId kLast = NodeId::kLastClip;
+  };
+
+ public:
+  template <typename NodeType>
+  bool HasNode() const {
+    return nodes_.HasFieldInRange(NodeIdRange<NodeType>::kFirst,
+                                  NodeIdRange<NodeType>::kLast);
+  }
 
   // Transform node method declarations.
   //
@@ -232,11 +287,9 @@ class CORE_EXPORT ObjectPaintProperties
   //
   // This hierarchy is related to the order of transform operations in
   // https://drafts.csswg.org/css-transforms-2/#accumulated-3d-transformation-matrix-computation
-  bool HasTransformNode() const {
-    return HasNodeTypeInRange(NodeId::kFirstTransform, NodeId::kLastTransform);
-  }
   bool HasCSSTransformPropertyNode() const {
-    return Translate() || Rotate() || Scale() || Offset() || Transform();
+    return nodes_.HasFieldInRange(NodeId::kFirstCSSTransform,
+                                  NodeId::kLastCSSTransform);
   }
   std::array<const TransformPaintPropertyNode*, 5>
   AllCSSTransformPropertiesOutsideToInside() const {
@@ -302,10 +355,6 @@ class CORE_EXPORT ObjectPaintProperties
   //       This serves as a parent to subtree effects on an element with paint
   //       containment, It is the deepest child of any effect tree on the
   //       contain: paint element.
-  bool HasEffectNode() const {
-    return HasNodeTypeInRange(NodeId::kFirstEffect, NodeId::kLastEffect);
-  }
-
   ADD_EFFECT(ElementCaptureEffect, NodeId::kElementCaptureEffect)
   ADD_EFFECT(ViewTransitionSubframeRootEffect,
              NodeId::kViewTransitionSubframeRootEffect)
@@ -316,7 +365,7 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_EFFECT(ClipPathMask, NodeId::kClipPathMask)
   ADD_EFFECT(VerticalScrollbarEffect, NodeId::kVerticalScrollbarEffect)
   ADD_EFFECT(HorizontalScrollbarEffect, NodeId::kHorizontalScrollbarEffect)
-  ADD_EFFECT(ScrollCornerEffect, NodeId::kScrollCorner)
+  ADD_EFFECT(ScrollCornerEffect, NodeId::kScrollCornerEffect)
   ADD_ALIAS_NODE(Effect, EffectIsolationNode, NodeId::kEffectAlias)
 
   // Clip node declarations.
@@ -368,9 +417,6 @@ class CORE_EXPORT ObjectPaintProperties
   //       This serves as a parent to subtree clips on an element with paint
   //       containment. It is the deepest child of any clip tree on the contain:
   //       paint element.
-  bool HasClipNode() const {
-    return HasNodeTypeInRange(NodeId::kFirstClip, NodeId::kLastClip);
-  }
   ADD_CLIP(ClipPathClip, NodeId::kClipPathClip)
   ADD_CLIP(MaskClip, NodeId::kMaskClip)
   ADD_CLIP(CssClip, NodeId::kCssClip)
@@ -389,11 +435,26 @@ class CORE_EXPORT ObjectPaintProperties
 #undef ADD_NODE
 #undef ADD_ALIAS_NODE
 
-  // Debug-only state change validation method implementations.
-//
-// Used by find_properties_needing_update.h for verifying state doesn't
-// change.
+  // For each node of `NodeType`, runs `action`, and returns true immediately
+  // if `action` returns true, or returns false after iterating the nodes.
+  template <typename NodeType>
+  bool ForNodes(base::FunctionRef<bool(const NodeType&)> action) const {
+    for (NodeId i = NodeIdRange<NodeType>::kFirst;
+         i <= NodeIdRange<NodeType>::kLast;
+         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
+      if (const auto* node = GetNode<NodeType>(i)) {
+        if (action(*node)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 #if DCHECK_IS_ON()
+  // Debug-only state change validation method implementations.
+  // Used by find_properties_needing_update.h for verifying state doesn't
+  // change.
   void SetImmutable() const { is_immutable_ = true; }
   bool IsImmutable() const { return is_immutable_; }
   void SetMutable() const { is_immutable_ = false; }
@@ -412,17 +473,12 @@ class CORE_EXPORT ObjectPaintProperties
            "effect trees.";
   }
 
-  void AddTransformNodesToPrinter(PropertyTreePrinter& printer) const {
-    AddNodesToPrinter(NodeId::kFirstTransform, NodeId::kLastTransform, printer);
-  }
-  void AddClipNodesToPrinter(PropertyTreePrinter& printer) const {
-    AddNodesToPrinter(NodeId::kFirstClip, NodeId::kLastClip, printer);
-  }
-  void AddEffectNodesToPrinter(PropertyTreePrinter& printer) const {
-    AddNodesToPrinter(NodeId::kFirstEffect, NodeId::kLastEffect, printer);
-  }
-  void AddScrollNodesToPrinter(PropertyTreePrinter& printer) const {
-    AddNodesToPrinter(NodeId::kFirstScroll, NodeId::kLastScroll, printer);
+  template <typename NodeType>
+  void AddNodesToPrinter(PropertyTreePrinter& printer) const {
+    ForNodes<NodeType>([&printer](const NodeType& node) {
+      printer.AddNode(&node);
+      return false;
+    });
   }
 #endif
 
@@ -515,29 +571,6 @@ class CORE_EXPORT ObjectPaintProperties
     }
     return nullptr;
   }
-
-  bool HasNodeTypeInRange(NodeId first_id, NodeId last_id) const {
-    for (NodeId i = first_id; i <= last_id;
-         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
-      if (nodes_.HasField(i)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-#if DCHECK_IS_ON()
-  void AddNodesToPrinter(NodeId first_id,
-                         NodeId last_id,
-                         PropertyTreePrinter& printer) const {
-    for (NodeId i = first_id; i <= last_id;
-         i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
-      if (nodes_.HasField(i)) {
-        printer.AddNode(nodes_.GetField(i).Get());
-      }
-    }
-  }
-#endif
 
   NodeList nodes_;
 

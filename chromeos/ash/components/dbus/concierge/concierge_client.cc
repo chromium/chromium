@@ -131,7 +131,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
   void CancelDiskImageOperation(
       const concierge::CancelDiskImageRequest& request,
-      chromeos::DBusMethodCallback<concierge::CancelDiskImageResponse> callback)
+      chromeos::DBusMethodCallback<concierge::SuccessFailureResponse> callback)
       override {
     CallMethod(concierge::kCancelDiskImageMethod, request, std::move(callback));
   }
@@ -168,19 +168,19 @@ class ConciergeClientImpl : public ConciergeClient {
   }
 
   void StopVm(const concierge::StopVmRequest& request,
-              chromeos::DBusMethodCallback<concierge::StopVmResponse> callback)
-      override {
+              chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
+                  callback) override {
     CallMethod(concierge::kStopVmMethod, request, std::move(callback));
   }
 
   void SuspendVm(const concierge::SuspendVmRequest& request,
-                 chromeos::DBusMethodCallback<concierge::SuspendVmResponse>
+                 chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
                      callback) override {
     CallMethod(concierge::kSuspendVmMethod, request, std::move(callback));
   }
 
   void ResumeVm(const concierge::ResumeVmRequest& request,
-                chromeos::DBusMethodCallback<concierge::ResumeVmResponse>
+                chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
                     callback) override {
     CallMethod(concierge::kResumeVmMethod, request, std::move(callback));
   }
@@ -232,7 +232,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
   void DetachUsbDevice(
       const concierge::DetachUsbDeviceRequest& request,
-      chromeos::DBusMethodCallback<concierge::DetachUsbDeviceResponse> callback)
+      chromeos::DBusMethodCallback<concierge::SuccessFailureResponse> callback)
       override {
     CallMethod(concierge::kDetachUsbDeviceMethod, request, std::move(callback));
   }
@@ -263,6 +263,14 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kListVmsMethod, request, std::move(callback));
   }
 
+  void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
+    CallMethod(concierge::kModifyFakePowerConfigMethod, request,
+               std::move(callback));
+  }
+
   void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<concierge::GetVmLaunchAllowedResponse>
@@ -271,16 +279,17 @@ class ConciergeClientImpl : public ConciergeClient {
                std::move(callback));
   }
 
-  void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
-                  callback) override {
+  void SwapVm(
+      const vm_tools::concierge::SwapVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     CallMethod(concierge::kSwapVmMethod, request, std::move(callback));
   }
 
   void InstallPflash(
       base::ScopedFD fd,
       const vm_tools::concierge::InstallPflashRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override {
     CallMethodWithFd(concierge::kInstallPflashMethod, request, std::move(fd),
                      std::move(callback));
@@ -288,8 +297,8 @@ class ConciergeClientImpl : public ConciergeClient {
 
   void AggressiveBalloon(
       const vm_tools::concierge::AggressiveBalloonRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     CallMethod(concierge::kAggressiveBalloonMethod, request,
                std::move(callback));
   }

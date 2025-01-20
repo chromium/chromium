@@ -108,7 +108,7 @@ ShutdownDetector::ShutdownDetector(
   CHECK(task_runner_);
 }
 
-ShutdownDetector::~ShutdownDetector() {}
+ShutdownDetector::~ShutdownDetector() = default;
 
 NOINLINE void ExitPosted() {
   // Ensure function isn't optimized away.

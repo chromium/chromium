@@ -29,14 +29,27 @@ constexpr char kNonInstallOrigin[] = "https://example.com/";
 constexpr char kNonInstallURL[] = "https://example.com/title3.html";
 constexpr char kSuccessMessage[] = "SUCCESS";
 constexpr char kFailureMessage[] = "FAIL: 1 User denied Geolocation";
+constexpr char kPathToBeServed[] = "chrome/test/data";
+
+struct PermissionParam {
+  // If the origin should be allowed by policy.
+  bool allow_origin_by_policy;
+
+  // Origin under test for having access to the browser permission.
+  std::string origin;
+
+  // Appropriate failure or success message for the browser permission
+  // availability.
+  std::string result_message;
+};
 
 }  // namespace
 
-class WebKioskBrowserPermissionsTest : public WebKioskBaseTest {
+class WebKioskBrowserPermissionsTest
+    : public WebKioskBaseTest,
+      public testing::WithParamInterface<PermissionParam> {
  public:
-  WebKioskBrowserPermissionsTest()
-      : geolocation_overrider_(
-            std::make_unique<device::ScopedGeolocationOverrider>(0, 0)) {}
+  WebKioskBrowserPermissionsTest() = default;
 
   WebKioskBrowserPermissionsTest(const WebKioskBrowserPermissionsTest&) =
       delete;
@@ -50,11 +63,35 @@ class WebKioskBrowserPermissionsTest : public WebKioskBaseTest {
 
   content::WebContents* GetKioskAppWebContents() {
     BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(initial_browser());
+        BrowserView::GetBrowserViewForBrowser(kiosk_app_browser());
     return browser_view ? browser_view->GetActiveWebContents() : nullptr;
   }
 
-  void WaitForGeoLocationDefined(content::WebContents* web_contents) {
+  void AllowBrowserPermissionsForOrigin(const std::string& origin) {
+    kiosk_app_browser()->profile()->GetPrefs()->SetList(
+        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        base::Value::List().Append(origin));
+  }
+
+ private:
+  FakeOriginTestServerMixin install_origin_server_mixin_{
+      &mixin_host_, GURL(kInstallOrigin), FILE_PATH_LITERAL(kPathToBeServed)};
+
+  FakeOriginTestServerMixin non_install_origin_server_mixin_{
+      &mixin_host_, GURL(kNonInstallOrigin),
+      FILE_PATH_LITERAL(kPathToBeServed)};
+};
+
+class WebKioskGeolocationBrowserPermissionTest
+    : public WebKioskBrowserPermissionsTest {
+ public:
+  WebKioskGeolocationBrowserPermissionTest()
+      : geolocation_overrider_(
+            std::make_unique<device::ScopedGeolocationOverrider>(
+                /*latitude=*/0,
+                /*longitude=*/0)) {}
+
+  void WaitForPermissionDefined(content::WebContents* web_contents) {
     ash::test::TestPredicateWaiter(
         base::BindRepeating(
             [](content::WebContents* web_contents) {
@@ -67,8 +104,7 @@ class WebKioskBrowserPermissionsTest : public WebKioskBaseTest {
         .Wait();
   }
 
-  content::EvalJsResult CallGeoLocationPermission(
-      content::WebContents* web_contents) {
+  content::EvalJsResult CallPermission(content::WebContents* web_contents) {
     return content::EvalJs(web_contents, R"(
     (async function() {
       try {
@@ -89,73 +125,37 @@ class WebKioskBrowserPermissionsTest : public WebKioskBaseTest {
     })();)");
   }
 
-  void AllowBrowserPermissionsForOrigin(const std::string& origin) {
-    initial_browser()->profile()->GetPrefs()->SetList(
-        prefs::kKioskBrowserPermissionsAllowedForOrigins,
-        base::Value::List().Append(origin));
-  }
-
-  Browser* initial_browser() {
-    Browser* initial_browser = BrowserList::GetInstance()->get(0);
-    CHECK(initial_browser);
-    return initial_browser;
-  }
-
  private:
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-
-  FakeOriginTestServerMixin server_mixin_{
-      &mixin_host_,
-      /*origin=*/GURL(kInstallOrigin),
-      /*path_to_be_served=*/FILE_PATH_LITERAL("chrome/test/data")};
 };
 
-IN_PROC_BROWSER_TEST_F(WebKioskBrowserPermissionsTest,
-                       InstallOriginCanAccessGeolocationPermission) {
+IN_PROC_BROWSER_TEST_P(WebKioskGeolocationBrowserPermissionTest,
+                       CheckOriginAccess) {
   InitializeRegularOnlineKiosk();
+  if (GetParam().allow_origin_by_policy) {
+    AllowBrowserPermissionsForOrigin(GetParam().origin);
+  }
+
   content::WebContents* web_contents = GetKioskAppWebContents();
   ASSERT_NE(web_contents, nullptr);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(GetParam().origin)));
 
-  WaitForGeoLocationDefined(web_contents);
+  WaitForPermissionDefined(web_contents);
 
-  content::EvalJsResult result = CallGeoLocationPermission(web_contents);
-  EXPECT_EQ(result.value.GetString(), kSuccessMessage);
+  content::EvalJsResult result = CallPermission(web_contents);
+  EXPECT_EQ(result.value.GetString(), GetParam().result_message);
 }
 
-class WebKioskBrowserPermissionsNonInstallOriginTest
-    : public WebKioskBrowserPermissionsTest {
- private:
-  FakeOriginTestServerMixin server_mixin_{
-      &mixin_host_,
-      /*origin=*/GURL(kNonInstallOrigin),
-      /*path_to_be_served=*/FILE_PATH_LITERAL("chrome/test/data")};
-};
-
-IN_PROC_BROWSER_TEST_F(WebKioskBrowserPermissionsNonInstallOriginTest,
-                       OriginCannotAccessBrowserPermissions) {
-  InitializeRegularOnlineKiosk();
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(kNonInstallURL)));
-
-  WaitForGeoLocationDefined(web_contents);
-
-  content::EvalJsResult result = CallGeoLocationPermission(web_contents);
-  EXPECT_TRUE(base::Contains(result.value.GetString(), kFailureMessage));
-}
-
-IN_PROC_BROWSER_TEST_F(WebKioskBrowserPermissionsNonInstallOriginTest,
-                       OriginCanAccessBrowserPermissionsIfAllowedByPref) {
-  InitializeRegularOnlineKiosk();
-  AllowBrowserPermissionsForOrigin(kNonInstallOrigin);
-  content::WebContents* web_contents = GetKioskAppWebContents();
-  ASSERT_NE(web_contents, nullptr);
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(kNonInstallURL)));
-
-  WaitForGeoLocationDefined(web_contents);
-
-  content::EvalJsResult result = CallGeoLocationPermission(web_contents);
-  EXPECT_EQ(result.value.GetString(), kSuccessMessage);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebKioskGeolocationBrowserPermissionTest,
+    testing::Values(PermissionParam{/*allow_origin_by_policy=*/false,
+                                    kInstallURL, kSuccessMessage},
+                    PermissionParam{/*allow_origin_by_policy=*/true,
+                                    kInstallURL, kSuccessMessage},
+                    PermissionParam{/*allow_origin_by_policy=*/false,
+                                    kNonInstallURL, kFailureMessage},
+                    PermissionParam{/*allow_origin_by_policy=*/true,
+                                    kNonInstallURL, kSuccessMessage}));
 
 }  // namespace ash

@@ -18,7 +18,6 @@ static_library("crostini_upgrader") {
   ]
 
   deps = [
-    ":mojo_bindings",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
@@ -26,7 +25,7 @@ static_library("crostini_upgrader") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/resources/chromeos/crostini_upgrader:resources",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//components/strings:components_strings",
@@ -36,11 +35,12 @@ static_library("crostini_upgrader") {
     "//ui/aura",
     "//ui/base",
     "//ui/chromeos",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings:ui_strings",
     "//ui/web_dialogs",
     "//ui/webui",
   ]
+
+  public_deps = [ ":mojo_bindings" ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/crostini" ]
 }
@@ -73,4 +73,5 @@ source_set("browser_tests") {
 
 mojom("mojo_bindings") {
   sources = [ "crostini_upgrader.mojom" ]
+  webui_module_path = "/"
 }

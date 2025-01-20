@@ -25,7 +25,7 @@ class GURL;
             (const autofill::PasswordFormFillData&)formData
                          forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
-                  forSecurityOrigin:(const GURL&)origin;
+                  forSecurityOrigin:(const url::Origin&)origin;
 
 // Informs delegate that there are no saved credentials for the current page.
 // The frame is used to get the AccountSelectFillData and reset the credentials

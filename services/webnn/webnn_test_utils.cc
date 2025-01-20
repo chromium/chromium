@@ -4,15 +4,23 @@
 
 #include "services/webnn/webnn_test_utils.h"
 
+#include <limits.h>
+
 #include "base/check_is_test.h"
+#include "base/test/test_future.h"
+#include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
-GraphInfoBuilder::GraphInfoBuilder() {
-  graph_info_ = mojom::GraphInfo::New();
-}
+GraphInfoBuilder::GraphInfoBuilder(
+    mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote)
+    : graph_info_(mojom::GraphInfo::New()),
+      graph_builder_remote_(graph_builder_remote) {}
+
 GraphInfoBuilder::~GraphInfoBuilder() = default;
 
 uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
@@ -20,7 +28,8 @@ uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
                                         mojom::Operand::Kind kind) {
   mojom::OperandPtr operand = mojom::Operand::New();
 
-  operand->descriptor = *OperandDescriptor::Create(type, dimensions);
+  operand->descriptor =
+      OperandDescriptor::UnsafeCreateForTesting(type, dimensions);
   operand->kind = kind;
 
   CHECK(graph_info_->id_to_operand_map.find(operand_id_) ==
@@ -48,11 +57,14 @@ uint64_t GraphInfoBuilder::BuildInput(const std::string& name,
 uint64_t GraphInfoBuilder::BuildConstant(
     const std::vector<uint32_t>& dimensions,
     OperandDataType type,
-    base::span<const uint8_t> values) {
+    base::span<const uint8_t> values,
+    blink::WebNNPendingConstantToken handle) {
   uint64_t operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kConstant);
-  graph_info_->constant_id_to_buffer_map[operand_id] =
-      mojo_base::BigBuffer(values);
+
+  graph_builder_remote_->get()->CreatePendingConstant(
+      handle, type, mojo_base::BigBuffer(values));
+  graph_info_->constant_operand_ids_to_handles[operand_id] = std::move(handle);
   return operand_id;
 }
 
@@ -387,6 +399,17 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
       mojom::Operation::NewReshape(std::move(reshape)));
 }
 
+void GraphInfoBuilder::BuildReverse(uint64_t input_operand_id,
+                                    uint64_t output_operand_id,
+                                    std::vector<uint32_t> axes) {
+  auto reverse = mojom::Reverse::New();
+  reverse->input_operand_id = input_operand_id;
+  reverse->output_operand_id = output_operand_id;
+  reverse->axes = std::move(axes);
+  graph_info_->operations.push_back(
+      mojom::Operation::NewReverse(std::move(reverse)));
+}
+
 void GraphInfoBuilder::BuildScatterElements(uint64_t input_operand_id,
                                             uint64_t indices_operand_id,
                                             uint64_t updates_operand_id,
@@ -514,32 +537,45 @@ void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
 }
 
 mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
-  CHECK_IS_TEST();
-  mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
-  for (auto& [operand_id, operand_info] : graph_info_->id_to_operand_map) {
-    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
-  }
-  cloned_graph_info->input_operands = graph_info_->input_operands;
-  cloned_graph_info->output_operands = graph_info_->output_operands;
-  cloned_graph_info->operations.reserve(graph_info_->operations.size());
-  for (auto& operation : graph_info_->operations) {
-    cloned_graph_info->operations.push_back(operation.Clone());
-  }
-  for (auto& [constant_id, constant_buffer] :
-       graph_info_->constant_id_to_buffer_map) {
-    cloned_graph_info->constant_id_to_buffer_map[constant_id] =
-        constant_buffer.Clone();
-  }
-  return cloned_graph_info;
+  return CloneGraphInfoForTesting(*graph_info_);
 }
 
 mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
   return std::move(graph_info_);
 }
 
+[[nodiscard]] bool GraphInfoBuilder::IsValidGraphForTesting(
+    const ContextProperties& context_properties) {
+  base::test::TestFuture<bool> future;
+  graph_builder_remote_->get()->IsValidGraphForTesting(
+      context_properties, CloneGraphInfo(), future.GetCallback());
+  return future.Take();
+}
+
+mojom::GraphInfoPtr CloneGraphInfoForTesting(
+    const mojom::GraphInfo& graph_info) {
+  mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
+  for (auto& [operand_id, operand_info] : graph_info.id_to_operand_map) {
+    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
+  }
+  cloned_graph_info->input_operands = graph_info.input_operands;
+  cloned_graph_info->output_operands = graph_info.output_operands;
+  cloned_graph_info->operations.reserve(graph_info.operations.size());
+  for (auto& operation : graph_info.operations) {
+    cloned_graph_info->operations.push_back(operation.Clone());
+  }
+  for (auto& [constant_id, constant_handle] :
+       graph_info.constant_operand_ids_to_handles) {
+    cloned_graph_info->constant_operand_ids_to_handles[constant_id] =
+        constant_handle;
+  }
+  return cloned_graph_info;
+}
+
 ContextProperties GetContextPropertiesForTesting() {
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/SupportedDataTypes::All(),
@@ -556,21 +592,28 @@ ContextProperties GetContextPropertiesForTesting() {
        /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
        /*dequantize_linear_input=*/SupportedDataTypes::All(),
        /*dequantize_linear_scale=*/SupportedDataTypes::All(),
-       /*add_input=*/SupportedDataTypes::All(),
-       /*sub_input=*/SupportedDataTypes::All(),
-       /*mul_input=*/SupportedDataTypes::All(),
-       /*div_input=*/SupportedDataTypes::All(),
-       /*max_input=*/SupportedDataTypes::All(),
-       /*min_input=*/SupportedDataTypes::All(),
-       /*pow_input=*/SupportedDataTypes::All(),
-       /*equal_input=*/SupportedDataTypes::All(),
-       /*greater_input=*/SupportedDataTypes::All(),
-       /*greater_or_equal_input=*/SupportedDataTypes::All(),
-       /*lesser_input=*/SupportedDataTypes::All(),
-       /*lesser_or_equal_input=*/SupportedDataTypes::All(),
-       /*logical_and_input=*/DataTypeConstraint::kUint8,
-       /*logical_or_input=*/DataTypeConstraint::kUint8,
-       /*logical_xor_input=*/DataTypeConstraint::kUint8,
+       /*add_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*sub_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*mul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*div_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*max_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*min_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*pow_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*equal_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*greater_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*greater_or_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*lesser_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*lesser_or_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*not_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*logical_and_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_or_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
+       /*logical_xor_input=*/
+       {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
        /*logical_not_input=*/SupportedDataTypes::All(),
        /*logical_output=*/SupportedDataTypes::All(),
        /*abs_input=*/SupportedDataTypes::All(),
@@ -610,7 +653,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*linear_input=*/SupportedDataTypes::All(),
        /*lstm_input=*/SupportedDataTypes::All(),
        /*lstm_cell_input=*/SupportedDataTypes::All(),
-       /*matmul_input=*/SupportedDataTypes::All(),
+       /*matmul_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
        /*pad_input=*/SupportedDataTypes::All(),
        /*average_pool2d_input=*/SupportedDataTypes::All(),
        /*l2_pool2d_input=*/SupportedDataTypes::All(),
@@ -631,6 +674,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*relu_input=*/SupportedDataTypes::All(),
        /*resample2d_input=*/SupportedDataTypes::All(),
        /*reshape_input=*/SupportedDataTypes::All(),
+       /*reverse_input=*/SupportedDataTypes::All(),
        /*scatter_elements_input=*/SupportedDataTypes::All(),
        /*scatter_elements_indices=*/SupportedDataTypes::All(),
        /*scatter_nd_input=*/SupportedDataTypes::All(),

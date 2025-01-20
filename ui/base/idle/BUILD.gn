@@ -64,7 +64,10 @@ component("idle") {
     sources += [ "idle_linux.cc" ]
     deps += [ "//ui/display" ]
     if (use_dbus) {
-      deps += [ "//dbus" ]
+      deps += [
+        "//components/dbus",
+        "//dbus",
+      ]
     }
   }
 

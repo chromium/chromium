@@ -22,21 +22,10 @@ BASE_FEATURE(kBatteryBadgeIcon,
              "BatteryBadgeIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables more filtering out of phones from the Bluetooth UI.
-BASE_FEATURE(kBluetoothPhoneFilter,
-             "BluetoothPhoneFilter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables better quick settings UI for bluetooth and wifi error states.
 BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables updated UI for the clipboard history menu and new system behavior
-// related to clipboard history.
-BASE_FEATURE(kClipboardHistoryRefresh,
-             "ClipboardHistoryRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice,
@@ -77,6 +66,12 @@ BASE_FEATURE(kCrosComponents,
 // Enables an app to discover and install other apps. This flag will be enabled
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Mall app for managed users. Only has an effect when kCrosMall is
+// also enabled.
+BASE_FEATURE(kCrosMallManaged,
+             "CrosMallManaged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
@@ -129,22 +124,10 @@ BASE_FEATURE(kEssentialSearch,
              "EssentialSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable experimental goldfish web app isolation.
-BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
-             "ExperimentalWebAppStoragePartitionIsolation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag used to gate preinstallation of the Gemini app.
 BASE_FEATURE(kGeminiAppPreinstall,
              "GeminiAppPreinstall",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Jelly features. go/jelly-flags
-BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
-// controls all system UI updates and new system components. go/jelly-flags
-BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
@@ -176,9 +159,6 @@ BASE_FEATURE(kMahiSendingUrl,
 BASE_FEATURE(kMahiManaged, "MahiManaged", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Controls enabling / disabling the sparky feature.
-BASE_FEATURE(kSparky, "Sparky", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi debugging.
 BASE_FEATURE(kMahiDebugging,
              "MahiDebugging",
@@ -186,6 +166,11 @@ BASE_FEATURE(kMahiDebugging,
 
 // Controls enabling / disabling the pompano feature.
 BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls enabling / disabling the summary of selected text feature.
+BASE_FEATURE(kMahiSummarizeSelected,
+             "MahiSummarizeSelected",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
@@ -198,7 +183,7 @@ BASE_FEATURE(kNewGuestProfile,
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease,
              "NotificationWidthIncrease",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the Navigation Capturing Reimpl for the Office
 // PWA.
@@ -303,6 +288,12 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables syncing of user's Office files upload workflow preferences for
+// enterprise users, such whether to ask before moving files to the cloud.
+BASE_FEATURE(kUploadOfficeToCloudSync,
+             "UploadOfficeToCloudSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the use of scope extensions for the Microsoft 365 PWA from finch as
 // a fallback.
 BASE_FEATURE(kMicrosoft365ScopeExtensions,
@@ -323,7 +314,14 @@ const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
 
     // The old branding of the Microsoft 365 web app. Many links within
     // Microsoft 365 still link to the old www.office.com origin.
-    "https://www.office.com/"};
+    "https://www.office.com/,"
+
+    // The new branding for the Microsoft 365 web app.
+    "https://m365.cloud.microsoft/,"
+
+    // The current Microsoft 365 web app. The scope of the new Microsoft 365
+    // Copilot web app remains unclear, so this is added for safety.
+    "https://www.microsoft365.com/"};
 
 // Comma separated list of scope extension domains for the Microsoft 365 PWA.
 const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
@@ -368,15 +366,6 @@ bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
 }
 
-bool IsClipboardHistoryRefreshEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
-#else
-  return base::FeatureList::IsEnabled(kClipboardHistoryRefresh) &&
-         IsJellyEnabled();
-#endif
-}
-
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
@@ -399,7 +388,7 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 }
 
 bool IsCrosComponentsEnabled() {
-  return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+  return base::FeatureList::IsEnabled(kCrosComponents);
 }
 
 bool IsCrosMallSwaEnabled() {
@@ -457,25 +446,12 @@ bool IsGeminiAppPreinstallEnabled() {
   return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
 }
 
-bool IsJellyEnabled() {
-  return base::FeatureList::IsEnabled(kJelly);
-}
-
-bool IsJellyrollEnabled() {
-  // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
-  // this to behave.
-  return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
-}
-
-// Sparkly depends on Mahi, so we turn on Mahi if the sparky flag is enabled.
-// Sparky doesn't work on LACROS so that case is ignored.
 bool IsMahiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
 #else
-  return (base::FeatureList::IsEnabled(kMahi) &&
-          base::FeatureList::IsEnabled(kFeatureManagementMahi)) ||
-         base::FeatureList::IsEnabled(kSparky);
+  return base::FeatureList::IsEnabled(kMahi) &&
+         base::FeatureList::IsEnabled(kFeatureManagementMahi);
 #endif
 }
 
@@ -496,10 +472,6 @@ bool IsMahiManagedEnabled() {
 #endif
 }
 
-bool IsSparkyEnabled() {
-  return base::FeatureList::IsEnabled(kSparky);
-}
-
 bool IsMahiDebuggingEnabled() {
   return base::FeatureList::IsEnabled(kMahiDebugging);
 }
@@ -510,6 +482,10 @@ bool IsPlatformKeysChangesWave1Enabled() {
 
 bool IsPompanoEnabled() {
   return base::FeatureList::IsEnabled(kPompano);
+}
+
+bool IsMahiSummarizeSelectedEnabled() {
+  return base::FeatureList::IsEnabled(kMahiSummarizeSelected);
 }
 
 bool IsNotificationWidthIncreaseEnabled() {
@@ -589,6 +565,10 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
          base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
 #endif
+}
+
+bool IsUploadOfficeToCloudSyncEnabled() {
+  return base::FeatureList::IsEnabled(kUploadOfficeToCloudSync);
 }
 
 bool IsMicrosoft365ScopeExtensionsEnabled() {

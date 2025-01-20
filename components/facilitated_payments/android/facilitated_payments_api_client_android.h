@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_ANDROID_FACILITATED_PAYMENTS_API_CLIENT_ANDROID_H_
 
 #include <jni.h>
+
 #include <cstdint>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 namespace content {
 class RenderFrameHost;

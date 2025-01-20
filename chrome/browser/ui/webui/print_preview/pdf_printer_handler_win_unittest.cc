@@ -47,8 +47,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
       : PdfPrinterHandler(profile, contents, sticky_settings),
         save_failed_(false) {}
 
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index) override {
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     // Since we always cancel the dialog as soon as it is initialized, this
     // should never be called.
     NOTREACHED();
@@ -93,12 +92,12 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
 class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
  public:
-  PdfPrinterHandlerWinTest() {}
+  PdfPrinterHandlerWinTest() = default;
 
   PdfPrinterHandlerWinTest(const PdfPrinterHandlerWinTest&) = delete;
   PdfPrinterHandlerWinTest& operator=(const PdfPrinterHandlerWinTest&) = delete;
 
-  ~PdfPrinterHandlerWinTest() override {}
+  ~PdfPrinterHandlerWinTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

@@ -28,6 +28,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2504109125669302160">Toegangsrechten verlenen aan <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Verbonden met <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Wil je deze computer delen zodat een andere gebruiker deze kan bekijken en bedienen?</translation>
@@ -133,6 +134,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7067321367069083429">Scherm werkt als een touchscreen</translation>
 <translation id="7116737094673640201">Welkom bij Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
+<translation id="7298392173540380852">Copyright 2025 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
 <translation id="7359298090707901886">De gekozen browser kan niet worden gebruikt om URL's op de lokale machine te openen.</translation>
@@ -149,7 +151,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7693372326588366043">Lijst met hosts vernieuwen</translation>
 <translation id="7714222945760997814">Dit melden</translation>
 <translation id="7868137160098754906">Voer je pincode voor de externe computer in.</translation>
-<translation id="7881455334687220899">Copyright 2024 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="7895403300744144251">Beveiligingsbeleid op de externe computer staat verbindingen vanuit je account niet toe.</translation>
 <translation id="7936528439960309876">Rechts docken</translation>
 <translation id="7970576581263377361">Verificatie mislukt. Log opnieuw in bij Chromium.</translation>
@@ -181,7 +182,6 @@ Als '<ph name="SERVICE_SCRIPT_NAME" />' al is aangevinkt, moet je dit uitvinken 
 <translation id="8747048596626351634">De sessie is gecrasht of kan niet worden gestart. Als ~/.chrome-remote-desktop-session bestaat op de externe computer, moet je ervoor zorgen dat hiermee een langdurig voorgrondproces wordt gestart, zoals een bureaubladomgeving of vensterbeheer.</translation>
 <translation id="8804164990146287819">Privacybeleid</translation>
 <translation id="8906511416443321782">Er is toegang tot de microfoon vereist om audio op te nemen en naar de Chrome Remote Desktop-client te streamen.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="9111855907838866522">Je bent verbonden met je externe apparaat. Tik met vier vingers op het scherm om het menu te openen.</translation>
 <translation id="9126115402994542723">Niet meer vragen naar een pincode bij het aansluiten van dit apparaat op deze host.</translation>
 <translation id="916856682307586697">De standaard XSession starten</translation>

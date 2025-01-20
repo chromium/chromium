@@ -11,9 +11,14 @@ import logging
 from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
                     Set, Tuple, Type, Union)
 
+# vpython-provided modules.
 import six
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
+
+# //testing imports.
+from unexpected_passes_common import registry
 
 FULL_PASS = 1
 NEVER_PASS = 2
@@ -74,13 +79,15 @@ class BaseExpectation():
                tags: Iterable[str],
                expected_results: Union[str, Iterable[str]],
                bug: Optional[str] = None):
-    self.test = test
-    self.tags = frozenset(tags)
-    self.bug = bug or ''
+    self._test_id = registry.RegisterTestName(test)
+    self._tags_id = registry.RegisterTagSet(frozenset(tags))
+    self._bug_id = registry.RegisterBug(bug or '')
     if isinstance(expected_results, str):
-      self.expected_results = frozenset([expected_results])
+      expected_results = frozenset([expected_results])
     else:
-      self.expected_results = frozenset(expected_results)
+      expected_results = frozenset(expected_results)
+    self._expected_results_id = registry.RegisterExpectedResults(
+        expected_results)
 
     # We're going to be making a lot of comparisons, and fnmatch is *much*
     # slower (~40x from rough testing) than a straight comparison, so only use
@@ -100,7 +107,28 @@ class BaseExpectation():
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash((self.test, self.tags, self.expected_results, self.bug))
+    return hash(
+        (self._test_id, self._tags_id, self._expected_results_id, self._bug_id))
+
+  @property
+  def test(self) -> str:
+    return registry.RetrieveTestName(self._test_id)
+
+  @property
+  def tags(self) -> FrozenSet[str]:
+    return registry.RetrieveTagSet(self._tags_id)
+
+  @tags.setter
+  def tags(self, new_tags: FrozenSet[str]):
+    self._tags_id = registry.RegisterTagSet(new_tags)
+
+  @property
+  def bug(self) -> str:
+    return registry.RetrieveBug(self._bug_id)
+
+  @property
+  def expected_results(self) -> FrozenSet[str]:
+    return registry.RetrieveExpectedResults(self._expected_results_id)
 
   def _IsWildcard(self) -> bool:
     # This logic is the same as typ's expectation parser.
@@ -190,10 +218,11 @@ class BaseResult():
       build_id: A string containing the Buildbucket ID for the build this result
           came from.
     """
-    self.test = test
-    self.tags = frozenset(tags)
-    self.actual_result = actual_result
-    self.step = step
+    self._test_id = registry.RegisterTestName(test)
+    self._tags_id = registry.RegisterTagSet(frozenset(tags))
+    self._actual_result_id = registry.RegisterActualResult(actual_result)
+    self._step_id = registry.RegisterStep(step)
+    # TODO(crbug.com/388307196): Switch to using ints instead of strings.
     self.build_id = build_id
 
   def __eq__(self, other: Any) -> bool:
@@ -206,8 +235,24 @@ class BaseResult():
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash(
-        (self.test, self.tags, self.actual_result, self.step, self.build_id))
+    return hash((self._test_id, self._tags_id, self._actual_result_id,
+                 self._step_id, self.build_id))
+
+  @property
+  def test(self) -> str:
+    return registry.RetrieveTestName(self._test_id)
+
+  @property
+  def tags(self) -> FrozenSet[str]:
+    return registry.RetrieveTagSet(self._tags_id)
+
+  @property
+  def actual_result(self) -> str:
+    return registry.RetrieveActualResult(self._actual_result_id)
+
+  @property
+  def step(self) -> str:
+    return registry.RetrieveStep(self._step_id)
 
 
 class BaseBuildStats():
@@ -509,6 +554,8 @@ class BaseTestExpectationMap(BaseTypedMap):
               self._AddSingleResult(r, stats)
     return matched_results
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def _AddSingleResult(self, result: BaseResult, stats: BaseBuildStats) -> None:
     """Adds |result| to |self|.
 
@@ -520,6 +567,7 @@ class BaseTestExpectationMap(BaseTypedMap):
       stats.AddPassedBuild(result.tags)
     else:
       stats.AddFailedBuild(result.build_id, result.tags)
+  # pylint: enable=no-self-use
 
   def SplitByStaleness(
       self) -> Tuple['BaseTestExpectationMap', 'BaseTestExpectationMap',
@@ -603,8 +651,10 @@ class BaseTestExpectationMap(BaseTypedMap):
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
     return stale_dict, semi_stale_dict, active_dict
 
-  def _ShouldTreatSemiStaleAsActive(self, pass_map: Dict[int, 'BuilderStepMap']
-                                    ) -> bool:
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
+  def _ShouldTreatSemiStaleAsActive(
+      self, pass_map: Dict[int, 'BuilderStepMap']) -> bool:
     """Check if a semi-stale expectation should be treated as active.
 
     Allows for implementation-specific workarounds.
@@ -619,6 +669,7 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     del pass_map
     return False
+  # pylint: enable=no-self-use
 
   def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
     """Filters out any unused Expectations from stored data.

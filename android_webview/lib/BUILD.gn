@@ -33,6 +33,7 @@ source_set("lib") {
     "//components/spellcheck:buildflags",
     "//components/stylus_handwriting/android:android",
     "//components/variations",
+    "//components/variations:variations_associated_data",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//components/viz/common",

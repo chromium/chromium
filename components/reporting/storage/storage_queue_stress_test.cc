@@ -134,9 +134,6 @@ class TestUploadClient : public UploaderInterface {
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
-    // Enable compression.
-    scoped_feature_list_.InitAndEnableFeature(kCompressReportingPipeline);
-
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()));
   }

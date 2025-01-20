@@ -61,6 +61,7 @@
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/transform_recorder.h"
@@ -392,6 +393,16 @@ std::optional<size_t> View::GetIndexOf(const View* view) const {
   return i == children_.cend() ? std::nullopt
                                : std::make_optional(static_cast<size_t>(
                                      std::distance(children_.cbegin(), i)));
+}
+
+void View::PropagateWillClearFocusManager() {
+  {
+    internal::ScopedChildrenLock lock(this);
+    for (views::View* child : children_) {
+      child->PropagateWillClearFocusManager();
+    }
+  }
+  WillClearFocusManager();
 }
 
 // Size and disposition --------------------------------------------------------
@@ -1295,14 +1306,12 @@ void View::Paint(const PaintInfo& parent_paint_info) {
 
   PaintInfo paint_info = PaintInfo::CreateChildPaintInfo(
       parent_paint_info, GetMirroredBounds(), parent_bounds.size(),
-      GetPaintScaleType(), !!layer(), needs_paint_);
-
+      GetPaintScaleType(), !!layer());
   needs_paint_ = false;
 
   const ui::PaintContext& context = paint_info.context();
   bool is_invalidated = true;
-  if (paint_info.context().CanCheckInvalid() ||
-      base::FeatureList::IsEnabled(features::kEnableViewPaintOptimization)) {
+  if (paint_info.context().CanCheckInvalid()) {
     // For View paint optimization, do not default to repainting every View in
     // the View hierarchy if the invalidation rect is empty. Repainting does not
     // depend on the invalidation rect for View paint optimization.
@@ -1791,15 +1800,13 @@ void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
 
   // Providing we are attached to a Widget and registered with a focus manager,
   // we should de-register from that focus manager now.
-  if (GetWidget() && accelerator_focus_manager_) {
-    accelerator_focus_manager_->UnregisterAccelerator(accelerator, this);
+  if (auto* focus_manager = GetFocusManager()) {
+    focus_manager->UnregisterAccelerator(accelerator, this);
   }
 }
 
 void View::ResetAccelerators() {
-  if (accelerators_) {
-    UnregisterAccelerators(false);
-  }
+  UnregisterAccelerators(false);
 }
 
 bool View::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -2002,8 +2009,27 @@ FocusTraversable* View::GetPaneFocusTraversable() {
 
 // Tooltips --------------------------------------------------------------------
 
+void View::SetCachedTooltipText(const std::u16string& text) {
+  if (cached_tooltip_text_ == text) {
+    return;
+  }
+
+  GetViewAccessibility().OnTooltipTextChanged(
+      std::exchange(cached_tooltip_text_, text));
+  TooltipTextChanged();
+}
+
+base::CallbackListSubscription View::AddTooltipTextChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&cached_tooltip_text_, std::move(callback));
+}
+
 std::u16string View::GetTooltipText(const gfx::Point& p) const {
-  return std::u16string();
+  return GetCachedTooltipText();
+}
+
+const std::u16string& View::GetCachedTooltipText() const {
+  return cached_tooltip_text_;
 }
 
 // Context menus ---------------------------------------------------------------
@@ -2241,15 +2267,12 @@ void View::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {}
 
 void View::VisibilityChanged(View* starting_from, bool is_visible) {}
 
-void View::NativeViewHierarchyChanged() {
-  FocusManager* focus_manager = GetFocusManager();
-  if (accelerator_focus_manager_ != focus_manager) {
-    UnregisterAccelerators(true);
+void View::WillClearFocusManager() {
+  UnregisterAccelerators(true);
+}
 
-    if (focus_manager) {
-      RegisterPendingAccelerators();
-    }
-  }
+void View::NativeViewHierarchyChanged() {
+  RegisterPendingAccelerators();
 }
 
 void View::AddedToWidget() {}
@@ -2539,7 +2562,9 @@ void View::AddLayerToRegionImpl(
 
   CreateOrDestroyLayer();
 
-  layer()->SetFillsBoundsOpaquely(false);
+  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
+    layer()->SetFillsBoundsOpaquely(false);
+  }
 }
 
 void View::SetLayerParent(ui::Layer* parent_layer) {
@@ -2660,6 +2685,8 @@ void View::TooltipTextChanged() {
   if (widget && widget->GetTooltipManager()) {
     widget->GetTooltipManager()->TooltipTextChanged(this);
   }
+
+  OnPropertyChanged(&cached_tooltip_text_, kPropertyEffectsNone);
 }
 
 void View::UpdateTooltipForFocus() {
@@ -3116,9 +3143,7 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   // their parents. This allows children to override accelerators registered by
   // their parents as accelerators registered later take priority over those
   // registered earlier.
-  if (GetFocusManager()) {
-    RegisterPendingAccelerators();
-  }
+  RegisterPendingAccelerators();
 
   {
     internal::ScopedChildrenLock lock(this);
@@ -3130,6 +3155,7 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   ViewHierarchyChangedImpl(details);
   if (is_added_to_widget) {
     AddedToWidget();
+    GetViewAccessibility().OnViewAddedToWidget();
     observers_.Notify(&ViewObserver::OnViewAddedToWidget, this);
   }
 }
@@ -3600,13 +3626,16 @@ void View::RegisterPendingAccelerators() {
     return;
   }
 
-  accelerator_focus_manager_ = GetFocusManager();
-  CHECK(accelerator_focus_manager_);
+  auto* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    return;
+  }
+
   for (std::vector<ui::Accelerator>::const_iterator i =
            accelerators_->begin() +
            static_cast<ptrdiff_t>(registered_accelerator_count_);
        i != accelerators_->end(); ++i) {
-    accelerator_focus_manager_->RegisterAccelerator(
+    focus_manager->RegisterAccelerator(
         *i, ui::AcceleratorManager::kNormalPriority, this);
   }
   registered_accelerator_count_ = accelerators_->size();
@@ -3618,9 +3647,8 @@ void View::UnregisterAccelerators(bool leave_data_intact) {
   }
 
   if (GetWidget()) {
-    if (accelerator_focus_manager_) {
-      accelerator_focus_manager_->UnregisterAccelerators(this);
-      accelerator_focus_manager_ = nullptr;
+    if (auto* focus_manager = GetFocusManager()) {
+      focus_manager->UnregisterAccelerators(this);
     }
     if (!leave_data_intact) {
       accelerators_->clear();

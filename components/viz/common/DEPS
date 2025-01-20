@@ -35,6 +35,7 @@ specific_include_rules = {
     "+gpu/ipc/gl_in_process_context.h",
   ],
   "features.cc" : [
+    "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_finch_features.h",
     "+gpu/config/gpu_switches.h",
     "+media/media_buildflags.h",

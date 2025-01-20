@@ -61,12 +61,12 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -81,7 +81,7 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;
@@ -472,9 +472,8 @@ public class RecentTabsPageTest {
     @MediumTest
     @Feature({"RecentTabsPage"})
     public void testEmptyStateView() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        SigninTestUtil.signinAndEnableHistorySync(
-                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();
@@ -483,6 +482,16 @@ public class RecentTabsPageTest {
                                 withId(R.id.empty_state_container),
                                 withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage", "RenderTest"})
+    public void testSigninPromoView() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mPage = loadRecentTabsPage();
+
+        mRenderTestRule.render(mPage.getView(), "signin_promo");
     }
 
     @Test

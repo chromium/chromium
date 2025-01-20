@@ -15,7 +15,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,13 +47,13 @@ bool ContainsHost(
 
 class AutofillMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  AutofillMetricsBrowserTest() {}
+  AutofillMetricsBrowserTest() = default;
 
   AutofillMetricsBrowserTest(const AutofillMetricsBrowserTest&) = delete;
   AutofillMetricsBrowserTest& operator=(const AutofillMetricsBrowserTest&) =
       delete;
 
-  ~AutofillMetricsBrowserTest() override {}
+  ~AutofillMetricsBrowserTest() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -204,14 +204,14 @@ IN_PROC_BROWSER_TEST_F(
 class SitePerProcessAutofillMetricsBrowserTest
     : public AutofillMetricsBrowserTest {
  public:
-  SitePerProcessAutofillMetricsBrowserTest() {}
+  SitePerProcessAutofillMetricsBrowserTest() = default;
 
   SitePerProcessAutofillMetricsBrowserTest(
       const SitePerProcessAutofillMetricsBrowserTest&) = delete;
   SitePerProcessAutofillMetricsBrowserTest& operator=(
       const SitePerProcessAutofillMetricsBrowserTest&) = delete;
 
-  ~SitePerProcessAutofillMetricsBrowserTest() override {}
+  ~SitePerProcessAutofillMetricsBrowserTest() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {

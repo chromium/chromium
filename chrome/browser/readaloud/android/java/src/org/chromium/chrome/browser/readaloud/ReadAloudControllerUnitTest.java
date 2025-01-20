@@ -235,7 +235,7 @@ public class ReadAloudControllerUnitTest {
         when(mMockIncognitoProfile.isOffTheRecord()).thenReturn(true);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);

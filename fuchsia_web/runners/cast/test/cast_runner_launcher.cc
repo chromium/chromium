@@ -70,10 +70,9 @@ class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
             kDynamicComponentCapabilitiesName);
     fidl::InterfaceHandle<fuchsia::io::Directory> services;
     zx_status_t status =
-        capability_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                  fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                                  fuchsia::io::OpenFlags::DIRECTORY,
-                              services.NewRequest().TakeChannel());
+        capability_dir->Serve(fuchsia_io::wire::kPermReadable,
+                              fidl::ServerEnd<fuchsia_io::Directory>(
+                                  services.NewRequest().TakeChannel()));
     ZX_CHECK(status == ZX_OK, status) << "Serve()";
 
     // Bind that Directory capability under the same path of this virtual
@@ -269,7 +268,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
         fuchsia::component::decl::Capability::WithDirectory(std::move(
             fuchsia::component::decl::Directory()
                 .set_name(kDynamicComponentCapabilitiesName)
-                .set_rights(fuchsia::io::RW_STAR_DIR)
+                .set_rights(fuchsia::io::R_STAR_DIR)
                 .set_source_path(kDynamicComponentCapabilitiesPath))));
 
     test_proxy_decl.mutable_exposes()->emplace_back(

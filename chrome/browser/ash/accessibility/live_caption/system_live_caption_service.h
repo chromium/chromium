@@ -114,7 +114,9 @@ class SystemLiveCaptionService
                              const std::string& source_language,
                              const std::string& target_language,
                              bool is_final,
-                             const std::string& result);
+                             const ::captions::TranslateEvent& result);
+
+  void AttemptDispatch(const std::string& text, bool is_final);
 
   // Binds to the correct observer list based on `source_`
   void BindToBrowserInterface();
@@ -155,10 +157,6 @@ class SystemLiveCaptionService
 
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;
-
-  // The number of characters omitted from the translation by the text
-  // stabilization policy. Used by metrics only.
-  int translation_characters_erased_ = 0;
 
   // If set during a test this number will be used to determine the
   // number of non chrome output streams.

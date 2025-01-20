@@ -76,6 +76,8 @@ class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
 
+inline constexpr std::string kDefaultUserEmail = "user0@tray";
+
 // Base class for most tests in //ash. Constructs ash::Shell and all its
 // dependencies. Provides a user login session (use NoSessionAshTestBase for
 // tests that start at the login screen or need unusual user types). Sets
@@ -310,18 +312,15 @@ class AshTestBase : public testing::Test {
 
   AmbientAshTestHelper* GetAmbientAshTestHelper();
 
-  // Emulates an ash session that have |session_count| user sessions running.
-  // Note that existing user sessions will be cleared.
-  void CreateUserSessions(int session_count);
-
-  // Simulates a user sign-in. It creates a new user session, adds it to
-  // existing user sessions and makes it the active user session.
+  // Simulates a user sign-in, and returns an AccountId used to sign in.  It
+  // creates a new user session, adds it to existing user sessions and makes it
+  // the active user session.
   //
   // For convenience |user_email| is used to create an |AccountId|. For testing
   // behavior where |AccountId|s are compared, prefer the method of the same
   // name that takes an |AccountId| created with a valid storage key instead.
   // See the documentation for|AccountId::GetUserEmail| for discussion.
-  void SimulateUserLogin(
+  AccountId SimulateUserLogin(
       const std::string& user_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular);
 
@@ -332,13 +331,19 @@ class AshTestBase : public testing::Test {
       user_manager::UserType user_type = user_manager::UserType::kRegular);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
-  void SimulateNewUserFirstLogin(const std::string& user_email);
+  AccountId SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
   void SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
   void SimulateKioskMode(user_manager::UserType user_type);
+
+  // Switches the active user to `account_id`;
+  void SwitchActiveUser(const AccountId& account_id);
+
+  // Returns true if the session is in `state`.
+  bool IsInSessionState(session_manager::SessionState state) const;
 
   // Simulates setting height of the accessibility panel.
   // Note: Accessibility panel widget needs to be setup first.
@@ -358,6 +363,7 @@ class AshTestBase : public testing::Test {
 
   // Methods to emulate blocking and unblocking user session with given
   // |block_reason|.
+  // TODO(crbug.com/383770001): Deprecate these methods.
   void BlockUserSession(UserSessionBlockReason block_reason);
   void UnblockUserSession();
 

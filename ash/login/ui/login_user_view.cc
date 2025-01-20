@@ -19,13 +19,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -176,13 +173,10 @@ class LoginUserView::UserImage : public NonAccessibleView {
     enterprise_icon_container_->SetLayoutManager(
         std::make_unique<EnterpriseBadgeLayout>(icon_size));
 
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-    ui::ColorId icon_background_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
-                 : kColorAshIconColorSecondaryBackground;
-    ui::ColorId icon_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSecondary)
-                 : kColorAshIconColorSecondary;
+    const ui::ColorId icon_background_color_id =
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary);
+    const ui::ColorId icon_color_id =
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSecondary);
 
     views::ImageView* icon_ = enterprise_icon_container_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -286,11 +280,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     user_name_ = new views::Label();
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
-    if (chromeos::features::IsJellyrollEnabled()) {
-      user_name_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    } else {
-      user_name_->SetEnabledColorId(kColorAshTextColorPrimary);
-    }
+    user_name_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
     const gfx::FontList font_list(
@@ -457,19 +447,11 @@ LoginUserView::LoginUserView(LoginDisplayStyle style,
         &LoginUserView::DropdownButtonPressed, base::Unretained(this)));
     dropdown_->SetHasInkDropActionOnClick(false);
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    if (!chromeos::features::IsJellyrollEnabled()) {
-      dropdown_->SetImageModel(
-          views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
-                                         kColorAshIconColorPrimary,
-                                         kDropdownIconSizeDp));
-    } else {
-      dropdown_->SetImageModel(
-          views::Button::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
-                                         cros_tokens::kCrosSysOnSurface,
-                                         kJellyDropdownIconSizeDp));
-    }
+    dropdown_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
+                                       cros_tokens::kCrosSysOnSurface,
+                                       kJellyDropdownIconSizeDp));
   }
   tap_button_ = new TapButton(on_tap_, this);
   SetTapEnabled(true);

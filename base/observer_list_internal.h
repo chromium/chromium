@@ -161,8 +161,9 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
 
   ObserverList* get() const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
-    if (list_)
+    if (list_) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(list_->iteration_sequence_checker_);
+    }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
     return list_;
   }

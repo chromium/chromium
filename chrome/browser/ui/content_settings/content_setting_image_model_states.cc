@@ -16,8 +16,9 @@ ContentSettingImageModelStates::~ContentSettingImageModelStates() = default;
 // static
 ContentSettingImageModelStates* ContentSettingImageModelStates::Get(
     content::WebContents* contents) {
-  if (auto* state = FromWebContents(contents))
+  if (auto* state = FromWebContents(contents)) {
     return state;
+  }
   CreateForWebContents(contents);
   return FromWebContents(contents);
 }

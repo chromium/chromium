@@ -136,6 +136,8 @@ target(link_target_type, "child") {
 
   if (is_win) {
     sources += [
+      "child_process_sandbox_support_impl_win.cc",
+      "child_process_sandbox_support_impl_win.h",
       "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
       "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
       "dwrite_font_proxy/dwrite_font_proxy_win.cc",

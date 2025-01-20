@@ -149,6 +149,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   // Tracks how many smoothness effects are driven by each thread.
   size_t main_thread_driving_smoothness_ = 0;
   size_t compositor_thread_driving_smoothness_ = 0;
+  size_t raster_thread_driving_smoothness_ = 0;
 };
 
 }  // namespace cc

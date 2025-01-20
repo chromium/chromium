@@ -100,7 +100,6 @@ CloudProvider GetCloudProvider(const std::string& destination) {
 
 }  // namespace
 
-// TODO(b/352539894): Add tests with some files to upload.
 class LocalFilesMigrationManagerTest : public policy::PolicyTest {
  public:
   LocalFilesMigrationManagerTest() {
@@ -440,7 +439,29 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
-                       NoMigrationIfNoDestination) {
+                       MigrationCompleteIfNoDestinationAndEmpty) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
+  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
+  base::RunLoop run_loop;
+  // Write access will be disallowed.
+  EXPECT_CALL(userdataauth_,
+              SetUserDataStorageWriteEnabled(WithEnabled(false), _))
+      .WillOnce(testing::DoAll(
+          base::test::RunClosure(run_loop.QuitClosure()),
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply())));
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/kReadOnly);
+  run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Enabled", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
+                       NoMigrationIfNoDestinationAndNonEmpty) {
+  SetUpMyFiles();
+  CreateTestFile(kTestFile, my_files_dir_);
+
   EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/kReadOnly);

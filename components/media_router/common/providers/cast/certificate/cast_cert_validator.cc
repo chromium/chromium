@@ -91,8 +91,8 @@ class CertVerificationContextImpl : public CertVerificationContext {
     };
 
     // Verify with RSASSA-PKCS1-v1_5 and |digest|.
-    auto signature_bytes = base::as_bytes(base::make_span(signature));
-    auto data_bytes = base::as_bytes(base::make_span(data));
+    auto signature_bytes = base::as_byte_span(signature);
+    auto data_bytes = base::as_byte_span(data);
     bssl::ScopedEVP_MD_CTX ctx;
     return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA &&
            EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
@@ -171,8 +171,9 @@ void DetermineDeviceCertificatePolicy(
     const bssl::ParsedCertificate* cert,
     std::unique_ptr<CertVerificationContext>* context) {
   // Get the Key Usage extension.
-  if (!cert->has_key_usage())
+  if (!cert->has_key_usage()) {
     return false;
+  }
 
   // Ensure Key Usage contains digitalSignature.
   if (!cert->key_usage().AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
@@ -181,15 +182,17 @@ void DetermineDeviceCertificatePolicy(
 
   // Get the Common Name for the certificate.
   std::string common_name;
-  if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name))
+  if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name)) {
     return false;
+  }
 
   // Get the public key for the certificate.
   CBS spki;
   CBS_init(&spki, cert->tbs().spki_tlv.data(), cert->tbs().spki_tlv.size());
   bssl::UniquePtr<EVP_PKEY> key(EVP_parse_public_key(&spki));
-  if (!key || CBS_len(&spki) != 0)
+  if (!key || CBS_len(&spki) != 0) {
     return false;
+  }
 
   *context = std::make_unique<CertVerificationContextImpl>(std::move(key),
                                                            common_name);
@@ -216,8 +219,9 @@ bssl::ParseCertificateOptions GetCertParsingOptions() {
 // This function must only be called if path building failed.
 CastCertError MapToCastError(const bssl::CertPathBuilder::Result& result) {
   DCHECK(!result.HasValidPath());
-  if (result.paths.empty())
+  if (result.paths.empty()) {
     return CastCertError::ERR_CERTS_VERIFY_GENERIC;
+  }
   const bssl::CertPathErrors& path_errors =
       result.paths.at(result.best_result_index)->errors;
   if (path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotAfter) ||
@@ -268,16 +272,19 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
             << CastCertificateChainAsPEM(certs);
   }
 
-  if (!trust_store)
+  if (!trust_store) {
     return VerifyDeviceCert(certs, time, context, policy, crl, fallback_crl,
                             crl_policy);
+  }
 
-  if (certs.empty())
+  if (certs.empty()) {
     return CastCertError::ERR_CERTS_MISSING;
+  }
 
   // Fail early if CRL is required but not provided.
-  if (!crl && crl_policy == CRLPolicy::CRL_REQUIRED)
+  if (!crl && crl_policy == CRLPolicy::CRL_REQUIRED) {
     return CastCertError::ERR_CRL_INVALID;
+  }
 
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> target_cert;
@@ -287,13 +294,15 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
         bssl::ParsedCertificate::Create(
             net::x509_util::CreateCryptoBuffer(certs[i]),
             GetCertParsingOptions(), &errors));
-    if (!cert)
+    if (!cert) {
       return CastCertError::ERR_CERTS_PARSE;
+    }
 
-    if (i == 0)
+    if (i == 0) {
       target_cert = std::move(cert);
-    else
+    } else {
       intermediate_cert_issuer_source.AddCert(std::move(cert));
+    }
   }
 
   CastPathBuilderDelegate path_builder_delegate;
@@ -312,8 +321,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
       bssl::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
   bssl::CertPathBuilder::Result result = path_builder.Run();
-  if (!result.HasValidPath())
+  if (!result.HasValidPath()) {
     return MapToCastError(result);
+  }
 
   // Determine whether this device certificate is restricted to audio-only.
   DetermineDeviceCertificatePolicy(result.GetBestValidPath(), policy);
@@ -321,8 +331,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   // Check properties of the leaf certificate not already verified by path
   // building (key usage), and construct a CertVerificationContext that uses
   // its public key.
-  if (!CheckTargetCertificate(target_cert.get(), context))
+  if (!CheckTargetCertificate(target_cert.get(), context)) {
     return CastCertError::ERR_CERTS_RESTRICTIONS;
+  }
 
   if (!crl && (crl_policy == CRLPolicy::CRL_REQUIRED_WITH_FALLBACK ||
                crl_policy == CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK)) {

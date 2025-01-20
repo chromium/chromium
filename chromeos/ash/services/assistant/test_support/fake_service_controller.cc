@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/assistant/test_support/fake_service_controller.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::assistant {
@@ -66,11 +67,12 @@ std::string FakeServiceController::access_token() {
     return kNoValue;
 }
 
-std::string FakeServiceController::gaia_id() {
-  if (authentication_tokens_.size())
-    return authentication_tokens_[0]->gaia_id;
-  else
-    return kNoValue;
+GaiaId FakeServiceController::gaia_id() {
+  if (authentication_tokens_.size()) {
+    return GaiaId(authentication_tokens_[0]->gaia_id);
+  } else {
+    return GaiaId(kNoValue);
+  }
 }
 
 void FakeServiceController::Initialize(

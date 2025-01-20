@@ -11,16 +11,17 @@ import android.os.Build;
 import android.util.Size;
 import android.view.Display;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.media.MediaCodecUtil.MimeTypes;
 
 /**
  * A utility class to make an estimate for the hints provided to MediaFormat as to the expected
  * maximum resolution to prepare for.
  */
+@NullMarked
 public class MaxAnticipatedResolutionEstimator {
     private static final String TAG = "EstimateResolution";
     private static final int SCREEN_WIDTH_4K = 3840;
@@ -50,24 +51,25 @@ public class MaxAnticipatedResolutionEstimator {
     public static Resolution getScreenResolution(MediaFormat format) {
         Resolution resolution = getNativeResolution();
         if (resolution == null) {
-            resolution.mWidth = format.getInteger(MediaFormat.KEY_WIDTH);
-            resolution.mHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
+            resolution =
+                    new Resolution(
+                            format.getInteger(MediaFormat.KEY_WIDTH),
+                            format.getInteger(MediaFormat.KEY_HEIGHT));
         }
 
         // Cap screen size at 1080p for non-4K codecs
         String mimeType = format.getString(MediaFormat.KEY_MIME);
-        if (!mimeType.equals(MimeTypes.VIDEO_HEVC)
-                && !mimeType.equals(MimeTypes.VIDEO_VP9)
-                && !mimeType.equals(MimeTypes.VIDEO_AV1)
-                && !mimeType.equals(MimeTypes.VIDEO_DV)) {
+        if (!MimeTypes.VIDEO_HEVC.equals(mimeType)
+                && !MimeTypes.VIDEO_VP9.equals(mimeType)
+                && !MimeTypes.VIDEO_AV1.equals(mimeType)
+                && !MimeTypes.VIDEO_DV.equals(mimeType)) {
             resolution.mWidth = Math.min(resolution.mWidth, 1920);
             resolution.mHeight = Math.min(resolution.mHeight, 1080);
         }
         return resolution;
     }
 
-    @Nullable
-    public static Resolution getNativeResolution() {
+    public static @Nullable Resolution getNativeResolution() {
         // Starting with P, DisplayCompat relies on having read access to
         // vendor.display-size (except for devices that correctly implement
         // DisplayMode#getPhysicalHeight / getPhysicalWidth

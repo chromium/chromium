@@ -17,7 +17,7 @@
         "args": [
           "-v",
           "-v",
-          "--browser=android-trichrome-bundle",
+          "--browser=android-trichrome-chrome-google-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-go-wembley-perf_map.json",
           "--ignore-benchmark-exit-code"
@@ -25,7 +25,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_bundle",
         "resultdb": {
           "enable": true
         },
@@ -38,12 +38,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test": "performance_test_suite_android_clank_trichrome_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -82,7 +82,7 @@
             "pool": "chrome.tests.perf-webview"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -113,7 +113,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -121,12 +121,12 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -152,7 +152,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -160,12 +160,12 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -191,7 +191,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -199,12 +199,12 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -230,7 +230,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -238,12 +238,12 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -269,7 +269,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -282,12 +282,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -313,7 +313,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -326,12 +326,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -357,7 +357,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -371,12 +371,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 44
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -402,7 +402,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -416,12 +416,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -461,7 +461,7 @@
             "pool": "chrome.tests.perf-webview"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 23
@@ -506,7 +506,7 @@
             "pool": "chrome.tests.perf-webview-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -537,7 +537,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -551,12 +551,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -582,7 +582,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -596,12 +596,12 @@
             "pool": "chrome.tests.perf-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -627,7 +627,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -641,12 +641,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -672,7 +672,7 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "resultdb": {
           "enable": true
         },
@@ -686,12 +686,12 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 16
         },
-        "test": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -739,10 +739,10 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 26
+          "shards": 22
         },
         "test": "performance_test_suite",
         "trigger_script": {
@@ -784,7 +784,7 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26
@@ -829,7 +829,7 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -881,7 +881,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 30
@@ -931,7 +931,7 @@
             "synthetic_product_name": "Macmini8,1_x86-64-i7-8700B_Intel UHD Graphics 630_65536_APPLE SSD AP1024M"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
@@ -947,214 +947,6 @@
         }
       }
     ]
-  },
-  "mac-laptop_high_end-perf": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "-v",
-          "--browser=builder",
-          "--upload-results",
-          "--test-shard-map-filename=mac-laptop_high_end-perf_map.json",
-          "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing"
-        ],
-        "merge": {
-          "args": [
-            "--lightweight",
-            "--skip-perf"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "1002:6821-4.0.20-3.2.8",
-            "os": "Mac-12",
-            "pool": "chrome.tests.perf",
-            "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
-          },
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 23
-        },
-        "test": "performance_test_suite",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "mac-laptop_high_end-perf-pgo": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "-v",
-          "--browser=builder",
-          "--upload-results",
-          "--test-shard-map-filename=mac-laptop_high_end-perf-pgo_map.json",
-          "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing"
-        ],
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "1002:6821-4.0.20-3.2.8",
-            "os": "Mac-12",
-            "pool": "chrome.tests.perf",
-            "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
-          },
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 26
-        },
-        "test": "performance_test_suite",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "mac-laptop_high_end-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
-  "mac-laptop_low_end-perf": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "-v",
-          "--browser=builder",
-          "--upload-results",
-          "--test-shard-map-filename=mac-laptop_low_end-perf_map.json",
-          "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing"
-        ],
-        "merge": {
-          "args": [
-            "--lightweight",
-            "--skip-perf"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "8086:1626",
-            "os": "Mac-12",
-            "pool": "chrome.tests.perf",
-            "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
-          },
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 23
-        },
-        "test": "performance_test_suite",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "mac-laptop_low_end-perf-pgo": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "-v",
-          "--browser=builder",
-          "--upload-results",
-          "--test-shard-map-filename=mac-laptop_low_end-perf-pgo_map.json",
-          "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing"
-        ],
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "8086:1626",
-            "os": "Mac-12",
-            "pool": "chrome.tests.perf",
-            "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
-          },
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 26
-        },
-        "test": "performance_test_suite",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "mac-laptop_low_end-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
   },
   "mac-m1-pro-perf": {
     "isolated_scripts": [
@@ -1184,7 +976,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -1229,7 +1021,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1274,7 +1066,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28
@@ -1319,7 +1111,7 @@
             "pool": "chrome.tests.perf-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
@@ -1365,7 +1157,7 @@
             "synthetic_product_name": "Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1413,7 +1205,7 @@
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
@@ -1457,7 +1249,7 @@
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
@@ -1510,7 +1302,7 @@
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1555,7 +1347,7 @@
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1604,7 +1396,7 @@
             "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 45
@@ -1648,7 +1440,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 40
@@ -1705,7 +1497,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1750,7 +1542,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26

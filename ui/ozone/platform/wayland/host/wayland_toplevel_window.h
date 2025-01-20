@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -179,7 +178,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // True if it's maximized before requesting the window state change from the
   // client.
-  // TODO(b/328109805): Move this logic to server side on Lacros.
   bool previously_maximized_ = false;
 
   // The display ID to switch to in case the state is `kFullscreen`.
@@ -193,19 +191,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
   bool is_suspended_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Unique ID for this window. May be shared over non-Wayland IPC transports
-  // (e.g. mojo) to identify the window.
-  std::string window_unique_id_;
-
-  int64_t initial_display_id_ = display::kInvalidDisplayId;
-#else
   // Id of the chromium app passed through
   // PlatformWindowInitProperties::wm_class_name. This is used by Wayland
   // compositor to identify the app, unite it's windows into the same stack of
   // windows and find *.desktop file to set various preferences including icons.
   std::string app_id_;
-#endif
 
   // Title of the ShellToplevel.
   std::u16string window_title_;
@@ -214,10 +204,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // integration with the desktop shell.
   std::unique_ptr<GtkSurface1> gtk_surface1_;
 
-  // When use_native_frame is false, client-side decoration is set,
-  // e.g. lacros-browser.
-  // When use_native_frame is true, server-side decoration is set,
-  // e.g. lacros-taskmanager.
+  // When use_native_frame is false, client-side decoration is set.
+  // When use_native_frame is true, server-side decoration is set.
   bool use_native_frame_ = false;
 
   std::optional<std::vector<gfx::Rect>> opaque_region_px_;

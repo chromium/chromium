@@ -418,8 +418,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
                                    net::CertStatus cert_status) {
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(cert_data)),
-            net::X509Certificate::FORMAT_AUTO);
+            base::as_byte_span(cert_data), net::X509Certificate::FORMAT_AUTO);
     ASSERT_FALSE(certs.empty());
     ResetErrorHandler(certs[0], cert_status);
   }
@@ -572,7 +571,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
  private:
   void ResetErrorHandler(scoped_refptr<net::X509Certificate> cert,
                          net::CertStatus cert_status) {
-    ssl_info_.Reset();
+    ssl_info_ = net::SSLInfo();
     ssl_info_.cert = cert;
     ssl_info_.cert_status = cert_status;
     ssl_info_.public_key_hashes.push_back(
@@ -954,43 +953,6 @@ TEST_F(SSLErrorHandlerNameMismatchTest, OSReportsCaptivePortal) {
       SSLErrorHandler::SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE, 1);
   histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 1);
-}
-
-class SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest
-    : public SSLErrorHandlerNameMismatchTest {
- public:
-  SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(kCaptivePortalInterstitial);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that a captive portal interstitial isn't shown if the OS reports a
-// portal but CaptivePortalInterstitial feature is disabled.
-TEST_F(SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest,
-       OSReportsCaptivePortal_FeatureDisabled) {
-  base::HistogramTester histograms;
-  delegate()->set_os_reports_captive_portal();
-
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  error_handler()->StartHandlingError();
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_TRUE(delegate()->ssl_interstitial_shown());
-  EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
-
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::HANDLE_ALL, 1);
-  histograms.ExpectBucketCount(
-      SSLErrorHandler::GetHistogramNameForTesting(),
-      SSLErrorHandler::SHOW_SSL_INTERSTITIAL_OVERRIDABLE, 1);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 0);
 }
 
 TEST_F(SSLErrorHandlerNameMismatchTest,

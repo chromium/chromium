@@ -7,13 +7,13 @@ package org.chromium.ui.dragdrop;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link DropDataAndroid}. */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class DropDataAndroidUnitTest {
     private static final String IMAGE_FILENAME = "image.webp";
 

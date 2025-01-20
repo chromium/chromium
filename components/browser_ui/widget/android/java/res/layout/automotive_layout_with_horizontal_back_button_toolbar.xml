@@ -13,7 +13,7 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/automotive_base_linear_layout"
         android:orientation="vertical"
-        android:layout_gravity="top"
+        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -36,7 +36,7 @@ found in the LICENSE file.
     <ViewStub
         android:id="@+id/automotive_on_swipe_back_button_toolbar_stub"
         android:layout="@layout/automotive_on_swipe_back_button_toolbar"
-        android:layout_gravity="bottom"
+        android:layout_gravity="top"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"/>
 

@@ -13,14 +13,16 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -34,13 +36,19 @@ import java.util.Set;
 /** Unit tests for {@link HomeModulesConfigManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeModulesConfigManagerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
     private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
+    }
+
+    @After
+    public void tearDown() {
+        mHomeModulesConfigManager.cleanupForTesting();
     }
 
     @Test
@@ -121,11 +129,15 @@ public class HomeModulesConfigManagerUnitTest {
         String tabResumptionPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.TAB_RESUMPTION));
+        String defaultBrowserPromoPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.DEFAULT_BROWSER_PROMO));
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.PRICE_CHANGE));
 
         assertFalse(TextUtils.equals(tabResumptionPreferenceKey, priceChangePreferenceKey));
+        assertFalse(TextUtils.equals(defaultBrowserPromoPreferenceKey, priceChangePreferenceKey));
 
         // Verifies that the SINGLE_TAB and TAB_RESUMPTION modules are shared with the same
         // preference key.
@@ -136,42 +148,26 @@ public class HomeModulesConfigManagerUnitTest {
                 tabResumptionPreferenceKey,
                 mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_RESUMPTION));
 
+        // Verifies that all the educational tip modules are shared with the same preference key.
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(
+                        ModuleType.DEFAULT_BROWSER_PROMO));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(
+                        ModuleType.TAB_GROUP_SYNC_PROMO));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
+
         // Verifies that the PRICE_CHANGE has its own preference key.
         assertEquals(
                 priceChangePreferenceKey,
                 mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
-    }
-
-    @Test
-    public void testFreshnessCount() {
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-        String moduleFreshnessCountPreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
-                        String.valueOf(moduleType));
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-
-        assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
-
-        int count = 5;
-        mHomeModulesConfigManager.increaseFreshnessCount(moduleType, count);
-        assertEquals(
-                count,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
-
-        mHomeModulesConfigManager.resetFreshnessCount(moduleType);
-        assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
     }
 
     private void registerModuleConfigChecker(int size) {

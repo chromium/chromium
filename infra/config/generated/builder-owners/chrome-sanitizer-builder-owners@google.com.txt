@@ -28,7 +28,6 @@ ci/WebKit Linux Leak
 ci/WebKit Linux MSAN
 ci/Win ASan Release
 ci/Win ASan Release Media
-ci/android-asan
 ci/chromeos-amd64-generic-asan-rel
 ci/ios-asan
 ci/win-asan

@@ -455,10 +455,10 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
   location_icon_view_ = top_bar_container_view_->AddChildView(
       std::make_unique<LocationIconView>(font_list, this, this));
-    // The PageInfo icon should be 8px from the left of the window and 4px from
-    // the right of the origin.
-    location_icon_view_->SetProperty(views::kMarginsKey,
-                                     gfx::Insets::TLBR(0, 8, 0, 4));
+  // The PageInfo icon should be 8px from the left of the window and 4px from
+  // the right of the origin.
+  location_icon_view_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets::TLBR(0, 8, 0, 4));
 
   // For file URLs, we want to elide the tail, since the file name and/or query
   // part of the file URL can be made to look like an origin for spoofing. For
@@ -499,8 +499,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   constexpr ContentSettingImageModel::ImageType kContentSettingImageOrder[] = {
       ContentSettingImageModel::ImageType::MEDIASTREAM};
   std::vector<std::unique_ptr<ContentSettingImageModel>> models;
-  for (auto type : kContentSettingImageOrder)
+  for (auto type : kContentSettingImageOrder) {
     models.push_back(ContentSettingImageModel::CreateForContentType(type));
+  }
 
   // Creates the content setting views based on the models.
   for (auto& model : models) {
@@ -746,13 +747,15 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
   int window_component = GetHTComponentForFrame(
       point, ResizeBorderInsets(), kResizeAreaCornerSize, kResizeAreaCornerSize,
       GetWidget()->widget_delegate()->CanResize());
-  if (window_component != HTNOWHERE)
+  if (window_component != HTNOWHERE) {
     return window_component;
+  }
 
   // Allow interacting with the web contents.
   int frame_component = frame()->client_view()->NonClientHitTest(point);
-  if (frame_component != HTNOWHERE)
+  if (frame_component != HTNOWHERE) {
     return frame_component;
+  }
 
   return HTCAPTION;
 }
@@ -793,8 +796,9 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
       color_provider->GetColor(kColorPipWindowTopBarBackground));
   window_title_->SetEnabledColor(
       color_provider->GetColor(kColorPipWindowForeground));
-  for (ContentSettingImageView* view : content_setting_views_)
+  for (ContentSettingImageView* view : content_setting_views_) {
     view->SetIconColor(color_provider->GetColor(kColorPipWindowForeground));
+  }
 
 #if !BUILDFLAG(IS_LINUX)
   // On Linux the top bar background will be drawn in OnPaint().
@@ -973,8 +977,9 @@ SkColor PictureInPictureBrowserFrameView::GetSecurityChipColor(
 
 bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
   content::WebContents* contents = GetWebContents();
-  if (!contents)
+  if (!contents) {
     return false;
+  }
 
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
@@ -1002,21 +1007,21 @@ LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
 
 ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
-    // If we're animating between colors, use the current color value.
-    if (current_foreground_color_.has_value()) {
-      return ui::ImageModel::FromVectorIcon(
-          location_bar_model_->GetVectorIcon(), *current_foreground_color_,
-          kWindowIconImageSize);
-    }
-
-    ui::ColorId foreground_color_id =
-        (top_bar_color_animation_.GetCurrentValue() == 0)
-            ? kColorPipWindowForegroundInactive
-            : kColorPipWindowForeground;
-
+  // If we're animating between colors, use the current color value.
+  if (current_foreground_color_.has_value()) {
     return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
-                                          foreground_color_id,
+                                          *current_foreground_color_,
                                           kWindowIconImageSize);
+  }
+
+  ui::ColorId foreground_color_id =
+      (top_bar_color_animation_.GetCurrentValue() == 0)
+          ? kColorPipWindowForegroundInactive
+          : kColorPipWindowForeground;
+
+  return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
+                                        foreground_color_id,
+                                        kWindowIconImageSize);
 }
 
 std::optional<ui::ColorId>
@@ -1106,8 +1111,8 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
     for (ContentSettingImageView* view : content_setting_views_) {
       view->SetIconColor(color);
     }
-      current_foreground_color_ = color;
-      location_icon_view_->Update(/*suppress_animations=*/false);
+    current_foreground_color_ = color;
+    location_icon_view_->Update(/*suppress_animations=*/false);
     return;
   }
 

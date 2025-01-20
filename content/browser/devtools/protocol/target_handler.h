@@ -69,42 +69,45 @@ class TargetHandler : public DevToolsDomainHandler,
   // Domain implementation.
   Response SetDiscoverTargets(
       bool discover,
-      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter) override;
+      std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter)
+      override;
   void SetAutoAttach(
       bool auto_attach,
       bool wait_for_debugger_on_start,
-      Maybe<bool> flatten,
-      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+      std::optional<bool> flatten,
+      std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<SetAutoAttachCallback> callback) override;
   void AutoAttachRelated(
       const std::string& targetId,
       bool wait_for_debugger_on_start,
-      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+      std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<AutoAttachRelatedCallback> callback) override;
   Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<Target::RemoteLocation>>) override;
   Response AttachToTarget(const std::string& target_id,
-                          Maybe<bool> flatten,
+                          std::optional<bool> flatten,
                           std::string* out_session_id) override;
   Response AttachToBrowserTarget(std::string* out_session_id) override;
-  Response DetachFromTarget(Maybe<std::string> session_id,
-                            Maybe<std::string> target_id) override;
+  Response DetachFromTarget(std::optional<std::string> session_id,
+                            std::optional<std::string> target_id) override;
   Response SendMessageToTarget(const std::string& message,
-                               Maybe<std::string> session_id,
-                               Maybe<std::string> target_id) override;
+                               std::optional<std::string> session_id,
+                               std::optional<std::string> target_id) override;
   Response GetTargetInfo(
-      Maybe<std::string> target_id,
+      std::optional<std::string> target_id,
       std::unique_ptr<Target::TargetInfo>* target_info) override;
   Response ActivateTarget(const std::string& target_id) override;
   Response CloseTarget(const std::string& target_id,
                        bool* out_success) override;
-  Response ExposeDevToolsProtocol(const std::string& target_id,
-                                  Maybe<std::string> binding_name) override;
+  Response ExposeDevToolsProtocol(
+      const std::string& target_id,
+      std::optional<std::string> binding_name) override;
   void CreateBrowserContext(
-      Maybe<bool> in_disposeOnDetach,
-      Maybe<String> in_proxyServer,
-      Maybe<String> in_proxyBypassList,
-      Maybe<protocol::Array<String>> in_originsToGrantUniversalNetworkAccess,
+      std::optional<bool> in_disposeOnDetach,
+      std::optional<String> in_proxyServer,
+      std::optional<String> in_proxyBypassList,
+      std::unique_ptr<protocol::Array<String>>
+          in_originsToGrantUniversalNetworkAccess,
       std::unique_ptr<CreateBrowserContextCallback> callback) override;
   void DisposeBrowserContext(
       const std::string& context_id,
@@ -112,16 +115,19 @@ class TargetHandler : public DevToolsDomainHandler,
   Response GetBrowserContexts(
       std::unique_ptr<protocol::Array<String>>* browser_context_ids) override;
   Response CreateTarget(const std::string& url,
-                        Maybe<int> width,
-                        Maybe<int> height,
-                        Maybe<std::string> context_id,
-                        Maybe<bool> enable_begin_frame_control,
-                        Maybe<bool> new_window,
-                        Maybe<bool> background,
-                        Maybe<bool> for_tab,
+                        std::optional<int> left,
+                        std::optional<int> top,
+                        std::optional<int> width,
+                        std::optional<int> height,
+                        std::optional<std::string> window_state,
+                        std::optional<std::string> context_id,
+                        std::optional<bool> enable_begin_frame_control,
+                        std::optional<bool> new_window,
+                        std::optional<bool> background,
+                        std::optional<bool> for_tab,
                         std::string* out_target_id) override;
   Response GetTargets(
-      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+      std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
       override;
 
@@ -160,8 +166,8 @@ class TargetHandler : public DevToolsDomainHandler,
   bool ShouldWaitForDebuggerOnStart(
       NavigationRequest* navigation_request) const;
 
-  Response FindSession(Maybe<std::string> session_id,
-                       Maybe<std::string> target_id,
+  Response FindSession(std::optional<std::string> session_id,
+                       std::optional<std::string> target_id,
                        Session** session);
   void ClearThrottles();
   void SetAutoAttachInternal(bool auto_attach,

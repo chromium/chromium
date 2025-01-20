@@ -111,7 +111,7 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
       const ProcessMemoryMetricsEmitterFake&) = delete;
 
  private:
-  ~ProcessMemoryMetricsEmitterFake() override {}
+  ~ProcessMemoryMetricsEmitterFake() override = default;
 
   void ReceivedMemoryDump(bool success,
                           std::unique_ptr<GlobalMemoryDump> ptr) override {
@@ -350,7 +350,7 @@ class ProcessMemoryMetricsEmitterTest
   ProcessMemoryMetricsEmitterTest& operator=(
       const ProcessMemoryMetricsEmitterTest&) = delete;
 
-  ~ProcessMemoryMetricsEmitterTest() override {}
+  ~ProcessMemoryMetricsEmitterTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -866,8 +866,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest, MAYBE_RendererBuildId) {
     // To match with the memory maps, need to convert it to absolute path,
     // which may hit ScopedBlockingCall.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    auto maps =
-        memory_instrumentation::OSMetrics::GetProcessMemoryMaps(process.Pid());
+    auto maps = memory_instrumentation::OSMetrics::GetProcessMemoryMaps(
+        process.Handle());
     bool found = false;
     for (const memory_instrumentation::mojom::VmRegionPtr& region : maps) {
       if (region->module_debugid.empty())

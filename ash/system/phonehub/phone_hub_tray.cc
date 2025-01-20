@@ -58,6 +58,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
@@ -158,6 +159,9 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
           : nullptr;
 
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
 }
 
 PhoneHubTray::~PhoneHubTray() {
@@ -204,10 +208,6 @@ void PhoneHubTray::UpdateTrayItemColor(bool is_active) {
                     : cros_tokens::kCrosSysOnSurface));
 }
 
-std::u16string PhoneHubTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME);
-}
-
 void PhoneHubTray::HandleLocaleChange() {
   icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
@@ -219,7 +219,7 @@ void PhoneHubTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 }
 
 std::u16string PhoneHubTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME);
 }
 
 bool PhoneHubTray::ShouldEnableExtraKeyboardAccessibility() {
@@ -321,6 +321,7 @@ void PhoneHubTray::ShowBubble() {
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/true));
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
+  bubble_view->box_layout()->SetDefaultFlex(0);
 
   // Creates header view on top for displaying phone status and settings icon.
   auto phone_status = ui_controller_->CreateStatusHeaderView(this);

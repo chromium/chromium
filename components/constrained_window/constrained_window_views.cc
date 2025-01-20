@@ -37,8 +37,7 @@ using web_modal::ModalDialogHostObserver;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ModalDialogHostObserver*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ModalDialogHostObserver,
-                                   kModalDialogHostObserverKey,
-                                   nullptr)
+                                   kModalDialogHostObserverKey)
 
 namespace constrained_window {
 
@@ -372,7 +371,7 @@ bool SupportsGlobalScreenCoordinates() {
 }
 
 bool PlatformClipsChildrenToViewport() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   return true;
 #else
   return false;

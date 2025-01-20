@@ -9,10 +9,10 @@
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -25,6 +25,7 @@ using autofill::AutofillProfile;
 using autofill::PersonalDataManager;
 using contact_info_helper::AddressDataManagerProfileChecker;
 using contact_info_helper::BuildTestAccountProfile;
+using contact_info_helper::GetAddressDataManager;
 using contact_info_helper::GetPersonalDataManager;
 using testing::UnorderedElementsAre;
 
@@ -88,35 +89,27 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
   ASSERT_TRUE(SetupSync());
   // Add `profile` on client 0 and expect it to appear on client 1.
   AutofillProfile profile = BuildTestAccountProfile();
-  GetPersonalDataManager(GetProfile(0))
-      ->address_data_manager()
-      .AddProfile(profile);
+  GetAddressDataManager(GetProfile(0))->AddProfile(profile);
   // Here and below `AutofillProfilesEqualChecker()` cannot be used directly.
   // Since `AddProfile()` happens asynchronously, the condition would be true
   // immediately, because no profiles are stored in either PDM yet.
   EXPECT_TRUE(
-      AddressDataManagerProfileChecker(
-          &GetPersonalDataManager(GetProfile(1))->address_data_manager(),
-          UnorderedElementsAre(profile))
+      AddressDataManagerProfileChecker(GetAddressDataManager(GetProfile(1)),
+                                       UnorderedElementsAre(profile))
           .Wait());
   // Now update it from client 1 and expect the update on client 0.
   profile.SetRawInfo(autofill::EMAIL_ADDRESS,
                      u"new-" + profile.GetRawInfo(autofill::EMAIL_ADDRESS));
-  GetPersonalDataManager(GetProfile(1))
-      ->address_data_manager()
-      .UpdateProfile(profile);
+  GetAddressDataManager(GetProfile(1))->UpdateProfile(profile);
   EXPECT_TRUE(
-      AddressDataManagerProfileChecker(
-          &GetPersonalDataManager(GetProfile(0))->address_data_manager(),
-          UnorderedElementsAre(profile))
+      AddressDataManagerProfileChecker(GetAddressDataManager(GetProfile(0)),
+                                       UnorderedElementsAre(profile))
           .Wait());
   // Finally, remove the `profile` from client 0 and expect removal on client 1.
-  GetPersonalDataManager(GetProfile(0))->RemoveByGUID(profile.guid());
-  EXPECT_TRUE(
-      AddressDataManagerProfileChecker(
-          &GetPersonalDataManager(GetProfile(1))->address_data_manager(),
-          testing::IsEmpty())
-          .Wait());
+  GetAddressDataManager(GetProfile(0))->RemoveProfile(profile.guid());
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  GetAddressDataManager(GetProfile(1)), testing::IsEmpty())
+                  .Wait());
 }
 
 // Adds different profiles with identical GUIDs from both clients. Expects that
@@ -142,21 +135,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, DuplicateGUID) {
   // Since `AddProfile()` happens asynchronously, wait for the change to
   // propagate locally.
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
-  GetPersonalDataManager(GetProfile(0))
-      ->address_data_manager()
-      .AddProfile(kProfile0);
-  GetPersonalDataManager(GetProfile(1))
-      ->address_data_manager()
-      .AddProfile(kProfile1);
+  GetAddressDataManager(GetProfile(0))->AddProfile(kProfile0);
+  GetAddressDataManager(GetProfile(1))->AddProfile(kProfile1);
   EXPECT_TRUE(
-      AddressDataManagerProfileChecker(
-          &GetPersonalDataManager(GetProfile(0))->address_data_manager(),
-          UnorderedElementsAre(kProfile0))
+      AddressDataManagerProfileChecker(GetAddressDataManager(GetProfile(0)),
+                                       UnorderedElementsAre(kProfile0))
           .Wait());
   EXPECT_TRUE(
-      AddressDataManagerProfileChecker(
-          &GetPersonalDataManager(GetProfile(1))->address_data_manager(),
-          UnorderedElementsAre(kProfile1))
+      AddressDataManagerProfileChecker(GetAddressDataManager(GetProfile(1)),
+                                       UnorderedElementsAre(kProfile1))
           .Wait());
 
   // Sync and expect equal profiles eventually.

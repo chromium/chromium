@@ -157,7 +157,7 @@ extern const wchar_t kLegacyRunValuePrefix[];
 extern const wchar_t kLegacyTaskNamePrefixSystem[];
 extern const wchar_t kLegacyTaskNamePrefixUser[];
 
-// `InstallerApiResult` values defined by the Installer API.
+// `InstallerResult` values defined by the Installer API.
 enum class InstallerApiResult {
   // The installer succeeded, unconditionally.
   // - if a launch command was provided via the installer API, the command will

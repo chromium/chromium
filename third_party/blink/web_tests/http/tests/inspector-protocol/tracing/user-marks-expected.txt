@@ -37,6 +37,7 @@ Got a performance mark event:
 Object: {
 	args: {
 		data: {
+			callTime: number
 			detail: string
 			navigationId: string
 			stackTrace: [
@@ -62,6 +63,7 @@ Object: {
 Got performance measure event:
 Object: {
 	args: {
+		callTime: number
 		stackTrace: [
 			{
 				columnNumber: number

@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -38,14 +39,6 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/hash/md5.h"
-#include "base/path_service.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_paths_lacros.h"
-#include "components/account_id/account_id.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -532,8 +525,8 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   DownloadPrefs prefs(&profile);
   const base::FilePath default_dir =
       prefs.GetDefaultDownloadDirectoryForProfile();
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(profile.GetProfileUserName(), "12345");
+  AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile.GetProfileUserName(), GaiaId("12345"));
   const std::string drivefs_profile_salt = "a";
   base::FilePath removable_media_dir;
   base::FilePath android_files_dir;
@@ -543,38 +536,10 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   removable_media_dir = ash::CrosDisksClient::GetRemovableDiskMountPoint();
   android_files_dir = base::FilePath(file_manager::util::GetAndroidFilesPath());
   linux_files_dir = file_manager::util::GetCrostiniMountDirectory(&profile);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // These values would normally be sent by ash during lacros startup.
-  base::FilePath documents_path =
-      base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-  removable_media_dir = base::FilePath("/media/removable");
-  android_files_dir = base::FilePath("/run/arc/sdcard/write/emulated/0");
-  linux_files_dir =
-      base::FilePath("/media/fuse/crostini_0123456789abcdef_termina_penguin");
-  const base::FilePath drivefs_dir = base::FilePath(
-      "/media/fuse/drivefs-" + base::MD5String(drivefs_profile_salt + "-" +
-                                               account_id.GetAccountIdKey()));
-  const base::FilePath ash_resources_dir = base::FilePath("/opt/google/chrome");
-  base::FilePath share_cache_dir = profile.GetPath().AppendASCII("ShareCache");
-  base::FilePath preinstalled_web_app_config_dir;
-  base::FilePath preinstalled_web_app_extra_config_dir;
-  chrome::SetLacrosDefaultPaths(
-      documents_path, default_dir, drivefs_dir, /*onedrive=*/base::FilePath(),
-      removable_media_dir, android_files_dir, linux_files_dir,
-      ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
-      preinstalled_web_app_extra_config_dir);
 #endif
 
   // Test a valid subdirectory of downloads.
   ExpectValidDownloadDir(&profile, &prefs, default_dir.AppendASCII("testdir"));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Test a valid subdirectory of documents. This isn't tested for ash because
-  // these tests run on the linux "emulator", where ash uses ~/Documents, but
-  // the ash path sanitization code doesn't handle that path.
-  ExpectValidDownloadDir(&profile, &prefs,
-                         documents_path.AppendASCII("testdir"));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Test with an invalid path outside the permitted paths.
   profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,

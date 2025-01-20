@@ -11,7 +11,7 @@ namespace language {
 MockGeoLocation::MockGeoLocation() = default;
 MockGeoLocation::~MockGeoLocation() = default;
 
-void MockGeoLocation::SetHighAccuracy(bool high_accuracy) {}
+void MockGeoLocation::SetHighAccuracyHint(bool high_accuracy) {}
 
 void MockGeoLocation::QueryNextPosition(QueryNextPositionCallback callback) {
   ++query_next_position_called_times_;

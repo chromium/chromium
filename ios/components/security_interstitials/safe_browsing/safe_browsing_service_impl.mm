@@ -15,6 +15,7 @@
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
+#import "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/sessions/core/session_id.h"
@@ -37,24 +38,11 @@
 
 namespace {
 
-void StartSafeBrowsingDBManagerInternal(
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-        safe_browsing_db_manager,
-    scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-        shared_url_loader_factory) {
-  std::string client_name;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  client_name = "googlechrome";
+inline constexpr std::string_view kClientName = "googlechrome";
 #else
-  client_name = "chromium";
+inline constexpr std::string_view kClientName = "chromium";
 #endif
-
-  safe_browsing::V4ProtocolConfig config =
-      safe_browsing::GetV4ProtocolConfig(client_name,
-                                         /*disable_auto_update=*/false);
-
-  safe_browsing_db_manager->StartOnUIThread(shared_url_loader_factory, config);
-}
 
 }  // namespace
 
@@ -68,17 +56,9 @@ SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() {
 
 SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() = default;
 
-void SafeBrowsingServiceImpl::Initialize(
-    PrefService* prefs,
-    const base::FilePath& user_data_path,
-    safe_browsing::SafeBrowsingMetricsCollector*
-        safe_browsing_metrics_collector) {
+void SafeBrowsingServiceImpl::Initialize(const base::FilePath& user_data_path) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-
-  if (io_thread_enabler_) {
-    // Already initialized.
-    return;
-  }
+  DCHECK(!io_thread_enabler_);
 
   base::FilePath safe_browsing_data_path =
       user_data_path.Append(safe_browsing::kSafeBrowsingBaseFilename);
@@ -89,31 +69,39 @@ void SafeBrowsingServiceImpl::Initialize(
 
   io_thread_enabler_ = base::MakeRefCounted<IOThreadEnabler>();
 
+  std::string user_agent =
+      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE);
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::Initialize, io_thread_enabler_,
                      network_context_client_.BindNewPipeAndPassReceiver(),
-                     safe_browsing_data_path));
+                     std::move(safe_browsing_data_path),
+                     std::move(user_agent)));
 
-  auto url_loader_factory_params =
-      network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_orb_enabled = false;
   network_context_client_->CreateURLLoaderFactory(
       std::move(url_loader_factory_pending_receiver_),
-      std::move(url_loader_factory_params));
+      safe_browsing::GetUrlLoaderFactoryParams());
+}
+
+void SafeBrowsingServiceImpl::OnBrowserStateCreated(
+    PrefService* prefs,
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Watch for changes to the Safe Browsing opt-out preference.
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs);
-  pref_change_registrar_->Add(
-      prefs::kSafeBrowsingEnabled,
-      base::BindRepeating(
-          &SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState,
-          base::Unretained(this)));
-  UMA_HISTOGRAM_BOOLEAN(
-      safe_browsing::kSafeBrowsingEnabledHistogramName,
-      pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled));
+  auto registrar = std::make_unique<PrefChangeRegistrar>();
+  registrar->Init(prefs);
+  registrar->Add(prefs::kSafeBrowsingEnabled,
+                 base::BindRepeating(
+                     &SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState,
+                     base::Unretained(this)));
+
+  auto insertion_result = pref_change_registrars_.insert(
+      std::make_pair(prefs, std::move(registrar)));
+  DCHECK(insertion_result.second);
+
+  UMA_HISTOGRAM_BOOLEAN(safe_browsing::kSafeBrowsingEnabledHistogramName,
+                        prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   // TODO(crbug.com/40886668): Deprecate SafeBrowsing.Pref.Enhanced.
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.Enhanced",
                         prefs->GetBoolean(prefs::kSafeBrowsingEnhanced));
@@ -132,14 +120,29 @@ void SafeBrowsingServiceImpl::Initialize(
                       false);
   }
   UpdateSafeBrowsingEnabledState();
-  if (safe_browsing_metrics_collector)
-    safe_browsing_metrics_collector->StartLogging();
+
+  if (metrics_collector) {
+    metrics_collector->StartLogging();
+  }
+}
+
+void SafeBrowsingServiceImpl::OnBrowserStateDestroyed(PrefService* prefs) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  // OnBrowserStateDestroyed(...) may be called after ShutDown(). In that
+  // case, `prefs` will no longer be in `pref_change_registrars_` and the
+  // call can be ignored.
+  auto iter = pref_change_registrars_.find(prefs);
+  if (iter != pref_change_registrars_.end()) {
+    pref_change_registrars_.erase(iter);
+    UpdateSafeBrowsingEnabledState();
+  }
 }
 
 void SafeBrowsingServiceImpl::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  pref_change_registrar_.reset();
+  pref_change_registrars_.clear();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
@@ -169,7 +172,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       hash_real_time_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
               web_state->GetBrowserState()->IsOffTheRecord(),
-              pref_change_registrar_->prefs(),
+              client->GetPrefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
               /*log_usage_histograms=*/true,
@@ -193,7 +196,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -215,7 +218,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       hash_real_time_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
               web_state->GetBrowserState()->IsOffTheRecord(),
-              pref_change_registrar_->prefs(),
+              client->GetPrefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
               /*log_usage_histograms=*/true,
@@ -239,7 +242,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
       /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -270,7 +273,7 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*hash_realtime_selection=*/
       safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 // Checks if async check should be created.
@@ -295,7 +298,7 @@ bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
       hash_real_time_selection =
           safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
               web_state->GetBrowserState()->IsOffTheRecord(),
-              pref_change_registrar_->prefs(),
+              client->GetPrefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
               /*log_usage_histograms=*/true,
@@ -349,16 +352,23 @@ void SafeBrowsingServiceImpl::SetUpURLLoaderFactory(
 }
 
 void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
-  bool enabled =
-      pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
+  bool enabled = false;
+  for (const auto& [prefs, _] : pref_change_registrars_) {
+    if (prefs->GetBoolean(prefs::kSafeBrowsingEnabled)) {
+      enabled = true;
+      break;
+    }
+  }
   if (enabled_ == enabled) {
     return;
   }
 
   enabled_ = enabled;
   if (enabled_) {
-    StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
-                                       shared_url_loader_factory_);
+    safe_browsing_db_manager_->StartOnUIThread(
+        shared_url_loader_factory_,
+        safe_browsing::GetV4ProtocolConfig(std::string(kClientName),
+                                           /*disable_auto_update=*/false));
   } else {
     safe_browsing_db_manager_->StopOnUIThread(false);
   }
@@ -373,8 +383,9 @@ SafeBrowsingServiceImpl::IOThreadEnabler::~IOThreadEnabler() = default;
 void SafeBrowsingServiceImpl::IOThreadEnabler::Initialize(
     mojo::PendingReceiver<network::mojom::NetworkContext>
         network_context_receiver,
-    const base::FilePath& safe_browsing_data_path) {
-  SetUpURLRequestContext(safe_browsing_data_path);
+    const base::FilePath& safe_browsing_data_path,
+    const std::string& user_agent) {
+  SetUpURLRequestContext(safe_browsing_data_path, user_agent);
   std::vector<std::string> cors_exempt_header_list;
   network_context_ = std::make_unique<network::NetworkContext>(
       /*network_service=*/nullptr, std::move(network_context_receiver),
@@ -397,7 +408,8 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::ClearAllCookies(
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
-    const base::FilePath& safe_browsing_data_path) {
+    const base::FilePath& safe_browsing_data_path,
+    const std::string& user_agent) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
   net::URLRequestContextBuilder builder;
@@ -412,7 +424,6 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
           /*system_cookie_store=*/nullptr, net::NetLog::Get());
 
   builder.SetCookieStore(std::move(cookie_store));
-  builder.set_user_agent(
-      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
+  builder.set_user_agent(user_agent);
   url_request_context_ = builder.Build();
 }

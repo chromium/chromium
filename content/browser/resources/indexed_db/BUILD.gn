@@ -9,8 +9,8 @@ build_webui("build") {
 
   static_files = [
     "common.css",
-    "indexeddb_internals.html",
     "indexeddb_internals.css",
+    "indexeddb_internals.html",
   ]
 
   web_component_files = [

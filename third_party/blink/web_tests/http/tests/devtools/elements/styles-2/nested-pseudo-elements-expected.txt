@@ -22,6 +22,11 @@ Running: dumpBeforeStyles
 [$#inspected::before$] { (<style>)
     content: "BEFORE";
 
+======== Pseudo ::marker element ========
+[expanded] 
+[$#inspected::before::marker$] { (<style>)
+    content: "before marker";
+
 
 Running: dumpAfterStyles
 [expanded] 
@@ -32,10 +37,23 @@ Running: dumpAfterStyles
 [$#inspected::after$] { (<style>)
     content: "AFTER";
 
+======== Pseudo ::marker element ========
+[expanded] 
+[$#inspected::after::marker$] { (<style>)
+    content: "after marker";
+
 
 Running: dumpBeforeMarkerStyles
+[expanded] 
+[$#inspected::before::marker$] { (<style>)
+    content: "before marker";
+
 
 Running: dumpAfterMarkerStyles
+[expanded] 
+[$#inspected::after::marker$] { (<style>)
+    content: "after marker";
+
 
 Running: removeAfterMarker
 - <div id="container">

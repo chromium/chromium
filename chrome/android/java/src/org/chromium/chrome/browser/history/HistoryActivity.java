@@ -58,7 +58,8 @@ public class HistoryActivity extends SnackbarActivity {
                         clientPackageName,
                         shouldShowClearData,
                         appSpecificHistory,
-                        showAppFilter);
+                        showAppFilter,
+                        /* openHistoryItemCallback= */ null);
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
         if (showAppFilter) createBottomSheetController(contentView);
@@ -71,17 +72,7 @@ public class HistoryActivity extends SnackbarActivity {
                 (ViewGroup)
                         LayoutInflater.from(this).inflate(R.layout.bottom_sheet_container, null);
         ScrimCoordinator scrim =
-                new ScrimCoordinator(
-                        this,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        contentView,
-                        getColor(R.color.default_scrim_color));
+                new ScrimCoordinator(this, /* systemUiScrimDelegate= */ null, contentView);
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrim,

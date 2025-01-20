@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.widget.Button;
@@ -11,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,14 +67,14 @@ public class AutofillSnackbarControllerTest {
         showSnackbar();
 
         Snackbar currentSnackbar = getCurrentSnackbar();
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar message text", SNACKBAR_MESSAGE_TEXT, getSnackbarMessageText());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar action text", SNACKBAR_ACTION_TEXT, getSnackbarActionText());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect snackbar duration", SNACKBAR_DURATION, currentSnackbar.getDuration());
 
-        Assert.assertTrue(
+        assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof AutofillSnackbarController);
     }
@@ -84,7 +86,7 @@ public class AutofillSnackbarControllerTest {
 
         dismissSnackbar();
 
-        Assert.assertNull(getCurrentSnackbar());
+        assertNull(getCurrentSnackbar());
         verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
     }
 

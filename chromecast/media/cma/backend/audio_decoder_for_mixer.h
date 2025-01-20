@@ -73,7 +73,7 @@ class AudioDecoderForMixer
   friend class AvSyncTest;
 
   // mixer_service::OutputStreamConnection::Delegate implementation:
-  void FillNextBuffer(void* buffer,
+  void FillNextBuffer(base::span<uint8_t> buffer,
                       int frames,
                       int64_t delay_timestamp,
                       int64_t delay) override;

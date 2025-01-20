@@ -235,6 +235,26 @@ TEST_F(CullRectTest,
   EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
 }
 
+TEST_F(CullRectTest,
+       ApplyScrollTranslationPartialScrollingContentsWithTinyExpansionRatio) {
+  // Results should be the same as no expansion.
+  expansion_ratio_ = 0.00001;
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -3000, -5000, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(8000, 8000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(3020, 5010, 30, 50), cull_rect.Rect());
+
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(false, false),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(gfx::Rect(3020, 5010, 40, 50), cull_rect.Rect());
+}
+
 TEST_F(CullRectTest, ApplyScrollTranslationNoIntersectionWithContainerRect) {
   auto state = CreateCompositedScrollTranslationState(
       PropertyTreeState::Root(), -10, -15, gfx::Rect(200, 100, 40, 50),
@@ -504,31 +524,37 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
       state1, -3000, -5000, gfx::Rect(20, 10, 40, 50), gfx::Size(8000, 8000));
 
   // Same as ApplyScrollTranslationPartialScrollingContents.
-  CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
+  CullRect cull_rect1(gfx::Rect(0, 0, 80, 100));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, state1, state1,
                                    scroll_translation_state));
-  EXPECT_EQ(gfx::Rect(1020, 3010, 4030, 4050), cull_rect1.Rect());
+  EXPECT_EQ(gfx::Rect(1020, 3010, 4040, 4050), cull_rect1.Rect());
 
   CullRect old_cull_rect(gfx::Rect(1000, 3100, 4000, 4000));
-  CullRect cull_rect2(gfx::Rect(0, 0, 50, 100));
+  CullRect cull_rect2(gfx::Rect(0, 0, 80, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   EXPECT_TRUE(ApplyPaintProperties(cull_rect2, state1, state1,
                                    scroll_translation_state, old_cull_rect));
   EXPECT_EQ(old_cull_rect, cull_rect2);
 
-  old_cull_rect.Move(gfx::Vector2d(1000, 1000));
   CullRect cull_rect3(gfx::Rect(0, 0, 50, 100));
-  // Use the new cull rect if it changed enough.
+  // Use the new cull rect if it is mapped from a rect that is smaller than the
+  // scroll container rect.
   EXPECT_TRUE(ApplyPaintProperties(cull_rect3, state1, state1,
                                    scroll_translation_state, old_cull_rect));
-  EXPECT_EQ(cull_rect1, cull_rect3);
+  EXPECT_EQ(gfx::Rect(1020, 3010, 4030, 4050), cull_rect3.Rect());
 
-  CullRect cull_rect4 = CullRect::Infinite();
+  old_cull_rect.Move(gfx::Vector2d(1000, 1000));
+  CullRect cull_rect4(gfx::Rect(0, 0, 80, 100));
+  // Use the new cull rect if it changed enough.
   EXPECT_TRUE(ApplyPaintProperties(cull_rect4, state1, state1,
+                                   scroll_translation_state, old_cull_rect));
+  EXPECT_EQ(cull_rect1, cull_rect4);
+
+  CullRect cull_rect5 = CullRect::Infinite();
+  EXPECT_TRUE(ApplyPaintProperties(cull_rect5, state1, state1,
                                    scroll_translation_state));
-  // This result differs from the first result in width (4030 vs 4040)
-  // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(gfx::Rect(1020, 3010, 4040, 4050), cull_rect4.Rect());
+  // This is the same as the first result.
+  EXPECT_EQ(gfx::Rect(1020, 3010, 4040, 4050), cull_rect5.Rect());
 }
 
 TEST_F(CullRectTest, TransformUnderScrollTranslation) {
@@ -543,29 +569,35 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
 
   // Cases below are the same as those in SingleScrollPartialScrollingContents,
   // except that the offset is adjusted with |t2|.
-  CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
+  CullRect cull_rect1(gfx::Rect(0, 0, 80, 100));
   EXPECT_TRUE(ApplyPaintProperties(cull_rect1, state1, state1, state2));
-  EXPECT_EQ(gfx::Rect(-980, 10, 4030, 4050), cull_rect1.Rect());
+  EXPECT_EQ(gfx::Rect(-980, 10, 4040, 4050), cull_rect1.Rect());
 
   CullRect old_cull_rect(gfx::Rect(-980, 10, 4000, 4000));
-  CullRect cull_rect2(gfx::Rect(0, 0, 50, 100));
+  CullRect cull_rect2(gfx::Rect(0, 0, 80, 100));
   // Use old_cull_rect if the new cull rect didn't change enough.
   EXPECT_TRUE(
       ApplyPaintProperties(cull_rect2, state1, state1, state2, old_cull_rect));
   EXPECT_EQ(old_cull_rect, cull_rect2);
 
-  old_cull_rect.Move(gfx::Vector2d(1000, 1000));
   CullRect cull_rect3(gfx::Rect(0, 0, 50, 100));
-  // Use the new cull rect if it changed enough.
+  // Use new cull_rect if it is mapped from a rect that is smaller than the
+  // scroll container rect.
   EXPECT_TRUE(
       ApplyPaintProperties(cull_rect3, state1, state1, state2, old_cull_rect));
-  EXPECT_EQ(cull_rect1, cull_rect3);
+  EXPECT_EQ(gfx::Rect(-980, 10, 4030, 4050), cull_rect3.Rect());
 
-  CullRect cull_rect4 = CullRect::Infinite();
-  EXPECT_TRUE(ApplyPaintProperties(cull_rect4, state1, state1, state2));
-  // This result differs from the first result in height (7050 vs 7060)
-  // because it's not clipped by the infinite input cull rect.
-  EXPECT_EQ(gfx::Rect(-980, 10, 4040, 4050), cull_rect4.Rect());
+  old_cull_rect.Move(gfx::Vector2d(1000, 1000));
+  CullRect cull_rect4(gfx::Rect(0, 0, 80, 100));
+  // Use the new cull rect if it changed enough.
+  EXPECT_TRUE(
+      ApplyPaintProperties(cull_rect4, state1, state1, state2, old_cull_rect));
+  EXPECT_EQ(cull_rect1, cull_rect4);
+
+  CullRect cull_rect5 = CullRect::Infinite();
+  EXPECT_TRUE(ApplyPaintProperties(cull_rect5, state1, state1, state2));
+  // This is the same as the first result.
+  EXPECT_EQ(gfx::Rect(-980, 10, 4040, 4050), cull_rect5.Rect());
 }
 
 TEST_F(CullRectTest, TransformEscapingScroll) {

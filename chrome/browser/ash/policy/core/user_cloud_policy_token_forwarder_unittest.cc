@@ -39,6 +39,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -128,7 +129,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   // and user policy manager.
   void CreateUserWithType(user_manager::UserType user_type) {
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId(kGaiaId));
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(),
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),

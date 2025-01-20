@@ -172,7 +172,7 @@ class WiredDisplayMediaRouteProviderTest : public testing::Test {
         secondary_display1_(10000001, secondary_display1_bounds_),
         secondary_display2_(10000002, secondary_display2_bounds_),
         mirror_display_(10000004, primary_display_bounds_) {}
-  ~WiredDisplayMediaRouteProviderTest() override {}
+  ~WiredDisplayMediaRouteProviderTest() override = default;
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);

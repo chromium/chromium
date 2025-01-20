@@ -18,6 +18,8 @@
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/webid/jwt_signer.h"
+#include "content/browser/webid/sd_jwt.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -195,8 +197,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     kLoginToIdpPopup = 5,
     kContinueOnPopup = 6,
     kErrorUrlPopup = 7,
+
     kMaxValue = kErrorUrlPopup
   };
+
   DialogType GetDialogType() const { return dialog_type_; }
 
   enum IdentitySelectionType { kExplicit, kAutoPassive, kAutoActive };
@@ -226,6 +230,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool HasUserTriedToSignInToIdp(const GURL& idp_config_url) {
     return idps_user_tried_to_signin_to_.contains(idp_config_url);
   }
+
+  FedCmUseOtherAccountResult ComputeUseOtherAccountResult(
+      blink::mojom::FederatedAuthRequestResult result,
+      const std::optional<GURL>& selected_idp_config_url);
 
  private:
   friend class FederatedAuthRequestImplTest;
@@ -369,6 +377,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const std::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);
+  void ProcessSdJwt(const GURL& selected_idp_config_url,
+                    const std::string& token);
+  void OnDisclosureParsed(base::RepeatingClosure cb,
+                          const std::string& json,
+                          data_decoder::DataDecoder::ValueOrError result);
+  void OnSdJwtParsed(const GURL& selected_idp_config_url,
+                     const sdjwt::Jwt& token);
   void CompleteUserInfoRequest(
       FederatedAuthUserInfoRequest* request,
       RequestUserInfoCallback callback,
@@ -617,6 +632,28 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // such that the previous user gesture is expired. Therefore we store the
   // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
+
+  // Whether we have shown any UI during this flow.
+  bool did_show_ui_{false};
+
+  // Keeps track of the state of the use other account flow. Is std::nullopt
+  // when the flow is not active.
+  std::optional<FedCmUseOtherAccountResult> use_other_account_account_result_;
+
+  // Whether a token request has been sent.
+  bool has_sent_token_request_{false};
+
+  // Keeps track of the state of the verifying dialog. Is std::nullopt when the
+  // verifying dialog has not been shown.
+  std::optional<FedCmVerifyingDialogResult> verifying_dialog_result_;
+
+  // A private key that is used to bind the token when the token "format" is
+  // "vc+sd-jwt".
+  std::unique_ptr<crypto::ECPrivateKey> private_key_;
+
+  // A list of discloures that were parsed in the token response, when
+  // the token's format is "vc+sd-jwt".
+  std::vector<std::pair<std::string, std::string>> disclosures_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

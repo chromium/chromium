@@ -10,38 +10,14 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let date: Date
   let useLens: Bool
   let useColorLensAndVoiceIcons: Bool
+  let isPreview: Bool
+  let avatar: Image?
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
-    ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
-  }
-
-  func shouldUseLens() -> Bool {
-    let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-    let useLens: Bool =
-      sharedDefaults.bool(
-        forKey: WidgetConstants.QuickActionsWidget.isGoogleDefaultSearchEngineKey)
-      && sharedDefaults.bool(
-        forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
-    return useLens
-  }
-
-  func shouldUseColorLensAndVoiceIcons() -> Bool {
-    // On iOS 15, color icons are not supported in widget, always return false
-    // as no icon would be displayed.
-    // On iOS 16, color icons are displayed in monochrome, so still present
-    // the monochrome icon as it may be better adapted.
-    if #available(iOS 17, *) {
-      guard shouldUseLens() else { return false }
-
-      let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-      let useColorLensAndVoiceIcons: Bool =
-        sharedDefaults.bool(
-          forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
-      return useColorLensAndVoiceIcons
-    }
-    return false
+    ConfigureQuickActionsWidgetEntry(
+      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil)
   }
 
   func getSnapshot(
@@ -51,7 +27,9 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil
     )
     completion(entry)
   }
@@ -63,7 +41,9 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      isPreview: context.isPreview,
+      avatar: nil
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -72,7 +52,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
 }
 
 struct QuickActionsWidget: Widget {
-  // Changing |kind| or deleting this widget will cause all installed instances of this widget to
+  // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
   // stop updating and show the placeholder state.
   let kind: String = "QuickActionsWidget"
 
@@ -92,6 +72,95 @@ struct QuickActionsWidget: Widget {
     .crContentMarginsDisabled()
     .crContainerBackgroundRemovable(false)
   }
+}
+
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  struct QuickActionsWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "QuickActionsWidget"
+
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind,
+        intent: SelectProfileIntent.self,
+        provider: ConfigurableQuickActionsWidgetEntryProvider()
+      ) { entry in
+        QuickActionsWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME")
+      )
+      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
+      .supportedFamilies([.systemMedium])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
+    }
+  }
+
+  // Advises WidgetKit when to update a widget’s display.
+  @available(iOS 17, *)
+  struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
+
+    func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
+      ConfigureQuickActionsWidgetEntry(
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil
+      )
+    }
+
+    func snapshot(for configuration: SelectProfileIntent, in context: Context) async
+      -> ConfigureQuickActionsWidgetEntry
+    {
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar
+      )
+      return entry
+    }
+
+    func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
+      ConfigureQuickActionsWidgetEntry
+    > {
+      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar
+      )
+      let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
+      let timeline: Timeline = Timeline(entries: entries, policy: .never)
+      return timeline
+    }
+  }
+#endif
+
+func shouldUseLens() -> Bool {
+  let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+  let useLens: Bool =
+    sharedDefaults.bool(
+      forKey: WidgetConstants.QuickActionsWidget.isGoogleDefaultSearchEngineKey)
+    && sharedDefaults.bool(
+      forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
+  return useLens
+}
+
+func shouldUseColorLensAndVoiceIcons() -> Bool {
+  // On iOS 15, color icons are not supported in widget, always return false
+  // as no icon would be displayed.
+  // On iOS 16, color icons are displayed in monochrome, so still present
+  // the monochrome icon as it may be better adapted.
+  if #available(iOS 17, *) {
+    return shouldUseLens()
+  }
+  return false
 }
 
 struct QuickActionsWidgetEntryView: View {
@@ -138,6 +207,9 @@ struct QuickActionsWidgetEntryView: View {
                   .font(.subheadline)
                   .foregroundColor(Color("widget_text_color"))
                 Spacer()
+                #if IOS_ENABLE_WIDGETS_FOR_MIM
+                  Avatar(entry: entry)
+                #endif
               }
             }
             .frame(minWidth: 0, maxWidth: .infinity)
@@ -230,5 +302,26 @@ struct ButtonPlaceholder: View {
         .foregroundColor(Color("widget_text_color"))
         .opacity(0.3)
     }.frame(minWidth: 0, maxWidth: .infinity)
+  }
+}
+
+struct Avatar: View {
+  var entry: ConfigureQuickActionsWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 35, height: 35)
+        .padding(.trailing, 8)
+    }
   }
 }

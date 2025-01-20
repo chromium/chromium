@@ -246,6 +246,7 @@ ci.builder(
         short_name = "linux-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
+    siso_remote_linking = True,
 )
 
 ci.builder(
@@ -298,8 +299,6 @@ ci.builder(
             ),
             "browser_tests": targets.mixin(
                 args = [
-                    # crbug.com/868082
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter",
                 ],
                 swarming = targets.swarming(
@@ -317,12 +316,6 @@ ci.builder(
             ),
             "components_browsertests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",
-            ),
-            "content_browsertests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
             ),
             "content_unittests": targets.mixin(
                 # crbug.com/337984655
@@ -377,7 +370,11 @@ ci.builder(
             ),
         },
     ),
+    # TODO: crbug.com/380151726 - any builderless 8-core bots don't have SSD
+    # at this moment. Use 8 cores after adding SSD to them.
+    cores = 16,
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         short_name = "win-rel-cft",
     ),

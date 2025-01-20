@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
@@ -34,21 +34,6 @@ class PasswordCrossDomainConfirmationPopupController {
   };
 
   virtual ~PasswordCrossDomainConfirmationPopupController() = default;
-
-  virtual void Hide(autofill::SuggestionHidingReason reason) = 0;
-
-  // Creates and shows a popup pointing to `element_bounds` and presenting
-  // a message regarding cross domain password usage. `domain` is the domain
-  // of the current web site the popup is triggered on. `password_domain` is
-  // the domain of the web site the password was originally stored on.
-  // `confirmation_callback` is called if the user confirms the action, if
-  // the user cancels it, the popup is silently hidden.
-  // If the popup is already shown, it gets hidden and a new one shows up.
-  virtual void Show(const gfx::RectF& element_bounds,
-                    base::i18n::TextDirection text_direction,
-                    const GURL& domain,
-                    const std::u16string& password_origin,
-                    base::OnceClosure confirmation_callback) = 0;
 };
 
 }  // namespace password_manager

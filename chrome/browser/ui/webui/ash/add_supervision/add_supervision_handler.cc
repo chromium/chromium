@@ -79,15 +79,16 @@ void AddSupervisionHandler::GetInstalledArcApps(
   std::vector<std::string> installed_arc_apps;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .ForEachApp([&installed_arc_apps,
-                   profile](const apps::AppUpdate& update) {
-        if (ShouldIncludeAppUpdate(update)) {
-          std::string package_name =
-              arc::AppIdToArcPackageName(update.AppId(), profile);
-          if (!package_name.empty())
-            installed_arc_apps.push_back(package_name);
-        }
-      });
+      .ForEachApp(
+          [&installed_arc_apps, profile](const apps::AppUpdate& update) {
+            if (ShouldIncludeAppUpdate(update)) {
+              std::string package_name =
+                  arc::AppIdToArcPackageName(update.AppId(), profile);
+              if (!package_name.empty()) {
+                installed_arc_apps.push_back(package_name);
+              }
+            }
+          });
 
   std::move(callback).Run(installed_arc_apps);
 }

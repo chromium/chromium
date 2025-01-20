@@ -16,13 +16,13 @@ export interface PageVisibility {
   defaultBrowser?: boolean;
   downloads?: boolean;
   extensions?: boolean;
+  glic?: boolean;
   languages?: boolean;
   onStartup?: boolean;
   people?: boolean;
   performance?: boolean;
   privacy?: boolean|PrivacyPageVisibility;
   reset?: boolean;
-  safetyCheck?: boolean;
   safetyHub?: boolean;
   system?: boolean;
 }
@@ -36,6 +36,8 @@ export interface AppearancePageVisibility {
   sidePanel: boolean;
 }
 
+// TODO(crbug.com/362659905): Merge pageVisibility.safetyHub with
+// PrivacyPageVisibility when the crash is fixed.
 export interface PrivacyPageVisibility {
   networkPrediction: boolean;
   searchPrediction: boolean;
@@ -56,13 +58,13 @@ function createPageVisibility(): PageVisibility|undefined {
     defaultBrowser: false,
     downloads: false,
     extensions: false,
+    glic: false,
     languages: false,
     onStartup: false,
     people: false,
     performance: false,
     privacy: false,
     reset: false,
-    safetyCheck: false,
     safetyHub: false,
     system: false,
   };
@@ -74,7 +76,6 @@ function createPageVisibility(): PageVisibility|undefined {
     people: false,
     onStartup: false,
     reset: false,
-    safetyCheck: false,
     safetyHub: false,
     appearance: {
       setTheme: false,
@@ -92,6 +93,7 @@ function createPageVisibility(): PageVisibility|undefined {
     downloads: true,
     a11y: true,
     extensions: false,
+    glic: false,
     languages: true,
     performance: false,
   };

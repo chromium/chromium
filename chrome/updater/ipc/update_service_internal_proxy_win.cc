@@ -34,8 +34,10 @@ class UpdaterInternalCallback
     : public DYNAMICIIDSIMPL(IUpdaterInternalCallback) {
  public:
   explicit UpdaterInternalCallback(
+      UpdaterScope scope,
       base::OnceCallback<void(std::optional<RpcError>)> callback)
-      : callback_(std::move(callback)) {}
+      : DYNAMICIIDSIMPL(IUpdaterInternalCallback)(scope),
+        callback_(std::move(callback)) {}
   UpdaterInternalCallback(const UpdaterInternalCallback&) = delete;
   UpdaterInternalCallback& operator=(const UpdaterInternalCallback&) = delete;
 
@@ -110,8 +112,8 @@ class UpdateServiceInternalProxyImplImpl
       std::move(callback).Run(connection);
       return;
     }
-    auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterInternalCallback>(std::move(callback));
+    auto callback_wrapper = MakeComObjectOrCrash<UpdaterInternalCallback>(
+        scope(), std::move(callback));
     HRESULT hr = get_interface()->Run(callback_wrapper.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
@@ -127,8 +129,8 @@ class UpdateServiceInternalProxyImplImpl
       std::move(callback).Run(connection);
       return;
     }
-    auto callback_wrapper =
-        MakeComObjectOrCrash<UpdaterInternalCallback>(std::move(callback));
+    auto callback_wrapper = MakeComObjectOrCrash<UpdaterInternalCallback>(
+        scope(), std::move(callback));
     HRESULT hr = get_interface()->Hello(callback_wrapper.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdaterInternal::Hello" << std::hex << hr;

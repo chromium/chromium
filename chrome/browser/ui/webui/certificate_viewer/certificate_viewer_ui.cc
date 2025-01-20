@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/certificate_viewer_resources.h"
 #include "chrome/grit/certificate_viewer_resources_map.h"
@@ -23,6 +17,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -58,12 +53,17 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
       {"trustStateHint", IDS_CERT_INFO_TRUST_STATE_HINT},
       {"trustStateTrusted", IDS_CERT_INFO_TRUST_STATE_TRUSTED},
       {"constraints", IDS_CERT_INFO_CONSTRAINTS_LABEL},
+      {"add", IDS_CERT_INFO_ADD_CONSTRAINTS_BUTTON_LABEL},
+      {"addConstraints", IDS_CERT_INFO_ADD_CONSTRAINTS_LABEL},
+      {"addConstraintsPlaceholder", IDS_CERT_INFO_ADD_CONSTRAINTS_PLACEHOLDER},
+      {"addConstraintErrorMessage", IDS_CERT_INFO_ADD_CONSTRAINT_ERROR_MESSAGE},
+      {"deleteConstraintErrorMessage",
+       IDS_CERT_INFO_DELETE_CONSTRAINT_ERROR_MESSAGE},
+      {"trustStateErrorMessage", IDS_CERT_INFO_TRUST_STATE_ERROR_MESSAGE},
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kCertificateViewerResources,
-                                              kCertificateViewerResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kCertificateViewerResources,
                               IDR_CERTIFICATE_VIEWER_CERTIFICATE_VIEWER_HTML);
 }
 
@@ -76,4 +76,4 @@ CertificateViewerUI::CertificateViewerUI(content::WebUI* web_ui)
                               chrome::kChromeUICertificateViewerHost);
 }
 
-CertificateViewerUI::~CertificateViewerUI() {}
+CertificateViewerUI::~CertificateViewerUI() = default;

@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"

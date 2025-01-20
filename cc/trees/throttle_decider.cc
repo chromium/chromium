@@ -50,9 +50,7 @@ void ThrottleDecider::ProcessRenderPass(
       }
       const auto& child_rp = *found->second;
       if (child_rp.backdrop_filters.HasFilterOfType(FilterOperation::BLUR) &&
-          render_pass_quad->resources
-                  .ids[viz::RenderPassDrawQuadInternal::kMaskResourceIdIndex] ==
-              viz::kInvalidResourceId) {
+          render_pass_quad->resource_id == viz::kInvalidResourceId) {
         gfx::RectF blur_bounds(child_rp.output_rect);
         if (child_rp.backdrop_filter_bounds)
           blur_bounds.Intersect(child_rp.backdrop_filter_bounds->rect());

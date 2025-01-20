@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome öppnar automatiskt inkognitolänkar till YouTube i inkognitoläget.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Öppna en ny flik i Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Använd Chrome varje gång du trycker på länkar i meddelanden och andra appar.</translation>
 <translation id="1229222343402087523">Sök efter ${searchPhrase} i Chrome</translation>
 <translation id="1237769345474105984">Från Chrome</translation>
-<translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="124228879633599436">Den här versionen av Chrome är inaktuell. Se till att du är skyddad genom att uppdatera.</translation>
 <translation id="1333745675627230582">Spela Chrome Dino-spelet</translation>
 <translation id="1352919863522755794">Google Lösenordshantering kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
@@ -38,6 +38,7 @@ Tänk på detta:
 <translation id="1646463005043273333">Öppnar Chrome-inställningen för att ställa in Chrome som standardwebbläsare.</translation>
 <translation id="1670609221633730681">Tips för Chrome: Välj adressfältets position</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Spara dina lösenord i Chrome</translation>
 <translation id="1790080846677398234">Lägger till de angivna webbadresserna i dina bokmärken i Chrome.</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="3655656110921623717">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chrome.</translation>
 <translation id="3740397331642243698">Öppnar de angivna webbadresserna i Google Chrome i inkognitoläge.</translation>
 <translation id="3741995255368156336">Öppnar läslistan i Chrome.</translation>
+<translation id="3808570423967020928">Kom åt Chrome snabbare från hemskärmens docka.</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="384394811301901750">Google Chrome kan inte använda kameran just nu</translation>
 <translation id="3863841106411295595">Lägger till de angivna webbadresserna i din läslista i Chrome.</translation>
@@ -125,6 +127,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="4636900170638246267">Logga in på den här webbplatsen och i Chrome.</translation>
 <translation id="4646014602299206846">Chrome identifierar paketets spårningsnummer på webbplatser du besöker och visar uppdateringar om paketet på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla.</translation>
 <translation id="4647910807533196601">Öppna min senaste flik i Chrome.</translation>
+<translation id="4693084815234024320">Du använder Chromes inkognitoläge</translation>
 <translation id="4724297637870447613">Använd Chrome överallt</translation>
 <translation id="4738647308035481133">Google Chrome-sida</translation>
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
@@ -219,9 +222,12 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 
 Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Radera webbinformation i Chrome.</translation>
+<translation id="6924922227983877439">Öppna länkar i Chrome som standard</translation>
+<translation id="6931601805528922498">När du loggar in läggs ditt konto till i Chrome för arbetsrelaterad surfning.</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
 <translation id="7056826488869329999">Öppnar och kör en säkerhetskontroll i Chrome.</translation>
 <translation id="7061455974939528301">Håll nere Chrome-ikonen och klicka på Ändra hemskärmen</translation>
+<translation id="7065813315247345131">Flytta Chrome till dockan</translation>
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
 <translation id="7161390184744336561">Google Chrome-versionen är inaktuell</translation>
 <translation id="7165736900384873061">Börja använda Google Chrome som QR-skanner</translation>

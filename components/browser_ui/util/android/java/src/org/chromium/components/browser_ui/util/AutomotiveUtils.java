@@ -58,7 +58,7 @@ public class AutomotiveUtils {
                 DisplayAndroid.getNonMultiDisplay(activityContext), automotiveToolbarHeightPx);
     }
 
-    private static boolean useVerticalAutomotiveBackButtonToolbar(Context activityContext) {
+    public static boolean useVerticalAutomotiveBackButtonToolbar(Context activityContext) {
         return !sForceHorizontalAutomotiveTesting
                 && activityContext.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE;

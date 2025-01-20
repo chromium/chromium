@@ -599,6 +599,9 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
   content::AttributionDataModel::DataKey attribution_reporting_key{kSiteOrigin};
   content::PrivateAggregationDataModel::DataKey private_aggregation_key{
       kSiteOrigin};
+  net::device_bound_sessions::SessionKey device_bound_session_key(
+      net::SchemefulSite(kSiteOrigin.GetURL()),
+      net::device_bound_sessions::SessionKey::Id("session_id"));
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       third_party_cookie_types = {
@@ -612,7 +615,9 @@ TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
            unpartitioned_session_storage_usage},
           {BrowsingDataModel::StorageType::kSharedWorker,
            unpartitioned_shared_worker_info},
-          {BrowsingDataModel::StorageType::kCookie, *unpartitioned_cookie}};
+          {BrowsingDataModel::StorageType::kCookie, *unpartitioned_cookie},
+          {BrowsingDataModel::StorageType::kDeviceBoundSession,
+           device_bound_session_key}};
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       non_third_party_cookie_types = {

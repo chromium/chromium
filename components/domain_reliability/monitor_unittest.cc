@@ -602,7 +602,7 @@ TEST_F(DomainReliabilityMonitorTest,
 // expected.
 TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   const net::IsolationInfo kIsolationInfo =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

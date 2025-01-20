@@ -37,6 +37,7 @@ component("model_assets") {
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//services/on_device_model/public/mojom:mojom_shared",
+    "//skia",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_ASSETS_CPP_IMPL" ]
 }

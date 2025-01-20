@@ -36,6 +36,7 @@
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -49,11 +50,11 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -191,14 +192,26 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return color_params_.GetSkColorInfo();
+  SkAlphaType GetAlphaType() const override {
+    return color_params_.GetAlphaType();
+  }
+  SkColorType GetSkColorType() const override {
+    return color_params_.GetSkColorType();
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
+  }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return color_params_.GetSkColorSpace();
   }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
   void FinalizeFrame(FlushReason) override;
+  void PaintPlacedElements() final;
+  void MarkPlacedElementDirty(Element* placedElement) final;
+  bool HasPlacedElements() const final;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
@@ -283,7 +296,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void UpdateElementAccessibility(const Path&, Element*);
 
   bool IsComposited() const override;
-  bool IsOriginTopLeft() const override;
   bool HasAlpha() const override { return CreationAttributes().alpha; }
   bool IsDesynchronized() const override {
     return CreationAttributes().desynchronized;
@@ -301,7 +313,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool should_prune_local_font_cache_;
   LinkedHashSet<String> font_lru_list_;
 
-  CanvasColorParams color_params_;
+  Canvas2DColorParams color_params_;
 
   // For privacy reasons we need to delay contextLost events until the page is
   // visible. In order to do this we will hold on to a bool here

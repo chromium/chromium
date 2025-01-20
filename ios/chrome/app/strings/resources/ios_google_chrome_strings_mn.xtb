@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1066101356081285416">Chrome таны зочилсон сайтууд дээрх хяналтын дугааруудыг илрүүлэх бөгөөд Шинэ таб хуудсанд танд илгээмжийн шинэчлэлтийг харуулна. Энэ онцлогоор хангах болон Google-н худалдан авалтын онцлогуудыг хүн бүрд сайжруулахын тулд илгээмж хяналтын дугаар болон вебсайтын нэрийг Google рүү илгээнэ. Та үүнийг <ph name="BEGIN_LINK" />Илгээмж хянах тохиргоонд<ph name="END_LINK" /> хүссэн үедээ шинэчлэх боломжтой.</translation>
+<translation id="1076643793026027628">Chrome YouTube-н нууцлалтай холбоосыг Нууцлалтай горимд автоматаар нээнэ.</translation>
 <translation id="1086486568852410168">Google Lens-р хайх</translation>
 <translation id="1143896152279775643">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална.</translation>
 <translation id="1146503048444965320">Chrome-д шинэ таб нээх</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Мессеж болон бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
 <translation id="1229222343402087523">Chrome-с ${searchPhrase}-г хайх</translation>
 <translation id="1237769345474105984">Chrome-с</translation>
-<translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="124228879633599436">Таны Chrome хуучирсан байна. Аюулгүй байхын тулд үүнийг шинэчилнэ үү.</translation>
 <translation id="1333745675627230582">Chrome Dino тоглоомыг тоглох</translation>
 <translation id="1352919863522755794">Google Password Manager таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome-г өгөгдмөл хөтчөөр тохируулахын тулд Chrome-н Тохиргоог нээнэ.</translation>
 <translation id="1670609221633730681">Chrome-н зөвлөгөө: Хаяг оруулах хэсгийн байрлалаа сонгоно уу</translation>
 <translation id="1759842336958782510">Хромэ</translation>
+<translation id="1784567647421309104">Нууц үгээ Chrome-д хадгалах</translation>
 <translation id="1790080846677398234">Таны Chrome-н хавчуургад оруулсан URL-уудыг нэмнэ.</translation>
 <translation id="1799920918471566157">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1830634592642484976">Энэ хаягийг одоогоор Chrome-д хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Энэ нь Chrome тухай бүрд мобайл сайтын хүсэлт тавина гэсэн үг юм.</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3741995255368156336">Chrome-н Унших жагсаалтыг нээнэ.</translation>
+<translation id="3808570423967020928">Үндсэн нүүрнийхээ суурилуулагчаас Chrome-д илүү хурдан хандана уу.</translation>
 <translation id="3827545470516145620">Та энэ төхөөрөмжид аюулгүй байдлын стандарт хамгаалалтыг авч байна</translation>
 <translation id="384394811301901750">Google Chrome таны камерыг одоогоор ашиглах боломжгүй</translation>
 <translation id="3863841106411295595">Таны Chrome-н унших жагсаалтад оруулсан URL-уудыг нэмнэ.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">Энэ сайт болон Chrome-д нэвтэрнэ үү.</translation>
 <translation id="4646014602299206846">Chrome таны зочилсон сайтууд дээрх илгээмж хянах дугааруудыг илрүүлэх бөгөөд танд шинэ таб хуудсанд илгээмжийн шинэчлэлтийг харуулна. Энэ онцлогоор хангах болон хүн бүрд Shopping-г сайжруулахын тулд таны өгөгдлийг Google-тэй хуваалцана.</translation>
 <translation id="4647910807533196601">Миний сүүлийн табыг Chrome-д нээнэ үү.</translation>
+<translation id="4693084815234024320">Та Chrome-н Нууцлалтай горимд байна</translation>
 <translation id="4724297637870447613">Chrome-г хүссэн газраасаа ашиглаарай</translation>
 <translation id="4738647308035481133">Google Chrome-н хуудас</translation>
 <translation id="4742795653798179840">Chrome-н өгөгдлийг устгалаа</translation>
@@ -219,9 +222,12 @@
 
 Таны Chrome-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="6922332667202044570">Chrome дахь интернэтээр үзсэн өгөгдлийг устгана.</translation>
+<translation id="6924922227983877439">Холбоосыг өгөгдмөлөөр Chrome-д нээнэ</translation>
+<translation id="6931601805528922498">Нэвтэрснээр таны бүртгэлийг ажилтай холбоотойгоор үзэхэд зориулж Chrome-д нэмнэ.</translation>
 <translation id="6975725306479268850">Автоматаар бөглөх хэсэгт Chrome-г сонгоно уу</translation>
 <translation id="7056826488869329999">Chrome-д Аюулгүй байдлын шалгалтыг нээж, явуулна.</translation>
 <translation id="7061455974939528301">Chrome-н дүрс тэмдгийг удаан дараад, "Үндсэн нүүрийг засах"-ыг товшино уу</translation>
+<translation id="7065813315247345131">Chrome-г суурилуулагч руу зөөх</translation>
 <translation id="7124339256045485976">Chrome-г хамгийн шинэ байлгаарай</translation>
 <translation id="7161390184744336561">Google Chrome хуучирсан байна</translation>
 <translation id="7165736900384873061">Google Chrome QR скан хийгчийг ашиглах</translation>

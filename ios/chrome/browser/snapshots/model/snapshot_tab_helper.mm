@@ -80,34 +80,64 @@ void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorageWrapper* wrapper) {
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
+    base::TimeTicks end_time = base::TimeTicks::Now();
+    base::UmaHistogramTimes("IOS.Snapshots.RetrieveColorSnapshotTime",
+                            end_time - start_time);
+    if (callback) {
+      callback(image);
+    }
+  };
+
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);
-    [snapshot_manager_ retrieveSnapshotWithCompletion:callback];
+    [snapshot_manager_ retrieveSnapshotWithCompletion:wrapped_callback];
   } else {
     CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ retrieveSnapshot:callback];
+    [legacy_snapshot_manager_ retrieveSnapshot:wrapped_callback];
   }
 }
 
 void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
+    base::TimeTicks end_time = base::TimeTicks::Now();
+    base::UmaHistogramTimes("IOS.Snapshots.RetrieveGreySnapshotTime",
+                            end_time - start_time);
+    if (callback) {
+      callback(image);
+    }
+  };
+
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);
-    [snapshot_manager_ retrieveGreySnapshotWithCompletion:callback];
+    [snapshot_manager_ retrieveGreySnapshotWithCompletion:wrapped_callback];
   } else {
     CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ retrieveGreySnapshot:callback];
+    [legacy_snapshot_manager_ retrieveGreySnapshot:wrapped_callback];
   }
 }
 
 void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   was_loading_during_last_snapshot_ = web_state_->IsLoading();
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  void (^wrapped_callback)(UIImage*) = ^(UIImage* image) {
+    base::TimeTicks end_time = base::TimeTicks::Now();
+    base::UmaHistogramTimes("IOS.Snapshots.UpdateSnapshotTime",
+                            end_time - start_time);
+    if (callback) {
+      callback(image);
+    }
+  };
+
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);
-    [snapshot_manager_ updateSnapshotWithCompletion:callback];
+    [snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
   } else {
     CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ updateSnapshotWithCompletion:callback];
+    [legacy_snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
   }
 }
 

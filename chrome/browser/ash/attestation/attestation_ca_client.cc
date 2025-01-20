@@ -128,7 +128,7 @@ AttestationCAClient::AttestationCAClient() {
   pca_type_ = GetAttestationServerType();
 }
 
-AttestationCAClient::~AttestationCAClient() {}
+AttestationCAClient::~AttestationCAClient() = default;
 
 void AttestationCAClient::SendEnrollRequest(const std::string& request,
                                             DataCallback on_response) {

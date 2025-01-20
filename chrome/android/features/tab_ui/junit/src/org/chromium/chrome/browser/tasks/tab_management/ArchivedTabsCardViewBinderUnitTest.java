@@ -17,9 +17,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -40,6 +42,8 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private Activity mActivity;
     private View mArchivedTabsCardView;
     private PropertyModel mModel;
@@ -47,7 +51,6 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mArchivedTabsCardView =
                 LayoutInflater.from(mActivity)

@@ -13,6 +13,7 @@ import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
+import "skia/public/mojom/surface_origin.mojom";
 
 // See viz::TransferableResource::SynchronizationType in
 // components/viz/common/resources/transferable_resource.h
@@ -20,12 +21,6 @@ enum SynchronizationType {
   kSyncToken,
   kGpuCommandsCompleted,
   kReleaseFence,
-};
-
-// See components/viz/common/resources/transferable_resource.h.
-union MemoryBufferId {
-  gpu.mojom.Mailbox mailbox;
-  SharedBitmapId shared_bitmap_id;
 };
 
 // Represents a visual resource (e.g., image, video frame) that can be
@@ -38,7 +33,7 @@ struct TransferableResource {
   ResourceId id;
   SharedImageFormat format;
   gfx.mojom.Size size;
-  MemoryBufferId memory_buffer_id;
+  gpu.mojom.Mailbox memory_buffer_id;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
   SynchronizationType synchronization_type;
@@ -53,4 +48,5 @@ struct TransferableResource {
   gfx.mojom.HDRMetadata hdr_metadata;
   bool needs_detiling;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
+  skia.mojom.SurfaceOrigin origin;
 };

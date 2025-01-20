@@ -148,19 +148,22 @@ void ExclusiveAccessBubbleViews::Update(
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
   DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
          params.has_download);
+  bool already_shown = IsShowing() || IsVisible();
   if (params_.type == params.type && params_.url == params.url &&
-      !params.force_update && (IsShowing() || IsVisible())) {
+      !params.force_update && already_shown) {
     return;
   }
 
-  // Show the notification about overriding only if requesting a download
-  // notification, a notification was visible earlier, and the earlier
-  // notification was either a non-download one, or was one about an override
-  // itself.
-  notify_overridden_ = params.has_download &&
-                       (IsVisible() || animation_->IsShowing()) &&
-                       (!params_.has_download || notify_overridden_);
-  params_.has_download = params.has_download;
+  // Show the notification about overriding only if:
+  // 1. There was a notification visible earlier, and
+  // 2. Exactly one of the previous and current notifications has a download,
+  //    or the previous notification was about an override itself.
+  // If both the previous and current notifications have a download, but
+  // neither is an override, then we don't need to show an override.
+  notify_overridden_ =
+      already_shown &&
+      (notify_overridden_ || (params.has_download ^ params_.has_download));
+  params_.has_download = params.has_download || notify_overridden_;
 
   // Bubble maybe be re-used after timeout.
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
@@ -192,13 +195,15 @@ void ExclusiveAccessBubbleViews::Update(
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
-  if (IsVisible())
+  if (IsVisible()) {
     UpdateBounds();
+  }
 }
 
 void ExclusiveAccessBubbleViews::HideImmediately() {
-  if (!IsShowing() && !popup_->IsVisible())
+  if (!IsShowing() && !popup_->IsVisible()) {
     return;
+  }
 
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
@@ -280,8 +285,9 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
 
 void ExclusiveAccessBubbleViews::AnimationEnded(
     const gfx::Animation* animation) {
-  if (animation_->IsShowing())
+  if (animation_->IsShowing()) {
     GetView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  }
   AnimationProgressed(animation);
 }
 
@@ -327,8 +333,9 @@ void ExclusiveAccessBubbleViews::Hide() {
 }
 
 void ExclusiveAccessBubbleViews::Show() {
-  if (animation_->IsShowing())
+  if (animation_->IsShowing()) {
     return;
+  }
   animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
 }

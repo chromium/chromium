@@ -14,11 +14,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
@@ -27,85 +25,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-namespace {
-void LaunchUserPerceptionSurvey(HatsService* hats_service,
-                                PrefService* pref_service,
-                                plus_addresses::hats::SurveyType survey_type) {
-  std::string survey_trigger;
-  switch (survey_type) {
-    case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressAcceptedFirstTimeCreateSurvey)) {
-        return;
-      }
-      survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
-      break;
-    case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressDeclinedFirstTimeCreateSurvey)) {
-        return;
-      }
-      survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
-      break;
-    case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
-        return;
-      }
-      survey_trigger =
-          kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
-      break;
-    case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey)) {
-        return;
-      }
-      survey_trigger =
-          kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback;
-      break;
-    case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserDidChoosePlusAddressOverEmail)) {
-        return;
-      }
-      survey_trigger =
-          kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
-      break;
-    case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserDidChooseEmailOverPlusAddress)) {
-        return;
-      }
-      survey_trigger =
-          kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
-      break;
-    case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
-      if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
-        return;
-      }
-      survey_trigger =
-          kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
-      break;
-  }
-
-  hats_service->LaunchSurvey(
-      survey_trigger,
-      /*success_callback=*/base::DoNothing(),
-      /*failure_callback=*/base::DoNothing(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/
-      plus_addresses::hats::GetPlusAddressHatsData(pref_service));
-}
-}  // namespace
 
 // static
 plus_addresses::PlusAddressService*
@@ -145,7 +64,6 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
-  DependsOn(HatsServiceFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
@@ -177,11 +95,6 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
                                &GoogleGroupsManager::IsFeatureEnabledForProfile,
                                base::Unretained(groups_manager))
                          : base::BindRepeating(&base::FeatureList::IsEnabled);
-  plus_addresses::PlusAddressServiceImpl::LaunchHatsSurvey launch_hats_survey =
-      base::BindRepeating(LaunchUserPerceptionSurvey,
-                          HatsServiceFactory::GetForProfile(
-                              profile, /*create_if_necessary=*/true),
-                          profile->GetPrefs());
 
   std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressServiceImpl>(
@@ -191,8 +104,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
               identity_manager, profile->GetURLLoaderFactory()),
           WebDataServiceFactory::GetPlusAddressWebDataForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service, std::move(feature_check),
-          std::move(launch_hats_survey));
+          affiliation_service, std::move(feature_check));
 
   affiliation_service->RegisterSource(
       std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(

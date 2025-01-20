@@ -2,27 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif
 
 namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionModuleApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionModuleApiTestBase = ExtensionApiTest;
+#endif
 
-class ExtensionModuleApiTest : public ExtensionApiTest,
+using ContextType = extensions::browser_test_util::ContextType;
+
+class ExtensionModuleApiTest : public ExtensionModuleApiTestBase,
                                public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionModuleApiTest() : ExtensionApiTest(GetParam()) {}
+  ExtensionModuleApiTest() : ExtensionModuleApiTestBase(GetParam()) {}
   ~ExtensionModuleApiTest() override = default;
   ExtensionModuleApiTest(const ExtensionModuleApiTest&) = delete;
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;
 };
 
+// Android only supports service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionModuleApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionModuleApiTest,
                          ::testing::Values(ContextType::kServiceWorker));

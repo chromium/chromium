@@ -91,9 +91,7 @@ constexpr size_t kEntriesLimit = 100;
 std::optional<DlpFileDestination> GetFileDestinationForApp(
     const apps::AppUpdate& app_update) {
   switch (app_update.AppType()) {
-    case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kChromeApp:
       return DlpFileDestination(GURL(base::StrCat(
           {extensions::kExtensionScheme, "://", app_update.AppId()})));
@@ -109,8 +107,6 @@ std::optional<DlpFileDestination> GetFileDestinationForApp(
       // the start URL.
       return DlpFileDestination(GURL(app_update.PublisherId()));
     case apps::AppType::kUnknown:
-    case apps::AppType::kBuiltIn:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:

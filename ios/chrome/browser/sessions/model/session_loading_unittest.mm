@@ -61,7 +61,7 @@ constexpr TabInfo kTabs[] = {
 constexpr SessionInfo kSessionInfo = {
     .active_index = 1,
     .pinned_tab_count = 2,
-    .tabs = base::make_span(kTabs),
+    .tabs = base::span(kTabs),
 };
 
 // Returns a test URL (as a string) for a item with `identifier`.
@@ -274,7 +274,7 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterEmptyItems) {
   const SessionInfo session_info = {
       .active_index = 1,
       .pinned_tab_count = 2,
-      .tabs = base::make_span(tabs),
+      .tabs = base::span(tabs),
   };
 
   // Write the session.
@@ -317,7 +317,7 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItems) {
   const SessionInfo session_info = {
       .active_index = 1,
       .pinned_tab_count = 1,
-      .tabs = base::make_span(tabs),
+      .tabs = base::span(tabs),
   };
 
   // Write the session described by session_info.
@@ -433,7 +433,7 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_InvalidIdentifiers) {
 
   const SessionInfo session_info = {
       .active_index = 0,
-      .tabs = base::make_span(tabs),
+      .tabs = base::span(tabs),
   };
 
   ios::proto::WebStateListStorage session;
@@ -483,8 +483,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItemsWithGroups) {
   const SessionInfo session_info = {
       .active_index = 0,
       .pinned_tab_count = 0,
-      .tabs = base::make_span(tabs),
-      .groups = base::make_span(groups),
+      .tabs = base::span(tabs),
+      .groups = base::span(groups),
   };
 
   // Write the session described by session_info.

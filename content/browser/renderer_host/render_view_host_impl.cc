@@ -342,7 +342,7 @@ RenderViewHostImpl::RenderViewHostImpl(
 
   std::pair<RoutingIDViewMap::iterator, bool> result =
       g_routing_id_view_map.Get().emplace(
-          RenderViewHostID(GetProcess()->GetID(), routing_id_), this);
+          RenderViewHostID(GetProcess()->GetDeprecatedID(), routing_id_), this);
   CHECK(result.second) << "Inserting a duplicate item!";
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
 
@@ -381,7 +381,7 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // Detach the routing ID as the object is going away.
   GetAgentSchedulingGroup().RemoveRoute(GetRoutingID());
   g_routing_id_view_map.Get().erase(
-      RenderViewHostID(GetProcess()->GetID(), GetRoutingID()));
+      RenderViewHostID(GetProcess()->GetDeprecatedID(), GetRoutingID()));
 
   delegate_->RenderViewDeleted(this);
   GetProcess()->RemoveObserver(this);
@@ -436,12 +436,12 @@ bool RenderViewHostImpl::CreateRenderView(
   RenderFrameHostImpl* main_rfh = nullptr;
   RenderFrameProxyHost* main_rfph = nullptr;
   if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
-    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                            main_frame_routing_id_);
     DCHECK(main_rfh);
   } else {
-    main_rfph =
-        RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+    main_rfph = RenderFrameProxyHost::FromID(GetProcess()->GetDeprecatedID(),
+                                             proxy_route_id);
     DCHECK(main_rfph);
   }
   FrameTreeNode* const frame_tree_node =
@@ -450,7 +450,7 @@ bool RenderViewHostImpl::CreateRenderView(
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
 
   params->renderer_preferences = delegate_->GetRendererPrefs(this);
-  params->web_preferences = delegate_->GetOrCreateWebPreferences();
+  params->web_preferences = delegate_->GetOrCreateWebPreferences(this);
   params->color_provider_colors = delegate_->GetColorProviderColorMaps();
   params->opener_frame_token = opener_frame_token;
   params->replication_state =
@@ -766,7 +766,7 @@ blink::web_pref::WebPreferences
 RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   if (!delegate_)
     return blink::web_pref::WebPreferences();
-  return delegate_->GetOrCreateWebPreferences();
+  return delegate_->GetOrCreateWebPreferences(this);
 }
 
 void RenderViewHostImpl::RenderViewCreated(
@@ -788,7 +788,7 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
     return nullptr;
   }
 
-  return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+  return RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                      main_frame_routing_id_);
 }
 
@@ -908,7 +908,7 @@ void RenderViewHostImpl::SendWebPreferencesToRenderer() {
     if (!will_send_web_preferences_callback_for_testing_.is_null()) {
       will_send_web_preferences_callback_for_testing_.Run();
     }
-    broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences());
+    broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences(this));
   }
 }
 
@@ -954,11 +954,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
     // <webview>, and PDF. These may have a compositor surface as well,
     // in which case we need to explore not the outer node only, but the inner
     // ones as well.
-    FrameTree::NodeRange node_range =
-        base::FeatureList::IsEnabled(
-            features::kInnerFrameCompositorSurfaceEviction)
-            ? tree.NodesIncludingInnerTreeNodes()
-            : tree.SubtreeNodes(root);
+    FrameTree::NodeRange node_range = tree.NodesIncludingInnerTreeNodes();
     CollectSurfaceIdsForEvictionForFrameTreeNodeRange(node_range, ids);
   } else if (is_in_back_forward_cache_) {
     // `FrameTree::SubtreeAndInnerTreeNodes` starts with the children of `rfh`

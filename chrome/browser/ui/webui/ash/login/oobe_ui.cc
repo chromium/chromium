@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 
 #include <stddef.h>
@@ -50,6 +44,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -176,8 +171,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -246,8 +241,7 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 }
 
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
-  source->AddResourcePaths(
-      base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
+  source->AddResourcePaths(kAssistantOptinResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
@@ -643,7 +637,7 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>();
   }
 }
@@ -794,16 +788,15 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
           "test_api/no_test_api.js",
           "test_api/test_api.js",
       });
-  for (const auto& path : base::make_span(kOobeResources, kOobeResourcesSize)) {
+  for (const auto& path : kOobeResources) {
     if (!kConditionalResources.contains(path.path)) {
       source->AddResourcePath(path.path, path.id);
     }
   }
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
+  source->AddResourcePaths(kGaiaAuthHostResources);
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
         IDR_OOBE_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);

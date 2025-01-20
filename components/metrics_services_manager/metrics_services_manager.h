@@ -25,6 +25,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace metrics::dwa {
+class DwaService;
+}
+
 namespace variations {
 class EntropyProviders;
 class SyntheticTrialRegistry;
@@ -70,6 +74,9 @@ class MetricsServicesManager {
 
   // Returns the UkmService, creating it if it hasn't been created yet.
   ukm::UkmService* GetUkmService();
+
+  // Returns the DwaService, creating it if it hasn't been created yet.
+  metrics::dwa::DwaService* GetDwaService();
 
   // Returns the IdentifiabilityStudyState, if it has been created, and nullptr
   // otherwise.
@@ -120,6 +127,9 @@ class MetricsServicesManager {
 
   // Updates the state of StructuredMetricsService to match current permissions.
   void UpdateStructuredMetricsService();
+
+  // Updates the state of DwaService to match current permissions.
+  void UpdateDwaService();
 
   // Updates the managed services when permissions for recording/uploading
   // metrics change.

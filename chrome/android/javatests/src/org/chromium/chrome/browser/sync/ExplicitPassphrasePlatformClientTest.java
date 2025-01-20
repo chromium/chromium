@@ -22,6 +22,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -56,9 +57,10 @@ public class ExplicitPassphrasePlatformClientTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/386744084")
     public void testInvokeIfCorrectDecryptionPassphraseSet() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncService syncService = mSyncTestRule.getSyncService();
         CriteriaHelper.pollUiThread(() -> syncService.isPassphraseRequiredForPreferredDataTypes());
 
@@ -72,9 +74,10 @@ public class ExplicitPassphrasePlatformClientTest {
     // wrong.
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/386744084")
     public void testInvokeIfWrongDecryptionPassphraseSet() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("correctPassphrase");
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncService syncService = mSyncTestRule.getSyncService();
         CriteriaHelper.pollUiThread(() -> syncService.isPassphraseRequiredForPreferredDataTypes());
 

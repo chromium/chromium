@@ -9,7 +9,7 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/smhasher/src/MurmurHash3.h"
+#include "third_party/smhasher/src/src/MurmurHash3.h"
 
 namespace variations {
 namespace internal {

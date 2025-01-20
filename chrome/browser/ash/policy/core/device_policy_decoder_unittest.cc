@@ -793,8 +793,9 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
   device_policy.mutable_deviceloginscreentouchvirtualkeyboardenabled()
       ->set_value(true);
 
-  DecodeDevicePolicyTestHelper(device_policy, key::kTouchVirtualKeyboardEnabled,
-                               base::Value(true));
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+      base::Value(true));
 }
 
 TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
@@ -942,4 +943,23 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceRestrictionScheduleError) {
       kInvalidJsonParsingErrorPrefix));
 }
 
+TEST_F(DevicePolicyDecoderTest, DevicePowerBatteryChargingOptimization) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  // Test that the policy is not set by default.
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDevicePowerBatteryChargingOptimization);
+
+  // Test with a valid value (e.g., Adaptive charging, value = 2).
+  // The specific value doesn't matter, as we're testing the decoding logic.
+  // Test with Adaptive charging (value = 2)
+  int64_t charging_optimization_value = 2;
+  device_policy.mutable_devicepowerbatterychargingoptimization()->set_value(
+      charging_optimization_value);
+
+  base::Value expected_value(static_cast<int>(charging_optimization_value));
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDevicePowerBatteryChargingOptimization,
+                               std::move(expected_value));
+}
 }  // namespace policy

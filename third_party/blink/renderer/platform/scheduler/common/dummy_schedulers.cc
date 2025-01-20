@@ -82,7 +82,6 @@ class DummyFrameScheduler : public FrameScheduler {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 
-  void SetPreemptedForCooperativeScheduling(Preempted) override {}
   void SetFrameVisible(bool) override {}
   bool IsFrameVisible() const override { return true; }
   void SetVisibleAreaLarge(bool) override {}
@@ -111,6 +110,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void OnFirstContentfulPaintInMainFrame() override {}
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   void OnDispatchLoadEvent() override {}
+  void OnDidInstallNewDocument() override {}
   void OnMainFrameInteractive() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>
@@ -122,7 +122,6 @@ class DummyFrameScheduler : public FrameScheduler {
       WebSchedulingPriority) override {
     return nullptr;
   }
-  ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
   void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,

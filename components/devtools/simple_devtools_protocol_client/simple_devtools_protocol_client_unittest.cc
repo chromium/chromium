@@ -99,8 +99,7 @@ class SimpleDevToolsProtocolClientEventHandlerTest
 
     std::string json;
     base::JSONWriter::Write(base::Value(std::move(params)), &json);
-    DispatchProtocolMessage(agent_host_.get(),
-                            base::as_bytes(base::make_span(json)));
+    DispatchProtocolMessage(agent_host_.get(), base::as_byte_span(json));
     RunUntilIdle();
   }
 };
@@ -355,7 +354,7 @@ class SelfDestructingSimpleDevToolsProtocolClient
   void TryIt() {
     std::string json_message = "{}";
     SimpleDevToolsProtocolClient::DispatchProtocolMessage(
-        agent_host_.get(), base::as_bytes(base::make_span(json_message)));
+        agent_host_.get(), base::as_byte_span(json_message));
 
     // Delete self so that the task posted by the previous call has nowhere to
     // go.

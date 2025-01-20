@@ -35,6 +35,7 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  ram_size: 2048
 }
 avd_variants {
   key: "swarming"

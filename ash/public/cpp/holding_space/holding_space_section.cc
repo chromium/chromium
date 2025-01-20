@@ -43,7 +43,6 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
               HoldingSpaceItem::Type::kArcDownload,
               HoldingSpaceItem::Type::kDiagnosticsLog,
               HoldingSpaceItem::Type::kDownload,
-              HoldingSpaceItem::Type::kLacrosDownload,
               HoldingSpaceItem::Type::kNearbyShare,
               HoldingSpaceItem::Type::kPhotoshopWeb,
               HoldingSpaceItem::Type::kPrintedPdf,

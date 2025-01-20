@@ -1475,6 +1475,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops. Alternate phrase for: 'Automatically click when cursor stops'">
     Auto clicks
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_MOUSE_KEYS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the mouse via the keyboard">
+    Mouse keys
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement.">
     Face control
   </message>
@@ -1608,6 +1611,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable slow keys.">
     Slow keys
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD_ALT1" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a dropdown to enable/disable the internal touchpad">
+    Disable Trackpad
+  </message>
 
   <!-- Reset section. -->
   <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">
@@ -1677,11 +1686,14 @@
   </message>
 
   <!-- On Startup section. -->
-  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
     Startup
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
     Restore apps and pages
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_WELCOME_RECAP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a drop down to configure the restore apps and pages options">
+    Welcome recap
   </message>
 
   <!-- Multitasking section. -->

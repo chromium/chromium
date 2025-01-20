@@ -167,14 +167,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
         base::BindRepeating(&KeepAliveURLLoaderFactoriesBase::CreateThrottles,
                             base::Unretained(this), resource_request),
         base::PassKey<KeepAliveURLLoaderService>(),
-        context->attribution_context.has_value()
-            ? KeepAliveAttributionRequestHelper::CreateIfNeeded(
-                  resource_request.attribution_reporting_eligibility,
-                  resource_request.url,
-                  resource_request.attribution_reporting_src_token,
-                  resource_request.devtools_request_id,
-                  context->attribution_context.value())
-            : nullptr);
+        KeepAliveAttributionRequestHelper::CreateIfNeeded(
+            resource_request.attribution_reporting_eligibility,
+            resource_request.url,
+            resource_request.attribution_reporting_src_token,
+            resource_request.devtools_request_id,
+            context->attribution_context));
     // Adds a new loader receiver to the set held by `this`, binding the pending
     // `receiver` from a renderer to `raw_loader` with `loader` as its context.
     // The set will keep `loader` alive.

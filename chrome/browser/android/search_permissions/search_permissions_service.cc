@@ -110,7 +110,7 @@ SearchPermissionsService::Factory::Factory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-SearchPermissionsService::Factory::~Factory() {}
+SearchPermissionsService::Factory::~Factory() = default;
 
 bool SearchPermissionsService::Factory::ServiceIsCreatedWithBrowserContext()
     const {
@@ -153,7 +153,7 @@ void SearchPermissionsService::Shutdown() {
   delegate_.reset();
 }
 
-SearchPermissionsService::~SearchPermissionsService() {}
+SearchPermissionsService::~SearchPermissionsService() = default;
 
 ContentSetting SearchPermissionsService::RestoreOldSettingAndReturnPrevious(
     const GURL& dse_origin,

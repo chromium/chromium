@@ -1,6 +1,6 @@
 !include helpers.txt
 
-<root root=true> = <lines>
+<root root=true> = <lines count=100>
 
 <VideoFrame> = videoFrame1
 <VideoFrame> = videoFrame2
@@ -125,13 +125,14 @@
 
 
 <EncodedVideoChunkOutputCallback> = () => {}
+<EncodedAudioChunkOutputCallback> = () => {}
 <WebCodecsErrorCallback> = () => {}
 
 <MediaStreamTrackGeneratorInit> = { kind: <MediaStreamTrackGeneratorKind>}
 <MediaStreamTrackProcessorInit> = { track: <MediaStreamTrack> }
 
 
-<VideoDecoderConfig> = { codec: <VideoCodec> }
+<VideoEncoderConfig> = { codec: <VideoCodec> }
 <VideoEncoderConfig> = { codec: <VideoCodec>, height: <VideoSizes>, width: <VideoSizes> }
 <VideoEncoderConfig> = { codec: <VideoCodec>, height: <VideoSizes>, width: <VideoSizes>, hardwareAcceleration: <HardwarePreference>}
 <VideoEncoderEncodeOptions> = { av1: <VideoEncoderEncodeOptionsForAv1>, avc: <VideoEncoderEncodeOptionsForAvc>, keyFrame: <Boolean>, vp9: <VideoEncoderEncodeOptionsForVp9> }
@@ -139,8 +140,6 @@
 <VideoEncoderEncodeOptionsForAvc> = { quantizer: <UnsignedShort> }
 <VideoEncoderEncodeOptionsForVp9> = { quantizer: <UnsignedShort> }
 <VideoEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedVideoChunkOutputCallback> }
-<AudioEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedVideoChunkOutputCallback> }
-<VideoEncoderSupport> = { config: <VideoEncoderConfig>, supported: <Boolean> }
 
 <AacEncoderConfig> = {}
 <AvcEncoderConfig> = {}
@@ -152,14 +151,13 @@
 <AudioEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedAudioChunkOutputCallback> }
 <AudioEncoderSupport> = { config: <AudioEncoderConfig>, supported: <Boolean> }
 
-<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int min=0 max=100>, sampleRate: <SampleRate>, timestamp: <int min=0 max=100> }
+<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int min=1 max=100>, sampleRate: <SampleRate>, timestamp: <int min=0 max=100> }
 <AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int>, sampleRate: <SampleRate>, timestamp: <int> }
+<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, sampleRate: <SampleRate>, numberOfFrames: this.sampleRate/100, timestamp: <int min=0 max=100> }
 
-<VideoFrameBufferInit> = { codedHeight: <int>, codedWidth: <int>, format: <VideoPixelFormat>, timestamp: <int> }
 <VideoFrameBufferInit> = { codedHeight: <int min=80 max=1280>, codedWidth: <int min=80 max=1280>, format: <VideoPixelFormat>, timestamp: <int min=0 min=100> }
 
-
-!lineguard try { <line> } catch(e) {}
+!lineguard try { <line> } catch(e) { }
 !varformat fuzzvar%05d
 !begin lines
 
@@ -168,109 +166,34 @@
 #~~~~~~~~~~INTERFACES~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#~~~~~~~~~~~~~~~~VideoFrame~~~~~~~~~~~~~~~~#
-<VideoFrame>.close();
-
-#~~~~~~~~~~~~~~~~AudioData~~~~~~~~~~~~~~~~#
-<AudioData>.close();
+<new ConfigureEncoder> = (encoder, config) => { encoder.configure(config); return encoder; };
 
 #~~~~~~~~~~~~~~~~VideoEncoder~~~~~~~~~~~~~~~~#
 <new VideoEncoder> = new VideoEncoder(<VideoEncoderInit>);
 
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
-<VideoEncoder>.configure(<VideoEncoderConfig>);
+# A VideoEncoder must be configured before calls to encode.
+<new ConfiguredVideoEncoder> = <ConfigureEncoder>(<VideoEncoder>, <VideoEncoderConfig>);
 
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
-<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<ConfiguredVideoEncoder>.encode(<VideoFrame>);
+<ConfiguredVideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
 
-await <VideoEncoder>.flush();
-await <VideoEncoder>.flush();
-await <VideoEncoder>.flush();
-await <VideoEncoder>.flush();
-await <VideoEncoder>.flush();
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
-<VideoEncoder>.reset();
-#<VideoEncoder>.close();
-
+await <ConfiguredVideoEncoder>.flush();
+await VideoEncoder.isConfigSupported(<VideoEncoderConfig>);
+<ConfiguredVideoEncoder>.reset();
+<ConfiguredVideoEncoder>.close();
 
 #~~~~~~~~~~~~~~~~AudioEncoder~~~~~~~~~~~~~~~~#
-<new AudioEncoder> = new AudioEncoder(<VideoEncoderInit>);
+<new AudioEncoder> = new AudioEncoder(<AudioEncoderInit>);
 
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
-<AudioEncoder>.configure(<AudioEncoderConfig>);
+<new ConfiguredAudioEncoder> = <ConfigureEncoder>(<AudioEncoder>,<AudioEncoderConfig>);
 <AudioEncoder>.configure(<AudioEncoderConfig>);
 
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
-<AudioEncoder>.encode(<AudioData>);
+<ConfiguredAudioEncoder>.encode(<AudioData>);
 
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
-await <AudioEncoder>.flush();
-<AudioEncoder>.reset();
-# <AudioEncoder>.close();
+await <ConfiguredAudioEncoder>.flush();
+
+<ConfiguredAudioEncoder>.reset();
+<ConfiguredAudioEncoder>.close();
 
 
 #~~~~~~~~~~~~~~~~MediaStreamTrackGenerator~~~~~~~~~~~~~~~~#
@@ -289,7 +212,6 @@ await <AudioEncoder>.flush();
 
 #~~~~~~~~~~~~~~~~AudioData~~~~~~~~~~~~~~~~#
 <new AudioData> = new AudioData(<AudioDataInit>);
-let sampleRate = <SampleRate>; let numberOfFrames = sampleRate / 100; <new AudioData> = new AudioData({ data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: numberOfFrames, sampleRate: sampleRate, timestamp: <int min=0 max=100> });
 <new AudioData> = <AudioData>.clone();
 
 #~~~~~~~~~~~~~~~~VideoFrame~~~~~~~~~~~~~~~~#
@@ -327,15 +249,12 @@ let sampleRate = <SampleRate>; let numberOfFrames = sampleRate / 100; <new Audio
 
 #~~~~~~~~~~~~~~~~MediaStreamTrackProcessor~~~~~~~~~~~~~~~~#
 <new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
-<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
-<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
 <new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>,<int min=0 max=65536>);
 <new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrackProcessorInit>);
 
 #~~~~~~~~~~~~~~~~TransformStream~~~~~~~~~~~~~~~~#
 <new TransformStream> = new TransformStream();
 <new TransformStream> = new TransformStream(transformer);
-<new TransformStream> = new TransformStream(transformer, <QueueingStrategy>, <QueueingStrategy>);
 <new TransformStream> = new TransformStream(transformer, <QueueingStrategy>, <QueueingStrategy>);
 
 #~~~~~~~~~~~~~~~~ByteLengthQueuingStrategy~~~~~~~~~~~~~~~~#
@@ -346,3 +265,4 @@ let sampleRate = <SampleRate>; let numberOfFrames = sampleRate / 100; <new Audio
 
 cleanup();
 cleanup();
+!end lines

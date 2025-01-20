@@ -21,6 +21,7 @@
 #include <sys/mman.h>
 #elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
+
 #include "base/debug/proc_maps_linux.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -29,11 +30,11 @@
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 const size_t kRegionSize = 1024;
 
@@ -151,7 +152,7 @@ TEST_F(PlatformSharedMemoryRegionTest, InvalidAfterMove) {
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
   PlatformSharedMemoryRegion moved_region = std::move(region);
-  EXPECT_FALSE(region.IsValid());
+  EXPECT_FALSE(region.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(moved_region.IsValid());
 }
 
@@ -442,5 +443,4 @@ TEST_F(PlatformSharedMemoryRegionTest, UnsafeRegionConvertToUnsafeDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(region.ConvertToUnsafe(), kErrorRegex);
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

@@ -144,6 +144,13 @@ class WebAuthenticationProxyService
     : public content::WebAuthenticationRequestProxy,
       public KeyedService {
  public:
+  // Use
+  // WebAuthenticationProxyServiceFactory::BuildServiceInstanceForBrowserContext
+  // instead.
+  explicit WebAuthenticationProxyService(
+      content::BrowserContext* browser_context);
+  ~WebAuthenticationProxyService() override;
+
   using RespondCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
   // Returns the service instance for the given BrowserContext, if a proxy is
@@ -206,12 +213,6 @@ class WebAuthenticationProxyService
   void CancelRequest(RequestId request_id) override;
 
  private:
-  friend class WebAuthenticationProxyServiceFactory;
-
-  explicit WebAuthenticationProxyService(
-      content::BrowserContext* browser_context);
-  ~WebAuthenticationProxyService() override;
-
   void CancelPendingCallbacks();
   RequestId NewRequestId();
   void OnParseCreateResponse(
@@ -255,7 +256,7 @@ class WebAuthenticationProxyServiceFactory : public ProfileKeyedServiceFactory {
   ~WebAuthenticationProxyServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

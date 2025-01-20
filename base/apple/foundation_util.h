@@ -308,7 +308,7 @@ BASE_EXPORT FilePath CFURLToFilePath(CFURLRef url);
 inline span<const uint8_t> NSDataToSpan(NSData* data) {
   // SAFETY: `NSData` guarantees that `bytes` is exactly `length` in size.
   return UNSAFE_BUFFERS(
-      make_span(static_cast<const uint8_t*>(data.bytes), data.length));
+      span(static_cast<const uint8_t*>(data.bytes), size_t{data.length}));
 }
 
 // Returns a mutable `base::span<uint8_t>` pointing to the memory owned by
@@ -320,7 +320,7 @@ inline span<uint8_t> NSMutableDataToSpan(NSMutableData* data) {
   // SAFETY: `NSMutableData` guarantees that `mutableBytes` is exactly `length`
   // in size.
   return UNSAFE_BUFFERS(
-      make_span(static_cast<uint8_t*>(data.mutableBytes), data.length));
+      span(static_cast<uint8_t*>(data.mutableBytes), size_t{data.length}));
 }
 
 #endif  // defined(__OBJC__)

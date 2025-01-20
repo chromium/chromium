@@ -11,7 +11,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "components/viz/common/display/use_layered_window.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/service/display_embedder/software_output_device_win_swapchain.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/viz/privileged/mojom/compositing/layered_window_updater.mojom.h"
@@ -23,52 +25,6 @@
 #include "ui/gl/vsync_provider_win.h"
 
 namespace viz {
-
-SoftwareOutputDeviceWinBase::SoftwareOutputDeviceWinBase(HWND hwnd)
-    : hwnd_(hwnd) {
-  vsync_provider_ = std::make_unique<gl::VSyncProviderWin>(hwnd);
-}
-
-SoftwareOutputDeviceWinBase::~SoftwareOutputDeviceWinBase() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!in_paint_);
-}
-
-void SoftwareOutputDeviceWinBase::Resize(const gfx::Size& viewport_pixel_size,
-                                         float scale_factor) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!in_paint_);
-
-  if (viewport_pixel_size_ == viewport_pixel_size)
-    return;
-
-  viewport_pixel_size_ = viewport_pixel_size;
-  ResizeDelegated();
-}
-
-SkCanvas* SoftwareOutputDeviceWinBase::BeginPaint(
-    const gfx::Rect& damage_rect) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!in_paint_);
-
-  damage_rect_ = damage_rect;
-  in_paint_ = true;
-  return BeginPaintDelegated();
-}
-
-void SoftwareOutputDeviceWinBase::EndPaint() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(in_paint_);
-
-  in_paint_ = false;
-
-  gfx::Rect intersected_damage_rect = damage_rect_;
-  intersected_damage_rect.Intersect(gfx::Rect(viewport_pixel_size_));
-  if (intersected_damage_rect.IsEmpty())
-    return;
-
-  EndPaintDelegated(intersected_damage_rect);
-}
 
 SoftwareOutputDeviceWinDirect::SoftwareOutputDeviceWinDirect(
     HWND hwnd,
@@ -216,7 +172,15 @@ void SoftwareOutputDeviceWinProxy::DrawAck() {
 std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceWin(
     HWND hwnd,
     OutputDeviceBacking* backing,
-    mojom::DisplayClient* display_client) {
+    mojom::DisplayClient* display_client,
+    HWND& child_hwnd) {
+  child_hwnd = NULL;
+
+  if (features::ShouldRemoveRedirectionBitmap()) {
+    return std::make_unique<SoftwareOutputDeviceWinSwapChain>(hwnd, child_hwnd,
+                                                              backing);
+  }
+
   if (NeedsToUseLayerWindow(hwnd)) {
     DCHECK(display_client);
 
@@ -228,9 +192,9 @@ std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceWin(
 
     return std::make_unique<SoftwareOutputDeviceWinProxy>(
         hwnd, std::move(layered_window_updater));
-  } else {
-    return std::make_unique<SoftwareOutputDeviceWinDirect>(hwnd, backing);
   }
+
+  return std::make_unique<SoftwareOutputDeviceWinDirect>(hwnd, backing);
 }
 
 }  // namespace viz

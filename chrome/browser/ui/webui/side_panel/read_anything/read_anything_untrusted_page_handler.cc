@@ -33,11 +33,11 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
@@ -72,6 +72,8 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 using ash::language_packs::LanguagePackManager;
 using ash::language_packs::PackResult;
+#else
+#include "chrome/common/extensions/extension_constants.h"
 #endif
 
 using content::TtsController;
@@ -313,6 +315,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
+  extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 #endif
   side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
                                web_ui_->GetWebContents())
@@ -332,16 +335,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           : read_anything::mojom::HighlightGranularity::kDefaultValue;
   base::Value::Dict voices = base::Value::Dict();
   if (features::IsReadAnythingReadAloudEnabled()) {
-    if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-      voices =
-          prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
-    } else {
-      std::string voice_name =
-          prefs->GetString(prefs::kAccessibilityReadAnythingVoiceName);
-      if (!voice_name.empty()) {
-        voices.Set("", voice_name);
-      }
-    }
+    voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
 
   page_->OnSettingsRestoredFromPrefs(
@@ -371,14 +365,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   SetDefaultLanguageCode(prefs_lang);
 
   if (use_screen_ai_service_) {
-    if (features::IsReadAnythingWithScreen2xEnabled()) {
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->GetServiceStateAsync(
-              screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
-              base::BindOnce(&ReadAnythingUntrustedPageHandler::
-                                 OnScreenAIServiceInitialized,
-                             weak_factory_.GetWeakPtr()));
-    }
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+        ->GetServiceStateAsync(
+            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+            base::BindOnce(
+                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
+                weak_factory_.GetWeakPtr()));
 #if BUILDFLAG(ENABLE_PDF)
     // PDF searchify feature adds OCR text to images while loading the PDF, so
     // warming up the OCR service is not needed.
@@ -412,6 +404,7 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
       this);
+  extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 #endif
   translate_observation_.Reset();
   web_screenshotter_.reset();
@@ -507,6 +500,15 @@ void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
   voicePackInfo->pack_state = VoicePackInstallationState::NewInstallationState(
       GetInstallationStateFromStatusCode(install_status));
   OnGetVoicePackInfo(std::move(voicePackInfo));
+}
+
+void ReadAnythingUntrustedPageHandler::OnExtensionReady(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  if (extension->id() != extension_misc::kTTSEngineExtensionId) {
+    return;
+  }
+  page_->OnTtsEngineInstalled();
 }
 #endif
 
@@ -609,13 +611,9 @@ void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
 void ReadAnythingUntrustedPageHandler::OnVoiceChange(const std::string& voice,
                                                      const std::string& lang) {
   PrefService* prefs = profile_->GetPrefs();
-  if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-    ScopedDictPrefUpdate update(prefs,
-                                prefs::kAccessibilityReadAnythingVoiceName);
-    update->Set(lang, voice);
-  } else {
-    prefs->SetString(prefs::kAccessibilityReadAnythingVoiceName, voice);
-  }
+  ScopedDictPrefUpdate update(prefs,
+                              prefs::kAccessibilityReadAnythingVoiceName);
+  update->Set(lang, voice);
 }
 
 void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
@@ -625,7 +623,9 @@ void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
   ScopedListPrefUpdate update(
       prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
   if (enabled) {
-    update->Append(lang);
+    if (!base::Contains(update.Get(), lang)) {
+      update->Append(lang);
+    }
   } else {
     update->EraseValue(base::Value(lang));
   }
@@ -779,7 +779,6 @@ void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
 
 void ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized(
     bool successful) {
-  DCHECK(features::IsReadAnythingWithScreen2xEnabled());
   if (successful) {
     page_->ScreenAIServiceReady();
   }
@@ -880,7 +879,8 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
     const std::string& code) {
   const std::string& language_code =
-      (code.empty() || code == translate::kUnknownLanguageCode) ? "" : code;
+      (code.empty() || code == language_detection::kUnknownLanguageCode) ? ""
+                                                                         : code;
   // Only send the language code if it's a new language.
   if (language_code != current_language_code_) {
     current_language_code_ = language_code;

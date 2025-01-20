@@ -75,7 +75,6 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
 void SearchEnginePreconnector::PreconnectDSE() {
   DCHECK(!browser_context_->IsOffTheRecord());
   DCHECK(!timer_.IsRunning());
-
   if (!base::FeatureList::IsEnabled(features::kPreconnectToSearch))
     return;
 
@@ -131,10 +130,7 @@ void SearchEnginePreconnector::PreconnectDSE() {
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
   timer_.Start(FROM_HERE,
-               base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-                   net::features::kNetUnusedIdleSocketTimeout,
-                   "unused_idle_socket_timeout_seconds", 60)) +
-                   retry_delay,
+               base::Seconds(GetPreconnectIntervalSec()) + retry_delay,
                base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
                               base::Unretained(this)));
 }
@@ -156,4 +152,12 @@ bool SearchEnginePreconnector::IsBrowserAppLikelyInForeground() const {
           Profile::FromBrowserContext(browser_context_));
 
   return keyed_service && keyed_service->IsBrowserAppLikelyInForeground();
+}
+
+int SearchEnginePreconnector::GetPreconnectIntervalSec() const {
+  constexpr int kPreconnectIntervalSec = 60;
+  int preconnect_interval = base::GetFieldTrialParamByFeatureAsInt(
+      net::features::kSearchEnginePreconnectInterval, "preconnect_interval",
+      kPreconnectIntervalSec);
+  return preconnect_interval;
 }

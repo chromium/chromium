@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">רשימת פרטי הכניסה למילוי במגע פתוחה בגובה המלא של המסך.</translation>
 <translation id="5591247451101092906">להשתמש בסיסמה או במפתח הגישה שנשמרו?</translation>
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
+<translation id="592182999816790476">הסיסמה של <ph name="USERNAME" /> נשמרה בשביל האתר <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">מפתח הגישה של <ph name="USERNAME" />, צריך להשתמש בנעילת המסך</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{סיסמה חדשה לאתר הזה}one{סיסמאות חדשות לאתר הזה}two{סיסמאות חדשות לאתר הזה}other{סיסמאות חדשות לאתר הזה}}</translation>
 <translation id="7286867818472074330">בחירת מפתח גישה</translation>

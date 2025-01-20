@@ -377,11 +377,11 @@ void DlpContentManager::ScreenShareInfo::Resume() {
     content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
     DCHECK(main_frame);
     source_callback_.Run(
-        content::DesktopMediaID(
-            content::DesktopMediaID::TYPE_WEB_CONTENTS,
-            content::DesktopMediaID::kNullId,
-            content::WebContentsMediaCaptureId(
-                main_frame->GetProcess()->GetID(), main_frame->GetRoutingID())),
+        content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                                content::DesktopMediaID::kNullId,
+                                content::WebContentsMediaCaptureId(
+                                    main_frame->GetProcess()->GetDeprecatedID(),
+                                    main_frame->GetRoutingID())),
         captured_surface_control_active_);
     // Start after source will be changed and notified.
     pending_start_on_source_change_ = true;

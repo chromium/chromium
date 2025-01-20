@@ -9,6 +9,8 @@ assert(use_blink,
 
 source_set("safe_sites_navigation_throttle") {
   sources = [
+    "policy_blocklist_metrics.cc",
+    "policy_blocklist_metrics.h",
     "proceed_until_response_navigation_throttle.cc",
     "proceed_until_response_navigation_throttle.h",
     "safe_search_service.cc",

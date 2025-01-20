@@ -61,7 +61,6 @@ include_rules = [
   "+chrome/browser/ui/app_icon_loader.h",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/app_icon_color_cache",
-  "+chrome/browser/ui/ash/default_pinned_apps",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/session",
@@ -92,6 +91,8 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_shelf_controller_unittest\.cc": [
+    "+chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h",
+    "+chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h",
     "+chrome/browser/ui/web_applications/test",
     "+chrome/browser/web_applications/isolated_web_apps",
   ],

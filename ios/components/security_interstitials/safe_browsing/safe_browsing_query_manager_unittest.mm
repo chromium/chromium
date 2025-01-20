@@ -142,6 +142,7 @@ class SafeBrowsingQueryManagerTest : public testing::TestWithParam<bool> {
       : browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
+        client_(/*pref_service=*/nullptr),
         use_async_safe_browsing_(GetParam()) {
     scoped_feature_list_.InitWithFeatureState(
         safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
@@ -415,7 +416,9 @@ class SafeBrowsingQueryManagerWebStateDestructionTest
     : public testing::TestWithParam<bool> {
  protected:
   SafeBrowsingQueryManagerWebStateDestructionTest()
-      : http_method_("GET"), use_async_safe_browsing_(GetParam()) {
+      : http_method_("GET"),
+        client_(/*pref_service=*/nullptr),
+        use_async_safe_browsing_(GetParam()) {
     scoped_feature_list_.InitWithFeatureState(
         safe_browsing::kSafeBrowsingAsyncRealTimeCheck,
         use_async_safe_browsing_);

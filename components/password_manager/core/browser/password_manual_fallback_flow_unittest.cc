@@ -11,10 +11,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -168,7 +168,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const gfx::RectF& element_bounds,
                base::i18n::TextDirection text_direction,
                const GURL& domain,
-               const std::u16string& password_origin,
+               const std::u16string& password_hostname,
+               bool show_warning_text,
                base::OnceClosure confirmation_callback),
               (override));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
@@ -1011,7 +1012,7 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   const gfx::RectF element_bounds{10, 10, 100, 100};
   const auto text_direction = base::i18n::TextDirection::LEFT_TO_RIGHT;
   const GURL domain = driver().GetLastCommittedURL();
-  const std::string password_origin = "password_origin";
+  const std::string password_hostname = "password_hostname";
 
   PasswordForm form;
   form.username_element_renderer_id = MakeFieldRendererId();
@@ -1024,18 +1025,18 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   flow().RunFlow(form.username_element_renderer_id, element_bounds,
                  text_direction);
 
-  EXPECT_CALL(
-      password_manager_client(),
-      ShowCrossDomainConfirmationPopup(element_bounds, text_direction, domain,
-                                       base::UTF8ToUTF16(password_origin), _));
+  EXPECT_CALL(password_manager_client(),
+              ShowCrossDomainConfirmationPopup(
+                  element_bounds, text_direction, domain,
+                  base::UTF8ToUTF16(password_hostname), _, _));
   EXPECT_CALL(driver(), FillField).Times(0);
 
   Suggestion suggestion =
       Suggestion(/*main_text=*/"Password", "label", Suggestion::Icon::kKey,
                  /*type=*/GetParam());
   suggestion.payload = Suggestion::PasswordSuggestionDetails(
-      u"username", u"password", password_origin,
-      base::UTF8ToUTF16(password_origin),
+      u"username", u"password", password_hostname,
+      base::UTF8ToUTF16(password_hostname),
       /*is_cross_domain=*/true);
 
   ShowAndAcceptSuggestion(std::move(suggestion),

@@ -325,7 +325,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      std::optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const UsbDevice& device);

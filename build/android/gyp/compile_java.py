@@ -38,6 +38,8 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Too much effort to enable.
     'UnusedVariable',
+    # These are allowed in tests.
+    'NoStreams',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -51,7 +53,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MockNotUsedInProduction',
     # High priority to enable in non-tests:
     'JdkObsolete',
-    'UnusedMethod',
     'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
     # These are all for Javadoc, which we don't really care about.
@@ -128,6 +129,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StringCharset',
     # Nice to have.
     'StringCaseLocaleUsage',
+    # Low priority.
+    'RedundantControlFlow',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -146,6 +149,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'UnnecessaryStaticImport',
     'UseBinds',
     'WildcardImport',
+    'NoStreams',
 ]
 
 
@@ -345,13 +349,12 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   logging.info('Starting _OnStaleMd5')
 
   # Use the build server for errorprone runs.
-  if (options.enable_errorprone and not options.skip_build_server
-      and server_utils.MaybeRunCommand(
-          name=options.target_name,
-          argv=sys.argv,
-          stamp_file=options.jar_path,
-          force=options.use_build_server,
-          experimental=options.experimental_build_server)):
+  if (options.enable_errorprone and not options.skip_build_server and
+      server_utils.MaybeRunCommand(name=options.target_name,
+                                   argv=sys.argv,
+                                   stamp_file=options.jar_path,
+                                   use_build_server=options.use_build_server)):
+    logging.info('Using build server')
     return
 
   if options.enable_kythe_annotations:
@@ -556,8 +559,14 @@ def _RunCompiler(changes,
         raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
-    CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
-                  options.additional_jar_files, options.kotlin_jar_path)
+    if options.enable_errorprone:
+      # There is no jar file when running errorprone and jar_path is actually
+      # just the stamp file for that target.
+      server_utils.MaybeTouch(jar_path)
+    else:
+      CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
+                    options.additional_jar_files, options.kotlin_jar_path)
+
 
     # Remove input srcjars that confuse Android Studio:
     # https://crbug.com/353326240
@@ -586,9 +595,6 @@ def _ParseOptions(argv):
   parser.add_option('--use-build-server',
                     action='store_true',
                     help='Always use the build server.')
-  parser.add_option('--experimental-build-server',
-                    action='store_true',
-                    help='Use experimental build server features.')
   parser.add_option('--java-srcjars',
                     action='append',
                     default=[],
@@ -629,6 +635,9 @@ def _ParseOptions(argv):
       '--enable-errorprone',
       action='store_true',
       help='Enable errorprone checks')
+  parser.add_option('--enable-nullaway',
+                    action='store_true',
+                    help='Enable NullAway (requires --enable-errorprone)')
   parser.add_option('--testonly',
                     action='store_true',
                     help='Disable some Error Prone checks')
@@ -725,10 +734,53 @@ def main(argv):
   if options.enable_errorprone:
     # All errorprone args are passed space-separated in a single arg.
     errorprone_flags = ['-Xplugin:ErrorProne']
+
+    if options.enable_nullaway:
+      # See: https://github.com/uber/NullAway/wiki/Configuration
+      # Check nullability only for classes marked with @NullMarked (this is our
+      # migration story).
+      errorprone_flags += ['-XepOpt:NullAway:OnlyNullMarked']
+      errorprone_flags += [
+          '-XepOpt:NullAway:CustomContractAnnotations='
+          'org.chromium.build.annotations.Contract,'
+          'org.chromium.support_lib_boundary.util.Contract'
+      ]
+      # TODO(agrieve): Re-enable once this is fixed:
+      #     https://github.com/uber/NullAway/issues/1104
+      # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
+
+      # Make it a warning to use assumeNonNull() with a @NonNull.
+      errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
+                            'org.chromium.build.NullUtil.assumeNonNull')]
+      # Detect "assert foo != null" as a null check.
+      errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
+      # Do not ignore @Nullable & @NonNull in non-@NullMarked classes.
+      errorprone_flags += [
+          '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
+      ]
+      # Treat @RecentlyNullable the same as @Nullable.
+      errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
+      # Enable experimental checking of @Nullable generics.
+      # https://github.com/uber/NullAway/wiki/JSpecify-Support
+      errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
+      # Treat these the same as constructors.
+      init_methods = [
+          'android.app.Application.onCreate',
+          'android.app.Activity.onCreate',
+          'android.app.Service.onCreate',
+          'android.app.backup.BackupAgent.onCreate',
+          'android.content.ContentProvider.attachInfo',
+          'android.content.ContentProvider.onCreate',
+          'android.content.ContextWrapper.attachBaseContext',
+      ]
+      errorprone_flags += [
+          '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
+      ]
+
     # Make everything a warning so that when treat_warnings_as_errors is false,
     # they do not fail the build.
     errorprone_flags += ['-XepAllErrorsAsWarnings']
-    # Don't check generated files.
+    # Don't check generated files (those tagged with @Generated).
     errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
     errorprone_flags.extend('-Xep:{}:OFF'.format(x)
                             for x in ERRORPRONE_WARNINGS_TO_DISABLE)
@@ -767,6 +819,7 @@ def main(argv):
 
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 
+    javac_args += ['-XDshould-stop.ifError=FLOW']
     # This flag quits errorprone after checks and before code generation, since
     # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
     # for chrome_java.
@@ -812,15 +865,21 @@ def main(argv):
                    kt_files +
                    [options.warnings_as_errors, options.jar_info_exclude_globs])
 
-  # Use md5_check for |pass_changes| feature.
-  md5_check.CallAndWriteDepfileIfStale(lambda changes: _OnStaleMd5(
-      changes, options, javac_cmd, javac_args, java_files, kt_files),
-                                       options,
-                                       depfile_deps=depfile_deps,
-                                       input_paths=input_paths,
-                                       input_strings=input_strings,
-                                       output_paths=output_paths,
-                                       pass_changes=True)
+  do_it = lambda changes: _OnStaleMd5(changes, options, javac_cmd, javac_args,
+                                      java_files, kt_files)
+  # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
+  if options.enable_errorprone:
+    do_it(None)
+    action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
+  else:
+    # Use md5_check for |pass_changes| feature.
+    md5_check.CallAndWriteDepfileIfStale(do_it,
+                                         options,
+                                         depfile_deps=depfile_deps,
+                                         input_paths=input_paths,
+                                         input_strings=input_strings,
+                                         output_paths=output_paths,
+                                         pass_changes=True)
   return 0
 
 

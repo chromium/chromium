@@ -177,7 +177,7 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
     case ash::AcceleratorAction::kToggleImeMenuBubble:
       return mojom_accelerator_action::kToggleImeMenuBubble;
     case ash::AcceleratorAction::kTogglePicker:
-      return mojom_accelerator_action::kTogglePicker;
+      return mojom_accelerator_action::kToggleQuickInsert;
     case ash::AcceleratorAction::kShowShortcutViewer:
       return mojom_accelerator_action::kShowShortcutViewer;
     case ash::AcceleratorAction::kToggleStylusTools:
@@ -293,6 +293,12 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kMinimizeTopWindowOnBack;
     case ash::AcceleratorAction::kResizePipWindow:
       return mojom_accelerator_action::kResizePipWindow;
+    case ash::AcceleratorAction::kToggleGeminiApp:
+      return mojom_accelerator_action::kToggleGeminiApp;
+    case ash::kToggleDoNotDisturb:
+      return mojom_accelerator_action::kToggleDoNotDisturb;
+    case ash::AcceleratorAction::kToggleCameraAllowed:
+      return mojom_accelerator_action::kToggleCameraAllowed;
     case ash::AcceleratorAction::kDebugClearUseKMeansPref:
       return mojom_accelerator_action::kDebugClearUseKMeansPref;
     case ash::AcceleratorAction::kDebugKeyboardBacklightToggle:
@@ -601,7 +607,7 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kToggleImeMenuBubble:
       *out = ash::AcceleratorAction::kToggleImeMenuBubble;
       return true;
-    case mojom_accelerator_action::kTogglePicker:
+    case mojom_accelerator_action::kToggleQuickInsert:
       *out = ash::AcceleratorAction::kTogglePicker;
       return true;
     case mojom_accelerator_action::kShowShortcutViewer:
@@ -774,6 +780,15 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kResizePipWindow:
       *out = ash::AcceleratorAction::kResizePipWindow;
+      return true;
+    case mojom_accelerator_action::kToggleGeminiApp:
+      *out = ash::AcceleratorAction::kToggleGeminiApp;
+      return true;
+    case mojom_accelerator_action::kToggleDoNotDisturb:
+      *out = ash::AcceleratorAction::kToggleDoNotDisturb;
+      return true;
+    case mojom_accelerator_action::kToggleCameraAllowed:
+      *out = ash::AcceleratorAction::kToggleCameraAllowed;
       return true;
     case mojom_accelerator_action::kDebugClearUseKMeansPref:
       *out = ash::AcceleratorAction::kDebugClearUseKMeansPref;

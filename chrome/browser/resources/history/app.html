@@ -210,6 +210,7 @@
                 selected="[[tabsContentPage_]]"
                 on-iron-select="updateScrollTarget_">
               <history-list id="history" query-state="[[queryState_]]"
+                  is-active="[[getShowHistoryList_(selectedPage_)]]"
                   searched-term="[[queryResult_.info.term]]"
                   pending-delete="{{pendingDelete_}}"
                   query-result="[[queryResult_]]"
@@ -220,6 +221,7 @@
               <template is="dom-if"
                   if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
                 <history-clusters id="history-clusters"
+                    is-active="[[getShowResultsByGroup_(selectedPage_)]]"
                     query="[[queryState_.searchTerm]]"
                     time-range-start="[[queryStateAfterDate_]]"
                     path="grouped"
@@ -261,7 +263,3 @@
         </cr-drawer>
       </template>
     </cr-lazy-render>
-
-    <iron-media-query query="(max-width: 1023px)"
-        query-matches="{{hasDrawer_}}">
-    </iron-media-query>

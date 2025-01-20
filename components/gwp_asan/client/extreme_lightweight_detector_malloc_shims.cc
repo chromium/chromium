@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 #include <atomic>
 
 #include "base/compiler_specific.h"
@@ -313,3 +315,5 @@ GetEludQuarantineBranchForLargeObjectsForTesting() {
 }
 
 }  // namespace gwp_asan::internal
+
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

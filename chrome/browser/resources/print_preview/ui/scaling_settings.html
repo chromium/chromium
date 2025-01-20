@@ -4,7 +4,8 @@
   <span slot="title" id="scaling-label">$i18n{scalingLabel}</span>
   <div slot="controls">
     <select class="md-select" aria-labelledby="scaling-label"
-        disabled$="[[dropdownDisabled_]]" value="{{selectedValue::change}}">
+        disabled$="[[dropdownDisabled_]]" value="[[selectedValue]]"
+        on-change="onSelectChange">
       <option value="[[ScalingValue.DEFAULT]]">
         $i18n{optionDefaultScaling}
       </option>

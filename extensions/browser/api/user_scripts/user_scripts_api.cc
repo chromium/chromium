@@ -5,6 +5,7 @@
 #include "extensions/browser/api/user_scripts/user_scripts_api.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/api/user_scripts.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/code_injection.mojom-forward.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -35,24 +37,38 @@ namespace {
 
 constexpr char kEmptySourceError[] =
     "User script with ID '*' must specify at least one js source.";
+constexpr char kEmptySourceErrorWithoutIdError[] =
+    "User script must specify at least one js source.";
 constexpr char kInvalidSourceError[] =
     "User script with ID '*' must specify exactly one of 'code' or 'file' as a "
     "js source.";
+constexpr char kInvalidSourceWithoutIdError[] =
+    "User script must specify exactly one of 'code' or 'file' as a js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
 
-// Returns true if the given `world_id` is valid from the API perspective.
-// If invalid, populates `error_out`.
-bool IsValidWorldId(const std::optional<std::string>& world_id,
+// Sanitizes the given `world_id`, updating it if necessary.
+// Returns true on success; on failure, returns false and populates `error_out`.
+bool IsValidWorldId(api::user_scripts::ExecutionWorld world,
+                    std::optional<std::string>& world_id,
                     std::string* error_out) {
   if (!world_id) {
     // Omitting world ID is valid.
     return true;
   }
 
-  if (world_id->empty()) {
-    *error_out = "If specified, `worldId` must be non-empty.";
+  if (world != api::user_scripts::ExecutionWorld::kNone &&
+      world != api::user_scripts::ExecutionWorld::kUserScript) {
+    *error_out = "World ID can only be specified for USER_SCRIPT worlds.";
     return false;
+  }
+
+  if (world_id->empty()) {
+    // Specifying an empty-string world ID is valid, and will use the default
+    // user script world. This is represented by nullopt elsewhere, so we update
+    // the world ID value.
+    world_id = std::nullopt;
+    return true;
   }
 
   if (world_id->at(0) == '_') {
@@ -68,6 +84,29 @@ bool IsValidWorldId(const std::optional<std::string>& world_id,
 
   // Valid world ID!
   return true;
+}
+
+mojom::ExecutionWorld ConvertExecutionWorld(
+    api::user_scripts::ExecutionWorld world) {
+  switch (world) {
+    // Execution world defaults to `kUserScript` when it's not provided.
+    case api::user_scripts::ExecutionWorld::kNone:
+    case api::user_scripts::ExecutionWorld::kUserScript:
+      return mojom::ExecutionWorld::kUserScript;
+    case api::user_scripts::ExecutionWorld::kMain:
+      return mojom::ExecutionWorld::kMain;
+  }
+}
+
+scripting::InjectionTarget ConvertToInternalInjectionTarget(
+    api::user_scripts::InjectionTarget injection_target) {
+  scripting::InjectionTarget internal_injection_target;
+  internal_injection_target.all_frames = injection_target.all_frames;
+  internal_injection_target.document_ids =
+      std::move(injection_target.document_ids);
+  internal_injection_target.frame_ids = std::move(injection_target.frame_ids);
+  internal_injection_target.tab_id = std::move(injection_target.tab_id);
+  return internal_injection_target;
 }
 
 api::scripts_internal::SerializedUserScript
@@ -107,7 +146,7 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.include_globs = std::move(user_script.include_globs);
   serialized_script.exclude_globs = std::move(user_script.exclude_globs);
   serialized_script.js =
-      user_script_sources_to_serialized_sources(std::move(user_script.js));
+      user_script_sources_to_serialized_sources(std::move(*user_script.js));
   serialized_script.matches = std::move(*user_script.matches);
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
@@ -135,14 +174,14 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
-  // `js` must not be empty.
-  if (user_script.js.empty()) {
+  // `js` must be existent and not empty.
+  if (!user_script.js || user_script.js.value().empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         kEmptySourceError, UserScript::TrimPrefixFromScriptID(user_script.id));
     return nullptr;
   }
 
-  for (const api::user_scripts::ScriptSource& source : user_script.js) {
+  for (const api::user_scripts::ScriptSource& source : *user_script.js) {
     if ((source.code && source.file) || (!source.code && !source.file)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           kInvalidSourceError,
@@ -152,7 +191,7 @@ std::unique_ptr<UserScript> ParseUserScript(
   }
 
   std::string utf8_error;
-  if (!IsValidWorldId(user_script.world_id, &utf8_error)) {
+  if (!IsValidWorldId(user_script.world, user_script.world_id, &utf8_error)) {
     *error = base::UTF8ToUTF16(utf8_error);
     return nullptr;
   }
@@ -496,7 +535,7 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.exclude_matches = std::move(new_script.exclude_matches);
   }
 
-  if (!new_script.js.empty()) {
+  if (new_script.js) {
     original_script.js = std::move(new_script.js);
   }
 
@@ -585,9 +624,6 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> csp = std::move(params->properties.csp);
-  bool enable_messaging = params->properties.messaging.value_or(false);
-
   std::optional<std::string> world_id;
   if (base::FeatureList::IsEnabled(
           extensions_features::kApiUserScriptsMultipleWorlds)) {
@@ -595,7 +631,8 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   }
 
   std::string error;
-  if (!IsValidWorldId(world_id, &error)) {
+  if (!IsValidWorldId(api::user_scripts::ExecutionWorld::kUserScript, world_id,
+                      &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
@@ -610,10 +647,193 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
                                  kMaxNumberOfRegisteredWorlds)));
   }
 
-  config_manager->SetUserScriptWorldInfo(*extension(), world_id, csp,
-                                         enable_messaging);
+  mojom::UserScriptWorldInfoPtr world_info =
+      config_manager->GetUserScriptWorldInfo(extension()->id(), world_id);
+  bool changed = false;
+
+  std::optional<std::string> csp = std::move(params->properties.csp);
+  if (csp && csp != world_info->csp) {
+    changed = true;
+    world_info->csp = std::move(csp);
+  }
+
+  std::optional<bool> enable_messaging = params->properties.messaging;
+  if (enable_messaging && *enable_messaging != world_info->enable_messaging) {
+    changed = true;
+    world_info->enable_messaging = *enable_messaging;
+  }
+
+  if (changed) {
+    config_manager->SetUserScriptWorldInfo(*extension(), std::move(world_info));
+  }
 
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
+  std::optional<api::user_scripts::Execute::Params> params(
+      api::user_scripts::Execute::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  injection_ = std::move(params->injection);
+
+  // Validate injection sources.
+  if (injection_.js.empty()) {
+    return RespondNow(Error(kEmptySourceErrorWithoutIdError));
+  }
+  for (const api::user_scripts::ScriptSource& source : injection_.js) {
+    if ((source.code && source.file) || (!source.code && !source.file)) {
+      return RespondNow(Error(kInvalidSourceWithoutIdError));
+    }
+  }
+
+  // Validate injection world id.
+  std::string error;
+  if (!IsValidWorldId(injection_.world, injection_.world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Validate injection target.
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection_.target));
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::set<int> frame_ids;
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Retrieve injection sources in order. Since file sources need to be loaded,
+  // we use a nullopt for placeholder in the source list. After files are
+  // successfully loaded, they should be converted to js source too.
+  std::vector<std::string> file_sources;
+  std::vector<std::optional<mojom::JSSourcePtr>> sources;
+  for (api::user_scripts::ScriptSource& source : injection_.js) {
+    if (source.file) {
+      file_sources.push_back(std::move(*source.file));
+      sources.push_back(std::nullopt);
+    } else {
+      CHECK(source.code);
+      sources.push_back(mojom::JSSource::New(std::move(*source.code), GURL()));
+    }
+  }
+
+  if (!file_sources.empty()) {
+    // JS files don't require localization.
+    constexpr bool kRequiresLocalization = false;
+    scripting::CheckAndLoadFiles(
+        std::move(file_sources), *extension(), kRequiresLocalization,
+        base::BindOnce(&UserScriptsExecuteFunction::DidLoadResources, this,
+                       script_executor, frame_scope, std::move(frame_ids),
+                       std::move(sources)),
+        &error);
+  } else {
+    Execute(std::move(sources), script_executor, frame_scope, frame_ids,
+            &error);
+  }
+
+  return RespondLater();
+}
+
+void UserScriptsExecuteFunction::DidLoadResources(
+    ScriptExecutor* script_executor,
+    ScriptExecutor::FrameScope frame_scope,
+    std::set<int> frame_ids,
+    std::vector<std::optional<mojom::JSSourcePtr>> sources,
+    std::vector<scripting::InjectedFileSource> file_sources,
+    std::optional<std::string> load_error) {
+  if (load_error) {
+    Respond(Error(std::move(*load_error)));
+    return;
+  }
+
+  DCHECK(!file_sources.empty());
+
+  // Convert the file sources to js and add them to sources in their
+  // corresponding execution order.
+  int file_index = 0;
+  for (std::optional<mojom::JSSourcePtr>& source : sources) {
+    // Only file sources have a nullopt placeholder value.
+    if (!source.has_value()) {
+      CHECK_LT(file_index, static_cast<int>(file_sources.size()));
+      source = mojom::JSSource::New(
+          std::move(*file_sources[file_index].data),
+          extension()->GetResourceURL(file_sources[file_index].file_name));
+      file_index++;
+    }
+  }
+
+  // Verify all the file sources where properly added to the sources.
+  CHECK_EQ(file_index, static_cast<int>(file_sources.size()));
+
+  std::string error;
+  Execute(std::move(sources), script_executor, frame_scope, frame_ids, &error);
+}
+
+void UserScriptsExecuteFunction::Execute(
+    std::vector<std::optional<mojom::JSSourcePtr>> sources,
+    ScriptExecutor* script_executor,
+    ScriptExecutor::FrameScope frame_scope,
+    std::set<int> frame_ids,
+    std::string* error) {
+  mojom::ExecutionWorld execution_world =
+      ConvertExecutionWorld(injection_.world);
+  std::optional<std::string> execution_world_id = injection_.world_id;
+  bool inject_immediately = injection_.inject_immediately.value_or(false);
+
+  std::vector<mojom::JSSourcePtr> js_sources;
+  js_sources.reserve(sources.size());
+  for (std::optional<mojom::JSSourcePtr>& source : sources) {
+    CHECK(source.has_value());
+    js_sources.push_back(std::move(*source));
+  }
+
+  scripting::ExecuteScript(
+      extension()->id(), std::move(js_sources), execution_world,
+      execution_world_id, script_executor, frame_scope, frame_ids,
+      inject_immediately, user_gesture(),
+      base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
+}
+
+void UserScriptsExecuteFunction::OnScriptExecuted(
+    std::vector<ScriptExecutor::FrameResult> frame_results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (frame_results.size() == 1 && !frame_results[0].error.empty()) {
+    Respond(Error(std::move(frame_results[0].error)));
+    return;
+  }
+
+  // Otherwise, respond successfully. We currently just skip over individual
+  // frames that failed. In the future, we can bubble up these error messages
+  // to the extension.
+  std::vector<api::user_scripts::InjectionResult> injection_results;
+  for (auto& result : frame_results) {
+    if (!result.error.empty()) {
+      continue;
+    }
+    api::user_scripts::InjectionResult injection_result;
+    injection_result.result = std::move(result.value);
+    injection_result.frame_id = result.frame_id;
+    if (result.document_id) {
+      injection_result.document_id = result.document_id.ToString();
+    }
+
+    // Put the top frame first; otherwise, any order.
+    if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
+      injection_results.insert(injection_results.begin(),
+                               std::move(injection_result));
+    } else {
+      injection_results.push_back(std::move(injection_result));
+    }
+  }
+
+  Respond(ArgumentList(
+      api::user_scripts::Execute::Results::Create(injection_results)));
 }
 
 ExtensionFunction::ResponseAction
@@ -650,7 +870,8 @@ UserScriptsResetWorldConfigurationFunction::Run() {
   // that's a fragile guarantee and may change if e.g. we start using reserved
   // world IDs. Validate to be on the safe side.
   std::string error;
-  if (!IsValidWorldId(params->world_id, &error)) {
+  if (!IsValidWorldId(api::user_scripts::ExecutionWorld::kUserScript,
+                      params->world_id, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 

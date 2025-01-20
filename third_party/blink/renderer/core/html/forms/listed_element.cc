@@ -29,17 +29,20 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -49,8 +52,6 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
-#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -59,10 +60,8 @@ namespace {
 
 void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
   // Let any forms in the shadow including ancestors know that this
-  // ListedElement has changed. We also cache listed elements inside
-  // (descendant) nested forms and therefore need to invalidate the caches also
-  // inside the same `TreeScope`.
-  ContainerNode* starting_node = insertion_point.ParentOrShadowHostNode();
+  // ListedElement has changed.
+  ContainerNode* starting_node = &insertion_point;
   for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
@@ -715,6 +714,28 @@ void ListedElement::TakeStateAndRestore() {
     ToHTMLElement().GetDocument().GetFormController().RestoreControlStateFor(
         *this);
   }
+}
+
+HTMLFormElement* ListedElement::GetOwningFormForAutofill() const {
+  // The owning form is the furthest ancestor form element, if there is one.
+  HTMLFormElement* owner = nullptr;
+  // Look for ancestors of the associated form of this element inside the same
+  // tree.
+  for (Node* ancestor = Form(); ancestor; ancestor = ancestor->parentNode()) {
+    if (auto* form = DynamicTo<HTMLFormElement>(ancestor)) {
+      owner = form;
+    }
+  }
+
+  // If this element is inside Shadow DOM, also consider ancestors of this
+  // element.
+  for (Node* ancestor = ToHTMLElement().OwnerShadowHost(); ancestor;
+       ancestor = ancestor->ParentOrShadowHostNode()) {
+    if (auto* form = DynamicTo<HTMLFormElement>(ancestor)) {
+      owner = form;
+    }
+  }
+  return owner;
 }
 
 void ListedElement::SetFormAttributeTargetObserver(

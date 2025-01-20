@@ -614,13 +614,9 @@ std::pair<std::string, std::string> SplitHTTP(const std::string& http_text) {
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillPageQueryRequest& query) {
   for (const auto& form : query.forms()) {
-    out << "\nForm\n signature: " << form.signature();
+    out << "\nForm signature: " << form.signature();
     for (const auto& field : form.fields()) {
-      out << "\n Field\n  signature: " << field.signature();
-      if (!field.name().empty())
-        out << "\n  name: " << field.name();
-      if (!field.control_type().empty())
-        out << "\n  control_type: " << field.control_type();
+      out << "\n Field signature: " << field.signature();
     }
   }
   return out;
@@ -801,7 +797,7 @@ ServerUrlLoader::ServerUrlLoader(
   CHECK(cache_replayer_);
 }
 
-ServerUrlLoader::~ServerUrlLoader() {}
+ServerUrlLoader::~ServerUrlLoader() = default;
 
 bool WriteNotFoundResponse(
     content::URLLoaderInterceptor::RequestParams* params) {

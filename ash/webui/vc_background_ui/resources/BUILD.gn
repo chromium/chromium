@@ -11,10 +11,9 @@ build_webui("build") {
   grd_prefix = "ash_vc_background"
 
   static_files = [
+    "index.html",
     "vc_background_ui_app_icon_128.png",
     "vc_background_ui_app_icon_256.png",
-
-    "index.html",
   ]
 
   web_component_files = [

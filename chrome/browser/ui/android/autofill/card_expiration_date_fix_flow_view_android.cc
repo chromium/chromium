@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
+
 #include <memory>
 #include <utility>
-
-#include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
@@ -75,8 +75,9 @@ void CardExpirationDateFixFlowViewAndroid::ControllerGone() {
 }
 
 CardExpirationDateFixFlowViewAndroid::~CardExpirationDateFixFlowViewAndroid() {
-  if (controller_)
+  if (controller_) {
     controller_->OnDialogClosed();
+  }
 }
 
 }  // namespace autofill

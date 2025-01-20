@@ -11,6 +11,7 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/test/proto_printer.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace feed {
 
@@ -39,7 +40,7 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
 void WaitForStoreInitializeTask::ReadStartupDataDone(
     FeedStore::StartupData startup_data) {
   if (startup_data.metadata &&
-      startup_data.metadata->gaia() != stream_->GetAccountInfo().gaia) {
+      GaiaId(startup_data.metadata->gaia()) != stream_->GetAccountInfo().gaia) {
     store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
                                     weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -78,7 +79,7 @@ void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema() {
   if (metadata.stream_schema_version() != 1) {
     result_.startup_data.stream_data.clear();
     if (metadata.gaia().empty()) {
-      metadata.set_gaia(stream_->GetAccountInfo().gaia);
+      metadata.set_gaia(stream_->GetAccountInfo().gaia.ToString());
     }
     store_->UpgradeFromStreamSchemaV0(
         std::move(metadata),

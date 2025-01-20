@@ -23,6 +23,7 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
@@ -266,6 +267,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // window associated to this host.
   void SetAllowScreenshots(bool allow);
   bool AllowScreenshots() const;
+
+  // Set the color mode of the window.
+  void SetColorMode(ui::ColorProviderKey::ColorMode color_mode);
 
  private:
   friend class TextInputHost;

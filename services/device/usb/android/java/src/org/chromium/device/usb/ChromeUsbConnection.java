@@ -10,14 +10,16 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Exposes android.hardware.usb.UsbDeviceConnection as necessary for C++
  * device::UsbDeviceHandleAndroid.
  *
- * Lifetime is controlled by device::UsbDeviceHandleAndroid.
+ * <p>Lifetime is controlled by device::UsbDeviceHandleAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 class ChromeUsbConnection {
     private static final String TAG = "Usb";
 

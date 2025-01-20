@@ -38,6 +38,11 @@ struct SecurePaymentConfirmationCredential;
 //                         payment confirmation method. Historically it also
 //                         stored instrument information, hence the name and
 //                         the (no longer used) label and icon fields.
+//                         This table is only used when credential store APIs
+//                         are unavailable: This is controlled by the
+//                         platform-specific
+//                         SecurePaymentConfirmationUseCredentialStoreAPIs flag:
+//                         On Android, currently, this table is not used.
 //
 //   credential_id         The WebAuthn credential identifier blob. Primary key.
 //   relying_party_id      The relying party identifier string.
@@ -45,6 +50,15 @@ struct SecurePaymentConfirmationCredential;
 //   icon                  The serialized SkBitmap blob.
 //   data_created          The creation date in micro seconds from 1601-01-01
 //                         00:00:00 UTC.
+//
+// secure_payment_confirmation_browser_bound_key
+//                         This table stores browser bound key information for
+//                         payment credentials. The primary key of this table is
+//                         the pair of `credential_id` and `relying_party_id`.
+//
+//   credential_id         The WebAuthn credential identifier blob.
+//   relying_party_id      The relying party identifier string.
+//   browser_bound_key_id  The identifier of the browser bound key.
 class PaymentMethodManifestTable : public WebDatabaseTable {
  public:
   PaymentMethodManifestTable();
@@ -121,6 +135,24 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   GetSecurePaymentConfirmationCredentials(
       std::vector<std::vector<uint8_t>> credential_ids,
       const std::string& relying_party_id);
+
+  // Sets a browser bound key identifier for the credential id, relying party id
+  // pair. If a browser bound key exists, no updates are performed and false is
+  // returned.
+  //
+  // Returns whether the browser bound key id was set.
+  bool SetBrowserBoundKey(std::vector<uint8_t> credential_id,
+                          std::string_view relying_party_id,
+                          std::vector<uint8_t> browser_bound_key_id);
+
+  // Gets the browser bound key id for the given credential id, relying party id
+  // pair.
+  //
+  // Returns the browser bound key id or nullopt when not found (or error
+  // occurred during retrieval).
+  std::optional<std::vector<uint8_t>> GetBrowserBoundKey(
+      std::vector<uint8_t> credential_id,
+      std::string_view relying_party_id);
 };
 
 }  // namespace payments

@@ -68,7 +68,7 @@ class RenderWidgetInitialSizeTest : public RenderWidgetTest {
  protected:
   blink::VisualProperties InitialVisualProperties() override {
     blink::VisualProperties initial_visual_properties;
-    initial_visual_properties.new_size = initial_size_;
+    initial_visual_properties.new_size_device_px = initial_size_;
     initial_visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(initial_size_);
     initial_visual_properties.local_surface_id =
@@ -189,6 +189,12 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
+  // Composition range isn't used on Android and this feature stops the path
+  // that sends composition range info. Disable the feature so that the tests
+  // pass until the Android and non Android code paths are decoupled at which
+  // point the feature can be removed.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML(
       "<div contenteditable>EDITABLE</div>"
       "<script> document.querySelector('div').focus(); </script>");
@@ -205,6 +211,9 @@ TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
+  // See comment in GetCompositionRangeValidComposition for explanation.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML(
       "<div>NOT EDITABLE</div>"
       "<script> document.execCommand('selectAll'); </script>");
@@ -214,6 +223,9 @@ TEST_F(RenderWidgetTest, GetCompositionRangeForSelection) {
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeInvalid) {
+  // See comment in GetCompositionRangeValidComposition for explanation.
+  blink::WebRuntimeFeatures::EnableFeatureFromString("CursorAnchorInfoMojoPipe",
+                                                     false);
   LoadHTML("<div>NOT EDITABLE</div>");
   gfx::Range range = LastCompositionRange();
   // If this test ever starts failing, one likely outcome is that WebRange

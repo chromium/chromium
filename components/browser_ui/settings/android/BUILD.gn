@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsCustomTabLauncher.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
@@ -119,6 +120,7 @@ android_library("unit_device_javatests") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreferenceTest.java",
   ]
   deps = [
     ":java",

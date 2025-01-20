@@ -97,6 +97,8 @@ class BrowserRootView : public views::internal::RootView {
   friend class BrowserRootViewBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, ClearDropInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, DropOrderingCorrect);
+  FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest,
+                           InitiatorOriginForDroppedLink);
 
   // Used during a drop session of a url. Tracks the position of the drop.
   struct DropInfo {

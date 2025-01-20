@@ -4,8 +4,10 @@
 
 #include "components/security_interstitials/core/insecure_form_util.h"
 
+#include "base/strings/string_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_IOS)
 
@@ -39,14 +41,15 @@ void SetInsecureFormPortsForTesting(int source_url_port_treated_as_secure,
 
 #endif
 
-bool IsInsecureFormActionOnSecureSource(const GURL& source_url,
+bool IsInsecureFormActionOnSecureSource(const url::Origin& source_origin,
                                         const GURL& action_url) {
-  if (!source_url.SchemeIs(url::kHttpsScheme)) {
+  if (!base::EqualsCaseInsensitiveASCII(source_origin.scheme(),
+                                        url::kHttpsScheme)) {
 #if BUILDFLAG(IS_IOS)
     // On iOS, tests can't use an HTTPS server that serves a valid HTTPS
     // response. Check if the URL is treated as secure for testing purposes.
     if (g_form_source_url_port_treated_as_secure_for_insecure_form_testing &&
-        source_url.IntPort() !=
+        source_origin.port() !=
             g_form_source_url_port_treated_as_secure_for_insecure_form_testing) {
       return false;
     }

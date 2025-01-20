@@ -239,19 +239,6 @@ std::vector<SpellCheckResult> BackgroundHelper::RequestTextCheckForAllLanguages(
             (action == CORRECTIVE_ACTION_GET_SUGGESTIONS ||
              action == CORRECTIVE_ACTION_REPLACE)) {
           std::vector<std::u16string> suggestions;
-          if (!base::FeatureList::IsEnabled(
-                  spellcheck::kWinRetrieveSuggestionsOnlyOnDemand)) {
-            // Perform the expensive operation of retrieving suggestions for all
-            // misspelled words while performing a text check. If
-            // kWinRetrieveSuggestionsOnlyOnDemand is set, suggestions will
-            // be retrieved on demand when the context menu is brought up with a
-            // misspelled word selected, and the spellcheck results returned by
-            // this method will have empty suggestion lists.
-            FillSuggestionList(it->first,
-                               text.substr(start_index, error_length),
-                               &suggestions);
-          }
-
           result_map[std::tuple<ULONG, ULONG>(start_index, error_length)]
               .push_back(suggestions);
         }

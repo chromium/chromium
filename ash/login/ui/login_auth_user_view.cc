@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/arrow_button_view.h"
@@ -36,7 +37,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/clock_model.h"
@@ -51,7 +51,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user.h"
@@ -90,7 +89,6 @@ namespace ash {
 namespace {
 
 constexpr const char kLoginAuthUserViewClassName[] = "LoginAuthUserView";
-constexpr int kMinimiumLoginAuthUserViewHeightDp = 346;
 
 // Distance between the user view (ie, the icon and name) and other elements
 const int kDistanceBetweenUserViewAndPasswordDp = 24;
@@ -560,6 +558,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 
   auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();
+  pin_input_view_->SetPaintToLayer();  // Needed for opacity animation.
+  pin_input_view_->layer()->SetFillsBoundsOpaquely(false);
   pin_input_view->Init(base::BindRepeating(&LoginAuthUserView::OnAuthSubmit,
                                            base::Unretained(this)),
                        base::BindRepeating(&LoginAuthUserView::OnPinTextChanged,
@@ -578,13 +578,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   pin_password_toggle_->SetMaxSize(
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    pin_password_toggle_->SetPillButtonType(
-        PillButton::kDefaultElevatedLargeWithoutIcon);
-    pin_password_toggle_->SetBorder(std::make_unique<views::HighlightBorder>(
-        kPinPasswordToggleButtonHighlightRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  }
+  pin_password_toggle_->SetPillButtonType(
+      PillButton::kDefaultElevatedLargeWithoutIcon);
+  pin_password_toggle_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kPinPasswordToggleButtonHighlightRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   auto pin_view = std::make_unique<LoginPinView>(
       LoginPinView::Style::kNumeric,
@@ -863,6 +861,7 @@ void LoginAuthUserView::CaptureStateForAnimationPreLayout() {
   // Stop any running animation scheduled in ApplyAnimationPostLayout.
   stop_animation(this);
   stop_animation(password_view_);
+  stop_animation(pin_input_view_);
   stop_animation(pin_view_);
   stop_animation(challenge_response_view_);
   stop_animation(pin_password_toggle_);
@@ -916,8 +915,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_password != previous_state_->has_password) {
     AnimateOpacity<LoginPasswordView>(
         password_view_, /*towards_visible=*/current_state.has_password,
-        /*observe_completion=*/previous_state_->has_password &&
-            !current_state.has_password);
+        /*observe_completion=*/previous_state_->has_password);
   }
 
   ////////
@@ -926,8 +924,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   if (current_state.has_pin_input != previous_state_->has_pin_input) {
     AnimateOpacity<LoginPinInputView>(
         pin_input_view_, /*towards_visible=*/current_state.has_pin_input,
-        /*observe_completion=*/previous_state_->has_pin_input &&
-            !current_state.has_pin_input);
+        /*observe_completion=*/previous_state_->has_pin_input);
   }
 
   ////////
@@ -1100,7 +1097,7 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize(
   gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Make sure we are at least as big as the user view. If we do not do this
   // the view will be below minimum size when no auth methods are displayed.
-  size.set_height(std::max(kMinimiumLoginAuthUserViewHeightDp, size.height()));
+  size.set_height(std::max(login::kMinimiumBigUserViewHeightDp, size.height()));
   return size;
 }
 

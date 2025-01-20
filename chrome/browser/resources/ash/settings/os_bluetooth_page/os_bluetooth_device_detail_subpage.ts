@@ -9,11 +9,12 @@
  */
 
 import '../settings_shared.css.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import './os_bluetooth_change_device_name_dialog.js';
+import './os_bluetooth_forget_device_dialog.js';
 import './os_bluetooth_true_wireless_images.js';
-import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';

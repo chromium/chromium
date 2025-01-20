@@ -1302,9 +1302,19 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
   if (ShouldShowVideoControls()) {
     // Allocate vertical room for overlay play button if necessary.
     if (overlay_play_button_) {
-      gfx::Size overlay_play_button_size =
+      const gfx::Size overlay_play_button_size =
           overlay_play_button_->GetSizeOrDefault();
-      if (controls_size.height() >= overlay_play_button_size.height() &&
+      const gfx::Size play_button_size = play_button_->GetSizeOrDefault();
+      const gfx::Size timeline_size =
+          timeline_->IsWanted() ? timeline_->GetSizeOrDefault() : gfx::Size();
+      // There must be at least enough room left over vertically to show the
+      // normal button controls, else the overlay play button will push them off
+      // the bottom of the element.  We use the regular play button's size as a
+      // proxy for this.  Similarly, make sure that it leaves room for the
+      // timeline if we want it.
+      if (controls_size.height() - play_button_size.height() -
+                  timeline_size.height() >=
+              overlay_play_button_size.height() &&
           controls_size.width() >= kMinWidthForOverlayPlayButton) {
         overlay_play_button_->SetDoesFit(true);
         controls_size.Enlarge(0, -overlay_play_button_size.height());

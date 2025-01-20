@@ -347,8 +347,8 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   do {
     if (++num_tries > max_tries) {
-      LOG(ERROR) << "Failed to listen on a valid port after " << max_tries
-                 << " attempts.";
+      DVLOG(1) << "Failed to listen on a valid port after " << max_tries
+               << " attempts.";
       listen_socket_.reset();
       return false;
     }
@@ -358,14 +358,14 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
     int result =
         listen_socket_->ListenWithAddressAndPort(address.data(), port, 10);
     if (result) {
-      LOG(ERROR) << "Listen failed: " << ErrorToString(result);
+      DVLOG(1) << "Listen failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
 
     result = listen_socket_->GetLocalAddress(&local_endpoint_);
     if (result != OK) {
-      LOG(ERROR) << "GetLocalAddress failed: " << ErrorToString(result);
+      DVLOG(1) << "GetLocalAddress failed: " << ErrorToString(result);
       listen_socket_.reset();
       return false;
     }
@@ -387,8 +387,10 @@ bool EmbeddedTestServer::InitializeAndListen(int port,
 
   listen_socket_->DetachFromThread();
 
-  if (is_using_ssl_ && !InitializeSSLServerContext())
+  if (is_using_ssl_ && !InitializeSSLServerContext()) {
+    DVLOG(1) << "Unable to initialize SSL";
     return false;
+  }
 
   return true;
 }
@@ -574,11 +576,15 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
 bool EmbeddedTestServer::InitializeSSLServerContext() {
   if (UsingStaticCert()) {
-    if (!InitializeCertAndKeyFromFile())
+    if (!InitializeCertAndKeyFromFile()) {
+      DVLOG(1) << "Unable to initialize cert and key from file";
       return false;
+    }
   } else {
-    if (!GenerateCertAndKey())
+    if (!GenerateCertAndKey()) {
+      DVLOG(1) << "Unable to generate cert and key";
       return false;
+    }
   }
 
   if (protocol_ == HttpConnection::Protocol::kHttp2) {
@@ -697,6 +703,7 @@ base::FilePath EmbeddedTestServer::GetRootCertPemPath() {
 void EmbeddedTestServer::ShutdownOnIOThread() {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   weak_factory_.InvalidateWeakPtrs();
+  shutdown_closures_.Notify();
   listen_socket_.reset();
   connections_.clear();
 }
@@ -762,8 +769,7 @@ void EmbeddedTestServer::HandleRequest(
   }
 
   if (!response) {
-    LOG(WARNING) << "Request not handled. Returning 404: "
-                 << request->relative_url;
+    DVLOG(2) << "Request not handled. Returning 404: " << request->relative_url;
     auto not_found_response = std::make_unique<BasicHttpResponse>();
     not_found_response->set_code(HTTP_NOT_FOUND);
     response = std::move(not_found_response);
@@ -1028,6 +1034,11 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
 void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
                                          std::string accept_ch) {
   alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
+}
+
+base::CallbackListSubscription EmbeddedTestServer::RegisterShutdownClosure(
+    base::OnceClosure closure) {
+  return shutdown_closures_.Add(std::move(closure));
 }
 
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {

@@ -33,8 +33,9 @@ base::Value::List FetchBrowserChildProcesses() {
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
     // Only add processes that have already started, i.e. with valid handles.
-    if (!process_data.GetProcess().IsValid())
+    if (!process_data.GetProcess().IsValid()) {
       continue;
+    }
     base::Value::Dict proc;
     proc.Set("processId",
              base::strict_cast<double>(process_data.GetProcess().Pid()));
@@ -59,8 +60,9 @@ base::Value::List FetchRenderHostProcesses() {
        !it.IsAtEnd(); it.Advance()) {
     RenderProcessHost* host = it.GetCurrentValue();
     // Skip processes that might not have started yet.
-    if (!host->GetProcess().IsValid())
+    if (!host->GetProcess().IsValid()) {
       continue;
+    }
 
     base::Value::Dict proc;
     proc.Set("processId", base::strict_cast<double>(host->GetProcess().Pid()));
@@ -79,8 +81,6 @@ base::Value::Dict FeatureToValue(const base::Feature& feature) {
 
 base::Value::List FetchSandboxFeatures() {
   base::Value::List features;
-  features.Append(FeatureToValue(sandbox::policy::features::kGpuAppContainer));
-  features.Append(FeatureToValue(sandbox::policy::features::kGpuLPAC));
   features.Append(
       FeatureToValue(sandbox::policy::features::kNetworkServiceSandbox));
   features.Append(
@@ -93,6 +93,10 @@ base::Value::List FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kWinSboxNoFakeGdiInit));
   features.Append(FeatureToValue(
       sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer));
+  features.Append(
+      FeatureToValue(sandbox::policy::features::kEnableCsrssLockdown));
+  features.Append(FeatureToValue(
+      sandbox::policy::features::kWinSboxFilterServiceEnvironment));
   return features;
 }
 

@@ -92,12 +92,34 @@ TEST_F(TextHighlighterManagerTest, TextHighlighterTest) {
   // Create a new text highlighter.
   const std::string text_directive_1 = "ab,cd";
   manager->CreateTextHighlighterAndRemoveExistingInstance(text_directive_1);
-  EXPECT_THAT(manager->text_highlighter_->GetTextDirective(), text_directive_1);
+  EXPECT_THAT(
+      manager->get_text_highlighters_for_testing()[0]->GetTextDirective(),
+      text_directive_1);
 
   // Create a second instance and automatically delete the existing one.
   const std::string text_directive_2 = "bcd";
   manager->CreateTextHighlighterAndRemoveExistingInstance(text_directive_2);
-  EXPECT_THAT(manager->text_highlighter_->GetTextDirective(), text_directive_2);
+  EXPECT_THAT(
+      manager->get_text_highlighters_for_testing()[0]->GetTextDirective(),
+      text_directive_2);
+}
+
+TEST_F(TextHighlighterManagerTest, MultiTextHighlighters) {
+  // Set up a manager bound to the mock agent container.
+  MockAnnotationAgentContainer mock_agent_container;
+  TextHighlighterManager* manager = CreateManagerForTest(&mock_agent_container);
+
+  // Create two new text highlighters.
+  const std::string text_directive_1 = "ab,cd";
+  const std::string text_directive_2 = "bcd";
+  manager->CreateTextHighlightersAndRemoveExisting(
+      {text_directive_1, text_directive_2});
+  EXPECT_THAT(
+      manager->get_text_highlighters_for_testing()[0]->GetTextDirective(),
+      text_directive_1);
+  EXPECT_THAT(
+      manager->get_text_highlighters_for_testing()[1]->GetTextDirective(),
+      text_directive_2);
 }
 
 }  // namespace companion

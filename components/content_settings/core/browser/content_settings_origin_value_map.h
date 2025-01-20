@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -125,7 +126,8 @@ class OriginValueMap {
 
   HostIndexedContentSettings& get_index(ContentSettingsType type)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    auto [it, is_new] = entry_index().try_emplace(type, clock_);
+    auto [it, is_new] = entry_index().try_emplace(
+        type, clock_, content_settings::ShouldTypeExpireActively(type));
     return it->second;
   }
 

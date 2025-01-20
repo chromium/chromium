@@ -600,9 +600,7 @@ export function getOptionUiType(option: OptionType): UiType {
       return UiType.TOGGLE_BUTTON;
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
-      return loadTimeData.getBoolean('allowAutocorrectToggle') ?
-          UiType.TOGGLE_BUTTON :
-          UiType.DROPDOWN;
+      return UiType.TOGGLE_BUTTON;
     case OptionType.XKB_LAYOUT:
     case OptionType.JAPANESE_INPUT_MODE:
     case OptionType.JAPANESE_PUNCTUATION_STYLE:

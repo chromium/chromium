@@ -191,9 +191,15 @@ void TabGroupSyncServiceProxy::MoveTab(const LocalTabGroupID& group_id,
   service_->OnTabsReorderedLocally(group->saved_guid());
 }
 
-void TabGroupSyncServiceProxy::OnTabSelected(const LocalTabGroupID& group_id,
-                                             const LocalTabID& tab_id) {
+void TabGroupSyncServiceProxy::OnTabSelected(
+    const std::optional<LocalTabGroupID>& group_id,
+    const LocalTabID& tab_id) {
   NOTIMPLEMENTED();
+}
+
+std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+TabGroupSyncServiceProxy::GetCurrentlySelectedTabID() {
+  return {std::nullopt, std::nullopt};
 }
 
 void TabGroupSyncServiceProxy::SaveGroup(SavedTabGroup group) {
@@ -207,6 +213,18 @@ void TabGroupSyncServiceProxy::UnsaveGroup(const LocalTabGroupID& local_id) {
 void TabGroupSyncServiceProxy::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {
+  NOTIMPLEMENTED();
+}
+
+void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id,
+    base::OnceClosure on_complete_callback) {
+  NOTIMPLEMENTED();
+}
+
+void TabGroupSyncServiceProxy::OnTabGroupUnShareComplete(
+    const LocalTabGroupID& local_group_id,
+    bool success) {
   NOTIMPLEMENTED();
 }
 
@@ -226,10 +244,30 @@ std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
   return group ? std::optional<SavedTabGroup>(*group) : std::nullopt;
 }
 
+std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
+    const EitherGroupID& either_id) const {
+  const SavedTabGroup* group = nullptr;
+
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    group = service_->model()->Get(std::get<LocalTabGroupID>(either_id));
+  } else {
+    group = service_->model()->Get(std::get<base::Uuid>(either_id));
+  }
+
+  return group ? std::make_optional<SavedTabGroup>(*group) : std::nullopt;
+}
+
 std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds()
     const {
   NOTIMPLEMENTED();
   return std::vector<LocalTabGroupID>();
+}
+
+std::optional<std::u16string>
+TabGroupSyncServiceProxy::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 void TabGroupSyncServiceProxy::OpenTabGroup(

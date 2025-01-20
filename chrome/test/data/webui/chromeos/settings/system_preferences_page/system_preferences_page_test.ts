@@ -5,9 +5,6 @@
 /**
  * @fileoverview
  * Browser tests for the System preferences page.
- *
- * - This suite expects the OsSettingsRevampWayfinding feature flag to be
- *   enabled.
  */
 
 import 'chrome://os-settings/os_settings.js';
@@ -201,9 +198,7 @@ suite('<settings-system-preferences-page>', () => {
 
   suite('Multitasking subsection', () => {
     test(
-        'Multitasking settings card is visible if feature is allowed',
-        async () => {
-          loadTimeData.overrideValues({shouldShowMultitasking: true});
+        'Multitasking settings card is visible', async () => {
           await createPage();
 
           const multitaskingSettingsCard =
@@ -211,19 +206,6 @@ suite('<settings-system-preferences-page>', () => {
           assertTrue(
               isVisible(multitaskingSettingsCard),
               'Multitasking settings card should be visible.');
-        });
-
-    test(
-        'Multitasking settings card is not visible if feature is disallowed',
-        async () => {
-          loadTimeData.overrideValues({shouldShowMultitasking: false});
-          await createPage();
-
-          const multitaskingSettingsCard =
-              page.shadowRoot!.querySelector('multitasking-settings-card');
-          assertFalse(
-              isVisible(multitaskingSettingsCard),
-              'Multitasking settings card should not be visible.');
         });
   });
 

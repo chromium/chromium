@@ -5,6 +5,7 @@
 #include "content/browser/guest_page_holder_impl.h"
 
 #include "base/notimplemented.h"
+#include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -24,13 +25,35 @@ std::unique_ptr<GuestPageHolder> GuestPageHolder::Create(
 
   std::unique_ptr<GuestPageHolderImpl> guest_page =
       std::make_unique<GuestPageHolderImpl>(
-          static_cast<WebContentsImpl&>(*owner_web_contents),
-          std::move(site_instance), delegate);
+          static_cast<WebContentsImpl&>(*owner_web_contents), std::string(),
+          /*opener=*/nullptr, std::move(site_instance), delegate);
+  return guest_page;
+}
+
+std::unique_ptr<GuestPageHolder> GuestPageHolder::CreateWithOpener(
+    WebContents* owner_web_contents,
+    const std::string& frame_name,
+    RenderFrameHost* opener,
+    scoped_refptr<SiteInstance> site_instance,
+    base::WeakPtr<GuestPageHolder::Delegate> delegate) {
+  CHECK(owner_web_contents);
+  // Note that `site_instance->IsGuest()` would only be true for <webview>, not
+  // other guest types.
+  CHECK(site_instance);
+  CHECK(delegate);
+
+  std::unique_ptr<GuestPageHolderImpl> guest_page =
+      std::make_unique<GuestPageHolderImpl>(
+          static_cast<WebContentsImpl&>(*owner_web_contents), frame_name,
+          static_cast<RenderFrameHostImpl*>(opener), std::move(site_instance),
+          delegate);
   return guest_page;
 }
 
 GuestPageHolderImpl::GuestPageHolderImpl(
     WebContentsImpl& owner_web_contents,
+    const std::string& frame_name,
+    RenderFrameHostImpl* opener,
     scoped_refptr<SiteInstance> site_instance,
     base::WeakPtr<GuestPageHolder::Delegate> delegate)
     : owner_web_contents_(owner_web_contents),
@@ -45,12 +68,10 @@ GuestPageHolderImpl::GuestPageHolderImpl(
                   /*manager_delegate=*/&owner_web_contents,
                   /*page_delegate=*/&owner_web_contents,
                   FrameTree::Type::kGuest) {
-  // TODO(crbug.com/40202416): Implement support for devtools and set the
-  // `devtools_frame_token`.
   frame_tree_.Init(static_cast<SiteInstanceImpl*>(site_instance.get()),
                    /*renderer_initiated_creation=*/false,
-                   /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                   blink::FramePolicy{},
+                   /*main_frame_name=*/frame_name,
+                   /*opener_for_origin=*/opener, blink::FramePolicy{},
                    /*devtools_frame_token=*/base::UnguessableToken::Create());
   // Notify WebContentsObservers of the new guest frame via
   // RenderFrameHostChanged.
@@ -62,6 +83,18 @@ GuestPageHolderImpl::GuestPageHolderImpl(
   // Ensure our muted state is correct on creation.
   if (owner_web_contents.IsAudioMuted()) {
     GetAudioStreamFactory()->SetMuted(true);
+  }
+
+  if (opener) {
+    FrameTreeNode* new_root = frame_tree_.root();
+
+    // For the "original opener", track the opener's main frame instead, because
+    // if the opener is a subframe, the opener tracking could be easily bypassed
+    // by spawning from a subframe and deleting the subframe.
+    // https://crbug.com/705316
+    new_root->SetOriginalOpener(opener->frame_tree()->root());
+    new_root->SetOpenerDevtoolsFrameToken(opener->devtools_frame_token());
+    new_root->SetOpener(opener->frame_tree_node());
   }
 }
 
@@ -80,7 +113,7 @@ NavigationController& GuestPageHolderImpl::GetController() {
   return frame_tree_.controller();
 }
 
-RenderFrameHost* GuestPageHolderImpl::GetGuestMainFrame() {
+RenderFrameHostImpl* GuestPageHolderImpl::GetGuestMainFrame() {
   return frame_tree_.root()->current_frame_host();
 }
 
@@ -94,6 +127,13 @@ void GuestPageHolderImpl::SetAudioMuted(bool mute) {
   // owning WebContents state.
   GetAudioStreamFactory()->SetMuted(mute ||
                                     owner_web_contents_->IsAudioMuted());
+}
+
+RenderFrameHost* GuestPageHolderImpl::GetOpener() {
+  if (auto* opener = frame_tree_.root()->GetOpener()) {
+    return opener->current_frame_host();
+  }
+  return nullptr;
 }
 
 void GuestPageHolderImpl::SetAudioMutedFromWebContents(
@@ -113,6 +153,7 @@ void GuestPageHolderImpl::DidStopLoading() {
   if (delegate_) {
     delegate_->GuestDidStopLoading();
   }
+  load_stop_callbacks_for_testing_.Notify();
 }
 
 bool GuestPageHolderImpl::IsHidden() {
@@ -124,8 +165,11 @@ FrameTreeNodeId GuestPageHolderImpl::GetOuterDelegateFrameTreeNodeId() {
 }
 
 RenderFrameHostImpl* GuestPageHolderImpl::GetProspectiveOuterDocument() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!delegate_) {
+    return nullptr;
+  }
+  return static_cast<RenderFrameHostImpl*>(
+      delegate_->GetProspectiveOuterDocument());
 }
 
 FrameTree* GuestPageHolderImpl::LoadingTree() {
@@ -170,7 +214,7 @@ bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {
 }
 
 void GuestPageHolderImpl::UpdateOverridingUserAgent() {
-  NOTIMPLEMENTED();
+  owner_web_contents_->UpdateOverridingUserAgent();
 }
 
 ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
@@ -193,10 +237,20 @@ const blink::RendererPreferences& GuestPageHolderImpl::GetRendererPrefs() {
   // Also disable drag/drop navigations.
   renderer_preferences_.can_accept_load_drops = false;
 
-  // TODO(crbug.com/40202416): Let the delegate make additional modifications.
-  // TODO(crbug.com/376085326): Apply user agent override.
+  if (delegate_) {
+    delegate_->GuestOverrideRendererPreferences(renderer_preferences_);
+  }
 
   return renderer_preferences_;
+}
+
+const blink::web_pref::WebPreferences&
+GuestPageHolderImpl::GetWebPreferences() {
+  if (!web_preferences_) {
+    web_preferences_ = std::make_unique<blink::web_pref::WebPreferences>(
+        owner_web_contents_->ComputeWebPreferences(GetGuestMainFrame()));
+  }
+  return *web_preferences_;
 }
 
 GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
@@ -225,6 +279,48 @@ GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
   }
 
   return holder;
+}
+
+base::CallbackListSubscription
+GuestPageHolderImpl::RegisterLoadStopCallbackForTesting(
+    base::RepeatingClosure callback) {
+  return load_stop_callbacks_for_testing_.Add(callback);
+}
+
+FrameTree* GuestPageHolderImpl::CreateNewWindow(
+    WindowOpenDisposition disposition,
+    const GURL& url,
+    const std::string& main_frame_name,
+    scoped_refptr<SiteInstance> site_instance,
+    RenderFrameHostImpl* opener) {
+  auto* guest_page =
+      static_cast<GuestPageHolderImpl*>(delegate_->GuestCreateNewWindow(
+          disposition, url, main_frame_name, opener, std::move(site_instance)));
+  if (!guest_page) {
+    return nullptr;
+  }
+  return &guest_page->frame_tree();
+}
+
+bool GuestPageHolderImpl::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root()) {
+    return false;
+  }
+  const bool hidden_with_parent_state =
+      render_frame_proxy_host->cross_process_frame_connector()->IsHidden() ||
+      render_frame_proxy_host->cross_process_frame_connector()
+              ->EmbedderVisibility() != Visibility::VISIBLE;
+  frame_tree_.ForEachRenderViewHost([hidden_with_parent_state](
+                                        RenderViewHostImpl* rvh) {
+    rvh->SetFrameTreeVisibility(
+        hidden_with_parent_state ? blink::mojom::PageVisibilityState::kHidden
+                                 : blink::mojom::PageVisibilityState::kVisible);
+  });
+  return false;
 }
 
 }  // namespace content

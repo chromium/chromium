@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/callback_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 // TODO(crbug.com/40251079): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
@@ -729,13 +730,6 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
 void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
   bool preinstalling_enabled =
       base::FeatureList::IsEnabled(features::kPreinstalledWebAppInstallation);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled()) {
-    preinstalling_enabled = false;
-  }
-#endif
 
   if (!preinstalling_enabled) {
     std::move(callback).Run({});

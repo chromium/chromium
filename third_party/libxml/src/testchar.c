@@ -667,7 +667,7 @@ static int testCharRanges(void) {
     input->cur =
     input->base = xmlBufContent(input->buf->buffer);
     input->end = input->base + 4;
-    inputPush(ctxt, input);
+    xmlCtxtPushInput(ctxt, input);
 
     printf("testing char range: 1");
     fflush(stdout);

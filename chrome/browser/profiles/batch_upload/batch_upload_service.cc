@@ -34,8 +34,9 @@ constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
 // This list contains all the data types that are available for the Batch Upload
 // dialog. Data types should not be repeated and the list is ordered based on
 // the priority of showing in the dialog.
-const std::array<syncer::DataType, 2> kBatchUploadOrderedAvailableTypes{
+const std::array<syncer::DataType, 3> kBatchUploadOrderedAvailableTypes{
     syncer::DataType::PASSWORDS,
+    syncer::DataType::BOOKMARKS,
     syncer::DataType::CONTACT_INFO,
 };
 
@@ -139,12 +140,12 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
       GetOrderedListOfNonEmptyDataDescriptions(std::move(local_data_map)),
       state_.dialog_state_->entry_point_,
       /*complete_callback=*/
-      base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
+      base::BindOnce(&BatchUploadService::OnBatchUploadDialogResult,
                      base::Unretained(this)));
   std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
 }
 
-void BatchUploadService::OnBatchUplaodDialogResult(
+void BatchUploadService::OnBatchUploadDialogResult(
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         item_ids_to_move) {
@@ -157,7 +158,7 @@ void BatchUploadService::OnBatchUplaodDialogResult(
     return;
   }
 
-  sync_service_->TriggerLocalDataMigration(item_ids_to_move);
+  sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
 
   // `browser` may be null in tests.
   if (browser) {

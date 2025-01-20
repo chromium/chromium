@@ -23,8 +23,9 @@ MemoryMappedFile::~MemoryMappedFile() {
 
 #if !BUILDFLAG(IS_NACL)
 bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
-  if (IsValid())
+  if (IsValid()) {
     return false;
+  }
 
   uint32_t flags = 0;
   switch (access) {
@@ -103,11 +104,13 @@ bool MemoryMappedFile::Initialize(File file,
 #endif
   }
 
-  if (IsValid())
+  if (IsValid()) {
     return false;
+  }
 
-  if (region != Region::kWholeFile)
+  if (region != Region::kWholeFile) {
     DCHECK_GE(region.offset, 0);
+  }
 
   file_ = std::move(file);
 

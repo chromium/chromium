@@ -68,7 +68,7 @@ void ConfigureAlpn(const ConnectJobFactory::Endpoint& endpoint,
   DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
 
   if (alpn_mode == ConnectJobFactory::AlpnMode::kHttp11Only) {
-    ssl_config.alpn_protos = {kProtoHTTP11};
+    ssl_config.alpn_protos = {NextProto::kProtoHTTP11};
     ssl_config.application_settings =
         *common_connect_job_params.application_settings;
   } else {
@@ -95,7 +95,7 @@ void ConfigureAlpn(const ConnectJobFactory::Endpoint& endpoint,
   // that False Start otherwise saves.
   ssl_config.renego_allowed_default = renego_allowed;
   if (renego_allowed) {
-    ssl_config.renego_allowed_for_protos = {kProtoHTTP11};
+    ssl_config.renego_allowed_for_protos = {NextProto::kProtoHTTP11};
   }
 }
 

@@ -25,9 +25,11 @@
 #include "components/account_id/account_id.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,20 +70,19 @@ const PIIMap kExpectedPIIMap = {
 class ChromeUserLogsDataCollectorTest : public ::testing::Test {
  public:
   ChromeUserLogsDataCollectorTest() {
-    std::unique_ptr<user_manager::FakeUserManager> fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>();
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
     AccountId fake_user_account =
-        AccountId::FromUserEmailGaiaId(kFakeUserEmail, kFakeGaiaId);
+        AccountId::FromUserEmailGaiaId(kFakeUserEmail, GaiaId(kFakeGaiaId));
     fake_user_hash_ =
         user_manager::FakeUserManager::GetFakeUsernameHash(fake_user_account);
     // Add the fake user to `fake_user_manager` and make it primary user by
     // making user logged in.
-    fake_user_manager->AddUser(fake_user_account);
-    fake_user_manager->UserLoggedIn(fake_user_account, fake_user_hash_,
-                                    /*browser_restart=*/false, false);
-
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_->AddGaiaUser(fake_user_account,
+                                    user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(fake_user_account, fake_user_hash_,
+                                     /*browser_restart=*/false, false);
 
     // Set up task runner and container for RedactionTool. We will use when
     // calling CollectDataAndDetectPII() and ExportCollectedDataWithPII()
@@ -147,7 +148,9 @@ class ChromeUserLogsDataCollectorTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::string fake_user_hash_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
   scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;

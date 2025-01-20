@@ -22,39 +22,40 @@ import org.chromium.base.supplier.OneshotSupplier;
  * activity. This class will use the window's bar color when it's initialized.
  */
 public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
-    private final ObservableSupplier<Boolean> mIsActivityEdgeToEdgeSupplier;
+    private final ObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
     private final OneshotSupplier<SystemBarColorHelper> mEdgeToEdgeDelegateHelperSupplier;
     private final WindowSystemBarColorHelper mWindowColorHelper;
-    private final Callback<Boolean> mOnEdgeToEdgeChanged = this::onActivityEdgeToEdgeChanged;
+    private final Callback<Boolean> mOnEdgeToEdgeChanged = this::onContentFitsWindowChanged;
 
     protected boolean mIsActivityEdgeToEdge;
 
     /**
      * @param window Window from {@link android.app.Activity#getWindow()}.
-     * @param isActivityEdgeToEdgeSupplier Supplier of whether the activity is drawing edge to edge.
+     * @param doesContentFitWindowSupplier Supplier of whether the activity content fits the window
+     *     insets.
      * @param delegateHelperSupplier Delegate helper that colors the bar when edge to edge.
      */
     public EdgeToEdgeSystemBarColorHelper(
             @NonNull Window window,
-            @NonNull ObservableSupplier<Boolean> isActivityEdgeToEdgeSupplier,
+            @NonNull ObservableSupplier<Boolean> doesContentFitWindowSupplier,
             @NonNull OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier) {
-        mIsActivityEdgeToEdgeSupplier = isActivityEdgeToEdgeSupplier;
+        mDoesContentFitWindowSupplier = doesContentFitWindowSupplier;
         mEdgeToEdgeDelegateHelperSupplier = delegateHelperSupplier;
         mWindowColorHelper = new WindowSystemBarColorHelper(window);
 
         // Initial values. By default, read the values from window.
-        mIsActivityEdgeToEdge = Boolean.TRUE.equals(mIsActivityEdgeToEdgeSupplier.get());
+        mIsActivityEdgeToEdge = Boolean.FALSE.equals(mDoesContentFitWindowSupplier.get());
         mStatusBarColor = mWindowColorHelper.getStatusBarColor();
         mNavBarColor = mWindowColorHelper.getNavigationBarColor();
         mNavBarDividerColor = mWindowColorHelper.getNavigationBarDividerColor();
 
-        mIsActivityEdgeToEdgeSupplier.addObserver(mOnEdgeToEdgeChanged);
+        mDoesContentFitWindowSupplier.addObserver(mOnEdgeToEdgeChanged);
         mEdgeToEdgeDelegateHelperSupplier.onAvailable(this::onDelegateColorHelperChanged);
     }
 
     @Override
     public void destroy() {
-        mIsActivityEdgeToEdgeSupplier.removeObserver(mOnEdgeToEdgeChanged);
+        mDoesContentFitWindowSupplier.removeObserver(mOnEdgeToEdgeChanged);
         mWindowColorHelper.destroy();
     }
 
@@ -74,8 +75,8 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         updateColors();
     }
 
-    private void onActivityEdgeToEdgeChanged(Boolean isEdgeToEdge) {
-        boolean toEdge = Boolean.TRUE.equals(isEdgeToEdge);
+    private void onContentFitsWindowChanged(Boolean contentFitsWindow) {
+        boolean toEdge = Boolean.FALSE.equals(contentFitsWindow);
         if (mIsActivityEdgeToEdge != toEdge) {
             mIsActivityEdgeToEdge = toEdge;
             updateColors();
@@ -104,5 +105,9 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     WindowSystemBarColorHelper getWindowHelperForTesting() {
         return mWindowColorHelper;
+    }
+
+    SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
+        return mEdgeToEdgeDelegateHelperSupplier.get();
     }
 }

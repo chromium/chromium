@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -78,7 +79,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
                                     public PermissionsManager::Observer,
-                                    public ToolbarActionsModel::Observer {
+                                    public ToolbarActionsModel::Observer,
+                                    public AccountExtensionTracker::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -170,6 +172,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnToolbarModelInitialized() override {}
   void OnToolbarPinnedActionsChanged() override;
 
+  // AccountExtensionTracker::Observer:
+  void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
+  void OnExtensionsUploadabilityChanged() override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -204,6 +210,9 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       permissions_manager_observation_{this};
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_actions_model_observation_{this};
+  base::ScopedObservation<AccountExtensionTracker,
+                          AccountExtensionTracker::Observer>
+      account_extension_tracker_observation_{this};
 
   raw_ptr<Profile> profile_;
 
@@ -1093,6 +1102,49 @@ class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
 
   // The ID of the extension to be dismissed.
   ExtensionId extension_id_;
+
+  // If true, immediately accepts the keep dialog by running the callback.
+  std::optional<bool> accept_bubble_for_testing_;
+};
+
+class DeveloperPrivateUploadExtensionToAccountFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.uploadExtensionToAccount",
+                             DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT)
+  DeveloperPrivateUploadExtensionToAccountFunction();
+
+  DeveloperPrivateUploadExtensionToAccountFunction(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+  DeveloperPrivateUploadExtensionToAccountFunction& operator=(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateUploadExtensionToAccountFunction() override;
+
+  ResponseAction Run() override;
+
+  // Verify that the extension to be uploaded exists and that there's a signed
+  // in user. Returns the extension if successful, otherwise returns an error.
+  base::expected<const Extension*, std::string> VerifyExtensionAndSigninState();
+
+  // Uploads the given `extension` to the user's account.
+  void UploadExtensionToAccount(const Extension& extension);
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The ID of the extension to be uploaded.
+  ExtensionId extension_id_;
+
+  raw_ptr<Profile> profile_;
 
   // If true, immediately accepts the keep dialog by running the callback.
   std::optional<bool> accept_bubble_for_testing_;

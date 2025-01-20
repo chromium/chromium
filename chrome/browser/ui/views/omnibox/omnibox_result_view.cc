@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -101,6 +102,8 @@ class OmniboxResultViewButton : public views::ImageButton {
 
 BEGIN_METADATA(OmniboxResultViewButton)
 END_METADATA
+
+constexpr float kIPHBackgroundBorderRadius = 8;
 
 }  // namespace
 
@@ -324,16 +327,17 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
-OmniboxResultView::~OmniboxResultView() {}
+OmniboxResultView::~OmniboxResultView() = default;
 
 // static
 std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
-    views::View* view,
+    const views::View* view,
     OmniboxPartState part_state) {
   DCHECK(view);
 
-  bool prefers_contrast = view->GetNativeTheme() &&
-                          view->GetNativeTheme()->UserHasContrastPreference();
+  const bool prefers_contrast =
+      view->GetNativeTheme() &&
+      view->GetNativeTheme()->UserHasContrastPreference();
   // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.
   if (part_state == OmniboxPartState::NORMAL && !prefers_contrast) {
@@ -342,7 +346,8 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
 
   if (part_state == OmniboxPartState::IPH) {
     return views::CreateThemedRoundedRectBackground(
-        GetOmniboxBackgroundColorId(part_state), /*radius=*/8,
+        GetOmniboxBackgroundColorId(part_state),
+        /*radius=*/kIPHBackgroundBorderRadius,
         /*for_border_thickness=*/0);
   }
 
@@ -512,7 +517,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
   UpdateAccessibleName();
   UpdateAccessibilitySelectedState();
   if (GetMatchSelected()) {
-    auto selection_state = popup_view_->GetSelection().state;
+    const auto selection_state = popup_view_->GetSelection().state;
 
     // The text is also accessible via text/value change events in the omnibox
     // but this selection event allows the screen reader to get more details
@@ -532,12 +537,18 @@ void OmniboxResultView::OnSelectionStateChanged() {
 
 bool OmniboxResultView::GetMatchSelected() const {
   // The header button being focused means the match itself is NOT focused.
-  OmniboxPopupSelection selection = popup_view_->GetSelection();
+  const auto selection = popup_view_->GetSelection();
   return selection.line == model_index_ &&
          selection.state != OmniboxPopupSelection::FOCUSED_BUTTON_HEADER;
 }
 
 views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
+  return const_cast<views::Button*>(
+      std::as_const(*this).GetActiveAuxiliaryButtonForAccessibility());
+}
+
+const views::Button*
+OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() const {
   if (popup_view_->GetSelection().state ==
       OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP) {
     return thumbs_up_button_;
@@ -640,10 +651,9 @@ void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
   }
 
   if (event.IsOnlyMiddleMouseButton() || event.IsOnlyLeftMouseButton()) {
-    WindowOpenDisposition disposition =
-        event.IsOnlyLeftMouseButton()
-            ? WindowOpenDisposition::CURRENT_TAB
-            : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    const auto disposition = event.IsOnlyLeftMouseButton()
+                                 ? WindowOpenDisposition::CURRENT_TAB
+                                 : WindowOpenDisposition::NEW_BACKGROUND_TAB;
     popup_view_->model()->OpenSelection(OmniboxPopupSelection(model_index_),
                                         event.time_stamp(), disposition);
   }
@@ -702,8 +712,8 @@ void OmniboxResultView::UpdateHoverState() {
 }
 
 void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
-  bool old_visibility = thumbs_up_button_->GetVisible();
-  bool new_visibility =
+  const bool old_visibility = thumbs_up_button_->GetVisible();
+  const bool new_visibility =
       popup_view_->model()->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
           model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)) &&
       (GetMatchSelected() || IsMouseHovered());
@@ -720,8 +730,8 @@ void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
 // TODO(b/345536738): Introduce a single UpdateButtonsVisibility() that iterates
 //  over all the buttons and updates their visibilities.
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
-  bool old_visibility = remove_suggestion_button_->GetVisible();
-  bool new_visibility =
+  const bool old_visibility = remove_suggestion_button_->GetVisible();
+  const bool new_visibility =
       popup_view_->model()->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
           model_index_,
           OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
@@ -750,9 +760,9 @@ void OmniboxResultView::UpdateAccessibleName() {
   // TODO(tommycli): We re-fetch the original match from the popup model,
   // because |match_| already has its contents and description swapped by this
   // class, and we don't want that for the bubble. We should improve this.
-  bool is_selected = GetMatchSelected();
+  const bool is_selected = GetMatchSelected();
   if (model_index_ < autocomplete_controller->result().size()) {
-    AutocompleteMatch raw_match =
+    const auto raw_match =
         autocomplete_controller->result().match_at(model_index_);
     // The selected match can have a special name, e.g. when is one or more
     // buttons that can be tabbed to.

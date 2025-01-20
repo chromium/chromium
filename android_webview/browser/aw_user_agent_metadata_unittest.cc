@@ -60,14 +60,14 @@ class AwUserAgentMetadataTest : public testing::Test {
   raw_ptr<JNIEnv> env_;
 };
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataEmpty) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_Empty) {
   blink::UserAgentMetadata ua_metadata;
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataFull) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_Full) {
   blink::UserAgentMetadata ua_metadata = {
       .brand_version_list = {{"b1", "mv1"}, {"b2", "mv2"}},
       .brand_full_version_list = {{"b1", "fv1"}, {"b2", "fv2"}},
@@ -85,7 +85,8 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataFull) {
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataPartFullBrand) {
+TEST_F(AwUserAgentMetadataTest,
+       TestJavaObjectCppObject_Metadata_PartFullBrand) {
   blink::UserAgentMetadata ua_metadata = {
       .brand_version_list = {{"b1", "mv1"}, {"b2", "mv2"}},
       .brand_full_version_list = {{"b1", "fv1"}},
@@ -104,7 +105,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataPartFullBrand) {
 }
 
 TEST_F(AwUserAgentMetadataTest,
-       TestJavaObjectCppObjectMetadataNoFullBrandList) {
+       TestJavaObjectCppObject_Metadata_NoFullBrandList) {
   blink::UserAgentMetadata ua_metadata = {
       .brand_version_list = {{"b1", "mv1"}, {"b2", "mv2"}},
       .brand_full_version_list = {},
@@ -122,7 +123,7 @@ TEST_F(AwUserAgentMetadataTest,
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataNoBrandList) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_NoBrandList) {
   blink::UserAgentMetadata ua_metadata = {
       .brand_version_list = {},
       .brand_full_version_list = {},
@@ -140,7 +141,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataNoBrandList) {
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataLowEntropy) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_LowEntropy) {
   blink::UserAgentMetadata ua_metadata = {
       .brand_version_list = {{"b1", "mv1"}, {"b2", "mv2"}},
       .brand_full_version_list = {},
@@ -158,7 +159,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectMetadataLowEntropy) {
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectDefault) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Default) {
   blink::UserAgentMetadata ua_metadata =
       AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
   verifyUaMetadata(ua_metadata,
@@ -166,7 +167,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectDefault) {
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectInvalidBrandVersion) {
+TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_InvalidBrandVersion) {
   blink::UserAgentMetadata ua_metadata;
   ua_metadata.brand_version_list = {{"b1", "mv1"}, {"b2", "mv2"}};
   ua_metadata.brand_full_version_list = {{"b3", "fv1"}, {"b2", "fv2"}};
@@ -182,15 +183,15 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObjectInvalidBrandVersion) {
             actual_metadata.brand_full_version_list);
 }
 
-TEST_F(AwUserAgentMetadataTest, TestBitnessParsingInvalidValueString) {
+TEST_F(AwUserAgentMetadataTest, TestBitnessParsing_InvalidValue_String) {
   EXPECT_EQ("", RoundTripBitness("foo"));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestBitnessParsingDefault) {
+TEST_F(AwUserAgentMetadataTest, TestBitnessParsing_Default) {
   EXPECT_EQ("", RoundTripBitness("0"));
 }
 
-TEST_F(AwUserAgentMetadataTest, TestBitnessParsingIntValue) {
+TEST_F(AwUserAgentMetadataTest, TestBitnessParsing_IntValue) {
   EXPECT_EQ("8", RoundTripBitness("8"));
   EXPECT_EQ("16", RoundTripBitness("16"));
   EXPECT_EQ("32", RoundTripBitness("32"));

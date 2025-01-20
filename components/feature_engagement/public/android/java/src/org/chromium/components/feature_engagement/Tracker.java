@@ -5,18 +5,22 @@
 package org.chromium.components.feature_engagement;
 
 import androidx.annotation.CheckResult;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Tracker is the Java representation of a native Tracker object.
- * It is owned by the native BrowserContext.
+ * Tracker is the Java representation of a native Tracker object. It is owned by the native
+ * BrowserContext.
  *
- * Tracker is the core class for the feature engagement.
+ * <p>Tracker is the core class for the feature engagement.
  */
+@NullMarked
 public interface Tracker {
-    /** A handle for the display lock. While this is unreleased, no in-product help can be displayed. */
+    /**
+     * A handle for the display lock. While this is unreleased, no in-product help can be displayed.
+     */
     interface DisplayLockHandle {
         /**
          * This method must be invoked when the lock should be released, and it must be invoked on
@@ -116,8 +120,8 @@ public interface Tracker {
      * display lock is acquired, the lock is still handed out, but it will not dismiss the current
      * in-product help. However, no new in-product help will be shown until all locks have been
      * released. It is required to invoke {@link DisplayLockHandle#release()} once the lock should
-     * no longer be held.
-     * The DisplayLockHandle must be released on the main thread.
+     * no longer be held. The DisplayLockHandle must be released on the main thread.
+     *
      * @return a DisplayLockHandle, or {@code null} if no handle could be retrieved.
      */
     @CheckResult
@@ -140,9 +144,8 @@ public interface Tracker {
     String getPendingPriorityNotification();
 
     /**
-     * Called by the client to register a handler for priority notifications. This
-     * will essentially contain the code to spin up an IPH. The handler runs only once and
-     * unregisters itself.
+     * Called by the client to register a handler for priority notifications. This will essentially
+     * contain the code to spin up an IPH. The handler runs only once and unregisters itself.
      */
     void registerPriorityNotificationHandler(String feature, Runnable priorityNotificationHandler);
 

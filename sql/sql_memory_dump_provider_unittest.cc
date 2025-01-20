@@ -8,6 +8,7 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {
@@ -16,8 +17,6 @@ namespace {
 
 class SQLMemoryDumpProviderTest : public testing::Test {
  public:
-  ~SQLMemoryDumpProviderTest() override = default;
-
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(db_.Open(
@@ -28,7 +27,7 @@ class SQLMemoryDumpProviderTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_;
+  Database db_{test::kTestTag};
 };
 
 TEST_F(SQLMemoryDumpProviderTest, OnMemoryDump) {

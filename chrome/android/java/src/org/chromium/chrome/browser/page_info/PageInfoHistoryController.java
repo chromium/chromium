@@ -100,7 +100,8 @@ public class PageInfoHistoryController
                         new BrowsingHistoryBridge(profile),
                         null,
                         /* launchedForApp= */ false,
-                        /* showAppFilter= */ false);
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }

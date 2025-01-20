@@ -446,9 +446,10 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
 
   // The pending info list is cleared in LayerTreeHostImpl::CommitComplete
   // and should be empty when pushing properties.
-  DCHECK(host_impl->pending_throughput_tracker_infos_.Read(*host_impl).empty());
-  host_impl->pending_throughput_tracker_infos_.Write(*host_impl) =
-      TakePendingThroughputTrackerInfos();
+  DCHECK(host_impl->pending_compositor_metrics_tracker_infos_.Read(*host_impl)
+             .empty());
+  host_impl->pending_compositor_metrics_tracker_infos_.Write(*host_impl) =
+      TakePendingCompositorMetricsTrackerInfos();
 }
 
 const ElementAnimations* AnimationHost::GetElementAnimationsForElementId(
@@ -926,24 +927,25 @@ bool AnimationHost::HasNativePropertyAnimation() const {
   return false;
 }
 
-AnimationHost::PendingThroughputTrackerInfos
-AnimationHost::TakePendingThroughputTrackerInfos() {
-  PendingThroughputTrackerInfos infos =
-      std::move(pending_throughput_tracker_infos_.Write(*this));
-  pending_throughput_tracker_infos_.Write(*this) = {};
+AnimationHost::PendingCompositorMetricsTrackerInfos
+AnimationHost::TakePendingCompositorMetricsTrackerInfos() {
+  PendingCompositorMetricsTrackerInfos infos =
+      std::move(pending_compositor_metrics_tracker_infos_.Write(*this));
+  pending_compositor_metrics_tracker_infos_.Write(*this) = {};
   return infos;
 }
 
-void AnimationHost::StartThroughputTracking(
+void AnimationHost::StartCompositorMetricsTracking(
     TrackedAnimationSequenceId sequence_id) {
-  pending_throughput_tracker_infos_.Write(*this).push_back({sequence_id, true});
+  pending_compositor_metrics_tracker_infos_.Write(*this).push_back(
+      {sequence_id, true});
   SetNeedsPushProperties();
 }
 
-void AnimationHost::StopThroughputTracking(
-    TrackedAnimationSequenceId sequnece_id) {
-  pending_throughput_tracker_infos_.Write(*this).push_back(
-      {sequnece_id, false});
+void AnimationHost::StopCompositorMetricsTracking(
+    TrackedAnimationSequenceId sequence_id) {
+  pending_compositor_metrics_tracker_infos_.Write(*this).push_back(
+      {sequence_id, false});
   SetNeedsPushProperties();
 }
 

@@ -5,7 +5,6 @@
 package org.chromium.media;
 
 import android.media.MediaCodec;
-import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecInfo.CodecProfileLevel;
@@ -15,12 +14,13 @@ import android.media.MediaFormat;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,12 +30,13 @@ import java.util.NoSuchElementException;
 
 /** A collection of MediaCodec utility functions. */
 @JNINamespace("media")
+@NullMarked
 class MediaCodecUtil {
     private static final String TAG = "MediaCodecUtil";
 
     /** Information returned by createDecoder() */
     public static class CodecCreationInfo {
-        public MediaCodec mediaCodec;
+        public @Nullable MediaCodec mediaCodec;
         public boolean supportsAdaptivePlayback;
         public @BitrateAdjuster.Type int bitrateAdjuster = BitrateAdjuster.Type.NO_ADJUSTMENT;
     }
@@ -73,7 +74,7 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private int getCodecCount() {
-            if (hasNewMediaCodecList()) return mCodecList.length;
+            if (mCodecList != null) return mCodecList.length;
             try {
                 return MediaCodecList.getCodecCount();
             } catch (RuntimeException e) {
@@ -85,15 +86,11 @@ class MediaCodecUtil {
 
         @SuppressWarnings("deprecation")
         private MediaCodecInfo getCodecInfoAt(int index) {
-            if (hasNewMediaCodecList()) return mCodecList[index];
+            if (mCodecList != null) return mCodecList[index];
             return MediaCodecList.getCodecInfoAt(index);
         }
 
-        private boolean hasNewMediaCodecList() {
-            return mCodecList != null;
-        }
-
-        private MediaCodecInfo[] mCodecList;
+        private MediaCodecInfo @Nullable [] mCodecList;
 
         private class CodecInfoIterator implements Iterator<MediaCodecInfo> {
             private int mPosition;
@@ -183,11 +180,12 @@ class MediaCodecUtil {
 
     /**
      * Get a list of encoder supported color formats for specified MIME type.
+     *
      * @param mime MIME type of the media format.
      * @return a list of encoder supported color formats.
      */
     @CalledByNative
-    private static int[] getEncoderColorFormatsForMime(String mime) {
+    private static int @Nullable [] getEncoderColorFormatsForMime(String mime) {
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
         for (MediaCodecInfo info : codecListHelper) {
             if (!info.isEncoder()) continue;
@@ -221,7 +219,7 @@ class MediaCodecUtil {
         }
 
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
-        if (codecListHelper.hasNewMediaCodecList()) {
+        if (codecListHelper.mCodecList != null) {
             for (MediaCodecInfo info : codecListHelper) {
                 if (info.isEncoder()) continue;
 
@@ -313,13 +311,14 @@ class MediaCodecUtil {
 
     /**
      * Creates MediaCodec decoder.
+     *
      * @param mime MIME type of the media.
      * @param codecType Type of codec to create.
      * @param mediaCrypto Crypto of the media.
      * @return CodecCreationInfo object
      */
     static CodecCreationInfo createDecoder(
-            String mime, @CodecType int codecType, MediaCrypto mediaCrypto) {
+            String mime, @CodecType int codecType, @Nullable MediaCrypto mediaCrypto) {
         // Always return a valid CodecCreationInfo, its |mediaCodec| field will be null
         // if we cannot create the codec.
 
@@ -574,8 +573,8 @@ class MediaCodecUtil {
         // if we cannot create the codec.
         CodecCreationInfo result = new CodecCreationInfo();
 
-        @Nullable
         @HWEncoder
+        @Nullable
         Integer encoderProperties = findHWEncoder(mime);
         if (encoderProperties == null) return result;
 
@@ -661,14 +660,5 @@ class MediaCodecUtil {
 
         Log.w(TAG, "HW encoder for " + mime + " is not available on this device.");
         return null;
-    }
-
-    /**
-     * Sets the encryption pattern value if and only if CryptoInfo.setPattern method is supported.
-     * Note that if platformSupportsCbcsEncryption returns true, then this function will set the
-     * pattern.
-     */
-    static void setPatternIfSupported(CryptoInfo cryptoInfo, int encrypt, int skip) {
-        cryptoInfo.setPattern(new CryptoInfo.Pattern(encrypt, skip));
     }
 }

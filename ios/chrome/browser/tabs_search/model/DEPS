@@ -14,7 +14,7 @@ specific_include_rules = {
     "+ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate.h",
   ],
   "^tabs_search_service.mm": [
-    "+ios/chrome/browser/ui/recent_tabs/synced_sessions.h",
+    "+ios/chrome/browser/recent_tabs/ui_bundled/synced_sessions.h",
   ],
 
 }

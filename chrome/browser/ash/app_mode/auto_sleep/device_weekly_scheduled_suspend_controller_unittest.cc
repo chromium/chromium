@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -47,8 +47,8 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
     device_weekly_scheduled_suspend_controller_
-        ->SetTaskExecutorFactoryForTesting(
-            std::make_unique<RepeatingTimeIntervalTaskExecutor::Factory>(
+        ->SetWeeklyIntervalTimerFactoryForTesting(
+            std::make_unique<WeeklyIntervalTimer::Factory>(
                 task_environment_.GetMockClock(),
                 base::DefaultTickClock::GetInstance()));
     user_activity_calls_ = 0;
@@ -58,7 +58,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Clear the policy so that task executors can be cleaned up before shutting
+    // Clear the policy so that timers can be cleaned up before shutting
     // down the fake power manager.
     UpdatePolicyPref({});
     device_weekly_scheduled_suspend_controller_.reset();
@@ -81,13 +81,13 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
 
   void CheckIntervalsInController(
       const WeeklyTimeIntervals& expected_intervals) {
-    const RepeatingTimeIntervalTaskExecutors& interval_executors =
+    const WeeklyIntervalTimers& interval_timers =
         device_weekly_scheduled_suspend_controller_
-            ->GetIntervalExecutorsForTesting();
-    ASSERT_EQ(expected_intervals.size(), interval_executors.size());
+            ->GetWeeklyIntervalTimersForTesting();
+    ASSERT_EQ(expected_intervals.size(), interval_timers.size());
     for (size_t i = 0; i < expected_intervals.size(); ++i) {
-      ASSERT_TRUE(interval_executors[i]);
-      EXPECT_EQ(*expected_intervals[i], interval_executors[i]->time_interval());
+      ASSERT_TRUE(interval_timers[i]);
+      EXPECT_EQ(*expected_intervals[i], interval_timers[i]->time_interval());
     }
   }
 

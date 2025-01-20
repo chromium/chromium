@@ -24,11 +24,11 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,7 +40,7 @@ namespace {
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
 AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
 
 void AddAndLoginUser() {
   ash::FakeChromeUserManager* user_manager =
@@ -356,9 +356,7 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
 class PersonalizationAppThemeProviderImplJellyTest
     : public PersonalizationAppThemeProviderImplTest {
  public:
-  PersonalizationAppThemeProviderImplJellyTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  PersonalizationAppThemeProviderImplJellyTest() = default;
 
   PersonalizationAppThemeProviderImplJellyTest(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
@@ -376,9 +374,6 @@ class PersonalizationAppThemeProviderImplJellyTest
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         kAccountId);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {

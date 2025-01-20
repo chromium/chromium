@@ -100,7 +100,7 @@ class BrowserCommandController;
 namespace content {
 class NavigationHandle;
 class SessionStorageNamespace;
-}
+}  // namespace content
 
 namespace extensions {
 class BrowserExtensionWindowController;
@@ -776,7 +776,8 @@ class Browser : public TabStripModelObserver,
   void ExitPictureInPicture() override;
   bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
   content::PreloadingEligibility IsPrerender2Supported(
-      content::WebContents& web_contents) override;
+      content::WebContents& web_contents,
+      content::PreloadingTriggerType trigger_type) override;
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
   void MediaWatchTimeChanged(
       const content::MediaPlayerWatchTime& watch_time) override;
@@ -870,9 +871,6 @@ class Browser : public TabStripModelObserver,
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void EnsureActiveTab() override;
-#endif
 
   // Called by BrowserView when on active changes.
   void DidBecomeActive();
@@ -1114,7 +1112,6 @@ class Browser : public TabStripModelObserver,
 
   // Overridden from ThemeServiceObserver:
   void OnThemeChanged() override;
-
 
   // Command and state updating ///////////////////////////////////////////////
 

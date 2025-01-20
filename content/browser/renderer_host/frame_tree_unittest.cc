@@ -174,7 +174,7 @@ TEST_F(FrameTreeTest, FrameNodeQueue) {
   FrameTreeNode* root = frame_tree.root();
 
   constexpr auto kOwnerType = blink::FrameOwnerElementType::kIframe;
-  int process_id = root->current_frame_host()->GetProcess()->GetID();
+  int process_id = root->current_frame_host()->GetProcess()->GetDeprecatedID();
   frame_tree.AddFrame(
       root->current_frame_host(), process_id, 14, CreateStubFrameRemote(),
       CreateStubBrowserInterfaceBrokerReceiver(),
@@ -231,7 +231,7 @@ TEST_F(FrameTreeTest, Shape) {
 
   std::string no_children_node("no children node");
   std::string deep_subtree("node with deep subtree");
-  int process_id = root->current_frame_host()->GetProcess()->GetID();
+  int process_id = root->current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // Do not navigate each frame separately, since that will clutter the test
   // itself. Instead, leave them in "not live" state, which is indicated by the
@@ -506,7 +506,7 @@ TEST_F(FrameTreeTest, FindFrames) {
   EXPECT_EQ(nullptr, frame_tree.FindByID(FrameTreeNodeId()));
 
   // Ensure they can be found by routing id.
-  int process_id = main_test_rfh()->GetProcess()->GetID();
+  int process_id = main_test_rfh()->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(root, frame_tree.FindByRoutingID(process_id,
                                              main_test_rfh()->GetRoutingID()));
   EXPECT_EQ(child0, frame_tree.FindByRoutingID(process_id, 22));
@@ -676,7 +676,7 @@ TEST_F(FrameTreeTest, FailAddFrameWithWrongProcessId) {
   contents()->NavigateAndCommit(GURL("http://www.google.com"));
   FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
   FrameTreeNode* root = frame_tree.root();
-  int process_id = root->current_frame_host()->GetProcess()->GetID();
+  int process_id = root->current_frame_host()->GetProcess()->GetDeprecatedID();
 
   ASSERT_EQ("1: []", GetTreeState(frame_tree));
 

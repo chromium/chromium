@@ -37,7 +37,7 @@ public class AwServiceWorkerController {
         mBrowserContext = browserContext;
         mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
         mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
-        mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
+        mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClient();
         mBrowserContext.setServiceWorkerIoThreadClient(mServiceWorkerIoThreadClient);
     }
 
@@ -55,7 +55,7 @@ public class AwServiceWorkerController {
 
     // Helper classes implementations
 
-    private class ServiceWorkerIoThreadClientImpl extends AwContentsIoThreadClient {
+    private class ServiceWorkerIoThreadClient extends AwContentsIoThreadClient {
         // All methods are called on the IO thread.
 
         @Override

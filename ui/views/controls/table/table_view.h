@@ -14,6 +14,7 @@
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/render_text.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -238,6 +239,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool GetSortOnPaint() const;
   void SetSortOnPaint(bool sort_on_paint);
 
+  // If enabled, hovering over a row causes the row's background color to
+  // change.
+  void SetMouseHoveringEnabled(bool enabled);
+
   // Returns the proper ax sort direction.
   ax::mojom::SortDirection GetFirstSortDescriptorDirection() const;
 
@@ -267,6 +272,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   void OnVisibleBoundsChanged() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -308,6 +315,23 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   };
 
   void OnPaintImpl(gfx::Canvas* canvas);
+
+  // Draws a string with the desired parameters in an efficient way by reusing
+  // RenderTexts for each cell.
+  void DrawString(gfx::Canvas* canvas,
+                  const std::u16string& text,
+                  SkColor color,
+                  const gfx::Rect& text_bounds,
+                  int flags,
+                  size_t row,
+                  size_t col);
+
+  // Updates |render_text| from the specified parameters.
+  void UpdateRenderText(const gfx::Rect& rect,
+                        const std::u16string& text,
+                        int flags,
+                        SkColor color,
+                        gfx::RenderText* render_text);
 
   // Returns the horizontal margin between the bounds of a cell and its
   // contents.
@@ -369,6 +393,11 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Invokes SchedulePaint() for the selected rows.
   void SchedulePaintForSelection();
+
+  // Invokes SchedulePaintForRect() on the old and new hovered rows.
+  // If either parameter is nullopt, paint is not scheduled for that parameter.
+  void OnHoverChanged(std::optional<size_t> previous_hovered_row,
+                      std::optional<size_t> new_hovered_row);
 
   // Returns the TableColumn matching the specified id.
   ui::TableColumn FindColumnByID(int id) const;
@@ -501,6 +530,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
 
+  // Handles key events for keyboard navigation by cell. Returns true if the
+  // event was handled.
+  bool HandleKeyPressedForKeyboardNavigationByCell(const ui::KeyEvent& event);
+
   // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
   // one.
   raw_ptr<ui::TableModel, LeakedDanglingUntriaged> model_ = nullptr;
@@ -525,6 +558,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // optionally the header row. This bool keeps track of whether the active row
   // is the header row, since the selection model doesn't support that.
   bool header_row_is_active_ = false;
+
+  // The row beneath the cursor, if the table is focused.
+  std::optional<size_t> hovered_row_ = std::nullopt;
 
   TableType table_type_ = TableType::kTextOnly;
 
@@ -577,6 +613,13 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Customization for the header. Includes options such as padding.
   TableHeaderStyle header_style_;
+
+  // TODO(crbug.com/388086397): Enable by mouse hovering by default when color
+  // tokens are refined on all platforms.
+  bool hovering_enabled_ = false;
+
+  // RenderText cache from row,col.
+  std::vector<std::vector<std::unique_ptr<gfx::RenderText>>> render_text_cache_;
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;

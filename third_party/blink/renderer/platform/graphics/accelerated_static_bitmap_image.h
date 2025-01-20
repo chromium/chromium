@@ -18,6 +18,7 @@ struct SkImageInfo;
 
 namespace gpu {
 class ClientSharedImage;
+struct ExportedSharedImage;
 }  // namespace gpu
 
 namespace blink {
@@ -41,12 +42,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   //
   // |sk_image_info| provides the metadata associated with the backing.
   //
-  // |texture_target| is the target that the texture should be bound to if the
-  // backing is used with GL.
-  //
-  // |is_origin_top_left| indicates whether the origin in texture space
-  // corresponds to the top-left content pixel.
-  //
   // |context_provider| is the context that the shared image was created with.
   // |context_thread_ref| and |context_task_runner| refer to the thread the
   // context is bound to. If the image is created on a different thread than
@@ -64,8 +59,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
-      GLenum texture_target,
-      bool is_origin_top_left,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
@@ -73,15 +66,15 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       bool supports_display_compositing,
       bool is_overlay_candidate);
 
-  // Creates an image wrapping an external mailbox.
-  // The mailbox may come from a different context,
+  // Creates an image wrapping an external shared image.
+  // The shared image may come from a different context,
   // potentially from a different process.
-  // This takes ownership of the mailbox.
-  static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromExternalMailbox(
-      const gpu::MailboxHolder& mailbox_holder,
-      gpu::SharedImageUsageSet usage,
+  // This takes ownership of the shared image.
+  static scoped_refptr<AcceleratedStaticBitmapImage>
+  CreateFromExternalSharedImage(
+      const gpu::ExportedSharedImage& exported_shared_image,
+      const gpu::SyncToken& sync_token,
       const SkImageInfo& sk_image_info,
-      bool is_origin_top_left,
       bool supports_display_compositing,
       bool is_overlay_candidate,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
@@ -132,7 +125,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   gpu::MailboxHolder GetMailboxHolder() const final;
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   gpu::SyncToken GetSyncToken() const final;
-  bool IsOriginTopLeft() const final { return is_origin_top_left_; }
+  bool IsOriginTopLeft() const final {
+    return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
+  }
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;
   }
@@ -141,8 +136,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   PaintImage PaintImageForCurrentFrame() override;
 
   SkImageInfo GetSkImageInfo() const override;
-
-  gpu::SharedImageUsageSet GetUsage() const override;
 
  private:
   struct ReleaseContext {
@@ -158,8 +151,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
-      GLenum texture_target,
-      bool is_origin_top_left,
       bool supports_display_compositing,
       bool is_overlay_candidate,
       const ImageOrientation& orientation,
@@ -173,8 +164,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const SkImageInfo sk_image_info_;
-  const GLenum texture_target_;
-  const bool is_origin_top_left_ : 1;
   const bool supports_display_compositing_ : 1;
   const bool is_overlay_candidate_ : 1;
 

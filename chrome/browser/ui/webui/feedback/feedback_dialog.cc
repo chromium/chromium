@@ -141,8 +141,9 @@ void FeedbackDialog::Show() const {
   // The widget_ is set to null when the FeedbackDialog is constructed.
   // After the following two function calls, it is finally initialized.
   // Therefore, it is safer to check whether the widget_ is null
-  if (this->widget_)
+  if (this->widget_) {
     this->widget_->Show();
+  }
 }
 
 views::Widget* FeedbackDialog::GetWidget() const {

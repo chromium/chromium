@@ -200,8 +200,8 @@ template("single_apple_toolchain") {
                       root_build_dir) + " --files-to-instrument=" +
           rebase_path(toolchain_coverage_instrumentation_input_file,
                       root_build_dir) + " --target-os=" + target_os
-      cc = "$python_path $_coverage_wrapper ${cc}"
-      cxx = "$python_path $_coverage_wrapper ${cxx}"
+      cc = "\"$python_path\" $_coverage_wrapper ${cc}"
+      cxx = "\"$python_path\" $_coverage_wrapper ${cxx}"
     }
 
     linker_driver_env = "TOOL_VERSION=${tool_versions.linker_driver}"

@@ -393,6 +393,7 @@ class DummyAuthContentBrowserClient
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
+      content::GuestPageHolder* guest,
       LoginAuthRequiredCallback auth_required_callback) override {
     create_login_delegate_called_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -118,13 +119,13 @@ TEST_F(ActivePrimaryAccountsMetricsRecorderTest,
 
   // After some time, the user signs in.
   task_environment_.FastForwardBy(base::Hours(1));
-  tracker.MarkAccountAsActiveNow("first_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("first_gaia"));
   // After some more time, the user switches accounts.
   task_environment_.FastForwardBy(base::Hours(1));
-  tracker.MarkAccountAsActiveNow("second_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("second_gaia"));
   // After some more time, the user switches back to the first account.
   task_environment_.FastForwardBy(base::Hours(1));
-  tracker.MarkAccountAsActiveNow("first_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("first_gaia"));
 
   // Finally, enough time passes to trigger a metrics emission. The two distinct
   // accounts should show up.
@@ -142,11 +143,11 @@ TEST_F(ActivePrimaryAccountsMetricsRecorderTest,
   local_state_.SetTime(kTimerPrefName, base::Time::Now() - base::Hours(13));
   ActivePrimaryAccountsMetricsRecorder tracker(local_state_);
 
-  tracker.MarkAccountAsActiveNow("first_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("first_gaia"));
   task_environment_.FastForwardBy(base::Days(1));
-  tracker.MarkAccountAsActiveNow("second_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("second_gaia"));
   task_environment_.FastForwardBy(base::Days(1));
-  tracker.MarkAccountAsActiveNow("third_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("third_gaia"));
   task_environment_.FastForwardBy(base::Days(3));
 
   task_environment_.FastForwardBy(base::Hours(12));
@@ -201,7 +202,7 @@ TEST_F(ActivePrimaryAccountsMetricsRecorderTest,
                                   /*sample=*/2, /*expected_bucket_count=*/1);
   }
 
-  tracker.MarkAccountAsActiveNow("second_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("second_gaia"));
   {
     base::HistogramTester histograms;
 
@@ -221,9 +222,9 @@ TEST_F(ActivePrimaryAccountsMetricsRecorderTest, CleansUpExpiredEntries) {
   local_state_.SetTime(kTimerPrefName, base::Time::Now() - base::Hours(13));
   ActivePrimaryAccountsMetricsRecorder tracker(local_state_);
 
-  tracker.MarkAccountAsActiveNow("first_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("first_gaia"));
   task_environment_.FastForwardBy(base::Days(1));
-  tracker.MarkAccountAsActiveNow("second_gaia");
+  tracker.MarkAccountAsActiveNow(GaiaId("second_gaia"));
   task_environment_.FastForwardBy(base::Hours(12));
 
   // Sanity check: Now both accounts should be stored in the pref.

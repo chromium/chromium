@@ -28,7 +28,7 @@ IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                   web_state->GetBrowserState()->GetURLLoaderFactory()),
               client->GetIdentityManager(),
-              &client->GetPersonalDataManager()->payments_data_manager(),
+              &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),
       web_state_(CHECK_DEREF(web_state)) {}
 
@@ -94,11 +94,6 @@ void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
       url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
-}
-
-void IOSWebViewPaymentsAutofillClient::set_bridge(
-    id<CWVAutofillClientIOSBridge> bridge) {
-  bridge_ = bridge;
 }
 
 }  // namespace autofill::payments

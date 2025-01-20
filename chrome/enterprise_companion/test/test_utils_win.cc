@@ -39,9 +39,6 @@ constexpr wchar_t kRegKeyCompanyCloudManagement[] =
 
 class TestMethodsWin : public TestMethods {
  public:
-  TestMethodsWin() = default;
-  ~TestMethodsWin() override = default;
-
   base::FilePath GetTestExePath() override {
     return base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
   }

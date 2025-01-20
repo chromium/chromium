@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/certificate_selector.h"
-
 #include <memory>
 #include <string>
 
@@ -11,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/certificate_selector.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/x509_certificate.h"
@@ -44,7 +43,7 @@ class TestCertificateSelector : public CertificateSelector {
 
 class CertificateSelectorDialogTest : public DialogBrowserTest {
  public:
-  CertificateSelectorDialogTest() {}
+  CertificateSelectorDialogTest() = default;
 
   CertificateSelectorDialogTest(const CertificateSelectorDialogTest&) = delete;
   CertificateSelectorDialogTest& operator=(

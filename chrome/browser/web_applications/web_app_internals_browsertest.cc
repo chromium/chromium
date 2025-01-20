@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +20,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -267,7 +269,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
   auto params = ::mojom::InstallFromBundleUrlParams::New();
   params->web_bundle_url = web_bundle_url;
   params->update_info = ::mojom::UpdateInfo::New(
-      update_manifest_url, UpdateChannel::default_channel().ToString());
+      update_manifest_url, UpdateChannel::default_channel().ToString(),
+      /*pinned_version=*/std::nullopt, /*allow_downgrades=*/false);
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());
@@ -357,6 +360,172 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
     EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.1.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
+  }
+
+  // Add v2.3.0 to `beta` channel, pin the app to v2.1.0. Expect no update.
+  {
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.3.0"))
+            .BuildBundle(test::GetDefaultEd25519KeyPair()),
+        /*update_channels=*/{{beta_channel}});
+
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "2.1.0", set_pinned_version_future.GetCallback());
+    EXPECT_TRUE(set_pinned_version_future.Get());
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update skipped"));
+  }
+
+  // Add v2.4.0 to `beta` channel, pin the app to v2.3.0. Expect an update to
+  // v2.3.0.
+  {
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.4.0"))
+            .BuildBundle(test::GetDefaultEd25519KeyPair()),
+        /*update_channels=*/{{beta_channel}});
+
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "2.3.0", set_pinned_version_future.GetCallback());
+    EXPECT_TRUE(set_pinned_version_future.Get());
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.3.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.3.0"));
+    EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
+    EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
+  }
+
+  // Unpin the app. App should be updated to v2.4.0.
+  {
+    handler->ResetPinnedVersionForIsolatedWebApp(app_id);
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.4.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.4.0"));
+  }
+
+  // Pin to v2.3.0, allow downgrades. Expect update to v2.3.0.
+  {
+    handler->SetAllowDowngradesForIsolatedWebApp(true, app_id);
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "2.3.0", set_pinned_version_future.GetCallback());
+    EXPECT_TRUE(set_pinned_version_future.Get());
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.3.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.3.0"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppInternalsIwaInstallationBrowserTest,
+    FetchUpdateManifestAndInstallIwaAndUpdateInvalidPinnedVersion) {
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()));
+
+  auto* handler = OpenWebAppInternals();
+
+  GURL update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
+      test::GetDefaultEd25519WebBundleId());
+  base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
+      um_future;
+  handler->ParseUpdateManifestFromUrl(update_manifest_url,
+                                      um_future.GetCallback());
+
+  auto um_result = um_future.Take();
+  ASSERT_TRUE(um_result->is_update_manifest());
+
+  const auto& update_manifest = *um_result->get_update_manifest();
+
+  ASSERT_THAT(update_manifest,
+              Field(&::mojom::UpdateManifest::versions,
+                    ElementsAre(Pointee(
+                        Field(&::mojom::VersionEntry::version, Eq("1.0.0"))))));
+
+  const GURL& web_bundle_url = update_manifest.versions[0]->web_bundle_url;
+
+  base::test::TestFuture<::mojom::InstallIsolatedWebAppResultPtr>
+      install_future;
+  auto params = ::mojom::InstallFromBundleUrlParams::New();
+  params->web_bundle_url = web_bundle_url;
+  params->update_info = ::mojom::UpdateInfo::New(
+      update_manifest_url, UpdateChannel::default_channel().ToString(),
+      /*pinned_version=*/std::nullopt, /*allow_downgrades=*/false);
+  handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
+                                              install_future.GetCallback());
+  ASSERT_TRUE(install_future.Take()->is_success());
+
+  webapps::AppId app_id = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                              test::GetDefaultEd25519WebBundleId())
+                              .app_id();
+
+  // Add v2.0.0 to the update manifest.
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()));
+
+  // Pin the app to an non-existent but valid version.
+  {
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "1.1.1", set_pinned_version_future.GetCallback());
+    EXPECT_TRUE(set_pinned_version_future.Get());
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(
+        update_future.Get(),
+        HasSubstr("Update failed: Error::kUpdateManifestNoApplicableVersion"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    // Expect the app to stay at v1.0.0.
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("1.0.0"));
+  }
+
+  // Fails to pin the app to invalid version.
+  {
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "invalid_version", set_pinned_version_future.GetCallback());
+    EXPECT_THAT(set_pinned_version_future.Get(), 0);
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(
+        update_future.Get(),
+        HasSubstr("Update failed: Error::kUpdateManifestNoApplicableVersion"));
   }
 }
 

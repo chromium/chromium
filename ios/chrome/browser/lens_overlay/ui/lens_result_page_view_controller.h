@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 
 @protocol LensToolbarMutator;
 @protocol LensResultPageMutator;

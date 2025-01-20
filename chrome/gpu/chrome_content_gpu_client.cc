@@ -15,8 +15,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -28,7 +28,7 @@
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "ui/ozone/public/ozone_platform.h"         // nogncheck
 #include "ui/ozone/public/surface_factory_ozone.h"  // nogncheck
 #endif
@@ -54,7 +54,7 @@ ChromeContentGpuClient::ChromeContentGpuClient() {
 #endif
 }
 
-ChromeContentGpuClient::~ChromeContentGpuClient() {}
+ChromeContentGpuClient::~ChromeContentGpuClient() = default;
 
 void ChromeContentGpuClient::GpuServiceInitialized() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

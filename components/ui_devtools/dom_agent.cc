@@ -375,7 +375,7 @@ void DOMAgent::SearchDomTree(const DOMAgent::Query& query_data,
 // src/third_party/blink/renderer/core/inspector/inspector_dom_agent.cc
 Response DOMAgent::performSearch(
     const protocol::String& whitespace_trimmed_query,
-    protocol::Maybe<bool> optional_include_user_agent_shadow_dom,
+    std::optional<bool> optional_include_user_agent_shadow_dom,
     protocol::String* search_id,
     int* result_count) {
   Query query_data = PreprocessQuery(whitespace_trimmed_query);

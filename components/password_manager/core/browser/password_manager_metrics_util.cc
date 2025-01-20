@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -66,9 +66,6 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
     case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedOutUser:
       return "SignedOutUser";
-    case password_manager::features_util::PasswordAccountStorageUserState::
-        kSignedOutAccountStoreUser:
-      return "SignedOutAccountStoreUser";
     case password_manager::features_util::PasswordAccountStorageUserState::
         kSignedInUser:
       return "SignedInUser";
@@ -266,9 +263,6 @@ void LogPasswordDropdownShown(
   for (const auto& suggestion : suggestions) {
     switch (suggestion.type) {
       case autofill::SuggestionType::kGeneratePasswordEntry:
-        // TODO(crbug.com/40122999): Revisit metrics for the "opt in and
-        // generate" button.
-      case autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate:
         dropdown_state = PasswordDropdownState::kStandardGenerate;
         break;
       default:
@@ -303,9 +297,6 @@ void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
       break;
     case PasswordDropdownSelectedOption::kShowAll:
     case PasswordDropdownSelectedOption::kGenerate:
-    case PasswordDropdownSelectedOption::kUnlockAccountStorePasswords:
-    case PasswordDropdownSelectedOption::kResigninToUnlockAccountStore:
-    case PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration:
     default:
       base::RecordAction(base::UserMetricsAction(
           "PasswordManager.PasswordDropdownSelected.Others"));
@@ -323,13 +314,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   base::UmaHistogramEnumeration(
       "PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent", event);
-}
-
-void LogPasswordsCountFromAccountStoreAfterUnlock(
-    int account_store_passwords_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.CredentialsCountFromAccountStoreAfterUnlock",
-      account_store_passwords_count);
 }
 
 void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
@@ -602,4 +586,11 @@ void LogPasswordDropdownHidden() {
   base::RecordAction(
       base::UserMetricsAction("PasswordManager.PasswordDropdownHidden"));
 }
+
+void LogFillSuggestionGroupedMatchAccepted(bool grouped_match_accepted) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.FillSuggestionsGroupedMatchAccepted",
+      grouped_match_accepted);
+}
+
 }  // namespace password_manager::metrics_util

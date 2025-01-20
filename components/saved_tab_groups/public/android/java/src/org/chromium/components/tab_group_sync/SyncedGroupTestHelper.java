@@ -4,13 +4,18 @@
 
 package org.chromium.components.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
+import org.mockito.ArgumentMatcher;
+
+import org.chromium.base.Token;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -77,9 +82,26 @@ public class SyncedGroupTestHelper {
         return group;
     }
 
+    /**
+     * @param syncId The sync id of the group, when not unique it will overwrite previous mocks.
+     * @param tabGroupId The local id of the group.
+     * @return A new group object.
+     */
+    public SavedTabGroup newTabGroup(String syncId, Token tabGroupId) {
+        SavedTabGroup group = newTabGroup(syncId);
+        when(mTabGroupSyncService.getGroup(argThat(matchesTabGroupToken(tabGroupId))))
+                .thenReturn(group);
+        return group;
+    }
+
     /** Removes the tab group from mocked responses. */
     public void removeTabGroup(String syncId) {
         mTabGroupSyncIdSet.remove(syncId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(null);
+    }
+
+    private ArgumentMatcher<LocalTabGroupId> matchesTabGroupToken(Token tabGroupId) {
+        return localTabGroupId ->
+                localTabGroupId != null && Objects.equals(localTabGroupId.tabGroupId, tabGroupId);
     }
 }

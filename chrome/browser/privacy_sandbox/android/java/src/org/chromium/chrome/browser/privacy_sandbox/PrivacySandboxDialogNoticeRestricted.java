@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
@@ -78,10 +79,13 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.RestrictedNoticeDialog.AckClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
+            RecordUserAction.record(
+                    "Settings.PrivacySandbox.RestrictedNoticeDialog.OpenSettingsClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();

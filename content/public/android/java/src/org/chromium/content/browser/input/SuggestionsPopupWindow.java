@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -24,11 +26,15 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.content.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Popup window that displays a menu for viewing and applying text replacement suggestions. */
+@NullMarked
 public abstract class SuggestionsPopupWindow
         implements OnItemClickListener, OnDismissListener, View.OnClickListener {
     private static final String ACTION_USER_DICTIONARY_INSERT =
@@ -38,14 +44,14 @@ public abstract class SuggestionsPopupWindow
     private final Context mContext;
     protected final TextSuggestionHost mTextSuggestionHost;
     private final View mParentView;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
-    private Activity mActivity;
-    private DisplayMetrics mDisplayMetrics;
+    private @Nullable Activity mActivity;
+    private @Nullable DisplayMetrics mDisplayMetrics;
     private PopupWindow mPopupWindow;
     private LinearLayout mContentView;
 
-    private String mHighlightedText;
+    private @Nullable String mHighlightedText;
     private int mNumberOfSuggestionsToUse;
     private TextView mAddToDictionaryButton;
     private TextView mDeleteButton;
@@ -65,7 +71,7 @@ public abstract class SuggestionsPopupWindow
     public SuggestionsPopupWindow(
             Context context,
             TextSuggestionHost textSuggestionHost,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             View parentView) {
         mContext = context;
         mTextSuggestionHost = textSuggestionHost;
@@ -171,7 +177,7 @@ public abstract class SuggestionsPopupWindow
     }
 
     /** Used by TextSuggestionHost to update {@link WindowAndroid} to the current one. */
-    public void updateWindowAndroid(WindowAndroid windowAndroid) {
+    public void updateWindowAndroid(@Nullable WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
     }
 
@@ -218,6 +224,7 @@ public abstract class SuggestionsPopupWindow
         }
     }
 
+    @RequiresNonNull("mDisplayMetrics")
     private void measureContent() {
         // Make the menu wide enough to fit its widest item.
         int width =
@@ -251,6 +258,7 @@ public abstract class SuggestionsPopupWindow
         mNumberOfSuggestionsToUse = getSuggestionsCount();
         mHighlightedText = highlightedText;
 
+        assumeNonNull(mWindowAndroid);
         mActivity = mWindowAndroid.getActivity().get();
         // Note: the Activity can be null here if we're in a WebView that was created without
         // using an Activity. So all code in this class should handle this case.

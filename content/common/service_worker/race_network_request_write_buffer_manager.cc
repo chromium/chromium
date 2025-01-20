@@ -16,7 +16,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 
 namespace content {
 namespace {
@@ -56,8 +56,8 @@ uint32_t RaceNetworkRequestWriteBufferManager::GetDataPipeCapacityBytes() {
   // The feature param may override the buffer size.
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kServiceWorkerAutoPreload, "data_pipe_capacity_num_bytes",
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+      network::GetDataPipeDefaultAllocationSize(
+          network::DataPipeAllocationSize::kLargerSizeIfPossible));
 }
 
 mojo::ScopedDataPipeProducerHandle

@@ -13,6 +13,7 @@
 
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -133,8 +134,7 @@ class ProtoToJSONRuleConverter {
 
       switch (static_cast<proto::ActivationType>(activation_type)) {
         case proto::ACTIVATION_TYPE_UNSPECIFIED:
-          CHECK(false);
-          break;
+          NOTREACHED();
         case proto::ACTIVATION_TYPE_DOCUMENT:
           activation_types.emplace_back("document");
           break;
@@ -148,8 +148,7 @@ class ProtoToJSONRuleConverter {
           activation_types.emplace_back("genericblock");
           break;
         case proto::ACTIVATION_TYPE_ALL:
-          CHECK(false);
-          break;
+          NOTREACHED();
       }
     }
 
@@ -197,8 +196,7 @@ class ProtoToJSONRuleConverter {
         result += "||";
         break;
       case proto::ANCHOR_TYPE_UNSPECIFIED:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
 
     result += input_rule_.url_pattern();
@@ -211,8 +209,7 @@ class ProtoToJSONRuleConverter {
         break;
       case proto::ANCHOR_TYPE_SUBDOMAIN:
       case proto::ANCHOR_TYPE_UNSPECIFIED:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
 
     // If |result| is empty, omit persisting the url pattern. In that case, it
@@ -279,8 +276,7 @@ class ProtoToJSONRuleConverter {
       dnr_api::ResourceType resource_type = dnr_api::ResourceType::kNone;
       switch (static_cast<proto::ElementType>(element_type)) {
         case proto::ELEMENT_TYPE_UNSPECIFIED:
-          CHECK(false);
-          break;
+          NOTREACHED();
         case proto::ELEMENT_TYPE_OTHER:
           resource_type = dnr_api::ResourceType::kOther;
           break;
@@ -300,8 +296,7 @@ class ProtoToJSONRuleConverter {
           resource_type = dnr_api::ResourceType::kXmlhttprequest;
           break;
         case proto::ELEMENT_TYPE_OBJECT_SUBREQUEST:
-          CHECK(false);
-          break;
+          NOTREACHED();
         case proto::ELEMENT_TYPE_SUBDOCUMENT:
           resource_type = dnr_api::ResourceType::kSubFrame;
           break;
@@ -315,8 +310,7 @@ class ProtoToJSONRuleConverter {
           resource_type = dnr_api::ResourceType::kFont;
           break;
         case proto::ELEMENT_TYPE_POPUP:
-          CHECK(false);
-          break;
+          NOTREACHED();
         case proto::ELEMENT_TYPE_WEBSOCKET:
           resource_type = dnr_api::ResourceType::kWebsocket;
           break;
@@ -327,8 +321,7 @@ class ProtoToJSONRuleConverter {
           resource_type = dnr_api::ResourceType::kWebbundle;
           break;
         case proto::ELEMENT_TYPE_ALL:
-          CHECK(false);
-          break;
+          NOTREACHED();
       }
 
       resource_types.Append(dnr_api::ToString(resource_type));
@@ -413,8 +406,7 @@ class ProtoToJSONRuleConverter {
         domain_type = dnr_api::DomainType::kThirdParty;
         break;
       case proto::SOURCE_TYPE_UNSPECIFIED:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
 
     CHECK_NE(dnr_api::DomainType::kNone, domain_type);
@@ -441,8 +433,7 @@ class ProtoToJSONRuleConverter {
         }
         break;
       case proto::RULE_SEMANTICS_UNSPECIFIED:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
 
     CHECK_NE(dnr_api::RuleActionType::kNone, action_type);

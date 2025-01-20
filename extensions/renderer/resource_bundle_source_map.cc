@@ -76,17 +76,14 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
   bool is_gzipped = resource_bundle_->IsGzipped(info.id);
   if (is_gzipped) {
     info.cached = std::make_unique<std::string>();
-    uint32_t size = compression::GetUncompressedSize(resource);
-    info.cached->resize(size);
-    std::string_view uncompressed(*info.cached);
-    if (!compression::GzipUncompress(resource, uncompressed)) {
+    if (!compression::GzipUncompress(resource, info.cached.get())) {
       // Let |info.cached| point to an empty string, so that the next time when
       // the resource is requested, the method returns an empty string directly,
       // instead of trying to uncompress again.
       info.cached->clear();
       return v8::Local<v8::String>();
     }
-    resource = uncompressed;
+    resource = *info.cached;
   }
 
   return ConvertString(isolate, resource);

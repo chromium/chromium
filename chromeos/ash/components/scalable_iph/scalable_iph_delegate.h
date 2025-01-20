@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -20,7 +21,8 @@ namespace scalable_iph {
 // This delegate is responsible for:
 // - Show an IPH with a request from `ScalableIph`.
 // - Observe events in Ash, e.g. Network state change, etc.
-class ScalableIphDelegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
+    ScalableIphDelegate {
  public:
   enum class SessionState { kUnknownInitialValue, kActive, kLocked, kOther };
 
@@ -174,23 +176,40 @@ class ScalableIphDelegate {
   virtual void PerformActionForScalableIph(ActionType action_type) = 0;
 };
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::SessionState session_state);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out, ScalableIphDelegate::Action action);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out, ScalableIphDelegate::Button button);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::BubbleIcon bubble_icon);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::BubbleParams bubble_params);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(
     std::ostream& out,
     ScalableIphDelegate::NotificationImageType notification_image_type);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(
     std::ostream& out,
     ScalableIphDelegate::NotificationIcon notification_icon);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(
     std::ostream& out,
     ScalableIphDelegate::NotificationSummaryText summary_text);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH)
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::NotificationParams params);
 

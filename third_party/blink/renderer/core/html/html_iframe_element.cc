@@ -30,8 +30,10 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -134,7 +136,7 @@ bool HTMLIFrameElement::IsPresentationAttribute(
 void HTMLIFrameElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else if (name == html_names::kHeightAttr) {
@@ -309,7 +311,7 @@ void HTMLIFrameElement::ParseAttribute(
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
              GetExecutionContext() &&
-             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+             RuntimeEnabledFeatures::SharedStorageAPIEnabled(
                  GetExecutionContext())) {
     if (!GetExecutionContext()->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -624,19 +626,18 @@ void HTMLIFrameElement::DidChangeAttributes() {
   if (RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext()) &&
       GetExecutionContext()->IsSecureContext()) {
     attributes->browsing_topics =
-        !FastGetAttribute(html_names::kBrowsingtopicsAttr).IsNull();
+        FastHasAttribute(html_names::kBrowsingtopicsAttr);
   }
 
   if (GetExecutionContext()->IsSecureContext()) {
     attributes->ad_auction_headers =
-        !FastGetAttribute(html_names::kAdauctionheadersAttr).IsNull();
+        FastHasAttribute(html_names::kAdauctionheadersAttr);
   }
 
-  if (RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
-          GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::SharedStorageAPIEnabled(GetExecutionContext()) &&
       GetExecutionContext()->IsSecureContext()) {
     attributes->shared_storage_writable_opted_in =
-        !FastGetAttribute(html_names::kSharedstoragewritableAttr).IsNull();
+        FastHasAttribute(html_names::kSharedstoragewritableAttr);
   }
 
   attributes->id = ConvertToReportValue(id_);
@@ -652,6 +653,46 @@ void HTMLIFrameElement::DidChangeAttributes() {
   }
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
       ContentFrame()->GetFrameToken(), srcdoc_value);
+}
+
+void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
+  if (allow_.empty()) {
+    return;
+  }
+
+  scoped_refptr<const SecurityOrigin> src_origin =
+      GetOriginForPermissionsPolicy();
+  url::Origin src = src_origin->ToUrlOrigin();
+  ParsedPermissionsPolicy container_policy = ConstructContainerPolicy();
+  auto& security_context = GetExecutionContext()->GetSecurityContext();
+  for (const auto& feature_desc : GetPermissionsPolicyFeatureList(src)) {
+    mojom::blink::PermissionsPolicyFeature feature = feature_desc.first;
+    if (!IsFeatureDeclared(feature, container_policy)) {
+      continue;
+    }
+
+    if (auto* permissions_policy = security_context.GetPermissionsPolicy();
+        permissions_policy &&
+        !PermissionsPolicy::InheritedValueForFeature(
+            src, permissions_policy, feature_desc, container_policy)) {
+      auto endpoint = std::optional<String>(
+          permissions_policy->GetEndpointForFeature(feature));
+      GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
+          feature, mojom::blink::PolicyDisposition::kEnforce, endpoint,
+          /*message*/ "", allow_);
+    } else if (auto* report_only_permissions_policy =
+                   security_context.GetReportOnlyPermissionsPolicy();
+               report_only_permissions_policy &&
+               !PermissionsPolicy::InheritedValueForFeature(
+                   src, report_only_permissions_policy, feature_desc,
+                   container_policy)) {
+      auto endpoint = std::optional<String>(
+          report_only_permissions_policy->GetEndpointForFeature(feature));
+      GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
+          feature, mojom::blink::PolicyDisposition::kReport, endpoint,
+          /*message*/ "", allow_);
+    }
+  }
 }
 
 }  // namespace blink

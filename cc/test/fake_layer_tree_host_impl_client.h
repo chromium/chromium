@@ -25,8 +25,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override {}
   void SetNeedsOneBeginImplFrameOnImplThread() override {}
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
-  void SetNeedsCommitOnImplThread() override {}
+  void SetNeedsCommitOnImplThread(bool urgent) override {}
   void SetNeedsPrepareTilesOnImplThread() override {}
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
@@ -55,7 +54,8 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override {}
   void DidObserveFirstScrollDelay(
       int source_frame_number,
       base::TimeDelta first_scroll_delay,

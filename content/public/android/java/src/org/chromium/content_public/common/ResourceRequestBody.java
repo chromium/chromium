@@ -10,8 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Wrapper around the native content::ResourceRequestBody. */
 @JNINamespace("content")
+@NullMarked
 public final class ResourceRequestBody {
     /**
      * Result of EncodeResourceRequestBody call from page_state_serialization.h.

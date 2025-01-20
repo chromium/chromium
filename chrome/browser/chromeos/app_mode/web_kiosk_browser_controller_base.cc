@@ -78,7 +78,10 @@ bool WebKioskBrowserControllerBase::CanUserUninstall() const {
 }
 
 bool WebKioskBrowserControllerBase::IsInstalled() const {
-  return registrar().IsInstalled(app_id());
+  return registrar().IsInstallState(
+      app_id(), {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                 web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
 void WebKioskBrowserControllerBase::OnTabInserted(

@@ -109,10 +109,6 @@ const uint8_t kOmahaPolicyResponseData[] = {
 class TestTokenService
     : public device_management_storage::TokenServiceInterface {
  public:
-  TestTokenService()
-      : enrollment_token_("TestEnrollmentToken"), dm_token_("TestDMToken") {}
-  ~TestTokenService() override = default;
-
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "TestDeviceID"; }
 
@@ -140,8 +136,8 @@ class TestTokenService
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
-  std::string enrollment_token_;
-  std::string dm_token_;
+  std::string enrollment_token_ = "TestEnrollmentToken";
+  std::string dm_token_ = "TestDMToken";
 };
 
 std::string CannedOmahaPolicyFetchResponse() {

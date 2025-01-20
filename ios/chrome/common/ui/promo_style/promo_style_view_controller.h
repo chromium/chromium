@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 enum class PromoStyleImageType {
@@ -40,9 +42,13 @@ enum class ActionButtonsVisibility {
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
+- (instancetype)initWithTaskRunner:
+    (scoped_refptr<base::SequencedTaskRunner>)taskRunner;
+
+- (instancetype)init;
+
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil
-    NS_DESIGNATED_INITIALIZER;
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 

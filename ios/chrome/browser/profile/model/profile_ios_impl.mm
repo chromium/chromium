@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
+#import "base/uuid.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -49,6 +50,82 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
+
+// TODO(crbug.com/369296278): Remove when MaybeMigrateSyncingUserToSignedIn()
+// is no longer used (i.e. ~one year after kForceMigrateSyncingUserToSignedIn
+// is fully launched).
+#import "base/task/bind_post_task.h"
+#import "components/browser_sync/sync_to_signin_migration.h"
+
+namespace {
+
+// Determine the WebKit storage UUID for profile.
+//
+// There are three possibilities depending on the age of the profile.
+// First for really old profiles (before the introduction of separate
+// data store in iOS 17.0) they store the data in the global unnamed
+// store, and thus use an empty UUID to represent this. For profiles
+// created between M-128 and M-133, a random UUID is generated and is
+// stored in the PrefService to use as the identifier for WebKit data.
+// Profile created in M-133+ have their name be an UUID and the name
+// can use used as the storage identifier.
+//
+// To determine which value to use for the storage identifier, proceed
+// in steps. If the profile name can be parsed as an UUID, then use it
+// as the storage identifier (this is a profile created in M-133+). If
+// not, then use the value stored in kBrowserStateStorageIdentifier if
+// it is set, otherwise do not use an UUID (the profile is legacy and
+// will use the global storage).
+//
+// Assert that the profile name is an UUID if it has just been created
+// to ensure the algorithm above correctly cover all possible cases.
+//
+// There is no WebKit API to change the storage nor to copy data from
+// one storage location to another. Until an API is provided, it will
+// not be possible to migrate users. For this reason the state is not
+// recorded as an histogram (it could be years before we can drop the
+// support for "default" storage or for storing the UUID in prefs).
+base::Uuid GetStorageUUID(const std::string& name,
+                          PrefService* prefs,
+                          bool is_new_profile) {
+  base::Uuid uuid = base::Uuid::ParseLowercase(name);
+  if (uuid.is_valid()) {
+    // M-133+ profile whose name is an UUID already. In that case use
+    // the profile name as the storage identifier.
+    return uuid;
+  }
+
+  const std::string& uuid_string =
+      prefs->GetString(prefs::kBrowserStateStorageIdentifier);
+  if (uuid_string.empty() && !is_new_profile) {
+    // Pre M-128 profile, there is no UUID stored in the prefs and the
+    // profile use the default WebKit storage, which is represented as
+    // an invalid UUID.
+    return base::Uuid();
+  }
+
+  // M-128+ profile by default.
+  //
+  // Note: `uuid_string` should be a valid UUID and `is_new_profile`
+  // should be false, but the code will still generate a random UUID
+  // if either of those assumption are incorrect.
+  //
+  // They could happen if the storage for a profile was tampered with
+  // or somehow got corrupted (e.g. the profile directory was deleted
+  // or the json data on disk modified). Another possibility is that
+  // the name was reserved in ProfileAttributesStorageIOS but for some
+  // reason the profile never created.
+  uuid = base::Uuid::ParseCaseInsensitive(uuid_string);
+  if (!uuid.is_valid()) {
+    uuid = base::Uuid::GenerateRandomV4();
+    prefs->SetString(prefs::kBrowserStateStorageIdentifier,
+                     uuid.AsLowercaseString());
+  }
+
+  return uuid;
+}
+
+}  // namespace
 
 // Helper class to create the Profile's directory.
 //
@@ -241,21 +318,27 @@ ProfileIOSImpl::ProfileIOSImpl(
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
-  const bool is_new_profile = directories_creation_result.created;
-  if (creation_mode == CreationMode::kAsynchronous) {
+  const InitInfo init_info{
+      .creation_mode = creation_mode,
+      .is_new_profile = directories_creation_result.created,
+  };
+  if (init_info.creation_mode == CreationMode::kAsynchronous) {
     // It is safe to use base::Unretained(...) here since `this` owns the
     // PrefService and the callback will not be invoked after destruction
     // of the PrefService.
-    prefs_->AddPrefInitObserver(base::BindOnce(&ProfileIOSImpl::OnPrefsLoaded,
-                                               base::Unretained(this),
-                                               creation_mode, is_new_profile));
-  } else {
-    // Prefs were loaded synchronously so we can continue immediately.
-    OnPrefsLoaded(creation_mode, is_new_profile, true);
+    prefs_->AddPrefInitObserver(base::BindOnce(
+        &ProfileIOSImpl::PrefsInitStage1, base::Unretained(this), init_info));
+
+    return;
   }
+
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage1(init_info, true);
 }
 
 ProfileIOSImpl::~ProfileIOSImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   // Warning: the order for shutting down the BrowserState objects is important
@@ -279,10 +362,12 @@ ProfileIOSImpl::~ProfileIOSImpl() {
 }
 
 ProfileIOS* ProfileIOSImpl::GetOriginalProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return this;
 }
 
 ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!otr_state_) {
     otr_state_.reset(new OffTheRecordProfileIOSImpl(
         GetIOTaskRunner(), this, GetOffTheRecordStatePath()));
@@ -292,54 +377,63 @@ ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
 }
 
 bool ProfileIOSImpl::HasOffTheRecordProfile() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !!otr_state_;
 }
 
 void ProfileIOSImpl::DestroyOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Tear down OTR Profile with which it is associated.
   otr_state_.reset();
 }
 
 ProfilePolicyConnector* ProfileIOSImpl::GetPolicyConnector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return policy_connector_.get();
 }
 
 policy::UserCloudPolicyManager* ProfileIOSImpl::GetUserCloudPolicyManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_cloud_policy_manager_.get();
 }
 
 sync_preferences::PrefServiceSyncable* ProfileIOSImpl::GetSyncablePrefs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefs_);  // Should explicitly be initialized.
   return prefs_.get();
 }
 
 const sync_preferences::PrefServiceSyncable* ProfileIOSImpl::GetSyncablePrefs()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefs_);  // Should explicitly be initialized.
   return prefs_.get();
 }
 
 bool ProfileIOSImpl::IsOffTheRecord() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;
 }
 
-const std::string& ProfileIOSImpl::GetWebKitStorageID() const {
+const base::Uuid& ProfileIOSImpl::GetWebKitStorageID() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return storage_uuid_;
 }
 
 void ProfileIOSImpl::SetOffTheRecordProfileIOS(
     std::unique_ptr<ProfileIOS> otr_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!otr_state_);
   otr_state_ = std::move(otr_state);
 }
 
-void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
-                                   bool is_new_profile,
-                                   bool success) {
+void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Early return in case of failure to load the preferences.
   if (!success) {
     if (delegate_) {
-      delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
+      delegate_->OnProfileCreationFinished(this, init_info.creation_mode,
+                                           init_info.is_new_profile,
                                            /*success=*/false);
     }
     return;
@@ -348,7 +442,7 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
   // If the initialisation is asynchronous, then we also need to wait for
   // the SupervisedUserSettingsService to complete its initialisation, if
   // is not yet complete.
-  if (creation_mode == CreationMode::kAsynchronous) {
+  if (init_info.creation_mode == CreationMode::kAsynchronous) {
     supervised_user::SupervisedUserSettingsService* supervised_user_settings =
         SupervisedUserSettingsServiceFactory::GetForProfile(this);
     if (!supervised_user_settings->IsReady()) {
@@ -356,26 +450,54 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
       // SupervisedUserSettingsService and the callback will not be invoked
       // after destruction of the SupervisedUserSettingsService.
       supervised_user_settings->WaitUntilReadyToSync(
-          base::BindOnce(&ProfileIOSImpl::OnPrefsLoaded, base::Unretained(this),
-                         creation_mode, is_new_profile, success));
+          base::BindOnce(&ProfileIOSImpl::PrefsInitStage2,
+                         base::Unretained(this), init_info, success));
       return;
     }
   }
 
-  // Migrate obsolete prefs.
-  MigrateObsoleteProfilePrefs(GetStatePath(), prefs_.get());
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage2(init_info, success);
+}
 
-  // Initialize `storage_uuid_` from the prefs. In case of a new Profile,
-  // generate a new value (this avoid losing data when migrating from an old
-  // Profile).
-  //
-  // TODO(crbug.com/346754380): Remove when all Profile use a non-default
-  // storage (since there is no automatic migration, this could take years).
-  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  if (storage_uuid_.empty() && is_new_profile) {
-    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
-    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
+void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(success);
+
+  // Migrate the preferences, unless the profile has just been created.
+  if (!init_info.is_new_profile) {
+    MigrateObsoleteProfilePrefs(prefs_.get());
+
+    // TODO(crbug.com/369296278): Remove ~one year after the full launch of
+    // kForceMigrateSyncingUserToSignedIn (also remove the corresponding
+    // tests and -signinAndEnableLegacySyncFeature: test helper).
+    //
+    // MaybeMigrateSyncingUserToSignedIn(...) may perform disk IO which is
+    // not permitted if the Profile is loaded asynchronously.
+    if (init_info.creation_mode == CreationMode::kAsynchronous) {
+      browser_sync::MaybeMigrateSyncingUserToSignedInAsync(
+          GetStatePath(), GetPrefs(),
+          base::BindOnce(&ProfileIOSImpl::PrefsInitStage3,
+                         weak_ptr_factory_.GetWeakPtr(), init_info, success));
+      return;
+    }
+
+    browser_sync::MaybeMigrateSyncingUserToSignedIn(GetStatePath(), GetPrefs());
   }
+
+  // Either the operation was synchronous or unnecessary, move to the
+  // next stage of the profile initialisation.
+  PrefsInitStage3(init_info, success);
+}
+
+void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(success);
+
+  // Initialize the WebKit storage identifier.
+  const bool is_new_profile = init_info.is_new_profile;
+  storage_uuid_ = GetStorageUUID(GetProfileName(), GetPrefs(), is_new_profile);
 
   // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
 
@@ -385,17 +507,20 @@ void ProfileIOSImpl::OnPrefsLoaded(CreationMode creation_mode,
       this);
 
   if (delegate_) {
-    delegate_->OnProfileCreationFinished(this, creation_mode, is_new_profile,
-                                         success);
+    delegate_->OnProfileCreationFinished(this, init_info.creation_mode,
+                                         init_info.is_new_profile,
+                                         /*success=*/true);
   }
 }
 
 ProfileIOSIOData* ProfileIOSImpl::GetIOData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_data_->io_data();
 }
 
 net::URLRequestContextGetter* ProfileIOSImpl::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplicationContext* application_context = GetApplicationContext();
   return io_data_
       ->CreateMainRequestContextGetter(
@@ -405,15 +530,18 @@ net::URLRequestContextGetter* ProfileIOSImpl::CreateRequestContext(
 }
 
 base::WeakPtr<ProfileIOS> ProfileIOSImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ProfileIOSImpl::ClearNetworkingHistorySince(base::Time time,
                                                  base::OnceClosure completion) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   io_data_->ClearNetworkingHistorySince(time, std::move(completion));
 }
 
 PrefProxyConfigTracker* ProfileIOSImpl::GetProxyConfigTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(

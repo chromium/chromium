@@ -50,7 +50,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
-#include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -143,7 +142,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/constants/ash_switches.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/system/sys_info.h"
@@ -156,6 +154,7 @@
 #include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -1158,8 +1157,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     } else {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-      profile_name =
-          base::UTF16ToUTF8(storage.ChooseNameForNewProfile(avatar_index));
+      profile_name = base::UTF16ToUTF8(storage.ChooseNameForNewProfile());
 #else
       profile_name = l10n_util::GetStringUTF8(IDS_DEFAULT_PROFILE_NAME);
 #endif
@@ -1273,6 +1271,7 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
   if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
       origin == ProfileKeepAliveOrigin::kProfileCreationFlow ||
       origin == ProfileKeepAliveOrigin::kProfileStatistics ||
+      origin == ProfileKeepAliveOrigin::kWaitingForGlicView ||
       (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
        base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
@@ -1526,10 +1525,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
 #endif
-
-  // TODO(crbug.com/40110472): Remove once getting this created with the browser
-  // context does not change dependency initialization order to cause crashes.
-  AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile);
 }
 
 void ProfileManager::DoFinalInitLogging(Profile* profile) {

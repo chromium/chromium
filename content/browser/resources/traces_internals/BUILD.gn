@@ -8,26 +8,26 @@ build_webui("build") {
   grd_prefix = "traces_internals"
 
   static_files = [
-    "trace_report_internals.html",
     "trace_report_internals.css",
+    "trace_report_internals.html",
   ]
 
   non_web_component_files = [
-    "app.ts",
     "app.html.ts",
-    "trace_report_browser_proxy.ts",
-    "trace_report_list.ts",
-    "trace_report_list.html.ts",
-    "trace_report.ts",
+    "app.ts",
     "trace_report.html.ts",
+    "trace_report.ts",
+    "trace_report_browser_proxy.ts",
+    "trace_report_list.html.ts",
+    "trace_report_list.ts",
     "tracing_scenarios_config.html.ts",
     "tracing_scenarios_config.ts",
   ]
 
   css_files = [
     "app.css",
-    "trace_report_list.css",
     "trace_report.css",
+    "trace_report_list.css",
     "tracing_scenarios_config.css",
   ]
 

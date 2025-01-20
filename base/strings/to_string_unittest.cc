@@ -41,6 +41,7 @@ TEST(ToStringTest, Streamable) {
   // Types with built-in <<.
   EXPECT_EQ(ToString("foo"), "foo");
   EXPECT_EQ(ToString(123), "123");
+  EXPECT_EQ(ToString(true), "true");  // bools should become words, not numbers.
 }
 
 enum class StreamableTestEnum { kGreeting, kLocation };

@@ -15,6 +15,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//build/android:build_java",
     "//chrome/browser/preferences:java",
@@ -63,7 +64,7 @@ java_cpp_enum("chrome_browser_flags_enums_srcjar") {
 robolectric_library("flags_junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListUnitTest.java",
   ]
   deps = [
     ":java",

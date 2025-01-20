@@ -7,14 +7,15 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class AXObject;
 class ChromeClient;
+class ComputedStyle;
 class CSSFontSelector;
 class PagePopup;
 class HTMLElement;

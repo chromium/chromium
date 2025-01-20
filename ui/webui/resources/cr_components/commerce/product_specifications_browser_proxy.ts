@@ -6,19 +6,23 @@ import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webu
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {PageCallbackRouter, ProductSpecificationsHandlerFactory, ProductSpecificationsHandlerRemote} from './product_specifications.mojom-webui.js';
-import type {DisclosureVersion} from './product_specifications.mojom-webui.ts';
+import type {DisclosureVersion, ShowSetDisposition} from './product_specifications.mojom-webui.ts';
 
 let instance: ProductSpecificationsBrowserProxy|null = null;
 
 export interface ProductSpecificationsBrowserProxy {
   getCallbackRouter(): PageCallbackRouter;
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void;
+  showProductSpecificationsSetsForUuids(
+      uuids: Uuid[], disposition: ShowSetDisposition): void;
+  showComparePage(inNewTab: boolean): void;
   setAcceptedDisclosureVersion(version: DisclosureVersion): void;
   maybeShowDisclosure(urls: Url[], name: string, setId: string):
       Promise<{disclosureShown: boolean}>;
   declineDisclosure(): void;
   showSyncSetupFlow(): void;
   getPageTitleFromHistory(url: Url): Promise<{title: string}>;
+  getComparisonTableUrlForUuid(uuid: Uuid): Promise<{url: Url}>;
 }
 
 export class ProductSpecificationsBrowserProxyImpl implements
@@ -49,6 +53,15 @@ export class ProductSpecificationsBrowserProxyImpl implements
     this.handler.showProductSpecificationsSetForUuid(uuid, inNewTab);
   }
 
+  showProductSpecificationsSetsForUuids(
+      uuids: Uuid[], disposition: ShowSetDisposition): void {
+    this.handler.showProductSpecificationsSetsForUuids(uuids, disposition);
+  }
+
+  showComparePage(inNewTab: boolean) {
+    this.handler.showComparePage(inNewTab);
+  }
+
   maybeShowDisclosure(urls: Url[], name: string, setId: string) {
     return this.handler.maybeShowDisclosure(urls, name, setId);
   }
@@ -59,6 +72,10 @@ export class ProductSpecificationsBrowserProxyImpl implements
 
   getPageTitleFromHistory(url: Url): Promise<{title: string}> {
     return this.handler.getPageTitleFromHistory(url);
+  }
+
+  getComparisonTableUrlForUuid(uuid: Uuid): Promise<{url: Url}> {
+    return this.handler.getComparisonTableUrlForUuid(uuid);
   }
 
   getCallbackRouter() {

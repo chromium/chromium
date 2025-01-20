@@ -39,10 +39,12 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
   std::u16string cancel_text = delegate_->GetDismissButtonText();
 
   int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
-  if (!ok_text.empty())
+  if (!ok_text.empty()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
-  if (!cancel_text.empty())
+  }
+  if (!cancel_text.empty()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kCancel);
+  }
   SetButtons(buttons);
   SetDefaultButton(static_cast<int>(delegate_->GetDefaultDialogButton()));
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_text);
@@ -64,7 +66,7 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
   DCHECK(anchor_view);
 }
 
-ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() {}
+ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() = default;
 
 std::string ToolbarActionsBarBubbleViews::GetAnchorActionId() const {
   return delegate_->GetAnchorActionId();
@@ -75,8 +77,9 @@ ToolbarActionsBarBubbleViews::CreateExtraInfoView() {
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
       extra_view_info = delegate_->GetExtraViewInfo();
 
-  if (!extra_view_info)
+  if (!extra_view_info) {
     return nullptr;
+  }
 
   std::unique_ptr<views::ImageView> icon;
   if (extra_view_info->resource) {
@@ -125,8 +128,9 @@ void ToolbarActionsBarBubbleViews::ButtonPressed() {
 
 void ToolbarActionsBarBubbleViews::NotifyDelegateOfClose(
     ToolbarActionsBarBubbleDelegate::CloseAction action) {
-  if (delegate_notified_of_close_)
+  if (delegate_notified_of_close_) {
     return;
+  }
   delegate_notified_of_close_ = true;
   delegate_->OnBubbleClosed(action);
 }
@@ -182,12 +186,14 @@ void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {
   DCHECK_EQ(GetWidget(), widget);
-  if (!visible)
+  if (!visible) {
     return;
+  }
 
   GetWidget()->RemoveObserver(this);
-  if (observer_notified_of_show_)
+  if (observer_notified_of_show_) {
     return;
+  }
 
   observer_notified_of_show_ = true;
   // Using Unretained is safe here because the delegate (which might invoke the

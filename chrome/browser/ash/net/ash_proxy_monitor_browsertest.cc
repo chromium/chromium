@@ -9,7 +9,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,8 +20,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -39,12 +36,6 @@
 namespace {
 
 constexpr char kPacUrl[] = "http://pac.pac/";
-
-constexpr char kExtensionName[] = "Lacros Test Extension Name";
-constexpr char kExtensionId[] = "Lacros Test Extension ID";
-constexpr char kPrefExtensionNameKey[] = "extension_name_key";
-constexpr char kPrefExtensionIdKey[] = "extension_id_key";
-constexpr char kPrefExtensionCanDisabledKey[] = "can_be_disabled_key";
 
 constexpr char kDefaultServicePath[] = "default_wifi";
 constexpr char kDefaultServiceSsid[] = "default_wifi_guid";
@@ -113,22 +104,6 @@ base::Value::Dict GetManualProxyConfig(const std::string& proxy_servers) {
       proxy_servers, /*bypass_list=*/std::string());
 }
 
-class TestPrefObserver : public crosapi::mojom::PrefObserver {
- public:
-  TestPrefObserver() = default;
-  TestPrefObserver(const TestPrefObserver&) = delete;
-  TestPrefObserver& operator=(const TestPrefObserver&) = delete;
-  ~TestPrefObserver() override {}
-
-  // crosapi::mojom::PrefObserver:
-  void OnPrefChanged(base::Value value) override {
-    future_.AddValue(std::move(value));
-  }
-  base::Value Wait() { return future_.Take(); }
-  base::test::RepeatingTestFuture<base::Value> future_;
-  mojo::Receiver<crosapi::mojom::PrefObserver> receiver_{this};
-};
-
 }  // namespace
 
 namespace ash {
@@ -184,7 +159,6 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    SetupFakePrefService();
     SetupNetworkEnvironment();
     ash_proxy_monitor_observer_ =
         std::make_unique<TestAshProxyMonitorObserver>();
@@ -195,7 +169,6 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     ash_proxy_monitor_observer_.reset();
-    prefs_observer_.reset();
   }
 
   void SetupNetworkEnvironment() {
@@ -207,18 +180,6 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
     service_test->ClearServices();
     ConnectWifiNetworkService(kDefaultServicePath, kDefaultServiceSsid,
                               kDefaultServiceGuid);
-  }
-
-  void SetupFakePrefService() {
-    prefs_ash_ = std::make_unique<crosapi::PrefsAsh>(
-        g_browser_process->profile_manager(), g_browser_process->local_state());
-    mojo::Remote<crosapi::mojom::Prefs> prefs_ash_remote;
-    prefs_ash_->BindReceiver(prefs_ash_remote.BindNewPipeAndPassReceiver());
-    prefs_observer_ = std::make_unique<TestPrefObserver>();
-    prefs_ash_remote->AddObserver(
-        crosapi::mojom::PrefPath::kProxy,
-        prefs_observer_->receiver_.BindNewPipeAndPassRemote());
-    prefs_ash_->OnProfileAdded(browser()->profile());
   }
 
   void ConnectWifiNetworkService(const std::string& service_path,
@@ -242,21 +203,6 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
                                      value);
   }
 
-  void ClearProxyPrefFromLacrosExtension() {
-    base::test::TestFuture<void> future;
-    prefs_ash_->ClearExtensionControlledPref(crosapi::mojom::PrefPath::kProxy,
-                                             future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-  }
-
-  void SetProxyPrefFromLacrosExtension(base::Value::Dict proxy_dict) {
-    base::test::TestFuture<void> future;
-    prefs_ash_->SetPref(crosapi::mojom::PrefPath::kProxy,
-                        base::Value(std::move(proxy_dict)),
-                        future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-  }
-
   void SetDhcpWpadUrl(const std::string& dhcp_url,
                       const std::string& service_path) {
     auto wpad_config = base::Value::Dict().Set(
@@ -271,8 +217,6 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
     service_test->SetServiceProperty(service_path, shill::kIPConfigProperty,
                                      base::Value(kIPConfigPath));
   }
-  std::unique_ptr<crosapi::PrefsAsh> prefs_ash_;
-  std::unique_ptr<TestPrefObserver> prefs_observer_;
 
   policy::MockConfigurationPolicyProvider provider_;
   std::unique_ptr<TestAshProxyMonitorObserver> ash_proxy_monitor_observer_;
@@ -340,9 +284,6 @@ IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, ProxyPrefChanges) {
   std::tuple<base::Value::Dict, GURL> result =
       ash_proxy_monitor_observer_->WaitForUpdate();
   EXPECT_EQ(std::get<0>(result), GetPacProxyConfig(kPacUrl));
-  EXPECT_FALSE(g_browser_process->platform_part()
-                   ->ash_proxy_monitor()
-                   ->IsLacrosExtensionControllingProxy());
 
   // Clear the policy pref.
   policy.Erase(policy::key::kProxyMode);
@@ -384,41 +325,6 @@ IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, OrderOfPrecedence) {
   EXPECT_EQ(std::get<0>(result), GetManualProxyConfig("http=proxy.com:3128"));
 
   EXPECT_TRUE(ash_proxy_monitor_observer_->AreAllProxyUpdatesRead());
-}
-
-IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, LacrosExtensionProxyPrefChanges) {
-  SetProxyPrefFromLacrosExtension(GetPacProxyConfig(kPacUrl));
-  std::tuple<base::Value::Dict, GURL> result =
-      ash_proxy_monitor_observer_->WaitForUpdate();
-  EXPECT_EQ(std::get<0>(result), GetPacProxyConfig(kPacUrl));
-
-  auto* ash_proxy_monitor =
-      g_browser_process->platform_part()->ash_proxy_monitor();
-
-  EXPECT_TRUE(ash_proxy_monitor->IsLacrosExtensionControllingProxy());
-
-  // Update the extension metadata.
-  ash_proxy_monitor->SetLacrosExtensionControllingProxyInfo(
-      kExtensionName, kExtensionId, false);
-
-  auto* pref_service = browser()->profile()->GetPrefs();
-  EXPECT_EQ(pref_service->GetDict(ash::prefs::kLacrosProxyControllingExtension),
-            base::Value::Dict()
-                .Set(kPrefExtensionNameKey, kExtensionName)
-                .Set(kPrefExtensionIdKey, kExtensionId)
-                .Set(kPrefExtensionCanDisabledKey, false));
-  auto extension = ash_proxy_monitor->GetLacrosExtensionControllingTheProxy();
-  EXPECT_EQ(extension->name, kExtensionName);
-  EXPECT_EQ(extension->id, kExtensionId);
-  EXPECT_EQ(extension->can_be_disabled, false);
-  ClearProxyPrefFromLacrosExtension();
-  ash_proxy_monitor->ClearLacrosExtensionControllingProxyInfo();
-
-  while (std::get<0>(result) != ProxyConfigDictionary::CreateDirect()) {
-    result = ash_proxy_monitor_observer_->WaitForUpdate();
-  }
-
-  EXPECT_FALSE(ash_proxy_monitor->GetLacrosExtensionControllingTheProxy());
 }
 
 }  // namespace ash

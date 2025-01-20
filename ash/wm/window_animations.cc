@@ -154,7 +154,7 @@ class CrossFadeObserver : public aura::WindowObserver,
     window_->AddObserver(this);
 
     smoothness_tracker_ =
-        layer_->GetCompositor()->RequestNewThroughputTracker();
+        layer_->GetCompositor()->RequestNewCompositorMetricsTracker();
     smoothness_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             [](const std::optional<std::string>& histogram_name,
@@ -530,7 +530,7 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
   ui::AnimationThroughputReporter reporter(
       settings.GetAnimator(),
       metrics_util::ForSmoothnessV3(
-          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+          base::BindRepeating(static_cast<void (*)(std::string_view, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Unminimize")));
   base::TimeDelta duration =
@@ -551,7 +551,7 @@ void AnimateHideWindow_Minimize(aura::Window* window) {
   ui::AnimationThroughputReporter reporter(
       hiding_settings.layer_animation_settings()->GetAnimator(),
       metrics_util::ForSmoothnessV3(
-          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+          base::BindRepeating(static_cast<void (*)(std::string_view, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Minimize")));
 

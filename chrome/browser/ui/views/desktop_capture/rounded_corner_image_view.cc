@@ -8,8 +8,8 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/layout/layout_provider.h"
 
-bool RoundedCornerImageView::GetCanProcessEventsWithinSubtree() const {
-  return false;
+RoundedCornerImageView::RoundedCornerImageView() {
+  SetCanProcessEventsWithinSubtree(false);
 }
 
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {

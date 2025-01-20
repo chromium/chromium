@@ -16,3 +16,9 @@ BASE_FEATURE(kStatelessFormSuggestionController,
 BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
              "ThrottleFormInputAccessorySuggestionRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables skipping reloading input views in the form input keyboard accessory
+// when the app is in the background.
+BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
+             "FormInputAccessorySkipInputViewReloadInBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);

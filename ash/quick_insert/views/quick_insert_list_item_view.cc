@@ -296,7 +296,7 @@ void QuickInsertListItemView::SetPreview(
     preview_bubble_controller_->CloseBubble();
   }
 
-  async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
+  async_preview_image_ = std::make_unique<HoldingSpaceImage>(
       QuickInsertPreviewBubbleView::kPreviewImageSize, file_path,
       async_bitmap_resolver);
   file_path_ = file_path;
@@ -315,7 +315,7 @@ void QuickInsertListItemView::SetPreview(
     // base::Unretained is safe here since `async_icon_subscription_` is a
     // member. During destruction, `async_icon_subscription_` will be destroyed
     // before the other members, so the callback is guaranteed to be safe.
-    async_preview_icon_ = std::make_unique<ash::HoldingSpaceImage>(
+    async_preview_icon_ = std::make_unique<HoldingSpaceImage>(
         kLeadingIconSizeDip, file_path, std::move(async_bitmap_resolver));
     async_icon_subscription_ = async_preview_icon_->AddImageSkiaChangedCallback(
         base::BindRepeating(&QuickInsertListItemView::UpdateIconWithPreview,

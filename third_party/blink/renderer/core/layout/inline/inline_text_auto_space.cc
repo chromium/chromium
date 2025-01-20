@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
 
 #include <unicode/uchar.h>
 #include <unicode/uscript.h>
 
 #include "base/check.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 
 namespace blink {
@@ -39,7 +35,9 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
   // They will be, for example, `USCRIPT_LATIN` if the previous character is
   // `USCRIPT_LATIN`. Check if we have any such characters.
   CHECK(!text.Is8Bit());
-  return std::any_of(text.Characters16(), text.Characters16() + text.length(),
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  return std::any_of(text.Characters16(),
+                     UNSAFE_TODO(text.Characters16() + text.length()),
                      [](const UChar ch) {
                        return ch >= TextAutoSpace::kNonHanIdeographMin &&
                               ch <= TextAutoSpace::kNonHanIdeographMax;
@@ -52,6 +50,7 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 // should be added to the end of the previous item. This class keeps the
 // previous item's `shape_result_` for this purpose.
 class SpacingApplier {
+  STACK_ALLOCATED();
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
                   const InlineItem* current_item,
@@ -71,7 +70,8 @@ class SpacingApplier {
         // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
         offsets_with_spacing_.emplace_back(
             OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
-        ++offset;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++offset);
       } else {
         // This branch holds an assumption that RTL texts cannot be ideograph.
         // The assumption might be wrong, but should work for almost all cases.
@@ -87,7 +87,8 @@ class SpacingApplier {
 
     // Update the previous item in prepare for the next iteration.
     last_item_ = current_item;
-    for (; offset != offsets.end(); ++offset) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    for (; offset != offsets.end(); UNSAFE_TODO(++offset)) {
       offsets_with_spacing_.emplace_back(
           OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
     }
@@ -204,7 +205,8 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
     do {
       // Find the `RunSegmenterRange` for `offset`.
       while (offset >= range->end) {
-        ++range;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++range);
         CHECK_NE(range, ranges_.end());
       }
       DCHECK_GE(offset, range->start);

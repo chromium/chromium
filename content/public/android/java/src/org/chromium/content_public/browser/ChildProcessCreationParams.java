@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ChildProcessCreationParamsImpl;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.content.browser.ChildProcessCreationParamsImpl;
  * name, like in the case of Android WebView). Also allows specifying additional
  * child service binding flags.
  */
+@NullMarked
 public final class ChildProcessCreationParams {
     /**
      * Set params. This should be called once on start up. If null is passed for

@@ -22,13 +22,6 @@ import java.util.function.Function;
 public interface BaseNotificationManagerProxy {
     /**
      * @see <a
-     *     href="https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()">
-     *     https://developer.android.com/reference/android/app/NotificationManager#areNotificationsEnabled()</a>
-     */
-    void areNotificationsEnabled(Callback<Boolean> callback);
-
-    /**
-     * @see <a
      *     href="https://developer.android.com/reference/android/app/NotificationManager#cancel(int)">
      *     https://developer.android.com/reference/android/app/NotificationManager#cancel(int)</a>
      */
@@ -104,6 +97,13 @@ public interface BaseNotificationManagerProxy {
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()</a>
      */
     void getNotificationChannels(Callback<List<NotificationChannel>> callback);
+
+    /**
+     * @see <a
+     *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()">
+     *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannel()</a>
+     */
+    void getNotificationChannel(String channelId, Callback<NotificationChannel> callback);
 
     /**
      * A proxy for Android's StatusBarNotification.

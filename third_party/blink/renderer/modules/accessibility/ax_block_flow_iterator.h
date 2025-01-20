@@ -130,7 +130,7 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
   void ProcessLayoutBlock(LayoutBlockFlow* container);
   void ProcessBoxFragment(const PhysicalBoxFragment* box_fragment,
                           wtf_size_t starting_fragment_index);
-  bool OnCurrentLine(wtf_size_t index) const;
+  bool OnLine(const Line& line, wtf_size_t index) const;
 
   Member<LayoutBlockFlow> block_flow_container_;
 

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,10 +109,8 @@ std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
 // static
 void GoogleCalendarPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
     registry->RegisterTimePref(kGoogleCalendarLastDismissedTimePrefName,
                                base::Time());
-  }
 }
 
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
@@ -170,8 +169,9 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
             /*event_types=*/event_types,
             ntp_features::kNtpCalendarModuleExperimentParam.Get(),
             /*order_by=*/"startTime"));
-    base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                             base::PersistentHash("google_calendar"));
+    base::UmaHistogramSparse(
+        "NewTabPage.Modules.DataRequest",
+        base::PersistentHash(ntp_modules::kGoogleCalendarModuleId));
   }
 }
 

@@ -34,10 +34,10 @@ static const EncodingParameters kProprietaryEncodingParameters[] = {
     {true, "video/mp4;codecs=avc1"},
     {false, "video/mp4;codecs=avc1"},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {true, "video/x-matroska;codecs=hvc1"},
-    {false, "video/x-matroska;codecs=hvc1"},
-    {true, "video/mp4;codecs=hvc1"},
-    {false, "video/mp4;codecs=hvc1"},
+    {true, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {true, "video/mp4;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/mp4;codecs=hvc1.1.6.L186.B0"},
 #endif
 };
 
@@ -219,8 +219,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
 #elif BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Fails on Win7 debug, https://crbug.com/703844.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// Fails on Mac/Arm, https://crbug.com/1222675
+#elif BUILDFLAG(IS_MAC)
+// Fails on Mac, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #elif BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_X86_64)
 // Flaky on Fuchsia-x64, https://crbug.com/1408820

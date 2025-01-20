@@ -194,7 +194,7 @@ void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
 
 void ContinueTaskView::UpdateIcon() {
   if (!result()) {
-    icon_->SetImage(gfx::ImageSkia());
+    icon_->SetImage(ui::ImageModel());
     return;
   }
 
@@ -210,12 +210,12 @@ void ContinueTaskView::UpdateIcon() {
     icon = result()->chip_icon();
   }
 
-  icon_->SetImage(CreateIconWithCircleBackground(
+  icon_->SetImage(ui::ImageModel::FromImageSkia(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()),
-      GetColorProvider()->GetColor(GetIconBackgroundColorId())));
+      GetColorProvider()->GetColor(GetIconBackgroundColorId()))));
 }
 
 ui::ColorId ContinueTaskView::GetIconBackgroundColorId() const {
@@ -368,8 +368,12 @@ ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
       return TaskResultType::kLocalFile;
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
+    case AppListSearchResultType::kZeroStateHelpApp:
+      return TaskResultType::kHelpApp;
+    case AppListSearchResultType::kDesksAdminTemplate:
+      return TaskResultType::kDesksAdminTemplate;
     default:
-      NOTREACHED();
+      return TaskResultType::kUnknown;
   }
 }
 

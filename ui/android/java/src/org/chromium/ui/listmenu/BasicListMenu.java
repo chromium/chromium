@@ -15,11 +15,11 @@ import android.widget.ListView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -37,6 +37,7 @@ import java.util.List;
  * An implementation of a list menu. Uses app_menu_layout as the default layout of menu and
  * list_menu_item as the default layout of a menu item.
  */
+@NullMarked
 public class BasicListMenu implements ListMenu, OnItemClickListener {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
@@ -78,7 +79,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
             boolean isIconTintable,
             boolean groupContainsIcon,
             boolean enabled,
-            @Nullable View.OnClickListener clickListener,
+            View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -102,11 +103,11 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         return new ListItem(ListMenuItemType.MENU_ITEM, modelBuilder.build());
     }
 
-    private final @NonNull ListView mListView;
-    private final @NonNull ModelListAdapter mAdapter;
-    private final @NonNull View mContentView;
-    private final @NonNull List<Runnable> mClickRunnables;
-    private final @NonNull Delegate mDelegate;
+    private final ListView mListView;
+    private final ModelListAdapter mAdapter;
+    private final View mContentView;
+    private final List<Runnable> mClickRunnables;
+    private final Delegate mDelegate;
 
     /**
      * @param context The {@link Context} to inflate the layout.
@@ -117,11 +118,11 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
      * @param backgroundTintColor The background tint color of the menu.
      */
     public BasicListMenu(
-            @NonNull Context context,
-            @NonNull ModelList data,
-            @NonNull View contentView,
-            @NonNull ListView listView,
-            @NonNull Delegate delegate,
+            Context context,
+            ModelList data,
+            View contentView,
+            ListView listView,
+            Delegate delegate,
             @ColorRes int backgroundTintColor) {
         mAdapter = new ListMenuItemAdapter(data);
         mContentView = contentView;
@@ -140,13 +141,11 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         }
     }
 
-    @NonNull
     @Override
     public View getContentView() {
         return mContentView;
     }
 
-    @NonNull
     public ListView getListView() {
         return mListView;
     }
@@ -192,5 +191,9 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 ListMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
                 ListSectionDividerViewBinder::bind);
+    }
+
+    public ModelListAdapter getAdapterForTesting() {
+        return mAdapter;
     }
 }

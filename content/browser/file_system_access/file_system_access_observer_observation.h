@@ -9,6 +9,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "content/browser/file_system_access/file_system_access_observation_group.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,7 +36,7 @@ class FileSystemAccessObserverObservation
  public:
   FileSystemAccessObserverObservation(
       FileSystemAccessObserverHost* host,
-      std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation,
+      std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation,
       mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
       absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle);
@@ -64,8 +65,7 @@ class FileSystemAccessObserverObservation
   // processes the received change data and sends a file change event via mojo
   // pipe.
   void OnChanges(
-      const std::optional<
-          std::list<FileSystemAccessWatcherManager::Observation::Change>>&
+      const std::optional<std::list<FileSystemAccessObservationGroup::Change>>&
           changes_or_error);
 
   // Invoked if an error occurred while watching file changes. It sends a file
@@ -91,7 +91,7 @@ class FileSystemAccessObserverObservation
                       std::unique_ptr<FileSystemAccessFileHandleImpl>>
       handle_;
 
-  std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation_
+  std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Mojo pipes that send file change notifications back to the renderer.

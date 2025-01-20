@@ -42,15 +42,12 @@ class CookieControlsServiceObserver : public CookieControlsService::Observer {
 
 class CookieControlsServiceTest : public ChromeRenderViewHostTestHarness {
  public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-  }
+  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
 
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
  protected:
   std::unique_ptr<CookieControlsServiceObserver> observer_;
-
 };
 
 TEST_F(CookieControlsServiceTest, HandleCookieControlsToggleChanged) {

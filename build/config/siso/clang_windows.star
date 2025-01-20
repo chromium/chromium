@@ -11,6 +11,7 @@ load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./reproxy.star", "reproxy")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 load("./win_sdk.star", "win_sdk")
 
@@ -72,7 +73,7 @@ def __step_config(ctx, step_config):
         canonicalize_dir = not input_root_absolute_path
 
         timeout = "2m"
-        if gn.args(ctx).get("use_reclient") == "false" and windowsWorker:
+        if (not reproxy.enabled(ctx)) and windowsWorker:
             # use longer timeout for siso native
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"
@@ -85,7 +86,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
                 "input_root_absolute_path": input_root_absolute_path,
@@ -100,7 +100,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
                 "input_root_absolute_path": input_root_absolute_path,
@@ -115,7 +114,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
@@ -131,7 +129,6 @@ def __step_config(ctx, step_config):
                 "inputs": [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
-                "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
@@ -141,6 +138,8 @@ def __step_config(ctx, step_config):
                 "timeout": timeout,
             },
         ])
+    elif gn.args(ctx).get("use_remoteexec") == "true":
+        fail("remoteexec requires rewrapper config")
     return step_config
 
 clang = module(

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/proxy_chain.h"
 
+#include <array>
 #include <optional>
 #include <sstream>
 
@@ -103,14 +99,15 @@ TEST(ProxyChainTest, ToDebugString) {
 }
 
 TEST(ProxyChainTest, FromSchemeHostAndPort) {
-  const struct {
+  struct Tests {
     const ProxyServer::Scheme input_scheme;
     const char* const input_host;
     const std::optional<uint16_t> input_port;
     const char* const input_port_str;
     const char* const expected_host;
     const uint16_t expected_port;
-  } tests[] = {
+  };
+  const auto tests = std::to_array<Tests>({
       {ProxyServer::SCHEME_HTTP, "foopy", 80, "80", "foopy", 80},
 
       // Non-standard port
@@ -150,7 +147,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
       {ProxyServer::SCHEME_HTTPS, "foopy", std::nullopt, "", "foopy", 443},
       {ProxyServer::SCHEME_SOCKS4, "foopy", std::nullopt, "", "foopy", 1080},
       {ProxyServer::SCHEME_SOCKS5, "foopy", std::nullopt, "", "foopy", 1080},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i].input_host + ":" +
@@ -173,7 +170,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
 }
 
 TEST(ProxyChainTest, InvalidHostname) {
-  const char* const tests[]{
+  const auto tests = std::to_array<const char*>({
       "",
       "[]",
       "[foo]",
@@ -184,7 +181,7 @@ TEST(ProxyChainTest, InvalidHostname) {
       "3ffe:2a00:100:7031::1]",
       "[3ffe:2a00:100:7031::1",
       "foo.80",
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
@@ -195,12 +192,12 @@ TEST(ProxyChainTest, InvalidHostname) {
 }
 
 TEST(ProxyChainTest, InvalidPort) {
-  const char* const tests[]{
+  const auto tests = std::to_array<const char*>({
       "-1",
       "65536",
       "foo",
       "0x35",
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
@@ -541,7 +538,7 @@ TEST(ProxyChainTest, PickleDirect) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
 }
 
@@ -552,8 +549,25 @@ TEST(ProxyChainTest, PickleOneProxy) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
+}
+
+TEST(ProxyChainTest, UnpickleInvalidProxy) {
+  ProxyServer invalid_proxy_server;
+  // Manually pickle a proxcy chain with an invalid proxy server.
+  base::Pickle pickle;
+  pickle.WriteInt(ProxyChain::kNotIpProtectionChainId);
+  pickle.WriteInt(1);  // Length of the chain
+  invalid_proxy_server.Persist(&pickle);
+
+  base::PickleIterator iter(pickle);
+  ProxyChain invalid_proxy_chain_from_pickle;
+  // Unpickling should fail and leave us with an invalid proxy chain.
+  EXPECT_FALSE(invalid_proxy_chain_from_pickle.InitFromPickle(&iter));
+  // Make sure that we unpickled the invalid proxy server.
+  EXPECT_TRUE(iter.ReachedEnd());
+  EXPECT_FALSE(invalid_proxy_chain_from_pickle.IsValid());
 }
 
 #if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
@@ -633,7 +647,7 @@ TEST(ProxyChainTest, PickleTwoProxies) {
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
   ProxyChain proxy_chain_from_pickle;
-  proxy_chain_from_pickle.InitFromPickle(&iter);
+  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
   EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
 }
 #endif

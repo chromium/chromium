@@ -16,9 +16,17 @@ import org.chromium.android_webview.common.Lifetime;
 public class PrefetchOperationResult {
 
     public final @PrefetchOperationStatusCode int statusCode;
+    public final int httpResponseStatusCode;
 
     public PrefetchOperationResult(@PrefetchOperationStatusCode int statusCode) {
         this.statusCode = statusCode;
+        httpResponseStatusCode = 0;
+    }
+
+    public PrefetchOperationResult(
+            @PrefetchOperationStatusCode int statusCode, int httpResponseStatusCode) {
+        this.statusCode = statusCode;
+        this.httpResponseStatusCode = httpResponseStatusCode;
     }
 
     @Nullable
@@ -34,10 +42,11 @@ public class PrefetchOperationResult {
             case StatusCode.PREFETCH_RESPONSE_SERVER_ERROR:
                 if (extras != null
                         && extras.containsKey(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE)) {
-                    // TODO(crbug.com/378481147) : Return the HTTP response code via. prefetch
-                    // exception.
+                    return new PrefetchOperationResult(
+                            PrefetchOperationStatusCode.SERVER_FAILURE,
+                            extras.getInt(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE));
                 }
-                return new PrefetchOperationResult(PrefetchOperationStatusCode.FAILURE);
+                return new PrefetchOperationResult(PrefetchOperationStatusCode.SERVER_FAILURE);
             default:
                 throw new IllegalArgumentException(
                         "Unhandled or invalid prefetch status code - status_code=" + statusCode);

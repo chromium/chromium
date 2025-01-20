@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
@@ -73,8 +72,7 @@ class TestScannerCommandDelegate : public ScannerCommandDelegate {
               SetClipboard,
               (std::unique_ptr<ui::ClipboardData> data),
               (override));
-
-  base::WeakPtr<TestScannerCommandDelegate> GetWeakPtr() {
+  base::WeakPtr<ScannerCommandDelegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -93,8 +91,10 @@ base::Value::Dict ContactToDict(const google_apis::people::Contact& contact) {
 }
 
 TEST(ScannerActionToCommandTest, NewEvent) {
-  ScannerCommand command =
-      ScannerActionToCommand(manta::proto::NewEventAction());
+  manta::proto::ScannerAction action;
+  action.mutable_new_event();
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
       command,
@@ -105,8 +105,10 @@ TEST(ScannerActionToCommandTest, NewEvent) {
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithTitle) {
-  manta::proto::NewEventAction action;
-  action.set_title("Test title?");
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_title("Test title?");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
@@ -119,8 +121,10 @@ TEST(ScannerActionToCommandTest, NewEventWithTitle) {
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithDescription) {
-  manta::proto::NewEventAction action;
-  action.set_description("Test desc?");
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_description("Test desc?");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
@@ -133,8 +137,10 @@ TEST(ScannerActionToCommandTest, NewEventWithDescription) {
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithDates) {
-  manta::proto::NewEventAction action;
-  action.set_dates("20241014T160000/20241014T161500");
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_dates("20241014T160000/20241014T161500");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
@@ -148,8 +154,10 @@ TEST(ScannerActionToCommandTest, NewEventWithDates) {
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithLocation) {
-  manta::proto::NewEventAction action;
-  action.set_location("401 - Unauthorized");
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_location("401 - Unauthorized");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
@@ -162,11 +170,13 @@ TEST(ScannerActionToCommandTest, NewEventWithLocation) {
 }
 
 TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
-  manta::proto::NewEventAction action;
-  action.set_title("🌏");
-  action.set_description("formerly \"Geo Sync\"");
-  action.set_dates("20241014T160000/20241014T161500");
-  action.set_location("Wonderland");
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_title("🌏");
+  new_event.set_description("formerly \"Geo Sync\"");
+  new_event.set_dates("20241014T160000/20241014T161500");
+  new_event.set_location("Wonderland");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(
@@ -183,16 +193,20 @@ TEST(ScannerActionToCommandTest, NewEventWithMultipleFields) {
 }
 
 TEST(ScannerActionToCommandTest, NewContact) {
-  ScannerCommand command =
-      ScannerActionToCommand(manta::proto::NewContactAction());
+  manta::proto::ScannerAction action;
+  action.mutable_new_contact();
+
+  ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   EXPECT_THAT(std::move(command), VariantWith<CreateContactCommand>(FieldsAre(
                                       ResultOf(&ContactToDict, IsJson("{}")))));
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
-  manta::proto::NewContactAction action;
-  action.set_given_name("Léa");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_given_name("Léa");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -209,8 +223,10 @@ TEST(ScannerActionToCommandTest, NewContactWithGivenName) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
-  manta::proto::NewContactAction action;
-  action.set_family_name("François");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_family_name("François");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -227,8 +243,10 @@ TEST(ScannerActionToCommandTest, NewContactWithFamilyName) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithDeprecatedEmail) {
-  manta::proto::NewContactAction action;
-  action.set_email("afrancois@example.com");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_email("afrancois@example.com");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -245,15 +263,17 @@ TEST(ScannerActionToCommandTest, NewContactWithDeprecatedEmail) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithEmailAddresses) {
-  manta::proto::NewContactAction action;
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
   manta::proto::NewContactAction::EmailAddress& home_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   home_email.set_value("afrancois@example.com");
   home_email.set_type("home");
   manta::proto::NewContactAction::EmailAddress& work_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   work_email.set_value("afrancois@work.example.com");
   work_email.set_type("work");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -276,16 +296,18 @@ TEST(ScannerActionToCommandTest, NewContactWithEmailAddresses) {
 
 TEST(ScannerActionToCommandTest,
      NewContactWithEmailAddressesAndDeprecatedEmail) {
-  manta::proto::NewContactAction action;
-  action.set_email("afrancois@example.com");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_email("afrancois@example.com");
   manta::proto::NewContactAction::EmailAddress& home_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   home_email.set_value("afrancois@example.com");
   home_email.set_type("home");
   manta::proto::NewContactAction::EmailAddress& work_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   work_email.set_value("afrancois@work.example.com");
   work_email.set_type("work");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -307,8 +329,10 @@ TEST(ScannerActionToCommandTest,
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithDeprecatedPhone) {
-  manta::proto::NewContactAction action;
-  action.set_phone("+61400000000");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_phone("+61400000000");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -325,15 +349,17 @@ TEST(ScannerActionToCommandTest, NewContactWithDeprecatedPhone) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbers) {
-  manta::proto::NewContactAction action;
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
   manta::proto::NewContactAction::PhoneNumber& mobile_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   mobile_number.set_value("+61400000000");
   mobile_number.set_type("mobile");
   manta::proto::NewContactAction::PhoneNumber& home_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   home_number.set_value("+61390000000");
   home_number.set_type("home");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -355,16 +381,18 @@ TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbers) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbersAndDeprecatedPhone) {
-  manta::proto::NewContactAction action;
-  action.set_phone("+61400000000");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_phone("+61400000000");
   manta::proto::NewContactAction::PhoneNumber& mobile_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   mobile_number.set_value("+61400000000");
   mobile_number.set_type("mobile");
   manta::proto::NewContactAction::PhoneNumber& home_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   home_number.set_value("+61390000000");
   home_number.set_type("home");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -386,25 +414,27 @@ TEST(ScannerActionToCommandTest, NewContactWithPhoneNumbersAndDeprecatedPhone) {
 }
 
 TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
-  manta::proto::NewContactAction action;
-  action.set_given_name("André");
-  action.set_family_name("François");
+  manta::proto::ScannerAction action;
+  manta::proto::NewContactAction& new_contact = *action.mutable_new_contact();
+  new_contact.set_given_name("André");
+  new_contact.set_family_name("François");
   manta::proto::NewContactAction::EmailAddress& home_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   home_email.set_value("afrancois@example.com");
   home_email.set_type("home");
   manta::proto::NewContactAction::EmailAddress& work_email =
-      *action.add_email_addresses();
+      *new_contact.add_email_addresses();
   work_email.set_value("afrancois@work.example.com");
   work_email.set_type("work");
   manta::proto::NewContactAction::PhoneNumber& mobile_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   mobile_number.set_value("+61400000000");
   mobile_number.set_type("mobile");
   manta::proto::NewContactAction::PhoneNumber& home_number =
-      *action.add_phone_numbers();
+      *new_contact.add_phone_numbers();
   home_number.set_value("+61390000000");
   home_number.set_type("home");
+
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
   constexpr std::string_view kExpectedJson = R"json({
@@ -442,9 +472,11 @@ TEST(ScannerActionToCommandTest, NewContactWithMultipleFields) {
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleDoc) {
-  manta::proto::NewGoogleDocAction action;
-  action.set_title("Doc Title");
-  action.set_html_contents("<span>Contents</span>");
+  manta::proto::ScannerAction action;
+  manta::proto::NewGoogleDocAction& new_google_doc =
+      *action.mutable_new_google_doc();
+  new_google_doc.set_title("Doc Title");
+  new_google_doc.set_html_contents("<span>Contents</span>");
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
@@ -457,9 +489,11 @@ TEST(ScannerActionToCommandTest, NewGoogleDoc) {
 }
 
 TEST(ScannerActionToCommandTest, NewGoogleSheet) {
-  manta::proto::NewGoogleSheetAction action;
-  action.set_title("Sheet Title");
-  action.set_csv_contents("a,b\n1,2");
+  manta::proto::ScannerAction action;
+  manta::proto::NewGoogleSheetAction& new_google_sheet =
+      *action.mutable_new_google_sheet();
+  new_google_sheet.set_title("Sheet Title");
+  new_google_sheet.set_csv_contents("a,b\n1,2");
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
@@ -472,8 +506,10 @@ TEST(ScannerActionToCommandTest, NewGoogleSheet) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithPlainText) {
-  manta::proto::CopyToClipboardAction action;
-  action.set_plain_text("Hello");
+  manta::proto::ScannerAction action;
+  manta::proto::CopyToClipboardAction& copy_to_clipboard =
+      *action.mutable_copy_to_clipboard();
+  copy_to_clipboard.set_plain_text("Hello");
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
@@ -486,8 +522,10 @@ TEST(ScannerActionHandlerTest, CopyToClipboardWithPlainText) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithHtmlText) {
-  manta::proto::CopyToClipboardAction action;
-  action.set_html_text("<img />");
+  manta::proto::ScannerAction action;
+  manta::proto::CopyToClipboardAction& copy_to_clipboard =
+      *action.mutable_copy_to_clipboard();
+  copy_to_clipboard.set_html_text("<img />");
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 
@@ -501,9 +539,11 @@ TEST(ScannerActionHandlerTest, CopyToClipboardWithHtmlText) {
 }
 
 TEST(ScannerActionHandlerTest, CopyToClipboardWithMultipleFields) {
-  manta::proto::CopyToClipboardAction action;
-  action.set_plain_text("Hello");
-  action.set_html_text("<b>Hello</b>");
+  manta::proto::ScannerAction action;
+  manta::proto::CopyToClipboardAction& copy_to_clipboard =
+      *action.mutable_copy_to_clipboard();
+  copy_to_clipboard.set_plain_text("Hello");
+  copy_to_clipboard.set_html_text("<b>Hello</b>");
 
   ScannerCommand command = ScannerActionToCommand(std::move(action));
 

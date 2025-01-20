@@ -25,6 +25,7 @@ import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfi
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
 
@@ -109,6 +110,13 @@ class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
             return mInternalDelegate.showManageFlow(manageUiConfig);
         }
         return null;
+    }
+
+    @Override
+    public void updateRuntimeData(String sessionId, DataSharingRuntimeDataConfig runtimeData) {
+        if (mInternalDelegate != null) {
+            mInternalDelegate.updateRuntimeData(sessionId, runtimeData);
+        }
     }
 
     @Override

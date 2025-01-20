@@ -24,10 +24,10 @@ namespace certificate_transparency {
 
 struct COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) OperatorHistoryEntry {
   // Name of the current operator for the log.
-  std::string current_operator_;
+  std::string current_operator;
   // Vector of previous operators (if any) for the log, represented as pairs of
   // operator name and time when they stopped operating the log.
-  std::vector<std::pair<std::string, base::Time>> previous_operators_;
+  std::vector<std::pair<std::string, base::Time>> previous_operators;
 
   OperatorHistoryEntry();
   ~OperatorHistoryEntry();

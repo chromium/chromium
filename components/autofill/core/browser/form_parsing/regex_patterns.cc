@@ -12,8 +12,6 @@
 
 namespace autofill {
 
-namespace {
-
 // Returns the span of MatchPatternRefs for the given pattern name, language
 // code, and pattern file.
 //
@@ -22,13 +20,13 @@ namespace {
 //
 // Falls back to the union of all patterns of a the given name in the given
 // pattern file if there are no patterns for the given language.
-base::span<const MatchPatternRef> GetMatchPatterns(
-    std::string_view name,
-    std::string_view language_code,
-    PatternFile pattern_file) {
-  auto it = kPatternMap.find(std::make_pair(name, language_code));
-  if (!language_code.empty() && it == kPatternMap.end())
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
+                                                   LanguageCode language_code,
+                                                   PatternFile pattern_file) {
+  auto it = kPatternMap.find(std::make_pair(name, *language_code));
+  if (!(*language_code).empty() && it == kPatternMap.end()) {
     it = kPatternMap.find(std::make_pair(name, ""));
+  }
   CHECK(it != kPatternMap.end());
   switch (pattern_file) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
@@ -37,33 +35,15 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 #else
     case PatternFile::kDefault:
       return it->second[0];
-    case PatternFile::kPredictionImprovements:
+    case PatternFile::kAutofillAi:
       return it->second[1];
 #endif
   }
   NOTREACHED();
 }
 
-}  // namespace
-
 std::optional<PatternFile> GetActivePatternFile() {
   return HeuristicSourceToPatternFile(GetActiveHeuristicSource());
-}
-
-base::span<const MatchPatternRef> GetMatchPatterns(
-    std::string_view name,
-    std::optional<LanguageCode> language_code,
-    PatternFile pattern_file) {
-  return language_code ? GetMatchPatterns(name, **language_code, pattern_file)
-                       : GetMatchPatterns(name, "", pattern_file);
-}
-
-base::span<const MatchPatternRef> GetMatchPatterns(
-    FieldType type,
-    std::optional<LanguageCode> language_code,
-    PatternFile pattern_file) {
-  return GetMatchPatterns(FieldTypeToStringView(type), language_code,
-                          pattern_file);
 }
 
 bool IsSupportedLanguageCode(LanguageCode language_code) {

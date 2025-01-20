@@ -5,18 +5,14 @@
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 
-if (is_linux) {
-  shared_library("fake_gbm") {
-    sources = [
-      "fake_gbm.cc",
-      "fake_gbm.h",
-    ]
+shared_library("fake_gbm") {
+  sources = [ "fake_gbm.cc" ]
 
-    deps = [ "//base" ]
-  }
+  deps = [ "//base" ]
 }
 
 shared_library("fake_drv_video") {
+  testonly = true
   sources = [ "fake_drv_video.cc" ]
 
   deps = [
@@ -27,6 +23,7 @@ shared_library("fake_drv_video") {
 }
 
 source_set("fake_libva_driver_internals") {
+  testonly = true
   visibility = [ ":fake_drv_video" ]
   sources = [
     "av1_decoder_delegate.cc",
@@ -44,6 +41,8 @@ source_set("fake_libva_driver_internals") {
     "fake_image.h",
     "fake_surface.cc",
     "fake_surface.h",
+    "h264_decoder_delegate.cc",
+    "h264_decoder_delegate.h",
     "no_op_context_delegate.cc",
     "no_op_context_delegate.h",
     "object_tracker.h",
@@ -54,20 +53,18 @@ source_set("fake_libva_driver_internals") {
   ]
 
   deps = [
+    ":fake_gbm",
     "//base",
     "//build/config/linux/libdrm",
     "//third_party/dav1d",
     "//third_party/libvpx",
     "//third_party/libyuv",
+    "//third_party/openh264:decoder",
     "//ui/gfx/linux:gbm",
   ]
 
   if (is_chromeos) {
     public_deps = [ "//third_party/minigbm" ]
-  }
-
-  if (is_linux) {
-    public_deps = [ ":fake_gbm" ]
   }
 }
 

@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -26,7 +25,6 @@
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -197,12 +195,6 @@ GetAggregatableContributions(
 std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
     const StoreSourceResult& result) {
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::
-              kAttributionAggregatableDebugReporting)) {
-    return std::nullopt;
-  }
-
   const StorableSource& source = result.source();
   const attribution_reporting::SourceAggregatableDebugReportingConfig& config =
       source.registration().aggregatable_debug_reporting_config;
@@ -234,12 +226,6 @@ std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
 std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
     const CreateReportResult& result) {
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::
-              kAttributionAggregatableDebugReporting)) {
-    return std::nullopt;
-  }
-
   if (absl::holds_alternative<CreateReportResult::NotRegistered>(
           result.event_level_result()) &&
       absl::holds_alternative<CreateReportResult::NotRegistered>(

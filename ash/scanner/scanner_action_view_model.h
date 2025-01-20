@@ -10,7 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -37,6 +39,7 @@ class ASH_EXPORT ScannerActionViewModel {
   // This may crash if this action has been previously moved.
   std::u16string GetText() const;
   const gfx::VectorIcon& GetIcon() const;
+  manta::proto::ScannerAction::ActionCase GetActionCase() const;
 
   // Executes this action, running the provided callback with a success value
   // when the execution finishes.

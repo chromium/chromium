@@ -40,6 +40,7 @@ static_library("graduation") {
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 
@@ -66,6 +67,7 @@ source_set("unit_tests") {
     "//ash/webui/graduation:graduation",
     "//base",
     "//components/account_id",
+    "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/base:base",
     "//components/signin/public/base:test_support",

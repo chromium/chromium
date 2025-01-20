@@ -15,10 +15,6 @@ BASE_FEATURE(kSharedHighlightingAmp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kIOSSharedHighlightingV2,
-             "IOSSharedHighlightingV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSharedHighlightingManager,
              "SharedHighlightingManager",
              base::FEATURE_DISABLED_BY_DEFAULT);

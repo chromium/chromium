@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/prefs",
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/ntp/shared/metrics:utils",
     "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

@@ -66,8 +66,9 @@ bool ShouldDisplayUrl(content::WebContents* contents) {
   auto* tab_helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           contents);
-  if (tab_helper && tab_helper->IsDisplayingInterstitial())
+  if (tab_helper && tab_helper->IsDisplayingInterstitial()) {
     return tab_helper->ShouldDisplayURL();
+  }
   return true;
 }
 
@@ -162,15 +163,17 @@ class CustomTabBarTitleOriginView : public views::View {
   }
 
   void Update(const std::u16string title, const std::u16string location) {
-    if (title_label_)
+    if (title_label_) {
       title_label_->SetText(title);
+    }
     location_label_->SetText(location);
     location_label_->SetVisible(!location.empty());
   }
 
   void SetColors(SkColor background_color) {
-    if (title_label_)
+    if (title_label_) {
       title_label_->SetBackgroundColor(background_color);
+    }
     location_label_->SetBackgroundColor(background_color);
   }
 
@@ -287,7 +290,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   browser_->tab_strip_model()->AddObserver(this);
 }
 
-CustomTabBarView::~CustomTabBarView() {}
+CustomTabBarView::~CustomTabBarView() = default;
 
 gfx::Rect CustomTabBarView::GetAnchorBoundsInScreen() const {
   return gfx::UnionRects(location_icon_view_->GetAnchorBoundsInScreen(),
@@ -370,8 +373,9 @@ void CustomTabBarView::OnThemeChanged() {
 void CustomTabBarView::TabChangedAt(content::WebContents* contents,
                                     int index,
                                     TabChangeType change_type) {
-  if (delegate_->GetWebContents() == contents)
+  if (delegate_->GetWebContents() == contents) {
     UpdateContents();
+  }
 }
 
 void CustomTabBarView::UpdateContents() {
@@ -379,21 +383,21 @@ void CustomTabBarView::UpdateContents() {
   // be animating out and it looks messy.
   web_app::AppBrowserController* const app_controller =
       browser_->app_controller();
-  if (app_controller && !app_controller->ShouldShowCustomTabBar())
+  if (app_controller && !app_controller->ShouldShowCustomTabBar()) {
     return;
+  }
 
   content::WebContents* contents = delegate_->GetWebContents();
-  if (!contents)
+  if (!contents) {
     return;
+  }
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   std::u16string title, location;
-  if (!entry->IsInitialEntry()) {
-    title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
-    if (ShouldDisplayUrl(contents)) {
-      location = web_app::AppBrowserController::FormatUrlOrigin(
-          contents->GetVisibleURL(), url_formatter::kFormatUrlOmitDefaults);
-    }
+  title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
+  if (ShouldDisplayUrl(contents)) {
+    location = web_app::AppBrowserController::FormatUrlOrigin(
+        contents->GetVisibleURL(), url_formatter::kFormatUrlOmitDefaults);
   }
 
   title_origin_view_->Update(title, location);
@@ -518,8 +522,9 @@ void CustomTabBarView::AppInfoClosedCallback(
   // else), we should refocus the location bar. This lets the user tab into the
   // "You should reload this page" infobar rather than dumping them back out
   // into a stale webpage.
-  if (!reload_prompt)
+  if (!reload_prompt) {
     return;
+  }
   if (closed_reason != views::Widget::ClosedReason::kEscKeyPressed &&
       closed_reason != views::Widget::ClosedReason::kCloseButtonClicked) {
     return;

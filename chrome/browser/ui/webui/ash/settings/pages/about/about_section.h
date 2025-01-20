@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_ABOUT_ABOUT_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_ABOUT_ABOUT_SECTION_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -47,7 +45,7 @@ class AboutSection : public OsSettingsSection {
   bool ShouldShowAUToggle(user_manager::User* active_user);
 
   raw_ptr<PrefService> pref_service_;
-  std::optional<CrostiniSection> crostini_subsection_;
+  CrostiniSection crostini_subsection_;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void UpdateReportIssueSearchTags();

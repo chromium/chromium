@@ -40,6 +40,7 @@ import java.util.concurrent.CountDownLatch;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
+@SuppressWarnings("UnusedMethod") // Private methods to test JavascriptInterface
 public class JavaBridgeBasicsTest {
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 

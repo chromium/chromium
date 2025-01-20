@@ -77,8 +77,7 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
 
-  # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
-  "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
+  # b/352703668: tests failing on trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
   # b/359336803: These tests are failing on brya (specifically kano) and
@@ -93,8 +92,14 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
   "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
-  # b/376898784
-  "a11y.LiveCaption.fieldtrial_testing_config_on",
+  # b/383280237
+  "audio.CrasNoiseCancellation.aec",
+  "audio.CrasNoiseCancellation.no_effects",
+
+  # b/384060114
+  "inputs.InputMethodShelfInputs@reven-vmtest",
+  "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
+  "inputs.VirtualKeyboardHandwriting.floating@reven-vmtest",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
@@ -134,10 +139,4 @@ if (!is_chrome_branded) {
     "shimlessrma.WelcomeCancel.critical",
     "shimlessrma.WelcomeNextCancel.critical",
   ]
-}
-
-if (is_cfi) {
-  # b/350872890: pending investigation and fixes for is_cfi builders on betty.
-  tast_disabled_tests_from_chrome_all +=
-      [ "crostini.FsCorruption.bookworm_stable@betty" ]
 }

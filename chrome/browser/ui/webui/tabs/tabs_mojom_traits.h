@@ -43,7 +43,9 @@ struct EnumTraits<tabs::mojom::TabAlertState, TabAlertState> {
              {TabAlertState::AUDIO_RECORDING,
               tabs::mojom::TabAlertState::kAudioRecording},
              {TabAlertState::VIDEO_RECORDING,
-              tabs::mojom::TabAlertState::kVideoRecording}});
+              tabs::mojom::TabAlertState::kVideoRecording},
+             {TabAlertState::GLIC_ACCESSING,
+              tabs::mojom::TabAlertState::kGlicAccessing}});
     return alert_state_map.at(input);
   }
 

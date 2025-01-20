@@ -22,7 +22,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"
@@ -92,8 +92,7 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
   ash::EnableTrustedTypesCSP(source);
 
   // Add all settings resources.
-  source->AddResourcePaths(
-      base::make_span(kAshCameraAppResources, kAshCameraAppResourcesSize));
+  source->AddResourcePaths(kAshCameraAppResources);
 
   delegate->PopulateLoadTimeData(source);
 

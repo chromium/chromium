@@ -32,8 +32,6 @@ source_set("model") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/sync_bookmarks",
@@ -41,14 +39,12 @@ source_set("model") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/signin/model:system_identity_util",
-    "//ios/web",
-    "//ios/web/public/thread",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [

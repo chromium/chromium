@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-
 #import <UIKit/UIKit.h>
+
 #include <string>
 
 #include "base/base_paths.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"

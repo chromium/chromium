@@ -7,50 +7,67 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform::home_modules {
 
-DefaultBrowserPromo::DefaultBrowserPromo()
-    : CardSelectionInfo(kDefaultBrowserPromo) {}
+DefaultBrowserPromo::DefaultBrowserPromo(PrefService* profile_prefs)
+    : CardSelectionInfo(kDefaultBrowserPromo), profile_prefs_(profile_prefs) {}
 
 std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
-      {kHasDefaultBrowserPromoReachedLimitInRoleManager,
+      {kHasDefaultBrowserPromoShownInOtherSurface,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kHasDefaultBrowserPromoReachedLimitInRoleManager})},
-      {kIsDefaultBrowserChrome,
+           .name = kHasDefaultBrowserPromoShownInOtherSurface})},
+      {kShouldShowNonRoleManagerDefaultBrowserPromo,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kIsDefaultBrowserChrome})}};
+           .name = kShouldShowNonRoleManagerDefaultBrowserPromo})}};
   return map;
 }
 
 CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kDefaultBrowserPromo == forced_result.value().result_label.value()) {
+    return forced_result.value();
+  }
+
   CardSelectionInfo::ShowResult result;
   result.result_label = kDefaultBrowserPromo;
 
-  std::optional<float> resultForIsDefaultBrowserChrome =
-      signals.GetSignal(kIsDefaultBrowserChrome);
-  std::optional<float>
-      resultForHasDefaultBrowserPromoReachedLimitInRoleManager =
-          signals.GetSignal(kHasDefaultBrowserPromoReachedLimitInRoleManager);
-
-  if (!resultForIsDefaultBrowserChrome.has_value() ||
-      !resultForHasDefaultBrowserPromoReachedLimitInRoleManager.has_value()) {
+  bool has_been_interacted_with =
+      profile_prefs_->GetBoolean(kDefaultBrowserPromoInteractedPref);
+  if (has_been_interacted_with) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
-  if (!*resultForIsDefaultBrowserChrome &&
-      *resultForHasDefaultBrowserPromoReachedLimitInRoleManager) {
-    result.position = EphemeralHomeModuleRank::kTop;
+  std::optional<float> resultForShouldShowNonRoleManagerDefaultBrowserPromo =
+      signals.GetSignal(kShouldShowNonRoleManagerDefaultBrowserPromo);
+  std::optional<float> resultForHasDefaultBrowserPromoShownInOtherSurface =
+      signals.GetSignal(kHasDefaultBrowserPromoShownInOtherSurface);
+
+  if (!resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
+      !resultForHasDefaultBrowserPromoShownInOtherSurface.has_value()) {
+    result.position = EphemeralHomeModuleRank::kNotShown;
+    return result;
+  }
+
+  if (*resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
+      !*resultForHasDefaultBrowserPromoShownInOtherSurface) {
+    result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
 
@@ -59,6 +76,15 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
 }
 
 bool DefaultBrowserPromo::IsEnabled(int impression_count) {
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kDefaultBrowserPromo == forced_result.value().result_label.value()) {
+    return true;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/ip_address.h"
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -41,7 +37,7 @@ TEST(IPAddressBytesTest, ConstructEmpty) {
 }
 
 TEST(IPAddressBytesTest, ConstructIPv4) {
-  uint8_t data[] = {192, 168, 1, 1};
+  auto data = std::to_array<uint8_t>({192, 168, 1, 1});
   IPAddressBytes bytes(data);
   ASSERT_EQ(std::size(data), bytes.size());
   size_t i = 0;
@@ -51,7 +47,24 @@ TEST(IPAddressBytesTest, ConstructIPv4) {
 }
 
 TEST(IPAddressBytesTest, ConstructIPv6) {
-  uint8_t data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+  auto data = std::to_array<uint8_t>({
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+  });
   IPAddressBytes bytes(data);
   ASSERT_EQ(std::size(data), bytes.size());
   size_t i = 0;

@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -533,32 +535,76 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(
                 0.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
 
+        int topControlsOffset = 0;
+        int bottomControlsOffset = TOOLBAR_HEIGHT;
         mBrowserControlsManager.setControlsPosition(
-                ControlsPosition.BOTTOM, 0, 0, TOOLBAR_HEIGHT, 10);
+                ControlsPosition.BOTTOM,
+                0,
+                0,
+                topControlsOffset,
+                TOOLBAR_HEIGHT,
+                10,
+                bottomControlsOffset);
         verify(mBrowserControlsStateProviderObserver)
                 .onControlsPositionChanged(ControlsPosition.BOTTOM);
         assertEquals(
-                0.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+                1.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
         assertEquals(0, mBrowserControlsManager.getTopControlsMinHeight());
         assertEquals(10, mBrowserControlsManager.getBottomControlsMinHeight());
+        assertEquals(topControlsOffset, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(bottomControlsOffset, mBrowserControlsManager.getBottomControlOffset());
 
         // Hidden ratio should reflect the bottom offset, not the top.
         notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT / 2);
         assertEquals(
                 0.5f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
 
-        mBrowserControlsManager.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 10, 0, 0);
+        topControlsOffset = -TOOLBAR_HEIGHT / 4;
+        bottomControlsOffset = 0;
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.TOP,
+                TOOLBAR_HEIGHT,
+                10,
+                topControlsOffset,
+                0,
+                0,
+                bottomControlsOffset);
         verify(mBrowserControlsStateProviderObserver)
                 .onControlsPositionChanged(ControlsPosition.TOP);
         assertEquals(
                 0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
         assertEquals(10, mBrowserControlsManager.getTopControlsMinHeight());
         assertEquals(0, mBrowserControlsManager.getBottomControlsMinHeight());
+        assertEquals(topControlsOffset, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(bottomControlsOffset, mBrowserControlsManager.getBottomControlOffset());
+        assertEquals(
+                TOOLBAR_HEIGHT + topControlsOffset, mBrowserControlsManager.getContentOffset());
 
         // Changing the bottom offset shouldn't affect hidden ratio while position is top.
         notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT);
         assertEquals(
                 0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+
+        Mockito.clearInvocations(mContainerView);
+        notifyBrowserControlsOffsetChanged(0, 0);
+        verify(mContainerView).requestLayout();
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // For native pages, we can't run an animation so the initial offsets should be overridden
+        // to 0.
+        doReturn(true).when(mTab).isNativePage();
+        topControlsOffset = 10;
+        bottomControlsOffset = TOOLBAR_HEIGHT;
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM,
+                0,
+                0,
+                topControlsOffset,
+                TOOLBAR_HEIGHT,
+                10,
+                bottomControlsOffset);
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
     }
 
     @Test

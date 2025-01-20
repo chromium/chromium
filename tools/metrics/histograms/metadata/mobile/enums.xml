@@ -231,6 +231,8 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="AI Prototyping"/>
   <int value="64" label="Manage shared tab group"/>
   <int value="65" label="Share local tab group"/>
+  <int value="66" label="Leave shared tab group"/>
+  <int value="67" label="Delete shared tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

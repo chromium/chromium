@@ -5,16 +5,12 @@
 #import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/password_manager_settings_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
 
 IOSPasswordManagerSettingsServiceFactory::
     IOSPasswordManagerSettingsServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasswordManagerSettingsService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("PasswordManagerSettingsService") {}
 
 IOSPasswordManagerSettingsServiceFactory::
     ~IOSPasswordManagerSettingsServiceFactory() = default;
@@ -29,8 +25,10 @@ IOSPasswordManagerSettingsServiceFactory::GetInstance() {
 // static
 password_manager::PasswordManagerSettingsService*
 IOSPasswordManagerSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<password_manager::PasswordManagerSettingsService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<
+          password_manager::PasswordManagerSettingsService>(profile,
+                                                            /*create=*/true);
 }
 
 std::unique_ptr<KeyedService>

@@ -59,8 +59,9 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   SetShowCloseButton(true);
 
   set_parent_window(parent_window);
-  if (!anchor_view)
+  if (!anchor_view) {
     SetAnchorRect(anchor_rect);
+  }
 }
 
 void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
@@ -78,8 +79,9 @@ void PageInfoBubbleViewBase::RenderFrameDeleted(
 
 void PageInfoBubbleViewBase::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     GetWidget()->Close();
+  }
 }
 
 void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {

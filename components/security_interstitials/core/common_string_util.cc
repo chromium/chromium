@@ -42,8 +42,8 @@ void PopulateSSLLayoutStrings(int cert_error,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
-void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
-                                 const base::Time time_triggered,
+void PopulateSSLDebuggingStrings(const net::SSLInfo& ssl_info,
+                                 base::Time time_triggered,
                                  base::Value::Dict& load_time_data) {
   load_time_data.Set("subject", ssl_info.cert->subject().GetDisplayName());
   load_time_data.Set("issuer", ssl_info.cert->issuer().GetDisplayName());

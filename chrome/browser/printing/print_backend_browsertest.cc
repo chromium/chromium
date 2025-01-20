@@ -108,7 +108,7 @@ bool LoadMetafileDataFromFile(const std::string& file_name,
     if (!base::ReadFileToString(data_file, &data))
       return false;
   }
-  return metafile.InitFromData(base::as_bytes(base::make_span(data)));
+  return metafile.InitFromData(base::as_byte_span(data));
 }
 
 }  // namespace

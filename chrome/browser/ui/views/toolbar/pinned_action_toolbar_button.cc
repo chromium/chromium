@@ -344,9 +344,9 @@ bool PinnedActionToolbarButton::IsCommandIdEnabled(int command_id) const {
     return browser_->profile()->IsRegularProfile() && is_pinnable_;
   }
   if (command_id == IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR) {
-    tabs::TabModel* tab = browser_->tab_strip_model()->GetActiveTab();
+    tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
     customize_chrome::SidePanelController* side_panel_controller =
-        tab->tab_features()->customize_chrome_side_panel_controller();
+        tab->GetTabFeatures()->customize_chrome_side_panel_controller();
     return side_panel_controller &&
            side_panel_controller->IsCustomizeChromeEntryAvailable();
   }
@@ -421,9 +421,13 @@ void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
   CHECK(action_id.has_value());
   const std::optional<std::string> metrics_name =
       actions::ActionIdMap::ActionIdToString(action_id.value());
-  CHECK(metrics_name.has_value());
-  base::RecordComputedAction(base::StrCat(
-      {"Actions.PinnedToolbarButtonActivation.", metrics_name.value()}));
+  // ActionIdToStringMappings are not initialized in unit tests, therefore will
+  // not have a value. In the normal case, `metrics_name` should always have a
+  // value.
+  if (metrics_name.has_value()) {
+    base::RecordComputedAction(base::StrCat(
+        {"Actions.PinnedToolbarButtonActivation.", metrics_name.value()}));
+  }
 
   base::AutoReset<bool> needs_delayed_destruction =
       action_view_->SetNeedsDelayedDestruction(true);

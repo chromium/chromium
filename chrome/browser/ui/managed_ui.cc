@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -56,8 +57,7 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
-
-namespace chrome {
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -166,14 +166,16 @@ std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile) {
 bool ShouldDisplayManagedUi(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show the UI in demo mode.
-  if (ash::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
     return false;
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Don't show the UI for Family Link accounts.
-  if (profile->IsChild())
+  if (profile->IsChild()) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return enterprise_util::IsBrowserManaged(profile) ||
@@ -184,7 +186,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 
 GURL GetManagedUiUrl(Profile* profile) {
   if (enterprise_util::IsBrowserManaged(profile)) {
-    return GURL(kChromeUIManagementURL);
+    return GURL(chrome::kChromeUIManagementURL);
   }
 
   if (ShouldDisplayManagedByParentUi(profile)) {
@@ -395,7 +397,6 @@ std::u16string GetManagementPageSubtitle(Profile* profile) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetManagementBubbleTitle(Profile* profile) {
-  // TODO(347245819): Use EnterpriseCustomLabel for the managers.
   std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   switch (GetManagementStringType(profile)) {
@@ -445,7 +446,7 @@ std::optional<std::string> GetDeviceManagerIdentity() {
     std::string custom_management_label =
         g_browser_process->local_state()
             ? g_browser_process->local_state()->GetString(
-                  prefs::kEnterpriseCustomLabel)
+                  prefs::kEnterpriseCustomLabelForBrowser)
             : std::string();
     if (!custom_management_label.empty()) {
       return custom_management_label;
@@ -464,8 +465,9 @@ std::optional<std::string> GetDeviceManagerIdentity() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 std::optional<std::string> GetSessionManagerIdentity() {
-  if (!policy::PolicyLoaderLacros::IsMainUserManaged())
+  if (!policy::PolicyLoaderLacros::IsMainUserManaged()) {
     return std::nullopt;
+  }
   return policy::PolicyLoaderLacros::main_user_policy_data()->managed_by();
 }
 #endif
@@ -473,14 +475,15 @@ std::optional<std::string> GetSessionManagerIdentity() {
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)
            ->HasManagementAuthority(
-               policy::EnterpriseManagementAuthority::CLOUD))
+               policy::EnterpriseManagementAuthority::CLOUD)) {
     return std::nullopt;
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(
           features::kEnterpriseManagementDisclaimerUsesCustomLabel)) {
     std::string custom_management_label =
-        profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+        profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabelForProfile);
     if (!custom_management_label.empty()) {
       return custom_management_label;
     }
@@ -489,8 +492,9 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
 
   const std::optional<std::string> managed_by =
       policy::GetManagedBy(profile->GetCloudPolicyManager());
-  if (managed_by)
+  if (managed_by) {
     return *managed_by;
+  }
 
   if (profile->GetProfilePolicyConnector()->IsUsingLocalTestPolicyProvider()) {
     return "Local Test Policies";
@@ -498,5 +502,3 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
 
   return GetEnterpriseAccountDomain(*profile);
 }
-
-}  // namespace chrome

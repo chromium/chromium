@@ -9,15 +9,22 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "chrome/common/buildflags.h"
 
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
-namespace whats_new {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace whats_new {
 class WhatsNewRegistry;
-#endif
 }  // namespace whats_new
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicBackgroundModeManager;
+class GlicProfileManager;
+}  // namespace glic
+#endif
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
@@ -38,6 +45,9 @@ class GlobalFeatures {
   // Called exactly once to initialize features.
   void Init();
 
+  // Called exactly once when the browser starts to shutdown.
+  void Shutdown();
+
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 
@@ -48,6 +58,16 @@ class GlobalFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicProfileManager* glic_profile_manager() {
+    return glic_profile_manager_.get();
+  }
+
+  glic::GlicBackgroundModeManager* glic_background_mode_manager() {
+    return glic_background_mode_manager_.get();
   }
 #endif
 
@@ -72,6 +92,12 @@ class GlobalFeatures {
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
+  std::unique_ptr<glic::GlicBackgroundModeManager>
+      glic_background_mode_manager_;
 #endif
 };
 

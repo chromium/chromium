@@ -70,8 +70,7 @@ void SaveTestWallpaperFile(const AccountId& account_id, base::FilePath target) {
     ASSERT_TRUE(base::CreateDirectory(target.DirName()));
   }
   auto data = EncodeImage(gfx::test::CreateImageSkia(/*size=*/16));
-  ASSERT_TRUE(
-      base::WriteFile(target, base::make_span(data->front(), data->size())));
+  ASSERT_TRUE(base::WriteFile(target, base::span(*data)));
 }
 
 }  // namespace

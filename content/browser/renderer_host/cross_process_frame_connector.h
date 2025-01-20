@@ -15,6 +15,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
@@ -308,7 +309,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   bool IsVisible();
 
   // This function is called by the RenderFrameHostDelegate to signal that it
-  // became visible.
+  // became visible. This is called after any navigations resulting from
+  // visibility changes have been queued (e.g. if needs-reload was set).
   void DelegateWasShown();
 
   // Handlers for messages received from the parent frame.
@@ -321,6 +323,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector
       base::OnceClosure closure) {
     child_frame_crash_shown_closure_for_testing_ = std::move(closure);
   }
+
+  // Returns the embedder's visibility.
+  Visibility EmbedderVisibility();
 
  protected:
   friend class MockCrossProcessFrameConnector;

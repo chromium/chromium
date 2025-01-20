@@ -101,7 +101,7 @@ public class PasswordsPreferenceTest {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(any()))
                 .thenReturn(mWarningType);
 
-        SettingsStation page = mEntryPoints.startMainSettingsNonBatched();
+        SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
         PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
 
         mRenderTestRule.render(passwordsPref.getPrefView(), "passwords_preference");

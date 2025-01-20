@@ -180,6 +180,19 @@ String AbstractPropertySetCSSStyleDeclaration::removeProperty(
   return result;
 }
 
+void AbstractPropertySetCSSStyleDeclaration::QuietlyRemoveProperty(
+    const String& property_name) {
+  CSSPropertyID property_id =
+      CssPropertyID(GetExecutionContext(), property_name);
+  CHECK(IsValidCSSPropertyID(property_id));
+  if (property_id == CSSPropertyID::kVariable) {
+    PropertySet().RemoveProperty(AtomicString(property_name),
+                                 /*return_text=*/nullptr);
+  } else {
+    PropertySet().RemoveProperty(property_id, /*return_text=*/nullptr);
+  }
+}
+
 const CSSValue*
 AbstractPropertySetCSSStyleDeclaration::GetPropertyCSSValueInternal(
     CSSPropertyID property_id) {

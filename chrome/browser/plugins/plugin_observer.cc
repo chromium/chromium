@@ -167,7 +167,10 @@ void PluginObserver::OpenPDF(const GURL& url) {
         })");
   std::unique_ptr<download::DownloadUrlParameters> params =
       std::make_unique<download::DownloadUrlParameters>(
-          url, render_frame_host->GetRenderViewHost()->GetProcess()->GetID(),
+          url,
+          render_frame_host->GetRenderViewHost()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           render_frame_host->GetRoutingID(), traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(

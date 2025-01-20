@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
@@ -34,7 +33,6 @@
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/on_device_model_service.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/video_effects/public/cpp/buildflags.h"
 
@@ -47,10 +45,12 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"
+#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
 #include "media/gpu/sandbox/hardware_video_encoding_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 // gn check is not smart enough to realize that this include only applies to
 // Linux/ChromeOS and the BUILD.gn dependencies correctly account for that.
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  //nogncheck
@@ -58,17 +58,19 @@
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "services/screen_ai/public/cpp/utilities.h"  // nogncheck
+#include "services/screen_ai/sandbox/screen_ai_sandbox_hook_linux.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
 #include "services/video_effects/video_effects_sandbox_hook_linux.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
@@ -76,21 +78,17 @@
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/ash/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if (BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \
-     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)))
-#include "services/screen_ai/public/cpp/utilities.h"  // nogncheck
-#include "services/screen_ai/sandbox/screen_ai_sandbox_hook_linux.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_apple.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/debug/crash_logging.h"
 #include "base/native_library.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -140,9 +138,7 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
 
 bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
   const bool obtain_gpu_info =
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoEncoding;
 
   if (obtain_gpu_info) {
@@ -174,14 +170,13 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
       // We deliberately "leak" `h_mod` so that the module stays loaded.
       if (!h_mod) {
-        base::UmaHistogramSparse(
-            "Process.Sandbox.PreloadLibraryFailed.ErrorCode", lib_error.code);
         // The browser should not request libraries that do not exist, so crash
-        // on failure.
-        wchar_t dll_name[MAX_PATH];
-        base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
-        base::debug::Alias(dll_name);
+        // on failure. Record info to distinguish crash signatures.
         base::debug::Alias(&lib_error);
+        std::string dll_name_str = base::WideToUTF8(library_path.value());
+        DEBUG_ALIAS_FOR_CSTR(dll_name, dll_name_str.c_str(), 256);
+        SCOPED_CRASH_KEY_STRING256("PreSandboxHook", "ModuleName", dll_name);
+
         NOTREACHED();
       }
     }
@@ -257,11 +252,7 @@ int UtilityMain(MainFunctionParams parameters) {
   // thread type change in ChildProcess constructor. It also needs to be
   // registered before the process has multiple threads, which may race with
   // application of the sandbox.
-  if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser) ||
-      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
-    SandboxedProcessThreadTypeHandler::Create();
-  }
+  SandboxedProcessThreadTypeHandler::Create();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -277,10 +268,12 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook,
                                         GetNetworkContextsParentDirectories());
       break;
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
       pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
       break;
+#else
+      NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kAudio:
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
@@ -300,13 +293,15 @@ int UtilityMain(MainFunctionParams parameters) {
           &on_device_translation::OnDeviceTranslationSandboxHook);
       break;
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       pre_sandbox_hook =
           base::BindOnce(&screen_ai::ScreenAIPreSandboxHook,
                          parameters.command_line->GetSwitchValuePath(
                              screen_ai::GetBinaryPathSwitch()));
       break;
+#else
+      NOTREACHED();
 #endif
 #if BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kVideoEffects:
@@ -314,17 +309,17 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&video_effects::VideoEffectsPreSandboxHook);
       break;
 #endif  // BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
       break;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kHardwareVideoEncoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoEncodingPreSandboxHook);
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kIme:
       pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
       break;
@@ -337,7 +332,7 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&ash::libassistant::LibassistantPreSandboxHook);
       break;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     default:
       break;
   }

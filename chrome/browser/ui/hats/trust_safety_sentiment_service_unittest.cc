@@ -687,8 +687,9 @@ TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
   // Record 2 visits to the NTP so regardless of the random NTP count chosen,
   // the Privacy Settings trigger will be eligible, but currently blocked by
   // the presence of an incognito profile.
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++) {
     service()->OpenedNewTabPage();
+  }
 
   profile()->DestroyOffTheRecordProfile(otr_profile);
 

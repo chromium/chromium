@@ -829,9 +829,7 @@ void HTMLFormElement::CollectListedElements(
   }
 }
 
-// This function should be const conceptually. However we update some fields
-// because of lazy evaluation.
-const ListedElement::List& HTMLFormElement::ListedElements(
+const ListedElement::List& HTMLFormElement::CollectAndCacheListedElements(
     bool include_shadow_trees) const {
   bool collect_shadow_inputs =
       include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;

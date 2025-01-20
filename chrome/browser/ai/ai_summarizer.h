@@ -34,7 +34,6 @@ class AISummarizer : public AIContextBoundObject,
 
  private:
   void ModelExecutionCallback(
-      const std::string& input,
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);

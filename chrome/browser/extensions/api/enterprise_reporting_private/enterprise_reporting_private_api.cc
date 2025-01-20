@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -31,6 +28,7 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -182,7 +180,7 @@ device_signals::SignalsAggregationRequest CreateAggregationRequest(
 }
 
 void StartSignalCollection(
-    const std::string& user_id,
+    const GaiaId& user_id,
     device_signals::SignalsAggregationRequest request,
     content::BrowserContext* browser_context,
     base::OnceCallback<void(device_signals::SignalsAggregationResponse)>
@@ -217,7 +215,7 @@ const char kDeviceIdNotFound[] = "Failed to retrieve the device id.";
 // GetDeviceId
 
 EnterpriseReportingPrivateGetDeviceIdFunction::
-    EnterpriseReportingPrivateGetDeviceIdFunction() {}
+    EnterpriseReportingPrivateGetDeviceIdFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
@@ -276,9 +274,8 @@ void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
     int32_t status) {
   if (status == 0) {  // Success.
     VLOG(1) << "The Endpoint Verification secret was retrieved.";
-    Respond(WithArguments(base::Value::BlobStorage(
-        reinterpret_cast<const uint8_t*>(data.data()),
-        reinterpret_cast<const uint8_t*>(data.data() + data.size()))));
+    Respond(WithArguments(
+        base::Value::BlobStorage(base::ToVector(base::as_byte_span(data)))));
   } else {
     VLOG(1) << "Endpoint Verification secret retrieval error: " << status;
     Respond(Error(base::StringPrintf("%d", status)));
@@ -328,9 +325,8 @@ void EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse(
   switch (status) {
     case RetrieveDeviceDataStatus::kSuccess:
       VLOG(1) << "The Endpoint Verification data was retrieved.";
-      Respond(WithArguments(base::Value::BlobStorage(
-          reinterpret_cast<const uint8_t*>(data.data()),
-          reinterpret_cast<const uint8_t*>(data.data() + data.size()))));
+      Respond(WithArguments(
+          base::Value::BlobStorage(base::ToVector(base::as_byte_span(data)))));
       return;
     case RetrieveDeviceDataStatus::kDataRecordNotFound:
       VLOG(1) << "The Endpoint Verification data is not present.";
@@ -463,6 +459,7 @@ EnterpriseReportingPrivateGetContextInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetContextInfoFunction::Run() {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetInstance()
           ->GetForBrowserContext(browser_context());
@@ -476,6 +473,9 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
       this));
 
   return RespondLater();
+#else
+  return RespondNow(NoArguments());
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
@@ -683,12 +683,6 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kFileSystemInfo)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetFileSystemInfo::Params>
       params =
           api::enterprise_reporting_private::GetFileSystemInfo::Params::Create(
@@ -714,7 +708,7 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      params->request.user_context.user_id, aggregation_request,
+      GaiaId(params->request.user_context.user_id), aggregation_request,
       browser_context(),
       base::BindOnce(&EnterpriseReportingPrivateGetFileSystemInfoFunction::
                          OnSignalRetrieved,
@@ -763,12 +757,6 @@ EnterpriseReportingPrivateGetSettingsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetSettingsFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kSettings)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetSettings::Params> params =
       api::enterprise_reporting_private::GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -792,7 +780,7 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      params->request.user_context.user_id, aggregation_request,
+      GaiaId(params->request.user_context.user_id), aggregation_request,
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved,
@@ -840,19 +828,13 @@ EnterpriseReportingPrivateGetAvInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetAvInfoFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kAntiVirus)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetAvInfo::Params> params =
       api::enterprise_reporting_private::GetAvInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
-      params->user_context.user_id, CreateAggregationRequest(signal_name()),
-      browser_context(),
+      GaiaId(params->user_context.user_id),
+      CreateAggregationRequest(signal_name()), browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved, this,
           base::TimeTicks::Now()));
@@ -892,19 +874,13 @@ EnterpriseReportingPrivateGetHotfixesFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetHotfixesFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kHotfix)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetHotfixes::Params> params =
       api::enterprise_reporting_private::GetHotfixes::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
-      params->user_context.user_id, CreateAggregationRequest(signal_name()),
-      browser_context(),
+      GaiaId(params->user_context.user_id),
+      CreateAggregationRequest(signal_name()), browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,
           this, base::TimeTicks::Now()));
@@ -947,6 +923,7 @@ EnterpriseReportingPrivateReportDataMaskingEventFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto params =
       api::enterprise_reporting_private::ReportDataMaskingEvent::Params::Create(
           args());
@@ -954,6 +931,7 @@ EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
 
   enterprise_connectors::ReportDataMaskingEvent(browser_context(),
                                                 std::move(params->event));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   return RespondNow(NoArguments());
 }

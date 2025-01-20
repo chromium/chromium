@@ -5,6 +5,7 @@ interface AI
     getter languageModel
     getter rewriter
     getter summarizer
+    getter translator
     getter writer
     method constructor
 interface AICreateMonitor : EventTarget
@@ -57,6 +58,7 @@ interface AILanguageModelFactory
     method create
 interface AIRewriter
     attribute @@toStringTag
+    getter format
     getter length
     getter sharedContext
     getter tone
@@ -66,6 +68,7 @@ interface AIRewriter
     method rewriteStreaming
 interface AIRewriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AISummarizer
@@ -82,10 +85,8 @@ interface AISummarizerCapabilities
     attribute @@toStringTag
     getter available
     method constructor
+    method createOptionsAvailable
     method languageAvailable
-    method supportsFormat
-    method supportsLength
-    method supportsType
 interface AISummarizerFactory
     attribute @@toStringTag
     method capabilities
@@ -96,19 +97,29 @@ interface AITranslator
     method constructor
     method destroy
     method translate
+interface AITranslatorCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+    method languagePairAvailable
 interface AITranslatorFactory
     attribute @@toStringTag
+    method capabilities
     method constructor
     method create
 interface AIWriter
     attribute @@toStringTag
+    getter format
+    getter length
     getter sharedContext
+    getter tone
     method constructor
     method destroy
     method write
     method writeStreaming
 interface AIWriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AbortController
@@ -131,6 +142,16 @@ interface AbortSignal : EventTarget
     method constructor
     method throwIfAborted
     setter onabort
+interface AsyncDisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.asyncDispose)
+    method adopt
+    method constructor
+    method defer
+    method disposeAsync
+    method move
+    method use
 interface BackgroundFetchEvent : ExtendableEvent
     attribute @@toStringTag
     getter registration
@@ -513,6 +534,16 @@ interface DecompressionStream
     getter readable
     getter writable
     method constructor
+interface DisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.dispose)
+    method adopt
+    method constructor
+    method defer
+    method dispose
+    method move
+    method use
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -727,6 +758,7 @@ interface GPU
     method requestAdapter
 interface GPUAdapter
     attribute @@toStringTag
+    getter featureLevel
     getter features
     getter info
     getter isCompatibilityMode
@@ -739,6 +771,8 @@ interface GPUAdapterInfo
     getter architecture
     getter description
     getter device
+    getter subgroupMaxSize
+    getter subgroupMinSize
     getter vendor
     method constructor
 interface GPUBindGroup
@@ -1001,7 +1035,11 @@ interface GPUSupportedLimits
     getter maxSampledTexturesPerShaderStage
     getter maxSamplersPerShaderStage
     getter maxStorageBufferBindingSize
+    getter maxStorageBuffersInFragmentStage
+    getter maxStorageBuffersInVertexStage
     getter maxStorageBuffersPerShaderStage
+    getter maxStorageTexturesInFragmentStage
+    getter maxStorageTexturesInVertexStage
     getter maxStorageTexturesPerShaderStage
     getter maxSubgroupSize
     getter maxTextureArrayLayers
@@ -1225,6 +1263,11 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
+interface LanguageTranslator
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method translate
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -1482,6 +1525,7 @@ interface OffscreenCanvasRenderingContext2D
     method fillRect
     method fillText
     method fillTextCluster
+    method getContextAttributes
     method getImageData
     method getLineDash
     method getTextureFormat
@@ -1619,6 +1663,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     attribute @@toStringTag
     getter connectEnd
     getter connectStart
+    getter contentEncoding
     getter contentType
     getter decodedBodySize
     getter deliveryType
@@ -1785,6 +1830,10 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
+interface ReportBody
+    attribute @@toStringTag
+    method constructor
+    method toJSON
 interface ReportingObserver
     attribute @@toStringTag
     method constructor
@@ -1959,6 +2008,10 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
+interface SuppressedError : Error
+    attribute message
+    attribute name
+    method constructor
 interface SyncEvent : ExtendableEvent
     attribute @@toStringTag
     getter lastChance
@@ -1992,8 +2045,6 @@ interface TextCluster
     getter x
     getter y
     method constructor
-    setter x
-    setter y
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
@@ -2039,9 +2090,9 @@ interface TextMetrics
     getter hangingBaseline
     getter ideographicBaseline
     getter width
-    method caretPositionFromPoint
     method constructor
     method getActualBoundingBox
+    method getIndexFromOffset
     method getSelectionRects
     method getTextClusters
 interface TimestampTrigger
@@ -2062,7 +2113,9 @@ interface TransformStreamDefaultController
     method terminate
 interface Translation
     attribute @@toStringTag
+    method canTranslate
     method constructor
+    method createTranslator
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag

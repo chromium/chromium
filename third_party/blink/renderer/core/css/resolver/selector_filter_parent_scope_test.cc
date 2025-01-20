@@ -44,27 +44,29 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope root_scope(nullptr);
-  SelectorFilterParentScope html_scope(*GetDocument().documentElement());
+  SelectorFilterParentScope root_scope(
+      nullptr, SelectorFilterParentScope::ScopeType::kRoot);
+  SelectorFilterParentScope html_scope(
+      GetDocument().documentElement(),
+      SelectorFilterParentScope::ScopeType::kParent);
   {
-    SelectorFilterParentScope body_scope(*GetDocument().body());
-    SelectorFilterParentScope::EnsureParentStackIsPushed();
+    SelectorFilterParentScope body_scope(
+        GetDocument().body(), SelectorFilterParentScope::ScopeType::kParent);
     {
-      SelectorFilterParentScope div_scope(*div);
-      SelectorFilterParentScope::EnsureParentStackIsPushed();
+      SelectorFilterParentScope div_scope(
+          div, SelectorFilterParentScope::ScopeType::kParent);
 
       base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-          /*is_within_scope=*/false, nullptr,
+          CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
           "html *, body *, .match *, #myId *", arena);
       CSSSelectorList* selectors =
           CSSSelectorList::AdoptSelectorVector(selector_vector);
 
       for (const CSSSelector* selector = selectors->First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
-        Vector<unsigned> selector_hashes;
+        Vector<uint16_t> selector_hashes;
         filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                        selector_hashes);
         EXPECT_NE(selector_hashes.size(), 0u);
@@ -83,23 +85,22 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(
-      GetDocument().getElementById(AtomicString("y")));
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilterParentScope span_scope(
+      GetDocument().getElementById(AtomicString("y")),
+      SelectorFilterParentScope::ScopeType::kRoot);
 
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr,
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "html *, body *, div *, span *, .x *, #y *", arena);
   CSSSelectorList* selectors =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    Vector<unsigned> selector_hashes;
+    Vector<uint16_t> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                    selector_hashes);
     EXPECT_NE(selector_hashes.size(), 0u);
@@ -159,22 +160,21 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(inner);
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilterParentScope span_scope(
+      inner, SelectorFilterParentScope::ScopeType::kRoot);
 
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr,
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
   CSSSelectorList* selectors =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    Vector<unsigned> selector_hashes;
+    Vector<uint16_t> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
                                    selector_hashes);
     EXPECT_NE(selector_hashes.size(), 0u);

@@ -443,14 +443,14 @@ TEST_F(WebBundleURLLoaderFactoryTest, MultipleRequests) {
   // Write the first 10kB of the bundle in which the bundle's metadata and the
   // response for kResourceUrl are included.
   ASSERT_GT(bundle.size(), 10000u);
-  WriteBundle(base::make_span(bundle).first(10000u));
+  WriteBundle(base::span(bundle).first<10000>());
   request1.client->RunUntilComplete();
 
   EXPECT_EQ(net::OK, request1.client->completion_status().error_code);
   EXPECT_FALSE(request2.client->has_received_completion());
 
   // Write the rest of the data.
-  WriteBundle(base::make_span(bundle).subspan(10000u));
+  WriteBundle(base::span(bundle).subspan<10000>());
   FinishWritingBundle();
   request2.client->RunUntilComplete();
 
@@ -478,7 +478,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {
   // Write the first 10kB of the bundle in which the bundle's metadata, response
   // for kResourceUrl, and response header for kResourceUrl2 are included.
   ASSERT_GT(bundle.size(), 10000U);
-  WriteBundle(base::make_span(bundle).first(10000u));
+  WriteBundle(base::span(bundle).first<10000>());
 
   // This makes sure the bytes written above are consumed by WebBundle parser.
   request_to_complete1.client->RunUntilComplete();
@@ -490,7 +490,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CancelRequest) {
   request_to_cancel3.loader.reset();
 
   // Write the rest of the data.
-  WriteBundle(base::make_span(bundle).subspan(10000));
+  WriteBundle(base::span(bundle).subspan<10000>());
   FinishWritingBundle();
   request_to_complete2.client->RunUntilComplete();
   EXPECT_EQ(net::OK,

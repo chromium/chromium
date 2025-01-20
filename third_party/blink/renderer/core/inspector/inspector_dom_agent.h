@@ -95,6 +95,7 @@ class CORE_EXPORT InspectorDOMAgent final
 
   static protocol::Response ToResponse(DummyExceptionStateForTesting&);
   static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
+  static PseudoId ProtocolPseudoTypeToPseudoId(protocol::DOM::PseudoType);
   static protocol::DOM::ShadowRootType GetShadowRootType(ShadowRoot*);
   static protocol::DOM::CompatibilityMode GetDocumentCompatibilityMode(
       Document*);
@@ -114,29 +115,29 @@ class CORE_EXPORT InspectorDOMAgent final
   void Reset();
 
   // Methods called from the frontend for DOM nodes inspection.
-  protocol::Response enable(protocol::Maybe<String> includeWhitespace) override;
+  protocol::Response enable(std::optional<String> includeWhitespace) override;
   protocol::Response disable() override;
   protocol::Response getDocument(
-      protocol::Maybe<int> depth,
-      protocol::Maybe<bool> traverse_frames,
+      std::optional<int> depth,
+      std::optional<bool> traverse_frames,
       std::unique_ptr<protocol::DOM::Node>* root) override;
   protocol::Response getNodesForSubtreeByStyle(
       int node_id,
       std::unique_ptr<protocol::Array<protocol::DOM::CSSComputedStyleProperty>>
           computed_styles,
-      protocol::Maybe<bool> pierce,
+      std::optional<bool> pierce,
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
   protocol::Response getFlattenedDocument(
-      protocol::Maybe<int> depth,
-      protocol::Maybe<bool> pierce,
+      std::optional<int> depth,
+      std::optional<bool> pierce,
       std::unique_ptr<protocol::Array<protocol::DOM::Node>>* nodes) override;
   protocol::Response collectClassNamesFromSubtree(
       int node_id,
       std::unique_ptr<protocol::Array<String>>* class_names) override;
   protocol::Response requestChildNodes(
       int node_id,
-      protocol::Maybe<int> depth,
-      protocol::Maybe<bool> traverse_frames) override;
+      std::optional<int> depth,
+      std::optional<bool> traverse_frames) override;
   protocol::Response querySelector(int node_id,
                                    const String& selector,
                                    int* out_node_id) override;
@@ -154,17 +155,17 @@ class CORE_EXPORT InspectorDOMAgent final
                                        const String& value) override;
   protocol::Response setAttributesAsText(int node_id,
                                          const String& text,
-                                         protocol::Maybe<String> name) override;
+                                         std::optional<String> name) override;
   protocol::Response removeAttribute(int node_id, const String& name) override;
-  protocol::Response getOuterHTML(protocol::Maybe<int> node_id,
-                                  protocol::Maybe<int> backend_node_id,
-                                  protocol::Maybe<String> object_id,
+  protocol::Response getOuterHTML(std::optional<int> node_id,
+                                  std::optional<int> backend_node_id,
+                                  std::optional<String> object_id,
                                   String* outer_html) override;
   protocol::Response setOuterHTML(int node_id,
                                   const String& outer_html) override;
   protocol::Response performSearch(
       const String& query,
-      protocol::Maybe<bool> include_user_agent_shadow_dom,
+      std::optional<bool> include_user_agent_shadow_dom,
       String* search_id,
       int* result_count) override;
   protocol::Response getSearchResults(
@@ -182,10 +183,10 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
   protocol::Response setInspectedNode(int node_id) override;
   protocol::Response resolveNode(
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_group,
-      protocol::Maybe<int> execution_context_id,
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_group,
+      std::optional<int> execution_context_id,
       std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>*)
       override;
   protocol::Response getAttributes(
@@ -193,65 +194,65 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<String>>* attributes) override;
   protocol::Response copyTo(int node_id,
                             int target_node_id,
-                            protocol::Maybe<int> insert_before_node_id,
+                            std::optional<int> insert_before_node_id,
                             int* out_node_id) override;
   protocol::Response moveTo(int node_id,
                             int target_node_id,
-                            protocol::Maybe<int> insert_before_node_id,
+                            std::optional<int> insert_before_node_id,
                             int* out_node_id) override;
   protocol::Response undo() override;
   protocol::Response redo() override;
   protocol::Response markUndoableState() override;
-  protocol::Response focus(protocol::Maybe<int> node_id,
-                           protocol::Maybe<int> backend_node_id,
-                           protocol::Maybe<String> object_id) override;
+  protocol::Response focus(std::optional<int> node_id,
+                           std::optional<int> backend_node_id,
+                           std::optional<String> object_id) override;
   protocol::Response setFileInputFiles(
       std::unique_ptr<protocol::Array<String>> files,
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id) override;
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id) override;
   protocol::Response setNodeStackTracesEnabled(bool enable) override;
   protocol::Response getNodeStackTraces(
       int node_id,
-      protocol::Maybe<v8_inspector::protocol::Runtime::API::StackTrace>*
+      std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>*
           creation) override;
   protocol::Response getBoxModel(
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
       std::unique_ptr<protocol::DOM::BoxModel>*) override;
   protocol::Response getContentQuads(
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
       std::unique_ptr<protocol::Array<protocol::Array<double>>>* quads)
       override;
   protocol::Response getNodeForLocation(
       int x,
       int y,
-      protocol::Maybe<bool> include_user_agent_shadow_dom,
-      protocol::Maybe<bool> ignore_pointer_events_none,
+      std::optional<bool> include_user_agent_shadow_dom,
+      std::optional<bool> ignore_pointer_events_none,
       int* backend_node_id,
       String* frame_id,
-      protocol::Maybe<int>* node_id) override;
+      std::optional<int>* node_id) override;
   protocol::Response getRelayoutBoundary(int node_id,
                                          int* out_node_id) override;
   protocol::Response describeNode(
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
-      protocol::Maybe<int> depth,
-      protocol::Maybe<bool> pierce,
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
+      std::optional<int> depth,
+      std::optional<bool> pierce,
       std::unique_ptr<protocol::DOM::Node>*) override;
   protocol::Response scrollIntoViewIfNeeded(
-      protocol::Maybe<int> node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
-      protocol::Maybe<protocol::DOM::Rect> rect) override;
+      std::optional<int> node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
+      std::unique_ptr<protocol::DOM::Rect> rect) override;
 
   protocol::Response getFrameOwner(const String& frame_id,
                                    int* backend_node_id,
-                                   protocol::Maybe<int>* node_id) override;
+                                   std::optional<int>* node_id) override;
 
   protocol::Response getFileInfo(const String& object_id,
                                  String* path) override;
@@ -264,11 +265,11 @@ class CORE_EXPORT InspectorDOMAgent final
   // optional container-name.
   protocol::Response getContainerForNode(
       int node_id,
-      protocol::Maybe<String> container_name,
-      protocol::Maybe<protocol::DOM::PhysicalAxes> physical_axes,
-      protocol::Maybe<protocol::DOM::LogicalAxes> logical_axes,
-      protocol::Maybe<bool> queries_scroll_state,
-      protocol::Maybe<int>* container_node_id) override;
+      std::optional<String> container_name,
+      std::optional<protocol::DOM::PhysicalAxes> physical_axes,
+      std::optional<protocol::DOM::LogicalAxes> logical_axes,
+      std::optional<bool> queries_scroll_state,
+      std::optional<int>* container_node_id) override;
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
@@ -280,7 +281,7 @@ class CORE_EXPORT InspectorDOMAgent final
                                           int* out_node_id) override;
 
   protocol::Response getAnchorElement(int node_id,
-                                      protocol::Maybe<String> anchor_specifier,
+                                      std::optional<String> anchor_specifier,
                                       int* out_node_id) override;
 
   bool Enabled() const;
@@ -347,9 +348,9 @@ class CORE_EXPORT InspectorDOMAgent final
                            HeapVector<Member<Node>>* result);
 
   protocol::Response AssertNode(int node_id, Node*&);
-  protocol::Response AssertNode(const protocol::Maybe<int>& node_id,
-                                const protocol::Maybe<int>& backend_node_id,
-                                const protocol::Maybe<String>& object_id,
+  protocol::Response AssertNode(const std::optional<int>& node_id,
+                                const std::optional<int>& backend_node_id,
+                                const std::optional<String>& object_id,
                                 Node*&);
   protocol::Response AssertElement(int node_id, Element*&);
   Document* GetDocument() const { return document_.Get(); }

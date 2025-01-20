@@ -459,7 +459,8 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
   }
 
   base::Value::Dict settings_dict;
-  if (Shell::Get()->keyboard_capability()->HasRightAltKeyForOobe(keyboard.id)) {
+  if (Shell::Get()->keyboard_capability()->HasQuickInsertKeyForOobe(
+          keyboard.id)) {
     base::Value::Dict modifier_remappings_dict;
     modifier_remappings_dict.Set(
         base::NumberToString(

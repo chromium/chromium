@@ -19,11 +19,17 @@
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion;
 
+/// Responds to a search image with Lens request by creating a new Lens UI with
+/// the given image. The completion is called once the UI is presented.
+- (void)searchImageWithLens:(UIImage*)image
+                 entrypoint:(LensOverlayEntrypoint)entrypoint
+                 completion:(void (^)(BOOL))completion;
+
 /// Display the lens overlay, if it exists.
 - (void)showLensUI:(BOOL)animated;
 
 /// Hide lens overlay if it exists.
-- (void)hideLensUI:(BOOL)animated;
+- (void)hideLensUI:(BOOL)animated completion:(void (^)())completion;
 
 /// Destroy lens overlay (called e.g. in response to memory pressure).
 - (void)destroyLensUI:(BOOL)animated

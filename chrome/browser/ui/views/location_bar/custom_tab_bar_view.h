@@ -25,7 +25,7 @@ namespace views {
 class FlexLayout;
 class MenuRunner;
 class ImageButton;
-}
+}  // namespace views
 
 class BrowserView;
 class CustomTabBarTitleOriginView;

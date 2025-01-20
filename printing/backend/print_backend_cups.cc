@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/backend/print_backend_cups.h"
 
 #include <cups/cups.h>
@@ -18,6 +13,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -115,9 +111,13 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
     printer_info->options[kDriverInfoTagName] = drv_info;
 
   // Store printer options.
-  for (int opt_index = 0; opt_index < printer.num_options; ++opt_index) {
-    printer_info->options[printer.options[opt_index].name] =
-        printer.options[opt_index].value;
+  if (printer.num_options > 0) {
+    // SAFETY: Required from CUPS.
+    auto options = UNSAFE_BUFFERS(base::span<const cups_option_t>(
+        printer.options, static_cast<size_t>(printer.num_options)));
+    for (const auto& option : options) {
+      printer_info->options[option.name] = option.value;
+    }
   }
   std::string_view info =
       info_option ? std::string_view(info_option) : std::string_view();
@@ -183,10 +183,10 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     return mojom::ResultCode::kSuccess;
   }
 
-  for (int printer_index = 0; printer_index < dests_data.num_dests;
-       ++printer_index) {
-    const cups_dest_t& printer = dests_data.dests[printer_index];
-
+  // SAFETY: Required from CUPS.
+  auto printers = UNSAFE_BUFFERS(base::span<const cups_dest_t>(
+      dests_data.dests, static_cast<size_t>(dests_data.num_dests)));
+  for (const auto& printer : printers) {
     PrinterBasicInfo printer_info;
     if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
         mojom::ResultCode::kSuccess) {

@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -56,7 +56,6 @@ public class SuggestionsNavigationDelegateUnitTest {
     @Mock private Profile mProfile;
     @Mock private NativePageHost mHost;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -67,12 +66,7 @@ public class SuggestionsNavigationDelegateUnitTest {
     public void setUp() {
         mSuggestionsNavigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        mActivity,
-                        mProfile,
-                        mHost,
-                        mTabModelSelector,
-                        mTabGroupCreationDialogManager,
-                        mTab);
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
 
         lenient().when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
     }
@@ -158,7 +152,10 @@ public class SuggestionsNavigationDelegateUnitTest {
         Assert.assertTrue(
                 mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(JUnitTestGURLs.URL_2));
         verify(tabModel).setIndex(eq(1), anyInt());
-        verify(tabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab));
+        verify(tabModel.getTabRemover())
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab),
+                        /* allowDialog= */ eq(false));
     }
 
     private TabModel createTabModelFromList(List<GURL> urlList) {
@@ -169,6 +166,8 @@ public class SuggestionsNavigationDelegateUnitTest {
             lenient().doReturn(tab).when(tabModel).getTabAt(i);
         }
         lenient().doReturn(urlList.size()).when(tabModel).getCount();
+        TabRemover tabRemover = mock(TabRemover.class);
+        lenient().doReturn(tabRemover).when(tabModel).getTabRemover();
         return tabModel;
     }
 }

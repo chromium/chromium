@@ -15,14 +15,15 @@ import collections
 import errno
 import json
 import os
-import shlex
 import platform
 import re
+import shlex
 import shutil
 import subprocess
 import sys
 import tempfile
 import traceback
+from typing import List, Optional
 import urllib.request
 import zipfile
 
@@ -98,6 +99,7 @@ class MetaBuildWrapper:
         'win') else 'isolate'
     self.use_luci_auth = False
     self.rts_out_dir = self.PathJoin('gen', 'rts')
+    self.rts_banned_suites = set()
 
   def PostArgsInit(self):
     self.use_luci_auth = getattr(self.args, 'luci_auth', False)
@@ -108,6 +110,14 @@ class MetaBuildWrapper:
     if 'expectations_dir' in self.args and self.args.expectations_dir is None:
       self.args.expectations_dir = os.path.join(
           os.path.dirname(self.args.config_file), 'mb_config_expectations')
+    rts_banned_suites_map = json.loads(
+        self.ReadFile(
+            self.PathJoin(self.chromium_src_dir, 'tools', 'mb',
+                          'rts_banned_suites.json')))
+    self.rts_banned_suites.update(rts_banned_suites_map.get('*', set()))
+    if getattr(self.args, 'builder', None):
+      self.rts_banned_suites.update(
+          rts_banned_suites_map.get(self.args.builder, set()))
 
   def Main(self, args):
     self.ParseArgs(args)
@@ -486,23 +496,23 @@ class MetaBuildWrapper:
       self.WriteFile(expectation_file, json_s)
     return 0
 
-  def RtsSelect(self):
-    # TODO(crbug.com/374962112): Support 'filegraph-selection'.
-    filter_data = None
+  def RtsSelect(self, targets: List[str]):
+    """Looks for RTS Model arg and writes filter file to isolate.
 
-    # TODO(crbug.com/360878342): Get Filter files and store on isolate.
-    # TODO(crbug.com/375209059): Add Doc Link for STS
-    if self.args.rts_model == 'smart-test-selection':
-      filter_data = ""  # Android API: GetTasksToSkip(self.args.target)
-
-    filter_file_path = self.PathJoin(self.ToAbsPath(self.args.path),
-                                     self.rts_out_dir,
-                                     self.args.target + '.filter')
-    self.WriteFile(filter_file_path, filter_data, force_verbose=True)
+    Args:
+        targets: List of requested target test suites.
+    """
+    filter_data = ''
+    for target in targets:
+      # TODO: crbug.com/374962112 - Support 'filegraph-selection'.
+      # TODO: crbug.com/375209059 - Add Doc Link for RTS
+      if self.args.rts_model == 'smart_test_selection':
+        # TODO: crbug.com/360881028 - Android API: GetTasksToSkip(target)
+        self.WriteFile(self.GetFilterFilePath(target=target, absolute=True),
+                       filter_data,
+                       force_verbose=False)
 
   def CmdGen(self):
-    if self.args.rts_model:
-      self.RtsSelect()
     vals = self.Lookup()
     return self.RunGNGen(vals)
 
@@ -662,9 +672,9 @@ class MetaBuildWrapper:
       return 1
 
     tags = ['-tag=%s' % tag for tag in self.args.tags]
+    json_dir = self.TempDir()
 
     try:
-      json_dir = self.TempDir()
       json_file = self.PathJoin(json_dir, 'task.json')
       cmd = [
           self.PathJoin('tools', 'luci-go', 'swarming'),
@@ -1093,6 +1103,8 @@ class MetaBuildWrapper:
 
   def RunGNGen(self, vals, compute_inputs_for_analyze=False, check=True):
     build_dir = self.args.path
+    isolate_targets = None
+    isolate_map = None
 
     if check:
       cmd = self.GNCmd('gen', build_dir, '--check')
@@ -1148,7 +1160,7 @@ class MetaBuildWrapper:
       self.Print('GN gen failed: %d' % ret)
       return ret
 
-    if getattr(self.args, 'swarming_targets_file', None):
+    if isolate_targets is not None:
       ret = self.GenerateIsolates(vals, isolate_targets, isolate_map, build_dir)
 
     return ret
@@ -1274,6 +1286,8 @@ class MetaBuildWrapper:
     """
     possible_rpaths = self.PossibleRuntimeDepsPaths(vals, ninja_targets,
                                                     isolate_map)
+    if self.args.rts_model:
+      self.RtsSelect(ninja_targets)
 
     for target, rpaths in possible_rpaths.items():
       # TODO(crbug.com/41441724): We don't know where each .runtime_deps
@@ -1304,18 +1318,49 @@ class MetaBuildWrapper:
         return ret
     return 0
 
-  def AddFilterFileArg(self, target, build_dir, command):
+  def GetFilterFilePath(self, target: str, *, absolute: bool = False) -> str:
+    """Uses build directory and filter file path to pass on to the Isolate.
+
+    Args:
+        target: Name of the test suite (target) that will be used
+            as part of the filename of the filter file. Ensures that the filter
+            file has been created and written by the RtsSelect function.
+        absolute: Determines what type of path to return. If True,
+            return the entire path, else the relative path.
+
+    Returns:
+        Absolute or relative path to the filter file.
+    """
     filter_file = target + '.filter'
     filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
-    abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
+    abs_filter_file_path = self.ToAbsPath(self.args.path, filter_file_path)
+    self.MaybeMakeDirectory(os.path.dirname(abs_filter_file_path))
+    if absolute:
+      return abs_filter_file_path
+    return filter_file_path
 
-    filter_exists = self.Exists(abs_filter_file_path)
-    if filter_exists:
+  def AddFilterFileArg(self, target: str,
+                       command: List[str]) -> Optional[List[str]]:
+    """Adds the filter file arg and filter filename to existing command.
+
+    This will filter out test cases from a specific test suite based on
+    predicitive models using a form of regression test selection (RTS).
+
+    Args:
+        target: Name of the test suite (target) that will be used
+            as part of the filename of the filter file.
+        command: Existing command line to append new filter arg to.
+
+    Returns:
+        Updated command line list or None if no file was added.
+    """
+    filter_file_path = self.GetFilterFilePath(target=target, absolute=False)
+    if filter_file_path:
       filtered_command = command.copy()
       filtered_command.append('--test-launcher-filter-file=%s' %
                               filter_file_path)
       self.Print('added test selection filter file to command: %s' %
-                 filter_file)
+                 filter_file_path)
       return filtered_command
     return None
 
@@ -1535,9 +1580,14 @@ class MetaBuildWrapper:
     }
 
     if self.args.rts_model:
-      rts_command = self.AddFilterFileArg(target, build_dir, command)
-      if rts_command:
-        isolate['variables']['rts_command'] = rts_command
+      # When RTS Model is selected, set the RTS command to be used by the
+      # test launcher. When the target is not in the banned suites, the
+      # filter file argument will be added to the command.
+      if target not in self.rts_banned_suites:
+        rts_command = self.AddFilterFileArg(target, command)
+        if rts_command:
+          self.Print('Adding RTS filter file to command.')
+          isolate['variables']['rts_command'] = rts_command
 
     self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
 
@@ -1981,6 +2031,7 @@ class MetaBuildWrapper:
     output_path = self.args.output_path
     if not self.Exists(path):
       self.WriteFailureAndRaise('"%s" does not exist' % path, output_path)
+    inp = None
 
     try:
       inp = json.loads(self.ReadFile(path))

@@ -714,7 +714,7 @@ public final class R {
         public static {{ e.java_type }} {{ e.name }} = {{ e.value }};
         {% endfor %}
         {% for e in non_final_resources[resource_type] %}
-            {% if e.value != '0' %}
+            {% if e.value not in ('0', '0x0') %}
         public static {{ e.java_type }} {{ e.name }} = {{ e.value }};
             {% else %}
         public static {{ e.java_type }} {{ e.name }};

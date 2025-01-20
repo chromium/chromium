@@ -123,4 +123,7 @@ bool WebClient::IsInsecureFormWarningEnabled(
   return true;
 }
 
+void WebClient::BuildEditMenu(web::WebState* web_state,
+                              id<UIMenuBuilder>) const {}
+
 }  // namespace web

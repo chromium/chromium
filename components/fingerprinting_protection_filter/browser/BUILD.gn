@@ -22,11 +22,15 @@ if (use_blink) {
     ]
     public_deps = [
       "//base",
+      "//components/content_settings/browser",
+      "//components/content_settings/core/browser",
       "//components/content_settings/core/browser:cookie_settings",
       "//components/content_settings/core/common:common",
       "//components/fingerprinting_protection_filter/common:common",
+      "//components/fingerprinting_protection_filter/common:exceptions",
       "//components/fingerprinting_protection_filter/common:features",
       "//components/fingerprinting_protection_filter/mojom",
+      "//components/privacy_sandbox:features",
       "//components/privacy_sandbox:tracking_protection_settings",
       "//components/site_engagement/content",
       "//components/subresource_filter/content/shared/browser",
@@ -38,8 +42,8 @@ if (use_blink) {
       "//services/metrics/public/cpp:ukm_builders",
     ]
     deps = [
-      "//components/content_settings/browser",
       "//components/fingerprinting_protection_filter/common:exceptions",
+      "//components/fingerprinting_protection_filter/common:prefs",
       "//components/subresource_filter/core/common",
       "//net",
       "//services/metrics/public/cpp:metrics_cpp",
@@ -60,6 +64,7 @@ if (use_blink) {
     ]
     deps = [
       "//components/content_settings/core/browser",
+      "//components/fingerprinting_protection_filter/common:prefs",
       "//components/privacy_sandbox:tracking_protection_settings",
     ]
   }
@@ -76,6 +81,8 @@ if (use_blink) {
       ":test_support",
       "//base",
       "//components/content_settings/core/browser:browser",
+      "//components/fingerprinting_protection_filter/common:exceptions",
+      "//components/fingerprinting_protection_filter/common:prefs",
       "//components/privacy_sandbox:features",
       "//components/subresource_filter/content/shared/browser:test_support",
       "//components/subresource_filter/core/browser",

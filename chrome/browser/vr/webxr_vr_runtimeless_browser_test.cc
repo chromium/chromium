@@ -7,6 +7,8 @@
 
 namespace vr {
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that WebXR does not return any devices if all runtime support is
 // disabled.
 IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
@@ -15,5 +17,6 @@ IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
   WaitOnJavaScriptStep();
   EndTest();
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 }  // namespace vr

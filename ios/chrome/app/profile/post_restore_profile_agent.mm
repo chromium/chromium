@@ -46,29 +46,23 @@
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  switch (nextInitStage) {
-    case ProfileInitStage::kProfileLoaded: {
-      ProfileIOS* profile = self.profileState.profile;
-      _promosManager = PromosManagerFactory::GetForProfile(profile);
-      _identityManager = IdentityManagerFactory::GetForProfile(profile);
-      _prefService = profile->GetPrefs();
-      break;
-    }
-    case ProfileInitStage::kFinal: {
-      _hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
-      [self maybeRegisterPromo];
-      if (_hasAccountInfo && _identityManager) {
-        _identityObserverBridge =
-            std::make_unique<signin::IdentityManagerObserverBridge>(
-                _identityManager, self);
-      } else {
-        [self shutdown];
-      }
-      break;
-    }
-    default:
-      // Nothing to do for other stages.
-      break;
+  if (nextInitStage != ProfileInitStage::kFinal) {
+    return;
+  }
+
+  DCHECK(profileState.profile);
+  ProfileIOS* profile = profileState.profile;
+  _promosManager = PromosManagerFactory::GetForProfile(profile);
+  _identityManager = IdentityManagerFactory::GetForProfile(profile);
+  _prefService = profile->GetPrefs();
+  _hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
+  [self maybeRegisterPromo];
+  if (_hasAccountInfo && _identityManager) {
+    _identityObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
+  } else {
+    [self shutdown];
   }
 }
 

@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/test_management_policy.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom.h"
@@ -23,11 +24,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;
+using extensions::ExtensionId;
+using extensions::ExtensionRegistry;
 using extensions::ExtensionService;
 using extensions::ManagementPolicy;
 using extensions::TestExtensionEnvironment;
 using extensions::TestManagementPolicyProvider;
+using extensions::UnloadedExtensionReason;
 using extensions::mojom::ManifestLocation;
+using ::testing::IsNull;
 
 namespace ash::boca {
 namespace {
@@ -40,6 +45,11 @@ class OnTaskExtensionsManagerImplTest : public ::testing::Test {
         extensions::ExtensionBuilder("Extension").SetLocation(location).Build();
     extension_environment_.GetExtensionService()->AddExtension(extension.get());
     return extension.get();
+  }
+
+  void UninstallExtension(const std::string& extension_id) {
+    extension_environment_.GetExtensionService()->UnloadExtension(
+        extension_id, UnloadedExtensionReason::UNINSTALL);
   }
 
   TestingProfile* profile() { return extension_environment_.profile(); }
@@ -159,6 +169,62 @@ TEST_F(OnTaskExtensionsManagerImplTest, ShouldReEnableExtensionsOnInit) {
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return extension_service->IsExtensionEnabled(extension->id());
   }));
+}
+
+TEST_F(OnTaskExtensionsManagerImplTest,
+       ShouldReEnableExtensionIfDisableMultipleTimes) {
+  const Extension* const extension = AddExtension();
+  const ExtensionService* const extension_service =
+      extension_environment_.GetExtensionService();
+
+  // Allow all extension modifications by policy.
+  TestManagementPolicyProvider provider(
+      TestManagementPolicyProvider::ALLOW_ALL);
+  ManagementPolicy* const policy =
+      extension_environment_.GetExtensionSystem()->management_policy();
+  policy->RegisterProvider(&provider);
+
+  // Disable extensions multiple times.
+  OnTaskExtensionsManagerImpl on_task_extensions_manager(profile());
+  on_task_extensions_manager.DisableExtensions();
+  ASSERT_FALSE(extension_service->IsExtensionEnabled(extension->id()));
+  on_task_extensions_manager.DisableExtensions();
+  ASSERT_FALSE(extension_service->IsExtensionEnabled(extension->id()));
+
+  // Re-enable extensions and verify the extension is enabled.
+  on_task_extensions_manager.ReEnableExtensions();
+  EXPECT_TRUE(extension_service->IsExtensionEnabled(extension->id()));
+}
+
+TEST_F(OnTaskExtensionsManagerImplTest,
+       ShouldNotReEnableExtensionIfExtensionIsUninstalled) {
+  const Extension* const extension = AddExtension();
+  const ExtensionService* const extension_service =
+      extension_environment_.GetExtensionService();
+  const ExtensionRegistry* const extension_registry =
+      ExtensionRegistry::Get(profile());
+
+  // Allow all extension modifications by policy.
+  TestManagementPolicyProvider provider(
+      TestManagementPolicyProvider::ALLOW_ALL);
+  ManagementPolicy* const policy =
+      extension_environment_.GetExtensionSystem()->management_policy();
+  policy->RegisterProvider(&provider);
+
+  // Disable extensions.
+  OnTaskExtensionsManagerImpl on_task_extensions_manager(profile());
+  on_task_extensions_manager.DisableExtensions();
+  ASSERT_FALSE(extension_service->IsExtensionEnabled(extension->id()));
+
+  // Uninstall the extension.
+  const ExtensionId extension_id = extension->id();
+  UninstallExtension(extension_id);
+  ASSERT_THAT(extension_registry->disabled_extensions().GetByID(extension_id),
+              IsNull());
+
+  // Re-enable extensions and verify the extension is not enabled.
+  on_task_extensions_manager.ReEnableExtensions();
+  EXPECT_FALSE(extension_service->IsExtensionEnabled(extension_id));
 }
 
 }  // namespace

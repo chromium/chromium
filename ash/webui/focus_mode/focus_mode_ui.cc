@@ -321,8 +321,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   // Setup chrome://focus-mode-media main page.
   source->AddResourcePath("", IDR_ASH_FOCUS_MODE_FOCUS_MODE_HTML);
   // Add chrome://focus-mode-media content.
-  source->AddResourcePaths(
-      base::make_span(kAshFocusModeResources, kAshFocusModeResourcesSize));
+  source->AddResourcePaths(kAshFocusModeResources);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -163,10 +162,12 @@ class TouchBarNotificationBridge : public CommandObserver,
   void UpdateTouchBar() { [[owner_ controller] invalidateTouchBar]; }
 
   void UpdateWebContents(content::WebContents* new_contents) {
-    if (contents_ == new_contents)
+    if (contents_ == new_contents) {
       return;
-    if (contents_)
+    }
+    if (contents_) {
       BookmarkTabHelper::FromWebContents(contents_)->RemoveObserver(this);
+    }
 
     contents_ = new_contents;
 
@@ -176,8 +177,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
     BookmarkTabHelper* bookmark_helper =
         contents_ ? BookmarkTabHelper::FromWebContents(contents_) : nullptr;
-    if (bookmark_helper)
+    if (bookmark_helper) {
       bookmark_helper->AddObserver(this);
+    }
 
     owner_.isPageLoading = contents_ && contents_->IsLoading();
     owner_.isStarred = bookmark_helper && bookmark_helper->is_starred();
@@ -195,10 +197,11 @@ class TouchBarNotificationBridge : public CommandObserver,
   // CommandObserver:
   void EnabledStateChangedForCommand(int command, bool enabled) override {
     DCHECK(command == IDC_BACK || command == IDC_FORWARD);
-    if (command == IDC_BACK)
+    if (command == IDC_BACK) {
       owner_.canGoBack = enabled;
-    else if (command == IDC_FORWARD)
+    } else if (command == IDC_FORWARD) {
       owner_.canGoForward = enabled;
+    }
   }
 
   // TabStripModelObserver:
@@ -210,8 +213,9 @@ class TouchBarNotificationBridge : public CommandObserver,
   }
 
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser == owner_.browser)
+    if (browser == owner_.browser) {
       owner_.browser = nullptr;
+    }
   }
 
   // WebContentsObserver:
@@ -234,7 +238,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
  private:
   BrowserWindowDefaultTouchBar* __weak owner_;
-  raw_ptr<Browser> browser_;             // Weak.
+  raw_ptr<Browser> browser_;                // Weak.
   raw_ptr<content::WebContents> contents_;  // Weak.
 
   // Used to monitor the optional home button pref.
@@ -305,8 +309,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
       makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
-  if (!touchBar)
+  if (!touchBar) {
     return nil;
+  }
 
   if ([identifier hasSuffix:kBackForwardTouchId]) {
     auto* items = @[
@@ -377,8 +382,9 @@ class TouchBarNotificationBridge : public CommandObserver,
     content::WebContents* contents =
         _browser->tab_strip_model()->GetActiveWebContents();
 
-    if (!contents)
+    if (!contents) {
       return nil;
+    }
 
     // Strip the trailing slash.
     url::Parsed parsed;
@@ -471,8 +477,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 }
 
 - (void)setBrowser:(Browser*)browser {
-  if (_browser == browser)
+  if (_browser == browser) {
     return;
+  }
   _browser = browser;
   _notificationBridge.reset(
       _browser ? new TouchBarNotificationBridge(self, _browser) : nullptr);
@@ -554,8 +561,9 @@ class TouchBarNotificationBridge : public CommandObserver,
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
   }
 #endif
-  if (!image)
+  if (!image) {
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
+  }
 
   if (!_searchButton) {
     _searchButton = [NSButton buttonWithTitle:buttonTitle

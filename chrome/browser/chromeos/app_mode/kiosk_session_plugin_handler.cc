@@ -25,7 +25,7 @@ KioskSessionPluginHandler::Observer::Observer(content::WebContents* contents,
                                               KioskSessionPluginHandler* owner)
     : content::WebContentsObserver(contents), owner_(owner) {}
 
-KioskSessionPluginHandler::Observer::~Observer() {}
+KioskSessionPluginHandler::Observer::~Observer() = default;
 
 std::set<int> KioskSessionPluginHandler::Observer::GetHungPluginsForTesting()
     const {
@@ -88,7 +88,7 @@ KioskSessionPluginHandler::KioskSessionPluginHandler(
     KioskSessionPluginHandlerDelegate* delegate)
     : delegate_(delegate) {}
 
-KioskSessionPluginHandler::~KioskSessionPluginHandler() {}
+KioskSessionPluginHandler::~KioskSessionPluginHandler() = default;
 
 void KioskSessionPluginHandler::Observe(content::WebContents* contents) {
   watchers_.push_back(std::make_unique<Observer>(contents, this));

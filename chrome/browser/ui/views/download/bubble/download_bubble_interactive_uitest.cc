@@ -37,7 +37,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/chromeos/test_util.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -46,7 +46,6 @@
 
 namespace {
 
-#if !BUILDFLAG(IS_MAC)
 // This waits for the download bubble widget to be shown.
 views::NamedWidgetShownWaiter CreateDownloadBubbleDialogWaiter() {
   return views::NamedWidgetShownWaiter{views::test::AnyWidgetTestPasskey{},
@@ -64,7 +63,6 @@ bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
   bool is_hiding = bubble->animation_for_test()->IsClosing();
   return bubble->IsShowing() || (bubble->IsVisible() && !is_hiding);
 }
-#endif
 
 // TODO(chlily): Deduplicate this helper class into a test utils file.
 class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
@@ -73,7 +71,7 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       : ChromeDownloadManagerDelegate(profile) {
     GetDownloadIdReceiverCallback().Run(download::DownloadItem::kInvalidId + 1);
   }
-  ~TestDownloadManagerDelegate() override {}
+  ~TestDownloadManagerDelegate() override = default;
 
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
@@ -103,6 +101,7 @@ class DownloadBubbleInteractiveUiTest
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHDownloadEsbPromoFeature})) {
 #if BUILDFLAG(IS_MAC)
+    // TODO(chlily): Add test coverage for immersive fullscreen disabled on Mac.
     test_features_.InitWithFeatures({features::kImmersiveFullscreen}, {});
 #endif  // BUILDFLAG(IS_MAC)
   }
@@ -219,7 +218,6 @@ class DownloadBubbleInteractiveUiTest
     });
   }
 
-#if !BUILDFLAG(IS_MAC)
   // Check for whether the exclusive access bubble is shown ("Press Esc to
   // exit fullscreen" or other similar message).
   auto IsExclusiveAccessBubbleDisplayed(bool displayed) {
@@ -243,13 +241,10 @@ class DownloadBubbleInteractiveUiTest
                      : false);
     });
   }
-#endif
 
 #if BUILDFLAG(IS_MAC)
   auto EnterImmersiveFullscreen() {
-    return [&]() {
-      ui_test_utils::ToggleFullscreenModeAndWait(browser());
-    };
+    return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
   }
 
   auto IsInImmersiveFullscreen() {
@@ -419,26 +414,36 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-// This test is only for platforms where fullscreen is not immersive.
-// TODO(chlily): Add test coverage for Mac.
-#if !BUILDFLAG(IS_MAC)
 // Test that downloading a file in tab fullscreen (not browser fullscreen)
 // results in an exclusive access bubble, and the partial view, if enabled, is
 // displayed after the tab exits fullscreen.
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
     ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView) {
+  using ui_test_utils::FullscreenWaiter;
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 
   // Grab the fullscreen accelerator, which is used to exit fullscreen in the
   // test. For some reason, exiting tab fullscreen via JavaScript doesn't work
   // (times out).
   ui::Accelerator fullscreen_accelerator;
+#if BUILDFLAG(IS_MAC)
+  // SendAccelerator or ui_controls::SendKeyPress doesn't support fn key on
+  // Mac, that the default fullscreen hotkey wouldn't work.
+  // TODO: When SendAccelerator fixed on mac, remove this hard coded key.
+  fullscreen_accelerator =
+      ui::Accelerator(ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+#else
   chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_FULLSCREEN, &fullscreen_accelerator);
+#endif
 
   views::NamedWidgetShownWaiter dialog_waiter =
       CreateDownloadBubbleDialogWaiter();
+
+  auto tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
+      browser(), FullscreenWaiter::Expectation{.tab_fullscreen = true});
 
   RunTestSequenceInContext(
       browser()->window()->GetElementContext(),
@@ -449,7 +454,14 @@ IN_PROC_BROWSER_TEST_F(
       InParallel(
           ExecuteJs(kWebContentsElementId,
                     "() => document.documentElement.requestFullscreen()"),
-          InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId))),
+          InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId)),
+          Do([&]() {
+            tab_fullscreen_waiter->Wait();
+            // Reset the fullscreen waiter to wait for exiting fullscreen next
+            // time.
+            tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
+                browser(), FullscreenWaiter::kNoFullscreen);
+          })),
       // The exclusive access bubble should notify about the fullscreen change.
       Check(IsExclusiveAccessBubbleDisplayed(true),
             "Exclusive access bubble is displayed upon entering fullscreen"),
@@ -466,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(
             "Exclusive access bubble is for a download"),
 
       // Now exit fullscreen, and the partial view, if enabled, should be shown.
-      SendAccelerator(kBrowserViewElementId, fullscreen_accelerator),
-
+      InParallel(SendAccelerator(kBrowserViewElementId, fullscreen_accelerator),
+                 Do([&]() { tab_fullscreen_waiter->Wait(); })),
       If([&]() { return IsPartialViewEnabled(); },
          Steps(Do(WaitForDownloadBubbleShow(dialog_waiter)),
                Check(DownloadBubbleIsShowingDetails(true),
@@ -478,7 +490,6 @@ IN_PROC_BROWSER_TEST_F(
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
       WaitForHide(kToolbarDownloadButtonElementId));
 }
-#endif
 
 // Tests that the partial view does not steal focus from the web contents, and
 // that the partial view is still closable when clicking outside of it, and that

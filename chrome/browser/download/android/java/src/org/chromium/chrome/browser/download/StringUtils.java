@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -229,6 +230,7 @@ public final class StringUtils {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::u16string")
         String getFailStateMessage(@FailState int failState);
     }
 }

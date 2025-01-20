@@ -71,9 +71,6 @@ class TryValueFlipsTest : public PageTestBase {
     add(CSSPropertyID::kAlignSelf, flips.align_self);
     add(CSSPropertyID::kJustifySelf, flips.justify_self);
     add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-    if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
-      add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
-    }
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);
     add_if_flipped(CSSPropertyID::kMinBlockSize, flips.min_block_size);
@@ -89,8 +86,7 @@ class TryValueFlipsTest : public PageTestBase {
   // for debugging failing tests.
   Vector<String> DeclarationStrings(const CSSPropertyValueSet* set) {
     Vector<String> result;
-    for (unsigned i = 0; i < set->PropertyCount(); ++i) {
-      CSSPropertyValueSet::PropertyReference ref = set->PropertyAt(i);
+    for (const CSSPropertyValue& ref : set->Properties()) {
       result.push_back(ref.Name().ToAtomicString() + ":" +
                        ref.Value().CssText());
     }
@@ -326,7 +322,7 @@ Declaration ParseDeclaration(String string) {
       css_test_helpers::ParseDeclarationBlock(string);
   CHECK(set);
   CHECK_EQ(1u, set->PropertyCount());
-  CSSPropertyValueSet::PropertyReference ref = set->PropertyAt(0);
+  const CSSPropertyValue& ref = set->PropertyAt(0);
   return Declaration{.property_id = ref.Name().Id(), .value = &ref.Value()};
 }
 

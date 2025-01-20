@@ -6,21 +6,15 @@
 #define IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class GoogleGroupsManager;
 class ProfileIOS;
 
-class GoogleGroupsManagerFactory
-    : public BrowserStateKeyedServiceFactory {
+class GoogleGroupsManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static GoogleGroupsManager* GetForProfile(ProfileIOS* profile);
   static GoogleGroupsManagerFactory* GetInstance();
-
-  GoogleGroupsManagerFactory(const GoogleGroupsManagerFactory&) =
-      delete;
-  GoogleGroupsManagerFactory& operator=(
-      const GoogleGroupsManagerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<GoogleGroupsManagerFactory>;
@@ -31,10 +25,6 @@ class GoogleGroupsManagerFactory
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  bool ServiceIsCreatedWithBrowserState() const override;
-
-  bool ServiceIsNULLWhileTesting() const override;
 
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

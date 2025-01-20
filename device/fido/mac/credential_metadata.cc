@@ -26,9 +26,9 @@
 
 namespace device::fido::mac {
 
-static constexpr size_t kNonceLength = 12;
-
 namespace {
+
+constexpr size_t kNonceLength = 12;
 
 // MakeAad returns the concatenation of |version| and |rp_id|,
 // which is used as the additional authenticated data (AAD) input to the AEAD.
@@ -290,9 +290,11 @@ static std::optional<CredentialMetadata> UnsealLegacyCredentialId(
 
   auto version = static_cast<CredentialMetadata::Version>(credential_id[0]);
 
-  std::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
-      Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(1, kNonceLength),
-      credential_id.subspan(1 + kNonceLength), MakeAad(version, rp_id));
+  const auto [nonce, ciphertext] =
+      credential_id.subspan<1>().split_at<kNonceLength>();
+  std::optional<std::vector<uint8_t>> plaintext =
+      Cryptor(secret).Unseal(Cryptor::Algorithm::kAes256Gcm, nonce, ciphertext,
+                             MakeAad(version, rp_id));
   if (!plaintext) {
     return std::nullopt;
   }
@@ -355,8 +357,8 @@ static std::optional<CredentialMetadata> UnsealV2OrLaterCredentialMetadata(
     return std::nullopt;
   }
 
-  std::optional<cbor::Value> maybe_array = cbor::Reader::Read(base::make_span(
-      reinterpret_cast<const uint8_t*>(plaintext->data()), plaintext->size()));
+  std::optional<cbor::Value> maybe_array =
+      cbor::Reader::Read(base::span(*plaintext));
   if (!maybe_array || !maybe_array->is_array()) {
     return std::nullopt;
   }

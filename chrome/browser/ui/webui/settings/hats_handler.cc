@@ -231,8 +231,9 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
 
   // The HaTS service may not be available for the profile, for example if it
   // is a guest profile.
-  if (!hats_service)
+  if (!hats_service) {
     return;
+  }
 
   std::string trigger = "";
   int timeout_ms = 0;
@@ -290,8 +291,9 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
 void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {
   auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
-  if (!sentiment_service)
+  if (!sentiment_service) {
     return;
+  }
 
   if (interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
     sentiment_service->InteractedWithPrivacySettings(

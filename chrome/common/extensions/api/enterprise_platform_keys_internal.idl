@@ -21,12 +21,13 @@ namespace enterprise.platformKeysInternal {
     // Provided for all algorithms.
     DOMString name;
 
-    // Provided in case of RSASSA-PKCS1-v1_5.
+    // Provided in case the algorithm is RSASSA-PKCS1-v1_5 or RSA-OAEP
+    // (the last type is supported on Chrome versions 134+).
     long? modulusLength;
     ArrayBuffer? publicExponent;
     Hash? hash;
 
-    // Provided in case of ECDSA.
+    // Provided in case the algorithm is ECDSA.
     DOMString? namedCurve;
   };
 
@@ -45,7 +46,7 @@ namespace enterprise.platformKeysInternal {
     static void getTokens(GetTokensCallback callback);
 
     // Internal version of SubtleCrypto.generateKey, currently supporting only
-    // RSASSA-PKCS1-v1_5 and ECDSA.
+    // RSASSA-PKCS1-v1_5, RSA-OAEP (on Chrome versions 134+), and ECDSA.
     // |tokenId| The id of a Token returned by |getTokens|.
     // |algorithm| The algorithm parameters as specified by WebCrypto.
     // |softwareBacked| Whether the key operations should be executed in

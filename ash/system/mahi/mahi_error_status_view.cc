@@ -93,7 +93,7 @@ class ErrorContentsView : public views::FlexLayoutView,
                 .SetMaximumWidth(kLabelMaximumWidth),
             views::Builder<views::Link>()
                 .CopyAddressTo(&retry_link_)
-                .SetForceUnderline(false)
+                .SetForceUnderline(true)
                 .SetID(mahi_constants::ViewId::kErrorStatusRetryLink)
                 .SetText(l10n_util::GetStringUTF16(
                     IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT))

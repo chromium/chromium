@@ -107,9 +107,9 @@ PermissionsData GetUnusedSitePermissionsFromDict(
                &permissions_data.constraints}};
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    keys.push_back({safety_hub::kAbusiveRevocationExpirationKey,
-                    safety_hub::kAbusiveRevocationLifetimeKey,
-                    &permissions_data.abusive_revocation_constraints});
+    keys.emplace_back(safety_hub::kAbusiveRevocationExpirationKey,
+                      safety_hub::kAbusiveRevocationLifetimeKey,
+                      &permissions_data.abusive_revocation_constraints);
   }
   for (const auto& [expiration_key, lifetime_key, constraints] : keys) {
     const base::Value* js_expiration =
@@ -297,13 +297,6 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
 
 base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions) &&
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    return result;
-  }
-
   UnusedSitePermissionsService* service =
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);

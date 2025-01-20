@@ -9,7 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -18,8 +21,8 @@ namespace ash::babelorca {
 
 class BabelOrcaCaptionTranslator {
  public:
-  using OnTranslationCallback = base::RepeatingCallback<void(
-      const std::optional<media::SpeechRecognitionResult>&)>;
+  using OnTranslationCallback =
+      base::OnceCallback<void(const media::SpeechRecognitionResult&)>;
 
   explicit BabelOrcaCaptionTranslator(
       std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher);
@@ -28,46 +31,51 @@ class BabelOrcaCaptionTranslator {
   BabelOrcaCaptionTranslator operator=(const BabelOrcaCaptionTranslator&) =
       delete;
 
-  // Called before calls to translate.  This sets the source and target language
-  // as well as the callback that will trigger once translation has completed.
-  void InitTranslationAndSetCallback(OnTranslationCallback callback,
-                                     const std::string& source_language,
-                                     const std::string& target_language);
+  void Translate(const media::SpeechRecognitionResult& recognition_result,
+                 OnTranslationCallback callback,
+                 const std::string& source_language,
+                 const std::string& target_language);
 
-  // Called to cleanup the callback if translations are no longer needed.
-  void UnsetOnTranslationCallback() { callback_.Reset(); }
-
-  // Translates results contents if `recognition_result` is present and the
-  // OnTranslationCallback is set.  this method does nothing if
-  //`InitTranslationAndSetCallback` hasn't been called.
-  void Translate(
-      const std::optional<media::SpeechRecognitionResult>& recognition_result);
+  // Methods used for setting the current source and target
+  // languages in tests.
+  void SetDefaultLanguagesForTesting(const std::string& default_source,
+                                     const std::string& default_target);
+  void UnsetCurrentLanguagesForTesting();
 
  private:
-  // Utility for ensuring we're only comparing the language components of
-  // locales.
-  static std::string GetLanguageComponentFromLocale(const std::string& locale);
+  // wrapper function to invoke a request via the dispatcher.
+  void DispatchTranslationRequest(
+      const media::SpeechRecognitionResult& sr_result,
+      const std::string& source_language,
+      const std::string& target_language,
+      OnTranslationCallback callback);
 
   // Unwraps and formats output from the translation dispatcher, then passes
   // the result, if successful, to the callback.  Otherwise passes a nullopt
   // to indicate an error.
   void OnTranslationDispatcherCallback(
+      OnTranslationCallback callback,
       const std::string& cached_translation,
       const std::string& original_transcription,
       const std::string& source_language,
       const std::string& target_language,
       bool is_final,
-      const std::string& result);
+      const captions::TranslateEvent& event);
 
-  bool IsNonIdeographicSourceOrIdeographicTarget();
-  bool AreLanguagesTheSame();
+  // Safely pops the queue by doing nothing if the queue is empty. Otherwise
+  // it invokes the first callback in line and pops it off the queue.
+  void PopQueue();
 
-  std::string source_language_;
-  std::string target_language_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  OnTranslationCallback callback_;
+  std::optional<std::string> current_source_language_;
+  std::optional<std::string> current_target_language_;
+
   ::captions::TranslationCache translation_cache_;
   std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher_;
+  base::queue<base::OnceCallback<void()>> dispatch_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool pending_is_final_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<BabelOrcaCaptionTranslator> weak_ptr_factory_{this};
 };

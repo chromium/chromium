@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -186,10 +182,11 @@ void ProfileResetter::ResetSettingsImpl(
   // These flags are set to false by the individual reset functions.
   pending_reset_flags_ = resettable_flags;
 
-  struct {
+  struct FlagToMethod {
     Resettable flag;
     void (ProfileResetter::*method)();
-  } flagToMethod[] = {
+  };
+  auto flagToMethod = std::to_array<FlagToMethod>({
       // Ordering of resets does matter here, extensions resets should
       // always precede DNS and proxy resets as the former can impact
       // the latter.
@@ -208,7 +205,7 @@ void ProfileResetter::ResetSettingsImpl(
       {PROXY_SETTINGS, &ProfileResetter::ResetProxySettings},
       {KEYBOARD_SETTINGS, &ProfileResetter::ResetKeyboardInputSettings},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  };
+  });
 
   ResettableFlags reset_triggered_for_flags = 0;
   for (size_t i = 0; i < std::size(flagToMethod); ++i) {

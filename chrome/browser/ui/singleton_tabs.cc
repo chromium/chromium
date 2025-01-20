@@ -97,8 +97,9 @@ NavigateParams GetSingletonTabNavigateParams(Browser* browser,
 // the URL specified in |params|.
 int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
   if (params.disposition != WindowOpenDisposition::SINGLETON_TAB &&
-      params.disposition != WindowOpenDisposition::SWITCH_TO_TAB)
+      params.disposition != WindowOpenDisposition::SWITCH_TO_TAB) {
     return -1;
+  }
 
   // In case the URL was rewritten by the BrowserURLHandler we need to ensure
   // that we do not open another URL that will get redirected to the rewritten
@@ -156,8 +157,9 @@ std::pair<Browser*, int> GetIndexAndBrowserOfExistingTab(
     // When tab switching, only look at same profile and anonymity level.
     if (profile == browser->profile() && !browser->is_delete_scheduled()) {
       int index = GetIndexOfExistingTab(browser, params);
-      if (index >= 0)
+      if (index >= 0) {
         return {browser, index};
+      }
     }
   }
   return {nullptr, -1};

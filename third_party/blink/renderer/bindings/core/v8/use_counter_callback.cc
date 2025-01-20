@@ -17,8 +17,9 @@ namespace blink {
 
 void UseCounterCallback(v8::Isolate* isolate,
                         v8::Isolate::UseCounterFeature feature) {
-  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled())
+  if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled()) {
     return;
+  }
 
   std::optional<WebFeature> blink_feature;
   std::optional<WebDXFeature> webdx_feature;
@@ -412,6 +413,45 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kSetMethods:
       webdx_feature = WebDXFeature::kSetMethods;
+      break;
+    case v8::Isolate::kArrayFindLast:
+      webdx_feature = WebDXFeature::kArrayFindlast;
+      break;
+    case v8::Isolate::kArrayGroup:
+      webdx_feature = WebDXFeature::kArrayGroup;
+      break;
+    case v8::Isolate::kArrayBufferTransfer:
+      webdx_feature = WebDXFeature::kTransferableArraybuffer;
+      break;
+    case v8::Isolate::kPromiseWithResolvers:
+      webdx_feature = WebDXFeature::kPromiseWithresolvers;
+      break;
+    case v8::Isolate::kAtomicsWaitAsync:
+      webdx_feature = WebDXFeature::kAtomicsWaitAsync;
+      break;
+    case v8::Isolate::kLocaleInfoObsoletedGetters:
+      blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
+      break;
+    case v8::Isolate::kLocaleInfoFunctions:
+      webdx_feature = WebDXFeature::kIntlLocaleInfo;
+      break;
+    case v8::Isolate::kExtendingNonExtensibleWithPrivate:
+      blink_feature = WebFeature::kV8ExtendingNonExtensibleWithPrivate;
+      break;
+    case v8::Isolate::kPromiseTry:
+      webdx_feature = WebDXFeature::kPromiseTry;
+      break;
+    case v8::Isolate::kStringReplaceAll:
+      webdx_feature = WebDXFeature::kStringReplaceall;
+      break;
+    case v8::Isolate::kStringWellFormed:
+      webdx_feature = WebDXFeature::kStringWellformed;
+      break;
+    case v8::Isolate::kWeakReferences:
+      webdx_feature = WebDXFeature::kWeakReferences;
+      break;
+    case v8::Isolate::kErrorIsError:
+      webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

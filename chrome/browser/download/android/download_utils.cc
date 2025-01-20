@@ -33,7 +33,6 @@ namespace {
 // If received bytes is more than the size limit and resumption will restart
 // from the beginning, throttle it.
 int kDefaultAutoResumptionSizeLimit = 10 * 1024 * 1024;  // 10 MB
-const char kAutoResumptionSizeLimitParamName[] = "AutoResumptionSizeLimit";
 }  // namespace
 
 static jint JNI_DownloadUtils_GetResumeMode(
@@ -68,13 +67,7 @@ base::FilePath DownloadUtils::GetUriStringForPath(
 
 // static
 int DownloadUtils::GetAutoResumptionSizeLimit() {
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kDownloadAutoResumptionThrottling,
-      kAutoResumptionSizeLimitParamName);
-  int size_limit;
-  return base::StringToInt(value, &size_limit)
-             ? size_limit
-             : kDefaultAutoResumptionSizeLimit;
+  return kDefaultAutoResumptionSizeLimit;
 }
 
 // static

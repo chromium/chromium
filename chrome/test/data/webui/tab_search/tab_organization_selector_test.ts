@@ -175,7 +175,8 @@ suite('TabOrganizationSelectorTest', () => {
     assertTrue(!!declutterButton);
     assertTrue(declutterButton.disabled);
 
-    testApiProxy.getCallbackRouterRemote().staleTabsChanged(createStaleTabs(3));
+    testApiProxy.getCallbackRouterRemote().unusedTabsChanged(
+        {staleTabs: createStaleTabs(3), duplicateTabs: {}});
     await microtasksFinished();
 
     assertFalse(declutterButton.disabled);

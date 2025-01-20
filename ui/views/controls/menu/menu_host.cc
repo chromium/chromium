@@ -155,8 +155,9 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
-  if (init_params.parent == nullptr)
+  if (init_params.parent == nullptr) {
     params.activatable = Widget::InitParams::Activatable::kYes;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
@@ -275,8 +276,9 @@ void MenuHost::SetMenuHostOwnedWindowAnchor(
 }
 
 void MenuHost::ReleaseMenuHostCapture() {
-  if (native_widget_private()->HasCapture())
+  if (native_widget_private()->HasCapture()) {
     native_widget_private()->ReleaseCapture();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -287,16 +289,19 @@ internal::RootView* MenuHost::CreateRootView() {
 }
 
 void MenuHost::OnMouseCaptureLost() {
-  if (destroying_ || ignore_capture_lost_)
+  if (destroying_ || ignore_capture_lost_) {
     return;
+  }
 
-  if (!ViewsDelegate::GetInstance()->ShouldCloseMenuIfMouseCaptureLost())
+  if (!ViewsDelegate::GetInstance()->ShouldCloseMenuIfMouseCaptureLost()) {
     return;
+  }
 
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (menu_controller && !menu_controller->drag_in_progress())
+  if (menu_controller && !menu_controller->drag_in_progress()) {
     menu_controller->Cancel(MenuController::ExitType::kAll);
+  }
   Widget::OnMouseCaptureLost();
 }
 
@@ -311,13 +316,15 @@ void MenuHost::OnNativeWidgetDestroyed() {
 }
 
 void MenuHost::OnOwnerClosing() {
-  if (destroying_)
+  if (destroying_) {
     return;
+  }
 
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (menu_controller && !menu_controller->drag_in_progress())
+  if (menu_controller && !menu_controller->drag_in_progress()) {
     menu_controller->Cancel(MenuController::ExitType::kAll);
+  }
 }
 
 void MenuHost::OnDragWillStart() {
@@ -330,12 +337,14 @@ void MenuHost::OnDragWillStart() {
 void MenuHost::OnDragComplete() {
   // If we are being destroyed there is no guarantee that the menu items are
   // available.
-  if (destroying_)
+  if (destroying_) {
     return;
+  }
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (!menu_controller)
+  if (!menu_controller) {
     return;
+  }
 
   bool should_close =
       menu_controller->exit_type() != MenuController::ExitType::kNone;

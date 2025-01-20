@@ -159,7 +159,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
 
         mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
@@ -175,7 +175,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
         CustomTabBottomBarDelegate.CustomButtonsUpdater updater =
                 Mockito.mock(CustomTabBottomBarDelegate.CustomButtonsUpdater.class);
@@ -195,9 +195,11 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onControlsOffsetChanged(
                 /* topOffset= */ 0,
                 /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
                 /* bottomOffset= */ 0,
                 /* bottomControlsMinHeightOffset= */ 0,
-                /* needsAnimate= */ false,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
                 /* isVisibilityForced= */ false);
         verify(mBottomBarView).setTranslationY(-100);
     }

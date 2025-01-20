@@ -116,17 +116,6 @@ uint64_t CalculateDMLBufferTensorSize(
   return buffer_tensor_size;
 }
 
-std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
-  size_t dim_size = dimensions.size();
-  std::vector<uint32_t> strides(dim_size);
-  base::CheckedNumeric<uint32_t> stride = 1;
-  for (size_t i = dim_size; i-- > 0;) {
-    strides[i] = stride.ValueOrDie();
-    stride *= dimensions[i];
-  }
-  return strides;
-}
-
 Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device) {
   CHECK(dml_device);
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;

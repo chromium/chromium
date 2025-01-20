@@ -345,7 +345,7 @@ class SocketReadFunction : public SocketApiFunction {
 
   // SocketApiFunction:
   ResponseAction Work() override;
-  void OnCompleted(int result,
+  void OnCompleted(int bytes_read,
                    scoped_refptr<net::IOBuffer> io_buffer,
                    bool socket_destroying);
 };

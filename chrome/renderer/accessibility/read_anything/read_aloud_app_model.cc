@@ -12,6 +12,8 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_tree.h"
@@ -23,9 +25,14 @@
 
 namespace {
 
-std::vector<size_t> GetDependencyHeads(
-    DependencyParserModel& dependency_parser_model,
-    base::span<const std::string> input) {
+// Returns the dependency parser model for this renderer process.
+DependencyParserModel& GetDependencyParserModel_() {
+  static base::NoDestructor<DependencyParserModel> instance;
+  return *instance;
+}
+
+std::vector<size_t> GetDependencyHeads(base::span<const std::string> input) {
+  DependencyParserModel& dependency_parser_model = GetDependencyParserModel_();
   return dependency_parser_model.IsAvailable()
              ? dependency_parser_model.GetDependencyHeads(input)
              : std::vector<size_t>();
@@ -134,29 +141,23 @@ void ReadAloudAppModel::PreprocessTextForSpeech(
     processed_granularities_on_current_page_.push_back(current_granularity);
     current_granularity = GetNextNodes(is_pdf, is_docs, current_nodes);
   }
-}
 
-void ReadAloudAppModel::PreprocessPhrasesForText(
-    DependencyParserModel& dependency_parser_model) {
+  // Initiate phrase computation.
   if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
-    DLOG(WARNING) << "Starting phrase calculation for "
-                  << processed_granularities_on_current_page_.size()
-                  << " sentences...";
-    // Gets phrase boundaries for all the processed granularities.
-    for (a11y::ReadAloudCurrentGranularity& granularity :
-         processed_granularities_on_current_page_) {
-      CalculatePhrases(dependency_parser_model, granularity);
-    }
-    DLOG(WARNING) << "Phrase calculation done.";
+    StartPhraseCalculation();
   }
 }
 
+DependencyParserModel& ReadAloudAppModel::GetDependencyParserModel() {
+  return GetDependencyParserModel_();
+}
+
 void ReadAloudAppModel::CalculatePhrases(
-    DependencyParserModel& dependency_parser_model,
     a11y::ReadAloudCurrentGranularity& granularity) {
   if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
     return;
   }
+
   if (granularity.phrase_boundaries.size() > 0) {
     // Already found.
     return;
@@ -165,15 +166,32 @@ void ReadAloudAppModel::CalculatePhrases(
     // Empty.
     return;
   }
-  if (!dependency_parser_model.IsAvailable()) {
-    // No model. Fall back to the 3-word phrases for now, so that tests don't
-    // fail. TODO(crbug.com/330749762): replace with a proper workaround.
-    granularity.CalculatePhrases();
+
+  // By default, initialize with  3-word phrases, which will be overwritten with
+  // actual phrase boundaries. This can take effect if Play is pressed before
+  // the first phrase is calculated; it also takes effect in some tests.
+  // TODO(crbug.com/330749762): replace with a proper workaround.
+  granularity.CalculatePlaceholderPhrases();
+
+  if (is_calculating_phrases) {
+    // This happens if multiple PreprocessTextForSpeech calls arrive for the
+    // same page, which is quite common on some pages. If that happens, there
+    // will be two or more parallel calls to this function: one corresponding to
+    // the old Preprocess, and another corresponding to the new one.
+    // is_calculating_phrases will be false for the old call and true for the
+    // new calls. In this case, it is OK to return early for the new call, since
+    // at the end of the old call, another call to the next sentence will
+    // automatically be performed.
+    LOG(WARNING) << "WARNING: Already calculating phrases, returning";
     return;
   }
 
+  is_calculating_phrases = true;
+
   const TokenizedSentence tokenized_sentence =
       TokenizedSentence(granularity.text);
+  granularity.tokens = tokenized_sentence.tokens();
+
   // Need to convert because model inference only takes std::string array.
   std::vector<std::string> phrase_tokens;
   phrase_tokens.reserve(tokenized_sentence.tokens().size());
@@ -181,27 +199,86 @@ void ReadAloudAppModel::CalculatePhrases(
       tokenized_sentence.tokens(), std::back_inserter(phrase_tokens),
       static_cast<std::string (*)(std::u16string_view)>(&base::UTF16ToUTF8));
 
-  // Perform computation of dependency heads synchronously.
-  std::vector<size_t> heads =
-      GetDependencyHeads(dependency_parser_model, phrase_tokens);
+  // Perform computation of dependency heads asynchronously.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&GetDependencyHeads, phrase_tokens),
+      base::BindOnce(&ReadAloudAppModel::UpdatePhraseBoundaries,
+                     weak_ptr_factory_.GetWeakPtr(), phrase_tokens));
+}
+
+static const Strategy kPhraseStrategy = Strategy::kWords;
+static const int kPhraseStrategyParameter = 5;
+
+void ReadAloudAppModel::StartPhraseCalculation() {
+  if (processed_granularities_on_current_page_.size() > 0) {
+    current_phrase_calculation_index_ = 0;
+    CalculatePhrases(processed_granularities_on_current_page_[0]);
+  }
+}
+
+void ReadAloudAppModel::UpdatePhraseBoundaries(std::vector<std::string> tokens,
+                                               std::vector<size_t> heads) {
+  // Reset the phrase calculation flag, so that the next phrase calculation can
+  // be scheduled, if needed.
+  is_calculating_phrases = false;
 
   if (heads.empty()) {
     // Empty output.
     return;
   }
 
-  // Cast from size_t to int.
-  std::vector<int> dependency_heads(heads.begin(), heads.end());
+  if ((current_phrase_calculation_index_ < 0) ||
+      (current_phrase_calculation_index_ >=
+       static_cast<int>(processed_granularities_on_current_page_.size()))) {
+    // Likely that the granularities were overwritten after phrase calculation
+    // was initiated (e.g. for dynamic page content). Reset the calculation.
+    StartPhraseCalculation();
+    return;
+  }
 
-  // Calculate the token boundary weights.
+  a11y::ReadAloudCurrentGranularity& granularity =
+      processed_granularities_on_current_page_
+          [current_phrase_calculation_index_];
+
+  if (granularity.tokens.size() != tokens.size()) {
+    // Likely that the granularities were overwritten after phrase calculation
+    // was initiated (e.g. for dynamic page content). Reset the calculation.
+    StartPhraseCalculation();
+    return;
+  }
+
+  // Reconstruct the tokenized sentence using the tokens.
+  std::vector<std::u16string> u16string_tokens;
+  for (auto token : tokens) {
+    u16string_tokens.emplace_back(base::UTF8ToUTF16(token));
+  }
+
+  const TokenizedSentence tokenized_sentence(granularity.text,
+                                             u16string_tokens);
+
+  // Determine the token boundaries.
+  std::vector<int> dependency_heads(
+      heads.begin(), heads.end());  // Needed to cast from unsigned to int
+
   const DependencyTree dependency_tree(tokenized_sentence, dependency_heads);
   const TokenBoundaries token_boundaries(dependency_tree);
 
-  // Segment the sentence based on the boundary weights.
+  // Segment the sentence and update phrase boundaries.
   PhraseSegmenter smart_highlight;
   granularity.phrase_boundaries = CalculatePhraseBoundaries(
-      smart_highlight, tokenized_sentence, token_boundaries, Strategy::kWords,
-      /* max_words_per_phrase=*/5);
+      smart_highlight, tokenized_sentence, token_boundaries, kPhraseStrategy,
+      kPhraseStrategyParameter);
+
+  // Kick off the next sentence, if available.
+  if (++current_phrase_calculation_index_ <
+      static_cast<int>(processed_granularities_on_current_page_.size())) {
+    CalculatePhrases(processed_granularities_on_current_page_
+                         [current_phrase_calculation_index_]);
+  } else {
+    current_phrase_calculation_index_ = -1;
+    LOG(WARNING) << "All phrases calculated!";
+  }
 }
 
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple

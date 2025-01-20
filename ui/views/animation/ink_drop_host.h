@@ -289,7 +289,7 @@ class VIEWS_EXPORT InkDropHost {
   // Attention is a state we apply on Buttons' ink drop when we want to draw
   // users' attention to this button and prompt users' interaction.
   // It consists of two visual effects: a default light blue color and a pulsing
-  // effect. Current use case is IPH. Go to chrome://internals/user-education
+  // effect. Current use case is IPH. Go to chrome://user-education-internals
   // and press e.g. IPH_TabSearch to see the effects.
   bool in_attention_state_ = false;
 };

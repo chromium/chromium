@@ -63,7 +63,7 @@ class MockAutoFetchNotifier : public AutoFetchNotifier {
 
 class FakeInternalImplDelegate : public InternalImpl::Delegate {
  public:
-  ~FakeInternalImplDelegate() override {}
+  ~FakeInternalImplDelegate() override = default;
   void SetNotificationStateToShown(int64_t request_id) override {
     set_notification_state_requests.push_back(request_id);
   }
@@ -80,7 +80,7 @@ class FakeInternalImplDelegate : public InternalImpl::Delegate {
 // tab information.
 class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
  public:
-  ~StubTabFinder() override {}
+  ~StubTabFinder() override = default;
 
   // AutoFetchPageLoadWatcher::AndroidTabFinder.
   std::map<int, TabInfo> FindAndroidTabs(

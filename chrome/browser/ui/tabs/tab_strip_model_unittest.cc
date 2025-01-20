@@ -10,8 +10,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -42,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -73,11 +72,37 @@ const char kTabStripModelTestIDUserDataKey[] = "TabStripModelTestIDUserData";
 class TabStripModelTestIDUserData : public base::SupportsUserData::Data {
  public:
   explicit TabStripModelTestIDUserData(int id) : id_(id) {}
-  ~TabStripModelTestIDUserData() override {}
+  ~TabStripModelTestIDUserData() override = default;
   int id() { return id_; }
 
  private:
   int id_;
+};
+
+struct ObservedSelectionChange {
+  ObservedSelectionChange() = default;
+  ObservedSelectionChange(const ObservedSelectionChange& other) = default;
+  ~ObservedSelectionChange() = default;
+
+  ObservedSelectionChange& operator=(const ObservedSelectionChange& other) =
+      default;
+
+  explicit ObservedSelectionChange(
+      const TabStripSelectionChange& selection_change) {
+    old_tab = selection_change.old_tab ? selection_change.old_tab->GetHandle()
+                                       : tabs::TabHandle::Null();
+    new_tab = selection_change.new_tab ? selection_change.new_tab->GetHandle()
+                                       : tabs::TabHandle::Null();
+
+    old_model = selection_change.old_model;
+    new_model = selection_change.new_model;
+  }
+
+  tabs::TabHandle old_tab = tabs::TabHandle::Null();
+  tabs::TabHandle new_tab = tabs::TabHandle::Null();
+
+  ui::ListSelectionModel old_model;
+  ui::ListSelectionModel new_model;
 };
 
 class MockTabStripModelObserver : public TabStripModelObserver {
@@ -199,7 +224,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
   void PushDeactivateState(WebContents* contents,
                            const ui::ListSelectionModel& old_model) {
-    states_.push_back(State(contents, old_model.active(), DEACTIVATE));
+    states_.emplace_back(contents, old_model.active(), DEACTIVATE);
   }
 
   void PushSelectState(content::WebContents* new_contents,
@@ -213,8 +238,9 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   void PushMoveState(WebContents* contents, int from_index, int to_index) {
     const auto tab_index_to_selection_model_index =
         [](int tab_index) -> std::optional<size_t> {
-      if (tab_index == TabStripModel::kNoTab)
+      if (tab_index == TabStripModel::kNoTab) {
         return std::nullopt;
+      }
       DCHECK_GE(tab_index, 0);
       return static_cast<size_t>(tab_index);
     };
@@ -224,11 +250,11 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   void PushCloseState(WebContents* contents, int index) {
-    states_.push_back(State(contents, index, CLOSE));
+    states_.emplace_back(contents, index, CLOSE);
   }
 
   void PushDetachState(WebContents* contents, int index, bool was_active) {
-    states_.push_back(State(contents, index, DETACH));
+    states_.emplace_back(contents, index, DETACH);
   }
 
   void PushReplaceState(WebContents* old_contents,
@@ -258,7 +284,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    latest_selection_change = selection;
+    latest_selection_change_ = ObservedSelectionChange(selection);
     switch (change.type()) {
       case TabStripModelChange::kInserted: {
         for (const auto& contents : change.GetInsert()->contents) {
@@ -297,8 +323,9 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
 
     if (selection.active_tab_changed()) {
-      if (selection.old_contents && selection.selection_changed())
+      if (selection.old_contents && selection.selection_changed()) {
         PushDeactivateState(selection.old_contents, selection.old_model);
+      }
 
       PushActivateState(selection.old_contents, selection.new_contents,
                         selection.new_model.active(), selection.reason);
@@ -337,8 +364,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
-  TabStripSelectionChange GetLatestSelectionChange() {
-    return latest_selection_change;
+  ObservedSelectionChange GetLatestSelectionChange() {
+    return latest_selection_change_;
   }
 
   void TabChangedAt(WebContents* contents,
@@ -366,7 +393,10 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
-  void ClearStates() { states_.clear(); }
+  void ClearStates() {
+    states_.clear();
+    group_updates_.clear();
+  }
 
  private:
   static std::string_view StringifyActionName(
@@ -398,7 +428,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   std::vector<State> states_;
-  TabStripSelectionChange latest_selection_change;
+  ObservedSelectionChange latest_selection_change_;
   std::map<tab_groups::TabGroupId, TabGroupUpdate> group_updates_;
 };
 
@@ -463,20 +493,23 @@ class TabStripModelTest : public testing::Test,
   std::string GetTabStripStateString(const TabStripModel& model) {
     std::string actual;
     for (int i = 0; i < model.count(); ++i) {
-      if (i > 0)
+      if (i > 0) {
         actual += " ";
+      }
 
       actual += base::NumberToString(GetID(model.GetWebContentsAt(i)));
 
-      if (model.IsTabPinned(i))
+      if (model.IsTabPinned(i)) {
         actual += "p";
+      }
     }
     return actual;
   }
 
   void PrepareTabs(TabStripModel* model, int tab_count) {
-    for (int i = 0; i < tab_count; ++i)
+    for (int i = 0; i < tab_count; ++i) {
       model->AppendWebContents(CreateWebContentsWithID(i), true);
+    }
   }
 
   void PrepareTabstripForSelectionTest(TabStripModel* model,
@@ -484,8 +517,9 @@ class TabStripModelTest : public testing::Test,
                                        int pinned_count,
                                        const std::string& selected_tabs) {
     PrepareTabs(model, tab_count);
-    for (int i = 0; i < pinned_count; ++i)
+    for (int i = 0; i < pinned_count; ++i) {
       model->SetTabPinned(i, true);
+    }
 
     ui::ListSelectionModel selection_model;
     for (std::string_view sel : base::SplitStringPiece(
@@ -1745,15 +1779,17 @@ TEST_P(TabStripModelTest, GetIndicesClosedByCommand) {
             tabstrip.GetIndicesClosedByCommand(index, id);
         std::string result;
         for (size_t i = 0; i < indices.size(); ++i) {
-          if (i != 0)
+          if (i != 0) {
             result += " ";
+          }
           result += base::NumberToString(indices[i]);
         }
         return result;
       };
 
-  for (int i = 0; i < 5; ++i)
+  for (int i = 0; i < 5; ++i) {
     tabstrip.AppendWebContents(CreateWebContents(), true);
+  }
 
   EXPECT_EQ("4 3 2 1",
             indicesClosedAsString(0, TabStripModel::CommandCloseTabsToRight));
@@ -2074,6 +2110,7 @@ TEST_P(TabStripModelTest, AddWebContents_LinkOpensInSameGroupAsOpener) {
   // There should have been a separate notification for the tab being grouped.
   EXPECT_EQ(observer.group_update(group_id).contents_update_count, 2);
 
+  observer.ClearStates();
   tabstrip.CloseAllTabs();
   ASSERT_TRUE(tabstrip.empty());
 }
@@ -2480,6 +2517,7 @@ TEST_P(TabStripModelTest, FastShutdown) {
     EXPECT_EQ(2, tabstrip.count());
 
     delegate.set_run_unload_listener(false);
+    observer.ClearStates();
     tabstrip.CloseAllTabs();
     EXPECT_TRUE(tabstrip.empty());
   }
@@ -2668,6 +2706,7 @@ TEST_P(TabStripModelTest, Pinning) {
     EXPECT_EQ("1p 3p 4 2", GetTabStripStateString(tabstrip));
   }
 
+  observer.ClearStates();
   tabstrip.CloseAllTabs();
 }
 
@@ -2724,6 +2763,7 @@ TEST_P(TabStripModelTest, ReplaceSendsSelected) {
   state.src_contents = raw_third_contents;
   observer.ExpectStateEquals(0, state);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3070,8 +3110,9 @@ TEST_P(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
 TEST_P(TabStripModelTest, CloseSelectedTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     strip.AppendWebContents(CreateWebContents(), true);
+  }
   strip.ToggleSelectionAt(1);
   strip.CloseSelectedTabs();
   EXPECT_EQ(1, strip.count());
@@ -3187,6 +3228,7 @@ TEST_P(TabStripModelTest, MultipleSelection) {
   ASSERT_EQ(0, observer.GetStateCount());
 
   strip.RemoveObserver(&observer);
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3217,6 +3259,7 @@ TEST_P(TabStripModelTest, MultipleToSingle) {
   s.change_reason = TabStripModelObserver::CHANGE_REASON_NONE;
   observer.ExpectStateEquals(0, s);
   strip.RemoveObserver(&observer);
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3244,15 +3287,17 @@ class TabBlockedStateTestBrowser
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
+    if (change.type() != TabStripModelChange::kInserted) {
       return;
+    }
 
     for (const auto& contents : change.GetInsert()->contents) {
       web_modal::WebContentsModalDialogManager* manager =
           web_modal::WebContentsModalDialogManager::FromWebContents(
               contents.contents);
-      if (manager)
+      if (manager) {
         manager->SetDelegate(this);
+      }
     }
   }
 
@@ -3264,8 +3309,9 @@ class TabBlockedStateTestBrowser
     // Removal of tabs from the TabStripModel can cause observer callbacks to
     // invoke this method. The WebContents may no longer exist in the
     // TabStripModel.
-    if (index == TabStripModel::kNoTab)
+    if (index == TabStripModel::kNoTab) {
       return;
+    }
 
     tab_strip_model_->SetTabBlocked(index, blocked);
   }
@@ -3411,6 +3457,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAt) {
   strip.MoveWebContentsAt(2, 3, true);
   EXPECT_EQ(3, strip.active_index());
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3456,6 +3503,7 @@ TEST_P(TabStripModelTest, AddTabToNewGroupUpdatesObservers) {
   EXPECT_EQ(1u, observer.group_updates().size());
   EXPECT_EQ(1, observer.group_update(group).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3476,6 +3524,7 @@ TEST_P(TabStripModelTest, ReplacingTabGroupUpdatesObservers) {
   EXPECT_EQ(3, observer.group_update(first_group).contents_update_count);
   EXPECT_EQ(1, observer.group_update(second_group).contents_update_count);
 
+  observer.ClearStates();
   tab_strip.CloseAllTabs();
 }
 
@@ -3588,6 +3637,7 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupIdempotent) {
   EXPECT_EQ(strip.GetTabGroupForTab(0), group);
   EXPECT_EQ(0, observer.GetStateCount());
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3615,12 +3665,16 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
   PrepareTabs(&strip, 2);
 
   tab_groups::TabGroupId group = strip.AddToNewGroup({0});
+  EXPECT_EQ(1u, observer.group_updates().size());
+  EXPECT_EQ(1, observer.group_update(group).contents_update_count);
   observer.ClearStates();
+  ASSERT_EQ(0u, observer.group_updates().size());
 
   strip.AddToExistingGroup({1}, group);
   EXPECT_EQ(1u, observer.group_updates().size());
-  EXPECT_EQ(2, observer.group_update(group).contents_update_count);
+  EXPECT_EQ(1, observer.group_update(group).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3718,6 +3772,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
   strip.RemoveFromGroup({0});
   EXPECT_EQ(0, observer.GetStateCount());
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3750,6 +3805,7 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
   strip.RemoveFromGroup({0});
   EXPECT_EQ(0u, observer.group_updates().size());
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3861,6 +3917,7 @@ TEST_P(TabStripModelTest, MoveGroupToTest) {
   EXPECT_EQ("3 4 0 1 2", GetTabStripStateString(strip));
   EXPECT_EQ(group1, strip.GetTabGroupForTab(4));
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -3906,6 +3963,7 @@ TEST_P(TabStripModelTest, CloseTabNotifiesObserversOfGroupChange) {
   EXPECT_EQ(1u, observer.group_updates().size());
   EXPECT_EQ(1, observer.group_update(group).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(0u, observer.group_updates().size());
 }
@@ -3930,6 +3988,7 @@ TEST_P(TabStripModelTest, InsertWebContentsAtWithGroupNotifiesObservers) {
   EXPECT_EQ(1u, observer.group_updates().size());
   EXPECT_EQ(3, observer.group_update(group).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -4104,6 +4163,7 @@ TEST_P(TabStripModelTest, VisualDataChangeNotifiesObservers) {
   ASSERT_EQ(1u, observer.group_updates().size());
   EXPECT_EQ(2, observer.group_update(group).visuals_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -4363,6 +4423,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupChangedEvent) {
   EXPECT_EQ(1u, observer.group_updates().size());
   EXPECT_EQ(3, observer.group_update(group2).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -4389,6 +4450,7 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
   EXPECT_EQ(3, observer.group_update(group1).contents_update_count);
   EXPECT_EQ(1, observer.group_update(group2).contents_update_count);
 
+  observer.ClearStates();
   strip.CloseAllTabs();
 }
 
@@ -4432,14 +4494,16 @@ TEST_P(TabStripModelTest, DanglingOpener) {
 class TabToWindowTestTabStripModelDelegate : public TestTabStripModelDelegate {
  public:
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override {
-    for (int index : indices)
+    for (int index : indices) {
       can_move_calls_.push_back(index);
+    }
     return true;
   }
 
   void MoveTabsToNewWindow(const std::vector<int>& indices) override {
-    for (int index : indices)
+    for (int index : indices) {
       move_calls_.push_back(index);
+    }
   }
 
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override {}
@@ -4809,11 +4873,11 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   // Check selection change after insertion.
   tabstrip->InsertWebContentsAt(0, CreateWebContentsWithID(5),
                                 AddTabTypes::ADD_NONE);
-  TabStripSelectionChange change = observer.GetLatestSelectionChange();
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
 
   // Active webcontents should not change but selection list changes.
-  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(1));
-  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(1));
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
 
   EXPECT_EQ(change.old_model.active(), 0u);
   EXPECT_EQ(change.old_model.size(), 1u);
@@ -4826,8 +4890,8 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   change = observer.GetLatestSelectionChange();
 
   // Active webcontents should not change but selection list changes.
-  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(0));
-  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
 
   EXPECT_EQ(change.old_model.active(), 1u);
   EXPECT_EQ(change.old_model.size(), 1u);
@@ -4839,14 +4903,100 @@ TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
   tabstrip->MoveWebContentsAt(1, 0, true);
   change = observer.GetLatestSelectionChange();
 
-  EXPECT_EQ(change.old_contents, tabstrip->GetWebContentsAt(1));
-  EXPECT_EQ(change.new_contents, tabstrip->GetWebContentsAt(0));
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
 
   EXPECT_EQ(change.old_model.active(), 0u);
   EXPECT_EQ(change.old_model.size(), 1u);
 
   EXPECT_EQ(change.new_model.active(), 0u);
   EXPECT_EQ(change.new_model.size(), 1u);
+
+  observer.ClearStates();
+}
+
+TEST_P(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
+  TestTabStripModelDelegate delegate;
+  MockTabStripModelObserver observer;
+
+  std::unique_ptr<TabStripModel> tabstrip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+  tabstrip->AddObserver(&observer);
+  ASSERT_TRUE(tabstrip->empty());
+
+  // Add 6 tabs to the tabstrip model.
+  PrepareTabs(tabstrip.get(), 6);
+  ASSERT_EQ(6, tabstrip->count());
+  tabstrip->ActivateTabAt(2);
+
+  // Group tabs 1, 2, and 3 into a tab group.
+  tab_groups::TabGroupId group = tabstrip->AddToNewGroup({1, 2, 3});
+  ASSERT_EQ(group, tabstrip->GetTabAtIndex(1)->GetGroup().value());
+
+  tabstrip->ToggleSelectionAt(0);
+
+  // Verify the selection model before moving the group.
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip->selection_model().active(), 0u);
+
+  // Check selection change after moving the group.
+  tabstrip->MoveGroupTo(group, 2);
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  // Active webcontents should not change and selection model updates.
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(0)->GetHandle());
+
+  EXPECT_EQ(change.old_model.size(), 2u);
+
+  EXPECT_EQ(change.new_model.active(), 0u);
+  EXPECT_TRUE(change.new_model.IsSelected(3));
+  EXPECT_EQ(change.new_model.size(), 2u);
+
+  observer.ClearStates();
+}
+
+TEST_P(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
+  TestTabStripModelDelegate delegate;
+  MockTabStripModelObserver observer;
+
+  std::unique_ptr<TabStripModel> tabstrip =
+      std::make_unique<TabStripModel>(&delegate, profile());
+  tabstrip->AddObserver(&observer);
+  ASSERT_TRUE(tabstrip->empty());
+
+  // Add 6 tabs to the tabstrip model.
+  PrepareTabs(tabstrip.get(), 6);
+  ASSERT_EQ(6, tabstrip->count());
+  tabstrip->ActivateTabAt(2);
+
+  tabstrip->ActivateTabAt(0);
+  tabstrip->ToggleSelectionAt(2);
+  tabstrip->ToggleSelectionAt(4);
+
+  // Verify the selection model before moving the tabs.
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(2));
+  EXPECT_TRUE(tabstrip->selection_model().IsSelected(4));
+  EXPECT_EQ(tabstrip->selection_model().active(), 4u);
+
+  // Move the selected tabs to index 3.
+  tabstrip->MoveSelectedTabsTo(3, std::nullopt);
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  // Active webcontents and selection model should update correctly.
+  EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(5)->GetHandle());
+  EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(5)->GetHandle());
+
+  EXPECT_EQ(change.old_model.size(), 3u);
+
+  EXPECT_EQ(change.new_model.active(), 5u);
+  EXPECT_TRUE(change.new_model.IsSelected(3));
+  EXPECT_TRUE(change.new_model.IsSelected(4));
+  EXPECT_TRUE(change.new_model.IsSelected(5));
+  EXPECT_EQ(change.new_model.size(), 3u);
+
+  observer.ClearStates();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripModelTest, ::testing::Bool());

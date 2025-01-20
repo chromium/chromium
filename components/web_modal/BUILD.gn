@@ -16,6 +16,8 @@ component("web_modal") {
     "web_contents_modal_dialog_manager_delegate.cc",
     "web_contents_modal_dialog_manager_delegate.h",
     "web_modal_export.h",
+    "web_modal_utils.cc",
+    "web_modal_utils.h",
   ]
 
   defines = [ "WEB_MODAL_IMPLEMENTATION" ]

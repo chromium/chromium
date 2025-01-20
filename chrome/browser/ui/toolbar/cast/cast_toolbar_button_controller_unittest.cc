@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
+
 #include <memory>
 #include <string>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"

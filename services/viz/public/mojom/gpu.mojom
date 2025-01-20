@@ -9,7 +9,7 @@ import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/shared_image_capabilities.mojom";
 import "gpu/ipc/common/sync_token.mojom";
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -34,7 +34,7 @@ interface Gpu {
          gpu.mojom.SharedImageCapabilities shared_image_capabilities);
 
   // Creates a new JpegDecodeAccelerator and binds it to |jda|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   CreateJpegDecodeAccelerator(
       pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
 

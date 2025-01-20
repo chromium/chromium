@@ -36,6 +36,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Aborted"/>
 </enum>
 
+<!-- LINT.IfChange(ToastDismissMenuEntries) -->
+
+<enum name="ToastDismissMenuEntries">
+  <int value="0" label="Dismiss"/>
+  <int value="1" label="Don't show again"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toasts/toast_metrics.h:ToastDismissMenuEntries) -->
+
 <!-- LINT.IfChange(ToastId) -->
 
 <enum name="ToastId">

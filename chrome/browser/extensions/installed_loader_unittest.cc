@@ -70,7 +70,7 @@ struct HostPermissionsMetricsTestParams {
 
 class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
  public:
-  InstalledLoaderUnitTest() {}
+  InstalledLoaderUnitTest() = default;
 
   InstalledLoaderUnitTest(const InstalledLoaderUnitTest&) = delete;
   InstalledLoaderUnitTest& operator=(const InstalledLoaderUnitTest&) = delete;

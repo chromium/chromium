@@ -9,13 +9,29 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/media_stream_request.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
+
+namespace blink {
+struct RendererPreferences;
+}  // namespace blink
+
+namespace gfx {
+class Size;
+}
 
 namespace content {
 
 struct ContextMenuParams;
+struct OpenURLParams;
 class NavigationController;
+class NavigationHandle;
+class JavaScriptDialogManager;
+class RenderFrameHost;
 class SiteInstance;
 class WebContents;
 
@@ -43,6 +59,62 @@ class GuestPageHolder : public base::SupportsUserData {
     virtual bool GuestHandleContextMenu(RenderFrameHost& render_frame_host,
                                         const ContextMenuParams& params) = 0;
 
+    // Returns a pointer to a service to manage JavaScript dialogs. May return
+    // nullptr in which case dialogs aren't shown.
+    virtual JavaScriptDialogManager* GuestGetJavascriptDialogManager() = 0;
+
+    // Allow the delegate to mutate the RendererPreferences.
+    virtual void GuestOverrideRendererPreferences(
+        blink::RendererPreferences& preferences) = 0;
+
+    // The main frame was completely loaded.
+    virtual void GuestDocumentOnLoadCompleted() = 0;
+
+    // The main frame's loading progress changed.
+    virtual void GuestDidChangeLoadProgress(double progress) = 0;
+
+    // The main frame's process is gone.
+    virtual void GuestMainFrameProcessGone(base::TerminationStatus status) = 0;
+
+    // The guest was resized.
+    virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
+
+    // The guest's preferred size changed.
+    virtual void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) = 0;
+
+    // Return the prospective outer document. Should only be called when
+    // unattached.
+    virtual RenderFrameHost* GetProspectiveOuterDocument() = 0;
+
+    // Create a new window with the disposition and URL.
+    virtual GuestPageHolder* GuestCreateNewWindow(
+        WindowOpenDisposition disposition,
+        const GURL& url,
+        const std::string& main_frame_name,
+        RenderFrameHost* opener,
+        scoped_refptr<SiteInstance> site_instance) = 0;
+
+    // Open an URL from the current GuestPageHolder.
+    virtual void GuestOpenURL(const OpenURLParams& params,
+                              base::OnceCallback<void(NavigationHandle&)>
+                                  navigation_handle_callback) = 0;
+
+    // Close the current window.
+    virtual void GuestClose() = 0;
+
+    // Asks permission to use the camera and/or microphone.
+    // See `WebContentsDelegate::RequestMediaAccessPermission`
+    virtual void GuestRequestMediaAccessPermission(
+        const MediaStreamRequest& request,
+        MediaResponseCallback callback) = 0;
+
+    // Checks if we have permission to access the microphone or camera.
+    // See `WebContentsDelegate::CheckMediaAccessPermission`
+    virtual bool GuestCheckMediaAccessPermission(
+        RenderFrameHost* render_frame_host,
+        const url::Origin& security_origin,
+        blink::mojom::MediaStreamType type) = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.
@@ -53,6 +125,14 @@ class GuestPageHolder : public base::SupportsUserData {
   // attach the guest to its embedder with `WebContents::AttachGuestPage`.
   CONTENT_EXPORT static std::unique_ptr<GuestPageHolder> Create(
       WebContents* owner_web_contents,
+      scoped_refptr<SiteInstance> site_instance,
+      base::WeakPtr<GuestPageHolder::Delegate> delegate);
+
+  // Creates a new guest page with opener arguments.
+  CONTENT_EXPORT static std::unique_ptr<GuestPageHolder> CreateWithOpener(
+      WebContents* owner_web_contents,
+      const std::string& frame_name,
+      RenderFrameHost* opener,
       scoped_refptr<SiteInstance> site_instance,
       base::WeakPtr<GuestPageHolder::Delegate> delegate);
 
@@ -68,6 +148,8 @@ class GuestPageHolder : public base::SupportsUserData {
   // This does not affect audio capture, just local/system output.
   virtual bool IsAudioMuted() = 0;
   virtual void SetAudioMuted(bool mute) = 0;
+
+  virtual RenderFrameHost* GetOpener() = 0;
 
  private:
   // This interface should only be implemented inside content.

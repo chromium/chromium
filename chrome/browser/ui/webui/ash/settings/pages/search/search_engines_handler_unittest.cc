@@ -56,9 +56,7 @@ class SearchEnginesHandlerAshTest : public testing::Test {
     handler_->AllowJavascriptForTesting();
   }
 
-  void TearDown() override {
-    web_ui_.reset();
-  }
+  void TearDown() override { web_ui_.reset(); }
 
  protected:
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }

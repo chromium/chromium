@@ -9,6 +9,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -24,10 +25,16 @@
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,13 +48,10 @@ namespace ash {
 
 class CoralControllerTest : public AshTestBase {
  public:
-  CoralControllerTest() {
-    feature_list_.InitWithFeatures(
-        {features::kCoralFeature, features::kCoralSavedDeskFeature}, {});
-  }
+  CoralControllerTest() = default;
 
   void ClickFirstCoralButton() {
-    BirchChipButton* coral_button = GetFirstCoralButton();
+    CoralChipButton* coral_button = GetFirstCoralButton();
     CHECK(coral_button);
     LeftClickOn(coral_button);
   }
@@ -80,7 +84,7 @@ class CoralControllerTest : public AshTestBase {
  private:
   std::unique_ptr<TestBirchClient> birch_client_;
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
 // Tests that clicking the in session coral button opens and activates a new
@@ -108,7 +112,7 @@ TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
   // Verify that there is no crash and the expected toast is shown.
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
-  BirchChipButton* coral_button = GetFirstCoralButton();
+  CoralChipButton* coral_button = GetFirstCoralButton();
   LeftClickOn(coral_button);
   LeftClickOn(coral_button->addon_view());
   EXPECT_TRUE(
@@ -213,6 +217,77 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
                                                                 window2.get()));
 }
 
+// Tests that clicking on a in-session chip will stay in Overview and remove the
+// chip.
+TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // We are on the only desk before launching the group.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
+  ASSERT_EQ(desks_controller->GetActiveDeskIndex(), 0);
+
+  ClickFirstCoralButton();
+
+  // Check that we still in Overview.
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Check that we are on the newly created desk now.
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+  ASSERT_EQ(desks_controller->active_desk()->type(), Desk::Type::kCoral);
+
+  // Check that the chip is removed.
+  EXPECT_EQ(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips().size(),
+      0u);
+}
+
+// Tests that visible on all desk window overview items are parented to the
+// active desk container once a coral group is launched. Regression test for
+// crbug.com/383892354.
+TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
+  // Create two apps with the same app id's as the test coral group. Set one to
+  // be visible on all desks.
+  auto window1 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey,
+                       std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  window1->SetProperty(aura::client::kWindowWorkspaceKey,
+                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  auto window2 = CreateAppWindow();
+  window2->SetProperty(kAppIDKey,
+                       std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+  CreateTestGroup({{"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
+                   {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+                  "Coral Group");
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  ClickFirstCoralButton();
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+  ASSERT_EQ(DesksController::Get()->GetNumberOfDesks(), 2);
+
+  // Both items should be parented to the active desk container.
+  OverviewItemBase* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItemBase* item2 = GetOverviewItemForWindow(window2.get());
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item1->item_widget()->GetNativeWindow()->parent()));
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(
+      item2->item_widget()->GetNativeWindow()->parent()));
+}
+
+// Tests that there is no crash when removing a coral chip by user.
+TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Remove the first coral chip and there should be no crash.
+  CoralChipButton* coral_chip = GetFirstCoralButton();
+  BirchBarController::Get()->OnItemHiddenByUser(coral_chip->GetItem());
+}
+
 class CoralSavedGroupTest : public CoralControllerTest {
  public:
   desks_storage::DeskModel* desk_model() {
@@ -233,9 +308,12 @@ class CoralSavedGroupTest : public CoralControllerTest {
     EXPECT_TRUE(model_adapter->IsShowingMenu());
     views::MenuItemView* save_as_group_item =
         model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
-    CHECK_EQ(save_as_group_item->GetCommand(),
-             base::to_underlying(
-                 BirchChipContextMenuModel::CommandId::kCoralSaveForLater));
+    if (!save_as_group_item ||
+        save_as_group_item->GetCommand() !=
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kCoralSaveForLater)) {
+      return nullptr;
+    }
     return save_as_group_item;
   }
 
@@ -244,6 +322,22 @@ class CoralSavedGroupTest : public CoralControllerTest {
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
   }
 };
+
+// Tests that the saved as group menu item does not show up in tablet mode.
+TEST_F(CoralSavedGroupTest, NoMenuInTablet) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  EXPECT_FALSE(GetSaveAsGroupMenuItem());
+}
+
+// Tests that the saved as group menu item does not show up in an informed
+// restore overview session.
+TEST_F(CoralSavedGroupTest, NoMenuInInformedRestore) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests, OverviewEnterExitType::kInformedRestore);
+  EXPECT_FALSE(GetSaveAsGroupMenuItem());
+}
 
 // Tests saving a group that has a couple tabs in it.
 TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
@@ -285,6 +379,77 @@ TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
                                    GURL("https://youtube.com/")));
 }
 
+// Tests saving a group that has a couple apps in it.
+TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
+  // Create some windows with app ids.
+  auto window1 = CreateAppWindow();
+  auto window2 = CreateAppWindow();
+  auto window3 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey, std::string("window1_app_id"));
+  window2->SetProperty(kAppIDKey, std::string("window2_app_id"));
+  window3->SetProperty(kAppIDKey, std::string("window3_app_id"));
+
+  // Simulate having app launch info for these windows.
+  static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
+      ->set_app_ids_with_app_launch_info(
+          {"window1_app_id", "window2_app_id", "window3_app_id"});
+
+  // Prepare a coral response with two of the windows.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(CreateTestGroup(
+      {{"Window1", "window1_app_id"}, {"Window2", "window2_app_id"}},
+      "saved group"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Verify the desk model entry name and type.
+  const desks_storage::DeskModel::GetAllEntriesResult& result =
+      desk_model()->GetAllEntries();
+  ASSERT_EQ(result.entries.size(), 1u);
+  const DeskTemplate* coral_template = result.entries[0];
+  // TODO(crbug.com/365839564): This should be the name of the group, not the
+  // desk.
+  EXPECT_EQ(coral_template->template_name(), u"Desk 1");
+  EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
+
+  // Verify that the desk model entry browser info matches our fake coral
+  // response.
+  const app_restore::RestoreData* restore_data =
+      coral_template->desk_restore_data();
+  ASSERT_TRUE(restore_data);
+  const app_restore::RestoreData::AppIdToLaunchList& launch_list =
+      restore_data->app_id_to_launch_list();
+  EXPECT_TRUE(launch_list.contains("window1_app_id"));
+  EXPECT_TRUE(launch_list.contains("window2_app_id"));
+  EXPECT_FALSE(launch_list.contains("window3_app_id"));
+}
+
+// Tests that after saving a group, we show the saved desk library.
+TEST_F(CoralSavedGroupTest, ShowSavedDeskLibrary) {
+  // Prepare a coral response.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")}}, "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Tests that the saved desk library is shown.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    OverviewSession* session = OverviewController::Get()->overview_session();
+    return session && session->IsShowingSavedDeskLibrary();
+  }));
+}
+
 TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   // Add enough entries to hit the max.
   for (int i = 0; i < 6; ++i) {
@@ -300,6 +465,56 @@ TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   LeftClickOn(save_as_group_item);
   EXPECT_TRUE(Shell::Get()->toast_manager()->IsToastShown(
       "coral_max_saved_groups_toast"));
+}
+
+// Tests that clicking a saved group item creates a coral desk.
+TEST_F(CoralSavedGroupTest, LaunchSavedGroup) {
+  AddCoralEntry("saved_group_1");
+
+  // Ensure we have one desk currently.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
+
+  // Enter overview, ensure the library button is visible and click it.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  RunScheduledLayoutForAllOverviewDeskBars();
+  auto* button = GetLibraryButton();
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  LeftClickOn(button);
+
+  // Click on the only saved desk entry.
+  const views::Button* saved_group_launch_button =
+      GetSavedDeskItemButton(/*index=*/0);
+  LeftClickOn(saved_group_launch_button);
+
+  // Test that we create a new desk of type coral.
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  EXPECT_EQ(desks_controller->desks().back()->type(), Desk::Type::kCoral);
+}
+
+// Tests that the saved desk library has the expected amount of grid items.
+TEST_F(CoralSavedGroupTest, CheckGridItems) {
+  AddCoralEntry("saved_group_1");
+  AddCoralEntry("saved_group_2");
+
+  // Enter overview, ensure the library button is visible and click it.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  RunScheduledLayoutForAllOverviewDeskBars();
+  auto* button = GetLibraryButton();
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  LeftClickOn(button);
+
+  // Test that the library view has the coral grid with two coral entries.
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
+  const SavedDeskGridView* coral_grid_view =
+      SavedDeskLibraryViewTestApi(library_view).coral_grid_view();
+  EXPECT_EQ(coral_grid_view->grid_items().size(), 2u);
 }
 
 }  // namespace ash

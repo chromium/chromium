@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
@@ -47,6 +48,14 @@ class SmartCardPermissionContext::OneTimeObserver
   }
   void OnLastPageFromOriginClosed(const url::Origin& origin) override {
     permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
+  }
+
+  void OnAllTabsInBackgroundTimerExpired(
+      const url::Origin& origin,
+      const BackgroundExpiryType& expiry_type) override {
+    if (expiry_type == BackgroundExpiryType::kTimeout) {
+      permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
+    }
   }
 
  private:
@@ -160,7 +169,7 @@ bool SmartCardPermissionContext::HasReaderPermission(
     const url::Origin& origin,
     const std::string& reader_name) {
   if (!CanRequestObjectPermission(origin)) {
-    return false;
+    return IsAllowlistedByPolicy(origin);
   }
 
   return ephemeral_grants_[origin].contains(reader_name) ||
@@ -186,7 +195,7 @@ void SmartCardPermissionContext::RequestReaderPermisssion(
   }
 
   if (!CanRequestObjectPermission(origin)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(IsAllowlistedByPolicy(origin));
     return;
   }
 
@@ -371,14 +380,46 @@ void SmartCardPermissionContext::OnPermissionRequestDecided(
   switch (result) {
     case SmartCardPermissionRequest::Result::kAllowOnce:
       GrantEphemeralReaderPermission(origin, reader_name);
+      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kAllowAlways:
       GrantPersistentReaderPermission(origin, reader_name);
+      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kDontAllow:
       std::move(callback).Run(false);
+      OnPermissionDenied(origin);
       break;
   }
+}
+
+void SmartCardPermissionContext::OnPermissionDenied(const url::Origin& origin) {
+  auto consecutive_denials = ++consecutive_denials_[origin];
+
+  DCHECK(consecutive_denials <= 3);
+  if (consecutive_denials >= 3) {
+    HostContentSettingsMapFactory::GetForProfile(&profile_.get())
+        ->SetContentSettingDefaultScope(origin.GetURL(), GURL(),
+                                        ContentSettingsType::SMART_CARD_GUARD,
+                                        ContentSetting::CONTENT_SETTING_BLOCK);
+    consecutive_denials_.erase(origin);
+  }
+}
+
+bool SmartCardPermissionContext::IsAllowlistedByPolicy(
+    const url::Origin& origin) {
+  if (!guard_content_settings_type_) {
+    return false;
+  }
+
+  content_settings::SettingInfo setting_info;
+  auto content_setting =
+      HostContentSettingsMapFactory::GetForProfile(&profile_.get())
+          ->GetContentSetting(origin.GetURL(), GURL(),
+                              ContentSettingsType::SMART_CARD_GUARD,
+                              &setting_info);
+  return setting_info.source == content_settings::SettingSource::kPolicy &&
+         content_setting == CONTENT_SETTING_ALLOW;
 }

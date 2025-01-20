@@ -21,9 +21,6 @@ constexpr char kTestExe[] = "enterprise_companion_test";
 
 class TestMethodsLinux : public TestMethods {
  public:
-  TestMethodsLinux() = default;
-  ~TestMethodsLinux() override = default;
-
   base::FilePath GetTestExePath() override {
     return base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
   }

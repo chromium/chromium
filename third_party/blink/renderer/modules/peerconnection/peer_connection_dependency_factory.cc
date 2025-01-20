@@ -37,6 +37,7 @@
 #include "net/net_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -105,23 +106,6 @@ namespace blink {
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
-
-enum WebRTCIPHandlingPolicy {
-  kDefault,
-  kDefaultPublicAndPrivateInterfaces,
-  kDefaultPublicInterfaceOnly,
-  kDisableNonProxiedUdp,
-};
-
-WebRTCIPHandlingPolicy GetWebRTCIPHandlingPolicy(const String& preference) {
-  if (preference == kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces)
-    return kDefaultPublicAndPrivateInterfaces;
-  if (preference == kWebRTCIPHandlingDefaultPublicInterfaceOnly)
-    return kDefaultPublicInterfaceOnly;
-  if (preference == kWebRTCIPHandlingDisableNonProxiedUdp)
-    return kDisableNonProxiedUdp;
-  return kDefault;
-}
 
 bool IsValidPortRange(uint16_t min_port, uint16_t max_port) {
   DCHECK(min_port <= max_port);
@@ -241,23 +225,18 @@ class PeerConnectionStaticDeps {
   }
 
   void EnsureChromeThreadsStarted(ExecutionContext& context) {
-    base::ThreadType thread_type = base::ThreadType::kDefault;
-    if (base::FeatureList::IsEnabled(
-            features::kWebRtcThreadsUseResourceEfficientType)) {
-      thread_type = base::ThreadType::kResourceEfficient;
-    }
     if (!chrome_signaling_thread_.IsRunning()) {
       chrome_signaling_thread_.StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
     if (chrome_network_thread_ && !chrome_network_thread_->IsRunning()) {
       chrome_network_thread_->StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
 
     if (!chrome_worker_thread_.IsRunning()) {
       chrome_worker_thread_.StartWithOptions(
-          base::Thread::Options(thread_type));
+          base::Thread::Options(base::ThreadType::kDefault));
     }
     // To allow sending to the signaling/worker threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
@@ -482,6 +461,76 @@ class InterceptingNetworkControllerFactory
   // instances.
   const CrossThreadWeakHandle<RTCRtpTransport> rtp_transport_;
 };
+
+// The enum is used for logging. Entries should not be renumbered or reused.
+// Keep in sync with the corresponding enum in
+// tools/metrics/histograms/metadata/web_rtc/enums.xml.
+enum class EncodeScalabilityMode {
+  NotSupported = 0,
+  kL1T1 = 1,
+  kL1T2 = 2,
+  kL1T3 = 3,
+  kMaxValue = kL1T3,
+};
+
+struct ScalabilityMap {
+  std::string scalability_string;
+  EncodeScalabilityMode scalability_enum;
+};
+
+void ReportUmaEncodeDecodeCapabilities(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  const gfx::ColorSpace& render_color_space =
+      Platform::Current()->GetRenderingColorSpace();
+
+  // Create encoder/decoder factories.
+  std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
+      blink::CreateWebrtcVideoEncoderFactoryForUmaLogging(gpu_factories);
+  std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
+      blink::CreateWebrtcVideoDecoderFactoryForUmaLogging(gpu_factories,
+                                                          render_color_space);
+  if (webrtc_encoder_factory && webrtc_decoder_factory) {
+    const std::array<webrtc::SdpVideoFormat, 3> kSdpFormats = {
+        webrtc::SdpVideoFormat{"VP9"}, webrtc::SdpVideoFormat{"AV1"},
+        webrtc::SdpVideoFormat{"H265"}};
+    const std::array<ScalabilityMap, 3> kScalabilityModes = {
+        ScalabilityMap{"L1T1", EncodeScalabilityMode::kL1T1},
+        ScalabilityMap{"L1T2", EncodeScalabilityMode::kL1T2},
+        ScalabilityMap{"L1T3", EncodeScalabilityMode::kL1T3}};
+
+    for (const auto& sdp_format : kSdpFormats) {
+      bool decode_support =
+          webrtc_decoder_factory
+              ->QueryCodecSupport(sdp_format, /*reference_scaling=*/false)
+              .is_power_efficient;
+
+      EncodeScalabilityMode encode_support =
+          EncodeScalabilityMode::NotSupported;
+      for (const auto& mode : kScalabilityModes) {
+        if (webrtc_encoder_factory
+                ->QueryCodecSupport(sdp_format, mode.scalability_string)
+                .is_power_efficient) {
+          encode_support = mode.scalability_enum;
+        } else {
+          break;
+        }
+      }
+
+      base::UmaHistogramBoolean(
+          "WebRTC.Video.HwCapabilities.Decode." + sdp_format.name,
+          decode_support);
+      base::UmaHistogramEnumeration(
+          "WebRTC.Video.HwCapabilities.Encode." + sdp_format.name,
+          encode_support);
+    }
+  }
+}
+
+void WaitForEncoderSupportReady(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  gpu_factories->NotifyEncoderSupportKnown(
+      base::BindOnce(&ReportUmaEncodeDecodeCapabilities, gpu_factories));
+}
 
 }  // namespace
 
@@ -727,6 +776,17 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
                               WrapCrossThreadWeakPersistent(
                                   webrtc_video_perf_reporter_.Get())));
 
+  if (!encode_decode_capabilities_reported_) {
+    encode_decode_capabilities_reported_ = true;
+    if (gpu_factories) {
+      // Wait until decoder and encoder support are known.
+      gpu_factories->NotifyDecoderSupportKnown(
+          base::BindOnce(&WaitForEncoderSupportReady, gpu_factories));
+    } else {
+      ReportUmaEncodeDecodeCapabilities(gpu_factories);
+    }
+  }
+
   if (blink::Platform::Current()->UsesFakeCodecForPeerConnection()) {
     webrtc_encoder_factory =
         std::make_unique<webrtc::FakeVideoEncoderFactory>();
@@ -866,39 +926,41 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     VLOG(3) << "WebRTC routing preferences will not be enforced";
   } else {
     if (web_frame && web_frame->View()) {
-      WebString webrtc_ip_handling_policy;
+      mojom::blink::WebRtcIpHandlingPolicy webrtc_ip_handling_policy;
       Platform::Current()->GetWebRTCRendererPreferences(
           web_frame, &webrtc_ip_handling_policy, &min_port, &max_port,
           &allow_mdns_obfuscation);
-
+      DVLOG(1) << "Active WebRtcIPHandlingPolicy: "
+               << ToString(webrtc_ip_handling_policy);
       // TODO(guoweis): |enable_multiple_routes| should be renamed to
       // |request_multiple_routes|. Whether local IP addresses could be
       // collected depends on if mic/camera permission is granted for this
       // origin.
-      WebRTCIPHandlingPolicy policy =
-          GetWebRTCIPHandlingPolicy(webrtc_ip_handling_policy);
-      switch (policy) {
+      switch (webrtc_ip_handling_policy) {
         // TODO(guoweis): specify the flag of disabling local candidate
         // collection when webrtc is updated.
-        case kDefaultPublicInterfaceOnly:
-        case kDefaultPublicAndPrivateInterfaces:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefaultPublicInterfaceOnly:
+        case mojom::blink::WebRtcIpHandlingPolicy::
+            kDefaultPublicAndPrivateInterfaces:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = true;
           port_config.enable_default_local_candidate =
-              (policy == kDefaultPublicAndPrivateInterfaces);
+              (webrtc_ip_handling_policy ==
+               mojom::blink::WebRtcIpHandlingPolicy::
+                   kDefaultPublicAndPrivateInterfaces);
           break;
-        case kDisableNonProxiedUdp:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDisableNonProxiedUdp:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = false;
           break;
-        case kDefault:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefault:
           port_config.enable_multiple_routes = true;
           port_config.enable_nonproxied_udp = true;
           break;
       }
 
-      VLOG(3) << "WebRTC routing preferences: "
-              << "policy: " << policy
+      VLOG(3) << "WebRTC routing preferences: " << "policy: "
+              << ToString(webrtc_ip_handling_policy)
               << ", multiple_routes: " << port_config.enable_multiple_routes
               << ", nonproxied_udp: " << port_config.enable_nonproxied_udp
               << ", min_udp_port: " << min_port

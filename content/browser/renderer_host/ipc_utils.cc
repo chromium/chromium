@@ -182,7 +182,7 @@ bool VerifyDownloadUrlParams(RenderProcessHost* process,
                              const blink::mojom::DownloadURLParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(process);
-  int process_id = process->GetID();
+  int process_id = process->GetDeprecatedID();
 
   // Verifies |params.blob_url_token| is appropriately set.
   if (!VerifyBlobToken(process_id, params.blob_url_token, params.url))
@@ -213,7 +213,7 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
   DCHECK(process);
   DCHECK(out_validated_url);
   DCHECK(out_blob_url_loader_factory);
-  int process_id = process->GetID();
+  int process_id = process->GetDeprecatedID();
 
   // Verify |params.url| and populate |out_validated_url|.
   *out_validated_url = params->url;
@@ -281,7 +281,7 @@ bool VerifyBeginNavigationCommonParams(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(common_params);
   RenderProcessHost* process = current_rfh.GetProcess();
-  int process_id = process->GetID();
+  int process_id = process->GetDeprecatedID();
 
   // Verify (and possibly rewrite) |url|.
   process->FilterURL(false, &common_params->url);

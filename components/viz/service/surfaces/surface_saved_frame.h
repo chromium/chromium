@@ -55,9 +55,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     // Texture representation.
     gpu::Mailbox mailbox;
 
-    // Software bitmap representation.
-    SkBitmap bitmap;
-
     // Software image representation.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
 
@@ -84,7 +81,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   };
 
   static std::unique_ptr<SurfaceSavedFrame> CreateForTesting(
-      CompositorFrameTransitionDirective directive);
+      CompositorFrameTransitionDirective directive,
+      gpu::SharedImageInterface* shared_image_interface);
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
                     gpu::SharedImageInterface* shared_image_interface);
@@ -109,7 +107,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
  private:
   explicit SurfaceSavedFrame(base::PassKey<SurfaceSavedFrame>,
-                             CompositorFrameTransitionDirective directive);
+                             CompositorFrameTransitionDirective directive,
+                             gpu::SharedImageInterface* shared_image_interface);
 
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
@@ -175,9 +174,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // smaller than the number of requests we made. This is used to determine
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
-
-  // This indicates whether or not to use blit requests.
-  const bool use_blit_requests_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };

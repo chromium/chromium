@@ -22,7 +22,7 @@ class SyncTask {
   SyncTask(const SyncTask&) = delete;
   SyncTask& operator=(const SyncTask&) = delete;
 
-  virtual ~SyncTask() {}
+  virtual ~SyncTask() = default;
   virtual void RunPreflight(std::unique_ptr<SyncTaskToken> token) = 0;
 
   bool used_network() { return used_network_; }

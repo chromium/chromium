@@ -27,11 +27,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace {
 
 // A callback that holds the last frame captured by a webrtc::DesktopCapturer.
@@ -63,14 +58,6 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 // Captures and returns a snapshot of the screen, or an empty bitmap in case of
 // error.
 SkBitmap CaptureScreen() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::ScreenManager>()) {
-    LOG(WARNING) << "crosapi must be available to CreateScreenCapturer.";
-    return SkBitmap();
-  }
-#endif
-
   std::unique_ptr<webrtc::DesktopCapturer> capturer =
       content::desktop_capture::CreateScreenCapturer();
   if (!capturer) {

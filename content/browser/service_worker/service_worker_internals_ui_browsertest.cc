@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -361,126 +360,73 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         << "Should not be able to find any Service Worker.";
   }
 
-  testing::AssertionResult SetMutationObserver(std::string target,
-                                               std::string expected,
-                                               const std::u16string& title) {
+  void AssertTextShown(std::string css_selector, std::string expected) {
     static constexpr char kScript[] = R"(
-      const elementToObserve = document.getElementById("serviceworker-list");
-      const options = { childList: true, subtree: true };
+      (function() {
+        const elementToObserve = document.getElementById("serviceworker-list");
 
-      const callback = function (mutations, observer) {
-        mutations.forEach((mutation) => {
-          if (
-            mutation.type === "childList" &&
-            mutation.target &&
-            mutation.target.attributes &&
-            mutation.target.attributes.jscontent &&
-            RegExp($1+$2+$3).test(mutation.target.attributes.jscontent.value)
-          ) {
-            mutation.addedNodes.forEach((node) => {
-              if (node.data === $4) {
-                document.title = $5;
-                observer.disconnect();
-              }
-            });
-          }
+        function checkStatus() {
+          const statusNode = elementToObserve.querySelector('%s');
+          return !!statusNode && statusNode.textContent === '%s';
+        }
+
+        if (checkStatus()) {
+          return true;
+        }
+
+        return new Promise(function(resolve, reject) {
+          const observer = new MutationObserver(() => {
+            if (checkStatus()) {
+              observer.disconnect();
+              resolve(true);
+            }
+          });
+          observer.observe(
+              elementToObserve,
+             {childList: true, subtree: true, characterData: true});
         });
-      };
-
-      const observer = new MutationObserver(callback);
-      observer.observe(elementToObserve, options);
+      })()
     )";
-    return ExecJs(
-        web_contents()->GetPrimaryMainFrame(),
-        JsReplace(kScript, "^(.this.)?(", target, ")$", expected, title),
-        EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
+
+    EXPECT_TRUE(
+        content::EvalJs(web_contents()->GetPrimaryMainFrame(),
+                        base::StringPrintf(kScript, css_selector, expected))
+            .ExtractBool());
+  }
+
+  void AssertNodeNotExists(std::string css_selector) {
+    static constexpr char kScript[] = R"(
+      (function() {
+        const list = document.getElementById("serviceworker-list");
+        return list.querySelector('%s') === null;
+      })()
+    )";
+    EXPECT_TRUE(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                       base::StringPrintf(kScript, css_selector))
+                    .ExtractBool());
   }
 
   int ServiveWorkerCountFromInternalUI() {
     return EvalJs(web_contents()->GetPrimaryMainFrame(),
-                  R"(document.querySelectorAll(
-                    "div#serviceworker-list \
-                    > div:not([style='display: none;']) \
-                    > div:not([class='serviceworker-summary']) \
-                    > div.serviceworker-registration"
+                  R"(document.body.querySelectorAll(
+                    "#serviceworker-list .serviceworker-registration"
                   ).length)",
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                   /*world_id=*/1)
         .ExtractInt();
   }
 
-  std::string GetServiceWorkerInfoFromInternalUI(int64_t registration_id,
-                                                 std::string target) {
-    static constexpr char kScript[] = R"(
-     var serviceworkers = document.querySelectorAll(
-       "div#serviceworker-list > div:not([style='display: none;'])\
-             > div:not([class='serviceworker-summary']) > \
-             div.serviceworker-registration"
-     );
-
-     let result = "not found";
-     serviceworkers.forEach((serviceworker) => {
-       let target;
-       Array.prototype.forEach.call(
-         serviceworker.querySelectorAll("*"),
-         (node) =>
-       {
-           if (
-             node.attributes.jscontent &&
-             RegExp("registration_id").test(node.attributes.jscontent.value) &&
-             node.innerText == $1
-           ) {
-             target = serviceworker;
-           }
-       });
-       if (target) {
-         Array.prototype.forEach.call(target.querySelectorAll("span"),
-         (node) => {
-           if (
-             node.attributes.jscontent &&
-             RegExp($2+$3+$4).test(node.attributes.jscontent.value)
-           ) {
-            result = node.innerText;
-            if (result === "") result = "missed";
-           }
-         });
-       }
-     });
-     result;
-    )";
-    return EvalJs(web_contents()->GetPrimaryMainFrame(),
-                  JsReplace(kScript, base::NumberToString(registration_id),
-                            "^(.this.)?(", target, ")$"),
-                  EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
-        .ExtractString();
-  }
-
   void TriggerServiceWorkerInternalUIOption(int64_t registration_id,
                                             std::string option) {
     static constexpr char kScript[] = R"(
-      var serviceworkers = document.querySelectorAll(
-        "div#serviceworker-list > div:not([style='display: none;'])\
-                  > div:not([class='serviceworker-summary']) > \
-                  div.serviceworker-registration"
-      );
-
-      serviceworkers.forEach((serviceworker) => {
-        Array.prototype.forEach.call(serviceworker.querySelectorAll("*"),
-        (node) => {
-          if (
-            node.attributes.jscontent &&
-            RegExp("registration_id").test(node.attributes.jscontent.value) &&
-            node.innerText == $1
-          ) {
-            serviceworker.querySelector("button."+$2).click();
-          }
-        });
-      });
+      const button = document.body.querySelector('#serviceworker-list \
+          .serviceworker-registration[data-registration-id=\'%d\'] \
+          button[data-command=\'%s\']');
+      button.click();
     )";
-    EXPECT_TRUE(ExecJs(
-        web_contents()->GetPrimaryMainFrame(),
-        JsReplace(kScript, base::NumberToString(registration_id), option),
-        EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
+    EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       base::StringPrintf(kScript, registration_id, option),
+                       EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
   }
 
   enum InfoTag {
@@ -552,49 +498,47 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  // Register and wait for the service worker to populate on the internal UI.
-  const std::u16string kTitle = u"SW populated";
-  TitleWatcher title_watcher(web_contents(), kTitle);
-  SetMutationObserver("status", "ACTIVATED", kTitle);
-
+  // Register the service worker to populate on the internal UI.
   Shell* sw_registration_window = CreateNewWindow();
   auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
       wrapper(), ServiceWorkerVersion::ACTIVATED);
   sw_state_observer->Init();
   RegisterServiceWorker();
   sw_state_observer->Wait();
-  int64_t registration_id = sw_state_observer->RegistrationID();
   int64_t version_id = sw_state_observer->VersionID();
   ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
 
-  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+  // Test that the service worker registration is reflected in the UI.
+  SetActiveWindow(sw_internal_ui_window);
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  "ACTIVATED");
 
   GURL top_level_page(embedded_test_server()->GetURL(kServiceWorkerUrl));
   GURL scope(embedded_test_server()->GetURL(kServiceWorkerScope));
 
   // Assert populated service worker info.
   SetActiveWindow(sw_internal_ui_window);
-  ASSERT_EQ(base::NumberToString(version_id),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "version_id"));
-  ASSERT_EQ(GetServiceWorkerInfo(SCOPE),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "scope"));
-  ASSERT_EQ(GetServiceWorkerInfo(STATUS),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "status"));
-  ASSERT_EQ(
-      GetServiceWorkerInfo(RUNNING_STATUS),
-      GetServiceWorkerInfoFromInternalUI(registration_id, "running_status"));
-  ASSERT_EQ(GetServiceWorkerInfo(PROCESS_ID),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "process_id"));
-  ASSERT_EQ(url::Origin::Create(scope).GetDebugString(),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "origin"));
-  ASSERT_EQ(
-      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize(),
-      GetServiceWorkerInfoFromInternalUI(registration_id, "top_level_site"));
-  ASSERT_EQ("SameSite", GetServiceWorkerInfoFromInternalUI(
-                            registration_id, "ancestor_chain_bit"));
-  ASSERT_EQ("missed",
-            GetServiceWorkerInfoFromInternalUI(registration_id, "nonce"));
+  AssertTextShown(".serviceworker-registration .serviceworker-vid .value",
+                  base::NumberToString(version_id));
+  AssertTextShown(".serviceworker-registration .serviceworker-scope .value",
+                  GetServiceWorkerInfo(SCOPE));
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  GetServiceWorkerInfo(STATUS));
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      GetServiceWorkerInfo(RUNNING_STATUS));
+  AssertTextShown(".serviceworker-registration .serviceworker-pid .value",
+                  GetServiceWorkerInfo(PROCESS_ID));
+  AssertTextShown(".serviceworker-registration .serviceworker-origin .value",
+                  url::Origin::Create(scope).GetDebugString());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-top-level-site .value",
+      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-ancestor-chain-bit .value",
+      "SameSite");
+  AssertNodeNotExists(".serviceworker-registration .serviceworker-nonce");
 
   // Leave a clean state.
   UnRegisterServiceWorker();
@@ -614,48 +558,42 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  // Register and wait for the service worker to populate on the internal UI.
-  const std::u16string kTitle = u"SW populated";
-  TitleWatcher title_watcher(web_contents(), kTitle);
-  SetMutationObserver("status", "ACTIVATED", kTitle);
-
+  // Register the service worker to populate on the internal UI.
   Shell* sw_registration_window = CreateNewWindow();
   auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
       wrapper(), ServiceWorkerVersion::ACTIVATED);
   sw_state_observer->Init();
   RegisterServiceWorker();
   sw_state_observer->Wait();
-  int64_t registration_id = sw_state_observer->RegistrationID();
   ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
 
-  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+  // Test that the service worker registration is reflected in the UI.
+  SetActiveWindow(sw_internal_ui_window);
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  "ACTIVATED");
 
   // Assert running status.
-  SetActiveWindow(sw_internal_ui_window);
-  ASSERT_EQ("RUNNING", GetServiceWorkerInfoFromInternalUI(registration_id,
-                                                          "running_status"));
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "RUNNING");
+
   // Tests that a stopping service worker is reflected on internal UI.
-  const std::u16string kTitle2 = u"SW running_status: STOPPED";
-  TitleWatcher title_watcher2(web_contents(), kTitle2);
-  SetMutationObserver("running_status", "STOPPED", kTitle2);
-
   wrapper()->StopAllServiceWorkers(base::DoNothing());
-
-  ASSERT_EQ(kTitle2, title_watcher2.WaitAndGetTitle());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "STOPPED");
 
   // Tests that a starting service worker is reflected on internal UI.
-  const std::u16string kTitle3 = u"SW running_status: STARTING";
-  TitleWatcher title_watcher_3(web_contents(), kTitle3);
-  // To avoid premature timeouts and flakiness, the expected `running_status` to
-  // be asserted will be `STARTING` instead of `RUNNING`.
-  SetMutationObserver("running_status", "STARTING", kTitle3);
-
   wrapper()->StartActiveServiceWorker(GetAllRegistrations().front().scope,
                                       GetAllRegistrations().front().key,
                                       base::DoNothing());
 
-  ASSERT_EQ(kTitle3, title_watcher_3.WaitAndGetTitle());
+  // To avoid premature timeouts and flakiness, the expected `running_status` to
+  // be asserted will be `STARTING` instead of `RUNNING`.
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "STARTING");
 
   // Leave a clean state.
   UnRegisterServiceWorker();
@@ -667,11 +605,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  // Register and wait for the service worker to populate on the internal UI.
-  const std::u16string kTitle = u"SW populated";
-  TitleWatcher title_watcher(web_contents(), kTitle);
-  SetMutationObserver("status", "ACTIVATED", kTitle);
-
+  // Register the service worker to populate on the internal UI.
   Shell* sw_registration_window = CreateNewWindow();
   auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
       wrapper(), ServiceWorkerVersion::ACTIVATED);
@@ -682,35 +616,33 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
   ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
 
-  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+  // Test that the service worker registration is reflected in the UI.
+  SetActiveWindow(sw_internal_ui_window);
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  "ACTIVATED");
 
   // Test the stop option on the service worker internal UI.
   SetActiveWindow(sw_internal_ui_window);
-  const std::u16string kTitle2 = u"SW running_status: STOPPED";
-  TitleWatcher title_watcher_2(web_contents(), kTitle2);
-  SetMutationObserver("running_status", "STOPPED", kTitle2);
-
   auto sw_on_stopped_observer =
       base::MakeRefCounted<SWOnStoppedObserver>(wrapper());
   sw_on_stopped_observer->Init();
   TriggerServiceWorkerInternalUIOption(registration_id, "stop");
   sw_on_stopped_observer->Wait();
-
-  EXPECT_EQ(kTitle2, title_watcher_2.WaitAndGetTitle());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "STOPPED");
 
   // Test the start option on the service worker internal UI.
   SetActiveWindow(sw_internal_ui_window);
-  const std::u16string kTitle3 = u"SW running_status: RUNNING";
-  TitleWatcher title_watcher_3(web_contents(), kTitle3);
-  SetMutationObserver("running_status", "RUNNING", kTitle3);
-
   auto sw_on_started_observer =
       base::MakeRefCounted<SWOnStartedObserver>(wrapper());
   sw_on_started_observer->Init();
   TriggerServiceWorkerInternalUIOption(registration_id, "start");
   sw_on_started_observer->Wait();
 
-  EXPECT_EQ(kTitle3, title_watcher_3.WaitAndGetTitle());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-running-status .value",
+      "RUNNING");
 
   // Test the unregister option on the service worker internal UI.
   SetActiveWindow(sw_internal_ui_window);
@@ -750,11 +682,7 @@ IN_PROC_BROWSER_TEST_F(
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  // Register and wait for the service worker to populate on the internal UI.
-  const std::u16string kTitle = u"SW populated";
-  TitleWatcher title_watcher(web_contents(), kTitle);
-  SetMutationObserver("status", "ACTIVATED", kTitle);
-
+  // Register the service worker to populate on the internal UI.
   auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
       wrapper(), ServiceWorkerVersion::ACTIVATED);
   sw_state_observer->Init();
@@ -782,24 +710,24 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   sw_state_observer->Wait();
-  int64_t registration_id = sw_state_observer->RegistrationID();
 
-  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+  // Test that the service worker registration is reflected in the UI.
+  SetActiveWindow(sw_internal_ui_window);
+  AssertTextShown(".serviceworker-registration .serviceworker-status .value",
+                  "ACTIVATED");
 
   // Assert populated service worker info.
-  SetActiveWindow(sw_internal_ui_window);
-  ASSERT_EQ(scope.spec(),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "scope"));
-
-  ASSERT_EQ(url::Origin::Create(scope).GetDebugString(),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "origin"));
-  ASSERT_EQ(
-      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize(),
-      GetServiceWorkerInfoFromInternalUI(registration_id, "top_level_site"));
-  ASSERT_EQ("CrossSite", GetServiceWorkerInfoFromInternalUI(
-                             registration_id, "ancestor_chain_bit"));
-  ASSERT_EQ("missed",
-            GetServiceWorkerInfoFromInternalUI(registration_id, "nonce"));
+  AssertTextShown(".serviceworker-registration .serviceworker-scope .value",
+                  scope.spec());
+  AssertTextShown(".serviceworker-registration .serviceworker-origin .value",
+                  url::Origin::Create(scope).GetDebugString());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-top-level-site .value",
+      net::SchemefulSite(url::Origin::Create(top_level_page)).Serialize());
+  AssertTextShown(
+      ".serviceworker-registration .serviceworker-ancestor-chain-bit .value",
+      "CrossSite");
+  AssertNodeNotExists(".serviceworker-registration .serviceworker-nonce");
 }
 
 }  // namespace content

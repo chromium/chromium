@@ -37,7 +37,7 @@ class DiagnosticsControllerTest : public testing::Test {
  protected:
   DiagnosticsControllerTest() : cmdline_(base::CommandLine::NO_PROGRAM) {}
 
-  ~DiagnosticsControllerTest() override {}
+  ~DiagnosticsControllerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

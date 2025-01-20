@@ -6,7 +6,7 @@
 
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
-#include "content/browser/media/web_app_system_media_controls_manager.h"
+#include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
 
 namespace content {
 

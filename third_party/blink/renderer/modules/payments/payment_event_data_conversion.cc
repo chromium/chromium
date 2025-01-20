@@ -43,14 +43,18 @@ PaymentDetailsModifier* ToPaymentDetailsModifier(
   return modifier;
 }
 
-ScriptValue StringDataToScriptValue(ScriptState* script_state,
-                                    const String& stringified_data) {
-  if (!script_state->ContextIsValid())
-    return ScriptValue();
+void MaybeSetData(ScriptState* script_state,
+                  PaymentMethodData* method_data,
+                  const String& stringified_data) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
 
   ScriptState::Scope scope(script_state);
-  return ScriptValue(script_state->GetIsolate(),
-                     FromJSONString(script_state, stringified_data));
+  auto v8_json = FromJSONString(script_state, stringified_data);
+  if (!v8_json.IsEmpty()) {
+    method_data->setData(ScriptObject(script_state->GetIsolate(), v8_json));
+  }
 }
 
 PaymentMethodData* ToPaymentMethodData(
@@ -59,10 +63,7 @@ PaymentMethodData* ToPaymentMethodData(
   DCHECK(data);
   PaymentMethodData* method_data = PaymentMethodData::Create();
   method_data->setSupportedMethod(data->supported_method);
-  ScriptValue v8_data =
-      StringDataToScriptValue(script_state, data->stringified_data);
-  if (!v8_data.IsEmpty())
-    method_data->setData(std::move(v8_data));
+  MaybeSetData(script_state, method_data, data->stringified_data);
   return method_data;
 }
 

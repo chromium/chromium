@@ -140,6 +140,11 @@ gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
+gfx::Size RenderWidgetHostViewBase::GetRequestedRendererSizeDevicePx() {
+  return gfx::ScaleToCeiledSize(GetRequestedRendererSize(),
+                                GetDeviceScaleFactor());
+}
+
 uint32_t RenderWidgetHostViewBase::GetCaptureSequenceNumber() const {
   // TODO(vmpstr): Implement this for overrides other than aura and child frame.
   NOTIMPLEMENTED_LOG_ONCE();
@@ -564,7 +569,7 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
 void RenderWidgetHostViewBase::ResetGestureDetection() {}
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
-  return screen_infos_.current().device_scale_factor;
+  return GetScreenInfos().current().device_scale_factor;
 }
 
 base::WeakPtr<input::RenderWidgetHostViewInput>
@@ -697,11 +702,11 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 }
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
-    const gfx::PointF& point) {
+    const gfx::PointF& point) const {
   return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
-bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {
+bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() const {
   return false;
 }
 
@@ -764,6 +769,11 @@ TextInputManager* RenderWidgetHostViewBase::GetTextInputManager() {
 
 TouchSelectionControllerClientManager*
 RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
+  return nullptr;
+}
+
+TouchSelectionControllerInputObserver*
+RenderWidgetHostViewBase::GetTouchSelectionControllerInputObserver() {
   return nullptr;
 }
 

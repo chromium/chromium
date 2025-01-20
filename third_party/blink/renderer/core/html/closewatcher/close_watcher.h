@@ -38,9 +38,14 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
 
   void setEnabled(bool enabled) { enabled_ = enabled; }
 
-  // Note: return value is not exposed to JS via IDL; it's only for internal
-  // use.
-  bool requestClose();
+  void requestCloseForBinding();
+
+  enum class AllowCancel {
+    kAlways,
+    kWithUserActivation,
+  };
+  bool RequestClose(AllowCancel allow_cancel);
+
   void close();
   void destroy();
 

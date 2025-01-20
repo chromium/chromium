@@ -14,8 +14,7 @@ GuestTask::GuestTask(content::WebContents* web_contents)
                    GetFaviconFromWebContents(web_contents),
                    web_contents) {}
 
-GuestTask::~GuestTask() {
-}
+GuestTask::~GuestTask() = default;
 
 void GuestTask::UpdateTitle() {
   set_title(GetCurrentTitle(web_contents()));

@@ -614,7 +614,6 @@ ContextualSearchLayer::ContextualSearchLayer(
       SkColor4f::FromColor(kTouchHighlightColor));
 }
 
-ContextualSearchLayer::~ContextualSearchLayer() {
-}
+ContextualSearchLayer::~ContextualSearchLayer() = default;
 
 }  //  namespace android

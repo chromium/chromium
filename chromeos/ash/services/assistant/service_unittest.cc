@@ -28,6 +28,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -280,7 +281,7 @@ TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenStarting) {
   ASSERT_TRUE(assistant_manager()->access_token().has_value());
   EXPECT_EQ(kAccessToken, assistant_manager()->access_token().value());
   ASSERT_TRUE(assistant_manager()->gaia_id().has_value());
-  EXPECT_EQ(kGaiaId, assistant_manager()->gaia_id());
+  EXPECT_EQ(GaiaId(kGaiaId), assistant_manager()->gaia_id());
 }
 
 TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenAccessTokenIsRefreshed) {
@@ -297,7 +298,7 @@ TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenAccessTokenIsRefreshed) {
   ASSERT_TRUE(assistant_manager()->access_token().has_value());
   EXPECT_EQ("new token", assistant_manager()->access_token());
   ASSERT_TRUE(assistant_manager()->gaia_id().has_value());
-  EXPECT_EQ(kGaiaId, assistant_manager()->gaia_id());
+  EXPECT_EQ(GaiaId(kGaiaId), assistant_manager()->gaia_id());
 }
 
 TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStarting) {

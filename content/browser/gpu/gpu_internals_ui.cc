@@ -86,7 +86,7 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
       "trusted-types static-types;");
 
   source->UseStringsJs();
-  source->AddResourcePaths(base::make_span(kGpuResources, kGpuResourcesSize));
+  source->AddResourcePaths(kGpuResources);
   source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
 }
 

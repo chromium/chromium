@@ -35,7 +35,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"

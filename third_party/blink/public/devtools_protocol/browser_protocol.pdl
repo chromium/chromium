@@ -499,8 +499,8 @@ experimental domain Audits
   type AffectedRequest extends object
     properties
       # The unique request id.
-      Network.RequestId requestId
-      optional string url
+      optional Network.RequestId requestId
+      string url
 
   # Information about the frame affected by an inspector issue.
   type AffectedFrame extends object
@@ -543,6 +543,27 @@ experimental domain Audits
       SetCookie
       ReadCookie
 
+  # Represents the category of insight that a cookie issue falls under.
+  type InsightType extends string
+    enum
+      # Cookie domain has an entry in third-party cookie migration readiness
+      # list:
+      # https://github.com/privacysandbox/privacy-sandbox-dev-support/blob/main/3pc-migration-readiness.md
+      GitHubResource
+      # Cookie is exempted due to a grace period:
+      # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/grace-period
+      GracePeriod
+      # Cookie is exempted due a heuristics-based exemptiuon:
+      # https://developers.google.com/privacy-sandbox/cookies/temporary-exceptions/heuristics-based-exception
+      Heuristics
+
+  # Information about the suggested solution to a cookie issue.
+  type CookieIssueInsight extends object
+    properties
+      InsightType type
+      # Link to table entry in third-party cookie migration readiness list.
+      optional string tableEntryUrl
+
   # This information is currently necessary, as the front-end has a difficult
   # time finding a specific cookie. With this, we can convey specific error
   # information without the cookie.
@@ -562,6 +583,8 @@ experimental domain Audits
       optional string siteForCookies
       optional string cookieUrl
       optional AffectedRequest request
+      # The recommended solution to the issue.
+      optional CookieIssueInsight insight
 
   type MixedContentResolutionStatus extends string
     enum
@@ -631,6 +654,7 @@ experimental domain Audits
       CorpNotSameOriginAfterDefaultedToSameOriginByDip
       CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip
       CorpNotSameSite
+      SRIMessageSignatureMismatch
 
   # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
   # code. Currently only used for COEP/COOP, but may be extended to include
@@ -925,6 +949,7 @@ experimental domain Audits
       InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching
+      UiDismissedNoEmbargo
 
   type FederatedAuthUserInfoRequestIssueDetails extends object
     properties
@@ -959,6 +984,21 @@ experimental domain Audits
       # The failure message for the failed request.
       string failureMessage
       optional Network.RequestId requestId
+
+  type SelectElementAccessibilityIssueReason extends string
+    enum
+      DisallowedSelectChild
+      DisallowedOptGroupChild
+      NonPhrasingContentOptionChild
+      InteractiveContentOptionChild
+      InteractiveContentLegendChild
+
+  # This issue warns about errors in the select element content model.
+  type SelectElementAccessibilityIssueDetails extends object
+    properties
+      DOM.BackendNodeId nodeId
+      SelectElementAccessibilityIssueReason selectElementAccessibilityIssueReason
+      boolean hasDisallowedAttributes
 
   type StyleSheetLoadingIssueReason extends string
     enum
@@ -1020,6 +1060,7 @@ experimental domain Audits
       FederatedAuthUserInfoRequestIssue
       PropertyRuleIssue
       SharedDictionaryIssue
+      SelectElementAccessibilityIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -1047,6 +1088,7 @@ experimental domain Audits
       optional PropertyRuleIssueDetails propertyRuleIssueDetails
       optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
+      optional SelectElementAccessibilityIssueDetails selectElementAccessibilityIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.
@@ -1370,18 +1412,21 @@ domain Browser
 
   experimental type PermissionType extends string
     enum
-      accessibilityEvents
+      ar
       audioCapture
-      backgroundSync
+      automaticFullscreen
       backgroundFetch
+      backgroundSync
+      cameraPanTiltZoom
       capturedSurfaceControl
       clipboardReadWrite
       clipboardSanitizedWrite
       displayCapture
       durableStorage
-      flash
       geolocation
+      handTracking
       idleDetection
+      keyboardLock
       localFonts
       midi
       midiSysex
@@ -1389,16 +1434,19 @@ domain Browser
       notifications
       paymentHandler
       periodicBackgroundSync
+      pointerLock
       protectedMediaIdentifier
       sensors
-      storageAccess
+      smartCard
       speakerSelection
+      storageAccess
       topLevelStorageAccess
       videoCapture
-      videoCapturePanTiltZoom
+      vr
       wakeLockScreen
       wakeLockSystem
       webAppInstallation
+      webPrinting
       windowManagement
 
   experimental type PermissionSetting extends string
@@ -1671,6 +1719,14 @@ experimental domain CSS
       # Matches of CSS rules applicable to the pseudo style.
       array of RuleMatch matches
 
+  # CSS style coming from animations with the name of the animation.
+  type CSSAnimationStyle extends object
+    properties
+      # The name of the animation.
+      optional string name
+      # The style coming from the animation.
+      CSSStyle style
+
   # Inherited CSS rule collection from ancestor node.
   type InheritedStyleEntry extends object
     properties
@@ -1678,6 +1734,14 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Matches of CSS rules matching the ancestor node in the style inheritance chain.
       array of RuleMatch matchedCSSRules
+
+  # Inherited CSS style collection for animated styles from ancestor node.
+  type InheritedAnimatedStyleEntry extends object
+    properties
+      # Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
+      optional array of CSSAnimationStyle animationStyles
+      # The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
+      optional CSSStyle transitionsStyle
 
   # Inherited pseudo element matches from pseudos of an ancestor node.
   type InheritedPseudoElementMatches extends object
@@ -2209,6 +2273,14 @@ experimental domain CSS
       # Element pseudo classes to force when computing the element's style.
       array of string forcedPseudoClasses
 
+  # Ensures that the given node is in its starting-style state.
+  command forceStartingStyle
+    parameters
+      # The element id for which to force the starting-style state.
+      DOM.NodeId nodeId
+      # Boolean indicating if this is on or off.
+      boolean forced
+
   command getBackgroundColors
     parameters
       # Id of the node to get background colors for.
@@ -2234,6 +2306,34 @@ experimental domain CSS
       # Computed style for the specified DOM node.
       array of CSSComputedStyleProperty computedStyle
 
+  # Resolve the specified values in the context of the provided element.
+  # For example, a value of '1em' is evaluated according to the computed
+  # 'font-size' of the element and a value 'calc(1px + 2px)' will be
+  # resolved to '3px'.
+  command resolveValues
+    parameters
+      # Substitution functions (var()/env()/attr()) and cascade-dependent
+      # keywords (revert/revert-layer) do not work.
+      array of string values
+      # Id of the node in whose context the expression is evaluated
+      DOM.NodeId nodeId
+      # Only longhands and custom property names are accepted.
+      optional string propertyName
+      # Pseudo element type, only works for pseudo elements that generate
+      # elements in the tree, such as ::before and ::after.
+      experimental optional DOM.PseudoType pseudoType
+      # Pseudo element custom ident.
+      experimental optional string pseudoIdentifier
+    returns
+      array of string results
+
+  experimental command getLonghandProperties
+    parameters
+      string shorthandName
+      string value
+    returns
+      array of CSSProperty longhandProperties
+
   # Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM
   # attributes) for a DOM node identified by `nodeId`.
   command getInlineStylesForNode
@@ -2244,6 +2344,20 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Attribute-defined element style (e.g. resulting from "width=20 height=100%").
       optional CSSStyle attributesStyle
+
+  # Returns the styles coming from animations & transitions
+  # including the animation & transition styles coming from inheritance chain.
+  experimental command getAnimatedStylesForNode
+    parameters
+      DOM.NodeId nodeId
+    returns
+      # Styles coming from animations.
+      optional array of CSSAnimationStyle animationStyles
+      # Style coming from transitions.
+      optional CSSStyle transitionsStyle
+      # Inherited style entries for animationsStyle and transitionsStyle from
+      # the inheritance chain of the element.
+      optional array of InheritedAnimatedStyleEntry inherited
 
   # Returns requested styles for a DOM node identified by `nodeId`.
   command getMatchedStylesForNode
@@ -2710,10 +2824,10 @@ domain DOM
     enum
       first-line
       first-letter
-      check
+      checkmark
       before
       after
-      select-arrow
+      picker-icon
       marker
       backdrop
       column
@@ -2726,8 +2840,7 @@ domain DOM
       first-line-inherited
       scroll-marker
       scroll-marker-group
-      scroll-next-button
-      scroll-prev-button
+      scroll-button
       scrollbar
       scrollbar-thumb
       scrollbar-button
@@ -4104,56 +4217,6 @@ experimental domain DOMStorage
   event domStorageItemsCleared
     parameters
       StorageId storageId
-
-experimental domain Database
-
-  # Unique identifier of Database object.
-  type DatabaseId extends string
-
-  # Database object.
-  type Database extends object
-    properties
-      # Database ID.
-      DatabaseId id
-      # Database domain.
-      string domain
-      # Database name.
-      string name
-      # Database version.
-      string version
-
-  # Database error.
-  type Error extends object
-    properties
-      # Error message.
-      string message
-      # Error code.
-      integer code
-
-  # Disables database tracking, prevents database events from being sent to the client.
-  command disable
-
-  # Enables database tracking, database events will now be delivered to the client.
-  command enable
-
-  command executeSQL
-    parameters
-      DatabaseId databaseId
-      string query
-    returns
-      optional array of string columnNames
-      optional array of any values
-      optional Error sqlError
-
-  command getDatabaseTableNames
-    parameters
-      DatabaseId databaseId
-    returns
-      array of string tableNames
-
-  event addDatabase
-    parameters
-      Database database
 
 experimental domain DeviceOrientation
 
@@ -5963,6 +6026,7 @@ domain Network
       corp-not-same-origin-after-defaulted-to-same-origin-by-dip
       corp-not-same-origin-after-defaulted-to-same-origin-by-coep-and-dip
       corp-not-same-site
+      sri-message-signature-mismatch
 
   # The reason why request was blocked.
   type CorsError extends string
@@ -7263,6 +7327,9 @@ domain Network
       # are represented by the invalid cookie line string instead of a proper cookie.
       array of BlockedSetCookieWithReason blockedCookies
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
       # The IP address space of the resource. The address space can only be determined once the transport
       # established the connection, so we can't send it in `requestWillBeSentExtraInfo`.
@@ -7291,6 +7358,9 @@ domain Network
       # Request identifier. Used to match this information to another responseReceived event.
       RequestId requestId
       # Raw response headers as they were received over the wire.
+      # Duplicate headers in the response are represented as a single key with their values
+      # concatentated using `\n` as the separator.
+      # See also `headersText` that contains verbatim text for HTTP/1.*.
       Headers headers
 
   # Fired exactly once for each Trust Token operation. Depending on
@@ -7316,6 +7386,7 @@ domain Network
         InternalError
         UnknownError
         FulfilledLocally
+        SiteIssuerLimit
       TrustTokenOperationType type
       RequestId requestId
       # Top level origin. The context in which the operation was attempted.
@@ -7525,6 +7596,19 @@ domain Network
       LoadNetworkResourceOptions options
     returns
       LoadNetworkResourcePageResult resource
+
+  # Sets Controls for third-party cookie access
+  # Page reload is required before the new cookie bahavior will be observed
+  experimental command setCookieControls
+    parameters
+      # Whether 3pc restriction is enabled.
+      boolean enableThirdPartyCookieRestriction
+
+      # Whether 3pc grace period exception should be enabled; false by default.
+      boolean disableThirdPartyCookieMetadata
+
+      # Whether 3pc heuristics exceptions should be enabled; false by default.
+      boolean disableThirdPartyCookieHeuristics
 
 # This domain provides various functionality related to drawing atop the inspected page.
 experimental domain Overlay
@@ -8113,6 +8197,7 @@ domain Page
       ch-ua
       ch-ua-arch
       ch-ua-bitness
+      ch-ua-high-entropy-values
       ch-ua-platform
       ch-ua-model
       ch-ua-mobile
@@ -10127,7 +10212,6 @@ experimental domain Storage
   # Enum of possible storage types.
   type StorageType extends string
     enum
-      appcache
       cookies
       file_systems
       indexeddb
@@ -11090,6 +11174,14 @@ domain Target
       string host
       integer port
 
+  # The state of the target window.
+  experimental type WindowState extends string
+    enum
+      normal
+      minimized
+      maximized
+      fullscreen
+
   # Activates (focuses) the target.
   command activateTarget
     parameters
@@ -11163,19 +11255,26 @@ domain Target
     parameters
       # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
-      # Frame width in DIP (headless chrome only).
+      # Frame left origin in DIP (requires newWindow to be true or headless shell).
+      experimental optional integer left
+      # Frame top origin in DIP (requires newWindow to be true or headless shell).
+      experimental optional integer top
+      # Frame width in DIP (requires newWindow to be true or headless shell).
       optional integer width
-      # Frame height in DIP (headless chrome only).
+      # Frame height in DIP (requires newWindow to be true or headless shell).
       optional integer height
+      # Frame window state (requires newWindow to be true or headless shell).
+      # Default is normal.
+      optional WindowState windowState
       # The browser context to create the page in.
       experimental optional Browser.BrowserContextID browserContextId
-      # Whether BeginFrames for this target will be controlled via DevTools (headless chrome only,
+      # Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
       # not supported on MacOS yet, false by default).
       experimental optional boolean enableBeginFrameControl
-      # Whether to create a new Window or Tab (chrome-only, false by default).
+      # Whether to create a new Window or Tab (false by default, not supported by headless shell).
       optional boolean newWindow
-      # Whether to create the target in background or foreground (chrome-only,
-      # false by default).
+      # Whether to create the target in background or foreground (false by default, not supported
+      # by headless shell).
       optional boolean background
       # Whether to create the target of type "tab".
       experimental optional boolean forTab
@@ -12394,6 +12493,15 @@ experimental domain Preload
       array of RuleSetId ruleSetIds
       array of DOM.BackendNodeId nodeIds
 
+  # Chrome manages different types of preloads together using a
+  # concept of preloading pipeline. For example, if a site uses a
+  # SpeculationRules for prerender, Chrome first starts a prefetch and
+  # then upgrades it to prerender.
+  #
+  # CDP events for them are emitted separately but they share
+  # `PreloadPipelineId`.
+  type PreloadPipelineId extends string
+
   command enable
 
   command disable
@@ -12550,6 +12658,7 @@ experimental domain Preload
   event prefetchStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       # The frame id of the frame initiating prefetch.
       Page.FrameId initiatingFrameId
       string prefetchUrl
@@ -12568,6 +12677,7 @@ experimental domain Preload
   event prerenderStatusUpdated
     parameters
       PreloadingAttemptKey key
+      PreloadPipelineId pipelineId
       PreloadingStatus status
       optional PrerenderFinalStatus prerenderStatus
       # This is used to give users more information about the name of Mojo interface

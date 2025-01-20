@@ -9,14 +9,12 @@
 #include <optional>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -88,13 +86,7 @@ AggregatableDebugData DebugDataAll(
   return debug_data;
 }
 
-class AggregatableDebugReportTest : public testing::Test {
- private:
-  base::test::ScopedFeatureList scoped_feature_list{
-      attribution_reporting::features::kAttributionAggregatableDebugReporting};
-};
-
-TEST_F(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
+TEST(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
   const struct {
     const char* desc;
     bool is_within_fenced_frame = false;
@@ -174,7 +166,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
+TEST(AggregatableDebugReportTest, SourceDebugReport) {
   const struct {
     DebugDataType type;
     StoreSourceResult::Result result;
@@ -308,7 +300,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
+TEST(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
   const struct {
     StoreSourceResult::Result result;
   } kTestCases[] = {
@@ -340,7 +332,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
   const struct {
     const char* desc;
     bool is_within_fenced_frame = false;
@@ -417,7 +409,7 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
   const struct {
     CreateReportResult::EventLevel result;
     DebugDataType type;
@@ -547,7 +539,7 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
   const struct {
     CreateReportResult::EventLevel result;
     bool has_matching_source = false;
@@ -609,7 +601,7 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
   const struct {
     CreateReportResult::Aggregatable result;
     DebugDataType type;
@@ -724,8 +716,7 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
   }
 }
 
-TEST_F(AggregatableDebugReportTest,
-       TriggerDebugReport_AggregatableUnsupported) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_AggregatableUnsupported) {
   const struct {
     CreateReportResult::Aggregatable result;
     bool has_matching_source = false;
@@ -780,8 +771,8 @@ TEST_F(AggregatableDebugReportTest,
   }
 }
 
-TEST_F(AggregatableDebugReportTest,
-       TriggerDebugReport_EventLevelAndAggregatable) {
+TEST(AggregatableDebugReportTest,
+     TriggerDebugReport_EventLevelAndAggregatable) {
   const struct {
     const char* desc;
     CreateReportResult::EventLevel event_level_result;
@@ -869,7 +860,7 @@ TEST_F(AggregatableDebugReportTest,
 
 }  // namespace
 
-TEST_F(AggregatableDebugReportTest, SourceDebugReport_Data) {
+TEST(AggregatableDebugReportTest, SourceDebugReport_Data) {
   const base::Time source_time = base::Time::Now();
   const SuitableOrigin source_origin =
       *SuitableOrigin::Deserialize("https://a.test");
@@ -925,7 +916,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Data) {
           Property(&AggregatableDebugReport::BudgetRequired, 5))));
 }
 
-TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Data) {
+TEST(AggregatableDebugReportTest, TriggerDebugReport_Data) {
   const base::Time trigger_time = base::Time::Now();
   const SuitableOrigin destination_origin =
       *SuitableOrigin::Deserialize("https://d.test");
@@ -978,7 +969,7 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Data) {
           Property(&AggregatableDebugReport::BudgetRequired, 5))));
 }
 
-TEST_F(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
+TEST(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
   ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist_{
           {url::Origin::Create(GURL("https://a.test"))}};

@@ -6,6 +6,7 @@ module network.mojom;
 
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "services/network/public/mojom/integrity_algorithm.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 
@@ -59,15 +60,8 @@ struct CSPSource {
   bool is_port_wildcard = false;
 };
 
-enum CSPHashAlgorithm {
-  None = 0,
-  SHA256 = 1,
-  SHA384 = 2,
-  SHA512 = 4,
-};
-
 struct CSPHashSource {
-  CSPHashAlgorithm algorithm;
+  IntegrityAlgorithm algorithm;
   array<uint8> value;
 };
 
@@ -88,6 +82,7 @@ struct CSPSourceList {
   bool allow_dynamic = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;
+  IntegrityAlgorithm? report_hash_algorithm;
 };
 
 enum CSPDirectiveName {

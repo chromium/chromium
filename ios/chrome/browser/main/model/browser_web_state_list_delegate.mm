@@ -4,22 +4,27 @@
 
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 
+#import "base/check.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/web_state.h"
 
-BrowserWebStateListDelegate::BrowserWebStateListDelegate()
-    : BrowserWebStateListDelegate(InsertionPolicy::kAttachTabHelpers,
-                                  ActivationPolicy::kForceRealization) {}
-
 BrowserWebStateListDelegate::BrowserWebStateListDelegate(
+    ProfileIOS* profile,
     InsertionPolicy insertion_policy,
     ActivationPolicy activation_policy)
-    : insertion_policy_(insertion_policy),
-      activation_policy_(activation_policy) {}
+    : profile_(profile),
+      insertion_policy_(insertion_policy),
+      activation_policy_(activation_policy) {
+  CHECK(profile);
+}
 
 BrowserWebStateListDelegate::~BrowserWebStateListDelegate() = default;
 
 void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
+  CHECK_EQ(profile_,
+           ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   if (insertion_policy_ == InsertionPolicy::kAttachTabHelpers) {
     // WebState in a Browser are not pre-render tabs, so always attach
     // all the tab helpers (the method is idempotent, so it is okay to

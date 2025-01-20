@@ -53,15 +53,6 @@ public interface TabGroupModelFilter extends TabList {
     @NonNull
     TabModel getTabModel();
 
-    /**
-     * A wrapper around {@link TabModel#closeTabs} that sets hiding state for tab groups correctly.
-     *
-     * @param tabClosureParams The params to use when closing tabs.
-     * @deprecated Use {@link TabRemover#closeTabs(TabClosureParams, boolean)} instead.
-     */
-    @Deprecated
-    boolean closeTabs(TabClosureParams tabClosureParams);
-
     /** Returns the total tab count in the underlying {@link TabModel}. */
     int getTotalTabCount();
 
@@ -234,18 +225,6 @@ public interface TabGroupModelFilter extends TabList {
     /** Returns a utility interface to help with that ungrouping tabs from a tab group. */
     @NonNull
     TabUngrouper getTabUngrouper();
-
-    /**
-     * This method moves Tab with id as {@code sourceTabId} out of the group it belongs to in the
-     * specified direction.
-     *
-     * @param sourceTabId The id of the {@link Tab} to get the source group.
-     * @param trailing True if the tab should be placed after the tab group when removed. False if
-     *     it should be placed before.
-     * @deprecated Use {@link TabUngrouper#ungroupTabs(List<Tab>, boolean)} instead.
-     */
-    @Deprecated
-    void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing);
 
     // TODO(crbug.com/372068933): This method should probably have more restricted access.
     /**

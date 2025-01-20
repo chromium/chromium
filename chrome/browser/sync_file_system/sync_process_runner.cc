@@ -28,7 +28,7 @@ namespace {
 
 class BaseTimerHelper : public SyncProcessRunner::TimerHelper {
  public:
-  BaseTimerHelper() {}
+  BaseTimerHelper() = default;
 
   bool IsRunning() override { return timer_.IsRunning(); }
 
@@ -43,7 +43,7 @@ class BaseTimerHelper : public SyncProcessRunner::TimerHelper {
   BaseTimerHelper(const BaseTimerHelper&) = delete;
   BaseTimerHelper& operator=(const BaseTimerHelper&) = delete;
 
-  ~BaseTimerHelper() override {}
+  ~BaseTimerHelper() override = default;
 
  private:
   base::OneShotTimer timer_;
@@ -76,7 +76,7 @@ SyncProcessRunner::SyncProcessRunner(const std::string& name,
     timer_helper_ = std::make_unique<BaseTimerHelper>();
 }
 
-SyncProcessRunner::~SyncProcessRunner() {}
+SyncProcessRunner::~SyncProcessRunner() = default;
 
 void SyncProcessRunner::Schedule() {
   if (pending_changes_ == 0) {

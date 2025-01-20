@@ -18,6 +18,9 @@ namespace features {
 // Controls if GPU should synchronize presentation with vsync.
 GL_EXPORT bool UseGpuVsync();
 
+// Controls if vsync interval should be based on compositor clock.
+GL_EXPORT bool UseCompositorClockVSyncInterval();
+
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
@@ -32,6 +35,7 @@ GL_EXPORT BASE_DECLARE_FEATURE(kUseBuiltInMetalShaderCache);
 
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3);
+GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
 #endif  // BUILDFLAG(IS_WIN)
 
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();

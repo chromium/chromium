@@ -323,6 +323,13 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="11" label="Coral"/>
 </enum>
 
+<enum name="BocaPollingResult">
+  <int value="0" label="No Update"/>
+  <int value="1" label="Polling causes session to start"/>
+  <int value="2" label="Polling causes session to end"/>
+  <int value="3" label="Polling causes in-session update"/>
+</enum>
+
 <enum name="BooleanMuted">
   <int value="0" label="Muted"/>
   <int value="1" label="Unmuted"/>
@@ -544,6 +551,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
       label="Disabled because the related app is disabled by policy"/>
   <int value="3"
       label="Disabled because the related URLs are blocked by policy"/>
+</enum>
+
+<enum name="CoralActionType">
+  <int value="0" label="Restore"/>
+  <int value="1" label="LaunchToNewDesk"/>
+  <int value="2" label="SaveAsDeskTemplate"/>
 </enum>
 
 <enum name="CriticalNotificationOutcome">
@@ -1320,28 +1333,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="8" label="FailedToGetNssCerts"/>
 </enum>
 
-<enum name="LacrosLaunchMode">
-  <int value="0" label="Only Ash browser"/>
-  <int value="1" label="Ash and Lacros browser available"/>
-  <int value="2" label="Lacros browser is primary"/>
-  <int value="3" label="Only Lacros browser"/>
-</enum>
-
-<enum name="LacrosLaunchModeAndSource">
-  <int value="0" label="Default or user set, only Ash browser"/>
-  <int value="1" label="Default or user set, Ash and Lacros browser available"/>
-  <int value="2" label="Default or user set, Lacros browser is primary"/>
-  <int value="3" label="Default or user set, only Lacros browser"/>
-  <int value="4" label="User forced, only Ash browser"/>
-  <int value="5" label="User forced, Ash and Lacros browser available"/>
-  <int value="6" label="User forced, Lacros browser is primary"/>
-  <int value="7" label="User forced, only Lacros browser"/>
-  <int value="8" label="Policy forced, only Ash browser"/>
-  <int value="9" label="Policy forced, Ash and Lacros browser available"/>
-  <int value="10" label="Policy forced, Lacros browser is primary"/>
-  <int value="11" label="Policy forced, only Lacros browser"/>
-</enum>
-
 <enum name="LobsterState">
   <int value="0" label="Shown Opportunity"/>
   <int value="1" label="Blocked"/>
@@ -1387,6 +1378,16 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="9" label="Parent access button"/>
 </enum>
 
+<!-- LINT.IfChange(LoginReadaheadResult) -->
+
+<enum name="LoginReadaheadResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/login/readahead/login_readahead_performer.cc:LoginReadaheadResult) -->
+
 <enum name="LoginScreenUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Restart button"/>
@@ -1416,6 +1417,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="9" label="kRestrictedCountry"/>
   <int value="10" label="kNoIdentityManager"/>
   <int value="11" label="kPerUserQuotaExceeded"/>
+  <int value="12" label="kImageHasPerson"/>
 </enum>
 
 <enum name="ModifyGlanceablesTaskResult">
@@ -1583,6 +1585,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
   <int value="37" label="Video Conference Tray Sidetone Enabled"/>
   <int value="38" label="Content Transfer App Enabled"/>
+  <int value="39" label="Sunfish Launcher Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
@@ -1605,6 +1608,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="6" label="Use as personal device button"/>
   <int value="7" label="OsInstall button"/>
   <int value="8" label="Unexpected click"/>
+</enum>
+
+<enum name="OverviewBasedScreenshotKeyboardType">
+  <int value="0" label="Non-ChromeOS Keyboard"/>
+  <int value="1" label="ChromeOS Keyboard WITH Screenshot key"/>
+  <int value="2" label="ChromeOS Keyboard WITHOUT Screenshot key"/>
 </enum>
 
 <enum name="OverviewDragAction">
@@ -2366,6 +2375,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="56" label="Copy Image To Clipboard Action"/>
   <int value="57" label="Capture Mode Text Copied"/>
   <int value="58" label="Coral Saved Groups Limit Max"/>
+  <int value="59" label="Scanner Action Success"/>
+  <int value="60" label="Scanner Action Failure"/>
+  <int value="61" label="Apps Can Access Camera"/>
+  <int value="62" label="Apps Can't Access Camera"/>
+  <int value="63" label="Can't Turn On Camera Access Remotely"/>
 </enum>
 
 <enum name="TogglePickerAction">

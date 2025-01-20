@@ -97,6 +97,8 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_SODA_FR_FR},
       {"gonpemdgkjcecdgbnaabipppbmgfggbe",
        SystemProfileProto_ComponentId_FIRST_PARTY_SETS},
+      {"hajigopbbjhghbfimgkfmpenfkclmohk",
+       SystemProfileProto_ComponentId_AMOUNT_EXTRACTION_HEURISTIC_REGEXES},
       {"hfnkpimlhhgieaddgfemjhofmfblmnib",
        SystemProfileProto_ComponentId_CRL_SET},
       {"hkifppleldbgkdlijbdfkdpedggaopda",
@@ -177,6 +179,11 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
   return result->second;
 }
 
+// static
+uint32_t ComponentMetricsProvider::HashCohortId(const std::string& cohort_id) {
+  return base::PersistentHash(cohort_id.substr(0, cohort_id.find_last_of(":")));
+}
+
 void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
   for (const auto& component : components_info_delegate_->GetComponents()) {
@@ -191,8 +198,8 @@ void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     proto->set_component_id(id);
     proto->set_version(component.version.GetString());
     proto->set_omaha_fingerprint(Trim(component.fingerprint));
-    proto->set_cohort_hash(base::PersistentHash(
-        component.cohort_id.substr(0, component.cohort_id.find_last_of(":"))));
+    proto->set_cohort_hash(
+        ComponentMetricsProvider::HashCohortId(component.cohort_id));
   }
 }
 

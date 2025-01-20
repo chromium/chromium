@@ -53,7 +53,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
 
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_ = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -129,7 +129,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;
   id<SystemIdentity> identity_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
@@ -151,6 +151,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestAllowPriceTrackingNotifications) {
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
   OCMExpect([mockDelegate removePriceTrackingPromo]);
+  OCMExpect([mockDelegate promoWasTapped]);
   mediator().delegate = mockDelegate;
   [mediator() allowPriceTrackingNotifications];
 }

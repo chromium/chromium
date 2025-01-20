@@ -315,12 +315,16 @@ void DrmOverlayManager::OnPromotedOverlayTypes(
 bool DrmOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
-  if (candidate.buffer_size.IsEmpty())
+  if (candidate.buffer_size.IsEmpty()) {
+    VLOG(3) << "Overlay Rejected: buffer_size="
+            << candidate.buffer_size.ToString();
     return false;
+  }
 
   if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
       absl::get<gfx::OverlayTransform>(candidate.transform) ==
           gfx::OVERLAY_TRANSFORM_INVALID) {
+    VLOG(3) << "Overlay Rejected: invalid transform";
     return false;
   }
 

@@ -191,4 +191,24 @@ TEST_F(EventTargetTest, UseCountScrollsnapchange) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kSnapEvent));
 }
 
+TEST_F(EventTargetTest, UseCountMove) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kMoveEvent));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"HTML(
+    window.addEventListener('move', () => {});
+  )HTML")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kMoveEvent));
+}
+
+TEST_F(EventTargetTest, UseCountOnMove) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kMoveEvent));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"HTML(
+    window.onmove = () => {};
+  )HTML")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kMoveEvent));
+}
+
 }  // namespace blink

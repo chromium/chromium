@@ -4,9 +4,11 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ContentViewStaticsImpl;
 
 /** Implementations of various static methods. */
+@NullMarked
 public class ContentViewStatics {
     /**
      * Suspends Webkit timers in all renderers.

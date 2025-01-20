@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_math_solver_query.proto";
 import "lens_overlay_message_set.proto";
 
 message StickinessSignals {
@@ -15,8 +16,16 @@ message StickinessSignals {
     UNKNOWN = 0;
 
     TRANSLATE_LITE = 56;
+
+    EDUCATION_INPUT = 79;
   }
   optional Namespace id_namespace = 1;
 
   optional MessageSet interpretation = 28;
+
+  optional EducationInputExtension education_input_extension = 121;
+}
+
+message EducationInputExtension {
+  optional MathSolverQuery math_solver_query = 1;
 }

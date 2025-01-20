@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<grit base_dir="." latest_public_release="0" current_release="1" output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+<grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
   <!--
   This file contains definition of resources that will be translated for each
   locale.  The strings in this file are specific to iOS.
@@ -231,6 +231,12 @@
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web.">
         Sign in to Chrome
       </message>
+      <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_ACCESSIBILITY_LABEL" desc="Accessibility text for the title of the Contextual Panel screen.">
+        From Chrome
+      </message>
+    <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE" desc="Branded title on the Contextual Panel screen. The string is lowercase on purpose.">
+        chrome
+      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE" desc="Subtitle text of the inital step view of Credential Provider Exention promo. [iOS only]">
         To easily get your saved passwords in your other apps, use Chrome for AutoFill
       </message>
@@ -321,8 +327,14 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE" desc="The signout dialog title when forced sign-in is enabled. (Force Sign In) [iOS only]">
         Sign out of Chrome?
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
+       Signing in adds your account to Chrome for work-related browsing.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_UNO.">
         Your organization turned off the ability to use and save Chrome data in your Google Account. New bookmarks, passwords, and more will be saved only to this device.
+      </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement read by VoiceOver when the expanded manual fill view is shown.">
+         Chrome Autofill expanded view
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome keeps your sensitive data secure with Face ID.
@@ -412,6 +424,24 @@ Things to consider:
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to making sure your can always use Chromium data in your Google account. [iOS only]">
         Make sure you can always use the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME" desc="Button label to indicate browser activity and stop the browser from running idle timeout actions.">
+         Continue using Chrome
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
+          {THRESHOLD, plural,
+          =1 {This happens when Chrome isn't used for {THRESHOLD} minute}
+          other {This happens when Chrome isn't used for {THRESHOLD} minutes}}
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
+          {THRESHOLD, plural,
+            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}
+            other {This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}
+      </message>
+      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens. It also informs the user that data will be cleared when they are signed out.">
+          {THRESHOLD, plural,
+            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
+            other {This happens when Chrome isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
         Open in Chrome
@@ -590,14 +620,14 @@ Things to consider:
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_TITLE" desc="The title of the use Lens for translation tip for the Magic Stack.">
         Translate with Google Lens
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
+        Get Chrome's Strongest Security
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_2" desc="The second step of the Save Passwords tutorial for the Magic Stack.">
         Chrome will offer to save your password.
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE" desc="The title of the Save Password tip for the Magic Stack.">
         Save Your Passwords in Chrome
-      </message>
-      <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
-        Get Chrome's Strongest Security
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_DESCRIPTION" desc="The description of the Set Up List completion for the Magic Stack.">
         Check back here for more useful tips to get the most out of Chrome.
@@ -676,17 +706,17 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_TITLE" desc="Text for the title of a Tips notification that encourages the user to complete the Set Up List">
         Finish setting up Chrome
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE" desc="Text for the title of a Tips notification that encourages the user to sign in to their account">
-        Chrome Tip: Sign in to Chrome
-      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY" desc="Text for the body of a Tips notification that encourages the user to sign in to their account">
         Sign in with your Google Account to sync your passwords, bookmarks, and more.
       </message>
-      <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE" desc="Text for the title of a Tips notification that takes the user to the Whats New page">
-        What's New in Chrome
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE" desc="Text for the title of a Tips notification that encourages the user to sign in to their account">
+        Chrome Tip: Sign in to Chrome
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_BODY" desc="Text for the body of a Tips notification that takes the user to the Whats New page">
         Explore new features that help you get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_TITLE" desc="Text for the title of a Tips notification that takes the user to the Whats New page">
+        What's New in Chrome
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[iOS only] [Length: Unlimited]">
         Share Chrome
@@ -826,15 +856,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_FOOTER" desc="Footer for Safe Browsing enhanced protection mode.">
         Learn more about <ph name="BEGIN_LINK">BEGIN_LINK</ph>how Chrome keeps your data private<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_DESCRIPTION" desc="The Enhanced Safe Browsing infobar promo's description.">Chrome recommends enhanced protection</message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INLINE_PROMO_DESCRIPTION" desc="The Enhanced Safe Browsing inline promo's description.">
+          Get Chrome's strongest security from dangerous sites
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing standard protection mode.">
         Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO_PROXY" desc="Second bullet point under the Safe Browsing standard protection mode.">
         Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.
-      </message>
-      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INFOBAR_DESCRIPTION" desc="The Enhanced Safe Browsing infobar promo's description.">Chrome recommends enhanced protection</message>
-      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_INLINE_PROMO_DESCRIPTION" desc="The Enhanced Safe Browsing inline promo's description.">
-          Get Chrome's strongest security from dangerous sites
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY" desc="Friendlier summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
@@ -901,6 +931,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
         You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS AutoFill from Chrome password manager [iOS only]">
+        Toggle Chrome
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE" desc="The subtitle of the view that teaches users to turn on iOS AutoFill from Chrome password manager [iOS Only]">
+        Sign in faster with Chrome autofill
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_MAGIC_STACK_PAGE_HEADER" desc="Informational header at the top of the safety check page when opened via the Magic Stack">
         Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.
@@ -974,6 +1010,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SET_UP_LIST_DESCRIPTION" desc="Description for the Set Up List - a list of tasks the user might want to complete when first using Chrome.">
           Complete these suggested actions below to get the most out of Chrome.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_DOCK_CHROME_SHORT_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to add Chrome to their iOS dock (used when the Set Up List is in compact mode).">
+        Access Chrome faster from your Home Screen Dock.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE" desc="Title for the Set Up List item that encourages the user to add Chrome to their iOS dock.">
+        Move Chrome to the Dock
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu for the Set Up List module.">
           This card shows you suggestions on how to get the most out of Chrome.
       </message>
@@ -981,7 +1023,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Keep up with content and helpful Chrome tips.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TIPS_TITLE" desc="Title for the Set Up List (a variation that mentions Tips) - a list of tasks the user might want to complete when first using Chromium.">
-        Chrome tips
+        Chrome Tips
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TITLE" desc="Title for the Set Up List - a list of tasks the user might want to complete when first using Chrome.">
         Get the most out of Chrome
@@ -1118,39 +1160,18 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
           =1 {Now showing 1 Chrome window}
           other {Now showing {count} Chrome windows}}
       </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_SUBTITLE" desc="Subtitle of the Youtube Incognito Sheet explaining that Chrome automatically opens Youtube Incognito links in Incognito">
+        Chrome automatically opens Youtube Incognito links in Incognito.
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE" desc="Title of the Youtube Incognito Sheet informing the user that the URL will be opened in Chrome Incognito">
+        You're in Chrome Incognito
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chrome there.
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL" desc="Text when a signed out user attempts to use send-tab-to-self, then sees a sign-in promo.">
         To send this tab to another device, sign in to Chrome on both devices.
       </message>
-      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
-          {THRESHOLD, plural,
-          =1 {This happens when Chrome isn't used for {THRESHOLD} minute}
-          other {This happens when Chrome isn't used for {THRESHOLD} minutes}}
-      </message>
-      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens.">
-          {THRESHOLD, plural,
-            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. This could include history and autofill.}
-            other {This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}}
-      </message>
-      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens. It also informs the user that data will be cleared when they are signed out.">
-          {THRESHOLD, plural,
-            =1 {This happens when Chrome isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
-            other {This happens when Chrome isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
-      </message>
-      <message name="IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME" desc="Button label to indicate browser activity and stop the browser from running idle timeout actions.">
-         Continue using Chrome
-      </message>
-      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement read by VoiceOver when the expanded manual fill view is shown.">
-         Chrome Autofill expanded view
-      </message>
-      <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE" desc="Branded title on the Contextual Panel screen. The string is lowercase on purpose.">
-        chrome
-      </message>
-      <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_ACCESSIBILITY_LABEL" desc="Accessibility text for the title of the Contextual Panel screen.">
-        From Chrome
-      </message>
-    </messages>
+      </messages>
   </release>
 </grit>

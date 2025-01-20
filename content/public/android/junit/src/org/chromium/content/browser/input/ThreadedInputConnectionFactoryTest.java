@@ -37,8 +37,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.concurrent.Callable;
@@ -46,7 +44,6 @@ import java.util.concurrent.Callable;
 /** Unit tests for {@ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS})
 public class ThreadedInputConnectionFactoryTest {
     /** A testable version of ThreadedInputConnectionFactory. */
     private class TestFactory extends ThreadedInputConnectionFactory {

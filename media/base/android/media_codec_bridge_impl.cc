@@ -47,6 +47,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+using base::android::ToJavaIntArray;
 
 #define RETURN_ON_ERROR(condition)                             \
   do {                                                         \
@@ -237,6 +238,14 @@ MediaCodecResult::Codes ConvertToMediaCodecEnum(MediaCodecStatus status) {
     case MEDIA_CODEC_ZERO_SUBSAMPLES:
     case MEDIA_CODEC_UNKNOWN_CIPHER_MODE:
     case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
+    case MEDIA_CODEC_INSUFFICIENT_RESOURCE:
+    case MEDIA_CODEC_RECLAIMED:
+    case MEDIA_CODEC_INPUT_SLOT_UNAVAILABLE:
+    case MEDIA_CODEC_ILLEGAL_STATE:
+    case MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION:
+    case MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION:
+    case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
+    case MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION:
       return MediaCodecResult::Codes::kError;
   }
 }
@@ -301,6 +310,24 @@ std::string ApplyDescriptiveMessage(MediaCodecStatus status) {
       return "Cipher mode is not supported.";
     case MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED:
       return "Pattern encryption only supported for 'cbcs' scheme (CBC mode).";
+    case MEDIA_CODEC_INSUFFICIENT_RESOURCE:
+      return "Required resource was not able to be allocated.";
+    case MEDIA_CODEC_RECLAIMED:
+      return "The resource manager reclaimed the media resource used by the "
+             "codec.";
+    case MEDIA_CODEC_INPUT_SLOT_UNAVAILABLE:
+      return "The input slot is not available or the index is out of range";
+    case MEDIA_CODEC_ILLEGAL_STATE:
+      return "Not in the Executing state.";
+    case MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION:
+      return "Unknown MediaCodec.CryptoException.";
+    case MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION:
+      return "Unknown MediaDrm.ErrorCode returned by "
+             "MediaCodec.CryptoException.";
+    case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
+      return "Unknown MediaCodec.CodecException.";
+    case MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION:
+      return "Error constructing or queuing a LinearBlock";
   }
 }
 
@@ -353,7 +380,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
 
   return base::WrapUnique(new MediaCodecBridgeImpl(
       CodecType::kAny, std::nullopt, std::move(j_bridge),
-      std::move(on_buffers_available_cb)));
+      /*use_block_model=*/false, std::move(on_buffers_available_cb)));
 }
 
 // static
@@ -392,7 +419,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
 
   return base::WrapUnique(new MediaCodecBridgeImpl(
       config.codec_type, config.codec, std::move(j_bridge),
-      config.on_buffers_available_cb));
+      config.use_block_model, config.on_buffers_available_cb));
 }
 
 // static
@@ -433,8 +460,10 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     CodecType codec_type,
     std::optional<VideoCodec> video_decoder_codec,
     ScopedJavaGlobalRef<jobject> j_bridge,
+    bool use_block_model,
     base::RepeatingClosure on_buffers_available_cb)
-    : codec_type_(codec_type),
+    : use_block_model_(use_block_model),
+      codec_type_(codec_type),
       video_decoder_codec_(std::move(video_decoder_codec)),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
       j_bridge_(std::move(j_bridge)) {
@@ -620,6 +649,9 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     base::TimeDelta presentation_time) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
   CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+  if (use_block_model_) {
+    return QueueInputBlock(index, data, presentation_time);
+  }
   if (!FillInputBuffer(index, data)) {
     return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
   }
@@ -630,6 +662,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
     int index,
     size_t data_size,
     base::TimeDelta presentation_time) {
+  DCHECK(!use_block_model_);
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   JNIEnv* env = AttachCurrentThread();
   auto status =
@@ -640,110 +673,134 @@ MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
-    int index,
-    base::span<const uint8_t> data,
-    base::TimeDelta presentation_time,
-    bool is_eos) {
-  DVLOG(3) << __func__ << " " << index << ": " << data.size();
-  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_result =
-      Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
-  ScopedJavaLocalRef<jobject> j_block =
-      Java_ObtainBlockResult_block(env, j_result);
-  ScopedJavaLocalRef<jobject> j_buffer =
-      Java_ObtainBlockResult_buffer(env, j_result);
-  if (j_buffer.is_null()) {
-    Java_ObtainBlockResult_recycle(env, j_result);
-    return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
-  }
-
-  if (!data.empty()) {
-    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
-        .copy_from_nonoverlapping(data);
-  }
-
-  MediaCodecStatus status =
-      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
-          env, j_bridge_, index, j_block, 0, data.size(),
-          presentation_time.InMicroseconds(),
-          is_eos ? kBufferFlagEndOfStream : 0));
-  Java_ObtainBlockResult_recycle(env, j_result);
-  ReportAnyErrorToUMA(status);
-  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
-}
-
 MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     int index,
     base::span<const uint8_t> data,
-    const std::string& key_id,
-    const std::string& iv,
-    const std::vector<SubsampleEntry>& subsamples,
-    EncryptionScheme encryption_scheme,
-    std::optional<EncryptionPattern> encryption_pattern,
-    base::TimeDelta presentation_time) {
+    base::TimeDelta presentation_time,
+    const DecryptConfig& decrypt_config) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
   CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
-
-  if (!FillInputBuffer(index, data)) {
-    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
-  }
-
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_key_id = ToJavaByteArray(env, key_id);
-  ScopedJavaLocalRef<jbyteArray> j_iv = ToJavaByteArray(env, iv);
 
   // The MediaCodec.CryptoInfo documentation says to pass NULL for |clear_array|
   // to indicate that all data is encrypted. But it doesn't specify what
   // |cypher_array| and |subsamples_size| should be in that case. We pass
   // one subsample here just to be on the safe side.
-  int num_subsamples = std::max(static_cast<size_t>(1), subsamples.size());
+  const auto num_subsamples =
+      std::max(static_cast<size_t>(1), decrypt_config.subsamples().size());
 
+  // Decompose SubsampleEntry objects into two jint arrays since there's no way
+  // to set the values directly into a jintArray :|
   auto native_clear_array = base::HeapArray<jint>::Uninit(num_subsamples);
   auto native_cypher_array = base::HeapArray<jint>::Uninit(num_subsamples);
-
-  if (subsamples.empty()) {
+  if (decrypt_config.subsamples().empty()) {
     native_clear_array[0] = 0;
     native_cypher_array[0] = data.size();
   } else {
-    for (size_t i = 0; i < subsamples.size(); ++i) {
-      DCHECK(subsamples[i].clear_bytes <= std::numeric_limits<uint16_t>::max());
-      if (subsamples[i].cypher_bytes >
-          static_cast<uint32_t>(std::numeric_limits<jint>::max())) {
+    for (size_t i = 0; i < decrypt_config.subsamples().size(); ++i) {
+      const auto& subsamples = decrypt_config.subsamples()[i];
+      if (subsamples.cypher_bytes > std::numeric_limits<jint>::max()) {
         return {MediaCodecResult::Codes::kError,
                 "Subsample size is too large."};
       }
-
-      native_clear_array[i] = subsamples[i].clear_bytes;
-      native_cypher_array[i] = subsamples[i].cypher_bytes;
+      native_clear_array[i] = subsamples.clear_bytes;
+      native_cypher_array[i] = subsamples.cypher_bytes;
     }
   }
 
-  ScopedJavaLocalRef<jintArray> clear_array =
-      base::android::ToJavaIntArray(env, native_clear_array);
-  ScopedJavaLocalRef<jintArray> cypher_array =
-      base::android::ToJavaIntArray(env, native_cypher_array);
+  if (use_block_model_) {
+    ScopedJavaLocalRef<jobject> j_result =
+        Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
+    ScopedJavaLocalRef<jobject> j_block =
+        Java_ObtainBlockResult_block(env, j_result);
+    if (j_block.is_null()) {
+      return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+    }
 
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
+    if (!data.empty()) {
+      ScopedJavaLocalRef<jobject> j_buffer =
+          Java_ObtainBlockResult_buffer(env, j_result);
+      base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+          .first(data.size())
+          .copy_from_nonoverlapping(data);
+    }
+
+    const auto status = static_cast<MediaCodecStatus>(
+        Java_MediaCodecBridge_queueSecureInputBlock(
+            env, j_bridge_, index, j_block, 0, data.size(),
+            ToJavaByteArray(env, decrypt_config.iv()),
+            ToJavaByteArray(env, decrypt_config.key_id()),
+            ToJavaIntArray(env, native_clear_array),
+            ToJavaIntArray(env, native_cypher_array), num_subsamples,
+            static_cast<int>(decrypt_config.encryption_scheme()),
+            decrypt_config.encryption_pattern()
+                ? decrypt_config.encryption_pattern()->crypt_byte_block()
+                : 0,
+            decrypt_config.encryption_pattern()
+                ? decrypt_config.encryption_pattern()->skip_byte_block()
+                : 0,
+            presentation_time.InMicroseconds(), /*flags=*/0));
+
+    Java_ObtainBlockResult_recycle(env, j_result);
+    ReportAnyErrorToUMA(status);
+    return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
+  }
+
+  if (!FillInputBuffer(index, data)) {
+    return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
+  }
+
+  // Note: All the To*Array() calls each make a copy below. This could be a
+  // performance problem on low end Android devices.
+  const auto status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_queueSecureInputBuffer(
-          env, j_bridge_, index, 0, j_iv, j_key_id, clear_array, cypher_array,
-          num_subsamples, static_cast<int>(encryption_scheme),
-          static_cast<int>(
-              encryption_pattern ? encryption_pattern->crypt_byte_block() : 0),
-          static_cast<int>(
-              encryption_pattern ? encryption_pattern->skip_byte_block() : 0),
+          env, j_bridge_, index, 0, ToJavaByteArray(env, decrypt_config.iv()),
+          ToJavaByteArray(env, decrypt_config.key_id()),
+          ToJavaIntArray(env, native_clear_array),
+          ToJavaIntArray(env, native_cypher_array), num_subsamples,
+          static_cast<int>(decrypt_config.encryption_scheme()),
+          decrypt_config.encryption_pattern()
+              ? decrypt_config.encryption_pattern()->crypt_byte_block()
+              : 0,
+          decrypt_config.encryption_pattern()
+              ? decrypt_config.encryption_pattern()->skip_byte_block()
+              : 0,
           presentation_time.InMicroseconds()));
   ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-void MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
+MediaCodecResult MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
   DVLOG(3) << __func__ << ": " << input_buffer_index;
   JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_queueInputBuffer(env, j_bridge_, input_buffer_index, 0,
-                                         0, 0, kBufferFlagEndOfStream);
+
+  auto status = MediaCodecStatus::MEDIA_CODEC_OK;
+  if (use_block_model_) {
+    ScopedJavaLocalRef<jobject> j_result =
+        Java_MediaCodecBridge_obtainBlock(env, j_bridge_, 0);
+    ScopedJavaLocalRef<jobject> j_block =
+        Java_ObtainBlockResult_block(env, j_result);
+    if (j_block.is_null()) {
+      ReportAnyErrorToUMA(MediaCodecStatus::MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION);
+      return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+    }
+
+    status =
+        static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
+            env, j_bridge_, input_buffer_index, j_block, 0, 0, 0,
+            kBufferFlagEndOfStream));
+    Java_ObtainBlockResult_recycle(env, j_result);
+  } else {
+    status =
+        static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
+            env, j_bridge_, input_buffer_index, 0, 0, 0,
+            kBufferFlagEndOfStream));
+  }
+  DVLOG(3) << __func__ << ": status: " << status
+           << ", index: " << input_buffer_index;
+
+  ReportAnyErrorToUMA(status);
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 MediaCodecResult MediaCodecBridgeImpl::DequeueInputBuffer(
@@ -805,6 +862,7 @@ void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
 
 base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(
     int input_buffer_index) {
+  DCHECK(!use_block_model_);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getInputBuffer(env, j_bridge_, input_buffer_index));
@@ -872,6 +930,7 @@ size_t MediaCodecBridgeImpl::GetMaxInputSize() {
 
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,
                                            base::span<const uint8_t> data) {
+  DCHECK(!use_block_model_);
   auto dst = GetInputBuffer(index);
   if (dst.empty()) {
     LOG(ERROR) << "GetInputBuffer failed";
@@ -884,6 +943,40 @@ bool MediaCodecBridgeImpl::FillInputBuffer(int index,
   }
   dst.first(data.size()).copy_from_nonoverlapping(data);
   return true;
+}
+
+MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
+    int index,
+    base::span<const uint8_t> data,
+    base::TimeDelta presentation_time) {
+  DVLOG(3) << __func__ << " " << index << ": " << data.size();
+  DCHECK(use_block_model_);
+  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_result =
+      Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
+  ScopedJavaLocalRef<jobject> j_block =
+      Java_ObtainBlockResult_block(env, j_result);
+  if (j_block.is_null()) {
+    ReportAnyErrorToUMA(MediaCodecStatus::MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION);
+    return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+  }
+
+  if (!data.empty()) {
+    auto j_buffer = Java_ObtainBlockResult_buffer(env, j_result);
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+        .first(data.size())
+        .copy_from_nonoverlapping(data);
+  }
+
+  auto status =
+      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
+          env, j_bridge_, index, j_block, 0, data.size(),
+          presentation_time.InMicroseconds(), 0));
+  Java_ObtainBlockResult_recycle(env, j_result);
+  ReportAnyErrorToUMA(status);
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 void MediaCodecBridgeImpl::ReportAnyErrorToUMA(MediaCodecStatus status) {

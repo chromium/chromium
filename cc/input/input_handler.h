@@ -57,7 +57,9 @@ enum class ScrollBeginThreadState {
   kScrollingOnCompositor = 0,
   kScrollingOnCompositorBlockedOnMain = 1,
   kScrollingOnMain = 2,
-  kMaxValue = kScrollingOnMain,
+  kRasterInducingScroll = 3,
+  kRasterInducingScrollBlockedOnMain = 4,
+  kMaxValue = kRasterInducingScrollBlockedOnMain,
 };
 
 struct CC_EXPORT InputHandlerPointerResult {
@@ -137,6 +139,11 @@ class CC_EXPORT InputHandlerClient {
     // `kUseScrollPredictorForEmptyQueue`. After which we will resume frame
     // production and enqueuing input.
     kUseScrollPredictorForDeadline,
+
+    // Will perform as `kDispatchScrollEventsImmediately` until the deadline.
+    // However no input arriving after the deadline will dispatch. Event if
+    // frame production has yet to complete.
+    kDispatchScrollEventsUntilDeadline,
   };
 
   InputHandlerClient(const InputHandlerClient&) = delete;
@@ -160,7 +167,8 @@ class CC_EXPORT InputHandlerClient {
   virtual void DeliverInputForDeadline() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual bool HasQueuedInput() const = 0;
-  virtual void SetScrollEventDispatchMode(ScrollEventDispatchMode mode) = 0;
+  virtual void SetScrollEventDispatchMode(ScrollEventDispatchMode mode,
+                                          double scroll_deadline_ratio) = 0;
 
  protected:
   InputHandlerClient() = default;
@@ -264,6 +272,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     // a parameter to ThreadInputHandler to specify whether unused delta is
     // consumed by the viewport or bubbles to the parent.
     bool viewport_cannot_scroll = false;
+
+    // This bool indicates if this scroll operation is expected to require
+    // raster work to be done on worker threads before the scroll tree
+    // can be activated.
+    bool raster_inducing = false;
   };
 
   // ViewportScrollResult records, for a scroll gesture affecting a page's

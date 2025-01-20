@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/message_center/views/relative_time_formatter.h"
+
+#include <array>
 
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
-
 
 namespace message_center {
 
@@ -31,18 +27,33 @@ struct RelativeTimeFormat {
 // Gets the relative time format closest but greater than |delta|.
 const RelativeTimeFormat& GetRelativeTimeFormat(base::TimeDelta delta) {
   // All relative time formats must be sorted by their |range|.
-  static constexpr RelativeTimeFormat kTimeFormats[] = {
-      {base::TimeDelta(), IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST,
-       IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST},
-      {base::Minutes(1), IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST,
-       IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE},
-      {base::Hours(1), IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST,
-       IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE},
-      {base::Days(1), IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST,
-       IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST_FUTURE},
-      {base::Days(364), IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST,
-       IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST_FUTURE},
-  };
+  static constexpr auto kTimeFormats = std::to_array<RelativeTimeFormat>({
+      {
+          base::TimeDelta(),
+          IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST,
+          IDS_MESSAGE_NOTIFICATION_NOW_STRING_SHORTEST,
+      },
+      {
+          base::Minutes(1),
+          IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST,
+          IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE,
+      },
+      {
+          base::Hours(1),
+          IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST,
+          IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE,
+      },
+      {
+          base::Days(1),
+          IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST,
+          IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST_FUTURE,
+      },
+      {
+          base::Days(364),
+          IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST,
+          IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST_FUTURE,
+      },
+  });
   constexpr size_t kTimeFormatsCount = std::size(kTimeFormats);
   static_assert(kTimeFormatsCount > 0, "kTimeFormats must not be empty");
 

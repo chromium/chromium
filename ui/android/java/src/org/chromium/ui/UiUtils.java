@@ -34,7 +34,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.Insets;
@@ -44,6 +43,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +56,7 @@ import java.util.Set;
  * Utility functions for common Android UI tasks.
  * This class is not supposed to be instantiated.
  */
+@NullMarked
 public class UiUtils {
     private static final String TAG = "UiUtils";
 
@@ -140,7 +142,7 @@ public class UiUtils {
      * @param bitmapConfig     Bitmap config for the generated screenshot (ARGB_8888 or RGB_565).
      * @return The screen bitmap of the view or null if a problem was encountered.
      */
-    public static Bitmap generateScaledScreenshot(
+    public static @Nullable Bitmap generateScaledScreenshot(
             View currentView, int maximumDimension, Bitmap.Config bitmapConfig) {
         Bitmap screenshot = null;
         boolean drawingCacheEnabled = currentView.isDrawingCacheEnabled();
@@ -253,7 +255,7 @@ public class UiUtils {
      *     height of all items stored at index 1.
      */
     public static int[] computeListAdapterContentDimensions(
-            ListAdapter adapter, ViewGroup parentView) {
+            ListAdapter adapter, @Nullable ViewGroup parentView) {
         final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         AbsListView.LayoutParams params =

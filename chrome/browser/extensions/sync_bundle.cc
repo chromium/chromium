@@ -15,8 +15,8 @@
 
 namespace extensions {
 
-SyncBundle::SyncBundle() {}
-SyncBundle::~SyncBundle() {}
+SyncBundle::SyncBundle() = default;
+SyncBundle::~SyncBundle() = default;
 
 void SyncBundle::StartSyncing(
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {

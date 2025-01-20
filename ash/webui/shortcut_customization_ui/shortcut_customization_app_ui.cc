@@ -32,10 +32,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -191,6 +191,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
+      {"iconLabelDoNotDisturb",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB},
       {"iconLabelEnableSelectToSpeak",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_SELECT_TO_SPEAK},
       {"iconLabelEnableOrToggleDictation",
@@ -241,21 +243,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS},
       {"iconLabelZoomToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
+      {"blockQuickInsertKey",
+       IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE},
+      {"iconLabelQuickInsert", IDS_KEYBOARD_QUICK_INSERT_LABEL},
   };
-
-  // For official builds, only add the real string if the feature is enabled.
-  if (features::IsModifierSplitEnabled()) {
-    source->AddLocalizedString(
-        "blockRightAltKey",
-        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE);
-    source->AddLocalizedString("iconLabelRightAlt",
-                               IDS_KEYBOARD_QUICK_INSERT_LABEL);
-  } else {
-    source->AddLocalizedString("blockRightAltKey",
-                               IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
-    source->AddLocalizedString(
-        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-  }
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",
@@ -267,9 +258,7 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isCustomizationAllowed",
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
-  html_source->AddBoolean(
-      "isJellyEnabledForShortcutCustomization",
-      ash::features::IsJellyEnabledForShortcutCustomization());
+  html_source->AddBoolean("isJellyEnabledForShortcutCustomization", true);
   html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
                           features::IsInputDeviceSettingsSplitEnabled());
   html_source->AddBoolean(
@@ -290,10 +279,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
 
   ash::EnableTrustedTypesCSP(source);
 
-  const auto resources =
-      base::make_span(kAshShortcutCustomizationAppResources,
-                      kAshShortcutCustomizationAppResourcesSize);
-  SetUpWebUIDataSource(source, resources,
+  SetUpWebUIDataSource(source, kAshShortcutCustomizationAppResources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
   AddLocalizedStrings(source);
 
@@ -361,9 +347,6 @@ void ShortcutCustomizationAppUI::BindInterface(
 
 void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  // BindInterface should not be called unless jelly-colors and
-  // scanning-app-jelly flags are enabled.
-  CHECK(features::IsJellyEnabledForShortcutCustomization());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }

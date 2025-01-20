@@ -186,13 +186,8 @@ class PerformanceTimelineLCPStartTimePrecisionBrowserTest
   int32_t precision_ = 10;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_LCPStartTimePrecision DISABLED_LCPStartTimePrecision
-#else
-#define MAYBE_LCPStartTimePrecision LCPStartTimePrecision
-#endif
 IN_PROC_BROWSER_TEST_F(PerformanceTimelineLCPStartTimePrecisionBrowserTest,
-                       MAYBE_LCPStartTimePrecision) {
+                       LCPStartTimePrecision) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/lcp-start-time-precision.html"));
@@ -286,15 +281,15 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelinePrefetchTransferSizeBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL prefetch_url(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
+      embedded_test_server()->GetURL("a.com", "/cacheable.html"));
   const GURL landing_url(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/prefetch.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), landing_url));
   Prefetch();
   EXPECT_TRUE(NavigateToURL(shell(), prefetch_url));
-  // Navigate to a prefetched url should result in a navigation timing entry
-  // with 0 transfer size.
+  // Navigate to a HTTP-cached prefetched url should result in a navigation
+  // timing entry with 0 transfer size since the HTTP cache gets used.
   EXPECT_EQ(0, GetTransferSize());
 }
 

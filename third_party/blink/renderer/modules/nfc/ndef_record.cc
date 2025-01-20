@@ -584,14 +584,14 @@ const String& NDEFRecord::mediaType() const {
   return media_type_;
 }
 
-DOMDataView* NDEFRecord::data() const {
+NotShared<DOMDataView> NDEFRecord::data() const {
   // Step 4 in https://w3c.github.io/web-nfc/#dfn-parse-an-ndef-record
   if (record_type_ == "empty") {
     DCHECK(payload_data_.empty());
-    return nullptr;
+    return NotShared<DOMDataView>();
   }
   DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(payload_data_);
-  return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
+  return NotShared(DOMDataView::Create(dom_buffer, 0, payload_data_.size()));
 }
 
 // https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-data-bytes

@@ -111,11 +111,6 @@ bool IsScrollBlockingEvent(const AtomicString& event_type) {
          IsWheelScrollBlockingEvent(event_type);
 }
 
-bool IsInstrumentedForAsyncStack(const AtomicString& event_type) {
-  return event_type == event_type_names::kLoad ||
-         event_type == event_type_names::kError;
-}
-
 base::TimeDelta BlockedEventsWarningThreshold(ExecutionContext* context,
                                               const Event& event) {
   if (!event.cancelable())
@@ -673,11 +668,6 @@ bool EventTarget::AddEventListenerInternal(
     }
 
     AddedEventListener(event_type, *registered_listener);
-    if (IsA<JSBasedEventListener>(listener) &&
-        IsInstrumentedForAsyncStack(event_type)) {
-      listener->async_task_context()->Schedule(GetExecutionContext(),
-                                               event_type);
-    }
   }
   return added;
 }
@@ -708,6 +698,9 @@ void EventTarget::AddedEventListener(
       UseCounter::Count(*document, WebFeature::kScrollend);
     } else if (event_util::IsSnapEventType(event_type)) {
       UseCounter::Count(*document, WebFeature::kSnapEvent);
+    } else if (RuntimeEnabledFeatures::WindowOnMoveEventEnabled() &&
+               (event_type == event_type_names::kMove)) {
+      UseCounter::Count(*document, WebFeature::kMoveEvent);
     }
   }
 
@@ -864,11 +857,6 @@ bool EventTarget::SetAttributeEventListener(const AtomicString& event_type,
     return false;
   }
   if (registered_listener) {
-    if (IsA<JSBasedEventListener>(listener) &&
-        IsInstrumentedForAsyncStack(event_type)) {
-      listener->async_task_context()->Schedule(GetExecutionContext(),
-                                               event_type);
-    }
     registered_listener->SetCallback(listener);
     return true;
   }
@@ -1100,9 +1088,6 @@ bool EventTarget::FireEventListeners(Event& event,
     event.SetHandlingPassive(EventPassiveMode(*registered_listener));
 
     probe::UserCallback probe(context, nullptr, event.type(), false, this);
-    probe::AsyncTask async_task(context, listener->async_task_context(),
-                                "event",
-                                IsInstrumentedForAsyncStack(event.type()));
 
     // To match Mozilla, the AT_TARGET phase fires both capturing and bubbling
     // event listeners, even though that violates some versions of the DOM spec.

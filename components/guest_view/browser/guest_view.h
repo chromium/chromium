@@ -34,6 +34,12 @@ class GuestView : public GuestViewBase {
         GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
   }
 
+  static T* FromInstanceID(content::ChildProcessId embedder_process_id,
+                           int guest_instance_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
+  }
+
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
   static T* FromWebContents(content::WebContents* contents) {
     return AsDerivedGuest(GuestViewBase::FromWebContents(contents));
@@ -68,8 +74,7 @@ class GuestView : public GuestViewBase {
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
       : GuestViewBase(owner_rfh) {
-    base::UmaHistogramEnumeration("GuestView.GuestViewCreated",
-                                  T::HistogramValue);
+    LogUsage();
   }
   ~GuestView() override = default;
 
@@ -89,6 +94,15 @@ class GuestView : public GuestViewBase {
       return nullptr;
 
     return static_cast<T*>(guest);
+  }
+
+  void LogUsage() {
+    GuestViewHistogramValue value = T::HistogramValue;
+    if (value == GuestViewHistogramValue::kWebView &&
+        IsOwnedByControlledFrameEmbedder()) {
+      value = GuestViewHistogramValue::kControlledFrame;
+    }
+    base::UmaHistogramEnumeration("GuestView.GuestViewCreated", value);
   }
 };
 

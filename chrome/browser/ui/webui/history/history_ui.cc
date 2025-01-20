@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/history/history_ui.h"
 
 #include <memory>
@@ -47,12 +42,12 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/shopping_service.h"
@@ -77,6 +72,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -242,9 +238,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
-      IDR_HISTORY_HISTORY_HTML);
+  webui::SetupWebUIDataSource(source, kHistoryResources,
+                              IDR_HISTORY_HISTORY_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -254,9 +249,13 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   // Used to determine when the compare tab on history sidepanel is shown.
-  source->AddBoolean("compareHistoryEnabled",
-                     commerce::CanLoadProductSpecificationsFullPageUi(
-                         service->GetAccountChecker()));
+  // Hide the compare tab when the new management interface is enabled, since
+  // this interface provides the same functionality.
+  source->AddBoolean(
+      "compareHistoryEnabled",
+      commerce::CanLoadProductSpecificationsFullPageUi(
+          service->GetAccountChecker()) &&
+          !base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
   return source;
 }
 
@@ -363,7 +362,6 @@ void HistoryUI::BindInterface(
 }
 
 void HistoryUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -375,10 +373,9 @@ void HistoryUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           nullptr);
 }
 

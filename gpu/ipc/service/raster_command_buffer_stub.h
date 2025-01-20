@@ -36,7 +36,6 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub final
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
  private:
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void SetActiveURL(GURL url) override;
 
   base::WeakPtrFactory<RasterCommandBufferStub> weak_ptr_factory_{this};

@@ -649,7 +649,16 @@ TEST_F(EcheTrayTest, OnConnectionStatusChanged) {
   EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
 }
 
-TEST_F(EcheTrayTest, BubbleViewAccessibleName) {
+TEST_F(EcheTrayTest, AccessibleNames) {
+  ASSERT_TRUE(eche_tray());
+
+  {
+    ui::AXNodeData node_data;
+    eche_tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              eche_tray()->GetAccessibleName());
+  }
+
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
@@ -658,10 +667,12 @@ TEST_F(EcheTrayTest, BubbleViewAccessibleName) {
   auto* bubble_view = eche_tray()->get_bubble_wrapper_for_test()->bubble_view();
   EXPECT_TRUE(bubble_view->GetVisible());
 
-  ui::AXNodeData node_data;
-  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            eche_tray()->GetAccessibleNameForBubble());
+  {
+    ui::AXNodeData node_data;
+    bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              eche_tray()->GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

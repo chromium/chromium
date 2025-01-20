@@ -13,7 +13,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -415,9 +415,7 @@ void AppSearchDataSource::Refresh() {
       ->AppRegistryCache()
       .ForEachApp([this](const apps::AppUpdate& update) {
         if (!apps_util::IsInstalled(update.Readiness()) ||
-            (!update.ShowInSearch().value_or(false) &&
-             !(update.Recommendable().value_or(false) &&
-               update.AppType() == apps::AppType::kBuiltIn))) {
+            !update.ShowInSearch().value_or(false)) {
           return;
         }
 

@@ -127,7 +127,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SendTabToSelfToolbarBubbleView::Timeout,
-                      weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr()),
         kTimeoutMs);
   }
 }

@@ -20,7 +20,7 @@
 
 class CollectedCookiesTest : public DialogBrowserTest {
  public:
-  CollectedCookiesTest() {}
+  CollectedCookiesTest() = default;
 
   CollectedCookiesTest(const CollectedCookiesTest&) = delete;
   CollectedCookiesTest& operator=(const CollectedCookiesTest&) = delete;

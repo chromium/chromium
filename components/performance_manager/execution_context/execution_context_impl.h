@@ -35,6 +35,7 @@ class FrameExecutionContext : public ExecutionContext,
   ExecutionContextType GetType() const override;
   blink::ExecutionContextToken GetToken() const override;
   Graph* GetGraph() const override;
+  NodeState GetNodeState() const override;
   const GURL& GetUrl() const override;
   const ProcessNode* GetProcessNode() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
@@ -65,6 +66,7 @@ class WorkerExecutionContext : public ExecutionContext,
   ExecutionContextType GetType() const override;
   blink::ExecutionContextToken GetToken() const override;
   Graph* GetGraph() const override;
+  NodeState GetNodeState() const override;
   const GURL& GetUrl() const override;
   const ProcessNode* GetProcessNode() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;

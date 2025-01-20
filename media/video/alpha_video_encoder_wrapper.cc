@@ -128,15 +128,13 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
   auto alpha_frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_I420, frame->visible_rect().size(), frame->visible_rect(),
       frame->natural_size(), frame->stride(VideoFrame::Plane::kA), uv_stride,
-      uv_stride, frame->visible_data(VideoFrame::Plane::kA),
-      dummy_uv_planes_.data(), dummy_uv_planes_.data(), frame->timestamp());
+      uv_stride, frame->GetVisiblePlaneData(VideoFrame::Plane::kA),
+      dummy_uv_planes_, dummy_uv_planes_, frame->timestamp());
   alpha_frame->metadata().MergeMetadataFrom(frame->metadata());
 
   auto done_callback = [](base::WeakPtr<AlphaVideoEncoderWrapper> self,
                           EncoderStatus status) {
-    if (!self) {
-      NOTREACHED() << "Underlying encoder must be synchronous";
-    }
+    CHECK(self) << "Underlying encoder must be synchronous";
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!self->encode_status_.has_value() || self->encode_status_->is_ok()) {
       self->encode_status_ = std::move(status);
@@ -146,22 +144,41 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
   yuv_encoder_->Encode(
       yuv_frame, encode_options,
       base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
-  alpha_encoder_->Encode(
-      alpha_frame, encode_options,
-      base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
 
-  if (!yuv_output_.has_value() || !alpha_output_.has_value()) {
+  if (!yuv_output_.has_value()) {
     // This wrapper can only work with synchronous encoders that are completely
     // done encoding by the time Encode() completed.
     // So if we don't have the status and outputs it's time to give up.
-    CHECK(encode_status_.has_value());
+    if (!encode_status_.has_value()) {
+      encode_status_ = {EncoderStatus::Codes::kEncoderFailedEncode};
+    }
+    std::move(done_cb).Run(*encode_status_);
+    return;
+  }
+
+  encode_status_.reset();
+  EncodeOptions alpha_options = encode_options;
+  alpha_options.key_frame = yuv_output_->key_frame;
+  alpha_encoder_->Encode(
+      alpha_frame, alpha_options,
+      base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
+
+  if (!alpha_output_.has_value()) {
+    // This wrapper can only work with synchronous encoders that are completely
+    // done encoding by the time Encode() completed.
+    // So if we don't have the status and outputs it's time to give up.
+    if (!encode_status_.has_value()) {
+      encode_status_ = {EncoderStatus::Codes::kEncoderFailedEncode};
+    }
     std::move(done_cb).Run(*encode_status_);
     return;
   }
 
   if (encode_status_->is_ok()) {
     if (yuv_output_->key_frame && !alpha_output_->key_frame) {
-      // Alpha keyframe must always go with YUV keyframe.
+      // We asked the alpha encoder to produce a keyframe and it let us down.
+      // Very disappointing, and it will most likely break seeking,
+      // let's report an error.
       std::move(done_cb).Run(EncoderStatus::Codes::kEncoderIllegalState);
       return;
     }

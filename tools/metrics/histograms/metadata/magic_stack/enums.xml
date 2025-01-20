@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="3rd module"/>
   <int value="3" label="4th module"/>
   <int value="4" label="5th module"/>
+  <int value="5" label="6th module"/>
 </enum>
 
 <enum name="ModuleType">
@@ -83,6 +84,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Price change module"/>
   <int value="2" label="Tab resumption module"/>
   <int value="3" label="Safety hub module"/>
+  <int value="4" label="Educational tip module"/>
+  <int value="5" label="Auxiliary search module"/>
+  <int value="6" label="Default Browser Promo Card"/>
+  <int value="7" label="Tab Group Promo Card"/>
+  <int value="8" label="Tab Group Sync Promo Card"/>
+  <int value="9" label="Quick Delete Promo Card"/>
 </enum>
 
 </enums>

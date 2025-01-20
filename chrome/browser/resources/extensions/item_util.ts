@@ -44,6 +44,9 @@ export enum UserAction {
   LEARN_MORE = 'Extensions.Settings.HostList.LearnMoreActivated',
 }
 
+// Duration of the toast shown.
+export const TOAST_DURATION_MS = 3000;
+
 // Values for logging Extension Safety Hub metrics.
 export const SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME =
     'SafeBrowsing.ExtensionSafetyHub.Trigger.Kept';
@@ -89,7 +92,8 @@ export function userCanChangeEnablement(
       item.disableReasons.suspiciousInstall ||
       item.disableReasons.updateRequired ||
       item.disableReasons.publishedInStoreRequired ||
-      item.disableReasons.blockedByPolicy) {
+      item.disableReasons.blockedByPolicy ||
+      item.disableReasons.unsupportedDeveloperExtension) {
     return false;
   }
   // Item is disabled when MV2 deprecation is on 'unsupported' experiment stage
@@ -314,6 +318,7 @@ export function createDummyExtensionInfo():
       custodianApprovalRequired: false,
       parentDisabledPermissions: false,
       unsupportedManifestVersion: false,
+      unsupportedDeveloperExtension: false,
     },
     errorCollection: {isEnabled: false, isActive: false},
     fileAccess: {isEnabled: false, isActive: false},
@@ -344,5 +349,6 @@ export function createDummyExtensionInfo():
         chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
     isAffectedByMV2Deprecation: false,
     didAcknowledgeMV2DeprecationNotice: false,
+    canUploadAsAccountExtension: false,
   };
 }

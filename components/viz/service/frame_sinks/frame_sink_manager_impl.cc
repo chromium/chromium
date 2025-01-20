@@ -29,7 +29,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/display/overdraw_tracker.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
@@ -43,13 +42,10 @@
 
 namespace viz {
 
-FrameSinkManagerImpl::InitParams::InitParams() = default;
 FrameSinkManagerImpl::InitParams::InitParams(
-    SharedBitmapManager* shared_bitmap_manager,
     OutputSurfaceProvider* output_surface_provider,
     GmbVideoFramePoolContextProvider* gmb_context_provider)
-    : shared_bitmap_manager(shared_bitmap_manager),
-      output_surface_provider(output_surface_provider),
+    : output_surface_provider(output_surface_provider),
       gmb_context_provider(gmb_context_provider) {}
 FrameSinkManagerImpl::InitParams::InitParams(InitParams&& other) = default;
 FrameSinkManagerImpl::InitParams::~InitParams() = default;
@@ -79,8 +75,7 @@ FrameSinkManagerImpl::FrameSinkData& FrameSinkManagerImpl::FrameSinkData::
 operator=(FrameSinkData&& other) = default;
 
 FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
-    : shared_bitmap_manager_(params.shared_bitmap_manager),
-      output_surface_provider_(params.output_surface_provider),
+    : output_surface_provider_(params.output_surface_provider),
       gpu_service_(params.gpu_service),
       gmb_context_provider_(params.gmb_context_provider),
       surface_manager_(this,
@@ -815,6 +810,15 @@ void FrameSinkManagerImpl::DidFinishFrame(const FrameSinkId& frame_sink_id,
     observer.OnFrameSinkDidFinishFrame(frame_sink_id, args);
 }
 
+void FrameSinkManagerImpl::OnFrameSinkDeviceScaleFactorChanged(
+    const FrameSinkId& frame_sink_id,
+    float device_scale_factor) {
+  for (auto& observer : observer_list_) {
+    observer.OnFrameSinkDeviceScaleFactorChanged(frame_sink_id,
+                                                 device_scale_factor);
+  }
+}
+
 void FrameSinkManagerImpl::AddObserver(FrameSinkObserver* obs) {
   observer_list_.AddObserver(obs);
 }
@@ -1163,6 +1167,17 @@ void FrameSinkManagerImpl::SetSameDocNavigationScreenshotSize(
   std::move(callback).Run();
 }
 
+void FrameSinkManagerImpl::GetForceEnableZoomState(
+    const FrameSinkId& frame_sink_id,
+    GetForceEnableZoomStateCallback callback) {
+  CHECK(GetInputManager());
+  CHECK(GetInputManager()->GetRenderInputRouterFromFrameSinkId(frame_sink_id));
+  bool enabled = GetInputManager()
+                     ->GetRenderInputRouterFromFrameSinkId(frame_sink_id)
+                     ->GetForceEnableZoom();
+  std::move(callback).Run(enabled);
+}
+
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   transition_token_to_animation_manager_.erase(transition_token);
@@ -1181,11 +1196,21 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
 }
 
 void FrameSinkManagerImpl::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-        rir_delegate_client_remote) {
+        rir_delegate_client_remote,
+    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+        rir_delegate_receiver) {
   input_manager_->SetupRenderInputRouterDelegateConnection(
-      grouping_id, std::move(rir_delegate_client_remote));
+      grouping_id, std::move(rir_delegate_client_remote),
+      std::move(rir_delegate_receiver));
+}
+
+void FrameSinkManagerImpl::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& render_input_routers) {
+  input_manager_->NotifyRendererBlockStateChanged(blocked,
+                                                  render_input_routers);
 }
 
 void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
@@ -1196,6 +1221,10 @@ void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {
       root_begin_frame_source_->RemoveObserver(gpu_service_);
     }
   }
+}
+
+GpuServiceImpl* FrameSinkManagerImpl::GetGpuService() {
+  return gpu_service_;
 }
 
 }  // namespace viz

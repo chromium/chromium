@@ -66,6 +66,10 @@ bool StructTraits<os_crypt_async::mojom::KeyDataView,
   switch (data.algorithm()) {
     case os_crypt_async::mojom::Algorithm::kAES256GCM:
       key_size.emplace(os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
+      break;
+    case os_crypt_async::mojom::Algorithm::kAES128CBC:
+      key_size.emplace(os_crypt_async::Encryptor::Key::kAES128CBCKeySize);
+      break;
   }
 
   if (!key_size.has_value()) {

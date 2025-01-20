@@ -36,7 +36,7 @@ XRRay::XRRay() {
 }
 
 XRRay::XRRay(XRRigidTransform* transform, ExceptionState& exception_state) {
-  DOMFloat32Array* m = transform->matrix();
+  NotShared<DOMFloat32Array> m = transform->matrix();
   Set(DOMFloat32ArrayToTransform(m), exception_state);
 }
 
@@ -120,7 +120,7 @@ XRRay* XRRay::Create(DOMPointInit* origin,
 
 XRRay::~XRRay() {}
 
-DOMFloat32Array* XRRay::matrix() {
+NotShared<DOMFloat32Array> XRRay::matrix() {
   DVLOG(3) << __FUNCTION__;
 
   // A page may take the matrix value and detach it so matrix_ is a detached
@@ -186,7 +186,7 @@ DOMFloat32Array* XRRay::matrix() {
   }
 
   // Step 9: Return matrix
-  return matrix_.Get();
+  return matrix_;
 }
 
 gfx::Transform XRRay::RawMatrix() {

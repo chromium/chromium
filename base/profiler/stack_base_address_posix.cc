@@ -30,13 +30,15 @@ std::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
   char line[1024];
   base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
   uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
-  if (!fp)
+  if (!fp) {
     return std::nullopt;
+  }
   while (fgets(line, sizeof(line), fp.get()) != nullptr) {
     uintptr_t start, end;
     if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
-      if (start <= stack_addr && stack_addr < end)
+      if (start <= stack_addr && stack_addr < end) {
         return end;
+      }
     }
   }
   return std::nullopt;

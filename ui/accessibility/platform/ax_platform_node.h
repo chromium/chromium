@@ -104,11 +104,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   AXPlatformNodeId GetUniqueId() const;
 
   // Creates a string representation of this node's data.
-  std::string ToString();
+  std::string ToString() const;
 
   // Returns a string representation of the subtree of nodes rooted at this
   // node.
-  std::string SubtreeToString();
+  std::string SubtreeToString() const;
 
   friend std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node);
 

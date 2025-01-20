@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -26,7 +26,6 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 suite('AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
-  let customPageVisibility: PrivacyPageVisibility;
   let testElement: SettingsPersonalizationOptionsElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -39,12 +38,14 @@ suite('AllBuilds', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function buildTestElement() {
+  function buildTestElement(customPageVisibility?: PrivacyPageVisibility) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = settingsPrefs.prefs!;
     testElement.set('prefs.page_content_collection.enabled.value', false);
-    testElement.pageVisibility = customPageVisibility;
+    if (customPageVisibility) {
+      testElement.pageVisibility = customPageVisibility;
+    }
     document.body.appendChild(testElement);
     flush();
   }
@@ -258,21 +259,19 @@ suite('AllBuilds', function() {
   });
 
   test('searchSuggestToggleHiddenByPageVisibility', function() {
-    customPageVisibility = {
+    buildTestElement({
       searchPrediction: false,
       networkPrediction: false,
-    };
-    buildTestElement();
+    });
     assertFalse(isVisible(
         testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });
 
   test('searchSuggestToggleShownByPageVisibility', function() {
-    customPageVisibility = {
+    buildTestElement({
       searchPrediction: true,
       networkPrediction: false,
-    };
-    buildTestElement();
+    });
     assertTrue(isVisible(
         testElement.shadowRoot!.querySelector('#searchSuggestToggle')));
   });
@@ -293,29 +292,6 @@ suite('AllBuilds', function() {
     flush();
     assertFalse(!!testElement.shadowRoot!.querySelector(
         '#priceEmailNotificationsToggle'));
-  });
-
-  test('pageContentRow', function() {
-    const pageContentRow =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#pageContentRow')!;
-
-    // TODO(crbug.com/40070860): Remove visibility check once crbug/1476887
-    // launched.
-    assertTrue(isVisible(pageContentRow));
-
-    // The sublabel is dynamic based on the setting state.
-    testElement.set('prefs.page_content_collection.enabled.value', true);
-    const row = testElement.shadowRoot!.querySelector<CrLinkRowElement>(
-        '#pageContentRow')!;
-    assertEquals(
-        loadTimeData.getString('pageContentLinkRowSublabelOn'), row.subLabel);
-    testElement.set('prefs.page_content_collection.enabled.value', false);
-    assertEquals(
-        loadTimeData.getString('pageContentLinkRowSublabelOff'), row.subLabel);
-
-    // A click on the row navigates to the page content page.
-    pageContentRow.click();
-    assertEquals(routes.PAGE_CONTENT, Router.getInstance().getCurrentRoute());
   });
 
   test('historySearchRow', () => {
@@ -339,33 +315,6 @@ suite('AllBuilds', function() {
     buildTestElement();
     assertFalse(!!testElement.shadowRoot!.querySelector<HTMLElement>(
         '#historySearchRow'));
-  });
-});
-
-// TODO(crbug.com/40070860): Remove once crbug/1476887 launched.
-suite('PageContentSettingOff', function() {
-  let testElement: SettingsPersonalizationOptionsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePageContentSetting: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('settings-personalization-options');
-    document.body.appendChild(testElement);
-    flush();
-  });
-
-  teardown(function() {
-    testElement.remove();
-  });
-
-  test('pageContentRowNotVisible', function() {
-    assertFalse(
-        isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
   });
 });
 

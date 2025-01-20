@@ -304,6 +304,8 @@ source_set("common") {
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",
     "web_preferences/web_preferences_mojom_traits.cc",
+    "webid/login_status_account.cc",
+    "webid/login_status_options.cc",
     "widget/constants.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/visual_properties.cc",
@@ -450,6 +452,7 @@ source_set("common_unittests_sources") {
     "page/browsing_context_group_info_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
+    "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "performance/performance_scenario_observer_unittest.cc",
     "performance/performance_scenarios_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",
@@ -471,6 +474,7 @@ source_set("common_unittests_sources") {
     "unique_name/unique_name_helper_unittest.cc",
     "user_agent/user_agent_metadata_unittest.cc",
     "web_package/web_package_request_matcher_unittest.cc",
+    "webid/federated_auth_request_mojom_traits_unittest.cc",
   ]
 
   deps = [

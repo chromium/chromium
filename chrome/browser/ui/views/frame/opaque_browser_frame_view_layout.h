@@ -19,7 +19,7 @@ class OpaqueBrowserFrameViewLayoutDelegate;
 namespace views {
 class Button;
 class Label;
-}
+}  // namespace views
 
 // Calculates the position of the widgets in the opaque browser frame view.
 //
@@ -136,14 +136,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // the other overrides.
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
-
  protected:
   // Whether a specific button should be inserted on the leading or trailing
   // side.
-  enum ButtonAlignment {
-    ALIGN_LEADING,
-    ALIGN_TRAILING
-  };
+  enum ButtonAlignment { ALIGN_LEADING, ALIGN_TRAILING };
 
   struct TopAreaPadding {
     int leading;

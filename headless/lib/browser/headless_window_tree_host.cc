@@ -57,13 +57,22 @@ gfx::Rect HeadlessWindowTreeHost::GetBoundsInPixels() const {
 }
 
 void HeadlessWindowTreeHost::SetBoundsInPixels(const gfx::Rect& bounds) {
+  if (bounds_ == bounds) {
+    return;
+  }
+
   bool origin_changed = bounds_.origin() != bounds.origin();
-  bool size_changed = bounds_.size() != bounds.size();
+
   bounds_ = bounds;
-  if (origin_changed)
+
+  if (origin_changed) {
     OnHostMovedInPixels();
-  if (size_changed)
-    OnHostResizedInPixels(bounds.size());
+  }
+
+  // Report host size even if it is not changing to ensure the compositor layers
+  // are updated. Optimizing this away causes Page.captureScreenshot() to hang
+  // indefinitely. See https://crbug.com/40571433.
+  OnHostResizedInPixels(bounds.size());
 }
 
 void HeadlessWindowTreeHost::ShowImpl() {}
@@ -71,7 +80,7 @@ void HeadlessWindowTreeHost::ShowImpl() {}
 void HeadlessWindowTreeHost::HideImpl() {}
 
 gfx::Point HeadlessWindowTreeHost::GetLocationOnScreenInPixels() const {
-  return gfx::Point();
+  return bounds_.origin();
 }
 
 void HeadlessWindowTreeHost::SetCapture() {}

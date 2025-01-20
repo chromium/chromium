@@ -13,7 +13,7 @@
 class SelectPopupBrowsertest : public InProcessBrowserTest {
  public:
   SelectPopupBrowsertest() {
-    feature_list_.InitAndEnableFeature(blink::features::kCSSPseudoOpenClosed);
+    feature_list_.InitAndEnableFeature(blink::features::kCSSPseudoOpen);
   }
 
   void TestBody() override {}

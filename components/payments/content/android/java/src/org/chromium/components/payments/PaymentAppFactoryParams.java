@@ -50,7 +50,9 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
 
     /**
      * @return The certificate chain of the top-level context as returned by
-     * CertificateChainHelper.getCertificateChain(). Can be null.
+     * CertificateChainHelper.getCertificateChain(). Can be null when
+     * ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local file,
+     * which are secure contexts without SSL. Each byte array cannot be null.
      */
     @Nullable
     default byte[][] getCertificateChain() {

@@ -7,7 +7,7 @@
 namespace power {
   callback VoidCallback = void ();
 
-  [noinline_doc] enum Level {
+  enum Level {
     // Prevents the system from sleeping in response to user inactivity.
     system,
 

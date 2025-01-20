@@ -8,7 +8,7 @@
 
 namespace payments {
 
-ValidationDelegate::~ValidationDelegate() {}
+ValidationDelegate::~ValidationDelegate() = default;
 
 bool ValidationDelegate::ShouldFormat() {
   return false;

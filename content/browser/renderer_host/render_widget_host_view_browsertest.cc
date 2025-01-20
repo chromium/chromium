@@ -23,7 +23,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/features.h"
@@ -1480,7 +1479,7 @@ IN_PROC_BROWSER_TEST_P(
   PerformTestWithLeftRightRects(html_rect_size, copy_rect, output_size);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS there is no software compositing.
 static const auto kTestCompositingModes = testing::Values(GL_COMPOSITING);
 #else
@@ -1615,14 +1614,8 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Show DISABLED_Show
-#else
-#define MAYBE_Show Show
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_Show) {
+                       Show) {
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   ExpectPresentationFeedback(TabSwitchResult::kSuccess);
@@ -1648,14 +1641,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
   ExpectNoPresentationFeedback();
 }
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowWhileCapturing DISABLED_ShowWhileCapturing
-#else
-#define MAYBE_ShowWhileCapturing ShowWhileCapturing
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_ShowWhileCapturing) {
+                       ShowWhileCapturing) {
   // Frame is captured and then becomes visible.
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(

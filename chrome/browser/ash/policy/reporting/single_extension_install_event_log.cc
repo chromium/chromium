@@ -15,7 +15,7 @@ SingleExtensionInstallEventLog::SingleExtensionInstallEventLog(
     const std::string& extension_id)
     : SingleInstallEventLog(extension_id) {}
 
-SingleExtensionInstallEventLog::~SingleExtensionInstallEventLog() {}
+SingleExtensionInstallEventLog::~SingleExtensionInstallEventLog() = default;
 
 bool SingleExtensionInstallEventLog::Load(
     base::File* file,

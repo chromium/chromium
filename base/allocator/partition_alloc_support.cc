@@ -674,9 +674,9 @@ void CheckDanglingRawPtrBufferEmpty() {
       LOG(ERROR) << debug::StackTrace(
                         // This call truncates the `nullptr` tail of the stack
                         // trace (see the `is_partitioned` CHECK above).
-                        make_span(raw_stack_trace.begin(),
-                                  ranges::partition_point(
-                                      raw_stack_trace, is_frame_ptr_not_null)))
+                        span(raw_stack_trace.begin(),
+                             ranges::partition_point(raw_stack_trace,
+                                                     is_frame_ptr_not_null)))
                  << "\n";
     }
 #else
@@ -907,9 +907,16 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
       false;
 #endif
 
+  size_t extra_extras_size = 0;
+  if (enable_brp) {
+    extra_extras_size = static_cast<size_t>(
+        base::features::kBackupRefPtrExtraExtrasSizeParam.Get());
+  }
+
   return {
       enable_brp,
       process_affected_by_brp_flag,
+      extra_extras_size,
   };
 }
 
@@ -1052,6 +1059,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       base::features::kPartitionAllocZappingByFreeFlags);
   const bool eventually_zero_freed_memory = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocEventuallyZeroFreedMemory);
+  const bool fewer_memory_regions = base::FeatureList::IsEnabled(
+      base::features::kPartitionAllocFewerMemoryRegions);
 
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   const bool use_pool_offset_freelists =
@@ -1154,12 +1163,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
+      brp_config.extra_extras_size,
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
       memory_tagging_reporting_mode, bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_branch_capacity_in_bytes,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
       allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
+      allocator_shim::FewerMemoryRegions(fewer_memory_regions),
       allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists),
       use_small_single_slot_spans);
 
@@ -1180,6 +1191,18 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableLargeEmptySlotSpanRing();
+  }
+
+  if (process_type == "" &&
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
+    // `ReconfigureAfterTaskRunnerInit()` is called on the UI thread.
+    const size_t capacity_in_bytes = static_cast<size_t>(
+        base::features::kPartitionAllocSchedulerLoopQuarantineBrowserUICapacity
+            .Get());
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
+        ->SetSchedulerLoopQuarantineThreadLocalBranchCapacity(
+            capacity_in_bytes);
   }
 
 #if PA_BUILDFLAG( \
@@ -1307,7 +1330,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (ShouldEnableShadowMetadata(process_type)) {
     partition_alloc::PartitionRoot::EnableShadowMetadata(
         partition_alloc::internal::PoolHandleMask::kRegular |
-        partition_alloc::internal::PoolHandleMask::kBRP);
+        partition_alloc::internal::PoolHandleMask::kBRP |
+        partition_alloc::internal::PoolHandleMask::kConfigurable);
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }

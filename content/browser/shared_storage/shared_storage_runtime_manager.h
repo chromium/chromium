@@ -12,8 +12,8 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
-#include "content/browser/locks/lock_manager.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "content/browser/shared_storage/shared_storage_lock_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
@@ -24,6 +24,7 @@ namespace content {
 class FencedFrameConfig;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageWorkletHost;
+class StoragePartitionImpl;
 
 // Manages in-memory components related to shared storage, such as
 // `SharedStorageWorkletHost` and `LockManager`. The manager is bound to the
@@ -33,27 +34,13 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   using WorkletHosts = std::map<SharedStorageWorkletHost*,
                                 std::unique_ptr<SharedStorageWorkletHost>>;
 
-  // Represents an origin for use as a lock group ID.
-  // This wraps the serialized origin and provides a trivial `is_null()` method
-  // to satisfy the requirements of the LockManager template class.
-  struct OriginLockGroupId {
-    explicit OriginLockGroupId(const url::Origin& origin)
-        : origin(origin.Serialize()) {}
-
-    bool is_null() const { return false; }
-
-    bool operator<(const OriginLockGroupId& other) const {
-      return origin < other.origin;
-    }
-
-    std::string origin;
-  };
-
-  SharedStorageRuntimeManager();
+  explicit SharedStorageRuntimeManager(StoragePartitionImpl& storage_partition);
   virtual ~SharedStorageRuntimeManager();
 
   class SharedStorageObserverInterface : public base::CheckedObserver {
    public:
+    // TODO(https://crbug.com/380291909): Introduce more granular types to
+    // distinguish PA worklet access from shared storage worklet access.
     enum AccessType {
       // The "Document" prefix indicates that the method is called from the
       // Window scope, and the "Worklet" prefix indicates that the method is
@@ -107,6 +94,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -139,9 +127,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
   void NotifyConfigPopulated(const std::optional<FencedFrameConfig>& config);
 
-  void BindLockManager(
-      const url::Origin& shared_storage_origin,
-      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
+  SharedStorageLockManager& lock_manager() { return lock_manager_; }
 
  protected:
   void OnWorkletKeepAliveFinished(SharedStorageWorkletHost*);
@@ -153,6 +139,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const url::Origin& data_origin,
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -171,12 +158,12 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   std::map<SharedStorageDocumentServiceImpl*, WorkletHosts>
       attached_shared_storage_worklet_hosts_;
 
-  // Manages shared storage locks.
-  LockManager<OriginLockGroupId> lock_manager_;
-
   // The hosts that are detached from the worklet's owner document and have
   // entered keep-alive phase.
   WorkletHosts keep_alive_shared_storage_worklet_hosts_;
+
+  // Manages shared storage locks.
+  SharedStorageLockManager lock_manager_;
 
   base::ObserverList<SharedStorageObserverInterface> observers_;
 };

@@ -1,0 +1,66 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("regional_capabilities") {
+  sources = [
+    "regional_capabilities_service.cc",
+    "regional_capabilities_service.h",
+    "regional_capabilities_switches.cc",
+    "regional_capabilities_switches.h",
+    "regional_capabilities_utils.cc",
+    "regional_capabilities_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/country_codes",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/search_engines:search_engine_utils",
+
+    # TODO(crbug.com/388792357): Refactor out search_engines dependency.
+    "//components/search_engines:search_engines_switches",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/regional_capabilities/android:jni_headers" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "regional_capabilities_test_utils.cc",
+    "regional_capabilities_test_utils.h",
+  ]
+
+  deps = [
+    ":regional_capabilities",
+    "//components/country_codes",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "regional_capabilities_service_unittest.cc" ]
+
+  deps = [
+    ":regional_capabilities",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/search_engines:search_engines_switches",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    # Note: "//components/regional_capabilities/android:test_utils_java" is also
+    # also needed, but it seems that for now it needs to be added in the `deps`
+    # of `//components:components_unittests`.
+    deps +=
+        [ "//components/regional_capabilities/android:test_utils_jni_headers" ]
+  }
+}

@@ -82,8 +82,7 @@ class RemotingSender::SenderEncodedFrameFactory {
 
     const bool is_key_frame =
         !decoder_buffer.end_of_stream() && decoder_buffer.is_key_frame();
-    remoting_frame->dependency =
-        is_key_frame ? Dependency::kKeyFrame : Dependency::kDependent;
+    remoting_frame->is_key_frame = is_key_frame;
     remoting_frame->referenced_frame_id =
         is_key_frame ? frame_id : frame_id - 1;
     remoting_frame->reference_time = clock_->NowTicks();
@@ -163,8 +162,7 @@ RemotingSender::RemotingSender(
                               base::Unretained(this)),
           std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
-      is_audio_(config.rtp_payload_type <=
-                media::cast::RtpPayloadType::REMOTE_AUDIO),
+      is_audio_(config.is_audio()),
       frame_factory_(
           std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase,
                                                       *frame_sender_,
@@ -250,7 +248,7 @@ void RemotingSender::TrySendFrame() {
 #if DCHECK_IS_ON()
   CHECK_GE(remoting_frame->referenced_frame_id, remoting_frame->frame_id - 1);
   if (flow_restart_pending_) {
-    CHECK_EQ(remoting_frame->dependency, Dependency::kKeyFrame);
+    CHECK(remoting_frame->is_key_frame);
     CHECK_EQ(remoting_frame->referenced_frame_id, remoting_frame->frame_id);
   } else {
     CHECK_GT(remoting_frame->frame_id, media::cast::FrameId::first());
@@ -325,8 +323,9 @@ void RemotingSender::OnRemotingDataStreamError() {
   // NOTE: This method must be idemptotent as it may be called more than once.
   decoder_buffer_reader_.reset();
   stream_sender_.reset();
-  if (!error_callback_.is_null())
+  if (!error_callback_.is_null()) {
     std::move(error_callback_).Run();
+  }
 }
 
 void RemotingSender::ClearCurrentFrame() {

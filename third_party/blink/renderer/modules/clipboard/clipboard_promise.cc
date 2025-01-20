@@ -354,7 +354,7 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  Vector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>> items;
+  HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
   for (const auto& item : clipboard_item_data_) {

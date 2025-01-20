@@ -93,6 +93,10 @@ SystemPanelView::SystemPanelView() = default;
 
 SystemPanelView::~SystemPanelView() = default;
 
+bool SystemPanelView::IsDragging() const {
+  return drag_controller_.is_dragging_;
+}
+
 void SystemPanelView::OnMouseEvent(ui::MouseEvent* event) {
   HandleDragEventIfNeeded(event);
 }

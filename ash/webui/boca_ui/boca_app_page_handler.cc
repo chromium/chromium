@@ -27,16 +27,19 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/join_session_request.h"
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash::boca {
 
@@ -151,19 +154,22 @@ BocaAppHandler::BocaAppHandler(
     mojo::PendingReceiver<boca::mojom::PageHandler> receiver,
     mojo::PendingRemote<boca::mojom::Page> remote,
     content::WebUI* web_ui,
+    std::unique_ptr<WebviewAuthHandler> auth_handler,
     std::unique_ptr<ClassroomPageHandlerImpl> classroom_client_impl,
     SessionClientImpl* session_client_impl,
     bool is_producer)
     : is_producer_(is_producer),
       tab_info_collector_(web_ui, is_producer),
+      auth_handler_(std::move(auth_handler)),
       class_room_page_handler_(std::move(classroom_client_impl)),
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
       web_ui_(web_ui) {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      web_ui->GetWebContents()->GetBrowserContext());
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
-  user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
+  user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
   user_identity_.set_photo_url(user->image_url().spec());
   // BocaAppClient is guaranteed to be live here.
@@ -179,6 +185,10 @@ BocaAppHandler::~BocaAppHandler() {
   BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
   BocaAppClient::Get()->GetSessionManager()->ToggleAppStatus(
       /*is_app_opened=*/false);
+}
+
+void BocaAppHandler::AuthenticateWebview(AuthenticateWebviewCallback callback) {
+  auth_handler_->AuthenticateWebview(std::move(callback));
 }
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
@@ -252,7 +262,8 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), is_producer_, user_identity_.gaia_id(),
+      session_client_impl_->sender(), is_producer_,
+      GaiaId(user_identity_.gaia_id()),
       base::BindOnce(
           [](GetSessionCallback callback,
              base::expected<std::unique_ptr<::boca::Session>,
@@ -281,6 +292,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                 std::move(session), /*dispatch_event=*/true);
           },
           std::move(callback)));
+  get_session_request->set_device_id(BocaAppClient::Get()->GetDeviceId());
   session_client_impl_->GetSession(std::move(get_session_request));
 }
 
@@ -324,7 +336,7 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
 
   std::unique_ptr<RemoveStudentRequest> request =
       std::make_unique<RemoveStudentRequest>(
-          session_client_impl_->sender(), user_identity_.gaia_id(),
+          session_client_impl_->sender(), GaiaId(user_identity_.gaia_id()),
           session->session_id(),
           base::BindOnce(&BocaAppHandler::OnStudentRemoved,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -424,6 +436,25 @@ void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
   session_client_impl_->JoinSession(std::move(request));
 }
 
+void BocaAppHandler::ViewStudentScreen(const std::string& id,
+                                       ViewStudentScreenCallback callback) {
+  CHECK(spotlight_service_);
+  spotlight_service_->ViewScreen(
+      id, kSchoolToolsApiBaseUrl,
+      base::BindOnce(
+          [](ViewStudentScreenCallback callback,
+             base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (!result.has_value()) {
+              std::move(callback).Run(
+                  mojom::ViewStudentScreenError::kHTTPError);
+              return;
+            } else {
+              std::move(callback).Run(std::nullopt);
+            }
+          },
+          std::move(callback)));
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   if (!test_activity_callback_.is_null()) {
@@ -457,8 +488,12 @@ void BocaAppHandler::OnConsumerActivityUpdated(
       auto identity_ptr = mojom::IdentifiedActivity::New(
           item.first, mojom::StudentActivity::New(
                           item.second.state() == ::boca::StudentStatus::ACTIVE,
-                          device.second.activity().active_tab().title(), false,
-                          false, mojom::JoinMethod::kRoster));
+                          device.second.activity().active_tab().title(),
+                          /*is_caption_enabled=*/false,
+                          /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
+                          device.second.view_screen_config()
+                              .connection_param()
+                              .connection_code()));
       result.push_back(std::move(identity_ptr));
     }
   }
@@ -497,6 +532,10 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
   local_caption_config.set_translations_enabled(config->local_caption_enabled);
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
+}
+
+void BocaAppHandler::SetSpotlightService(SpotlightService* spotlight_service) {
+  spotlight_service_ = spotlight_service;
 }
 
 void BocaAppHandler::SetFloatModeAndBoundsForWindow(

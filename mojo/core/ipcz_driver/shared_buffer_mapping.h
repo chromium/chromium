@@ -38,7 +38,7 @@ class MOJO_SYSTEM_IMPL_EXPORT SharedBufferMapping
   size_t size() const { return mapping_->size(); }
 
   base::span<uint8_t> bytes() const {
-    return base::make_span(static_cast<uint8_t*>(memory()), size());
+    return base::span(static_cast<uint8_t*>(memory()), size());
   }
 
   static scoped_refptr<SharedBufferMapping> Create(

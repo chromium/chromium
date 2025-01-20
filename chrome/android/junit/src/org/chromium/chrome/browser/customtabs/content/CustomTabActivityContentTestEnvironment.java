@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -87,7 +88,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabObserver customTabObserver;
     @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
-    @Mock public CustomTabsSessionToken session;
+    @Mock public SessionHolder<CustomTabsSessionToken> session;
     @Mock public TabModelSelectorImpl tabModelSelector;
     @Mock public TabModel tabModel;
     @Mock public ReparentingTask reparentingTask;
@@ -142,14 +143,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
 
-        when(activity.getCustomTabActivityTabProvider()).thenReturn(tabProvider);
-        when(activity.getTabObserverRegistrar()).thenReturn(tabObserverRegistrar);
-        when(activity.getCustomTabObserver()).thenReturn(customTabObserver);
-        when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
-        when(activity.getCipherFactory()).thenReturn(cipherFactory);
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
-        when(activity.getIntentDataProvider()).thenReturn(intentDataProvider);
-        when(activity.getLifecycleDispatcher()).thenReturn(lifecycleDispatcher);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -166,30 +160,46 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return new CustomTabActivityTabController(
                 activity,
                 profileProviderSupplier,
-                () -> customTabDelegateFactory,
-                activityTabProvider,
+                customTabDelegateFactory,
+                intentDataProvider,
+                tabObserverRegistrar,
                 () -> compositorViewHolder,
                 tabPersistencePolicy,
                 tabFactory,
+                customTabObserver,
+                navigationEventObserver,
+                activityTabProvider,
+                tabProvider,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
-                tabModelInitializer);
+                tabModelInitializer,
+                cipherFactory,
+                lifecycleDispatcher);
     }
 
     public CustomTabActivityNavigationController createNavigationController(
             CustomTabActivityTabController tabController) {
         CustomTabActivityNavigationController controller =
                 new CustomTabActivityNavigationController(
-                        tabController, closeButtonNavigator, activity);
+                        tabController,
+                        tabProvider,
+                        intentDataProvider,
+                        customTabObserver,
+                        closeButtonNavigator,
+                        activity,
+                        lifecycleDispatcher);
         return controller;
     }
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
         return new CustomTabIntentHandler(
-                new DefaultCustomTabIntentHandlingStrategy(navigationController, activity),
-                mMinimizationManagerHolder,
-                activity);
+                tabProvider,
+                intentDataProvider,
+                new DefaultCustomTabIntentHandlingStrategy(
+                        tabProvider, navigationController, customTabObserver),
+                activity,
+                mMinimizationManagerHolder);
     }
 
     public void warmUp() {

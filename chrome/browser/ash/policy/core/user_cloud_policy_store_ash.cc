@@ -54,7 +54,7 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
                                                   account_id,
                                                   user_policy_key_dir)) {}
 
-UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() {}
+UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() = default;
 
 void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -259,8 +259,7 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     return;
   }
 
-  InstallPolicy(std::move(validator->policy()),
-                std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;

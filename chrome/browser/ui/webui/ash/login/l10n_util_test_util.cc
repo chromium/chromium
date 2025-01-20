@@ -12,12 +12,10 @@
 namespace ash {
 
 MockInputMethodManagerWithInputMethods::
-    MockInputMethodManagerWithInputMethods() {
-}
+    MockInputMethodManagerWithInputMethods() = default;
 
 MockInputMethodManagerWithInputMethods::
-    ~MockInputMethodManagerWithInputMethods() {
-}
+    ~MockInputMethodManagerWithInputMethods() = default;
 
 void MockInputMethodManagerWithInputMethods::AddInputMethod(
     const std::string& id,

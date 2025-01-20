@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_SESSION_OBSERVER_VIEWS_H_
 
 #include "components/live_caption/caption_bubble_session_observer.h"
-
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
+#include "components/signin/public/base/session_binding_test_utils.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,7 +169,8 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
-      base::OptionalToPtr(ephemeral_key));
+      ephemeral_key.has_value() ? ephemeral_key->ExportPublicKey()
+                                : std::string_view());
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -247,6 +250,19 @@ TEST(SessionBindingUtilsTest,
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, DecryptValueWithEphemeralKey) {
+  static constexpr std::string_view kValue = "test_value";
+  HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
+  std::string encrypted_value = EncryptValueWithEphemeralKey(key, "test_value");
+  EXPECT_EQ(DecryptValueWithEphemeralKey(key, encrypted_value), kValue);
+}
+
+TEST(SessionBindingUtilsTest, DecryptValueWithEphemeralKeyFailure) {
+  static constexpr std::string_view kBogusEncryptedValue = "abcdef";
+  HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
+  EXPECT_TRUE(DecryptValueWithEphemeralKey(key, kBogusEncryptedValue).empty());
 }
 
 }  // namespace signin

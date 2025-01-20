@@ -5,14 +5,12 @@
 package org.chromium.chrome.browser.ui;
 
 import android.content.Intent;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
@@ -59,7 +57,6 @@ public class AppLaunchDrawBlocker {
     private boolean mBlockDrawForInitialTab;
 
     private boolean mBlockDrawForIncognitoRestore;
-    private long mTimeStartedBlockingDrawForIncognitoRestore;
 
     /**
      * Constructor for AppLaunchDrawBlocker.
@@ -142,12 +139,7 @@ public class AppLaunchDrawBlocker {
      */
     @VisibleForTesting
     public void onIncognitoRestoreUnblockConditionsFired() {
-        if (mBlockDrawForIncognitoRestore) {
-            mBlockDrawForIncognitoRestore = false;
-            RecordHistogram.recordTimesHistogram(
-                    "Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth",
-                    SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForIncognitoRestore);
-        }
+        mBlockDrawForIncognitoRestore = false;
     }
 
     private void writeSearchEngineHadLogoPref() {
@@ -169,7 +161,6 @@ public class AppLaunchDrawBlocker {
     private void maybeBlockDrawForIncognitoRestore() {
         if (!mIncognitoRestoreAppLaunchDrawBlocker.shouldBlockDraw()) return;
         mBlockDrawForIncognitoRestore = true;
-        mTimeStartedBlockingDrawForIncognitoRestore = SystemClock.elapsedRealtime();
         ViewDrawBlocker.blockViewDrawUntilReady(
                 mViewSupplier.get(), () -> !mBlockDrawForIncognitoRestore);
     }

@@ -1,7 +1,7 @@
 Name: SMHasher
-URL: http://code.google.com/p/smhasher/
+URL: https://github.com/aappleby/smhasher
 Version: N/A
-Revision: 147
+Revision: 0ff96f7835817a27d0487325b6c16033e2992eb5
 License: MIT, Public Domain
 License File: LICENSE
 Security Critical: yes

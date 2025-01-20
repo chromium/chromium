@@ -626,10 +626,7 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
     }
   } else {
     frame_throttling_delegate_->StopThrottlingAllFrameSinks();
-    if (base::FeatureList::IsEnabled(
-            ::features::kBatterySaverModeAlignWakeUps)) {
-      base::MessagePump::ResetAlignWakeUpsState();
-    }
+    base::MessagePump::ResetAlignWakeUpsState();
   }
 
   child_process_tuning_delegate_->SetBatterySaverModeForAllChildProcessHosts(

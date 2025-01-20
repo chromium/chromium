@@ -85,29 +85,6 @@ String EncryptedMediaUtils::ConvertFromSessionType(
 }
 
 // static
-String EncryptedMediaUtils::ConvertKeyStatusToString(
-    const WebEncryptedMediaKeyInformation::KeyStatus status) {
-  switch (status) {
-    case WebEncryptedMediaKeyInformation::KeyStatus::kUsable:
-      return "usable";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kExpired:
-      return "expired";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kReleased:
-      return "released";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputRestricted:
-      return "output-restricted";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputDownscaled:
-      return "output-downscaled";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending:
-      return "status-pending";
-    case WebEncryptedMediaKeyInformation::KeyStatus::kInternalError:
-      return "internal-error";
-  }
-
-  NOTREACHED();
-}
-
-// static
 V8MediaKeyStatus EncryptedMediaUtils::ConvertKeyStatusToEnum(
     const WebEncryptedMediaKeyInformation::KeyStatus status) {
   switch (status) {

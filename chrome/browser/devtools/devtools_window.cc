@@ -195,8 +195,7 @@ DevToolsToolboxDelegate::DevToolsToolboxDelegate(WebContents* toolbox_contents,
       inspected_web_contents_(web_contents ? web_contents->GetWeakPtr()
                                            : nullptr) {}
 
-DevToolsToolboxDelegate::~DevToolsToolboxDelegate() {
-}
+DevToolsToolboxDelegate::~DevToolsToolboxDelegate() = default;
 
 content::WebContents* DevToolsToolboxDelegate::OpenURLFromTab(
     content::WebContents* source,
@@ -805,20 +804,11 @@ Profile* DevToolsWindow::GetProfileForDevToolsWindow(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->IsPrimaryOTRProfile()) {
+  if (profile->IsPrimaryOTRProfile() || profile->IsDevToolsOTRProfile()) {
     return profile;
   }
   return profile->GetOriginalProfile();
 }
-
-namespace {
-
-scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
-    WebContents* wc) {
-  return DevToolsAgentHost::GetOrCreateForTab(wc);
-}
-
-}  // namespace
 
 // static
 void DevToolsWindow::ToggleDevToolsWindow(
@@ -829,7 +819,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
     const std::string& settings,
     DevToolsOpenedByAction toggled_by) {
   scoped_refptr<DevToolsAgentHost> agent(
-      GetOrCreateDevToolsHostForWebContents(inspected_web_contents));
+      DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   bool do_open = force_open;
   if (!window) {
@@ -902,7 +892,7 @@ void DevToolsWindow::InspectElement(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(inspected_frame_host);
   scoped_refptr<DevToolsAgentHost> agent(
-      GetOrCreateDevToolsHostForWebContents(web_contents));
+      DevToolsAgentHost::GetOrCreateForTab(web_contents));
   agent->InspectElement(inspected_frame_host, x, y);
   bool should_measure_time = !FindDevToolsWindow(agent.get());
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -1676,7 +1666,7 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
     content::RenderViewHost* render_view_host =
         inspected_web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
     if (render_view_host)
-      child_id = render_view_host->GetProcess()->GetID();
+      child_id = render_view_host->GetProcess()->GetDeprecatedID();
   }
   // Use about:blank instead of an empty GURL. The browser treats an empty GURL
   // as navigating to the home page, which may be privileged (chrome://newtab/).
@@ -1974,8 +1964,9 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
   }
 
   // Only show the infobar only if the RenderProcessHost id changes.
-  int rph_id =
-      inspected_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int rph_id = inspected_web_contents->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->GetDeprecatedID();
   if (checked_sharing_process_id_ == rph_id) {
     return;
   }

@@ -212,11 +212,6 @@ inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
       if (style.LogicalWidth().IsAuto()) {
         return true;
       }
-      if (!RuntimeEnabledFeatures::StricterCellWidthContentSizeQuirkEnabled() &&
-          (style.LogicalWidth().HasAutoOrContentOrIntrinsic() ||
-           style.LogicalWidth().HasStretch())) {
-        return true;
-      }
     }
   }
   return false;

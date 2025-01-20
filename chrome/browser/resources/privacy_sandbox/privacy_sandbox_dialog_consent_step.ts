@@ -11,7 +11,6 @@ import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 import './privacy_sandbox_privacy_policy_dialog.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -54,23 +53,11 @@ export class PrivacySandboxDialogConsentStepElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * If true, the Ads API UX Enhancement should be shown.
-       */
-      shouldShowV2_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
-        },
-      },
     };
   }
 
   private isPrivacyPolicyLinkEnabled_: boolean;
   private hideConsentNoticePage_: boolean;
-  private shouldShowV2_: boolean;
 
   private onConsentAccepted_() {
     this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
@@ -106,13 +93,17 @@ export class PrivacySandboxDialogConsentStepElement extends
   private onBackButtonClicked_() {
     this.hideConsentNoticePage_ = false;
     const privacyPolicyLinkId =
-        this.shouldShowV2_ ? '#privacyPolicyLinkV2' : '#privacyPolicyLink';
+        this.shouldShowV2() ? '#privacyPolicyLinkV2' : '#privacyPolicyLink';
     // Send focus back to privacy policy link for a11y screen reader.
     this.shadowRoot!.querySelector<HTMLElement>(privacyPolicyLinkId)!.focus();
   }
 
   private onPrivacyPolicyLinkClicked_() {
     this.hideConsentNoticePage_ = true;
+  }
+
+  private getButtonsClass_() {
+    return this.equalizedButtons() ? 'tonal-button' : '';
   }
 }
 

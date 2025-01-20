@@ -11,7 +11,7 @@ BrowserLocationBarModelDelegate::BrowserLocationBarModelDelegate(
     Browser* browser)
     : browser_(browser) {}
 
-BrowserLocationBarModelDelegate::~BrowserLocationBarModelDelegate() {}
+BrowserLocationBarModelDelegate::~BrowserLocationBarModelDelegate() = default;
 
 content::WebContents* BrowserLocationBarModelDelegate::GetActiveWebContents()
     const {

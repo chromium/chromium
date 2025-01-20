@@ -31,7 +31,7 @@ using ::testing::Optional;
 
 class AllPlusAddressesBottomSheetViewBrowserTest : public AndroidBrowserTest {
  public:
-  AllPlusAddressesBottomSheetViewBrowserTest() {}
+  AllPlusAddressesBottomSheetViewBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();

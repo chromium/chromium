@@ -28,14 +28,22 @@ RemoteError ErrorStringToRemoteError(const std::string& error_str) {
   return RemoteError::kOther;
 }
 
-std::vector<uint8_t> RequestToJSONBytes(const url::Origin& origin,
-                                        base::Value request) {
+std::string RequestTypeToString(RequestInfo::RequestType type) {
+  switch (type) {
+    case RequestInfo::RequestType::kGet:
+      return "credential.get";
+    case RequestInfo::RequestType::kCreate:
+      return "credential.create";
+  }
+}
+
+std::vector<uint8_t> RequestToJSONBytes(RequestInfo request_info) {
   base::Value::Dict digital;
-  digital.Set("digital", std::move(request));
+  digital.Set("digital", std::move(request_info.request));
 
   base::Value::Dict toplevel;
-  toplevel.Set("origin", origin.Serialize());
-  toplevel.Set("requestType", "credential.get");
+  toplevel.Set("origin", request_info.rp_origin.Serialize());
+  toplevel.Set("requestType", RequestTypeToString(request_info.request_type));
   toplevel.Set("request", std::move(digital));
 
   std::optional<std::string> json = base::WriteJson(toplevel);
@@ -48,13 +56,11 @@ std::vector<uint8_t> RequestToJSONBytes(const url::Origin& origin,
 RequestDispatcher::RequestDispatcher(
     std::unique_ptr<device::FidoDiscoveryBase> v1_discovery,
     std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
-    url::Origin origin,
-    base::Value request,
+    RequestInfo request_info,
     CompletionCallback callback)
     : v1_discovery_(std::move(v1_discovery)),
       v2_discovery_(std::move(v2_discovery)),
-      origin_(std::move(origin)),
-      request_(std::move(request)),
+      request_info_(std::move(request_info)),
       callback_(std::move(callback)) {
   FIDO_LOG(EVENT) << "Starting digital identity flow";
   v1_discovery_->set_observer(this);
@@ -104,7 +110,7 @@ void RequestDispatcher::OnAuthenticatorReady(
     return;
   }
   tunnel_device->DeviceTransactJSON(
-      RequestToJSONBytes(origin_, std::move(request_)),
+      RequestToJSONBytes(std::move(request_info_)),
       base::BindOnce(&RequestDispatcher::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -121,11 +127,11 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::optional<base::Value> json = base::JSONReader::Read(
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(response->data()),
                        response->size()),
       base::JSON_PARSE_RFC);
-  if (!json || !json->is_dict()) {
+  if (!json) {
     FIDO_LOG(ERROR) << "Invalid JSON response: " << base::HexEncode(*response);
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
     return;
@@ -136,8 +142,7 @@ void RequestDispatcher::OnComplete(
       *json, base::JsonOptions::OPTIONS_PRETTY_PRINT, &reserialized);
   FIDO_LOG(EVENT) << "-> " << reserialized;
 
-  const base::Value::Dict& dict = json->GetDict();
-  const base::Value::Dict* response_dict = dict.FindDict("response");
+  const base::Value::Dict* response_dict = json->FindDict("response");
   if (!response_dict) {
     FIDO_LOG(ERROR) << "no 'response' element in response";
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));

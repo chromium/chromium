@@ -29,9 +29,9 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import type {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -45,11 +45,13 @@ import {listenOnce} from '//resources/js/util.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
+import {BOOKMARK_ROW_LOAD_EVENT} from './power_bookmark_row.js';
 import type {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {PowerBookmarksDragManager} from './power_bookmarks_drag_manager.js';
 import type {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
@@ -257,14 +259,16 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: ShoppingServiceBrowserProxy =
-      ShoppingServiceBrowserProxyImpl.getInstance();
+  private priceTrackingProxy_: PriceTrackingBrowserProxy =
+      PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
   private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
   private trackedProductInfos_: {[key: string]: BookmarkProductInfo} = {};
   private availableProductInfos_ = new Map<string, BookmarkProductInfo>();
   private bookmarksService_: PowerBookmarksService =
       new PowerBookmarksService(this);
+  private keyArrowNavigationService_: KeyArrowNavigationService =
+      new KeyArrowNavigationService(this, 'power-bookmark-row:not([hidden])');
   private bookmarksDragManager_: PowerBookmarksDragManager =
       new PowerBookmarksDragManager(this);
   private focusOutlineManager_: FocusOutlineManager;
@@ -294,6 +298,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private updatedElementIds_: string[] = [];
   private bookmarksTreeViewEnabled_: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
+  private keyboardArrowServiceInitialized: boolean = false;
+  private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
 
   constructor() {
     super();
@@ -308,18 +314,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     });
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksService_.startListening();
-    this.shoppingServiceApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
-      res.productInfos.forEach(
-          product => this.set(
-              `trackedProductInfos_.${product.bookmarkId.toString()}`,
-              product));
-    });
-    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.priceTrackingProxy_.getAllPriceTrackedBookmarkProductInfo().then(
+        res => {
+          res.productInfos.forEach(
+              product => this.set(
+                  `trackedProductInfos_.${product.bookmarkId.toString()}`,
+                  product));
+        });
+    this.priceTrackingProxy_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });
     this.updateShoppingCollectionFolderId_();
-    const callbackRouter = this.shoppingServiceApi_.getCallbackRouter();
+    const callbackRouter = this.priceTrackingProxy_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
@@ -337,21 +344,34 @@ export class PowerBookmarksListElement extends PolymerElement {
 
     this.bookmarksDragManager_.startObserving();
     this.recordMetricsOnConnected_();
+    this.keyArrowNavigationService_.startListening();
+
+    this.addEventListener(BOOKMARK_ROW_LOAD_EVENT, () => {
+      this.rebuildNavigationElementsDebouncer_ = Debouncer.debounce(
+          this.rebuildNavigationElementsDebouncer_, timeOut.after(1), () => {
+            this.keyArrowNavigationService_.rebuildNavigationElements();
+          });
+    });
   }
 
   override disconnectedCallback() {
     this.bookmarksService_.stopListening();
     this.shoppingListenerIds_.forEach(
-        id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
+        id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
 
     this.shownBookmarksResizeObserver_!.disconnect();
     this.shownBookmarksResizeObserver_ = undefined;
 
     this.bookmarksDragManager_.stopObserving();
+    this.keyArrowNavigationService_.stopListening();
   }
 
   setCurrentUrl(url: string) {
     this.currentUrl_ = url;
+  }
+
+  getCurrentUrlForTesting(): string|undefined {
+    return this.currentUrl_;
   }
 
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
@@ -412,6 +432,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.updatedElementIds_ = [bookmark.id];
     this.updateShoppingData_();
     this.notifyPathIfVisible_(parent.id, 'children');
+    this.keyArrowNavigationService_.rebuildNavigationElements();
   }
 
   onBookmarkMoved(
@@ -439,6 +460,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     // If the new parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(newParent.id, 'children');
+    // If compact and tree view is active, we must resize open folders
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      this.notifyBookmarksListResize_();
+    }
+    this.keyArrowNavigationService_.rebuildNavigationElements();
   }
 
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
@@ -463,6 +489,9 @@ export class PowerBookmarksListElement extends PolymerElement {
     // If the parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(bookmark.parentId!, 'children');
+    afterNextRender(this, () => {
+      this.keyArrowNavigationService_.rebuildNavigationElements();
+    });
   }
 
   getTrackedProductInfos(): {[key: string]: BookmarkProductInfo} {
@@ -471,10 +500,6 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   getAvailableProductInfos(): Map<string, BookmarkProductInfo> {
     return this.availableProductInfos_;
-  }
-
-  getSelectedBookmarks(): {[key: string]: boolean} {
-    return this.selectedBookmarks_;
   }
 
   getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
@@ -488,6 +513,13 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   /** PowerBookmarksDragDelegate */
   getFallbackBookmark(): chrome.bookmarks.BookmarkTreeNode {
+    // Returning other bookmarks folder in tree view allow moving bookmarks to
+    // the root folder
+    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
+      return this.bookmarksService_.findBookmarkWithId(
+          loadTimeData.getString('otherBookmarksId'))!;
+    }
+
     return this.getParentFolder_();
   }
 
@@ -507,6 +539,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     document.addEventListener('mousedown', () => {
       this.focusOutlineManager_.visible = false;
     }, {once: true});
+    this.keyArrowNavigationService_.rebuildNavigationElements();
   }
 
   clickBookmarkRowForTests(bookmark: chrome.bookmarks.BookmarkTreeNode) {
@@ -530,6 +563,13 @@ export class PowerBookmarksListElement extends PolymerElement {
       },
     });
     this.setRenamingId_(event);
+  }
+
+  /**
+   * Returns the KeyboardNavigationService instance for testing.
+   */
+  getKeyboardNavigationServiceforTesting() {
+    return this.keyArrowNavigationService_;
   }
 
   private notifyPathIfVisible_(id: string, key: string) {
@@ -629,9 +669,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private updateShoppingCollectionFolderId_(): void {
-    this.shoppingServiceApi_.getShoppingCollectionBookmarkFolderId().then(res => {
-      this.shoppingCollectionFolderId_ = res.collectionId.toString();
-    });
+    this.priceTrackingProxy_.getShoppingCollectionBookmarkFolderId().then(
+        res => {
+          this.shoppingCollectionFolderId_ = res.collectionId.toString();
+        });
   }
 
   private getActiveFolderLabel_(): string {
@@ -647,7 +688,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private updateShoppingData_() {
     this.availableProductInfos_.clear();
-    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.priceTrackingProxy_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });
@@ -670,7 +711,9 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    const activeFolder = this.getActiveFolder_();
+    const activeFolder = this.bookmarksTreeViewEnabled_ && this.compact_ ?
+        undefined :
+        this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     this.displayLists_ = [primaryList];
@@ -829,7 +872,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     const isSelected =
-        !!this.bookmarksService_?.bookmarkIsSelected(event.detail.bookmark);
+        Object.entries(this.selectedBookmarks_)
+            .find(([key, _val]) => key === event.detail.bookmark.id)
+            ?.[1] ??
+        false;
     if (event.detail.checked && !isSelected) {
       this.set(
           `selectedBookmarks_.${event.detail.bookmark.id.toString()}`, true);

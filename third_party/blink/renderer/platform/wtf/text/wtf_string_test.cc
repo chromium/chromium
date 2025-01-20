@@ -258,8 +258,8 @@ TEST(WTF, SimplifyWhiteSpace) {
 
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {
   // [U+017F U+212A i a] starts with "sk".
-  EXPECT_TRUE(
-      String::FromUTF8("\xC5\xBF\xE2\x84\xAAia").StartsWithIgnoringCase("sk"));
+  EXPECT_TRUE(String::FromUTF8("\xC5\xBF\xE2\x84\xAAia")
+                  .DeprecatedStartsWithIgnoringCase("sk"));
 }
 
 TEST(StringTest, StartsWithIgnoringASCIICase) {

@@ -257,23 +257,18 @@ const char DevToolsClientImpl::kCdpTunnelChannel[] = "/cdp";
 const char DevToolsClientImpl::kBidiChannelSuffix[] = "/bidi";
 
 DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
-                                       const std::string& session_id)
+                                       const std::string& session_id,
+                                       bool is_tab)
     : session_id_(session_id),
       id_(id),
-      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)) {}
+      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
+      is_tab_(is_tab) {}
 
 DevToolsClientImpl::~DevToolsClientImpl() {
-  if (IsNull()) {
+  if (parent_ == nullptr) {
     return;
   }
-  if (parent_ != nullptr) {
-    parent_->UnregisterSessionHandler(session_id_);
-  } else {
-    // Resetting the callback is redundant as we assume
-    // that .dtor won't start a nested message loop.
-    // Doing this just in case.
-    socket_->SetNotificationCallback(base::RepeatingClosure());
-  }
+  parent_->UnregisterSessionHandler(session_id_);
 }
 
 void DevToolsClientImpl::SetParserFuncForTesting(
@@ -509,13 +504,6 @@ Status DevToolsClientImpl::SetSocket(std::unique_ptr<SyncWebSocket> socket) {
   }
   socket_ = std::move(socket);
   socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
 
   return OnConnected();
 }
@@ -529,7 +517,13 @@ Status DevToolsClientImpl::OnConnected() {
                   "established"};
   }
 
-  Status status = SetUpDevTools();
+  Status status(kOk);
+  if (IsTabTarget()) {
+    // Only operation supported at a Tab Target is to setup AutoAttach.
+    status = SetupTabTarget();
+  } else {
+    status = SetUpDevTools();
+  }
   if (status.IsError()) {
     return status;
   }
@@ -550,6 +544,20 @@ Status DevToolsClientImpl::OnConnected() {
   }
 
   return status;
+}
+
+Status DevToolsClientImpl::SetupTabTarget() {
+  base::Value::Dict params;
+  params.Set("autoAttach", true);
+  params.Set("flatten", true);
+  params.Set("waitForDebuggerOnStart", false);
+  Status status = SendCommand("Target.setAutoAttach", params);
+
+  if (status.IsError()) {
+    return status;
+  }
+
+  return Status{kOk};
 }
 
 Status DevToolsClientImpl::SetUpDevTools() {
@@ -775,6 +783,10 @@ DevToolsClient* DevToolsClientImpl::GetParentClient() const {
 
 bool DevToolsClientImpl::IsMainPage() const {
   return is_main_page_;
+}
+
+bool DevToolsClientImpl::IsTabTarget() const {
+  return is_tab_;
 }
 
 void DevToolsClientImpl::SetMainPage(bool value) {

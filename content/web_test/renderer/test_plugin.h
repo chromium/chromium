@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
@@ -32,10 +31,6 @@ namespace blink {
 class WebGraphicsContext3DProvider;
 struct WebPluginParams;
 }  // namespace blink
-
-namespace cc {
-class CrossThreadSharedBitmap;
-}
 
 namespace gpu {
 
@@ -112,7 +107,6 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
 
   // cc::TextureLayerClient methods:
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override;
 
@@ -169,11 +163,6 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
 
   // Functions for drawing scene in Software.
   void DrawSceneSoftware(void* memory);
-  static void ReleaseSharedMemory(
-      scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap,
-      cc::SharedBitmapIdRegistration registration,
-      const gpu::SyncToken& sync_token,
-      bool lost);
   static void ReleaseSharedImage(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
@@ -188,7 +177,6 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   raw_ptr<gpu::gles2::GLES2Interface> gl_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
-  scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   bool content_changed_ = false;
   GLuint framebuffer_ = 0;

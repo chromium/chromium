@@ -39,13 +39,9 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
   // sync_pb::WebAppIconInfo* icon_info = sync_proto.add_icon_infos();
   // icon_info->set_url(kIconUrl);
   // sync_proto.SerializeAsString()
-  const std::string serialized_proto = {
-      10,  29,  104, 116, 116, 112, 115, 58,  47,  47,  101, 120, 97,
-      109, 112, 108, 101, 46,  99,  111, 109, 47,  108, 97,  117, 110,
-      99,  104, 117, 114, 108, 18,  9,   84,  101, 115, 116, 32,  110,
-      97,  109, 101, 24,  1,   50,  30,  18,  28,  104, 116, 116, 112,
-      115, 58,  47,  47,  101, 120, 97,  109, 112, 108, 101, 46,  99,
-      111, 109, 47,  105, 99,  111, 110, 46,  112, 110, 103};
+  const std::string serialized_proto =
+      "\n\035https://example.com/launchurl\022\tTest "
+      "name\030\0012\036\022\034https://example.com/icon.png";
 
   // Parse the proto.
   sync_pb::WebAppSpecifics sync_proto;
@@ -153,11 +149,9 @@ TEST(WebAppProtoUtilsTest, SpecificsProtoWithNewFieldParses) {
   //     sync_pb::WebAppSpecifics::BROWSER);
   // sync_proto.set_test_new_field("hello");
   // sync_proto.SerializeAsString();
-  const std::string serialized_proto = {
-      10,  29,  104, 116, 116, 112, 115, 58,  47,  47,  101, 120, 97,  109,
-      112, 108, 101, 46,  99,  111, 109, 47,  108, 97,  117, 110, 99,  104,
-      117, 114, 108, 18,  9,   84,  101, 115, 116, 32,  110, 97,  109, 101,
-      24,  1,   -6,  -75, -65, 20,  5,   104, 101, 108, 108, 111};
+  const std::string serialized_proto =
+      "\n\035https://example.com/launchurl\022\tTest "
+      "name\030\001\372\265\277\024\005hello";
 
   // Parse the proto.
   sync_pb::WebAppSpecifics sync_proto;
@@ -194,11 +188,8 @@ TEST(WebAppProtoUtilsTest, SpecificsProtoWithNewEnumValueParses) {
   // sync_proto.set_user_display_mode_default(
   //     sync_pb::WebAppSpecifics::TEST_NEW_ENUM);
   // sync_proto.SerializeAsString();
-  const std::string serialized_proto = {
-      10,  29,  104, 116, 116, 112, 115, 58,  47,  47,  101, 120,
-      97,  109, 112, 108, 101, 46,  99,  111, 109, 47,  108, 97,
-      117, 110, 99,  104, 117, 114, 108, 18,  9,   84,  101, 115,
-      116, 32,  110, 97,  109, 101, 24,  -33, -10, -57, 2};
+  const std::string serialized_proto =
+      "\n\035https://example.com/launchurl\022\tTest name\030\337\366\307\002";
 
   // Parse the proto.
   sync_pb::WebAppSpecifics sync_proto;

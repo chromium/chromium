@@ -200,6 +200,22 @@ void PersonalizationAppSeaPenProviderImpl::
       contextual_tooltip::TooltipType::kSeaPenWallpaperIntroDialog);
 }
 
+void PersonalizationAppSeaPenProviderImpl::
+    ShouldShowSeaPenFreeformIntroductionDialogInternal(
+        ShouldShowSeaPenFreeformIntroductionDialogCallback callback) {
+  std::move(callback).Run(contextual_tooltip::ShouldShowNudge(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenFreeformIntroDialog,
+      /*recheck_delay=*/nullptr));
+}
+
+void PersonalizationAppSeaPenProviderImpl::
+    HandleSeaPenFreeformIntroductionDialogClosedInternal() {
+  contextual_tooltip::HandleGesturePerformed(
+      profile_->GetPrefs(),
+      contextual_tooltip::TooltipType::kSeaPenFreeformIntroDialog);
+}
+
 void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
     const uint32_t id,
     DeleteRecentSeaPenImageCallback callback) {

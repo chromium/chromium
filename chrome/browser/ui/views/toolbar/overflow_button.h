@@ -19,7 +19,6 @@ class OverflowButton : public ToolbarButton {
   METADATA_HEADER(OverflowButton, ToolbarButton)
 
  public:
-
   OverflowButton();
   OverflowButton(const OverflowButton&) = delete;
   OverflowButton& operator=(const OverflowButton&) = delete;

@@ -6,17 +6,22 @@
 
 'use strict';
 
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-shared-storage',
+    '/.well-known/private-aggregation/debug/report-shared-storage',
+    /*fullTimeoutMs=*/ 2000,
+);
+
 private_aggregation_promise_test(async () => {
   await addModuleOnce('resources/shared-storage-module.js');
 
   const data = {enableDebugMode: true, contributions: [{bucket: 1n, value: 2}]};
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage',
       /*is_debug_enabled=*/ true,
@@ -25,11 +30,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with one contribution');
 
 private_aggregation_promise_test(async () => {
@@ -42,11 +43,10 @@ private_aggregation_promise_test(async () => {
 
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -54,11 +54,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with multiple contributions');
 
 private_aggregation_promise_test(async () => {
@@ -72,11 +68,10 @@ private_aggregation_promise_test(async () => {
 
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
@@ -84,11 +79,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with debug key');
 
 
@@ -103,11 +94,10 @@ private_aggregation_promise_test(async () => {
 
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
@@ -115,11 +105,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with multiple contributions and a debug key');
 
 private_aggregation_promise_test(async () => {
@@ -132,23 +118,14 @@ private_aggregation_promise_test(async () => {
 
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
-
-  const report = JSON.parse(reports[0]);
+  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
 
   // Note that the payload cannot be tested as debug mode is disabled.
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined);
-
-  // We use a short timeout as the previous poll should've waited long enough.
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation without debug mode');
 
 private_aggregation_promise_test(async () => {
@@ -162,11 +139,10 @@ private_aggregation_promise_test(async () => {
 
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ '1234',
@@ -174,11 +150,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls enableDebugMode() after contributeToHistogram()');
 
 
@@ -193,21 +165,13 @@ private_aggregation_promise_test(async () => {
   await sharedStorage.run(
       'contribute-to-histogram', {data: data_2, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined);
-
-  // We use a short timeout as the previous poll should've waited long enough.
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(debug_reports, null);
 }, 'calling enableDebugMode() in a different operation doesn\'t apply');
 
 
@@ -229,15 +193,8 @@ private_aggregation_promise_test(async () => {
       'contribute-to-histogram', {data: data_2, keepAlive: true});
 
   // We don't verify the reports as they could arrive in a different order.
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage',
-      /*wait_for=*/ 2);
-  assert_equals(reports.length, 2);
-
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 2);
-  assert_equals(debug_reports.length, 2);
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 2, /*expectedNumDebugReports=*/ 2);
 }, 'reports from multiple operations aren\'t batched');
 
 private_aggregation_promise_test(async () => {
@@ -250,11 +207,10 @@ private_aggregation_promise_test(async () => {
   };
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -262,11 +218,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with mergeable contributions');
 
 private_aggregation_promise_test(async () => {
@@ -279,11 +231,10 @@ private_aggregation_promise_test(async () => {
   };
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -291,11 +242,7 @@ private_aggregation_promise_test(async () => {
       buildExpectedPayload(
           MULTIPLE_CONTRIBUTIONS_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with zero-value contributions');
 
 private_aggregation_promise_test(async () => {
@@ -310,11 +257,10 @@ private_aggregation_promise_test(async () => {
   const data = {enableDebugMode: true, contributions};
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -322,11 +268,7 @@ private_aggregation_promise_test(async () => {
       buildPayloadWithSequentialContributions(
           NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with too many contributions');
 
 private_aggregation_promise_test(async () => {
@@ -340,11 +282,10 @@ private_aggregation_promise_test(async () => {
   const data = {enableDebugMode: true, contributions};
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage')
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -353,11 +294,7 @@ private_aggregation_promise_test(async () => {
           ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE,
           NUM_CONTRIBUTIONS_SHARED_STORAGE));
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with many mergeable contributions');
 
 private_aggregation_promise_test(async () => {
@@ -373,13 +310,6 @@ private_aggregation_promise_test(async () => {
   await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
   // No reports are expected as the budget has surely been exceeded.
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(reports, null);
-
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(debug_reports, null);
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
 }, 'run() that calls Private Aggregation with values that sum to more than the max long');

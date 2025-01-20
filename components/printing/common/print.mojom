@@ -23,7 +23,7 @@ struct PreviewIds {
 // Parameters required to do print preview.
 [Stable, EnableIf=enable_print_preview]
 struct RequestPrintPreviewParams {
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   bool is_from_arc = false;
 
   bool is_modifiable = false;
@@ -206,7 +206,7 @@ struct ScriptedPrintParams {
 
 // Interface implemented by a class that desires to render print documents for
 // Chrome print preview.
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 interface PrintRenderer {
   // Creates a preview document for print preview using the provided
   // `job_settings`.
@@ -325,7 +325,7 @@ interface PrintRenderFrame {
   // Optionally provides a `print_renderer` to render print documents.
   [EnableIf=enable_print_preview]
   InitiatePrintPreview(
-      [EnableIf=is_chromeos_ash]
+      [EnableIf=is_chromeos]
       pending_associated_remote<PrintRenderer>? print_renderer,
       bool has_selection);
 

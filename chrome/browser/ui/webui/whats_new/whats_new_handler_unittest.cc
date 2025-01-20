@@ -17,9 +17,8 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/user_education/common/user_education_features.h"
+#include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "components/user_education/webui/whats_new_registry.h"
-#include "components/user_education/webui/whats_new_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -50,31 +49,6 @@ class MockPage : public whats_new::mojom::Page {
   mojo::Receiver<whats_new::mojom::Page> receiver_{this};
 };
 
-class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
- public:
-  MockWhatsNewStorageService() = default;
-  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
-  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
-  MOCK_METHOD(int,
-              GetModuleQueuePosition,
-              (const std::string_view),
-              (const, override));
-  MOCK_METHOD(std::optional<int>,
-              GetUsedVersion,
-              (std::string_view edition_name),
-              (const override));
-  MOCK_METHOD(std::optional<std::string_view>,
-              FindEditionForCurrentVersion,
-              (),
-              (const, override));
-  MOCK_METHOD(bool, IsUsedEdition, (const std::string_view), (const, override));
-  MOCK_METHOD(void, SetModuleEnabled, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearModule, (const std::string_view), (override));
-  MOCK_METHOD(void, SetEditionUsed, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearEdition, (const std::string_view), (override));
-  MOCK_METHOD(void, Reset, (), (override));
-};
-
 }  // namespace
 
 class WhatsNewHandlerTest : public testing::Test {
@@ -82,8 +56,6 @@ class WhatsNewHandlerTest : public testing::Test {
   WhatsNewHandlerTest()
       : profile_(std::make_unique<TestingProfile>()),
         web_contents_(factory_.CreateWebContents(profile_.get())) {
-    feature_list_.InitWithFeatures(
-        {}, {user_education::features::kWhatsNewVersion2});
   }
   ~WhatsNewHandlerTest() override = default;
 
@@ -141,7 +113,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
 
   const GURL expected_url = GURL(base::StringPrintf(
-      "https://www.google.com/chrome/whats-new/?version=%d&internal=true",
+      "https://www.google.com/chrome/v2/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR));
 
   EXPECT_CALL(callback, Run)
@@ -267,8 +239,7 @@ TEST_F(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride) {
 
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{user_education::features::kWhatsNewVersion2, {{}}},
-       {kTestEdition, {{whats_new::kSurveyParam, survey_override_id}}},
+      {{kTestEdition, {{whats_new::kSurveyParam, survey_override_id}}},
        base::test::FeatureRefAndParams(
            features::kHappinessTrackingSurveysForDesktopWhatsNew,
            {{"whats-new-time", "20s"}})},
@@ -297,8 +268,7 @@ TEST_F(WhatsNewHandlerTest, SurveyIsNotTriggeredForPreviouslyUsedEdition) {
 
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{user_education::features::kWhatsNewVersion2, {{}}},
-       {kTestEdition, {{whats_new::kSurveyParam, survey_override_id}}},
+      {{kTestEdition, {{whats_new::kSurveyParam, survey_override_id}}},
        base::test::FeatureRefAndParams(
            features::kHappinessTrackingSurveysForDesktopWhatsNew,
            {{"whats-new-time", "20s"}})},

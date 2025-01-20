@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/process/process_iterator.h"
+
 #include "build/build_config.h"
 
 namespace base {
@@ -18,8 +19,9 @@ const ProcessEntry* ProcessIterator::NextProcessEntry() {
   do {
     result = CheckForNextProcess();
   } while (result && !IncludeEntry());
-  if (result)
+  if (result) {
     return &entry_;
+  }
   return nullptr;
 }
 
@@ -61,8 +63,9 @@ int GetProcessCount(const FilePath::StringType& executable_name,
                     const ProcessFilter* filter) {
   int count = 0;
   NamedProcessIterator iter(executable_name, filter);
-  while (iter.NextProcessEntry())
+  while (iter.NextProcessEntry()) {
     ++count;
+  }
   return count;
 }
 

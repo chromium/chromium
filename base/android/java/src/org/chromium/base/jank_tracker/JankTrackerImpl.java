@@ -9,6 +9,9 @@ import android.os.Build;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -19,15 +22,14 @@ import java.lang.ref.WeakReference;
  * based on activity state. When the activity is being destroyed {@link #destroy()} should be called
  * to clear the activity state observer. All methods should be called from the UI thread.
  */
+@NullMarked
 public class JankTrackerImpl implements JankTracker {
     // We use the DEADLINE field in the Android FrameMetrics which was added in S.
     private static final boolean IS_TRACKING_ENABLED =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
 
-    private boolean mIsInitialized;
-    private JankTrackerStateController mController;
-    private JankReportingScheduler mReportingScheduler;
-    private boolean mDestroyed;
+    private @Nullable JankTrackerStateController mController;
+    private @Nullable JankReportingScheduler mReportingScheduler;
 
     /**
      * Creates a new JankTracker instance tracking UI rendering of an activity. Metric recording
@@ -44,7 +46,9 @@ public class JankTrackerImpl implements JankTracker {
                     public void run() {
                         // If we've been destroyed or the Activity is gone early out.
                         Activity innerActivity = ref.get();
-                        if (mDestroyed || innerActivity == null || innerActivity.isDestroyed()) {
+                        if (mController == null
+                                || innerActivity == null
+                                || innerActivity.isDestroyed()) {
                             return;
                         }
 
@@ -78,6 +82,7 @@ public class JankTrackerImpl implements JankTracker {
         constructInternalFinal(controller);
     }
 
+    @EnsuresNonNullIf("mReportingScheduler")
     private boolean constructInternalPreController(JankReportingScheduler scheduler) {
         if (!IS_TRACKING_ENABLED) {
             mReportingScheduler = null;
@@ -88,15 +93,23 @@ public class JankTrackerImpl implements JankTracker {
         return true;
     }
 
+    @EnsuresNonNullIf({"mController", "mReportingScheduler"})
+    private boolean isInitialized() {
+        if (mController == null) {
+            return false;
+        }
+        assert mReportingScheduler != null;
+        return true;
+    }
+
     private void constructInternalFinal(JankTrackerStateController controller) {
         mController = controller;
         mController.initialize();
-        mIsInitialized = true;
     }
 
     @Override
     public void startTrackingScenario(JankScenario scenario) {
-        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
+        if (!isInitialized()) return;
 
         mReportingScheduler.startTrackingScenario(scenario);
     }
@@ -108,7 +121,7 @@ public class JankTrackerImpl implements JankTracker {
 
     @Override
     public void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
-        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
+        if (!isInitialized()) return;
 
         mReportingScheduler.finishTrackingScenario(scenario, endScenarioTimeNs);
     }
@@ -116,8 +129,8 @@ public class JankTrackerImpl implements JankTracker {
     /** Stops listening for Activity state changes. */
     @Override
     public void destroy() {
-        mDestroyed = true;
-        if (!IS_TRACKING_ENABLED || !mIsInitialized) return;
+        if (!isInitialized()) return;
         mController.destroy();
+        mController = null;
     }
 }

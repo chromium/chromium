@@ -69,7 +69,7 @@ class MockGalleryChangeObserver
   MockGalleryChangeObserver& operator=(const MockGalleryChangeObserver&) =
       delete;
 
-  ~MockGalleryChangeObserver() override {}
+  ~MockGalleryChangeObserver() override = default;
 
   int notifications() const { return notifications_;}
 
@@ -125,7 +125,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
   MediaGalleriesPreferencesTest& operator=(
       const MediaGalleriesPreferencesTest&) = delete;
 
-  ~MediaGalleriesPreferencesTest() override {}
+  ~MediaGalleriesPreferencesTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(TestStorageMonitor::CreateAndInstall());

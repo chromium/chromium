@@ -304,6 +304,22 @@ public class DisplayCutoutControllerTest {
     }
 
     @Test
+    public void testSafeAreaConstraint() {
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(true);
+        DisplayCutoutController.SafeAreaInsetsTracker tracker =
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab);
+        Assert.assertNotNull(tracker);
+        Assert.assertTrue(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
+
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(false);
+        Assert.assertFalse(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
+    }
+
+    @Test
     public void testObserverUpdateOnContentChange() {
         // First, make sure observer is attached at the beginning.
         verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());

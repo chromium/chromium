@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, NoViewOnNormalStartup) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.RecoverySource",
-      static_cast<base::HistogramBase::Sample>(kUiSurface), 0);
+      static_cast<base::HistogramBase::Sample32>(kUiSurface), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.RecoverySource",
-      static_cast<base::HistogramBase::Sample>(kUiSurface), 3);
+      static_cast<base::HistogramBase::Sample32>(kUiSurface), 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Accept) {
@@ -218,5 +218,5 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Accept) {
 
   histogram_tester.ExpectUniqueSample(
       "Crostini.RecoverySource",
-      static_cast<base::HistogramBase::Sample>(kUiSurface), 2);
+      static_cast<base::HistogramBase::Sample32>(kUiSurface), 2);
 }

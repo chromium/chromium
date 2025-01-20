@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/web_apps/view_visible_in_active_widget_notifier.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -9,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/web_apps/view_visible_in_active_widget_notifier.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"

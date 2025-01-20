@@ -57,8 +57,7 @@ bool FederatedClientManager::IsFederatedServiceAvailable() {
     initialized_ = true;
   }
 
-  return ash::features::IsFederatedServiceEnabled() && controller_ &&
-         controller_->IsServiceAvailable();
+  return controller_ && controller_->IsServiceAvailable();
 }
 
 void FederatedClientManager::ReportExample(

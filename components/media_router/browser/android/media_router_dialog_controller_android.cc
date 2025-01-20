@@ -41,8 +41,9 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
     const JavaParamRef<jstring>& jsource_id,
     const JavaParamRef<jstring>& jsink_id) {
   auto start_presentation_context = std::move(start_presentation_context_);
-  if (!start_presentation_context)
+  if (!start_presentation_context) {
     return;
+  }
 
   const auto& presentation_request =
       start_presentation_context->presentation_request();
@@ -53,8 +54,9 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
   // Verify that there was a request containing the source id the sink was
   // selected for.
   std::vector<MediaSource> sources;
-  for (const auto& url : presentation_request.presentation_urls)
+  for (const auto& url : presentation_request.presentation_urls) {
     sources.push_back(MediaSource::ForPresentationUrl(url));
+  }
   bool is_source_from_request = false;
   for (const auto& source : sources) {
     if (source.id() == source_id) {
@@ -104,8 +106,9 @@ void MediaRouterDialogControllerAndroid::OnMediaSourceNotSupported(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   auto request = std::move(start_presentation_context_);
-  if (!request)
+  if (!request) {
     return;
+  }
 
   request->InvokeErrorCallback(blink::mojom::PresentationError(
       blink::mojom::PresentationErrorType::NO_AVAILABLE_SCREENS,
@@ -114,8 +117,9 @@ void MediaRouterDialogControllerAndroid::OnMediaSourceNotSupported(
 
 void MediaRouterDialogControllerAndroid::CancelPresentationRequest() {
   auto request = std::move(start_presentation_context_);
-  if (!request)
+  if (!request) {
     return;
+  }
 
   request->InvokeErrorCallback(blink::mojom::PresentationError(
       blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
@@ -141,8 +145,9 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
 
   std::vector<MediaSource> sources;
   for (const auto& url :
-       start_presentation_context_->presentation_request().presentation_urls)
+       start_presentation_context_->presentation_request().presentation_urls) {
     sources.push_back(MediaSource::ForPresentationUrl(url));
+  }
 
   // If it's a single route with the same source, show the controller dialog
   // instead of the device picker.
@@ -156,8 +161,9 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
   for (const auto& source : sources) {
     const MediaSource::Id& source_id = source.id();
     const MediaRoute* matching_route = router->FindRouteBySource(source_id);
-    if (!matching_route)
+    if (!matching_route) {
       continue;
+    }
 
     ScopedJavaLocalRef<jstring> jsource_id =
         base::android::ConvertUTF8ToJavaString(env, source_id);
@@ -174,8 +180,9 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
 
   std::vector<std::u16string> source_ids;
   source_ids.reserve(sources.size());
-  for (const auto& source : sources)
+  for (const auto& source : sources) {
     source_ids.push_back(base::UTF8ToUTF16(source.id()));
+  }
   ScopedJavaLocalRef<jobjectArray> jsource_ids =
       base::android::ToJavaArrayOfStrings(env, source_ids);
   Java_BrowserMediaRouterDialogController_openRouteChooserDialog(

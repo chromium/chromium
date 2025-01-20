@@ -22,10 +22,6 @@ export function isSeaPenUseExptTemplateEnabled() {
   return loadTimeData.getBoolean('isSeaPenUseExptTemplateEnabled');
 }
 
-export function isLacrosEnabled() {
-  return loadTimeData.getBoolean('isLacrosEnabled');
-}
-
 export function isVcResizeThumbnailEnabled() {
   return loadTimeData.getBoolean('isVcResizeThumbnailEnabled');
 }

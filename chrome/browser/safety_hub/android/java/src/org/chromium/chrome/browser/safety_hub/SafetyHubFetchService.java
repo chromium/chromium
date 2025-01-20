@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
@@ -79,6 +80,20 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
         // Fetch latest update status.
         UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
+
+        recordMetricForUnusedSitePermissionsSettingState();
+    }
+
+    /**
+     * Records the metric related to the setting state of autorevoke unused site permissions. This
+     * should only be recorded on start up.
+     */
+    private void recordMetricForUnusedSitePermissionsSettingState() {
+        boolean unusedSitePermissionsRevocationEnabled =
+                UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
+        RecordHistogram.recordBooleanHistogram(
+                "Settings.SafetyHub.AutorevokeUnusedSitePermissions.StateOnStartup",
+                unusedSitePermissionsRevocationEnabled);
     }
 
     void addObserver(Observer observer) {
@@ -133,7 +148,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     /** Schedules the next fetch job to run after a delay. */
     private void scheduleNextFetchJob() {
-        long nextFetchDelayMs = TimeUnit.DAYS.toMillis(SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
+        int nextFetchDelayInDays =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.SAFETY_HUB,
+                        "background-password-check-interval-in-days",
+                        SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
+        long nextFetchDelayMs = TimeUnit.DAYS.toMillis(nextFetchDelayInDays);
 
         // Cancel existing job if it wasn't already stopped.
         cancelFetchJob();
@@ -203,6 +223,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * signed-in profile.
      */
     private void fetchWeakCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
+            mWeakCredentialsCountFetched = true;
+            onFetchCredentialsFinished(onFinishedCallback);
+            return;
+        }
+
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
@@ -226,6 +252,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * signed-in profile.
      */
     private void fetchReusedCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
+            mReusedCredentialsCountFetched = true;
+            onFetchCredentialsFinished(onFinishedCallback);
+            return;
+        }
+
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 

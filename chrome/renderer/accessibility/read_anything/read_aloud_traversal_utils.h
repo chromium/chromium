@@ -59,8 +59,8 @@ struct ReadAloudCurrentGranularity {
   std::vector<ReadAloudTextSegment> GetSegmentsForRange(int start_index,
                                                         int end_index);
 
-  // Calculate phrase boundaries from the text.
-  void CalculatePhrases();
+  // Calculate placeholder phrase boundaries from the text (3 words per phrase).
+  void CalculatePlaceholderPhrases();
 
   // Calculate the phrase_boundaries index corresponding to a text index.
   int GetPhraseIndex(int index) {
@@ -94,6 +94,10 @@ struct ReadAloudCurrentGranularity {
   // is stored separately for easier retrieval for non-sentence granularity
   // highlighting.
   std::u16string text;
+
+  // Tokens for phrase breaking. Usually a word, but can also be punctuations or
+  // numbers.
+  std::vector<std::u16string_view> tokens;
 
   // Boundary indices for phrases. Starts at 0.
   std::vector<int> phrase_boundaries;

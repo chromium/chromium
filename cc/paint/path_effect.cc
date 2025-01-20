@@ -1,8 +1,9 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
+// TODO(crbug.com/377326291): Fix and remove.
 #pragma allow_unsafe_buffers
 #endif
 
@@ -51,11 +52,7 @@ class DashPathEffect final : public PathEffect {
         .ValueOrDie();
   }
   void SerializeData(PaintOpWriter& writer) const override {
-    // This serialization is identical to the behavior of
-    // PaintOpWriter::Write(std::vector), which lets us use
-    // PaintOpReader::Read(std::vector) below.
-    writer.WriteSize(intervals_.size());
-    writer.WriteData(intervals_.size() * sizeof(float), intervals_.data());
+    writer.Write(intervals_);
     writer.Write(phase_);
   }
 
@@ -134,7 +131,7 @@ sk_sp<PathEffect> PathEffect::Deserialize(PaintOpReader& reader, Type type) {
     case Type::kDash: {
       std::vector<float> intervals;
       float phase;
-      reader.Read(&intervals);
+      reader.Read(intervals);
       reader.Read(&phase);
       return reader.valid()
                  ? MakeDash(intervals.data(),

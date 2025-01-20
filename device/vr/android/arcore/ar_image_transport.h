@@ -52,10 +52,6 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
   void CopyCameraImageToFramebuffer(GLuint framebuffer,
                                     const gfx::Size& frame_size,
                                     const gfx::Transform& uv_transform);
-  void CopyDrawnImageToFramebuffer(WebXrPresentationState* webxr,
-                                   GLuint framebuffer,
-                                   const gfx::Size& frame_size,
-                                   const gfx::Transform& uv_transform);
 
  private:
   void DoRuntimeInitialization(int texture_taget) override;

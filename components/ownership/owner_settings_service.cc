@@ -96,8 +96,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
   do {
     ++attempt_counter;
     signature_item = SignPolicy(
-        private_key,
-        base::as_bytes(base::make_span(policy_response->policy_data())),
+        private_key, base::as_byte_span(policy_response->policy_data()),
         signature_type);
   } while (!signature_item && attempt_counter < kMaxSignatureAttempts);
 

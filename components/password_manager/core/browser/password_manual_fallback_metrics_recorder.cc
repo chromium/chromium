@@ -21,12 +21,10 @@ PasswordManualFallbackMetricsRecorder::
     ~PasswordManualFallbackMetricsRecorder() {
   EmitExplicitlyTriggeredMetric(
       classified_as_target_filling_context_menu_state_,
-      "ClassifiedAsTargetFilling",
-      /*record_to_total_not_classified_as_target_filling_bucket=*/false);
+      "ClassifiedAsTargetFilling");
   EmitExplicitlyTriggeredMetric(
       not_classified_as_target_filling_context_menu_state_,
-      "NotClassifiedAsTargetFilling",
-      /*record_to_total_not_classified_as_target_filling_bucket=*/true);
+      "NotClassifiedAsTargetFilling");
   EmitFillAfterSuggestionMetric(classified_as_target_filling_suggestion_state_,
                                 "ClassifiedAsTargetFilling");
   EmitFillAfterSuggestionMetric(
@@ -88,22 +86,18 @@ void PasswordManualFallbackMetricsRecorder::ContextMenuEntryAccepted(
 
 void PasswordManualFallbackMetricsRecorder::EmitExplicitlyTriggeredMetric(
     ContextMenuEntryState context_menu_state,
-    std::string_view bucket,
-    bool record_to_total_not_classified_as_target_filling_bucket) {
+    std::string_view bucket) {
   if (context_menu_state == ContextMenuEntryState::kNotShown) {
     return;
   }
 
-  auto metric_name = [](std::string_view token1, std::string_view token2) {
+  auto metric_name = [](std::string_view token) {
     return base::StrCat(
-        {"Autofill.ManualFallback.ExplicitlyTriggered.", token1, ".", token2});
+        {"Autofill.ManualFallback.ExplicitlyTriggered.", token, ".Password"});
   };
   const bool was_accepted =
       context_menu_state == ContextMenuEntryState::kAccepted;
-  base::UmaHistogramBoolean(metric_name(bucket, "Password"), was_accepted);
-  if (record_to_total_not_classified_as_target_filling_bucket) {
-    base::UmaHistogramBoolean(metric_name(bucket, "Total"), was_accepted);
-  }
+  base::UmaHistogramBoolean(metric_name(bucket), was_accepted);
 }
 
 void PasswordManualFallbackMetricsRecorder::EmitFillAfterSuggestionMetric(

@@ -16,6 +16,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +29,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A collection of SDK based helper functions for retrieving supported profiles
- * for accelerated encoders and decoders from MediaCodecInfo. Only called from
- * the GPU process, so doesn't need to be tagged with MainDex.
+ * A collection of SDK based helper functions for retrieving supported profiles for accelerated
+ * encoders and decoders from MediaCodecInfo. Only called from the GPU process, so doesn't need to
+ * be tagged with MainDex.
  */
 @JNINamespace("media")
+@NullMarked
 class VideoAcceleratorUtil {
     private static final String TAG = "VAUtil";
 
@@ -97,7 +100,7 @@ class VideoAcceleratorUtil {
         public int maxFramerateDenominator;
         public boolean supportsCbr;
         public boolean supportsVbr;
-        public String name;
+        public @Nullable String name;
         public boolean isSoftwareCodec;
         public boolean supportsSecurePlayback;
         public boolean requiresSecurePlayback;
@@ -154,7 +157,7 @@ class VideoAcceleratorUtil {
         }
 
         @CalledByNative("SupportedProfileAdapter")
-        public String getName() {
+        public @Nullable String getName() {
             return this.name;
         }
 
@@ -189,11 +192,16 @@ class VideoAcceleratorUtil {
         return false;
     }
 
-    // Chromium doesn't bundle a software encoder or decoder for H.264 or H.265 so allow
-    // usage of software codecs through MediaCodec for those codecs.
-    private static boolean requiresHardware(String type) {
-        return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264)
-                && !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_HEVC);
+    // Chromium doesn't bundle a software encoder for H.264. Since `c2.android.avc.encoder` can
+    // support up to `2048x2048 & 30fps`, we allow the usage of software codecs through
+    // MediaCodec for H.264.
+    //
+    // However, it should be noted that Chromium also doesn't bundle a software encoder for HEVC.
+    // And since `c2.android.hevc.encoder` only supports up to `512x512 & 30fps`, which normal
+    // users can't use as it is a pretty low resolution framerate combination, we explicitly
+    // choose not to report it as supported.
+    private static boolean requiresHardwareEncoder(String type) {
+        return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264);
     }
 
     // H.264 high profile isn't required by Android platform, so we can only add support if
@@ -224,13 +232,17 @@ class VideoAcceleratorUtil {
         return 1;
     }
 
+    private static int alignUp(int size, int alignment) {
+        return (size + alignment - 1) & ~(alignment - 1);
+    }
+
     /**
-     * Returns an array of SupportedProfileAdapter entries since the NDK
-     * doesn't provide this functionality :/
+     * Returns an array of SupportedProfileAdapter entries since the NDK doesn't provide this
+     * functionality :/
      */
     @CalledByNative
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static SupportedProfileAdapter[] getSupportedEncoderProfiles() {
+    private static SupportedProfileAdapter @Nullable [] getSupportedEncoderProfiles() {
         MediaCodecInfo[] codecList;
         try {
             codecList = new MediaCodecList(MediaCodecList.REGULAR_CODECS).getCodecInfos();
@@ -250,7 +262,7 @@ class VideoAcceleratorUtil {
             for (MediaCodecInfo info : codecList) {
                 if (info.isAlias()) continue; // Skip duplicates.
                 if (!info.isEncoder()) continue;
-                if (!info.isHardwareAccelerated() && requiresHardware(type)) continue;
+                if (!info.isHardwareAccelerated() && requiresHardwareEncoder(type)) continue;
 
                 MediaCodecInfo.CodecCapabilities capabilities = null;
                 try {
@@ -290,10 +302,17 @@ class VideoAcceleratorUtil {
                         new Resolution(supportedWidths.getUpper(), supportedHeights.getUpper()));
                 LinkedHashMap<Integer, Resolution> frameRateResolutionMap =
                         new LinkedHashMap<Integer, Resolution>();
+
+                // Retrieve the alignment of the current codec.
+                int widthAlignment = videoCapabilities.getWidthAlignment();
+                int heightAlignment = videoCapabilities.getHeightAlignment();
                 // Compute the final supported resolution and framerate combinations.
                 for (Resolution supportedResolution : supportedResolutions) {
-                    int supportedWidth = supportedResolution.getWidth();
-                    int supportedHeight = supportedResolution.getHeight();
+                    // Adjust the width and height here based on the retrieved alignment. Otherwise,
+                    // if a width or height doesn't match the alignment, the function
+                    // `isSizeSupported()` below will return false.
+                    int supportedWidth = alignUp(supportedResolution.getWidth(), widthAlignment);
+                    int supportedHeight = alignUp(supportedResolution.getHeight(), heightAlignment);
                     if (!videoCapabilities.isSizeSupported(supportedWidth, supportedHeight)) {
                         continue;
                     }
@@ -305,7 +324,9 @@ class VideoAcceleratorUtil {
                     int supportedFrameRate =
                             (int) Math.floor(supportedFrameRates.getUpper().doubleValue());
                     if (!frameRateResolutionMap.containsKey(supportedFrameRate)) {
-                        frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                        frameRateResolutionMap.put(
+                                supportedFrameRate,
+                                new Resolution(supportedWidth, supportedHeight));
                     } else {
                         Resolution resolution = frameRateResolutionMap.get(supportedFrameRate);
                         // If the framerates of the two are the same, always use the higher
@@ -313,7 +334,9 @@ class VideoAcceleratorUtil {
                         // useless result to the list.
                         if (supportedWidth >= resolution.getWidth()
                                 && supportedHeight >= resolution.getHeight()) {
-                            frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                            frameRateResolutionMap.put(
+                                    supportedFrameRate,
+                                    new Resolution(supportedWidth, supportedHeight));
                         }
                     }
                 }
@@ -402,11 +425,11 @@ class VideoAcceleratorUtil {
     }
 
     /**
-     * Returns an array of SupportedProfileAdapter entries since the NDK
-     * doesn't provide this functionality :/
+     * Returns an array of SupportedProfileAdapter entries since the NDK doesn't provide this
+     * functionality :/
      */
     @CalledByNative
-    private static SupportedProfileAdapter[] getSupportedDecoderProfiles() {
+    private static SupportedProfileAdapter @Nullable [] getSupportedDecoderProfiles() {
         MediaCodecInfo[] codecList;
         try {
             codecList = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();

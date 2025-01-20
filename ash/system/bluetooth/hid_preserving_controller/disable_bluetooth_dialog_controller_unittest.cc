@@ -19,8 +19,6 @@ class DisableBluetoothDialogControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kBluetoothDisconnectWarning);
     disable_bluetooth_dialog_controller_impl_ =
         std::make_unique<DisableBluetoothDialogControllerImpl>();
   }

@@ -49,7 +49,7 @@ SiteDataCountingHelper::SiteDataCountingHelper(
       completion_callback_(std::move(completion_callback)),
       tasks_(0) {}
 
-SiteDataCountingHelper::~SiteDataCountingHelper() {}
+SiteDataCountingHelper::~SiteDataCountingHelper() = default;
 
 void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   content::StoragePartition* partition = profile_->GetDefaultStoragePartition();

@@ -93,7 +93,4 @@ void DefaultStoreChangedBubbleController::OnNavigateToSettingsButtonClicked() {
 void DefaultStoreChangedBubbleController::ReportInteractions() {
   password_manager::metrics_util::LogGeneralUIDismissalReason(
       dismissal_reason_);
-  base::UmaHistogramBoolean(
-      "PasswordBubble.DefaultStoreChangedBubble.ContinueButtonInBubbleClicked",
-      dismissal_reason_ == metrics_util::CLICKED_ACCEPT);
 }

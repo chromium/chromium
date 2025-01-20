@@ -136,8 +136,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
       base::ranges::find(challenge_options_, selected_challenge_option_id_,
                          &CardUnmaskChallengeOption::id);
 
-  CHECK(selected_challenge_option != challenge_options_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(selected_challenge_option != challenge_options_.end());
   selected_challenge_option_type_ = (*selected_challenge_option).type;
 
   DCHECK(selected_challenge_option_type_ !=

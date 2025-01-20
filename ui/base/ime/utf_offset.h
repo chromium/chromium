@@ -5,6 +5,8 @@
 #ifndef UI_BASE_IME_UTF_OFFSET_H_
 #define UI_BASE_IME_UTF_OFFSET_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string_view>
 

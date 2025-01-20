@@ -5,6 +5,11 @@
 #ifndef CHROME_TEST_FUZZING_RENDERER_FUZZING_IN_PROCESS_RENDERER_FUZZING_H_
 #define CHROME_TEST_FUZZING_RENDERER_FUZZING_IN_PROCESS_RENDERER_FUZZING_H_
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/base64.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"

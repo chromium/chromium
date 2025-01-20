@@ -242,8 +242,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
   // devtools to be able to instrument the URLLoaderFactory. This call will
   // create a DevtoolsAgentHost.
   WorkerDevToolsManager::GetInstance().WorkerCreated(
-      host, worker_process_host->GetID(), ancestor_render_frame_host_id_,
-      std::move(devtools_throttle_handle));
+      host, worker_process_host->GetDeprecatedID(),
+      ancestor_render_frame_host_id_, std::move(devtools_throttle_handle));
   base::UmaHistogramTimes("Worker.BrowserProcess.StartScriptLoadTime",
                           base::TimeTicks::Now() - start_time);
   base::UmaHistogramTimes("Worker.BrowserProcess.DevToolsCreateTime",

@@ -6,9 +6,11 @@ package org.chromium.content_public.browser;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.MotionEventSynthesizerImpl;
 
 /** Injects synthetic touch events. All the coordinates are of physical unit. */
+@NullMarked
 public interface MotionEventSynthesizer {
     public static MotionEventSynthesizer create(View target) {
         return MotionEventSynthesizerImpl.create(target);

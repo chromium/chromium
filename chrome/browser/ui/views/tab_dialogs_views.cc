@@ -75,10 +75,12 @@ void TabDialogsViews::ShowManagePasswordsBubble(bool user_action) {
 void TabDialogsViews::HideManagePasswordsBubble() {
   PasswordBubbleViewBase* bubble =
       PasswordBubbleViewBase::manage_password_bubble();
-  if (!bubble)
+  if (!bubble) {
     return;
-  if (bubble->GetWebContents() == web_contents_)
+  }
+  if (bubble->GetWebContents() == web_contents_) {
     PasswordBubbleViewBase::CloseCurrentBubble();
+  }
 }
 
 void TabDialogsViews::ShowDeprecatedAppsDialog(

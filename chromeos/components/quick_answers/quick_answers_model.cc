@@ -4,6 +4,7 @@
 
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
@@ -53,7 +54,7 @@ std::optional<quick_answers::Intent> ToIntent(IntentType intent_type) {
       return std::nullopt;
   }
 
-  CHECK(false) << "Invalid intent type enum value provided";
+  NOTREACHED() << "Invalid intent type enum value provided";
 }
 
 PhoneticsInfo::PhoneticsInfo() = default;

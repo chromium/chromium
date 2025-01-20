@@ -1,0 +1,24 @@
+<html>
+
+<head>
+    <title>Iframe Autopip Document Picture-in-Picture For Media Playback Test</title>
+</head>
+
+<body>
+    <iframe width="100%" height="100%"
+        src="/cross-site/b.com/media/picture-in-picture/autopip-document.html" id="iframe"></iframe>
+
+    <script>
+        const iframe = document.getElementById('iframe');
+
+        function playVideo() {
+            console.log(`Posted message to start video playback`);
+
+            // Send a `postMessage` to b.com to start video playback.
+            iframe.contentWindow.postMessage({ action: 'playVideo' }, '*');
+            return true;
+        }
+    </script>
+</body>
+
+</html>

@@ -10,6 +10,8 @@ import './os_japanese_dictionary_entry_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BigString} from 'chrome://resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
@@ -17,6 +19,12 @@ import {JpPosType} from '../mojom-webui/user_data_japanese_dictionary.mojom-webu
 
 import {getTemplate} from './os_japanese_dictionary_expand.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';
+
+interface OsJapaneseDictionaryExpandElement {
+  $: {
+    selectFileDialog: HTMLElement,
+  };
+}
 
 class OsJapaneseDictionaryExpandElement extends PolymerElement {
   static get is() {
@@ -77,6 +85,47 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
              this.dict.id))
             .status.success;
     if (dictionarySaved) {
+      this.dispatchSavedEvent_();
+    }
+  }
+
+  // Export dictionary.
+  private async exportDictionary_(): Promise<void> {
+    const a = document.createElement('a');
+    a.href = `jp-export-dictionary/${this.dict.id}`;
+    // In case there is no name, use a placeholder name.
+    const fileName = this.dict.name || 'unnamed-dictionary';
+    a.download = `${fileName}.txt`;
+    a.click();
+  }
+
+  // Imports dictionary.
+  private importDictionary_(): void {
+    this.$.selectFileDialog.dispatchEvent(new MouseEvent('click'));
+  }
+
+  private async handleFileSelectChange_(e: Event): Promise<void> {
+    const fileInput = e.target as HTMLInputElement;
+    const fileData = fileInput.files![0];
+    // Use bytes for now rather than shared memory for simplicity.
+    // TODO(b/366101658): Use shared memory when file is too big.
+    // The limit below is the max size that a mojo BigBuffer can handle via
+    // directly using the bytes rather than shared memory.
+    if (fileData.size >= 128 * 1048576) {
+      return;
+    }
+    const fileDataView = new Uint8Array(await fileData.arrayBuffer());
+    const fileMojomBigBuffer: BigBuffer = {
+      bytes: Array.from(fileDataView),
+      sharedMemory: undefined,
+      invalidBuffer: undefined,
+    };
+    const fileMojomBigString: BigString = {data: fileMojomBigBuffer};
+
+    const {status} =
+        await UserDataServiceProvider.getRemote().importJapaneseDictionary(
+            this.dict.id, fileMojomBigString);
+    if (status.success) {
       this.dispatchSavedEvent_();
     }
   }

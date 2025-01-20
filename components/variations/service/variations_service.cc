@@ -27,9 +27,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -94,10 +94,8 @@ std::string GetPlatformString() {
   return "ios";
 #elif BUILDFLAG(IS_MAC)
   return "mac";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return "chromeos";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return "chromeos_lacros";
 #elif BUILDFLAG(IS_ANDROID)
   return "android";
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -254,7 +252,7 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This is a utility which syncs the policy-managed value of
 // |prefs::kDeviceVariationsRestrictionsByPolicy| into
 // |prefs::kVariationsRestrictionsByPolicy|.
@@ -331,7 +329,7 @@ class DeviceVariationsRestrictionByPolicyApplicator {
   base::WeakPtrFactory<DeviceVariationsRestrictionByPolicyApplicator>
       weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 VariationsService::VariationsService(
     std::unique_ptr<VariationsServiceClient> client,
@@ -363,7 +361,9 @@ VariationsService::VariationsService(
               /*signature_verification_enabled=*/true,
               std::make_unique<VariationsSafeSeedStoreLocalState>(
                   local_state,
-                  client_.get()->GetVariationsSeedFileDir()),
+                  client_.get()->GetVariationsSeedFileDir(),
+                  client_.get()->GetChannelForVariations(),
+                  entropy_providers_.get()),
               client_.get()->GetChannelForVariations(),
               client_.get()->GetVariationsSeedFileDir(),
               entropy_providers_.get()),
@@ -372,7 +372,7 @@ VariationsService::VariationsService(
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   device_variations_restrictions_by_policy_applicator_ =
       std::make_unique<DeviceVariationsRestrictionByPolicyApplicator>(
           policy_pref_service_);
@@ -397,13 +397,6 @@ void VariationsService::PerformPreMainMessageLoopStartup() {
 
   StartRepeatedVariationsSeedFetch();
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-std::string VariationsService::LoadPermanentConsistencyCountry(
-    const base::Version& version,
-    const std::string& latest_country) {
-  return field_trial_creator_.LoadPermanentConsistencyCountry(version,
-                                                              latest_country);
 }
 
 bool VariationsService::EncryptString(const std::string& plaintext,
@@ -516,7 +509,7 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
 }
 
 void VariationsService::EnsureLocaleEquals(const std::string& locale) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS may switch language on the fly.
   return;
 #else
@@ -1033,20 +1026,7 @@ std::string VariationsService::GetOverriddenPermanentCountry() const {
 }
 
 std::string VariationsService::GetStoredPermanentCountry() const {
-  const std::string variations_overridden_country =
-      GetOverriddenPermanentCountry();
-  if (!variations_overridden_country.empty())
-    return variations_overridden_country;
-
-  const auto& list_value =
-      local_state_->GetList(prefs::kVariationsPermanentConsistencyCountry);
-  std::string stored_country;
-
-  if (list_value.size() == 2 && list_value[1].is_string()) {
-    stored_country = list_value[1].GetString();
-  }
-
-  return stored_country;
+  return field_trial_creator_.GetPermanentConsistencyCountry();
 }
 
 bool VariationsService::OverrideStoredPermanentCountry(

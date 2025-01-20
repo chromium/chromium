@@ -19,20 +19,22 @@ namespace ui {
 // subset of Android's MotionEvent API used in gesture detection.
 class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Action {
-    NONE,
-    DOWN,
-    UP,
-    MOVE,
-    CANCEL,
-    POINTER_DOWN,
-    POINTER_UP,
-    HOVER_ENTER,
-    HOVER_EXIT,
-    HOVER_MOVE,
-    BUTTON_PRESS,
-    BUTTON_RELEASE,
-    LAST = BUTTON_RELEASE
+    NONE = 0,
+    DOWN = 1,
+    UP = 2,
+    MOVE = 3,
+    CANCEL = 4,
+    POINTER_DOWN = 5,
+    POINTER_UP = 6,
+    HOVER_ENTER = 7,
+    HOVER_EXIT = 8,
+    HOVER_MOVE = 9,
+    BUTTON_PRESS = 10,
+    BUTTON_RELEASE = 11,
+    kMaxValue = BUTTON_RELEASE
   };
 
   enum class ToolType { UNKNOWN, FINGER, STYLUS, MOUSE, ERASER, LAST = ERASER };
@@ -85,6 +87,9 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual int GetFlags() const = 0;
   virtual base::TimeTicks GetEventTime() const = 0;
   virtual base::TimeTicks GetLatestEventTime() const;
+  // Returns the event time (in milliseconds) of first down in the input
+  // sequence.
+  virtual base::TimeTicks GetDownTime() const;
 
   virtual Classification GetClassification() const;
 

@@ -445,8 +445,8 @@ bool VerifyScopeText(Document* document, const String& scope_text) {
       ParserContextForDocument(document));
   CSSRuleSourceDataList* source_data =
       MakeGarbageCollected<CSSRuleSourceDataList>();
-  String text = "@scope " + scope_text + " { div { " + bogus_property_name +
-                ": none; } }";
+  String text =
+      "@scope " + scope_text + " { " + bogus_property_name + ": none; }";
   InspectorCSSParserObserver observer(text, document, source_data);
   CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
                                     style_sheet, text, observer);
@@ -456,13 +456,13 @@ bool VerifyScopeText(Document* document, const String& scope_text) {
   if (rule_count != 1 || source_data->at(0)->type != StyleRule::kScope)
     return false;
 
-  // Scope rule should have exactly one style rule child.
+  // Scope rule should have exactly one CSSNestedDeclarationsRule child.
   CSSRuleSourceDataList& child_source_data = source_data->at(0)->child_rules;
   rule_count = child_source_data.size();
   if (rule_count != 1 || !child_source_data.at(0)->HasProperties())
     return false;
 
-  // Exactly one property should be in style rule.
+  // Exactly one property should be in the CSSNestedDeclarationsRule.
   Vector<CSSPropertySourceData>& property_data =
       child_source_data.at(0)->property_data;
   unsigned property_count = property_data.size();
@@ -930,7 +930,7 @@ InspectorStyle::LonghandProperties(
     auto result =
         std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
     for (auto longhand_property : longhand_properties) {
-      String value = longhand_property.Value()->CssText();
+      String value = longhand_property.Value().CssText();
       std::unique_ptr<protocol::CSS::CSSProperty> longhand =
           protocol::CSS::CSSProperty::create()
               .setName(longhand_property.Name().ToAtomicString())

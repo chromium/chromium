@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
-#include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
-#include "device/fido/discoverable_credential_metadata.h"
+#include "chrome/browser/ui/webauthn/account_hover_list_model.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view.h"
 
 AuthenticatorSelectAccountSheetView::AuthenticatorSelectAccountSheetView(
     std::unique_ptr<AuthenticatorSelectAccountSheetModel> sheet_model)
@@ -22,17 +25,10 @@ AuthenticatorSelectAccountSheetView::~AuthenticatorSelectAccountSheetView() =
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorSelectAccountSheetView::BuildStepSpecificContent() {
-  switch (model()->selection_type()) {
-    case AuthenticatorSelectAccountSheetModel::kMultipleAccounts:
-      return std::make_pair(std::make_unique<HoverListView>(
-                                std::make_unique<AccountHoverListModel>(
-                                    model()->dialog_model(), this)),
-                            AutoFocus::kYes);
-    case AuthenticatorSelectAccountSheetModel::kSingleAccount:
-      return std::make_pair(
-          std::make_unique<PasskeyDetailView>(model()->SingleCredential().user),
-          AutoFocus::kNo);
-  }
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<AccountHoverListModel>(
+          model()->dialog_model(), this)),
+      AutoFocus::kYes);
 }
 
 void AuthenticatorSelectAccountSheetView::CredentialSelected(size_t index) {

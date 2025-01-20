@@ -4,10 +4,35 @@
 
 module mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "services/on_device_model/public/mojom/on_device_model.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "services/on_device_model/public/mojom/on_device_model_service.mojom";
+import "skia/public/mojom/bitmap.mojom";
 
+// Struct containing data to be displayed on on-device-internals page.
+struct OnDeviceInternalsData {
+  // Whether the base model is downloaded and ready.
+  bool base_model_ready;
+  // The state of the foundational model (e.g. "Ready", "NotEligible").
+  string model_state;
+  // Installer criteria for the base model.
+  map<string, string> registration_criteria;
+  // Whether each supplementary model is downloaded.
+  array<OnDeviceSupplementaryModelInfo> supp_models;
+  // The crash count for the on-device model service.
+  int32 model_crash_count;
+  // The maximum crash count for the on-device model
+  // allowed before the service is disabled.
+  int32 max_model_crash_count;
+};
+
+// Struct containing name of supplementary model and whether they are ready.
+struct OnDeviceSupplementaryModelInfo {
+  string supp_model_name;
+  bool is_ready;
+};
 
 // Lives in the browser process. A renderer uses this to link itself with
 // a page handler.
@@ -24,12 +49,23 @@ interface OnDeviceInternalsPageHandler {
   // Binds a new OnDeviceModel interface if possible using model assets loaded
   // from within `model_path`.
   LoadModel(mojo_base.mojom.FilePath model_path,
+            on_device_model.mojom.ModelPerformanceHint performance_hint,
             pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
       (on_device_model.mojom.LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>
       (on_device_model.mojom.PerformanceClass performance_class);
+
+  // Returns the status of various on-device models.
+  GetOnDeviceInternalsData() => (OnDeviceInternalsData page_data);
+
+  // Decodes a bitmap from an image buffer.
+  DecodeBitmap(mojo_base.mojom.BigBuffer image_buffer) =>
+      (skia.mojom.BitmapMappedFromTrustedProcess? bitmap);
+
+  // Reset the crash count for the on-device model service.
+  ResetModelCrashCount();
 };
 
 

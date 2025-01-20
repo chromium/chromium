@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_switches.h"
 
@@ -28,7 +29,7 @@
 namespace features {
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByBrand{
         &kDefaultPassthroughCommandDecoder, "BlockListByBrand", ""};
@@ -121,7 +122,7 @@ BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
 // platforms that would otherwise not default to using EGL bindings.
 BASE_FEATURE(kDefaultPassthroughCommandDecoder,
              "DefaultPassthroughCommandDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Add a small delay in shader compiling if validating command decoder is used.
 // This is to verify if passthrough command decoder impacting negatively top
@@ -161,6 +162,18 @@ BASE_FEATURE(kUseBuiltInMetalShaderCache,
 BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
              "UsePrimaryMonitorVSyncIntervalOnSV3",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If true, VsyncThreadWin will use the compositor clock
+// to determine the vsync interval.
+BASE_FEATURE(kUseCompositorClockVSyncInterval,
+             "UseCompositorClockVSyncInterval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool UseCompositorClockVSyncInterval() {
+  return base::win::GetVersion() >= base::win::Version::WIN11_24H2 &&
+         base::FeatureList::IsEnabled(
+             features::kUseCompositorClockVSyncInterval);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 bool UseGpuVsync() {

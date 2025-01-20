@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
@@ -213,7 +209,7 @@ TEST_F(ExtensionThrottleEntryTest, IsEntryReallyOutdated) {
       base::Milliseconds(MockExtensionThrottleEntry::kDefaultEntryLifetimeMs);
   const base::TimeDelta kFiveMs = base::Milliseconds(5);
 
-  TimeAndBool test_values[] = {
+  const std::array<TimeAndBool, 6> test_values = {
       TimeAndBool(now_, false, __LINE__),
       TimeAndBool(now_ - kFiveMs, false, __LINE__),
       TimeAndBool(now_ + kFiveMs, false, __LINE__),
@@ -286,7 +282,7 @@ TEST_F(ExtensionThrottleEntryTest, SlidingWindow) {
 
 TEST(ExtensionThrottleManagerTest, IsUrlStandardised) {
   MockExtensionThrottleManager manager;
-  GurlAndString test_values[] = {
+  const std::array<GurlAndString, 8> test_values = {
       GurlAndString(GURL("http://www.example.com"),
                     std::string("http://www.example.com/"), __LINE__),
       GurlAndString(GURL("http://www.Example.com"),

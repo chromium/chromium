@@ -63,16 +63,6 @@ class MaskedDomainListManager {
                               const std::vector<std::string>& exclusion_list);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListManagerBaseTest,
-                           ExclusionSetDomainsRemovedFromMDL);
-
-  // Removes domains from the MDL which are either part of the exclusion list
-  // themselves or are subdomains of an entry in the exclusion list.
-  // Returns MDL after removing such domains.
-  std::set<std::string> ExcludeDomainsFromMDL(
-      const std::set<std::string>& mdl_domains,
-      const std::set<std::string>& excluded_domains);
-
   // Determines whether or not the resource URL matches any URL listed in the
   // public suffix list.
   bool MatchesPublicSuffixList(const GURL& resource_url) const;

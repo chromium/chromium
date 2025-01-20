@@ -988,10 +988,14 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
 }
 
 void BackgroundModeManager::RemoveStatusTrayIcon() {
-  if (status_icon_)
-    status_tray_->RemoveStatusIcon(status_icon_);
-  status_icon_ = nullptr;
-  context_menu_ = nullptr;
+  if (status_icon_) {
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray_->RemoveStatusIcon(status_icon_);
+    context_menu_ = nullptr;
+    status_icon_ = nullptr;
+    removed_icon.reset();
+  }
+  status_tray_ = nullptr;
 }
 
 BackgroundModeManager::BackgroundModeData*

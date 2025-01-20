@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
@@ -149,14 +150,10 @@ class WebAppUiManager {
   virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;
   virtual bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const = 0;
 
-  // Returns whether |web_contents| is in a web app window or popup window
-  // created from a web app window.
-  virtual bool IsInAppWindow(content::WebContents* web_contents) const = 0;
-  virtual const webapps::AppId* GetAppIdForWindow(
-      const content::WebContents* web_contents) const = 0;
-
-  virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
-                                         bool shortcut_created) const = 0;
+  virtual bool CanReparentAppTabToWindow(
+      const webapps::AppId& app_id,
+      bool shortcut_created,
+      content::WebContents* web_contents) const = 0;
   // Reparents the |contents| to a new browser window, returns a nullptr if the
   // operation failed.
   virtual Browser* ReparentAppTabToWindow(content::WebContents* contents,
@@ -249,7 +246,12 @@ class WebAppUiManager {
   // Triggers the web app install dialog on the specified |web_contents| if
   // there is an installable web app. This will show the dialog even if the app
   // is already installed.
-  virtual void TriggerInstallDialog(content::WebContents* web_contents) = 0;
+  using InstallCallback =
+      base::OnceCallback<void(const webapps::AppId& app_id,
+                              webapps::InstallResultCode code)>;
+  virtual void TriggerInstallDialog(content::WebContents* web_contents,
+                                    webapps::WebappInstallSource source,
+                                    InstallCallback callback) = 0;
 
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if
   // |parent_window| is nullptr. Use this API if a Browser window needs to be

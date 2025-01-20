@@ -36,6 +36,7 @@ class WorkerDevToolsManager {
       const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
       scoped_refptr<DevToolsThrottleHandle> throttle_handle);
   void WorkerDestroyed(const DedicatedWorkerHost* host);
+  void AddAllAgentHosts(DevToolsAgentHost::List* result);
 
  private:
   friend struct base::DefaultSingletonTraits<WorkerDevToolsManager>;

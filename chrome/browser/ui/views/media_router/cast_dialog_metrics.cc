@@ -135,8 +135,9 @@ CastDialogMetrics::CastDialogMetrics(
 CastDialogMetrics::~CastDialogMetrics() = default;
 
 void CastDialogMetrics::OnSinksLoaded(const base::Time& sinks_load_time) {
-  if (!sinks_load_time_.is_null())
+  if (!sinks_load_time_.is_null()) {
     return;
+  }
   MediaRouterMetrics::RecordCastDialogLoaded(sinks_load_time -
                                              initialization_time_);
   sinks_load_time_ = sinks_load_time;
@@ -161,8 +162,9 @@ void CastDialogMetrics::OnRecordSinkCount(
 
 void CastDialogMetrics::MaybeRecordActivationLocationAndCastMode(
     MediaCastMode cast_mode) {
-  if (activation_location_and_cast_mode_recorded_)
+  if (activation_location_and_cast_mode_recorded_) {
     return;
+  }
   UMA_HISTOGRAM_ENUMERATION(
       "MediaRouter.Ui.Dialog.ActivationLocationAndCastMode",
       GetActivationLocationAndCastMode(activation_location_, cast_mode,

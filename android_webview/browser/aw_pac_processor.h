@@ -32,7 +32,7 @@ class AwPacProcessor {
 
   jboolean SetProxyScript(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
-                          const base::android::JavaParamRef<jstring>& jscript);
+                          std::string& jscript);
   bool SetProxyScript(std::string script);
   base::android::ScopedJavaLocalRef<jstring> MakeProxyRequest(
       JNIEnv* env,

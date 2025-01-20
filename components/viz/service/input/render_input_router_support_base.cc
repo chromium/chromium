@@ -12,6 +12,9 @@
 namespace viz {
 
 RenderInputRouterSupportBase::~RenderInputRouterSupportBase() {
+  TRACE_EVENT_INSTANT(
+      "input", "RenderInputRouterSupportBase::~RenderInputRouterSupportBase");
+  rir_->SetView(nullptr);
   NotifyObserversAboutShutdown();
 }
 
@@ -24,6 +27,7 @@ RenderInputRouterSupportBase::RenderInputRouterSupportBase(
       "input", "RenderInputRouterSupportBase::RenderInputRouterSupportBase",
       "frame_sink_id", frame_sink_id);
   CHECK(delegate_);
+  rir_->SetView(this);
 }
 
 bool RenderInputRouterSupportBase::ShouldInitiateStylusWriting() {
@@ -98,8 +102,11 @@ const FrameSinkId& RenderInputRouterSupportBase::GetFrameSinkId() const {
 }
 
 gfx::Size RenderInputRouterSupportBase::GetVisibleViewportSize() {
-  // TODO(374119530): Implement GetVisibleViewportSize in Viz.
-  NOTREACHED();
+  auto* metadata = delegate_->GetLastActivatedFrameMetadata(GetFrameSinkId());
+  if (!metadata) {
+    return gfx::Size();
+  }
+  return metadata->visible_viewport_size;
 }
 
 void RenderInputRouterSupportBase::OnAutoscrollStart() {

@@ -52,6 +52,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     /**
      * Creates an instance of a LayoutManagerChromePhone.
@@ -127,6 +128,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mTabStripHeightSupplier = toolbarManager.getTabStripHeightSupplier();
 
         setNextLayout(null, true);
     }
@@ -169,7 +171,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            Supplier<Integer> bottomControlsOffsetSupplier) {
+            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         super.init(
                 selector,
                 creator,
@@ -178,7 +180,11 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 topUiColorProvider,
                 bottomControlsOffsetSupplier);
         if (DeviceClassManager.enableLayerDecorationCache()) {
-            mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());
+            mLayerTitleCache =
+                    new LayerTitleCache(
+                            mHost.getContext(),
+                            getResourceManager(),
+                            mTabStripHeightSupplier.get());
             // TODO: TitleCache should be a part of the ResourceManager.
             mLayerTitleCache.setTabModelSelector(selector);
             mLayerTitleCacheSupplier.set(mLayerTitleCache);
@@ -198,5 +204,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public StripLayoutHelperManager getStripLayoutHelperManager() {
         return mTabStripLayoutHelperManager;
+    }
+
+    @Override
+    public boolean hasTabletUi() {
+        return true;
     }
 }

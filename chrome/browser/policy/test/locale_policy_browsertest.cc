@@ -25,8 +25,8 @@ namespace policy {
 // Sets the locale policy before the browser is started.
 class LocalePolicyTest : public PolicyTest {
  public:
-  LocalePolicyTest() {}
-  ~LocalePolicyTest() override {}
+  LocalePolicyTest() = default;
+  ~LocalePolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();

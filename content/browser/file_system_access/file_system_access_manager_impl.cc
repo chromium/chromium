@@ -221,6 +221,7 @@ void ShowFilePickerOnUIThread(
         params.accept_types.push_back(u"." + base::UTF8ToUTF16(ext));
       }
     }
+    params.open_writable = true;
     auto listener =
         base::MakeRefCounted<WebContentsDelegateListener>(std::move(callback));
     delegate->RunFileChooser(rfh, std::move(listener), params);
@@ -835,9 +836,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't perform sensitive entry access checks on D&D files.
-  if (!permission_context_ || file_type == HandleType::kFile ||
-      !base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDragAndDropCheckBlocklist)) {
+  if (!permission_context_ || file_type == HandleType::kFile) {
     DidVerifySensitiveDirectoryAccessForDataTransfer(
         binding_context, path_info, url, file_type,
         std::move(token_resolved_callback), SensitiveEntryResult::kAllowed);
@@ -949,7 +948,7 @@ void FileSystemAccessManagerImpl::SerializeHandle(
 namespace {
 
 std::string SerializePath(const base::FilePath& path) {
-  auto path_bytes = base::as_bytes(base::make_span(path.value()));
+  auto path_bytes = base::as_byte_span(path.value());
   return std::string(path_bytes.begin(), path_bytes.end());
 }
 

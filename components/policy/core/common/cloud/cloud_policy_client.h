@@ -309,6 +309,7 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& oidc_id_token,
       const std::string& client_id,
       const base::TimeDelta& timeout_duration,
+      bool is_token_encrypted,
       ResultCallback callback);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
@@ -343,7 +344,15 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadPolicyValidationReport(
       CloudPolicyValidatorBase::Status status,
       const std::vector<ValueValidationIssue>& value_validation_issues,
-      const ValidationAction action,
+      ValidationAction action,
+      const std::string& policy_type,
+      const std::string& policy_token,
+      ResultCallback callback);
+
+  virtual void UploadPolicyValidationReport(
+      CloudPolicyValidatorBase::Status status,
+      const std::vector<ValueValidationIssue>& value_validation_issues,
+      ValidationAction action,
       const std::string& policy_type,
       const std::string& policy_token);
 

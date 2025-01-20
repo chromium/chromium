@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_launcher_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +19,7 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace ash {
+class KioskIwaData;
 
 // TODO(crbug.com/374730382): Add unit tests.
 class KioskIwaLauncher : public KioskWebAppLauncherBase {

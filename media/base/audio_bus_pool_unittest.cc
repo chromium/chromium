@@ -65,13 +65,13 @@ TEST_F(AudioBusPoolTest, ReuseAudioBusesInLifoOrder) {
 
   std::unique_ptr<AudioBus> audio_bus_1 = AudioBus::Create(params_);
   std::unique_ptr<AudioBus> audio_bus_2 = AudioBus::Create(params_);
-  audio_bus_1->channel(0)[0] = 123;
-  audio_bus_2->channel(0)[0] = 456;
+  audio_bus_1->channel_span(0)[0] = 123;
+  audio_bus_2->channel_span(0)[0] = 456;
   audio_bus_pool_->InsertAudioBus(std::move(audio_bus_1));
   audio_bus_pool_->InsertAudioBus(std::move(audio_bus_2));
 
-  EXPECT_EQ(456, audio_bus_pool_->GetAudioBus()->channel(0)[0]);
-  EXPECT_EQ(123, audio_bus_pool_->GetAudioBus()->channel(0)[0]);
+  EXPECT_EQ(456, audio_bus_pool_->GetAudioBus()->channel_span(0)[0]);
+  EXPECT_EQ(123, audio_bus_pool_->GetAudioBus()->channel_span(0)[0]);
 }
 
 TEST_F(AudioBusPoolTest, Preallocate) {

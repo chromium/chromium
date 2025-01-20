@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/price_insights/coordinator",
-  "+ios/chrome/browser/ui/broadcaster",
-  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/broadcaster/ui_bundled",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/omnibox",
 ]

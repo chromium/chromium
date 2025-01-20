@@ -37,13 +37,13 @@ class RendererEventInjectionTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<const char*> {
  public:
-  RendererEventInjectionTest() {}
+  RendererEventInjectionTest() = default;
 
   RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
   RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
       delete;
 
-  ~RendererEventInjectionTest() override {}
+  ~RendererEventInjectionTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {
@@ -86,7 +86,8 @@ class TouchEventObserver
 
  private:
   // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const content::RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
       const blink::WebTouchEvent& web_touch =
           static_cast<const blink::WebTouchEvent&>(event);

@@ -56,6 +56,11 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
       RenderFrameHost& host,
       const GURL& provider_url,
       const url::Origin& relying_party_embedder) const = 0;
+
+  // Checks if third party cookies are enabled in settings. Note that it's
+  // different from `HasThirdPartyCookiesAccess` because the latter takes other
+  // factors like heuristics into consideration.
+  virtual bool AreThirdPartyCookiesEnabledInSettings() const = 0;
 };
 
 }  // namespace content

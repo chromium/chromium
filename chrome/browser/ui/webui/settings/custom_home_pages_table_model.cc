@@ -50,8 +50,7 @@ CustomHomePagesTableModel::CustomHomePagesTableModel(Profile* profile)
       observer_(nullptr),
       num_outstanding_title_lookups_(0) {}
 
-CustomHomePagesTableModel::~CustomHomePagesTableModel() {
-}
+CustomHomePagesTableModel::~CustomHomePagesTableModel() = default;
 
 void CustomHomePagesTableModel::SetURLs(const std::vector<GURL>& urls) {
   entries_.resize(urls.size());
@@ -72,8 +71,9 @@ void CustomHomePagesTableModel::AddWithoutNotification(size_t index,
 void CustomHomePagesTableModel::Add(size_t index, const GURL& url) {
   AddWithoutNotification(index, url);
   LoadTitle(&(entries_[index]));
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsAdded(index, 1);
+  }
 }
 
 void CustomHomePagesTableModel::RemoveWithoutNotification(size_t index) {
@@ -90,32 +90,36 @@ void CustomHomePagesTableModel::RemoveWithoutNotification(size_t index) {
 
 void CustomHomePagesTableModel::Remove(size_t index) {
   RemoveWithoutNotification(index);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsRemoved(index, 1);
+  }
 }
 
 void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
     content::WebContents* ignore_contents) {
   // Remove the current entries.
-  while (RowCount())
+  while (RowCount()) {
     RemoveWithoutNotification(0);
+  }
 
   // Add tabs from appropriate browser windows.
   size_t add_index = 0;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldIncludeBrowser(browser))
+    if (!ShouldIncludeBrowser(browser)) {
       continue;
+    }
 
-    for (int tab_index = 0;
-         tab_index < browser->tab_strip_model()->count();
+    for (int tab_index = 0; tab_index < browser->tab_strip_model()->count();
          ++tab_index) {
       content::WebContents* contents =
           browser->tab_strip_model()->GetWebContentsAt(tab_index);
-      if (contents == ignore_contents)
+      if (contents == ignore_contents) {
         continue;
+      }
       const GURL url = contents->GetURL();
-      if (!url.is_empty() && !url.SchemeIs(content::kChromeDevToolsScheme))
+      if (!url.is_empty() && !url.SchemeIs(content::kChromeDevToolsScheme)) {
         AddWithoutNotification(add_index++, url);
+      }
     }
   }
   LoadAllTitles();
@@ -123,8 +127,9 @@ void CustomHomePagesTableModel::SetToCurrentlyOpenPages(
 
 std::vector<GURL> CustomHomePagesTableModel::GetURLs() {
   std::vector<GURL> urls(entries_.size());
-  for (size_t i = 0; i < entries_.size(); ++i)
+  for (size_t i = 0; i < entries_.size(); ++i) {
     urls[i] = entries_[i].url;
+  }
   return urls;
 }
 
@@ -152,8 +157,9 @@ void CustomHomePagesTableModel::SetObserver(ui::TableModelObserver* observer) {
 
 bool CustomHomePagesTableModel::ShouldIncludeBrowser(Browser* browser) {
   // Do not include incognito browsers.
-  if (browser->profile() != profile_)
+  if (browser->profile() != profile_) {
     return false;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not include the Settings window.
   if (chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
@@ -194,8 +200,9 @@ void CustomHomePagesTableModel::LoadAllTitles() {
           &task_tracker_);
     }
   }
-  if (entries_.empty())
+  if (entries_.empty()) {
     observer_->OnModelChanged();
+  }
 }
 
 void CustomHomePagesTableModel::OnGotOneOfManyTitles(
@@ -203,8 +210,9 @@ void CustomHomePagesTableModel::OnGotOneOfManyTitles(
     history::QueryURLResult result) {
   OnGotTitle(entry_url, false, std::move(result));
   DCHECK_GE(num_outstanding_title_lookups_, 1);
-  if (--num_outstanding_title_lookups_ == 0 && observer_)
+  if (--num_outstanding_title_lookups_ == 0 && observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
@@ -226,8 +234,9 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
   entry->task_id = base::CancelableTaskTracker::kBadTaskId;
   if (result.success && !result.row.title().empty()) {
     entry->title = result.row.title();
-    if (observer_ && observable)
+    if (observer_ && observable) {
       observer_->OnItemsChanged(entry_index, 1);
+    }
   }
 }
 

@@ -11,9 +11,7 @@
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 #include "net/tools/huffman_trie/trie/trie_writer.h"
 
-namespace url_formatter {
-
-namespace top_domains {
+namespace url_formatter::top_domains {
 
 TopDomainTrieEntry::TopDomainTrieEntry(
     const net::huffman_trie::HuffmanRepresentationTable& huffman_table,
@@ -65,6 +63,4 @@ bool TopDomainTrieEntry::WriteEntry(
   return true;
 }
 
-}  // namespace top_domains
-
-}  // namespace url_formatter
+}  // namespace url_formatter::top_domains

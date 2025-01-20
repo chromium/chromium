@@ -20,15 +20,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -64,7 +64,7 @@ const FieldType kProfileFieldTypes[] = {NAME_FIRST,
                                         PHONE_HOME_WHOLE_NUMBER};
 
 const base::FilePath& GetTestDataDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
@@ -159,8 +159,10 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
   TestAddressDataManager& test_address_data_manager() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_address_data_manager();
+        .test_address_data_manager();
   }
+
+  ukm::SourceId ukm_source_id() const { return 123; }
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -178,9 +180,7 @@ void AutofillMergeTest::SetUp() {
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, /*history_service=*/nullptr);
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-       features::kAutofillInferCountryCallingCode},
+      /*enabled_features=*/{},
       /*disabled_features=*/{});
 }
 
@@ -251,7 +251,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       test_api(*form_data_importer_)
           .ProcessAddressProfileImportCandidates(
               extracted_data.address_profile_import_candidates,
-              /*allow_prompt=*/true);
+              /*allow_prompt=*/true, ukm_source_id());
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 
       // Clear the |form| to start a new profile.
@@ -266,7 +266,8 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   // were imported (or updated).
   base::ranges::sort(imported_profiles,
                      [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() < b->modification_date();
+                       return a->usage_history().modification_date() <
+                              b->usage_history().modification_date();
                      });
   *merged_profiles = SerializeProfiles(imported_profiles);
 }

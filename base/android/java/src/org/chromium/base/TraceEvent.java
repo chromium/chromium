@@ -22,6 +22,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -41,6 +43,7 @@ import java.util.ArrayList;
  * It is OK to use tracing before the native library has loaded, in a slightly restricted fashion.
  * @see EarlyTraceEvent for details.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class TraceEvent implements AutoCloseable {
     private static volatile boolean sEnabled; // True when tracing into Chrome's tracing service.
@@ -56,7 +59,7 @@ public class TraceEvent implements AutoCloseable {
         static final String FILTERED_EVENT_NAME = LOOPER_TASK_PREFIX + "EVENT_NAME_FILTERED";
 
         private static final int SHORTEST_LOG_PREFIX_LENGTH = "<<<<< Finished to ".length();
-        private String mCurrentTarget;
+        private @Nullable String mCurrentTarget;
 
         @Override
         public void println(final String line) {
@@ -260,7 +263,7 @@ public class TraceEvent implements AutoCloseable {
     private final String mName;
 
     /** Constructor used to support the "try with resource" construct. */
-    private TraceEvent(String name, String arg) {
+    private TraceEvent(String name, @Nullable String arg) {
         mName = name;
         begin(name, arg);
     }
@@ -285,7 +288,7 @@ public class TraceEvent implements AutoCloseable {
      * @param arg The arguments of the event.
      * @return a TraceEvent, or null if tracing is not enabled.
      */
-    public static TraceEvent scoped(String name, String arg) {
+    public static @Nullable TraceEvent scoped(String name, @Nullable String arg) {
         if (!(EarlyTraceEvent.enabled() || enabled())) return null;
         return new TraceEvent(name, arg);
     }
@@ -299,13 +302,13 @@ public class TraceEvent implements AutoCloseable {
      * @param arg An integer argument of the event.
      * @return a TraceEvent, or null if tracing is not enabled.
      */
-    public static TraceEvent scoped(String name, int arg) {
+    public static @Nullable TraceEvent scoped(String name, int arg) {
         if (!(EarlyTraceEvent.enabled() || enabled())) return null;
         return new TraceEvent(name, arg);
     }
 
     /** Similar to {@link #scoped(String, String arg)}, but uses null for |arg|. */
-    public static TraceEvent scoped(String name) {
+    public static @Nullable TraceEvent scoped(String name) {
         return scoped(name, null);
     }
 
@@ -560,7 +563,7 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      * @param arg  The arguments of the event.
      */
-    public static void begin(String name, String arg) {
+    public static void begin(String name, @Nullable String arg) {
         EarlyTraceEvent.begin(name, /* isToplevel= */ false);
         if (sEnabled) {
             TraceEventJni.get().begin(name, arg);
@@ -592,7 +595,7 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      * @param arg  The arguments of the event.
      */
-    public static void end(String name, String arg) {
+    public static void end(String name, @Nullable String arg) {
         end(name, arg, 0);
     }
 
@@ -602,7 +605,7 @@ public class TraceEvent implements AutoCloseable {
      * @param arg  The arguments of the event.
      * @param flow The flow ID to associate with this event (0 is treated as invalid).
      */
-    public static void end(String name, String arg, long flow) {
+    public static void end(String name, @Nullable String arg, long flow) {
         EarlyTraceEvent.end(name, /* isToplevel= */ false);
         if (sEnabled) {
             TraceEventJni.get().end(arg, flow);
@@ -630,13 +633,13 @@ public class TraceEvent implements AutoCloseable {
     interface Natives {
         void registerEnabledObserver();
 
-        void instant(String name, String arg);
+        void instant(String name, @Nullable String arg);
 
-        void begin(String name, String arg);
+        void begin(String name, @Nullable String arg);
 
         void beginWithIntArg(String name, int arg);
 
-        void end(String arg, long flow);
+        void end(@Nullable String arg, long flow);
 
         void beginToplevel(String target);
 
@@ -793,8 +796,7 @@ public class TraceEvent implements AutoCloseable {
      */
     private static final class ViewHierarchyDumper implements MessageQueue.IdleHandler {
         private static final long MIN_VIEW_DUMP_INTERVAL_MILLIS = 1000L;
-        private static boolean sEnabled;
-        private static ViewHierarchyDumper sInstance;
+        private static @Nullable ViewHierarchyDumper sInstance;
         private long mLastDumpTs;
 
         @Override
@@ -812,18 +814,7 @@ public class TraceEvent implements AutoCloseable {
         public static void updateEnabledState() {
             PostTask.runOrPostTask(
                     TaskTraits.UI_DEFAULT,
-                    () -> {
-                        if (TraceEventJni.get().viewHierarchyDumpEnabled()) {
-                            if (sInstance == null) {
-                                sInstance = new ViewHierarchyDumper();
-                            }
-                            enable();
-                        } else {
-                            if (sInstance != null) {
-                                disable();
-                            }
-                        }
-                    });
+                    () -> setEnabled(TraceEventJni.get().viewHierarchyDumpEnabled()));
         }
 
         private static void dumpView(ActivityInfo collection, int parentId, View v) {
@@ -846,19 +837,14 @@ public class TraceEvent implements AutoCloseable {
             }
         }
 
-        private static void enable() {
+        private static void setEnabled(boolean value) {
             ThreadUtils.assertOnUiThread();
-            if (!sEnabled) {
+            if (sInstance == null && value) {
+                sInstance = new ViewHierarchyDumper();
                 Looper.myQueue().addIdleHandler(sInstance);
-                sEnabled = true;
-            }
-        }
-
-        private static void disable() {
-            ThreadUtils.assertOnUiThread();
-            if (sEnabled) {
+            } else if (sInstance != null && !value) {
                 Looper.myQueue().removeIdleHandler(sInstance);
-                sEnabled = false;
+                sInstance = null;
             }
         }
     }

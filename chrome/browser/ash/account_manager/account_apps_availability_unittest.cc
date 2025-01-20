@@ -24,6 +24,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,9 +44,9 @@ constexpr char kSecondaryAccount1Email[] = "secondaryAccount1@gmail.com";
 constexpr char kSecondaryAccount2Email[] = "secondaryAccount2@gmail.com";
 
 account_manager::Account CreateAccount(const std::string& email,
-                                       const std::string& gaia_id) {
-  account_manager::AccountKey key(gaia_id,
-                                  ::account_manager::AccountType::kGaia);
+                                       const GaiaId& gaia_id) {
+  account_manager::AccountKey key =
+      account_manager::AccountKey::FromGaiaId(gaia_id);
   return {key, email};
 }
 
@@ -89,11 +90,13 @@ class AccountAppsAvailabilityTest : public testing::Test {
   ~AccountAppsAvailabilityTest() override = default;
 
   void SetUp() override {
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+
     identity_test_env()->EnableRemovalOfExtendedAccountInfo();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     AccountAppsAvailability::RegisterPrefs(pref_service_->registry());
-
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
 
     primary_account_ = identity_test_env()->MakePrimaryAccountAvailable(
         kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
@@ -118,17 +121,22 @@ class AccountAppsAvailabilityTest : public testing::Test {
   void LoginUserSession() {
     auto account_id = AccountId::FromUserEmailGaiaId(primary_account_.email,
                                                      primary_account_.gaia);
-    auto* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(), false,
-                                     false);
+    fake_user_manager_->AddGaiaUser(account_id,
+                                    user_manager::UserType::kRegular);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   AccountInfo primary_account_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
 };
 
 TEST_F(AccountAppsAvailabilityTest, InitializationPrefIsPersistedOnDisk) {

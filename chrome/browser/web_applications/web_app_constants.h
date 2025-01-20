@@ -13,7 +13,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -24,64 +23,6 @@ enum class WebappUninstallSource;
 }
 
 namespace web_app {
-
-// Installations of Web Apps have different sources of management. Apps can be
-// installed by different management systems - for example an app can be both
-// installed by the user and by policy. Keeping track of which installation
-// managers have installed a web app allows for them to be installed by multiple
-// managers at the same time, and uninstalls from one manager doesn't affect
-// another - the app will stay installed as long as at least one management
-// source has it installed.
-//
-// This enum is also used to rank installation sources, so the ordering matters.
-// This enum should be zero based: values are used as index in a bitset.
-// We don't use this enum values in prefs or metrics: enumerators can be
-// reordered. This enum is not a strongly typed enum class: it supports implicit
-// conversion to int and <> comparison operators.
-namespace WebAppManagement {
-enum Type {
-  kMinValue = 0,
-  kSystem = kMinValue,
-  kIwaShimlessRma,
-  // Installed by Kiosk on Chrome OS.
-  kKiosk,
-  kPolicy,
-  kIwaPolicy,
-  // Installed by APS (App Preload Service) on ChromeOS as an OEM app.
-  kOem,
-  kSubApp,
-  kWebAppStore,
-  kOneDriveIntegration,
-  // User-installed web apps are managed by the sync system.or
-  // user-installed apps without overlaps this is the only source that will be
-  // set.
-  kSync,
-  kUserInstalled,
-  kIwaUserInstalled,
-  // Installed by APS (App Preload Service) on ChromeOS as a default app. These
-  // have the same UX as kDefault apps, but are are not managed by
-  // PreinstalledWebAppManager.
-  kApsDefault,
-  // This value is used by both the PreinstalledWebAppManager AND the
-  // AndroidSmsAppSetupControllerImpl, which is a potential conflict in the
-  // future.
-  // TODO(dmurph): Add a new source here so that the
-  // AndroidSmsAppSetupControllerImpl has its own source, and migrate those
-  // installations to have the new source.
-  // https://crbug.com/1314055
-  kDefault,
-  kMaxValue = kDefault,
-};
-
-std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
-
-bool IsIwaType(WebAppManagement::Type type);
-
-}  // namespace WebAppManagement
-
-using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
-                                            WebAppManagement::kMinValue,
-                                            WebAppManagement::kMaxValue>;
 
 // ExternallyManagedAppManager: Where an app was installed from. This affects
 // what flags will be used when installing the app.
@@ -281,33 +222,6 @@ enum class WebAppInstallStatus : int64_t {
 #endif
 
 using ResultCallback = base::OnceCallback<void(Result)>;
-
-// Management types that can be uninstalled by the user.
-// Note: These work directly with the `webapps::IsUserUninstall` function - any
-// source that returns true there can uninstall these types but not others, and
-// will CHECK-fail in RemoveWebAppJob otherwise.
-// All WebAppManagement::Types must be listed in either this constant or
-// kNotUserUninstallableSources (located in the cc file).
-constexpr WebAppManagementTypes kUserUninstallableSources = {
-    WebAppManagement::kDefault,
-    WebAppManagement::kApsDefault,
-    WebAppManagement::kSync,
-    WebAppManagement::kUserInstalled,
-    WebAppManagement::kWebAppStore,
-    WebAppManagement::kSubApp,
-    WebAppManagement::kOem,
-    WebAppManagement::kOneDriveIntegration,
-    WebAppManagement::kIwaUserInstalled,
-};
-
-// Management types that resulted from a user web app install.
-constexpr WebAppManagementTypes kUserDrivenInstallSources = {
-    WebAppManagement::kSync,
-    WebAppManagement::kUserInstalled,
-    WebAppManagement::kWebAppStore,
-    WebAppManagement::kOneDriveIntegration,
-    WebAppManagement::kIwaUserInstalled,
-};
 
 }  // namespace web_app
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/h264_rate_controller.h"
+
+#include <array>
 
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -16,10 +13,7 @@
 namespace media {
 namespace {
 // Base temporal layer index.
-constexpr int kBaseLayerIndex = 0;
-
-// Delta QP between layers in Fixed Delta QP mode. It is arbitrary chosen value.
-constexpr int kFixedLayerDeltaQP = 4;
+constexpr size_t kBaseLayerIndex = 0;
 
 // Maximum FPS used in the tradeoff calculation between FPS and maximum QP.
 constexpr float kFpsMax = 60;
@@ -52,16 +46,19 @@ constexpr float kRDYIntercept = -6.0f;
 
 // The arrays define line segments in the tradeoff function between FPS and
 // maximum QP .
-constexpr struct {
+struct FPS2QPTradeoffs {
   float fps;
   float qp;
-} kFPS2QPTradeoffs[] = {{0.0f, 51.0f},
-                        {5.0f, 42.0f},
-                        {10.0f, 41.0f},
-                        {15.0f, 40.0f},
-                        {30.0f, 37.0f},
-                        {kFpsMax, 37.0f},
-                        {std::numeric_limits<float>::max(), 20.0f}};
+};
+constexpr auto kFPS2QPTradeoffs = std::to_array<FPS2QPTradeoffs>({
+    {0.0f, 51.0f},
+    {5.0f, 42.0f},
+    {10.0f, 41.0f},
+    {15.0f, 40.0f},
+    {30.0f, 37.0f},
+    {kFpsMax, 37.0f},
+    {std::numeric_limits<float>::max(), 20.0f},
+});
 
 // Window size in number of frames for the Moving Window. The average framerate
 // is based on the last received frames within the window.
@@ -77,8 +74,7 @@ size_t GetRateBudget(float frame_rate, uint32_t avg_bitrate) {
 // Returns the FPS value related to the Max QP value. The function is
 // represented by line segments defined in the array `kFPS2QPTradeoffs`.
 float Fps2MaxQP(float fps) {
-  size_t num_elems = sizeof(kFPS2QPTradeoffs) / sizeof(kFPS2QPTradeoffs[0]);
-  for (size_t i = 0; i < num_elems - 1; ++i) {
+  for (size_t i = 0; i < kFPS2QPTradeoffs.size() - 1; ++i) {
     if (fps >= kFPS2QPTradeoffs[i].fps && fps < kFPS2QPTradeoffs[i + 1].fps) {
       return h264_rate_control_util::ClampedLinearInterpolation(
           fps, kFPS2QPTradeoffs[i].fps, kFPS2QPTradeoffs[i + 1].fps,
@@ -91,8 +87,7 @@ float Fps2MaxQP(float fps) {
 // Returns the FPS value related to the Max QP value. The returned value is
 // a constant value obtained from the `kFPS2QPTradeoffs` array.
 float MaxQP2Fps(int max_qp) {
-  size_t num_elems = sizeof(kFPS2QPTradeoffs) / sizeof(kFPS2QPTradeoffs[0]);
-  for (size_t i = 0; i < num_elems - 1; ++i) {
+  for (size_t i = 0; i < kFPS2QPTradeoffs.size() - 1; ++i) {
     if (max_qp <= kFPS2QPTradeoffs[i].qp &&
         max_qp > kFPS2QPTradeoffs[i + 1].qp) {
       // Do not use linear interpolation to be less aggressive on FPS changes.
@@ -403,11 +398,12 @@ void H264RateController::EstimateInterFrameQP(size_t temporal_id,
   // statistical model is employed for QP estimation.
   if (fixed_delta_qp_ && temporal_id > kBaseLayerIndex &&
       !curr_layer.is_buffer_full()) {
-    int delta_qp = kFixedLayerDeltaQP;
+    int delta_qp = fixed_delta_qp_.value();
     // delta_qp is reduced if the QP estimation for the last base layer frame is
     // lower than the minimum QP.
     if (base_layer.undershoot_delta_qp() > 0) {
-      delta_qp = std::max(delta_qp - base_layer.undershoot_delta_qp(), 0);
+      delta_qp = std::max(
+          fixed_delta_qp_.value() - base_layer.undershoot_delta_qp(), 0);
     }
     curr_layer.update_curr_frame_qp(base_layer.curr_frame_qp() + delta_qp);
     return;
@@ -852,12 +848,13 @@ uint32_t H264RateController::ClipInterFrameQP(uint32_t curr_qp,
   } else if (num_temporal_layers_ > 1 && temporal_id == kBaseLayerIndex) {
     if (temporal_layers_[kBaseLayerIndex + 1]->curr_frame_qp() >
         temporal_layers_[kBaseLayerIndex]->curr_frame_qp() +
-            kFixedLayerDeltaQP) {
-      // Delta QP more than 4 means enhancement layer QP has been raised due to
-      // HRD overflow. Make sure the following base layer QP follows.
+            fixed_delta_qp_.value_or(0)) {
+      // Delta QP greater than `fixed_delta_qp_` const means enhancement layer
+      // QP has been raised due to HRD overflow. Make sure the following base
+      // layer QP follows.
       min_qp = std::max(min_qp,
                         temporal_layers_[kBaseLayerIndex + 1]->curr_frame_qp() -
-                            kFixedLayerDeltaQP);
+                            fixed_delta_qp_.value_or(0));
     }
   }
 

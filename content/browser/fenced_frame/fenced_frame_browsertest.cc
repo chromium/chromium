@@ -1537,15 +1537,11 @@ class FencedFrameWithSiteIsolationDisabledBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(
-          features::kProcessSharingWithDefaultSiteInstances);
       disabled_features.push_back(
           features::kProcessSharingWithStrictSiteInstances);
     } else {
       enabled_features.push_back(
           features::kProcessSharingWithStrictSiteInstances);
-      disabled_features.push_back(
-          features::kProcessSharingWithDefaultSiteInstances);
     }
 
     if (std::get<1>(GetParam())) {
@@ -2470,10 +2466,9 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kFencedFramesAPIChanges, {}},
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
-         {blink::features::
-              kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
-          {}},
-         {blink::features::kFencedFramesReportEventHeaderChanges, {}}},
+         {blink::features::kFencedFramesCrossOriginEventReporting, {}},
+         {blink::features::kFencedFramesReportEventHeaderChanges, {}},
+         {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
         {/* disabled_features */});
   }
 
@@ -2665,7 +2660,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->trusted_params = network::ResourceRequest::TrustedParams();
     request->trusted_params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+        net::IsolationInfo::CreateTransient(nonce);
 
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         network::SimpleURLLoader::Create(std::move(request),
@@ -4072,8 +4067,9 @@ namespace {
 class InsecureContentTestContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
-  void OverrideWebkitPrefs(WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override {
+  void OverrideWebPreferences(WebContents* web_contents,
+                              SiteInstance& main_frame_site,
+                              blink::web_pref::WebPreferences* prefs) override {
     // Browser will both run and display insecure content.
     prefs->allow_running_insecure_content = true;
   }
@@ -4283,7 +4279,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // Clean up test dialog manager.
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // An observer class that asserts the page transition always is
@@ -5270,15 +5265,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 // 2. creates an opaque mode urn iframe nested in the fenced frame.
 // 3. do an `_unfencedTop` navigation from the urn iframe.
 //
-// The `_unfencedTop` navigation should succeed. This verifies the fenced frame
-// properties from the urn iframe are used for checks in
-// `ValidateUnfencedTopNavigation`. Otherwise, if the fenced frame properties
-// from the top-level fenced frame are used, a mojo bad message should be
-// received.
-//
-// Note: Outside tests, one common scenairo that results in the same setup is
-// creating a shared storage urn iframe nested inside a default fenced frame.
-//
+// The `_unfencedTop` navigation should succeed. Note: previously this test
+// existed to confirm that the URN iframe's fenced frame properties were used in
+// the `_unfencedTop` navigation. However, now that we've allowed default mode
+// fenced frames to use the `_unfencedTop` navigation target, this test doesn't
+// have the same failure mode as before. However, it's still useful to verify
+// that the `_unfencedTop` navigation works in a nested URN iframe.
+
 // TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes is
 // deprecated, this test should be removed.
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -6537,7 +6530,6 @@ class FencedFrameReportEventBrowserTest
       kExceedMaxEventDataLength,
       kUntrustedNetworkDisabled,
       kCrossOriginNoHeader,
-      kCrossOriginModeAB
     };
 
     // Outcome of reportEvent.
@@ -6573,9 +6565,6 @@ class FencedFrameReportEventBrowserTest
         return "This document is cross-origin to the document that contains "
                "reporting metadata, but the fenced frame's document was not "
                "served with the 'Allow-Cross-Origin-Event-Reporting' header.";
-      case Step::Result::kCrossOriginModeAB:
-        return "Cross-origin reporting beacons are not supported with Mode A/B "
-               "Chrome-facilitated testing traffic.";
       default:
         return "";
     }
@@ -8395,70 +8384,6 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class FencedFrameReportEventFacilitatedTestingEnabledBrowserTest
-    : public FencedFrameReportEventBrowserTest {
- public:
-  FencedFrameReportEventFacilitatedTestingEnabledBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCookieDeprecationFacilitatedTesting);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventFacilitatedTestingEnabledBrowserTest,
-    NestedIframeCrossOriginNavigationWithOptIn) {
-  base::HistogramTester histogram_tester;
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .destination = {"a.test",
-                          "/set-header"
-                          "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-      {
-          .is_target_nested_iframe = true,
-          .event = {/*type=*/"click", /*reporting_destination=*/"buyer",
-                    /*data=*/"data", /*cross_origin_exposed=*/true},
-          .destination = {"b.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kCrossOriginModeAB,
-      },
-  };
-  RunTest(config);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    FencedFrameReportEventFacilitatedTestingEnabledBrowserTest,
-    CustomURLNestedIframeCrossOriginNavigationWithOptIn) {
-  base::HistogramTester histogram_tester;
-  std::vector<Step> config = {
-      {
-          .is_embedder_initiated = true,
-          .is_opaque = true,
-          .use_custom_destination_url = true,
-          .destination = {"a.test",
-                          "/set-header"
-                          "?Supports-Loading-Mode: fenced-frame"
-                          "&Allow-Cross-Origin-Event-Reporting: ?1"},
-          .report_event_result = Step::Result::kSuccess,
-      },
-      {
-          .is_target_nested_iframe = true,
-          .use_custom_destination_url = true,
-          .event = {/*type=*/"N/a", /*reporting_destination=*/"N/a",
-                    /*data=*/"data", /*cross_origin_exposed=*/true},
-          .destination = {"b.test", "/fenced_frames/title1.html"},
-          .report_event_result = Step::Result::kCrossOriginModeAB,
-      },
-  };
-  RunTest(config);
-}
-
 // Parameterized on whether the feature is enabled or not.
 class UUIDFrameTreeBrowserTest
     : public FencedFrameBrowserTestBase,
@@ -8861,7 +8786,8 @@ class FencedFrameAutomaticBeaconBrowserTest
                    JsReplace(R"(
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
-                destination: $2
+                destination: $2,
+                crossOriginExposed: true,
               });
             )",
                              config.beacon_type.name, destination_list.Clone()),
@@ -8878,7 +8804,8 @@ class FencedFrameAutomaticBeaconBrowserTest
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
                 eventData: $2,
-                destination: $3
+                destination: $3,
+                crossOriginExposed: true,
               });
             )",
                              config.beacon_type.name, config.message.value(),
@@ -9177,7 +9104,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
-                       CrossOriginToMappedURL) {
+                       CrossOriginToMappedURLWithoutOptIn) {
   Config config = {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .secondary_initiator_url = {"c.test", "/fenced_frames/title1.html"},

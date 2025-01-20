@@ -96,12 +96,6 @@ LanguagePackKey LanguagePackKeyFromNonEnglishSupportedLanguage(
       static_cast<unsigned>(supported_language) - 1);
 }
 
-SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
-    LanguagePackKey language_pack_key) {
-  return static_cast<SupportedLanguage>(
-      static_cast<unsigned>(language_pack_key) + 1);
-}
-
 }  // namespace
 
 bool IsPopularLanguage(SupportedLanguage supported_language) {
@@ -131,6 +125,12 @@ std::optional<SupportedLanguage> ToSupportedLanguage(
     return it->second;
   }
   return std::nullopt;
+}
+
+SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
+    LanguagePackKey language_pack_key) {
+  return static_cast<SupportedLanguage>(
+      static_cast<unsigned>(language_pack_key) + 1);
 }
 
 std::string GetComponentPathPrefName(

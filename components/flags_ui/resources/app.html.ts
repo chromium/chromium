@@ -32,19 +32,6 @@ export function getHtml(this: AppElement) {
 </div>
 <div id="body-container">
   <div id="flagsTemplate">
-<if expr="chromeos_ash">
-    <div class="os-link-container" id="os-link-container"
-          ?hidden="${!this.data.showSystemFlagsLink}">
-      <span id="os-flags-link-container" class="os-link-icon"></span>
-      <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
-      <a href="#" id="os-link-href" aria-describedby="os-link-desc"
-          @click="${this.onOsLinkHrefClick_}">
-        $i18n{os-flags-link}
-      </a>
-      <span aria-hidden="true">$i18n{os-flags-text2}</span>
-    </div>
-</if>
-
     <div class="flex-container">
       <div class="flex">
         <h1 class="section-header-title">$i18n{heading}</h1>
@@ -54,7 +41,7 @@ export function getHtml(this: AppElement) {
     <div class="blurb-container">
       <span class="blurb-warning">$i18n{page-warning}</span>
       <span>$i18n{page-warning-explanation}</span>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
       <p id="owner-warning" ?hidden="${!this.data.showOwnerWarning}">
         $i18n{owner-warning}
       </p>
@@ -121,12 +108,14 @@ export function getHtml(this: AppElement) {
       </div>
 </if>
     </div>
-    <div id="needs-restart">
+    <div id="needs-restart" ?show="${this.needsRestart}"
+        role="${this.getNeedsRestartRole_()}">
       <div class="flex-container">
         <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
         <div class="flex">
 <if expr="not is_ios">
           <cr-button id="experiment-restart-button" class="action-button"
+              ?disabled="${!this.needsRestart}"
               @click="${this.onRestartButtonClick_}"
               @keydown="${this.onRestartButtonKeydown_}"
               @blur="${this.onRestartButtonBlur_}">

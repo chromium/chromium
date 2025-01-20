@@ -152,7 +152,6 @@ enum HttpMethod {
 struct CookieSameSiteContextMetadata {
   CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
   ContextRedirectTypeBug1221316 redirect_type_bug_1221316 = kUnset;
-  HttpMethod http_method_bug_1221316 = kUnset;
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.
@@ -171,6 +170,15 @@ enum CookieAccessSemantics {
   NONLEGACY = 0,
   LEGACY,
 };
+
+// Keep in sync with net/cookies/cookie_constants.h.
+// LINT.IfChange(CookieScopeSemanticsMojom)
+enum CookieScopeSemantics {
+  UNKNOWN = -1,
+  NONLEGACY = 0,
+  LEGACY = 1,
+};
+// LINT.ThenChange(/net/cookies/cookie_constants.h:CookieScopeSemantics)
 
 // Keep defaults here in sync with net/cookies/cookie_options.cc.
 struct CookieOptions {
@@ -237,6 +245,7 @@ struct CookieOrLineWithAccessResult {
 struct CookieAccessResult {
   CookieEffectiveSameSite effective_same_site;
   CookieAccessSemantics access_semantics;
+  CookieScopeSemantics scope_semantics;
   CookieInclusionStatus status;
   bool is_allowed_to_access_secure_cookies;
 };

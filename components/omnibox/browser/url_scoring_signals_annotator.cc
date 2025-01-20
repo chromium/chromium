@@ -40,19 +40,22 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
       match.scoring_signals = std::make_optional<ScoringSignals>();
     }
 
-    match.scoring_signals->set_length_of_url(
-        match.destination_url.spec().length());
-    match.scoring_signals->set_is_host_only(
-        history::HistoryMatch::IsHostOnly(match.destination_url));
     match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
 
-    // Populate query-URL matching signals if not set.
-    if (!match.scoring_signals->has_total_url_match_length() &&
-        !match.destination_url.is_empty()) {
-      PopulateQueryUrlMatchingSignals(
-          lower_raw_terms, lower_terms_to_word_starts_offsets,
-          match.destination_url, &*match.scoring_signals);
+    if (match.destination_url.is_valid()) {
+      match.scoring_signals->set_length_of_url(
+          match.destination_url.spec().length());
+      match.scoring_signals->set_is_host_only(
+          history::HistoryMatch::IsHostOnly(match.destination_url));
+
+      // Populate query-URL matching signals if not set.
+      if (!match.scoring_signals->has_total_url_match_length() &&
+          !match.destination_url.is_empty()) {
+        PopulateQueryUrlMatchingSignals(
+            lower_raw_terms, lower_terms_to_word_starts_offsets,
+            match.destination_url, &*match.scoring_signals);
+      }
     }
   }
 }

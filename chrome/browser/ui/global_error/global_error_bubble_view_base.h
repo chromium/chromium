@@ -16,7 +16,7 @@ class GlobalErrorBubbleViewBase {
       Browser* browser,
       const base::WeakPtr<GlobalErrorWithStandardBubble>& error);
 
-  virtual ~GlobalErrorBubbleViewBase() {}
+  virtual ~GlobalErrorBubbleViewBase() = default;
 
   // Close the bubble view.
   virtual void CloseBubbleView() = 0;

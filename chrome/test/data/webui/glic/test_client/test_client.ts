@@ -1,0 +1,309 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import type {GlicBrowserHost, GlicWebClient, TabData} from 'chrome://glic/glic_api/glic_api.js';
+
+import {createGlicHostRegistryOnLoad} from '../api_boot.js';
+
+interface PageElementTypes {
+  status: HTMLDivElement;
+  pageHeader: HTMLDivElement;
+  focusedFavicon: HTMLImageElement;
+  focusedUrl: HTMLInputElement;
+  syncCookiesBn: HTMLButtonElement;
+  syncCookieStatus: HTMLSpanElement;
+  getUserProfileInfoBn: HTMLButtonElement;
+  getUserProfileInfoStatus: HTMLSpanElement;
+  getUserProfileInfoImg: HTMLImageElement;
+  changeProfileBn: HTMLButtonElement;
+  testPermissionSwitch: HTMLButtonElement;
+  microphoneSwitch: HTMLInputElement;
+  geolocationSwitch: HTMLInputElement;
+  tabContextSwitch: HTMLInputElement;
+  newtabbn: HTMLButtonElement;
+  reloadpage: HTMLButtonElement;
+  getpagecontext: HTMLButtonElement;
+  URL: HTMLInputElement;
+  innerTextCheckbox: HTMLInputElement;
+  viewportScreenshotCheckbox: HTMLInputElement;
+  screenshotImg: HTMLImageElement;
+  faviconImg: HTMLImageElement;
+  getlocation: HTMLButtonElement;
+  location: HTMLDivElement;
+  permissionSelect: HTMLSelectElement;
+  enabledSelect: HTMLSelectElement;
+  closebn: HTMLButtonElement;
+  attachpanelbn: HTMLButtonElement;
+  detachpanelbn: HTMLButtonElement;
+  refreshbn: HTMLButtonElement;
+  navigateWebviewUrl: HTMLInputElement;
+  audioCapStop: HTMLButtonElement;
+  audioCapStart: HTMLButtonElement;
+  audioStatus: HTMLDivElement;
+  mic: HTMLAudioElement;
+}
+
+const $: PageElementTypes = new Proxy({}, {
+  get(_target: any, prop: string) {
+    return document.getElementById(prop);
+  },
+});
+
+function logMessage(message: string) {
+  $.status.append(message.slice(0, 100000), document.createElement('br'));
+}
+
+class WebClient implements GlicWebClient {
+  browser: GlicBrowserHost|undefined;
+
+  async initialize(browser: GlicBrowserHost): Promise<void> {
+    this.browser = browser;
+    logMessage('initialize called');
+    $.pageHeader!.classList.add('connected');
+
+    const ver = await browser.getChromeVersion();
+    logMessage(`Chrome version: ${JSON.stringify(ver)}`);
+
+    const focusedTabState = await this.browser.getFocusedTabState!();
+    focusedTabChanged(focusedTabState.getValue());
+    focusedTabState.subscribe(focusedTabChanged);
+  }
+
+  async notifyPanelClosed() {
+    logMessage('notifyPanelClosed called');
+  }
+}
+
+const client = new WebClient();
+
+function getBrowser(): GlicBrowserHost|undefined {
+  return client?.browser;
+}
+
+async function focusedTabChanged(newValue: TabData|undefined) {
+  $.focusedUrl.value = '';
+  $.focusedFavicon.src = '';
+  logMessage(`Focused Tab State Changed: ${JSON.stringify(newValue)}`);
+  if (newValue?.url) {
+    $.focusedUrl.value = newValue.url;
+  }
+  if (newValue?.favicon) {
+    const fav = await newValue.favicon();
+    if (fav) {
+      $.focusedFavicon.src = URL.createObjectURL(fav);
+    }
+  }
+}
+
+createGlicHostRegistryOnLoad().then((registry) => {
+  logMessage('registring web client');
+  registry.registerWebClient(client);
+});
+
+type PermissionSwitchName = 'microphone'|'geolocation'|'tabContext';
+const permissionSwitches: Record<PermissionSwitchName, HTMLInputElement> = {
+  microphone: $.microphoneSwitch,
+  geolocation: $.geolocationSwitch,
+  tabContext: $.tabContextSwitch,
+};
+
+function updatePermissionSwitch(
+    permissionSwitchName: PermissionSwitchName, enabled: boolean,
+    sendToBackend = true) {
+  logMessage(
+      `Setting permission ${permissionSwitchName} to ${enabled} and ${
+          sendToBackend ? '' : 'not'} sending to backend.`,
+  );
+  if (!permissionSwitches[permissionSwitchName]) {
+    console.error('Permission switch not found: ' + permissionSwitchName);
+    return;
+  }
+  permissionSwitches[permissionSwitchName].checked = enabled;
+}
+
+$.syncCookiesBn.addEventListener('click', async () => {
+  $.syncCookieStatus!.innerText = 'Requesting';
+  try {
+    await getBrowser()!.refreshSignInCookies!();
+    $.syncCookieStatus!.innerText = `Done!`;
+  } catch (e) {
+    $.syncCookieStatus!.innerText = `Caught error: ${e}`;
+  }
+});
+
+$.getUserProfileInfoBn.addEventListener('click', async () => {
+  $.getUserProfileInfoStatus.innerText = 'Requesting';
+  try {
+    const profile = await getBrowser()!.getUserProfileInfo!();
+    $.getUserProfileInfoStatus.innerText = `Done: ${JSON.stringify(profile)}`;
+    const icon = await profile.avatarIcon();
+    if (icon) {
+      $.getUserProfileInfoImg.src = URL.createObjectURL(icon);
+    }
+  } catch (e) {
+    $.getUserProfileInfoStatus.innerText = `Caught error: ${e}`;
+  }
+});
+
+$.changeProfileBn.addEventListener('click', () => {
+  getBrowser()!.showProfilePicker!();
+});
+
+// Listen for switch changes by user in webclient:
+for (const key of Object.keys(permissionSwitches) as PermissionSwitchName[]) {
+  const element = permissionSwitches[key];
+  element.addEventListener('change', () => {
+    updatePermissionSwitch(key, element.checked);
+  });
+}
+
+// Add listeners to demo elements:
+$.newtabbn.addEventListener('click', async () => {
+  const url = $.URL.value;
+  await getBrowser()!.createTab!(url, {});
+  logMessage('createTab done');
+});
+
+$.reloadpage.addEventListener('click', () => {
+  location.reload();
+});
+
+$.getpagecontext.addEventListener('click', async () => {
+  logMessage('Starting Get Page Context');
+  const options: any = {};
+  if ($.innerTextCheckbox.checked) {
+    options.innerText = true;
+  }
+  if ($.viewportScreenshotCheckbox.checked) {
+    options.viewportScreenshot = {};
+  }
+  try {
+    const pageContent =
+        await client!.browser!.getContextFromFocusedTab!(options);
+    if (pageContent.viewportScreenshot) {
+      const blob =
+          new Blob([pageContent.viewportScreenshot.data], {type: 'image/jpeg'});
+      $.screenshotImg.src = URL.createObjectURL(blob);
+    }
+    if (pageContent.tabData.favicon) {
+      const favicon = await pageContent.tabData.favicon();
+      if (favicon) {
+        $.faviconImg.src = URL.createObjectURL(favicon);
+      }
+    }
+    logMessage(
+        `Finished Get Page Context. Returned data: ${
+            JSON.stringify(pageContent, null, 2)}`,
+    );
+  } catch (error) {
+    logMessage(`Error getting page context: ${error}`);
+  }
+});
+$.getlocation.addEventListener('click', async () => {
+  logMessage('Requesting geolocation...');
+
+  if (navigator.geolocation) {
+    try {
+      const position =
+          await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      $.location.innerHTML = `
+          Latitude: ${latitude}<br>
+          Longitude: ${longitude}<br>
+          Accuracy: ${accuracy} meters
+        `;
+      logMessage(
+          `Geolocation obtained: Latitude ${latitude}, Longitude ${longitude}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        logMessage(`Error getting geolocation: ${error.message}`);
+        $.location.innerHTML = `Error: ${error.message}`;
+      }
+    }
+  } else {
+    logMessage('Geolocation is not supported by this browser.');
+    $.location.innerHTML = 'Geolocation is not supported by this browser.';
+  }
+});
+$.testPermissionSwitch.addEventListener('click', () => {
+  const selectedPermission = $.permissionSelect.value;
+  const isEnabled = $.enabledSelect.value === 'true';
+  updatePermissionSwitch(selectedPermission as any, isEnabled, false);
+});
+
+$.closebn.addEventListener('click', () => {
+  getBrowser()!.closePanel!();
+});
+$.attachpanelbn.addEventListener('click', () => {
+  getBrowser()!.attachPanel!();
+});
+$.detachpanelbn.addEventListener('click', () => {
+  getBrowser()!.detachPanel!();
+});
+$.refreshbn.addEventListener('click', () => {
+  location.reload();
+});
+$.navigateWebviewUrl.addEventListener('keyup', ({key}) => {
+  if (key === 'Enter') {
+    window.location.href = $.navigateWebviewUrl.value;
+  }
+});
+
+
+class AudioCapture {
+  recordedData: Blob[] = [];
+  recorder: MediaRecorder|undefined;
+  constructor() {}
+
+  async start() {
+    if (this.recorder) {
+      return;
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+
+    $.audioStatus.replaceChildren('Recording...');
+    this.recorder = new MediaRecorder(stream, {mimeType: 'audio/webm'});
+    let stopped = false;
+    window.setInterval(() => {
+      if (!stopped) {
+        this.recorder!.requestData();
+      }
+    }, 100);
+    this.recorder.addEventListener('dataavailable', (event: BlobEvent) => {
+      this.recordedData.push(event.data);
+    });
+    this.recorder.addEventListener('stop', () => {
+      stopped = true;
+      $.audioStatus.replaceChildren('Playback...');
+      const blob = new Blob(this.recordedData, {type: 'audio/webm'});
+      $.mic.src = URL.createObjectURL(blob);
+    });
+    this.recorder.start();
+  }
+
+  stop() {
+    if (!this.recorder) {
+      return;
+    }
+    $.mic.play();
+    this.recorder.stop();
+    this.recorder = undefined;
+  }
+}
+const audioCapture = new AudioCapture();
+
+window.addEventListener('load', () => {
+  $.audioCapStop.addEventListener('click', () => {
+    audioCapture.stop();
+  });
+  $.audioCapStart.addEventListener('click', () => {
+    audioCapture.start();
+  });
+});

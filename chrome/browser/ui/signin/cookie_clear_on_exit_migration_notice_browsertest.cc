@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticePixelTest,
 class CookieClearOnExitMigrationNoticeBrowserTest
     : public SigninBrowserTestBase {
  public:
-  CookieClearOnExitMigrationNoticeBrowserTest() : SigninBrowserTestBase() {
+  CookieClearOnExitMigrationNoticeBrowserTest() {
     feature_list_.InitWithFeatureState(
         switches::kExplicitBrowserSigninUIOnDesktop,
         /*enabled=*/!content::IsPreTest());

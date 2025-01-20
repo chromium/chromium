@@ -18,9 +18,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -75,7 +75,7 @@ class UserAnnotationsServiceTest : public testing::Test {
     logs_service_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
     service_ = std::make_unique<UserAnnotationsService>(
-        &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
+        &model_executor_, logs_service_.get(), temp_dir_.GetPath(), os_crypt_.get(),
         optimization_guide_decider_.get());
   }
 

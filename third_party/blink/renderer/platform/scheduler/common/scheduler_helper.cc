@@ -12,7 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "third_party/blink/renderer/platform/scheduler/common/ukm_task_sampler.h"
 
 namespace blink {
 namespace scheduler {
@@ -23,10 +22,7 @@ using base::sequence_manager::TaskTimeObserver;
 using base::sequence_manager::TimeDomain;
 
 SchedulerHelper::SchedulerHelper(SequenceManager* sequence_manager)
-    : sequence_manager_(sequence_manager),
-      observer_(nullptr),
-      ukm_task_sampler_(sequence_manager_->GetMetricRecordingSettings()
-                            .task_sampling_rate_for_recording_cpu_time) {
+    : sequence_manager_(sequence_manager), observer_(nullptr) {
   sequence_manager_->SetWorkBatchSize(4);
 }
 
@@ -160,14 +156,6 @@ base::TimeTicks SchedulerHelper::NowTicks() const {
     return sequence_manager_->NowTicks();
   // We may need current time for tracing when shutting down worker thread.
   return base::TimeTicks::Now();
-}
-
-bool SchedulerHelper::HasCPUTimingForEachTask() const {
-  if (sequence_manager_) {
-    return sequence_manager_->GetMetricRecordingSettings()
-        .records_cpu_time_for_all_tasks();
-  }
-  return false;
 }
 
 }  // namespace scheduler

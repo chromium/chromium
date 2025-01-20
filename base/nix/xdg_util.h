@@ -135,6 +135,10 @@ BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
 BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
     base::CommandLine& cmd_line);
 
+// Sets the global activation token not received from the command line or as
+// an environment variable, e.g. from notification D-BUS API.
+BASE_EXPORT void SetActivationToken(std::string token);
+
 // Transfers ownership of the currently set global activation token if set.
 BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
 
@@ -147,10 +151,20 @@ BASE_EXPORT void SetXdgActivationTokenCreator(
 BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
     XdgActivationLaunchOptionsCallback callback);
 
+// Tries to create an xdg-activation token and invokes the `callback` with the
+// token if available, or an empty string.
+BASE_EXPORT void CreateXdgActivationToken(XdgActivationTokenCallback callback);
+
 // Returns a request path as specified in v0.9 of xdg-desktop-portal:
 // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
 BASE_EXPORT
 std::string XdgDesktopPortalRequestPath(const std::string& sender,
+                                        const std::string& token);
+
+// Returns a session path as specified in v0.9 of xdg-desktop-portal:
+// https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Session.html
+BASE_EXPORT
+std::string XdgDesktopPortalSessionPath(const std::string& sender,
                                         const std::string& token);
 
 }  // namespace nix

@@ -62,6 +62,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-asan-v8-sandbox-testing",
+    mirrors = ["ci/ASAN Release V8 Sandbox Testing"],
+    gn_args = "ci/ASAN Release V8 Sandbox Testing",
+    contact_team_email = "v8-infra@google.com",
+)
+
+try_.builder(
     name = "linux-chromeos-asan-rel",
     mirrors = ["ci/ChromiumOS ASAN Release"],
     gn_args = "ci/ChromiumOS ASAN Release",

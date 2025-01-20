@@ -163,8 +163,6 @@ base::WeakPtr<CommandBufferStub> RasterCommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void RasterCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
-
 void RasterCommandBufferStub::SetActiveURL(GURL url) {
   active_url_ = ContextUrl(std::move(url));
   UpdateActiveUrl();

@@ -100,8 +100,9 @@ void ViewAccessibility::AddVirtualChildViewAt(
   DCHECK(virtual_view);
   DCHECK_LE(index, virtual_children_.size());
 
-  if (virtual_view->parent_view() == this)
+  if (virtual_view->parent_view() == this) {
     return;
+  }
   DCHECK(!virtual_view->parent_view()) << "This |view| already has a View "
                                           "parent. Call RemoveVirtualChildView "
                                           "first.";
@@ -118,8 +119,9 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
     AXVirtualView* virtual_view) {
   DCHECK(virtual_view);
   auto cur_index = GetIndexOf(virtual_view);
-  if (!cur_index.has_value())
+  if (!cur_index.has_value()) {
     return {};
+  }
 
   std::unique_ptr<AXVirtualView> child =
       std::move(virtual_children_[cur_index.value()]);
@@ -127,14 +129,16 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
                           static_cast<ptrdiff_t>(cur_index.value()));
   child->set_parent_view(nullptr);
   child->UnsetPopulateDataCallback();
-  if (focused_virtual_child_ && child->Contains(focused_virtual_child_))
+  if (focused_virtual_child_ && child->Contains(focused_virtual_child_)) {
     OverrideFocus(nullptr);
+  }
   return child;
 }
 
 void ViewAccessibility::RemoveAllVirtualChildViews() {
-  while (!virtual_children_.empty())
+  while (!virtual_children_.empty()) {
     RemoveVirtualChildView(virtual_children_.back().get());
+  }
 }
 
 bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
@@ -142,8 +146,9 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
   for (const auto& virtual_child : virtual_children_) {
     // AXVirtualView::Contains() also checks if the provided virtual view is the
     // same as |this|.
-    if (virtual_child->Contains(virtual_view))
+    if (virtual_child->Contains(virtual_view)) {
       return true;
+    }
   }
   return false;
 }
@@ -160,9 +165,6 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
-  data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                           view_->GetClassName());
-
   if (is_widget_closed_) {
     // Views may misbehave if their widget is closed; set "null-like" attributes
     // rather than possibly crashing.
@@ -189,18 +191,19 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   data->relative_bounds.bounds = gfx::RectF(view_->bounds());
 
+  // TODO(crbug.com/378724151): Remove once all Views cache their tooltip.
   // This was previously found earlier in the function. It has been moved here,
   // after the call to `ViewAccessibility::Merge`, so that we only check the
   // `data` after all the attributes have been set. Otherwise, there was a bug
   // where the description was not yet populated into the out `data` member in
   // `Merge` and so we were falling into the `if` block below, which led to
   // hangs. See https://crbug.com/326509144 for more details.
-  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
+      view_->GetCachedTooltipText().empty()) {
     std::u16string tooltip = view_->GetTooltipText(gfx::Point());
     // Some screen readers announce the accessible description right after the
     // accessible name. Only use the tooltip as the accessible description if
-    // it's different from the name, otherwise users might be puzzled as to why
-    // their screen reader is announcing the same thing twice.
+    // it's different from the name, otherwise it could lead to double speak.
     if (!tooltip.empty() && tooltip != data->GetString16Attribute(
                                            ax::mojom::StringAttribute::kName)) {
       data->SetDescription(base::UTF16ToUTF8(tooltip));
@@ -442,22 +445,20 @@ void ViewAccessibility::SetName(std::u16string name,
     return;
   }
 
+  std::u16string old_name = GetCachedName();
+
   if (name.empty()) {
     data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   } else {
-    // |AXNodeData::SetName| expects a valid role. Some Views call |SetRole|
-    // prior to setting the name. For those that don't, see if we can get the
-    // default role from the View.
-    // TODO(crbug.com/325137417): This is a temporary workaround to avoid a
-    // DCHECK, once we have migrated all Views to use the new setters and we
-    // always set a role in the constructors for views, we can remove this.
-    if (data_.role == ax::mojom::Role::kUnknown) {
-      ui::AXNodeData data;
-      view_->GetAccessibleNodeData(&data);
-      data_.role = data.role;
-    }
-
     data_.SetNameChecked(name);
+  }
+
+  // If previously the accessible name was the same as the tooltip text, we
+  // weren't using the tooltip text as the description, however now that the
+  // name has changed, we should check if the tooltip text should be used as the
+  // description.
+  if (!old_name.empty() && old_name == view_->GetCachedTooltipText()) {
+    OnTooltipTextChanged();
   }
 
   view_->OnAccessibleNameChanged(name);
@@ -734,6 +735,46 @@ void ViewAccessibility::SetTableColumnCount(int column_count) {
                         column_count);
 }
 
+void ViewAccessibility::SetAriaTableRowCount(int row_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount, row_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, row_count);
+}
+
+void ViewAccessibility::SetAriaTableColumnCount(int column_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
+                        column_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
+                        column_count);
+}
+
+void ViewAccessibility::ClearTableRowCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowCount, std::nullopt);
+}
+
+void ViewAccessibility::ClearTableColumnCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableColumnCount,
+                        std::nullopt);
+}
+
+void ViewAccessibility::ClearAriaTableRowCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, std::nullopt);
+}
+
+void ViewAccessibility::ClearAriaTableColumnCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
+                        std::nullopt);
+}
+
 void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
   data_.SetDescriptionExplicitlyEmpty();
 
@@ -805,6 +846,38 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
         data_.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
   }
   return std::u16string();
+}
+
+void ViewAccessibility::OnTooltipTextChanged(
+    std::optional<std::u16string> old_tooltip_text) {
+  if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
+      view_->GetCachedTooltipText() == GetCachedDescription()) {
+    return;
+  }
+  // Some screen readers announce the accessible description right after the
+  // accessible name. Only use the tooltip as the accessible description if
+  // it's different from the name, otherwise users might be puzzled as to why
+  // their screen reader is announcing the same thing twice.
+  const std::u16string tooltip = view_->GetCachedTooltipText();
+  // We only want to update the description if we were previously using the
+  // tooltip as the description or if we had no description.
+  if ((old_tooltip_text.has_value() &&
+       old_tooltip_text == GetCachedDescription()) ||
+      !data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    if (!tooltip.empty() && tooltip != GetCachedName()) {
+      SetDescription(tooltip);
+    } else {
+      RemoveDescription();
+    }
+  }
+}
+
+void ViewAccessibility::OnViewAddedToWidget() {
+  // Ideally, we would like to set the class name when the object is created,
+  // this would be done in the ctor, but due to inheritance and the
+  // implementation of `GetClassName`, it would not work. As such, we set it
+  // here, since at this point the view object is fully initialized.
+  SetClassName(view_->GetClassName());
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
@@ -925,17 +998,19 @@ void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
 }
 
 void ViewAccessibility::SetNextFocus(Widget* widget) {
-  if (widget)
+  if (widget) {
     next_focus_ = widget->GetWeakPtr();
-  else
+  } else {
     next_focus_ = nullptr;
+  }
 }
 
 void ViewAccessibility::SetPreviousFocus(Widget* widget) {
-  if (widget)
+  if (widget) {
     previous_focus_ = widget->GetWeakPtr();
-  else
+  } else {
     previous_focus_ = nullptr;
+  }
 }
 
 Widget* ViewAccessibility::GetNextWindowFocus() const {
@@ -1137,8 +1212,9 @@ ViewAccessibility::GetAtomicViewAXTreeManagerForTesting() const {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
-  if (focused_virtual_child_)
+  if (focused_virtual_child_) {
     return focused_virtual_child_->GetNativeObject();
+  }
   return view_->GetNativeViewAccessible();
 }
 

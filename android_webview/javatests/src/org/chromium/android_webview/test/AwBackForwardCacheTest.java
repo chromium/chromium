@@ -405,7 +405,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         AwSettings settings = mAwContents.getSettings();
         settings.setSafeBrowsingEnabled(false);
         settings.setAllowContentAccess(false);
-        settings.setCSSHexAlphaColorEnabled(false);
+        settings.setCssHexAlphaColorEnabled(false);
         settings.setScrollTopLeftInteropEnabled(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setAttributionBehavior(AwSettings.ATTRIBUTION_DISABLED);
@@ -477,13 +477,13 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         verifyPageEvictedWithSettingsChange(() -> settings.setJavaScriptEnabled(true));
         verifyPageEvictedWithSettingsChange(
                 () -> {
-                    settings.setAllowUniversalAccessFromFileURLs(
-                            !settings.getAllowUniversalAccessFromFileURLs());
+                    settings.setAllowUniversalAccessFromFileUrls(
+                            !settings.getAllowUniversalAccessFromFileUrls());
                 });
         verifyPageEvictedWithSettingsChange(
                 () -> {
-                    settings.setAllowFileAccessFromFileURLs(
-                            !settings.getAllowFileAccessFromFileURLs());
+                    settings.setAllowFileAccessFromFileUrls(
+                            !settings.getAllowFileAccessFromFileUrls());
                 });
         verifyPageEvictedWithSettingsChange(
                 () -> {
@@ -503,7 +503,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setSupportMultipleWindows(!settings.supportMultipleWindows()));
         verifyPageEvictedWithSettingsChange(() -> settings.setBlockSpecialFileUrls(true));
-        verifyPageEvictedWithSettingsChange(() -> settings.setCSSHexAlphaColorEnabled(true));
+        verifyPageEvictedWithSettingsChange(() -> settings.setCssHexAlphaColorEnabled(true));
         verifyPageEvictedWithSettingsChange(() -> settings.setScrollTopLeftInteropEnabled(true));
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setUseWideViewPort(!settings.getUseWideViewPort()));
@@ -553,7 +553,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setWillSuppressErrorPage(!settings.getWillSuppressErrorPage()));
         verifyPageEvictedWithSettingsChange(
-                () -> settings.setDefaultVideoPosterURL("http://test_url"));
+                () -> settings.setDefaultVideoPosterUrl("http://test_url"));
         // Test BFCache can still work for future navigations
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());

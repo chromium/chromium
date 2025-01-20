@@ -29,7 +29,7 @@ ViewStack::ViewStack()
   slide_out_animator_->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
 }
 
-ViewStack::~ViewStack() {}
+ViewStack::~ViewStack() = default;
 
 void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
   gfx::Rect destination = bounds();
@@ -112,8 +112,9 @@ void ViewStack::RequestFocus() {
   // The view can only be focused if it has a widget already. It's possible that
   // this isn't the case if some views are pushed before the stack is added to a
   // hierarchy that has a widget.
-  if (top()->GetWidget())
+  if (top()->GetWidget()) {
     top()->RequestFocus();
+  }
 }
 
 void ViewStack::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -128,8 +129,8 @@ void ViewStack::HideCoveredViews() {
   }
 }
 
-void ViewStack::UpdateAnimatorBounds(
-    views::BoundsAnimator* animator, const gfx::Rect& target) {
+void ViewStack::UpdateAnimatorBounds(views::BoundsAnimator* animator,
+                                     const gfx::Rect& target) {
   // If an animator is currently animating, figure out which views and update
   // their target bounds.
   if (animator->IsAnimating()) {

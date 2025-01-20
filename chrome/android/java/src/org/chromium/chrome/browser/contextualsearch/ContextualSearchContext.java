@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
@@ -460,7 +461,7 @@ public abstract class ContextualSearchContext {
         void setResolveProperties(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
-                String homeCountry,
+                @JniType("std::string") String homeCountry,
                 boolean doSendBasePageUrl);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
@@ -471,21 +472,22 @@ public abstract class ContextualSearchContext {
                 int endAdjust);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
+        @JniType("std::string")
         String detectLanguage(long nativeContextualSearchContext, ContextualSearchContext caller);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void setTranslationLanguages(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
-                String detectedLanguage,
-                String targetLanguage,
-                String fluentLanguages);
+                @JniType("std::string") String detectedLanguage,
+                @JniType("std::string") String targetLanguage,
+                @JniType("std::string") String fluentLanguages);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void prepareToResolve(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
                 boolean isExactSearch,
-                String relatedSearchesStamp);
+                @JniType("std::string") String relatedSearchesStamp);
     }
 }

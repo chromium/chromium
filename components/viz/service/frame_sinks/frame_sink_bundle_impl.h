@@ -69,9 +69,7 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void SetWantsBeginFrameAcks(uint32_t sink_id) override;
   void Submit(
       std::vector<mojom::BundledFrameSubmissionPtr> submissions) override;
-  void DidAllocateSharedBitmap(uint32_t sink_id,
-                               base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id) override;
+
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(uint32_t sink_id,
                   const std::vector<Thread>& threads) override;

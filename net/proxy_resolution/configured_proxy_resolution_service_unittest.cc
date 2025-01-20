@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 
+#include <array>
 #include <cstdarg>
 #include <memory>
 #include <string>
@@ -2042,8 +2043,8 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback_BadConfigMandatory) {
 TEST_F(ConfiguredProxyResolutionServiceTest, ProxyBypassList) {
   // Test that the proxy bypass rules are consulted.
 
-  TestCompletionCallback callback[2];
-  ProxyInfo info[2];
+  std::array<TestCompletionCallback, 2> callback;
+  std::array<ProxyInfo, 2> info;
   ProxyConfig config;
   config.proxy_rules().ParseFromString("foopy1:8080;foopy2:9090");
   config.set_auto_detect(false);

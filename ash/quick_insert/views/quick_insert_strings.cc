@@ -27,20 +27,20 @@ std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE);
 #else
-      return u"";
+      return u"Editor";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kEditorRewrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE);
 #else
-      return u"";
+      return u"Editor";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kLobsterWithNoSelectedText:
     case QuickInsertCategory::kLobsterWithSelectedText:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL);
 #else
-      return u"";
+      return u"Lobster";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
@@ -48,6 +48,10 @@ std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL);
     case QuickInsertCategory::kEmojis:
       return l10n_util::GetStringUTF16(IDS_PICKER_EMOJIS_CATEGORY_LABEL);
+    case QuickInsertCategory::kGifs:
+      // The label is not translated to keep the width of the GIF button
+      // constant. It is treated like an icon.
+      return u"GIF";
     case QuickInsertCategory::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
     case QuickInsertCategory::kDriveFiles:
@@ -89,6 +93,9 @@ std::u16string GetSearchFieldPlaceholderTextForQuickInsertCategory(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      return l10n_util::GetStringUTF16(
+          IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
   }
 }
 
@@ -149,6 +156,11 @@ std::u16string GetSectionTitleForQuickInsertSectionType(
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case QuickInsertSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
+    case QuickInsertSectionType::kFeaturedGifs:
+      return l10n_util::GetStringUTF16(
+          IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE);
+    case QuickInsertSectionType::kSearchedGifs:
+      return u"";
   }
 }
 

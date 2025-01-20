@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -28,7 +26,6 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -38,8 +35,9 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
@@ -69,6 +67,8 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -274,7 +274,7 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionAppsChromeOs::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,
@@ -490,7 +490,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   }
 
   ash::app_time::AppTimeLimitInterface* app_limit =
-      ash::app_time::AppTimeLimitInterface::Get(profile());
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile());
   DCHECK(app_limit);
   app_limit->PauseWebActivity(app_id);
 }
@@ -504,7 +504,7 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
       app_type(), app_id, /*paused=*/false));
 
   ash::app_time::AppTimeLimitInterface* app_time =
-      ash::app_time::AppTimeLimitInterface::Get(profile());
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile());
   DCHECK(app_time);
   app_time->ResumeWebActivity(app_id);
 }

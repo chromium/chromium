@@ -153,7 +153,7 @@ std::unique_ptr<MessagePort> ChromeMessagingDelegate::CreateReceiverForTab(
     return nullptr;
   }
 
-  return std::make_unique<ExtensionMessagePort>(
+  return ExtensionMessagePort::CreateForTab(
       channel_delegate, receiver_port_id, extension_id,
       receiver_render_frame_host, include_child_frames);
 }

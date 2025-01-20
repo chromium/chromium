@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -107,59 +103,47 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
       u"e.g.,";
 
   // The languages and expected results used in this test.
-  static const TestCase kTestCases[] = {
-    {
-      // English (keep contraction words)
-      "en-US", true, L"hello:hello affix Hello e.g"
-    }, {
-      // English (split contraction words)
-      "en-US", false, L"hello hello affix Hello e g"
-    }, {
-      // Greek
-      "el-GR", true,
-      L"\x03B3\x03B5\x03B9\x03AC\x0020\x03C3\x03BF\x03C5"
-    }, {
-      // Russian
-      "ru-RU", true,
-      L"\x0437\x0434\x0440\x0430\x0432\x0441\x0442\x0432"
-      L"\x0443\x0439\x0442\x0435"
-    }, {
-      // Hebrew
-      "he-IL", true,
-      L"\x05e9\x05dc\x05d5\x05dd "
-      L"\x05e6\x0027\x05d9\x05e4\x05e1 \x05e6\x05F3\x05d9\x05e4\x05e1 "
-      L"\x05e6\x05d4\x0022\x05dc \x05e6\x05d4\x05f4\x05dc "
-      L"\x05e6\x05d4\x0022\x05dc \x05e9\x05dc\x05d5"
-    }, {
-      // Arabic
-      "ar", true,
-      L"\x0627\x0644\x0633\x0644\x0627\x0645 "
-      L"\x0639\x0644\x064a\x0643\x0645 "
-      // Farsi/Persian
-      L"\x0647\x0634\x0631\x062d "
-      L"\x0647\x062e\x0648\x0627\x0647 "
-      L"\x062f\x0631\x062f "
-      L"\x0631\x0645\x0627\x0646 "
-      L"\x0633\x0631 "
-      L"\x0646\x0646\x062c\x0633 "
-      L"\x0627\x0644\x062d\x0645\x062f "
-      L"\x062c\x062c\x062c\x062c"
-    }, {
-      // Hindi
-      "hi-IN", true,
-      L"\x0930\x093E\x091C\x0927\x093E\x0928"
-    }, {
-      // Thai
-      "th-TH", true,
-      L"\x0e2a\x0e27\x0e31\x0e2a\x0e14\x0e35\x0020\x0e04"
-      L"\x0e23\x0e31\x0e1a"
-    }, {
-      // Korean
-      "ko-KR", true,
-      L"\x110b\x1161\x11ab\x1102\x1167\x11bc\x1112\x1161"
-      L"\x1109\x1166\x110b\x116d"
-    },
-  };
+  static const auto kTestCases = std::to_array<TestCase>({
+      {// English (keep contraction words)
+       "en-US", true, L"hello:hello affix Hello e.g"},
+      {// English (split contraction words)
+       "en-US", false, L"hello hello affix Hello e g"},
+      {// Greek
+       "el-GR", true, L"\x03B3\x03B5\x03B9\x03AC\x0020\x03C3\x03BF\x03C5"},
+      {// Russian
+       "ru-RU", true,
+       L"\x0437\x0434\x0440\x0430\x0432\x0441\x0442\x0432"
+       L"\x0443\x0439\x0442\x0435"},
+      {// Hebrew
+       "he-IL", true,
+       L"\x05e9\x05dc\x05d5\x05dd "
+       L"\x05e6\x0027\x05d9\x05e4\x05e1 \x05e6\x05F3\x05d9\x05e4\x05e1 "
+       L"\x05e6\x05d4\x0022\x05dc \x05e6\x05d4\x05f4\x05dc "
+       L"\x05e6\x05d4\x0022\x05dc \x05e9\x05dc\x05d5"},
+      {// Arabic
+       "ar", true,
+       L"\x0627\x0644\x0633\x0644\x0627\x0645 "
+       L"\x0639\x0644\x064a\x0643\x0645 "
+       // Farsi/Persian
+       L"\x0647\x0634\x0631\x062d "
+       L"\x0647\x062e\x0648\x0627\x0647 "
+       L"\x062f\x0631\x062f "
+       L"\x0631\x0645\x0627\x0646 "
+       L"\x0633\x0631 "
+       L"\x0646\x0646\x062c\x0633 "
+       L"\x0627\x0644\x062d\x0645\x062f "
+       L"\x062c\x062c\x062c\x062c"},
+      {// Hindi
+       "hi-IN", true, L"\x0930\x093E\x091C\x0927\x093E\x0928"},
+      {// Thai
+       "th-TH", true,
+       L"\x0e2a\x0e27\x0e31\x0e2a\x0e14\x0e35\x0020\x0e04"
+       L"\x0e23\x0e31\x0e1a"},
+      {// Korean
+       "ko-KR", true,
+       L"\x110b\x1161\x11ab\x1102\x1167\x11bc\x1112\x1161"
+       L"\x1109\x1166\x110b\x116d"},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%" PRIuS "]: language=%s", i,
@@ -234,37 +218,69 @@ TEST(SpellcheckWordIteratorTest, TreatNumbersAsWordCharacters) {
   // numbers and an alphabet of the language, into words. When ASCII numbers are
   // treated as word characters, the split word becomes equal to the dummy word.
   // Otherwise, the split word does not include ASCII numbers.
-  static const struct {
+  struct TestCases {
     const char* language;
     const wchar_t* text;
     bool left_to_right;
-  } kTestCases[] = {
-    {
-      // English
-      "en-US", L"0123456789" L"a", true,
-    }, {
-      // Greek
-      "el-GR", L"0123456789" L"\x03B1", true,
-    }, {
-      // Russian
-      "ru-RU", L"0123456789" L"\x0430", true,
-    }, {
-      // Hebrew
-      "he-IL", L"0123456789" L"\x05D0", false,
-    }, {
-      // Arabic
-      "ar",  L"0123456789" L"\x0627", false,
-    }, {
-      // Hindi
-      "hi-IN", L"0123456789" L"\x0905", true,
-    }, {
-      // Thai
-      "th-TH", L"0123456789" L"\x0e01", true,
-    }, {
-      // Korean
-      "ko-KR", L"0123456789" L"\x1100\x1161", true,
-    },
   };
+  static const auto kTestCases = std::to_array<TestCases>({
+      {
+          // English
+          "en-US",
+          L"0123456789"
+          L"a",
+          true,
+      },
+      {
+          // Greek
+          "el-GR",
+          L"0123456789"
+          L"\x03B1",
+          true,
+      },
+      {
+          // Russian
+          "ru-RU",
+          L"0123456789"
+          L"\x0430",
+          true,
+      },
+      {
+          // Hebrew
+          "he-IL",
+          L"0123456789"
+          L"\x05D0",
+          false,
+      },
+      {
+          // Arabic
+          "ar",
+          L"0123456789"
+          L"\x0627",
+          false,
+      },
+      {
+          // Hindi
+          "hi-IN",
+          L"0123456789"
+          L"\x0905",
+          true,
+      },
+      {
+          // Thai
+          "th-TH",
+          L"0123456789"
+          L"\x0e01",
+          true,
+      },
+      {
+          // Korean
+          "ko-KR",
+          L"0123456789"
+          L"\x1100\x1161",
+          true,
+      },
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%" PRIuS "]: language=%s", i,
@@ -294,11 +310,12 @@ TEST(SpellcheckWordIteratorTest, TreatNumbersAsWordCharacters) {
 // Verify SpellcheckWordIterator treats typographical apostrophe as a part of
 // the word.
 TEST(SpellcheckWordIteratorTest, TypographicalApostropheIsPartOfWord) {
-  static const struct {
+  struct TestCases {
     const char* language;
     const wchar_t* input;
     const wchar_t* expected;
-  } kTestCases[] = {
+  };
+  static const auto kTestCases = std::to_array<TestCases>({
       // Typewriter apostrophe:
       {"en-AU", L"you're", L"you're"},
       {"en-CA", L"you're", L"you're"},
@@ -311,7 +328,7 @@ TEST(SpellcheckWordIteratorTest, TypographicalApostropheIsPartOfWord) {
       {"en-GB", L"you\x2019re", L"you\x2019re"},
       {"en-US", L"you\x2019re", L"you\x2019re"},
       {"en-US", L"....you\x2019re", L"you\x2019re"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SpellcheckCharAttribute attributes;

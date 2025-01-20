@@ -192,6 +192,11 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="dangerous download canceled on profile closure"/>
 </enum>
 
+<enum name="DisplayPersistentNotificationEvents">
+  <int value="0" label="Request to display persistent notification"/>
+  <int value="1" label="Finished displaying persistent notification"/>
+</enum>
+
 <enum name="SafeBrowsingAllowlistAsyncMatch">
   <int value="0" label="ASYNC"/>
   <int value="1" label="MATCH"/>
@@ -667,6 +672,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
   <int value="3" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
   <int value="4" label="VISITED_MORE_THAN_A_DAY_AGO_PREVIOUSLY_UNFAMILIAR"/>
+</enum>
+
+<enum name="SuspiciousNotificationWarningInteractions">
+  <int value="0" label="WARNING_SHOWN"/>
+  <int value="1" label="SHOW_ORIGINAL_NOTIFICATION"/>
+  <int value="2" label="UNSUBSCRIBE"/>
+  <int value="3" label="ALWAYS_ALLOW"/>
+  <int value="4" label="DISMISS"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">

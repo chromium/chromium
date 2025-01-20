@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -43,6 +41,7 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
+    "signin_constants.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -58,7 +57,6 @@ source_set("identity_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/plus_addresses:features",
     "//components/prefs",
@@ -67,7 +65,7 @@ source_set("identity_manager") {
     "//services/network/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/user_manager" ]
   }
 
@@ -129,7 +127,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -151,13 +148,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/account_manager" ]
   }
 }
 
@@ -185,7 +179,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
@@ -194,12 +187,8 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/account_manager" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//components/account_manager_core" ]
   }
 
   if (is_android) {

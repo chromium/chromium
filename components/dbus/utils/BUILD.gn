@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("utils") {
+source_set("utils") {
+  visibility = [ "//components/dbus/*" ]
   sources = [
     "check_for_service_and_start.cc",
     "check_for_service_and_start.h",
     "name_has_owner.cc",
     "name_has_owner.h",
   ]
-  defines = [ "IS_DBUS_IMPL" ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
     "//dbus",
@@ -18,6 +19,7 @@ component("utils") {
 
 source_set("unit_tests") {
   testonly = true
+  visibility = [ "//components/dbus:unit_tests" ]
   sources = [ "check_for_service_and_start_unittest.cc" ]
   deps = [
     ":utils",

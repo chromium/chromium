@@ -21,23 +21,6 @@
 
 namespace blink {
 
-namespace {
-
-gfx::Vector2dF ResolveMouseWheelPercentToWheelDelta(
-    const WebMouseWheelEvent& event) {
-  DCHECK(event.delta_units == ui::ScrollGranularity::kScrollByPercentage);
-  // TODO (dlibby): OS scroll settings need to be factored into this.
-  // Note that this value is negative because we're converting from wheel
-  // ticks to wheel delta pixel. Wheel ticks are negative for scrolling down,
-  // but the delta must be positive.
-  constexpr float percent_mouse_wheel_ticks_multiplier = -100.f;
-  return gfx::Vector2dF(
-      event.wheel_ticks_x * percent_mouse_wheel_ticks_multiplier,
-      event.wheel_ticks_y * percent_mouse_wheel_ticks_multiplier);
-}
-
-}  // namespace
-
 MouseWheelEventManager::MouseWheelEventManager(LocalFrame& frame,
                                                ScrollManager& scroll_manager)
     : frame_(frame), wheel_target_(nullptr), scroll_manager_(scroll_manager) {}
@@ -106,12 +89,7 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
 
   if (wheel_target_) {
     WheelEvent* dom_event =
-        (event.delta_units == ui::ScrollGranularity::kScrollByPercentage)
-            ? WheelEvent::Create(event,
-                                 ResolveMouseWheelPercentToWheelDelta(event),
-                                 *wheel_target_->GetDocument().domWindow())
-            : WheelEvent::Create(event,
-                                 *wheel_target_->GetDocument().domWindow());
+        WheelEvent::Create(event, *wheel_target_->GetDocument().domWindow());
 
     // The event handler might remove |wheel_target_| from DOM so we should get
     // this value now (see https://crbug.com/857013).

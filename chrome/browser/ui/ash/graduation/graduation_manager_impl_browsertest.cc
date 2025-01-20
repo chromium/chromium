@@ -260,8 +260,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenStartDateIsReached) {
   WaitForShelfItemAdd();
 
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -284,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
   WaitForShelfItemAdd();
 
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedOnEndDate) {
@@ -296,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedOnEndDate) {
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 
   // Fast forward to the policy enablement end date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
@@ -305,8 +302,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
 
   // Since this is the last day the app is available, the app should be pinned.
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyUnset) {
@@ -349,8 +345,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
   EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
 
   // Fast forward to one day past the policy enablement end date set in the
   // pre-test.

@@ -98,7 +98,7 @@ test("highway_tests") {
   ]
   deps = [
     ":libhwy",
+    "//base/test:run_all_unittests",
     "//testing/gtest",
-    "//testing/gtest:gtest_main",
   ]
 }

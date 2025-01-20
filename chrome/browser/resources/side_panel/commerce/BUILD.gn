@@ -19,6 +19,16 @@ build_webui("build") {
     "price_tracking_section.ts",
   ]
 
+  non_web_component_files = [ "price_insights_browser_proxy.ts" ]
+
+  mojo_files_deps =
+      [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/components/commerce/core/mojom/price_insights.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/price_tracking.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/shared.mojom-webui.ts",
+  ]
+
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [

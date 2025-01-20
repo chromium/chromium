@@ -49,8 +49,7 @@ void DecodeImage(ImageDataType image_data,
                  data_decoder::DecodeImageCallback callback,
                  scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
                  data_decoder::DataDecoder* data_decoder) {
-  base::span<const uint8_t> image_data_span(
-      base::as_bytes(base::make_span(image_data)));
+  base::span<const uint8_t> image_data_span(base::as_byte_span(image_data));
 
   if (data_decoder) {
     data_decoder::DecodeImage(

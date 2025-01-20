@@ -31,8 +31,7 @@ class FastShutdown : public InProcessBrowserTest {
   FastShutdown& operator=(const FastShutdown&) = delete;
 
  protected:
-  FastShutdown() {
-  }
+  FastShutdown() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);

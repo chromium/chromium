@@ -37,7 +37,7 @@ FakeServiceContext& FakeServiceContext::set_power_manager_client(
 }
 
 FakeServiceContext& FakeServiceContext::set_primary_account_gaia_id(
-    std::string value) {
+    const GaiaId& value) {
   gaia_id_ = value;
   return *this;
 }
@@ -108,7 +108,7 @@ chromeos::PowerManagerClient* FakeServiceContext::power_manager_client() {
   return power_manager_client_;
 }
 
-std::string FakeServiceContext::primary_account_gaia_id() {
+GaiaId FakeServiceContext::primary_account_gaia_id() {
   return gaia_id_;
 }
 

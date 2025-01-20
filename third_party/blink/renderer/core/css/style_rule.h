@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
+#include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,7 +52,6 @@ class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
 class ExecutionContext;
-class StyleSheetContents;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -142,10 +142,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
                               CSSRule* parent_rule,
                               bool trigger_use_counters = false) const;
 
-  // Move this rule to being a child of new_parent, updating parent
-  // pointers in the selector. This happens only when we need to reallocate a
-  // StyleRule because its selector changed.
-  void Reparent(StyleRule* new_parent);
+  // See CSSSelector::Renest.
+  StyleRuleBase* Renest(StyleRule* new_parent);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
@@ -413,13 +411,6 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 
   const StyleScope& GetStyleScope() const { return *style_scope_; }
 
-  void SetPreludeText(const ExecutionContext*,
-                      String,
-                      CSSNestingType,
-                      StyleRule* parent_rule_for_nesting,
-                      bool is_within_scope,
-                      StyleSheetContents* style_sheet);
-
  private:
   Member<const StyleScope> style_scope_;
 };
@@ -427,9 +418,10 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 // https://www.w3.org/TR/css-cascade-5/#layer-block
 class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
  public:
-  StyleRuleLayerBlock(LayerName&& name,
-                      HeapVector<Member<StyleRuleBase>> rules);
+  StyleRuleLayerBlock(LayerName name, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleLayerBlock(const StyleRuleLayerBlock&);
+  StyleRuleLayerBlock(const StyleRuleLayerBlock&,
+                      HeapVector<Member<StyleRuleBase>> rules);
 
   const LayerName& GetName() const { return name_; }
   String GetNameAsString() const;
@@ -536,6 +528,8 @@ class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
  public:
   StyleRuleMedia(const MediaQuerySet*, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleMedia(const StyleRuleMedia&) = default;
+  StyleRuleMedia(const StyleRuleMedia&,
+                 HeapVector<Member<StyleRuleBase>> rules);
 
   const MediaQuerySet* MediaQueries() const { return media_queries_.Get(); }
 
@@ -559,6 +553,8 @@ class StyleRuleSupports : public StyleRuleCondition {
                     bool condition_is_supported,
                     HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleSupports(const StyleRuleSupports&);
+  StyleRuleSupports(const StyleRuleSupports&,
+                    HeapVector<Member<StyleRuleBase>> rules);
 
   bool ConditionIsSupported() const { return condition_is_supported_; }
   StyleRuleSupports* Copy() const {
@@ -579,6 +575,8 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
  public:
   StyleRuleContainer(ContainerQuery&, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleContainer(const StyleRuleContainer&);
+  StyleRuleContainer(const StyleRuleContainer&,
+                     HeapVector<Member<StyleRuleBase>> rules);
 
   ContainerQuery& GetContainerQuery() const { return *container_query_; }
 
@@ -620,43 +618,50 @@ class StyleRuleCharset : public StyleRuleBase {
 };
 
 // An @function rule, representing a CSS function.
-class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
+class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
  public:
-  struct Type {
-    CSSSyntaxDefinition syntax;
-
-    // Whether this is a numeric type, that would be accepted by calc()
-    // (see https://drafts.csswg.org/css-values/#calc-func). This is used
-    // to allow the user to not have to write calc() around every single
-    // expression, so that one could do e.g. --foo(2 + 2) instead of
-    // --foo(calc(2 + 2)). Since writing calc() around an expression of
-    // such a type will never change its meaning, and nested calc is allowed,
-    // this is always safe even when not needed.
-    bool should_add_implicit_calc;
-  };
   struct Parameter {
     String name;
-    Type type;
+    CSSSyntaxDefinition type;
   };
 
+  // The body of the function is represented by `child_rules`.
+  // Each child rule is either a CSSNestedDeclarations rule (holding
+  // descriptors, like 'result' and local variables), or a conditional rule,
+  // such as @media.
+  //
+  // The example below has three child rules: a CSSNestedDeclarations rule
+  // holding `--x`, an @media rule, and another CSSNestedDeclarations rule
+  // holding `results`.
+  //
+  //   @function --foo() {
+  //     --x: 10px;
+  //     @media (width > 100px) {
+  //       --x: 20x;
+  //     }
+  //     result: var(--x);
+  //   }
+  //
+  // Note: Although StyleRuleFunction itself can accommodate conditional rules,
+  // it's not yet supported by parsing/evaluation.
+  //
+  // TODO(crbug.com/325504770): Support parsing/evaluation of conditionals.
   StyleRuleFunction(AtomicString name,
                     Vector<Parameter> parameters,
-                    CSSVariableData* function_body,
-                    Type return_type);
+                    HeapVector<Member<StyleRuleBase>> child_rules,
+                    CSSSyntaxDefinition return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
   const AtomicString& GetName() const { return name_; }
   const Vector<Parameter>& GetParameters() const { return parameters_; }
-  CSSVariableData& GetFunctionBody() const { return *function_body_; }
-  const Type& GetReturnType() const { return return_type_; }
+  const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
   Vector<Parameter> parameters_;
-  Member<CSSVariableData> function_body_;
-  Type return_type_;
+  CSSSyntaxDefinition return_type_;
 };
 
 // An @mixin rule, representing a CSS mixin. We store all of the rules

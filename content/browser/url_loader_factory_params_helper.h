@@ -60,6 +60,8 @@ class URLLoaderFactoryParamsHelper {
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       RenderProcessHost* process,
       network::mojom::TrustTokenOperationPolicyVerdict
           trust_token_issuance_policy,
@@ -118,7 +120,9 @@ class URLLoaderFactoryParamsHelper {
       mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
           trust_token_observer,
       mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
-          shared_dictionary_observer);
+          shared_dictionary_observer,
+      mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+          device_bound_session_observer);
 
  private:
   // Only static methods.

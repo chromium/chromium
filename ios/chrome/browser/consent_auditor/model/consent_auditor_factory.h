@@ -6,9 +6,7 @@
 #define IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace consent_auditor {
 class ConsentAuditor;
@@ -16,15 +14,10 @@ class ConsentAuditor;
 
 // Singleton that owns all ConsentAuditors and associates them with
 // ProfileIOS.
-class ConsentAuditorFactory : public BrowserStateKeyedServiceFactory {
+class ConsentAuditorFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static consent_auditor::ConsentAuditor* GetForProfile(ProfileIOS* profile);
-  static consent_auditor::ConsentAuditor* GetForProfileIfExists(
-      ProfileIOS* profile);
   static ConsentAuditorFactory* GetInstance();
-
-  ConsentAuditorFactory(const ConsentAuditorFactory&) = delete;
-  ConsentAuditorFactory& operator=(const ConsentAuditorFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ConsentAuditorFactory>;

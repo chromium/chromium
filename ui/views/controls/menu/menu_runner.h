@@ -115,6 +115,9 @@ class VIEWS_EXPORT MenuRunner {
 
     // Indicates that the menu should show mnemonics.
     SHOULD_SHOW_MNEMONICS = 1 << 10,
+
+    // Indicates that the menu was invoked from the keyboard.
+    INVOKED_FROM_KEYBOARD = 1 << 11,
   };
 
   // Creates a new MenuRunner, which may use a native menu if available.

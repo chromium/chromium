@@ -19,7 +19,8 @@ namespace remoting {
 CorpSessionAuthzServiceClientFactory::CorpSessionAuthzServiceClientFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& service_account_email,
-    const std::string& refresh_token) {
+    const std::string& refresh_token,
+    std::string_view support_id) {
   DCHECK(url_loader_factory);
 
   url_loader_factory_ = url_loader_factory;
@@ -27,6 +28,7 @@ CorpSessionAuthzServiceClientFactory::CorpSessionAuthzServiceClientFactory(
       url_loader_factory, service_account_email, refresh_token);
   oauth_token_getter_task_runner_ =
       base::SequencedTaskRunner::GetCurrentDefault();
+  support_id_ = support_id;
 }
 
 CorpSessionAuthzServiceClientFactory::~CorpSessionAuthzServiceClientFactory() =
@@ -37,7 +39,8 @@ CorpSessionAuthzServiceClientFactory::Create() {
   return std::make_unique<CorpSessionAuthzServiceClient>(
       url_loader_factory_,
       std::make_unique<OAuthTokenGetterProxy>(oauth_token_getter_->GetWeakPtr(),
-                                              oauth_token_getter_task_runner_));
+                                              oauth_token_getter_task_runner_),
+      support_id_);
 }
 
 AuthenticationMethod CorpSessionAuthzServiceClientFactory::method() {

@@ -10,7 +10,9 @@
 
 namespace media {
 
-H265AnnexBToHevcBitstreamConverter::H265AnnexBToHevcBitstreamConverter() {
+H265AnnexBToHevcBitstreamConverter::H265AnnexBToHevcBitstreamConverter(
+    bool add_parameter_sets_in_bitstream)
+    : add_parameter_sets_in_bitstream_(add_parameter_sets_in_bitstream) {
   // These configuration items never change.
   config_.configurationVersion = 1;
   config_.lengthSizeMinusOne = 3;
@@ -29,7 +31,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
     base::span<uint8_t> output,
     bool* config_changed_out,
     size_t* size_out) {
-  std::vector<H265NALU> slice_units;
+  std::vector<base::span<const uint8_t>> slice_units;
   size_t data_size = 0;
   bool config_changed = false;
   H265NALU nalu;
@@ -47,8 +49,9 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
   base::flat_set<int> vps_to_include;
 
   // Scan input buffer looking for two main types of NALUs
-  //  1. VPS, SPS and PPS. They'll be added to the HEVC configuration |config_|
-  //     and will *not* be copied to |output|.
+  //  1. VPS, SPS and PPS. They'll be added to the HEVC configuration `config_`
+  //     and maybe be copied to `output` based on
+  //     `add_parameter_sets_in_bitstream_`.
   //  2. Slices. They'll being copied into the output buffer, but also affect
   //     what configuration (profile and level) is active now.
   // A configure change will only happen on IDR frame. It is expected the
@@ -183,9 +186,40 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
       }
         [[fallthrough]];
       default:
-        slice_units.push_back(nalu);
+        // TODO(crbug.com/40284755): The `nalu.data` should hold a span instead
+        // of a pointer.
+        slice_units.emplace_back(nalu.data.get(),
+                                 base::checked_cast<size_t>(nalu.size));
         data_size += config_.lengthSizeMinusOne + 1 + nalu.size;
         break;
+    }
+  }
+
+  if (config_changed && add_parameter_sets_in_bitstream_) {
+    // Insert parameter sets, in the order of PPS, SPS and VPS.
+    for (auto& id : pps_to_include) {
+      auto it = id2pps_.find(id);
+      if (it == id2pps_.end()) {
+        return MP4Status::Codes::kFailedToLookupPPS;
+      }
+      slice_units.insert(slice_units.begin(), it->second);
+      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
+    }
+    for (auto& id : sps_to_include) {
+      auto it = id2sps_.find(id);
+      if (it == id2sps_.end()) {
+        return MP4Status::Codes::kFailedToLookupSPS;
+      }
+      slice_units.insert(slice_units.begin(), it->second);
+      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
+    }
+    for (auto& id : vps_to_include) {
+      auto it = id2vps_.find(id);
+      if (it == id2vps_.end()) {
+        return MP4Status::Codes::kFailedToLookupVPS;
+      }
+      slice_units.insert(slice_units.begin(), it->second);
+      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
     }
   }
 
@@ -200,15 +234,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
   base::SpanWriter writer(output);
   for (auto& unit : slice_units) {
     bool written_ok =
-        writer.WriteU32BigEndian(unit.size) &&
-        writer.Write(
-            // SAFETY: `unit` is constructed with a size that is the number of
-            // elements at the data pointer.
-            //
-            // TODO(crbug.com/40284755): The `unit` should hold a span instead
-            // of a pointer.
-            UNSAFE_TODO(base::span(unit.data.get(),
-                                   base::checked_cast<size_t>(unit.size))));
+        writer.WriteU32BigEndian(unit.size()) && writer.Write(unit);
     if (!written_ok) {
       return MP4Status::Codes::kBufferTooSmall;
     }
@@ -217,7 +243,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
   DCHECK_EQ(writer.num_written(), data_size);
 
   // Now when we are sure that everything is written and fits nicely,
-  // we can update parts of the |config_| that were changed by this data chunk.
+  // we can update parts of the `config_` that were changed by this data chunk.
   if (config_changed) {
     if (new_active_sps_id < 0)
       new_active_sps_id = active_sps_id_;
@@ -301,41 +327,53 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
 
     // We write 3 arrays, in the order of VPS array, SPS array and PPS array.
     auto hvcc_array_idx = 0;
-    mp4::HEVCDecoderConfigurationRecord::HVCCNALUnit nal_unit;
+
     mp4::HEVCDecoderConfigurationRecord::HVCCNALArray nalu_array;
     // bit 7: array_completeness. When set to 1, corresponding type of
     // NAL unit will be in the array only and none are in the stream; otherwise
     // they may additionally be in the stream.
-    uint8_t first_byte = (1 << 7) | (H265NALU::VPS_NUT & 0x3F);
-    if (id2vps_.size() > 0) {
+    uint8_t first_byte = ((add_parameter_sets_in_bitstream_ ? 0 : 1) << 7) |
+                         (H265NALU::VPS_NUT & 0x3F);
+    if (vps_to_include.size() > 0) {
       nalu_array.first_byte = first_byte;
-      for (auto& vps : id2vps_) {
-        nal_unit.assign(vps.second.begin(), vps.second.end());
-        nalu_array.units.push_back(nal_unit);
+      for (int id : vps_to_include) {
+        auto it = id2vps_.find(id);
+        if (it == id2vps_.end()) {
+          return MP4Status::Codes::kFailedToLookupVPS;
+        }
+        nalu_array.units.push_back(it->second);
       }
       config_.arrays.push_back(nalu_array);
       hvcc_array_idx++;
     }
 
-    first_byte = (1 << 7) | (H265NALU::SPS_NUT & 0x3F);
+    first_byte = ((add_parameter_sets_in_bitstream_ ? 0 : 1) << 7) |
+                 (H265NALU::SPS_NUT & 0x3F);
     nalu_array.units.clear();
-    if (id2sps_.size() > 0) {
+    if (sps_to_include.size() > 0) {
       nalu_array.first_byte = first_byte;
-      for (auto& sps : id2sps_) {
-        nal_unit.assign(sps.second.begin(), sps.second.end());
-        nalu_array.units.push_back(nal_unit);
+      for (int id : sps_to_include) {
+        auto it = id2sps_.find(id);
+        if (it == id2sps_.end()) {
+          return MP4Status::Codes::kFailedToLookupSPS;
+        }
+        nalu_array.units.push_back(it->second);
       }
       config_.arrays.push_back(nalu_array);
       hvcc_array_idx++;
     }
 
-    first_byte = (1 << 7) | (H265NALU::PPS_NUT & 0x3F);
+    first_byte = ((add_parameter_sets_in_bitstream_ ? 0 : 1) << 7) |
+                 (H265NALU::PPS_NUT & 0x3F);
     nalu_array.units.clear();
-    if (id2sps_.size() > 0) {
+    if (pps_to_include.size() > 0) {
       nalu_array.first_byte = first_byte;
-      for (auto& pps : id2pps_) {
-        nal_unit.assign(pps.second.begin(), pps.second.end());
-        nalu_array.units.push_back(nal_unit);
+      for (int id : pps_to_include) {
+        auto it = id2pps_.find(id);
+        if (it == id2pps_.end()) {
+          return MP4Status::Codes::kFailedToLookupPPS;
+        }
+        nalu_array.units.push_back(it->second);
       }
       config_.arrays.push_back(nalu_array);
       hvcc_array_idx++;

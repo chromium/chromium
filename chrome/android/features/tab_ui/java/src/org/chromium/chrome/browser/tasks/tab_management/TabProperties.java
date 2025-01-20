@@ -97,11 +97,11 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION_STRING =
+    public static final WritableObjectPropertyKey<TextResolver> CONTENT_DESCRIPTION_TEXT_RESOLVER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> ACTION_BUTTON_DESCRIPTION_STRING =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TextResolver>
+            ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<ShoppingPersistedTabDataFetcher>
             SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
@@ -153,8 +153,8 @@ public class TabProperties {
                 URL_DOMAIN,
                 ACCESSIBILITY_DELEGATE,
                 CARD_TYPE,
-                CONTENT_DESCRIPTION_STRING,
-                ACTION_BUTTON_DESCRIPTION_STRING,
+                CONTENT_DESCRIPTION_TEXT_RESOLVER,
+                ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
@@ -183,7 +183,7 @@ public class TabProperties {
                 TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
-                ACTION_BUTTON_DESCRIPTION_STRING,
-                CONTENT_DESCRIPTION_STRING,
+                ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
+                CONTENT_DESCRIPTION_TEXT_RESOLVER,
             };
 }

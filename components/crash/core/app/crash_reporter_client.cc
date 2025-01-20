@@ -29,6 +29,9 @@ const char kDefaultUploadURL[] = "https://clients2.google.com/cr/report";
 
 }  // namespace
 
+ProductInfo::ProductInfo() = default;
+ProductInfo::~ProductInfo() = default;
+
 void SetCrashReporterClient(CrashReporterClient* client) {
   g_client = client;
 }
@@ -40,9 +43,6 @@ CrashReporterClient* GetCrashReporterClient() {
 
 CrashReporterClient::CrashReporterClient() = default;
 CrashReporterClient::~CrashReporterClient() = default;
-
-CrashReporterClient::ProductInfo::ProductInfo() = default;
-CrashReporterClient::ProductInfo::~ProductInfo() = default;
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
 void CrashReporterClient::SetCrashReporterClientIdFromGUID(

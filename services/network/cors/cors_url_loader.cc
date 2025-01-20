@@ -307,7 +307,8 @@ CorsURLLoader::CorsURLLoader(
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
     raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
     NetworkContext* context,
-    net::CookieSettingOverrides factory_cookie_setting_overrides)
+    net::CookieSettingOverrides factory_cookie_setting_overrides,
+    net::CookieSettingOverrides devtools_cookie_setting_overrides)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -335,7 +336,8 @@ CorsURLLoader::CorsURLLoader(
       context_(context),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer),
-      factory_cookie_setting_overrides_(factory_cookie_setting_overrides) {
+      factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
+      devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
               perfetto::Flow::ProcessScoped(net_log_.source().id));
   CHECK(url_loader_network_service_observer_ != nullptr);
@@ -504,6 +506,11 @@ void CorsURLLoader::FollowRedirect(
   // instead of being handled in `network::URLLoader`.
   //
   // See also: https://crbug.com/1293891
+  //
+  // Note that this is also needed to prevent a compromised renderer from using
+  // `new_url` to access arbitrary same-origin urls on a more private network,
+  // if it ever gets Private Network Access permissions to access a URL that is
+  // redirected.
   request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
 
   // Similarly, when we follow a redirect, we may make a different decision as
@@ -875,7 +882,9 @@ void CorsURLLoader::StartRequest() {
             request_.url, request_.site_for_cookies,
             isolation_info_.top_frame_origin(),
             network::URLLoader::CalculateCookieSettingOverrides(
-                factory_cookie_setting_overrides_, request_)) ==
+                factory_cookie_setting_overrides_,
+                devtools_cookie_setting_overrides_, request_,
+                /*emit_metrics=*/false)) ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the
       // server may respond with a "retry" header. The server needs to know the
@@ -1465,7 +1474,16 @@ bool CorsURLLoader::
 
   GURL data_origin_url(*request_header);
   CHECK(data_origin_url.is_valid());
-  CHECK(url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url));
+
+  if (!url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url)) {
+    // The data origin used is not the worklet script's origin, so we don't
+    // require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
+    // header. Instead, a separate request is sent in parallel to the origin of
+    // `data_origin_url`, with path
+    // "/.well-known/shared-storage/trusted-origins", to confirm whether or not
+    // this worklet script is allowed to process that origin's data.
+    return true;
+  }
 
   std::optional<std::string> response_header =
       GetHeaderString(response, "Shared-Storage-Cross-Origin-Worklet-Allowed");

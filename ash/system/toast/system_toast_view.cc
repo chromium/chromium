@@ -5,18 +5,22 @@
 #include "ash/system/toast/system_toast_view.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -31,22 +35,27 @@ namespace {
 // Margin constants
 constexpr gfx::Insets kToastInteriorMargin = gfx::Insets::VH(8, 16);
 constexpr gfx::Insets kMultilineToastInteriorMargin = gfx::Insets::VH(8, 24);
-constexpr gfx::Insets kToastWithButtonInteriorMargin =
+constexpr gfx::Insets kToastWithTextButtonInteriorMargin =
     gfx::Insets::TLBR(2, 16, 2, 2);
-constexpr gfx::Insets kMultilineToastWithButtonInteriorMargin =
+constexpr gfx::Insets kMultilineToastWithTextButtonInteriorMargin =
     gfx::Insets::TLBR(8, 24, 8, 12);
 
 // Contents constants
 constexpr int kToastLabelMaxWidth = 512;
 constexpr int kToastLeadingIconSize = 20;
 constexpr int kToastLeadingIconPaddingWidth = 14;
-constexpr int kDismissButtonFocusRingHaloInset = 1;
+constexpr int kTextButtonFocusRingHaloInset = 1;
+// Padding to add space between the toast's body text and icon button.
+constexpr gfx::Insets kToastIconButtonLeftPadding =
+    gfx::Insets::TLBR(0, 14, 0, 0);
 
 }  // namespace
 
 SystemToastView::SystemToastView(const std::u16string& text,
-                                 const std::u16string& dismiss_text,
-                                 base::RepeatingClosure dismiss_callback,
+                                 ButtonType button_type,
+                                 const std::u16string& button_text,
+                                 const gfx::VectorIcon* button_icon,
+                                 base::RepeatingClosure button_callback,
                                  const gfx::VectorIcon* leading_icon) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
@@ -100,31 +109,56 @@ SystemToastView::SystemToastView(const std::u16string& text,
                            views::MaximumFlexSizeRule::kScaleToMaximum))
           .Build());
 
-  const bool has_button = !dismiss_text.empty();
-  if (has_button) {
-    AddChildView(
-        views::Builder<PillButton>()
-            .CopyAddressTo(&dismiss_button_)
-            .SetID(VIEW_ID_TOAST_BUTTON)
-            .SetCallback(std::move(dismiss_callback))
-            .SetText(dismiss_text)
-            .SetTooltipText(dismiss_text)
-            .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
-            .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
-            .Build());
-
-    auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
-    button_focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
-    button_focus_ring->SetOutsetFocusRingDisabled(true);
+  switch (button_type) {
+    case ButtonType::kNone:
+      CHECK(button_text.empty());
+      CHECK(button_icon->is_empty());
+      break;
+    case ButtonType::kTextButton: {
+      CHECK(!button_text.empty());
+      AddChildView(
+          views::Builder<PillButton>()
+              .CopyAddressTo(&button_)
+              .SetID(VIEW_ID_TOAST_BUTTON)
+              .SetCallback(std::move(button_callback))
+              .SetText(button_text)
+              .SetTooltipText(button_text)
+              .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
+              .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+              .Build());
+      auto* button_focus_ring = views::FocusRing::Get(button_);
+      button_focus_ring->SetHaloInset(kTextButtonFocusRingHaloInset);
+      button_focus_ring->SetOutsetFocusRingDisabled(true);
+      break;
+    }
+    case ButtonType::kIconButton: {
+      CHECK(!button_text.empty());
+      CHECK(!button_icon->is_empty());
+      auto* icon_button =
+          AddChildView(IconButton::Builder()
+                           .SetViewId(VIEW_ID_TOAST_BUTTON)
+                           .SetType(IconButton::Type::kSmallFloating)
+                           .SetVectorIcon(button_icon)
+                           .SetCallback(std::move(button_callback))
+                           .SetAccessibleName(button_text)
+                           .Build());
+      icon_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+      icon_button->SetIconColor(cros_tokens::kCrosSysPrimary);
+      icon_button->SetProperty(views::kMarginsKey, kToastIconButtonLeftPadding);
+      button_ = icon_button;
+      break;
+    }
   }
 
   // Need to size label to get the required number of lines.
   label_->SizeToPreferredSize();
+  const bool has_text_button = button_type == ButtonType::kTextButton;
   SetInteriorMargin(label_->GetRequiredLines() > 1
-                        ? has_button ? kMultilineToastWithButtonInteriorMargin
-                                     : kMultilineToastInteriorMargin
-                    : has_button ? kToastWithButtonInteriorMargin
-                                 : kToastInteriorMargin);
+                        ? has_text_button
+                              ? kMultilineToastWithTextButtonInteriorMargin
+                              : kMultilineToastInteriorMargin
+                    : has_text_button ? kToastWithTextButtonInteriorMargin
+                                      : kToastInteriorMargin);
 
   const int rounded_corner_radius = GetPreferredSize().height() / 2;
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(rounded_corner_radius));

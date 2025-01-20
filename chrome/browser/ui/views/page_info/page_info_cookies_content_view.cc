@@ -17,6 +17,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -24,6 +25,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -31,6 +33,13 @@ namespace {
 using ::content_settings::CookieControlsUtil;
 using ::content_settings::TrackingProtectionFeature;
 using ::content_settings::TrackingProtectionFeatureType;
+
+const ui::ImageModel GetThirdPartyCookiesIcon(
+    bool third_party_cookies_enabled) {
+  return PageInfoViewFactory::GetImageModel(
+      third_party_cookies_enabled ? views::kEyeRefreshIcon
+                                  : views::kEyeCrossedRefreshIcon);
+}
 
 class ThirdPartyCookieLabelWrapper : public views::BoxLayoutView {
   METADATA_HEADER(ThirdPartyCookieLabelWrapper, views::BoxLayoutView)
@@ -90,6 +99,11 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
       views::BoxLayout::Orientation::kVertical));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   // The top and bottom margins should be the same as for buttons shown below.
   const auto button_insets = layout_provider->GetInsetsMetric(
@@ -159,20 +173,17 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
               this),
           PageInfoViewFactory::GetPermissionIcon(info),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
-          /*secondary_text=*/std::u16string(),
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP),
           /*subtitle_text=*/u" ", PageInfoViewFactory::GetLaunchIcon()));
   cookies_dialog_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
   cookies_dialog_button_->SetProperty(views::kElementIdentifierKey,
                                       kCookieDialogButton);
-  cookies_dialog_button_->title()->SetTextStyle(
-      views::style::STYLE_BODY_3_MEDIUM);
-  cookies_dialog_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
-  cookies_dialog_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
-  cookies_dialog_button_->subtitle()->SetEnabledColorId(
-      kColorPageInfoSubtitleForeground);
+  cookies_dialog_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP));
+  cookies_dialog_button_->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+  cookies_dialog_button_->SetSubtitleTextStyleAndColor(
+      views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
 }
 
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
@@ -313,8 +324,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
                                           feature.status, blocking_status,
                                           expiration);
   SetThirdPartyCookiesToggle(protections_on, feature.status);
-  third_party_cookies_row_->SetIcon(
-      PageInfoViewFactory::GetThirdPartyCookiesIcon(!protections_on));
+  third_party_cookies_row_->SetIcon(GetThirdPartyCookiesIcon(!protections_on));
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 
@@ -390,19 +400,20 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetRwsIcon(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP),
+          PageInfoViewFactory::GetImageModel(vector_icons::kTenancyIcon),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
-          is_managed ? std::optional<ui::ImageModel>(
-                           PageInfoViewFactory::GetEnforcedByPolicyIcon())
-                     : std::nullopt));
+          is_managed
+              ? PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon)
+              : ui::ImageModel()));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
-  rws_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  rws_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
-  rws_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
-  rws_button_->subtitle()->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  rws_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP));
+  rws_button_->SetTitleTextStyleAndColor(views::style::STYLE_BODY_3_MEDIUM,
+                                         kColorPageInfoForeground);
+  rws_button_->SetSubtitleTextStyleAndColor(views::style::STYLE_BODY_4,
+                                            kColorPageInfoSubtitleForeground);
 }
 
 void PageInfoCookiesContentView::RwsSettingsButtonClicked(ui::Event const&) {
@@ -445,11 +456,9 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_row_->SetTitle(l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL));
   third_party_cookies_row_->SetIcon(
-      PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon());
-  third_party_cookies_row_->title()->SetTextStyle(
-      views::style::STYLE_BODY_3_MEDIUM);
-  third_party_cookies_row_->title()->SetEnabledColorId(
-      kColorPageInfoForeground);
+      PageInfoViewFactory::GetImageModel(views::kEyeCrossedRefreshIcon));
+  third_party_cookies_row_->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
 
   third_party_cookies_toggle_subtitle_ =
       third_party_cookies_row_->AddSecondaryLabel(std::u16string());

@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -40,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -47,13 +47,11 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -88,13 +86,15 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsi
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -109,6 +109,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -137,7 +138,6 @@ public class SafetyCheckMediatorTest {
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    @Mock private SyncConsentActivityLauncher mSyncLauncher;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
@@ -218,7 +218,9 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(true);
 
@@ -226,8 +228,7 @@ public class SafetyCheckMediatorTest {
         // account storage.
         // This will no longer be true once the local and account store split happens.
         if (mUseGmsApi) {
-            when(mSyncService.getSelectedTypes())
-                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+            when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         } else {
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         }
@@ -243,7 +244,6 @@ public class SafetyCheckMediatorTest {
                 mUpdatesDelegate,
                 new SafetyCheckBridge(mProfile),
                 mSigninLauncher,
-                mSyncLauncher,
                 mSyncService,
                 mPrefService,
                 mPasswordStoreBridge,
@@ -774,7 +774,6 @@ public class SafetyCheckMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testClickListenerStartsSignInFlowWhenUserSignedOut() {
         mMediator.setInitialState();
         setUpPasswordCheckToReturnError(
@@ -785,20 +784,20 @@ public class SafetyCheckMediatorTest {
 
         click(getPasswordsClickListener(mPasswordCheckModel));
 
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mSigninLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(),
                         eq(mProfile),
-                        any(),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .ADD_ACCOUNT),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.NONE),
-                        eq(SigninAccessPoint.SAFETY_CHECK),
-                        isNull());
+                        configCaptor.capture(),
+                        eq(SigninAccessPoint.SAFETY_CHECK));
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(
+                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
+        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+        assertNull(config.selectedCoreAccountId);
     }
 
     @Test

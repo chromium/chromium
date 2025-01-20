@@ -31,7 +31,8 @@ void LogStoredIbanMetrics(
     const std::string histogram_suffix =
         ibans[0]->record_type() == Iban::kLocalIban ? "Local" : "Server";
     for (const std::unique_ptr<Iban>& iban : ibans) {
-      const base::TimeDelta time_since_last_use = now - iban->use_date();
+      const base::TimeDelta time_since_last_use =
+          now - iban->usage_history().use_date();
       if (time_since_last_use > disused_data_threshold) {
         num_disused_ibans++;
       }
@@ -71,7 +72,7 @@ void LogDaysSinceLastIbanUse(const Iban& iban) {
                     (iban.record_type() == Iban::RecordType::kServerIban)
                         ? "Server"
                         : "Local"}),
-      (AutofillClock::Now() - iban.use_date()).InDays());
+      (AutofillClock::Now() - iban.usage_history().use_date()).InDays());
 }
 
 void LogStrikesPresentWhenIbanSaved(const int num_strikes,

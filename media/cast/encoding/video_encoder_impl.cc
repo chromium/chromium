@@ -29,7 +29,7 @@ namespace {
 void InitializeEncoderOnEncoderThread(
     const scoped_refptr<CastEnvironment>& environment,
     SoftwareVideoEncoder* encoder) {
-  DCHECK(environment->CurrentlyOn(CastEnvironment::VIDEO));
+  DCHECK(environment->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
   encoder->Initialize();
 }
 
@@ -40,7 +40,7 @@ void EncodeVideoFrameOnEncoderThread(
     base::TimeTicks reference_time,
     const VideoEncoderImpl::CodecDynamicConfig& dynamic_config,
     VideoEncoderImpl::FrameEncodedCallback output_cb) {
-  DCHECK(environment->CurrentlyOn(CastEnvironment::VIDEO));
+  DCHECK(environment->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
   if (dynamic_config.key_frame_requested) {
     encoder->GenerateKeyFrame();
   }
@@ -51,8 +51,8 @@ void EncodeVideoFrameOnEncoderThread(
       video_frame->metadata().capture_begin_time;
   encoded_frame->capture_end_time = video_frame->metadata().capture_end_time;
   encoder->Encode(std::move(video_frame), reference_time, encoded_frame.get());
-  encoded_frame->encode_completion_time = environment->Clock()->NowTicks();
-  environment->PostTask(CastEnvironment::MAIN, FROM_HERE,
+  encoded_frame->encode_completion_time = environment->NowTicks();
+  environment->PostTask(CastEnvironment::ThreadId::kMain, FROM_HERE,
                         base::BindOnce(output_cb, std::move(encoded_frame)));
 }
 }  // namespace
@@ -64,7 +64,6 @@ VideoEncoderImpl::VideoEncoderImpl(
     StatusChangeCallback status_change_cb,
     FrameEncodedCallback output_cb)
     : cast_environment_(cast_environment) {
-  CHECK(cast_environment_->HasVideoThread());
   CHECK(status_change_cb);
   CHECK(output_cb);
 
@@ -74,19 +73,20 @@ VideoEncoderImpl::VideoEncoderImpl(
     encoder_ =
         std::make_unique<VpxEncoder>(video_config, std::move(metrics_provider));
     cast_environment_->PostTask(
-        CastEnvironment::VIDEO, FROM_HERE,
+        CastEnvironment::ThreadId::kVideo, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
                        encoder_.get()));
   } else if (codec == VideoCodec::kUnknown &&
              video_config.video_codec_params.value()
                  .enable_fake_codec_for_tests) {
-    encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(video_config);
+    encoder_ = std::make_unique<FakeSoftwareVideoEncoder>(
+        video_config, std::move(metrics_provider));
 #if BUILDFLAG(ENABLE_LIBAOM)
   } else if (codec == VideoCodec::kAV1) {
     encoder_ =
         std::make_unique<Av1Encoder>(video_config, std::move(metrics_provider));
     cast_environment_->PostTask(
-        CastEnvironment::VIDEO, FROM_HERE,
+        CastEnvironment::ThreadId::kVideo, FROM_HERE,
         base::BindOnce(&InitializeEncoderOnEncoderThread, cast_environment,
                        encoder_.get()));
 #endif
@@ -98,17 +98,17 @@ VideoEncoderImpl::VideoEncoderImpl(
   dynamic_config_.bit_rate = video_config.start_bitrate;
 
   cast_environment_->PostTask(
-      CastEnvironment::MAIN, FROM_HERE,
+      CastEnvironment::ThreadId::kMain, FROM_HERE,
       base::BindOnce(
           std::move(status_change_cb),
           encoder_.get() ? STATUS_INITIALIZED : STATUS_UNSUPPORTED_CODEC));
 }
 
 VideoEncoderImpl::~VideoEncoderImpl() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   if (encoder_) {
     cast_environment_->PostTask(
-        CastEnvironment::VIDEO, FROM_HERE,
+        CastEnvironment::ThreadId::kVideo, FROM_HERE,
         base::BindOnce(&base::DeletePointer<SoftwareVideoEncoder>,
                        encoder_.release()));
   }
@@ -117,11 +117,11 @@ VideoEncoderImpl::~VideoEncoderImpl() {
 bool VideoEncoderImpl::EncodeVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   DCHECK(!video_frame->visible_rect().IsEmpty());
 
   cast_environment_->PostTask(
-      CastEnvironment::VIDEO, FROM_HERE,
+      CastEnvironment::ThreadId::kVideo, FROM_HERE,
       base::BindOnce(&EncodeVideoFrameOnEncoderThread, cast_environment_,
                      encoder_.get(), std::move(video_frame), reference_time,
                      dynamic_config_, output_cb_));

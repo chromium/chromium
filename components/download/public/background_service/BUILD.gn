@@ -9,9 +9,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-source_set("public") {
+component("public") {
+  defines = [ "IS_COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_IMPL" ]
+
   sources = [
-    "background_download_service.cc",
     "background_download_service.h",
     "client.cc",
     "client.h",
@@ -52,10 +53,10 @@ source_set("public") {
     "//url",
   ]
 
-  if (!use_blink) {
-    public_deps += [ "//components/download/public/task:task_type" ]
-  } else {
+  if (use_blink) {
     public_deps += [ "//components/download/public/task:public" ]
+  } else {
+    public_deps += [ "//components/download/public/task:task_type" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

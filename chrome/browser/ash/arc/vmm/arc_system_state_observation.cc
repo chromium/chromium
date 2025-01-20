@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 
 namespace arc {
 

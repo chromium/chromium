@@ -6,13 +6,12 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_UTILS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace security_interstitials {
 
 // Provides utilities for security interstitials on //content-based platforms.
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Launches date and time settings as appropriate based on the platform (not
 // supported on ChromeOS, where taking this action requires embedder-level
 // machinery.

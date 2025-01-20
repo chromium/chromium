@@ -39,6 +39,8 @@ class ASH_EXPORT FakePowerStatus : public PowerStatus {
   // Sets the conditions for the battery to not display any icons (default).
   void SetDefaultState();
 
+  bool proto_initialized() { return proto_initialized_; }
+
   // PowerStatus:
   bool IsBatteryPresent() const override;
   bool IsBatterySaverActive() const override;

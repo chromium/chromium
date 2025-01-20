@@ -181,10 +181,12 @@ pylib/junit/junit_test_instance.py
 pylib/local/__init__.py
 pylib/local/device/__init__.py
 pylib/local/device/local_device_environment.py
+pylib/local/device/local_device_ethernet_environment.py
 pylib/local/device/local_device_gtest_run.py
 pylib/local/device/local_device_instrumentation_test_run.py
 pylib/local/device/local_device_monkey_test_run.py
 pylib/local/device/local_device_test_run.py
+pylib/local/device/skylab_environment.py
 pylib/local/emulator/__init__.py
 pylib/local/emulator/avd.py
 pylib/local/emulator/ini.py

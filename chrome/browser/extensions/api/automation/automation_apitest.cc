@@ -225,7 +225,7 @@ chrome.test.loadScript(scriptUrl).then(function() {
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class AutomationApiTest : public ExtensionApiTest {
  public:
@@ -490,7 +490,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Find) {
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/find.js")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Attributes) {
+// Flaky on Win and ChromeOS: crbug.com/375385426
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Attributes DISABLED_Attributes
+#else
+#define MAYBE_Attributes Attributes
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_Attributes) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/attributes.js")) << message_;
 }
@@ -501,7 +507,13 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ReverseRelations) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChange) {
+// TODO(crbug.com/389060012): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TreeChange DISABLED_TreeChange
+#else
+#define MAYBE_TreeChange TreeChange
+#endif
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_TreeChange) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change.js")) << message_;
 }

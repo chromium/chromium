@@ -3,8 +3,8 @@ Short Name: libavif
 URL: https://github.com/AOMediaCodec/libavif
 Version: N/A
 Revision: DEPS
-License: 2-Clause BSD
-License File: LICENSE
+License: BSD-2-Clause, MIT
+License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
 

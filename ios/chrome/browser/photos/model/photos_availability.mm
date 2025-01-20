@@ -20,11 +20,6 @@
 bool IsSaveToPhotosAvailable(ProfileIOS* profile) {
   CHECK(profile);
 
-  // Check flag.
-  if (!base::FeatureList::IsEnabled(kIOSSaveToPhotos)) {
-    return false;
-  }
-
   // Check policy.
   if (profile->GetPrefs()->GetInteger(
           prefs::kIosSaveToPhotosContextMenuPolicySettings) ==

@@ -166,6 +166,20 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 }
 
+TEST_F(PerformanceManagerImplTest, GetGraphImpl) {
+  // Create a page node for something to target.
+  std::unique_ptr<PageNodeImpl> page_node =
+      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
+                                             PagePropertyFlags{},
+                                             base::TimeTicks::Now());
+
+  ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+  EXPECT_EQ(page_node.get()->graph(), graph);
+
+  PerformanceManagerImpl::DeleteNode(std::move(page_node));
+}
+
 TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =

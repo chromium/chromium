@@ -4,8 +4,12 @@
 
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -13,20 +17,33 @@
 
 namespace user_education {
 
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kFeatureEnabledPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
+
+FeatureEnabledPrecondition::FeatureEnabledPrecondition(
+    const base::Feature& feature)
+    : CachingFeaturePromoPrecondition(
+          kFeatureEnabledPrecondition,
+          "Feature Enabled",
+          base::FeatureList::IsEnabled(feature)
+              ? FeaturePromoResult::Success()
+              : FeaturePromoResult::kFeatureDisabled) {}
+
+FeatureEnabledPrecondition::~FeatureEnabledPrecondition() = default;
 
 FeatureEngagementTrackerInitializedPrecondition::
     FeatureEngagementTrackerInitializedPrecondition(
         feature_engagement::Tracker* tracker)
     : CachingFeaturePromoPrecondition(
           kFeatureEngagementTrackerInitializedPrecondition,
-          FeaturePromoResult::kBlockedByConfig,
           "Feature Engagement Tracker Initialized",
-          false) {
+          FeaturePromoResult::kBlockedByConfig) {
   if (tracker) {
     tracker->AddOnInitializedCallback(
         base::BindOnce(&FeatureEngagementTrackerInitializedPrecondition::
@@ -44,9 +61,9 @@ void FeatureEngagementTrackerInitializedPrecondition::
     OnFeatureEngagementTrackerInitialized(
         bool tracker_initialized_successfully) {
   if (tracker_initialized_successfully) {
-    set_is_allowed(true);
+    set_check_result(FeaturePromoResult::Success());
   } else {
-    set_failure(FeaturePromoResult::kError);
+    set_check_result(FeaturePromoResult::kError);
   }
 }
 
@@ -56,7 +73,6 @@ MeetsFeatureEngagementCriteriaPrecondition::
         const feature_engagement::Tracker& tracker)
     : FeaturePromoPreconditionBase(
           kMeetsFeatureEngagementCriteriaPrecondition,
-          FeaturePromoResult::kBlockedByConfig,
           base::StringPrintf("Feature %s Meets Feature Engagement Criteria",
                              feature.name)),
       feature_(feature),
@@ -65,16 +81,18 @@ MeetsFeatureEngagementCriteriaPrecondition::
 MeetsFeatureEngagementCriteriaPrecondition::
     ~MeetsFeatureEngagementCriteriaPrecondition() = default;
 
-bool MeetsFeatureEngagementCriteriaPrecondition::IsAllowed() const {
+FeaturePromoResult
+MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   // Note: if we don't have access to `ListEvents()` this is a no-op.
 #if !BUILDFLAG(IS_ANDROID)
   for (const auto& [config, count] : tracker_->ListEvents(*feature_)) {
     if (!config.comparator.MeetsCriteria(count)) {
-      return false;
+      return FeaturePromoResult::kBlockedByConfig;
     }
   }
 #endif
-  return true;
+  return FeaturePromoResult::Success();
 }
 
 DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
@@ -85,7 +103,6 @@ AnchorElementPrecondition::AnchorElementPrecondition(
     const AnchorElementProvider& provider,
     ui::ElementContext default_context)
     : FeaturePromoPreconditionBase(kAnchorElementPrecondition,
-                                   FeaturePromoResult::kBlockedByUi,
                                    "Anchor Element Visible"),
       provider_(provider),
       default_context_(default_context) {
@@ -94,10 +111,53 @@ AnchorElementPrecondition::AnchorElementPrecondition(
 
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
-bool AnchorElementPrecondition::IsAllowed() const {
+FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   auto* const element = provider_->GetAnchorElement(default_context_);
-  GetCachedData(kAnchorElement) = element;
-  return element != nullptr;
+  GetCachedDataForComputation(data, kAnchorElement) = element;
+  return element != nullptr ? FeaturePromoResult::Success()
+                            : FeaturePromoResult::kBlockedByUi;
+}
+
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(LifecyclePrecondition,
+                                    std::unique_ptr<FeaturePromoLifecycle>,
+                                    kLifecycle);
+
+LifecyclePrecondition::LifecyclePrecondition(
+    std::unique_ptr<FeaturePromoLifecycle> lifecycle,
+    bool for_demo)
+    : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check"),
+      for_demo_(for_demo) {
+  CHECK(lifecycle);
+  InitCachedData(kLifecycle, std::move(lifecycle));
+}
+
+LifecyclePrecondition::~LifecyclePrecondition() = default;
+
+FeaturePromoResult LifecyclePrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  auto* const lifecycle = GetCachedDataForComputation(data, kLifecycle).get();
+  return for_demo_ ? FeaturePromoResult::Success() : lifecycle->CanShow();
+}
+
+SessionPolicyPrecondition::SessionPolicyPrecondition(
+    FeaturePromoSessionPolicy* session_policy,
+    FeaturePromoPriorityProvider::PromoPriorityInfo priority_info,
+    GetCurrentPromoInfoCallback get_current_promo_info_callback)
+    : FeaturePromoPreconditionBase(kSessionPolicyPrecondition,
+                                   "Session Policy Check"),
+      session_policy_(*session_policy),
+      priority_info_(priority_info),
+      get_current_promo_info_callback_(
+          std::move(get_current_promo_info_callback)) {}
+
+SessionPolicyPrecondition::~SessionPolicyPrecondition() = default;
+
+// FeaturePromoPrecondition:
+FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  return session_policy_->CanShowPromo(priority_info_,
+                                       get_current_promo_info_callback_.Run());
 }
 
 }  // namespace user_education

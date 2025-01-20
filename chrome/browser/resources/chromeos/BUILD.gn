@@ -23,6 +23,8 @@ group("resources") {
     "bluetooth_pairing_dialog:resources",
     "borealis_installer:resources",
     "cloud_upload:resources",
+    "crostini_installer:resources",
+    "crostini_upgrader:resources",
     "desk_api:resources",
     "edu_coexistence:resources",
     "emoji_picker:resources",
@@ -50,7 +52,7 @@ group("resources") {
     "set_time_dialog:resources",
     "skyvault:resources",
     "supervision:resources",
-    "vc_tray_tester:resources",
+    "vm:resources",
   ]
 }
 
@@ -91,15 +93,11 @@ group("closure_compile") {
     "account_manager/components:closure_compile",
     "arc_account_picker:closure_compile",
     "assistant_optin:closure_compile",
-    "crostini_installer:closure_compile",
-    "crostini_upgrader:closure_compile",
     "emulator:closure_compile",
     "multidevice_internals:closure_compile",
-    "multidevice_setup:closure_compile",
     "password_change:closure_compile",
     "smb_shares:closure_compile",
     "sys_internals:closure_compile",
-    "vm:closure_compile",
   ]
 }
 

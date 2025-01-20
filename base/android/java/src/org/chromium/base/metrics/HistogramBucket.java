@@ -4,7 +4,10 @@
 
 package org.chromium.base.metrics;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Represents one single bucket of a histogram, with the count of records in that bucket. */
+@NullMarked
 public class HistogramBucket {
     public final int mMin;
     public final long mMax;

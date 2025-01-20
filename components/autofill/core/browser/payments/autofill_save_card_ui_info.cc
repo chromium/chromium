@@ -6,8 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -90,6 +90,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.is_for_upload = is_for_upload;
   ui_info.logo_icon_id = logo_icon_id;
   ui_info.issuer_icon_id = CreditCard::IconResourceId(card.network());
+  ui_info.card_network = card.NetworkForDisplay();
   ui_info.legal_message_lines = legal_message_lines;
   ui_info.card_label = card.CardNameAndLastFourDigits();
   ui_info.card_sub_label = card.AbbreviatedExpirationDateForDisplay(false);

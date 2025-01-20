@@ -66,7 +66,8 @@ class PrivacyScreenToastManagedView : public views::View {
 
     const SkColor icon_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary);
-    icon->SetImage(gfx::CreateVectorIcon(kSystemTrayManagedIcon, icon_color));
+    icon->SetImage(
+        ui::ImageModel::FromVectorIcon(kSystemTrayManagedIcon, icon_color));
 
     AddChildView(label);
     AddChildView(icon);
@@ -159,16 +160,8 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   std::u16string enabled_state = l10n_util::GetStringUTF16(
       is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
                   : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
-  std::u16string managed_state =
-      is_managed_ ? l10n_util::GetStringUTF16(
-                        IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED)
-                  : std::u16string();
   button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOOLTIP, enabled_state));
-
-  accessible_name_ = l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
-      enabled_state, managed_state);
 
   DeprecatedLayoutImmediately();
 }

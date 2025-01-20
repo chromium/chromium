@@ -4324,10 +4324,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_caretOffset(LONG* offset) {
   if (!HasVisibleCaretOrSelection())
     return S_FALSE;
 
-  int selection_start, selection_end;
-  GetSelectionOffsets(&selection_start, &selection_end);
-  // The caret is always at the end of the selection.
-  *offset = selection_end;
+  *offset = GetCaretOffset();
   if (*offset < 0)
     return S_FALSE;
 
@@ -4564,7 +4561,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_offsetAtPoint(
     return S_FALSE;
   }
 
-  for (int i = 0, text_length = hit_child->GetTextContentUTF16().length();
+  for (int i = 0, text_length = hit_child->GetTextContentLengthUTF16();
        i < text_length; ++i) {
     gfx::Rect char_bounds =
         hit_child->GetDelegate()->GetInnerTextRangeBoundsRect(
@@ -4644,13 +4641,18 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 
   COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
-  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+  AXSelection unignored_selection = GetDelegate()->GetHypertextSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
+  if (unignored_selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
+    // This indicates there is no selection.
+    return S_FALSE;
+  }
   AXPlatformNodeWin* anchor_node =
       static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(anchor_id));
-  if (!anchor_node)
+  if (!anchor_node) {
     return E_FAIL;
+  }
 
   // If the selection endpoint is inside this object and therefore, at least
   // from this side, we do not need to crop the selection. Simply convert
@@ -4662,7 +4664,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
   // the method's declaration.
 
   int anchor_offset = unignored_selection.anchor_offset;
-  if (anchor_node->IsDescendant(this)) {
+  if (anchor_node->IsDescendantOf(this)) {
     anchor_offset =
         anchor_node->GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
   } else {
@@ -4680,7 +4682,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
     return E_FAIL;
 
   int focus_offset = unignored_selection.focus_offset;
-  if (focus_node->IsDescendant(this)) {
+  if (focus_node->IsDescendantOf(this)) {
     focus_offset =
         focus_node->GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
   } else {
@@ -4690,9 +4692,6 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
   DCHECK_GE(focus_offset, 0)
       << "This value is unexpected here, since we have already determined in "
          "this method that focus_object is in the accessibility tree.";
-
-  if (anchor_node == focus_node && anchor_offset == focus_offset)
-    return S_FALSE;  // No selection within this subtree.
 
   Microsoft::WRL::ComPtr<IAccessibleText> anchor_text_node;
   if (FAILED(anchor_node->QueryInterface(IID_PPV_ARGS(&anchor_text_node))))
@@ -4730,6 +4729,28 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
 
   COM_OBJECT_VALIDATE();
 
+  if (nSelections == 0) {
+    // Clear the selection by using an anchor offset of
+    // kNoSelectionOffset. If it's a plain textfield, this will
+    // collapse the selection to the caret, as plain textfields always need to
+    // have some selection.
+    AXActionData clear_action;
+    clear_action.action = ax::mojom::Action::kSetSelection;
+    clear_action.target_tree_id = GetDelegate()->GetTreeData().tree_id;
+    clear_action.anchor_node_id = GetData().id;
+    clear_action.focus_node_id = GetData().id;
+    if (GetData().IsAtomicTextField()) {
+      int caret_offset = GetCaretOffset();
+      clear_action.anchor_offset = caret_offset;
+      clear_action.focus_offset = caret_offset;
+    } else {
+      clear_action.anchor_offset = ax::mojom::kNoSelectionOffset;
+      clear_action.focus_offset = ax::mojom::kNoSelectionOffset;
+    }
+    return GetDelegate()->AccessibilityPerformAction(clear_action) ? S_OK
+                                                                   : S_FALSE;
+  }
+
   // Chromium does not currently support more than one selection.
   if (nSelections != 1 || !selections)
     return E_INVALIDARG;
@@ -4758,8 +4779,9 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
   AXPosition end_position =
       end_node->HypertextOffsetToEndpoint(selections->endOffset)
           ->AsDomSelectionPosition();
-  if (start_position->IsNullPosition() || end_position->IsNullPosition())
+  if (start_position->IsNullPosition() || end_position->IsNullPosition()) {
     return E_INVALIDARG;
+  }
 
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kSetSelection;
@@ -5811,11 +5833,6 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
   if (riid == IID_IAccessible2) {
     for (WinAccessibilityAPIUsageObserver& observer :
          GetWinAccessibilityAPIUsageObserverList()) {
-      if (!features::IsAccessibilityRestrictiveIA2AXModesEnabled()) {
-        observer.OnAdvancedIAccessible2Used();
-        continue;
-      }
-
       if (GetDelegate()->IsWebContent()) {
         observer.OnAdvancedIAccessible2Used();
       } else {
@@ -5865,6 +5882,9 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
       reinterpret_cast<AXPlatformNodeWin*>(this_ptr);
   DCHECK(accessible);
 
+  // Note: Each inherited interface requires a hidden v-table pointer. It's
+  // therefore advantageous to not have objects that inherit from interfaces
+  // they'll never use.
   if (riid == IID_IAccessibleTable || riid == IID_IAccessibleTable2) {
     if (!IsTableLike(accessible->GetRole()))
       return E_NOINTERFACE;
@@ -5873,6 +5893,10 @@ STDMETHODIMP AXPlatformNodeWin::InternalQueryInterface(
       return E_NOINTERFACE;
   } else if (riid == IID_IAccessibleText || riid == IID_IAccessibleHypertext) {
     if (IsImageOrVideo(accessible->GetRole())) {
+      return E_NOINTERFACE;
+    }
+    // Text leaf nodes don't support these interfaces, their containers do.
+    if (ui::IsText(accessible->GetRole())) {
       return E_NOINTERFACE;
     }
   } else if (riid == IID_IAccessibleValue) {
@@ -6319,47 +6343,24 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
   std::sort(relevant_ranges.begin(), relevant_ranges.end(),
             sort_ranges_by_start_offset);
 
-  // Validate that the desired range has a contiguous MarkerType.
-  std::optional<std::pair<int, int>> contiguous_range;
+  // Validate that the desired range has instance of MarkerType.
+  bool has_marker_in_desired_range = false;
   for (const std::pair<int, int>& range : relevant_ranges) {
-    if (end_offset && range.first > end_offset.value())
+    if (end_offset && range.first >= end_offset.value()) {
       break;
-    if (start_offset && range.second < start_offset.value())
-      continue;
-
-    if (!contiguous_range) {
-      contiguous_range = range;
+    }
+    if (start_offset && range.second <= start_offset.value()) {
       continue;
     }
 
-    // If there is a gap, then the range must be mixed.
-    if ((range.first - contiguous_range->second) > 1)
-      return MarkerTypeRangeResult::kMixed;
-
-    // Expand the range if possible.
-    contiguous_range->second = std::max(contiguous_range->second, range.second);
+    has_marker_in_desired_range = true;
+    break;
   }
 
-  // The desired range does not overlap with |marker_type|.
-  if (!contiguous_range)
+  if (!has_marker_in_desired_range) {
     return MarkerTypeRangeResult::kNone;
+  }
 
-  // If there is a partial overlap, then the desired range must be mixed.
-  // 1. The |start_offset| is not specified, treat it as offset 0.
-  if (!start_offset && contiguous_range->first > 0)
-    return MarkerTypeRangeResult::kMixed;
-  // 2. The |end_offset| is not specified, treat it as max text offset.
-  if (!end_offset &&
-      static_cast<size_t>(contiguous_range->second) < GetHypertext().length())
-    return MarkerTypeRangeResult::kMixed;
-  // 3. The |start_offset| is specified, but is before the first matching range.
-  if (start_offset && start_offset.value() < contiguous_range->first)
-    return MarkerTypeRangeResult::kMixed;
-  // 4. The |end_offset| is specified, but is after the last matching range.
-  if (end_offset && end_offset.value() > contiguous_range->second)
-    return MarkerTypeRangeResult::kMixed;
-
-  // The desired range is a complete match for |marker_type|.
   return MarkerTypeRangeResult::kMatch;
 }
 
@@ -8433,12 +8434,10 @@ void AXPlatformNodeWin::NotifyObserverForMSAAUsage() const {
 
 void AXPlatformNodeWin::NotifyAddAXModeFlagsForIA2(
     const uint32_t ax_modes) const {
-  if (features::IsAccessibilityRestrictiveIA2AXModesEnabled()) {
-    // Non-web content is always enabled, if a client isn't looking for web
-    // content, don't enable.
-    if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
-      return;
-    }
+  // Non-web content is always enabled, if a client isn't looking for web
+  // content, don't enable.
+  if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
+    return;
   }
 
   AXPlatformNode::NotifyAddAXModeFlags(ax_modes);

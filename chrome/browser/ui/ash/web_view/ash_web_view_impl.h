@@ -66,6 +66,7 @@ class AshWebViewImpl : public ash::AshWebView,
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
+  void ActivateContents(content::WebContents* contents) override;
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) override;
   bool TakeFocus(content::WebContents* web_contents, bool reverse) override;

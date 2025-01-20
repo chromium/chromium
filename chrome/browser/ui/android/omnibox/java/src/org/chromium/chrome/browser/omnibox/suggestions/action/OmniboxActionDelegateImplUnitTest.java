@@ -29,9 +29,6 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -141,15 +138,6 @@ public class OmniboxActionDelegateImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void openClearBrowsingData() {
-        mDelegate.handleClearBrowsingData();
-        verify(mMockSettingsNavigation)
-                .startSettings(mContext, SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void openQuickDeleteDialog() {
         mDelegate.handleClearBrowsingData();
         verify(mMockOpenQuickDeleteDialog).run();
@@ -161,7 +149,7 @@ public class OmniboxActionDelegateImplUnitTest {
         Intent i = new Intent();
         i.setClass(mContext, TestActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        assertTrue(IntentUtils.intentTargetsSelf(mContext, i));
+        assertTrue(IntentUtils.intentTargetsSelf(i));
         assertTrue(mDelegate.startActivity(i));
         // Added during intent invocation.
         assertTrue(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
@@ -173,7 +161,7 @@ public class OmniboxActionDelegateImplUnitTest {
         ShadowApplication.getInstance().checkActivities(false);
         Intent i = new Intent("some magic here");
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        assertFalse(IntentUtils.intentTargetsSelf(mContext, i));
+        assertFalse(IntentUtils.intentTargetsSelf(i));
         assertTrue(mDelegate.startActivity(i));
         // Might be added during intent invocation.
         assertFalse(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));

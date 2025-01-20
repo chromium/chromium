@@ -81,8 +81,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
     GURL ohttp_relay = https_server_->GetURL("/ohttpRelay");
 
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{network::features::kPrivateStateTokens, {}},
-                              {features::kKAnonymityService,
+        /*enabled_features=*/{{features::kKAnonymityService,
                                {{"KAnonymityServiceAuthServer",
                                  https_server_->base_url().spec()},
                                 {"KAnonymityServiceJoinServer",

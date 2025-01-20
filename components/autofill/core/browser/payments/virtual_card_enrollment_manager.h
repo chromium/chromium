@@ -9,8 +9,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -24,7 +25,7 @@ class WebContents;
 namespace autofill {
 
 class CreditCard;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // This struct is passed into the controller when we show the
 // VirtualCardEnrollmentBubble, and it lets the controller customize the
@@ -96,7 +97,7 @@ class VirtualCardEnrollmentManager {
  public:
   // The parameters should outlive the VirtualCardEnrollmentManager.
   VirtualCardEnrollmentManager(
-      PersonalDataManager* personal_data_manager,
+      PaymentsDataManager* payments_data_manager,
       payments::PaymentsNetworkInterface* payments_network_interface,
       AutofillClient* autofill_client = nullptr);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
@@ -345,9 +346,9 @@ class VirtualCardEnrollmentManager {
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            UpstreamAnimationSync_ResponseFirst);
 
-  // The associated personal data manager, used to save and load personal data
+  // The associated payments data manager, used to save and load payments data
   // to/from the web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ref<PaymentsDataManager> payments_data_manager_;
 
   // The associated `payments_network_interface_` that is used for all requests
   // to the server.

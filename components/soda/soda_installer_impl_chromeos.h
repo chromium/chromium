@@ -9,7 +9,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/soda/soda_installer.h"
 
@@ -57,6 +59,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // DLC is automatically purged from disk.
   void UninstallSoda(PrefService* global_prefs) override;
 
+  void InstallLanguageInternal(const std::string& language);
+
   void SetSodaBinaryPath(base::FilePath new_path);
   void SetLanguagePath(const LanguageCode language, base::FilePath new_path);
 
@@ -68,6 +72,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void OnSodaInstalled(
       const base::Time start_time,
       const ash::DlcserviceClient::InstallResult& install_result);
+  void OnSodaInstallRetry();
+  void OnSodaLanguageInstallRetry();
   void OnLanguageInstalled(
       const LanguageCode language_code,
       const std::string language_name,
@@ -84,6 +90,16 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void OnDlcUninstalled(std::string_view dlc_id, std::string_view err);
 
   double soda_progress_ = 0.0;
+
+  double soda_backoff_seconds_ = 1.0;
+  // timer only used for soda install retries.
+  base::OneShotTimer soda_install_retry_timer_;
+
+  // timer only used for soda languagepack install retries. We keep them merged
+  // as we don't expect independent failures.
+  double soda_languagepack_backoff_seconds_ = 1.0;
+  base::OneShotTimer languagepack_install_retry_timer_;
+  base::flat_set<std::string> retry_languages_to_install_;
 
   base::FilePath soda_lib_path_;
 

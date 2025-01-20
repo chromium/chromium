@@ -142,7 +142,7 @@ int SocketPosix::Bind(const SockaddrStorage& address) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(kInvalidSocket, socket_fd_);
 
-  int rv = bind(socket_fd_, address.addr, address.addr_len);
+  int rv = bind(socket_fd_, address.addr(), address.addr_len);
   if (rv < 0) {
     PLOG(ERROR) << "bind() failed";
     return MapSystemError(errno);
@@ -365,8 +365,9 @@ int SocketPosix::GetLocalAddress(SockaddrStorage* address) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(address);
 
-  if (getsockname(socket_fd_, address->addr, &address->addr_len) < 0)
+  if (getsockname(socket_fd_, address->addr(), &address->addr_len) < 0) {
     return MapSystemError(errno);
+  }
   return OK;
 }
 
@@ -431,9 +432,8 @@ void SocketPosix::OnFileCanWriteWithoutBlocking(int fd) {
 
 int SocketPosix::DoAccept(std::unique_ptr<SocketPosix>* socket) {
   SockaddrStorage new_peer_address;
-  int new_socket = HANDLE_EINTR(accept(socket_fd_,
-                                       new_peer_address.addr,
-                                       &new_peer_address.addr_len));
+  int new_socket = HANDLE_EINTR(
+      accept(socket_fd_, new_peer_address.addr(), &new_peer_address.addr_len));
   if (new_socket < 0)
     return MapAcceptError(errno);
 
@@ -459,9 +459,8 @@ void SocketPosix::AcceptCompleted() {
 }
 
 int SocketPosix::DoConnect() {
-  int rv = HANDLE_EINTR(connect(socket_fd_,
-                                peer_address_->addr,
-                                peer_address_->addr_len));
+  int rv = HANDLE_EINTR(
+      connect(socket_fd_, peer_address_->addr(), peer_address_->addr_len));
   DCHECK_GE(0, rv);
   return rv == 0 ? OK : MapConnectError(errno);
 }
@@ -516,15 +515,7 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Disable SIGPIPE for this write. Although Chromium globally disables
-  // SIGPIPE, the net stack may be used in other consumers which do not do
-  // this. MSG_NOSIGNAL is a Linux-only API. On OS X, this is a setsockopt on
-  // socket creation.
   int rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
-#else
-  int rv = HANDLE_EINTR(write(socket_fd_, buf->data(), buf_len));
-#endif
   if (rv >= 0) {
     CHECK_LE(rv, buf_len);
   }

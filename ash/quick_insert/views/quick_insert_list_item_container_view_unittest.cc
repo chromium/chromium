@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
@@ -123,8 +124,10 @@ TEST_F(QuickInsertListItemContainerViewTest, ChildrenHasListItemRole) {
   container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
 
-  EXPECT_EQ(container.children()[0]->GetAccessibleRole(),
-            ax::mojom::Role::kListItem);
+  ui::AXNodeData node_data;
+  container.children()[0]->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListItem);
 }
 
 }  // namespace

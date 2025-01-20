@@ -9,6 +9,7 @@
   to the relevant set of devtools protocol handlers.
 */
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -142,6 +144,8 @@ class WillCreateURLLoaderFactoryParams final {
            network::URLLoaderFactoryBuilder& factory_builder,
            network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
+  DevToolsAgentHostImpl* agent_host() { return agent_host_; }
+
  private:
   WillCreateURLLoaderFactoryParams(DevToolsAgentHostImpl* agent_host,
                                    const base::UnguessableToken& devtools_token,
@@ -153,27 +157,6 @@ class WillCreateURLLoaderFactoryParams final {
   const int process_id_;
   const raw_ptr<StoragePartition> storage_partition_;
 };
-
-void OnPrefetchRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const GURL& initiator,
-    const network::ResourceRequest& request,
-    std::optional<std::pair<const GURL&,
-                            const network::mojom::URLResponseHeadDevToolsInfo&>>
-        redirect_info);
-void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const GURL& url,
-                                const network::mojom::URLResponseHead& head);
-void OnPrefetchRequestComplete(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status);
-void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const std::string& body,
-                                bool is_base64_encoded);
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
 void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
@@ -262,35 +245,60 @@ void BackForwardCacheNotUsed(
 void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
 void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
+void DidUpdatePolicyContainerHost(FrameTreeNode* ftn);
+
+// SpeculationRules
+void DidUpdateSpeculationCandidates(
+    RenderFrameHost& rfh,
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
+// Prefetch
+void DidUpdatePrefetchStatus(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
+    const GURL& prefetch_url,
+    const base::UnguessableToken& preload_pipeline_id,
+    PreloadingTriggeringOutcome status,
+    PrefetchStatus prefetch_status,
+    const std::string& request_id);
+// CDP events Network.* for prefetch
+void OnPrefetchRequestWillBeSent(
+    FrameTreeNode& ftn,
+    const std::string& request_id,
+    const GURL& initiator,
+    const network::ResourceRequest& request,
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info);
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head);
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status);
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded);
+
+// Prerender
 bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(const NavigationRequest& nav_request,
                           const std::optional<base::UnguessableToken>&
                               initiator_devtools_navigation_token);
-
-void DidUpdatePolicyContainerHost(FrameTreeNode* ftn);
-
-void DidUpdatePrefetchStatus(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const GURL& prefetch_url,
-    PreloadingTriggeringOutcome status,
-    PrefetchStatus prefetch_status,
-    const std::string& request_id);
-
 void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
-
-void DidUpdateSpeculationCandidates(
-    RenderFrameHost& rfh,
-    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
@@ -420,7 +428,7 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
 // Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
 // worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
 void OnWorkerMainScriptRequestWillBeSent(
-    FrameTreeNode* ftn,
+    RenderFrameHostImpl& ancestor_frame_host,
     const base::UnguessableToken& worker_token,
     network::ResourceRequest& request);
 
@@ -431,13 +439,6 @@ void OnWorkerMainScriptLoadingFailed(
     const base::UnguessableToken& worker_token,
     FrameTreeNode* ftn,
     RenderFrameHostImpl* ancestor_rfh,
-    const network::URLLoaderCompletionStatus& status);
-
-// Fires `Network.onLoadingFinished` event for a dedicated worker main script.
-// Used for PlzDedicatedWorker.
-void OnWorkerMainScriptLoadingFinished(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& worker_token,
     const network::URLLoaderCompletionStatus& status);
 
 // Adds a message from a worklet to the devtools console. This is specific to
@@ -487,6 +488,11 @@ void OnFencedFrameReportResponseReceived(
     scoped_refptr<net::HttpResponseHeaders> headers);
 
 void DidChangeFrameLoadingState(FrameTreeNode& ftn);
+
+// Returns true if devtools wants to override the cookie settings.
+bool ApplyNetworkCookieControlsOverrides(
+    DevToolsAgentHostImpl* params,
+    net::CookieSettingOverrides& overrides);
 
 }  // namespace devtools_instrumentation
 

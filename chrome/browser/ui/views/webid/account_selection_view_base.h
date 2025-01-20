@@ -26,16 +26,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
+namespace webid {
 
 class FedCmAccountSelectionView;
-
-namespace content {
-class IdentityRequestAccount;
-}  // namespace content
 
 // The radius used for the corner of the "Continue as" button.
 inline constexpr int kButtonRadius = 16;
@@ -206,12 +199,7 @@ class AccountSelectionViewBase {
       FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
-  AccountSelectionViewBase();
   virtual ~AccountSelectionViewBase();
-
-  // Creates and sets the appropriate dialog widget, depending on whether the
-  // dialog is bubble or modal.
-  virtual void InitDialogWidget() = 0;
 
   // Updates the FedCM dialog to show the "account picker" sheet.
   // `is_choose_an_account` is true if the dialog must change its title to
@@ -224,15 +212,14 @@ class AccountSelectionViewBase {
       bool is_choose_an_account) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
-  virtual void ShowVerifyingSheet(
-      const content::IdentityRequestAccount& account,
-      const std::u16string& title) = 0;
+  virtual void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
+                                  const std::u16string& title) = 0;
 
   // Updates to show a single account. On widget mode, used when showing the
   // account confirmation dialog after the user picks one of multiple accounts.
   // On button mode, used for the user to pick the single account.
   virtual void ShowSingleAccountConfirmDialog(
-      const content::IdentityRequestAccount& account,
+      const IdentityRequestAccountPtr& account,
       bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "failure" sheet.
@@ -248,8 +235,7 @@ class AccountSelectionViewBase {
 
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderData& idp_data) = 0;
+      const IdentityRequestAccountPtr& account) = 0;
 
   // Updates to show a single account along with a button to show all options.
   // Currently used when there are multiple IDPs and exactly one returning
@@ -258,18 +244,8 @@ class AccountSelectionViewBase {
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) = 0;
 
-  // Updates the FedCM dialog to show the "loading" sheet.
-  virtual void ShowLoadingDialog() = 0;
-
-  // Closes the dialog, without dismissing the FedCM API.
-  virtual void CloseDialog() = 0;
-
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
-
-  // Retrieves the dialog widget used to control the dialog, if available. This
-  // method is virtual for testing purposes.
-  virtual base::WeakPtr<views::Widget> GetDialogWidget();
 
   // Populates `brand_icon_images_` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, const gfx::ImageSkia& idp_image);
@@ -277,20 +253,7 @@ class AccountSelectionViewBase {
   // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
-  // Updates the position of the dialog. Used when the contents of the dialog
-  // has changed or when the widget which the dialog is anchored on has been
-  // resized.
-  virtual void UpdateDialogPosition() = 0;
-
-  // Whether the dialog can fit in the web contents at its preferred size.
-  // Virtual for testing purposes.
-  virtual bool CanFitInWebContents();
-
-  // Temporary logic to disable interactions with the tab's WebContents for the
-  // modal dialog.
-  // TODO(https://crbug.com/377803489): Remove this.
-  virtual void DidShowWidget();
-  virtual void DidHideWidget();
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  protected:
   void SetLabelProperties(views::Label* label);
@@ -301,7 +264,7 @@ class AccountSelectionViewBase {
   // HoverButton, and in that case the number is the 0-based position of that
   // account in the overall dialog.
   std::unique_ptr<views::View> CreateAccountRow(
-      const content::IdentityRequestAccount& account,
+      const IdentityRequestAccountPtr& account,
       std::optional<int> clickable_position,
       bool should_include_idp,
       bool is_modal_dialog = false,
@@ -328,17 +291,26 @@ class AccountSelectionViewBase {
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Web contents which the dialog is rendered on.
+  // TODO(https://crbug.com/377803489): WeakPtr is unnecessary and a symptom of
+  // owner_ bug below.
   base::WeakPtr<content::WebContents> web_contents_;
 
   // The images for the brand icons. Stored so that they can be reused upon
   // pressing the back button after choosing an account.
   base::flat_map<GURL, gfx::ImageSkia> brand_icon_images_;
 
-  // Widget to control the dialog i.e. hide, show, add observer etc.
-  base::WeakPtr<views::Widget> dialog_widget_;
-
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
+  // TODO(https://crbug.com/377803489): This is a real dangling pointer in
+  // production code. The subclasses of AccountSelectionViewBase also inherit
+  // (indirectly) from views::DialogDelegate, with owned_by_widget = true. This
+  // means that this class is owned by the widget, which in turn is owned by
+  // FedCmAccountSelectionView. The problem is that the widget uses
+  // NATIVE_WIDGET_OWNS_WIDGET ownership semantics and is closed via
+  // Widget::Close() which is asynchronous. ~FedCmAccountSelectionView() calls
+  // into FedCmAccountSelectionView::Close() which asynchronously closes the
+  // Widget. When the Widget is eventually destroyed, this class is destroyed,
+  // but that's after FedCmAccountSelectionView is destroyed.
   raw_ptr<FedCmAccountSelectionView, DanglingUntriaged> owner_{nullptr};
 
   // The description of the RP to be used in the dialog.
@@ -348,5 +320,7 @@ class AccountSelectionViewBase {
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionViewBase> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_

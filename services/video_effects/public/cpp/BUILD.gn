@@ -12,6 +12,6 @@ source_set("video_effects_service_host") {
 
   deps = [
     "//content/public/browser",
-    "//services/on_device_model/ml:ml_no_internal",
+    "//services/on_device_model/ml:ml_holder_no_internal",
   ]
 }

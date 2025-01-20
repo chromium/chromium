@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 let instance: TrafficLogTag|null = null;
 
+// See components/sync/engine/events/protocol_event.h
 export interface ProtocolEvent {
+  details: string;
+  proto: any;
   time: string;
+  type: string;
 }
 
 class TrafficLogTag {
@@ -48,8 +52,7 @@ class TrafficLogTag {
     const shouldScrollDown = this.isScrolledToBottom_();
 
     assert(this.container);
-    jstProcess(
-        new JsEvalContext({events: this.protocolEvents}), this.container);
+    render(this.getTrafficLogHtml_(), this.container);
 
     if (shouldScrollDown) {
       this.scrollToBottom_();
@@ -60,7 +63,7 @@ class TrafficLogTag {
    * Toggles the given traffic event entry div's "expanded" state.
    * @param e the click event that triggered the toggle.
    */
-  private expandListener_(e: Event) {
+  private onClick_(e: Event) {
     if ((e.target as HTMLElement).classList.contains('proto')) {
       // We ignore proto clicks to keep it copyable.
       return;
@@ -73,33 +76,31 @@ class TrafficLogTag {
     trafficEventDiv.classList.toggle('traffic-event-entry-expanded-fullscreen');
   }
 
-  /**
-   * Attaches a listener to the given traffic event entry div.
-   */
-  addExpandListener(element: HTMLElement) {
-    element.addEventListener('click', this.expandListener_, false);
+  private getTrafficLogHtml_() {
+    // clang-format off
+    return html`
+      ${this.protocolEvents.map(item => html`
+        <div class="traffic-event-entry-fullscreen" @click="${this.onClick_}">
+          <span class="time">${(new Date(item.time)).toLocaleString()}</span>
+          <span class="type">${item.type}</span>
+          <pre class="details">${item.details}</pre>
+          <pre class="proto">${JSON.stringify(item.proto, null, 2)}</pre>
+        </div>
+      `)}
+    `;
+    // clang-format on
   }
 
   onLoad() {
-    const container = document.querySelector<HTMLElement>(
-        '#traffic-event-fullscreen-container');
-    assert(container);
-    this.container = container;
-
+    this.container = getRequiredElement('traffic-event-fullscreen-container');
     addWebUiListener(
         'onProtocolEvent', this.onReceivedProtocolEvent_.bind(this));
-
-    // Make the prototype jscontent element disappear.
-    jstProcess(new JsEvalContext({}), this.container);
   }
 
   static getInstance(): TrafficLogTag {
     return instance || (instance = new TrafficLogTag());
   }
 }
-
-// For JS eval.
-Object.assign(window, {TrafficLogTag});
 
 document.addEventListener('DOMContentLoaded', () => {
   TrafficLogTag.getInstance().onLoad();

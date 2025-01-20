@@ -70,7 +70,6 @@ static_library("dbus") {
 
   deps = [
     "//ash/components/arc:arc_features",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//build:chromeos_buildflags",
@@ -80,7 +79,6 @@ static_library("dbus") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/tracing",
-    "//chrome/browser/ash/arc/video",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/net",
@@ -155,6 +153,8 @@ static_library("dbus") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc/session",
+    "//chromeos/ash/experiences/arc/video",
     "//chromeos/ash/services/rollback_network_config/public/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus/constants",

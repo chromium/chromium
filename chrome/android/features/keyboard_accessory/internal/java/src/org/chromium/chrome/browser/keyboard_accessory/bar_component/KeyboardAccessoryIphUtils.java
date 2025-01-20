@@ -41,6 +41,10 @@ class KeyboardAccessoryIphUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED);
                 return;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE:
+                tracker.notifyEvent(
+                        EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED);
+                return;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE:

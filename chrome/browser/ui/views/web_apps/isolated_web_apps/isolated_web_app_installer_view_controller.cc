@@ -14,11 +14,12 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -226,9 +227,7 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
     ash::ShelfModel::Get()->Set(index, item);
   }
 
-  // TODO(https://crbug.com/375937556): Revise this now that the Lacros support
-  // is removed.
-  static_cast<LacrosShelfItemController*>(
+  static_cast<IsolatedWebAppInstallerShelfItemController*>(
       shelf_model->GetShelfItemDelegate(shelf_id))
       ->AddWindow(window_);
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -6,10 +6,13 @@ package org.chromium.ui.resources.statics;
 
 import android.content.res.Resources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.async.AsyncPreloadResourceLoader;
 
 /** Handles loading Android resources from disk asynchronously and synchronously. */
+@NullMarked
 public class StaticResourceLoader extends AsyncPreloadResourceLoader {
     /**
      * Creates a {@link StaticResourceLoader}.
@@ -26,7 +29,7 @@ public class StaticResourceLoader extends AsyncPreloadResourceLoader {
                 callback,
                 new ResourceCreator() {
                     @Override
-                    public Resource create(int resId) {
+                    public @Nullable Resource create(int resId) {
                         return StaticResource.create(resources, resId, 0, 0);
                     }
                 });

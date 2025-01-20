@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/event_filter.h"
@@ -227,8 +228,12 @@ class EventListenerMap {
                                   const ExtensionId& extension_id,
                                   const std::string& event_name) const;
 
-  // Removes any listeners that |extension_id| has added, both lazy and regular.
+  // Removes all listeners that |extension_id| has added, both lazy and active.
   void RemoveListenersForExtension(const ExtensionId& extension_id);
+
+  // Removes any active listeners that |extension_id| has added.
+  void RemoveActiveServiceWorkerListenersForExtension(
+      const ExtensionId& extension_id);
 
   // Adds unfiltered lazy listeners as described their serialised descriptions.
   // |event_names| the names of the lazy events.
@@ -248,6 +253,11 @@ class EventListenerMap {
                                  const base::Value::Dict& filtered);
 
  private:
+  // Removes all listeners for `extension_id` where `removal_predicate` is true.
+  void RemoveListenersForExtensionImpl(
+      const ExtensionId& extension_id,
+      base::RepeatingCallback<bool(const ExtensionId&, EventListener*)>
+          removal_predicate);
 
   void CleanupListener(EventListener* listener);
   bool IsFilteredEvent(const Event& event) const;

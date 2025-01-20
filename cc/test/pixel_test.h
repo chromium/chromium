@@ -95,16 +95,8 @@ class PixelTest : public testing::Test {
     return gpu_service_holder_->task_executor();
   }
 
-  // Allocates a SharedMemory bitmap.
-  void AllocateSharedBitmapMemory(
-      scoped_refptr<viz::RasterContextProvider> context_provider,
-      const gfx::Size& size,
-      scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      base::WritableSharedMemoryMapping& mapping,
-      gpu::SyncToken& sync_token);
-  // Uses AllocateSharedBitmapMemory() then registers a ResourceId with the
-  // |child_resource_provider_|, and copies the contents of |source| into the
-  // software resource backing.
+  // Copies the contents of |source| into a software-backed TransferableResource
+  // and imports that resource into `context_provider`.
   viz::ResourceId AllocateAndFillSoftwareResource(
       scoped_refptr<viz::RasterContextProvider> context_provider,
       const gfx::Size& size,

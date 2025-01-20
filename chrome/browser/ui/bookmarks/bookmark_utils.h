@@ -23,12 +23,12 @@ namespace bookmarks {
 class BookmarkNode;
 class ManagedBookmarkService;
 struct BookmarkNodeData;
-}
+}  // namespace bookmarks
 
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class DropTargetEvent;

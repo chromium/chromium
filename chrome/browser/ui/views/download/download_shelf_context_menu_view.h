@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,7 @@ class Rect;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 class DownloadBubbleUIController;
 
@@ -72,8 +73,8 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   base::TimeTicks close_time_;
 
   // Determines whether we should record if a DownloadCommand was executed.
-  bool download_commands_executed_recorded_[DownloadCommands::kMaxValue + 1] = {
-      false};
+  std::array<bool, DownloadCommands::kMaxValue + 1>
+      download_commands_executed_recorded_{false};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_

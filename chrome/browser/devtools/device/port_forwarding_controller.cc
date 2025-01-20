@@ -617,7 +617,7 @@ PortForwardingController::PortForwardingController(Profile* profile)
   OnPrefsChange();
 }
 
-PortForwardingController::~PortForwardingController() {}
+PortForwardingController::~PortForwardingController() = default;
 
 PortForwardingController::ForwardingStatus
 PortForwardingController::DeviceListChanged(

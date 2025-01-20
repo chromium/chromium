@@ -12,7 +12,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -189,7 +188,7 @@ class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
     // data types appropriately.
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
     dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
 #endif
@@ -1257,7 +1256,7 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
 
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
     dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
 #endif

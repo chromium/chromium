@@ -261,7 +261,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertBrowserCall('blockNotificationPermissionForOrigins');
     assertUndoToast(
-        true, 'safetyCheckNotificationPermissionReviewBlockedToastLabel');
+        true, 'safetyHubNotificationPermissionReviewBlockedToastLabel');
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -283,7 +283,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // shown and action menu is closed.
     await assertBrowserCall('ignoreNotificationPermissionForOrigins');
     assertUndoToast(
-        true, 'safetyCheckNotificationPermissionReviewIgnoredToastLabel');
+        true, 'safetyHubNotificationPermissionReviewIgnoredToastLabel');
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
@@ -306,7 +306,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // shown and action menu is closed.
     await assertBrowserCall('resetNotificationPermissionForOrigins');
     assertUndoToast(
-        true, 'safetyCheckNotificationPermissionReviewResetToastLabel');
+        true, 'safetyHubNotificationPermissionReviewResetToastLabel');
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
@@ -599,34 +599,34 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await flushTasks();
     testElement.$.blockAllButton.click();
     await assertPluralString(
-        'safetyCheckNotificationPermissionReviewBlockAllToastLabel', 2, 2);
+        'safetyHubNotificationPermissionReviewBlockAllToastLabel', 2, 2);
 
     // Check the header string for a completion case after Block All action
     // (single entry in review).
     await setupSingleEntry();
     testElement.$.blockAllButton.click();
     await assertPluralString(
-        'safetyCheckNotificationPermissionReviewBlockAllToastLabel', 1, 2);
+        'safetyHubNotificationPermissionReviewBlockAllToastLabel', 1, 2);
 
     // Check the header string for a completion case after Block action.
     await setupSingleEntry();
     clickButton(getEntries()[0]!.querySelector('#mainButton'));
     await assertCompletionHeaderString(
-        'safetyCheckNotificationPermissionReviewBlockedToastLabel');
+        'safetyHubNotificationPermissionReviewBlockedToastLabel');
     testElement.$.bulkUndoButton.click();
 
     // Check the header string for a completion case after Ignore action.
     openActionMenu();
     clickButton(testElement.shadowRoot!.querySelector('#ignore'));
     await assertCompletionHeaderString(
-        'safetyCheckNotificationPermissionReviewIgnoredToastLabel');
+        'safetyHubNotificationPermissionReviewIgnoredToastLabel');
     testElement.$.bulkUndoButton.click();
 
     // Check the header string for a completion case after Reset action.
     openActionMenu();
     clickButton(testElement.shadowRoot!.querySelector('#reset'));
     await assertCompletionHeaderString(
-        'safetyCheckNotificationPermissionReviewResetToastLabel');
+        'safetyHubNotificationPermissionReviewResetToastLabel');
   });
 
   /**
@@ -668,13 +668,13 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     openActionMenu();
     clickButton(testElement.shadowRoot!.querySelector('#ignore'));
     assertUndoToast(
-        true, 'safetyCheckNotificationPermissionReviewIgnoredToastLabel');
+        true, 'safetyHubNotificationPermissionReviewIgnoredToastLabel');
 
     // Click Don't Allow for the second item. This hides the existing undo toast
     // and shows a new one.
     clickButton(getEntries()[1]!.querySelector('#mainButton'));
     assertUndoToast(
-        true, 'safetyCheckNotificationPermissionReviewBlockedToastLabel', 1);
+        true, 'safetyHubNotificationPermissionReviewBlockedToastLabel', 1);
 
     // Click BlockAll that hides the existing toast and doesn't show a new one.
     testElement.$.blockAllButton.click();

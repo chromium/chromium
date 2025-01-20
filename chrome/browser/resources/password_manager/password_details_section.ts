@@ -192,7 +192,11 @@ export class PasswordDetailsSectionElement extends
    * if no, navigate back to Passwords page.
    */
   private refreshGroupInfo_(groups: chrome.passwordsPrivate.CredentialGroup[]) {
-    assert(this.selectedGroup_);
+    if (!this.selectedGroup_) {
+      // It's possible refresh was triggered during page opening or closure when
+      // `selectedGroup_` is not set. In this case do nothing.
+      return;
+    }
     const currentIds = this.selectedGroup_.entries.map(entry => entry.id);
     let matchingGroup = groups.filter(
         group => group.entries.some(entry => currentIds.includes(entry.id)))[0];

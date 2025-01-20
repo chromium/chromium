@@ -124,11 +124,9 @@ class LOCKABLE ThreadCheckerDoNothing {
 // even if the tasks happen to run on the same thread (e.g. two independent
 // SingleThreadTaskRunners on the ThreadPool that happen to share a thread).
 #if DCHECK_IS_ON()
-class ThreadChecker : public ThreadCheckerImpl {
-};
+class ThreadChecker : public ThreadCheckerImpl {};
 #else
-class ThreadChecker : public ThreadCheckerDoNothing {
-};
+class ThreadChecker : public ThreadCheckerDoNothing {};
 #endif  // DCHECK_IS_ON()
 
 #if DCHECK_IS_ON()

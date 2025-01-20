@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/shell_integration_linux.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <map>
 #include <optional>
@@ -51,7 +47,7 @@ namespace {
 // Provides mock environment variables values based on a stored map.
 class MockEnvironment : public base::Environment {
  public:
-  MockEnvironment() {}
+  MockEnvironment() = default;
 
   MockEnvironment(const MockEnvironment&) = delete;
   MockEnvironment& operator=(const MockEnvironment&) = delete;
@@ -271,7 +267,7 @@ TEST(ShellIntegrationTest, GetUniqueWebShortcutUnique) {
 
 TEST(ShellIntegrationTest, GetDesktopFileContents) {
   const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
-  const struct {
+  struct TestCases {
     const char* const url;
     const char* const title;
     const char* const icon_name;
@@ -279,7 +275,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
     const char* const mime_type;
     bool nodisplay;
     const char* const expected_output;
-  } test_cases[] = {
+  };
+  const auto test_cases = std::to_array<TestCases>({
       // Real-world case.
       {"http://gmail.com", "GMail", "chrome-http__gmail.com", "", "", false,
 
@@ -402,7 +399,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
-       "StartupWMClass=paint.app\n"}};
+       "StartupWMClass=paint.app\n"},
+  });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
@@ -420,14 +418,15 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
 
 TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
   const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
-  const struct {
+  struct TestCases {
     const char* const url;
     const char* const title;
     const char* const icon_name;
     bool nodisplay;
     std::set<web_app::DesktopActionInfo> action_info;
     const char* const expected_output;
-  } test_cases[] = {
+  };
+  const auto test_cases = std::to_array<TestCases>({
       // Test Shortcut Menu actions.
       {"https://example.app",
        "Lawful example",
@@ -481,7 +480,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
        "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action%%205\n"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
@@ -498,11 +497,12 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
 }
 
 TEST(ShellIntegrationTest, GetDirectoryFileContents) {
-  const struct {
+  struct TestCases {
     const char* const title;
     const char* const icon_name;
     const char* const expected_output;
-  } test_cases[] = {
+  };
+  const auto test_cases = std::to_array<TestCases>({
       // Real-world case.
       {"Chrome Apps", "chrome-apps",
 
@@ -525,7 +525,7 @@ TEST(ShellIntegrationTest, GetDirectoryFileContents) {
        "Icon=chromium-browser\n"
 #endif
       },
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);

@@ -42,12 +42,12 @@ const int kCaptionButtonHeight = 18;
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  TestLayoutDelegate() : show_caption_buttons_(true), maximized_(false) {}
+  TestLayoutDelegate() = default;
 
   TestLayoutDelegate(const TestLayoutDelegate&) = delete;
   TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
 
-  ~TestLayoutDelegate() override {}
+  ~TestLayoutDelegate() override = default;
 
   void set_window_title(const std::u16string& title) { window_title_ = title; }
   void set_show_caption_buttons(bool show_caption_buttons) {
@@ -96,8 +96,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
 
  private:
   std::u16string window_title_;
-  bool show_caption_buttons_;
-  bool maximized_;
+  bool show_caption_buttons_ = true;
+  bool maximized_ = false;
 };
 
 }  // namespace
@@ -106,14 +106,14 @@ class OpaqueBrowserFrameViewLayoutTest
     : public ChromeViewsTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  OpaqueBrowserFrameViewLayoutTest() {}
+  OpaqueBrowserFrameViewLayoutTest() = default;
 
   OpaqueBrowserFrameViewLayoutTest(const OpaqueBrowserFrameViewLayoutTest&) =
       delete;
   OpaqueBrowserFrameViewLayoutTest& operator=(
       const OpaqueBrowserFrameViewLayoutTest&) = delete;
 
-  ~OpaqueBrowserFrameViewLayoutTest() override {}
+  ~OpaqueBrowserFrameViewLayoutTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -188,8 +188,9 @@ class OpaqueBrowserFrameViewLayoutTest
   }
 
   int CaptionY() const {
-    return delegate_->IsMaximized() ?
-        0 : views::NonClientFrameView::kFrameShadowThickness;
+    return delegate_->IsMaximized()
+               ? 0
+               : views::NonClientFrameView::kFrameShadowThickness;
   }
 
   int CaptionLeft() const {
@@ -226,8 +227,9 @@ class OpaqueBrowserFrameViewLayoutTest
         maximized ? 0 : OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
     int close_width =
         kCloseButtonWidth + (maximized ? kMaximizedExtraCloseWidth : 0);
-    int close_x = caption_buttons_on_left ?
-        frame_thickness : (kWindowWidth - frame_thickness - close_width);
+    int close_x = caption_buttons_on_left
+                      ? frame_thickness
+                      : (kWindowWidth - frame_thickness - close_width);
     EXPECT_EQ(close_x, close_button_->x());
     EXPECT_EQ(CaptionY(), close_button_->y());
     EXPECT_EQ(close_width, close_button_->width());
@@ -235,20 +237,23 @@ class OpaqueBrowserFrameViewLayoutTest
     EXPECT_TRUE(close_button_->GetVisible());
     views::ImageButton* visible_button = maximize_button_;
     views::ImageButton* hidden_button = restore_button_;
-    if (maximized)
+    if (maximized) {
       std::swap(visible_button, hidden_button);
-    if (caption_buttons_on_left)
+    }
+    if (caption_buttons_on_left) {
       EXPECT_EQ(minimize_button_->bounds().right(), visible_button->x());
-    else
+    } else {
       EXPECT_EQ(close_button_->x(), visible_button->bounds().right());
+    }
     EXPECT_EQ(close_button_->y(), visible_button->y());
     EXPECT_EQ(kMaximizeButtonWidth, visible_button->width());
     EXPECT_EQ(close_button_->height(), visible_button->height());
     EXPECT_TRUE(visible_button->GetVisible());
-    if (caption_buttons_on_left)
+    if (caption_buttons_on_left) {
       EXPECT_EQ(close_button_->bounds().right(), minimize_button_->x());
-    else
+    } else {
       EXPECT_EQ(visible_button->x(), minimize_button_->bounds().right());
+    }
     EXPECT_EQ(visible_button->y(), minimize_button_->y());
     EXPECT_EQ(kMinimizeButtonWidth, minimize_button_->width());
     EXPECT_EQ(visible_button->height(), minimize_button_->height());

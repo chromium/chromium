@@ -38,7 +38,7 @@ namespace net {
 class NET_EXPORT_PRIVATE DnsTaskResultsManager {
  public:
   // Time to wait for a AAAA response after receiving an A response.
-  static constexpr base::TimeDelta kResolutionDelay = base::Milliseconds(50);
+  static base::TimeDelta GetResolutionDelay();
 
   // Interface for watching for intermediate service endpoints updates.
   class Delegate {

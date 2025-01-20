@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -215,7 +216,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
                       base::NumberToString(window_size.width()),
                       ",height:", base::NumberToString(window_size.height()),
                       ",preferInitialWindowPlacement:",
-                      prefer_initial_window_placement ? "true" : "false"});
+                      base::ToString(prefer_initial_window_placement)});
     script = base::StrCat({script, "})"});
     ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);

@@ -272,8 +272,8 @@ class CORE_EXPORT GridLayoutAlgorithm
                            const LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
 
-  // Set reading flow elements so they can be accessed by LayoutBox.
-  void SetReadingFlowElements(const GridSizingTree& sizing_tree);
+  // Set reading flow nodes so they can be accessed by LayoutBox.
+  void SetReadingFlowNodes(const GridSizingTree& sizing_tree);
 
   LayoutUnit ComputeGridItemAvailableSize(
       const GridItemData& grid_item,

@@ -62,7 +62,6 @@ std::string MakeErrorPage(content::NavigationHandle& navigation_handle,
           Profile::FromBrowserContext(
               navigation_handle.GetWebContents()->GetBrowserContext())
               ->IsIncognitoProfile(),
-          /*offline_content_feature_enabled=*/false,
           /*auto_fetch_feature_enabled=*/false,
           /*is_kiosk_mode=*/
           base::CommandLine::ForCurrentProcess()->HasSwitch(

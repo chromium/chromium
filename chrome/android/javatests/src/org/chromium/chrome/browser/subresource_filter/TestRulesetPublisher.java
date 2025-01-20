@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.subresource_filter;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
@@ -31,6 +32,6 @@ public final class TestRulesetPublisher {
     @NativeMethods
     interface Natives {
         void createAndPublishRulesetDisallowingSuffixForTesting(
-                TestRulesetPublisher obj, String suffix);
+                TestRulesetPublisher obj, @JniType("std::string") String suffix);
     }
 }

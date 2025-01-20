@@ -4,13 +4,18 @@
 
 #include <jni.h>
 
+#include <optional>
+#include <string>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/values.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 

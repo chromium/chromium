@@ -1,8 +1,8 @@
 Name: resources
 Short Name: resources
 URL: http://robolectric.org
-Version: 4.12.1
-License: MIT
+Version: 4.14.1
+License: Apache-2.0, MIT
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no

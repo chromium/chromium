@@ -16,15 +16,6 @@ const NearbySharedV3Test = class extends PolymerTest {
   get webuiHost() {
     return 'nearby';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kNearbySharing',
-      ],
-    };
-  }
 };
 
 [['DeviceIcon', 'nearby_device_icon_test.js'],

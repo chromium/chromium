@@ -41,6 +41,10 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kBatteryStatusManagerBroadcastReceiverInBackground);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSecurityKeyHidInterfacesAreFido);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const DEVICE_FEATURES_EXPORT
     base::FeatureParam<device::mojom::LocationProviderManagerMode>
         kLocationProviderManagerParam;

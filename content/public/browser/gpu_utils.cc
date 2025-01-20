@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -30,10 +29,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_features.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -96,28 +91,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
   gpu_preferences.gpu_sandbox_start_early =
       command_line->HasSwitch(switches::kGpuSandboxStartEarly);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!gpu_preferences.gpu_sandbox_start_early) {
-    const chromeos::BrowserParamsProxy* init_params =
-        chromeos::BrowserParamsProxy::Get();
-    CHECK(init_params);
-    switch (init_params->GpuSandboxStartMode()) {
-      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kUnspecified:
-        // In practice, this is expected to be reached due to version skewing:
-        // when ash-chrome is too old to provide a useful value for
-        // BrowserInitParams.gpu_sandbox_start_early. In that case, it's better
-        // to start the sandbox early than to crash the GPU process (since that
-        // process is started with --gpu-sandbox-failures-fatal=yes).
-        // This can also be reached on tests when
-        // |init_params|->DisableCrosapiForTesting() is true.
-      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly:
-        gpu_preferences.gpu_sandbox_start_early = true;
-        break;
-      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal:
-        break;
-    }
-  }
-#endif
 
   gpu_preferences.enable_vulkan_protected_memory =
       command_line->HasSwitch(switches::kEnableVulkanProtectedMemory);

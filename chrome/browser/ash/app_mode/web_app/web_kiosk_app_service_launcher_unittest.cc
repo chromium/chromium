@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -178,7 +179,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     auto info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     info->title = kAppTitle;
-    app_manager_->UpdateAppByAccountId(account_id_, *info);
+    app_manager_->UpdateAppFromInstallInfo(account_id_, *info);
   }
 
   bool IsAppInstalledAsPlaceholder() {

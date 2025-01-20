@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -32,6 +33,8 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
       host_content_settings_map_(HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       auto_blocker_(PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      media_engagement_service_(MediaEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   // `base::Unretained` is safe here since we own `tab_strip_observer_helper_`.
   tab_strip_observer_helper_ =
@@ -208,7 +211,6 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
     return;
   }
 
-  ScheduleAsyncVisibilityCheck();
   ScheduleUrlSafetyCheck();
 }
 
@@ -222,7 +224,6 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
   safe_browsing_checker_client_.reset();
 
   has_safe_url_ = false;
-  has_sufficiently_visible_video_ = false;
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
@@ -252,14 +253,14 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() {
     return false;
   }
 
-  // The tab must either have playback or be using camera/microphone to autopip.
-  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
-    return false;
-  }
-
   // Only https:// or file:// may autopip.
   const GURL url = web_contents()->GetLastCommittedURL();
   if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIsFile()) {
+    return false;
+  }
+
+  // The tab must either have playback or be using camera/microphone to autopip.
+  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -308,7 +309,7 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   }
 
   return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
-         has_safe_url_ && has_sufficiently_visible_video_;
+         has_safe_url_ && MeetsMediaEngagementConditions();
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
@@ -326,6 +327,29 @@ bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
   return audible_helper->WasRecentlyAudible();
 }
 
+bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
+  // Skip checking media engagement when content setting is set to allow.
+  if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+
+  std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
+  if (!rfh) {
+    return false;
+  }
+
+  const url::Origin origin = rfh.value()->GetLastCommittedOrigin();
+  if (origin.GetURL().SchemeIsFile()) {
+    return true;
+  }
+
+  if (!media_engagement_service_) {
+    return false;
+  }
+
+  return media_engagement_service_->HasHighEngagement(origin);
+}
+
 ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
   GURL url = web_contents()->GetLastCommittedURL();
   auto setting = host_content_settings_map_->GetContentSetting(
@@ -336,29 +360,6 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
     return CONTENT_SETTING_BLOCK;
   }
   return setting;
-}
-
-void AutoPictureInPictureTabHelper::ScheduleAsyncVisibilityCheck() {
-  CHECK(!is_in_picture_in_picture_);
-
-  content::MediaSession* media_session =
-      content::MediaSession::GetIfExists(web_contents());
-  CHECK(media_session);
-
-  media_session->GetVisibility(
-      base::BindOnce(&AutoPictureInPictureTabHelper::OnVideoVisibilityResult,
-                     async_tasks_weak_factory_.GetWeakPtr()));
-}
-
-void AutoPictureInPictureTabHelper::OnVideoVisibilityResult(
-    bool has_sufficiently_visible_video) {
-  has_sufficiently_visible_video_ = has_sufficiently_visible_video;
-
-  if (!has_sufficiently_visible_video_) {
-    return;
-  }
-
-  MaybeEnterAutoPictureInPicture();
 }
 
 void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
@@ -376,6 +377,11 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->safe_browsing_service());
 
+  std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
+  if (!rfh) {
+    return;
+  }
+
   if (!safe_browsing_checker_client_) {
     // Create the AutoPiP safe browsing checker client, which will be used for
     // determining URL safety.
@@ -388,9 +394,7 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
   }
 
   safe_browsing_checker_client_->CheckUrlSafety(
-      // TODO(crbug.com/40250017): Replace with MediaSession routed frame last
-      // committed URL, and ensure the rfh is in primary main frame.
-      web_contents()->GetLastCommittedURL());
+      rfh.value()->GetLastCommittedURL());
 }
 
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
@@ -398,6 +402,36 @@ void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
     auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
         web_contents(), host_content_settings_map_, auto_blocker_);
   }
+}
+
+std::optional<content::RenderFrameHost*>
+AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents());
+  if (!media_session) {
+    return std::nullopt;
+  }
+
+  auto* rfh = media_session->GetRoutedFrame();
+  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+    return std::nullopt;
+  }
+
+  return {rfh};
+}
+
+std::string AutoPictureInPictureTabHelper::GetHistogramNameForReason() const {
+  if (IsUsingCameraOrMicrophone()) {
+    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+           "VideoConferencing";
+  }
+
+  if (MeetsVideoPlaybackConditions()) {
+    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+           "MediaPlayback";
+  }
+
+  return "";
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
@@ -430,7 +464,7 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
   EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
-      std::move(close_pip_cb), anchor_view, arrow);
+      std::move(close_pip_cb), GetHistogramNameForReason(), anchor_view, arrow);
 }
 
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {

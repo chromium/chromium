@@ -64,7 +64,6 @@
       },
       {
         "id": "DefaultSuggestResult",
-        "inline_doc": true,
         "type": "object",
         "description": "A suggest result.",
         "properties": {

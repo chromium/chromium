@@ -21,6 +21,10 @@ namespace growth {
 
 namespace {
 
+// NOTE: Do not change the number.
+// The number of `campaign_id`s can be stored in the sparse histograms.
+constexpr int kCampaignsCountPerHistogram = 500;
+
 // The mapping of `app_id` or URL `domain` to `app_group_id`.
 const auto& GetAppGroupIdMap() {
   // TODO: b/341721256 - Get the app ids from their constants files.
@@ -139,6 +143,12 @@ std::string CreateConditionParamForCap(base::cstring_view campaign_type,
       "name:ChromeOSAshGrowthCampaigns_%s%d_%s;comparator:<%d;window:3650;"
       "storage:3650",
       campaign_type.c_str(), id, event_type.c_str(), cap);
+}
+
+int GetHistogramMaxCampaignId(int campaign_id) {
+  // `campaign_id` starts at 0.
+  return (campaign_id / kCampaignsCountPerHistogram + 1) *
+         kCampaignsCountPerHistogram;
 }
 
 std::string ToString(bool value) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
+
 #import <Foundation/Foundation.h>
 
 #import "base/apple/foundation_util.h"
@@ -12,7 +14,6 @@
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
-#import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"

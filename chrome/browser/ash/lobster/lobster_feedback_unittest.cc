@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lobster/lobster_feedback.h"
-
 #include "base/test/gtest_util.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/specialized_features/feedback.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/feedback/proto/extension.pb.h"
@@ -24,6 +24,9 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Integration tests for `specialized_features::SendFeedback` with real Chrome
+// dependencies.
 
 namespace {
 
@@ -92,15 +95,16 @@ TEST(LobsterFeedback, SendFeedbackDoesNotSendEmail) {
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          profile.get());
 
-  EXPECT_TRUE(
-      SendLobsterFeedback(profile.get(),
-                          /*query=*/"",
-                          /*model_version=*/"",
-                          /*user_description=*/
-                          "visit https://www.whatismyip.com/, log in using "
-                          "test@email.com and try entering 111.222.333.444",
-                          /*image_bytes=*/"a1b2c3"));
+  specialized_features::SendFeedback(
+      *uploader, feedback::kLobsterFeedbackProductId,
+      /*description=*/
+      "visit https://www.whatismyip.com/, log in using "
+      "test@email.com and try entering 111.222.333.444",
+      /*image=*/"a1b2c3");
 
   auto feedback_data =
       on_report_sent_future.Get<userfeedback::ExtensionSubmit>();
@@ -112,21 +116,22 @@ TEST(LobsterFeedback, SendFeedbackRedactsDescription) {
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          profile.get());
 
-  EXPECT_TRUE(
-      SendLobsterFeedback(profile.get(),
-                          /*query=*/"",
-                          /*model_version=*/"",
-                          /*user_description=*/
-                          "visit https://www.whatismyip.com/ log in using "
-                          "test@email.com and try entering 111.222.333.444",
-                          /*image_bytes=*/"a1b2c3"));
+  specialized_features::SendFeedback(
+      *uploader, feedback::kLobsterFeedbackProductId,
+      /*description=*/
+      "visit https://www.whatismyip.com/ log in using "
+      "test@email.com and try entering 111.222.333.444",
+      /*image=*/"a1b2c3");
 
   auto feedback_data =
       on_report_sent_future.Get<userfeedback::ExtensionSubmit>();
   EXPECT_EQ(feedback_data.common_data().description(),
-            "model_input: \nmodel_version: \nuser_description: visit (URL: 1) "
-            "log in using (email: 1) and try entering 111.222.333.444");
+            "visit (URL: 1) log in using "
+            "(email: 1) and try entering 111.222.333.444");
 }
 
 TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
@@ -136,12 +141,14 @@ TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@google.com", on_report_sent_future.GetRepeatingCallback());
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          profile.get());
 
-  EXPECT_TRUE(SendLobsterFeedback(profile.get(), /*query=*/"a dummy query",
-                                  /*model_version=*/"dummy_version",
-                                  /*user_description=*/
-                                  "some dummy description",
-                                  /*image_bytes=*/"a1b2c3"));
+  specialized_features::SendFeedback(*uploader,
+                                     feedback::kLobsterFeedbackProductId,
+                                     /*description=*/"some dummy description",
+                                     /*image=*/"a1b2c3");
 
   auto feedback_data =
       on_report_sent_future.Get<userfeedback::ExtensionSubmit>();
@@ -152,8 +159,7 @@ TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   expected_feedback_data.mutable_common_data()->set_gaia_id(0);
   expected_feedback_data.mutable_common_data()->set_user_email("");
   expected_feedback_data.mutable_common_data()->set_description(
-      "model_input: a dummy query\nmodel_version: "
-      "dummy_version\nuser_description: some dummy description");
+      "some dummy description");
   expected_feedback_data.mutable_common_data()->set_source_description_language(
       "");
   expected_feedback_data.mutable_web_data()

@@ -128,13 +128,13 @@ void ContentSettingsManagerImpl::Create(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_BLOCKING})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
-                         render_process_host->GetID(), std::move(receiver),
-                         delegate->GetCookieSettings(
-                             render_process_host->GetBrowserContext()),
-                         std::move(delegate)));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
+                                render_process_host->GetDeprecatedID(),
+                                std::move(receiver),
+                                delegate->GetCookieSettings(
+                                    render_process_host->GetBrowserContext()),
+                                std::move(delegate)));
 }
 
 void ContentSettingsManagerImpl::Clone(

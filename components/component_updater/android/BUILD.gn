@@ -106,7 +106,9 @@ source_set("embedded_component_loader_unittests") {
     ":embedded_component_loader",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater",
     "//components/crash/core/common:crash_key",
+    "//components/metrics:component_metrics",
     "//testing/gmock",
     "//testing/gtest",
   ]

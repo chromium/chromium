@@ -25,8 +25,6 @@ import android.text.style.UpdateAppearance;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextLinks;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -41,6 +39,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
@@ -55,6 +55,7 @@ import java.util.Locale;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
+@NullMarked
 public class ClipboardImpl extends Clipboard
         implements ClipboardManager.OnPrimaryClipChangedListener {
     private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
@@ -81,9 +82,9 @@ public class ClipboardImpl extends Clipboard
 
     private ClipboardManager mClipboardManager;
 
-    private ImageFileProvider mImageFileProvider;
+    private @Nullable ImageFileProvider mImageFileProvider;
 
-    private ImageFileProvider.ClipboardFileMetadata mPendingCopiedImageMetadata;
+    private ImageFileProvider.@Nullable ClipboardFileMetadata mPendingCopiedImageMetadata;
 
     public ClipboardImpl(ClipboardManager clipboardManager) {
         mContext = ContextUtils.getApplicationContext();
@@ -91,19 +92,27 @@ public class ClipboardImpl extends Clipboard
         mClipboardManager.addPrimaryClipChangedListener(this);
     }
 
-    @Override
-    protected String getCoercedText() {
+    private @Nullable ClipData getPrimaryClip() {
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
         // crbug.com/654802 and b/31501780)
         try {
-            return mClipboardManager
-                    .getPrimaryClip()
-                    .getItemAt(0)
-                    .coerceToText(mContext)
-                    .toString();
+            ClipData ret = mClipboardManager.getPrimaryClip();
+            if (ret == null || ret.getItemCount() == 0) {
+                return null;
+            }
+            return ret;
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @Override
+    protected @Nullable String getCoercedText() {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null) {
+            return null;
+        }
+        return clipData.getItemAt(0).coerceToText(mContext).toString();
     }
 
     @Override
@@ -136,7 +145,7 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    public String clipDataToHtmlText(ClipData clipData) {
+    public @Nullable String clipDataToHtmlText(ClipData clipData) {
         ClipDescription description = clipData.getDescription();
         if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
             return clipData.getItemAt(0).getHtmlText();
@@ -154,15 +163,12 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected String getHTMLText() {
-        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
-        // crbug/654802 and b/31501780)
-        try {
-            ClipData clipData = mClipboardManager.getPrimaryClip();
-            return clipDataToHtmlText(clipData);
-        } catch (Exception e) {
+    protected @Nullable String getHTMLText() {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null) {
             return null;
         }
+        return clipDataToHtmlText(clipData);
     }
 
     @Override
@@ -196,60 +202,54 @@ public class ClipboardImpl extends Clipboard
             float score = description.getConfidenceScore(TextClassifier.TYPE_URL);
             return score > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION;
         } else {
-            GURL url = new GURL(getCoercedText());
-            return url.isValid();
+            String text = getCoercedText();
+            return text == null ? false : new GURL(text).isValid();
         }
     }
 
     @Override
+    @Nullable
     String getUrl() {
         if (!hasUrl()) return null;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return getCoercedText();
 
-        try {
-            ClipData clipData = mClipboardManager.getPrimaryClip();
-            ClipDescription description = clipData.getDescription();
-            CharSequence firstLinkText = null;
-            if (description.hasMimeType(URL_MIME_TYPE)) {
-                firstLinkText = getCoercedText();
-            } else {
-                ClipData.Item item = clipData.getItemAt(0);
-                TextLinks textLinks = item.getTextLinks();
-                if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
-
-                CharSequence fullText = item.getText();
-                TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
-                firstLinkText = fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
-            }
-            if (firstLinkText == null) return null;
-
-            // Fixing the URL here since Android thought the string is a URL, but GURL may not
-            // recognize the string as a URL. Ex. www.foo.com. Android thinks this is a URL, but
-            // GURL doesn't since there is no protocol.
-            GURL fixedUrl = UrlFormatter.fixupUrl(firstLinkText.toString());
-            return fixedUrl.getSpec();
-        } catch (Exception e) {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null) {
             return null;
         }
+        ClipDescription description = clipData.getDescription();
+        CharSequence firstLinkText = null;
+        if (description.hasMimeType(URL_MIME_TYPE)) {
+            firstLinkText = getCoercedText();
+        } else {
+            ClipData.Item item = clipData.getItemAt(0);
+            TextLinks textLinks = item.getTextLinks();
+            if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
+
+            CharSequence fullText = item.getText();
+            TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
+            firstLinkText = fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+        }
+        if (firstLinkText == null) return null;
+
+        // Fixing the URL here since Android thought the string is a URL, but GURL may not
+        // recognize the string as a URL. Ex. www.foo.com. Android thinks this is a URL, but
+        // GURL doesn't since there is no protocol.
+        GURL fixedUrl = UrlFormatter.fixupUrl(firstLinkText.toString());
+        return fixedUrl.getSpec();
     }
 
     @Override
     public @Nullable Uri getImageUri() {
-        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
-        // crbug.com/654802).
-        try {
-            ClipData clipData = mClipboardManager.getPrimaryClip();
-            if (clipData == null
-                    || clipData.getItemCount() == 0
-                    || !hasImageMimeType(clipData.getDescription())) {
-                return null;
-            }
-
-            return clipData.getItemAt(0).getUri();
-        } catch (Exception e) {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null
+                || clipData.getItemCount() == 0
+                || !hasImageMimeType(clipData.getDescription())) {
             return null;
         }
+
+        return clipData.getItemAt(0).getUri();
     }
 
     @Override
@@ -276,13 +276,13 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected String getImageUriString() {
+    protected @Nullable String getImageUriString() {
         Uri uri = getImageUri();
         return uri == null ? null : uri.toString();
     }
 
     @Override
-    public byte[] getPng() {
+    public byte @Nullable [] getPng() {
         ThreadUtils.assertOnBackgroundThread();
 
         Uri uri = getImageUri();
@@ -335,7 +335,7 @@ public class ClipboardImpl extends Clipboard
         return hasImageMimeType(description);
     }
 
-    private static boolean hasImageMimeType(ClipDescription description) {
+    private static boolean hasImageMimeType(@Nullable ClipDescription description) {
         return (description != null)
                 && (description.hasMimeType("image/*")
                         || (sSkipImageMimeTypeCheckForTesting != null
@@ -354,44 +354,37 @@ public class ClipboardImpl extends Clipboard
 
     @Override
     protected String[][] getFilenames() {
-        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
-        // crbug/654802 and b/31501780)
         List<String[]> uris = new ArrayList<String[]>();
-        try {
-            ClipData clipData = mClipboardManager.getPrimaryClip();
+        ClipData clipData = getPrimaryClip();
+        if (clipData != null) {
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 Uri uri = clipData.getItemAt(i).getUri();
                 if (uri != null) {
                     String uriString = uri.toString();
                     String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
                     if (displayName == null) {
-                        displayName = new String();
+                        displayName = "";
                     }
                     uris.add(new String[] {uriString, displayName});
                 }
             }
-        } catch (Exception e) {
-            // Return an empty list below if there is an error accessing ClipData.
         }
         return uris.toArray(new String[][] {});
     }
 
     @Override
     public boolean hasFilenames() {
-        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
-        // crbug/654802 and b/31501780)
-        try {
-            ClipData clipData = mClipboardManager.getPrimaryClip();
-            for (int i = 0; i < clipData.getItemCount(); i++) {
-                Uri uri = clipData.getItemAt(i).getUri();
-                if (uri != null) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (Exception e) {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null) {
             return false;
         }
+        for (int i = 0; i < clipData.getItemCount(); i++) {
+            Uri uri = clipData.getItemAt(i).getUri();
+            if (uri != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -618,7 +611,7 @@ public class ClipboardImpl extends Clipboard
      * individually. Note: Don't forget to revoke the permission once the clipboard is updated.
      */
     @SuppressWarnings("QueryPermissionsNeeded")
-    private void grantUriPermission(@NonNull Uri uri) {
+    private void grantUriPermission(Uri uri) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || mImageFileProvider == null) {
             return;
         }
@@ -705,14 +698,11 @@ public class ClipboardImpl extends Clipboard
     }
 
     private boolean hasStyledTextOnPreS() {
-        CharSequence text;
-        try {
-            // getPrimaryClip() has been observed to throw unexpected exceptions for some devices
-            // (see crbug.com/654802 and b/31501780)
-            text = mClipboardManager.getPrimaryClip().getItemAt(0).getText();
-        } catch (Exception e) {
+        ClipData clipData = getPrimaryClip();
+        if (clipData == null) {
             return false;
         }
+        CharSequence text = clipData.getItemAt(0).getText();
 
         if (text instanceof Spanned) {
             Spanned spanned = (Spanned) text;

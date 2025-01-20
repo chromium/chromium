@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -116,11 +117,14 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 
 const int kListenBacklog = 5;
 
-class TCPSocketTest : public PlatformTest,
-                      public WithTaskEnvironment,
-                      // The param indicates whether the
-                      // "TcpSocketIoCompletionPortWin" feature is enabled.
-                      public testing::WithParamInterface<bool> {
+class TCPSocketTest
+    : public PlatformTest,
+      public WithTaskEnvironment,
+      // The params indicate whether the
+      // "TcpSocketIoCompletionPortWin" feature is enabled and
+      // whether we should use Read() or ReadIfReady() to read
+      // the data.
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   TCPSocketTest() {
 #if BUILDFLAG(IS_WIN)
@@ -128,14 +132,18 @@ class TCPSocketTest : public PlatformTest,
         features::kTcpSocketIoCompletionPortWin,
         IsTcpSocketIoCompletionPortWinEnabled());
 #else
-    CHECK(!GetParam());
+    CHECK(!std::get<0>(GetParam()));
 #endif  // BUILDFLAG(IS_WIN)
     socket_ = TCPSocket::Create(nullptr, nullptr, NetLogSource());
   }
 
 #if BUILDFLAG(IS_WIN)
-  bool IsTcpSocketIoCompletionPortWinEnabled() { return GetParam(); }
+  bool IsTcpSocketIoCompletionPortWinEnabled() {
+    return std::get<0>(GetParam());
+  }
 #endif  // BUILDFLAG(IS_WIN)
+
+  bool ShouldUseReadIfReady() { return std::get<1>(GetParam()); }
 
   void SetUpListenIPv4() {
     ASSERT_THAT(socket_->Open(ADDRESS_FAMILY_IPV4), IsOk());
@@ -285,6 +293,57 @@ class TCPSocketTest : public PlatformTest,
     return AddressList(local_address_);
   }
 
+  // Helper function to read `expected_size` bytes from the accepting
+  // socket using ReadIfReady(). Data will be temporarily read into
+  // `read_buffer` and then accumulated in `received_data_buffer`. On
+  // successful return, `received_data` will be modified to refer to
+  // the read data. On failure, `received_data` will be unmodified.
+  // Correctly handles cases where data is split across multiple
+  // ReadIfReady() calls.
+  void ReadAllAvailableData(TCPSocket* connecting_socket,
+                            TCPSocket* accepted_socket,
+                            IOBufferWithSize* read_buffer,
+                            base::span<uint8_t> received_data_buffer,
+                            size_t expected_size,
+                            base::span<const uint8_t>* received_data) {
+    ASSERT_LE(expected_size, received_data_buffer.size());
+    size_t total_received = 0;
+    while (total_received < expected_size) {
+      EXPECT_TRUE(connecting_socket->IsConnected());
+      EXPECT_TRUE(accepted_socket->IsConnected());
+
+      TestCompletionCallback read_callback;
+      int read_result = connecting_socket->ReadIfReady(
+          read_buffer, read_buffer->size(), read_callback.callback());
+
+      if (read_result == ERR_IO_PENDING) {
+        read_result = read_callback.GetResult(read_result);
+        ASSERT_EQ(read_result, 0);
+        read_result = connecting_socket->ReadIfReady(
+            read_buffer, read_buffer->size(), read_callback.callback());
+        ASSERT_GT(read_result, 0);
+        DVLOG(1) << "Got data in while loop. Size " << read_result;
+      }
+
+      if (read_result > 0) {
+        ASSERT_LE(total_received + read_result, expected_size);
+        received_data_buffer.subspan(total_received)
+            .copy_prefix_from(
+                read_buffer->span().first(static_cast<size_t>(read_result)));
+
+        total_received += read_result;
+        DVLOG(1) << "Copied data in while loop. Size " << total_received;
+      } else {
+        FAIL() << "**** Failed to read data using ReadIfReady(). Return: "
+               << read_result << " connecting socket connected "
+               << connecting_socket->IsConnected()
+               << " Accepting socket connected "
+               << accepted_socket->IsConnected();
+      }
+    }
+    *received_data = received_data_buffer.first(total_received);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TCPSocket> socket_;
   IPEndPoint local_address_;
@@ -369,8 +428,8 @@ TEST_P(TCPSocketTest, AcceptForAdoptedUnconnectedSocket) {
 
   IPEndPoint address(IPAddress::IPv4Localhost(), 0);
   SockaddrStorage storage;
-  ASSERT_TRUE(address.ToSockAddr(storage.addr, &storage.addr_len));
-  ASSERT_EQ(0, bind(existing_socket, storage.addr, storage.addr_len));
+  ASSERT_TRUE(address.ToSockAddr(storage.addr(), &storage.addr_len));
+  ASSERT_EQ(0, bind(existing_socket, storage.addr(), storage.addr_len));
 
   ASSERT_THAT(socket_->Listen(kListenBacklog), IsOk());
   ASSERT_THAT(socket_->GetLocalAddress(&local_address_), IsOk());
@@ -584,30 +643,23 @@ TEST_P(TCPSocketTest, CancelPendingReadIfReady) {
   int read_if_ready_result = connecting_socket->ReadIfReady(
       read_buffer.get(), read_buffer->size(), read_callback.callback());
 
-#if BUILDFLAG(IS_WIN)
-  if (IsTcpSocketIoCompletionPortWinEnabled()) {
-    // TCPSocketIoCompletionPortWin does not support ReadIfReady().
-    EXPECT_EQ(ERR_READ_IF_READY_NOT_IMPLEMENTED, read_if_ready_result);
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
   EXPECT_EQ(ERR_IO_PENDING, read_if_ready_result);
 
   // Now cancel the pending ReadIfReady().
-  connecting_socket->CancelReadIfReady();
+  ASSERT_EQ(OK, connecting_socket->CancelReadIfReady());
 
   // Send data to |connecting_socket|.
-  const char kMsg[] = "hello!";
-  scoped_refptr<StringIOBuffer> write_buffer =
-      base::MakeRefCounted<StringIOBuffer>(kMsg);
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  scoped_refptr<IOBufferWithSize> write_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  write_buffer->span().copy_from(base::as_byte_span(kMsg));
 
   TestCompletionCallback write_callback;
-  int write_result = accepted_socket->Write(write_buffer.get(), strlen(kMsg),
+  int write_result = accepted_socket->Write(write_buffer.get(), kMsg.size(),
                                             write_callback.callback(),
                                             TRAFFIC_ANNOTATION_FOR_TESTS);
-  const int msg_size = strlen(kMsg);
-  ASSERT_EQ(msg_size, write_result);
+  ASSERT_EQ(static_cast<int>(kMsg.size()), write_result);
 
   TestCompletionCallback read_callback2;
   int read_result = connecting_socket->ReadIfReady(
@@ -618,8 +670,500 @@ TEST_P(TCPSocketTest, CancelPendingReadIfReady) {
         read_buffer.get(), read_buffer->size(), read_callback2.callback());
   }
 
-  ASSERT_EQ(msg_size, read_result);
-  ASSERT_EQ(0, memcmp(&kMsg, read_buffer->data(), msg_size));
+  ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
+  ASSERT_EQ(read_buffer->span().first(static_cast<size_t>(read_result)),
+            base::as_byte_span(kMsg));
+}
+
+// Validates that we can successfully read data from the underlying socket after
+// cancelling a pending read request when data is available and issuing a new
+// ReadIfReady()/Read() request.
+TEST_P(TCPSocketTest, CancelReadRetainedBufferedData) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  connecting_socket->SetDefaultOptionsForClient();
+  accepted_socket->SetDefaultOptionsForClient();
+
+  // The test setup is as below.
+  // 1. First issue a ReadIfReady() call on the connecting socket. This will
+  //    return ERR_IO_PENDING.
+  // 2. Write data from the accepted socket (other side).
+  // 3. Cancel the first read.
+  // 4. Write more data from the accepted socket.
+  // 5. Attempt to read the data via ReadIfReady().
+
+  std::array<uint8_t, 1024> received_data = {};
+  size_t received_data_size = 0;
+  size_t bytes_written = 0;
+
+  // Set up a read buffer and initiate a read.
+  scoped_refptr<IOBufferWithSize> read_buffer1 =
+      base::MakeRefCounted<IOBufferWithSize>(1024);
+  TestCompletionCallback read_callback1;
+
+  int read_result = connecting_socket->ReadIfReady(
+      read_buffer1.get(), read_buffer1->size(), read_callback1.callback());
+
+  ASSERT_EQ(ERR_IO_PENDING, read_result);
+
+  // Write data to the socket before cancelling the read operation.
+  constexpr std::string_view kMsg = "test_data.Part 1";
+  scoped_refptr<IOBufferWithSize> write_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  write_buffer->span().copy_from(base::as_byte_span(kMsg));
+
+  TestCompletionCallback write_callback;
+  int write_result1 = accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                             write_callback.callback(),
+                                             TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg.size()),
+            write_callback.GetResult(write_result1));
+  bytes_written += kMsg.size();
+
+  // Cancel the pending read operation.
+  connecting_socket->CancelReadIfReady();
+
+  // Handle the case where the ReadIfRead() operation completed before the
+  // CancelReadIfReady call.
+  if (read_callback1.have_result()) {
+    EXPECT_EQ(net::OK, read_callback1.GetResult(read_result));
+    DVLOG(1) << "Got data after CancelReadIfReady() " << received_data_size;
+  }
+
+  constexpr std::string_view kMsg2 = "test_data. Part 2";
+  scoped_refptr<IOBufferWithSize> write_buffer2 =
+      base::MakeRefCounted<IOBufferWithSize>(kMsg2.size());
+  write_buffer2->span().copy_from(base::as_byte_span(kMsg2));
+
+  TestCompletionCallback write_callback2;
+  int write_result2 = accepted_socket->Write(write_buffer2.get(), kMsg2.size(),
+                                             write_callback2.callback(),
+                                             TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg2.size()),
+            write_callback2.GetResult(write_result2));
+  bytes_written += kMsg2.size();
+
+  // Set up a new buffer and initiate a read.
+  scoped_refptr<IOBufferWithSize> read_buffer2 =
+      base::MakeRefCounted<IOBufferWithSize>(1024);
+
+  // The data read off the socket is copied into this buffer.
+  base::span<const uint8_t> received_data_buffer;
+
+  // Use `span` for `received_data` directly.
+  ReadAllAvailableData(connecting_socket.get(), accepted_socket.get(),
+                       read_buffer2.get(), received_data, bytes_written,
+                       &received_data_buffer);
+  received_data_size = received_data_buffer.size();
+
+  // Validate that the read operation successfully retrieved the expected data.
+  ASSERT_EQ(bytes_written, received_data_size);
+  std::string expected_data = std::string(kMsg) + std::string(kMsg2);
+  ASSERT_EQ(base::as_bytes(base::span(expected_data)),
+            received_data_buffer.first(received_data_size));
+}
+
+// Validates behavior when a pending ReadIfRead() is canceled and the socket
+// remains active for further operations. This test ensures that data written to
+// the socket before and after a cancel operation is read successfully by
+// subsequent ReadIfReady() requests.
+//
+// The test setup is as follows:
+// 1. Issue an initial ReadIfReady on the connecting socket.
+//    This will return ERR_IO_PENDING as there is no data available initially.
+// 2. Write data from the accepted socket (peer).
+// 3. Call CancelReadIfReady() on the connecting socket to cancel the pending
+//    read operation. If the read callback has already run, it captures the
+//    available data.
+// 4. Write additional data from the accepted socket.
+// 5. Issue subsequent read requests to ensure that all data written to the
+//    socket is received correctly.
+//
+// Special Considerations:
+// - For ReadIfReady, after the callback is invoked, the test ensures that
+//   another ReadIfReady call is made to retrieve the available data.
+//
+TEST_P(TCPSocketTest, CancelThenImmediateReadIfReady) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  connecting_socket->SetDefaultOptionsForClient();
+  accepted_socket->SetDefaultOptionsForClient();
+
+  // Set up a read buffer and initiate a ReadIfReady or Read.
+  scoped_refptr<IOBufferWithSize> read_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(1024);
+  TestCompletionCallback read_callback;
+
+  int read_result = connecting_socket->ReadIfReady(
+      read_buffer.get(), read_buffer->size(), read_callback.callback());
+
+  ASSERT_EQ(ERR_IO_PENDING, read_result);
+
+  // Write data to the socket.
+  static constexpr base::cstring_view kMsg = "test_data";
+
+  scoped_refptr<IOBufferWithSize> write_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  write_buffer->span().copy_from(base::as_byte_span(kMsg));
+
+  TestCompletionCallback write_callback;
+  ASSERT_EQ(static_cast<int>(kMsg.size()),
+            accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                   write_callback.callback(),
+                                   TRAFFIC_ANNOTATION_FOR_TESTS));
+  // Small sleep to allow the write to be propagated. In some environments, e.g
+  // IOS simulator, Fuchsia, we have seen cases where the write does not
+  // propagate through even though the Write call returns that data was written
+  // to the socket. The test relies on the CancelReadIfReady() call executing
+  // just around the time the data becomes available for read.
+  //
+  // We may need to rewrite this test in the event it becomes flaky.
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+  // Cancel the ReadIfReady() operation and immediately issue another
+  // ReadIfReady().
+  connecting_socket->CancelReadIfReady();
+
+  std::array<uint8_t, 1024> received_data = {};
+  // The data read off the socket is copied into this buffer.
+  base::span<const uint8_t> received_data_buffer;
+  // Read may not return the entire data in one call. Handle the case where
+  // we may get partial data.
+  ReadAllAvailableData(connecting_socket.get(), accepted_socket.get(),
+                       read_buffer.get(), received_data, kMsg.size(),
+                       &received_data_buffer);
+
+  // Validate that the data was read correctly.
+  ASSERT_EQ(kMsg.size(), received_data_buffer.size());
+  ASSERT_EQ(base::as_byte_span(kMsg),
+            received_data_buffer.first(received_data_buffer.size()));
+}
+
+// Validates that large amounts of data can be read correctly in multiple
+// chunks with interspersed CancelReadIfReady() calls This test ensures that
+// when a large payload is written to the socket, the reading side can retrieve
+// the data in several smaller read operations without data loss or corruption.
+// The test verifies both Read and ReadIfReady behavior when handling large data
+// transfers with the Read/ReadIfReady() calls cancelled periodically.
+//
+// The test setup is as follows:
+// 1. Generate a large data payload (e.g., 10 KB).
+// 2. Write the payload from the accepted socket (peer) to the connecting
+//    socket in 2K chunks.
+// 3. On the connecting socket, repeatedly call ReadIfReady or Read with the
+//    read chunk size (1KB) to read the data.
+// 4. Issue CancelReadIfReady() calls after every 2K chunk written.
+// 5. Continue reading until all data has been received.
+// 6. Verify that the concatenated received data matches the original payload.
+//
+// Special Considerations:
+// - For ReadIfReady, after each callback indicating data readiness, the test
+//   issues another ReadIfReady call to retrieve the next chunk.
+TEST_P(TCPSocketTest, LargeDataReadWithCancelReadIfReady) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  connecting_socket->SetDefaultOptionsForClient();
+  accepted_socket->SetDefaultOptionsForClient();
+
+  // Generate a large data payload (10 KB of 'x').
+  constexpr size_t chunk_size = 2048;       // Write in 2 KB chunks.
+  constexpr size_t read_chunk_size = 1024;  // Read in 1 KB chunks.
+  constexpr size_t total_size = 10 * 1024;  // 10 KB.
+  std::vector<uint8_t> large_data(total_size, 0u);
+  base::RandBytes(large_data);
+
+  std::vector<uint8_t> received_data(total_size, 0);
+  size_t received_data_size = 0;
+
+  // Iterate over chunks to write and read in parts.
+  for (size_t offset = 0; offset < total_size; offset += chunk_size) {
+    // Determine the size of the current chunk.
+    size_t current_chunk_size = std::min(chunk_size, total_size - offset);
+
+    scoped_refptr<IOBufferWithSize> write_buffer =
+        base::MakeRefCounted<IOBufferWithSize>(current_chunk_size);
+
+    // Copy the data to be sent out into the write buffer.
+    write_buffer->span()
+        .first(current_chunk_size)
+        .copy_from(
+            base::as_byte_span(large_data).subspan(offset, current_chunk_size));
+
+    // Issue a read before writing the chunk.
+    scoped_refptr<IOBufferWithSize> read_buffer =
+        base::MakeRefCounted<IOBufferWithSize>(read_chunk_size);
+
+    TestCompletionCallback read_callback;
+    int read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+
+    ASSERT_EQ(ERR_IO_PENDING, read_result);
+
+    // Write the chunk to the socket.
+    TestCompletionCallback write_callback;
+    ASSERT_EQ(static_cast<int>(current_chunk_size),
+              accepted_socket->Write(write_buffer.get(), current_chunk_size,
+                                     write_callback.callback(),
+                                     TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    // Small sleep to allow the write to be propagated.
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+    // Cancel the pending read above.
+    connecting_socket->CancelReadIfReady();
+
+    // The CancelReadIfReady() call above clears out the completion callback
+    // passed in by the caller. This also means that the caller won't receive
+    // a notification about available data in the socket after the
+    // CancelReadIfReady() call. We have a small Run loop below to give
+    // sufficient time for the IO completion to be signaled. Please note that
+    // this only applies to the Windows (IO completion based socket). Other
+    // implementations just stop listening for read completions.
+    base::RunLoop run_loop;
+    base::OneShotTimer timeout_timer;
+    timeout_timer.Start(FROM_HERE, TestTimeouts::tiny_timeout(),
+                        base::BindOnce(&base::RunLoop::QuitWhenIdle,
+                                       base::Unretained(&run_loop)));
+    run_loop.Run();
+
+    // Read until the entire chunk is retrieved.
+    size_t chunk_received = 0;
+    while (chunk_received < current_chunk_size) {
+      TestCompletionCallback retry_read_callback;
+      read_result =
+          connecting_socket->ReadIfReady(read_buffer.get(), read_buffer->size(),
+                                         retry_read_callback.callback());
+      if (read_result == ERR_IO_PENDING) {
+        read_result = retry_read_callback.GetResult(read_result);
+        ASSERT_GE(read_result, 0);
+        read_result = connecting_socket->ReadIfReady(
+            read_buffer.get(), read_buffer->size(),
+            retry_read_callback.callback());
+      }
+
+      ASSERT_GT(read_result, 0);
+      // Append received data to the buffer using spans.
+      base::span<uint8_t>(received_data)
+          .subspan(received_data_size, static_cast<size_t>(read_result))
+          .copy_from(
+              read_buffer->span().first(static_cast<size_t>(read_result)));
+      received_data_size += read_result;
+      chunk_received += read_result;
+    }
+  }
+  // Validate that all the data was read correctly.
+  ASSERT_EQ(base::span<const uint8_t>(received_data).first(received_data_size),
+            base::as_bytes(base::span(large_data)));
+}
+
+TEST_P(TCPSocketTest, ReadComplete) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  // Send data to |connecting_socket|.
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  scoped_refptr<StringIOBuffer> write_buffer =
+      base::MakeRefCounted<StringIOBuffer>(std::string(kMsg));
+
+  TestCompletionCallback write_callback;
+  int write_result = accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                            write_callback.callback(),
+                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg.size()), write_result);
+
+  // ReadIfReady should read all of the data.
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  TestCompletionCallback read_callback;
+  int read_result = 0;
+  if (ShouldUseReadIfReady()) {
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      ASSERT_EQ(OK, read_callback.GetResult(read_result));
+      read_result = connecting_socket->ReadIfReady(
+          read_buffer.get(), read_buffer->size(), read_callback.callback());
+    }
+  } else {
+    read_result = connecting_socket->Read(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      // For read calls issuing GetResult is enough as the data will be copied.
+      read_result = read_callback.GetResult(read_result);
+      ASSERT_GE(read_result, 0);
+    }
+  }
+  ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
+  ASSERT_EQ(base::span(kMsg), read_buffer->span());
+}
+
+// This test is similar to ReadComplete, but with a larger buffer size than the
+// available data.
+TEST_P(TCPSocketTest, ReadBiggerRead) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  // Send data to |connecting_socket|.
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  scoped_refptr<StringIOBuffer> write_buffer =
+      base::MakeRefCounted<StringIOBuffer>(std::string(kMsg));
+  TestCompletionCallback write_callback;
+  int write_result = accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                            write_callback.callback(),
+                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg.size()), write_result);
+
+  // Read/ReadIfReady should read all of the data.
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kMsg.size() * 2);
+  TestCompletionCallback read_callback;
+  int read_result = 0;
+
+  if (ShouldUseReadIfReady()) {
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      ASSERT_EQ(OK, read_callback.GetResult(read_result));
+      read_result = connecting_socket->ReadIfReady(
+          read_buffer.get(), read_buffer->size(), read_callback.callback());
+    }
+  } else {
+    read_result = connecting_socket->Read(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      // For read calls issuing GetResult is enough as the data will be copied.
+      read_result = read_callback.GetResult(read_result);
+      ASSERT_GE(read_result, 0);
+    }
+  }
+
+  ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
+  ASSERT_EQ(base::span(kMsg),
+            read_buffer->span().first(static_cast<uint8_t>(read_result)));
+}
+
+// This test is similar to ReadComplete, but with a smaller buffer size than the
+// available data.
+TEST_P(TCPSocketTest, ReadSmallerRead) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  // Send data to |connecting_socket|.
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  scoped_refptr<StringIOBuffer> write_buffer =
+      base::MakeRefCounted<StringIOBuffer>(std::string(kMsg));
+
+  TestCompletionCallback write_callback;
+  int write_result = accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                            write_callback.callback(),
+                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg.size()), write_result);
+
+  // Read/ReadIfReady should read all of the data.
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kMsg.size() / 2);
+  TestCompletionCallback read_callback;
+  int read_result = 0;
+  if (ShouldUseReadIfReady()) {
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      ASSERT_EQ(OK, read_callback.GetResult(read_result));
+      read_result = connecting_socket->ReadIfReady(
+          read_buffer.get(), read_buffer->size(), read_callback.callback());
+    }
+  } else {
+    read_result = connecting_socket->Read(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+    if (read_result == ERR_IO_PENDING) {
+      // For read calls issuing GetResult is enough as the data will be copied.
+      read_result = read_callback.GetResult(read_result);
+      ASSERT_GE(read_result, 0);
+    }
+  }
+  ASSERT_EQ(static_cast<int>(kMsg.size()) / 2, read_result);
+  ASSERT_EQ(base::span(kMsg).first(static_cast<uint8_t>(read_result)),
+            read_buffer->span());
+}
+
+TEST_P(TCPSocketTest, ReadNoDataThenClose) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  // Read/ReadIfReady should report that a read is pending if there's no data
+  // yet.
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  TestCompletionCallback read_callback;
+  int read_result = 0;
+
+  if (ShouldUseReadIfReady()) {
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+  } else {
+    read_result = connecting_socket->Read(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+  }
+
+  ASSERT_EQ(ERR_IO_PENDING, read_result);
+
+  // Gracefully close the connection.
+  accepted_socket->Close();
+  accepted_socket.reset();
+
+  read_result = read_callback.WaitForResult();
+  ASSERT_EQ(0, read_result);
+}
+
+TEST_P(TCPSocketTest, ReadDataAfter) {
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+
+  static constexpr base::cstring_view kMsg = "hello!";
+
+  // ReadIfReady should report that a read is pending if there's no data yet.
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kMsg.size());
+  TestCompletionCallback read_callback;
+  int read_result = 0;
+
+  if (ShouldUseReadIfReady()) {
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+  } else {
+    read_result = connecting_socket->Read(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+  }
+
+  ASSERT_EQ(ERR_IO_PENDING, read_result);
+
+  ASSERT_FALSE(read_callback.have_result());
+
+  // Send data to |connecting_socket|.
+  scoped_refptr<StringIOBuffer> write_buffer =
+      base::MakeRefCounted<StringIOBuffer>(std::string(kMsg));
+  TestCompletionCallback write_callback;
+  int write_result = accepted_socket->Write(write_buffer.get(), kMsg.size(),
+                                            write_callback.callback(),
+                                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_EQ(static_cast<int>(kMsg.size()), write_result);
+
+  read_result = read_callback.WaitForResult();
+  if (ShouldUseReadIfReady()) {
+    ASSERT_EQ(OK, read_result);
+    // Now the data can be read.
+    read_result = connecting_socket->ReadIfReady(
+        read_buffer.get(), read_buffer->size(), read_callback.callback());
+  } else {
+    // For read calls issuing GetResult is enough as the data will be copied.
+    ASSERT_GE(read_result, 0);
+  }
+
+  ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
+  ASSERT_EQ(base::span(kMsg), read_buffer->span());
 }
 
 TEST_P(TCPSocketTest, IsConnected) {
@@ -1088,20 +1632,28 @@ TEST_P(TCPSocketTest, PendingReadError) {
 #endif
 }
 
-INSTANTIATE_TEST_SUITE_P(Any,
-                         TCPSocketTest,
-                         ::testing::Values(false
+INSTANTIATE_TEST_SUITE_P(
+    Any,
+    TCPSocketTest,
+    ::testing::Values(
+        // Base tests
+        std::make_tuple(false, false),  // Base, Read
+        std::make_tuple(false, true)    // Base, ReadIfReady
 #if BUILDFLAG(IS_WIN)
-                                           ,
-                                           true
+        // TcpSocketIoCompletionPortWin tests
+        ,
+        std::make_tuple(true,
+                        false),      // TcpSocketIoCompletionPortWin, Read
+        std::make_tuple(true, true)  // TcpSocketIoCompletionPortWin,
+                                     // ReadIfReady
 #endif
-                                           ),
-                         [](::testing::TestParamInfo<bool> info) {
-                           if (info.param) {
-                             return "TcpSocketIoCompletionPortWin";
-                           }
-                           return "Base";
-                         });
+        ),
+    [](::testing::TestParamInfo<std::tuple<bool, bool>> info) {
+      std::string name =
+          std::get<0>(info.param) ? "TcpSocketIoCompletionPortWin" : "Base";
+      name += std::get<1>(info.param) ? "_ReadIfReady" : "_Read";
+      return name;
+    });
 
 }  // namespace
 }  // namespace net

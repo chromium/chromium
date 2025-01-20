@@ -153,8 +153,12 @@ String RTCIceCandidate::usernameFragment() const {
   return platform_candidate_->UsernameFragment();
 }
 
-std::optional<String> RTCIceCandidate::url() const {
-  return platform_candidate_->Url();
+String RTCIceCandidate::url() const {
+  const std::optional<String> url = platform_candidate_->Url();
+  if (!url) {
+    return g_null_atom;
+  }
+  return *url;
 }
 
 std::optional<V8RTCIceServerTransportProtocol> RTCIceCandidate::relayProtocol()
@@ -166,14 +170,14 @@ std::optional<V8RTCIceServerTransportProtocol> RTCIceCandidate::relayProtocol()
   return V8RTCIceServerTransportProtocol::Create(relay_protocol.value());
 }
 
-ScriptValue RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {
+ScriptObject RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddString("candidate", platform_candidate_->Candidate());
   result.AddString("sdpMid", platform_candidate_->SdpMid());
   if (platform_candidate_->SdpMLineIndex())
     result.AddNumber("sdpMLineIndex", *platform_candidate_->SdpMLineIndex());
   result.AddString("usernameFragment", platform_candidate_->UsernameFragment());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

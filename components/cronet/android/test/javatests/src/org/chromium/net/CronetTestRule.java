@@ -20,6 +20,8 @@ import android.os.StrictMode;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -27,7 +29,8 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.net.httpflags.Flags;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.httpflags.FlagValue;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetUrlRequestContext;
@@ -238,18 +241,78 @@ public class CronetTestRule implements TestRule {
                 }
                 Log.i(TAG, "Running test against " + implementation + " implementation.");
                 setImplementationUnderTest(implementation);
-                evaluateWithFramework(base, testName, netLogEnabled);
+                evaluateWithFramework(base, testName, netLogEnabled, desc);
             }
         } else {
-            evaluateWithFramework(base, testName, netLogEnabled);
+            evaluateWithFramework(base, testName, netLogEnabled, desc);
         }
+    }
+
+    private org.chromium.net.httpflags.Flags getDeclaredHttpFlags(Description desc) {
+        Flags httpFlags = getTestMethodAnnotation(desc, Flags.class);
+        if (httpFlags == null) {
+            return null;
+        }
+        if (getTestClassAnnotation(desc, DoNotBatch.class) == null) {
+            throw new IllegalStateException(
+                    "Using @Flags annotation requires the test methods to be run individually by"
+                            + " applying @DoNotBatch annotation to the test suite.");
+        }
+        org.chromium.net.httpflags.Flags.Builder flagsBuilder =
+                org.chromium.net.httpflags.Flags.newBuilder();
+        for (IntFlag flag : httpFlags.intFlags()) {
+            flagsBuilder.putFlags(
+                    flag.name(),
+                    FlagValue.newBuilder()
+                            .addConstrainedValues(
+                                    FlagValue.ConstrainedValue.newBuilder()
+                                            .setIntValue(flag.value()))
+                            .build());
+        }
+        for (BoolFlag flag : httpFlags.boolFlags()) {
+            flagsBuilder.putFlags(
+                    flag.name(),
+                    FlagValue.newBuilder()
+                            .addConstrainedValues(
+                                    FlagValue.ConstrainedValue.newBuilder()
+                                            .setBoolValue(flag.value()))
+                            .build());
+        }
+        for (FloatFlag flag : httpFlags.floatFlags()) {
+            flagsBuilder.putFlags(
+                    flag.name(),
+                    FlagValue.newBuilder()
+                            .addConstrainedValues(
+                                    FlagValue.ConstrainedValue.newBuilder()
+                                            .setFloatValue(flag.value()))
+                            .build());
+        }
+        for (StringFlag flag : httpFlags.stringFlags()) {
+            flagsBuilder.putFlags(
+                    flag.name(),
+                    FlagValue.newBuilder()
+                            .addConstrainedValues(
+                                    FlagValue.ConstrainedValue.newBuilder()
+                                            .setStringValue(flag.value()))
+                            .build());
+        }
+        for (BytesFlag flag : httpFlags.bytesFlags()) {
+            flagsBuilder.putFlags(
+                    flag.name(),
+                    FlagValue.newBuilder()
+                            .addConstrainedValues(
+                                    FlagValue.ConstrainedValue.newBuilder()
+                                            .setBytesValue(ByteString.copyFrom(flag.value())))
+                            .build());
+        }
+        return flagsBuilder.build();
     }
 
     /**
      * This method only returns the value of the `is_running_in_aosp` flag which for Chromium can be
-     * found inside components/cronet/android/test/res/values/cronet-test-rule-configuration.xml
-     * for which it should be equal to false. However, on AOSP, we ship a different value
-     * which is equal to true.
+     * found inside components/cronet/android/test/res/values/cronet-test-rule-configuration.xml for
+     * which it should be equal to false. However, on AOSP, we ship a different value which is equal
+     * to true.
      *
      * <p>This distinction between where the tests are being executed is crucial because we don't
      * want to run JavaCronetEngine tests in AOSP.
@@ -272,17 +335,22 @@ public class CronetTestRule implements TestRule {
         return ApplicationProvider.getApplicationContext().getResources().getBoolean(resId);
     }
 
-    private void evaluateWithFramework(Statement statement, String testName, boolean netLogEnabled)
+    private void evaluateWithFramework(
+            Statement statement, String testName, boolean netLogEnabled, Description desc)
             throws Throwable {
-        try (CronetTestFramework framework = createCronetTestFramework(testName, netLogEnabled)) {
+        org.chromium.net.httpflags.Flags flags = getDeclaredHttpFlags(desc);
+        try (CronetTestFramework framework =
+                createCronetTestFramework(testName, netLogEnabled, flags)) {
             statement.evaluate();
         } finally {
             mCronetTestFramework = null;
         }
     }
 
-    private CronetTestFramework createCronetTestFramework(String testName, boolean netLogEnabled) {
+    private CronetTestFramework createCronetTestFramework(
+            String testName, boolean netLogEnabled, org.chromium.net.httpflags.Flags flags) {
         mCronetTestFramework = new CronetTestFramework(mImplementation, testName, netLogEnabled);
+        mCronetTestFramework.setHttpFlags(flags);
         if (mEngineStartupMode.equals(EngineStartupMode.AUTOMATIC)) {
             mCronetTestFramework.startEngine();
         }
@@ -309,11 +377,64 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
+     * Annotation allowing classes or individual tests to run with a specific httpflag turned on.
+     * This does not mean that the test will run multiple times, it means that the test will run
+     * only once with the specified flags enabled.
+     *
+     * <p>Warning: The test must not use @Batch as the httpflags loading happens only once when
+     * Cronet itself is initialized on startup. This may lead to inconsistent global state depending
+     * on the order of the test-execution (eg: flags may be applied to undesired tests). The test
+     * rule protects against that by asserting that the test suite is never batched.
+     */
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Flags {
+        IntFlag[] intFlags() default {};
+
+        StringFlag[] stringFlags() default {};
+
+        BoolFlag[] boolFlags() default {};
+
+        FloatFlag[] floatFlags() default {};
+
+        BytesFlag[] bytesFlags() default {};
+    }
+
+    public @interface IntFlag {
+        String name();
+
+        long value();
+    }
+
+    public @interface StringFlag {
+        String name();
+
+        String value();
+    }
+
+    public @interface BoolFlag {
+        String name();
+
+        boolean value();
+    }
+
+    public @interface FloatFlag {
+        String name();
+
+        float value();
+    }
+
+    public @interface BytesFlag {
+        String name();
+
+        byte[] value();
+    }
+
+    /**
      * Annotation allowing classes or individual tests to be skipped based on the version of the
-     * Cronet API present. Takes the minimum API version upon which the test should be run.
-     * For example if a test should only be run with API version 2 or greater:
-     *   @RequiresMinApi(2)
-     *   public void testFoo() {}
+     * Cronet API present. Takes the minimum API version upon which the test should be run. For
+     * example if a test should only be run with API version 2 or greater: @RequiresMinApi(2) public
+     * void testFoo() {}
      */
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -461,7 +582,6 @@ public class CronetTestRule implements TestRule {
             }
 
             CronetManifest.resetCache();
-            setHttpFlags(null);
         }
 
         /**
@@ -489,21 +609,19 @@ public class CronetTestRule implements TestRule {
          * Sets the HTTP flags, if any, that the code under test should run with. This affects the
          * behavior of the {@link Context} that the code under test sees.
          *
-         * If this method is never called, the default behavior is to simulate the absence of a
+         * <p>If this method is never called, the default behavior is to simulate the absence of a
          * flags file. This ensures that the code under test does not end up accidentally using a
          * flags file from the host system, which would lead to non-deterministic results.
          *
          * @param flagsFileContents the contents of the flags file, or null to simulate a missing
-         * file (default behavior).
-         *
+         *     file (default behavior).
          * @throws IllegalStateException if called after the engine has already been built.
-         * Modifying flags while the code under test is running is always a mistake, because the
-         * code under test won't notice the changes.
-         *
+         *     Modifying flags while the code under test is running is always a mistake, because the
+         *     code under test won't notice the changes.
          * @see org.chromium.net.impl.HttpFlagsLoader
          * @see HttpFlagsInterceptor
          */
-        public void setHttpFlags(@Nullable Flags flagsFileContents) {
+        public void setHttpFlags(@Nullable org.chromium.net.httpflags.Flags flagsFileContents) {
             checkNotClosed();
 
             if (mCronetEngine != null) {
@@ -720,10 +838,6 @@ public class CronetTestRule implements TestRule {
                     break;
             }
         }
-
-        private void checkImplClass(CronetEngine engine, Class expectedClass) {
-            assertThat(engine).isInstanceOf(expectedClass);
-        }
     }
 
     @Nullable
@@ -736,12 +850,5 @@ public class CronetTestRule implements TestRule {
     private static <T extends Annotation> T getTestClassAnnotation(
             Description description, Class<T> clazz) {
         return description.getTestClass().getAnnotation(clazz);
-    }
-
-    private static String safeGetIgnoreReason(IgnoreFor ignoreAnnotation) {
-        if (ignoreAnnotation == null) {
-            return "";
-        }
-        return ignoreAnnotation.reason();
     }
 }

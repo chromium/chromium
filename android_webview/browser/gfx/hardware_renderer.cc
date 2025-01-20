@@ -30,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
@@ -609,10 +610,18 @@ HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
                                    AwVulkanContextProvider* context_provider)
     : render_thread_manager_(state),
       last_egl_context_(eglGetCurrentContext()),
-      output_surface_provider_(context_provider),
-      report_rendering_threads_(
-          base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
+      output_surface_provider_(context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
+    std::string soc_allowlist =
+        ::features::kWebViewADPFSocManufacturerAllowlist.Get();
+    std::string soc_blocklist =
+        ::features::kWebViewADPFSocManufacturerBlocklist.Get();
+    std::string soc = base::SysInfo::SocManufacturer();
+    report_rendering_threads_ =
+        ::features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
+  }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRenderer::InitializeOnViz, base::Unretained(this),

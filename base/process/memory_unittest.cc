@@ -35,6 +35,7 @@
 #endif
 #if BUILDFLAG(IS_MAC)
 #include <malloc/malloc.h>
+
 #include "base/check_op.h"
 #include "base/process/memory_unittest_mac.h"
 #include "partition_alloc/shim/allocator_interception_apple.h"
@@ -42,6 +43,7 @@
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
+
 #include "base/test/malloc_wrapper.h"
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -60,8 +62,11 @@ typedef long ssize_t;
 #endif
 
 // HeapQueryInformation function pointer.
-typedef BOOL (WINAPI* HeapQueryFn)  \
-    (HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T, PSIZE_T);
+typedef BOOL(WINAPI* HeapQueryFn)(HANDLE,
+                                  HEAP_INFORMATION_CLASS,
+                                  PVOID,
+                                  SIZE_T,
+                                  PSIZE_T);
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -73,7 +78,7 @@ typedef BOOL (WINAPI* HeapQueryFn)  \
 // will fail.
 
 // Wrap free() in a function to thwart Clang's -Wfree-nonheap-object warning.
-static void callFree(void *ptr) {
+static void callFree(void* ptr) {
   free(ptr);
 }
 
@@ -91,8 +96,9 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #elif defined(ADDRESS_SANITIZER)
   // AddressSanitizer replaces malloc() and prints a different error message on
   // heap corruption.
-  ASSERT_DEATH(callFree(buf), "attempting free on address which "
-      "was not malloc\\(\\)-ed");
+  ASSERT_DEATH(callFree(buf),
+               "attempting free on address which "
+               "was not malloc\\(\\)-ed");
 #else
   ADD_FAILURE() << "This test is not supported in this build configuration.";
 #endif
@@ -631,15 +637,17 @@ void TestAllocationsReleaseReservation(void* (*alloc_fn)(size_t),
     // was dropped instead of crashing.
     //
     // Meaning that the test is either successful, or crashes.
-    if (!partition_alloc::HasReservationForTesting())
+    if (!partition_alloc::HasReservationForTesting()) {
       break;
+    }
   }
 
   EXPECT_GE(areas.size(), 2u)
       << "Should be able to allocate without releasing the reservation";
 
-  for (void* ptr : areas)
+  for (void* ptr : areas) {
     free_fn(ptr);
+  }
 }
 
 TEST_F(OutOfMemoryHandledTest, MallocReleasesReservation) {
@@ -696,15 +704,17 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(base::UncheckedCalloc(1, kSafeMallocSize, &ptr));
   EXPECT_TRUE(ptr != nullptr);
   const char* bytes = static_cast<const char*>(ptr);
-  for (size_t i = 0; i < kSafeMallocSize; ++i)
+  for (size_t i = 0; i < kSafeMallocSize; ++i) {
     EXPECT_EQ(0, bytes[i]);
+  }
   base::UncheckedFree(ptr);
 
   EXPECT_TRUE(base::UncheckedCalloc(kSafeCallocItems, kSafeCallocSize, &ptr));
   EXPECT_TRUE(ptr != nullptr);
   bytes = static_cast<const char*>(ptr);
-  for (size_t i = 0; i < (kSafeCallocItems * kSafeCallocSize); ++i)
+  for (size_t i = 0; i < (kSafeCallocItems * kSafeCallocSize); ++i) {
     EXPECT_EQ(0, bytes[i]);
+  }
   base::UncheckedFree(ptr);
 
   EXPECT_FALSE(base::UncheckedCalloc(1, test_size_, &ptr));

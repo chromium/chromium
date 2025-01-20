@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,11 +77,8 @@ class MainContentExtractionTest : public InProcessBrowserTest {
  public:
   MainContentExtractionTest() {
     feature_list_.InitWithFeatures(
-        {
-            features::kScreenAITestMode,
-            features::kReadAnythingWithScreen2x,
-            ax::mojom::features::kScreenAIMainContentExtractionEnabled,
-        },
+        {features::kScreenAITestMode,
+         ax::mojom::features::kScreenAIMainContentExtractionEnabled},
         {});
   }
 
@@ -211,8 +205,9 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, MultipleRequests) {
 
   constexpr uint32_t kRequestsCount = 3;
   std::vector<ui::AXNodeID> main_content_ids[kRequestsCount];
-  base::test::TestFuture<const std::vector<ui::AXNodeID>&>
-      futures[kRequestsCount];
+  std::array<base::test::TestFuture<const std::vector<ui::AXNodeID>&>,
+             kRequestsCount>
+      futures;
 
   for (uint32_t i = 0; i < kRequestsCount; i++) {
     ExtractMainContent(tree_update, futures[i].GetCallback());

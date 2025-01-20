@@ -24,6 +24,6 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
 
   // Try using the fuzz as the full contents of a port event.
   mojo::core::NodeController::DeserializeRawBytesAsEventForFuzzer(
-      base::make_span(data, size));
+      base::span(data, size));
   return 0;
 }

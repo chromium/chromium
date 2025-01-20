@@ -86,11 +86,12 @@ void RTCSessionDescription::setSdp(const String& sdp) {
   platform_session_description_->SetSdp(sdp);
 }
 
-ScriptValue RTCSessionDescription::toJSONForBinding(ScriptState* script_state) {
+ScriptObject RTCSessionDescription::toJSONForBinding(
+    ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddStringOrNull("type", platform_session_description_->GetType());
   result.AddStringOrNull("sdp", sdp());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 RTCSessionDescriptionPlatform* RTCSessionDescription::WebSessionDescription() {

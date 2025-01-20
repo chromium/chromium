@@ -77,8 +77,7 @@ TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,
                                      TestScopedOfflineClock* clock)
     : url_(url), test_scenario_(test_scenario), clock_(clock) {}
 
-TestMHTMLArchiver::~TestMHTMLArchiver() {
-}
+TestMHTMLArchiver::~TestMHTMLArchiver() = default;
 
 void TestMHTMLArchiver::GenerateMHTML(
     const base::FilePath& archives_dir,
@@ -174,8 +173,7 @@ OfflinePageMHTMLArchiverTest::OfflinePageMHTMLArchiverTest()
       last_result_(OfflinePageArchiver::ArchiverResult::ERROR_DEVICE_FULL),
       last_file_size_(0L) {}
 
-OfflinePageMHTMLArchiverTest::~OfflinePageMHTMLArchiverTest() {
-}
+OfflinePageMHTMLArchiverTest::~OfflinePageMHTMLArchiverTest() = default;
 
 void OfflinePageMHTMLArchiverTest::SetUp() {
   base::FilePath test_data_dir_path;

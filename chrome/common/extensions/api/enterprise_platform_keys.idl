@@ -8,7 +8,7 @@
 // extension through $(ref:platformKeys chrome.platformKeys).
 [platforms = ("chromeos", "lacros")]
 namespace enterprise.platformKeys {
-  [nocompile, noinline_doc] dictionary Token {
+  [nocompile] dictionary Token {
     // Uniquely identifies this <code>Token</code>.
     // <p>Static IDs are <code>"user"</code> and <code>"system"</code>,
     // referring to the platform's user-specific and the system-wide hardware
@@ -20,10 +20,16 @@ namespace enterprise.platformKeys {
     // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
     // interface. The cryptographic operations, including key generation, are
     // hardware-backed.
-    // <p>Only non-extractable RSASSA-PKCS1-V1_5 keys with
+    // <p>Only non-extractable keys can be generated. The supported key types
+    // are RSASSA-PKCS1-V1_5 and RSA-OAEP (on Chrome versions 134+) with
     // <code>modulusLength</code> up to 2048 and ECDSA with
-    // <code>namedCurve</code> P-256 can be generated. Each key can be
-    // used for signing data at most once.</p>
+    // <code>namedCurve</code> P-256. Each RSASSA-PKCS1-V1_5 and ECDSA key can
+    // be used for signing data at most once, unless the extension is
+    // allowlisted through the
+    // <a href="https://chromeenterprise.google/policies/#KeyPermissions">KeyPermissions policy</a>,
+    // in which case the key can be used indefinitely. RSA-OAEP keys are
+    // supported since Chrome version 134 and can be used by extensions
+    // allowlisted through that same policy to unwrap other keys.</p>
     // <p>Keys generated on a specific <code>Token</code> cannot be used with
     // any other Tokens, nor can they be used with
     // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
@@ -37,9 +43,15 @@ namespace enterprise.platformKeys {
     // software-backed. Protection of the keys, and thus implementation of the
     // non-extractable property, is done in software, so the keys are less
     // protected than hardware-backed keys.
-    // <p>Only non-extractable RSASSA-PKCS1-V1_5 keys with
-    // <code>modulusLength</code> up to 2048 can be generated. Each key can be
-    // used for signing data at most once.</p>
+    // <p>Only non-extractable keys can be generated. The supported key types
+    // are RSASSA-PKCS1-V1_5 and RSA-OAEP (on Chrome versions 134+) with
+    // <code>modulusLength</code> up to 2048. Each RSASSA-PKCS1-V1_5 key can be
+    // used for signing data at most once, unless the extension is allowlisted
+    // through the
+    // <a href="https://chromeenterprise.google/policies/#KeyPermissions">KeyPermissions policy</a>,
+    // in which case the key can be used indefinitely. RSA-OAEP keys are
+    // supported since Chrome version 134 and can be used by extensions
+    // allowlisted through that same policy to unwrap other keys.</p>
     // <p>Keys generated on a specific <code>Token</code> cannot be used with
     // any other Tokens, nor can they be used with
     // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects

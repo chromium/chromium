@@ -77,7 +77,8 @@ class TrustedVaultRequestTest : public testing::Test {
       const std::optional<std::string>& request_body,
       base::TimeDelta max_retry_duration,
       TrustedVaultRequest::CompletionCallback completion_callback) {
-    const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
+    const CoreAccountId account_id =
+        CoreAccountId::FromGaiaId(GaiaId("user_id"));
     FakeTrustedVaultAccessTokenFetcher access_token_fetcher(
         MakeAccessTokenInfo(access_token));
 
@@ -105,7 +106,8 @@ class TrustedVaultRequestTest : public testing::Test {
   std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessTokenError(
       TrustedVaultAccessTokenFetcher::FetchingError error,
       TrustedVaultRequest::CompletionCallback completion_callback) {
-    const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
+    const CoreAccountId account_id =
+        CoreAccountId::FromGaiaId(GaiaId("user_id"));
 
     auto request = std::make_unique<TrustedVaultRequest>(
         account_id, TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),

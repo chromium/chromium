@@ -15,7 +15,7 @@ import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../../common/command.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory} from '../../common/tts_types.js';
@@ -79,6 +79,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.lastRootUrl_ = '';
 
     /** @private {boolean} */
+    this.isSubMenuShowing_ = false;
+
+    /** @private {boolean} */
     this.shouldIgnoreDocumentSelectionFromAction_ = false;
 
     /** @private {number?} */
@@ -115,6 +118,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         EventType.LOAD_COMPLETE, event => this.onLoadComplete_(event));
     this.addListener_(
         EventType.FOCUS_AFTER_MENU_CLOSE, event => this.onMenuEnd_(event));
+    this.addListener_(
+        EventType.MENU_POPUP_START, event => this.onMenuPopupStart_(event));
     this.addListener_(EventType.MENU_START, event => this.onMenuStart_(event));
     this.addListener_(
         EventType.RANGE_VALUE_CHANGED, event => this.onValueChanged_(event));
@@ -139,6 +144,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         EventType.AUTOFILL_AVAILABILITY_CHANGED,
         this.onAutofillAvailabilityChanged);
     this.addListener_(EventType.ORIENTATION_CHANGED, this.onOrientationChanged);
+    // Called when a child MenuItem is collapsed.
+    this.addListener_(EventType.COLLAPSED, this.onMenuItemCollapsed);
 
     await AutomationObjectConstructorInstaller.init(node);
     const focus = await AsyncUtil.getFocus();
@@ -351,6 +358,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     // Refresh the handler, if needed, now that ChromeVox focus is up to date.
     this.createTextEditHandlerIfNeeded_(node);
+
+    // Reset `isSubMenuShowing_` when a focus changes because focus
+    // changes should automatically close any menus.
+    this.isSubMenuShowing_ = false;
   }
 
   /**
@@ -771,6 +782,24 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         ChromeVoxRange.set(range);
       }
     });
+
+    // Reset the state to stop handling a Collapsed event.
+    this.isSubMenuShowing_ = false;
+  }
+
+  /**
+   * @param {!ChromeVoxEvent} event
+   * @private
+   */
+  onMenuPopupStart_(event) {
+    // Handles a MenuPopupStart event only if it's from a menu node. This event
+    // will be fired from a menu node, instead of a menu item node, when its
+    // sub-menu gets expanded.
+    if (!event.target || !AutomationPredicate.menu(event.target)) {
+      return;
+    }
+    // Set a state to start handling a Collapsed event.
+    this.isSubMenuShowing_ = true;
   }
 
   /**
@@ -837,6 +866,20 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
                                                            'device_portrait';
       new Output().format('@' + msg).go();
     }
+  }
+
+  /**
+   * Handles focus back to a parent MenuItem when its child is collapsed.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onMenuItemCollapsed(evt) {
+    const target = evt.target;
+    if (!this.isSubMenuShowing_ || !AutomationPredicate.menuItem(target) ||
+        !target.state.collapsed || !target.selected) {
+      return;
+    }
+
+    this.onEventDefault(evt);
   }
 
   /**
@@ -944,6 +987,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     o.withRichSpeechAndBraille(ChromeVoxRange.current, null, evt.type).go();
+
+    // Reset `isSubMenuShowing_` when a focus changes because focus
+    // changes should automatically close any menus.
+    this.isSubMenuShowing_ = false;
   }
 
   /** Initializes global state for DesktopAutomationHandler. */

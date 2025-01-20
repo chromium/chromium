@@ -28,7 +28,7 @@ FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(bool enabled)
           content::GetUIThreadTaskRunner({})),
       enabled_(enabled) {}
 
-FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
+FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
 FakeSafeBrowsingDatabaseManager& FakeSafeBrowsingDatabaseManager::Enable() {
   enabled_ = true;

@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">လက်ရှိပြောဆိုမှုမှန်သမျှကို ရပ်ရန် လက် ၂ ချောင်းဖြင့် တို့ပါ</translation>
 <translation id="2573256689920773241">အခြေခံ ရွှေ့ကြည့်ခြင်း</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
+<translation id="2577127557293415225">မျက်လုံးနှစ်ဖက်စလုံး ခဏမှိတ်ပါ</translation>
 <translation id="2582407057977008361">ဘေးဘက်သို့</translation>
 <translation id="2592212930811759050">စတင်တည်းဖြတ်ရန် နှစ်ချက်တို့ပါ</translation>
 <translation id="2598495320872286378">သဒ္ဒါ အမှား</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">ကော်လံ</translation>
 <translation id="6387719785439924554">ဘေးဘက်သို့</translation>
 <translation id="6393014464788431702">အစီအစဉ် စစ်ထုတ်မှုများအားလုံးကို ပိတ်ပါ</translation>
+<translation id="6406989068857078334">မောက်စ်မြန်နှုန်း လျှော့ချထားသည်၊ နှိပ်ရန် <ph name="GESTURE" /> ထပ်လုပ်ပါ</translation>
 <translation id="6411569524720229058">ဆောင်းဦးရာသီ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ကော်လန်}other{# ကော်လန်များ}}</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8205922869661890178">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ မှတ်တမ်းစာမျက်နှာကို ဖွင့်သည်</translation>
 <translation id="8212109599554677485">မျက်နှာပြင်ပြသမှုပုံစံကို ဘေးချင်းကပ်ပုံစံသို့ ပြောင်းရန်</translation>
 <translation id="8215202828671303819">အမျာအပြား ရွေးရန်</translation>
+<translation id="822316432305106615">အတိအကျနှိပ်ခြင်း စတင်ရန်</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />၊ <ph name="OPACITY_PERCENTAGE" />% အလင်းပိတ်မှု</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="826825447994856889">နိဒါန်း</translation>

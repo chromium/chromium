@@ -16,9 +16,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
@@ -97,7 +95,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void UpdateDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED();
+    producer_host_->UpdateDataSource(descriptor);
   }
 
   void UnregisterDataSource(const std::string& name) override {

@@ -21,8 +21,10 @@ build/win-build-perf-ninja
 build/win-build-perf-siso
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
+ci/linux-modules-compile-fyi-rel
 ci/linux-win-cross-rel
 try/ios-simulator-exp
 try/linux-full-remote-rel
 try/linux-full-remote-rel-compilator
+try/linux-modules-compile-fyi-rel
 try/linux-win-cross-rel

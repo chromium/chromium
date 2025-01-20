@@ -1,0 +1,130 @@
+This is a testharness.js-based test.
+Found 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Changing attribute values should close open popovers
+  assert_false: expected false got true
+[FAIL] Changing a popover from auto to hint (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to manual (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to invalid (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to null (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to undefined (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from hint to auto (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from hint to manual (via attr), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via attr), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via attr), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via attr), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via attr), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via attr), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via attr), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via attr), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to undefined (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from manual to auto (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from manual to hint (via attr), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via attr), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via attr), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via attr), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via attr), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via attr), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to undefined (via attr), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to hint (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to manual (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to invalid (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to null (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from auto to undefined (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from hint to auto (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from hint to manual (via idl), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via idl), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via idl), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via idl), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via idl), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to manual (via idl), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to invalid (via idl), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from hint to null (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from hint to undefined (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from manual to auto (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from manual to hint (via idl), and then auto during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via idl), and then hint during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via idl), and then manual during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via idl), and then invalid during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via idl), and then null during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to hint (via idl), and then undefined during 'beforetoggle' works
+  assert_false: expected false got true
+[FAIL] Changing a popover from manual to null (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+[FAIL] Changing a popover from manual to undefined (via idl), and then hint during 'beforetoggle' works
+  assert_equals: IDL attribute expected "hint" but got "manual"
+Harness: the test ran to completion.
+

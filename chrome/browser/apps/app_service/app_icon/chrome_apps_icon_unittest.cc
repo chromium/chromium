@@ -30,11 +30,11 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -112,7 +112,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     return result.Take();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::IconValuePtr GetCompressedIconData(
       const std::string& app_id,
       ui::ResourceScaleFactor scale_factor) {
@@ -121,7 +121,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
                                          scale_factor, result.GetCallback());
     return result.Take();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(ChromeAppsIconFactoryTest, LoadUncompressedIcon) {
@@ -173,7 +173,7 @@ TEST_F(ChromeAppsIconFactoryTest, LoadCompressedIconWithoutEffect) {
   VerifyCompressedIcon(src_data, *iv);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeAppsIconFactoryTest, GetCompressedIconData) {
   // Generate the source uncompressed icon for comparing.
   std::vector<uint8_t> src_data1 =
@@ -295,6 +295,6 @@ TEST_F(AppServiceChromeAppIconTest, GetCompressedIconDataForUncompressedIcon) {
   ASSERT_EQ(apps::IconType::kUncompressed, ret->icon_type);
   VerifyIcon(src_image_skia, ret->uncompressed);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

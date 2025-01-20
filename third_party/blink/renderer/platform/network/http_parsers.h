@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
+#include "services/network/public/mojom/sri_message_signature.mojom-blink-forward.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
@@ -185,6 +186,12 @@ PLATFORM_EXPORT
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>
 ParseContentSecurityPolicyHeaders(
     const ContentSecurityPolicyResponseHeaders& headers);
+
+// Parses SRI-relevant HTTP Message Signature headers. This wraps
+// network::ParseSRIMessageSignaturesFromHeaders with blink types.
+PLATFORM_EXPORT
+network::mojom::blink::SRIMessageSignaturesPtr
+ParseSRIMessageSignaturesFromHeaders(const String& raw_headers);
 
 PLATFORM_EXPORT
 network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(

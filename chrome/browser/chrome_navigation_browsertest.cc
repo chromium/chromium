@@ -92,7 +92,7 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   ChromeNavigationBrowserTest& operator=(const ChromeNavigationBrowserTest&) =
       delete;
 
-  ~ChromeNavigationBrowserTest() override {}
+  ~ChromeNavigationBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Backgrounded renderer processes run at a lower priority, causing the
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   // Navigate to a page that disallows scripts via CSP and has an iframe that
   // tries to load an invalid URL, which results in an error page.
-  GURL error_url("http://invalid.foo/");
+  GURL error_url("https://invalid.test/");
   content::NavigationHandleObserver observer(web_contents, error_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(observer.has_committed());
@@ -835,30 +835,28 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(url::kAboutBlankURL,
             popup->GetSiteInstance()->GetSiteURL().scheme());
   EXPECT_NE(url::kDataScheme, popup->GetSiteInstance()->GetSiteURL().scheme());
-  if (content::AreDefaultSiteInstancesEnabled()) {
-    EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
-    EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
-  } else {
+  if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
 
     // Verify that full isolation results in a separate process for each
     // SiteInstance. Otherwise they share a process because none of the sites
     // require a dedicated process.
-    if (content::AreAllSitesIsolatedForTesting()) {
-      EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-      EXPECT_NE(old_popup_site_instance->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-    } else {
-      EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
-      EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
-      EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
-      EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-      EXPECT_EQ(old_popup_site_instance->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-    }
+    EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+    EXPECT_NE(old_popup_site_instance->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+  } else {
+    EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
+    EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
+
+    EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
+    EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+    EXPECT_EQ(old_popup_site_instance->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
   }
 }
 
@@ -965,15 +963,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kRedirectTargetUrl, popup->GetLastCommittedURL());
   EXPECT_TRUE(popup->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 
-  // 5. Verify that with strict SiteInstances the data: URL is hosted in a brand
+  // 5. Verify that with full site isolation the data: URL is hosted in a brand
   //    new, separate SiteInstance (separate from the opener and the previous
   //    popup SiteInstance).
-  if (content::AreDefaultSiteInstancesEnabled()) {
-    EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
-    EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_NE(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
-  } else {
+  if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
     EXPECT_EQ(url::kDataScheme,
@@ -982,20 +975,23 @@ IN_PROC_BROWSER_TEST_F(
     // Verify that full isolation results in a separate process for each
     // SiteInstance. Otherwise they share a process because none of the sites
     // require a dedicated process.
-    if (content::AreAllSitesIsolatedForTesting()) {
-      EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-      EXPECT_NE(old_popup_site_instance->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-    } else {
-      EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
-      EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
-      EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
-      EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-      EXPECT_EQ(old_popup_site_instance->GetProcess(),
-                popup->GetSiteInstance()->GetProcess());
-    }
+    EXPECT_NE(opener->GetSiteInstance()->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+    EXPECT_NE(old_popup_site_instance->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+  } else {
+    EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
+    EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
+    EXPECT_NE(url::kDataScheme,
+              popup->GetSiteInstance()->GetSiteURL().scheme());
+
+    EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
+    EXPECT_FALSE(old_popup_site_instance->RequiresDedicatedProcess());
+    EXPECT_EQ(opener->GetSiteInstance()->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
+    EXPECT_EQ(old_popup_site_instance->GetProcess(),
+              popup->GetSiteInstance()->GetProcess());
   }
 }
 
@@ -1484,7 +1480,7 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
   SignInIsolationBrowserTest& operator=(const SignInIsolationBrowserTest&) =
       delete;
 
-  ~SignInIsolationBrowserTest() override {}
+  ~SignInIsolationBrowserTest() override = default;
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -1551,7 +1547,7 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
   WebstoreIsolationBrowserTest& operator=(const WebstoreIsolationBrowserTest&) =
       delete;
 
-  ~WebstoreIsolationBrowserTest() override {}
+  ~WebstoreIsolationBrowserTest() override = default;
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");

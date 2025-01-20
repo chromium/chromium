@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "gin/converter.h"
 #include "gin/per_context_data.h"
 #include "gin/public/context_holder.h"
@@ -42,7 +43,7 @@ void ShellRunnerDelegate::DidRunScript(ShellRunner* runner) {
 
 void ShellRunnerDelegate::UnhandledException(ShellRunner* runner,
                                                TryCatch& try_catch) {
-  CHECK(false) << try_catch.GetStackTrace();
+  NOTREACHED() << try_catch.GetStackTrace();
 }
 
 ShellRunner::ShellRunner(ShellRunnerDelegate* delegate, Isolate* isolate)

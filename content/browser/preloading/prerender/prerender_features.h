@@ -14,10 +14,6 @@ namespace features {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NewLimitAndScheduler);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2AllowActivationInBackground);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2EmbedderBlockedHosts);
-CONTENT_EXPORT extern const base::FeatureParam<std::string>
-    kPrerender2EmbedderBlockedHostsParam;
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2FallbackPrefetchSpecRules);
 
 // This allows controlling the behavior of multiple use of `PrefetchContainer`
@@ -38,6 +34,9 @@ enum class Prerender2FallbackPrefetchReusablePolicy {
 CONTENT_EXPORT extern const base::FeatureParam<
     Prerender2FallbackPrefetchReusablePolicy>
     kPrerender2FallbackPrefetchReusablePolicy;
+
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrerender2FallbackBodySizeLimit;
 
 // A field trial param that controls the timeout for waiting on headers
 // during navigation for the prerender URL matched by No-Vary-Search hint before

@@ -10,12 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Provides utility methods relating to system animation state on the current platform (i.e. Android
  * in this case). See ui/gfx/animation/animation_android.cc.
  */
 @JNINamespace("gfx")
+@NullMarked
 public class Animation {
     @CalledByNative
     private static boolean prefersReducedMotion() {

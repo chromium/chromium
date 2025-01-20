@@ -107,7 +107,8 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
         [[ManualFillPlusAddressItem alloc] initWithPlusAddress:nil
                                                contentInjector:nil
                                                    menuActions:@[]
-                                   cellIndexAccessibilityLabel:nil];
+                                   cellIndexAccessibilityLabel:nil
+                                     isAddressManualFallbackUI:YES];
     [address_view_controller presentPlusAddresses:@[ item ]];
     // Override the type for the test.
     item.type = kItemTypeSampleTwo;

@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -53,7 +54,10 @@ public class NetworkFetcherTask {
 
     @CalledByNative
     private static void download(
-            long nativeDownloadFileTask, long mainTaskRunner, GURL url, String filePath) {
+            long nativeDownloadFileTask,
+            long mainTaskRunner,
+            GURL url,
+            @JniType("std::string") String filePath) {
         downloadToFile(
                 /* connection= */ null, nativeDownloadFileTask, mainTaskRunner, url, filePath);
     }
@@ -131,7 +135,7 @@ public class NetworkFetcherTask {
             long mainTaskRunner,
             GURL url,
             byte[] postData,
-            String contentType,
+            @JniType("std::string") String contentType,
             String[] headerKeys,
             String[] headerValues) {
         postRequest(
@@ -282,8 +286,8 @@ public class NetworkFetcherTask {
                 long taskRunner,
                 byte[] responseBody,
                 int networkError,
-                String headerETag,
-                String headerXCupServerProof,
+                @JniType("std::string") String headerETag,
+                @JniType("std::string") String headerXCupServerProof,
                 long xHeaderRetryAfterSec);
     } // interface Natives
 }

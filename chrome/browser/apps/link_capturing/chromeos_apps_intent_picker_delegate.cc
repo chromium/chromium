@@ -33,17 +33,13 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
   PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
   switch (app_type) {
     case AppType::kUnknown:
-    case AppType::kBuiltIn:
     case AppType::kCrostini:
     case AppType::kPluginVm:
     case AppType::kChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
     case AppType::kBorealis:
     case AppType::kBruschetta:
-    case AppType::kStandaloneBrowserExtension:
       break;
     case AppType::kArc:
       picker_entry_type = PickerEntryType::kArc;

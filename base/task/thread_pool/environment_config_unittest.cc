@@ -7,8 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // This test summarizes which platforms use background thread priority.
 TEST(ThreadPoolEnvironmentConfig, CanUseBackgroundPriorityForWorker) {
@@ -31,5 +30,4 @@ TEST(ThreadPoolEnvironmentConfig, CanUseBackgroundPriorityForWorker) {
 #endif
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

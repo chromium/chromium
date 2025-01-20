@@ -114,8 +114,7 @@ ExitHandler::ExitHandler() {
           &ExitHandler::OnSessionRestoreDone, base::Unretained(this)));
 }
 
-ExitHandler::~ExitHandler() {
-}
+ExitHandler::~ExitHandler() = default;
 
 void ExitHandler::OnSessionRestoreDone(Profile* profile, int /* num_tabs */) {
   if (!SessionRestore::IsRestoringSynchronously()) {

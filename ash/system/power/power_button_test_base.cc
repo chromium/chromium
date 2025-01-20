@@ -109,7 +109,7 @@ void PowerButtonTestBase::Initialize(
   if (status == LoginStatus::NOT_LOGGED_IN)
     ClearLogin();
   else
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
 
   if (status == LoginStatus::GUEST)
     SetCanLockScreen(false);

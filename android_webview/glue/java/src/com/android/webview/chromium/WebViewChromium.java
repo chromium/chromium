@@ -704,7 +704,7 @@ class WebViewChromium
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
         long startTime = SystemClock.uptimeMillis();
-        boolean isFirstWebViewInit = !mFactory.hasStarted();
+        boolean isFirstWebViewInit = !mFactory.isChromiumInitialized();
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 mFactory.startYourEngines(true);
@@ -750,7 +750,7 @@ class WebViewChromium
                 mFactory.startYourEngines(true);
             }
 
-            final boolean isAccessFromFileURLsGrantedByDefault =
+            final boolean isAccessFromFileUrlsGrantedByDefault =
                     mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
             final boolean areLegacyQuirksEnabled =
                     mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
@@ -771,7 +771,7 @@ class WebViewChromium
                         mFactory.createContentSettingsAdapter(
                                 new AwSettings(
                                         mContext,
-                                        isAccessFromFileURLsGrantedByDefault,
+                                        isAccessFromFileUrlsGrantedByDefault,
                                         areLegacyQuirksEnabled,
                                         allowEmptyDocumentPersistence,
                                         allowGeolocationOnInsecureOrigins,
@@ -786,7 +786,7 @@ class WebViewChromium
             }
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCSSHexAlphaColorEnabled(true);
+                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
                 mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
             }
 
@@ -813,7 +813,7 @@ class WebViewChromium
 
         // If initialization hasn't been deferred, record a startup time histogram entry
         // and trace event(s).
-        if (mFactory.hasStarted()) {
+        if (mFactory.isChromiumInitialized()) {
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
@@ -3644,6 +3644,7 @@ class WebViewChromium
         }
 
         // @Override
+        @SuppressWarnings("UnusedMethod")
         public boolean super_onHoverEvent(MotionEvent event) {
             return mWebViewPrivate.super_onHoverEvent(event);
         }

@@ -53,6 +53,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
@@ -105,7 +106,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   DCHECK(context_factory_);
   auto* host_frame_sink_manager = context_factory_->GetHostFrameSinkManager();
   host_frame_sink_manager->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kYes);
   host_frame_sink_manager->SetFrameSinkDebugLabel(frame_sink_id_, "Compositor");
   root_web_layer_ = cc::Layer::Create();
 
@@ -217,10 +218,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
   settings.wait_for_all_pipeline_stages_before_draw =
       command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw);
-
-  if (features::IsPercentBasedScrollingEnabled()) {
-    settings.percent_based_scrolling = true;
-  }
 
   settings.enable_compositing_based_throttling =
       enable_compositing_based_throttling;
@@ -545,6 +542,15 @@ void Compositor::SetBackgroundColor(SkColor color) {
 void Compositor::SetVisible(bool visible) {
   const bool changed = visible != IsVisible();
   if (changed) {
+    // Since the compositor won't draw any frames when invisible, copy requests
+    // for surfaces embedded by this compositor won't get serviced. This is
+    // because copy requests are handled as a part of drawing a new frame.
+    // Trigger an immediate draw to service pending copy requests before marking
+    // the compositor invisible.
+    if (!visible && display_private_ && !pending_surface_copies_.empty()) {
+      display_private_->ForceImmediateDrawAndSwapIfPossible();
+    }
+
     observer_list_.Notify(&CompositorObserver::OnCompositorVisibilityChanging,
                           this, visible);
   }
@@ -715,9 +721,9 @@ void Compositor::IssueExternalBeginFrame(
       args, force, std::move(callback));
 }
 
-ThroughputTracker Compositor::RequestNewThroughputTracker() {
-  return ThroughputTracker(next_throughput_tracker_id_++,
-                           weak_ptr_factory_.GetWeakPtr());
+CompositorMetricsTracker Compositor::RequestNewCompositorMetricsTracker() {
+  return CompositorMetricsTracker(next_compositor_metrics_tracker_id_++,
+                                  weak_ptr_factory_.GetWeakPtr());
 }
 
 double Compositor::GetPercentDroppedFrames() const {
@@ -812,7 +818,7 @@ Compositor::GetBeginMainFrameMetrics() {
 #endif
 }
 
-void Compositor::NotifyThroughputTrackerResults(
+void Compositor::NotifyCompositorMetricsTrackerResults(
     cc::CustomTrackerResults results) {
   for (auto& pair : results)
     ReportMetricsForTracker(pair.first, std::move(pair.second));
@@ -852,7 +858,8 @@ void Compositor::FrameSinksToThrottleUpdated(
 
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED();
+  observer_list_.Notify(&CompositorObserver::OnFirstSurfaceActivation, this,
+                        surface_info);
 }
 
 void Compositor::OnFrameTokenChanged(uint32_t frame_token,
@@ -867,43 +874,43 @@ Compositor::TrackerState& Compositor::TrackerState::operator=(TrackerState&&) =
     default;
 Compositor::TrackerState::~TrackerState() = default;
 
-void Compositor::StartThroughputTracker(
+void Compositor::StartMetricsTracker(
     TrackerId tracker_id,
-    ThroughputTrackerHost::ReportCallback callback) {
-  DCHECK(!base::Contains(throughput_tracker_map_, tracker_id));
+    CompositorMetricsTrackerHost::ReportCallback callback) {
+  DCHECK(!base::Contains(compositor_metrics_tracker_map_, tracker_id));
 
-  auto& tracker_state = throughput_tracker_map_[tracker_id];
+  auto& tracker_state = compositor_metrics_tracker_map_[tracker_id];
   tracker_state.report_callback = std::move(callback);
 
-  animation_host_->StartThroughputTracking(tracker_id);
+  animation_host_->StartCompositorMetricsTracking(tracker_id);
 }
 
-bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
+bool Compositor::StopMetricsTracker(TrackerId tracker_id) {
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  CHECK(it != compositor_metrics_tracker_map_.end(), base::NotFatalUntil::M130);
 
-  // Clean up if report has happened since StopThroughputTracking would
+  // Clean up if report has happened since StopCompositorMetricsTracking would
   // not trigger report in this case.
   if (it->second.report_attempted) {
-    throughput_tracker_map_.erase(it);
+    compositor_metrics_tracker_map_.erase(it);
     return false;
   }
 
   it->second.should_report = true;
-  animation_host_->StopThroughputTracking(tracker_id);
+  animation_host_->StopCompositorMetricsTracking(tracker_id);
   return true;
 }
 
-void Compositor::CancelThroughputTracker(TrackerId tracker_id) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
+void Compositor::CancelMetricsTracker(TrackerId tracker_id) {
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  CHECK(it != compositor_metrics_tracker_map_.end(), base::NotFatalUntil::M130);
 
   const bool should_stop = !it->second.report_attempted;
 
-  throughput_tracker_map_.erase(it);
+  compositor_metrics_tracker_map_.erase(it);
 
   if (should_stop)
-    animation_host_->StopThroughputTracking(tracker_id);
+    animation_host_->StopCompositorMetricsTracking(tracker_id);
 }
 
 void Compositor::OnResume() {
@@ -947,21 +954,22 @@ void Compositor::RequestSuccessfulPresentationTimeForNextFrame(
 void Compositor::ReportMetricsForTracker(
     int tracker_id,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  if (it == throughput_tracker_map_.end())
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  if (it == compositor_metrics_tracker_map_.end()) {
     return;
+  }
 
-  // Set `report_attempted` but not reporting if relevant ThroughputTrackers
-  // are not stopped and waiting for reports.
+  // Set `report_attempted` but not reporting if relevant
+  // CompositorMetricsTrackers are not stopped and waiting for reports.
   if (!it->second.should_report) {
     it->second.report_attempted = true;
     return;
   }
 
-  // Callback may modify `throughput_tracker_map_` so update the map first.
-  // See https://crbug.com/1193382.
+  // Callback may modify `compositor_metrics_tracker_map_` so update the map
+  // first. See https://crbug.com/1193382.
   auto callback = std::move(it->second.report_callback);
-  throughput_tracker_map_.erase(it);
+  compositor_metrics_tracker_map_.erase(it);
   std::move(callback).Run(data);
 }
 
@@ -1020,5 +1028,26 @@ void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
                         refresh_rate);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+Compositor::ScopedKeepSurfaceAliveCallback
+Compositor::TakeScopedKeepSurfaceAliveCallback(
+    const viz::SurfaceId& surface_id) {
+  DCHECK(surface_id.is_valid());
+  CHECK(!pending_surface_copies_.contains(pending_surface_copy_id_));
+  pending_surface_copies_[pending_surface_copy_id_] =
+      host_->CreateScopedKeepSurfaceAlive(surface_id);
+  PendingSurfaceCopyId pending_surface_copy_id(pending_surface_copy_id_);
+  ++(*pending_surface_copy_id_);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &Compositor::RemoveScopedKeepSurfaceAlive, weak_ptr_factory_.GetWeakPtr(),
+      std::move(pending_surface_copy_id)));
+}
+
+void Compositor::RemoveScopedKeepSurfaceAlive(
+    const PendingSurfaceCopyId& scoped_keep_surface_alive_id) {
+  CHECK(pending_surface_copies_.find(scoped_keep_surface_alive_id) !=
+        pending_surface_copies_.end());
+  pending_surface_copies_.erase(scoped_keep_surface_alive_id);
+}
 
 }  // namespace ui

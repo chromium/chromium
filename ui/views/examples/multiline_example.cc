@@ -142,8 +142,9 @@ class MultilineExample::RenderTextView : public View {
 
   void UpdateColors() {
     const auto* cp = GetColorProvider();
-    if (!cp)
+    if (!cp) {
       return;
+    }
     render_text_->SetColor(
         cp->GetColor(ExamplesColorIds::kColorMultilineExampleForeground));
     render_text_->set_selection_color(cp->GetColor(
@@ -230,8 +231,9 @@ void MultilineExample::CreateExampleView(View* container) {
 void MultilineExample::ContentsChanged(Textfield* sender,
                                        const std::u16string& new_contents) {
   render_text_view_->SetText(new_contents);
-  if (label_checkbox_->GetChecked())
+  if (label_checkbox_->GetChecked()) {
     label_->SetText(new_contents);
+  }
   example_view()->InvalidateLayout();
   example_view()->SchedulePaint();
 }

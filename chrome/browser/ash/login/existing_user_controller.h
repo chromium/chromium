@@ -146,6 +146,10 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Calls login() on previously-used `login_performer_`.
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context);
 
+  // Retrieve public session auto-login policy and update the
+  // timer.
+  void ConfigureAutoLogin();
+
  private:
   friend class ExistingUserControllerTest;
   friend class ExistingUserControllerAutoLoginTest;
@@ -160,9 +164,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   void LoginAsGuest();
   void LoginAsPublicSession(const UserContext& user_context);
   void LoginAsKioskApp(KioskAppId kiosk_app_id);
-  // Retrieve public session auto-login policy and update the
-  // timer.
-  void ConfigureAutoLogin();
 
   // Trigger public session auto-login.
   void OnPublicSessionAutoLoginTimerFire();

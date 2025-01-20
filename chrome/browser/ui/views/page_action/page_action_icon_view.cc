@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
+#include "page_action_icon_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -86,6 +87,12 @@ PageActionIconView::PageActionIconView(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
   UpdateBorder();
+
+  name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&PageActionIconView::OnAXNameChanged,
+                              base::Unretained(this)));
 }
 
 PageActionIconView::~PageActionIconView() = default;
@@ -125,13 +132,14 @@ void PageActionIconView::InstallLoadingIndicatorForTesting() {
   InstallLoadingIndicator();
 }
 
-std::u16string PageActionIconView::GetTextForTooltipAndAccessibleName() const {
-  return GetViewAccessibility().GetCachedName();
+void PageActionIconView::OnAXNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateTooltipText();
 }
 
-std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {
-  return IsBubbleShowing() ? std::u16string()
-                           : GetTextForTooltipAndAccessibleName();
+std::u16string PageActionIconView::GetTextForTooltipAndAccessibleName() const {
+  return GetViewAccessibility().GetCachedName();
 }
 
 void PageActionIconView::ViewHierarchyChanged(
@@ -237,6 +245,8 @@ void PageActionIconView::SetActive(bool active) {
   active_ = active;
   UpdateIconImage();
   OnPropertyChanged(&active_, views::kPropertyEffectsNone);
+  // For StarView
+  UpdateTooltipText();
 }
 
 bool PageActionIconView::GetActive() const {
@@ -247,12 +257,13 @@ void PageActionIconView::Update() {
   // Currently no page action icon should be visible during user input.
   // A future subclass may need a hook here if that changes.
   if (delegate_->ShouldHidePageActionIcons()) {
-    ResetSlideAnimation(/*show_label=*/false);
+    ResetSlideAnimation(/*show=*/false);
     SetVisible(false);
   } else {
     UpdateImpl();
   }
   UpdateBorder();
+  UpdateTooltipText();
 }
 
 void PageActionIconView::UpdateIconImage() {
@@ -308,6 +319,12 @@ void PageActionIconView::UpdateBorder() {
   if (new_insets != GetInsets()) {
     SetBorder(views::CreateEmptyBorder(new_insets));
   }
+}
+
+void PageActionIconView::UpdateTooltipText() {
+  SetCachedTooltipText(IsBubbleShowing()
+                           ? std::u16string()
+                           : GetTextForTooltipAndAccessibleName());
 }
 
 void PageActionIconView::InstallLoadingIndicator() {

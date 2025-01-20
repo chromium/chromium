@@ -55,7 +55,7 @@ class FontSettingsClearFontFunction : public ExtensionFunction {
  protected:
   // RefCounted types have non-public destructors, as with all extension
   // functions in this file.
-  ~FontSettingsClearFontFunction() override {}
+  ~FontSettingsClearFontFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -67,7 +67,7 @@ class FontSettingsGetFontFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fontSettings.getFont", FONTSETTINGS_GETFONT)
 
  protected:
-  ~FontSettingsGetFontFunction() override {}
+  ~FontSettingsGetFontFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -79,7 +79,7 @@ class FontSettingsSetFontFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fontSettings.setFont", FONTSETTINGS_SETFONT)
 
  protected:
-  ~FontSettingsSetFontFunction() override {}
+  ~FontSettingsSetFontFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -92,7 +92,7 @@ class FontSettingsGetFontListFunction : public ExtensionFunction {
                              FONTSETTINGS_GETFONTLIST)
 
  protected:
-  ~FontSettingsGetFontListFunction() override {}
+  ~FontSettingsGetFontListFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -105,7 +105,7 @@ class FontSettingsGetFontListFunction : public ExtensionFunction {
 // Base class for extension API functions that clear a browser font pref.
 class ClearFontPrefExtensionFunction : public ExtensionFunction {
  protected:
-  ~ClearFontPrefExtensionFunction() override {}
+  ~ClearFontPrefExtensionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -118,7 +118,7 @@ class ClearFontPrefExtensionFunction : public ExtensionFunction {
 // Base class for extension API functions that get a browser font pref.
 class GetFontPrefExtensionFunction : public ExtensionFunction {
  protected:
-  ~GetFontPrefExtensionFunction() override {}
+  ~GetFontPrefExtensionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -135,7 +135,7 @@ class GetFontPrefExtensionFunction : public ExtensionFunction {
 // Base class for extension API functions that set a browser font pref.
 class SetFontPrefExtensionFunction : public ExtensionFunction {
  protected:
-  ~SetFontPrefExtensionFunction() override {}
+  ~SetFontPrefExtensionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -159,7 +159,7 @@ class FontSettingsClearDefaultFontSizeFunction
                              FONTSETTINGS_CLEARDEFAULTFONTSIZE)
 
  protected:
-  ~FontSettingsClearDefaultFontSizeFunction() override {}
+  ~FontSettingsClearDefaultFontSizeFunction() override = default;
 
   // ClearFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -172,7 +172,7 @@ class FontSettingsGetDefaultFontSizeFunction
                              FONTSETTINGS_GETDEFAULTFONTSIZE)
 
  protected:
-  ~FontSettingsGetDefaultFontSizeFunction() override {}
+  ~FontSettingsGetDefaultFontSizeFunction() override = default;
 
   // GetFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -186,7 +186,7 @@ class FontSettingsSetDefaultFontSizeFunction
                              FONTSETTINGS_SETDEFAULTFONTSIZE)
 
  protected:
-  ~FontSettingsSetDefaultFontSizeFunction() override {}
+  ~FontSettingsSetDefaultFontSizeFunction() override = default;
 
   // SetFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -200,7 +200,7 @@ class FontSettingsClearDefaultFixedFontSizeFunction
                              FONTSETTINGS_CLEARDEFAULTFIXEDFONTSIZE)
 
  protected:
-  ~FontSettingsClearDefaultFixedFontSizeFunction() override {}
+  ~FontSettingsClearDefaultFixedFontSizeFunction() override = default;
 
   // ClearFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -213,7 +213,7 @@ class FontSettingsGetDefaultFixedFontSizeFunction
                              FONTSETTINGS_GETDEFAULTFIXEDFONTSIZE)
 
  protected:
-  ~FontSettingsGetDefaultFixedFontSizeFunction() override {}
+  ~FontSettingsGetDefaultFixedFontSizeFunction() override = default;
 
   // GetFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -227,7 +227,7 @@ class FontSettingsSetDefaultFixedFontSizeFunction
                              FONTSETTINGS_SETDEFAULTFIXEDFONTSIZE)
 
  protected:
-  ~FontSettingsSetDefaultFixedFontSizeFunction() override {}
+  ~FontSettingsSetDefaultFixedFontSizeFunction() override = default;
 
   // SetFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -241,7 +241,7 @@ class FontSettingsClearMinimumFontSizeFunction
                              FONTSETTINGS_CLEARMINIMUMFONTSIZE)
 
  protected:
-  ~FontSettingsClearMinimumFontSizeFunction() override {}
+  ~FontSettingsClearMinimumFontSizeFunction() override = default;
 
   // ClearFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -254,7 +254,7 @@ class FontSettingsGetMinimumFontSizeFunction
                              FONTSETTINGS_GETMINIMUMFONTSIZE)
 
  protected:
-  ~FontSettingsGetMinimumFontSizeFunction() override {}
+  ~FontSettingsGetMinimumFontSizeFunction() override = default;
 
   // GetFontPrefExtensionFunction:
   const char* GetPrefName() override;
@@ -268,7 +268,7 @@ class FontSettingsSetMinimumFontSizeFunction
                              FONTSETTINGS_SETMINIMUMFONTSIZE)
 
  protected:
-  ~FontSettingsSetMinimumFontSizeFunction() override {}
+  ~FontSettingsSetMinimumFontSizeFunction() override = default;
 
   // SetFontPrefExtensionFunction:
   const char* GetPrefName() override;

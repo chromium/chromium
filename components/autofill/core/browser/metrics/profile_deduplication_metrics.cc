@@ -19,14 +19,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/autofill/core/browser/address_data_cleaner.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
@@ -160,10 +160,10 @@ void LogQuasiDuplicateAdoption(
     int duplication_rank,
     base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
   for (const auto& [other_profile, types] : min_incompatible_sets) {
-    const size_t score =
-        std::min(profile.use_count(), other_profile->use_count());
-    const size_t total_use_count =
-        profile.use_count() + other_profile->use_count();
+    const size_t score = std::min(profile.usage_history().use_count(),
+                                  other_profile->usage_history().use_count());
+    const size_t total_use_count = profile.usage_history().use_count() +
+                                   other_profile->usage_history().use_count();
     // This metric is recording a pair (score, total_use_count), where both
     // values are capped such that they fit in range [0, 99] and then encoded
     // such that 8 lowest bits are represent the capped total_use_count, the

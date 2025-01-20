@@ -110,7 +110,7 @@ TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
   UnitValue a = {89, UnitType::kDegrees};
   UnitValue b = {0.25, UnitType::kTurns};
   EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeDegrees(
-                     CSSToLengthConversionData()));
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CSSPrimitiveValueTest, IsResolution) {
@@ -131,7 +131,7 @@ TEST_F(CSSPrimitiveValueTest, Zooming) {
   UnitValue b = {10, UnitType::kPercentage};
   CSSPrimitiveValue* original = CreateAddition(a, b);
 
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   conversion_data.SetZoom(0.5);
 
   Length length = original->ConvertToLength(conversion_data);
@@ -149,7 +149,7 @@ TEST_F(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
   UnitValue a = {std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(std::numeric_limits<double>::max(),
             value->ComputeLength<double>(conversion_data));
 }
@@ -158,7 +158,7 @@ TEST_F(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(std::numeric_limits<double>::lowest(),
             value->ComputeLength<double>(conversion_data));
 }
@@ -167,14 +167,14 @@ TEST_F(CSSPrimitiveValueTest, NaNLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(0.0, value->ComputeLength<double>(conversion_data));
 }
 
 TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
 }
@@ -182,7 +182,7 @@ TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
 TEST_F(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(std::numeric_limits<float>::lowest(), length.Percent());
 }
@@ -190,7 +190,7 @@ TEST_F(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
 TEST_F(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
   CSSPrimitiveValue* value = Create(
       {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(0.0, length.Percent());
 }
@@ -348,7 +348,8 @@ TEST_F(CSSPrimitiveValueTest, ComputeMethodsWithLengthResolver) {
     CSSPrimitiveValue* value = CSSMathFunctionValue::Create(expression);
 
     Font font;
-    CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+    CSSToLengthConversionData length_resolver =
+        CSSToLengthConversionData(/*element=*/nullptr);
     length_resolver.SetFontSizes(
         CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
     EXPECT_EQ(10.0, value->ComputeDegrees(length_resolver));
@@ -425,7 +426,7 @@ TEST_F(CSSPrimitiveValueTest, ComputeValueToCanonicalUnit) {
   auto* function = CSSMathFunctionValue::Create(node_sub);
 
   Font font;
-  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   length_resolver.SetFontSizes(
       CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
 

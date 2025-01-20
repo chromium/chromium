@@ -29,7 +29,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/window_tree_host.h"
 #endif
 
@@ -234,7 +234,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   CaptureInput();
   auto* screen = display::Screen::GetScreen();
   gfx::Point initial_position = screen->GetCursorScreenPoint();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (screen->InTabletMode()) {
     initial_position =
         screen->GetDisplayForNewWindows().work_area().CenterPoint();
@@ -246,7 +246,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   // the UI.
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Add an observation so the capture can be updated as the eye dropper window
   // moves between displays.
   window_observation_.Observe(GetWidget()->GetNativeWindow());
@@ -293,7 +293,7 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   const SkBitmap frame = screen_capturer_->GetBitmap();
   gfx::Point center_position_px;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only captures a single display at a time, and we need to convert
   // the cursor position to display (root window) local pixel coordinates.
   aura::Window* window = GetWidget()->GetNativeWindow();
@@ -384,7 +384,7 @@ void EyeDropperView::OnWidgetMove() {
   SchedulePaint();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);

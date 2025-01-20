@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
@@ -28,9 +29,8 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
@@ -87,6 +87,8 @@
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
@@ -109,6 +111,7 @@
             sortingCriteria:DriveItemsSortingType::kName
            sortingDirection:DriveItemsSortingOrder::kAscending
                driveService:driveService
+            identityManager:identityManager
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)
               metricsHelper:_metricsHelper];
@@ -329,9 +332,9 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* completionInfo) {
+                          id<SystemIdentity> completionIdentity) {
                if (result == SigninCoordinatorResultSuccess) {
-                 [weakSelf addAndSelectNewIdentity:completionInfo.identity];
+                 [weakSelf addAndSelectNewIdentity:completionIdentity];
                } else {
                  [weakSelf reportAddingIdentityFailure];
                }

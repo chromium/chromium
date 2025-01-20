@@ -32,7 +32,7 @@ class MockDataTypeLocalDataBatchUploader
               (override));
   MOCK_METHOD(void, TriggerLocalDataMigration, (), (override));
   MOCK_METHOD(void,
-              TriggerLocalDataMigration,
+              TriggerLocalDataMigrationForItems,
               ((std::vector<syncer::LocalDataItemModel::DataId> items)),
               (override));
 };

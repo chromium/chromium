@@ -35,21 +35,20 @@ export class DataSharingSdkImpl implements DataSharingSdk {
       resolve({
         status: Code.OK,
         result: {
-          groupData:
-              _params.groupIds!.map(groupId => ({
-                                      groupId,
-                                      displayName: 'GROUP_NAME',
-                                      members: [
-                                        {
-                                          focusObfuscatedGaiaId: 'GAIA_ID',
-                                          displayName: 'MEMBER_NAME',
-                                          email: 'test@gmail.com',
-                                          role: 'member',
-                                          avatarUrl: 'http://example.com',
-                                          givenName: 'MEMBER_NAME',
-                                        },
-                                      ],
-                                    })),
+          groupData: _params.params!.map(param => ({
+                                           groupId: param.groupId,
+                                           displayName: 'GROUP_NAME',
+                                           members: [
+                                             {
+                                               focusObfuscatedGaiaId: 'GAIA_ID',
+                                               displayName: 'MEMBER_NAME',
+                                               email: 'test@gmail.com',
+                                               role: 'member',
+                                               avatarUrl: 'http://example.com',
+                                               givenName: 'MEMBER_NAME',
+                                             },
+                                           ],
+                                         })),
         },
       });
     });

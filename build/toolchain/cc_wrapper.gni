@@ -5,7 +5,8 @@
 import("//build/toolchain/rbe.gni")
 
 # Defines the configuration of cc wrapper
-# ccache: a c/c++ compiler cache which can greatly reduce recompilation times.
+# ccache, sccache: c/c++ compiler caches which can greatly reduce recompilation
+#                  times.
 # icecc, distcc: it takes compile jobs from a build and distributes them among
 #                remote machines allowing a parallel build.
 #
@@ -20,10 +21,6 @@ import("//build/toolchain/rbe.gni")
 # Use ccache 3.2 or later to avoid clang unused argument warnings:
 # https://bugzilla.samba.org/show_bug.cgi?id=8118
 #
-# To avoid -Wparentheses-equality clang warnings, at some cost in terms of
-# speed, you can do:
-# export CCACHE_CPP2=yes
-#
 # 2) icecc
 # Set clang_use_chrome_plugins=false because icecc cannot distribute custom
 # clang libraries.
@@ -32,7 +29,7 @@ import("//build/toolchain/rbe.gni")
 # export CCACHE_PREFIX=icecc
 
 declare_args() {
-  # Set to "ccache", "icecc" or "distcc".  Probably doesn't work on windows.
+  # Set to "ccache", "sccache", "icecc" or "distcc".
   cc_wrapper = ""
 }
 

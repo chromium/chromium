@@ -7,10 +7,13 @@ package org.chromium.components.variations;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashMap;
 
 /** Wrapper for variations. */
 @JNINamespace("variations::android")
+@NullMarked
 public final class VariationsAssociatedData {
 
     private VariationsAssociatedData() {}
@@ -25,6 +28,14 @@ public final class VariationsAssociatedData {
         return VariationsAssociatedDataJni.get().getVariationParamValue(trialName, paramName);
     }
 
+    /**
+     * Get a HashMap with the value of a space-separated string containing the list of current
+     * active variations (as would be reported in the |variation_id| repeated field of the
+     * ClientVariations proto) for a given ID collection. See more at
+     * `VariationsIdsProvider::GetVariationsString()`.
+     *
+     * @return A HashMap with value containing the current active variations.
+     */
     public static HashMap<String, String> getFeedbackMap() {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("Chrome Variations", VariationsAssociatedDataJni.get().getFeedbackVariations());
@@ -32,11 +43,24 @@ public final class VariationsAssociatedData {
     }
 
     /**
+     * Get the encrypted variations state. Variations state is the commandline variations that a
+     * person can pass in to Chrome, which specifies Chrome features' on or off states. See more at
+     * `VariationsCommandLine::EncryptToString()`
+     *
+     * @return A HashMap with value containing the encrypted variations state.
+     */
+    public static HashMap<String, String> getVariationsStateFeedbackMap() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("Chrome Variations State", VariationsAssociatedDataJni.get().getVariationsState());
+        return map;
+    }
+
+    /**
      * Returns the list of Google App variations from active finch field trials.
-     * @return A space separated list of ids with leading and trailing space.
-     * For example, " 123 456 ".
-     * IMPORTANT: This string is only approved for integrations with the Android
-     * Google App and must receive a privacy review before extending to other apps.
+     *
+     * @return A space separated list of ids with leading and trailing space. e.g. " 123 456 ".
+     *     IMPORTANT: This string is only approved for integrations with the Android Google App and
+     *     must receive a privacy review before extending to other apps.
      */
     public static String getGoogleAppVariations() {
         String variations = VariationsAssociatedDataJni.get().getGoogleAppVariations();
@@ -48,6 +72,8 @@ public final class VariationsAssociatedData {
         String getVariationParamValue(String trialName, String paramName);
 
         String getFeedbackVariations();
+
+        String getVariationsState();
 
         String getGoogleAppVariations();
     }

@@ -32,11 +32,10 @@ using password_manager::metrics_util::PasswordType;
 IOSChromePasswordReuseDetectionManagerClient::
     IOSChromePasswordReuseDetectionManagerClient(
         id<IOSChromePasswordReuseDetectionManagerClientBridge> bridge)
-    : bridge_(bridge), password_reuse_detection_manager_(this) {
-  log_manager_ = autofill::LogManager::Create(
-      ios::PasswordManagerLogRouterFactory::GetForProfile(bridge_.profile),
-      base::RepeatingClosure());
-
+    : bridge_(bridge),
+      password_reuse_detection_manager_(this),
+      log_router_(ios::PasswordManagerLogRouterFactory::GetForProfile(
+          bridge_.profile)) {
   if (IsPasswordReuseDetectionEnabled()) {
     web_state_observation_.Observe(bridge_.webState);
     input_event_observation_.Observe(
@@ -58,7 +57,11 @@ const GURL& IOSChromePasswordReuseDetectionManagerClient::GetLastCommittedURL()
 }
 
 autofill::LogManager*
-IOSChromePasswordReuseDetectionManagerClient::GetLogManager() {
+IOSChromePasswordReuseDetectionManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    log_manager_ =
+        autofill::LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 

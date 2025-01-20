@@ -147,11 +147,16 @@ export type ExportSettings = Infer<typeof exportSettingsSchema>;
 
 export const settingsSchema = z.object({
   exportSettings: exportSettingsSchema,
+  hasOpenedMicMenu: z.withDefault(z.boolean(), false),
   includeSystemAudio: z.boolean(),
   keepScreenOn: z.withDefault(z.boolean(), false),
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
+  // Language selected by the user.
+  // Note that most usage should use `getSelectedLanguage` in PlatformHandler,
+  // to automatically fall back to default language when there's only one
+  // language available.
   transcriptionLanguage: z.withDefault(
     z.nullable(z.nativeEnum(LanguageCode)),
     null,
@@ -173,6 +178,7 @@ const defaultSettings: Settings = {
     transcription: false,
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
+  hasOpenedMicMenu: false,
   includeSystemAudio: false,
   keepScreenOn: false,
   onboardingDone: false,

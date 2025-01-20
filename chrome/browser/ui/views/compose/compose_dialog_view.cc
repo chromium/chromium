@@ -208,8 +208,8 @@ bool ComposeDialogView::HandleContextMenu(
     }
   }
 
-  for (size_t index = 0; index < command_ids.size(); index++) {
-    menu->RemoveMenuItem(command_ids[index]);
+  for (int command_id : command_ids) {
+    menu->RemoveMenuItem(command_id);
   }
   menu->RemoveAdjacentSeparators();
 

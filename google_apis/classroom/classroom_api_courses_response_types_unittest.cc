@@ -27,7 +27,7 @@ TEST(ClassroomApiCoursesResponseTypesTest, ConvertsCourses) {
   const auto raw_courses = JSONReader::Read(R"(
       {
         "courses": [
-          {"id": "course-1", "name": "Course Name 1", "courseState": "ACTIVE"},
+          {"id": "course-1", "name": "Course Name 1", "section": "Period 1", "courseState": "ACTIVE"},
           {"id": "course-2", "name": "Course Name 2", "courseState": "ARCHIVED"}
         ]
       })");
@@ -40,10 +40,12 @@ TEST(ClassroomApiCoursesResponseTypesTest, ConvertsCourses) {
 
   EXPECT_EQ(courses->items().at(0)->id(), "course-1");
   EXPECT_EQ(courses->items().at(0)->name(), "Course Name 1");
+  EXPECT_EQ(courses->items().at(0)->section(), "Period 1");
   EXPECT_EQ(courses->items().at(0)->state(), Course::State::kActive);
 
   EXPECT_EQ(courses->items().at(1)->id(), "course-2");
   EXPECT_EQ(courses->items().at(1)->name(), "Course Name 2");
+  EXPECT_EQ(courses->items().at(1)->section(), "");
   EXPECT_EQ(courses->items().at(1)->state(), Course::State::kOther);
 }
 

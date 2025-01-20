@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <limits>
 
@@ -234,6 +235,92 @@ TEST_P(ParkableStringTest, CheckCompressedSize) {
   EXPECT_EQ(kCompressedSize, parkable.Impl()->compressed_size());
 }
 
+TEST_P(ParkableStringTest, CompressThenToDiskYoungNoCompressedData) {
+  ParkableString parkable(MakeLargeString().ReleaseImpl());
+  EXPECT_TRUE(parkable.Impl()->Park(
+      ParkableStringImpl::ParkingMode::kCompressThenToDisk));
+  RunPostedTasks();
+
+  // We expect the compressed data to be discarded after it is on disk.
+  EXPECT_FALSE(parkable.Impl()->has_compressed_data());
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+}
+
+TEST_P(ParkableStringTest, CompressThenToDiskFull) {
+  ParkableString parkable(MakeLargeString().ReleaseImpl());
+  EXPECT_TRUE(
+      parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+  RunPostedTasks();
+  EXPECT_TRUE(parkable.Impl()->is_parked());
+  EXPECT_TRUE(parkable.Impl()->has_compressed_data());
+  EXPECT_FALSE(parkable.Impl()->is_on_disk());
+
+  { String unparked = parkable.ToString(); }
+
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_TRUE(parkable.Impl()->has_compressed_data());
+  EXPECT_FALSE(parkable.Impl()->is_on_disk());
+  EXPECT_EQ(ParkableStringImpl::Age::kYoung,
+            parkable.Impl()->age_for_testing());
+
+  EXPECT_TRUE(parkable.Impl()->Park(
+      ParkableStringImpl::ParkingMode::kCompressThenToDisk));
+  RunPostedTasks();
+
+  // We expect the compressed data to be discarded after it is on disk.
+  EXPECT_FALSE(parkable.Impl()->has_compressed_data());
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+
+  { String unparked = parkable.ToString(); }
+
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_TRUE(parkable.Impl()->has_compressed_data());
+  EXPECT_TRUE(parkable.Impl()->has_on_disk_data());
+  EXPECT_FALSE(parkable.Impl()->is_on_disk());
+  EXPECT_EQ(ParkableStringImpl::Age::kYoung,
+            parkable.Impl()->age_for_testing());
+
+  // This should happen synchronously
+  EXPECT_TRUE(parkable.Impl()->Park(
+      ParkableStringImpl::ParkingMode::kCompressThenToDisk));
+
+  // We expect the compressed data to be discarded after it is on disk.
+  EXPECT_FALSE(parkable.Impl()->has_compressed_data());
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+}
+
+TEST_P(ParkableStringTest, CompressThenToDiskOnDiskData) {
+  ParkableString parkable(MakeLargeString().ReleaseImpl());
+  EXPECT_TRUE(ParkAndWait(parkable));
+
+  WaitForDiskWriting();
+
+  ASSERT_TRUE(parkable.Impl()->is_on_disk());
+
+  { String unparked = parkable.ToString(); }
+
+  ASSERT_FALSE(parkable.Impl()->is_on_disk());
+
+  // This should happen synchronously
+  EXPECT_TRUE(parkable.Impl()->Park(
+      ParkableStringImpl::ParkingMode::kCompressThenToDisk));
+
+  // We expect the compressed data to be discarded after it is on disk.
+  EXPECT_FALSE(parkable.Impl()->has_compressed_data());
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+}
+
+TEST_P(ParkableStringTest, CompressThenToDiskNotParkable) {
+  ParkableString parkable(MakeLargeString().ReleaseImpl());
+  String retained = parkable.ToString();
+  // This should be a no-op, because the string has a reference.
+  EXPECT_FALSE(parkable.Impl()->Park(
+      ParkableStringImpl::ParkingMode::kCompressThenToDisk));
+  RunPostedTasks();
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_FALSE(parkable.Impl()->is_on_disk());
+}
+
 TEST_P(ParkableStringTest, DontCompressRandomString) {
   base::HistogramTester histogram_tester;
   // Make a large random string. Large to make sure it's parkable, and random to
@@ -262,7 +349,7 @@ TEST_P(ParkableStringTest, ParkUnparkIdenticalContent) {
 }
 
 TEST_P(ParkableStringTest, DecompressUtf16String) {
-  UChar emoji_grinning_face[2] = {0xd83d, 0xde00};
+  std::array<UChar, 2> emoji_grinning_face = {0xd83d, 0xde00};
   size_t size_in_chars = 2 * kSizeKb * 1000 / sizeof(UChar);
 
   Vector<UChar> data(size_in_chars);

@@ -64,16 +64,8 @@ struct DeskTemplateState {
 // Next version: 5
 // Next method id: 3
 interface DeskTemplateClient {
-  // Creates a browser from the desk template data.
-  [MinVersion=1]
-  CreateBrowserWithRestoredData@1(gfx.mojom.Rect bounds,
-                                  ui.mojom.WindowShowState initial_show_state,
-                                  DeskTemplateState state);
-
-  // Returns state of the tab strip model in the browser window identified by
-  // |window_unique_id|.
-  GetBrowserInformation@0(uint32 serial, string window_unique_id) => (
-    uint32 serial, string window_unique_id, DeskTemplateState? state);
+  // GetBrowserInformation@0 was removed.
+  // CreateBrowserWithRestoredData@1 was removed.
 
   // Gets the image of the favicon associated with `url`. Returns an empty
   // image if the favicon cannot be found. If `profile_id` is specified, then

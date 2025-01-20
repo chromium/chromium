@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
-#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"  // nogncheck https://crbug.com/377760841
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -272,8 +272,7 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   // Exit early if the reimplementation data is attached, to avoid running two
   // different throttles simultaneously. Note: this cannot be checked in
   // `MaybeCreate()` since the data might get attached after it's executed.
-  if (web_app::NavigationCapturingNavigationHandleUserData::
-          GetForNavigationHandle(*handle)) {
+  if (web_app::NavigationCapturingProcess::GetForNavigationHandle(*handle)) {
     return content::NavigationThrottle::PROCEED;
   }
 

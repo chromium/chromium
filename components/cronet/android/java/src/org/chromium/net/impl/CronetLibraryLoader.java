@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.net.RegistrationPolicyAlwaysRegister;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsLoader;
@@ -56,6 +57,11 @@ public class CronetLibraryLoader {
     private static final ConditionVariable sWaitForLibLoad = new ConditionVariable();
 
     private static final ConditionVariable sHttpFlagsLoaded = new ConditionVariable();
+
+    @VisibleForTesting
+    public static final String UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME =
+            "Cronet_UpdateNetworkStateOnlyOnceOnStartup";
+
     private static ResolvedFlags sHttpFlags;
 
     /**
@@ -226,7 +232,31 @@ public class CronetLibraryLoader {
             // embedders do not have API access to create network change
             // observers. Existing observers in the net stack do not
             // perform expensive work.
-            NetworkChangeNotifier.registerToReceiveNotificationsAlways();
+            //
+            // During the setup of connectivity state autodetection, the network state is updated
+            // multiple times:
+            // 1. Within Java NetworkChangeNotifierAutoDetect's constructor
+            // 2. Within Java NetworkChangeNotifier#setAutoDetectConnectivityStateInternal, after
+            // creating a NetworkChangeNotifierAutoDetect (effectively, just after 1)
+            // 3. Within C++ NetworkChangeNotifierDelegateAndroid's constructor
+            //
+            // 2 should never be needed, as 1 always runs before and takes care of updating the
+            // network state. Having said that, it will be kept to keep track of the performance
+            // improvement from this change. Once the experiment terminates, we will delete it, this
+            // should always be safe for Chrome, Cronet and Webview.
+            //
+            // As per 3, Cronet always initializes NetworkChangeNotifier first from Java (going
+            // through 1 and 2), then from C++ (going through 3).
+            // Since we would like to query the network state only once, this experiment
+            // disables 2 and 3.
+            var updateNetworkStateOnceFlagValue =
+                    getHttpFlags().flags().get(UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME);
+            var updateNetworkStateOnce =
+                    updateNetworkStateOnceFlagValue != null
+                            && updateNetworkStateOnceFlagValue.getBoolValue();
+            NetworkChangeNotifier.setAutoDetectConnectivityState(
+                    new RegistrationPolicyAlwaysRegister(),
+                    /* forceUpdateNetworkState= */ !updateNetworkStateOnce);
 
             try (var libLoadTraceEvent =
                     ScopedSysTraceEvent.scoped(
@@ -243,7 +273,7 @@ public class CronetLibraryLoader {
                 // NetworkChangeNotifierAndroid is created, so as to avoid receiving
                 // the undesired initial network change observer notification, which
                 // will cause active requests to fail with ERR_NETWORK_CHANGED.
-                CronetLibraryLoaderJni.get().cronetInitOnInitThread();
+                CronetLibraryLoaderJni.get().cronetInitOnInitThread(!updateNetworkStateOnce);
             }
         }
     }
@@ -400,7 +430,7 @@ public class CronetLibraryLoader {
         // Native methods are implemented in cronet_library_loader.cc.
         void nativeInit();
 
-        void cronetInitOnInitThread();
+        void cronetInitOnInitThread(boolean updateNetworkStateFromNative);
 
         String getCronetVersion();
 

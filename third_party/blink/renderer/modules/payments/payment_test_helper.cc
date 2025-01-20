@@ -257,7 +257,7 @@ BuildSecurePaymentConfirmationMethodDataForTest(const V8TestingScope& scope) {
   HeapVector<Member<PaymentMethodData>> method_data(
       1, PaymentMethodData::Create());
   method_data[0]->setSupportedMethod("secure-payment-confirmation");
-  method_data[0]->setData(ScriptValue(
+  method_data[0]->setData(ScriptObject(
       scope.GetIsolate(), spc_request->ToV8(scope.GetScriptState())));
 
   return method_data;

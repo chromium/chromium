@@ -6,6 +6,13 @@
 
 #include "base/logging.h"
 #include "components/account_id/account_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 
 namespace user_manager {
@@ -29,6 +36,8 @@ void UserManager::Observer::OnUserImageIsEnterpriseManagedChanged(
     bool is_enterprise_managed) {}
 
 void UserManager::Observer::OnUserProfileCreated(const User& user) {}
+
+void UserManager::Observer::OnUserProfileWillBeDestroyed(const User& user) {}
 
 void UserManager::Observer::OnUserProfileImageUpdateFailed(const User& user) {}
 
@@ -78,6 +87,41 @@ UserManager::DeviceLocalAccountInfo::operator=(
     const UserManager::DeviceLocalAccountInfo&) = default;
 
 UserManager::DeviceLocalAccountInfo::~DeviceLocalAccountInfo() = default;
+
+// static
+void UserManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kRegularUsersPref);
+  registry->RegisterStringPref(prefs::kLastLoggedInGaiaUser, "");
+  registry->RegisterDictionaryPref(prefs::kUserDisplayName);
+  registry->RegisterDictionaryPref(prefs::kUserGivenName);
+  registry->RegisterDictionaryPref(prefs::kUserDisplayEmail);
+  registry->RegisterDictionaryPref(prefs::kUserOAuthTokenStatus);
+  registry->RegisterDictionaryPref(prefs::kUserForceOnlineSignin);
+  registry->RegisterDictionaryPref(prefs::kUserType);
+  registry->RegisterStringPref(prefs::kLastActiveUser, "");
+  registry->RegisterDictionaryPref(prefs::kOwnerAccount);
+
+  registry->RegisterListPref(prefs::kDeviceLocalAccountsWithSavedData);
+  registry->RegisterStringPref(prefs::kDeviceLocalAccountPendingDataRemoval,
+                               "");
+
+  UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
+  KnownUser::RegisterPrefs(registry);
+  MultiUserSignInPolicyController::RegisterPrefs(registry);
+}
+
+// static
+void UserManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(
+      prefs::kMultiProfileUserBehaviorPref,
+      MultiUserSignInPolicyToPrefValue(MultiUserSignInPolicy::kUnrestricted));
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileNeverShowIntro, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileWarningShowDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
 
 void UserManager::Initialize() {
   DCHECK(!UserManager::instance);

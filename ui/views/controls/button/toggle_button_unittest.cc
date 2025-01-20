@@ -156,6 +156,11 @@ TEST_F(ToggleButtonTest, AccessibleCheckedStateChange) {
   ui::AXNodeData data;
   EXPECT_EQ(
       ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 0);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 0);
   button()->SetIsOn(true);
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(

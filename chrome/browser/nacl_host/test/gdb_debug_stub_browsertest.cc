@@ -21,8 +21,7 @@
 
 class NaClGdbDebugStubTest : public PPAPINaClNewlibTest {
  public:
-  NaClGdbDebugStubTest() {
-  }
+  NaClGdbDebugStubTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 

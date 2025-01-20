@@ -29,6 +29,7 @@ enum class CredentialSourceType;
 enum class MoveToAccountStoreTrigger;
 }  // namespace metrics_util
 }  // namespace password_manager
+class PasswordChangeDelegate;
 
 // An interface for ManagePasswordsBubbleModel implemented by
 // ManagePasswordsUIController. Allows to retrieve the current state of the tab
@@ -187,21 +188,6 @@ class PasswordsModelDelegate {
   virtual void AuthenticateUserWithMessage(const std::u16string& message,
                                            AvailabilityCallback callback) = 0;
 
-  // Called from the Save/Update bubble controller when gaia re-auth is needed
-  // to save passwords. This method triggers the reauth flow. Upon successful
-  // reauth, it saves the password if it's still relevant. Otherwise, it changes
-  // the default destination to local and reopens the save bubble.
-  virtual void AuthenticateUserForAccountStoreOptInAndSavePassword(
-      const std::u16string& username,
-      const std::u16string& password) = 0;
-
-  // Called from the Save/Update bubble controller when a "new" user (i.e. who
-  // hasn't chosen whether to use the account-scoped storage yet) saves a
-  // password (locally). If the reauth is successful, this moves the just-saved
-  // password into the account store.
-  virtual void
-  AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() = 0;
-
   // Called from Biometric Authentication promo dialog when the feature is
   // enabled.
   virtual void ShowBiometricActivationConfirmation() = 0;
@@ -226,6 +212,9 @@ class PasswordsModelDelegate {
 
   // Called from the Relaunch Chrome bubble to gracefully restart the Chrome.
   virtual void RelaunchChrome() = 0;
+
+  // Returns the delegate for the password change flow.
+  virtual PasswordChangeDelegate* GetPasswordChangeDelegate() const = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;

@@ -95,12 +95,8 @@ class GFX_RANGE_EXPORT Range {
     return start() > end() ? start() : end();
   }
 
-  constexpr bool operator==(const Range& other) const {
-    return start() == other.start() && end() == other.end();
-  }
-  constexpr bool operator!=(const Range& other) const {
-    return !(*this == other);
-  }
+  constexpr bool operator==(const Range& other) const = default;
+  constexpr auto operator<=>(const Range& other) const = default;
   constexpr bool EqualsIgnoringDirection(const Range& other) const {
     return GetMin() == other.GetMin() && GetMax() == other.GetMax();
   }

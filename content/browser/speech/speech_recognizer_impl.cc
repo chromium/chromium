@@ -485,9 +485,6 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   int chunk_duration_ms = recognition_engine_->GetDesiredAudioChunkDurationMs();
 
   if (!audio_parameters_.IsValid()) {
-    DLOG(WARNING) << "Audio input device not found, but one should exist -- "
-                     "using fake audio input parameters.";
-
     // It's okay to try with fake parameters since we've already been given
     // permission from SpeechRecognitionManagerImpl. If no device exists, this
     // will just result in an OnCaptureError().

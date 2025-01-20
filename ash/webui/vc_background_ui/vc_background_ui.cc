@@ -23,7 +23,6 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
@@ -52,8 +51,7 @@ void AddStrings(content::WebUIDataSource* source) {
 
 void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePath("", IDR_ASH_VC_BACKGROUND_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kAshVcBackgroundResources,
-                                           kAshVcBackgroundResourcesSize));
+  source->AddResourcePaths(kAshVcBackgroundResources);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
@@ -135,8 +133,6 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
                          sea_pen_provider_->IsManagedSeaPenEnabled());
   source->AddBoolean("isManagedSeaPenFeedbackEnabled",
                      sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
-  source->AddBoolean("isLacrosEnabled",
-                     ::crosapi::lacros_startup_state::IsLacrosEnabled());
   source->AddBoolean("isVcResizeThumbnailEnabled",
                      ::ash::features::IsVcResizeThumbnailEnabled());
 }

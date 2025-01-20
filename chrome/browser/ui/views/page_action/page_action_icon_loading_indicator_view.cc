@@ -27,8 +27,9 @@ PageActionIconLoadingIndicatorView::~PageActionIconLoadingIndicatorView() {
 }
 
 void PageActionIconLoadingIndicatorView::SetAnimating(bool animating) {
-  if (!throbber_start_time_ == !animating)
+  if (!throbber_start_time_ == !animating) {
     return;
+  }
 
   SetVisible(animating);
   if (animating) {
@@ -46,8 +47,9 @@ bool PageActionIconLoadingIndicatorView::GetAnimating() const {
 }
 
 void PageActionIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
-  if (!throbber_start_time_)
+  if (!throbber_start_time_) {
     return;
+  }
 
   const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
   constexpr int kThrobberStrokeWidth = 2;

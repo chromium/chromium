@@ -233,8 +233,10 @@ class FragmentPaintPropertyTreeBuilder {
       const std::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
   ALWAYS_INLINE void UpdateForObjectLocation(
-      std::optional<gfx::Vector2d>& paint_offset_translation);
-  ALWAYS_INLINE void UpdateStickyTranslation();
+      std::optional<gfx::Vector2d>& paint_offset_translation,
+      PhysicalOffset& extra_sticky_offset);
+  ALWAYS_INLINE void UpdateStickyTranslation(
+      const PhysicalOffset& extra_sticky_offset);
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
 
   void UpdateIndividualTransform(
@@ -533,6 +535,14 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   }
 
+  // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
+  // IsCanvasPlacedElement() funciton?
+  if (object.Parent() && object.Parent()->IsCanvas()) {
+    // The object is being drawn by placeElement and should ignore the ignore
+    // the paint offset.
+    return true;
+  }
+
   if (NeedsIsolationNodes(box_model)) {
     DCHECK(box_model.HasLayer());
     return true;
@@ -726,14 +736,17 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
   }
 }
 
-void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
+void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
+    const PhysicalOffset& extra_sticky_offset) {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
-          gfx::Vector2dF(box_model.StickyPositionOffset()))}};
+      auto total_offset =
+          extra_sticky_offset + box_model.StickyPositionOffset();
+      TransformPaintPropertyNode::State state{
+          {gfx::Transform::MakeTranslation(ToRoundedVector2d(total_offset))}};
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kStickyPosition;
@@ -790,6 +803,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           constraint->scroll_container_relative_containing_block_rect =
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
+          constraint->pixel_snap_offset = gfx::Vector2dF(extra_sticky_offset);
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
             constraint->nearest_element_shifting_sticky_box =
@@ -806,6 +820,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
                     CompositorElementIdNamespace::kStickyTranslation);
           }
           state.sticky_constraint = std::move(constraint);
+
+          if (object_.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+            state.direct_compositing_reasons |=
+                CompositingReason::kAffectedBySafeAreaBottom;
+          }
         }
       }
 
@@ -827,16 +846,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *box.GetAnchorPositionScrollData();
-      gfx::Vector2dF translation_offset =
-          -anchor_position_scroll_data.AccumulatedAdjustment();
+      gfx::Vector2dF translation_offset(
+          -anchor_position_scroll_data.AccumulatedAdjustment());
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
       // TODO(crbug.com/1309178): We should disable composited scrolling if the
       // snapshot's scrollers do not match the current scrollers.
 
-      DCHECK(full_context_.direct_compositing_reasons &
-             CompositingReason::kAnchorPosition);
+      DCHECK(object_.GetDocument().Printing() ||
+             (full_context_.direct_compositing_reasons &
+              CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons = CompositingReason::kAnchorPosition;
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
@@ -2676,7 +2696,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       UpdateScrollNode();
       UpdateOverflowControlEffects();
       UpdateScrollTranslation();
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        object_.GetFrameView()->AddScrollableAreaWithScrollNode(
+            *To<LayoutBox>(object_).GetScrollableArea());
+      }
     } else {
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        if (properties_->Scroll() &&
+            To<LayoutBox>(object_).GetScrollableArea()) {
+          object_.GetFrameView()->RemoveScrollableAreaWithScrollNode(
+              *To<LayoutBox>(object_).GetScrollableArea());
+        }
+      }
       OnClearScroll(properties_->ClearScroll());
       OnClearEffect(properties_->ClearVerticalScrollbarEffect());
       OnClearEffect(properties_->ClearHorizontalScrollbarEffect());
@@ -2914,6 +2947,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollTranslation() {
         effective_change_type =
             PaintPropertyChangeType::kChangedOnlyCompositedValues;
         properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
+        if (paint_artifact_compositor->UsesRasterInducingScroll(
+                *properties_->Scroll())) {
+          paint_artifact_compositor->SetNeedsUpdateForRasterInducingScroll();
+        }
       }
     }
   }
@@ -3153,10 +3190,16 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
-    std::optional<gfx::Vector2d>& paint_offset_translation) {
+    std::optional<gfx::Vector2d>& paint_offset_translation,
+    PhysicalOffset& extra_sticky_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
+
+  if (NeedsStickyTranslation(object_)) {
+    extra_sticky_offset = context_.current.paint_offset;
+    ResetPaintOffset();
+  }
 
   PhysicalOffset paint_offset_delta =
       fragment_data_.PaintOffset() - context_.current.paint_offset;
@@ -3230,7 +3273,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
   std::optional<gfx::Vector2d> paint_offset_translation;
-  UpdateForObjectLocation(paint_offset_translation);
+  PhysicalOffset extra_sticky_offset;
+  UpdateForObjectLocation(paint_offset_translation, extra_sticky_offset);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 
@@ -3250,7 +3294,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #endif
 
   if (properties_) {
-    UpdateStickyTranslation();
+    UpdateStickyTranslation(extra_sticky_offset);
     UpdateAnchorPositionScrollTranslation();
     if (object_.IsSVGChild()) {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
@@ -3444,16 +3488,16 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     fragment.EnsureId();
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
-    if (properties->HasTransformNode()) {
+    if (properties->HasNode<TransformPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.transform_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
-    if (properties->HasClipNode()) {
+    if (properties->HasNode<ClipPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.clip_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
-    if (properties->HasEffectNode()) {
+    if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.effect_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }

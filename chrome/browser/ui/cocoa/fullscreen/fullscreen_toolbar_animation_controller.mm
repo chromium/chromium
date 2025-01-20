@@ -55,8 +55,9 @@ void FullscreenToolbarAnimationController::AnimateToolbarForTabstripChanges(
     content::WebContents* contents,
     bool in_foreground) {
   // Don't kickstart the animation if the toolbar is already displayed.
-  if ([owner_ mustShowFullscreenToolbar])
+  if ([owner_ mustShowFullscreenToolbar]) {
     return;
+  }
 
   if (animation_.IsShowing()) {
     hide_toolbar_timer_.Reset();
@@ -74,19 +75,22 @@ void FullscreenToolbarAnimationController::AnimateToolbarForTabstripChanges(
 }
 
 void FullscreenToolbarAnimationController::AnimateToolbarIn() {
-  if (![owner_ isInFullscreen])
+  if (![owner_ isInFullscreen]) {
     return;
+  }
 
   animation_.Reset(animation_start_value_);
   animation_.Show();
 }
 
 void FullscreenToolbarAnimationController::AnimateToolbarOutIfPossible() {
-  if (![owner_ isInFullscreen] || [owner_ mustShowFullscreenToolbar])
+  if (![owner_ isInFullscreen] || [owner_ mustShowFullscreenToolbar]) {
     return;
+  }
 
-  if (animation_.IsClosing())
+  if (animation_.IsClosing()) {
     return;
+  }
 
   animation_.Stop();
   animation_.Hide();
@@ -119,8 +123,9 @@ void FullscreenToolbarAnimationController::AnimationProgressed(
 
 void FullscreenToolbarAnimationController::AnimationEnded(
     const gfx::Animation* animation) {
-  if (!web_contents() && animation_.IsShowing())
+  if (!web_contents() && animation_.IsShowing()) {
     StartHideTimerIfPossible();
+  }
 }
 
 //////////////////////////////////////////////////////////////////

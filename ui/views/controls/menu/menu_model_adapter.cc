@@ -142,6 +142,10 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));
+  if (const std::u16string acc_name = model->GetAccessibleNameAt(model_index);
+      !acc_name.empty()) {
+    menu_item_view->GetViewAccessibility().SetName(acc_name);
+  }
   const ui::ElementIdentifier element_id =
       model->GetElementIdentifierAt(model_index);
   if (element_id) {

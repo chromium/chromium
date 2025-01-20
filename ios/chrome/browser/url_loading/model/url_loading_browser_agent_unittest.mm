@@ -45,6 +45,8 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
 
     // Configure app service.
     scene_loader_->current_browser_ = browser_.get();
+    scene_loader_->original_browser_ = browser_.get();
+    scene_loader_->otr_browser_ = otr_browser_.get();
 
     // Disable web usage on both browsers
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());

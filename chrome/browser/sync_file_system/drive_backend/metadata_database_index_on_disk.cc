@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_on_disk.h"
 
+#include <array>
 #include <unordered_set>
 
 #include "base/containers/contains.h"
@@ -276,7 +272,7 @@ MetadataDatabaseIndexOnDisk::Create(LevelDBWrapper* db) {
   return index;
 }
 
-MetadataDatabaseIndexOnDisk::~MetadataDatabaseIndexOnDisk() {}
+MetadataDatabaseIndexOnDisk::~MetadataDatabaseIndexOnDisk() = default;
 
 void MetadataDatabaseIndexOnDisk::RemoveUnreachableItems() {
   RemoveUnreachableItemsFromDB(
@@ -684,13 +680,17 @@ int64_t MetadataDatabaseIndexOnDisk::BuildTrackerIndexes() {
 }
 
 int64_t MetadataDatabaseIndexOnDisk::DeleteTrackerIndexes() {
-  const char* kIndexPrefixes[] = {
-    kAppRootIDByAppIDKeyPrefix, kActiveTrackerIDByFileIDKeyPrefix,
-    kTrackerIDByFileIDKeyPrefix, kMultiTrackerByFileIDKeyPrefix,
-    kActiveTrackerIDByParentAndTitleKeyPrefix,
-    kTrackerIDByParentAndTitleKeyPrefix, kMultiBackingParentAndTitleKeyPrefix,
-    kDirtyIDKeyPrefix, kDemotedDirtyIDKeyPrefix
-  };
+  auto kIndexPrefixes = std::to_array<const char*>({
+      kAppRootIDByAppIDKeyPrefix,
+      kActiveTrackerIDByFileIDKeyPrefix,
+      kTrackerIDByFileIDKeyPrefix,
+      kMultiTrackerByFileIDKeyPrefix,
+      kActiveTrackerIDByParentAndTitleKeyPrefix,
+      kTrackerIDByParentAndTitleKeyPrefix,
+      kMultiBackingParentAndTitleKeyPrefix,
+      kDirtyIDKeyPrefix,
+      kDemotedDirtyIDKeyPrefix,
+  });
 
   int64_t num_deletes_before = db_->num_deletes();
   for (size_t i = 0; i < std::size(kIndexPrefixes); ++i)

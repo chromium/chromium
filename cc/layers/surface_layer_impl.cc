@@ -125,6 +125,16 @@ void SurfaceLayerImpl::SetIsReflection(bool is_reflection) {
   NoteLayerPropertyChanged();
 }
 
+void SurfaceLayerImpl::SetOverrideChildPaintFlags(
+    bool override_child_paint_flags) {
+  if (override_child_paint_flags_ == override_child_paint_flags) {
+    return;
+  }
+
+  override_child_paint_flags_ = override_child_paint_flags;
+  NoteLayerPropertyChanged();
+}
+
 void SurfaceLayerImpl::ResetStateForUpdateSubmissionStateCallback() {
   will_draw_needs_reset_ = true;
   NoteLayerPropertyChanged();
@@ -141,6 +151,7 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_);
   layer_impl->SetHasPointerEventsNone(has_pointer_events_none_);
   layer_impl->SetIsReflection(is_reflection_);
+  layer_impl->SetOverrideChildPaintFlags(override_child_paint_flags_);
 
   if (layer_impl->IsActive() && will_draw_needs_reset_) {
     layer_impl->will_draw_ = false;
@@ -206,6 +217,10 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                  surface_range_, background_color(),
                  stretch_content_to_fill_bounds_);
     quad->is_reflection = is_reflection_;
+    if (override_child_paint_flags()) {
+      quad->override_child_filter_quality = GetFilterQuality();
+      quad->override_child_dynamic_range_limit = GetDynamicRangeLimit();
+    }
     // Add the primary surface ID as a dependency.
     append_quads_data->activation_dependencies.push_back(surface_range_.end());
     if (deadline_in_frames_) {

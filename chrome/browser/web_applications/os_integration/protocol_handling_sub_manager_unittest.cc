@@ -507,7 +507,7 @@ TEST_F(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
             std::make_tuple(app_id, std::vector<std::string>())));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // This should have no affect.
   SynchronizeOsOptions options;

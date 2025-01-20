@@ -264,13 +264,13 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
       toast_id, ash::ToastCatalogName::kUndoCloseAll,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT),
       use_persistent_toast ? ToastData::kInfiniteDuration
-                           : ToastData::kDefaultToastDuration,
-      /*visible_on_lock_screen=*/false,
-      /*has_dismiss_button=*/true,
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_UNDO_TEXT));
+                           : ToastData::kDefaultToastDuration);
   undo_toast_data.persist_on_hover = true;
   undo_toast_data.show_on_all_root_windows = true;
-  undo_toast_data.dismiss_callback = std::move(dismiss_callback);
+  undo_toast_data.button_type = ToastData::ButtonType::kTextButton;
+  undo_toast_data.button_text =
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_UNDO_TEXT);
+  undo_toast_data.button_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
   undo_toast_data.activatable = use_persistent_toast;
   ToastManager::Get()->Show(std::move(undo_toast_data));
@@ -1175,13 +1175,14 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 void DesksController::CaptureActiveDeskAsSavedDesk(
     GetDeskTemplateCallback callback,
     DeskTemplateType template_type,
-    aura::Window* root_window_to_show) const {
+    aura::Window* root_window_to_show,
+    const base::flat_set<std::string>& coral_app_id_allowlist) const {
   DCHECK(current_account_id_.is_valid());
 
   restore_data_collector_.CaptureActiveDeskAsSavedDesk(
       std::move(callback), template_type,
       base::UTF16ToUTF8(active_desk_->name()), root_window_to_show,
-      current_account_id_);
+      current_account_id_, coral_app_id_allowlist);
 }
 
 Desk* DesksController::CreateNewDeskForSavedDesk(
@@ -1219,9 +1220,8 @@ Desk* DesksController::CreateNewDeskForSavedDesk(
       NewDesk(DesksCreationRemovalSource::kFloatingWorkspace);
       break;
     case DeskTemplateType::kCoral:
-      // TODO(crbug.com/371447150): Create a new desk with a new creation
-      // source.
-      return nullptr;
+      NewDesk(DesksCreationRemovalSource::kCoral);
+      break;
     case DeskTemplateType::kUnknown:
       return nullptr;
   }
@@ -1507,7 +1507,7 @@ bool DesksController::RequestFocusOnUndoDeskRemovalToast() {
     return false;
   }
 
-  return ToastManager::Get()->RequestFocusOnActiveToastDismissButton(
+  return ToastManager::Get()->RequestFocusOnActiveToastButton(
       temporary_removed_desk_->toast_id());
 }
 
@@ -1545,8 +1545,7 @@ bool DesksController::CanEndOverview() const {
   // be jarring if the screenshot is different from the appearance of the new
   // desk), so we don't want to allow overview to be exited before the animation
   // ends.
-  return !features::IsOverviewDeskNavigationEnabled() || !animation_ ||
-         animation_->CanEndOverview();
+  return !animation_ || animation_->CanEndOverview();
 }
 
 void DesksController::OnWindowActivating(ActivationReason reason,
@@ -1733,8 +1732,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   DCHECK(old_active);
   old_active->Deactivate(update_window_activation);
   active_desk_->Activate(update_window_activation);
-  if (features::IsOverviewDeskNavigationEnabled() && animation_ &&
-      was_in_overview) {
+  if (animation_ && was_in_overview) {
     overview_controller->StartOverview(OverviewStartAction::kOverviewDeskSwitch,
                                        OverviewEnterExitType::kImmediateEnter);
   }
@@ -2205,9 +2203,8 @@ void DesksController::MaybeCommitPendingDeskRemoval(
 }
 
 bool DesksController::IsUndoToastFocused() const {
-  return temporary_removed_desk_ &&
-         ToastManager::Get()->IsToastDismissButtonFocused(
-             temporary_removed_desk_->toast_id());
+  return temporary_removed_desk_ && ToastManager::Get()->IsToastButtonFocused(
+                                        temporary_removed_desk_->toast_id());
 }
 
 void DesksController::TrackWindowOnAllDesks(aura::Window* window) {
@@ -2442,6 +2439,13 @@ bool DesksController::MoveWindowFromSourceDeskTo(
   if (is_floated) {
     Shell::Get()->float_controller()->OnMovingFloatedWindowToDesk(
         window, source_desk, target_desk, target_root);
+    // Append item for the floating `window` to overview when the target desk is
+    // the `active_desk_`.
+    if (in_overview && target_desk == active_desk_) {
+      overview_controller->overview_session()->AppendItem(window,
+                                                          /*reposition=*/true,
+                                                          /*animate=*/true);
+    }
   } else {
     source_desk->MoveWindowToDesk(window, target_desk, target_root,
                                   /*unminimize=*/true);

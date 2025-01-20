@@ -16,6 +16,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+class V8UnionMediaKeyStatusOrUndefined;
 class WebData;
 
 // Represents a read-only map (to JavaScript) of key IDs and their current
@@ -39,13 +40,13 @@ class MediaKeyStatusMap final : public ScriptWrappable,
   MediaKeyStatusMap() = default;
 
   void Clear();
-  void AddEntry(WebData key_id, const String& status);
+  void AddEntry(WebData key_id, const V8MediaKeyStatus&);
   const MapEntry& at(uint32_t) const;
 
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
   bool has(const V8BufferSource* key_id);
-  ScriptValue get(ScriptState*, const V8BufferSource* key_id);
+  V8UnionMediaKeyStatusOrUndefined* get(const V8BufferSource* key_id);
 
   void Trace(Visitor*) const override;
 

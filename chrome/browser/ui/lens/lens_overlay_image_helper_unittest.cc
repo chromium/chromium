@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+
+#include <array>
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -817,10 +814,16 @@ TEST_F(LensOverlayImageHelperTest, ConvertColorToLab) {
 
   // Conversion values from
   // https://colorjs.io/apps/convert/?color=magenta&precision=4
-  std::tuple<float, float, float> output_lab[] = {
-      {0.0, 0.0, 0.0},         {100.0, 0.0, 0.0},       {54.29, 80.80, 69.89},
-      {87.82, -79.27, 80.99},  {29.57, 68.30, -112.03}, {97.61, -15.75, 93.39},
-      {90.67, -50.66, -14.96}, {60.17, 93.54, -60.50}};
+  auto output_lab = std::to_array<std::tuple<float, float, float>>({
+      {0.0, 0.0, 0.0},
+      {100.0, 0.0, 0.0},
+      {54.29, 80.80, 69.89},
+      {87.82, -79.27, 80.99},
+      {29.57, 68.30, -112.03},
+      {97.61, -15.75, 93.39},
+      {90.67, -50.66, -14.96},
+      {60.17, 93.54, -60.50},
+  });
 
   int index = 0;
   for (auto rgb : input_rgb) {

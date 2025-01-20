@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
@@ -195,11 +196,6 @@ FrameSchedulerImpl::FrameSchedulerImpl(
                        "FrameScheduler.ThrottlingType",
                        &tracing_controller_,
                        ThrottlingTypeToString),
-      preempted_for_cooperative_scheduling_(
-          false,
-          "FrameScheduler.PreemptedForCooperativeScheduling",
-          &tracing_controller_,
-          YesNoStateToString),
       aggressive_throttling_opt_out_count_(0),
       opted_out_from_aggressive_throttling_(
           false,
@@ -482,6 +478,18 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return DeferrableTaskQueueTraits().SetPrioritisationType(
           QueueTraits::PrioritisationType::kJavaScriptTimer);
     }
+    case TaskType::kIdleTask:
+      // This type is used for timed-out idle tasks, which essentially become
+      // timers in the background after we stop running idle tasks or if the
+      // timeout is less than the idle period duration. These tasks should be
+      // throttled similar to other timers to prevent creating non-throttleable
+      // timers.
+      return DeferrableTaskQueueTraits()
+          .SetCanBeThrottled(
+              base::FeatureList::IsEnabled(kThrottleTimedOutIdleTasks))
+          .SetCanBeIntensivelyThrottled(
+              base::FeatureList::IsEnabled(kThrottleTimedOutIdleTasks) &&
+              IsIntensiveWakeUpThrottlingEnabled());
     case TaskType::kInternalLoading:
     case TaskType::kNetworking:
       return LoadingTaskQueueTraits();
@@ -521,7 +529,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kPerformanceTimeline:
     case TaskType::kWebGL:
     case TaskType::kWebGPU:
-    case TaskType::kIdleTask:
     case TaskType::kInternalDefault:
     case TaskType::kMiscPlatformAPI:
     case TaskType::kFontLoading:
@@ -725,7 +732,6 @@ FrameSchedulerImpl::CompositorTaskRunner() {
 }
 
 void FrameSchedulerImpl::ResetForNavigation() {
-  document_bound_weak_factory_.InvalidateWeakPtrs();
   back_forward_cache_disabling_feature_tracker_.Reset();
 }
 
@@ -953,7 +959,6 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
   DCHECK(parent_page_scheduler_);
   bool queue_disabled = false;
   queue_disabled |= frame_paused_ && queue->CanBePaused();
-  queue_disabled |= preempted_for_cooperative_scheduling_;
   // Per-frame freezable task queues will be frozen after 5 mins in background
   // on Android, and if the browser freezes the page in the background. They
   // will be resumed when the page is visible.
@@ -1026,6 +1031,10 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
 
 void FrameSchedulerImpl::OnDispatchLoadEvent() {
   is_load_event_dispatched_ = true;
+}
+
+void FrameSchedulerImpl::OnDidInstallNewDocument() {
+  document_bound_weak_factory_.InvalidateWeakPtrs();
 }
 
 bool FrameSchedulerImpl::IsWaitingForContentfulPaint() const {
@@ -1221,18 +1230,6 @@ void FrameSchedulerImpl::RemovePauseSubresourceLoadingHandle() {
   }
 }
 
-ukm::UkmRecorder* FrameSchedulerImpl::GetUkmRecorder() {
-  if (!delegate_)
-    return nullptr;
-  return delegate_->GetUkmRecorder();
-}
-
-ukm::SourceId FrameSchedulerImpl::GetUkmSourceId() {
-  if (!delegate_)
-    return ukm::kInvalidSourceId;
-  return delegate_->GetUkmSourceId();
-}
-
 void FrameSchedulerImpl::OnTaskQueueCreated(
     MainThreadTaskQueue* task_queue,
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {
@@ -1372,7 +1369,8 @@ FrameSchedulerImpl::CreateWebSchedulingTaskQueue(
       frame_task_queue_controller_->NewWebSchedulingTaskQueue(
           DeferrableTaskQueueTraits()
               .SetCanBeThrottled(true)
-              .SetCanBeIntensivelyThrottled(true)
+              .SetCanBeIntensivelyThrottled(
+                  IsIntensiveWakeUpThrottlingEnabled())
               .SetCanBeDeferredForRendering(can_be_deferred_for_rendering),
           queue_type, priority);
   return std::make_unique<MainThreadWebSchedulingTaskQueueImpl>(
@@ -1493,13 +1491,6 @@ FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits() {
 MainThreadTaskQueue::QueueTraits
 FrameSchedulerImpl::CanRunWhenVirtualTimePausedTaskQueueTraits() {
   return QueueTraits().SetCanRunWhenVirtualTimePaused(true);
-}
-
-void FrameSchedulerImpl::SetPreemptedForCooperativeScheduling(
-    Preempted preempted) {
-  DCHECK_NE(preempted.value(), preempted_for_cooperative_scheduling_);
-  preempted_for_cooperative_scheduling_ = preempted.value();
-  UpdatePolicy();
 }
 
 MainThreadTaskQueue::QueueTraits FrameSchedulerImpl::LoadingTaskQueueTraits() {

@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/common/content_features.h"
@@ -126,9 +127,8 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
   }
 
   void SetUp() override {
-    features_.InitWithFeatures({::features::kPersistentOriginTrials,
-                                network::features::kStorageAccessHeadersTrial},
-                               {});
+    features_.InitWithFeatures({network::features::kStorageAccessHeadersTrial},
+                               {network::features::kStorageAccessHeaders});
     PlatformBrowserTest::SetUp();
   }
 

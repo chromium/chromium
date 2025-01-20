@@ -71,8 +71,7 @@ StandardManagementPolicyProvider::StandardManagementPolicyProvider(
     Profile* profile)
     : profile_(profile), settings_(settings) {}
 
-StandardManagementPolicyProvider::~StandardManagementPolicyProvider() {
-}
+StandardManagementPolicyProvider::~StandardManagementPolicyProvider() = default;
 
 std::string
     StandardManagementPolicyProvider::GetDebugPolicyProviderName() const {
@@ -153,6 +152,16 @@ bool StandardManagementPolicyProvider::UserMayInstall(
   if (!Manifest::IsPolicyLocation(extension->location()) &&
       installation_mode == ExtensionManagement::INSTALLATION_FORCED) {
     return ReturnLoadError(extension, error);
+  }
+
+  // Check if the extension would be force-disabled once it's installed. If it
+  // would, block the new installation.
+  auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile_);
+  if (mv2_experiment_manager &&
+      mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
+    *error =
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION);
+    return false;
   }
 
   return UserMayLoad(extension, error);

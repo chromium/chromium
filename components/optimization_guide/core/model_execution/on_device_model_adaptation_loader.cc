@@ -19,6 +19,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -53,6 +54,12 @@ CreateAdaptatonMetadataFromModelExecutionConfig(
   }
   auto& config = *execution_config->mutable_feature_configs(0);
   if (config.feature() != ToModelExecutionFeatureProto(feature)) {
+    return base::unexpected(OnDeviceModelAdaptationAvailability::
+                                kAdaptationModelExecutionConfigInvalid);
+  }
+  if (config.output_config().has_redact_rules() &&
+      config.output_config().response_streaming_mode() ==
+          proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK) {
     return base::unexpected(OnDeviceModelAdaptationAvailability::
                                 kAdaptationModelExecutionConfigInvalid);
   }
@@ -176,6 +183,9 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
   if (base_model_spec_) {
     model_metadata.set_base_model_version(base_model_spec_->model_version);
     model_metadata.set_base_model_name(base_model_spec_->model_name);
+    *model_metadata.mutable_supported_performance_hints() = {
+        base_model_spec_->supported_performance_hints.begin(),
+        base_model_spec_->supported_performance_hints.end()};
   }
   model_metadata.SerializeToString(any_metadata.mutable_value());
 

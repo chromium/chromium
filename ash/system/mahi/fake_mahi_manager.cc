@@ -149,6 +149,7 @@ void FakeMahiManager::OnContextMenuClicked(
   switch (context_menu_request->action_type) {
     // TODO(b:372741602): deal with kElucidation properly
     case MahiContextMenuActionType::kElucidation:
+    case MahiContextMenuActionType::kSummaryOfSelection:
       return;
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:

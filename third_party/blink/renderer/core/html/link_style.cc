@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
@@ -74,8 +73,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
        !owner_->FastGetAttribute(html_names::kIntegrityAttr).empty() &&
        !cached_style_sheet->IntegrityMetadata().empty()) ||
       resource->ForceIntegrityChecks()) {
-    SubresourceIntegrityHelper::DoReport(
-        *GetExecutionContext(), cached_style_sheet->IntegrityReportInfo());
+    cached_style_sheet->IntegrityReport().SendReports(GetExecutionContext());
 
     if (!cached_style_sheet->PassedIntegrityChecks()) {
       loading_ = false;

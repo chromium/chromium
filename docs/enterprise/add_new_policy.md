@@ -321,7 +321,7 @@ the feature flags.
     - **Do not modify the behavior when the policy is not set**. To be more
     specific: values `default`, `default_for_enterprise_users` and
     `default_policy_level` must (likely) never change after the launch. Contact
-    cros-policy-muc-eng@google.com for guidance if you need to make such
+    chromium-enterprise@chromium.org for guidance if you need to make such
     changes.
 - **An important pitfall is that adding an additional allowed
 value to an enum policy may cause compatibility issues.** Specifically, an

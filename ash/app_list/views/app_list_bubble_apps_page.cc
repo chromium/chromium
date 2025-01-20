@@ -725,7 +725,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
           IconButton::Type::kSmallFloating, &kChevronUpIcon,
           /*is_togglable=*/false,
           /*has_border=*/false));
-  // See ButtonFocusSkipper in app_list_bubble_view.cc for focus handling.
+  // See ButtonFocusSkipper in button_focus_skipper.cc for focus handling.
 }
 
 void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {

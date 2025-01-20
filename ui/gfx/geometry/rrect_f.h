@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -15,7 +16,7 @@
 
 namespace gfx {
 
-class GEOMETRY_SKIA_EXPORT RRectF {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF {
  public:
   RRectF() = default;
   ~RRectF() = default;

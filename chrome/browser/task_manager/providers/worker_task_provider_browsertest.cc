@@ -55,7 +55,7 @@ int GetChildProcessID(Browser* browser) {
       ->GetActiveWebContents()
       ->GetPrimaryMainFrame()
       ->GetProcess()
-      ->GetID();
+      ->GetDeprecatedID();
 }
 
 }  // namespace

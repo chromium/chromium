@@ -63,8 +63,9 @@ GURL GetURLOfAnyHungFrame(content::WebContents* web_contents,
   // hosting the previously committed navigation.  In such case, the
   // FindFirstRenderFrameHostMatchingProcess above might not find any matching
   // frame.
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return GURL();
+  }
   return render_frame_host->GetLastCommittedURL();
 }
 
@@ -86,10 +87,11 @@ std::vector<content::WebContents*> GetHungWebContentsList(
   // initial |results| when it hasn't yet committed a navigation into the hung
   // process.
   auto first = base::ranges::find(result, hung_web_contents);
-  if (first != result.end())
+  if (first != result.end()) {
     std::rotate(result.begin(), first, std::next(first));
-  else
+  } else {
     result.insert(result.begin(), hung_web_contents);
+  }
 
   return result;
 }
@@ -101,20 +103,23 @@ std::u16string GetHungWebContentsTitle(
     content::WebContents* affected_web_contents,
     content::RenderProcessHost* hung_process) {
   std::u16string page_title = affected_web_contents->GetTitle();
-  if (page_title.empty())
+  if (page_title.empty()) {
     page_title = CoreTabHelper::GetDefaultTitle();
+  }
   // TODO(xji): Consider adding a special case if the title text is a URL,
   // since those should always have LTR directionality. Please refer to
   // http://crbug.com/6726 for more information.
   base::i18n::AdjustStringForLocaleDirection(&page_title);
 
   if (affected_web_contents->GetPrimaryMainFrame()->GetProcess() ==
-      hung_process)
+      hung_process) {
     return page_title;
+  }
 
   GURL hung_url = GetURLOfAnyHungFrame(affected_web_contents, hung_process);
-  if (!hung_url.is_valid() || !hung_url.has_host())
+  if (!hung_url.is_valid() || !hung_url.has_host()) {
     return page_title;
+  }
 
   // N.B. using just the host here is OK since this is a notification and the
   // user doesn't need to make a security critical decision about the page in

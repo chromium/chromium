@@ -53,8 +53,6 @@ class SessionWrapper final : public mojom::Session {
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
-  void GetSizeInTokensDeprecated(const std::string& text,
-                                 GetSizeInTokensCallback callback) override;
   void Score(const std::string& text, ScoreCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Session> session) override;
 
@@ -309,14 +307,6 @@ void SessionWrapper::GetSizeInTokens(mojom::InputPtr input,
 
   model_->AddAndRunPendingTask(std::move(size_in_tokens_internal),
                                weak_ptr_factory_.GetWeakPtr());
-}
-
-void SessionWrapper::GetSizeInTokensDeprecated(
-    const std::string& text,
-    GetSizeInTokensCallback callback) {
-  auto input = mojom::Input::New();
-  input->pieces.push_back(text);
-  GetSizeInTokens(std::move(input), std::move(callback));
 }
 
 void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {

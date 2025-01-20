@@ -250,8 +250,21 @@ void PingManager::OnURLLoaderComplete(
   auto it = safebrowsing_reports_.find(source);
   CHECK(it != safebrowsing_reports_.end(), base::NotFatalUntil::M130);
   safebrowsing_reports_.erase(it);
+  if (!on_url_loader_complete_callback_.is_null()) {
+    std::move(on_url_loader_complete_callback_).Run();
+  }
 }
 
+void PingManager::OnSafeBrowsingHitURLLoaderComplete(
+    network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> response_body) {
+  int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
+                          ? source->ResponseInfo()->headers->response_code()
+                          : 0;
+  RecordHttpResponseOrErrorCode("SafeBrowsing.HitReport.NetworkResult",
+                                source->NetError(), response_code);
+  OnURLLoaderComplete(source, std::move(response_body));
+}
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
@@ -259,8 +272,11 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
-  std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.";
-  std::string suffix = (has_access_token ? "YesAccessToken" : "NoAccessToken");
+  std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
+  std::string suffix =
+      (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
+  RecordHttpResponseOrErrorCode(metric.c_str(), source->NetError(),
+                                response_code);
   RecordHttpResponseOrErrorCode((metric + suffix).c_str(), source->NetError(),
                                 response_code);
   OnURLLoaderComplete(source, std::move(response_body));
@@ -280,6 +296,7 @@ void PingManager::ReportSafeBrowsingHit(
   if (!hit_report->post_data.empty()) {
     resource_request->method = "POST";
   }
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(report_url);
 
   auto report_ptr = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
@@ -290,8 +307,8 @@ void PingManager::ReportSafeBrowsingHit(
 
   report_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
-                     report_ptr.get()));
+      base::BindOnce(&PingManager::OnSafeBrowsingHitURLLoaderComplete,
+                     base::Unretained(this), report_ptr.get()));
   safebrowsing_reports_.insert(std::move(report_ptr));
 
   // The following is to log this HitReport on any open chrome://safe-browsing
@@ -447,6 +464,7 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
   resource_request->url = report_url;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->method = "POST";
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(report_url);
 
   if (!access_token.empty()) {
     LogAuthenticatedCookieResets(
@@ -500,7 +518,27 @@ GURL PingManager::SafeBrowsingHitUrl(
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       threat_list = "phishcsdhit";
       break;
-    default:
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_EXTENSION:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_BILLING:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       NOTREACHED();
   }
 
@@ -582,6 +620,11 @@ void PingManager::SetTokenFetcherForTesting(
 void PingManager::SetHatsDelegateForTesting(
     std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
   hats_delegate_ = std::move(hats_delegate);
+}
+
+void PingManager::SetOnURLLoaderCompleteCallbackForTesting(
+    base::OnceCallback<void()> callback) {
+  on_url_loader_complete_callback_ = std::move(callback);
 }
 
 }  // namespace safe_browsing

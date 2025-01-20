@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,6 +51,8 @@ public class TabGroupLabellerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final Token GROUP_ID1 = new Token(1L, 11L);
+    private static final int ROOT_ID1 = 0;
+    private static final int TAB_ID0 = 0;
     private static final int TAB_ID1 = 1;
 
     @Mock private Profile mProfile;
@@ -71,7 +74,8 @@ public class TabGroupLabellerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mContext = ApplicationProvider.getApplicationContext();
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getRootIdFromStableId(GROUP_ID1)).thenReturn(TAB_ID1);
+        when(mTabGroupModelFilter.getRootIdFromStableId(GROUP_ID1)).thenReturn(ROOT_ID1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(ROOT_ID1)).thenReturn(TAB_ID1);
         mTabGroupLabeller =
                 new TabGroupLabeller(
                         mProfile, mTabListNotificationHandler, mTabGroupModelFilterSupplier);
@@ -123,6 +127,7 @@ public class TabGroupLabellerUnitTest {
     @Test
     public void testShowAll_WrongTabModel() {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(anyInt())).thenReturn(Tab.INVALID_TAB_ID);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
         when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
 

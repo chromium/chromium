@@ -82,6 +82,11 @@
 // -[CWVUserContentController removeMessageHandlerForCommand] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_MESSAGE_HANDLERS 1
 
+// Supports -[CWVUserContentController isMessageHandlerRegisteredForCommand:]
+// API.
+#define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_IS_MESSAGE_HANDLER_REGISTERED \
+  1
+
 // Supports -[CWVNavigationDelegate
 // webView:decidePolicyForNavigationAction:decisionHandler:] and
 // -[CWVNavigationDelegate
@@ -102,5 +107,8 @@
 
 // Supports CWVOmniboxInput.
 #define IOS_WEB_VIEW_SUPPORTS_OMNIBOX_INPUT 1
+
+// Supports AccountAddressSyncing
+#define IOS_WEB_VIEW_SUPPORTS_ACCOUNT_ADDRESS_SYNC 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

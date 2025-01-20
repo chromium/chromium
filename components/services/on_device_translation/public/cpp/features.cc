@@ -4,12 +4,20 @@
 
 #include "components/services/on_device_translation/public/cpp/features.h"
 
+#include <cstddef>
+
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/version.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace on_device_translation {
 
 namespace {
+
+// Limit the number of downloadable language packs to 3 during OT to mitigate
+// the risk of fingerprinting attacks.
+constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
 
 base::FilePath GetPathFromCommandLine(const char* switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -21,25 +29,53 @@ base::FilePath GetPathFromCommandLine(const char* switch_name) {
 
 }  // namespace
 
+const base::FeatureParam<std::string> kTranslationAPILibraryMinimumVersion{
+    &blink::features::kTranslationAPI, "TranslationAPILibraryMinimumVersion",
+    "2025.1.10.0"};
+
 const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck{
-    &blink::features::kEnableTranslationAPI,
-    "TranslationAPIAcceptLanguagesCheck", true};
+    &blink::features::kTranslationAPI, "TranslationAPIAcceptLanguagesCheck",
+    true};
 
 const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
-    &blink::features::kEnableTranslationAPI,
-    "TranslationAPILimitLanguagePackCount", true};
+    &blink::features::kTranslationAPI, "TranslationAPILimitLanguagePackCount",
+    true};
 
 const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
-    &blink::features::kEnableTranslationAPI, "TranslationAPIServiceIdleTimeout",
+    &blink::features::kTranslationAPI, "TranslationAPIServiceIdleTimeout",
     base::Minutes(1)};
 
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
-    &blink::features::kEnableTranslationAPI, "TranslationAPIMaxServiceCount",
-    10};
+    &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);
+}
+
+size_t GetInstallablePackageCount(size_t installed_package_count) {
+  if (!kTranslationAPILimitLanguagePackCount.Get()) {
+    return std::numeric_limits<size_t>::max();
+  }
+  if (installed_package_count >= kTranslationAPILimitLanguagePackCountMax) {
+    return 0;
+  }
+  return kTranslationAPILimitLanguagePackCountMax - installed_package_count;
+}
+
+bool IsValidTranslateKitVersion(std::string_view version_str) {
+  base::Version minimum_version(kTranslationAPILibraryMinimumVersion.Get());
+  CHECK(minimum_version.IsValid());
+
+  base::Version version(version_str);
+  if (!version.IsValid()) {
+    return false;
+  }
+  if (version.components().size() != minimum_version.components().size()) {
+    return false;
+  }
+
+  return version.CompareTo(minimum_version) >= 0;
 }
 
 }  // namespace on_device_translation

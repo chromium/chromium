@@ -6,16 +6,18 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
@@ -23,6 +25,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace features {
 
@@ -34,6 +40,7 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If this flag is enabled, AndroidBrowserControlsInViz must also be enabled.
 BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -58,7 +65,7 @@ BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
 
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
              "UseDrmBlackFullscreenOptimization",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -75,7 +82,7 @@ BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
 
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -124,6 +131,20 @@ const base::FeatureParam<DelegatedCompositingMode>
 BASE_FEATURE(kDCompSurfacesForDelegatedInk,
              "DCompSurfacesForDelegatedInk",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, Chromium will utilize DXGI SwapChains and DComp visuals as the
+// software output device rather than GDI bit block transfer to the redirection
+// bitmap. Additionally, the redirection bitmap will be removed and replaced
+// with the native acrylic background effect on Win11. Since the browser window
+// appears before the GPU process is able to draw content into it, the acrylic
+// effect gives the user feedback that a window is present and content is
+// coming. Without the acrylic effect a transparent window will appear with a 1
+// pixel border that eats all mouse clicks; not a good user experience. Further,
+// the acylic effect will appear in uncovered regions of the window when the
+// user resizes the window.
+BASE_FEATURE(kRemoveRedirectionBitmap,
+             "RemoveRedirectionBitmap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Note: This feature is actively being finched (Oct, 2024).
@@ -174,11 +195,22 @@ BASE_FEATURE(kWebViewNewInvalidateHeuristic,
              "WebViewNewInvalidateHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, WebView reports the set of threads involved in frame production
-// to HWUI, and they're included in the HWUI ADPF session.
+// If enabled and the device's SOC manufacturer satisifes the allowlist and
+// blocklist rules, WebView reports the set of threads involved in frame
+// production to HWUI, and they're included in the HWUI ADPF session.
+// If disabled, WebView never uses ADPF.
+// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
+// soc must be in the allowlist for WebView to use ADPF, and the blocklist is
+// ignored. If there's no allowlist, the soc must be absent from the blocklist.
 BASE_FEATURE(kWebViewEnableADPF,
              "WebViewEnableADPF",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kWebViewADPFSocManufacturerAllowlist{
+    &kWebViewEnableADPF, "webview_soc_manufacturer_allowlist", "Google"};
+
+const base::FeatureParam<std::string> kWebViewADPFSocManufacturerBlocklist{
+    &kWebViewEnableADPF, "webview_soc_manufacturer_blocklist", ""};
 
 // If enabled, Renderer Main is included in the set of threads reported to the
 // HWUI. This feature works only when WebViewEnableADPF is enabled, otherwise
@@ -187,15 +219,18 @@ BASE_FEATURE(kWebViewEnableADPFRendererMain,
              "WebViewEnableADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the GPU Main thread is included in the set of threads reported
+// to the HWUI. This feature works only when WebViewEnableADPF is enabled,
+// otherwise this is a no-op.
+BASE_FEATURE(kWebViewEnableADPFGpuMain,
+             "WebViewEnableADPFGpuMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebView providing frame rate hints to View system.
 BASE_FEATURE(kWebViewFrameRateHints,
              "WebViewFrameRateHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kDrawPredictedInkPoint,
-             "DrawPredictedInkPoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 // Increase the max CALayer number allowed for CoreAnimation.
@@ -229,14 +264,6 @@ BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
 BASE_FEATURE(kVSyncAlignedPresent,
              "VSyncAlignedPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The paramters for the number of supported pending Frames.
-// 1: Support one pending frame. This is the old default.
-// 2: Support two pending frames. New. This is the number of max pending
-//    swap in the scheduler.
-// Others: Error! It will be overwritten to 2 pending frames.
-const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
-                                                "PendingFrames", 2};
 #endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
@@ -307,12 +334,6 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
 BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, Chrome includes only main frame's Renderer Main thread(s) into
-// the ADPF(Android Dynamic Performance Framework) hint session.
-BASE_FEATURE(kEnableMainFrameOnlyADPFRendererMain,
-             "EnableMainFrameOnlyADPFRendererMain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Chrome's ADPF(Android Dynamic Performance Framework) hint
 // session includes Renderer threads only if:
@@ -453,11 +474,6 @@ BASE_FEATURE(kLastVSyncArgsKillswitch,
              "LastVSyncArgsKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use BlitRequests for copy requests made by ViewTransition.
-BASE_FEATURE(kBlitRequestsForViewTransition,
-             "BlitRequestsForViewTransition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Null Hypothesis test for viz. This will be used in an meta experiment to
 // judge finch variation.
 BASE_FEATURE(kVizNullHypothesis,
@@ -469,13 +485,13 @@ BASE_FEATURE(kUse90HzSwapChainCountFor72fps,
              "Use90HzSwapChainCountFor72fps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Allows the display to seamlessly adjust the refresh rate in order to match
 // content preferences. ChromeOS only.
 BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              "CrosContentAdjustedRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 int DrawQuadSplitLimit() {
   constexpr int kDefaultDrawQuadSplitLimit = 5;
@@ -509,10 +525,6 @@ bool IsUsingVizFrameSubmissionForWebView() {
 
 bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
-}
-
-bool ShouldDrawPredictedInkPoints() {
-  return base::FeatureList::IsEnabled(kDrawPredictedInkPoint);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -613,21 +625,9 @@ bool IsCVDisplayLinkBeginFrameSourceEnabled() {
 bool IsVSyncAlignedPresentEnabled() {
   return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent);
 }
-
-int NumPendingFrameSupported() {
-  // Return the old default if this feature is not enabled.
-  if (!base::FeatureList::IsEnabled(kVSyncAlignedPresent)) {
-    return 1;
-  }
-
-  // Unless 1 pending frame is specified, overwrite all other params to the new
-  // default, 2 pending frames.
-  int num = kNumPendingFrames.Get() == 1 ? 1 : 2;
-  return num;
-}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsCrosContentAdjustedRefreshRateEnabled() {
   if (base::FeatureList::IsEnabled(kCrosContentAdjustedRefreshRate)) {
     if (base::FeatureList::IsEnabled(kUseFrameIntervalDecider)) {
@@ -640,7 +640,7 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 bool ShouldUseDCompSurfacesForDelegatedInk() {
@@ -655,11 +655,49 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
   }
   return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
 }
+
+bool ShouldRemoveRedirectionBitmap() {
+  // Redirection bitmap should not be removed if Direct Composition is
+  // disabled. On devices with DComp disabled, ANGLE draws to the redirection
+  // bitmap via a blit swap chain. DWM_SYSTEMBACKDROP_TYPE is only available
+  // on Win11 22H2+, therefore limit the bitmap removal to those versions or
+  // higher so that an appropriate background replacement is available.
+  // Note: the DISABLE_DIRECT_COMPOSITION command line check is a workaround for
+  // https://crbug.com/40276881. Additionally, Direct Composition is only
+  // blocklisted for Windows 10 so this feature would not be enabled at the same
+  // time.
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             gpu::GpuDriverBugWorkaroundTypeToString(
+                 gpu::DISABLE_DIRECT_COMPOSITION)) &&
+         base::FeatureList::IsEnabled(kRemoveRedirectionBitmap);
+}
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+bool IsBcivBottomControlsEnabled() {
+  return base::FeatureList::IsEnabled(features::kAndroidBcivBottomControls);
+}
+
 bool IsBrowserControlsInVizEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
+}
+
+bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
+                         std::string_view soc_blocklist,
+                         std::string_view soc) {
+  std::vector<std::string_view> allowlist = base::SplitStringPiece(
+      soc_allowlist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
+  std::vector<std::string_view> blocklist = base::SplitStringPiece(
+      soc_blocklist, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // If there's no allowlist, soc must be absent from the blocklist.
+  if (allowlist.empty()) {
+    return !base::Contains(blocklist, soc);
+  }
+  // If there's an allowlist, soc must be in the allowlist.
+  // Blocklist is ignored in this case.
+  return base::Contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -14,13 +14,17 @@ bool EmptyCollaborationService::IsEmptyService() {
   return true;
 }
 
+void EmptyCollaborationService::AddObserver(Observer* observer) {}
+
+void EmptyCollaborationService::RemoveObserver(Observer* observer) {}
+
 void EmptyCollaborationService::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const GURL& url) {}
 
-void EmptyCollaborationService::StartShareFlow(
+void EmptyCollaborationService::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    tab_groups::EitherGroupID group_id) {}
+    const tab_groups::EitherGroupID& group_id) {}
 
 ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();
@@ -29,6 +33,11 @@ ServiceStatus EmptyCollaborationService::GetServiceStatus() {
 data_sharing::MemberRole EmptyCollaborationService::GetCurrentUserRoleForGroup(
     const data_sharing::GroupId& group_id) {
   return data_sharing::MemberRole::kUnknown;
+}
+
+std::optional<data_sharing::GroupData> EmptyCollaborationService::GetGroupData(
+    const data_sharing::GroupId& group_id) {
+  return std::nullopt;
 }
 
 }  // namespace collaboration

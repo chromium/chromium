@@ -127,27 +127,6 @@ class WTF_EXPORT SegmentedBuffer {
 
   bool empty() const { return !size(); }
 
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
-  // ones.
-  HAS_STRICTLY_TYPED_ARG
-  void Append(const char* data, STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    Append(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_TODO(base::span(data, size)));
-  }
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  HAS_STRICTLY_TYPED_ARG
-  void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    Append(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_TODO(base::span(data, size)));
-  }
-
   void Append(base::span<const char> data);
   void Append(base::span<const unsigned char> data) {
     Append(base::as_chars(data));
@@ -291,28 +270,6 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
 
   static scoped_refptr<SharedBuffer> Create(SegmentedBuffer&& data) {
     return base::AdoptRef(new SharedBuffer(std::move(data)));
-  }
-
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_TODO(base::span(data, size)));
-  }
-
-  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_TODO(base::span(data, size)));
   }
 
   static scoped_refptr<SharedBuffer> Create(Vector<char>&&);

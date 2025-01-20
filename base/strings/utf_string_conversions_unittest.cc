@@ -74,26 +74,27 @@ TEST(UTFStringConversionsTest, ConvertUTF8ToWide) {
     const wchar_t* wide;
     bool success;
   } convert_cases[] = {
-    // Regular UTF-8 input.
-    {"\xe4\xbd\xa0\xe5\xa5\xbd", L"\x4f60\x597d", true},
-    // Non-character is passed through.
-    {"\xef\xbf\xbfHello", L"\xffffHello", true},
-    // Truncated UTF-8 sequence.
-    {"\xe4\xa0\xe5\xa5\xbd", L"\xfffd\x597d", false},
-    // Truncated off the end.
-    {"\xe5\xa5\xbd\xe4\xa0", L"\x597d\xfffd", false},
-    // Non-shortest-form UTF-8.
-    {"\xf0\x84\xbd\xa0\xe5\xa5\xbd", L"\xfffd\xfffd\xfffd\xfffd\x597d", false},
-    // This UTF-8 character decodes to a UTF-16 surrogate, which is illegal.
-    {"\xed\xb0\x80", L"\xfffd\xfffd\xfffd", false},
-    // Non-BMP characters. The second is a non-character regarded as valid.
-    // The result will either be in UTF-16 or UTF-32.
+      // Regular UTF-8 input.
+      {"\xe4\xbd\xa0\xe5\xa5\xbd", L"\x4f60\x597d", true},
+      // Non-character is passed through.
+      {"\xef\xbf\xbfHello", L"\xffffHello", true},
+      // Truncated UTF-8 sequence.
+      {"\xe4\xa0\xe5\xa5\xbd", L"\xfffd\x597d", false},
+      // Truncated off the end.
+      {"\xe5\xa5\xbd\xe4\xa0", L"\x597d\xfffd", false},
+      // Non-shortest-form UTF-8.
+      {"\xf0\x84\xbd\xa0\xe5\xa5\xbd", L"\xfffd\xfffd\xfffd\xfffd\x597d",
+       false},
+      // This UTF-8 character decodes to a UTF-16 surrogate, which is illegal.
+      {"\xed\xb0\x80", L"\xfffd\xfffd\xfffd", false},
+  // Non-BMP characters. The second is a non-character regarded as valid.
+  // The result will either be in UTF-16 or UTF-32.
 #if defined(WCHAR_T_IS_16_BIT)
-    {"A\xF0\x90\x8C\x80z", L"A\xd800\xdf00z", true},
-    {"A\xF4\x8F\xBF\xBEz", L"A\xdbff\xdffez", true},
+      {"A\xF0\x90\x8C\x80z", L"A\xd800\xdf00z", true},
+      {"A\xF4\x8F\xBF\xBEz", L"A\xdbff\xdffez", true},
 #elif defined(WCHAR_T_IS_32_BIT)
-    {"A\xF0\x90\x8C\x80z", L"A\x10300z", true},
-    {"A\xF4\x8F\xBF\xBEz", L"A\x10fffez", true},
+      {"A\xF0\x90\x8C\x80z", L"A\x10300z", true},
+      {"A\xF4\x8F\xBF\xBEz", L"A\x10fffez", true},
 #endif
   };
 
@@ -126,17 +127,17 @@ TEST(UTFStringConversionsTest, ConvertUTF16ToUTF8) {
     const char* utf8;
     bool success;
   } convert_cases[] = {
-    // Regular UTF-16 input.
-    {L"\x4f60\x597d", "\xe4\xbd\xa0\xe5\xa5\xbd", true},
-    // Test a non-BMP character.
-    {L"\xd800\xdf00", "\xF0\x90\x8C\x80", true},
-    // Non-characters are passed through.
-    {L"\xffffHello", "\xEF\xBF\xBFHello", true},
-    {L"\xdbff\xdffeHello", "\xF4\x8F\xBF\xBEHello", true},
-    // The first character is a truncated UTF-16 character.
-    {L"\xd800\x597d", "\xef\xbf\xbd\xe5\xa5\xbd", false},
-    // Truncated at the end.
-    {L"\x597d\xd800", "\xe5\xa5\xbd\xef\xbf\xbd", false},
+      // Regular UTF-16 input.
+      {L"\x4f60\x597d", "\xe4\xbd\xa0\xe5\xa5\xbd", true},
+      // Test a non-BMP character.
+      {L"\xd800\xdf00", "\xF0\x90\x8C\x80", true},
+      // Non-characters are passed through.
+      {L"\xffffHello", "\xEF\xBF\xBFHello", true},
+      {L"\xdbff\xdffeHello", "\xF4\x8F\xBF\xBEHello", true},
+      // The first character is a truncated UTF-16 character.
+      {L"\xd800\x597d", "\xef\xbf\xbd\xe5\xa5\xbd", false},
+      // Truncated at the end.
+      {L"\x597d\xd800", "\xe5\xa5\xbd\xef\xbf\xbd", false},
   };
 
   for (const auto& test : convert_cases) {
@@ -156,18 +157,18 @@ TEST(UTFStringConversionsTest, ConvertUTF32ToUTF8) {
     const char* utf8;
     bool success;
   } convert_cases[] = {
-    // Regular 16-bit input.
-    {L"\x4f60\x597d", "\xe4\xbd\xa0\xe5\xa5\xbd", true},
-    // Test a non-BMP character.
-    {L"A\x10300z", "A\xF0\x90\x8C\x80z", true},
-    // Non-characters are passed through.
-    {L"\xffffHello", "\xEF\xBF\xBFHello", true},
-    {L"\x10fffeHello", "\xF4\x8F\xBF\xBEHello", true},
-    // Invalid Unicode code points.
-    {L"\xfffffffHello", "\xEF\xBF\xBDHello", false},
-    // The first character is a truncated UTF-16 character.
-    {L"\xd800\x597d", "\xef\xbf\xbd\xe5\xa5\xbd", false},
-    {L"\xdc01Hello", "\xef\xbf\xbdHello", false},
+      // Regular 16-bit input.
+      {L"\x4f60\x597d", "\xe4\xbd\xa0\xe5\xa5\xbd", true},
+      // Test a non-BMP character.
+      {L"A\x10300z", "A\xF0\x90\x8C\x80z", true},
+      // Non-characters are passed through.
+      {L"\xffffHello", "\xEF\xBF\xBFHello", true},
+      {L"\x10fffeHello", "\xF4\x8F\xBF\xBEHello", true},
+      // Invalid Unicode code points.
+      {L"\xfffffffHello", "\xEF\xBF\xBDHello", false},
+      // The first character is a truncated UTF-16 character.
+      {L"\xd800\x597d", "\xef\xbf\xbd\xe5\xa5\xbd", false},
+      {L"\xdc01Hello", "\xef\xbf\xbdHello", false},
   };
 
   for (const auto& test : convert_cases) {

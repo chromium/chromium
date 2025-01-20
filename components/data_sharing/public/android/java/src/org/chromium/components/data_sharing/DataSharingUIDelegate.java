@@ -19,6 +19,7 @@ import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfi
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
 
@@ -122,6 +123,16 @@ public interface DataSharingUIDelegate {
     default String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
         return null;
     }
+
+    /**
+     * Update the runtime data needed for the flows after they are started.
+     *
+     * <p>If the flow is already stopped, then noop.
+     *
+     * @param sessionId The session ID returned by the showFlow() calls.
+     * @param runtimeData The runtime data to update the flow with.
+     */
+    default void updateRuntimeData(String sessionId, DataSharingRuntimeDataConfig runtimeData) {}
 
     /**
      * Method to display avatars in a single tile.

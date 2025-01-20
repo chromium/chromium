@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "media/base/container_names.h"
+#include "media/base/demuxer.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/timestamp_constants.h"
@@ -114,6 +115,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
+  void SetDemuxerType(DemuxerType renderer_type) override;
   void SetKeySystem(const std::string& key_system) override;
   void SetHasWaitingForKey() override;
   void SetIsHardwareSecure() override;
@@ -165,6 +167,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   std::optional<MediaInfo> media_info_;
 
   RendererType renderer_type_ = RendererType::kRendererImpl;
+  DemuxerType demuxer_type_ = DemuxerType::kUnknownDemuxer;
   std::string key_system_;
   bool has_waiting_for_key_ = false;
   bool is_hardware_secure_ = false;

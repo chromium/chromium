@@ -237,6 +237,14 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
 
   bool checked() const { return checked_; }
 
+ protected:
+  // views::Button:
+  void UpdateAccessibleCheckedState() override {
+    GetViewAccessibility().SetCheckedState(
+        checked_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  }
+
  private:
   void UpdateImage() {
     SetImageModel(views::Button::STATE_NORMAL,
@@ -250,12 +258,6 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     SetDefaultActionVerb(checked_ ? ax::mojom::DefaultActionVerb::kUncheck
                                   : ax::mojom::DefaultActionVerb::kCheck);
     UpdateAccessibleDefaultActionVerb();
-  }
-
-  void UpdateAccessibleCheckedState() {
-    GetViewAccessibility().SetCheckedState(
-        checked_ ? ax::mojom::CheckedState::kTrue
-                 : ax::mojom::CheckedState::kFalse);
   }
 
   bool checked_ = false;

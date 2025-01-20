@@ -178,6 +178,7 @@ class IwaInstallerFactory {
       IwaInstaller::ResultCallback callback);
 
   static IwaInstallerFactoryCallback& GetIwaInstallerFactory();
+  static IwaInstallerFactoryCallback GetDefaultIwaInstallerFactory();
 };
 
 std::ostream& operator<<(std::ostream& os,

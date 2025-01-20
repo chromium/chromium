@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -306,12 +307,16 @@ public final class AwCookieManager {
                 long nativeCookieManager,
                 AwCookieManager caller,
                 String url,
-                String value,
+                @JniType("std::string") String value,
                 CookieCallback callback);
 
         void setCookieSync(
-                long nativeCookieManager, AwCookieManager caller, String url, String value);
+                long nativeCookieManager,
+                AwCookieManager caller,
+                String url,
+                @JniType("std::string") String value);
 
+        @JniType("std::string")
         String getCookie(long nativeCookieManager, AwCookieManager caller, String url);
 
         String[] getCookieInfo(long nativeCookieManager, AwCookieManager caller, String url);

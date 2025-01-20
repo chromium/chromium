@@ -22,10 +22,10 @@ build_webui("build") {
 
   non_web_component_files = [
     "actions.ts",
-    "bookmarks.ts",
     "api_listener.ts",
-    "bookmarks_api_proxy.ts",
     "bookmark_manager_api_proxy.ts",
+    "bookmarks.ts",
+    "bookmarks_api_proxy.ts",
     "browser_proxy.ts",
     "constants.ts",
     "debouncer.ts",
@@ -34,8 +34,8 @@ build_webui("build") {
     "mouse_focus_behavior.ts",
     "reducers.ts",
     "router.ts",
-    "store_client_mixin.ts",
     "store.ts",
+    "store_client_mixin.ts",
     "types.ts",
     "util.ts",
   ]
@@ -49,8 +49,8 @@ build_webui("build") {
   ts_composite = true
 
   ts_definitions = [
-    "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",

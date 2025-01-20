@@ -37,44 +37,6 @@ namespace updater::ui {
 
 namespace {
 
-// The current UI shows to the user only one completion type, even though
-// there could be multiple applications in a bundle, where each application
-// could have a different completion type. The following array lists the
-// completion codes from low priority to high priority. The completion type
-// with highest priority will be shown to the user.
-constexpr CompletionCodes kCompletionCodesActionPriority[] = {
-    CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY,
-    CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND,
-    CompletionCodes::COMPLETION_CODE_SUCCESS,
-    CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND,
-    CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY,
-    CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY,
-    CompletionCodes::COMPLETION_CODE_RESTART_BROWSER,
-    CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS,
-    CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
-    CompletionCodes::COMPLETION_CODE_REBOOT,
-    CompletionCodes::COMPLETION_CODE_ERROR,
-    CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL,
-};
-
-// |kCompletionCodesActionPriority| must have all the values in enumeration
-// CompletionCodes. The enumeration value starts from 1 so the array size
-// should match the last value in the enumeration.
-static_assert(
-    std::size(kCompletionCodesActionPriority) ==
-        static_cast<size_t>(
-            CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL),
-    "completion code is missing");
-
-int GetPriority(CompletionCodes code) {
-  for (size_t i = 0; i < std::size(kCompletionCodesActionPriority); ++i) {
-    if (kCompletionCodesActionPriority[i] == code) {
-      return i;
-    }
-  }
-  NOTREACHED();
-}
-
 // Returns true if all apps are cancelled or if the range is empty.
 bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
   return base::ranges::all_of(apps_info, [](const AppCompletionInfo& app_info) {

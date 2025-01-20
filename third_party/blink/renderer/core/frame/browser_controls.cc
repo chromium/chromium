@@ -6,12 +6,14 @@
 
 #include <algorithm>  // for std::min and std::max
 
+#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
-BrowserControls::BrowserControls(const Page& page)
+BrowserControls::BrowserControls(Page& page)
     : page_(&page),
       top_shown_ratio_(0),
       bottom_shown_ratio_(0),
@@ -56,12 +58,13 @@ void BrowserControls::SetShownRatio(float top_ratio, float bottom_ratio) {
 
   top_shown_ratio_ = top_ratio;
   bottom_shown_ratio_ = bottom_ratio;
-  page_->GetChromeClient().DidUpdateBrowserControls();
+  DidUpdateBrowserControls(false);
 }
 
 void BrowserControls::UpdateConstraintsAndState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current) {
+  bool changed = permitted_state_ != constraints;
   permitted_state_ = constraints;
 
   DCHECK(!(constraints == cc::BrowserControlsState::kShown &&
@@ -76,7 +79,7 @@ void BrowserControls::UpdateConstraintsAndState(
     top_shown_ratio_ = TopMinShownRatio();
     bottom_shown_ratio_ = BottomMinShownRatio();
   }
-  page_->GetChromeClient().DidUpdateBrowserControls();
+  DidUpdateBrowserControls(changed);
 }
 
 void BrowserControls::SetParams(cc::BrowserControlsParams params) {
@@ -85,7 +88,7 @@ void BrowserControls::SetParams(cc::BrowserControlsParams params) {
   }
 
   params_ = params;
-  page_->GetChromeClient().DidUpdateBrowserControls();
+  DidUpdateBrowserControls(true);
 }
 
 float BrowserControls::TopMinShownRatio() {
@@ -95,6 +98,29 @@ float BrowserControls::TopMinShownRatio() {
 float BrowserControls::BottomMinShownRatio() {
   return BottomHeight() ? params_.bottom_controls_min_height / BottomHeight()
                         : 0.f;
+}
+
+void BrowserControls::DidUpdateBrowserControls(bool update_safe_area_inset) {
+  page_->GetChromeClient().DidUpdateBrowserControls();
+
+  Frame* main_frame = page_->MainFrame();
+  if (!main_frame || !main_frame->IsLocalFrame() ||
+      !main_frame->IsOutermostMainFrame()) {
+    return;
+  }
+
+  if (!page_->GetSettings().GetDynamicSafeAreaInsetsEnabled()) {
+    return;
+  }
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled()) {
+    // With DynamicSafeAreaInsetsOnScroll, we always update the safe area inset.
+    // Otherwise, update the safe area inset only if the caller explicitly
+    // requested it (change to BrowserControlsState or BrowserControlsParams).
+    update_safe_area_inset = true;
+  }
+  if (update_safe_area_inset) {
+    page_->UpdateSafeAreaInsetWithBrowserControls(*this);
+  }
 }
 
 }  // namespace blink

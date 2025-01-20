@@ -1785,7 +1785,7 @@ TEST_F(HidReportDescriptorTest, InvalidReportSizePermitted) {
       0x75, 0x80,  //   Report Size (128)
       0x90         //   Output
   };
-  auto report_descriptor_data = base::make_span(kInvalidReportSizeDescriptor);
+  auto report_descriptor_data = base::span(kInvalidReportSizeDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
@@ -1810,8 +1810,7 @@ TEST_F(HidReportDescriptorTest, ReasonablyHugeReportNotIgnored) {
       0x75, 0x08,        //   Report Size (8)
       0x90               //   Output
   };
-  auto report_descriptor_data =
-      base::make_span(kReasonablyHugeReportDescriptor);
+  auto report_descriptor_data = base::span(kReasonablyHugeReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
@@ -1834,8 +1833,7 @@ TEST_F(HidReportDescriptorTest, UnreasonablyHugeReportIgnored) {
       0x75, 0x08,                    //   Report Size (8)
       0x90                           //   Output
   };
-  auto report_descriptor_data =
-      base::make_span(kUnreasonablyHugeReportDescriptor);
+  auto report_descriptor_data = base::span(kUnreasonablyHugeReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
@@ -1865,7 +1863,7 @@ TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
       0x75, 0x08,  // Report Size (8)
       0x90         // Output
   };
-  auto report_descriptor_data = base::make_span(kHighlyNestedReportDescriptor);
+  auto report_descriptor_data = base::span(kHighlyNestedReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
@@ -1904,7 +1902,7 @@ TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
   auto* parent = AddTopCollection(0, kCollectionTypePhysical);
   for (size_t i = 1; i < 50; ++i)
     parent = AddChild(parent, 0, kCollectionTypePhysical);
-  ValidateCollections(base::make_span(kExtraEndCollectionDescriptor));
+  ValidateCollections(base::span(kExtraEndCollectionDescriptor));
 }
 
 TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
@@ -1929,7 +1927,7 @@ TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
   SetReportSizeAndCount(8, 1);
   SetLogicalAndPhysicalBounds(0, 0, 0, 0);
   AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
-  ValidateCollections(base::make_span(kZeroByteLogicalMinMaxDescriptor));
+  ValidateCollections(base::span(kZeroByteLogicalMinMaxDescriptor));
 }
 
 TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
@@ -1954,7 +1952,7 @@ TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
   SetReportSizeAndCount(8, 1);
   SetLogicalAndPhysicalBounds(-127, 127, -127, 127);
   AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
-  ValidateCollections(base::make_span(kOneByteLogicalMinMaxDescriptor));
+  ValidateCollections(base::span(kOneByteLogicalMinMaxDescriptor));
 }
 
 TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
@@ -1979,7 +1977,7 @@ TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
   SetReportSizeAndCount(16, 1);
   SetLogicalAndPhysicalBounds(-32767, 32767, -32767, 32767);
   AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
-  ValidateCollections(base::make_span(kTwoByteLogicalMinMaxDescriptor));
+  ValidateCollections(base::span(kTwoByteLogicalMinMaxDescriptor));
 }
 
 TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
@@ -2004,7 +2002,7 @@ TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
   SetReportSizeAndCount(32, 1);
   SetLogicalAndPhysicalBounds(-2147483647, 2147483647, -2147483647, 2147483647);
   AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
-  ValidateCollections(base::make_span(kFourByteLogicalMinMaxDescriptor));
+  ValidateCollections(base::span(kFourByteLogicalMinMaxDescriptor));
 }
 
 }  // namespace device

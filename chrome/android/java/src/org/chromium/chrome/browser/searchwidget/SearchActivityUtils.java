@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.searchwidget;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -40,6 +39,10 @@ public class SearchActivityUtils {
      * @return the origin of an intent
      */
     /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
+        if (Intent.ACTION_WEB_SEARCH.equals(intent.getAction())) {
+            return IntentOrigin.WEB_SEARCH;
+        }
+
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(
                     intent, SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
@@ -100,6 +103,10 @@ public class SearchActivityUtils {
 
     /** Returns the caller-supplied initial search query. */
     /* package */ static @Nullable String getIntentQuery(@NonNull Intent intent) {
+        if (getIntentOrigin(intent) == IntentOrigin.WEB_SEARCH) {
+            return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
+        }
+
         // Unlike most other intents, this does not require trusted extras.
         return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
     }
@@ -129,7 +136,7 @@ public class SearchActivityUtils {
      */
     /* package */ static void resolveOmniboxRequestForResult(
             @NonNull Activity activity, @NonNull OmniboxLoadUrlParams params) {
-        var intent = createLoadUrlIntent(activity, activity.getCallingActivity(), params);
+        var intent = createLoadUrlIntent(activity.getCallingActivity(), params);
         if (intent != null) {
             activity.setResult(Activity.RESULT_OK, intent);
         } else {
@@ -140,23 +147,20 @@ public class SearchActivityUtils {
     /**
      * Creates an intent that can be used to launch Chrome.
      *
-     * @param context current context
      * @param params information about what url to load and what additional data to pass
-     * @return the intent will be passed to ChromeLauncherActivity, or null if page cannot be loaded
+     * @return the intent will be passed to ChromeLauncherActivity.
      */
-    /* package */ static @Nullable Intent createIntentForStartActivity(
-            Context context, @Nullable OmniboxLoadUrlParams params) {
+    /* package */ static Intent createIntentForStartActivity(
+            @Nullable OmniboxLoadUrlParams params) {
         var intent =
                 createLoadUrlIntent(
-                        context,
                         new ComponentName(
                                 ContextUtils.getApplicationContext(), ChromeLauncherActivity.class),
                         params);
-        if (intent == null) return null;
+        assert intent != null;
 
         intent.setAction(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-
         return intent;
     }
 
@@ -171,7 +175,7 @@ public class SearchActivityUtils {
      */
     @VisibleForTesting
     /* package */ static @Nullable Intent createLoadUrlIntent(
-            Context context, ComponentName recipient, @Nullable OmniboxLoadUrlParams params) {
+            ComponentName recipient, @Nullable OmniboxLoadUrlParams params) {
         var intent =
                 new Intent()
                         .putExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, true)
@@ -179,7 +183,7 @@ public class SearchActivityUtils {
 
         // Do not pass any of these information if the calling package is something we did not
         // expect, but somehow it managed to fabricate a trust token.
-        if (!IntentUtils.intentTargetsSelf(context, intent)) {
+        if (!IntentUtils.intentTargetsSelf(intent)) {
             return null;
         }
 

@@ -17,13 +17,7 @@ class ChromeOSInfoPrivateBrowserTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateBrowserTest, TestIsRunningOnLacros) {
-  const char* custom_arg =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      "isRunningOnLacros - False";
-#else
-      "isRunningOnLacros - True";
-#endif
-
+  const char* custom_arg = "isRunningOnLacros - False";
   ASSERT_TRUE(RunExtensionTest("chromeos_info_private/basic",
                                {.custom_arg = custom_arg},
                                {.load_as_component = true}))

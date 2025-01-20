@@ -35,6 +35,22 @@ class CSSRuleList;
 
 StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent);
 
+struct NestingContext {
+  STACK_ALLOCATED();
+
+ public:
+  // Whether we are nested inside a regular style rule (kNesting),
+  // or an @scope rule (kScope).
+  CSSNestingType nesting_type;
+  // What the '&' selector references.
+  StyleRule* parent_rule_for_nesting;
+};
+
+// Finds the parent rule for nesting (i.e. what the '&' selector should
+// refer to), starting at `parent_rule` (inclusive), and traversing up the
+// ancestor chain.
+NestingContext CalculateNestingContext(const CSSRule* parent_rule);
+
 // Utility function also used by CSSStyleRule, which can have child rules
 // just like CSSGroupingRule can (we share insertRule() / deleteRule()
 // implementation). Returns nullptr if an exception was raised.
@@ -44,6 +60,20 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
                                   size_t num_child_rules,
                                   const CSSRule& parent_rule,
                                   ExceptionState& exception_state);
+
+// See CSSStyleRule/CSSGroupingRule::QuietlyInsertRule.
+void ParseAndQuietlyInsertRule(
+    const ExecutionContext*,
+    const String& rule_string,
+    unsigned index,
+    CSSRule& parent_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules,
+    HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
+
+// See CSSStyleRule/CSSGroupingRule::QuietlyDeleteRule.
+void QuietlyDeleteRule(unsigned index,
+                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
 
 class CORE_EXPORT CSSGroupingRule : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
@@ -60,6 +90,14 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
                       unsigned index,
                       ExceptionState&);
   void deleteRule(unsigned index, ExceptionState&);
+
+  // Like insertRule/deleteRule, but does not cause any invalidation.
+  // Used by Inspector to temporarily insert non-existent rules for
+  // the purposes of rule matching (see InspectorGhostRules).
+  void QuietlyInsertRule(const ExecutionContext*,
+                         const String& rule,
+                         unsigned index);
+  void QuietlyDeleteRule(unsigned index);
 
   // For CSSRuleList
   unsigned length() const;

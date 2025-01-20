@@ -9,12 +9,15 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment containing enhanced protection settings. */
 public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFragmentBase {
     @VisibleForTesting static final String PREF_LEARN_MORE = "learn_more";
+    @VisibleForTesting static final String PREF_BULLET_FIVE = "bullet_five";
+
     private static final String SAFE_BROWSING_IN_CHROME_URL =
             "https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
@@ -25,6 +28,9 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
 
     @Override
     protected void onCreatePreferencesInternal(Bundle bundle, String s) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
+            findPreference(PREF_BULLET_FIVE).setVisible(false);
+        }
         findPreference(PREF_LEARN_MORE)
                 .setSummary(
                         SpanApplier.applySpans(
@@ -35,11 +41,11 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
                                 new SpanApplier.SpanInfo(
                                         "<link>",
                                         "</link>",
-                                        new NoUnderlineClickableSpan(
+                                        new ChromeClickableSpan(
                                                 getContext(), this::onLearnMoreClicked))));
     }
 
     private void onLearnMoreClicked(View view) {
-        openUrlInCct(SAFE_BROWSING_IN_CHROME_URL);
+        getCustomTabLauncher().openUrlInCct(getContext(), SAFE_BROWSING_IN_CHROME_URL);
     }
 }

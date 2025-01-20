@@ -20,6 +20,8 @@ source_set("internal") {
     "tab_group_sync_service_factory_helper.cc",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
+    "tab_group_type_observer.cc",
+    "tab_group_type_observer.h",
   ]
   deps = [
     ":tab_group_sync_bridge",
@@ -70,6 +72,7 @@ source_set("model") {
     "//components/saved_tab_groups/public:features",
     "//components/sync",
     "//components/tab_groups",
+    "//google_apis",
     "//ui/gfx",
     "//url",
   ]
@@ -81,6 +84,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//components/saved_tab_groups/public:conversion_utils_java",
       "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//net/android:net_java",
@@ -161,6 +165,7 @@ source_set("unit_tests") {
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
     "tab_group_sync_service_unittest.cc",
+    "tab_group_type_observer_unittest.cc",
   ]
   deps = [
     ":internal",
@@ -211,6 +216,7 @@ source_set("tab_group_sync_bridge") {
     "//chrome/test:browser_tests",
     "//chrome/test:sync_integration_tests",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/test/app:test_support",
   ]
 
   sources = [

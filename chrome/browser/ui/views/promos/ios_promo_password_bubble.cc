@@ -62,9 +62,7 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
   }
 
   // Handler for when the window closes.
-  void OnWindowClosing() {
-    ios_promo_password_delegate_ = nullptr;
-  }
+  void OnWindowClosing() { ios_promo_password_delegate_ = nullptr; }
 
   // Callback for when the bubble is dismissed.
   void OnDismissal() {

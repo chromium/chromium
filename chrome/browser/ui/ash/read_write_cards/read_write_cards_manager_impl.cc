@@ -16,10 +16,11 @@
 #include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
@@ -72,8 +73,8 @@ void ReadWriteCardsManagerImpl::FetchController(
     return;
   }
 
-  editor_menu_controller_->GetEditorContext(
-      base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorContext,
+  editor_menu_controller_->GetEditorMenuCardContext(
+      base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorMenuCardContext,
                      weak_factory_.GetWeakPtr(), params, std::move(callback)));
 }
 
@@ -91,27 +92,29 @@ void ReadWriteCardsManagerImpl::TryCreatingEditorSession(
   }
 }
 
-void ReadWriteCardsManagerImpl::OnGetEditorContext(
+void ReadWriteCardsManagerImpl::OnGetEditorMenuCardContext(
     const content::ContextMenuParams& params,
     editor_menu::FetchControllersCallback callback,
-    const editor_menu::EditorContext& editor_context) {
-  std::move(callback).Run(GetControllers(params, editor_context));
+    const editor_menu::EditorMenuCardContext& editor_menu_card_context) {
+  std::move(callback).Run(GetControllers(params, editor_menu_card_context));
 }
 
 std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
 ReadWriteCardsManagerImpl::GetControllers(
     const content::ContextMenuParams& params,
-    const editor_menu::EditorContext& editor_context) {
+    const editor_menu::EditorMenuCardContext& editor_menu_card_context) {
   const bool should_show_editor_menu =
       editor_menu_controller_ && params.is_editable;
 
   // Before branching off to MagicBoost, ensure top level funnel metrics for
   // Editor are recorded.
   if (should_show_editor_menu) {
-    editor_menu_controller_->LogEditorMode(editor_context.mode);
+    editor_menu_controller_->LogEditorMode(
+        editor_menu_card_context.editor_mode());
   }
 
-  auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_context);
+  auto opt_in_features =
+      GetMagicBoostOptInFeatures(params, editor_menu_card_context);
 
   if (opt_in_features) {
     crosapi::mojom::MagicBoostController::TransitionAction action =
@@ -136,9 +139,8 @@ ReadWriteCardsManagerImpl::GetControllers(
     return {magic_boost_card_controller_->GetWeakPtr()};
   }
 
-  bool editor_is_blocked =
-      editor_context.mode == editor_menu::EditorMode::kHardBlocked ||
-      editor_context.mode == editor_menu::EditorMode::kSoftBlocked;
+  bool editor_is_blocked = editor_menu_card_context.text_and_image_mode() ==
+                           editor_menu::TextAndImageMode::kBlocked;
   // If Magic Boost is not enabled, each feature (besides Mahi which only uses
   // Magic Boost) will have its own opt-in flow, provided within each individual
   // controller.
@@ -201,7 +203,7 @@ bool ReadWriteCardsManagerImpl::ShouldShowMahi(
 std::optional<OptInFeatures>
 ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
     const content::ContextMenuParams& params,
-    const editor_menu::EditorContext& editor_context) {
+    const editor_menu::EditorMenuCardContext& editor_menu_card_context) {
   if (!magic_boost_card_controller_ ||
       !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
     return std::nullopt;
@@ -215,8 +217,9 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
   // Only opt in orca if it is not blocked by any hard requirements and its
   // current status is unset.
   const bool should_opt_in_orca =
-      editor_context.mode != editor_menu::EditorMode::kHardBlocked &&
-      !editor_context.consent_status_settled;
+      editor_menu_card_context.editor_mode() !=
+          editor_menu::EditorMode::kHardBlocked &&
+      !editor_menu_card_context.consent_status_settled();
 
   if (should_show_editor_menu) {
     if (should_opt_in_orca) {

@@ -47,7 +47,8 @@ AccountBookmarkSyncServiceFactory::AccountBookmarkSyncServiceFactory()
 AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
     default;
 
-KeyedService* AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountBookmarkSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEnableBookmarksInTransportMode)) {
@@ -55,7 +56,7 @@ KeyedService* AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  return new sync_bookmarks::BookmarkSyncService(
+  return std::make_unique<sync_bookmarks::BookmarkSyncService>(
       BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
       syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 }

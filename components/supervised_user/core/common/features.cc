@@ -14,10 +14,6 @@
 
 namespace supervised_user {
 
-BASE_FEATURE(kKidFriendlyContentFeed,
-             "KidFriendlyContentFeed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -69,7 +65,7 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 BASE_FEATURE(kExposedParentalControlNeededForExtensionInstallation,
              "ExposedParentalControlNeededForExtensionInstallation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -97,6 +93,10 @@ BASE_FEATURE(kCustomProfileStringsForSupervisedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
+             "EnableSupervisedUserVersionSignOutDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShowKiteForSupervisedUsers,
              "ShowKiteForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -132,6 +132,10 @@ BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
 
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExemptYouTubeInfrastructureFromBlocking,
+             "ExemptYouTubeInfrastructureFromBlocking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
@@ -172,25 +176,12 @@ BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kFetchListFamilyMembersWithCapability,
-             "FetchListFamilyMembersWithCapability",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
-             "UseFamilyMemberRolePrefsForFeedback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
              "ClassifyUrlOnProcessResponseEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsKidFriendlyContentFeedAvailable() {
-  return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
-}
+BASE_FEATURE(kExemptGuardianApprovalOnGwsRedirector,
+             "ExemptGuardianApprovalOnGwsRedirector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace supervised_user

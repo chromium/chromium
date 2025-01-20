@@ -49,7 +49,7 @@ void BinaryDataToString(const std::vector<uint8_t>& binary_data,
 
 }  // namespace
 
-SetRegValueWorkItem::~SetRegValueWorkItem() {}
+SetRegValueWorkItem::~SetRegValueWorkItem() = default;
 
 SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
                                          const std::wstring& key_path,

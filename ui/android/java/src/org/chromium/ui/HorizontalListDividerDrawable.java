@@ -10,12 +10,15 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Draws a horizontal list divider line at the bottom of its drawing area.
  *
  * Because ?android:attr/listDivider may be a 9-patch, there's no way to achieve this drawing
  * effect with the platform Drawable classes; hence this custom Drawable.
  */
+@NullMarked
 public class HorizontalListDividerDrawable extends LayerDrawable {
     /**
      * Create a horizontal list divider drawable.

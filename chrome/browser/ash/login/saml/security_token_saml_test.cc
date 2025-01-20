@@ -80,7 +80,7 @@ SecurityTokenSamlTest::SecurityTokenSamlTest()
   ConfigureFakeGaia();
 }
 
-SecurityTokenSamlTest::~SecurityTokenSamlTest() {}
+SecurityTokenSamlTest::~SecurityTokenSamlTest() = default;
 
 void SecurityTokenSamlTest::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);

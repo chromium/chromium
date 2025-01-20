@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_view_factory.h"
 #include "chrome/browser/ui/views/passwords/password_default_store_changed_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/views/webauthn/passkey_not_accepted_bubble_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_updated_confirmation_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_upgrade_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -48,6 +50,18 @@
 #include "chrome/browser/ui/views/passwords/biometric_authentication_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/biometric_authentication_for_filling_bubble_view.h"
 #endif
+
+namespace {
+PageActionIconType GetPageActionIconType(content::WebContents* web_contents) {
+  base::WeakPtr<PasswordsModelDelegate> delegate =
+      PasswordsModelDelegateFromWebContents(web_contents);
+  password_manager::ui::State model_state = delegate->GetState();
+  if (model_state == password_manager::ui::PASSWORD_CHANGE_STATE) {
+    return PageActionIconType::kChangePassword;
+  }
+  return PageActionIconType::kManagePasswords;
+}
+}  // namespace
 
 // static
 PasswordBubbleViewBase* PasswordBubbleViewBase::g_manage_passwords_bubble_ =
@@ -66,7 +80,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   ToolbarButtonProvider* button_provider =
       browser_view->toolbar_button_provider();
   views::View* anchor_view =
-      button_provider->GetAnchorView(PageActionIconType::kManagePasswords);
+      button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage);
 
   PasswordBubbleViewBase* bubble =
       CreateBubble(web_contents, anchor_view, reason);
@@ -85,7 +99,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   if (!views::Button::AsButton(anchor_view)) {
     g_manage_passwords_bubble_->SetHighlightedButton(
         button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords));
+            GetPageActionIconType(web_contents)));
   }
 
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);
@@ -181,6 +195,12 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state == password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE) {
     view = new PasskeyNotAcceptedBubbleView(web_contents, anchor_view, reason,
                                             delegate->PasskeyRpId());
+  } else if (model_state == password_manager::ui::PASSKEY_UPGRADE_STATE) {
+    view = new PasskeyUpgradeBubbleView(web_contents, anchor_view, reason,
+                                        delegate->PasskeyRpId());
+  } else if (model_state == password_manager::ui::PASSWORD_CHANGE_STATE) {
+    view = CreatePasswordChangeBubbleView(delegate->GetPasswordChangeDelegate(),
+                                          web_contents, anchor_view);
   } else {
     NOTREACHED();
   }

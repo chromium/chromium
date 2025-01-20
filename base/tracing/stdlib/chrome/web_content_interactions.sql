@@ -16,19 +16,19 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- keyboard input (typing), and drags.
 CREATE PERFETTO TABLE chrome_web_content_interactions(
   -- Unique id for this interaction.
-  id INT,
+  id LONG,
   -- Start timestamp of the event. Because multiple events may occur for the
   -- same interaction, this is the start timestamp of the longest event.
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the event. Because multiple events may occur for the same
   -- interaction, this is the duration of the longest event.
-  dur INT,
+  dur DURATION,
   -- The interaction type.
   interaction_type STRING,
   -- The total duration of all events that occurred for the same interaction.
-  total_duration_ms INT,
+  total_duration_ms LONG,
   -- The process id this event occurred on.
-  renderer_upid INT
+  renderer_upid LONG
 ) AS
 SELECT
   id,

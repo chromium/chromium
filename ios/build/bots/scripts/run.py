@@ -109,8 +109,8 @@ class Runner():
     self.parse_args(args)
 
     try:
-      with measures.time_consumption(
-          'mac_toolchain', 'Download and Install', 'Xcode and Runtime'):
+      with measures.time_consumption('mac_toolchain', 'Download and Install',
+                                     'Xcode and Runtime'):
         install_success, is_legacy_xcode = xcode.install_xcode(
             self.args.mac_toolchain_cmd, self.args.xcode_build_version,
             self.args.xcode_path, self.args.runtime_cache_prefix,

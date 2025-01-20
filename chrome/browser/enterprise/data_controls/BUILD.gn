@@ -26,8 +26,8 @@ source_set("data_controls") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
     "//components/enterprise/content",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
@@ -37,6 +37,16 @@ source_set("data_controls") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [
+      "android_data_controls_dialog.cc",
+      "android_data_controls_dialog.h",
+      "android_data_controls_dialog_factory.cc",
+      "android_data_controls_dialog_factory.h",
+    ]
+    deps += [ "//ui/android" ]
+  }
 
   if (!is_android) {
     sources += [
@@ -67,8 +77,6 @@ source_set("data_controls") {
 
   if (is_chromeos) {
     deps += [
-      "//chromeos/startup",
-
       # Included for allow_circular_includes_from.
       "//chrome/browser/chromeos/policy/dlp",
     ]
@@ -90,7 +98,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/account_id",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
     "//components/enterprise/data_controls/core/browser:test_support",
     "//components/prefs",
     "//content/test:test_support",
@@ -98,9 +106,6 @@ source_set("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/startup" ]
-  }
   if (is_chromeos_ash) {
     public_deps += [ "//components/user_manager" ]
   }

@@ -370,6 +370,10 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       // Finally, if the remote -> local swap commits, the frame swapping logic
       // has additional logic to swap a similar placeholder RemoteFrame in the
       // previous blink::WebView to unload the previous RenderFrame.
+      //
+      // Note: we create the placeholder RemoteFrame with no opener, even if we
+      // have an opener_frame. This ensures that the placeholder RemoteFrame is
+      // not retained beyond the navigation by the opener's OpenedFrameTracker.
 
       // Create the placeholder RemoteFrame.
       blink::RemoteFrameToken remote_frame_token;
@@ -377,7 +381,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
           remote_frame_token, mojo::NullAssociatedRemote(),
           mojo::NullAssociatedReceiver(), mojo::NullAssociatedRemote(),
           mojo::NullAssociatedReceiver(), params->devtools_main_frame_token,
-          params->replication_state.Clone(), opener_frame, web_view);
+          params->replication_state.Clone(), nullptr, web_view);
 
       auto& provisional_local_params =
           params->main_frame->get_provisional_local_params();

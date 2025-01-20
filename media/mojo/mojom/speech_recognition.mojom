@@ -6,12 +6,13 @@ module media.mojom;
 
 import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
+import "media/mojo/mojom/speech_recognition_recognition_context.mojom";
 import "media/mojo/mojom/speech_recognizer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -229,16 +230,6 @@ interface SpeechRecognitionSurfaceClient {
   OnFullscreenToggled@1();
 };
 
-// Static metadata about a remote speech surface. Used by the speech service
-// client in Ash.
-[Stable]
-struct SpeechRecognitionSurfaceMetadata {
-  // A unique identifier for the "session" (i.e. tab) of the surface. Is used to
-  // hide the caption bubble for all streams in a tab if the bubble is closed
-  // once.
-  mojo_base.mojom.UnguessableToken session_id;
-};
-
 // This interface between the speech recognition client and the browser.
 // The remote lives in the renderer process and the receiver lives in the
 // browser process. Not necessary for browser-side features (e.g. CrOS system
@@ -249,16 +240,8 @@ interface SpeechRecognitionClientBrowserInterface {
   BindSpeechRecognitionBrowserObserver@0(
       pending_remote<SpeechRecognitionBrowserObserver> observer);
 
-  // Requests that a remote speech recognition client be instantiated and bound
-  // in the Ash browser process. The instantiated client should use the surface
-  // and surface client bindings to perform tasks (such as refocusing) that
-  // require coordination with the current lacros tab.
   [MinVersion=1]
-  BindRecognizerToRemoteClient@1(
-      pending_receiver<SpeechRecognitionRecognizerClient> client,
-      pending_receiver<SpeechRecognitionSurfaceClient> surface_client,
-      pending_remote<SpeechRecognitionSurface> surface,
-      SpeechRecognitionSurfaceMetadata metadata);
+  REMOVED_1@1();
 
   // Similar to BindSpeechRecognitionBrowserObserver, however binds Browser
   // observers that listen to events specific to BabelOrca rather than
@@ -341,4 +324,8 @@ struct SpeechRecognitionOptions {
   // The sample rate of the forwarded audio.
   [MinVersion=6]
   int32 sample_rate;
+
+  // The optional recognition context for speech recognition biasing.
+  [MinVersion=8]
+  SpeechRecognitionRecognitionContext? recognition_context;
 };

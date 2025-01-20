@@ -46,6 +46,7 @@
 #include "ash/quick_insert/views/quick_insert_view.h"
 #include "ash/quick_insert/views/quick_insert_view_delegate.h"
 #include "ash/quick_insert/views/quick_insert_widget.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/window_util.h"
@@ -222,13 +223,13 @@ std::u16string TransformText(std::u16string_view text,
 }
 
 void OpenLink(const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void OpenFile(const base::FilePath& path) {
-  ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
+  NewWindowDelegate::GetPrimary()->OpenFile(path);
 }
 
 GURL GetUrlForNewWindow(QuickInsertNewWindowResult::Type type) {
@@ -253,6 +254,19 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
       return ui::EmojiPickerCategory::kSymbols;
     case QuickInsertEmojiResult::Type::kEmoticon:
       return ui::EmojiPickerCategory::kEmoticons;
+  }
+}
+
+QuickInsertSectionType GetSectionTypeForCategorySuggestion(
+    QuickInsertCategory category) {
+  switch (category) {
+    case QuickInsertCategory::kUnitsMaths:
+    case QuickInsertCategory::kDatesTimes:
+      return QuickInsertSectionType::kExamples;
+    case QuickInsertCategory::kGifs:
+      return QuickInsertSectionType::kFeaturedGifs;
+    default:
+      return QuickInsertSectionType::kNone;
   }
 }
 
@@ -336,16 +350,11 @@ void QuickInsertController::GetZeroStateSuggestedResults(
 void QuickInsertController::GetResultsForCategory(
     QuickInsertCategory category,
     SearchResultsCallback callback) {
-  const QuickInsertSectionType section_type =
-      (category == QuickInsertCategory::kUnitsMaths ||
-       category == QuickInsertCategory::kDatesTimes)
-          ? QuickInsertSectionType::kExamples
-          : QuickInsertSectionType::kNone;
-
   CHECK(client_);
   suggestions_controller_.GetSuggestionsForCategory(
       *client_, category,
-      base::BindRepeating(CreateSingleSectionForCategoryResults, section_type)
+      base::BindRepeating(CreateSingleSectionForCategoryResults,
+                          GetSectionTypeForCategorySuggestion(category))
           .Then(std::move(callback)));
 }
 
@@ -563,8 +572,7 @@ bool QuickInsertController::IsGifsEnabled() {
 }
 
 PrefService* QuickInsertController::GetPrefs() {
-  CHECK(client_);
-  return client_->GetPrefs();
+  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
 
 QuickInsertModeType QuickInsertController::GetMode() {
@@ -615,7 +623,8 @@ void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   show_editor_callback_ = client_->CacheEditorContext();
   show_lobster_callback_ = client_->CacheLobsterContext(
       /*support_image_insertion=*/focused_text_input_client &&
-      focused_text_input_client->CanInsertImage());
+          focused_text_input_client->CanInsertImage(),
+      /*caret_bounds=*/GetCaretBounds());
   input_method::ImeKeyboard& keyboard = GetImeKeyboard();
 
   if (focused_text_input_client &&

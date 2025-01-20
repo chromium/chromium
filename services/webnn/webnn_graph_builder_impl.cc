@@ -4,12 +4,13 @@
 
 #include "services/webnn/webnn_graph_builder_impl.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -19,6 +20,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_pending_constant_operand.h"
 #include "services/webnn/webnn_utils.h"
 
 // Evaluate `condition`, and if it returns false then return false.
@@ -108,8 +110,8 @@ bool ValidateClampAttributes(const mojom::Clamp& clamp) {
 }
 
 bool ValidateEluAttributes(const mojom::Elu& elu) {
-  if (std::isnan(elu.alpha) || elu.alpha <= 0.0f) {
-    // The value of alpha must be greater than 0.
+  if (std::isnan(elu.alpha) || std::isinf(elu.alpha)) {
+    // The value of alpha is nan.
     return false;
   }
 
@@ -521,7 +523,8 @@ class OperationValidationContext {
  public:
   // If `operations` are valid given the passed members as context, returns a
   // mapping of operands to the operations which depend on it.
-  static std::optional<DependentOperationsMap>
+  static std::optional<
+      std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
   ValidateOperationsAndGetDependencies(
       const std::vector<mojom::OperationPtr>& operations,
       const ContextProperties& context_properties,
@@ -562,7 +565,7 @@ class OperationValidationContext {
   bool ValidateDequantizeLinear(
       const mojom::DequantizeLinear& dequantize_linear,
       size_t operation_id);
-  bool ValidateElementWiseBinaryDataTypes(
+  bool ValidateElementWiseBinaryOperands(
       const mojom::Operand* lhs,
       const mojom::Operand* rhs,
       const mojom::Operand* output,
@@ -603,6 +606,8 @@ class OperationValidationContext {
   bool ValidateResample2d(const mojom::Resample2d& resample2d,
                           size_t operation_id);
   bool ValidateReshape(const mojom::Reshape& reshape, size_t operation_id);
+  bool ValidateReverseOperation(const mojom::Reverse& reverse,
+                                size_t operation_id);
   bool ValidateScatterElements(const mojom::ScatterElements& scatter_elements,
                                size_t operation_id);
   bool ValidateScatterND(const mojom::ScatterND& scatter_nd,
@@ -646,14 +651,14 @@ void OperationValidationContext::NoteDependency(uint64_t operand_id,
 }
 
 // static
-std::optional<DependentOperationsMap>
+std::optional<std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
 OperationValidationContext::ValidateOperationsAndGetDependencies(
     const std::vector<mojom::OperationPtr>& operations,
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     base::flat_set<uint64_t> processed_operands) {
   OperationValidationContext context(context_properties, id_to_operand_map,
-                                     processed_operands);
+                                     std::move(processed_operands));
 
   for (size_t i = 0; i < operations.size(); i++) {
     if (!context.ValidateOperation(*operations[i], /*operation_id=*/i)) {
@@ -661,7 +666,8 @@ OperationValidationContext::ValidateOperationsAndGetDependencies(
     }
   }
 
-  return context.operands_to_dependent_operations_;
+  return {{std::move(context.processed_operands_),
+           std::move(context.operands_to_dependent_operations_)}};
 }
 
 template <typename Operation>
@@ -754,21 +760,31 @@ bool OperationValidationContext::ValidateBatchNormalization(
   }
   const auto& scale_operand_id = batch_normalization.scale_operand_id;
   if (scale_operand_id) {
-    if (!id_to_operand_map_->contains(scale_operand_id.value()) ||
-        !processed_operands_.contains(scale_operand_id.value())) {
+    if (!processed_operands_.contains(scale_operand_id.value())) {
       // The scale operand is invalid.
       return false;
     }
     NoteDependency(scale_operand_id.value(), operation_id);
+
+    auto* scale = GetMojoOperand(scale_operand_id.value());
+    if (!scale || scale == output) {
+      // The scale operand is invalid.
+      return false;
+    }
   }
   const auto& bias_operand_id = batch_normalization.bias_operand_id;
   if (bias_operand_id) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
-        !processed_operands_.contains(bias_operand_id.value())) {
+    if (!processed_operands_.contains(bias_operand_id.value())) {
       // The bias operand is invalid.
       return false;
     }
     NoteDependency(bias_operand_id.value(), operation_id);
+
+    auto* bias = GetMojoOperand(bias_operand_id.value());
+    if (!bias || bias == output) {
+      // The bias operand is invalid.
+      return false;
+    }
   }
 
   const auto validated_output = ValidateBatchNormalizationAndInferOutput(
@@ -900,13 +916,12 @@ bool OperationValidationContext::ValidateConv2d(const mojom::Conv2d& conv2d,
     }
     NoteDependency(bias_operand_id.value(), operation_id);
 
-    const auto bias_operand_iterator =
-        id_to_operand_map_->find(bias_operand_id.value());
-    if (bias_operand_iterator == id_to_operand_map_->end()) {
+    auto* bias = GetMojoOperand(bias_operand_id.value());
+    if (!bias || bias == output) {
       // Invalid bias operand.
       return false;
     }
-    bias_operand = bias_operand_iterator->second->descriptor;
+    bias_operand = bias->descriptor;
   }
   RETURN_IF_FALSE(processed_operands_.insert(conv2d.output_operand_id).second);
 
@@ -947,6 +962,9 @@ bool OperationValidationContext::ValidateCumulativeSum(
     return false;
   }
   NoteDependency(cumulative_sum.input_operand_id, operation_id);
+
+  RETURN_IF_FALSE(
+      processed_operands_.insert(cumulative_sum.output_operand_id).second);
 
   auto* input = GetMojoOperand(cumulative_sum.input_operand_id);
   auto* output = GetMojoOperand(cumulative_sum.output_operand_id);
@@ -1007,7 +1025,7 @@ bool OperationValidationContext::ValidateDequantizeLinear(
   return true;
 }
 
-bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
+bool OperationValidationContext::ValidateElementWiseBinaryOperands(
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
     const mojom::Operand* output,
@@ -1031,50 +1049,53 @@ bool OperationValidationContext::ValidateElementWiseBinaryDataTypes(
 
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
-      return context_properties_->data_type_limits.add_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.add_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kSub:
-      return context_properties_->data_type_limits.sub_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.sub_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMul:
-      return context_properties_->data_type_limits.mul_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.mul_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kDiv:
-      return context_properties_->data_type_limits.div_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.div_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMax:
-      return context_properties_->data_type_limits.max_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.max_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kMin:
-      return context_properties_->data_type_limits.min_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.min_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kPow:
-      return context_properties_->data_type_limits.pow_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.pow_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kEqual:
-      return context_properties_->data_type_limits.equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreater:
-      return context_properties_->data_type_limits.greater_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return context_properties_->data_type_limits.greater_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.greater_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesser:
-      return context_properties_->data_type_limits.lesser_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return context_properties_->data_type_limits.lesser_or_equal_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.lesser_or_equal_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      return context_properties_->data_type_limits.not_equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
-      return context_properties_->data_type_limits.logical_and_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_and_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
-      return context_properties_->data_type_limits.logical_or_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_or_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
-      return context_properties_->data_type_limits.logical_xor_input.Has(
-          lhs->descriptor.data_type());
+      return context_properties_->data_type_limits.logical_xor_input
+          .SupportsAll({lhs->descriptor, rhs->descriptor});
   }
 }
 
@@ -1100,7 +1121,7 @@ bool OperationValidationContext::ValidateElementWiseBinary(
     return false;
   }
 
-  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
+  if (!ValidateElementWiseBinaryOperands(a, b, output, operation)) {
     return false;
   }
 
@@ -1123,6 +1144,7 @@ bool OperationValidationContext::ValidateElu(const mojom::Elu& elu,
           elu, context_properties_->data_type_limits.elu_input, operation_id)) {
     return false;
   }
+
   if (!ValidateEluAttributes(elu)) {
     return false;
   }
@@ -1352,12 +1374,17 @@ bool OperationValidationContext::ValidateGemm(const mojom::Gemm& gemm,
   }
   auto& c_operand_id = gemm.c_operand_id;
   if (c_operand_id) {
-    if (!id_to_operand_map_->contains(c_operand_id.value()) ||
-        !processed_operands_.contains(c_operand_id.value())) {
+    if (!processed_operands_.contains(c_operand_id.value())) {
       // The third operand is invalid.
       return false;
     }
     NoteDependency(c_operand_id.value(), operation_id);
+
+    auto* c = GetMojoOperand(c_operand_id.value());
+    if (!c || c == output) {
+      // The third operand is invalid.
+      return false;
+    }
   }
 
   auto validated_output = ValidateGemmAndInferOutput(
@@ -1693,13 +1720,12 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   for (uint64_t output_operand_id : lstm.output_operand_ids) {
     if (output_operand_id == lstm.input_operand_id ||
         output_operand_id == lstm.weight_operand_id ||
-        output_operand_id == lstm.recurrent_weight_operand_id) {
-      return false;
-    }
-    if ((initial_hidden_state_operand_id.has_value() &&
-         initial_hidden_state_operand_id.value() == output_operand_id) ||
-        (initial_cell_state_operand_id.has_value() &&
-         initial_cell_state_operand_id.value() == output_operand_id)) {
+        output_operand_id == lstm.recurrent_weight_operand_id ||
+        output_operand_id == lstm.bias_operand_id ||
+        output_operand_id == lstm.recurrent_bias_operand_id ||
+        output_operand_id == lstm.peephole_weight_operand_id ||
+        output_operand_id == lstm.initial_hidden_state_operand_id ||
+        output_operand_id == lstm.initial_cell_state_operand_id) {
       return false;
     }
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
@@ -1788,7 +1814,10 @@ bool OperationValidationContext::ValidateLstmCell(
         output_operand_id == lstm_cell.weight_operand_id ||
         output_operand_id == lstm_cell.recurrent_weight_operand_id ||
         output_operand_id == lstm_cell.hidden_state_operand_id ||
-        output_operand_id == lstm_cell.cell_state_operand_id) {
+        output_operand_id == lstm_cell.cell_state_operand_id ||
+        output_operand_id == lstm_cell.bias_operand_id ||
+        output_operand_id == lstm_cell.recurrent_bias_operand_id ||
+        output_operand_id == lstm_cell.peephole_weight_operand_id) {
       return false;
     }
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
@@ -2127,6 +2156,34 @@ bool OperationValidationContext::ValidateReshape(const mojom::Reshape& reshape,
     // The output shape is not expected.
     return false;
   }
+  return true;
+}
+
+bool OperationValidationContext::ValidateReverseOperation(
+    const mojom::Reverse& reverse,
+    size_t operation_id) {
+  if (!processed_operands_.contains(reverse.input_operand_id)) {
+    return false;
+  }
+  NoteDependency(reverse.input_operand_id, operation_id);
+
+  RETURN_IF_FALSE(processed_operands_.insert(reverse.output_operand_id).second);
+
+  auto* input = GetMojoOperand(reverse.input_operand_id);
+  auto* output = GetMojoOperand(reverse.output_operand_id);
+  if (!input || !output || output == input) {
+    return false;
+  }
+
+  auto validated_output = ValidateReverseAndInferOutput(
+      *context_properties_, input->descriptor, reverse.axes, reverse.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
   return true;
 }
 
@@ -2554,6 +2611,8 @@ bool OperationValidationContext::ValidateOperation(
       return ValidateUnaryOperation(
           *operation.get_relu(),
           context_properties_->data_type_limits.relu_input, operation_id);
+    case mojom::Operation::Tag::kReverse:
+      return ValidateReverseOperation(*operation.get_reverse(), operation_id);
     case mojom::Operation::Tag::kScatterElements:
       return ValidateScatterElements(*operation.get_scatter_elements(),
                                      operation_id);
@@ -2594,10 +2653,68 @@ bool OperationValidationContext::ValidateOperation(
 
 }  // namespace
 
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands)
+    : compute_resource_info(std::move(compute_resource_info)),
+      constant_operands(std::move(constant_operands)) {}
+
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
+    ValidateGraphSuccessResult&&) = default;
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult&
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::operator=(
+    ValidateGraphSuccessResult&&) = default;
+
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::
+    ~ValidateGraphSuccessResult() = default;
+
 WebNNGraphBuilderImpl::WebNNGraphBuilderImpl(WebNNContextImpl& context)
     : context_(context) {}
 
 WebNNGraphBuilderImpl::~WebNNGraphBuilderImpl() = default;
+
+void WebNNGraphBuilderImpl::CreatePendingConstant(
+    const blink::WebNNPendingConstantToken& constant_handle,
+    OperandDataType data_type,
+    mojo_base::BigBuffer data) {
+  if (has_built_) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageOnBuiltGraphBuilder, base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  if (data.size() == 0) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  // The size of `data` must be a multiple of the number of bytes of the data
+  // type.
+  auto checked_number_of_bits = base::CheckMul(data.size(), 8);
+  size_t number_of_bits;
+  if (!checked_number_of_bits.AssignIfValid(&number_of_bits) ||
+      number_of_bits % OperandDescriptor::GetBitsPerElement(data_type) != 0u) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  // Copy the contents of `data` into a new pending constant operand associated
+  // with this builder.
+  if (!pending_constant_operands_
+           .insert(std::make_unique<WebNNPendingConstantOperand>(
+               constant_handle, data_type, data))
+           .second) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+}
 
 void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
                                         CreateGraphCallback callback) {
@@ -2609,22 +2726,22 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
+  auto validate_graph_result =
+      ValidateGraphImpl(context_->properties(), *graph_info,
+                        /*keep_builder_resources_for_testing=*/false);
+
   has_built_ = true;
 
-  auto compute_resource_info =
-      ValidateGraph(context_->properties(), *graph_info);
-  if (!compute_resource_info.has_value()) {
+  if (!validate_graph_result.has_value()) {
     context_->ReportBadGraphBuilderMessage(
         kBadMessageInvalidGraph, base::PassKey<WebNNGraphBuilderImpl>());
     return;
   }
 
-  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-      constant_operands = TakeConstants(*graph_info);
-
   context_->CreateGraphImpl(
-      std::move(graph_info), *std::move(compute_resource_info),
-      std::move(constant_operands),
+      std::move(graph_info),
+      std::move(validate_graph_result->compute_resource_info),
+      std::move(validate_graph_result->constant_operands),
       base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -2633,6 +2750,16 @@ void WebNNGraphBuilderImpl::SetId(
     mojo::ReceiverId id,
     base::PassKey<WebNNContextImpl> /*pass_key*/) {
   id_ = id;
+}
+
+void WebNNGraphBuilderImpl::IsValidGraphForTesting(
+    const ContextProperties& context_properties,
+    mojom::GraphInfoPtr graph_info,
+    IsValidGraphForTestingCallback callback) {
+  std::move(callback).Run(
+      ValidateGraphImpl(context_properties, *graph_info,
+                        /*keep_builder_resources_for_testing=*/true)
+          .has_value());
 }
 
 void WebNNGraphBuilderImpl::DidCreateGraph(
@@ -2658,11 +2785,17 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
                       base::PassKey<WebNNGraphBuilderImpl>());
 }
 
-// static
-std::optional<WebNNGraphImpl::ComputeResourceInfo>
-WebNNGraphBuilderImpl::ValidateGraph(
+std::optional<WebNNGraphBuilderImpl::ValidateGraphSuccessResult>
+WebNNGraphBuilderImpl::ValidateGraphImpl(
     const ContextProperties& context_properties,
-    const mojom::GraphInfo& graph_info) {
+    const mojom::GraphInfo& graph_info,
+    bool keep_builder_resources_for_testing) {
+  if (keep_builder_resources_for_testing) {
+    CHECK_IS_TEST();
+  } else {
+    CHECK(!has_built_);
+  }
+
   // The input operands of graph can be empty.
   if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||
       graph_info.output_operands.empty()) {
@@ -2687,15 +2820,13 @@ WebNNGraphBuilderImpl::ValidateGraph(
   graph_inputs.reserve(graph_info.input_operands.size());
   std::vector<uint64_t> graph_outputs;
   graph_outputs.reserve(graph_info.output_operands.size());
-  base::flat_map<uint64_t, size_t> constant_ids_to_byte_lengths;
-  constant_ids_to_byte_lengths.reserve(
-      graph_info.constant_id_to_buffer_map.size());
+  std::vector<std::pair<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      graph_constants;
+  graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
 
-  // The operand id must start from 1.
-  uint64_t expected_operand_id = 1;
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
-    // Validate that the operand ids are increasing and contiguous.
-    if (id != expected_operand_id++) {
+    const size_t byte_length = operand->descriptor.PackedByteLength();
+    if (byte_length > context_properties.tensor_byte_length_limit) {
       return std::nullopt;
     }
     const std::optional<std::string>& name = operand->name;
@@ -2748,8 +2879,52 @@ WebNNGraphBuilderImpl::ValidateGraph(
           return std::nullopt;
         }
 
-        constant_ids_to_byte_lengths[id] =
-            operand->descriptor.PackedByteLength();
+        // `id` must correspond to a pending constant operand handle...
+        auto id_and_handle_it =
+            graph_info.constant_operand_ids_to_handles.find(id);
+        if (id_and_handle_it ==
+            graph_info.constant_operand_ids_to_handles.end()) {
+          return std::nullopt;
+        }
+
+        // ...which must identify a handle known by this builder...
+        auto pending_constant_operand_it =
+            pending_constant_operands_.find(id_and_handle_it->second);
+        if (pending_constant_operand_it == pending_constant_operands_.end()) {
+          return std::nullopt;
+        }
+
+        // ...whose data must be compatible with what `operand` expects.
+        if (keep_builder_resources_for_testing) {
+          if (!pending_constant_operand_it->get()->IsValidWithDescriptor(
+                  operand->descriptor)) {
+            return std::nullopt;
+          }
+
+          // Since `keep_builder_resources_for_testing` is true, insert a
+          // placeholder `nullptr` rather than extracting corresponding
+          // `WebNNPendingConstantOperand` from `pending_constant_operands_` and
+          // converting it into a concrete operand, as is done below.
+          graph_constants.emplace_back(id, nullptr);
+        } else {
+          auto extracted_pending_constant =
+              pending_constant_operands_.extract(pending_constant_operand_it);
+          std::unique_ptr<WebNNPendingConstantOperand>
+              pending_constant_operand =
+                  std::move(extracted_pending_constant.value());
+          CHECK(pending_constant_operand);
+
+          // Give the bytes a shape to turn the pending constant operand into a
+          // concrete operand.
+          auto constant_operand =
+              pending_constant_operand->TakeAsConstantOperand(
+                  operand->descriptor);
+          if (!constant_operand) {
+            return std::nullopt;
+          }
+
+          graph_constants.emplace_back(id, std::move(constant_operand));
+        }
 
         processed_operands.insert(id);
         break;
@@ -2766,63 +2941,56 @@ WebNNGraphBuilderImpl::ValidateGraph(
     return std::nullopt;
   }
 
-  // Validate the constant weight data are valid.
-  if (!base::ranges::equal(graph_info.constant_id_to_buffer_map,
-                           constant_ids_to_byte_lengths,
-                           [](const auto& iter_a, const auto& iter_b) {
-                             // Compare the constant id with the key of map and
-                             // the byte length of buffer with value of map.
-                             return iter_a.first == iter_b.first &&
-                                    iter_a.second.size() == iter_b.second;
-                           })) {
+  // Items were iteratively erased from `pending_constant_operands_` above, so
+  // any remaining items are unused. Release these unused resources.
+  //
+  // TODO(crbug.com/379844003): Consider erroring if constant (or input)
+  // operands are unused, since this is likely an accidental misuse of the WebNN
+  // API.
+  if (!keep_builder_resources_for_testing) {
+    pending_constant_operands_.clear();
+  }
+
+  if (graph_constants.size() !=
+      graph_info.constant_operand_ids_to_handles.size()) {
     return std::nullopt;
   }
 
   // Validate the operations which are sorted in the topological order.
-  std::optional<DependentOperationsMap> operands_to_dependent_operations =
-      OperationValidationContext::ValidateOperationsAndGetDependencies(
+  std::optional<std::pair<base::flat_set<uint64_t>, DependentOperationsMap>>
+      result = OperationValidationContext::ValidateOperationsAndGetDependencies(
           graph_info.operations, context_properties,
-          graph_info.id_to_operand_map, std::move(processed_operands));
-  if (!operands_to_dependent_operations.has_value()) {
+          graph_info.id_to_operand_map, processed_operands);
+  if (!result.has_value()) {
     return std::nullopt;
   }
 
-  return WebNNGraphImpl::ComputeResourceInfo(
-      std::move(inputs), std::move(outputs),
-      *std::move(operands_to_dependent_operations),
-      base::PassKey<WebNNGraphBuilderImpl>());
-}
+  DependentOperationsMap operands_to_dependent_operations;
+  std::tie(processed_operands, operands_to_dependent_operations) =
+      *std::move(result);
 
-// static
-bool WebNNGraphBuilderImpl::IsValidForTesting(
-    const ContextProperties& context_properties,
-    const mojom::GraphInfo& graph_info) {
-  return ValidateGraph(context_properties, graph_info).has_value();
-}
-
-// static
-base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-WebNNGraphBuilderImpl::TakeConstants(mojom::GraphInfo& graph_info) {
-  std::vector<std::pair<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
-      constant_operands;
-  constant_operands.reserve(graph_info.constant_id_to_buffer_map.size());
-
-  for (auto it = graph_info.constant_id_to_buffer_map.begin();
-       it != graph_info.constant_id_to_buffer_map.end();) {
-    const auto* operand =
-        GetMojoOperand(graph_info.id_to_operand_map, it->first);
-    CHECK(operand);
-    constant_operands.emplace_back(
-        it->first, std::make_unique<WebNNConstantOperand>(operand->descriptor,
-                                                          it->second));
-    // Destroy the `BigBuffer` immediately after copying it, to avoid ending up
-    // holding two copies of the all weights simultaneously by the last
-    // iteration of this loop.
-    it = graph_info.constant_id_to_buffer_map.erase(it);
+  // Now that all the operations have been processed we can check that all the
+  // operands are connected to the graph inputs and outputs.
+  for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    if (operand->kind == mojom::Operand::Kind::kOutput && operand->name) {
+      // Graph outputs must be the output of some operator.
+      if (!processed_operands.contains(id)) {
+        return std::nullopt;
+      }
+    } else {
+      // All other operands must be the input to some operator.
+      if (!operands_to_dependent_operations.contains(id)) {
+        return std::nullopt;
+      }
+    }
   }
 
-  return base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>(
-      std::move(constant_operands));
+  return ValidateGraphSuccessResult{
+      WebNNGraphImpl::ComputeResourceInfo(
+          std::move(inputs), std::move(outputs),
+          std::move(operands_to_dependent_operations),
+          base::PassKey<WebNNGraphBuilderImpl>()),
+      std::move(graph_constants)};
 }
 
 void WebNNGraphBuilderImpl::DestroySelf() {

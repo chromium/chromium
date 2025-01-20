@@ -34,7 +34,8 @@ CookieAccessResult Include() {
 }
 
 CookieAccessResult Exclude(CookieInclusionStatus::ExclusionReason reason) {
-  return CookieAccessResult(CookieInclusionStatus(reason));
+  return CookieAccessResult(CookieInclusionStatus::MakeFromReasonsForTesting(
+      /*exclusions=*/{reason}));
 }
 
 }  // namespace

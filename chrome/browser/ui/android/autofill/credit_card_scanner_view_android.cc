@@ -48,7 +48,7 @@ CreditCardScannerViewAndroid::CreditCardScannerViewAndroid(
           reinterpret_cast<intptr_t>(this),
           web_contents->GetJavaWebContents())) {}
 
-CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() {}
+CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() = default;
 
 void CreditCardScannerViewAndroid::ScanCancelled(
     JNIEnv* env,

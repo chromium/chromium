@@ -5,21 +5,35 @@
 #ifndef CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_
 #define CHROME_BROWSER_ASH_SETTINGS_TOKEN_ENCRYPTOR_H_
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
-
-namespace crypto {
-class SymmetricKey;
-}
 
 namespace ash {
 
 // Interface class for classes that encrypt and decrypt tokens using the
 // system salt.
+//
+// This class supports two methods of encryption: the old "weak" method and the
+// new method. Unfortunately neither method provides actual confidentiality
+// protection and both have completely equivalent strength. Both methods rely on
+// the system salt, which is stored in the clear on disk. The old method is:
+//
+//   AES-256-CTR(key = salt, counter = salt[0 .. 15], token)
+//
+// and the new method is:
+//
+//   counter = random_bytes(16)
+//   counter || AES-256-CTR(key = salt, counter = counter, token)
+//
+// so in both cases there are no actual secrets involved as either key or
+// counter. The only practical distinction is that the new method generates
+// larger encoded values and that two separate encryptions of the same token
+// will yield different encoded values.
 class TokenEncryptor {
  public:
-  virtual ~TokenEncryptor() {}
+  virtual ~TokenEncryptor() = default;
 
   // Encrypts |token| with the system salt key (stable for the lifetime
   // of the device).  Useful to avoid storing plain text in place like
@@ -62,18 +76,11 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
       const std::string& encrypted_token_hex) override;
 
  private:
-  // Converts |passphrase| to a SymmetricKey using the given |salt|.
-  std::unique_ptr<crypto::SymmetricKey> PassphraseToKey(
-      const std::string& passphrase,
-      const std::string& salt);
+  static constexpr size_t kDerivedKeySize = 32;
+  static constexpr size_t kNonceSize = 16;
 
-  // The cached system salt passed to the constructor, originally coming
-  // from cryptohome daemon.
-  std::string system_salt_;
-
-  // A key based on the system salt.  Useful for encrypting device-level
-  // data for which we have no additional credentials.
-  std::unique_ptr<crypto::SymmetricKey> system_salt_key_;
+  std::array<uint8_t, kDerivedKeySize> key_;
+  std::array<uint8_t, kNonceSize> nonce_;
 };
 
 }  // namespace ash

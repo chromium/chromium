@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -65,7 +64,7 @@ void ReportUploader::Upload() {
       // binary string but still provide useful information.
       VLOG(2) << "Uploading report: " << request->SerializeAsString();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       client_->UploadChromeOsUserReport(std::move(request),
                                         std::move(callback));
 #else

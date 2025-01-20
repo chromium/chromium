@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/version_info/channel.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/common/features/feature_channel.h"
@@ -73,6 +75,32 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   // stable channel doesn't enable a required feature.
   // TODO(b/309153867): Remove this when underlying issue is figured out.
   extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
+};
+
+class UpdateDiscoveryTaskResultWaiter
+    : public IsolatedWebAppUpdateManager::Observer {
+  using TaskResultCallback = base::OnceCallback<void(
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status)>;
+
+ public:
+  UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
+                                  const webapps::AppId expected_app_id,
+                                  TaskResultCallback callback);
+  ~UpdateDiscoveryTaskResultWaiter() override;
+
+  // IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateDiscoveryTaskCompleted(
+      const webapps::AppId& app_id,
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) override;
+
+ private:
+  const webapps::AppId expected_app_id_;
+  TaskResultCallback callback_;
+  const raw_ref<WebAppProvider> provider_;
+
+  base::ScopedObservation<IsolatedWebAppUpdateManager,
+                          IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(

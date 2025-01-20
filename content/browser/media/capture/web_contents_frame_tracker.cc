@@ -29,7 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video_capture_types.h"
@@ -164,7 +163,6 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
 
   capture_size_ = capture_size;
   if (is_high_dpi_enabled &&
-      base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi) &&
       !GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {
     auto_scaler_ =
         std::make_unique<WebContentsAutoScaler>(*context_, capture_size);

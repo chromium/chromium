@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">Presiona con 2 dedos para silenciar la voz actual</translation>
 <translation id="2573256689920773241">Navegación básica</translation>
 <translation id="257674075312929031">Agrupar</translation>
+<translation id="2577127557293415225">Cierra brevemente ambos ojos</translation>
 <translation id="2582407057977008361">Lateral</translation>
 <translation id="2592212930811759050">Presiona dos veces para comenzar a editar</translation>
 <translation id="2598495320872286378">Error gramatical</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">col</translation>
 <translation id="6387719785439924554">lateral</translation>
 <translation id="6393014464788431702">Inhabilitar todos los filtros de eventos</translation>
+<translation id="6406989068857078334">Se redujo la velocidad del mouse. <ph name="GESTURE" /> nuevamente para hacer clic.</translation>
 <translation id="6411569524720229058">Otoño</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dos puntos}other{# dos puntos}}</translation>
@@ -1019,7 +1021,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de selección anterior</translation>
 <translation id="7696631298608145306">ir a la palabra siguiente</translation>
-<translation id="7701040980221191251">Ninguna</translation>
+<translation id="7701040980221191251">No hay</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">No hay cuadros combinados siguientes</translation>
 <translation id="7715455358521357192">Entrecerrar el ojo derecho</translation>
@@ -1040,7 +1042,7 @@
 <translation id="7839679365527550018">Palabra anterior</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7851816175263618915">Algunos signos de puntuación</translation>
-<translation id="7871691770940645922">Dispositivo virtual braile</translation>
+<translation id="7871691770940645922">Pantalla braille virtual</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="78826985582142166">ctrl desl</translation>
 <translation id="7913106023953875143">No hay encabezados de nivel 2 siguientes</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8205922869661890178">Abre la página de registro del desarrollador</translation>
 <translation id="8212109599554677485">Cambia el estilo de la pantalla a lado a lado</translation>
 <translation id="8215202828671303819">Selección múltiple</translation>
+<translation id="822316432305106615">Iniciar clic de precisión</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% de opacidad.</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="826825447994856889">Introducción</translation>

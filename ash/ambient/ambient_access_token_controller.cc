@@ -83,7 +83,7 @@ void AmbientAccessTokenController::RefreshAccessToken() {
 }
 
 void AmbientAccessTokenController::AccessTokenRefreshed(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token,
     const base::Time& expiration_time) {
   has_pending_request_ = false;

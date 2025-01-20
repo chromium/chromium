@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_id.h"
@@ -25,18 +26,15 @@ SessionServiceTabGroupSyncObserver::SessionServiceTabGroupSyncObserver(
     SessionID session_id)
     : profile_(profile),
       tab_strip_model_(tab_strip_model),
-      session_id_(session_id) {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_service);
-  tab_group_service->AddObserver(this);
+      session_id_(session_id),
+      service_(tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_)) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_service);
-  tab_group_service->RemoveObserver(this);
+  CHECK(service_);
+  service_->RemoveObserver(this);
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(
@@ -60,6 +58,14 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupRemoved(
   }
 
   UpdateTabGroupSessionMetadata(local_id, std::nullopt);
+}
+
+void SessionServiceTabGroupSyncObserver::OnTabGroupMigrated(
+    const tab_groups::SavedTabGroup& new_group,
+    const base::Uuid& old_sync_id,
+    tab_groups::TriggerSource source) {
+  UpdateTabGroupSessionMetadata(new_group.local_group_id(),
+                                new_group.saved_guid().AsLowercaseString());
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(

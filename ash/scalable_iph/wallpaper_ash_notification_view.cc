@@ -35,9 +35,8 @@ int GetResourceId(int preview_index) {
     case 3:
       return IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_4_PNG;
     default:
-      CHECK(false);
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 #endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
 

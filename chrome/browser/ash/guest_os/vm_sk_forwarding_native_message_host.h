@@ -35,10 +35,11 @@ namespace guest_os {
 // opened and closes the channel once a response is received.
 class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
  public:
-  static const char* const kHostName;
-  static const char* const kOrigins[];
+  static constexpr char kHostName[] = "com.google.vm_sk_forwarding";
+  static constexpr const char* kOrigins[] = {
+      "chrome-extension://lehkgnicackihfeppclgiffgbgbhmbdp/",
+      "chrome-extension://lcooaekmckohjjnpaaokodoepajbnill/"};
   static const char* const kHostCreatedByExtensionNotSupportedError;
-  static const size_t kOriginCount;
 
   using ResponseCallback =
       base::OnceCallback<void(const std::string& response)>;

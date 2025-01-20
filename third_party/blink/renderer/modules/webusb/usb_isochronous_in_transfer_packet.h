@@ -20,24 +20,23 @@ class USBIsochronousInTransferPacket final : public ScriptWrappable {
  public:
   static USBIsochronousInTransferPacket* Create(
       const V8USBTransferStatus& status) {
-    return MakeGarbageCollected<USBIsochronousInTransferPacket>(status,
-                                                                nullptr);
+    return MakeGarbageCollected<USBIsochronousInTransferPacket>(
+        status, NotShared<DOMDataView>());
   }
 
   static USBIsochronousInTransferPacket* Create(
       const V8USBTransferStatus& status,
       NotShared<DOMDataView> data) {
-    return MakeGarbageCollected<USBIsochronousInTransferPacket>(status,
-                                                                data.Get());
+    return MakeGarbageCollected<USBIsochronousInTransferPacket>(status, data);
   }
 
   USBIsochronousInTransferPacket(const V8USBTransferStatus& status,
-                                 DOMDataView* data)
+                                 NotShared<DOMDataView> data)
       : status_(status), data_(data) {}
   ~USBIsochronousInTransferPacket() override = default;
 
   V8USBTransferStatus status() const { return status_; }
-  DOMDataView* data() const { return data_.Get(); }
+  NotShared<DOMDataView> data() const { return data_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(data_);
@@ -46,7 +45,7 @@ class USBIsochronousInTransferPacket final : public ScriptWrappable {
 
  private:
   const V8USBTransferStatus status_;
-  const Member<DOMDataView> data_;
+  const NotShared<DOMDataView> data_;
 };
 
 }  // namespace blink

@@ -94,6 +94,8 @@ void LineBoxFragmentBuilder::PropagateChildrenDataFromLineItems(
 }
 
 const LayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {
+  Finalize();
+
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
   const auto* fragment = PhysicalLineBoxFragment::Create(this);

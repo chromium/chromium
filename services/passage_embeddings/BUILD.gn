@@ -31,7 +31,6 @@ source_set("passage_embeddings") {
   }
 
   deps = [
-    "//components/history_embeddings",
     "//services/passage_embeddings/public/mojom",
     "//third_party/sentencepiece:sentencepiece",
     "//third_party/sentencepiece:sentencepiece_proto",

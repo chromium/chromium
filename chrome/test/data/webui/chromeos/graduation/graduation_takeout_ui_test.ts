@@ -87,9 +87,11 @@ suite('GraduationTakeoutUiTest.WebviewUrl', function() {
     if (isEmbeddedEndpointEnabled) {
       assertTrue(getWebview().src.startsWith(
           'https://takeout.google.com/embedded/transfer'));
+      assertTrue(getWebview().getUserAgent().includes('ChromeWebView'));
     } else {
       assertTrue(
           getWebview().src.startsWith('https://takeout.google.com/transfer'));
+      assertFalse(getWebview().getUserAgent().includes('ChromeWebView'));
     }
   });
 });

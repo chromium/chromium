@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
 #include <memory>
@@ -401,7 +396,7 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // GeneratedCodeCacheHost for testing.
   cache_handler->SetCachedMetadata(/*code_cache_host*/ nullptr,
                                    V8CodeCache::TagForCodeCache(cache_handler),
-                                   reinterpret_cast<const uint8_t*>("X"), 1);
+                                   base::byte_span_from_cstring("X"));
 
   AppendData("function foo() {");
   Finish();
@@ -445,8 +440,7 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
 
   cache_handler->SetCachedMetadata(
       /*code_cache_host*/ nullptr,
-      V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
-      cached_data->length);
+      V8CodeCache::TagForCompileHints(cache_handler), ToSpan(*cached_data));
 
   // Checks for debugging failures in this test.
   EXPECT_TRUE(V8CodeCache::HasCompileHints(
@@ -934,7 +928,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheData() {
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      reinterpret_cast<const uint8_t*>("X"), 1);
+      base::byte_span_from_cstring("X"));
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(data_type_id);
   mojo_base::BigBuffer cached_metadata_buffer =
@@ -950,12 +944,26 @@ mojo_base::BigBuffer CreateDummyTimeStampData() {
   uint64_t now_ms = 11111;
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      reinterpret_cast<uint8_t*>(&now_ms), sizeof(now_ms));
+      base::byte_span_from_ref(now_ms));
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(data_type_id);
   mojo_base::BigBuffer cached_metadata_buffer =
       mojo_base::BigBuffer(cached_metadata->SerializedData());
   return cached_metadata_buffer;
+}
+
+mojo_base::BigBuffer CreateDummyCodeCacheDataWithHash(
+    base::span<const char> source) {
+  ScriptCachedMetadataHandlerWithHashing* cache_handler =
+      MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+          UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
+  ParkableString source_text(String(source).ReleaseImpl());
+  cache_handler->Check(nullptr, source_text);
+  uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
+  cache_handler->SetCachedMetadata(
+      /*code_cache_host=*/nullptr, data_type_id,
+      base::byte_span_from_cstring("X"));
+  return mojo_base::BigBuffer(cache_handler->GetSerializedCachedMetadata());
 }
 
 network::mojom::URLResponseHeadPtr CreateURLResponseHead(
@@ -985,7 +993,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
   ~BackgroundResourceScriptStreamerTest() override = default;
 
   void TearDown() override {
-    RunInBackgroundThred(base::BindLambdaForTesting(
+    RunInBackgroundThread(base::BindLambdaForTesting(
         [&]() { background_response_processor_.reset(); }));
   }
 
@@ -1036,7 +1044,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_BLOCKING});
 
-    RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+    RunInBackgroundThread(base::BindLambdaForTesting([&]() {
       std::unique_ptr<BackgroundResponseProcessorFactory> factory =
           dummy_loader_factory->TakeBackgroundResponseProcessorFactory();
       background_response_processor_ = std::move(*factory).Create();
@@ -1066,11 +1074,11 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
-  void RunInBackgroundThred(base::OnceClosure closuer) {
+  void RunInBackgroundThread(base::OnceClosure closure) {
     base::RunLoop loop;
     background_resource_fetch_task_runner_->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          std::move(closuer).Run();
+          std::move(closure).Run();
           loop.Quit();
         }));
     loop.Run();
@@ -1121,7 +1129,7 @@ int BackgroundResourceScriptStreamerTest::url_counter_ = 0;
 TEST_F(BackgroundResourceScriptStreamerTest, UnsupportedModuleMimeType) {
   V8TestingScope scope;
   Init(scope.GetIsolate(), /*is_module_script=*/true);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     // "text/plain" is not a valid mime type for module scripts.
     network::mojom::URLResponseHeadPtr head =
         CreateURLResponseHead("text/plain");
@@ -1145,9 +1153,9 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
     head->charset = "utf-8";
@@ -1185,9 +1193,9 @@ TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
     head->charset = "utf-8";
@@ -1208,9 +1216,85 @@ TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest, HasCodeCache) {
   background_response_processor_client_.WaitUntilFinished();
   // Checking that the code cache data is passed to the finish callback.
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/code_cache_data_copy);
+  Finish();
+  RunUntilResourceLoaded();
+  // When there is a code cache, we should not stream the script.
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+}
+
+TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       HasCodeCacheWithCorrectHash) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheDataWithHash(
+      base::span_from_cstring(kLargeEnoughScript));
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    // Set charset to make the code cache valid.
+    head->charset = "utf-8";
+    // Set a dummy code cache data.
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  // Checking that the code cache data is passed to the finish callback.
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
+      /*expected_cached_metadata=*/code_cache_data_copy);
+  EXPECT_TRUE(resource_->HasBackgroundStreamerWithDecodedData());
+  EXPECT_TRUE(resource_->HasBackgroundStreamerWithConsumeCodeCacheTask());
+  Finish();
+  RunUntilResourceLoaded();
+  // When there is a code cache, we should not stream the script.
+  CheckNotStreamingReason(
+      ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+}
+
+TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       HasCodeCacheWithIncorrectHash) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheDataWithHash(
+      base::span_from_cstring("not matching script"));
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    // Set charset to make the code cache valid.
+    head->charset = "utf-8";
+    // Set a dummy code cache data.
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  // Checking that the code cache data is passed to the finish callback.
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
+      /*expected_cached_metadata=*/code_cache_data_copy);
+  EXPECT_TRUE(resource_->HasBackgroundStreamerWithDecodedData());
+  // The cache consumption task was abandoned due to mismatching source hash.
+  EXPECT_FALSE(resource_->HasBackgroundStreamerWithConsumeCodeCacheTask());
   Finish();
   RunUntilResourceLoaded();
   // When there is a code cache, we should not stream the script.
@@ -1222,9 +1306,9 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasTimeStampData) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer time_stamp_data = CreateDummyTimeStampData();
-  const std::vector<uint8_t> time_stamp_data_copy(
-      time_stamp_data.data(), time_stamp_data.data() + time_stamp_data.size());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  const std::vector<uint8_t> time_stamp_data_copy(time_stamp_data.begin(),
+                                                  time_stamp_data.end());
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set a dummy time stamp data.
     std::optional<mojo_base::BigBuffer> cached_metadata =
@@ -1244,8 +1328,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasTimeStampData) {
   background_response_processor_client_.WaitUntilFinished();
   // Checking that the dummy time stamp data is passed to the finish callback.
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/time_stamp_data_copy);
   Finish();
   RunUntilResourceLoaded();
@@ -1257,11 +1340,11 @@ TEST_F(BackgroundResourceScriptStreamerTest, InvalidCachedMetadata) {
   uint8_t kInvalidCachedMetadata[] = {0x00, 0x00};
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set an invalid cached metadata.
     std::optional<mojo_base::BigBuffer> cached_metadata =
-        mojo_base::BigBuffer(base::make_span(kInvalidCachedMetadata));
+        mojo_base::BigBuffer(base::span(kInvalidCachedMetadata));
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
         head, consumer_handle_, cached_metadata,
         background_resource_fetch_task_runner_,
@@ -1277,8 +1360,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, InvalidCachedMetadata) {
   background_response_processor_client_.WaitUntilFinished();
   // Checking that the dummy metadata is passed to the finish callback.
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/kInvalidCachedMetadata);
   Finish();
   RunUntilResourceLoaded();
@@ -1289,7 +1371,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, InvalidCachedMetadata) {
 TEST_F(BackgroundResourceScriptStreamerTest, SmallScript) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1305,8 +1387,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, SmallScript) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kTooSmallScript,
-                                        sizeof(kTooSmallScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kTooSmallScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1322,7 +1403,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, SmallScriptInFirstChunk) {
   // MaybeStartProcessingResponse() can synchronously read the data chunk in the
   // data pipe.
   AppendData(kTooSmallScript);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1336,8 +1417,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, SmallScriptInFirstChunk) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kTooSmallScript,
-                                        sizeof(kTooSmallScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kTooSmallScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1349,7 +1429,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, SmallScriptInFirstChunk) {
 TEST_F(BackgroundResourceScriptStreamerTest, EmptyScript) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1379,7 +1459,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EmptyScriptSyncCheckable) {
   // Close the data pipe here, so the MaybeStartProcessingResponse() can
   // synchronously know that the script is empty.
   producer_handle_.reset();
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     // MaybeStartProcessingResponse() can synchronously know that the script is
@@ -1402,7 +1482,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EmptyScriptSyncCheckable) {
 TEST_F(BackgroundResourceScriptStreamerTest, EnoughData) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1418,8 +1498,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughData) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1434,7 +1513,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataInFirstChunk) {
   // MaybeStartProcessingResponse(), so that MaybeStartProcessingResponse() can
   // synchronously read the data chunk in the data pipe.
   AppendData(kLargeEnoughScript);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1448,8 +1527,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataInFirstChunk) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1460,7 +1538,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataInFirstChunk) {
 TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataModuleScript) {
   V8TestingScope scope;
   Init(scope.GetIsolate(), /*is_module_script=*/true);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1476,8 +1554,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataModuleScript) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1490,7 +1567,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingNotSupported) {
   // Intentionally using unsupported encoding "EUC-JP".
   Init(scope.GetIsolate(), /*is_module_script=*/false,
        WTF::TextEncoding("EUC-JP"));
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1506,8 +1583,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingNotSupported) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1521,7 +1597,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingFromBOM) {
   // Intentionally using unsupported encoding "EUC-JP".
   Init(scope.GetIsolate(), /*is_module_script=*/false,
        WTF::TextEncoding("EUC-JP"));
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1537,8 +1613,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingFromBOM) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kScriptWithBOM,
-                                        sizeof(kScriptWithBOM) - 1),
+      /*expected_body=*/base::span_from_cstring(kScriptWithBOM),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1549,7 +1624,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingFromBOM) {
 TEST_F(BackgroundResourceScriptStreamerTest, ScriptTypeMismatch) {
   V8TestingScope scope;
   Init(scope.GetIsolate(), /*is_module_script=*/true);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1565,8 +1640,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, ScriptTypeMismatch) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1580,7 +1654,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, ScriptTypeMismatch) {
 TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileWaitingForDataPipe) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1592,7 +1666,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileWaitingForDataPipe) {
     EXPECT_FALSE(cached_metadata);
   }));
   Cancel();
-  RunInBackgroundThred(base::BindLambdaForTesting(
+  RunInBackgroundThread(base::BindLambdaForTesting(
       [&]() { background_response_processor_.reset(); }));
   producer_handle_.reset();
   // Cancelling the background response processor while waiting for data pipe
@@ -1604,7 +1678,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelBeforeReceiveResponse) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   Cancel();
-  RunInBackgroundThred(base::BindLambdaForTesting(
+  RunInBackgroundThread(base::BindLambdaForTesting(
       [&]() { background_response_processor_.reset(); }));
   // Cancelling the background response processor before receiving response
   // should not cause any crash.
@@ -1614,7 +1688,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelBeforeReceiveResponse) {
 TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileRuningStreamingTask) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1628,7 +1702,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileRuningStreamingTask) {
   // Append enough data to start streaming.
   AppendData(kLargeEnoughScript);
   Cancel();
-  RunInBackgroundThred(base::BindLambdaForTesting(
+  RunInBackgroundThread(base::BindLambdaForTesting(
       [&]() { background_response_processor_.reset(); }));
   producer_handle_.reset();
   // Cancelling the background response processor while running streaming task
@@ -1639,7 +1713,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileRuningStreamingTask) {
 TEST_F(BackgroundResourceScriptStreamerTest, CompilingStreamedScript) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1655,8 +1729,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CompilingStreamedScript) {
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kLargeEnoughScript,
-                                        sizeof(kLargeEnoughScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1683,7 +1756,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
        CompilingStreamedScriptWithParseError) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1700,8 +1773,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
   background_response_processor_client_.CheckResultOfFinishCallback(
-      /*expected_body=*/base::make_span(kInvalidScript,
-                                        sizeof(kInvalidScript) - 1),
+      /*expected_body=*/base::span_from_cstring(kInvalidScript),
       /*expected_cached_metadata=*/std::nullopt);
   Finish();
   RunUntilResourceLoaded();
@@ -1728,7 +1800,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
 TEST_F(BackgroundResourceScriptStreamerTest, DataPipeReadableAfterGC) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1769,7 +1841,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
        DataPipeReadableAfterProcessorIsDeleted) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1817,11 +1889,11 @@ TEST_F(BackgroundResourceScriptStreamerTest,
       v8_compile_hints_consumer = MakeGarbageCollected<
           v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>();
   Vector<int64_t> dummy_data(v8_compile_hints::kBloomFilterInt32Count / 2);
-  v8_compile_hints_consumer->SetData(dummy_data.data(), dummy_data.size());
+  v8_compile_hints_consumer->SetData(dummy_data);
 
   Init(scope.GetIsolate(), /*is_module_script=*/false, /*charset=*/std::nullopt,
        v8_compile_hints_consumer);
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
     EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
@@ -1834,7 +1906,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
       base::StrCat({std::string(kDataPipeSize - 1, '/'), "\n"});
   AppendData(comment_line);
 
-  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     // Call YieldCurrentThread() until the parser thread reads the
     // `comment_line` form the data pipe.
     while (!producer_handle_->QuerySignalsState().writable()) {

@@ -94,6 +94,14 @@ TEST(IdentifiableTokenTest, SampleFloat) {
             ImplicitConverter(source_value).sample);
 }
 
+TEST(IdentifiableTokenTest, SampleDouble) {
+  auto source_value = 5.1;
+  auto expected_value = INT64_C(0x4014666666666666);
+  EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
+  EXPECT_EQ(IdentifiableToken(expected_value),
+            ImplicitConverter(source_value).sample);
+}
+
 TEST(IdentifiableTokenTest, SampleConstCharArray) {
   EXPECT_EQ(IdentifiableToken(INT64_C(0xf75a3b8a1499428d)),
             IdentifiableToken("abcd"));
@@ -114,7 +122,7 @@ TEST(IdentifiableTokenTest, SampleStringPiece) {
 }
 
 TEST(IdentifiableTokenTest, SampleCharSpan) {
-  auto source_value = base::make_span("abcd", 4u);
+  auto source_value = base::span_from_cstring("abcd");
   auto expected_value = INT64_C(0xf75a3b8a1499428d);
   EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
   EXPECT_EQ(IdentifiableToken(expected_value),
@@ -123,7 +131,7 @@ TEST(IdentifiableTokenTest, SampleCharSpan) {
 
 TEST(IdentifiableTokenTest, SampleStringSpan) {
   std::string strings[] = {"baby", "shark", "du duu du duu du du"};
-  auto source_value = base::make_span(strings);
+  auto source_value = base::span(strings);
   auto expected_value = INT64_C(0xd37aad882e58faa5);
   EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
   EXPECT_EQ(IdentifiableToken(expected_value),

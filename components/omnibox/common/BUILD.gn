@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "omnibox_feature_configs.cc",
+    "omnibox_feature_configs.h",
     "omnibox_features.cc",
     "omnibox_features.h",
     "omnibox_focus_state.h",
@@ -47,6 +49,7 @@ if (is_android) {
       ":jni_headers",
     ]
     deps = [
+      "$google_play_services_package:google_play_services_location_java",
       "//base:base_java",
       "//components/cached_flags:java",
       "//third_party/androidx:androidx_annotation_annotation_java",

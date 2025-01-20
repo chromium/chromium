@@ -22,7 +22,7 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 
 /** The facility describing one setting preference item in the MainSettings fragment. */
-public class PreferenceFacility extends Facility<SettingsStation> {
+public class PreferenceFacility extends Facility<SettingsStation<?>> {
     private final ViewSpec mPrefViewSpec;
 
     private ViewElement mPrefView;

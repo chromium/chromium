@@ -6,6 +6,8 @@
 
 #include <unicode/uscript.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -97,7 +99,7 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "Test run with multiple"
-  ShapeResultView::Segment segments[] = {{result, 0, 22}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 22}});
   auto* first4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(first4->StartIndex(), 0u);
@@ -148,7 +150,7 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "عربى"
-  ShapeResultView::Segment segments[] = {{result, 0, 4}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 4}});
   auto* first_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> first_glyphs;
   first_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&first_glyphs));
@@ -237,8 +239,7 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs: "hello world!"
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(&font, direction)->CopyRange(0u, 4u, result);
@@ -280,7 +281,7 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
                                  static_cast<void*>(&reference_glyphs));
 
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(0, 8, composite_copy);
   result->CopyRange(7, 8, composite_copy);
   result->CopyRange(10, 11, composite_copy);
@@ -321,7 +322,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
   // TODO(layout-dev): Arguably both should be updated to renumber the first
   // result as well but some callers depend on the existing behavior.
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result->CopyRange(14, 23, composite_copy);
   result->CopyRange(33, 55, composite_copy);
   result->CopyRange(4, 5, composite_copy);
@@ -374,7 +375,7 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
   // reference_result data might use different fonts, resulting in different
   // glyph ids and metrics.
   ShapeResult* composite_copy =
-      MakeGarbageCollected<ShapeResult>(&font, 0, 0, direction);
+      MakeGarbageCollected<ShapeResult>(0, 0, direction);
   result_a->CopyRange(0, 22, composite_copy);
   result_b->CopyRange(0, 7, composite_copy);
   EXPECT_EQ(composite_copy->NumCharacters(), reference_result->NumCharacters());

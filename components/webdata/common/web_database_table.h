@@ -15,7 +15,7 @@ class Encryptor;
 namespace sql {
 class Database;
 class MetaTable;
-}
+}  // namespace sql
 
 // An abstract base class representing a table within a WebDatabase.
 // Each table should subclass this, adding type-specific methods as needed.

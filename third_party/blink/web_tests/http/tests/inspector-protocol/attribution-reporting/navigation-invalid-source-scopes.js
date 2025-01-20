@@ -3,23 +3,17 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const { dp } = await testRunner.startHTML(
-    '<a href="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-source-with-scopes-redirect.php" attributionsrc target="_blank">Link</a>',
-    "Test that registering two sources with different scopes in the same navigation triggers an issue."
-  );
+  const {dp, session} = await testRunner.startHTML(
+      '<a href="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-source-with-scopes-redirect.php" attributionsrc target="_blank">Link</a>',
+      'Test that registering two sources with different scopes in the same navigation triggers an issue.');
 
   await dp.Audits.enable();
 
-  dp.Runtime.evaluate({
-    expression: `document.querySelector('a').click()`,
-    userGesture: true,
-  });
+  session.evaluateAsyncWithUserGesture(`document.querySelector('a').click()`);
 
   const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log((await issue).params.issue, "Issue reported: ", [
-    "request",
-  ]);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
 
   testRunner.completeTest();
 });

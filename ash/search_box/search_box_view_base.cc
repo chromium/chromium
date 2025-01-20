@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -306,7 +307,7 @@ class SearchIconImageView : public views::ImageView {
 
   void SetSearchIconImage(gfx::ImageSkia image) {
     if (GetImage().isNull() || !animation_enabled_) {
-      SetImage(image);
+      SetImage(ui::ImageModel::FromImageSkia(image));
       return;
     }
 
@@ -314,7 +315,7 @@ class SearchIconImageView : public views::ImageView {
       old_icon_layer_->GetAnimator()->StopAnimating();
 
     old_icon_layer_ = RecreateLayer();
-    SetImage(image);
+    SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Animate the old layer to fade out.
     views::AnimationBuilder()
@@ -525,6 +526,16 @@ views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
   return assistant_button_;
 }
 
+views::ImageButton* SearchBoxViewBase::CreateAssistantNewEntryPointButton(
+    const base::RepeatingClosure& button_callback) {
+  CHECK(end_button_container_);
+  CHECK(!assistant_new_entry_point_button_);
+
+  assistant_new_entry_point_button_ = end_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  return assistant_new_entry_point_button_;
+}
+
 views::ImageButton* SearchBoxViewBase::CreateFilterButton(
     const base::RepeatingClosure& button_callback) {
   MaybeCreateFilterAndCloseButtonContainer();
@@ -551,6 +562,10 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
 
 views::ImageButton* SearchBoxViewBase::assistant_button() {
   return assistant_button_;
+}
+
+views::ImageButton* SearchBoxViewBase::assistant_new_entry_point_button() {
+  return assistant_new_entry_point_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::sunfish_button() {
@@ -691,6 +706,12 @@ void SearchBoxViewBase::OnEnabledChanged() {
     close_button_->SetEnabled(enabled);
   if (assistant_button_)
     assistant_button_->SetEnabled(enabled);
+  if (sunfish_button_) {
+    sunfish_button_->SetEnabled(enabled);
+  }
+  if (assistant_new_entry_point_button_) {
+    assistant_new_entry_point_button_->SetEnabled(enabled);
+  }
   if (filter_button_) {
     filter_button_->SetEnabled(enabled);
   }
@@ -774,10 +795,13 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
     MaybeFadeContainerOut(filter_and_close_button_container_);
   }
 
-  if (assistant_button_ || sunfish_button_) {
+  if (end_button_container_ && !end_button_container_->children().empty()) {
+    const bool any_edge_button_shown = show_assistant_button_ ||
+                                       show_assistant_new_entry_point_button_ ||
+                                       show_sunfish_button_;
     const bool should_show_edge_buttons =
-        (show_assistant_button_ || show_sunfish_button_) &&
-        !should_show_close_button;
+        any_edge_button_shown && !should_show_close_button;
+
     if (should_show_edge_buttons) {
       MaybeFadeContainerIn(end_button_container_);
     } else {
@@ -867,6 +891,16 @@ void SearchBoxViewBase::SetShowAssistantButton(bool show) {
   DCHECK(assistant_button_);
   show_assistant_button_ = show;
   assistant_button_->SetVisible(show);
+  UpdateButtonsVisibility();
+}
+
+void SearchBoxViewBase::SetShowAssistantNewEntryPointButton(bool show) {
+  if (show) {
+    CHECK(assistant_new_entry_point_button_);
+    show_assistant_new_entry_point_button_ = show;
+    assistant_new_entry_point_button_->SetVisible(show);
+  }
+
   UpdateButtonsVisibility();
 }
 

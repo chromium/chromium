@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
+#include "base/i18n/unicodestring.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
@@ -20,6 +24,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -36,6 +43,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
+namespace webid {
 namespace {
 
 // safe_zone_diameter/icon_size as defined in
@@ -71,34 +79,49 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
 }
 
+std::u16string ListToString(base::span<std::u16string> items) {
+  std::vector<icu::UnicodeString> strings;
+  strings.reserve(items.size());
+  for (const auto& item : items) {
+    strings.emplace_back(item.data(), item.size());
+  }
+  UErrorCode error = U_ZERO_ERROR;
+  auto formatter = base::WrapUnique(icu::ListFormatter::createInstance(error));
+  if (U_FAILURE(error) || !formatter) {
+    // Verify that this doesn't happen in practice.
+    base::debug::DumpWithoutCrashing();
+    return std::u16string();
+  }
+  icu::UnicodeString formatted;
+  formatter->format(strings.data(), strings.size(), formatted, error);
+  if (U_FAILURE(error)) {
+    // Verify that this doesn't happen in practice.
+    base::debug::DumpWithoutCrashing();
+    return std::u16string();
+  }
+  return base::i18n::UnicodeStringToString16(formatted);
+}
+
 std::u16string GetPermissionFieldsString(
     const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
-  std::vector<std::string> strings;
+  std::vector<std::u16string> strings;
   for (auto field : fields) {
     switch (field) {
       case content::IdentityRequestDialogDisclosureField::kName:
         strings.push_back(
-            l10n_util::GetStringUTF8(IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME));
+            l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME));
         break;
       case content::IdentityRequestDialogDisclosureField::kEmail:
-        strings.push_back(
-            l10n_util::GetStringUTF8(IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL));
+        strings.push_back(l10n_util::GetStringUTF16(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL));
         break;
       case content::IdentityRequestDialogDisclosureField::kPicture:
-        strings.push_back(l10n_util::GetStringUTF8(
+        strings.push_back(l10n_util::GetStringUTF16(
             IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE));
         break;
     }
   }
-  // Make sure we have at least 3 strings in the vector for the function call.
-  int num_strings = strings.size();
-  if (strings.size() < 3) {
-    strings.resize(3);
-  }
-  return base::i18n::MessageFormatter::FormatWithNamedArgs(
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_DATA_SHARING_STRING),
-      "count", num_strings, "field_1", strings[0], "field_2", strings[1],
-      "field_3", strings[2]);
+  return ListToString(strings);
 }
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -455,6 +478,15 @@ void AccountHoverButton::OnThemeChanged() {
 }
 
 void AccountHoverButton::OnPressed(const ui::Event& event) {
+  // We do not disable the button which has been clicked because otherwise,
+  // focus wouldn't be able to remain on the selected account row and causes the
+  // focus to move to the cancel button. Since the button is not disabled, it is
+  // possible for the button to be clicked again and we would ignore these
+  // future clicks.
+  if (has_been_clicked_) {
+    return;
+  }
+
   // Log the metric before invoking the callback since the callback may
   // destroy this object.
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
@@ -509,15 +541,14 @@ AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
-    : web_contents_(web_contents->GetWeakPtr()),
+    : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       owner_(owner),
       rp_for_display_(rp_for_display) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
 }
 
-AccountSelectionViewBase::AccountSelectionViewBase() = default;
-AccountSelectionViewBase::~AccountSelectionViewBase() {}
+AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
 void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
@@ -531,7 +562,7 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
-    const content::IdentityRequestAccount& account,
+    const IdentityRequestAccountPtr& account,
     std::optional<int> clickable_position,
     bool should_include_idp,
     bool is_modal_dialog,
@@ -544,7 +575,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   views::style::TextStyle account_email_style =
       is_modal_dialog ? views::style::STYLE_BODY_5
                       : views::style::STYLE_SECONDARY;
-  if (account.is_filtered_out) {
+  if (account->is_filtered_out) {
     account_name_style = views::style::STYLE_DISABLED;
     account_email_style = views::style::STYLE_DISABLED;
   }
@@ -553,17 +584,17 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   auto account_image_view = std::make_unique<AccountImageView>();
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(clickable_position || !should_include_idp);
-  const content::IdentityProviderData& idp_data = *account.identity_provider;
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   if (clickable_position) {
     BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
-      account_image_view->SetAccountImage(account, *image_fetcher_,
+      account_image_view->SetAccountImage(*account, *image_fetcher_,
                                           avatar_size);
       // Introduce a border so that the IDP image is a bit past the account
       // image.
-      account_image_view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/kIdpBadgeOffset,
-                            /*right=*/kIdpBadgeOffset)));
+      account_image_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          /*top=*/0, /*left=*/0, /*bottom=*/kIdpBadgeOffset,
+          /*right=*/kIdpBadgeOffset)));
       // Put `account_image_view` into a FillLayout `background_container`.
       std::unique_ptr<views::View> background_container =
           std::make_unique<views::View>();
@@ -599,7 +630,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
       avatar_view = std::move(background_container);
     } else {
-      account_image_view->SetAccountImage(account, *image_fetcher_,
+      account_image_view->SetAccountImage(*account, *image_fetcher_,
                                           avatar_size);
       avatar_view = std::move(account_image_view);
     }
@@ -618,19 +649,21 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     // data.
     auto row = std::make_unique<AccountHoverButton>(
         base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
-                            base::Unretained(owner_), std::cref(account),
-                            std::cref(idp_data)),
+                            base::Unretained(owner_), account),
         std::move(avatar_view),
-        /*title=*/account.is_filtered_out ? base::UTF8ToUTF16(account.email)
-                                          : base::UTF8ToUTF16(account.name),
-        /*subtitle=*/account.is_filtered_out
+        /*title=*/account->is_filtered_out ? base::UTF8ToUTF16(account->email)
+                                           : base::UTF8ToUTF16(account->name),
+        /*subtitle=*/account->is_filtered_out
             ? l10n_util::GetStringUTF16(IDS_FILTERED_ACCOUNT_MESSAGE)
-            : base::UTF8ToUTF16(account.email),
+            : base::UTF8ToUTF16(account->email),
         /*secondary_view=*/
         is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
                         : nullptr,
         /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr,
         *clickable_position);
+    row->SetProperty(views::kElementIdentifierKey,
+                     kFedCmAccountChooserDialogAccountElementId);
+
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         /*vertical=*/additional_vertical_padding,
         /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing
@@ -641,15 +674,17 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     if (should_include_idp) {
       row->SetFooterTextStyle(views::style::CONTEXT_LABEL, account_email_style);
     }
-    if (account.is_filtered_out) {
+    if (account->is_filtered_out) {
       row->SetEnabled(false);
     }
     return row;
   }
   // We should only create non-button account rows for valid accounts.
-  CHECK(!account.is_filtered_out);
-  account_image_view->SetAccountImage(account, *image_fetcher_, avatar_size);
+  CHECK(!account->is_filtered_out);
+  account_image_view->SetAccountImage(*account, *image_fetcher_, avatar_size);
   auto row = std::make_unique<views::View>();
+  row->SetProperty(views::kElementIdentifierKey,
+                   kFedCmAccountChooserDialogAccountElementId);
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(
@@ -666,13 +701,13 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   views::StyledLabel* const account_name =
       text_column->AddChildView(std::make_unique<views::StyledLabel>());
   account_name->SetDefaultTextStyle(account_name_style);
-  account_name->SetText(base::UTF8ToUTF16(account.name));
+  account_name->SetText(base::UTF8ToUTF16(account->name));
   account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Add account email.
   views::Label* const account_email =
       text_column->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(account.email),
+          base::UTF8ToUTF16(account->email),
           views::style::CONTEXT_DIALOG_BODY_TEXT, account_email_style));
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
@@ -826,31 +861,10 @@ AccountSelectionViewBase::GetErrorDialogText(
   return {summary, description};
 }
 
-base::WeakPtr<views::Widget> AccountSelectionViewBase::GetDialogWidget() {
-  return dialog_widget_;
-}
-
 // static
 net::NetworkTrafficAnnotationTag
 AccountSelectionViewBase::GetTrafficAnnotation() {
   return kTrafficAnnotation;
 }
 
-bool AccountSelectionViewBase::CanFitInWebContents() {
-  CHECK(web_contents_ && dialog_widget_);
-
-  gfx::Size web_contents_size = web_contents_->GetSize();
-  gfx::Size preferred_bubble_size =
-      dialog_widget_->GetContentsView()->GetPreferredSize();
-
-  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
-  // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
-  // to the bubble widget.
-  return preferred_bubble_size.width() <
-             (web_contents_size.width() - kRightMargin) &&
-         preferred_bubble_size.height() <
-             (web_contents_size.height() - kTopMargin);
-}
-
-void AccountSelectionViewBase::DidShowWidget() {}
-void AccountSelectionViewBase::DidHideWidget() {}
+}  // namespace webid

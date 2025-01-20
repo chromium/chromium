@@ -2,8 +2,9 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome-k ezkutuko moduan irekitzen ditu automatikoki YouTube-ko ezkutuko moduko estekak.</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
-<translation id="1143896152279775643"><ph name="EMAIL" /> kontuaren pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="1143896152279775643"><ph name="EMAIL" /> kontuko pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="1146503048444965320">Ireki fitxa berri bat Chrome-n</translation>
 <translation id="1166460004393506534">Ezabatu Chrome-ko arakatze-datuak</translation>
 <translation id="1179527450541388808">Sartu Chrome-n bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Erabili Chrome mezuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="1229222343402087523">Bilatu "${searchPhrase}" Chrome-n</translation>
 <translation id="1237769345474105984">Chrome-tik</translation>
-<translation id="1240190568154816272">Chrome-ri buruzko aholkuak</translation>
 <translation id="124228879633599436">Chrome zaharkituta dago. Eguneratu seguru egoteko.</translation>
 <translation id="1333745675627230582">Aritu Chrome-ko Dino jokoan</translation>
 <translation id="1352919863522755794">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -38,6 +38,7 @@ Kontuan hartu beharrekoak:
 <translation id="1646463005043273333">Chrome arakatzaile lehenetsi gisa ezartzeko Chrome-ren ezarpena irekitzen du.</translation>
 <translation id="1670609221633730681">Chrome-rako aholkua: aukeratu helbide-barraren posizioa</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Gorde pasahitzak Chrome-n</translation>
 <translation id="1790080846677398234">Idatzitako URLak Chrome-ko laster-marketan gehitzen ditu.</translation>
 <translation id="1799920918471566157">Chrome-ri buruzko aholkuak</translation>
 <translation id="1830634592642484976">Helbide hau Chrome-n gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="3655656110921623717">Ondorioz, Chrome-k beti eskatuko du mugikorretarako webgunea.</translation>
 <translation id="3740397331642243698">Idatzitako URLak Google Chrome-ren ezkutuko moduan irekitzen ditu.</translation>
 <translation id="3741995255368156336">Chrome-ren Irakurketa-zerrenda irekitzen du.</translation>
+<translation id="3808570423967020928">Sartu Chrome-n bizkorrago orri nagusiko zintaren bidez.</translation>
 <translation id="3827545470516145620">Babes estandarra darabilzu gailu honetan</translation>
 <translation id="384394811301901750">Google Chrome-k ezin du erabili kamera une honetan</translation>
 <translation id="3863841106411295595">Idatzitako URLak Chrome-ko irakurketa-zerrendan gehitzen ditu.</translation>
@@ -125,6 +127,7 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="4636900170638246267">Hasi saioa webgune honetan eta Chrome-n.</translation>
 <translation id="4646014602299206846">Chrome-k paketeen jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira.</translation>
 <translation id="4647910807533196601">Ireki nire azken fitxa Chrome-n.</translation>
+<translation id="4693084815234024320">Chrome-ren ezkutuko moduan zaude</translation>
 <translation id="4724297637870447613">Erabili Chrome edonon</translation>
 <translation id="4738647308035481133">Google Chrome-ko orri bat</translation>
 <translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
@@ -219,9 +222,12 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 
 Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6922332667202044570">Ezabatu Chrome-ko arakatze-datuak.</translation>
+<translation id="6924922227983877439">Ireki estekak Chrome-n modu lehenetsian</translation>
+<translation id="6931601805528922498">Saioa hasiz gero, zure kontua Chrome-n gehitzen da laneko kontuetarako arakatzeko.</translation>
 <translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>
 <translation id="7056826488869329999">Chrome-ren segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="7061455974939528301">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu orri nagusia"</translation>
+<translation id="7065813315247345131">Eraman Chrome zintara</translation>
 <translation id="7124339256045485976">Mantendu Chrome eguneratuta</translation>
 <translation id="7161390184744336561">Google Chrome zaharkituta dago</translation>
 <translation id="7165736900384873061">Hasi Google Chrome QR eskanerra erabiltzen</translation>

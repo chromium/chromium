@@ -75,7 +75,8 @@ void VerifyFailure(net::Error expected_error,
   EXPECT_EQ(0u, actual_body.size());
 }
 
-class CertNetFetcherURLLoaderTest : public PlatformTest {
+class CertNetFetcherURLLoaderTest : public PlatformTest,
+                                    public net::WithTaskEnvironment {
  public:
   CertNetFetcherURLLoaderTest() {
     test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
@@ -215,7 +216,6 @@ class CertNetFetcherURLLoaderTest : public PlatformTest {
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<base::Thread> creation_thread_;
   std::unique_ptr<CertNetFetcherTestUtil> test_util_;
-
   bool use_hanging_url_loader_ = false;
 };
 
@@ -239,8 +239,7 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
 };
 
 class CertNetFetcherURLLoaderTestWithSecureDnsInterceptor
-    : public CertNetFetcherURLLoaderTest,
-      public net::WithTaskEnvironment {
+    : public CertNetFetcherURLLoaderTest {
  public:
   CertNetFetcherURLLoaderTestWithSecureDnsInterceptor()
       : invoked_interceptor_(false) {}

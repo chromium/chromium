@@ -229,8 +229,8 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   // TODO(crbug.com/40828528): This is a smoking gun code smell;
   // TabStripRegionView and Toolbar have different affordances, so they should
   // separately override the drag&drop methods.
-  if (data.HasCustomFormat(
-          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag))) {
+  if (data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
+          ui::kMimeTypeWindowDrag))) {
     return false;
   }
 
@@ -594,6 +594,7 @@ void BrowserRootView::NavigateToDroppedUrls(
     params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
     params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    params.initiator_origin = event.data().GetRendererTaintedOrigin();
     params.source_contents = model->GetWebContentsAt(insertion_index);
     params.window_action = NavigateParams::SHOW_WINDOW;
     Navigate(&params);
@@ -613,6 +614,7 @@ void BrowserRootView::NavigateToDroppedUrls(
         insertion_index < model->count()) {
       params.group = model->GetTabGroupForTab(insertion_index);
     }
+    params.initiator_origin = event.data().GetRendererTaintedOrigin();
     params.window_action = NavigateParams::SHOW_WINDOW;
     Navigate(&params);
   }

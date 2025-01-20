@@ -67,10 +67,6 @@ bool SetWallpaperInfo(const AccountId& account_id,
                       const WallpaperInfo& info,
                       PrefService* const pref_service,
                       const std::string& pref_name) {
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    CHECK(info.version.IsValid());
-  }
-
   if (!pref_service) {
     return false;
   }
@@ -214,7 +210,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     RemoveWallpaperInfo(account_id, local_state_, prefs::kUserWallpaperInfo);
     RemoveWallpaperInfo(account_id,
                         profile_helper_->GetUserPrefServiceSyncable(account_id),
-                        GetSyncPrefName());
+                        prefs::kSyncableWallpaperInfo);
   }
 
   std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
@@ -331,7 +327,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     if (!pref_service)
       return false;
 
-    return GetWallpaperInfo(account_id, pref_service, GetSyncPrefName(), info);
+    return GetWallpaperInfo(account_id, pref_service,
+                            prefs::kSyncableWallpaperInfo, info);
   }
 
   // Store |info| into the syncable pref service for |account_id|.
@@ -344,27 +341,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
     DCHECK(IsWallpaperTypeSyncable(info.type));
 
-    return SetWallpaperInfo(account_id, info, pref_service, GetSyncPrefName());
-  }
-
-  bool GetSyncedWallpaperInfoFromDeprecatedPref(
-      const AccountId& account_id,
-      WallpaperInfo* info) const override {
-    CHECK(features::IsVersionWallpaperInfoEnabled());
-    PrefService* pref_service =
-        profile_helper_->GetUserPrefServiceSyncable(account_id);
-    if (!pref_service) {
-      return false;
-    }
-
-    return GetWallpaperInfo(account_id, pref_service,
-                            prefs::kSyncableWallpaperInfo, info);
-  }
-
-  void ClearDeprecatedPref(const AccountId& account_id) override {
-    RemoveWallpaperInfo(account_id,
-                        profile_helper_->GetUserPrefServiceSyncable(account_id),
-                        prefs::kSyncableWallpaperInfo);
+    return SetWallpaperInfo(account_id, info, pref_service,
+                            prefs::kSyncableWallpaperInfo);
   }
 
   base::TimeDelta GetTimeToNextDailyRefreshUpdate(
@@ -433,18 +411,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 }  // namespace
 
 // static
-const char* WallpaperPrefManager::GetSyncPrefName() {
-  return features::IsVersionWallpaperInfoEnabled()
-             ? prefs::kSyncableVersionedWallpaperInfo
-             : prefs::kSyncableWallpaperInfo;
-}
-
-// static
 bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
-  if (features::IsVersionWallpaperInfoEnabled() &&
-      !local_info.version.IsValid()) {
-    return false;
-  }
   if (IsTimeOfDayWallpaper(local_info.collection_id)) {
     // Time Of Day wallpapers are not syncable.
     return false;
@@ -460,22 +427,6 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
     LOG(ERROR) << " wallpaper type " << static_cast<int>(synced_info.type)
                << " from remote prefs is not syncable.";
     return false;
-  }
-
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    base::Version sync_version = synced_info.version;
-    base::Version local_version = GetSupportedVersion(synced_info.type);
-    if (!sync_version.IsValid()) {
-      LOG(WARNING) << __func__ << " invalid sync version";
-      return false;
-    }
-    if (sync_version.IsValid() && local_version.IsValid()) {
-      const int remote_major_version = sync_version.components()[0];
-      const int local_major_version = local_version.components()[0];
-      if (remote_major_version > local_major_version) {
-        return false;
-      }
-    }
   }
 
   if (synced_info.MatchesSelection(local_info)) {
@@ -533,8 +484,6 @@ void WallpaperPrefManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   using user_prefs::PrefRegistrySyncable;
 
   registry->RegisterDictionaryPref(prefs::kSyncableWallpaperInfo,
-                                   PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(prefs::kSyncableVersionedWallpaperInfo,
                                    PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 

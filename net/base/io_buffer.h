@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_BASE_IO_BUFFER_H_
 #define NET_BASE_IO_BUFFER_H_
 
@@ -16,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/free_deleter.h"
@@ -97,10 +93,10 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   }
 
   base::span<uint8_t> span() {
-    return base::make_span(bytes(), static_cast<size_t>(size_));
+    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
   }
   base::span<const uint8_t> span() const {
-    return base::make_span(bytes(), static_cast<size_t>(size_));
+    return UNSAFE_TODO(base::span(bytes(), static_cast<size_t>(size_)));
   }
 
  protected:

@@ -18,7 +18,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
@@ -53,7 +55,9 @@ PasswordUiViewAndroid::SerializationResult SerializePasswords(
     const base::FilePath& target_directory,
     std::vector<password_manager::CredentialUIEntry> credentials) {
   // The UI should not trigger serialization if there are no passwords.
-  DCHECK(!credentials.empty());
+  base::UmaHistogramBoolean(
+      "PasswordManager.ExportAndroid.MoreThanZeroPasswords",
+      credentials.size() > 0);
 
   // Creating a file will block the execution on I/O.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -62,6 +66,9 @@ PasswordUiViewAndroid::SerializationResult SerializePasswords(
   // Ensure that the target directory exists.
   base::File::Error error = base::File::FILE_OK;
   if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
+    base::UmaHistogramExactLinear(
+        "PasswordManager.ExportAndroid.CreateDirectoryError", -error,
+        -base::File::Error::FILE_ERROR_MAX);
     return {0, std::string(), base::File::ErrorToString(error)};
   }
 
@@ -69,18 +76,24 @@ PasswordUiViewAndroid::SerializationResult SerializePasswords(
   // passwords.
   base::FilePath export_file;
   if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+    logging::SystemErrorCode error_code = logging::GetLastSystemErrorCode();
+    base::UmaHistogramExactLinear(
+        "PasswordManager.ExportAndroid.CreateTempFileError",
+        -base::File::OSErrorToFileError(error_code),
+        -base::File::Error::FILE_ERROR_MAX);
+    return {0, std::string(), logging::SystemErrorCodeToString(error_code)};
   }
 
   // Write the serialized data in CSV.
   std::string data =
       password_manager::PasswordCSVWriter::SerializePasswords(credentials);
   if (!base::WriteFile(export_file, data)) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+    logging::SystemErrorCode error_code = logging::GetLastSystemErrorCode();
+    base::UmaHistogramExactLinear(
+        "PasswordManager.ExportAndroid.WriteToTempFileError",
+        -base::File::OSErrorToFileError(error_code),
+        -base::File::Error::FILE_ERROR_MAX);
+    return {0, std::string(), logging::SystemErrorCodeToString(error_code)};
   }
 
   return {static_cast<int>(credentials.size()), export_file.value(),

@@ -21,7 +21,7 @@ class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
                              SPEECHRECOGNITIONPRIVATE_START)
 
  protected:
-  ~SpeechRecognitionPrivateStartFunction() override {}
+  ~SpeechRecognitionPrivateStartFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -37,7 +37,7 @@ class SpeechRecognitionPrivateStopFunction : public ExtensionFunction {
                              SPEECHRECOGNITIONPRIVATE_STOP)
 
  protected:
-  ~SpeechRecognitionPrivateStopFunction() override {}
+  ~SpeechRecognitionPrivateStopFunction() override = default;
   ResponseAction Run() override;
 
  private:

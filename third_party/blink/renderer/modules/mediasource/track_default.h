@@ -42,7 +42,7 @@ class TrackDefault final : public ScriptWrappable {
   String byteStreamTrackID() const { return byte_stream_track_id_; }
   String language() const { return language_; }
   String label() const { return label_; }
-  ScriptValue kinds(ScriptState*) const;
+  ScriptObject kinds(ScriptState*) const;
 
  private:
   const V8TrackDefaultType type_;

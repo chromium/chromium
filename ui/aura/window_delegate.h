@@ -31,8 +31,9 @@ class AURA_EXPORT WindowDelegate : public ui::EventHandler {
   // Returns the window's minimum size, or size 0,0 if there is no limit.
   virtual gfx::Size GetMinimumSize() const = 0;
 
-  // Returns the window's maximum size, or size 0,0 if there is no limit.
-  virtual gfx::Size GetMaximumSize() const = 0;
+  // Returns the window's maximum size, or (size 0,0 or std::nullopt) if there
+  // is no limit.
+  virtual std::optional<gfx::Size> GetMaximumSize() const = 0;
 
   // Called when the Window's position and/or size changes.
   virtual void OnBoundsChanged(const gfx::Rect& old_bounds,

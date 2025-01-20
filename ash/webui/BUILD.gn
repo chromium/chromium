@@ -49,6 +49,7 @@ test("ash_webui_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//content/test:test_support",
     "//mojo/core/embedder",
     "//ui/accessibility:test_support",
     "//ui/base:base",
@@ -69,10 +70,8 @@ group("closure_compile") {
   testonly = true
   deps = [
     "//ash/webui/common:closure_compile",
-    "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/untrusted_resources:closure_compile",
-    "//ash/webui/files_internals:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/multidevice_debug/resources:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",

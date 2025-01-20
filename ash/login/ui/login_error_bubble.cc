@@ -9,8 +9,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,9 +35,7 @@ LoginErrorBubble::LoginErrorBubble(base::WeakPtr<views::View> anchor_view)
   alert_icon_ = AddChildView(std::make_unique<views::ImageView>());
   alert_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kLockScreenAlertIcon,
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary,
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
       kAlertIconSizeDp));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);

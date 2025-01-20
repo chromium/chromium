@@ -36,7 +36,7 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       const BubbleParameters& bubble_parameters,
       signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure dialog_closed_closure,
-      base::RepeatingClosure retry_callback = base::DoNothing()) override;
+      base::RepeatingClosure retry_callback) override;
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,

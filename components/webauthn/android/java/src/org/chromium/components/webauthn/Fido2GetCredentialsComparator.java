@@ -19,9 +19,9 @@ public class Fido2GetCredentialsComparator {
     public static class Factory {
         private static Fido2GetCredentialsComparator sInstanceForTesting;
 
-        public static Fido2GetCredentialsComparator get() {
+        public static Fido2GetCredentialsComparator get(boolean isGoogleRp) {
             return sInstanceForTesting == null
-                    ? new Fido2GetCredentialsComparator()
+                    ? new Fido2GetCredentialsComparator(isGoogleRp)
                     : sInstanceForTesting;
         }
 
@@ -50,108 +50,118 @@ public class Fido2GetCredentialsComparator {
         public final long completionTime;
         public final int credentialCount;
 
-        public State(boolean successful, long completionTime, int credentialCount) {
+        public static State failed() {
+            return new State(
+                    /* successful= */ false, /* completionTime= */ 0, /* credentialCount= */ -1);
+        }
+
+        public static State successful(long completionTime, int credentialCount) {
+            return new State(/* successful= */ true, completionTime, credentialCount);
+        }
+
+        private State(boolean successful, long completionTime, int credentialCount) {
             this.successful = successful;
             this.completionTime = completionTime;
             this.credentialCount = credentialCount;
         }
     }
 
-    private static final String HISTOGRAM_PREFIX = "WebAuthentication.Android.Fido2VsPasskeyCache.";
+    private static final String HISTOGRAM_PREFIX = "WebAuthentication.Android.Fido2VsPasskeyCache";
 
     private State mPasskeysCacheResultState;
     private State mFido2ResultState;
+    private boolean mIsGoogleRp;
 
     void onGetCredentialsSuccessful(int credentialCount) {
         if (mFido2ResultState != null) {
             return;
         }
-        long realtimeNow = SystemClock.elapsedRealtime();
-        if (mPasskeysCacheResultState == null) {
-            mFido2ResultState = new State(true, realtimeNow, credentialCount);
-            return;
-        }
-        if (mPasskeysCacheResultState.successful) {
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_PREFIX + "PasskeyCacheFasterMs",
-                    realtimeNow - mPasskeysCacheResultState.completionTime);
-            RecordHistogram.recordCount100Histogram(
-                    HISTOGRAM_PREFIX + "CredentialCountDifference",
-                    Math.abs(credentialCount - mPasskeysCacheResultState.credentialCount));
-            RecordHistogram.recordEnumeratedHistogram(
-                    HISTOGRAM_PREFIX + "SuccessState",
-                    SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL,
-                    SuccessState.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    HISTOGRAM_PREFIX + "SuccessState",
-                    SuccessState.FIDO2_SUCCESSFUL_CACHE_FAILED,
-                    SuccessState.COUNT);
-        }
+        mFido2ResultState = State.successful(SystemClock.elapsedRealtime(), credentialCount);
+        performComparison();
     }
 
     void onGetCredentialsFailed() {
         if (mFido2ResultState != null) {
             return;
         }
-        long realtimeNow = SystemClock.elapsedRealtime();
-        if (mPasskeysCacheResultState == null) {
-            mFido2ResultState = new State(false, realtimeNow, -1);
-            return;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_PREFIX + "SuccessState",
-                mPasskeysCacheResultState.successful
-                        ? SuccessState.FIDO2_FAILED_CACHE_SUCCESSFUL
-                        : SuccessState.FIDO2_FAILED_CACHE_FAILED,
-                SuccessState.COUNT);
+        mFido2ResultState = State.failed();
+        performComparison();
     }
 
     void onCachedGetCredentialsSuccessful(int credentialCount) {
         if (mPasskeysCacheResultState != null) {
             return;
         }
-        long realtimeNow = SystemClock.elapsedRealtime();
-        if (mFido2ResultState == null) {
-            mPasskeysCacheResultState = new State(true, realtimeNow, credentialCount);
-            return;
-        }
-        if (mFido2ResultState.successful) {
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_PREFIX + "Fido2FasterMs",
-                    realtimeNow - mFido2ResultState.completionTime);
-            RecordHistogram.recordCount100Histogram(
-                    HISTOGRAM_PREFIX + "CredentialCountDifference",
-                    Math.abs(credentialCount - mFido2ResultState.credentialCount));
-            RecordHistogram.recordEnumeratedHistogram(
-                    HISTOGRAM_PREFIX + "SuccessState",
-                    SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL,
-                    SuccessState.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    HISTOGRAM_PREFIX + "SuccessState",
-                    SuccessState.FIDO2_FAILED_CACHE_SUCCESSFUL,
-                    SuccessState.COUNT);
-        }
+        mPasskeysCacheResultState =
+                State.successful(SystemClock.elapsedRealtime(), credentialCount);
+        performComparison();
     }
 
     void onCachedGetCredentialsFailed() {
         if (mPasskeysCacheResultState != null) {
             return;
         }
-        long realtimeNow = SystemClock.elapsedRealtime();
-        if (mFido2ResultState == null) {
-            mPasskeysCacheResultState = new State(false, realtimeNow, -1);
+        mPasskeysCacheResultState = State.failed();
+        performComparison();
+    }
+
+    private void performComparison() {
+        if (mFido2ResultState == null || mPasskeysCacheResultState == null) {
             return;
         }
+
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_PREFIX + "SuccessState",
-                mFido2ResultState.successful
-                        ? SuccessState.FIDO2_SUCCESSFUL_CACHE_FAILED
-                        : SuccessState.FIDO2_FAILED_CACHE_FAILED,
-                SuccessState.COUNT);
+                HISTOGRAM_PREFIX + ".SuccessState", getSuccessState(), SuccessState.COUNT);
+        if (!mFido2ResultState.successful || !mPasskeysCacheResultState.successful) {
+            return;
+        }
+        long timeDifference =
+                Math.abs(
+                        mFido2ResultState.completionTime
+                                - mPasskeysCacheResultState.completionTime);
+        String speedHistogramName =
+                mFido2ResultState.completionTime < mPasskeysCacheResultState.completionTime
+                        ? ".Fido2FasterMs"
+                        : ".PasskeyCacheFasterMs";
+        String rpSuffix = mIsGoogleRp ? ".GoogleRp" : ".NonGoogleRp";
+
+        RecordHistogram.recordTimesHistogram(HISTOGRAM_PREFIX + speedHistogramName, timeDifference);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_PREFIX + speedHistogramName + rpSuffix, timeDifference);
+        int credentialCountDifference =
+                Math.abs(
+                        mFido2ResultState.credentialCount
+                                - mPasskeysCacheResultState.credentialCount);
+        RecordHistogram.recordCount100Histogram(
+                HISTOGRAM_PREFIX + ".CredentialCountDifference", credentialCountDifference);
+        RecordHistogram.recordCount100Histogram(
+                HISTOGRAM_PREFIX + ".CredentialCountDifference" + rpSuffix,
+                credentialCountDifference);
+        if (mFido2ResultState.credentialCount != mPasskeysCacheResultState.credentialCount) {
+            // The difference we see between the two APIs are significant. Also emit the
+            // credential counts.
+            RecordHistogram.recordCount1000Histogram(
+                    HISTOGRAM_PREFIX + ".Fido2CredentialCountWhenDifferent",
+                    mFido2ResultState.credentialCount);
+            RecordHistogram.recordCount1000Histogram(
+                    HISTOGRAM_PREFIX + ".PasskeyCacheCredentialCountWhenDifferent",
+                    mPasskeysCacheResultState.credentialCount);
+        }
+    }
+
+    private @SuccessState int getSuccessState() {
+        if (mFido2ResultState.successful) {
+            return mPasskeysCacheResultState.successful
+                    ? SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL
+                    : SuccessState.FIDO2_SUCCESSFUL_CACHE_FAILED;
+        }
+        return mPasskeysCacheResultState.successful
+                ? SuccessState.FIDO2_FAILED_CACHE_SUCCESSFUL
+                : SuccessState.FIDO2_FAILED_CACHE_FAILED;
     }
 
     // Use the factory to create an instance.
-    private Fido2GetCredentialsComparator() {}
+    private Fido2GetCredentialsComparator(boolean isGoogleRp) {
+        mIsGoogleRp = isGoogleRp;
+    }
 }

@@ -47,49 +47,44 @@ enum SharedImageUsage : uint32_t {
   // CVPixelBuffer's IOSurface. Because of this backing, IOSurfaceIsInUse will
   // always return true.
   SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 10,
-  // Image will be used with mipmap enabled
+  // Image will be used with mipmap enabled.
   SHARED_IMAGE_USAGE_MIPMAP = 1 << 11,
-  // Image will be used for CPU Writes by client
-  SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 12,
+  // Image will be used for CPU Writes by client. Normally write usage also
+  // implies read. Hence adding ONLY tag to clarify that its write only in this
+  // case.
+  SHARED_IMAGE_USAGE_CPU_WRITE_ONLY = 1 << 12,
   // Image will be used in RasterInterface with RawDraw.
   SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 13,
-  // Image will be used in RasterInterface for DelegatedCompositing.
-  // This is intended to avoid the overhead of a GPU fence per tile.
-  // TODO(crbug.com/41492887): In order to delegate buffers we need all buffer
-  // allocations to be set as SCANOUT. This will cause a fence per rastered
-  // tiled. A new buffer concept that avoids scanout but allows delegation might
-  // enable us to remove this usage.
-  SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 14,
   // Image will be created on the high performance GPU if supported.
-  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 15,
+  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 14,
   // Windows only: image will be backed by a DComp surface. A swap chain is
   // preferred when an image is opaque and expected to update frequently and
   // independently of other overlays. This flag is incompatible with
   // DISPLAY_READ and SCANOUT_DXGI_SWAP_CHAIN.
-  SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 16,
+  SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 15,
   // Windows only: image will be backed by a DXGI swap chain. This flag is
   // incompatible with SCANOUT_DCOMP_SURFACE.
-  SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN = 1 << 17,
+  SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN = 1 << 16,
 
   // Image will be used as a WebGPU storage texture.
-  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 18,
+  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 17,
 
   // Image will be written via GLES2Interface
-  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 19,
+  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 18,
 
   // Image will be written via RasterInterface
-  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 20,
+  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 19,
 
   // Image will be written by Dawn (for WebGPU)
-  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 21,
+  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 20,
 
   // The image will be used by GLES2 only for raster over the GLES2 interface.
   // Specified in conjunction with GLES2_READ and/or GLES2_WRITE.
-  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 22,
+  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 21,
 
   // The image will be used by raster only over the GLES2 interface.
   // Specified in conjunction with RASTER_READ and/or RASTER_WRITE.
-  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 23,
+  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 22,
 
   // Image will contain protected content to be scanned out. Note that this type
   // of image
@@ -98,18 +93,27 @@ enum SharedImageUsage : uint32_t {
   // to by a preprocessing step that converts the image's pixel format into
   // something the
   // display controller understands.
-  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 24,
+  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 23,
 
   // Image will be used as a WebGPU shared buffer
-  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 25,
+  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 24,
+
+  // Image will be used only by the CPU for Read and Writes by the client.
+  // Note that this flag is a special case and will be used in cases where
+  // clients wants a MappableSharedImage which needs to be mapped in the
+  // CPU for read/write but is not importable/texturable in the GPU. Once such
+  // use case is CrOs where client CameraBufferFactory uses BufferFormat::R_8
+  // to create a MappableSI but that format is non-texturable.
+  SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 25,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
-  // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
+  // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
+  // image.
   SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 26,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
@@ -181,6 +185,8 @@ class GPU_EXPORT SharedImageUsageSet {
   // NOLINTBEGIN(google-explicit-constructor)
   inline constexpr operator uint32_t() const { return set_storage_; }
   // NOLINTEND(google-explicit-constructor)
+
+  std::string ToString() const;
 
  private:
   friend inline constexpr bool operator==(gpu::SharedImageUsageSet set_a,

@@ -12,6 +12,7 @@ mojom("mojom") {
 
   webui_module_path = "/ash/webui/diagnostics_ui"
 
-  # Generate WebUI bindings in JavaScript rather than TypeScript.
-  generate_webui_js_bindings = true
+  # Non-CQ target //chromeos/services/chromebox_for_meetings has a transitive
+  # dependency on this file, and relies on the deprecated legacy bindings.
+  generate_legacy_js_bindings = true
 }

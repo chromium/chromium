@@ -868,7 +868,8 @@ WebFeedSubscriptionCoordinator::GetAllWebFeedSubscriptionStatus() const {
 
   // Remove duplicates, and fetch WebFeed status.
   base::ranges::sort(result);
-  result.erase(base::ranges::unique(result), result.end());
+  auto repeated = std::ranges::unique(result);
+  result.erase(repeated.begin(), repeated.end());
   for (auto& entry : result) {
     entry.second = GetWebFeedSubscriptionStatus(entry.first);
   }

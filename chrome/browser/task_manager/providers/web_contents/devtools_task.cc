@@ -12,7 +12,6 @@ DevToolsTask::DevToolsTask(content::WebContents* web_contents)
     : TabContentsTask(web_contents) {
 }
 
-DevToolsTask::~DevToolsTask() {
-}
+DevToolsTask::~DevToolsTask() = default;
 
 }  // namespace task_manager

@@ -2,7 +2,7 @@ Name: Checked in build outputs generated on Windows.
 URL: https://source.chromium.org/chromium/chromium/src/+/main:third_party/win_build_output/
 Version: N/A
 Date: 2024-10-23
-License: BSD 3-Clause
+License: BSD-3-Clause
 License File: //LICENSE
 Security Critical: yes
 Shipped: yes

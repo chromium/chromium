@@ -130,6 +130,13 @@ struct SharedStorageWritableTestCase {
   bool expected_shared_storage_writable_opted_in;
 };
 
+struct BrowsingTopicsWritableTestCase {
+  bool use_secure_document_url;
+  const char* base_url;
+  const char* input_html;
+  bool expected_browsing_topics;
+};
+
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
  public:
   explicit HTMLMockHTMLResourcePreloader(const KURL& document_url)
@@ -262,7 +269,9 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   void CheckNumberOfIntegrityConstraints(size_t expected) {
     size_t actual = 0;
     if (preload_request_) {
-      actual = preload_request_->IntegrityMetadataForTestingOnly().size();
+      IntegrityMetadataSet test_set =
+          preload_request_->IntegrityMetadataForTestingOnly();
+      actual = test_set.hashes.size() + test_set.signatures.size();
       EXPECT_EQ(expected, actual);
     }
   }
@@ -305,6 +314,16 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
     EXPECT_EQ(expected_shared_storage_writable_opted_in,
               resource->GetResourceRequest().GetSharedStorageWritableOptedIn());
+  }
+
+  void BrowsingTopicsRequestVerification(Document* document,
+                                         bool expected_browsing_topics) {
+    ASSERT_TRUE(preload_request_.get());
+    Resource* resource = preload_request_->Start(document);
+    ASSERT_TRUE(resource);
+
+    EXPECT_EQ(expected_browsing_topics,
+              resource->GetResourceRequest().GetBrowsingTopics());
   }
 
  protected:
@@ -542,6 +561,20 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.TakePreloadData(std::move(preload_data));
     preloader.SharedStorageWritableRequestVerification(
         &GetDocument(), test_case.expected_shared_storage_writable_opted_in);
+  }
+
+  void Test(BrowsingTopicsWritableTestCase test_case) {
+    SCOPED_TRACE(base::StringPrintf("Use secure doc URL: %d; HTML: '%s'",
+                                    test_case.use_secure_document_url,
+                                    test_case.input_html));
+
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url(test_case.base_url);
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.BrowsingTopicsRequestVerification(
+        &GetDocument(), test_case.expected_browsing_topics);
   }
 
  private:
@@ -1376,21 +1409,6 @@ TEST_F(HTMLPreloadScannerTest, testLinkRelPreload) {
     Test(test_case);
 }
 
-TEST_F(HTMLPreloadScannerTest, testNoDataUrls) {
-  PreloadScannerTestCase test_cases[] = {
-      {"http://example.test",
-       "<link rel=preload href='data:text/html,<p>data</data>'>", nullptr,
-       "http://example.test/", ResourceType::kRaw, 0},
-      {"http://example.test", "<img src='data:text/html,<p>data</data>'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-      {"data:text/html,<a>anchor</a>", "<img src='#anchor'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-  };
-
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-}
-
 // The preload scanner should follow the same policy that the ScriptLoader does
 // with regard to the type and language attribute.
 TEST_F(HTMLPreloadScannerTest, testScriptTypeAndLanguage) {
@@ -1772,7 +1790,6 @@ TEST_F(HTMLPreloadScannerTest, TokenStreamMatcher) {
 
 TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   static constexpr bool kSecureDocumentUrl = true;
   static constexpr bool kInsecureDocumentUrl = false;
 
@@ -1807,6 +1824,58 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
              network::mojom::ReferrerPolicy::kDefault,
              /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
+  }
+}
+
+class HTMLPreloadScannerDataUrlsTest
+    : public HTMLPreloadScannerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HTMLPreloadScannerDataUrlsTest() = default;
+
+ protected:
+  bool IsPreloadLinkRelDataUrlsEnabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(HTMLPreloadScannerDataUrlsTest,
+                         HTMLPreloadScannerDataUrlsTest,
+                         testing::Bool());
+
+TEST_P(HTMLPreloadScannerDataUrlsTest, testDataUrls) {
+  ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls(
+      IsPreloadLinkRelDataUrlsEnabled());
+  PreloadScannerTestCase test_cases[] = {
+      {"http://example.test",
+       "<link rel=preload href='data:text/html,<p>data</data>'>", nullptr,
+       "http://example.test/", ResourceType::kRaw, 0},
+      {"http://example.test",
+       "<link rel=preload as=style "
+       "href='data:text/css;charset=UTF-8,*%7Bcolor%3Ablue%3B%7D'>",
+       IsPreloadLinkRelDataUrlsEnabled()
+           ? "data:text/css;charset=UTF-8,*%7Bcolor%3Ablue%3B%7D"
+           : nullptr,
+       "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+      {"http://example.test", "<img src='data:text/html,<p>data</data>'>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      {"data:text/html,<a>anchor</a>", "<img src='#anchor'>", nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<link rel=preload as=image "
+       "href='data:image/"
+       "png;base64,"
+       "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
+       "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII='>",
+       IsPreloadLinkRelDataUrlsEnabled()
+           ? "data:image/"
+             "png;base64,"
+             "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
+             "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII="
+           : nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    HTMLPreloadScannerTest::Test(test_case);
   }
 }
 
@@ -1948,6 +2017,44 @@ TEST_F(HTMLPreloadScannerTest, PreloadScanDisabled_NoPreloads) {
     RunSetUp(kViewportDisabled, kPreloadEnabled,
              network::mojom::ReferrerPolicy::kDefault, true, {},
              /* disable_preload_scanning=*/true);
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testBrowsingTopics) {
+  WebRuntimeFeaturesBase::EnableTopicsAPI(true);
+  static constexpr bool kSecureDocumentUrl = true;
+  static constexpr bool kInsecureDocumentUrl = false;
+
+  static constexpr char kSecureBaseURL[] = "https://example.test";
+  static constexpr char kInsecureBaseURL[] = "http://example.test";
+
+  BrowsingTopicsWritableTestCase test_cases[] = {
+      // Insecure context
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/false},
+      // No browsingtopics attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+       /*expected_browsing_topics=*/false},
+      // Irrelevant element type
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' browsingtopics>",
+       /*expected_browsing_topics=*/false},
+      // Secure context, browsingtopics attribute
+      // Base (initial) URL does not affect SharedStorageWritable eligibility
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/true},
+      // Secure context, browsingtopics attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' browsingtopics>",
+       /*expected_browsing_topics=*/true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
 }

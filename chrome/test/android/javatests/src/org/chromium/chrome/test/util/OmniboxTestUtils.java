@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -385,37 +384,6 @@ public class OmniboxTestUtils {
                 });
 
         return result.get();
-    }
-
-    /**
-     * Retrieve the Suggestion View for specific suggestion index. Traverses the Suggestions list
-     * and skips over the Headers.
-     *
-     * @param <T> The type of the expected view. Inferred from call.
-     * @param indexOfSuggestion The index of the suggestion view (not including the headers).
-     * @return The View corresponding to suggestion with specific index, or null if there's no such
-     *     suggestion.
-     */
-    private @Nullable <T extends View> T getSuggestionViewForIndex(int indexOfSuggestion) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    OmniboxSuggestionsDropdown dropdown =
-                            mLocationBar
-                                    .getAutocompleteCoordinator()
-                                    .getSuggestionsDropdownForTest();
-                    int numViews = dropdown.getDropdownItemViewCountForTest();
-                    int nonHeaderViewIndex = 0;
-
-                    for (int childIndex = 0; childIndex < numViews; childIndex++) {
-                        View view = dropdown.getDropdownItemViewForTest(childIndex);
-                        if (view instanceof HeaderView) continue;
-
-                        if (nonHeaderViewIndex == indexOfSuggestion) return (T) view;
-                        nonHeaderViewIndex++;
-                    }
-
-                    return null;
-                });
     }
 
     /**

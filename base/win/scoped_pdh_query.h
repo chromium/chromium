@@ -5,10 +5,9 @@
 #ifndef BASE_WIN_SCOPED_PDH_QUERY_H_
 #define BASE_WIN_SCOPED_PDH_QUERY_H_
 
-#include <pdh.h>
-
 #include "base/base_export.h"
 #include "base/scoped_generic.h"
+#include "base/win/pdh_shim.h"
 
 namespace base::win {
 

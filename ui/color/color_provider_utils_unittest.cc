@@ -47,8 +47,9 @@ TEST_F(ColorProviderUtilsTest, RendererColorMapGeneratesProvidersCorrectly) {
   // enum is generated in the resulting RendererColorMap.
   ui::ColorProvider color_provider;
   ui::ColorMixer& mixer = color_provider.AddMixer();
-  for (int i = ui::kUiColorsStart + 1; i < ui::kUiColorsEnd; ++i)
+  for (int i = ui::kUiColorsStart + 1; i < ui::kUiColorsEnd; ++i) {
     mixer[i] = {static_cast<SkColor>(i)};
+  }
 
   // The size of the RendererColorMap should match number of defined
   // RendererColorIds.

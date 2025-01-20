@@ -52,7 +52,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
 
   AuthenticatorResponse* response() const { return response_.Get(); }
 
-  std::optional<String> authenticatorAttachment() const {
+  const String& authenticatorAttachment() const {
     return authenticator_attachment_;
   }
 
@@ -77,7 +77,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       const PublicKeyCredentialRequestOptionsJSON*,
       ExceptionState&);
 
-  v8::Local<v8::Value> toJSON(ScriptState*) const;
+  v8::Local<v8::Object> toJSON(ScriptState*) const;
 
   static ScriptPromise<IDLUndefined> signalUnknownCredential(
       ScriptState*,
@@ -101,7 +101,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
  private:
   const Member<DOMArrayBuffer> raw_id_;
   const Member<AuthenticatorResponse> response_;
-  const std::optional<String> authenticator_attachment_;
+  const String authenticator_attachment_;
   Member<const AuthenticationExtensionsClientOutputs> extension_outputs_;
 };
 

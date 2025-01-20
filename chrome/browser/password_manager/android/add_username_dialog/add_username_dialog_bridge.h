@@ -47,8 +47,7 @@ class AddUsernameDialogBridge {
                              DialogAcceptedCallback dialog_accepted_callback,
                              base::OnceClosure dialog_dismissed_callback);
 
-  void OnDialogAccepted(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& username);
+  void OnDialogAccepted(JNIEnv* env, const std::u16string& username);
   void OnDialogDismissed(JNIEnv* env);
 
  private:

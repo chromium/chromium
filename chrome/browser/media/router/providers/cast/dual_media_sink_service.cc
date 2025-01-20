@@ -35,13 +35,8 @@ bool DualMediaSinkService::HasInstance() {
   return g_dual_media_sink_service;
 }
 
-// static
 DialMediaSinkServiceImpl* DualMediaSinkService::GetDialMediaSinkServiceImpl() {
   return dial_media_sink_service_->impl();
-}
-
-MediaSinkServiceBase* DualMediaSinkService::GetCastMediaSinkServiceBase() {
-  return cast_media_sink_service_->impl();
 }
 
 CastMediaSinkServiceImpl* DualMediaSinkService::GetCastMediaSinkServiceImpl() {

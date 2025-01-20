@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -115,7 +116,7 @@ void UrlLoader::Open(const UrlRequest& request,
   if (!request.body.empty()) {
     blink::WebHTTPBody body;
     body.Initialize();
-    body.AppendData(request.body);
+    body.AppendData(blink::WebData(base::as_byte_span(request.body)));
     blink_request.SetHttpBody(body);
   }
 

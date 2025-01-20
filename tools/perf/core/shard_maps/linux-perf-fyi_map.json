@@ -14,7 +14,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+                "arguments": []
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -41,7 +41,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+                "arguments": []
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -68,7 +68,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+                "arguments": []
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -95,7 +95,7 @@
         "crossbench": {
             "speedometer_3.0": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": ["--fileserver"]
+                "arguments": []
             },
             "jetstream_2.2": {
                 "display_name": "jetstream2.crossbench",
@@ -109,13 +109,13 @@
     },
     "extra_infos": {
         "num_stories": 24,
-        "predicted_min_shard_time": 630,
+        "predicted_min_shard_time": 723.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 630,
+        "predicted_max_shard_time": 723.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 630,
-        "shard #1": 630,
-        "shard #2": 630,
-        "shard #3": 630
+        "shard #0": 723.0,
+        "shard #1": 723.0,
+        "shard #2": 723.0,
+        "shard #3": 723.0
     }
 }

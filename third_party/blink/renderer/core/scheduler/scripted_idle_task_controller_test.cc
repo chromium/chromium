@@ -7,7 +7,6 @@
 #include <deque>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
@@ -161,7 +160,6 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 
-  void SetPreemptedForCooperativeScheduling(Preempted) override {}
   void SetFrameVisible(bool) override {}
   bool IsFrameVisible() const override { return true; }
   void SetVisibleAreaLarge(bool) override {}
@@ -191,6 +189,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   void OnMainFrameInteractive() override {}
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   void OnDispatchLoadEvent() override {}
+  void OnDidInstallNewDocument() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>
   GetPauseSubresourceLoadingHandle() override {
@@ -201,7 +200,6 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
       WebSchedulingPriority) override {
     return nullptr;
   }
-  ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
   void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,
@@ -244,19 +242,9 @@ class MockIdleTask : public IdleTask {
 };
 }  // namespace
 
-class ScriptedIdleTaskControllerTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class ScriptedIdleTaskControllerTest : public testing::Test {
  public:
-  ScriptedIdleTaskControllerTest() {
-    if (IsOOMFixEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kScriptedIdleTaskControllerOOMFix);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kScriptedIdleTaskControllerOOMFix);
-    }
-  }
+  ScriptedIdleTaskControllerTest() = default;
 
   void InitializeScheduler(ShouldYield should_yield) {
     scheduler_.emplace(should_yield);
@@ -277,19 +265,16 @@ class ScriptedIdleTaskControllerTest
         execution_context_->GetExecutionContext());
   }
 
-  bool IsOOMFixEnabled() { return GetParam(); }
-
  protected:
   test::TaskEnvironment task_environment_;
   std::optional<MockScriptedIdleTaskControllerScheduler> scheduler_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ScopedSchedulerOverrider> scheduler_overrider_;
   std::optional<ScopedNullExecutionContext> execution_context_;
 };
 
-TEST_P(ScriptedIdleTaskControllerTest, RunCallback) {
+TEST_F(ScriptedIdleTaskControllerTest, RunCallback) {
   InitializeScheduler(ShouldYield(false));
 
   Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
@@ -305,7 +290,7 @@ TEST_P(ScriptedIdleTaskControllerTest, RunCallback) {
   EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
 }
 
-TEST_P(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
+TEST_F(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
   InitializeScheduler(ShouldYield(true));
 
   Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
@@ -321,7 +306,7 @@ TEST_P(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
   EXPECT_EQ(1u, scheduler_->GetNumIdleTasks());
 }
 
-TEST_P(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
+TEST_F(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
   InitializeScheduler(ShouldYield(false));
 
   // Register an idle task with a deadline.
@@ -342,7 +327,7 @@ TEST_P(ScriptedIdleTaskControllerTest, LongTimeoutShouldBeRemoveFromQueue) {
   EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
 }
 
-TEST_P(ScriptedIdleTaskControllerTest, RunAfterSchedulerWasDeleted) {
+TEST_F(ScriptedIdleTaskControllerTest, RunAfterSchedulerWasDeleted) {
   InitializeScheduler(ShouldYield(false));
 
   scoped_refptr<TestTaskRunner> task_runner = scheduler_->TaskRunner();
@@ -366,7 +351,7 @@ TEST_P(ScriptedIdleTaskControllerTest, RunAfterSchedulerWasDeleted) {
   EXPECT_EQ(task_runner->GetTaskCanceledCount(), 1);
 }
 
-TEST_P(ScriptedIdleTaskControllerTest, NoUnnecessaryRepostOnUnpause) {
+TEST_F(ScriptedIdleTaskControllerTest, NoUnnecessaryRepostOnUnpause) {
   InitializeScheduler(ShouldYield(false));
 
   // Register an idle task.
@@ -383,14 +368,10 @@ TEST_P(ScriptedIdleTaskControllerTest, NoUnnecessaryRepostOnUnpause) {
 
   // Pausing/unpausing the context should not cause more scheduler idle tasks to
   // be posted. That would unnecessarily use memory.
-  if (IsOOMFixEnabled()) {
-    EXPECT_EQ(scheduler_->GetNumIdleTasks(), 1u);
-  } else {
-    EXPECT_GT(scheduler_->GetNumIdleTasks(), 1u);
-  }
+  EXPECT_EQ(scheduler_->GetNumIdleTasks(), 1u);
 }
 
-TEST_P(ScriptedIdleTaskControllerTest,
+TEST_F(ScriptedIdleTaskControllerTest,
        SchedulerTimeoutTaskCanceledOnIdleTaskCanceled) {
   InitializeScheduler(ShouldYield(false));
 
@@ -403,13 +384,7 @@ TEST_P(ScriptedIdleTaskControllerTest,
 
   // The scheduler timeout task should be canceled. Otherwise, it stays in the
   // queue until the timeout expires which unnecessarily uses memory.
-  if (IsOOMFixEnabled()) {
-    EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
-  } else {
-    EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 0);
-  }
+  EXPECT_EQ(scheduler_->TaskRunner()->GetTaskCanceledCount(), 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(, ScriptedIdleTaskControllerTest, ::testing::Bool());
 
 }  // namespace blink

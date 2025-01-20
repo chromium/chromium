@@ -29,6 +29,7 @@
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,10 +37,6 @@
 namespace safe_browsing {
 
 namespace {
-
-// Command-line flag that can be used to override the current CSD model. Must be
-// provided with an absolute path.
-const char kOverrideCsdModelFlag[] = "csd-model-override-path";
 
 void ReturnModelOverrideFailure(
     base::OnceCallback<void(std::pair<std::string, base::File>)> callback) {
@@ -275,7 +272,7 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   bool model_valid = false;
   bool tflite_valid = visual_tflite_model.IsValid();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kOverrideCsdModelFlag) &&
+          switches::kOverrideCsdModelFlag) &&
       !model_str.empty()) {
     model_type_ = CSDModelType::kNone;
     flatbuffers::Verifier verifier(
@@ -566,7 +563,7 @@ void ClientSidePhishingModel::SetModelStringForTesting(
   // TODO (andysjlim): Move to a helper function once protobuf feature is
   // removed
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kOverrideCsdModelFlag) &&
+          switches::kOverrideCsdModelFlag) &&
       !model_str.empty()) {
     model_type_ = CSDModelType::kNone;
     flatbuffers::Verifier verifier(
@@ -631,10 +628,10 @@ void* ClientSidePhishingModel::GetFlatBufferMemoryAddressForTesting() {
 // This function is used for testing in client_side_phishing_model_unittest
 void ClientSidePhishingModel::MaybeOverrideModel() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kOverrideCsdModelFlag)) {
+          switches::kOverrideCsdModelFlag)) {
     base::FilePath overriden_model_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            kOverrideCsdModelFlag);
+            switches::kOverrideCsdModelFlag);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(

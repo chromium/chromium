@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,10 +15,11 @@
 namespace base {
 
 TEST(JSONStringEscapeTest, EscapeUTF8) {
-  const struct {
+  struct Cases {
     const char* to_escape;
     const char* escaped;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Cases>({
       {"\b\001aZ\"\\wee", "\\b\\u0001aZ\\\"\\\\wee"},
       {"a\b\f\n\r\t\v\1\\.\"z", "a\\b\\f\\n\\r\\t\\u000B\\u0001\\\\.\\\"z"},
       {"b\x0f\x7f\xf0\xff!",  // \xf0\xff is not a valid UTF-8 unit.
@@ -62,7 +65,7 @@ TEST(JSONStringEscapeTest, EscapeUTF8) {
       {"\xF3\xBF\xBF\xBF", "\xF3\xBF\xBF\xBF"},  // U+0FFFFF
       {"\xF4\x8F\xBF\xBE", "\xF4\x8F\xBF\xBE"},  // U+10FFFE
       {"\xF4\x8F\xBF\xBF", "\xF4\x8F\xBF\xBF"},  // U+10FFFF
-  };
+  });
 
   for (const auto& i : cases) {
     const char* in_ptr = i.to_escape;
@@ -108,10 +111,11 @@ TEST(JSONStringEscapeTest, EscapeUTF8) {
 }
 
 TEST(JSONStringEscapeTest, EscapeUTF16) {
-  const struct {
+  struct Cases {
     const wchar_t* to_escape;
     const char* escaped;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<Cases>({
       {L"b\uffb1\u00ff", "b\xEF\xBE\xB1\xC3\xBF"},
       {L"\b\001aZ\"\\wee", "\\b\\u0001aZ\\\"\\\\wee"},
       {L"a\b\f\n\r\t\v\1\\.\"z", "a\\b\\f\\n\\r\\t\\u000B\\u0001\\\\.\\\"z"},
@@ -157,7 +161,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
       {L"\U000FFFFF", "\xF3\xBF\xBF\xBF"},  // U+0FFFFF
       {L"\U0010FFFE", "\xF4\x8F\xBF\xBE"},  // U+10FFFE
       {L"\U0010FFFF", "\xF4\x8F\xBF\xBF"},  // U+10FFFF
-  };
+  });
 
   for (const auto& i : cases) {
     std::u16string in = WideToUTF16(i.to_escape);
@@ -236,8 +240,8 @@ TEST(JSONStringEscapeTest, EscapeBytes) {
     const char* to_escape;
     const char* escaped;
   } cases[] = {
-    {"b\x0f\x7f\xf0\xff!", "b\\u000F\\u007F\\u00F0\\u00FF!"},
-    {"\xe5\xc4\x4f\x05\xb6\xfd", "\\u00E5\\u00C4O\\u0005\\u00B6\\u00FD"},
+      {"b\x0f\x7f\xf0\xff!", "b\\u000F\\u007F\\u00F0\\u00FF!"},
+      {"\xe5\xc4\x4f\x05\xb6\xfd", "\\u00E5\\u00C4O\\u0005\\u00B6\\u00FD"},
   };
 
   for (const auto& i : cases) {
@@ -250,7 +254,7 @@ TEST(JSONStringEscapeTest, EscapeBytes) {
               EscapeBytesAsInvalidJSONString(in, true));
   }
 
-  const char kEmbedNull[] = { '\xab', '\x39', '\0', '\x9f', '\xab' };
+  const char kEmbedNull[] = {'\xab', '\x39', '\0', '\x9f', '\xab'};
   std::string in(kEmbedNull, std::size(kEmbedNull));
   EXPECT_FALSE(IsStringUTF8AllowingNoncharacters(in));
   EXPECT_EQ(std::string("\\u00AB9\\u0000\\u009F\\u00AB"),

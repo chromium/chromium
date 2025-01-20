@@ -177,6 +177,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   // Exposed as Request.integrity in Service Workers
   std::string fetch_integrity;
+  // Used to populate `Accept-Signatures`
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  std::vector<std::string> expected_signatures;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
   mojom::RequestDestination original_destination =
       mojom::RequestDestination::kEmpty;
@@ -217,8 +220,18 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       devtools_accepted_stream_types;
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;
+
+  // Used internally by the network service. Should not be modified by external
+  // callers, which should pass in address space of the request initiator via
+  // the ClientSecurityState includde either in URLLoaderFactoryParams or
+  // ResourceRequest::TrustedParams.
+  //
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/url_request.mojom
+  // for more details.
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
+
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
@@ -227,6 +240,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::AttributionReportingEligibility::kUnset;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
+  std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;

@@ -335,6 +335,8 @@
   E(kActionContentContextExitFullscreen, IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN) \
   E(kActionContentContextShowAllSavedPasswords, \
     IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS) \
+  E(kActionContentContextUsePasskeyFromAnotherDeviceTopLevel, \
+    IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   E(kActionContentContextPartialTranslate, \
     IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE) \
   /* Frame items. */ \
@@ -406,7 +408,6 @@
   E(kActionContentContextGenerateQrCode, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE) \
   E(kActionContentContextSharingSubmenu, IDC_CONTENT_CONTEXT_SHARING_SUBMENU) \
   /* Context menu item to show the clipboard history menu */ \
-  E(kActionContentClipboardHistoryMenu, IDC_CONTENT_CLIPBOARD_HISTORY_MENU) \
   E(kActionContentPasteFromClipboard, IDC_CONTENT_PASTE_FROM_CLIPBOARD) \
   /* Context menu items in the status tray */ \
   E(kActionStatusTrayKeepChromeRunningInBackground, \
@@ -474,20 +475,12 @@
   /* Autofill context menu commands */ \
   E(kActionContentContextAutofillImprovedSuggestions, \
     IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) \
-  E(kActionContentContextAutofillFallbackAddress, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
-  E(kActionContentContextAutofillFallbackPayments, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) \
-  E(kActionContentContextAutofillFallbackPassowords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSelectPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) \
   E(kActionContentContextAutofillFallbackPasswordsImportPasswords, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSuggestPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
-  E(kActionContentContextAutofillFallbackPasswordsNoSavedPasswords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS) \
   E(kActionContentContextUsePasskeyFromAnotherDevice, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   /* Live Caption */ \
@@ -554,6 +547,7 @@
   E(kActionSidePanelShowShoppingInsights) \
   E(kActionSidePanelShowSideSearch) \
   E(kActionSidePanelShowUserNote) \
+  E(kActionSidePanelShowMerchantTrust)
 
 #define TOOLBAR_PINNABLE_ACTION_IDS \
   E(kActionHome, IDC_HOME) \

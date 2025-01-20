@@ -4,9 +4,9 @@
 
 #include "base/test/test_file_util.h"
 
-#include <sys/mman.h>
 #include <errno.h>
 #include <stdint.h>
+#include <sys/mman.h>
 
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"

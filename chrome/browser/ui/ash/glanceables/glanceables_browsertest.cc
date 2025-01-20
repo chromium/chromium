@@ -37,6 +37,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -250,7 +251,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   std::unique_ptr<FakeGlanceablesClassroomClient>
       fake_glanceables_classroom_client_;

@@ -44,7 +44,6 @@ class CRYPTO_EXPORT SymmetricKey {
 
   // Generates a random key suitable to be used with |algorithm| and of
   // |key_size_in_bits| bits. |key_size_in_bits| must be a multiple of 8.
-  // The caller is responsible for deleting the returned SymmetricKey.
   //
   // Deprecated: use the value version below that does not take an algorithm.
   static std::unique_ptr<SymmetricKey> GenerateRandomKey(
@@ -59,7 +58,7 @@ class CRYPTO_EXPORT SymmetricKey {
   // multiple of 8. The caller is responsible for deleting the returned
   // SymmetricKey.
   //
-  // Deprecated: use crypto::kdf::DeriveKeyPBKDF2() instead.
+  // Deprecated: use crypto::kdf::DeriveKeyPbkdf2HmacSha1() instead.
   static std::unique_ptr<SymmetricKey> DeriveKeyFromPasswordUsingPbkdf2(
       Algorithm algorithm,
       const std::string& password,
@@ -93,9 +92,9 @@ class CRYPTO_EXPORT SymmetricKey {
   // exported with key(). The key must be of suitable size for use with
   // |algorithm|. The caller owns the returned SymmetricKey.
   //
-  // Deprecated: use the regular constructor that accepts a span of bytes,
-  // or use the Import() override that returns an optional if you need to
-  // tolerate failures.
+  // Deprecated: use the regular constructor that accepts a span of bytes, and
+  // validate that the key is of whatever length your client code expects before
+  // doing so.
   static std::unique_ptr<SymmetricKey> Import(Algorithm algorithm,
                                               const std::string& raw_key);
 

@@ -15,9 +15,7 @@
 #include "base/test/test_timeouts.h"
 #endif
 
-namespace views {
-
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -87,6 +85,4 @@ void WaitForWidgetActive(Widget* widget, bool active) {
   waiter.Wait();
 }
 
-}  // namespace test
-
-}  // namespace views
+}  // namespace views::test

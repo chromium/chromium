@@ -31,8 +31,6 @@ class AudioOutputDispatcher;
 // AudioManagerBase provides AudioManager functions common for all platforms.
 class MEDIA_EXPORT AudioManagerBase : public AudioManager {
  public:
-  enum class VoiceProcessingMode { kDisabled = 0, kEnabled = 1 };
-
   AudioManagerBase(const AudioManagerBase&) = delete;
   AudioManagerBase& operator=(const AudioManagerBase&) = delete;
 

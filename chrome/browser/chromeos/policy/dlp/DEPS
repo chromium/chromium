@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",
   "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/lacros/window_utility.h",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

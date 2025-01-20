@@ -150,14 +150,15 @@
             pref="{{fakeAssistantPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
-      <template is="dom-if" if="[[hasRightAltKey]]" restamp>
+      <template is="dom-if" if="[[hasQuickInsertKey]]" restamp>
         <keyboard-remap-modifier-key-row
             has-function-key="[[hasFunctionKey]]"
             default-remappings="[[defaultRemappings]]"
-            key="[[modifierKey.kRightAlt]]" id="rightAltKey"
+            key="[[modifierKey.kQuickInsert]]" id="quickInsertKey"
             meta-key="[[keyboard.metaKey]]"
-            aria-label="[[getActionRowLabel('perDeviceKeyboardKeyRightAlt')]]"
-            pref="{{fakeRightAltPref}}">
+            aria-label=
+                "[[getActionRowLabel('perDeviceKeyboardKeyQuickInsert')]]"
+            pref="{{fakeQuickInsertPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
       <template is="dom-if" if="[[hasFunctionKey]]" restamp>

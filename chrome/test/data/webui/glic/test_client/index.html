@@ -1,0 +1,171 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!doctype html>
+<meta charset="utf-8" />
+
+<style>
+  #pageHeader.connected {
+    background-color: green;
+  }
+  #pageHeader {
+    background-color: blue;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+  }
+  .section h1 {
+    text-align: center;
+    margin: 0.2em;
+    font-size: 15pt;
+  }
+  .section {
+    background-color: #eee;
+    box-shadow: 0 0 0.5em #999;
+    border: 1px solid black;
+    padding: 3px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+  body {
+    background-color: white;
+  }
+  .permission-switch {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+  }
+  .permission-switch label {
+    margin-right: 0.5em;
+  }
+  input[type="text"] {
+    width: 400px;
+  }
+  img {
+    border: thick double black;
+    background-image: linear-gradient(cyan, fuchsia);
+  }
+</style>
+<div id="pageHeader">
+  <h2>Test Web Client</h2>
+  <button id="refreshbn">🔄</button>
+  <button id="closebn">❌</button>
+</div>
+
+<div class="section">
+  <h1>Test SetPermissionState() and NotifyPermissionChanged()</h1>
+  <div class="permission-switches">
+    <div class="permission-switch">
+      <label for="microphoneSwitch">Microphone:</label>
+      <input type="checkbox" id="microphoneSwitch" disabled />
+    </div>
+    <div class="permission-switch">
+      <label for="geolocationSwitch">Geolocation:</label>
+      <input type="checkbox" id="geolocationSwitch" disabled />
+    </div>
+    <div class="permission-switch">
+      <label for="tabContextSwitch">Tab Context:</label>
+      <input type="checkbox" id="tabContextSwitch" disabled />
+    </div>
+  </div>
+  <div>
+    <select id="permissionSelect">
+      <option value="microphone">Microphone</option>
+      <option value="geolocation">Geolocation</option>
+      <option value="tab_context">Tab Context</option>
+    </select>
+    <select id="enabledSelect">
+      <option value="true">True</option>
+      <option value="false">False</option>
+    </select>
+    <button id="testPermissionSwitch">Simulate External Permission
+      Update</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Focused Tab</h1>
+  <label>Focused Tab Url: </label><input id="focusedUrl" type="text" /> <br />
+  <label>Favicon: </label><img id="focusedFavicon" />
+</div>
+<div class="section">
+  <h1>Test createTab()</h1>
+  <label>Url</label><input id="URL" type="text"
+      value="https://news.ycombinator.com" />
+  <br />
+  <button id="newtabbn">Open New Tab!</button>
+  <br />
+</div>
+<div class="section">
+  <h1>Test Panel Controls</h1>
+  <button id="attachpanelbn">Attach Panel</button>
+  <br />
+  <button id="detachpanelbn">Detach Panel</button>
+  <br />
+</div>
+<div class="section">
+  <h1>Test getContextFromFocusedTab()</h1>
+  <div>
+    <button id="getpagecontext">Get page Context</button>
+    <label> <input type="checkbox" id="innerTextCheckbox" /> Inner Text </label>
+    <label> <input type="checkbox"
+        id="viewportScreenshotCheckbox" /> Viewport Screenshot </label>
+    <img id="faviconImg" />
+  </div>
+  <div id="screenshot">
+    <img />
+  </div>
+</div>
+<div class="section">
+  <h1>Test Location Access</h1>
+  <button id="getlocation">Get Location</button> <br />
+  <div id="location"></div>
+</div>
+<div class="section">
+  <h1>Test Link Out Behavior</h1>
+  <a href="https://www.example.com" id="link" target="_blank"
+    rel="noopener noreferrer"
+    >https://www.example.com
+  </a>
+</div>
+<div class="section">
+  <h1>UserProfile</h1>
+  <div>
+    <button id="getUserProfileInfoBn">getUserProfileInfo()</button> Status:
+    <span id="getUserProfileInfoStatus"></span>
+    <img id="getUserProfileInfoImg" />
+  </div>
+  <div>
+    <button id="changeProfileBn">changeProfile()</button>
+  </div>
+</div>
+<div class="section">
+  <h1>Misc</h1>
+  <button id="syncCookiesBn">refreshSignInCookies()</button> Status:
+  <span id="syncCookieStatus"></span>
+</div>
+<div class="section">
+  <h1>Demo Test Utils</h1>
+  <button id="reloadpage">Reload page</button>
+  <div>
+    Navigate webview to <input id="navigateWebviewUrl" type="text"
+      value="https://www.google.com" />
+  </div>
+</div>
+<div class="section">
+  <h1>Audio Capture</h1>
+  <button id="audioCapStart">START</button>
+  <button id="audioCapStop">STOP</button>
+
+  After pressing STOP, this will play recorded sound.
+  <br />
+  <audio id="mic" controls></audio><br />
+  <div></div>
+  <div id="audioStatus"></div>
+</div>
+<br />
+<div id="status"></div>
+
+<script src="./test_client.js" type="module">
+</script>

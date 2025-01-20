@@ -53,7 +53,8 @@ class OidcAuthResponseCaptureNavigationThrottle
   GetOidcEnrollmentUrlMatcherForTesting();
 
  private:
-  ThrottleCheckResult AttemptToTriggerInterception();
+  ThrottleCheckResult AttemptToTriggerUrlInterception();
+  ThrottleCheckResult AttemptToTriggerHeaderInterception();
 
   // Starts OIDC registration and profile creation process if the response is
   // valid.

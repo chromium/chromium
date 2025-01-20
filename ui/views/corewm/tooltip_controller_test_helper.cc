@@ -108,10 +108,6 @@ TooltipTestView::TooltipTestView() = default;
 
 TooltipTestView::~TooltipTestView() = default;
 
-std::u16string TooltipTestView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
-}
-
 BEGIN_METADATA(TooltipTestView)
 END_METADATA
 

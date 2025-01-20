@@ -305,13 +305,10 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
     RecordExceptionMetrics();
   }
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry)) {
-    const auto* registry =
-        content_settings::WebsiteSettingsRegistry::GetInstance();
-    for (const auto* info : *registry) {
-      DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(info->type());
-    }
+  const auto* registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  for (const auto* info : *registry) {
+    DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(info->type());
   }
 }
 
@@ -515,8 +512,7 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     if (provider_pair.second->SetWebsiteSetting(
             primary_pattern, secondary_pattern, content_type, std::move(value),
             constraints, content_settings::PartitionKey::WipGetDefault())) {
-      if (base::FeatureList::IsEnabled(
-              content_settings::features::kActiveContentSettingExpiry)) {
+      if (content_settings::ShouldTypeExpireActively(content_type)) {
         UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
       }
 
@@ -733,11 +729,15 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
       };
       bool empty = num_requester.empty();
       int max_requester =
-          empty ? 0 : base::ranges::max(num_requester, {}, get_value).second;
+          empty
+              ? 0
+              : base::ranges::max_element(num_requester, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxRequester",
                                    max_requester);
       int max_toplevel =
-          empty ? 0 : base::ranges::max(num_toplevel, {}, get_value).second;
+          empty
+              ? 0
+              : base::ranges::max_element(num_toplevel, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxTopLevel",
                                    max_toplevel);
     }
@@ -959,8 +959,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     // grant, but the grant is no longer provided. Also refer to the comment
     // near the definition of `kEagerExpiryBuffer` regarding provisioning and
     // CPU contention.
-    if (!base::FeatureList::IsEnabled(
-            content_settings::features::kActiveContentSettingExpiry)) {
+    if (!content_settings::ShouldTypeExpireActively(content_type)) {
       if ((!rule->metadata.expiration().is_null() &&
            (rule->metadata.expiration() < clock_->Now()))) {
         continue;
@@ -1241,8 +1240,7 @@ void HostContentSettingsMap::UpdateExpiryEnforcementTimer(
 
 void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
     ContentSettingsType content_setting_type) {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry)) {
+  if (!content_settings::ShouldTypeExpireActively(content_setting_type)) {
     return;
   }
 

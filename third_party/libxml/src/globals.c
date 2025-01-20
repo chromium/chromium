@@ -58,12 +58,20 @@ static xmlMutex xmlThrDefMutex;
  * On Windows, we either use DllMain when compiling a DLL or a registered
  * wait function for static builds.
  *
- * Compiler TLS isn't really useful. It can make allocation more robust
- * on some platforms but it also increases the memory consumption of each
- * thread by ~250 bytes whether it uses libxml2 or not. The main problem
- * is that be have to deallocate strings in xmlLastError and C offers no
- * simple way to deallocate dynamic data in _Thread_local variables.
- * In C++, one could simply use a thread_local variable with a destructor.
+ * Compiler TLS isn't really useful for now. It can make allocation more
+ * robust on some platforms but it also increases the memory consumption
+ * of each thread by ~250 bytes whether it uses libxml2 or not. The main
+ * problem is that we have to deallocate strings in xmlLastError and C
+ * offers no simple way to deallocate dynamic data in _Thread_local
+ * variables. In C++, one could simply use a thread_local variable with a
+ * destructor.
+ *
+ * At some point, many of the deprecated globals can be removed,
+ * although things like global error handlers will take a while.
+ * Ultimately, the only crucial things seem to be xmlLastError and
+ * RNG state. xmlLastError already involves dynamic allocation, so it
+ * could be allocated dynamically as well, only storing a global
+ * pointer.
  */
 
 #ifdef LIBXML_THREAD_ENABLED

@@ -263,8 +263,9 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
 
   policy_separator_->SetVisible(show_policy_label);
   policy_label_->SetVisible(show_policy_label);
-  if (show_policy_label)
+  if (show_policy_label) {
     policy_label_->SetData({GetPolicyText(state.policy), false});
+  }
 }
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {

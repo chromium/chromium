@@ -98,9 +98,7 @@ void Fence::reportEvent(const FenceEvent* event,
     return;
   }
 
-  if (event->hasDestinationURL() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kAdAuctionReportingWithMacroApi)) {
+  if (event->hasDestinationURL()) {
     reportEventToDestinationURL(event, exception_state);
   } else {
     reportEventToDestinationEnum(event, exception_state);
@@ -119,10 +117,7 @@ void Fence::reportEventToDestinationEnum(const FenceEvent* event,
   }
   if (event->crossOriginExposed() &&
       !base::FeatureList::IsEnabled(
-          blink::features::
-              kFencedFramesCrossOriginEventReportingUnlabeledTraffic) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic)) {
+          blink::features::kFencedFramesCrossOriginEventReporting)) {
     exception_state.ThrowTypeError(
         "'crossOriginExposed' is not supported with reportEvent().");
     return;
@@ -196,10 +191,7 @@ void Fence::reportEventToDestinationURL(const FenceEvent* event,
   }
   if (event->crossOriginExposed() &&
       !base::FeatureList::IsEnabled(
-          blink::features::
-              kFencedFramesCrossOriginEventReportingUnlabeledTraffic) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesCrossOriginEventReportingAllTraffic)) {
+          blink::features::kFencedFramesCrossOriginEventReporting)) {
     exception_state.ThrowTypeError(
         "'crossOriginExposed' is not supported with reportEvent().");
     return;
@@ -303,10 +295,20 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
 
   if (properties->is_cross_origin_content()) {
-    AddConsoleMessage(
-        "Automatic beacon data can only be set from documents that registered "
-        "reporting metadata.");
-    return;
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesCrossOriginAutomaticBeaconData)) {
+      exception_state.ThrowSecurityError(
+          "Automatic beacon data can only be set from documents that "
+          "registered reporting metadata.");
+      return;
+    }
+    if (!event->crossOriginExposed()) {
+      AddConsoleMessage(
+          "This document is cross-origin to the document that contains "
+          "reporting metadata, but setReportEventDataForAutomaticBeacons() was "
+          "not called with crossOriginExposed=true.");
+      return;
+    }
   }
 
   WTF::Vector<blink::FencedFrame::ReportingDestination> destinations;

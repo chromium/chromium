@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<label for="input">Mammal</label>
+<input id="input" type="text" aria-controls="listbox">
+<div id="listbox" role="listbox" aria-label="list">
+  <div role="option" id="opt1">Otter</div>
+  <div role="option">Ocelot</div>
+</div>
+
+<script>
+  var input = document.getElementById("input");
+  input.focus();
+
+  var opt1 = document.getElementById("opt1");
+
+  var opt2 = opt1.nextElementSibling;
+
+  var opt3 = document.createElement("div");
+  opt3.role = "option";
+  opt3.id = "opt3";
+  opt3.innerText = "Opossum";
+
+  const go_passes = [
+    /* Vanilla example */
+    () => input.setAttribute("aria-activedescendant", "opt1"),
+    /* Set aria-activedescendant and then set ID */
+    () => input.setAttribute("aria-activedescendant", "opt2"),
+    () => opt2.id = "opt2",
+    /* Set aria-activedescendant and then add element to DOM */
+    () => input.setAttribute("aria-activedescendant", "opt3"),
+    () => opt2.after(opt3),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

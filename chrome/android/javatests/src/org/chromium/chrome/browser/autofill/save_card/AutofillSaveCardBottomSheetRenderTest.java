@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.save_card;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
@@ -58,7 +57,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -81,17 +80,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     ScrimCoordinator scrimCoordinator =
                             new ScrimCoordinator(
                                     mActivity,
-                                    new ScrimCoordinator.SystemUiScrimDelegate() {
-                                        @Override
-                                        public void setStatusBarScrimFraction(
-                                                float scrimFraction) {}
-
-                                        @Override
-                                        public void setNavigationBarScrimFraction(
-                                                float scrimFraction) {}
-                                    },
-                                    activityContentView,
-                                    Color.WHITE);
+                                    /* systemUiScrimDelegate= */ null,
+                                    activityContentView);
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
                                     () -> scrimCoordinator,

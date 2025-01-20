@@ -152,21 +152,10 @@ class SettingsSiteSettingsListElement extends
         category === ContentSettingsTypes.PROTECTED_CONTENT ||
         category === ContentSettingsTypes.PDF_DOCUMENTS ||
         category === ContentSettingsTypes.SITE_DATA ||
-        category === ContentSettingsTypes.OFFER_WRITING_HELP) {
-      return Promise.resolve();
-    }
-
-    if (category === ContentSettingsTypes.COOKIES) {
-      if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
-          loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
-        const index = this.categoryList.map(e => e.id).indexOf(
-            ContentSettingsTypes.COOKIES);
-        this.set(
-            `categoryList.${index}.subLabel`,
-            this.i18n('trackingProtectionLinkRowSubLabel'));
-      }
-      // Updates to the cookies label are handled by the
-      // cookieSettingDescriptionChanged event listener.
+        category === ContentSettingsTypes.OFFER_WRITING_HELP ||
+        // Updates to the cookies label are handled by the
+        // cookieSettingDescriptionChanged event listener.
+        category === ContentSettingsTypes.COOKIES) {
       return Promise.resolve();
     }
 
@@ -310,11 +299,6 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
-        loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
-      return;
-    }
-
     const index =
         this.categoryList.map(e => e.id).indexOf(ContentSettingsTypes.COOKIES);
     // The third-party cookies might not be part of the current

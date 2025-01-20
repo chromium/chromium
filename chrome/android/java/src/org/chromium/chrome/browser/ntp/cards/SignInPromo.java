@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -27,8 +28,9 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /**
  * Superclass tracking whether a signin card could be shown.
  *
- * Subclasses are notified when relevant signin status changes.
+ * <p>Subclasses are notified when relevant signin status changes.
  */
+// TODO(crbug.com/327387704): Remove after uno phase 2 follow-up launch.
 public abstract class SignInPromo {
     /** Period for which promos are suppressed if signin is refused in FRE. */
     @VisibleForTesting static final long SUPPRESSION_PERIOD_MS = DateUtils.DAY_IN_MILLIS;
@@ -77,6 +79,7 @@ public abstract class SignInPromo {
      * @return Whether the {@link SignInPromo} should be created.
      */
     public static boolean shouldCreatePromo() {
+        NtpSigninPromoDelegate.resetNtpSyncPromoLimitsIfHiddenForTooLong();
         return !sDisablePromoForTests
                 && !ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)

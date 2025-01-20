@@ -97,7 +97,7 @@ SingleInstallEventLog<T>::SingleInstallEventLog(const std::string& id)
     : id_(id) {}
 
 template <typename T>
-SingleInstallEventLog<T>::~SingleInstallEventLog() {}
+SingleInstallEventLog<T>::~SingleInstallEventLog() = default;
 
 template <typename T>
 void SingleInstallEventLog<T>::Add(const T& event) {

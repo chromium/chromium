@@ -9,10 +9,12 @@ import android.os.Debug;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.IOException;
 
 /** Enables the generation of hprof files from heap dumps. */
+@NullMarked
 public final class JavaHeapDumpGenerator {
     private static final String TAG = "JavaHprofGenerator";
 

@@ -52,19 +52,25 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
     return matches
 
   possible_matches = []
-  if not project_name or project_name == 'chrome':
+  if not project_name or project_name.startswith('chrome'):
     matches = _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
     if matches:
-      project_name = 'chrome'
+      project_name = project_name or 'chrome'
       possible_matches += matches
 
-  if not project_name or project_name == 'chromium':
+  if not project_name or project_name.startswith('chromium'):
     matches = _walk_props_dir(_BUILDER_PROP_DIRS)
     if matches:
-      project_name = 'chromium'
+      project_name = project_name or 'chromium'
       possible_matches += matches
 
   if not possible_matches:
+    if (project_name and project_name.startswith('chrome')
+        and not _INTERNAL_BUILDER_PROP_DIRS.exists()):
+      logging.warning(
+          '[red]%s looks like an internal builder, but src-internal is not '
+          'present in this checkout. Make sure checkout_src_internal is set to '
+          'True in your .gclient file and run `gclient sync`.[/]', builder_name)
     # Try also fetching the props from buildbucket. This will give us needed
     # vals like recipe and builder-group name for builders that aren't
     # bootstrapped.

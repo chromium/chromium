@@ -34,8 +34,8 @@
 
 namespace blink {
 
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 class V8MediaDeviceKind;
 
 class MODULES_EXPORT MediaDeviceInfo : public ScriptWrappable {
@@ -54,7 +54,7 @@ class MODULES_EXPORT MediaDeviceInfo : public ScriptWrappable {
 
   mojom::blink::MediaDeviceType DeviceType() const;
 
-  ScriptValue toJSONForBinding(ScriptState*);
+  ScriptObject toJSONForBinding(ScriptState*);
 
  private:
   String device_id_;

@@ -26,15 +26,29 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-using ExtensionSettingsUIBrowserTest = ExtensionSettingsTestBase;
+class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
+ public:
+  guest_view::TestGuestViewManager* GetGuestViewManager() {
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(), extensions::ExtensionsAPIClient::Get()
+                                  ->CreateGuestViewManagerDelegate());
+  }
+
+ private:
+  guest_view::TestGuestViewManagerFactory factory_;
+};
 
 // Tests that viewing a source of the options page works fine.
 // This is a regression test for https://crbug.com/796080.
@@ -45,9 +59,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   GURL options_url("chrome://extensions/?options=" + extension->id());
   content::WebContents* options_contents = nullptr;
   {
-    content::WebContentsAddedObserver options_contents_added_observer;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), options_url));
-    options_contents = options_contents_added_observer.GetWebContents();
+    auto* guest = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+    GetGuestViewManager()->WaitUntilAttached(guest);
+    options_contents = guest->web_contents();
   }
   ASSERT_TRUE(options_contents);
   EXPECT_TRUE(content::WaitForLoadStop(options_contents));
@@ -219,18 +234,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
       )"));
 }
 
-class SafetyHubExtensionSettingsUIBrowserTest
-    : public ExtensionSettingsTestBase {
- public:
-  SafetyHubExtensionSettingsUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSafetyHub);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SafetyHubExtensionSettingsUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
   Profile* profile = browser()->profile();
   extensions::ExtensionPrefs* extension_prefs =

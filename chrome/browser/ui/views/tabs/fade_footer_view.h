@@ -27,6 +27,18 @@ struct PerformanceRowData {
   int64_t memory_usage_in_bytes = 0;
 };
 
+struct CollaborationMessagingRowData {
+  bool should_show_collaboration_messaging = false;
+  std::u16string text;
+  ui::ImageModel avatar;
+
+  CollaborationMessagingRowData();
+  ~CollaborationMessagingRowData();
+  CollaborationMessagingRowData(const CollaborationMessagingRowData& other);
+  CollaborationMessagingRowData& operator=(
+      const CollaborationMessagingRowData& other);
+};
+
 template <typename T>
 class FooterRow : public FadeWrapper<views::View, T> {
   using FadeWrapper_View_T = FadeWrapper<views::View, T>;
@@ -65,11 +77,20 @@ using FadeWrapper_View_PerformanceRowData =
     FadeWrapper<views::View, PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
 
+using FadeWrapper_View_CollaborationMessagingRowData =
+    FadeWrapper<views::View, CollaborationMessagingRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_CollaborationMessagingRowData,
+                          FadeWrapper);
+
 using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
 
 using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
+
+using FooterRow_CollaborationMessagingRowData =
+    FooterRow<CollaborationMessagingRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_CollaborationMessagingRowData, FooterRow);
 
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
   using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;
@@ -97,6 +118,22 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
   void SetData(const PerformanceRowData& data) override;
 };
 
+class FadeCollaborationMessagingFooterRow
+    : public FooterRow<CollaborationMessagingRowData> {
+  using FooterRowCollaborationMessagingRowData =
+      FooterRow<CollaborationMessagingRowData>;
+  METADATA_HEADER(FadeCollaborationMessagingFooterRow,
+                  FooterRowCollaborationMessagingRowData)
+
+ public:
+  explicit FadeCollaborationMessagingFooterRow(bool is_fade_out_view)
+      : FooterRow<CollaborationMessagingRowData>(is_fade_out_view) {}
+  ~FadeCollaborationMessagingFooterRow() override = default;
+
+  // FadeWrapper:
+  void SetData(const CollaborationMessagingRowData& data) override;
+};
+
 class FooterView : public views::View {
   METADATA_HEADER(FooterView, views::View)
 
@@ -106,6 +143,10 @@ class FooterView : public views::View {
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,
                                        FadePerformanceFooterRow,
                                        PerformanceRowData>;
+  using CollaborationMessagingFadeView =
+      FadeView<FadeCollaborationMessagingFooterRow,
+               FadeCollaborationMessagingFooterRow,
+               CollaborationMessagingRowData>;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardFooterElementId);
 
   FooterView();
@@ -113,6 +154,7 @@ class FooterView : public views::View {
 
   void SetAlertData(const AlertFooterRowData& data);
   void SetPerformanceData(const PerformanceRowData& data);
+  void SetCollaborationMessagingData(const CollaborationMessagingRowData& data);
   void SetFade(double percent);
 
   AlertFadeView* GetAlertRowForTesting() { return alert_row_; }
@@ -121,12 +163,18 @@ class FooterView : public views::View {
     return performance_row_;
   }
 
+  CollaborationMessagingFadeView* GetCollaborationMessagingRowForTesting() {
+    return collaboration_messaging_row_;
+  }
+
   views::FlexLayout* flex_layout() { return flex_layout_; }
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<AlertFadeView> alert_row_ = nullptr;
   raw_ptr<PerformanceFadeView> performance_row_ = nullptr;
+  raw_ptr<CollaborationMessagingFadeView> collaboration_messaging_row_ =
+      nullptr;
 
   void UpdateVisibility();
 };

@@ -32,7 +32,9 @@ bool IsNavigationCapturingReimplEnabled() {
          (::features::kNavigationCapturingDefaultState.Get() ==
               ::features::CapturingState::kReimplDefaultOn ||
           ::features::kNavigationCapturingDefaultState.Get() ==
-              ::features::CapturingState::kReimplDefaultOff);
+              ::features::CapturingState::kReimplDefaultOff ||
+          ::features::kNavigationCapturingDefaultState.Get() ==
+              ::features::CapturingState::kReimplOnViaClientMode);
 }
 
 }  // namespace apps::features

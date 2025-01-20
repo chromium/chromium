@@ -14,7 +14,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 class VersionUpdaterCros : public VersionUpdater,
                            public ash::UpdateEngineClient::Observer {

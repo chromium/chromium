@@ -5,14 +5,14 @@
 #include "chrome/browser/ai/ai_on_device_model_component_observer.h"
 
 #include "base/types/pass_key.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 
 AIOnDeviceModelComponentObserver::AIOnDeviceModelComponentObserver(
-    AIManagerKeyedService* ai_manager)
+    AIManager* ai_manager)
     : ai_manager_(ai_manager) {
   if (g_browser_process->component_updater()) {
     component_updater_observation_.Observe(

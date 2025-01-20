@@ -231,6 +231,39 @@ bool EnumTraits<network::mojom::CookieAccessSemantics,
   return false;
 }
 
+network::mojom::CookieScopeSemantics EnumTraits<
+    network::mojom::CookieScopeSemantics,
+    net::CookieScopeSemantics>::ToMojom(net::CookieScopeSemantics input) {
+  switch (input) {
+    case net::CookieScopeSemantics::UNKNOWN:
+      return network::mojom::CookieScopeSemantics::UNKNOWN;
+    case net::CookieScopeSemantics::NONLEGACY:
+      return network::mojom::CookieScopeSemantics::NONLEGACY;
+    case net::CookieScopeSemantics::LEGACY:
+      return network::mojom::CookieScopeSemantics::LEGACY;
+  }
+}
+
+bool EnumTraits<network::mojom::CookieScopeSemantics,
+                net::CookieScopeSemantics>::
+    FromMojom(network::mojom::CookieScopeSemantics input,
+              net::CookieScopeSemantics* output) {
+  switch (input) {
+    case network::mojom::CookieScopeSemantics::UNKNOWN:
+      *output = net::CookieScopeSemantics::UNKNOWN;
+      return true;
+    case network::mojom::CookieScopeSemantics::NONLEGACY:
+      *output = net::CookieScopeSemantics::NONLEGACY;
+      return true;
+    case network::mojom::CookieScopeSemantics::LEGACY:
+      *output = net::CookieScopeSemantics::LEGACY;
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
 network::mojom::ContextType
 EnumTraits<network::mojom::ContextType,
            net::CookieOptions::SameSiteCookieContext::ContextType>::
@@ -555,9 +588,6 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
   if (!data.ReadRedirectTypeBug1221316(&out->redirect_type_bug_1221316))
     return false;
 
-  if (!data.ReadHttpMethodBug1221316(&out->http_method_bug_1221316))
-    return false;
-
   return true;
 }
 
@@ -786,6 +816,7 @@ bool StructTraits<
   net::CookieEffectiveSameSite effective_same_site;
   net::CookieInclusionStatus status;
   net::CookieAccessSemantics access_semantics;
+  net::CookieScopeSemantics scope_semantics;
 
   if (!c.ReadEffectiveSameSite(&effective_same_site))
     return false;
@@ -793,8 +824,11 @@ bool StructTraits<
     return false;
   if (!c.ReadAccessSemantics(&access_semantics))
     return false;
+  if (!c.ReadScopeSemantics(&scope_semantics)) {
+    return false;
+  }
 
-  *out = {effective_same_site, status, access_semantics,
+  *out = {effective_same_site, status, access_semantics, scope_semantics,
           c.is_allowed_to_access_secure_cookies()};
 
   return true;

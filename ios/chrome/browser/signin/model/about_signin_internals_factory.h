@@ -5,10 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ABOUT_SIGNIN_INTERNALS_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_ABOUT_SIGNIN_INTERNALS_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AboutSigninInternals;
 class ProfileIOS;
@@ -16,14 +14,10 @@ class ProfileIOS;
 namespace ios {
 // Singleton that owns all AboutSigninInternals and associates them with browser
 // states.
-class AboutSigninInternalsFactory : public BrowserStateKeyedServiceFactory {
+class AboutSigninInternalsFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static AboutSigninInternals* GetForProfile(ProfileIOS* profile);
   static AboutSigninInternalsFactory* GetInstance();
-
-  AboutSigninInternalsFactory(const AboutSigninInternalsFactory&) = delete;
-  AboutSigninInternalsFactory& operator=(const AboutSigninInternalsFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<AboutSigninInternalsFactory>;

@@ -11,10 +11,23 @@
  * #include=mwb-element-shared-style-lit cr-hidden-style-lit sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
+:host {
+  --sp-footer-height: 56px;
+}
+
 #content {
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+
+cr-icon-button {
+  cursor: pointer;
+}
+
+cr-lazy-list {
+  flex: 1;
+  scrollbar-gutter: stable;
 }
 
 /* Transition required to ensure focus highlight after button press.
@@ -30,6 +43,17 @@ reading-list-item:first-of-type:last-of-type {
   padding-block-start: var(--sp-body-padding);
 }
 
-sp-heading {
-  margin: 8px 16px;
+.sp-card {
+  display: flex;
+  height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
+  margin: var(--sp-body-padding);
+}
+
+.sp-card sp-heading {
+  margin: 6px 0;
+  width: auto;
+}
+
+sp-footer {
+  height: var(--sp-footer-height);
 }

@@ -26,6 +26,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -56,13 +57,15 @@ struct PolicySectionEvents
   virtual ~PolicySectionEvents() = default;
 };
 
-base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
+base::Value::Dict LoadGroupPolicies() {
   base::ScopedClosureRunner leave_policy_section_closure;
 
-  if (should_take_policy_critical_section && base::IsManagedDevice()) {
+  if (base::IsManagedDevice()) {
     // Only for managed machines, a best effort is made to take the Group Policy
     // critical section. Lock acquisition can take a long time in the worst case
     // scenarios, hence a short timed wait is used.
+    // If the lock cannot be obtained, the code below will still read the
+    // policy.
 
     auto events = base::MakeRefCounted<PolicySectionEvents>();
     leave_policy_section_closure.ReplaceClosure(base::BindOnce(
@@ -72,7 +75,9 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
         events));
 
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        FROM_HERE,
+        {base::MayBlock(), base::WithBaseSyncPrimitives(),
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(
             [](scoped_refptr<PolicySectionEvents> events) {
               scoped_hpolicy policy_lock(::EnterCriticalPolicySection(true));
@@ -83,6 +88,8 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
             },
             events));
 
+    // Based on Chrome UMA data, a 15 second timeout is sufficient for 99.9% of
+    // cases.
     if (!events->enter_policy_section.TimedWait(base::Seconds(30))) {
       VLOG(1) << "Timed out trying to get the policy critical section.";
     }
@@ -116,9 +123,8 @@ base::Value::Dict LoadGroupPolicies(bool should_take_policy_critical_section) {
 }  // namespace
 
 GroupPolicyManager::GroupPolicyManager(
-    bool should_take_policy_critical_section,
     std::optional<bool> override_is_managed_device)
-    : PolicyManager(LoadGroupPolicies(should_take_policy_critical_section)),
+    : PolicyManager(LoadGroupPolicies()),
       is_managed_device_(override_is_managed_device.value_or(
           base::IsManagedOrEnterpriseDevice())) {}
 
@@ -129,7 +135,12 @@ bool GroupPolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string GroupPolicyManager::source() const {
-  return kSourceGroupPolicyManager;
+  return kSourcePlatformPolicyManager;
+}
+
+scoped_refptr<PolicyManagerInterface> CreatePlatformPolicyManager(
+    std::optional<bool> override_is_managed_device) {
+  return base::MakeRefCounted<GroupPolicyManager>(override_is_managed_device);
 }
 
 }  // namespace updater

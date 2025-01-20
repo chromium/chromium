@@ -14,7 +14,6 @@
 #include "chrome/browser/enterprise/client_certificates/profile_context_delegate.h"
 #include "chrome/browser/enterprise/core/dependency_factory_impl.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -71,7 +70,6 @@ CertificateProvisioningServiceFactory::CertificateProvisioningServiceFactory()
           BuildCertificateProvisioningProfileSelections()) {
   DependsOn(CertificateStoreFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
-  DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 }
 
 CertificateProvisioningServiceFactory::
@@ -99,16 +97,14 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* device_management_service = GetDeviceManagementService();
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactory::GetForProfile(profile);
-  auto* profile_network_context_service =
-      ProfileNetworkContextServiceFactory::GetForContext(context);
   if (!certificate_store || !url_loader_factory || !device_management_service ||
-      !profile_id_service || !profile_network_context_service) {
+      !profile_id_service) {
     return nullptr;
   }
 
   return CertificateProvisioningService::Create(
       profile->GetPrefs(), certificate_store,
-      std::make_unique<ProfileContextDelegate>(profile_network_context_service),
+      std::make_unique<ProfileContextDelegate>(profile),
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(

@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -108,30 +111,6 @@ manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
   }
 
   return manta::FeatureSupportStatus::kUnknown;
-}
-
-bool IsCountryAllowed(std::string_view country_code) {
-  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>(
-      {"ae", "ag", "ai", "am", "ao", "aq", "ar", "as", "at", "au", "aw", "az",
-       "bb", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bl", "bm", "bn", "bo",
-       "bq", "br", "bs", "bt", "bw", "bz", "ca", "cc", "cd", "cf", "cg", "ch",
-       "ci", "ck", "cl", "cm", "co", "cr", "cv", "cw", "cx", "cy", "cz", "de",
-       "dj", "dk", "dm", "do", "dz", "ec", "ee", "eg", "eh", "er", "es", "et",
-       "fi", "fj", "fk", "fm", "fr", "ga", "gb", "gd", "ge", "gg", "gh", "gi",
-       "gm", "gn", "gq", "gr", "gs", "gt", "gu", "gw", "gy", "hm", "hn", "hr",
-       "ht", "hu", "id", "ie", "il", "im", "in", "io", "iq", "is", "it", "je",
-       "jm", "jo", "jp", "ke", "kg", "kh", "ki", "km", "kn", "kr", "kw", "ky",
-       "kz", "la", "lb", "lc", "li", "lk", "lr", "ls", "lt", "lu", "lv", "ly",
-       "ma", "mg", "mh", "ml", "mn", "mp", "mr", "ms", "mt", "mu", "mv", "mw",
-       "mx", "my", "mz", "na", "nc", "ne", "nf", "ng", "ni", "nl", "no", "np",
-       "nr", "nu", "nz", "om", "pa", "pe", "pg", "ph", "pk", "pl", "pm", "pn",
-       "pr", "ps", "pt", "pw", "py", "qa", "ro", "rw", "sa", "sb", "sc", "sd",
-       "se", "sg", "sh", "si", "sk", "sl", "sn", "so", "sr", "ss", "st", "sv",
-       "sz", "tc", "td", "tg", "th", "tj", "tk", "tl", "tm", "tn", "to", "tr",
-       "tt", "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg",
-       "vi", "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
-
-  return kCountryAllowlist.contains(country_code);
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
@@ -258,7 +237,7 @@ bool IsAllowedForUseInDemoMode(std::string_view country_code) {
   return base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
          base::FeatureList::IsEnabled(
              chromeos::features::kFeatureManagementOrca) &&
-         IsCountryAllowed(country_code);
+         IsGenerativeAiAllowedForCountry(country_code);
 }
 
 bool IsAllowedForUseInNonDemoMode(Profile* profile,
@@ -266,7 +245,7 @@ bool IsAllowedForUseInNonDemoMode(Profile* profile,
   if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
       !base::FeatureList::IsEnabled(
           chromeos::features::kFeatureManagementOrca) ||
-      !IsCountryAllowed(country_code) ||
+      !IsGenerativeAiAllowedForCountry(country_code) ||
       (base::FeatureList::IsEnabled(
            ash::features::kOrcaUseAccountCapabilities) &&
        FetchOrcaAccountCapabilityFromMantaService(profile) !=
@@ -364,7 +343,7 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
   std::vector<EditorBlockedReason> blocked_reasons;
 
   if (base::FeatureList::IsEnabled(chromeos::features::kOrca)) {
-    if (!IsCountryAllowed(context_->active_country_code())) {
+    if (!IsGenerativeAiAllowedForCountry(context_->active_country_code())) {
       blocked_reasons.push_back(
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
@@ -461,13 +440,13 @@ bool EditorSwitch::CanBeTriggered() const {
           IsSystemInEnglishLanguage());
 }
 
-EditorMode EditorSwitch::GetEditorMode() const {
+chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
   if (!IsAllowedForUse()) {
-    return EditorMode::kHardBlocked;
+    return chromeos::editor_menu::EditorMode::kHardBlocked;
   }
 
   if (!CanBeTriggered()) {
-    return EditorMode::kSoftBlocked;
+    return chromeos::editor_menu::EditorMode::kSoftBlocked;
   }
 
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
@@ -475,16 +454,23 @@ EditorMode EditorSwitch::GetEditorMode() const {
 
   if (current_consent_status == ConsentStatus::kPending ||
       current_consent_status == ConsentStatus::kUnset) {
-    return EditorMode::kConsentNeeded;
+    return chromeos::editor_menu::EditorMode::kConsentNeeded;
   } else if (context_->selected_text_length() > 0) {
-    return EditorMode::kRewrite;
+    return chromeos::editor_menu::EditorMode::kRewrite;
   } else {
-    return EditorMode::kWrite;
+    return chromeos::editor_menu::EditorMode::kWrite;
   }
 }
 
+chromeos::editor_menu::EditorTextSelectionMode
+EditorSwitch::GetEditorTextSelectionMode() const {
+  return context_->selected_text_length() > 0
+             ? chromeos::editor_menu::EditorTextSelectionMode::kHasSelection
+             : chromeos::editor_menu::EditorTextSelectionMode::kNoSelection;
+}
+
 void EditorSwitch::OnContextUpdated() {
-  EditorMode current_mode = GetEditorMode();
+  chromeos::editor_menu::EditorMode current_mode = GetEditorMode();
   if (current_mode != last_known_editor_mode_) {
     observer_->OnEditorModeChanged(current_mode);
   }

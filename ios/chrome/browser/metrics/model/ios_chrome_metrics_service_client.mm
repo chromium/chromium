@@ -36,6 +36,7 @@
 #import "components/metrics/cpu_metrics_provider.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/metrics/drive_metrics_provider.h"
+#import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/entropy_state_provider.h"
 #import "components/metrics/field_trials_provider.h"
 #import "components/metrics/metrics_data_validation.h"
@@ -51,7 +52,6 @@
 #import "components/metrics/stability_metrics_helper.h"
 #import "components/metrics/ui/form_factor_metrics_provider.h"
 #import "components/metrics/ui/screen_info_metrics_provider.h"
-#import "components/metrics/url_constants.h"
 #import "components/metrics/version_utils.h"
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -78,15 +78,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/model/tab_parenting_global_observer.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_metrics_provider.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
@@ -181,6 +180,7 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
                                                     kBrowserMetricsName);
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
+  metrics::dwa::DwaService::RegisterPrefs(registry);
 }
 
 variations::SyntheticTrialRegistry*
@@ -194,6 +194,10 @@ metrics::MetricsService* IOSChromeMetricsServiceClient::GetMetricsService() {
 
 ukm::UkmService* IOSChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
+}
+
+metrics::dwa::DwaService* IOSChromeMetricsServiceClient::GetDwaService() {
+  return dwa_service_.get();
 }
 
 void IOSChromeMetricsServiceClient::SetMetricsClientId(
@@ -256,16 +260,6 @@ base::TimeDelta IOSChromeMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(metrics::ShouldUseCellularUploadInterval());
 }
 
-void IOSChromeMetricsServiceClient::WebStateDidStartLoading(
-    web::WebState* web_state) {
-  metrics_service_->OnApplicationNotIdle();
-}
-
-void IOSChromeMetricsServiceClient::WebStateDidStopLoading(
-    web::WebState* web_state) {
-  metrics_service_->OnApplicationNotIdle();
-}
-
 void IOSChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
@@ -284,6 +278,11 @@ void IOSChromeMetricsServiceClient::Initialize() {
             metrics::MetricsLogUploader::MetricServiceType::UKM));
 
     RegisterUKMProviders();
+  }
+
+  if (base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature)) {
+    dwa_service_ =
+        std::make_unique<metrics::dwa::DwaService>(this, local_state);
   }
 }
 
@@ -376,10 +375,6 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<variations::FieldTrialsProvider>(
           synthetic_trial_registry_.get(), kUKMFieldTrialSuffix));
-
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSChromeDefaultBrowserMetricsProvider>(
-          metrics::MetricsLogUploader::MetricServiceType::UKM));
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
@@ -454,10 +449,6 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
 }
 
 void IOSChromeMetricsServiceClient::RegisterForNotifications() {
-  tab_parented_subscription_ =
-      TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-          base::BindRepeating(&IOSChromeMetricsServiceClient::OnTabParented,
-                              base::Unretained(this)));
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
           base::BindRepeating(
@@ -475,14 +466,16 @@ bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS);
-  ObserveServiceForDeletions(history_service);
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
-  StartObserving(sync, profile->GetPrefs());
-  return (history_service != nullptr && sync != nullptr);
-}
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+  if (!history_service || !sync || !browser_list) {
+    return false;
+  }
 
-void IOSChromeMetricsServiceClient::OnTabParented(web::WebState* web_state) {
-  metrics_service_->OnApplicationNotIdle();
+  ObserveServiceForDeletions(history_service);
+  StartObserving(sync, profile->GetPrefs());
+  StartObservingBrowserList(browser_list);
+  return true;
 }
 
 void IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
@@ -515,33 +508,44 @@ IOSChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
   if (ukm_service_)
     ukm_service_->Purge();
+  if (dwa_service_) {
+    dwa_service_->Purge();
+  }
 }
 
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
     ukm::UkmConsentState previous_consent_state) {
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
-  if (!ukm_service_)
-    return;
-  if (must_purge) {
-    ukm_service_->Purge();
-    ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
-  } else {
-    // Purge recording if required consent has been revoked.
-    if (!consent_state.Has(ukm::MSBB)) {
-      ukm_service_->PurgeMsbbData();
+  if (ukm_service_) {
+    if (must_purge) {
+      ukm_service_->Purge();
+      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+    } else {
+      // Purge recording if required consent has been revoked.
+      if (!consent_state.Has(ukm::MSBB)) {
+        ukm_service_->PurgeMsbbData();
+      }
+      // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
+      // supported on iOS.
     }
-    // No need to test for ukm::APPS and ukm::EXTENSIONS as they are not
-    // supported on iOS.
+
+    // Notify the recording service of changed metrics consent.
+    ukm_service_->UpdateRecording(consent_state);
+
+    // Broadcast UKM consent state change.
+    ukm_service_->OnUkmAllowedStateChanged(consent_state);
   }
 
-  // Notify the recording service of changed metrics consent.
-  ukm_service_->UpdateRecording(consent_state);
+  // Purges DWA data if any of the UKM consents is missing. For consent changes
+  // to metrics collection, this is handled in a separate callback
+  // (see MetricsServicesManager::UpdatePermissions()). Other scenarios,
+  // such as incognito, are handled further downstream.
+  if (dwa_service_ && (must_purge || !IsDwaAllowedForAllProfiles())) {
+    dwa_service_->Purge();
+  }
 
-  // Broadcast UKM consent state change.
-  ukm_service_->OnUkmAllowedStateChanged(consent_state);
-
-  // Signal service manager to enable/disable UKM based on new state.
+  // Signal service manager to enable/disable UKM/DWA based on new states.
   UpdateRunningServices();
 }
 
@@ -563,8 +567,129 @@ void IOSChromeMetricsServiceClient::OnProfileLoaded(ProfileManagerIOS* manager,
   }
 }
 
+void IOSChromeMetricsServiceClient::OnProfileUnloaded(
+    ProfileManagerIOS* manager,
+    ProfileIOS* profile) {
+  // Nothing to do, the observer unregister themselves when the KeyedService
+  // as part of the ProfileIOS destruction.
+}
+
+void IOSChromeMetricsServiceClient::OnProfileMarkedForPermanentDeletion(
+    ProfileManagerIOS* manager,
+    ProfileIOS* profile) {
+  // Nothing to do, the observer unregister themselves when the KeyedService
+  // as part of the ProfileIOS destruction.
+}
+
+void IOSChromeMetricsServiceClient::OnBrowserAdded(
+    const BrowserList* browser_list,
+    Browser* browser) {
+  switch (browser->type()) {
+    case Browser::Type::kRegular:
+    case Browser::Type::kIncognito:
+      StartObservingBrowser(browser);
+      break;
+
+    case Browser::Type::kInactive:
+    case Browser::Type::kTemporary:
+      break;
+  }
+}
+
+void IOSChromeMetricsServiceClient::OnBrowserRemoved(
+    const BrowserList* browser_list,
+    Browser* browser) {
+  switch (browser->type()) {
+    case Browser::Type::kRegular:
+    case Browser::Type::kIncognito:
+      StopObservingBrowser(browser);
+      break;
+
+    case Browser::Type::kInactive:
+    case Browser::Type::kTemporary:
+      break;
+  }
+}
+
+void IOSChromeMetricsServiceClient::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+
+      StopObservingWebState(detach_change.detached_web_state());
+      break;
+    }
+
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+
+      StopObservingWebState(replace_change.replaced_web_state());
+      StartObservingWebState(replace_change.inserted_web_state());
+      break;
+    }
+
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+
+      StartObservingWebState(insert_change.inserted_web_state());
+      break;
+    }
+
+    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      // nothing to do.
+      break;
+  }
+}
+
+void IOSChromeMetricsServiceClient::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (stability_metrics_provider_) {
+    stability_metrics_provider_->WebStateDidStartNavigation(web_state,
+                                                            navigation_context);
+  }
+}
+
+void IOSChromeMetricsServiceClient::DidStartLoading(web::WebState* web_state) {
+  metrics_service_->OnApplicationNotIdle();
+}
+
+void IOSChromeMetricsServiceClient::DidStopLoading(web::WebState* web_state) {
+  metrics_service_->OnApplicationNotIdle();
+  if (stability_metrics_provider_) {
+    stability_metrics_provider_->WebStateDidStartLoading(web_state);
+  }
+}
+
+void IOSChromeMetricsServiceClient::RenderProcessGone(
+    web::WebState* web_state) {
+  if (stability_metrics_provider_) {
+    stability_metrics_provider_->RenderProcessGone(web_state);
+  }
+}
+
+void IOSChromeMetricsServiceClient::WebStateDestroyed(
+    web::WebState* web_state) {
+  NOTREACHED();
+}
+
 bool IOSChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
+}
+
+bool IOSChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 
 bool IOSChromeMetricsServiceClient::
@@ -576,4 +701,57 @@ std::string IOSChromeMetricsServiceClient::GetUploadSigningKey() {
   std::string decoded_key;
   base::Base64Decode(google_apis::GetMetricsKey(), &decoded_key);
   return decoded_key;
+}
+
+void IOSChromeMetricsServiceClient::StartObservingBrowserList(
+    BrowserList* browser_list) {
+  browser_list_observations_.AddObservation(browser_list);
+
+  BrowserList::BrowserType type = BrowserList::BrowserType::kAll;
+  for (Browser* browser : browser_list->BrowsersOfType(type)) {
+    OnBrowserAdded(browser_list, browser);
+  }
+}
+
+void IOSChromeMetricsServiceClient::StopObservingBrowserList(
+    BrowserList* browser_list) {
+  browser_list_observations_.RemoveObservation(browser_list);
+
+  BrowserList::BrowserType type = BrowserList::BrowserType::kAll;
+  for (Browser* browser : browser_list->BrowsersOfType(type)) {
+    OnBrowserRemoved(browser_list, browser);
+  }
+}
+
+void IOSChromeMetricsServiceClient::StartObservingBrowser(Browser* browser) {
+  WebStateList* web_state_list = browser->GetWebStateList();
+  web_state_list_observations_.AddObservation(web_state_list);
+
+  const int web_state_list_count = web_state_list->count();
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    StartObservingWebState(web_state);
+  }
+}
+
+void IOSChromeMetricsServiceClient::StopObservingBrowser(Browser* browser) {
+  WebStateList* web_state_list = browser->GetWebStateList();
+  web_state_list_observations_.RemoveObservation(web_state_list);
+
+  const int web_state_list_count = web_state_list->count();
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    StopObservingWebState(web_state);
+  }
+}
+
+void IOSChromeMetricsServiceClient::StartObservingWebState(
+    web::WebState* web_state) {
+  web_state_observations_.AddObservation(web_state);
+  metrics_service_->OnApplicationNotIdle();
+}
+
+void IOSChromeMetricsServiceClient::StopObservingWebState(
+    web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
 }

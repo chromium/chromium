@@ -15,12 +15,12 @@ namespace tab_groups {
 // is enabled.
 BASE_FEATURE(kTabGroupSyncAndroid,
              "TabGroupSyncAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to enable tab group revisit surface.
 BASE_FEATURE(kTabGroupPaneAndroid,
              "TabGroupPaneAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to determine whether the network layer is disabled for
 // tab group sync.
@@ -33,14 +33,7 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
 // triggering, extension support etc. b/325123353
 BASE_FEATURE(kTabGroupsSaveV2,
              "TabGroupsSaveV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This flag controls the UI update made to saved tab groups as well as model
-// and sync support for pinning saved tab groups.
-BASE_FEATURE(kTabGroupsSaveUIUpdate,
-             "TabGroupsSaveUIUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will use the TabGroupSyncService. When disabled, desktop platforms will
@@ -93,12 +86,13 @@ BASE_FEATURE(kEnableTabTitleSanitization,
              "EnableTabTitleSanitization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables checking for URLs before syncing them to remote devices.
+BASE_FEATURE(kEnableUrlRestriction,
+             "EnableUrlRestriction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
-}
-
-bool IsTabGroupsSaveUIUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
 }
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
@@ -131,6 +125,10 @@ bool ShouldForceRemoveClosedTabGroupsOnStartup() {
 
 bool IsTabTitleSanitizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableTabTitleSanitization);
+}
+
+bool IsUrlRestrictionEnabled() {
+  return base::FeatureList::IsEnabled(kEnableUrlRestriction);
 }
 
 }  // namespace tab_groups

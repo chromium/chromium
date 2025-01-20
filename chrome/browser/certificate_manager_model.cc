@@ -51,10 +51,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/kcer/kcer.h"
-#include "ash/components/kcer/kcer_histograms.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/kcer_histograms.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -542,7 +542,7 @@ CertificateManagerModel::CertInfo::CertInfo(net::ScopedCERTCertificate cert,
       hardware_backed_(hardware_backed),
       device_wide_(device_wide) {}
 
-CertificateManagerModel::CertInfo::~CertInfo() {}
+CertificateManagerModel::CertInfo::~CertInfo() = default;
 
 // static
 std::unique_ptr<CertificateManagerModel::CertInfo>
@@ -643,7 +643,7 @@ CertificateManagerModel::CertificateManagerModel(
 #endif
 }
 
-CertificateManagerModel::~CertificateManagerModel() {}
+CertificateManagerModel::~CertificateManagerModel() = default;
 
 void CertificateManagerModel::OnCertsSourceUpdated() {
   if (hold_back_updates_)

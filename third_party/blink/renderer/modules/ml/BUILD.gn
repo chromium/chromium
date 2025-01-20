@@ -11,10 +11,9 @@ blink_modules_sources("ml") {
     "ml.h",
     "ml_context.cc",
     "ml_context.h",
-    "ml_trace.cc",
-    "ml_trace.h",
     "navigator_ml.cc",
     "navigator_ml.h",
+    "webnn/allow_shared_buffer_source_util.h",
     "webnn/ml_constant_operand.cc",
     "webnn/ml_constant_operand.h",
     "webnn/ml_error.cc",
@@ -44,7 +43,6 @@ blink_modules_sources("ml") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ml_trace_unittest.cc",
     "webnn/ml_graph_builder_test_utils.cc",
     "webnn/ml_graph_builder_test_utils.h",
     "webnn/ml_graph_test.cc",

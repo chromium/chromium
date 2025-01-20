@@ -50,7 +50,10 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         super.onCreate(savedInstanceState);
 
         // If the profile doesn't exist, then do not perform any action.
-        if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) finish();
+        if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) {
+            finish();
+            return;
+        }
 
         mCurrentUrl =
                 savedInstanceState == null
@@ -97,9 +100,11 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
     @Override
     protected void onDestroy() {
-        mDownloadCoordinator.removeObserver(mUiObserver);
-        mDownloadCoordinator.destroy();
-        mModalDialogManager.destroy();
+        if (mDownloadCoordinator != null) {
+            mDownloadCoordinator.removeObserver(mUiObserver);
+            mDownloadCoordinator.destroy();
+            mModalDialogManager.destroy();
+        }
         super.onDestroy();
     }
 

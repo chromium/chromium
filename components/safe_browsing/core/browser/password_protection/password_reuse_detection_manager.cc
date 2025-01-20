@@ -125,7 +125,7 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
   password_manager::metrics_util::PasswordType reused_password_type =
       GetReusedPasswordType(reused_protected_password_hash,
                             matching_reused_credentials.size());
-  autofill::LogManager* log_manager = client_->GetLogManager();
+  autofill::LogManager* log_manager = client_->GetCurrentLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     std::vector<std::string> domains_to_log;

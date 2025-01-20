@@ -51,8 +51,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
         /*webdata_service=*/nullptr,
         /*affiliation_service=*/mock_affiliation_service(),
         /*feature_enabled_for_profile_check=*/
-        base::BindRepeating(&base::FeatureList::IsEnabled),
-        /*launch_hats_survey=*/base::DoNothing());
+        base::BindRepeating(&base::FeatureList::IsEnabled));
 
     match_helper_ = std::make_unique<PlusAddressAffiliationMatchHelper>(
         plus_address_service(), mock_affiliation_service());

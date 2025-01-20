@@ -11,11 +11,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 

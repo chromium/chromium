@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/autofill/core/browser/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher.h"

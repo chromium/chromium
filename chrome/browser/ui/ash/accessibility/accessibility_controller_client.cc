@@ -25,10 +25,11 @@ void SetAutomationManagerEnabled(content::BrowserContext* context,
                                  bool enabled) {
   DCHECK(context);
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
-  if (enabled)
+  if (enabled) {
     manager->Enable();
-  else
+  } else {
     manager->Disable();
+  }
 }
 
 }  // namespace
@@ -44,8 +45,9 @@ AccessibilityControllerClient::~AccessibilityControllerClient() {
 void AccessibilityControllerClient::TriggerAccessibilityAlert(
     ash::AccessibilityAlert alert) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   int msg = 0;
   switch (alert) {
@@ -112,16 +114,18 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
         l10n_util::GetStringUTF8(msg));
     // After handling the alert, if the alert is screen-off, we should
     // disable automation manager to handle any following a11y events.
-    if (alert == ash::AccessibilityAlert::SCREEN_OFF)
+    if (alert == ash::AccessibilityAlert::SCREEN_OFF) {
       SetAutomationManagerEnabled(profile, false);
+    }
   }
 }
 
 void AccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
     const std::string& message) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   AutomationManagerAura::GetInstance()->HandleAlert(message);
 }

@@ -242,6 +242,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // Don't create "Cached Theme.pak" in the extension directory, for testing.
   static void DisableThemePackForTesting();
 
+  void ResetThemeSyncableServiceForTest();
+
  protected:
   // Set a custom default theme instead of the normal default theme.
   virtual void SetCustomDefaultTheme(

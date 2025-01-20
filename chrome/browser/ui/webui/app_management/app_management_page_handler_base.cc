@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -27,8 +26,10 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -105,7 +106,7 @@ bool CanShowDefaultAppAssociationsUi() {
 
 }  // namespace
 
-AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
+AppManagementPageHandlerBase::~AppManagementPageHandlerBase() = default;
 
 void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;
@@ -303,6 +304,9 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
   }
 
   app->publisher_id = update.PublisherId();
+  app->disable_user_choice_navigation_capturing =
+      (update.AppType() == apps::AppType::kWeb) &&
+      (update.WindowMode() == apps::WindowMode::kBrowser);
 
   return app;
 }

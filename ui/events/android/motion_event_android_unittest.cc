@@ -72,6 +72,8 @@ TEST(MotionEventAndroidTest, Constructor) {
       base::TimeTicks() + base::Nanoseconds(kLatestEventTimeNS);
   base::TimeTicks oldest_event_time =
       base::TimeTicks() + base::Nanoseconds(kOldestEventTimeNS);
+  const base::TimeTicks down_time_ms =
+      base::TimeTicks::FromUptimeMillis(oldest_event_time.ToUptimeMillis());
 
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(latest_event_time);
@@ -86,14 +88,15 @@ TEST(MotionEventAndroidTest, Constructor) {
   int action_index = -1;
   MotionEventAndroidJava event(
       base::android::AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
-      oldest_event_time, latest_event_time, kAndroidActionDown, pointer_count,
-      history_size, action_index, kAndroidActionButton, 0,
+      oldest_event_time, latest_event_time, down_time_ms, kAndroidActionDown,
+      pointer_count, history_size, action_index, kAndroidActionButton, 0,
       kAndroidButtonPrimary, kAndroidAltKeyDown, 0, raw_offset, -raw_offset,
       false, &p0, &p1);
 
   EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
   EXPECT_EQ(oldest_event_time, event.GetEventTime());
   EXPECT_EQ(latest_event_time, event.GetLatestEventTime());
+  EXPECT_EQ(event.GetDownTime(), down_time_ms);
   EXPECT_EQ(p0.pos_x_pixels * kPixToDip, event.GetX(0));
   EXPECT_EQ(p0.pos_y_pixels * kPixToDip, event.GetY(0));
   EXPECT_EQ(p1.pos_x_pixels * kPixToDip, event.GetX(1));
@@ -190,10 +193,11 @@ TEST(MotionEventAndroidTest, NonEmptyHistoryForNonMoveEventsSanitized) {
   int pointer_count = 1;
   size_t history_size = 5;
   MotionEventAndroid::Pointer p0(0, 0, 0, 0, 0, 0, 0, 0);
-  MotionEventAndroidJava event(
-      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
-      base::TimeTicks(), base::TimeTicks(), kAndroidActionDown, pointer_count,
-      history_size, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroidJava event(base::android::AttachCurrentThread(), nullptr,
+                               kPixToDip, 0, 0, 0, base::TimeTicks(),
+                               base::TimeTicks(), base::TimeTicks(),
+                               kAndroidActionDown, pointer_count, history_size,
+                               0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
 
   EXPECT_EQ(0U, event.GetHistorySize());
 }
@@ -227,11 +231,13 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
 
   const float x = 100;
   const float y = 200;
-  const jlong down_time = 0;
-  const jlong event_time = 0;
+  // Java_MotionEvent_obtain expects timestamps(down time, event time) obtained
+  // from |SystemClock#uptimeMillis()|.
+  const jlong down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
+  const jlong event_time_ms = down_time_ms;
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_motion_event =
-      JNI_MotionEvent::Java_MotionEvent_obtain(env, down_time, event_time,
+      JNI_MotionEvent::Java_MotionEvent_obtain(env, down_time_ms, event_time_ms,
                                                kAndroidActionDown, x, y,
                                                kAndroidAltKeyDown);
   const AInputEvent* native_event = nullptr;
@@ -239,14 +245,20 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
     native_event = AMotionEvent_fromJava(env, java_motion_event.obj());
   }
   CHECK(native_event != nullptr);
-  std::unique_ptr<MotionEventAndroid> event =
-      MotionEventAndroidNative::Create(native_event, kPixToDip,
-                                       /* y_offset_pix= */ 0);
+
+  std::unique_ptr<MotionEventAndroid> event = MotionEventAndroidNative::Create(
+      base::android::ScopedInputEvent(native_event), kPixToDip,
+      /* y_offset_pix= */ 0);
 
   EXPECT_EQ(event->GetX(0), x * kPixToDip);
   EXPECT_EQ(event->GetY(0), y * kPixToDip);
   EXPECT_EQ(event->GetAction(), MotionEvent::Action::DOWN);
   EXPECT_EQ(event->GetFlags(), ui::EF_ALT_DOWN);
+
+  EXPECT_EQ(event->GetEventTime(),
+            base::TimeTicks::FromUptimeMillis(event_time_ms));
+  EXPECT_EQ(event->GetDownTime(),
+            base::TimeTicks::FromUptimeMillis(down_time_ms));
 }
 
 }  // namespace ui

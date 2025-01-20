@@ -122,12 +122,14 @@ void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown(
 }
 
 void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
-  if (!waiting_for_account_available_)
+  if (!waiting_for_account_available_) {
     return;
+  }
 
   DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
-  if (!AreCredentialsAvailable())
+  if (!AreCredentialsAvailable()) {
     return;
+  }
 
   waiting_for_account_available_ = false;
   StartAccessTokenRequest();

@@ -247,8 +247,8 @@ ComPtr<IPin> VideoCaptureDeviceWin::GetPin(ComPtr<IBaseFilter> capture_filter,
 VideoPixelFormat VideoCaptureDeviceWin::TranslateMediaSubtypeToPixelFormat(
     const GUID& sub_type) {
   static struct {
-    // This field is not a raw_ref<> because it was filtered by the rewriter
-    // for: #global-scope
+    // This field is not a raw_ref<> because it only ever references statically-
+    // allocated data that will never be freed, so it cannot possibly dangle.
     RAW_PTR_EXCLUSION const GUID& sub_type;
     VideoPixelFormat format;
   } const kMediaSubtypeToPixelFormatCorrespondence[] = {

@@ -63,6 +63,8 @@ class ProfilePicker {
   // An entry point that triggers the profile picker window to open.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
     kOnStartup = 0,
     kProfileMenuManageProfiles = 1,
@@ -95,8 +97,12 @@ class ProfilePicker {
     // Opens the add new profile view from the app menu.
     kAppMenuProfileSubMenuAddNewProfile = 15,
 
-    kMaxValue = kAppMenuProfileSubMenuAddNewProfile,
+    // Opens the Glic version of the Profile Picker
+    kGlicManager = 16,
+
+    kMaxValue = kGlicManager,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerEntryPoint)
 
   class Params final {
    public:
@@ -137,6 +143,14 @@ class ProfilePicker {
     static Params ForFirstRun(const base::FilePath& profile_path,
                               FirstRunExitedCallback first_run_exited_callback);
 
+    // Builds parameter with the `kForGlicManager` entry point.
+    //
+    // `picked_profile_callback` will be called when a Profile is selected
+    // (returning the loaded profile) or when the picker is closed (returning a
+    // nullptr profile).
+    static Params ForGlicManager(
+        base::OnceCallback<void(Profile*)> picked_profile_callback);
+
     // Calls `first_run_exited_callback_`, forwarding `exit_status`.See
     // `ForFirstRun()` for more details.
     //
@@ -144,6 +158,12 @@ class ProfilePicker {
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
     void NotifyFirstRunExited(FirstRunExitStatus exit_status);
+
+    // Calls `picked_profile_callback_`, forwarding the `profile`. See
+    // `ForGlicManager()` for more details.
+    // This method will be called if the view/controller are destroyed without a
+    // profile being picked - the `profile` will be null in this case.
+    void NotifyProfilePicked(Profile* profile);
 
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused
@@ -158,6 +178,7 @@ class ProfilePicker {
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
     FirstRunExitedCallback first_run_exited_callback_;
+    base::OnceCallback<void(Profile*)> picked_profile_callback_;
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -219,13 +240,21 @@ class ProfilePicker {
   // without signing in.
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
-  // `profile_picked_time_on_startup` is the time when the user picked a
-  // profile to open, to measure browser startup performance. It is only set
-  // when the picker is shown on startup.
   static void SwitchToSignedOutPostIdentityFlow(
       std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback);
+
+  struct ProfilePickingArgs {
+    // Opens the settings page of the profile once it is first picked.
+    bool open_settings = false;
+    // Whether we are recording timing metrics about loading the profile and
+    // opening the first web content.
+    bool should_record_startup_metrics = false;
+  };
+
+  // Picks the profile with `profile_path`.
+  static void PickProfile(const base::FilePath& profile_path,
+                          ProfilePickingArgs args);
 
   // Cancel the signed-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from
@@ -235,18 +264,6 @@ class ProfilePicker {
 
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();
-
-  // Shows a dialog where the user can auth the profile or see the
-  // auth error message. If a dialog is already shown, this destroys the current
-  // dialog and creates a new one.
-  static void ShowDialog(Profile* profile, const GURL& url);
-
-  // Hides the dialog if it is showing.
-  static void HideDialog();
-
-  // Getter of the target page  url. If not empty and is valid, it opens on
-  // profile selection instead of the new tab page.
-  static GURL GetOnSelectProfileTargetUrl();
 
   // Getter of the path of profile which is displayed on the profile switch
   // screen.
@@ -286,30 +303,6 @@ class ProfilePicker {
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
   static StartupProfileModeReason GetStartupModeReason();
-
-  // Show the dialog and display local sign in error message without browser.
-  static void ShowDialogAndDisplayErrorMessage(Profile* profile);
-};
-
-// Dialog that will be displayed when a locked profile is selected in the
-// ProfilePicker when force-signin is enabled.
-class ProfilePickerForceSigninDialog {
- public:
-  // Dimensions of the reauth dialog displaying the password-separated signin
-  // flow.
-  static constexpr int kDialogHeight = 512;
-  static constexpr int kDialogWidth = 448;
-
-  // Shows a dialog where the user reauthenticates their primary account that
-  // has invalid credentials, when force signin is enabled.
-  static void ShowReauthDialog(Profile* profile, const std::string& email);
-
-  // Shows a dialog where the user logs into their profile for the first time
-  // via the profile picker, when force signin is enabled.
-  static void ShowForceSigninDialog(Profile* profile);
-
-  // Display local sign in error message without browser.
-  static void DisplayErrorMessage();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

@@ -8,7 +8,7 @@ source_set("android") {
   sources = [ "bookmark_bridge.h" ]
   public_deps = [
     "//base",
-    "//chrome/browser/android/bookmarks",
+    "//chrome/browser/partnerbookmarks:android",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/reading_list/android:reading_list",
     "//components/bookmarks/browser",

@@ -419,11 +419,11 @@ bool TestRenderViewHost::CreateRenderView(
   RenderFrameHostImpl* main_frame = nullptr;
   RenderFrameProxyHost* proxy_host = nullptr;
   if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
-    main_frame = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+    main_frame = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                              main_frame_routing_id_);
   } else {
-    proxy_host =
-        RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+    proxy_host = RenderFrameProxyHost::FromID(GetProcess()->GetDeprecatedID(),
+                                              proxy_route_id);
   }
 
   if (!GetWidget()->view_is_frame_sink_id_owner()) {
@@ -493,8 +493,10 @@ void TestRenderViewHost::SimulateWasShown() {
 
 blink::web_pref::WebPreferences
 TestRenderViewHost::TestComputeWebPreferences() {
-  return static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(this))
-      ->ComputeWebPreferences();
+  auto* web_contents_impl =
+      static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(this));
+  return web_contents_impl->ComputeWebPreferences(
+      web_contents_impl->GetPrimaryMainFrame());
 }
 
 bool TestRenderViewHost::IsTestRenderViewHost() const {
@@ -508,7 +510,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
   GetMainRenderFrameHost()->StartDragging(
       DropDataToDragData(
           drop_data, storage_partition->GetFileSystemAccessManager(),
-          GetProcess()->GetID(),
+          GetProcess()->GetDeprecatedID(),
           ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())),
       blink::kDragOperationEvery, std::move(bitmap), gfx::Vector2d(),
       gfx::Rect(), blink::mojom::DragEventSourceInfo::New());

@@ -115,7 +115,6 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       return manual_fill::ManualFillDataType::kAddress;
     case autofill::FillingProduct::kCreditCard:
     case autofill::FillingProduct::kIban:
-    case autofill::FillingProduct::kStandaloneCvc:
       return manual_fill::ManualFillDataType::kPaymentMethod;
     case autofill::FillingProduct::kPassword:
       return manual_fill::ManualFillDataType::kPassword;
@@ -123,7 +122,7 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:
-    case autofill::FillingProduct::kPredictionImprovements:
+    case autofill::FillingProduct::kAutofillAi:
     case autofill::FillingProduct::kMerchantPromoCode:
       // These cases are currently not available on iOS.
       NOTREACHED();

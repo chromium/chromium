@@ -9,20 +9,12 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_DEVICE_H_
 #define MEDIA_GPU_V4L2_V4L2_DEVICE_H_
 
+#include <linux/videodev2.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/av1-ctrls.h>
-#endif
-#include <linux/videodev2.h>
-
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
@@ -30,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"

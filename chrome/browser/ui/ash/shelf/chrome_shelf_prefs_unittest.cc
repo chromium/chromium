@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -34,7 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app.h"
@@ -92,8 +91,9 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   syncer::StringOrdinal GetPinPosition(const std::string& app_id) override {
     const SyncItem* item = GetSyncItem(app_id);
-    if (!item)
+    if (!item) {
       return syncer::StringOrdinal();
+    }
     return item->item_pin_ordinal;
   }
 
@@ -113,8 +113,9 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   const SyncItem* GetSyncItem(const std::string& id) const override {
     auto it = item_map_.find(id);
-    if (it == item_map_.end())
+    if (it == item_map_.end()) {
       return nullptr;
+    }
     return it->second.get();
   }
 

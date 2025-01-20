@@ -29,7 +29,7 @@ class CommerceBrowserUtilsTest : public testing::Test {
       : account_checker_(std::make_unique<commerce::MockAccountChecker>()),
         prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
   void SetUp() override {
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     account_checker_->SetPrefs(prefs_.get());
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(

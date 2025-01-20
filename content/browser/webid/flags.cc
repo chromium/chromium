@@ -27,13 +27,6 @@ bool IsFedCmMultipleIdentityProvidersEnabled() {
       features::kFedCmMultipleIdentityProviders);
 }
 
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
-  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
-    return FedCmIdpSigninStatusMode::ENABLED;
-  }
-  return FedCmIdpSigninStatusMode::METRICS_ONLY;
-}
-
 bool IsFedCmMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
@@ -42,8 +35,8 @@ bool IsFedCmSelectiveDisclosureEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
 }
 
-bool IsFedCmSameSiteNoneEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteNone);
+bool IsFedCmDelegationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDelegation);
 }
 
 bool IsFedCmIdPRegistrationEnabled() {

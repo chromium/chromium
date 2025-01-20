@@ -51,14 +51,14 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #endif
 
 using AppInfo = apps::IntentPickerAppInfo;
 using BubbleType = apps::IntentPickerBubbleType;
-using content::WebContents;
 using content::OpenURLParams;
 using content::Referrer;
+using content::WebContents;
 
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
@@ -73,8 +73,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   void TearDown() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
-    if (bubble_)
+    if (bubble_) {
       bubble_->GetWidget()->CloseNow();
+    }
 
     TestWithBrowserView::TearDown();
   }
@@ -90,8 +91,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     anchor_view_ =
         browser_view->toolbar()->AddChildView(std::make_unique<views::View>());
 
-    if (use_icons)
+    if (use_icons) {
       FillAppListWithDummyIcons();
+    }
 
     // We create |web_contents| since the Bubble UI has an Observer that
     // depends on this, otherwise it wouldn't work.
@@ -131,8 +133,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     ui::ImageModel dummy_icon_model =
         ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CLOSE));
-    for (auto& app : app_info_)
+    for (auto& app : app_info_) {
       app.icon_model = dummy_icon_model;
+    }
   }
 
   views::Button* GetButtonAtIndex(size_t index) {
@@ -348,19 +351,33 @@ TEST_F(IntentPickerBubbleViewTest, InitiatingOriginView) {
 }
 
 enum class BubbleInterfaceType { kListView, kGridView };
+using IntentPickerBubbleViewLayoutTestParam =
+    std::tuple<BubbleInterfaceType, apps::test::LinkCapturingFeatureVersion>;
 
 class IntentPickerBubbleViewLayoutTest
     : public IntentPickerBubbleViewTest,
-      public ::testing::WithParamInterface<BubbleInterfaceType> {
+      public ::testing::WithParamInterface<
+          IntentPickerBubbleViewLayoutTestParam> {
  public:
   IntentPickerBubbleViewLayoutTest() {
-    if (GetParam() == BubbleInterfaceType::kGridView) {
+    if (GetBubbleInterfaceTypeParam() == BubbleInterfaceType::kGridView) {
       feature_list_.InitWithFeaturesAndParameters(
-          apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+          apps::test::GetFeaturesToEnableLinkCapturingUX(
+              GetLinkCapturingFeatureVersionParam()),
+          {});
     } else {
       feature_list_.InitWithFeatures(
           {}, apps::test::GetFeaturesToDisableLinkCapturingUX());
     }
+  }
+
+  BubbleInterfaceType GetBubbleInterfaceTypeParam() const {
+    return std::get<BubbleInterfaceType>(GetParam());
+  }
+
+  apps::test::LinkCapturingFeatureVersion GetLinkCapturingFeatureVersionParam()
+      const {
+    return std::get<apps::test::LinkCapturingFeatureVersion>(GetParam());
   }
 
  private:
@@ -503,23 +520,54 @@ TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         IntentPickerBubbleViewLayoutTest,
-                         testing::Values(BubbleInterfaceType::kListView,
-                                         BubbleInterfaceType::kGridView));
+std::string_view BubbleInterfaceTypeToParamString(BubbleInterfaceType type) {
+  switch (type) {
+    case BubbleInterfaceType::kGridView:
+      return "GridView";
+    case BubbleInterfaceType::kListView:
+      return "ListView";
+  }
+}
 
-class IntentPickerBubbleViewGridLayoutTest : public IntentPickerBubbleViewTest {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewLayoutTest,
+    testing::Combine(
+        testing::Values(BubbleInterfaceType::kListView,
+                        BubbleInterfaceType::kGridView),
+#if BUILDFLAG(IS_CHROMEOS)
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+            ),
+    [](const testing::TestParamInfo<IntentPickerBubbleViewLayoutTestParam>&
+           test_param) {
+      std::string test_name;
+      test_name.append(BubbleInterfaceTypeToParamString(
+          std::get<BubbleInterfaceType>(test_param.param)));
+      test_name.append("_");
+      test_name.append(apps::test::ToString(
+          std::get<apps::test::LinkCapturingFeatureVersion>(test_param.param)));
+      return test_name;
+    });
+
+class IntentPickerBubbleViewGridLayoutTest
+    : public IntentPickerBubbleViewTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   IntentPickerBubbleViewGridLayoutTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
+TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
@@ -528,7 +576,7 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
   ASSERT_EQ(bubble_->GetSelectedIndex(), 0u);
 }
 
-TEST_F(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
+TEST_P(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
   ui::AXNodeData data;
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
@@ -551,7 +599,7 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
-TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
+TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
 
@@ -568,7 +616,7 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
 #else
 #define MAYBE_OpenWithReturnKey OpenWithReturnKey
 #endif
-TEST_F(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
+TEST_P(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
   AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
@@ -581,3 +629,15 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
 
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IntentPickerBubbleViewGridLayoutTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);

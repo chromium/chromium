@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
@@ -115,6 +114,11 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
                                   "CSSReadingFlow");
   // Enable CSSInert, used by AccessibilityCSSInteractivityInert.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "CSSInert");
+  // Enable custom elements to have a default role of "none", removing them
+  // from the accessibility tree.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityCustomElementRoleNone");
+
   // Enable reference target
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "ShadowRootReferenceTarget");
@@ -194,6 +198,45 @@ class SummaryAsHeadingDumpAccessibilityTreeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class CustomizableSelectEnabledDumpAccessibilityTreeTest
+    : public DumpAccessibilityTreeTest {
+ protected:
+  CustomizableSelectEnabledDumpAccessibilityTreeTest() {
+    feature_list_.InitWithFeatures({{blink::features::kCustomizableSelect,
+                                     blink::features::kSelectParserRelaxation}},
+                                   {/* disabled_features */});
+  }
+
+  ~CustomizableSelectEnabledDumpAccessibilityTreeTest() override {
+    // Ensure that the feature lists are destroyed in the same order they
+    // were created in.
+    scoped_feature_list_.Reset();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class CustomizableSelectDisabledDumpAccessibilityTreeTest
+    : public DumpAccessibilityTreeTest {
+ protected:
+  CustomizableSelectDisabledDumpAccessibilityTreeTest() {
+    feature_list_.InitWithFeatures({/* enabled_features */},
+                                   {{blink::features::kCustomizableSelect}});
+  }
+
+  ~CustomizableSelectDisabledDumpAccessibilityTreeTest() override {
+    // Ensure that the feature lists are destroyed in the same order they
+    // were created in.
+    scoped_feature_list_.Reset();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // TODO(crbug.com/40925629): We need to create a way to incrementally
 // enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
@@ -217,6 +260,18 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SummaryAsHeadingDumpAccessibilityTreeTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CustomizableSelectEnabledDumpAccessibilityTreeTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CustomizableSelectDisabledDumpAccessibilityTreeTest,
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
@@ -412,51 +467,51 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSLanguage) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementCheck) {
+                       AccessibilityCSSPseudoElementCheckMark) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check.html"));
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check-mark.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementCheckOverrideContent) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check-override-content.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementCheckOverrideContentAlternativeText) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL(
-      "pseudo-element-check-override-content-alternative-text.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementSelectArrow) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-select-arrow.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementSelectArrowOverrideContent) {
+                       AccessibilityCSSPseudoElementCheckMarkOverrideContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunCSSTest(
-      FILE_PATH_LITERAL("pseudo-element-select-arrow-override-content.html"));
+      FILE_PATH_LITERAL("pseudo-element-check-mark-override-content.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementSelectArrowOverrideContentAlternativeText) {
+    AccessibilityCSSPseudoElementCheckMarkOverrideContentAlternativeText) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunCSSTest(FILE_PATH_LITERAL(
-      "pseudo-element-select-arrow-override-content-alternative-text.html"));
+      "pseudo-element-check-mark-override-content-alternative-text.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementPickerIcon) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-picker-icon.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementPickerIconOverrideContent) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  RunCSSTest(
+      FILE_PATH_LITERAL("pseudo-element-picker-icon-override-content.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityCSSPseudoElementPickerIconOverrideContentAlternativeText) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  RunCSSTest(FILE_PATH_LITERAL(
+      "pseudo-element-picker-icon-override-content-alternative-text.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -721,6 +776,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaActions) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaActionsImplicit) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  RunAriaTest(FILE_PATH_LITERAL("aria-actions-implicit.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaActionsReferenceTarget) {
   RunAriaTest(FILE_PATH_LITERAL("aria-actions-reference-target.html"));
 }
@@ -861,6 +923,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaCombobox) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaComboboxDynamic) {
   RunAriaTest(FILE_PATH_LITERAL("aria-combobox-dynamic.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaComboboxDynamicElementReferences) {
+  RunAriaTest(
+      FILE_PATH_LITERAL("aria-combobox-dynamic-element-references.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1216,6 +1284,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGeneric) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGlobal) {
   RunAriaTest(FILE_PATH_LITERAL("aria-global.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaGlobalOnCustomElement) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityCustomElementRoleNone");
+  RunAriaTest(FILE_PATH_LITERAL("aria-global-on-custom-element.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGrid) {
@@ -1902,13 +1977,18 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityTabletumnHidden) {
+                       AccessibilityTableColumnHidden) {
   RunAriaTest(FILE_PATH_LITERAL("table-column-hidden.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableColumnRemove) {
   RunHtmlTest(FILE_PATH_LITERAL("table-column-remove.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTableWithRadioButtons) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-with-radio-buttons.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2132,6 +2212,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunHtmlTest(FILE_PATH_LITERAL("custom-select-open.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilityCustomSelectMixedOptions) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-select-mixed-options.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+    AccessibilityCustomSelectLabelElement) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-select-label-element.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDd) {
@@ -3183,11 +3273,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-opened.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityModalDialogInIframeOpened) {
-  RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-in-iframe-opened.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
                        AccessibilityModalDialogInIframeOpened) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-in-iframe-opened.html"));
@@ -3302,6 +3387,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOpenModal) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityOptionindatalist) {
   RunHtmlTest(FILE_PATH_LITERAL("option-in-datalist.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOptionLabel) {
+  RunAriaTest(FILE_PATH_LITERAL("option-label.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOutput) {
@@ -3499,7 +3588,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("selection-container.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
+// Times out on android: https://issues.chromium.org/issues/384959329
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySelect DISABLED_AccessibiltySelect
+#else
+#define MAYBE_AccessibilitySelect ENABLED_AccessibiltySelect
+#endif
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelect) {
+  RunHtmlTest(FILE_PATH_LITERAL("select.html"));
+}
+IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
+                       AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
@@ -3509,7 +3609,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
 #else
 #define MAYBE_AccessibilitySelectOpen AccessibilitySelectOpen
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectOpen) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-open.html"));
+}
+IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
                        MAYBE_AccessibilitySelectOpen) {
   RunHtmlTest(FILE_PATH_LITERAL("select-open.html"));
 }
@@ -3523,18 +3627,31 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("select-in-canvas.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilitySelectFollowsFocus) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus.html"));
+}
+IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
                        AccessibilitySelectFollowsFocus) {
   RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilitySelectFollowsFocusAriaSelectedFalse) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("select-follows-focus-aria-selected-false.html"));
+}
+IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
                        AccessibilitySelectFollowsFocusAriaSelectedFalse) {
   RunHtmlTest(
       FILE_PATH_LITERAL("select-follows-focus-aria-selected-false.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilitySelectFollowsFocusMultiselect) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus-multiselect.html"));
+}
+IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
                        AccessibilitySelectFollowsFocusMultiselect) {
   RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus-multiselect.html"));
 }
@@ -3981,7 +4098,18 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("delete-selection-crash.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReloadSelectionCrash) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, NameImgLabelledbyInputsTree) {
+  RunHtmlTest(FILE_PATH_LITERAL("name-img-labelledby-inputs-tree.html"));
+}
+
+// TODO(crbug.com/386918219): Flaky on UIA
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ReloadSelectionCrash DISABLED_ReloadSelectionCrash
+#else
+#define MAYBE_ReloadSelectionCrash ReloadSelectionCrash
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_ReloadSelectionCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("reload-selection-crash.html"));
 }
 
@@ -4333,13 +4461,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSInteractivityInert) {
   RunCSSTest(FILE_PATH_LITERAL("interactivity-inert.html"));
-}
-
-//
-// AccName tests where having the full tree is desired.
-//
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, NameImgLabelledbyInputs) {
-  RunAccNameTest(FILE_PATH_LITERAL("name-img-labelledby-inputs.html"));
 }
 
 //

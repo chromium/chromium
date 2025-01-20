@@ -1194,6 +1194,16 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
   return domain_visits;
 }
 
+bool VisitDatabase::GetIsUrlKnownToSync(URLID url_id, bool* is_known_to_sync) {
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT 1 FROM visits "
+                                 "WHERE url=? AND is_known_to_sync"));
+  statement.BindInt64(0, url_id);
+  *is_known_to_sync = statement.Step();
+  return true;
+}
+
 bool VisitDatabase::MigrateVisitsWithoutDuration() {
   if (!GetDB().DoesTableExist("visits")) {
     NOTREACHED() << " Visits table should exist before migration";

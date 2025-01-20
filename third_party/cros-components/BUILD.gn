@@ -113,7 +113,7 @@ rewrite_imports("cros_components_ts") {
     "lit|//resources/mwc/lit/index.js",
     "@lit/task|//resources/mwc/lit/index.js",
 
-    "@material/|chrome://resources/mwc/@material/",
+    "@material/|//resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.
     "(?P<filepath>\.\.?/[\w\-/]+)\$|\g<filepath>.js",

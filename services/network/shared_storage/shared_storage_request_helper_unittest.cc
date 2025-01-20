@@ -24,6 +24,8 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/shared_storage/shared_storage_header_utils.h"
 #include "services/network/shared_storage/shared_storage_test_url_loader_network_observer.h"
@@ -434,6 +436,21 @@ class SharedStorageRequestHelperProcessHeaderTest
 
 }  // namespace
 
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, EmptyHeader) {
+  const std::string kHeader = "";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+  EXPECT_TRUE(observer_->headers_received().front().methods.empty());
+}
+
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
        ClearSetAppendDelete_TokensStringsBytes_HeaderReceived) {
   const std::string kHeader(
@@ -446,21 +463,17 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   WaitForHeadersReceived(1);
 
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
   EXPECT_THAT(
-      observer_->headers_received().front().second,
-      ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"a", /*value=*/"val",
-                                  /*ignore_if_present=*/true),
-                  std::make_tuple(mojom::SharedStorageOperationType::kAppend,
-                                  /*key=*/"a", /*value=*/"hello",
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                                  /*key=*/"a", /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt)));
+      observer_->headers_received().front().methods,
+      ElementsAre(
+          SharedStorageMethodWrapper(MojomClearMethod()),
+          SharedStorageMethodWrapper(MojomSetMethod(
+              /*key=*/u"a", /*value=*/u"val", /*ignore_if_present=*/true)),
+          SharedStorageMethodWrapper(
+              MojomAppendMethod(/*key=*/u"a", /*value=*/u"hello")),
+          SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"a"))));
 }
 
 TEST_F(SharedStorageRequestHelperProcessHeaderTest,
@@ -478,34 +491,210 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
   WaitForHeadersReceived(1);
 
   // The token, "will/skip;unknown=1", parses to a valid Structured Header
-  // Parameterized List Item, but does not yield a valid operation type. The
-  // `SharedStorageRequestHelper` skips over it and sends the other valid
-  // operations it finds.
+  // Parameterized List Item, but does not yield a valid modifier method type.
+  // The `SharedStorageRequestHelper` skips over it and sends the valid methods
+  // it finds.
   EXPECT_EQ(observer_->headers_received().size(), 1u);
-  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
 
-  EXPECT_THAT(observer_->headers_received().front().second,
+  EXPECT_THAT(observer_->headers_received().front().methods,
               ElementsAre(
-                  // Recognized but superfluous parameters are included in the
-                  // mojom struct, e.g. `key` for the first call to `clear`.
-                  // They will be ignored in the browser process.
-                  std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/"b", /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt),
+                  // The superfluous parameter `key` is omitted.
+                  SharedStorageMethodWrapper(MojomClearMethod()),
                   // The unrecognized parameter `unknown` is omitted.
-                  std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                  /*key=*/"a", /*value=*/"new value",
-                                  /*ignore_if_present=*/true),
+                  SharedStorageMethodWrapper(
+                      MojomSetMethod(/*key=*/u"a", /*value=*/u"new value",
+                                     /*ignore_if_present=*/true)),
                   // The second instance of `key` parameter is used.
-                  std::make_tuple(mojom::SharedStorageOperationType::kAppend,
-                                  /*key=*/"extra/key", /*value=*/"hello",
-                                  /*ignore_if_present=*/std::nullopt),
-                  std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                                  /*key=*/"a", /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/false),
-                  std::make_tuple(mojom::SharedStorageOperationType::kClear,
-                                  /*key=*/std::nullopt, /*value=*/std::nullopt,
-                                  /*ignore_if_present=*/std::nullopt)));
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"extra/key", /*value=*/u"hello")),
+                  SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"a")),
+                  SharedStorageMethodWrapper(MojomClearMethod())));
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       KeyLengthInvalid_ItemSkipped) {
+  const std::string kHeader =
+      "set;key=\"\";value=v, append;key=\"\";value=v, delete;key=\"\", "
+      "set;key=k;value=v";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(observer_->headers_received().front().methods,
+              ElementsAre(SharedStorageMethodWrapper(
+                  MojomSetMethod(/*key=*/u"k", /*value=*/u"v",
+                                 /*ignore_if_present=*/false))));
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, IndividualMethodWithLock) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v;with_lock=\"\", "
+      "delete;key=k, clear;with_lock=lock2";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(
+          SharedStorageMethodWrapper(MojomSetMethod(
+              /*key=*/u"k", /*value=*/u"v",
+              /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+          SharedStorageMethodWrapper(MojomAppendMethod(
+              /*key=*/u"k", /*value=*/u"v", /*with_lock=*/"")),
+          SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"k")),
+          SharedStorageMethodWrapper(MojomClearMethod(/*with_lock=*/"lock2"))));
+
+  // Expect no with_lock option for the batch.
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, ReservedLockNameSkipped) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=\"-lock1\", "
+      "append;key=k;value=v;with_lock=\"lock2\"";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/std::nullopt)),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v", /*with_lock=*/"lock2"))));
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, BatchOptionsWithLock) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=lock2";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, "lock2");
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_ReservedName) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=\"-lock2\"";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  // Expect no with_lock option for the batch.
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_OverridePreviousOptions) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v, "
+      "options;with_lock=lock2, options;abc=def";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, std::nullopt);
+}
+
+TEST_F(SharedStorageRequestHelperProcessHeaderTest,
+       BatchOptionsWithLock_InTheMiddle) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, options;abc=def;with_lock=lock2, "
+      "append;key=k;value=v";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().request_origin,
+            request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().methods,
+      ElementsAre(SharedStorageMethodWrapper(MojomSetMethod(
+                      /*key=*/u"k", /*value=*/u"v",
+                      /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+                  SharedStorageMethodWrapper(MojomAppendMethod(
+                      /*key=*/u"k", /*value=*/u"v"))));
+
+  EXPECT_EQ(observer_->headers_received().front().with_lock, "lock2");
 }
 
 namespace {
@@ -524,7 +713,6 @@ TEST_F(SharedStorageRequestHelperProcessHeaderMultiConnectionTest,
       "clear, invalid?item",       // Unparsable item
       "append;key=key=a;value=b",  // Unparsable parameter
       "set=a/dict, delete=a/key",  // Dictionary
-      "",                          // Empty header
   });
 
   RegisterSharedStorageMultipleHandlerAndStartServer(invalid_headers);
@@ -571,16 +759,14 @@ TEST_F(SharedStorageRequestHelperProcessHeaderMultiConnectionTest,
     WaitForHeadersReceived(i + 1);
 
     EXPECT_EQ(observer_->headers_received().size(), i + 1);
-    EXPECT_EQ(observer_->headers_received()[i].first, request_origin_);
+    EXPECT_EQ(observer_->headers_received()[i].request_origin, request_origin_);
 
     EXPECT_THAT(
-        observer_->headers_received()[i].second,
-        ElementsAre(std::make_tuple(mojom::SharedStorageOperationType::kSet,
-                                    /*key=*/"x", /*value=*/"y",
-                                    /*ignore_if_present=*/std::nullopt),
-                    std::make_tuple(mojom::SharedStorageOperationType::kDelete,
-                                    /*key=*/"z", /*value=*/std::nullopt,
-                                    /*ignore_if_present=*/std::nullopt)));
+        observer_->headers_received()[i].methods,
+        ElementsAre(
+            SharedStorageMethodWrapper(MojomSetMethod(
+                /*key=*/u"x", /*value=*/u"y", /*ignore_if_present=*/false)),
+            SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"z"))));
   }
 }
 

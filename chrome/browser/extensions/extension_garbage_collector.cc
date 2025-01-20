@@ -18,6 +18,7 @@
 #include "base/one_shot_event.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -143,7 +144,7 @@ ExtensionGarbageCollector::ExtensionGarbageCollector(
   InstallTracker::Get(context_)->AddObserver(this);
 }
 
-ExtensionGarbageCollector::~ExtensionGarbageCollector() {}
+ExtensionGarbageCollector::~ExtensionGarbageCollector() = default;
 
 // static
 ExtensionGarbageCollector* ExtensionGarbageCollector::Get(
@@ -178,6 +179,10 @@ void ExtensionGarbageCollector::GarbageCollectExtensionsOnFileThread(
     unpacked ? CheckUnpackedExtensionDirectory(extension_path, extension_paths)
              : CheckExtensionDirectory(extension_path, extension_paths);
   }
+  // TODO(crbug.com/379867155) Remove this after chrome app kiosk crash recovery
+  // is independent of extensions garbage collection.
+  SYSLOG(INFO)
+      << "Garbage collection for extensions on file thread is complete.";
 }
 
 void ExtensionGarbageCollector::GarbageCollectExtensions() {

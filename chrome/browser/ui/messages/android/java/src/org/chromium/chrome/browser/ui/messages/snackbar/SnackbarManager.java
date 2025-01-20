@@ -23,6 +23,7 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -210,7 +211,6 @@ public class SnackbarManager
     /** Handles click event for action button at end of snackbar. */
     @Override
     public void onClick(View v) {
-        mView.announceActionForAccessibility();
         mSnackbars.removeCurrentDueToAction();
         updateView();
     }
@@ -449,5 +449,17 @@ public class SnackbarManager
      */
     public SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
+    }
+
+    // ============================================================================================
+    // Flags
+    // ============================================================================================
+
+    /**
+     * Whether floating snackbar is enabled. When enabled, the snackbar will float on top of the web
+     * content.
+     */
+    public static boolean isFloatingSnackbarEnabled() {
+        return ChromeFeatureList.sFloatingSnackbar.isEnabled();
     }
 }

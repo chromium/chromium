@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -47,19 +48,19 @@ namespace net {
 namespace {
 
 // MAXNS is normally 3, but let's test 4 if possible.
-const char* const kNameserversIPv4[] = {
+const auto kNameserversIPv4 = std::to_array<const char*>({
     "8.8.8.8",
     "192.168.1.1",
     "63.1.2.4",
     "1.0.0.1",
-};
+});
 
-const char* const kNameserversIPv6[] = {
+const auto kNameserversIPv6 = std::to_array<const char*>({
     nullptr,
     "2001:db8::42",
     nullptr,
     "::FFFF:129.144.52.38",
-};
+});
 
 const std::vector<NsswitchReader::ServiceSpecification> kBasicNsswitchConfig = {
     NsswitchReader::ServiceSpecification(NsswitchReader::Service::kFiles),
@@ -104,6 +105,7 @@ void InitializeResState(res_state res) {
     // `TestResolvReader::CloseResState()`.
     struct sockaddr_in6* sa6;
     sa6 = static_cast<sockaddr_in6*>(malloc(sizeof(*sa6)));
+    memset(sa6, 0, sizeof(*sa6));
     sa6->sin6_family = AF_INET6;
     sa6->sin6_port = base::HostToNet16(NS_DEFAULTPORT - i);
     inet_pton(AF_INET6, kNameserversIPv6[i], &sa6->sin6_addr);

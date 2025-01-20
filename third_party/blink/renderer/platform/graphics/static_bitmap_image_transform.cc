@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -242,9 +243,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
   {
-    SkImageInfo dest_info = SkImageInfo::Make(
-        dest_size, dest_color_type, dest_alpha_type, dest_color_space);
-    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kNo;
     // If `source` is accelerated, then use a SharedImage provider.
@@ -253,18 +251,21 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
           source->ContextProviderWrapper();
       if (context_provider) {
         const gpu::SharedImageUsageSet shared_image_usage_flags =
-            context_provider->ContextProvider()
-                ->SharedImageInterface()
-                ->UsageForMailbox(source->GetMailboxHolder().mailbox);
+            source->GetSharedImage()->usage();
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-            dest_info, kFilterQuality, kShouldInitialize, context_provider,
-            RasterMode::kGPU, shared_image_usage_flags);
+            gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+            dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
+            kShouldInitialize, context_provider, RasterMode::kGPU,
+            shared_image_usage_flags);
       }
     }
     // If not (or if the SharedImage provider fails), fall back to software.
     if (!resource_provider) {
       resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-          dest_info, kFilterQuality, kShouldInitialize);
+          gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
+          dest_alpha_type,
+          SkColorSpaceToGfxColorSpace(std::move(dest_color_space)),
+          kShouldInitialize);
     }
   }
 

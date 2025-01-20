@@ -53,23 +53,26 @@ void WebUITabStripFieldTrial::RegisterFieldTrialIfNecessary() {
 }
 
 WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
-  if (!DeviceIsTabletModeCapable())
+  if (!DeviceIsTabletModeCapable()) {
     return;
+  }
 
   base::FeatureList* const feature_list = base::FeatureList::GetInstance();
 
   if (feature_list->IsFeatureOverriddenFromCommandLine(
-          features::kWebUITabStrip.name))
+          features::kWebUITabStrip.name)) {
     return;
+  }
 
   const char* group_name;
 
-  if (!feature_list->IsFeatureOverridden(features::kWebUITabStrip.name))
+  if (!feature_list->IsFeatureOverridden(features::kWebUITabStrip.name)) {
     group_name = "Default";
-  else if (base::FeatureList::IsEnabled(features::kWebUITabStrip))
+  } else if (base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
     group_name = "Enabled";
-  else
+  } else {
     group_name = "Disabled";
+  }
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "WebUITabStripOnTablets", group_name);

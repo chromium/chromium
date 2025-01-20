@@ -8,7 +8,6 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
-import android.graphics.Color;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -137,16 +136,7 @@ public class NoPasskeysBottomSheetRenderTest {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
         ScrimCoordinator scrimCoordinator =
                 new ScrimCoordinator(
-                        getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        activityContentView,
-                        Color.WHITE);
+                        getActivity(), /* systemUiScrimDelegate= */ null, activityContentView);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
                 () -> scrimCoordinator,
                 (unused) -> {},

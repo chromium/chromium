@@ -310,7 +310,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
@@ -414,7 +414,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
     media_id =
         content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
             request.requested_video_device_ids.front(),
-            main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
+            main_frame->GetProcess()->GetDeprecatedID(),
+            main_frame->GetRoutingID(),
             url::Origin::Create(request.security_origin),
             content::kRegistryStreamTypeDesktop);
   }
@@ -486,7 +487,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
 
   if (pending_request->request.requested_video_device_ids.empty() ||
       pending_request->request.requested_video_device_ids.front().empty()) {
-    // Passing nullptr selects the default picker (DesktopMediaPickerViews).
+    // Passing nullptr selects the default picker (DesktopMediaPickerImpl).
     pending_request->picker = picker_factory_->CreatePicker(nullptr);
     if (!pending_request->picker) {
       std::move(pending_request->callback)

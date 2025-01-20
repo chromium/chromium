@@ -28,29 +28,34 @@ ViewAXPlatformNodeDelegateMac::~ViewAXPlatformNodeDelegateMac() = default;
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetNSWindow() {
   auto* widget = view()->GetWidget();
-  if (!widget)
+  if (!widget) {
     return nil;
+  }
 
   auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       widget->GetNativeWindow());
-  if (!window_host)
+  if (!window_host) {
     return nil;
+  }
 
   return window_host->GetNativeViewAccessibleForNSWindow();
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() const {
-  if (view()->parent())
+  if (view()->parent()) {
     return ViewAXPlatformNodeDelegate::GetParent();
+  }
 
   auto* widget = view()->GetWidget();
-  if (!widget)
+  if (!widget) {
     return nil;
+  }
 
   auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       view()->GetWidget()->GetNativeWindow());
-  if (!window_host)
+  if (!window_host) {
     return nil;
+  }
 
   return window_host->GetNativeViewAccessibleForNSView();
 }

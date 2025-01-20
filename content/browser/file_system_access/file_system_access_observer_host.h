@@ -90,7 +90,7 @@ class FileSystemAccessObserverHost
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
       ObserveCallback callback,
       base::expected<
-          std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+          std::unique_ptr<FileSystemAccessObservationGroup::Observer>,
           blink::mojom::FileSystemAccessErrorPtr> observation_or_error);
 
   void OnHostReceiverDisconnect();

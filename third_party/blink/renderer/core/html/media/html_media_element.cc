@@ -1582,7 +1582,7 @@ void HTMLMediaElement::StartPlayerLoad() {
 
   GetMediaPlayerHostRemote().OnMediaPlayerAdded(
       std::move(media_player_remote), AddMediaPlayerObserverAndPassReceiver(),
-      web_media_player_->GetDelegateId());
+      web_media_player_->GetPlayerId());
 
   if (GetLayoutObject())
     GetLayoutObject()->SetShouldDoFullPaintInvalidation();
@@ -2976,6 +2976,8 @@ bool HTMLMediaElement::preservesPitch() const {
 }
 
 void HTMLMediaElement::setPreservesPitch(bool preserves_pitch) {
+  UseCounter::Count(GetDocument(), WebFeature::kPreservesPitch);
+
   preserves_pitch_ = preserves_pitch;
 
   if (web_media_player_)
@@ -3911,11 +3913,14 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
     StartPlaybackProgressTimer();
     playing_ = true;
   } else {  // Should not be playing right now
-    if (is_playing) {
+    // Always tell WMP about the pause since it may need to clear a pending
+    // automatic playback resumption.
+    if (web_media_player_ && ready_state_ >= kHaveMetadata) {
       web_media_player_->Pause();
-
-      if (pause_speech && ::features::IsTextBasedAudioDescriptionEnabled())
-        SpeechSynthesis()->Pause();
+    }
+    if (is_playing && pause_speech &&
+        ::features::IsTextBasedAudioDescriptionEnabled()) {
+      SpeechSynthesis()->Pause();
     }
 
     playback_progress_timer_.Stop();
@@ -4967,6 +4972,11 @@ std::string HTMLMediaElement::GetActivePresentationId() {
   // If MediaRouterBase::CreatePresentationId() were changed, this line might
   // need to be updated.
   return remote_playback_client_->GetPresentationId().Ascii();
+}
+
+ExecutionContext* HTMLMediaElement::GetExecutionContextForPlayer() const {
+  return opener_document_ ? opener_document_->GetExecutionContext()
+                          : GetExecutionContext();
 }
 
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(

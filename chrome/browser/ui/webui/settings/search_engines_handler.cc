@@ -229,8 +229,9 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("urlLocked", ((template_url->prepopulate_id() > 0) ||
                          (template_url->starter_pack_id() > 0)));
   GURL icon_url = template_url->favicon_url();
-  if (icon_url.is_valid())
+  if (icon_url.is_valid()) {
     dict.Set("iconURL", icon_url.spec());
+  }
 
   // The icons that are used for search engines in the EEA region are bundled
   // with Chrome. We use the favicon service for countries outside the EEA
@@ -402,10 +403,11 @@ void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
                                            const std::u16string& keyword,
                                            const std::string& url) {
   DCHECK(!url.empty());
-  if (template_url)
+  if (template_url) {
     list_controller_.ModifyTemplateURL(template_url, title, keyword, url);
-  else
+  } else {
     list_controller_.AddTemplateURL(title, keyword, url);
+  }
 
   edit_controller_.reset();
 }
@@ -423,8 +425,9 @@ void SearchEnginesHandler::HandleValidateSearchEngineInput(
 
 bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
                                               const std::string& field_value) {
-  if (!edit_controller_.get())
+  if (!edit_controller_.get()) {
     return false;
+  }
 
   bool is_valid = false;
   if (field_name.compare(kSearchEngineField) == 0) {
@@ -442,16 +445,18 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
 
 void SearchEnginesHandler::HandleSearchEngineEditCancelled(
     const base::Value::List& args) {
-  if (!edit_controller_.get())
+  if (!edit_controller_.get()) {
     return;
+  }
   edit_controller_->CleanUpCancelledAdd();
   edit_controller_.reset();
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditCompleted(
     const base::Value::List& args) {
-  if (!edit_controller_.get())
+  if (!edit_controller_.get()) {
     return;
+  }
 
   CHECK_EQ(3U, args.size());
   const std::string& search_engine = args[0].GetString();

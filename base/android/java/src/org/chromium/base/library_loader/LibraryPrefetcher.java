@@ -13,6 +13,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * See also base/android/library_loader/library_prefetcher_hooks.cc, which contains
  * the native counterpart to this class.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class LibraryPrefetcher {
 

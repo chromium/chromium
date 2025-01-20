@@ -50,6 +50,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.scrollable_viewport_size;
   }
 
+  static gfx::Size visible_viewport_size(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.visible_viewport_size;
+  }
+
   static gfx::ContentColorUsage content_color_usage(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.content_color_usage;
@@ -72,6 +77,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static bool is_handling_interaction(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_handling_interaction;
+  }
+
+  static bool is_handling_animation(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_handling_animation;
   }
 
   static SkColor4f root_background_color(

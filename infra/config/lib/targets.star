@@ -270,66 +270,6 @@ def _resultdb(
         inv_extended_properties_dir = inv_extended_properties_dir,
     )
 
-def _skylab(
-        *,
-        cros_board = "",
-        cros_img = "",
-        cros_build_target = "",
-        use_lkgm = False,
-        cros_model = None,
-        cros_cbx = False,
-        autotest_name = None,
-        bucket = None,
-        dut_pool = None,
-        public_builder = None,
-        public_builder_bucket = None,
-        shards = None,
-        args = []):
-    """Define a Skylab test target.
-
-    Args:
-        cros_board: The CrOS DUT board name, e.g. "eve", "kevin".
-        cros_build_target: The CrOS build target name, e.g. "eve-arc-t".
-            If unspecified, the build target equals to cros_board will be used.
-        cros_img: ChromeOS image version to be deployed to DUT.
-            Must be empty when use_lkgm is true.
-            For example, "brya-release/R118-15604.42.0"
-        use_lkgm: If True, use a ChromeOS image version derived from
-            chromeos/CHROMEOS_LKGM file.
-        cros_model: Optional ChromeOS DUT model.
-        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
-             board, not all models are CBX-capable.
-        autotest_name: The name of the autotest to be executed in
-            Skylab.
-        bucket: Optional Google Storage bucket where the specified
-            image(s) are stored.
-        dut_pool: The skylab device pool to run the test. By default the
-            quota pool, shared by all CrOS tests.
-        public_builder: Optional Public CTP Builder.
-            The public_builder and public_builder_bucket fields can be
-            used when default CTP builder is not sufficient/advised
-            (ex: chromium cq, satlab for partners).
-        public_builder_bucket: Optional luci bucket. See public_builder
-            above.
-        shards: The number of shards used to run the test.
-        args: The list of test arguments to be added to test CLI.
-    """
-    return struct(
-        cros_board = cros_board,
-        cros_build_target = cros_build_target,
-        cros_img = cros_img,
-        use_lkgm = use_lkgm,
-        cros_model = cros_model,
-        cros_cbx = cros_cbx,
-        autotest_name = autotest_name,
-        bucket = bucket,
-        dut_pool = dut_pool,
-        public_builder = public_builder,
-        public_builder_bucket = public_builder_bucket,
-        shards = shards,
-        args = args,
-    )
-
 def _mixin_values(
         description = None,
         args = None,
@@ -354,8 +294,6 @@ def _mixin_values(
         resultdb = None,
         isolate_profile_data = None,
         merge = None,
-        timeout_sec = None,
-        shards = None,
         experiment_percentage = None):
     """Define values to be mixed into a target.
 
@@ -435,7 +373,6 @@ def _mixin_values(
             isolates.
         merge: A targets.merge describing the invocation to merge the
             results from the test's tasks.
-        timeout_sec: The maximum time the test can take to run.
         shards: The number of shards to use for running the test on
             skylab.
         experiment_percentage: An integer in the range [0, 100]
@@ -470,8 +407,6 @@ def _mixin_values(
         resultdb = resultdb,
         isolate_profile_data = isolate_profile_data,
         merge = merge,
-        timeout_sec = timeout_sec,
-        shards = shards,
         experiment_percentage = experiment_percentage,
     )
     return {k: v for k, v in mixin_values.items() if v != None}
@@ -641,22 +576,12 @@ def _legacy_basic_suite(*, name, tests):
 
 def _legacy_test_config(
         *,
-        # TODO(gbeaty) Tast tests should have their own test function defined
-        # and this should be removed from this function
-        tast_expr = None,
-        # TODO(gbeaty) Skylab details should be modified to be under a separate
-        # structure like swarming details are and this should be made a part of
-        # mixins and removed from this function
-        test_level_retries = None,
         mixins = None,
         remove_mixins = None,
         **kwargs):
     """Define the details of a test in a basic suite.
 
     Args:
-        tast_expr: The tast expression to run. Only applicable to skylab tests.
-        test_level_retries: The number of times to retry tests. Only applicable
-            to skylab tests.
         mixins: A list of names of mixins to apply to the test.
         remove_mixins: A list of names of mixins to skip applying to the test.
         **kwargs: The mixin values, see _mixin_values for allowed keywords and
@@ -667,8 +592,6 @@ def _legacy_test_config(
         tests argument of targets.legacy_basic_suite.
     """
     return struct(
-        tast_expr = tast_expr,
-        test_level_retries = test_level_retries,
         mixins = mixins,
         remove_mixins = remove_mixins,
         mixin_values = _mixin_values(**kwargs) or None,
@@ -814,6 +737,6 @@ targets = struct(
     remove = _targets_common.remove,
     resultdb = _resultdb,
     swarming = _targets_common.swarming,
-    skylab = _skylab,
+    skylab = _targets_common.skylab,
     magic_args = _targets_magic_args,
 )

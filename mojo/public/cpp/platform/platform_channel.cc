@@ -146,17 +146,6 @@ void CreateChannel(PlatformHandle* local_endpoint,
   // Set non-blocking on both ends.
   PCHECK(fcntl(fds[0], F_SETFL, O_NONBLOCK) == 0);
   PCHECK(fcntl(fds[1], F_SETFL, O_NONBLOCK) == 0);
-
-#if BUILDFLAG(IS_APPLE)
-  // This turns off |SIGPIPE| when writing to a closed socket, causing the call
-  // to fail with |EPIPE| instead. On Linux we have to use |send...()| with
-  // |MSG_NOSIGNAL| instead, which is not supported on Mac.
-  int no_sigpipe = 1;
-  PCHECK(setsockopt(fds[0], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                    sizeof(no_sigpipe)) == 0);
-  PCHECK(setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                    sizeof(no_sigpipe)) == 0);
-#endif  // BUILDFLAG(IS_APPLE)
 #endif  // BUILDFLAG(IS_NACL)
 
   *local_endpoint = PlatformHandle(base::ScopedFD(fds[0]));

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -22,6 +20,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -71,8 +70,9 @@ class LoadFinishedWaiter : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (selection.active_tab_changed())
+    if (selection.active_tab_changed()) {
       content::WebContentsObserver::Observe(selection.new_contents);
+    }
   }
 
   // content::WebContentsObserver:
@@ -102,8 +102,9 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
 
  protected:
   Profile* profile() {
-    if (!profile_)
+    if (!profile_) {
       profile_ = browser()->profile();
+    }
     return profile_;
   }
 

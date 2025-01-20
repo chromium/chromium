@@ -249,6 +249,7 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
     case CSSAtRuleID::kCSSAtRuleApplyMixin:
       return "@apply";
     case CSSAtRuleID::kCSSAtRuleInvalid:
+    case CSSAtRuleID::kCount:
       NOTREACHED();
   };
 }
@@ -330,6 +331,7 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
     case CSSAtRuleID::kCSSAtRuleApplyMixin:
       return WebFeature::kCSSMixins;
     case CSSAtRuleID::kCSSAtRuleInvalid:
+    case CSSAtRuleID::kCount:
       NOTREACHED();
   }
 }

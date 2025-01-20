@@ -16,6 +16,14 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsCitationBackground] = {
       ui::kColorSysBaseContainer};
+  mixer[kColorProductSpecificationsCitationPopupBackground] = {
+      ui::kColorSysSurface1};
+  mixer[kColorProductSpecificationsCitationPopupText] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorProductSpecificationsCitationPopupTitle] = {
+      ui::kColorSysOnSurface};
+  mixer[kColorProductSpecificationsComparisonTableListBackground] = {
+      ui::kColorSysSurface5};
   mixer[kColorProductSpecificationsDetailChipBackground] = {
       ui::kColorSysBaseContainer};
   mixer[kColorProductSpecificationsDisclosureBackground] = {

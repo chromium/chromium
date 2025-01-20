@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
@@ -73,6 +74,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/page_info/about_this_site_tab_helper.h"
+#import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
@@ -97,7 +99,6 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
@@ -264,11 +265,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   DownloadManagerTabHelper::CreateForWebState(web_state);
   SafariDownloadTabHelper::CreateForWebState(web_state);
   VcardTabHelper::CreateForWebState(web_state);
-
-  // Drive tab helper.
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    DocumentDownloadTabHelper::CreateForWebState(web_state);
-  }
+  DocumentDownloadTabHelper::CreateForWebState(web_state);
 
   PageloadForegroundDurationTabHelper::CreateForWebState(web_state);
 
@@ -316,16 +313,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   RepostFormTabHelper::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode) ||
-      base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsUpgrades)) {
-    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-        web_state, profile->GetPrefs(),
-        PrerenderServiceFactory::GetForProfile(profile),
-        HttpsUpgradeServiceFactory::GetForProfile(profile));
-    HttpsOnlyModeContainer::CreateForWebState(web_state);
-  }
+  HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
+      web_state, profile->GetPrefs(),
+      PrerenderServiceFactory::GetForProfile(profile),
+      HttpsUpgradeServiceFactory::GetForProfile(profile));
+  HttpsOnlyModeContainer::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(
@@ -362,4 +354,5 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       !for_prerender) {
     DataSharingTabHelper::CreateForWebState(web_state);
   }
+  EditMenuTabHelper::CreateForWebState(web_state);
 }

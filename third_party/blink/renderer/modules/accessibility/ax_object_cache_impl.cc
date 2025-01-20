@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -123,6 +122,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
@@ -131,7 +131,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
 
@@ -166,7 +166,9 @@ Node* RetargetInput(Node* node) {
       possible_select = NodeTraversal::Parent(*node);
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton() && node == select->SlottedButton()) {
+      if (select->IsAppearanceBaseButton(
+              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
+          node == select->SlottedButton()) {
         return select;
       }
     }
@@ -1226,7 +1228,8 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow(slot.GetDocument()));
   DCHECK(slot.SupportsAssignment());
 
-  if (slot.IsInUserAgentShadowRoot() &&
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      slot.IsInUserAgentShadowRoot() &&
       IsA<HTMLSelectElement>(slot.OwnerShadowHost())) {
     return slot.GetIdAttribute() == shadow_element_names::kSelectOptions;
   }
@@ -1472,7 +1475,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   new_obj->Init(parent);
   MaybeDisallowImplicitSelectionWithCleanLayout(new_obj);
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   Element* element = DynamicTo<Element>(node);
   if (element && !element->IsPseudoElement()) {
     // Ensure that the relation cache is properly initialized with information
@@ -1602,7 +1605,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   if (!obj)
     return;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   if (obj->CachedIsIncludedInTree()) {
     --included_node_count_;
   }
@@ -2168,6 +2171,17 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
   MarkAXObjectDirty(ax_object);
 }
 
+void AXObjectCacheImpl::ClearBlockFlowCachedData(
+    const LayoutBlockFlow* block_flow) {
+  if (!::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+    return;
+  }
+  auto it = block_flow_data_cache_.find(block_flow);
+  if (it != block_flow_data_cache_.end()) {
+    block_flow_data_cache_.erase(it);
+  }
+}
+
 void AXObjectCacheImpl::CSSAnchorChanged(const LayoutObject* positioned_obj) {
   if (Node* node = positioned_obj->GetNode()) {
     DeferTreeUpdate(TreeUpdateReason::kCSSAnchorChanged, node);
@@ -2441,7 +2455,7 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (Element* element = DynamicTo<Element>(node)) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.
-      relation_cache_->CacheRelationIds(*element);
+      relation_cache_->CacheRelations(*element);
       ScheduleAXUpdate();
     }
     if (AXObject::HasARIAOwns(element)) {
@@ -2627,7 +2641,7 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   CHECK(obj);
   CHECK(obj->ParentObject());
 
-  if (element && element->HasID()) {
+  if (element) {
     MaybeNewRelationTarget(*node, obj);
   }
 
@@ -2892,7 +2906,7 @@ void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 void AXObjectCacheImpl::CheckTreeIsFinalized() {
   CHECK(!Root()->NeedsToUpdateCachedValues());
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
 
   // Skip check if document load is not complete.
   if (!GetDocument().IsLoadCompleted()) {
@@ -2910,13 +2924,7 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
 
   // The following checks can make tests flaky if the tree being checked
   // is quite large. Therefore cap the number of objects we check.
-  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 5000;
-  if (objects_.size() > kMaxObjectsToCheckAfterTreeUpdate) {
-    DLOG(INFO)
-        << "AXObjectCacheImpl::CheckTreeIsFinalized: Only checking first "
-        << kMaxObjectsToCheckAfterTreeUpdate
-        << " items in objects_ (size: " << objects_.size() << ")";
-  }
+  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 1000;
 
   // First loop checks that tree structure is consistent.
   int count = 0;
@@ -2926,20 +2934,20 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
     }
 
     const AXObject* object = entry.value;
-    DCHECK(!object->IsDetached());
-    DCHECK(object->GetDocument());
-    DCHECK(object->GetDocument()->GetFrame())
+    CHECK(!object->IsDetached());
+    CHECK(object->GetDocument());
+    CHECK(object->GetDocument()->GetFrame())
         << "An object in a closed document should have been removed:"
         << "\n* Object: " << object;
-    DCHECK(!object->IsMissingParent())
+    CHECK(!object->IsMissingParent())
         << "No object should be missing its parent: " << "\n* Object: "
         << object << "\n* Computed parent: " << object->ComputeParent();
     // Check whether cached values need an update before using any getters that
     // will update them.
-    DCHECK(!object->NeedsToUpdateCachedValues())
+    CHECK(!object->NeedsToUpdateCachedValues())
         << "No cached values should require an update: " << "\n* Object: "
         << object;
-    DCHECK(!object->ChildrenNeedToUpdateCachedValues())
+    CHECK(!object->ChildrenNeedToUpdateCachedValues())
         << "Cached values for children should not require an update: "
         << "\n* Object: " << object;
     if (object->IsIncludedInTree()) {
@@ -2955,10 +2963,9 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
         CHECK(included_parent);
         const HeapVector<Member<AXObject>>& siblings =
             included_parent->CachedChildrenIncludingIgnored();
-        DCHECK(siblings.Contains(object))
+        CHECK(siblings.Contains(object))
             << "Object was not included in its parent: " << "\n* Object: "
-            << object
-            << "\n* Included parent: " << included_parent;
+            << object << "\n* Included parent: " << included_parent;
       }
     }
     count++;
@@ -2983,7 +2990,7 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
       if (!included_parent) {
         included_parent = Root();
       }
-      DCHECK(!ancestor->HasDirtyDescendants())
+      CHECK(!ancestor->HasDirtyDescendants())
           << "No subtrees should be flagged as needing updates at this point:"
           << "\n* Object: " << ancestor
           << "\n* Included parent: " << included_parent->GetAXTreeForThis();
@@ -2992,14 +2999,14 @@ void AXObjectCacheImpl::CheckTreeIsFinalized() {
     if (!included_parent) {
       included_parent = Root();
     }
-    DCHECK(!object->NeedsToUpdateChildren())
+    CHECK(!object->NeedsToUpdateChildren())
         << "No children in the tree should require an update at this point: "
         << "\n* Object: " << object
         << "\n* Included parent: " << included_parent;
 
     count++;
   }
-#endif
+#endif  // AX_FAIL_FAST_BUILD()
 }
 
 int AXObjectCacheImpl::GetDeferredEventsDelay() const {
@@ -3419,25 +3426,21 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   return success;
 }
 
-void AXObjectCacheImpl::ResetActiveBlockFlowContainer() {
-  active_block_flow_container_ = nullptr;
-  active_block_flow_data_ = nullptr;
-}
-
 const AXBlockFlowData* AXObjectCacheImpl::GetBlockFlowData(
     const AXObject* object) {
-  // TODO: Assumption that we are only really working on one paragraph at a
-  // time turned out to be incorrect. Ideally, we can come up with a strategy
-  // to make this work in order to avoid memory bloat.
   LayoutBlockFlow* block_flow =
       object->GetLayoutObject()->FragmentItemsContainer();
-
-  if (block_flow != active_block_flow_container_) {
-    active_block_flow_container_ = block_flow;
-    active_block_flow_data_ = MakeGarbageCollected<AXBlockFlowData>(block_flow);
+  if (!block_flow) {
+    return nullptr;
   }
-
-  return active_block_flow_data_;
+  auto it = block_flow_data_cache_.find(block_flow);
+  if (it != block_flow_data_cache_.end()) {
+    return it->value;
+  }
+  auto result = block_flow_data_cache_.insert(
+      block_flow, MakeGarbageCollected<AXBlockFlowData>(block_flow));
+  CHECK(result.is_new_entry);
+  return result.stored_value->value;
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
@@ -3638,7 +3641,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  CHECK(!ax_object->IsMissingParent(), base::NotFatalUntil::M140)
       << tree_update->ToString() << " on " << ax_object;
 
   // Update cached attributes for all changed nodes before serialization,
@@ -3711,7 +3714,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+  CHECK(!ax_object->IsMissingParent(), base::NotFatalUntil::M140)
       << tree_update->ToString() << " on " << ax_object;
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
@@ -4154,7 +4157,7 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
   if (Element* element = DynamicTo<Element>(node)) {
-    relation_cache_->UpdateRelatedTreeForIdChange(*element);
+    relation_cache_->UpdateRelatedTreeAfterChange(*element);
   }
 }
 
@@ -5689,7 +5692,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     //          << ObjectFromAXID(event.id);
   }
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   // Always compute this state.
   UpdatePluginIncludedNodeCount();
 
@@ -5702,10 +5705,10 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
   updates.back().tree_checks->node_count =
       GetIncludedNodeCount() + GetPluginIncludedNodeCount();
-#endif  // DCHECK_IS_ON()
+#endif  // AX_FAIL_FAST_BUILD()
 }
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
 void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
   if (obj->IsIncludedInTree()) {
     ++included_node_count_;
@@ -5747,7 +5750,7 @@ bool AXObjectCacheImpl::IsInternalUICheckerOn(const AXObject& obj) const {
   // used for complex form controls built into the browser.
   return obj.GetNode() && obj.GetNode()->IsInUserAgentShadowRoot();
 }
-#endif  // DCHECK_IS_ON()
+#endif  // AX_FAIL_FAST_BUILD()
 
 void AXObjectCacheImpl::GetImagesToAnnotate(
     ui::AXTreeUpdate& update,
@@ -6135,6 +6138,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(next_on_line_map_);
   visitor->Trace(processed_blocks_);
   visitor->Trace(previous_on_line_map_);
+  visitor->Trace(block_flow_data_cache_);
 
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
@@ -6144,9 +6148,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
   visitor->Trace(weak_factory_for_loc_updates_pipeline_);
-
-  visitor->Trace(active_block_flow_data_);
-  visitor->Trace(active_block_flow_container_);
 
   AXObjectCache::Trace(visitor);
 }
@@ -6344,15 +6345,8 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
       line_cursor.MoveToNextInlineLeafOnLine();
 
       if (!line_object) [[unlikely]] {
-        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
-        DUMP_WILL_BE_NOTREACHED()
-            << "InlineCursor says that has an existing position however no "
-               "LayoutObject was found. Found this while processing "
-            << layout_object << "(" << Get(layout_object) << ") after " << runs
-            << " runs.";
         break;
       }
-      if (line_object) {
         auto* next_line_object =
             line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
 
@@ -6381,7 +6375,6 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
           // previous line.
           ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
         }
-      }
     }
     cursor.MoveToNextLine();
   } while (cursor);

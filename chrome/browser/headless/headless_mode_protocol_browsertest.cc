@@ -283,7 +283,7 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
 
-// These currently fail on Mac,see https://crbug.com/1488010
+// These currently fail on Mac, see https://crbug.com/1488010
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
                             "sanity/minimize-restore-window.js")
@@ -296,7 +296,7 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
 HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "sanity/maximized-window-size.js")
 
-// This currently fails on Mac,see https://crbug.com/1500046
+// This currently fails on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
                             "sanity/fullscreen-window-size.js")
@@ -306,4 +306,11 @@ HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
+                            "sanity/create-target-position.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
+                            "sanity/create-target-window-state.js")
+
 }  // namespace headless

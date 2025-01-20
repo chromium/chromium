@@ -229,6 +229,10 @@ class DownloadUIModel {
   // total size of the download is not known. Virtual for testing.
   virtual int64_t GetTotalBytes() const;
 
+  // Returns the total number of bytes uploaded to the cloud. Returns 0 if the
+  // upload has not started.
+  virtual int64_t GetUploadedBytes() const;
+
   // Rough percent complete. Returns -1 if the progress is unknown.
   virtual int PercentComplete() const;
 

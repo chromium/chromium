@@ -59,7 +59,8 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
   const blink::WebCryptoAlgorithm* hash = nullptr;
 
   switch (algorithm.Id()) {
-    case blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5: {
+    case blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
+    case blink::kWebCryptoAlgorithmIdRsaOaep: {
       const blink::WebCryptoRsaHashedKeyGenParams* rsa_hashed_key_gen =
           algorithm.RsaHashedKeyGenParams();
       if (rsa_hashed_key_gen) {

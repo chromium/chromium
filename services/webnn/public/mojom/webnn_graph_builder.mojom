@@ -4,8 +4,11 @@
 
 module webnn.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents the return value of `CreateGraph()`. Let it be `graph_remote` if
 // the graph was successfully created and `error` otherwise.
@@ -17,10 +20,30 @@ union CreateGraphResult {
 // Represents the `MLGraphBuilder` in the WebIDL definition. Hosted in the GPU
 // process and called by the renderer process.
 interface WebNNGraphBuilder {
+  // Copy data from the constant operand identified by `constant_handle` to the
+  // WebNN service. This handle will later be used in a `GraphInfo` struct to
+  // identify to this operand.
+  //
+  // This allows for incrementally loading model weights to the WebNN service,
+  // rather than needing to send all the model weights over IPC at once during
+  // `build()`.
+  //
+  // Notably, the shape of the operand is not included here, since the constant
+  // data may be reshaped by subsequent operations added to the MLGraphBuilder.
+  // The shape of this constant data will be assigned by the looking up the
+  // corresponding operand ID assigned to this handle during `build()`.
+  CreatePendingConstant(blink.mojom.WebNNPendingConstantToken constant_handle,
+                        DataType data_type,
+                        mojo_base.mojom.BigBuffer data);
+
   // Compiles and initializes a backend-specific computational graph described
   // by `graph_info`.
   //
   // This method may be called at most once. Any subsequent messages on this
   // interface are signs of a misbehaving renderer.
   CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
+
+  // Check whether `graph_info` is a valid graph given `context_properties`.
+  IsValidGraphForTesting(ContextProperties context_properties,
+                         GraphInfo graph_info) => (bool is_valid);
 };

@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 
 #include <array>
+#include <concepts>
 #include <string_view>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -76,7 +78,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // AddAtomic().
   IdentifiableTokenBuilder& AddAtomic(ByteSpan buffer);
   IdentifiableTokenBuilder& AddAtomic(std::string_view string) {
-    return AddAtomic(base::as_bytes(base::make_span(string)));
+    return AddAtomic(base::as_byte_span(string));
   }
 
   // Feeds the underlying value of the |token| itself to the digest. Use this
@@ -92,11 +94,10 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   //
   // Adds eight bytes to the digest. If the type of the value doesn't consume
   // all of the bytes, pads the remainder with NUL bytes.
-  template <typename T,
-            typename std::enable_if_t<
-                std::is_same<T, std::remove_cvref_t<T>>::value &&
-                internal::has_unique_object_representations<T>::value &&
-                sizeof(T) <= sizeof(uint64_t)>* = nullptr>
+  template <typename T>
+    requires(std::same_as<T, std::remove_cvref_t<T>> &&
+             std::has_unique_object_representations_v<T> &&
+             sizeof(T) <= sizeof(uint64_t))
   IdentifiableTokenBuilder& AddValue(T in) {
     AlignPartialBuffer();
     int64_t clean_buffer = internal::DigestOfObjectRepresentation(in);

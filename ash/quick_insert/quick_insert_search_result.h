@@ -105,7 +105,8 @@ struct ASH_EXPORT QuickInsertGifResult {
                        const gfx::Size& preview_dimensions,
                        const GURL& full_url,
                        const gfx::Size& full_dimensions,
-                       std::u16string content_description);
+                       std::u16string content_description,
+                       size_t rank = 0);
   QuickInsertGifResult(const QuickInsertGifResult&);
   QuickInsertGifResult& operator=(const QuickInsertGifResult&);
   QuickInsertGifResult(QuickInsertGifResult&&);
@@ -130,6 +131,9 @@ struct ASH_EXPORT QuickInsertGifResult {
   // A textual description of the content, primarily used for accessibility
   // features.
   std::u16string content_description;
+
+  // The index of this result within the results, starting from 0.
+  size_t rank;
 
   bool operator==(const QuickInsertGifResult&) const;
 };
@@ -301,7 +305,7 @@ struct ASH_EXPORT QuickInsertCapsLockResult {
   enum class Shortcut {
     kAltLauncher,
     kAltSearch,
-    kFnRightAlt,
+    kFnQuickInsert,
   };
 
   bool enabled;

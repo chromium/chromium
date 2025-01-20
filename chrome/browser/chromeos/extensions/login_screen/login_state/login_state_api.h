@@ -22,7 +22,7 @@ class LoginStateGetProfileTypeFunction : public ExtensionFunction {
                              LOGINSTATE_GETPROFILETYPE)
 
  protected:
-  ~LoginStateGetProfileTypeFunction() override {}
+  ~LoginStateGetProfileTypeFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -32,7 +32,7 @@ class LoginStateGetSessionStateFunction : public ExtensionFunction {
                              LOGINSTATE_GETSESSIONSTATE)
 
  protected:
-  ~LoginStateGetSessionStateFunction() override {}
+  ~LoginStateGetSessionStateFunction() override = default;
   ResponseAction Run() override;
 
  private:

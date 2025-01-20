@@ -17,12 +17,12 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
- * A preference representing one browsing data type in ClearBrowsingDataFragment.
- * This class allows clickable links inside the checkbox summary.
+ * A preference representing one browsing data type in ClearBrowsingDataFragment. This class allows
+ * clickable links inside the checkbox summary.
  */
 public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPreference {
     private View mView;
@@ -108,7 +108,7 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         getContext(),
                                         (widget) -> {
                                             if (mLinkClickDelegate != null) {

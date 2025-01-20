@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -185,9 +184,7 @@ void LinkLoader::LoadStylesheet(
   String integrity_attr = params.integrity;
   if (!integrity_attr.empty()) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        integrity_attr, SubresourceIntegrityHelper::GetFeatures(context),
-        metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attr, metadata_set);
     link_fetch_params.SetIntegrityMetadata(metadata_set);
     link_fetch_params.MutableResourceRequest().SetFetchIntegrity(
         integrity_attr);

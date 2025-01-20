@@ -8,6 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /**
@@ -41,14 +43,15 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
  *    ObservableSupplier<ViewportInsets>} object.
  * </pre>
  */
+@NullMarked
 public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<ViewportInsets>
         implements Destroyable {
     /** Keyboard related suppliers */
-    private ObservableSupplier<Integer> mKeyboardInsetSupplier;
+    private @Nullable ObservableSupplier<Integer> mKeyboardInsetSupplier;
 
-    private ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
+    private @Nullable ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
-    private ObservableSupplier<Integer> mBottomSheetInsetSupplier;
+    private @Nullable ObservableSupplier<Integer> mBottomSheetInsetSupplier;
 
     /** The observer that gets attached to all inset suppliers. */
     private final Callback<Integer> mInsetSupplierObserver = (unused) -> computeInsets();
@@ -106,7 +109,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
      *
      * Pass null to unset the current supplier.
      */
-    public void setKeyboardInsetSupplier(ObservableSupplier<Integer> insetSupplier) {
+    public void setKeyboardInsetSupplier(@Nullable ObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
 
         if (mKeyboardInsetSupplier != null) {
@@ -130,7 +133,8 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
      *
      * Pass null to unset the current supplier.
      */
-    public void setKeyboardAccessoryInsetSupplier(ObservableSupplier<Integer> insetSupplier) {
+    public void setKeyboardAccessoryInsetSupplier(
+            @Nullable ObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
         if (mKeyboardAccessoryInsetSupplier != null) {
             mKeyboardAccessoryInsetSupplier.removeObserver(mInsetSupplierObserver);
@@ -203,7 +207,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
         super.set(newValues);
     }
 
-    private int intFromSupplier(ObservableSupplier<Integer> supplier) {
+    private int intFromSupplier(@Nullable ObservableSupplier<Integer> supplier) {
         if (supplier == null || supplier.get() == null) return 0;
         return supplier.get();
     }

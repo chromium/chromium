@@ -21,6 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -41,7 +42,7 @@ struct GaiaContext {
   std::string email;
 
   // GAIA ID of the current user.
-  std::string gaia_id;
+  GaiaId gaia_id;
 
   // GAPS cookie.
   std::string gaps_cookie;
@@ -73,7 +74,7 @@ struct OnlineSigninArtifacts {
   OnlineSigninArtifacts(OnlineSigninArtifacts&& original);
   ~OnlineSigninArtifacts();
 
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string email;
   bool using_saml;
 
@@ -138,7 +139,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.
 AccountId GetAccountId(const std::string& authenticated_email,
-                       const std::string& gaia_id,
+                       const std::string& id,
                        const AccountType& account_type);
 
 // Common utility for checking whether family link is allowed.

@@ -20,7 +20,7 @@ class PermissionsContainsFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.contains", PERMISSIONS_CONTAINS)
 
  protected:
-  ~PermissionsContainsFunction() override {}
+  ~PermissionsContainsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -32,7 +32,7 @@ class PermissionsGetAllFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.getAll", PERMISSIONS_GETALL)
 
  protected:
-  ~PermissionsGetAllFunction() override {}
+  ~PermissionsGetAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -44,7 +44,7 @@ class PermissionsRemoveFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("permissions.remove", PERMISSIONS_REMOVE)
 
  protected:
-  ~PermissionsRemoveFunction() override {}
+  ~PermissionsRemoveFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -120,27 +120,27 @@ class PermissionsRequestFunction : public ExtensionFunction {
   std::unique_ptr<const PermissionSet> prompted_permissions_for_testing_;
 };
 
-// chrome.permissions.addSiteAccessRequest
-class PermissionsAddSiteAccessRequestFunction : public ExtensionFunction {
+// chrome.permissions.addHostAccessRequest
+class PermissionsAddHostAccessRequestFunction : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("permissions.addSiteAccessRequest",
-                             PERMISSIONS_ADDSITEACCESSREQUEST)
+  DECLARE_EXTENSION_FUNCTION("permissions.addHostAccessRequest",
+                             PERMISSIONS_ADDHOSTACCESSREQUEST)
 
  protected:
-  ~PermissionsAddSiteAccessRequestFunction() override = default;
+  ~PermissionsAddHostAccessRequestFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-// chrome.permissions.removeSiteAccessRequest
-class PermissionsRemoveSiteAccessRequestFunction : public ExtensionFunction {
+// chrome.permissions.removeHostAccessRequest
+class PermissionsRemoveHostAccessRequestFunction : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("permissions.removeSiteAccessRequest",
-                             PERMISSIONS_REMOVESITEACCESSREQUEST)
+  DECLARE_EXTENSION_FUNCTION("permissions.removeHostAccessRequest",
+                             PERMISSIONS_REMOVEHOSTACCESSREQUEST)
 
  protected:
-  ~PermissionsRemoveSiteAccessRequestFunction() override = default;
+  ~PermissionsRemoveHostAccessRequestFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

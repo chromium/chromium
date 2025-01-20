@@ -79,6 +79,7 @@ class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
 class SmoothScrollSequencer;
+class ScrollMarkerGroupPseudoElement;
 
 using MainThreadScrollingReasons = uint32_t;
 
@@ -109,10 +110,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   static float MinFractionToStepWhenPaging();
   int MaxOverlapBetweenPages() const;
 
-  // Returns the amount of delta, in |granularity| units, for a direction-based
-  // (i.e. keyboard or scrollbar arrow) scroll.
-  static float DirectionBasedScrollDelta(ui::ScrollGranularity granularity);
-
   // Convert a non-finite scroll value (Infinity, -Infinity, NaN) to 0 as
   // per https://drafts.csswg.org/cssom-view/#normalize-non-finite-values.
   static float NormalizeNonFiniteScroll(float value) {
@@ -135,7 +132,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool SetScrollOffset(const ScrollOffset&,
                                mojom::blink::ScrollType,
                                mojom::blink::ScrollBehavior,
-                               ScrollCallback on_finish);
+                               ScrollCallback on_finish,
+                               bool targeted_scroll = false);
   virtual bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
@@ -611,7 +609,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
 
-  virtual void UpdateScrollMarkers(const ScrollOffset& offset) {}
+  virtual ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const {
+    return nullptr;
+  }
+
+  virtual void UpdateScrollMarkers() {}
 
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
@@ -655,7 +657,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   const ScrollOffset& delta);
 
   virtual void StopApplyingScrollStart() {}
-  const LayoutObject* GetScrollStartTarget() const;
+  const LayoutObject* GetScrollInitialTarget() const;
 
   virtual Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
                                             cc::SnapAxis) const {
@@ -692,20 +694,15 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual int DocumentStep(ScrollbarOrientation) const;
   virtual float PixelStep(ScrollbarOrientation) const;
 
-  // This returns the amount a percent-based delta should be resolved against;
-  // which is the visible height of the scroller. This value is eventually
-  // used to scroll the incoming scroll delta, where a scroll delta of 1
-  // represents one hundred percent.
-  float PercentageStep(ScrollbarOrientation) const;
-
   // Returns true if a snap point was found.
   bool PerformSnapping(
       const cc::SnapSelectionStrategy& strategy,
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kSmooth,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
+      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner(),
+      bool preserve_pinned_marker = false);
 
-  void ScrollToScrollStartTarget(const LayoutObject*);
+  void ScrollToScrollInitialTarget(const LayoutObject*);
 
   bool ShouldFilterIncomingScroll(mojom::blink::ScrollType incoming_type) {
     auto old_type = active_smooth_scroll_type_;

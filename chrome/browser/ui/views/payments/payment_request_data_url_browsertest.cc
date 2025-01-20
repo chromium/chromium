@@ -11,7 +11,7 @@ namespace payments {
 
 class PaymentRequestDataUrlTest : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentRequestDataUrlTest() {}
+  PaymentRequestDataUrlTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestDataUrlTest, SecurityError) {

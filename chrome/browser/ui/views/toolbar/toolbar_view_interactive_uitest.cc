@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-
 #include <stddef.h>
 
 #include "base/functional/bind.h"
@@ -26,6 +24,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -99,14 +98,18 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
     focus_manager->AdvanceFocus(false);
     view = focus_manager->GetFocusedView();
     ids.push_back(view->GetID());
-    if (view->GetID() == VIEW_ID_RELOAD_BUTTON)
+    if (view->GetID() == VIEW_ID_RELOAD_BUTTON) {
       found_reload = true;
-    if (view->GetID() == VIEW_ID_APP_MENU)
+    }
+    if (view->GetID() == VIEW_ID_APP_MENU) {
       found_app_menu = true;
-    if (view->GetID() == VIEW_ID_OMNIBOX)
+    }
+    if (view->GetID() == VIEW_ID_OMNIBOX) {
       found_location_bar = true;
-    if (ids.size() > 100)
+    }
+    if (ids.size() > 100) {
       GTEST_FAIL() << "Tabbed 100 times, still haven't cycled back!";
+    }
   }
 
   // Make sure we found a few key items.
@@ -121,8 +124,9 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
     focus_manager->AdvanceFocus(true);
     view = focus_manager->GetFocusedView();
     reverse_ids.push_back(view->GetID());
-    if (reverse_ids.size() > 100)
+    if (reverse_ids.size() > 100) {
       GTEST_FAIL() << "Tabbed 100 times, still haven't cycled back!";
+    }
   }
 
   // Assert that the views were focused in exactly the reverse order.
@@ -130,8 +134,9 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   // be the same, and the others are reverse.
   ASSERT_EQ(ids.size(), reverse_ids.size());
   size_t count = ids.size();
-  for (size_t i = 0; i < count - 1; i++)
+  for (size_t i = 0; i < count - 1; i++) {
     EXPECT_EQ(ids[i], reverse_ids[count - 2 - i]);
+  }
   EXPECT_EQ(ids[count - 1], reverse_ids[count - 1]);
 }
 

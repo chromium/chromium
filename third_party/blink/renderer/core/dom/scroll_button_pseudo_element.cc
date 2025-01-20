@@ -9,15 +9,27 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
+
+ScrollButtonPseudoElement::ScrollButtonPseudoElement(
+    Element* originating_element,
+    PseudoId pseudo_id)
+    : PseudoElement(originating_element, pseudo_id),
+      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+  SetTabIndexExplicitly();
+}
+
+void ScrollButtonPseudoElement::Trace(Visitor* v) const {
+  PseudoElement::Trace(v);
+}
 
 void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool is_click =
@@ -30,27 +42,90 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool should_intercept =
       event.target() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
+    Element* scroller = UltimateOriginatingElement();
+    double dx =
+        PageSizePercent * scroller->GetLayoutBox()->Size().width.ToDouble();
+    double dy =
+        PageSizePercent * scroller->GetLayoutBox()->Size().height.ToDouble();
+    LogicalToPhysical<bool> mapping(
+        scroller->GetComputedStyle()->GetWritingDirection(),
+        GetPseudoId() == kPseudoIdScrollButtonInlineStart,
+        GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
+        GetPseudoId() == kPseudoIdScrollButtonBlockStart,
+        GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+    if (mapping.Top()) {
+      scroller->scrollBy(0, -dy);
+    } else if (mapping.Bottom()) {
+      scroller->scrollBy(0, dy);
+    } else if (mapping.Left()) {
+      scroller->scrollBy(-dx, 0);
+    } else if (mapping.Right()) {
+      scroller->scrollBy(dx, 0);
+    }
     GetDocument().SetFocusedElement(this,
                                     FocusParams(SelectionBehaviorOnFocus::kNone,
                                                 mojom::blink::FocusType::kNone,
                                                 /*capabilities=*/nullptr));
-    if (scroll_marker_group_) {
-      if (GetPseudoId() == kPseudoIdScrollNextButton) {
-        scroll_marker_group_->ActivateNextScrollMarker(
-            /*focus=*/false);
-      } else {
-        scroll_marker_group_->ActivatePrevScrollMarker(
-            /*focus=*/false);
-      }
-    }
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);
 }
 
-void ScrollButtonPseudoElement::Trace(Visitor* v) const {
-  v->Trace(scroll_marker_group_);
-  PseudoElement::Trace(v);
+bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
+  // Note: we can hit it here, since we don't unsubscribe from
+  // scroll snapshot client (maybe we should).
+  if (!isConnected()) {
+    return true;
+  }
+  Element* originating_element = UltimateOriginatingElement();
+  CHECK(originating_element);
+  auto* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
+  if (!scroller || !scroller->IsScrollContainer()) {
+    return true;
+  }
+  ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  Scrollbar* horizontal = scrollable_area->HorizontalScrollbar();
+  Scrollbar* vertical = scrollable_area->VerticalScrollbar();
+  LogicalToPhysical<bool> mapping(
+      scroller->StyleRef().GetWritingDirection(),
+      GetPseudoId() == kPseudoIdScrollButtonInlineStart,
+      GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
+      GetPseudoId() == kPseudoIdScrollButtonBlockStart,
+      GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+  bool enabled = enabled_;
+  if (vertical) {
+    if (mapping.Top()) {
+      enabled_ = vertical->CurrentPos() != 0.0f;
+    }
+    if (mapping.Bottom()) {
+      enabled_ = vertical->CurrentPos() != vertical->Maximum();
+    }
+  }
+  if (horizontal) {
+    if (mapping.Left()) {
+      enabled_ = horizontal->CurrentPos() != 0.0f;
+    }
+    if (mapping.Right()) {
+      enabled_ = horizontal->CurrentPos() != horizontal->Maximum();
+    }
+  }
+  if (enabled != enabled_) {
+    PseudoStateChanged(CSSSelector::kPseudoDisabled);
+    return false;
+  }
+  return true;
+}
+
+void ScrollButtonPseudoElement::UpdateSnapshot() {
+  UpdateSnapshotInternal();
+}
+
+bool ScrollButtonPseudoElement::ValidateSnapshot() {
+  return UpdateSnapshotInternal();
+}
+
+bool ScrollButtonPseudoElement::ShouldScheduleNextService() {
+  return false;
 }
 
 }  // namespace blink

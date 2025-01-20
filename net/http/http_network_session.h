@@ -314,6 +314,9 @@ class NET_EXPORT HttpNetworkSession {
   CommonConnectJobParams CreateCommonConnectJobParams(
       bool for_websockets = false);
 
+  // Rewrite the port of `endpoint` when testing fixed port is specified.
+  void ApplyTestingFixedPort(url::SchemeHostPort& endpoint) const;
+
  private:
   friend class HttpNetworkSessionPeer;
 

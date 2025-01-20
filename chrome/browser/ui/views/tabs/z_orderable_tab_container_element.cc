@@ -46,12 +46,14 @@ float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   unsigned int z_value = 0;
 
   // The active tab is always on top.
-  if (tab && tab->IsActive())
+  if (tab && tab->IsActive()) {
     z_value |= kActiveTab;
+  }
 
   // Group headers and underlines are painted above non-active tabs.
-  if (header || underline)
+  if (header || underline) {
     z_value |= kGroupView;
+  }
 
   // The non-active tabs are painted next. They are ordered by their selected
   // or hovered state, which is animated and thus real-valued.

@@ -5,7 +5,6 @@
 #include "base/process/process_handle.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <ostream>
@@ -23,8 +22,9 @@ ProcessHandle GetCurrentProcessHandle() {
 }
 
 ProcessId GetProcId(ProcessHandle process) {
-  if (process == base::kNullProcessHandle)
+  if (process == base::kNullProcessHandle) {
     return 0;
+  }
   // This returns 0 if we have insufficient rights to query the process handle.
   // Invalid handles or non-process handles will cause a hard failure.
   ProcessId result = GetProcessId(process);

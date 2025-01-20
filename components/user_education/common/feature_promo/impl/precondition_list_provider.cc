@@ -8,6 +8,17 @@
 
 namespace user_education {
 
+CallbackPreconditionListProvider::CallbackPreconditionListProvider(
+    Callback callback)
+    : callback_(std::move(callback)) {}
+CallbackPreconditionListProvider::~CallbackPreconditionListProvider() = default;
+
+FeaturePromoPreconditionList CallbackPreconditionListProvider::GetPreconditions(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& params) const {
+  return callback_.Run(spec, params);
+}
+
 ComposingPreconditionListProvider::ComposingPreconditionListProvider() =
     default;
 ComposingPreconditionListProvider::~ComposingPreconditionListProvider() =
@@ -18,12 +29,20 @@ void ComposingPreconditionListProvider::AddProvider(
   providers_.emplace_back(provider);
 }
 
+void ComposingPreconditionListProvider::AddProvider(
+    PreconditionListProviderCallback callback) {
+  const auto& result = callback_providers_.emplace_back(
+      std::make_unique<CallbackPreconditionListProvider>(std::move(callback)));
+  AddProvider(result.get());
+}
+
 FeaturePromoPreconditionList
 ComposingPreconditionListProvider::GetPreconditions(
-    const FeaturePromoSpecification& spec) const {
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& params) const {
   FeaturePromoPreconditionList result;
   for (const auto& provider : providers_) {
-    result.AppendAll(provider->GetPreconditions(spec));
+    result.AppendAll(provider->GetPreconditions(spec, params));
   }
   return result;
 }

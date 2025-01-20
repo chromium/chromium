@@ -413,6 +413,13 @@ bool DownloadToolbarButtonView::ShouldShowExclusiveAccessBubble() const {
   if (!browser_view) {
     return false;
   }
+#if BUILDFLAG(IS_MAC)
+  // In content fullscreen, we do not show the download bubble and the toolbar
+  // is not visible. Therefore, we must show the ExclusiveAccessBubble notice.
+  if (fullscreen_utils::IsInContentFullscreen(browser_)) {
+    return true;
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsKioskSession()) {
     return false;
@@ -439,28 +446,6 @@ void DownloadToolbarButtonView::ShowDetails() {
     auto_close_bubble_timer_.Reset();
   }
   CreateBubbleDialogDelegate();
-}
-
-bool DownloadToolbarButtonView::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  if (!IsShowing()) {
-    Show();
-  }
-
-  if (!bubble_delegate_) {
-    // This should behave similarly to a normal button press on the toolbar
-    // button, so create the main view.
-    is_primary_partial_view_ = false;
-    CreateBubbleDialogDelegate();
-  }
-
-  DownloadBubbleRowView* row = ShowPrimaryDialogRow(content_id);
-
-  // Open the more specific security subpage if it has one.
-  if (row && row->info().has_subpage()) {
-    OpenSecurityDialog(content_id);
-  }
-  return row != nullptr;
 }
 
 void DownloadToolbarButtonView::HideDetails() {

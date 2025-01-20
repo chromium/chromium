@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Alliance for Open Media. All rights reserved.
+ * Copyright (c) 2025, Alliance for Open Media. All rights reserved.
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -30,6 +30,7 @@
 #define CONFIG_COLLECT_PARTITION_STATS 0
 #define CONFIG_COLLECT_RD_STATS 0
 #define CONFIG_CWG_C013 0
+#define CONFIG_CWG_E050 0
 #define CONFIG_DEBUG 0
 #define CONFIG_DENOISE 1
 #define CONFIG_DISABLE_FULL_PIXEL_SPLIT_8X8 1

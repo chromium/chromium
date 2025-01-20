@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 <style>
   body {
     height: 2000px;
@@ -26,13 +25,12 @@
   function waitForScrolls(scrolls, xTicks, yTicks) {
     const tolerance = 0.0001;
     const perTickScroll = pixelsPerTick();
-    const expectedScroll =
-       calculateExpectedScroll(scroller, xTicks * perTickScroll,
-                               yTicks * perTickScroll);
+    const expectedScrollX = xTicks * perTickScroll;
+    const expectedScrollY = yTicks * perTickScroll;
     return new Promise(async resolve => {
       const listener = () => {
-        if (Math.abs(scroller.scrollLeft - expectedScroll.x) < tolerance &&
-            Math.abs(scroller.scrollTop - expectedScroll.y) < tolerance) {
+        if (Math.abs(scroller.scrollLeft - expectedScrollX) < tolerance &&
+            Math.abs(scroller.scrollTop - expectedScrollY) < tolerance) {
           document.removeEventListener('scrollend', listener);
           resolve();
         }

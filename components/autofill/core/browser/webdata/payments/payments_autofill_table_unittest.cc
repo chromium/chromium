@@ -18,12 +18,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -50,6 +51,7 @@
 #include "url/origin.h"
 
 using base::Time;
+using base::test::EqualsProto;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
@@ -186,9 +188,9 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIban) {
   std::vector<PaymentsMetadata> outputs;
   ASSERT_TRUE(table_->GetServerIbansMetadata(outputs));
   ASSERT_FALSE(outputs.empty());
-  EXPECT_EQ(iban_0.use_date(), outputs[0].use_date);
-  EXPECT_EQ(iban_1.use_date(), outputs[1].use_date);
-  EXPECT_EQ(iban_2.use_date(), outputs[2].use_date);
+  EXPECT_EQ(iban_0.usage_history().use_date(), outputs[0].use_date);
+  EXPECT_EQ(iban_1.usage_history().use_date(), outputs[1].use_date);
+  EXPECT_EQ(iban_2.usage_history().use_date(), outputs[2].use_date);
 }
 
 // Test that masked IBANs can be added and loaded successfully without updating
@@ -910,8 +912,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
 TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerIbanMetadata) {
   Iban iban = test::GetServerIban();
   // Set the metadata.
-  iban.set_use_count(50);
-  iban.set_use_date(base::Time::Now());
+  iban.usage_history().set_use_count(50);
+  iban.usage_history().set_use_date(base::Time::Now());
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban.GetMetadata()));
 
   // Make sure it was added correctly.
@@ -975,8 +977,8 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   EXPECT_EQ(inputs[0].server_id(), outputs[0]->server_id());
 
   // Update metadata in the profile.
-  ASSERT_NE(outputs[0]->use_count(), 51u);
-  outputs[0]->set_use_count(51);
+  ASSERT_NE(outputs[0]->usage_history().use_count(), 51u);
+  outputs[0]->usage_history().set_use_count(51);
 
   PaymentsMetadata input_metadata = outputs[0]->GetMetadata();
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input_metadata));
@@ -1005,7 +1007,8 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerIbanMetadata) {
   EXPECT_EQ(inputs[0].instrument_id(), outputs[0]->instrument_id());
 
   // Update metadata in the IBAN.
-  outputs[0]->set_use_count(outputs[0]->use_count() + 1);
+  outputs[0]->usage_history().set_use_count(
+      outputs[0]->usage_history().use_count() + 1);
 
   EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(outputs[0]->GetMetadata()));
 
@@ -1198,24 +1201,24 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(1U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
+  EXPECT_EQ(1U, outputs[0]->usage_history().use_count());
+  EXPECT_NE(base::Time(), outputs[0]->usage_history().use_date());
   // We don't track modification date for server cards. It should always be
   // base::Time().
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().modification_date());
   outputs.clear();
 
   // Update the usage stats; make sure they're reflected in GetServerProfiles.
-  inputs.back().set_use_count(4U);
-  inputs.back().set_use_date(base::Time());
+  inputs.back().usage_history().set_use_count(4U);
+  inputs.back().usage_history().set_use_date(base::Time());
   inputs.back().set_billing_address_id("2");
   table_->UpdateServerCardMetadata(inputs.back());
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_EQ(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
+  EXPECT_EQ(4U, outputs[0]->usage_history().use_count());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().use_date());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().modification_date());
   EXPECT_EQ("2", outputs[0]->billing_address_id());
   outputs.clear();
 
@@ -1224,9 +1227,9 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_EQ(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
+  EXPECT_EQ(4U, outputs[0]->usage_history().use_count());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().use_date());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().modification_date());
   EXPECT_EQ("2", outputs[0]->billing_address_id());
   outputs.clear();
 
@@ -1241,9 +1244,9 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(1U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
+  EXPECT_EQ(1U, outputs[0]->usage_history().use_count());
+  EXPECT_NE(base::Time(), outputs[0]->usage_history().use_date());
+  EXPECT_EQ(base::Time(), outputs[0]->usage_history().modification_date());
   EXPECT_EQ("1", outputs[0]->billing_address_id());
   outputs.clear();
 }
@@ -1891,6 +1894,80 @@ TEST_F(PaymentsAutofillTableTest,
       [&payment_instrument_2](sync_pb::PaymentInstrument& p) {
         return p.instrument_id() == payment_instrument_2.instrument_id();
       }));
+}
+
+// Test that multiple payment instrument creation options can be stored and
+// gotten. All payment instrument creation option types should be used in this
+// test.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_StoresMultiplePaymentInstrumentCreationOptions) {
+  // Add multiple payment instrument creation options to the table.
+  // All payment instrument creation option types should be included at least
+  // once in the vector.
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234");
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678");
+  table_->SetPaymentInstrumentCreationOptions(
+      {creation_option_1, creation_option_2});
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that both payment instrument creation options exist in the table.
+  EXPECT_THAT(creation_options_from_table,
+              UnorderedElementsAre(EqualsProto(creation_option_1),
+                                   EqualsProto(creation_option_2)));
+}
+
+// Test that when given a new vector of payment instrument creation options,
+// the previous entries are cleared and replaced with the new entries.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_SetPaymentInstrumentCreationOptionsOverwritesExistingValues) {
+  // Add the first payment instrument creation option to the table.
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options{
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234")};
+  table_->SetPaymentInstrumentCreationOptions(creation_options);
+  // Overwrite the existing payment instrument with a new instrument.
+  sync_pb::PaymentInstrumentCreationOption new_creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678");
+  creation_options[0] = new_creation_option;
+  table_->SetPaymentInstrumentCreationOptions(creation_options);
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that only the new payment instrument creation option exists.
+  EXPECT_THAT(creation_options_from_table,
+              testing::UnorderedElementsAre(EqualsProto(new_creation_option)));
+}
+
+// Test that when an empty vector of payment instructment creation options is
+// set, the table is cleared instead of ignoring the empty vector.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_SetEmptyPaymentInstrumentCreationOptionsOverwritesExistingValues) {
+  // Add an existing payment instrument creation option to the table.
+  sync_pb::PaymentInstrumentCreationOption creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234");
+  table_->SetPaymentInstrumentCreationOptions({creation_option});
+
+  // Overwrite the existing payment instrument with an empty vector.
+  table_->SetPaymentInstrumentCreationOptions({});
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that nothing is returned.
+  EXPECT_EQ(creation_options_from_table.size(), 0u);
 }
 
 }  // namespace

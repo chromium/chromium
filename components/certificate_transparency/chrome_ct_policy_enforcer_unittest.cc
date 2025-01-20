@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -78,8 +74,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     test_now_ = base::Time::Now();
 
     std::string der_test_cert(net::ct::GetDerEncodedX509Cert());
-    chain_ = X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(der_test_cert)));
+    chain_ =
+        X509Certificate::CreateFromBytes(base::as_byte_span(der_test_cert));
     ASSERT_TRUE(chain_.get());
     test_log_id_ = std::string(kTestLogID, crypto::kSHA256Length);
     another_log_id_.assign(crypto::kSHA256Length, 1);
@@ -176,7 +172,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       std::map<std::string, LogInfo>* log_info) {
     for (size_t i = 0; i < scts.size(); i++) {
       OperatorHistoryEntry entry;
-      entry.current_operator_ = "Operator " + base::NumberToString(i);
+      entry.current_operator = "Operator " + base::NumberToString(i);
       LogInfo info;
       info.operator_history = entry;
       info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -625,20 +621,23 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
   base::Time time_2016_3_0_25_11_25_0_0 =
       CreateTime({2016, 3, 0, 25, 11, 25, 0, 0});
 
-  const struct TestData {
+  struct TestData {
     base::Time validity_start;
     base::Time validity_end;
     size_t scts_required;
-  } kTestData[] = {{// Cert valid for -12 months (nonsensical), needs 2 SCTs.
-                    time_2016_3_0_25_11_25_0_0, time_2015_3_0_25_11_25_0_0, 2},
-                   {// Cert valid for 179 days, needs 2 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_20_11_25_0_0, 2},
-                   {// Cert valid for exactly 180 days, needs only 2 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 2},
-                   {// Cert valid for barely over 180 days, needs 3 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_1_0, 3},
-                   {// Cert valid for over 180 days, needs 3 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3}};
+  };
+  const auto kTestData = std::to_array<TestData>({
+      {// Cert valid for -12 months (nonsensical), needs 2 SCTs.
+       time_2016_3_0_25_11_25_0_0, time_2015_3_0_25_11_25_0_0, 2},
+      {// Cert valid for 179 days, needs 2 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_20_11_25_0_0, 2},
+      {// Cert valid for exactly 180 days, needs only 2 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 2},
+      {// Cert valid for barely over 180 days, needs 3 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_1_0, 3},
+      {// Cert valid for over 180 days, needs 3 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3},
+  });
 
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     SCOPED_TRACE(i);
@@ -651,8 +650,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
     ASSERT_TRUE(net::x509_util::CreateSelfSignedCert(
         private_key->key(), net::x509_util::DIGEST_SHA256, "CN=test",
         i * 10 + scts_required, validity_start, validity_end, {}, &cert_data));
-    scoped_refptr<X509Certificate> cert(X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(cert_data))));
+    scoped_refptr<X509Certificate> cert(
+        X509Certificate::CreateFromBytes(base::as_byte_span(cert_data)));
     ASSERT_TRUE(cert);
 
     std::map<std::string, LogInfo> log_info;
@@ -696,7 +695,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, LogInfo> log_info;
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator";
+    entry.current_operator = "Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -734,7 +733,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   // Set all logs to the same operator.
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Same Operator";
+    entry.current_operator = "Same Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -742,7 +741,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   }
   // Set the previous operator of one of the logs to a different one, with an
   // end time after the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -763,7 +762,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
 
   // Set the previous operator of one of the logs to the same as the other log,
   // with an end time after the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -783,9 +782,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
   FillOperatorHistoryWithDiverseOperators(scts, &log_info);
   // Set multiple previous operators, the first should be ignored since it
   // stopped operating before the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp - base::Seconds(1));
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -804,7 +803,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   // Set all logs to the same operator.
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Same Operator";
+    entry.current_operator = "Same Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -812,9 +811,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   }
   // Set multiple previous operators, all of them should be ignored since they
   // all stopped operating before the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp - base::Seconds(2));
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Yet Another Different Operator", scts[1]->timestamp - base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =

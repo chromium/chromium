@@ -45,7 +45,7 @@ bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
 
 #endif  // !defined(ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const std::string GetUserMicrophoneCaptionLanguage(PrefService* profile_prefs) {
   return GetCaptionLanguageCodeForPref(
       prefs::kUserMicrophoneCaptionLanguageCode, profile_prefs);

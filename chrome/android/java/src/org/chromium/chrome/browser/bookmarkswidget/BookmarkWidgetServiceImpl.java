@@ -29,6 +29,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -181,6 +182,8 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mRemainingTaskCount = 1;
             mBookmarkModel =
                     BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+            mBookmarkModel.setPartnerBookmarkIteratorSupplier(
+                    () -> AppHooks.get().getPartnerBookmarkIterator());
             mBookmarkModel.finishLoadingBookmarkModel(
                     new Runnable() {
                         @Override

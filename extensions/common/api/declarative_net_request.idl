@@ -121,7 +121,6 @@ namespace declarativeNetRequest {
   };
 
   // Describes modification to various url components.
-  [noinline_doc]
   dictionary URLTransform {
      // The new scheme for the request. Allowed values are "http", "https",
      // "ftp" and "chrome-extension".
@@ -190,7 +189,7 @@ namespace declarativeNetRequest {
     DOMString[]? excludedValues;
   };
 
-  [noinline_doc] dictionary RuleCondition {
+  dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
     // Supported constructs:
@@ -409,7 +408,6 @@ namespace declarativeNetRequest {
     [nodoc] HeaderRegexOptions? regexOptions;
   };
 
-  [noinline_doc]
   dictionary RuleAction {
     // The type of action to perform.
     RuleActionType type;
@@ -452,13 +450,11 @@ namespace declarativeNetRequest {
     DOMString rulesetId;
   };
 
-  [noinline_doc]
   dictionary GetRulesFilter {
     // If specified, only rules with matching IDs are included.
     long[]? ruleIds;
   };
 
-  [noinline_doc]
   dictionary MatchedRuleInfo {
     MatchedRule rule;
 
@@ -486,7 +482,6 @@ namespace declarativeNetRequest {
      MatchedRuleInfo[] rulesMatchedInfo;
   };
 
-  [noinline_doc]
   dictionary RequestDetails {
     // The ID of the request. Request IDs are unique within a browser session.
     DOMString requestId;

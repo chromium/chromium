@@ -10,16 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import textwrap
 import zipfile
-
-_FILE_DIR = os.path.dirname(__file__)
-_CHROMIUM_SRC = os.path.join(_FILE_DIR, os.pardir, os.pardir)
-_BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
-
-# Item 0 of sys.path is the directory of the main file; item 1 is PYTHONPATH
-# (if set); item 2 is system libraries.
-sys.path.insert(1, _BUILD_ANDROID_GYP)
 
 from codegen import called_by_native_header
 from codegen import convert_type
@@ -33,48 +24,55 @@ import java_types
 import parse
 import proxy
 
-# Use 100 columns rather than 80 because it makes many lines more readable.
-_WRAP_LINE_LENGTH = 100
-# WrapOutput() is fairly slow. Pre-creating TextWrappers helps a bit.
-_WRAPPERS_BY_INDENT = [
-    textwrap.TextWrapper(width=_WRAP_LINE_LENGTH,
-                         expand_tabs=False,
-                         replace_whitespace=False,
-                         subsequent_indent=' ' * (indent + 4),
-                         break_long_words=False) for indent in range(50)
-]  # 50 chosen experimentally.
-
 
 class NativeMethod:
   """Describes a C/C++ method that is called by Java."""
   def __init__(self, parsed_method, *, java_class, is_proxy):
+    # The Java class the containing the natives. Never a nested class.
     self.java_class = java_class
-    self.name = parsed_method.name
-    self.signature = parsed_method.signature
     self.is_proxy = is_proxy
-    self.static = is_proxy or parsed_method.static
+    # The method name. For non-proxy natives, this omits the "native" prefix.
+    self.name = parsed_method.name
+    self.capitalized_name = common.capitalize(self.name)
+    self.is_test_only = NameIsTestOnly(parsed_method.name)
+    self.signature = parsed_method.signature
+    self.static = self.is_proxy or parsed_method.static
+    # Value of @NativeClassQualifiedName.
     self.native_class_name = parsed_method.native_class_name
 
-    # Proxy methods don't have a native prefix so the first letter is
-    # lowercase. But we still want the CPP declaration to use upper camel
-    # case for the method name.
-    self.cpp_name = common.capitalize(self.name)
-    self.cpp_impl_name = f'JNI_{java_class.name}_{self.cpp_name}'
-    self.is_test_only = NameIsTestOnly(self.name)
+    # True when an extra jclass parameter should be added.
+    self.needs_implicit_array_element_class_param = (
+        self.is_proxy
+        and proxy.needs_implicit_array_element_class_param(self.return_type))
 
     if self.is_proxy:
-      self.needs_implicit_array_element_class_param = (
-          proxy.needs_implicit_array_element_class_param(self.return_type))
+      # Signature with all reference types changed to "Object".
       self.proxy_signature = self.signature.to_proxy()
       if self.needs_implicit_array_element_class_param:
         self.proxy_signature = proxy.add_implicit_array_element_class_param(
             self.proxy_signature)
-      self.proxy_name, self.hashed_proxy_name = proxy.create_method_names(
-          java_class, self.name, self.is_test_only)
-    else:
-      self.needs_implicit_array_element_class_param = False
-      self.proxy_signature = self.signature
+      # proxy_signature with params reordered. Does not include switch_num.
+      self.muxed_signature = proxy.muxed_signature(self.proxy_signature)
 
+      # Name to use when using per-file natives.
+      # "native" prefix to not conflict with interface method names.
+      self.per_file_name = f'native{self.capitalized_name}'
+      # Method name within the GEN_JNI class.
+      self.proxy_name = f'{java_class.to_cpp()}_{self.name}'
+      # Method name within the J class (when is_hashing=True).
+      # TODO(agrieve): No need to mangle before hashing.
+      self.hashed_name = proxy.hashed_name(
+          common.jni_mangle(f'{java_class.full_name_with_slashes}/{self.name}'),
+          self.is_test_only)
+      # Method name within the J class (when is_muxing=True).
+      self.muxed_name = proxy.muxed_name(self.muxed_signature)
+      # Name of C++ function that will be called from switch tables.
+      self.muxed_entry_point_name = f'Muxed_{self.proxy_name}'
+      # Switch statement index when multiplexing.
+      self.muxed_switch_num = None
+
+    # Set when the first param dictates this is implemented as a member
+    # function of the native class given as the first parameter.
     first_param = self.params and self.params[0]
     if (first_param and first_param.java_type.is_primitive()
         and first_param.java_type.primitive_name == 'long'
@@ -87,28 +85,61 @@ class NativeMethod:
       self.first_param_cpp_type = None
 
   @property
-  def return_type(self):
-    return self.signature.return_type
-
-  @property
-  def proxy_return_type(self):
-    return self.proxy_signature.return_type
-
-  @property
   def params(self):
     return self.signature.param_list
+
+  @property
+  def return_type(self):
+    return self.signature.return_type
 
   @property
   def proxy_params(self):
     return self.proxy_signature.param_list
 
   @property
-  def param_types(self):
-    return self.signature.param_types
+  def proxy_return_type(self):
+    return self.proxy_signature.return_type
 
   @property
-  def proxy_param_types(self):
-    return self.proxy_signature.param_types
+  def muxed_params(self):
+    return self.muxed_signature.param_list
+
+  @property
+  def entry_point_return_type(self):
+    return self.proxy_return_type if self.is_proxy else self.return_type
+
+  def entry_point_params(self, jni_mode):
+    """Params to use for entry point functions."""
+    if not self.is_proxy:
+      return self.params
+    if jni_mode.is_muxing:
+      return self.muxed_params
+    return self.proxy_params
+
+  def boundary_name(self, jni_mode):
+    """Java name of the JNI native method."""
+    if not self.is_proxy:
+      return f'native{self.name}'
+    if jni_mode.is_per_file:
+      return f'native{self.capitalized_name}'
+    if jni_mode.is_muxing:
+      return self.muxed_name
+    if jni_mode.is_hashing:
+      return self.hashed_name
+    return self.proxy_name
+
+  def boundary_name_cpp(self, jni_mode, gen_jni_class=None):
+    """C++ name of the JNI native method."""
+    if not self.is_proxy:
+      mangled_class_name = self.java_class.to_cpp()
+    elif jni_mode.is_per_file:
+      mangled_class_name = self.java_class.to_cpp() + 'Jni'
+    else:
+      mangled_class_name = gen_jni_class.to_cpp()
+
+    method_name = self.boundary_name(jni_mode=jni_mode)
+    mangled_method_name = common.jni_mangle(method_name)
+    return f'Java_{mangled_class_name}_{mangled_method_name}'
 
 
 class CalledByNative:
@@ -192,23 +223,25 @@ def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
 class JniObject:
   """Uses the given java source file to generate the JNI header file."""
 
-  def __init__(self, parsed_file, options, *, from_javap):
-    self.options = options
+  def __init__(self,
+               parsed_file,
+               *,
+               from_javap,
+               default_namespace=None,
+               javap_unchecked_exceptions=False):
     self.filename = parsed_file.filename
     self.type_resolver = parsed_file.type_resolver
     self.module_name = parsed_file.module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
     self.constant_fields = parsed_file.constant_fields
-    # --per-file-natives is not available in all parsers.
-    self.per_file_natives = getattr(options, 'per_file_natives', False)
 
     # These are different only for legacy reasons.
     if from_javap:
-      self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name.replace(
+      self.jni_namespace = default_namespace or 'JNI_' + self.java_class.name.replace(
           '$', '__')
     else:
-      self.jni_namespace = parsed_file.jni_namespace or options.namespace
+      self.jni_namespace = parsed_file.jni_namespace or default_namespace
 
     natives = []
     for parsed_method in parsed_file.proxy_methods:
@@ -228,21 +261,11 @@ class JniObject:
     for parsed_called_by_native in parsed_file.called_by_natives:
       called_by_natives.append(
           CalledByNative(parsed_called_by_native,
-                         unchecked=from_javap and options.unchecked_exceptions,
+                         unchecked=from_javap and javap_unchecked_exceptions,
                          is_system_class=from_javap))
 
     _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
     self.called_by_natives = called_by_natives
-
-    # from-jar does not define these flags.
-    if natives:
-      self.final_gen_jni_class = proxy.get_gen_jni_class(
-          short=options.use_proxy_hash or options.enable_jni_multiplexing,
-          name_prefix=self.module_name,
-          package_prefix=options.package_prefix,
-          package_prefix_filter=options.package_prefix_filter)
-    else:
-      self.final_gen_jni_class = None
 
   @property
   def java_class(self):
@@ -258,8 +281,8 @@ class JniObject:
 
   def GetClassesToBeImported(self):
     classes = set()
-    for p in self.proxy_natives:
-      for t in list(p.param_types) + [p.return_type]:
+    for n in self.proxy_natives:
+      for t in list(n.signature.param_types) + [n.return_type]:
         class_obj = t.java_class
         if class_obj is None:
           # Primitive types will be None.
@@ -273,24 +296,6 @@ class JniObject:
 
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
-
-  def GetStubName(self, native):
-    """Return the name of the stub function for a native method."""
-    if native.is_proxy:
-      if self.options.use_proxy_hash:
-        method_name = common.escape_class_name(native.hashed_proxy_name)
-      else:
-        method_name = common.escape_class_name(native.proxy_name)
-      if self.per_file_natives:
-        return 'Java_' + common.escape_class_name(
-            f'{self.java_class.full_name_with_slashes}Jni/native{common.capitalize(native.name)}'
-        )
-      elif self.options.enable_jni_multiplexing:
-        return f'Java_{method_name}'
-      else:
-        return 'Java_%s_%s' % (self.final_gen_jni_class.to_cpp(), method_name)
-
-    return f'Java_{self.java_class.to_cpp()}_native{native.cpp_name}'
 
 
 def _CollectReferencedClasses(jni_obj):
@@ -312,7 +317,7 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-def _generate_header(jni_obj, extra_includes):
+def _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class):
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
@@ -335,7 +340,8 @@ def _generate_header(jni_obj, extra_includes):
     if jni_obj.natives:
       with sb.section('Java to native functions'):
         for native in jni_obj.natives:
-          natives_header.entry_point_method(sb, jni_obj, native)
+          natives_header.entry_point_method(sb, jni_mode, jni_obj, native,
+                                            gen_jni_class)
 
     if jni_obj.called_by_natives:
       with sb.section('Native to Java functions'):
@@ -344,22 +350,6 @@ def _generate_header(jni_obj, extra_includes):
 
   sb(epilogue)
   return sb.to_string()
-
-
-def WrapOutput(output):
-  ret = []
-  for line in output.splitlines():
-    # Do not wrap preprocessor directives or comments.
-    if len(line) < _WRAP_LINE_LENGTH or line[0] == '#' or line.startswith('//'):
-      ret.append(line)
-    else:
-      # Assumes that the line is not already indented as a continuation line,
-      # which is not always true (oh well).
-      first_line_indent = (len(line) - len(line.lstrip()))
-      wrapper = _WRAPPERS_BY_INDENT[first_line_indent]
-      ret.extend(wrapper.wrap(line))
-  ret += ['']
-  return '\n'.join(ret)
 
 
 def GetScriptName():
@@ -394,6 +384,7 @@ def _CheckSameModule(jni_objs):
       for filename in filenames:
         sys.stderr.write(f'  {filename}\n')
     sys.exit(1)
+  return next(iter(files_by_module)) if files_by_module else None
 
 
 def _CheckNotEmpty(jni_objs):
@@ -424,29 +415,29 @@ def _ParseClassFiles(jar_file, class_files, args):
         class_file = os.path.join(temp_dir, class_file)
         contents = _RunJavap(args.javap, class_file)
         parsed_file = parse.parse_javap(class_file, contents)
-        ret.append(JniObject(parsed_file, args, from_javap=True))
+        ret.append(
+            JniObject(parsed_file,
+                      from_javap=True,
+                      default_namespace=args.namespace,
+                      javap_unchecked_exceptions=args.unchecked_exceptions))
   return ret
 
 
-def _CreateSrcJar(srcjar_path,
-                  gen_jni_class,
-                  jni_objs,
-                  *,
-                  script_name,
-                  per_file_natives=False):
+def _CreateSrcJar(srcjar_path, jni_mode, gen_jni_class, jni_objs, *,
+                  script_name):
   with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
         if not jni_obj.proxy_natives:
           continue
-        content = proxy_impl_java.Generate(jni_obj,
+        content = proxy_impl_java.Generate(jni_mode,
+                                           jni_obj,
                                            gen_jni_class=gen_jni_class,
-                                           script_name=script_name,
-                                           per_file_natives=per_file_natives)
+                                           script_name=script_name)
         zip_path = f'{jni_obj.java_class.class_without_prefix.full_name_with_slashes}Jni.java'
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
-      if not per_file_natives:
+      if not jni_mode.is_per_file:
         content = placeholder_gen_jni_java.Generate(jni_objs,
                                                     gen_jni_class=gen_jni_class,
                                                     script_name=script_name)
@@ -502,16 +493,21 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
           already_added.add(zip_path)
 
 
-def _WriteHeaders(jni_objs, output_names, output_dir, extra_includes):
+def _WriteHeaders(jni_mode,
+                  jni_objs,
+                  output_names,
+                  output_dir,
+                  extra_includes,
+                  gen_jni_class=None):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
-    content = _generate_header(jni_obj, extra_includes)
+    content = _generate_header(jni_mode, jni_obj, extra_includes, gen_jni_class)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
 
 
-def GenerateFromSource(parser, args):
+def GenerateFromSource(parser, args, jni_mode):
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
@@ -524,15 +520,24 @@ def GenerateFromSource(parser, args):
                               package_prefix_filter=args.package_prefix_filter)
         for f in args.input_files
     ]
-    jni_objs = [JniObject(x, args, from_javap=False) for x in parsed_files]
+    jni_objs = [
+        JniObject(x, from_javap=False, default_namespace=args.namespace)
+        for x in parsed_files
+    ]
     _CheckNotEmpty(jni_objs)
-    _CheckSameModule(jni_objs)
+    module_name = _CheckSameModule(jni_objs)
   except parse.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_objs, args.output_names, args.output_dir,
-                args.extra_includes)
+  gen_jni_class = proxy.get_gen_jni_class(
+      short=jni_mode.is_hashing or jni_mode.is_muxing,
+      name_prefix=args.module_name or module_name,
+      package_prefix=args.package_prefix,
+      package_prefix_filter=args.package_prefix_filter)
+
+  _WriteHeaders(jni_mode, jni_objs, args.output_names, args.output_dir,
+                args.extra_includes, gen_jni_class)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar
@@ -544,10 +549,10 @@ def GenerateFromSource(parser, args):
           package_prefix=args.package_prefix,
           package_prefix_filter=args.package_prefix_filter)
       _CreateSrcJar(args.srcjar_path,
+                    jni_mode,
                     gen_jni_class,
                     jni_objs_with_proxy_natives,
-                    script_name=GetScriptName(),
-                    per_file_natives=args.per_file_natives)
+                    script_name=GetScriptName())
     else:
       # Only @CalledByNatives.
       zipfile.ZipFile(args.srcjar_path, 'w').close()
@@ -564,7 +569,7 @@ def GenerateFromSource(parser, args):
       zipfile.ZipFile(args.placeholder_srcjar_path, 'w').close()
 
 
-def GenerateFromJar(parser, args):
+def GenerateFromJar(parser, args, jni_mode):
   if not args.javap:
     args.javap = shutil.which('javap')
     if not args.javap:
@@ -582,5 +587,5 @@ def GenerateFromJar(parser, args):
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_objs, args.output_names, args.output_dir,
+  _WriteHeaders(jni_mode, jni_objs, args.output_names, args.output_dir,
                 args.extra_includes)

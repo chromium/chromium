@@ -41,7 +41,8 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeColorHelper;
     private WindowSystemBarColorHelper mWindowHelper;
-    private ObservableSupplierImpl<Boolean> mIsEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mShouldContentFitsWindowInsetsSupplier =
+            new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<SystemBarColorHelper> mDelegateHelperSupplier =
             new OneshotSupplierImpl<>();
 
@@ -52,7 +53,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Test
     public void initWhenNotEdgeToEdge_WithoutDelegateHelper_UseWindowHelper() {
-        mIsEdgeToEdgeSupplier.set(false);
+        mShouldContentFitsWindowInsetsSupplier.set(true);
         initEdgeToEdgeColorHelper();
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
@@ -61,7 +62,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Test
     public void initWhenNotEdgeToEdge_WithDelegateHelper_UseWindowHelper() {
-        mIsEdgeToEdgeSupplier.set(false);
+        mShouldContentFitsWindowInsetsSupplier.set(true);
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();
 
@@ -71,7 +72,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Test
     public void initWhenEdgeToEdge_WithoutDelegateHelper_WindowTransparent() {
-        mIsEdgeToEdgeSupplier.set(true);
+        mShouldContentFitsWindowInsetsSupplier.set(false);
         initEdgeToEdgeColorHelper();
 
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
@@ -80,7 +81,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Test
     public void initWhenEdgeToEdge_WithDelegateHelper_UseDelegateHelper() {
-        mIsEdgeToEdgeSupplier.set(true);
+        mShouldContentFitsWindowInsetsSupplier.set(false);
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();
 
@@ -101,7 +102,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         doReturn(Color.RED).when(mWindow).getNavigationBarColor();
 
         // Color will switch automatically when edge to edge mode changed.
-        mIsEdgeToEdgeSupplier.set(true);
+        mShouldContentFitsWindowInsetsSupplier.set(false);
         verify(mDelegateColorHelper).setNavigationBarColor(Color.RED);
         verify(mWindow).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
@@ -109,7 +110,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Test
     public void switchOutFromEdgeToEdge() {
-        mIsEdgeToEdgeSupplier.set(true);
+        mShouldContentFitsWindowInsetsSupplier.set(false);
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();
         mEdgeToEdgeColorHelper.setNavigationBarColor(Color.RED);
@@ -117,9 +118,9 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindow, times(0)).setNavigationBarColor(Color.TRANSPARENT);
         verify(mWindow).setNavigationBarContrastEnforced(false);
 
-        // Color will switch automatically when edge to edge mode changed.
+        // Color will switch automatically when leaving edge to edge mode.
         clearInvocations(mDelegateColorHelper);
-        mIsEdgeToEdgeSupplier.set(false);
+        mShouldContentFitsWindowInsetsSupplier.set(true);
         verify(mWindow).setNavigationBarColor(Color.RED);
         verifyNoMoreInteractions(mDelegateColorHelper);
         verify(mWindow).setNavigationBarContrastEnforced(true);
@@ -128,7 +129,7 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     private void initEdgeToEdgeColorHelper() {
         mEdgeToEdgeColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
-                        mWindow, mIsEdgeToEdgeSupplier, mDelegateHelperSupplier);
+                        mWindow, mShouldContentFitsWindowInsetsSupplier, mDelegateHelperSupplier);
         mWindowHelper = mEdgeToEdgeColorHelper.getWindowHelperForTesting();
     }
 }

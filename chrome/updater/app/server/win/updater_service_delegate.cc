@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
+#include "base/task/single_thread_task_executor.h"
 #include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
@@ -52,6 +53,9 @@ void UpdaterServiceDelegate::OnServiceControlStop() {
 }
 
 HRESULT UpdaterServiceDelegate::Run(const base::CommandLine& command_line) {
+  // Allow this thread to run tasks.
+  base::SingleThreadTaskExecutor task_executor;
+
   if (command_line.HasSwitch(kComServiceSwitch)) {
     VLOG(2) << "Running COM server within the Windows Service";
     return RunCOMServer();

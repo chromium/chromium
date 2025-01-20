@@ -54,8 +54,9 @@ ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
           },
           &screenshot_, run_loop.QuitClosure()));
   run_loop.Run();
-  if (screenshot_.IsEmpty())
+  if (screenshot_.IsEmpty()) {
     return ExamplesExitCode::kImageEmpty;
+  }
   return pixel_diff_->CompareScreenshot(
              ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
                  screenshot_prefix_, screenshot_name,

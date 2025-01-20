@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediator.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesRecyclerView.java",
+    "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesUtils.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleConfigChecker.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegateHost.java",
@@ -29,16 +30,19 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/segmentation_platform:client_util_java",
     "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/util:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/cached_flags:java",
     "//components/embedder_support/android:util_java",
     "//components/segmentation_platform/public:public_java",
@@ -59,7 +63,10 @@ android_resources("java_resources") {
     "java/res/layout/home_modules_recycler_view_layout.xml",
     "java/res/values/dimens.xml",
   ]
-  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
 }
 
 robolectric_library("junit") {
@@ -75,6 +82,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesRecyclerViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/ModuleRegistryUnitTest.java",
   ]
 
@@ -83,13 +91,16 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/educational_tip:java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/segmentation_platform:client_util_java",
     "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -97,6 +108,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/segmentation_platform/public:public_java",

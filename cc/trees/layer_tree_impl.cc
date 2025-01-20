@@ -158,11 +158,9 @@ LayerTreeImpl::LayerTreeImpl(
     : host_impl_(&host_impl),
       created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
-      is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
       property_trees_(host_impl),
       background_color_(SkColors::kTransparent),
-      last_scrolled_scroll_node_index_(kInvalidPropertyNodeId),
       page_scale_factor_(page_scale_factor),
       min_page_scale_factor_(0),
       max_page_scale_factor_(0),
@@ -436,10 +434,12 @@ void LayerTreeImpl::InvalidateRegionForImages(
 
 void LayerTreeImpl::InvalidateRasterInducingScrolls(
     const base::flat_set<ElementId>& scrolls_to_invalidate) {
+  DCHECK(IsSyncTree());
   if (scrolls_to_invalidate.empty()) {
+    did_raster_inducing_scroll_ = false;
     return;
   }
-  DCHECK(IsSyncTree());
+  did_raster_inducing_scroll_ = true;
   for (PictureLayerImpl* picture_layer : picture_layers_) {
     picture_layer->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
   }
@@ -453,36 +453,70 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   ViewportAnchor anchor(InnerViewportScrollNode(), OuterViewportScrollNode(),
                         this);
 
-  float top_controls_shown_ratio =
+  const float top_controls_shown_ratio =
       top_controls_shown_ratio_->Current(IsActiveTree());
-  float bottom_controls_shown_ratio =
+  const float bottom_controls_shown_ratio =
       bottom_controls_shown_ratio_->Current(IsActiveTree());
-  float top_controls_layout_height = browser_controls_shrink_blink_size()
-                                         ? top_controls_height()
-                                         : top_controls_min_height();
-  float top_content_offset =
+  const float top_controls_layout_height = browser_controls_shrink_blink_size()
+                                               ? top_controls_height()
+                                               : top_controls_min_height();
+  const float top_content_offset =
       top_controls_height() > 0
           ? top_controls_height() * top_controls_shown_ratio
           : 0.f;
   float delta_from_top_controls =
       top_controls_layout_height - top_content_offset;
-  float bottom_controls_layout_height = browser_controls_shrink_blink_size()
-                                            ? bottom_controls_height()
-                                            : bottom_controls_min_height();
-  float bottom_content_offset =
+  const float bottom_controls_layout_height =
+      browser_controls_shrink_blink_size() ? bottom_controls_height()
+                                           : bottom_controls_min_height();
+  const float bottom_content_offset =
       bottom_controls_height() > 0
           ? bottom_controls_height() * bottom_controls_shown_ratio
           : 0.f;
   delta_from_top_controls +=
       bottom_controls_layout_height - bottom_content_offset;
 
+  // The delta to be added to transform matrix if dynamic safe area is
+  // supported.
+  auto* property_trees = this->property_trees();
+  if (base::FeatureList::IsEnabled(
+          features::kDynamicSafeAreaInsetsSupportedByCC)) {
+    float blink_bottom_content_offset;
+    if (settings().dynamic_safe_area_insets_on_scroll_enabled) {
+      // Blink SAI is based on bottom controls shown ratio. Subtract the delta
+      // added by Blink SAI.
+      blink_bottom_content_offset =
+          bottom_content_offset -
+          bottom_controls_height() * bottom_controls_shown_ratio_->Delta();
+    } else {
+      // Blink did NOT update SAI based on bottom controls shown ratio.
+      blink_bottom_content_offset = bottom_controls_layout_height;
+    }
+
+    const float real_saib =
+        std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
+    const float blink_saib = std::max(
+        0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
+    const float transform_delta_by_safe_area_inset_bottom =
+        -(real_saib - blink_saib);
+
+    const float scaled_transform_delta_by_safe_area_inset_bottom =
+        transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
+
+    if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
+        scaled_transform_delta_by_safe_area_inset_bottom) {
+      property_trees->SetTransformDeltaBySafeAreaInsetBottom(
+          scaled_transform_delta_by_safe_area_inset_bottom);
+    }
+  }
+
   // Adjust the viewport layers by shrinking/expanding the container to account
   // for changes in the size (e.g. browser controls) since the last resize from
   // Blink.
-  auto* property_trees = this->property_trees();
   gfx::Vector2dF bounds_delta(0.f, delta_from_top_controls);
-  if (property_trees->inner_viewport_container_bounds_delta() == bounds_delta)
+  if (property_trees->inner_viewport_container_bounds_delta() == bounds_delta) {
     return;
+  }
 
   property_trees->SetInnerViewportContainerBoundsDelta(bounds_delta);
 
@@ -670,25 +704,28 @@ void LayerTreeImpl::PullPropertiesFrom(
     ClearSurfaceRanges();
     SetSurfaceRanges(commit_state.SurfaceRanges());
   }
-  TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
-  lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
-  for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {
-    property_trees()->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
-        id);
-  }
+  {
+    DiscardableImageMapUpdater updater(this);
+    TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
+    lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
-  // This must happen after synchronizing property trees and after pushing
-  // properties,  which updates the clobber_active_value flag (specifically in
-  // Layer::PushPropertiesTo).
-  // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
-  property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
-      unsafe_state.property_trees, this,
-      settings().commit_fractional_scroll_deltas);
-  // This must be after scroll updates because the discardable image map may
-  // depend on raster-inducing scroll offsets.
-  for (auto& layer : picture_layers()) {
-    layer->RegenerateDiscardableImageMapIfNeeded();
+    for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {
+      property_trees()->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
+          id);
+    }
+
+    // This must happen after synchronizing property trees and after pushing
+    // properties,  which updates the clobber_active_value flag (specifically in
+    // Layer::PushPropertiesTo).
+    // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
+    property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
+        unsafe_state.property_trees, this,
+        settings().commit_fractional_scroll_deltas);
+
+    // The scope should end (when the DiscardableImageMapUpdater will update
+    // discardable image maps) after scroll updates because the discardable
+    // image map may depend on raster-inducing scroll offsets.
   }
 
   PullLayerTreePropertiesFrom(commit_state);
@@ -785,6 +822,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   set_painted_device_scale_factor(commit_state.painted_device_scale_factor);
   SetDeviceScaleFactor(commit_state.device_scale_factor);
   SetDeviceViewportRect(commit_state.device_viewport_rect);
+
+  SetMaxSafeAreaInsetBottom(commit_state.max_safe_area_insets.bottom());
 
   if (commit_state.new_local_surface_id_request)
     RequestNewLocalSurfaceId();
@@ -890,6 +929,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->SetDeviceScaleFactor(device_scale_factor());
   target_tree->SetDeviceViewportRect(device_viewport_rect_);
 
+  target_tree->SetMaxSafeAreaInsetBottom(max_safe_area_inset_bottom_);
+
   if (TakeNewLocalSurfaceIdRequest())
     target_tree->RequestNewLocalSurfaceId();
   target_tree->SetLocalSurfaceIdFromParent(local_surface_id_from_parent());
@@ -915,6 +956,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->set_trace_id(trace_id());
   target_tree->set_background_color(background_color());
   target_tree->set_have_scroll_event_handlers(have_scroll_event_handlers());
+  target_tree->did_raster_inducing_scroll_ = did_raster_inducing_scroll_;
   target_tree->set_event_listener_properties(
       EventListenerClass::kTouchStartOrMove,
       event_listener_properties(EventListenerClass::kTouchStartOrMove));
@@ -1125,14 +1167,7 @@ const ScrollNode* LayerTreeImpl::CurrentlyScrollingNode() const {
   return property_trees_.scroll_tree().CurrentlyScrollingNode();
 }
 
-int LayerTreeImpl::LastScrolledScrollNodeIndex() const {
-  return last_scrolled_scroll_node_index_;
-}
-
 void LayerTreeImpl::SetCurrentlyScrollingNode(const ScrollNode* node) {
-  if (node)
-    last_scrolled_scroll_node_index_ = node->id;
-
   ScrollTree& scroll_tree = property_trees()->scroll_tree_mutable();
   ScrollNode* old_node = scroll_tree.CurrentlyScrollingNode();
 
@@ -1472,6 +1507,11 @@ gfx::Rect LayerTreeImpl::GetDeviceViewport() const {
   if (external_viewport.IsEmpty())
     return device_viewport_rect_;
   return external_viewport;
+}
+
+void LayerTreeImpl::SetMaxSafeAreaInsetBottom(
+    float max_safe_area_inset_bottom) {
+  max_safe_area_inset_bottom_ = max_safe_area_inset_bottom;
 }
 
 void LayerTreeImpl::SetDisplayColorSpaces(
@@ -1845,8 +1885,10 @@ void LayerTreeImpl::DidBecomeActive() {
 
   for (const auto& swap_promise : swap_promise_list_)
     swap_promise->DidActivate();
-  devtools_instrumentation::DidActivateLayerTree(host_impl_->id(),
-                                                 source_frame_number_);
+  if (!host_impl_->GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidActivateLayerTree(host_impl_->id(),
+                                                   source_frame_number_);
+  }
 }
 
 bool LayerTreeImpl::RequiresHighResToDraw() const {
@@ -2440,6 +2482,8 @@ static void FindClosestMatchingLayer(const gfx::PointF& screen_space_point,
                                      LayerImpl* root_layer,
                                      const Functor& func,
                                      FindClosestMatchingLayerState* state) {
+  CHECK(root_layer);
+
   // We want to iterate from front to back when hit testing.
   for (auto* layer : base::Reversed(*root_layer->layer_tree_impl())) {
     if (!func(layer))
@@ -3019,6 +3063,28 @@ bool LayerTreeImpl::IsReadyToActivate() const {
 
 void LayerTreeImpl::RequestImplSideInvalidationForRerasterTiling() {
   host_impl_->RequestImplSideInvalidationForRerasterTiling();
+}
+
+void LayerTreeImpl::AddLayerNeedingUpdateDiscardableImageMap(
+    PictureLayerImpl* layer) {
+  CHECK(discardable_image_map_updater_);
+  discardable_image_map_updater_->AddLayerNeedingUpdate(layer);
+}
+
+LayerTreeImpl::DiscardableImageMapUpdater::DiscardableImageMapUpdater(
+    LayerTreeImpl* layer_tree_impl)
+    : layer_tree_impl_(layer_tree_impl) {
+  CHECK(layer_tree_impl->IsSyncTree());
+  CHECK(!layer_tree_impl->discardable_image_map_updater_);
+  layer_tree_impl_->discardable_image_map_updater_ = this;
+}
+
+LayerTreeImpl::DiscardableImageMapUpdater::~DiscardableImageMapUpdater() {
+  DCHECK_EQ(layer_tree_impl_->discardable_image_map_updater_, this);
+  for (auto& layer : layers_needing_update_) {
+    layer->RegenerateDiscardableImageMap();
+  }
+  layer_tree_impl_->discardable_image_map_updater_ = nullptr;
 }
 
 }  // namespace cc

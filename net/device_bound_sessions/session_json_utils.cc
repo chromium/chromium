@@ -15,6 +15,8 @@ SessionParams::Scope ParseScope(const base::Value::Dict& scope_dict) {
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
   scope.include_site = include_site.value_or(false);
+  const std::string* origin = scope_dict.FindString("origin");
+  scope.origin = origin ? *origin : "";
   const base::Value::List* specifications_list =
       scope_dict.FindList("scope_specification");
   if (!specifications_list) {
@@ -73,7 +75,7 @@ std::vector<SessionParams::Credential> ParseCredentials(
 
 }  // namespace
 
-std::optional<SessionParams> ParseSessionInstructionJson(
+std::optional<ParsedSessionParams> ParseSessionInstructionJson(
     std::string_view response_json) {
   // TODO(kristianm): Skip XSSI-escapes, see for example:
   // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
@@ -96,10 +98,16 @@ std::optional<SessionParams> ParseSessionInstructionJson(
     return std::nullopt;
   }
 
+  std::optional<bool> continue_value = maybe_root->FindBool("continue");
+  if (continue_value.has_value() && *continue_value == false) {
+    return SessionTerminationParams(*session_id);
+  }
+
   std::string* refresh_url = maybe_root->FindString("refresh_url");
 
   std::vector<SessionParams::Credential> credentials;
   base::Value::List* credentials_list = maybe_root->FindList("credentials");
+
   if (credentials_list) {
     credentials = ParseCredentials(*credentials_list);
   }

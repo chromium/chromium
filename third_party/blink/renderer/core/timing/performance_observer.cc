@@ -82,10 +82,7 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
           execution_context)) {
     mask |= PerformanceEntry::kSoftNavigation;
   }
-  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          execution_context)) {
-    mask |= PerformanceEntry::kLongAnimationFrame;
-  }
+  mask |= PerformanceEntry::kLongAnimationFrame;
   return mask;
 }
 

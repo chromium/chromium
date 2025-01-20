@@ -111,8 +111,10 @@ void FakeBoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
       *cookie, url_, options,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback),
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
+          net::CookieAccessResult(
+              net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                  /*exclusions=*/{
+                      net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR}))));
 }
 
 void FakeBoundSessionRefreshCookieFetcher::OnCookieSet(

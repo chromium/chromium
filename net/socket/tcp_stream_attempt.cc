@@ -5,9 +5,11 @@
 #include "net/socket/tcp_stream_attempt.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_factory.h"
@@ -16,6 +18,16 @@
 #include "net/socket/transport_client_socket.h"
 
 namespace net {
+
+// static
+std::string_view TcpStreamAttempt::StateToString(State state) {
+  switch (state) {
+    case State::kNone:
+      return "None";
+    case State::kConnecting:
+      return "Connecting";
+  }
+}
 
 TcpStreamAttempt::TcpStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
@@ -35,6 +47,12 @@ LoadState TcpStreamAttempt::GetLoadState() const {
     case State::kConnecting:
       return LOAD_STATE_CONNECTING;
   }
+}
+
+base::Value::Dict TcpStreamAttempt::GetInfoAsValue() const {
+  base::Value::Dict dict;
+  dict.Set("next_state", StateToString(next_state_));
+  return dict;
 }
 
 int TcpStreamAttempt::StartInternal() {
@@ -64,6 +82,9 @@ int TcpStreamAttempt::StartInternal() {
       FROM_HERE, kTcpHandshakeTimeout,
       base::BindOnce(&TcpStreamAttempt::OnTimeout, base::Unretained(this)));
 
+  net_log().AddEventReferencingSource(
+      NetLogEventType::TCP_STREAM_ATTEMPT_CONNECT,
+      socket_ptr->NetLog().source());
   int rv = socket_ptr->Connect(
       base::BindOnce(&TcpStreamAttempt::OnIOComplete, base::Unretained(this)));
   if (rv != ERR_IO_PENDING) {

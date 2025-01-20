@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -78,8 +79,12 @@ class TabListViewBinder {
             ImageView faviconView = tabListView.findViewById(R.id.start_icon);
             faviconView.setImageDrawable(null);
 
-            FrameLayout container = tabListView.findViewById(R.id.after_title_container);
-            TabCardViewBinderUtils.detachTabGroupColorView(container);
+            FrameLayout colorContainer = tabListView.findViewById(R.id.after_title_container);
+            TabCardViewBinderUtils.detachTabGroupColorView(colorContainer);
+
+            FrameLayout labelContainer =
+                    tabListView.findViewById(R.id.before_description_container);
+            labelContainer.removeAllViews();
         }
     }
 
@@ -158,6 +163,9 @@ class TabListViewBinder {
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             TabGridViewBinder.setNullableLongClickListener(
                     model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            // Ignore this data for tab card labels in selectable mode.
+            updateTabCardLabel(view, /* tabCardLabelData= */ null);
         }
     }
 
@@ -181,10 +189,15 @@ class TabListViewBinder {
                             view.getContext(),
                             model.get(TabProperties.IS_INCOGNITO),
                             /* isSelected= */ false));
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
-            view.findViewById(R.id.end_button)
-                    .setContentDescription(
-                            model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TextResolver actionButtonDescriptionTextResolver =
+                    model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+            CharSequence actionButtonDescriptionString =
+                    TabCardViewBinderUtils.resolveNullSafe(
+                            actionButtonDescriptionTextResolver, view.getContext());
+            view.findViewById(R.id.end_button).setContentDescription(actionButtonDescriptionString);
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         }
     }
 
@@ -295,5 +308,38 @@ class TabListViewBinder {
                             ? R.color.default_icon_color_light
                             : R.color.default_icon_color_tint_list);
         }
+    }
+
+    private static void updateTabCardLabel(
+            ViewGroup view, @Nullable TabCardLabelData tabCardLabelData) {
+        TabCardLabelView labelView = getOrSetupTabCardLabelView(view);
+        labelView.setData(tabCardLabelData);
+    }
+
+    private static TabCardLabelView getOrSetupTabCardLabelView(ViewGroup view) {
+        FrameLayout labelContainer = view.findViewById(R.id.before_description_container);
+        if (labelContainer.getChildCount() > 0) {
+            return (TabCardLabelView) labelContainer.getChildAt(0);
+        }
+        Context context = labelContainer.getContext();
+        TabCardLabelView labelView =
+                (TabCardLabelView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.tab_card_label_layout, labelContainer, false);
+        labelContainer.addView(labelView);
+
+        Resources res = context.getResources();
+        int marginEnd = res.getDimensionPixelSize(R.dimen.tab_card_label_list_margin_end);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) labelView.getLayoutParams();
+        params.setMarginEnd(marginEnd);
+        labelView.setLayoutParams(params);
+
+        // TODO(crbug.com/362306803): This is technically supposed to have elevation. However,
+        // propagating clipToPadding=false and clipChildren=false all the way from
+        // title_and_description_layout up to tab_list_card_item to make it look right is not worth
+        // the complexity/risk of impacting other list UI when this UI is likely to be deprecated in
+        // 2025.
+        labelView.setElevation(0);
+        return labelView;
     }
 }

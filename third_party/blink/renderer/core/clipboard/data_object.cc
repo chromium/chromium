@@ -263,6 +263,17 @@ void DataObject::SetHTMLAndBaseURL(const String& html, const KURL& base_url) {
   InternalAddStringItem(DataObjectItem::CreateFromHTML(html, base_url));
 }
 
+Vector<String> DataObject::Urls() const {
+  Vector<String> results;
+  for (const auto& item : item_list_) {
+    if (item->Kind() == DataObjectItem::kStringKind &&
+        item->GetType() == kMimeTypeTextURIList) {
+      results.push_back(ConvertURIListToURL(item->GetAsString()));
+    }
+  }
+  return results;
+}
+
 bool DataObject::ContainsFilenames() const {
   for (const auto& item : item_list_) {
     if (item->IsFilename())

@@ -4,7 +4,8 @@ include_rules = [
   # doesn't use signin or sync.
   "+components/content_settings/core/browser",
   "+components/enterprise/connectors",
-  "+components/grit/components_resources.h",
+  "+components/grit/safe_browsing_resources.h",
+  "+components/grit/safe_browsing_resources_map.h",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser/password_manager_metrics_util.h",

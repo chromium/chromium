@@ -13,8 +13,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -42,7 +43,7 @@ std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
 }  // namespace internal
 
 // A form group that stores card information.
-class CreditCard : public AutofillDataModel {
+class CreditCard : public FormGroup {
  public:
   enum class RecordType {
     // A card with a complete number managed by Chrome (and not representing
@@ -518,6 +519,9 @@ class CreditCard : public AutofillDataModel {
         card_info_retrieval_enrollment_state;
   }
 
+  UsageHistoryInformation& usage_history();
+  const UsageHistoryInformation& usage_history() const;
+
  private:
   friend class CreditCardTestApi;
 
@@ -655,6 +659,8 @@ class CreditCard : public AutofillDataModel {
   // card issuer including card number, expiry and CVC.
   CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state_ =
       CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+
+  UsageHistoryInformation usage_history_information_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

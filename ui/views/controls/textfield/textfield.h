@@ -359,7 +359,6 @@ class VIEWS_EXPORT Textfield : public View,
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   // We don't want to compute the accessible text offsets unless accessibility
   // is enabled. We need to override this function to make sure that when
   // accessibility turns on, we compute the current accessible text offsets.
@@ -444,7 +443,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::optional<gfx::Rect> GetProximateCharacterBounds(
       const gfx::Range& range) const override;
   std::optional<size_t> GetProximateCharacterIndexFromPoint(
-      const gfx::Point& point,
+      const gfx::Point& screen_point_in_dips,
       ui::IndexFromPointFlags flags) const override;
 #endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
@@ -568,8 +567,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns true if a context menu for this view is showing.
   bool IsMenuShowing() const;
 
-  virtual void UpdateAccessibleTextSelection() {}
-
   void AddedToWidget() override;
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
@@ -616,6 +613,8 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Updates the selection background color.
   void UpdateSelectionBackgroundColor();
+
+  virtual void UpdateAccessibleTextSelection();
 
   // Does necessary updates when the text and/or cursor position changes.
   // If |notify_caret_bounds_changed| is not explicitly set, it will be computed

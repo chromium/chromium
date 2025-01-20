@@ -27,8 +27,9 @@ VlogInfo::VmodulePattern::VmodulePattern(const std::string& pattern)
   // If the pattern contains a {forward,back} slash, we assume that
   // it's meant to be tested against the entire __FILE__ string.
   std::string::size_type first_slash = pattern.find_first_of("\\/");
-  if (first_slash != std::string::npos)
+  if (first_slash != std::string::npos) {
     match_target = MATCH_FILE;
+  }
 }
 
 VlogInfo::VmodulePattern::VmodulePattern()
@@ -89,8 +90,9 @@ std::string_view GetModule(std::string_view file) {
   module = module.substr(0, extension_start);
   static const char kInlSuffix[] = "-inl";
   static const int kInlSuffixLen = std::size(kInlSuffix) - 1;
-  if (base::EndsWith(module, kInlSuffix))
+  if (base::EndsWith(module, kInlSuffix)) {
     module.remove_suffix(kInlSuffixLen);
+  }
   return module;
 }
 
@@ -102,8 +104,9 @@ int VlogInfo::GetVlogLevel(std::string_view file) const {
     for (const auto& it : vmodule_levels_) {
       std::string_view target(
           (it.match_target == VmodulePattern::MATCH_FILE) ? file : module);
-      if (MatchVlogPattern(target, it.pattern))
+      if (MatchVlogPattern(target, it.pattern)) {
         return it.vlog_level;
+      }
     }
   }
   return GetMaxVlogLevel();

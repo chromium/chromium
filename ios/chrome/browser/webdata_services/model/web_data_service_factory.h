@@ -9,7 +9,7 @@
 
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class KeywordWebDataService;
 class ProfileIOS;
@@ -28,7 +28,7 @@ class PlusAddressWebDataService;
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
 // ProfileIOS.
-class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
+class WebDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   // Returns the AutofillWebDataService associated with `profile`.
   static WebDataServiceWrapper* GetForProfile(ProfileIOS* profile,
@@ -68,9 +68,6 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
-  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
-  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
-
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;
 
@@ -80,9 +77,6 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace ios

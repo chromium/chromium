@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -136,12 +136,14 @@ HTMLDialogElement::HTMLDialogElement(Document& document)
     : HTMLElement(html_names::kDialogTag, document),
       is_modal_(false),
       return_value_(""),
+      request_close_return_value_(""),
       previously_focused_element_(nullptr) {
   UseCounter::Count(document, WebFeature::kDialogElement);
 }
 
 void HTMLDialogElement::close(const String& return_value,
-                              bool ignore_open_attribute) {
+                              bool ignore_open_attribute,
+                              bool async_focus) {
   // https://html.spec.whatwg.org/C/#close-the-dialog
   if (is_closing_) {
     return;
@@ -181,8 +183,6 @@ void HTMLDialogElement::close(const String& return_value,
   // We should call focus() last since it will fire a focus event which could
   // modify this element.
   if (previously_focused_element_) {
-    FocusOptions* focus_options = FocusOptions::Create();
-    focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
 
@@ -190,9 +190,25 @@ void HTMLDialogElement::close(const String& return_value,
                                  FlatTreeTraversal::IsDescendantOf(
                                      *GetDocument().FocusedElement(), *this);
     if (previously_focused_element && (was_modal || descendant_is_focused)) {
-      previously_focused_element->Focus(FocusParams(
-          SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-          nullptr, focus_options));
+      auto focus_fn = [](Element* element) {
+        FocusOptions* focus_options = FocusOptions::Create();
+        focus_options->setPreventScroll(true);
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
+                                   mojom::blink::FocusType::kScript, nullptr,
+                                   focus_options));
+      };
+
+      if (async_focus) {
+        CHECK(RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled());
+        GetDocument()
+            .GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(
+                FROM_HERE,
+                WTF::BindOnce(focus_fn,
+                              WrapWeakPersistent(previously_focused_element)));
+      } else {
+        focus_fn(previously_focused_element);
+      }
     }
   }
 
@@ -202,14 +218,16 @@ void HTMLDialogElement::close(const String& return_value,
   }
 }
 
-void HTMLDialogElement::requestClose(const String& return_value) {
+void HTMLDialogElement::requestClose(const String& return_value,
+                                     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   if (!IsOpen()) {
     return;
   }
-  // The close watcher might be disabled if this is a non-modal dialog.
+  CHECK(close_watcher_);
   close_watcher_->setEnabled(true);
-  close_watcher_->requestClose();
+  request_close_return_value_ = return_value;
+  close_watcher_->RequestClose(CloseWatcher::AllowCancel::kAlways);
   SetCloseWatcherEnabledState();
 }
 
@@ -279,28 +297,27 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
 
 // static
 // https://html.spec.whatwg.org/interactive-elements.html#light-dismiss-open-dialogs
-void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
-                                                 const Node& target_node) {
+void HTMLDialogElement::HandleDialogLightDismiss(
+    const PointerEvent& pointer_event,
+    const Node& target_node) {
   if (!RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
     return;
   }
-  CHECK(event.isTrusted());
+  CHECK(pointer_event.isTrusted());
+  // PointerEventManager will call this function before actually dispatching
+  // the event.
+  CHECK(!pointer_event.HasEventPath());
+  CHECK_EQ(Event::PhaseType::kNone, pointer_event.eventPhase());
+
+  // If there aren't any open dialogs, there's nothing to light dismiss.
   auto& document = target_node.GetDocument();
   if (document.AllOpenDialogs().empty()) {
     return;
   }
 
-  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
-  if (!pointer_event) {
-    return;
-  }
-  // PointerEventManager will call this function before actually dispatching
-  // the event.
-  CHECK(!event.HasEventPath());
-  CHECK_EQ(Event::PhaseType::kNone, event.eventPhase());
-  const AtomicString& event_type = event.type();
+  const AtomicString& event_type = pointer_event.type();
   const HTMLDialogElement* ancestor_dialog =
-      FindNearestDialog(target_node, *pointer_event);
+      FindNearestDialog(target_node, pointer_event);
   if (event_type == event_type_names::kPointerdown) {
     document.SetDialogPointerdownTarget(ancestor_dialog);
   } else if (event_type == event_type_names::kPointerup) {
@@ -311,14 +328,12 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
     if (!same_target) {
       return;
     }
-    // Make a copy of the list, because closed dialogs will be removed as we go.
-    VectorOf<HTMLDialogElement> dialog_list{document.AllOpenDialogs()};
-    for (auto index = dialog_list.size(); index-- != 0;) {
-      auto& dialog = dialog_list.at(index);
-      if (dialog != ancestor_dialog &&
-          dialog->ClosedBy() == ClosedByState::kAny) {
-        dialog->requestClose();
-      }
+    HTMLDialogElement* topmost_dialog = document.AllOpenDialogs().back();
+    if (ancestor_dialog == topmost_dialog) {
+      return;
+    }
+    if (topmost_dialog->ClosedBy() == ClosedByState::kAny) {
+      topmost_dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
     }
   }
 }
@@ -427,7 +442,7 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
 }
 
-bool HTMLDialogElement::IsKeyboardFocusable(
+bool HTMLDialogElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   if (!IsFocusable(update_behavior)) {
     return false;
@@ -469,20 +484,24 @@ void HTMLDialogElement::SetCloseWatcherEnabledState() {
   }
   CHECK(close_watcher_);
   ClosedByState closed_by = ClosedBy();
-  close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
-                             closed_by == ClosedByState::kCloseRequest);
+  close_watcher_->setEnabled(closed_by != ClosedByState::kNone);
 }
 
 void HTMLDialogElement::CreateCloseWatcher() {
-  CHECK(!close_watcher_);
+  if (close_watcher_) {
+    // See crbug.com/384549097. It is possible to try to create a close watcher
+    // when one already exists, due to the event handlers that get fired as part
+    // of closing a dialog.
+    return;
+  }
   LocalDOMWindow* window = GetDocument().domWindow();
   if (!window) {
     return;
   }
+  CHECK(IsOpen());
+  CHECK(window->GetFrame());
   close_watcher_ = CloseWatcher::Create(*window);
-  if (!close_watcher_) {
-    return;
-  }
+  CHECK(close_watcher_);
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
     SetCloseWatcherEnabledState();
   }
@@ -594,7 +613,7 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
 void HTMLDialogElement::CloseWatcherFiredClose() {
   // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
-  close();
+  close(request_close_return_value_);
 }
 
 // https://html.spec.whatwg.org#dialog-focusing-steps
@@ -703,16 +722,16 @@ void HTMLDialogElement::ParseAttribute(
       !is_closing_) {
     // The open attribute has been removed explicitly, without calling close().
     if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
-      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "The open attribute was removed from a dialog element while it was "
           "open. This is not recommended. Please close it using the "
           "dialog.close() method instead.");
-      console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
-      close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
+      close(/*return_value=*/String(), /*ignore_open_attribute=*/true,
+            /*async_focus=*/true);
     } else {
+      GetDocument().AllOpenDialogs().erase(this);
       if (close_watcher_) {
         close_watcher_->destroy();
         close_watcher_ = nullptr;

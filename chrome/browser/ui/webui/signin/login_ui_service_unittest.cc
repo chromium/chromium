@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -20,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -45,7 +44,7 @@ class LoginUIServiceTest : public testing::Test {
   LoginUIServiceTest(const LoginUIServiceTest&) = delete;
   LoginUIServiceTest& operator=(const LoginUIServiceTest&) = delete;
 
-  ~LoginUIServiceTest() override {}
+  ~LoginUIServiceTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -62,12 +61,12 @@ class LoginUIServiceTest : public testing::Test {
 
 class TestLoginUI : public LoginUIService::LoginUI {
  public:
-  TestLoginUI() { }
+  TestLoginUI() = default;
 
   TestLoginUI(const TestLoginUI&) = delete;
   TestLoginUI& operator=(const TestLoginUI&) = delete;
 
-  ~TestLoginUI() override {}
+  ~TestLoginUI() override = default;
   void FocusUI() override {}
 };
 
@@ -100,7 +99,7 @@ TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {
   EXPECT_EQ(nullptr, service.current_login_ui());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(LoginUIServiceTest, SetProfileBlockingErrorMessage) {
   LoginUIService service(profile_);
 

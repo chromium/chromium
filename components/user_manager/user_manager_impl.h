@@ -28,17 +28,15 @@
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
-class PrefRegistrySimple;
-
 namespace ash {
 class CrosSettings;
+class FakeChromeUserManager;
 class UserManagerTest;
 }  // namespace ash
 
 namespace user_manager {
 
-// Feature that removes legacy supervised users.
-BASE_DECLARE_FEATURE(kRemoveLegacySupervisedUsersOnStartup);
+class FakeUserManager;
 
 // Feature that removes deprecated ARC kiosk users.
 USER_MANAGER_EXPORT
@@ -141,10 +139,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // cryptohomes remaining in the wild.
   // TODO(b/355590943): clean up once there is no ARC kiosk records.
   static const char kDeprecatedArcKioskUsersHistogramName[];
-
-  // Registers UserManagerImpl preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // UserManager implementation:
   void Shutdown() override;
@@ -256,8 +250,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
-  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
-      override;
 
   void Initialize() override;
 
@@ -282,9 +274,20 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   ash::CrosSettings* cros_settings() { return cros_settings_; }
   const ash::CrosSettings* cros_settings() const { return cros_settings_; }
 
-  // Adds |user| to users list, and adds it to front of LRU list. It is assumed
-  // that there is no user with same id.
-  virtual void AddUserRecord(User* user);
+  // Add a new regular user with a Gaia account. Returns the created user.
+  // `user_type` must be kRegular or kChild, which can hold a Gaia account.
+  // The added user is persisted in `local_state_`.
+  User* AddGaiaUser(const AccountId& account_id, UserType user_type);
+
+  // Add a new ephemeral user.
+  // Unlike AddGaiaUser, the created user will not be persisted.
+  User* AddEphemeralUser(const AccountId& account_id, UserType user_type);
+
+  // Add a new guest user.
+  User* AddGuestUser();
+
+  // Add a public account user.
+  User* AddPublicAccountUser(const AccountId& account_id);
 
   // Returns true if user may be removed.
   virtual bool CanUserBeRemoved(const User* user) const;
@@ -388,6 +391,11 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   UserList lru_logged_in_users_;
 
  private:
+  // TODO(crbug.com/278643115): allows access to private members to support
+  // fake features for transition period.
+  friend class FakeUserManager;
+  friend class ash::FakeChromeUserManager;
+
   // Loads |users_| from Local State if the list has not been loaded yet.
   // Subsequent calls have no effect. Must be called on the UI thread.
   void EnsureUsersLoaded();
@@ -420,13 +428,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Notifies observers that merge session state had changed.
   void NotifyMergeSessionStateChanged();
-
-  // Processes log-in for each type of users.
-  void RegularUserLoggedIn(const AccountId& account_id,
-                           const UserType user_type);
-  void GuestUserLoggedIn();
-  void PublicAccountUserLoggedIn(User* user);
-  void KioskAppLoggedIn(User* user);
 
   // Insert |user| at the front of the LRU user list.
   void SetLRUUser(User* user);
@@ -463,9 +464,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Interface to the signed settings store.
   const raw_ptr<ash::CrosSettings> cros_settings_;
-
-  // Handles multi-user sign-in policy.
-  MultiUserSignInPolicyController multi_user_sign_in_policy_controller_;
 
   // Cached flag of whether the currently logged-in user existed before this
   // login.

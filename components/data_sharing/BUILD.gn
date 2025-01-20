@@ -33,10 +33,17 @@ source_set("test_support") {
     "test_support/mock_data_sharing_network_loader.h",
     "test_support/mock_data_sharing_service.cc",
     "test_support/mock_data_sharing_service.h",
+    "test_support/mock_preview_server_proxy.cc",
+    "test_support/mock_preview_server_proxy.h",
+    "test_support/test_utils.cc",
+    "test_support/test_utils.h",
   ]
+
+  deps = [ "//services/network/public/cpp" ]
 
   public_deps = [
     "//base",
+    "//components/data_sharing/internal",
     "//components/data_sharing/public",
     "//net/traffic_annotation",
     "//testing/gmock",
@@ -55,6 +62,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//components/data_sharing/public:public_java",
+      "//components/signin/public/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/mockito:mockito_java",

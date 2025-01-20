@@ -91,7 +91,7 @@ static_library("dlp") {
     # TODO(b/354095042): Use targets having headers directly included from
     # chrome/browser/ash/policy/dlp/dlp_content_manager_ash.cc
     # instead after fixing cyclic dependency.
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
   ]
 
   allow_circular_includes_from = [
@@ -139,8 +139,8 @@ source_set("unit_tests") {
     "//chromeos/dbus/dlp:dlp_proto",
     "//chromeos/ui/base",
     "//components/drive",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
     "//components/enterprise/data_controls/core/browser",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/file_access",
     "//components/reporting/client:test_support",
     "//components/reporting/storage:test_support",
@@ -209,8 +209,8 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/experiences/screenshot_area",
+    "//components/enterprise/common/proto:dlp_policy_event_proto",
     "//components/enterprise/data_controls/core/browser",
-    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/exo",
     "//components/exo:test_support",
     "//components/policy:cloud_policy_proto_generated_compile",

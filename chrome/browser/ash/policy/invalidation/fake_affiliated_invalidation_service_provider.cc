@@ -7,8 +7,7 @@
 namespace policy {
 
 FakeAffiliatedInvalidationServiceProvider::
-FakeAffiliatedInvalidationServiceProvider() {
-}
+    FakeAffiliatedInvalidationServiceProvider() = default;
 
 void FakeAffiliatedInvalidationServiceProvider::RegisterConsumer(
     Consumer* consumer) {

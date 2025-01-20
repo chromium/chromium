@@ -28,7 +28,7 @@ class DataTypeLocalDataBatchUploader {
   // Triggers the process of moving the data restricted to the data that matches
   // the `syncer::LocalDataItemModel::DataId` in `items`. The process is in fact
   // async, but no notion of completion is currently exposed here.
-  virtual void TriggerLocalDataMigration(
+  virtual void TriggerLocalDataMigrationForItems(
       std::vector<syncer::LocalDataItemModel::DataId> items);
 };
 

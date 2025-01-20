@@ -4,6 +4,8 @@
 
 source_set("watermark_view_lib") {
   sources = [
+    "settings.cc",
+    "settings.h",
     "watermark_view.cc",
     "watermark_view.h",
   ]

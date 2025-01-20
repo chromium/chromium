@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - winner with bad render hash
+  assert_true: Auction unexpectedly had a winner expected true got false
+[FAIL] Basic B&A auction - winner with bad reporting hash
+  assert_true: Auction unexpectedly had a winner expected true got false
+Harness: the test ran to completion.
+

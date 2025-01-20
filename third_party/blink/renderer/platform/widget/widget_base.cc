@@ -408,8 +408,28 @@ void WidgetBase::ForceRedraw(
 void WidgetBase::GetWidgetInputHandler(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
-  widget_input_handler_manager_->AddInterface(std::move(request),
-                                              std::move(host));
+  widget_input_handler_manager_->SetHost(std::move(host));
+  widget_input_handler_manager_->AddInterface(std::move(request));
+
+  // Bind the Viz side receiver that might have come before Browser side
+  // GetWidgetInputHandler request.
+  if (pending_widget_input_handler_.has_value()) {
+    widget_input_handler_manager_->AddInterface(
+        std::move(*pending_widget_input_handler_));
+    pending_widget_input_handler_.reset();
+  }
+}
+
+void WidgetBase::GetWidgetInputHandlerForInputOnViz(
+    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request) {
+  // Hold back binding Viz side receiver until we have processed Browser side
+  // `GetWidgetInputHandler` request.
+  if (!widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
+    pending_widget_input_handler_.emplace(std::move(request));
+    return;
+  }
+
+  widget_input_handler_manager_->AddInterface(std::move(request));
 }
 
 void WidgetBase::ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
@@ -484,9 +504,6 @@ void WidgetBase::UpdateVisualProperties(
   // Web tests can override the device scale factor in the renderer.
   if (auto scale_factor = client_->GetTestingDeviceScaleFactorOverride()) {
     screen_info.device_scale_factor = scale_factor;
-    visual_properties.compositor_viewport_pixel_rect =
-        gfx::Rect(gfx::ScaleToCeiledSize(visual_properties.new_size,
-                                         screen_info.device_scale_factor));
   }
 
   // Inform the rendering thread of the color space indicating the presence of
@@ -862,8 +879,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
-          gpu::kNullSurfaceHandle, GURL(url), automatic_flushes,
-          support_locking, limits, attributes,
+          GURL(url), automatic_flushes, support_locking, limits, attributes,
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1028,7 +1044,7 @@ void WidgetBase::UpdateVisualState() {
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(false);
 }
 
-void WidgetBase::BeginMainFrame(base::TimeTicks frame_time) {
+void WidgetBase::BeginMainFrame(const viz::BeginFrameArgs& args) {
   base::TimeTicks raf_aligned_input_start_time;
   if (ShouldRecordBeginMainFrameMetrics()) {
     raf_aligned_input_start_time = base::TimeTicks::Now();
@@ -1036,7 +1052,7 @@ void WidgetBase::BeginMainFrame(base::TimeTicks frame_time) {
 
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   widget_input_handler_manager_->input_event_queue()->DispatchRafAlignedInput(
-      frame_time);
+      args.frame_time);
   // DispatchRafAlignedInput could have detached the frame.
   if (!weak_this)
     return;
@@ -1044,7 +1060,7 @@ void WidgetBase::BeginMainFrame(base::TimeTicks frame_time) {
   if (ShouldRecordBeginMainFrameMetrics()) {
     client_->RecordDispatchRafAlignedInputTime(raf_aligned_input_start_time);
   }
-  client_->BeginMainFrame(frame_time);
+  client_->BeginMainFrame(args);
 }
 
 bool WidgetBase::ShouldRecordBeginMainFrameMetrics() {
@@ -1327,17 +1343,14 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   composition_character_bounds_ = character_bounds;
   composition_range_ = range;
 
-  std::optional<Vector<gfx::Rect>> line_bounds;
-
   // If using the new pipeline for CursorAnchorInfo data, send data from the
   // frame widget.
   if (RuntimeEnabledFeatures::CursorAnchorInfoMojoPipeEnabled()) {
     frame_widget->UpdateCursorAnchorInfo();
     return;
   }
-  if (RuntimeEnabledFeatures::ReportVisibleLineBoundsEnabled()) {
-    line_bounds = frame_widget->GetVisibleLineBoundsOnScreen();
-  }
+  std::optional<Vector<gfx::Rect>> line_bounds =
+      frame_widget->GetVisibleLineBoundsOnScreen();
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
     host->ImeCompositionRangeChanged(
@@ -1415,6 +1428,10 @@ void WidgetBase::SetHidden(bool hidden) {
     FlushInputProcessedCallback();
 
   SetCompositorVisible(!is_hidden_);
+
+  if (widget_input_handler_manager_) {
+    widget_input_handler_manager_->SetHidden(is_hidden_);
+  }
 }
 
 ui::TextInputType WidgetBase::GetTextInputType() {
@@ -1870,6 +1887,12 @@ std::optional<int> WidgetBase::GetMaxRenderBufferBounds() const {
   return Platform::Current()->IsGpuCompositingDisabled()
              ? max_render_buffer_bounds_sw_
              : max_render_buffer_bounds_gpu_;
+}
+
+void WidgetBase::OnDevToolsSessionConnectionChanged(bool attached) {
+  if (widget_input_handler_manager_) {
+    widget_input_handler_manager_->OnDevToolsSessionConnectionChanged(attached);
+  }
 }
 
 }  // namespace blink

@@ -114,6 +114,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
                 {
                   "id": "course-id-1",
                   "name": "Course 1",
+                  "section": "Period 1",
                   "courseState": "ACTIVE"
                 },
                 {
@@ -141,8 +142,11 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
   ASSERT_EQ(response.size(), 2u);
   EXPECT_EQ(response.at(0)->id, "course-id-1");
   EXPECT_EQ(response.at(0)->name, "Course 1");
+  EXPECT_EQ(response.at(0)->section, "Period 1");
   EXPECT_EQ(response.at(1)->id, "course-id-2");
   EXPECT_EQ(response.at(1)->name, "Course 2");
+  // Empty string when section is missing.
+  EXPECT_EQ(response.at(1)->section, "");
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListCoursesOnHttpError) {

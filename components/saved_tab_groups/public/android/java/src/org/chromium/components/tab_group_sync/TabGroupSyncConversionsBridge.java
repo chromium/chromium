@@ -17,23 +17,16 @@ import org.chromium.url.GURL;
  */
 @JNINamespace("tab_groups")
 public class TabGroupSyncConversionsBridge {
-
-    /**
-     * Conversion method to create a native SavedTabGroup from its Java counterpart.
-     *
-     * @param savedTabGroup The Java version of the {@link SavedTabGroup}.
-     * @return The native pointer to the SavedTabGroup created after conversion.
-     */
-    public static long convertToNativeSavedTabGroup(SavedTabGroup savedTabGroup) {
-        // Construct a group in native.
-        long nativeSavedTabGroupPtr =
-                TabGroupSyncConversionsBridgeJni.get().createGroup(savedTabGroup.localId);
-        assert savedTabGroup.localId != null
-                : "Java-to-native conversion expects a non-null local tab group ID";
-
+    @CalledByNative
+    private static void toNativeSavedTabGroup(
+            long nativeSavedTabGroup, SavedTabGroup savedTabGroup) {
         // Set visuals on the native group based on the Java group.
         TabGroupSyncConversionsBridgeJni.get()
-                .updateVisualData(nativeSavedTabGroupPtr, savedTabGroup.title, savedTabGroup.color);
+                .updateVisualData(
+                        nativeSavedTabGroup,
+                        savedTabGroup.localId,
+                        savedTabGroup.title,
+                        savedTabGroup.color);
 
         // Add tabs to the native group.
         for (int i = 0; i < savedTabGroup.savedTabs.size(); i++) {
@@ -41,11 +34,8 @@ public class TabGroupSyncConversionsBridge {
             assert savedTab.localId != null
                     : "Java-to-native conversion expects a non-null local tab ID";
             TabGroupSyncConversionsBridgeJni.get()
-                    .addTab(nativeSavedTabGroupPtr, savedTab.localId, savedTab.title, savedTab.url);
+                    .addTab(nativeSavedTabGroup, savedTab.localId, savedTab.title, savedTab.url);
         }
-
-        // Return the native group ptr.
-        return nativeSavedTabGroupPtr;
     }
 
     @CalledByNative
@@ -117,9 +107,7 @@ public class TabGroupSyncConversionsBridge {
 
     @NativeMethods
     interface Natives {
-        long createGroup(LocalTabGroupId groupId);
-
-        void updateVisualData(long groupPtr, String title, int color);
+        void updateVisualData(long groupPtr, LocalTabGroupId localId, String title, int color);
 
         void addTab(long groupPtr, int tabId, String title, GURL url);
     }

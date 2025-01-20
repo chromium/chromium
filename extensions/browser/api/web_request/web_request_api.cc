@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
@@ -390,9 +392,30 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         header_client,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     const url::Origin& request_initiator) {
+  const ProxyDecision decision = MaybeProxyURLLoaderFactoryInternal(
+      browser_context, frame, render_process_id, type, navigation_id,
+      ukm_source_id, factory_builder, header_client,
+      std::move(navigation_response_task_runner), request_initiator);
+  base::UmaHistogramEnumeration("Extensions.WebRequest.ProxyDecision",
+                                decision);
+  return decision != ProxyDecision::kWillNotProxy;
+}
+
+WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* frame,
+    int render_process_id,
+    URLLoaderFactoryType type,
+    std::optional<int64_t> navigation_id,
+    ukm::SourceIdObj ukm_source_id,
+    network::URLLoaderFactoryBuilder& factory_builder,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+    const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
-    bool use_proxy = false;
+    ProxyDecision decision = ProxyDecision::kWillNotProxy;
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
@@ -412,33 +435,18 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
                     util::GetBrowserContextId(browser_context),
                     BrowserFrameContextData(frame))
                 .is_available()) {
-          use_proxy = true;
+          decision = ProxyDecision::kWillProxyForWebUI;
         }
       } else {
-        use_proxy = IsAvailableToWebViewEmbedderFrame(frame);
+        if (IsAvailableToWebViewEmbedderFrame(frame)) {
+          decision = ProxyDecision::kWillProxyForEmbedderWebView;
+        }
       }
     }
 #endif
 
-    // Create a proxy URLLoader even when there is no CRX
-    // installed with webRequest permissions. This allows the extension
-    // requests to be intercepted for CRX telemetry service if enabled.
-    // Only proxy if the new RHC interception logic is disabled.
-    // TODO(crbug.com/40913716): Clean up collection logic here once new RHC
-    // interception logic is fully launched.
-    const std::string& request_scheme = request_initiator.scheme();
-    if (extensions::kExtensionScheme == request_scheme &&
-        ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
-            browser_context) &&
-        base::FeatureList::IsEnabled(
-            safe_browsing::kExtensionTelemetryReportContactedHosts) &&
-        !base::FeatureList::IsEnabled(
-            safe_browsing::
-                kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-      use_proxy = true;
-    }
-    if (!use_proxy) {
-      return false;
+    if (decision == ProxyDecision::kWillNotProxy) {
+      return decision;
     }
   }
 
@@ -476,7 +484,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       std::move(navigation_id), ukm_source_id, factory_builder,
       std::move(header_client_receiver), proxies_.get(), type,
       std::move(navigation_response_task_runner));
-  return true;
+  return ProxyDecision::kWillProxyForExtension;
 }
 
 bool WebRequestAPI::MaybeProxyAuthRequest(
@@ -528,8 +536,7 @@ void WebRequestAPI::ProxyWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry() ||
-         IsAvailableToWebViewEmbedderFrame(frame));
+  DCHECK(MayHaveProxies() || IsAvailableToWebViewEmbedderFrame(frame));
 
   content::BrowserContext* browser_context =
       frame->GetProcess()->GetBrowserContext();
@@ -540,7 +547,7 @@ void WebRequestAPI::ProxyWebSocket(
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
-      frame->GetProcess()->GetID(), frame->GetRoutingID(),
+      frame->GetProcess()->GetDeprecatedID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
 }
@@ -556,7 +563,7 @@ void WebRequestAPI::ProxyWebTransport(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
     auto* render_frame_host = content::RenderFrameHost::FromID(
-        render_process_host.GetID(), frame_routing_id);
+        render_process_host.GetDeprecatedID(), frame_routing_id);
     if (!IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
       std::move(callback).Run(std::move(handshake_client), std::nullopt);
       return;
@@ -583,21 +590,6 @@ bool WebRequestAPI::MayHaveProxies() const {
   }
 
   return web_request_extension_count_ > 0;
-}
-
-bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
-  // TODO(crbug.com/40913716): Clean up once new RHC interception logic is fully
-  // launched.
-  return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
-             browser_context_) &&
-         base::FeatureList::IsEnabled(
-             safe_browsing::kExtensionTelemetryReportContactedHosts) &&
-         base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kExtensionTelemetryReportHostsContactedViaWebSocket) &&
-         !base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
 }
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
@@ -906,8 +898,8 @@ WebRequestInternalEventHandledFunction::Run() {
     const base::Value::Dict& dict_value = args()[4].GetDict();
 
     if (!dict_value.empty()) {
-      base::Time install_time = ExtensionPrefs::Get(browser_context())
-                                    ->GetLastUpdateTime(extension_id_safe());
+      base::Time install_time = GetLastUpdateTime(
+          ExtensionPrefs::Get(browser_context()), extension_id_safe());
       response = std::make_unique<WebRequestEventRouter::EventResponse>(
           extension_id_safe(), install_time);
     }

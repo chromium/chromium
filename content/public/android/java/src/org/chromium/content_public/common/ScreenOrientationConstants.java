@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * ScreenOrientationConstants contains a set of constants related to the
  * screen orientation feature.
  */
+@NullMarked
 public class ScreenOrientationConstants {
     // Intent's bundle's key for the default orientation field.
     public static final String EXTRA_ORIENTATION = "org.chromium.content_public.common.orientation";

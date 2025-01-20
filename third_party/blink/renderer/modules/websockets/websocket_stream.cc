@@ -389,14 +389,12 @@ void WebSocketStream::UnderlyingSink::SendString(
   }
   // Skip one string copy by using v8::String UTF8 conversion instead of going
   // via WTF::String.
-  int expected_length = string_chunk->Utf8Length(isolate) + 1;
-  std::string message(expected_length, '\0');
-  int written_length = string_chunk->WriteUtf8(
-      isolate, &message[0], -1, nullptr, v8::String::REPLACE_INVALID_UTF8);
-  DCHECK_EQ(expected_length, written_length);
-  DCHECK_GT(expected_length, 0);
-  DCHECK_EQ(message.back(), '\0');
-  message.pop_back();  // Remove the null terminator.
+  size_t utf8_length = string_chunk->Utf8LengthV2(isolate);
+  std::string message(utf8_length, '\0');
+  size_t written_length =
+      string_chunk->WriteUtf8V2(isolate, message.data(), utf8_length,
+                                v8::String::WriteFlags::kReplaceInvalidUtf8);
+  DCHECK_EQ(utf8_length, written_length);
   if (creator_->channel_->Send(message, std::move(callback)) ==
       WebSocketChannel::SendResult::kSentSynchronously) {
     is_writing_ = false;

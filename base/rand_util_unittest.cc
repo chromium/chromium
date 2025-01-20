@@ -40,8 +40,9 @@ TEST(RandUtilTest, RandInt) {
   // Check that the DCHECKS in RandInt() don't fire due to internal overflow.
   // There was a 50% chance of that happening, so calling it 40 times means
   // the chances of this passing by accident are tiny (9e-13).
-  for (int i = 0; i < 40; ++i)
+  for (int i = 0; i < 40; ++i) {
     base::RandInt(kIntMin, kIntMax);
+  }
 }
 
 TEST(RandUtilTest, RandDouble) {
@@ -56,6 +57,14 @@ TEST(RandUtilTest, RandFloat) {
   volatile float number = base::RandFloat();
   EXPECT_GT(1.f, number);
   EXPECT_LE(0.f, number);
+}
+
+TEST(RandUtilTest, RandBool) {
+  // This test should finish extremely quickly unless `RandBool()` can only give
+  // one result value.
+  for (bool seen_false = false, seen_true = false; !seen_false || !seen_true;) {
+    (RandBool() ? seen_true : seen_false) = true;
+  }
 }
 
 TEST(RandUtilTest, RandTimeDelta) {
@@ -83,6 +92,23 @@ TEST(RandUtilTest, RandTimeDeltaUpTo) {
   const auto delta = base::RandTimeDeltaUpTo(base::Seconds(2));
   EXPECT_FALSE(delta.is_negative());
   EXPECT_LT(delta, base::Seconds(2));
+}
+
+TEST(RandUtilTest, RandomizeByPercentage) {
+  EXPECT_EQ(0, RandomizeByPercentage(0, 100));
+  EXPECT_EQ(100, RandomizeByPercentage(100, 0));
+
+  // Check that 10 +/- 200% will eventually produce values in each range
+  // [-10, 0), [0, 10), [10, 20), [20, 30).
+  for (bool a = false, b = false, c = false, d = false; !a || !b || !c || !d;) {
+    const int r = RandomizeByPercentage(10, 200);
+    EXPECT_GE(r, -10);
+    EXPECT_LT(r, 30);
+    a |= (r < 0);
+    b |= (r >= 0 && r < 10);
+    c |= (r >= 10 && r < 20);
+    d |= (r >= 20);
+  }
 }
 
 TEST(RandUtilTest, BitsToOpenEndedUnitInterval) {
@@ -163,8 +189,9 @@ TEST(RandUtilTest, RandBytesAsString) {
   random_string = base::RandBytesAsString(145);
   EXPECT_EQ(145U, random_string.size());
   char accumulator = 0;
-  for (auto i : random_string)
+  for (auto i : random_string) {
     accumulator |= i;
+  }
   // In theory this test can fail, but it won't before the universe dies of
   // heat death.
   EXPECT_NE(0, accumulator);
@@ -232,8 +259,9 @@ TEST(RandUtilTest, RandUint64ProducesBothValuesOfAllBits) {
     found_ones |= value;
     found_zeros &= value;
 
-    if (found_zeros == kAllZeros && found_ones == kAllOnes)
+    if (found_zeros == kAllZeros && found_ones == kAllOnes) {
       return;
+    }
   }
 
   FAIL() << "Didn't achieve all bit values in maximum number of tries.";
@@ -285,8 +313,9 @@ TEST(RandUtilTest, InsecureRandomGeneratorProducesBothValuesOfAllBits) {
     found_ones |= value;
     found_zeros &= value;
 
-    if (found_zeros == kAllZeros && found_ones == kAllOnes)
+    if (found_zeros == kAllZeros && found_ones == kAllOnes) {
       return;
+    }
   }
 
   FAIL() << "Didn't achieve all bit values in maximum number of tries.";

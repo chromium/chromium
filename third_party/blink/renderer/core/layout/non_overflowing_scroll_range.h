@@ -29,7 +29,7 @@ struct NonOverflowingScrollRange {
 
   // Checks if the given scroll offsets are within the scroll ranges, i.e., if
   // the fallback position's margin box overflows the bounds.
-  bool Contains(const gfx::Vector2dF& anchor_scroll_offset) const {
+  bool Contains(const PhysicalOffset& anchor_scroll_offset) const {
     return containing_block_range.Contains(anchor_scroll_offset);
   }
 

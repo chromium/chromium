@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/text_visitor.h"
@@ -18,9 +17,11 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
@@ -83,9 +84,15 @@ class ElementInnerTextCollector final {
   void ProcessChildrenWithRequiredLineBreaks(
       const Node& node,
       wtf_size_t required_line_break_count);
-  void ProcessLayoutText(const LayoutText& layout_text, const Text& text_node);
+  void ProcessLayoutText(const LayoutText& layout_text,
+                         const Text& text_node,
+                         const unsigned start_offset);
+  void ProcessTextFromOffsetMapping(const LayoutText& layout_text,
+                                    const Text& text_node);
+  unsigned ProcessFirstLineAndGetOffset(const LayoutText& layout_text);
   void ProcessNode(const Node& node);
   void ProcessOptionElement(const HTMLOptionElement& element);
+  void ProcessOptGroupElement(const HTMLOptGroupElement& element);
   void ProcessSelectElement(const HTMLSelectElement& element);
   void ProcessTextNode(const Text& node);
 
@@ -237,7 +244,8 @@ void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
 }
 
 void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
-                                                  const Text& text_node) {
+                                                  const Text& text_node,
+                                                  const unsigned start_offset) {
   if (layout_text.HasEmptyText()) {
     return;
   }
@@ -247,12 +255,40 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
     return;
   }
 
+  // LayoutText::PlainText() gives the rendered text after the application
+  // of white-space processing and text-transform rules
+  if (RuntimeEnabledFeatures::ElementInnerTextHandleFirstLineStyleEnabled()) {
+    const ComputedStyle* block_style = layout_text.Style();
+    const ComputedStyle* first_line_style = layout_text.FirstLineStyle();
+
+    // first_line_offset is the first character of the text that is not part of
+    // ::first_line
+    unsigned first_line_offset = 0;
+    if (block_style->TextTransform() != first_line_style->TextTransform()) {
+      first_line_offset = ProcessFirstLineAndGetOffset(layout_text);
+    }
+    const unsigned adjusted_offset =
+        first_line_offset ? first_line_offset : start_offset;
+    const String plain_text = layout_text.PlainText();
+    const unsigned text_length = plain_text.length();
+    if (adjusted_offset < text_length) {
+      result_.EmitText(StringView(plain_text, adjusted_offset,
+                                  text_length - adjusted_offset));
+    }
+  } else {
+    ProcessTextFromOffsetMapping(layout_text, text_node);
+  }
+}
+
+void ElementInnerTextCollector::ProcessTextFromOffsetMapping(
+    const LayoutText& layout_text,
+    const Text& text_node) {
   const OffsetMapping* const mapping = GetOffsetMapping(layout_text);
   if (!mapping) {
-    // TODO(crbug.com/967995): There are certain cases where we fail to compute
-    // |OffsetMapping| due to failures in layout. As the root cause is hard to
-    // fix at the moment, we work around it here so that the production build
-    // doesn't crash.
+    // TODO(crbug.com/967995): There are certain cases where we fail to
+    // compute |OffsetMapping| due to failures in layout. As the root cause is
+    // hard to fix at the moment, we work around it here so that the
+    // production build doesn't crash.
     DUMP_WILL_BE_NOTREACHED() << layout_text;
     return;
   }
@@ -263,6 +299,27 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
         StringView(mapping->GetText(), unit.TextContentStart(),
                    unit.TextContentEnd() - unit.TextContentStart()));
   }
+}
+
+// Offset mappings don't have text offsets for ::first-line. Get the rendered
+// text for ::first-line from FragmentItems and return the length of
+// the ::first-line part as offset
+unsigned ElementInnerTextCollector::ProcessFirstLineAndGetOffset(
+    const LayoutText& layout_text) {
+  LayoutBlockFlow* const block_flow = layout_text.FragmentItemsContainer();
+  DCHECK(block_flow) << layout_text;
+  unsigned first_line_length = 0;
+  for (InlineCursor cursor(*block_flow);
+       cursor && cursor.Current().UsesFirstLineStyle(); cursor.MoveToNext()) {
+    if (!cursor.CurrentItem()->IsText()) {
+      continue;
+    }
+    if (To<LayoutText>(cursor.Current().GetLayoutObject()) == &layout_text) {
+      result_.EmitText(cursor.Current().Text(cursor));
+      first_line_length = cursor.Current().TextEndOffset();
+    }
+  }
+  return first_line_length;
 }
 
 // The "inner text collection steps".
@@ -278,7 +335,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
 
   // 3. If node's computed value of 'visibility' is not 'visible', then return
   // items.
-  const ComputedStyle* style = node.GetComputedStyleForElementOrLayoutObject();
+  const ComputedStyle* style = GetComputedStyleForElementOrLayoutObject(node);
   if (style && style->Visibility() != EVisibility::kVisible) {
     return ProcessChildren(node);
   }
@@ -371,8 +428,59 @@ void ElementInnerTextCollector::ProcessOptionElement(
   result_.EmitRequiredLineBreak(1);
 }
 
+void ElementInnerTextCollector::ProcessOptGroupElement(
+    const HTMLOptGroupElement& optgroup) {
+  CHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+  // Note: We should emit newline for OPTGROUP even if it has no OPTION.
+  // e.g. <div>a<select><optgroup></select>b</div>.innerText == "a\nb"
+  result_.EmitRequiredLineBreak(1);
+  Element* descendant = ElementTraversal::FirstChild(optgroup);
+  while (descendant) {
+    if (visitor_) {
+      visitor_->WillVisit(*descendant, result_.length());
+    }
+    // TODO(crbug.com/389573453): Consider handling <hr> elements here.
+    if (auto* option = DynamicTo<HTMLOptionElement>(descendant)) {
+      ProcessOptionElement(*option);
+      descendant =
+          ElementTraversal::NextSkippingChildren(*descendant, &optgroup);
+    } else if (IsA<HTMLOptGroupElement>(descendant)) {
+      // TODO(crbug.com/389573453): Consider adding nested <optgroup>s here. For
+      // now we will skip them.
+      descendant =
+          ElementTraversal::NextSkippingChildren(*descendant, &optgroup);
+    } else {
+      descendant = ElementTraversal::Next(*descendant, &optgroup);
+    }
+  }
+  result_.EmitRequiredLineBreak(1);
+}
+
 void ElementInnerTextCollector::ProcessSelectElement(
     const HTMLSelectElement& select_element) {
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    // TODO(crbug.com/40271842): Consider Handling display:none on various
+    // elements here, especially options.
+    Element* descendant = ElementTraversal::FirstChild(select_element);
+    while (descendant) {
+      if (visitor_) {
+        visitor_->WillVisit(*descendant, result_.length());
+      }
+      // TODO(crbug.com/389573453): Consider handling <hr> elements here.
+      if (auto* option = DynamicTo<HTMLOptionElement>(descendant)) {
+        ProcessOptionElement(*option);
+        descendant = ElementTraversal::NextSkippingChildren(*descendant,
+                                                            &select_element);
+      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(descendant)) {
+        ProcessOptGroupElement(*optgroup);
+        descendant = ElementTraversal::NextSkippingChildren(*descendant,
+                                                            &select_element);
+      } else {
+        descendant = ElementTraversal::Next(*descendant, &select_element);
+      }
+    }
+    return;
+  }
   for (const Node& child : NodeTraversal::ChildrenOf(select_element)) {
     if (visitor_) {
       visitor_->WillVisit(child, result_.length());
@@ -408,10 +516,13 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
         OffsetMapping::GetInlineFormattingContextOf(layout_text) !=
             OffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
       // "::first-letter" with "float" reach here.
-      ProcessLayoutText(*first_letter_part, node);
+      ProcessLayoutText(*first_letter_part, node, 0);
+      unsigned first_letter_length = first_letter_part->PlainText().length();
+      ProcessLayoutText(layout_text, node, first_letter_length);
+      return;
     }
   }
-  ProcessLayoutText(layout_text, node);
+  ProcessLayoutText(layout_text, node, 0);
 }
 
 // ----

@@ -53,9 +53,12 @@ enum class TrustedVaultUserActionTriggerForUMA {
   // corresponding UI added.
   kNewTabPageInfobar = 3,
   // Used on Android only. This dialog is shown when GMSCore returned
-  // kKeyRetrievalRequired error when obtaining passwords.
+  // kKeyRetrievalRequired, kEmptySecurityDomain or kIrretrievableSecurityDomain
+  // error when obtaining passwords.
   kPasswordManagerErrorMessage = 4,
-  kMaxValue = kPasswordManagerErrorMessage
+  // Used on iOS only, from the account menu.
+  kAccountMenu = 5,
+  kMaxValue = kAccountMenu
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 

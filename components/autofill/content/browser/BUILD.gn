@@ -46,7 +46,6 @@ static_library("browser") {
   deps = [
     ":autofill_shared_storage_proto",
     "//base:i18n",
-    "//components/autofill/content/common:features",
     "//components/os_crypt/sync",
     "//components/prefs",
     "//components/profile_metrics",
@@ -148,7 +147,6 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base",
-    "//components/autofill/content/common:features",
     "//content/public/browser",
     "//content/test:browsertest_support",
     "//content/test:test_support",

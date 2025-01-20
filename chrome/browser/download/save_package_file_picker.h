@@ -40,7 +40,7 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   void FileSelectionCanceled() override;
 
   bool ShouldSaveAsOnlyHTML(content::WebContents* web_contents) const;
-  bool ShouldSaveAsMHTML() const;
+  bool ShouldSaveAsMHTMLByDefault() const;
 
   // Used to look up the renderer process for this request to get the context.
   const int render_process_id_;

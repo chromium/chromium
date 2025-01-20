@@ -10,7 +10,7 @@ source_set("content_notification_service") {
     "content_notification_service.mm",
   ]
   deps = [
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//url:url",
   ]
 }
@@ -22,9 +22,10 @@ source_set("content_notification_service_factory") {
   ]
   deps = [
     ":content_notification_service",
-    "//components/keyed_service/ios",
+    "//base",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
   ]

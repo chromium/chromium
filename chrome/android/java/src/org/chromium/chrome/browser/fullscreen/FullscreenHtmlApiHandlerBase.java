@@ -491,7 +491,10 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         // Ensure that the layout change listener to bring back browser controls is called on
         // automotive devices that never hide system bars.
-        if (BuildInfo.getInstance().isAutomotive) {
+        // TODO(peilinwang/clhager) When edge to edge is enabled, onLayoutChange doesn't trigger,
+        // which results in not showing the browser controls when we're supposed to, and also messes
+        // up the viewport and toolbar.
+        if (BuildInfo.getInstance().isAutomotive || EdgeToEdgeUtils.isEnabled()) {
             ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
         }
     }
@@ -669,8 +672,8 @@ public abstract class FullscreenHtmlApiHandlerBase
                         // directly in the onLayoutChange would have no effect.
                         mHandler.sendEmptyMessage(MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS);
 
-                        if ((bottom - top) <= (oldBottom - oldTop)
-                                && (right - left) <= (oldRight - oldLeft)
+                        if ((bottom - top) < (oldBottom - oldTop)
+                                && (right - left) < (oldRight - oldLeft)
                                 // Some automotive devices never hide the system bars, so Chrome
                                 // can't rely on detecting a change in insets.
                                 && !BuildInfo.getInstance().isAutomotive) {

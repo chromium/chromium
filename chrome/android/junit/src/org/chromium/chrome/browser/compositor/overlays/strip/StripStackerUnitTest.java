@@ -93,12 +93,13 @@ public class StripStackerUnitTest {
     }
 
     static class TestStacker extends StripStacker {
-        @Override
-        public void setViewOffsets(
-                StripLayoutView[] indexOrderedViews, boolean tabCreating, float cachedTabWidth) {}
 
         @Override
-        public void performOcclusionPass(
-                StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {}
+        public void pushDrawPropertiesToViews(
+                StripLayoutView[] indexOrderedViews,
+                float xOffset,
+                float visibleWidth,
+                boolean mMultiStepTabCloseAnimRunning,
+                float mCachedTabWidth) {}
     }
 }

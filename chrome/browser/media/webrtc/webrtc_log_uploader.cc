@@ -10,6 +10,8 @@
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
+
+#include <array>
 #include <cstdlib>
 #include <utility>
 
@@ -429,8 +431,10 @@ void WebRtcLogUploader::SetupMultipart(
   AddLogData(post_data, compressed_log);
 
   // Add the rtp dumps if they exist.
-  base::FilePath rtp_dumps[2] = {incoming_rtp_dump, outgoing_rtp_dump};
-  static const char* const kRtpDumpNames[2] = {"rtpdump_recv", "rtpdump_send"};
+  std::array<base::FilePath, 2> rtp_dumps = {incoming_rtp_dump,
+                                             outgoing_rtp_dump};
+  static const std::array<const char*, 2> kRtpDumpNames = {"rtpdump_recv",
+                                                           "rtpdump_send"};
 
   for (size_t i = 0; i < 2; ++i) {
     if (!rtp_dumps[i].empty() && base::PathExists(rtp_dumps[i])) {
@@ -457,7 +461,8 @@ std::string WebRtcLogUploader::CompressLog(WebRtcLogBuffer* buffer) {
   std::string compressed_log;
   ResizeForNextOutput(&compressed_log, &stream);
 
-  uint8_t intermediate_buffer[kIntermediateCompressionBufferBytes] = {0};
+  std::array<uint8_t, kIntermediateCompressionBufferBytes> intermediate_buffer =
+      {};
   webrtc_logging::PartialCircularBuffer read_buffer(buffer->Read());
   do {
     if (stream.avail_in == 0) {

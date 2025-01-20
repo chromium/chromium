@@ -29,8 +29,9 @@ zx_status_t VerifyTestInterface(
   ptr.set_error_handler(
       [quit = run_loop.QuitClosure(),
        weak_result = weak_result.GetWeakPtr()](zx_status_t status) {
-        if (weak_result)
+        if (weak_result) {
           *weak_result = status;
+        }
         std::move(quit).Run();
       });
 
@@ -38,8 +39,9 @@ zx_status_t VerifyTestInterface(
            [quit = run_loop.QuitClosure(),
             weak_result = weak_result.GetWeakPtr()](int32_t value) {
              EXPECT_EQ(value, 4);
-             if (weak_result)
+             if (weak_result) {
                *weak_result = ZX_OK;
+             }
              std::move(quit).Run();
            });
 

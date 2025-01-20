@@ -408,10 +408,6 @@ bool ServiceWorkerPaymentApp::HasEnrolledInstrument() const {
   return has_enrolled_instrument_result_;
 }
 
-void ServiceWorkerPaymentApp::RecordUse() {
-  NOTIMPLEMENTED();
-}
-
 bool ServiceWorkerPaymentApp::NeedsInstallation() const {
   return needs_installation_;
 }

@@ -31,20 +31,23 @@ import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo2;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-import java.util.Map;
-
 /** Unit tests for {@link ReengagementNotificationController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED,
+    ChromeFeatureList.REENGAGEMENT_NOTIFICATION
+})
 @Config(shadows = {ShadowNotificationManager.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ReengagementNotificationControllerTest {
@@ -72,7 +75,6 @@ public class ReengagementNotificationControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, true));
         mContext = ContextUtils.getApplicationContext();
         mShadowNotificationManager =
                 Shadows.shadowOf(

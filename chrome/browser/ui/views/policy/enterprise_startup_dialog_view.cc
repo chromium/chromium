@@ -186,7 +186,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
 #endif
 }
 
-EnterpriseStartupDialogView::~EnterpriseStartupDialogView() {}
+EnterpriseStartupDialogView::~EnterpriseStartupDialogView() = default;
 
 void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
     const std::u16string& information) {
@@ -309,15 +309,17 @@ EnterpriseStartupDialogImpl::~EnterpriseStartupDialogImpl() {
 
 void EnterpriseStartupDialogImpl::DisplayLaunchingInformationWithThrobber(
     const std::u16string& information) {
-  if (dialog_view_)
+  if (dialog_view_) {
     dialog_view_->DisplayLaunchingInformationWithThrobber(information);
+  }
 }
 
 void EnterpriseStartupDialogImpl::DisplayErrorMessage(
     const std::u16string& error_message,
     const std::optional<std::u16string>& accept_button) {
-  if (dialog_view_)
+  if (dialog_view_) {
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
+  }
 }
 
 bool EnterpriseStartupDialogImpl::IsShowing() {

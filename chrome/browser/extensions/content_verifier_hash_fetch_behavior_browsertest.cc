@@ -55,7 +55,7 @@ class ContentVerifierHashTest
   ContentVerifierHashTest(const ContentVerifierHashTest&) = delete;
   ContentVerifierHashTest& operator=(const ContentVerifierHashTest&) = delete;
 
-  ~ContentVerifierHashTest() override {}
+  ~ContentVerifierHashTest() override = default;
 
   enum TamperResourceType {
     kTamperRequestedResource,

@@ -16,6 +16,7 @@
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,9 +29,11 @@ class ProcessNodeImpl;
 class WorkerNodeImpl
     : public PublicNodeImpl<WorkerNodeImpl, WorkerNode>,
       public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>,
-      public SupportsNodeInlineData<execution_context::WorkerExecutionContext,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public SupportsNodeInlineData<
+          execution_context::WorkerExecutionContext,
+          resource_attribution::SharedCPUTimeResultData,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   static const char kDefaultPriorityReason[];
 
@@ -89,9 +92,11 @@ class WorkerNodeImpl
  private:
   friend class WorkerNodeImplDescriber;
 
-  void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  // NodeBase:
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.

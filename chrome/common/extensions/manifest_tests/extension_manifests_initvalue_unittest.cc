@@ -35,7 +35,7 @@ using InitValueManifestTest = ChromeManifestTest;
 
 TEST_F(InitValueManifestTest, InitFromValueInvalid) {
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kAllowlistID);
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("init_invalid_version_missing.json", errors::kInvalidVersion),
       Testcase("init_invalid_version_invalid.json", errors::kInvalidVersion),
       Testcase("init_invalid_version_name_invalid.json",
@@ -109,7 +109,7 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_short_name_type.json", errors::kInvalidShortName),
   };
 
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValid) {
@@ -150,28 +150,27 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
   EXPECT_EQ("1.0.0.0", extension->VersionString());
   EXPECT_EQ("1.0 alpha", extension->GetVersionForDisplay());
 
-  Testcase testcases[] = {
-    // Test with a minimum_chrome_version.
-    Testcase("init_valid_minimum_chrome.json"),
+  const Testcase testcases[] = {
+      // Test with a minimum_chrome_version.
+      Testcase("init_valid_minimum_chrome.json"),
 
-    // Test a hosted app with a minimum_chrome_version.
-    Testcase("init_valid_app_minimum_chrome.json"),
+      // Test a hosted app with a minimum_chrome_version.
+      Testcase("init_valid_app_minimum_chrome.json"),
 
-    // Test a hosted app with a requirements section.
-    Testcase("init_valid_app_requirements.json"),
+      // Test a hosted app with a requirements section.
+      Testcase("init_valid_app_requirements.json"),
 
-    // Test a theme with a minimum_chrome_version.
-    Testcase("init_valid_theme_minimum_chrome.json"),
+      // Test a theme with a minimum_chrome_version.
+      Testcase("init_valid_theme_minimum_chrome.json"),
 
-    // Verify empty permission settings are considered valid.
-    Testcase("init_valid_permissions_empty.json"),
+      // Verify empty permission settings are considered valid.
+      Testcase("init_valid_permissions_empty.json"),
 
-    // We allow unknown API permissions, so this will be valid until we better
-    // distinguish between API and host permissions.
-    Testcase("init_valid_permissions_unknown.json")
-  };
+      // We allow unknown API permissions, so this will be valid until we better
+      // distinguish between API and host permissions.
+      Testcase("init_valid_permissions_unknown.json")};
 
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, EXPECT_TYPE_SUCCESS);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValidNameInRTL) {

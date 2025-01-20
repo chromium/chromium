@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -53,7 +54,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -131,6 +131,9 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
     run_loop.Run();
   }
 
+  // If `ensure_no_migration_needed` is set to true, it means that migration has
+  // already happened, and the state of the web apps in the registry need to be
+  // updated to show that.
   Registry WriteWebApps(uint32_t num_apps, bool ensure_no_migration_needed) {
     Registry registry;
 
@@ -146,6 +149,7 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
             app->AddSource(WebAppManagement::kUserInstalled);
           }
         }
+        test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
         proto::DatabaseMetadata metadata;
         metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
         write_batch->WriteData(
@@ -344,6 +348,7 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
     }
 #endif
     EnsureHasUserDisplayModeForCurrentPlatform(*app);
+    test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
 
     if (base::FeatureList::IsEnabled(
             features::kWebAppDontAddExistingAppsToSync)) {
@@ -661,7 +666,6 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->protocol_handlers().empty());
   EXPECT_TRUE(app->allowed_launch_protocols().empty());
   EXPECT_TRUE(app->disallowed_launch_protocols().empty());
-  EXPECT_TRUE(app->url_handlers().empty());
   EXPECT_TRUE(app->scope_extensions().empty());
   EXPECT_TRUE(app->validated_scope_extensions().empty());
   EXPECT_TRUE(app->last_badging_time().is_null());
@@ -734,7 +738,6 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->additional_search_terms().empty());
   EXPECT_TRUE(app_copy->allowed_launch_protocols().empty());
   EXPECT_TRUE(app_copy->disallowed_launch_protocols().empty());
-  EXPECT_TRUE(app_copy->url_handlers().empty());
   EXPECT_TRUE(app_copy->scope_extensions().empty());
   EXPECT_TRUE(app_copy->validated_scope_extensions().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());

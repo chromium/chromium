@@ -14,11 +14,13 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -89,16 +91,18 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByAccountId) {
   BrowserContextHelper helper(std::move(delegate));
 
   // Set up UserManager.
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
-      user_manager::UserManager::Get());
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager(
+          std::make_unique<user_manager::FakeUserManager>(&local_state));
 
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  fake_user_manager->AddUser(account_id);
+  fake_user_manager->AddGaiaUser(account_id, user_manager::UserType::kRegular);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);
@@ -127,16 +131,19 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser) {
   BrowserContextHelper helper(std::move(delegate));
 
   // Set up UserManager.
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
-      user_manager::UserManager::Get());
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager(
+          std::make_unique<user_manager::FakeUserManager>(&local_state));
 
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddUser(account_id);
+  const user_manager::User* user = fake_user_manager->AddGaiaUser(
+      account_id, user_manager::UserType::kRegular);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);
@@ -166,16 +173,17 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
   BrowserContextHelper helper(std::move(delegate));
 
   // Set up UserManager.
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
-      user_manager::UserManager::Get());
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager(
+          std::make_unique<user_manager::FakeUserManager>(&local_state));
 
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id = AccountId::FromUserEmail("guest@guest");
+  const user_manager::User* user = fake_user_manager->AddGuestUser();
+  const AccountId& account_id = user->GetAccountId();
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddGuestUser(account_id);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);
@@ -204,15 +212,18 @@ TEST_P(BrowserContextHelperAccountIdTest, GetUserByBrowserContext) {
   BrowserContextHelper helper(std::move(delegate));
 
   // Set up UserManager.
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>());
-  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
-      user_manager::UserManager::Get());
+  TestingPrefServiceSimple local_state;
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager(
+          std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddUser(account_id);
+  const user_manager::User* user = fake_user_manager->AddGaiaUser(
+      account_id, user_manager::UserType::kRegular);
   fake_user_manager->UserLoggedIn(account_id, username_hash,
                                   /*browser_restart=*/false,
                                   /*is_child=*/false);

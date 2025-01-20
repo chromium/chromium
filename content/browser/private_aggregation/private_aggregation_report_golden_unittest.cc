@@ -515,18 +515,6 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
   };
 
   for (auto& test_case : kTestCases) {
-    // This reflects the logic in
-    // `PrivateAggregationHost::ContributeToHistogram()` and is copied here to
-    // avoid hitting a CHECK().
-    bool use_new_report_version = base::FeatureList::IsEnabled(
-        blink::features::kPrivateAggregationApiFilteringIds);
-    if (!use_new_report_version) {
-      base::ranges::for_each(
-          test_case.contributions,
-          [](blink::mojom::AggregatableReportHistogramContribution&
-                 contribution) { contribution.filtering_id.reset(); });
-    }
-
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 

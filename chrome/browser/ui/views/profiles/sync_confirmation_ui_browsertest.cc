@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -42,6 +43,8 @@
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 // TODO(crbug.com/40242558): Move this file next to sync_confirmation_ui.cc.
 // Render the page in a browser instead of a profile_picker_view to be able to
@@ -89,7 +92,7 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
-                          .use_small_window = true}},
+                          .window_size = PixelTestParam::kSmallWindowSize}},
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged},
 
@@ -212,10 +215,7 @@ class SyncConfirmationUIWindowPixelTest
           return std::unique_ptr<ProfileManagementStepController>(
               new SyncConfirmationStepControllerForTest(host));
         }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }
 
   bool VerifyUi() override {
@@ -451,9 +451,8 @@ std::string SyncConfirmationUITestParamToTestSuffix(
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
-                        SyncConfirmationUIAction::kGoToSettings),
-        testing::Values("", "pl")),
+    testing::Combine(testing::Bool(),
+                     testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
+                                     SyncConfirmationUIAction::kGoToSettings),
+                     testing::Values("", "pl")),
     &SyncConfirmationUITestParamToTestSuffix);

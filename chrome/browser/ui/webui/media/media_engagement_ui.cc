@@ -67,7 +67,7 @@ class MediaEngagementScoreDetailsProviderImpl
   MediaEngagementScoreDetailsProviderImpl& operator=(
       const MediaEngagementScoreDetailsProviderImpl&) = delete;
 
-  ~MediaEngagementScoreDetailsProviderImpl() override {}
+  ~MediaEngagementScoreDetailsProviderImpl() override = default;
 
   // media::mojom::MediaEngagementScoreDetailsProvider overrides:
   void GetMediaEngagementScoreDetails(
@@ -115,8 +115,9 @@ class MediaEngagementScoreDetailsProviderImpl
     std::vector<component_updater::ComponentInfo> info = cus->GetComponents();
 
     for (const auto& component : info) {
-      if (component.id == kPreloadComponentID)
+      if (component.id == kPreloadComponentID) {
         return component.version.GetString();
+      }
     }
 
     return std::string();

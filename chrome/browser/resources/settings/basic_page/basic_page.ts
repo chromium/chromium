@@ -9,15 +9,17 @@
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../ai_page/ai_page.js';
 import '../appearance_page/appearance_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
-import '../safety_check_page/safety_check_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
+// <if expr="enable_glic">
+import '../glic_page/glic_data_page.js';
+import '../glic_page/glic_page.js';
+// </if>
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
@@ -345,18 +347,15 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
   }
 
+  // <if expr="enable_glic">
+  private showGlicPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('showGlicSettings') &&
+        this.showPage_(visibility);
+  }
+  // </if>
+
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return this.showPage_(visibility);
-  }
-
-  private showSafetyCheckPage_(visibility?: boolean): boolean {
-    return !loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
-  }
-
-  private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
   }
 
   private showAiInfoCard_(visibility?: boolean): boolean {

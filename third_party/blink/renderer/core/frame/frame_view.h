@@ -19,7 +19,7 @@ namespace blink {
 
 class Frame;
 class ComputeIntersectionsContext;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
  public:
@@ -35,7 +35,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;
 
-  virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
+  virtual bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const = 0;
   virtual bool HasIntrinsicSizingInfo() const = 0;
 
   // Returns true if this frame could potentially skip rendering and avoid

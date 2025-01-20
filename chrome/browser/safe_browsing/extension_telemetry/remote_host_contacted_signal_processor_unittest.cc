@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
+
+#include <array>
+
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/common/extension_id.h"
@@ -19,12 +22,14 @@ using RemoteHostContactedInfo =
 using RemoteHostInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo;
 
-constexpr const char* kExtensionId[] = {"crx-0", "crx-1"};
-const char* host_urls[] = {"http://www.google.com", "http://www.youtube.com"};
-RemoteHostInfo::ProtocolType protocolType[] = {RemoteHostInfo::HTTP_HTTPS,
-                                               RemoteHostInfo::WEBSOCKET};
-RemoteHostInfo::ContactInitiator contactInitiatorType[] = {
-    RemoteHostInfo::EXTENSION, RemoteHostInfo::CONTENT_SCRIPT};
+constexpr const auto kExtensionId =
+    std::to_array<const char*>({"crx-0", "crx-1"});
+auto host_urls = std::to_array<const char*>(
+    {"http://www.google.com", "http://www.youtube.com"});
+auto protocolType = std::to_array<RemoteHostInfo::ProtocolType>(
+    {RemoteHostInfo::HTTP_HTTPS, RemoteHostInfo::WEBSOCKET});
+auto contactInitiatorType = std::to_array<RemoteHostInfo::ContactInitiator>(
+    {RemoteHostInfo::EXTENSION, RemoteHostInfo::CONTENT_SCRIPT});
 
 class RemoteHostContactedSignalProcessorTest : public ::testing::Test {
  protected:

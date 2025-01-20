@@ -32,7 +32,7 @@ class KioskExternalUpdateValidatorDelegate {
   virtual void OnExternalUpdateUnpackFailure(const std::string& app_id) = 0;
 
  protected:
-  virtual ~KioskExternalUpdateValidatorDelegate() {}
+  virtual ~KioskExternalUpdateValidatorDelegate() = default;
 };
 
 // Unpacks the crx file of the kiosk app and validates its signature.

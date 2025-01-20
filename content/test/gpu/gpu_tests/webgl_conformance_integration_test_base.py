@@ -14,7 +14,6 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
-from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
 from gpu_tests.util import host_information
@@ -22,8 +21,6 @@ from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils
 
 import gpu_path_util
-
-from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 
 TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'webgl_test_page.html')
@@ -75,10 +72,6 @@ class WebGLConformanceIntegrationTestBase(
 
   _webgl_version: Optional[int] = None
   _crash_count = 0
-  _gl_backend = ''
-  _angle_backend = ''
-  _command_decoder = ''
-  _verified_flags = False
   _original_environ: Optional[collections.abc.Mapping] = None
   page_loaded = False
 
@@ -263,60 +256,6 @@ class WebGLConformanceIntegrationTestBase(
     test_args = args[1]
     getattr(self, test_name)(test_path, test_args)
 
-  def _VerifyGLBackend(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
-    # Verify that Chrome's GL backend matches if a specific one was requested
-    if self._gl_backend:
-      if (self._gl_backend == 'angle'
-          and gpu_helper.GetANGLERenderer(gpu_info) == 'angle-disabled'):
-        self.fail('requested GL backend (' + self._gl_backend + ')' +
-                  ' had no effect on the browser: ' +
-                  _GetGPUInfoErrorString(gpu_info))
-        return False
-    return True
-
-  def _VerifyANGLEBackend(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
-    if self._angle_backend:
-      # GPU exepections use slightly different names for the angle backends
-      # than the Chrome flags
-      known_backend_flag_map = {
-          'angle-d3d11': ['d3d11'],
-          'angle-d3d9': ['d3d9'],
-          'angle-opengl': ['gl'],
-          'angle-opengles': ['gles'],
-          'angle-metal': ['metal'],
-          'angle-vulkan': ['vulkan'],
-          # Support setting VK_ICD_FILENAMES for swiftshader when requesting
-          # the 'vulkan' backend.
-          'angle-swiftshader': ['swiftshader', 'vulkan'],
-      }
-      current_angle_backend = gpu_helper.GetANGLERenderer(gpu_info)
-      if (current_angle_backend not in known_backend_flag_map or
-          self._angle_backend not in \
-            known_backend_flag_map[current_angle_backend]):
-        self.fail('requested ANGLE backend (' + self._angle_backend + ')' +
-                  ' had no effect on the browser: ' +
-                  _GetGPUInfoErrorString(gpu_info))
-        return False
-    return True
-
-  def _VerifyCommandDecoder(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
-    if self._command_decoder:
-      # GPU exepections use slightly different names for the command decoders
-      # than the Chrome flags
-      known_command_decoder_flag_map = {
-          'passthrough': 'passthrough',
-          'no_passthrough': 'validating',
-      }
-      current_command_decoder = gpu_helper.GetCommandDecoder(gpu_info)
-      if (current_command_decoder not in known_command_decoder_flag_map or
-          known_command_decoder_flag_map[current_command_decoder] != \
-          self._command_decoder):
-        self.fail('requested command decoder (' + self._command_decoder + ')' +
-                  ' had no effect on the browser: ' +
-                  _GetGPUInfoErrorString(gpu_info))
-        return False
-    return True
-
   def _NavigateTo(self, test_path: str, harness_script: str) -> None:
     if not self.__class__.page_loaded:
       # If we haven't loaded the test page that we use to run tests within an
@@ -338,12 +277,6 @@ class WebGLConformanceIntegrationTestBase(
 
     gpu_info = self.browser.GetSystemInfo().gpu
     self._crash_count = gpu_info.aux_attributes['process_crash_count']
-    if not self._verified_flags:
-      # If the user specified any flags for ANGLE or the command decoder,
-      # verify that the browser is actually using the requested configuration
-      if (self._VerifyGLBackend(gpu_info) and self._VerifyANGLEBackend(gpu_info)
-          and self._VerifyCommandDecoder(gpu_info)):
-        self._verified_flags = True
     url = self.UrlOfStaticFilePath(test_path)
     self.tab.action_runner.EvaluateJavaScript('runTest("%s")' % url)
 
@@ -507,12 +440,6 @@ class WebGLConformanceIntegrationTestBase(
         if o.startswith('--js-flags'):
           found_js_flags = True
           user_js_flags = o
-        elif o.startswith('--use-gl='):
-          cls._gl_backend = o[len('--use-gl='):]
-        elif o.startswith('--use-angle='):
-          cls._angle_backend = o[len('--use-angle='):]
-        elif o.startswith('--use-cmd-decoder='):
-          cls._command_decoder = o[len('--use-cmd-decoder='):]
     if found_js_flags:
       logging.warning('Overriding built-in JavaScript flags:')
       logging.warning(' Original flags: %s', builtin_js_flags)
@@ -643,13 +570,3 @@ class WebGLConformanceIntegrationTestBase(
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
     raise NotImplementedError()
-
-
-def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
-  primary_gpu = gpu_info.devices[0]
-  error_str = 'primary gpu=' + primary_gpu.device_string
-  if gpu_info.aux_attributes:
-    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
-    if gl_renderer:
-      error_str += ', gl_renderer=' + gl_renderer
-  return error_str

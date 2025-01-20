@@ -25,6 +25,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 
+class EndpointFetcher;
+
 namespace ash {
 
 class QuickInsertClient;
@@ -39,6 +41,9 @@ class ASH_EXPORT QuickInsertSearchRequest {
                                    std::vector<QuickInsertSearchResult> results,
                                    bool has_more_results)>;
   using DoneCallback = base::OnceCallback<void(bool interrupted)>;
+
+  static constexpr base::TimeDelta kGifDebouncingDelay =
+      base::Milliseconds(200);
 
   // `done_closure` is guaranteed to be called strictly after the last call to
   // `callback`.
@@ -56,12 +61,13 @@ class ASH_EXPORT QuickInsertSearchRequest {
   ~QuickInsertSearchRequest();
 
  private:
+  void StartGifSearch(std::string_view query);
   void HandleSearchSourceResults(QuickInsertSearchSource source,
                                  std::vector<QuickInsertSearchResult> results,
                                  bool has_more_results);
 
   void HandleActionSearchResults(std::vector<QuickInsertSearchResult> results);
-  void HandleCrosSearchResults(ash::AppListSearchResultType type,
+  void HandleCrosSearchResults(AppListSearchResultType type,
                                std::vector<QuickInsertSearchResult> results);
   void HandleDateSearchResults(std::vector<QuickInsertSearchResult> results);
   void HandleMathSearchResults(std::optional<QuickInsertSearchResult> result);
@@ -72,6 +78,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   void HandleLobsterSearchResults(
       QuickInsertSearchSource source,
       std::optional<QuickInsertSearchResult> result);
+  void HandleGifSearchResponse(std::vector<QuickInsertSearchResult> results);
 
   // Sets the search for the source to be started right now.
   // `CHECK` fails if a search was already started.
@@ -90,6 +97,8 @@ class ASH_EXPORT QuickInsertSearchRequest {
   const raw_ref<QuickInsertClient> client_;
 
   std::unique_ptr<QuickInsertClipboardHistoryProvider> clipboard_provider_;
+  QuickInsertSearchDebouncer gif_search_debouncer_;
+  std::unique_ptr<EndpointFetcher> gif_fetcher_;
 
   SearchResultsCallback current_callback_;
   // Set to true once all the searches have started at the end of the ctor.

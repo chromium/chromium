@@ -10,14 +10,14 @@ build_webui("build") {
   grd_prefix = "ash_common_cellular_setup"
 
   static_files = [
-    "default_esim_profile_dark.svg",
     "default_esim_profile.svg",
-    "error_dark.svg",
+    "default_esim_profile_dark.svg",
     "error.svg",
-    "final_page_success_dark.svg",
+    "error_dark.svg",
     "final_page_success.svg",
-    "sim_detect_error_dark.svg",
+    "final_page_success_dark.svg",
     "sim_detect_error.svg",
+    "sim_detect_error_dark.svg",
     "spinner.json",
   ]
 
@@ -55,8 +55,8 @@ build_webui("build") {
       "$root_gen_dir/ash/webui/common/resources/preprocessed/cellular_setup"
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",

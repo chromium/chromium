@@ -9,9 +9,7 @@
 #import <string>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace gcm {
 class GCMProfileService;
@@ -19,16 +17,10 @@ class GCMProfileService;
 
 // Singleton that owns all GCMProfileService and associates them with
 // profiles.
-class IOSChromeGCMProfileServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+class IOSChromeGCMProfileServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static gcm::GCMProfileService* GetForProfile(ProfileIOS* profile);
   static IOSChromeGCMProfileServiceFactory* GetInstance();
-
-  IOSChromeGCMProfileServiceFactory(const IOSChromeGCMProfileServiceFactory&) =
-      delete;
-  IOSChromeGCMProfileServiceFactory& operator=(
-      const IOSChromeGCMProfileServiceFactory&) = delete;
 
   // Returns a string like "com.chrome.ios" that should be used as the GCM
   // category when an app_id is sent as a subtype instead of as a category. This

@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,16 +14,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -46,7 +45,6 @@
 #include "url/url_constants.h"
 
 namespace tab_groups {
-constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
  protected:
@@ -56,7 +54,7 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -129,8 +127,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
-      WaitForShow(kTabGroupEditorBubbleShareGroupButtonId),
-      PressButton(kTabGroupEditorBubbleShareGroupButtonId),
+      WaitForShow(kTabGroupEditorBubbleShareGroupButtonId), Do([=, this]() {
+        // Directly show share UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            group_id);
+      }),
       WaitForShow(kDataSharingBubbleElementId),
       // Check the share bubble is anchored onto the group header view.
       CheckView(kDataSharingBubbleElementId,
@@ -144,17 +145,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
                 }));
 }
 
-// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
-// Re-enable this test.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
-                       DISABLED_ShowManageBubble) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   auto* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  std::string fake_collab_id = "fake_collab_id";
+  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
@@ -162,7 +160,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
-      PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      Do([=, this]() {
+        // Directly show manage UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            group_id);
+      }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
         return bubble->GetWidget()->IsModal();
@@ -180,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
         auto* data_sharing_service =
             data_sharing::DataSharingServiceFactory::GetForProfile(
                 browser()->profile());
-        data_sharing_service->HandleShareURLNavigationIntercepted(share_link,
-                                                                  nullptr);
+        // Directly show join UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            data_sharing_service->ParseDataSharingUrl(share_link).value());
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
@@ -189,26 +192,28 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
       }));
 }
 
-// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
-// Re-enable this test.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
-                       DISABLED_GenerateWebUIUrl) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
+  std::string fake_tab_group_title = "fake_title";
 
   auto expected_share_flow_url =
       GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
            std::string(data_sharing::kQueryParamFlow) + "=" +
            std::string(data_sharing::kFlowShare) + "&" +
            std::string(data_sharing::kQueryParamTabGroupId) + "=" +
-           group_id.ToString());
+           group_id.ToString() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
   auto expected_manage_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
       std::string(data_sharing::kQueryParamFlow) + "=" +
       std::string(data_sharing::kFlowManage) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id);
+      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
+      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+      fake_tab_group_title);
 
   auto expected_join_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
@@ -218,15 +223,19 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
       "&" + std::string(data_sharing::kQueryParamTokenSecret) + "=" +
       fake_access_token);
 
-  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
-  EXPECT_EQ(url.value().spec(), expected_share_flow_url);
-
   auto* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  group->SetCollaborationId(fake_collab_id);
+  group->SetTitle(base::UTF8ToUTF16(fake_tab_group_title));
+  tab_group_service->RemoveGroup(group->saved_guid());
+  tab_group_service->AddGroup(group.value());
+
+  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_share_flow_url);
+
+  group->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
 
@@ -249,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
       tab_group_service->GetGroup(local_group_id);
 
   // Mock up a shared group.
-  group_copy->SetCollaborationId(fake_collab_id);
+  group_copy->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
 
   RunTestSequence(
       SaveGroupLeaveEditorBubbleOpen(local_group_id),
@@ -274,94 +283,6 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
       }),
       // The group is opened into the tab strip.
       WaitForShow(kTabGroupHeaderElementId));
-}
-
-using DataSharingChromeNativeUiPixelTest = DataSharingChromeNativeUiTest;
-
-// Take a screenshot of the shared tab group in app menu > tab groups and
-// everything menu in the bookmarks bar.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
-                       SharedTabGroupInMenus) {
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-
-  // Make the group shared.
-  tab_group_service->MakeTabGroupSharedForTesting(local_group_id,
-                                                  fake_collab_id);
-
-  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
-                  FinishTabstripAnimations(), ShowBookmarksBar(),
-
-                  // Screenshot app menu -> tab groups.
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-                  EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  Screenshot(tab_groups::STGEverythingMenu::kTabGroup,
-                             "shared_icon_in_app_menu", "5924633"),
-
-                  // Close the app menu.
-                  HoverTabAt(0), ClickMouse(),
-                  WaitForHide(AppMenuModel::kTabGroupsMenuItem),
-
-                  // Screenshot everything menu.
-                  EnsurePresent(kSavedTabGroupOverflowButtonElementId),
-                  PressButton(kSavedTabGroupOverflowButtonElementId),
-                  EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
-                  Screenshot(tab_groups::STGEverythingMenu::kTabGroup,
-                             "shared_icon_in_everything_menu", "5924633"),
-
-                  // Close the everything menu.
-                  HoverTabAt(0), ClickMouse());
-}
-
-// Take a screenshot of the shared tab group's TabGroupHeader in the tabstrip.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
-                       SharedTabGroupInTabStrip) {
-  const char kTabGroupHeaderToScreenshot[] = "Tab group header to hover";
-
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-
-  // Make the group shared.
-  tab_group_service->MakeTabGroupSharedForTesting(local_group_id,
-                                                  fake_collab_id);
-
-  // Manually call set visual data to repaint the tab group header with the
-  // share icon.
-  TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(local_group_id);
-  tab_group->SetVisualData(*tab_group->visual_data());
-
-  RunTestSequence(
-      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      ShowBookmarksBar(),
-      NameDescendantView(
-          kBrowserViewElementId, kTabGroupHeaderToScreenshot,
-          base::BindRepeating(
-              [](tab_groups::TabGroupId group_id, const views::View* view) {
-                const TabGroupHeader* header =
-                    views::AsViewClass<TabGroupHeader>(view);
-                if (!header) {
-                  return false;
-                }
-                return header->group().value() == group_id;
-              },
-              local_group_id)),
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kSkipPixelTestsReason),
-      Screenshot(kTabGroupHeaderToScreenshot, "shared_icon_in_tab_group_header",
-                 "5924633"));
 }
 
 }  // namespace tab_groups

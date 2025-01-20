@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -33,12 +34,8 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeObserver(Observer observer) {}
 
     @Override
-    public String createGroup(LocalTabGroupId groupId) {
-        SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.syncId = SYNC_ID_1;
-        savedTabGroup.localId = groupId;
+    public void addGroup(SavedTabGroup savedTabGroup) {
         mTabGroups.add(savedTabGroup);
-        return savedTabGroup.syncId;
     }
 
     @Override
@@ -69,6 +66,12 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId) {}
+
+    @Override
+    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback) {}
+
+    @Override
+    public void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success) {}
 
     @Override
     public String[] getAllGroupIds() {
@@ -106,6 +109,14 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId) {}
+
+    @Override
+    public void setLocalObservationMode(boolean observeLocalChanges) {}
+
+    @Override
+    public boolean isObservingLocalChanges() {
+        return true;
+    }
 
     @Override
     public boolean isRemoteDevice(String syncCacheGuid) {

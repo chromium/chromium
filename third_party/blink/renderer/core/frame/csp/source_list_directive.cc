@@ -11,15 +11,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace {
-
-struct SupportedPrefixesStruct {
-  const char* prefix;
-  network::mojom::blink::CSPHashAlgorithm type;
-};
-
-}  // namespace
-
 namespace blink {
 
 namespace {
@@ -83,11 +74,6 @@ CSPCheckResult CSPSourceListAllows(
   if (source_list.allow_star) {
     if (url.ProtocolIs("ws") || url.ProtocolIs("wss")) {
       return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
-    }
-    if (url.ProtocolIs("ftp") &&
-        !base::FeatureList::IsEnabled(
-            network::features::kCspStopMatchingWildcardDirectivesToFtp)) {
-      return CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
     }
   }
 

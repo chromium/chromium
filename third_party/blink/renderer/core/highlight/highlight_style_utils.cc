@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -567,11 +566,6 @@ HighlightStyleUtils::HighlightPaintingStyle(
             HighlightColorProperty::kSelectionDecorationColor);
       }
     }
-  }
-
-  // Text shadows are disabled when printing. http://crbug.com/258321
-  if (document.Printing()) {
-    highlight_style.shadow = nullptr;
   }
 
   return {highlight_style, text_decoration_color, background_color,

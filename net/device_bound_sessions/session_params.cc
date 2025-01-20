@@ -15,18 +15,19 @@ SessionParams::SessionParams(std::string id,
       scope(std::move(incoming_scope)),
       credentials(std::move(creds)) {}
 
-SessionParams::SessionParams(SessionParams&& other) = default;
+SessionParams::SessionParams(SessionParams&& other) noexcept = default;
 
-SessionParams& SessionParams::operator=(SessionParams&& other) = default;
+SessionParams& SessionParams::operator=(SessionParams&& other) noexcept =
+    default;
 
 SessionParams::~SessionParams() = default;
 
 SessionParams::Scope::Scope() = default;
 
-SessionParams::Scope::Scope(Scope&& other) = default;
+SessionParams::Scope::Scope(Scope&& other) noexcept = default;
 
 SessionParams::Scope& SessionParams::Scope::operator=(
-    SessionParams::Scope&& other) = default;
+    SessionParams::Scope&& other) noexcept = default;
 
 SessionParams::Scope::~Scope() = default;
 

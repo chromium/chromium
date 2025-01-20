@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 assert(!is_android && !is_fuchsia)
@@ -38,14 +39,6 @@ source_set("signin") {
       "dice_web_signin_interceptor_delegate.h",
     ]
     public_deps += [ "//chrome/browser/signin" ]
-  }
-
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.h" ]
-    public_deps += [
-      "//components/sync/protocol",
-      "//google_apis",
-    ]
   }
 }
 
@@ -92,11 +85,6 @@ source_set("impl") {
       "dice_web_signin_interceptor_delegate.cc",
     ]
   }
-
-  if (!is_chromeos_ash) {
-    sources += [ "signin_reauth_view_controller.cc" ]
-    deps += [ "//components/consent_auditor" ]
-  }
 }
 
 if (enable_dice_support) {
@@ -121,6 +109,7 @@ if (!is_android) {
         "//chrome/browser",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/webui/signin:test_support_ui",
         "//chrome/test:test_support_ui",
         "//components/signin/public/base",
@@ -170,11 +159,6 @@ if (!is_android) {
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]
-    }
-
-    # Tests for non mobile and non CrOS (includes Linux, Win, Mac, Lacros).
-    if (!is_chromeos_ash) {
-      sources += [ "signin_reauth_view_controller_browsertest.cc" ]
     }
 
     if (!is_chromeos) {

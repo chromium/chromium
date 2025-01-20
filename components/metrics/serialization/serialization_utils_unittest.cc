@@ -289,7 +289,7 @@ TEST_F(SerializationUtilsTest, NegativeLengthTest) {
       0xff,
       0xff,
   };
-  ASSERT_TRUE(base::WriteFile(filepath(), base::make_span(kInput)));
+  ASSERT_TRUE(base::WriteFile(filepath(), base::span(kInput)));
 
   std::vector<std::unique_ptr<MetricSample>> samples;
   SerializationUtils::ReadAndTruncateMetricsFromFile(filename(), &samples);

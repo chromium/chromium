@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -24,22 +26,25 @@ import java.util.Set;
 public class HistorySyncHelper {
     private static final int MAX_SUCCESSIVE_DECLINES = 2;
     private static final long MIN_DAYS_SINCE_LAST_DECLINE = 14;
-    @Nullable private static HistorySyncHelper sHistorySyncHelperForTest;
+    @Nullable private static HistorySyncHelper sInstance;
     private final SyncService mSyncService;
     private final PrefService mPrefService;
 
     public static HistorySyncHelper getForProfile(Profile profile) {
-        if (sHistorySyncHelperForTest != null) {
-            return sHistorySyncHelperForTest;
+        if (sInstance == null) {
+            sInstance = new HistorySyncHelper(profile);
         }
-        return new HistorySyncHelper(profile);
+        return sInstance;
     }
 
     public static void setInstanceForTesting(HistorySyncHelper historySyncHelper) {
-        sHistorySyncHelperForTest = historySyncHelper;
+        var oldInstance = sInstance;
+        sInstance = historySyncHelper;
+        ResettersForTesting.register(() -> sInstance = oldInstance);
     }
 
-    private HistorySyncHelper(Profile profile) {
+    @VisibleForTesting
+    HistorySyncHelper(Profile profile) {
         mSyncService = SyncServiceFactory.getForProfile(profile);
         mPrefService = UserPrefs.get(profile);
     }
@@ -110,11 +115,13 @@ public class HistorySyncHelper {
 
     private void recordUserAlreadyOptedIn(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
+                SigninAccessPoint.MAX_VALUE);
     }
 
     private void recordHistorySyncSkipped(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Skipped", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Skipped", accessPoint,
+                SigninAccessPoint.MAX_VALUE);
     }
 }

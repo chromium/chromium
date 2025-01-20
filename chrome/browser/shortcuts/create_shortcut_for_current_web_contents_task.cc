@@ -16,7 +16,6 @@
 #include "chrome/browser/shortcuts/document_icon_fetcher_task.h"
 #include "chrome/browser/shortcuts/icon_badging.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -191,9 +190,7 @@ void CreateShortcutForCurrentWebContentsTask::
         base::BindOnce([](const base::FilePath& shortcut_path,
                           ShortcutCreatorResult result) {
           base::UmaHistogramEnumeration("Shortcuts.Creation.Result", result);
-          if (result != ShortcutCreatorResult::kError &&
-              base::FeatureList::IsEnabled(
-                  features::kShortcutsNotAppsRevealDesktop)) {
+          if (result != ShortcutCreatorResult::kError) {
             CHECK(!shortcut_path.empty());
             // Profile information is not needed to show the created shortcut in
             // the path on Windows, Mac and Linux.

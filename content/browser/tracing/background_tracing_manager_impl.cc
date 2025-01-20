@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -19,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -32,6 +34,7 @@
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
+#include "content/browser/tracing/triggers_data_source.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,8 +47,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/network_change_notifier.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -54,17 +55,19 @@ namespace content {
 
 namespace {
 // The time to live of a trace report is currently 14 days.
-const base::TimeDelta kTraceReportTimeToLive = base::Days(14);
+constexpr base::TimeDelta kTraceReportTimeToLive = base::Days(14);
+// The time to live of uploaded trace content is 2 days.
+constexpr base::TimeDelta kUploadedTraceContentTimeToLive = base::Days(2);
 // We limit the overall number of traces.
-const size_t kMaxTraceContent = 200;
+constexpr size_t kMaxTraceContent = 200;
 // We limit uploads of 1 trace per scenario over a period of 7 days. Since
 // traces live in the database for longer than 7 days, their TTL doesn't affect
 // this unless the database is manually cleared.
-const base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
+constexpr base::TimeDelta kMinTimeUntilNextUpload = base::Days(7);
 // We limit the overall number of traces per scenario saved to the database at
 // 100 per day.
-const size_t kMaxTracesPerScenario = 100;
-const base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
+constexpr size_t kMaxTracesPerScenario = 100;
+constexpr base::TimeDelta kMaxTracesPerScenarioDuration = base::Days(1);
 
 // |g_background_tracing_manager| is intentionally leaked on shutdown.
 BackgroundTracingManager* g_background_tracing_manager = nullptr;
@@ -102,7 +105,7 @@ void AddTraceOnDatabaseTaskRunner(
     BaseTraceReport base_report,
     bool should_save_trace,
     bool force_upload,
-    base::OnceCallback<void(std::optional<NewTraceReport>, bool)>
+    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
         on_trace_saved) {
   if (!database->is_initialized()) {
     return;
@@ -135,30 +138,41 @@ void AddTraceOnDatabaseTaskRunner(
                                 std::move(report_to_upload), success));
 }
 
+void OnUploadCompleteOnDatabaseTaskRunner(
+    TraceReportDatabase* database,
+    BaseTraceReport base_report,
+    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
+        on_finalize_complete) {
+  base::Token uuid = base_report.uuid;
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Upload",
+                           variations::HashName(base_report.scenario_name));
+  std::optional<ClientTraceReport> next_report;
+  if (database->UploadComplete(uuid, base::Time::Now())) {
+    next_report = database->GetNextReportPendingUpload();
+  }
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_finalize_complete),
+                                std::move(next_report), true));
+}
+
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     BaseTraceReport base_report,
     base::OnceCallback<void(std::optional<std::string>,
-                            std::optional<std::string>)> receive_callback,
-    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
-        on_finalize_complete) {
+                            std::optional<std::string>,
+                            base::OnceClosure)> receive_callback,
+    base::OnceClosure upload_complete) {
   base::Token uuid = base_report.uuid;
-  auto trace_content = database->GetTraceContent(uuid);
-  auto serialized_system_profile = database->GetSystemProfile(uuid);
-  std::optional<ClientTraceReport> next_report;
-  if (trace_content) {
-    base::UmaHistogramSparse("Tracing.Background.Scenario.Upload",
-                             variations::HashName(base_report.scenario_name));
-    if (database->UploadComplete(uuid, base::Time::Now())) {
-      next_report = database->GetNextReportPendingUpload();
-    }
+  auto compressed_trace_content = database->GetTraceContent(uuid);
+  if (!compressed_trace_content) {
+    std::move(receive_callback)
+        .Run(std::nullopt, std::nullopt, base::NullCallback());
+  } else {
+    auto serialized_system_profile = database->GetSystemProfile(uuid);
+    std::move(receive_callback)
+        .Run(std::move(compressed_trace_content),
+             std::move(serialized_system_profile), std::move(upload_complete));
   }
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(on_finalize_complete), std::move(next_report),
-                     trace_content.has_value()));
-  std::move(receive_callback)
-      .Run(std::move(trace_content), std::move(serialized_system_profile));
 }
 
 class PreferenceManagerImpl
@@ -399,7 +413,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseUpdated(
 
 void BackgroundTracingManagerImpl::OnTraceSaved(
     const std::string& scenario_name,
-    std::optional<NewTraceReport> trace_to_upload,
+    std::optional<BaseTraceReport> trace_to_upload,
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RecordMetric(success ? Metrics::SAVE_TRACE_SUCCEEDED
@@ -419,6 +433,7 @@ void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
       base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataProto,
                           base::Unretained(this)));
   BackgroundMetadataDataSource::Register();
+  TriggersDataSource::Register();
 }
 
 bool BackgroundTracingManagerImpl::RequestActivateScenario() {
@@ -467,8 +482,8 @@ bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
   for (auto& rule : trigger_rules_) {
     rule->Install(base::BindRepeating([](const BackgroundTracingRule* rule) {
       base::UmaHistogramSparse("Tracing.Background.Perfetto.Trigger",
-                               variations::HashName(rule->rule_id()));
-      perfetto::Tracing::ActivateTriggers({rule->rule_id()},
+                               variations::HashName(rule->rule_name()));
+      perfetto::Tracing::ActivateTriggers({rule->rule_name()},
                                           /*ttl_ms=*/0);
       return true;
     }));
@@ -709,7 +724,7 @@ void BackgroundTracingManagerImpl::SaveTrace(
     base::Token trace_uuid,
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
-  std::string rule_name = triggered_rule->rule_id();
+  std::string rule_name = triggered_rule->rule_name();
   if (triggered_rule->triggered_value()) {
     rule_name.append(
         base::StringPrintf(" value: %d", *triggered_rule->triggered_value()));
@@ -744,23 +759,30 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
 
 void BackgroundTracingManagerImpl::GetTraceToUpload(
     base::OnceCallback<void(std::optional<std::string>,
-                            std::optional<std::string>)> receive_callback) {
+                            std::optional<std::string>,
+                            base::OnceClosure)> receive_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!trace_report_to_upload_) {
-    std::move(receive_callback).Run(std::nullopt, std::nullopt);
+    std::move(receive_callback)
+        .Run(std::nullopt, std::nullopt, base::NullCallback());
     return;
   }
 
   DCHECK(trace_database_);
   BaseTraceReport trace_report = *std::move(trace_report_to_upload_);
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  trace_report_to_upload_.reset();
+  auto upload_complete_callback = base::BindPostTask(
+      database_task_runner_,
       base::BindOnce(
-          GetProtoValueOnDatabaseTaskRunner,
+          OnUploadCompleteOnDatabaseTaskRunner,
           base::Unretained(trace_database_.get()), trace_report,
-          std::move(receive_callback),
           base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                          weak_factory_.GetWeakPtr())));
+  database_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(GetProtoValueOnDatabaseTaskRunner,
+                                base::Unretained(trace_database_.get()),
+                                trace_report, std::move(receive_callback),
+                                std::move(upload_complete_callback)));
 }
 
 void BackgroundTracingManagerImpl::OnFinalizeComplete(
@@ -963,6 +985,8 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
   }
   for (BackgroundTracingRule& obs : it->second) {
     if (obs.OnRuleTriggered(value)) {
+      TRACE_EVENT_INSTANT("toplevel", "NamedTrigger",
+                          base::trace_event::TriggerFlow(trigger_name, value));
       return true;
     }
   }
@@ -1007,6 +1031,8 @@ void BackgroundTracingManagerImpl::CleanDatabase() {
             // The reports entries are kept (without the payload) for longer to
             // track upload quotas.
             trace_database->DeleteTraceReportsOlderThan(kTraceReportTimeToLive);
+            trace_database->DeleteUploadedTraceContentOlderThan(
+                kUploadedTraceContentTimeToLive);
             return trace_database->GetScenarioCountsSince(
                 base::Time::Now() - kMaxTracesPerScenarioDuration);
           },

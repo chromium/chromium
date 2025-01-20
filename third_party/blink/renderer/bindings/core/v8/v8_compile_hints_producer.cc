@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 
 #if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
@@ -146,7 +141,7 @@ void V8CrowdsourcedCompileHintsProducer::ScheduleDataDeletionTask(
   constexpr int kDeletionDelaySeconds = 30;
   auto delay = base::Seconds(kDeletionDelaySeconds);
 
-  execution_context->GetTaskRunner(TaskType::kIdleTask)
+  execution_context->GetTaskRunner(TaskType::kInternalDefault)
       ->PostDelayedTask(FROM_HERE,
                         WTF::BindOnce(&ClearDataTask, WrapWeakPersistent(this)),
                         delay);
@@ -213,7 +208,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   }
 
   static_assert(sizeof(unsigned) == sizeof(int32_t));
-  unsigned* raw_data = (bloom.GetRawData());
+  auto raw_data = bloom.GetRawData();
 
   // Add noise to the data.
   for (int i = 0; i < kBloomFilterInt32Count; ++i) {

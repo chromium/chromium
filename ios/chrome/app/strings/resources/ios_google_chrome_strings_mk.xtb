@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1066101356081285416">Chrome ќе ги открива броевите за следење на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Бројот за следење пакети и името на веб-сајтот ќе се испратат до Google за да се обезбеди функцијава и да се подобрат функциите за купување за сите. Ова може да го ажурирате кога сакате во <ph name="BEGIN_LINK" />Поставките за следење пакети<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome автоматски ги отвора линковите на YouTube „Инкогнито“ во режим „Инкогнито“.</translation>
 <translation id="1086486568852410168">Пребарувајте со Google Lens</translation>
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отворете нова картичка во Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Користете Chrome секогаш кога ќе допрете линкови во пораки и други апликации.</translation>
 <translation id="1229222343402087523">Пребарајте ${searchPhrase} во Chrome</translation>
 <translation id="1237769345474105984">Од Chrome</translation>
-<translation id="1240190568154816272">Совети за Chrome</translation>
 <translation id="124228879633599436">Вашата верзија на Chrome е застарена. Ажурирајте ја за да се заштитите.</translation>
 <translation id="1333745675627230582">Пушти ја играта „Диносаурус на Chrome“</translation>
 <translation id="1352919863522755794">Google Password Manager не можеше да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Ја отвора поставката за Chrome за поставување на Chrome како стандарден прелистувач.</translation>
 <translation id="1670609221633730681">Совет за Chrome: изберете ја положбата на лентата за адреси</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Зачувувајте ги лозинките во Chrome</translation>
 <translation id="1790080846677398234">Ги додава внесените URL-адреси во вашите обележувачи во Chrome.</translation>
 <translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1830634592642484976">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Ова значи дека Chrome ќе го бара сајтот за мобилен уред секој пат.</translation>
 <translation id="3740397331642243698">Ги отвора внесените URL-адреси во Google Chrome во „Инкогнито“.</translation>
 <translation id="3741995255368156336">Го отвора „Списокот за читање“ на Chrome.</translation>
+<translation id="3808570423967020928">Пристапувајте до Chrome побрзо од докот на почетниот екран.</translation>
 <translation id="3827545470516145620">Добивате стандардна безбедносна заштита на уредов</translation>
 <translation id="384394811301901750">Google Chrome не може да ја користи камерата сега</translation>
 <translation id="3863841106411295595">Ги додава внесените URL-адреси во вашиот „Список за читање“ во Chrome.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">Најавете се на сајтов и на Chrome.</translation>
 <translation id="4646014602299206846">Chrome ќе ги открива броевите за следење пакети на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Вашите податоци ќе се споделат со Google за да се обезбеди функцијава и да се подобри Shopping за сите.</translation>
 <translation id="4647910807533196601">Отвори ја мојата последна картичка во Chrome.</translation>
+<translation id="4693084815234024320">Користите режим „Инкогнито“ во Chrome</translation>
 <translation id="4724297637870447613">Користете го Chrome насекаде</translation>
 <translation id="4738647308035481133">Страница на Google Chrome</translation>
 <translation id="4742795653798179840">Избришани податоци на Chrome</translation>
@@ -219,9 +222,12 @@
 
 За повеќе поставки што ги користат податоците за подобрување на вашето доживување на Chrome, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Избришете ги податоците од прелистување во Chrome.</translation>
+<translation id="6924922227983877439">Отворајте ги линковите во Chrome стандардно</translation>
+<translation id="6931601805528922498">Ако се најавите, вашата сметка ќе се додаде во Chrome за прелистување поврзано со работа.</translation>
 <translation id="6975725306479268850">Избирање Chrome за „Автоматско пополнување“</translation>
 <translation id="7056826488869329999">Отвора и врши безбедносна проверка во Chrome.</translation>
 <translation id="7061455974939528301">Притиснете и задржете ја иконата за Chrome, па кликнете „Изменете го почетниот екран“</translation>
+<translation id="7065813315247345131">Преместете го Chrome на докот</translation>
 <translation id="7124339256045485976">Одржувајте го Chrome ажурен</translation>
 <translation id="7161390184744336561">Google Chrome е застарен</translation>
 <translation id="7165736900384873061">Започнете со користење на QR-скенерот на Google Chrome</translation>

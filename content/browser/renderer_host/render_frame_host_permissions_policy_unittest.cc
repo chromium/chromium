@@ -89,7 +89,8 @@ class RenderFrameHostPermissionsPolicyTest
     static_cast<TestRenderFrameHost*>(parent)->DidChangeFramePolicy(
         frame_token, {network::mojom::WebSandboxFlags::kNone,
                       CreateFPHeader(feature, origins),
-                      {} /* required_document_policy */});
+                      {} /* required_document_policy */,
+                      blink::FramePolicy::DeferredFetchPolicy::kDisabled});
   }
 
   void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {

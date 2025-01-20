@@ -9,12 +9,13 @@ import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * Client for facilitated payment APIs, such as PIX. The default implementation cannot invoke
- * payments. An implementing subclass must provide a factory that builds its instances.
- * Example usage:
+ * payments. An implementing subclass must provide a factory that builds its instances. Example
+ * usage:
  *
- *  FacilitatedPaymentsApiClient apiClient =
- *      FacilitatedPaymentsApiClient.create(renderFrameHost, delegate);
- *  apiClient.isAvailable();
+ * <pre>
+ * FacilitatedPaymentsApiClient apiClient =
+ *      FacilitatedPaymentsApiClient.create(renderFrameHost,delegate); apiClient.isAvailable();
+ * </pre>
  */
 public class FacilitatedPaymentsApiClient {
     private static Factory sFactory;
@@ -152,7 +153,19 @@ public class FacilitatedPaymentsApiClient {
      * Initiates the payment flow UI. Will invoke a delegate callback with the result.
      *
      * @param primaryAccount User's signed in account.
+     * @param securePayload The secure payload received from Payments backend that is required for
+     *     invoking the purchase action in Google Play Services.
+     */
+    public void invokePurchaseAction(CoreAccountInfo primaryAccount, SecurePayload securePayload) {
+        mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);
+    }
+
+    /**
+     * Initiates the payment flow UI. Will invoke a delegate callback with the result.
+     *
+     * @param primaryAccount User's signed in account.
      * @param actionToken An opaque token used for invoking the purchase action.
+     * @deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(CoreAccountInfo primaryAccount, byte[] actionToken) {
         mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);

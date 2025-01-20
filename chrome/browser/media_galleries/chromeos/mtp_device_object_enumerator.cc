@@ -12,8 +12,7 @@ MTPDeviceObjectEnumerator::MTPDeviceObjectEnumerator(
     std::vector<device::mojom::MtpFileEntryPtr> entries)
     : file_entries_(std::move(entries)), index_(0U), is_index_ready_(false) {}
 
-MTPDeviceObjectEnumerator::~MTPDeviceObjectEnumerator() {
-}
+MTPDeviceObjectEnumerator::~MTPDeviceObjectEnumerator() = default;
 
 base::FilePath MTPDeviceObjectEnumerator::Next() {
   if (IsIndexReadyAndInRange())

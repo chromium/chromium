@@ -8,11 +8,13 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A delegate that can be overridden to change the methods to figure out and change the current
  * state of Android's soft keyboard.
  */
+@NullMarked
 public class KeyboardVisibilityDelegate {
 
     /** The delegate to determine keyboard visibility. */

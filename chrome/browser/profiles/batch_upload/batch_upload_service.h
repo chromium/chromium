@@ -78,7 +78,7 @@ class BatchUploadService : public KeyedService {
   // per data type. Selected items will be processed to be moved to the account
   // storage. Empty map means the dialog was closed explicitly not to move any
   // data.
-  void OnBatchUplaodDialogResult(
+  void OnBatchUploadDialogResult(
       const std::map<syncer::DataType,
                      std::vector<syncer::LocalDataItemModel::DataId>>&
           item_ids_to_move);

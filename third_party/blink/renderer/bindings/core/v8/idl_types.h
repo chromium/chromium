@@ -20,6 +20,9 @@ namespace blink {
 
 class BigInt;
 class EventListener;
+class ScriptObject;
+template <typename T>
+class MemberScriptPromise;
 template <typename T>
 class ScriptPromise;
 class ScriptValue;
@@ -200,11 +203,23 @@ using IDLUSVStringStringContextTrustedScriptURL =
         bindings::IDLStringConvMode::kDefault>;
 
 // object
-struct IDLObject final : public IDLBaseHelper<ScriptValue> {};
+struct IDLObject final : public IDLBaseHelper<ScriptObject> {};
 
 // Promise types
 template <typename T>
 struct IDLPromise final : public IDLBaseHelper<ScriptPromise<T>> {};
+
+template <typename T>
+struct IsPromiseType {
+  static constexpr bool value = false;
+  using IDLPromiseResultType = void;
+};
+
+template <typename T>
+struct IsPromiseType<IDLPromise<T>> {
+  static constexpr bool value = true;
+  using IDLPromiseResultType = T;
+};
 
 // Sequence types
 template <typename T>
@@ -238,9 +253,12 @@ struct IDLRecord final : public IDLBase {
       std::is_same<typename NativeValueTraits<Key>::ImplType, String>::value,
       "IDLRecord keys must be of a WebIDL string type");
 
-  using ImplType = VectorOfPairs<
-      String,
-      std::remove_pointer_t<typename NativeValueTraits<Value>::ImplType>>;
+  using ValueImplType = std::conditional_t<
+      IsPromiseType<Value>::value,
+      MemberScriptPromise<typename IsPromiseType<Value>::IDLPromiseResultType>,
+      typename NativeValueTraits<Value>::ImplType>;
+
+  using ImplType = VectorOfPairs<String, std::remove_pointer_t<ValueImplType>>;
 };
 
 // Nullable types
@@ -251,9 +269,6 @@ struct IDLNullable final : public IDLBase {
       typename NativeValueTraits<T>::ImplType,
       std::optional<typename NativeValueTraits<T>::ImplType>>;
 };
-
-// Date
-struct IDLDate final : public IDLBaseHelper<base::Time> {};
 
 // EventHandler types
 struct IDLEventHandler final : public IDLBaseHelper<EventListener*> {};

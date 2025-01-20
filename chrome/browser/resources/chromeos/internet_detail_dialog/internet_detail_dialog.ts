@@ -625,8 +625,8 @@ export class InternetDetailDialogElement extends
     const apn = event.detail;
     config.typeConfig.cellular = {
       apn: apn,
-      roaming: undefined,
-      textMessageAllowState: undefined,
+      roaming: null,
+      textMessageAllowState: null,
     };
     this.setMojoNetworkProperties_(config);
   }

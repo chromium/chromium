@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -229,6 +230,7 @@ struct LogicalLineItem {
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const InlineItem* inline_item = nullptr;
   Member<const ShapeResultView> shape_result;
   TextOffsetRange text_offset;

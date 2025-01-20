@@ -7,16 +7,16 @@ package org.chromium.chrome.browser.feedback;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Pair;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.LocaleUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Grabs feedback about the current system. */
@@ -33,22 +33,17 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @Override
     public Map<String, String> getFeedback() {
-        Map<String, String> feedback =
-                CollectionUtil.newHashMap(
-                        Pair.create(
-                                "CPU Architecture",
-                                SystemInfoFeedbackSourceJni.get().getCpuArchitecture()),
-                        Pair.create(
-                                "Available Memory (MB)",
-                                Integer.toString(
-                                        SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB())),
-                        Pair.create(
-                                "Total Memory (MB)",
-                                Integer.toString(
-                                        SystemInfoFeedbackSourceJni.get().getTotalMemoryMB())),
-                        Pair.create("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor()),
-                        Pair.create("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel()),
-                        Pair.create("UI Locale", LocaleUtils.getDefaultLocaleString()));
+        HashMap<String, String> feedback = new HashMap();
+        feedback.put("CPU Architecture", SystemInfoFeedbackSourceJni.get().getCpuArchitecture());
+        feedback.put(
+                "Available Memory (MB)",
+                Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB()));
+        feedback.put(
+                "Total Memory (MB)",
+                Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB()));
+        feedback.put("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor());
+        feedback.put("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel());
+        feedback.put("UI Locale", LocaleUtils.getDefaultLocaleString());
 
         StatFs statFs = getResult();
         if (statFs != null) {
@@ -67,10 +62,13 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getCpuArchitecture();
 
+        @JniType("std::string")
         String getGpuVendor();
 
+        @JniType("std::string")
         String getGpuModel();
 
         int getAvailableMemoryMB();

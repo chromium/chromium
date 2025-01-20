@@ -50,7 +50,7 @@ VideoLayerImpl::VideoLayerImpl(
     : LayerImpl(tree_impl, id),
       provider_client_impl_(std::move(provider_client_impl)),
       video_transform_(video_transform) {
-  set_may_contain_video(true);
+  SetMayContainVideo(true);
 }
 
 VideoLayerImpl::~VideoLayerImpl() {
@@ -105,7 +105,6 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
     const LayerTreeSettings& settings = layer_tree_impl()->settings();
     updater_ = std::make_unique<media::VideoResourceUpdater>(
         layer_tree_impl()->context_provider(),
-        layer_tree_impl()->layer_tree_frame_sink(),
         layer_tree_impl()->resource_provider(),
         layer_tree_impl()->layer_tree_frame_sink()->shared_image_interface(),
         settings.use_stream_video_draw_quad,

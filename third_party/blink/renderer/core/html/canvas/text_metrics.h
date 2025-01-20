@@ -69,15 +69,15 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
-  unsigned caretPositionFromPoint(double x);
+  unsigned getIndexFromOffset(double x);
 
   const HeapVector<Member<DOMRectReadOnly>> getSelectionRects(
       uint32_t start,
       uint32_t end,
       ExceptionState& exception_state);
-  const DOMRectReadOnly* getActualBoundingBox(uint32_t start,
-                                              uint32_t end,
-                                              ExceptionState& exception_state);
+  DOMRectReadOnly* getActualBoundingBox(uint32_t start,
+                                        uint32_t end,
+                                        ExceptionState& exception_state);
   HeapVector<Member<TextCluster>> getTextClusters(
       uint32_t start,
       uint32_t end,

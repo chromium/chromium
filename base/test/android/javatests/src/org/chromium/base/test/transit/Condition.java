@@ -118,7 +118,7 @@ public abstract class Condition {
      * <p>Call this from the constructor to delay check() to be called until |supplier| supplies a
      * value.
      */
-    protected <T> Supplier<T> dependOnSupplier(Supplier<T> supplier, String inputName) {
+    protected <T extends Supplier<?>> T dependOnSupplier(T supplier, String inputName) {
         if (mDependentSuppliers == null) {
             mDependentSuppliers = new ArrayMap<>();
         }

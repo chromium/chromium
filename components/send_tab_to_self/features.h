@@ -45,6 +45,14 @@ extern const char kSendTabIOSPushNotificationsWithMagicStackCardParam[];
 // Convenience method for determining when SendTabIOSPushNotifications is
 // enabled with Magic Stack Card.
 bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard();
+
+// Param for the iOS Tab Reminders variant for the
+// `kSendTabToSelfIOSPushNotifications` feature.
+extern const char kSendTabIOSPushNotificationsWithTabRemindersParam[];
+
+// Convenience method for determining when `kSendTabToSelfIOSPushNotifications`
+// is enabled with Tab Reminders.
+bool IsSendTabIOSPushNotificationsEnabledWithTabReminders();
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace send_tab_to_self

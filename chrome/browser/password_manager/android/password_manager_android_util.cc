@@ -247,6 +247,7 @@ void MaybeActivateSplitStoresAndLocalUpm(
   }
 }
 
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 // Called on startup from `MaybeDeactivateSplitStoresAndLocalUpm` to delete the
 // login data files for users migrated to UPM. Must only be called if the value
 // of the state pref `PasswordsUseUPMLocalAndSeparateStores` is `On` and there
@@ -286,6 +287,7 @@ void MaybeDeleteLoginDataFiles(PrefService* prefs,
   }
   base::DeleteFile(account_db_journal_path);
 }
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 // Must only be called if the state pref is kOn or kOffAndMigrationPending, to
 // set it to kOff if the user downgraded GmsCore. Any passwords saved to GmsCore
@@ -318,13 +320,12 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                         HasMinGmsVersion() ? ActivationError::kNone
                                            : ActivationError::kOutdatedGmsCore);
   if (HasMinGmsVersion()) {
-    // GmsCore was not downgraded, no need to deactivate.
-    if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::
-                kClearLoginDatabaseForAllMigratedUPMUsers)) {
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+    if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn) {
       MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
     }
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+    // GmsCore was not downgraded, no need to deactivate.
     return;
   }
 

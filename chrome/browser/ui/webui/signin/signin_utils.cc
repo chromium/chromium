@@ -19,12 +19,13 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace signin {
 
 namespace {
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
 // Default timeout used to wait for account capabilities fetch.
 const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 #endif
@@ -75,14 +76,15 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
 
 Browser* GetDesktopBrowser(content::WebUI* web_ui) {
   Browser* browser = chrome::FindBrowserWithTab(web_ui->GetWebContents());
-  if (!browser)
+  if (!browser) {
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
+  }
   return browser;
 }
 
 base::TimeDelta GetMinorModeRestrictionsDeadline() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Not implemented for those platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Not implemented for this platform.
   NOTREACHED();
 #else
   return base::Milliseconds(kMinorModeRestrictionsFetchDeadlineMs);
@@ -92,15 +94,16 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
                                const base::Value::List& args) {
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   double height = args[0].GetDouble();
   browser->signin_view_controller()->SetModalSigninHeight(
       static_cast<int>(height));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void ClearProfileWithManagedAccounts(Profile* profile) {
   policy::UserPolicySigninServiceFactory::GetForProfile(profile)
       ->ShutdownCloudPolicyManager();

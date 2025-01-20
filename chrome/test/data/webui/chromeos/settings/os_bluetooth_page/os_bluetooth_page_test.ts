@@ -7,7 +7,6 @@ import 'chrome://os-settings/os_settings.js';
 import {OsSettingsSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrIconButtonElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes, SettingsBluetoothPageElement} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
@@ -103,8 +102,6 @@ suite('<os-settings-bluetooth-page>', () => {
   suite('back button on the landing page', async () => {
     let backButton: CrIconButtonElement;
     let bluetoothSubpage: OsSettingsSubpageElement;
-    const isRevampEnabled =
-        loadTimeData.getBoolean('isRevampWayfindingEnabled');
 
     setup(async () => {
       await init();
@@ -125,20 +122,13 @@ suite('<os-settings-bluetooth-page>', () => {
       backButton = iconButtonElement;
     });
 
-    // TODO(b/332926512): once Bluetooth L1 page is reactivated, the back button
-    // should exist in both of the tests below.
-    if (isRevampEnabled) {
-      test(
-          'is hidden when OSSettingsRevampWayfinding feature is enabled',
-          () => {
-            assertFalse(isVisible(backButton));
-          });
-    } else {
-      test(
-          'is visible when OSSettingsRevampWayfinding feature is disabled',
-          () => {
-            assertTrue(isVisible(backButton));
-          });
-    }
+    // The bluetooth top-level page is inactive in order to reduce the number
+    // of clicks to change bluetooth settings. The bluetooth subpage replaces
+    // the top-level page for now, so the back button should not be visible.
+    // See b/309808834 for more details on reactivating the original top-level
+    // page.
+    test('is hidden', () => {
+      assertFalse(isVisible(backButton));
+    });
   });
 });

@@ -17,7 +17,6 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,7 +186,7 @@ void PrepareDropDataForChildProcess(
     ChildProcessSecurityPolicyImpl* security_policy,
     int child_id,
     const storage::FileSystemContext* file_system_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The externalfile:// scheme is used in Chrome OS to open external files in a
   // browser tab.
   // TODO(https://crbug.com/858972): This seems like it could be forged by the

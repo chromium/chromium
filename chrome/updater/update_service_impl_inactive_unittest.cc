@@ -68,6 +68,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
     update_service->CheckForUpdate(
         /*app_id=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
+        /*language=*/{},
         base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
@@ -81,6 +82,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*app_id=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
+        /*language=*/{},
         base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
@@ -104,6 +106,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
         RegistrationRequest(),
         /*client_install_data=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
+        /*language=*/{},
         base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
@@ -123,6 +126,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*install_args=*/"",
         /*install_data=*/"",
         /*install_settings=*/"",
+        /*language=*/{},
         base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);

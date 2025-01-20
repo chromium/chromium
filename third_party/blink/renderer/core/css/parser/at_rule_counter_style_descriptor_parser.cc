@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
-
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
@@ -140,9 +141,11 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 
     // If the lower bound of any stream is higher than the upper bound, the
     // entire descriptor is invalid and must be ignored.
+    MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(
+        context.GetDocument() ? context.GetDocument()->GetFrame() : nullptr);
     if (lower_bound->IsPrimitiveValue() && upper_bound->IsPrimitiveValue() &&
-        To<CSSPrimitiveValue>(lower_bound)->GetIntValue() >
-            To<CSSPrimitiveValue>(upper_bound)->GetIntValue()) {
+        To<CSSPrimitiveValue>(lower_bound)->ComputeInteger(*media_values) >
+            To<CSSPrimitiveValue>(upper_bound)->ComputeInteger(*media_values)) {
       return nullptr;
     }
 
@@ -227,7 +230,10 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
     if (last_integer) {
       // The additive tuples must be specified in order of strictly descending
       // weight; otherwise, the declaration is invalid and must be ignored.
-      if (integer->GetIntValue() >= last_integer->GetIntValue()) {
+      MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(
+          context.GetDocument() ? context.GetDocument()->GetFrame() : nullptr);
+      if (integer->ComputeInteger(*media_values) >=
+          last_integer->ComputeInteger(*media_values)) {
         return nullptr;
       }
     }

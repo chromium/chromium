@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
-
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -11,6 +9,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"

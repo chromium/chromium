@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/json/values_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -53,7 +54,7 @@ class TestEventObserver : public policy::EventObserverBase {
   }
 
   ash::reporting::TriggerEventType GetEventType() const override {
-    return ash::reporting::TriggerEventType::TRIGGER_EVENT_TYPE_UNSPECIFIED;
+    return ash::reporting::TriggerEventType::FATAL_CRASH;
   }
 
   std::set<support_tool::DataCollectorType> GetDataCollectorTypes()
@@ -76,6 +77,9 @@ class EventObserverBaseTest : public testing::Test {
                                 base::TimeToValue(last_upload_time)));
   }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -90,6 +94,12 @@ TEST_F(EventObserverBaseTest, SuccessfulFirstUpload) {
   event_observer.TriggerLogUpload(policy::GenerateEventBasedLogUploadId(),
                                   test_future.GetCallback());
   ASSERT_EQ(test_future.Take(), policy::EventBasedUploadStatus::kSuccess);
+  histogram_tester_.ExpectUniqueSample(policy::kEventLogUploadAllHistogram,
+                                       policy::EventBasedUploadStatus::kSuccess,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      policy::kEventLogUploadTypeFatalCrashHistogram,
+      policy::EventBasedUploadStatus::kSuccess, 1);
 }
 
 TEST_F(EventObserverBaseTest, SuccessfulUploadAfterTimeLimit) {
@@ -103,6 +113,12 @@ TEST_F(EventObserverBaseTest, SuccessfulUploadAfterTimeLimit) {
   event_observer.TriggerLogUpload(policy::GenerateEventBasedLogUploadId(),
                                   test_future.GetCallback());
   ASSERT_EQ(test_future.Take(), policy::EventBasedUploadStatus::kSuccess);
+  histogram_tester_.ExpectUniqueSample(policy::kEventLogUploadAllHistogram,
+                                       policy::EventBasedUploadStatus::kSuccess,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      policy::kEventLogUploadTypeFatalCrashHistogram,
+      policy::EventBasedUploadStatus::kSuccess, 1);
 }
 
 TEST_F(EventObserverBaseTest, DeclinedUploadBeforeTimeLimit) {
@@ -116,6 +132,12 @@ TEST_F(EventObserverBaseTest, DeclinedUploadBeforeTimeLimit) {
   event_observer.TriggerLogUpload(policy::GenerateEventBasedLogUploadId(),
                                   test_future.GetCallback());
   ASSERT_EQ(test_future.Take(), policy::EventBasedUploadStatus::kDeclined);
+  histogram_tester_.ExpectUniqueSample(
+      policy::kEventLogUploadAllHistogram,
+      policy::EventBasedUploadStatus::kDeclined, 1);
+  histogram_tester_.ExpectUniqueSample(
+      policy::kEventLogUploadTypeFatalCrashHistogram,
+      policy::EventBasedUploadStatus::kDeclined, 1);
 }
 
 TEST_F(EventObserverBaseTest, DeclinedUploadForDifferentEventType) {
@@ -130,4 +152,10 @@ TEST_F(EventObserverBaseTest, DeclinedUploadForDifferentEventType) {
   event_observer.TriggerLogUpload(policy::GenerateEventBasedLogUploadId(),
                                   test_future.GetCallback());
   ASSERT_EQ(test_future.Take(), policy::EventBasedUploadStatus::kSuccess);
+  histogram_tester_.ExpectUniqueSample(policy::kEventLogUploadAllHistogram,
+                                       policy::EventBasedUploadStatus::kSuccess,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      policy::kEventLogUploadTypeFatalCrashHistogram,
+      policy::EventBasedUploadStatus::kSuccess, 1);
 }

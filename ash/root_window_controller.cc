@@ -243,6 +243,7 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
       kShellWindowId_SystemModalContainer,
       kShellWindowId_LockSystemModalContainer,
       kShellWindowId_MenuContainer,
+      kShellWindowId_CaptureModeSearchResultsPanel,
       kShellWindowId_LiveCaptionContainer,
       kShellWindowId_OverlayContainer,
   };
@@ -921,9 +922,6 @@ void RootWindowController::StartSplitViewOverviewSession(
     return;
   }
 
-  // TODO(michelefan): Remove the `StartOverview()` here, this is currently
-  // added to limit `SplitViewOverviewSession` creation and usage to clamshell
-  // only.
   if (Shell::Get()->IsInTabletMode()) {
     OverviewController::Get()->StartOverview(
         action.value_or(OverviewStartAction::kSplitView),
@@ -1321,6 +1319,12 @@ void RootWindowController::CreateContainers() {
                       lock_screen_related_containers);
   ::wm::SetChildWindowVisibilityChangesAnimated(menu_container);
   menu_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+
+  aura::Window* panel_container = CreateContainer(
+      kShellWindowId_CaptureModeSearchResultsPanel,
+      "SearchResultsPanelContainer", lock_screen_related_containers);
+  ::wm::SetChildWindowVisibilityChangesAnimated(panel_container);
+  panel_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* accessibility_bubble_container = CreateContainer(
       kShellWindowId_AccessibilityBubbleContainer,

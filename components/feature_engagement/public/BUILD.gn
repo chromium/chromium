@@ -2,14 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_chromeos) {
-  import("//build/config/chromeos/ui_mode.gni")
-}
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
+}
+
+component("feature_constants") {
+  defines = [ "IS_FEATURE_ENGAGEMENT_FEATURE_CONSTANTS_IMPL" ]
+
+  sources = [
+    "feature_constants.cc",
+    "feature_constants.h",
+    "feature_list.cc",
+    "feature_list.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/flags_ui",
+    "//extensions/buildflags",
+  ]
 }
 
 static_library("public") {
@@ -24,10 +38,6 @@ static_library("public") {
     "event_constants.h",
     "feature_configurations.cc",
     "feature_configurations.h",
-    "feature_constants.cc",
-    "feature_constants.h",
-    "feature_list.cc",
-    "feature_list.h",
     "field_trial_configuration_provider.cc",
     "field_trial_configuration_provider.h",
     "field_trial_utils.cc",
@@ -47,7 +57,11 @@ static_library("public") {
     "tracker.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":feature_constants",
+    "//base",
+  ]
+
   deps = [
     "//build:branding_buildflags",
     "//components/feed:feature_list",

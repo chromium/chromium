@@ -118,7 +118,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   auto features = BuildPredictionRequestFeatures(request);
   if (!base::FeatureList::IsEnabled(
           permissions::features::kPermissionPredictionsV3) ||
-      prediction_source == PredictionSource::USE_ONDEVICE) {
+      prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
       VLOG(1) << "[CPSS] Historic prompt count ("
@@ -163,7 +163,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (prediction_source == PredictionSource::USE_ONDEVICE) {
+  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
     permissions::PredictionModelHandlerProvider*
         prediction_model_handler_provider =
             PredictionModelHandlerProviderFactory::GetForBrowserContext(
@@ -176,7 +176,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     }
     if (prediction_model_handler &&
         prediction_model_handler->ModelAvailable()) {
-      VLOG(1) << "[CPSS] Using locally available model";
+      VLOG(1) << "[CPSS] Using locally available TFLitemodel";
       permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
           permissions::PermissionPredictionSource::ON_DEVICE);
       auto proto_request = GetPredictionRequestProto(features);
@@ -189,13 +189,13 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
           std::move(proto_request));
       return;
     } else {
-      VLOG(1) << "[CPSS] On device model unavailable";
+      VLOG(1) << "[CPSS] On device TFLite model unavailable";
       std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
       return;
     }
   }
 #else
-  if (prediction_source == PredictionSource::USE_ONDEVICE) {
+  if (prediction_source == PredictionSource::USE_ONDEVICE_TFLITE) {
     VLOG(1) << "[CPSS] Client doesnt support tflite";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
@@ -370,32 +370,33 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
     return PredictionSource::USE_NONE;
   }
 
-  bool is_tflite_available = false;
+  bool use_server_side = false;
+  if (is_msbb_enabled) {
+#if BUILDFLAG(IS_ANDROID)
+    use_server_side = base::FeatureList::IsEnabled(
+        permissions::features::kPermissionDedicatedCpssSettingAndroid);
+#else
+    use_server_side = base::FeatureList::IsEnabled(
+        permissions::features::kPermissionPredictionsV2);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+  if (use_server_side) {
+    return PredictionSource::USE_SERVER_SIDE;
+  }
+
+  bool use_ondevice_tflite = false;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  is_tflite_available = true;
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  bool is_on_device_enabled = false;
-
   if (request_type == permissions::RequestType::kNotifications) {
-    is_on_device_enabled = base::FeatureList::IsEnabled(
+    use_ondevice_tflite = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceNotificationPredictions);
   } else if (request_type == permissions::RequestType::kGeolocation) {
-    is_on_device_enabled = base::FeatureList::IsEnabled(
+    use_ondevice_tflite = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (is_msbb_enabled &&
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionDedicatedCpssSettingAndroid)) {
-#else
-  if (is_msbb_enabled && base::FeatureList::IsEnabled(
-                             permissions::features::kPermissionPredictionsV2)) {
-#endif
-    return PredictionSource::USE_SERVER_SIDE;
-  } else if (is_tflite_available && is_on_device_enabled) {
-    return PredictionSource::USE_ONDEVICE;
-  } else {
-    return PredictionSource::USE_NONE;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (use_ondevice_tflite) {
+    return PredictionSource::USE_ONDEVICE_TFLITE;
   }
+
+  return PredictionSource::USE_NONE;
 }

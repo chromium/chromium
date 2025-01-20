@@ -33,8 +33,7 @@ ExtensionTask::ExtensionTask(content::WebContents* web_contents,
   LoadExtensionIcon(extension);
 }
 
-ExtensionTask::~ExtensionTask() {
-}
+ExtensionTask::~ExtensionTask() = default;
 
 void ExtensionTask::UpdateTitle() {
   // The title of the extension should not change as a result of title change

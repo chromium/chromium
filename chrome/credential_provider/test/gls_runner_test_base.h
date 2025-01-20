@@ -16,6 +16,8 @@
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+class GaiaId;
+
 namespace credential_provider {
 
 namespace testing {
@@ -39,7 +41,7 @@ class GlsRunnerTestBase : public ::testing::Test {
   // other command line arguments require a specific error code to be returned.
   static HRESULT GetFakeGlsCommandline(UiExitCodes default_exit_code,
                                        const std::string& gls_email,
-                                       const std::string& gaia_id_override,
+                                       const GaiaId& gaia_id_override,
                                        const std::string& gaia_password,
                                        const std::string& full_name_override,
                                        const std::wstring& start_gls_event_name,

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
+
+#include "base/win/atl.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
-#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
-#include "chrome/credential_provider/gaiacp/stdafx.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,17 +49,17 @@ TEST_F(GcpOSGaiaUserManagerTest, CreateGaiaUserTest) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_FALSE(nullptr == sid);
 
-  wchar_t gaia_username[kWindowsUsernameBufferLength] = {0};
+  wchar_t gaia_username[kWindowsUsernameBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
                                    std::size(gaia_username));
   EXPECT_EQ(S_OK, hr);
 
-  wchar_t password[kWindowsPasswordBufferLength] = {0};
+  wchar_t password[kWindowsPasswordBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, password,
                                    std::size(password));
   EXPECT_EQ(S_OK, hr);
 
-  wchar_t stored_sid[kWindowsSidBufferLength] = {0};
+  wchar_t stored_sid[kWindowsSidBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaSid, stored_sid,
                                    std::size(stored_sid));
   EXPECT_EQ(S_OK, hr);
@@ -98,7 +100,7 @@ TEST_F(GcpOSGaiaUserManagerTest, ChangeGaiaUserPasswordIfNeededNoStoredSid) {
 
   EXPECT_STRNE(password.c_str(), new_password);
 
-  wchar_t stored_gaia_sid[kWindowsSidBufferLength] = {0};
+  wchar_t stored_gaia_sid[kWindowsSidBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaSid, stored_gaia_sid,
                                    std::size(stored_gaia_sid));
   ASSERT_EQ(S_OK, hr);

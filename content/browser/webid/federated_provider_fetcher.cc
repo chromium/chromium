@@ -56,21 +56,23 @@ FederatedProviderFetcher::FederatedProviderFetcher(
 FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
 void FederatedProviderFetcher::Start(
-    const std::set<GURL>& identity_provider_config_urls,
+    const std::vector<FetchRequest>& requested_providers,
     blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
     int icon_minimum_size,
     RequesterCallback callback) {
   callback_ = std::move(callback);
 
-  for (const GURL& identity_provider_config_url :
-       identity_provider_config_urls) {
+  for (const auto& request : requested_providers) {
     FetchResult fetch_result;
-    fetch_result.identity_provider_config_url = identity_provider_config_url;
+    fetch_result.identity_provider_config_url =
+        request.identity_provider_config_url;
+    fetch_result.force_skip_well_known_enforcement =
+        request.force_skip_well_known_enforcement;
     fetch_results_.push_back(std::move(fetch_result));
 
-    pending_well_known_fetches_.insert(identity_provider_config_url);
-    pending_config_fetches_.insert(identity_provider_config_url);
+    pending_well_known_fetches_.insert(request.identity_provider_config_url);
+    pending_config_fetches_.insert(request.identity_provider_config_url);
   }
 
   // In a separate loop to avoid invalidating references when adding elements to
@@ -97,8 +99,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   constexpr char kWellKnownFileStr[] = "well-known file";
 
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess &&
-      !ShouldSkipWellKnownEnforcementForIdp(
-          fetch_result.identity_provider_config_url)) {
+      !ShouldSkipWellKnownEnforcementForIdp(fetch_result)) {
     std::optional<std::string> additional_console_error_message =
         webid::ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
                                                         status.response_code);
@@ -242,11 +243,9 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       url::Origin::Create(result.identity_provider_config_url);
 
   bool is_login_url_valid =
-      webid::GetIdpSigninStatusMode(render_frame_host_.get(), idp_origin) !=
-          FedCmIdpSigninStatusMode::ENABLED ||
-      (result.metadata &&
-       webid::IsEndpointSameOrigin(result.identity_provider_config_url,
-                                   result.metadata->idp_login_url));
+      result.metadata &&
+      webid::IsEndpointSameOrigin(result.identity_provider_config_url,
+                                  result.metadata->idp_login_url);
 
   if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
     std::string console_message =
@@ -277,8 +276,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   //     contains the config url passed in the JS call
 
   // (a)
-  if (ShouldSkipWellKnownEnforcementForIdp(
-          result.identity_provider_config_url)) {
+  if (ShouldSkipWellKnownEnforcementForIdp(result)) {
     return;
   }
 
@@ -355,14 +353,18 @@ void FederatedProviderFetcher::RunCallbackIfDone() {
 }
 
 bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
-    const GURL& idp_url) {
+    const FetchResult& fetch_result) {
   if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
+    return true;
+  }
+  if (fetch_result.force_skip_well_known_enforcement) {
     return true;
   }
 
   // Skip if RP and IDP are same-site.
-  return webid::IsSameSite(render_frame_host_->GetLastCommittedOrigin(),
-                           url::Origin::Create(idp_url));
+  return webid::IsSameSite(
+      render_frame_host_->GetLastCommittedOrigin(),
+      url::Origin::Create(fetch_result.identity_provider_config_url));
 }
 
 }  // namespace content

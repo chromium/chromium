@@ -21,6 +21,8 @@ class ExceptionState;
 class ScriptState;
 class SharedStorageWorklet;
 class SharedStorageSetMethodOptions;
+class SharedStorageModifierMethodOptions;
+class SharedStorageModifierMethod;
 class SharedStorageRunOperationMethodOptions;
 class SharedStorageUrlWithMetadata;
 class SharedStorageWorklet;
@@ -45,16 +47,37 @@ class MODULES_EXPORT SharedStorage final
   ScriptPromise<IDLAny> set(ScriptState*,
                             const String& key,
                             const String& value,
-                            const SharedStorageSetMethodOptions* options,
+                            const SharedStorageSetMethodOptions*,
                             ExceptionState&);
   ScriptPromise<IDLAny> append(ScriptState*,
                                const String& key,
                                const String& value,
                                ExceptionState&);
+  ScriptPromise<IDLAny> append(ScriptState*,
+                               const String& key,
+                               const String& value,
+                               const SharedStorageModifierMethodOptions*,
+                               ExceptionState&);
   ScriptPromise<IDLAny> Delete(ScriptState*,
                                const String& key,
                                ExceptionState&);
+  ScriptPromise<IDLAny> Delete(ScriptState*,
+                               const String& key,
+                               const SharedStorageModifierMethodOptions*,
+                               ExceptionState&);
   ScriptPromise<IDLAny> clear(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLAny> clear(ScriptState*,
+                              const SharedStorageModifierMethodOptions*,
+                              ExceptionState&);
+  ScriptPromise<IDLAny> batchUpdate(
+      ScriptState*,
+      const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+      ExceptionState&);
+  ScriptPromise<IDLAny> batchUpdate(
+      ScriptState*,
+      const HeapVector<Member<SharedStorageModifierMethod>>& methods,
+      const SharedStorageModifierMethodOptions*,
+      ExceptionState&);
   ScriptPromise<IDLString> get(ScriptState*,
                                const String& key,
                                ExceptionState&);

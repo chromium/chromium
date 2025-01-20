@@ -30,7 +30,7 @@ StatusIndicatorSceneLayer::StatusIndicatorSceneLayer(
   view_container_->AddChild(view_layer_);
 }
 
-StatusIndicatorSceneLayer::~StatusIndicatorSceneLayer() {}
+StatusIndicatorSceneLayer::~StatusIndicatorSceneLayer() = default;
 
 void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
     JNIEnv* env,

@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
+
 @protocol PriceTrackingPromoCommands;
 @class PriceTrackingPromoItem;
 
 // View for the Price Tracking Promo module.
-@interface PriceTrackingPromoModuleView : UIView
+@interface PriceTrackingPromoModuleView
+    : UIView <PriceTrackingPromoFaviconConsumer>
 
 // Configures this view with `config`.
 - (void)configureView:(PriceTrackingPromoItem*)config;

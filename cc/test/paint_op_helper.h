@@ -598,6 +598,8 @@ class PaintOpHelper {
         return "kImage";
       case PaintShader::Type::kPaintRecord:
         return "kPaintRecord";
+      case PaintShader::Type::kSkSLCommand:
+        return "kSkSLCommand";
       case PaintShader::Type::kShaderCount:
         return "kShaderCount";
     }

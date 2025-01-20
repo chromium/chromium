@@ -17,13 +17,12 @@ import static org.chromium.chrome.browser.notifications.NotificationConstants.NO
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -36,8 +35,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
-import javax.inject.Inject;
-
 /**
  * Displays a notification when the user is on the verified domain. The first such notification (per
  * TWA) is urgent priority, subsequent ones are low priority.
@@ -48,14 +45,15 @@ public class DisclosureNotification
     private final TrustedWebActivityModel mModel;
     private String mCurrentScope;
 
-    @Inject
-    DisclosureNotification(
-            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
+    public DisclosureNotification(
+            Resources resources,
+            TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mResources = resources;
         mModel = model;
 
         mModel.addObserver(this);
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     private void show() {
@@ -89,17 +87,14 @@ public class DisclosureNotification
     private NotificationWrapper createNotification(
             boolean firstTime, String scope, String packageName) {
         int umaType;
-        int preOPriority;
         int notificationId;
         String channelId;
         if (firstTime) {
             umaType = NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_INITIAL;
-            preOPriority = NotificationCompat.PRIORITY_MAX;
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS;
             notificationId = NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL;
         } else {
             umaType = NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT;
-            preOPriority = NotificationCompat.PRIORITY_MIN;
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
             notificationId = NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT;
         }
@@ -136,7 +131,6 @@ public class DisclosureNotification
                 .setSound(null)
                 .setBigTextStyle(text)
                 .setOngoing(!firstTime)
-                .setPriorityBeforeO(preOPriority)
                 .buildNotificationWrapper();
     }
 

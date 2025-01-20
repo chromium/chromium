@@ -82,7 +82,7 @@ namespace base {
 //   using ScopedBar = ScopedGeneric<int, BarScopedTraits>;
 struct ScopedGenericOwnershipTracking {};
 
-template<typename T, typename Traits>
+template <typename T, typename Traits>
 class ScopedGeneric {
  private:
   // This must be first since it's used inline below.
@@ -138,8 +138,10 @@ class ScopedGeneric {
   // object, if given. Self-resets are not allowd as on unique_ptr. See
   // http://crbug.com/162971
   void reset(const element_type& value = traits_type::InvalidValue()) {
-    if (data_.generic != traits_type::InvalidValue() && data_.generic == value)
+    if (data_.generic != traits_type::InvalidValue() &&
+        data_.generic == value) {
       abort();
+    }
     FreeIfNecessary();
     data_.generic = value;
     TrackAcquire(value);
@@ -282,27 +284,27 @@ class ScopedGeneric {
   // Forbid comparison. If U != T, it totally doesn't make sense, and if U ==
   // T, it still doesn't make sense because you should never have the same
   // object owned by two different ScopedGenerics.
-  template <typename T2, typename Traits2> bool operator==(
-      const ScopedGeneric<T2, Traits2>& p2) const;
-  template <typename T2, typename Traits2> bool operator!=(
-      const ScopedGeneric<T2, Traits2>& p2) const;
+  template <typename T2, typename Traits2>
+  bool operator==(const ScopedGeneric<T2, Traits2>& p2) const;
+  template <typename T2, typename Traits2>
+  bool operator!=(const ScopedGeneric<T2, Traits2>& p2) const;
 
   Data data_;
   bool receiving_ = false;
 };
 
-template<class T, class Traits>
+template <class T, class Traits>
 void swap(const ScopedGeneric<T, Traits>& a,
           const ScopedGeneric<T, Traits>& b) {
   a.swap(b);
 }
 
-template<class T, class Traits>
+template <class T, class Traits>
 bool operator==(const T& value, const ScopedGeneric<T, Traits>& scoped) {
   return value == scoped.get();
 }
 
-template<class T, class Traits>
+template <class T, class Traits>
 bool operator!=(const T& value, const ScopedGeneric<T, Traits>& scoped) {
   return value != scoped.get();
 }

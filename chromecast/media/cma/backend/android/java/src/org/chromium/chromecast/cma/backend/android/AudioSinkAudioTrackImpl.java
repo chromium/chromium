@@ -416,10 +416,6 @@ class AudioSinkAudioTrackImpl {
         return mAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_STOPPED;
     }
 
-    private boolean isPlaying() {
-        return mAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING;
-    }
-
     private boolean isPaused() {
         return mAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED;
     }

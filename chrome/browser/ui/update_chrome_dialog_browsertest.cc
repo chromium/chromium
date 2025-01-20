@@ -9,7 +9,7 @@
 
 class UpdateRecommendedDialogTest : public DialogBrowserTest {
  public:
-  UpdateRecommendedDialogTest() {}
+  UpdateRecommendedDialogTest() = default;
 
   UpdateRecommendedDialogTest(const UpdateRecommendedDialogTest&) = delete;
   UpdateRecommendedDialogTest& operator=(const UpdateRecommendedDialogTest&) =

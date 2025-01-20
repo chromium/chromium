@@ -226,6 +226,7 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
 #endif
 
 - (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   if (self.URLIsExpanded) {
     self.expandURLButton.hidden = YES;
     self.URLLabel.numberOfLines = 0;

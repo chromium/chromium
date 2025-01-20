@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/braille_display_private/brlapi_connection.h"
 
 #include <errno.h>
 
+#include <array>
 #include <string>
 
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -83,7 +79,7 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
     VLOG(1) << "Error connecting to brlapi: " << BrlapiStrError();
     return ConnectResultForError();
   }
-  int path[2] = {0, 0};
+  std::array path = {0, 0};
   int pathElements = 0;
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::SysInfo::IsRunningOnChromeOS())
@@ -92,7 +88,7 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
   if (pathElements == 0 && getenv("WINDOWPATH") == nullptr)
     path[pathElements++] = kDefaultTtyLinux;
   if (libbrlapi_loader_->brlapi__enterTtyModeWithPath(
-          handle_.get(), path, pathElements, nullptr) < 0) {
+          handle_.get(), &path[0], pathElements, nullptr) < 0) {
     LOG(ERROR) << "brlapi: couldn't enter tty mode: " << BrlapiStrError();
     Disconnect();
     return CONNECT_ERROR_RETRY;

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -21,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -30,6 +32,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -86,6 +89,15 @@ TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
   EXPECT_EQ(gfx::Rect(gfx::Point(10, 10),
                       gfx::Size(kPanelDefaultWidth, kPanelDefaultHeight)),
             widget->GetRestoredBounds());
+}
+
+TEST_F(MahiPanelWidgetTest, AccessibleTitle) {
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(10, 10, 300, 300), &ui_controller_);
+
+  EXPECT_EQ(widget->GetRootView()->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE));
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {

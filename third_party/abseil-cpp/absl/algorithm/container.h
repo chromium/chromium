@@ -131,6 +131,8 @@ struct IsUnorderedContainer<std::unordered_set<Key, Hash, KeyEqual, Allocator>>
 //
 // Container-based version of absl::linear_search() for performing a linear
 // search within a container.
+//
+// For a generalization that uses a predicate, see absl::c_any_of().
 template <typename C, typename EqualityComparable>
 ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 bool c_linear_search(
     const C& c, EqualityComparable&& value) {

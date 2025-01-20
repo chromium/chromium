@@ -32,10 +32,14 @@ TEST(DiscoveryNetworkListTest, GetDiscoveryNetworkInfoList) {
 
 TEST(DiscoveryNetworkListTest, StableSortDiscoveryNetworkInfoUnique) {
   std::vector<DiscoveryNetworkInfo> network_info({
-      {"wlan0", "ssid0"}, {"wlan1", "ssid1"}, {"eth0", "de:ad:be:ef:00:11"},
+      {"wlan0", "ssid0"},
+      {"wlan1", "ssid1"},
+      {"eth0", "de:ad:be:ef:00:11"},
   });
   std::vector<DiscoveryNetworkInfo> sorted_network_info({
-      {"eth0", "de:ad:be:ef:00:11"}, {"wlan0", "ssid0"}, {"wlan1", "ssid1"},
+      {"eth0", "de:ad:be:ef:00:11"},
+      {"wlan0", "ssid0"},
+      {"wlan1", "ssid1"},
   });
 
   StableSortDiscoveryNetworkInfo(network_info.begin(), network_info.end());
@@ -45,10 +49,14 @@ TEST(DiscoveryNetworkListTest, StableSortDiscoveryNetworkInfoUnique) {
 
 TEST(DiscoveryNetworkListTest, StableSortDiscoveryNetworkInfoDuplicates) {
   std::vector<DiscoveryNetworkInfo> network_info({
-      {"wlan1", "ssid0"}, {"eth0", "de:ad:be:ef:00:11"}, {"wlan0", "ssid0"},
+      {"wlan1", "ssid0"},
+      {"eth0", "de:ad:be:ef:00:11"},
+      {"wlan0", "ssid0"},
   });
   std::vector<DiscoveryNetworkInfo> sorted_network_info({
-      {"eth0", "de:ad:be:ef:00:11"}, {"wlan1", "ssid0"}, {"wlan0", "ssid0"},
+      {"eth0", "de:ad:be:ef:00:11"},
+      {"wlan1", "ssid0"},
+      {"wlan0", "ssid0"},
   });
 
   StableSortDiscoveryNetworkInfo(network_info.begin(), network_info.end());

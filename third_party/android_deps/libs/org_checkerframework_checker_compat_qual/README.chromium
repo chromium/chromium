@@ -2,7 +2,7 @@ Name: Checker Qual
 Short Name: checker-compat-qual
 URL: https://checkerframework.org
 Version: 2.5.5
-License: GPL v2 with the classpath exception
+License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

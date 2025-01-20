@@ -137,10 +137,7 @@ class InterestGroupAuctionReporterTest
         winning_bid_info_(GetWinningBidInfo()) {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}},
-                              {blink::features::
-                                   kPrivateAggregationApiFilteringIds,
-                               {}}},
+                               {{"fledge_extensions_enabled", "true"}}}},
         /*disabled_features=*/{});
 
     mojo::SetDefaultProcessErrorHandler(
@@ -183,6 +180,7 @@ class InterestGroupAuctionReporterTest
 
     winning_bid_info_.render_url = GURL((*interest_group.ads)[0].render_url());
     winning_bid_info_.ad_metadata = kWinningAdMetadata;
+    winning_bid_info_.bid_ad = &(*interest_group.ads)[0];
 
     // The actual value doesn't matter for tests, but need to set some value as
     // it doesn't have a default one.
@@ -2445,20 +2443,7 @@ TEST(InterestGroupAuctionReporterStochasticRounding, ApproximatesTrueSum) {
   EXPECT_LT(total, 1.1 * kInput * kIterations);
 }
 
-class InterestGroupAuctionReporterAdMacroReportingEnabledTest
-    : public InterestGroupAuctionReporterTest {
- public:
-  InterestGroupAuctionReporterAdMacroReportingEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kAdAuctionReportingWithMacroApi);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       SingleSellerReportMacros) {
+TEST_F(InterestGroupAuctionReporterTest, SingleSellerReportMacros) {
   SetUpAndStartSingleSellerAuction();
   // The macros should be empty from the start.
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
@@ -2491,8 +2476,7 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
                   testing::UnorderedElementsAreArray(kAdMacros))));
 }
 
-TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       ComponentAuctionReportMacros) {
+TEST_F(InterestGroupAuctionReporterTest, ComponentAuctionReportMacros) {
   SetUpAndStartComponentAuction();
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
                   ->GetAdMacrosForTesting(),

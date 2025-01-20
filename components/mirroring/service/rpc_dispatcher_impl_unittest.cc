@@ -102,8 +102,8 @@ TEST_F(RpcDispatcherImplTest, ReceivesMessages) {
   dispatcher().OnMessage(kMessage);
 
   EXPECT_CALL(*this, OnMessage(testing::ElementsAre(1, 2, 3, 4)));
-  dispatcher().Subscribe(base::BindRepeating(
-      &RpcDispatcherImplTest::OnMessage, base::Unretained(this)));
+  dispatcher().Subscribe(base::BindRepeating(&RpcDispatcherImplTest::OnMessage,
+                                             base::Unretained(this)));
   dispatcher().OnMessage(kMessage);
 }
 

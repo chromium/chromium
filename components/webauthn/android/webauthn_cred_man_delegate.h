@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 
@@ -20,10 +23,13 @@ class WebAuthnCredManDelegate {
  public:
   using RequestPasswords = base::StrongAlias<class RequestPasswordsTag, bool>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum State {
-    kNotReady,
-    kNoPasskeys,
-    kHasPasskeys,
+    kNotReady = 0,
+    kNoPasskeys = 1,
+    kHasPasskeys = 2,
+    kMaxValue = kHasPasskeys
   };
 
   enum CredManEnabledMode {

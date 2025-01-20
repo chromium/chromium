@@ -46,11 +46,6 @@ BUILDER_EXCLUDE_SET = set([
 TEST_SUITE_EXCLUDE_SET = set([
     # 'chrome_all_tast_tests': crbug.com/1516971
     'chrome_all_tast_tests',
-    # TODO(crbug.com/40927590): Remove `*headless_shell_wpt_tests` exceptions
-    # once the migration is complete and sharding doesn't need to be manually
-    # managed anymore.
-    'headless_shell_wpt_tests',
-    'not_site_per_process_headless_shell_wpt_tests',
 ])
 
 # Test suite and try builder dicts that should not be autosharded any further.
@@ -318,11 +313,11 @@ def main(args):
                       help=('The percentile of suite durations to use to '
                             'calculate the current suite runtime.'))
   parser.add_argument('--min-sample-size',
-                      default=2000,
+                      default=1500,
                       type=int,
                       help=('The minimum number of times a suite must run '
                             'longer than the desired runtime, in order to be'
-                            ' resharded. 2000 is an appropriate default for '
+                            ' resharded. 1500 is an appropriate default for '
                             'a 14 day window. For something smaller like a '
                             'couple of days, the sample size should be much '
                             'smaller.'))

@@ -4,6 +4,7 @@
 """Definitions of builders in the tryserver.chromium.android builder group."""
 
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -76,6 +77,10 @@ try_.builder(
     mirrors = [
         "ci/android-desktop-x64-compile-rel",
     ],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     gn_args = gn_args.config(
         configs = [
             "ci/android-desktop-x64-compile-rel",

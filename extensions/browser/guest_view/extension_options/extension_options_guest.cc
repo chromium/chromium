@@ -60,6 +60,7 @@ std::unique_ptr<GuestViewBase> ExtensionOptionsGuest::Create(
 
 void ExtensionOptionsGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     GuestPageCreatedCallback callback) {
   // Get the extension's base URL.
@@ -117,11 +118,20 @@ void ExtensionOptionsGuest::CreateInnerPage(
 
 void ExtensionOptionsGuest::DidInitialize(
     const base::Value::Dict& create_params) {
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return;
   }
+
+  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
   GetController().LoadURL(options_page_, content::Referrer(),
                           ui::PAGE_TRANSITION_LINK, std::string());
+}
+
+void ExtensionOptionsGuest::DidAttachToEmbedder() {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GetController().LoadURL(options_page_, content::Referrer(),
+                            ui::PAGE_TRANSITION_LINK, std::string());
+  }
 }
 
 void ExtensionOptionsGuest::MaybeRecreateGuestContents(
@@ -212,10 +222,7 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
 
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  DispatchEventToView(std::make_unique<GuestViewEvent>(
-      api::extension_options_internal::OnClose::kEventName,
-      base::Value::Dict()));
+  GuestClose();
 }
 
 bool ExtensionOptionsGuest::GuestHandleContextMenu(
@@ -225,6 +232,12 @@ bool ExtensionOptionsGuest::GuestHandleContextMenu(
   return extension_options_guest_delegate_ &&
          extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
                                                               params);
+}
+
+void ExtensionOptionsGuest::GuestClose() {
+  DispatchEventToView(std::make_unique<GuestViewEvent>(
+      api::extension_options_internal::OnClose::kEventName,
+      base::Value::Dict()));
 }
 
 bool ExtensionOptionsGuest::HandleContextMenu(

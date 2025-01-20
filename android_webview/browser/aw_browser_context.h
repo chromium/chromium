@@ -151,6 +151,7 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
+  std::string GetExtraHeadersForUrl(const GURL& url) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
@@ -179,13 +180,9 @@ class AwBrowserContext : public content::BrowserContext,
 
   void ClearPersistentOriginTrialStorageForTesting(JNIEnv* env);
 
-  jboolean HasFormData(JNIEnv* env);
-  void ClearFormData(JNIEnv* env);
-
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
   void SetExtraHeaders(const GURL& url, const std::string& headers);
-  std::string GetExtraHeaders(const GURL& url);
 
  private:
   friend class AwBrowserContextIoThreadHandle;
@@ -207,6 +204,10 @@ class AwBrowserContext : public content::BrowserContext,
   base::FilePath http_cache_path_;
 
   scoped_refptr<AwQuotaManagerBridge> quota_manager_bridge_;
+
+  // Cleans up the database tables created by the AwFormDatabaseService
+  // until M132.
+  // TODO(crbug.com/390473673): Remove after M143.
   std::unique_ptr<AwFormDatabaseService> form_database_service_;
 
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;

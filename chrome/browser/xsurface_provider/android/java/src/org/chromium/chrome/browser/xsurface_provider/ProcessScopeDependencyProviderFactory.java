@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.xsurface_provider;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
  * Note that ProcessScopeDependencyProvider is sometimes needed in response to a Native call,
  * we use this through reflection rather than simply injecting an instance.
  */
+@NullMarked
 public interface ProcessScopeDependencyProviderFactory {
     /** Constructs and returns a ProcessScopeDependencyProvider instance. */
     ProcessScopeDependencyProvider create();

@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -104,6 +106,10 @@ class MODULES_EXPORT MediaDevices final
                               const CaptureHandleConfig*,
                               ExceptionState&);
 
+  ScriptPromise<IDLUndefined> setPreferredSinkId(ScriptState*,
+                                                 const String& sink_id,
+                                                 ExceptionState&);
+
   // Allow the factory methods for SubCaptureTarget subtypes to communicate
   // with the browser process through the mojom pipe that `this` owns.
   // TODO(crbug.com/1332628): Move most of the logic into
@@ -129,6 +135,8 @@ class MODULES_EXPORT MediaDevices final
   // mojom::blink::MediaDevicesListener implementation.
   void OnDevicesChanged(mojom::blink::MediaDeviceType,
                         const Vector<WebMediaDeviceInfo>&) override;
+
+  void MaybeFireDeviceChangeEvent(bool has_permission);
 
   void SetDispatcherHostForTesting(
       mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>);
@@ -175,12 +183,15 @@ class MODULES_EXPORT MediaDevices final
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
+  void SetPreferredSinkIdResultReceived(
+      const String& sink_id,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
+      media::mojom::blink::OutputDeviceStatus status);
 
   void OnSelectAudioOutputResult(
       ScriptPromiseResolverWithTracker<AudioOutputSelectionResult,
                                        MediaDeviceInfo>* resolver,
       mojom::blink::SelectAudioOutputResultPtr result);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call

@@ -42,11 +42,11 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -107,10 +107,12 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #else
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::CalculateFormSignature;
@@ -126,6 +128,7 @@ using autofill::test::CreateTestFormField;
 using content::BrowserContext;
 using content::WebContents;
 
+using password_manager::ContentPasswordManagerDriver;
 using password_manager::PasswordForm;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerSetting;
@@ -275,8 +278,7 @@ class FakePasswordAutofillAgent
       const std::u16string& username,
       const std::u16string& password) override {}
 
-  void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) override {}
+  void InformNoSavedCredentials() override {}
 
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override {}
@@ -286,6 +288,13 @@ class FakePasswordAutofillAgent
       autofill::FieldRendererId field_id,
       const std::u16string& value,
       autofill::AutofillSuggestionTriggerSource suggestion_source) override {}
+  void SubmitChangePasswordForm(
+      FieldRendererId password_element_id,
+      FieldRendererId new_password_element_id,
+      FieldRendererId confirm_password_element_id,
+      const std::u16string& old_password,
+      const std::u16string& new_password,
+      SubmitChangePasswordFormCallback callback) override {}
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override {}
   void SetLoggingState(bool active) override {
@@ -391,6 +400,8 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   // returns false.
   bool WasLoggingActivationMessageSent(bool* activation_flag);
 
+  FormData CreateLoginFormData();
+
   FakePasswordAutofillAgent fake_agent_;
   ScopedTestingLocalState local_state_;
 
@@ -398,11 +409,18 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_ = ui::WindowAndroid::CreateForTesting();
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 void ChromePasswordManagerClientTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_ANDROID)
+  window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
+#endif  // BUILDFLAG(IS_ANDROID)
   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
       GetBrowserContext(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
@@ -449,6 +467,16 @@ bool ChromePasswordManagerClientTest::WasLoggingActivationMessageSent(
   return true;
 }
 
+FormData ChromePasswordManagerClientTest::CreateLoginFormData() {
+  FormData form = CreateFormDataForRenderFrameHost(
+      *main_rfh(), {CreateTestFormField("Username", "username", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Password", "password", "",
+                                        FormControlType::kInputPassword)});
+  form.set_name(u"login");
+  return form;
+}
+
 TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
   bool logging_active = true;
   // Ensure the existence of a driver, which will send the IPCs we listen for
@@ -465,6 +493,12 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile());
   log_router->RegisterReceiver(&log_receiver);
+
+  // Now that the log router has a receiver, create the log manager, which
+  // should notify upon construction that logging is now available.
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_TRUE(log_manager && log_manager->IsLoggingActive());
+
   EXPECT_TRUE(WasLoggingActivationMessageSent(&logging_active));
   EXPECT_TRUE(logging_active);
 
@@ -577,13 +611,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(autofill_driver);
 
-  FormData form = CreateFormDataForRenderFrameHost(
-      *main_rfh(), {CreateTestFormField("Username", "username", "",
-                                        FormControlType::kInputText),
-                    CreateTestFormField("Password", "password", "",
-                                        FormControlType::kInputPassword)});
-  form.set_name(u"login");
-
+  FormData form = CreateLoginFormData();
   {
     autofill::TestAutofillManagerWaiter waiter(
         autofill_driver->GetAutofillManager(),
@@ -600,8 +628,54 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 
-  EXPECT_THAT(GetClient()->GetPasswordManager()->GetFormPredictionsForTesting(),
+  EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
+                  GetClient()->GetPasswordManager())
+                  ->GetServerPredictionsForTesting(),
               UnorderedElementsAre(Key(CalculateFormSignature(form))));
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       ReceivesPasswordFormClassifierPredictions) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::kPasswordFormClientsideClassifier);
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+
+  NavigateAndCommit(GURL(kUrl));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  ContentPasswordManagerDriver* password_driver =
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(password_driver);
+
+  FormData form = CreateLoginFormData();
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+  }
+
+  // Simulate that the field types have been determined.
+  using Observer = autofill::AutofillManager::Observer;
+  autofill_driver->GetAutofillManager().NotifyObservers(
+      &Observer::OnFieldTypesDetermined, form.global_id(),
+      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+
+  auto received_predictions =
+      static_cast<const password_manager::PasswordManager*>(
+          GetClient()->GetPasswordManager())
+          ->GetClassifierModelPredictionsForTesting();
+  // Check that predictions are available for the form.
+  auto form_key = std::make_pair(password_driver, form.renderer_id());
+  ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
+  // Check that predictions are available for all form fields.
+  EXPECT_THAT(received_predictions[form_key],
+              UnorderedElementsAre(Key(form.fields()[0].renderer_id()),
+                                   Key(form.fields()[1].renderer_id())));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -664,7 +738,7 @@ TEST_F(ChromePasswordManagerClientTest,
   // receives predictions for both the main and the child form.
   EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
                   GetClient()->GetPasswordManager())
-                  ->GetFormPredictionsForTesting(),
+                  ->GetServerPredictionsForTesting(),
               UnorderedElementsAre(Key(CalculateFormSignature(main_form)),
                                    Key(CalculateFormSignature(child_form))));
 }
@@ -1061,7 +1135,9 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
 
   // But then navigate to a WebUI, there the logging should not be active.
   NavigateAndCommit(GURL("chrome://password-manager-internals/"));
-  EXPECT_FALSE(GetClient()->GetLogManager()->IsLoggingActive());
+
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_FALSE(log_manager && log_manager->IsLoggingActive());
 
   log_router->UnregisterReceiver(&log_receiver);
 }
@@ -1765,18 +1841,26 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 
-class MockPasswordCrossDomainConfirmationPopupController
-    : public password_manager::PasswordCrossDomainConfirmationPopupController {
+class FakePasswordCrossDomainConfirmationPopupView
+    : public PasswordCrossDomainConfirmationPopupView {
  public:
-  MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
-  MOCK_METHOD(void,
-              Show,
-              (const gfx::RectF&,
-               base::i18n::TextDirection,
-               const GURL&,
-               const std::u16string&,
-               base::OnceClosure),
-              (override));
+  explicit FakePasswordCrossDomainConfirmationPopupView(
+      base::OnceClosure confirmation_callback)
+      : confirmation_callback_(std::move(confirmation_callback)) {}
+
+  void Confirm() { std::move(confirmation_callback_).Run(); }
+
+  MOCK_METHOD(void, Hide, (), (override));
+  MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const, override));
+
+  base::WeakPtr<PasswordCrossDomainConfirmationPopupView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::OnceClosure confirmation_callback_;
+  base::WeakPtrFactory<FakePasswordCrossDomainConfirmationPopupView>
+      weak_ptr_factory_{this};
 };
 
 TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
@@ -1787,27 +1871,84 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
   web_contents()->GetNativeView()->SetBounds(gfx::Rect(100, 100, 1000, 1000));
 #endif  // !BUILDFLAG(IS_MAC)
 
-  base::MockRepeatingCallback<std::unique_ptr<
-      password_manager::PasswordCrossDomainConfirmationPopupController>()>
+  // Controller requests the focused frame, this call makes sure there is one.
+  FocusWebContentsOnMainFrame();
+
+  base::MockRepeatingCallback<
+      std::unique_ptr<PasswordCrossDomainConfirmationPopupControllerImpl>()>
       popup_factory;
-  EXPECT_CALL(popup_factory, Run).WillOnce([&]() {
-    auto mock_controller =
-        std::make_unique<MockPasswordCrossDomainConfirmationPopupController>();
-    EXPECT_CALL(
-        *mock_controller,
-        Show(gfx::RectF(
-                 gfx::PointF(web_contents()->GetContainerBounds().origin()),
-                 gfx::SizeF(100, 100)),
-             base::i18n::TextDirection::LEFT_TO_RIGHT,
-             GURL("https://google.com"), std::u16string(u"google.de"), _));
-    return mock_controller;
-  });
+  auto controller =
+      std::make_unique<PasswordCrossDomainConfirmationPopupControllerImpl>(
+          web_contents());
+  base::MockOnceClosure accepted_callback;
+  auto view = std::make_unique<FakePasswordCrossDomainConfirmationPopupView>(
+      accepted_callback.Get());
+  controller->set_view_factory_for_testing(base::BindRepeating(
+      [](FakePasswordCrossDomainConfirmationPopupView* view,
+         base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
+         const GURL& domain, const std::u16string& password_origin,
+         base::OnceClosure confirmation_callback,
+         base::OnceClosure cancel_callback) { return view->GetWeakPtr(); },
+      base::Unretained(view.get())));
+
+  EXPECT_CALL(popup_factory, Run)
+      .WillOnce(testing::Return(std::move(controller)));
   GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
       popup_factory.Get());
 
   GetClient()->ShowCrossDomainConfirmationPopup(
       gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-      GURL("https://google.com"), u"google.de", base::DoNothing());
+      GURL("https://google.com"), u"google.de", /*show_warning_text=*/false,
+      accepted_callback.Get());
+
+  EXPECT_CALL(accepted_callback, Run);
+  view->Confirm();
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePasswordManagerClientTest,
+       ShowAndAcceptCrossDomainConfirmationPopup) {
+  AcknowledgeGroupedCredentialSheetControllerTestHelper helper;
+  GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
+      base::BindRepeating(
+          &AcknowledgeGroupedCredentialSheetControllerTestHelper::
+              CreateController,
+          base::Unretained(&helper)));
+
+  base::MockOnceClosure accepted_callback;
+  // Need to store the returned controller to dismiss the sheet.
+  std::unique_ptr<
+      password_manager::PasswordCrossDomainConfirmationPopupController>
+      controller = GetClient()->ShowCrossDomainConfirmationPopup(
+          gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
+          GURL("https://google.com"), u"google.de", /*show_warning_text=*/true,
+          accepted_callback.Get());
+  EXPECT_CALL(accepted_callback, Run);
+  helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       ShowAndDeclineCrossDomainConfirmationPopup) {
+  AcknowledgeGroupedCredentialSheetControllerTestHelper helper;
+  GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
+      base::BindRepeating(
+          &AcknowledgeGroupedCredentialSheetControllerTestHelper::
+              CreateController,
+          base::Unretained(&helper)));
+
+  base::MockOnceClosure accepted_callback;
+  // Need to store the returned controller to dismiss the sheet.
+  std::unique_ptr<
+      password_manager::PasswordCrossDomainConfirmationPopupController>
+      controller = GetClient()->ShowCrossDomainConfirmationPopup(
+          gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
+          GURL("https://google.com"), u"google.de", /*show_warning_text=*/true,
+          accepted_callback.Get());
+  EXPECT_CALL(accepted_callback, Run).Times(0);
+  helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

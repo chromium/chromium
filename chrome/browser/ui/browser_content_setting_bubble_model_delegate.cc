@@ -28,7 +28,7 @@ BrowserContentSettingBubbleModelDelegate::
     : browser_(browser) {}
 
 BrowserContentSettingBubbleModelDelegate::
-    ~BrowserContentSettingBubbleModelDelegate() {}
+    ~BrowserContentSettingBubbleModelDelegate() = default;
 
 void BrowserContentSettingBubbleModelDelegate::ShowCollectedCookiesDialog(
     content::WebContents* web_contents) {
@@ -43,12 +43,13 @@ void BrowserContentSettingBubbleModelDelegate::ShowMediaSettingsPage() {
 
 void BrowserContentSettingBubbleModelDelegate::ShowContentSettingsPage(
     ContentSettingsType type) {
-  if (type == ContentSettingsType::PROTOCOL_HANDLERS)
+  if (type == ContentSettingsType::PROTOCOL_HANDLERS) {
     chrome::ShowSettingsSubPage(browser_, chrome::kHandlerSettingsSubPage);
-  else if (type == ContentSettingsType::COOKIES)
+  } else if (type == ContentSettingsType::COOKIES) {
     chrome::ShowSettingsSubPage(browser_, chrome::kCookieSettingsSubPage);
-  else
+  } else {
     chrome::ShowContentSettingsExceptions(browser_, type);
+  }
 }
 
 void BrowserContentSettingBubbleModelDelegate::ShowLearnMorePage(

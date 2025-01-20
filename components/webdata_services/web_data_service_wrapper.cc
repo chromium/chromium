@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_offer_sync_bridge.h"
@@ -130,6 +131,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       std::make_unique<autofill::AutofillSyncMetadataTable>());
   profile_database_->AddTable(
       std::make_unique<autofill::PaymentsAutofillTable>());
+  profile_database_->AddTable(std::make_unique<autofill::EntityTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
 #if BUILDFLAG(USE_BLINK)

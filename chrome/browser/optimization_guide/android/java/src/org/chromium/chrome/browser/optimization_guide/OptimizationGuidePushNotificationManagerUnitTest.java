@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -199,10 +199,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         // Flag state cannot change within the same process instance, so this behavior does not
         // actually get triggered in real usage.
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
-        FeatureList.mergeTestValues(testValues, /* replace= */ true);
+        FeatureOverrides.disable(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
 
         // Push another notification to trigger the clear.
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
@@ -229,7 +226,8 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
         final int overflowSize = 5;
-        OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE.setForTesting(overflowSize);
+        ChromeFeatureList.sOptimizationGuidePushNotificationsMaxCacheSize.setForTesting(
+                overflowSize);
 
         for (int i = 1; i <= overflowSize; i++) {
             Assert.assertEquals(

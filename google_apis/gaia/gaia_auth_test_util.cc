@@ -8,10 +8,11 @@
 
 namespace gaia {
 
+#include "google_apis/gaia/gaia_id.h"
 std::string GenerateOAuth2MintTokenConsentResult(
     std::optional<bool> approved,
     const std::optional<std::string>& encrypted_approval_data,
-    const std::optional<std::string>& obfuscated_id,
+    const std::optional<GaiaId>& obfuscated_id,
     base::Base64UrlEncodePolicy encode_policy) {
   OAuth2MintTokenConsentResult consent_result;
   if (approved.has_value())
@@ -19,7 +20,7 @@ std::string GenerateOAuth2MintTokenConsentResult(
   if (encrypted_approval_data.has_value())
     consent_result.set_encrypted_approval_data(encrypted_approval_data.value());
   if (obfuscated_id.has_value())
-    consent_result.set_obfuscated_id(obfuscated_id.value());
+    consent_result.set_obfuscated_id(obfuscated_id->ToString());
   std::string serialized_consent = consent_result.SerializeAsString();
   std::string encoded_consent;
   base::Base64UrlEncode(serialized_consent, encode_policy, &encoded_consent);

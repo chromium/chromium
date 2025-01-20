@@ -65,7 +65,7 @@ CGaiaCredentialProviderModule::CGaiaCredentialProviderModule()
       gcpw_extension_check_performed_(0),
       crashpad_initialized_(0) {}
 
-CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() {}
+CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() = default;
 
 // static
 HRESULT WINAPI
@@ -136,7 +136,7 @@ void CGaiaCredentialProviderModule::InitializeCrashReporting() {
 }
 
 void CGaiaCredentialProviderModule::LogProcessDetails() {
-  wchar_t process_name[MAX_PATH] = {0};
+  wchar_t process_name[MAX_PATH] = {};
   GetModuleFileName(nullptr, process_name, MAX_PATH);
 
   LOGFN(INFO) << "GCPW Initialized in " << process_name

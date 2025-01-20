@@ -37,6 +37,30 @@ void PDFDocumentHelper::BindPdfHost(
   pdf_helper->pdf_host_receivers_.Bind(rfh, std::move(pdf_host));
 }
 
+// static
+PDFDocumentHelper* PDFDocumentHelper::MaybeGetForWebContents(
+    content::WebContents* contents) {
+  PDFDocumentHelper* pdf_helper = nullptr;
+
+  // Iterate through each of the render frame hosts, because the frame
+  // associated to a PDFDocumentHelper is not guaranteed to be a specific frame.
+  // For example, if kPdfOopif feature is enabled, the frame is the top frame.
+  // If kPdfOopif is disabled, it is a child frame.
+  contents->ForEachRenderFrameHostWithAction(
+      [&pdf_helper](content::RenderFrameHost* rfh) {
+        auto* possible_pdf_helper =
+            PDFDocumentHelper::GetForCurrentDocument(rfh);
+        if (possible_pdf_helper) {
+          pdf_helper = possible_pdf_helper;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  return pdf_helper;
+}
+
 PDFDocumentHelper::PDFDocumentHelper(
     content::RenderFrameHost* rfh,
     std::unique_ptr<PDFDocumentHelperClient> client)
@@ -212,11 +236,30 @@ void PDFDocumentHelper::GetPdfBytes(
     uint32_t size_limit,
     pdf::mojom::PdfListener::GetPdfBytesCallback callback) {
   if (!remote_pdf_client_) {
-    std::move(callback).Run(
-        pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed, {});
+    std::move(callback).Run(pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+                            /*bytes=*/{}, /*page_count=*/0);
     return;
   }
   remote_pdf_client_->GetPdfBytes(size_limit, std::move(callback));
+}
+
+void PDFDocumentHelper::GetPageText(
+    int32_t page_index,
+    pdf::mojom::PdfListener::GetPageTextCallback callback) {
+  if (!remote_pdf_client_) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+  remote_pdf_client_->GetPageText(page_index, std::move(callback));
+}
+
+void PDFDocumentHelper::GetMostVisiblePageIndex(
+    pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback) {
+  if (!remote_pdf_client_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  remote_pdf_client_->GetMostVisiblePageIndex(std::move(callback));
 }
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {

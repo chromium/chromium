@@ -68,6 +68,9 @@ interface MediaMetricsProvider {
   // Sets the RendererType used in the playback.
   SetRendererType(RendererType renderer_type);
 
+  // Sets the DemuxerType used in the playback.
+  SetDemuxerType(DemuxerType demuxer_type);
+
   // Sets the EME key system used for an EME playback. For clear playback, or if
   // the `key_system` is not recognized, value 0 (kUnknownKeySystemForUkm) will
   // be reported.

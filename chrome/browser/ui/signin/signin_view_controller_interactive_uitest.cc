@@ -5,6 +5,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -288,6 +290,11 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        MAYBE_EnterpriseConfirmationDefaultFocus) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseUpdatedProfileCreationScreen)) {
+    GTEST_SKIP() << "EnterpriseUpdatedProfileCreationScreen feature replaces "
+                    "this dialog with a new one";
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This test runs in the main profile.
   EXPECT_TRUE(

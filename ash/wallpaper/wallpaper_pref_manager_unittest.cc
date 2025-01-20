@@ -24,6 +24,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +36,8 @@ using testing::Gt;
 using testing::Lt;
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId account_id_1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
 
 constexpr char kDummyUrl[] = "https://best_wallpaper/1";
 constexpr char kDummyUrl2[] = "https://best_wallpaper/2";
@@ -484,80 +486,6 @@ TEST_F(WallpaperPrefManagerTest, ShouldNotSyncInIfLocalWallpaperIsSeaPen) {
   local_info.location = "6868";
   EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
                                                   /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       SetUserWallpaperInfoChecksVersionWhenVersionedWallpaperInfoIsEnabled) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-
-  EXPECT_TRUE(local_info.version.IsValid());
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, local_info));
-}
-
-TEST_F(WallpaperPrefManagerTest, ShouldNotSyncInIfSyncPrefHasInvalidVersion) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnline);
-  synced_info.version = base::Version();
-
-  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                  /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       ShouldNotSyncInIfSyncPrefHasUnsupportedVersion) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnline);
-  synced_info.version = base::Version("99.99");
-
-  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                  /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       ShouldSyncInIfSyncPrefHasSameVersionAsSupportedVersion) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kDaily);
-  synced_info.version = base::Version("1.0");
-
-  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                 /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       ShouldSyncInIfSyncPrefHasSameMajorButDifferentMinorVersion) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnline);
-  synced_info.version = base::Version("1.1");
-
-  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                 /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       ShouldSyncInIfSyncPrefHasOlderVersionThanSupportedVersion) {
-  base::test::ScopedFeatureList features(features::kVersionedWallpaperInfo);
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnline);
-  synced_info.version = base::Version("0.1");
-
-  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                 /*is_oobe=*/false));
-}
-
-TEST_F(WallpaperPrefManagerTest,
-       VersionIsIgnoredWhenVersionWallpaperInfoIsDisabled) {
-  WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
-  local_info.version = base::Version("1.0");
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kDaily);
-  synced_info.version = base::Version("2.0");
-
-  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
-                                                 /*is_oobe=*/false));
 }
 
 // Verifies that creating a wallpaper info from prefs with an invalid layout

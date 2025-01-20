@@ -12,6 +12,7 @@ import './language_toast.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -29,6 +30,7 @@ import {VoiceNotificationManager} from './voice_notification_manager.js';
 export interface LanguageMenuElement {
   $: {
     languageMenu: CrDialogElement,
+    searchField: CrInputElement,
   };
 }
 
@@ -132,6 +134,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
 
   protected onClearSearchClick_() {
     this.languageSearchValue_ = '';
+    this.$.searchField.focus();
   }
 
   protected onToggleChange_(e: Event) {

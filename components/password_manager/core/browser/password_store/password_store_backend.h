@@ -83,15 +83,6 @@ class PasswordStoreBackend {
   // called on the main sequence.
   virtual void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) = 0;
 
-  // Returns the complete list of PasswordForms (regardless of their blocklist
-  // status) saved in the given sync |account|. The passed account should be a
-  // current or former syncing account, otherwise |callback| will be
-  // called with an error result. Callback is called on the main sequence.
-  // TODO(crbug.com/40833594): Clean up/refactor to avoid having methods
-  // introduced for a specific backend in this interface.
-  virtual void GetAllLoginsForAccountAsync(std::string account,
-                                           LoginsOrErrorReply callback) = 0;
-
   // Returns all PasswordForms with the same signon_realm as a form in |forms|.
   // If |include_psl|==true, the PSL-matched forms are also included.
   // If multiple forms are given, those will be concatenated.
@@ -138,13 +129,6 @@ class PasswordStoreBackend {
   virtual void RemoveLoginAsync(const base::Location& location,
                                 const PasswordForm& form,
                                 PasswordChangesOrErrorReply callback) = 0;
-  virtual void RemoveLoginsByURLAndTimeAsync(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,
       base::Time delete_begin,

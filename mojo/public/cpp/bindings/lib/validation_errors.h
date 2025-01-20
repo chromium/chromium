@@ -163,11 +163,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
   ValidationError last_warning_;
 };
 
-// Used to record that Deserialize() of a Mojo string failed because it was not
-// valid UTF-8.
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void RecordInvalidStringDeserialization();
-
 }  // namespace internal
 }  // namespace mojo
 

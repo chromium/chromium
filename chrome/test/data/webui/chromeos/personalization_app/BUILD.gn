@@ -22,6 +22,7 @@ build_webui_tests("build_webui_tests") {
   ]
 
   files = [
+    "ambient_observer_test.ts",
     "ambient_preview_large_element_test.ts",
     "ambient_preview_small_element_test.ts",
     "ambient_subpage_element_test.ts",
@@ -68,7 +69,6 @@ build_webui_tests("build_webui_tests") {
     "wallpaper_grid_item_element_test.ts",
     "wallpaper_images_element_test.ts",
     "wallpaper_observer_test.ts",
-    "ambient_observer_test.ts",
     "wallpaper_preview_element_test.ts",
     "wallpaper_selected_element_test.ts",
     "wallpaper_subpage_element_test.ts",

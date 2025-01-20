@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"

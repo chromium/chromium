@@ -105,18 +105,6 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
                   std::max(1u, top_k.value_or(1)));
 }
 
-std::optional<ModelBackendType> ModelBackendTypeFromMojom(
-    on_device_model::mojom::ModelBackendType backend) {
-  switch (backend) {
-    case on_device_model::mojom::ModelBackendType::kGpu:
-      return ModelBackendType::kGpuBackend;
-    case on_device_model::mojom::ModelBackendType::kApu:
-      return ModelBackendType::kApuBackend;
-    default:
-      return std::nullopt;
-  }
-}
-
 }  // namespace
 
 // Handles sending and canceling responses.
@@ -327,8 +315,9 @@ void SessionImpl::AddContext(
       std::move(client),
       base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
       std::move(on_complete));
-  input->max_tokens =
-      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
+    input->max_tokens = max_tokens_;
+  }
   input->top_k = GetTopK(input->top_k);
   input->temperature = GetTemperature(input->temperature);
   ChromeMLContextSavedFn context_saved_fn =
@@ -349,8 +338,9 @@ void SessionImpl::Execute(
   responder_ = std::make_unique<Responder>(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
-  input->max_tokens =
-      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
+    input->max_tokens = max_tokens_;
+  }
   input->top_k = GetTopK(input->top_k);
   input->temperature = GetTemperature(input->temperature);
   ChromeMLContextSavedFn context_saved_fn = responder_->CreateContextSavedFn();
@@ -447,11 +437,10 @@ base::expected<std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>,
 OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params,
     base::OnceClosure on_complete) {
-  on_device_model::AdaptationAssets assets = std::move(params->assets);
   static uint32_t next_id = 0;
   base_sessions_.insert(
       {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
-                                        model_, std::move(assets))});
+                                        model_, std::move(params))});
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return base::ok(std::make_unique<ScopedAdaptation>(
       weak_ptr_factory_.GetWeakPtr(), next_id++));
@@ -465,24 +454,17 @@ LoadModelResult OnDeviceModelExecutor::Init(
 
   max_tokens_ = std::max(params->max_tokens, kReserveTokensForSafety);
 
-  std::optional<ModelBackendType> backend_type =
-      ModelBackendTypeFromMojom(params->backend_type);
-  if (!backend_type.has_value()) {
-    LOG(ERROR) << "Failed to parse model backend type";
-    return LoadModelResult::kFailedToLoadLibrary;
-  }
-
   ChromeMLModelData data;
   std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
   std::string sp_model_path_str = assets.sp_model_path.AsUTF8Unsafe();
-  if (*backend_type == ModelBackendType::kGpuBackend) {
+  if (params->backend_type == ml::ModelBackendType::kGpuBackend) {
     data.weights_file = assets.weights.TakePlatformFile();
   } else {
     data.model_path = weights_path_str.data();
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
   ChromeMLModelDescriptor descriptor = {
-      .backend_type = *backend_type,
+      .backend_type = params->backend_type,
       .model_data = &data,
       .max_tokens = max_tokens_,
       .temperature = 0.0f,
@@ -493,6 +475,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
       .use_low_power = kUseLowPower.Get(),
       .allow_fp16 = kAllowFp16.Get(),
+      .performance_hint = params->performance_hint,
   };
   model_ = chrome_ml_->api().SessionCreateModel(
       &descriptor, reinterpret_cast<uintptr_t>(this),

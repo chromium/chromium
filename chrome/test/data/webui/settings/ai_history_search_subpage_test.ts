@@ -29,6 +29,13 @@ suite('HistorySearchSubpage', function() {
     return CrSettingsPrefs.initialized;
   });
 
+  teardown(function() {
+    // Reset pref policy to ALLOW.
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH}.value`,
+        ModelExecutionEnterprisePolicyValue.ALLOW);
+  });
+
   function createPage() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -53,6 +60,10 @@ suite('HistorySearchSubpage', function() {
 
     const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
     assertTrue(!!toggle);
+
+    const policyIndicator =
+        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertFalse(!!policyIndicator);
 
     // Check NOT_INITIALIZED case.
     assertEquals(
@@ -81,6 +92,25 @@ suite('HistorySearchSubpage', function() {
         FeatureOptInState.DISABLED,
         subpage.getPref(PrefName.HISTORY_SEARCH).value);
     assertFalse(toggle.checked);
+  });
+
+  test('historySearchToggleDisabled', async () => {
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH}.value`,
+        ModelExecutionEnterprisePolicyValue.DISABLE);
+    await createPage();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertTrue(!!indicator);
+
+    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+    assertFalse(toggle.checked);
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertFalse(!!linkout);
   });
 
   test('historySearchLinkout', async function() {
@@ -133,21 +163,35 @@ suite('HistorySearchSubpage', function() {
     }
 
     await createPage();
-    assertTrue(checkVisibility('#linkoutText'));
-    assertFalse(checkVisibility('#linkoutTextWithAnswers'));
+    const linkout =
+        subpage.shadowRoot!.querySelector<HTMLElement>('#linkoutText');
+    assertTrue(!!linkout);
+    assertEquals(
+        loadTimeData.getString('historySearchSettingSublabelV2') +
+            loadTimeData.getString('sentenceEnd'),
+        linkout.innerText.trim());
+
     assertTrue(checkVisibility('#whenOnPageContentText'));
     assertFalse(checkVisibility('#whenOnPageContentTextWithAnswers'));
-    assertFalse(checkVisibility('#whenOnLogStartItem'));
+    assertFalse(checkVisibility('#whenOnRecallInfoWithAnswers'));
+    assertTrue(checkVisibility('#whenOnLogStartItem'));
     assertTrue(checkVisibility('#considerDataEncryptedText'));
     assertFalse(checkVisibility('#considerDataEncryptedTextWithAnswers'));
     assertFalse(checkVisibility('#considerOutDatedItem'));
 
     loadTimeData.overrideValues({historyEmbeddingsAnswersFeatureEnabled: true});
     await createPage();
-    assertFalse(checkVisibility('#linkoutText'));
-    assertTrue(checkVisibility('#linkoutTextWithAnswers'));
+    const linkoutWithAnswers =
+        subpage.shadowRoot!.querySelector<HTMLElement>('#linkoutText');
+    assertTrue(!!linkoutWithAnswers);
+    assertEquals(
+        loadTimeData.getString('historySearchWithAnswersSettingSublabelV2') +
+            loadTimeData.getString('sentenceEnd'),
+        linkoutWithAnswers.innerText.trim());
+
     assertFalse(checkVisibility('#whenOnPageContentText'));
     assertTrue(checkVisibility('#whenOnPageContentTextWithAnswers'));
+    assertTrue(checkVisibility('#whenOnRecallInfoWithAnswers'));
     assertTrue(checkVisibility('#whenOnLogStartItem'));
     assertFalse(checkVisibility('#considerDataEncryptedText'));
     assertTrue(checkVisibility('#considerDataEncryptedTextWithAnswers'));

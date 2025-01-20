@@ -11,10 +11,10 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
-#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
+#include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
@@ -469,10 +469,11 @@ void ArcBluezBridge::CreateBluetoothListenSocket(
   if (sock_wrapper) {
     std::move(callback).Run(mojom::BluetoothStatus::SUCCESS, listen_port,
                             sock_wrapper->remote.BindNewPipeAndPassReceiver());
+    BluetoothListeningSocket* socket = sock_wrapper.get();
     listening_sockets_.insert(std::move(sock_wrapper));
-    sock_wrapper->remote.set_disconnect_handler(
+    socket->remote.set_disconnect_handler(
         base::BindOnce(&ArcBluezBridge::CloseBluetoothListeningSocket,
-                       weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+                       weak_factory_.GetWeakPtr(), socket));
   } else {
     std::move(callback).Run(
         mojom::BluetoothStatus::FAIL, /*port=*/0,
@@ -567,10 +568,11 @@ void ArcBluezBridge::CreateBluetoothConnectSocket(
 
   std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
                           sock_wrapper->remote.BindNewPipeAndPassReceiver());
+  BluetoothConnectingSocket* socket = sock_wrapper.get();
   connecting_sockets_.insert(std::move(sock_wrapper));
-  sock_wrapper->remote.set_disconnect_handler(
+  socket->remote.set_disconnect_handler(
       base::BindOnce(&ArcBluezBridge::CloseBluetoothConnectingSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+                     weak_factory_.GetWeakPtr(), socket));
 }
 
 }  // namespace arc

@@ -53,11 +53,6 @@
   outline: none;
 }
 
-.card-name {
-  font-size: inherit;
-  line-height: inherit;
-}
-
 .card-checkbox::part(label-container) {
   flex-grow: 1;
 }

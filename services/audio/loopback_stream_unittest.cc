@@ -178,7 +178,7 @@ class LoopbackStreamTest : public testing::Test {
                  observer.InitWithNewPipeAndPassReceiver());
 
     stream_ = std::make_unique<LoopbackStream>(
-        base::BindOnce([](media::mojom::ReadOnlyAudioDataPipePtr pipe) {
+        base::BindOnce([](media::mojom::ReadWriteAudioDataPipePtr pipe) {
           EXPECT_TRUE(pipe->shared_memory.IsValid());
           EXPECT_TRUE(pipe->socket.is_valid());
         }),

@@ -177,8 +177,8 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
 
   SkColor icon_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
-  icon_->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kWarningOutlineIcon, icon_color));
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kWarningOutlineIcon, icon_color));
 
   SkColor label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);

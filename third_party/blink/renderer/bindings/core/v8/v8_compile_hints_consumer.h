@@ -24,7 +24,7 @@ class CORE_EXPORT V8CrowdsourcedCompileHintsConsumer
       const V8CrowdsourcedCompileHintsConsumer&) = delete;
 
   // Set the compile hints data based on raw memory containing int64_t:s.
-  void SetData(const int64_t* memory, size_t int64_count);
+  void SetData(base::span<const int64_t> memory);
 
   static bool CompileHintCallback(int position,
                                   void* raw_data_and_script_name_hash);

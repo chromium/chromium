@@ -87,8 +87,7 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   //
   // Note: Implementations should make sure to check
   // `active_window_check_blocked()`.
-  virtual bool CanShowPromoForElement(
-      ui::TrackedElement* anchor_element) const = 0;
+  virtual bool CanShowPromoForElement(ui::TrackedElement* anchor_element) const;
 
  private:
   struct QueuedPromoData;
@@ -133,6 +132,7 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
 
   // Tracks whether this controller has messaging priority.
   RequiredNoticePriorityHandle messaging_priority_handle_;
+  const raw_ptr<ProductMessagingController> messaging_controller_;
 
   // Tracks pending promos that have been queued (e.g. for startup).
   QueuedPromos queued_promos_;

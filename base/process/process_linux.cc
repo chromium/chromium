@@ -33,6 +33,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_priority_delegate.h"
 #include "base/strings/strcat.h"
@@ -51,6 +52,20 @@ BASE_FEATURE(kOneGroupPerRenderer,
 #else
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+BASE_FEATURE(kFlattenCpuCgroups,
+             "FlattenCpuCgroups",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+// If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
+// processes uses /sys/fs/cgroup/cpu/ui cgroup instead of
+// /sys/fs/cgroup/cpu/chrome_renderers sharing the cpu cgroup with the browser
+// process and others.
+BASE_FEATURE_PARAM(bool,
+                   kFlattenCpuCgroupsUnified,
+                   &kFlattenCpuCgroups,
+                   "unified_cpu_cgroup",
+                   false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -72,6 +87,9 @@ const char kControlPath[] = "/sys/fs/cgroup/cpu%s/cgroup.procs";
 const char kFullRendererCgroupRoot[] = "/sys/fs/cgroup/cpu/chrome_renderers";
 const char kForeground[] = "/chrome_renderers/foreground";
 const char kBackground[] = "/chrome_renderers/background";
+const char kForegroundExperiment[] = "/chrome_renderers";
+const char kForegroundUnifiedExperiment[] = "/ui";
+const char kBackgroundExperiment[] = "/chrome_renderers_background";
 const char kProcPath[] = "/proc/%d/cgroup";
 const char kUclampMinFile[] = "cpu.uclamp.min";
 const char kUclampMaxFile[] = "cpu.uclamp.max";
@@ -87,8 +105,9 @@ const char kCgroupPrefix[] = "a-";
 
 bool PathIsCGroupFileSystem(const FilePath& path) {
   struct statfs statfs_buf;
-  if (statfs(path.value().c_str(), &statfs_buf) < 0)
+  if (statfs(path.value().c_str(), &statfs_buf) < 0) {
     return false;
+  }
   return statfs_buf.f_type == CGROUP_SUPER_MAGIC;
 }
 
@@ -110,8 +129,17 @@ struct CGroups {
   std::string uclamp_max;
 
   CGroups() {
-    foreground_file = FilePath(StringPrintf(kControlPath, kForeground));
-    background_file = FilePath(StringPrintf(kControlPath, kBackground));
+    if (FeatureList::IsEnabled(kFlattenCpuCgroups)) {
+      foreground_file =
+          FilePath(StringPrintf(kControlPath, kFlattenCpuCgroupsUnified.Get()
+                                                  ? kForegroundUnifiedExperiment
+                                                  : kForegroundExperiment));
+      background_file =
+          FilePath(StringPrintf(kControlPath, kBackgroundExperiment));
+    } else {
+      foreground_file = FilePath(StringPrintf(kControlPath, kForeground));
+      background_file = FilePath(StringPrintf(kControlPath, kBackground));
+    }
     enabled = PathIsCGroupFileSystem(foreground_file) &&
               PathIsCGroupFileSystem(background_file);
 
@@ -176,13 +204,15 @@ Time Process::CreationTime() const {
                             : internal::ReadProcStatsAndGetFieldAsInt64(
                                   Pid(), internal::VM_STARTTIME);
 
-  if (!start_ticks)
+  if (!start_ticks) {
     return Time();
+  }
 
   TimeDelta start_offset = internal::ClockTicksToTimeDelta(start_ticks);
   Time boot_time = internal::GetBootTime();
-  if (boot_time.is_null())
+  if (boot_time.is_null()) {
     return Time();
+  }
   return Time(boot_time + start_offset);
 }
 
@@ -193,8 +223,9 @@ bool Process::CanSetPriority() {
     return g_process_priority_delegate->CanSetProcessPriority();
   }
 
-  if (CGroups::Get().enabled)
+  if (CGroups::Get().enabled) {
     return true;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   static const bool can_reraise_priority =
@@ -240,8 +271,7 @@ bool Process::SetPriority(Priority priority) {
   // Should not be called concurrently with other functions
   // like SetThreadType().
   if (PlatformThreadChromeOS::IsThreadsBgFeatureEnabled()) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        PlatformThreadChromeOS::GetCrossProcessThreadPrioritySequenceChecker());
+    PlatformThreadChromeOS::DcheckCrossProcessThreadPrioritySequence();
 
     int process_id = process_;
     bool background = priority == Priority::kBestEffort;
@@ -289,8 +319,9 @@ Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
     if (fields.size() != 3U) {
       NOTREACHED();
     }
-    if (fields[2] == kBackground)
+    if (fields[2] == kBackground) {
       return Process::Priority::kBestEffort;
+    }
   }
 
   return Process::Priority::kUserBlocking;

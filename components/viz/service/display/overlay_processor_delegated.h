@@ -21,11 +21,14 @@
 namespace viz {
 
 // OverlayProcessor subclass that attempts to promote to overlay all the draw
-// quads of the root render pass. This is currently only used by LaCros.
+// quads of the root render pass. This was only used by LaCros.
 // TODO(petermcneeley): This class and its Apple equivalent(s) will eventually
 // be refactored in merged together into a unified delegation processor.
 // Delegation will just become an extended feature of ozone and we avoid/push
 // down platform specific defines and files where possible.
+//
+// TODO(crbug.com/375523817): consider either merging that with
+// OverlayProcessorOzone or completely remove it.
 class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     : public OverlayProcessorOzone {
  public:
@@ -95,11 +98,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   bool BlockForCopyRequests(const AggregatedRenderPassList* render_pass_list);
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
-  bool supports_clip_rect_ = false;
-  bool supports_out_of_window_clip_rect_ = false;
   bool needs_background_image_ = false;
-  bool supports_affine_transform_ = false;
-  bool has_transformation_fix_ = false;
   gfx::RectF unassigned_damage_;
   // Used to count the number of frames we should wait until allowing delegation
   // again.

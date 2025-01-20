@@ -134,6 +134,8 @@ class ExtensionPlatformApiTest : public ExtensionPlatformBrowserTest {
   }
 
  private:
+  void OpenURL(const GURL& url, bool open_in_incognito);
+
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
   std::unique_ptr<base::Value::Dict> test_config_;

@@ -136,6 +136,11 @@ class InterestGroupStorageTest : public testing::Test {
   // in that version will be added. By default, all fields for the current
   // version are added.
   //
+  // For best coverage, changes within the fields that don't require any
+  // active database migration (e.g. adding an optional field to a proto) should
+  // still get their own version number with `version_changed_ig_fields`
+  // set to true.
+  //
   // If non-null, *version_changed_ig_fields will be set indicating if
   // `version_number` changed any new interest group fields when compared to
   // `version_number` - 1, if it exists. (Some versions merely changed the
@@ -196,13 +201,17 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 31:
+        result.ads.value()[0].creative_scanning_metadata = "scan 1";
+        result.ad_components.value()[1].creative_scanning_metadata = "scan 2";
+        ABSL_FALLTHROUGH_INTENDED;
       case 30:
         // Compressed AdsProto, but introduced no new fields.
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 29:
         result.ads.value()[0].selectable_buyer_and_seller_reporting_ids = {
             "selectable_id1", "selectable_id2"};
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 28:
         // NOTE: As this is the oldest version supported by ProduceAllFields(),
         // it also initializes fields from before version 28.
@@ -374,9 +383,10 @@ class InterestGroupStorageTest : public testing::Test {
   const url::Origin kPartialOrigin =
       url::Origin::Create(GURL(kPartialOriginStr));
 
+  base::ScopedTempDir temp_directory_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir temp_directory_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -401,7 +411,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
   EXPECT_TRUE(base::PathExists(db_path()));
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -416,7 +426,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
 
   // Create an empty database with old schema version (version=1).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -438,7 +448,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -453,7 +463,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
 
   // Create an empty database with a newer schema version (version=1000000).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -475,7 +485,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -901,6 +911,95 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(interest_groups[0].next_update_after,
               base::Time::Now() +
                   InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  }
+}
+
+TEST_F(InterestGroupStorageTest, ValidateInterestGroupOnUpdate) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  blink::InterestGroupKey group_key(g.owner, g.name);
+
+  // To cause IsValid and IsValidForJoinAndUpdate to return false, we use the
+  // hard limit and soft limit, respectively, on the number of
+  // selectableBuyerAndSellerReportingIds. We have two here, so we'll use a
+  // limit of one to cause this ad to make its enclosing interest group invalid.
+  InterestGroup::Ad ad1(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+
+  InterestGroup::Ad ad2(ad1_url, "metadata1",
+                        /*size_group=*/std::nullopt,
+                        /*buyer_reporting_id=*/"brid1",
+                        /*buyer_and_seller_reporting_id=*/"shrid1",
+                        /*selectable_buyer_and_seller_reporting_ids=*/
+                        std::vector<std::string>{"selectable_id1"});
+
+  g.ads = {ad1};
+
+  // Join a new interest group.
+  {
+    EXPECT_TRUE(
+        storage->JoinInterestGroup(g, test_origin.GetURL()).has_value());
+  }
+
+  InterestGroupUpdate update;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "1"}});
+
+    // The interest group in the database is invalid because it has an ad
+    // whose number of selectableBuyerAndSellerReportingIds exceeds the hard
+    // limit. This update makes it valid.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // Trying to put back the ad with too many
+    // selectableBuyerAndSellerReportingIds fails.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "2"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+    // With the limit relaxed, this update passes this time.
+    update.ads = {ad1};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+
+    // The interest group in the database is valid because it's still within
+    // the hard limit. This update works because it's still within the soft
+    // limit.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // But this update back to the ad with too many
+    // selectableBuyerAndSellerReportingIds fails because it exceeds the soft
+    // limit.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
   }
 }
 
@@ -1352,7 +1451,7 @@ TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
   // Trigger scheduling of the next maintenance.
   storage->GetAllInterestGroupOwners();
   // Allow enough idle time to trigger maintenance.
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                    base::Seconds(1));
 
   cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
@@ -1990,7 +2089,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyRegularGroupNames) {
                                1);
 
   // Allow enough idle time to trigger maintenance.
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                    base::Seconds(1));
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
@@ -2047,7 +2146,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyNegativeGroupNames) {
                                1);
 
   // Allow enough idle time to trigger maintenance.
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                    base::Seconds(1));
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
@@ -2138,7 +2237,7 @@ TEST_F(InterestGroupStorageTest, JoinTooMuchStorage) {
   EXPECT_EQ(added_groups.size(), interest_groups.size());
 
   // Allow enough idle time to trigger maintenance.
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                    base::Seconds(1));
 
   interest_groups = storage->GetInterestGroupsForOwner(kTestOrigin);
@@ -2285,13 +2384,13 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
       storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(2u, interest_groups.size());
   base::Time next_maintenance_time =
-      base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+      base::Time::Now() + InterestGroupStorage::kDefaultIdlePeriod;
 
   // Maintenance should not have run yet as we are not idle.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
             original_maintenance_time);
 
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod -
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod -
                                    base::Seconds(1));
 
   // Maintenance should not have run yet as we are not idle.
@@ -2314,7 +2413,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"),
                              keep_origin.GetURL());
-  next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+  next_maintenance_time =
+      base::Time::Now() + InterestGroupStorage::kDefaultIdlePeriod;
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
@@ -2344,7 +2444,8 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   EXPECT_EQ("keep", interest_groups[0].interest_group.name);
   EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
   EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
-  next_maintenance_time = base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+  next_maintenance_time =
+      base::Time::Now() + InterestGroupStorage::kDefaultIdlePeriod;
 
   // All the groups should still be in the database since they shouldn't have
   // been cleaned up yet.
@@ -2425,10 +2526,10 @@ TEST_F(InterestGroupStorageTest, ExpirationDeletesMetadata) {
     switch (test_case) {
       case TestCase::kDestroyedByMaintenance: {
         base::Time expected_maintenance_time =
-            base::Time::Now() + InterestGroupStorage::kIdlePeriod;
+            base::Time::Now() + InterestGroupStorage::kDefaultIdlePeriod;
         // Enough time to trigger maintenance.
-        task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
-                                         base::Seconds(1));
+        task_environment().FastForwardBy(
+            InterestGroupStorage::kDefaultIdlePeriod + base::Seconds(1));
         // Verify that maintenance has run.
         EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
                   expected_maintenance_time);
@@ -2468,6 +2569,293 @@ TEST_F(InterestGroupStorageTest, ExpirationDeletesMetadata) {
 
     // Leave the interest group so it doesn't affect the next test.
     storage->LeaveInterestGroup(kGroupKey, kOrigin);
+  }
+}
+
+class InterestGroupStorageWithNoIdleFastForwardTest
+    : public InterestGroupStorageTest {
+ public:
+  // NOTE: For better test runtime performance in FastForwardWithoutIdlingBy(),
+  // use a larger idle period -- this reduces the number of FastForwardBy()
+  // calls.
+  static constexpr base::TimeDelta kIdlePeriod = base::Minutes(30);
+
+  void SetUp() override {
+    InterestGroupStorageTest::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kInterestGroupStorage,
+        {
+            {"max_ops_before_maintenance", "1000000000"}  // 1 billion ops
+        });
+  }
+
+  std::unique_ptr<InterestGroupStorage> CreateStorage() {
+    return InterestGroupStorage::CreateWithIdlePeriodForTesting(
+        temp_directory_.GetPath(), /*idle_period=*/kIdlePeriod);
+  }
+
+  // Fast-forwards time on `task_environment` by `delta` in such a way that
+  // `storage` is never put into an idle state, no matter how large `delta` is.
+  //
+  // This is achieved by breaking the fast-forward up into multiple
+  // fast-forwards, with operations on `storage` in-between to reset the idle
+  // timer.
+  //
+  // Guaranteed to exit with the last `storage` operation occurring at the mock
+  // time of return.
+  static void FastForwardWithoutIdlingBy(
+      base::test::TaskEnvironment& task_environment,
+      InterestGroupStorage& storage,
+      base::TimeDelta delta) {
+    const base::TimeTicks start = base::TimeTicks::Now();
+    const base::Time last_maintenance_time =
+        storage.GetLastMaintenanceTimeForTesting();
+
+    const base::TimeDelta kMaxFastForwardDelta =
+        kIdlePeriod - base::Microseconds(1);
+    for (int64_t i = 0; i < delta.IntDiv(kMaxFastForwardDelta); i++) {
+      SCOPED_TRACE(i);
+      storage.ResetIdleTimerForTesting();
+      task_environment.FastForwardBy(kMaxFastForwardDelta);
+      EXPECT_EQ(last_maintenance_time,
+                storage.GetLastMaintenanceTimeForTesting());
+    }
+    storage.ResetIdleTimerForTesting();
+    task_environment.FastForwardBy(delta % kMaxFastForwardDelta);
+
+    EXPECT_EQ(last_maintenance_time,
+              storage.GetLastMaintenanceTimeForTesting());
+    EXPECT_EQ(start + delta, base::TimeTicks::Now());
+    storage.ResetIdleTimerForTesting();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Like InterestGroupStorage.ExpirationDeletesMetadata, but it also checks edge
+// cases near the expiration point.
+//
+// Join and bid history (but not prevWins history) expires at UTC midnight
+// before the max interest group lifetime expiration -- this is because bid and
+// join times are only stored at UTC day resolution, to reduce the performance
+// and storage impact on the database.
+//
+// Therefore, for interest groups whose lifetime is near the maximum, they
+// experience 2 expirations -- one for the join and bid history, and one for the
+// rest of the interest group. This test checks both expirations, both as
+// enforced by maintenance, and when re-joining without maintenance.
+TEST_F(InterestGroupStorageWithNoIdleFastForwardTest,
+       ExpirationDeletesMetadata_LargeLifetimes) {
+  base::HistogramTester histograms;
+
+  // NOTE: These must be large enough for the fast forwards and maintenance
+  // interval used in the test, as checked by an assertion below. We'll also
+  // need to ensure that the test starting time is several hours after midnight
+  // UTC for this to be true, so go with noon tomorrow UTC.
+  const base::TimeDelta kExpiryDeltas[] = {
+      InterestGroupStorage::kHistoryLength - base::Microseconds(1),
+      InterestGroupStorage::kHistoryLength};
+
+  const base::Time noon_tomorrow_utc =
+      base::Time::FromDeltaSinceWindowsEpoch(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().FloorToMultiple(
+              base::Days(1))) +
+      base::Days(1) + base::Hours(12);
+  task_environment().FastForwardBy(noon_tomorrow_utc - base::Time::Now());
+
+  enum class TestCase {
+    // The expired group is destroyed by periodic database maintenance, checking
+    // no destruction at expiry - 1 microsecond, and no history loss 1
+    // microsecond before its expiration (see "History expiration" note below).
+    kDestroyedByMaintenance0,
+    // The expired group is destroyed by periodic database maintenance, checking
+    // destruction at expiry time, and checking history loss at history loss
+    // time (see "History expiration" note below).
+    kDestroyedByMaintenance1,
+    // The expired group is overwritten by a new group before database
+    // maintenance has had a chance to destroy it. Also, check history loss
+    // without running maintenance.
+    kOverwrittenByNewGroup
+  };
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://owner.test"));
+  const char kName[] = "name";
+  const blink::InterestGroupKey kGroupKey(kOrigin, kName);
+  const char kAdJson[] = "{url: 'https://ad.test/'}";
+
+  for (base::TimeDelta expiry_delta : kExpiryDeltas) {
+    SCOPED_TRACE(expiry_delta);
+    for (auto test_case : {TestCase::kDestroyedByMaintenance0,
+                           TestCase::kDestroyedByMaintenance1,
+                           TestCase::kOverwrittenByNewGroup}) {
+      SCOPED_TRACE(static_cast<int>(test_case));
+      std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+      const base::Time start = base::Time::Now();
+      const base::Time expiry = start + expiry_delta;
+      // History expiry: Join and bid history expire at a point before the
+      // interest group. This is because these counts are kept on a per UTC day
+      // basis. Win history isn't affected, only join and bid history.
+      const base::Time join_bid_expiry = base::Time::FromDeltaSinceWindowsEpoch(
+          (start + InterestGroupStorage::kHistoryLength)
+              .ToDeltaSinceWindowsEpoch()
+              .FloorToMultiple(base::Days(1)));
+      // Make sure `expiry_delta` is big enough for the required fast forwards
+      // -- we have to wait the idle period for the first maintenance operation,
+      // and we have to at least go kMaintenanceInterval between maintenance
+      // operations.
+      ASSERT_GT(expiry, join_bid_expiry + kIdlePeriod +
+                            InterestGroupStorage::kMaintenanceInterval);
+
+      // Join the group twice (since join counts will always be at least 1, even
+      // after expiration), and record a bid and win.
+      constexpr size_t kJoinCount = 2u;
+      for (size_t i = 0; i < kJoinCount; i++) {
+        storage->JoinInterestGroup(
+            blink::TestInterestGroupBuilder(kOrigin, kName)
+                .SetExpiry(expiry)
+                .Build(),
+            kOrigin.GetURL());
+      }
+      storage->RecordInterestGroupBids({kGroupKey});
+      storage->RecordInterestGroupWin(kGroupKey, kAdJson);
+
+      // Check that the interest group can be retrieved, and all relevant fields
+      // are correct.
+      auto expect_group_original_values = [&storage, &kOrigin, &kName,
+                                           &kAdJson] {
+        std::vector<StorageInterestGroup> interest_groups =
+            storage->GetInterestGroupsForOwner(kOrigin);
+        ASSERT_EQ(1u, interest_groups.size());
+        EXPECT_EQ(kName, interest_groups[0].interest_group.name);
+        EXPECT_EQ(2, interest_groups[0].bidding_browser_signals->join_count);
+        EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->bid_count);
+        ASSERT_EQ(1u,
+                  interest_groups[0].bidding_browser_signals->prev_wins.size());
+        EXPECT_EQ(
+            kAdJson,
+            interest_groups[0].bidding_browser_signals->prev_wins[0]->ad_json);
+      };
+      expect_group_original_values();
+
+      // After passing `join_bid_expiry`, join and bid history will be lost, but
+      // win history retained.
+      auto expect_group_lost_join_bids = [&storage, &kOrigin, &kName,
+                                          &kAdJson] {
+        std::vector<StorageInterestGroup> interest_groups =
+            storage->GetInterestGroupsForOwner(kOrigin);
+        ASSERT_EQ(1u, interest_groups.size());
+        EXPECT_EQ(kName, interest_groups[0].interest_group.name);
+        // The join history was lost, resulting in a 0 join count.
+        EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->join_count);
+        EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+        ASSERT_EQ(1u,
+                  interest_groups[0].bidding_browser_signals->prev_wins.size());
+        EXPECT_EQ(
+            kAdJson,
+            interest_groups[0].bidding_browser_signals->prev_wins[0]->ad_json);
+      };
+
+      auto maintenance_test_cases =
+          [&](base::TimeDelta fast_forward_time_before_expire) {
+            // Fast forward not quite enough to expire join / bid history, but
+            // don't trigger maintenance by avoiding idling.
+            FastForwardWithoutIdlingBy(
+                task_environment(), *storage,
+                (join_bid_expiry - fast_forward_time_before_expire) -
+                    base::Time::Now());
+            expect_group_original_values();
+
+            // Now, fast forward enough time to trigger maintenance.
+            base::Time expected_maintenance_time =
+                base::Time::Now() + kIdlePeriod;
+            task_environment().FastForwardBy(kIdlePeriod);
+            // Verify that maintenance has run and join / bid history was lost.
+            EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+                      expected_maintenance_time);
+            expect_group_lost_join_bids();
+
+            // Now, fast forward not quite enough to expire the interest group,
+            // but don't trigger maintenance by avoiding idling.
+            FastForwardWithoutIdlingBy(
+                task_environment(), *storage,
+                (expiry - fast_forward_time_before_expire) - base::Time::Now());
+            expect_group_lost_join_bids();
+
+            // Now, fast forward enough time to trigger maintenance again.
+            expected_maintenance_time = base::Time::Now() + kIdlePeriod;
+            task_environment().FastForwardBy(kIdlePeriod);
+            // Verify that maintenance has run.
+            EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+                      expected_maintenance_time);
+          };
+      switch (test_case) {
+        case TestCase::kDestroyedByMaintenance0: {
+          maintenance_test_cases(
+              /*fast_forward_time_before_expire=*/base::Microseconds(1));
+          break;
+        }
+
+        case TestCase::kDestroyedByMaintenance1: {
+          maintenance_test_cases(
+              /*fast_forward_time_before_expire=*/kIdlePeriod);
+          break;
+        }
+
+        case TestCase::kOverwrittenByNewGroup: {
+          base::Time old_maintenance_time =
+              storage->GetLastMaintenanceTimeForTesting();
+          // Fast forward not quite enough to expire join / bid history, but
+          // don't trigger maintenance by avoiding idling.
+          FastForwardWithoutIdlingBy(
+              task_environment(), *storage,
+              (join_bid_expiry - base::Microseconds(1)) - base::Time::Now());
+          expect_group_original_values();
+
+          task_environment().FastForwardBy(base::Microseconds(2));
+          expect_group_lost_join_bids();
+
+          // Now, fast forward not quite enough to expire the interest group,
+          // but don't trigger maintenance by avoiding idling.
+          FastForwardWithoutIdlingBy(
+              task_environment(), *storage,
+              (expiry - base::Microseconds(1)) - base::Time::Now());
+          expect_group_lost_join_bids();
+
+          task_environment().FastForwardBy(base::Microseconds(1));
+
+          // Maintenance should not have been performed.
+          EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
+                    old_maintenance_time);
+          break;
+        }
+      }
+
+      // Whether or not it's still in the database, GetInterestGroupsForOwner()
+      // should not retrieve the expired group.
+      std::vector<StorageInterestGroup> interest_groups =
+          storage->GetInterestGroupsForOwner(kOrigin);
+      EXPECT_EQ(0u, interest_groups.size());
+
+      // Re-join the interest group.
+      storage->JoinInterestGroup(
+          blink::TestInterestGroupBuilder(kOrigin, kName).Build(),
+          kOrigin.GetURL());
+
+      // Retrieve the group. Its `join_count`, `bid_count`, and `prev_wins`
+      // should not reflect data from the first time the group was joined.
+      interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+      ASSERT_EQ(1u, interest_groups.size());
+      EXPECT_EQ(kName, interest_groups[0].interest_group.name);
+      EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
+      EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+      EXPECT_EQ(0u,
+                interest_groups[0].bidding_browser_signals->prev_wins.size());
+
+      // Leave the interest group so it doesn't affect the next test.
+      storage->LeaveInterestGroup(kGroupKey, kOrigin);
+    }
   }
 }
 
@@ -2989,7 +3377,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
     }
 
     // Make sure the database still works if we open it again.
@@ -3002,7 +3390,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
 
       bool version_changed_ig_fields;
       blink::InterestGroup next_version_expected =
@@ -3011,7 +3399,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
         // Make sure IgExpect[Not]EqualsForTesting() gets updated to compare the
         // newly introduced field(s).
         next_version_expected.expiry = actual.expiry;
-        IgExpectNotEqualsForTesting(next_version_expected, actual);
+        IgExpectNotEqualsForTesting(actual, next_version_expected);
       }
     }
 
@@ -3453,7 +3841,7 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
   EXPECT_NE(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_2));
 
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);
 
   EXPECT_EQ(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_1));
@@ -3474,7 +3862,7 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
   EXPECT_NE(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_2));
 
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);
 
   EXPECT_EQ(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_1));
@@ -3496,7 +3884,7 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
   task_environment().FastForwardBy(InterestGroupStorage::kHistoryLength);
   storage->UpdateLastKAnonymityReported(k_anon_key_1);
   EXPECT_EQ(1u, storage->GetAllInterestGroupsUnfilteredForTesting().size());
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);
   EXPECT_EQ(0u, storage->GetAllInterestGroupsUnfilteredForTesting().size());
 
   EXPECT_NE(base::Time::Min(),
@@ -3508,7 +3896,7 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
       InterestGroupStorage::kAdditionalKAnonStoragePeriod);
   EXPECT_NE(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_1));
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);
 
   EXPECT_EQ(base::Time::Min(),
             storage->GetLastKAnonymityReported(k_anon_key_1));
@@ -3601,7 +3989,7 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
 
   // DB maintenance should not delete unexpired values.
   EXPECT_EQ(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
-  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod);
+  task_environment().FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod);
   EXPECT_NE(base::Time::Min(), storage->GetLastMaintenanceTimeForTesting());
   std::tie(a_expiration, a_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_a);

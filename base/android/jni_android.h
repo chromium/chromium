@@ -23,7 +23,7 @@ namespace base {
 namespace android {
 
 // Used to mark symbols to be exported in a shared library's symbol table.
-#define JNI_EXPORT __attribute__ ((visibility("default")))
+#define JNI_EXPORT __attribute__((visibility("default")))
 
 // Contains the registration method information for initializing JNI bindings.
 struct RegistrationMethod {
@@ -90,7 +90,6 @@ inline ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                            const char* class_name) {
   return jni_zero::GetClass(env, class_name);
 }
-
 
 // Returns true if an exception is pending in the provided JNIEnv*.
 inline bool HasException(JNIEnv* env) {

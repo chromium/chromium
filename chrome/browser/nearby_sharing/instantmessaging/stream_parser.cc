@@ -69,7 +69,7 @@ StreamParser::ParseStreamIfAvailable() {
 
   google::protobuf::io::CodedInputStream input_stream(
       unparsed_bytes_available.data(), unparsed_bytes_available.size());
-  int bytes_consumed = 0;
+  size_t bytes_consumed = 0;
 
   // We can't use StreamBody::ParseFromString() here, as it can't do partial
   // parsing, nor can it tell how many bytes are consumed.
@@ -84,9 +84,9 @@ StreamParser::ParseStreamIfAvailable() {
         receive_messages_responses.push_back(parsed_response);
         [[fallthrough]];
       case StreamParser::StreamParsingResult::kNoop:
-        bytes_consumed = input_stream.CurrentPosition();
-        continue_parsing = base::checked_cast<size_t>(bytes_consumed) <
-                           unparsed_bytes_available.size();
+        bytes_consumed =
+            base::checked_cast<size_t>(input_stream.CurrentPosition());
+        continue_parsing = bytes_consumed < unparsed_bytes_available.size();
         break;
       case StreamParser::StreamParsingResult::kNotEnoughDataYet:
       case StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed:

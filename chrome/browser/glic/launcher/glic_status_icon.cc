@@ -1,0 +1,159 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/glic/launcher/glic_status_icon.h"
+
+#include <memory>
+#include <optional>
+
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/launcher/glic_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/status_icons/status_icon.h"
+#include "chrome/browser/status_icons/status_icon_menu_model.h"
+#include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "glic_status_icon.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+
+namespace {
+gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
+  return gfx::CreateVectorIcon(
+      kGlicButtonIcon,
+      (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
+          ? SK_ColorWHITE
+          : SK_ColorBLACK);
+}
+}  // namespace
+
+GlicStatusIcon::GlicStatusIcon(GlicController* controller,
+                               StatusTray* status_tray)
+    : controller_(controller), status_tray_(status_tray) {
+  // TODO(crbug.com/382287104): Use correct icon.
+  // TODO(crbug.com/386839488): Chose color based on system theme.
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  status_icon_ = status_tray_->CreateStatusIcon(
+      StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
+      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
+
+  // If the StatusIcon cannot be created, don't configure it.
+  if (!status_icon_) {
+    return;
+  }
+#if BUILDFLAG(IS_LINUX)
+  //  Set a vector icon for proper themeing on Linux.
+  status_icon_->SetIcon(kGlicButtonIcon);
+#else
+  native_theme_observer_.Observe(native_theme);
+#endif
+#if BUILDFLAG(IS_MAC)
+  if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
+    status_icon_->SetOpenMenuWithSecondaryClick(true);
+  }
+  status_icon_->SetImageTemplate(true);
+#endif
+  status_icon_->AddObserver(this);
+
+  std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
+  context_menu_ = menu.get();
+  status_icon_->SetContextMenu(std::move(menu));
+}
+
+std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
+  std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SHOW));
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
+
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
+                l10n_util::GetStringUTF16(
+                    IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
+  menu->AddItem(
+      IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
+      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
+  return menu;
+}
+
+GlicStatusIcon::~GlicStatusIcon() {
+  context_menu_ = nullptr;
+  if (status_icon_) {
+    status_icon_->RemoveObserver(this);
+    std::unique_ptr<StatusIcon> removed_icon =
+        status_tray_->RemoveStatusIcon(status_icon_);
+    status_icon_ = nullptr;
+    removed_icon.reset();
+  }
+  status_tray_ = nullptr;
+}
+
+void GlicStatusIcon::OnStatusIconClicked() {
+  controller_->Show();
+}
+
+void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
+      controller_->Show();
+      break;
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT: {
+      ShowPromoInPage::Params params;
+      params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
+      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+      params.bubble_text = l10n_util::GetStringUTF16(
+          IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
+      chrome::ShowPageWithPromoForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
+      break;
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
+      ShowPromoInPage::Params params;
+      params.bubble_anchor_id = kGlicOsToggleElementId;
+      params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+      params.bubble_text =
+          l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
+      chrome::ShowPageWithPromoForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
+      break;
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
+      chrome::ShowSettingsSubPageForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          chrome::kChromeUIGlicHost);
+      break;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+}
+
+void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  status_icon_->SetImage(GetIconForTheme(observed_theme));
+}
+
+void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
+  CHECK(context_menu_);
+  context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW,
+                                            &hotkey);
+  std::optional<size_t> show_menu_item_index =
+      context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW);
+  CHECK(show_menu_item_index);
+  context_menu_->SetForceShowAcceleratorForItemAt(show_menu_item_index.value(),
+                                                  !hotkey.IsEmpty());
+}

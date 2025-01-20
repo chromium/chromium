@@ -31,11 +31,23 @@ public interface TabModelActionListener {
     }
 
     /**
+     * Called before an action is performed or a dialog is shown to let the listener know which type
+     * of dialog might be shown.
+     *
+     * @param dialogType The type of dialog that should be shown.
+     * @param willSkipDialog Whether the dialog will be bypassed due to user preferences. This is
+     *     meaningless if {@code dialogType} is {@link DialogType.NONE}.
+     */
+    default void willPerformActionOrShowDialog(
+            @DialogType int dialogType, boolean willSkipDialog) {}
+
+    /**
      * Called with the result of showing the action confirmation dialog for the action. This is
      * guaranteed to be called, and may be called synchronously if no dialog is shown and the action
      * will proceed synchronously. This will be called after the action is triggered.
      *
-     * @param dialogType The type of dialog that was shown.
+     * @param dialogType The type of dialog that was shown. This may differ from the value in {@code
+     *     willPerformActionOrShowDialog} as it is the type of dialog that was actually shown.
      * @param result The {@link ActionConfirmationResult}.
      */
     default void onConfirmationDialogResult(

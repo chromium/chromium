@@ -708,6 +708,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+      std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
       int http_response_code) override;
   void CancelNavigation(NavigationDiscardReason reason) override;
   void ResetNavigationsForDiscard() override;

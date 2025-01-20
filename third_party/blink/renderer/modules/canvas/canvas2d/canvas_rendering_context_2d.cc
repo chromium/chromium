@@ -39,18 +39,19 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "cc/layers/texture_layer.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "gpu/command_buffer/client/context_support.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -58,8 +59,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -75,12 +74,14 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -89,9 +90,11 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -100,13 +103,14 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
@@ -149,15 +153,12 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
 
 namespace {
 
-gpu::ContextSupport* GetContextSupport() {
-  if (!SharedGpuContext::ContextProviderWrapper() ||
-      !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
-    return nullptr;
-  }
-  return SharedGpuContext::ContextProviderWrapper()
-      ->ContextProvider()
-      ->ContextSupport();
-}
+// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
+// create resource provider internally rather than Canvas2DLayerBridge.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
+             "AdjustCanCreateCanvas2dResourceProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -194,11 +195,6 @@ V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
-
-bool CanvasRenderingContext2D::IsOriginTopLeft() const {
-  // Use top-left origin since Skia Graphite won't support bottom-left origin.
-  return true;
-}
 
 bool CanvasRenderingContext2D::IsComposited() const {
   // The following case is necessary for handling the special case of canvases
@@ -313,10 +309,11 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 bool CanvasRenderingContext2D::Restore() {
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
-  CHECK(host->context_lost());
   if (host->GetRasterMode() == RasterMode::kCPU) {
     return false;
   }
+
+  CHECK(host->context_lost());
   DCHECK(!host->ResourceProvider());
 
   host->ClearLayerTexture();
@@ -324,7 +321,7 @@ bool CanvasRenderingContext2D::Restore() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
 
-  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
+  if (!context_provider_wrapper->ContextProvider().IsContextLost()) {
     CanvasResourceProvider* resource_provider =
         host->GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
 
@@ -354,7 +351,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  DCHECK(IsPaintable());
+  DCHECK(IsCanvas2DBufferValid());
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
 
@@ -489,11 +486,6 @@ sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (isContextLost()) [[unlikely]] {
-    return nullptr;
-  }
-
-  Canvas2DLayerBridge* bridge = canvas()->GetOrCreateCanvas2DLayerBridge();
-  if (bridge == nullptr) [[unlikely]] {
     return nullptr;
   }
 
@@ -729,7 +721,11 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  return canvas()->GetOrCreateCanvas2DLayerBridge();
+  if (base::FeatureList::IsEnabled(kAdjustCanCreateCanvas2dResourceProvider)) {
+    return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+  } else {
+    return canvas()->GetOrCreateCanvas2DLayerBridge();
+  }
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
@@ -770,6 +766,75 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
           CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   return BaseRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
+}
+
+bool CanvasRenderingContext2D::HasPlacedElements() const {
+  return !placed_elements_.empty();
+}
+
+void CanvasRenderingContext2D::PaintPlacedElements() {
+  bool placed_elements_need_repainting = false;
+  for (auto deferred_paint_record : placed_elements_.Values()) {
+    if (deferred_paint_record->IsDirty()) {
+      placed_elements_need_repainting = true;
+      break;
+    }
+  }
+
+  if (!placed_elements_need_repainting) {
+    return;
+  }
+
+  DCHECK_EQ(canvas()->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::LifecycleState::kInPaint);
+
+  for (auto& [element, deferred_paint_image] : placed_elements_) {
+    if (!element->GetLayoutBox() || element->parentElement() != canvas()) {
+      // The element is no longer visible or has been reparented.
+      deferred_paint_image->Clear();
+      continue;
+    }
+
+    if (!deferred_paint_image->IsDirty()) {
+      continue;
+    }
+
+    PaintRecordBuilder builder;
+    LayoutBox* layout_box = element->GetLayoutBox();
+    // All placed elements should have their own stacking contexts.
+    CHECK(layout_box->HasLayer());
+    CHECK(layout_box->IsStacked());
+    PaintLayer* layer = layout_box->EnclosingLayer();
+
+    PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
+    paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
+
+    PropertyTreeState property_tree_state = layer->GetLayoutObject()
+                                                .FirstFragment()
+                                                .LocalBorderBoxProperties()
+                                                .Unalias();
+
+    cc::PaintRecord placed_element_picture =
+        builder.EndRecording(property_tree_state);
+
+    cc::RecordPaintCanvas canvas;
+    canvas.drawPicture(placed_element_picture);
+
+    // TODO(https://issues.chromium.org/379143302): Take the border box bounds
+    // of the layout object by walking over the paint chunks to compute the
+    // painted size.
+    deferred_paint_image->SetPaintRecord(
+        placed_element_picture, gfx::SizeF(layer->GetLayoutBox()->Size()));
+    deferred_paint_image->SetIsDirty(false);
+  }
+}
+
+void CanvasRenderingContext2D::MarkPlacedElementDirty(Element* placedElement) {
+  if (!placed_elements_.Contains(placedElement)) {
+    return;
+  }
+
+  placed_elements_.at(placedElement)->SetIsDirty(true);
 }
 
 void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
@@ -839,7 +904,6 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   CHECK(IsPaintable());
   HTMLCanvasElement* const element = canvas();
-  Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
 
   bool page_is_visible = element->IsPageVisible();
   if (element->ResourceProvider()) {
@@ -848,14 +912,12 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 
   // Conserve memory.
   if (element->GetRasterMode() == RasterMode::kGPU) {
-    if (auto* context_support = GetContextSupport()) {
-      context_support->SetAggressivelyFreeResources(!page_is_visible);
-    }
+    SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
   }
 
   if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
       element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
-    bridge->InitiateHibernationIfNecessary();
+    element->GetHibernationHandler()->InitiateHibernationIfNecessary();
   }
 
   // The impl tree may have dropped the transferable resource for this canvas
@@ -882,7 +944,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
     element->SetNeedsPushProperties();
   }
 
-  if (page_is_visible && bridge->GetHibernationHandler().IsHibernating()) {
+  if (page_is_visible && element->IsHibernating()) {
     element
         ->GetOrCreateResourceProviderWithCurrentRasterModeHint();  // Rude
                                                                    // awakening
@@ -898,25 +960,7 @@ cc::Layer* CanvasRenderingContext2D::CcLayer() const {
 
 CanvasRenderingContext2DSettings*
 CanvasRenderingContext2D::getContextAttributes() const {
-  CanvasRenderingContext2DSettings* settings =
-      CanvasRenderingContext2DSettings::Create();
-  settings->setAlpha(CreationAttributes().alpha);
-  settings->setColorSpace(color_params_.GetColorSpaceAsString());
-  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled())
-    settings->setPixelFormat(color_params_.GetPixelFormatAsString());
-  settings->setDesynchronized(Host()->LowLatencyEnabled());
-  switch (CreationAttributes().will_read_frequently) {
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kTrue);
-      break;
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kFalse:
-      settings->setWillReadFrequently(V8CanvasWillReadFrequently::Enum::kFalse);
-      break;
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined:
-      settings->setWillReadFrequently(
-          V8CanvasWillReadFrequently::Enum::kUndefined);
-  }
-  return settings;
+  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {

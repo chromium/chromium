@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 
 #include "base/run_loop.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 
 namespace ui {
 
@@ -14,11 +15,6 @@ WaylandConnectionTestApi::WaylandConnectionTestApi(WaylandConnection* impl)
 void WaylandConnectionTestApi::SetCursorShape(
     std::unique_ptr<WaylandCursorShape> obj) {
   impl_->cursor_shape_ = std::move(obj);
-}
-
-void WaylandConnectionTestApi::SetZcrCursorShapes(
-    std::unique_ptr<WaylandZcrCursorShapes> obj) {
-  impl_->zcr_cursor_shapes_ = std::move(obj);
 }
 
 void WaylandConnectionTestApi::SyncDisplay() {

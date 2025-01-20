@@ -44,7 +44,7 @@ namespace {
 
 constexpr char kExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class PlatformKeysTest : public PlatformKeysTestBase {
  public:
@@ -296,7 +296,7 @@ class TestSelectDelegate
   explicit TestSelectDelegate(net::CertificateList certs_to_select)
       : certs_to_select_(certs_to_select) {}
 
-  ~TestSelectDelegate() override {}
+  ~TestSelectDelegate() override = default;
 
   void Select(const std::string& extension_id,
               const net::CertificateList& certs,

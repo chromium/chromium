@@ -275,32 +275,33 @@ String ImageDataStorageFormatName(ImageDataStorageFormat format) {
   NOTREACHED();
 }
 
-String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
+// The PredefinedColorSpace value definitions are specified in the CSS Color
+// Level 4 specification.
+gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
+    PredefinedColorSpace color_space) {
   switch (color_space) {
     case PredefinedColorSpace::kSRGB:
-      return "srgb";
+      return gfx::ColorSpace::CreateSRGB();
     case PredefinedColorSpace::kRec2020:
-      return "rec2020";
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                             gfx::ColorSpace::TransferID::GAMMA24);
     case PredefinedColorSpace::kP3:
-      return "display-p3";
+      return gfx::ColorSpace::CreateDisplayP3D65();
     case PredefinedColorSpace::kRec2100HLG:
-      return "rec2100-hlg";
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                             gfx::ColorSpace::TransferID::HLG);
     case PredefinedColorSpace::kRec2100PQ:
-      return "rec2100-pq";
+      return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                             gfx::ColorSpace::TransferID::PQ);
     case PredefinedColorSpace::kSRGBLinear:
-      return "srgb-linear";
-  };
+      return gfx::ColorSpace::CreateSRGBLinear();
+  }
   NOTREACHED();
 }
 
-String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case CanvasPixelFormat::kUint8:
-      return "uint8";
-    case CanvasPixelFormat::kF16:
-      return "float16";
-  }
-  NOTREACHED();
+sk_sp<SkColorSpace> PredefinedColorSpaceToSkColorSpace(
+    PredefinedColorSpace color_space) {
+  return PredefinedColorSpaceToGfxColorSpace(color_space).ToSkColorSpace();
 }
 
 }  // namespace blink

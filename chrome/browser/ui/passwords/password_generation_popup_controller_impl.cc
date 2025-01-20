@@ -20,13 +20,14 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -45,6 +46,7 @@
 #include "ui/gfx/text_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/accessibility/accessibility_state_utils.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
@@ -208,7 +210,7 @@ bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
       PasswordAccepted();
       return true;
     case PasswordGenerationPopupElement::kNudgePasswordCancelButton:
-      HideImpl();
+      PasswordRejected();
       return true;
     default:
       return false;
@@ -254,6 +256,14 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     driver_->FocusNextFieldAfterPasswords();
     weak_this->HideImpl();
   }
+}
+
+void PasswordGenerationPopupControllerImpl::PasswordRejected() {
+  CHECK_EQ(state_, kOfferGeneration);
+  if (driver_) {
+    driver_->GeneratedPasswordRejected();
+  }
+  HideImpl();
 }
 
 void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(
@@ -303,6 +313,10 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldShowNudgePassword()) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
+    // For the screen reader users, move the focus to the accept button on show.
+    if (accessibility_state_utils::IsScreenReaderEnabled()) {
+      SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

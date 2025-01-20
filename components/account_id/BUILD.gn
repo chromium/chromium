@@ -10,7 +10,8 @@ component("account_id") {
     "account_id.h",
   ]
 
-  public_deps = [ "//base" ]
-
-  deps = [ "//google_apis" ]
+  public_deps = [
+    "//base",
+    "//google_apis",
+  ]
 }

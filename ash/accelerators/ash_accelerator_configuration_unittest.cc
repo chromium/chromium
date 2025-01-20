@@ -160,8 +160,6 @@ class AshAcceleratorConfigurationTest : public AshTestBase {
   ~AshAcceleratorConfigurationTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kShortcutCustomization);
     AshTestBase::SetUp();
     config_ = std::make_unique<AshAcceleratorConfiguration>();
     config_->AddObserver(&observer_);
@@ -2595,8 +2593,7 @@ TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
 TEST_F(AshAcceleratorConfigurationTest, PrefsResetWithFlag) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{::features::kShortcutCustomization,
-                            features::kResetShortcutCustomizations},
+      /*enabled_features=*/{features::kResetShortcutCustomizations},
       /*disabled_features=*/{});
   SimulateNewUserFirstLogin(kFakeUserEmail);
   const AcceleratorData test_data[] = {

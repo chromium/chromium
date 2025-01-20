@@ -4,18 +4,14 @@
 
 source_set("model") {
   sources = [
-    "cookie_settings_factory.cc",
-    "cookie_settings_factory.h",
     "host_content_settings_map_factory.cc",
     "host_content_settings_map_factory.h",
   ]
   deps = [
     "//base",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
-    "//components/keyed_service/ios",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }

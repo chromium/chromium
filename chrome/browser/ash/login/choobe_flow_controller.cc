@@ -55,9 +55,9 @@ OobeScreenId GetLastOptionalScreenInSet(
 
 }  // namespace
 
-ChoobeFlowController::ChoobeFlowController() {}
+ChoobeFlowController::ChoobeFlowController() = default;
 
-ChoobeFlowController::~ChoobeFlowController() {}
+ChoobeFlowController::~ChoobeFlowController() = default;
 
 void ChoobeFlowController::ClearPreferences(PrefService& prefs) {
   prefs.ClearPref(prefs::kChoobeCompletedScreens);

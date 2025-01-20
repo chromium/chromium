@@ -40,12 +40,15 @@ namespace {
 // this must be stateless.
 // Example Usage: `CONSTEXPR_LAMBDA((int i, int j) { return i + j; }) lambda;`
 // TODO(crbug.com/40533712): Remove once we have constexpr lambdas for real.
-#define CONSTEXPR_LAMBDA(fun) \
-  constexpr struct { constexpr bool operator() fun }
+#define CONSTEXPR_LAMBDA(fun)     \
+  constexpr struct {              \
+    constexpr bool operator() fun \
+  }
 
 struct Int {
   constexpr Int() = default;
-  constexpr Int(int value) : value(value) {}
+  constexpr Int(int value)  // NOLINT(google-explicit-constructor)
+      : value(value) {}
 
   int value = 0;
 };
@@ -54,25 +57,14 @@ constexpr bool operator==(Int lhs, Int rhs) {
   return lhs.value == rhs.value;
 }
 
-constexpr bool operator<(Int lhs, Int rhs) {
-  return lhs.value < rhs.value;
-}
-
-constexpr bool operator>(Int lhs, Int rhs) {
-  return lhs.value > rhs.value;
-}
-
-constexpr bool operator<=(Int lhs, Int rhs) {
-  return lhs.value <= rhs.value;
-}
-
-constexpr bool operator>=(Int lhs, Int rhs) {
-  return lhs.value >= rhs.value;
+constexpr auto operator<=>(Int lhs, Int rhs) {
+  return lhs.value <=> rhs.value;
 }
 
 // Move-only int that clears `value` when moving out.
 struct MoveOnlyInt {
-  MoveOnlyInt(int value) : value(value) {}
+  MoveOnlyInt(int value)  // NOLINT(google-explicit-constructor)
+      : value(value) {}
   MoveOnlyInt(MoveOnlyInt&& other) : value(std::exchange(other.value, 0)) {}
 
   MoveOnlyInt& operator=(MoveOnlyInt&& other) {
@@ -384,8 +376,8 @@ TEST(RangesTest, IsPermutation) {
   EXPECT_TRUE(ranges::is_permutation(
       ints1, ints2, [](Int lhs, Int rhs) { return lhs.value == rhs.value; }));
 
-  EXPECT_TRUE(
-      ranges::is_permutation(ints1, ints2, ranges::equal_to{}, &Int::value));
+  EXPECT_TRUE(ranges::is_permutation(ints1, ints2, ranges::equal_to{},
+                                     &Int::value, &Int::value));
 
   EXPECT_FALSE(ranges::is_permutation(array1, ints2, ranges::equal_to{}, {},
                                       &Int::value));
@@ -522,8 +514,9 @@ TEST(RangesTest, Move) {
   EXPECT_TRUE(std::all_of(output, output + 3, equals_six));
   EXPECT_TRUE(std::all_of(output + 3, output + 5, equals_zero));
 
-  for (auto& in : input)
+  for (auto& in : input) {
     in = 6;
+  }
 
   EXPECT_EQ(output + 5, ranges::move(input, output));
   EXPECT_TRUE(ranges::all_of(input, equals_zero));
@@ -542,8 +535,9 @@ TEST(RangesTest, MoveBackward) {
   EXPECT_TRUE(std::all_of(output, output + 2, equals_zero));
   EXPECT_TRUE(std::all_of(output + 2, output + 5, equals_six));
 
-  for (auto& in : input)
+  for (auto& in : input) {
     in = 6;
+  }
 
   EXPECT_EQ(output, ranges::move_backward(input, output + 5));
   EXPECT_TRUE(ranges::all_of(input, equals_zero));

@@ -77,8 +77,8 @@ enum class PatternFile : uint8_t {
   kMaxValue = kLegacy
 #else
   kDefault,
-  kPredictionImprovements,
-  kMaxValue = kPredictionImprovements
+  kAutofillAi,
+  kMaxValue = kAutofillAi
 #endif
 };
 
@@ -96,15 +96,9 @@ std::optional<PatternFile> GetActivePatternFile();
 //
 // The returned patterns are sorted by their MatchingPattern::positive_score in
 // decreasing order.
-base::span<const MatchPatternRef> GetMatchPatterns(
-    std::string_view name,
-    std::optional<LanguageCode> language_code,
-    PatternFile pattern_file);
-
-base::span<const MatchPatternRef> GetMatchPatterns(
-    FieldType type,
-    std::optional<LanguageCode> language_code,
-    PatternFile pattern_file);
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
+                                                   LanguageCode language_code,
+                                                   PatternFile pattern_file);
 
 // Returns true iff there at least one pattern for some PatternSource and
 // pattern name.

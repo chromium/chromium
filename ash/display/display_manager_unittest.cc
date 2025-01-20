@@ -39,7 +39,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -50,7 +49,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -126,6 +124,14 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     }
     if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {
       changed_metrics_[display.id()] |= changed_metrics;
+    }
+    // A new display may be re-configured during the configuration by shell.
+    auto iter = std::find_if(added_displays_.begin(), added_displays_.end(),
+                             [display](const display::Display& d) {
+                               return d.id() == display.id();
+                             });
+    if (iter != added_displays_.end()) {
+      *iter = display;
     }
   }
 
@@ -318,10 +324,6 @@ class DisplayManagerTest : public AshTestBase,
     check_root_window_on_destruction_ = false;
   }
 
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_features_;
-  }
-
  private:
   vector<display::Display> changed_;
   vector<display::Display> added_;
@@ -339,18 +341,10 @@ class DisplayManagerTest : public AshTestBase,
   base::ScopedObservation<display::DisplayManager,
                           display::DisplayManagerObserver>
       display_manager_observation_{this};
-
-  // Currently `display::features::kRoundedDisplay` feature is used during the
-  // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
-  // `scoped_features_` needs to outlive the call.
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_F(DisplayManagerTest,
        RoundedDisplayProviderIsOnlyCreatedForEachRoundedDisplay) {
-  scoped_feature_list().InitAndEnableFeature(
-      display::features::kRoundedDisplay);
-
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
@@ -370,9 +364,6 @@ TEST_F(DisplayManagerTest,
 }
 
 TEST_F(DisplayManagerTest, RoundedDisplayProviderIsRemovedForRemovedDisplay) {
-  scoped_feature_list().InitAndEnableFeature(
-      display::features::kRoundedDisplay);
-
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
 
@@ -3751,15 +3742,23 @@ TEST_F(DisplayManagerTest, ForcedMirrorModeExited) {
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }
 
-TEST_F(DisplayManagerTest, DisplayPrefsAndKioskMode) {
+namespace {
+
+class NoSessionDisplayManagerTest : public DisplayManagerTest {
+ public:
+  NoSessionDisplayManagerTest() { set_start_session(false); }
+  NoSessionDisplayManagerTest(const NoSessionDisplayManagerTest&) = delete;
+  NoSessionDisplayManagerTest& operator=(const NoSessionDisplayManagerTest&) =
+      delete;
+  ~NoSessionDisplayManagerTest() override = default;
+};
+
+}  // namespace
+
+TEST_F(NoSessionDisplayManagerTest, DisplayPrefsAndKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
   UpdateDisplay("400x300,800x700");

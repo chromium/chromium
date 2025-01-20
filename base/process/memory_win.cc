@@ -24,8 +24,9 @@ namespace {
 // Return a non-0 value to retry the allocation.
 int ReleaseReservationOrTerminate(size_t size) {
   constexpr int kRetryAllocation = 1;
-  if (internal::ReleaseAddressSpaceReservation())
+  if (internal::ReleaseAddressSpaceReservation()) {
     return kRetryAllocation;
+  }
   TerminateBecauseOutOfMemory(size);
 }
 

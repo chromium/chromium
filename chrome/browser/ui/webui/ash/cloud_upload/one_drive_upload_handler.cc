@@ -208,8 +208,7 @@ void OneDriveUploadHandler::OnFailedUpload(
     LOG(ERROR) << "Upload to OneDrive: " << error_message;
     notification_manager_->ShowUploadError(error_message);
   }
-    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
-                             0);
+  std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt, 0);
 }
 
 void OneDriveUploadHandler::OnIOTaskStatus(

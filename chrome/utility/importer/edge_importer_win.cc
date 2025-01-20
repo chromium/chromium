@@ -155,7 +155,7 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
 
 }  // namespace
 
-EdgeImporter::EdgeImporter() {}
+EdgeImporter::EdgeImporter() = default;
 
 void EdgeImporter::StartImport(const importer::SourceProfile& source_profile,
                                uint16_t items,
@@ -172,7 +172,7 @@ void EdgeImporter::StartImport(const importer::SourceProfile& source_profile,
   bridge_->NotifyEnded();
 }
 
-EdgeImporter::~EdgeImporter() {}
+EdgeImporter::~EdgeImporter() = default;
 
 void EdgeImporter::ImportFavorites() {
   std::vector<ImportedBookmarkEntry> bookmarks;

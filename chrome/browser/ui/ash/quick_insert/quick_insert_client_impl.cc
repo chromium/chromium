@@ -44,13 +44,16 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
-#include "chrome/browser/ui/ash/quick_insert/quick_insert_link_suggester.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -223,40 +226,14 @@ ash::input_method::EditorMediator* GetEditorMediator(Profile* profile) {
       profile);
 }
 
-// TODO: b/326847990 - Remove this once it's moved to mojom traits.
-chromeos::editor_menu::PresetQueryCategory FromMojoPresetQueryCategory(
-    const crosapi::mojom::EditorPanelPresetQueryCategory category) {
-  using EditorPanelPresetQueryCategory =
-      crosapi::mojom::EditorPanelPresetQueryCategory;
-  using PresetQueryCategory = chromeos::editor_menu::PresetQueryCategory;
-
-  switch (category) {
-    case EditorPanelPresetQueryCategory::kUnknown:
-      return PresetQueryCategory::kUnknown;
-    case EditorPanelPresetQueryCategory::kShorten:
-      return PresetQueryCategory::kShorten;
-    case EditorPanelPresetQueryCategory::kElaborate:
-      return PresetQueryCategory::kElaborate;
-    case EditorPanelPresetQueryCategory::kRephrase:
-      return PresetQueryCategory::kRephrase;
-    case EditorPanelPresetQueryCategory::kFormalize:
-      return PresetQueryCategory::kFormalize;
-    case EditorPanelPresetQueryCategory::kEmojify:
-      return PresetQueryCategory::kEmojify;
-    case EditorPanelPresetQueryCategory::kProofread:
-      return PresetQueryCategory::kProofread;
-  }
-}
-
-std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromPanelContext(
-    crosapi::mojom::EditorPanelContextPtr panel_context) {
+std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromEditorContext(
+    const chromeos::editor_menu::EditorContext& editor_context) {
   std::vector<ash::QuickInsertSearchResult> results;
-  for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
-       panel_context->preset_text_queries) {
+  for (const chromeos::editor_menu::PresetTextQuery& query :
+       editor_context.preset_queries) {
     results.push_back(ash::QuickInsertEditorResult(
-        ash::QuickInsertEditorResult::Mode::kRewrite,
-        base::UTF8ToUTF16(query->name),
-        FromMojoPresetQueryCategory(query->category), query->text_query_id));
+        ash::QuickInsertEditorResult::Mode::kRewrite, query.name,
+        query.category, query.text_query_id));
   }
   return results;
 }
@@ -311,6 +288,7 @@ void QuickInsertClientImpl::StartCrosSearch(
     case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kGifs:
     case ash::QuickInsertCategory::kClipboard:
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:
@@ -364,7 +342,7 @@ bool QuickInsertClientImpl::IsEligibleForEditor() {
   }
 
   return editor_mediator->GetEditorMode() !=
-         ash::input_method::EditorMode::kHardBlocked;
+         chromeos::editor_menu::EditorMode::kHardBlocked;
 }
 
 QuickInsertClientImpl::ShowEditorCallback
@@ -377,9 +355,10 @@ QuickInsertClientImpl::CacheEditorContext() {
 
   editor_mediator->CacheContext();
 
-  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
-  if (editor_mode == ash::input_method::EditorMode::kSoftBlocked ||
-      editor_mode == ash::input_method::EditorMode::kHardBlocked) {
+  chromeos::editor_menu::EditorMode editor_mode =
+      editor_mediator->GetEditorMode();
+  if (editor_mode == chromeos::editor_menu::EditorMode::kSoftBlocked ||
+      editor_mode == chromeos::editor_menu::EditorMode::kHardBlocked) {
     return {};
   }
 
@@ -388,7 +367,8 @@ QuickInsertClientImpl::CacheEditorContext() {
 }
 
 QuickInsertClientImpl::ShowLobsterCallback
-QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
+QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion,
+                                           const gfx::Rect& caret_bounds) {
   if (!ash::features::IsLobsterEnabled()) {
     return base::NullCallback();
   }
@@ -402,8 +382,9 @@ QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
     return base::NullCallback();
   }
 
-  lobster_trigger_ = lobster_controller->CreateTrigger(
-      ash::LobsterEntryPoint::kQuickInsert, support_image_insertion);
+  lobster_trigger_ =
+      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kQuickInsert,
+                                        support_image_insertion, caret_bounds);
 
   if (!lobster_trigger_) {
     return base::NullCallback();
@@ -423,15 +404,16 @@ void QuickInsertClientImpl::GetSuggestedEditorResults(
     return;
   }
 
-  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
-  if (editor_mode == ash::input_method::EditorMode::kHardBlocked ||
-      editor_mode == ash::input_method::EditorMode::kSoftBlocked) {
+  chromeos::editor_menu::EditorMode editor_mode =
+      editor_mediator->GetEditorMode();
+  if (editor_mode == chromeos::editor_menu::EditorMode::kHardBlocked ||
+      editor_mode == chromeos::editor_menu::EditorMode::kSoftBlocked) {
     std::move(callback).Run({});
     return;
   }
 
   editor_mediator->panel_manager()->GetEditorPanelContext(
-      base::BindOnce(GetEditorResultsFromPanelContext)
+      base::BindOnce(GetEditorResultsFromEditorContext)
           .Then(std::move(callback)));
 }
 
@@ -453,22 +435,12 @@ void QuickInsertClientImpl::GetRecentDriveFileResults(
                      .Then(std::move(callback)));
 }
 
-void QuickInsertClientImpl::GetSuggestedLinkResults(
-    size_t max_results,
-    SuggestedLinksCallback callback) {
-  link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
-}
-
 void QuickInsertClientImpl::FetchFileThumbnail(
     const base::FilePath& path,
     const gfx::Size& size,
     FetchFileThumbnailCallback callback) {
   CHECK(thumbnail_loader_);
   thumbnail_loader_->Load(path, size, std::move(callback));
-}
-
-PrefService* QuickInsertClientImpl::GetPrefs() {
-  return profile_ == nullptr ? nullptr : profile_->GetPrefs();
 }
 
 // Forked from `ClipboardHistoryControllerDelegateImpl::Paste`.
@@ -536,6 +508,16 @@ void QuickInsertClientImpl::ActiveUserChanged(user_manager::User* active_user) {
                      weak_factory_.GetWeakPtr(), active_user));
 }
 
+history::HistoryService* QuickInsertClientImpl::GetHistoryService() {
+  return HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+favicon::FaviconService* QuickInsertClientImpl::GetFaviconService() {
+  return FaviconServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
 void QuickInsertClientImpl::SetProfileByUser(const user_manager::User* user) {
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
@@ -560,7 +542,6 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
   ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 
   file_suggester_ = std::make_unique<QuickInsertFileSuggester>(profile_);
-  link_suggester_ = std::make_unique<QuickInsertLinkSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<QuickInsertThumbnailLoader>(profile_);
 
   if (controller_ != nullptr) {
@@ -588,6 +569,7 @@ QuickInsertClientImpl::CreateSearchProviderForCategory(
     case ash::QuickInsertCategory::kLobsterWithSelectedText:
     case ash::QuickInsertCategory::kEmojisGifs:
     case ash::QuickInsertCategory::kEmojis:
+    case ash::QuickInsertCategory::kGifs:
     case ash::QuickInsertCategory::kClipboard:
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:

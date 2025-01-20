@@ -403,7 +403,7 @@ class FindArchiveToPatchTest : public testing::Test {
     }
   };
 
-  FindArchiveToPatchTest() {}
+  FindArchiveToPatchTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());

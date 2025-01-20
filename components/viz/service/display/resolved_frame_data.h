@@ -36,8 +36,8 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 struct VIZ_SERVICE_EXPORT ResolvedQuadData {
   explicit ResolvedQuadData(const DrawQuad& quad);
 
-  // Remapped display ResourceIds.
-  DrawQuad::Resources remapped_resources;
+  // Remapped display ResourceId.
+  ResourceId remapped_resource_id;
 };
 
 // Render pass data that is fixed for the lifetime of ResolvedPassData.

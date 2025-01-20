@@ -223,7 +223,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsFalse() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(false);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -248,7 +248,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsTrue() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -275,7 +275,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testPermissionIsCachedAfterFileNavigation() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),

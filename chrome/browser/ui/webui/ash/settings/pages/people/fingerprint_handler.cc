@@ -64,7 +64,7 @@ FingerprintHandler::FingerprintHandler(Profile* profile) : profile_(profile) {
   user_id_ = ProfileHelper::Get()->GetUserIdHashFromProfile(profile);
 }
 
-FingerprintHandler::~FingerprintHandler() {}
+FingerprintHandler::~FingerprintHandler() = default;
 
 void FingerprintHandler::RegisterMessages() {
   // Note: getFingerprintsList must be called before observers will be added.

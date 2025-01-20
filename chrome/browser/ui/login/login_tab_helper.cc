@@ -17,7 +17,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-LoginTabHelper::~LoginTabHelper() {}
+LoginTabHelper::~LoginTabHelper() = default;
 
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -29,8 +29,9 @@ void LoginTabHelper::DidStartNavigation(
   // response bodies that have subframes or can trigger same-document
   // navigations.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument())
+      navigation_handle->IsSameDocument()) {
     return;
+  }
 
   login_handler_.reset();
 }

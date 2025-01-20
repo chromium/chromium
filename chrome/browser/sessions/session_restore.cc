@@ -53,7 +53,6 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/session_service_utils.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -671,11 +670,9 @@ class SessionRestoreImpl : public BrowserListObserver {
     PruneWindows(windows);
 
     if (windows->empty()) {
-      // Restore was unsuccessful. The DOM storage system can also delete its
-      // data, since no session restore will happen at a later point in time.
-      profile_->GetDefaultStoragePartition()
-          ->GetDOMStorageContext()
-          ->StartScavengingUnusedSessionStorage();
+      // Restore was unsuccessful. The cookie/storage systems can also delete
+      // their data, since no session restore will happen at a later point.
+      profile_->GetDefaultStoragePartition()->DeleteStaleSessionData();
       return FinishedTabCreation(false, false, restored_tabs);
     }
 
@@ -856,21 +853,9 @@ class SessionRestoreImpl : public BrowserListObserver {
       last_normal_browser = finished_browser;
     }
 
-    // sessionStorages needed for the session restore have now been recreated
-    // by RestoreTab. Now it's safe for the DOM storage system to start
-    // deleting leftover data.
-    profile_->GetDefaultStoragePartition()
-        ->GetDOMStorageContext()
-        ->StartScavengingUnusedSessionStorage();
-
-    // Cookies needed for session restore have been loaded and their last
-    // accessed time has been updated. Now it's safe for the CookieManager to
-    // delete stale session cookies not used in the past 7 days.
-    // See crbug.com/40285083 for more info.
-    if (base::FeatureList::IsEnabled(kDeleteStaleSessionCookiesOnStartup)) {
-      profile_->GetDefaultStoragePartition()
-          ->DeleteStaleSessionOnlyCookiesAfterDelay();
-    }
+    // Session cookies/storage needed for the session restore have now been
+    // recreated by RestoreTab so it's safe to start deleting leftover data.
+    profile_->GetDefaultStoragePartition()->DeleteStaleSessionData();
 
     return last_normal_browser ? last_normal_browser : last_app_browser;
   }

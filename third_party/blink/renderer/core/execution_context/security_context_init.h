@@ -49,7 +49,8 @@ class CORE_EXPORT SecurityContextInit {
       const FramePolicy& frame_policy,
       const std::optional<ParsedPermissionsPolicy>& isolated_app_policy,
       const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
-          fenced_frame_properties);
+          fenced_frame_properties,
+      const KURL& document_url);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);

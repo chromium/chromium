@@ -501,41 +501,77 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME,
                 time_remaining, base::UTF8ToUTF16(task_name)),
             focus_mode_tray_->GetAccessibleNameForBubble());
-  ui::AXNodeData node_data;
-  GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            focus_mode_tray_->GetAccessibleNameForBubble());
+
+  {
+    ui::AXNodeData node_data;
+    GetBubbleView()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              focus_mode_tray_->GetAccessibleNameForBubble());
+  }
+
+  {
+    ui::AXNodeData node_data;
+    focus_mode_tray_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                  time_remaining));
+  }
+
+  {
+    ui::AXNodeData node_data;
+    focus_mode_tray_->image_view()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                  time_remaining));
+  }
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   views::FocusManager* focus_manager =
       GetBubbleView()->GetWidget()->GetFocusManager();
-  node_data = ui::AXNodeData();
-  focus_manager->GetFocusedView()->GetViewAccessibility().GetAccessibleNodeData(
-      &node_data);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME),
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  node_data = ui::AXNodeData();
-  focus_manager->GetFocusedView()->GetViewAccessibility().GetAccessibleNodeData(
-      &node_data);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  node_data = ui::AXNodeData();
-  focus_manager->GetFocusedView()->GetViewAccessibility().GetAccessibleNodeData(
-      &node_data);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON),
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(
-      base::UTF8ToUTF16(task_name),
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription));
+
+  {
+    ui::AXNodeData node_data;
+    focus_manager->GetFocusedView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+    EXPECT_EQ(base::UTF8ToUTF16(task_name),
+              node_data.GetString16Attribute(
+                  ax::mojom::StringAttribute::kDescription));
+  }
 }
 
 // Tests basic ending moment functionality. If the time expires for the ending

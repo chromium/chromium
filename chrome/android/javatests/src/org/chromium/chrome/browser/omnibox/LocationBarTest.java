@@ -337,7 +337,8 @@ public class LocationBarTest {
     @MediumTest
     public void testEditingText() {
         testEditingText(
-                /* expectRetainOmniboxOnFocus= */ OmniboxFeatures.shouldRetainOmniboxOnFocus());
+                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
+                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
     }
 
     @Test
@@ -635,7 +636,8 @@ public class LocationBarTest {
     @Restriction(DeviceFormFactor.TABLET)
     public void testFocusLogic_buttonVisibilityTablet() {
         testFocusLogic_buttonVisibilityTablet(
-                /* expectRetainOmniboxOnFocus= */ OmniboxFeatures.shouldRetainOmniboxOnFocus());
+                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
+                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
     }
 
     @Test

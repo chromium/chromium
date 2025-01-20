@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 
 #include <iterator>
@@ -132,8 +127,7 @@ std::string GetChildDescription(const content::ChildProcessData& data) {
 void CreateAndAddMemoryInternalsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIMemoryInternalsHost);
-  source->AddResourcePaths(base::make_span(kMemoryInternalsResources,
-                                           kMemoryInternalsResourcesSize));
+  source->AddResourcePaths(kMemoryInternalsResources);
   source->SetDefaultResource(IDR_MEMORY_INTERNALS_MEMORY_INTERNALS_HTML);
 }
 
@@ -412,4 +406,4 @@ MemoryInternalsUI::MemoryInternalsUI(content::WebUI* web_ui)
   CreateAndAddMemoryInternalsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
-MemoryInternalsUI::~MemoryInternalsUI() {}
+MemoryInternalsUI::~MemoryInternalsUI() = default;

@@ -16,7 +16,6 @@
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
 #include "services/media_session/media_session_service_impl.h"
@@ -132,12 +131,6 @@ class AudioFocusManagerTest
       test::MockMediaSession* session) {
     mojom::MediaSessionInfo::SessionState state = session->GetState();
 
-    if (!IsEnforcementEnabled()) {
-      // If audio focus enforcement is disabled then we should never see ducking
-      // in the tests.
-      EXPECT_NE(mojom::MediaSessionInfo::SessionState::kDucking, state);
-    }
-
     return state;
   }
 
@@ -191,7 +184,7 @@ class AudioFocusManagerTest
   }
 
   bool IsEnforcementEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Enforcement is enabled by default on Chrome OS.
     if (GetParam() == mojom::EnforcementMode::kDefault)
       return true;
@@ -232,6 +225,17 @@ class AudioFocusManagerTest
     return service_->audio_focus_manager_for_testing()
         .audio_focus_stack_.back()
         ->identity();
+  }
+
+  void StartDuckingAllAudio(
+      const std::optional<base::UnguessableToken>& exempted_request_id) {
+    GetService()->StartDuckingAllAudio(exempted_request_id);
+    FlushForTesting();
+  }
+
+  void StopDuckingAllAudio() {
+    GetService()->StopDuckingAllAudio();
+    FlushForTesting();
   }
 
   void FlushForTesting() { audio_focus_remote_.FlushForTesting(); }
@@ -1740,6 +1744,82 @@ TEST_P(AudioFocusManagerTest, GetSourceFocusRequests) {
 
   // Ensure that the API returned nothing for the unused identity.
   EXPECT_TRUE(identity_3_requests.empty());
+}
+
+TEST_P(AudioFocusManagerTest, StartDuckingAllAudio_NoExemption) {
+  test::MockMediaSession media_session_1;
+  test::MockMediaSession media_session_2;
+
+  base::UnguessableToken group_id = base::UnguessableToken::Create();
+
+  // Request audio focus for two media sessions.
+  ASSERT_TRUE(RequestGroupedAudioFocus(base::UnguessableToken::Create(),
+                                       &media_session_1,
+                                       mojom::AudioFocusType::kGain, group_id));
+  ASSERT_TRUE(RequestGroupedAudioFocus(base::UnguessableToken::Create(),
+                                       &media_session_2,
+                                       mojom::AudioFocusType::kGain, group_id));
+  EXPECT_EQ(IsGroupingEnabled()
+                ? mojom::MediaSessionInfo::SessionState::kActive
+                : mojom::MediaSessionInfo::SessionState::kSuspended,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kActive,
+            GetState(&media_session_2));
+
+  // A call to `StartDuckingAllAudio()` with no exempted request ID should duck
+  // all sessions.
+  StartDuckingAllAudio(std::nullopt);
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kDucking,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kDucking,
+            GetState(&media_session_2));
+
+  // Once ducking all audio is stopped, the sessions should no longer be ducked.
+  StopDuckingAllAudio();
+  EXPECT_EQ(IsGroupingEnabled()
+                ? mojom::MediaSessionInfo::SessionState::kActive
+                : mojom::MediaSessionInfo::SessionState::kSuspended,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kActive,
+            GetState(&media_session_2));
+}
+
+TEST_P(AudioFocusManagerTest, StartDuckingAllAudio_WithExemption) {
+  test::MockMediaSession media_session_1;
+  test::MockMediaSession media_session_2;
+
+  base::UnguessableToken group_id = base::UnguessableToken::Create();
+  base::UnguessableToken id_2 = base::UnguessableToken::Create();
+
+  // Request audio focus for two media sessions.
+  ASSERT_TRUE(RequestGroupedAudioFocus(base::UnguessableToken::Create(),
+                                       &media_session_1,
+                                       mojom::AudioFocusType::kGain, group_id));
+  ASSERT_TRUE(RequestGroupedAudioFocus(id_2, &media_session_2,
+                                       mojom::AudioFocusType::kGain, group_id));
+  EXPECT_EQ(IsGroupingEnabled()
+                ? mojom::MediaSessionInfo::SessionState::kActive
+                : mojom::MediaSessionInfo::SessionState::kSuspended,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kActive,
+            GetState(&media_session_2));
+
+  // A call to `StartDuckingAllAudio()` with an exempted request ID should duck
+  // all sessions except the exempted one.
+  StartDuckingAllAudio(id_2);
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kDucking,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kActive,
+            GetState(&media_session_2));
+
+  // Once ducking all audio is stopped, the sessions should no longer be ducked.
+  StopDuckingAllAudio();
+  EXPECT_EQ(IsGroupingEnabled()
+                ? mojom::MediaSessionInfo::SessionState::kActive
+                : mojom::MediaSessionInfo::SessionState::kSuspended,
+            GetState(&media_session_1));
+  EXPECT_EQ(mojom::MediaSessionInfo::SessionState::kActive,
+            GetState(&media_session_2));
 }
 
 }  // namespace media_session

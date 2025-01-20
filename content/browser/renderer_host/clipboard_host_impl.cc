@@ -29,6 +29,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -53,51 +54,13 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/common/url_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
 namespace {
-
-// Used to skip content analysis checks when the source and destination of the
-// clipboard data are the same.
-struct LastClipboardWriterInfo {
-  // RFH ID of the last RFH to have committed data to the clipboard.
-  GlobalRenderFrameHostId rfh_id;
-
-  // The sequence number of the last commit made to the clipboard by the
-  // browser.
-  ui::ClipboardSequenceNumberToken seqno;
-};
-
-LastClipboardWriterInfo& LastClipboardWriterInfoStorage() {
-  static LastClipboardWriterInfo info;
-  return info;
-}
-
-// Helper observer used to keep track of the last copy operation made from
-// the browser. This is used to ensure that `ui::Clipboard::GetSequenceNumber`
-// is always used with a updated value, which is not always synchronous
-// depending on platform.
-class CopyObserver : public ui::ClipboardObserver {
- public:
-  CopyObserver() { ui::ClipboardMonitor::GetInstance()->AddObserver(this); }
-
- private:
-  void OnClipboardDataChanged() override {
-    LastClipboardWriterInfoStorage().seqno =
-        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-            ui::ClipboardBuffer::kCopyPaste);
-  }
-};
-
-void ClearIfLastClipboardWriterIs(const RenderFrameHost& rfh) {
-  if (LastClipboardWriterInfoStorage().rfh_id == rfh.GetGlobalId()) {
-    LastClipboardWriterInfoStorage() = {};
-  }
-}
 
 std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
                            std::unique_ptr<ui::DataTransferEndpoint> data_dst) {
@@ -121,37 +84,30 @@ std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
 
 }  // namespace
 
-bool IsLastClipboardWrite(const RenderFrameHost& rfh,
-                          ui::ClipboardSequenceNumberToken seqno) {
-  const auto& info = LastClipboardWriterInfoStorage();
-  return info.rfh_id == rfh.GetGlobalId() && info.seqno == seqno;
-}
-
-void SetLastClipboardWrite(const RenderFrameHost& rfh,
-                           ui::ClipboardSequenceNumberToken seqno) {
-  LastClipboardWriterInfoStorage() = {
-      .rfh_id = rfh.GetGlobalId(),
-      .seqno = seqno,
-  };
-}
-
 ClipboardEndpoint GetSourceClipboardEndpoint(
-    ui::ClipboardSequenceNumberToken seqno,
+    const ui::DataTransferEndpoint* data_dst,
     ui::ClipboardBuffer clipboard_buffer) {
-  const auto& info = LastClipboardWriterInfoStorage();
-  auto* rfh = RenderFrameHost::FromID(info.rfh_id);
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::string pickled_rfh_token;
+  clipboard->ReadData(SourceRFHTokenType(), data_dst, &pickled_rfh_token);
 
-  if (info.seqno != seqno || !rfh) {
+  auto rfh_token = GlobalRenderFrameHostToken::FromPickle(
+      base::Pickle::WithData(base::as_byte_span(pickled_rfh_token)));
+
+  RenderFrameHost* rfh = nullptr;
+  if (rfh_token) {
+    rfh = RenderFrameHost::FromFrameToken(*rfh_token);
+  }
+
+  if (!rfh) {
     // Fall back to the clipboard source if there is no `seqno` match or RFH, as
     // `ui::DataTransferEndpoint` can be populated differently based on
     // platform.
-    return ClipboardEndpoint(
-        ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer));
+    return ClipboardEndpoint(clipboard->GetSource(clipboard_buffer));
   }
 
   std::optional<ui::DataTransferEndpoint> source_dte;
-  auto clipboard_source_dte =
-      ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
+  auto clipboard_source_dte = clipboard->GetSource(clipboard_buffer);
   if (clipboard_source_dte) {
     if (clipboard_source_dte->IsUrlType()) {
       source_dte = std::make_optional<ui::DataTransferEndpoint>(
@@ -166,14 +122,14 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
   return ClipboardEndpoint(
       std::move(source_dte),
       base::BindRepeating(
-          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
-            auto* rfh = RenderFrameHost::FromID(rfh_id);
+          [](GlobalRenderFrameHostToken rfh_token) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromFrameToken(rfh_token);
             if (!rfh) {
               return nullptr;
             }
             return rfh->GetBrowserContext();
           },
-          info.rfh_id),
+          rfh->GetGlobalFrameToken()),
       *rfh);
 }
 
@@ -181,9 +137,7 @@ ClipboardHostImpl::ClipboardHostImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {
-  static base::NoDestructor<CopyObserver> observer;
-  clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
+  ResetClipboardWriter();
 }
 
 void ClipboardHostImpl::Create(
@@ -196,7 +150,6 @@ void ClipboardHostImpl::Create(
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {
-  ClearIfLastClipboardWriterIs(render_frame_host());
   clipboard_writer_->Reset();
 }
 
@@ -223,15 +176,14 @@ void ClipboardHostImpl::ReadAvailableTypes(
       clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
                                    clipboard_buffer, data_endpoint.get());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
-  // paste that it put on the clipboard during copy (b/271078230). This can be
-  // removed when ash is fully replaced by lacros.
+  // paste that it put on the clipboard during copy (b/271078230).
   if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
           kChromeUIScheme)) {
     file_type_only = false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (file_type_only) {
     types = {base::UTF8ToUTF16(ui::kMimeTypeURIList)};
@@ -467,7 +419,8 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   RenderProcessHost* process = render_frame_host().GetProcess();
   result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
       filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+      process->GetDeprecatedID(),
+      process->GetStoragePartition()->GetFileSystemContext());
 
   // Convert to DataTransferFiles which creates the access token for each file.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
@@ -475,7 +428,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   std::vector<blink::mojom::DataTransferFilePtr> files =
       FileInfosToDataTransferFiles(
           filenames, storage_partition->GetFileSystemAccessManager(),
-          process->GetID());
+          process->GetDeprecatedID());
   std::move(files.begin(), files.end(), std::back_inserter(result->files));
 
   PasteIfPolicyAllowed(
@@ -646,10 +599,7 @@ void ClipboardHostImpl::CommitWrite() {
   if (render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
     clipboard_writer_->MarkAsOffTheRecord();
   }
-  clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
-
-  LastClipboardWriterInfoStorage().rfh_id = render_frame_host().GetGlobalId();
+  ResetClipboardWriter();
 }
 
 bool ClipboardHostImpl::IsRendererPasteAllowed(
@@ -691,11 +641,11 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
 
   std::string result;
   ui::Clipboard::GetForCurrentThread()->ReadData(
-      ui::ClipboardFormatType::GetType(web_custom_format_string),
+      ui::ClipboardFormatType::CustomPlatformType(web_custom_format_string),
       data_endpoint.get(), &result);
   if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
     return;
-  base::span<const uint8_t> span = base::as_bytes(base::make_span(result));
+  base::span<const uint8_t> span = base::as_byte_span(result);
   mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
   std::move(callback).Run(std::move(buffer));
 }
@@ -728,10 +678,13 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
   ui::ClipboardSequenceNumberToken seqno =
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
 
+  auto data_dst = CreateClipboardEndpoint();
+  const ui::DataTransferEndpoint* data_dst_endpoint =
+      base::OptionalToPtr(data_dst.data_transfer_endpoint());
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .IsClipboardPasteAllowedByPolicy(
-          GetSourceClipboardEndpoint(seqno, clipboard_buffer),
-          CreateClipboardEndpoint(),
+          GetSourceClipboardEndpoint(data_dst_endpoint, clipboard_buffer),
+          std::move(data_dst),
           {
               .size = data_size,
               .format_type = data_type,
@@ -840,6 +793,14 @@ ClipboardEndpoint ClipboardHostImpl::CreateClipboardEndpoint() {
           },
           render_frame_host().GetGlobalId()),
       render_frame_host());
+}
+
+void ClipboardHostImpl::ResetClipboardWriter() {
+  clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
+  clipboard_writer_->WritePickledData(
+      render_frame_host().GetGlobalFrameToken().ToPickle(),
+      SourceRFHTokenType());
 }
 
 }  // namespace content

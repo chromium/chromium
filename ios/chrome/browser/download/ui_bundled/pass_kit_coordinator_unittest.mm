@@ -107,7 +107,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
 
     histogram_tester_.ExpectUniqueSample(
         kUmaPresentAddPassesDialogResult,
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             PresentAddPassesDialogResult::kSuccessful),
         1);
   }
@@ -138,7 +138,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaPresentAddPassesDialogResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentAddPassesDialogResult::kSuccessful),
       1);
 
@@ -154,7 +154,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
 
   histogram_tester_.ExpectBucketCount(
       kUmaPresentAddPassesDialogResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentAddPassesDialogResult::
               kAnotherAddPassesViewControllerIsPresented),
       1);
@@ -200,7 +200,7 @@ TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
 
   histogram_tester_.ExpectBucketCount(
       kUmaPresentAddPassesDialogResult,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentAddPassesDialogResult::kAnotherViewControllerIsPresented),
       1);
 }

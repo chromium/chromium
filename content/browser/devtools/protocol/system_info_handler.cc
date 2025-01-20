@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
@@ -322,7 +323,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
 
   void ObserverWatchdogCallback() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    CHECK(false) << "Gathering system GPU info took more than "
+    NOTREACHED() << "Gathering system GPU info took more than "
                  << (kGPUInfoWatchdogTimeoutMs / 1000) << " seconds.";
   }
 

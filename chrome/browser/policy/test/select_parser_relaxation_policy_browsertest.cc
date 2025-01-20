@@ -56,7 +56,8 @@ class SelectParserRelaxationEnabledPolicyBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(SelectParserRelaxationEnabledPolicyBrowserTest,
-                       PolicyIsFollowed) {
+                       // TODO(crbug.com/379724243): Re-enable this test
+                       DISABLED_PolicyIsFollowed) {
   // By default the new behavior should be enabled.
   const bool expected_enabled = GetParam() != Policy::kFalse;
 

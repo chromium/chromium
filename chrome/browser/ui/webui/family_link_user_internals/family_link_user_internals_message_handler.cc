@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 
 using content::BrowserThread;
 
@@ -87,22 +88,24 @@ std::string FilteringBehaviorToString(
   return "Unknown";
 }
 
-std::string FilteringBehaviorToString(
-    supervised_user::FilteringBehavior behavior,
-    bool uncertain) {
-  std::string result = FilteringBehaviorToString(behavior);
-  if (uncertain)
-    result += " (Uncertain)";
-  return result;
+std::string FilteringResultToString(
+    supervised_user::SupervisedUserURLFilter::Result result) {
+  std::string return_value = FilteringBehaviorToString(result.behavior);
+  if (!result.IsClassificationSuccessful()) {
+    return_value += " (Uncertain)";
+  }
+  return return_value;
 }
 
-std::string FilteringBehaviorDetailsToString(
-    supervised_user::FilteringBehaviorDetails details) {
-  switch (details.reason) {
+std::string FilteringReasonToString(
+    supervised_user::SupervisedUserURLFilter::Result result) {
+  switch (result.reason) {
     case supervised_user::FilteringBehaviorReason::DEFAULT:
       return "Default";
     case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
-      if (details.classification_details.reason ==
+      CHECK(result.async_check_details.has_value())
+          << "reason == ASYNC_CHECKER must imply async_check_details";
+      if (result.async_check_details->reason ==
           safe_search_api::ClassificationDetails::Reason::kCachedResponse) {
         return "AsyncChecker (Cached)";
       }
@@ -162,8 +165,9 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::Value::List& args) {
   DCHECK(args.empty());
   AllowJavascript();
-  if (scoped_observation_.IsObserving())
+  if (scoped_observation_.IsObserving()) {
     return;
+  }
 
   scoped_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
 }
@@ -176,14 +180,16 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::Value::List& args) {
   DCHECK_EQ(2u, args.size());
-  if (!args[0].is_string() || !args[1].is_string())
+  if (!args[0].is_string() || !args[1].is_string()) {
     return;
+  }
   const std::string& callback_id = args[0].GetString();
   const std::string& url_str = args[1].GetString();
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
+  }
 
   supervised_user::SupervisedUserURLFilter* filter =
       GetSupervisedUserService()->GetURLFilter();
@@ -197,7 +203,7 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
             web_contents->GetOutermostWebContents());
   }
 
-  filter->GetFilteringBehaviorForURLWithAsyncChecks(
+  filter->GetFilteringBehaviorWithAsyncChecks(
       url,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
                      weak_factory_.GetWeakPtr(), callback_id),
@@ -232,7 +238,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
           &section_list, "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
-      AddSectionEntry(section_user, "Gaia", account.gaia);
+      AddSectionEntry(section_user, "Gaia", account.gaia.ToString());
       AddSectionEntry(section_user, "Email", account.email);
       AddSectionEntry(section_user, "Given name", account.given_name);
       AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);
@@ -265,29 +271,20 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
   base::Value::Dict result;
-  result.Set("allowResult", FilteringBehaviorToString(behavior, uncertain));
-  result.Set("manual",
-             reason == supervised_user::FilteringBehaviorReason::MANUAL &&
-                 behavior == supervised_user::FilteringBehavior::kAllow);
+  result.Set("allowResult", FilteringResultToString(filtering_result));
+  result.Set("manual", filtering_result.IsFromManualList() &&
+                           filtering_result.IsAllowed());
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
-    const GURL& url,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorDetails details) {
+    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Value::Dict result;
-  result.Set("url", url.possibly_invalid_spec());
-  result.Set("result",
-             FilteringBehaviorToString(
-                 behavior, details.classification_details.reason ==
-                               safe_search_api::ClassificationDetails::Reason::
-                                   kFailedUseDefault));
-  result.Set("reason", FilteringBehaviorDetailsToString(details));
+  result.Set("url", filtering_result.url.possibly_invalid_spec());
+  result.Set("result", FilteringResultToString(filtering_result));
+  result.Set("reason", FilteringReasonToString(filtering_result));
   FireWebUIListener("filtering-result-received", result);
 }

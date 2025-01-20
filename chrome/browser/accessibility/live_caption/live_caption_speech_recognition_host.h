@@ -82,7 +82,7 @@ class LiveCaptionSpeechRecognitionHost
                              const std::string& source_language,
                              const std::string& target_language,
                              bool is_final,
-                             const std::string& result);
+                             const captions::TranslateEvent& result);
 
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.

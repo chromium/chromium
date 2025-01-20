@@ -13,12 +13,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info.h"
-#include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
@@ -105,7 +105,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
@@ -119,7 +119,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       std::optional<PreloadingHoldbackStatus> holdback_status_override =
           std::nullopt);
@@ -134,7 +134,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       bool javascript_enabled,
       const std::optional<url::Origin>& referring_origin,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
@@ -536,18 +536,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns request id to be used by DevTools and test utilities.
   const std::string& RequestId() const { return request_id_; }
 
-  // Sets DevTools observer
-  void SetDevToolsObserver(
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
-    devtools_observer_ = std::move(devtools_observer);
-  }
-
-  // Returns DevTool observer
-  const base::WeakPtr<SpeculationHostDevToolsObserver>& GetDevToolsObserver()
-      const {
-    return devtools_observer_;
-  }
-
   const std::optional<PrefetchResponseSizes>& GetPrefetchResponseSizes() const {
     return prefetch_response_sizes_;
   }
@@ -555,26 +543,33 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPreloadingAttempt() { return !!attempt_; }
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
-  // Simulates a prefetch container that has started its request. It sets the
-  //`attempt_` to the correct state: `PreloadingEligibility::kEligible`,
-  // `PreloadingHoldbackStatus::kAllowed` and
-  // `PreloadingTriggeringOutcome::kReady`.
-  void SimulateAttemptAtRequestStartForTest();
-  // Simulates a prefetch container that reaches the interceptor. Similar to
-  // |SimulateAttemptAtRequestStartForTest| but also marks the prefetch as
-  // completed.
-  void SimulateAttemptAtInterceptorForTest();
-  // Simulates a prefetch container that failed at the eligibility check.
-  void SimulateEligibilityCheckFailedForTest(PreloadingEligibility eligibility);
+  // Simulates state transitions for:
+  // - Passing eligibility check successfully (`LoadState::kEligible`),
+  // - About to start prefetching (`LoadState::kStarted`), and
+  // - Completion of prefetching.
+  // For correct transitions, the methods should be called in the following
+  // order (note that the `Simulate*()` methods here doesn't simulate the
+  // loader):
+  // - `SimulatePrefetchEligibleForTest()`
+  // - `SimulatePrefetchStartedForTest()`
+  // - `SetStreamingURLLoader()`
+  // - `SimulatePrefetchCompletedForTest()`
+  void SimulatePrefetchEligibleForTest();
+  void SimulatePrefetchStartedForTest();
+  void SimulatePrefetchCompletedForTest();
+
+  // Simulates a prefetch container that failed at the eligibility check
+  // (`LoadState::FailedIneligible`).
+  void SimulatePrefetchFailedIneligibleForTest(
+      PreloadingEligibility eligibility);
+
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
   // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
-  // RenderFrameHost is being used on no_vary_search::ProcessHead() to put
-  // message to DevTools console and can be null.
-  void MaybeSetNoVarySearchData(RenderFrameHost* rfh);
+  void MaybeSetNoVarySearchData();
 
   // Called upon detecting a change to cookies within the redirect chain.
   //
@@ -587,7 +582,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // - When `PrefetchURLLoaderInterceptor::MaybeCreateLoader()` handles
   //   redirects in the serving prefetch.
   void OnDetectedCookiesChange();
-  void OnDetectedCookiesChange2();
+  void OnDetectedCookiesChange2(
+      std::optional<bool>
+          is_unblock_for_cookies_changed_triggered_by_this_prefetch_container);
 
   // Called when the prefetch request is started (i.e. the URL loader is created
   // & started).
@@ -760,6 +757,16 @@ class CONTENT_EXPORT PrefetchContainer {
   //
   // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
   void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
+
+  // DevTools
+  void NotifyPrefetchRequestWillBeSent(
+      const network::mojom::URLResponseHeadPtr* redirect_head);
+  void NotifyPrefetchResponseReceived(
+      const network::mojom::URLResponseHead& head);
+  void NotifyPrefetchRequestComplete(
+      const network::URLLoaderCompletionStatus& completion_status);
+  std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
+  MakeSelfOwnedNetworkServiceDevToolsObserver();
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
@@ -950,9 +957,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Request identifier used by DevTools and test utilities.
   std::string request_id_;
-
-  // Weak pointer to DevTools observer
-  base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
 
   // Information of preload pipeline that this prefetch belongs/is related to.
   //

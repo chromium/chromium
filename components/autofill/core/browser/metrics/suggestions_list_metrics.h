@@ -8,7 +8,7 @@
 #include <cstddef>
 
 #include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
 enum class FillingProduct;

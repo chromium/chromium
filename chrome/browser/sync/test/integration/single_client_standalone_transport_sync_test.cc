@@ -265,7 +265,6 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
         /*enabled_features=*/
         {switches::kExplicitBrowserSigninUIOnDesktop,
          syncer::kEnablePreferencesAccountStorage,
-         syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
          syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kSyncAutofillWalletCredentialData},
@@ -491,7 +490,6 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
         /*enabled_features=*/
         {switches::kExplicitBrowserSigninUIOnDesktop,
          syncer::kReadingListEnableSyncTransportModeUponSignIn,
-         syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableBookmarksInTransportMode,
          syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

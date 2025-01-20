@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -39,7 +40,7 @@ const int kMaxPreviewTitleLength = 500;
 class DesktopMediaTabListTest : public testing::Test {
  public:
   DesktopMediaTabListTest() {
-    picker_views_ = std::make_unique<DesktopMediaPickerViews>();
+    picker_views_ = std::make_unique<DesktopMediaPickerImpl>();
 
     const std::u16string kAppName = u"foo";
     DesktopMediaPicker::Params picker_params{
@@ -106,7 +107,7 @@ class DesktopMediaTabListTest : public testing::Test {
   views::ScopedViewsTestHelper test_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
   raw_ptr<FakeDesktopMediaList, DanglingUntriaged> media_list_;
-  std::unique_ptr<DesktopMediaPickerViews> picker_views_;
+  std::unique_ptr<DesktopMediaPickerImpl> picker_views_;
   DesktopMediaPickerViewsTestApi test_api_;
   raw_ptr<DesktopMediaTabList, DanglingUntriaged> tab_list_;
   raw_ptr<views::ImageView, DanglingUntriaged> preview_;

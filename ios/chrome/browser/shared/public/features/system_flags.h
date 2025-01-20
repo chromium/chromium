@@ -20,10 +20,6 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// NSUserDefaults key to display an experimental "switch profile" entry in
-// settings. For historic reasons, this is int-valued.
-extern NSString* const kDisplaySwitchProfile;
-
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
@@ -148,9 +144,6 @@ bool SimulatePostDeviceRestore();
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
 
-// Whether the developer-mode Switch Profile UI will be be displayed.
-bool DisplaySwitchProfile();
-
 // Returns the inactivity threshold to be used for displaying Safety Check
 // notifications, overriding the default value stored in the code or any value
 // set by Finch.
@@ -176,6 +169,15 @@ bool ShouldUseInactiveTabsTestThreshold();
 // Returns the override for Tab Resumption decoration.
 // Returns nil is not set.
 NSString* GetTabResumptionDecorationOverride();
+
+// Whether the first party incognito experince should be simulated.
+bool ShouldOpenInIncognitoOverride();
+
+// Whether the a delay should be added to the asynchronous startup.
+bool ShouldDelayAsyncStartup();
+
+// Whether to always show the first party incognito experience UI.
+bool AlwaysShowTheFirstPartyIncognitoUI();
 
 }  // namespace experimental_flags
 

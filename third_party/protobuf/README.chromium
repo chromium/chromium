@@ -1,13 +1,15 @@
 Name: Protocol Buffers
 Short Name: protobuf
 URL: https://github.com/google/protobuf
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Version: 21.12
 CPEPrefix: cpe:/a:google:protobuf:21.12
 Revision: f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c
 Security Critical: yes
 Shipped: yes
+Mitigated: CVE-2024-7254
+CVE-2024-7254: Denial of service, outside our threat model. crbug.com/369473715
 
 Steps used to create the current version (or roll a newer one):
 0. Nuke third_party/protobuf from orbit (rm -rf `third_party/protobuf`). Note
@@ -220,3 +222,9 @@ Description of the patches:
 
   Fix Android compile error that affects webrtc. Fixed in upstream
   https://github.com/protocolbuffers/protobuf/commit/9471a882256eaf01027524e8b6c15cbb5e42bef6
+
+- 0041-android-newline.patch
+
+  Fixes missing newline in Android logging. This code is gone upstream as of
+  https://github.com/protocolbuffers/protobuf/commit/a9f1ea6371c108876649f27a5940a59cc8594768
+  and so this patch should probably be dropped with the next protobuf roll.

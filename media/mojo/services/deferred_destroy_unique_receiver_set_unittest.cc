@@ -7,13 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

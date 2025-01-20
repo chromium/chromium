@@ -3,23 +3,17 @@
 // found in the LICENSE file.
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const { dp } = await testRunner.startHTML(
-    '<a href="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-invalid-source.php" attributionsrc target="_blank">Link</a>',
-    "Test that clicking an attributionsrc anchor which returns an invalid Attribution-Reporting-Register-Source header triggers an issue."
-  );
+  const {dp, session} = await testRunner.startHTML(
+      '<a href="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-invalid-source.php" attributionsrc target="_blank">Link</a>',
+      'Test that clicking an attributionsrc anchor which returns an invalid Attribution-Reporting-Register-Source header triggers an issue.');
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
+  session.evaluateAsyncWithUserGesture(`document.querySelector('a').click()`);
 
-  await dp.Runtime.evaluate({
-    expression: `document.querySelector('a').click()`,
-    userGesture: true,
-  });
+  const issue = await dp.Audits.onceIssueAdded();
 
-  testRunner.log((await issue).params.issue, "Issue reported: ", [
-    "request",
-  ]);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
 
   testRunner.completeTest();
 });

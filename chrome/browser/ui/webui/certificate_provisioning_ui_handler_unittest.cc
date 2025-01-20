@@ -96,16 +96,19 @@ void FormatDictRecurse(base::Value* value,
     return;
   }
   if (value->is_list()) {
-    for (base::Value& child : value->GetList())
+    for (base::Value& child : value->GetList()) {
       FormatDictRecurse(&child, messages);
+    }
     return;
   }
-  if (!value->is_string())
+  if (!value->is_string()) {
     return;
+  }
   for (size_t i = 0; i < messages.size(); ++i) {
     std::string placeholder = std::string("$") + base::NumberToString(i);
-    if (value->GetString() != placeholder)
+    if (value->GetString() != placeholder) {
       continue;
+    }
     *value = base::Value(messages[i]);
   }
 }
@@ -125,8 +128,9 @@ base::Value FormatJsonDict(std::string_view input,
 base::Value GetByProfileId(const base::Value& all_processes,
                            const std::string& profile_id) {
   for (const base::Value& process : all_processes.GetList()) {
-    if (profile_id == *process.GetDict().FindString("certProfileId"))
+    if (profile_id == *process.GetDict().FindString("certProfileId")) {
       return process.Clone();
+    }
   }
   return base::Value();
 }
@@ -187,8 +191,9 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
     *out_all_processes = std::move(args[0]);
 
     // Extract all profile ids for easier verification.
-    if (!out_profile_ids)
+    if (!out_profile_ids) {
       return;
+    }
     out_profile_ids->clear();
     for (const base::Value& process : out_all_processes->GetList()) {
       const std::string* profile_id =

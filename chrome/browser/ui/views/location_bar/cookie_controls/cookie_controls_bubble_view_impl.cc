@@ -30,7 +30,7 @@ CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents,
     OnCloseBubbleCallback callback)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents,true),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents, true),
       callback_(std::move(callback)) {
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));

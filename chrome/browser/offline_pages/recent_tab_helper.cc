@@ -101,8 +101,7 @@ RecentTabHelper::RecentTabHelper(content::WebContents* web_contents)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-RecentTabHelper::~RecentTabHelper() {
-}
+RecentTabHelper::~RecentTabHelper() = default;
 
 void RecentTabHelper::SetDelegate(
     std::unique_ptr<RecentTabHelper::Delegate> delegate) {

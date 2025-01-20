@@ -24,7 +24,7 @@
 <translation id="1082009148392559545">Се презема штедачот на екран</translation>
 <translation id="1094693127011229778">IP-адресата не е достапна</translation>
 <translation id="1100902271996134409">Се создаваат слики…</translation>
-<translation id="1116694919640316211">За</translation>
+<translation id="1116694919640316211">Информации</translation>
 <translation id="1118572504348554005">Можно е да ги споделиме повратните информации споделени со нас преку формуларов со нашите партнери за отстранувањето грешки и решавањето на другите проблеми што ни ги пријавувате. Не опфаќајте чувствителни податоци како лозинки.</translation>
 <translation id="1119403468619527527">Премалку зборови за да се поедностави</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Овозможи темна тема</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1808803439260407870">Класична уметност</translation>
+<translation id="181434555916624618">Засега, резултатите со луѓе нема да се прикажуваат. Обидете се со друго барање.</translation>
 <translation id="1815850098929213707">Избраното копче е <ph name="KEYS" />. Допрете го копчето за да ја измените контролата</translation>
 <translation id="1823120442877418684">Знаци</translation>
 <translation id="1827738518074806965">Уметничка галерија</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3347558044552027859">модерно</translation>
+<translation id="3353477144743332882">Преземи го моделот за создавање резимеа и имиња</translation>
 <translation id="3359218928534347896">исклучување на звукот на микрофонот</translation>
 <translation id="3360306038446926262">Прозорци</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -574,7 +576,6 @@
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="382043424867370667">Тапет Sunset</translation>
 <translation id="3824259034819781947">Приложете датотеки</translation>
-<translation id="383586991013681190">Изберете јазик на транскрипција и преземете во „Поставки“</translation>
 <translation id="3836587210832263413">Вклучете ги само екстензиите во коишто имате доверба</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3845880861638660475">Притиснете <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> за да го затворите дијалогот.</translation>
@@ -689,6 +690,7 @@
 <translation id="4354430579665871434">копче</translation>
 <translation id="4356100841225547054">Исклучи го звукот</translation>
 <translation id="4361257691546579041">APN е од стандарден тип.</translation>
+<translation id="4368101969572512692">Измешај ги предлозите</translation>
 <translation id="437294888293595148">Ресетирај ги сите кратенки</translation>
 <translation id="437477383107495720">зајачиња</translation>
 <translation id="4376423484621194274">Вашиот администратор не дозволува затворање на <ph name="APP_NAME" /></translation>
@@ -706,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
 <translation id="4428840632568803690">Говорник <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
+<translation id="4430019312045809116">Гласност</translation>
 <translation id="4431821876790500265">Прикажи го извештајот</translation>
 <translation id="4443192710976771874">црвена</translation>
 <translation id="4447592701292766824">Не може да се создаде резиме за содржиниве</translation>
@@ -727,7 +730,6 @@
 <translation id="4507392511610824664">зголемување на осветленоста</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
-<translation id="4516323842122524821">Јачина на звук</translation>
 <translation id="4521826082652183069">Совпаѓање на алтернативното име на субјектот</translation>
 <translation id="4522570452068850558">Детали</translation>
 <translation id="4536864596629708641">Конфигурација на IP</translation>
@@ -768,6 +770,7 @@
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информации поврзани со вашиот избор</translation>
+<translation id="4750394297954878236">Предлози</translation>
 <translation id="4771607256327216405">осветлување на тастатурата</translation>
 <translation id="4771923071974529837">утре</translation>
 <translation id="4773299976671772492">Сопрено</translation>
@@ -853,7 +856,8 @@
 <translation id="5121677070210013200">Не може да се преземе моделот за транскрипции. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="5130848777448318809">понија</translation>
 <translation id="5137451382116112100">Цел екран</translation>
-<translation id="5140788690559353412">Кога ќе го изгубите пристапот до вашата училишна сметка, веќе нема да имате пристап до поврзаната е-пошта и датотеките во Google Drive, како Gmail, „Документи“, „Слајдови“ и друго.</translation>
+<translation id="5139813694804168398">Не вознемирувај</translation>
+<translation id="5140788690559353412">Кога ќе го изгубите пристапот до вашата училишна сметка, веќе нема да имате пристап до поврзаната е-пошта и датотеките во Google Drive, како Gmail, Docs, Slides и друго.</translation>
 <translation id="5142961317498132443">Проверка</translation>
 <translation id="5144311987923128508">Копчето „Потврди“ сега е оневозможено</translation>
 <translation id="5144887194300568405">Копирај го преводот</translation>
@@ -897,6 +901,7 @@
 <translation id="5302048478445481009">Јазик</translation>
 <translation id="5303837385540978511">Тапет ексклузивен за <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Ажурирајте го уредот <ph name="DEVICE_NAME" /> на верзија <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318310531701770497">Не може да се создадат имиња. Обидете се со подолга транскрипција.</translation>
@@ -973,7 +978,6 @@
 <translation id="5703716265115423771">намали звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Копче за изменување за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Ажурирајте: <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Потрошениот интернет е ресетиран</translation>
 <translation id="574392208103952083">Медиум</translation>
 <translation id="5744175046705638478">Преведете „<ph name="QUERY" />“</translation>
@@ -998,6 +1002,7 @@
 <translation id="5859969039821714932">Кратенката не е достапна. Притиснете нова кратенка без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
+<translation id="5875913454160982848">Преземи го моделот за транскрипции</translation>
 <translation id="5876385649737594562">Вклучете за да изберете опции</translation>
 <translation id="5877503382465267833">Паузирај ја снимката <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цел екран</translation>
@@ -1037,13 +1042,13 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6040852767465482106">Анонимен идентитет</translation>
 <translation id="604124094241169006">Автоматски</translation>
-<translation id="6042308850641462728">Повеќе</translation>
 <translation id="6048107060512778456">Неуспешно - заглавена хартија</translation>
 <translation id="6050189528197190982">Скала на сиви тонови</translation>
 <translation id="6054711098834486579">експресионизам</translation>
 <translation id="6058625436358447366">За да завршите, внесете ги старата и новата лозинка</translation>
 <translation id="6061772781719867950">Неуспешни HTTP-барања</translation>
 <translation id="6073292342939316679">намалување на осветленоста на тастатурата</translation>
+<translation id="6074752328838739425">Скриј го резимето</translation>
 <translation id="6075872808778243331">(Android) Латенција на HTTP</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
 <translation id="6091080061796993741">жолта</translation>
@@ -1233,6 +1238,7 @@
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">светлопурпурна</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
+<translation id="6899460405678814458">Прикажи го резимето</translation>
 <translation id="6900701049656042631">Нема фотографии во албумов. За да додадете фотографии, одете на <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Создајте заднина со AI</translation>
 <translation id="6905163627763043954">Испробајте</translation>
@@ -1291,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Именски сервер}one{Именски сервер}other{Именски сервери}}</translation>
 <translation id="7135814714616751706">Пребарувајте кратенки</translation>
 <translation id="7138614237884624401">Поедноставен текст</translation>
+<translation id="7138668887584231801">Нема доволно зборови за да се резимира</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
@@ -1309,6 +1316,7 @@
 <translation id="7182063559013288142">Инстант точка на пристап</translation>
 <translation id="7184043045742675738">Кликнете на кој било од клучевите за да го приспособите вашето копче. Променете ја позицијата на клучот со глувчето или копчињата со стрелки.</translation>
 <translation id="7187669805838282391">во среда</translation>
+<translation id="7205318498545665455">Изберете го микрофонот</translation>
 <translation id="7206979415662233817">Услови за користење</translation>
 <translation id="7210635925306941239">синозелена</translation>
 <translation id="7212547870105584639">Управувајте со поставките за APN на мрежата. Имињата на пристапните точки воспоставуваат врска меѓу мобилната мрежа и интернетот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1363,6 +1371,7 @@
 <translation id="7425037327577270384">Помогни ми да напишам</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не може да се оневозможи или отстрани ова APN. Уверете се дека овозможените APN од тип <ph name="ATTACH" /> се оневозможени или отстранети.</translation>
+<translation id="7453118953486228603">Кликнете за да се резимира избраниот текст</translation>
 <translation id="7458970041932198923">Поврзете се на мрежа и повторно вчитајте ја страницата за да ги прегледате и поставите аватарите.</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
@@ -1585,6 +1594,7 @@
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
 <translation id="8505011850330200833">Моделот на Gemini бара простор од 2 GB за да обработува транскрипции и да создава резимеа</translation>
 <translation id="8508640263392900755">Детали за APN</translation>
+<translation id="8509574872955173831">Дознајте повеќе за создавањето резимеа и имиња</translation>
 <translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />штедач на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџилница</translation>

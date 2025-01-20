@@ -221,7 +221,7 @@ Response CSSAgent::disable() {
 
 Response CSSAgent::getMatchedStylesForNode(
     int node_id,
-    protocol::Maybe<Array<CSS::RuleMatch>>* matched_css_rules) {
+    std::unique_ptr<Array<CSS::RuleMatch>>* matched_css_rules) {
   UIElement* ui_element = dom_agent_->GetElementFromNodeId(node_id);
   if (!ui_element)
     return NodeNotFoundError(node_id);

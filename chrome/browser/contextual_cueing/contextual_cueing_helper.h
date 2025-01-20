@@ -5,33 +5,44 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_HELPER_H_
 
-#include "base/component_export.h"
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class OptimizationGuideKeyedService;
+
 namespace contextual_cueing {
-class COMPONENT_EXPORT(CONTEXTUAL_CUEING) ContextualCueingHelper
+
+class ContextualCueingHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ContextualCueingHelper> {
  public:
   // Creates ContextualCueingHelper and attaches it the `web_contents` if
   // contextual cueing is enabled.
-  [[nodiscard]] static std::unique_ptr<ContextualCueingHelper>
-  MaybeCreateForWebContents(content::WebContents* web_contents);
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   ContextualCueingHelper(const ContextualCueingHelper&) = delete;
   ContextualCueingHelper& operator=(const ContextualCueingHelper&) = delete;
   ~ContextualCueingHelper() override;
 
   // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+
+  const std::string& last_navigation_cue_label() const {
+    return last_navigation_cue_label_;
+  }
 
  private:
-  explicit ContextualCueingHelper(content::WebContents* contents);
+  ContextualCueingHelper(content::WebContents* contents,
+                         OptimizationGuideKeyedService* ogks);
 
-  friend WebContentsUserData;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
+      nullptr;
+
+  // Holds the cue label for the last navigation in `this`.
+  std::string last_navigation_cue_label_;
+
+  friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

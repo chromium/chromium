@@ -52,7 +52,7 @@ class ExtensionAssetsManager {
                                   const base::FilePath& profile_dir) = 0;
 
  protected:
-  virtual ~ExtensionAssetsManager() {}
+  virtual ~ExtensionAssetsManager() = default;
 };
 
 }  // namespace extensions

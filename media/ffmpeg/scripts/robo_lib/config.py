@@ -22,7 +22,7 @@ class RoboConfiguration:
                  '_sushi_branch_name', '_readme_chromium_commit_title',
                  '_nasm_path', '_prompt_on_call', '_os_flavor',
                  '_force_gn_rebuild', '_skip_allowed', '_script_directory',
-                 '_relative_x86_directory')
+                 '_relative_x86_directory', '_log_shell_calls')
 
     def __init__(self, quiet=False):
         # Important: Robosushi might be running the --setup command, so some of
@@ -32,7 +32,8 @@ class RoboConfiguration:
         self.set_prompt_on_call(False)
         # Pull this from parsed args
         self._force_gn_rebuild = False
-        # Allowed to skip steps, default to yes, needs --no-skip flag to disable.
+        self._log_shell_calls = False
+        # Allow skipping steps, default to yes, needs --no-skip flag to disable.
         self._skip_allowed = True
         # This is the prefix that our branches start with.
         self._sushi_branch_prefix = "sushi-"
@@ -70,8 +71,8 @@ class RoboConfiguration:
                 shell.log(f"On sushi branch: {self.sushi_branch_name()}")
 
         # Filename that we'll ask generate_gn.py to write git commands to.
-        # TODO: Should this use script_directory, or stay with ffmpeg?  As long as
-        # there's a .gitignore entry, either should be fine.
+        # TODO: Should this use script_directory, or stay with ffmpeg?  As long
+        # as there's a .gitignore entry, either should be fine.
         self._autorename_git_file = os.path.join(self.ffmpeg_home(),
                                                  "scripts",
                                                  ".git_commands.sh")
@@ -145,7 +146,7 @@ class RoboConfiguration:
         return self._sushi_branch_name
 
     def sushi_branch_prefix(self):
-        """Return the branch name that indicates that this is a "sushi branch"."""
+        """Return the branch name that indicates this is a "sushi branch"."""
         return self._sushi_branch_prefix
 
     def gn_commit_title(self):
@@ -266,14 +267,15 @@ class RoboConfiguration:
                                  "llvm-build", "Release+Asserts", "bin")
         if self.llvm_path() not in os.environ["PATH"]:
             raise errors.UserInstructions(
-                "Please add:\n%s\nto the beginning of $PATH\nExample: export PATH=%s:$PATH"
-                % (self.llvm_path(), self.llvm_path()))
+                f"Please add:\n{self.llvm_path()}\n to the beginning of $PATH"
+                f":\nexport PATH={self.llvm_path()}:$PATH")
 
     def EnsureNoMakeInfo(self):
         """Ensure that makeinfo is not available."""
         if os.system("makeinfo --version > /dev/null 2>&1") == 0:
             raise errors.UserInstructions(
-                "makeinfo is available and we don't need it, so please remove it\nExample: sudo apt-get remove texinfo"
+                "makeinfo is available and we don't need it, so please remove "
+                "it\nExample: sudo apt-get remove texinfo"
             )
 
     def llvm_path(self):
@@ -295,17 +297,34 @@ class RoboConfiguration:
         self._sushi_branch_name = name
 
     def prompt_on_call(self):
-        """ Return True if and only if we're supposed to ask the user before running
-    any command that might have a side-effect."""
+        """ Return True if and only if we're supposed to ask the user before
+            running any command that might have a side-effect."""
         return self._prompt_on_call
+
+    def log_shell_calls(self):
+        return self._prompt_on_call or self._log_shell_calls
 
     def set_prompt_on_call(self, value):
         self._prompt_on_call = value
 
+    def set_log_shell_calls(self, value):
+        self._log_shell_calls = value
+
     def Call(self, args, **kwargs):
         """Run the command specified by |args| (see subprocess.call), optionally
     prompting the user."""
-        if self.prompt_on_call():
-            print(f"[{os.getcwd()}] About to run: `{' '.join(args)}` ")
-            input("Press ENTER to continue, or interrupt the script: ")
+        if self.log_shell_calls():
+            cmd = args if kwargs.get("shell", False) else " ".join(args)
+            print(f"  About to run: [{os.getcwd()}] {cmd}")
+            if self.prompt_on_call():
+                input("Press ENTER to continue, or interrupt the script: ")
         return shell.check_run(args, **kwargs)
+
+    def CheckCall(self, *args, **kwargs):
+        if self.Call(*args, **kwargs):
+            if "errmsg" in kwargs:
+                raise Exception(kwargs["errmsg"])
+            arglist = list(args)
+            arglist += [f"{k}={v}" for k,v in kwargs.items()]
+            joined_args = ", ".join(arglist)
+            raise Exception(f"Call({joined_args})")

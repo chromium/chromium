@@ -79,6 +79,7 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override {
     prompt_factory_ = nullptr;
+    manager_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -182,7 +183,7 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
   MockPermissionRequest iframe_request_other_domain_;
   MockPermissionRequest iframe_request_camera_other_domain_;
   MockPermissionRequest iframe_request_mic_other_domain_;
-  raw_ptr<PermissionRequestManager, DanglingUntriaged> manager_;
+  raw_ptr<PermissionRequestManager> manager_;
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   TestPermissionsClient client_;
   base::test::ScopedFeatureList feature_list_;
@@ -810,7 +811,7 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
 
   Deny();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptDenied,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 }
@@ -821,14 +822,14 @@ TEST_F(PermissionRequestManagerTest, UMAForTabSwitching) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
   WaitForBubbleToBeShown();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 
   MockTabSwitchAway();
   MockTabSwitchBack();
   histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample>(
+                                static_cast<base::HistogramBase::Sample32>(
                                     RequestTypeForUma::PERMISSION_GEOLOCATION),
                                 1);
 }

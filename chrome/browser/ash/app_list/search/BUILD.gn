@@ -63,8 +63,6 @@ static_library("search") {
     "search_provider.h",
     "search_session_metrics_manager.cc",
     "search_session_metrics_manager.h",
-    "sparky_event_rewriter.cc",
-    "sparky_event_rewriter.h",
     "types.cc",
     "types.h",
   ]
@@ -84,6 +82,7 @@ static_library("search") {
   ]
 
   deps = [
+    "//ash/app_list/vector_icons",
     "//ash/assistant/util",
     "//ash/components/arc:arc_app_constants",
     "//ash/webui/help_app_ui",
@@ -91,7 +90,6 @@ static_library("search") {
     "//ash/webui/shortcut_customization_ui",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/util",
-    "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/release_notes",

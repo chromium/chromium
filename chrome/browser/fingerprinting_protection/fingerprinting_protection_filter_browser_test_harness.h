@@ -41,9 +41,14 @@ class FingerprintingProtectionFilterBrowserTest
 
   ~FingerprintingProtectionFilterBrowserTest() override;
 
-  // The path to a multi-frame document used for tests.
+  // The path to a multi-frame document used for desktop browser tests.
   static constexpr const char kTestFrameSetPath[] =
       "/subresource_filter/frame_set.html";
+
+  // The path to a multi-frame document used for browser tests that run on
+  // Android and Desktop.
+  static constexpr const char kMultiPlatformTestFrameSetPath[] =
+      "/frame_set.html";
 
   // PageLoad histogram names.
   static constexpr const char kSubresourceLoadsTotalForPage[] =
@@ -73,6 +78,8 @@ class FingerprintingProtectionFilterBrowserTest
 
   void AssertUrlContained(const GURL& full_url, const GURL& sub_url);
 
+  bool NavigateToDestination(const GURL& url);
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -94,6 +101,9 @@ class FingerprintingProtectionFilterDryRunBrowserTest
 
   ~FingerprintingProtectionFilterDryRunBrowserTest() override;
 
+ protected:
+  void SetUpOnMainThread() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -112,6 +122,9 @@ class FingerprintingProtectionFilterEnabledInIncognitoBrowserTest
 
   ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() override;
 
+ protected:
+  void SetUpOnMainThread() override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -127,6 +140,31 @@ class FingerprintingProtectionFilterDisabledBrowserTest
       const FingerprintingProtectionFilterDisabledBrowserTest&) = delete;
 
   ~FingerprintingProtectionFilterDisabledBrowserTest() override;
+
+ protected:
+  void SetUpOnMainThread() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest();
+
+  FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest(
+      const FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest&) =
+      delete;
+  FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest& operator=(
+      const FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest&) =
+      delete;
+
+  ~FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest()
+      override;
+
+ protected:
+  void SetUpOnMainThread() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

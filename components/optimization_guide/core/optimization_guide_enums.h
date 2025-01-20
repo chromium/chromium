@@ -239,7 +239,7 @@ enum class OnDeviceModelStatus {
   kReady = 0,
   // Criteria to install model have not been met.
   kNotEligible = 1,
-  // Criteria to install are met, but model not installed yet.
+  // Criteria to install are met, but model installation has not completed yet.
   kInstallNotComplete = 2,
   // The model installer was not registered, even though the client would be
   // eligible to install right now. This likely means the state of the system
@@ -250,12 +250,18 @@ enum class OnDeviceModelStatus {
   kModelInstalledTooLate = 4,
   // The model is not ready, and the reason is unknown.
   kNotReadyForUnknownReason = 5,
+  // Criteria (except disk space) to install are met, but the device doesn't
+  // have enough disk space.
+  kInsufficientDiskSpace = 6,
+  // Criteria to install are met, but model is not downloaded because there was
+  // no on-device feature usage.
+  kNoOnDeviceFeatureUsed = 7,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelStatus in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kNotReadyForUnknownReason,
+  kMaxValue = kNoOnDeviceFeatureUsed,
 };
 
 // Status of a model quality logs upload request.
@@ -316,29 +322,6 @@ enum class OnDeviceModelPerformanceClass : int {
   kMaxValue = kFailedToLoadLibrary,
 };
 
-// The result of loading an on-device model.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelLoadResult {
-  kUnknown = 0,
-
-  // Model loaded successfully.
-  kSuccess = 1,
-
-  // GPU was blocklisted.
-  kGpuBlocked = 2,
-
-  // Native library failed to load.
-  kFailedToLoadLibrary = 3,
-
-  // This must be kept in sync with
-  // OnDeviceModelLoadResult in optimization/enums.xml.
-
-  // Insert new values before this line.
-  kMaxValue = kFailedToLoadLibrary,
-};
-
 // The validity of the model metadata packaged with the text safety model.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -362,15 +345,6 @@ enum class TextSafetyModelMetadataValidity {
   // optimization/enums.xml.
 
   kMaxValue = kValid,
-};
-
-// Enumerates the different reasons for model remote disconnection.
-enum class ModelRemoteDisconnectReason {
-  kDisconncted,
-  kRemoteIdle,
-
-  kGpuBlocked,
-  kModelLoadFailed,
 };
 
 enum class OnDeviceModelAdaptationAvailability {
@@ -422,6 +396,14 @@ enum class OnDeviceModelValidationResult {
   // This must be kept in sync with OnDeviceModelValidationResult in
   // optimization/enums.xml.
   kMaxValue = kInterrupted,
+};
+
+// Whether a response is complete or not.
+enum class ResponseCompleteness {
+  // This is a partial response, more output may follow.
+  kPartial,
+  // The response is complete and no more output will be produced.
+  kComplete,
 };
 
 }  // namespace optimization_guide

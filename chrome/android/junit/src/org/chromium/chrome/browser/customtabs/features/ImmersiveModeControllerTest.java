@@ -22,21 +22,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * Tests for {@link ImmersiveModeController}.
  *
- * sdk = P for the cutout mode (setsLayoutParams) test.
+ * <p>sdk = P for the cutout mode (setsLayoutParams) test.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P, manifest = Config.NONE)
 public class ImmersiveModeControllerTest {
     // Convenience constants to make the tests  more readable.
@@ -47,7 +47,7 @@ public class ImmersiveModeControllerTest {
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Mock public CustomTabActivity mActivity;
-    @Mock public WindowAndroid mWindowAndroid;
+    @Mock public ActivityWindowAndroid mWindowAndroid;
     @Mock public Window mWindow;
     @Mock public View mDecorView;
     private WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
@@ -78,8 +78,7 @@ public class ImmersiveModeControllerTest {
                 .setSystemUiVisibility(anyInt());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        mController = new ImmersiveModeController(mActivity, mWindowAndroid);
+        mController = new ImmersiveModeController(mActivity, mWindowAndroid, mLifecycleDispatcher);
     }
 
     @Test

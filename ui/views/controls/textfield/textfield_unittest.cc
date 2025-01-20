@@ -49,6 +49,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/keyboard_layout.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -119,8 +120,9 @@ class TextfieldDestroyerController : public TextfieldController {
   // TextfieldController:
   bool HandleKeyEvent(Textfield* sender,
                       const ui::KeyEvent& key_event) override {
-    if (target_)
+    if (target_) {
       target_->OnBlur();
+    }
     target_.reset();
     return false;
   }
@@ -173,8 +175,9 @@ class MockInputMethod : public ui::InputMethodBase {
   void CancelComposition(const ui::TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
   void SetVirtualKeyboardVisibilityIfEnabled(bool visibility) override {
-    if (visibility)
+    if (visibility) {
       count_show_virtual_keyboard_++;
+    }
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -243,8 +246,9 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
 // still needs to be mocked, since it's not possible to generate test events
 // which trigger the appropriate NSResponder action messages for composition.
 #if BUILDFLAG(IS_MAC)
-  if (key->is_char())
+  if (key->is_char()) {
     return DispatchKeyEventPostIME(key);
+  }
 #endif
 
   // Checks whether the key event is from EventGenerator on Windows which will
@@ -268,24 +272,28 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
     dispatch_details = DispatchKeyEventPostIME(key);
   }
 
-  if (key->handled() || dispatch_details.dispatcher_destroyed)
+  if (key->handled() || dispatch_details.dispatcher_destroyed) {
     return dispatch_details;
+  }
 
   ui::TextInputClient* client = GetTextInputClient();
   if (client) {
     if (handled) {
-      if (result_text_.length())
+      if (result_text_.length()) {
         client->InsertText(result_text_,
                            ui::TextInputClient::InsertTextCursorBehavior::
                                kMoveCursorAfterText);
-      if (composition_.text.length())
+      }
+      if (composition_.text.length()) {
         client->SetCompositionText(composition_);
-      else
+      } else {
         client->ClearCompositionText();
+      }
     } else if (key->type() == ui::EventType::kKeyPressed) {
       char16_t ch = key->GetCharacter();
-      if (ch)
+      if (ch) {
         client->InsertChar(*key);
+      }
     }
   }
 
@@ -295,8 +303,9 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
 }
 
 void MockInputMethod::OnTextInputTypeChanged(ui::TextInputClient* client) {
-  if (IsTextInputClientFocused(client))
+  if (IsTextInputClientFocused(client)) {
     text_input_type_changed_ = true;
+  }
   InputMethodBase::OnTextInputTypeChanged(client);
 }
 
@@ -315,8 +324,9 @@ void MockInputMethod::OnWillChangeFocusedClient(
     ui::TextInputClient* focused_before,
     ui::TextInputClient* focused) {
   ui::TextInputClient* client = GetTextInputClient();
-  if (client && client->HasCompositionText())
+  if (client && client->HasCompositionText()) {
     client->ConfirmCompositionText(/* keep_selection */ false);
+  }
   ClearComposition();
 }
 
@@ -409,8 +419,9 @@ class TestTextfield : public views::Textfield {
     base::WeakPtr<TestTextfield> textfield(weak_ptr_factory_.GetWeakPtr());
     views::View::OnKeyEvent(event);
 
-    if (!textfield)
+    if (!textfield) {
       return;
+    }
 
     key_handled_ = event->handled();
 
@@ -455,8 +466,9 @@ void TextfieldTest::SetUp() {
 void TextfieldTest::TearDown() {
   textfield_ = nullptr;
   event_target_ = nullptr;
-  if (widget_)
+  if (widget_) {
     widget_->Close();
+  }
   // Clear kill buffer used for "Yank" text editing command so that no state
   // persists between tests.
   TextfieldModel::ClearKillBuffer();
@@ -577,8 +589,9 @@ void TextfieldTest::SendKeyEvent(ui::KeyboardCode key_code,
 
   // By default, swap control and command for native events on Mac. This
   // handles most cases.
-  if (TestingNativeMac())
+  if (TestingNativeMac()) {
     std::swap(control, command);
+  }
 
   int flags =
       (shift ? ui::EF_SHIFT_DOWN : 0) | (control ? ui::EF_CONTROL_DOWN : 0) |
@@ -683,26 +696,29 @@ void TextfieldTest::SendWordEvent(ui::KeyboardCode key, bool shift) {
 
 // Sends Shift+Delete if supported, otherwise Cmd+X again.
 void TextfieldTest::SendAlternateCut() {
-  if (TestingNativeMac())
+  if (TestingNativeMac()) {
     SendKeyEvent(ui::VKEY_X, false, true);
-  else
+  } else {
     SendKeyEvent(ui::VKEY_DELETE, true, false);
+  }
 }
 
 // Sends Ctrl+Insert if supported, otherwise Cmd+C again.
 void TextfieldTest::SendAlternateCopy() {
-  if (TestingNativeMac())
+  if (TestingNativeMac()) {
     SendKeyEvent(ui::VKEY_C, false, true);
-  else
+  } else {
     SendKeyEvent(ui::VKEY_INSERT, false, true);
+  }
 }
 
 // Sends Shift+Insert if supported, otherwise Cmd+V again.
 void TextfieldTest::SendAlternatePaste() {
-  if (TestingNativeMac())
+  if (TestingNativeMac()) {
     SendKeyEvent(ui::VKEY_V, false, true);
-  else
+  } else {
     SendKeyEvent(ui::VKEY_INSERT, true, false);
+  }
 }
 
 View* TextfieldTest::GetFocusedView() {
@@ -1016,8 +1032,8 @@ TEST_F(TextfieldTest,
 
   // After undo, the cursor and selected range should reflect the state prior to
   // the edit.
-  textfield_->InsertOrReplaceText(u"xyz");               // 2nd edit
-  SendKeyEvent(ui::VKEY_Z, false, true);                 // Undo 2nd edit
+  textfield_->InsertOrReplaceText(u"xyz");  // 2nd edit
+  SendKeyEvent(ui::VKEY_Z, false, true);    // Undo 2nd edit
   EXPECT_EQ(textfield_->GetCursorPosition(), 15u);
   EXPECT_EQ(textfield_->GetSelectedRange(), gfx::Range(10, 15));
 
@@ -1031,8 +1047,8 @@ TEST_F(TextfieldTest,
 
   // After undo, the cursor and selected range should reflect the state prior to
   // the edit, even if that differs than the state after the current (1st) edit.
-  textfield_->InsertOrReplaceText(u"xyz");               // (2')nd edit
-  SendKeyEvent(ui::VKEY_Z, false, true);                 // Undo (2')nd edit
+  textfield_->InsertOrReplaceText(u"xyz");  // (2')nd edit
+  SendKeyEvent(ui::VKEY_Z, false, true);    // Undo (2')nd edit
   EXPECT_EQ(textfield_->GetCursorPosition(), 20u);
   EXPECT_EQ(textfield_->GetSelectedRange(), gfx::Range(20, 20));
 }
@@ -1050,10 +1066,11 @@ TEST_F(TextfieldTest, KeyTest) {
   SendKeyEvent(ui::VKEY_1, false, false, false, true);
 
   // On Mac, Caps+Shift remains uppercase.
-  if (TestingNativeMac())
+  if (TestingNativeMac()) {
     EXPECT_EQ(u"TeXT!1!1", textfield_->GetText());
-  else
+  } else {
     EXPECT_EQ(u"TexT!1!1", textfield_->GetText());
+  }
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1114,12 +1131,94 @@ TEST_F(TextfieldTest, MAYBE_KeysWithModifiersTest) {
   SendKeyPress(ui::VKEY_OEM_MINUS, ctrl);
   SendKeyPress(ui::VKEY_OEM_MINUS, ctrl | shift);
 
-  if (TestingNativeCrOs())
+  if (TestingNativeCrOs()) {
     EXPECT_EQ(u"TeTEx34", textfield_->GetText());
-  else if (TestingNativeMac())
+  } else if (TestingNativeMac()) {
     EXPECT_EQ(u"TheTxE134", textfield_->GetText());
-  else
+  } else {
     EXPECT_EQ(u"TeTEx234", textfield_->GetText());
+  }
+}
+
+TEST_F(TextfieldTest, AccessibleTextSelectBound) {
+  InitTextfield();
+  ui::AXNodeData data;
+  gfx::Range range(4, 8);
+  auto canvas = std::make_unique<gfx::Canvas>(gfx::Size(1, 1), 1.0, false);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->OnPaint(canvas.get());
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 11);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 11);
+
+  textfield_->SetSelectedRange(range);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 8);
+
+  textfield_->ExtendSelectionAndDelete(2, 1);
+  textfield_->SelectAll(false);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCut();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 4);
+
+  textfield_->SetText(u"SettingText");
+  textfield_->SetSelectedRange(range);
+  SendAlternateCopy();
+  SendAlternatePaste();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 8);
+
+  textfield_->SetText(u"Setting text for test");
+  textfield_->SetEditableSelectionRange(gfx::Range(0));
+  textfield_->SelectWord();
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Setting", textfield_->GetSelectedText());
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 7);
+
+  textfield_->DeleteRange(textfield_->GetSelectedRange());
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
+
+  textfield_->SetText(u"SettingText : ");
+  ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
+      0x5A, ui::VKEY_Z, ui::DomCode::NONE, ui::EF_NONE);
+  textfield_->InsertChar(key_event);
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 15);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 15);
+
+  textfield_->SetText(u"0123456789");
+  textfield_->SetSelectedRange(gfx::Range(3, 5));
+  textfield_->AddSecondarySelectedRange(gfx::Range(7, 9));
+  textfield_->OnPaint(canvas.get());
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 3);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 5);
 }
 
 TEST_F(TextfieldTest, ControlAndSelectTest) {
@@ -1381,17 +1480,20 @@ TEST_F(TextfieldTest, ModifySelectionWithMultipleSelections) {
 TEST_F(TextfieldTest, InsertionDeletionTest) {
   // Insert a test string in a textfield.
   InitTextfield();
-  for (size_t i = 0; i < 10; ++i)
+  for (size_t i = 0; i < 10; ++i) {
     SendKeyEvent(static_cast<ui::KeyboardCode>(ui::VKEY_A + i));
+  }
   EXPECT_EQ(u"abcdefghij", textfield_->GetText());
 
   // Test the delete and backspace keys.
   textfield_->SetSelectedRange(gfx::Range(5));
-  for (size_t i = 0; i < 3; ++i)
+  for (size_t i = 0; i < 3; ++i) {
     SendKeyEvent(ui::VKEY_BACK);
+  }
   EXPECT_EQ(u"abfghij", textfield_->GetText());
-  for (size_t i = 0; i < 3; ++i)
+  for (size_t i = 0; i < 3; ++i) {
     SendKeyEvent(ui::VKEY_DELETE);
+  }
   EXPECT_EQ(u"abij", textfield_->GetText());
 
   // Select all and replace with "k".
@@ -3276,8 +3378,9 @@ TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   InitTextfield();
 
   std::u16string str;
-  for (size_t i = 0; i < 500; ++i)
+  for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent('a');
+  }
   SendKeyEvent(kHebrewLetterSamekh);
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
@@ -3289,8 +3392,9 @@ TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   SendKeyEvent(ui::VKEY_A, false, true);
   SendKeyEvent(ui::VKEY_DELETE);
 
-  for (size_t i = 0; i < 500; ++i)
+  for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent(kHebrewLetterSamekh);
+  }
   SendKeyEvent('a');
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
@@ -3305,8 +3409,9 @@ TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
   InitTextfield();
 
   std::u16string str;
-  for (size_t i = 0; i < 500; ++i)
+  for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent('a');
+  }
   SendKeyEvent(kHebrewLetterSamekh);
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
@@ -3317,8 +3422,9 @@ TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
   SendKeyEvent(ui::VKEY_A, false, true);
   SendKeyEvent(ui::VKEY_DELETE);
 
-  for (size_t i = 0; i < 500; ++i)
+  for (size_t i = 0; i < 500; ++i) {
     SendKeyEvent(kHebrewLetterSamekh);
+  }
   SendKeyEvent('a');
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
@@ -4242,9 +4348,10 @@ TEST_F(TextfieldTest, AccessibilityAttributes) {
   EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
             gfx::ToEnclosingRect(actual.relative_bounds.bounds));
 
-  EXPECT_EQ(textfield_->GetBoundsInScreen(),
-            delegate->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
-                                    ui::AXClippingBehavior::kUnclipped, nullptr));
+  EXPECT_EQ(
+      textfield_->GetBoundsInScreen(),
+      delegate->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                              ui::AXClippingBehavior::kUnclipped, nullptr));
 }
 #endif
 

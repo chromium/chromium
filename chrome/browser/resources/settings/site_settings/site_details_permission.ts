@@ -400,7 +400,11 @@ export class SiteDetailsPermissionElement extends
         category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
         category === ContentSettingsTypes.FILE_SYSTEM_WRITE ||
         category === ContentSettingsTypes.HID_DEVICES ||
-        category === ContentSettingsTypes.BLUETOOTH_DEVICES);
+        category === ContentSettingsTypes.BLUETOOTH_DEVICES
+        // <if expr="is_chromeos">
+        || category === ContentSettingsTypes.SMART_CARD_READERS
+        // </if>
+    );
   }
 
   /**
@@ -420,10 +424,15 @@ export class SiteDetailsPermissionElement extends
       return true;
     }
 
-    // For Bluetooth scanning permission and File System write permission
-    // 'ask' takes the place of 'allow'.
-    if (category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
-        category === ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+    // For Bluetooth scanning permission, File System write permission
+    // and Smart card readers permission 'ask' takes the place of 'allow'.
+    if (
+        category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
+        category === ContentSettingsTypes.FILE_SYSTEM_WRITE
+        // <if expr="is_chromeos">
+        || category === ContentSettingsTypes.SMART_CARD_READERS
+        // </if>
+    ) {
       return true;
     }
 

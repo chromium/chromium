@@ -8,8 +8,12 @@
 #import <ranges>
 
 #import "base/check.h"
+#import "base/check_deref.h"
+#import "base/metrics/histogram_functions.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "ios/web/public/web_state.h"
 
 namespace autofill {
 
@@ -37,20 +41,28 @@ void AutofillDriverIOSFactory::Observer::OnAutofillDriverStateChanged(
 }
 
 AutofillDriverIOSFactory::AutofillDriverIOSFactory(
-    web::WebState* web_state,
-    AutofillClient* client,
+    AutofillClientIOS* client,
     id<AutofillDriverIOSBridge> bridge)
-    : client_(client), web_state_(web_state), bridge_(bridge) {
-  web_state_->AddObserver(this);
+    : client_(CHECK_DEREF(client)), bridge_(bridge) {
+  web_state()->AddObserver(this);
   GetWebFramesManager().AddObserver(this);
 }
 
 AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
-  TearDown();
+  CHECK(web_state_destroyed_, base::NotFatalUntil::M135);
+  for (auto& observer : AutofillDriverFactory::observers()) {
+    observer.OnAutofillDriverFactoryDestroyed(*this);
+  }
+  base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
+                               max_drivers_);
 }
 
-void AutofillDriverIOSFactory::TearDown() {
-  if (web_state_) {
+// The AutofillClientIOS contract guarantees that WebStateDestroyed() is called
+// and that `client_` is still alive.
+void AutofillDriverIOSFactory::WebStateDestroyed(
+    web::WebState* destroyed_web_state) {
+  CHECK(web_state(), base::NotFatalUntil::M135);
+  if (web_state()) {
     for (const auto& [frame_id, driver] : driver_map_) {
       if (driver) {
         SetLifecycleStateAndNotifyObservers(*driver,
@@ -58,23 +70,21 @@ void AutofillDriverIOSFactory::TearDown() {
       }
     }
     driver_map_.clear();
-    for (auto& observer : AutofillDriverFactory::observers()) {
-      observer.OnAutofillDriverFactoryDestroyed(*this);
-    }
     GetWebFramesManager().RemoveObserver(this);
-    web_state_->RemoveObserver(this);
-    web_state_ = nullptr;
+    web_state()->RemoveObserver(this);
   }
+  web_state_destroyed_ = true;
 }
 
-void AutofillDriverIOSFactory::WebStateDestroyed(web::WebState* web_state) {
-  TearDown();
+web::WebState* AutofillDriverIOSFactory::web_state() {
+  return client_->web_state();
 }
 
 web::WebFramesManager& AutofillDriverIOSFactory::GetWebFramesManager() {
-  CHECK(web_state_);
+  CHECK(web_state());
   auto* web_frames_manager =
-      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
+      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
   CHECK(web_frames_manager) << "Tests must set the WebFramesManager before "
                                "instantiating AutofillDriverIOSFactory";
   return *web_frames_manager;
@@ -111,8 +121,7 @@ void AutofillDriverIOSFactory::WebFrameBecameUnavailable(
 
 AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
     web::WebFrame* web_frame) {
-  if (!web_state_) {
-    // WebStateDestroyed() has already been fired.
+  if (web_state_destroyed_) {
     return nullptr;
   }
   std::string web_frame_id = web_frame->GetFrameId();
@@ -120,7 +129,7 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   std::unique_ptr<AutofillDriverIOS>& driver = iter->second;
   if (insertion_happened) {
     driver = std::make_unique<AutofillDriverIOS>(
-        web_state_, web_frame, client_, &router_, bridge_,
+        web_state(), web_frame, &*client_, &router_, bridge_,
         base::PassKey<AutofillDriverIOSFactory>());
     for (auto& observer : observers()) {
       observer.OnAutofillDriverCreated(*this, *driver);
@@ -129,11 +138,10 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
     SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kActive);
     DCHECK_EQ(&driver_map_[web_frame_id], &driver);
   }
+  max_drivers_ = std::max(max_drivers_, driver_map_.size());
   // `driver` may be null if WebFrameBecameUnavailable() has been called for its
   // `web_frame` already.
   return driver.get();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AutofillDriverIOSFactory)
 
 }  //  namespace autofill

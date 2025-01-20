@@ -23,10 +23,15 @@ PasswordAccessLossWarningBridgeImpl::~PasswordAccessLossWarningBridgeImpl() =
 bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
     PrefService* pref_service,
     bool called_at_startup) {
-  // TODO: crbug.com/357063741 - Check all the criteria for showing the sheet.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // If the login DB is being deprecated, the warning is no longer relevant.
     return false;
   }
 

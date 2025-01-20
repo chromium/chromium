@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалтыг бүтэн өндрөөр нээлээ.</translation>
 <translation id="5591247451101092906">Хадгалсан нууц үг эсвэл passkey-г ашиглах уу?</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" />-д хадгалсан <ph name="USERNAME" />-н нууц үг</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />-н нэвтрэх түлхүүр, дэлгэцийн түгжээгээ ашиглана уу</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="7286867818472074330">Нэвтрэх түлхүүр сонгох</translation>

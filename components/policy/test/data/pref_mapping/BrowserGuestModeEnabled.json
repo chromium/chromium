@@ -3,10 +3,7 @@
     "os": [
       "win",
       "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "fuchsia"
+      "mac"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "profile.browser_guest_enabled",

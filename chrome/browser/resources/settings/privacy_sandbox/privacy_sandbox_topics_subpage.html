@@ -174,6 +174,11 @@
 <div id="footer" class="cr-secondary-text hr footer">
   $i18nRaw{topicsPageFooter}
 </div>
+<template is="dom-if" if="[[shouldShowV2_]]">
+  <div id="footerDisclaimer" class="cr-secondary-text footer">
+    $i18nRaw{adTopicsPageDisclaimer}
+  </div>
+</template>
 <cr-toast id="unblockTopicToast" duration="10000">
   <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>
   <cr-button id="closeToastButton" on-click="onHideToastClick_">

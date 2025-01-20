@@ -7,10 +7,10 @@
 
 #include "build/build_config.h"
 #include "build/rust/std/alias.h"
+#include "build/rust/std/buildflags.h"
 #include "build/rust/std/immediate_crash.h"
-#include "partition_alloc/buildflags.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #include "partition_alloc/shim/allocator_shim.h"        // nogncheck
 #elif BUILDFLAG(IS_WIN)
@@ -95,7 +95,7 @@ extern "C" {
 #define REMAP_ALLOC_ATTRIBUTES __attribute__((weak))
 #endif  // COMPONENT_BUILD
 
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_WIN) && \
+#if !BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) && BUILDFLAG(IS_WIN) && \
     defined(ADDRESS_SANITIZER)
 #define USE_WIN_ALIGNED_MALLOC 1
 #else
@@ -113,7 +113,7 @@ extern "C" {
 __attribute__((weak)) unsigned char __rust_no_alloc_shim_is_unstable;
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   // PartitionAlloc will crash if given an alignment larger than this.
   if (align > partition_alloc::internal::kMaxSupportedAlignment) {
     return nullptr;
@@ -133,7 +133,7 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
 }
 
 REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   if (align <= alignof(std::max_align_t)) {
     allocator_shim::UncheckedFree(p);
   } else {
@@ -151,7 +151,7 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
                                             size_t old_size,
                                             size_t align,
                                             size_t new_size) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   if (align <= alignof(std::max_align_t)) {
     return allocator_shim::UncheckedRealloc(p, new_size);
   } else {
@@ -167,11 +167,11 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
 }
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc_zeroed(size_t size, size_t align) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || USE_WIN_ALIGNED_MALLOC
-  // TODO(danakj): When USE_PARTITION_ALLOC_AS_MALLOC is true, it's possible
-  // that a partition_alloc::UncheckedAllocZeroed() call would perform better
-  // than partition_alloc::UncheckedAlloc() + memset. But there is no such API
-  // today. See b/342251590.
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) || USE_WIN_ALIGNED_MALLOC
+  // TODO(danakj): When RUST_ALLOCATOR_USES_PARTITION_ALLOC is true, it's
+  // possible that a partition_alloc::UncheckedAllocZeroed() call would perform
+  // better than partition_alloc::UncheckedAlloc() + memset. But there is no
+  // such API today. See b/342251590.
   void* p = __rust_alloc(size, align);
   if (p) {
     memset(p, 0, size);

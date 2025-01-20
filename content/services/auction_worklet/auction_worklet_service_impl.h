@@ -99,6 +99,7 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
+      std::optional<bool> send_creative_scanning_metadata,
       mojom::TrustedSignalsPublicKeyPtr public_key,
       mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
           load_seller_worklet_client) override;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
 
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "tab_group_header.h"
 #include "ui/gfx/geometry/rect.h"
@@ -59,6 +60,9 @@ class TabGroupStyle {
 
   // Returns the sync icon width.
   virtual float GetSyncIconWidth() const;
+
+  // Returns the attention indicator icon width.
+  virtual float GetAttentionIndicatorWidth(bool needs_attention) const;
 
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;

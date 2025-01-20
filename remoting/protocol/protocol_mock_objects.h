@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
@@ -16,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/proto/internal.pb.h"
 #include "remoting/proto/video.pb.h"
@@ -59,6 +61,10 @@ class MockAuthenticator : public Authenticator {
   MOCK_CONST_METHOD0(state, Authenticator::State());
   MOCK_CONST_METHOD0(started, bool());
   MOCK_CONST_METHOD0(rejection_reason, Authenticator::RejectionReason());
+  MOCK_METHOD(Authenticator::RejectionDetails,
+              rejection_details,
+              (),
+              (const, override));
   MOCK_CONST_METHOD0(GetAuthKey, const std::string&());
   MOCK_CONST_METHOD0(CreateChannelAuthenticatorPtr, ChannelAuthenticator*());
   MOCK_METHOD2(ProcessMessage,
@@ -236,7 +242,12 @@ class MockSession : public Session {
   MOCK_METHOD0(jid, const std::string&());
   MOCK_METHOD0(config, const SessionConfig&());
   MOCK_METHOD(const Authenticator&, authenticator, (), (const, override));
-  MOCK_METHOD1(Close, void(ErrorCode error));
+  MOCK_METHOD(void,
+              Close,
+              (ErrorCode error,
+               std::string_view error_details,
+               const base::Location& location),
+              (override));
   MOCK_METHOD1(AddPlugin, void(SessionPlugin* plugin));
 };
 

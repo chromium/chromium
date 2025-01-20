@@ -16,6 +16,9 @@ source_set("coordinators") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/ui_bundled:constants",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/default",
@@ -36,9 +39,6 @@ source_set("coordinators") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/ui/infobars:constants",
-    "//ios/chrome/browser/ui/infobars/banners",
-    "//ios/chrome/browser/ui/infobars/presentation",
   ]
 }
 
@@ -53,11 +53,11 @@ source_set("mediators") {
     "//base",
     "//components/feature_engagement/public",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
-    "//ios/chrome/browser/ui/infobars/banners",
-    "//ios/chrome/browser/ui/infobars/banners:public",
   ]
 }
 

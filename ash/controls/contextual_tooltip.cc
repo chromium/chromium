@@ -68,6 +68,8 @@ std::string TooltipTypeToString(TooltipType type) {
       return "sea_pen_vc_background_intro_dialog";
     case TooltipType::kSeaPenWallpaperIntroDialog:
       return "sea_pen_wallpaper_intro_dialog";
+    case TooltipType::kSeaPenFreeformIntroDialog:
+      return "sea_pen_freeform_intro_dialog";
   }
   return "invalid";
 }
@@ -146,7 +148,9 @@ bool ShouldShowNudge(PrefService* prefs,
       (type == TooltipType::kSeaPenVcBackgroundIntroDialog &&
        success_count >= kSuccessLimitSeaPenVcBackgroundIntroDialog) ||
       (type == TooltipType::kSeaPenWallpaperIntroDialog &&
-       success_count >= kSuccessLimitSeaPenWallpaperIntroDialog)) {
+       success_count >= kSuccessLimitSeaPenWallpaperIntroDialog) ||
+      (type == TooltipType::kSeaPenFreeformIntroDialog &&
+       success_count >= kSuccessLimitSeaPenFreeformIntroDialog)) {
     set_recheck_delay(base::TimeDelta());
     return false;
   }

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -60,7 +61,7 @@ FragmentItems::FragmentItems(const FragmentItems& other)
     // |FragmentItem|.
     if (auto* layout_text =
             DynamicTo<LayoutText>(other_item.GetMutableLayoutObject()))
-      layout_text->DetachAbstractInlineTextBoxesIfNeeded();
+      layout_text->DetachAxHooksIfNeeded();
   }
 }
 
@@ -73,6 +74,7 @@ void FragmentItems::FinalizeAfterLayout(
     const HeapVector<Member<const LayoutResult>, 1>& results,
     LayoutBlockFlow& container) {
   struct LastItem {
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
     const FragmentItem* item;
     wtf_size_t fragment_id;
     wtf_size_t item_index;
@@ -109,14 +111,25 @@ void FragmentItems::FinalizeAfterLayout(
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
         item.SetFragmentId(line_fragment_id++);
         continue;
+      } else if (item.IsEllipsis() &&
+                 item.GetLayoutObject() == fragment.GetLayoutObject()) {
+        DCHECK(
+            RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+        // Line-clamp ellipsis
+        continue;
       } else if (!found_inflow_content) {
         // Resumed floats may take up all the space in the containing block
         // fragment, leaving no room for actual content inside the inline
         // formatting context. The non-atomic inline boxes themselves also don't
         // contribute to having inflow content, as they may just be wrappers
         // around such floats. We need something "real", such as text or a
-        // non-atomic inline.
-        found_inflow_content = !item.IsFloating() && !item.IsInlineBox();
+        // non-atomic inline. Blocks in inlines cannot unconditionally count as
+        // "real" here, since it's possible that they only contain fragmented
+        // parallel flows (e.g. floats). We *could* examine this situation more
+        // closely, since there might indeed be real in-flow content in there,
+        // but let's keep this as simple as possible.
+        found_inflow_content = !item.IsFloating() && !item.IsInlineBox() &&
+                               !item.IsBlockInInline();
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
       DCHECK(!layout_object->IsOutOfFlowPositioned());

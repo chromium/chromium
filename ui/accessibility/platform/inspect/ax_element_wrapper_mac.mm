@@ -120,7 +120,7 @@ std::string AXElementWrapper::DOMId() const {
 
 NSArray* AXElementWrapper::Children() const {
   if (IsNSAccessibilityElement())
-    return [node_ children];
+    return [node_ accessibilityChildren];
 
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFTypeRef> children_ref;
@@ -211,6 +211,13 @@ NSArray* AXElementWrapper::AttributeNames() const {
 
 NSArray* AXElementWrapper::ParameterizedAttributeNames() const {
   if (IsNSAccessibilityElement()) {
+    // The NSAccessibility protocol implementation in AXPlatformNodeCocoa no
+    // longer exposes old-style parameterized attributes. Instead, it provides
+    // the internalAccessibilityParameterizedAttributeNames method for backward
+    // compatibility in testing.
+    if ([node_ isKindOfClass:[AXPlatformNodeCocoa class]]) {
+      return [node_ internalAccessibilityParameterizedAttributeNames];
+    }
     return [node_ accessibilityParameterizedAttributeNames];
   }
 
@@ -340,8 +347,16 @@ void AXElementWrapper::SetAttributeValue(NSString* attribute, id value) const {
 }
 
 NSArray* AXElementWrapper::ActionNames() const {
-  if (IsNSAccessibilityElement())
+  // The NSAccessibility protocol implementation in AXPlatformNodeCocoa no
+  // longer exposes old-style actions. Instead, it provides
+  // the internalAccessibilityActionNames method for backward
+  // compatibility in testing.
+  if (IsNSAccessibilityElement()) {
+    if ([node_ isKindOfClass:[AXPlatformNodeCocoa class]]) {
+      return [node_ internalAccessibilityActionNames];
+    }
     return [node_ accessibilityActionNames];
+  }
 
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFArrayRef> attributes_ref;
@@ -448,10 +463,14 @@ AXOptionalNSObject AXElementWrapper::ToOptional(
     id value,
     AXError result,
     const std::string& message) const {
-  if (result == kAXErrorSuccess)
-    return AXOptionalNSObject(value);
-
-  return AXOptionalNSObject::Error(AXErrorMessage(result, message));
+  switch (result) {
+    case kAXErrorSuccess:
+      return AXOptionalNSObject(value);
+    case kAXErrorNoValue:
+      return AXOptionalNSObject(nil);
+    default:
+      return AXOptionalNSObject::Error(AXErrorMessage(result, message));
+  }
 }
 
 }  // namespace ui

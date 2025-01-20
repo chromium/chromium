@@ -34,6 +34,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

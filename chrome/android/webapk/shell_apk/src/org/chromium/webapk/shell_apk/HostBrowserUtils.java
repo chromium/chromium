@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,12 @@ public class HostBrowserUtils {
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
     public static String ARC_WEBAPK_BROWSER = "org.chromium.arc.webapk";
+
+    // Action for launching {@link WebappLauncherActivity}.
+    // TODO(hanxi): crbug.com/737556. Replaces this string with the new WebAPK launch action after
+    // it is propagated to all the Chrome's channels.
+    public static final String ACTION_START_WEBAPK =
+            "com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP";
 
     /** The package names of the browsers that support WebAPK notification delegation. */
     private static Set<String> sBrowsersSupportingNotificationDelegation =
@@ -141,11 +148,30 @@ public class HostBrowserUtils {
         return WebApkUtils.getComponentNameFromResolveInfo(resolveInfo);
     }
 
-    /** Deletes the internal storage for the given context. */
-    private static void deleteInternalStorage(Context context) {
-        DexLoader.deletePath(context.getCacheDir());
-        DexLoader.deletePath(context.getFilesDir());
-        DexLoader.deletePath(
-                context.getDir(HostBrowserClassLoader.DEX_DIR_NAME, Context.MODE_PRIVATE));
+    static @NonNull Intent getBrowserLaunchIntentWithoutFlagsAndExtras(
+            boolean hostBrowserIsFromManifest,
+            @NonNull String hostBrowserPackageName,
+            @Nullable ComponentName hostBrowserComponentName,
+            @NonNull Uri startUrl) {
+        Intent intent;
+        if (hostBrowserIsFromManifest) {
+            intent = new Intent();
+            intent.setAction(ACTION_START_WEBAPK);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, startUrl);
+        }
+
+        if (hostBrowserComponentName != null) {
+            // If the component is Android's intent resolver (which is expected if there's no
+            // default browser set), then setting this selector will ensure that the WebAPK itself
+            // doesn't register as a potential intent receiver (which could cause an infinite loop
+            // of the WebAPK intenting to itself).
+            intent.setSelector(WebApkUtils.getQueryInstalledBrowsersIntent());
+            intent.setComponent(hostBrowserComponentName);
+        } else {
+            intent.setPackage(hostBrowserPackageName);
+        }
+
+        return intent;
     }
 }

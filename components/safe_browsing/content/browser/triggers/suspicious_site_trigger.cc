@@ -11,12 +11,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,8 +80,8 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
 SuspiciousSiteTrigger::~SuspiciousSiteTrigger() = default;
 
 bool SuspiciousSiteTrigger::MaybeStartReport() {
-  SBErrorOptions error_options =
-      TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*prefs_, web_contents());
 
   // We use primary page's main document to construct `resource` below, since
   // `WebContents::StartLoading()` is invoked for navigations which updates it.
@@ -94,14 +95,15 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
   resource.url = primary_rfh.GetLastCommittedURL();
-  resource.render_process_id = primary_rfh_id.child_id;
-  resource.render_frame_token = primary_rfh.GetFrameToken().value();
+  resource.rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          primary_rfh_id.child_id, primary_rfh.GetFrameToken().value());
 
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(
           TriggerType::SUSPICIOUS_SITE, web_contents(), resource,
           url_loader_factory_, history_service_, referrer_chain_provider_,
-          error_options, &reason)) {
+          permissions, &reason)) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_START_FAILED);
     UMA_HISTOGRAM_ENUMERATION(
@@ -123,12 +125,12 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
 }
 
 void SuspiciousSiteTrigger::FinishReport() {
-  SBErrorOptions error_options =
-      TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*prefs_, web_contents());
   auto result = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SUSPICIOUS_SITE, GetWebContentsKey(web_contents()),
       base::TimeDelta(),
-      /*did_proceed=*/false, /*num_visits=*/0, error_options);
+      /*did_proceed=*/false, /*num_visits=*/0, permissions);
   if (result.IsReportSent()) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_FINISHED);
@@ -140,11 +142,11 @@ void SuspiciousSiteTrigger::FinishReport() {
 
 void SuspiciousSiteTrigger::SuspiciousSiteDetectedWhenMonitoring() {
   DCHECK_EQ(TriggerState::MONITOR_MODE, current_state_);
-  SBErrorOptions error_options =
-      TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*prefs_, web_contents());
   TriggerManagerReason reason;
   if (trigger_manager_->CanStartDataCollectionWithReason(
-          error_options, TriggerType::SUSPICIOUS_SITE, &reason) ||
+          permissions, TriggerType::SUSPICIOUS_SITE, &reason) ||
       reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED) {
     UMA_HISTOGRAM_ENUMERATION(
         kSuspiciousSiteTriggerEventMetricName,

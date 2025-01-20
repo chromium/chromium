@@ -377,7 +377,11 @@ void ThreadCache::SwapForTesting(PartitionRoot* root) {
 // static
 void ThreadCache::RemoveTombstoneForTesting() {
   PA_CHECK(IsTombstone(Get()));
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
+  internal::g_thread_cache = nullptr;
+#else
   internal::PartitionTlsSet(internal::g_thread_cache_key, nullptr);
+#endif
 }
 
 // static

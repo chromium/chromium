@@ -11,28 +11,43 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.ON_CONTINUE_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.REMOVE_ALL_LOCAL_DATA_CHECKED;
 
+import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link MissingDeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
+@Features.EnableFeatures(SigninFeatures.UNO_FOR_AUTO)
+public class MissingDeviceLockViewBinderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
     private AtomicBoolean mContinueClicked = new AtomicBoolean();
     private AtomicBoolean mCheckboxToggled = new AtomicBoolean();
@@ -41,17 +56,20 @@ public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase
     private PropertyModel mViewModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
-        ViewGroup view = new LinearLayout(getActivity());
+    @Before
+    public void setUp() {
+        ViewGroup view = new LinearLayout(sActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
-                    mView = MissingDeviceLockView.create(getActivity().getLayoutInflater());
+                    mView = MissingDeviceLockView.create(sActivity.getLayoutInflater());
                     view.addView(mView);
 
                     mViewModel =
@@ -73,10 +91,9 @@ public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
-        super.tearDownTest();
     }
 
     @Test

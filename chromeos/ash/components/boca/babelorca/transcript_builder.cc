@@ -60,6 +60,15 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
     return results;
   }
 
+  // If transcript length decreased and it is final, it is possible that the
+  // removed part belongs to the next transcript, so discard the message and
+  // rely on the upcoming message's `previous_transcript` for update.
+  if (message->current_transcript->is_final &&
+      message->current_transcript->transcript_id == transcript_id_ &&
+      message->current_transcript->text.length() < text_.length()) {
+    return {};
+  }
+
   if (!message->previous_transcript.is_null() && !is_final_ &&
       message->previous_transcript->transcript_id == transcript_id_) {
     results = MaybeMergeTranscript(std::move(message->previous_transcript),
@@ -71,12 +80,11 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
   for (auto& result : current_results) {
     results.push_back(std::move(result));
   }
-  Update(std::move(message->current_transcript));
   return results;
 }
 
 std::vector<TranscriptBuilder::Result> TranscriptBuilder::MaybeMergeTranscript(
-    const mojom::TranscriptPartPtr& transcript_part,
+    mojom::TranscriptPartPtr transcript_part,
     bool is_previous) {
   std::vector<Result> results;
   if (transcript_part->transcript_id == transcript_id_ && !is_final_) {
@@ -103,6 +111,9 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::MaybeMergeTranscript(
   }
   results.emplace_back(transcript_part->text, transcript_part->is_final,
                        transcript_part->language);
+  if (!is_previous) {
+    Update(std::move(transcript_part));
+  }
   return results;
 }
 

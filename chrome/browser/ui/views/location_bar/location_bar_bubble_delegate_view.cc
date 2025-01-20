@@ -149,8 +149,9 @@ void LocationBarBubbleDelegateView::OnFullscreenStateChanged() {
 
 void LocationBarBubbleDelegateView::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     CloseBubble();
+  }
 }
 
 void LocationBarBubbleDelegateView::WebContentsDestroyed() {
@@ -182,8 +183,9 @@ gfx::Rect LocationBarBubbleDelegateView::GetAnchorBoundsInScreen() const {
 
 void LocationBarBubbleDelegateView::AdjustForFullscreen(
     const gfx::Rect& screen_bounds) {
-  if (GetAnchorView())
+  if (GetAnchorView()) {
     return;
+  }
 
   const int kBubblePaddingFromScreenEdge = 20;
   int horizontal_offset = width() / 2 + kBubblePaddingFromScreenEdge;

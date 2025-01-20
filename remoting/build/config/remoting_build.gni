@@ -30,4 +30,7 @@ declare_args() {
   if (is_chrome_branded) {
     remoting_internal = true
   }
+
+  # Set to true to enable using Crashpad instead of Breakpad.
+  enable_chromoting_crashpad = false
 }

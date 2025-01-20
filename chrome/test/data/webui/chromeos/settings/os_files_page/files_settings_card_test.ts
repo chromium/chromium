@@ -18,10 +18,7 @@ import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_p
 import {TestSmbBrowserProxy} from './test_smb_browser_proxy.js';
 
 suite('<files-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const route =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.FILES;
+  const route = routes.SYSTEM_PREFERENCES;
 
   let filesSettingsCard: FilesSettingsCardElement;
   let prefElement: SettingsPrefsElement;
@@ -432,66 +429,39 @@ suite('<files-settings-card>', () => {
     });
   });
 
-  if (isRevampWayfindingEnabled) {
-    suite('when no share has been setup before', () => {
-      setup(async () => {
-        smbBrowserProxy.anySmbMounted = false;
-      });
-
-      test('File shares row is not visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const smbSharesLinkRow =
-            filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
-        assertFalse(isVisible(smbSharesLinkRow));
-      });
-
-      test('Add file shares row is visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const addSmbSharesRow =
-            filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
-        assertTrue(isVisible(addSmbSharesRow));
-      });
+  suite('when no share has been setup before', () => {
+    setup(async () => {
+      smbBrowserProxy.anySmbMounted = false;
     });
 
-    suite('when file shares have been setup before', () => {
-      setup(async () => {
-        smbBrowserProxy.anySmbMounted = true;
-      });
+    test('File shares row is not visible', async () => {
+      await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
 
-      test('File shares row is visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const smbSharesLinkRow =
-            filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
-        assertTrue(isVisible(smbSharesLinkRow));
-      });
-
-      test('Add file shares row is not visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const addSmbSharesRow =
-            filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
-        assertFalse(isVisible(addSmbSharesRow));
-      });
-
-      test(
-          'File shares row is focused when returning from subpage',
-          async () => {
-            await createFilesSettingsCard();
-
-            await assertSubpageTriggerFocused(
-                '#smbSharesRow', routes.SMB_SHARES);
-          });
+      const smbSharesLinkRow =
+          filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
+      assertFalse(isVisible(smbSharesLinkRow));
     });
-  } else {
+
+    test('Add file shares row is visible', async () => {
+      await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
+      const addSmbSharesRow =
+          filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
+      assertTrue(isVisible(addSmbSharesRow));
+    });
+  });
+
+  suite('when file shares have been setup before', () => {
+    setup(async () => {
+      smbBrowserProxy.anySmbMounted = true;
+    });
+
     test('File shares row is visible', async () => {
       await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
       const smbSharesLinkRow =
           filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
       assertTrue(isVisible(smbSharesLinkRow));
@@ -499,6 +469,8 @@ suite('<files-settings-card>', () => {
 
     test('Add file shares row is not visible', async () => {
       await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
       const addSmbSharesRow =
           filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
       assertFalse(isVisible(addSmbSharesRow));
@@ -509,5 +481,5 @@ suite('<files-settings-card>', () => {
 
       await assertSubpageTriggerFocused('#smbSharesRow', routes.SMB_SHARES);
     });
-  }
+  });
 });

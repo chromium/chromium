@@ -30,7 +30,6 @@ static_library("search") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
@@ -39,10 +38,10 @@ static_library("search") {
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/assistant_optin",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
@@ -53,6 +52,7 @@ static_library("search") {
     "//ui/base",
     "//ui/chromeos",
     "//ui/gfx/geometry",
+    "//ui/webui",
   ]
 
   if (is_chrome_branded) {
@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/components/magic_boost/test:fake_magic_boost_state",
+    "//chromeos/components/quick_answers:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

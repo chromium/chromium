@@ -19,10 +19,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/capture/video/chromeos/mock_camera_module.h"
 #include "media/capture/video/chromeos/mock_vendor_tag_ops.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,8 +50,9 @@ class CameraHalDelegateTest : public ::testing::Test {
   CameraHalDelegateTest& operator=(const CameraHalDelegateTest&) = delete;
 
   void SetUp() override {
-    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
-        &mock_gpu_memory_buffer_manager_);
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+    VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(test_sii_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     if (!camera_hal_delegate_->Init()) {
@@ -64,7 +65,7 @@ class CameraHalDelegateTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
+    VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(nullptr);
     camera_hal_delegate_.reset();
     task_environment_.RunUntilIdle();
   }
@@ -79,7 +80,7 @@ class CameraHalDelegateTest : public ::testing::Test {
   std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
   testing::StrictMock<unittest_internal::MockCameraModule> mock_camera_module_;
   testing::StrictMock<unittest_internal::MockVendorTagOps> mock_vendor_tag_ops_;
-  unittest_internal::MockGpuMemoryBufferManager mock_gpu_memory_buffer_manager_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -240,14 +241,11 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
       .WillOnce(
           Return(static_cast<int32_t>(cros::mojom::EntryType::TYPE_BYTE)));
 
-  EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-              CreateGpuMemoryBuffer(
-                  _, gfx::BufferFormat::YUV_420_BIPLANAR,
-                  gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                  gpu::kNullSurfaceHandle, nullptr))
-      .Times(1)
-      .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                           CreateFakeGpuMemoryBuffer));
+  EXPECT_CALL(*test_sii_,
+              DoCreateSharedImage(
+                  _, viz::MultiPlaneFormat::kNV12, gpu::kNullSurfaceHandle,
+                  gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE))
+      .Times(1);
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
   base::RunLoop run_loop;

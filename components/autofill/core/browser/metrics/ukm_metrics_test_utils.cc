@@ -18,7 +18,7 @@ using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
 using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
-using UkmTextFieldDidChangeType = ukm::builders::Autofill_TextFieldDidChange;
+using UkmTextFieldValueChangedType = ukm::builders::Autofill_TextFieldDidChange;
 using UkmLogHiddenRepresentationalFieldSkipDecisionType =
     ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
 using UkmFieldTypeValidationType = ukm::builders::Autofill_FieldTypeValidation;
@@ -113,7 +113,7 @@ void AppendFieldFillStatusUkm(
          {UkmFieldFillStatusType::kFormSignatureName, form_signature.value()},
          {UkmFieldFillStatusType::kFieldSignatureName, field_signature.value()},
          {UkmFieldFillStatusType::kValidationEventName, metric_type},
-         {UkmTextFieldDidChangeType::kIsAutofilledName,
+         {UkmTextFieldValueChangedType::kIsAutofilledName,
           field.is_autofilled() ? 1 : 0},
          {UkmFieldFillStatusType::kWasPreviouslyAutofilledName, 0}});
   }

@@ -54,6 +54,8 @@ class ActivityLog : public BrowserContextKeyedAPI,
     virtual void OnExtensionActivity(scoped_refptr<Action> activity) = 0;
   };
 
+  explicit ActivityLog(content::BrowserContext* context);
+  ~ActivityLog() override;
   ActivityLog(const ActivityLog&) = delete;
   ActivityLog& operator=(const ActivityLog&) = delete;
 
@@ -143,9 +145,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
  private:
   friend class ActivityLogTest;
   friend class BrowserContextKeyedAPIFactory<ActivityLog>;
-
-  explicit ActivityLog(content::BrowserContext* context);
-  ~ActivityLog() override;
 
   // Specifies if the Watchdog app is active (installed & enabled).
   // If so, we need to log to the database and stream to the API.

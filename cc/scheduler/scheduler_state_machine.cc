@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -177,8 +178,6 @@ SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_FORCED;
     case Action::DRAW_ABORT:
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_ABORT;
-    case Action::UPDATE_DISPLAY_TREE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UPDATE_DISPLAY_TREE;
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return pbzeroSchedulerAction::
           CC_SCHEDULER_ACTION_V2_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
@@ -360,10 +359,6 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
 }
 
 bool SchedulerStateMachine::ShouldDraw() const {
-  if (settings_.use_layer_context_for_display) {
-    return false;
-  }
-
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
   // from occurring. If we are waiting for the first draw, then perform the
@@ -412,22 +407,6 @@ bool SchedulerStateMachine::ShouldDraw() const {
     return true;
 
   return needs_redraw_;
-}
-
-bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
-  if (!settings_.use_layer_context_for_display) {
-    return false;
-  }
-
-  if (did_update_display_tree_) {
-    return false;
-  }
-
-  if (layer_tree_frame_sink_state_ != LayerTreeFrameSinkState::ACTIVE) {
-    return false;
-  }
-
-  return needs_update_display_tree_;
 }
 
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
@@ -670,6 +649,14 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
     return false;
   }
 
+  // This comes last, because we only want to throttle main frame that would
+  // otherwise actually be sent, and we do not want to throttle forced redraws.
+  if (main_frame_throttled_interval_.is_positive() &&
+      Now() - last_sent_begin_main_frame_time_ <
+          main_frame_throttled_interval_) {
+    TRACE_EVENT0("cc", "ThrottleMainFrame");
+    return false;
+  }
   return true;
 }
 
@@ -766,9 +753,6 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
       return Action::DRAW_FORCED;
     else
       return Action::DRAW_IF_POSSIBLE;
-  }
-  if (ShouldUpdateDisplayTree()) {
-    return Action::UPDATE_DISPLAY_TREE;
   }
   if (ShouldPerformImplSideInvalidation())
     return Action::PERFORM_IMPL_SIDE_INVALIDATION;
@@ -930,6 +914,7 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   did_send_begin_main_frame_for_current_frame_ = true;
   // TODO(szager): Make sure this doesn't break perfetto
   last_frame_number_begin_main_frame_sent_ = current_frame_number_;
+  last_sent_begin_main_frame_time_ = Now();
 }
 
 void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedUntil() {
@@ -1031,15 +1016,9 @@ void SchedulerStateMachine::WillActivate() {
 
   has_pending_tree_ = false;
   pending_tree_is_ready_for_activation_ = false;
-  if (settings_.use_layer_context_for_display) {
-    needs_update_display_tree_ = true;
-    did_update_display_tree_ = false;
-  } else {
-    needs_redraw_ = true;
-    active_tree_needs_first_draw_ =
-        pending_tree_needs_first_draw_on_activation_;
-    pending_tree_needs_first_draw_on_activation_ = false;
-  }
+  needs_redraw_ = true;
+  active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
+  pending_tree_needs_first_draw_on_activation_ = false;
   waiting_for_activation_after_rendering_resumed_ = false;
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
@@ -1076,7 +1055,9 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
     case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
-      } else {
+      } else if (!settings_.using_synchronous_renderer_compositor) {
+        // We cannot enforce this for WebView, as we cannot prevent the
+        // application from attempting to force draws when we are unable to.
         DUMP_WILL_BE_NOTREACHED()
             << consecutive_cant_draw_count_ << " consecutve draws"
             << " with DrawResult::kAbortedCantDraw result";
@@ -1122,11 +1103,6 @@ void SchedulerStateMachine::WillDraw() {
   // in WillDrawInternal because AbortDraw calls WillDrawInternal but shouldn't
   // request another frame.
   did_attempt_draw_in_last_frame_ = true;
-}
-
-void SchedulerStateMachine::WillUpdateDisplayTree() {
-  needs_update_display_tree_ = false;
-  did_update_display_tree_ = true;
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
@@ -1517,6 +1493,10 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   return false;
 }
 
+void SchedulerStateMachine::SetThrottleMainFrames(base::TimeDelta interval) {
+  main_frame_throttled_interval_ = interval;
+}
+
 bool SchedulerStateMachine::IsDrawThrottled() const {
   return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
          !settings_.disable_frame_rate_limit;
@@ -1564,11 +1544,6 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
 
 void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
-}
-
-void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {
-  needs_update_display_tree_ = true;
-  did_update_display_tree_ = false;
 }
 
 void SchedulerStateMachine::SetNeedsPrepareTiles() {
@@ -1637,8 +1612,12 @@ bool SchedulerStateMachine::ImplLatencyTakesPriority() const {
   return false;
 }
 
-void SchedulerStateMachine::SetNeedsBeginMainFrame() {
+void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
   needs_begin_main_frame_ = true;
+
+  if (now) {
+    last_sent_begin_main_frame_time_ = base::TimeTicks();
+  }
 }
 
 void SchedulerStateMachine::SetNeedsOneBeginImplFrame() {
@@ -1672,7 +1651,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
         // the next BeginMainFrame after the deferred commit timeout will cause
         // a commit, but it might come later than optimal.
         begin_main_frame_state_ = BeginMainFrameState::IDLE;
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
@@ -1687,7 +1666,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kAbortedNotVisible:
       case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
       case CommitEarlyOutReason::kAbortedDeferredCommit:
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
@@ -1707,7 +1686,6 @@ void SchedulerStateMachine::DidLoseLayerTreeFrameSink() {
     return;
   layer_tree_frame_sink_state_ = LayerTreeFrameSinkState::NONE;
   needs_redraw_ = false;
-  needs_update_display_tree_ = false;
 }
 
 bool SchedulerStateMachine::NotifyReadyToActivate() {
@@ -1792,6 +1770,10 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
       return true;
   }
   NOTREACHED();
+}
+
+base::TimeTicks SchedulerStateMachine::Now() const {
+  return base::TimeTicks::Now();
 }
 
 }  // namespace cc

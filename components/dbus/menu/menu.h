@@ -28,7 +28,7 @@ class MenuModel;
 class DbusProperties;
 
 // Implements the com.canonical.dbusmenu interface.
-class COMPONENT_EXPORT(DBUS) DbusMenu {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
   using MenuItemReference = std::pair<ui::MenuModel*, size_t>;

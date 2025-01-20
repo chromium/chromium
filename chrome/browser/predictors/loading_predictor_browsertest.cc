@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/predictors/loading_predictor.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -24,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,6 +32,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
@@ -415,7 +413,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   LoadingPredictorBrowserTest& operator=(const LoadingPredictorBrowserTest&) =
       delete;
 
-  ~LoadingPredictorBrowserTest() override {}
+  ~LoadingPredictorBrowserTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -1143,6 +1141,40 @@ IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, Base) {
             result_urls);
 }
 
+IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, UMA) {
+  NavigateAndWaitForLcpElement(GetURL("/predictors/preload.html"));
+
+  base::HistogramTester histogram_tester;
+  NavigateAndWaitForLcpElement(GetURL("/predictors/preload2.html"));
+  // predicted subresources:
+  //   style.css
+  //   script.js
+  //   font.ttf
+  //   red_rectangle.png
+  // actual subresources:
+  //   style.css
+  //   script.js
+  //   red_rectangle.png
+  //   red_rectangle2.png
+  //   red_rectangle3.png
+  // hit = 3
+  // precision = 3/4 = 75%
+  // recall    = 3/5 = 60%
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ::internal::kHistogramLCPPSubresourceCountType),
+      base::BucketsAre(
+          base::Bucket(network::mojom::RequestDestination::kImage, 3),
+          base::Bucket(network::mojom::RequestDestination::kStyle, 1),
+          base::Bucket(network::mojom::RequestDestination::kScript, 1)));
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountPrecision, 75, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountRecall, 60, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountSameSiteRatio, 100, 1);
+}
+
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
     : public LoadingPredictorBrowserTest {
  public:
@@ -1225,7 +1257,7 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
     }
   }
 
-  ~LoadingPredictorNetworkIsolationKeyBrowserTest() override {}
+  ~LoadingPredictorNetworkIsolationKeyBrowserTest() override = default;
 
   // One server is used to initiate preconnects, and one is preconnected to.
   // This makes tracking preconnected sockets much easier, and removes all
@@ -1279,10 +1311,10 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
 
   void RunCorsTest(bool use_cors_for_preconnect,
                    bool use_cors_for_resource_request) {
-    const char* kCrossOriginValue[]{
+    auto kCrossOriginValue = std::to_array<const char*>({
         "anonymous",
         "use-credentials",
-    };
+    });
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), preconnecting_test_server()->GetURL("/title1.html")));
@@ -1763,7 +1795,7 @@ class LoadingPredictorBrowserTestWithOptimizationGuide
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kLoadingPredictorUseOptimizationGuide,
           {{"use_predictions",
-            ShouldUseOptimizationGuidePredictions() ? "true" : "false"},
+            base::ToString(ShouldUseOptimizationGuidePredictions())},
            {"always_retrieve_predictions", "true"}}},
          {optimization_guide::features::kOptimizationHints, {}}},
         {});

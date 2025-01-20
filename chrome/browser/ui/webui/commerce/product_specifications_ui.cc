@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -21,9 +16,9 @@
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/commerce_product_specifications_resources.h"
 #include "chrome/grit/commerce_product_specifications_resources_map.h"
@@ -43,6 +38,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace commerce {
 
@@ -64,9 +60,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kCommerceProductSpecificationsResources,
-                      kCommerceProductSpecificationsResourcesSize),
+      source, kCommerceProductSpecificationsResources,
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   // Set up chrome://compare/disclosure
@@ -91,6 +85,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       // Main UI strings:
       {"addNewColumn", IDS_COMPARE_ADD_NEW_COLUMN},
       {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
+      {"cancelA11yLabel", IDS_CANCEL},
       {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
       {"compareErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
       {"compareErrorMessage", IDS_COMPARE_ERROR_TITLE},
@@ -107,6 +102,15 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
       {"learnMore", IDS_COMPARE_LEARN_MORE},
       {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
+      {"menuDelete", IDS_COMPARE_CONTEXT_MENU_DELETE},
+      {"menuOpenAll", IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT},
+      {"menuOpenAllInNewWindow",
+       IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT},
+      {"menuOpenInNewTab", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenInNewWindow", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW},
+      {"menuRename", IDS_COMPARE_CONTEXT_MENU_RENAME},
+      {"menuTooltipMore", IDS_COMPARE_EDIT_MORE},
+      {"numSelected", IDS_COMPARE_NUM_ITEMS_SELECTED},
       {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
       {"openProductPage", IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB},
       {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
@@ -118,10 +122,12 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
       {"tableFullMessage", IDS_COMPARE_TABLE_FULL_MESSAGE},
+      {"tableListItemTitle", IDS_COMPARE_TABLE_LIST_ITEM_TITLE},
       {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"yourComparisonTables", IDS_COMPARE_YOUR_COMPARISON_TABLES},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -130,6 +136,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
   source->AddInteger("maxNameLength", kMaxNameLength);
   source->AddInteger("maxTableSize", kMaxTableSize);
+
+  source->AddBoolean(
+      "comparisonTableListEnabled",
+      base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
 
   std::string email;
   signin::IdentityManager* identity_manager =
@@ -140,6 +150,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     email = account_info.email;
   }
   source->AddString("userEmail", email);
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("numItems", IDS_COMPARE_NUM_ITEMS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 void ProductSpecificationsUI::BindInterface(
@@ -160,12 +174,11 @@ void ProductSpecificationsUI::BindInterface(
     mojo::PendingReceiver<
         product_specifications::mojom::ProductSpecificationsHandlerFactory>
         receiver) {
-  product_specifications_handler_factory_receiver_.reset();
-  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
+  product_specifications_factory_receiver_.reset();
+  product_specifications_factory_receiver_.Bind(std::move(receiver));
 }
 
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -179,10 +192,9 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           optimization_guide_keyed_service
               ? optimization_guide_keyed_service
                     ->GetModelQualityLogsUploaderService()

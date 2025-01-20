@@ -25,17 +25,20 @@ constexpr int kQueuePrevJumpValue = -1;
 constexpr int kQueueNextJumpValue = 1;
 
 void SetIfValid(std::string* out, const base::Value* value) {
-  if (value && value->is_string())
+  if (value && value->is_string()) {
     *out = value->GetString();
+  }
 }
 void SetIfValid(bool* out, const base::Value* value) {
-  if (value && value->is_bool())
+  if (value && value->is_bool()) {
     *out = value->GetBool();
+  }
 }
 
 void SetIfNonNegative(float* out, const base::Value* value) {
-  if (!value)
+  if (!value) {
     return;
+  }
   if (value->is_double() && value->GetDouble() >= 0) {
     *out = value->GetDouble();
   } else if (value->is_int() && value->GetInt() >= 0) {
@@ -43,12 +46,14 @@ void SetIfNonNegative(float* out, const base::Value* value) {
   }
 }
 void SetIfNonNegative(int* out, const base::Value* value) {
-  if (value && value->is_int() && value->GetInt() >= 0)
+  if (value && value->is_int() && value->GetInt() >= 0) {
     *out = value->GetInt();
+  }
 }
 void SetIfNonNegative(base::TimeDelta* out, const base::Value* value) {
-  if (!value)
+  if (!value) {
     return;
+  }
   if (value->is_double() && value->GetDouble() >= 0) {
     *out = base::Seconds(value->GetDouble());
   } else if (value->is_int() && value->GetInt() >= 0) {
@@ -63,8 +68,9 @@ std::optional<gfx::Size> GetValidSize(const base::Value::Dict& dict) {
   int height = 0;
   SetIfNonNegative(&width, dict.Find("width"));
   SetIfNonNegative(&height, dict.Find("height"));
-  if (width <= 0 || height <= 0)
+  if (width <= 0 || height <= 0) {
     return std::nullopt;
+  }
   return std::make_optional<gfx::Size>(width, height);
 }
 
@@ -74,25 +80,28 @@ CastMediaController::CastMediaController(AppActivity* activity)
     : sender_id_("sender-" + base::NumberToString(base::RandUint64())),
       activity_(activity) {}
 
-CastMediaController::~CastMediaController() {}
+CastMediaController::~CastMediaController() = default;
 
 void CastMediaController::Play() {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   activity_->SendMediaRequestToReceiver(
       *CastInternalMessage::From(CreateMediaRequest(V2MessageType::kPlay)));
 }
 
 void CastMediaController::Pause() {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   activity_->SendMediaRequestToReceiver(
       *CastInternalMessage::From(CreateMediaRequest(V2MessageType::kPause)));
 }
 
 void CastMediaController::SetMute(bool mute) {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   auto message = CastInternalMessage::From(
       CreateVolumeRequest()
           .SetByDottedPath("message.volume.muted", mute)
@@ -102,8 +111,9 @@ void CastMediaController::SetMute(bool mute) {
 }
 
 void CastMediaController::SetVolume(float volume) {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   activity_->SendSetVolumeRequestToReceiver(
       *CastInternalMessage::From(
           CreateVolumeRequest()
@@ -114,16 +124,18 @@ void CastMediaController::SetVolume(float volume) {
 }
 
 void CastMediaController::Seek(base::TimeDelta time) {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
       CreateMediaRequest(V2MessageType::kSeek)
           .SetByDottedPath("message.currentTime", time.InSecondsF())));
 }
 
 void CastMediaController::NextTrack() {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   // We do not use |kQueueNext| because not all receiver apps support it.
   // See crbug.com/1078601.
   activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
@@ -132,8 +144,9 @@ void CastMediaController::NextTrack() {
 }
 
 void CastMediaController::PreviousTrack() {
-  if (session_id_.empty())
+  if (session_id_.empty()) {
     return;
+  }
   // We do not use |kQueuePrev| because not all receiver apps support it.
   // See crbug.com/1078601.
   activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
@@ -152,8 +165,9 @@ void CastMediaController::SetSession(const CastSession& session) {
   session_id_ = session.session_id();
   const base::Value::Dict* volume =
       session.value().FindDictByDottedPath("receiver.volume");
-  if (!volume)
+  if (!volume) {
     return;
+  }
   SetIfNonNegative(&media_status_.volume, volume->Find("level"));
   SetIfValid(&media_status_.is_muted, volume->Find("muted"));
   const std::string* volume_type = volume->FindString("controlType");
@@ -200,13 +214,16 @@ base::Value::Dict CastMediaController::CreateVolumeRequest() {
 void CastMediaController::UpdateMediaStatus(
     const base::Value::Dict& message_value) {
   const base::Value::List* status_list = message_value.FindList("status");
-  if (!status_list)
+  if (!status_list) {
     return;
-  if (status_list->empty())
+  }
+  if (status_list->empty()) {
     return;
+  }
   const base::Value& status_value = (*status_list)[0];
-  if (!status_value.is_dict())
+  if (!status_value.is_dict()) {
     return;
+  }
   SetIfNonNegative(&media_session_id_,
                    status_value.GetDict().Find("mediaSessionId"));
   SetIfValid(&media_status_.title,
@@ -224,12 +241,14 @@ void CastMediaController::UpdateMediaStatus(
   if (images) {
     media_status_.images.clear();
     for (const base::Value& image_value : *images) {
-      if (!image_value.is_dict())
+      if (!image_value.is_dict()) {
         continue;
+      }
       const base::Value::Dict& image_dict = image_value.GetDict();
       const std::string* url_string = image_dict.FindString("url");
-      if (!url_string)
+      if (!url_string) {
         continue;
+      }
       media_status_.images.emplace_back(std::in_place, GURL(*url_string),
                                         GetValidSize(image_dict));
     }

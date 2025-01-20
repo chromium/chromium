@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -371,7 +367,7 @@ MediaGalleryPrefInfo::MediaGalleryPrefInfo()
 MediaGalleryPrefInfo::MediaGalleryPrefInfo(const MediaGalleryPrefInfo& other) =
     default;
 
-MediaGalleryPrefInfo::~MediaGalleryPrefInfo() {}
+MediaGalleryPrefInfo::~MediaGalleryPrefInfo() = default;
 
 base::FilePath MediaGalleryPrefInfo::AbsolutePath() const {
   base::FilePath base_path = MediaStorageUtil::FindDevicePathById(device_id);
@@ -445,7 +441,8 @@ bool MediaGalleryPrefInfo::IsGalleryAvailable() const {
          MediaStorageUtil::IsRemovableStorageAttached(device_id);
 }
 
-MediaGalleriesPreferences::GalleryChangeObserver::~GalleryChangeObserver() {}
+MediaGalleriesPreferences::GalleryChangeObserver::~GalleryChangeObserver() =
+    default;
 
 MediaGalleriesPreferences::MediaGalleriesPreferences(Profile* profile)
     : initialized_(false),
@@ -483,14 +480,15 @@ bool MediaGalleriesPreferences::IsInitialized() const { return initialized_; }
 Profile* MediaGalleriesPreferences::profile() { return profile_; }
 
 void MediaGalleriesPreferences::AddDefaultGalleries() {
-  const struct DefaultTypes {
+  struct DefaultTypes {
     int directory_key;
     MediaGalleryPrefInfo::DefaultGalleryType default_gallery_type;
-  } kDirectories[] = {
-    {chrome::DIR_USER_MUSIC, MediaGalleryPrefInfo::kMusicDefault},
-    {chrome::DIR_USER_PICTURES, MediaGalleryPrefInfo::kPicturesDefault},
-    {chrome::DIR_USER_VIDEOS, MediaGalleryPrefInfo::kVideosDefault},
   };
+  const auto kDirectories = std::to_array<DefaultTypes>({
+      {chrome::DIR_USER_MUSIC, MediaGalleryPrefInfo::kMusicDefault},
+      {chrome::DIR_USER_PICTURES, MediaGalleryPrefInfo::kPicturesDefault},
+      {chrome::DIR_USER_VIDEOS, MediaGalleryPrefInfo::kVideosDefault},
+  });
 
   for (size_t i = 0; i < std::size(kDirectories); ++i) {
     base::FilePath path;

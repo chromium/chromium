@@ -111,6 +111,8 @@ class BaselineOptimizer:
              port_name: str,
              flag_specific: Optional[str] = None) -> Port:
         port = self._host.port_factory.get(port_name)
+        # Avoid an update race between `optimize-baselines` workers.
+        port.set_option_default('manifest_update', False)
         if flag_specific:
             port.set_option_default('flag_specific', flag_specific)
         return port

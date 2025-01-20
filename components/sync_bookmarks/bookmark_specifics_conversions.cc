@@ -189,7 +189,7 @@ std::string InferGuidForLegacyBookmark(
 
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer UUID");
 
-  const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
+  const std::string guid = ComputeGuidFromBytes(base::span(hash));
   DCHECK(base::Uuid::ParseLowercase(guid).is_valid());
   return guid;
 }
@@ -478,7 +478,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
 
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
-  if (specifics.ByteSize() == 0) {
+  if (specifics.ByteSizeLong() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;

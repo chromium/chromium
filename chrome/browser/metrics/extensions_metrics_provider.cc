@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -219,7 +220,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 25),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 26),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -269,6 +270,7 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
       {extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
        ExtensionInstallProto::UNSUPPORTED_DEVELOPER_EXTENSION},
+      // TODO(crbug.com/372186532): Add an entry for `DISABLE_UNKNOWN` here.
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
@@ -348,7 +350,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   }
   install.set_blacklist_state(GetBlacklistState(extension.id(), prefs));
   install.set_installed_in_this_sample_period(
-      prefs->GetLastUpdateTime(extension.id()) >= last_sample_time);
+      GetLastUpdateTime(prefs, extension.id()) >= last_sample_time);
   install.set_in_extensions_developer_mode(in_extensions_developer_mode);
 
   return install;
@@ -393,8 +395,7 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
   DCHECK_LE(client_key, kExtensionListClientKeys);
   std::string message =
       base::StringPrintf("%u:%s", client_key, extension_id.c_str());
-  uint64_t output =
-      base::legacy::CityHash64(base::as_bytes(base::make_span(message)));
+  uint64_t output = base::legacy::CityHash64(base::as_byte_span(message));
   return output % kExtensionListBuckets;
 }
 

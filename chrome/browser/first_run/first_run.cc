@@ -82,12 +82,10 @@ base::Time g_cached_sentinel_creation_time;
 // ImportEnded() is called asynchronously. Thus we have to handle both cases.
 class ImportEndedObserver : public importer::ImporterProgressObserver {
  public:
-  ImportEndedObserver() : ended_(false) {}
+  ImportEndedObserver() = default;
 
   ImportEndedObserver(const ImportEndedObserver&) = delete;
   ImportEndedObserver& operator=(const ImportEndedObserver&) = delete;
-
-  ~ImportEndedObserver() override {}
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
@@ -109,7 +107,7 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
 
  private:
   // Set if the import has ended.
-  bool ended_;
+  bool ended_ = false;
 
   base::OnceClosure callback_for_import_end_;
 };

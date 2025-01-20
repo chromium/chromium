@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +32,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -73,8 +68,9 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
       {"networkProxyConnectionType",
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_CONNECTION_TYPE_DIALOG},
   };
-  for (const auto& entry : localized_strings)
+  for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
+  }
 }
 
 std::string GetNetworkName8(const NetworkState& network) {
@@ -118,10 +114,11 @@ void InternetDetailDialog::ShowDialog(const std::string& network_id,
                                       gfx::NativeWindow parent) {
   auto* network_state_handler = NetworkHandler::Get()->network_state_handler();
   const NetworkState* network;
-  if (!network_id.empty())
+  if (!network_id.empty()) {
     network = network_state_handler->GetNetworkStateFromGuid(network_id);
-  else
+  } else {
     network = network_state_handler->DefaultNetwork();
+  }
   if (!network) {
     LOG(ERROR) << "Network not found: " << network_id;
     return;
@@ -184,14 +181,12 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kInternetDetailDialogResources,
-                      kInternetDetailDialogResourcesSize),
+      source, kInternetDetailDialogResources,
       IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
   source->DisableTrustedTypesCSP();
 }
 
-InternetDetailDialogUI::~InternetDetailDialogUI() {}
+InternetDetailDialogUI::~InternetDetailDialogUI() = default;
 
 void InternetDetailDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>

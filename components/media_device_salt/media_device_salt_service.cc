@@ -24,9 +24,6 @@ namespace media_device_salt {
 BASE_FEATURE(kMediaDeviceIdPartitioning,
              "MediaDeviceIdPartitioning",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kMediaDeviceIdRandomSaltsPerStorageKey,
-             "MediaDeviceIdRandomSaltsPerStorageKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -71,13 +68,8 @@ void MediaDeviceSaltService::GetSalt(
     return;
   }
 
-  std::optional<std::string> candidate_salt;
-  if (!base::FeatureList::IsEnabled(kMediaDeviceIdRandomSaltsPerStorageKey)) {
-    candidate_salt = GetGlobalSalt();
-  }
-
   db_.AsyncCall(&MediaDeviceSaltDatabase::GetOrInsertSalt)
-      .WithArgs(storage_key, candidate_salt)
+      .WithArgs(storage_key, /*candidate_salt=*/std::nullopt)
       .Then(base::BindOnce(&MediaDeviceSaltService::FinalizeGetSalt,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -101,8 +93,7 @@ void MediaDeviceSaltService::DeleteSalts(
       return;
     }
   } else {
-    if (!base::FeatureList::IsEnabled(kMediaDeviceIdRandomSaltsPerStorageKey) ||
-        !base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
+    if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
       ResetGlobalSalt();
     }
     if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {

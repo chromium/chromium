@@ -123,7 +123,7 @@ def ParseArgs() -> argparse.Namespace:
   detection_modifiers.add_argument(
       '--iqr-multiplier',
       type=float,
-      default=1.5,
+      default=3,
       help=('How many interquartile ranges a failure rate must be above the '
             'third quartile for it to be considered an outlier.'))
   detection_modifiers.add_argument(

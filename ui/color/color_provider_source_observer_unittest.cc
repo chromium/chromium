@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/color/color_provider_source.h"
+#include "ui/color/color_provider_source_observer.h"
 
 #include <memory>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_manager.h"
-#include "ui/color/color_provider_source_observer.h"
+#include "ui/color/color_provider_source.h"
 
 namespace ui {
 

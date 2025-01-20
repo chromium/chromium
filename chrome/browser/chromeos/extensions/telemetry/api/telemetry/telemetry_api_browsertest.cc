@@ -43,7 +43,7 @@ using testing::UnorderedElementsAreArray;
 class TelemetryExtensionTelemetryApiBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
-  TelemetryExtensionTelemetryApiBrowserTest() {}
+  TelemetryExtensionTelemetryApiBrowserTest() = default;
   ~TelemetryExtensionTelemetryApiBrowserTest() override = default;
 
   TelemetryExtensionTelemetryApiBrowserTest(
@@ -1417,11 +1417,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       thermal_sensors.push_back(std::move(thermal_sensor_1));
       thermal_sensors.push_back(std::move(thermal_sensor_2));
 
-      auto Thermal_info =
+      auto thermal_info =
           crosapi::ProbeThermalInfo::New(std::move(thermal_sensors));
 
       telemetry_info->thermal_result =
-          crosapi::ProbeThermalResult::NewThermalInfo(std::move(Thermal_info));
+          crosapi::ProbeThermalResult::NewThermalInfo(std::move(thermal_info));
     }
     probe_service_->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
   }

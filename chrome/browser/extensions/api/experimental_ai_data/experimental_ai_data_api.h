@@ -7,12 +7,32 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
+#include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
 
+// Base class for all experimental AI data functions.
+class ExperimentalAiDataApiFunction : public ExtensionFunction {
+ public:
+  ExperimentalAiDataApiFunction();
+
+  ExperimentalAiDataApiFunction(const ExperimentalAiDataApiFunction&) = delete;
+  ExperimentalAiDataApiFunction& operator=(
+      const ExperimentalAiDataApiFunction&) = delete;
+
+ protected:
+  ~ExperimentalAiDataApiFunction() override;
+
+  // Called when data collection is complete to return a result to the
+  // extension.
+  void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
+  bool PreRunValidation(std::string* error) override;
+};
+
 // Collects data from the user for a private AI extension.
-class ExperimentalAiDataGetAiDataFunction : public ExtensionFunction {
+class ExperimentalAiDataGetAiDataFunction
+    : public ExperimentalAiDataApiFunction {
  public:
   ExperimentalAiDataGetAiDataFunction();
 
@@ -23,12 +43,30 @@ class ExperimentalAiDataGetAiDataFunction : public ExtensionFunction {
 
  protected:
   ~ExperimentalAiDataGetAiDataFunction() override;
-
   ResponseAction Run() override;
-  void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
 
   DECLARE_EXTENSION_FUNCTION("experimentalAiData.getAiData",
                              EXPERIMENTALAIDATA_PRIVATE_GETAIDATA)
+};
+
+// Collects data from the user for a private AI extension. This flavor allows
+// specifying the data to collect.
+class ExperimentalAiDataGetAiDataWithSpecifierFunction
+    : public ExperimentalAiDataApiFunction {
+ public:
+  ExperimentalAiDataGetAiDataWithSpecifierFunction();
+
+  ExperimentalAiDataGetAiDataWithSpecifierFunction(
+      const ExperimentalAiDataGetAiDataFunction&) = delete;
+  ExperimentalAiDataGetAiDataWithSpecifierFunction& operator=(
+      const ExperimentalAiDataGetAiDataFunction&) = delete;
+
+ protected:
+  ~ExperimentalAiDataGetAiDataWithSpecifierFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("experimentalAiData.getAiDataWithSpecifier",
+                             EXPERIMENTALAIDATA_PRIVATE_GETAIDATAWITHSPECIFIER)
 };
 
 }  //  namespace extensions

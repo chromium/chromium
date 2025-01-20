@@ -55,6 +55,7 @@ class CdmHostProxy {
                                             cdm::Status decoder_status) = 0;
   virtual cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) = 0;
   virtual void RequestStorageId(uint32_t version) = 0;
+  virtual void ReportMetrics(cdm::MetricName metric_name, uint64_t value) = 0;
 };
 
 }  // namespace media

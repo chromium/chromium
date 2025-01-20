@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 
 #include "base/containers/span.h"
@@ -20,28 +15,20 @@ ScriptValue WebGLAny(ScriptState* script_state, bool value) {
                      v8::Boolean::New(script_state->GetIsolate(), value));
 }
 
-ScriptValue WebGLAny(ScriptState* script_state,
-                     const bool* value,
-                     uint32_t size) {
-  auto span = base::make_span(value, size);
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<IDLSequence<IDLBoolean>>::ToV8(script_state, span));
-}
-
-ScriptValue WebGLAny(ScriptState* script_state, const Vector<bool>& value) {
+ScriptValue WebGLAny(ScriptState* script_state, base::span<const bool> value) {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLBoolean>>::ToV8(script_state, value));
 }
 
-ScriptValue WebGLAny(ScriptState* script_state, const Vector<unsigned>& value) {
+ScriptValue WebGLAny(ScriptState* script_state,
+                     base::span<const unsigned> value) {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLUnsignedShort>>::ToV8(script_state, value));
 }
 
-ScriptValue WebGLAny(ScriptState* script_state, const Vector<int>& value) {
+ScriptValue WebGLAny(ScriptState* script_state, base::span<const int> value) {
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLLong>>::ToV8(script_state, value));

@@ -192,6 +192,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   // never cache this pointer since it can become nullptr if the renderer
   // crashes, instead you should always ask for it using the accessor.
   virtual RenderWidgetHostView* GetView() = 0;
+  virtual const RenderWidgetHostView* GetView() const = 0;
 
   // Returns true if the renderer is considered unresponsive.
   virtual bool IsCurrentlyUnresponsive() = 0;
@@ -233,8 +234,10 @@ class CONTENT_EXPORT RenderWidgetHost {
    public:
     virtual ~InputEventObserver() {}
 
-    virtual void OnInputEvent(const blink::WebInputEvent&) {}
-    virtual void OnInputEventAck(blink::mojom::InputEventResultSource source,
+    virtual void OnInputEvent(const RenderWidgetHost&,
+                              const blink::WebInputEvent&) {}
+    virtual void OnInputEventAck(const RenderWidgetHost&,
+                                 blink::mojom::InputEventResultSource source,
                                  blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 

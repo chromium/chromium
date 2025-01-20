@@ -43,19 +43,21 @@ bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {
 }
 
 void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
-  if (!ShouldTrackBrowser(browser))
+  if (!ShouldTrackBrowser(browser)) {
     return;
+  }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_strip_model->AddObserver(tab_strip_model_observer_);
 
   TabStripModelChange::Insert insert;
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    insert.contents.push_back({tab_strip_model->GetWebContentsAt(i), i});
+    insert.contents.push_back({tab_strip_model->GetTabAtIndex(i),
+                               tab_strip_model->GetWebContentsAt(i), i});
   }
 
   TabStripModelChange change(std::move(insert));
-  TabStripSelectionChange selection(tab_strip_model->GetActiveWebContents(),
+  TabStripSelectionChange selection(tab_strip_model->GetActiveTab(),
                                     tab_strip_model->selection_model());
   tab_strip_model_observer_->OnTabStripModelChanged(tab_strip_model, change,
                                                     selection);

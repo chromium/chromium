@@ -72,13 +72,15 @@ std::string GetFullWindowsVersion() {
 
   const std::string release_id = gi->release_id();
 
-  if (!release_id.empty())
+  if (!release_id.empty()) {
     version += " Version " + release_id;
+  }
 
-  if (patch > 0)
+  if (patch > 0) {
     version += base::StringPrintf(" (Build %u.%u)", build, patch);
-  else
+  } else {
     version += base::StringPrintf(" (Build %u)", build);
+  }
   return version;
 }
 

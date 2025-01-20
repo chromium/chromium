@@ -1013,6 +1013,12 @@ ci.thin_tester(
             "gpu_samsung_s24_stable",
             "limited_capacity_bot",
         ],
+        per_test_modifications = {
+            "noop_sleep_tests": targets.mixin(
+                # TODO(crbug.com/333424893): Enable tests.
+                experiment_percentage = 100,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,
@@ -2107,6 +2113,9 @@ ci.thin_tester(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
+    # Remove from the gardening rotation due to instability.
+    # TODO(crbug.com/380912395): Add back to a gardening rotation when green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|x64|Intel",
         short_name = "asn",
@@ -2180,6 +2189,9 @@ ci.thin_tester(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
+    # Remove from the gardening rotation due to instability.
+    # TODO(crbug.com/380912395): Add back to a gardening rotation when green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|x64|Nvidia",
         short_name = "asn",
@@ -2474,6 +2486,8 @@ ci.thin_tester(
         short_name = "1660",
     ),
     cq_mirrors_console_view = "mirrors",
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
@@ -2647,6 +2661,8 @@ ci.thin_tester(
         category = "ToT|Windows|x64|Intel",
         short_name = "770",
     ),
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
@@ -2676,9 +2692,7 @@ ci.thin_tester(
         # should be running the same test_suites as
         # 'Dawn Win10 x64 Release (NVIDIA)'
         targets = [
-            "gpu_dawn_telemetry_win_x64_tests",
-            "gpu_dawn_integration_gtests_passthrough_win_x64",
-            "gpu_dawn_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -2690,10 +2704,10 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|x64|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Windows|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 6 * time.hour,
 )
@@ -2725,10 +2739,6 @@ ci.thin_tester(
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
-            # TODO(crbug.com/40888390): The swarming dimensions for
-            # webgpu_blink_web_tests and webgpu_cts_tests on
-            # win10-code-coverage, in test_suite_exceptions.pyl, must be kept
-            # manually in sync with this configuration.
             "win10_nvidia_gtx_1660_stable",
         ],
     ),
@@ -2740,6 +2750,8 @@ ci.thin_tester(
         category = "ToT|Windows|x64|Nvidia",
         short_name = "1660",
     ),
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.gpu.windows_builder(
@@ -3018,9 +3030,7 @@ ci.thin_tester(
         # should be running the same test_suites as 'Dawn Win10 x86 Release
         # (NVIDIA)'.
         targets = [
-            "gpu_dawn_telemetry_tests_fxc",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -3032,10 +3042,10 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|x86|Nvidia",
-        short_name = "exp",
-    ),
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Windows|x86|Nvidia",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
 )
 

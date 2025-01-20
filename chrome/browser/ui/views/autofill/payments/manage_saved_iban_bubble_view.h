@@ -38,7 +38,6 @@ class ManageSavedIbanBubbleView : public AutofillLocationBarBubble {
   void WindowClosing() override;
 
  private:
-
   IbanBubbleController* controller() const { return controller_; }
 
   // Attributes IDs to the dialog's DialogDelegate-supplied buttons. This is

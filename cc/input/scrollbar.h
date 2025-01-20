@@ -114,8 +114,8 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   // (`HasTickmarks()`), this can still return true, but the nine-patch
   // implementation in cc will not be used for painting.
   virtual bool UsesNinePatchTrackAndButtonsResource() const = 0;
-  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize() const = 0;
-  virtual gfx::Rect NinePatchTrackAndButtonsAperture() const = 0;
+  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(float scale) const = 0;
+  virtual gfx::Rect NinePatchTrackAndButtonsAperture(float scale) const = 0;
 
   // This is used by blink only, to adjust the painted thumb rect in
   // main-thread minimal mode.

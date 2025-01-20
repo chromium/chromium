@@ -275,10 +275,6 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyAddressLocalIndication', async () => {
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: false,
-    });
-
     const autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [createAddressEntry()];
     autofillManager.data.accountInfo = {
@@ -302,21 +298,12 @@ suite('AutofillSectionAddressTests', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
 
-    changeListener(autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
-    assertFalse(
-        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
-        'Sync is disabled but the feature is off, the icon should be hidden.');
-
     changeListener(autofillManager.data.addresses, [], [], undefined);
     assertFalse(
         isVisible(section.$.addressList.children[0]!.querySelector(
             '[icon*=cloud-off]')),
         'The local indicator should not be shown to logged-out users');
 
-
-    loadTimeData.overrideValues({
-      syncEnableContactInfoDataTypeInTransportMode: true,
-    });
     changeListener(
         autofillManager.data.addresses, [], [], STUB_USER_ACCOUNT_INFO);
     assertTrue(
@@ -1195,9 +1182,11 @@ suite('AutofillSectionAddressLocaleTests', function() {
 
 suite('PlusAddressesTest', function() {
   const fakeUrl = 'https://foo.bar';
+  let metrics: MetricsTracker;
   let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
+    metrics = fakeMetricsPrivate();
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     loadTimeData.overrideValues({
@@ -1247,7 +1236,8 @@ suite('PlusAddressesTest', function() {
         plusAddressButton.click();
         const url = await openWindowProxy.whenCalled('openUrl');
         assertEquals(url, fakeUrl);
-
+        assertEquals(
+            1, metrics.count('Settings.ManageOptionOnSettingsSelected'));
         autofillSection.remove();
       });
 });

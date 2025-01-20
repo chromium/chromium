@@ -163,7 +163,7 @@ class ConnectionManagerImplTest : public testing::Test {
   }
 
   void VerifyConnectionResultHistogram(
-      base::HistogramBase::Sample sample,
+      base::HistogramBase::Sample32 sample,
       base::HistogramBase::Count expected_count) {
     histogram_tester_.ExpectBucketCount(kConnectionResultMetricName, sample,
                                         expected_count);

@@ -35,8 +35,6 @@ source_set("model") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/google/core/common",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",
@@ -49,9 +47,9 @@ source_set("model") {
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -121,7 +119,6 @@ source_set("test_support") {
     "//components/sync/model",
   ]
   public_deps = [
-    "//components/keyed_service/core",
     "//components/reading_list/core",
     "//ios/web/public",
   ]

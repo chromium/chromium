@@ -55,7 +55,7 @@ TEST(SharedImageUsage, FunctionsHasAny) {
                                   SHARED_IMAGE_USAGE_WEBGPU_READ));
   EXPECT_FALSE(as_usage_set.Has(SHARED_IMAGE_USAGE_MIPMAP));
   EXPECT_FALSE(as_usage_set.HasAny(SHARED_IMAGE_USAGE_MIPMAP |
-                                   SHARED_IMAGE_USAGE_CPU_WRITE));
+                                   SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
 }
 
 TEST(SharedImageUsage, FunctionsIntersect) {
@@ -74,12 +74,12 @@ TEST(SharedImageUsage, FunctionsIntersect) {
 TEST(SharedImageUsage, GlobalOperatorCasting) {
   // Global operators will create a 'SharedImageUsageSet'.
   auto as_usage_set = SHARED_IMAGE_USAGE_GLES2_READ |
-                      SHARED_IMAGE_USAGE_CPU_WRITE |
+                      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                       SHARED_IMAGE_USAGE_WEBGPU_READ;
   as_usage_set |= as_usage_set | SHARED_IMAGE_USAGE_RAW_DRAW;
   as_usage_set |= SHARED_IMAGE_USAGE_RASTER_WRITE | as_usage_set;
   EXPECT_TRUE(as_usage_set.HasAll(
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_RAW_DRAW |
       SHARED_IMAGE_USAGE_RASTER_WRITE));
 }
@@ -100,51 +100,51 @@ TEST(SharedImageUsage, RemoveAllButNotPresent) {
   SharedImageUsageSet as_usage_set =
       SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_RAW_DRAW;
-  // We intentionally remove 'SHARED_IMAGE_USAGE_CPU_WRITE' even though it was
-  // never added in above. We are testing that this is allowed and that it will
-  // not produce an internal bit flip.
+  // We intentionally remove 'SHARED_IMAGE_USAGE_CPU_WRITE_ONLY' even though it
+  // was never added in above. We are testing that this is allowed and that it
+  // will not produce an internal bit flip.
   as_usage_set.RemoveAll(SHARED_IMAGE_USAGE_RASTER_WRITE |
-                         SHARED_IMAGE_USAGE_CPU_WRITE);
+                         SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
   EXPECT_TRUE(as_usage_set.HasAll(SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
                                   SHARED_IMAGE_USAGE_RAW_DRAW));
   EXPECT_FALSE(as_usage_set.HasAny(SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                   SHARED_IMAGE_USAGE_CPU_WRITE));
+                                   SHARED_IMAGE_USAGE_CPU_WRITE_ONLY));
 }
 
 TEST(SharedImageUsage, GlobalOperatorSetUnion) {
   // Global operators will create a 'SharedImageUsageSet'.
   SharedImageUsageSet usage_a =
-      SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
   SharedImageUsageSet usage_b =
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_RASTER_WRITE;
   SharedImageUsageSet usage_set_union = usage_a | usage_b;
   EXPECT_TRUE(usage_set_union.HasAll(SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
                                      SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     SHARED_IMAGE_USAGE_CPU_WRITE |
+                                     SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                                      SHARED_IMAGE_USAGE_WEBGPU_READ));
 }
 
 TEST(SharedImageUsage, ImplicitCasting) {
   SharedImageUsageSet as_usage_set =
-      SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
   // TODO(crbug.com/343347288): Remove after all usage has been converted to
   // `SharedImageUsageSet`.
   // Temporary exception to allow for existing, non type safe, conversions.
   uint32_t as_uint32_t = as_usage_set;
 
-  EXPECT_EQ(static_cast<uint32_t>(SHARED_IMAGE_USAGE_CPU_WRITE) |
+  EXPECT_EQ(static_cast<uint32_t>(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) |
                 static_cast<uint32_t>(SHARED_IMAGE_USAGE_WEBGPU_READ),
             as_uint32_t);
 }
 
 TEST(SharedImageUsage, EqualityTest) {
   SharedImageUsageSet usage_a =
-      SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
   SharedImageUsageSet usage_b =
-      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE;
-  SharedImageUsageSet usage_c = SHARED_IMAGE_USAGE_CPU_WRITE;
-  SharedImageUsageSet usage_d = SHARED_IMAGE_USAGE_CPU_WRITE |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+  SharedImageUsageSet usage_c = SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+  SharedImageUsageSet usage_d = SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                                 SHARED_IMAGE_USAGE_WEBGPU_READ |
                                 SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
   EXPECT_TRUE(usage_a == usage_b);

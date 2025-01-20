@@ -68,8 +68,16 @@ WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() {}
 WebViewDeviceAccountsProviderImpl::~WebViewDeviceAccountsProviderImpl() =
     default;
 
+void WebViewDeviceAccountsProviderImpl::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WebViewDeviceAccountsProviderImpl::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void WebViewDeviceAccountsProviderImpl::GetAccessToken(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
@@ -88,7 +96,7 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
   CWVIdentity* identity =
       [[CWVIdentity alloc] initWithEmail:nil
                                 fullName:nil
-                                  gaiaID:base::SysUTF8ToNSString(gaia_id)];
+                                  gaiaID:gaia_id.ToNSString()];
   [CWVSyncController.dataSource
       fetchAccessTokenForIdentity:identity
                            scopes:scopes_array
@@ -117,7 +125,7 @@ WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   for (CWVIdentity* identity in identities) {
     AccountInfo account_info;
     account_info.email = base::SysNSStringToUTF8(identity.email);
-    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
+    account_info.gaia = GaiaId(identity.gaiaID);
     account_infos.push_back(account_info);
   }
   return account_infos;

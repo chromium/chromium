@@ -42,8 +42,8 @@ const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
 
 // This enum must match the numbering for StorageAccessResult in
-// histograms/enums.xml. Do not reorder or remove items, only add new items
-// at the end.
+// histograms/metadata/storage/enums.xml. Do not reorder or remove items, only
+// add new items at the end.
 enum class StorageAccessResult {
   ACCESS_BLOCKED = 0,
   ACCESS_ALLOWED = 1,
@@ -171,15 +171,15 @@ NET_EXPORT std::string GetEffectiveDomain(const std::string& scheme,
 
 // Determine the actual cookie domain based on the domain string passed
 // (if any) and the URL from which the cookie came.
-// On success returns true, and sets cookie_domain to either a
+// On success returns either a
 //   -host cookie domain (ex: "google.com")
 //   -domain cookie domain (ex: ".google.com")
 // On success, DomainIsHostOnly(url.host()) is DCHECKed. The URL's host must not
 // begin with a '.' character.
-NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
-                                          const std::string& domain_string,
-                                          CookieInclusionStatus& status,
-                                          std::string* result);
+NET_EXPORT std::optional<std::string> GetCookieDomainWithString(
+    const GURL& url,
+    const std::string& domain_string,
+    CookieInclusionStatus& status);
 
 // Returns true if a domain string represents a host-only cookie,
 // i.e. it doesn't begin with a leading '.' character.
@@ -400,6 +400,11 @@ NET_EXPORT bool IsPortBoundCookiesEnabled();
 
 NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
+// Takes the feature state and CookieScopeSemantics semantics into account to
+// determine if the behavior should be applied.
+NET_EXPORT bool IsSchemeBoundCookiesBehaviorActive(
+    CookieScopeSemantics scope_semantics);
+
 // Returns true if either portion of OBC is enabled.
 NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 
@@ -462,13 +467,13 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
 NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
 
-// Adds or removes the kStorageAccessGrantEligible override, as appropriate.
-// Mutates `overrides` in place.
-NET_EXPORT void AddOrRemoveStorageAccessApiOverride(
+// Indicates whether the first hop in a request should have the
+// kStorageAccessGrantEligible override.
+[[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
-    CookieSettingOverrides& overrides);
+    bool emit_metrics);
 
 }  // namespace cookie_util
 

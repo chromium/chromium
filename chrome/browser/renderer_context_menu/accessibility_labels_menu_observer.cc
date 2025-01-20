@@ -35,7 +35,7 @@ AccessibilityLabelsMenuObserver::AccessibilityLabelsMenuObserver(
     RenderViewContextMenuProxy* proxy)
     : proxy_(proxy) {}
 
-AccessibilityLabelsMenuObserver::~AccessibilityLabelsMenuObserver() {}
+AccessibilityLabelsMenuObserver::~AccessibilityLabelsMenuObserver() = default;
 
 void AccessibilityLabelsMenuObserver::InitMenu(
     const content::ContextMenuParams& params) {

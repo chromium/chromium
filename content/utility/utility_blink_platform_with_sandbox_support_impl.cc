@@ -11,6 +11,8 @@
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
+#elif BUILDFLAG(IS_WIN)
+#include "content/child/child_process_sandbox_support_impl_win.h"
 #endif
 
 namespace content {
@@ -27,6 +29,8 @@ UtilityBlinkPlatformWithSandboxSupportImpl::
   sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader);
 #elif BUILDFLAG(IS_MAC)
   sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
+#elif BUILDFLAG(IS_WIN)
+  sandbox_support_ = std::make_unique<WebSandboxSupportWin>();
 #endif
 }
 
@@ -35,7 +39,8 @@ UtilityBlinkPlatformWithSandboxSupportImpl::
 
 blink::WebSandboxSupport*
 UtilityBlinkPlatformWithSandboxSupportImpl::GetSandboxSupport() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   return sandbox_support_.get();
 #else
   return nullptr;

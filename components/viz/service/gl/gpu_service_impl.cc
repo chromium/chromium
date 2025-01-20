@@ -27,10 +27,10 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/startup_metric_utils/gpu/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -93,23 +93,23 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
 #endif
-#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
@@ -291,12 +291,12 @@ bool PostInitializeLogHandler(int severity,
 }
 
 bool IsAcceleratedJpegDecodeSupported() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return chromeos_camera::GpuMjpegDecodeAcceleratorFactory::
       IsAcceleratedJpegDecodeSupported();
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool WillGetGmbConfigFromGpu() {
@@ -311,6 +311,14 @@ bool WillGetGmbConfigFromGpu() {
 #else
   return false;
 #endif
+}
+
+void RunGetPeakGpuMemoryUsageCallbackOnMainThread(
+    GpuServiceImpl::GetPeakMemoryUsageCallback callback,
+    uint64_t peak_memory,
+    base::flat_map<gpu::GpuPeakMemoryAllocationSource, uint64_t>
+        allocation_per_source) {
+  std::move(callback).Run(peak_memory, std::move(allocation_per_source));
 }
 
 }  // namespace
@@ -337,15 +345,13 @@ GpuServiceImpl::GpuServiceImpl(
 #if BUILDFLAG(ENABLE_VULKAN)
       vulkan_implementation_(init_params.vulkan_implementation),
 #endif
-      exit_callback_(std::move(init_params.exit_callback)),
       clear_shader_cache_(base::FeatureList::IsEnabled(
           features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
   DCHECK(!io_runner_->BelongsToCurrentThread());
-  DCHECK(exit_callback_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -547,26 +553,86 @@ void GpuServiceImpl::UpdateGPUInfoGL() {
   gpu_host_->DidUpdateGPUInfo(gpu_info_);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
     gpu::GpuProcessShmCount use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
     mojom::GpuServiceCreationParamsPtr creation_params,
-#if BUILDFLAG(IS_ANDROID)
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler,
+    base::WaitableEvent* shutdown_event,
+    const gpu::SharedContextState::GrContextOptionsProvider*
+        gr_context_options_provider) {
+  if (!sync_point_manager) {
+    sync_point_manager = CreateSyncPointManager();
+  }
+
+  if (!shared_image_manager) {
+#if BUILDFLAG(IS_OZONE)
+    shared_image_manager =
+        CreateSharedImageManager(creation_params->supports_overlays);
+#else
+    shared_image_manager = CreateSharedImageManager();
 #endif
+  }
+
+  if (!scheduler) {
+    scheduler = CreateScheduler(sync_point_manager);
+  }
+
+  if (!shutdown_event) {
+    shutdown_event = CreateShutdownEvent();
+  }
+
+  gr_context_options_provider_ = gr_context_options_provider;
+
+  InitializeWithHostInternal(
+      std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
+      default_offscreen_surface, std::move(creation_params), sync_point_manager,
+      shared_image_manager, scheduler, shutdown_event);
+}
+#else
+void GpuServiceImpl::InitializeWithHost(
+    mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    gpu::GpuProcessShmCount use_shader_cache_shm_count,
+    scoped_refptr<gl::GLSurface> default_offscreen_surface,
+    mojom::GpuServiceCreationParamsPtr creation_params,
     base::WaitableEvent* shutdown_event) {
-#if !BUILDFLAG(IS_ANDROID)
-  // On platforms other than Android these objects are *always* created
-  // internally.
-  gpu::SyncPointManager* sync_point_manager = nullptr;
-  gpu::SharedImageManager* shared_image_manager = nullptr;
-  gpu::Scheduler* scheduler = nullptr;
+  gpu::SyncPointManager* sync_point_manager = CreateSyncPointManager();
+#if BUILDFLAG(IS_OZONE)
+  gpu::SharedImageManager* shared_image_manager =
+      CreateSharedImageManager(creation_params->supports_overlays);
+#else
+  gpu::SharedImageManager* shared_image_manager = CreateSharedImageManager();
+#endif
+  gpu::Scheduler* scheduler = CreateScheduler(sync_point_manager);
+
+  if (!shutdown_event) {
+    shutdown_event = CreateShutdownEvent();
+  }
+
+  InitializeWithHostInternal(
+      std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
+      default_offscreen_surface, std::move(creation_params), sync_point_manager,
+      shared_image_manager, scheduler, shutdown_event);
+}
 #endif
 
+void GpuServiceImpl::InitializeWithHostInternal(
+    mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    gpu::GpuProcessShmCount use_shader_cache_shm_count,
+    scoped_refptr<gl::GLSurface> default_offscreen_surface,
+    mojom::GpuServiceCreationParamsPtr creation_params,
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::SharedImageManager* shared_image_manager,
+    gpu::Scheduler* scheduler,
+    base::WaitableEvent* shutdown_event) {
   DCHECK(main_runner_->BelongsToCurrentThread());
+
+  scheduler_ = scheduler;
+  shutdown_event_ = shutdown_event;
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
   gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,
@@ -581,46 +647,6 @@ void GpuServiceImpl::InitializeWithHost(
         &GpuServiceImpl::RecordLogMessage, base::Unretained(this)));
   }
 
-  if (!sync_point_manager) {
-    owned_sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
-    sync_point_manager = owned_sync_point_manager_.get();
-  }
-
-  if (!shared_image_manager) {
-    // When using real buffers for testing overlay configurations, we need
-    // access to SharedImageManager on the viz thread to obtain the buffer
-    // corresponding to a mailbox.
-    const bool display_context_on_another_thread =
-        features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
-
-    // |display_context_on_another_thread|, features::IsUsingRawDraw(),
-    // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
-    // requires |thread_safe_manager| to be true.
-    bool thread_safe_manager = true;
-    owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
-        thread_safe_manager, display_context_on_another_thread);
-#if BUILDFLAG(IS_OZONE)
-    owned_shared_image_manager_->SetSupportsOverlays(
-        creation_params->supports_overlays);
-#endif
-    shared_image_manager = owned_shared_image_manager_.get();
-  }
-
-  shutdown_event_ = shutdown_event;
-  if (!shutdown_event_) {
-    owned_shutdown_event_ = std::make_unique<base::WaitableEvent>(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    shutdown_event_ = owned_shutdown_event_.get();
-  }
-
-  if (scheduler) {
-    scheduler_ = scheduler;
-  } else {
-    owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
-    scheduler_ = owned_scheduler_.get();
-  }
-
   // Defer creation of the render thread. This is to prevent it from handling
   // IPC messages before the sandbox has been enabled and all other necessary
   // initialization has succeeded.
@@ -632,7 +658,7 @@ void GpuServiceImpl::InitializeWithHost(
       std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
-      dawn_caching_interface_factory());
+      dawn_caching_interface_factory(), gr_context_options_provider_);
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());
@@ -714,7 +740,7 @@ void GpuServiceImpl::RecordLogMessage(int severity,
   gpu_host_->RecordLogMessage(severity, std::move(header), std::move(message));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
     mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
@@ -837,7 +863,7 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
   chromeos_camera::MojoJpegEncodeAcceleratorService::Create(
       std::move(jea_receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
@@ -1005,7 +1031,6 @@ void GpuServiceImpl::GetVideoMemoryUsageStats(
 }
 
 void GpuServiceImpl::StartPeakMemoryMonitor(uint32_t sequence_num) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuServiceImpl::StartPeakMemoryMonitorOnMainThread,
@@ -1014,7 +1039,6 @@ void GpuServiceImpl::StartPeakMemoryMonitor(uint32_t sequence_num) {
 
 void GpuServiceImpl::GetPeakMemoryUsage(uint32_t sequence_num,
                                         GetPeakMemoryUsageCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
   main_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GpuServiceImpl::GetPeakMemoryUsageOnMainThread,
                                 weak_ptr_, sequence_num, std::move(callback)));
@@ -1146,7 +1170,6 @@ void GpuServiceImpl::GetIsolationKey(
 }
 
 void GpuServiceImpl::MaybeExitOnContextLost(
-    bool synthetic_loss,
     gpu::error::ContextLostReason context_lost_reason) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
@@ -1156,13 +1179,10 @@ void GpuServiceImpl::MaybeExitOnContextLost(
     return;
   }
 
-  if (IsExiting() || !exit_callback_)
-    return;
-
   LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
                 "from errors. GPU process will restart shortly.";
-  is_exiting_.Set();
-  std::move(exit_callback_).Run(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST);
+  base::Process::TerminateCurrentProcessImmediately(
+      static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
 }
 
 bool GpuServiceImpl::IsExiting() const {
@@ -1506,6 +1526,13 @@ void GpuServiceImpl::GetPeakMemoryUsageOnMainThread(
   uint64_t peak_memory = 0u;
   auto allocation_per_source =
       gpu_channel_manager_->GetPeakMemoryUsage(sequence_num, &peak_memory);
+
+  auto seq_loc = GetPeakMemoryUsageRequestLocation(sequence_num);
+  if (seq_loc == SequenceLocation::kGpuProcess) {
+    RunGetPeakGpuMemoryUsageCallbackOnMainThread(
+        std::move(callback), peak_memory, std::move(allocation_per_source));
+    return;
+  }
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), peak_memory,
                                       std::move(allocation_per_source)));
@@ -1566,6 +1593,44 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
   }
 }
 #endif
+
+gpu::SyncPointManager* GpuServiceImpl::CreateSyncPointManager() {
+  owned_sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+  return owned_sync_point_manager_.get();
+}
+
+gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
+    bool supports_overlays) {
+  // When using real buffers for testing overlay configurations, we need
+  // access to SharedImageManager on the viz thread to obtain the buffer
+  // corresponding to a mailbox.
+  const bool display_context_on_another_thread =
+      features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
+
+  // |display_context_on_another_thread|, features::IsUsingRawDraw(),
+  // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
+  // requires |thread_safe_manager| to be true.
+  bool thread_safe_manager = true;
+  owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
+      thread_safe_manager, display_context_on_another_thread);
+#if BUILDFLAG(IS_OZONE)
+  owned_shared_image_manager_->SetSupportsOverlays(supports_overlays);
+#endif
+  return owned_shared_image_manager_.get();
+}
+
+gpu::Scheduler* GpuServiceImpl::CreateScheduler(
+    gpu::SyncPointManager* sync_point_manager) {
+  owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
+  return owned_scheduler_.get();
+}
+
+base::WaitableEvent* GpuServiceImpl::CreateShutdownEvent() {
+  owned_shutdown_event_ = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  return owned_shutdown_event_.get();
+}
 
 bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) {

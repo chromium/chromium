@@ -18,6 +18,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -86,8 +87,9 @@ LoginHandler::~LoginHandler() {
 
   password_manager::HttpAuthManager* http_auth_manager =
       GetHttpAuthManagerForLogin();
-  if (http_auth_manager)
+  if (http_auth_manager) {
     http_auth_manager->OnPasswordFormDismissed();
+  }
 
   if (!WasAuthHandled()) {
     auth_required_callback_.Reset();
@@ -112,10 +114,12 @@ void LoginHandler::SetAuth(const std::u16string& username,
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
   password_manager::PasswordManagerClient* client =
       GetPasswordManagerClientFromWebContent();
-  if (client && client->GetLogManager()->IsLoggingActive()) {
+  autofill::LogManager* log_manager =
+      client ? client->GetCurrentLogManager() : nullptr;
+  if (log_manager && log_manager->IsLoggingActive()) {
     logger =
         std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-            client->GetLogManager());
+            log_manager);
     logger->LogMessage(
         autofill::SavePasswordProgressLogger::STRING_SET_AUTH_METHOD);
   }
@@ -126,8 +130,9 @@ void LoginHandler::SetAuth(const std::u16string& username,
         autofill::SavePasswordProgressLogger::STRING_AUTHENTICATION_HANDLED,
         already_handled);
   }
-  if (already_handled)
+  if (already_handled) {
     return;
+  }
 
   password_manager::HttpAuthManager* httpauth_manager =
       GetHttpAuthManagerForLogin();
@@ -158,8 +163,9 @@ void LoginHandler::SetAuth(const std::u16string& username,
 }
 
 void LoginHandler::CancelAuth(bool notify_others) {
-  if (WasAuthHandled())
+  if (WasAuthHandled()) {
     return;
+  }
 
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
 
@@ -266,8 +272,9 @@ void LoginHandler::OtherHandlerFinished(bool supplied,
 
 password_manager::PasswordManagerClient*
 LoginHandler::GetPasswordManagerClientFromWebContent() {
-  if (!web_contents_)
+  if (!web_contents_) {
     return nullptr;
+  }
   password_manager::PasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(web_contents_.get());
   return client;
@@ -383,9 +390,10 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
 
   password_manager::PasswordManagerClient* client =
       GetPasswordManagerClientFromWebContent();
-  if (client && client->GetLogManager()->IsLoggingActive()) {
-    password_manager::BrowserSavePasswordProgressLogger logger(
-        client->GetLogManager());
+  autofill::LogManager* log_manager =
+      client ? client->GetCurrentLogManager() : nullptr;
+  if (log_manager && log_manager->IsLoggingActive()) {
+    password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogMessage(
         autofill::SavePasswordProgressLogger::STRING_SHOW_LOGIN_PROMPT_METHOD);
   }
@@ -400,8 +408,9 @@ void LoginHandler::BuildViewAndNotify(
     const std::u16string& authority,
     const std::u16string& explanation,
     LoginHandler::LoginModelData* login_model_data) {
-  if (login_model_data)
+  if (login_model_data) {
     password_form_ = *login_model_data->form;
+  }
   bool success = BuildViewImpl(authority, explanation, login_model_data);
   if (success) {
     NotifyAuthNeeded();

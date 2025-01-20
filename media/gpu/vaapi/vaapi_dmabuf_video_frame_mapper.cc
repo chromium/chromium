@@ -11,6 +11,8 @@
 
 #include <sys/mman.h>
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -58,7 +60,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
 
   // All the planes are stored in the same buffer, VAImage.va_buffer.
   std::vector<ColorPlaneLayout> planes(kNumPlanes);
-  uint8_t* addrs[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> addrs = {};
   for (size_t i = 0; i < kNumPlanes; i++) {
     planes[i].stride = va_image->image()->pitches[i];
     planes[i].offset = va_image->image()->offsets[i];

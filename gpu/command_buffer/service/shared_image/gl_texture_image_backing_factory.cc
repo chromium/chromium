@@ -52,10 +52,6 @@ bool SupportScanout() {
     return true;
   }
   if (!base::FeatureList::IsEnabled(
-          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
           features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
@@ -145,20 +141,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
   return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
                                    color_space, surface_origin, alpha_type,
                                    usage, std::move(debug_label), pixel_data);
-}
-
-std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
 }
 
 bool GLTextureImageBackingFactory::IsSupported(
@@ -259,13 +241,17 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
-  // Only supports WebGPU usages on Dawn's OpenGLES backend.
+  // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+    if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
       return false;
     }
+#else
+    return false;
+#endif
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);

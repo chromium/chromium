@@ -259,7 +259,7 @@ public class StripLayoutHelperManager
                     && mModelSelectorButton.onDown(x, y, fromMouse, buttons)) {
                 return;
             }
-            getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
+            getActiveStripLayoutHelper().onDown(x, y, fromMouse, buttons);
         }
 
         @Override
@@ -477,7 +477,8 @@ public class StripLayoutHelperManager
                             dragDropDelegate,
                             browserControlsStateProvider,
                             windowAndroid,
-                            toolbarManager.getTabStripHeightSupplier());
+                            toolbarManager.getTabStripHeightSupplier(),
+                            desktopWindowStateManager);
         }
 
         mToolbarManager = toolbarManager;
@@ -768,6 +769,11 @@ public class StripLayoutHelperManager
                 mRightPadding,
                 mTopPadding);
         return mTabStripTreeProvider;
+    }
+
+    @Override
+    public void removeFromParent() {
+        mTabStripTreeProvider.removeFromParent();
     }
 
     private int getStripTransitionScrimColor() {

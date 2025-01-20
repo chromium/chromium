@@ -334,6 +334,7 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
 
   unrooted_devices = {
       'a13',
+      'a13ve',
       'a23',
       'dm1q',  # Samsung S23.
       'devonn',  # Motorola Moto G Power 5G.

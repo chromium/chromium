@@ -27,6 +27,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/vector_icons.h"
@@ -623,8 +624,11 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   // The selected bit and selection based state should both update for all menu
   // items while they and their anscestors remain part of the menu.
-  EXPECT_FALSE(submenu_item->IsSelected());
-  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  EXPECT_EQ(submenu_item->IsSelected(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+  EXPECT_EQ(submenu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+
   submenu_item->SetSelected(true);
   EXPECT_TRUE(submenu_item->IsSelected());
   EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
@@ -669,7 +673,9 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
-  EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
+  EXPECT_EQ(child_menu_item->last_paint_as_selected_for_testing(),
+            views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard);
+
   child_menu_item->SetSelected(true);
   EXPECT_TRUE(child_menu_item->IsSelected());
   EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
@@ -836,27 +842,31 @@ using MenuItemViewA11yTest = MenuItemViewPaintUnitTest;
 // A MenuItemView that has a submenu should open the submenu on kExpand and
 // close the submenu on kCollapse.
 TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
-  MenuItemView* submenu_item_view =
-      menu_item_view()->AppendSubMenu(1, u"Submenu");
+  MenuItemView* menu_item = menu_item_view()->AppendMenuItem(1, u"Menu Item");
+  // On some platforms, the submenu is automatically opened when it's on the
+  // first item. To avoid this, add it to a second item.
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(2, u"SubMenu");
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
   // Pre-conditions: An expandable submenu item.
-  ASSERT_TRUE(submenu_item_view->HasSubmenu());
-  ASSERT_FALSE(submenu_item_view->SubmenuIsShowing());
+  ASSERT_FALSE(menu_item->HasSubmenu());
+  ASSERT_FALSE(menu_item->SubmenuIsShowing());
+  ASSERT_TRUE(submenu->HasSubmenu());
+  ASSERT_FALSE(submenu->SubmenuIsShowing());
 
   // Send an expand action to the menu item.
   ui::AXActionData expand_action_data;
   expand_action_data.action = ax::mojom::Action::kExpand;
-  submenu_item_view->HandleAccessibleAction(expand_action_data);
-  EXPECT_TRUE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(expand_action_data);
+  EXPECT_TRUE(submenu->SubmenuIsShowing());
 
   // Send a collapse action to the menu item.
   ui::AXActionData collapse_action_data;
   collapse_action_data.action = ax::mojom::Action::kCollapse;
-  submenu_item_view->HandleAccessibleAction(collapse_action_data);
-  EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(collapse_action_data);
+  EXPECT_FALSE(submenu->SubmenuIsShowing());
 }
 
 TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
@@ -893,4 +903,81 @@ TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
   EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
+TEST_F(MenuItemViewA11yTest, AccessibleExpandedCollapsedState) {
+  MenuItemView* non_submenu =
+      menu_item_view()->AppendMenuItem(1, u"Item, not a submenu");
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(1, u"Submenu");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  // The non-submenu item should not have an expanded/collapsed state.
+  ui::AXNodeData data;
+  non_submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kNone);
+
+  // The submenu item should have a collapsed state.
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  // The submenu item should have an expanded state after expanding.
+  ui::AXActionData expand_action_data;
+  expand_action_data.action = ax::mojom::Action::kExpand;
+  submenu->HandleAccessibleAction(expand_action_data);
+
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+}
+
+TEST_F(MenuItemViewA11yTest, TooltipText) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+            u"Tooltip");
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetTooltipText(gfx::Point()),
+            u"Tooltip");
+}
+
+TEST_F(MenuItemViewA11yTest, TooltipTextAccessibility) {
+  const int id = 1000;
+  const auto type = views::MenuItemView::Type::kNormal;
+  const int index = 0;
+
+  menu_item_view()->AddMenuItemAt(index, id, u"Custom", std::u16string(),
+                                  std::u16string(), ui::ImageModel(),
+                                  ui::ImageModel(), type, ui::NORMAL_SEPARATOR,
+                                  std::nullopt, std::nullopt, std::nullopt);
+  ui::AXNodeData data;
+
+  menu_item_view()->SetTooltip(u"Tooltip", id);
+  menu_item_view()
+      ->GetMenuItemByID(id)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(menu_item_view()->GetMenuItemByID(id)->GetCachedTooltipText(),
+            u"Tooltip");
+  // When no description is explicitly set, the tooltip should be used.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Tooltip");
+}
 }  // namespace views

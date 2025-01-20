@@ -22,10 +22,9 @@ enum class DbOperationStatus {
   kMaxValue = kDatabaseRazed,
 };
 
-SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
-    : uma_tag_(uma_tag),
-      db_path_(db_path),
-      db_(sql::Database(sql::DatabaseOptions())),
+SqlStorage::SqlStorage(base::FilePath db_path, sql::Database::Tag uma_tag)
+    : db_path_(db_path),
+      db_(sql::Database(uma_tag)),
       token_table_(&db_),
       term_table_(&db_),
       url_table_(&db_),
@@ -46,16 +45,15 @@ bool SqlStorage::Init() {
   const base::FilePath db_dir = db_path_.DirName();
   if (!base::PathExists(db_dir) && !base::CreateDirectory(db_dir)) {
     LOG(ERROR) << "Failed to create a db directory " << db_dir;
-    base::UmaHistogramEnumeration(uma_tag_,
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
                                   DbOperationStatus::kDirectoryCreateError);
     return false;
   }
 
-  db_.set_histogram_tag(uma_tag_);
-
   if (!db_.Open(db_path_)) {
     LOG(ERROR) << "Failed to open " << db_path_;
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenDbError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kOpenDbError);
     return false;
   }
   // base::Unretained is safe as SqlStorage (this) owns the sql::Database (db_).
@@ -71,34 +69,40 @@ bool SqlStorage::Init() {
   }
 
   // Record successful operation and let the world know.
-  base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenOk);
+  base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                DbOperationStatus::kOpenOk);
   return true;
 }
 
 bool SqlStorage::InitTables() {
   if (!token_table_.Init()) {
     LOG(ERROR) << "Failed to initialize token_table";
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kTableInitError);
     return false;
   }
   if (!term_table_.Init()) {
     LOG(ERROR) << "Failed to initialize term_table";
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kTableInitError);
     return false;
   }
   if (!url_table_.Init()) {
     LOG(ERROR) << "Failed to initialize url_table";
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kTableInitError);
     return false;
   }
   if (!file_info_table_.Init()) {
     LOG(ERROR) << "Failed to initialize file_info_table";
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kTableInitError);
     return false;
   }
   if (!posting_list_table_.Init()) {
     LOG(ERROR) << "Failed to initialize file_info_table";
-    base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
+    base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                  DbOperationStatus::kTableInitError);
     return false;
   }
   return true;
@@ -129,7 +133,8 @@ void SqlStorage::Restart() {
     LOG(ERROR) << "Failed to raze the database.";
     return;
   }
-  base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kDatabaseRazed);
+  base::UmaHistogramEnumeration(db_.histogram_tag(),
+                                DbOperationStatus::kDatabaseRazed);
   if (InitTables()) {
     LOG(ERROR) << "Failed to re-initialize db tables after Raze";
   }

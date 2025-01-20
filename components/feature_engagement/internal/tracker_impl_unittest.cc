@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -280,7 +279,7 @@ class TestSessionController : public SessionController {
   bool should_reset_for_next_call_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TestConfigurationProvider : public ConfigurationProvider {
  public:
   TestConfigurationProvider() = default;
@@ -1213,7 +1212,7 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
                    0);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TrackerImplTest, TestWouldTriggerWithUpdatedConfig) {
   // Ensure all initialization is finished.
   StoringInitializedCallback callback;

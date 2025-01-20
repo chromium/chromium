@@ -44,7 +44,9 @@ source_set("app_icon") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder.cc",
       "app_icon_decoder.h",
@@ -64,10 +66,9 @@ source_set("app_icon") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources:component_extension_resources",
-      "//components/arc/common",
     ]
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("util") {
@@ -87,7 +88,7 @@ source_set("util") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/public/cpp" ]
   }
 }
@@ -133,7 +134,7 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/extensions" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder_unittest.cc",
       "arc_apps_icon_unittest.cc",

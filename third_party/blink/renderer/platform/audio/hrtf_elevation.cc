@@ -34,7 +34,9 @@
 #include "third_party/blink/renderer/platform/audio/hrtf_elevation.h"
 
 #include <math.h>
+
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -77,14 +79,15 @@ constexpr float kResponseSampleRate = 44100;
 // angle. See https://bugs.webkit.org/show_bug.cgi?id=98294#c9 for the
 // elevation angles and their order in the concatenated response.
 constexpr int kElevationIndexTableSize = 10;
-constexpr int kElevationIndexTable[kElevationIndexTableSize] = {
-    0, 15, 30, 45, 60, 75, 90, 315, 330, 345};
+constexpr std::array<int, kElevationIndexTableSize> kElevationIndexTable = {
+    0, 15, 30, 45, 60, 75, 90, 315, 330, 345,
+};
 
 // The range of elevations for the IRCAM impulse responses varies depending on
 // azimuth, but the minimum elevation appears to always be -45.
 //
 // Here's how it goes:
-constexpr int kMaxElevations[] = {
+constexpr auto kMaxElevations = std::to_array<int>({
     //  Azimuth
     //
     90,  // 0
@@ -110,8 +113,8 @@ constexpr int kMaxElevations[] = {
     75,  // 300
     45,  // 315
     60,  // 330
-    45   // 345
-};
+    45,  // 345
+});
 
 // Lazily load a concatenated HRTF database for given subject and store it in a
 // local hash table to ensure quick efficient future retrievals.

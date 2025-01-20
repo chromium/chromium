@@ -52,7 +52,7 @@ TEST_P(H26xAnnexBBitstreamBuilderAppendBitsTest, AppendAndVerifyBits) {
 
   EXPECT_EQ(b.BytesInBuffer(), num_bytes);
 
-  const uint8_t* ptr = b.data();
+  const uint8_t* ptr = b.data().data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
 
@@ -73,7 +73,7 @@ TEST_F(H26xAnnexBBitstreamBuilderAppendBitsTest, VerifyFlushAndBitsInBuffer) {
   EXPECT_EQ(b.BytesInBuffer(), num_bytes);
   EXPECT_EQ(b.BitsInBuffer(), num_bits);
 
-  const uint8_t* ptr = b.data();
+  const uint8_t* ptr = b.data().data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
   expected &= ((1ull << num_bits) - 1);

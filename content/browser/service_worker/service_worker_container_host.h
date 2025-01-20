@@ -175,6 +175,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
 
   // The URL of this context.
   virtual const GURL& url() const = 0;
+  // The url to use for access check, the same url as the one used for scope
+  // match. This is needed for srcdoc iframes where url() is "about:srcdoc" and
+  // url_for_access_check() is the parent client's URL that matches the service
+  // worker's origin.
+  virtual const GURL& url_for_access_check() const = 0;
 
   // Calls ContentBrowserClient::AllowServiceWorker(). Returns true if content
   // settings allows service workers to run at |scope|. If this container is for
@@ -304,6 +309,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
   base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
+  const GURL& url_for_access_check() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,
@@ -470,6 +476,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   const base::WeakPtr<ServiceWorkerContextCore>& context() const override;
   base::WeakPtr<ServiceWorkerContainerHost> AsWeakPtr() override;
   const GURL& url() const override;
+  const GURL& url_for_access_check() const override;
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,

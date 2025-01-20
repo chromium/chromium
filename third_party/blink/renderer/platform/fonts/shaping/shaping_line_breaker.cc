@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
@@ -586,7 +588,7 @@ const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
     unsigned last_safe,
     const ShapeResult* line_start_result,
     const ShapeResult* line_end_result) {
-  ShapeResultView::Segment segments[3];
+  std::array<ShapeResultView::Segment, 3> segments;
   constexpr unsigned max_length = std::numeric_limits<unsigned>::max();
   unsigned count = 0;
   if (line_start_result) {

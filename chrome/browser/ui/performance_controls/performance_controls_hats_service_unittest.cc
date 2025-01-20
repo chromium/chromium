@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

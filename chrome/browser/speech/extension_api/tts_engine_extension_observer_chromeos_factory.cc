@@ -43,8 +43,9 @@ TtsEngineExtensionObserverChromeOSFactory::
 TtsEngineExtensionObserverChromeOSFactory::
     ~TtsEngineExtensionObserverChromeOSFactory() = default;
 
-KeyedService*
-TtsEngineExtensionObserverChromeOSFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new TtsEngineExtensionObserverChromeOS(static_cast<Profile*>(profile));
+std::unique_ptr<KeyedService> TtsEngineExtensionObserverChromeOSFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* profile) const {
+  return std::make_unique<TtsEngineExtensionObserverChromeOS>(
+      static_cast<Profile*>(profile));
 }

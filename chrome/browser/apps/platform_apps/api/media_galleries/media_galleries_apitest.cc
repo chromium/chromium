@@ -80,7 +80,7 @@ base::FilePath::CharType kDevicePath[] = FILE_PATH_LITERAL("/qux");
 class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
  protected:
   MediaGalleriesPlatformAppBrowserTest() : test_jpg_size_(0) {}
-  ~MediaGalleriesPlatformAppBrowserTest() override {}
+  ~MediaGalleriesPlatformAppBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();

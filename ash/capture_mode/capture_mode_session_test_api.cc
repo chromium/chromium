@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 
+#include "ash/capture_mode/action_button_container_view.h"
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -12,6 +13,7 @@
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -67,12 +69,20 @@ views::Widget* CaptureModeSessionTestApi::GetActionContainerWidget() {
   return session_->action_container_widget_.get();
 }
 
+views::Widget* CaptureModeSessionTestApi::GetDisclaimerWidget() {
+  return session_->disclaimer_.get();
+}
+
 views::Widget* CaptureModeSessionTestApi::GetRecordingTypeMenuWidget() {
   return session_->recording_type_menu_widget_.get();
 }
 
 views::Widget* CaptureModeSessionTestApi::GetDimensionsLabelWidget() {
   return session_->dimensions_label_widget_.get();
+}
+
+views::Widget* CaptureModeSessionTestApi::GetFeedbackButtonWidget() {
+  return session_->feedback_button_widget_.get();
 }
 
 UserNudgeController* CaptureModeSessionTestApi::GetUserNudgeController() {
@@ -145,7 +155,8 @@ std::vector<ActionButtonView*> CaptureModeSessionTestApi::GetActionButtons()
 
 ActionButtonView* CaptureModeSessionTestApi::GetButtonWithViewID(
     ActionButtonViewID id) const {
-  raw_ptr<views::BoxLayoutView> container = session_->action_container_view_;
+  raw_ptr<ActionButtonContainerView> container =
+      session_->action_container_view_;
   return container
              ? views::AsViewClass<ActionButtonView>(container->GetViewByID(id))
              : nullptr;
@@ -154,6 +165,10 @@ ActionButtonView* CaptureModeSessionTestApi::GetButtonWithViewID(
 CaptureRegionOverlayController*
 CaptureModeSessionTestApi::GetCaptureRegionOverlayController() const {
   return session_->capture_region_overlay_controller_.get();
+}
+
+PillButton* CaptureModeSessionTestApi::GetFeedbackButton() {
+  return session_->feedback_button_.get();
 }
 
 }  // namespace ash

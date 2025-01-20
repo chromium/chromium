@@ -64,11 +64,11 @@ AXPlatformNodeId AXPlatformNode::GetUniqueId() const {
   return CHECK_DEREF(GetDelegate()).GetUniqueId();
 }
 
-std::string AXPlatformNode::ToString() {
+std::string AXPlatformNode::ToString() const {
   return GetDelegate() ? GetDelegate()->ToString() : "No delegate";
 }
 
-std::string AXPlatformNode::SubtreeToString() {
+std::string AXPlatformNode::SubtreeToString() const {
   return GetDelegate() ? GetDelegate()->SubtreeToString() : "No delegate";
 }
 

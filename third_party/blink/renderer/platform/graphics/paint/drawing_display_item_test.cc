@@ -246,9 +246,9 @@ TEST_F(DrawingDisplayItemTest, DrawEmptyImage) {
                    .set_id(1)
                    .TakePaintImage();
   PaintRecorder recorder;
-  recorder.beginRecording()->drawImageRect(image, SkRect::MakeEmpty(),
-                                           SkRect::MakeEmpty(),
-                                           SkCanvas::kFast_SrcRectConstraint);
+  recorder.beginRecording()->drawImageRect(
+      image, SkRect::MakeEmpty(), SkRect::MakeEmpty(), SkSamplingOptions(),
+      nullptr, SkCanvas::kFast_SrcRectConstraint);
   DrawingDisplayItem item(
       client_->Id(), DisplayItem::kBoxDecorationBackground, gfx::Rect(10, 20),
       recorder.finishRecordingAsPicture(), RasterEffectOutset::kNone);

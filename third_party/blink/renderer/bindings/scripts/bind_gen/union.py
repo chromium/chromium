@@ -203,8 +203,6 @@ def make_check_assignment_value(cg_context, union_member, assignment_value):
     assert isinstance(union_member, _UnionMember)
     assert isinstance(assignment_value, str)
 
-    if union_member.idl_type and union_member.idl_type.is_object:
-        return TextNode("DCHECK({}.IsObject());".format(assignment_value))
     if union_member.type_info.is_gc_type:
         return TextNode("DCHECK({});".format(assignment_value))
 
@@ -481,7 +479,7 @@ def make_factory_methods(cg_context):
             # Shortcut to reduce the binary size
             S("blink_value",
               (_format("auto&& ${blink_value} = "
-                       "ScriptValue(${isolate}, ${v8_value});"))))
+                       "ScriptObject(${isolate}, ${v8_value});"))))
 
     # 11. If Type(V) is Boolean, then:
     # 11.1. If types includes boolean, ...
@@ -870,9 +868,9 @@ def make_trace_function(cg_context):
     for member in cg_context.union_members:
         if member.is_null:
             continue
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.var_name)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.var_name)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_decl, func_def

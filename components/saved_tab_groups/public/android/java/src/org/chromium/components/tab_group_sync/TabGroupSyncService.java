@@ -7,6 +7,7 @@ package org.chromium.components.tab_group_sync;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
@@ -76,6 +77,18 @@ public interface TabGroupSyncService {
          */
         default void onTabGroupLocalIdChanged(
                 String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
+
+        /**
+         * Called to notify that the local observation mode has changed. If {@code
+         * observeLocalChanges} is true, the local changes should be ignored by the observer and not
+         * propagated to sync. This is typically used to ignore transient changes which are often
+         * redundant and incorrect to propagate to sync server. Note, this is a temporary solution
+         * and only available in Android until a more accurate cross-platform solution is
+         * implemented.
+         *
+         * @param observeLocalChanges Whether the local tab model changes should be observed.
+         */
+        default void onLocalObservationModeChanged(boolean observeLocalChanges) {}
     }
 
     /**
@@ -93,12 +106,11 @@ public interface TabGroupSyncService {
     void removeObserver(Observer observer);
 
     /**
-     * Creates a remote tab group with the given local group ID.
+     * Adds a given {@link SavedTabGroup} to the service.
      *
-     * @param localTabGroupId The local tab group ID.
-     * @return The sync ID of the group after it has been added to sync.
+     * @param savedTabGroup The {@link SavedTabGroup} to be added to the service.
      */
-    String createGroup(LocalTabGroupId localTabGroupId);
+    void addGroup(SavedTabGroup savedTabGroup);
 
     /**
      * Removes a remote tab group which is open locally.
@@ -131,6 +143,22 @@ public interface TabGroupSyncService {
      * @param collaborationId Collaboration ID with which the group is associated.
      */
     void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId);
+
+    /**
+     * Starts the process of converting a shared tab group to saved tab group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param callback Callback to be called when group is converted to saved tab group.
+     */
+    void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback);
+
+    /**
+     * Called when shared tab group is successfully converted to saved tab group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param success boolean for telling if the operation succeeded or failed.
+     */
+    void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success);
 
     /**
      * Adds a tab to a remote group. Should be called with response to a local tab addition to a tab
@@ -175,12 +203,14 @@ public interface TabGroupSyncService {
     void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup);
 
     /**
-     * Called to notify the backend that a tab was selected in the UI. Metrics purposes only.
+     * Called to notify the backend that a tab was selected in the UI. Used by the messaging backend
+     * to keep track of currently selected tab.
      *
-     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param tabGroupId The local group ID of the corresponding tab group. Null if the tab is not
+     *     part of a group.
      * @param tabId The local ID of the corresponding tab.
      */
-    void onTabSelected(LocalTabGroupId tabGroupId, int tabId);
+    void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId);
 
     /**
      * Called to return all the remote tab group IDs currently existing in the system.
@@ -239,6 +269,20 @@ public interface TabGroupSyncService {
      * @param localTabId The local ID of the corresponding tab.
      */
     void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId);
+
+    /**
+     * Whether the TabGroupSyncService should observe local tab model changes. By default,
+     * TabGroupSyncService starts observing from the start. Typically called to pause / resume local
+     * observation typically during transient UI actions (such as dragging tab groups to other
+     * windows). This ensures that transient changes which are often redundant and incorrect do not
+     * propagate to sync server.
+     *
+     * @param observeLocalChanges True to observe local changes, false to pause observation.
+     */
+    void setLocalObservationMode(boolean observeLocalChanges);
+
+    /** Returns whether TabGroupSyncService is currently observing local changes. */
+    boolean isObservingLocalChanges();
 
     /**
      * Helper method to identify whether a given sync cache guid corresponds to a remote device.

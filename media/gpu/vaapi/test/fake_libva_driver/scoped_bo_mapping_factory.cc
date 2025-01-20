@@ -20,15 +20,11 @@ ScopedBOMapping::ScopedAccess::ScopedAccess(const ScopedBOMapping& mapping)
     struct dma_buf_sync sync_start;
     memset(&sync_start, 0, sizeof(sync_start));
     sync_start.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW;
-#if defined(MINIGBM)
-    PCHECK(HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC,
-                              &sync_start)) == 0);
-#else
+
     // This will fail for the fake GBM backend, so ignore the return result. We
-    // leave the IOCTL in here anyway in case a Linux user wants to try the fake
-    // VA-API driver with a real GBM that happens to not be minigbm.
+    // leave the IOCTL in here anyway in case we're running on top of a real GEM
+    // driver.
     HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC, &sync_start));
-#endif
   }
 }
 
@@ -37,12 +33,7 @@ ScopedBOMapping::ScopedAccess::~ScopedAccess() {
     struct dma_buf_sync sync_end;
     memset(&sync_end, 0, sizeof(sync_end));
     sync_end.flags = DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW;
-#if defined(MINIGBM)
-    PCHECK(HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC,
-                              &sync_end)) == 0);
-#else
     HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC, &sync_end));
-#endif
   }
 }
 

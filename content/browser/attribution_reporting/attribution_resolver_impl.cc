@@ -1058,6 +1058,12 @@ base::Time AttributionResolverImpl::GetAggregatableReportTime(
 }
 
 std::vector<AttributionReport> AttributionResolverImpl::GetAttributionReports(
+    base::Time max_report_time) {
+  return GetAttributionReportsWithLimit(max_report_time, /*limit=*/-1);
+}
+
+std::vector<AttributionReport>
+AttributionResolverImpl::GetAttributionReportsWithLimit(
     base::Time max_report_time,
     int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1080,7 +1086,13 @@ std::optional<AttributionReport> AttributionResolverImpl::GetReport(
   return storage_.GetReport(id);
 }
 
-std::vector<StoredSource> AttributionResolverImpl::GetActiveSources(int limit) {
+std::vector<StoredSource> AttributionResolverImpl::GetActiveSources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return storage_.GetActiveSources(/*limit=*/-1);
+}
+
+std::vector<StoredSource> AttributionResolverImpl::GetActiveSourcesWithLimit(
+    int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return storage_.GetActiveSources(limit);
 }
@@ -1121,6 +1133,13 @@ std::optional<base::Time> AttributionResolverImpl::AdjustOfflineReportTimes() {
   }
 
   return storage_.GetNextReportTime(base::Time::Min());
+}
+
+void AttributionResolverImpl::ClearDataIncludingRateLimit(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter) {
+  ClearData(delete_begin, delete_end, filter, /*delete_rate_limit_data=*/true);
 }
 
 void AttributionResolverImpl::ClearData(

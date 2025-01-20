@@ -78,18 +78,16 @@ void RespondWithObserver::Trace(Visitor* visitor) const {
 
 void RespondWithObserver::RespondWithReject::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
-  ThenCallable<IDLAny, RespondWithReject, IDLAny>::Trace(visitor);
+  ThenCallable<IDLAny, RespondWithReject, IDLPromise<IDLAny>>::Trace(visitor);
 }
 
-ScriptValue RespondWithObserver::RespondWithReject::React(
+ScriptPromise<IDLAny> RespondWithObserver::RespondWithReject::React(
     ScriptState* script_state,
     ScriptValue value) {
   DCHECK(observer_);
   observer_->OnResponseRejected(
       mojom::blink::ServiceWorkerResponseError::kPromiseRejected);
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
+  return ScriptPromise<IDLAny>::Reject(script_state, value);
 }
 
 }  // namespace blink

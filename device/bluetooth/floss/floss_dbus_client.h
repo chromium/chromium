@@ -353,7 +353,6 @@ inline constexpr char kSetDebugLogging[] = "SetDebugLogging";
 
 namespace experimental {
 inline constexpr char kSetLLPrivacy[] = "SetLLPrivacy";
-inline constexpr char kSetDevCoredump[] = "SetDevCoredump";
 }  // namespace experimental
 
 // BluetoothDevice structure for DBus apis.

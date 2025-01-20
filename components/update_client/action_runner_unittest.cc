@@ -29,10 +29,9 @@ class FakeActionHandler : public ActionHandler {
 
   bool ran() const { return ran_; }
 
- protected:
+ private:
   ~FakeActionHandler() override = default;
 
- private:
   bool ran_ = false;
 };
 

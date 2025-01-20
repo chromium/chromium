@@ -27,12 +27,10 @@ class OpenCookieDatabaseComponentInstallerPolicy
       const OpenCookieDatabaseComponentInstallerPolicy&) = delete;
   OpenCookieDatabaseComponentInstallerPolicy& operator=(
       const OpenCookieDatabaseComponentInstallerPolicy&) = delete;
-  ~OpenCookieDatabaseComponentInstallerPolicy() override = default;
 
   // ComponentInstallerPolicy:
   bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
-
  private:
   // ComponentInstallerPolicy:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

@@ -68,13 +68,15 @@ TEST_F(AwComponentMetricsProviderDelegateTest, TestMultipleComponents) {
 
   std::string fake_component_id = "abcdefgh";
   base::Version fake_component_version("123.456.78.9");
+  std::string fake_component_cohort_id = "test_cohort_id";
   component_updater::ComponentsInfoHolder::GetInstance()->AddComponent(
-      fake_component_id, fake_component_version);
+      fake_component_id, fake_component_version, fake_component_cohort_id);
 
   std::vector<ComponentInfo> components = delegate.GetComponents();
   ASSERT_EQ(1u, components.size());
   EXPECT_EQ(fake_component_id, components[0].id);
   EXPECT_EQ(fake_component_version, components[0].version);
+  EXPECT_EQ(fake_component_cohort_id, components[0].cohort_id);
 }
 
 }  // namespace android_webview

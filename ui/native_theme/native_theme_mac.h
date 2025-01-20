@@ -91,6 +91,11 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // scale factor.
   static gfx::Size GetThumbMinSize(bool vertical, float scale);
 
+  // This is used in tests to simulate enabling a non-blinking cursor.
+  void SetPrefersNonBlinkingCursorForTesting(bool enabled) {
+    prefers_non_blinking_cursor_for_testing_ = enabled;
+  }
+
  protected:
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeMac>;
@@ -103,6 +108,9 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
 
  private:
+  // Returns true if the user prefers a non blinking cursor.
+  bool PrefersNonBlinkingCursor() const;
+
   // Paint the selected menu item background, and a border for emphasis when in
   // high contrast.
   void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
@@ -155,6 +163,8 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   NativeThemeEffectiveAppearanceObserver* __strong appearance_observer_;
   id __strong display_accessibility_notification_token_;
+  id __strong non_blinking_cursor_token_;
+  bool prefers_non_blinking_cursor_for_testing_ = false;
 
   // Used to notify the web native theme of changes to dark mode and high
   // contrast.

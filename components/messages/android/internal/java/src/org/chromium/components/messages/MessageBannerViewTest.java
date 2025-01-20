@@ -41,8 +41,8 @@ import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -238,7 +238,7 @@ public class MessageBannerViewTest {
                                             android.R.drawable.ic_menu_add)
                                     .with(
                                             MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
-                                            new ListMenuButtonDelegate() {
+                                            new ListMenuDelegate() {
                                                 @Override
                                                 public ListMenu getListMenu() {
                                                     return listMenu;

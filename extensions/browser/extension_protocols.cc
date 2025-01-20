@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/extension_protocols.h"
 
 #include <stddef.h>
@@ -21,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -350,10 +346,8 @@ bool IsPathEqualTo(const GURL& url, std::string_view test) {
 }
 
 bool IsFaviconURL(const GURL& url) {
-  return base::FeatureList::IsEnabled(
-             extensions_features::kNewExtensionFaviconHandling) &&
-         (IsPathEqualTo(url, kFaviconSourcePath) ||
-          IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"})));
+  return IsPathEqualTo(url, kFaviconSourcePath) ||
+         IsPathEqualTo(url, base::StrCat({kFaviconSourcePath, "/"}));
 }
 
 bool IsBackgroundPageURL(const GURL& url) {
@@ -492,8 +486,9 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
         // Note: We still pass the data to |verify_job_|, even if there was a
         // read error, because some errors are ignorable. See
         // ContentVerifyJob::BytesRead() for more details.
-        verify_job_->BytesRead(static_cast<const char*>(buffer.data()),
-                               result->bytes_read, result->result);
+        verify_job_->BytesRead(
+            buffer.subspan(0u, static_cast<size_t>(result->bytes_read)),
+            result->result);
       }
     }
   }
@@ -679,9 +674,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
                           scoped_refptr<base::RefCountedMemory> bitmap_data) {
     if (bitmap_data) {
       head->mime_type = "image/bmp";
-      WriteData(std::move(head),
-                base::as_bytes(
-                    base::make_span(bitmap_data->data(), bitmap_data->size())));
+      WriteData(std::move(head), base::as_byte_span(*bitmap_data));
     } else {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
     }
@@ -773,7 +766,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         std::string contents;
         GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                        &head->charset, &contents);
-        WriteData(std::move(head), base::as_bytes(base::make_span(contents)));
+        WriteData(std::move(head), base::as_byte_span(contents));
       } else if (is_favicon_url) {
         tracker_ = std::make_unique<base::CancelableTaskTracker>();
         ExtensionsBrowserClient::Get()->GetFavicon(

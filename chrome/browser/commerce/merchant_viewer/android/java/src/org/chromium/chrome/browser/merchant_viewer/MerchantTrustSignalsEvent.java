@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class MerchantTrustSignalsEvent {
     private final long mTimestamp;
 
     @CalledByNative
-    MerchantTrustSignalsEvent(String key, long timestamp) {
+    MerchantTrustSignalsEvent(@JniType("std::string") String key, long timestamp) {
         mKey = key;
         mTimestamp = timestamp;
     }
@@ -27,7 +28,9 @@ public class MerchantTrustSignalsEvent {
 
     @CalledByNative
     static MerchantTrustSignalsEvent createEventAndAddToList(
-            List<MerchantTrustSignalsEvent> list, String key, long timestamp) {
+            List<MerchantTrustSignalsEvent> list,
+            @JniType("std::string") String key,
+            long timestamp) {
         MerchantTrustSignalsEvent event = new MerchantTrustSignalsEvent(key, timestamp);
         list.add(event);
         return event;

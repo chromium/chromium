@@ -68,13 +68,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SuccessfullySetAsDefaultBrowser"/>
 </enum>
 
-<enum name="FirstRunEntryPoint">
-  <int value="0" label="Other"/>
-  <int value="1" label="Process startup"/>
-  <int value="2" label="Web app launch"/>
-  <int value="3" label="Web app context menu command"/>
-</enum>
-
 <enum name="FirstRunExitStatus">
   <summary>
     Status code indicating how the first run experience was exited.
@@ -399,6 +392,8 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="kOsIntegrationForceUnregistration"/>
   <int value="38" label="kRemoteDebugging"/>
   <int value="39" label="kHeadlessCommand"/>
+  <int value="40" label="kGlicView"/>
+  <int value="41" label="kWaitingForGlicView"/>
 </enum>
 
 <!-- LINT.IfChange(ProfileMenuActionableItem) -->
@@ -436,6 +431,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Deleted a profile"/>
 </enum>
 
+<!-- LINT.IfChange(ProfilePickerAction) -->
+
 <enum name="ProfilePickerAction">
   <int value="0" label="Launch existing profile"/>
   <int value="1" label="Launch existing profile on customize settings page"/>
@@ -443,6 +440,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Launch new profile"/>
   <int value="4" label="Delete profile"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerAction) -->
+
+<!-- LINT.IfChange(ProfilePickerEntryPoint) -->
 
 <enum name="ProfilePickerEntryPoint">
   <int value="0" label="On startup"/>
@@ -461,7 +462,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="No usable profile for existing process"/>
   <int value="14" label="Manage profile item in the app menu"/>
   <int value="15" label="Add new profile item in the app menu"/>
+  <int value="16" label="Glic Manager"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>

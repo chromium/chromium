@@ -4,6 +4,8 @@
 
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
+assert(is_chromeos)
+
 static_library("desks_storage") {
   output_name = "desks_storage_lib"
 
@@ -32,7 +34,6 @@ static_library("desks_storage") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chromeos/crosapi/cpp",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",

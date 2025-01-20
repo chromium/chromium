@@ -18,6 +18,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -68,11 +69,11 @@ sync_pb::EntitySpecifics GenerateSharedTabGroupDataSpecifics(
 std::unique_ptr<EntityData> GenerateSharedTabGroupDataEntityData(
     const ClientTagHash& hash,
     const std::string& guid,
-    const std::string& collaboration_id) {
+    CollaborationMetadata collaboration_metadata) {
   std::unique_ptr<EntityData> entity_data(new EntityData());
   entity_data->client_tag_hash = hash;
   entity_data->specifics = GenerateSharedTabGroupDataSpecifics(guid);
-  entity_data->collaboration_id = collaboration_id;
+  entity_data->collaboration_metadata = std::move(collaboration_metadata);
   return entity_data;
 }
 
@@ -83,9 +84,9 @@ UpdateResponseData GenerateSharedTabGroupDataUpdate(
     const std::string& guid,
     const base::Time& mtime,
     int64_t version,
-    const std::string& collaboration_id) {
-  std::unique_ptr<EntityData> data =
-      GenerateSharedTabGroupDataEntityData(hash, guid, collaboration_id);
+    CollaborationMetadata collaboration_metadata) {
+  std::unique_ptr<EntityData> data = GenerateSharedTabGroupDataEntityData(
+      hash, guid, std::move(collaboration_metadata));
   data->id = server_id;
   data->modification_time = mtime;
   UpdateResponseData update;
@@ -902,23 +903,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
       entity->metadata().possibly_trimmed_base_specifics().SerializeAsString());
 }
 
-TEST_F(ProcessorEntityTest,
-       LocalDeletionDoesNotRecordVersionInfoIfFeatureIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {/* enabled_features */},
-      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion});
-
-  std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
-  EXPECT_FALSE(entity->metadata().has_deleted_by_version());
-}
-
-TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
-      {/* disabled_features */});
+TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfo) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
   std::string expected_version = std::string(version_info::GetVersionNumber());
@@ -926,63 +911,117 @@ TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
 }
 
 TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
+  const GaiaId kCreatorUserId("creator_user_id");
+  const GaiaId kUpdaterUserId("updater_user_id");
+
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalUpdate(
-      GenerateSharedTabGroupDataEntityData(kHash, "guid", "collaboration"),
-      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
+      GenerateSharedTabGroupDataEntityData(
+          kHash, "guid",
+          CollaborationMetadata::ForLocalChange(
+              /*changed_by=*/kCreatorUserId, "collaboration")),
+      /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
   EXPECT_EQ("", entity->metadata().server_id());
   EXPECT_EQ(kUncommittedVersion, entity->metadata().server_version());
   EXPECT_EQ("collaboration",
             entity->metadata().collaboration().collaboration_id());
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .last_update_attribution()
+                                           .obfuscated_gaia_id());
+
+  // The same user ID is used as a creator for the first time.
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .creation_attribution()
+                                           .obfuscated_gaia_id());
   EXPECT_TRUE(entity->IsUnsynced());
 
   // Generate a commit request.
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
   const EntityData& data = *request.entity;
-  EXPECT_EQ("collaboration", data.collaboration_id);
+  ASSERT_TRUE(data.collaboration_metadata.has_value());
+  EXPECT_EQ("collaboration", data.collaboration_metadata->collaboration_id());
+
+  // Verify that creator is not updated on the next local update.
+  entity->RecordLocalUpdate(
+      GenerateSharedTabGroupDataEntityData(
+          kHash, "guid",
+          CollaborationMetadata::ForLocalChange(
+              /*changed_by=*/kUpdaterUserId, "collaboration")),
+      /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
+  EXPECT_EQ(kUpdaterUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .last_update_attribution()
+                                           .obfuscated_gaia_id());
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .creation_attribution()
+                                           .obfuscated_gaia_id());
+  EXPECT_NE(entity->metadata()
+                .collaboration()
+                .last_update_attribution()
+                .obfuscated_gaia_id(),
+            entity->metadata()
+                .collaboration()
+                .creation_attribution()
+                .obfuscated_gaia_id());
 }
 
 TEST_F(ProcessorEntityTest, ShouldCreateNewRemoteSharedItem) {
+  const std::string kCreatorUserId = "creator_user_id";
+  const std::string kUpdaterUserId = "updater_user_id";
+
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   const base::Time mtime = base::Time::Now();
+
+  sync_pb::SyncEntity::CollaborationMetadata collaboration_remote_proto;
+  collaboration_remote_proto.set_collaboration_id("collaboration");
+  collaboration_remote_proto.mutable_creation_attribution()
+      ->set_obfuscated_gaia_id(kCreatorUserId);
+  collaboration_remote_proto.mutable_last_update_attribution()
+      ->set_obfuscated_gaia_id(kUpdaterUserId);
+
   UpdateResponseData update = GenerateSharedTabGroupDataUpdate(
-      *entity, kHash, kId, "guid", mtime, /*version=*/10, "collaboration");
+      *entity, kHash, kId, "guid", mtime, /*version=*/10,
+      CollaborationMetadata::FromRemoteProto(collaboration_remote_proto));
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
   EXPECT_EQ("collaboration",
             entity->metadata().collaboration().collaboration_id());
-}
-
-TEST_F(ProcessorEntityTest, ShouldMatchEntitiesByCollaborations) {
-  std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(
-      GenerateSharedTabGroupDataEntityData(kHash, "guid", "collaboration"),
-      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
-
-  std::unique_ptr<EntityData> matching_entity_data =
-      GenerateSharedTabGroupDataEntityData(kHash, "guid", "collaboration");
-  std::unique_ptr<EntityData> different_collaboration_entity_data =
-      GenerateSharedTabGroupDataEntityData(kHash, "guid",
-                                           "different_collaboration");
-
-  EXPECT_TRUE(entity->MatchesData(*matching_entity_data));
-  EXPECT_FALSE(entity->MatchesData(*different_collaboration_entity_data));
+  EXPECT_EQ(entity->metadata()
+                .collaboration()
+                .creation_attribution()
+                .obfuscated_gaia_id(),
+            kCreatorUserId);
+  EXPECT_EQ(entity->metadata()
+                .collaboration()
+                .last_update_attribution()
+                .obfuscated_gaia_id(),
+            kUpdaterUserId);
 }
 
 TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(
-      GenerateSharedTabGroupDataEntityData(kHash, "guid", "collaboration"),
-      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
+  entity->RecordLocalUpdate(GenerateSharedTabGroupDataEntityData(
+                                kHash, "guid",
+                                CollaborationMetadata::ForLocalChange(
+                                    /*changed_by=*/GaiaId(), "collaboration")),
+                            /*trimmed_specifics=*/{},
+                            /*unique_position=*/std::nullopt);
   entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
 
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
 
-  EXPECT_EQ(request.entity->collaboration_id, "collaboration");
+  ASSERT_TRUE(request.entity->collaboration_metadata.has_value());
+  EXPECT_EQ(request.entity->collaboration_metadata->collaboration_id(),
+            "collaboration");
 }
 
 }  // namespace syncer

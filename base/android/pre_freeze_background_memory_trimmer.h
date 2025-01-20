@@ -20,7 +20,7 @@
 namespace base::android {
 class MemoryPurgeManagerAndroid;
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
+BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
@@ -108,9 +108,11 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static bool SelfCompactionIsSupported();
 
-  // Compacts the memory for the process, and returns the number of bytes
-  // processed on success.
-  static std::optional<int64_t> CompactSelf();
+  // Compacts the memory for the process.
+  void CompactSelf();
+
+  // If we are currently running self compaction, cancel it.
+  static void MaybeCancelSelfCompaction();
 
   static void SetSupportsModernTrimForTesting(bool is_supported);
   static void ClearMetricsForTesting() LOCKS_EXCLUDED(lock_);
@@ -121,12 +123,16 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   bool DidRegisterTasksForTesting() const;
 
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
+  static void ResetSelfCompactionLastCancelledForTesting();
 
-  static std::optional<int64_t> CompactRegion(debug::MappedMemoryRegion region);
+  static std::optional<uint64_t> CompactRegion(
+      debug::MappedMemoryRegion region);
 
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
+
+  static void OnSelfFreeze() LOCKS_EXCLUDED(lock_);
 
   static bool SupportsModernTrim();
   static bool ShouldUseModernTrim();
@@ -140,6 +146,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   friend class base::OneShotDelayedBackgroundTimer;
   friend class PreFreezeBackgroundMemoryTrimmerTest;
   friend class PreFreezeSelfCompactionTest;
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, Cancel);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
   // rather than relying on something like |base::OneShotTimer|, since
@@ -178,10 +186,62 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     OnceCallback<void(MemoryReductionTaskContext)> task_;
   };
 
+ private:
+  class CompactionMetric : public RefCountedThreadSafe<CompactionMetric> {
+   public:
+    explicit CompactionMetric(base::TimeTicks started_at);
+
+    void RecordDelayedMetrics();
+
+    void RecordBeforeMetrics();
+    void MaybeRecordCompactionMetrics();
+
+   private:
+    friend class RefCountedThreadSafe<CompactionMetric>;
+    ~CompactionMetric();
+    void RecordSmapsRollup(std::optional<debug::SmapsRollup>* target);
+    void RecordSmapsRollupWithDelay(std::optional<debug::SmapsRollup>* target,
+                                    base::TimeDelta delay);
+    base::TimeTicks started_at_;
+    // We use std::optional here because:
+    // - We record these incrementally.
+    // - We may stop recording at some point.
+    // - We only want to emit histograms if all values were recorded.
+    std::optional<debug::SmapsRollup> smaps_before_;
+    std::optional<debug::SmapsRollup> smaps_after_;
+    std::optional<debug::SmapsRollup> smaps_after_1s_;
+    std::optional<debug::SmapsRollup> smaps_after_10s_;
+    std::optional<debug::SmapsRollup> smaps_after_60s_;
+  };
+
   PreFreezeBackgroundMemoryTrimmer();
 
-  static std::optional<int64_t> CompactMemory(
-      std::vector<debug::MappedMemoryRegion> regions);
+  void StartSelfCompaction(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                           std::vector<debug::MappedMemoryRegion> regions,
+                           scoped_refptr<CompactionMetric> metric,
+                           uint64_t max_size,
+                           base::TimeTicks started_at);
+  static base::TimeDelta GetDelayBetweenSelfCompaction();
+  void MaybePostSelfCompactionTask(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::vector<debug::MappedMemoryRegion> regions,
+      scoped_refptr<CompactionMetric> metric,
+      uint64_t max_size,
+      base::TimeTicks started_at);
+  void SelfCompactionTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          std::vector<debug::MappedMemoryRegion> regions,
+                          scoped_refptr<CompactionMetric> metric,
+                          uint64_t max_size,
+                          base::TimeTicks started_at);
+  void FinishSelfCompaction(scoped_refptr<CompactionMetric> metric,
+                            base::TimeTicks started_at);
+
+  static bool ShouldContinueSelfCompaction(
+      base::TimeTicks compaction_started_at) LOCKS_EXCLUDED(Instance().lock_);
+
+  static std::optional<uint64_t> CompactMemory(
+      std::vector<debug::MappedMemoryRegion>* regions,
+      const uint64_t max_bytes);
 
   void RegisterMemoryMetricInternal(const PreFreezeMetric* metric)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -212,10 +272,18 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeDelta delay) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void OnPreFreezeInternal() LOCKS_EXCLUDED(lock_);
+  void RunPreFreezeTasks() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void OnSelfFreezeInternal();
+
+  void MaybeCancelSelfCompactionInternal() LOCKS_EXCLUDED(lock_);
 
   void PostMetricsTasksIfModern() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void PostMetricsTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RecordMetrics() LOCKS_EXCLUDED(lock_);
+
+  void RecordSmapsRollup(std::optional<debug::SmapsRollup>* target,
+                         base::TimeTicks started_at);
 
   mutable base::Lock lock_;
   std::deque<std::unique_ptr<BackgroundTask>> background_tasks_
@@ -226,6 +294,17 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // to the "i"th entry in |metrics_|. When there is no pending metrics task,
   // |values_before_| should be empty.
   std::vector<std::optional<uint64_t>> values_before_ GUARDED_BY(lock_);
+  // Whether or not we should continue self compaction. There are two reasons
+  // why we would cancel:
+  // (1) We have resumed, meaning we are likely to touch much of the process
+  //     memory soon, and we do not want to waste CPU time with compaction,
+  //     since it can block other work that needs to be done.
+  // (2) We are going to be frozen by App Freezer, which will do the compaction
+  //     work for us. This situation should be relatively rare, because we
+  //     attempt to not do self compaction if we know that we are going to
+  //     frozen by App Freezer.
+  base::TimeTicks self_compaction_last_cancelled_ GUARDED_BY(lock_) =
+      base::TimeTicks::Min();
   bool supports_modern_trim_;
 };
 

@@ -192,7 +192,7 @@ void SingleThreadProxy::SetLayerTreeFrameSink(
   }
 }
 
-void SingleThreadProxy::SetNeedsAnimate() {
+void SingleThreadProxy::SetNeedsAnimate(bool urgent) {
   TRACE_EVENT0("cc", "SingleThreadProxy::SetNeedsAnimate");
   DCHECK(task_runner_provider_->IsMainThread());
   if (animate_requested_)
@@ -200,7 +200,7 @@ void SingleThreadProxy::SetNeedsAnimate() {
   animate_requested_ = true;
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(urgent);
   layer_tree_host_->OnCommitRequested();
 }
 
@@ -210,7 +210,7 @@ void SingleThreadProxy::SetNeedsUpdateLayers() {
   if (!RequestedAnimatePending()) {
     DebugScopedSetImplThread impl(task_runner_provider_);
     if (scheduler_on_impl_thread_)
-      scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+      scheduler_on_impl_thread_->SetNeedsBeginMainFrame(/* urgent = */ false);
   }
   update_layers_requested_ = true;
 }
@@ -305,7 +305,7 @@ void SingleThreadProxy::SetNeedsCommit() {
   commit_requested_ = true;
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(/* urgent = */ false);
 }
 
 void SingleThreadProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
@@ -461,7 +461,7 @@ void SingleThreadProxy::Stop() {
 }
 
 void SingleThreadProxy::QueueImageDecode(int request_id,
-                                         const PaintImage& image) {
+                                         const DrawImage& image) {
   DCHECK(task_runner_provider_->IsMainThread());
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->QueueImageDecode(request_id, image);
@@ -537,12 +537,12 @@ void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
     scheduler_on_impl_thread_->SetNeedsPrepareTiles();
 }
 
-void SingleThreadProxy::SetNeedsCommitOnImplThread() {
+void SingleThreadProxy::SetNeedsCommitOnImplThread(bool urgent) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(urgent);
   commit_requested_ = true;
 }
 
@@ -667,7 +667,7 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished(
       DebugScopedSetMainThread main_thread(task_runner_provider_);
       IssueImageDecodeFinishedCallbacks();
     } else {
-      SetNeedsCommitOnImplThread();
+      SetNeedsCommitOnImplThread(/* urgent = */ false);
     }
   }
 }
@@ -717,7 +717,7 @@ void SingleThreadProxy::NotifyPaintWorkletStateChange(
   NOTREACHED();
 }
 
-void SingleThreadProxy::NotifyThroughputTrackerResults(
+void SingleThreadProxy::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
@@ -726,7 +726,7 @@ void SingleThreadProxy::NotifyThroughputTrackerResults(
   // destruction. Regardless, `layer_tree_host_` should be accessed from
   // MainThread side.
   DebugScopedSetMainThread main(task_runner_provider_);
-  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
+  layer_tree_host_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 bool SingleThreadProxy::IsInSynchronousComposite() const {
@@ -1172,7 +1172,10 @@ void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
 
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
       layer_tree_host_->TakeBeginMainFrameMetrics();
-  host_impl_->ReadyToCommit(commit_args, true, begin_main_frame_metrics.get());
+  host_impl_->ReadyToCommit(commit_args,
+                            /*scroll_and_viewport_changes_synced=*/true,
+                            begin_main_frame_metrics.get(),
+                            /*commit_timeout=*/false);
 
   // TODO(enne): SingleThreadProxy does not support cancelling commits yet,
   // search for CommitEarlyOutReason::FINISHED_NO_UPDATES inside
@@ -1208,10 +1211,6 @@ DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
 }
 
 DrawResult SingleThreadProxy::ScheduledActionDrawForced() {
-  NOTREACHED();
-}
-
-void SingleThreadProxy::ScheduledActionUpdateDisplayTree() {
   NOTREACHED();
 }
 

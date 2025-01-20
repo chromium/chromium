@@ -15,18 +15,15 @@
 
 namespace {
 void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
-  if (base::FeatureList::IsEnabled(
-          remote_cocoa::features::kFullscreenAlwaysShowTrafficLights)) {
-    [base::apple::ObjCCast<BrowserNativeWidgetWindow>(browser_window)
-        setAlwaysShowTrafficLights:always_show ? YES : NO];
-  }
+  [base::apple::ObjCCast<BrowserNativeWidgetWindow>(browser_window)
+      setAlwaysShowTrafficLights:YES];
 }
 }  // namespace
 
 namespace remote_cocoa {
 
 ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
-    NativeWidgetMacNSWindow* browser_window,
+    BrowserNativeWidgetWindow* browser_window,
     NativeWidgetMacOverlayNSWindow* overlay_window,
     NativeWidgetMacOverlayNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {

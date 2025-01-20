@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_ARCHIVE_VALIDATOR_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_ARCHIVE_VALIDATOR_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

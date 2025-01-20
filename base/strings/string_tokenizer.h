@@ -192,16 +192,15 @@ class StringTokenizerT {
   // returns false if the tokenizer is complete.  This method must be called
   // before calling any of the token* methods.
   bool GetNext() {
-    if (quotes_.empty() && options_ == 0)
+    if (quotes_.empty() && options_ == 0) {
       return QuickGetNext();
-    else
+    } else {
       return FullGetNext();
+    }
   }
 
   // Start iterating through tokens from the beginning of the string.
-  void Reset() {
-    token_end_ = start_pos_;
-  }
+  void Reset() { token_end_ = start_pos_; }
 
   // Returns true if token is a delimiter.  When the tokenizer is constructed
   // with the RETURN_DELIMS option, this method can be used to check if the
@@ -241,8 +240,9 @@ class StringTokenizerT {
   // Skip over any contiguous whitespace characters according to the whitespace
   // policy.
   void SkipWhitespace() {
-    while (token_end_ != end_ && ShouldSkip(*token_end_))
+    while (token_end_ != end_ && ShouldSkip(*token_end_)) {
       ++token_end_;
+    }
   }
 
   // Implementation of GetNext() for when we have no quote characters. We have
@@ -297,8 +297,9 @@ class StringTokenizerT {
         }
 
         // If it's non-empty, or empty tokens were requested, return the token.
-        if (token_begin_ != token_end_ || (options_ & RETURN_EMPTY_TOKENS))
+        if (token_begin_ != token_end_ || (options_ & RETURN_EMPTY_TOKENS)) {
           return true;
+        }
       }
 
       DCHECK(!token_is_delim_);
@@ -319,13 +320,15 @@ class StringTokenizerT {
       token_is_delim_ = true;
       token_begin_ = token_end_;
 
-      if (token_end_ == end_)
+      if (token_end_ == end_) {
         return false;
+      }
 
       // Look at the delimiter.
       ++token_end_;
-      if (options_ & RETURN_DELIMS)
+      if (options_ & RETURN_DELIMS) {
         return true;
+      }
     }
 
     return false;
@@ -358,8 +361,9 @@ class StringTokenizerT {
         state->in_quote = false;
       }
     } else {
-      if (IsDelim(c) || ShouldSkip(c))
+      if (IsDelim(c) || ShouldSkip(c)) {
         return false;
+      }
       state->in_quote = IsQuote(state->quote_char = c);
     }
     return true;

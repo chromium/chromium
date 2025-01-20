@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/av1_builder.h"
+
+#include <iterator>
 
 #include "base/check_op.h"
 
@@ -29,11 +26,20 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   ret.WriteBool(false);  // Disable reduced still picture.
   ret.WriteBool(false);  // No timing info present.
   ret.WriteBool(false);  // No initial display delay.
-  ret.Write(0, 5);       // No operating point.
-  ret.Write(0, 12);  // No scalability information (operating_point_idc[0] = 0)
-  ret.Write(seq_hdr.level, 5);
-  if (seq_hdr.level > 7) {
-    ret.WriteBool(seq_hdr.tier);
+
+  CHECK_LT(seq_hdr.operating_points_cnt_minus_1, kMaxTemporalLayerNum);
+  ret.Write(seq_hdr.operating_points_cnt_minus_1, 5);
+  for (uint8_t i = 0; i <= seq_hdr.operating_points_cnt_minus_1; i++) {
+    if (seq_hdr.operating_points_cnt_minus_1 == 0) {
+      ret.Write(0, 12);  // No scalability information.
+    } else {
+      ret.Write(1, 4);  // Spatial layer 1 should be decoded.
+      ret.Write((1 << (seq_hdr.operating_points_cnt_minus_1 + 1 - i)) - 1, 8);
+    }
+    ret.Write(seq_hdr.level.at(i), 5);
+    if (seq_hdr.level.at(i) > 7) {
+      ret.WriteBool(seq_hdr.tier.at(i));
+    }
   }
 
   ret.Write(seq_hdr.frame_width_bits_minus_1, 4);
@@ -148,10 +154,10 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     for (uint32_t i = 0; i < libgav1::kMaxSegments; i++) {
       for (uint32_t j = 0; j < libgav1::kSegmentFeatureMax; j++) {
         bool feature_enabled = (i < pic_hdr.segment_number &&
-                                (pic_hdr.feature_mask[i] & (1u << j)));
+                                (pic_hdr.feature_mask.at(i) & (1u << j)));
         ret.WriteBool(feature_enabled);
         if (feature_enabled) {
-          int delta_q = pic_hdr.feature_data[i][j];
+          int delta_q = pic_hdr.feature_data.at(i).at(j);
           ret.WriteBool(delta_q < 0);  // Sign bit.
           if (delta_q < 0) {
             delta_q += 2 * (1 << 8);
@@ -167,9 +173,9 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
   }
 
   // Pack loop filter parameters.
-  ret.Write(pic_hdr.filter_level[0], 6);
-  ret.Write(pic_hdr.filter_level[1], 6);
-  if (pic_hdr.filter_level[0] || pic_hdr.filter_level[1]) {
+  ret.Write(pic_hdr.filter_level.at(0), 6);
+  ret.Write(pic_hdr.filter_level.at(1), 6);
+  if (pic_hdr.filter_level.at(0) || pic_hdr.filter_level.at(1)) {
     ret.Write(pic_hdr.filter_level_u, 6);
     ret.Write(pic_hdr.filter_level_v, 6);
   }
@@ -182,10 +188,10 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.Write(2, 2);         // Set CDEF damping minus 3 to 5 - 3.
     ret.Write(3, 2);         // Set cdef_bits to 3.
     for (size_t i = 0; i < (1 << num_planes); i++) {
-      ret.Write(pic_hdr.cdef_y_pri_strength[i], 4);
-      ret.Write(pic_hdr.cdef_y_sec_strength[i], 2);
-      ret.Write(pic_hdr.cdef_uv_pri_strength[i], 4);
-      ret.Write(pic_hdr.cdef_uv_sec_strength[i], 2);
+      ret.Write(pic_hdr.cdef_y_pri_strength.at(i), 4);
+      ret.Write(pic_hdr.cdef_y_sec_strength.at(i), 2);
+      ret.Write(pic_hdr.cdef_uv_pri_strength.at(i), 4);
+      ret.Write(pic_hdr.cdef_uv_sec_strength.at(i), 2);
     }
   }
   ret.WriteBool(true);  // TxMode TX_MODE_SELECT.
@@ -263,8 +269,9 @@ void AV1BitstreamBuilder::PutTrailingBits() {
 }
 
 void AV1BitstreamBuilder::WriteOBUHeader(libgav1::ObuType type,
+                                         bool has_size,
                                          bool extension_flag,
-                                         bool has_size) {
+                                         std::optional<uint8_t> temporal_id) {
   DCHECK_LE(1, type);
   DCHECK_LE(type, 8);
   WriteBool(false);  // forbidden bit must be set to 0.
@@ -272,6 +279,12 @@ void AV1BitstreamBuilder::WriteOBUHeader(libgav1::ObuType type,
   WriteBool(extension_flag);
   WriteBool(has_size);
   WriteBool(false);  // reserved bit must be set to 0.
+  if (extension_flag) {
+    CHECK(temporal_id.has_value());
+    Write(temporal_id.value(), 3);
+    Write(0, 2);  // spatial layer must be zero.
+    Write(0, 3);  // reserved bits must be set to 0.
+  }
 }
 
 // Encode a variable length unsigned integer of up to 4 bytes.

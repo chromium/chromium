@@ -24,6 +24,7 @@
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -782,10 +783,10 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
   auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
 
   std::vector<mojom::ModifierKey> expected_modifier_keys = {
-      mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
-      mojom::ModifierKey::kMeta,      mojom::ModifierKey::kEscape,
-      mojom::ModifierKey::kAlt,       mojom::ModifierKey::kFunction,
-      mojom::ModifierKey::kRightAlt};
+      mojom::ModifierKey::kBackspace,  mojom::ModifierKey::kControl,
+      mojom::ModifierKey::kMeta,       mojom::ModifierKey::kEscape,
+      mojom::ModifierKey::kAlt,        mojom::ModifierKey::kFunction,
+      mojom::ModifierKey::kQuickInsert};
   base::ranges::sort(expected_modifier_keys);
   base::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
@@ -1288,6 +1289,7 @@ class TopRowLayoutCustomTest
       case TopRowActionKey::kAllApplications:
       case TopRowActionKey::kEmojiPicker:
       case TopRowActionKey::kDictation:
+      case TopRowActionKey::kDoNotDisturb:
       case TopRowActionKey::kUnknown:
       case TopRowActionKey::kNone:
         return 0;

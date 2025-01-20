@@ -4,5 +4,8 @@
 
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 
-NSString* const kFakeShareFlowViewControllerIdentifier =
-    @"fake_share_flow_view_controller";
+NSString* const kFakeShareFlowIdentifier = @"fake_share_flow";
+
+NSString* const kFakeManageFlowIdentifier = @"fake_manage_flow";
+
+NSString* const kFakeJoinFlowIdentifier = @"fake_join_flow";

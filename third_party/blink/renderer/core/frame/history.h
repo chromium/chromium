@@ -44,6 +44,7 @@ class KURL;
 class ExceptionState;
 class HistoryItem;
 class ScriptState;
+class ScriptValue;
 class V8ScrollRestoration;
 
 // This class corresponds to the History interface.

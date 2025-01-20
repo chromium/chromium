@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/webauthn/user_actions.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/vector_icon_types.h"

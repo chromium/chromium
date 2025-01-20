@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <optional>
 #include <string>
 
@@ -244,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
                        DontShowMultipleDialogsIfAlreadyShown) {
   base::UserActionTester action_tester;
-  std::u16string titles[] = {u"title1", u"title2"};
+  auto titles = std::to_array<std::u16string>({u"title1", u"title2"});
   base::test::TestFuture<std::optional<std::u16string>> test_future1,
       test_future2;
 

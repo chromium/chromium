@@ -246,15 +246,15 @@ int GetSimpleCacheTrailerPrefetchSize(int hint_size) {
   return kSimpleCacheTrailerPrefetchSpeculativeBytes.Get();
 }
 
-SimpleEntryStat::SimpleEntryStat(base::Time last_used,
-                                 base::Time last_modified,
-                                 const int32_t data_size[],
-                                 const int32_t sparse_data_size)
+SimpleEntryStat::SimpleEntryStat(
+    base::Time last_used,
+    base::Time last_modified,
+    const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
+    const int32_t sparse_data_size)
     : last_used_(last_used),
       last_modified_(last_modified),
-      sparse_data_size_(sparse_data_size) {
-  memcpy(data_size_, data_size, sizeof(data_size_));
-}
+      data_size_(data_size),
+      sparse_data_size_(sparse_data_size) {}
 
 // These size methods all assume the presence of the SHA256 on stream zero,
 // since this version of the cache always writes it. In the read case, it may
@@ -1419,8 +1419,7 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
   }
 
   const char* key_data = header_data.data() + sizeof(*header);
-  base::span<const char> key_span =
-      base::make_span(key_data, header->key_length);
+  base::span key_span(key_data, header->key_length);
   if (base::PersistentHash(base::as_bytes(key_span)) != header->key_hash) {
     RecordSyncOpenResult(cache_type_, OPEN_ENTRY_KEY_HASH_MISMATCH);
     return false;
@@ -1443,7 +1442,7 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
 int SimpleSynchronousEntry::InitializeForOpen(
     BackendFileOperations* file_operations,
     SimpleEntryStat* out_entry_stat,
-    SimpleStreamPrefetchData stream_prefetch_data[2]) {
+    std::array<SimpleStreamPrefetchData, 2>& stream_prefetch_data) {
   DCHECK(!initialized_);
   if (!OpenFiles(file_operations, out_entry_stat)) {
     DLOG(WARNING) << "Could not open platform files for entry.";
@@ -1583,7 +1582,7 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
     BackendFileOperations* file_operations,
     int file_size,
     SimpleEntryStat* out_entry_stat,
-    SimpleStreamPrefetchData stream_prefetch_data[2]) {
+    std::array<SimpleStreamPrefetchData, 2>& stream_prefetch_data) {
   SimpleFileTracker::FileHandle file =
       file_tracker_->Acquire(file_operations, this, SubFileForFileIndex(0));
   if (!file.IsOK())

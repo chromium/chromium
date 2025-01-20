@@ -63,8 +63,13 @@ class AsyncCheckTracker
   // Caveat: This class only tracks committed navigation ids for a
   // certain period, so this function may not return the correct result if the
   // navigation associated with the `resource` is too old.
-  static bool IsMainPageLoadPending(
+  static bool IsMainPageResourceLoadPending(
       const security_interstitials::UnsafeResource& resource);
+
+  static bool IsMainPageLoadPending(
+      const security_interstitials::UnsafeResourceLocator& rfh_locator,
+      const std::optional<int64_t>& navigation_id,
+      safe_browsing::SBThreatType threat_type);
 
   // Returns the timestamp when the navigation associated with `resource` is
   // committed. Returns nullopt if the navigation has not committed.

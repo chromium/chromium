@@ -89,6 +89,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLegacyCookieAccessAllowedForDomains,
          ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedDefaultLegacyCookieScope,
+         ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLegacyCookieScopeForDomains,
+         ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedSerialAskForUrls, ContentSettingsType::SERIAL_GUARD,
          CONTENT_SETTING_ASK},
         {prefs::kManagedSerialBlockedForUrls, ContentSettingsType::SERIAL_GUARD,
@@ -136,6 +140,16 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
          CONTENT_SETTING_BLOCK},
+#if BUILDFLAG(IS_CHROMEOS)
+        {prefs::kManagedSmartCardConnectAllowedForUrls,
+         ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedSmartCardConnectBlockedForUrls,
+         ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_BLOCK},
+#endif
+        {prefs::kManagedControlledFrameAllowedForUrls,
+         ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedControlledFrameBlockedForUrls,
+         ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -188,6 +202,12 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedDirectSocketsBlockedForUrls,
     prefs::kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls,
     prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
+#if BUILDFLAG(IS_CHROMEOS)
+    prefs::kManagedSmartCardConnectAllowedForUrls,
+    prefs::kManagedSmartCardConnectBlockedForUrls,
+#endif
+    prefs::kManagedControlledFrameAllowedForUrls,
+    prefs::kManagedControlledFrameBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -223,6 +243,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebPrintingSetting,
     prefs::kManagedDefaultDirectSocketsSetting,
     prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting,
+    prefs::kManagedDefaultControlledFrameSetting,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
@@ -336,6 +357,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultDirectSocketsSetting},
         {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
          prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting},
+        {ContentSettingsType::CONTROLLED_FRAME,
+         prefs::kManagedDefaultControlledFrameSetting},
 };
 
 // static
@@ -431,6 +454,17 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
                 << original_pattern_str;
         continue;
       }
+
+#if BUILDFLAG(IS_CHROMEOS)
+      if (entry.content_type == ContentSettingsType::SMART_CARD_GUARD &&
+          entry.setting == CONTENT_SETTING_ALLOW &&
+          !pattern_pair.first.MatchesSingleOrigin()) {
+        VLOG(1) << "Smart card reader access cannot be allowed by wildcard, "
+                   "skipping pattern "
+                << original_pattern_str;
+        continue;
+      }
+#endif
 
       DCHECK_NE(entry.content_type,
                 ContentSettingsType::AUTO_SELECT_CERTIFICATE);

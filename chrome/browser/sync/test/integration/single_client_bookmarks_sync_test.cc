@@ -2322,7 +2322,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
 class SingleClientBookmarksWithAccountStorageSyncTest
     : public SingleClientBookmarksSyncTest {
  public:
-  SingleClientBookmarksWithAccountStorageSyncTest() {}
+  SingleClientBookmarksWithAccountStorageSyncTest() = default;
 
   SingleClientBookmarksWithAccountStorageSyncTest(
       const SingleClientBookmarksWithAccountStorageSyncTest&) = delete;

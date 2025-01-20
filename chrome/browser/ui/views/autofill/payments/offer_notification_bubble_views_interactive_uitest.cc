@@ -25,7 +25,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/search/ntp_features.h"
@@ -85,8 +85,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     switch (test_offer_type_) {
       case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
         ShowBubbleForCardLinkedOfferAndVerify();
-        break;
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
         break;
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         ShowBubbleForGPayPromoCodeOfferAndVerify();
@@ -149,8 +147,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         return "CardLinkedOffer";
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         return "GPayPromoCodeOffer";
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
-        return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
     }

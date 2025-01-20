@@ -131,10 +131,12 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
   ImageMeasures measures;
 
   measures.phdrs_required = 1 + load_segments_.size();
-  if (!note_contents_.empty())
+  if (!note_contents_.empty()) {
     ++measures.phdrs_required;
-  if (soname_.has_value())
+  }
+  if (soname_.has_value()) {
     ++measures.phdrs_required;
+  }
 
   // The current offset into the image, where the next bytes are to be written.
   // Starts after the ELF header.
@@ -146,10 +148,12 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
 
   // Add space for the notes.
   measures.note_start = offset;
-  if (!note_contents_.empty())
+  if (!note_contents_.empty()) {
     offset = bits::AlignUp(offset, kNoteAlign);
-  for (const std::vector<uint8_t>& contents : note_contents_)
+  }
+  for (const std::vector<uint8_t>& contents : note_contents_) {
     offset += contents.size();
+  }
   measures.note_size = offset - measures.note_start;
 
   // Add space for the load segments.
@@ -172,8 +176,9 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
 
   // Add space for the string table.
   ++offset;  // The first string table byte holds a null character.
-  if (soname_)
+  if (soname_) {
     offset += soname_->size() + 1;
+  }
 
   measures.total_size = offset;
 
@@ -209,8 +214,9 @@ TestElfImage TestElfImageBuilder::Build() {
     size_t size = load_segment.size;
     // The first non PT_PHDR program header is expected to be a PT_LOAD and
     // encompass all the preceding headers.
-    if (i == 0)
+    if (i == 0) {
       size += loc - elf_start;
+    }
     loc = AppendHdr(CreatePhdr(PT_LOAD, load_segment.flags, kLoadAlign,
                                measures.load_segment_start[i],
                                GetVirtualAddressForOffset(
@@ -243,8 +249,9 @@ TestElfImage TestElfImageBuilder::Build() {
 
   // Add the load segments.
   for (auto it = load_segments_.begin(); it != load_segments_.end(); ++it) {
-    if (it != load_segments_.begin())
+    if (it != load_segments_.begin()) {
       loc = bits::AlignUp(loc, kLoadAlign);
+    }
     memset(loc, 0, it->size);
     loc += it->size;
   }

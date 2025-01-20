@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Defines system GUIDs used in this binary to prevent linking errors.
+// Defines system GUIDs used in this binary.
 
-#define INITGUID
+#include <initguid.h>
 
-#include "chrome/credential_provider/gaiacp/stdafx.h"
+#include <credentialprovider.h>

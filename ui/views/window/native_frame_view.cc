@@ -38,8 +38,9 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with
   // empty size.
   gfx::Rect window_bounds = client_bounds;
-  if (window_bounds.IsEmpty())
+  if (window_bounds.IsEmpty()) {
     window_bounds.set_size(gfx::Size(1, 1));
+  }
   return window_bounds;
 #endif
 }

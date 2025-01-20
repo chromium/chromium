@@ -158,9 +158,7 @@ ui::ColorId GetLabelColorId(SearchResultView::LabelType label_type,
 
   switch (color_tag) {
     case SearchResult::Tag::NONE:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
       switch (label_type) {
         case SearchResultView::LabelType::kBigTitle:
@@ -206,7 +204,7 @@ std::optional<TypographyToken> GetTypographyToken(
       if (is_inline_detail) {
         return TypographyToken::kCrosBody1;
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case SearchResultView::LabelType::kKeyboardShortcut:
       return TypographyToken::kCrosAnnotation1;
   }
@@ -617,6 +615,8 @@ SearchResultView::SearchResultView(
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kSearchRatingStarPadding, 0, 0)));
+  rating_star_->SetImage(ui::ImageModel::FromVectorIcon(
+      kBadgeRatingIcon, kColorAshTextColorSecondary, kSearchRatingStarSize));
 
   keyboard_shortcut_container_ = body_text_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -972,7 +972,8 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
             kSearchListHostBadgeContainerDimension / 2, background_color,
             std::move(resized_badge_icon_image));
-    badge_icon_view_->SetImage(std::move(badge_icon_with_background));
+    badge_icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(std::move(badge_icon_with_background)));
   } else {
     // Badge icon that isn't part of App Shortcuts or using background needs
     // to add shadows.
@@ -985,7 +986,8 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
     gfx::ImageSkia badge_icon_with_shadow =
         gfx::ImageSkiaOperations::CreateImageWithDropShadow(
             std::move(resized_badge_icon_image), std::move(shadow_values));
-    badge_icon_view_->SetImage(std::move(badge_icon_with_shadow));
+    badge_icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(std::move(badge_icon_with_shadow)));
   }
 }
 
@@ -1467,9 +1469,6 @@ void SearchResultView::OnMouseExited(const ui::MouseEvent& event) {
 void SearchResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateIconAndBadgeIcon();
-  rating_star_->SetImage(gfx::CreateVectorIcon(
-      kBadgeRatingIcon, kSearchRatingStarSize,
-      GetColorProvider()->GetColor(kColorAshTextColorSecondary)));
   SchedulePaint();
 }
 
@@ -1522,7 +1521,7 @@ void SearchResultView::SetIconImage(const gfx::ImageSkia& source,
   gfx::ImageSkia image(source);
   image = gfx::ImageSkiaOperations::CreateResizedImage(
       source, skia::ImageOperations::RESIZE_BEST, size);
-  icon->SetImage(image);
+  icon->SetImage(ui::ImageModel::FromImageSkia(image));
   icon->SetImageSize(size);
 }
 

@@ -47,6 +47,17 @@ message SafetyCategoryThreshold {
   optional float threshold = 3;
 }
 
+message LanguageCheck {
+  // Requires one of the allowed languages was detected with at least this level
+  // of confidence. If this value is 0 or unset, language results will be
+  // ignored.
+  optional double confidence_threshold = 1;
+
+  // An alternative threshold used when checking incomplete model output.
+  // If unspecified, the same threshold is used for all checks.
+  optional double partial_threshold = 2;
+}
+
 message RequestSafetyCheck {
   // How to generate input for the text safety check from the request message.
   repeated SubstitutedString input_template = 1;
@@ -59,7 +70,21 @@ message RequestSafetyCheck {
   optional bool check_language_only = 3;
 
   // Whether to ignore the language result of the safety check.
+  // Exclusive with "check_language_only" and "language_check".
   optional bool ignore_language_result = 4;
+
+  // Specify a requirement on the output language.
+  // If neither "language_check" nor "ignore_language_result" is specified, the
+  // language will be checked with a default threshold.
+  optional LanguageCheck language_check = 5;
+}
+
+message PartialOutputChecks {
+  // The minimum number of tokens required to evaluate partial output safety.
+  optional uint32 minimum_tokens = 1;
+
+  // The minimum number of tokens required between partial outputs.
+  optional uint32 token_interval = 2;
 }
 
 message RawOutputCheck {
@@ -67,6 +92,10 @@ message RawOutputCheck {
   // Should be written against a google.protobuf.StringValue proto with the raw
   // output.
   repeated SubstitutedString input_template = 1;
+
+  // Specify a requirement on the output language.
+  // If unspecified, the language will be checked with a default threshold.
+  optional LanguageCheck language_check = 2;
 }
 
 message ResponseSafetyCheck {
@@ -80,6 +109,11 @@ message ResponseSafetyCheck {
 
   // Whether to ignore the language result of the safety check.
   optional bool ignore_language_result = 3;
+
+  // Specify a requirement on the output language.
+  // If neither "language_check" nor "ignore_language_result" is specified, the
+  // language will be checked with a default threshold.
+  optional LanguageCheck language_check = 4;
 }
 
 message FeatureTextSafetyConfiguration {
@@ -96,9 +130,19 @@ message FeatureTextSafetyConfiguration {
   // Safety checks to run on the feature request message.
   repeated RequestSafetyCheck request_check = 4;
 
+  // Configures when and how partial outputs are checked.
+  // If unspecified, all partial outputs are suppressed, and only completed
+  // outputs will be checked / returned to the feature code.
+  optional PartialOutputChecks partial_output_checks = 8;
+
   // Configures the checks to run on raw model output.
   optional RawOutputCheck raw_output_check = 5;
 
   // Configures check that run on parsed model output, with request as context.
   repeated ResponseSafetyCheck response_check = 6;
+
+  // When enabled, the unsafe text does not cancel a pending response, but
+  // instead just doesn't send it until it is safe again. If the text is still
+  // unsafe on complete, then it cancels the pending response.
+  optional bool only_cancel_unsafe_response_on_complete = 7;
 }

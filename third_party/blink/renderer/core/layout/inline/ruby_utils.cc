@@ -235,7 +235,11 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   if (previous_item.item->Style()->FontSize() > ruby_style.FontSize()) {
     return false;
   }
-  start_overhang = std::min(start_overhang, previous_item.inline_size);
+  LayoutUnit text_inline_size = previous_item.inline_size;
+  if (RuntimeEnabledFeatures::RubyOverhangOverlapFixEnabled()) {
+    text_inline_size = text_inline_size / 2;
+  }
+  start_overhang = std::min(start_overhang, text_inline_size);
   return true;
 }
 
@@ -275,9 +279,13 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   // width of the InlineItem's ShapeResult. However it's impossible to compute
   // inline_size of |text_item| before calling BreakText(), and BreakText()
   // requires precise |position_| which takes |end_overhang| into account.
+  LayoutUnit text_inline_size =
+      LayoutUnit(text_item.TextShapeResult()->Width());
+  if (RuntimeEnabledFeatures::RubyOverhangOverlapFixEnabled()) {
+    text_inline_size = text_inline_size / 2;
+  }
   LayoutUnit end_overhang =
-      std::min(column_item.pending_end_overhang,
-               LayoutUnit(text_item.TextShapeResult()->Width()));
+      std::min(column_item.pending_end_overhang, text_inline_size);
   InlineItemResult& end_item =
       column_item.ruby_column->base_line.MutableResults()->back();
   DCHECK_EQ(end_item.item->Type(), InlineItem::kRubyLinePlaceholder);

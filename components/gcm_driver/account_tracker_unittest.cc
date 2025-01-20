@@ -11,8 +11,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,7 +25,7 @@ class TrackingEvent {
  public:
   TrackingEvent(TrackingEventType type,
                 const CoreAccountId& account_id,
-                const std::string& gaia_id)
+                const GaiaId& gaia_id)
       : type_(type), account_id_(account_id), gaia_id_(gaia_id) {}
 
   TrackingEvent(TrackingEventType type, const CoreAccountInfo& account_info)
@@ -49,7 +49,8 @@ class TrackingEvent {
         break;
     }
     return base::StringPrintf("{ type: %s, account_id: %s, gaia: %s }", typestr,
-                              account_id_.ToString().c_str(), gaia_id_.c_str());
+                              account_id_.ToString().c_str(),
+                              gaia_id_.ToString().c_str());
   }
 
  private:
@@ -57,7 +58,7 @@ class TrackingEvent {
 
   TrackingEventType type_;
   CoreAccountId account_id_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
 };
 
 bool CompareByUser(TrackingEvent a, TrackingEvent b) {
@@ -268,7 +269,7 @@ class AccountTrackerTest : public testing::Test {
 // the underlying GoogleSignedOut callback is never sent). Tests that exercise
 // functionality dependent on that callback firing are not relevant on ChromeOS
 // and should simply not run on that platform.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void NotifyLogoutOfAllAccounts() { identity_test_env_.ClearPrimaryAccount(); }
 #endif
 
@@ -310,7 +311,7 @@ TEST_F(AccountTrackerTest, PrimaryNoEventsBeforeLogin) {
   NotifyTokenRevoked(account.account_id);
 
 // Logout is not possible on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   NotifyLogoutOfAllAccounts();
 #endif
 
@@ -344,7 +345,7 @@ TEST_F(AccountTrackerTest, PrimaryRevokeThenTokenAvailable) {
 }
 
 // These tests exercise true login/logout, which are not possible on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerTest, PrimaryTokenAvailableThenLogin) {
   AddAccountWithToken(kPrimaryAccountEmail);
   EXPECT_TRUE(observer()->CheckEvents());
@@ -457,7 +458,7 @@ TEST_F(AccountTrackerTest, MultiNoEventsBeforeLogin) {
   NotifyTokenRevoked(account2.account_id);
 
 // Logout is not possible on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   NotifyLogoutOfAllAccounts();
 #endif
 
@@ -524,7 +525,7 @@ TEST_F(AccountTrackerTest, GetAccountsReturnNothingWhenPrimarySignedOut) {
 }
 
 // This test exercises true login/logout, which are not possible on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerTest, MultiLogoutRemovesAllAccounts) {
   CoreAccountInfo primary_account = SetActiveAccount(kPrimaryAccountEmail);
   NotifyTokenAvailable(primary_account.account_id);

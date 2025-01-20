@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -51,6 +50,8 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.util.Set;
 
 /**
  * Tests for the "Passwords" settings screen. These tests are not batchable (without significant
@@ -416,12 +417,8 @@ public class PasswordSettingsTest {
                                     usingCustomPassphrase
                                             ? PassphraseType.CUSTOM_PASSPHRASE
                                             : PassphraseType.KEYSTORE_PASSPHRASE);
-                    when(mMockSyncService.getActiveDataTypes())
-                            .thenReturn(
-                                    CollectionUtil.newHashSet(
-                                            syncingPasswords
-                                                    ? DataType.PASSWORDS
-                                                    : DataType.AUTOFILL));
+                    Integer elements = syncingPasswords ? DataType.PASSWORDS : DataType.AUTOFILL;
+                    when(mMockSyncService.getActiveDataTypes()).thenReturn(Set.of(elements));
                 });
     }
 }

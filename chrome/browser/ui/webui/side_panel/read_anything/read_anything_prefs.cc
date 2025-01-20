@@ -37,16 +37,9 @@ void RegisterReadAnythingProfilePrefs(
     // TODO(crbug.com/40927698): When we release on multiple platforms, add
     // separate prefs for voices on each platform since they're not always
     // the same on every platform.
-    if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-      registry->RegisterDictionaryPref(
-          prefs::kAccessibilityReadAnythingVoiceName, base::Value::Dict(),
-          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    } else {
-      registry->RegisterStringPref(
-          prefs::kAccessibilityReadAnythingVoiceName,
-          string_constants::kReadAnythingPlaceholderVoiceName,
-          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    }
+    registry->RegisterDictionaryPref(
+        prefs::kAccessibilityReadAnythingVoiceName, base::Value::Dict(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterDoublePref(
         prefs::kAccessibilityReadAnythingSpeechRate,
         kReadAnythingDefaultSpeechRate,

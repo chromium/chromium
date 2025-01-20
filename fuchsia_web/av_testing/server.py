@@ -8,25 +8,32 @@ import http.server
 import logging
 import os
 import socketserver
-import sys
+
+
+VIDEO_DIR = '/usr/local/cipd/videostack_videos_30s'
 
 
 class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
 
 
-Handler = http.server.SimpleHTTPRequestHandler
+class Handler(http.server.SimpleHTTPRequestHandler):
+    extensions_map = {
+        '.html': 'text/html',
+        '': 'application/octet-stream',
+    }
 
-Handler.extensions_map = {
-    '.html': 'text/html',
-    '': 'application/octet-stream',
-}
-
-DIR = os.path.dirname(__file__)
+    def translate_path(self, path):
+        prefix = '/videos/'
+        if path.startswith(prefix):
+            return os.path.join(VIDEO_DIR, path[len(prefix):])
+        return http.server.SimpleHTTPRequestHandler.translate_path(self, path)
 
 
 def start(port: int) -> None:
     with ThreadedHTTPServer(("", port), Handler) as httpd:
-        os.chdir(DIR)
-        logging.warning('Http server is running on port %s at %s', port, DIR)
+        root_dir = os.path.dirname(__file__)
+        os.chdir(root_dir)
+        logging.warning('Http server is running on port %s at %s', port,
+                        root_dir)
         httpd.serve_forever()

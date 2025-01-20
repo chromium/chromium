@@ -53,9 +53,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
 
   image_ = image;
   image_->AddObserver(this);
-  // ResourceFetcher is not determined from StyleFetchedImage and it is
-  // impossible to send a request for refetching.
-  image_->SetNotRefetchableDataFromDiskCache();
 }
 
 StyleFetchedImage::~StyleFetchedImage() = default;
@@ -117,7 +114,7 @@ CSSValue* StyleFetchedImage::ComputedCSSValue(const ComputedStyle&,
 }
 
 bool StyleFetchedImage::CanRender() const {
-  return !image_->ErrorOccurred() && !image_->GetImage()->IsNull();
+  return image_->HasImage() && !image_->ErrorOccurred();
 }
 
 bool StyleFetchedImage::IsLoaded() const {
@@ -173,17 +170,17 @@ gfx::SizeF StyleFetchedImage::ImageSize(
   return ApplyZoom(size, multiplier);
 }
 
-IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   Image& image = *image_->GetImage();
-  IntrinsicSizingInfo intrinsic_sizing_info;
+  NaturalSizingInfo intrinsic_sizing_info;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
                                                     intrinsic_sizing_info)) {
-      intrinsic_sizing_info = IntrinsicSizingInfo::None();
+      intrinsic_sizing_info = NaturalSizingInfo::None();
     }
   } else {
     gfx::SizeF size(
@@ -201,7 +198,7 @@ IntrinsicSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
 bool StyleFetchedImage::HasIntrinsicSize() const {
   Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    IntrinsicSizingInfo intrinsic_sizing_info;
+    NaturalSizingInfo intrinsic_sizing_info;
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
     if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
@@ -298,6 +295,10 @@ bool StyleFetchedImage::GetImageAnimationPolicy(
   }
   policy = document_->GetSettings()->GetImageAnimationPolicy();
   return true;
+}
+
+bool StyleFetchedImage::CanBeSpeculativelyDecoded() const {
+  return false;
 }
 
 void StyleFetchedImage::Trace(Visitor* visitor) const {

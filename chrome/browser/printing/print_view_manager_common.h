@@ -20,7 +20,7 @@ namespace printing {
 // Start printing using the appropriate PrintViewManagerBase subclass.
 // Optionally provide a printing::mojom::PrintRenderer to render print
 // documents.
-void StartPrint(
+bool StartPrint(
     content::WebContents* web_contents,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,

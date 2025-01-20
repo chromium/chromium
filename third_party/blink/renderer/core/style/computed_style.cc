@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_non_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
+#include "third_party/blink/renderer/core/style/style_shape.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -523,71 +524,6 @@ StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
   // The auto keyword computes to the parent's justify-items computed value.
   return ResolvedSelfAlignment(parent_style->JustifyItems(),
                                normal_value_behavior, HasOutOfFlowPosition());
-}
-
-StyleContentAlignmentData ResolvedContentAlignment(
-    const StyleContentAlignmentData& value,
-    const StyleContentAlignmentData& normal_behaviour) {
-  return (value.GetPosition() == ContentPosition::kNormal &&
-          value.Distribution() == ContentDistributionType::kDefault)
-             ? normal_behaviour
-             : value;
-}
-
-StyleContentAlignmentData ComputedStyle::ResolvedAlignContent(
-    const StyleContentAlignmentData& normal_behaviour) const {
-  // We will return the behaviour of 'normal' value if needed, which is specific
-  // of each layout model.
-  return ResolvedContentAlignment(AlignContent(), normal_behaviour);
-}
-
-StyleContentAlignmentData ComputedStyle::ResolvedJustifyContent(
-    const StyleContentAlignmentData& normal_behaviour) const {
-  // We will return the behaviour of 'normal' value if needed, which is specific
-  // of each layout model.
-  return ResolvedContentAlignment(JustifyContent(), normal_behaviour);
-}
-
-static inline ContentPosition ResolvedContentAlignmentPosition(
-    const StyleContentAlignmentData& value,
-    const StyleContentAlignmentData& normal_value_behavior) {
-  return (value.GetPosition() == ContentPosition::kNormal &&
-          value.Distribution() == ContentDistributionType::kDefault)
-             ? normal_value_behavior.GetPosition()
-             : value.GetPosition();
-}
-
-static inline ContentDistributionType ResolvedContentAlignmentDistribution(
-    const StyleContentAlignmentData& value,
-    const StyleContentAlignmentData& normal_value_behavior) {
-  return (value.GetPosition() == ContentPosition::kNormal &&
-          value.Distribution() == ContentDistributionType::kDefault)
-             ? normal_value_behavior.Distribution()
-             : value.Distribution();
-}
-
-ContentPosition ComputedStyle::ResolvedJustifyContentPosition(
-    const StyleContentAlignmentData& normal_value_behavior) const {
-  return ResolvedContentAlignmentPosition(JustifyContent(),
-                                          normal_value_behavior);
-}
-
-ContentDistributionType ComputedStyle::ResolvedJustifyContentDistribution(
-    const StyleContentAlignmentData& normal_value_behavior) const {
-  return ResolvedContentAlignmentDistribution(JustifyContent(),
-                                              normal_value_behavior);
-}
-
-ContentPosition ComputedStyle::ResolvedAlignContentPosition(
-    const StyleContentAlignmentData& normal_value_behavior) const {
-  return ResolvedContentAlignmentPosition(AlignContent(),
-                                          normal_value_behavior);
-}
-
-ContentDistributionType ComputedStyle::ResolvedAlignContentDistribution(
-    const StyleContentAlignmentData& normal_value_behavior) const {
-  return ResolvedContentAlignmentDistribution(AlignContent(),
-                                              normal_value_behavior);
 }
 
 bool ComputedStyle::operator==(const ComputedStyle& o) const {
@@ -1741,6 +1677,13 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       case BasicShape::kStylePathType: {
         const StylePath& path = To<StylePath>(basic_shape);
         path_position = CalculatePointAndTangentOnPath(path.GetPath());
+        break;
+      }
+      case BasicShape::kStyleShapeType: {
+        const StyleShape& shape = To<StyleShape>(basic_shape);
+        Path path;
+        shape.GetPath(path, bounding_box, EffectiveZoom());
+        path_position = CalculatePointAndTangentOnPath(path);
         break;
       }
       case BasicShape::kStyleRayType: {

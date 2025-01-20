@@ -9,8 +9,10 @@ import "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom
 import "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
-// Keep in sync with SecureChannelConnectionAttemptFailureReason in
-// tools/metrics/histograms/enums.xml
+// Keep in sync with SecureChannelConnectionAttemptFailureReason UMA enum
+// defined in //tools/metrics/histograms/enums.xml.
+//
+// LINT.IfChange(SecureChannelConnectionAttemptFailureReason)
 enum ConnectionAttemptFailureReason {
   // The local device could not authenticate with the remote device. This likely
   // means that one (or both) devices have not synced their keys recently.
@@ -69,6 +71,7 @@ enum ConnectionAttemptFailureReason {
   // The attempt was intentionally interrupted.
   CONNECTION_CANCELLED = 15,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SecureChannelConnectionAttemptFailureReason)
 
 enum ConnectionCreationDetail {
   REMOTE_DEVICE_USED_BACKGROUND_BLE_ADVERTISING,

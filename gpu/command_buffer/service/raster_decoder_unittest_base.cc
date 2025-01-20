@@ -81,7 +81,6 @@ void RasterDecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void RasterDecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void RasterDecoderTestBase::OnDescheduleUntilFinished() {}
 void RasterDecoderTestBase::OnRescheduleAfterFinished() {}
-void RasterDecoderTestBase::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 bool RasterDecoderTestBase::ShouldYield() {
   return false;
 }

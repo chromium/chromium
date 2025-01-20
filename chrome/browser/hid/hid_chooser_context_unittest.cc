@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <array>
 #include <optional>
 #include <string_view>
 
@@ -32,6 +33,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension_features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -56,8 +58,8 @@ constexpr uint16_t kTestVendorId = 0x1234;
 constexpr uint16_t kTestProductId = 0xabcd;
 constexpr char kTestSerialNumber[] = "serial-number";
 constexpr char kTestProductName[] = "product-name";
-const char* const kTestPhysicalDeviceIds[] = {"physical-device-id-1",
-                                              "physical-device-id-2"};
+const auto kTestPhysicalDeviceIds = std::to_array<const char*>(
+    {"physical-device-id-1", "physical-device-id-2"});
 constexpr char kTestUserEmail[] = "user@example.com";
 
 // The HID usages assigned to the top-level collection of the simulated device.
@@ -79,7 +81,7 @@ class HidChooserContextTestBase {
     auto* profile_name = kTestUserEmail;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (login_user) {
-      constexpr char kTestUserGaiaId[] = "1111111111";
+      const GaiaId kTestUserGaiaId("1111111111");
       auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
       auto* fake_user_manager_ptr = fake_user_manager.get();
       scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

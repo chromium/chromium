@@ -12,9 +12,15 @@
 
 namespace blink {
 
-StyleCrossfadeImage::StyleCrossfadeImage(cssvalue::CSSCrossfadeValue& value,
-                                         HeapVector<Member<StyleImage>> images)
-    : original_value_(value), images_(std::move(images)) {
+StyleCrossfadeImage::StyleCrossfadeImage(
+    cssvalue::CSSCrossfadeValue& value,
+    HeapVector<Member<StyleImage>> images,
+    const CSSLengthResolver& length_resolver)
+    : original_value_(value),
+      images_(std::move(images)),
+      weights_(ComputeWeights(length_resolver, /*for_sizing=*/false)),
+      weights_for_sizing_(
+          ComputeWeights(length_resolver, /*for_sizing=*/true)) {
   is_crossfade_ = true;
 }
 
@@ -49,7 +55,7 @@ CSSValue* StyleCrossfadeImage::ComputedCSSValue(
         original_value_->GetImagesAndPercentages()[i].second;
     if (percentage && !percentage->IsNumericLiteralValue()) {
       // https://drafts.csswg.org/css-cascade-5/#computed-value
-      double val = ClampTo<double>(percentage->GetDoubleValue(), 0.0, 100.0);
+      double val = ClampTo<double>(weights_[i] * 100.0, 0.0, 100.0);
       percentage = CSSNumericLiteralValue::Create(
           val, CSSPrimitiveValue::UnitType::kPercentage);
     }
@@ -109,15 +115,15 @@ static bool ParticipatesInSizing(const StyleImage& image) {
 }
 
 // https://drafts.csswg.org/css-images-4/#cross-fade-sizing
-IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
+NaturalSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   if (AnyImageIsNone()) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   }
 
   // TODO(fs): Consider `respect_orientation`?
-  Vector<IntrinsicSizingInfo> sizing_info;
+  Vector<NaturalSizingInfo> sizing_info;
   for (StyleImage* image : images_) {
     if (ParticipatesInSizing(*image)) {
       sizing_info.push_back(
@@ -127,7 +133,7 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
 
   // Degenerate cases.
   if (sizing_info.empty()) {
-    return IntrinsicSizingInfo::None();
+    return NaturalSizingInfo::None();
   } else if (sizing_info.size() == 1) {
     return sizing_info[0];
   }
@@ -136,7 +142,7 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
   const bool all_equal = std::ranges::all_of(
       base::span(sizing_info).subspan(1u),
       [first_sizing_info{sizing_info[0]}](
-          const IntrinsicSizingInfo& sizing_info) {
+          const NaturalSizingInfo& sizing_info) {
         return sizing_info.size == first_sizing_info.size &&
                sizing_info.aspect_ratio == first_sizing_info.aspect_ratio &&
                sizing_info.has_width == first_sizing_info.has_width &&
@@ -146,16 +152,15 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
     return sizing_info[0];
   }
 
-  const std::vector<float> weights = ComputeWeights(/*for_sizing=*/true);
-  IntrinsicSizingInfo result_sizing_info;
+  NaturalSizingInfo result_sizing_info;
   result_sizing_info.size = gfx::SizeF(0.0f, 0.0f);
   result_sizing_info.has_width = false;
   result_sizing_info.has_height = false;
-  DCHECK_EQ(weights.size(), sizing_info.size());
+  DCHECK_EQ(weights_for_sizing_.size(), sizing_info.size());
   for (unsigned i = 0; i < sizing_info.size(); ++i) {
     result_sizing_info.size +=
-        gfx::SizeF(sizing_info[i].size.width() * weights[i],
-                   sizing_info[i].size.height() * weights[i]);
+        gfx::SizeF(sizing_info[i].size.width() * weights_for_sizing_[i],
+                   sizing_info[i].size.height() * weights_for_sizing_[i]);
     result_sizing_info.has_width |= sizing_info[i].has_width;
     result_sizing_info.has_height |= sizing_info[i].has_height;
   }
@@ -202,12 +207,11 @@ gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
     return image_sizes[0];
   }
 
-  const std::vector<float> weights = ComputeWeights(/*for_sizing=*/true);
   gfx::SizeF size(0.0f, 0.0f);
-  DCHECK_EQ(weights.size(), image_sizes.size());
+  DCHECK_EQ(weights_for_sizing_.size(), image_sizes.size());
   for (unsigned i = 0; i < image_sizes.size(); ++i) {
-    size += gfx::SizeF(image_sizes[i].width() * weights[i],
-                       image_sizes[i].height() * weights[i]);
+    size += gfx::SizeF(image_sizes[i].width() * weights_for_sizing_[i],
+                       image_sizes[i].height() * weights_for_sizing_[i]);
   }
   return size;
 }
@@ -261,14 +265,13 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
   const ImageResourceObserver* proxy_observer =
       original_value_->GetObserverProxy();
 
-  const std::vector<float> weights = ComputeWeights(/*for_sizing=*/false);
   Vector<CrossfadeGeneratedImage::WeightedImage> images;
-  DCHECK_EQ(images_.size(), weights.size());
+  DCHECK_EQ(images_.size(), weights_.size());
   for (unsigned i = 0; i < images_.size(); ++i) {
     scoped_refptr<Image> image =
         images_[i]->GetImage(*proxy_observer, document, style, target_size);
     images.push_back(
-        CrossfadeGeneratedImage::WeightedImage{std::move(image), weights[i]});
+        CrossfadeGeneratedImage::WeightedImage{std::move(image), weights_[i]});
   }
   return CrossfadeGeneratedImage::Create(std::move(images), resolved_size);
 }
@@ -291,8 +294,10 @@ bool StyleCrossfadeImage::KnownToBeOpaque(const Document& document,
 // “If any percentages are omitted, all the specified percentages are summed
 // together and subtracted from 100%, the result is floored at 0%, then divided
 // equally between all images with omitted percentages at computed-value time.”
-std::vector<float> StyleCrossfadeImage::ComputeWeights(bool for_sizing) const {
-  std::vector<float> result;
+HeapVector<float> StyleCrossfadeImage::ComputeWeights(
+    const CSSLengthResolver& length_resolver,
+    bool for_sizing) const {
+  HeapVector<float> result;
   float sum = 0.0f;
   int num_missing = 0;
 
@@ -304,11 +309,8 @@ std::vector<float> StyleCrossfadeImage::ComputeWeights(bool for_sizing) const {
     if (percentage == nullptr) {
       result.push_back(0.0 / 0.0);  // NaN.
       ++num_missing;
-    } else if (percentage->IsPercentage()) {
-      result.push_back(percentage->GetFloatValue() / 100.0);
-      sum += result.back();
     } else {
-      result.push_back(percentage->GetFloatValue());
+      result.push_back(percentage->ComputeNumber(length_resolver));
       sum += result.back();
     }
   }
@@ -344,6 +346,8 @@ std::vector<float> StyleCrossfadeImage::ComputeWeights(bool for_sizing) const {
 void StyleCrossfadeImage::Trace(Visitor* visitor) const {
   visitor->Trace(original_value_);
   visitor->Trace(images_);
+  visitor->Trace(weights_);
+  visitor->Trace(weights_for_sizing_);
   StyleImage::Trace(visitor);
 }
 

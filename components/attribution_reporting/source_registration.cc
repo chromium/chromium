@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -26,7 +25,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -165,9 +163,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
                    AggregatableNamedBudgetDefs::FromJSON(
                        registration.Find(kAggregatableNamedBudgets)));
 
-  if (base::Value* scopes_value = registration.Find(kAttributionScopes);
-      scopes_value &&
-      base::FeatureList::IsEnabled(features::kAttributionScopes)) {
+  if (base::Value* scopes_value = registration.Find(kAttributionScopes)) {
     ASSIGN_OR_RETURN(result.attribution_scopes_data,
                      AttributionScopesData::FromJSON(*scopes_value));
   }
@@ -263,8 +259,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   aggregatable_debug_reporting_config.Serialize(dict);
 
-  if (attribution_scopes_data.has_value() &&
-      base::FeatureList::IsEnabled(features::kAttributionScopes)) {
+  if (attribution_scopes_data.has_value()) {
     dict.Set(kAttributionScopes, attribution_scopes_data->ToJson());
   }
 

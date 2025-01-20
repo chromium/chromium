@@ -284,13 +284,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   const auto& request = resource_->GetResourceRequest();
   auto request_context = request.GetRequestContext();
   if (auto* frame_or_worker_scheduler = fetcher->GetFrameOrWorkerScheduler()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kBackForwardCacheWithKeepaliveRequest) &&
-        request.GetKeepalive()) {
-      frame_or_worker_scheduler->RegisterStickyFeature(
-          SchedulingPolicy::Feature::kKeepaliveRequest,
-          {SchedulingPolicy::DisableBackForwardCache()});
-    } else if (!RequestContextObserveResponse(request_context)) {
+    if (!RequestContextObserveResponse(request_context)) {
       // Only when this feature is turned on and the loading tasks keep being
       // processed and the data is queued up on the renderer, a page can stay in
       // BackForwardCache with network requests.
@@ -602,9 +596,7 @@ bool ResourceLoader::WillFollowRedirect(
   // the placement of this code, together with the //net counterpart.
   if (removed_headers) {
     // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
-    if (base::FeatureList::IsEnabled(
-            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
-        !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
+    if (!SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
                                        new_url)) {
       removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
     }

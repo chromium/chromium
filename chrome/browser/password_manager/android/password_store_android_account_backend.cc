@@ -175,16 +175,6 @@ void PasswordStoreAndroidAccountBackend::GetAutofillableLoginsAsync(
                                 std::move(callback));
 }
 
-void PasswordStoreAndroidAccountBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  CHECK(!account.empty());
-  // This method is only used before the store split, to migrate non-syncable
-  // data back to the built-in backend after password sync turns off.
-  CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs()));
-  GetAllLoginsInternal(std::move(account), std::move(callback));
-}
-
 void PasswordStoreAndroidAccountBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -239,22 +229,6 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
   }
   RemoveLoginInternal(GetSyncingAccount(sync_service_), form,
                       std::move(callback));
-}
-
-void PasswordStoreAndroidAccountBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
-    return;
-  }
-  RemoveLoginsByURLAndTimeInternal(GetSyncingAccount(sync_service_), url_filter,
-                                   delete_begin, delete_end,
-                                   std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(

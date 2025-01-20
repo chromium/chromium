@@ -25,14 +25,12 @@ const base::FilePath::CharType kIOSFeatureEngagementTrackerStorageDirname[] =
 namespace feature_engagement {
 
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   std::optional<std::string> fetDemoModeOverride =
       tests_hook::FETDemoModeOverride();
   if (fetDemoModeOverride.has_value()) {
     return CreateDemoModeTracker(fetDemoModeOverride.value());
   }
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

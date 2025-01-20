@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_CONSTANT_OPERAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_CONSTANT_OPERAND_H_
 
-#include "base/containers/heap_array.h"
-#include "base/containers/span.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -20,11 +19,12 @@ class MLGraphBuilder;
 // method. See https://www.w3.org/TR/webnn/#api-mlgraphbuilder-constant.
 class MODULES_EXPORT MLConstantOperand final : public MLOperand {
  public:
-  // Creates a constant operand which is backed by a copy of `bytes`. The length
-  // of `bytes` must match the number of bytes described by `descriptor`.
+  // Creates a constant operand on `builder`. After creating an instance of this
+  // class, the caller may create a "pending" constant operand in the WebNN
+  // Service with the generated `handle_`, which identifies the weight data
+  // associated with this operand.
   MLConstantOperand(MLGraphBuilder* builder,
-                    webnn::OperandDescriptor descriptor,
-                    base::span<const uint8_t> bytes);
+                    webnn::OperandDescriptor descriptor);
 
   MLConstantOperand(const MLConstantOperand&) = delete;
   MLConstantOperand& operator=(const MLConstantOperand&) = delete;
@@ -33,17 +33,11 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
 
   void Trace(Visitor* visitor) const override;
 
-  base::span<const uint8_t> Bytes() const;
-
-  void ReleaseBytes();
+  const WebNNPendingConstantToken& handle() const { return handle_; }
 
  private:
-  // Bytes associated with a constant operand. See
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant.
-  //
-  // Once these bytes have been copied to the respective graph, they should be
-  // released via `ReleaseBytes()` to avoid keeping this copy unnecessarily.
-  base::HeapArray<uint8_t> constant_bytes_;
+  // Identifies this constant operand in the WebNN service.
+  const WebNNPendingConstantToken handle_;
 };
 
 }  // namespace blink

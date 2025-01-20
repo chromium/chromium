@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 public class HistorySyncCoordinator {
@@ -28,7 +28,8 @@ public class HistorySyncCoordinator {
     public interface HistorySyncDelegate {
         void dismissHistorySync(boolean isHistorySyncAccepted);
 
-        default void maybeRecordFreProgress(@MobileFreProgress int state) {}
+        void recordHistorySyncOptIn(
+                @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType);
     }
 
     private final Activity mActivity;
@@ -79,7 +80,7 @@ public class HistorySyncCoordinator {
 
         setView(view, mUseLandscapeLayout);
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
         MinorModeHelper.resolveMinorMode(
                 IdentityServicesProvider.get().getSigninManager(mProfile).getIdentityManager(),
                 IdentityServicesProvider.get()

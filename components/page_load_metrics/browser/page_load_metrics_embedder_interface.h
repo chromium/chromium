@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_EMBEDDER_INTERFACE_H_
 
 #include <memory>
+#include <string_view>
 
 class GURL;
 
@@ -37,6 +38,8 @@ class PageLoadMetricsEmbedderInterface {
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
   virtual bool IsExtensionUrl(const GURL& url) = 0;
   virtual bool IsNonTabWebUI(const GURL& url) = 0;
+  virtual bool ShouldObserveScheme(std::string_view scheme) = 0;
+  virtual bool IsIncognito(content::WebContents* web_contents) = 0;
 
   // Returns the PageLoadMetricsMemoryTracker for the given BrowserContext if
   // tracking is enabled.

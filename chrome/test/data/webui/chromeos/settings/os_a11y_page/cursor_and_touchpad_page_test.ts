@@ -6,6 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {DisableTouchpadMode, SettingsCursorAndTouchpadPageElement} from 'chrome://os-settings/lazy_load.js';
 import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -16,7 +17,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
 import {clearBody} from '../utils.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = -0x1000000;
 const RED_CURSOR_COLOR = 0xd93025;
 
 /**
@@ -85,11 +86,18 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     return page.shadowRoot!.querySelector<CrLinkRowElement>('#faceGazePageRow');
   }
 
-  async function getDisableInternalTouchpadSelectElement() {
+  function getDisableInternalTouchpadDropdown() {
     const disableInternalTouchpadDropdown =
         page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
             '#disableInternalTouchpadDropdown');
     assert(disableInternalTouchpadDropdown);
+
+    return disableInternalTouchpadDropdown;
+  }
+
+  async function getDisableInternalTouchpadSelectElement() {
+    const disableInternalTouchpadDropdown =
+        getDisableInternalTouchpadDropdown();
     await waitAfterNextRender(disableInternalTouchpadDropdown);
     const disableInternalTouchpadSelectElement =
         disableInternalTouchpadDropdown.shadowRoot!.querySelector('select');
@@ -116,16 +124,12 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     cursorColorSelectElement.value = String(RED_CURSOR_COLOR);
     cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
     const cursorColorPref = page.getPref('settings.a11y.cursor_color');
-    const cursorColorEnabledPref =
-        page.getPref('settings.a11y.cursor_color_enabled');
     assertEquals(RED_CURSOR_COLOR, cursorColorPref.value);
-    assertTrue(cursorColorEnabledPref.value);
 
     // Turn cursor color back to default, and verify pref is also default.
     cursorColorSelectElement.value = String(DEFAULT_BLACK_CURSOR_COLOR);
     cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
     assertEquals(DEFAULT_BLACK_CURSOR_COLOR, cursorColorPref.value);
-    assertFalse(cursorColorEnabledPref.value);
   });
 
   // Only run this test when input device setting split feature flag is
@@ -641,27 +645,25 @@ suite('<settings-cursor-and-touchpad-page>', () => {
       });
 
   test('Mouse keys feature disabled.', async () => {
-    await initPage();
+    loadTimeData.overrideValues({
+      isAccessibilityMouseKeysEnabled: false,
+    });
 
-    if (loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
-      // Skip if the flag is enabled.
-      return;
-    }
+    await initPage();
 
     // Toggle shouldn't be available if flag is disabled.
     const enableMouseKeysToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeys');
+            '#mouseKeysToggle');
     assertNull(enableMouseKeysToggle);
   });
 
-  test('Mouse keys: Dominant Hand', async () => {
+  test('Mouse keys: toggle is in sync with pref', async () => {
+    loadTimeData.overrideValues({
+      isAccessibilityMouseKeysEnabled: true,
+    });
     await initPage();
 
-    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
-      // Skip if the flag isn't enabled.
-      return;
-    }
     // If the flag is enabled, check that the UI works.
     assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
 
@@ -669,8 +671,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
 
     const enableMouseKeysToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeys');
+        page.shadowRoot!.querySelector<CrToggleElement>('#mouseKeysToggle');
     assert(enableMouseKeysToggle);
     assertTrue(isVisible(enableMouseKeysToggle));
 
@@ -679,45 +680,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     flush();
 
     assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
-
-    // kAccessibilityMouseKeysDominantHand
-    // Ensure dominantHandControl exists.
-    const dominantHandControl =
-        page.shadowRoot!.querySelector<HTMLElement>(`#mouseKeysDominantHand`);
-    assert(dominantHandControl);
-    assertTrue(isVisible(dominantHandControl));
-
-    // Ensure pref is set to the default value.
-    let pref = page.getPref('settings.a11y.mouse_keys.dominant_hand');
-    assertEquals(pref.value, 0);
-
-    // Update dominantHandControl to alternate value.
-    await waitAfterNextRender(dominantHandControl);
-    const dominantHandControlElement =
-        dominantHandControl.shadowRoot!.querySelector('select');
-    assert(dominantHandControlElement);
-    dominantHandControlElement.value = String(1);
-    dominantHandControlElement.dispatchEvent(new CustomEvent('change'));
-
-    // Ensure pref is set to the alternate value.
-    pref = page.getPref('settings.a11y.mouse_keys.dominant_hand');
-    assertEquals(pref.value, 1);
-
-    // Switch to num pad.
-    const usePrimaryKeysToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#mouseKeysUsePrimaryKeys');
-    assert(usePrimaryKeysToggle);
-    assertTrue(isVisible(usePrimaryKeysToggle));
-
-    usePrimaryKeysToggle.click();
-    await waitBeforeNextRender(page);
-    flush();
-
-    // kAccessibilityMouseKeysUsePrimaryKeys
-    assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
-
-    assertFalse(isVisible(dominantHandControl));
   });
 
   if (disableInternalTouchpadFeatureEnabled) {
@@ -803,6 +765,22 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           assertFalse(isVisible(
               page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
         });
+
+    test('Disable touchpad dropdown is deep linkable', async () => {
+      await initPage();
+      const params = new URLSearchParams();
+      const settingId = settingMojom.Setting.kDisableTouchpad.toString();
+      params.append('settingId', settingId);
+      Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
+      flush();
+
+      const dropdown = getDisableInternalTouchpadDropdown();
+      await waitAfterNextRender(dropdown);
+      assertEquals(
+          dropdown, page.shadowRoot!.activeElement,
+          `Disable touchpad dropdown should be focused for settingId=${
+              settingId}.`);
+    });
   } else {
     test('disable internal touchpad feature disabled', async () => {
       await initPage();

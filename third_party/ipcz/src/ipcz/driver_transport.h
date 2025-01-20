@@ -88,10 +88,6 @@ class DriverTransport
     return std::move(transport_);
   }
 
-  // Releases the driver handle so that it's no longer controlled by this
-  // DriverTranport.
-  IpczDriverHandle Release();
-
   // Begins listening on the transport for incoming data and driver objects.
   // Once this is called, the transport's Listener may be invoked by the driver
   // at any time from arbitrary threads, as determined by the driver

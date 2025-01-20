@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -49,6 +48,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("UnusedMethod")
 public class OmahaBaseTest {
     private static class TimestampPair {
         public long timestampNextRequest;
@@ -198,7 +198,6 @@ public class OmahaBaseTest {
 
     @After
     public void tearDown() {
-        FeatureList.setTestValues(null);
         OmahaBase.setIsDisabledForTesting(true);
     }
 

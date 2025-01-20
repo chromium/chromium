@@ -59,8 +59,7 @@ MahiContentSourceButton::MahiContentSourceButton() {
 
 MahiContentSourceButton::~MahiContentSourceButton() = default;
 
-void MahiContentSourceButton::RefreshContentSourceInfo(
-    bool elucidation_in_use) {
+void MahiContentSourceButton::RefreshContentSourceInfo() {
   auto* const mahi_manager = chromeos::MahiManager::Get();
   CHECK(mahi_manager);
 
@@ -70,8 +69,9 @@ void MahiContentSourceButton::RefreshContentSourceInfo(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromImageSkia(image_util::ResizeAndCropImage(
           mahi_manager->GetContentIcon(), mahi_constants::kContentIconSize)));
-  if (elucidation_in_use) {
-    SetText(mahi_manager->GetSelectedText());
+  const std::u16string selected_text = mahi_manager->GetSelectedText();
+  if (!selected_text.empty()) {
+    SetText(selected_text);
   } else {
     SetText(mahi_manager->GetContentTitle());
   }

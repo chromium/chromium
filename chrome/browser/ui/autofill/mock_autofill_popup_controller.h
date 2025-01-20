@@ -14,10 +14,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -114,7 +114,6 @@ class MockAutofillPopupController : public AutofillPopupController {
               UpdateDataListValues,
               (base::span<const SelectOption>),
               (override));
-  MOCK_METHOD(void, PinView, (), (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
   MOCK_METHOD(void, OnPopupPainted, (), (override));
   MOCK_METHOD(bool,

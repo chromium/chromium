@@ -98,10 +98,9 @@ struct InProgressExternalVideoFrameEncode {
   // of the CastEnvironment clock, the latter of which might be simulated.
   const base::TimeTicks start_time;
 
-  InProgressExternalVideoFrameEncode(
-      scoped_refptr<VideoFrame> v_frame,
-      base::TimeTicks r_time,
-      int bit_rate)
+  InProgressExternalVideoFrameEncode(scoped_refptr<VideoFrame> v_frame,
+                                     base::TimeTicks r_time,
+                                     int bit_rate)
       : video_frame(std::move(v_frame)),
         reference_time(r_time),
         target_bit_rate(bit_rate),
@@ -172,7 +171,7 @@ class ExternalVideoEncoder::VEAClientImpl final
                           encoder_active_);
 
     cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
+        CastEnvironment::ThreadId::kMain, FROM_HERE,
         base::BindOnce(
             status_change_cb_,
             encoder_active_ ? media::EncoderStatus::Codes::kOk
@@ -284,12 +283,13 @@ class ExternalVideoEncoder::VEAClientImpl final
     encoder_active_ = false;
 
     cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
+        CastEnvironment::ThreadId::kMain, FROM_HERE,
         base::BindOnce(status_change_cb_, status, STATUS_CODEC_RUNTIME_ERROR));
 
     // Flush all in progress frames to avoid any getting stuck.
-    while (!in_progress_frame_encodes_.empty())
+    while (!in_progress_frame_encodes_.empty()) {
       AbortLatestEncodeAttemptDueToErrors();
+    }
   }
 
   void AllocateInputBuffer(size_t size) {
@@ -350,7 +350,7 @@ class ExternalVideoEncoder::VEAClientImpl final
     if (metadata.dropped_frame()) {
       CHECK(key_frame_encountered_);
       // The encoder drops a frame.
-      cast_environment_->PostTask(CastEnvironment::MAIN, FROM_HERE,
+      cast_environment_->PostTask(CastEnvironment::ThreadId::kMain, FROM_HERE,
                                   base::BindOnce(output_cb_, nullptr));
       in_progress_frame_encodes_.pop_front();
       if (encoder_active_) {
@@ -389,10 +389,7 @@ class ExternalVideoEncoder::VEAClientImpl final
           in_progress_frame_encodes_.front();
 
       auto encoded_frame = std::make_unique<SenderEncodedFrame>();
-      encoded_frame->dependency =
-          metadata.key_frame
-              ? openscreen::cast::EncodedFrame::Dependency::kKeyFrame
-              : openscreen::cast::EncodedFrame::Dependency::kDependent;
+      encoded_frame->is_key_frame = metadata.key_frame;
       encoded_frame->frame_id = next_frame_id_++;
       if (metadata.key_frame) {
         encoded_frame->referenced_frame_id = encoded_frame->frame_id;
@@ -438,7 +435,6 @@ class ExternalVideoEncoder::VEAClientImpl final
 
         const double actual_bitrate =
             encoded_frame->data.size() * 8.0 / frame_duration.InSecondsF();
-        encoded_frame->encoder_bitrate = actual_bitrate;
         DCHECK_GT(request.target_bit_rate, 0);
         const double bitrate_utilization =
             actual_bitrate / request.target_bit_rate;
@@ -485,10 +481,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         quantizer_estimator_.Reset();
       }
 
-      encoded_frame->encode_completion_time =
-          cast_environment_->Clock()->NowTicks();
+      encoded_frame->encode_completion_time = cast_environment_->NowTicks();
       cast_environment_->PostTask(
-          CastEnvironment::MAIN, FROM_HERE,
+          CastEnvironment::ThreadId::kMain, FROM_HERE,
           base::BindOnce(output_cb_, std::move(encoded_frame)));
 
       in_progress_frame_encodes_.pop_front();
@@ -513,8 +508,9 @@ class ExternalVideoEncoder::VEAClientImpl final
   ~VEAClientImpl() final {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    while (!in_progress_frame_encodes_.empty())
+    while (!in_progress_frame_encodes_.empty()) {
       AbortLatestEncodeAttemptDueToErrors();
+    }
 
     // According to the media::VideoEncodeAccelerator interface, Destroy()
     // should be called instead of invoking its private destructor.
@@ -530,7 +526,7 @@ class ExternalVideoEncoder::VEAClientImpl final
 
     std::unique_ptr<SenderEncodedFrame> no_result(nullptr);
     cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
+        CastEnvironment::ThreadId::kMain, FROM_HERE,
         base::BindOnce(output_cb_, std::move(no_result)));
     in_progress_frame_encodes_.pop_back();
   }
@@ -560,8 +556,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         case H264NALU::kNonIDRSlice: {
           H264SliceHeader slice_header;
           if (h264_parser_.ParseSliceHeader(nalu, &slice_header) !=
-              H264Parser::kOk)
+              H264Parser::kOk) {
             return -1;
+          }
           const H264PPS* pps =
               h264_parser_.GetPPS(slice_header.pic_parameter_set_id);
           if (!pps) {
@@ -667,7 +664,7 @@ ExternalVideoEncoder::ExternalVideoEncoder(
       output_cb_(std::move(output_cb)),
       frame_size_(frame_size),
       bit_rate_(video_config.start_bitrate) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   DCHECK_GT(video_config.max_frame_rate, 0);
   DCHECK(!frame_size_.IsEmpty());
   DCHECK(status_change_cb);
@@ -681,12 +678,12 @@ ExternalVideoEncoder::ExternalVideoEncoder(
 }
 
 ExternalVideoEncoder::~ExternalVideoEncoder() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   DestroyClientSoon();
 }
 
 void ExternalVideoEncoder::DestroyClientSoon() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   // Ensure |client_| is destroyed from the encoder task runner by dropping the
   // reference to it within an encoder task.
   if (client_) {
@@ -697,14 +694,14 @@ void ExternalVideoEncoder::DestroyClientSoon() {
 
 void ExternalVideoEncoder::SetErrorToMetricsProvider(
     const media::EncoderStatus& encoder_status) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   metrics_provider_->SetError(encoder_status);
 }
 
 bool ExternalVideoEncoder::EncodeVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
   if (!client_ || video_frame->visible_rect().size() != frame_size_) {
     return false;
@@ -719,7 +716,7 @@ bool ExternalVideoEncoder::EncodeVideoFrame(
 }
 
 void ExternalVideoEncoder::SetBitRate(int new_bit_rate) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   DCHECK_GT(new_bit_rate, 0);
 
   bit_rate_ = new_bit_rate;
@@ -732,7 +729,7 @@ void ExternalVideoEncoder::SetBitRate(int new_bit_rate) {
 }
 
 void ExternalVideoEncoder::GenerateKeyFrame() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   key_frame_requested_ = true;
 }
 
@@ -742,14 +739,14 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
     const StatusChangeCallback& status_change_cb,
     scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner,
     std::unique_ptr<media::VideoEncodeAccelerator> vea) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
 
   // The callback will be invoked with null pointers in the case where the
   // system does not support or lacks the resources to provide GPU-accelerated
   // video encoding.
   if (!encoder_task_runner || !vea) {
     cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
+        CastEnvironment::ThreadId::kMain, FROM_HERE,
         base::BindOnce(status_change_cb, STATUS_CODEC_INIT_FAILED));
     return;
   }
@@ -769,7 +766,7 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
       NOTREACHED() << "Fake software video encoder cannot be external";
     default:
       cast_environment_->PostTask(
-          CastEnvironment::MAIN, FROM_HERE,
+          CastEnvironment::ThreadId::kMain, FROM_HERE,
           base::BindOnce(status_change_cb, STATUS_UNSUPPORTED_CODEC));
       return;
   }

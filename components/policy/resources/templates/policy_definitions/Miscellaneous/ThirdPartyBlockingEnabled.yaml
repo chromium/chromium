@@ -1,5 +1,8 @@
 caption: Enable third party software injection blocking
+deprecated: true
 desc: |-
+  This policy is deprecated.
+
   Setting the policy to Enabled or leaving it unset prevents third-party software from injecting executable code into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s processes.
 
         Setting the policy to Disabled allows this software to inject such code into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s processes.

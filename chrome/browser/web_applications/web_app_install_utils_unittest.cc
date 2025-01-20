@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
@@ -40,7 +36,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -155,14 +150,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
-    auto url_handler = blink::mojom::ManifestUrlHandler::New();
-    url_handler->origin =
-        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
-    url_handler->has_origin_wildcard = false;
-    manifest.url_handlers.push_back(std::move(url_handler));
-  }
-
-  {
     auto scope_extension = blink::mojom::ManifestScopeExtension::New();
     scope_extension->origin =
         url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
@@ -180,6 +167,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     declaration.matches_opaque_src = false;
 
     manifest.permissions_policy.push_back(std::move(declaration));
+  }
+
+  {
+    blink::Manifest::RelatedApplication related_app;
+    related_app.platform = u"platform";
+    related_app.url = GURL("http://www.example.com");
+    related_app.id = u"id";
+    manifest.related_applications.push_back(std::move(related_app));
   }
 
   {
@@ -270,13 +265,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
-  // Check URL handlers were updated.
-  EXPECT_EQ(1u, web_app_info.url_handlers.size());
-  auto url_handler = web_app_info.url_handlers[0];
-  EXPECT_EQ(url_handler.origin,
-            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
-  EXPECT_FALSE(url_handler.has_origin_wildcard);
-
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());
   auto scope_extension = *web_app_info.scope_extensions.begin();
@@ -300,6 +288,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
             declaration.allowed_origins[0].Serialize());
   EXPECT_FALSE(declaration.matches_all_origins);
   EXPECT_FALSE(declaration.matches_opaque_src);
+
+  // Check related applications were updated.
+  ASSERT_EQ(1u, web_app_info.related_applications.size());
+  auto related_app = web_app_info.related_applications[0];
+  EXPECT_EQ(u"platform", related_app.platform);
+  EXPECT_EQ(GURL("http://www.example.com"), related_app.url);
+  EXPECT_EQ(u"id", related_app.id);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
@@ -480,14 +475,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   }
 
   {
-    auto url_handler = blink::mojom::ManifestUrlHandler::New();
-    url_handler->origin =
-        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
-    url_handler->has_origin_wildcard = true;
-    manifest.url_handlers.push_back(std::move(url_handler));
-  }
-
-  {
     auto scope_extension = blink::mojom::ManifestScopeExtension::New();
     scope_extension->origin =
         url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
@@ -608,13 +595,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
-
-  // Check URL handlers were updated.
-  EXPECT_EQ(1u, web_app_info.url_handlers.size());
-  auto url_handler = web_app_info.url_handlers[0];
-  EXPECT_EQ(url_handler.origin,
-            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
-  EXPECT_TRUE(url_handler.has_origin_wildcard);
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info.scope_extensions.size());
@@ -1531,18 +1511,19 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
   // The metadata we expect to be saved after icons are finished downloading and
   // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
   // match downloaded sizes, not those specified in the manifest.
-  struct {
+  struct Expectations {
     GURL expected_url;
     apps::IconInfo::SquareSizePx expected_size;
     apps::IconInfo::Purpose expected_purpose;
-  } expectations[] = {
+  };
+  auto expectations = std::to_array<Expectations>({
       {first_image_url, 17, apps::IconInfo::Purpose::kAny},
       {first_image_url, 29, apps::IconInfo::Purpose::kAny},
       {second_image_url, 79, apps::IconInfo::Purpose::kAny},
       {second_image_url, 134, apps::IconInfo::Purpose::kAny},
       {second_image_url, 79, apps::IconInfo::Purpose::kMaskable},
       {second_image_url, 134, apps::IconInfo::Purpose::kMaskable},
-  };
+  });
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);
@@ -1666,17 +1647,19 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlingAndHomeTabIcons) {
   // The metadata we expect to be saved after icons are finished downloading and
   // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
   // match downloaded sizes, not those specified in the manifest.
-  struct {
+  struct Expectations {
     GURL expected_url;
     apps::IconInfo::SquareSizePx expected_size;
     apps::IconInfo::Purpose expected_purpose;
-  } expectations[] = {
+  };
+  auto expectations = std::to_array<Expectations>({
       {kFileHandlerIconUrl2, 17, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl2, 29, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kMaskable},
-      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kMaskable}};
+      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kMaskable},
+  });
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);

@@ -65,18 +65,14 @@ void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(
     const std::vector<OfflinePageItem>& offline_pages) {
   for (const OfflinePageItem& offline_page : offline_pages) {
     Java_OfflinePageEvaluationBridge_createOfflinePageAndAddToList(
-        env, j_result_obj,
-        ConvertUTF8ToJavaString(env, offline_page.url.spec()),
-        offline_page.offline_id,
-        ConvertUTF8ToJavaString(env, offline_page.client_id.name_space),
-        ConvertUTF8ToJavaString(env, offline_page.client_id.id),
+        env, j_result_obj, offline_page.url.spec(), offline_page.offline_id,
+        offline_page.client_id.name_space, offline_page.client_id.id,
         ConvertUTF16ToJavaString(env, offline_page.title),
-        ConvertUTF8ToJavaString(env, offline_page.file_path.value()),
-        offline_page.file_size,
+        offline_page.file_path.value(), offline_page.file_size,
         offline_page.creation_time.InMillisecondsSinceUnixEpoch(),
         offline_page.access_count,
         offline_page.last_access_time.InMillisecondsSinceUnixEpoch(),
-        ConvertUTF8ToJavaString(env, offline_page.request_origin));
+        offline_page.request_origin);
   }
 }
 
@@ -86,9 +82,8 @@ JNI_OfflinePageEvaluationBridge_ToJavaSavePageRequest(
     const SavePageRequest& request) {
   return Java_OfflinePageEvaluationBridge_createSavePageRequest(
       env, static_cast<int>(request.request_state()), request.request_id(),
-      ConvertUTF8ToJavaString(env, request.url().spec()),
-      ConvertUTF8ToJavaString(env, request.client_id().name_space),
-      ConvertUTF8ToJavaString(env, request.client_id().id));
+      request.url().spec(), request.client_id().name_space,
+      request.client_id().id);
 }
 
 ScopedJavaLocalRef<jobjectArray>
@@ -230,7 +225,7 @@ OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
   request_coordinator_->GetLogger()->SetClient(this);
 }
 
-OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() {}
+OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() = default;
 
 void OfflinePageEvaluationBridge::Destroy(JNIEnv* env,
                                           const JavaParamRef<jobject>&) {
@@ -296,9 +291,7 @@ void OfflinePageEvaluationBridge::CustomLog(const std::string& message) {
   ScopedJavaLocalRef<jobject> obj = weak_java_ref_.get(env);
   if (obj.is_null())
     return;
-  Java_OfflinePageEvaluationBridge_log(env, obj,
-                                       ConvertUTF8ToJavaString(env, kNativeTag),
-                                       ConvertUTF8ToJavaString(env, message));
+  Java_OfflinePageEvaluationBridge_log(env, obj, kNativeTag, message);
 }
 
 void OfflinePageEvaluationBridge::GetAllPages(
@@ -331,16 +324,16 @@ bool OfflinePageEvaluationBridge::PushRequestProcessing(
 void OfflinePageEvaluationBridge::SavePageLater(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_client_id,
+    std::string& url,
+    std::string& name_space,
+    std::string& client_id,
     jboolean user_requested) {
   offline_pages::ClientId client_id;
-  client_id.name_space = ConvertJavaStringToUTF8(env, j_namespace);
-  client_id.id = ConvertJavaStringToUTF8(env, j_client_id);
+  client_id.name_space = name_space;
+  client_id.id = client_id;
 
   RequestCoordinator::SavePageLaterParams params;
-  params.url = GURL(ConvertJavaStringToUTF8(env, j_url));
+  params.url = GURL(url);
   params.client_id = client_id;
   params.user_requested = static_cast<bool>(user_requested);
   request_coordinator_->SavePageLater(params);

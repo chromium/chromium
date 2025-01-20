@@ -4,6 +4,8 @@
 
 #include "components/sharing_message/sharing_fcm_sender.h"
 
+#include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +25,16 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
+namespace {
+
+// When enabled, sharing messages sent using sync may be postponed until sync
+// is active.
+BASE_FEATURE(kSharingPostponeFcmMessageSending,
+             "SharingPostponeFcmMessageSending",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
 SharingFCMSender::SharingFCMSender(
     std::unique_ptr<WebPushSender> web_push_sender,
     SharingMessageBridge* sharing_message_bridge,
@@ -31,7 +43,8 @@ SharingFCMSender::SharingFCMSender(
     gcm::GCMDriver* gcm_driver,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::LocalDeviceInfoProvider* local_device_info_provider,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    syncer::SyncableService::StartSyncFlare start_sync_flare)
     : web_push_sender_(std::move(web_push_sender)),
       sharing_message_bridge_(sharing_message_bridge),
       sync_preference_(sync_preference),
@@ -39,7 +52,15 @@ SharingFCMSender::SharingFCMSender(
       gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
       local_device_info_provider_(local_device_info_provider),
-      sync_service_(sync_service) {}
+      sync_service_(sync_service),
+      start_sync_flare_(std::move(start_sync_flare)) {
+  // `sync_service_` can be null in tests.
+  if (sync_service_) {
+    sync_service_observation_.Observe(sync_service_);
+  } else {
+    CHECK_IS_TEST();
+  }
+}
 
 SharingFCMSender::~SharingFCMSender() = default;
 
@@ -96,17 +117,36 @@ void SharingFCMSender::SendMessageToFcmTarget(
     SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingFCMSender::SendMessageToFcmTarget");
 
-  bool canSendViaSync =
-      sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE) &&
-      !fcm_configuration.sender_id_fcm_token().empty() &&
-      !fcm_configuration.sender_id_p256dh().empty() &&
-      !fcm_configuration.sender_id_auth_secret().empty();
-  bool canSendViaVapid = !fcm_configuration.vapid_fcm_token().empty() &&
-                         !fcm_configuration.vapid_p256dh().empty() &&
-                         !fcm_configuration.vapid_auth_secret().empty();
+  bool can_send_via_sync = !fcm_configuration.sender_id_fcm_token().empty() &&
+                           !fcm_configuration.sender_id_p256dh().empty() &&
+                           !fcm_configuration.sender_id_auth_secret().empty();
+  bool can_send_via_vapid = !fcm_configuration.vapid_fcm_token().empty() &&
+                            !fcm_configuration.vapid_p256dh().empty() &&
+                            !fcm_configuration.vapid_auth_secret().empty();
 
-  base::UmaHistogramBoolean("Sharing.SendMessageUsingSync", canSendViaSync);
-  if (canSendViaSync) {
+  if (can_send_via_sync &&
+      !sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE) &&
+      base::FeatureList::IsEnabled(kSharingPostponeFcmMessageSending)) {
+    // If the message can be sent via sync, wait until SHARING_MESSAGE is
+    // syncing. This should be rare and mostly for the ACK messages.
+    // TODO(crbug.com/40253551): delete pending messages by TTL.
+    pending_messages_.emplace_back(fcm_configuration, time_to_live,
+                                   std::move(message), std::move(callback));
+    if (start_sync_flare_) {
+      start_sync_flare_.Run(syncer::SHARING_MESSAGE);
+      start_sync_flare_.Reset();
+    }
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "Sharing.SendMessageUsingSync",
+      can_send_via_sync &&
+          sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
+
+  // Fallback to sending via Vapid if SHARING_MESSAGE is not syncing.
+  if (can_send_via_sync &&
+      sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
     EncryptMessage(
         kSharingSenderID, fcm_configuration.sender_id_p256dh(),
@@ -119,8 +159,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
     return;
   }
 
-  // TODO(crbug.com/40253551): This can probably go away.
-  if (canSendViaVapid) {
+  if (can_send_via_vapid) {
     std::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
         sync_preference_->GetFCMRegistration();
     if (!fcm_registration || !fcm_registration->authorized_entity) {
@@ -167,6 +206,32 @@ void SharingFCMSender::SendMessageToServerTarget(
       base::BindOnce(&SharingFCMSender::DoSendMessageToServerTarget,
                      weak_ptr_factory_.GetWeakPtr(),
                      server_channel.configuration(), message.message_id()));
+}
+
+void SharingFCMSender::ClearPendingMessages() {
+  pending_messages_.clear();
+}
+
+void SharingFCMSender::OnStateChanged(syncer::SyncService* sync_service) {
+  // Replay pending messages once SHARING_MESSAGE is active.
+  if (pending_messages_.empty() ||
+      !sync_service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+    return;
+  }
+
+  std::vector<PendingMessage> pending_messages = std::move(pending_messages_);
+  pending_messages_.clear();
+
+  for (PendingMessage& pending_message : pending_messages) {
+    SendMessageToFcmTarget(pending_message.fcm_configuration,
+                           pending_message.time_to_live,
+                           std::move(pending_message.message),
+                           std::move(pending_message.callback));
+  }
+}
+
+void SharingFCMSender::OnSyncShutdown(syncer::SyncService* sync_service) {
+  sync_service_observation_.Reset();
 }
 
 void SharingFCMSender::EncryptMessage(const std::string& authorized_entity,
@@ -369,11 +434,6 @@ bool SharingFCMSender::SetMessageSenderInfo(SharingMessage* message) {
   }
 
   auto* fcm_configuration = message->mutable_fcm_channel_configuration();
-  fcm_configuration->set_vapid_fcm_token(
-      sharing_info->vapid_target_info.fcm_token);
-  fcm_configuration->set_vapid_p256dh(sharing_info->vapid_target_info.p256dh);
-  fcm_configuration->set_vapid_auth_secret(
-      sharing_info->vapid_target_info.auth_secret);
   fcm_configuration->set_sender_id_fcm_token(
       sharing_info->sender_id_target_info.fcm_token);
   fcm_configuration->set_sender_id_p256dh(
@@ -392,3 +452,21 @@ void SharingFCMSender::SetSharingMessageBridgeForTesting(
     SharingMessageBridge* sharing_message_bridge) {
   sharing_message_bridge_ = sharing_message_bridge;
 }
+
+SharingFCMSender::PendingMessage::PendingMessage(
+    components_sharing_message::FCMChannelConfiguration fcm_configuration,
+    base::TimeDelta time_to_live,
+    SharingMessage message,
+    SendMessageCallback callback)
+    : fcm_configuration(std::move(fcm_configuration)),
+      time_to_live(time_to_live),
+      message(std::move(message)),
+      callback(std::move(callback)) {}
+
+SharingFCMSender::PendingMessage::~PendingMessage() = default;
+
+SharingFCMSender::PendingMessage::PendingMessage(PendingMessage&& other) =
+    default;
+
+SharingFCMSender::PendingMessage& SharingFCMSender::PendingMessage::operator=(
+    PendingMessage&& other) = default;

@@ -583,7 +583,7 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
   // Set 'info' icon on left side.
   std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
       use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));

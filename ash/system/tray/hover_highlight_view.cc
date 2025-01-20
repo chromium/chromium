@@ -135,7 +135,7 @@ void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
   std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView(
       /*use_wide_layout=*/true));
   icon_ = icon.get();
-  icon->SetImage(image);
+  icon->SetImage(ui::ImageModel::FromImageSkia(image));
   icon->SetEnabled(GetEnabled());
 
   AddViewAndLabel(std::move(icon), text);

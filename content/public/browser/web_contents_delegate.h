@@ -18,11 +18,11 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/serial_chooser.h"
@@ -44,6 +44,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #endif
 
 class GURL;
@@ -750,7 +751,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // content/browser/preloading/prerender/README.md for details) is supported.
   // If it is not supported, returns the reason.
   virtual PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents);
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type);
 
   // Returns whether to override user agent for prerendering navigation.
   virtual NavigationController::UserAgentOverrideOption
@@ -828,6 +830,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Allows delegate to override whether there is support for animations when
+  // performing a forward transition.
+  virtual bool SupportsForwardTransitionAnimation();
+
   // Synchronous version of |MaybeCopyContentAreaAsBitmap|. Return an
   // empty bitmap if embedder is not showing any custom view.
   virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();

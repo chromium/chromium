@@ -30,9 +30,9 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -77,7 +77,8 @@ void StartRecordAnimationSmoothness(
     return;
   }
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(

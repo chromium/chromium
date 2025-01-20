@@ -30,7 +30,7 @@ namespace views {
 class BubbleDialogDelegate;
 class Button;
 class View;
-}
+}  // namespace views
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleOkButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolderFieldId);

@@ -114,7 +114,7 @@ class DownloadHistoryData : public base::SupportsUserData::Data {
   DownloadHistoryData(const DownloadHistoryData&) = delete;
   DownloadHistoryData& operator=(const DownloadHistoryData&) = delete;
 
-  ~DownloadHistoryData() override {}
+  ~DownloadHistoryData() override = default;
 
   PersistenceState state() const { return state_; }
   void SetState(PersistenceState s) { state_ = s; }
@@ -292,7 +292,7 @@ DownloadHistory::HistoryAdapter::HistoryAdapter(
     history::HistoryService* history)
     : history_(history) {
 }
-DownloadHistory::HistoryAdapter::~HistoryAdapter() {}
+DownloadHistory::HistoryAdapter::~HistoryAdapter() = default;
 
 void DownloadHistory::HistoryAdapter::QueryDownloads(
     history::HistoryService::DownloadQueryCallback callback) {
@@ -315,8 +315,8 @@ void DownloadHistory::HistoryAdapter::RemoveDownloads(
   history_->RemoveDownloads(ids);
 }
 
-DownloadHistory::Observer::Observer() {}
-DownloadHistory::Observer::~Observer() {}
+DownloadHistory::Observer::Observer() = default;
+DownloadHistory::Observer::~Observer() = default;
 
 // static
 bool DownloadHistory::IsPersisted(const download::DownloadItem* item) {

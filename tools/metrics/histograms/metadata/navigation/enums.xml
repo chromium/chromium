@@ -353,6 +353,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Requires dedicated process"/>
 </enum>
 
+<enum name="NavigationStartAdjustmentType">
+  <int value="0" label="No adjustment made"/>
+  <int value="1" label="Legacy PostTask without BeforeUnload"/>
+  <int value="2" label="BeforeUnload handlers without dialog"/>
+  <int value="3" label="BeforeUnload dialog shown"/>
+</enum>
+
 <enum name="NavigationSuddenTerminationDisabler">
   <int value="0" label="Subframe-None"/>
   <int value="1" label="MainFrame-None"/>
@@ -446,6 +453,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
   <int value="17" label="Not capture non primary main frames"/>
   <int value="18" label="Captured Empty Bitmap From Embedder"/>
+  <int value="19" label="Forward transition animation not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->
@@ -1954,6 +1962,8 @@ Called by update_scheduler_enums.py.-->
   <int value="65" label="SmartCard"/>
   <int value="66" label="LiveMediaStreamTrack"/>
   <int value="67" label="UnloadHandler"/>
+  <int value="68" label="ParserAborted"/>
+  <int value="69" label="WebBluetooth"/>
 </enum>
 
 </enums>

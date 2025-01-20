@@ -21,10 +21,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
-#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/ash/services/secure_channel/util/histogram_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
@@ -331,12 +331,8 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
                                                   /*wifi_lan=*/false,
                                                   /*wifi_direct=*/false),
                              /*remote_bluetooth_mac_address=*/std::nullopt,
-                             features::IsNearbyKeepAliveFixEnabled()
-                                 ? std::make_optional(kKeepAliveInterval)
-                                 : std::nullopt,
-                             features::IsNearbyKeepAliveFixEnabled()
-                                 ? std::make_optional(kKeepAliveTimeout)
-                                 : std::nullopt),
+                             std::make_optional(kKeepAliveInterval),
+                             std::make_optional(kKeepAliveTimeout)),
       connection_lifecycle_listener_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnRequestConnectionResult,
                      weak_ptr_factory_.GetWeakPtr()));

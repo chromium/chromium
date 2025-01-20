@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -499,6 +500,8 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
 
   DVLOG(10) << "Validation: root sequence " << root_sequence->sequence_id();
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   // Releases that need to be forcefully done to avoid invalid waits.
   ReleaseMap force_releases;
   {
@@ -532,11 +535,18 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
     }
   }
 
+  base::UmaHistogramBoolean("GPU.GraphValidation.NeedsForceRelease",
+                            !force_releases.empty());
+
   for (const auto& [client_id, release] : force_releases) {
     sync_point_manager_->EnsureFenceSyncReleased(
         {client_id.namespace_id, client_id.command_buffer_id, release},
         ReleaseCause::kForceRelease);
   }
+
+  base::UmaHistogramCustomTimes("GPU.GraphValidation.Duration",
+                                base::TimeTicks::Now() - start_time,
+                                base::Milliseconds(1), base::Seconds(1), 50);
 }
 
 void TaskGraph::ValidateTaskFenceDeps(

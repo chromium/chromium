@@ -430,13 +430,13 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
     const char* expected_hex;
   } nsinteger_cases[] = {
 #if !defined(ARCH_CPU_64_BITS)
-    {12345678, "12345678", "bc614e"},
-    {-12345678, "-12345678", "ff439eb2"},
+      {12345678, "12345678", "bc614e"},
+      {-12345678, "-12345678", "ff439eb2"},
 #else
-    {12345678, "12345678", "bc614e"},
-    {-12345678, "-12345678", "ffffffffff439eb2"},
-    {137451299150l, "137451299150", "2000bc614e"},
-    {-137451299150l, "-137451299150", "ffffffdfff439eb2"},
+      {12345678, "12345678", "bc614e"},
+      {-12345678, "-12345678", "ffffffffff439eb2"},
+      {137451299150l, "137451299150", "2000bc614e"},
+      {-137451299150l, "-137451299150", "ffffffdfff439eb2"},
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
@@ -454,13 +454,13 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
     const char* expected_hex;
   } nsuinteger_cases[] = {
 #if !defined(ARCH_CPU_64_BITS)
-    {12345678u, "12345678", "bc614e"},
-    {4282621618u, "4282621618", "ff439eb2"},
+      {12345678u, "12345678", "bc614e"},
+      {4282621618u, "4282621618", "ff439eb2"},
 #else
-    {12345678u, "12345678", "bc614e"},
-    {4282621618u, "4282621618", "ff439eb2"},
-    {137451299150ul, "137451299150", "2000bc614e"},
-    {18446743936258252466ul, "18446743936258252466", "ffffffdfff439eb2"},
+      {12345678u, "12345678", "bc614e"},
+      {4282621618u, "4282621618", "ff439eb2"},
+      {137451299150ul, "137451299150", "2000bc614e"},
+      {18446743936258252466ul, "18446743936258252466", "ffffffdfff439eb2"},
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
@@ -521,17 +521,17 @@ TEST(FoundationUtilTest, CFDataToSpan) {
   {
     ScopedCFTypeRef<CFDataRef> data(
         CFDataCreate(nullptr, buffer, sizeof(buffer)));
-    span<const uint8_t> span = CFDataToSpan(data.get());
-    EXPECT_EQ(make_span(buffer), span);
-    EXPECT_THAT(span, ElementsAreArray(buffer));
+    span<const uint8_t> data_span = CFDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    EXPECT_THAT(data_span, ElementsAreArray(buffer));
   }
 
   {
     ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
     CFDataAppendBytes(data.get(), buffer, sizeof(buffer));
-    span<uint8_t> span = CFMutableDataToSpan(data.get());
-    EXPECT_EQ(make_span(buffer), span);
-    span[0] = 123;
+    span<uint8_t> data_span = CFMutableDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    data_span[0] = 123;
     EXPECT_EQ(CFDataGetBytePtr(data.get())[0], 123);
   }
 }

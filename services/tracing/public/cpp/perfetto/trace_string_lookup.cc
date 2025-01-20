@@ -73,6 +73,7 @@ constexpr ThreadType kThreadTypes[] = {
      ChromeThreadDescriptor::THREAD_NETWORKCONFIGWATCHER},
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
     {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
+    {"CompositorGpuThread", ChromeThreadDescriptor::THREAD_COMPOSITOR_GPU},
 };
 
 ChromeThreadDescriptor::ThreadType GetThreadType(

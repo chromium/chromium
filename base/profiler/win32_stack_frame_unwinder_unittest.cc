@@ -141,8 +141,7 @@ Win32StackFrameUnwinderTest::CreateUnwinder() {
   std::unique_ptr<TestUnwindFunctions> unwind_functions(
       new TestUnwindFunctions);
   unwind_functions_ = unwind_functions.get();
-  return WrapUnique(
-      new Win32StackFrameUnwinder(std::move(unwind_functions)));
+  return WrapUnique(new Win32StackFrameUnwinder(std::move(unwind_functions)));
 }
 
 // Checks the case where all frames have unwind information.

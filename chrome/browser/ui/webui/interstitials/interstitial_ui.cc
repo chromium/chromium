@@ -34,9 +34,9 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
@@ -49,6 +49,7 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -81,6 +82,7 @@
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
+using security_interstitials::UnsafeResourceLocator;
 
 InterstitialUIConfig::InterstitialUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
@@ -104,8 +106,7 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
     return nullptr;
   }
 
-  return net::X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(cert_der)));
+  return net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
 }
 
 // Implementation of chrome://interstitials demonstration pages. This code is
@@ -172,12 +173,14 @@ std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   // This delegate doesn't create an interstitial.
   int options_mask = 0;
-  if (overridable)
+  if (overridable) {
     options_mask |=
         security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  if (strict_enforcement)
+  }
+  if (strict_enforcement) {
     options_mask |=
         security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
+  }
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateSSLPage(web_contents, cert_error, ssl_info,
                                              request_url, options_mask,
@@ -323,8 +326,9 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.threat_type = threat_type;
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+      primary_main_frame_id.child_id,
+      primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()
@@ -361,7 +365,7 @@ std::unique_ptr<ManagedProfileRequiredPage> CreateManagedProfileRequiredPage(
     content::WebContents* web_contents) {
   const GURL kRequestUrl("https://example.com");
   return std::make_unique<ManagedProfileRequiredPage>(
-      web_contents, kRequestUrl,
+      web_contents, kRequestUrl, u"user@example.com",
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents,
                                                                kRequestUrl));
 }
@@ -380,8 +384,9 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   resource.url = kRequestUrl;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+      primary_main_frame_id.child_id,
+      primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()
@@ -439,8 +444,9 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
                                  &url_param)) {
-    if (GURL(url_param).is_valid())
+    if (GURL(url_param).is_valid()) {
       request_url = GURL(url_param);
+    }
   }
   std::string type_param;
   bool is_giant_webview = false;
@@ -465,8 +471,9 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.threat_type = threat_type;
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+      primary_main_frame_id.child_id,
+      primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
           ->database_manager()
@@ -499,14 +506,16 @@ std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
   std::string request_url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
                                  &request_url_param)) {
-    if (GURL(request_url_param).is_valid())
+    if (GURL(request_url_param).is_valid()) {
       request_url = GURL(request_url_param);
+    }
   }
   std::string landing_url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "landing_page",
                                  &landing_url_param)) {
-    if (GURL(landing_url_param).is_valid())
+    if (GURL(landing_url_param).is_valid()) {
       landing_url = GURL(landing_url_param);
+    }
   }
   std::string wifi_connection_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "is_wifi",
@@ -688,6 +697,7 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
   return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
-      g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
+      g_browser_process->GetApplicationLocale(),
+      /*already_sent_remote_request=*/false,
       /*is_main_frame=*/true);
 }

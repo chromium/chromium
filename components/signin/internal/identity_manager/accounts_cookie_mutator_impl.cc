@@ -47,7 +47,7 @@ void AccountsCookieMutatorImpl::SetAccountsInCookie(
         set_accounts_in_cookies_completed_callback) {
   std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair> accounts;
   for (const auto& account_id : parameters.accounts_to_send) {
-    accounts.push_back(make_pair(
+    accounts.push_back(std::make_pair(
         account_id, account_tracker_service_->GetAccountInfo(account_id).gaia));
   }
   gaia_cookie_manager_service_->SetAccountsInCookie(
@@ -71,7 +71,7 @@ AccountsCookieMutatorImpl::SetAccountsInCookieForPartition(
 
   std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair> accounts;
   for (const auto& account_id : parameters.accounts_to_send) {
-    accounts.emplace_back(make_pair(
+    accounts.emplace_back(std::make_pair(
         account_id, account_tracker_service_->GetAccountInfo(account_id).gaia));
   }
 
@@ -100,7 +100,7 @@ void AccountsCookieMutatorImpl::LogOutAllAccounts(
 }
 
 void AccountsCookieMutatorImpl::RemoveLoggedOutAccountByGaiaId(
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   // Note that RemoveLoggedOutAccountByGaiaId() does NOT internally trigger a
   // ListAccounts fetch. It could make sense to force a request here, e.g. via
   // ForceOnCookieChangeProcessing(), but this isn't considered important enough

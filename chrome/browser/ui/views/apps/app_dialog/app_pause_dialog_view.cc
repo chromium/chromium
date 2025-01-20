@@ -64,8 +64,9 @@ AppPauseDialogView::AppPauseDialogView(
 
 AppPauseDialogView::~AppPauseDialogView() {
   g_app_pause_dialog_view = nullptr;
-  if (closed_callback_)
+  if (closed_callback_) {
     std::move(closed_callback_).Run();
+  }
 }
 
 // static

@@ -151,12 +151,6 @@ public class BookmarkToolbarMediatorTest {
                 == (int) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE);
     }
 
-    private void dropCurrentSelection() {
-        doReturn(Collections.emptyList()).when(mSelectionDelegate).getSelectedItemsAsList();
-        doReturn(Collections.emptyList()).when(mSelectionDelegate).getSelectedItems();
-        doReturn(false).when(mSelectionDelegate).isSelectionEnabled();
-    }
-
     private void setCurrentSelection(BookmarkId... bookmarkIdArray) {
         List<BookmarkId> bookmarkIdList = Arrays.asList(bookmarkIdArray);
         doReturn(bookmarkIdList).when(mSelectionDelegate).getSelectedItemsAsList();

@@ -36,7 +36,7 @@
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/sync_method_unittest.test-mojom-shared-message-ids.h"
 #include "mojo/public/cpp/bindings/tests/sync_method_unittest.test-mojom.h"
-#include "mojo/public/interfaces/bindings/tests/test_sync_methods.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_sync_methods.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This needs to be included last, since it forward declares a bunch of classes

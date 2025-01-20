@@ -347,6 +347,10 @@
         android:taskAffinity=""
         android:theme="@style/Theme.Chromium.SearchActivity"
         android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: 8fea14cf
+        <action android:name="android.intent.action.WEB_SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 8fea14cf
     </activity>  # DIFF-ANCHOR: 7468a722
     <activity  # DIFF-ANCHOR: d32b85df
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
@@ -385,11 +389,12 @@
         android:exported="false"
         android:theme="@style/Theme.Material3.DayNight">
     </activity>  # DIFF-ANCHOR: 45a98fa4
-    <activity  # DIFF-ANCHOR: ed66979d
-        android:name="org.chromium.chrome.browser.task_manager.TaskManagerActivity"
+    <activity  # DIFF-ANCHOR: 6e34d703
+        android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
         android:exported="false"
+        android:launchMode="singleInstance"
         android:theme="@style/Theme.Chromium.Activity">
-    </activity>  # DIFF-ANCHOR: ed66979d
+    </activity>  # DIFF-ANCHOR: 6e34d703
     <activity  # DIFF-ANCHOR: 43bfa5de
         android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

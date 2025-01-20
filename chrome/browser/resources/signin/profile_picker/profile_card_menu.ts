@@ -52,7 +52,6 @@ export interface ProfileCardMenuElement {
     actionMenu: CrActionMenuElement,
     moreActionsButton: HTMLElement,
     removeConfirmationDialog: CrDialogElement,
-    removePrimaryLacrosProfileDialog: CrDialogElement,
   };
 }
 

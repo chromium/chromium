@@ -90,6 +90,7 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
 
  public:
   explicit CheckPseudoHasArgumentContext(const CSSSelector* selector,
+                                         const ContainerNode* scope,
                                          bool match_in_shadow_tree);
 
   inline bool AdjacentDistanceFixed() const {
@@ -129,6 +130,9 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   }
 
   const CSSSelector* HasArgument() const { return has_argument_; }
+
+  // See SelectorCheckingContext::scope.
+  const ContainerNode* Scope() const { return scope_; }
 
   const Vector<unsigned>& GetPseudoHasArgumentHashes() const {
     return pseudo_has_argument_hashes_;
@@ -281,6 +285,7 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   CheckPseudoHasArgumentTraversalScope traversal_scope_;
   SiblingsAffectedByHasFlags siblings_affected_by_has_flags_;
   const CSSSelector* has_argument_;
+  const ContainerNode* scope_;
   bool match_in_shadow_tree_;
 
   Vector<unsigned> pseudo_has_argument_hashes_;

@@ -11,12 +11,12 @@ source_set("coordinator") {
   ]
 
   deps = [
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tips_notifications/ui:enhanced_safe_browsing_promo",
     "//ios/chrome/browser/tips_notifications/ui:lens_promo",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
 }

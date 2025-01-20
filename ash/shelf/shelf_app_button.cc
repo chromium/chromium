@@ -501,13 +501,15 @@ ShelfAppButton::~ShelfAppButton() {
 }
 
 void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
-  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      image, icon_shadows_));
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateImageWithDropShadow(image,
+                                                          icon_shadows_)));
 }
 
 void ShelfAppButton::UpdateMainAndMaybeHostBadgeIconImage() {
   if (is_promise_app_ || progress_indicator_ || has_host_badge_) {
-    icon_view_->SetImage(GetIconImage(icon_scale_));
+    icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(GetIconImage(icon_scale_)));
     return;
   }
 

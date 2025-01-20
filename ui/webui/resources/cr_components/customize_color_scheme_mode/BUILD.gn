@@ -33,9 +33,9 @@ build_webui("build") {
     "customize_color_scheme_mode.html.ts",
     "customize_color_scheme_mode.ts",
     "segmented_button.html.ts",
+    "segmented_button.ts",
     "segmented_button_option.html.ts",
     "segmented_button_option.ts",
-    "segmented_button.ts",
   ]
   css_files = [
     "customize_color_scheme_mode.css",

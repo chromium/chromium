@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -33,7 +34,7 @@ constexpr char kIncorrectPinnedVersion[] = "bad.1.version";
 // We create an instance of IsolatedWebAppExternalInstallOptions if both
 // update manifest URL and bundle ID are correct as the app may be installed.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl);
 
   ASSERT_OK_AND_ASSIGN(
@@ -47,7 +48,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
 
 // We don't install apps signed by not a release key.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueDevelopmentId) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kDevelopmentSignedWebBundleId, kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -58,7 +59,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueDevelopmentId) {
 
 // We don't install an app with incorrect ID.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongId) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kIncorrectSignedWebBundleId, kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -69,7 +70,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongId) {
 
 // Verify if a valid custom update channel is correctly parsed and set.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueCustomChannel) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId);
 
   ASSERT_OK_AND_ASSIGN(
@@ -80,13 +81,43 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueCustomChannel) {
 
 // Verify if a pinned version is correctly parsed and set.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValuePinnedVersion) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
-      kCorrectPinnedVersion);
+      kCorrectPinnedVersion, /*allow_downgrades=*/false);
 
   ASSERT_OK_AND_ASSIGN(
       const auto options,
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+
+  EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
+  EXPECT_EQ(options.allow_downgrades(), false);
+}
+
+// Verify that invalid version throws an error.
+TEST(IsolatedWebAppExternalInstallOptionsTest,
+     FromPolicyValueInvalidPinnedVersion) {
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
+      kIncorrectPinnedVersion, /*allow_downgrades=*/false);
+
+  const auto options =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
+
+  EXPECT_FALSE(options.has_value());
+  EXPECT_EQ(options.error(), "Pinned version has invalid format");
+}
+
+// Verify if allow_downgrades field is correctly set.
+TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueAllowDowngrades) {
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
+      kCorrectPinnedVersion, /*allow_downgrades=*/true);
+
+  ASSERT_OK_AND_ASSIGN(
+      const auto options,
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+
+  EXPECT_EQ(options.allow_downgrades(), true);
   EXPECT_EQ(options.pinned_version(), base::Version(kCorrectPinnedVersion));
 }
 
@@ -94,7 +125,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValuePinnedVersion) {
 // custom channel defined.
 TEST(IsolatedWebAppExternalInstallOptionsTest,
      FromPolicyValuePinnedVersionNoChannel) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, std::nullopt,
       kCorrectPinnedVersion);
 
@@ -107,7 +138,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest,
 
 // Verify that if no pinned version is set, then it does not appear in options.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueNoPinnedVersion) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId);
 
   ASSERT_OK_AND_ASSIGN(
@@ -118,7 +149,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueNoPinnedVersion) {
 
 // No app install if we can't parse the update manifest URL.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongUrl) {
-  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
       kEd25519SignedWebBundleId, kIncorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>

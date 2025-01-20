@@ -31,7 +31,7 @@ namespace views {
 class LabelButton;
 class MenuRunner;
 class TreeView;
-}
+}  // namespace views
 
 class BookmarkEditorViewTest;
 class GURL;
@@ -58,7 +58,14 @@ class BookmarkEditorView : public BookmarkEditor,
 
  public:
   // Type of node in the tree. Public purely for testing.
-  typedef ui::TreeNodeWithValue<int64_t> EditorNode;
+  struct EditorNodeData {
+    enum class Type { kRoot, kTitle, kFolder };
+    Type type;
+    // bookmark_node_id only makes sense for kFolder, but may be zero for a new
+    // folder before a corresponding entry has been added to the bookmark model.
+    int64_t bookmark_node_id = 0;
+  };
+  typedef ui::TreeNodeWithValue<EditorNodeData> EditorNode;
 
   // Model for the TreeView. Trivial subclass that doesn't allow titles with
   // empty strings. Public purely for testing.
@@ -153,6 +160,12 @@ class BookmarkEditorView : public BookmarkEditor,
   // url we're editing or the most recent parent if the url being editted isn't
   // starred.
   void ExpandAndSelect();
+
+  // Returns true if a bookmark folder is currently selected.
+  bool IsBookmarkFolderSelected() const;
+
+  // Returns true if `node` can be edited.
+  bool CanEdit(ui::TreeModelNode* node) const;
 
   // Creates a returns the new root node. This invokes CreateNodes to do
   // the real work.
@@ -249,10 +262,6 @@ class BookmarkEditorView : public BookmarkEditor,
   raw_ptr<bookmarks::BookmarkModel> bb_model_;
   // Corresponding expanded state tracker.
   raw_ptr<BookmarkExpandedStateTracker> expanded_state_tracker_;
-
-  // If true, we're running the menu for the bookmark bar or other bookmarks
-  // nodes.
-  bool running_menu_for_root_ = false;
 
   // Is the tree shown?
   const bool show_tree_;

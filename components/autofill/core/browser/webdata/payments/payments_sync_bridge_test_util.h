@@ -52,6 +52,18 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
     std::string ewallet_name,
     std::string account_display_name,
     bool is_fido_enrolled);
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
+                                                 std::string issuer_id,
+                                                 std::string currency,
+                                                 uint64_t price_lower_bound,
+                                                 uint64_t price_upper_bound);
+
+sync_pb::AutofillWalletSpecifics
+CreateAutofillWalletSpecificsForPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_SYNC_BRIDGE_TEST_UTIL_H_

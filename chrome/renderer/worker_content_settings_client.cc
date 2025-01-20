@@ -61,7 +61,7 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
         *(other.content_setting_rules_));
 }
 
-WorkerContentSettingsClient::~WorkerContentSettingsClient() {}
+WorkerContentSettingsClient::~WorkerContentSettingsClient() = default;
 
 std::unique_ptr<blink::WebContentSettingsClient>
 WorkerContentSettingsClient::Clone() {

@@ -111,6 +111,8 @@ ASH_EXPORT bool CanWindowSnap();
 
 ASH_EXPORT bool CanResizePipWindow();
 
+ASH_EXPORT bool CanToggleGeminiApp();
+
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.
 // Note: These functions should be independent and not depend on ui::Accelerator
@@ -319,13 +321,22 @@ ASH_EXPORT void ToggleCalendar();
 // Turns caps lock on and off.
 ASH_EXPORT void ToggleCapsLock();
 
+// Enables or disables camera access in privacy settings.
+ASH_EXPORT void ToggleCameraAllowed();
+
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
-// Toggles Picker.
+// Toggles do not disturb functionality.
+ASH_EXPORT void ToggleDoNotDisturb();
+
+// Toggles Quick Insert.
 // `accelerator_timestamp` is the timestamp associated with the accelerator that
-// triggered Picker.
-ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
+// triggered Quick Insert.
+ASH_EXPORT void ToggleQuickInsert(base::TimeTicks accelerator_timestamp);
+
+// Toggles Gemini.
+ASH_EXPORT void ToggleGeminiApp();
 
 // Enables Select to Speak if the feature is currently disabled. Does nothing if
 // the feature is currently enabled.

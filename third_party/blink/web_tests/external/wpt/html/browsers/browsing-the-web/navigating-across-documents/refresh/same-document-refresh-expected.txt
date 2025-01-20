@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Same-Document Referrer from Refresh
+  assert_equals: referrer header is unchanged expected "http://web-platform.test:8001/html/browsers/browsing-the-web/navigating-across-documents/refresh/same-document-refresh.html" but got "http://web-platform.test:8001/html/browsers/browsing-the-web/navigating-across-documents/refresh/resources/refresh-with-section.sub.html?url=%23section"
+Harness: the test ran to completion.
+

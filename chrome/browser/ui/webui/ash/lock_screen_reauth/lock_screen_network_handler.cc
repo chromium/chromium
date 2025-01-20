@@ -44,7 +44,7 @@ constexpr char kGetHostname[] = "getHostname";
 
 }  // namespace
 
-NetworkConfigMessageHandler::NetworkConfigMessageHandler() {}
+NetworkConfigMessageHandler::NetworkConfigMessageHandler() = default;
 
 NetworkConfigMessageHandler::~NetworkConfigMessageHandler() = default;
 
@@ -76,8 +76,9 @@ void NetworkConfigMessageHandler::Initialize(const base::Value::List& args) {
   // been loaded.
   LockScreenStartReauthDialog* start_reauth_dialog =
       LockScreenStartReauthDialog::GetInstance();
-  if (!start_reauth_dialog)
+  if (!start_reauth_dialog) {
     return;
+  }
   start_reauth_dialog->OnNetworkDialogReadyForTesting();
 }
 

@@ -247,10 +247,6 @@ DownloadBubblePartialView::DownloadBubblePartialView(
 
 DownloadBubblePartialView::~DownloadBubblePartialView() = default;
 
-bool DownloadBubblePartialView::IsPartialView() const {
-  return true;
-}
-
 void DownloadBubblePartialView::AddedToWidget() {
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {

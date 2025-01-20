@@ -32,7 +32,7 @@ class TabGroupController {
   virtual int GetTabCount() const = 0;
 
  protected:
-  virtual ~TabGroupController() {}
+  virtual ~TabGroupController() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_CONTROLLER_H_

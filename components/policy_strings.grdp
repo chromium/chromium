@@ -52,6 +52,9 @@
   <message name="IDS_POLICY_DM_STATUS_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Message to show when the user tries to enroll a device with a packaged license into Kiosk.">
     This is a bundled device and can not be enrolled with Kiosk and Signage Upgrade.
   </message>
+  <message name="IDS_POLICY_DM_STATUS_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED" desc="Error message to show when the user tries to enroll a device but the initial enrollment limit for the organization unit has been reached.">
+    This device can't be enrolled right now because your organization unit has reached its initial enrollment limit. Contact your administrator for assistance.
+  </message>
   <message name="IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH" desc="Message indicating this client cannot be registered with the specified domain.">
     Domain mismatch
   </message>
@@ -72,6 +75,9 @@
   </message>
   <message name="IDS_POLICY_DM_STATUS_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Can't enroll with enterprise account (enterprise account is not eligible).
+  </message>
+  <message name="IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION" desc="Status text for a download item that was blocked by the organization.">
+    Blocked by your organization
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
     Validation successful
@@ -382,31 +388,34 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT" desc="The text displayed in the status column of the SiteSearchSettings policy when there is more than one entry using the same shortcut.">
     Ignored non-unique shortcut: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut contains a space character.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut contains a space character.">
     Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut starts with the @ character.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut starts with the @ character.">
     Shortcut can't start with the @ character: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the SiteSearchSettings policy when there is no valid entry in the policy.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when there is no valid entry in the policy.">
     The list contains no valid search provider.
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is defined as an empty string.">
     Shortcut can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a name is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a name is defined as an empty string.">
     Name can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL is defined as an empty string.">
     URL can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
     URL doesn't include required replacement string <ph name="SEARCH_TERMS_REPLACEMENT">"{searchTerms}"</ph>: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
     Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL scheme is not HTTPS.">
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_SEARCH_AGGREGATOR_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the SearchAggregatorSettings policy.">
+    Shortcut can't be the same as the search aggregator keyword defined by <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY">SearchAggregatorSettings</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
+  </message>
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL scheme is not HTTPS.">
     HTTPS scheme recommended for search URL: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
   </message>
   <message name="IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEYS" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains incoherent values">
@@ -1282,6 +1291,12 @@ Additional details:
   <message name="IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS" desc="The text displayed in the status column when a policy is not supported as a user policy on ios.">
     This policy is not yet supported as a user policy on iOS.
   </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_CONTROL_MESSAGE" desc="Text listing all GenAI policies whose default behavior is controlled by GenAiDefaultSettings.">
+    This policy is controlling the default behavior of the following policies: <ph name="POLICIES">$1<ex>Policy1, Policy2</ex></ph>
+  </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_NO_CONTROL_MESSAGE" desc="Text stating that no GenAI policies have their default behavior controlled by GenAiDefaultSettings.">
+    This policy is not controlling the default behavior of any other policies.
+  </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
     Sign in to OneDrive to continue downloading
   </message>
@@ -1372,13 +1387,13 @@ Additional details:
   </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOUR" desc="The title for the dialog informing the user that migration will start in 1 hour.">
     Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 hour
-  </message>  
+  </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTES" desc="The title for the dialog informing the user that migration will start in 2 or more minutes.">
     Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in <ph name="MINUTES">$2<ex>36</ex></ph> minutes
   </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTE" desc="The title for the dialog informing the user that migration will start in 1 minute.">
     Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 minute
-  </message>  
+  </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
     Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> at <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
   </message>

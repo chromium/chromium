@@ -46,11 +46,11 @@ LocalOrSyncableBookmarkSyncServiceFactory::
 LocalOrSyncableBookmarkSyncServiceFactory::
     ~LocalOrSyncableBookmarkSyncServiceFactory() = default;
 
-KeyedService*
-LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> LocalOrSyncableBookmarkSyncServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new sync_bookmarks::BookmarkSyncService(
+  return std::make_unique<sync_bookmarks::BookmarkSyncService>(
       BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 }

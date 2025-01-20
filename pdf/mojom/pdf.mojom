@@ -4,6 +4,7 @@
 
 module pdf.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -28,9 +29,19 @@ interface PdfListener {
 
   // Get PDF bytes. If the size of the PDF in bytes is larger than `size_limit`,
   // an empty vector will be returned instead. `bytes` is only guaranteed to be
-  // from the PDF engine if `status` is `kSuccess`.
+  // from the PDF engine if `status` is `kSuccess`. `page_count` is the number
+  // of pages in the PDF displayed in the renderer, not the number of pages
+  // returned in `bytes`.
   GetPdfBytes(uint32 size_limit)
-      => (GetPdfBytesStatus status, array<uint8> bytes);
+      => (GetPdfBytesStatus status, array<uint8> bytes, uint32 page_count);
+
+  // Get the text contained on the given page of the PDF. `page_index` should be
+  // the range [0, # of pages).
+  GetPageText(int32 page_index) => (mojo_base.mojom.String16 text);
+
+  // Returns the index of the most visible page. If no page is visible,
+  // returns nullopt.
+  GetMostVisiblePageIndex() => (uint32? page_index);
 };
 
 // Browser-side interface used by PDF renderers.

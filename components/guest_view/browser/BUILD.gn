@@ -32,7 +32,6 @@ static_library("browser") {
     "//components/guest_view/common",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/guest_view/common:mojom",
     "//components/zoom",

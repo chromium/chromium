@@ -1825,7 +1825,7 @@ def main(argv):
     module_configs_by_name = {d['module_name']: d for d in module_configs}
     per_module_fields = [
         'device_classpath', 'trace_event_rewritten_device_classpath',
-        'all_dex_files'
+        'all_dex_files', 'assets'
     ]
     lint_aars = set()
     lint_srcjars = set()
@@ -2280,10 +2280,10 @@ def main(argv):
                              tested_apk_config['javac_full_classpath_targets']):
         jar_to_target[jar] = target
 
-    # Used by bytecode_processor to give better error message when missing
-    # deps are found. Both javac_full_classpath_targets and javac_full_classpath
-    # must be in identical orders, as they get passed as separate arrays and
-    # then paired up based on index.
+    # Used by check_for_missing_direct_deps.py to give better error message
+    # when missing deps are found. Both javac_full_classpath_targets and
+    # javac_full_classpath must be in identical orders, as they get passed as
+    # separate arrays and then paired up based on index.
     config['deps_info']['javac_full_classpath_targets'] = [
         jar_to_target[x] for x in deps_info['javac_full_classpath']
     ]

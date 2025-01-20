@@ -63,22 +63,15 @@ bool IsFillable(mojom::FocusedFieldType focused_field_type);
 mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
     mojom::SubmissionSource source);
 
+// Strips any authentication data from `gurl`.
+GURL StripAuth(const GURL& gurl);
+
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
 
 // Checks if the user triggered Autofill on a field manually through the Chrome
 // context menu.
 bool IsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source);
-
-// Checks if the user triggered address Autofill on a field manually through the
-// Chrome context menu.
-bool IsAddressAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source);
-
-// Checks if the user triggered payments Autofill on a field manually through
-// the Chrome context menu.
-bool IsPaymentsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
 // Checks if the user triggered passwords Autofill on a field manually through

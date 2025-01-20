@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_AI_CHROME_AUTOFILL_AI_CLIENT_H_
 
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/prefs/pref_service.h"
@@ -41,9 +42,10 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   std::string GetTitle() override;
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;
+  autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
-  void OpenPredictionImprovementsSettings() override;
+  void OpenAutofillAiSettings() override;
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormData& form_data) override;
@@ -57,6 +59,11 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
       override;
 
+  void SetModelExecutorForTesting(
+      std::unique_ptr<autofill_ai::AutofillAiModelExecutor> model_executor) {
+    filling_engine_ = std::move(model_executor);
+  }
+
  private:
   explicit ChromeAutofillAiClient(content::WebContents* web_contents,
                                   Profile* profile);
@@ -64,10 +71,11 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
 
-  // Returns whether the optimization guide suggests that Autofill prediction
-  // improvements should currently be allowed to report feedback.
+  // Returns whether the optimization guide suggests that Autofill AI should
+  // should currently be allowed to report feedback.
   bool CanShowFeedbackPage();
 
+  // TODO(crbug.com/371534239): Rename to `model_executor_`.
   std::unique_ptr<autofill_ai::AutofillAiModelExecutor> filling_engine_;
 
   autofill_ai::AutofillAiManager prediction_improvements_manager_;

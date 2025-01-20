@@ -208,8 +208,9 @@ void PathInterpolationFunctions::Composite(
     const InterpolationValue& value) {
   const auto& list = To<InterpolableList>(*value.interpolable_value);
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
-  double neutral_component = To<InterpolableNumber>(list.Get(kPathNeutralIndex))
-                                 ->Value(CSSToLengthConversionData());
+  double neutral_component =
+      To<InterpolableNumber>(list.Get(kPathNeutralIndex))
+          ->Value(CSSToLengthConversionData(/*element=*/nullptr));
 
   if (neutral_component == 0) {
     underlying_value_owner.Set(type, value);

@@ -51,8 +51,9 @@ bool ChromeWebContentsViewFocusHelper::TakeFocus(bool reverse) {
 
 void ChromeWebContentsViewFocusHelper::StoreFocus() {
   last_focused_view_tracker_.SetView(nullptr);
-  if (GetFocusManager())
+  if (GetFocusManager()) {
     last_focused_view_tracker_.SetView(GetFocusManager()->GetFocusedView());
+  }
 }
 
 bool ChromeWebContentsViewFocusHelper::RestoreFocus() {

@@ -12,10 +12,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace {
@@ -97,10 +97,11 @@ void PartialTranslateBubbleModelImpl::SetTargetText(
   // Luxembourgish uses a leading space and is the only one of these languages
   // supported by Translate in Chrome. Given this, specific localization is not
   // handled, but could be in the future if more languages are included.
-  if (source_text_truncated_)
+  if (source_text_truncated_) {
     target_text_ = text + u"…";
-  else
+  } else {
     target_text_ = text;
+  }
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetTargetText() const {
@@ -171,14 +172,15 @@ void PartialTranslateBubbleModelImpl::Translate(
   // If the selected text was truncated, strip the trailing ellipses before
   // sending for translation.
   std::u16string source_text = GetSourceText();
-  if (source_text_truncated_)
+  if (source_text_truncated_) {
     request.selection_text = source_text.substr(0, source_text.size() - 1);
-  else
+  } else {
     request.selection_text = source_text;
+  }
 
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
-  if (source_language_code != translate::kUnknownLanguageCode) {
+  if (source_language_code != language_detection::kUnknownLanguageCode) {
     // |source_language_code| will be kUnknownLanguageCode if it was initially
     // returned by page language detection, or if the user explicitly selects
     // "Detected Language" in the language list. In such cases,

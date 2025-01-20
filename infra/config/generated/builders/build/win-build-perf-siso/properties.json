@@ -52,8 +52,7 @@
   },
   "$build/siso": {
     "configs": [
-      "builder",
-      "remote-link"
+      "builder"
     ],
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,

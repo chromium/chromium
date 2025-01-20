@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -11,21 +11,6 @@ async function navigateToRequestedUrl() {
   let tab = await openTab(url);
   return tab;
 }
-
-// Returns the injected element ids in `tabId`.
-async function getInjectedElementIds(tabId) {
-  let injectedElements = await chrome.scripting.executeScript({
-    target: {tabId: tabId},
-    func: () => {
-      let childIds = [];
-      for (const child of document.body.children)
-        childIds.push(child.id);
-      return childIds.sort();
-    }
-  });
-  chrome.test.assertEq(1, injectedElements.length);
-  return injectedElements[0].result;
-};
 
 chrome.test.runTests([
   // Test that an error is returned when any of the script IDs specified in
@@ -171,6 +156,55 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Test that an error is returned if the script source list specified is
+  // empty.
+  async function emptyJsError() {
+    await chrome.userScripts.unregister();
+
+    // Register user script.
+    const scriptId = 'us1';
+    const scriptsToRegister = [
+      {id: scriptId, matches: ['*://*/*'], js: [{file: 'user_script.js'}]}
+    ];
+    await chrome.userScripts.register(scriptsToRegister);
+    let tab = await navigateToRequestedUrl();
+
+    // Verify user script was registered and injected.
+    let registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(1, registeredScripts.length);
+    chrome.test.assertEq(
+        ['injected_user_script'],
+        await getInjectedElementIds(tab.id));
+
+    // Updating a script with an empty script source list should fail.
+    const scriptsToUpdate = [
+      {
+        id: scriptId,
+        matches: ['*://hostperms-a.com/*'],
+        js: []
+      }
+    ];
+
+    await chrome.test.assertPromiseRejects(
+      chrome.userScripts.update(scriptsToUpdate),
+      `Error: User script with ID '${scriptId}' must specify at least one ` +
+          `js source.`);
+
+    // Verify previously registered user script was not affected.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_idle',
+      allFrames: false,
+      world: "USER_SCRIPT"
+    }];
+    registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
+
+    chrome.test.succeed();
+  },
+
   async function updatingToAnInvalidWorldIdThrowsError() {
     await chrome.userScripts.unregister();
 
@@ -193,6 +227,50 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.update(scriptUpdate),
         `Error: World IDs beginning with '_' are reserved.`);
+
+    chrome.test.succeed();
+  },
+
+  // Tests updating a user script world ID from a non-default world back to
+  // the default world.
+  async function updateUserScriptToDefaultWorldId() {
+    await chrome.userScripts.unregister();
+
+    // Register a user script with a given world ID.
+    const scriptToRegister = [
+      {
+        id: 'us1',
+        matches: ['*://*/*'],
+        js: [{file: 'user_script.js'}],
+        worldId: 'some world',
+      },
+    ];
+    await chrome.userScripts.register(scriptToRegister);
+
+    // Update it to the default world by specifying `worldId: ''`.
+    const scriptUpdate = [
+      {
+        id: 'us1',
+        matches: ['*://*/*'],
+        js: [{file: 'user_script.js'}],
+        worldId: '',
+      }
+    ];
+
+    await chrome.userScripts.update(scriptUpdate);
+
+    // The updated script should now use the default world ID, which is
+    // represented by not having a specified world ID.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_idle',
+      allFrames: false,
+      world: 'USER_SCRIPT',
+    }];
+    const registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
 
     chrome.test.succeed();
   },
@@ -260,6 +338,48 @@ chrome.test.runTests([
     tab = await openTab(url);
     chrome.test.assertEq(
         ['injected_user_script_2'], await getInjectedElementIds(tab.id));
+
+    chrome.test.succeed();
+  },
+
+  // Tests that the script id is the only required field when calling
+  // userScripts.update. Such call will be successful and have no effect.
+  async function scriptUpdated_requiredFields() {
+    await chrome.userScripts.unregister();
+
+    // Register user script.
+    const scriptsToRegister = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_end'
+    }];
+    await chrome.userScripts.register(scriptsToRegister);
+    let tab = await navigateToRequestedUrl();
+
+    // Verify user script was registered and injected
+    let registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(1, registeredScripts.length);
+    chrome.test.assertEq(
+        ['injected_user_script'], await getInjectedElementIds(tab.id));
+
+    // Update user script with no changes.
+    const scriptsToUpdate = [{
+      id: 'us1'
+    }];
+    await chrome.userScripts.update(scriptsToUpdate);
+
+    // Verify user script remains the same.
+    const expectedScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{file: 'user_script.js'}],
+      runAt: 'document_end',
+      allFrames: false,
+      world:"USER_SCRIPT"
+    }];
+    registeredScripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedScripts, registeredScripts);
 
     chrome.test.succeed();
   },

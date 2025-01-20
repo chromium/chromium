@@ -353,23 +353,23 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     switch (this.lastUserAction_) {
       case Actions.BLOCK:
         this.toastText_ = this.i18n(
-            'safetyCheckNotificationPermissionReviewBlockedToastLabel',
+            'safetyHubNotificationPermissionReviewBlockedToastLabel',
             this.lastOrigins_[0]);
         break;
       case Actions.BLOCK_ALL:
         this.toastText_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
-                'safetyCheckNotificationPermissionReviewBlockAllToastLabel',
+                'safetyHubNotificationPermissionReviewBlockAllToastLabel',
                 this.lastOrigins_.length);
         break;
       case Actions.IGNORE:
         this.toastText_ = this.i18n(
-            'safetyCheckNotificationPermissionReviewIgnoredToastLabel',
+            'safetyHubNotificationPermissionReviewIgnoredToastLabel',
             this.lastOrigins_[0]);
         break;
       case Actions.RESET:
         this.toastText_ = this.i18n(
-            'safetyCheckNotificationPermissionReviewResetToastLabel',
+            'safetyHubNotificationPermissionReviewResetToastLabel',
             this.lastOrigins_[0]);
         break;
       default:
@@ -447,7 +447,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       return '';
     }
     return this.i18n(
-        'safetyCheckNotificationPermissionReviewIgnoreAriaLabel', origins[0]);
+        'safetyHubNotificationPermissionReviewIgnoreAriaLabel', origins[0]);
   }
 
   private getResetAriaLabelForOrigins(origins: string[]): string {
@@ -456,7 +456,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       return '';
     }
     return this.i18n(
-        'safetyCheckNotificationPermissionReviewResetAriaLabel', origins[0]);
+        'safetyHubNotificationPermissionReviewResetAriaLabel', origins[0]);
   }
 
   private showUndoTooltip_(e: Event) {

@@ -8,24 +8,23 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/read_only_shared_memory_region.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/compositor_frame_fuzzer/compositor_frame_fuzzer.pb.h"
 
 namespace viz {
 
 struct FuzzedBitmap {
-  FuzzedBitmap(const SharedBitmapId& id,
-               const gfx::Size& size,
-               base::ReadOnlySharedMemoryRegion shared_region);
+  FuzzedBitmap(const gfx::Size& size,
+               scoped_refptr<gpu::ClientSharedImage> shared_image,
+               gpu::SyncToken sync_token);
   ~FuzzedBitmap();
 
   FuzzedBitmap(FuzzedBitmap&& other) noexcept;
   FuzzedBitmap& operator=(FuzzedBitmap&& other) = default;
 
-  SharedBitmapId id;
   gfx::Size size;
-  base::ReadOnlySharedMemoryRegion shared_region;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
 };
 
 struct FuzzedData {

@@ -35,7 +35,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
@@ -61,7 +60,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final DataSharingTabManager mDataSharingTabManager;
     private final @NonNull BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
@@ -82,6 +81,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      *     UI and DataSharing services.
      * @param backPressManager Manages the different back press handlers throughout the app.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -98,7 +98,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull BackPressManager backPressManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -121,6 +122,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                         : TabListCoordinator.TabListMode.GRID;
         mBackPressManager = backPressManager;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
     /**
@@ -155,7 +157,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mProfileProviderSupplier,
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
-                mTabCreatorManager,
                 mBrowserControlsStateProvider,
                 mScrimCoordinator,
                 mModalDialogManager,
@@ -190,22 +191,9 @@ public class TabSwitcherPaneCoordinatorFactory {
     static ScrimCoordinator createScrimCoordinatorForTablet(Activity activity) {
         ViewGroup coordinator = activity.findViewById(R.id.coordinator);
         // TODO(crbug.com/40067282): Because the show/hide animation already uses the
-        // RootUiCoordinator's
-        // ScrimCoordinator, a separate instance is needed. However, the way this is implemented the
-        // status bar color is not updated. This should be fixed.
-        SystemUiScrimDelegate delegate =
-                new SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {}
-                };
-        return new ScrimCoordinator(
-                activity,
-                delegate,
-                coordinator,
-                activity.getColor(R.color.omnibox_focused_fading_background_color));
+        // RootUiCoordinator's ScrimCoordinator, a separate instance is needed. However, the way
+        // this is implemented the status bar color is not updated. This should be fixed.
+        return new ScrimCoordinator(activity, /* systemUiScrimDelegate= */ null, coordinator);
     }
 
     @VisibleForTesting
@@ -258,7 +246,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mActivity.findViewById(R.id.coordinator),
                             mTabCreatorManager.getTabCreator(/* incognito= */ false),
                             mBackPressManager,
-                            mDesktopWindowStateManager);
+                            mDesktopWindowStateManager,
+                            mEdgeToEdgeSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

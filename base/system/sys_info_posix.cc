@@ -64,8 +64,9 @@ base::LazyInstance<
 bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
   struct statfs stats;
 
-  if (HANDLE_EINTR(statfs(path.value().c_str(), &stats)) != 0)
+  if (HANDLE_EINTR(statfs(path.value().c_str(), &stats)) != 0) {
     return false;
+  }
 
   // This static_cast is here because various libcs disagree about the size
   // and signedness of statfs::f_type. In particular, glibc has it as either a
@@ -87,8 +88,9 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
                       int64_t* available_bytes,
                       int64_t* total_bytes) {
   struct statvfs stats;
-  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0)
+  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0) {
     return false;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const bool zero_size_means_unlimited =
@@ -186,8 +188,9 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t available;
-  if (!GetDiskSpaceInfo(path, &available, nullptr))
+  if (!GetDiskSpaceInfo(path, &available, nullptr)) {
     return -1;
+  }
   return available;
 }
 
@@ -197,8 +200,9 @@ int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t total;
-  if (!GetDiskSpaceInfo(path, nullptr, &total))
+  if (!GetDiskSpaceInfo(path, nullptr, &total)) {
     return -1;
+  }
   return total;
 }
 
@@ -235,12 +239,15 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
   }
   int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
                         bugfix_version);
-  if (num_read < 1)
+  if (num_read < 1) {
     *major_version = 0;
-  if (num_read < 2)
+  }
+  if (num_read < 2) {
     *minor_version = 0;
-  if (num_read < 3)
+  }
+  if (num_read < 3) {
     *bugfix_version = 0;
+  }
 }
 #endif
 
@@ -282,20 +289,23 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
     std::string content;
     auto path = StringPrintf(
         "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", core_index);
-    if (!ReadFileToStringNonBlocking(FilePath(path), &content))
+    if (!ReadFileToStringNonBlocking(FilePath(path), &content)) {
       return 0;
+    }
     if (!StringToUint(
             content,
-            &max_core_frequencies_khz[static_cast<size_t>(core_index)]))
+            &max_core_frequencies_khz[static_cast<size_t>(core_index)])) {
       return 0;
+    }
   }
 
   auto [min_max_core_frequencies_khz_it, max_max_core_frequencies_khz_it] =
       std::minmax_element(max_core_frequencies_khz.begin(),
                           max_core_frequencies_khz.end());
 
-  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it)
+  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it) {
     return 0;
+  }
 
   return static_cast<int>(std::count(max_core_frequencies_khz.begin(),
                                      max_core_frequencies_khz.end(),

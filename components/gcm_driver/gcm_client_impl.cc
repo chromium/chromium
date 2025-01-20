@@ -1392,7 +1392,7 @@ void GCMClientImpl::HandleIncomingDataMessage(
     const mcs_proto::DataMessageStanza& data_message_stanza,
     MessageData& message_data) {
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
-                                      data_message_stanza.ByteSize(),
+                                      data_message_stanza.ByteSizeLong(),
                                       GCMStatsRecorder::DATA_MESSAGE);
 
   IncomingMessage incoming_message;
@@ -1418,7 +1418,7 @@ void GCMClientImpl::HandleIncomingDeletedMessages(
   }
 
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
-                                      data_message_stanza.ByteSize(),
+                                      data_message_stanza.ByteSizeLong(),
                                       GCMStatsRecorder::DELETED_MESSAGES);
   delegate_->OnMessagesDeleted(app_id);
 }

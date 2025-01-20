@@ -476,7 +476,12 @@ base::Value ToValue(
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options) {
   CHECK(!options->extensions.is_null());
   base::Value::Dict value;
-  value.Set("challenge", Base64UrlEncode(options->challenge));
+  if (options->challenge.has_value()) {
+    value.Set("challenge", Base64UrlEncode(*options->challenge));
+  } else {
+    CHECK(options->challenge_url.has_value());
+    value.Set("challengeUrl", options->challenge_url->spec());
+  }
   value.Set("rpId", options->relying_party_id);
 
   base::Value::List allow_credentials;

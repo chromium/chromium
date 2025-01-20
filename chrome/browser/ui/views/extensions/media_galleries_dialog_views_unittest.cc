@@ -41,21 +41,19 @@ MediaGalleryPrefInfo MakePrefInfoForTesting(MediaGalleryPrefId id) {
 
 class MediaGalleriesDialogTest : public ChromeViewsTestBase {
  public:
-  MediaGalleriesDialogTest() {}
+  MediaGalleriesDialogTest() = default;
 
   MediaGalleriesDialogTest(const MediaGalleriesDialogTest&) = delete;
   MediaGalleriesDialogTest& operator=(const MediaGalleriesDialogTest&) = delete;
 
-  ~MediaGalleriesDialogTest() override {}
+  ~MediaGalleriesDialogTest() override = default;
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     std::vector<std::u16string> headers;
-    headers.push_back(std::u16string());
+    headers.emplace_back();
     headers.push_back(u"header2");
-    ON_CALL(controller_, GetSectionHeaders()).
-        WillByDefault(Return(headers));
-    EXPECT_CALL(controller_, GetSectionEntries(_)).
-        Times(AnyNumber());
+    ON_CALL(controller_, GetSectionHeaders()).WillByDefault(Return(headers));
+    EXPECT_CALL(controller_, GetSectionEntries(_)).Times(AnyNumber());
   }
 
   void TearDown() override {
@@ -97,12 +95,10 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
 // permissions in the registry.
 TEST_F(MediaGalleriesDialogTest, InitializeCheckboxes) {
   MediaGalleriesDialogController::Entries attached_permissions;
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(MakePrefInfoForTesting(1), true));
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(MakePrefInfoForTesting(2), false));
-  EXPECT_CALL(*controller(), GetSectionEntries(0)).
-      WillRepeatedly(Return(attached_permissions));
+  attached_permissions.emplace_back(MakePrefInfoForTesting(1), true);
+  attached_permissions.emplace_back(MakePrefInfoForTesting(2), false);
+  EXPECT_CALL(*controller(), GetSectionEntries(0))
+      .WillRepeatedly(Return(attached_permissions));
 
   MediaGalleriesDialogViews dialog(controller());
   EXPECT_EQ(2U, dialog.checkbox_map_.size());
@@ -118,10 +114,9 @@ TEST_F(MediaGalleriesDialogTest, InitializeCheckboxes) {
 TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
   // Setup necessary for the expectations in CreateParams() above to pass.
   MediaGalleriesDialogController::Entries attached_permissions;
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(MakePrefInfoForTesting(1), true));
-  EXPECT_CALL(*controller(), GetSectionEntries(0)).
-      WillRepeatedly(Return(attached_permissions));
+  attached_permissions.emplace_back(MakePrefInfoForTesting(1), true);
+  EXPECT_CALL(*controller(), GetSectionEntries(0))
+      .WillRepeatedly(Return(attached_permissions));
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -143,25 +138,22 @@ TEST_F(MediaGalleriesDialogTest, UpdateAdds) {
   MediaGalleriesDialogViews dialog(controller());
 
   MediaGalleriesDialogController::Entries attached_permissions;
-  EXPECT_CALL(*controller(), GetSectionEntries(0)).
-      WillRepeatedly(ReturnPointee(&attached_permissions));
+  EXPECT_CALL(*controller(), GetSectionEntries(0))
+      .WillRepeatedly(ReturnPointee(&attached_permissions));
 
   EXPECT_TRUE(dialog.checkbox_map_.empty());
 
   MediaGalleryPrefInfo gallery1 = MakePrefInfoForTesting(1);
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(gallery1, true));
+  attached_permissions.emplace_back(gallery1, true);
   dialog.UpdateGalleries();
   EXPECT_EQ(1U, dialog.checkbox_map_.size());
 
   MediaGalleryPrefInfo gallery2 = MakePrefInfoForTesting(2);
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(gallery2, true));
+  attached_permissions.emplace_back(gallery2, true);
   dialog.UpdateGalleries();
   EXPECT_EQ(2U, dialog.checkbox_map_.size());
 
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(gallery2, false));
+  attached_permissions.emplace_back(gallery2, false);
   dialog.UpdateGalleries();
   EXPECT_EQ(2U, dialog.checkbox_map_.size());
 }
@@ -170,20 +162,18 @@ TEST_F(MediaGalleriesDialogTest, ForgetDeletes) {
   MediaGalleriesDialogViews dialog(controller());
 
   MediaGalleriesDialogController::Entries attached_permissions;
-  EXPECT_CALL(*controller(), GetSectionEntries(0)).
-      WillRepeatedly(ReturnPointee(&attached_permissions));
+  EXPECT_CALL(*controller(), GetSectionEntries(0))
+      .WillRepeatedly(ReturnPointee(&attached_permissions));
 
   EXPECT_TRUE(dialog.checkbox_map_.empty());
 
   MediaGalleryPrefInfo gallery1 = MakePrefInfoForTesting(1);
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(gallery1, true));
+  attached_permissions.emplace_back(gallery1, true);
   dialog.UpdateGalleries();
   EXPECT_EQ(1U, dialog.checkbox_map_.size());
 
   MediaGalleryPrefInfo gallery2 = MakePrefInfoForTesting(2);
-  attached_permissions.push_back(
-      MediaGalleriesDialogController::Entry(gallery2, true));
+  attached_permissions.emplace_back(gallery2, true);
   dialog.UpdateGalleries();
   EXPECT_EQ(2U, dialog.checkbox_map_.size());
 

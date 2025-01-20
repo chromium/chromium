@@ -127,6 +127,59 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     const TransformPaintPropertyNode* outer_scroll_translation = nullptr;
   };
 
+  enum class UpdateType : uint8_t {
+    kNone,
+
+    // Fast-path update after raster-inducing scroll that don't need repaint or
+    // full update. This only updates the old paint chunk info (which may be
+    // affected by scroll offsets) in RasterInvalidator.
+    kRasterInducingScroll,
+
+    // Fast-path update where the painting of existing composited layers
+    // changed, but property trees and compositing decisions remain the same.
+    // When this update can be used is tightly coupled with `Update`, see
+    // `SetNeedsUpdateAfterRepaint` for details. For example, this update can
+    // be used when the color of a display item is updated. This update can not
+    // be used if the size of a display item increases because that could
+    // require different cc::layers due to changes in overlap. This update also
+    // can not be used if property trees change (with the exception of
+    // fast-path direct updates that do not change compositing such as
+    // |DirectlyUpdateCompositedOpacityValue|) because property tree values in
+    // effect and clip nodes create cc::layers (e.g., clip mask layers).
+    //
+    // This copies over the newly-painted PaintChunks to existing
+    // |pending_layers_|, issues raster invalidations, and updates the existing
+    // cc::Layer properties such as background color.
+    kRepaint,
+
+    // Full update of layers and property trees. See `Update`.
+    kFull,
+  };
+
+  void SetNeedsUpdate() { SetNeedsUpdateInternal(UpdateType::kFull); }
+  void SetNeedsUpdateForRasterInducingScroll() {
+    SetNeedsUpdateInternal(UpdateType::kRasterInducingScroll);
+  }
+  void SetNeedsUpdateAfterRepaint(const PaintArtifact& previous,
+                                  const PaintArtifact& repainted);
+
+  UpdateType NeedsUpdate() const { return needs_update_; }
+  void ClearNeedsUpdateForTesting() { needs_update_ = UpdateType::kNone; }
+
+  // There is no mechanism for doing a paint lifecycle phase without running
+  // PaintArtifactCompositor::Update so this is exposed so tests can check the
+  // last update type.
+  UpdateType PreviousUpdateForTesting() const {
+    return previous_update_for_testing_;
+  }
+  void ClearPreviousUpdateForTesting() {
+    previous_update_for_testing_ = UpdateType::kNone;
+  }
+
+  // Try fast-path update (kRasterInducingScroll or kRepaint).
+  // Returns true if no further update is needed.
+  bool TryFastPathUpdate(const PaintArtifact&);
+
   // Updates the cc layer list and property trees to match those provided in
   // |paint_chunks|.
   //
@@ -140,25 +193,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
               const ViewportProperties& viewport_properties,
               const StackScrollTranslationVector& scroll_translation_nodes,
               Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
-
-  // Fast-path update where the painting of existing composited layers changed,
-  // but property trees and compositing decisions remain the same. See:
-  // |Update| for full updates.
-  //
-  // When this update can be used is tightly coupled with |Update|, see
-  // |SetNeedsFullUpdateAfterPaintIfNeeded| for details. For example, this
-  // update can be used when the color of a display item is updated. This update
-  // can not be used if the size of a display item increases because that could
-  // require different cc::layers due to changes in overlap. This update also
-  // can not be used if property trees change (with the exception of fast-path
-  // direct updates that do not change compositing such as
-  // |DirectlyUpdateCompositedOpacityValue|) because property tree values in
-  // effect and clip nodes create cc::layers (e.g., clip mask layers).
-  //
-  // This copies over the newly-painted PaintChunks to existing
-  // |pending_layers_|, issues raster invalidations, and updates the existing
-  // cc::Layer properties such as background color.
-  void UpdateRepaintedLayers(const PaintArtifact&);
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
@@ -178,6 +212,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // TODO(crbug.com/40517276): Remove this function after launching
   // RasterInducingScroll.
   bool UsesCompositedScrolling(const ScrollPaintPropertyNode&) const;
+  bool UsesRasterInducingScroll(const ScrollPaintPropertyNode&) const;
 
   // The root layer of the tree managed by this object.
   cc::Layer* RootLayer() const { return root_layer_.get(); }
@@ -201,29 +236,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // Returns the ith ContentLayerClientImpl for testing.
   ContentLayerClientImpl* ContentLayerClientForTesting(wtf_size_t i) const;
 
-  // Mark this as needing a full compositing update. Repaint-only updates that
-  // do not affect compositing can use a fast-path in |UpdateRepaintedLayers|
-  // (see comment above that function for more information), and should not call
-  // SetNeedsUpdate.
-  void SetNeedsUpdate() { needs_update_ = true; }
-  bool NeedsUpdate() const { return needs_update_; }
-  void ClearNeedsUpdateForTesting() { needs_update_ = false; }
-
   void SetLCDTextPreference(LCDTextPreference);
-
-  // There is no mechanism for doing a paint lifecycle phase without running
-  // PaintArtifactCompositor::Update so this is exposed so tests can check the
-  // last update type.
-  enum class PreviousUpdateType { kNone, kRepaint, kFull };
-  PreviousUpdateType PreviousUpdateForTesting() const {
-    return previous_update_for_testing_;
-  }
-  void ClearPreviousUpdateForTesting() {
-    previous_update_for_testing_ = PreviousUpdateType::kNone;
-  }
-
-  void SetNeedsFullUpdateAfterPaintIfNeeded(const PaintArtifact& previous,
-                                            const PaintArtifact& repainted);
 
   // Returns true if a property tree node associated with |element_id| exists
   // on any of the PropertyTrees constructed by |Update|.
@@ -259,6 +272,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   };
 
  private:
+  void SetNeedsUpdateInternal(UpdateType);
+
   void UpdateCompositorViewportProperties(const ViewportProperties&,
                                           PropertyTreeManager&,
                                           cc::LayerTreeHost*);
@@ -308,10 +323,12 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   base::WeakPtr<CompositorScrollCallbacks> scroll_callbacks_;
 
   bool tracks_raster_invalidations_;
-  bool needs_update_ = true;
   bool layer_debug_info_enabled_ = false;
   bool should_always_update_on_scroll_ = false;
-  PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
+
+  UpdateType needs_update_ = UpdateType::kFull;
+  UpdateType previous_update_for_testing_ = UpdateType::kNone;
+
   LCDTextPreference lcd_text_preference_ = LCDTextPreference::kIgnored;
 
   scoped_refptr<cc::Layer> root_layer_;

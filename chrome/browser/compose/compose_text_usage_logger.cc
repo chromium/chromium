@@ -26,7 +26,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(ComposeTextUsageLogger);
 
 namespace {
 constexpr int MAX_FIELD_METRIC_COUNT = 100;
-// Note: Although OnAfterTextFieldDidChange is only called for user
+// Note: Although OnAfterTextFieldValueChanged is only called for user
 // actions like typing or pastes, we need to handle the case where the
 // user edits the field after it was modified by the page. In this case,
 // we'd rather be conservative when recording text changes as user typing. If
@@ -77,7 +77,7 @@ ComposeTextUsageLogger::~ComposeTextUsageLogger() {
   }
 }
 
-void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
+void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,

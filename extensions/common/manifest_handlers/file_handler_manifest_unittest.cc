@@ -24,7 +24,7 @@ namespace errors = manifest_errors;
 using FileHandlersManifestTest = ManifestTest;
 
 TEST_F(FileHandlersManifestTest, InvalidFileHandlers) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("file_handlers_invalid_handlers.json",
                errors::kInvalidFileHandlers),
       Testcase("file_handlers_invalid_type.json",
@@ -44,7 +44,7 @@ TEST_F(FileHandlersManifestTest, InvalidFileHandlers) {
       Testcase("file_handlers_invalid_verb.json",
                errors::kInvalidFileHandlerVerb),
   };
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, EXPECT_TYPE_ERROR);
 }
 
 TEST_F(FileHandlersManifestTest, ValidFileHandlers) {

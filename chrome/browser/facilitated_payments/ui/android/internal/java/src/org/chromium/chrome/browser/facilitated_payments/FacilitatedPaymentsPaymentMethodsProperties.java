@@ -148,13 +148,27 @@ class FacilitatedPaymentsPaymentMethodsProperties {
      * bottom sheet for payments.
      */
     static class HeaderProperties {
-        static final ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
-                new ReadableIntPropertyKey("image_drawable_id");
-        static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
+        static final ReadableIntPropertyKey PRODUCT_ICON_DRAWABLE_ID =
+                new ReadableIntPropertyKey("product_icon_drawable_id");
+        static final ReadableIntPropertyKey PRODUCT_ICON_HEIGHT =
+                new ReadableIntPropertyKey("product_icon_height");
+        static final ReadableIntPropertyKey PRODUCT_ICON_CONTENT_DESCRIPTION_ID =
+                new ReadableIntPropertyKey("product_icon_content_description_id");
+        static final ReadableIntPropertyKey SECURITY_CHECK_DRAWABLE_ID =
+                new ReadableIntPropertyKey("security_check_drawable_id");
+        static final ReadableObjectPropertyKey<String> TITLE =
+                new ReadableObjectPropertyKey("title");
         static final ReadableIntPropertyKey DESCRIPTION_ID =
                 new ReadableIntPropertyKey("description_id");
 
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID, DESCRIPTION_ID};
+        static final PropertyKey[] ALL_KEYS = {
+            PRODUCT_ICON_DRAWABLE_ID,
+            PRODUCT_ICON_HEIGHT,
+            PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
+            SECURITY_CHECK_DRAWABLE_ID,
+            TITLE,
+            DESCRIPTION_ID
+        };
 
         private HeaderProperties() {}
     }

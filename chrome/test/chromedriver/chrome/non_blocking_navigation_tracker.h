@@ -12,7 +12,7 @@ class Status;
 
 class NonBlockingNavigationTracker : public PageLoadStrategy {
  public:
-  NonBlockingNavigationTracker() {}
+  NonBlockingNavigationTracker() = default;
 
   ~NonBlockingNavigationTracker() override;
 

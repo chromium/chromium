@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 
+#import "base/command_line.h"
+#import "base/strings/string_number_conversions.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -31,4 +33,23 @@ bool IsLensOverlayAvailable() {
 
 bool IsLensOverlaySameTabNavigationEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
+}
+
+bool IsLVFUnifiedExperienceEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
+}
+
+LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {
+  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+      kLensOverlayAlternativeOnboarding, kLensOverlayOnboardingParam);
+  if (featureParam == kLensOverlayOnboardingParamSpeedbumpMenu) {
+    return LensOverlayOnboardingTreatment::kSpeedbumpMenu;
+  } else if (featureParam == kLensOverlayOnboardingParamUpdatedStrings) {
+    return LensOverlayOnboardingTreatment::kUpdatedOnboardingStrings;
+  } else if (featureParam ==
+             kLensOverlayOnboardingParamUpdatedStringsAndVisuals) {
+    return LensOverlayOnboardingTreatment::kUpdatedOnboardingStringsAndVisuals;
+  } else {
+    return LensOverlayOnboardingTreatment::kDefaultOnboardingExperience;
+  }
 }

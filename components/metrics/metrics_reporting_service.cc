@@ -15,8 +15,8 @@
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/server_urls.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
-#include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace metrics {
@@ -56,7 +56,7 @@ GURL MetricsReportingService::GetInsecureUploadUrl() const {
 }
 
 std::string_view MetricsReportingService::upload_mime_type() const {
-  return kDefaultMetricsMimeType;
+  return kMetricsMimeType;
 }
 
 MetricsLogUploader::MetricServiceType MetricsReportingService::service_type()

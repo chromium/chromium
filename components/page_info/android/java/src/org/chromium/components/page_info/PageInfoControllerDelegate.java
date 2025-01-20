@@ -211,11 +211,6 @@ public abstract class PageInfoControllerDelegate {
     public abstract boolean showTrackingProtectionUi();
 
     /**
-     * @return Whether the Tracking Protection branded UI should be shown.
-     */
-    public abstract boolean shouldShowTrackingProtectionBrandedUi();
-
-    /**
      * @return Whether the Tracking Protection with ACT Features UI should be shown.
      */
     public abstract boolean showTrackingProtectionActFeaturesUi();

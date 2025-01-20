@@ -81,21 +81,7 @@ LacrosWebAppsController::~LacrosWebAppsController() = default;
 
 void LacrosWebAppsController::Init() {
   if (!remote_publisher_) {
-    auto* service = chromeos::LacrosService::Get();
-    if (!service) {
-      return;
-    }
-    if (!IsWebAppsCrosapiEnabled()) {
-      return;
-    }
-
-    remote_publisher_version_ =
-        service->GetInterfaceVersion<crosapi::mojom::AppPublisher>();
-
-    service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
-        receiver_.BindNewPipeAndPassRemoteWithVersion());
-    remote_publisher_ =
-        service->GetRemote<crosapi::mojom::AppPublisher>().get();
+    return;
   }
 
   provider_->on_registry_ready().Post(

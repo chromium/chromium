@@ -39,7 +39,6 @@ void OnGpuChannelEstablished(
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), stream_id, stream_priority,
-          gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/"
                            "BrowserGpuVideoAcceleratorFactories::"
                            "CreateGpuVideoAcceleratorFactories")),

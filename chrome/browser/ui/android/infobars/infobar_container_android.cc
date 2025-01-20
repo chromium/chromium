@@ -57,8 +57,9 @@ void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
   infobars::InfoBarAndroid* android_bar =
       static_cast<infobars::InfoBarAndroid*>(infobar);
 
-  if (android_bar->HasSetJavaInfoBar())
+  if (android_bar->HasSetJavaInfoBar()) {
     return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (Java_InfoBarContainer_hasInfoBars(
@@ -98,7 +99,6 @@ void InfoBarContainerAndroid::PlatformSpecificRemoveInfoBar(
       static_cast<infobars::InfoBarAndroid*>(infobar);
   android_infobar->CloseJavaInfoBar();
 }
-
 
 // Native JNI methods ---------------------------------------------------------
 

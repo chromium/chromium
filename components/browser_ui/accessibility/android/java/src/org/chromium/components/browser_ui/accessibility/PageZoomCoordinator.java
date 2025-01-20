@@ -162,7 +162,7 @@ public class PageZoomCoordinator {
     /** Clean-up views and children during destruction. */
     public void destroy() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
         }
 
         if (mView != null) {

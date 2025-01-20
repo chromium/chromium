@@ -64,6 +64,15 @@
   <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PASSWORD_LABEL" desc="Message displayed in the multi-device setup flow when the user has entered an incorrect password.">
     Wrong password
   </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER_FOR_PIN" desc="Header for the first page in the multi-device setup flow for PIN only users; the page displays a field in which the user must enter their PIN to continue.">
+    Enter your PIN
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PIN_LABEL" desc="Default text in the field for user to enter their PIN.">
+    PIN
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PIN_LABEL" desc="Message displayed in the multi-device setup flow for PIN only users; when the user has entered an incorrect PIN.">
+    Wrong PIN
+  </message>
   <message name="IDS_MULTIDEVICE_SETUP_BACK_LABEL" desc="Label for button to navigate back in MultiDevice setup workflow.">
     Back
   </message>
@@ -1324,54 +1333,12 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks
   </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options.">
-    Back up and restore your apps and settings
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options.">
-    Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings &gt; Accounts.
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options.">
-    New to Chromebook? Turn on sync so your preferences will be backed up.
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen.">
-    Manage sync options
-  </message>
   <!-- Strings for OS sync consent screen options -->
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps.">
-    Apps
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps.">
-    Apps installed from the Play Store and web apps from Chrome browser
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings.">
-    Settings
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings.">
-    Keyboard and mouse behavior, language preferences, and more
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks.">
-    Wi-Fi networks
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks.">
-    Saved networks and passwords so you can connect instantly
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper.">
-    Wallpaper
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper.">
-    Remember your desktop background across devices
-  </message>
   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option." >
     Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
   </message>
    <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option.">
     If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
-  </message>
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them.">
-    Manage sync options
-  </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them.">
-    Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings &gt; Accounts.
   </message>
   <!-- Strings for categories selection screen-->
   <message name="IDS_LOGIN_CATEGORIES_SCREEN_LOADING" desc="Message shown while the categories are being fetched for the server.">
@@ -1393,8 +1360,8 @@
   <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_TITLE" desc="The title of the recommended apps screen">
     Top apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE" desc="The subtitle of the recommended apps screen">
-    Selected apps will be installed after setup. Find more recommendations later in the Explore app.
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE" desc="The subtitle of the recommended apps screen.Apps and Games here refers to system apps provided by the App Mall team.">
+    Selected apps will be installed after setup. Find more recommendations later in the Apps &amp; Games app.
   </message>
   <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SKIP" desc="The label on the button that skips the recommended apps screen">
     Skip
@@ -2093,7 +2060,7 @@
     Instant hotspot connection failed
   </message>
   <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE_LEGACY" desc="Title of the notification shown to the user when an attempt to tether to another device has failed.">
-    Instant Tethering connection failed
+    Instant hotspot connection failed
   </message>
   <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE" desc="Message shown as part of the notification shown to the user when an attempt to tether to another device has failed which gives the user instructions about how to configure tethering.">
     Tap to configure
@@ -3148,9 +3115,6 @@
   <message name="IDS_MOBILE_SETUP_TITLE" desc="ChromeOS mobile device activation page title">
     Mobile data service management
   </message>
-  <message name="IDS_MOBILE_CANCEL_ACTIVATION" desc="Message when user attempts to cancel cellular data service activation proces">
-    Are you sure you want to cancel mobile data service setup process?
-  </message>
   <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE" desc="Error title shown when user failed to view mobile account">
     Can't access your mobile account
   </message>
@@ -3351,6 +3315,9 @@
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Error message to show when the user tries to enroll an enterprise license packaged device into KIOSK.">
     This is a bundled device and can not be enrolled with Kiosk &amp; Signage Upgrade.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED" desc="Error message to show when the user tries to enroll a device but the initial enrollment limit for the organization unit has been reached.">
+    This device can't be enrolled right now because your organization unit has reached its initial enrollment limit. Contact your administrator for assistance.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ATTRIBUTE_ERROR" desc="Error message shown when successfully enrolled, but the device attribute update has failed.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.
@@ -4675,43 +4642,6 @@
     OK
   </message>
 
-  <!-- Lacros data migration screen. -->
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
-    Updating Chrome browser
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
-    <ph name="PERCENT">$1<ex>100</ex></ph>% completed
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON" desc="Skip button for data migration.">
-    Skip
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION" desc="Message shown when skip button is visible.">
-    This is taking longer than expected, you can skip or wait until it's done.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE" desc="Shown if the lacros migration fails.">
-    Chrome browser could not be updated
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_LOW_DISK_SPACE" desc="Shown if the lacros migration failed with low disk space error.">
-    There isn't enough space on this device to complete this update. Clean up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again from your Chrome browser.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if the lacros migration failed other than low disk space error.">
-    You can try again later in Chrome.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_CANCEL_BUTTON" desc="Text button shown on the lacros data migration failure to cancel everything">
-    Cancel
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_GOTO_FILES_BUTTON" desc="Text button shown on the lacros data migration failure to open files.app in the following user session">
-    Go to files
-  </message>
-
-  <!-- Lacros data backward migration screen. -->
-  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if Lacros data backward migration fails.">
-    If you click “Cancel”, it may affect your browser data and you may need to perform a factory reset.
-  </message>
-  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_RETRY_BUTTON" desc="Shown if Lacros data backward migration fails.">
-    Retry
-  </message>
-
   <!-- Print Job Notification -->
   <message name="IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of printing notification.">
     Print
@@ -5439,6 +5369,27 @@
   <message name="IDS_BRUSCHETTA_INSTALLER_CLEANING_UP_MESSAGE" desc="Message while the installer is cleaning up a failed install.">
     Install failed, cleaning up
   </message>
+  <message name="IDS_BRUSCHETTA_RESULT_UNKNOWN" desc="Bruschetta (codename) unknown result.">
+    Unknown result.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_SUCCESS" desc="Bruschetta (codename) result for success.">
+    Success.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_DLC_INSTALL_ERROR" desc="Bruschetta (codename) result for error installing DLC.">
+    Error installing DLC (oftentimes a reboot is needed, check Settings\>\>About ChromeOS for more information).
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_START_VM_FAILED" desc="Bruschetta (codename) result for when VM fails to start.">
+    Starting VM failed.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_TIMEOUT" desc="Bruschetta (codename) result for a timeout.">
+    Timeout when booting or reconnecting to VM.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_FORBIDDEN_BY_POLICY" desc="Bruschetta (codename) result for when Bruschetta (codename) is forbidden by policy.">
+    Forbidden by policy.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_CONCIERGE_UNAVAILABLE" desc="Bruschetta (codename) result for when concierge service is unavailable.">
+    Concierge service is unavailable.
+  </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_TITLE" desc="Title of the Bruschetta (codename) uninstaller, a dialog for uninstalling Bruschetta, the associated VM and files.">
     Remove <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph>
   </message>
@@ -5559,9 +5510,6 @@
   </message>
   <message name="IDS_SMART_LOCK_SCREENLOCK_AUTHENTICATED_LABEL" desc="Label for the Smart Lock icon used for accessibility purposes. Describes when a phone eligible to unlock the Chromebook is detected and authenticated.">
     Your device can be unlocked with Smart Lock. Press Enter to unlock.
-  </message>
-  <message name="IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP" desc="Tooltip message shown on the lock screen when hovering above the managed icon which is shown when custom policy provided trusted anchors are present.">
-    Certificate provided by your administrator who can view credentials for <ph name="DOMAIN">$1<ex>google.com</ex></ph>
   </message>
 
   <!-- Strings for EcheApp -->

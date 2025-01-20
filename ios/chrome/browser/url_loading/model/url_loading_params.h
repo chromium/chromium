@@ -108,6 +108,10 @@ struct UrlLoadParams {
   // Whether the URL should be loaded as part of a tab group.
   bool load_in_group = false;
 
+  // Whether the current mode (incognito/regular) should be updated to match the
+  // one from this URL (for foreground loads only).
+  bool switch_mode_if_needed = true;
+
   // The tab group where the URL should be loaded (if null and `load_in_group`
   // the URL is loaded in a new tab group).
   base::WeakPtr<const TabGroup> tab_group;

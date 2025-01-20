@@ -17,11 +17,13 @@
   #   chromium.android.fyi
   #   chromium.angle
   #   chromium.cft
+  #   chromium.chromiumos
   #   chromium.coverage
   #   chromium.enterprise_companion
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
   #   chromium.gpu
+  #   chromium.gpu.fyi
   #   chromium.linux
   #   chromium.mac
   #   chromium.memory
@@ -461,49 +463,6 @@
   {
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.chromiumos.star
-    #   chromeos-amd64-generic-asan-rel
-    #   chromeos-amd64-generic-cfi-thin-lto-rel
-    #   chromeos-amd64-generic-dbg
-    #   chromeos-amd64-generic-rel
-    #   chromeos-amd64-generic-rel-gtest
-    #   chromeos-amd64-generic-rel-tast
-    #   chromeos-arm-generic-dbg
-    #   chromeos-arm-generic-rel
-    #   chromeos-arm64-generic-rel
-    #   linux-cfm-rel
-    #   linux-chromeos-dbg
-    #   linux-chromeos-rel
-    'name': 'chromium.chromiumos',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'chromeos-jacuzzi-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'jacuzzi',
-      },
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'chromeos-octopus-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'octopus',
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.clang.star
     #   CFI Linux CF
     #   CFI Linux ToT
@@ -575,7 +534,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'additional_compile_targets': [
           'all',
@@ -709,14 +668,13 @@
     #   android-perfetto-rel
     #   ios-blink-dbg-fyi
     #   ios-fieldtrial-rel
-    #   ios-m1-simulator
     #   ios-vm
     #   ios-webkit-tot
     #   ios-wpt-fyi-rel
     #   ios17-beta-simulator
-    #   ios17-sdk-device
     #   ios17-sdk-simulator
     #   ios18-beta-simulator
+    #   ios18-sdk-device
     #   ios18-sdk-simulator
     #   Linux Viz
     #   linux-annotator-rel
@@ -817,95 +775,6 @@
           'xcode_16_main',
           'xctest',
         ],
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.gpu.fyi.star
-    #   Android FYI Experimental Release (Pixel 6)
-    #   Android FYI Release (Motorola Moto G Power 5G)
-    #   Android FYI Release (NVIDIA Shield TV)
-    #   Android FYI Release (Nexus 5X)
-    #   Android FYI Release (Pixel 2)
-    #   Android FYI Release (Pixel 4)
-    #   Android FYI Release (Pixel 6)
-    #   Android FYI Release (Samsung A13)
-    #   Android FYI Release (Samsung A23)
-    #   Android FYI Release (Samsung S23)
-    #   ChromeOS FYI Release (amd64-generic)
-    #   GPU FYI Android arm Builder
-    #   GPU FYI Android arm64 Builder
-    #   GPU FYI Linux Builder
-    #   GPU FYI Linux Builder (dbg)
-    #   GPU FYI Mac Builder
-    #   GPU FYI Mac Builder (asan)
-    #   GPU FYI Mac Builder (dbg)
-    #   GPU FYI Win Builder
-    #   GPU FYI Win x64 Builder
-    #   GPU FYI Win x64 Builder (dbg)
-    #   GPU FYI Win x64 DX12 Vulkan Builder
-    #   GPU FYI Win x64 DX12 Vulkan Builder (dbg)
-    #   Linux FYI Debug (NVIDIA)
-    #   Linux FYI Experimental Release (Intel UHD 630)
-    #   Linux FYI Experimental Release (NVIDIA)
-    #   Linux FYI GPU TSAN Release
-    #   Linux FYI Release (AMD RX 5500 XT)
-    #   Linux FYI Release (Intel UHD 630)
-    #   Linux FYI Release (Intel UHD 770)
-    #   Linux FYI Release (NVIDIA)
-    #   Linux Wayland FYI Release (AMD)
-    #   Linux Wayland FYI Release (Intel)
-    #   Mac FYI ASAN (Intel)
-    #   Mac FYI Debug (Intel)
-    #   Mac FYI Experimental Release (Apple M1)
-    #   Mac FYI Experimental Release (Intel)
-    #   Mac FYI Experimental Retina Release (AMD)
-    #   Mac FYI Experimental Retina Release (Apple M2)
-    #   Mac FYI Experimental Retina Release (NVIDIA)
-    #   Mac FYI Release (Apple M1)
-    #   Mac FYI Release (Intel)
-    #   Mac FYI Retina ASAN (AMD)
-    #   Mac FYI Retina Debug (AMD)
-    #   Mac FYI Retina Release (AMD)
-    #   Mac FYI Retina Release (Apple M2)
-    #   Mac FYI Retina Release (NVIDIA)
-    #   Mac Pro FYI Release (AMD)
-    #   Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)
-    #   Win10 FYI x64 DX12 Vulkan Release (NVIDIA)
-    #   Win10 FYI x64 Debug (NVIDIA)
-    #   Win10 FYI x64 Exp Release (NVIDIA)
-    #   Win10 FYI x64 Experimental Release (Intel)
-    #   Win10 FYI x64 Release (AMD RX 5500 XT)
-    #   Win10 FYI x64 Release (Intel)
-    #   Win10 FYI x64 Release (Intel UHD 770)
-    #   Win10 FYI x64 Release (NVIDIA)
-    #   Win10 FYI x64 Release (NVIDIA RTX 4070 Super)
-    #   Win10 FYI x64 Release XR Perf (NVIDIA)
-    #   Win10 FYI x86 Release (NVIDIA)
-    #   Win11 FYI arm64 Release (Qualcomm Adreno 690)
-    'name': 'chromium.gpu.fyi',
-    'forbid_script_tests': True,
-    'mixins': [
-      'chromium-tester-service-account',
-      'swarming_containment_auto',
-      'timeout_30m',
-    ],
-    'machines': {
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'ChromeOS FYI Release Skylab (volteer)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'os_type': 'chromeos',
-        'skip_merge_script': True,
-        'use_swarming': False,
-        'test_suites': {
-          'skylab_tests': 'gpu_fyi_chromeos_release_gtests_volteer_skylab',
-          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab',
-        },
       },
     },
   },
@@ -1243,22 +1112,6 @@
         },
         'os_type': 'android',
       },
-      'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'linux-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as linux-chrome even if it doesn't run the tests
-           'base_unittests',
-           'chrome',
-           'chrome/installer/linux',
-           'chrome_sizes',
-           'variations_smoke_tests',
-        ],
-        # no tests. stay compile only.
-      },
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
@@ -1278,27 +1131,6 @@
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
         'os_type': 'mac',
-      },
-      'mac-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as mac-chrome even if it doesn't run the tests
-          'chrome',
-          'chrome/installer/mac',
-          'chrome_sizes',
-          'variations_smoke_tests',
-        ],
-        # no tests, stay compile only.
-      },
-      'win-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as win-chrome even if it doesn't run the tests
-          'base_unittests',
-          'chrome',
-          'chrome_official_builder',
-          'chrome_sizes',
-          'variations_smoke_tests',
-        ],
-        # no tests, stay compile only.
       },
       'win-finch-smoke-chrome': {
         'mixins': [
@@ -1382,6 +1214,67 @@
       'chrome-tester-service-account',
     ],
     'machines': {
+      'model_validation-linux': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'linux',
+      },
+      'model_validation-mac-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-mac-x64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_x64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-win-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'win-arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win32': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win64': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
       'optimization_guide-android-arm64': {
         'mixins': [
           'android',
@@ -1413,7 +1306,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_device_gtests',
+           'isolated_scripts': 'optimization_guide_ios_device_gtests',
         },
         'os_type': 'ios',
       },
@@ -1427,7 +1320,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_sim_gtests',
+           'isolated_scripts': 'optimization_guide_ios_sim_gtests',
         },
         'os_type': 'ios',
       },
@@ -1499,7 +1392,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win32_script_tests',
         },
         'os_type': 'win',
       },
@@ -1514,7 +1407,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win64_script_tests',
         },
         'os_type': 'win',
       },

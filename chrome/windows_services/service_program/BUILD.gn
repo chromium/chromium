@@ -77,7 +77,6 @@ source_set("lib") {
     ":constants",
     ":delegate",
     "//chrome/install_static:install_static_util",
-    "//third_party/abseil-cpp:absl",
   ]
   visibility = [
     ":service_program",

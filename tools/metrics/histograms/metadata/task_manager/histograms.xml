@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="NumberOfProcessBuckets">
+  <variant name="Fifth" summary="The fifth process to be ended."/>
+  <variant name="First" summary="The first process to be ended."/>
+  <variant name="Fourth" summary="The fourth process to be ended."/>
+  <variant name="Second" summary="The second process to be ended."/>
+  <variant name="Third" summary="The third process to be ended."/>
+</variants>
+
 <histogram name="TaskManager.Closed.ElapsedTime" units="ms"
     expires_after="2025-10-03">
   <owner>mwoj@google.com</owner>
@@ -39,6 +47,19 @@ chromium-metrics-reviews@google.com.
     Logged every time the Task Manager is opened, and captures where the Task
     Manager was started from.
   </summary>
+</histogram>
+
+<histogram name="TaskManager.{NthProcess}ProcessEnded.ElapsedTime" units="ms"
+    expires_after="2025-12-15">
+  <owner>mwoj@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    How long it took to end some nth process. When n is 1, the starting time in
+    the calculation is the initialization time of the task manager. When n
+    greater than 1, the elapsed time is the delta between end process clicks.
+    Captures up to 5 processes.
+  </summary>
+  <token key="NthProcess" variants="NumberOfProcessBuckets"/>
 </histogram>
 
 </histograms>

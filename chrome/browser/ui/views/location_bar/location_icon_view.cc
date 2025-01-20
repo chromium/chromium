@@ -81,7 +81,7 @@ LocationIconView::LocationIconView(
   UpdateBorder();
 }
 
-LocationIconView::~LocationIconView() {}
+LocationIconView::~LocationIconView() = default;
 
 gfx::Size LocationIconView::GetMinimumSize() const {
   return GetMinimumSizeForPreferredSize(GetPreferredSize());
@@ -183,8 +183,9 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
 }
 
 bool LocationIconView::GetShowText() const {
-  if (delegate_->IsEditingOrEmpty())
+  if (delegate_->IsEditingOrEmpty()) {
     return false;
+  }
 
   const auto* location_bar_model = delegate_->GetLocationBarModel();
   const GURL& url = location_bar_model->GetURL();
@@ -203,15 +204,18 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
 }
 
 std::u16string LocationIconView::GetText() const {
-  if (delegate_->IsEditingOrEmpty())
+  if (delegate_->IsEditingOrEmpty()) {
     return std::u16string();
+  }
 
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
-          content::kChromeUIScheme))
+          content::kChromeUIScheme)) {
     return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
+  }
 
-  if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(url::kFileScheme))
+  if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(url::kFileScheme)) {
     return l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE);
+  }
 
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
           dom_distiller::kDomDistillerScheme)) {
@@ -228,23 +232,26 @@ std::u16string LocationIconView::GetText() const {
         extensions::ui_util::GetEnabledExtensionNameForUrl(
             delegate_->GetLocationBarModel()->GetURL(),
             delegate_->GetWebContents()->GetBrowserContext());
-    if (!extension_name.empty())
+    if (!extension_name.empty()) {
       return extension_name;
+    }
   }
 
   return delegate_->GetLocationBarModel()->GetSecureDisplayText();
 }
 
 bool LocationIconView::GetAnimateTextVisibilityChange() const {
-  if (delegate_->IsEditingOrEmpty())
+  if (delegate_->IsEditingOrEmpty()) {
     return false;
+  }
 
   SecurityLevel level = GetSecurityLevel();
   // Do not animate transitions from WARNING to DANGEROUS, since
   // the transition can look confusing/messy.
   if (level == SecurityLevel::DANGEROUS &&
-      last_update_security_level_ == SecurityLevel::WARNING)
+      last_update_security_level_ == SecurityLevel::WARNING) {
     return false;
+  }
   return (level == SecurityLevel::DANGEROUS || level == SecurityLevel::WARNING);
 }
 
@@ -252,12 +259,13 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   SetLabel(GetText());
 
   bool should_show = GetShowText();
-  if (!GetAnimateTextVisibilityChange() || suppress_animations)
+  if (!GetAnimateTextVisibilityChange() || suppress_animations) {
     ResetSlideAnimation(should_show);
-  else if (should_show)
+  } else if (should_show) {
     AnimateIn(std::nullopt);
-  else
+  } else {
     AnimateOut();
+  }
 }
 
 void LocationIconView::SetAccessibleProperties(bool is_initialization) {
@@ -309,38 +317,36 @@ void LocationIconView::UpdateIcon() {
         this->GetWidget() && this->GetWidget()->GetCustomTheme();
 
     if (has_custom_theme && icon_name == vector_icons::kGoogleSuperGIcon.name) {
-      SetBackground(
-          views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
+      SetBackgroundColor(SK_ColorWHITE);
     }
   }
 #endif
 
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     SetImageModel(icon);
+  }
 }
 
 void LocationIconView::UpdateBackground() {
-    CHECK(GetColorProvider());
-    const std::u16string& display_text = GetText();
-    const bool is_text_dangerous =
-        display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
+  CHECK(GetColorProvider());
+  const std::u16string& display_text = GetText();
+  const bool is_text_dangerous =
+      display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
-    const ui::ColorId id =
-        delegate_->GetLocationIconBackgroundColorOverride().value_or(
-            is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
-                              : kColorOmniboxIconBackground);
+  const ui::ColorId id =
+      delegate_->GetLocationIconBackgroundColorOverride().value_or(
+          is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
+                            : kColorOmniboxIconBackground);
 
-    SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(id), height() / 2));
+  SetBackgroundColor(GetColorProvider()->GetColor(id));
 
-    if (is_text_dangerous) {
-      ConfigureInkDropForRefresh2023(this,
-                                     kColorOmniboxSecurityChipInkDropHover,
-                                     kColorOmniboxSecurityChipInkDropRipple);
-    } else {
-      ConfigureInkDropForRefresh2023(this, kColorOmniboxIconHover,
-                                     kColorOmniboxIconPressed);
-    }
+  if (is_text_dangerous) {
+    ConfigureInkDropForRefresh2023(this, kColorOmniboxSecurityChipInkDropHover,
+                                   kColorOmniboxSecurityChipInkDropRipple);
+  } else {
+    ConfigureInkDropForRefresh2023(this, kColorOmniboxIconHover,
+                                   kColorOmniboxIconPressed);
+  }
 }
 
 void LocationIconView::OnIconFetched(const gfx::Image& image) {
@@ -362,8 +368,7 @@ void LocationIconView::Update(bool suppress_animations,
   UpdateLabelColors();
 
   if (force_hide_background) {
-    SetBackground(
-        views::CreateRoundedRectBackground(SK_ColorTRANSPARENT, height() / 2));
+    SetBackgroundColor(SK_ColorTRANSPARENT);
   }
 
   bool is_editing_or_empty = delegate_->IsEditingOrEmpty();
@@ -399,12 +404,14 @@ void LocationIconView::Update(bool suppress_animations,
 }
 
 bool LocationIconView::IsTriggerableEvent(const ui::Event& event) {
-  if (delegate_->IsEditingOrEmpty())
+  if (delegate_->IsEditingOrEmpty()) {
     return false;
+  }
 
   if (event.IsMouseEvent()) {
-    if (event.AsMouseEvent()->IsOnlyMiddleMouseButton())
+    if (event.AsMouseEvent()->IsOnlyMiddleMouseButton()) {
       return false;
+    }
   } else if (event.IsGestureEvent() &&
              event.type() != ui::EventType::kGestureTap) {
     return false;
@@ -418,23 +425,23 @@ void LocationIconView::UpdateBorder() {
   // child views in the location bar have the same height. The visible height of
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
-    gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
-    if (ShouldShowLabel()) {
-      SecurityLevel level = GetSecurityLevel();
-      if (level == security_state::DANGEROUS) {
-        // Extra space between the left edge and label.
-        const int kLeftHorizontalPadding = 6;
-        // Extra space between the label and right edge.
-        const int kRightHorizontalPadding = 10;
-        insets.set_left(kLeftHorizontalPadding);
-        insets.set_right(kRightHorizontalPadding);
-      } else {
-        // An extra space between chip's label and right edge.
-        const int kExtraRightPadding = 4;
-        insets.set_right(insets.right() + kExtraRightPadding);
-      }
+  gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  if (ShouldShowLabel()) {
+    SecurityLevel level = GetSecurityLevel();
+    if (level == security_state::DANGEROUS) {
+      // Extra space between the left edge and label.
+      const int kLeftHorizontalPadding = 6;
+      // Extra space between the label and right edge.
+      const int kRightHorizontalPadding = 10;
+      insets.set_left(kLeftHorizontalPadding);
+      insets.set_right(kRightHorizontalPadding);
+    } else {
+      // An extra space between chip's label and right edge.
+      const int kExtraRightPadding = 4;
+      insets.set_right(insets.right() + kExtraRightPadding);
     }
-    SetBorder(views::CreateEmptyBorder(insets));
+  }
+  SetBorder(views::CreateEmptyBorder(insets));
 }
 
 gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
@@ -443,6 +450,10 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
   size.SetToMin(
       GetSizeForLabelWidth(font_list().GetExpectedTextWidth(kMinCharacters)));
   return size;
+}
+
+void LocationIconView::SetBackgroundColor(SkColor color) {
+  SetBackground(views::CreateRoundedRectBackground(color, GetCornerRadii()));
 }
 
 BEGIN_METADATA(LocationIconView)

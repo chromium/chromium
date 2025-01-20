@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
-import("//printing/buildflags/buildflags.gni")
 
 sb_files = [
   "audio.sb",
@@ -13,6 +12,7 @@ sb_files = [
   "mirroring.sb",
   "network.sb",
   "on_device_model_execution.sb",
+  "print_backend.sb",
   "print_compositor.sb",
   "renderer.sb",
   "screen_ai.sb",
@@ -20,10 +20,6 @@ sb_files = [
   "on_device_translation.sb",
   "utility.sb",
 ]
-
-if (enable_oop_printing) {
-  sb_files += [ "print_backend.sb" ]
-}
 
 action_foreach("package_sb_files") {
   script = "package_sb_file.py"

@@ -27,8 +27,21 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them outside the if (enable_extensions) block.
   sources = [
+    "api/tabs/windows_util.cc",
+    "api/tabs/windows_util.h",
     "chrome_extensions_browser_api_provider.cc",
     "chrome_extensions_browser_api_provider.h",
+    "extension_special_storage_policy.cc",
+    "extension_special_storage_policy.h",
+    "extension_tab_util.cc",
+    "extension_tab_util.h",
+    "extension_util.cc",
+    "extension_util.h",
+    "window_controller.cc",
+    "window_controller.h",
+    "window_controller_list.cc",
+    "window_controller_list.h",
+    "window_controller_list_observer.h",
   ]
   configs += [
     "//build/config:precompiled_headers",
@@ -36,10 +49,18 @@ source_set("extensions") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//content/public/browser",
     "//extensions/browser",
     "//extensions/buildflags",
+    "//extensions/common",
     "//net",
+    "//storage/browser",
   ]
   defines = []
 
@@ -84,12 +105,6 @@ source_set("extensions") {
       "api/bookmarks/bookmarks_api_watcher.h",
       "api/bookmarks_core/bookmarks_function.cc",
       "api/bookmarks_core/bookmarks_function.h",
-      "api/braille_display_private/braille_controller.h",
-      "api/braille_display_private/braille_controller_brlapi.h",
-      "api/braille_display_private/braille_display_private_api.cc",
-      "api/braille_display_private/braille_display_private_api.h",
-      "api/braille_display_private/stub_braille_controller.cc",
-      "api/braille_display_private/stub_braille_controller.h",
       "api/chrome_device_permissions_prompt.h",
       "api/chrome_extensions_api_client.cc",
       "api/chrome_extensions_api_client.h",
@@ -314,18 +329,8 @@ source_set("extensions") {
       "api/tabs/tabs_windows_api.h",
       "api/tabs/windows_event_router.cc",
       "api/tabs/windows_event_router.h",
-      "api/tabs/windows_util.cc",
-      "api/tabs/windows_util.h",
       "api/top_sites/top_sites_api.cc",
       "api/top_sites/top_sites_api.h",
-      "api/web_navigation/frame_navigation_state.cc",
-      "api/web_navigation/frame_navigation_state.h",
-      "api/web_navigation/web_navigation_api.cc",
-      "api/web_navigation/web_navigation_api.h",
-      "api/web_navigation/web_navigation_api_constants.cc",
-      "api/web_navigation/web_navigation_api_constants.h",
-      "api/web_navigation/web_navigation_api_helpers.cc",
-      "api/web_navigation/web_navigation_api_helpers.h",
       "api/webstore_private/extension_install_status.cc",
       "api/webstore_private/extension_install_status.h",
       "api/webstore_private/webstore_private_api.cc",
@@ -470,8 +475,6 @@ source_set("extensions") {
       "extension_service.h",
       "extension_side_panel_view_host.cc",
       "extension_side_panel_view_host.h",
-      "extension_special_storage_policy.cc",
-      "extension_special_storage_policy.h",
       "extension_sync_data.cc",
       "extension_sync_data.h",
       "extension_sync_service.cc",
@@ -484,16 +487,12 @@ source_set("extensions") {
       "extension_system_factory.h",
       "extension_system_impl.cc",
       "extension_system_impl.h",
-      "extension_tab_util.cc",
-      "extension_tab_util.h",
       "extension_telemetry_service_verdict_handler.cc",
       "extension_telemetry_service_verdict_handler.h",
       "extension_ui_util.cc",
       "extension_ui_util.h",
       "extension_uninstall_dialog.cc",
       "extension_uninstall_dialog.h",
-      "extension_util.cc",
-      "extension_util.h",
       "extension_view.h",
       "extension_view_host.cc",
       "extension_view_host.h",
@@ -531,8 +530,6 @@ source_set("extensions") {
       "forced_extensions/install_stage_tracker.h",
       "forced_extensions/install_stage_tracker_factory.cc",
       "forced_extensions/install_stage_tracker_factory.h",
-      "global_shortcut_listener.cc",
-      "global_shortcut_listener.h",
       "install_gate.h",
       "install_observer.cc",
       "install_observer.h",
@@ -648,11 +645,6 @@ source_set("extensions") {
       "webstore_reinstaller.h",
       "webstore_standalone_installer.cc",
       "webstore_standalone_installer.h",
-      "window_controller.cc",
-      "window_controller.h",
-      "window_controller_list.cc",
-      "window_controller_list.h",
-      "window_controller_list_observer.h",
     ]
 
     # Chrome OS does not support Native Messaging policies.
@@ -729,6 +721,7 @@ source_set("extensions") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//build/config/chromebox_for_meetings:buildflags",
+      "//build/config/linux/dbus:buildflags",
       "//chrome:extra_resources",
       "//chrome:resources",
       "//chrome:strings",
@@ -743,7 +736,6 @@ source_set("extensions") {
       "//chrome/browser/apps:user_type_filter",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/chooser_controller",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/feedback",
       "//chrome/browser/importer",
       "//chrome/browser/picture_in_picture",
@@ -829,7 +821,6 @@ source_set("extensions") {
       "//components/browsing_data/content",
       "//components/browsing_data/core",
       "//components/content_settings/core/browser",
-      "//components/content_settings/core/browser:cookie_settings",
       "//components/cookie_config:cookie_config",
       "//components/crx_file",
       "//components/device_signals/core/browser",
@@ -927,13 +918,13 @@ source_set("extensions") {
       "//extensions/browser/api/storage:settings_observer",
       "//extensions/browser/updater",
       "//extensions/browser/updater:keepalive",
-      "//extensions/common",
       "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",
       "//google_apis",
       "//google_apis/common:request_util",
       "//media:media_buildflags",
+      "//net:extras",
       "//pdf:buildflags",
       "//ppapi/buildflags",
       "//printing/buildflags",
@@ -947,7 +938,6 @@ source_set("extensions") {
       "//services/video_capture/public/mojom:constants",
       "//skia",
       "//sql",
-      "//storage/browser",
       "//storage/common",
       "//third_party/abseil-cpp:absl",
       "//third_party/blink/public:resources",
@@ -962,6 +952,7 @@ source_set("extensions") {
       "//ui/accessibility:ax_enums_mojo",
       "//ui/base",
       "//ui/base:ozone_buildflags",
+      "//ui/base/accelerators/global_accelerator_listener",
       "//ui/base/clipboard",
       "//ui/base/dragdrop/mojom:mojom_shared",
       "//ui/base/idle",
@@ -1028,7 +1019,6 @@ source_set("extensions") {
         "//chromeos/components/quick_answers/public/cpp:prefs",
         "//chromeos/components/security_token_pin",
         "//chromeos/constants",
-        "//chromeos/crosapi/cpp",
         "//chromeos/crosapi/mojom",
         "//chromeos/dbus/missive:missive",
         "//chromeos/dbus/power",
@@ -1076,7 +1066,6 @@ source_set("extensions") {
         "//chromeos/components/quick_answers/public/cpp:prefs",
         "//chromeos/components/security_token_pin",
         "//chromeos/constants",
-        "//chromeos/crosapi/cpp",
         "//chromeos/crosapi/mojom",
         "//chromeos/dbus/missive:missive",
         "//chromeos/dbus/power",
@@ -1216,7 +1205,6 @@ source_set("extensions") {
         "//chrome/browser/ash/fileapi",
         "//chrome/browser/ash/guest_os",
         "//chrome/browser/ash/guest_os/public",
-        "//chrome/browser/ash/guest_os/virtual_machines",
         "//chrome/browser/ash/input_method",
         "//chrome/browser/ash/login",
         "//chrome/browser/ash/login/app_mode",
@@ -1238,6 +1226,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done",
         "//chrome/browser/devtools",
         "//chrome/browser/nearby_sharing/common",
+        "//chrome/browser/policy:system_features_disable_list",
         "//chrome/browser/ui/ash/keyboard",
         "//chrome/browser/ui/ash/login",
         "//chrome/browser/ui/ash/media_client",
@@ -1271,6 +1260,7 @@ source_set("extensions") {
         "//chromeos/ash/components/system",
         "//chromeos/ash/components/tether:tether",
         "//chromeos/ash/components/tpm",
+        "//chromeos/ash/experiences/guest_os/virtual_machines",
         "//chromeos/ash/services/assistant/public/cpp",
         "//chromeos/ash/services/ime/public/mojom",
         "//chromeos/components/remote_apps/mojom",
@@ -1327,7 +1317,6 @@ source_set("extensions") {
         "//chrome/browser/ash/fileapi",
         "//chrome/browser/ash/guest_os",
         "//chrome/browser/ash/guest_os/public",
-        "//chrome/browser/ash/guest_os/virtual_machines",
         "//chrome/browser/ash/input_method",
         "//chrome/browser/ash/login",
         "//chrome/browser/ash/login/app_mode",
@@ -1355,21 +1344,11 @@ source_set("extensions") {
       }
     }
 
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-      sources += [
-        "global_shortcut_listener_ozone.cc",
-        "global_shortcut_listener_ozone.h",
-      ]
-    }
-
     if (is_mac) {
       sources += [
         "api/enterprise_reporting_private/keychain_data_helper_mac.cc",
         "api/enterprise_reporting_private/keychain_data_helper_mac.h",
         "api/image_writer_private/removable_storage_provider_mac.cc",
-        "global_shortcut_listener_mac.h",
-        "global_shortcut_listener_mac.mm",
         "system_display/display_info_provider_mac.cc",
         "system_display/display_info_provider_mac.h",
       ]
@@ -1397,8 +1376,6 @@ source_set("extensions") {
         "api/messaging/launch_context_win.cc",
         "external_registry_loader_win.cc",
         "external_registry_loader_win.h",
-        "global_shortcut_listener_win.cc",
-        "global_shortcut_listener_win.h",
         "system_display/display_info_provider_win.cc",
         "system_display/display_info_provider_win.h",
       ]
@@ -1457,24 +1434,20 @@ source_set("extensions") {
       ]
     }
 
-    if (use_brlapi) {
-      sources += [
-        "api/braille_display_private/braille_controller_brlapi.cc",
-        "api/braille_display_private/brlapi_connection.cc",
-        "api/braille_display_private/brlapi_connection.h",
-        "api/braille_display_private/brlapi_keycode_map.cc",
-        "api/braille_display_private/brlapi_keycode_map.h",
-      ]
-      deps += [ "//third_party/libbrlapi" ]
-    } else {
-      sources += [ "api/braille_display_private/braille_controller_stub.cc" ]
-    }
-
     if (enterprise_data_controls) {
       deps += [
         "//components/enterprise/buildflags",
         "//components/enterprise/data_controls/core/browser",
       ]
+    }
+
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic:enabling",
+        "//chrome/browser/glic:glic",
+        "//chrome/browser/glic:impl",
+      ]
+      allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
     }
   }  # if (enable_extensions)
 }
@@ -1483,11 +1456,24 @@ if (enable_extensions) {
   proto_library("cws_item_service_proto") {
     sources = [ "cws_item_service.proto" ]
   }
+}
 
-  static_library("test_support") {
-    testonly = true
+static_library("test_support") {
+  testonly = true
 
-    sources = [
+  sources = [
+    "mock_extension_special_storage_policy.cc",
+    "mock_extension_special_storage_policy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/extensions",
+  ]
+
+  if (enable_extensions) {
+    sources += [
       "api/messaging/native_messaging_test_util.cc",
       "api/messaging/native_messaging_test_util.h",
       "api/passwords_private/test_passwords_private_delegate.cc",
@@ -1510,8 +1496,6 @@ if (enable_extensions) {
       "menu_manager_test_observer.h",
       "mock_crx_installer.cc",
       "mock_crx_installer.h",
-      "mock_extension_special_storage_policy.cc",
-      "mock_extension_special_storage_policy.h",
       "scoped_database_manager_for_test.cc",
       "scoped_database_manager_for_test.h",
       "scoped_test_mv2_enabler.cc",
@@ -1526,7 +1510,7 @@ if (enable_extensions) {
       "test_extension_system.h",
     ]
 
-    deps = [
+    deps += [
       ":extensions",
       "//base",
       "//chrome/browser",
@@ -1560,7 +1544,9 @@ if (enable_extensions) {
       deps += [ "//components/user_manager:test_support" ]
     }
   }
+}
 
+if (enable_extensions) {
   fuzzer_test("extension_management_internal_fuzzer") {
     sources = [ "extension_management_internal_fuzzer.cc" ]
     deps = [

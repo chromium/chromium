@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -64,7 +65,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -104,8 +105,9 @@ bool IsIncognitoAllowed() {
 // "chrome://settings/networks/?type=WiFi" returns "networks/?type=WiFi".
 std::string GetPathAndQuery(const GURL& url) {
   std::string result = url.path();
-  if (!result.empty() && result[0] == '/')
+  if (!result.empty() && result[0] == '/') {
     result.erase(0, 1);
+  }
   if (url.has_query()) {
     result += '?';
     result += url.query();
@@ -163,6 +165,11 @@ bool OpenFilesSwa(Profile* const profile,
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                params);
   return true;
+}
+
+bool IsGeminiApp(Browser* browser) {
+  return web_app::GetAppIdFromApplicationName(browser->app_name()) ==
+         ash::kGeminiAppId;
 }
 
 }  // namespace
@@ -252,8 +259,9 @@ void ChromeNewWindowClient::NewTab() {
 
 void ChromeNewWindowClient::NewWindow(bool is_incognito,
                                       bool should_trigger_session_restore) {
-  if (is_incognito && !IsIncognitoAllowed())
+  if (is_incognito && !IsIncognitoAllowed()) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   Profile* profile = (browser && browser->profile())
@@ -359,8 +367,9 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
   // If the |from| is kUserInteraction, then the page will load with a user
   // activation. This means it will be able to autoplay media without
   // restriction.
-  if (from == OpenUrlFrom::kUserInteraction)
+  if (from == OpenUrlFrom::kUserInteraction) {
     navigate_params.was_activated = blink::mojom::WasActivatedOption::kYes;
+  }
 
   Navigate(&navigate_params);
 
@@ -472,14 +481,17 @@ void ChromeNewWindowClient::RestoreTab() {
 
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   Profile* profile = browser ? browser->profile() : nullptr;
-  if (!profile)
+  if (!profile) {
     profile = ProfileManager::GetActiveUserProfile();
-  if (profile->IsOffTheRecord())
+  }
+  if (profile->IsOffTheRecord()) {
     return;
+  }
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(profile);
-  if (!service)
+  if (!service) {
     return;
+  }
 
   if (service->IsLoaded()) {
     RestoreTabUsingProfile(profile);
@@ -525,6 +537,32 @@ void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {
                           platform_util::OpenOperationCallback());
 }
 
+void ChromeNewWindowClient::ToggleGeminiApp() {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  const auto& browsers = BrowserList::GetInstance()->OrderedByActivation();
+
+  auto it = std::find_if(browsers.begin(), browsers.end(),
+                         [profile](Browser* browser) {
+                           return browser->profile() == profile &&
+                                  browser->type() == Browser::Type::TYPE_APP &&
+                                  IsGeminiApp(browser);
+                         });
+
+  Browser* active_browser = (it != browsers.end()) ? *it : nullptr;
+  if (!active_browser) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        ash::kGeminiAppId, ui::EF_NONE, apps::LaunchSource::kFromKeyboard);
+    return;
+  }
+
+  BrowserWindow* app_window = active_browser->window();
+  if (app_window->IsActive()) {
+    app_window->Minimize();
+  } else {
+    app_window->Activate();
+  }
+}
+
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
                                             bool launch_in_dialog,
                                             int32_t task_id) {
@@ -540,12 +578,14 @@ void ChromeNewWindowClient::CloseCameraApp() {
       ChromeShelfController::instance()
           ->shelf_model()
           ->GetAppWindowShelfItemController(shelf_id);
-  if (!app_controller)
+  if (!app_controller) {
     return;
+  }
 
   DCHECK_LE(app_controller->window_count(), 1lu);
-  if (app_controller->window_count() > 0)
+  if (app_controller->window_count() > 0) {
     app_controller->windows().front()->Close();
+  }
 }
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {

@@ -18,6 +18,7 @@ Usage example:
 
 import io
 import optparse
+import json_parse
 import os
 import shlex
 import sys
@@ -46,6 +47,37 @@ GENERATORS = [
 ]
 
 
+def DeleteNodes(item, delete_key=None, matcher=None):
+  """Deletes certain nodes in item, recursively. If |delete_key| is set, all
+  dicts with |delete_key| as an attribute are deleted. If a callback is passed
+  as |matcher|, |DeleteNodes| will delete all dicts for which matcher(dict)
+  returns True.
+  """
+  assert (delete_key is not None) != (matcher is not None)
+
+  def ShouldDelete(thing):
+    return json_parse.IsDict(thing) and (
+        delete_key is not None and delete_key in thing
+        or matcher is not None and matcher(thing))
+
+  if json_parse.IsDict(item):
+    toDelete = []
+    for key, value in item.items():
+      if ShouldDelete(value):
+        toDelete.append(key)
+      else:
+        DeleteNodes(value, delete_key, matcher)
+    for key in toDelete:
+      del item[key]
+  elif type(item) == list:
+    item[:] = [
+        DeleteNodes(thing, delete_key, matcher) for thing in item
+        if not ShouldDelete(thing)
+    ]
+
+  return item
+
+
 def GenerateSchema(
     generator_name,
     file_paths,
@@ -64,7 +96,7 @@ def GenerateSchema(
 
     # If compiling the C++ model code, delete 'nocompile' nodes.
     if generator_name == 'cpp':
-      api_def = json_schema.DeleteNodes(api_def, 'nocompile')
+      api_def = DeleteNodes(api_def, 'nocompile')
 
     api_defs.extend(api_def)
 

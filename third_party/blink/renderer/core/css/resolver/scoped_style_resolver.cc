@@ -119,7 +119,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       continue;
     }
 
-    const RuleSet& rule_set = *active_sheet.second;
+    RuleSet& rule_set = *active_sheet.second;
     if (!active_style_sheets_.empty() &&
         active_style_sheets_.back().second == active_sheet.second) {
       // Some frameworks generate a ton of identical <style> tags;
@@ -132,6 +132,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       // however, we'd need to make sure this doesn't change @layer ordering.
     } else {
       active_style_sheets_.push_back(active_sheet);
+      rule_set.CompactRulesIfNeeded();
       AddKeyframeRules(rule_set);
       AddFontFaceRules(rule_set);
       AddCounterStyleRules(rule_set);
@@ -282,7 +283,7 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
     if (CanRejectRuleSet(collector, *rule_set)) {
       continue;
     }
-    match_request.AddRuleset(rule_set.Get());
+    match_request.AddRuleSet(rule_set.Get());
     if (match_request.IsFull()) {
       func(match_request);
       match_request.ClearAfterMatching();
@@ -318,11 +319,9 @@ void ScopedStyleResolver::CollectMatchingSlottedRules(
 
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
-    PartNames* part_names,
-    bool for_shadow_pseudo) {
+    PartNames* part_names) {
   ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
-    collector.CollectMatchingPartPseudoRules(match_request, part_names,
-                                             for_shadow_pseudo);
+    collector.CollectMatchingPartPseudoRules(match_request, part_names);
   });
 }
 
@@ -456,11 +455,17 @@ void ForEachImplicitScopeTrigger(TreeScope& scope,
   for (const RuleSet::Interval<StyleScope>& interval :
        rule_set.ScopeIntervals()) {
     const StyleScope* style_scope = interval.value.Get();
-    if (!style_scope || !style_scope->IsImplicit()) {
-      continue;
-    }
-    if (Element* scoping_root = ImplicitScopeTrigger(scope, sheet)) {
-      func(*scoping_root, *style_scope);
+    while (style_scope) {
+      if (style_scope->IsImplicit()) {
+        if (Element* scoping_root = ImplicitScopeTrigger(scope, sheet)) {
+          func(*scoping_root, *style_scope);
+        }
+      }
+      // Note that ScopeIntervals() only reaches the @scope rules that
+      // hold some style rule directly, but it's also possible to do e.g.
+      // @scope { @scope (.a) { div {} } }, where an implicit @scope exists
+      // as a parent-@scope only.
+      style_scope = style_scope->Parent();
     }
   }
 }

@@ -9,9 +9,9 @@
 #include <type_traits>
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "ui/base/class_property.h"
 
 class Browser;

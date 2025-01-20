@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
-#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -131,14 +131,16 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   MenuController& operator=(const MenuController&) = delete;
 
   // Runs the menu at the specified location.
-  void Run(Widget* parent,
-           MenuButtonController* button_controller,
-           MenuItemView* root,
-           const gfx::Rect& anchor_bounds,
-           MenuAnchorPosition position,
-           bool context_menu,
-           bool is_nested_drag,
-           gfx::NativeView native_view_for_gestures = gfx::NativeView());
+  void Run(
+      Widget* parent,
+      MenuButtonController* button_controller,
+      MenuItemView* root,
+      const gfx::Rect& anchor_bounds,
+      MenuAnchorPosition position,
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone,
+      bool context_menu = false,
+      bool is_nested_drag = false,
+      gfx::NativeView native_view_for_gestures = gfx::NativeView());
 
   bool for_drop() const { return for_drop_; }
 

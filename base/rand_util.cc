@@ -55,6 +55,12 @@ float RandFloat() {
   return BitsToOpenEndedUnitIntervalF(base::RandUint64());
 }
 
+bool RandBool() {
+  uint8_t number;
+  RandBytes(span_from_ref(number));
+  return number & 1;
+}
+
 TimeDelta RandTimeDelta(TimeDelta start, TimeDelta limit) {
   // We must have a finite, non-empty, non-reversed interval.
   CHECK_LT(start, limit);

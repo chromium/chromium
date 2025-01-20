@@ -94,7 +94,7 @@ bool DidInjectScript(content::WebContents& web_contents) {
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  public:

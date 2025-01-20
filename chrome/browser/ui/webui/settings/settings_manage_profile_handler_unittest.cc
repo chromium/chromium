@@ -16,6 +16,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -30,8 +31,8 @@ class TestManageProfileHandler : public ManageProfileHandler {
   explicit TestManageProfileHandler(Profile* profile)
       : ManageProfileHandler(profile) {}
 
-  using ManageProfileHandler::set_web_ui;
   using ManageProfileHandler::AllowJavascript;
+  using ManageProfileHandler::set_web_ui;
 };
 
 }  // namespace
@@ -57,7 +58,7 @@ class ManageProfileHandlerTest : public testing::Test {
 
   void SetSignedInProfile() {
     gfx::Image gaia_image(gfx::test::CreateImage(256, 256));
-    entry()->SetAuthInfo("gaia_id", u"user@gmail.com", false);
+    entry()->SetAuthInfo(GaiaId("gaia_id"), u"user@gmail.com", false);
     entry()->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_image);
     EXPECT_TRUE(entry()->IsUsingDefaultAvatar());
     EXPECT_TRUE(entry()->IsUsingGAIAPicture());
@@ -276,7 +277,7 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
                  /*gaia_selected=*/false);
 
   // Sign out.
-  entry()->SetAuthInfo("", std::u16string(), false);
+  entry()->SetAuthInfo(GaiaId(), std::u16string(), false);
   entry()->SetGAIAPicture(std::string(), gfx::Image());
 
   const content::TestWebUI::CallData& data_2 = *web_ui()->call_data().back();

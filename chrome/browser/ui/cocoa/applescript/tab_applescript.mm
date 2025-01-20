@@ -31,9 +31,9 @@
 using content::NavigationController;
 using content::NavigationEntry;
 using content::OpenURLParams;
+using content::Referrer;
 using content::RenderFrameHost;
 using content::RenderViewHost;
-using content::Referrer;
 using content::WebContents;
 
 namespace {
@@ -46,8 +46,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   NSAppleEventManager* manager = [NSAppleEventManager sharedAppleEventManager];
   NSAppleEventDescriptor* reply_event =
       [manager replyAppleEventForSuspensionID:suspension_id];
-  [reply_event setParamDescriptor:result_descriptor
-                       forKeyword:keyDirectObject];
+  [reply_event setParamDescriptor:result_descriptor forKeyword:keyDirectObject];
   [manager resumeWithSuspensionID:suspension_id];
 }
 
@@ -59,7 +58,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 // specified like:
 //
 //   make new tab with properties {URL:"http://google.com"}
-@property (nonatomic, copy) NSString* tempURL;
+@property(nonatomic, copy) NSString* tempURL;
 
 - (bool)isJavaScriptEnabled;
 
@@ -326,6 +325,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
       savePageType = content::SAVE_PAGE_TYPE_AS_ONLY_HTML;
     } else if ([saveType isEqualToString:@"complete html"]) {
       savePageType = content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML;
+    } else if ([saveType isEqualToString:@"single file"]) {
+      savePageType = content::SAVE_PAGE_TYPE_AS_MHTML;
     } else {
       AppleScript::SetError(AppleScript::Error::kInvalidSaveType);
       return;

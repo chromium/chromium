@@ -117,8 +117,8 @@ class AboutSigninInternals : public KeyedService,
     // Called when the token is invalidated.
     void Invalidate();
 
-    std::string consumer_id;    // service that requested the token.
-    signin::ScopeSet scopes;    // Scoped that are requested.
+    std::string consumer_id;  // service that requested the token.
+    signin::ScopeSet scopes;  // Scoped that are requested.
     base::Time request_time;
     base::Time receive_time;
     base::Time expiration_time;

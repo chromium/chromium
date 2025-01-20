@@ -16,15 +16,21 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTokenType =
-    IsAnyOf<T, blink::WebNNContextToken, blink::WebNNTensorToken>;
+concept IsSupportedTokenType = IsAnyOf<T,
+                                       blink::WebNNPendingConstantToken,
+                                       blink::WebNNContextToken,
+                                       blink::WebNNTensorToken>;
 }  // namespace internal
 
 template <typename WebNNTokenType>
   requires internal::IsSupportedTokenType<WebNNTokenType>
-class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNObjectImpl {
+class COMPONENT_EXPORT(WEBNN_UTILS) WebNNObjectImpl {
  public:
   WebNNObjectImpl() = default;
+
+  explicit WebNNObjectImpl(WebNNTokenType handle)
+      : handle_(std::move(handle)) {}
+
   virtual ~WebNNObjectImpl() = default;
 
   WebNNObjectImpl(const WebNNObjectImpl&) = delete;

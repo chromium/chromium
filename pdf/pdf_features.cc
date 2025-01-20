@@ -43,6 +43,16 @@ BASE_FEATURE(kPdfPortfolio, "PdfPortfolio", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfSearchifySave,
+             "PdfSearchifySave",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables accessibility tags in PDFs to be parsed and integrated into the
+// accessibility tree by Chrome's PDF Viewer. Accessibility tags provide
+// structure and semantics to the text found in a PDF, e.g. they could mark a
+// specific piece of text as a heading, or a block of text as a paragraph.
+BASE_FEATURE(kPdfTags, "PdfTags", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfUseShowSaveFilePicker,
              "PdfUseShowSaveFilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -67,6 +77,11 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
 bool IsOopifPdfEnabled() {
   return g_is_oopif_pdf_policy_enabled &&
          base::FeatureList::IsEnabled(kPdfOopif);
+}
+
+bool IsPdfSearchifySaveEnabled() {
+  return base::FeatureList::IsEnabled(kPdfSearchify) &&
+         base::FeatureList::IsEnabled(kPdfSearchifySave);
 }
 
 }  // namespace chrome_pdf::features

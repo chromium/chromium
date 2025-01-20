@@ -53,12 +53,14 @@ constexpr size_t kPageSize = 4096;
 // successful, |residency| has the size of |end| - |start| in pages.
 // Returns true for success.
 bool Mincore(size_t start, size_t end, std::vector<unsigned char>* residency) {
-  if (start % kPageSize || end % kPageSize)
+  if (start % kPageSize || end % kPageSize) {
     return false;
+  }
   size_t size = end - start;
   size_t size_in_pages = size / kPageSize;
-  if (residency->size() != size_in_pages)
+  if (residency->size() != size_in_pages) {
     residency->resize(size_in_pages);
+  }
   int err = HANDLE_EINTR(
       mincore(reinterpret_cast<void*>(start), size, &(*residency)[0]));
   PLOG_IF(ERROR, err) << "mincore() failed";
@@ -125,8 +127,9 @@ bool CollectResidency(size_t start,
   uint64_t now = static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 +
                  static_cast<uint64_t>(ts.tv_nsec);
   std::vector<unsigned char> residency;
-  if (!Mincore(start, end, &residency))
+  if (!Mincore(start, end, &residency)) {
     return false;
+  }
 
   data->emplace_back(now, std::move(residency));
   return true;
@@ -216,8 +219,9 @@ PrefetchStatus ForkAndPrefetch(bool ordered_only) {
   // Always prefetch the ordered section first, as it's reached early during
   // startup, and not necessarily located at the beginning of .text.
   std::vector<std::pair<size_t, size_t>> ranges = {GetOrderedTextRange()};
-  if (!ordered_only)
+  if (!ordered_only) {
     ranges.push_back(GetTextRange());
+  }
 
   pid_t pid = fork();
   if (pid == 0) {
@@ -237,8 +241,9 @@ PrefetchStatus ForkAndPrefetch(bool ordered_only) {
     int status;
     const pid_t result = HANDLE_EINTR(waitpid(pid, &status, 0));
     if (result == pid) {
-      if (WIFEXITED(status))
+      if (WIFEXITED(status)) {
         return PrefetchStatus::kSuccess;
+      }
       if (WIFSIGNALED(status)) {
         int signal = WTERMSIG(status);
         switch (signal) {
@@ -286,13 +291,15 @@ int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
 
   std::vector<unsigned char> residency;
   bool ok = Mincore(start, end, &residency);
-  if (!ok)
+  if (!ok) {
     return -1;
+  }
   total_pages += residency.size();
   resident_pages += static_cast<size_t>(
       ranges::count_if(residency, [](unsigned char x) { return x & 1; }));
-  if (total_pages == 0)
+  if (total_pages == 0) {
     return -1;
+  }
   return static_cast<int>((100 * resident_pages) / total_pages);
 }
 
@@ -316,8 +323,9 @@ void NativeLibraryPrefetcher::PeriodicallyCollectResidency() {
   // Collect residency for about minute (the actual time spent collecting
   // residency can vary, so this is only approximate).
   for (int i = 0; i < 120; ++i) {
-    if (!CollectResidency(range.first, range.second, data.get()))
+    if (!CollectResidency(range.first, range.second, data.get())) {
       return;
+    }
     usleep(5e5);
   }
   DumpResidency(range.first, range.second, std::move(data));

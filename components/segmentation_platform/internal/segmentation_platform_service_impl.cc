@@ -180,6 +180,13 @@ void SegmentationPlatformServiceImpl::GetAnnotatedNumericResult(
       segmentation_key, prediction_options, input_context, std::move(callback));
 }
 
+void SegmentationPlatformServiceImpl::GetInputKeysForModel(
+    const std::string& segmentation_key,
+    InputContextKeysCallback callback) {
+  request_dispatcher_->GetInputKeysForModel(segmentation_key,
+                                            std::move(callback));
+}
+
 SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
     const std::string& segmentation_key) {
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());

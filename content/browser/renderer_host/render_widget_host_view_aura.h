@@ -22,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -247,7 +246,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::optional<gfx::Rect> GetProximateCharacterBounds(
       const gfx::Range& range) const override;
   std::optional<size_t> GetProximateCharacterIndexFromPoint(
-      const gfx::Point& point,
+      const gfx::Point& screen_point_in_dips,
       ui::IndexFromPointFlags flags) const override;
 #endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
@@ -312,7 +311,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       bool is_composition_committed) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Returns the editing context of the active web content.
   // This is currently used by TSF and ChromeOS to fetch the URL of the active
   // web content.
@@ -331,7 +330,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
+  std::optional<gfx::Size> GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override;
   gfx::NativeCursor GetCursor(const gfx::Point& point) override;
@@ -374,6 +373,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Overridden from aura::WindowTreeHostObserver:
   void OnHostMovedInPixels(aura::WindowTreeHost* host) override;
+  void OnLocalSurfaceIdChanged(aura::WindowTreeHost* host,
+                               const viz::LocalSurfaceId& id) override {}
 
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
@@ -660,6 +661,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // parent.
   void ApplyEventObserverForPopupExit(const ui::LocatedEvent& event);
 
+  // Converts |screen_point| from screen coordinate to window coordinate.
+  gfx::Point ConvertPointFromScreen(
+      const gfx::Point& screen_point_in_dips) const;
+
   // Converts |rect| from screen coordinate to window coordinate.
   gfx::Rect ConvertRectFromScreen(const gfx::Rect& rect) const;
 
@@ -718,8 +723,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Invoked on Shell Handwriting API request to update the element's focus
   // based on the provided rect and the distance tolerance.
-  void OnFocusHandwritingTarget(const gfx::Rect& rect_in_screen,
-                                const gfx::Size& distance_tolerance);
+  void OnFocusHandwritingTarget(
+      const gfx::Rect& focus_screen_rect_in_dips,
+      const gfx::Size& tolerance_screen_distance_in_dips);
 #endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<aura::Window> window_;

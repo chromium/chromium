@@ -2,26 +2,189 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_glic)
+
 source_set("glic") {
   sources = [
+    "border_view.h",
+    "glic_cookie_synchronizer.h",
+    "glic_focused_tab_manager.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
+    "glic_page_context_fetcher.h",
+    "glic_page_handler.h",
+    "glic_pref_names.h",
+    "glic_profile_configuration.h",
+    "glic_profile_manager.h",
+    "glic_tab_data.h",
+    "glic_tab_indicator_helper.h",
+    "glic_ui.h",
+    "glic_view.h",
+    "glic_web_client_access.h",
+    "glic_window_controller.h",
+    "guest_util.h",
   ]
   public_deps = [
+    ":mojo_bindings",
     "//base",
+    "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
+    "//pdf/mojom:mojom",
+    "//ui/views:views",
+    "//ui/views/controls/webview",
+    "//ui/webui",
   ]
 }
 
 source_set("impl") {
   sources = [
+    "border_view.cc",
+    "glic_cookie_synchronizer.cc",
+    "glic_focused_tab_manager.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
+    "glic_page_context_fetcher.cc",
+    "glic_page_handler.cc",
+    "glic_profile_configuration.cc",
+    "glic_profile_manager.cc",
+    "glic_tab_data.cc",
+    "glic_tab_indicator_helper.cc",
+    "glic_ui.cc",
+    "glic_view.cc",
+    "glic_window_controller.cc",
+    "glic_window_resize_animation.cc",
+    "glic_window_resize_animation.h",
+    "guest_util.cc",
   ]
-  public_deps = [ "//chrome/browser/ui:ui" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":enabling",
+    ":glic",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/glic/launcher",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/resources/glic:resources",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
+    "//chrome/common",
+    "//components/favicon/content:content",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/guest_view/browser",
+    "//components/pdf/browser:browser",
+    "//components/sessions",
+    "//extensions/browser:browser",
+    "//ui/webui",
+    "//url",
+  ]
+
+  if (is_mac) {
+    deps += [ "//ui/accelerated_widget_mac" ]
+  }
+}
+
+mojom("mojo_bindings") {
+  sources = [ "glic.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+}
+
+source_set("enabling") {
+  sources = [
+    "glic_enabling.cc",
+    "glic_enabling.h",
+  ]
   deps = [
     ":glic",
-    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
   ]
+  public_deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "glic_cookie_synchronizer_unittest.cc",
+    "glic_enabling_unittest.cc",
+    "glic_profile_manager_unittest.cc",
+  ]
+  deps = [
+    ":enabling",
+    ":glic",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "glic_browsertest.cc",
+    "glic_policy_browsertest.cc",
+    "guest_util_browsertest.cc",
+  ]
+  deps = [
+    ":glic",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/glic/launcher",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "border_view_browsertest.cc",
+    "glic_window_controller_ui_test.cc",
+  ]
+  deps = [
+    ":glic",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+  data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }

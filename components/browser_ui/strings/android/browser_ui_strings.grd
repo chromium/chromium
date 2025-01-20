@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="values-af/browser_ui_strings.xml" lang="af" type="android" />
     <output filename="values-am/browser_ui_strings.xml" lang="am" type="android" />
@@ -453,15 +453,6 @@
       </message>
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
-        Forget this site?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
-        Are you sure you want to reset permissions, and delete cookies and site data?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
-        Forget
       </message>
       <message name="IDS_PAGE_INFO_HISTORY_TITLE" desc="Label used in the Page Info dialog above the history list.">
         History
@@ -1138,6 +1129,38 @@
         {TILE_COUNT, plural,
          =1 {Hide continue with this tab card}
          other {Hide continue with these tabs card}}
+      </message>
+
+      <!-- Auxiliary search Magic Stack strings -->
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_NAME" desc="Name of the auxiliary search module on NTP.">
+        View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the auxiliary search card.">
+        Hide View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
+        Chrome now shares your recent tabs with your device. You’ll see them in your device’s app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
+        Chrome now shows your recent tabs in your device's app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
+        Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
+        Let Chrome show your recent tabs in your device’s app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GO_TO_SETTINGS" desc="The text shown on the Go to settings button on the auxiliary search module on NTP.">
+        Go to settings
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GOT_IT" desc="The text shown on the Got it button on the auxiliary search module on NTP.">
+        Got it
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_NO_THANKS" desc="The text shown on the No thanks button on the auxiliary search module on NTP.">
+        No thanks
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_TURN_ON" desc="The text shown on the Turn on button on the auxiliary search module on NTP.">
+        Turn on
       </message>
 
       <!-- Educational tip module strings -->

@@ -124,6 +124,7 @@ class ManagePasswordsUIController
   void OnPasskeyDeleted() override;
   void OnPasskeyUpdated(std::string passkey_rp_id) override;
   void OnPasskeyNotAccepted(std::string passkey_rp_id) override;
+  void OnPasskeyUpgrade(std::string passkey_rp_id) override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
@@ -203,11 +204,6 @@ class ManagePasswordsUIController
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;
-  void AuthenticateUserForAccountStoreOptInAndSavePassword(
-      const std::u16string& username,
-      const std::u16string& password) override;
-  void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
-      override;
   void MaybeShowIOSPasswordPromo() override;
   void RelaunchChrome() override;
   // Skips user os level authentication during the life time of the returned
@@ -232,7 +228,6 @@ class ManagePasswordsUIController
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
-
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
   // manage passwords icon and bubble.
@@ -247,7 +242,7 @@ class ManagePasswordsUIController
       CredentialManagerDialogController* controller);
 
   // Called to create the credentials leaked dialog.
-  virtual CredentialLeakPrompt* CreateCredentialLeakPrompt(
+  virtual std::unique_ptr<CredentialLeakPrompt> CreateCredentialLeakPrompt(
       CredentialLeakDialogController* controller);
 
   // Check if |web_contents()| is attached to some Browser. Mocked in tests.
@@ -268,6 +263,8 @@ class ManagePasswordsUIController
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  PasswordChangeDelegate* GetPasswordChangeDelegate() const override;
+
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
 
@@ -277,6 +274,9 @@ class ManagePasswordsUIController
   void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) override;
   void OnLeakDialogHidden() override;
+  void ChangePassword(const GURL& url,
+                      const std::u16string& username,
+                      const std::u16string& password) override;
 
   enum class BubbleStatus {
     NOT_SHOWN,
@@ -315,32 +315,11 @@ class ManagePasswordsUIController
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  // Gets invoked gaia reauth flow is finished. If the reauth was successful,
-  // and the |form_manager| is still the same, |username| and |password| are
-  // saved against the current origin. If the reauth was unsuccessful, it
-  // changes the default destination to profle store and reopens the save
-  // bubble.
-  void FinishSavingPasswordAfterAccountStoreOptInAuth(
-      const url::Origin& origin,
-      password_manager::PasswordFormManagerForUI* form_manager,
-      const std::u16string& username,
-      const std::u16string& password,
-      password_manager::PasswordManagerClient::ReauthSucceeded
-          reauth_succeeded);
-
   void OnTriggerPostSaveCompromisedBubble(
       password_manager::PostSaveCompromisedHelper::BubbleType type,
       size_t count_compromised_passwords_);
 
-  // Called from an opt-in/reauth flow that was triggered after a new
-  // account-storage-eligible user saved a password locally. If the opt-in was
-  // successful, this moves the just-saved password into the account store.
-  void MoveJustSavedPasswordAfterAccountStoreOptIn(
-      const password_manager::PasswordForm& form,
-      password_manager::PasswordManagerClient::ReauthSucceeded
-          reauth_succeeded);
-
-  void OnMoveJustSavedPasswordAfterAccountStoreOptInCompleted(
+  void OnMovePasswordToAccountStoreComplete(
       std::list<std::unique_ptr<
           password_manager::MovePasswordToAccountStoreHelper>>::iterator
           done_helper_it);
@@ -351,6 +330,9 @@ class ManagePasswordsUIController
   // Returns true if the password that is about to be changed was previously
   // phished.
   bool IsPendingPasswordPhished() const;
+
+  // Returns true if password changing is currently running.
+  bool IsPasswordChangeOngoing() const;
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;

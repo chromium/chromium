@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
+#include <cstdint>
+#include <cstring>
+#include <tuple>
 
 // No rewrite expected.
 extern const int kPropertyVisitedIDs[];
@@ -23,13 +25,13 @@ void fct() {
   buf[index] = 11;
 
   // Expected rewrite:
-  // auto buf2 = std::to_array<int, 5>({1, 1, 1, 1, 1});
+  // std::array<int, 5> buf2 = {1, 1, 1, 1, 1};
   int buf2[5] = {1, 1, 1, 1, 1};
   buf2[index] = 11;
 
   constexpr int size = 5;
   // Expected rewrite:
-  // constexpr auto buf3 = std::to_array<int, size>({1, 1, 1, 1, 1});
+  // constexpr std::array<int, size> buf3 = {1, 1, 1, 1, 1};
   constexpr int buf3[size] = {1, 1, 1, 1, 1};
   (void)buf3[index];
 
@@ -49,19 +51,19 @@ void fct() {
   buf6[index] = 1;
 
   // Expected rewrite:
-  // auto buf7 = std::to_array<int (*)(int), 16>({nullptr});
-  int (*buf7[16])(int) = {nullptr};
+  // std::array<int (*)(int), 16> buf7 = {};
+  int (*buf7[16])(int) = {};
   buf7[index] = nullptr;
 
   // Expected rewrite:
-  // auto buf8 = std::to_array<int(**)[], 16>({nullptr});
-  int(**buf8[16])[] = {nullptr};
+  // std::array<int(**)[], 16> buf8 = {};
+  int(**buf8[16])[] = {};
   buf8[index] = nullptr;
 
   using Arr = int(**)[];
   // Expected rewrite:
-  // auto buf9 = std::to_array<Arr, buf3[0]>({nullptr});
-  Arr buf9[buf3[0]] = {nullptr};
+  // std::array<Arr, buf3[0]> buf9 = {};
+  Arr buf9[buf3[0]] = {};
   buf9[index] = nullptr;
 
   // Expected rewrite:
@@ -70,4 +72,29 @@ void fct() {
   buf10[index] = nullptr;
 
   index = kPropertyVisitedIDs[index];
+}
+
+void sizeof_array_expr() {
+  // Expected rewrite:
+  // auto buf = std::to_array<int>({1});
+  int buf[]{1};
+  std::ignore = buf[0];
+
+  // Expected rewrite:
+  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  std::ignore = sizeof buf;
+  // Expected rewrite:
+  // std::ignore = (buf.size() * sizeof(decltype(buf)::value_type));
+  std::ignore = sizeof(buf);
+  // The following won't be rewritten.
+  std::ignore = sizeof *buf;
+  std::ignore = sizeof buf[0];
+}
+
+// Test for crbug.com/383424943.
+void crbug_383424943() {
+  // No rewrite expected.
+  int buf[]{1};
+  // Using sizeof was causing buf to be rewritten.
+  memset(buf, 'x', sizeof(buf));
 }

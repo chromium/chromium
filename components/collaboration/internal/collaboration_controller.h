@@ -11,8 +11,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/public/types.h"
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -43,11 +49,18 @@ class CollaborationController {
     // Delegate is showing invitation screen to the user.
     kAddingUserToGroup,
 
-    // Waiting for tab group to be added in sync. Loading UI should be shown.
-    kWaitingForSyncTabGroup,
+    // Waiting for tab group to be added in sync and people group to be added in
+    // DataSharing. Loading UI should be shown.
+    kWaitingForSyncAndDataSharingGroup,
 
     // Delegate is promoting the local tab group.
     kOpeningLocalTabGroup,
+
+    // Delegate is showing the share sheet.
+    kShowingShareScreen,
+
+    // Delegate is showing the manage people screen.
+    kShowingManageScreen,
 
     // The flow is cancelled.
     kCancel,
@@ -56,19 +69,46 @@ class CollaborationController {
     kError,
   };
 
-  enum class Flow {
-    kJoin,
-    kShare,
+  class Flow {
+   public:
+    // Join flow constructor.
+    Flow(FlowType type, const data_sharing::GroupToken& token);
+
+    // Share flow constructor.
+    Flow(FlowType type, const tab_groups::EitherGroupID& either_id);
+
+    ~Flow();
+
+    Flow(const Flow&);
+
+    const FlowType type;
+
+    const data_sharing::GroupToken& join_token() const {
+      DCHECK_EQ(type, FlowType::kJoin);
+      return join_token_;
+    }
+
+    const tab_groups::EitherGroupID& either_id() const {
+      DCHECK_EQ(type, FlowType::kShareOrManage);
+      return either_id_;
+    }
+
+   private:
+    // ID for join flow.
+    const data_sharing::GroupToken join_token_;
+
+    // ID for share flow.
+    const tab_groups::EitherGroupID either_id_;
   };
 
   using FinishCallback = base::OnceCallback<void()>;
 
   explicit CollaborationController(
       const Flow& flow,
-      const data_sharing::GroupToken& token,
       CollaborationService* collaboration_service,
       data_sharing::DataSharingService* data_sharing_service,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
+      syncer::SyncService* sync_service,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       FinishCallback finish_and_delete);
   ~CollaborationController();
@@ -85,7 +125,7 @@ class CollaborationController {
   tab_groups::TabGroupSyncService* tab_group_sync_service() {
     return tab_group_sync_service_.get();
   }
-  const data_sharing::GroupToken& token() { return token_; }
+  syncer::SyncService* sync_service() { return sync_service_.get(); }
   CollaborationService* collaboration_service() {
     return collaboration_service_.get();
   }
@@ -98,12 +138,19 @@ class CollaborationController {
           CollaborationControllerDelegate::ErrorInfo(
               CollaborationControllerDelegate::ErrorInfo::Type::kUnknown));
 
+  // Called to refocus the current flow.
+  void PromoteCurrentSession();
+
   // Called when the flow is finished to exit and clean itself up in the
   // service.
   void Exit();
 
+  // Helper functions used in tests.
+  void SetStateForTesting(StateId state);
+  StateId GetStateForTesting();
+
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 17>
+  static constexpr std::array<std::pair<StateId, StateId>, 22>
       kValidTransitions = {{
           // kPending transitions to:
           //
@@ -129,34 +176,47 @@ class CollaborationController {
           // kCheckingFlowRequirements transition to:
           //
           //   kAddingUserToGroup: When user is not in current people group.
-          //   kWaitingForSyncTabGroup: When user is in current people group,
+          //   kWaitingForSyncAndDataSharingGroup: When user is in current
+          //   people group,
           //   but tab group not found in sync.
           //   kOpeningLocalTabGroup: When user is in current people group, and
           //   tab group found in sync.
+          //   kShowingShareScreen: In share flow, when the tab group is not
+          //   shared.
+          //   kShowingManageScreen: In share flow, when the tab group is a
+          //   shared tab group.
+          //   kError: An error occurred while checking requirements. This could
+          //   be due to version mismatch.
           {StateId::kCheckingFlowRequirements, StateId::kAddingUserToGroup},
           {StateId::kCheckingFlowRequirements,
-           StateId::kWaitingForSyncTabGroup},
+           StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kCheckingFlowRequirements, StateId::kOpeningLocalTabGroup},
+          {StateId::kCheckingFlowRequirements, StateId::kShowingShareScreen},
+          {StateId::kCheckingFlowRequirements, StateId::kShowingManageScreen},
+          {StateId::kCheckingFlowRequirements, StateId::kError},
 
           // kAddingUserToGroup transition to:
           //
-          //   kWaitingForSyncTabGroup: After the user accept the join
+          //   kWaitingForSyncAndDataSharingGroup: After the user accept the
+          //   join
           //   invitation and the tab group is not yet added in sync.
           //   kOpeningLocalTabGroup: After the user accept the join invitation
           //   and the tab group is in sync.
           //   kCancel: After the user cancels the join invitation
           //   kError: An error occurred during invitation screen.
-          {StateId::kAddingUserToGroup, StateId::kWaitingForSyncTabGroup},
+          {StateId::kAddingUserToGroup,
+           StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kAddingUserToGroup, StateId::kOpeningLocalTabGroup},
           {StateId::kAddingUserToGroup, StateId::kCancel},
           {StateId::kAddingUserToGroup, StateId::kError},
 
-          // kWaitingForSyncTabGroup transition to:
+          // kWaitingForSyncAndDataSharingGroup transition to:
           //
           //   kOpeningLocalTabGroup: After tab group is added in sync.
           //   kError: An error occurred while waiting for sync tab group.
-          {StateId::kWaitingForSyncTabGroup, StateId::kOpeningLocalTabGroup},
-          {StateId::kWaitingForSyncTabGroup, StateId::kError},
+          {StateId::kWaitingForSyncAndDataSharingGroup,
+           StateId::kOpeningLocalTabGroup},
+          {StateId::kWaitingForSyncAndDataSharingGroup, StateId::kError},
 
           // kOpeningLocalTabGroup transition to:
           //
@@ -165,6 +225,16 @@ class CollaborationController {
           //   to clean up.
           {StateId::kOpeningLocalTabGroup, StateId::kError},
           {StateId::kOpeningLocalTabGroup, StateId::kCancel},
+
+          // kShowingShareScreen transition to:
+          //
+          //   kError: An error occurred while showing the share screen.
+          {StateId::kShowingShareScreen, StateId::kError},
+
+          // kShowingManageScreen transition to:
+          //
+          //   kError: An error occurred while showing the manage people screen.
+          {StateId::kShowingManageScreen, StateId::kError},
       }};
 
   bool IsValidStateTransition(StateId from, StateId to);
@@ -173,10 +243,10 @@ class CollaborationController {
   std::unique_ptr<ControllerState> current_state_;
 
   const Flow flow_;
-  const data_sharing::GroupToken token_;
   const raw_ptr<CollaborationService> collaboration_service_;
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<CollaborationControllerDelegate> delegate_;
   FinishCallback finish_and_delete_;
   base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};

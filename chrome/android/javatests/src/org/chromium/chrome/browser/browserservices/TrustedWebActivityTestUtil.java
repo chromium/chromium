@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.browserservices;
 import android.content.Intent;
 
 import androidx.browser.customtabs.CustomTabsService;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -82,9 +82,9 @@ public class TrustedWebActivityTestUtil {
 
     /** Creates a Custom Tabs Session from the Intent, specifying the |packageName|. */
     public static void createSession(Intent intent, String packageName) throws TimeoutException {
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var token = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(token);
+        connection.newSession(token.getSessionAsCustomTab());
         connection.overridePackageNameForSessionForTesting(token, packageName);
     }
 
@@ -104,7 +104,7 @@ public class TrustedWebActivityTestUtil {
     /** Waits till {@link CurrentPageVerifier} verification either succeeds or fails. */
     public static void waitForCurrentPageVerifierToFinish(CustomTabActivity activity)
             throws TimeoutException {
-        CurrentPageVerifier verifier = activity.getComponent().resolveCurrentPageVerifier();
+        CurrentPageVerifier verifier = activity.getCurrentPageVerifier();
         new CurrentPageVerifierWaiter().start(verifier);
     }
 }

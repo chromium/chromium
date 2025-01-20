@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -83,7 +84,7 @@ TEST_F(IdentityAPITest, AllAccountsExtensionEnabled) {
 
 TEST_F(IdentityAPITest, GetGaiaIdForExtension) {
   std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
-  std::string gaia_id = identity_env()->MakeAccountAvailable(kTestAccount).gaia;
+  GaiaId gaia_id = identity_env()->MakeAccountAvailable(kTestAccount).gaia;
   api()->SetGaiaIdForExtension(extension_id, gaia_id);
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), gaia_id);
 
@@ -95,10 +96,10 @@ TEST_F(IdentityAPITest, GetGaiaIdForExtension) {
 TEST_F(IdentityAPITest, GetGaiaIdForExtensionSurvivesShutdown) {
   EXPECT_CALL(mock_on_signin_changed_callback(), Run(_));
   std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
-  std::string gaia_id = identity_env()
-                            ->MakePrimaryAccountAvailable(
-                                kTestAccount, signin::ConsentLevel::kSignin)
-                            .gaia;
+  GaiaId gaia_id = identity_env()
+                       ->MakePrimaryAccountAvailable(
+                           kTestAccount, signin::ConsentLevel::kSignin)
+                       .gaia;
   api()->SetGaiaIdForExtension(extension_id, gaia_id);
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), gaia_id);
 
@@ -216,7 +217,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogChromeAlreadySignedIn) {
   ASSERT_TRUE(identity_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
   base::test::TestFuture<void> on_complete;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete.GetCallback());
   // The UI is not shown and the callback is shown immediately.
   EXPECT_TRUE(on_complete.IsReady());
@@ -228,7 +229,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogNoAccountsOnTheWeb) {
                   ->GetAccountsWithRefreshTokens()
                   .empty());
   base::test::TestFuture<void> on_complete;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete.GetCallback());
   // The UI is not shown and the callback is shown immediately.
   EXPECT_TRUE(on_complete.IsReady());
@@ -247,7 +248,7 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialog) {
     api()->SetSkipUIForTesting(on_ui_triggered.GetCallback());
 
     base::test::TestFuture<void> on_complete;
-    api()->MaybeShowChromeSigninDialog("Extension name",
+    api()->MaybeShowChromeSigninDialog(u"Extension name",
                                        on_complete.GetCallback());
 
     EXPECT_FALSE(on_complete.IsReady());
@@ -271,13 +272,13 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogConcurrent) {
 
   base::test::TestFuture<void> on_complete_1;
   base::test::TestFuture<void> on_complete_2;
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete_1.GetCallback());
 
   EXPECT_TRUE(on_ui_triggered.IsReady());
   // Should crash if UI is shown as `on_ui_triggered` should have been already
   // consumed.
-  api()->MaybeShowChromeSigninDialog("Extension name",
+  api()->MaybeShowChromeSigninDialog(u"Extension name",
                                      on_complete_2.GetCallback());
 
   EXPECT_FALSE(on_complete_1.IsReady());

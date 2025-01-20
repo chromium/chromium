@@ -18,7 +18,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/origin.h"
 
@@ -36,8 +35,8 @@ using AccessType =
 class CONTENT_EXPORT SharedStorageHeaderObserver {
  public:
   using OperationResult = storage::SharedStorageManager::OperationResult;
-  using OperationType = network::mojom::SharedStorageOperationType;
-  using OperationPtr = network::mojom::SharedStorageOperationPtr;
+  using MethodWithOptionsPtr =
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr;
   using ContextType = StoragePartitionImpl::ContextType;
 
   // Enum for tracking how often the `PermissionsPolicy` double check runs along
@@ -96,40 +95,22 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   void HeaderReceived(const url::Origin& request_origin,
                       ContextType context_type,
                       NavigationOrDocumentHandle* navigation_or_document_handle,
-                      std::vector<OperationPtr> operations,
+                      std::vector<MethodWithOptionsPtr> methods_with_options,
+                      const std::optional<std::string>& with_lock,
                       base::OnceClosure callback,
                       mojo::ReportBadMessageCallback bad_message_callback,
                       bool can_defer);
 
  protected:
   // virtual for testing.
-  virtual void OnHeaderProcessed(const url::Origin& request_origin,
-                                 const std::vector<bool>& header_results) {}
-  virtual void OnOperationFinished(const url::Origin& request_origin,
-                                   OperationPtr operation,
-                                   OperationResult result) {}
+  virtual void OnHeaderProcessed(const url::Origin& request_origin) {}
+  virtual void OnBatchUpdateFinished(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::optional<std::string>& with_lock,
+      const std::string& error_message) {}
 
  private:
-  bool Invoke(const url::Origin& request_origin,
-              FrameTreeNodeId main_frame_id,
-              OperationPtr operation);
-
-  bool Set(const url::Origin& request_origin,
-           FrameTreeNodeId main_frame_id,
-           std::string key,
-           std::string value,
-           network::mojom::OptionalBool ignore_if_present);
-  bool Append(const url::Origin& request_origin,
-              FrameTreeNodeId main_frame_id,
-              std::string key,
-              std::string value);
-  bool Delete(const url::Origin& request_origin,
-              FrameTreeNodeId main_frame_id,
-              std::string key);
-  bool Clear(const url::Origin& request_origin, FrameTreeNodeId main_frame_id);
-
-  storage::SharedStorageManager* GetSharedStorageManager();
-
   PermissionsPolicyDoubleCheckStatus DoPermissionsPolicyDoubleCheck(
       const url::Origin& request_origin,
       ContextType context_type,

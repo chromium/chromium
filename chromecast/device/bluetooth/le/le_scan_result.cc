@@ -96,8 +96,8 @@ bool LeScanResult::SetAdvData(base::span<const uint8_t> advertisement_data) {
     // [i   ][i+1 ][i+2:i+1+size]
     //
     // Note: size does not include its own byte
-    uint8_t size = advertisement_data[i];
-    uint8_t type = advertisement_data[i + 1];
+    size_t size = advertisement_data[i];
+    size_t type = advertisement_data[i + 1];
 
     // Avoid infinite loop if invalid data
     if (size == 0 || i + 1 + size > advertisement_data.size()) {

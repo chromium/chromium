@@ -1253,7 +1253,7 @@ class DeviceLocalAccountPolicyProviderLoadImmediateTest
 };
 
 DeviceLocalAccountPolicyProviderLoadImmediateTest::
-    DeviceLocalAccountPolicyProviderLoadImmediateTest() {}
+    DeviceLocalAccountPolicyProviderLoadImmediateTest() = default;
 
 void DeviceLocalAccountPolicyProviderLoadImmediateTest::SetUp() {
   DeviceLocalAccountPolicyServiceTestBase::SetUp();

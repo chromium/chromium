@@ -1,7 +1,8 @@
 import pytest
 
-from webdriver.bidi.error import MoveTargetOutOfBoundsException
+from webdriver.bidi.error import MoveTargetOutOfBoundsException, NoSuchFrameException
 from webdriver.bidi.modules.input import Actions, get_element_origin
+from webdriver.bidi.modules.script import ContextTarget
 
 from .. import get_events
 from . import (
@@ -12,6 +13,45 @@ from . import (
 )
 
 pytestmark = pytest.mark.asyncio
+
+CONTEXT_LOAD_EVENT = "browsingContext.load"
+
+
+async def test_pointer_down_closes_browsing_context(
+    bidi_session, configuration, get_element, new_tab, inline, subscribe_events,
+    wait_for_event
+):
+    url = inline("""<input onpointerdown="window.close()">close</input>""")
+
+    # Opening a new context via `window.open` is required for script to be able
+    # to close it.
+    await subscribe_events(events=[CONTEXT_LOAD_EVENT])
+    on_load = wait_for_event(CONTEXT_LOAD_EVENT)
+
+    await bidi_session.script.evaluate(
+        expression=f"window.open('{url}')",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=True
+    )
+    # Wait for the new context to be created and get it.
+    new_context = await on_load
+
+    element = await get_element("input", context=new_context)
+    origin = get_element_origin(element)
+
+    actions = Actions()
+    (
+        actions.add_pointer(pointer_type="pen")
+        .pointer_move(0, 0, origin=origin)
+        .pointer_down(button=0)
+        .pause(250 * configuration["timeout_multiplier"])
+        .pointer_up(button=0)
+    )
+
+    with pytest.raises(NoSuchFrameException):
+        await bidi_session.input.perform_actions(
+            actions=actions, context=new_context["context"]
+        )
 
 
 @pytest.mark.parametrize("origin", ["element", "pointer", "viewport"])

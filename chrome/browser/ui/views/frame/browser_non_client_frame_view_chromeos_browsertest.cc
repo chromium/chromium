@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chromeos/test_util.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1705,7 +1705,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   // Verify background color is immediately resolved from the app controller
   // despite the fact that the web contents background color hasn't loaded
   // yet.
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+  EXPECT_EQ(contents_web_view->layer()->background_color(),
             browser->app_controller()->GetBackgroundColor().value());
   EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
 
@@ -1714,9 +1714,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+    EXPECT_EQ(contents_web_view->layer()->background_color(),
               browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+    EXPECT_EQ(contents_web_view->layer()->background_color(),
               web_contents->GetBackgroundColor().value());
   }
 
@@ -1728,9 +1728,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   // background color and the web contents background color due to the fact
   // that the web contents background color update is async.
   ToggleColorMode();
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+  EXPECT_EQ(contents_web_view->layer()->background_color(),
             browser->app_controller()->GetBackgroundColor().value());
-  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+  EXPECT_EQ(contents_web_view->layer()->background_color(),
             web_contents->GetBackgroundColor().value());
 
   // If theme changes should be animated, the layer associated with the
@@ -1747,9 +1747,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+    EXPECT_EQ(contents_web_view->layer()->background_color(),
               browser->app_controller()->GetBackgroundColor().value());
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+    EXPECT_EQ(contents_web_view->layer()->background_color(),
               web_contents->GetBackgroundColor().value());
   }
 

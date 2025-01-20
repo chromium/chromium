@@ -10,8 +10,8 @@
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/scanner/scanner_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
@@ -20,10 +20,6 @@
 namespace manta {
 class ScannerProvider;
 }  // namespace manta
-
-namespace ash {
-struct ScannerSystemState;
-}  // namespace ash
 
 namespace drive {
 class DriveAPIService;
@@ -45,6 +41,7 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
                             public KeyedService {
  public:
   explicit ScannerKeyedService(
+      PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<manta::ScannerProvider> scanner_provider);
@@ -53,7 +50,8 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
   ~ScannerKeyedService() override;
 
   // ash::ScannerProfileScopedDelegate:
-  ash::ScannerSystemState GetSystemState() const override;
+  specialized_features::FeatureAccessFailureSet CheckFeatureAccess()
+      const override;
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
@@ -63,16 +61,15 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
       manta::ScannerProvider::ScannerProtoResponseCallback callback) override;
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
-  bool IsGoogler() override;
 
   // KeyedService:
   void Shutdown() override;
 
  private:
   raw_ptr<signin::IdentityManager> identity_manager_;
+  specialized_features::FeatureAccessChecker access_checker_;
 
   std::unique_ptr<manta::ScannerProvider> scanner_provider_;
-  ScannerSystemStateProvider system_state_provider_;
 
   std::unique_ptr<drive::DriveAPIService> drive_service_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;

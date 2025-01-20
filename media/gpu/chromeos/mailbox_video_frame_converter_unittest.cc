@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
+#include <array>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -48,14 +44,12 @@ class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(GetCapabilities, std::optional<gpu::SharedImageCapabilities>());
-  MOCK_METHOD7(
+  MOCK_METHOD5(
       CreateSharedImage,
       scoped_refptr<gpu::ClientSharedImage>(gfx::GpuMemoryBufferHandle handle,
                                             viz::SharedImageFormat format,
                                             const gfx::Size& size,
                                             const gfx::ColorSpace& color_space,
-                                            GrSurfaceOrigin surface_origin,
-                                            SkAlphaType alpha_type,
                                             gpu::SharedImageUsageSet usage));
   MOCK_METHOD1(UpdateSharedImage,
                std::optional<gpu::SyncToken>(const gpu::Mailbox& mailbox));
@@ -179,13 +173,14 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // OOPVideoDecoder transfers ownership of these frames to the
   // MailboxVideoFrameConverter, but we keep raw pointers around in order to use
   // them in test assertions.
-  FrameResource* gmb_frames[2];
+  std::array<FrameResource*, 2> gmb_frames;
 
   // |mailboxes_seen_by_gpu_delegate| are the Mailboxes generated for each of
   // the |gmb_frames|. These Mailboxes are generated in the
   // MailboxVideoFrameConverter and supplied to the GpuDelegate to create the
   // SharedImage for the GpuMemoryBuffer backing the VideoFrame.
-  gpu::Mailbox mailboxes_seen_by_gpu_delegate[std::size(gmb_frames)];
+  std::array<gpu::Mailbox, std::size(gmb_frames)>
+      mailboxes_seen_by_gpu_delegate;
 
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
     mock_frame_destruction_cbs_.emplace_back(
@@ -193,7 +188,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   }
 
   // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
-  scoped_refptr<VideoFrame> converted_frames[std::size(gmb_frames)];
+  std::array<scoped_refptr<VideoFrame>, std::size(gmb_frames)> converted_frames;
 
   // Let's now feed each of the |gmb_frames| to the MailboxVideoFrameConverter
   // and verify that the GpuDelegate gets used correctly.
@@ -221,7 +216,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           CreateSharedImage(
               /*handle=*/_, shared_image_format,
               /*size=*/needs_detiling ? kCodedSize : kVisibleRect.size(),
-              /*color_space=*/_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              /*color_space=*/_,
               /*usage=*/_))
           .WillOnce([&mailboxes_seen_by_gpu_delegate, i]() {
             auto shared_image = gpu::ClientSharedImage::CreateForTesting();

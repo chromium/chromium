@@ -59,6 +59,10 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadWebrtcIpHandlingPolicy(&out->webrtc_ip_handling_policy))
     return false;
 
+  if (!data.ReadWebrtcIpHandlingUrls(&out->webrtc_ip_handling_urls)) {
+    return false;
+  }
+
   out->webrtc_udp_min_port = data.webrtc_udp_min_port();
   out->webrtc_udp_max_port = data.webrtc_udp_max_port();
 
@@ -114,6 +118,10 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 #endif
   out->plugin_fullscreen_allowed = data.plugin_fullscreen_allowed();
   out->caret_browsing_enabled = data.caret_browsing_enabled();
+
+#if BUILDFLAG(IS_ANDROID)
+  out->uses_platform_autofill = data.uses_platform_autofill();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!data.ReadExplicitlyAllowedNetworkPorts(
           &out->explicitly_allowed_network_ports)) {

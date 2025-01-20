@@ -287,7 +287,7 @@ TEST_F(Html5FsTest, Read) {
   ScopedNode node;
   ASSERT_EQ(0, fs->Open(Path("/file"), O_RDONLY, &node));
 
-  char buffer[10] = {0};
+  char buffer[10] = {};
   int bytes_read = 0;
   HandleAttr attr;
   ASSERT_EQ(0, node->Read(attr, &buffer[0], sizeof(buffer), &bytes_read));
@@ -431,7 +431,7 @@ TEST_F(Html5FsTest, FTruncate) {
   ASSERT_EQ(0, fs->Open(Path("/file"), O_RDWR, &node));
 
   HandleAttr attr;
-  char buffer[10] = {0};
+  char buffer[10] = {};
   int bytes_read = 0;
 
   // First make the file shorter...

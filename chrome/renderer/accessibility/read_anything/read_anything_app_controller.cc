@@ -363,12 +363,6 @@ SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
   return converted;
 }
 
-// Returns the dependency parser model for this renderer process.
-DependencyParserModel& GetDependencyParserModel() {
-  static base::NoDestructor<DependencyParserModel> instance;
-  return *instance;
-}
-
 }  // namespace
 
 // static
@@ -654,6 +648,16 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // The distiller will call OnAXTreeDistilled when the main content extractor
+  // disconnects. If this happens during middle of a distillation, there was an
+  // error, and we should reset the model. However, this disconnect can also
+  // happen after a long time of inactivity. In this case, we shouldn't reset
+  // the model since the last state is still the correct state and clearing the
+  // model causes issues for read aloud.
+  if (IsReadAloudEnabled() && !model_.distillation_in_progress() &&
+      tree_id == ui::AXTreeIDUnknown() && content_node_ids.empty()) {
+    return;
+  }
   // If speech is playing, we don't want to redraw and disrupt speech. We will
   // re-distill once speech pauses.
   if (read_aloud_model_.speech_playing()) {
@@ -662,7 +666,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     return;
   }
   // Reset state, including the current side panel selection so we can update
-  // it based on the new main panel selection in PostProcessSelection below.
+  // it based on the new main panel selection in PostProcessSelection below.ona
   model_.Reset(content_node_ids);
   read_aloud_model_.ResetReadAloudState();
 
@@ -706,9 +710,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // loading. Therefore, to avoid displaying an empty side panel, wait for
     // Google Docs to finish loading.
     if (!IsGoogleDocs() || model_.page_finished_loading()) {
-      ExecuteJavaScript("chrome.readingMode.showEmpty();");
-      base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
-                                    ReadAnythingEmptyState::kEmptyStateShown);
+      DrawEmptyState();
     }
   }
 
@@ -736,11 +738,15 @@ bool ReadAnythingAppController::PostProcessSelection() {
   // Note post `model_.PostProcessSelection` returns true if a draw is required.
   if (model_.PostProcessSelection()) {
     did_draw = true;
-    // TODO(b/40927698): When Read Aloud is playing and content is selected
-    // in the main panel, don't re-draw with the updated selection until
-    // Read Aloud is paused.
-    bool should_recompute_display_nodes = !model_.content_node_ids().empty();
-    Draw(should_recompute_display_nodes);
+    if (model_.is_empty()) {
+      DrawEmptyState();
+    } else {
+      // TODO(b/40927698): When Read Aloud is playing and content is selected
+      // in the main panel, don't re-draw with the updated selection until
+      // Read Aloud is paused.
+      bool should_recompute_display_nodes = !model_.content_node_ids().empty();
+      Draw(should_recompute_display_nodes);
+    }
   }
   // Skip drawing the selection in the side panel if the selection originally
   // came from there.
@@ -768,6 +774,12 @@ void ReadAnythingAppController::DrawSelection() {
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateSelection();");
+}
+
+void ReadAnythingAppController::DrawEmptyState() {
+  ExecuteJavaScript("chrome.readingMode.showEmpty();");
+  base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
+                                ReadAnythingEmptyState::kEmptyStateShown);
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
@@ -854,8 +866,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
-      .SetProperty("isAutoVoiceSwitchingEnabled",
-                   &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetProperty("requiresDistillation",
@@ -1024,15 +1034,9 @@ double ReadAnythingAppController::SpeechRate() const {
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
-  if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-    std::string lang = model_.base_language_code();
-    if (read_aloud_model_.voices().contains(lang)) {
-      return *read_aloud_model_.voices().FindString(lang);
-    }
-  } else {
-    if (!read_aloud_model_.voices().empty()) {
-      return read_aloud_model_.voices().begin()->second.GetString();
-    }
+  std::string lang = model_.base_language_code();
+  if (read_aloud_model_.voices().contains(lang)) {
+    return *read_aloud_model_.voices().FindString(lang);
   }
 
   return string_constants::kReadAnythingPlaceholderVoiceName;
@@ -1273,10 +1277,6 @@ bool ReadAnythingAppController::IsChromeOsAsh() const {
 #endif
 }
 
-bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
-  return features::IsReadAloudAutoVoiceSwitchingEnabled();
-}
-
 bool ReadAnythingAppController::IsGoogleDocs() const {
   return model_.IsDocs();
 }
@@ -1445,8 +1445,7 @@ void ReadAnythingAppController::OnConnected() {
       std::move(page_handler_factory_receiver));
 
   // Get the dependency parser model used by phrase-based highlighting.
-  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
-  if (dependency_parser_model.IsAvailable()) {
+  if (read_aloud_model_.GetDependencyParserModel().IsAvailable()) {
     return;
   }
 
@@ -1667,10 +1666,6 @@ void ReadAnythingAppController::PreprocessTextForSpeech() {
                                                : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
                                             node_ids);
-  if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
-    DependencyParserModel& model = GetDependencyParserModel();
-    read_aloud_model_.PreprocessPhrasesForText(model);
-  }
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
@@ -1710,6 +1705,10 @@ void ReadAnythingAppController::OnDeviceLocked() {
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
+}
+#else
+void ReadAnythingAppController::OnTtsEngineInstalled() {
+  ExecuteJavaScript("chrome.readingMode.onTtsEngineInstalled()");
 }
 #endif
 
@@ -1844,13 +1843,13 @@ bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
 
 void ReadAnythingAppController::UpdateDependencyParserModel(
     base::File model_file) {
-  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
-  dependency_parser_model.UpdateWithFile(std::move(model_file));
+  read_aloud_model_.GetDependencyParserModel().UpdateWithFile(
+      std::move(model_file));
 }
 
 DependencyParserModel&
 ReadAnythingAppController::GetDependencyParserModelForTesting() {
-  return GetDependencyParserModel();
+  return read_aloud_model_.GetDependencyParserModel();
 }
 
 void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {

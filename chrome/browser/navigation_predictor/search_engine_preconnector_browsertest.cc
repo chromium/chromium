@@ -126,15 +126,15 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
     if (PreconnectWithPrivacyModeEnabled()) {
       feature_list_.InitWithFeaturesAndParameters(
           {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-           {net::features::kNetUnusedIdleSocketTimeout,
-            {{"unused_idle_socket_timeout_seconds", "0"}}},
+           {net::features::kSearchEnginePreconnectInterval,
+            {{"preconnect_interval", "0"}}},
            {features::kPreconnectToSearchWithPrivacyModeEnabled, {}}},
           {});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
           {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-           {net::features::kNetUnusedIdleSocketTimeout,
-            {{"unused_idle_socket_timeout_seconds", "0"}}}},
+           {net::features::kSearchEnginePreconnectInterval,
+            {{"preconnect_interval", "0"}}}},
           {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
     }
   }
@@ -410,8 +410,8 @@ class SearchEnginePreconnectorKeepSocketBrowserTest
   SearchEnginePreconnectorKeepSocketBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-         {net::features::kNetUnusedIdleSocketTimeout,
-          {{"unused_idle_socket_timeout_seconds", "60"}}}},
+         {net::features::kSearchEnginePreconnectInterval,
+          {{"preconnect_interval", "60"}}}},
         {});
   }
 
@@ -475,8 +475,8 @@ class SearchEnginePreconnectorDesktopAutoStartBrowserTest
   SearchEnginePreconnectorDesktopAutoStartBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPreconnectToSearch, {{"startup_delay_ms", "0"}}},
-         {net::features::kNetUnusedIdleSocketTimeout,
-          {{"unused_idle_socket_timeout_seconds", "0"}}}},
+         {net::features::kSearchEnginePreconnectInterval,
+          {{"preconnect_interval", "0"}}}},
         {});
   }
 
@@ -498,15 +498,15 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
       if (PreconnectWithPrivacyModeEnabled()) {
         feature_list_.InitWithFeaturesAndParameters(
             {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-             {net::features::kNetUnusedIdleSocketTimeout,
-              {{"unused_idle_socket_timeout_seconds", "60"}}},
+             {net::features::kSearchEnginePreconnectInterval,
+              {{"preconnect_interval", "60"}}},
              {features::kPreconnectToSearchWithPrivacyModeEnabled, {}}},
             {});
       } else {
         feature_list_.InitWithFeaturesAndParameters(
             {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-             {net::features::kNetUnusedIdleSocketTimeout,
-              {{"unused_idle_socket_timeout_seconds", "60"}}}},
+             {net::features::kSearchEnginePreconnectInterval,
+              {{"preconnect_interval", "60"}}}},
             {{features::kPreconnectToSearchWithPrivacyModeEnabled}});
       }
     }

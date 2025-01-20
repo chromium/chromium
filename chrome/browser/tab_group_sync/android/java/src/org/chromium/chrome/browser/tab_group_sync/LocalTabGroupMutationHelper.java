@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -221,17 +223,25 @@ public class LocalTabGroupMutationHelper {
      * the group has been closed and drop the mapping.
      *
      * @param tabGroupId The local ID of the tab group.
+     * @param closingSource The source of the tab closure.
      */
     public void closeTabGroup(LocalTabGroupId tabGroupId, @ClosingSource int closingSource) {
         LogUtils.log(TAG, "closeTabGroup " + tabGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 
+        SavedTabGroup group = mTabGroupSyncService.getGroup(tabGroupId);
+        boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);
+
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         getTabModel()
                 .getTabRemover()
-                .forceCloseTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+                .forceCloseTabs(
+                        TabClosureParams.closeTabs(tabs)
+                                .allowUndo(false)
+                                .saveToTabRestoreService(!isCollaboration)
+                                .build());
 
         // Remove mapping from service. Collect metrics before that.
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);

@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
+#include <array>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -134,11 +130,14 @@ const char kHttpRespData[] = "hello world";
 
 struct TestParams {
   quic::ParsedQuicVersion version;
+  bool happy_eyeballs_v3_enabled = false;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return ParsedQuicVersionToString(p.version);
+  return base::StrCat(
+      {ParsedQuicVersionToString(p.version), "_",
+       p.happy_eyeballs_v3_enabled ? "HEv3Enabled" : "HEv3Disabled"});
 }
 
 // Run QuicNetworkTransactionWithDestinationTest instances with all value
@@ -146,6 +145,7 @@ std::string PrintToString(const TestParams& p) {
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
+  bool happy_eyeballs_v3_enabled = false;
 };
 
 // Used by ::testing::PrintToStringParamName().
@@ -163,7 +163,8 @@ std::string PrintToString(const PoolingTestParams& p) {
       break;
   }
   return base::StrCat(
-      {ParsedQuicVersionToString(p.version), "_", destination_string});
+      {ParsedQuicVersionToString(p.version), "_", destination_string,
+       p.happy_eyeballs_v3_enabled ? "_HEv3Enabled" : "_HEv3Disabled"});
 }
 
 std::string GenerateQuicAltSvcHeaderValue(
@@ -204,7 +205,8 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(TestParams{version});
+    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version, false});
   }
   return params;
 }
@@ -214,9 +216,12 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(PoolingTestParams{version, SAME_AS_FIRST});
-    params.push_back(PoolingTestParams{version, SAME_AS_SECOND});
-    params.push_back(PoolingTestParams{version, DIFFERENT});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, false});
+    params.push_back(PoolingTestParams{version, DIFFERENT, false});
+    params.push_back(PoolingTestParams{version, SAME_AS_FIRST, true});
+    params.push_back(PoolingTestParams{version, SAME_AS_SECOND, true});
+    params.push_back(PoolingTestParams{version, DIFFERENT, true});
   }
   return params;
 }
@@ -329,6 +334,15 @@ class QuicNetworkTransactionTest
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         ssl_data_(ASYNC, OK) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().happy_eyeballs_v3_enabled) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     FLAGS_quic_enable_http3_grease_randomness = false;
     request_.method = "GET";
     std::string url("https://");
@@ -781,7 +795,8 @@ class QuicNetworkTransactionTest
           NetworkAnonymizationKey()) {
     crypto_client_stream_factory_.set_handshake_mode(handshake_mode);
     url::SchemeHostPort server(request_.url);
-    AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+    AlternativeService alternative_service(NextProto::kProtoQUIC, server.host(),
+                                           443);
     base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_->SetQuicAlternativeService(
         server, network_anonymization_key, alternative_service, expiration,
@@ -793,8 +808,8 @@ class QuicNetworkTransactionTest
       const HostPortPair& alternative) {
     crypto_client_stream_factory_.set_handshake_mode(handshake_mode);
     url::SchemeHostPort server(request_.url);
-    AlternativeService alternative_service(kProtoQUIC, alternative.host(),
-                                           alternative.port());
+    AlternativeService alternative_service(
+        NextProto::kProtoQUIC, alternative.host(), alternative.port());
     base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_->SetQuicAlternativeService(
         server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -823,7 +838,7 @@ class QuicNetworkTransactionTest
             server, network_anonymization_key);
     EXPECT_EQ(1u, alternative_service_info_vector.size());
     EXPECT_EQ(
-        kProtoQUIC,
+        NextProto::kProtoQUIC,
         alternative_service_info_vector[0].alternative_service().protocol);
     EXPECT_FALSE(http_server_properties_->IsAlternativeServiceBroken(
         alternative_service_info_vector[0].alternative_service(),
@@ -1005,7 +1020,8 @@ class QuicNetworkTransactionTest
     // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
     std::set<std::string> alt_svc_negotiated_alpn;
     for (const auto& alt_svc_info : alt_svc_info_vector) {
-      EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
+      EXPECT_EQ(NextProto::kProtoQUIC,
+                alt_svc_info.alternative_service().protocol);
       for (const auto& version : alt_svc_info.advertised_versions()) {
         alt_svc_negotiated_alpn.insert(
             quic::ParsedQuicVersionToString(version));
@@ -1016,6 +1032,7 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(alt_svc_negotiated_alpn, supported_alpn);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   const quic::ParsedQuicVersion version_;
   const std::string alt_svc_header_ =
       GenerateQuicAltSvcHeader({version_}) + "\r\n";
@@ -2056,8 +2073,8 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   // Set up alternative service to use QUIC with a version that is not
   // supported.
   url::SchemeHostPort server(request_.url);
-  AlternativeService alternative_service(kProtoQUIC, kDefaultServerHostName,
-                                         443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         kDefaultServerHostName, 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -2067,7 +2084,8 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
       http_server_properties_->GetAlternativeServiceInfos(
           server, NetworkAnonymizationKey());
   EXPECT_EQ(1u, alt_svc_info_vector.size());
-  EXPECT_EQ(kProtoQUIC, alt_svc_info_vector[0].alternative_service().protocol);
+  EXPECT_EQ(NextProto::kProtoQUIC,
+            alt_svc_info_vector[0].alternative_service().protocol);
   EXPECT_EQ(1u, alt_svc_info_vector[0].advertised_versions().size());
   EXPECT_EQ(unsupported_version,
             alt_svc_info_vector[0].advertised_versions()[0]);
@@ -2141,8 +2159,8 @@ TEST_P(QuicNetworkTransactionTest, RetryMisdirectedRequest) {
   // Note that |origins_to_force_quic_on| cannot be used in this test, because
   // that overrides |enable_alternative_services|.
   url::SchemeHostPort server(request_.url);
-  AlternativeService alternative_service(kProtoQUIC, kDefaultServerHostName,
-                                         443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         kDefaultServerHostName, 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -3604,8 +3622,10 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
   CreateSession();
 
   // Set up alternative service for |origin1|.
-  AlternativeService local_alternative(kProtoQUIC, "mail.example.org", 443);
-  AlternativeService remote_alternative(kProtoQUIC, "www.example.org", 443);
+  AlternativeService local_alternative(NextProto::kProtoQUIC,
+                                       "mail.example.org", 443);
+  AlternativeService remote_alternative(NextProto::kProtoQUIC,
+                                        "www.example.org", 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   AlternativeServiceInfoVector alternative_services;
   alternative_services.push_back(
@@ -3661,7 +3681,8 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternativeOnlyRecordedOnce) {
   CreateSession();
 
   // Set up alternative service for |origin1|.
-  AlternativeService local_alternative(kProtoQUIC, "mail.example.org", 443);
+  AlternativeService local_alternative(NextProto::kProtoQUIC,
+                                       "mail.example.org", 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   AlternativeServiceInfoVector alternative_services;
   alternative_services.push_back(
@@ -3794,13 +3815,13 @@ TEST_P(QuicNetworkTransactionTest,
 
   // Set up alternative service for |origin1|.
   base::Time expiration = base::Time::Now() + base::Days(1);
-  AlternativeService alternative1(kProtoQUIC, origin1.host(), 443);
+  AlternativeService alternative1(NextProto::kProtoQUIC, origin1.host(), 443);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin1), NetworkAnonymizationKey(), alternative1,
       expiration, supported_versions_);
 
   // Set up alternative service for |origin2|.
-  AlternativeService alternative2(kProtoQUIC, origin2.host(), 443);
+  AlternativeService alternative2(NextProto::kProtoQUIC, origin2.host(), 443);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin2), NetworkAnonymizationKey(), alternative2,
       expiration, supported_versions_);
@@ -4003,7 +4024,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
 
   // Set up alternative service entry to `kDestination1`.
   url::SchemeHostPort server(request_.url);
-  AlternativeService alternative_service(kProtoQUIC, kDestination1, 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC, kDestination1,
+                                         443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
@@ -4013,7 +4035,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
   SendRequestAndExpectQuicResponse(kQuicRespData);
 
   // Set up alternative service entry to a different destination.
-  alternative_service = AlternativeService(kProtoQUIC, kDestination2, 443);
+  alternative_service =
+      AlternativeService(NextProto::kProtoQUIC, kDestination2, 443);
   http_server_properties_->SetQuicAlternativeService(
       server, NetworkAnonymizationKey(), alternative_service, expiration,
       supported_versions_);
@@ -4095,7 +4118,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   const char kDestination2[] = "second.example.com";
 
   // Set up alternative service for |origin1|.
-  AlternativeService alternative_service1(kProtoQUIC, kDestination1, 443);
+  AlternativeService alternative_service1(NextProto::kProtoQUIC, kDestination1,
+                                          443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin1), NetworkAnonymizationKey(),
@@ -4105,7 +4129,8 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   // the first one with a different destination as for |origin1|,
   // the second one with the same.  The second one should be used,
   // because the request can be pooled to that one.
-  AlternativeService alternative_service2(kProtoQUIC, kDestination2, 443);
+  AlternativeService alternative_service2(NextProto::kProtoQUIC, kDestination2,
+                                          443);
   AlternativeServiceInfoVector alternative_services;
   alternative_services.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
@@ -4274,7 +4299,7 @@ TEST_P(QuicNetworkTransactionTest, AlternativeServiceDifferentPort) {
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   const AlternativeService alternative_service =
       alternative_service_info_vector[0].alternative_service();
-  EXPECT_EQ(kProtoQUIC, alternative_service.protocol);
+  EXPECT_EQ(NextProto::kProtoQUIC, alternative_service.protocol);
   EXPECT_EQ(kDefaultServerHostName, alternative_service.host);
   EXPECT_EQ(137, alternative_service.port);
 }
@@ -4322,7 +4347,7 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
   AddHangingNonAlternateProtocolSocketData();
   CreateSession();
 
-  AlternativeService alternative_service(kProtoQUIC,
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
                                          HostPortPair::FromURL(request_.url));
   http_server_properties_->MarkAlternativeServiceRecentlyBroken(
       alternative_service, NetworkAnonymizationKey());
@@ -4357,8 +4382,19 @@ TEST_P(QuicNetworkTransactionTest,
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  std::vector<base::test::FeatureRef> enable_features;
+  std::vector<base::test::FeatureRef> disable_features;
+  enable_features.emplace_back(
       features::kPartitionConnectionsByNetworkIsolationKey);
+  // Disable AsyncQuicSession for HappyEyeballsV3 because AsyncQuicSession
+  // delays QUIC session establishment and requires another mock TCP socket
+  // in the HappyEyeballsV3 code path.
+  // TODO(crbug.com/346835898): Avoid disable AsyncQuicSession if possible.
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    disable_features.emplace_back(features::kAsyncQuicSession);
+  }
+  feature_list.InitWithFeatures(enable_features, disable_features);
+
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   http_server_properties_ = std::make_unique<HttpServerProperties>();
@@ -4400,7 +4436,7 @@ TEST_P(QuicNetworkTransactionTest,
 
   CreateSession();
 
-  AlternativeService alternative_service(kProtoQUIC,
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
                                          HostPortPair::FromURL(request_.url));
   http_server_properties_->MarkAlternativeServiceRecentlyBroken(
       alternative_service, kNetworkAnonymizationKey1);
@@ -6143,6 +6179,20 @@ class QuicNetworkTransactionWithDestinationTest
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         ssl_data_(ASYNC, OK) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().happy_eyeballs_v3_enabled) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
+      // Disable AsyncQuicSession to simplify tests since HappyEyeballsV3
+      // may attempt both the origin and alternative endpoint when
+      // AsyncQuicSession is enabled.
+      // TODO(crbug.com/346835898): Avoid disabling AsyncQuicSession.
+      disabled_features.emplace_back(features::kAsyncQuicSession);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     FLAGS_quic_enable_http3_grease_randomness = false;
   }
 
@@ -6152,7 +6202,7 @@ class QuicNetworkTransactionWithDestinationTest
 
     HttpNetworkSessionParams session_params;
     session_params.enable_quic = true;
-    // To simplefy tests, we disable UseDnsHttpsSvcbAlpn feature. If this is
+    // To simplify tests, we disable UseDnsHttpsSvcbAlpn feature. If this is
     // enabled, we need to prepare mock sockets for `dns_alpn_h3_job_`. Also
     // AsyncQuicSession feature makes it more complecated because it changes the
     // socket call order.
@@ -6211,7 +6261,7 @@ class QuicNetworkTransactionWithDestinationTest
         destination = HostPortPair(kDifferentHostname, 443);
         break;
     }
-    AlternativeService alternative_service(kProtoQUIC, destination);
+    AlternativeService alternative_service(NextProto::kProtoQUIC, destination);
     base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_.SetQuicAlternativeService(
         url::SchemeHostPort("https", origin, 443), NetworkAnonymizationKey(),
@@ -6326,6 +6376,7 @@ class QuicNetworkTransactionWithDestinationTest
         version_.transport_version, n);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   const quic::ParsedQuicVersion version_;
   quic::ParsedQuicVersionVector supported_versions_;
@@ -6782,7 +6833,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   CreateSession();
@@ -7308,7 +7359,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   SSLSocketDataProvider ssl_data(ASYNC, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   CreateSession();
@@ -8381,7 +8432,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
       "Content-Length: 10\r\n\r\n";
   const char kRespData[] = "0123456789";
 
-  std::unique_ptr<MockQuicData> mock_quic_data[2] = {
+  std::array<std::unique_ptr<MockQuicData>, 2> mock_quic_data = {
       std::make_unique<MockQuicData>(version_),
       std::make_unique<MockQuicData>(version_)};
 

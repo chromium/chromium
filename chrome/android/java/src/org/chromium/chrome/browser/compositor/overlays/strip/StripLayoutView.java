@@ -73,6 +73,7 @@ public abstract class StripLayoutView implements VirtualView {
     private boolean mVisible = true;
     private boolean mCollapsed;
     private boolean mIsIncognito;
+    private boolean mIsForegrounded;
 
     // A11y variables.
     private String mAccessibilityDescription = "";
@@ -192,6 +193,15 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
+     * .
+     *
+     * @return The vertical offset of the view.
+     */
+    public float getOffsetY() {
+        return 0f;
+    }
+
+    /**
      * @return Whether or not this {@link StripLayoutView} should be drawn.
      */
     public boolean isVisible() {
@@ -240,6 +250,18 @@ public abstract class StripLayoutView implements VirtualView {
      */
     public void setIncognito(boolean state) {
         mIsIncognito = state;
+    }
+
+    /** Returns {@code true} if the view is foregrounded for reorder, {@code false} otherwise. */
+    public boolean isForegrounded() {
+        return mIsForegrounded;
+    }
+
+    /**
+     * @param isForegrounded Whether or not the given view should be foregrounded for reorder.
+     */
+    void setIsForegrounded(boolean isForegrounded) {
+        mIsForegrounded = isForegrounded;
     }
 
     /**

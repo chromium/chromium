@@ -50,7 +50,7 @@ const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"chrome_task_annotator",
 const char* const kMemoryPressureEventsAllowedArgs[] = {
     "chrome_memory_pressure_notification", nullptr};
 
-const AllowlistEntry kEventArgsAllowlist[] = {
+const auto kEventArgsAllowlist = std::to_array<AllowlistEntry>({
     // Args recorded in perfetto protos and exported by trace processor JSON
     // exporter:
 
@@ -102,28 +102,31 @@ const AllowlistEntry kEventArgsAllowlist[] = {
     {TRACE_DISABLED_BY_DEFAULT("memory-infra"), "*", kMemoryDumpAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("system_stats"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("v8.gc"), "*", kV8GCAllowedArgs},
-    {nullptr, nullptr, nullptr}};
+    {nullptr, nullptr, nullptr},
+});
 
-const char* kMetadataAllowlist[] = {"chrome-bitness",
-                                    "chrome-dcheck-on",
-                                    "chrome-library-name",
-                                    "clock-domain",
-                                    "config",
-                                    "cpu-*",
-                                    "field-trials",
-                                    "gpu-*",
-                                    "highres-ticks",
-                                    "hardware-class",
-                                    "last_triggered_rule",
-                                    "network-type",
-                                    "num-cpus",
-                                    "os-*",
-                                    "physical-memory",
-                                    "product-version",
-                                    "scenario_name",
-                                    "trace-config",
-                                    "user-agent",
-                                    nullptr};
+auto kMetadataAllowlist = std::to_array<const char*>({
+    "chrome-bitness",
+    "chrome-dcheck-on",
+    "chrome-library-name",
+    "clock-domain",
+    "config",
+    "cpu-*",
+    "field-trials",
+    "gpu-*",
+    "highres-ticks",
+    "hardware-class",
+    "last_triggered_rule",
+    "network-type",
+    "num-cpus",
+    "os-*",
+    "physical-memory",
+    "product-version",
+    "scenario_name",
+    "trace-config",
+    "user-agent",
+    nullptr,
+});
 
 }  // namespace
 

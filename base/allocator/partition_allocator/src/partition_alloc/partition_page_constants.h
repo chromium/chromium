@@ -17,7 +17,7 @@ namespace partition_alloc::internal {
 // PartitionPageSize() is 4 times the OS page size.
 static constexpr size_t kMaxSlotsPerSlotSpan = 4 * (1 << 14) / kSmallestBucket;
 #elif defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE) && \
-    PA_BUILDFLAG(IS_LINUX) && \
+    PA_BUILDFLAG(IS_LINUX) &&                                            \
     (PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || PA_BUILDFLAG(PA_ARCH_CPU_PPC64))
 // System page size can be 4, 16, or 64 kiB on Linux on AArch64.
 // System page size can be 4 or 64 kiB on Linux on ppc64.

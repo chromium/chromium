@@ -304,7 +304,7 @@ class CookieTracker : public WebContentsObserver {
       cookie_accesses_.push_back({
           details.type,
           ContextType::kFrame,
-          {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
+          {rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID()},
           -1,
           details.url,
           details.first_party_url,
@@ -353,7 +353,8 @@ class CookieTracker : public WebContentsObserver {
   }
 
   void RenderFrameCreated(RenderFrameHost* rfh) override {
-    frame_ids_.emplace_back(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+    frame_ids_.emplace_back(rfh->GetProcess()->GetDeprecatedID(),
+                            rfh->GetRoutingID());
   }
 
  private:
@@ -445,7 +446,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                   net::CookieAccessResult(
                       net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                       net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, false)}));
+                      net::CookieAccessSemantics::NONLEGACY,
+                      net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Navigate to |url2| on the same site. Given that we have set a cookie
@@ -467,7 +469,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                   net::CookieAccessResult(
                       net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                       net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, false)}));
+                      net::CookieAccessSemantics::NONLEGACY,
+                      net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -511,7 +514,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)},
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)},
           CookieAccess{CookieAccessDetails::Type::kRead,
                        ContextType::kNavigation,
                        {},
@@ -523,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)}));
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Navigate to another url on the same site and expect a notification about
@@ -544,7 +549,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                   net::CookieAccessResult(
                       net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                       net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, false)}));
+                      net::CookieAccessSemantics::NONLEGACY,
+                      net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -587,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                   net::CookieAccessResult(
                       net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                       net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, false)}));
+                      net::CookieAccessSemantics::NONLEGACY,
+                      net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   EXPECT_TRUE(NavigateToURL(web_contents(), url2));
@@ -610,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)},
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)},
           CookieAccess{CookieAccessDetails::Type::kRead,
                        ContextType::kNavigation,
                        {},
@@ -622,7 +630,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)}));
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -660,7 +669,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                   net::CookieAccessResult(
                       net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                       net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, false)}));
+                      net::CookieAccessSemantics::NONLEGACY,
+                      net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Load a page with subresource. Both the page and the resource should get
@@ -685,14 +695,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)},
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)},
           CookieAccess{CookieAccessDetails::Type::kRead, ContextType::kFrame,
                        cookie_tracker.frame_id(frame_id_index), -1, url2_image,
                        first_party_url, "foo", "bar",
                        net::CookieAccessResult(
                            net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
                            net::CookieInclusionStatus(),
-                           net::CookieAccessSemantics::NONLEGACY, false)}));
+                           net::CookieAccessSemantics::NONLEGACY,
+                           net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -715,7 +727,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
           net::CookieAccessResult(
               net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
               net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY, false)}));
+              net::CookieAccessSemantics::NONLEGACY,
+              net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   EXPECT_EQ("foo=bar", EvalJs(web_contents(), "document.cookie"));
@@ -729,7 +742,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
           net::CookieAccessResult(
               net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
               net::CookieInclusionStatus(),
-              net::CookieAccessSemantics::NONLEGACY, false)}));
+              net::CookieAccessSemantics::NONLEGACY,
+              net::CookieScopeSemantics::UNKNOWN, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -763,24 +777,25 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestWithTPCD,
   GURL url_a(embedded_https_test_server().GetURL("a.test", "/"));
   GURL url_a_check_cookie(
       embedded_https_test_server().GetURL("a.test", "/title1.html"));
-  content::SetCookie(web_contents()->GetBrowserContext(), url_a,
-                     "foo=bar;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(web_contents()->GetBrowserContext(), url_a,
+                                 "foo=bar;SameSite=None;Secure"));
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a_check_cookie));
   cookie_tracker.WaitForCookies(1);
-  EXPECT_THAT(cookie_tracker.cookie_accesses(),
-              testing::ElementsAre(CookieAccess{
-                  CookieAccessDetails::Type::kRead,
-                  ContextType::kNavigation,
-                  {},
-                  cookie_tracker.navigation_id(0),
-                  url_a_check_cookie,
-                  url_a,
-                  "foo",
-                  "bar",
-                  net::CookieAccessResult(
-                      net::CookieEffectiveSameSite::NO_RESTRICTION,
-                      net::CookieInclusionStatus(),
-                      net::CookieAccessSemantics::NONLEGACY, true)}));
+  EXPECT_THAT(
+      cookie_tracker.cookie_accesses(),
+      testing::ElementsAre(CookieAccess{
+          CookieAccessDetails::Type::kRead,
+          ContextType::kNavigation,
+          {},
+          cookie_tracker.navigation_id(0),
+          url_a_check_cookie,
+          url_a,
+          "foo",
+          "bar",
+          net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,
+                                  net::CookieInclusionStatus(),
+                                  net::CookieAccessSemantics::NONLEGACY,
+                                  net::CookieScopeSemantics::UNKNOWN, true)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Navigate to |url_b_cross_site|. This page should load b.test(a.test)
@@ -798,22 +813,25 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestWithTPCD,
                       testing::_, testing::_, testing::_, "foo", "bar",
                       net::CookieAccessResult(
                           net::CookieEffectiveSameSite::NO_RESTRICTION,
-                          net::CookieInclusionStatus(
-                              net::CookieInclusionStatus::ExclusionReason::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
-                          net::CookieAccessSemantics::NONLEGACY, true)),
+                          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                              /*exclusions=*/{
+                                  net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                          net::CookieAccessSemantics::NONLEGACY,
+                          net::CookieScopeSemantics::UNKNOWN, true)),
                   MatchesCookieAccess(
                       CookieAccessDetails::Type::kRead, testing::_, testing::_,
                       testing::_, testing::_, testing::_, "foo", "bar",
                       net::CookieAccessResult(
                           net::CookieEffectiveSameSite::NO_RESTRICTION,
-                          net::CookieInclusionStatus(
-                              net::CookieInclusionStatus::ExclusionReason::
-                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
-                          net::CookieAccessSemantics::NONLEGACY, true))));
+                          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                              /*exclusions=*/{
+                                  net::CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                          net::CookieAccessSemantics::NONLEGACY,
+                          net::CookieScopeSemantics::UNKNOWN, true))));
   cookie_tracker.cookie_accesses().clear();
 }
-
 namespace {
 
 class FocusedNodeObserver : public WebContentsObserver {
@@ -871,7 +889,7 @@ class WebContentsObserverColorSchemeBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebContentsObserverBrowserTest::SetUpCommandLine(command_line);
-    // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
+    // ShellContentBrowserClient::OverrideWebPreferences() overrides the
     // prefers-color-scheme according to switches::kForceDarkMode command line.
     if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
       command_line->AppendSwitch(switches::kForceDarkMode);

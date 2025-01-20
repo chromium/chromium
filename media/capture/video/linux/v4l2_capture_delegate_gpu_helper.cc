@@ -9,6 +9,7 @@
 
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -141,8 +142,8 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
   }
 
   // Setting some default usage in order to get a mappable shared image.
-  constexpr auto si_usage =
-      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto shared_image = sii->CreateSharedImage(
       {kTargetSharedImageFormat, dimensions, gfx::ColorSpace(),
        gpu::SharedImageUsageSet(si_usage), "V4L2CaptureDelegateGpuHelper"},
@@ -222,11 +223,14 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
       i420_u + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
                                      VideoFrame::Plane::kU, dimensions)
                    .GetArea();
-  std::vector<int32_t> i420_strides = VideoFrame::ComputeStrides(
+  std::vector<size_t> i420_strides = VideoFrame::ComputeStrides(
       VideoPixelFormat::PIXEL_FORMAT_I420, dimensions);
-  const int i420_stride_y = i420_strides[VideoFrame::Plane::kY];
-  const int i420_stride_u = i420_strides[VideoFrame::Plane::kU];
-  const int i420_stride_v = i420_strides[VideoFrame::Plane::kV];
+  const int i420_stride_y =
+      base::checked_cast<int>(i420_strides[VideoFrame::Plane::kY]);
+  const int i420_stride_u =
+      base::checked_cast<int>(i420_strides[VideoFrame::Plane::kU]);
+  const int i420_stride_v =
+      base::checked_cast<int>(i420_strides[VideoFrame::Plane::kV]);
 
   const int width = capture_format.frame_size.width();
   const int height = capture_format.frame_size.height();

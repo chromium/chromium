@@ -9,8 +9,8 @@ build_webui("build") {
 
   static_files = [
     "logs/policy_logs.html",
-    "policy.html",
     "policy.css",
+    "policy.html",
     "policy_shared_vars.css",
     "test/policy_test.html",
   ]
@@ -18,18 +18,18 @@ build_webui("build") {
   # Files holding a Custom element definition AND have an equivalent .html file.
   web_component_files = [
     "policy_conflict.ts",
-    "policy_row.ts",
     "policy_precedence_row.ts",
-    "policy_table.ts",
     "policy_promotion.ts",
+    "policy_row.ts",
+    "policy_table.ts",
+    "status_box.ts",
     "test/policy_test_row.ts",
     "test/policy_test_table.ts",
-    "status_box.ts",
   ]
 
   non_web_component_files = [
-    "logs/types.ts",
     "logs/policy_logs.ts",
+    "logs/types.ts",
     "policy.ts",
     "policy_base.ts",
     "test/policy_test.ts",

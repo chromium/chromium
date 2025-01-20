@@ -14,15 +14,16 @@
 #include "base/command_line_jni/CommandLine_jni.h"
 #endif
 
+using base::CommandLine;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-using base::CommandLine;
 
 namespace {
 
 void AppendToCommandLine(std::vector<std::string>& vec, bool includes_program) {
-  if (!includes_program)
+  if (!includes_program) {
     vec.insert(vec.begin(), std::string());
+  }
   CommandLine extra_command_line(vec);
   CommandLine::ForCurrentProcess()->AppendArguments(extra_command_line,
                                                     includes_program);

@@ -64,12 +64,14 @@ void SystemMonitorDeviceMonitorImpl::StopMonitoring() {
 
 void SystemMonitorDeviceMonitorImpl::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
-  if (!is_monitoring_)
+  if (!is_monitoring_) {
     return;
+  }
   // TODO(noahrose): Get an issue number for this TODO. Only notify observers in
   // changes of audio output devices as opposed to audio devices in general.
-  if (device_type != base::SystemMonitor::DEVTYPE_AUDIO)
+  if (device_type != base::SystemMonitor::DEVTYPE_AUDIO) {
     return;
+  }
 
   for (auto& observer : observers_) {
     observer.OnDevicesChanged();
@@ -87,8 +89,9 @@ PollingDeviceMonitorImpl::PollingDeviceMonitorImpl(
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void PollingDeviceMonitorImpl::StartMonitoring() {
-  if (is_monitoring_)
+  if (is_monitoring_) {
     return;
+  }
 
   is_monitoring_ = true;
   if (!is_task_posted_) {
@@ -114,8 +117,9 @@ PollingDeviceMonitorImpl::~PollingDeviceMonitorImpl() = default;
 
 void PollingDeviceMonitorImpl::PollDeviceProvider() {
   is_task_posted_ = false;
-  if (!is_monitoring_)
+  if (!is_monitoring_) {
     return;
+  }
   device_provider_->GetOutputDeviceDescriptions(
       base::BindOnce(&PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -123,8 +127,9 @@ void PollingDeviceMonitorImpl::PollDeviceProvider() {
 
 void PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved(
     media::AudioDeviceDescriptions descriptions) {
-  if (!is_monitoring_)
+  if (!is_monitoring_) {
     return;
+  }
 
   if (!base::ranges::equal(descriptions, device_ids_, std::equal_to<>(),
                            &media::AudioDeviceDescription::unique_id)) {

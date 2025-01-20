@@ -4,6 +4,8 @@
 
 source_set("messaging") {
   sources = [
+    "messaging_backend_service_bridge.h",
+    "messaging_backend_service_bridge.mm",
     "messaging_backend_service_factory.h",
     "messaging_backend_service_factory.mm",
   ]
@@ -19,6 +21,7 @@ source_set("messaging") {
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
   ]
 }
 

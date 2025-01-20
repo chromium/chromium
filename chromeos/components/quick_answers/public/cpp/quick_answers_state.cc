@@ -38,7 +38,7 @@ QuickAnswersState::Error ToQuickAnswersStateError(
       return QuickAnswersState::Error::kUninitialized;
   }
 
-  CHECK(false) << "Unknown MagicBoostState::Error enum class value provided.";
+  NOTREACHED() << "Unknown MagicBoostState::Error enum class value provided.";
 }
 
 quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
@@ -57,7 +57,7 @@ quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
       return quick_answers::prefs::ConsentStatus::kRejected;
   }
 
-  CHECK(false) << "Unknown HMRConsentStatus enum class value provided.";
+  NOTREACHED() << "Unknown HMRConsentStatus enum class value provided.";
 }
 
 base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
@@ -161,12 +161,15 @@ QuickAnswersState::QuickAnswersState() {
   CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
 
-  if (GetFeatureType() == FeatureType::kHmr) {
     chromeos::MagicBoostState* magic_boost_state =
         chromeos::MagicBoostState::Get();
-    CHECK(magic_boost_state) << "QuickAnswersState depends on MagicBoostState.";
-    magic_boost_state_observation_.Observe(magic_boost_state);
-  }
+    if (magic_boost_state) {
+      magic_boost_state_observation_.Observe(magic_boost_state);
+    }
+
+    // Inovke `MaybeNotifyFeatureTypeChanged` to set initial last notified
+    // value.
+    MaybeNotifyFeatureTypeChanged();
 }
 
 QuickAnswersState::~QuickAnswersState() {
@@ -181,6 +184,18 @@ void QuickAnswersState::AddObserver(QuickAnswersStateObserver* observer) {
 
 void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void QuickAnswersState::OnMagicBoostEnabledUpdated(bool enabled) {
+  // MagicBoost's availability check includes an async operation. It can return
+  // false for a short period even if a user/device is eligible.
+  // `MagicBoostState` does not have an interface to allow clients to listen
+  // availability change. As a workaround, we are currently using
+  // `OnMagicBoostEnabled` as a signal. See
+  // `SearchSection::OnMagicBoostEnabledUpdated` as an example.
+  // TODO(b/383612536): allow clients to observe MagicBoostState availability
+  // change
+  MaybeNotifyFeatureTypeChanged();
 }
 
 void QuickAnswersState::OnHMREnabledUpdated(bool enabled) {
@@ -373,7 +388,7 @@ QuickAnswersState::IsIntentEligibleExpectedAs(
           return quick_answers_unit_conversion_eligible_;
       }
 
-      CHECK(false) << "Invalid IntentType enum class value provided.";
+      NOTREACHED() << "Invalid IntentType enum class value provided.";
   }
 }
 
@@ -405,11 +420,17 @@ void QuickAnswersState::SetIntentEligibilityAsQuickAnswers(
       return;
   }
 
-  CHECK(false) << "Invalid Intent enum class value provided.";
+  NOTREACHED() << "Invalid Intent enum class value provided.";
 }
 
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
+  base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+      maybe_feature_type = GetFeatureTypeExpected();
+  if (maybe_feature_type.has_value()) {
+    observer->OnFeatureTypeChanged();
+  }
+
   if (prefs_initialized_) {
     observer->OnPrefsInitialized();
     observer->OnApplicationLocaleReady(resolved_application_locale_);
@@ -475,6 +496,31 @@ void QuickAnswersState::MaybeNotifyIsEnabledChanged() {
   for (auto& observer : observers_) {
     observer.OnSettingsEnabled(last_notified_is_enabled_.value());
   }
+}
+
+void QuickAnswersState::MaybeNotifyFeatureTypeChanged() {
+  base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+      feature_type = GetFeatureTypeExpected();
+
+  if (last_notified_feature_type_ == feature_type) {
+    return;
+  }
+
+  last_notified_feature_type_ = feature_type;
+
+  if (last_notified_feature_type_.has_value()) {
+    for (auto& observer : observers_) {
+      observer.OnFeatureTypeChanged();
+    }
+  }
+
+  // Trigger potential value change notifications. Note that this won't reset
+  // the last value with the previous feature type. e.g., if it's eligible with
+  // the previous feature type and it's still eligible with new feature type, it
+  // won't notify.
+  MaybeNotifyEligibilityChanged();
+  MaybeNotifyIsEnabledChanged();
+  MaybeNotifyConsentStatusChanged();
 }
 
 void QuickAnswersState::MaybeNotifyConsentStatusChanged() {

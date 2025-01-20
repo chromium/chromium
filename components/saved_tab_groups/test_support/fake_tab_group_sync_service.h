@@ -47,17 +47,29 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void MoveTab(const LocalTabGroupID& group_id,
                const LocalTabID& tab_id,
                int new_group_index) override;
-  void OnTabSelected(const LocalTabGroupID& group_id,
+  void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                      const LocalTabID& tab_id) override;
+  std::pair<std::optional<base::Uuid>, std::optional<base::Uuid>>
+  GetCurrentlySelectedTabID() override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) override;
+  void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
+                              base::OnceClosure on_complete_callback) override;
+  void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
+                                 bool success) override;
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
       const LocalTabGroupID& local_id) const override;
+  std::optional<SavedTabGroup> GetGroup(
+      const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
+  std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
+      const CollaborationId& collaboration_id) const override;
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
@@ -100,7 +112,10 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   std::optional<int> GetIndexOf(const base::Uuid& guid) const;
   std::optional<int> GetIndexOf(const LocalTabGroupID& local_id) const;
 
+  // Notifies observers when `group` is updated.
   void NotifyObserversOfTabGroupUpdated(SavedTabGroup& group);
+  // Notifies observers when `group` is shared.
+  void NotifyObserversOfTabGroupShared(SavedTabGroup& group);
 
   base::ObserverList<TabGroupSyncService::Observer> observers_;
   std::vector<SavedTabGroup> groups_;

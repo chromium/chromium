@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
+class GaiaId;
 class PrefService;
 class PrefRegistrySimple;
 class PrefChangeRegistrar;
@@ -55,9 +56,6 @@ enum class ChromeSigninUserChoice {
 // accounts known in Chrome (Signed in/out accounts or primary account).
 class SigninPrefs {
  public:
-  // Used as a key to dictionary pref used for accounts.
-  using GaiaId = std::string_view;
-
   explicit SigninPrefs(PrefService& pref_service);
   ~SigninPrefs();
 
@@ -70,14 +68,16 @@ class SigninPrefs {
   // value does apply.
 
   void SetChromeSigninInterceptionUserChoice(
-      GaiaId gaia_id,
+      const GaiaId& gaia_id,
       ChromeSigninUserChoice user_choice);
   ChromeSigninUserChoice GetChromeSigninInterceptionUserChoice(
-      GaiaId gaia_id) const;
+      const GaiaId& gaia_id) const;
 
   // Last signout time.
-  void SetChromeLastSignoutTime(GaiaId gaia_id, base::Time last_signout_time);
-  std::optional<base::Time> GetChromeLastSignoutTime(GaiaId gaia_id) const;
+  void SetChromeLastSignoutTime(const GaiaId& gaia_id,
+                                base::Time last_signout_time);
+  std::optional<base::Time> GetChromeLastSignoutTime(
+      const GaiaId& gaia_id) const;
 
   // This pref is expected to be used with the reprompt logic for the Chrome
   // Signin bubble. The reprompt should only be possible after bubble declines,
@@ -86,25 +86,29 @@ class SigninPrefs {
   //
   // Last Chrome Signin Bubble Decline time.
   void SetChromeSigninInterceptionLastBubbleDeclineTime(
-      GaiaId gaia_id,
+      const GaiaId& gaia_id,
       base::Time last_repromt_time);
-  void ClearChromeSigninInterceptionLastBubbleDeclineTime(GaiaId gaia_id);
+  void ClearChromeSigninInterceptionLastBubbleDeclineTime(
+      const GaiaId& gaia_id);
   std::optional<base::Time> GetChromeSigninInterceptionLastBubbleDeclineTime(
-      GaiaId gaia_id) const;
+      const GaiaId& gaia_id) const;
 
   // Chrome Signin reprompt count.
-  int IncrementChromeSigninBubbleRepromptCount(GaiaId gaia_id);
-  int GetChromeSigninBubbleRepromptCount(GaiaId gaia_id) const;
-  void ClearChromeSigninBubbleRepromptCount(GaiaId gaia_id);
+  int IncrementChromeSigninBubbleRepromptCount(const GaiaId& gaia_id);
+  int GetChromeSigninBubbleRepromptCount(const GaiaId& gaia_id) const;
+  void ClearChromeSigninBubbleRepromptCount(const GaiaId& gaia_id);
 
-  int IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id);
-  int GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const;
+  int IncrementChromeSigninInterceptionDismissCount(const GaiaId& gaia_id);
+  int GetChromeSigninInterceptionDismissCount(const GaiaId& gaia_id) const;
 
-  void IncrementPasswordSigninPromoImpressionCount(GaiaId gaia_id);
-  int GetPasswordSigninPromoImpressionCount(GaiaId gaia_id) const;
+  void IncrementPasswordSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetPasswordSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
-  void IncrementAutofillSigninPromoDismissCount(GaiaId gaia_id);
-  int GetAutofillSigninPromoDismissCount(GaiaId gaia_id) const;
+  void IncrementAddressSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetAddressSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
+  void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
   // Note: `callback` will be notified on every change in the main dictionary
   // and sub-dictionries (account dictionaries).
@@ -112,7 +116,7 @@ class SigninPrefs {
                                         base::RepeatingClosure callback);
 
   // Checks if the an account pref with the given `gaia_id` exists.
-  bool HasAccountPrefs(GaiaId gaia_id) const;
+  bool HasAccountPrefs(const GaiaId& gaia_id) const;
 
   // Keeps all prefs with the gaia ids given in `gaia_ids_to_keep`.
   // This is done this way since we usually are not aware of the accounts that
@@ -126,19 +130,21 @@ class SigninPrefs {
 
  private:
   // Increments any specified `pref` of type int for the given `gaia_id`.
-  int IncrementIntPrefForAccount(GaiaId gaia_id, std::string_view pref);
+  int IncrementIntPrefForAccount(const GaiaId& gaia_id, std::string_view pref);
   // Gets any specified `pref` of type int for the given `gaia_id`.
   // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
-  int GetIntPrefForAccount(GaiaId gaia_id, std::string_view pref) const;
+  int GetIntPrefForAccount(const GaiaId& gaia_id, std::string_view pref) const;
 
   // Time pref related, returns by default std::nullopt if the pref is not
   // created yet for the given `gaia_id`.
-  void SetTimePref(base::Time time, GaiaId gaia_id, std::string_view pref);
-  std::optional<base::Time> GetTimePref(GaiaId gaia_id,
+  void SetTimePref(base::Time time,
+                   const GaiaId& gaia_id,
+                   std::string_view pref);
+  std::optional<base::Time> GetTimePref(const GaiaId& gaia_id,
                                         std::string_view pref) const;
 
   // Clear any given account pref for the given `gaia_id`.
-  void ClearPref(GaiaId gaia_id, std::string_view pref);
+  void ClearPref(const GaiaId& gaia_id, std::string_view pref);
 
   const raw_ref<PrefService> pref_service_;
 };

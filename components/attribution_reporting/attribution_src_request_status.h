@@ -18,7 +18,8 @@ enum class AttributionSrcRequestStatus {
   kRedirected = 3,
   kReceivedAfterRedirected = 4,
   kFailedAfterRedirected = 5,
-  kMaxValue = kFailedAfterRedirected,
+  kDropped = 6,  // only recorded for in-browser metrics
+  kMaxValue = kDropped,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAttributionSrcRequestStatus)
 

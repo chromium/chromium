@@ -102,6 +102,17 @@ const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return std::nullopt;
 }
 
+PhysicalNaturalSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  // 300x150, no aspect ratio. (Should probably be none.)
+  PhysicalSize natural_size{LayoutUnit(kDefaultWidth),
+                            LayoutUnit(kDefaultHeight)};
+  natural_size.Scale(StyleRef().EffectiveZoom());
+  PhysicalNaturalSizingInfo sizing_info;
+  sizing_info.size = natural_size;
+  return sizing_info;
+}
+
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   auto frozen_size = FrozenFrameSize();
   if (!frozen_size || frozen_size->IsEmpty()) {
@@ -368,9 +379,8 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     // system forwards mouse events to the child frame even when the mouse is
     // outside of the child frame. Revisit this when the input system supports
     // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
-    PhysicalSize frozen_layout_size = *frozen_size;
-    content_rect =
-        ComputeReplacedContentRect(base_content_rect, &frozen_layout_size);
+    content_rect = ComputeReplacedContentRect(
+        base_content_rect, PhysicalNaturalSizingInfo::MakeFixed(*frozen_size));
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the

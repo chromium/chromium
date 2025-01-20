@@ -28,13 +28,16 @@
 
 namespace content {
 
+class AudioOutputAuthorizationHandler;
 class MediaStreamManager;
 
 class CONTENT_EXPORT MediaDevicesDispatcherHost
     : public blink::mojom::MediaDevicesDispatcherHost {
  public:
-  MediaDevicesDispatcherHost(GlobalRenderFrameHostId render_frame_host_id,
-                             MediaStreamManager* media_stream_manager);
+  MediaDevicesDispatcherHost(
+      const GlobalRenderFrameHostToken& main_frame_host_token,
+      GlobalRenderFrameHostId render_frame_host_id,
+      MediaStreamManager* media_stream_manager);
 
   MediaDevicesDispatcherHost(const MediaDevicesDispatcherHost&) = delete;
   MediaDevicesDispatcherHost& operator=(const MediaDevicesDispatcherHost&) =
@@ -43,6 +46,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   ~MediaDevicesDispatcherHost() override;
 
   static void Create(
+      const GlobalRenderFrameHostToken& main_frame_host_token,
       GlobalRenderFrameHostId render_frame_host_id,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver);
@@ -82,6 +86,9 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       media::mojom::SubCaptureTargetType type,
       ProduceSubCaptureTargetIdCallback callback) override;
 #endif
+
+  void SetPreferredSinkId(const std::string& hashed_sink_id,
+                          SetPreferredSinkIdCallback callback) override;
 
  private:
   void OnGotTransientUserActivationResult(const std::string& hashed_device_id,
@@ -129,6 +136,16 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       GetVideoInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
 
+  void AuthorizationCompleted(
+      std::unique_ptr<AudioOutputAuthorizationHandler> authorization_handler,
+      SetPreferredSinkIdCallback callback,
+      media::OutputDeviceStatus status,
+      const media::AudioParameters&,
+      const std::string& raw_device_id,
+      const std::string& device_id_for_renderer);
+
+  std::unique_ptr<AudioOutputAuthorizationHandler> CreateAuthorizationHandler();
+
   void FinalizeGetVideoInputCapabilities(
       GetVideoInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
@@ -166,6 +183,9 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   void ReceivedBadMessage(int render_process_id,
                           bad_message::BadMessageReason reason);
 
+  using AuthorizationHandlerCreateFactoryCallback = base::RepeatingCallback<
+      std::unique_ptr<AudioOutputAuthorizationHandler>()>;
+
   void SetBadMessageCallbackForTesting(
       base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
           callback);
@@ -173,6 +193,12 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   void SetCaptureHandleConfigCallbackForTesting(
       base::RepeatingCallback<
           void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback);
+
+  void SetAuthorizationForTesting(
+      AuthorizationHandlerCreateFactoryCallback authorization_handler);
+
+  // The following const fields can be accessed on any thread.
+  const GlobalRenderFrameHostToken main_frame_host_token_;
 
   // The following const fields can be accessed on any thread.
   const GlobalRenderFrameHostId render_frame_host_id_;
@@ -197,6 +223,10 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   base::RepeatingCallback<void(int, int, blink::mojom::CaptureHandleConfigPtr)>
       capture_handle_config_callback_for_testing_;
+
+  // The callback to create AudioOutputAuthorizationHandler.
+  AuthorizationHandlerCreateFactoryCallback
+      authorization_handler_factory_callback_;
 
   base::WeakPtrFactory<MediaDevicesDispatcherHost> weak_factory_{this};
 };

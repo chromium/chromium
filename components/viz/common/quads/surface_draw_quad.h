@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 
+#include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
@@ -46,6 +47,17 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
   // If true, allows this surface to be merged into the embedding surface,
   // avoiding an intermediate texture.
   bool allow_merge = true;
+
+  // If `override_child_filter_quality` has a value, then, when copying quads
+  // from the child surface replace (during surface aggregation), replace the
+  // value of  TextureDrawQuad::nearest_neighbor with the value indicated by
+  // `override_child_filter_quality`, for any TextureDrawQuad encountered.
+  // TODO(https://crbug.com/40277822): Apply this logic to
+  // `override_dynamic_range_limit`, too, when it becomes a property of
+  // TextureDrawQuad.
+  std::optional<cc::PaintFlags::FilterQuality> override_child_filter_quality;
+  std::optional<cc::PaintFlags::DynamicRangeLimitMixture>
+      override_child_dynamic_range_limit;
 
   static const SurfaceDrawQuad* MaterialCast(const DrawQuad* quad);
 

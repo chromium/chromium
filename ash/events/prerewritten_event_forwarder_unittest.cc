@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
@@ -88,8 +87,6 @@ class PrerewrittenEventForwarderTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures({features::kShortcutCustomization},
-                                          {});
     observer_ = std::make_unique<TestKeyObserver>();
     rewriter_ = std::make_unique<PrerewrittenEventForwarder>();
     rewriter_->AddObserver(observer_.get());
@@ -99,14 +96,12 @@ class PrerewrittenEventForwarderTest : public AshTestBase {
     rewriter_->RemoveObserver(observer_.get());
     rewriter_.reset();
     observer_.reset();
-    scoped_feature_list_.Reset();
     AshTestBase::TearDown();
   }
 
  protected:
   std::unique_ptr<TestKeyObserver> observer_;
   std::unique_ptr<PrerewrittenEventForwarder> rewriter_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrerewrittenEventForwarderTest, InitializationTest) {

@@ -116,7 +116,9 @@ public class ChildProcessLauncherTest {
                                         SERVICE_COUNT_META_DATA_KEY,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
     }
@@ -376,7 +378,9 @@ public class ChildProcessLauncherTest {
                                         /* serviceCount= */ 2,
                                         /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
-                                        /* useStrongBinding= */ false);
+                                        /* useStrongBinding= */ false,
+                                        /* fallbackToNextSlot= */ false,
+                                        /* isSandboxedForHistograms= */ false);
                             }
                         });
         Assert.assertFalse(badConnectionAllocator.anyConnectionAllocated());

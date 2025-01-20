@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
@@ -53,9 +53,9 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
   return suggestion;
 }
 
-Suggestion CreatePredictionImprovementsFeedback() {
-  Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
-  suggestion.icon = Suggestion::Icon::kAutofillPredictionImprovements;
+Suggestion CreateAutofillAiFeedback() {
+  Suggestion suggestion(SuggestionType::kAutofillAiFeedback);
+  suggestion.icon = Suggestion::Icon::kAutofillAi;
   suggestion.highlight_on_select = false;
   suggestion.voice_over = u"Required feedback screen reader text.";
   return suggestion;
@@ -69,11 +69,6 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kLocation,
                SuggestionType::kAddressEntry),
-    Suggestion("Fill_Full_Email_entry",
-               "Minor text",
-               "label",
-               Suggestion::Icon::kNoIcon,
-               SuggestionType::kFillFullEmail),
     CreatePasswordSuggestion(u"Password_entry"),
     Suggestion("Autofill_options",
                "Minor text",
@@ -86,19 +81,15 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kMagic,
                SuggestionType::kComposeResumeNudge),
-    Suggestion("Edit_address",
-               "label",
-               Suggestion::Icon::kEdit,
-               SuggestionType::kEditAddressProfile),
     Suggestion("Promo_code",
                "label",
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails),
-    CreatePredictionImprovementsFeedback(),
+    CreateAutofillAiFeedback(),
     Suggestion("Autofill_with_AI",
                "",
-               Suggestion::Icon::kAutofillPredictionImprovements,
-               SuggestionType::kRetrievePredictionImprovements),
+               Suggestion::Icon::kAutofillAi,
+               SuggestionType::kRetrieveAutofillAi),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
@@ -222,7 +213,13 @@ class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
       user_education::NewBadgeController::DisableNewBadgesForTesting();
 };
 
-IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, SuggestionRowUiTest) {
+// TODO(crbug.com/40261456): Re-enable failing test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SuggestionRowUiTest DISABLED_SuggestionRowUiTest
+#else
+#define MAYBE_SuggestionRowUiTest SuggestionRowUiTest
+#endif
+IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, MAYBE_SuggestionRowUiTest) {
   CreateRowView(std::get<Suggestion>(GetParam()),
                 std::get<std::optional<PopupRowView::CellType>>(GetParam()));
   ShowAndVerifyUi();

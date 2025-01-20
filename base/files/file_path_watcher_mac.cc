@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path_watcher.h"
+
 #include <memory>
 
-#include "base/files/file_path_watcher.h"
 #include "base/files/file_path_watcher_kqueue.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -30,8 +31,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
     // Use kqueue for non-recursive watches and FSEvents for recursive ones.
     DCHECK(!impl_.get());
     if (type == Type::kRecursive) {
-      if (!FilePathWatcher::RecursiveWatchAvailable())
+      if (!FilePathWatcher::RecursiveWatchAvailable()) {
         return false;
+      }
 #if !BUILDFLAG(IS_IOS)
       impl_ = std::make_unique<FilePathWatcherFSEvents>();
 #endif  // BUILDFLAG(IS_IOS)
@@ -43,8 +45,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   }
 
   void Cancel() override {
-    if (impl_.get())
+    if (impl_.get()) {
       impl_->Cancel();
+    }
     set_cancelled();
   }
 

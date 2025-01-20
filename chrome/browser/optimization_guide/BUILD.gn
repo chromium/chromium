@@ -23,6 +23,7 @@ source_set("optimization_guide") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/on_device_internals:mojom",
     "//components/keyed_service/core",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/core:prediction",
@@ -59,11 +60,11 @@ source_set("impl") {
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/sync:sync",
     "//chrome/browser/ui:ui",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/metrics_services_manager:metrics_services_manager",
     "//components/no_state_prefetch/browser:browser",
     "//components/user_prefs:user_prefs",
     "//components/variations/service:service",
+    "//ui/webui",
   ]
   if (is_android) {
     deps += [

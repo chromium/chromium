@@ -57,7 +57,7 @@ void DidGetFileResourceForUploadExisting(UploadCompletionCallback callback,
 FakeDriveServiceWrapper::FakeDriveServiceWrapper()
     : make_directory_conflict_(false) {}
 
-FakeDriveServiceWrapper::~FakeDriveServiceWrapper() {}
+FakeDriveServiceWrapper::~FakeDriveServiceWrapper() = default;
 
 CancelCallbackOnce FakeDriveServiceWrapper::AddNewDirectory(
     const std::string& parent_resource_id,
@@ -77,7 +77,7 @@ FakeDriveUploader::FakeDriveUploader(
     FakeDriveServiceWrapper* fake_drive_service)
     : fake_drive_service_(fake_drive_service), make_file_conflict_(false) {}
 
-FakeDriveUploader::~FakeDriveUploader() {}
+FakeDriveUploader::~FakeDriveUploader() = default;
 
 void FakeDriveUploader::StartBatchProcessing() {}
 

@@ -30,14 +30,14 @@ namespace {
 
 class KeywordExtensionsDelegateImplTest : public ExtensionServiceTestBase {
  public:
-  KeywordExtensionsDelegateImplTest() {}
+  KeywordExtensionsDelegateImplTest() = default;
 
   KeywordExtensionsDelegateImplTest(const KeywordExtensionsDelegateImplTest&) =
       delete;
   KeywordExtensionsDelegateImplTest& operator=(
       const KeywordExtensionsDelegateImplTest&) = delete;
 
-  ~KeywordExtensionsDelegateImplTest() override {}
+  ~KeywordExtensionsDelegateImplTest() override = default;
 
  protected:
   void SetUp() override;

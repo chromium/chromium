@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -103,19 +99,16 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
 
   const raw_ptr<ToolbarActionsModel> model_;
 
-  size_t inserted_count_;
-  size_t removed_count_;
-  size_t initialized_count_;
+  size_t inserted_count_ = 0;
+  size_t removed_count_ = 0;
+  size_t initialized_count_ = 0;
 
   std::vector<ToolbarActionsModel::ActionId> last_pinned_action_ids_;
 };
 
 ToolbarActionsModelTestObserver::ToolbarActionsModelTestObserver(
     ToolbarActionsModel* model)
-    : model_(model),
-      inserted_count_(0),
-      removed_count_(0),
-      initialized_count_(0) {
+    : model_(model) {
   model_->AddObserver(this);
 }
 
@@ -128,13 +121,13 @@ ToolbarActionsModelTestObserver::~ToolbarActionsModelTestObserver() {
 class ToolbarActionsModelUnitTest
     : public extensions::ExtensionServiceUserTestBase {
  public:
-  ToolbarActionsModelUnitTest() {}
+  ToolbarActionsModelUnitTest() = default;
 
   ToolbarActionsModelUnitTest(const ToolbarActionsModelUnitTest&) = delete;
   ToolbarActionsModelUnitTest& operator=(const ToolbarActionsModelUnitTest&) =
       delete;
 
-  ~ToolbarActionsModelUnitTest() override {}
+  ~ToolbarActionsModelUnitTest() override = default;
 
  protected:
   // Initialize the ExtensionService, ToolbarActionsModel, and ExtensionSystem.
@@ -318,18 +311,19 @@ ToolbarActionsModelUnitTest::AddBrowserActionExtensions() {
 bool ToolbarActionsModelUnitTest::ModelHasActionForId(
     const std::string& id) const {
   for (const auto& toolbar_action_id : toolbar_model_->action_ids()) {
-    if (toolbar_action_id == id)
+    if (toolbar_action_id == id) {
       return true;
+    }
   }
   return false;
 }
 
 testing::AssertionResult ToolbarActionsModelUnitTest::AddAndVerifyExtensions(
     const extensions::ExtensionList& extensions) {
-  for (auto iter = extensions.begin(); iter != extensions.end(); ++iter) {
-    if (!AddExtension(*iter)) {
+  for (const auto& extension : extensions) {
+    if (!AddExtension(extension)) {
       return testing::AssertionFailure()
-             << "Failed to install extension: " << (*iter)->name();
+             << "Failed to install extension: " << extension->name();
     }
   }
   return testing::AssertionSuccess();
@@ -582,8 +576,9 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   extensions::TestExtensionDir dir2;
   dir2.WriteManifest(base::StringPrintf(kManifest, "incognito2"));
 
-  extensions::TestExtensionDir* dirs[] = {&dir1, &dir2};
-  const extensions::Extension* extensions[] = {nullptr, nullptr};
+  auto dirs = std::to_array<extensions::TestExtensionDir*>({&dir1, &dir2});
+  auto extensions =
+      std::to_array<const extensions::Extension*>({nullptr, nullptr});
   for (size_t i = 0; i < std::size(dirs); ++i) {
     // The extension id will be calculated from the file path; we need this to
     // wait for the extension to load.

@@ -46,11 +46,16 @@ ToSerializedAcceleratedImage(
       blink::FlushReason::kCreateImageBitmap, static_bitmap_image);
   cloned_image->EnsureSyncTokenVerified();
 
+  auto shared_image = cloned_image->GetSharedImage();
+  if (!shared_image) {
+    return nullptr;
+  }
+
   auto result =
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
-              cloned_image->GetMailboxHolder(), cloned_image->GetUsage(),
-              cloned_image->GetSkImageInfo(), cloned_image->IsOriginTopLeft(),
+              shared_image->Export(), cloned_image->GetSyncToken(),
+              cloned_image->GetSkImageInfo(),
               cloned_image->SupportsDisplayCompositing(),
               cloned_image->IsOverlayCandidate(),
               WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,

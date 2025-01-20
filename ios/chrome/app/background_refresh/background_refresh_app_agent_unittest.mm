@@ -11,6 +11,9 @@
 #import "base/task/thread_pool.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
+#import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
@@ -119,6 +122,14 @@ typedef void (^TaskExpirationBlock)();
 }
 @end
 
+// Refresh provider whose refresh interval is settable.
+@interface SettableIntervalRefreshProvider : AppRefreshProvider
+@property(nonatomic, readwrite) base::TimeDelta refreshInterval;
+@end
+@implementation SettableIntervalRefreshProvider
+@synthesize refreshInterval;
+@end
+
 // Test audience for the background refresh agent.
 // It (a) records that the start and end callbacks are called, and
 //    (b) quits the injected runloop when the end callback is made.
@@ -159,7 +170,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
-    // Configure IO thread -- from profile manager test.
+    // Configure IO thread.
     chrome_io_ = std::make_unique<IOSChromeIOThread>(
         application_context->GetLocalState(), application_context->GetNetLog());
     application_context->SetIOSChromeIOThread(chrome_io_.get());
@@ -176,9 +187,18 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     BuildMockTaskScheduler();
     BuildMockTask();
 
+    // Set up mock app state and configure its -initStage method to return
+    // `init_stage_`. This is done instead of stubbing so that the return value
+    // can be changed.
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    [app_state_ updateInitStage:
+                    NextAppInitStage(
+                        AppInitStage::kBrowserObjectsForBackgroundHandlers)];
+
     agent_ = [[BackgroundRefreshAppAgent alloc] init];
     audience_ = [[TestRefreshAudience alloc] init];
     agent_.audience = audience_;
+    agent_.appState = app_state_;
     audience_.runLoop = &run_loop_;
   }
 
@@ -225,6 +245,14 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
           // see the notes above on correctly ensuring that it completes before
           // the member is accessed by `ExpireTask()`.
           task_expiration_handler_ = [handler copy];
+        });
+    // Stub the task request method to capture the last task request.
+    OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
+                                              error:[OCMArg setTo:nil]])
+        .andDo(^(NSInvocation* invocation) {
+          __weak BGAppRefreshTaskRequest* request;
+          [invocation getArgument:&request atIndex:2];
+          last_task_request_ = [request copy];
         });
   }
 
@@ -287,8 +315,10 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   // Mocks and the handlers they are configured with.
   id task_scheduler_mock_;
   TaskHandlerBlock task_handler_;
+  BGAppRefreshTaskRequest* last_task_request_ = nil;
   id task_mock_;
   TaskExpirationBlock task_expiration_handler_;
+  AppState* app_state_;
 
   // Object under test and its audience.
   BackgroundRefreshAppAgent* agent_;
@@ -299,6 +329,7 @@ TEST_F(BackgroundRefreshAppAgentTest, ScheduleOnBackground) {
   // Test that moving to a background state schedules a refresh.
   // Test that when no providers are registered, background refresh is still
   // marked as successful.
+
   OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
                                             error:[OCMArg setTo:nil]]);
 
@@ -312,14 +343,17 @@ TEST_F(BackgroundRefreshAppAgentTest, ScheduleOnBackground) {
   EXPECT_TRUE(audience_.ended);
 }
 
+// Set init stage for most tests.
+// add test for early init -> no execution -> init stage change -> execution
+// add test for no scheduled task -> init stage change -> no execution
+
 TEST_F(BackgroundRefreshAppAgentTest, ExecuteSingleTask) {
   // Test that when a single provider is registered, that task executes and the
   // refresh is marked successful.
+
   TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -336,12 +370,11 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteSingleTask) {
 TEST_F(BackgroundRefreshAppAgentTest, NotExecuteNotDueTask) {
   // Test that when the only provider is not due, that provider is not executed,
   // and that the BGTask is marked successful.
+
   TestNotDueRefreshProvider* notDueProvider =
       [[TestNotDueRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:notDueProvider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -358,13 +391,12 @@ TEST_F(BackgroundRefreshAppAgentTest, NotExecuteNotDueTask) {
 TEST_F(BackgroundRefreshAppAgentTest, ExecuteTwoTasks) {
   // Test that when two providers are configured, both of them are executed and
   // the task is marked successful.
+
   TestRefreshProvider* provider1 = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider1];
   TestRefreshProvider* provider2 = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider2];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -383,6 +415,7 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteThreeTasksOnDifferentThreads) {
   // Test that when three providers are configured, each of them using different
   // execution threads, all of them are executed and the task is marked
   // successful.
+
   TestRefreshProvider* provider1 = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider1];
   TestUIThreadRefreshProvider* provider2 =
@@ -412,6 +445,7 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteThreeTasksOnDifferentThreads) {
 TEST_F(BackgroundRefreshAppAgentTest, HandleNotDueTask) {
   // Test that when both as due and non-due provider are configured, only the
   // due provider is executed.
+
   TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider];
   TestNotDueRefreshProvider* notDueProvider =
@@ -440,12 +474,11 @@ TEST_F(BackgroundRefreshAppAgentTest, DISABLED_ExpireTask) {
   // the task is terminated, and the task is *not* marked successful.
   // Note: The current implementation doesn't terminate the prolonged task;
   // it just stops listening for the task to finish.
+
   TestRefreshProvider* long_provider = [[TestRefreshProvider alloc] init];
   long_provider.injectedTask = [[ProlongedTask alloc] init];
   [agent_ addAppRefreshProvider:long_provider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -490,4 +523,100 @@ TEST_F(BackgroundRefreshAppAgentTest, NoSchedulingWhenNotEnabled) {
   EXPECT_FALSE(audience_.started);
   EXPECT_FALSE(audience_.ended);
   EXPECT_FALSE([provider injectedTask].executed);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalNoProviders) {
+  // Test that with no configured providers, no refresh is scheduled.
+  SimulateAppBackgrounding();
+  EXPECT_EQ(last_task_request_, nil);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalOneProvider) {
+  // Test that with one configured provider, the refresh delay is the interval
+  // defined by the provider.
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+  // Maximum expected delay is one minute more than the provider's refresh
+  // interval.
+  NSTimeInterval expected_delay_max =
+      (provider.refreshInterval + base::Minutes(1)).InSecondsF();
+
+  SimulateAppBackgrounding();
+
+  EXPECT_NE(last_task_request_, nil);
+
+  NSTimeInterval seconds_delay =
+      last_task_request_.earliestBeginDate.timeIntervalSinceNow;
+  EXPECT_GT(seconds_delay, 0.0);
+  EXPECT_LT(seconds_delay, expected_delay_max);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalSeveralProviders) {
+  // Test that with several configured providers, the refresh delay is the
+  // minimum interval defined by the providers.
+  SettableIntervalRefreshProvider* provider1 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider1.refreshInterval = base::Days(1);
+  [agent_ addAppRefreshProvider:provider1];
+
+  SettableIntervalRefreshProvider* provider2 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider2.refreshInterval = base::Hours(1);
+  [agent_ addAppRefreshProvider:provider2];
+
+  SettableIntervalRefreshProvider* provider3 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider3.refreshInterval = base::Minutes(10);
+  [agent_ addAppRefreshProvider:provider3];
+
+  // Maximum expected delay is one minute more than the minimum (10 minutes).
+  NSTimeInterval expected_delay_max = base::Minutes(11).InSecondsF();
+
+  SimulateAppBackgrounding();
+
+  EXPECT_NE(last_task_request_, nil);
+
+  NSTimeInterval seconds_delay =
+      last_task_request_.earliestBeginDate.timeIntervalSinceNow;
+  EXPECT_GT(seconds_delay, 0.0);
+  EXPECT_LT(seconds_delay, expected_delay_max);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecution) {
+  // Test that when the app init stage is not ready for background refresh,
+  // execution doesn't happen until it is ready.
+
+  // Set the app state init stage to be the one that must be complete before
+  // refresh can occur.
+  [app_state_
+      updateInitStage:AppInitStage::kBrowserObjectsForBackgroundHandlers];
+
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
+
+  SimulateAppBackgrounding();
+  InvokeTaskHandlerThen(run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(audience_.started);
+  EXPECT_FALSE(audience_.ended);
+  EXPECT_FALSE([provider injectedTask].executed);
+
+  base::RunLoop second_run_loop;
+  audience_.runLoop = &second_run_loop;
+
+  AppInitStage refreshStage =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
+  [app_state_ updateInitStage:refreshStage];
+  // Call the observer method for state change.
+  [agent_ appState:app_state_ willTransitionToInitStage:refreshStage];
+
+  second_run_loop.Run();
+
+  EXPECT_TRUE(audience_.started);
+  VerifyTaskCompleted(YES);
+  EXPECT_TRUE(audience_.ended);
+  EXPECT_TRUE([provider injectedTask].executed);
 }

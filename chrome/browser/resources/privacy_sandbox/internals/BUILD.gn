@@ -10,11 +10,11 @@ build_webui("build") {
 
   web_component_files = [
     "content_setting_pattern_source.ts",
-    "pref_display.ts",
-    "value_display.ts",
+    "cr_frame_list.ts",
     "mojo_timedelta.ts",
     "mojo_timestamp.ts",
-    "cr_frame_list.ts",
+    "pref_display.ts",
+    "value_display.ts",
   ]
   non_web_component_files = [ "index.ts" ]
   html_to_wrapper_template = "native"
@@ -26,10 +26,10 @@ build_webui("build") {
     "//components/content_settings/core/common:mojo_bindings_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_enums.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom-webui.ts",
   ]
 
   ts_composite = true
@@ -42,12 +42,12 @@ build_webui("build") {
   webui_context_type = "trusted"
   if (!is_android) {
     extra_grdp_files = [
-        "$target_gen_dir/private_state_tokens/resources.grdp",
-        "$target_gen_dir/related_website_sets/resources.grdp",
+      "$target_gen_dir/private_state_tokens/resources.grdp",
+      "$target_gen_dir/related_website_sets/resources.grdp",
     ]
     extra_grdp_deps = [
-        "private_state_tokens:build_grdp",
-        "related_website_sets:build_grdp",
+      "private_state_tokens:build_grdp",
+      "related_website_sets:build_grdp",
     ]
   }
 }

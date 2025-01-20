@@ -121,7 +121,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* MinWidthOrMinHeightAuto(const ComputedStyle&);
   static CSSValue* ValueForPositionOffset(const ComputedStyle&,
                                           const CSSProperty&,
-                                          const LayoutObject*);
+                                          const LayoutObject*,
+                                          CSSValuePhase);
   static CSSValue* ValueForItemPositionWithOverflowAlignment(
       const StyleSelfAlignmentData&);
   static cssvalue::CSSContentDistributionValue*
@@ -150,7 +151,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForFontPalette(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
-  static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,
+  static CSSValue* ValueForGridAutoTrackList(const NGGridTrackList&,
                                              const LayoutObject*,
                                              const ComputedStyle&);
   static CSSValue* ValueForGridTrackList(GridTrackSizingDirection,
@@ -266,6 +267,14 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForSVGResource(const StyleSVGResource*);
   static const CSSValue* ValueForGapDecorationColorDataList(
       const GapDataList<StyleColor>&,
+      const ComputedStyle&,
+      CSSValuePhase);
+  static const CSSValue* ValueForGapDecorationWidthDataList(
+      const GapDataList<int>&,
+      const ComputedStyle&,
+      CSSValuePhase);
+  static const CSSValue* ValueForGapDecorationStyleDataList(
+      const GapDataList<EBorderStyle>&,
       const ComputedStyle&,
       CSSValuePhase);
   static CSSValue* ValueForShadowData(const ShadowData&,

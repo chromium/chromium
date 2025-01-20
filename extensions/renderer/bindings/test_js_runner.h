@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_TEST_JS_RUNNER_H_
 #define EXTENSIONS_RENDERER_BINDINGS_TEST_JS_RUNNER_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/js_runner.h"
@@ -85,14 +86,12 @@ class TestJSRunner : public JSRunner {
   // JSRunner:
   void RunJSFunction(v8::Local<v8::Function> function,
                      v8::Local<v8::Context> context,
-                     int argc,
-                     v8::Local<v8::Value> argv[],
+                     base::span<v8::Local<v8::Value>> args,
                      ResultCallback callback) override;
   v8::MaybeLocal<v8::Value> RunJSFunctionSync(
       v8::Local<v8::Function> function,
       v8::Local<v8::Context> context,
-      int argc,
-      v8::Local<v8::Value> argv[]) override;
+      base::span<v8::Local<v8::Value>> args) override;
 
  private:
   friend class Suspension;

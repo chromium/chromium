@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(MoreAppsButtonLoadingState) -->
+
 <enum name="MoreAppsButtonLoadingState">
   <summary>
     When the Phone Hub bubble is opened, this enum denotes when either the
@@ -35,6 +37,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Glimmer animation was shown."/>
   <int value="1" label="More apps button was loaded immediately."/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:MoreAppsButtonLoadingState) -->
 
 <enum name="PhoneHubCameraRollBooleanStorageAccessPermission">
   <int value="0" label="No storage access permission on Android device"/>
@@ -227,7 +231,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Next Or Try Again Clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubPermissionsOnboardingScreenEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsOnboardingScreenEvent) -->
 
 <!-- LINT.IfChange(PhoneHubPermissionsOnboardingSetUpMode) -->
 
@@ -253,7 +257,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="All permissions"/>
 </enum>
 
-<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:PhoneHubPermissionsOnboardingSetUpMode) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsOnboardingSetUpMode) -->
 
 <!-- LINT.IfChange(PhoneHubQuickAction) -->
 

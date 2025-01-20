@@ -782,9 +782,7 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
         url,
         base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
                        weak_ptr_factory_for_other_devices_tab_.GetWeakPtr(),
-                       command_id, menu_model),
-
-        favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                       command_id, menu_model));
   }
 }
 

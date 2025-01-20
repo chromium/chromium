@@ -75,7 +75,7 @@ void RecordCheckingForUpdateTime(const base::TimeDelta duration) {
 
 }  // anonymous namespace
 
-VersionUpdater::UpdateInfo::UpdateInfo() {}
+VersionUpdater::UpdateInfo::UpdateInfo() = default;
 
 VersionUpdater::VersionUpdater(VersionUpdater::Delegate* delegate)
     : delegate_(delegate),

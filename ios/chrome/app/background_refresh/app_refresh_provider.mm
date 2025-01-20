@@ -25,9 +25,7 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    // TODO(crbug.com/354918222): Use this value (perhaps a longer interval) for
-    // scheduling refreshes.
-    _refreshInterval = base::Minutes(15);
+    _refreshInterval = base::Minutes(30);
   }
   return self;
 }

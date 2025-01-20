@@ -51,6 +51,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
   capability: MediaSizeCapability;
   disabled: boolean;
   private disableBorderlessCheckbox_: boolean;
+  private lastSelectedValue_: string = '';
 
   static get observers() {
     return [
@@ -69,13 +70,21 @@ export class PrintPreviewMediaSizeSettingsElement extends
       if (JSON.stringify(option) === valueToSet) {
         this.shadowRoot!.querySelector('print-preview-settings-select')!
             .selectValue(valueToSet);
+        this.lastSelectedValue_ = valueToSet;
         return;
       }
     }
 
-    const defaultOption = this.capability.option.find(o => !!o.is_default) ||
-        this.capability.option[0];
-    this.setSetting('mediaSize', defaultOption);
+    // If the sticky settings are not compatible with the initially selected
+    // printer, reset this setting to the printer default. Only do this when
+    // the setting changes, as occurs for sticky settings, and not for a printer
+    // change which can also trigger this observer. The model is responsible for
+    // setting a compatible media size value after printer changes.
+    if (valueToSet !== this.lastSelectedValue_) {
+      const defaultOption = this.capability.option.find(o => !!o.is_default) ||
+          this.capability.option[0];
+      this.setSetting('mediaSize', defaultOption, /*noSticky=*/ true);
+    }
   }
 
   private computeDisableBorderlessCheckbox_(

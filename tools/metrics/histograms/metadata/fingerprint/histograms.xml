@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -70,6 +70,35 @@ chromium-metrics-reviews@google.com.
     Tracks the scan result during fingerprint enrollment session. It is recorded
     every time user touches the fingerprint sensor while enrolling fingerprints
     (during onboarding or in Chrome OS settings).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Enroll.SessionResult" enum="EnrollSessionResult"
+    expires_after="2026-01-08">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the result/outcome of an enrollment session. This allows for
+    calculating the enrollment session success rate and for spotting abnormal
+    enrollment session failures/aborts.
+
+    This metric is emitted from the DBus wrapper class,
+    BiometricsManagerWrapper, of biod when one of the various completion/failure
+    event hooks are called. This metric is strategically inserted in parts of
+    the callback routines such that it is only emitted once, at the end of an
+    enrollment sesssion, regardless of the exit condition.
+
+    That being said, this metric is imperfect. It has been observed that Chrome
+    shows slightly different callback behavior upon forced crashes.
+    Additionally, Chrome does not provide biod a precise &quot;user abort
+    session&quot; signal, but rather provides a generic DBus session
+    cancellation signal, that could be confused with other actions. However, if
+    we ignore less likely situations, like Chrome crashing, we can use this DBus
+    cancellation failure as a proxy to detect when the user manually aborted the
+    session. The unknown failure and the enrollment start failure errors are
+    indicative of a core fingerprint system issue. The DBus owner dying error
+    and the no primary user error are both indicative of a ChromeOS system
+    issue.
   </summary>
 </histogram>
 
@@ -182,6 +211,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Sensor.NumDeadPixels" units="count"
+    expires_after="2025-11-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of dead pixels in the fingerprint sensor. This metric is
+    reported in biod when the sensor maintenance routine is fired daily.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanError"
     expires_after="2025-11-17">
   <owner>fsammoura@google.com</owner>
@@ -269,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -283,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -300,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
-    enum="BooleanCorrect" expires_after="2025-03-30">
+    enum="BooleanCorrect" expires_after="2025-06-08">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -375,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
-    enum="FingerprintRecordFormatVersion" expires_after="2025-05-11">
+    enum="FingerprintRecordFormatVersion" expires_after="2025-07-13">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -387,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -399,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -419,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -438,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -448,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -468,6 +507,18 @@ chromium-metrics-reviews@google.com.
     <variant name="NoUpdate" summary="not necessary"/>
     <variant name="Update" summary="necessary"/>
   </token>
+</histogram>
+
+<histogram name="Fingerprint.UploadTemplate.Success"
+    enum="UploadTemplateResStatus" expires_after="2025-12-09">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Reports the result of uploading a fingerprint template to the Fingerprint
+    Microcontroller (FPMCU). Returns an EC result code with the following
+    possible values: -1: Command failure; 0: Success; 1 to 20: Specific error
+    codes (see EC result code documentation for details).
+  </summary>
 </histogram>
 
 <histogram name="Fingerprint.{ContextFunction}" enum="FingerprintSensorMode"

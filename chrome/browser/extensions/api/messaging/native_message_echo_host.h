@@ -26,9 +26,12 @@ namespace extensions {
 // used to drive the tests.
 class NativeMessageEchoHost : public NativeMessageHost {
  public:
-  static const char* const kHostName;
-  static const char* const kOrigins[];
-  static const size_t kOriginCount;
+  // Must match ScopedTestNativeMessagingHost::kHostName.
+  static constexpr char kHostName[] = "com.google.chrome.test.echo";
+
+  // Must match ScopedTestNativeMessagingHost::kExtensionId.
+  static constexpr const char* kOrigins[] = {
+      "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"};
 
   static std::unique_ptr<NativeMessageHost> Create(
       content::BrowserContext* browser_context);

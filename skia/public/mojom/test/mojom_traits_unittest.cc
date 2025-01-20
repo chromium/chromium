@@ -178,7 +178,7 @@ TEST(StructTraitsTest, SkColorSpace) {
       in_null_cs, out_null_cs));
   EXPECT_EQ(out_null_cs.get(), nullptr);
 
-  SkColorSpacePrimaries in_p = SkNamedPrimariesExt::kGenericFilm;
+  SkColorSpacePrimaries in_p = SkNamedPrimaries::kGenericFilm;
   SkColorSpacePrimaries out_p;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<skia::mojom::SkColorSpacePrimaries>(

@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/gfx/image/image.h"
 
@@ -20,7 +21,7 @@ namespace crosapi {
 
 namespace {
 
-signin::IdentityManager* GetIdentityManager(const std::string& gaia_id) {
+signin::IdentityManager* GetIdentityManager(const GaiaId& gaia_id) {
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
   if (!user)
@@ -33,7 +34,7 @@ signin::IdentityManager* GetIdentityManager(const std::string& gaia_id) {
   return IdentityManagerFactory::GetInstance()->GetForProfileIfExists(profile);
 }
 
-AccountInfo GetAccountInfo(const std::string& gaia_id) {
+AccountInfo GetAccountInfo(const GaiaId& gaia_id) {
   signin::IdentityManager* identity_manager = GetIdentityManager(gaia_id);
   if (!identity_manager)
     return AccountInfo();
@@ -53,8 +54,8 @@ void IdentityManagerAsh::BindReceiver(
 void IdentityManagerAsh::GetAccountFullName(
     const std::string& gaia_id,
     GetAccountFullNameCallback callback) {
-  AccountInfo account_info = GetAccountInfo(gaia_id);
-  if (GetAccountInfo(gaia_id).IsEmpty()) {
+  AccountInfo account_info = GetAccountInfo(GaiaId(gaia_id));
+  if (account_info.IsEmpty()) {
     std::move(callback).Run("");
     return;
   }
@@ -63,7 +64,7 @@ void IdentityManagerAsh::GetAccountFullName(
 
 void IdentityManagerAsh::GetAccountImage(const std::string& gaia_id,
                                          GetAccountImageCallback callback) {
-  AccountInfo account_info = GetAccountInfo(gaia_id);
+  AccountInfo account_info = GetAccountInfo(GaiaId(gaia_id));
   if (account_info.IsEmpty()) {
     std::move(callback).Run(gfx::ImageSkia());
     return;
@@ -73,8 +74,8 @@ void IdentityManagerAsh::GetAccountImage(const std::string& gaia_id,
 
 void IdentityManagerAsh::GetAccountEmail(const std::string& gaia_id,
                                          GetAccountEmailCallback callback) {
-  AccountInfo account_info = GetAccountInfo(gaia_id);
-  if (GetAccountInfo(gaia_id).IsEmpty()) {
+  AccountInfo account_info = GetAccountInfo(GaiaId(gaia_id));
+  if (account_info.IsEmpty()) {
     std::move(callback).Run("");
     return;
   }
@@ -84,8 +85,9 @@ void IdentityManagerAsh::GetAccountEmail(const std::string& gaia_id,
 void IdentityManagerAsh::HasAccountWithPersistentError(
     const std::string& gaia_id,
     HasAccountWithPersistentErrorCallback callback) {
-  signin::IdentityManager* identity_manager = GetIdentityManager(gaia_id);
-  AccountInfo account_info = GetAccountInfo(gaia_id);
+  signin::IdentityManager* identity_manager =
+      GetIdentityManager(GaiaId(gaia_id));
+  AccountInfo account_info = GetAccountInfo(GaiaId(gaia_id));
   if (!identity_manager || account_info.IsEmpty()) {
     std::move(callback).Run(false);
     return;

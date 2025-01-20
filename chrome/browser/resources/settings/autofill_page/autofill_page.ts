@@ -25,7 +25,6 @@ import '../icons.html.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -87,30 +86,29 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      userEligibleForAutofillPredictionImprovements_: {
+      userEligibleForAutofillAi_: {
         type: Boolean,
         value: false,
       },
 
 
-      userHasAutofillPredictionImprovementsEntries_: {
+      userHasAutofillAiEntries_: {
         type: Boolean,
         value: false,
       },
 
-      autofillPredictionImprovementsAvailable_: {
+      autofillAiAvailable_: {
         type: Boolean,
-        computed: 'computeAutofillPredictionImprovementsAvailable_(' +
-            'userEligibleForAutofillPredictionImprovements_, ' +
-            'userHasAutofillPredictionImprovementsEntries_)',
+        computed: 'computeAutofillAiAvailable_(userEligibleForAutofillAi_, ' +
+            'userHasAutofillAiEntries_)',
       },
     };
   }
 
   private passkeyFilter_: string;
-  private userEligibleForAutofillPredictionImprovements_: boolean;
-  private userHasAutofillPredictionImprovementsEntries_: boolean;
-  private autofillPredictionImprovementsAvailable_: boolean;
+  private userEligibleForAutofillAi_: boolean;
+  private userHasAutofillAiEntries_: boolean;
+  private autofillAiAvailable_: boolean;
   private focusConfig_: Map<string, string>;
 
   override connectedCallback() {
@@ -118,20 +116,19 @@ export class SettingsAutofillPageElement extends
     // TODO(crbug.com/368565649): Consider updating on sign-in state changes.
     UserAnnotationsManagerProxyImpl.getInstance().isUserEligible().then(
         eligible => {
-          this.userEligibleForAutofillPredictionImprovements_ = eligible;
+          this.userEligibleForAutofillAi_ = eligible;
         });
     UserAnnotationsManagerProxyImpl.getInstance().hasEntries().then(value => {
-      this.userHasAutofillPredictionImprovementsEntries_ = value;
+      this.userHasAutofillAiEntries_ = value;
     });
   }
 
   /**
-   * Computes `autofillPredictionImprovementsAvailable_`.
+   * Computes `autofillAiAvailable_`.
    */
-  private computeAutofillPredictionImprovementsAvailable_(): boolean {
-    return loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
-        (this.userEligibleForAutofillPredictionImprovements_ ||
-         this.userHasAutofillPredictionImprovementsEntries_);
+  private computeAutofillAiAvailable_(): boolean {
+    return loadTimeData.getBoolean('autofillAiEnabled') &&
+        (this.userEligibleForAutofillAi_ || this.userHasAutofillAiEntries_);
   }
 
 
@@ -158,16 +155,11 @@ export class SettingsAutofillPageElement extends
         PasswordManagerPage.PASSWORDS);
   }
 
-  private onPlusAddressClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('plusAddressManagementUrl'));
-  }
-
   /**
-   * Shows the prediction improvements settings sub page.
+   * Shows the Autofill AI settings sub page.
    */
-  private onAutofillPredictionImprovementsClick_() {
-    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
+  private onAutofillAiClick_() {
+    Router.getInstance().navigateTo(routes.AUTOFILL_AI);
   }
 
   /**

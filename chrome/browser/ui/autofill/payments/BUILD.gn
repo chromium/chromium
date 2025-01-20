@@ -17,7 +17,7 @@ source_set("payments") {
     "mandatory_reauth_bubble_controller.h",
     "mandatory_reauth_bubble_controller_impl.h",
     "payments_ui_constants.h",
-    "view_factory.h",
+    "payments_view_factory.h",
     "virtual_card_enroll_bubble_controller_impl.h",
   ]
 
@@ -138,6 +138,7 @@ source_set("impl") {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",
@@ -148,11 +149,6 @@ source_set("impl") {
       "//components/user_prefs",
       "//components/webauthn/content/browser",
     ]
-
-    # TODO(crbug.com/372209715): Extract out of is_chrome_branded.
-    if (is_chrome_branded) {
-      deps += [ "//chrome/browser/ui/promos:utils" ]
-    }
   }
 
   if (toolkit_views) {
@@ -164,7 +160,6 @@ source_set("impl") {
       "manage_migration_ui_controller.cc",
       "offer_notification_bubble_controller_impl.cc",
       "save_card_bubble_controller_impl.cc",
-      "save_card_ui.cc",
       "save_payment_icon_controller.cc",
     ]
     deps += [ "//chrome/browser/ui/hats" ]

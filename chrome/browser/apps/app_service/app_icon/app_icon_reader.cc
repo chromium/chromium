@@ -35,12 +35,6 @@ int GetResourceIdForIcon(const std::string& id,
                                      : IDR_ARC_SUPPORT_ICON_192_PNG;
   }
 
-  if (ash::switches::IsAshDebugBrowserEnabled() &&
-      id == app_constants::kChromeAppId) {
-    return UseSmallIcon(size_in_dip) ? IDR_DEBUG_CHROME_APP_ICON_32
-                                     : IDR_DEBUG_CHROME_APP_ICON_192;
-  }
-
   return icon_key.resource_id;
 }
 

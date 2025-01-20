@@ -139,12 +139,20 @@ def _compute_edits(
   bundle_builder = values.CallValueBuilder('targets.bundle',
                                            {'mixins': mixins_builder},
                                            output_empty=True)
+
+  skylab_mixin_builder = values.CallValueBuilder('targets.mixin')
+  skylab_bundle_builder = values.CallValueBuilder(
+      'targets.bundle', {'mixins': skylab_mixin_builder})
+
   settings_builder = values.CallValueBuilder('targets.settings')
 
   for key, value in builder_config.items():
     match key:
       case 'test_suites':
-        targets_builder = values.ListValueBuilder()
+        skylab_targets_builder = values.ListValueBuilder()
+        skylab_bundle_builder['targets'] = skylab_targets_builder
+
+        targets_builder = values.ListValueBuilder([skylab_bundle_builder])
         bundle_builder['targets'] = targets_builder
 
         for suite_type, suite in value.items():
@@ -155,10 +163,11 @@ def _compute_edits(
               targets_builder.append(f'"{suite}"')
 
             case 'skylab_tests' | 'skylab_gpu_telemetry_tests':
-              raise SkylabSuite(suite_type, suite)
+              skylab_targets_builder.append(f'"{suite}"')
+              settings_builder['use_swarming'] = 'False'
 
             case 'junit_tests' | _:
-              raise Exception(f'unhandled suite type: "{suite}"')
+              raise Exception(f'unhandled suite type: "{suite_type}"')
 
       case 'additional_compile_targets':
         bundle_builder[key] = values.convert_direct(value)
@@ -169,6 +178,10 @@ def _compute_edits(
       case 'mixins':
         for element in value:
           mixins_builder.append(f'"{element}"')
+
+      case 'cros_board':
+        skylab_mixin_builder['skylab'] = values.CallValueBuilder(
+            'targets.skylab', {key: f'"{value}"'})
 
       case 'browser_config':
         browser_config = _BROWSER_CONFIG_MAPPING[value]

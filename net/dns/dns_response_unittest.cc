@@ -9,6 +9,8 @@
 
 #include "net/dns/dns_response.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <optional>
@@ -731,7 +733,7 @@ TEST(DnsResponseTest, InitParseWithoutQuery) {
 
   DnsResourceRecord record;
   DnsRecordParser parser = resp.Parser();
-  for (unsigned i = 0; i < kT0RecordCount; i ++) {
+  for (uint32_t i = 0; i < kT0RecordCount; i++) {
     EXPECT_FALSE(parser.AtEnd());
     EXPECT_TRUE(parser.ReadRecord(&record));
   }

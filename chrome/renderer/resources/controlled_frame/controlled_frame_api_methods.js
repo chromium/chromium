@@ -16,6 +16,9 @@ const CONTROLLED_FRAME_API_METHODS = [
   // Returns the user agent string used by the webview for guest page requests.
   'getUserAgent',
 
+  // Returns whether the user agent string has been overridden.
+  'isUserAgentOverridden',
+
   // Prints the contents of the webview.
   'print',
 
@@ -30,6 +33,9 @@ const CONTROLLED_FRAME_API_METHODS = [
 
   // Stops loading the current navigation if one is in progress.
   'stop',
+
+  // Toggles whether client hints use the Controlled Frame brand.
+  'setClientHintsUABrandEnabled',
 ];
 
 // Contains a list of API details that can return Promises. The details have the
@@ -90,7 +96,6 @@ const CONTROLLED_FRAME_DELETED_API_METHODS = [
   'getProcessId',
   'getZoomMode',
   'isSpatialNavigationEnabled',
-  'isUserAgentOverridden',
   'loadDataWithBaseUrl',
   'setSpatialNavigationEnabled',
   'stopFinding',

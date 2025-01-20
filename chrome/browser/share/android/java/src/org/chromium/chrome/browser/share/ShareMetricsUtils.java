@@ -32,6 +32,7 @@ public final class ShareMetricsUtils {
         ShareCustomAction.COPY_IMAGE_WITH_LINK,
         ShareCustomAction.PAGE_INFO,
         ShareCustomAction.REMOVE_PAGE_INFO,
+        ShareCustomAction.SHARE_AS_TAB_GROUP,
         ShareCustomAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -51,10 +52,11 @@ public final class ShareMetricsUtils {
         int COPY_IMAGE_WITH_LINK = 9;
         int PAGE_INFO = 10;
         int REMOVE_PAGE_INFO = 11;
+        int SHARE_AS_TAB_GROUP = 12;
 
         // Add new types here
 
-        int NUM_ENTRIES = 12;
+        int NUM_ENTRIES = 13;
     }
 
     /**

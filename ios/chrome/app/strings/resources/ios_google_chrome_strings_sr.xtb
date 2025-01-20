@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1066101356081285416">Chrome открива бројеве за праћење на сајтовима које посећујете и приказује вам новости о пакетима на страници Нова картица. Број за праћење пакета и назив веб-сајта се шаљу Google-у ради пружања ове функције и побољшања функција Google куповине за све. То можете да ажурирате у сваком тренутку у <ph name="BEGIN_LINK" />подешавањима праћења пакета<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome аутоматски отвара YouTube линкове без архивирања у режиму без архивирања.</translation>
 <translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
 <translation id="1143896152279775643">Лозика се чува у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отварање нове картице у Chrome-у</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Користите Chrome сваки пут када додирнете линкове у порукама и другим апликацијама.</translation>
 <translation id="1229222343402087523">Претражите фразу ${searchPhrase} у Chrome-у</translation>
 <translation id="1237769345474105984">Из Chrome-а</translation>
-<translation id="1240190568154816272">Савети за Chrome</translation>
 <translation id="124228879633599436">Chrome је застарео. Ажурирајте га да бисте били безбедни.</translation>
 <translation id="1333745675627230582">Играјте игру Chrome диносаурус</translation>
 <translation id="1352919863522755794">Google менаџер лозинки није успео да вам провери лозинке. Проверите интернет везу.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Отвара подешавање Chrome-а да би га поставило као подразумевани прегледач.</translation>
 <translation id="1670609221633730681">Савет за Chrome: Одаберите положај траке за адресу</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Сачувајте лозинке у Chrome-у</translation>
 <translation id="1790080846677398234">Додаје унете URL-ове у обележиваче у Chrome-у.</translation>
 <translation id="1799920918471566157">Савети за Chrome</translation>
 <translation id="1830634592642484976">Ова адреса је тренутно сачувана у Chrome-у. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">То значи да ће Chrome сваки пут захтевати мобилни сајт.</translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3741995255368156336">Отвара Chrome листу за читање.</translation>
+<translation id="3808570423967020928">Брже приступајте Chrome-у са траке с апликацијама на Почетном екрану.</translation>
 <translation id="3827545470516145620">Добијате стандардну безбедносну заштиту на овом уређају</translation>
 <translation id="384394811301901750">Google Chrome тренутно не може да користи камеру</translation>
 <translation id="3863841106411295595">Додаје унете URL-ове на листу за читање у Chrome-у.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">Пријавите се на овај сајт и у Chrome.</translation>
 <translation id="4646014602299206846">Chrome открива бројеве за праћење пакета на сајтовима које посећујете и приказује вам новости о пакетима на страници Нова картица. Подаци ће се делити са Google-ом ради пружања ове функције и побољшања Куповине за све.</translation>
 <translation id="4647910807533196601">Отвара моју најновију картицу у Chrome-у.</translation>
+<translation id="4693084815234024320">Користите Chrome режим без архивирања</translation>
 <translation id="4724297637870447613">Користите Chrome свуда</translation>
 <translation id="4738647308035481133">Google Chrome страница</translation>
 <translation id="4742795653798179840">Избрисани Chrome подаци</translation>
@@ -219,9 +222,12 @@
 
 Још подешавања која користе податке за побољшање доживљаја Chrome-а потражите у <ph name="BEGIN_LINK" />Google услугама<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Избришите податке прегледања у Chrome-у.</translation>
+<translation id="6924922227983877439">Подразумевано отварајте линкове у Chrome-у</translation>
+<translation id="6931601805528922498">Пријављивањем додајете налог у Chrome за прегледање у вези са послом.</translation>
 <translation id="6975725306479268850">Изаберите Chrome за аутоматско попуњавање</translation>
 <translation id="7056826488869329999">Отвара и покреће Проверу безбедности у Chrome-у.</translation>
 <translation id="7061455974939528301">Притисните и задржите икону Chrome-а, па кликните на Измените почетни екран</translation>
+<translation id="7065813315247345131">Преместите Chrome на траку с апликацијама</translation>
 <translation id="7124339256045485976">Редовно ажурирају Chrome</translation>
 <translation id="7161390184744336561">Google Chrome је застарео</translation>
 <translation id="7165736900384873061">Почните да користите Google Chrome QR скенер</translation>

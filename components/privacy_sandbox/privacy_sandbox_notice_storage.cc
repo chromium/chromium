@@ -133,6 +133,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
   } else {  // Notice has been shown, action handling below.
     switch (notice_data->notice_action_taken) {
       case NoticeActionTaken::kNotSet:
+      case NoticeActionTaken::kLearnMore:
         startup_state = NoticeStartupState::kPromptWaiting;
         break;
       case NoticeActionTaken::kOptIn:
@@ -153,7 +154,6 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
       case NoticeActionTaken::kAck:
       case NoticeActionTaken::kClosed:
       case NoticeActionTaken::kSettings:
-      case NoticeActionTaken::kLearnMore:
         startup_state = NoticeStartupState::kFlowCompleted;
         break;
     }
@@ -256,6 +256,17 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     return;
   }
 
+  // Emitting histograms.
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
+      notice_action_taken);
+
+  // Don't store LearnMore action in prefs since this doesn't affect the prompt
+  // flow.
+  if (notice_action_taken == NoticeActionTaken::kLearnMore) {
+    return;
+  }
+
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken),
       static_cast<int>(notice_action_taken));
@@ -266,11 +277,6 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
       base::StrCat(
           {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
       NoticeActionBehavior::kSuccess);
-
-  // Emitting histograms.
-  base::UmaHistogramEnumeration(
-      base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
-      notice_action_taken);
 
   std::string notice_action_str = GetNoticeActionString(notice_action_taken);
   // First shown to interacted duration.
@@ -311,6 +317,15 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
     SetSchemaVersion(pref_service, notice);
     base::UmaHistogramBoolean(
         base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeShownForFirstTime.", notice}),
+        true);
+  } else {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeShownForFirstTime.", notice}),
+        false);
   }
 
   // Always set notice last shown.
@@ -319,6 +334,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
       base::TimeToValue(notice_shown_time));
 }
 
+// TODO(chrstne): Create new histograms for migration.
 void PrivacySandboxNoticeStorage::MigratePrivacySandboxNoticeData(
     PrefService* pref_service,
     const PrivacySandboxNoticeData& input,

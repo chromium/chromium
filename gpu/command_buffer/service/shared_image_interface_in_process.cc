@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/process/memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -26,7 +25,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
@@ -226,7 +224,8 @@ bool SharedImageInterfaceInProcess::LazyCreateSharedImageFactory() {
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
     const SharedImageInfo& si_info,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {
@@ -317,7 +316,8 @@ scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {
@@ -489,43 +489,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, gmb_type);
 }
 
-SharedImageInterface::SharedImageMapping
-SharedImageInterfaceInProcess::CreateSharedImage(
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  DCHECK_EQ(si_info.meta.usage,
-            gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE));
-
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  CHECK(!si_info.meta.format.PrefersExternalSampler());
-#endif
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
-  const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  if (!shared_memory_region.IsValid()) {
-    DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
-                   "with SHARED_IMAGE_USAGE_CPU_WRITE fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
-  shared_image_mapping.mapping = shared_memory_region.Map();
-  if (!shared_image_mapping.mapping.IsValid()) {
-    DLOG(ERROR)
-        << "shared_memory_region.Map() for SHARED_IMAGE_USAGE_CPU_WRITE fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
+  base::WritableSharedMemoryMapping mapping;
   gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.offset = 0;
-  handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
 
   auto mailbox = Mailbox::Generate();
   {
@@ -541,11 +510,9 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                                    std::move(handle)),
                     /*sync_token_fences=*/{}, sync_token);
   }
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_,
-      gfx::SHARED_MEMORY_BUFFER);
-
-  return shared_image_mapping;
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, std::move(mapping));
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(

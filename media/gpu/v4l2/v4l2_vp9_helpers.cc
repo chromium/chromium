@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
 #include "base/containers/heap_array.h"
@@ -103,17 +108,15 @@ bool OverwriteShowFrame(base::span<uint8_t> frame_data,
 }  // namespace
 
 bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
-  DCHECK(buffer->has_side_data());
-  DCHECK(!buffer->side_data()->spatial_layers.empty());
+  DCHECK(buffer->side_data());
+  std::vector<uint32_t> frame_sizes = buffer->side_data()->spatial_layers;
+  DCHECK(!frame_sizes.empty());
 
-  const size_t num_of_layers = buffer->side_data()->spatial_layers.size();
-  if (num_of_layers > 3u) {
+  if (frame_sizes.size() > 3u) {
     LOG(ERROR) << "The maximum number of spatial layers in VP9 is three";
     return false;
   }
 
-  const uint32_t* cue_data = buffer->side_data()->spatial_layers.data();
-  std::vector<uint32_t> frame_sizes(cue_data, cue_data + num_of_layers);
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size = buffer->size() + superframe_index.size();
   auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);

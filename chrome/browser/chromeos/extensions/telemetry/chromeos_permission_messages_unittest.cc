@@ -67,7 +67,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
       delete;
   ChromeOSPermissionMessageUnittest& operator=(
       const ChromeOSPermissionMessageUnittest&) = delete;
-  ~ChromeOSPermissionMessageUnittest() override {}
+  ~ChromeOSPermissionMessageUnittest() override = default;
 
  protected:
   void CreateAndInstallExtensionWithPermissions(

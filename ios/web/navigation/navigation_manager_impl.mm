@@ -209,7 +209,7 @@ void NavigationManagerImpl::SerializeToProto(
   DCHECK_LE(length + offset, items.size());
 
   storage.set_last_committed_item_index(last_committed_item_index);
-  for (const auto* item : base::make_span(items.begin() + offset, length)) {
+  for (const auto* item : base::span(items.begin() + offset, length)) {
     item->SerializeToProto(*storage.add_items());
   }
 }
@@ -498,12 +498,13 @@ void NavigationManagerImpl::RestoreNativeSession() {
   // Native restore worked, abort unsafe restore.
   DiscardNonCommittedItems();
   last_committed_item_index_ = web_view_cache_.GetCurrentItemIndex();
-  if (restored_visible_item_ &&
-      restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
-    NavigationItem* last_committed_item = GetLastCommittedItem();
+  if (restored_visible_item_) {
+    // Restore the state of the `restored_visible_item_` that were
+    // not overwritten by the session data restoration, including the
+    // user agent and virtual URL.
+    NavigationItemImpl* last_committed_item = GetLastCommittedItemImpl();
     if (last_committed_item) {
-      last_committed_item->SetUserAgentType(
-          restored_visible_item_->GetUserAgentType());
+      last_committed_item->RestoreStateFromItem(restored_visible_item_.get());
     }
   }
   restored_visible_item_.reset();

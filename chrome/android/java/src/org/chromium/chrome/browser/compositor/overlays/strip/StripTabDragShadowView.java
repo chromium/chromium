@@ -253,7 +253,6 @@ public class StripTabDragShadowView extends FrameLayout {
                                     getContext(),
                                     mIncognito,
                                     /* foreground= */ true,
-                                    /* isReordering= */ false,
                                     /* isPlaceholder= */ false,
                                     /* isHovered= */ false)));
 

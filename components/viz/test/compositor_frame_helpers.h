@@ -49,7 +49,6 @@ struct TextureQuadParams {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   SkColor4f background_color = SkColors::kGreen;
-  bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
   gfx::ProtectedVideoType protected_video_type =

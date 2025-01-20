@@ -41,6 +41,7 @@ class AppListA11yAnnouncer;
 class AppsContainerView;
 class AppListMainView;
 class AppsGridView;
+class ButtonFocusSkipper;
 class PagedAppsGridView;
 class PaginationModel;
 class SearchBoxView;
@@ -341,6 +342,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // A timer which will reset the app list to the initial page. This timer only
   // goes off when the app list is not visible after a set amount of time.
   base::OneShotTimer page_reset_timer_;
+
+  std::unique_ptr<ButtonFocusSkipper> button_focus_skipper_;
 
   // Used to cancel in progress `SetState()` request if `SetState()` gets called
   // again. Updating children state during app list view state update may cause

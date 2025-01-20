@@ -152,15 +152,15 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
 };
 
 TEST_F(AppEventsObserverTest, OnAppInstalled) {
-  InitAppType(::apps::AppType::kStandaloneBrowser);
-  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryBrowser});
+  InitAppType(::apps::AppType::kWeb);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
   base::test::TestFuture<MetricData> test_future;
   app_events_observer_->SetOnEventObservedCallback(
       test_future.GetRepeatingCallback());
 
   // Install new app.
   static constexpr char kAppId[] = "TestNewApp";
-  InstallOneApp(kAppId, ::apps::AppType::kStandaloneBrowser,
+  InstallOneApp(kAppId, ::apps::AppType::kWeb,
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
 
@@ -176,7 +176,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled) {
       result.telemetry_data().app_telemetry().app_install_data();
   EXPECT_THAT(app_install_data.app_id(), StrEq(kAppId));
   EXPECT_THAT(app_install_data.app_type(),
-              Eq(::apps::ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER));
+              Eq(::apps::ApplicationType::APPLICATION_TYPE_WEB));
   EXPECT_THAT(
       app_install_data.app_install_reason(),
       Eq(::apps::ApplicationInstallReason::APPLICATION_INSTALL_REASON_USER));
@@ -196,7 +196,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled) {
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
-  InitAppType(::apps::AppType::kStandaloneBrowser);
+  InitAppType(::apps::AppType::kWeb);
 
   base::test::TestFuture<MetricData> test_future;
   app_events_observer_->SetOnEventObservedCallback(
@@ -204,7 +204,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
 
   // Install new app.
   static constexpr char kAppId[] = "TestNewApp";
-  InstallOneApp(kAppId, ::apps::AppType::kStandaloneBrowser,
+  InstallOneApp(kAppId, ::apps::AppType::kWeb,
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
 
@@ -218,7 +218,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
-  InitAppType(::apps::AppType::kStandaloneBrowser);
+  InitAppType(::apps::AppType::kWeb);
 
   // Set policy to enable reporting for a different app type than the one being
   // tested.
@@ -229,7 +229,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
 
   // Install new app.
   static constexpr char kAppId[] = "TestNewApp";
-  InstallOneApp(kAppId, ::apps::AppType::kStandaloneBrowser,
+  InstallOneApp(kAppId, ::apps::AppType::kWeb,
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
 
@@ -243,7 +243,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalledWithPublisherId) {
-  InitAppType(::apps::AppType::kStandaloneBrowser);
+  InitAppType(::apps::AppType::kWeb);
 
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
   base::test::TestFuture<MetricData> test_future;
@@ -305,7 +305,7 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_PreinstalledApp) {
   base::test::TestFuture<MetricData> test_future;
   app_events_observer_->SetOnEventObservedCallback(
       test_future.GetRepeatingCallback());
-  InstallOneApp(kAppId, ::apps::AppType::kStandaloneBrowser,
+  InstallOneApp(kAppId, ::apps::AppType::kWeb,
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
 
@@ -492,7 +492,7 @@ TEST_F(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
   // Verify observer is unregistered by attempting to install an app and no
   // metric data being reported.
   static constexpr char app_id[] = "TestNewApp";
-  InstallOneApp(app_id, ::apps::AppType::kStandaloneBrowser,
+  InstallOneApp(app_id, ::apps::AppType::kWeb,
                 /*publisher_id=*/"", ::apps::Readiness::kReady,
                 ::apps::InstallSource::kBrowser);
   ASSERT_FALSE(test_future.IsReady());

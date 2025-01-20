@@ -44,6 +44,7 @@
 #include "android_webview/common/devtools_instrumentation.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/android/build_info.h"
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -76,8 +77,8 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -463,30 +464,6 @@ static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
 
 static void JNI_AwContents_SetAwDrawGLFunctionTable(JNIEnv* env,
                                                     jlong function_table) {}
-
-static void JNI_AwContents_UpdateScreenCoverage(
-    JNIEnv* env,
-    jint global_percentage,
-    const base::android::JavaParamRef<jobjectArray>& jschemes,
-    const base::android::JavaParamRef<jintArray>& jscheme_percentages) {
-  std::vector<std::string> schemes;
-  AppendJavaStringArrayToStringVector(env, jschemes, &schemes);
-
-  std::vector<int> scheme_percentages;
-  JavaIntArrayToIntVector(env, jscheme_percentages, &scheme_percentages);
-
-  DCHECK(schemes.size() == scheme_percentages.size());
-
-  std::vector<VisibilityMetricsLogger::Scheme> scheme_enums(schemes.size());
-  for (size_t i = 0; i < schemes.size(); i++) {
-    scheme_enums[i] = VisibilityMetricsLogger::SchemeStringToEnum(schemes[i]);
-  }
-
-  AwBrowserProcess::GetInstance()
-      ->visibility_metrics_logger()
-      ->UpdateScreenCoverage(global_percentage, scheme_enums,
-                             scheme_percentages);
-}
 
 // static
 jint JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
@@ -1518,7 +1495,9 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
 void AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
-    const base::android::JavaParamRef<jobject>& prefetch_params) {
+    const base::android::JavaParamRef<jobject>& prefetch_params,
+    const base::android::JavaParamRef<jobject>& activation_callback,
+    const base::android::JavaParamRef<jobject>& error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
@@ -1527,12 +1506,9 @@ void AwContents::StartPrerendering(
   // sequentially.
   prerender_handle_.reset();
 
-  // TODO(https://crbug.com/41490450): Set the additional headers in a
-  // prerendering navigation request.
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
@@ -1544,12 +1520,33 @@ void AwContents::StartPrerendering(
   // - Pass a valid navigation handle callback.
   prerender_handle_ = web_contents_->StartPrerendering(
       GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", std::move(no_vary_search_expected), page_transition,
+      "WebView", std::move(additional_headers), std::move(no_vary_search_hint),
+      page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
+
+  if (prerender_handle_) {
+    if (activation_callback) {
+      prerender_handle_->SetActivationCallback(base::BindOnce(
+          &base::android::RunRunnableAndroid,
+          ScopedJavaGlobalRef<jobject>(env, activation_callback)));
+    }
+    if (error_callback) {
+      prerender_handle_->SetErrorCallback(
+          base::BindOnce(&base::android::RunRunnableAndroid,
+                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
+    }
+  } else {
+    if (error_callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&base::android::RunRunnableAndroid,
+                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
+    }
+  }
 }
 
 void AwContents::CancelAllPrerendering(JNIEnv* env) {
@@ -1609,7 +1606,7 @@ void AwContents::TrimMemory(JNIEnv* env, jint level, jboolean visible) {
 
 void AwContents::GrantFileSchemeAccesstoChildProcess(JNIEnv* env) {
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       url::kFileScheme);
 }
 

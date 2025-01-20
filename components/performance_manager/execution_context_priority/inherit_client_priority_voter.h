@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 
-#include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
-#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 
@@ -16,21 +16,21 @@ namespace execution_context_priority {
 
 // This voter ensures the priority of a client is inherited by its children
 // workers.
-class InheritClientPriorityVoter : public VoterBase,
-                                   public FrameNode::ObserverDefaultImpl,
-                                   public WorkerNode::ObserverDefaultImpl {
+class InheritClientPriorityVoter : public PriorityVoter,
+                                   public FrameNodeObserver,
+                                   public WorkerNodeObserver {
  public:
   static const char kPriorityInheritedReason[];
 
-  explicit InheritClientPriorityVoter(VotingChannel voting_channel);
+  InheritClientPriorityVoter();
   ~InheritClientPriorityVoter() override;
 
   InheritClientPriorityVoter(const InheritClientPriorityVoter&) = delete;
   InheritClientPriorityVoter& operator=(const InheritClientPriorityVoter&) =
       delete;
 
-  // VoterBase:
-  void InitializeOnGraph(Graph* graph) override;
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
   void TearDownOnGraph(Graph* graph) override;
 
   // FrameNodeObserver:

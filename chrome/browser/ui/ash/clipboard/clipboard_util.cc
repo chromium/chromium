@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/clipboard/clipboard_util.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -77,16 +78,14 @@ void DecodeImageFileAndCopyToClipboard(
       "<img src='data:image/png;base64,";
   static const char kImageClipboardFormatSuffix[] = "'>";
 
-  std::string encoded =
-      base::Base64Encode(base::as_bytes(base::make_span(png_data)));
+  std::string encoded = base::Base64Encode(base::as_byte_span(png_data));
   std::string html = base::StrCat(
       {kImageClipboardFormatPrefix, encoded, kImageClipboardFormatSuffix});
 
   // Decode the image in sandboxed process because |png_data| comes from
   // external storage.
   data_decoder::DecodeImageIsolated(
-      base::as_bytes(base::make_span(png_data)),
-      data_decoder::mojom::ImageCodec::kDefault,
+      base::as_byte_span(png_data), data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       gfx::Size(),
       base::BindOnce(&CopyDecodedImageToClipboard, clipboard_sequence,

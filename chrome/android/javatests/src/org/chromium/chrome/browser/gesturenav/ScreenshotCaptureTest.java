@@ -64,7 +64,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
     "BackForwardTransitions:transition_from_native_pages/true/transition_to_native_pages/true"
 })
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
@@ -136,13 +135,31 @@ public class ScreenshotCaptureTest {
     @After
     public void tearDown() {
         mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(null);
+        mRenderTestRule.setVariantPrefix("");
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testNavigatingAwayFromNtpToNormalPage(boolean nightModeEnabled)
+    public void testNavigatingAwayFromNtpToNormalPageSoftware(boolean nightModeEnabled)
+            throws IOException, TimeoutException, InterruptedException {
+        mRenderTestRule.setVariantPrefix("software");
+        navigatingAwayFromNtpToNormalPage();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testNavigatingAwayFromNtpToNormalPageHardware(boolean nightModeEnabled)
+            throws IOException, TimeoutException, InterruptedException {
+        mRenderTestRule.setVariantPrefix("hardware");
+        navigatingAwayFromNtpToNormalPage();
+    }
+
+    private void navigatingAwayFromNtpToNormalPage()
             throws IOException, TimeoutException, InterruptedException {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());

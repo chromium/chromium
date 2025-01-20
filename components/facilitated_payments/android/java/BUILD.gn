@@ -10,27 +10,25 @@ android_library("java") {
   sources = [
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClient.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
+    "src/org/chromium/components/facilitated_payments/SecureData.java",
+    "src/org/chromium/components/facilitated_payments/SecurePayload.java",
   ]
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [
-    ":java_enums",
-    ":jni_headers",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
 }
 
 generate_jni("jni_headers") {
-  sources = [ "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java" ]
-}
-
-java_cpp_enum("java_enums") {
   sources = [
-    "../../core/browser/facilitated_payments_api_client.h"
+    "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
+    "src/org/chromium/components/facilitated_payments/SecureData.java",
+    "src/org/chromium/components/facilitated_payments/SecurePayload.java",
   ]
 }

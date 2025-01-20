@@ -9,10 +9,9 @@
 
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
-
-#include <memory>
 
 #include "base/build_time.h"
 #include "base/containers/span.h"
@@ -160,8 +159,8 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the signature in the CRL. It should be signed with RSASSA-PKCS1-v1_5
   // and SHA-256.
-  auto signature_bytes = base::as_bytes(base::make_span(crl.signature()));
-  auto tbs_crl_bytes = base::as_bytes(base::make_span(crl.tbs_crl()));
+  auto signature_bytes = base::as_byte_span(crl.signature());
+  auto tbs_crl_bytes = base::as_byte_span(crl.tbs_crl());
   bssl::ScopedEVP_MD_CTX ctx;
   if (EVP_PKEY_id(pubkey.get()) != EVP_PKEY_RSA ||
       !EVP_DigestVerifyInit(ctx.get(), nullptr, EVP_sha256(), nullptr,
@@ -314,8 +313,9 @@ CastCRLImpl::CastCRLImpl(const TbsCrl& tbs_crl,
   // means that these calls were successful.
   ConvertTimeSeconds(tbs_crl.not_before_seconds(), &not_before_);
   ConvertTimeSeconds(tbs_crl.not_after_seconds(), &not_after_);
-  if (overall_not_after < not_after_)
+  if (overall_not_after < not_after_) {
     not_after_ = overall_not_after;
+  }
 
   // Parse the revoked hashes.
   for (const auto& hash : tbs_crl.revoked_public_key_hashes()) {
@@ -348,8 +348,9 @@ CastCRLImpl::~CastCRLImpl() = default;
 bool CastCRLImpl::CheckRevocation(
     const bssl::ParsedCertificateList& trusted_chain,
     const base::Time& time) const {
-  if (trusted_chain.empty())
+  if (trusted_chain.empty()) {
     return false;
+  }
 
   // Check the validity of the CRL at the specified time.
   bssl::der::GeneralizedTime verification_time;
@@ -418,8 +419,9 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
     const base::Time& time,
     bssl::TrustStore* trust_store,
     const bool is_fallback_crl) {
-  if (!trust_store)
+  if (!trust_store) {
     return ParseAndVerifyCRL(crl_proto, time, is_fallback_crl);
+  }
 
   CrlBundle crl_bundle;
   if (!crl_bundle.ParseFromString(crl_proto)) {

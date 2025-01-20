@@ -306,13 +306,22 @@ template("mixed_test") {
             "close_fd_mask",
             "fork",
           ]
-          fuzzer_args =
-              "-undefok=" + string_join(",", known_libfuzzer_args) + " "
+          fuzzer_args = [ "-undefok=" + string_join(",", known_libfuzzer_args) ]
         } else {
-          fuzzer_args = ""
+          fuzzer_args = []
         }
-        fuzzer_args += "--fuzz=$fuzztest_unit --corpus_database=\"\""
-        contents = [ "const char* kFuzzerArgs = \"${fuzzer_args}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
+
+        fuzzer_args += [
+          "--fuzz=${fuzztest_unit}",
+          "--corpus_database=",
+        ]
+        fuzzer_args_joined = string_join(" ", fuzzer_args)
+
+        NEWLINE = "$0x0A"
+
+        contents =
+            "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";" + NEWLINE +
+            "const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" + NEWLINE
       }
 
       _fuzzer_target_name = target_name
@@ -721,6 +730,8 @@ template("test") {
       _test_runner_shard,
     ]
 
+    _subpackages = []
+
     # Select the Fuchsia test realm in which to run the test.
     if (defined(invoker.run_as_chromium_system_test) &&
         invoker.run_as_chromium_system_test) {
@@ -729,6 +740,10 @@ template("test") {
         "//build/config/fuchsia/test/system_test_minimum.shard.test-cml",
       ]
     } else {
+      _subpackages += [
+        "//third_party/fuchsia-sdk/sdk/packages/fake-build-info:fake-build-info",
+        "//third_party/fuchsia-sdk/sdk/packages/intl_property_manager:intl_property_manager",
+      ]
       _manifest_fragments += [
         "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
         "//build/config/fuchsia/test/minimum.shard.test-cml",
@@ -818,6 +833,8 @@ template("test") {
       if (devtools_root_location != "") {
         excluded_paths += [ "${devtools_root_location}/*" ]
       }
+
+      subpackages = _subpackages
     }
 
     # |target_name| refers to the package-runner rule, so that building
@@ -1180,6 +1197,9 @@ template("script_test") {
   _shared_data_deps = [ "//testing:test_scripts_shared" ]
   if (defined(invoker.data_deps)) {
     _shared_data_deps += invoker.data_deps
+  }
+  if (use_rts) {
+    _shared_data_deps += [ ":${invoker.target_name}__rts_filters" ]
   }
 
   _wrapped_script =

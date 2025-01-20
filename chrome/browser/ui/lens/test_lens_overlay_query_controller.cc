@@ -4,9 +4,27 @@
 
 #include "test_lens_overlay_query_controller.h"
 
+#include "base/containers/span.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace lens {
+
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kPlainTextMimeType[] = "text/plain";
+constexpr char kHtmlMimeType[] = "text/html";
+
+lens::MimeType StringToContentType(const std::string& content_type) {
+  if (content_type == kPdfMimeType) {
+    return lens::MimeType::kPdf;
+  } else if (content_type == kHtmlMimeType) {
+    return lens::MimeType::kHtml;
+  } else if (content_type == kPlainTextMimeType) {
+    return lens::MimeType::kPlainText;
+  }
+  return lens::MimeType::kUnknown;
+}
 
 FakeEndpointFetcher::FakeEndpointFetcher(EndpointResponse response)
     : EndpointFetcher(
@@ -55,15 +73,20 @@ void TestLensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    lens::PageContentMimeType underlying_content_type,
-    float ui_scale_factor) {
-  last_sent_underlying_content_bytes_ = underlying_content_bytes;
-  last_sent_underlying_content_type_ = underlying_content_type;
-  last_sent_page_url_ = page_url;
+    lens::MimeType underlying_content_type,
+    float ui_scale_factor,
+    base::TimeTicks invocation_time) {
+  // Deep copy significant_region_boxes to avoid lifetime issues after the
+  // std::move call below.
+  last_sent_significant_region_boxes_.clear();
+  for (const auto& box : significant_region_boxes) {
+    last_sent_significant_region_boxes_.push_back(box.Clone());
+  }
 
   LensOverlayQueryController::StartQueryFlow(
       screenshot, page_url, page_title, std::move(significant_region_boxes),
-      underlying_content_bytes, underlying_content_type, ui_scale_factor);
+      underlying_content_bytes, underlying_content_type, ui_scale_factor,
+      invocation_time);
 }
 
 void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
@@ -123,27 +146,15 @@ void TestLensOverlayQueryController::SendContextualTextQuery(
       query_text, lens_selection_type, additional_search_query_params);
 }
 
-void TestLensOverlayQueryController::SendPageContentUpdateRequest(
-    base::span<const uint8_t> new_content_bytes,
-    lens::PageContentMimeType new_content_type,
-    GURL new_page_url) {
-  // TODO(crbug.com/378918804): Update these variables in the endpoint
-  // fetcher creator.
-  last_sent_underlying_content_bytes_ = new_content_bytes;
-  last_sent_underlying_content_type_ = new_content_type;
-  last_sent_page_url_ = new_page_url;
-
-  LensOverlayQueryController::SendPageContentUpdateRequest(
-      new_content_bytes, new_content_type, new_page_url);
-}
-
 void TestLensOverlayQueryController::ResetTestingState() {
   last_lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   last_queried_region_.reset();
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
-  last_sent_underlying_content_type_ = lens::PageContentMimeType::kNone;
+  last_sent_partial_content_ = lens::LensOverlayDocument();
+  last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
+  last_sent_page_content_data_.clear();
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;
 }
@@ -155,7 +166,8 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     const std::string& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
-    const std::vector<std::string>& cors_exempt_headers) {
+    const std::vector<std::string>& cors_exempt_headers,
+    const UploadProgressCallback upload_progress_callback) {
   lens::LensOverlayServerResponse fake_server_response;
   std::string fake_server_response_string;
   google_apis::ApiErrorCode fake_server_response_code =
@@ -169,14 +181,35 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
         fake_cluster_info_response_.SerializeAsString();
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
+             request->objects_request().has_payload() &&
+             request->objects_request().payload().has_partial_pdf_document()) {
+    // Partial page content upload request.
+    num_partial_page_content_requests_sent_++;
+    sent_partial_page_content_objects_request_.CopyFrom(
+        request->objects_request());
+    // The server doesn't send a response to this request, so no need to set
+    // the response string to something meaningful.
+    fake_server_response_string = "";
+    last_sent_partial_content_.CopyFrom(
+        request->objects_request().payload().partial_pdf_document());
+  } else if (request->has_objects_request() &&
+             !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
     // Page content upload request.
+    num_page_content_update_requests_sent_++;
     sent_page_content_objects_request_.CopyFrom(request->objects_request());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";
     sent_page_content_request_id_.CopyFrom(
         request->objects_request().request_context().request_id());
+    last_sent_page_content_data_ =
+        std::string(request->objects_request().payload().content_data());
+    last_sent_underlying_content_bytes_ =
+        base::as_byte_span(last_sent_page_content_data_);
+    last_sent_underlying_content_type_ = StringToContentType(
+        request->objects_request().payload().content_type());
+    last_sent_page_url_ = GURL(request->objects_request().payload().page_url());
   } else if (request->has_objects_request()) {
     // Full image request.
     sent_full_image_objects_request_.CopyFrom(request->objects_request());
@@ -214,20 +247,33 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   fake_endpoint_response.response = fake_server_response_string;
   fake_endpoint_response.http_status_code = fake_server_response_code;
 
+  if (upload_progress_callback) {
+    last_upload_progress_callback_ = std::move(upload_progress_callback);
+  }
+  // If there is an upload progress callback, run it immedietly with 100%
+  // progress, unless disable_page_upload_response_callback in which case the
+  // caller will need to call the callback manually.
+  if (!disable_page_upload_response_callback &&
+      !last_upload_progress_callback_.is_null()) {
+    // Simulate the upload progress callback completing the upload.
+    std::move(last_upload_progress_callback_).Run(1, 1);
+  }
+
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   response->disable_responding_ = disable_response;
   return response;
 }
 
 void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
-    base::TimeDelta latency_ms,
-    bool is_translate_query,
-    std::string vit_query_param_value) {
-  if (is_translate_query) {
-    num_full_page_translate_gen204_pings_sent_++;
-  } else {
-    num_full_page_objects_gen204_pings_sent_++;
-  }
+    lens::LensOverlayGen204Controller::LatencyType latency_type,
+    base::TimeTicks start_time_ticks,
+    std::string vit_query_param_value,
+    std::optional<base::TimeDelta> cluster_info_latency,
+    std::optional<std::string> encoded_analytics_id) {
+  int counter = latency_gen_204_counter_.contains(latency_type)
+                    ? latency_gen_204_counter_.at(latency_type)
+                    : 0;
+  latency_gen_204_counter_[latency_type] = counter + 1;
 }
 
 }  // namespace lens

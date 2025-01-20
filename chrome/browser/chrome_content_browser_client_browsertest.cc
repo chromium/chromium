@@ -15,11 +15,11 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -39,7 +39,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -60,6 +62,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
@@ -67,6 +70,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -121,7 +125,7 @@ std::vector<uint8_t> StringToVector(const std::string& str) {
 // first renderer process.
 class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeContentBrowserClientBrowserTest() {}
+  ChromeContentBrowserClientBrowserTest() = default;
 
   ChromeContentBrowserClientBrowserTest(
       const ChromeContentBrowserClientBrowserTest&) = delete;
@@ -157,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  IsolatedOriginNTPBrowserTest() {}
+  IsolatedOriginNTPBrowserTest() = default;
 
   IsolatedOriginNTPBrowserTest(const IsolatedOriginNTPBrowserTest&) = delete;
   IsolatedOriginNTPBrowserTest& operator=(const IsolatedOriginNTPBrowserTest&) =
@@ -219,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             ntp_site_instance->GetSiteURL());
 
@@ -227,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   // process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             site_instance->GetSiteURL());
 }
@@ -236,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  OpenWindowFromNTPBrowserTest() {}
+  OpenWindowFromNTPBrowserTest() = default;
 
   OpenWindowFromNTPBrowserTest(const OpenWindowFromNTPBrowserTest&) = delete;
   OpenWindowFromNTPBrowserTest& operator=(const OpenWindowFromNTPBrowserTest&) =
@@ -273,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      ntp_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      ntp_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
   // Execute script that creates new window from ntp tab with
   // ntp.com/title1.html as target url. Host is same as remote-ntp host, yet
@@ -295,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   EXPECT_EQ(generic_url, opened_tab->GetLastCommittedURL());
   // New created tab should not reside in an Instant process.
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      opened_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 }
 
 // Test that the System AccentColor keyword is supported ONLY for installed
@@ -341,10 +345,12 @@ class SystemAccentColorTest : public InProcessBrowserTest {
       web_app_scope_ = web_app_scope;
     }
 
-    void OverrideWebkitPrefs(
+    void OverrideWebPreferences(
         content::WebContents* web_contents,
+        content::SiteInstance& main_frame_site,
         blink::web_pref::WebPreferences* web_prefs) override {
-      ChromeContentBrowserClient::OverrideWebkitPrefs(web_contents, web_prefs);
+      ChromeContentBrowserClient::OverrideWebPreferences(
+          web_contents, main_frame_site, web_prefs);
 
       web_prefs->web_app_scope = web_app_scope_;
     }
@@ -734,7 +740,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 class PreferredRootScrollbarColorSchemeChromeClientTest
-    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+    : public testing::WithParamInterface<std::tuple<bool, bool, bool>>,
       public InProcessBrowserTest {
  protected:
   PreferredRootScrollbarColorSchemeChromeClientTest()
@@ -751,6 +757,7 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
     ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(dark_mode_);
     ThemeService* theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
+    theme_service->UseDeviceTheme(std::get<2>(GetParam()));
     if (uses_custom_theme_) {
       theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
     } else {
@@ -763,12 +770,18 @@ class PreferredRootScrollbarColorSchemeChromeClientTest
   }
 
   blink::mojom::PreferredColorScheme ExpectedColorScheme() const {
-    return dark_mode_ && !uses_custom_theme_
+    return dark_mode_ && !uses_custom_theme_ && !UsesDeviceTheme()
                ? blink::mojom::PreferredColorScheme::kDark
                : blink::mojom::PreferredColorScheme::kLight;
   }
 
  private:
+  bool UsesDeviceTheme() const {
+    ThemeService* theme_service =
+        ThemeServiceFactory::GetForProfile(browser()->profile());
+    return theme_service->UsingDeviceTheme();
+  }
+
   class ChromeContentBrowserClientWithWebTheme
       : public ChromeContentBrowserClient {
    public:
@@ -805,7 +818,9 @@ IN_PROC_BROWSER_TEST_P(PreferredRootScrollbarColorSchemeChromeClientTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PreferredRootScrollbarColorSchemeChromeClientTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 class PrefersContrastTest
     : public testing::WithParamInterface<ui::NativeTheme::PreferredContrast>,
@@ -949,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
   EXPECT_EQ(u"about:blank", tab_title);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that if a protocol handler is registered for a scheme, an external
 // program (another Chrome tab in this case) is not launched to handle the
 // navigation. This is a regression test for crbug.com/963133.
@@ -1056,7 +1071,6 @@ class ScopedFakeExternalProtocolHandlerDelegate
  private:
   base::RunLoop launch_url_run_loop_;
   const std::u16string program_name_ = u"custom";
-  bool launch_url_called_ = false;
   bool external_protocol_dialog_called_ = false;
   std::string launched_url_without_security_check_;
   std::string launched_url_with_security_check_;
@@ -2082,5 +2096,245 @@ IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
   EXPECT_FALSE(client()->ShouldTryToUseExistingProcessHost(browser()->profile(),
                                                            random_url));
 }
+
+class ThirdPartyStoragePartitioningOriginTrialTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ThirdPartyStoragePartitioningOriginTrialTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // The 3PCD tracking protection feature must be disabled so that we can
+    // disable third-party cookies by changing the prefs::kCookieControlsMode
+    // pref.
+    feature_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+  // The URL that will be used to load third-party scripts.
+  static constexpr char kThirdPartyScriptUrl[] = "https://127.0.0.1:44445";
+  // A cross-site URL used for Origin Trials.
+  static constexpr char kCrossSiteOriginTrialUrl[] = "https://a.com";
+
+  bool BlockThirdPartyCookies() const { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+  void SetUpOnMainThread() override {
+    // Set up the framework that allows us to intercept and inspect any Origin
+    // Trial header requests.
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            &ThirdPartyStoragePartitioningOriginTrialTest::InterceptURLRequest,
+            base::Unretained(this)));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void SetOriginTrialToken(const std::string& token) {
+    origin_trial_token_ = token;
+  }
+
+  GURL cross_site_script_meta_tag_origin_trial_url() const {
+    return GURL(base::StrCat({kCrossSiteOriginTrialUrl, "/meta_script.html"}));
+  }
+
+  GURL meta_tag_injecting_javascript_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/meta.js"}));
+  }
+
+  GURL empty_frame_meta_origin_trial_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/empty.html"}));
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  bool RespondForEmptyUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = "<html>This page has no title.</html>";
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  bool RespondForScriptMetaTagOriginTrialUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    // Construct the origin trial response.
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = base::StrCat(
+        {"<html><head><script src=\"",
+         meta_tag_injecting_javascript_url().spec(),
+         "\"></script></head><body>This page has no title.</body></html>"});
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  bool RespondForMetaTagInjectingScriptUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    CHECK(!origin_trial_token_.empty());
+    // Construct the origin trial response.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: application/javascript\n";
+    std::string body =
+        base::StrCat({"const otMeta = document.createElement('meta'); "
+                      "otMeta.httpEquiv = 'origin-trial'; "
+                      "otMeta.content = '",
+                      origin_trial_token_,
+                      "'; "
+                      "document.head.append(otMeta); ",
+                      "const iframe = document.createElement('iframe'); ",
+                      "document.head.appendChild(iframe); "});
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  // Create the framework to intercept origin trial requests.
+  bool InterceptURLRequest(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url ==
+        cross_site_script_meta_tag_origin_trial_url()) {
+      return RespondForScriptMetaTagOriginTrialUrl(params);
+    }
+    if (params->url_request.url == meta_tag_injecting_javascript_url()) {
+      return RespondForMetaTagInjectingScriptUrl(params);
+    }
+    if (params->url_request.url == empty_frame_meta_origin_trial_url()) {
+      return RespondForEmptyUrl(params);
+    }
+    return false;
+  }
+
+  base::test::ScopedFeatureList feature_;
+  net::EmbeddedTestServer https_server_;
+  std::string origin_trial_token_;
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// Test that the 3PSP deprecation trial only enables third-party storage when
+// the user has explicitly opted into third-party cooking blocking (instead of
+// enabling first-party storage). This test is derived from
+// RenderFrameHostImplWithTokensBrowserTest.ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned.
+IN_PROC_BROWSER_TEST_P(ThirdPartyStoragePartitioningOriginTrialTest,
+                       ThirdPartyCookieSettingOverridesDeprecationTrial) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44445
+  // DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
+  // --is-third-party
+  const char kValidThirdPartyToken[] =
+      "A7BpVOcOsvw3FiZnc4wIJ9pfGSrhUqMyV8GmGkZrm6emdOW5hBe9YN8XKoFa+"
+      "YQkVUxdNR22quD3oCJvuIX2cAoAAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6N"
+      "DQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pb"
+      "mczIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+
+  SetOriginTrialToken(kValidThirdPartyToken);
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      BlockThirdPartyCookies()
+          ? static_cast<int>(
+                content_settings::CookieControlsMode::kBlockThirdParty)
+          : static_cast<int>(content_settings::CookieControlsMode::kOff));
+
+  // Navigate to "a.test" and load a script from a third-party. In that script,
+  // the deprecation trial token above is added via <meta> tag. Then, the script
+  // adds an iframe.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), cross_site_script_meta_tag_origin_trial_url()));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(contents, nullptr);
+
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  // Navigate the currently empty iframe to a URL that is same-site with the
+  // third-party script.
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame,
+                                        empty_frame_meta_origin_trial_url()));
+  // Execute a dummy roundtrip to ensure the <meta> tag trial token has time to
+  // parse and be applied to the iframe.
+  EXPECT_TRUE(content::ExecJs(contents, ";"));
+
+  // Re-obtain the iframe after confirming the navigation is complete.
+  child_frame = ChildFrameAt(contents->GetPrimaryMainFrame(), 0);
+
+  if (BlockThirdPartyCookies()) {
+    EXPECT_TRUE(child_frame->GetStorageKey().IsThirdPartyContext());
+  } else {
+    EXPECT_TRUE(child_frame->GetStorageKey().IsFirstPartyContext());
+  }
+}
+
+class BundledCodeCacheChromeContentBrowserClientTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BundledCodeCacheChromeContentBrowserClientTest() {
+    feature_list_.InitWithFeatureState(features::kWebUIBundledCodeCache,
+                                       IsBundledCodeCacheEnabled());
+  }
+
+  bool IsBundledCodeCacheEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Assert top-chrome webui renderers disallow v8 feature flag overrides only
+// when the bundled webui code cache is enabled.
+IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
+                       ConfiguresRendererForDisallowV8FeatureOverrides) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL top_chrome_url1(chrome::kChromeUITabSearchURL);
+  const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
+  const GURL non_top_chrome_url1(chrome::kChromeUINewTabPageURL);
+  const GURL non_top_chrome_url2(
+      embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_TRUE(top_chrome_url2.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_FALSE(non_top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_FALSE(non_top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+
+  // Disallow V8 feature flag overrides should only apply to top-chrome URLs
+  // when bundled code caching is enabled.
+  auto navigate_and_expect_policy_result = [this](const GURL& url,
+                                                  bool expectation) {
+    content::RenderFrameHost* rfh =
+        ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_EQ(expectation, rfh->GetProcess()->DisallowV8FeatureFlagOverrides());
+  };
+  navigate_and_expect_policy_result(top_chrome_url1,
+                                    IsBundledCodeCacheEnabled());
+  navigate_and_expect_policy_result(top_chrome_url2,
+                                    IsBundledCodeCacheEnabled());
+  navigate_and_expect_policy_result(non_top_chrome_url1, false);
+  navigate_and_expect_policy_result(non_top_chrome_url1, false);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ThirdPartyStoragePartitioningOriginTrialTest,
+                         ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    BundledCodeCacheChromeContentBrowserClientTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        BundledCodeCacheChromeContentBrowserClientTest::ParamType>& info) {
+      return info.param ? "BundledCodeCache_Enabled"
+                        : "BundledCodeCache_Disabled";
+    });
 
 }  // namespace

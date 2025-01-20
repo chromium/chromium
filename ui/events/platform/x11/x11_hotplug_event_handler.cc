@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/platform/x11/x11_hotplug_event_handler.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <set>
@@ -404,7 +400,7 @@ void X11HotplugEventHandler::OnHotplugEvent() {
       DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
 
   const int kMaxDeviceNum = 128;
-  DeviceType device_types[kMaxDeviceNum];
+  std::array<DeviceType, kMaxDeviceNum> device_types;
   for (auto& device_type : device_types)
     device_type = DEVICE_TYPE_OTHER;
 

@@ -301,6 +301,8 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       return DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK;
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED;
     default:
       // Handle all unknown 5xx HTTP error codes as temporary and any other
       // unknown error as one that needs more time to recover.

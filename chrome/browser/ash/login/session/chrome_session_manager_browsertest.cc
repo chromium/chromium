@@ -82,7 +82,7 @@ class ChromeSessionManagerTest : public LoginManagerTest {
   ChromeSessionManagerTest(const ChromeSessionManagerTest&) = delete;
   ChromeSessionManagerTest& operator=(const ChromeSessionManagerTest&) = delete;
 
-  ~ChromeSessionManagerTest() override {}
+  ~ChromeSessionManagerTest() override = default;
 
   // LoginManagerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {

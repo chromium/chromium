@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -423,7 +424,9 @@ void MediaDrmOriginIdManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kMediaDrmOriginIds);
 }
 
-MediaDrmOriginIdManager::MediaDrmOriginIdManager(PrefService* pref_service)
+MediaDrmOriginIdManager::MediaDrmOriginIdManager(
+    PrefService* pref_service,
+    base::PassKey<MediaDrmOriginIdManagerFactory>)
     : pref_service_(pref_service) {
   DVLOG(1) << __func__;
   DCHECK(pref_service_);

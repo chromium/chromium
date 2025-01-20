@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 
 namespace manual_fill {
 

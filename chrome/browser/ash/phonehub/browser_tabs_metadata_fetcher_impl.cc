@@ -107,8 +107,7 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
     favicon_request_handler_->GetFaviconImageForPageURL(
         results_[i].url,
         base::BindOnce(&BrowserTabsMetadataFetcherImpl::OnFaviconReady,
-                       weak_ptr_factory_.GetWeakPtr(), i, barrier),
-        favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                       weak_ptr_factory_.GetWeakPtr(), i, barrier));
   }
 }
 

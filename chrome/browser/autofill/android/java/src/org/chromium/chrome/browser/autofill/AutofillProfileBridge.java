@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
@@ -132,14 +133,16 @@ public final class AutofillProfileBridge {
      *
      * @param countryCode The CLDR code used to retrieve address components.
      * @param languageCode The language code associated with the saved autofill profile that ui
-     *                     components are being retrieved for; can be null if ui components are
-     *                     being retrieved for a new profile.
+     *     components are being retrieved for; can be null if ui components are being retrieved for
+     *     a new profile.
      * @param validationType The target usage validation rules.
      * @return A list of address UI components. The ordering in the list specifies the order these
-     *         components should appear in the UI.
+     *     components should appear in the UI.
      */
     public List<AutofillAddressUiComponent> getAddressUiComponents(
-            String countryCode, String languageCode, @AddressValidationType int validationType) {
+            @JniType("std::string") String countryCode,
+            @JniType("std::string") String languageCode,
+            @AddressValidationType int validationType) {
         List<Integer> componentIds = new ArrayList<>();
         List<String> componentNames = new ArrayList<>();
         List<Integer> componentRequired = new ArrayList<>();
@@ -194,15 +197,18 @@ public final class AutofillProfileBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
+        @JniType("std::string")
         String getDefaultCountryCode();
 
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
 
-        void getRequiredFields(String countryCode, List<Integer> requiredFields);
+        void getRequiredFields(
+                @JniType("std::string") String countryCode, List<Integer> requiredFields);
 
+        @JniType("std::string")
         String getAddressUiComponents(
-                String countryCode,
-                String languageCode,
+                @JniType("std::string") String countryCode,
+                @JniType("std::string") String languageCode,
                 @AddressValidationType int validationType,
                 List<Integer> componentIds,
                 List<String> componentNames,

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 namespace fingerprinting_protection_filter::features {
@@ -27,24 +28,12 @@ bool IsFingerprintingProtectionFeatureEnabled() {
              kEnableFingerprintingProtectionFilterInIncognito);
 }
 
-bool IsFingerprintingProtectionEnabledInIncognito(bool is_incognito) {
-  if (!is_incognito) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      kEnableFingerprintingProtectionFilterInIncognito);
-}
-
-bool IsFingerprintingProtectionEnabledInNonIncognito(bool is_incognito) {
+bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito) {
   if (is_incognito) {
-    return false;
+    return base::FeatureList::IsEnabled(
+        kEnableFingerprintingProtectionFilterInIncognito);
   }
   return base::FeatureList::IsEnabled(kEnableFingerprintingProtectionFilter);
-}
-
-bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito) {
-  return IsFingerprintingProtectionEnabledInIncognito(is_incognito) ||
-         IsFingerprintingProtectionEnabledInNonIncognito(is_incognito);
 }
 
 bool IsFingerprintingProtectionConsoleLoggingEnabled() {
@@ -52,6 +41,36 @@ bool IsFingerprintingProtectionConsoleLoggingEnabled() {
   // param is set to true with either feature flag, we should log when blocking.
   return kEnableConsoleLoggingIncognito.Get() ||
          kEnableConsoleLoggingNonIncognito.Get();
+}
+
+bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+    bool is_incognito) {
+  return GetFingerprintingProtectionRefreshHeuristicThreshold(is_incognito) > 0;
+}
+
+int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito) {
+  if (is_incognito) {
+    return kRefreshHeuristicExceptionThresholdIncognito.Get();
+  }
+
+  return kRefreshHeuristicExceptionThresholdNonIncognito.Get();
+}
+
+bool SampleEnablePerformanceMeasurements(bool is_incognito) {
+  if (!base::ThreadTicks::IsSupported()) {
+    // Can't do accurate performance measurements if ThreadTicks not supported.
+    return false;
+  }
+
+  // Get sampling rate based on whether we're in incognito.
+  const base::Feature& feature =
+      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
+                   : features::kEnableFingerprintingProtectionFilter;
+  const double sampling_rate = GetFieldTrialParamByFeatureAsDouble(
+      feature, features::kPerformanceMeasurementRateParam, 0.0);
+
+  // Randomly sample.
+  return base::RandDouble() < sampling_rate;
 }
 
 constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option
@@ -75,6 +94,14 @@ const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito{
 const base::FeatureParam<bool> kEnableConsoleLoggingIncognito{
     &kEnableFingerprintingProtectionFilterInIncognito,
     kEnableConsoleLoggingParam, false};
+
+const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdNonIncognito{
+    &kEnableFingerprintingProtectionFilter,
+    kRefreshHeuristicExceptionThresholdParam, 0};
+
+const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito,
+    kRefreshHeuristicExceptionThresholdParam, 0};
 
 const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito{
     &kEnableFingerprintingProtectionFilter, kPerformanceMeasurementRateParam,

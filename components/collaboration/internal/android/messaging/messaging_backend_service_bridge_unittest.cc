@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,6 +93,11 @@ class MockMessagingBackendService : public MessagingBackendService {
   MOCK_METHOD(std::vector<ActivityLogItem>,
               GetActivityLog,
               (const ActivityLogQueryParams&));
+  MOCK_METHOD(void, ClearDirtyTabMessagesForGroup, (tab_groups::EitherGroupID));
+  MOCK_METHOD(void,
+              AddActivityLogForTesting,
+              (data_sharing::GroupId collaboration_id,
+               const std::vector<ActivityLogItem>& activity_log));
 };
 
 class MessagingBackendServiceBridgeTest : public testing::Test {
@@ -204,9 +210,9 @@ InstantMessage CreateInstantMessage() {
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
   // GroupMember has its own conversion utils, so only check a single field.
   message.attribution.affected_user = data_sharing::GroupMember();
-  message.attribution.affected_user->gaia_id = "affected";
+  message.attribution.affected_user->gaia_id = GaiaId("affected");
   message.attribution.triggering_user = data_sharing::GroupMember();
-  message.attribution.triggering_user->gaia_id = "triggering";
+  message.attribution.triggering_user->gaia_id = GaiaId("triggering");
 
   // TabGroupMessageMetadata.
   message.attribution.tab_group_metadata = TabGroupMessageMetadata();
@@ -374,6 +380,42 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForGroup_SyncId) {
       PersistentMessagesToCollaborationEventArray(env, messages));
 }
 
+TEST_F(MessagingBackendServiceBridgeTest,
+       TestClearDirtyTabMessagesForGroup_LocalID) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // Create a new random local tab group ID.
+  tab_groups::LocalTabGroupID local_tab_group_id = base::Token::CreateRandom();
+  auto j_local_tab_group_id =
+      tab_groups::TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+          env, std::make_optional(local_tab_group_id));
+
+  // Invoke the method from Java. The call should arrive to the service.
+  tab_groups::EitherGroupID group_id(local_tab_group_id);
+  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(group_id)).Times(1);
+
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeClearDirtyTabMessagesForGroupAndVerify(
+      env, j_companion(), j_local_tab_group_id, ScopedJavaLocalRef<jstring>());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest,
+       TestClearDirtyTabMessagesForGroup_SyncID) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // Create a random sync tab group ID.
+  base::Uuid sync_tab_group_id = base::Uuid::GenerateRandomV4();
+  ScopedJavaLocalRef<jstring> j_sync_tab_group_id =
+      base::android::ConvertUTF8ToJavaString(
+          env, sync_tab_group_id.AsLowercaseString());
+
+  // Invoke the method from Java. The call should arrive to the service.
+  tab_groups::EitherGroupID group_id(sync_tab_group_id);
+  EXPECT_CALL(service(), ClearDirtyTabMessagesForGroup(group_id)).Times(1);
+
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeClearDirtyTabMessagesForGroupAndVerify(
+      env, j_companion(), ScopedJavaLocalRef<jobject>(), j_sync_tab_group_id);
+}
+
 TEST_F(MessagingBackendServiceBridgeTest, TestGetMessagesForTab_LocalID) {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<PersistentMessage> messages = GetDefaultPersistentMessages();
@@ -451,16 +493,20 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   // Create two activity log items.
   ActivityLogItem activity_log_item1;
   activity_log_item1.collaboration_event = CollaborationEvent::TAB_UPDATED;
-  activity_log_item1.title_text = "title 1";
-  activity_log_item1.description_text = "description 1";
-  activity_log_item1.timestamp_text = "timestamp 1";
+  activity_log_item1.title_text = u"User 1";
+  activity_log_item1.description_text = u"https://google.com";
+  activity_log_item1.time_delta_text = u"2 hours ago";
+  activity_log_item1.show_favicon = true;
+  activity_log_item1.action = RecentActivityAction::kReopenTab;
 
   ActivityLogItem activity_log_item2;
   activity_log_item2.collaboration_event =
       CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  activity_log_item2.title_text = "title 2";
-  activity_log_item2.description_text = "description 2";
-  activity_log_item2.timestamp_text = "timestamp 2";
+  activity_log_item2.title_text = u"User 2";
+  activity_log_item2.description_text = u"foo@gmail.com";
+  activity_log_item2.time_delta_text = u"3 days ago";
+  activity_log_item2.show_favicon = false;
+  activity_log_item2.action = RecentActivityAction::kManageSharing;
 
   std::vector<ActivityLogItem> activity_log_items;
   activity_log_items.emplace_back(activity_log_item1);

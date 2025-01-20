@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">ॲडमिन धोरणाचे पुनरावलोकन करा</translation>
 <translation id="158849752021629804">होम नेटवर्क आवश्यक</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">पिन</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="162175252992296058">यूएस आंतरराष्ट्रीय कीबोर्डसह पोर्तुगीज</translation>
 <translation id="1629521517399325891">नेटवर्क ऑथेंटिकेशनसाठी वापरकर्ता सर्टिफिकेट उपलब्ध नाही.</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">हा आयटम तुमच्या ट्रॅशमध्ये आहे</translation>
 <translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
 <translation id="4193154014135846272">Google दस्तऐवज</translation>
-<translation id="4197674956721858839">झिप निवड</translation>
 <translation id="4202378258276439759">स्पॅनिश (लॅटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जॉर्जियन</translation>
 <translation id="421017592316736757">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
@@ -664,7 +664,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6096979789310008754">शोध मजकूर साफ केला, सर्व फाइल आणि फोल्डर दाखवत आहे.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर हलवत आहे</translation>
 <translation id="61118516107968648">CSV मजकूर</translation>
-<translation id="6129953537138746214">जागा</translation>
+<translation id="6129953537138746214">स्पेस</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> हलवित आहे...</translation>
 <translation id="6133877453787250710">अ‍ॅडमिनिस्ट्रेटर मॉनिटर:</translation>
 <translation id="613750717151263950">यूएस कीबोर्डसह जपानी</translation>

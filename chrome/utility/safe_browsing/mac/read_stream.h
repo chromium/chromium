@@ -21,7 +21,7 @@ namespace dmg {
 // An interface for reading and seeking over a byte stream.
 class ReadStream {
  public:
-  virtual ~ReadStream() {}
+  virtual ~ReadStream() = default;
 
   // Copies up to |buf.size()| bytes from the stream into |buf|.
   // Returns |true| on success with the actual number of bytes written stored in

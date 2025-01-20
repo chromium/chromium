@@ -53,4 +53,7 @@ found in the LICENSE file.
 
     <!-- Padding between rightmost button and strip end -->
     <dimen name="button_end_padding">8dp</dimen>
+
+    <!-- Defines how much the omnibox and the long-press menu should overlap.-->
+    <dimen name="omnibox_longpress_menu_overlap">2dp</dimen>
 </resources>

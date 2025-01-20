@@ -256,6 +256,8 @@ source_set("unit_tests") {
     "fourcc_unittests.cc",
     "frame_registry_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",
+    "mock_native_pixmap_dmabuf.cc",
+    "mock_native_pixmap_dmabuf.h",
     "native_pixmap_frame_resource_unittest.cc",
     "platform_video_frame_pool_unittest.cc",
     "platform_video_frame_utils_unittest.cc",

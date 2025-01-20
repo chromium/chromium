@@ -8,9 +8,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/server_urls.h"
 #include "components/metrics/structured/reporting/structured_metrics_log_metrics.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
-#include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace metrics::structured::reporting {
@@ -54,7 +54,7 @@ GURL StructuredMetricsReportingService::GetInsecureUploadUrl() const {
 }
 
 std::string_view StructuredMetricsReportingService::upload_mime_type() const {
-  return kDefaultMetricsMimeType;
+  return kMetricsMimeType;
 }
 
 MetricsLogUploader::MetricServiceType

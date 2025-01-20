@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_html_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_text_agent.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
@@ -93,7 +94,6 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/inspector_web_audio_agent.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_client.h"
-#include "third_party/blink/renderer/modules/webdatabase/inspector_database_agent.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_impl.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
@@ -241,6 +241,10 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
         &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
+  if (frame.IsLocalRoot()) {
+    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+        &AIPageContentAgent::BindReceiver, WrapWeakPersistent(&frame)));
+  }
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
@@ -293,7 +297,6 @@ ModulesInitializer::CreatePictureInPictureController(Document& document) const {
 
 void ModulesInitializer::InitInspectorAgentSession(
     DevToolsSession* session,
-    bool allow_view_agents,
     InspectorDOMAgent* dom_agent,
     InspectedFrames* inspected_frames,
     Page* page) const {
@@ -306,9 +309,6 @@ void ModulesInitializer::InitInspectorAgentSession(
   session->CreateAndAppend<InspectorWebAudioAgent>(page);
   session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   session->CreateAndAppend<BucketFileSystemAgent>(inspected_frames);
-  if (allow_view_agents) {
-    session->CreateAndAppend<InspectorDatabaseAgent>(page);
-  }
 }
 
 void ModulesInitializer::OnClearWindowObjectInMainWorld(
@@ -353,7 +353,7 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
   WebString sink_id(
       HTMLMediaElementAudioOutputDevice::sinkId(html_media_element));
   MediaInspectorContextImpl* context_impl = MediaInspectorContextImpl::From(
-      *To<LocalDOMWindow>(html_media_element.GetExecutionContext()));
+      *To<LocalDOMWindow>(html_media_element.GetExecutionContextForPlayer()));
   FrameWidget* frame_widget =
       html_media_element.GetDocument().GetFrame()->GetWidgetForLocalRoot();
   return web_frame_client->CreateMediaPlayer(

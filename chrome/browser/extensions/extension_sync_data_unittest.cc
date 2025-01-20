@@ -117,8 +117,8 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
 
 class AppSyncDataTest : public testing::Test {
  public:
-  AppSyncDataTest() {}
-  ~AppSyncDataTest() override {}
+  AppSyncDataTest() = default;
+  ~AppSyncDataTest() override = default;
 
   void SetRequiredExtensionValues(
       sync_pb::ExtensionSpecifics* extension_specifics) {

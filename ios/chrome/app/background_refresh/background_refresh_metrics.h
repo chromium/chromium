@@ -19,10 +19,10 @@ enum class InitStageDuringBackgroundRefreshActions {
   kInitStageVariationsSeed = 4,
   kInitStageBrowserObjectsForBackgroundHandlers = 5,
   kInitStageEnterprise = 6,
-  kInitStageBrowserObjectsForUI = 7,
-  kInitStageNormalUI = 8,
-  kInitStageFirstRun = 9,
-  kInitStageChoiceScreen = 10,
+  // kInitStageBrowserObjectsForUI = 7,
+  // kInitStageNormalUI = 8,
+  // kInitStageFirstRun = 9,
+  // kInitStageChoiceScreen = 10,
   kInitStageFinal = 11,
   kMaxValue = kInitStageFinal,
 };
@@ -40,6 +40,20 @@ enum class BGTaskSchedulerErrorActions {
   kErrorCodeNotPermitted = 3,
   kErrorCodeTooManyPendingTaskRequests = 4,
   kMaxValue = kErrorCodeTooManyPendingTaskRequests,
+};
+
+// Histogram name for application launch status when background tasks are
+// triggered.
+extern const char kLaunchTypeForBackgroundRefreshHistogram[];
+
+// Enum for the IOS.BackgroundRefresh.LaunchType histogram.
+// Keep in sync with "LaunchTypeForBackgroundRefreshType".
+enum class LaunchTypeForBackgroundRefreshActions {
+  kUnknown = 0,
+  kLaunchTypeCold = 1,
+  kLaunchTypeWarm = 2,
+  kLaunchTypePreBrowserObjects = 3,
+  kMaxValue = kLaunchTypePreBrowserObjects,
 };
 
 #endif  // IOS_CHROME_APP_BACKGROUND_REFRESH_BACKGROUND_REFRESH_METRICS_H_

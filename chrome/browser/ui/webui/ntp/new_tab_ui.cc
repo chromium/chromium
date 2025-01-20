@@ -73,8 +73,9 @@ const char kRTLHtmlTextDirection[] = "rtl";
 const char kLTRHtmlTextDirection[] = "ltr";
 
 const char* GetHtmlTextDirection(const std::u16string& text) {
-  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text))
+  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text)) {
     return kRTLHtmlTextDirection;
+  }
   return kLTRHtmlTextDirection;
 }
 
@@ -108,7 +109,7 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
-NewTabUI::~NewTabUI() {}
+NewTabUI::~NewTabUI() = default;
 
 // static
 bool NewTabUI::IsNewTab(const GURL& url) {
@@ -141,10 +142,11 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
   // title will be rendered as "!Yahoo" if its "dir" attribute is not set to
   // "ltr".
   std::string direction;
-  if (using_url_as_the_title)
+  if (using_url_as_the_title) {
     direction = kLTRHtmlTextDirection;
-  else
+  } else {
     direction = GetHtmlTextDirection(title);
+  }
 
   dictionary->Set("title", title_to_set);
   dictionary->Set("direction", direction);
@@ -236,4 +238,4 @@ std::string NewTabUI::NewTabHTMLSource::GetContentSecurityPolicy(
   return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
-NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() {}
+NewTabUI::NewTabHTMLSource::~NewTabHTMLSource() = default;

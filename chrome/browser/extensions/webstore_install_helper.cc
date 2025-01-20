@@ -37,7 +37,7 @@ WebstoreInstallHelper::WebstoreInstallHelper(Delegate* delegate,
       manifest_parse_complete_(false),
       parse_error_(Delegate::UNKNOWN_ERROR) {}
 
-WebstoreInstallHelper::~WebstoreInstallHelper() {}
+WebstoreInstallHelper::~WebstoreInstallHelper() = default;
 
 void WebstoreInstallHelper::Start(
     network::mojom::URLLoaderFactory* loader_factory) {

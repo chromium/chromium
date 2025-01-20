@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 
+#include <array>
 #include <utility>
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,8 +85,9 @@ TEST(FetchHeaderListTest, Combine) {
 
 TEST(FetchHeaderListTest, SetCookie) {
   test::TaskEnvironment task_environment;
-  const String values[] = {"foo=bar", "bar=baz; Domain=example.com",
-                           "fizz=buzz; Expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+  const auto values = std::to_array<String>(
+      {"foo=bar", "bar=baz; Domain=example.com",
+       "fizz=buzz; Expires=Thu, 01 Jan 1970 00:00:00 GMT"});
 
   auto* header_list = MakeGarbageCollected<FetchHeaderList>();
   header_list->Append("Set-cookie", values[0]);

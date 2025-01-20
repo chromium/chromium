@@ -119,6 +119,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
   // be a well-formed AX tree.
   EXPECT_GE(nodes_visited, 10U);
 
-  if (HasFailure())
+  if (HasFailure()) {
     ui::PrintNSAXTree(window);
+  }
 }

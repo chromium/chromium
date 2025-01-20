@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/uuid.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -66,18 +67,11 @@ CreatePermanentFolderToTrackerMap(bookmarks::BookmarkModel* model) {
   return permanent_folder_to_tracker;
 }
 
-}  // namespace
-
-// static
-BookmarkParentFolder BookmarkParentFolder::FromNonPermanentNode(
-    const bookmarks::BookmarkNode* parent_node) {
-  CHECK(parent_node);
-  CHECK(parent_node->is_folder());
-  CHECK(!parent_node->is_permanent_node())
-      << "Node is permanent: " << parent_node->uuid();
-
-  return BookmarkParentFolder(parent_node);
+bool IsPermanentManagedFolder(const BookmarkParentFolder& folder) {
+  return folder.as_permanent_folder() == PermanentFolderType::kManagedNode;
 }
+
+}  // namespace
 
 // static
 BookmarkParentFolder BookmarkParentFolder::BookmarkBarFolder() {
@@ -97,6 +91,33 @@ BookmarkParentFolder BookmarkParentFolder::MobileFolder() {
 // static
 BookmarkParentFolder BookmarkParentFolder::ManagedFolder() {
   return BookmarkParentFolder(PermanentFolderType::kManagedNode);
+}
+
+// static
+BookmarkParentFolder BookmarkParentFolder::FromFolderNode(
+    const bookmarks::BookmarkNode* node) {
+  CHECK(node);
+  CHECK(!node->is_root());
+  CHECK(node->is_folder());
+  if (!node->is_permanent_node()) {
+    return BookmarkParentFolder(node);
+  }
+  switch (node->type()) {
+    case bookmarks::BookmarkNode::URL:
+      NOTREACHED();
+    case bookmarks::BookmarkNode::FOLDER:
+      // TODO(crbug.com/381252292): Consider extending type with a value
+      // `MANAGED_NODE`.
+      // Only other possible permanent node is the managed one.
+      return BookmarkParentFolder::ManagedFolder();
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+      return BookmarkParentFolder::BookmarkBarFolder();
+    case bookmarks::BookmarkNode::OTHER_NODE:
+      return BookmarkParentFolder::OtherFolder();
+    case bookmarks::BookmarkNode::MOBILE:
+      return BookmarkParentFolder::MobileFolder();
+  }
+  NOTREACHED();
 }
 
 BookmarkParentFolder::BookmarkParentFolder(
@@ -147,7 +168,8 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
     bookmarks::ManagedBookmarkService* managed_bookmark_service)
     : model_(model),
       managed_bookmark_service_(managed_bookmark_service),
-      permanent_folder_to_tracker_(CreatePermanentFolderToTrackerMap(model)) {
+      permanent_folder_to_tracker_(CreatePermanentFolderToTrackerMap(model)),
+      dummy_empty_node_(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL()) {
   CHECK(model_);
 }
 
@@ -186,12 +208,8 @@ size_t BookmarkMergedSurfaceService::GetIndexOf(
 const bookmarks::BookmarkNode* BookmarkMergedSurfaceService::GetNodeAtIndex(
     const BookmarkParentFolder& folder,
     size_t index) const {
-  const BookmarkNode* node =
-      folder.HoldsNonPermanentFolder()
-          ? folder.as_non_permanent_folder()
-          : PermanentFolderToNode(*folder.as_permanent_folder());
-  CHECK_LT(index, node->children().size());
-  return node->children()[index].get();
+  CHECK_LT(index, GetChildrenCount(folder));
+  return GetChildren(folder)[index];
 }
 
 bool BookmarkMergedSurfaceService::loaded() const {
@@ -200,25 +218,38 @@ bool BookmarkMergedSurfaceService::loaded() const {
 
 size_t BookmarkMergedSurfaceService::GetChildrenCount(
     const BookmarkParentFolder& folder) const {
-  if (folder.as_permanent_folder()) {
-    const BookmarkNode* node =
-        PermanentFolderToNode(*folder.as_permanent_folder());
-    // `PermanentFolderType::kManagedNode` can return null if the managed node
-    // is null.
-    return node ? node->children().size() : 0;
-  }
-  return folder.as_non_permanent_folder()->children().size();
+  return GetChildren(folder).size();
 }
 
-const std::vector<std::unique_ptr<BookmarkNode>>&
-BookmarkMergedSurfaceService::GetChildren(
+BookmarkParentFolderChildren BookmarkMergedSurfaceService::GetChildren(
     const BookmarkParentFolder& folder) const {
   if (folder.HoldsNonPermanentFolder()) {
-    return folder.as_non_permanent_folder()->children();
+    return BookmarkParentFolderChildren(folder.as_non_permanent_folder());
   }
 
-  CHECK(!IsParentFolderManaged(folder) || managed_permanent_node());
-  return PermanentFolderToNode(*folder.as_permanent_folder())->children();
+  if (IsPermanentManagedFolder(folder)) {
+    const BookmarkNode* node = managed_permanent_node()
+                                   ? managed_permanent_node()
+                                   : &dummy_empty_node_;
+    return BookmarkParentFolderChildren(node);
+  }
+
+  return BookmarkParentFolderChildren(
+      &GetPermanentFolderOrderingTracker(*folder.as_permanent_folder()));
+}
+
+const bookmarks::BookmarkNode*
+BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
+    const BookmarkParentFolder& folder) const {
+  CHECK(model_->loaded());
+  if (folder.HoldsNonPermanentFolder()) {
+    return folder.as_non_permanent_folder();
+  }
+
+  // Managed nodes can't be edited.
+  CHECK(!IsPermanentManagedFolder(folder));
+  return GetPermanentFolderOrderingTracker(*folder.as_permanent_folder())
+      .GetDefaultParentForNewNodes();
 }
 
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
@@ -226,27 +257,23 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         size_t index) {
   CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
-    model_->Move(node, PermanentFolderToNode(*new_parent.as_permanent_folder()),
-                 index);
+    GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
+        .MoveToIndex(node, index);
   } else {
     model_->Move(node, new_parent.as_non_permanent_folder(), index);
   }
 }
 
-void BookmarkMergedSurfaceService::CopyBookmarkNodeDataElement(
-    const bookmarks::BookmarkNodeData::Element& element,
+void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(
+    const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
     const BookmarkParentFolder& new_parent,
     size_t index) {
   CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
-    // Note: This will be updated once support for account only bookmarks is
-    // added.
-    bookmarks::CloneBookmarkNode(
-        model_, {element},
-        PermanentFolderToNode(*new_parent.as_permanent_folder()), index,
-        /*reset_node_times=*/true);
+    GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
+        .AddNodesAsCopiesOfNodeData(elements, index);
   } else {
-    bookmarks::CloneBookmarkNode(model_, {element},
+    bookmarks::CloneBookmarkNode(model_, elements,
                                  new_parent.as_non_permanent_folder(), index,
                                  /*reset_node_times=*/true);
   }
@@ -258,7 +285,7 @@ bool BookmarkMergedSurfaceService::IsParentFolderManaged(
     return IsNodeManaged(folder.as_non_permanent_folder());
   }
 
-  if (folder.as_permanent_folder() == PermanentFolderType::kManagedNode) {
+  if (IsPermanentManagedFolder(folder)) {
     CHECK(managed_permanent_node());
     return true;
   }
@@ -269,21 +296,6 @@ bool BookmarkMergedSurfaceService::IsNodeManaged(
     const bookmarks::BookmarkNode* node) const {
   return managed_bookmark_service_ &&
          managed_bookmark_service_->IsNodeManaged(node);
-}
-
-const BookmarkNode* BookmarkMergedSurfaceService::PermanentFolderToNode(
-    PermanentFolderType folder) const {
-  switch (folder) {
-    case PermanentFolderType::kBookmarkBarNode:
-      return model_->bookmark_bar_node();
-    case PermanentFolderType::kOtherNode:
-      return model_->other_node();
-    case PermanentFolderType::kMobileNode:
-      return model_->mobile_node();
-    case PermanentFolderType::kManagedNode:
-      return managed_permanent_node();
-  }
-  NOTREACHED();
 }
 
 const BookmarkNode* BookmarkMergedSurfaceService::managed_permanent_node()
@@ -297,6 +309,13 @@ const BookmarkNode* BookmarkMergedSurfaceService::managed_permanent_node()
 const PermanentFolderOrderingTracker&
 BookmarkMergedSurfaceService::GetPermanentFolderOrderingTracker(
     PermanentFolderType folder_type) const {
+  CHECK_NE(folder_type, PermanentFolderType::kManagedNode);
+  return *permanent_folder_to_tracker_.find(folder_type)->second;
+}
+
+PermanentFolderOrderingTracker&
+BookmarkMergedSurfaceService::GetPermanentFolderOrderingTracker(
+    PermanentFolderType folder_type) {
   CHECK_NE(folder_type, PermanentFolderType::kManagedNode);
   return *permanent_folder_to_tracker_.find(folder_type)->second;
 }

@@ -34,8 +34,7 @@ class CC_EXPORT NinePatchLayerImpl : public UIResourceLayerImpl {
   void SetLayout(const gfx::Rect& image_aperture,
                  const gfx::Rect& border,
                  const gfx::Rect& layer_occlusion,
-                 bool fill_center,
-                 bool nearest_neighbor);
+                 bool fill_center);
 
   mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(

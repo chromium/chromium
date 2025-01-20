@@ -68,8 +68,7 @@ class WhatsNewModule {
                  std::string owner,
                  std::optional<BrowserCommand> browser_command = std::nullopt)
       : feature_(&feature),
-        metric_name_(""),
-        owner_(owner),
+        unique_name_(feature.name),
         browser_command_(browser_command) {}
 
   // Creates a default-enabled WhatsNewModule in order to enable
@@ -81,19 +80,11 @@ class WhatsNewModule {
                  std::string owner,
                  std::optional<BrowserCommand> browser_command)
       : feature_(nullptr),
-        metric_name_(metric_name),
-        owner_(owner),
+        unique_name_(metric_name),
         browser_command_(browser_command) {}
 
   std::optional<BrowserCommand> browser_command() const {
     return browser_command_;
-  }
-
-  std::string metric_name() const {
-    if (HasFeature()) {
-      return GetFeatureName();
-    }
-    return metric_name_;
   }
 
   // Return true if the module has a feature, i.e. is not default-enabled.
@@ -107,6 +98,10 @@ class WhatsNewModule {
   // This indicates the feature has recently rolled out to all users.
   bool HasRolledFeature() const;
 
+  // Returns unique name for the module. This is used for the key within
+  // the registry as well as for metrics.
+  const std::string& unique_name() const { return unique_name_; }
+
   // Return true if the feature is enabled.
   bool IsFeatureEnabled() const;
 
@@ -118,8 +113,7 @@ class WhatsNewModule {
 
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
-  std::string metric_name_;
-  std::string owner_;
+  std::string unique_name_;
   std::optional<BrowserCommand> browser_command_;
 };
 
@@ -142,13 +136,15 @@ class WhatsNewEdition {
     return browser_commands_;
   }
 
-  std::string metric_name() const { return GetFeatureName(); }
-
   // Return true if the feature is enabled.
   bool IsFeatureEnabled() const;
 
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
+
+  // Returns unique name for the module. This is used for the key within
+  // the registry as well as for metrics.
+  const std::string& unique_name() const { return unique_name_; }
 
   // Get the customization of the feature for this edition, if any.
   const std::string GetCustomization() const;
@@ -158,7 +154,7 @@ class WhatsNewEdition {
 
  private:
   raw_ref<const base::Feature> feature_;
-  std::string owner_;
+  std::string unique_name_;
   std::vector<BrowserCommand> browser_commands_;
 };
 
@@ -192,7 +188,7 @@ class WhatsNewRegistry {
   const std::optional<std::string> GetActiveEditionSurvey() const;
 
   // Set a "used version" for an edition.
-  void SetEditionUsed(std::string_view edition) const;
+  void SetEditionUsed(std::string edition) const;
 
   // Cleanup data from storage for housekeeping.
   void ClearUnregisteredModules() const;
@@ -205,13 +201,17 @@ class WhatsNewRegistry {
     return storage_service_.get();
   }
 
-  const std::vector<WhatsNewModule>& modules() const { return modules_; }
-  const std::vector<WhatsNewEdition>& editions() const { return editions_; }
+  const std::map<std::string, WhatsNewModule>& modules() const {
+    return modules_;
+  }
+  const std::map<std::string, WhatsNewEdition>& editions() const {
+    return editions_;
+  }
 
  private:
   std::unique_ptr<WhatsNewStorageService> storage_service_;
-  std::vector<WhatsNewModule> modules_;
-  std::vector<WhatsNewEdition> editions_;
+  std::map<std::string, WhatsNewModule> modules_;
+  std::map<std::string, WhatsNewEdition> editions_;
 };
 
 }  // namespace whats_new

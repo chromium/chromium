@@ -52,7 +52,7 @@ void AndroidAutofillManager::OnFormSubmittedImpl(
     provider->OnFormSubmitted(this, form, source);
 }
 
-void AndroidAutofillManager::OnTextFieldDidChangeImpl(
+void AndroidAutofillManager::OnTextFieldValueChangedImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
     const TimeTicks timestamp) {
@@ -69,7 +69,7 @@ void AndroidAutofillManager::OnTextFieldDidChangeImpl(
   // cleared by blink. Check `provider` cache.
   bool cached_is_autofilled = provider->GetCachedIsAutofilled(*field);
 
-  provider->OnTextFieldDidChange(this, form, *field, timestamp);
+  provider->OnTextFieldValueChanged(this, form, *field, timestamp);
 
   if (auto* logger = GetEventFormLogger(form.global_id(), field_id)) {
     if (cached_is_autofilled) {
@@ -120,12 +120,12 @@ void AndroidAutofillManager::OnFocusOnFormFieldImpl(
   }
 }
 
-void AndroidAutofillManager::OnSelectControlDidChangeImpl(
+void AndroidAutofillManager::OnSelectControlSelectionChangedImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
   if (auto* provider = GetAutofillProvider()) {
     if (const FormFieldData* field = form.FindFieldByGlobalId(field_id)) {
-      provider->OnSelectControlDidChange(this, form, *field);
+      provider->OnSelectControlSelectionChanged(this, form, *field);
     }
   }
 }

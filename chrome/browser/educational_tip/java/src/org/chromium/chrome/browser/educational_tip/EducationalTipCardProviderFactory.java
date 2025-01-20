@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.educational_tip;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.CallbackController;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 /** A factory interface for building a EducationalTipCardProvider instance. */
 public class EducationalTipCardProviderFactory {
@@ -19,20 +19,20 @@ public class EducationalTipCardProviderFactory {
      * @return An instance of EducationalTipCardProvider.
      */
     static EducationalTipCardProvider createInstance(
-            @EducationalTipCardType int cardType,
+            @ModuleType int moduleType,
             @NonNull Runnable onModuleClickedCallback,
             @NonNull CallbackController callbackController,
             @NonNull EducationTipModuleActionDelegate actionDelegate) {
-        switch (cardType) {
-            case EducationalTipCardType.DEFAULT_BROWSER_PROMO:
+        switch (moduleType) {
+            case ModuleType.DEFAULT_BROWSER_PROMO:
                 return new DefaultBrowserPromoCoordinator(onModuleClickedCallback, actionDelegate);
-            case EducationalTipCardType.TAB_GROUPS:
+            case ModuleType.TAB_GROUP_PROMO:
                 return new TabGroupPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
-            case EducationalTipCardType.TAB_GROUP_SYNC:
+            case ModuleType.TAB_GROUP_SYNC_PROMO:
                 return new TabGroupSyncPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
-            case EducationalTipCardType.QUICK_DELETE:
+            case ModuleType.QUICK_DELETE_PROMO:
                 return new QuickDeletePromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
             default:

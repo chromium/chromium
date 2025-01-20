@@ -67,8 +67,7 @@ TAG_SPECIALIZATIONS = {
         # These two are both Fuchsia-related.
         'fuchsia-chrome': [],
         'web-engine-shell': [],
-        # These two are both ChromeOS-related.
-        'lacros-chrome': [],
+        # ChromeOS.
         'cros-chrome': [],
     },
     'GPU_TAGS': {
@@ -180,8 +179,8 @@ TAG_HEADER = """\
 {OS_TAGS}
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
+#             android-pixel-6 android-shield-android-tv android-sm-a137f
+#             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock

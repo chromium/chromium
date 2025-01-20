@@ -20,21 +20,20 @@ import {
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 import {
   disableTranscription,
-  enableTranscription,
+  enableTranscriptionSkipConsentCheck,
   setTranscriptionLanguage,
 } from '../core/state/transcription.js';
 import {
   assertExhaustive,
-  assertExists,
   assertInstanceof,
 } from '../core/utils/assert.js';
 
 import {CraButton} from './cra/cra-button.js';
-import {LanguageDropdown} from './language-dropdown.js';
 import {
   DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
 } from './speaker-label-consent-dialog-content.js';
@@ -150,7 +149,7 @@ export class OnboardingDialog extends ReactiveLitElement {
 
   private readonly autoFocusItem = createRef<CraButton>();
 
-  private readonly dropdown = createRef<LanguageDropdown>();
+  private readonly selectedLanguage = signal<LanguageCode|null>(null);
 
   get dialog(): HTMLDivElement {
     return assertInstanceof(
@@ -258,8 +257,7 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 1: {
         const turnOnTranscription = () => {
-          enableTranscription();
-          setTranscriptionLanguage(LanguageCode.EN_US);
+          enableTranscriptionSkipConsentCheck();
           if (!this.platformHandler.canUseSpeakerLabel.value) {
             // Speaker label isn't supported on this platform.
             this.close();
@@ -296,7 +294,7 @@ export class OnboardingDialog extends ReactiveLitElement {
       }
       case 2: {
         const turnOnTranscription = () => {
-          enableTranscription();
+          enableTranscriptionSkipConsentCheck();
           this.step = 3;
         };
         const turnOffTranscription = () => {
@@ -327,17 +325,21 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 3: {
+        const onDropdownChange = (ev: CustomEvent<LanguageCode|null>) => {
+          this.selectedLanguage.value = ev.detail;
+        };
+
         const dialogBody = html`
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
             .languageList=${this.platformHandler.getLangPackList()}
-            ${ref(this.dropdown)}
+            @dropdown-changed=${onDropdownChange}
           >
           </language-dropdown>
         `;
 
         const downloadLanguage = () => {
-          const languageCode = assertExists(this.dropdown.value).value;
+          const languageCode = this.selectedLanguage.value;
           if (languageCode === null) {
             return;
           }
@@ -367,6 +369,7 @@ export class OnboardingDialog extends ReactiveLitElement {
             <cra-button
               label=${i18n.onboardingDialogLanguageSelectionDownloadButton}
               @click=${downloadLanguage}
+              .disabled=${this.selectedLanguage.value === null}
             ></cra-button>
           `,
         );

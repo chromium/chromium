@@ -127,8 +127,11 @@
   .language-picker-menu-back-button {
     --cr-icon-button-fill-color: var(--color-surface-container-highest-dark);
     --cr-icon-button-size: 20px;
-    margin: 8px 8px 8px 0px;
-  }
+    margin-block-start: 8px;
+    margin-inline-end: 8px;
+    margin-block-end: 8px;
+    margin-inline-start: 0;
+}
 
   .language-picker-menu-button {
     border-radius: 0;
@@ -529,7 +532,8 @@
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick"
         aria-hidden="[[!languagePickerButtonsVisible]]"
-        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage)]]"
+        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage,
+                    contentLanguage)]]"
         tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
                     sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="starsIcon" slot="prefix-icon"></span>

@@ -631,19 +631,17 @@ void JpegClient::SaveToFile(TestImage* test_image,
             << out_filename_hw.MaybeAsASCII();
 
   ASSERT_TRUE(base::WriteFile(
-      out_filename_hw,
-      base::make_span(hw_out_frame_
-                          ? hw_out_frame_->data(0)
-                          : static_cast<uint8_t*>(hw_out_mapping_.memory()),
-                      hw_size)));
+      out_filename_hw, base::span(hw_out_frame_ ? hw_out_frame_->data(0)
+                                                : static_cast<uint8_t*>(
+                                                      hw_out_mapping_.memory()),
+                                  hw_size)));
 
   base::FilePath out_filename_sw = out_filename_hw.InsertBeforeExtension("_sw");
   LOG(INFO) << "Writing SW encode results to "
             << out_filename_sw.MaybeAsASCII();
   ASSERT_TRUE(base::WriteFile(
       out_filename_sw,
-      base::make_span(static_cast<uint8_t*>(sw_out_mapping_.memory()),
-                      sw_size)));
+      base::span(static_cast<uint8_t*>(sw_out_mapping_.memory()), sw_size)));
 }
 
 void JpegClient::StartEncode(int32_t bitstream_buffer_id) {

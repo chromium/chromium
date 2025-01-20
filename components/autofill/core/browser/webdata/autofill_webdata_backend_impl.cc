@@ -15,12 +15,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -31,6 +33,7 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -114,7 +117,15 @@ enum class Result {
   kUpdateServerIbanMetadata_Failure = 275,
   kClearAllCreditCardBenefits_Success = 276,
   kClearAllCreditCardBenefits_Failure = 277,
-  kMaxValue = kClearAllCreditCardBenefits_Failure,
+  kAddEntityInstance_Success = 280,
+  kAddEntityInstance_Failure = 281,
+  kUpdateEntityInstance_Success = 290,
+  kUpdateEntityInstance_Failure = 291,
+  kRemoveEntityInstance_Success = 300,
+  kRemoveEntityInstance_Failure = 301,
+  kRemoveEntityInstancesModifiedBetween_Success = 310,
+  kRemoveEntityInstancesModifiedBetween_Failure = 311,
+  kMaxValue = kRemoveEntityInstancesModifiedBetween_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -439,6 +450,68 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
       DenseSet<AutofillProfile::RecordType>::all(), profiles);
   return std::make_unique<WDResult<std::vector<AutofillProfile>>>(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddEntityInstance(
+    const EntityInstance& entity,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->AddEntityInstance(entity)) {
+    ReportResult(Result::kAddEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kAddEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityInstance(
+    const EntityInstance& entity,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->UpdateEntityInstance(entity)) {
+    ReportResult(Result::kUpdateEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kUpdateEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
+    const base::Uuid& guid,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->RemoveEntityInstance(guid)) {
+    ReportResult(Result::kRemoveEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kRemoveEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State
+AutofillWebDataBackendImpl::RemoveEntityInstancesModifiedBetween(
+    base::Time delete_begin,
+    base::Time delete_end,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (EntityTable::FromWebDatabase(db)->RemoveEntityInstancesModifiedBetween(
+          delete_begin, delete_end)) {
+    ReportResult(Result::kRemoveEntityInstancesModifiedBetween_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kRemoveEntityInstancesModifiedBetween_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  return std::make_unique<WDResult<std::vector<EntityInstance>>>(
+      AUTOFILL_ENTITY_INSTANCE_RESULT,
+      EntityTable::FromWebDatabase(db)->GetEntityInstances());
 }
 
 std::unique_ptr<WDTypedResult>
@@ -854,6 +927,21 @@ AutofillWebDataBackendImpl::GetPaymentInstruments(WebDatabase* db) {
       payment_instruments);
   return std::make_unique<WDResult<std::vector<sync_pb::PaymentInstrument>>>(
       PAYMENT_INSTRUMENT_RESULT, std::move(payment_instruments));
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetPaymentInstrumentCreationOptions(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
+  PaymentsAutofillTable::FromWebDatabase(db)
+      ->GetPaymentInstrumentCreationOptions(
+          payment_instrument_creation_options);
+  return std::make_unique<
+      WDResult<std::vector<sync_pb::PaymentInstrumentCreationOption>>>(
+      PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,
+      std::move(payment_instrument_creation_options));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

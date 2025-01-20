@@ -19,7 +19,7 @@ bool CanUseGPU() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
   return context_provider_wrapper &&
-         !context_provider_wrapper->ContextProvider()->IsContextLost();
+         !context_provider_wrapper->ContextProvider().IsContextLost();
 }
 
 }  // namespace
@@ -50,18 +50,6 @@ CanvasResourceHost::ReplaceResourceProvider(
 void CanvasResourceHost::DiscardResourceProvider() {
   resource_provider_ = nullptr;
   UpdateMemoryUsage();
-}
-
-void CanvasResourceHost::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  filter_quality_ = filter_quality;
-  if (resource_provider_) {
-    resource_provider_->SetFilterQuality(filter_quality);
-  }
-  if (cc_layer_) {
-    cc_layer_->SetNearestNeighbor(filter_quality ==
-                                  cc::PaintFlags::FilterQuality::kNone);
-  }
 }
 
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
@@ -162,13 +150,11 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
   }
   if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
+    InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
     cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
-    cc_layer_->SetNearestNeighbor(FilterQuality() ==
-                                  cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetFlipped(false);
   }
   return cc_layer_.get();
 }
@@ -187,7 +173,6 @@ void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
 }  // unnamed namespace
 
 bool CanvasResourceHost::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.

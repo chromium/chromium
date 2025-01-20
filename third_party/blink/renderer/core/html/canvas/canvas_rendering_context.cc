@@ -42,7 +42,6 @@ CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingAPI canvas_rendering_API)
     : ActiveScriptWrappable<CanvasRenderingContext>({}),
       host_(host),
-      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha),
       creation_attributes_(attrs),
       canvas_rendering_type_(canvas_rendering_API) {
   // The following check is for investigating crbug.com/1470622
@@ -55,11 +54,6 @@ CanvasRenderingContext::CanvasRenderingContext(
   // the problem has to do with a pre-finalizer being called
   // prematurely.
   CHECK(host_);
-}
-
-SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
-  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
-                     SkColorSpace::MakeSRGB());
 }
 
 void CanvasRenderingContext::Dispose() {

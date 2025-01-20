@@ -34,7 +34,6 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -155,7 +154,7 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   // testing::Test
   void SetUp() override {
     manager_ = std::make_unique<FrameSinkManagerImpl>(
-        FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
+        FrameSinkManagerImpl::InitParams());
     surface_observer_ =
         std::make_unique<FakeSurfaceObserver>(manager_->surface_manager());
     manager_->SetLocalClient(&frame_sink_manager_client_);
@@ -316,7 +315,6 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
  protected:
   TestSharedImageInterfaceProvider shared_image_interface_provider_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<FrameSinkManagerImpl> manager_;
   testing::NiceMock<MockFrameSinkManagerClient> frame_sink_manager_client_;
   FakeCompositorFrameSinkClient fake_support_client_;
@@ -2199,8 +2197,7 @@ TEST_P(CompositorFrameSinkSupportTest,
           CompositorFrameTransitionDirective::CreateSave(
               transition_token, maybe_cross_frame_sink,
               /*sequence_id=*/1, {}, {}),
-          surface, &shared_bitmap_manager_, sii, &id_tracker,
-          base::DoNothing());
+          surface, sii, &id_tracker, base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
   EXPECT_FALSE(HasAnimationManagerForToken(transition_token));

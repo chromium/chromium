@@ -420,6 +420,19 @@ class CORE_EXPORT HTMLMediaElement
   // media::RemotePlaybackClientWrapper overrides:
   std::string GetActivePresentationId() override;
 
+  // Returns the execution context for player creation. This will be the
+  // execution context of the opener document if available, otherwise the
+  // execution context of the current document.
+  //
+  // This method should be used when it is necessary to continue using the
+  // execution context of the opener document, when a media element is moved
+  // into a new document (e.g. picture in picture window).
+  //
+  // This is currently only used by the `ModulesInitializer` to properly set the
+  // media player inspector context, so that media DevTool logs are routed using
+  // the correct execution context.
+  ExecutionContext* GetExecutionContextForPlayer() const;
+
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
   static void AssertShadowRootChildren(ShadowRoot&);
@@ -547,7 +560,7 @@ class CORE_EXPORT HTMLMediaElement
 
   int GetElementId() override { return GetDomNodeId(); }
 
-  void SetCcLayer(cc::Layer*) final;
+  void SetCcLayer(cc::Layer*) override;
 
   void AddMediaTrack(const media::MediaTrack&) final;
   void RemoveMediaTrack(const media::MediaTrack&) final;

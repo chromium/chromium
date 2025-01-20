@@ -16,8 +16,9 @@ bool BeingDebugged() {
 }
 
 void BreakDebuggerAsyncSafe() {
-  if (IsDebugUISuppressed())
+  if (IsDebugUISuppressed()) {
     _exit(1);
+  }
 
   __debugbreak();
 }

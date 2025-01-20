@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/command_line.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -147,9 +147,9 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
         UserConsentTypes::ArcPlayTermsOfServiceConsent play_consent;
         play_consent.set_status(UserConsentTypes::NOT_GIVEN);
         play_consent.set_confirmation_grd_id(
-            IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE);
+            IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON);
         play_consent.add_description_grd_ids(
-            IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
+            IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
         play_consent.set_consent_flow(
             UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
         ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(

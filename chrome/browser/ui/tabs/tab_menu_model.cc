@@ -128,6 +128,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    AddItemWithStringId(TabStripModel::CommandAddToSplit,
+                        IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
+    SetEnabledAt(GetItemCount() - 1,
+                 num_tabs == 1 && index != tab_strip->active_index());
+  }
 
   for (const auto& selection : indices) {
     if (tab_strip->GetTabGroupForTab(selection).has_value()) {
@@ -201,9 +207,14 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                       IDS_TAB_CXMENU_CLOSEOTHERTABS);
-  AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
-                                          : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+    SetEnabledAt(GetItemCount() - 1,
+                 tab_strip->IsContextMenuCommandEnabled(
+                     index, TabStripModel::CommandCloseTabsToRight));
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

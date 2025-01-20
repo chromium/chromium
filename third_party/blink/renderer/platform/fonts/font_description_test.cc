@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,20 +41,31 @@ namespace blink {
 class FontDescriptionTest : public FontTestBase {};
 
 TEST_F(FontDescriptionTest, TestHashCollision) {
-  FontSelectionValue weights[] = {
-      FontSelectionValue(100), FontSelectionValue(200),
-      FontSelectionValue(300), FontSelectionValue(400),
-      FontSelectionValue(500), FontSelectionValue(600),
-      FontSelectionValue(700), FontSelectionValue(800),
-      FontSelectionValue(900)};
-  FontSelectionValue stretches[]{
-      kUltraCondensedWidthValue, kExtraCondensedWidthValue,
-      kCondensedWidthValue,      kSemiCondensedWidthValue,
-      kNormalWidthValue,         kSemiExpandedWidthValue,
-      kExpandedWidthValue,       kExtraExpandedWidthValue,
-      kUltraExpandedWidthValue};
+  auto weights = std::to_array<FontSelectionValue>({
+      FontSelectionValue(100),
+      FontSelectionValue(200),
+      FontSelectionValue(300),
+      FontSelectionValue(400),
+      FontSelectionValue(500),
+      FontSelectionValue(600),
+      FontSelectionValue(700),
+      FontSelectionValue(800),
+      FontSelectionValue(900),
+  });
+  auto stretches = std::to_array<FontSelectionValue>({
+      kUltraCondensedWidthValue,
+      kExtraCondensedWidthValue,
+      kCondensedWidthValue,
+      kSemiCondensedWidthValue,
+      kNormalWidthValue,
+      kSemiExpandedWidthValue,
+      kExpandedWidthValue,
+      kExtraExpandedWidthValue,
+      kUltraExpandedWidthValue,
+  });
 
-  FontSelectionValue slopes[] = {kNormalSlopeValue, kItalicSlopeValue};
+  auto slopes =
+      std::to_array<FontSelectionValue>({kNormalSlopeValue, kItalicSlopeValue});
 
   FontDescription source;
   WTF::Vector<unsigned> hashes;

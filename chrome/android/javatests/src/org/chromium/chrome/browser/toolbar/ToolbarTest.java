@@ -12,16 +12,24 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
+import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.Nullable;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -41,17 +49,20 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -115,6 +126,71 @@ public class ToolbarTest {
                     isShowingError[0] = tab.isShowingErrorPage();
                 });
         return isShowingError[0];
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testControlContainerTopMarginWhenBookmarkBarIsDisabledOnPhone() {
+        testControlContainerTopMargin(/* expectBookmarkBar= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
+    @Restriction({DeviceFormFactor.TABLET})
+    public void testControlContainerTopMarginWhenBookmarkBarIsDisabledOnTablet() {
+        testControlContainerTopMargin(/* expectBookmarkBar= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnPhone() {
+        testControlContainerTopMargin(/* expectBookmarkBar= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
+    @Restriction({DeviceFormFactor.TABLET})
+    public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnTablet() {
+        testControlContainerTopMargin(/* expectBookmarkBar= */ true);
+    }
+
+    private void testControlContainerTopMargin(boolean expectBookmarkBar) {
+        // Verify bookmark bar (in-)existence.
+        final var activity = mActivityTestRule.getActivity();
+        final @Nullable var bookmarkBar = activity.findViewById(R.id.bookmark_bar);
+        assertThat(bookmarkBar, is(expectBookmarkBar ? notNullValue() : nullValue()));
+
+        // Verify browser controls manager existence.
+        final var browserControlsManager =
+                BrowserControlsManagerSupplier.getValueOrNullFrom(activity.getWindowAndroid());
+        assertNotNull(browserControlsManager);
+
+        // Verify control container existence.
+        final var toolbarManager = activity.getToolbarManager();
+        assertNotNull(toolbarManager);
+        final var controlContainer =
+                (ToolbarControlContainer) toolbarManager.getContainerViewForTesting();
+        assertNotNull(controlContainer);
+
+        // Verify control container top margin.
+        final int bookmarkBarHeight = bookmarkBar != null ? bookmarkBar.getHeight() : 0;
+        final int controlContainerHeight = controlContainer.getHeight();
+        final int hairlineHeight = controlContainer.getToolbarHairlineHeight();
+        final int topControlsHeight = browserControlsManager.getTopControlsHeight();
+        assertEquals(
+                "Verify control container top margin.",
+                topControlsHeight - (controlContainerHeight - hairlineHeight) - bookmarkBarHeight,
+                ((MarginLayoutParams) controlContainer.getLayoutParams()).topMargin);
     }
 
     @Test

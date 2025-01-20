@@ -301,7 +301,7 @@ class DroppedFrameCounterTest : public testing::Test {
                                        SmoothnessStrategy::kDefaultStrategy)
       : smoothness_strategy_(smoothness_strategy) {
     dropped_frame_counter_.set_total_counter(&total_frame_counter_);
-    dropped_frame_counter_.OnFcpReceived();
+    dropped_frame_counter_.OnFirstContentfulPaintReceived();
   }
   ~DroppedFrameCounterTest() override = default;
 
@@ -790,37 +790,37 @@ TEST_F(DroppedFrameCounterTest, ConsistentSmoothnessRatings) {
 
   // Add 5 seconds with 5% dropped frames. This should be in the second bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence(MakeFrameSequence(1, 20), (kFps / 20) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 100, 0, 0, 0, 0, 0}));
 
   // Add 5 seconds with 10% dropped frames. This should be in the third bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence(MakeFrameSequence(1, 10), (kFps / 10) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 100, 0, 0, 0, 0}));
 
   // Add 5 seconds with 20% dropped frames. This should be in the fourth bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 100, 0, 0, 0}));
 
   // Add 5 seconds with 40% dropped frames. This should be in the fifth bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 100, 0, 0}));
 
   // Add 5 seconds with 60% dropped frames. This should be in the sixth bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence({false, false, true, true, true}, (kFps / 5) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 0, 100, 0}));
 
   // Add 5 seconds with 80% dropped frames. This should be in the last bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence({false, true, true, true, true}, (kFps / 5) * 5);
   EXPECT_TRUE(CheckSmoothnessBuckets({0, 0, 0, 0, 0, 0, 100}));
 }
@@ -859,7 +859,7 @@ TEST_F(DroppedFrameCounterTest, MovingSmoothnessRatings) {
   // (other than 100%) should be reported once, exactly matching the size of
   // each bucket.
   dropped_frame_counter_.Reset();
-  dropped_frame_counter_.OnFcpReceived();
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
   SimulateFrameSequence({true}, kFps);
   SimulateFrameSequence({false}, kFps);
   EXPECT_TRUE(CheckSmoothnessBuckets({3, 3, 6, 13, 25, 25, 25}));
@@ -872,7 +872,8 @@ TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
   // Set that FCP was received after the third frame starts, but before it ends.
   base::TimeTicks time_fcp_sent =
       pending_frames[2].frame_time + pending_frames[2].interval / 2;
-  dropped_frame_counter_.SetTimeFcpReceivedForTesting(time_fcp_sent);
+  dropped_frame_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
+      time_fcp_sent);
 
   // End each of the frames as dropped. The first three should not count for
   // smoothness, only the last two.
@@ -914,8 +915,9 @@ TEST_F(DroppedFrameCounterTest, WorstSmoothnessTiming) {
   const auto& last_frame = pending_frames.back();
   base::TimeTicks time_fcp_sent =
       last_frame.frame_time + last_frame.interval / 2;
-  dropped_frame_counter_.OnFcpReceived();
-  dropped_frame_counter_.SetTimeFcpReceivedForTesting(time_fcp_sent);
+  dropped_frame_counter_.OnFirstContentfulPaintReceived();
+  dropped_frame_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
+      time_fcp_sent);
 
   // End each of the pending frames as dropped. These shouldn't affect any of
   // the metrics.
@@ -955,7 +957,7 @@ TEST_F(DroppedFrameCounterTest, ReportOnEveryFrameForUI) {
       "kFps must be a multiple of 5 because this test depends on it.");
   SetInterval(kInterval);
 
-  dropped_frame_counter_.EnableReporForUI();
+  dropped_frame_counter_.EnableReportForUI();
   TestCustomMetricsRecorder recorder;
 
   // 4 seconds with 20% dropped frames.

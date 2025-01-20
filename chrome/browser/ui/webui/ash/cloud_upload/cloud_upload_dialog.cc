@@ -588,21 +588,21 @@ bool CloudOpenTask::OpenOrMoveFiles() {
     return true;
   }
 
-    // The files need to be moved.
-    auto operation =
-        GetUploadType(profile_, file_urls_.front()) == UploadType::kCopy
-            ? OfficeFilesTransferRequired::kCopy
-            : OfficeFilesTransferRequired::kMove;
-    // Set as WARNING as INFO is not allowed.
-    LOG(WARNING) << (operation == OfficeFilesTransferRequired::kCopy ? "Copy"
-                                                                     : "Mov")
-                 << "ing a " << ext << " file to "
-                 << (cloud_provider_ == CloudProvider::kGoogleDrive
-                         ? "Google Drive"
-                         : "OneDrive");
-    transfer_required_ = operation;
-    cloud_open_metrics_->LogTransferRequired(operation);
-    return ConfirmMoveOrStartUpload();
+  // The files need to be moved.
+  auto operation =
+      GetUploadType(profile_, file_urls_.front()) == UploadType::kCopy
+          ? OfficeFilesTransferRequired::kCopy
+          : OfficeFilesTransferRequired::kMove;
+  // Set as WARNING as INFO is not allowed.
+  LOG(WARNING) << (operation == OfficeFilesTransferRequired::kCopy ? "Copy"
+                                                                   : "Mov")
+               << "ing a " << ext << " file to "
+               << (cloud_provider_ == CloudProvider::kGoogleDrive
+                       ? "Google Drive"
+                       : "OneDrive");
+  transfer_required_ = operation;
+  cloud_open_metrics_->LogTransferRequired(operation);
+  return ConfirmMoveOrStartUpload();
 }
 
 void CloudOpenTask::OpenAlreadyHostedDriveUrls() {

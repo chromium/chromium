@@ -52,6 +52,11 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
         return new ArrayList<>();
     }
 
+    @Override
+    public boolean canReuseCachedSelectionMenu() {
+        return true;
+    }
+
     public void setAutofillSelectionMenuItemHelper(AutofillSelectionMenuItemHelper provider) {
         mAutofillSelectionMenuItemHelper = provider;
     }

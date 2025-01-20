@@ -18,7 +18,7 @@
 
 class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
  public:
-  ChromeScreenEnumeratorTest() {}
+  ChromeScreenEnumeratorTest() = default;
 
   explicit ChromeScreenEnumeratorTest(const ChromeScreenEnumerator&) = delete;
   ChromeScreenEnumeratorTest& operator=(const ChromeScreenEnumerator&) = delete;

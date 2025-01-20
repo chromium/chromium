@@ -82,7 +82,7 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
   if (result != net::OK)
     return std::make_tuple(result, ResourceResponse(), nullptr);
 
-  auto buffer = SharedBuffer::Create(data_string.data(), data_string.size());
+  auto buffer = SharedBuffer::Create(data_string);
   // The below code is the same as in
   // `CreateResourceForTransparentPlaceholderImage()`.
   ResourceResponse response;

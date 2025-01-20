@@ -30,6 +30,8 @@
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "net/dns/mock_host_resolver.h"
@@ -107,7 +109,12 @@ void RegisterTestingFactories(content::BrowserContext* context) {
   PlusAddressSettingServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating([](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
-        return std::make_unique<MockPlusAddressSettingService>();
+        auto mock_service = std::make_unique<MockPlusAddressSettingService>();
+        ON_CALL(*mock_service, GetSyncControllerDelegate).WillByDefault([] {
+          return std::make_unique<syncer::FakeDataTypeControllerDelegate>(
+              syncer::PLUS_ADDRESS_SETTING);
+        });
+        return mock_service;
       }));
 }
 
@@ -121,8 +128,8 @@ class ScopedPlusAddressFeatureList {
   void Reinit(const std::string& server_url, bool enable_onboarding = false) {
     CHECK(!server_url.empty());
     features_.Reset();
-      // Don't enable the 'sync-with-server' param so that the dialog is the
-      // only way to trigger requests to the server.
+    // Don't enable the 'sync-with-server' param so that the dialog is the
+    // only way to trigger requests to the server.
     base::FieldTrialParams plus_addresses_enabled_params_with_server =
         plus_addresses_enabled_params_;
     plus_addresses_enabled_params_with_server["server-url"] = server_url;

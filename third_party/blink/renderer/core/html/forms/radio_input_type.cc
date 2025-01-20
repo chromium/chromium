@@ -56,8 +56,8 @@ void RadioInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRadio);
 }
 
-ControlPart RadioInputType::AutoAppearance() const {
-  return kRadioPart;
+AppearanceValue RadioInputType::AutoAppearance() const {
+  return AppearanceValue::kRadio;
 }
 
 bool RadioInputType::ValueMissing(const String&) const {
@@ -190,9 +190,9 @@ void RadioInputType::HandleKeyupEvent(KeyboardEvent& event) {
   }
 }
 
-bool RadioInputType::IsKeyboardFocusable(
+bool RadioInputType::IsKeyboardFocusableSlow(
     Element::UpdateBehavior update_behavior) const {
-  if (!InputType::IsKeyboardFocusable(update_behavior)) {
+  if (!InputType::IsKeyboardFocusableSlow(update_behavior)) {
     return false;
   }
 

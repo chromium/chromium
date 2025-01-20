@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -24,19 +25,21 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Observes a {@link ModelList} and returns tokens for conceptual snapshots of the model state.
- * The opaque token can be compared against other tokens with {@link Object#equals(Object)}. The
- * purpose of these tokens is to decide when the bottom toolbar should take a bitmap capture in
- * preparation for browser controls being scrolled off the screen. This class only watches
- * properties that directly effect the steady state of the view, and thus it implicitly tightly
- * coupled with the TabListMode.STRIP mode of the {@link TabListCoordinator} component.
+ * Observes a {@link ModelList} and returns tokens for conceptual snapshots of the model state. The
+ * opaque token can be compared against other tokens with {@link Object#equals(Object)}. The purpose
+ * of these tokens is to decide when the bottom toolbar should take a bitmap capture in preparation
+ * for browser controls being scrolled off the screen. This class only watches properties that
+ * directly effect the steady state of the view, and thus it implicitly tightly coupled with the
+ * TabListMode.STRIP mode of the {@link TabListCoordinator} component.
  */
 public class TabStripSnapshotter {
     private static final Set<PropertyKey> SNAPSHOT_PROPERTY_KEY_SET =
-            CollectionUtil.newHashSet(
+            Set.of(
                     TabProperties.FAVICON_FETCHER,
                     TabProperties.FAVICON_FETCHED,
                     TabProperties.IS_SELECTED);
+    private final ObservableSupplier<Integer> mColorSupplier;
+    private final Callback<Integer> mColorObserver;
 
     /**
      * A token that contains an ordered list of tuples for each tab in the tab strip. Should be
@@ -45,9 +48,12 @@ public class TabStripSnapshotter {
     private static class TabStripSnapshotToken {
         private final int mScrollX;
         private final List<TabStripItemSnapshot> mList;
+        @ColorInt private final int mBackgroundColor;
 
-        public TabStripSnapshotToken(ModelList modelList, int scrollX) {
+        public TabStripSnapshotToken(
+                ModelList modelList, @ColorInt int backgroundColor, int scrollX) {
             mScrollX = scrollX;
+            mBackgroundColor = backgroundColor;
             mList = new ArrayList<>(modelList.size());
             for (int i = 0; i < modelList.size(); i++) {
                 ListItem listItem = modelList.get(i);
@@ -58,16 +64,15 @@ public class TabStripSnapshotter {
 
         @Override
         public int hashCode() {
-            return Objects.hash(mList, mScrollX);
+            return Objects.hash(mList, mScrollX, mBackgroundColor);
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof TabStripSnapshotToken)) {
+            if (!(obj instanceof TabStripSnapshotToken other)) {
                 return false;
             }
-            TabStripSnapshotToken other = (TabStripSnapshotToken) obj;
-            if (mScrollX != other.mScrollX) {
+            if (mScrollX != other.mScrollX || mBackgroundColor != other.mBackgroundColor) {
                 return false;
             }
             return mList.equals(other.mList);
@@ -113,14 +118,17 @@ public class TabStripSnapshotter {
      * @param onModelTokenChange Where to pass the token when the snapshot is taken.
      * @param modelList The model to observe.
      * @param recyclerView The recycler view that can be scrolled.
+     * @param colorSupplier Supplier of the current bg color of the tab strip.
      */
     public TabStripSnapshotter(
             @NonNull Callback<Object> onModelTokenChange,
             @NonNull ModelList modelList,
-            @NonNull RecyclerView recyclerView) {
+            @NonNull RecyclerView recyclerView,
+            @NonNull ObservableSupplier<Integer> colorSupplier) {
         mOnModelTokenChange = onModelTokenChange;
         mModelList = modelList;
         mRecyclerView = recyclerView;
+        mColorSupplier = colorSupplier;
         mOnScrollListener =
                 new OnScrollListener() {
                     @Override
@@ -134,15 +142,19 @@ public class TabStripSnapshotter {
         mPropertyObserverFilter =
                 new ModelListPropertyChangeFilter(
                         this::doSnapshot, modelList, SNAPSHOT_PROPERTY_KEY_SET);
+        mColorObserver = (color) -> doSnapshot();
+        mColorSupplier.addObserver(mColorObserver);
     }
 
     private void doSnapshot() {
         int scrollX = mRecyclerView.computeHorizontalScrollOffset();
-        mOnModelTokenChange.onResult(new TabStripSnapshotToken(mModelList, scrollX));
+        mOnModelTokenChange.onResult(
+                new TabStripSnapshotToken(mModelList, mColorSupplier.get(), scrollX));
     }
 
     public void destroy() {
         mRecyclerView.removeOnScrollListener(mOnScrollListener);
         mPropertyObserverFilter.destroy();
+        mColorSupplier.removeObserver(mColorObserver);
     }
 }

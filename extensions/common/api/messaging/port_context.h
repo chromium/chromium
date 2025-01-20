@@ -30,6 +30,8 @@ struct PortContext {
     FrameContext();
     explicit FrameContext(int routing_id);
 
+    auto operator<=>(const FrameContext&) const = default;
+
     // The routing id of the frame context.
     // This may be MSG_ROUTING_NONE if the context is process-wide and isn't
     // tied to a specific RenderFrame.
@@ -40,16 +42,23 @@ struct PortContext {
     WorkerContext();
     WorkerContext(int thread_id,
                   int64_t version_id,
+                  int render_process_id,
                   const ExtensionId& extension_id);
+
+    auto operator<=>(const WorkerContext&) const = default;
 
     int thread_id;
     int64_t version_id;
+    int render_process_id;
     ExtensionId extension_id;
   };
+
+  auto operator<=>(const PortContext&) const = default;
 
   static PortContext ForFrame(int routing_id);
   static PortContext ForWorker(int thread_id,
                                int64_t version_id,
+                               int render_process_id,
                                const ExtensionId& extension_id);
   static PortContext ForNativeHost();
 

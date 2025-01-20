@@ -480,9 +480,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that an alert is presented after displaying the share menu.
-// TODO(crbug.com/41334973): re-enable this test once earl grey can interact
-// with the share menu.
-- (void)DISABLED_testShowJavaScriptAfterShareMenu {
+- (void)testShowJavaScriptAfterShareMenu {
   // Load the blank test page.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);
   [ChromeEarlGrey loadURL:kURL];
@@ -492,10 +490,7 @@ void TapSuppressDialogsButton() {
   [ChromeEarlGreyUI openShareMenu];
 
   // Copy URL, dismissing the share menu.
-  id<GREYMatcher> printButton =
-      grey_allOf(grey_accessibilityLabel(@"Copy"),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-  [[EarlGrey selectElementWithMatcher:printButton] performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   // Show an alert and assert it is present.
   [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];

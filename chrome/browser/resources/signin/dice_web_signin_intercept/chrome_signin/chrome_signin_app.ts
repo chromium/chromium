@@ -53,6 +53,7 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
     email: '',
     pictureUrl: '',
     managedUserBadge: '',
+    userBadgeAltText: '',
   };
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =

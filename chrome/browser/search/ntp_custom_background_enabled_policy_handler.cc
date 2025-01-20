@@ -17,7 +17,7 @@ NtpCustomBackgroundEnabledPolicyHandler::
                                 base::Value::Type::BOOLEAN) {}
 
 NtpCustomBackgroundEnabledPolicyHandler::
-    ~NtpCustomBackgroundEnabledPolicyHandler() {}
+    ~NtpCustomBackgroundEnabledPolicyHandler() = default;
 
 void NtpCustomBackgroundEnabledPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,

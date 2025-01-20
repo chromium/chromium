@@ -42,6 +42,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -153,7 +154,7 @@
 #include "content/public/test/mock_captured_surface_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources.h"
 #endif
 
@@ -426,7 +427,7 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
   base::OnceClosure on_will_process_response_closure_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
   net::GZipHeader header;
   net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
@@ -461,7 +462,7 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
     to_append->append(dest_buffer->data(), rv);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Queries for video input devices on the current system using the getSources
 // API.
@@ -2006,7 +2007,7 @@ std::vector<WebContents*> GetAllWebContents() {
   return all_wc;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   // Inject WebUI test runner script.
   std::string script;
@@ -2048,7 +2049,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
 
   return message.compare("\"SUCCESS\"") == 0;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetCookies(BrowserContext* browser_context,
                        const GURL& url,
@@ -2088,11 +2089,12 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
   return net::cookie_util::StripAccessResults(std::get<0>(future.Get()));
 }
 
-bool SetCookie(BrowserContext* browser_context,
-               const GURL& url,
-               const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context,
-               net::CookiePartitionKey* cookie_partition_key) {
+bool SetCookie(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const std::string& value,
+    net::CookieOptions::SameSiteCookieContext context,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {
     DCHECK(base::Contains(base::ToLowerASCII(value), ";partitioned"));
   }
@@ -2103,7 +2105,7 @@ bool SetCookie(BrowserContext* browser_context,
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::CreateForTesting(
           url, value, base::Time::Now(), std::nullopt /* server_time */,
-          base::OptionalFromPtr(cookie_partition_key)));
+          cookie_partition_key.CopyAsOptional()));
   DCHECK(cc.get());
 
   net::CookieOptions options;
@@ -2601,7 +2603,7 @@ std::optional<std::string> RenderProcessHostBadMojoMessageWaiter::Wait() {
 }
 
 void RenderProcessHostBadMojoMessageWaiter::OnBadMojoMessage(
-    int render_process_id,
+    ChildProcessId render_process_id,
     const std::string& error) {
   if (render_process_id == monitored_render_process_id_)
     observed_mojo_error_ = error;
@@ -2953,6 +2955,7 @@ InputMsgWatcher::~InputMsgWatcher() {
 }
 
 void InputMsgWatcher::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_state,
     const blink::WebInputEvent& event) {
@@ -2964,7 +2967,8 @@ void InputMsgWatcher::OnInputEventAck(
   }
 }
 
-void InputMsgWatcher::OnInputEvent(const blink::WebInputEvent& event) {
+void InputMsgWatcher::OnInputEvent(const RenderWidgetHost& widget,
+                                   const blink::WebInputEvent& event) {
   last_sent_event_type_ = event.GetType();
 }
 
@@ -3033,6 +3037,7 @@ void InputEventAckWaiter::Reset() {
 }
 
 void InputEventAckWaiter::OnInputEventAck(
+    const RenderWidgetHost& widget,
     blink::mojom::InputEventResultSource source,
     blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& event) {
@@ -3771,18 +3776,36 @@ static constexpr char kEnableLogMessage[] = R"({"id":0,"method":"Log.enable"})";
 static constexpr int kDisableLogMessageId = 1;
 static constexpr char kDisableLogMessage[] =
     R"({"id":1,"method":"Log.disable"})";
+
+static constexpr int kEnableMediaMessageId = 2;
+static constexpr char kEnableMediaMessage[] =
+    R"({"id":2,"method":"Media.enable"})";
+static constexpr int kDisableMediaMessageId = 3;
+static constexpr char kDisableMediaMessage[] =
+    R"({"id":3,"method":"Media.disable"})";
 }  // namespace
 
 DevToolsInspectorLogWatcher::DevToolsInspectorLogWatcher(
-    WebContents* web_contents) {
+    WebContents* web_contents,
+    Domain domain) {
   host_ = DevToolsAgentHost::GetOrCreateFor(web_contents);
   host_->AttachClient(this);
 
-  host_->DispatchProtocolMessage(
-      this, base::as_bytes(
-                base::make_span(kEnableLogMessage, strlen(kEnableLogMessage))));
+  switch (domain) {
+    case Domain::Log:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kEnableLogMessage));
+      break;
+    case Domain::Media:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kEnableMediaMessage));
+      break;
+    default:
+      NOTREACHED();
+  }
 
   run_loop_enable_log_.Run();
+  domain_ = domain;
 }
 
 DevToolsInspectorLogWatcher::~DevToolsInspectorLogWatcher() {
@@ -3800,9 +3823,11 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
   if (command_id.has_value()) {
     switch (command_id.value()) {
       case kEnableLogMessageId:
+      case kEnableMediaMessageId:
         run_loop_enable_log_.Quit();
         break;
       case kDisableLogMessageId:
+      case kDisableMediaMessageId:
         run_loop_disable_log_.Quit();
         break;
       default:
@@ -3812,7 +3837,11 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
   }
 
   std::string* notification = parsed_message.FindString("method");
-  if (notification && *notification == "Log.entryAdded") {
+  if (!notification) {
+    return;
+  }
+
+  if (*notification == "Log.entryAdded") {
     std::string* text =
         parsed_message.FindStringByDottedPath("params.entry.text");
     DCHECK(text);
@@ -3823,14 +3852,28 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
       last_url_ = GURL(*url);
     }
   }
+
+  if (notification->find("Media.") != std::string::npos) {
+    last_media_notification_ = *notification;
+  }
 }
 
 void DevToolsInspectorLogWatcher::AgentHostClosed(DevToolsAgentHost* host) {}
 
 void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
-  host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(kDisableLogMessage,
-                                           strlen(kDisableLogMessage))));
+  switch (domain_) {
+    case Domain::Log:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kDisableLogMessage));
+      break;
+    case Domain::Media:
+      host_->DispatchProtocolMessage(
+          this, base::byte_span_from_cstring(kDisableMediaMessage));
+      break;
+    default:
+      NOTREACHED();
+  }
+
   run_loop_disable_log_.Run();
 }
 
@@ -4467,6 +4510,11 @@ base::CallbackListSubscription RegisterWebContentsCreationCallback(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SetConditionalFocusWindowForTesting(base::TimeDelta window) {
+  content::MediaStreamManager::GetInstance()
+      ->SetConditionalFocusWindowForTesting(window);
+}
+
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
         GlobalRenderFrameHostId,

@@ -11,9 +11,6 @@
 
 namespace content {
 
-using MediaSessionSuspendedSource =
-    MediaSessionUmaHelper::MediaSessionSuspendedSource;
-
 namespace {
 
 class MediaSessionUmaHelperTest : public testing::Test {
@@ -52,65 +49,9 @@ TEST_F(MediaSessionUmaHelperTest, CreateAndKillDoesNothing) {
 
   {
     std::unique_ptr<base::HistogramSamples> samples(
-        GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
-    EXPECT_EQ(0, samples->TotalCount());
-  }
-
-  {
-    std::unique_ptr<base::HistogramSamples> samples(
         GetHistogramSamplesSinceTestStart("Media.Session.ActiveTime"));
     EXPECT_EQ(0, samples->TotalCount());
   }
-}
-
-TEST_F(MediaSessionUmaHelperTest, SuspendRegisterImmediately) {
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransient);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
-  EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(0)); // System Transient
-  EXPECT_EQ(0, samples->GetCount(1)); // System Permanent
-  EXPECT_EQ(0, samples->GetCount(2)); // UI
-}
-
-TEST_F(MediaSessionUmaHelperTest, MultipleSuspend) {
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransient);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemPermanent);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kUI);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
-  EXPECT_EQ(3, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(0)); // System Transient
-  EXPECT_EQ(1, samples->GetCount(1)); // System Permanent
-  EXPECT_EQ(1, samples->GetCount(2)); // UI
-}
-
-TEST_F(MediaSessionUmaHelperTest, MultipleSuspendSame) {
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemPermanent);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransient);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kUI);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransient);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemPermanent);
-  media_session_uma_helper().RecordSessionSuspended(
-      MediaSessionSuspendedSource::kUI);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      GetHistogramSamplesSinceTestStart("Media.Session.Suspended"));
-  EXPECT_EQ(6, samples->TotalCount());
-  EXPECT_EQ(2, samples->GetCount(0)); // System Transient
-  EXPECT_EQ(2, samples->GetCount(1)); // System Permanent
-  EXPECT_EQ(2, samples->GetCount(2)); // UI
 }
 
 TEST_F(MediaSessionUmaHelperTest, ActivationNotTerminatedDoesNotCommit) {

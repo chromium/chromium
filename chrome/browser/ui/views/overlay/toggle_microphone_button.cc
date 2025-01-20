@@ -24,15 +24,17 @@ void ToggleMicrophoneButton::SetMutedState(bool is_muted) {
 }
 
 void ToggleMicrophoneButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImageAndTooltipText();
 }
 
 void ToggleMicrophoneButton::UpdateImageAndTooltipText() {
-  if (bounds().IsEmpty())
+  if (bounds().IsEmpty()) {
     return;
+  }
 
   const auto& icon =
       is_muted_ ? vector_icons::kMicOffIcon : vector_icons::kMicIcon;

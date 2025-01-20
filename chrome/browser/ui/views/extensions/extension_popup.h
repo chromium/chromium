@@ -27,13 +27,13 @@ class ExtensionViewViews;
 namespace content {
 class BrowserContext;
 class DevToolsAgentHost;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
 class ExtensionViewHost;
 enum class UnloadedExtensionReason;
-}
+}  // namespace extensions
 
 // The bubble used for hosting a browser-action popup provided by an extension.
 class ExtensionPopup : public views::BubbleDialogDelegateView,

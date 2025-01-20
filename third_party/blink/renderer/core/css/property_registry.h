@@ -27,6 +27,11 @@ class CORE_EXPORT PropertyRegistry : public GarbageCollected<PropertyRegistry> {
   // properties originating from CSS.registerProperty.
   void RemoveDeclaredProperties();
 
+  // Register property for devtools inspector.
+  void AddRegistrationForInspector(const AtomicString&, PropertyRegistration&);
+  // Removes property registration for devtools inspector.
+  void RemoveRegistrationForInspector(const AtomicString&);
+
   // Returns the registration originating from CSS.registerProperty if present,
   // otherwise returns the registration originating from @property (which may
   // be nullptr).

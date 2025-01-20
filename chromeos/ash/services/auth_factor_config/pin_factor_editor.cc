@@ -47,10 +47,67 @@ void PinFactorEditor::UpdatePin(
 void PinFactorEditor::RemovePin(
     const std::string& auth_token,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  ObtainContext(auth_token,
-                base::BindOnce(&PinFactorEditor::RemovePinWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token,
-                               std::move(callback)));
+  auth_factor_config_->CheckConfiguredFactors(
+      auth_token,
+      {mojom::AuthFactor::kPrefBasedPin, mojom::AuthFactor::kCryptohomePin,
+       mojom::AuthFactor::kCryptohomePinV2},
+      base::BindOnce(&PinFactorEditor::OnRemovePinConfigured,
+                     weak_factory_.GetWeakPtr(), auth_token,
+                     std::move(callback)));
+}
+
+void PinFactorEditor::GetConfiguredPinFactor(
+    const std::string& auth_token,
+    base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback) {
+  auth_factor_config_->CheckConfiguredFactors(
+      auth_token,
+      {mojom::AuthFactor::kPrefBasedPin, mojom::AuthFactor::kCryptohomePin,
+       mojom::AuthFactor::kCryptohomePinV2},
+      base::BindOnce(&PinFactorEditor::GetConfiguredPinFactorResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PinFactorEditor::GetConfiguredPinFactorResponse(
+    base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback,
+    AuthFactorSet factors) {
+  CHECK(factors.size() < 2);
+  if (factors.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(*factors.begin());
+}
+
+void PinFactorEditor::OnRemovePinConfigured(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    AuthFactorSet factors) {
+  CHECK(factors.size() < 2);
+  if (factors.empty()) {
+    LOG(WARNING)
+        << "No PIN configured, ignoring PinFactorEditor::RemovePin call";
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+  ObtainContext(
+      auth_token,
+      base::BindOnce(&PinFactorEditor::OnRemovePinConfiguredWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token,
+                     std::move(callback), *factors.begin()));
+}
+
+void PinFactorEditor::OnRemovePinConfiguredWithContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    mojom::AuthFactor factor,
+    std::unique_ptr<UserContext> context) {
+  AccountId account_id = context->GetAccountId();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
+  pin_backend_->Remove(
+      account_id, auth_token,
+      base::BindOnce(&PinFactorEditor::OnPinRemove, weak_factory_.GetWeakPtr(),
+                     auth_token, factor, std::move(callback)));
 }
 
 void PinFactorEditor::ObtainContext(
@@ -77,10 +134,58 @@ void PinFactorEditor::SetPinWithContext(
   }
   AccountId account_id = context->GetAccountId();
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-  pin_backend_->Set(account_id, auth_token, pin,
-                    base::BindOnce(&PinFactorEditor::OnPinConfigured,
-                                   weak_factory_.GetWeakPtr(), auth_token,
-                                   std::move(callback)));
+  pin_backend_->Set(
+      account_id, auth_token, pin,
+      base::BindOnce(&PinFactorEditor::OnPinSet, weak_factory_.GetWeakPtr(),
+                     auth_token, std::move(callback)));
+}
+
+void PinFactorEditor::OnPinSet(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool success) {
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::OnPinSetWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token,
+                               std::move(callback), success));
+}
+
+void PinFactorEditor::OnPinSetWithContext(
+    const std::string& auth_token,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool success,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+  if (!success) {
+    LOG(ERROR) << "Pin setup failed";
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        auth_token, std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
+    return;
+  }
+  CHECK(context->HasAuthFactorsConfiguration());
+
+  const cryptohome::AuthFactor* pin_factor =
+      context->GetAuthFactorsConfiguration().FindFactorByType(
+          cryptohome::AuthFactorType::kPin);
+  bool hasCryptohomePin =
+      pin_factor && pin_factor->GetCommonMetadata().lockout_policy() !=
+                        cryptohome::LockoutPolicy::kTimeLimited;
+  bool hasCryptohomePinV2 =
+      pin_factor && pin_factor->GetCommonMetadata().lockout_policy() ==
+                        cryptohome::LockoutPolicy::kTimeLimited;
+
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {hasCryptohomePinV2
+           ? mojom::AuthFactor::kCryptohomePinV2
+           : (hasCryptohomePin ? mojom::AuthFactor::kCryptohomePin
+                               : mojom::AuthFactor::kPrefBasedPin)},
+      auth_token, std::move(context), std::move(callback));
 }
 
 void PinFactorEditor::UpdatePinWithContext(
@@ -94,7 +199,6 @@ void PinFactorEditor::UpdatePinWithContext(
     return;
   }
 
-  AccountId account_id = context->GetAccountId();
   CHECK(context->HasAuthFactorsConfiguration());
 
   const cryptohome::AuthFactor* pin_factor =
@@ -110,64 +214,38 @@ void PinFactorEditor::UpdatePinWithContext(
     return;
   }
 
+  AccountId account_id = context->GetAccountId();
+
+  mojom::AuthFactor old_pin_factor_type =
+      pin_factor->GetCommonMetadata().lockout_policy() !=
+              cryptohome::LockoutPolicy::kTimeLimited
+          ? mojom::AuthFactor::kCryptohomePin
+          : mojom::AuthFactor::kCryptohomePinV2;
+
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
   pin_backend_->UpdateCryptohomePin(
       account_id, auth_token, pin,
-      base::BindOnce(&PinFactorEditor::OnPinConfigured,
+      base::BindOnce(&PinFactorEditor::OnUpdatePinConfigured,
                      weak_factory_.GetWeakPtr(), auth_token,
-                     std::move(callback)));
+                     old_pin_factor_type, std::move(callback)));
 }
 
-void PinFactorEditor::RemovePinWithContext(
+void PinFactorEditor::OnUpdatePinConfigured(
     const std::string& auth_token,
-    base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    std::unique_ptr<UserContext> context) {
-  if (!context) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
-  }
-
-  AccountId account_id = context->GetAccountId();
-
-  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-  auth_factor_config_->IsConfigured(
-      auth_token, mojom::AuthFactor::kPin,
-      base::BindOnce(&PinFactorEditor::OnIsPinConfiguredForRemove,
-                     weak_factory_.GetWeakPtr(), account_id, auth_token,
-                     std::move(callback)));
-}
-
-void PinFactorEditor::OnIsPinConfiguredForRemove(
-    const AccountId account_id,
-    const std::string& auth_token,
-    base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    bool is_pin_configured) {
-  if (!is_pin_configured) {
-    LOG(WARNING)
-        << "No PIN configured, ignoring PinFactorEditor::RemovePin call";
-    std::move(callback).Run(mojom::ConfigureResult::kSuccess);
-    return;
-  }
-  pin_backend_->Remove(account_id, auth_token,
-                       base::BindOnce(&PinFactorEditor::OnPinConfigured,
-                                      weak_factory_.GetWeakPtr(), auth_token,
-                                      std::move(callback)));
-}
-
-void PinFactorEditor::OnPinConfigured(
-    const std::string& auth_token,
+    mojom::AuthFactor old_pin_factor_type,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     bool success) {
-  ObtainContext(auth_token,
-                base::BindOnce(&PinFactorEditor::OnPinConfiguredWithContext,
-                               weak_factory_.GetWeakPtr(), auth_token,
-                               std::move(callback), success));
+  ObtainContext(
+      auth_token,
+      base::BindOnce(&PinFactorEditor::OnUpdatePinConfiguredWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token,
+                     old_pin_factor_type, std::move(callback), success));
 }
 
-void PinFactorEditor::OnPinConfiguredWithContext(
+void PinFactorEditor::OnUpdatePinConfiguredWithContext(
     const std::string& auth_token,
+    mojom::AuthFactor old_pin_factor_type,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     bool success,
     std::unique_ptr<UserContext> context) {
@@ -184,9 +262,58 @@ void PinFactorEditor::OnPinConfiguredWithContext(
     return;
   }
 
+  CHECK(context->HasAuthFactorsConfiguration());
+
+  const cryptohome::AuthFactor* pin_factor =
+      context->GetAuthFactorsConfiguration().FindFactorByType(
+          cryptohome::AuthFactorType::kPin);
+
+  CHECK(pin_factor);
+
+  mojom::AuthFactor new_pin_factor_type =
+      pin_factor->GetCommonMetadata().lockout_policy() !=
+              cryptohome::LockoutPolicy::kTimeLimited
+          ? mojom::AuthFactor::kCryptohomePin
+          : mojom::AuthFactor::kCryptohomePinV2;
+
   auth_factor_config_->NotifyFactorObserversAfterSuccess(
-      {mojom::AuthFactor::kPin}, auth_token, std::move(context),
-      std::move(callback));
+      {old_pin_factor_type, new_pin_factor_type}, auth_token,
+      std::move(context), std::move(callback));
+}
+
+void PinFactorEditor::OnPinRemove(
+    const std::string& auth_token,
+    mojom::AuthFactor factor,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool success) {
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::OnPinRemoveWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, factor,
+                               std::move(callback), success));
+}
+
+void PinFactorEditor::OnPinRemoveWithContext(
+    const std::string& auth_token,
+    mojom::AuthFactor factor,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool success,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+  if (!success) {
+    LOG(ERROR) << "Pin remove failed";
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        auth_token, std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
+    return;
+  }
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {factor}, auth_token, std::move(context), std::move(callback));
+  return;
 }
 
 void PinFactorEditor::BindReceiver(

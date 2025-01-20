@@ -20,6 +20,10 @@
 #include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "third_party/boringssl/src/include/openssl/hpke.h"
+#endif
+
 namespace variations {
 
 TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
@@ -140,5 +144,80 @@ TEST(VariationsCommandLineTest,
                             temp_file);
   BASE_EXPECT_DEATH(MaybeUnpackVariationsStateFile(), "");
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// This test verify the prod key can encrypt. But it doesn't check if the
+// ciphertext can be decoded or not on the server side.
+TEST(VariationsCommandLineTest, EncryptToString_ProdKey) {
+  VariationsCommandLine vc;
+  vc.field_trial_states = "trial1/group1/*trial2/group2";
+  vc.field_trial_params = "trial1.group1:p1/v1/p2/2";
+  vc.enable_features = "feature1<trial1";
+  vc.disable_features = "feature2<trial2";
+  std::vector<uint8_t> ciphertext;
+  auto status = vc.EncryptToString(&ciphertext);
+  EXPECT_EQ(status, VariationsStateEncryptionStatus::kSuccess);
+}
+
+// This test use a randomly generated public/private key pair and verify the
+// ciphertext can be decoded.
+// Note that in prod, the keyset was not generated in this way. So this test
+// passing doesn't necessary mean that in prod the server can decrypt the
+// reports.
+TEST(VariationsCommandLineTest, EncryptToString_EncryptAndDecryptUsingTestKey) {
+  EVP_HPKE_KEY* hpke_key = EVP_HPKE_KEY_new();
+  int result = EVP_HPKE_KEY_generate(hpke_key, EVP_hpke_x25519_hkdf_sha256());
+  EXPECT_EQ(result, 1);
+
+  std::vector<uint8_t> public_key(EVP_HPKE_MAX_PUBLIC_KEY_LENGTH, 0);
+  size_t public_key_len;
+  result = EVP_HPKE_KEY_public_key(hpke_key, public_key.data(), &public_key_len,
+                                   EVP_HPKE_MAX_PUBLIC_KEY_LENGTH);
+  EXPECT_EQ(result, 1);
+  public_key.resize(public_key_len);
+
+  VariationsCommandLine vc;
+  vc.field_trial_states = "trial1/group1/*trial2/group2";
+  vc.field_trial_params = "trial1.group1:p1/v1/p2/2";
+  vc.enable_features = "feature1<trial1";
+  vc.disable_features = "feature2<trial2";
+  std::vector<uint8_t> ciphertext;
+  size_t enc_len;
+  auto status = vc.EncryptToStringForTesting(&ciphertext, public_key, &enc_len);
+  EXPECT_EQ(status, VariationsStateEncryptionStatus::kSuccess);
+  EXPECT_GT(enc_len, 0u);
+
+  base::span<uint8_t> enc_span = base::span(ciphertext).subspan(0u, enc_len);
+  base::span<uint8_t> ciphertext_span = base::span(ciphertext).subspan(enc_len);
+  bssl::ScopedEVP_HPKE_CTX ctx;
+  result = EVP_HPKE_CTX_setup_recipient(
+      /*ctx=*/ctx.get(),
+      /*key=*/hpke_key,
+      /*kdf=*/EVP_hpke_hkdf_sha256(),
+      /*aead=*/EVP_hpke_aes_256_gcm(),
+      /*enc=*/enc_span.data(),
+      /*enc_len=*/enc_len,
+      /*info=*/nullptr,
+      /*info_len=*/0);
+  EXPECT_EQ(result, 1);
+  std::vector<uint8_t> decrypted(ciphertext_span.size(), 0);
+  size_t decrypted_len;
+
+  result = EVP_HPKE_CTX_open(
+      /*ctx=*/ctx.get(),
+      /*out=*/decrypted.data(),
+      /*out_len=*/&decrypted_len,
+      /*max_out_len=*/decrypted.size(),
+      /*in=*/ciphertext_span.data(),
+      /*in_len=*/ciphertext_span.size(),
+      /*ad=*/nullptr,
+      /*ad_len=*/0);
+  EXPECT_EQ(result, 1);
+  decrypted.resize(decrypted_len);
+
+  EXPECT_EQ(std::string(decrypted.begin(), decrypted.end()), vc.ToString());
+  EVP_HPKE_KEY_free(hpke_key);
+}
+#endif
 
 }  // namespace variations

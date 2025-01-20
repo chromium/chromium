@@ -782,6 +782,14 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
   UpdateLayerProperties(layer_selection, chunks_unchanged);
 }
 
+void PendingLayer::UpdateForRasterInducingScroll() {
+  if (content_layer_client_ &&
+      content_layer_client_->HasRasterInducingScroll()) {
+    content_layer_client_->GetRasterInvalidator().UpdateForRasterInducingScroll(
+        Chunks());
+  }
+}
+
 void PendingLayer::UpdateLayerProperties(cc::LayerSelection& layer_selection,
                                          bool selection_only) {
   // Properties of foreign layers are managed by their owners.

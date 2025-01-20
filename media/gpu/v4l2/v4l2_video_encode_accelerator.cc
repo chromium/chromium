@@ -358,7 +358,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
     }
 
     const gfx::Size ip_output_buffer_size(
-        image_processor_->output_config().planes[0].stride,
+        static_cast<int>(image_processor_->output_config().planes[0].stride),
         image_processor_->output_config().size.height());
     if (!NegotiateInputFormat(device_input_layout_->format(),
                               ip_output_buffer_size)) {
@@ -969,7 +969,8 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
   } else if (frame.coded_size() == input_frame_size_) {
     // This path is for the first frame on Encode().
     // Height and width that V4L2VEA needs to configure.
-    const gfx::Size buffer_size(frame.stride(0), frame.coded_size().height());
+    const gfx::Size buffer_size(static_cast<int>(frame.stride(0)),
+                                frame.coded_size().height());
 
     // A buffer given by client is allocated with the same dimension using
     // minigbm. However, it is possible that stride and height are different
@@ -986,7 +987,7 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
     if (image_processor_->input_config().size.height() ==
             buffer_size.height() &&
         image_processor_->input_config().planes[0].stride ==
-            buffer_size.width()) {
+            static_cast<size_t>(buffer_size.width())) {
       return true;
     }
   }
@@ -1004,15 +1005,13 @@ bool V4L2VideoEncodeAccelerator::ReconfigureFormatIfNeeded(
     return false;
   }
 
-  if (gfx::Size(image_processor_->output_config().planes[0].stride,
-                image_processor_->output_config().size.height()) !=
-      device_input_layout_->coded_size()) {
+  gfx::Size output_size(
+      static_cast<int>(image_processor_->output_config().planes[0].stride),
+      image_processor_->output_config().size.height());
+  if (output_size != device_input_layout_->coded_size()) {
     LOG(ERROR) << "Image Processor's output buffer's size is different from "
                << "input buffer size configure to the encoder driver. "
-               << "ip's output buffer size: "
-               << gfx::Size(image_processor_->output_config().planes[0].stride,
-                            image_processor_->output_config().size.height())
-                      .ToString()
+               << "ip's output buffer size: " << output_size.ToString()
                << ", encoder's input buffer size: "
                << device_input_layout_->coded_size().ToString();
     return false;
@@ -1220,8 +1219,13 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
     std::optional<V4L2WritableBufferRef> input_buffer;
     switch (input_memory_type_) {
       case V4L2_MEMORY_DMABUF:
-        input_buffer = input_queue_->GetFreeBufferForFrame(
-            GetSharedMemoryId(*encoder_input_queue_.front().frame));
+        if (encoder_input_queue_.front()
+                .frame->metadata()
+                .tracking_token.has_value()) {
+          input_buffer = input_queue_->GetFreeBufferForFrame(
+              *encoder_input_queue_.front().frame->metadata().tracking_token);
+        }
+
         // We may have failed to preserve buffer affinity, fallback to any
         // buffer in that case.
         if (!input_buffer)
@@ -1944,7 +1948,7 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
       return false;
-    input_size = gfx::Size(input_layout->planes()[0].stride,
+    input_size = gfx::Size(static_cast<int>(input_layout->planes()[0].stride),
                            input_layout->coded_size().height());
   }
 

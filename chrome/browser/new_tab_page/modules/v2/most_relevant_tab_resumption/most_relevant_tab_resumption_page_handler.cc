@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -78,6 +79,8 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr TabToMojom(
                                     tab.visit.url);
   url_visit_mojom->title = *dictionary.FindString("title");
 
+  url_visit_mojom->is_known_to_sync = false;
+
   return url_visit_mojom;
 }
 
@@ -97,6 +100,8 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr HistoryEntryVisitToMojom(
   NewTabUI::SetUrlTitleAndDirection(&dictionary, visit.url_row.title(),
                                     visit.url_row.url());
   url_visit_mojom->title = *dictionary.FindString("title");
+
+  url_visit_mojom->is_known_to_sync = visit.visit_row.is_known_to_sync;
 
   return url_visit_mojom;
 }
@@ -195,6 +200,7 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
           ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = GURL("https://www.google.com");
       url_visit_mojom->url_key = "https://www.google.com";
+      url_visit_mojom->relative_time = base::Minutes(5);
       url_visit_mojom->training_request_id = 0;
       url_visit_mojom->decoration =
           ntp::most_relevant_tab_resumption::mojom::Decoration::New();
@@ -243,8 +249,9 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
           &MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("tab_resumption"));
+  base::UmaHistogramSparse(
+      "NewTabPage.Modules.DataRequest",
+      base::PersistentHash(ntp_modules::kMostRelevantTabResumptionModuleId));
 }
 
 void MostRelevantTabResumptionPageHandler::DismissModule(
@@ -411,6 +418,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
       }
 
       url_visit_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
+      url_visit_mojom->relative_time =
+          base::Time::Now() - url_visit_aggregate.GetLastVisitTime();
       if (IsNewURL(url_visit_aggregate.url_key,
                    url_visit_aggregate.GetLastVisitTime())) {
         url_visits_mojom.push_back(std::move(url_visit_mojom));
@@ -453,6 +462,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
 
         history_url_visit_mojom->timestamp =
             url_visit_aggregate.GetLastVisitTime();
+        history_url_visit_mojom->relative_time =
+            base::Time::Now() - url_visit_aggregate.GetLastVisitTime();
         if (IsNewURL(url_visit_aggregate.url_key,
                      url_visit_aggregate.GetLastVisitTime())) {
           url_visits_mojom.push_back(std::move(history_url_visit_mojom));

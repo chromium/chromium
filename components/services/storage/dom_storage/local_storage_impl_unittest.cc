@@ -20,8 +20,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
@@ -73,6 +75,8 @@ class TestLevelDBObserver : public blink::mojom::StorageAreaObserver {
   }
 
   const std::vector<Observation>& observations() { return observations_; }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
 
  private:
   void KeyChanged(const std::vector<uint8_t>& key,
@@ -164,8 +168,7 @@ class LocalStorageImplTest : public testing::Test {
     context()->GetDatabaseForTesting().PostTaskWithThisObject(
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status =
-              db.Put(base::as_bytes(base::make_span(key)),
-                     base::as_bytes(base::make_span(value)));
+              db.Put(base::as_byte_span(key), base::as_byte_span(value));
           ASSERT_TRUE(status.ok());
           loop.Quit();
         }));
@@ -233,23 +236,19 @@ class LocalStorageImplTest : public testing::Test {
   }
 
   // Pumps both the main-thread sequence and the background database sequence
-  // until both are idle.
+  // until both are idle. Prefer other means of waiting, such as `RunUntil` or
+  // `TestFuture`.
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void DoTestPut(const std::vector<uint8_t>& key,
                  const std::vector<uint8_t>& value) {
     mojo::Remote<blink::mojom::StorageArea> area;
-    bool success = false;
-    base::RunLoop run_loop;
     context()->BindStorageArea(
         blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
         area.BindNewPipeAndPassReceiver());
-    area->Put(key, value, std::nullopt, "source",
-              test::MakeSuccessCallback(run_loop.QuitClosure(), &success));
-    run_loop.Run();
-    EXPECT_TRUE(success);
-    area.reset();
-    RunUntilIdle();
+    base::test::TestFuture<bool> success_future;
+    area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
   }
 
   bool DoTestGet(const std::vector<uint8_t>& key,
@@ -311,14 +310,18 @@ TEST_F(LocalStorageImplTest, Basic) {
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
 
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
-  area.reset();
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
-  RunUntilIdle();
+  // This causes the changes to flush immediately rather than the default of 5
+  // seconds.
+  area.reset();
 
   // Should have four rows of data, one for the version, one for the actual
   // data and two for metadata.
-  EXPECT_EQ(4u, GetDatabaseContents().size());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 4u; }));
 }
 
 TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -337,11 +340,13 @@ TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key2, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
 
-  RunUntilIdle();
-  EXPECT_EQ(7u, GetDatabaseContents().size());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 7u; }));
 }
 
 TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
@@ -357,14 +362,16 @@ TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
   context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
   context()->BindStorageArea(storage_key,
                              dummy_area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   area.reset();
   dummy_area.reset();
-  RunUntilIdle();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !GetDatabaseContents().empty(); }));
 
   // Clear all the data from the backing database.
-  EXPECT_FALSE(GetDatabaseContents().empty());
   ClearDatabase();
 
   // Data should still be readable, because despite closing the area
@@ -387,13 +394,15 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   area.reset();
-  RunUntilIdle();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !GetDatabaseContents().empty(); }));
 
   // Clear all the data from the backing database.
-  EXPECT_FALSE(GetDatabaseContents().empty());
   ClearDatabase();
 
   // Now open many new areas (for different StorageKeys) to trigger clean up.
@@ -405,10 +414,8 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
     area.reset();
   }
 
-  RunUntilIdle();
-
   // And make sure caches were actually cleared.
-  EXPECT_EQ(std::nullopt, DoTestGet(key));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !DoTestGet(key); }));
 }
 
 TEST_F(LocalStorageImplTest, ValidVersion) {
@@ -433,6 +440,8 @@ TEST_F(LocalStorageImplTest, InvalidVersion) {
 TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
   EXPECT_EQ(std::nullopt, DoTestGet(StdStringToUint8Vector("key")));
 
+  // Since we're waiting to make sure state *doesn't* change, `RunUntil` isn't
+  // helpful.
   RunUntilIdle();
   EXPECT_TRUE(GetDatabaseContents().empty());
 }
@@ -461,11 +470,14 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key2, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key2, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
 
   // Make sure all data gets committed to disk.
-  RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 8u; }));
 
   base::Time after_write = base::Time::Now();
 
@@ -495,29 +507,27 @@ TEST_F(LocalStorageImplTest, CheckAccessMetaData) {
   // storage_key1 has no content in its area.
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area.reset();
-  RunUntilIdle();
 
   // storage_key2 has content in its area.
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
             std::nullopt, "source", base::DoNothing());
   area.reset();
-  RunUntilIdle();
 
   // storage_key3 has content in its area but is purged on shutdown.
   context()->BindStorageArea(storage_key3, area.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<bool> success_future;
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
-            std::nullopt, "source", base::DoNothing());
+            std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
   std::vector<mojom::StoragePolicyUpdatePtr> updates;
   updates.emplace_back(mojom::StoragePolicyUpdate::New(
       storage_key3.origin(), /*purge_on_shutdown=*/true));
   context()->ApplyPolicyUpdates(std::move(updates));
-  RunUntilIdle();
 
   // After shutdown, we should just see data for storage_key2.
   ResetStorage(storage_path());
-  RunUntilIdle();
   base::Time after_metadata = base::Time::Now();
   auto contents = GetDatabaseContents();
   EXPECT_EQ(4u, contents.size());
@@ -544,11 +554,11 @@ TEST_F(LocalStorageImplTest, CheckAccessMetaData) {
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
   std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
-  area->GetAll(std::move(unused_observer), base::DoNothing());
-  area.reset();
-  RunUntilIdle();
+
+  base::test::TestFuture<std::vector<blink::mojom::KeyValuePtr>> future;
+  area->GetAll(std::move(unused_observer), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   ResetStorage(storage_path());
-  RunUntilIdle();
   after_metadata = base::Time::Now();
   contents = GetDatabaseContents();
   EXPECT_EQ(4u, contents.size());
@@ -587,17 +597,17 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-  area->Delete(key, value, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Delete(key, value, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
-
-  // Make sure all data gets committed to disk.
-  RunUntilIdle();
 
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(4u, contents.size());
-  for (const auto& entry : contents) {
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 4u; }));
+
+  for (const auto& entry : GetDatabaseContents()) {
     if (entry.first == "VERSION")
       continue;
     EXPECT_EQ(std::string::npos,
@@ -625,17 +635,17 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
   area.reset();
 
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-  area->DeleteAll("source", mojo::NullRemote(), base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->DeleteAll("source", mojo::NullRemote(), success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
-
-  // Make sure all data gets committed to disk.
-  RunUntilIdle();
 
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(4u, contents.size());
-  for (const auto& entry : contents) {
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 4u; }));
+
+  for (const auto& entry : GetDatabaseContents()) {
     if (entry.first == "VERSION")
       continue;
     EXPECT_EQ(std::string::npos,
@@ -673,15 +683,18 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
 
   // Make sure all data gets committed to disk.
-  RunUntilIdle();
-  EXPECT_FALSE(GetDatabaseContents().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 7u; }));
 
-  context()->DeleteStorage(storage_key1, base::DoNothing());
-  RunUntilIdle();
+  base::RunLoop run_loop;
+  context()->DeleteStorage(storage_key1, run_loop.QuitClosure());
+  run_loop.Run();
 
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
@@ -712,20 +725,24 @@ TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
 
   // Make sure all data gets committed to disk.
-  RunUntilIdle();
-  EXPECT_FALSE(GetDatabaseContents().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 7u; }));
 
   TestLevelDBObserver observer;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
-  RunUntilIdle();
+  observer.FlushForTesting();
 
-  context()->DeleteStorage(storage_key1, base::DoNothing());
-  RunUntilIdle();
+  base::RunLoop run_loop;
+  context()->DeleteStorage(storage_key1, run_loop.QuitClosure());
+  run_loop.Run();
+  observer.FlushForTesting();
 
   ASSERT_EQ(1u, observer.observations().size());
   EXPECT_EQ(TestLevelDBObserver::Observation::kDeleteAll,
@@ -760,22 +777,27 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   area.reset();
 
   context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
-  area->Put(key, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
 
   // Make sure all data gets committed to disk.
-  RunUntilIdle();
-  EXPECT_FALSE(GetDatabaseContents().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 7u; }));
 
   TestLevelDBObserver observer;
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
   area->Put(StdStringToUint8Vector("key2"), value, std::nullopt, "source",
-            base::DoNothing());
-  RunUntilIdle();
+            success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+  observer.FlushForTesting();
 
-  context()->DeleteStorage(storage_key1, base::DoNothing());
-  RunUntilIdle();
+  base::RunLoop run_loop;
+  context()->DeleteStorage(storage_key1, run_loop.QuitClosure());
+  run_loop.Run();
+  observer.FlushForTesting();
 
   ASSERT_EQ(2u, observer.observations().size());
   EXPECT_EQ(TestLevelDBObserver::Observation::kChange,
@@ -826,10 +848,13 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
 
   context()->BindStorageArea(storage_key1_third_party,
                              area.BindNewPipeAndPassReceiver());
-  area->Put(key1, value, std::nullopt, "source", base::DoNothing());
+  base::test::TestFuture<bool> success_future;
+  area->Put(key1, value, std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
-  // Make sure all data gets committed to the DB.
-  RunUntilIdle();
+  // Make sure data gets committed to disk.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !GetDatabaseContents().empty(); }));
 
   std::vector<mojom::StoragePolicyUpdatePtr> updates;
   updates.emplace_back(mojom::StoragePolicyUpdate::New(
@@ -1065,13 +1090,14 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   size_t values_written = 0;
   while (area1.is_connected()) {
     // Every write needs to be different to make sure there actually is a
+    // change to commit.
     value[0]++;
     area1->Put(key, value, std::nullopt, "source",
                base::BindLambdaForTesting([&](bool success) {
                  EXPECT_TRUE(success);
                  values_written++;
                }));
-    RunUntilIdle();
+    area1.FlushForTesting();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
     context()->FlushStorageKeyForTesting(blink::StorageKey(
@@ -1176,7 +1202,7 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
               base::BindLambdaForTesting(
                   [&](bool success) { EXPECT_TRUE(success); }));
     old_value = std::vector<uint8_t>(value);
-    RunUntilIdle();
+    area.FlushForTesting();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
     context()->FlushStorageKeyForTesting(blink::StorageKey(
@@ -1208,10 +1234,9 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     value[0]++;
-    area->Put(key, value, old_value, "source",
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
-    RunUntilIdle();
+    base::test::TestFuture<bool> success_future;
+    area->Put(key, value, old_value, "source", success_future.GetCallback());
+    EXPECT_TRUE(success_future.Take());
     old_value = value;
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
@@ -1220,7 +1245,7 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   }
 
   // Should still be connected after all that.
-  RunUntilIdle();
+  area.FlushForTesting();
   EXPECT_TRUE(area.is_connected());
 }
 
@@ -1302,12 +1327,13 @@ TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
             std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key5, area.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<bool> success_future;
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
-            std::nullopt, "source", base::DoNothing());
+            std::nullopt, "source", success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
   area.reset();
-  RunUntilIdle();
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(16u, contents.size());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == 16u; }));
 
   // Backdate metadata accessed and modified times so that storage_key3 and
   // storage_key4 should be purged, while storage_key1 and storage_key2 should
@@ -1318,7 +1344,6 @@ TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
   UpdateWriteMetaData(storage_key3, base::Time::Now() - base::Days(401), 0);
   UpdateAccessMetaData(storage_key4, base::Time::Now() - base::Days(401));
   UpdateWriteMetaData(storage_key4, base::Time::Now() - base::Days(401), 0);
-  RunUntilIdle();
 
   // Restart local storage, force bind area for storage_key3, and trigger stale
   // storage area purging.
@@ -1326,18 +1351,18 @@ TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
   context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
   context()->ForceFakeOpenStorageAreaForTesting(storage_key3);
   WaitForDatabaseOpen();
-  RunUntilIdle();
 
   // We should see that only the data for storage_key4 was cleared.
-  contents = GetDatabaseContents();
+  const size_t expected_size =
+      ShouldDeleteStaleLocalStorageOnStartup() ? 13u : 16u;
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetDatabaseContents().size() == expected_size; }));
+
   if (ShouldDeleteStaleLocalStorageOnStartup()) {
-    EXPECT_EQ(13u, contents.size());
-    for (const auto& entry : contents) {
+    for (const auto& entry : GetDatabaseContents()) {
       EXPECT_EQ(entry.first.find(storage_key4.origin().Serialize()),
                 std::string::npos);
     }
-  } else {
-    EXPECT_EQ(16u, contents.size());
   }
 }
 

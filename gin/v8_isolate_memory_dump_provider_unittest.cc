@@ -147,8 +147,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
   // Code stats are disabled unless this category is enabled.
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(
-          TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"), ""),
-      base::trace_event::TraceLog::RECORDING_MODE);
+          TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"), ""));
 
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::kLight};

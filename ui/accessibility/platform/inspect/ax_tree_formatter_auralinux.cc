@@ -630,6 +630,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "haspopup",
     "has-interest-target",
     "hidden",
+    "html-input-name",
     "id",
     "keyshortcuts",
     "level",

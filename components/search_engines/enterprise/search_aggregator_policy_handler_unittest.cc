@@ -96,7 +96,7 @@ auto kTestSearchAggregatorEmptyRequiredField =
             .search_url = "https://work.com/{searchTerms}",
             .suggest_url = "https://work.com/suggest",
             .expected_error_msg_id =
-                IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY,
+                IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY,
         },
         {
             .name = "work name",
@@ -104,7 +104,7 @@ auto kTestSearchAggregatorEmptyRequiredField =
             .search_url = "https://work.com/{searchTerms}",
             .suggest_url = "https://work.com/suggest",
             .expected_error_msg_id =
-                IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY,
+                IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY,
         },
         {
             .name = "work name",
@@ -112,7 +112,7 @@ auto kTestSearchAggregatorEmptyRequiredField =
             .search_url = "",
             .suggest_url = "https://work.com/suggest",
             .expected_error_msg_id =
-                IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY,
+                IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY,
         },
         {
             .name = "work name",
@@ -120,7 +120,7 @@ auto kTestSearchAggregatorEmptyRequiredField =
             .search_url = "https://work.com/{searchTerms}",
             .suggest_url = "",
             .expected_error_msg_id =
-                IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY,
+                IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY,
         },
     });
 
@@ -231,9 +231,9 @@ testing::Matcher<const base::Value&> IsSearchAggregatorEntry(
                          test_case.icon_url ? std::string(test_case.icon_url)
                                             : std::string()),
           FieldNotSet(DefaultSearchManager::kFaviconURL)),
-      HasIntegerField(DefaultSearchManager::kCreatedByPolicy,
-                      static_cast<int>(
-                          TemplateURLData::CreatedByPolicy::kSearchAggregator)),
+      HasIntegerField(
+          DefaultSearchManager::kPolicyOrigin,
+          static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
       HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
       HasIntegerField(DefaultSearchManager::kIsActive,
@@ -487,7 +487,7 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutWithSpace) {
     ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
     EXPECT_THAT(&errors,
                 HasValidationError(l10n_util::GetStringFUTF16(
-                    IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
+                    IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE,
                     base::UTF8ToUTF16(it->shortcut))));
   }
 }
@@ -512,7 +512,7 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutStartsWithAt) {
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
+                  IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT,
                   base::UTF8ToUTF16(
                       kTestSearchAggregatorShortcutStartsWithAt.shortcut))));
 }
@@ -555,7 +555,7 @@ TEST(SearchAggregatorPolicyHandlerTest, NonHttpsUrl) {
     PolicyErrorMap errors;
     ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
     EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringFUTF16(
-                             IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                             IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                              base::UTF8ToUTF16(it->invalid_url))));
   }
 }
@@ -581,7 +581,7 @@ TEST(SearchAggregatorPolicyHandlerTest, NoStringReplacementInSearchUrl) {
   EXPECT_THAT(
       &errors,
       HasValidationError(l10n_util::GetStringFUTF16(
-          IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
+          IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
           base::UTF8ToUTF16(
               kTestSearchAggregatorNoStringReplacementSearchUrl.search_url))));
 }
@@ -661,7 +661,7 @@ TEST(SearchAggregatorPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
+                  IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
                   base::UTF8ToUTF16(kValidTestSearchAggregator.shortcut))));
 }
 

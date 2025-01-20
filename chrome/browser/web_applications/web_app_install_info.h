@@ -26,7 +26,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -388,12 +387,11 @@ struct WebAppInstallInfo {
   // The URL protocols/schemes that the app can handle.
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
 
-  // The app intends to act as a URL handler for URLs described by this
-  // information.
-  apps::UrlHandlers url_handlers;
-
   // The app intends to have an extended scope containing URLs described by this
   // information.
+  // Note: All specified 'scope' members of these extensions will have queries
+  // and fragments stripped, per specification.
+  // https://w3c.github.io/manifest/#scope-member
   base::flat_set<web_app::ScopeExtensionInfo> scope_extensions;
 
   // `scope_extensions` after going through validation with associated origins.
@@ -401,6 +399,9 @@ struct WebAppInstallInfo {
   // See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
+  // Note: All specified 'scope' members of these extensions will have queries
+  // and fragments stripped, per specification.
+  // https://w3c.github.io/manifest/#scope-member
   std::optional<base::flat_set<web_app::ScopeExtensionInfo>>
       validated_scope_extensions;
 
@@ -470,6 +471,9 @@ struct WebAppInstallInfo {
   // A DIY app isn't installable or promotable, and the user was able to
   // customize the title, etc.
   bool is_diy_app = false;
+
+  // Apps that are listed as related applications in the manifest.
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
 
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.

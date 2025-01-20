@@ -33,7 +33,7 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
   static ScriptPromise<IDLSequence<V8BarcodeFormat>> getSupportedFormats(
       ScriptState*);
 
-  static String BarcodeFormatToString(
+  static V8BarcodeFormat::Enum BarcodeFormatToEnum(
       const shape_detection::mojom::BarcodeFormat format);
 
   ScriptPromise<IDLSequence<DetectedBarcode>> detect(ScriptState*,

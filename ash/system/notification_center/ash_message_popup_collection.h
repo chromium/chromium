@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_NOTIFICATION_CENTER_ASH_MESSAGE_POPUP_COLLECTION_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "ash/ash_export.h"
@@ -15,7 +16,7 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/views/message_popup_collection.h"

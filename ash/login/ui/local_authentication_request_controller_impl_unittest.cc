@@ -41,6 +41,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -54,9 +55,10 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-const char kTestAccount[] = "user@test.com";
-const char kExpectedPassword[] = "qwerty";
-const char kExpectedPin[] = "150504";
+constexpr char kTestAccount[] = "user@test.com";
+constexpr char kFakeGaia[] = "fake_gaia";
+constexpr char kExpectedPassword[] = "qwerty";
+constexpr char kExpectedPin[] = "150504";
 
 class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
  public:
@@ -83,13 +85,15 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
         FakeCryptohomeMiscClient::GetStubSystemSalt());
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
-    test_account_id_ = AccountId::FromUserEmail(kTestAccount);
+    test_account_id_ =
+        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
 
     SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(test_account_id_);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state()));
+    fake_user_manager_->AddGaiaUser(test_account_id_,
+                                    user_manager::UserType::kRegular);
   }
 
   void TearDown() override {
@@ -100,7 +104,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
       local_authentication_request_widget->Close(false /* validation success */,
                                                  nullptr);
     }
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
@@ -193,6 +197,12 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  base::test::ScopedFeatureList scoped_features_;
+
+  // Container object for the fake user manager for tests.
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
@@ -205,10 +215,6 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   // Auth session ids.
   std::pair<std::string, std::string> session_ids_;
 
-  // Container object for the fake user manager for tests.
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests local authentication dialog showing/hiding and focus behavior for
@@ -428,13 +434,14 @@ class LocalAuthenticationWithPinControllerImplTest
         FakeCryptohomeMiscClient::GetStubSystemSalt());
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
-    test_account_id_ = AccountId::FromUserEmail(kTestAccount);
+    test_account_id_ =
+        AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
 
     SetExpectedCredentialsWithDbusClient();
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(test_account_id_);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(local_state()));
+    fake_user_manager_->AddGaiaUser(test_account_id_,
+                                    user_manager::UserType::kRegular);
 
     user_manager::KnownUser known_user(Shell::Get()->local_state());
     known_user.SetStringPref(test_account_id_, prefs::kQuickUnlockPinSalt,
@@ -458,7 +465,7 @@ class LocalAuthenticationWithPinControllerImplTest
     EXPECT_FALSE(IsDialogVisible());
 
     test_api_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
@@ -656,10 +663,12 @@ class LocalAuthenticationWithPinControllerImplTest
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
     EXPECT_TRUE(base::test::RunUntil([&auth_submission_counter]() {
-      return (auth_submission_counter.password_submit_counter_ +
-              auth_submission_counter.pin_submit_counter_);
+      return auth_submission_counter.password_submit_counter_ > 0 ||
+             auth_submission_counter.pin_submit_counter_ > 0;
     }));
   }
+
+  base::test::ScopedFeatureList scoped_features_;
 
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
@@ -674,12 +683,11 @@ class LocalAuthenticationWithPinControllerImplTest
   std::pair<std::string, std::string> session_ids_;
 
   // Container object for the fake user manager for tests.
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
 
   // Access the authentication parameters using auth_params_.
   const AuthenticationParams auth_params_ = GetParam();
-
-  base::test::ScopedFeatureList scoped_features_;
 
   std::unique_ptr<LocalAuthenticationWithPinTestApi> test_api_;
 };

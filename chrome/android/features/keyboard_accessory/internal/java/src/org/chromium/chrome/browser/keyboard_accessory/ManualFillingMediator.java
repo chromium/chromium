@@ -218,8 +218,7 @@ class ManualFillingMediator
                     }
 
                     @Override
-                    public void tabClosureCommitted(Tab tab) {
-                        super.tabClosureCommitted(tab);
+                    public void onFinishingTabClosure(Tab tab) {
                         mObservedTabs.remove(tab);
                         tab.removeObserver(
                                 mTabObserver); // Fails silently if observer isn't registered.

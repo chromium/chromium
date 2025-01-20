@@ -90,14 +90,14 @@ void WaitForRenderWidgetHostCount(size_t target_count) {
 
 class SitePerProcessInteractiveBrowserTest : public InProcessBrowserTest {
  public:
-  SitePerProcessInteractiveBrowserTest() {}
+  SitePerProcessInteractiveBrowserTest() = default;
 
   SitePerProcessInteractiveBrowserTest(
       const SitePerProcessInteractiveBrowserTest&) = delete;
   SitePerProcessInteractiveBrowserTest& operator=(
       const SitePerProcessInteractiveBrowserTest&) = delete;
 
-  ~SitePerProcessInteractiveBrowserTest() override {}
+  ~SitePerProcessInteractiveBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -1471,7 +1471,7 @@ class SitePerProcessInteractivePDFTest
   SitePerProcessInteractivePDFTest& operator=(
       const SitePerProcessInteractivePDFTest&) = delete;
 
-  ~SitePerProcessInteractivePDFTest() override {}
+  ~SitePerProcessInteractivePDFTest() override = default;
 
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();

@@ -689,8 +689,7 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
     EXPECT_EQ(device_scale_factor_, impl->active_tree()->device_scale_factor());
     switch (impl->active_tree()->source_frame_number()) {
       case 0: {
-        // GESTURE scroll on impl thread. Also tests that the last scrolled
-        // layer id is stored even after the scrolling ends.
+        // GESTURE scroll on impl thread.
         gfx::Point scroll_point = gfx::ToCeiledPoint(
             gfx::PointF(-0.5f, -0.5f) +
             GetTransformNode(expected_scroll_layer_impl)->post_translation);
@@ -704,8 +703,6 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
         CHECK(scrolling_node);
         impl->GetInputHandler().ScrollEnd();
         CHECK(!impl->CurrentlyScrollingNode());
-        EXPECT_EQ(scrolling_node->id,
-                  impl->active_tree()->LastScrolledScrollNodeIndex());
 
         // Check the scroll is applied as a delta.
         EXPECT_POINTF_EQ(initial_offset_,
@@ -2303,7 +2300,8 @@ class MockInputHandlerClient : public InputHandlerClient {
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override { return false; }
   void SetScrollEventDispatchMode(
-      InputHandlerClient::ScrollEventDispatchMode mode) override {}
+      InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override {}
 };
 
 // This is a regression test, see crbug.com/639046.

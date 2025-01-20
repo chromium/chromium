@@ -11,20 +11,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace signin {
 
@@ -50,18 +45,19 @@ const char kShowConsistencyPromo[] = "show_consistency_promo";
 
 // Determines the service type that has been passed from Gaia in the header.
 GAIAServiceType GetGAIAServiceTypeFromHeader(const std::string& header_value) {
-  if (header_value == "SIGNOUT")
+  if (header_value == "SIGNOUT") {
     return GAIA_SERVICE_TYPE_SIGNOUT;
-  else if (header_value == "INCOGNITO")
+  } else if (header_value == "INCOGNITO") {
     return GAIA_SERVICE_TYPE_INCOGNITO;
-  else if (header_value == "ADDSESSION")
+  } else if (header_value == "ADDSESSION") {
     return GAIA_SERVICE_TYPE_ADDSESSION;
-  else if (header_value == "SIGNUP")
+  } else if (header_value == "SIGNUP") {
     return GAIA_SERVICE_TYPE_SIGNUP;
-  else if (header_value == "DEFAULT")
+  } else if (header_value == "DEFAULT") {
     return GAIA_SERVICE_TYPE_DEFAULT;
-  else
+  } else {
     return GAIA_SERVICE_TYPE_NONE;
+  }
 }
 
 }  // namespace
@@ -75,13 +71,14 @@ ChromeConnectedHeaderHelper::ChromeConnectedHeaderHelper(
 // static
 std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask) {
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
-  if (!chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings))
+  if (!chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
     return "";
+  }
 
   // Child accounts are not supported on iOS, so it is preferred to not include
   // this information in the ChromeConnected cookie.
@@ -148,8 +145,9 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
-  if (!url.SchemeIsCryptographic())
+  if (!url.SchemeIsCryptographic()) {
     return false;
+  }
 
   const GURL kGoogleDriveURL("https://drive.google.com");
   const GURL kGoogleDocsURL("https://docs.google.com");
@@ -159,8 +157,9 @@ bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
 bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
     const GURL& url) {
   // Consider the account ID sensitive and limit it to secure domains.
-  if (!url.SchemeIsCryptographic())
+  if (!url.SchemeIsCryptographic()) {
     return false;
+  }
 
   switch (account_consistency_) {
     case AccountConsistencyMethod::kDisabled:
@@ -189,7 +188,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
 std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
     bool is_header_request,
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     Tribool is_child_account,
     int profile_mode_mask,
     const std::string& source,
@@ -231,8 +230,8 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
   if (!gaia_id.empty() &&
       IsUrlEligibleToIncludeGaiaId(url, is_header_request)) {
     // Only set the Gaia ID on domains that actually require it.
-    parts.push_back(
-        base::StringPrintf("%s=%s", kGaiaIdAttrName, gaia_id.c_str()));
+    parts.push_back(base::StringPrintf("%s=%s", kGaiaIdAttrName,
+                                       gaia_id.ToString().c_str()));
   }
   parts.push_back(
       base::StringPrintf("%s=%s", kProfileModeAttrName,
@@ -254,13 +253,8 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
       break;
   }
 
-  parts.push_back(base::StringPrintf("%s=%s",
-                                     kConsistencyEnabledByDefaultAttrName,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                     "true"));
-#else
-                                     "false"));
-#endif
+  parts.push_back(base::StringPrintf(
+      "%s=%s", kConsistencyEnabledByDefaultAttrName, "false"));
 
   return base::JoinString(parts, is_header_request ? "," : ":");
 }

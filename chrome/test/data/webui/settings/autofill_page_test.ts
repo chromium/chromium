@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
@@ -174,32 +174,32 @@ suite('PasswordsAndForms', function() {
     });
   });
 
-  test('autofillPredictionImprovementsEnabled', async function() {
+  test('autofillAiEnabled', async function() {
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
     });
     const prefs = await createPrefs(true, true);
     const element = createAutofillElement(prefs);
     await flushTasks();
-    const autofillPredictionImprovementsManagerButton =
+    const autofillAiManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#autofillPredictionImprovementsManagerButton');
-    assertTrue(autofillPredictionImprovementsManagerButton !== null);
+            '#autofillAiManagerButton');
+    assertTrue(autofillAiManagerButton !== null);
     element.remove();
     flush();
     destroyPrefs(prefs);
   });
 
-  test('autofillPredictionImprovementsDisabled', async function() {
+  test('autofillAiDisabled', async function() {
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: false,
+      autofillAiEnabled: false,
     });
     const prefs = await createPrefs(true, true);
     const element = createAutofillElement(prefs);
-    const autofillPredictionImprovementsManagerButton =
+    const autofillAiManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#autofillPredictionImprovementsManagerButton');
-    assertTrue(autofillPredictionImprovementsManagerButton === null);
+            '#autofillAiManagerButton');
+    assertTrue(autofillAiManagerButton === null);
     element.remove();
     flush();
     destroyPrefs(prefs);
@@ -349,17 +349,16 @@ suite('PasswordsUITest', function() {
 });
 
 
-suite('AutofillPredictionImprovementsRedirectTest', function() {
-  let section: SettingsAutofillPredictionImprovementsSectionElement;
+suite('AutofillAiRedirectTest', function() {
+  let section: SettingsAutofillAiSectionElement;
   let userAnnotationsManager: TestUserAnnotationsManagerProxyImpl;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    // Enable the Autofill Prediction Improvements feature so that the route is
-    // defined.
+    // Enable the Autofill AI feature so that the route is defined.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
     });
 
     resetRouterForTesting();
@@ -367,16 +366,15 @@ suite('AutofillPredictionImprovementsRedirectTest', function() {
     userAnnotationsManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationsManager);
 
-    // Simulate navigating to the AUTOFILL_PREDICTION_IMPROVEMENTS route.
-    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
+    // Simulate navigating to the AUTOFILL_AI route.
+    Router.getInstance().navigateTo(routes.AUTOFILL_AI);
   });
 
   test('Redirects to Autofill when disabled and no entries', async function() {
     // Mock getEntries to return an empty array to simulate no entries.
     userAnnotationsManager.setEntries([]);
 
-    section = document.createElement(
-        'settings-autofill-prediction-improvements-section');
+    section = document.createElement('settings-autofill-ai-section');
     section.disabled = true;
 
     document.body.appendChild(section);

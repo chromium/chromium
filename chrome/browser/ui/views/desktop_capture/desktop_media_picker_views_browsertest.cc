@@ -28,7 +28,7 @@
 
 class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
  public:
-  DesktopMediaPickerViewsBrowserTest() {}
+  DesktopMediaPickerViewsBrowserTest() = default;
 
   DesktopMediaPickerViewsBrowserTest(
       const DesktopMediaPickerViewsBrowserTest&) = delete;
@@ -37,7 +37,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    picker_ = std::make_unique<DesktopMediaPickerViews>();
+    picker_ = std::make_unique<DesktopMediaPickerImpl>();
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
 
@@ -45,13 +45,15 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     if (override_source_lists_.empty()) {
       sources = CreateDefaultSourceLists();
     } else {
-      for (auto& source : override_source_lists_)
+      for (auto& source : override_source_lists_) {
         sources.push_back(std::move(source));
+      }
     }
 
     std::vector<FakeDesktopMediaList*> source_lists;
-    for (const auto& source : sources)
+    for (const auto& source : sources) {
       source_lists.push_back(static_cast<FakeDesktopMediaList*>(source.get()));
+    }
 
     DesktopMediaPicker::Params picker_params{
         DesktopMediaPicker::Params::RequestSource::kUnknown};
@@ -63,8 +65,9 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     picker_->Show(picker_params, std::move(sources),
                   DesktopMediaPicker::DoneCallback());
 
-    if (after_show_callback_)
+    if (after_show_callback_) {
       std::move(after_show_callback_).Run(source_lists);
+    }
   }
 
  protected:
@@ -78,7 +81,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     return sources;
   }
 
-  std::unique_ptr<DesktopMediaPickerViews> picker_;
+  std::unique_ptr<DesktopMediaPickerImpl> picker_;
 
   // If this list isn't filled in, a default list of source lists will be
   // created.

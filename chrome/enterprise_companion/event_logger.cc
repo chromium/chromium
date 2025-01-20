@@ -25,12 +25,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
@@ -54,6 +57,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -107,7 +114,52 @@ proto::EnterpriseCompanionMetadata GetMetadata() {
     metadata.set_omaha_cohort_id(
         command_line->GetSwitchValueASCII(kCohortIdSwitch));
   }
+
+#if defined(ARCH_CPU_X86)
+  metadata.set_application_arch(proto::X86);
+#elif defined(ARCH_CPU_X86_64)
+  metadata.set_application_arch(proto::X86_64);
+#elif defined(ARCH_CPU_ARM64)
+  metadata.set_application_arch(proto::ARM64);
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  metadata.set_os_platform(proto::LINUX);
+#elif BUILDFLAG(IS_MAC)
+  metadata.set_os_platform(proto::MAC);
+#elif BUILDFLAG(IS_WIN)
+  metadata.set_os_platform(proto::WINDOWS);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo::VersionNumber v =
+      base::win::OSInfo::GetInstance()->version_number();
+  metadata.set_os_version(
+      base::StringPrintf("%u.%u.%u", v.major, v.minor, v.build));
+#elif BUILDFLAG(IS_MAC)
+  int32_t os_major = 0, os_minor = 0, os_bugfix = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(&os_major, &os_minor,
+                                               &os_bugfix);
+  metadata.set_os_version(base::StringPrintf("%u.%u", os_major, os_minor));
+#endif
+
+  const std::string os_arch = base::SysInfo::OperatingSystemArchitecture();
+  if (os_arch == "x86") {
+    metadata.set_os_arch(proto::X86);
+  } else if (os_arch == "x86_64") {
+    metadata.set_os_arch(proto::X86_64);
+  } else if (os_arch == "arm64") {
+    metadata.set_os_arch(proto::ARM64);
+  }
+
   return metadata;
+}
+
+proto::Status ToProtoStatus(EnterpriseCompanionStatus status) {
+  proto::Status proto_status;
+  proto_status.set_space(status.space());
+  proto_status.set_code(status.code());
+  return proto_status;
 }
 
 class EventUploader {
@@ -152,8 +204,8 @@ class EventUploader {
       std::optional<std::string> response_body) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (url_loader->NetError() != net::OK) {
-      LOG(ERROR) << "Logging request failed "
-                 << net::ErrorToString(url_loader->NetError());
+      VLOG(1) << "Logging request failed "
+              << net::ErrorToString(url_loader->NetError());
     }
 
     network::mojom::URLResponseHeadPtr response_head =
@@ -177,7 +229,6 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
       : uploader_(base::SequenceBound<EventUploader>(
             base::SequencedTaskRunner::GetCurrentDefault(),
             url_loader_factory)) {}
-  ~EventLoggerDelegate() override = default;
 
   // Overrides of EventLogger:Delegate.
   // This is a long-live app and doesn't actually store the next allowed time
@@ -287,8 +338,8 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
                 << "Failed to set logging cookie: " << result.status;
           }).Then(std::move(callback)));
     } else {
-      LOG(ERROR) << "Failed to initialize logging cookie. Not canonical: "
-                 << cookie->DebugString();
+      VLOG(1) << "Failed to initialize logging cookie. Not canonical: "
+              << cookie->DebugString();
       std::move(callback).Run();
     }
   }
@@ -300,8 +351,8 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
       if (!cookie_file_.WriteAndCheck(
               0, base::as_byte_span(change.cookie.Value())) ||
           !cookie_file_.SetLength(change.cookie.Value().length())) {
-        LOG(ERROR) << "Failed to write logging cookie: "
-                   << change.cookie.DebugString();
+        VLOG(1) << "Failed to write logging cookie: "
+                << change.cookie.DebugString();
       }
     }
   }
@@ -330,7 +381,7 @@ class EnterpriseCompanionEventLoggerImpl
       const EnterpriseCompanionStatus& status) override {
     VLOG(2) << __func__ << ": status=" << status.description();
     proto::EnterpriseCompanionEvent event;
-    *event.mutable_status() = status.ToProtoStatus();
+    *event.mutable_status() = ToProtoStatus(status);
     event.set_duration_ms((base::Time::Now() - start_time).InMilliseconds());
     *event.mutable_browser_enrollment_event() = proto::BrowserEnrollmentEvent();
     impl_->Log(event);
@@ -341,7 +392,7 @@ class EnterpriseCompanionEventLoggerImpl
                            const EnterpriseCompanionStatus& status) override {
     VLOG(2) << __func__ << ": status=" << status.description();
     proto::EnterpriseCompanionEvent event;
-    *event.mutable_status() = status.ToProtoStatus();
+    *event.mutable_status() = ToProtoStatus(status);
     event.set_duration_ms((base::Time::Now() - start_time).InMilliseconds());
     *event.mutable_policy_fetch_event() = proto::PolicyFetchEvent();
     impl_->Log(event);

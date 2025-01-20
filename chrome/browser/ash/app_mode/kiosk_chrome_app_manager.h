@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/time/time.h"
@@ -48,6 +50,9 @@ extern const char kKioskExternalUpdateSuccessHistogram[];
 class KioskChromeAppManager : public KioskAppManagerBase,
                               public chromeos::ExternalCacheDelegate {
  public:
+  // A tuple with the path and version string of a CRX in the external cache.
+  using CachedCrxInfo = std::tuple<base::FilePath, std::string>;
+
   // Result of downloading primary app from ExternalCache. Should be in sync
   // with extensions::ExtensionDownloaderDelegate::Error. Used in UMA metrics.
   enum class PrimaryAppDownloadResult {
@@ -149,11 +154,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // Returns true if the app is found in cache.
   bool HasCachedCrx(const std::string& app_id) const;
 
-  // Gets the path and version of the cached crx with `app_id`.
-  // Returns true if the app is found in cache.
-  bool GetCachedCrx(const std::string& app_id,
-                    base::FilePath* file_path,
-                    std::string* version) const;
+  // Returns the path and version of the cached CRX with `app_id`, or `nullopt`
+  // if the app is not found in cache.
+  std::optional<CachedCrxInfo> GetCachedCrx(std::string_view app_id) const;
 
   crosapi::mojom::AppInstallParams CreatePrimaryAppInstallData(
       const std::string& id) const;

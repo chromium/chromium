@@ -17,6 +17,7 @@
 #include "headless/lib/browser/headless_window_tree_host.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
+#include "headless/public/headless_window_state.h"
 
 class SkBitmap;
 
@@ -65,12 +66,10 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
     return window_tree_host_.get();
   }
   int window_id() const { return window_id_; }
-  void set_window_state(const std::string& state) {
-    DCHECK(state == "normal" || state == "minimized" || state == "maximized" ||
-           state == "fullscreen");
-    window_state_ = state;
-  }
-  const std::string& window_state() const { return window_state_; }
+  HeadlessWindowState window_state() const { return window_state_; }
+
+  // Set the WebContent's platform window state and visibility.
+  void SetWindowState(HeadlessWindowState window_state);
 
   // Set bounds of WebContent's platform window.
   void SetBounds(const gfx::Rect& bounds);
@@ -94,7 +93,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
   explicit HeadlessWebContentsImpl(
       std::unique_ptr<content::WebContents> web_contents);
 
-  void InitializeWindow(const gfx::Rect& initial_bounds);
+  void InitializeWindow(const gfx::Rect& bounds,
+                        HeadlessWindowState window_state);
 
   uint64_t begin_frame_sequence_number_ =
       viz::BeginFrameArgs::kStartingFrameNumber;
@@ -104,7 +104,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
   std::unique_ptr<Delegate> web_contents_delegate_;
   std::unique_ptr<HeadlessWindowTreeHost> window_tree_host_;
   int window_id_ = 0;
-  std::string window_state_;
+  HeadlessWindowState window_state_ = HeadlessWindowState::kNormal;
   std::unique_ptr<content::WebContents> const web_contents_;
 
   class PendingFrame;

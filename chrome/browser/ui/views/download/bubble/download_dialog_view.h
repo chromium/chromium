@@ -44,7 +44,6 @@ class DownloadDialogView : public DownloadBubblePrimaryView {
   // Returns the close button. The close button should be the initially focused
   // view to make it easier for the user to close the dialog.
   views::View* GetInitiallyFocusedView() override;
-  bool IsPartialView() const override;
 
  private:
   void CloseBubble();

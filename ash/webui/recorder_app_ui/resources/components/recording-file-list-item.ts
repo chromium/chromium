@@ -62,7 +62,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         --cros-card-padding: 24px;
         --cros-card-hover-color: none;
 
-        margin: 0 32px;
+        margin: 0 var(--container-padding-horizontal);
         position: relative;
 
         /* TODO: b/336963138 - Align with the motion spec. */
@@ -114,7 +114,9 @@ export class RecordingFileListItem extends ReactiveLitElement {
       }
 
       #title {
+        color: var(--cros-sys-on_surface);
         font: var(--cros-title-1-font);
+        margin: 0;
         overflow: hidden;
 
         /* To avoid overlap with the options button. */
@@ -332,14 +334,14 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   private renderTitle(title: string, highlight: [number, number]|null) {
     if (highlight === null) {
-      return html`<div id="title">${title}</div>`;
+      return html`<h3 id="title">${title}</h3>`;
     }
     const [start, end] = highlight;
-    return html`<div id="title">
+    return html`<h3 id="title">
       ${title.slice(0, start)}<span class="highlight"
         >${title.slice(start, end)}</span
       >${title.slice(end)}
-    </div>`;
+    </h3>`;
   }
 
   private renderDescription(description: string) {

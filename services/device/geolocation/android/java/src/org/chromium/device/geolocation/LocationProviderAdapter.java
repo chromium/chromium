@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.FutureTask;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.FutureTask;
  * content/browser/geolocation/location_api_adapter_android.h.
  * Based on android.webkit.GeolocationService.java
  */
+@NullMarked
 public class LocationProviderAdapter {
     private static final String TAG = "LocationProvider";
 

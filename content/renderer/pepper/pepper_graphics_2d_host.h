@@ -23,10 +23,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cc {
-class CrossThreadSharedBitmap;
-}
-
 namespace gfx {
 class Rect;
 }
@@ -180,7 +176,6 @@ class CONTENT_EXPORT PepperGraphics2DHost final
 
   // Callback when compositor is done with a software resource given to it.
   void ReleaseSoftwareCallback(
-      scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       const gpu::SyncToken& sync_token,
@@ -253,11 +248,9 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   // Shared images that are available for recycling.
   std::vector<SharedImageInfo> recycled_shared_images_;
 
-  // This is a bitmap that was recently released by the compositor and may be
-  // used to transfer bytes to the compositor again, along with the registration
-  // of the SharedBitmapId that is kept alive as long as the bitmap is, in order
-  // to give the bitmap to the compositor.
-  scoped_refptr<cc::CrossThreadSharedBitmap> cached_bitmap_;
+  // This is a SharedImage for use with the software compositor that was
+  // recently released by the compositor and may be used to transfer bytes to
+  // the compositor again.
   scoped_refptr<gpu::ClientSharedImage> cached_bitmap_shared_image_;
   // Used for tracking whether the shared_image_interface has changed due to
   // context lost.

@@ -415,7 +415,7 @@ gn_args.config(
         "use_partition_alloc": False,
         "enable_reporting": True,
         "use_hashed_jni_names": True,
-        "default_min_sdk_version": 21,
+        "default_min_sdk_version": 23,
         "enable_base_tracing": False,
         "clang_use_default_sample_profile": False,
         "media_use_ffmpeg": False,
@@ -572,6 +572,16 @@ gn_args.config(
     name = "enable_backup_ref_ptr_feature_flag",
     args = {
         "enable_backup_ref_ptr_feature_flag": True,
+    },
+)
+
+# Enables the instance tracer for BackupRefPtr. This provides more useful stack
+# traces when triggering the dangling pointer detector, but at the cost of some
+# runtime performance (last measured at ~10% in release builds).
+gn_args.config(
+    name = "enable_backup_ref_ptr_instance_tracer",
+    args = {
+        "enable_backup_ref_ptr_instance_tracer": True,
     },
 )
 
@@ -816,21 +826,21 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "lacros",
-    args = {
-        "target_os": "chromeos",
-        "chromeos_is_browser_only": True,
-    },
-)
-
-gn_args.config(
-    name = "lacros_on_linux",
-    args = {
-        "chromeos_is_browser_only": True,
-    },
+    name = "chromeos_on_linux",
     configs = [
         "chromeos",
     ],
+)
+
+# Do not use this for non-FYI builders.
+gn_args.config(
+    name = "libcxx_modules",
+    args = {
+        # TODO: crbug.com/351909443 - remove once performance of plugins is
+        # improved.
+        "clang_use_chrome_plugins": False,
+        "use_libcxx_modules": True,
+    },
 )
 
 gn_args.config(
@@ -1095,13 +1105,6 @@ gn_args.config(
     name = "perfetto_zlib",
     args = {
         "enable_perfetto_zlib": True,
-    },
-)
-
-gn_args.config(
-    name = "pgo_phase_0",
-    args = {
-        "chrome_pgo_phase": 0,
     },
 )
 
@@ -1414,6 +1417,13 @@ gn_args.config(
     configs = [
         "x64",
     ],
+)
+
+gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
 )
 
 gn_args.config(

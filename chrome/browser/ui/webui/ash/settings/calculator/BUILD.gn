@@ -15,17 +15,16 @@ static_library("calculator") {
   public_deps = [
     "//ash/components/arc",
     "//ash/components/arc/mojom",
-    "//ash/components/arc/session:connection_holder",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/crostini",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
     "//components/user_manager",
   ]
 
   deps = [
-    "//ash/components/arc/session",
     "//ash/constants",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/drive",
@@ -37,6 +36,7 @@ static_library("calculator") {
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/experiences/arc/session",
     "//components/browsing_data/content",
     "//components/prefs",
     "//content/public/browser",

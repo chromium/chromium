@@ -12,8 +12,13 @@
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "third_party/farmhash/src/src/farmhash.h"
 
 namespace history_embeddings {
+
+uint32_t HashString(std::string_view str) {
+  return util::Fingerprint32(str);
+}
 
 // Standard normalized magnitude for all embeddings.
 constexpr float kUnitLength = 1.0f;
@@ -83,29 +88,6 @@ void CountTermsInPassage(std::vector<size_t>& term_counts,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-UrlPassages::UrlPassages(history::URLID url_id,
-                         history::VisitID visit_id,
-                         base::Time visit_time)
-    : url_id(url_id), visit_id(visit_id), visit_time(visit_time) {}
-UrlPassages::~UrlPassages() = default;
-UrlPassages::UrlPassages(const UrlPassages&) = default;
-UrlPassages& UrlPassages::operator=(const UrlPassages&) = default;
-UrlPassages::UrlPassages(UrlPassages&&) = default;
-UrlPassages& UrlPassages::operator=(UrlPassages&&) = default;
-bool UrlPassages::operator==(const UrlPassages& other) const {
-  if (other.url_id == url_id && other.visit_id == visit_id &&
-      other.visit_time == visit_time) {
-    std::string a, b;
-    if (other.passages.SerializeToString(&a) &&
-        passages.SerializeToString(&b)) {
-      return a == b;
-    }
-  }
-  return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
 Embedding::Embedding() = default;
 Embedding::Embedding(std::vector<float> data, size_t passage_word_count)
@@ -154,27 +136,64 @@ float Embedding::ScoreWith(const Embedding& other_embedding) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-UrlEmbeddings::UrlEmbeddings() : url_id(0), visit_id(0) {}
-UrlEmbeddings::UrlEmbeddings(history::URLID url_id,
-                             history::VisitID visit_id,
-                             base::Time visit_time)
-    : url_id(url_id), visit_id(visit_id), visit_time(visit_time) {}
-UrlEmbeddings::UrlEmbeddings(const UrlPassages& url_passages)
-    : UrlEmbeddings(url_passages.url_id,
-                    url_passages.visit_id,
-                    url_passages.visit_time) {}
-UrlEmbeddings::~UrlEmbeddings() = default;
-UrlEmbeddings::UrlEmbeddings(UrlEmbeddings&&) = default;
-UrlEmbeddings& UrlEmbeddings::operator=(UrlEmbeddings&&) = default;
-UrlEmbeddings::UrlEmbeddings(const UrlEmbeddings&) = default;
-UrlEmbeddings& UrlEmbeddings::operator=(const UrlEmbeddings&) = default;
-bool UrlEmbeddings::operator==(const UrlEmbeddings&) const = default;
+ScoredUrl::ScoredUrl(history::URLID url_id,
+                     history::VisitID visit_id,
+                     base::Time visit_time,
+                     float score,
+                     float word_match_score)
+    : url_id(url_id),
+      visit_id(visit_id),
+      visit_time(visit_time),
+      score(score),
+      word_match_score(word_match_score) {}
+ScoredUrl::~ScoredUrl() = default;
+ScoredUrl::ScoredUrl(ScoredUrl&&) = default;
+ScoredUrl& ScoredUrl::operator=(ScoredUrl&&) = default;
+ScoredUrl::ScoredUrl(const ScoredUrl&) = default;
+ScoredUrl& ScoredUrl::operator=(const ScoredUrl&) = default;
 
-float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
-                                   const SearchParams& search_params,
-                                   const Embedding& query_embedding,
-                                   const proto::PassagesValue& passages,
-                                   size_t min_passage_word_count) const {
+////////////////////////////////////////////////////////////////////////////////
+
+SearchParams::SearchParams() = default;
+SearchParams::SearchParams(const SearchParams&) = default;
+SearchParams::SearchParams(SearchParams&&) = default;
+SearchParams::~SearchParams() = default;
+SearchParams& SearchParams::operator=(const SearchParams&) = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+SearchInfo::SearchInfo() = default;
+SearchInfo::SearchInfo(SearchInfo&&) = default;
+SearchInfo::~SearchInfo() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
+UrlData::UrlData(history::URLID url_id,
+                 history::VisitID visit_id,
+                 base::Time visit_time)
+    : url_id(url_id), visit_id(visit_id), visit_time(visit_time) {}
+UrlData::UrlData(const UrlData&) = default;
+UrlData::UrlData(UrlData&&) = default;
+UrlData& UrlData::operator=(const UrlData&) = default;
+UrlData& UrlData::operator=(UrlData&&) = default;
+UrlData::~UrlData() = default;
+
+bool UrlData::operator==(const UrlData& other) const {
+  if (other.url_id == url_id && other.visit_id == visit_id &&
+      other.visit_time == visit_time && embeddings == other.embeddings) {
+    std::string a, b;
+    if (other.passages.SerializeToString(&a) &&
+        passages.SerializeToString(&b)) {
+      return a == b;
+    }
+  }
+  return false;
+}
+
+UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
+                                const SearchParams& search_params,
+                                const Embedding& query_embedding,
+                                size_t min_passage_word_count) const {
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
   float word_match_required_score =
       search_params.word_match_minimum_embedding_score;
@@ -198,12 +217,14 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
     passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
-    // Note that if `erase_non_ascii` is true then the embeddings have
-    // already be recomputed with non-ASCII characters excluded from
-    // the source passages, and are thus usable for search. In such
-    // cases, we can also modify the passage for term search.
+    // Note that if `erase_non_ascii_characters` is true then the embeddings
+    // have already be recomputed with non-ASCII characters excluded from the
+    // source passages, and are thus usable for search. In such cases, we can
+    // also modify the passage for term search.
+    bool skip_similarity_scoring = false;
     if (!base::IsStringASCII(*passage)) {
-      if (search_params.erase_non_ascii) {
+      if (search_params.erase_non_ascii_characters ||
+          search_params.word_match_search_non_ascii_passages) {
         search_info.modified_nonascii_passage_count++;
         if (word_match_required_score != kMaxFloat) {
           // Copy and modify the passage to exclude the non-ASCII characters.
@@ -212,6 +233,11 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
           modified_passage = *passage;
           EraseNonAsciiCharacters(modified_passage);
           passage = &modified_passage;
+          if (!search_params.erase_non_ascii_characters) {
+            // The embedding for this passage is not valid, but the passage
+            // can still be word match text searched.
+            skip_similarity_scoring = true;
+          }
         }
       } else {
         search_info.skipped_nonascii_passage_count++;
@@ -219,11 +245,12 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
       }
     }
 
-    float score = embedding.GetPassageWordCount() < min_passage_word_count
+    float score = skip_similarity_scoring || embedding.GetPassageWordCount() <
+                                                 min_passage_word_count
                       ? 0.0f
                       : query_embedding.ScoreWith(embedding);
 
-    if (score >= word_match_required_score) {
+    if (score >= word_match_required_score || skip_similarity_scoring) {
       // Since the ASCII check above processed the whole passage string, it is
       // likely ready in CPU cache. Scan text again to count terms in passage.
       base::ElapsedTimer timer;
@@ -261,54 +288,11 @@ float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
     }
   }
 
-  return best + word_match_boost;
+  return UrlScore{
+      .score = best + word_match_boost,
+      .word_match_score = word_match_boost,
+  };
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
-ScoredUrl::ScoredUrl(history::URLID url_id,
-                     history::VisitID visit_id,
-                     base::Time visit_time,
-                     float score)
-    : url_id(url_id),
-      visit_id(visit_id),
-      visit_time(visit_time),
-      score(score) {}
-ScoredUrl::~ScoredUrl() = default;
-ScoredUrl::ScoredUrl(ScoredUrl&&) = default;
-ScoredUrl& ScoredUrl::operator=(ScoredUrl&&) = default;
-ScoredUrl::ScoredUrl(const ScoredUrl&) = default;
-ScoredUrl& ScoredUrl::operator=(const ScoredUrl&) = default;
-
-////////////////////////////////////////////////////////////////////////////////
-
-SearchParams::SearchParams() = default;
-SearchParams::SearchParams(SearchParams&&) = default;
-SearchParams::~SearchParams() = default;
-
-////////////////////////////////////////////////////////////////////////////////
-
-SearchInfo::SearchInfo() = default;
-SearchInfo::SearchInfo(SearchInfo&&) = default;
-SearchInfo::~SearchInfo() = default;
-
-////////////////////////////////////////////////////////////////////////////////
-
-UrlPassagesEmbeddings::UrlPassagesEmbeddings(history::URLID url_id,
-                                             history::VisitID visit_id,
-                                             base::Time visit_time)
-    : url_passages(url_id, visit_id, visit_time),
-      url_embeddings(url_id, visit_id, visit_time) {}
-UrlPassagesEmbeddings::UrlPassagesEmbeddings(const UrlPassagesEmbeddings&) =
-    default;
-UrlPassagesEmbeddings::UrlPassagesEmbeddings(UrlPassagesEmbeddings&&) = default;
-UrlPassagesEmbeddings& UrlPassagesEmbeddings::operator=(
-    const UrlPassagesEmbeddings&) = default;
-UrlPassagesEmbeddings& UrlPassagesEmbeddings::operator=(
-    UrlPassagesEmbeddings&&) = default;
-UrlPassagesEmbeddings::~UrlPassagesEmbeddings() = default;
-bool UrlPassagesEmbeddings::operator==(const UrlPassagesEmbeddings&) const =
-    default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -340,32 +324,48 @@ SearchInfo VectorDatabase::FindNearest(
   size_t min_passage_word_count =
       GetFeatureParameters().search_passage_minimum_word_count;
 
-  struct Compare {
+  struct CompareScore {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
       return a.score > b.score;
     }
   };
-  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
+  struct CompareWordMatchScore {
+    bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
+      return a.word_match_score > b.word_match_score;
+    }
+  };
+  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, CompareScore>
+      top_by_score;
+  std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, CompareWordMatchScore>
+      top_by_word_match_score;
 
   SearchInfo search_info;
   search_info.completed = true;
   base::ElapsedTimer total_timer;
-  while (const UrlPassagesEmbeddings* url_data = iterator->Next()) {
-    const UrlEmbeddings& item = url_data->url_embeddings;
+  while (const UrlData* url_data = iterator->Next()) {
     if (is_search_halted.Run()) {
       search_info.completed = false;
       break;
     }
     search_info.searched_url_count++;
-    search_info.searched_embedding_count += item.embeddings.size();
+    search_info.searched_embedding_count += url_data->embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    const float score = item.BestScoreWith(
-        search_info, search_params, query_embedding,
-        url_data->url_passages.passages, min_passage_word_count);
-    q.emplace(item.url_id, item.visit_id, item.visit_time, score);
-    while (q.size() > count) {
-      q.pop();
+    UrlScore url_score = url_data->BestScoreWith(
+        search_info, search_params, query_embedding, min_passage_word_count);
+
+    top_by_score.emplace(url_data->url_id, url_data->visit_id,
+                         url_data->visit_time, url_score.score,
+                         url_score.word_match_score);
+    while (top_by_score.size() > count) {
+      top_by_score.pop();
+    }
+
+    top_by_word_match_score.emplace(url_data->url_id, url_data->visit_id,
+                                    url_data->visit_time, url_score.score,
+                                    url_score.word_match_score);
+    while (top_by_word_match_score.size() > count) {
+      top_by_word_match_score.pop();
     }
 
     search_info.scoring_time += scoring_timer.Elapsed();
@@ -389,12 +389,17 @@ SearchInfo VectorDatabase::FindNearest(
                    search_info.total_search_time;
   }
 
-  // Empty queue into vector and return result sorted with descending scores.
-  while (!q.empty()) {
-    search_info.scored_urls.push_back(q.top());
-    q.pop();
+  // Empty queues into vectors and return results sorted with descending scores.
+  while (!top_by_score.empty()) {
+    search_info.scored_urls.push_back(top_by_score.top());
+    top_by_score.pop();
+  }
+  while (!top_by_word_match_score.empty()) {
+    search_info.word_match_scored_urls.push_back(top_by_word_match_score.top());
+    top_by_word_match_score.pop();
   }
   base::ranges::reverse(search_info.scored_urls);
+  base::ranges::reverse(search_info.word_match_scored_urls);
   return search_info;
 }
 
@@ -404,24 +409,23 @@ VectorDatabaseInMemory::VectorDatabaseInMemory() = default;
 VectorDatabaseInMemory::~VectorDatabaseInMemory() = default;
 
 void VectorDatabaseInMemory::SaveTo(VectorDatabase* database) {
-  for (UrlPassagesEmbeddings& url_data : data_) {
+  for (UrlData& url_data : data_) {
     database->AddUrlData(std::move(url_data));
   }
   data_.clear();
 }
 
 size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
-  return data_.empty() ? 0 : data_[0].url_embeddings.embeddings[0].Dimensions();
+  return data_.empty() ? 0 : data_[0].embeddings[0].Dimensions();
 }
 
-bool VectorDatabaseInMemory::AddUrlData(UrlPassagesEmbeddings url_data) {
-  CHECK_EQ(static_cast<size_t>(url_data.url_passages.passages.passages_size()),
-           url_data.url_embeddings.embeddings.size());
+bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
+  CHECK_EQ(static_cast<size_t>(url_data.passages.passages_size()),
+           url_data.embeddings.size());
   if (!data_.empty()) {
-    for (const Embedding& embedding : url_data.url_embeddings.embeddings) {
+    for (const Embedding& embedding : url_data.embeddings) {
       // All embeddings in the database must have equal dimensions.
-      CHECK_EQ(embedding.Dimensions(),
-               data_[0].url_embeddings.embeddings[0].Dimensions());
+      CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
       // All embeddings in the database are expected to be normalized.
       CHECK_LT(std::abs(embedding.Magnitude() - kUnitLength), kEpsilon);
     }
@@ -435,18 +439,17 @@ std::unique_ptr<VectorDatabase::UrlDataIterator>
 VectorDatabaseInMemory::MakeUrlDataIterator(
     std::optional<base::Time> time_range_start) {
   struct SimpleIterator : public UrlDataIterator {
-    explicit SimpleIterator(const std::vector<UrlPassagesEmbeddings>& source,
+    explicit SimpleIterator(const std::vector<UrlData>& source,
                             std::optional<base::Time> time_range_start)
         : iterator_(source.cbegin()),
           end_(source.cend()),
           time_range_start_(time_range_start) {}
     ~SimpleIterator() override = default;
 
-    const UrlPassagesEmbeddings* Next() override {
+    const UrlData* Next() override {
       if (time_range_start_.has_value()) {
         while (iterator_ != end_) {
-          if (iterator_->url_embeddings.visit_time >=
-              time_range_start_.value()) {
+          if (iterator_->visit_time >= time_range_start_.value()) {
             break;
           }
           iterator_++;
@@ -459,8 +462,8 @@ VectorDatabaseInMemory::MakeUrlDataIterator(
       return &(*iterator_++);
     }
 
-    std::vector<UrlPassagesEmbeddings>::const_iterator iterator_;
-    std::vector<UrlPassagesEmbeddings>::const_iterator end_;
+    std::vector<UrlData>::const_iterator iterator_;
+    std::vector<UrlData>::const_iterator end_;
     const std::optional<base::Time> time_range_start_;
   };
 
@@ -475,7 +478,9 @@ std::vector<std::string> SplitQueryToTerms(
     const std::unordered_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length) {
-  extern uint32_t HashString(std::string_view str);
+  // Configuration may permit zero-length terms, but empty strings
+  // are never useful in search so the effective minimum then is one.
+  min_term_length = min_term_length > 0 ? min_term_length : 1;
   std::string query = base::ToLowerASCII(raw_query);
   std::string_view query_view(query);
   std::vector<std::string> query_terms;

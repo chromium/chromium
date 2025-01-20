@@ -4,7 +4,7 @@
 
 package org.chromium.base.task;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -14,6 +14,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
  * initialization, but task prioritization is extremely limited. Once the native scheduler is ready,
  * tasks will be migrated over.
  */
+@NullMarked
 @JNINamespace("base")
 public class PostTask {
     private static final String TAG = "PostTask";
@@ -36,7 +39,7 @@ public class PostTask {
     private static final Object sPreNativeTaskRunnerLock = new Object();
 
     @GuardedBy("sPreNativeTaskRunnerLock")
-    private static List<TaskRunnerImpl> sPreNativeTaskRunners = new ArrayList<>();
+    private static @Nullable List<TaskRunnerImpl> sPreNativeTaskRunners = new ArrayList<>();
 
     // Volatile is sufficient for synchronization here since we never need to read-write. This is a
     // one-way switch (outside of testing) and volatile makes writes to it immediately visible to
@@ -44,8 +47,8 @@ public class PostTask {
     private static volatile boolean sNativeInitialized;
     private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
             new ChromeThreadPoolExecutor();
-    private static volatile Executor sPrenativeThreadPoolExecutorForTesting;
-    private static final ThreadLocal<TaskOriginException> sTaskOrigin =
+    private static volatile @Nullable Executor sPrenativeThreadPoolExecutorForTesting;
+    private static final @Nullable ThreadLocal<TaskOriginException> sTaskOrigin =
             ENABLE_TASK_ORIGINS ? new ThreadLocal<>() : null;
     private static final TaskRunner[] sTraitsToRunnerMap =
             new TaskRunner[TaskTraits.UI_TRAITS_END + 1];
@@ -73,13 +76,14 @@ public class PostTask {
 
         @Override
         public void run() {
-            sTaskOrigin.set(mTaskOrigin);
+            var taskOrigin = assumeNonNull(sTaskOrigin);
+            taskOrigin.set(mTaskOrigin);
             try {
                 mWrappedRunnable.run();
             } catch (Throwable t) {
                 JavaUtils.throwUnchecked(maybeAddTaskOrigin(t));
             } finally {
-                sTaskOrigin.remove();
+                taskOrigin.remove();
             }
         }
     }
@@ -166,7 +170,8 @@ public class PostTask {
      * @param c The task to be run with the specified traits.
      * @return The result of the callable
      */
-    public static <T> T runSynchronously(@TaskTraits int taskTraits, Callable<T> c) {
+    public static <T extends @Nullable Object> T runSynchronously(
+            @TaskTraits int taskTraits, Callable<T> c) {
         return runSynchronouslyInternal(taskTraits, new FutureTask<T>(c));
     }
 
@@ -184,7 +189,8 @@ public class PostTask {
         runSynchronouslyInternal(taskTraits, new FutureTask<Void>(r, null));
     }
 
-    private static <T> T runSynchronouslyInternal(@TaskTraits int taskTraits, FutureTask<T> task) {
+    private static <T extends @Nullable Object> T runSynchronouslyInternal(
+            @TaskTraits int taskTraits, FutureTask<T> task) {
         // Ensure no task origin "caused by" is added, since we are wrapping in a RuntimeException
         // anyways.
         Runnable r = ENABLE_TASK_ORIGINS ? populateTaskOrigin(null, task) : task;
@@ -220,7 +226,11 @@ public class PostTask {
     }
 
     public static @Nullable Exception getTaskOrigin() {
-        return ENABLE_TASK_ORIGINS ? sTaskOrigin.get() : null;
+        if (ENABLE_TASK_ORIGINS) {
+            assumeNonNull(sTaskOrigin);
+            return sTaskOrigin.get();
+        }
+        return null;
     }
 
     /**
@@ -281,6 +291,7 @@ public class PostTask {
         sNativeInitialized = true;
         List<TaskRunnerImpl> preNativeTaskRunners;
         synchronized (sPreNativeTaskRunnerLock) {
+            assert sPreNativeTaskRunners != null;
             preNativeTaskRunners = sPreNativeTaskRunners;
             sPreNativeTaskRunners = null;
         }

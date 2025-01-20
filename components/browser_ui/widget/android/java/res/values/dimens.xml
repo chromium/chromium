@@ -228,4 +228,8 @@ found in the LICENSE file.
     <dimen name="loading_text_line_height">14dp</dimen>
     <dimen name="loading_text_line_spacing">6dp</dimen>
     <item type="fraction" format="fraction" name="loading_text_last_line_width_fraction">50%</item>
+
+    <!-- Price change indicator dimens -->
+    <dimen name="price_change_indicator_card_radius">8dp</dimen>
+    <dimen name="price_change_indicator_card_height">24dp</dimen>
 </resources>

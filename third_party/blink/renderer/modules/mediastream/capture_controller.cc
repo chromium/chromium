@@ -7,6 +7,7 @@
 #include <cmath>
 #include <optional>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
@@ -426,10 +427,9 @@ Vector<int> CaptureController::getSupportedZoomLevels() {
     return result;
   }
 
-  result[0] = static_cast<int>(std::ceil(100 * kPresetBrowserZoomFactors[0]));
+  result[0] = base::ClampCeil(100 * kPresetBrowserZoomFactors[0]);
   for (wtf_size_t i = 1; i < kSize; ++i) {
-    result[i] =
-        static_cast<int>(std::floor(100 * kPresetBrowserZoomFactors[i]));
+    result[i] = base::ClampFloor(100 * kPresetBrowserZoomFactors[i]);
     CHECK_LT(result[i - 1], result[i]) << "Must be monotonically increasing.";
   }
 

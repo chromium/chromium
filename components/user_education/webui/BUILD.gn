@@ -45,6 +45,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":test_support",
     ":webui",
     "//base",
     "//base/test:test_support",
@@ -64,5 +65,20 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//ui/webui/resources/js/browser_command:mojo_bindings",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_whats_new_storage_service.cc",
+    "mock_whats_new_storage_service.h",
+  ]
+
+  deps = [
+    ":webui",
+    "//base",
+    "//testing/gmock",
   ]
 }

@@ -51,7 +51,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            Supplier<Integer> bottomToolbarControlsOffsetSupplier,
+            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
         // If BCIV is enabled, we always show the hairline on the composited
@@ -124,6 +124,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         return mSceneLayer;
+    }
+
+    @Override
+    public void removeFromParent() {
+        mSceneLayer.removeFromParent();
     }
 
     @Override

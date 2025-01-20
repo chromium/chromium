@@ -54,6 +54,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
@@ -124,8 +125,7 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
 }
 
 // Creates a model representing a foreground `tray` image with the specified
-// `vector_icon`. Note that when Jelly is enabled, the image must be repainted
-// on changes to `tray` activation.
+// `vector_icon`. The image must be repainted on changes to `tray` activation.
 ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
                                           const gfx::VectorIcon& vector_icon) {
   // `tray` activation affects color.
@@ -227,6 +227,9 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
+  // Accessibility.
+  GetViewAccessibility().SetName(GetAccessibleNameForBubble());
+
   // Default icon.
   default_tray_icon_ =
       tray_container()->AddChildView(CreateDefaultTrayIcon(this));
@@ -295,12 +298,6 @@ void HoldingSpaceTray::Initialize() {
 
 void HoldingSpaceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
-}
-
-std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
@@ -443,9 +440,7 @@ void HoldingSpaceTray::PerformDrop(
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kDragAndDropToPin);
 
-  HoldingSpaceController::Get()->client()->PinFiles(
-      unpinned_file_paths,
-      holding_space_metrics::EventSource::kHoldingSpaceTray);
+  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
 
   did_drop_to_pin_ = true;
   output_drag_op = DragOperation::kCopy;
@@ -528,7 +523,9 @@ void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
 }
 
 std::u16string HoldingSpaceTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_A11Y_NAME,
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {

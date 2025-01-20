@@ -8,13 +8,13 @@
 
 #if USE_LOCAL_TLS_EMULATION()
 
+#include <sys/mman.h>
+
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/immediate_crash.h"
 #include "build/build_config.h"
-
-#include <sys/mman.h>
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #include <sys/prctl.h>

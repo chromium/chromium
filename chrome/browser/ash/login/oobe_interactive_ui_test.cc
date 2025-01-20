@@ -6,10 +6,6 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -19,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -84,6 +81,10 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -583,11 +584,11 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
     ArcState arc_state;
 
     std::string ToString() const {
-      return std::string("{is_tablet: ") + (is_tablet ? "true" : "false") +
+      return std::string("{is_tablet: ") + base::ToString(is_tablet) +
              ", is_quick_unlock_enabled: " +
-             (is_quick_unlock_enabled ? "true" : "false") +
+             base::ToString(is_quick_unlock_enabled) +
              ", hide_shelf_controls_in_tablet_mode: " +
-             (hide_shelf_controls_in_tablet_mode ? "true" : "false") +
+             base::ToString(hide_shelf_controls_in_tablet_mode) +
              ", arc_state: " + ArcStateToString(arc_state) + "}";
     }
   };
@@ -944,6 +945,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
+  base::ScopedAllowBlockingForTesting allow_io;
   test::SetFakeTouchpadDevice();
   policy_test_server_mixin_.SetupZeroTouchForcedEnrollment();
 

@@ -37,25 +37,22 @@ bool ShouldUseRestoreFrame(const views::Widget* widget);
 // right/bottom. Takes into account the orientation of the display.
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top);
 
-// Returns the corner radius of frame based on the state of the `native_window`
-// associated with the frame.
+// Returns the corner radius of `window` based on its state.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-int GetFrameCornerRadius(const aura::Window* native_window);
+int GetWindowCornerRadius(const aura::Window* window);
 
-// Returns true if the ClassProperty associated with native_window of the frame
-// can effect the radius of the frame.
+// Returns true if the ClassProperty can effect the radius of the window.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool CanPropertyEffectFrameRadius(const void* class_property_key);
+bool CanPropertyEffectWindowRadius(const void* class_property_key);
 
 // Returns true if window should have rounded corners for a given
 // `window_state`.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 bool ShouldWindowStateHaveRoundedCorners(WindowStateType window_state);
 
-// Returns true if the `native_window` that is associated with the frame should
-// have rounded corners.
+// Returns true if the `window` should have rounded corners.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window);
+bool ShouldWindowHaveRoundedCorners(const aura::Window* window);
 
 }  // namespace chromeos
 

@@ -109,8 +109,10 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   absl::Status status = ttp.StopAndParseTrace();
   EXPECT_TRUE(status.ok()) << status.message();
 
+  // Select the count of distinct grouping_id's.
   std::string query = R"(
-      SELECT EXTRACT_ARG(arg_set_id, 'debug.grouping_id') as id
+      SELECT COUNT(DISTINCT EXTRACT_ARG(arg_set_id, 'debug.grouping_id'))
+      AS distinct_grouping_ids
       FROM slice
       WHERE slice.name = 'RenderWidgetHostInputEventRouterCreated'
     )";
@@ -123,15 +125,18 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   // {"<num>"}}.
   EXPECT_EQ(result.value()[0].size(), 1u);
   if (input::IsTransferInputToVizSupported()) {
-    EXPECT_EQ(result.value().size(), 3u);
-    EXPECT_THAT(result.value(),
-                testing::ElementsAre(testing::ElementsAre("id"),
-                                     testing::ElementsAre("0"),
-                                     testing::ElementsAre("1")));
+    EXPECT_EQ(result.value().size(), 2u);
+    // Expect the distinct grouping_id count to be 2 for different WebContents.
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(testing::ElementsAre("distinct_grouping_ids"),
+                             testing::ElementsAre("2")));
   } else {
-    EXPECT_EQ(result.value().size(), 1u);
-    EXPECT_THAT(result.value(),
-                testing::ElementsAre(testing::ElementsAre("id")));
+    EXPECT_EQ(result.value().size(), 2u);
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(testing::ElementsAre("distinct_grouping_ids"),
+                             testing::ElementsAre("0")));
   }
 }
 
@@ -191,6 +196,39 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   const std::string expected_count =
       IsTransferInputToVizSupported() ? "1" : "0";
   EXPECT_EQ(slice_count, expected_count);
+}
+
+// TODO(crbug.com/381039758): Re-enable after investigation.
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
+                       DISABLED_ReuseSingleInputReceiver) {
+  base::HistogramTester histogram_tester;
+  GURL url = GURL(
+      "data:text/html,<!doctype html>"
+      "<body style='background-color: magenta;'></body>");
+  {
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        shell()->web_contents());
+    EXPECT_TRUE(content::NavigateToURL(shell(), url));
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  auto* second_shell = content::Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), url, nullptr, {800, 600});
+  {
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        second_shell->web_contents());
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  const int expected_count = IsTransferInputToVizSupported() ? 1 : 0;
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Android.InputOnViz.InputReceiverCreationResult",
+      /*kReuseExistingInputReceiver*/ 7, expected_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

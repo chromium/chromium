@@ -27,8 +27,8 @@ enum class ModifierKeyUsageMetric {
   kEscape = 10,
   kAssistant = 11,
   kFunction = 12,
-  kRightAlt = 13,
-  kMaxValue = kRightAlt
+  kQuickInsert = 13,
+  kMaxValue = kQuickInsert
 };
 
 // Enum used to record the source of function key rewrites.
@@ -57,7 +57,7 @@ void RecordModifierKeyPressedAfterRemapping(
     int device_id,
     DomCode dom_code,
     DomCode original_dom_code,
-    bool is_right_alt_key);
+    bool is_quick_insert_key);
 
 }  // namespace ui
 

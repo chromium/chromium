@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -37,12 +38,6 @@ namespace network {
 using CSPDirectiveName = mojom::CSPDirectiveName;
 using DirectivesMap =
     std::vector<std::pair<std::string_view, std::string_view>>;
-
-namespace features {
-BASE_FEATURE(kCspStopMatchingWildcardDirectivesToFtp,
-             "CspStopMatchingWildcardDirectivesToFtp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}
 
 namespace {
 
@@ -550,18 +545,18 @@ bool ParseNonce(std::string_view expression, std::string* nonce) {
 struct SupportedPrefixesStruct {
   const char* prefix;
   int prefix_length;
-  mojom::CSPHashAlgorithm type;
+  mojom::IntegrityAlgorithm type;
 };
 
 // Parse a hash-source, return false on error.
 bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
   static const SupportedPrefixesStruct SupportedPrefixes[] = {
-      {"'sha256-", 8, mojom::CSPHashAlgorithm::SHA256},
-      {"'sha384-", 8, mojom::CSPHashAlgorithm::SHA384},
-      {"'sha512-", 8, mojom::CSPHashAlgorithm::SHA512},
-      {"'sha-256-", 9, mojom::CSPHashAlgorithm::SHA256},
-      {"'sha-384-", 9, mojom::CSPHashAlgorithm::SHA384},
-      {"'sha-512-", 9, mojom::CSPHashAlgorithm::SHA512}};
+      {"'sha256-", 8, mojom::IntegrityAlgorithm::kSha256},
+      {"'sha384-", 8, mojom::IntegrityAlgorithm::kSha384},
+      {"'sha512-", 8, mojom::IntegrityAlgorithm::kSha512},
+      {"'sha-256-", 9, mojom::IntegrityAlgorithm::kSha256},
+      {"'sha-384-", 9, mojom::IntegrityAlgorithm::kSha384},
+      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512}};
 
   for (auto item : SupportedPrefixes) {
     if (base::StartsWith(expression, item.prefix,
@@ -592,6 +587,15 @@ bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
   }
 
   return false;
+}
+
+mojom::IntegrityAlgorithm StrongestHashAlgorithm(
+    std::optional<mojom::IntegrityAlgorithm> previous,
+    mojom::IntegrityAlgorithm current) {
+  if (previous) {
+    return std::max(previous.value(), current);
+  }
+  return current;
 }
 
 // Parse source-list grammar.
@@ -700,6 +704,23 @@ mojom::CSPSourceListPtr ParseSourceList(
 
     if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-hashes'")) {
       directive->allow_unsafe_hashes = true;
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha256'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha256);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha384'")) {
+      directive->report_hash_algorithm = StrongestHashAlgorithm(
+          directive->report_hash_algorithm, mojom::IntegrityAlgorithm::kSha384);
+      continue;
+    }
+
+    if (base::EqualsCaseInsensitiveASCII(expression, "'report-sha512'")) {
+      directive->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
       continue;
     }
 
@@ -1107,23 +1128,19 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
 }  // namespace
 
 CSPCheckResult::CSPCheckResult(bool allowed)
-    : CSPCheckResult(allowed, allowed, allowed) {}
+    : CSPCheckResult(allowed, allowed) {}
 
 CSPCheckResult& CSPCheckResult::operator&=(const CSPCheckResult& other) {
   allowed_ &= other.allowed_;
   allowed_if_wildcard_does_not_match_ws_ &=
       other.allowed_if_wildcard_does_not_match_ws_;
-  allowed_if_wildcard_does_not_match_ftp_ &=
-      other.allowed_if_wildcard_does_not_match_ftp_;
   return *this;
 }
 
 bool CSPCheckResult::operator==(const CSPCheckResult& other) const {
   return allowed_ == other.allowed_ &&
          allowed_if_wildcard_does_not_match_ws_ ==
-             other.allowed_if_wildcard_does_not_match_ws_ &&
-         allowed_if_wildcard_does_not_match_ftp_ ==
-             other.allowed_if_wildcard_does_not_match_ftp_;
+             other.allowed_if_wildcard_does_not_match_ws_;
 }
 
 CSPCheckResult::operator bool() const {
@@ -1139,19 +1156,11 @@ CSPCheckResult CSPCheckResult::Blocked() {
 }
 
 CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesWs() {
-  return CSPCheckResult(true, false, true);
-}
-
-CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp() {
-  return CSPCheckResult(true, true, false);
+  return CSPCheckResult(true, false);
 }
 
 bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchWs() const {
   return allowed_ != allowed_if_wildcard_does_not_match_ws_;
-}
-
-bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchFtp() const {
-  return allowed_ != allowed_if_wildcard_does_not_match_ftp_;
 }
 
 bool CSPCheckResult::IsAllowed() const {
@@ -1159,13 +1168,10 @@ bool CSPCheckResult::IsAllowed() const {
 }
 
 CSPCheckResult::CSPCheckResult(bool allowed,
-                               bool allowed_if_wildcard_does_not_match_ws,
-                               bool allowed_if_wildcard_does_not_match_ftp)
+                               bool allowed_if_wildcard_does_not_match_ws)
     : allowed_(allowed),
       allowed_if_wildcard_does_not_match_ws_(
-          allowed_if_wildcard_does_not_match_ws),
-      allowed_if_wildcard_does_not_match_ftp_(
-          allowed_if_wildcard_does_not_match_ftp) {}
+          allowed_if_wildcard_does_not_match_ws) {}
 
 CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
                                       CSPDirectiveName original_directive) {

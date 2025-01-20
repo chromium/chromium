@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
@@ -15,6 +16,7 @@
 #include "crypto/secure_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/ssl_hmac_channel_authenticator.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -162,6 +164,11 @@ Authenticator::RejectionReason Spake2Authenticator::rejection_reason() const {
   return rejection_reason_;
 }
 
+Authenticator::RejectionDetails Spake2Authenticator::rejection_details() const {
+  DCHECK_EQ(state(), REJECTED);
+  return rejection_details_;
+}
+
 void Spake2Authenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
                                          base::OnceClosure resume_callback) {
   ProcessMessageInternal(message);
@@ -178,14 +185,16 @@ void Spake2Authenticator::ProcessMessageInternal(
                                 &remote_cert_)) {
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ = RejectionDetails(
+        "Failed to decode the remote certificate in the incoming message.");
     return;
   }
 
   // Client always expects certificate in the first message.
   if (!is_host_ && remote_cert_.empty()) {
-    LOG(WARNING) << "No valid host certificate.";
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ = RejectionDetails("No valid host certificate.");
     return;
   }
 
@@ -200,15 +209,18 @@ void Spake2Authenticator::ProcessMessageInternal(
                                 &verification_hash)) {
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ = RejectionDetails(
+        "Failed to decode the spake message or the verification hash in the "
+        "incoming message.");
     return;
   }
 
   // |auth_key_| is generated when <spake-message> is received.
   if (auth_key_.empty()) {
     if (!spake_message_present) {
-      LOG(WARNING) << "<spake-message> not found.";
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_details_ = RejectionDetails("<spake-message> not found.");
       return;
     }
     uint8_t key[SPAKE2_MAX_KEY_SIZE];
@@ -221,6 +233,8 @@ void Spake2Authenticator::ProcessMessageInternal(
     if (!result) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
+      rejection_details_ =
+          RejectionDetails("Failed to process SPAKE2 message.");
       return;
     }
     CHECK(key_size);
@@ -231,16 +245,18 @@ void Spake2Authenticator::ProcessMessageInternal(
     expected_verification_hash_ =
         CalculateVerificationHash(!is_host_, remote_id_, local_id_);
   } else if (spake_message_present) {
-    LOG(WARNING) << "Received duplicate <spake-message>.";
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ =
+        RejectionDetails("Received duplicate <spake-message>.");
     return;
   }
 
   if (spake_message_sent_ && !verification_hash_present) {
-    LOG(WARNING) << "Didn't receive <verification-hash> when expected.";
     state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_details_ =
+        RejectionDetails("Didn't receive <verification-hash> when expected.");
     return;
   }
 
@@ -250,6 +266,7 @@ void Spake2Authenticator::ProcessMessageInternal(
             base::as_byte_span(expected_verification_hash_))) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
+      rejection_details_ = RejectionDetails("Verification hash mismatched.");
       return;
     }
     state_ = ACCEPTED;

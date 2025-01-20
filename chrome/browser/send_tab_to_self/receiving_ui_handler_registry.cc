@@ -26,8 +26,8 @@
 
 namespace send_tab_to_self {
 
-ReceivingUiHandlerRegistry::ReceivingUiHandlerRegistry() {}
-ReceivingUiHandlerRegistry::~ReceivingUiHandlerRegistry() {}
+ReceivingUiHandlerRegistry::ReceivingUiHandlerRegistry() = default;
+ReceivingUiHandlerRegistry::~ReceivingUiHandlerRegistry() = default;
 
 // static
 ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {
@@ -92,13 +92,12 @@ ReceivingUiHandlerRegistry::GetHandlers() const {
 
 void ReceivingUiHandlerRegistry::OnProfileShutdown(Profile* profile) {
   // Remove all handlers for |profile|.
-  applicable_handlers_.erase(
-      base::ranges::remove_if(
-          applicable_handlers_,
-          [=](const std::unique_ptr<ReceivingUiHandler>& handler) {
-            return handler->profile() == profile;
-          }),
-      applicable_handlers_.end());
+  auto to_remove = std::ranges::remove_if(
+      applicable_handlers_,
+      [=](const std::unique_ptr<ReceivingUiHandler>& handler) {
+        return handler->profile() == profile;
+      });
+  applicable_handlers_.erase(to_remove.begin(), to_remove.end());
 }
 
 }  // namespace send_tab_to_self

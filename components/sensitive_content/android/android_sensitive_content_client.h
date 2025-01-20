@@ -9,6 +9,7 @@
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "components/sensitive_content/sensitive_content_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/android/view_android_observer.h"
 
 namespace content {
 class WebContents;
@@ -18,6 +19,7 @@ namespace sensitive_content {
 
 class AndroidSensitiveContentClient
     : public SensitiveContentClient,
+      public ui::ViewAndroidObserver,
       public content::WebContentsUserData<AndroidSensitiveContentClient> {
  public:
   AndroidSensitiveContentClient(content::WebContents* web_contents,
@@ -35,6 +37,9 @@ class AndroidSensitiveContentClient
 
  private:
   friend class content::WebContentsUserData<AndroidSensitiveContentClient>;
+
+  // ui::ViewAndroidObserver
+  void OnDelegateSet() override;
 
   SensitiveContentManager manager_;
   std::string histogram_prefix_;

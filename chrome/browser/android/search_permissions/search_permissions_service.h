@@ -48,7 +48,7 @@ class SearchPermissionsService : public KeyedService {
   // testing.
   class SearchEngineDelegate {
    public:
-    virtual ~SearchEngineDelegate() {}
+    virtual ~SearchEngineDelegate() = default;
 
     // Returns the name of the current DSE.
     virtual std::u16string GetDSEName() = 0;

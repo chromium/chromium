@@ -17,7 +17,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -2085,6 +2084,16 @@ void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
                      GetUmaValueForRequests(requests),
                      GetUmaValueForRequests(screen_requests), action, variant,
                      screen_counter));
+}
+
+// static
+void PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
+    RequestTypeForUma request_type,
+    base::TimeDelta time_delta) {
+  base::UmaHistogramLongTimes100(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage." +
+          GetPermissionRequestString(request_type),
+      time_delta);
 }
 
 }  // namespace permissions

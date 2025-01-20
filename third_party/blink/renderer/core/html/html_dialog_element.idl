@@ -34,5 +34,5 @@
     [CEReactions, Measure, RaisesException] void show();
     [CEReactions, Measure, RaisesException] void showModal();
     [CEReactions] void close(optional DOMString returnValue);
-    [CEReactions,RuntimeEnabled=HTMLDialogLightDismiss] void requestClose(optional DOMString returnValue);
+    [CEReactions,RaisesException,RuntimeEnabled=HTMLDialogLightDismiss] void requestClose(optional DOMString returnValue);
 };

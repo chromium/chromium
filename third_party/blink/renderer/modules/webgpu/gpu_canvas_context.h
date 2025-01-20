@@ -62,7 +62,10 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // CanvasRenderingContext implementation
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override;
+  SkAlphaType GetAlphaType() const override;
+  SkColorType GetSkColorType() const override;
+  gfx::ColorSpace GetColorSpace() const override;
+  sk_sp<SkColorSpace> GetSkColorSpace() const override;
   // Produces a snapshot of the current contents of the swap chain if possible.
   // If that texture has already been sent to the compositor, will produce a
   // snapshot of the just released texture associated to this gpu context.
@@ -77,8 +80,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
-  bool IsOriginTopLeft() const final { return true; }
-  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
   bool IsPaintable() const final { return true; }
   int ExternallyAllocatedBufferCountPerPixel() final { return 1; }
   void Stop() final;
@@ -109,6 +110,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;
+  void InitializeLayer(cc::Layer* layer) override;
   void SetNeedsCompositingUpdate() override;
 
  private:
@@ -132,8 +134,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
 
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   Member<GPUDevice> device_;
 
   // If the system doesn't support the requested format but it's one that WebGPU

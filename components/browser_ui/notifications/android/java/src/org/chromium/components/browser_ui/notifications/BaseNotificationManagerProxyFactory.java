@@ -27,22 +27,15 @@ public class BaseNotificationManagerProxyFactory {
     }
 
     /** Overrides the proxy instance for tests. */
-    public static void setInstanceForTesting(NotificationManagerProxy proxy) {
+    public static void setInstanceForTesting(BaseNotificationManagerProxy proxy) {
         ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () -> {
                             sProxyForTest = proxy;
-                            NotificationManagerProxyImpl.setInstanceForTesting(proxy);
-                        });
-        ResettersForTesting.register(() -> sProxyForTest = null);
-    }
-
-    /** Overrides the proxy instance for tests. */
-    public static void setInstanceForTesting(AsyncNotificationManagerProxy proxy) {
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable)
-                        () -> {
-                            sProxyForTest = proxy;
+                            if (proxy instanceof NotificationManagerProxy) {
+                                NotificationManagerProxyImpl.setInstanceForTesting(
+                                        (NotificationManagerProxy) proxy);
+                            }
                         });
         ResettersForTesting.register(() -> sProxyForTest = null);
     }

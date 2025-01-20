@@ -5,6 +5,7 @@
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -29,6 +30,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +64,7 @@ OfflinePageVisuals TestVisuals() {
 
 // Build a store with outdated schema to simulate the upgrading process.
 void BuildTestStoreWithSchemaFromM52(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -109,7 +111,7 @@ void BuildTestStoreWithSchemaFromM52(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM53(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -158,7 +160,7 @@ void BuildTestStoreWithSchemaFromM53(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -214,7 +216,7 @@ void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -262,7 +264,7 @@ void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -311,7 +313,7 @@ void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -357,7 +359,7 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM61(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -435,7 +437,7 @@ void InjectItemInM62Store(sql::Database* db, const OfflinePageItem& item) {
 }
 
 void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -478,7 +480,7 @@ void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
 
 void BuildTestStoreWithSchemaVersion1(const base::FilePath& file) {
   BuildTestStoreWithSchemaFromM62(file);
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -507,7 +509,7 @@ void BuildTestStoreWithSchemaVersion1(const base::FilePath& file) {
 
 void BuildTestStoreWithSchemaVersion2(const base::FilePath& file) {
   BuildTestStoreWithSchemaVersion1(file);
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   sql::MetaTable meta_table;
   ASSERT_TRUE(
@@ -529,7 +531,7 @@ bool InsertVisualsVersion3(sql::Database* db,
 
 void BuildTestStoreWithSchemaVersion3(const base::FilePath& file) {
   BuildTestStoreWithSchemaVersion2(file);
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   sql::MetaTable meta_table;
   ASSERT_TRUE(
@@ -679,7 +681,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
   }
 
   void VerifyMetaVersions() {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("OfflinePages.db"))));
     ASSERT_TRUE(connection.is_open());

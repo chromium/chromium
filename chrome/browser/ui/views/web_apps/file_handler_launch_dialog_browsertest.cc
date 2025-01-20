@@ -146,8 +146,9 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
                            std::vector<base::FilePath> file_paths = {},
                            GURL expected_url = {}) {
     content::TestNavigationObserver navigation_observer(expected_url);
-    if (!expected_url.is_empty())
+    if (!expected_url.is_empty()) {
       navigation_observer.StartWatchingNewWebContents();
+    }
 
     base::RunLoop run_loop;
     web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
@@ -156,15 +157,17 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
         remember_checkbox_state);
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "FileHandlerLaunchDialogView");
-    if (file_paths.empty())
+    if (file_paths.empty()) {
       file_paths = {{base::FilePath::FromASCII("foo.txt")}};
+    }
     LaunchAppWithFiles(file_paths);
     waiter.WaitIfNeededAndGet()->CloseWithReason(user_response);
     run_loop.Run();
     EXPECT_EQ(expected_end_state, GetApp()->file_handler_approval_state());
 
-    if (!expected_url.is_empty())
+    if (!expected_url.is_empty()) {
       navigation_observer.Wait();
+    }
   }
 
   // Launches the app to handle a file, assumes no dialog will be shown, but

@@ -35,7 +35,6 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void Initialize() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void OnThemeChanged() override;
   // The SelectToSpeakTray does not have a bubble, so these functions are

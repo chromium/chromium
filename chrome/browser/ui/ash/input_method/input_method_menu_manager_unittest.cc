@@ -19,7 +19,7 @@ TEST(InputMethodMenuManagerTest, TestGetSingleton) {
 class MockObserver : public InputMethodMenuManager::Observer {
  public:
   MockObserver() : input_method_menu_item_changed_count_(0) {}
-  ~MockObserver() override {}
+  ~MockObserver() override = default;
 
   // Called when the list of menu items is changed.
   void InputMethodMenuItemChanged(InputMethodMenuManager* manager) override {
@@ -31,7 +31,7 @@ class MockObserver : public InputMethodMenuManager::Observer {
 class InputMethodMenuManagerStatefulTest : public testing::Test {
  public:
   InputMethodMenuManagerStatefulTest() : observer_(new MockObserver()) {}
-  ~InputMethodMenuManagerStatefulTest() override {}
+  ~InputMethodMenuManagerStatefulTest() override = default;
   void SetUp() override {
     menu_manager_ = InputMethodMenuManager::GetInstance();
     menu_manager_->AddObserver(observer_.get());

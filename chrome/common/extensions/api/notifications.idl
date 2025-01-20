@@ -5,7 +5,7 @@
 // Use the <code>chrome.notifications</code> API to create rich notifications
 // using templates and show these notifications to users in the system tray.
 namespace notifications {
-  [noinline_doc] enum TemplateType {
+  enum TemplateType {
     // Contains an icon, title, message, expandedMessage, and up to two
     // buttons.
     basic,

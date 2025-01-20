@@ -11,6 +11,8 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 
+class AIManager;
+
 // A base class for tasks which create an on-device session.
 class CreateOnDeviceSessionTask
     : public AIContextBoundObject,
@@ -99,6 +101,7 @@ class CreateLanguageModelOnDeviceSessionTask
     : public CreateOnDeviceSessionTask {
  public:
   CreateLanguageModelOnDeviceSessionTask(
+      AIManager& ai_manager,
       AIContextBoundObjectSet& context_bound_object_set,
       content::BrowserContext* browser_context,
       const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,

@@ -99,6 +99,8 @@ blink_modules_sources("mediastream") {
     "scoped_media_stream_tracer.h",
     "screen_capture_media_stream_track.cc",
     "screen_capture_media_stream_track.h",
+    "speech_recognition_media_stream_audio_sink.cc",
+    "speech_recognition_media_stream_audio_sink.h",
     "sub_capture_target.cc",
     "sub_capture_target.h",
     "track_audio_renderer.cc",
@@ -146,6 +148,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "media_permission_testing_platform.cc",
+    "media_permission_testing_platform.h",
     "mock_constraint_factory.cc",
     "mock_constraint_factory.h",
     "mock_encoded_video_frame.h",

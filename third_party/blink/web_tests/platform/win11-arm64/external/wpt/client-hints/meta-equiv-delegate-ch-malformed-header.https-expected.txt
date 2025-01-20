@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Delegate-CH malformed meta-equiv test
+  assert_false: device-memory-received expected false got true
+Harness: the test ran to completion.

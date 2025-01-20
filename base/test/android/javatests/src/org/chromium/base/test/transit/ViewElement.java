@@ -58,6 +58,7 @@ public class ViewElement extends Element<View> {
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
                         .withExpectEnabled(mOptions.mExpectEnabled)
+                        .withExpectDisabled(mOptions.mExpectDisabled)
                         .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
                         .build();
         return new DisplayedCondition(viewMatcher, conditionOptions);
@@ -77,6 +78,7 @@ public class ViewElement extends Element<View> {
         static final Options DEFAULT = new Options();
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
+        protected boolean mExpectDisabled;
         protected String mElementId;
         protected Integer mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
 
@@ -110,6 +112,14 @@ public class ViewElement extends Element<View> {
              */
             public Builder expectDisabled() {
                 mExpectEnabled = false;
+                mExpectDisabled = true;
+                return this;
+            }
+
+            /** Do not expect the View to be necessarily disabled or enabled. */
+            public Builder allowDisabled() {
+                mExpectEnabled = false;
+                mExpectDisabled = false;
                 return this;
             }
 
@@ -138,6 +148,11 @@ public class ViewElement extends Element<View> {
     /** Convenience {@link Options} setting expectDisabled(). */
     public static Options expectDisabledOption() {
         return newOptions().expectDisabled().build();
+    }
+
+    /** Convenience {@link Options} setting allowDisabled(). */
+    public static Options allowDisabledOption() {
+        return newOptions().allowDisabled().build();
     }
 
     /** Convenience {@link Options} setting displayingAtLeast(). */

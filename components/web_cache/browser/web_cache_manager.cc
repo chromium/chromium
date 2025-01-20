@@ -19,7 +19,7 @@ WebCacheManager::WebCacheManager() {
   // cannot observe the creation of the previous processes.
   for (auto iter(content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
-    Add(iter.GetCurrentValue()->GetID());
+    Add(iter.GetCurrentValue()->GetDeprecatedID());
   }
 }
 WebCacheManager::~WebCacheManager() = default;
@@ -53,7 +53,7 @@ void WebCacheManager::ClearCacheOnNavigation() {
 
 void WebCacheManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
-  Add(process_host->GetID());
+  Add(process_host->GetDeprecatedID());
   rph_observations_.AddObservation(process_host);
 }
 
@@ -66,7 +66,7 @@ void WebCacheManager::RenderProcessExited(
 void WebCacheManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* process_host) {
   rph_observations_.RemoveObservation(process_host);
-  Remove(process_host->GetID());
+  Remove(process_host->GetDeprecatedID());
 }
 
 void WebCacheManager::ClearCacheForProcess(int render_process_id) {

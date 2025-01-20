@@ -30,10 +30,10 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -986,34 +986,19 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
       create_shortcut_data("searches-before-urls", false, 1),
       create_shortcut_data("urls-before-searches", false, 2),
       create_shortcut_data("urls-before-searches", true, 1),
-      create_shortcut_data("urls-saddling-searches", false, 3),
-      create_shortcut_data("urls-saddling-searches", true, 2),
-      create_shortcut_data("urls-saddling-searches", false, 1),
-      create_shortcut_data("boosting-both-url", false, 2),
-      create_shortcut_data("boosting-both-url", false, 1),
-      create_shortcut_data("boosting-both-search", true, 3),
-      create_shortcut_data("boosting-both-search", true, 2),
+      create_shortcut_data("urls-saddling-searches-low-visits-a", false, 1),
+      create_shortcut_data("urls-saddling-searches-low-visits-b", true, 1),
+      create_shortcut_data("urls-saddling-searches-low-visits-c", false, 1),
+      create_shortcut_data("urls-saddling-searches-high-visits", false, 6),
+      create_shortcut_data("urls-saddling-searches-high-visits", true, 5),
+      create_shortcut_data("urls-saddling-searches-high-visits", false, 4),
   };
 
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
                                        shortcut_data, std::size(shortcut_data));
 
-  OmniboxTriggeredFeatureService* trigger_service =
-      client_->GetOmniboxTriggeredFeatureService();
-  OmniboxTriggeredFeatureService::Feature trigger_feature =
-      metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST;
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-      {{"ShortcutBoostUrlScore", "1300"}});
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::ShortcutBoosting>
-      scoped_config;
-
   {
     // Searches shouldn't be boosted since the appropriate param is not set.
-    trigger_service->ResetSession();
     AutocompleteInput input(u"only-searches", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
@@ -1021,13 +1006,10 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches.size(), 1u);
     EXPECT_EQ(matches[0].destination_url.spec(), "https://only-searches.com/1");
     EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
-    EXPECT_FALSE(
-        trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 
   {
     // Only the 1st URL should be boosted.
-    trigger_service->ResetSession();
     AutocompleteInput input(u"only-urls", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
@@ -1035,15 +1017,13 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches.size(), 2u);
     EXPECT_EQ(matches[0].destination_url.spec(), "https://only-urls.com/2");
     EXPECT_EQ(matches[1].destination_url.spec(), "https://only-urls.com/1");
-    EXPECT_EQ(matches[0].relevance, 1302);
+    EXPECT_EQ(matches[0].relevance, 1416);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 
   {
     // URLs should only boosted if they're 1st of all matches (including
     // searches).
-    trigger_service->ResetSession();
     AutocompleteInput input(u"searches-before-urls",
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
@@ -1056,14 +1036,11 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
               "https://searches-before-urls.com/1");
     EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_FALSE(
-        trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 
   {
     // URLs should only boosted if they're 1st of all matches (including
     // searches).
-    trigger_service->ResetSession();
     AutocompleteInput input(u"urls-before-searches",
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
@@ -1074,149 +1051,49 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
               "https://urls-before-searches.com/2");
     EXPECT_EQ(matches[1].destination_url.spec(),
               "https://urls-before-searches.com/1");
-    EXPECT_EQ(matches[0].relevance, 1302);
+    EXPECT_EQ(matches[0].relevance, 1416);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
-  }
-
-  {
-    // Should not boost when counterfactual is enabled.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-        {{"ShortcutBoostUrlScore", "1300"},
-         {"ShortcutBoostCounterfactual", "true"}});
-    scoped_config.Reset();
-
-    trigger_service->ResetSession();
-    AutocompleteInput input(u"urls-before-searches",
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
-    provider_->Start(input, false);
-    const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 2u);
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://urls-before-searches.com/2");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://urls-before-searches.com/1");
-    EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
-    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 
   {
     // All URLs meeting `ShortcutBoostNonTopHitThreshold` should be boosted.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-        {{"ShortcutBoostUrlScore", "1300"},
-         {"ShortcutBoostNonTopHitThreshold", "1"}});
-    scoped_config.Reset();
 
-    trigger_service->ResetSession();
-    AutocompleteInput input(u"urls-saddling-searches",
+    AutocompleteInput input(u"urls-saddling-searches-high-visits",
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
     EXPECT_EQ(matches.size(), 3u);
     EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://urls-saddling-searches.com/3");
+              "https://urls-saddling-searches-high-visits.com/6");
     EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://urls-saddling-searches.com/1");
+              "https://urls-saddling-searches-high-visits.com/4");
     EXPECT_EQ(matches[2].destination_url.spec(),
-              "https://urls-saddling-searches.com/2");
-    EXPECT_EQ(matches[0].relevance, 1303);
-    EXPECT_EQ(matches[1].relevance, 1301);
+              "https://urls-saddling-searches-high-visits.com/5");
+    EXPECT_EQ(matches[0].relevance, 1420);
+    EXPECT_EQ(matches[1].relevance, 1418);
     EXPECT_LE(matches[2].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 
   {
     // URLs not meeting `ShortcutBoostNonTopHitThreshold` should not be boosted
     // except for the top shortcut.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-        {{"ShortcutBoostUrlScore", "1300"},
-         {"ShortcutBoostNonTopHitThreshold", "10"}});
-    scoped_config.Reset();
 
-    trigger_service->ResetSession();
-    AutocompleteInput input(u"urls-saddling-searches",
+    AutocompleteInput input(u"urls-saddling-searches-low-visits",
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
     EXPECT_EQ(matches.size(), 3u);
     EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://urls-saddling-searches.com/3");
+              "https://urls-saddling-searches-low-visits-a.com/1");
     EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://urls-saddling-searches.com/2");
+              "https://urls-saddling-searches-low-visits-c.com/1");
     EXPECT_EQ(matches[2].destination_url.spec(),
-              "https://urls-saddling-searches.com/1");
-    EXPECT_EQ(matches[0].relevance, 1300);
+              "https://urls-saddling-searches-low-visits-b.com/1");
+    EXPECT_EQ(matches[0].relevance, 1414);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_LE(matches[2].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
-  }
-
-  {
-    // Boost URLs according to URL params, not search params.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-        {
-            {"ShortcutBoostUrlScore", "1300"},
-            {"ShortcutBoostSearchScore", "1310"},
-            {"ShortcutBoostNonTopHitThreshold", "2"},
-            {"ShortcutBoostNonTopHitSearchThreshold", "3"},
-        });
-    scoped_config.Reset();
-
-    trigger_service->ResetSession();
-    AutocompleteInput input(u"boosting-both-url",
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
-    provider_->Start(input, false);
-    const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 2u);
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://boosting-both-url.com/2");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://boosting-both-url.com/1");
-    EXPECT_EQ(matches[0].relevance, 1302);
-    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
-  }
-
-  {
-    // Boost searches according to search params, not URL params.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-        {
-            {"ShortcutBoostUrlScore", "1300"},
-            {"ShortcutBoostSearchScore", "1310"},
-            {"ShortcutBoostNonTopHitThreshold", "2"},
-            {"ShortcutBoostNonTopHitSearchThreshold", "3"},
-        });
-    scoped_config.Reset();
-
-    trigger_service->ResetSession();
-    AutocompleteInput input(u"boosting-both-search",
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
-    provider_->Start(input, false);
-    const auto& matches = provider_->matches();
-    EXPECT_EQ(matches.size(), 2u);
-    EXPECT_EQ(matches[0].destination_url.spec(),
-              "https://boosting-both-search.com/3");
-    EXPECT_EQ(matches[1].destination_url.spec(),
-              "https://boosting-both-search.com/2");
-    EXPECT_EQ(matches[0].relevance, 1313);
-    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
-    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 }
 

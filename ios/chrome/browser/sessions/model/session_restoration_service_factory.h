@@ -9,7 +9,7 @@
 
 #import "base/functional/callback_forward.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class SessionRestorationService;
@@ -17,7 +17,7 @@ class SessionRestorationService;
 // Singleton that owns all SessionRestorationService and associates them with
 // ProfileIOS.
 class SessionRestorationServiceFactory final
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   // Represents the storage format that is requested.
   enum StorageFormat {
@@ -45,8 +45,6 @@ class SessionRestorationServiceFactory final
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const final;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) final;

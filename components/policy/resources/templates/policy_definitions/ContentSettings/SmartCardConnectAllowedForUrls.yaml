@@ -1,0 +1,24 @@
+caption: Allow Smart Card connection by Isolated Apps
+desc: |-
+  Setting the policy specifies which Isolated Web Apps (IWAs) can connect to smart cards using Web Smart Card API without having the user prompted for permission. This policy does not accept wildcards.
+
+  This policy overrides <ph name="POLICY_NAME">SmartCardConnectBlockedForUrls</ph>; in particular, a blocklist value of <ph name="ALL_ISOLATED_WEB_APPS">*</ph> means that all IWAs will be unable to connect to smart card readers (users won't even be prompted for permission) except for the ones listed in this policy.
+
+  By default, IWAs that specify Smart Card permissions within their manifest can connect to smart cards provided that user grants the permission interactively per-reader.
+
+example_value:
+- isolated-app://egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic
+- isolated-app://anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+owners:
+- file://content/browser/smart_card/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

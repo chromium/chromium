@@ -12,9 +12,7 @@
 using base::Value;
 
 JSONStringValueSerializer::JSONStringValueSerializer(std::string* json_string)
-    : json_string_(json_string),
-      pretty_print_(false) {
-}
+    : json_string_(json_string), pretty_print_(false) {}
 
 JSONStringValueSerializer::~JSONStringValueSerializer() = default;
 
@@ -29,14 +27,17 @@ bool JSONStringValueSerializer::SerializeAndOmitBinaryValues(
 
 bool JSONStringValueSerializer::SerializeInternal(base::ValueView root,
                                                   bool omit_binary_values) {
-  if (!json_string_)
+  if (!json_string_) {
     return false;
+  }
 
   int options = 0;
-  if (omit_binary_values)
+  if (omit_binary_values) {
     options |= base::JSONWriter::OPTIONS_OMIT_BINARY_VALUES;
-  if (pretty_print_)
+  }
+  if (pretty_print_) {
     options |= base::JSONWriter::OPTIONS_PRETTY_PRINT;
+  }
 
   return base::JSONWriter::WriteWithOptions(root, options, json_string_);
 }
@@ -53,12 +54,15 @@ std::unique_ptr<Value> JSONStringValueDeserializer::Deserialize(
     std::string* error_str) {
   auto ret =
       base::JSONReader::ReadAndReturnValueWithError(json_string_, options_);
-  if (ret.has_value())
+  if (ret.has_value()) {
     return base::Value::ToUniquePtrValue(std::move(*ret));
+  }
 
-  if (error_code)
+  if (error_code) {
     *error_code = base::ValueDeserializer::kErrorCodeInvalidFormat;
-  if (error_str)
+  }
+  if (error_str) {
     *error_str = std::move(ret.error().message);
+  }
   return nullptr;
 }

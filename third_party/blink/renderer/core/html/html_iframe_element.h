@@ -61,6 +61,8 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   bool Credentialless() const override { return credentialless_; }
 
+  void CheckPotentialPermissionsPolicyViolation() override;
+
  private:
   void SetCollapsed(bool) override;
 
@@ -69,7 +71,7 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

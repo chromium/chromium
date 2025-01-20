@@ -8,7 +8,8 @@ import os
 import tempfile
 import unittest
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 from test_results import TestResult
 

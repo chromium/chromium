@@ -16,6 +16,7 @@
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
@@ -47,7 +48,7 @@ const float kMaxLinuxAxisValue = 32767.0;
 const int kInvalidEffectId = -1;
 const uint16_t kRumbleMagnitudeMax = 0xffff;
 
-const size_t kSpecialKeys[] = {
+const auto kSpecialKeys = std::to_array<size_t>({
     // Xbox One S pre-FW update reports Xbox button as SystemMainMenu over BT.
     KEY_MENU,
     // Power is used for the Guide button on the Nvidia Shield 2015 gamepad.
@@ -56,9 +57,11 @@ const size_t kSpecialKeys[] = {
     KEY_SEARCH,
     // Start, Back, and Guide buttons are often reported as Consumer Home or
     // Back.
-    KEY_HOMEPAGE, KEY_BACK,
+    KEY_HOMEPAGE,
+    KEY_BACK,
     // Record is used for Xbox Series X's share button over BT.
-    KEY_RECORD};
+    KEY_RECORD,
+});
 const size_t kSpecialKeysLen = std::size(kSpecialKeys);
 
 #define LONG_BITS (CHAR_BIT * sizeof(long))

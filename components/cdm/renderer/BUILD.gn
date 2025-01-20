@@ -5,6 +5,16 @@
 import("//third_party/widevine/cdm/widevine.gni")
 
 static_library("renderer") {
+  # See //components/cdm/README.md
+  visibility = [
+    "//android_webview/*",
+    "//chrome/*",
+    "//chromecast/*",
+    "//components/cdm/*",
+    "//content/shell/*",
+    "//fuchsia_web/*",
+  ]
+
   sources = [
     "external_clear_key_key_system_info.cc",
     "external_clear_key_key_system_info.h",
@@ -36,9 +46,6 @@ static_library("renderer") {
       "widevine_key_system_info.cc",
       "widevine_key_system_info.h",
     ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//third_party/widevine/cdm:headers",
-    ]
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 }

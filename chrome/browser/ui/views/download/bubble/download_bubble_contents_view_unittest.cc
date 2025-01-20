@@ -114,6 +114,11 @@ class DownloadBubbleContentsViewTest
       EXPECT_CALL(*item, GetDangerType())
           .WillRepeatedly(Return(download::DownloadDangerType::
                                      DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+      EXPECT_CALL(*item, IsDangerous()).WillRepeatedly(Return(true));
+      EXPECT_CALL(*item, GetReferrerUrl())
+          .WillRepeatedly(ReturnRefOfCopy(GURL("https://chromium.org")));
+      EXPECT_CALL(*item, GetTargetFilePath())
+          .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
       content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile_,
                                                        nullptr);
       download_items_.push_back(std::move(item));

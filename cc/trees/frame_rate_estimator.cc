@@ -5,8 +5,10 @@
 #include "cc/trees/frame_rate_estimator.h"
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -43,6 +45,15 @@ void FrameRateEstimator::SetVideoConferenceMode(bool enabled) {
 }
 
 void FrameRateEstimator::WillDraw(base::TimeTicks now) {
+  TRACE_EVENT1(
+      "cc,benchmark", "FrameRateEstimator::WillDraw", "Info",
+      base::StringPrintf("num_did_not_produce_frame_since_last_draw: %" PRIu64
+                         "\nin_video_conference_mode: %d\ninput_priority_mode: "
+                         "%d\nkNumDidNotProduceFrameBeforeThrottle: %d",
+                         num_did_not_produce_frame_since_last_draw_,
+                         in_video_conference_mode_, input_priority_mode_,
+                         features::kNumDidNotProduceFrameBeforeThrottle.Get()));
+
   num_did_not_produce_frame_since_last_draw_ = 0u;
   if (!in_video_conference_mode_ || input_priority_mode_) {
     return;

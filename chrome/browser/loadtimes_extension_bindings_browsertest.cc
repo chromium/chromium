@@ -13,7 +13,7 @@
 
 class LoadtimesExtensionBindingsTest : public InProcessBrowserTest {
  public:
-  LoadtimesExtensionBindingsTest() {}
+  LoadtimesExtensionBindingsTest() = default;
 
   void CompareBeforeAndAfter() {
     // TODO(simonjam): There's a race on whether or not first paint is populated

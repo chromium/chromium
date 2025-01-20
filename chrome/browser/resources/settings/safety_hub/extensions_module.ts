@@ -65,7 +65,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
   private async onSafetyCheckExtensionsChanged_(numExtensions: number) {
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckExtensionsReviewLabel', numExtensions);
+            'safetyHubExtensionsReviewLabel', numExtensions);
   }
 
   private onButtonClick_() {

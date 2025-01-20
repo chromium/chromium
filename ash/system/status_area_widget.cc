@@ -626,6 +626,12 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
   return true;
 }
 
+void StatusAreaWidget::InitializeTrayButtonsAccessibleNavFocus() {
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
+    tray_button->UpdateAccessibleNavFocus(shelf_);
+  }
+}
+
 void StatusAreaWidget::SetOpenShelfPodBubble(
     TrayBubbleView* open_shelf_pod_bubble) {
   if (open_shelf_pod_bubble_ == open_shelf_pod_bubble) {

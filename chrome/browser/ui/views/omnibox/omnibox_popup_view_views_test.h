@@ -38,7 +38,7 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     test::ThemeServiceChangedWaiter waiter_;
   };
 
-  OmniboxPopupViewViewsTest() {}
+  OmniboxPopupViewViewsTest() = default;
 
   OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
   OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =

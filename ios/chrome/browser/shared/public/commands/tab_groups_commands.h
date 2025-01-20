@@ -58,6 +58,9 @@ class WebStateID;
 // Displays a half sheet of the recent activity in a shared tab group.
 - (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
+// Displays a management page for managing a shared group.
+- (void)showManageForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_GROUPS_COMMANDS_H_

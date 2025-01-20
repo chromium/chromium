@@ -26,8 +26,6 @@ namespace invalidation {
 
 class Invalidation;
 
-BASE_DECLARE_FEATURE(kRestoreInterestingTopicsFeature);
-
 // A helper class for FCMInvalidationService.  It helps keep track of registered
 // handlers and which topic registrations are associated with each handler.
 class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
@@ -49,8 +47,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // unencrypted area.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  static void ClearDeprecatedPrefs(PrefService* prefs);
 
   // Starts sending notifications to |handler|.  |handler| must not be nullptr,
   // and it must not already be registered.

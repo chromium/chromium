@@ -96,7 +96,7 @@ TEST_F(GinJavaBridgeValueTest, BrokenValues) {
       GinJavaBridgeValue::ContainsGinJavaBridgeValue(non_binary.get()));
 
   const char dummy_data[] = "\000\001\002\003\004\005\006\007\010\011\012\013";
-  base::Value broken_binary(base::as_bytes(base::make_span(dummy_data)));
+  base::Value broken_binary(base::byte_span_with_nul_from_cstring(dummy_data));
   EXPECT_FALSE(GinJavaBridgeValue::ContainsGinJavaBridgeValue(&broken_binary));
 }
 

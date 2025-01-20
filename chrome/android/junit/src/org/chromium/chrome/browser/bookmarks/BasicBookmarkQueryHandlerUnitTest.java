@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -22,7 +21,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -37,14 +35,12 @@ public class BasicBookmarkQueryHandlerUnitTest {
     private FakeBookmarkModel mBookmarkModel;
     private BasicBookmarkQueryHandler mHandler;
 
-    @Mock ShoppingService mShoppingService;
-
     @Before
     public void setup() {
         mBookmarkModel = FakeBookmarkModel.createModel();
         mHandler =
                 new BasicBookmarkQueryHandler(
-                        mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class), mShoppingService);
+                        mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class));
     }
 
     @Test

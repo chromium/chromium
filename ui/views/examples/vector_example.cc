@@ -129,17 +129,19 @@ class VectorIconGallery : public View, public TextfieldController {
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override {
     if (sender == size_input_) {
-      if (base::StringToInt(new_contents, &size_) && (size_ > 0))
+      if (base::StringToInt(new_contents, &size_) && (size_ > 0)) {
         Update();
-      else
+      } else {
         size_input_->SetText(std::u16string());
+      }
 
       return;
     }
 
     DCHECK_EQ(color_input_, sender);
-    if (new_contents.size() != 8u)
+    if (new_contents.size() != 8u) {
       return;
+    }
     unsigned new_color =
         strtoul(base::UTF16ToASCII(new_contents).c_str(), nullptr, 16);
     if (new_color <= 0xffffffff) {

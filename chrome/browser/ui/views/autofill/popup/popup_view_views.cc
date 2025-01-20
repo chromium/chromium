@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
@@ -48,13 +48,13 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -691,16 +691,15 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // TODO(crbug.com/374715256): Prediction improvements suggestions are
-  // generated asynchronously, after showing the "loading" popup. Testing on
-  // the `kPredictionImprovementsFeedback` suggestion is a way to understand
-  // that the suggestions are generated successfully and announce it. This
-  // approach should be reconsidered in favor of something more reliable.
+  // TODO(crbug.com/374715256): Autofill Ai suggestions are generated
+  // asynchronously, after showing the "loading" popup. Testing for the
+  // `kAutofillAiFeedback` suggestion is a way to understand that the
+  // suggestions are generated successfully and announce it. This approach
+  // should be reconsidered in favor of something more reliable.
   CHECK(controller(), base::NotFatalUntil::M134);
   if (controller() &&
       base::Contains(controller()->GetSuggestions(),
-                     SuggestionType::kPredictionImprovementsFeedback,
-                     &Suggestion::type)) {
+                     SuggestionType::kAutofillAiFeedback, &Suggestion::type)) {
     a11y_announcer_.Run(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
@@ -798,11 +797,19 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // educational messages. The promo bubble should only be shown once in one
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
-  for (auto iph_metadata : base::MakeFlatSet<Suggestion::IPHMetadata>(
+  for (const auto& iph_metadata : base::MakeFlatSet<Suggestion::IPHMetadata>(
            controller_->GetSuggestions(), /*comp=*/{},
            &Suggestion::iph_metadata)) {
     if (iph_metadata.feature) {
-      browser->window()->MaybeShowFeaturePromo(*iph_metadata.feature);
+      user_education::FeaturePromoParams params(*iph_metadata.feature);
+      // Setting the params to a `std::vector` (even if it is empty), indicates
+      // to the framework that a substitution should be made. Therefore only
+      // set it if `iph_params` is non-empty.
+      if (!iph_metadata.iph_params.empty()) {
+        params.body_params = iph_metadata.iph_params;
+        params.screen_reader_params = iph_metadata.iph_params;
+      }
+      browser->window()->MaybeShowFeaturePromo(std::move(params));
     }
   }
 }
@@ -1024,10 +1031,9 @@ void PopupViewViews::CreateSuggestionViews() {
                   suggestions[current_line_number])));
           break;
 
-        case SuggestionType::kPredictionImprovementsLoadingState:
+        case SuggestionType::kAutofillAiLoadingState:
           rows_.push_back(body_container->AddChildView(
-              std::make_unique<autofill_prediction_improvements::
-                                   PredictionImprovementsLoadingStateView>(
+              std::make_unique<autofill_ai::AutofillAiLoadingStateView>(
                   suggestions[current_line_number])));
           break;
 
@@ -1049,19 +1055,17 @@ void PopupViewViews::CreateSuggestionViews() {
 
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
-              SuggestionType::kRetrievePredictionImprovements) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsTriggerElementId);
-          } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kFillPredictionImprovements) {
+              SuggestionType::kRetrieveAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillPredictionImprovementsFillElementId);
+                                  kAutofillAiTriggerElementId);
           } else if (suggestions[current_line_number].type ==
-                     SuggestionType::kPredictionImprovementsError) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsErrorElementId);
+                     SuggestionType::kFillAutofillAi) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiFillElementId);
+          } else if (suggestions[current_line_number].type ==
+                     SuggestionType::kAutofillAiError) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiErrorElementId);
           }
 
           const base::Feature* const feature =
@@ -1073,7 +1077,9 @@ void PopupViewViews::CreateSuggestionViews() {
           if (feature == &feature_engagement::
                              kIPHAutofillVirtualCardSuggestionFeature ||
               feature == &feature_engagement::
-                             kIPHAutofillDisabledVirtualCardSuggestionFeature) {
+                             kIPHAutofillDisabledVirtualCardSuggestionFeature ||
+              feature == &feature_engagement::
+                             kIPHAutofillCardInfoRetrievalSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature ==
@@ -1431,9 +1437,7 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
   RowPointer first_row = rows_[0];
   views::View* view_to_focus = nullptr;
   if (auto* loading_view =
-          absl::get_if<autofill_prediction_improvements::
-                           PredictionImprovementsLoadingStateView*>(
-              &first_row)) {
+          absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(&first_row)) {
     view_to_focus = *loading_view;
   } else if (auto* warning_view = absl::get_if<PopupWarningView*>(&first_row)) {
     view_to_focus = *warning_view;

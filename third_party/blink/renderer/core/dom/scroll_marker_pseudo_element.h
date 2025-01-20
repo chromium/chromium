@@ -23,7 +23,6 @@ class ScrollMarkerPseudoElement : public PseudoElement {
   void SetSelected(bool value);
   bool IsSelected() const { return is_selected_; }
   int DefaultTabIndex() const override { return 0; }
-  FocusableState SupportsFocus(UpdateBehavior) const final;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const final { return true; }
   bool WillRespondToMouseClickEvents() override { return true; }
@@ -34,6 +33,7 @@ class ScrollMarkerPseudoElement : public PseudoElement {
     return scroll_marker_group_;
   }
 
+  void AttachLayoutTree(AttachContext&) final;
   void Dispose() final;
   void Trace(Visitor* v) const final;
 

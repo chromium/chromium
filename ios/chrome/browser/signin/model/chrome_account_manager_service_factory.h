@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ChromeAccountManagerService;
 class ProfileIOS;
@@ -14,13 +14,8 @@ class ProfileIOS;
 // Singleton that owns all ChromeAccountManagerServices and associates them with
 // ProfileIOS.
 class ChromeAccountManagerServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  ChromeAccountManagerServiceFactory(const BrowserStateKeyedServiceFactory&) =
-      delete;
-  ChromeAccountManagerServiceFactory& operator=(
-      const BrowserStateKeyedServiceFactory&) = delete;
-
   static ChromeAccountManagerService* GetForProfile(ProfileIOS* profile);
   static ChromeAccountManagerServiceFactory* GetInstance();
 

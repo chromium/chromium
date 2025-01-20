@@ -92,19 +92,9 @@ CryptAuthKeyProofComputerImpl::ComputeSymmetricKeyProof(
       crypto::HkdfSha256(symmetric_key.symmetric_key(), salt, info,
                          NumBytesForSymmetricKeyType(symmetric_key.type()));
 
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  std::vector<unsigned char> signed_payload(hmac.DigestLength());
-  bool success =
-      hmac.Init(derived_symmetric_key_material) &&
-      hmac.Sign(payload, signed_payload.data(), signed_payload.size());
-
-  if (!success) {
-    PA_LOG(ERROR) << "Failed to compute symmetric key proof for key handle "
-                  << symmetric_key.handle();
-    return std::nullopt;
-  }
-
-  return std::string(signed_payload.begin(), signed_payload.end());
+  return std::string(base::as_string_view(crypto::hmac::SignSha256(
+      base::as_byte_span(derived_symmetric_key_material),
+      base::as_byte_span(payload))));
 }
 
 std::optional<std::string>
@@ -121,7 +111,7 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
   std::unique_ptr<crypto::ECPrivateKey> ec_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-          base::as_bytes(base::make_span(asymmetric_key.private_key())));
+          base::as_byte_span(asymmetric_key.private_key()));
   if (!ec_private_key) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle() << ". "
@@ -140,8 +130,8 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
 
   std::string to_sign = salt + payload;
   std::vector<uint8_t> key_proof;
-  bool success = ec_signature_creator->Sign(
-      base::as_bytes(base::make_span(to_sign)), &key_proof);
+  bool success =
+      ec_signature_creator->Sign(base::as_byte_span(to_sign), &key_proof);
   if (!success) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle();

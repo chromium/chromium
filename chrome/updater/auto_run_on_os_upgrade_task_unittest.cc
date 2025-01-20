@@ -47,9 +47,6 @@ constexpr char kLastOSVersion[] = "last_os_version";
 
 class AutoRunOnOsUpgradeTaskTest : public testing::Test {
  protected:
-  AutoRunOnOsUpgradeTaskTest() = default;
-  ~AutoRunOnOsUpgradeTaskTest() override = default;
-
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());

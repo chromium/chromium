@@ -4,8 +4,12 @@
 
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
+#include <map>
+#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,112 +31,50 @@ using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
 using ::testing::Eq;
 
-struct ExperimentGroupMatchTest {
+struct MatchTest {
   std::string name;
   std::string req;
   std::string top;
-  // The proto has an int type but feature init needs a string representation.
-  std::string experiment_group;
   bool matches;
   bool matches_with_bypass;
 };
 
-const std::vector<ExperimentGroupMatchTest> kMatchTests = {
-    ExperimentGroupMatchTest{
-        "NoExperimentGroup_ExcludedFromResource",
+const std::vector<MatchTest> kMatchTests = {
+    MatchTest{
+        "ExcludedFromResource",
         "experiment.com",
         "top.com",
-        "0",
         false,
         false,
     },
-    ExperimentGroupMatchTest{
-        "NoExperimentGroup_DefaultResourceMatch",
+    MatchTest{
+        "ResourceMatch",
         "example.com",
         "top.com",
-        "0",
         true,
         true,
-    },
-    ExperimentGroupMatchTest{
-        "ExperimentGroup1_ExperimentResourceMatch",
-        "experiment.com",
-        "top.com",
-        "1",
-        true,
-        true,
-    },
-    ExperimentGroupMatchTest{
-        "ExperimentGroup2_ExperimentResourceMatch",
-        "experiment.com",
-        "top.com",
-        "2",
-        true,
-        true,
-    },
-    ExperimentGroupMatchTest{
-        "ExperimentGroup1_DefaultResourceMatch",
-        "example.com",
-        "top.com",
-        "1",
-        true,
-        true,
-    },
-    ExperimentGroupMatchTest{
-        "ExperimentGroup2_ExcludedFromDefaultResource",
-        "example.com",
-        "top.com",
-        "2",
-        false,
-        false,
-    },
-    ExperimentGroupMatchTest{
-        "ExperimentGroup3_ExcludedFromDefaultResource",
-        "experiment.com",
-        "top.com",
-        "3",
-        false,
-        false,
     },
     // Public suffix list testcases.
     // Assumes that "googleapis.com" is on the public suffix list.
-
+    //
     // The `googleapis.com` domain is in the owned_resources of an MDL entry,
     // but the top level site is not owned by it so this is a 3rd party request
     // and should be proxied.
-    ExperimentGroupMatchTest{
+    MatchTest{
         "OnPsl_OnOwnedResources_TopToDifferentDomain",
         "googleapis.com",
         "top.com",
-        "1",
         true,
         true,
     },
-
     // The `googleapis.com` domain is in the owned_resources of an MDL entry.
     // This is a request to a subdomain of an owned_resources (known tracker)
     // The top level site is not owned by the same owner so this is a 3rd
     // party request and should be proxied.
-    ExperimentGroupMatchTest{
+    MatchTest{
         "OnPsl_OnOwnedResources_TopToDifferentDomainSubDomain",
         "sub.googleapis.com",
         "top.com",
-        "1",
-        true,
-        true,
-    },
-    // Request from a domain to its subdomain.
-    // `googleapis.com` is listed on the PSL.
-    // An MDL entry claims ownership of `googleapis.com`
-    // No MDL entry claims ownership of `sub.googleapis.com`
-    // Should be proxied because `googleapis.com` is on the MDL and the two
-    // don't belong to the same owner.
-    ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
-        "OwnerDoesntClaimSubdomain",
-        "sub.googleapis.com",
-        "googleapis.com",
-        "1",
         true,
         true,
     },
@@ -142,12 +84,11 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     // An MDL entry claims ownership of `sub.co.jp`
     // Should be proxied because `co.jp` is listed on the PSL and the
     // top_frame_site has the same suffix but is not same-site.
-    ExperimentGroupMatchTest{
+    MatchTest{
         "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
         "OwnerClaimsSubdomain",
         "sub.co.jp",
         "other.co.jp",
-        "1",
         true,
         true,
     },
@@ -157,11 +98,10 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     // `co.jp` is listed in the PSL, the subdomain is
     // privately owned and an MDL entry claims ownership of it and this is a
     // request between an owned property to an owned resource of the same owner.
-    ExperimentGroupMatchTest{
+    MatchTest{
         "Psl_MatchingOwnedResources_SubdomainNotOnPsl",
         "sub.co.jp",
         "owned_property.com",
-        "1",
         true,
         false,
     },
@@ -170,38 +110,33 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     // No MDL entry claims ownership of `co.jp`
     // No MDL entry claims ownership of `site.co.jp`
     // Bypasses the proxy for same-site check of request and top_frame_site.
-    ExperimentGroupMatchTest{
+    MatchTest{
         "OnPsl_SameSiteRequest"
         "OwnerClaimsSubdomain",
         "same.site.co.jp",
         "site.co.jp",
-        "1",
         true,
         false,
     },
-
     // Ensure fully-qualified domain names (FQDNs) match correctly.
-    ExperimentGroupMatchTest{
-        "NoExperimentGroup_DefaultResourceMatch_FQDN",
+    MatchTest{
+        "ResourceMatch_FQDN",
         "example.com.",
         "top.com.",
-        "0",
         true,
         true,
     },
-    ExperimentGroupMatchTest{
-        "NoExperimentGroup_DefaultResourceMatch_FQDN_Req",
+    MatchTest{
+        "ResourceMatch_FQDN_Req",
         "example.com.",
         "top.com",
-        "0",
         true,
         true,
     },
-    ExperimentGroupMatchTest{
-        "NoExperimentGroup_DefaultResourceMatch_FQDN_Top",
+    MatchTest{
+        "ResourceMatch_FQDN_Top",
         "example.com",
         "top.com.",
-        "0",
         true,
         true,
     },
@@ -509,19 +444,12 @@ TEST_F(MaskedDomainListManagerTest, AllowListWithoutBypassUsesLessMemory) {
             allow_list_no_bypass_.EstimateMemoryUsage());
 }
 
-class MaskedDomainListManagerExperimentGroupMatchTest
+class MaskedDomainListManagerMatchTest
     : public MaskedDomainListManagerBaseTest,
-      public testing::WithParamInterface<ExperimentGroupMatchTest> {};
+      public testing::WithParamInterface<MatchTest> {};
 
-TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
-  const ExperimentGroupMatchTest& p = GetParam();
-
-  std::map<std::string, std::string> parameters;
-  parameters[network::features::kMaskedDomainListExperimentGroup.name] =
-      p.experiment_group;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      network::features::kMaskedDomainList, std::move(parameters));
+TEST_P(MaskedDomainListManagerMatchTest, Match) {
+  const MatchTest& p = GetParam();
 
   MaskedDomainListManager allow_list_no_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
@@ -531,39 +459,23 @@ TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
 
   MaskedDomainList mdl;
 
-  // ResourceOwner 1 - Includes the default group.
   ResourceOwner* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("example");
   Resource* resource = resource_owner->add_owned_resources();
   resource->set_domain("example.com");
-  resource->add_experiment_group_ids(1);
-
-  // ResourceOwner 2 - Excludes the default group.
-  resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("experiment");
-  resource = resource_owner->add_owned_resources();
-  resource->set_domain("experiment.com");
-  resource->set_exclude_default_group(true);
-  resource->add_experiment_group_ids(1);
-  resource->add_experiment_group_ids(2);
 
   // Public Suffix List (includes private section)
   mdl.add_public_suffix_list_rules()->set_private_domain("googleapis.com");
   mdl.add_public_suffix_list_rules()->set_private_domain("co.jp");
 
-  // ResourceOwner 3 - Includes resources which are on the public suffix list.
+  // Additional ResourceOwner - Includes resources which are on the public
+  // suffix list.
   resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("public_suffix");
   resource_owner->add_owned_properties("owned_property.com");
-  // Claim top level domain on the PSL.
-  resource = resource_owner->add_owned_resources();
-  resource->set_domain("googleapis.com");
-  resource->add_experiment_group_ids(1);
-
   // Claim a subdomain on the PSL.
   resource = resource_owner->add_owned_resources();
   resource->set_domain("sub.co.jp");
-  resource->add_experiment_group_ids(1);
 
   allow_list_no_bypass.UpdateMaskedDomainList(
       mdl, /*exclusion_list=*/std::vector<std::string>());
@@ -581,35 +493,97 @@ TEST_P(MaskedDomainListManagerExperimentGroupMatchTest, Match) {
                                        request_url, network_anonymization_key));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MaskedDomainListManagerExperimentGroupMatchTest,
-    testing::ValuesIn(kMatchTests),
-    [](const testing::TestParamInfo<ExperimentGroupMatchTest>& info) {
-      return info.param.name;
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         MaskedDomainListManagerMatchTest,
+                         testing::ValuesIn(kMatchTests),
+                         [](const testing::TestParamInfo<MatchTest>& info) {
+                           return info.param.name;
+                         });
 
 TEST_F(MaskedDomainListManagerBaseTest, ExclusionSetDomainsRemovedFromMDL) {
-  MaskedDomainListManager allow_list_no_bypass(
+  auto mdl_manager = MaskedDomainListManager(
       network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
-  const std::set<std::string> mdl_domains(
-      {"com", "example.com", "subdomain.example.com",
-       "sub.subdomain.example.com", "unrelated-example.com", "example.net",
-       "subdomain.example.net", "example.com.example.net", "excluded-tld",
-       "included-tld", "subdomain.excluded-tld", "subdomain.included-tld"});
-  const std::set<std::string> exclusion_set(
-      {"example.com", "excluded-tld", "irrelevant-tld"});
-  const std::set<std::string> mdl_domains_after_exclusions(
-      {"com", "unrelated-example.com", "example.net", "subdomain.example.net",
-       "example.com.example.net", "included-tld", "subdomain.included-tld"});
-  const std::set<std::string> empty_exclusion_set({});
 
-  EXPECT_THAT(
-      allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains, exclusion_set),
-      Eq(mdl_domains_after_exclusions));
-  EXPECT_THAT(allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains,
-                                                         empty_exclusion_set),
-              Eq(mdl_domains));
+  // Determine domains that should be excluded from the MDL.
+  std::string example_com = "example.com";
+  std::string excluded_tld = "excluded-tld";
+  std::string irrelevant_tld = "irrelevant-tld";  // Not in the MDL.
+  std::vector<std::string> exclusion_list = {example_com, excluded_tld,
+                                             irrelevant_tld};
+
+  // The following map contains domains as keys and any subdomains as
+  // values. This will be used to create the MDL being tested. Any domains
+  // excluded from the MDL will be tracked in the exclusion list. Excluded
+  // domains and their subdomains should not be matched on.
+  std::map<std::string, std::vector<std::string>> tld_map_with_domains = {
+      {example_com,
+       {
+           "subdomain.example.com",
+           "sub.subdomain.example.com",
+       }},
+      {"example.net",
+       {
+           "subdomain.example.net",
+           "example.com.example.net",
+       }},
+      {"included-tld",
+       {
+           "subdomain.included-tld",
+       }},
+      {excluded_tld,
+       {
+           "subdomain.excluded-tld",
+       }},
+      {"unrelated-example.com", {}},  // No subdomains for this domain.
+      {"com", {}}};
+
+  // Create an MDL with domains above:
+  MaskedDomainList mdl;
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    // Create a ResourceOwner for the domain. The owner name here is abritrary,
+    // but needs to be set. The more important thing is the owned resources must
+    // include the domain itself as well as any subdomains.
+    ResourceOwner* resource_owner = mdl.add_resource_owners();
+    resource_owner->set_owner_name(domain);
+    resource_owner->add_owned_resources()->set_domain(domain);
+    for (auto const& subdomain : subdomains) {
+      resource_owner->add_owned_resources()->set_domain(subdomain);
+    }
+  }
+
+  // First update the MDL and provide an empty exclusion list.
+  mdl_manager.UpdateMaskedDomainList(mdl, /*exclusion_list=*/{});
+
+  // Every domain in the domain map should be matched on b/c no domains are
+  // excluded.
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"https://", domain})),
+                                    net::NetworkAnonymizationKey()));
+    for (auto const& subdomain : subdomains) {
+      EXPECT_TRUE(
+          mdl_manager.Matches(GURL(base::StrCat({"https://", subdomain})),
+                              net::NetworkAnonymizationKey()));
+    }
+  }
+
+  // Now update the MDL with an exclusion list.
+  mdl_manager.UpdateMaskedDomainList(mdl, exclusion_list);
+
+  // An excluded domain nor its subdomains should not be matched on.
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    bool should_match = !base::Contains(exclusion_list, domain);
+    net::NetworkAnonymizationKey nak;
+
+    // If the domain is excluded, it should not be matched on and vice versa.
+    EXPECT_EQ(should_match, mdl_manager.Matches(
+                                GURL(base::StrCat({"https://", domain})), nak));
+
+    for (auto const& subdomain : subdomains) {
+      EXPECT_EQ(should_match,
+                mdl_manager.Matches(GURL(base::StrCat({"https://", subdomain})),
+                                    nak));
+    }
+  }
 }
 
 }  // namespace ip_protection

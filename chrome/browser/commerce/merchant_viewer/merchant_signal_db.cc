@@ -38,7 +38,7 @@ void OnLoadCallbackSingleEntry(const base::android::JavaRef<jobject>& jcallback,
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> signal =
       Java_MerchantTrustSignalsEvent_Constructor(
-          env, base::android::ConvertUTF8ToJavaString(env, proto.key()) /*key*/,
+          env, proto.key() /*key*/,
           proto.trust_signals_message_displayed_timestamp() /*timestamp*/);
   base::android::RunObjectCallbackAndroid(jcallback, signal);
 }
@@ -54,8 +54,7 @@ void OnLoadCallbackMultipleEntry(
   for (SessionProtoDB<MerchantSignalProto>::KeyAndValue& kv : data) {
     MerchantSignalProto proto = std::move(kv.second);
     Java_MerchantTrustSignalsEvent_createEventAndAddToList(
-        env, jlist,
-        base::android::ConvertUTF8ToJavaString(env, proto.key()) /*key*/,
+        env, jlist, proto.key() /*key*/,
         proto.trust_signals_message_displayed_timestamp() /*timestamp*/);
   }
   base::android::RunObjectCallbackAndroid(jcallback, jlist);
@@ -77,10 +76,9 @@ MerchantSignalDB::~MerchantSignalDB() = default;
 
 void MerchantSignalDB::Save(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jkey,
+    std::string& key,
     const jlong jtimestamp,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  const std::string& key = base::android::ConvertJavaStringToUTF8(env, jkey);
   MerchantSignalProto proto;
   proto.set_key(key);
   proto.set_trust_signals_message_displayed_timestamp(jtimestamp);
@@ -92,33 +90,32 @@ void MerchantSignalDB::Save(
 
 void MerchantSignalDB::Load(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jkey,
+    std::string& key,
     const base::android::JavaParamRef<jobject>& jcallback) {
   proto_db_->LoadOneEntry(
-      base::android::ConvertJavaStringToUTF8(env, jkey),
+      key,
       base::BindOnce(&OnLoadCallbackSingleEntry,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void MerchantSignalDB::LoadWithPrefix(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jprefix,
+    std::string& prefix,
     const base::android::JavaParamRef<jobject>& jcallback) {
   proto_db_->LoadContentWithPrefix(
-      base::android::ConvertJavaStringToUTF8(env, jprefix),
+      prefix,
       base::BindOnce(&OnLoadCallbackMultipleEntry,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void MerchantSignalDB::Delete(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jkey,
+    std::string& key,
     const base::android::JavaParamRef<jobject>& joncomplete_for_testing) {
   proto_db_->DeleteOneEntry(
-      base::android::ConvertJavaStringToUTF8(env, jkey),
-      base::BindOnce(&OnUpdateCallback,
-                     base::android::ScopedJavaGlobalRef<jobject>(
-                         joncomplete_for_testing)));
+      key, base::BindOnce(&OnUpdateCallback,
+                          base::android::ScopedJavaGlobalRef<jobject>(
+                              joncomplete_for_testing)));
 }
 
 void MerchantSignalDB::DeleteAll(

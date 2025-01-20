@@ -17,10 +17,6 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/services/app_service/public/cpp/url_handler_info.h"
-#endif
-
 class GURL;
 class Profile;
 
@@ -70,13 +66,6 @@ webapps::AppId InstallWebAppWithoutOsIntegration(
     bool overwrite_existing_manifest_fields = false,
     webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-
-// Synchronously install a web-app-based shortcut for testing.
-webapps::AppId InstallShortcut(Profile* profile,
-                               const std::string& shortcut_name,
-                               const GURL& start_url,
-                               bool create_default_icon = true,
-                               bool is_policy_install = false);
 
 // Synchronously uninstall a web app. May be used in unit tests and browser
 // tests. Emulates a user uninstall - if the web app cannot be uninstalled by

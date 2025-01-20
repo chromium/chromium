@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 
+#include <algorithm>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
@@ -64,30 +66,36 @@ TEST_F(HomeModulesCardRegistryTest, TestPriceTrackingNotificationPromoCard) {
 }
 
 // Tests that the Registry registers the TipsEphemeralModule cards when the
-// tips magic stack is enabled.
+// Tips (Magic Stack) is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
   feature_list_.InitWithFeatures(
       {features::kSegmentationPlatformTipsEphemeralCard}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
-  ASSERT_EQ(7u, registry_->all_output_labels().size());
+  ASSERT_EQ(8u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
-  ASSERT_EQ(1u,
+  ASSERT_EQ(2u,
             registry_->get_label_index(kLensEphemeralModuleSearchVariation));
-  ASSERT_EQ(15u, registry_->all_cards_input_size());
+  ASSERT_EQ(18u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(4u, all_cards.size());
+  ASSERT_EQ(5u, all_cards.size());
 
-  // Verify that the Lens card is registered and has the correct signal index.
-  ASSERT_EQ(std::string(kLensEphemeralModule),
-            std::string(all_cards.front()->card_name()));
+  // Verify that the Lens card is registered.
+  ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),
+                          [](const std::unique_ptr<CardSelectionInfo>& card) {
+                            return card->card_name() == kLensEphemeralModule;
+                          }));
+
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(5u, signal_map.find(kLensEphemeralModule)
+  ASSERT_EQ(8u, signal_map.find(kLensEphemeralModule)
                     ->second.find(segmentation_platform::kLensNotUsedRecently)
                     ->second);
 }
 
+// Tests that the Registry registers the Send Tab to Self ephemeral module card
+// when the send-tab-to-self feature with Magic Stack param is enabled and the
+// Tips (Magic Stack) is also enabled.
 TEST_F(HomeModulesCardRegistryTest, TestSendTabEphemeralModuleCard) {
   feature_list_.InitWithFeaturesAndParameters(
       {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
@@ -96,26 +104,30 @@ TEST_F(HomeModulesCardRegistryTest, TestSendTabEphemeralModuleCard) {
       {features::kSegmentationPlatformTipsEphemeralCard});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
-  ASSERT_EQ(2u, registry_->all_output_labels().size());
+  ASSERT_EQ(3u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
-  ASSERT_EQ(1u, registry_->get_label_index(kSendTabNotificationPromo));
-  ASSERT_EQ(1u, registry_->all_cards_input_size());
+  ASSERT_EQ(2u, registry_->get_label_index(kSendTabNotificationPromo));
+  ASSERT_EQ(4u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(1u, all_cards.size());
-  ASSERT_EQ(std::string(kSendTabNotificationPromo),
-            std::string(all_cards.front()->card_name()));
+  ASSERT_EQ(2u, all_cards.size());
+  // Verify that the Send Tab Notification Promo card is registered.
+  ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),
+                          [](const std::unique_ptr<CardSelectionInfo>& card) {
+                            return card->card_name() ==
+                                   kSendTabNotificationPromo;
+                          }));
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(0u, signal_map.find(kSendTabNotificationPromo)
+  ASSERT_EQ(3u, signal_map.find(kSendTabNotificationPromo)
                     ->second.find("send_tab_infobar_received_in_last_session")
                     ->second);
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 // Tests that the Registry registers the DefaultBrowserPromo card when its
 // feature is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
-#if BUILDFLAG(IS_ANDROID)
   feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
@@ -129,17 +141,15 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
   std::vector<std::string> signalKeys =
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
-  EXPECT_THAT(
-      signalKeys,
-      Contains("has_default_browser_promo_reached_limit_in_role_manager"));
-  EXPECT_THAT(signalKeys, Contains("is_default_browser_chrome"));
-#endif
+  EXPECT_THAT(signalKeys,
+              Contains("should_show_non_role_manager_default_browser_promo"));
+  EXPECT_THAT(signalKeys,
+              Contains("has_default_browser_promo_shown_in_other_surface"));
 }
 
 // Tests that the Registry won't register the DefaultBrowserPromo card when it
 // is disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
-#if BUILDFLAG(IS_ANDROID)
   feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   pref_service_.SetUserPref(kDefaultBrowserPromoImpressionCounterPref,
                             std::make_unique<base::Value>(4));
@@ -147,7 +157,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
 
   EXPECT_THAT(registry_->all_output_labels(),
               Not(Contains(kDefaultBrowserPromo)));
-  ASSERT_EQ(0u, registry_->all_cards_input_size());
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -158,9 +168,159 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
   EXPECT_THAT(
       signalKeys,
-      Not(Contains("has_default_browser_promo_reached_limit_in_role_manager")));
-  EXPECT_THAT(signalKeys, Not(Contains("is_default_browser_chrome")));
-#endif
+      Not(Contains("should_show_non_role_manager_default_browser_promo")));
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("has_default_browser_promo_shown_in_other_surface")));
 }
+
+// Tests that the Registry registers the TabGroupPromo card when its feature is
+// enabled.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 5u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kTabGroupPromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupPromo);
+  EXPECT_THAT(signalKeys, Contains("tab_group_exists"));
+  EXPECT_THAT(signalKeys, Contains("number_of_tabs"));
+  EXPECT_THAT(signalKeys, Contains("tab_group_shown_count"));
+}
+
+// Tests that the Registry won't register the TabGroupPromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  pref_service_.SetUserPref(kTabGroupPromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kTabGroupPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTabGroupPromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupPromo);
+  EXPECT_THAT(signalKeys, Not(Contains("tab_group_exists")));
+  EXPECT_THAT(signalKeys, Not(Contains("number_of_tabs")));
+  EXPECT_THAT(signalKeys, Not(Contains("tab_group_shown_count")));
+}
+
+// Tests that for educational tip cards, except for the default browser promo
+// card, could send a notification when the card is shown once per session,
+// rather than every time it is displayed.
+TEST_F(HomeModulesCardRegistryTest, TestShouldNotifyCardShownPerSession) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+  const char* card_name_1 = "TabGroupPromo";
+  const char* card_name_2 = "TabGroupSyncPromo";
+  EXPECT_TRUE(registry_->ShouldNotifyCardShownPerSession(card_name_1));
+  EXPECT_FALSE(registry_->ShouldNotifyCardShownPerSession(card_name_1));
+  EXPECT_TRUE(registry_->ShouldNotifyCardShownPerSession(card_name_2));
+  EXPECT_FALSE(registry_->ShouldNotifyCardShownPerSession(card_name_2));
+}
+
+// Tests that the Registry registers the TabGroupSyncPromo card when its feature
+// is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupSyncPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 7u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kTabGroupSyncPromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupSyncPromo);
+  EXPECT_THAT(signalKeys, Contains("synced_tab_group_exists"));
+  EXPECT_THAT(signalKeys, Contains("tab_group_sync_shown_count"));
+}
+
+// Tests that the Registry won't register the TabGroupSyncPromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardDisabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  pref_service_.SetUserPref(kTabGroupSyncPromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(),
+              Not(Contains(kTabGroupSyncPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTabGroupSyncPromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kTabGroupSyncPromo);
+  EXPECT_THAT(signalKeys, Not(Contains("synced_tab_group_exists")));
+  EXPECT_THAT(signalKeys, Not(Contains("tab_group_sync_shown_count")));
+}
+
+// Tests that the Registry registers the QuickDeletePromo card when its feature
+// is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kQuickDeletePromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 10u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kQuickDeletePromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kQuickDeletePromo);
+  EXPECT_THAT(signalKeys, Contains("count_of_clearing_browsing_data"));
+  EXPECT_THAT(signalKeys,
+              Contains("count_of_clearing_browsing_data_through_quick_delete"));
+  EXPECT_THAT(signalKeys, Contains("quick_delete_shown_count"));
+}
+
+// Tests that the Registry won't register the QuickDeletePromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
+  pref_service_.SetUserPref(kQuickDeletePromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kQuickDeletePromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kQuickDeletePromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kQuickDeletePromo);
+  EXPECT_THAT(signalKeys, Not(Contains("count_of_clearing_browsing_data")));
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("count_of_clearing_browsing_data_through_quick_delete")));
+  EXPECT_THAT(signalKeys, Not(Contains("quick_delete_shown_count")));
+}
+#endif
 
 }  // namespace segmentation_platform::home_modules

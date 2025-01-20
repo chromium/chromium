@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/feedback_resources.h"
@@ -24,6 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -80,12 +75,9 @@ void AddStringResources(content::WebUIDataSource* source,
 void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFeedbackHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
-      IDR_FEEDBACK_FEEDBACK_HTML);
-  source->AddResourcePaths(
-      base::make_span(kKeyValuePairViewerSharedResources,
-                      kKeyValuePairViewerSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kFeedbackResources,
+                              IDR_FEEDBACK_FEEDBACK_HTML);
+  source->AddResourcePaths(kKeyValuePairViewerSharedResources);
   AddStringResources(source, profile);
 }
 

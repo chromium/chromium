@@ -7,7 +7,7 @@
 #import "base/containers/contains.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
-#import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
+#import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 
 using safe_browsing::SBThreatType;
 using security_interstitials::UnsafeResource;

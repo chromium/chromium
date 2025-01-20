@@ -127,7 +127,7 @@ Ecdsa::RequestParameters Ecdsa::SignRequest(std::string_view request_body) {
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
-  uint8_t nonce[32] = {0};
+  uint8_t nonce[32] = {};
   crypto::RandBytes(nonce);
 
   // The nonce is an opaque string to the server, so the exact encoding does not

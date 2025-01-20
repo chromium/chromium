@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/image-encoders",
 
     # Dependencies.
+    "+skia/rusty_png_feature.h",
     "+third_party/blink/renderer/platform/graphics/graphics_types.h",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",
     "+third_party/blink/renderer/platform/network/mime/mime_type_registry.h",

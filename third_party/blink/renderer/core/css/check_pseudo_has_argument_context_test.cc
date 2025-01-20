@@ -37,7 +37,8 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext context(
-        selector_list->First()->SelectorList()->First(), match_in_shadow_tree);
+        selector_list->First()->SelectorList()->First(), /*scope=*/nullptr,
+        match_in_shadow_tree);
 
     EXPECT_EQ(expected_leftmost_relation, context.LeftmostRelation())
         << "Failed : " << selector_text;
@@ -73,7 +74,8 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
-        selector_list->First()->SelectorList()->First(), match_in_shadow_tree);
+        selector_list->First()->SelectorList()->First(), /*scope=*/nullptr,
+        match_in_shadow_tree);
     for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {
@@ -100,7 +102,8 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     EXPECT_EQ(selector_list->First()->GetPseudoType(), CSSSelector::kPseudoHas);
 
     CheckPseudoHasArgumentContext context(
-        selector_list->First()->SelectorList()->First(), match_in_shadow_tree);
+        selector_list->First()->SelectorList()->First(), /*scope=*/nullptr,
+        match_in_shadow_tree);
     return context.TraversalType();
   }
 
@@ -124,7 +127,8 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
-        selector_list->First()->SelectorList()->First(), match_in_shadow_tree);
+        selector_list->First()->SelectorList()->First(), /*scope=*/nullptr,
+        match_in_shadow_tree);
     for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {

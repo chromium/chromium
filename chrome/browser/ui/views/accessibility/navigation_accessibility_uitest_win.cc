@@ -61,14 +61,13 @@ class WinAccessibilityEventMonitor {
                       DWORD event_thread,
                       DWORD event_time);
 
-  static void CALLBACK WinEventHookThunk(
-      HWINEVENTHOOK handle,
-      DWORD event,
-      HWND hwnd,
-      LONG obj_id,
-      LONG child_id,
-      DWORD event_thread,
-      DWORD event_time);
+  static void CALLBACK WinEventHookThunk(HWINEVENTHOOK handle,
+                                         DWORD event,
+                                         HWND hwnd,
+                                         LONG obj_id,
+                                         LONG child_id,
+                                         DWORD event_thread,
+                                         DWORD event_time);
 
   struct EventInfo {
     DWORD event;
@@ -86,17 +85,14 @@ class WinAccessibilityEventMonitor {
 // static
 WinAccessibilityEventMonitor* WinAccessibilityEventMonitor::instance_ = NULL;
 
-WinAccessibilityEventMonitor::WinAccessibilityEventMonitor(
-    UINT event_min, UINT event_max) {
+WinAccessibilityEventMonitor::WinAccessibilityEventMonitor(UINT event_min,
+                                                           UINT event_max) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " WinAccessibilityEventMonitor at a time.";
   instance_ = this;
   win_event_hook_handle_ = SetWinEventHook(
-      event_min,
-      event_max,
-      NULL,
-      &WinAccessibilityEventMonitor::WinEventHookThunk,
-      GetCurrentProcessId(),
+      event_min, event_max, NULL,
+      &WinAccessibilityEventMonitor::WinEventHookThunk, GetCurrentProcessId(),
       0,  // Hook all threads
       WINEVENT_OUTOFCONTEXT);
 }
@@ -106,12 +102,11 @@ WinAccessibilityEventMonitor::~WinAccessibilityEventMonitor() {
   instance_ = NULL;
 }
 
-void WinAccessibilityEventMonitor::WaitForNextEvent(
-    DWORD* out_event,
-    HWND* out_hwnd,
-    UINT* out_role,
-    UINT* out_state,
-    std::string* out_name) {
+void WinAccessibilityEventMonitor::WaitForNextEvent(DWORD* out_event,
+                                                    HWND* out_hwnd,
+                                                    UINT* out_role,
+                                                    UINT* out_state,
+                                                    std::string* out_name) {
   if (event_queue_.empty()) {
     loop_runner_ = new content::MessageLoopRunner();
     loop_runner_->Run();
@@ -130,52 +125,55 @@ void WinAccessibilityEventMonitor::WaitForNextEvent(
                                           child_variant.Receive()));
 
   base::win::ScopedVariant role_variant;
-  if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive()))
+  if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive())) {
     *out_role = V_I4(role_variant.ptr());
-  else
+  } else {
     *out_role = 0;
+  }
 
   base::win::ScopedVariant state_variant;
-  if (S_OK == acc_obj->get_accState(child_variant, state_variant.Receive()))
+  if (S_OK == acc_obj->get_accState(child_variant, state_variant.Receive())) {
     *out_state = V_I4(state_variant.ptr());
-  else
+  } else {
     *out_state = 0;
+  }
 
   base::win::ScopedBstr name_bstr;
   HRESULT hr = acc_obj->get_accName(child_variant, name_bstr.Receive());
-  if (S_OK == hr)
+  if (S_OK == hr) {
     *out_name = base::WideToUTF8(name_bstr.Get());
-  else
+  } else {
     *out_name = "";
+  }
 }
 
-void WinAccessibilityEventMonitor::OnWinEventHook(
-    HWINEVENTHOOK handle,
-    DWORD event,
-    HWND hwnd,
-    LONG obj_id,
-    LONG child_id,
-    DWORD event_thread,
-    DWORD event_time) {
+void WinAccessibilityEventMonitor::OnWinEventHook(HWINEVENTHOOK handle,
+                                                  DWORD event,
+                                                  HWND hwnd,
+                                                  LONG obj_id,
+                                                  LONG child_id,
+                                                  DWORD event_thread,
+                                                  DWORD event_time) {
   EventInfo event_info;
   event_info.event = event;
   event_info.hwnd = hwnd;
   event_info.obj_id = obj_id;
   event_info.child_id = child_id;
   event_queue_.push_back(event_info);
-  if (loop_runner_.get())
+  if (loop_runner_.get()) {
     loop_runner_->Quit();
+  }
 }
 
 // static
-void CALLBACK WinAccessibilityEventMonitor::WinEventHookThunk(
-    HWINEVENTHOOK handle,
-    DWORD event,
-    HWND hwnd,
-    LONG obj_id,
-    LONG child_id,
-    DWORD event_thread,
-    DWORD event_time) {
+void CALLBACK
+WinAccessibilityEventMonitor::WinEventHookThunk(HWINEVENTHOOK handle,
+                                                DWORD event,
+                                                HWND hwnd,
+                                                LONG obj_id,
+                                                LONG child_id,
+                                                DWORD event_thread,
+                                                DWORD event_time) {
   if (instance_) {
     instance_->OnWinEventHook(handle, event, hwnd, obj_id, child_id,
                               event_thread, event_time);
@@ -189,8 +187,8 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
       delete;
 
  protected:
-  NavigationAccessibilityTest() {}
-  ~NavigationAccessibilityTest() override {}
+  NavigationAccessibilityTest() = default;
+  ~NavigationAccessibilityTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -198,10 +196,8 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
 
   void SendKeyPress(ui::KeyboardCode key) {
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
-    ASSERT_NO_FATAL_FAILURE(
-        ASSERT_TRUE(
-            ui_test_utils::SendKeyPressToWindowSync(
-                native_window, key, false, false, false, false)));
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        native_window, key, false, false, false, false)));
   }
 
  private:
@@ -226,10 +222,11 @@ IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
   GURL main_url(embedded_test_server()->GetURL("/english_page.html"));
 
   OmniboxViewViews* omnibox_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->
-      toolbar()->location_bar()->omnibox_view();
-  omnibox_view->SetUserText(base::UTF8ToUTF16(main_url.spec()),
-                            false);
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->location_bar()
+          ->omnibox_view();
+  omnibox_view->SetUserText(base::UTF8ToUTF16(main_url.spec()), false);
 
   WinAccessibilityEventMonitor monitor(EVENT_OBJECT_FOCUS, EVENT_OBJECT_FOCUS);
   SendKeyPress(ui::VKEY_RETURN);
@@ -242,12 +239,8 @@ IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
     std::string name;
     monitor.WaitForNextEvent(&event, &hwnd, &role, &state, &name);
 
-    LOG(INFO) << "Got event: "
-              << " event=" << event
-              << " hwnd=" << hwnd
-              << " role=" << role
-              << " state=" << state
-              << " name=" << name;
+    LOG(INFO) << "Got event: " << " event=" << event << " hwnd=" << hwnd
+              << " role=" << role << " state=" << state << " name=" << name;
 
     // We should get only focus events.
     EXPECT_EQ(static_cast<DWORD>(EVENT_OBJECT_FOCUS), event);

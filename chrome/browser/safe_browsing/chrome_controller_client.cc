@@ -33,7 +33,7 @@ ChromeControllerClient::ChromeControllerClient(
           default_safe_page,
           std::move(settings_page_helper)) {}
 
-ChromeControllerClient::~ChromeControllerClient() {}
+ChromeControllerClient::~ChromeControllerClient() = default;
 
 void ChromeControllerClient::Proceed() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

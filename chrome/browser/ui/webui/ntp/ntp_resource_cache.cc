@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -156,19 +157,23 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 NTPResourceCache::~NTPResourceCache() = default;
 
 NTPResourceCache::WindowType NTPResourceCache::GetWindowType(Profile* profile) {
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return GUEST;
-  if (profile->IsIncognitoProfile())
+  }
+  if (profile->IsIncognitoProfile()) {
     return INCOGNITO;
-  if (profile->IsOffTheRecord())
+  }
+  if (profile->IsOffTheRecord()) {
     return NON_PRIMARY_OTR;
+  }
 
   return NORMAL;
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
-  if (!new_tab_guest_html_)
+  if (!new_tab_guest_html_) {
     CreateNewTabGuestHTML();
+  }
 
   return new_tab_guest_html_.get();
 }
@@ -182,8 +187,9 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
       return GetNewTabGuestHTML();
 
     case INCOGNITO:
-      if (!new_tab_incognito_html_)
+      if (!new_tab_incognito_html_) {
         CreateNewTabIncognitoHTML(wc_getter);
+      }
       return new_tab_incognito_html_.get();
 
     case NON_PRIMARY_OTR:
@@ -204,19 +210,22 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Guest mode doesn't have theme-related CSS.
-  if (win_type == GUEST)
+  if (win_type == GUEST) {
     return nullptr;
+  }
 
   // Returns the cached CSS if it exists.
   // The cache will be invalidated when the theme of |wc_getter| changes.
   if (win_type == INCOGNITO) {
-    if (!new_tab_incognito_css_)
+    if (!new_tab_incognito_css_) {
       CreateNewTabIncognitoCSS(wc_getter);
+    }
     return new_tab_incognito_css_.get();
   }
 
-  if (!new_tab_css_)
+  if (!new_tab_css_) {
     CreateNewTabCSS(wc_getter);
+  }
   return new_tab_css_.get();
 }
 
@@ -325,7 +334,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       ThemeService::GetThemeProviderForProfile(incognito_profile);
 
   replacements["hasCustomBackground"] =
-      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      base::ToString(tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);

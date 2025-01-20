@@ -22,9 +22,16 @@ public class DataSharingCreateUiConfig {
     public interface CreateCallback {
         default void onGroupCreated(GroupData groupData) {}
 
+        default void onGroupCreatedWithWait(
+                GroupData groupData, Callback<Boolean> onCreateFinished) {}
+
         default void onCancelClicked() {}
 
         default void getDataSharingUrl(GroupToken tokenSecret, Callback<String> url) {}
+
+        // This will always be called when user creates the group, ui closes, or
+        // session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingCreateUiConfig(Builder builder) {

@@ -430,20 +430,6 @@ message AutofillUploadContents {
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38 [deprecated = true];
 
-  // Type of the value seen in the potential single username field.
-  enum ValueType {
-    TYPE_UNSPECIFIED = 0;
-    NO_VALUE_TYPE = 1;
-    STORED_FOR_CURRENT_DOMAIN = 2;
-    // TODO(crbug.com/40626063) Not used yet. Check against all domains to be
-    // implemented.
-    STORED_FOR_ANOTHER_DOMAIN = 3;
-    EMAIL = 4;
-    PHONE = 5;
-    USERNAME_LIKE = 6;
-    VALUE_WITH_NO_WHITESPACE = 7;
-    VALUE_WITH_WHITESPACE = 8;
-  }
   // Information received from user interaction with the prompt.
   enum SingleUsernamePromptEdit {
     EDIT_UNSPECIFIED = 0;
@@ -452,16 +438,8 @@ message AutofillUploadContents {
     EDITED_POSITIVE = 3;
     EDITED_NEGATIVE = 4;
   }
-  message SingleUsernameData {
-    optional fixed64 username_form_signature = 1;
-    optional fixed32 username_field_signature = 2;
-    optional ValueType value_type = 3;
-    optional SingleUsernamePromptEdit prompt_edit = 4;
-  }
-  // This message is recorded on forms that do not have a username field.
-  // The message contains data on preceding forms with potential username
-  // fields.
-  repeated SingleUsernameData single_username_data = 42;
+
+  reserved 42;
 
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or
@@ -472,25 +450,4 @@ message AutofillUploadContents {
 
   reserved 5;
   reserved "Field";
-}
-
-// This proto contains information about the validity of each field in an
-// autofill profile. It is used to transfer the results of running the profile
-// validation pipeline on the server side to the client via ChromeSync
-// PriorityPreferences. An identical copy of this proto is maintained in
-// the server code base.
-message ProfileValidityMap {
-  // Map from autofill type to the validity of its value in the profile.
-  //
-  // Key should be one of the enum values from FieldType. Values should be
-  // from the AutofillProfile::ValidityState. Plain integers are used
-  // instead of enums because proto2 treats unknown enum values as unknown
-  // fields, which is confusing when the enums are in maps.
-  map<int32, int32> field_validity_states = 1;
-}
-
-// Map from profile GUIDs to profile validity maps for that profile. Each
-// message should contain entries for all profiles from a single user.
-message UserProfileValidityMap {
-  map<string, ProfileValidityMap> profile_validity = 1;
 }

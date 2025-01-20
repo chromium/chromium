@@ -100,10 +100,6 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
       content_container->AddChildView(std::make_unique<views::Label>());
   description_->SetProperty(views::kMarginsKey,
                             kLabelInsets + gfx::Insets::TLBR(0, 0, 12, 0));
-  description_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded, true));
   description_->SetEnabledColor(label_color);
   description_->SetMultiLine(true);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

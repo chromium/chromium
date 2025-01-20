@@ -46,6 +46,7 @@ bool IsNSRange(id value);
 // object. The renderer converts webkit's accessibility tree into a
 // WebAccessibility tree and passes it to the browser process over IPC.
 // This class converts it into a format Cocoa can query.
+COMPONENT_EXPORT(AX_PLATFORM)
 @interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa
 
 // This creates a cocoa browser accessibility object around
@@ -72,12 +73,9 @@ bool IsNSRange(id value);
 // left).
 - (NSRect)rectInScreen:(gfx::Rect)rect;
 
-- (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids;
-
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
-- (NSString*)valueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;
 
 // Find the index of the given row among the descendants of this object
@@ -89,7 +87,6 @@ bool IsNSRange(id value);
 // on the characteristics of this accessibility node.
 - (ui::BrowserAccessibility*)actionTarget;
 
-@property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
 @property(nonatomic, readonly) NSNumber* disclosing;
@@ -105,12 +102,9 @@ bool IsNSRange(id value);
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;
-@property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
 @property(nonatomic, readonly) NSNumber* maxValue;
 @property(nonatomic, readonly) NSNumber* minValue;
-@property(nonatomic, readonly) NSNumber* numberOfCharacters;
 @property(nonatomic, readonly) NSString* orientation;
-@property(nonatomic, readonly) id parent;
 @property(nonatomic, readonly) NSValue* position;
 // A string indicating the role of this object as far as accessibility
 // is concerned.
@@ -118,8 +112,6 @@ bool IsNSRange(id value);
 @property(nonatomic, readonly) NSArray* rowHeaders;
 @property(nonatomic, readonly) NSValue* rowIndexRange;
 @property(nonatomic, readonly) NSArray* selectedChildren;
-@property(nonatomic, readonly) NSString* selectedText;
-@property(nonatomic, readonly) NSValue* selectedTextRange;
 @property(nonatomic, readonly) id selectedTextMarkerRange;
 @property(nonatomic, readonly) NSString* sortDirection;
 // Returns a text marker that points to the first character in the document that
@@ -132,7 +124,6 @@ bool IsNSRange(id value);
 @property(nonatomic, readonly) NSArray* tabs;
 @property(nonatomic, readonly) NSString* value;
 @property(nonatomic, readonly) NSString* valueDescription;
-@property(nonatomic, readonly) NSValue* visibleCharacterRange;
 @property(nonatomic, readonly) NSArray* visibleCells;
 @property(nonatomic, readonly) NSArray* visibleChildren;
 @property(nonatomic, readonly) NSArray* visibleColumns;

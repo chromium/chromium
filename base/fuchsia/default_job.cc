@@ -15,8 +15,9 @@ zx_handle_t g_job = ZX_HANDLE_INVALID;
 }
 
 zx::unowned_job GetDefaultJob() {
-  if (g_job == ZX_HANDLE_INVALID)
+  if (g_job == ZX_HANDLE_INVALID) {
     return zx::job::default_job();
+  }
   return zx::unowned_job(g_job);
 }
 

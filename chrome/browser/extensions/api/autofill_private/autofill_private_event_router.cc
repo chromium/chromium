@@ -19,7 +19,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -93,16 +93,20 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
     return;
 
   autofill_util::AddressEntryList addressList =
-      extensions::autofill_util::GenerateAddressList(*personal_data_);
+      extensions::autofill_util::GenerateAddressList(
+          personal_data_->address_data_manager());
 
   autofill_util::CreditCardEntryList creditCardList =
-      extensions::autofill_util::GenerateCreditCardList(*personal_data_);
+      extensions::autofill_util::GenerateCreditCardList(
+          personal_data_->payments_data_manager());
 
   autofill_util::IbanEntryList ibanList =
-      extensions::autofill_util::GenerateIbanList(*personal_data_);
+      extensions::autofill_util::GenerateIbanList(
+          personal_data_->payments_data_manager());
 
   std::optional<api::autofill_private::AccountInfo> account_info =
-      extensions::autofill_util::GetAccountInfo(*personal_data_);
+      extensions::autofill_util::GetAccountInfo(
+          personal_data_->address_data_manager());
 
   base::Value::List args;
   args.Append(ToValueList(addressList));

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base::trace_event {
 
@@ -32,6 +33,15 @@ class NamedTriggerManager {
   // Sets the instance returns by GetInstance() globally to |manager|.
   BASE_EXPORT static void SetInstance(NamedTriggerManager* manager);
 };
+
+// Returns a flow id that connects to a background tracing trigger.
+BASE_EXPORT uint64_t TriggerFlowId(const std::string_view& name,
+                                   std::optional<int32_t> value = std::nullopt);
+
+// Returns a perfetto flow that connects to a background tracing trigger.
+BASE_EXPORT perfetto::Flow TriggerFlow(
+    const std::string_view& name,
+    std::optional<int32_t> value = std::nullopt);
 
 }  // namespace base::trace_event
 

@@ -24,9 +24,10 @@ namespace blink {
 
 namespace {
 
-using testing::InSequence;
-using testing::StrictMock;
-using Checkpoint = StrictMock<testing::MockFunction<void(int)>>;
+using ::testing::ElementsAre;
+using ::testing::InSequence;
+using ::testing::StrictMock;
+using Checkpoint = StrictMock<::testing::MockFunction<void(int)>>;
 using Result = BytesConsumer::Result;
 using PublicState = BytesConsumer::PublicState;
 
@@ -199,24 +200,13 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
   checkpoint.Call(6);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(4u, buffer.size());
-  EXPECT_EQ(0x43, buffer[0]);
-  EXPECT_EQ(0x44, buffer[1]);
-  EXPECT_EQ(0x45, buffer[2]);
-  EXPECT_EQ(0x46, buffer[3]);
+  EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
   EXPECT_EQ(Result::kOk, consumer->EndRead(0));
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(4u, buffer.size());
-  EXPECT_EQ(0x43, buffer[0]);
-  EXPECT_EQ(0x44, buffer[1]);
-  EXPECT_EQ(0x45, buffer[2]);
-  EXPECT_EQ(0x46, buffer[3]);
+  EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
   EXPECT_EQ(Result::kOk, consumer->EndRead(1));
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(3u, buffer.size());
-  EXPECT_EQ(0x44, buffer[0]);
-  EXPECT_EQ(0x45, buffer[1]);
-  EXPECT_EQ(0x46, buffer[2]);
+  EXPECT_THAT(buffer, ElementsAre(0x44, 0x45, 0x46));
   EXPECT_EQ(Result::kOk, consumer->EndRead(3));
   EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(7);
@@ -224,11 +214,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
   checkpoint.Call(8);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(4u, buffer.size());
-  EXPECT_EQ(0x47, buffer[0]);
-  EXPECT_EQ(0x48, buffer[1]);
-  EXPECT_EQ(0x49, buffer[2]);
-  EXPECT_EQ(0x4a, buffer[3]);
+  EXPECT_THAT(buffer, ElementsAre(0x47, 0x48, 0x49, 0x4a));
   EXPECT_EQ(Result::kOk, consumer->EndRead(4));
   EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(9);
@@ -277,11 +263,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(4u, buffer.size());
-  EXPECT_EQ(0x43, buffer[0]);
-  EXPECT_EQ(0x44, buffer[1]);
-  EXPECT_EQ(0x45, buffer[2]);
-  EXPECT_EQ(0x46, buffer[3]);
+  EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
   chunk->DetachForTesting();
   EXPECT_EQ(Result::kError, consumer->EndRead(4));
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
@@ -326,11 +308,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
-  ASSERT_EQ(4u, buffer.size());
-  EXPECT_EQ(0x43, buffer[0]);
-  EXPECT_EQ(0x44, buffer[1]);
-  EXPECT_EQ(0x45, buffer[2]);
-  EXPECT_EQ(0x46, buffer[3]);
+  EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
   EXPECT_EQ(Result::kOk, consumer->EndRead(1));
   chunk->DetachForTesting();
   EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));

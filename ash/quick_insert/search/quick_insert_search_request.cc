@@ -33,6 +33,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -44,6 +45,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
+#include "chromeos/ash/components/emoji/tenor_types.mojom.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -53,6 +58,8 @@ namespace {
 // TODO: b/330936766 - Prioritise "earlier" domains in this list.
 constexpr auto kGoogleCorpGotoHosts = base::MakeFixedFlatSet<std::string_view>(
     {"goto2.corp.google.com", "goto.corp.google.com", "goto.google.com", "go"});
+
+constexpr int kMaxGifsToSearch = 25;
 
 const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
   switch (source) {
@@ -76,6 +83,8 @@ const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
     case QuickInsertSearchSource::kLobsterWithNoSelectedText:
     case QuickInsertSearchSource::kLobsterWithSelectedText:
       return "Ash.Picker.Search.LobsterProvider.QueryTime";
+    case QuickInsertSearchSource::kGifs:
+      return "Ash.Picker.Search.Gifs.QueryTime";
   }
   NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
 }
@@ -109,6 +118,28 @@ DeduplicateGoogleCorpGotoDomains(
   return deduped_results;
 }
 
+std::vector<QuickInsertSearchResult> ConvertGifResponse(
+    base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                   GifTenorApiFetcher::Error> response) {
+  if (!response.has_value()) {
+    // TODO: b/325368650 - Add better handling of errors.
+    return {};
+  }
+
+  size_t rank = 0;
+  return base::ToVector(
+      (*response)->results,
+      [&rank](const tenor::mojom::GifResponsePtr& result) {
+        CHECK(result);
+        const tenor::mojom::GifUrlsPtr& urls = result->url;
+        CHECK(urls);
+        return QuickInsertSearchResult(QuickInsertGifResult(
+            urls->preview, urls->preview_image, result->preview_size,
+            urls->full, result->full_size,
+            base::UTF8ToUTF16(result->content_description), rank++));
+      });
+}
+
 }  // namespace
 
 QuickInsertSearchRequest::QuickInsertSearchRequest(
@@ -122,6 +153,7 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
     bool search_case_transforms)
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
+      gif_search_debouncer_(kGifDebouncingDelay),
       current_callback_(std::move(callback)),
       done_callback_(std::move(done_callback)) {
   CHECK(!current_callback_.is_null());
@@ -178,6 +210,13 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
     MarkSearchStarted(QuickInsertSearchSource::kMath);
     // Math results is currently synchronous.
     HandleMathSearchResults(QuickInsertMathSearch(query));
+  }
+
+  if (category == QuickInsertCategory::kGifs) {
+    MarkSearchStarted(QuickInsertSearchSource::kGifs);
+    gif_search_debouncer_.RequestSearch(base::BindOnce(
+        &QuickInsertSearchRequest::StartGifSearch,
+        weak_ptr_factory_.GetWeakPtr(), base::UTF16ToUTF8(query)));
   }
 
   // These searches do not have category-specific search.
@@ -244,6 +283,16 @@ QuickInsertSearchRequest::~QuickInsertSearchRequest() {
   client_->StopCrosQuery();
 }
 
+void QuickInsertSearchRequest::StartGifSearch(std::string_view query) {
+  gif_fetcher_ = GifTenorApiFetcher::FetchGifSearchCancellable(
+      client_->GetSharedURLLoaderFactory(), query, std::nullopt,
+      kMaxGifsToSearch,
+      base::BindOnce(ConvertGifResponse)
+          .Then(
+              base::BindOnce(&QuickInsertSearchRequest::HandleGifSearchResponse,
+                             weak_ptr_factory_.GetWeakPtr())));
+}
+
 void QuickInsertSearchRequest::HandleSearchSourceResults(
     QuickInsertSearchSource source,
     std::vector<QuickInsertSearchResult> results,
@@ -269,7 +318,7 @@ void QuickInsertSearchRequest::HandleActionSearchResults(
 }
 
 void QuickInsertSearchRequest::HandleCrosSearchResults(
-    ash::AppListSearchResultType type,
+    AppListSearchResultType type,
     std::vector<QuickInsertSearchResult> results) {
   switch (type) {
     case AppListSearchResultType::kOmnibox: {
@@ -402,6 +451,13 @@ void QuickInsertSearchRequest::MaybeCallDoneClosure() {
 
   std::move(done_callback_).Run(/*interrupted=*/false);
   current_callback_.Reset();
+}
+
+void QuickInsertSearchRequest::HandleGifSearchResponse(
+    std::vector<QuickInsertSearchResult> results) {
+  // GIF results are never truncated.
+  HandleSearchSourceResults(QuickInsertSearchSource::kGifs, std::move(results),
+                            /*has_more_results=*/false);
 }
 
 }  // namespace ash

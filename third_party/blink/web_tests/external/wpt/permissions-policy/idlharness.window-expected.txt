@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PermissionsPolicy interface: existence and properties of interface object
   assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
 [FAIL] PermissionsPolicy interface object length
@@ -59,6 +59,8 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PermissionsPolicyViolationReportBody interface: attribute columnNumber
   assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 [FAIL] PermissionsPolicyViolationReportBody interface: attribute disposition
+  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+[FAIL] PermissionsPolicyViolationReportBody interface: attribute allowAttribute
   assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 [FAIL] HTMLIFrameElement interface: attribute permissionsPolicy
   assert_true: The prototype object must have a property "permissionsPolicy" expected true got false

@@ -12,6 +12,7 @@ import datetime
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -630,7 +631,8 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         exempted_crate_name = ConvertCrateIdToCrateName(exempted_crate_id)
         print(f"  WARNING: The `{exempted_crate_name}` crate "\
                "is covered by an exemption rather than an audit. "\
-               "Please bump the exemption in `vet_config.toml.hbs` "\
+               "Please bump the exemption in "\
+               "`third_party/rust/chromium_crates_io/vet_config.toml.hbs` "\
                "and run `tools/crates/run_gnrt.py vendor` again.")
 
 
@@ -645,6 +647,18 @@ def RaiseErrorIfGitIsDirty():
     if IsGitDirty():
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
+
+
+def RaiseErrorIfCantUploadToGerrit():
+    creds_check = Git("cl", "creds_check")
+    if "SSO" in creds_check:
+        if not shutil.which('gcertstatus'):
+            raise RuntimeError("No `gcertstatus` in `PATH` despite "\
+                               "`git cl creds-check` saying that SSO "\
+                               "authentication will be used.")
+        RunCommandAndCheckForErrors(["gcertstatus", "--check_remaining=45m"],
+                                    check_stdout=False,
+                                    check_exitcode=True)
 
 
 def CheckoutInitialBranch(branch):
@@ -877,6 +891,8 @@ def main():
         print(msg)
         parser.print_help()
         raise RuntimeError(msg)
+    if args.upload:
+        RaiseErrorIfCantUploadToGerrit()
 
     global g_is_verbose
     g_is_verbose = args.verbose

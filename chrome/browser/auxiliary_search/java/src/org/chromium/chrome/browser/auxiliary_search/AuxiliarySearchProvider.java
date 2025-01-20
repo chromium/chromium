@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
@@ -60,8 +61,6 @@ public class AuxiliarySearchProvider {
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
-    @VisibleForTesting static final int DEFAULT_FAVICON_NUMBER = 5;
-    @VisibleForTesting static final int DEFAULT_SCHEDULE_DELAY_TIME_MS = 0;
 
     @VisibleForTesting
     static final int DEFAULT_WINDOW_END_TIME_MS = 60 * 1000; // 1 min in milliseconds.
@@ -71,6 +70,8 @@ public class AuxiliarySearchProvider {
 
     /** Prevents two AuxiliarySearchProvider from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
+
+    private static boolean sSkipWritingFileForTesting;
 
     /**
      * A comparator to sort Tabs with timestamp descending, i.e., the most recent tab comes first.
@@ -105,7 +106,9 @@ public class AuxiliarySearchProvider {
         mFaviconHelper = new FaviconHelper();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
-        mZeroStateFaviconNumber = AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber =
+                ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber
+                        .getValue();
     }
 
     /**
@@ -205,14 +208,17 @@ public class AuxiliarySearchProvider {
         callback.onResult(tabGroupBuilder.build());
 
         int remainingFaviconFetchCount = tabs.size() - zeroStateFaviconFetchedNumber;
-        if (mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
+        if (!sSkipWritingFileForTesting && mIsFaviconEnabled && remainingFaviconFetchCount > 0) {
             saveTabMetadataToFile(
                     AuxiliarySearchUtils.getTabDonateFile(mContext),
                     tabs,
                     zeroStateFaviconFetchedNumber,
                     remainingFaviconFetchCount);
             scheduleBackgroundTask(
-                    (long) AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
+                    (long)
+                            ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs
+                                    .getValue(),
+                    startTimeMs);
         }
     }
 
@@ -372,5 +378,11 @@ public class AuxiliarySearchProvider {
         TaskInfo taskInfo = builder.build();
         scheduler.schedule(mContext, taskInfo);
         return taskInfo;
+    }
+
+    public static void setSkipWritingFileForTesting(boolean skipWriteFileForTesting) {
+        boolean oldValue = sSkipWritingFileForTesting;
+        sSkipWritingFileForTesting = skipWriteFileForTesting;
+        ResettersForTesting.register(() -> sSkipWritingFileForTesting = oldValue);
     }
 }

@@ -26,6 +26,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -105,11 +106,12 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
 
  private:
   const LoginManagerMixin::TestUserInfo school_user_{
-      AccountId::FromUserEmailGaiaId(kSchoolUser, kSchoolGaiaID)};
+      AccountId::FromUserEmailGaiaId(kSchoolUser, GaiaId(kSchoolGaiaID))};
   const LoginManagerMixin::TestUserInfo regular_user_{
-      AccountId::FromUserEmailGaiaId(kRegularUser, kRegularGaiaID)};
+      AccountId::FromUserEmailGaiaId(kRegularUser, GaiaId(kRegularGaiaID))};
   const LoginManagerMixin::TestUserInfo family_link_user_{
-      AccountId::FromUserEmailGaiaId(kFamilyLinkUser, kFamilyLinkGaiaID),
+      AccountId::FromUserEmailGaiaId(kFamilyLinkUser,
+                                     GaiaId(kFamilyLinkGaiaID)),
       test::kDefaultAuthSetup, user_manager::UserType::kChild};
 
   policy::DevicePolicyCrosTestHelper policy_helper_;

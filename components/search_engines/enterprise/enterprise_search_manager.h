@@ -30,6 +30,20 @@ class EnterpriseSearchManager {
   using ObserverCallback =
       base::RepeatingCallback<void(OwnedTemplateURLDataVector&&)>;
 
+  // Possible states for loading search engines from prefs or from mock
+  // settings.
+  enum class LoadingResult {
+    // Source is not available (e.g. controlling feature is disabled), so it
+    // should be ignored.
+    kUnavailable,
+    // Source is available and provides an empty list of search engines.
+    // Note: this state forces resetting search engines in the
+    // TemplateURLService, which is not the case when the policy is disabled.
+    kAvailableEmpty,
+    // Source is available and provides a non-empty list of search engines.
+    kAvailableNonEmpty,
+  };
+
   EnterpriseSearchManager(PrefService* pref_service,
                           const ObserverCallback& change_observer);
   ~EnterpriseSearchManager();
@@ -42,6 +56,13 @@ class EnterpriseSearchManager {
   // NotifyObserver() if search providers may have changed. Invokes
   // `change_observer_` if it is not NULL.
   void OnPrefChanged();
+
+  LoadingResult LoadSearchEnginesFromPrefs(
+      const PrefService::Preference* pref,
+      EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines);
+
+  LoadingResult LoadSearchAggregator(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines);
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

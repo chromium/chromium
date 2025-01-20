@@ -18,6 +18,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -344,16 +345,10 @@ bool ResourcePool::PrepareForExport(
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     SoftwareBacking* software_backing = resource->software_backing();
-    transferable =
-        software_backing->shared_image
-            ? viz::TransferableResource::MakeSoftwareSharedImage(
-                  software_backing->shared_image,
-                  software_backing->mailbox_sync_token, resource->size(),
-                  resource->format(), resource_source)
-            : viz::TransferableResource::MakeSoftwareSharedBitmap(
-                  software_backing->shared_bitmap_id,
-                  software_backing->mailbox_sync_token, resource->size(),
-                  resource->format(), resource_source);
+    DCHECK(software_backing->shared_image);
+    transferable = viz::TransferableResource::MakeSoftwareSharedImage(
+        software_backing->shared_image, software_backing->mailbox_sync_token,
+        resource->size(), resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(
@@ -403,8 +398,8 @@ void ResourcePool::ReleaseResource(InUsePoolResource in_use_resource) {
     CHECK(!base::Contains(unused_resources_, pool_resource->unique_id(),
                           &PoolResource::unique_id));
 
-    // Resource doesn't exist in any of our lists. CHECK.
-    CHECK(false);
+    // Resource doesn't exist in any of our lists. NOTREACHED().
+    NOTREACHED();
   }
 
   // Also ensure that the resource wasn't null in our list.

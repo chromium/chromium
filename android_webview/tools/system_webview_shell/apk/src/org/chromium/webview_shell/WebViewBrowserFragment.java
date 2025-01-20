@@ -82,9 +82,6 @@ public class WebViewBrowserFragment extends Fragment {
     private static final String RESOURCE_GEO = "RESOURCE_GEO";
     // Our imaginary WebKit permission to request when loading a file:// URL.
     private static final String RESOURCE_FILE_URL = "RESOURCE_FILE_URL";
-    // Our imaginary WebKit permissions to request when loading a file:// URL on T+.
-    private static final String RESOURCE_IMAGES_URL = "RESOURCE_IMAGES_URL";
-    private static final String RESOURCE_VIDEO_URL = "RESOURCE_VIDEO_URL";
     // WebKit permissions with no corresponding Android permission can always be granted.
     private static final String NO_ANDROID_PERMISSION = "NO_ANDROID_PERMISSION";
 
@@ -101,10 +98,6 @@ public class WebViewBrowserFragment extends Fragment {
         sPermissions = new HashMap<>();
         sPermissions.put(RESOURCE_GEO, Manifest.permission.ACCESS_FINE_LOCATION);
         sPermissions.put(RESOURCE_FILE_URL, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            sPermissions.put(RESOURCE_IMAGES_URL, Manifest.permission.READ_MEDIA_IMAGES);
-            sPermissions.put(RESOURCE_VIDEO_URL, Manifest.permission.READ_MEDIA_VIDEO);
-        }
         sPermissions.put(
                 PermissionRequest.RESOURCE_AUDIO_CAPTURE, Manifest.permission.RECORD_AUDIO);
         sPermissions.put(PermissionRequest.RESOURCE_MIDI_SYSEX, NO_ANDROID_PERMISSION);

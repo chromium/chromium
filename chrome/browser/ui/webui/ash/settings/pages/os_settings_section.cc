@@ -34,8 +34,9 @@ void OsSettingsSection::RegisterNestedSettingBulk(
     mojom::Subpage subpage,
     const base::span<const mojom::Setting>& settings,
     HierarchyGenerator* generator) {
-  for (const auto& setting : settings)
+  for (const auto& setting : settings) {
     generator->RegisterNestedSetting(setting, subpage);
+  }
 }
 
 OsSettingsSection::~OsSettingsSection() = default;
@@ -80,8 +81,9 @@ std::string OsSettingsSection::GetDefaultModifiedUrl(
     OsSettingsIdentifier id,
     const std::string& url_to_modify) {
   // Default case for static URLs which do not need to be modified.
-  if (type != mojom::SearchResultType::kSetting)
+  if (type != mojom::SearchResultType::kSetting) {
     return url_to_modify;
+  }
 
   std::stringstream ss;
   ss << url_to_modify;

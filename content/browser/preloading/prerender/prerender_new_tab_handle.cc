@@ -31,7 +31,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
   // TODO(crbug.com/40234240): Pass the same creation parameters as
   // WebContentsImpl::CreateNewWindow().
   web_contents_create_params_.opener_render_process_id =
-      initiator_render_frame_host->GetProcess()->GetID();
+      initiator_render_frame_host->GetProcess()->GetDeprecatedID();
   web_contents_create_params_.opener_render_frame_id =
       initiator_render_frame_host->GetRoutingID();
   web_contents_create_params_.opener_suppressed = true;

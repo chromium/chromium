@@ -130,7 +130,11 @@ std::string TranslateKitComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes installer_attributes;
+#if defined(MEMORY_SANITIZER)
+  installer_attributes["is_msan"] = "true";
+#endif  // defined(MEMORY_SANITIZER)
+  return installer_attributes;
 }
 
 // static

@@ -12,6 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
@@ -465,8 +467,8 @@ class RasterBufferProviderPerfTest
                                      unsigned num_raster_tasks,
                                      unsigned num_image_decode_tasks) {
     const size_t kNumVersions = 2;
-    TileTask::Vector image_decode_tasks[kNumVersions];
-    RasterTaskVector raster_tasks[kNumVersions];
+    std::array<TileTask::Vector, kNumVersions> image_decode_tasks;
+    std::array<RasterTaskVector, kNumVersions> raster_tasks;
     for (size_t i = 0; i < kNumVersions; ++i) {
       CreateImageDecodeTasks(num_image_decode_tasks, &image_decode_tasks[i]);
       CreateRasterTasks(this, num_raster_tasks, image_decode_tasks[i],

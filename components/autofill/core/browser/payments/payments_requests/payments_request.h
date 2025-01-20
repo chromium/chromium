@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -79,14 +80,15 @@ class PaymentsRequest {
   // If a subclass overrides this, it must also override GetHistogramName.
   virtual std::optional<base::TimeDelta> GetTimeout() const;
 
- protected:
   // Shared helper function to build the risk data sent in the request.
-  base::Value::Dict BuildRiskDictionary(const std::string& encoded_risk_data);
+  static base::Value::Dict BuildRiskDictionary(
+      std::string_view encoded_risk_data);
 
   // Shared helper function to build the customer context sent in the request.
-  base::Value::Dict BuildCustomerContextDictionary(
+  static base::Value::Dict BuildCustomerContextDictionary(
       int64_t external_customer_id);
 
+ protected:
   // Shared helper function that builds the Chrome user context which is then
   // set in the payment requests.
   base::Value::Dict BuildChromeUserContext(
@@ -116,7 +118,7 @@ class PaymentsRequest {
                                      const FieldType& type,
                                      const std::string& app_locale,
                                      base::Value::List& list);
-  static void SetStringIfNotEmpty(const AutofillDataModel& profile,
+  static void SetStringIfNotEmpty(const FormGroup& form_group,
                                   const FieldType& type,
                                   const std::string& app_locale,
                                   const std::string& path,

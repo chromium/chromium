@@ -68,7 +68,10 @@ enum class PasswordStoreOperation {
   // kRemoveLoginForAccount = 6,
 
   kRemoveLoginAsync = 7,
-  kRemoveLoginsByURLAndTimeAsync = 8,
+
+  // Obsolete
+  // kRemoveLoginsByURLAndTimeAsync = 8,
+
   kRemoveLoginsCreatedBetweenAsync = 9,
   kDisableAutoSignInForOriginsAsync = 10,
   // Deprecated
@@ -138,12 +141,6 @@ class PasswordStoreAndroidBackend
   void GetGroupedMatchingLoginsInternal(std::string account,
                                         const PasswordFormDigest& form_digest,
                                         LoginsOrErrorReply callback);
-  void RemoveLoginsByURLAndTimeInternal(
-      std::string account,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordChangesOrErrorReply callback);
   void RemoveLoginsCreatedBetweenInternal(std::string account,
                                           base::Time delete_begin,
                                           base::Time delete_end,
@@ -267,8 +264,7 @@ class PasswordStoreAndroidBackend
   using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
   // Using a small_map should ensure that we handle rare cases with many jobs
   // like a bulk deletion just as well as the normal, rather small job load.
-  using JobMap = base::small_map<
-      std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
+  using JobMap = base::small_map<std::unordered_map<JobId, JobReturnHandler>>;
 
   using DelayedRetryId = base::IdType32<CancellableRetryCallback>;
 

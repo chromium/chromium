@@ -4,17 +4,25 @@
 
 #include "chrome/browser/devtools/protocol/target_handler.h"
 
+#include <ranges>
+#include <string_view>
+
+#include "base/notreached.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 NavigateParams CreateNavigateParams(Profile* profile,
@@ -73,13 +81,16 @@ protocol::Response TargetHandler::SetRemoteLocations(
 
 protocol::Response TargetHandler::CreateTarget(
     const std::string& url,
-    protocol::Maybe<int> width,
-    protocol::Maybe<int> height,
-    protocol::Maybe<std::string> browser_context_id,
-    protocol::Maybe<bool> enable_begin_frame_control,
-    protocol::Maybe<bool> new_window,
-    protocol::Maybe<bool> background,
-    protocol::Maybe<bool> for_tab,
+    std::optional<int> left,
+    std::optional<int> top,
+    std::optional<int> width,
+    std::optional<int> height,
+    std::optional<std::string> window_state,
+    std::optional<std::string> browser_context_id,
+    std::optional<bool> enable_begin_frame_control,
+    std::optional<bool> new_window,
+    std::optional<bool> background,
+    std::optional<bool> for_tab,
     std::string* out_target_id) {
   Profile* profile = nullptr;
   if (browser_context_id.has_value()) {
@@ -130,12 +141,75 @@ protocol::Response TargetHandler::CreateTarget(
   }
 
   create_new_window = !target_browser;
+
+  const bool set_window_position = left || top || width || height;
+  if (set_window_position && !create_new_window) {
+    return protocol::Response::InvalidParams(
+        "Target position can only be set for new windows");
+  }
+
+  static std::string_view kActionableWindowStates[] = {
+      protocol::Target::WindowStateEnum::Minimized,
+      protocol::Target::WindowStateEnum::Maximized,
+      protocol::Target::WindowStateEnum::Fullscreen,
+  };
+
+  bool set_window_state = !!window_state;
+  if (set_window_state) {
+    if (!create_new_window) {
+      return protocol::Response::InvalidParams(
+          "Target window state can only be set for new windows");
+    }
+    if (*window_state == protocol::Target::WindowStateEnum::Normal) {
+      set_window_state = false;
+    } else if (std::ranges::find(kActionableWindowStates, *window_state) ==
+               std::end(kActionableWindowStates)) {
+      return protocol::Response::InvalidParams("Invalid target window state: " +
+                                               *window_state);
+    }
+  }
+
   NavigateParams params = CreateNavigateParams(
       profile, gurl, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, create_new_window,
       create_in_background, target_browser);
+
   Navigate(&params);
-  if (!params.navigated_or_inserted_contents)
+  if (!params.navigated_or_inserted_contents) {
     return protocol::Response::ServerError("Failed to open a new tab");
+  }
+
+  if (set_window_position) {
+    BrowserWindow* browser_window = params.browser->window();
+    CHECK(browser_window);
+    gfx::Rect bounds = browser_window->GetBounds();
+    if (left) {
+      bounds.set_x(left.value());
+    }
+    if (top) {
+      bounds.set_y(top.value());
+    }
+    if (width) {
+      bounds.set_width(width.value());
+    }
+    if (height) {
+      bounds.set_height(height.value());
+    }
+    browser_window->SetBounds(bounds);
+  }
+
+  if (set_window_state) {
+    if (*window_state == protocol::Target::WindowStateEnum::Minimized) {
+      params.browser->window()->Minimize();
+    } else if (*window_state == protocol::Target::WindowStateEnum::Maximized) {
+      params.browser->window()->Maximize();
+    } else if (*window_state == protocol::Target::WindowStateEnum::Fullscreen) {
+      params.browser->exclusive_access_manager()
+          ->fullscreen_controller()
+          ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
+    } else {
+      NOTREACHED();
+    }
+  }
 
   if (!create_in_background) {
     params.navigated_or_inserted_contents->Focus();

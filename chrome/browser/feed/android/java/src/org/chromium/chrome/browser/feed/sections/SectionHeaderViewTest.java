@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -67,11 +67,10 @@ public final class SectionHeaderViewTest {
     }
 
     private void setFeatureOverridesForIph() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED_ONBOARDING, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "IPH");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.WEB_FEED_ONBOARDING)
+                .param(ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "IPH")
+                .apply();
     }
 
     @Test

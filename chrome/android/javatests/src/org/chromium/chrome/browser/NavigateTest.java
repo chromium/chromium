@@ -35,12 +35,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -49,7 +46,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -57,7 +53,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -162,6 +157,7 @@ public class NavigateTest {
     @Restriction(DeviceFormFactor.TABLET)
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "Flaky. See crbug.com/380238040")
     public void testNavigateMany() throws Exception {
         final String[] urls =
                 mTestServer.getURLs(
@@ -559,65 +555,6 @@ public class NavigateTest {
                 Boolean.FALSE,
                 toolbarManager.getHandleBackPressChangedSupplier().get());
         onView(withId(R.id.back_button)).check(matches(Matchers.not(isEnabled())));
-    }
-
-    /** Test back with tab switcher. */
-    @Test
-    @MediumTest
-    @Feature({"Navigation"})
-    @DisabledTest(message = "https://crbug.com/1410635")
-    public void testNavigateBackWithTabSwitcher() throws Exception {
-        // Disable iph
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BackPressManager backPressManager =
-                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
-                    backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
-                });
-        final String[] urls = {
-            mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
-            mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
-            mTestServer.getURL("/chrome/test/data/android/navigate/three.html")
-        };
-
-        for (String url : urls) {
-            navigateAndObserve(url);
-        }
-
-        String histogram = BackPressManager.getHistogramForTesting();
-
-        HistogramWatcher startSurfaceHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        histogram,
-                        BackPressManager.getHistogramValue(BackPressHandler.Type.START_SURFACE));
-        HistogramWatcher tabSwitcherHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        histogram,
-                        BackPressManager.getHistogramValue(BackPressHandler.Type.TAB_SWITCHER));
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabUiTestHelper.enterTabSwitcher(cta);
-        Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
-                });
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    int type =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getLayoutManager()
-                                    .getActiveLayoutType();
-                    Assert.assertEquals(LayoutType.BROWSING, type);
-                });
-
-        try {
-            startSurfaceHistogram.assertExpected();
-        } catch (AssertionError e) {
-            tabSwitcherHistogram.assertExpected(
-                    "Either start surface or tab switcher handles back press.");
-        }
     }
 
     @Test

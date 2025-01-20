@@ -72,7 +72,6 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplForTest;
 class MainThreadSchedulerImplTest;
 class MockPageSchedulerImpl;
-FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, ShouldIgnoreTaskForUkm);
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest, Tracing);
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
                      LogIpcsPostedToDocumentsInBackForwardCache);
@@ -404,9 +403,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   FRIEND_TEST_ALL_PREFIXES(
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
-      ShouldIgnoreTaskForUkm);
-  FRIEND_TEST_ALL_PREFIXES(
-      main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
       Tracing);
   FRIEND_TEST_ALL_PREFIXES(
       main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest,
@@ -618,21 +614,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
 
-  // Probabilistically record all task metadata for the current task.
-  // If task belongs to a per-frame queue, this task is attributed to
-  // a particular Page, otherwise it's attributed to all Pages in the process.
-  void RecordTaskUkm(
-      MainThreadTaskQueue* queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
-
-  UkmRecordingStatus RecordTaskUkmImpl(
-      MainThreadTaskQueue* queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing,
-      FrameSchedulerImpl* frame_scheduler,
-      bool precise_attribution);
-
   void ShutdownAllQueues();
 
   bool AllPagesFrozen() const;
@@ -718,18 +699,15 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks current_policy_expiration_time;
     base::TimeTicks estimated_next_frame_begin;
     base::TimeTicks current_task_start_time;
+    base::TimeTicks discrete_input_response_start_time;
     base::TimeDelta compositor_frame_interval;
     TraceableCounter<int, TracingCategory::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.
 
-    TraceableObjectState<RAILMode,
-                         TracingCategory::kTopLevel>
-        rail_mode_for_tracing;  // Don't use except for tracing.
-
-    TraceableObjectState<bool, TracingCategory::kTopLevel> renderer_hidden;
+    bool renderer_hidden = false;
     std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
-    TraceableObjectState<bool, TracingCategory::kTopLevel>
-        renderer_backgrounded;
+    std::optional<base::ScopedSampleMetadata> renderer_frozen_metadata;
+    bool renderer_backgrounded = kLaunchingProcessIsBackgrounded;
     TraceableState<bool, TracingCategory::kDefault>
         blocking_input_expected_soon;
     TraceableState<bool, TracingCategory::kDebug> in_idle_period_for_testing;

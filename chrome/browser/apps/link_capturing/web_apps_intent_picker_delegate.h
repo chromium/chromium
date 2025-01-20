@@ -74,7 +74,7 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
 #endif  // BUILDFLAG(IS_MAC)
 
   raw_ref<Profile> profile_;
-  raw_ref<web_app::WebAppProvider> provider_;
+  raw_ptr<web_app::WebAppProvider> provider_;
 #if BUILDFLAG(IS_MAC)
   MacAppInfo mac_app_info_;
 #endif  // BUILDFLAG(IS_MAC)

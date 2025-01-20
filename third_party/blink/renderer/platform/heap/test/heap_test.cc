@@ -64,7 +64,11 @@ namespace blink {
 
 namespace {
 
-class HeapTest : public TestSupportingGC {};
+class HeapTest : public TestSupportingGC {
+#if DCHECK_IS_ON()
+  void TearDown() override { WTF::SetIsBeforeThreadCreatedForTest(); }
+#endif
+};
 
 class HeapDeathTest : public TestSupportingGC {};
 
@@ -2072,6 +2076,41 @@ TEST_F(HeapTest, WeakHeapHashCountedSetToVector) {
   EXPECT_LE(3u, vector.size());
   for (const auto& i : vector)
     EXPECT_TRUE(i->Value() == 1 || i->Value() == 2);
+}
+
+TEST_F(HeapTest, HeapHashSetToVector) {
+  HeapHashSet<Member<IntWrapper>> set;
+  HeapVector<Member<IntWrapper>> vector;
+  set.insert(MakeGarbageCollected<IntWrapper>(1));
+  set.insert(MakeGarbageCollected<IntWrapper>(1));
+  set.insert(MakeGarbageCollected<IntWrapper>(2));
+
+  CopyToVector(set, vector);
+  EXPECT_EQ(3u, vector.size());
+
+  Vector<int> int_vector;
+  for (const auto& i : vector) {
+    int_vector.push_back(i->Value());
+  }
+  std::sort(int_vector.begin(), int_vector.end());
+  ASSERT_EQ(3u, int_vector.size());
+  EXPECT_EQ(1, int_vector[0]);
+  EXPECT_EQ(1, int_vector[1]);
+  EXPECT_EQ(2, int_vector[2]);
+}
+
+TEST_F(HeapTest, WeakHeapHashSetToVector) {
+  HeapHashSet<WeakMember<IntWrapper>> set;
+  HeapVector<Member<IntWrapper>> vector;
+  set.insert(MakeGarbageCollected<IntWrapper>(1));
+  set.insert(MakeGarbageCollected<IntWrapper>(1));
+  set.insert(MakeGarbageCollected<IntWrapper>(2));
+
+  CopyToVector(set, vector);
+  EXPECT_EQ(3u, vector.size());
+  for (const auto& i : vector) {
+    EXPECT_TRUE(i->Value() == 1 || i->Value() == 2);
+  }
 }
 
 TEST_F(HeapTest, RefCountedGarbageCollected) {

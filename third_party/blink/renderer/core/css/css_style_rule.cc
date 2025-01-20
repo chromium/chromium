@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -88,33 +90,28 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   StyleSheetContents* parent_contents =
       parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   HeapVector<CSSSelector> arena;
-  StyleRule* parent_rule_for_nesting =
-      FindClosestParentStyleRuleOrNull(parentRule());
-  CSSNestingType nesting_type = parent_rule_for_nesting
-                                    ? CSSNestingType::kNesting
-                                    : CSSNestingType::kNone;
-  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
-      context, nesting_type, parent_rule_for_nesting, /*is_within_scope=*/false,
-      parent_contents, selector_text, arena);
+
+  NestingContext nesting_context = CalculateNestingContext(parentRule());
+  base::span<CSSSelector> selector_vector =
+      CSSParser::ParseSelector(context, nesting_context.nesting_type,
+                               nesting_context.parent_rule_for_nesting,
+                               parent_contents, selector_text, arena);
   if (selector_vector.empty()) {
     return;
   }
 
-  StyleRule* new_style_rule =
-      StyleRule::Create(selector_vector, std::move(*style_rule_));
+  StyleRule* new_style_rule = StyleRule::Create(
+      selector_vector, style_rule_->Properties().ImmutableCopyIfNeeded());
+  if (HeapVector<Member<StyleRuleBase>>* child_rules =
+          style_rule_->ChildRules()) {
+    for (StyleRuleBase* child_rule : *child_rules) {
+      new_style_rule->AddChildRule(child_rule->Renest(new_style_rule));
+    }
+  }
   if (parent_contents) {
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);
   }
-
-  // If we have any nested rules, update their parent selector(s) to point to
-  // our newly created StyleRule instead of the old one.
-  if (new_style_rule->ChildRules()) {
-    for (StyleRuleBase* child_rule : *new_style_rule->ChildRules()) {
-      child_rule->Reparent(new_style_rule);
-    }
-  }
-
   style_rule_ = new_style_rule;
 
   if (HasCachedSelectorText()) {
@@ -283,6 +280,21 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+}
+
+void CSSStyleRule::QuietlyInsertRule(const ExecutionContext* execution_context,
+                                     const String& rule,
+                                     unsigned index) {
+  style_rule_->EnsureChildRules();
+  ParseAndQuietlyInsertRule(execution_context, rule, index,
+                            /*parent_rule=*/*this, *style_rule_->ChildRules(),
+                            child_rule_cssom_wrappers_);
+}
+
+void CSSStyleRule::QuietlyDeleteRule(unsigned index) {
+  CHECK(style_rule_->ChildRules());
+  blink::QuietlyDeleteRule(index, *style_rule_->ChildRules(),
+                           child_rule_cssom_wrappers_);
 }
 
 }  // namespace blink

@@ -104,10 +104,6 @@ BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
              "OptGuideEnableXNNPACKDelegateWithTFLite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizationHintsComponent,
-             "OptimizationHintsComponent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for fetching on search results from a remote Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,
@@ -163,6 +159,12 @@ BASE_FEATURE(kTextSafetyClassifier,
              "TextSafetyClassifier",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to scan the full text when running the language detection in the text
+// safety classifier.
+BASE_FEATURE(kTextSafetyScanLanguageDetection,
+             "TextSafetyScanLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the text safety remote fallback should be used.
 BASE_FEATURE(kTextSafetyRemoteFallback,
              "TextSafetyRemoteFallback",
@@ -179,7 +181,6 @@ BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
              "OnDeviceModelFetchPerformanceClassEveryStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Enable the "Synapse" refreshed AI settings page.
 BASE_FEATURE(kAiSettingsPageRefresh,
              "AiSettingsPageRefresh",
@@ -187,11 +188,32 @@ BASE_FEATURE(kAiSettingsPageRefresh,
 
 const base::FeatureParam<bool> kShowAiSettingsForTesting{
     &kAiSettingsPageRefresh, "show_ai_settings_for_testing", false};
-#endif
+
+// Enable AI settings page integration with Privacy Guide.
+BASE_FEATURE(kPrivacyGuideAiSettings,
+             "PrivacyGuideAiSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
+             "AiSettingsPageEnterpriseDisabledUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelPerformanceParams,
+             "OnDeviceModelPerformanceParams",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
-    &kOptimizationGuideOnDeviceModel,
+    &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes", "5,6"};
+
+const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel{
+        &kOnDeviceModelPerformanceParams,
+        "compatible_low_tier_on_device_performance_classes", ""};
+
+BASE_FEATURE(kOptimizationGuideIconView,
+             "OptimizationGuideIconView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
@@ -573,12 +595,6 @@ bool TFLiteXNNPACKDelegateEnabled() {
   return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
 }
 
-bool ShouldCheckFailedComponentVersionPref() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kOptimizationHintsComponent, "check_failed_component_version_pref",
-      false);
-}
-
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch() {
   if (!base::FeatureList::IsEnabled(
@@ -697,42 +713,11 @@ base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
   return kOnDeviceModelCrashBackoffBaseTime.Get();
 }
 
-int GetOnDeviceModelTimeoutCountBeforeDisable() {
-  static const base::FeatureParam<int> kOnDeviceModelDisableTimeoutCount{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_disable_timeout_count",
-      2};
-  return kOnDeviceModelDisableTimeoutCount.Get();
-}
-
-base::TimeDelta GetOnDeviceModelMaxTimeoutBackoffTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelMaxTimeoutBackoffTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_max_timeout_backoff_time", base::Hours(1)};
-  return kOnDeviceModelMaxTimeoutBackoffTime.Get();
-}
-
-base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelTimeoutBackoffBaseTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_timeout_backoff_base_time", base::Minutes(1)};
-  return kOnDeviceModelTimeoutBackoffBaseTime.Get();
-}
-
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
       base::Minutes(3)};
   return kOnDeviceStartupMetricDelay.Get();
-}
-
-base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelTimeForInitialResponse{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_time_for_initial_response", base::Seconds(15)};
-  return kOnDeviceModelTimeForInitialResponse.Get();
 }
 
 bool GetOnDeviceFallbackToServerOnDisconnect() {
@@ -766,12 +751,16 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
+int GetDiskSpaceRequiredInMbForOnDeviceModelInstall() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideOnDeviceModel,
+      "on_device_model_free_space_mb_required_to_install", 20 * 1024);
+}
+
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
     int64_t free_disk_space_bytes) {
-  return base::GetFieldTrialParamByFeatureAsInt(
-             kOptimizationGuideOnDeviceModel,
-             "on_device_model_free_space_mb_required_to_install",
-             20 * 1024) <= free_disk_space_bytes / (1024 * 1024);
+  return GetDiskSpaceRequiredInMbForOnDeviceModelInstall() <=
+         free_disk_space_bytes / (1024 * 1024);
 }
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
@@ -791,13 +780,6 @@ bool GetOnDeviceModelRetractUnsafeContent() {
 
 bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
-}
-
-uint32_t GetOnDeviceModelTextSafetyTokenInterval() {
-  static const base::FeatureParam<int32_t>
-      kOnDeviceModelTextSafetyTokenInterval{
-          &kTextSafetyClassifier, "on_device_text_safety_token_interval", 10};
-  return static_cast<uint32_t>(kOnDeviceModelTextSafetyTokenInterval.Get());
 }
 
 double GetOnDeviceModelLanguageDetectionMinimumReliability() {
@@ -899,6 +881,20 @@ int GetOnDeviceModelValidationAttemptCount() {
   static const base::FeatureParam<int> kParam{
       &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
   return kParam.Get();
+}
+
+bool ShouldEnableOptimizationGuideIconView() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
+}
+
+bool IsAiSettingsPageRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kAiSettingsPageRefresh) ||
+         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings) ||
+         base::FeatureList::IsEnabled(kAiSettingsPageEnterpriseDisabledUi);
+}
+
+bool IsPrivacyGuideAiSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
 }
 
 }  // namespace features

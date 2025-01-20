@@ -90,6 +90,11 @@ class WebViewPermissionHelperDelegate {
                                        const GURL& url,
                                        bool blocked_by_policy) {}
 
+  // Whether media requests approved by the webview embedder are forwarded as
+  // the embedder. When false, media requests retain the embedded origin.
+  virtual bool ForwardEmbeddedMediaPermissionChecksAsEmbedder(
+      const url::Origin& embedder_origin);
+
   WebViewPermissionHelper* web_view_permission_helper() const {
     return web_view_permission_helper_;
   }

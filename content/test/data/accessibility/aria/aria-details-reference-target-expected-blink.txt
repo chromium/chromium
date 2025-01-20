@@ -9,9 +9,7 @@ rootWebArea
 ++++++++++++inlineTextBox name='text'
 ++++++++staticText name=' has details'
 ++++++++++inlineTextBox name=' has details'
-++++++genericContainer
-++++++++group
-++++++++++staticText name='Text details'
-++++++++++++inlineTextBox name='Text details'
-++++++genericContainer
-++++++++image name='Image details'
+++++++group
+++++++++staticText name='Text details'
+++++++++++inlineTextBox name='Text details'
+++++++image name='Image details'

@@ -14,7 +14,7 @@ class ExtensionEnableFlowDelegate {
   virtual void ExtensionEnableFlowAborted(bool user_initiated) = 0;
 
  protected:
-  virtual ~ExtensionEnableFlowDelegate() {}
+  virtual ~ExtensionEnableFlowDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ENABLE_FLOW_DELEGATE_H_

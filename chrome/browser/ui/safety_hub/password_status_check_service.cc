@@ -154,15 +154,15 @@ bool ShouldFindNewCheckTime(Profile* profile) {
   // If the weight for any day is different than the previous one, a new check
   // time should be found.
   auto map = GetDayPrefWeightMap();
-  for (auto day = map.begin(); day != map.end(); day++) {
-    std::optional<int> old_weight_val = check_schedule_dict.FindInt(day->first);
+  for (auto& day : map) {
+    std::optional<int> old_weight_val = check_schedule_dict.FindInt(day.first);
     // When the first time the weights are introduced, the old weight values
     // will be non-set. In this case, schedule time should reset.
     if (!old_weight_val.has_value()) {
       return true;
     }
 
-    int new_weight = day->second;
+    int new_weight = day.second;
     if (old_weight_val.value() != new_weight) {
       return true;
     }
@@ -684,8 +684,8 @@ void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
            base::TimeDeltaToValue(check_interval));
   // Save current weights for days on prefs.
   auto map = GetDayPrefWeightMap();
-  for (auto day = map.begin(); day != map.end(); day++) {
-    dict.Set(day->first, base::Value(day->second));
+  for (auto& day : map) {
+    dict.Set(day.first, base::Value(day.second));
   }
 
   profile_->GetPrefs()->SetDict(

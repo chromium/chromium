@@ -37,6 +37,16 @@
 using instance_id::InstanceID;
 using sync_pb::SharingSpecificFields;
 
+namespace {
+
+// When enabled, sharing messages will not be sent via VAPID and the device will
+// not register with VAPID.
+BASE_FEATURE(kSharingDisableVapid,
+             "SharingDisableVapid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 SharingDeviceRegistrationImpl::SharingDeviceRegistrationImpl(
     PrefService* pref_service,
     SharingSyncPreference* sharing_sync_preference,
@@ -129,15 +139,17 @@ void SharingDeviceRegistrationImpl::OnVapidTargetInfoRetrieved(
     SharingDeviceRegistrationResult result,
     std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info) {
   if (result != SharingDeviceRegistrationResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
+    // Clear results if the registration failed but proceed to register using
+    // sender ID.
+    authorized_entity = std::nullopt;
+    vapid_target_info = std::nullopt;
   }
 
   if (!CanSendViaSenderID(sync_service_)) {
-    OnSharingTargetInfoRetrieved(
-        std::move(callback), std::move(authorized_entity),
-        std::move(vapid_target_info), SharingDeviceRegistrationResult::kSuccess,
-        /*sharing_target_info=*/std::nullopt);
+    OnSharingTargetInfoRetrieved(std::move(callback),
+                                 std::move(authorized_entity),
+                                 std::move(vapid_target_info), result,
+                                 /*sharing_target_info=*/std::nullopt);
     return;
   }
 
@@ -257,6 +269,10 @@ void SharingDeviceRegistrationImpl::OnFCMTokenDeleted(
 
 std::optional<std::string>
 SharingDeviceRegistrationImpl::GetAuthorizationEntity() const {
+  if (base::FeatureList::IsEnabled(kSharingDisableVapid)) {
+    return std::nullopt;
+  }
+
   // TODO(himanshujaju) : Extract a static function to convert ECPrivateKey* to
   // Base64PublicKey in library.
   crypto::ECPrivateKey* vapid_key = vapid_key_manager_->GetOrCreateKey();

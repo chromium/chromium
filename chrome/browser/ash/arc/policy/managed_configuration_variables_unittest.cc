@@ -25,6 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -204,7 +205,7 @@ class ManagedConfigurationVariablesBase {
     // Set up a fake user and capture its profile.
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId)));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

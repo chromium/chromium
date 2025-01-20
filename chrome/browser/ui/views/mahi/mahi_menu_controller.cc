@@ -34,14 +34,33 @@ constexpr int kMaxCharForCondensedView = 100;
 constexpr int kMinCharForElucidation = 100;
 constexpr int kMaxCharForElucidation = 3200;
 
+constexpr int kMinCharForSummary = 300;
+
 // Whether the `text` is eligible for elucidation / simplication feature.
-SelectedTextState IsTextEligibleForElucidation(const std::u16string& text) {
+SelectedTextState SelectedTextStateForElucidation(const std::u16string& text) {
   if (text.empty()) {
     return SelectedTextState::kEmpty;
   }
   if (text.length() > kMaxCharForElucidation) {
     return SelectedTextState::kTooLong;
   } else if (text.length() < kMinCharForElucidation) {
+    return SelectedTextState::kTooShort;
+  }
+
+  return SelectedTextState::kEligible;
+}
+
+// Whether the selected text is eligible for a summary.
+SelectedTextState SelectedTextStateForSummary(const std::u16string& text) {
+  // If the summary of selection feature is disabled, we simply treat the text
+  // empty, which falls back to summary of whole document option.
+  if (!features::IsMahiSummarizeSelectedEnabled()) {
+    return SelectedTextState::kEmpty;
+  }
+
+  if (text.empty()) {
+    return SelectedTextState::kEmpty;
+  } else if (text.length() < kMinCharForSummary) {
     return SelectedTextState::kTooShort;
   }
 
@@ -111,8 +130,11 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
     }
 
     menu_widget_ = MahiMenuView::CreateWidget(
-        anchor_bounds, {.elucidation_eligiblity =
-                            IsTextEligibleForElucidation(selected_text_u16)});
+        anchor_bounds,
+        {.summary_of_selection_eligibility =
+             SelectedTextStateForSummary(selected_text_u16),
+         .elucidation_eligiblity =
+             SelectedTextStateForElucidation(selected_text_u16)});
     // This enables tooltip without having to activate the text field.
     menu_widget_->SetNativeWindowProperty(
         views::TooltipManager::kGroupingPropertyKey,
@@ -124,7 +146,9 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
   if (selected_text.empty()) {
     // Sets elucidation_eligibility = kUnknown to hide the elucidation button.
     menu_widget_ = MahiMenuView::CreateWidget(
-        anchor_bounds, {.elucidation_eligiblity = SelectedTextState::kUnknown});
+        anchor_bounds,
+        {.summary_of_selection_eligibility = SelectedTextState::kEmpty,
+         .elucidation_eligiblity = SelectedTextState::kUnknown});
     menu_widget_->ShowInactive();
     return;
   }
@@ -163,14 +187,22 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
 
   // kUnknown means hiding the elucidation button.
   SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
+  // kEmpty means the summary button is for the whole webpage / PDF file.
+  SelectedTextState summary_of_selection_eligibility =
+      SelectedTextState::kEmpty;
   if (features::IsPompanoEnabled()) {
     CHECK(chromeos::MahiMediaAppContentManager::Get());
-    elucidation_eligiblity = IsTextEligibleForElucidation(base::UTF8ToUTF16(
-        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText()));
+    const std::u16string selected_text = base::UTF8ToUTF16(
+        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText());
+    elucidation_eligiblity = SelectedTextStateForElucidation(selected_text);
+    summary_of_selection_eligibility =
+        SelectedTextStateForSummary(selected_text);
   }
 
   menu_widget_ = MahiMenuView::CreateWidget(
-      anchor, {.elucidation_eligiblity = elucidation_eligiblity},
+      anchor,
+      {.summary_of_selection_eligibility = summary_of_selection_eligibility,
+       .elucidation_eligiblity = elucidation_eligiblity},
       MahiMenuView::Surface::kMediaApp);
   menu_widget_->ShowInactive();
 }

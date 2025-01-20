@@ -27,7 +27,7 @@ namespace internal {
 struct WorkQueueAndTaskOrder {
   STACK_ALLOCATED();
 
-  public:
+ public:
   WorkQueueAndTaskOrder(WorkQueue& work_queue, const TaskOrder& task_order)
       : queue(&work_queue), order(task_order) {}
 

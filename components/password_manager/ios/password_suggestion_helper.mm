@@ -10,11 +10,15 @@
 #import "base/time/time.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -159,16 +163,22 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 
   // YES if there is pending queries cleanup task that was already scheduled.
   BOOL _cleanupScheduled;
+
+  // Password Manager tied to the same web state as this helper.
+  raw_ptr<password_manager::PasswordManagerInterface> _passwordManager;
 }
 
 #pragma mark - Initialization
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithWebState:(web::WebState*)webState
+                 passwordManager:(password_manager::PasswordManagerInterface*)
+                                     passwordManager {
   self = [super init];
   if (self) {
     _webState = webState->GetWeakPtr();
     _pendingFormQueries = [NSMutableArray array];
     _cleanupScheduled = NO;
+    _passwordManager = passwordManager;
   }
   return self;
 }
@@ -312,7 +322,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
                              forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame
-                      forSecurityOrigin:(const GURL&)origin {
+                      forSecurityOrigin:(const url::Origin&)origin {
   DCHECK(_webState.get());
   [self fillDataForFrameId:frameId]->Add(
       formData, [self shouldAlwaysPopulateRealmForFrame:frameId
@@ -343,9 +353,32 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   }
 
   if (!_webState.get() || !webFrame) {
+    // Return YES if the objects needed to prove that the field is a password
+    // aren't available.
     return YES;
   }
 
+  bool useNewDetection = base::FeatureList::IsEnabled(
+      password_manager::features::kIOSImprovePasswordFieldDetectionForFilling);
+
+  // If the new approach to detect password fields is enabled, first
+  // check if the Password Manager thinks it is a password field, then fallback
+  // to using Autofill if the Password Manager verdict is negative.
+  return (useNewDetection &&
+          [self isPasswordFieldFromPasswordManagerPerspective:formQuery
+                                                     webFrame:webFrame]) ||
+         [self isPasswordFieldFromAutofillPerspective:formQuery
+                                             webFrame:webFrame];
+}
+
+// Returns YES if the field of the `formQuery` is in the Autofill form cache and
+// has its type associated to a password type. Still returns YES if the type of
+// the field couldn't be verified (e.g. when the field can't be found in the
+// cache). Returns NO if the field type could be determined and its type isn't
+// associated to a password.
+- (BOOL)isPasswordFieldFromAutofillPerspective:
+            (FormSuggestionProviderQuery*)formQuery
+                                      webFrame:(web::WebFrame*)webFrame {
   auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       _webState.get(), webFrame);
   if (!driver) {
@@ -373,8 +406,19 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
     case autofill::FieldTypeGroup::kPasswordField:
     case autofill::FieldTypeGroup::kNoGroup:
       return YES;  // May be a password field.
-    default:
-      return NO;  // Not a password field.
+    case autofill::FieldTypeGroup::kName:
+    case autofill::FieldTypeGroup::kEmail:
+    case autofill::FieldTypeGroup::kCompany:
+    case autofill::FieldTypeGroup::kAddress:
+    case autofill::FieldTypeGroup::kPhone:
+    case autofill::FieldTypeGroup::kCreditCard:
+    case autofill::FieldTypeGroup::kTransaction:
+    case autofill::FieldTypeGroup::kUsernameField:
+    case autofill::FieldTypeGroup::kUnfillable:
+    case autofill::FieldTypeGroup::kIban:
+    case autofill::FieldTypeGroup::kStandaloneCvcField:
+    case autofill::FieldTypeGroup::kAutofillAi:
+      return NO;
   }
 }
 
@@ -402,7 +446,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 // is not specified.
 - (bool)shouldAlwaysPopulateRealmForFrame:(const std::string&)frameId
                               isMainFrame:(BOOL)isMainFrame
-                        forSecurityOrigin:(const GURL&)origin {
+                        forSecurityOrigin:(const url::Origin&)origin {
   CHECK(_webState.get());
   if (IsCrossOriginIframe(_webState.get(), isMainFrame, origin)) {
     return true;
@@ -508,6 +552,33 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   }
   _pendingFormQueries = remainingQueries;
   [self scheduleCleanupIfNeeded];
+}
+
+// Returns YES if Password Manager thinks the field in the `formQuery` is a
+// password field or returns NO otherwise.
+- (BOOL)isPasswordFieldFromPasswordManagerPerspective:
+            (FormSuggestionProviderQuery*)formQuery
+                                             webFrame:(web::WebFrame*)webFrame {
+  FieldRendererId field_id = formQuery.fieldRendererID;
+
+  if (!_passwordManager || !field_id) {
+    return NO;
+  }
+
+  password_manager::PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState.get(),
+                                                               webFrame);
+  // There must be a driver if there is a frame.
+  CHECK(driver);
+
+  const password_manager::PasswordForm* form =
+      _passwordManager->GetPasswordFormCache()->GetPasswordForm(
+          driver, formQuery.formRendererID);
+
+  return form != nullptr &&
+         (form->password_element_renderer_id == field_id ||
+          form->new_password_element_renderer_id == field_id ||
+          form->confirmation_password_element_renderer_id == field_id);
 }
 
 @end

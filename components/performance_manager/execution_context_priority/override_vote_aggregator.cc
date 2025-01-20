@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/override_vote_aggregator.h"
 
 #include "base/not_fatal_until.h"
 

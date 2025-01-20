@@ -106,17 +106,14 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   // This will be called by BrowserWithTestWindowTest::SetUp();
-  std::string GetDefaultProfileName() override { return kUserEmail; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kUserEmail;
+  }
 
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id,
-                                           /*is_affiliated=*/true);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserAffiliated(
+        AccountId::FromUserEmailGaiaId(email, gaia_id), true);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(
@@ -202,7 +199,7 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
       std::optional<base::Value> register_key) {
     static constexpr std::string_view kData = "challenge";
     base::Value::List args;
-    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    args.Append(base::Value(base::as_byte_span(kData)));
     if (register_key) {
       args.Append(std::move(*register_key));
     }
@@ -285,7 +282,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   base::Value::List CreateArgsInternal(bool register_key) {
     static constexpr std::string_view kData = "challenge";
     base::Value::List args;
-    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    args.Append(base::Value(base::as_byte_span(kData)));
     args.Append(register_key);
     return args;
   }
@@ -359,7 +356,7 @@ class EPKChallengeKeyTest
           register_key,
       api::enterprise_platform_keys::Scope scope) {
     api::enterprise_platform_keys::ChallengeKeyOptions options;
-    auto challenge = base::as_bytes(base::make_span("challenge"));
+    auto challenge = base::as_byte_span("challenge");
     options.challenge = std::vector(challenge.begin(), challenge.end());
     if (register_key.has_value()) {
       options.register_key.emplace(std::move(register_key.value()));

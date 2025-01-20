@@ -473,7 +473,7 @@ TEST_F(ActiveTabTest, ClearAllActiveExtensionsAndNotify) {
 // An active tab test that includes an ExtensionService.
 class ActiveTabWithServiceTest : public ExtensionServiceTestBase {
  public:
-  ActiveTabWithServiceTest() {}
+  ActiveTabWithServiceTest() = default;
 
   ActiveTabWithServiceTest(const ActiveTabWithServiceTest&) = delete;
   ActiveTabWithServiceTest& operator=(const ActiveTabWithServiceTest&) = delete;

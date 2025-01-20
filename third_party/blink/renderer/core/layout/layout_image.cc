@@ -39,9 +39,9 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -52,8 +52,7 @@
 
 namespace blink {
 
-LayoutImage::LayoutImage(Element* element)
-    : LayoutReplaced(element, PhysicalSize()) {}
+LayoutImage::LayoutImage(Element* element) : LayoutReplaced(element) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(Document& document) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
@@ -179,14 +178,14 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   InvalidatePaintAndMarkForLayoutIfNeeded(defer);
 }
 
-void LayoutImage::UpdateIntrinsicSizeIfNeeded(const PhysicalSize& new_size) {
+void LayoutImage::UpdateNaturalSizeIfNeeded(const PhysicalSize& new_size) {
   NOT_DESTROYED();
   if (image_resource_->ErrorOccurred())
     return;
-  SetIntrinsicSize(new_size);
+  SetNaturalSize(new_size);
 }
 
-bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
+bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   NOT_DESTROYED();
   // Flex layout algorithm uses the intrinsic image width/height even if
   // width/height are specified.
@@ -206,23 +205,23 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  PhysicalSize old_intrinsic_size = IntrinsicSize();
+  PhysicalSize old_natural_size = NaturalSize();
 
-  PhysicalSize new_intrinsic_size = PhysicalSize::FromSizeFRound(
+  PhysicalSize new_natural_size = PhysicalSize::FromSizeFRound(
       image_resource_->ImageSize(StyleRef().EffectiveZoom()));
-  UpdateIntrinsicSizeIfNeeded(new_intrinsic_size);
+  UpdateNaturalSizeIfNeeded(new_natural_size);
 
   // In the case of generated image content using :before/:after/content, we
   // might not be in the layout tree yet. In that case, we just need to update
-  // our intrinsic size. layout() will be called after we are inserted in the
+  // our natural size. layout() will be called after we are inserted in the
   // tree which will take care of what we are doing here.
   if (!ContainingBlock())
     return;
 
-  if (old_intrinsic_size != new_intrinsic_size) {
+  if (old_natural_size != new_natural_size) {
     SetIntrinsicLogicalWidthsDirty();
 
-    if (NeedsLayoutOnIntrinsicSizeChange()) {
+    if (NeedsLayoutOnNaturalSizeChange()) {
       SetNeedsLayoutAndFullPaintInvalidation(
           layout_invalidation_reason::kSizeChanged);
       return;
@@ -292,6 +291,10 @@ bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
   EObjectFit object_fit = StyleRef().GetObjectFit();
   if (object_fit != EObjectFit::kFill && object_fit != EObjectFit::kCover)
     return false;
+  // Object-view-box may leave parts of the content box empty.
+  if (StyleRef().ObjectViewBox()) {
+    return false;
+  }
   // Check for image with alpha.
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
@@ -331,40 +334,22 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
   return inside;
 }
 
-bool LayoutImage::CanApplyObjectViewBox() const {
-  if (!EmbeddedSVGImage()) {
-    return true;
-  }
-  // Only apply object-view-box if the image has both natural width/height.
-  const IntrinsicSizingInfo info =
-      image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-  return info.has_width && info.has_height;
-}
-
-void LayoutImage::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  DCHECK(!ShouldApplySizeContainment());
   if (EmbeddedSVGImage()) {
-    intrinsic_sizing_info =
+    NaturalSizingInfo sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-
-    if (auto view_box = ComputeObjectViewBoxRect()) {
-      DCHECK(intrinsic_sizing_info.has_width);
-      DCHECK(intrinsic_sizing_info.has_height);
-      intrinsic_sizing_info.size = gfx::SizeF(view_box->size);
-    }
 
     // The value returned by LayoutImageResource will be in zoomed CSS
     // pixels, but for the 'scale-down' object-fit value we want "zoomed
     // device pixels", so undo the DPR part here.
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
-      intrinsic_sizing_info.size.InvScale(ImageDevicePixelRatio());
+      sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
-    return;
+    return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
   }
 
-  LayoutReplaced::ComputeIntrinsicSizingInfo(intrinsic_sizing_info);
+  auto sizing_info = PhysicalNaturalSizingInfo::MakeFixed(NaturalSize());
 
   // Don't compute an intrinsic ratio to preserve historical WebKit behavior if
   // we're painting alt text and/or a broken image.
@@ -372,9 +357,9 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
   // aspect ratio that a failed poster image load should not override.
   if (image_resource_ && image_resource_->ErrorOccurred() &&
       !IsA<LayoutVideo>(this)) {
-    intrinsic_sizing_info.aspect_ratio = gfx::SizeF(1, 1);
-    return;
+    sizing_info.aspect_ratio = PhysicalSize(LayoutUnit(1), LayoutUnit(1));
   }
+  return sizing_info;
 }
 
 SVGImage* LayoutImage::EmbeddedSVGImage() const {

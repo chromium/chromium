@@ -55,6 +55,12 @@ categories to see whether any matches the metric(s) that you are adding. To
 create a new category, the CL must be reviewed by
 chromium-metrics-reviews@google.com.
 
+## Permitted Metrics
+
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, see go/uma-privacy#principles to verify your desired histogram
+adheres to those policies.
+
 ## Coding (Emitting to Histograms)
 
 Prefer the helper functions defined in
@@ -179,7 +185,7 @@ enum class NewTabPageAction {
 // LINT.ThenChange(//path/to/enums.xml:NewTabPageActionEnum)
 ```
 
-The `LINT``.IfChange` / `LINT``.ThenChange` comments point between the code and XML
+The `LINT.IfChange` / `LINT.ThenChange` comments point between the code and XML
 definitions of the enum, to encourage them to be kept in sync. See
 [guide](https://www.chromium.org/chromium-os/developer-library/guides/development/keep-files-in-sync/)
 and [more details](http://go/gerrit-ifthisthenthat).
@@ -700,11 +706,15 @@ contact for any questions or maintenance tasks, such as extending a histogram's
 expiry or deprecating the metric.
 
 Histograms must have a primary owner and may have secondary owners. A primary
-owner is a Googler with an @google.com or @chromium.org email address, e.g.
-<owner>lucy@chromium.org</owner>, who is ultimately responsible for maintaining
-the metric. Secondary owners may be other individuals, team mailing lists, e.g.
-<owner>my-team@google.com</owner>, or paths to OWNERS files, e.g.
-<owner>src/directory/OWNERS</owner>.
+owner is a Googler with an `@google.com` or `@chromium.org` email address, e.g.
+`<owner>lucy@chromium.org</owner>`, who is ultimately responsible for
+maintaining the metric. Secondary owners may be other individuals familiar with
+the implementation or the semantics of the metric, or a dev team mailing list,
+e.g. `<owner>my-team@google.com</owner>`, or paths to OWNERS files, e.g.
+`<owner>src/directory/OWNERS</owner>`. Do not put a `@chromium.org` group
+containing public users as an owner, since users of a feature have no knowledge
+of the codebase, can't perform any of the maintenance duties, nor should they be
+notified of any change to the histogram.
 
 It's a best practice to list multiple owners, so that there's no single point
 of failure for histogram-related questions and maintenance tasks. If you are
@@ -960,12 +970,17 @@ chromium-metrics-reviews@google.com.
 When reviewing metrics CLs, look at the following, listed in approximate order
 of importance:
 
-## Privacy
+## Privacy and Purpose
 
-Does anything tickle your privacy senses? (Googlers, see
-[go/uma-privacy](https://goto.google.com/uma-privacy) for guidelines.)
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, make sure the logging abides by the principles at
+go/uma-privacy#principles.
 
-**Please escalate if there's any doubt!**
+Furthermore, if anything tickles your privacy senses or provokes any other
+concerns (even if it's seemingly compatible with the principles), please express
+your concern.
+
+**Escalate if there's any doubt!**
 
 ## Clarity
 

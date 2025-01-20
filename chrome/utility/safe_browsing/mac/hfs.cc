@@ -15,13 +15,16 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
+#include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
@@ -160,30 +163,34 @@ class HFSForkReadStream : public ReadStream {
  private:
   const raw_ptr<HFSIterator> hfs_;  // The HFS+ iterator.
   const HFSPlusForkData fork_;  // The fork to be read.
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const HFSPlusExtentDescriptor>
-      extents_;  // All extents in the fork.
-  base::span<const HFSPlusExtentDescriptor>::iterator
-      current_extent_;        // The current extent in the fork.
-  bool read_current_extent_;  // Whether the current_extent_ has been read.
+  // All extents in the fork.
+  base::raw_span<const HFSPlusExtentDescriptor> extents_;
+  // The current extent in the fork.
+  base::raw_span<const HFSPlusExtentDescriptor>::iterator current_extent_;
+  // Whether the current_extent_ has been read.
+  bool read_current_extent_ = false;
   std::vector<uint8_t> current_extent_data_;  // Data for |current_extent_|.
-  size_t fork_logical_offset_;  // The logical offset into the fork.
+  size_t fork_logical_offset_ = 0u;  // The logical offset into the fork.
 };
 
 // HFSBTreeIterator iterates over the HFS+ catalog file.
 class HFSBTreeIterator {
  public:
   struct Entry {
-    uint16_t record_type;  // Catalog folder item type.
+    uint16_t record_type = 0u;  // Catalog folder item type.
     std::u16string path;   // Full path to the item.
-    bool unexported;  // Whether this is HFS+ private data.
+    bool unexported = false;  // Whether this is HFS+ private data.
+
+    // Stores a pointer to the item's data, in host-endian byte order.
+    // This points into `leaf_data_`.
+    // Note: member fields may be unaligned.
     union {
       // This field is not a raw_ptr<> because it was filtered by the rewriter
       // for: #union
-      RAW_PTR_EXCLUSION HFSPlusCatalogFile* file;
+      RAW_PTR_EXCLUSION const HFSPlusCatalogFile* file;
       // This field is not a raw_ptr<> because it was filtered by the rewriter
       // for: #union
-      RAW_PTR_EXCLUSION HFSPlusCatalogFolder* folder;
+      RAW_PTR_EXCLUSION const HFSPlusCatalogFolder* folder;
     };
   };
 
@@ -209,16 +216,35 @@ class HFSBTreeIterator {
   // buffer offsets.
   bool ReadCurrentLeaf();
 
-  // Returns a pointer to data at |current_leaf_offset_| in |leaf_data_|. This
-  // then advances the offset by the size of the object being returned.
-  template <typename T> T* GetLeafData();
+  // Returns a copy of the data in `leaf_data_` at the current position of the
+  // `leaf_iterator_` (assuming that it is of type T) converted to host endian,
+  // and automatically advances the `leaf_iterator_`. Returns nullopt if no T
+  // can be read at the current position. The data need not be aligned.
+  template <typename T>
+  std::optional<T> CopyLeafDataHostEndian();
+
+  // Returns a pointer to an object of type T at the current position of the
+  // `leaf_iterator_` with that data converted in place to host endian, and
+  // automatically advances the `leaf_iterator_`. Returns pointer to the
+  // resulting object, or nullptr on failure. This does not ensure alignment, so
+  // caller should only use this if the current iterator position is aligned.
+  template <typename T>
+  const T* GetLeafObjectHostEndian();
+
+  // Advances the position of `leaf_iterator_` past the next sizeof(T) bytes, if
+  // possible, and returns true. Returns false if the new position would exceed
+  // the total size of the `leaf_data_`.
+  template <typename T>
+  bool AdvanceLeafPast();
 
   // Checks if the HFS+ catalog key is a Mac OS X reserved key that should not
   // have it or its contents iterated over.
   bool IsKeyUnexported(const std::u16string& path);
 
-  raw_ptr<ReadStream> stream_;  // The stream backing the catalog file.
-  BTHeaderRec header_;  // The header B-tree node.
+  // The stream backing the catalog file.
+  raw_ptr<ReadStream> stream_ = nullptr;
+  // The header B-tree node.
+  BTHeaderRec header_;
 
   // Maps CNIDs to their full path. This is used to construct full paths for
   // items that descend from the folders in this map.
@@ -229,21 +255,26 @@ class HFSBTreeIterator {
   std::set<uint32_t> unexported_parents_;
 
   // The total number of leaf records read from all the leaf nodes.
-  uint32_t leaf_records_read_;
+  uint32_t leaf_records_read_ = 0u;
 
   // The number of records read from the current leaf node.
-  uint32_t current_leaf_records_read_;
-  uint32_t current_leaf_number_;  // The node ID of the leaf being read.
+  uint32_t current_leaf_records_read_ = 0u;
+  uint32_t current_leaf_number_ = 0u;  // The node ID of the leaf being read.
   // Whether the |current_leaf_number_|'s data has been read into the
   // |leaf_data_| buffer.
-  bool read_current_leaf_;
+  bool read_current_leaf_ = false;
   // The node data for |current_leaf_number_| copied from |stream_|.
+  // In general, parts of this data may be big-endian and parts of it may or may
+  // not have been swapped to host-endian.
   std::vector<uint8_t> leaf_data_;
-  size_t current_leaf_offset_;  // The offset in |leaf_data_|.
 
-  // Pointer to |leaf_data_| as a BTNodeDescriptor.
-  raw_ptr<const BTNodeDescriptor> current_leaf_;
-  Entry current_record_;  // The record read at |current_leaf_offset_|.
+  // Keeps track of our current position within the current `leaf_data_`.
+  std::unique_ptr<base::BufferIterator<uint8_t>> leaf_iterator_;
+
+  // Points to the BTNodeDescriptor at the start of `leaf_data_`.
+  raw_ptr<const BTNodeDescriptor> current_leaf_ = nullptr;
+  // The record read at the current position of the `leaf_iterator_`.
+  Entry current_record_;
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.
   const std::u16string kHFSMetadataFolder{u"\0\0\0\0HFS+ Private Data", 21};
@@ -256,7 +287,7 @@ HFSIterator::HFSIterator(ReadStream* stream)
       volume_header_() {
 }
 
-HFSIterator::~HFSIterator() {}
+HFSIterator::~HFSIterator() = default;
 
 bool HFSIterator::Open() {
   if (stream_->Seek(1024, SEEK_SET) != 1024)
@@ -367,12 +398,9 @@ HFSForkReadStream::HFSForkReadStream(HFSIterator* hfs,
     : hfs_(hfs),
       fork_(fork),
       extents_(fork.extents),
-      current_extent_(extents_.begin()),
-      read_current_extent_(false),
-      current_extent_data_(),
-      fork_logical_offset_(0) {}
+      current_extent_(extents_.begin()) {}
 
-HFSForkReadStream::~HFSForkReadStream() {}
+HFSForkReadStream::~HFSForkReadStream() = default;
 
 bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   size_t buffer_space_remaining = buf.size();
@@ -489,19 +517,9 @@ off_t HFSForkReadStream::Seek(off_t offset, int whence) {
   return -1;
 }
 
-HFSBTreeIterator::HFSBTreeIterator()
-    : stream_(),
-      header_(),
-      leaf_records_read_(0),
-      current_leaf_records_read_(0),
-      current_leaf_number_(0),
-      read_current_leaf_(false),
-      leaf_data_(),
-      current_leaf_offset_(0),
-      current_leaf_() {
-}
+HFSBTreeIterator::HFSBTreeIterator() = default;
 
-HFSBTreeIterator::~HFSBTreeIterator() {}
+HFSBTreeIterator::~HFSBTreeIterator() = default;
 
 bool HFSBTreeIterator::Init(ReadStream* stream) {
   DCHECK(!stream_);
@@ -549,101 +567,124 @@ bool HFSBTreeIterator::Next() {
   if (!ReadCurrentLeaf())
     return false;
 
-  GetLeafData<uint16_t>();  // keyLength
+  CHECK(leaf_iterator_);
 
-  uint32_t parent_id;
-  if (auto* parent_id_ptr = GetLeafData<uint32_t>()) {
-    parent_id = OSSwapBigToHostInt32(*parent_id_ptr);
-  } else {
+  // Skip keyLength.
+  if (!AdvanceLeafPast<uint16_t>()) {
     return false;
   }
 
-  uint16_t key_string_length;
-  if (auto* key_string_length_ptr = GetLeafData<uint16_t>()) {
-    key_string_length = OSSwapBigToHostInt16(*key_string_length_ptr);
-  } else {
+  auto parent_id = CopyLeafDataHostEndian<uint32_t>();
+  if (!parent_id.has_value()) {
+    return false;
+  }
+
+  auto key_string_length = CopyLeafDataHostEndian<uint16_t>();
+  if (!key_string_length.has_value()) {
     return false;
   }
 
   // Read and byte-swap the variable-length key string.
-  std::u16string key(key_string_length, '\0');
-  for (uint16_t i = 0; i < key_string_length; ++i) {
-    auto* character = GetLeafData<uint16_t>();
+  std::u16string key(*key_string_length, '\0');
+  for (uint16_t i = 0u; i < *key_string_length; ++i) {
+    auto character = CopyLeafDataHostEndian<uint16_t>();
     if (!character) {
       DLOG(ERROR) << "Key string length points past leaf data";
       return false;
     }
-    key[i] = OSSwapBigToHostInt16(*character);
+    key[i] = character.value();
   }
 
   // Read the record type and then rewind as the field is part of the catalog
   // structure that is read next.
-  auto* record_type = GetLeafData<int16_t>();
-  if (!record_type) {
+  size_t rewind_to = leaf_iterator_->position();
+  auto record_type = CopyLeafDataHostEndian<int16_t>();
+  if (!record_type.has_value()) {
     DLOG(ERROR) << "Failed to read record type";
     return false;
   }
-  current_record_.record_type = OSSwapBigToHostInt16(*record_type);
+  current_record_.record_type = *record_type;
   current_record_.unexported = false;
-  current_leaf_offset_ -= sizeof(int16_t);
+  leaf_iterator_->Seek(rewind_to);
+
   switch (current_record_.record_type) {
     case kHFSPlusFolderRecord: {
-      auto* folder = GetLeafData<HFSPlusCatalogFolder>();
-      ConvertBigEndian(folder);
+      const HFSPlusCatalogFolder* folder =
+          GetLeafObjectHostEndian<HFSPlusCatalogFolder>();
+      if (!folder) {
+        return false;
+      }
       ++leaf_records_read_;
       ++current_leaf_records_read_;
+
+      // Make a copy of this field to avoid unaligned access when inserting into
+      // sets/maps.
+      uint32_t folder_id = folder->folderID;
 
       // If this key is unexported, or the parent folder is, then mark the
       // record as such.
       if (IsKeyUnexported(key) ||
-          unexported_parents_.find(parent_id) != unexported_parents_.end()) {
-        unexported_parents_.insert(folder->folderID);
+          unexported_parents_.find(*parent_id) != unexported_parents_.end()) {
+        unexported_parents_.insert(folder_id);
         current_record_.unexported = true;
       }
 
       // Update the CNID map to construct the path tree.
-      if (parent_id != 0) {
-        auto parent_name = folder_cnid_map_.find(parent_id);
+      if (*parent_id != 0) {
+        auto parent_name = folder_cnid_map_.find(*parent_id);
         if (parent_name != folder_cnid_map_.end())
           key = parent_name->second + kFilePathSeparator + key;
       }
-      folder_cnid_map_[folder->folderID] = key;
+      folder_cnid_map_[folder_id] = key;
 
       current_record_.path = key;
       current_record_.folder = folder;
       break;
     }
     case kHFSPlusFileRecord: {
-      auto* file = GetLeafData<HFSPlusCatalogFile>();
-      ConvertBigEndian(file);
+      const HFSPlusCatalogFile* file =
+          GetLeafObjectHostEndian<HFSPlusCatalogFile>();
+      if (!file) {
+        return false;
+      }
       ++leaf_records_read_;
       ++current_leaf_records_read_;
 
       std::u16string path =
-          folder_cnid_map_[parent_id] + kFilePathSeparator + key;
+          folder_cnid_map_[*parent_id] + kFilePathSeparator + key;
       current_record_.path = path;
       current_record_.file = file;
       current_record_.unexported =
-          unexported_parents_.find(parent_id) != unexported_parents_.end();
+          unexported_parents_.find(*parent_id) != unexported_parents_.end();
       break;
     }
     case kHFSPlusFolderThreadRecord:
     case kHFSPlusFileThreadRecord: {
       // Thread records are used to quickly locate a file or folder just by
       // CNID. As these are not necessary for the iterator, skip past the data.
-      GetLeafData<uint16_t>();  // recordType
-      GetLeafData<uint16_t>();  // reserved
-      GetLeafData<uint32_t>();  // parentID
-      auto string_length = OSSwapBigToHostInt16(*GetLeafData<uint16_t>());
-      for (uint16_t i = 0; i < string_length; ++i)
-        GetLeafData<uint16_t>();
+      if (!AdvanceLeafPast<uint16_t>() ||  // recordType
+          !AdvanceLeafPast<uint16_t>() ||  // reserved
+          !AdvanceLeafPast<uint32_t>()) {  // parentID
+        return false;
+      }
+      // Skip past the nodeName string.
+      auto string_length = CopyLeafDataHostEndian<uint16_t>();
+      if (!string_length.has_value()) {
+        return false;
+      }
+      for (uint16_t i = 0u; i < *string_length; ++i) {
+        if (!AdvanceLeafPast<uint16_t>()) {
+          return false;
+        }
+      }
       ++leaf_records_read_;
       ++current_leaf_records_read_;
       break;
     }
-    default:
+    default: {
       DLOG(ERROR) << "Unknown record type " << current_record_.record_type;
       return false;
+    }
   }
 
   // If all the records from this leaf have been read, follow the forward link
@@ -651,6 +692,7 @@ bool HFSBTreeIterator::Next() {
   if (current_leaf_records_read_ >= current_leaf_->numRecords) {
     current_leaf_number_ = current_leaf_->fLink;
     read_current_leaf_ = false;
+    leaf_iterator_.reset();
   }
 
   return true;
@@ -682,28 +724,56 @@ bool HFSBTreeIterator::ReadCurrentLeaf() {
     return false;
   }
 
-  auto* leaf = reinterpret_cast<BTNodeDescriptor*>(leaf_data_.data());
-  ConvertBigEndian(leaf);
-  if (leaf->kind != kBTLeafNode) {
-    DLOG(ERROR) << "Node " << current_leaf_number_ << " is not a leaf";
+  leaf_iterator_ = std::make_unique<base::BufferIterator<uint8_t>>(leaf_data_);
+
+  current_leaf_ = GetLeafObjectHostEndian<BTNodeDescriptor>();
+  if (!current_leaf_) {
+    DLOG(ERROR) << "Failed to read node " << current_leaf_number_;
+    leaf_iterator_.reset();
     return false;
   }
-  current_leaf_ = leaf;
-  current_leaf_offset_ = sizeof(BTNodeDescriptor);
-  current_leaf_records_read_ = 0;
+  if (current_leaf_->kind != kBTLeafNode) {
+    DLOG(ERROR) << "Node " << current_leaf_number_ << " is not a leaf";
+    current_leaf_ = nullptr;
+    leaf_iterator_.reset();
+    return false;
+  }
+  current_leaf_records_read_ = 0u;
   read_current_leaf_ = true;
   return true;
 }
 
 template <typename T>
-T* HFSBTreeIterator::GetLeafData() {
-  base::CheckedNumeric<size_t> size = sizeof(T);
-  auto new_offset = size + current_leaf_offset_;
-  if (!new_offset.IsValid() || new_offset.ValueOrDie() >= leaf_data_.size())
-    return nullptr;
-  T* object = reinterpret_cast<T*>(&leaf_data_[current_leaf_offset_]);
-  current_leaf_offset_ = new_offset.ValueOrDie();
+std::optional<T> HFSBTreeIterator::CopyLeafDataHostEndian() {
+  CHECK(leaf_iterator_);
+  std::optional<T> data = leaf_iterator_->CopyObject<T>();
+  if (data.has_value()) {
+    ConvertBigEndian(&*data);
+  }
+  return data;
+}
+
+template <typename T>
+const T* HFSBTreeIterator::GetLeafObjectHostEndian() {
+  CHECK(leaf_iterator_);
+  T* object = leaf_iterator_->MutableObject<T>();
+  if (object) {
+    ConvertBigEndian(object);
+  }
   return object;
+}
+
+template <typename T>
+bool HFSBTreeIterator::AdvanceLeafPast() {
+  CHECK(leaf_iterator_);
+  base::CheckedNumeric<size_t> size = sizeof(T);
+  auto new_position = size + leaf_iterator_->position();
+  if (!new_position.IsValid() ||
+      new_position.ValueOrDie() > leaf_iterator_->total_size()) {
+    return false;
+  }
+  leaf_iterator_->Seek(new_position.ValueOrDie());
+  return true;
 }
 
 bool HFSBTreeIterator::IsKeyUnexported(const std::u16string& key) {

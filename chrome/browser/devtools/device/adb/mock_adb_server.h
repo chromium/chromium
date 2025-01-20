@@ -30,7 +30,7 @@ class MockAndroidConnection {
     virtual void SendSuccess(const std::string& message) {}
     virtual void SendRaw(const std::string& data) {}
     virtual void Close() {}
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   MockAndroidConnection(Delegate* delegate,

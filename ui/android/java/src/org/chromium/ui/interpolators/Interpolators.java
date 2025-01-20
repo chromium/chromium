@@ -16,7 +16,10 @@ import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Reference to one of each standard interpolator to avoid allocations. */
+@NullMarked
 public class Interpolators {
     public static final Interpolator STANDARD_INTERPOLATOR =
             PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f);

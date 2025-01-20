@@ -18,6 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/collaboration/internal/messaging_jni_headers/ConversionUtils_jni.h"
 
+using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
@@ -98,7 +99,8 @@ ScopedJavaLocalRef<jobject> MessageAttributionToJava(
       env, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
       j_last_known_tab_group_title, j_last_known_tab_group_color,
       j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
-      j_last_known_tab_url, j_affected_user, j_triggering_user);
+      j_last_known_tab_url, j_affected_user, attribution.affected_user_is_self,
+      j_triggering_user, attribution.triggering_user_is_self);
 }
 
 // Helper method to provide a consistent way to create a PersistentMessage
@@ -154,9 +156,11 @@ ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
   for (const auto& activity_log_item : activity_log_items) {
     Java_ConversionUtils_createActivityLogItemAndMaybeAddToList(
         env, jlist, static_cast<int>(activity_log_item.collaboration_event),
-        ConvertUTF8ToJavaString(env, activity_log_item.title_text),
-        ConvertUTF8ToJavaString(env, activity_log_item.description_text),
-        ConvertUTF8ToJavaString(env, activity_log_item.timestamp_text),
+        ConvertUTF16ToJavaString(env, activity_log_item.title_text),
+        ConvertUTF16ToJavaString(env, activity_log_item.description_text),
+        ConvertUTF16ToJavaString(env, activity_log_item.time_delta_text),
+        activity_log_item.show_favicon,
+        static_cast<int>(activity_log_item.action),
         MessageAttributionToJava(env, activity_log_item.activity_metadata));
   }
 

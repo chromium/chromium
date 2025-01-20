@@ -21,7 +21,7 @@ EnumHistogramChecker::EnumHistogramChecker(const std::string& histogram,
                                            base::HistogramSamples* base)
     : histogram_(histogram), expect_(count), base_(base) {}
 
-EnumHistogramChecker::~EnumHistogramChecker() {}
+EnumHistogramChecker::~EnumHistogramChecker() = default;
 
 EnumHistogramChecker* EnumHistogramChecker::Expect(int key, int value) {
   expect_[key] = value;

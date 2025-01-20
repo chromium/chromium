@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 
 #include <cmath>
@@ -18,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/engagement_resources.h"
 #include "chrome/grit/engagement_resources_map.h"
@@ -30,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -53,7 +48,7 @@ class SiteEngagementDetailsProviderImpl
   SiteEngagementDetailsProviderImpl& operator=(
       const SiteEngagementDetailsProviderImpl&) = delete;
 
-  ~SiteEngagementDetailsProviderImpl() override {}
+  ~SiteEngagementDetailsProviderImpl() override = default;
 
   // site_engagement::mojom::SiteEngagementDetailsProvider overrides:
   void GetSiteEngagementDetails(
@@ -112,14 +107,13 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   // Set up the chrome://site-engagement/ source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISiteEngagementHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEngagementResources, kEngagementResourcesSize),
-      IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
+  webui::SetupWebUIDataSource(source, kEngagementResources,
+                              IDR_ENGAGEMENT_SITE_ENGAGEMENT_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)
 
-SiteEngagementUI::~SiteEngagementUI() {}
+SiteEngagementUI::~SiteEngagementUI() = default;
 
 void SiteEngagementUI::BindInterface(
     mojo::PendingReceiver<site_engagement::mojom::SiteEngagementDetailsProvider>

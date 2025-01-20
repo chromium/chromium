@@ -296,7 +296,7 @@ cr-tabs {
   /* csschecker-disable-line left-right */
 }
 
-#needs-restart.show {
+#needs-restart[show] {
   opacity: 1;
   transform: translate(0);
 }
@@ -316,7 +316,7 @@ cr-tabs {
   /* csschecker-disable-line left-right */
 }
 
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
 #os-flags-link-container {
   background-image: url(chrome://resources/images/os_flags_app_icon.svg);
 }

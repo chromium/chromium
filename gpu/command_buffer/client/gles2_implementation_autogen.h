@@ -948,8 +948,6 @@ void MemoryBarrierEXT(GLbitfield barriers) override;
 
 void MemoryBarrierByRegion(GLbitfield barriers) override;
 
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags = 0) override;
-
 GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                    GLsizei count,
                                    GLenum type,
@@ -990,12 +988,6 @@ void* MapTexSubImage2DCHROMIUM(GLenum target,
                                GLenum access) override;
 
 void UnmapTexSubImage2DCHROMIUM(const void* mem) override;
-
-void ResizeCHROMIUM(GLuint width,
-                    GLuint height,
-                    GLfloat scale_factor,
-                    GLcolorSpace color_space,
-                    GLboolean alpha) override;
 
 const GLchar* GetRequestableExtensionsCHROMIUM() override;
 

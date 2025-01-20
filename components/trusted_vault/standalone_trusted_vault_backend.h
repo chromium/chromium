@@ -23,6 +23,7 @@
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace base {
@@ -101,7 +102,7 @@ class StandaloneTrustedVaultBackend
                  FetchKeysCallback callback);
 
   // Replaces keys for given |gaia_id| both in memory and in |file_path_|.
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version);
 
@@ -127,7 +128,7 @@ class StandaloneTrustedVaultBackend
                                    base::OnceCallback<void(bool)> cb);
 
   // Registers a new trusted recovery method that can be used to retrieve keys.
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+  void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure cb);
@@ -137,13 +138,13 @@ class StandaloneTrustedVaultBackend
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   trusted_vault_pb::LocalDeviceRegistrationInfo
-  GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
+  GetDeviceRegistrationInfoForTesting(const GaiaId& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
-  int GetLastKeyVersionForTesting(const std::string& gaia_id);
+  int GetLastKeyVersionForTesting(const GaiaId& gaia_id);
 
   void SetLastRegistrationReturnedLocalDataObsoleteForTesting(
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   void SetClockForTesting(base::Clock* clock);
 
@@ -169,7 +170,7 @@ class StandaloneTrustedVaultBackend
   // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
   // found.
   trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
-      const std::string& gaia_id);
+      const GaiaId& gaia_id);
 
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it. For the cases where
@@ -199,7 +200,7 @@ class StandaloneTrustedVaultBackend
 
   // Invokes |callback| with currently available keys for |gaia_id|.
   void FulfillFetchKeys(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       FetchKeysCallback callback,
       std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
@@ -259,7 +260,7 @@ class StandaloneTrustedVaultBackend
     PendingTrustedRecoveryMethod& operator=(PendingTrustedRecoveryMethod&&);
     ~PendingTrustedRecoveryMethod();
 
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::vector<uint8_t> public_key;
     int method_type_hint;
     base::OnceClosure completion_callback;
@@ -280,7 +281,7 @@ class StandaloneTrustedVaultBackend
     OngoingFetchKeys& operator=(OngoingFetchKeys&&);
     ~OngoingFetchKeys();
 
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::vector<FetchKeysCallback> callbacks;
     std::unique_ptr<TrustedVaultConnection::Request> request;
   };

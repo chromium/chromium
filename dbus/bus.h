@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -266,13 +267,13 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // |object_path| looks like "/org/freedesktop/NetworkManager/Devices/0".
   //
   // Must be called in the origin thread.
-  virtual ObjectProxy* GetObjectProxy(const std::string& service_name,
+  virtual ObjectProxy* GetObjectProxy(std::string_view service_name,
                                       const ObjectPath& object_path);
 
   // Same as above, but also takes a bitfield of ObjectProxy::Options.
   // See object_proxy.h for available options.
   virtual ObjectProxy* GetObjectProxyWithOptions(
-      const std::string& service_name,
+      std::string_view service_name,
       const ObjectPath& object_path,
       int options);
 
@@ -300,13 +301,13 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // never called. The |callback| argument must not be null.
   //
   // Must be called in the origin thread.
-  virtual bool RemoveObjectProxy(const std::string& service_name,
+  virtual bool RemoveObjectProxy(std::string_view service_name,
                                  const ObjectPath& object_path,
                                  base::OnceClosure callback);
 
   // Same as above, but also takes a bitfield of ObjectProxy::Options.
   // See object_proxy.h for available options.
-  virtual bool RemoveObjectProxyWithOptions(const std::string& service_name,
+  virtual bool RemoveObjectProxyWithOptions(std::string_view service_name,
                                             const ObjectPath& object_path,
                                             int options,
                                             base::OnceClosure callback);

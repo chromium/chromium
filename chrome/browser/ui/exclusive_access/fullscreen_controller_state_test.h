@@ -14,7 +14,9 @@ class Browser;
 class FullscreenController;
 
 // Utility definition for mapping enum values to strings in switch statements.
-#define ENUM_TO_STRING(enum) case enum: return #enum
+#define ENUM_TO_STRING(enum) \
+  case enum:                 \
+    return #enum
 
 // Test fixture used to test Fullscreen Controller through exhaustive sequences
 // of events in unit and interactive tests.
@@ -114,25 +116,23 @@ class FullscreenControllerStateTest {
   std::string GetStateTransitionsAsString() const;
 
  protected:
-  // Set of enumerations (created with a helper macro) for _FALSE, _TRUE, and
-  // _NO_EXPECTATION values to be passed to VerifyWindowStateExpectations().
-  #define EXPECTATION_ENUM(enum_name, enum_prefix) \
-      enum enum_name { \
-        enum_prefix##_FALSE, \
-        enum_prefix##_TRUE, \
-        enum_prefix##_NO_EXPECTATION \
-      }
+// Set of enumerations (created with a helper macro) for _FALSE, _TRUE, and
+// _NO_EXPECTATION values to be passed to VerifyWindowStateExpectations().
+#define EXPECTATION_ENUM(enum_name, enum_prefix) \
+  enum enum_name {                               \
+    enum_prefix##_FALSE,                         \
+    enum_prefix##_TRUE,                          \
+    enum_prefix##_NO_EXPECTATION                 \
+  }
   EXPECTATION_ENUM(FullscreenForBrowserExpectation, FULLSCREEN_FOR_BROWSER);
   EXPECTATION_ENUM(FullscreenForTabExpectation, FULLSCREEN_FOR_TAB);
 
   // Generated information about the transitions between states.
   struct StateTransitionInfo {
     StateTransitionInfo()
-        : event(EVENT_INVALID),
-          state(STATE_INVALID),
-          distance(NUM_STATES) {}
-    Event event;  // The |Event| that will cause the state transition.
-    State state;  // The adjacent |State| transitioned to; not the final state.
+        : event(EVENT_INVALID), state(STATE_INVALID), distance(NUM_STATES) {}
+    Event event;   // The |Event| that will cause the state transition.
+    State state;   // The adjacent |State| transitioned to; not the final state.
     int distance;  // Steps to final state. NUM_STATES represents unknown.
   };
 

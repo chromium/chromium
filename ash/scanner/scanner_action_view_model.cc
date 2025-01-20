@@ -4,16 +4,15 @@
 
 #include "ash/scanner/scanner_action_view_model.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +21,7 @@
 #include "base/time/time.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -165,9 +165,10 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
                             base::TimeTicks request_start_time,
                             base::WeakPtr<ScannerCommandDelegate> delegate,
                             ScannerCommandCallback action_finished_callback,
-                            std::optional<ScannerAction> populated_action) {
+                            manta::proto::ScannerAction populated_action) {
   RecordPopulateActionTimer(action_case, request_start_time);
-  if (!populated_action.has_value()) {
+  if (populated_action.action_case() ==
+      manta::proto::ScannerAction::ACTION_NOT_SET) {
     RecordPopulateActionFailure(action_case);
     std::move(action_finished_callback).Run(false);
     return;
@@ -178,7 +179,7 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
       std::move(action_finished_callback));
 
   HandleScannerCommand(std::move(delegate),
-                       ScannerActionToCommand(std::move(*populated_action)),
+                       ScannerActionToCommand(std::move(populated_action)),
                        std::move(record_metrics_callback));
 }
 
@@ -205,19 +206,20 @@ ScannerActionViewModel& ScannerActionViewModel::operator=(
 ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {
-  // TODO(b/375967525): Replace this with finalised translated strings.
-
   switch (unpopulated_action_.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
-      return u"New event";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL);
     case manta::proto::ScannerAction::kNewContact:
-      return u"New contact";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL);
     case manta::proto::ScannerAction::kNewGoogleDoc:
-      return u"New Google Doc";
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_CREATE_DOC);
     case manta::proto::ScannerAction::kNewGoogleSheet:
-      return u"New Google Sheet";
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_CREATE_SHEET);
     case manta::proto::ScannerAction::kCopyToClipboard:
-      return u"Copy to clipboard";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT);
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       // This should only be possible if `unpopulated_action_` has been
       // previously moved.
@@ -249,9 +251,14 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
   }
 }
 
+manta::proto::ScannerAction::ActionCase ScannerActionViewModel::GetActionCase()
+    const {
+  return unpopulated_action_.action_case();
+}
+
 void ScannerActionViewModel::ExecuteAction(
     ScannerCommandCallback action_finished_callback) const {
-  unpopulated_action_.PopulateToVariant(base::BindOnce(
+  unpopulated_action_.Populate(base::BindOnce(
       &ExecutePopulatedAction, unpopulated_action_.action_case(),
       base::TimeTicks::Now(), delegate_, std::move(action_finished_callback)));
 }

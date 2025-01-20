@@ -21,22 +21,12 @@
 #include "components/os_crypt/sync/key_storage_config_linux.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/encryptor.h"
+#include "crypto/kdf.h"
 #include "crypto/symmetric_key.h"
 
 namespace {
-
-// Salt for Symmetric key derivation.
-constexpr char kSalt[] = "saltysalt";
-
-// Key size required for 128 bit AES.
-constexpr size_t kDerivedKeySizeInBits = 128;
-
-// Constant for Symmetric key derivation.
-constexpr size_t kEncryptionIterations = 1;
-
-// Size of initialization vector for AES 128-bit.
-constexpr size_t kIVBlockSizeAES128 = 16;
 
 // Prefixes for cypher text returned by obfuscation version.  We prefix the
 // ciphertext with this string so that future data migration can detect
@@ -47,40 +37,34 @@ constexpr size_t kIVBlockSizeAES128 = 16;
 constexpr char kObfuscationPrefixV10[] = "v10";
 constexpr char kObfuscationPrefixV11[] = "v11";
 
+constexpr crypto::kdf::Pbkdf2HmacSha1Params kParams{
+    .iterations = 1,
+};
+
+const auto kSalt = base::byte_span_from_cstring("saltysalt");
+
+// clang-format off
+// PBKDF2-HMAC-SHA1(1 iteration, key = "peanuts", salt = "saltysalt")
+constexpr auto kV10Key = std::to_array<uint8_t>({
+    0xfd, 0x62, 0x1f, 0xe5, 0xa2, 0xb4, 0x02, 0x53,
+    0x9d, 0xfa, 0x14, 0x7c, 0xa9, 0x27, 0x27, 0x78,
+});
+
+// PBKDF2-HMAC-SHA1(1 iteration, key = "", salt = "saltysalt")
+constexpr auto kEmptyKey = std::to_array<uint8_t>({
+    0xd0, 0xd0, 0xec, 0x9c, 0x7d, 0x77, 0xd4, 0x3a,
+    0xc5, 0x41, 0x87, 0xfa, 0x48, 0x18, 0xd1, 0x7f,
+});
+
+const std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+};
+// clang-format on
+
 // The UMA metric name for whether the false was decryptable with an empty key.
 constexpr char kMetricDecryptedWithEmptyKey[] =
     "OSCrypt.Linux.DecryptedWithEmptyKey";
-
-// Generates a newly allocated SymmetricKey object based on a password.
-// Ownership of the key is passed to the caller. Returns null key if a key
-// generation error occurs.
-std::unique_ptr<crypto::SymmetricKey> GenerateEncryptionKey(
-    const std::string& password) {
-  const std::string salt(kSalt);
-
-  // Create an encryption key from our password and salt.
-  std::unique_ptr<crypto::SymmetricKey> encryption_key(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, password, salt, kEncryptionIterations,
-          kDerivedKeySizeInBits));
-  DCHECK(encryption_key);
-
-  return encryption_key;
-}
-
-// Decrypt `ciphertext` using `encryption_key` and store the result in
-// `encryption_key`.
-bool DecryptWith(const std::string& ciphertext,
-                 crypto::SymmetricKey* encryption_key,
-                 std::string* plaintext) {
-  const std::string iv(kIVBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv)) {
-    return false;
-  }
-
-  return encryptor.Decrypt(ciphertext, plaintext);
-}
 
 }  // namespace
 
@@ -155,31 +139,19 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
     return true;
   }
 
-  // If we are able to create a V11 key (i.e. a KeyStorage was available), then
-  // we'll use it. If not, we'll use V10.
-  crypto::SymmetricKey* encryption_key = GetPasswordV11(/*probe=*/false);
-  std::string obfuscation_prefix = kObfuscationPrefixV11;
-  if (!encryption_key) {
-    encryption_key = GetPasswordV10();
-    obfuscation_prefix = kObfuscationPrefixV10;
+  base::span<const uint8_t> key;
+
+  if (DeriveV11Key()) {
+    key = *v11_key_;
+    *ciphertext = kObfuscationPrefixV11;
+  } else {
+    key = kV10Key;
+    *ciphertext = kObfuscationPrefixV10;
   }
 
-  if (!encryption_key) {
-    return false;
-  }
+  ciphertext->append(base::as_string_view(
+      crypto::aes_cbc::Encrypt(key, kIv, base::as_byte_span(plaintext))));
 
-  const std::string iv(kIVBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv)) {
-    return false;
-  }
-
-  if (!encryptor.Encrypt(plaintext, ciphertext)) {
-    return false;
-  }
-
-  // Prefix the cipher text with version information.
-  ciphertext->insert(0, obfuscation_prefix);
   return true;
 }
 
@@ -193,19 +165,23 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   // Check that the incoming ciphertext was encrypted and with what version.
   // Credit card numbers are current legacy unencrypted data, so false match
   // with prefix won't happen.
-  crypto::SymmetricKey* encryption_key = nullptr;
+  base::span<const uint8_t> key;
   std::string obfuscation_prefix;
   os_crypt::EncryptionPrefixVersion encryption_version =
       os_crypt::EncryptionPrefixVersion::kNoVersion;
 
   if (base::StartsWith(ciphertext, kObfuscationPrefixV10,
                        base::CompareCase::SENSITIVE)) {
-    encryption_key = GetPasswordV10();
+    key = kV10Key;
     obfuscation_prefix = kObfuscationPrefixV10;
     encryption_version = os_crypt::EncryptionPrefixVersion::kVersion10;
   } else if (base::StartsWith(ciphertext, kObfuscationPrefixV11,
                               base::CompareCase::SENSITIVE)) {
-    encryption_key = GetPasswordV11(/*probe=*/false);
+    if (!DeriveV11Key()) {
+      VLOG(1) << "Decryption failed: could not get the key";
+      return false;
+    }
+    key = *v11_key_;
     obfuscation_prefix = kObfuscationPrefixV11;
     encryption_version = os_crypt::EncryptionPrefixVersion::kVersion11;
   }
@@ -213,14 +189,6 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   os_crypt::LogEncryptionVersion(encryption_version);
 
   if (encryption_version == os_crypt::EncryptionPrefixVersion::kNoVersion) {
-    // If the prefix is not found then we'll assume we're dealing with
-    // old data saved as clear text and we'll return it directly.
-    *plaintext = ciphertext;
-    return true;
-  }
-
-  if (!encryption_key) {
-    VLOG(1) << "Decryption failed: could not get the key";
     return false;
   }
 
@@ -228,17 +196,23 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   const std::string raw_ciphertext =
       ciphertext.substr(obfuscation_prefix.length());
 
-  if (DecryptWith(raw_ciphertext, encryption_key, plaintext)) {
+  std::optional<std::vector<uint8_t>> maybe_plain =
+      crypto::aes_cbc::Decrypt(key, kIv, base::as_byte_span(raw_ciphertext));
+
+  if (maybe_plain) {
     base::UmaHistogramBoolean(kMetricDecryptedWithEmptyKey, false);
+    plaintext->assign(base::as_string_view(*maybe_plain));
     return true;
   }
 
-  // Some clients have encrypted data with an empty key. See
-  // crbug.com/1195256.
-  auto empty_key = GenerateEncryptionKey(std::string());
-  if (DecryptWith(raw_ciphertext, empty_key.get(), plaintext)) {
+  // Decryption failed - try the empty fallback key. See
+  // https://crbug.com/40055416.
+  maybe_plain = crypto::aes_cbc::Decrypt(kEmptyKey, kIv,
+                                         base::as_byte_span(raw_ciphertext));
+  if (maybe_plain) {
     VLOG(1) << "Decryption succeeded after retrying with an empty key";
     base::UmaHistogramBoolean(kMetricDecryptedWithEmptyKey, true);
+    plaintext->assign(base::as_string_view(*maybe_plain));
     return true;
   }
 
@@ -248,45 +222,50 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
 }
 
 void OSCryptImpl::SetConfig(std::unique_ptr<os_crypt::Config> config) {
-  // Setting initialisation parameters makes no sense after initializing.
-  DCHECK(!is_password_v11_cached_);
+  CHECK(!v11_key_);
   config_ = std::move(config);
 }
 
 bool OSCryptImpl::IsEncryptionAvailable() {
-  return GetPasswordV11(/*probe=*/true);
+  // IsEncryptionAvailable() actually means "is real encryption backed by the
+  // system secret store available", which here means a v11 key is available,
+  // as opposed to the hardcoded v10 obfuscation key. Therefore, try deriving a
+  // v11 key - if one is already available this function will just return true.
+  return DeriveV11Key();
 }
 
 void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
   // Check if the v11 password is already cached. If it is, then data encrypted
   // with the old password might not be decryptable.
-  DCHECK(!is_password_v11_cached_);
+  CHECK(!v11_key_);
   // The config won't be used if this function is being called. Callers should
   // choose between setting a config and setting a raw encryption key.
-  DCHECK(!config_);
-  if (!raw_key.empty()) {
-    password_v11_cache_ =
-        crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, raw_key);
+  CHECK(!config_);
+
+  if (raw_key.empty()) {
+    // Empty key means a v11 key is not available on the browser side. To match
+    // the browser's behavior, this OSCryptImpl instance also should not try to
+    // derive a v11 key.
+    try_v11_ = false;
+  } else {
+    // If the provided key is non-empty, it's a derived key and can be stored
+    // directly. Also, set `try_v11_` regardless of its previous state since a
+    // v11 key is now available.
+    v11_key_.emplace(std::array<uint8_t, kDerivedKeyBytes>());
+    base::span(*v11_key_).copy_from(base::as_byte_span(raw_key));
+    try_v11_ = true;
   }
-  // Always set |is_password_v11_cached_|, even if given an empty string.
-  // Note that |raw_key| can be an empty string if real V11 encryption is not
-  // available, and setting |is_password_v11_cached_| causes GetPasswordV11 to
-  // correctly return nullptr in that case.
-  is_password_v11_cached_ = true;
 }
 
 std::string OSCryptImpl::GetRawEncryptionKey() {
-  if (crypto::SymmetricKey* key = GetPasswordV11(/*probe=*/false)) {
-    return key->key();
-  }
-  return std::string();
+  return DeriveV11Key() ? std::string(base::as_string_view(*v11_key_))
+                        : std::string();
 }
 
 void OSCryptImpl::ClearCacheForTesting() {
-  password_v10_cache_.reset();
-  password_v11_cache_.reset();
-  is_password_v11_cached_ = false;
+  v11_key_ = std::nullopt;
+  try_v11_ = true;
   config_.reset();
 }
 
@@ -299,47 +278,54 @@ void OSCryptImpl::UseMockKeyStorageForTesting(
 
 void OSCryptImpl::SetEncryptionPasswordForTesting(const std::string& password) {
   ClearCacheForTesting();  // IN-TEST
-  password_v11_cache_ = GenerateEncryptionKey(password);
-  is_password_v11_cached_ = true;
+  v11_key_ = Pbkdf2(password);
+  try_v11_ = true;
 }
 
-// Returns a cached string of "peanuts". Is thread-safe.
-crypto::SymmetricKey* OSCryptImpl::GetPasswordV10() {
+crypto::SubtlePassKey OSCryptImpl::MakeCryptoPassKey() {
+  return crypto::SubtlePassKey{};
+}
+
+std::array<uint8_t, OSCryptImpl::kDerivedKeyBytes> OSCryptImpl::Pbkdf2(
+    const std::string& key) {
+  std::array<uint8_t, OSCryptImpl::kDerivedKeyBytes> result;
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1(kParams, base::as_byte_span(key), kSalt,
+                                       result, MakeCryptoPassKey());
+  return result;
+}
+
+bool OSCryptImpl::DeriveV11Key() {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
-  if (!password_v10_cache_.get()) {
-    password_v10_cache_ = GenerateEncryptionKey("peanuts");
+  if (!try_v11_) {
+    return false;
   }
-  return password_v10_cache_.get();
-}
 
-// Caches and returns the password from the KeyStorage or null if there is no
-// service. Is thread-safe.
-crypto::SymmetricKey* OSCryptImpl::GetPasswordV11(bool probe) {
-  base::AutoLock auto_lock(OSCryptImpl::GetLock());
-  if (is_password_v11_cached_) {
-    return password_v11_cache_.get();
+  if (v11_key_) {
+    return true;
   }
 
   std::unique_ptr<KeyStorageLinux> key_storage;
   if (storage_provider_factory_for_testing_) {
     key_storage = std::move(storage_provider_factory_for_testing_).Run();
   } else {
-    CHECK(probe || config_);
     if (config_) {
       key_storage = KeyStorageLinux::CreateService(*config_);
       config_.reset();
     }
   }
 
-  if (key_storage) {
-    std::optional<std::string> key = key_storage->GetKey();
-    if (key.has_value()) {
-      password_v11_cache_ = GenerateEncryptionKey(*key);
-    }
+  if (!key_storage) {
+    // No backend available, can't do v11.
+    try_v11_ = false;
+    return false;
   }
 
-  is_password_v11_cached_ = true;
-  return password_v11_cache_.get();
+  std::optional<std::string> maybe_key = key_storage->GetKey();
+  if (maybe_key) {
+    v11_key_ = Pbkdf2(*maybe_key);
+  }
+
+  return v11_key_.has_value();
 }
 
 // static

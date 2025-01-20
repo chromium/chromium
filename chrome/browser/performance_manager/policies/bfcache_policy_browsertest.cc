@@ -9,7 +9,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
+#include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -123,7 +123,7 @@ class BFCachePolicyBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     // Disable tab discarding to avoid interference.
-    mechanism::PageDiscarder::DisableForTesting();
+    policies::UrgentPageDiscardingPolicy::DisableForTesting();
   }
 
  protected:

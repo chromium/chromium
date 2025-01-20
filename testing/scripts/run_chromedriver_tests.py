@@ -24,8 +24,11 @@ import common
 
 class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     return ['--isolated-script-test-output', output]
+  # pylint: enable=no-self-use
 
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     if any('--retry-limit' in arg for arg in self.rest_args):

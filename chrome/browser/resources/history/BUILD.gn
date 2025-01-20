@@ -10,13 +10,13 @@ build_webui("build") {
 
   static_files = [
     "history.html",
+    "images/compare_sync_promo.svg",
+    "images/compare_sync_promo_dark.svg",
     "images/history_embeddings_promo.svg",
     "images/history_embeddings_promo_dark.svg",
     "images/list.svg",
-    "images/sign_in_promo_dark.svg",
     "images/sign_in_promo.svg",
-    "images/compare_sync_promo_dark.svg",
-    "images/compare_sync_promo.svg",
+    "images/sign_in_promo_dark.svg",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.

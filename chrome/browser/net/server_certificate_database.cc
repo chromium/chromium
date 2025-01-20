@@ -5,9 +5,13 @@
 #include "chrome/browser/net/server_certificate_database.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
+#include "crypto/sha2.h"
 #include "net/cert/x509_util.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -42,10 +46,11 @@ namespace {
 }  // namespace
 
 ServerCertificateDatabase::ServerCertificateDatabase(
-    const base::FilePath& storage_dir) {
+    const base::FilePath& storage_dir)
+    : db_(/*tag=*/"ServerCertificate") {
   auto status = InitInternal(storage_dir);
 
-  CHECK(status == sql::InitStatus::INIT_OK);
+  db_initialized_ = (status == sql::InitStatus::INIT_OK);
 }
 
 ServerCertificateDatabase::~ServerCertificateDatabase() = default;
@@ -53,8 +58,6 @@ ServerCertificateDatabase::~ServerCertificateDatabase() = default;
 sql::InitStatus ServerCertificateDatabase::InitInternal(
     const base::FilePath& storage_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  db_.set_histogram_tag("ServerCertificate");
 
   base::FilePath db_file_path =
       storage_dir.Append(kServerCertificateDatabaseName);
@@ -98,30 +101,56 @@ sql::InitStatus ServerCertificateDatabase::InitInternal(
   return sql::InitStatus::INIT_OK;
 }
 
-bool ServerCertificateDatabase::InsertOrUpdateCert(
-    const CertInformation& cert_info) {
+bool ServerCertificateDatabase::InsertOrUpdateCerts(
+    const std::vector<CertInformation>& cert_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::string proto_bytes;
-  // If we can't serialize the proto to an array for some reason, bail.
-  if (!cert_info.cert_metadata.SerializeToString(&proto_bytes)) {
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
     return false;
   }
 
-  sql::Statement insert_statement(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO certificates(sha256hash_hex, der_cert, "
-      "trust_settings) VALUES(?,?,?)"));
-  DCHECK(insert_statement.is_valid());
-  insert_statement.BindString(0, cert_info.sha256hash_hex);
-  insert_statement.BindBlob(1, cert_info.der_cert);
-  insert_statement.BindBlob(2, base::as_byte_span(proto_bytes));
-  return insert_statement.Run();
+  std::vector<std::string> proto_bytes_vec;
+
+  // Quick check to ensure we can serialize all of the bytes before starting
+  // the transaction.
+  for (const auto& cert_info : cert_infos) {
+    std::string proto_bytes;
+    // If we can't serialize the proto to an array for some reason, bail.
+    if (!cert_info.cert_metadata.SerializeToString(&proto_bytes)) {
+      return false;
+    }
+    proto_bytes_vec.push_back(std::move(proto_bytes));
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  for (const auto&& [cert_info, proto_bytes] :
+       base::zip(cert_infos, proto_bytes_vec)) {
+    sql::Statement insert_statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        "INSERT OR REPLACE INTO certificates(sha256hash_hex, der_cert, "
+        "trust_settings) VALUES(?,?,?)"));
+    insert_statement.BindString(0, cert_info.sha256hash_hex);
+    insert_statement.BindBlob(1, cert_info.der_cert);
+    insert_statement.BindBlob(2, base::as_byte_span(proto_bytes));
+    if (!insert_statement.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
 }
 
 std::vector<ServerCertificateDatabase::CertInformation>
 ServerCertificateDatabase::RetrieveAllCertificates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return {};
+  }
 
   std::vector<ServerCertificateDatabase::CertInformation> certs;
   static constexpr char kSqlSelectAllCerts[] =
@@ -147,6 +176,11 @@ ServerCertificateDatabase::RetrieveAllCertificates() {
 
 uint32_t ServerCertificateDatabase::RetrieveCertificatesCount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return 0;
+  }
+
   static constexpr char kSqlSelectCertsCount[] =
       "SELECT COUNT(*) FROM certificates";
   sql::Statement statement(
@@ -161,6 +195,11 @@ uint32_t ServerCertificateDatabase::RetrieveCertificatesCount() {
 bool ServerCertificateDatabase::DeleteCertificate(
     const std::string& sha256hash_hex) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't crash browser if DB isn't initialized.
+  if (!db_initialized_) {
+    return false;
+  }
+
   sql::Statement delete_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM certificates WHERE sha256hash_hex=?"));
   DCHECK(delete_statement.is_valid());
@@ -168,6 +207,12 @@ bool ServerCertificateDatabase::DeleteCertificate(
   return delete_statement.Run() && db_.GetLastChangeCount() > 0;
 }
 
+ServerCertificateDatabase::CertInformation::CertInformation(
+    base::span<const uint8_t> cert) {
+  der_cert = base::ToVector(cert);
+  sha256hash_hex =
+      base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(cert)));
+}
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
 ServerCertificateDatabase::CertInformation::~CertInformation() = default;
 ServerCertificateDatabase::CertInformation::CertInformation(

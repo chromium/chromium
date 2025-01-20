@@ -10,9 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Android implementation details for device::ScreenOrientationListenerAndroid. */
 @JNINamespace("device")
+@NullMarked
 class ScreenOrientationListener {
     @CalledByNative
     static boolean isAutoRotateEnabledByUser() {

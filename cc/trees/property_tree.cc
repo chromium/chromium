@@ -34,12 +34,6 @@
 
 namespace cc {
 
-void AnimationUpdateOnMissingPropertyNodeUMALog(bool missing_property_node) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Renderer.AnimationUpdateOnMissingPropertyNode",
-      missing_property_node);
-}
-
 AnchorPositionScrollData::AnchorPositionScrollData() = default;
 AnchorPositionScrollData::~AnchorPositionScrollData() = default;
 AnchorPositionScrollData::AnchorPositionScrollData(
@@ -166,6 +160,7 @@ void TransformTree::clear() {
   device_scale_factor_ = 1.f;
   device_transform_scale_factor_ = 1.f;
   nodes_affected_by_outer_viewport_bounds_delta_.clear();
+  nodes_affected_by_safe_area_inset_bottom_.clear();
   cached_data_.clear();
   cached_data_.push_back(TransformCachedNodeData());
   sticky_position_data_.clear();
@@ -188,10 +183,8 @@ bool TransformTree::OnTransformAnimated(ElementId element_id,
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->local == transform)
     return false;
   node->local = transform;
@@ -526,7 +519,8 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
       ancestor_sticky_box_offset + ancestor_containing_block_offset +
       sticky_offset;
 
-  // return
+  sticky_offset += constraint.pixel_snap_offset;
+
   return gfx::ToRoundedVector2d(sticky_offset);
 }
 
@@ -655,11 +649,17 @@ void TransformTree::UpdateLocalTransform(
                         node->post_translation.y() + node->origin.y(),
                         node->origin.z());
 
-  gfx::Vector2dF position_adjustment;
+  float y_adjustment = 0.f;
   if (node->moved_by_outer_viewport_bounds_delta_y) {
-    position_adjustment.set_y(
-        property_trees()->outer_viewport_container_bounds_delta().y());
+    y_adjustment +=
+        property_trees()->outer_viewport_container_bounds_delta().y();
   }
+  if (node->moved_by_safe_area_bottom) {
+    y_adjustment +=
+        property_trees()->transform_delta_by_safe_area_inset_bottom();
+  }
+  gfx::Vector2dF position_adjustment(0.f, y_adjustment);
+
   if (node->should_undo_overscroll)
     UndoOverscroll(node, position_adjustment, viewport_property_ids);
   transform.Translate(position_adjustment -
@@ -842,6 +842,25 @@ void TransformTree::AddNodeAffectedByOuterViewportBoundsDelta(int node_id) {
 
 bool TransformTree::HasNodesAffectedByOuterViewportBoundsDelta() const {
   return !nodes_affected_by_outer_viewport_bounds_delta_.empty();
+}
+
+void TransformTree::NeedTransformUpdateForSafeAreaInsetBottom() {
+  if (nodes_affected_by_safe_area_inset_bottom_.empty()) {
+    return;
+  }
+
+  set_needs_update(true);
+  for (int i : nodes_affected_by_safe_area_inset_bottom_) {
+    Node(i)->needs_local_transform_update = true;
+  }
+}
+
+void TransformTree::AddNodeAffectedBySafeAreaInsetBottom(int node_id) {
+  nodes_affected_by_safe_area_inset_bottom_.push_back(node_id);
+}
+
+bool TransformTree::HasNodesAffectedBySafeAreaBottom() const {
+  return !nodes_affected_by_safe_area_inset_bottom_.empty();
 }
 
 const gfx::Transform& TransformTree::FromScreen(int node_id) const {
@@ -1063,10 +1082,8 @@ bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->opacity == opacity)
     return false;
   node->opacity = opacity;
@@ -1082,10 +1099,8 @@ bool EffectTree::OnFilterAnimated(ElementId id,
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->filters == filters)
     return false;
   node->filters = filters;
@@ -1102,10 +1117,8 @@ bool EffectTree::OnBackdropFilterAnimated(
   // TODO(crbug.com/40828469): Remove this when we no longer animate
   // non-existent nodes.
   if (!node) {
-    AnimationUpdateOnMissingPropertyNodeUMALog(true);
     return false;
   }
-  AnimationUpdateOnMissingPropertyNodeUMALog(false);
   if (node->backdrop_filters == backdrop_filters)
     return false;
   node->backdrop_filters = backdrop_filters;
@@ -2096,7 +2109,8 @@ PropertyTrees::PropertyTrees(const ProtectedSequenceSynchronizer& synchronizer)
       full_tree_damaged_(false),
       is_main_thread_(true),
       is_active_(false),
-      sequence_number_(0) {}
+      sequence_number_(0),
+      transform_delta_by_safe_area_inset_bottom_(0) {}
 
 PropertyTrees::~PropertyTrees() = default;
 
@@ -2130,6 +2144,8 @@ PropertyTrees& PropertyTrees::operator=(const PropertyTrees& from) {
       from.inner_viewport_container_bounds_delta());
   SetOuterViewportContainerBoundsDelta(
       from.outer_viewport_container_bounds_delta());
+  SetTransformDeltaBySafeAreaInsetBottom(
+      from.transform_delta_by_safe_area_inset_bottom());
   transform_tree_mutable().SetPropertyTrees(this);
   effect_tree_mutable().SetPropertyTrees(this);
   clip_tree_mutable().SetPropertyTrees(this);
@@ -2179,6 +2195,15 @@ void PropertyTrees::SetOuterViewportContainerBoundsDelta(
 
   outer_viewport_container_bounds_delta_.Write(synchronizer()) = bounds_delta;
   transform_tree_mutable().UpdateOuterViewportContainerBoundsDelta();
+}
+
+void PropertyTrees::SetTransformDeltaBySafeAreaInsetBottom(float delta) {
+  if (transform_delta_by_safe_area_inset_bottom() == delta) {
+    return;
+  }
+
+  transform_delta_by_safe_area_inset_bottom_.Write(synchronizer()) = delta;
+  transform_tree_mutable().NeedTransformUpdateForSafeAreaInsetBottom();
 }
 
 bool PropertyTrees::ElementIsAnimatingChanged(

@@ -52,8 +52,8 @@ base::FilePath bogus_file_pathname(const std::string& name) {
 class BackgroundApplicationListModelTest
     : public extensions::ExtensionServiceTestBase {
  public:
-  BackgroundApplicationListModelTest() {}
-  ~BackgroundApplicationListModelTest() override {}
+  BackgroundApplicationListModelTest() = default;
+  ~BackgroundApplicationListModelTest() override = default;
 
  protected:
   // extensions::ExtensionServiceTestBase:

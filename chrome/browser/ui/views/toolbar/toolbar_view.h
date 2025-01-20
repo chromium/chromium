@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
@@ -35,7 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class AppMenuButton;
@@ -50,7 +51,6 @@ class ChromeLabsButton;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
-class ManagementToolbarButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class PinnedToolbarActionsContainer;
@@ -63,6 +63,10 @@ class PerformanceInterventionButton;
 namespace media_router {
 class CastToolbarButton;
 }
+
+namespace page_actions {
+class PageActionView;
+}  // namespace page_actions
 
 namespace send_tab_to_self {
 class SendTabToSelfToolbarIconView;
@@ -92,6 +96,9 @@ class ToolbarView : public views::AccessiblePaneView,
     CUSTOM_TAB  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
   };
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarContainerElementId);
 
   ToolbarView(Browser* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;
@@ -189,10 +196,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   views::View* new_tab_button_for_testing() { return new_tab_button_; }
 
-  ManagementToolbarButton* management_toolbar_button() const {
-    return management_toolbar_button_;
-  }
-
   // LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
@@ -250,11 +253,14 @@ class ToolbarView : public views::AccessiblePaneView,
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
+  page_actions::PageActionView* GetPageActionView(
+      actions::ActionId action_id) override;
   AppMenuButton* GetAppMenuButton() override;
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
-  views::View* GetAnchorView(std::optional<PageActionIconType> type) override;
+  views::View* GetAnchorView(
+      std::optional<actions::ActionId> action_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
@@ -309,7 +315,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
-  raw_ptr<ManagementToolbarButton> management_toolbar_button_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
       send_tab_to_self_button_ = nullptr;

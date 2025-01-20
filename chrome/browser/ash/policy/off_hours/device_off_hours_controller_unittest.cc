@@ -307,7 +307,7 @@ class DeviceOffHoursControllerFakeClockTest
       const DeviceOffHoursControllerFakeClockTest&) = delete;
 
  protected:
-  DeviceOffHoursControllerFakeClockTest() {}
+  DeviceOffHoursControllerFakeClockTest() = default;
 
   void SetUp() override {
     DeviceOffHoursControllerSimpleTest::SetUp();

@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.xsurface_provider;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface_provider.hooks.XSurfaceHooks;
 
 /** Holds and provides an instance of {@link ProcessScope}. */
+@NullMarked
 public final class XSurfaceProcessScopeProvider {
-    private static ProcessScope sProcessScope;
+    private static @Nullable ProcessScope sProcessScope;
 
-    public static ProcessScope getProcessScope() {
+    public static @Nullable ProcessScope getProcessScope() {
         if (sProcessScope != null) {
             return sProcessScope;
         }
@@ -23,6 +28,7 @@ public final class XSurfaceProcessScopeProvider {
 
         ProcessScopeDependencyProviderFactory dependencyProviderFactory =
                 ServiceLoaderUtil.maybeCreate(ProcessScopeDependencyProviderFactory.class);
+        assumeNonNull(dependencyProviderFactory);
         sProcessScope = hooks.createProcessScope(dependencyProviderFactory.create());
         return sProcessScope;
     }

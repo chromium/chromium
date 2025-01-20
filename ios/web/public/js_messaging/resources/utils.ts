@@ -25,12 +25,59 @@ declare global {
 }
 
 /**
+ * Extracts the webpage URL from the given URL by removing the query
+ * and the reference (aka fragment) from the URL.
+ *
+ * IMPORTANT: Not security proof, do not assume the URL returns by this
+ * function reflects what is actually on the page as the hosted page can
+ * modify the behavior of the window.URL prototype.
+ *
+ * @param url Web page URL.
+ * @return Web page URL with query and reference removed. An empty
+ *   string if the window.URL prototype was changed by the hosted page.
+ */
+export function removeQueryAndReferenceFromURL(url: string): string {
+  if (typeof url !== 'string') {
+    return '';
+  }
+
+  let parsed: URL | undefined;
+  // Strings which are not URLs will throw a TypeError.
+  try {
+    parsed = new URL(url);
+  } catch (error) {
+    return '';
+  }
+
+  function isPropertyInvalid(value: unknown): boolean {
+    return typeof value !== 'string';
+  }
+
+  if (isPropertyInvalid(parsed.origin) || isPropertyInvalid(parsed.protocol) ||
+      isPropertyInvalid(parsed.pathname)) {
+    // If at least one of these properties is not of a string type, it is a sign
+    // that the window.URL prototype was changed by the hosted page in the page
+    // content world. Return an empty string in that case as URL has an
+    // undefined behavior. This doesn't cover all window.URL mutations, but it
+    // at least shields against getting non-string values from these
+    // properties. The returned URL will be malformed in the worst case but is
+    // guaranteed to be a string.
+    return '';
+  }
+
+  // For some protocols (eg. data:, javascript:) URL.origin is "null" string
+  // (not the type) so URL.protocol is used instead.
+  return (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
+      parsed.pathname;
+};
+
+/**
  * Posts `message` to the webkit message handler specified by `handlerName`.
  *
  * @param handlerName The name of the webkit message handler.
  * @param message The message to post to the handler.
  */
-function sendWebKitMessage(handlerName: string, message: object|string) {
+export function sendWebKitMessage(handlerName: string, message: object|string) {
   try {
     // A web page can override `window.webkit` with any value. Deleting the
     // object ensures that original and working implementation of
@@ -52,8 +99,6 @@ function sendWebKitMessage(handlerName: string, message: object|string) {
  * @param str The string to be trimmed.
  * @return The string after trimming.
  */
-function trim(str: string): string {
+export function trim(str: string): string {
   return str.replace(/^\s+|\s+$/g, '');
 };
-
-export {sendWebKitMessage, trim}

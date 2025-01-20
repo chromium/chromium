@@ -173,7 +173,7 @@ public class EphemeralTabMediator {
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                         if (navigation.hasCommitted()) {
                             mIsOnErrorPage = navigation.isErrorPage();
-                            mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
+                            mSheetContent.updateURL(getWebContents().getVisibleUrl());
                         } else if (navigation.isDownload()) {
                             // Not viewable contents such as download. Show a toast and close the
                             // tab.
@@ -261,7 +261,7 @@ public class EphemeralTabMediator {
                 return R.drawable.omnibox_not_secure_warning;
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
-                return R.drawable.omnibox_https_valid;
+                return R.drawable.omnibox_https_valid_lock;
             default:
                 assert false;
         }
@@ -271,7 +271,7 @@ public class EphemeralTabMediator {
     /** Destroys the objects used for the current preview tab. */
     void destroyContent() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
         mWebContentsDelegate = null;

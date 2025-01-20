@@ -4,6 +4,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/keyed_service",
   "+components/prefs",
+  "+components/strings/grit",
   "+components/sync",
   "+components/undo",
   "+components/version_info",

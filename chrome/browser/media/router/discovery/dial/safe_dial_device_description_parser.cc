@@ -20,8 +20,9 @@ namespace {
 // digits of the UUID as the friendly name.
 std::string ComputeFriendlyName(const std::string& unique_id,
                                 const std::string& model_name) {
-  if (model_name.empty() || unique_id.length() < 4)
+  if (model_name.empty() || unique_id.length() < 4) {
     return std::string();
+  }
 
   std::string trimmed_unique_id = unique_id.substr(unique_id.length() - 4);
   return base::StringPrintf("%s [%s]", model_name.c_str(),

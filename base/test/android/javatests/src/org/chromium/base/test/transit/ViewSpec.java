@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
 
@@ -21,6 +23,8 @@ import org.hamcrest.StringDescription;
 import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.base.test.util.ViewPrinter;
 
+import java.util.Arrays;
+
 /** A spec to generate ViewElements representing a view characteristic of a ConditionalState. */
 public class ViewSpec {
 
@@ -36,6 +40,32 @@ public class ViewSpec {
     @SafeVarargs
     public static ViewSpec viewSpec(Matcher<View>... viewMatchers) {
         return new ViewSpec(allOf(viewMatchers));
+    }
+
+    /** Create a ViewSpec for a descendant of this ViewSpec. */
+    public final ViewSpec descendant(Matcher<View> viewMatcher) {
+        return viewSpec(viewMatcher, isDescendantOfA(mViewMatcher));
+    }
+
+    /** Create a ViewSpec for a descendant of this ViewSpec that matches multiple Matchers<View>. */
+    @SafeVarargs
+    public final ViewSpec descendant(Matcher<View>... viewMatchers) {
+        Matcher<View>[] allViewMatchers = Arrays.copyOf(viewMatchers, viewMatchers.length + 1);
+        allViewMatchers[viewMatchers.length] = isDescendantOfA(mViewMatcher);
+        return viewSpec(allViewMatchers);
+    }
+
+    /** Creates a ViewSpec that matches this ViewSpec _and_ another Matcher<View>. */
+    public final ViewSpec and(Matcher<View> viewMatcher) {
+        return viewSpec(viewMatcher, mViewMatcher);
+    }
+
+    /** Creates a ViewSpec that matches this ViewSpec _and_ multiple other Matchers<View>. */
+    @SafeVarargs
+    public final ViewSpec and(Matcher<View>... viewMatchers) {
+        Matcher<View>[] allViewMatchers = Arrays.copyOf(viewMatchers, viewMatchers.length + 1);
+        allViewMatchers[viewMatchers.length] = mViewMatcher;
+        return viewSpec(allViewMatchers);
     }
 
     private ViewSpec(Matcher<View> viewMatcher) {

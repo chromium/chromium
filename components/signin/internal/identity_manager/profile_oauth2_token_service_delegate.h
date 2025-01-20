@@ -106,6 +106,7 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) = 0;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -120,7 +121,8 @@ class ProfileOAuth2TokenServiceDelegate {
 
 #if BUILDFLAG(IS_IOS)
   // Returns a list of accounts that exist on the device, including those that
-  // are assigned to different profiles.
+  // are assigned to different profiles, in the order provided by the system
+  // (usually the order in which the accounts were added).
   virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -233,7 +235,7 @@ class ProfileOAuth2TokenServiceDelegate {
 #if BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) {}
 
   // Returns a reference to the corresponding Java object.
@@ -280,6 +282,9 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual void FireRefreshTokensLoaded();
   void FireAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& error);
+#if BUILDFLAG(IS_IOS)
+  void FireAccountsOnDeviceChanged();
+#endif
 
   // Helper class to scope batch changes.
   class ScopedBatchChange {

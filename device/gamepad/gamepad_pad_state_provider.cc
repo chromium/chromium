@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/heap_array.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -29,10 +30,10 @@ PadState::PadState() = default;
 PadState::~PadState() = default;
 
 GamepadPadStateProvider::GamepadPadStateProvider() {
-  pad_states_ = std::make_unique<PadState[]>(Gamepads::kItemsLengthCap);
+  pad_states_ = base::HeapArray<PadState>::WithSize(Gamepads::kItemsLengthCap);
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i)
-    ClearPadState(pad_states_.get()[i]);
+    ClearPadState(pad_states_[i]);
 }
 
 GamepadPadStateProvider::~GamepadPadStateProvider() = default;
@@ -44,7 +45,7 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
   std::optional<size_t> empty_slot_index;
   std::optional<size_t> unrecognized_slot_index;
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-    auto& state = pad_states_.get()[i];
+    auto& state = pad_states_[i];
     if (state.source == source && state.source_id == source_id) {
       // Retrieving the pad state marks this gamepad as active.
       state.is_active = true;
@@ -57,7 +58,7 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
   }
 
   if (!empty_slot_index && unrecognized_slot_index && new_gamepad_recognized) {
-    auto& state = pad_states_.get()[*unrecognized_slot_index];
+    auto& state = pad_states_[*unrecognized_slot_index];
     DisconnectUnrecognizedGamepad(state.source, state.source_id);
     empty_slot_index = unrecognized_slot_index;
   }
@@ -65,7 +66,7 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
     return nullptr;
   }
 
-  auto& empty_slot = pad_states_.get()[*empty_slot_index];
+  auto& empty_slot = pad_states_[*empty_slot_index];
   empty_slot.pad_index = *empty_slot_index;
   empty_slot.source = source;
   empty_slot.source_id = source_id;
@@ -80,7 +81,7 @@ PadState* GamepadPadStateProvider::GetConnectedPadState(uint32_t pad_index) {
   if (pad_index >= Gamepads::kItemsLengthCap)
     return nullptr;
 
-  PadState& pad_state = pad_states_.get()[pad_index];
+  PadState& pad_state = pad_states_[pad_index];
   if (pad_state.source == GamepadSource::kNone)
     return nullptr;
 

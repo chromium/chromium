@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:orientation="vertical">
 
     <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_sandbox_notice_row_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -65,6 +66,7 @@ found in the LICENSE file.
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_row_description_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/privacy_sandbox_m1_notice_row_description_2"
@@ -78,6 +80,16 @@ found in the LICENSE file.
                     app:srcCompat="@drawable/privacy_sandbox_interests_illustration"
                     android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_row_description_2_v2"
+                    android:layout_marginBottom="@dimen/list_item_default_margin"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_m1_notice_row_description_2"
+                    app:leading="@dimen/text_size_medium_leading"
+                    style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_marginBottom="@dimen/list_item_default_margin"
@@ -120,6 +132,7 @@ found in the LICENSE file.
                     android:visibility="gone" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/privacy_sandbox_m1_notice_row_description_4"
                     android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -178,5 +191,46 @@ found in the LICENSE file.
                 style="@style/FilledButton" />
 
         </LinearLayout>
+    </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
+
+    <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_policy_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:paddingStart="12dp"
+            android:gravity="center_vertical"
+            android:background="@macro/default_bg_color">
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/privacy_policy_back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/privacy_sandbox_privacy_policy_back_button"
+                android:padding="12dp"/>
+
+            <TextView
+                android:id="@+id/privacy_policy_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_sandbox_privacy_policy_page_title"
+                android:layout_marginStart="12dp"
+                style="@style/TextAppearance.Headline.Primary"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/privacy_policy_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 </LinearLayout>

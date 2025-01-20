@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @implementation ShowSigninCommand
 
@@ -13,7 +14,7 @@
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
                        completion:
-                           (ShowSigninCommandCompletionCallback)completion {
+                           (SigninCoordinatorCompletionCallback)completion {
   if ((self = [super init])) {
     // Only `InstantSignin` can be opened with an identity selected.
     DCHECK(operation == AuthenticationOperation::kInstantSignin || !identity);
@@ -22,6 +23,7 @@
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _completion = [completion copy];
+    _optionalHistorySync = YES;
   }
   return self;
 }

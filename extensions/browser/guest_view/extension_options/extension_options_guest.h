@@ -33,9 +33,11 @@ class ExtensionOptionsGuest
 
   // GuestViewBase implementation.
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void GuestViewDidStopLoading() final;
@@ -47,6 +49,7 @@ class ExtensionOptionsGuest
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  void GuestClose() final;
 
   // content::WebContentsDelegate implementation.
   content::WebContents* AddNewContents(

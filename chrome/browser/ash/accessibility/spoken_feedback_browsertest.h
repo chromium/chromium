@@ -69,6 +69,8 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
   void RunJSForChromeVox(const std::string& script);
   void ImportJSModuleForChromeVox(std::string name, std::string path);
 
+  ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
+
   test::SpeechMonitor sm_;
 
  private:

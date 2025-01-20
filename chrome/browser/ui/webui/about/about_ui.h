@@ -31,9 +31,14 @@ class AboutUIConfigBase : public content::DefaultWebUIConfig<AboutUI> {
 
 // chrome://chrome-urls. Note that HandleChromeAboutAndChromeSyncRewrite()
 // rewrites chrome://about -> chrome://chrome-urls.
-class ChromeURLsUIConfig : public AboutUIConfigBase {
+class ChromeURLsUIConfig : public content::WebUIConfig {
  public:
   ChromeURLsUIConfig();
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // chrome://credits.
@@ -128,20 +133,14 @@ class AboutUI : public content::WebUIController {
   AboutUI& operator=(const AboutUI&) = delete;
 
   ~AboutUI() override = default;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool OverrideHandleWebUIMessage(const GURL& source_url,
-                                  const std::string& message,
-                                  const base::Value::List& args) override;
-#endif
 };
 
 namespace about_ui {
 
 // Helper functions
 void AppendHeader(std::string* output, const std::string& unescaped_title);
-void AppendBody(std::string *output);
-void AppendFooter(std::string *output);
+void AppendBody(std::string* output);
+void AppendFooter(std::string* output);
 
 }  // namespace about_ui
 

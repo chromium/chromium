@@ -19,10 +19,6 @@ void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
   callback_ = std::move(callback);
 }
 
-void MockBrowsingDataQuotaHelper::DeleteHostData(
-    const std::string& host,
-    blink::mojom::StorageType type) {}
-
 void MockBrowsingDataQuotaHelper::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,

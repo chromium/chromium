@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -139,7 +140,6 @@ class CC_EXPORT SchedulerStateMachine {
     DRAW_IF_POSSIBLE,
     DRAW_FORCED,
     DRAW_ABORT,
-    UPDATE_DISPLAY_TREE,
     BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
     PREPARE_TILES,
     INVALIDATE_LAYER_TREE_FRAME_SINK,
@@ -161,7 +161,6 @@ class CC_EXPORT SchedulerStateMachine {
   void DidPostCommit();
   void WillActivate();
   void WillDraw();
-  void WillUpdateDisplayTree();
   void WillBeginLayerTreeFrameSinkCreation();
   void WillPrepareTiles();
   void WillInvalidateLayerTreeFrameSink();
@@ -208,6 +207,13 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool IsDrawThrottled() const;
 
+  // Throttles main frame production to a given interval, but not compositor
+  // frames.
+  void SetThrottleMainFrames(base::TimeDelta interval);
+  base::TimeDelta main_frame_throttled_interval() const {
+    return main_frame_throttled_interval_;
+  }
+
   // Indicates whether the LayerTreeHostImpl is visible.
   void SetVisible(bool visible);
   bool visible() const { return visible_; }
@@ -230,10 +236,6 @@ class CC_EXPORT SchedulerStateMachine {
   void SetNeedsRedraw();
   bool needs_redraw() const { return needs_redraw_; }
 
-  // Indicates that the display tree needs an update, implying that the active
-  // tree has changed in some meaningful way since the last update.
-  void SetNeedsUpdateDisplayTree();
-  bool needs_update_display_tree() const { return needs_update_display_tree_; }
 
   bool did_invalidate_layer_tree_frame_sink() const {
     return did_invalidate_layer_tree_frame_sink_;
@@ -269,7 +271,13 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates that a new begin main frame flow needs to be performed, either
   // to pull updates from the main thread to the impl, or to push deltas from
   // the impl thread to main.
-  void SetNeedsBeginMainFrame();
+  //
+  // If `now` is true, then the BeginMainFrame() update is not throttled, and
+  // the next BeginMainFrame() will be sent at the next opportunity, regardless
+  // of the interval since the last one. This is to be used in cases where
+  // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
+  // that should not wait more than necessary.
+  void SetNeedsBeginMainFrame(bool now = false);
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   void SetMainThreadWantsBeginMainFrameNotExpectedMessages(bool new_state);
@@ -407,7 +415,6 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool ShouldBeginLayerTreeFrameSinkCreation() const;
   bool ShouldDraw() const;
-  bool ShouldUpdateDisplayTree() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
   bool ShouldCommit() const;
@@ -420,6 +427,9 @@ class CC_EXPORT SchedulerStateMachine {
   void WillDrawInternal();
   void WillPerformImplSideInvalidationInternal();
   void DidDrawInternal(DrawResult draw_result);
+
+  // Virtual for testing.
+  virtual base::TimeTicks Now() const;
 
   const SchedulerSettings settings_;
 
@@ -444,6 +454,9 @@ class CC_EXPORT SchedulerStateMachine {
   int last_frame_number_begin_main_frame_sent_ = -1;
   int last_frame_number_invalidate_layer_tree_frame_sink_performed_ = -1;
 
+  base::TimeTicks last_sent_begin_main_frame_time_;
+  base::TimeDelta main_frame_throttled_interval_;
+
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being
   // reset in OnBeginImplFrame.
@@ -456,7 +469,6 @@ class CC_EXPORT SchedulerStateMachine {
   // These are used to ensure that an action only happens once per frame,
   // deadline, etc.
   bool did_draw_ = false;
-  bool did_update_display_tree_ = false;
   bool did_send_begin_main_frame_for_current_frame_ = true;
 
   // Initialized to true to prevent begin main frame before begin frames have
@@ -477,7 +489,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_begin_main_frame_ = false;
   bool needs_one_begin_impl_frame_ = false;
   bool needs_post_commit_ = false;
-  bool needs_update_display_tree_ = false;
   bool visible_ = false;
   bool should_warm_up_ = false;
   bool begin_frame_source_paused_ = false;

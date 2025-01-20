@@ -55,8 +55,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   // If the context is lost, the resource provider would be invalid.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper ||
-      context_provider_wrapper->ContextProvider()->IsContextLost())
+      context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
+  }
 
   // For noop webgpu mailbox construction, creating mailbox texture with minimum
   // size.
@@ -112,13 +113,13 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       canvas_resource->GetClientSharedImage();
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
-  gfx::Size size = canvas_resource->Size();
+  gfx::Size size = shared_image->size();
 
   wgpu::TextureDescriptor tex_desc = {
       .usage = usage,
       .size = {base::checked_cast<uint32_t>(size.width()),
                base::checked_cast<uint32_t>(size.height())},
-      .format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat()),
+      .format = VizToWGPUFormat(shared_image->format()),
   };
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, tex_desc, std::move(shared_image),
@@ -154,7 +155,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame) {
   auto context_provider = dawn_control_client->GetContextProviderWeakPtr();
   if (!context_provider ||
-      context_provider->ContextProvider()->IsContextLost()) {
+      context_provider->ContextProvider().IsContextLost()) {
     return nullptr;
   }
 
@@ -164,7 +165,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
         if (context_provider) {
           // Update the sync token before unreferencing the video frame.
           media::WaitAndReplaceSyncTokenClient client(
-              context_provider->ContextProvider()->WebGPUInterface());
+              context_provider->ContextProvider().WebGPUInterface());
           frame->UpdateReleaseSyncToken(&client);
         }
       },
@@ -199,7 +200,7 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
   gpu::webgpu::WebGPUInterface* webgpu =
       dawn_control_client_->GetContextProviderWeakPtr()
           ->ContextProvider()
-          ->WebGPUInterface();
+          .WebGPUInterface();
 
   // Wait on any work using the image.
   webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -250,7 +251,7 @@ gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
     if (base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
             dawn_control_client_->GetContextProviderWeakPtr()) {
       gpu::webgpu::WebGPUInterface* webgpu =
-          context_provider->ContextProvider()->WebGPUInterface();
+          context_provider->ContextProvider().WebGPUInterface();
       if (alpha_clearer_) {
         alpha_clearer_->ClearAlpha(texture_);
         alpha_clearer_ = nullptr;

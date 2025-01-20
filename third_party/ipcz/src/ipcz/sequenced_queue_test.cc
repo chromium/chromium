@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ipcz/sequence_number.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
@@ -17,6 +18,7 @@ struct TestQueueTraits {
   static size_t GetElementSize(const std::string& s) { return s.size(); }
 };
 
+using testing::ElementsAre;
 using TestQueue = SequencedQueue<std::string>;
 using TestQueueWithSize = SequencedQueue<std::string, TestQueueTraits>;
 using SequencedQueueTest = testing::Test;
@@ -89,7 +91,8 @@ TEST(SequencedQueueTest, ForceTerminateSequence) {
 
   // But we can still force it to terminate at its current length. Now the gap
   // at element 1 is irrelevant, and element 0 alone is the complete sequence.
-  q.ForceTerminateSequence();
+  std::vector<std::string> removed_elements = q.ForceTerminateSequence();
+  EXPECT_THAT(removed_elements, ElementsAre("woot!"));
   EXPECT_FALSE(q.ExpectsMoreElements());
   EXPECT_TRUE(q.HasNextElement());
   EXPECT_FALSE(q.Push(SequenceNumber(1), "woot?"));

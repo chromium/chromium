@@ -59,6 +59,9 @@ class PingPersistedData : public update_client::PersistedData {
                        base::OnceClosure callback) override;
   int GetInstallDate(const std::string& id) const override;
   void SetInstallDate(const std::string& id, int install_date) override;
+  std::string GetInstallId(const std::string& app_id) const override;
+  void SetInstallId(const std::string& app_id,
+                    const std::string& install_id) override;
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;
@@ -197,6 +200,17 @@ void PingPersistedData::SetInstallDate(const std::string& id,
                                        int install_date) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
+}
+
+std::string PingPersistedData::GetInstallId(const std::string& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return "";
+}
+
+void PingPersistedData::SetInstallId(const std::string& app_id,
+                                     const std::string& install_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do nothing.
 }
 
 void PingPersistedData::GetActiveBits(

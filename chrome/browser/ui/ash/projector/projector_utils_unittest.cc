@@ -27,6 +27,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 
@@ -46,8 +47,9 @@ class ScopedLogIn {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kTestType))
+    if (!command_line.HasSwitch(switches::kTestType)) {
       command_line.AppendSwitch(switches::kTestType);
+    }
 
     switch (user_type) {
       case user_manager::UserType::kRegular:  // fallthrough
@@ -124,8 +126,9 @@ class ProjectorUtilsTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(prefs));
-    if (is_child())
+    if (is_child()) {
       builder.SetIsSupervisedProfile();
+    }
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed());
     profile_ = builder.Build();
   }
@@ -183,22 +186,22 @@ class ProjectorUtilsManagedTest : public ProjectorUtilsTest {
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_RegularAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsManagedTest, IsProjectorAllowedForProfile_ManagedAccount) {
-  ScopedLogIn login(
-      GetFakeUserManager(),
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        FakeGaiaMixin::kEnterpriseUser1,
+                        GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId),
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)),
                     user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
@@ -226,22 +229,22 @@ TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_KioskAppAccount) {
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_RegularAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsManagedTest, IsProjectorAppEnabled_ManagedAccount) {
-  ScopedLogIn login(
-      GetFakeUserManager(),
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        FakeGaiaMixin::kEnterpriseUser1,
+                        GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId),
+                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)),
                     user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));

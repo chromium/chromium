@@ -12,9 +12,9 @@
 
 namespace settings {
 
-NativeCertificatesHandler::NativeCertificatesHandler() {}
+NativeCertificatesHandler::NativeCertificatesHandler() = default;
 
-NativeCertificatesHandler::~NativeCertificatesHandler() {}
+NativeCertificatesHandler::~NativeCertificatesHandler() = default;
 
 void NativeCertificatesHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

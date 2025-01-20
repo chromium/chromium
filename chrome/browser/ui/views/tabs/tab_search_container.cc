@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -16,10 +15,11 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
-#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,6 +55,7 @@ constexpr char kDeclutterTriggerOutcomeName[] =
     "Tab.Organization.Declutter.Trigger.Outcome";
 constexpr char kDeclutterTriggerBucketedCTRName[] =
     "Tab.Organization.Declutter.Trigger.BucketedCTR";
+constexpr int kSpaceBetweenButtons = 2;
 
 Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
   const bool is_rtl = base::i18n::IsRTL();
@@ -69,7 +70,7 @@ Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
 
 TabSearchContainer::TabOrganizationAnimationSession::
     TabOrganizationAnimationSession(
-        TabOrganizationButton* button,
+        TabStripNudgeButton* button,
         TabSearchContainer* container,
         AnimationSessionType session_type,
         base::OnceCallback<void()> on_animation_ended)
@@ -208,7 +209,9 @@ TabSearchContainer::TabSearchContainer(
     bool tab_search_before_chips,
     View* locked_expansion_view,
     BrowserWindowInterface* browser_window_interface,
-    tabs::TabDeclutterController* tab_declutter_controller)
+    tabs::TabDeclutterController* tab_declutter_controller,
+    views::View* anchor_view,
+    TabStrip* tab_strip)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
       tab_declutter_controller_(tab_declutter_controller),
@@ -224,19 +227,15 @@ TabSearchContainer::TabSearchContainer(
     tab_organization_observation_.Observe(tab_organization_service_);
   }
 
+  // Edge adjacent to new tab button should be rounded and opposite edge
+  // should animate to flat on chip show.
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
-          tab_strip_controller, browser_window_interface,
-          features::IsTabstripComboButtonEnabled()
-              ? (base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft)
-              : Edge::kNone,
-          GetFlatEdge(true, tab_search_before_chips));
+          tab_strip_controller, browser_window_interface, Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips),
+          anchor_view ? anchor_view : this, tab_strip);
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
-  if (features::IsTabstripComboButtonEnabled()) {
-    tab_search_button->SetFlatEdgeFactor(1);
-  }
-
   tab_search_button_ = AddChildView(std::move(tab_search_button));
 
   int tab_search_button_index = GetIndexOf(tab_search_button_).value();
@@ -273,15 +272,14 @@ TabSearchContainer::~TabSearchContainer() {
   }
 }
 
-void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
+void TabSearchContainer::SetupButtonProperties(TabStripNudgeButton* button,
                                                bool tab_search_before_chips) {
   // Set the margins for the button
-  const int space_between_buttons = 2;
   gfx::Insets margin;
   if (tab_search_before_chips) {
-    margin.set_left(space_between_buttons);
+    margin.set_left(kSpaceBetweenButtons);
   } else {
-    margin.set_right(space_between_buttons);
+    margin.set_right(kSpaceBetweenButtons);
   }
   button->SetProperty(views::kMarginsKey, margin);
 
@@ -289,49 +287,57 @@ void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
   button->SetOpacity(0);
 }
 
-std::unique_ptr<TabOrganizationButton>
+std::unique_ptr<TabStripNudgeButton>
 TabSearchContainer::CreateAutoTabGroupButton(
     TabStripController* tab_strip_controller,
     bool tab_search_before_chips) {
-  auto button = std::make_unique<TabOrganizationButton>(
+  auto button = std::make_unique<TabStripNudgeButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
-      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
-      kAutoTabGroupButtonElementId,
+      l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
       GetFlatEdge(false, tab_search_before_chips));
-
+  button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
+  button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
   return button;
 }
 
-std::unique_ptr<TabOrganizationButton>
+std::unique_ptr<TabStripNudgeButton>
 TabSearchContainer::CreateTabDeclutterButton(
     TabStripController* tab_strip_controller,
     bool tab_search_before_chips) {
-  auto button = std::make_unique<TabOrganizationButton>(
+  auto button = std::make_unique<TabStripNudgeButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonDismissed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER),
-      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER),
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
       kTabDeclutterButtonElementId,
       GetFlatEdge(false, tab_search_before_chips));
+
+  button->SetTooltipText(
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE));
+  button->GetViewAccessibility().SetName(
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
   return button;
 }
 
-void TabSearchContainer::ShowTabOrganization(TabOrganizationButton* button) {
+void TabSearchContainer::ShowTabOrganization(TabStripNudgeButton* button) {
   if (locked_expansion_view_->IsMouseHovered()) {
     SetLockedExpansionMode(LockedExpansionMode::kWillShow, button);
   }
@@ -340,7 +346,7 @@ void TabSearchContainer::ShowTabOrganization(TabOrganizationButton* button) {
   }
 }
 
-void TabSearchContainer::HideTabOrganization(TabOrganizationButton* button) {
+void TabSearchContainer::HideTabOrganization(TabStripNudgeButton* button) {
   if (locked_expansion_view_->IsMouseHovered()) {
     SetLockedExpansionMode(LockedExpansionMode::kWillHide, button);
   }
@@ -351,7 +357,7 @@ void TabSearchContainer::HideTabOrganization(TabOrganizationButton* button) {
 
 void TabSearchContainer::SetLockedExpansionModeForTesting(
     LockedExpansionMode mode,
-    TabOrganizationButton* button) {
+    TabStripNudgeButton* button) {
   SetLockedExpansionMode(mode, button);
 }
 
@@ -378,8 +384,7 @@ void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
   ExecuteHideTabOrganization(auto_tab_group_button_);
 }
 
-void TabSearchContainer::OnOrganizeButtonTimeout(
-    TabOrganizationButton* button) {
+void TabSearchContainer::OnOrganizeButtonTimeout(TabStripNudgeButton* button) {
   if (button == auto_tab_group_button_) {
     base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
                                   TriggerOutcome::kTimedOut);
@@ -395,7 +400,7 @@ void TabSearchContainer::OnOrganizeButtonTimeout(
 }
 
 void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode,
-                                                TabOrganizationButton* button) {
+                                                TabStripNudgeButton* button) {
   if (mode == LockedExpansionMode::kNone) {
     if (locked_expansion_mode_ == LockedExpansionMode::kWillShow) {
       ExecuteShowTabOrganization(locked_expansion_button_);
@@ -411,7 +416,7 @@ void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode,
 }
 
 void TabSearchContainer::ExecuteShowTabOrganization(
-    TabOrganizationButton* button) {
+    TabStripNudgeButton* button) {
   if (browser_ && (button == auto_tab_group_button_) &&
       !TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
     return;
@@ -441,7 +446,7 @@ void TabSearchContainer::ExecuteShowTabOrganization(
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization(
-    TabOrganizationButton* button) {
+    TabStripNudgeButton* button) {
   // Hide the current animation if the shown button is the same button. Do not
   // create a new animation session.
   if (animation_session_ &&
@@ -534,17 +539,13 @@ void TabSearchContainer::OnTabDeclutterButtonDismissed() {
   ExecuteHideTabOrganization(tab_declutter_button_);
 }
 
-void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
+void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
   CHECK(tab_declutter_controller_);
   if (locked_expansion_mode_ != LockedExpansionMode::kNone) {
     return;
   }
 
-  if (should_show) {
-    ShowTabOrganization(tab_declutter_button_);
-  } else {
-    HideTabOrganization(tab_declutter_button_);
-  }
+  ShowTabOrganization(tab_declutter_button_);
 }
 
 DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(

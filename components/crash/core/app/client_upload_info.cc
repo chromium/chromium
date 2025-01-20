@@ -7,22 +7,30 @@
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/crash/core/app/crash_export_thunks.h"
+#endif
+
 namespace crash_reporter {
 
 bool GetClientCollectStatsConsent() {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the CrashReporterClient lives in chrome_elf.dll and needs to
+  // be accessed via a thunk.
+  return GetUploadConsent_ExportThunk();
+#else
   return GetCrashReporterClient()->GetCollectStatsConsent();
+#endif
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-void GetClientProductNameAndVersion(std::string* product,
-                                    std::string* version,
-                                    std::string* channel) {
-  CrashReporterClient::ProductInfo product_info;
-  GetCrashReporterClient()->GetProductInfo(&product_info);
-  *product = product_info.product_name;
-  *version = product_info.version;
-  *channel = product_info.channel;
-}
+void GetClientProductInfo(ProductInfo* product_info) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the CrashReporterClient lives in chrome_elf.dll and needs to
+  // be accessed via a thunk.
+  GetProductInfo_ExportThunk(product_info);
+#else
+  GetCrashReporterClient()->GetProductInfo(product_info);
 #endif
+}
 
 }  // namespace crash_reporter

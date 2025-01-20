@@ -73,7 +73,7 @@ function test_cq_condition_valid(condition, unknown) {
     assert_equals(style.sheet.rules.length, 2);
     const expected = unknown ? '' : 'true';
     assert_equals(getComputedStyle(document.querySelector("#cq-main")).getPropertyValue('--match'), expected);
-  }, `Query condition should be valid: ${condition}`);
+  }, `Query condition should be valid${unknown ? ' but unknown' : ''}: ${condition}`);
 }
 
 function test_cq_condition_known(condition) {
@@ -98,4 +98,13 @@ function test_container_name_valid(container_name) {
     let style = set_container_query_style(`@container ${container_name} not (width) {}`);
     assert_equals(style.sheet.rules.length, 1);
   }, `Container name: ${container_name}`);
+}
+
+function test_cq_condition_serialization(query, expected) {
+  test(t => {
+    t.add_cleanup(cleanup_container_query_main);
+    let style = set_container_query_style(`@container ${query} {}`);
+    assert_equals(style.sheet.rules.length, 1);
+    assert_equals(style.sheet.rules[0].conditionText, expected);
+  }, `@container conditionText serialization: ${query}`);
 }

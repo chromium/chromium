@@ -62,11 +62,9 @@ bool GetPyProtoPath(base::FilePath* dir) {
 
 }  // namespace
 
-WVTestLicenseServerConfig::WVTestLicenseServerConfig() {
-}
+WVTestLicenseServerConfig::WVTestLicenseServerConfig() = default;
 
-WVTestLicenseServerConfig::~WVTestLicenseServerConfig() {
-}
+WVTestLicenseServerConfig::~WVTestLicenseServerConfig() = default;
 
 bool WVTestLicenseServerConfig::GetServerCommandLine(
     base::CommandLine* command_line) {

@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -87,7 +86,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (!base::FeatureList::IsEnabled(kDemographicMetricsReporting))
     return std::nullopt;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Skip if not exactly one Profile on disk. Having more than one Profile that
   // is using the browser can make demographics less relevant. This approach
   // cannot determine if there is more than 1 distinct user using the Profile.
@@ -95,15 +94,12 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // ChromeOS almost always has more than one profile on disk, so this check
   // doesn't work. We have a profile selection strategy for ChromeOS, so skip
   // this check for ChromeOS.
-  // TODO(crbug.com/40729596): LaCros will behave similarly to desktop Chrome
-  // and reduce the number of profiles on disk to one, so remove these #if
-  // guards after LaCros release.
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kMoreThanOneProfile);
     return std::nullopt;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   syncer::SyncService* sync_service = profile_client_->GetSyncService();
   // Skip if no sync service.

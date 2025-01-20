@@ -8,10 +8,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/chrome_history_embeddings_service.h"
-#include "chrome/browser/history_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -49,7 +50,7 @@ bool IsEphemeralProfile(Profile* profile) {
 
 bool ShouldBuildServiceInstance(Profile* profile) {
   // Do NOT construct the service if the feature flag is disabled.
-  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
+  if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
   }
 
@@ -92,6 +93,7 @@ std::unique_ptr<KeyedService> HistoryEmbeddingsServiceFactory::
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
+      profile,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
@@ -127,7 +129,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   std::unique_ptr<history_embeddings::Answerer> answerer;
-  if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
+  if (history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled()) {
     if (history_embeddings::GetFeatureParameters().use_ml_answerer) {
       answerer = std::make_unique<history_embeddings::MlAnswerer>(
           optimization_guide_keyed_service);
@@ -149,12 +151,13 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
+      profile,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       optimization_guide_keyed_service,
       std::make_unique<history_embeddings::MlEmbedder>(
           optimization_guide_keyed_service,
-          history_embeddings::ChromePassageEmbeddingsServiceController::Get()),
+          passage_embeddings::ChromePassageEmbeddingsServiceController::Get()),
       std::move(answerer), std::move(intent_classifier));
 }

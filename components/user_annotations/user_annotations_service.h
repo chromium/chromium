@@ -48,6 +48,7 @@ class UserAnnotationsService : public KeyedService {
  public:
   UserAnnotationsService(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      optimization_guide::ModelQualityLogsUploaderService* logs_uploader,
       const base::FilePath& storage_dir,
       os_crypt_async::OSCryptAsync* os_crypt_async,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
@@ -143,6 +144,11 @@ class UserAnnotationsService : public KeyedService {
     return model_executor_;
   }
 
+  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+  logs_uploader() {
+    return logs_uploader_;
+  }
+
   // Database used to persist the user annotation entries.
   base::SequenceBound<UserAnnotationsDatabase> user_annotations_database_;
 
@@ -152,6 +158,10 @@ class UserAnnotationsService : public KeyedService {
   // The model executor to use to normalize entries. Guaranteed to outlive
   // `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_;
+
+  // The service used to upload model quality logs.
+  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+      logs_uploader_;
 
   // The optimization guide decider to determine whether to generate user
   // annotations for a page. Guaranteed to outlive `this`.

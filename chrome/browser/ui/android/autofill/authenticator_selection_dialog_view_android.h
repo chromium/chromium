@@ -7,6 +7,7 @@
 
 #include <jni.h>
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"

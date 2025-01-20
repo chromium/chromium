@@ -9,9 +9,8 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
@@ -23,7 +22,7 @@ suite('ProductSelectionMenuTest', () => {
     const menu = document.createElement('product-selection-menu');
     menu.selectedUrl = 'https://current-selection.com';
     document.body.appendChild(menu);
-    await flushTasks();
+    await microtasksFinished();
     return menu;
   }
 
@@ -66,7 +65,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(0, menu.sections.length);
     assertNotStyle($$(menu, '#empty')!, 'display', 'none');
@@ -85,7 +84,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
     const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
@@ -112,7 +111,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
     const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
@@ -144,7 +143,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
     const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
@@ -166,7 +165,7 @@ suite('ProductSelectionMenuTest', () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElement =
         menu.$.menu.get().querySelector<HTMLElement>('.dropdown-item');
@@ -196,7 +195,7 @@ suite('ProductSelectionMenuTest', () => {
     const menu = await createMenu();
     menu.selectedUrl = 'https://current-selection.com';
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElements =
         menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
@@ -234,7 +233,7 @@ suite('ProductSelectionMenuTest', () => {
     const menu = await createMenu();
     menu.excludedUrls = [excludedUrlString1, excludedUrlString2];
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElements =
         menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
@@ -254,8 +253,7 @@ suite('ProductSelectionMenuTest', () => {
     menu.forNewColumn = true;
     menu.isTableFull = true;
     menu.showAt(document.body);
-    await flushTasks();
-    await waitAfterNextRender(menu);
+    await microtasksFinished();
 
     const crActionMenu = menu.$.menu.get();
     assertTrue(crActionMenu.open);
@@ -286,8 +284,7 @@ suite('ProductSelectionMenuTest', () => {
         menu.forNewColumn = false;
         menu.isTableFull = true;
         menu.showAt(document.body);
-        await flushTasks();
-        await waitAfterNextRender(menu);
+        await microtasksFinished();
 
         const crActionMenu = menu.$.menu.get();
         assertTrue(crActionMenu.open);
@@ -313,7 +310,7 @@ suite('ProductSelectionMenuTest', () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const crActionMenu = menu.$.menu.get();
     assertTrue(crActionMenu.open);
@@ -333,7 +330,7 @@ suite('ProductSelectionMenuTest', () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const crActionMenu = menu.$.menu.get();
     assertTrue(crActionMenu.open);
@@ -353,7 +350,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(!!$$(menu, '.section-title'));
 
@@ -366,7 +363,7 @@ suite('ProductSelectionMenuTest', () => {
     initProductTabUrlInfos(productTabs);
 
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);

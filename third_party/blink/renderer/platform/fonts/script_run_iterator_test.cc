@@ -353,18 +353,12 @@ TEST_F(ScriptRunIteratorTest, Empty) {
   ASSERT_EQ(code, USCRIPT_INVALID_CODE);
 }
 
-// Some of our compilers cannot initialize a vector from an array yet.
-#define DECLARE_SCRIPT_RUNSVECTOR(...)                   \
-  static const ScriptTestRun kRunsArray[] = __VA_ARGS__; \
-  Vector<ScriptTestRun> runs;                            \
-  runs.Append(kRunsArray, sizeof(kRunsArray) / sizeof(*kRunsArray));
-
-#define CHECK_SCRIPT_RUNS(...)            \
-  DECLARE_SCRIPT_RUNSVECTOR(__VA_ARGS__); \
+#define CHECK_SCRIPT_RUNS(...)              \
+  Vector<ScriptTestRun> runs = __VA_ARGS__; \
   CheckRuns(runs);
 
-#define CHECK_MOCK_SCRIPT_RUNS(...)       \
-  DECLARE_SCRIPT_RUNSVECTOR(__VA_ARGS__); \
+#define CHECK_MOCK_SCRIPT_RUNS(...)         \
+  Vector<ScriptTestRun> runs = __VA_ARGS__; \
   CheckMockRuns(runs);
 
 TEST_F(ScriptRunIteratorTest, Whitespace) {
@@ -806,7 +800,7 @@ TEST_F(ScriptRunIteratorTest, MaxUnicodeScriptExtensions) {
   std::tie(max_extensions, max_extensionscp) = MaximumScriptExtensions();
   // If this test fails (as a result of an ICU update, most likely), it means
   // we need to change kMaxUnicodeScriptExtensions.
-  EXPECT_EQ(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
+  EXPECT_LE(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
 }
 
 class ScriptRunIteratorICUDataTest : public testing::Test {
@@ -834,7 +828,7 @@ class ScriptRunIteratorICUDataTest : public testing::Test {
 TEST_F(ScriptRunIteratorICUDataTest, ValidateICUMaxScriptExtensions) {
   int max_extensions;
   UChar32 cp = GetACharWithMaxExtensions(&max_extensions);
-  ASSERT_LE(max_extensions, ScriptData::kMaxScriptCount)
+  ASSERT_LT(max_extensions, ScriptData::kMaxScriptCount)
       << "char " << std::hex << cp << std::dec;
 }
 

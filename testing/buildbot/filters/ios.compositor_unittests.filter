@@ -95,3 +95,7 @@
 -TotalAnimationThroughputReporterTest.StartWhileAnimating
 -TotalAnimationThroughputReporterTest.StopAnimation
 -TotalAnimationThroughputReporterTest.ThreadCheck
+
+# TODO(crbug.com/381214486): This test has been failing since
+# https://crrev.com/c/6040362.
+-CompositorMetricsReporterTest.ThreadCheck

@@ -6,9 +6,11 @@ package org.chromium.ui;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 /** Simple interface allowing customized response to an overscrolling pull input. */
+@NullMarked
 public interface OverscrollRefreshHandler {
     /**
      * Signals the start of an overscrolling pull.

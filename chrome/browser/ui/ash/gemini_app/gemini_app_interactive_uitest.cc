@@ -488,9 +488,10 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
       AssignView(kGmailAppElementName, std::ref(gmail_app)),
 
       // Check Gemini app title.
-      CheckView(kGeminiAppElementName,
-                base::BindOnce(&ash::AppListItemView::title),
-                Property(&views::Label::GetText, Eq(GetGeminiAppTitle()))),
+      CheckView(
+          kGeminiAppElementName,
+          [](ash::AppListItemView* item) { return item->title(); },
+          Property(&views::Label::GetText, Eq(GetGeminiAppTitle()))),
 
       // Check Gemini app position.
       Check([&]() {

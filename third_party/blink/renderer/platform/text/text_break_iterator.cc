@@ -277,7 +277,7 @@ struct LazyLineBreakIterator::Context {
           return IsASCIIAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
                                                    : FastBreakResult::kNoBreak;
         }
-      } else if (RuntimeEnabledFeatures::BreakIteratorHyphenMinusEnabled()) {
+      } else {
         // Defer to the Unicode algorithm to take more context into account.
         return FastBreakResult::kUnknown;
       }

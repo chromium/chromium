@@ -79,8 +79,9 @@ ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
   const auto* current_data = clipboard->GetClipboardData(&data_dst);
 
   // No need to replace the clipboard contents if the markup is the same.
-  if (current_data && (html_markup == current_data->markup_data()))
+  if (current_data && (html_markup == current_data->markup_data())) {
     return;
+  }
 
   // Put |html_markup| on the clipboard temporarily so it can be pasted into
   // the WebContents. This is preferable to directly loading |html_markup_| in a
@@ -98,8 +99,9 @@ ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
 
 ClipboardImageModelRequest::ScopedClipboardModifier::
     ~ScopedClipboardModifier() {
-  if (!replaced_clipboard_data_)
+  if (!replaced_clipboard_data_) {
     return;
+  }
 
   ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
       std::move(replaced_clipboard_data_));
@@ -189,8 +191,9 @@ void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
 
   on_request_finished_callback_.Run();
 
-  if (g_test_params && g_test_params->callback)
+  if (g_test_params && g_test_params->callback) {
     g_test_params->callback.Run(ShouldEnableAutoResizeMode());
+  }
 }
 
 ClipboardImageModelRequest::Params
@@ -220,15 +223,17 @@ void ClipboardImageModelRequest::ResizeDueToAutoResize(
   // `ResizeDueToAutoResize()` can be called before and/or after
   // DidStopLoading(). If `DidStopLoading()` has not been called, wait for the
   // next resize before copying the surface.
-  if (!web_contents->IsLoading())
+  if (!web_contents->IsLoading()) {
     PostCopySurfaceTask();
+  }
 }
 
 void ClipboardImageModelRequest::DidStopLoading() {
   // `DidStopLoading()` can be called multiple times after a paste. We are only
   // interested in the initial load of the data URL.
-  if (did_stop_loading_)
+  if (did_stop_loading_) {
     return;
+  }
 
   did_stop_loading_ = true;
 
@@ -274,16 +279,18 @@ void ClipboardImageModelRequest::SetTestParams(TestParams* test_params) {
 }
 
 void ClipboardImageModelRequest::OnVisualStateChangeFinished(bool done) {
-  if (!done)
+  if (!done) {
     return;
+  }
 
   scoped_clipboard_modifier_.reset();
   PostCopySurfaceTask();
 }
 
 void ClipboardImageModelRequest::PostCopySurfaceTask() {
-  if (!deliver_image_model_callback_)
+  if (!deliver_image_model_callback_) {
     return;
+  }
 
   // Debounce calls to `CopySurface()`. `DidStopLoading()` and
   // `ResizeDueToAutoResize()` can be called multiple times in the same task
@@ -335,12 +342,14 @@ void ClipboardImageModelRequest::OnTimeout() {
 
 bool ClipboardImageModelRequest::ShouldEnableAutoResizeMode() const {
   // Prefer to use the auto resize mode specified by `g_test_params` if any.
-  if (g_test_params && g_test_params->enforce_auto_resize)
+  if (g_test_params && g_test_params->enforce_auto_resize) {
     return *g_test_params->enforce_auto_resize;
+  }
 
   // Use auto resize mode if `bounding_box_size_` is not meaningful.
-  if (bounding_box_size_.IsEmpty())
+  if (bounding_box_size_.IsEmpty()) {
     return true;
+  }
 
   // Use auto resize mode if the copied web content is too big to render.
   return !gfx::Rect(kMaxWebContentsSize)

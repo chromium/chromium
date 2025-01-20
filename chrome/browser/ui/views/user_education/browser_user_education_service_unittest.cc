@@ -207,7 +207,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       &feature_engagement::kIPHBackNavigationMenuFeature,
       &feature_engagement::kIPHAutofillCreditCardBenefitFeature,
       &feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature,
-      &feature_engagement::kIPHAutofillManualFallbackFeature,
       &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
       &feature_engagement::kIPHCookieControlsFeature,

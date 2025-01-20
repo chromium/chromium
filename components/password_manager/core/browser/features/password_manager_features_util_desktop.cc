@@ -22,6 +22,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 using signin::GaiaIdHash;
 
@@ -97,48 +98,6 @@ class ScopedAccountStorageSettingsUpdate {
 
 }  // namespace
 
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service) {
-  if (!AreAccountStorageOptInPromosAllowed()) {
-    return false;
-  }
-
-  // Show the opt-in if the user is eligible, but not yet opted in.
-  return internal::IsUserEligibleForAccountStorage(pref_service,
-                                                   sync_service) &&
-         !IsOptedInForAccountStorage(pref_service, sync_service);
-}
-
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
-                                      const GURL& current_page_url) {
-  if (!AreAccountStorageOptInPromosAllowed()) {
-    return false;
-  }
-
-  // Checks that the sync_service is not null and the feature is enabled.
-  // IsUserEligibleForAccountStorage() doesn't fit because it's false for
-  // signed-out users.
-  if (!internal::CanAccountStorageBeEnabled(pref_service, sync_service)) {
-    return false;  // Opt-in wouldn't work here, so don't show the re-signin.
-  }
-
-  // In order to show a re-signin prompt, no user may be logged in.
-  if (!sync_service->HasDisableReason(
-          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    return false;
-  }
-
-  if (gaia::HasGaiaSchemeHostPort(current_page_url)) {
-    return false;
-  }
-
-  // Show the opt-in if any known previous user opted into using the account
-  // storage before and might want to access it again.
-  return sync_service->GetUserSettings()
-             ->GetNumberOfAccountsWithPasswordsSelected() > 0;
-}
-
 PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
@@ -148,7 +107,7 @@ PasswordForm::Store GetDefaultPasswordStore(
     return PasswordForm::Store::kProfileStore;
   }
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     return PasswordForm::Store::kProfileStore;
   }
@@ -181,7 +140,7 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
     return false;
   }
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     return false;
   }
@@ -199,7 +158,7 @@ void OptInToAccountStorage(PrefService* pref_service,
   DCHECK(sync_service);
   CHECK(CanCreateAccountStore(pref_service));
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the opt-in UI was shown. This should be
     // rare, but is ultimately harmless - just do nothing here.
@@ -227,7 +186,7 @@ void OptOutOfAccountStorage(PrefService* pref_service,
   CHECK(pref_service);
   CHECK(sync_service);
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // In rare cases, it could happen that the account went away since the
     // opt-out UI was triggered.
@@ -245,30 +204,6 @@ void OptOutOfAccountStorage(PrefService* pref_service,
       .SetDefaultStore(PasswordForm::Store::kProfileStore);
 }
 
-void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
-                                            syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  DCHECK(sync_service);
-  CHECK(CanCreateAccountStore(pref_service));
-
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty()) {
-    // In rare cases, it could happen that the account went away since the
-    // opt-out UI was triggered.
-    return;
-  }
-
-  // Note SyncUserSettings::SetSelectedType() won't clear the gaia id hash
-  // but that's not required here.
-  syncer::SyncUserSettings* sync_user_settings =
-      sync_service->GetUserSettings();
-  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
-                                      false);
-  ScopedAccountStorageSettingsUpdate(pref_service,
-                                     GaiaIdHash::FromGaiaId(gaia_id))
-      .ClearAllSettings();
-}
-
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              PasswordForm::Store default_store) {
@@ -276,7 +211,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
   DCHECK(sync_service);
   CHECK(CanCreateAccountStore(pref_service));
 
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     // Maybe the account went away since the UI was shown. This should be rare,
     // but is ultimately harmless - just do nothing here.
@@ -293,7 +228,7 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
-    const std::vector<std::string>& gaia_ids) {
+    const std::vector<GaiaId>& gaia_ids) {
   DCHECK(pref_service);
 
   // Build a set of hashes of all the Gaia IDs.
@@ -318,53 +253,10 @@ void KeepAccountStorageSettingsOnlyForUsers(
   }
 }
 
-void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
-  ScopedDictPrefUpdate opt_in_pref_update(
-      pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
-  for (auto [serialized_gaia_id_hash, settings] :
-       pref_service->GetDict(prefs::kAccountStoragePerAccountSettings)) {
-    // `settings` should be a dict but check to avoid a possible startup crash.
-    if (!settings.is_dict()) {
-      continue;
-    }
-    // Do nothing if there is no password store set or if there is already a
-    // value set for SyncUserSettings::GetSelectedTypes().
-    std::optional<int> default_store =
-        settings.GetDict().FindInt(kAccountStorageDefaultStoreKey);
-    std::optional<bool> opt_in =
-        opt_in_pref_update->EnsureDict(serialized_gaia_id_hash)
-            ->FindBool(syncer::prefs::internal::kSyncPasswords);
-    if (!default_store || opt_in.has_value()) {
-      continue;
-    }
-
-    // Set password storage in the sync user settings to false if the default
-    // store has been set to kProfileStore before, e.g. through declining when
-    // asked through a Reauth bubble whether to save passwords to the account.
-    if (PasswordStoreFromInt(*default_store) ==
-        PasswordForm::Store::kProfileStore) {
-      opt_in_pref_update->EnsureDict(serialized_gaia_id_hash)
-          ->Set(syncer::prefs::internal::kSyncPasswords, false);
-    }
-  }
-}
-
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {
   return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
-}
-
-bool AreAccountStorageOptInPromosAllowed() {
-  // Disallow promos when kExplicitBrowserSigninUIOnDesktop is on.
-  // - For users who went through explicit sign-in, account storage is enabled
-  //   by default. If they bothered to disable this feature, they should not be
-  //   spammed into re-enabling it.
-  // - Users who went through implicit sign-in will be migrated to explicit
-  //   sign-in in the future, at which point the above applies. In the meantime,
-  //   it's not worth keeping the promos UI. Most users in this group have seen
-  //   the promo by now and have accepted *if* they want the feature.
-  return !switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

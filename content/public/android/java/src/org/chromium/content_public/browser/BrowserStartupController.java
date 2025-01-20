@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.BrowserStartupControllerImpl;
 
 /**
@@ -18,6 +19,7 @@ import org.chromium.content.browser.BrowserStartupControllerImpl;
  *
  * All communication with this class must happen on the main thread.
  */
+@NullMarked
 public interface BrowserStartupController {
     /** This provides the interface to the callbacks for successful or failed startup */
     interface StartupCallback {

@@ -114,7 +114,7 @@ class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, All) {
   RunTest("cr_components/history_clusters/history_clusters_test.js",
-          "mocha.run()");
+          "runMochaSuite('HistoryClustersTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, Cluster) {

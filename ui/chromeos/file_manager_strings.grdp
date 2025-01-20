@@ -524,8 +524,8 @@
   <message name="IDS_FILE_BROWSER_GO_TO_FILE_LOCATION_BUTTON_LABEL" desc="Menu item label, navigating the user to the file's containing folder.">
     Go to file location
   </message>
-  <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, showing dialog to create zip file for selected files.">
-    Zip selection
+  <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, creating a ZIP archive containing the selected files and/or folders. This must be a verb. For languages in which the verb 'to zip' does not have any obvious or direct translation, consider expressions such as 'Compress', or 'Compress as ZIP', or 'Create ZIP archive'.">
+    Zip
   </message>
   <message name="IDS_FILE_BROWSER_SET_WALLPAPER_BUTTON_LABEL" desc="The context menu item to set wallpaper.">
     Set as wallpaper

@@ -29,10 +29,6 @@
   return NO;
 }
 
-- (BOOL)isPanningSelectionUI {
-  return NO;
-}
-
 - (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   _currentQueryText = text;
   [self sendNewResult];
@@ -67,6 +63,10 @@
 
 // Resets the selection area to the initial position.
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
+- (void)hideUserSelection {
   // NO-OP
 }
 

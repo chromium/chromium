@@ -96,7 +96,7 @@ OfflinePageURLLoader::OfflinePageURLLoader(
   request_handler_->Start();
 }
 
-OfflinePageURLLoader::~OfflinePageURLLoader() {}
+OfflinePageURLLoader::~OfflinePageURLLoader() = default;
 
 void OfflinePageURLLoader::SetTabIdGetterForTesting(
     OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter) {

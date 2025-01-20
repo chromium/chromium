@@ -159,8 +159,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  virtual void SetTooltipText(const std::u16string& tooltip_text);
   const std::u16string& GetTooltipText() const;
+  virtual void SetTooltipText(const std::u16string& tooltip_text);
 
   // Tag is now a property. These accessors are deprecated. Use GetTag() and
   // SetTag() below or even better, use SetID()/GetID() from the ancestor.
@@ -171,6 +171,14 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
+
+  // Button uses the tooltip text in `AdjustAccessibleName` to provide an
+  // alternative accessible name if there is no existing accessible name.
+  // However, some button subclasses have a custom locally cached tooltip text
+  // that should be used instead. Views that follow this pattern should override
+  // this method to provide an alternative accessible name if they cache a
+  // custom tooltip text that is different from the one cached in View.
+  virtual std::u16string GetAlternativeAccessibleName() const;
 
   // Get/sets the current display state of the button.
   ButtonState GetState() const;
@@ -341,6 +349,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   virtual void OnEnabledChanged();
 
+  virtual void UpdateAccessibleCheckedState();
+
   // Sets the |default_action_verb_| for accessibility. Subclasses may
   // call this method to set their specific default action verb.
   void SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb);
@@ -353,10 +363,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
   void ReleaseAnchorHighlight();
-  void UpdateAccessibleCheckedState();
-
-  // The text shown in a tooltip.
-  std::u16string tooltip_text_;
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;

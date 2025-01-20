@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -187,7 +186,7 @@ std::string RemoteCommandsService::GetRequestType(
     case PolicyInvalidationScope::kCBCM:
       return dm_protocol::kChromeBrowserRemoteCommandType;
     case PolicyInvalidationScope::kUser:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return dm_protocol::kChromeAshUserRemoteCommandType;
 #else
       return dm_protocol::kChromeUserRemoteCommandType;

@@ -29,6 +29,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
@@ -126,13 +127,13 @@ class CrashClient {
     initialized = true;
 
     if (!crash_database_path || !base::CreateDirectory(*crash_database_path)) {
-      LOG(ERROR) << "Failed to get the database path.";
+      VLOG(1) << "Failed to get the database path.";
       return false;
     }
 
     database_ = crashpad::CrashReportDatabase::Initialize(*crash_database_path);
     if (!database_) {
-      LOG(ERROR) << "Failed to initialize Crashpad database.";
+      VLOG(1) << "Failed to initialize Crashpad database.";
       return false;
     }
 
@@ -161,8 +162,8 @@ class CrashClient {
                 << "\"; uploaded: " << (report.uploaded ? "yes" : "no");
       }
     } else {
-      LOG(ERROR) << "Failed to fetch completed crash reports: "
-                 << status_completed;
+      VLOG(1) << "Failed to fetch completed crash reports: "
+              << status_completed;
     }
 
     std::vector<crashpad::CrashReportDatabase::Report> reports_pending;
@@ -177,7 +178,7 @@ class CrashClient {
                 << "\", unique ID \"" << report.uuid.ToString() << "\"";
       }
     } else {
-      LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
+      VLOG(1) << "Failed to fetch pending crash reports: " << status_pending;
     }
 
     if (ShouldEnableCrashUploads()) {
@@ -234,6 +235,11 @@ class CrashClient {
       VLOG(1) << "Failed to start handler.";
       return false;
     }
+
+    static crash_reporter::CrashKeyString<64> crash_key_cohort_id("cohort_id");
+    crash_key_cohort_id.Set(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kCohortIdSwitch));
 
     VLOG(1) << "Crash handler launched and ready";
     return true;

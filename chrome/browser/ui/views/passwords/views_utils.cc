@@ -61,7 +61,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int link_message_id,
     const std::u16string& email,
     base::RepeatingClosure open_link_closure,
-    int context) {
+    int context,
+    int style) {
   const std::u16string link = l10n_util::GetStringUTF16(link_message_id);
 
   std::vector<size_t> offsets;
@@ -71,7 +72,7 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
   label->SetTextContext(context);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetDefaultTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   label->AddStyleRange(
@@ -102,7 +103,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     base::RepeatingClosure open_link_closure,
-    int context) {
+    int context,
+    int style) {
   const std::u16string link = l10n_util::GetStringUTF16(link_message_id);
 
   size_t link_offset;
@@ -112,7 +114,7 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
   label->SetTextContext(context);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  label->SetDefaultTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   label->AddStyleRange(

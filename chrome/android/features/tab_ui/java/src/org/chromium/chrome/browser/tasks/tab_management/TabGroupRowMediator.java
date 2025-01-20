@@ -18,7 +18,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
@@ -33,15 +32,14 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -167,24 +165,20 @@ class TabGroupRowMediator {
             return;
         }
 
-        String gaiaId = mCoreAccountInfoSupplier.get().getGaiaId();
+        GaiaId gaiaId = mCoreAccountInfoSupplier.get().getGaiaId();
         @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(groupData, gaiaId);
+        String groupTitle = groupData.displayName;
+        String collaborationId = groupData.groupToken.collaborationId;
         if (memberRole == MemberRole.OWNER) {
             mPropertyModel.set(
-                    DELETE_RUNNABLE,
-                    () ->
-                            processDeleteSharedGroup(
-                                    groupData.displayName, groupData.groupToken.collaborationId));
+                    DELETE_RUNNABLE, () -> processDeleteSharedGroup(groupTitle, collaborationId));
             mPropertyModel.set(LEAVE_RUNNABLE, null);
         } else {
             // TODO(crbug.com/365852281): Leave action should look like a delete if there are no
             // other users.
             mPropertyModel.set(DELETE_RUNNABLE, null);
             mPropertyModel.set(
-                    LEAVE_RUNNABLE,
-                    () ->
-                            processLeaveGroup(
-                                    groupData.displayName, groupData.groupToken.collaborationId));
+                    LEAVE_RUNNABLE, () -> processLeaveGroup(groupTitle, collaborationId));
         }
 
         if (sharedState == GroupSharedState.COLLABORATION_ONLY) {
@@ -197,10 +191,11 @@ class TabGroupRowMediator {
                         new SharedImageTilesCoordinator(
                                 mContext,
                                 SharedImageTilesType.DEFAULT,
-                                SharedImageTilesColor.DYNAMIC,
+                                new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
                                 mDataSharingService);
             }
-            mSharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
+            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                    mSavedTabGroup.collaborationId);
             mPropertyModel.set(
                     TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW,
                     mSharedImageTilesCoordinator.getView());
@@ -266,43 +261,38 @@ class TabGroupRowMediator {
         }
     }
 
-    private void processDeleteSharedGroup(String groupTitle, String groupId) {
+    private void processDeleteSharedGroup(String groupTitle, String collaborationId) {
         // TODO(crbug.com/365852281): Confirmation should look like a non-shared delete if there are
         // no other users.
         mActionConfirmationManager.processDeleteSharedGroupAttempt(
                 groupTitle,
                 (@ActionConfirmationResult Integer result) -> {
                     if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        mDataSharingService.deleteGroup(groupId, this::onLeaveOrDeleteGroup);
+                        TabUiUtils.exitCollaborationWithoutWarning(
+                                mContext,
+                                mModalDialogManager,
+                                mDataSharingService,
+                                collaborationId,
+                                MemberRole.OWNER);
                     }
                 });
     }
 
-    private void processLeaveGroup(String groupTitle, String groupId) {
+    private void processLeaveGroup(String groupTitle, String collaborationId) {
         // TODO(crbug.com/365852281): Confirmation should look like a non-shared delete if there are
         // no other users.
         mActionConfirmationManager.processLeaveGroupAttempt(
                 groupTitle,
                 (@ActionConfirmationResult Integer result) -> {
                     if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        String memberEmail = mCoreAccountInfoSupplier.get().getEmail();
-                        mDataSharingService.removeMember(
-                                groupId, memberEmail, this::onLeaveOrDeleteGroup);
+                        TabUiUtils.exitCollaborationWithoutWarning(
+                                mContext,
+                                mModalDialogManager,
+                                mDataSharingService,
+                                collaborationId,
+                                MemberRole.MEMBER);
                     }
                 });
-    }
-
-    private void onLeaveOrDeleteGroup(@PeopleGroupActionOutcome int outcome) {
-        if (outcome == PeopleGroupActionOutcome.SUCCESS) {
-            // TODO(crbug.com/345854578): Do we need to actively remove things from the UI?
-        } else {
-            ModalDialogUtils.showOneButtonConfirmation(
-                    mModalDialogManager,
-                    mContext.getResources(),
-                    R.string.data_sharing_generic_failure_title,
-                    R.string.data_sharing_generic_failure_description,
-                    R.string.data_sharing_invitation_failure_button);
-        }
     }
 
     private void deleteGroup(boolean allowDialog) {

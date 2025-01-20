@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_message.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_infobar.h"
@@ -19,13 +20,16 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
   // necessary conditions are met. The message UI is preferred over the infobar
   // UI.
   auto message_ui = PermissionMessage::Create(web_contents, delegate);
-  if (message_ui)
+  if (message_ui) {
     return message_ui;
+  }
 
   auto infobar = PermissionPromptInfoBar::Create(web_contents, delegate);
-  if (infobar)
+  if (infobar) {
     return infobar;
+  }
 
+  // TODO(crbug.com/377264239): enable PEPC prompt here.
   return std::make_unique<PermissionDialog>(web_contents, delegate);
 }
 

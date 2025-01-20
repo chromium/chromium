@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <utility>
@@ -126,10 +127,10 @@ void KeywordProviderTest::SetUp() {
   kw_provider_ = new KeywordProvider(client_.get(), nullptr);
 }
 
-template<class ResultType>
+template <class ResultType>
 void KeywordProviderTest::RunTest(TestData<ResultType>* keyword_cases,
                                   int num_cases,
-                                  ResultType AutocompleteMatch::* member) {
+                                  ResultType AutocompleteMatch::*member) {
   ACMatches matches;
   for (int i = 0; i < num_cases; ++i) {
     SCOPED_TRACE(keyword_cases[i].input);
@@ -225,7 +226,7 @@ TEST_F(KeywordProviderTest, Edit) {
 }
 
 TEST_F(KeywordProviderTest, URL) {
-  const MatchType<GURL> kEmptyMatch = { GURL(), false };
+  const MatchType<GURL> kEmptyMatch = {GURL(), false};
   TestData<GURL> url_cases[] = {
       // No query input -> empty destination URL.
       {u"z", 1, {{GURL(), true}, kEmptyMatch, kEmptyMatch}},
@@ -324,52 +325,70 @@ TEST_F(KeywordProviderTest, RemoveKeyword) {
 }
 
 TEST_F(KeywordProviderTest, GetKeywordForInput) {
-  EXPECT_EQ(u"aa", kw_provider_->GetKeywordForText(u"aa"));
-  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(u"aafoo"));
-  EXPECT_EQ(u"aa", kw_provider_->GetKeywordForText(u"aa foo"));
+  TemplateURLService* template_url_service = client_->GetTemplateURLService();
+  EXPECT_EQ(u"aa",
+            kw_provider_->GetKeywordForText(u"aa", template_url_service));
+  EXPECT_EQ(std::u16string(),
+            kw_provider_->GetKeywordForText(u"aafoo", template_url_service));
+  EXPECT_EQ(u"aa",
+            kw_provider_->GetKeywordForText(u"aa foo", template_url_service));
   EXPECT_EQ(u"cleantestv1.com",
-            kw_provider_->GetKeywordForText(u"http://cleantestv1.com"));
+            kw_provider_->GetKeywordForText(u"http://cleantestv1.com",
+                                            template_url_service));
   EXPECT_EQ(u"cleantestv1.com",
-            kw_provider_->GetKeywordForText(u"www.cleantestv1.com"));
+            kw_provider_->GetKeywordForText(u"www.cleantestv1.com",
+                                            template_url_service));
+  EXPECT_EQ(u"cleantestv1.com", kw_provider_->GetKeywordForText(
+                                    u"cleantestv1.com/", template_url_service));
   EXPECT_EQ(u"cleantestv1.com",
-            kw_provider_->GetKeywordForText(u"cleantestv1.com/"));
-  EXPECT_EQ(u"cleantestv1.com",
-            kw_provider_->GetKeywordForText(u"https://www.cleantestv1.com/"));
-  EXPECT_EQ(u"cleantestv2.com",
-            kw_provider_->GetKeywordForText(u"cleantestv2.com"));
+            kw_provider_->GetKeywordForText(u"https://www.cleantestv1.com/",
+                                            template_url_service));
+  EXPECT_EQ(u"cleantestv2.com", kw_provider_->GetKeywordForText(
+                                    u"cleantestv2.com", template_url_service));
   EXPECT_EQ(u"www.cleantestv2.com",
-            kw_provider_->GetKeywordForText(u"www.cleantestv2.com"));
-  EXPECT_EQ(u"cleantestv2.com",
-            kw_provider_->GetKeywordForText(u"cleantestv2.com/"));
+            kw_provider_->GetKeywordForText(u"www.cleantestv2.com",
+                                            template_url_service));
+  EXPECT_EQ(u"cleantestv2.com", kw_provider_->GetKeywordForText(
+                                    u"cleantestv2.com/", template_url_service));
   EXPECT_EQ(u"www.cleantestv3.com",
-            kw_provider_->GetKeywordForText(u"www.cleantestv3.com"));
-  EXPECT_EQ(std::u16string(),
-            kw_provider_->GetKeywordForText(u"cleantestv3.com"));
+            kw_provider_->GetKeywordForText(u"www.cleantestv3.com",
+                                            template_url_service));
+  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(
+                                  u"cleantestv3.com", template_url_service));
   EXPECT_EQ(u"http://cleantestv4.com",
-            kw_provider_->GetKeywordForText(u"http://cleantestv4.com"));
-  EXPECT_EQ(std::u16string(),
-            kw_provider_->GetKeywordForText(u"cleantestv4.com"));
-  EXPECT_EQ(u"cleantestv5.com",
-            kw_provider_->GetKeywordForText(u"cleantestv5.com"));
+            kw_provider_->GetKeywordForText(u"http://cleantestv4.com",
+                                            template_url_service));
+  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(
+                                  u"cleantestv4.com", template_url_service));
+  EXPECT_EQ(u"cleantestv5.com", kw_provider_->GetKeywordForText(
+                                    u"cleantestv5.com", template_url_service));
   EXPECT_EQ(u"http://cleantestv5.com",
-            kw_provider_->GetKeywordForText(u"http://cleantestv5.com"));
-  EXPECT_EQ(u"cleantestv6:", kw_provider_->GetKeywordForText(u"cleantestv6:"));
-  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(u"cleantestv6"));
-  EXPECT_EQ(u"cleantestv7/", kw_provider_->GetKeywordForText(u"cleantestv7/"));
-  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(u"cleantestv7"));
-  EXPECT_EQ(u"cleantestv8/", kw_provider_->GetKeywordForText(u"cleantestv8/"));
-  EXPECT_EQ(u"cleantestv8", kw_provider_->GetKeywordForText(u"cleantestv8"));
+            kw_provider_->GetKeywordForText(u"http://cleantestv5.com",
+                                            template_url_service));
+  EXPECT_EQ(u"cleantestv6:", kw_provider_->GetKeywordForText(
+                                 u"cleantestv6:", template_url_service));
+  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(
+                                  u"cleantestv6", template_url_service));
+  EXPECT_EQ(u"cleantestv7/", kw_provider_->GetKeywordForText(
+                                 u"cleantestv7/", template_url_service));
+  EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(
+                                  u"cleantestv7", template_url_service));
+  EXPECT_EQ(u"cleantestv8/", kw_provider_->GetKeywordForText(
+                                 u"cleantestv8/", template_url_service));
+  EXPECT_EQ(u"cleantestv8", kw_provider_->GetKeywordForText(
+                                u"cleantestv8", template_url_service));
 }
 
 TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
-  struct {
+  struct Cases {
     const std::string text;
     const size_t cursor_position;
     const bool allow_exact_keyword_match;
     const std::string expected_url;
     const std::string updated_text;
     const size_t updated_cursor_position;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {"foo", std::u16string::npos, true, "", "foo", std::u16string::npos},
       {"aa foo", std::u16string::npos, true, "aa.com?foo={searchTerms}", "foo",
        std::u16string::npos},
@@ -401,14 +420,14 @@ TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
       // Disallow exact keyword match.
       {"aa foo", std::u16string::npos, false, "", "aa foo",
        std::u16string::npos},
-  };
+  });
   for (size_t i = 0; i < std::size(cases); i++) {
     AutocompleteInput input(
         ASCIIToUTF16(cases[i].text), cases[i].cursor_position,
         metrics::OmniboxEventProto::OTHER, TestingSchemeClassifier());
     input.set_allow_exact_keyword_match(cases[i].allow_exact_keyword_match);
     const TemplateURL* url =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(
             client_->GetTemplateURLService(), &input);
     if (cases[i].expected_url.empty())
       EXPECT_FALSE(url);

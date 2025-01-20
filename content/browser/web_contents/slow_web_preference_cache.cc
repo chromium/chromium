@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "build/blink_buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -21,6 +22,8 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "ui/base/device_form_factor.h"
 #include "ui/events/devices/input_device_observer_android.h"
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#include "ui/events/devices/input_device_observer_ios.h"
 #endif
 
 namespace content {
@@ -58,6 +61,8 @@ SlowWebPreferenceCache::SlowWebPreferenceCache() {
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 #elif BUILDFLAG(IS_ANDROID)
   ui::InputDeviceObserverAndroid::GetInstance()->AddObserver(this);
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  ui::InputDeviceObserverIOS::GetInstance()->AddObserver(this);
 #endif
 }
 
@@ -68,6 +73,8 @@ SlowWebPreferenceCache::~SlowWebPreferenceCache() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 #elif BUILDFLAG(IS_ANDROID)
   ui::InputDeviceObserverAndroid::GetInstance()->RemoveObserver(this);
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  ui::InputDeviceObserverIOS::GetInstance()->RemoveObserver(this);
 #endif
 }
 

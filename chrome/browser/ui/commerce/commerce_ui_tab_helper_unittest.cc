@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -18,6 +19,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -77,16 +79,17 @@ class CommerceUiTabHelperTest : public testing::Test {
  public:
   CommerceUiTabHelperTest()
       : shopping_service_(std::make_unique<MockShoppingService>()),
-        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()) {
+        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()),
+        account_checker_(std::make_unique<MockAccountChecker>()) {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
     client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+    shopping_service_->SetAccountChecker(account_checker_.get());
   }
 
   CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
-  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) =
-      delete;
+  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) = delete;
   ~CommerceUiTabHelperTest() override = default;
 
   void SetUp() override {
@@ -150,6 +153,8 @@ class CommerceUiTabHelperTest : public testing::Test {
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
   tabs::MockTabInterface tab_interface_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
+  std::unique_ptr<MockAccountChecker> account_checker_;
+  base::test::ScopedFeatureList features_;
 
  private:
   TestingProfile profile_;
@@ -163,8 +168,7 @@ class CommerceUiTabHelperTest : public testing::Test {
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityIfNoImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -189,8 +193,7 @@ TEST_F(CommerceUiTabHelperTest,
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityWithImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -243,7 +246,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
   ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
@@ -267,7 +271,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
@@ -279,7 +284,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
 
 TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
@@ -290,7 +296,8 @@ TEST_F(CommerceUiTabHelperTest,
 
 TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
@@ -305,7 +312,8 @@ TEST_F(CommerceUiTabHelperTest,
 TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  shopping_service_->SetIsPriceInsightsEligible(true);
+  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
+                                          true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);

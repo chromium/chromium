@@ -280,8 +280,8 @@ class CORE_EXPORT ReadableByteStreamController
                                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-cancel
-  v8::Local<v8::Promise> CancelSteps(ScriptState*,
-                                     v8::Local<v8::Value> reason) override;
+  ScriptPromise<IDLUndefined> CancelSteps(ScriptState*,
+                                          v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
   void PullSteps(ScriptState*, ReadRequest*, ExceptionState&) override;

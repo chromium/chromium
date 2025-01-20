@@ -90,6 +90,8 @@ class CC_EXPORT ImageController {
 
   bool HasReadyToRunTaskForTesting() const;
 
+  void FlushDecodeTasksForTesting();
+
   ImageDecodeCache* cache() const { return cache_; }
 
  protected:
@@ -147,8 +149,10 @@ class CC_EXPORT ImageController {
   bool HasReadyToRunTask() const;
 
   static void ProcessNextImageDecodeOnWorkerThread(WorkerState* worker_state);
+  static void ProcessNextImageDecodeWithLock(WorkerState* worker_state);
 
   void ImageDecodeCompleted(ImageDecodeRequestId id);
+  ImageDecodeResult CompleteTaskForRequest(ImageDecodeRequest& request);
   void GenerateTasksForOrphanedRequests();
 
   void ScheduleImageDecodeOnWorkerIfNeeded()
@@ -164,6 +168,7 @@ class CC_EXPORT ImageController {
   size_t image_cache_max_limit_bytes_ = 0u;
 
   std::unique_ptr<WorkerState> worker_state_;
+  base::RepeatingClosure worker_task_;
 
   const base::RepeatingCallback<void(scoped_refptr<TileTask>)>
       notify_external_dependent_;

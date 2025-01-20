@@ -1,3 +1,5 @@
+// META: script=resources/workaround-for-382640509.js
+
 // Test that the exception from the callback will be re-thrown by the session
 // creation, and the session won't be created.
 promise_test(async t => {

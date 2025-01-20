@@ -428,6 +428,75 @@ TEST_F(AttributionSrcLoaderTest, NoReferrer) {
             network::mojom::ReferrerPolicy::kNever);
 }
 
+TEST_F(AttributionSrcLoaderTest, Referrer_ContextMenu) {
+  KURL url = ToKURL(kUrl);
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+  anchor->setAttribute(html_names::kAttributionsrcAttr, AtomicString(kUrl));
+  anchor->setAttribute(html_names::kReferrerpolicyAttr,
+                       AtomicString("strict-origin"));
+
+  std::optional<Impression> impression =
+      attribution_src_loader_->PrepareContextMenuNavigation(
+          /*navigation_url=*/KURL(), anchor);
+  ASSERT_TRUE(impression);
+
+  attribution_src_loader_->RegisterFromContextMenuNavigation(impression,
+                                                             anchor);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
+            network::mojom::ReferrerPolicy::kStrictOrigin);
+}
+
+TEST_F(AttributionSrcLoaderTest, NoReferrer_ContextMenu) {
+  KURL url = ToKURL(kUrl);
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+  anchor->setAttribute(html_names::kAttributionsrcAttr, AtomicString(kUrl));
+  anchor->setAttribute(html_names::kRelAttr, AtomicString("noreferrer"));
+
+  std::optional<Impression> impression =
+      attribution_src_loader_->PrepareContextMenuNavigation(
+          /*navigation_url=*/KURL(), anchor);
+  ASSERT_TRUE(impression);
+
+  attribution_src_loader_->RegisterFromContextMenuNavigation(impression,
+                                                             anchor);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
+            network::mojom::ReferrerPolicy::kNever);
+}
+
+TEST_F(AttributionSrcLoaderTest, DefaultReferrer_ContextMenu) {
+  KURL url = ToKURL(kUrl);
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  GetDocument().documentElement()->setInnerHTML(
+      "<head><meta name=referrer content=no-referrer>");
+
+  auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+  anchor->setAttribute(html_names::kAttributionsrcAttr, AtomicString(kUrl));
+
+  std::optional<Impression> impression =
+      attribution_src_loader_->PrepareContextMenuNavigation(
+          /*navigation_url=*/KURL(), anchor);
+  ASSERT_TRUE(impression);
+
+  attribution_src_loader_->RegisterFromContextMenuNavigation(impression,
+                                                             anchor);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
+            network::mojom::ReferrerPolicy::kNever);
+}
+
 TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));

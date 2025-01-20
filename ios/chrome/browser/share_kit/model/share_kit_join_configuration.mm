@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 
-#import "url/gurl.h"
-
 @implementation ShareKitJoinConfiguration
 
 @end

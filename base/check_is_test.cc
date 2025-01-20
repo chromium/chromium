@@ -12,12 +12,7 @@ bool g_this_is_a_test = false;
 }
 
 namespace base::internal {
-void check_is_test_impl(base::NotFatalUntil fatal_milestone) {
-  CHECK(g_this_is_a_test, fatal_milestone);
-}
-
-// static
-bool IsInTest::Get() {
+bool get_is_test_impl() {
   return g_this_is_a_test;
 }
 }  // namespace base::internal

@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "content/public/browser/web_contents.h"
 
 FastCheckoutControllerImpl::FastCheckoutControllerImpl(
@@ -19,7 +19,7 @@ FastCheckoutControllerImpl::~FastCheckoutControllerImpl() = default;
 
 void FastCheckoutControllerImpl::Show(
     const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-    const std::vector<autofill::CreditCard*>& credit_cards) {
+    const std::vector<const autofill::CreditCard*>& credit_cards) {
   GetOrCreateView()->Show(autofill_profiles, credit_cards);
 }
 

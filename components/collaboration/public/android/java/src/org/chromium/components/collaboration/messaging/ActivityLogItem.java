@@ -11,14 +11,25 @@ package org.chromium.components.collaboration.messaging;
  */
 public class ActivityLogItem {
     // The type of collaboration event associated with the log item.
-    @CollaborationEvent public int collaborationEvent;
+    public @CollaborationEvent int collaborationEvent;
 
     // Explicit display metadata to be shown in the UI.
+    // Text to be shown as title of the activity log item.
     public String titleText;
-    public String descriptionText;
-    public String timestampText;
 
-    // Implicit metadata that will be used to invoke the delegate when the
-    // activity row is clicked.
+    // Text to be shown as description of the activity log item.
+    public String descriptionText;
+
+    // Text to be shown as relative time duration (e.g. 8 hours ago) of when
+    // the event happened.
+    public String timeDeltaText;
+
+    // Whether the favicon should be shown for this row. Only tab related updates show a favicon.
+    public boolean showFavicon;
+
+    // The type of action to be taken when this activity row is clicked.
+    public @RecentActivityAction int action;
+
+    // Implicit metadata that will be used to invoke the delegate when the activity row is clicked.
     public MessageAttribution activityMetadata;
 }

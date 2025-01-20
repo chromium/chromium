@@ -29,6 +29,7 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -161,6 +162,7 @@ EGLDisplay GetPlatformANGLEDisplay(
     const std::vector<std::string>& enabled_features,
     const std::vector<std::string>& disabled_features,
     const std::vector<EGLAttrib>& extra_display_attribs) {
+  GPU_STARTUP_TRACE_EVENT("gl_display::GetPlatformANGLEDisplay");
   std::vector<EGLAttrib> display_attribs(extra_display_attribs);
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
@@ -704,6 +706,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
                                      std::vector<DisplayType> init_displays,
                                      EGLDisplayPlatform native_display,
                                      gl::GLDisplayEGL* existing_display) {
+  GPU_STARTUP_TRACE_EVENT("gl::GLDisplayEGL::InitializeDisplay");
   if (display_ != EGL_NO_DISPLAY)
     return true;
 
@@ -756,13 +759,16 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
       }
     }
 
-    if (!eglInitialize(display, nullptr, nullptr)) {
-      bool is_last = disp_index == init_displays.size() - 1;
+    {
+      GPU_STARTUP_TRACE_EVENT("eglInitializeFn display");
+      if (!eglInitialize(display, nullptr, nullptr)) {
+        bool is_last = disp_index == init_displays.size() - 1;
 
-      LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
-                 << " failed with error " << GetLastEGLErrorString()
-                 << (is_last ? "" : ", trying next display type");
-      continue;
+        LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
+                   << " failed with error " << GetLastEGLErrorString()
+                   << (is_last ? "" : ", trying next display type");
+        continue;
+      }
     }
 
     if (!existing_display) {
@@ -799,6 +805,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 }
 
 void GLDisplayEGL::InitializeCommon(bool for_testing) {
+  GPU_STARTUP_TRACE_EVENT("gl::GLDisplayEGL::InitializeCommon");
   // According to https://source.android.com/compatibility/android-cdd.html the
   // EGL_IMG_context_priority extension is mandatory for Virtual Reality High
   // Performance support, but due to a bug in Android Nougat the extension

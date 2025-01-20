@@ -18,6 +18,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/guest_page_holder.h"
@@ -68,6 +69,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                       public zoom::ZoomObserver,
                       public base::SupportsUserData::Data {
  public:
+  static GuestViewBase* FromInstanceID(content::ChildProcessId owner_process_id,
+                                       int instance_id);
+
   static GuestViewBase* FromInstanceID(int owner_process_id, int instance_id);
 
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
@@ -146,6 +150,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   using GuestCreatedCallback =
       base::OnceCallback<void(std::unique_ptr<GuestViewBase> guest)>;
   void Init(std::unique_ptr<GuestViewBase> owned_this,
+            scoped_refptr<content::SiteInstance> site_instance,
             const base::Value::Dict& create_params,
             GuestCreatedCallback callback);
 
@@ -313,6 +318,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Return the GuestPageHolder. Can only be called for mparch guests.
   content::GuestPageHolder& GetGuestPageHolder();
 
+  void SetGuestPageHolder(content::GuestPageHolder* guest_page_holder);
+
   // Called when the current `owner_rfh()` is in a different WebContents from
   // the frame that will be used for attachment. `owner_rfh` is the parent of
   // the RenderFrameHost that will be used for attachment.
@@ -335,9 +342,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Given a set of initialization parameters, a concrete subclass of
   // GuestViewBase can create a specialized `WebContents`/`GuestPageHolder` that
   // it returns back to GuestViewBase.
-  virtual void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
-                               const base::Value::Dict& create_params,
-                               GuestPageCreatedCallback callback) = 0;
+  virtual void CreateInnerPage(
+      std::unique_ptr<GuestViewBase> owned_this,
+      scoped_refptr<content::SiteInstance> site_instance,
+      const base::Value::Dict& create_params,
+      GuestPageCreatedCallback callback) = 0;
 
   // This method is called after the guest has been attached to an embedder and
   // suspended resource loads have been resumed.
@@ -361,6 +370,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // This method is called when the initial set of frames within the page have
   // completed loading.
   virtual void GuestViewDidStopLoading() {}
+
+  // When the document on load is completed in the main frame.
+  virtual void GuestViewDocumentOnLoadCompleted() {}
+
+  // When the load progress has changed.
+  virtual void GuestViewDidChangeLoadProgress(double progress) {}
+
+  // When the main process has terminated.
+  virtual void GuestViewMainFrameProcessGone(base::TerminationStatus status) {}
 
   // This method is called when the guest's zoom changes.
   virtual void GuestZoomChanged(double old_zoom_level, double new_zoom_level) {}
@@ -434,6 +452,31 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // GuestPageHolder::Delegate implementation.
   void GuestDidStopLoading() final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() override;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) override;
+  void GuestDocumentOnLoadCompleted() final;
+  void GuestDidChangeLoadProgress(double progress) final;
+  void GuestMainFrameProcessGone(base::TerminationStatus status) final;
+  void GuestResizeDueToAutoResize(const gfx::Size& new_size) final;
+  void GuestUpdateWindowPreferredSize(const gfx::Size& pref_size) final;
+  content::GuestPageHolder* GuestCreateNewWindow(
+      WindowOpenDisposition disposition,
+      const GURL& url,
+      const std::string& main_frame_name,
+      content::RenderFrameHost* opener,
+      scoped_refptr<content::SiteInstance> site_instance) override;
+  void GuestOpenURL(const content::OpenURLParams& params,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback) override;
+  void GuestClose() override;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
@@ -452,6 +495,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
+  void LoadProgressChanged(double progress) final;
+  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
 
   // zoom::ZoomObserver implementation.
   void OnZoomControllerDestroyed(zoom::ZoomController* source) final;

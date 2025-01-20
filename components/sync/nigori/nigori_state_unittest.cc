@@ -183,7 +183,7 @@ TEST(
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span("should encrypt this message")),
+          base::as_byte_span("should encrypt this message"),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -207,7 +207,7 @@ TEST(NigoriStateTest,
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       state.cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span("should encrypt this message")),
+          base::as_byte_span("should encrypt this message"),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 

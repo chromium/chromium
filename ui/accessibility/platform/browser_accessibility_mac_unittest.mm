@@ -309,30 +309,30 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
       initial_state, node_id_delegate_, nullptr);
   BrowserAccessibilityCocoa* ax_table =
       manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
-  NSArray* children = ax_table.children;
+  NSArray* children = ax_table.accessibilityChildren;
   EXPECT_EQ(5U, children.count);
 
   EXPECT_NSEQ(@"AXRow", [children[0] role]);
-  EXPECT_EQ(2U, [[children[0] children] count]);
+  EXPECT_EQ(2U, [[children[0] accessibilityChildren] count]);
 
   EXPECT_NSEQ(@"AXRow", [children[1] role]);
-  EXPECT_EQ(2U, [[children[1] children] count]);
+  EXPECT_EQ(2U, [[children[1] accessibilityChildren] count]);
 
   EXPECT_NSEQ(@"AXColumn", [children[2] role]);
-  EXPECT_EQ(2U, [[children[2] children] count]);
-  id col_children = [children[2] children];
+  EXPECT_EQ(2U, [[children[2] accessibilityChildren] count]);
+  id col_children = [children[2] accessibilityChildren];
   EXPECT_NSEQ(@"AXCell", [col_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
 
   EXPECT_NSEQ(@"AXColumn", [children[3] role]);
-  EXPECT_EQ(2U, [[children[3] children] count]);
-  col_children = [children[3] children];
+  EXPECT_EQ(2U, [[children[3] accessibilityChildren] count]);
+  col_children = [children[3] accessibilityChildren];
   EXPECT_NSEQ(@"AXCell", [col_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
 
   EXPECT_NSEQ(@"AXGroup", [children[4] role]);
-  EXPECT_EQ(2U, [[children[4] children] count]);
-  col_children = [children[4] children];
+  EXPECT_EQ(2U, [[children[4] accessibilityChildren] count]);
+  col_children = [children[4] accessibilityChildren];
   EXPECT_NSEQ(@"AXCell", [col_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
 }
@@ -372,33 +372,33 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
   ax_table = manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
 
   // Confirm the AX structure is as expected.
-  NSArray* ax_table_children = ax_table.children;
+  NSArray* ax_table_children = ax_table.accessibilityChildren;
   EXPECT_EQ(5U, ax_table_children.count);
 
   id first_row = ax_table_children[0];
   EXPECT_NSEQ(@"AXRow", [first_row role]);
-  id first_row_children = [first_row children];
+  id first_row_children = [first_row accessibilityChildren];
   EXPECT_EQ(2U, [first_row_children count]);
   EXPECT_NSEQ(@"AXCell", [first_row_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [first_row_children[1] role]);
 
   id second_row = ax_table_children[1];
   EXPECT_NSEQ(@"AXRow", [second_row role]);
-  id second_row_children = [second_row children];
+  id second_row_children = [second_row accessibilityChildren];
   EXPECT_EQ(2U, [second_row_children count]);
   EXPECT_NSEQ(@"AXCell", [second_row_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [second_row_children[1] role]);
 
   id first_column = ax_table_children[2];
   EXPECT_NSEQ(@"AXColumn", [first_column role]);
-  id first_column_children = [first_column children];
+  id first_column_children = [first_column accessibilityChildren];
   EXPECT_EQ(2U, [first_column_children count]);
   EXPECT_NSEQ(@"AXCell", [first_column_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [first_column_children[1] role]);
 
   id second_column = ax_table_children[3];
   EXPECT_NSEQ(@"AXColumn", [second_column role]);
-  id second_column_children = [second_column children];
+  id second_column_children = [second_column accessibilityChildren];
   EXPECT_EQ(2U, [second_column_children count]);
   EXPECT_NSEQ(@"AXCell", [second_column_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [second_column_children[1] role]);
@@ -410,7 +410,7 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
 
   id table_group = ax_table_children[4];
   EXPECT_NSEQ(@"AXGroup", [table_group role]);
-  EXPECT_EQ(0U, [table_group children].count);
+  EXPECT_EQ(0U, [table_group accessibilityChildren].count);
 
   // Confirm the table has row headers, and that they match the expected cells
   // in the table.
@@ -448,12 +448,12 @@ TEST_F(BrowserAccessibilityMacTest, TableWithTwoRowHeaders) {
       manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
 
   // Confirm the AX structure is as expected.
-  NSArray* ax_table_children = ax_table.children;
+  NSArray* ax_table_children = ax_table.accessibilityChildren;
   EXPECT_EQ(6U, ax_table_children.count);
 
   id first_row = ax_table_children[0];
   EXPECT_NSEQ(@"AXRow", [first_row role]);
-  id first_row_children = [first_row children];
+  id first_row_children = [first_row accessibilityChildren];
   EXPECT_EQ(3U, [first_row_children count]);
   EXPECT_NSEQ(@"AXCell", [first_row_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [first_row_children[1] role]);
@@ -461,7 +461,7 @@ TEST_F(BrowserAccessibilityMacTest, TableWithTwoRowHeaders) {
 
   id second_row = ax_table_children[1];
   EXPECT_NSEQ(@"AXRow", [second_row role]);
-  id second_row_children = [second_row children];
+  id second_row_children = [second_row accessibilityChildren];
   EXPECT_EQ(3U, [second_row_children count]);
   EXPECT_NSEQ(@"AXCell", [second_row_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [second_row_children[1] role]);
@@ -469,21 +469,21 @@ TEST_F(BrowserAccessibilityMacTest, TableWithTwoRowHeaders) {
 
   id first_column = ax_table_children[2];
   EXPECT_NSEQ(@"AXColumn", [first_column role]);
-  id first_column_children = [first_column children];
+  id first_column_children = [first_column accessibilityChildren];
   EXPECT_EQ(2U, [first_column_children count]);
   EXPECT_NSEQ(@"AXCell", [first_column_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [first_column_children[1] role]);
 
   id second_column = ax_table_children[3];
   EXPECT_NSEQ(@"AXColumn", [second_column role]);
-  id second_column_children = [second_column children];
+  id second_column_children = [second_column accessibilityChildren];
   EXPECT_EQ(2U, [second_column_children count]);
   EXPECT_NSEQ(@"AXCell", [second_column_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [second_column_children[1] role]);
 
   id third_column = ax_table_children[4];
   EXPECT_NSEQ(@"AXColumn", [third_column role]);
-  id third_column_children = [third_column children];
+  id third_column_children = [third_column accessibilityChildren];
   EXPECT_EQ(2U, [third_column_children count]);
   EXPECT_NSEQ(@"AXCell", [third_column_children[0] role]);
   EXPECT_NSEQ(@"AXCell", [third_column_children[1] role]);
@@ -497,7 +497,7 @@ TEST_F(BrowserAccessibilityMacTest, TableWithTwoRowHeaders) {
 
   id table_group = ax_table_children[5];
   EXPECT_NSEQ(@"AXGroup", [table_group role]);
-  EXPECT_EQ(0U, [table_group children].count);
+  EXPECT_EQ(0U, [table_group accessibilityChildren].count);
 
   // Confirm the table has two row headers per row, and that they match
   // the expected cells in the table.
@@ -761,6 +761,159 @@ TEST_F(BrowserAccessibilityMacTest,
   EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
       containsObject:NSAccessibilitySortDirectionAttribute]);
   EXPECT_NSEQ([cell sortDirection], NSAccessibilityUnknownSortDirectionValue);
+}
+
+// Test that the header container can be retrieved on a table with column
+// headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnTableWithColumnHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have six children: the three rows, the two columns,
+  // and the header group.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table accessibilityChildren];
+  EXPECT_EQ(6U, [children count]);
+  id header = children[5];
+  EXPECT_NSEQ([header role], NSAccessibilityGroupRole);
+
+  // Asking for the header directly should return that last child, which should
+  // have two children, namely the header cell for each of the two columns.
+  EXPECT_EQ(header, [ax_table accessibilityHeader]);
+  EXPECT_EQ(2U, [[header accessibilityChildren] count]);
+}
+
+// Test that the header container can be retrieved on a table with row headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnTableWithRowHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 5;
+  const int kNumberOfColumns = 7;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::RowHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have 13 children: the five rows, the seven columns,
+  // and the header group.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table accessibilityChildren];
+  EXPECT_EQ(13U, [children count]);
+  id header = children[12];
+  EXPECT_NSEQ([header role], NSAccessibilityGroupRole);
+
+  // Asking for the header directly should return that last child, but it will
+  // not contain any children because only column headers are included. See
+  // the `TableWithRowHeaders` and `TableWithTwoRowHeaders` tests above.
+  EXPECT_EQ(header, [ax_table accessibilityHeader]);
+  EXPECT_EQ(0U, [[header accessibilityChildren] count]);
+}
+
+// Test that the column header cells can be retrieved on a table with column
+// headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnColumnsWithColumnHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have six children: the three rows, the two columns,
+  // and the header group for the table itself.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table accessibilityChildren];
+  EXPECT_EQ(6U, [children count]);
+
+  // Asking for the header for a given column should return the first child of
+  // that column because the headers are in the first row.
+  id first_column = children[3];
+  EXPECT_NSEQ([first_column role], NSAccessibilityColumnRole);
+  EXPECT_EQ([first_column accessibilityHeader],
+            [first_column accessibilityChildren][0]);
+
+  id second_column = children[4];
+  EXPECT_NSEQ([second_column role], NSAccessibilityColumnRole);
+  EXPECT_EQ([second_column accessibilityHeader],
+            [second_column accessibilityChildren][0]);
+}
+
+// Test that the row header cells can be retrieved on a table with row headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnRowsWithRowHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 7;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::RowHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have 11 children: the three rows, the seven columns,
+  // and the header group for the table itself.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table accessibilityChildren];
+  EXPECT_EQ(11U, [children count]);
+
+  // Asking for the header for a given row should return the first child of
+  // that row because the headers are in the first column. This fails outside
+  // of blink due to the failure to set `kTableRowHeaderId` on the row node
+  // in `ui::AXTableInfo`. See crbug.com/380211806 for details.
+  id first_row = children[0];
+  EXPECT_NSEQ([first_row role], NSAccessibilityRowRole);
+  EXPECT_NE([first_row accessibilityHeader],
+            [first_row accessibilityChildren][0])
+      << "These should be equal. See crbug.com/380211806";
+
+  id second_row = children[1];
+  EXPECT_NSEQ([second_row role], NSAccessibilityRowRole);
+  EXPECT_NE([second_row accessibilityHeader],
+            [second_row accessibilityChildren][0])
+      << "These should be equal. See crbug.com/380211806";
+
+  id third_row = children[2];
+  EXPECT_NSEQ([third_row role], NSAccessibilityRowRole);
+  EXPECT_NE([third_row accessibilityHeader],
+            [third_row accessibilityChildren][0])
+      << "These should be equal. See crbug.com/380211806";
+}
+
+// `accessibilityNumberOfCharacters` on a text field.
+TEST_F(BrowserAccessibilityMacTest,
+       AccessibilityNumberOfCharactersOnTextField) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  accessibility_ =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  SetRootValue("hello world");
+  EXPECT_EQ([accessibility_ accessibilityNumberOfCharacters], 11);
+}
+
+// `accessibilityVisibleCharacterRange` on a text field.
+TEST_F(BrowserAccessibilityMacTest,
+       AccessibilityVisibleCharacterRangeOnTextField) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  accessibility_ =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  SetRootValue("hello world");
+  NSRange visibleRange = [accessibility_ accessibilityVisibleCharacterRange];
+  EXPECT_EQ(visibleRange.location, 0U);
+  EXPECT_EQ(visibleRange.length, 11U);
 }
 
 }  // namespace ui

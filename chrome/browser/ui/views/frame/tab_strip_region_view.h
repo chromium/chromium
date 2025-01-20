@@ -12,14 +12,17 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
+namespace glic {
+class GlicButton;
+}
 namespace views {
 class Button;
 }
-
-class GlicButton;
 class NewTabButton;
+class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
+class TabStripComboButton;
 class TabStripScrollContainer;
 class ProductSpecificationsButton;
 class TabSearchPositionMetricsLogger;
@@ -56,15 +59,28 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  views::Button* new_tab_button() { return new_tab_button_; }
+  views::Button* GetNewTabButton();
 
-  TabSearchContainer* tab_search_container() { return tab_search_container_; }
+  TabSearchButton* GetTabSearchButton();
 
-  ProductSpecificationsButton* product_specifications_button() {
-    return product_specifications_button_;
+  TabStripActionContainer* GetTabStripActionContainer();
+
+  TabStripComboButton* tab_strip_combo_button() {
+    return tab_strip_combo_button_;
   }
 
-  GlicButton* glic_button() { return glic_button_; }
+  ProductSpecificationsButton* GetProductSpecificationsButton();
+
+  glic::GlicButton* GetGlicButton();
+
+  // May be nullptr if combo button is enabled. |Use GetNewTabButton()| to
+  // access the new tab button inside the combo button.
+  views::Button* new_tab_button_for_testing() { return new_tab_button_; }
+
+  // May be nullptr if combo button is enabled.
+  TabSearchContainer* tab_search_container_for_testing() {
+    return tab_search_container_;
+  }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -125,18 +141,15 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void AdjustViewBoundsRect(View* view, int offset);
 
   raw_ptr<const Profile> profile_ = nullptr;
-  raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
-  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_ = nullptr;
-  raw_ptr<TabStripScrollContainer, DanglingUntriaged>
-      tab_strip_scroll_container_ = nullptr;
-  raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchContainer, DanglingUntriaged> tab_search_container_ =
-      nullptr;
-  raw_ptr<ProductSpecificationsButton, DanglingUntriaged>
-      product_specifications_button_ = nullptr;
-  raw_ptr<GlicButton, DanglingUntriaged> glic_button_ = nullptr;
+  raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
+  raw_ptr<views::View> tab_strip_container_ = nullptr;
+  raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
+  raw_ptr<views::Button> new_tab_button_ = nullptr;
+  raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
+  raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents

@@ -52,7 +52,9 @@ Profile* WebKioskBaseTest::profile() const {
 }
 
 Browser* WebKioskBaseTest::kiosk_app_browser() const {
-  return BrowserList::GetInstance()->get(0);
+  Browser* kiosk_app_browser = BrowserList::GetInstance()->get(0);
+  CHECK(kiosk_app_browser);
+  return kiosk_app_browser;
 }
 
 KioskSystemSession* WebKioskBaseTest::kiosk_system_session() const {

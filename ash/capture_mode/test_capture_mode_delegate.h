@@ -46,6 +46,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   }
   void set_is_allowed_by_dlp(bool value) { is_allowed_by_dlp_ = value; }
   void set_is_allowed_by_policy(bool value) { is_allowed_by_policy_ = value; }
+  void set_is_search_allowed_by_policy(bool value) {
+    is_search_allowed_by_policy_ = value;
+  }
   void set_should_save_after_dlp_check(bool value) {
     should_save_after_dlp_check_ = value;
   }
@@ -105,6 +108,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const gfx::Rect& bounds,
       OnCaptureModeDlpRestrictionChecked callback) override;
   bool IsCaptureAllowedByPolicy() const override;
+  bool IsSearchAllowedByPolicy() const override;
   void StartObservingRestrictedContent(
       const aura::Window* window,
       const gfx::Rect& bounds,
@@ -123,6 +127,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
   base::FilePath GetOneDriveMountPointPath() const override;
+  base::FilePath GetOneDriveVirtualPath() const override;
   PolicyCapturePath GetPolicyCapturePath() const override;
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
@@ -157,6 +162,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
                             const gfx::Rect& region,
                             const std::string& text,
                             ash::OnSearchUrlFetchedCallback callback) override;
+  void DeleteRemoteFile(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
@@ -166,6 +173,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_session_active_ = false;
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
+  bool is_search_allowed_by_policy_ = true;
   bool should_save_after_dlp_check_ = true;
   bool is_camera_disabled_by_policy_ = false;
   bool is_audio_capture_disabled_by_policy_ = false;

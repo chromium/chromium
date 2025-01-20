@@ -62,10 +62,10 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {features::kFencedFramesEnforceFocus, {}},
        {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
-       {blink::features::kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
-        {}},
+       {blink::features::kFencedFramesCrossOriginEventReporting, {}},
        {blink::features::kFencedFramesReportEventHeaderChanges, {}},
-       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}}},
+       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}},
+       {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
       {/* disabled_features */});
 }
 
@@ -240,7 +240,7 @@ void FencedFrameTestHelper::SendBasicRequest(
   request->method = net::HttpRequestHeaders::kPostMethod;
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(request),

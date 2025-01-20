@@ -5,8 +5,8 @@
 
 set -e
 
-if [[ $(basename ${PWD}) != "src" ]]; then
-  echo "Please set the current working directory to chromium/src first!"
+if [ ! -d "./third_party/mediapipe" ]; then
+  echo "Please set the current working directory to chromium root first."
   exit 1
 fi
 SRC_DIR=${PWD}
@@ -21,10 +21,18 @@ function join_by {
   fi
 }
 
+# Fetch the following third party mediapipe dependencies.
+THIRD_PARTY_DEPS=(
+  "com_google_audio_tools" # https://github.com/google/multichannel-audio-tools
+)
+# Patches to apply (<directory> <patch file>)
+THIRD_PARTY_DEPS_PATCHES=(
+  "third_party/com_google_audio_tools third_party/com_google_audio_tools_fixes.diff"
+)
+
 EXCLUDE_PATTERNS=(
   # Directories
   .git/
-  audio/
   docs/
   ios/
   java/
@@ -78,6 +86,33 @@ for file in ${FILES[@]} ${OBJC_FILES[@]} ${WEB_FILES[@]} ; do
   mkdir -p "$(dirname ${file})"
   cp "/tmp/mediapipe/${file}" "${file}"
 done
+
+# TODO: Consider using bazel directly to parse the WORKSPACE or pull deps.
+echo "Downloading mediapipe third party dependencies..."
+for dep in "${THIRD_PARTY_DEPS[@]}" ; do
+  echo "Downloading ${dep}..."
+  ARCHIVE=$(grep -Pzo "(?s)name = \"${dep}\".*?\)" WORKSPACE | grep -Eao "https://github.com.*?.zip" | sed "s/zip/tar\.gz/")
+  if [ -z "${ARCHIVE}" ]; then
+    echo "Failed to find ${dep} archive in WORKSPACE"
+    exit 1
+  fi
+  echo "Downloading ${ARCHIVE}..."
+  mkdir -p ./third_party/${dep}
+  curl -s -L "${ARCHIVE}" | tar xz --strip=1 -C ./third_party/${dep}
+done
+
+# Apply within third party dependencies.
+for patch_file in "${THIRD_PARTY_DEPS_PATCHES[@]}" ; do
+  set -- $patch_file
+  echo $1
+  git apply --directory=$1 $2 || echo "Failed to apply $2"
+done
+
+# Replace (D)CHECK with ABSL equivalents.
+for dep in "${THIRD_PARTY_DEPS[@]}" ; do
+  find ./third_party/${dep} -type f -exec sed -Ei 's/(DCHECK|CHECK)/ABSL_\0/g' {} \;
+done
+
 cd "${SRC_DIR}"
 
 echo "Applying patches..."

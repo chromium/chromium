@@ -133,8 +133,6 @@ bool TestWaylandServerThread::Start() {
   if (!xdg_shell_.Initialize(display_.get()))
     return false;
 
-  if (!zcr_stylus_.Initialize(display_.get()))
-    return false;
   if (config_.text_input_wrapper_type == ZWPTextInputWrapperType::kV3) {
     if (!zwp_text_input_manager_v3_.Initialize(display_.get())) {
       return false;
@@ -238,13 +236,6 @@ MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
     return &wp_presentation_;
   if (wp_presentation_.Initialize(display_.get()))
     return &wp_presentation_;
-  return nullptr;
-}
-
-TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_augmenter_.Initialize(display_.get()))
-    return &surface_augmenter_;
   return nullptr;
 }
 

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/media_preview/mic_preview/audio_stream_coordinator.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/task/bind_post_task.h"
@@ -79,11 +75,7 @@ void AudioStreamCoordinator::OnAudioCaptured(
     audio_bus_received_callback_for_test_.Run();
   }
 
-  float max_audio_value = 0;
-  const float* channel = audio_bus->channel(0);
-  for (int frame_index = 0; frame_index < audio_bus->frames(); frame_index++) {
-    max_audio_value = std::max(max_audio_value, channel[frame_index]);
-  }
+  float max_audio_value = std::ranges::max(audio_bus->channel_span(0));
   last_audio_level_ = GetRolledAverageValue(max_audio_value, last_audio_level_);
 
   if (auto* view = GetAudioStreamView(); view) {

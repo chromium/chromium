@@ -310,11 +310,21 @@ void HostFrameSinkManager::RequestCopyOfOutput(
 }
 
 void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    base::UnguessableToken grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-        rir_delegate_client_remote) {
+        rir_delegate_client_remote,
+    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+        rir_delegate_receiver) {
   frame_sink_manager_->SetupRenderInputRouterDelegateConnection(
-      grouping_id, std::move(rir_delegate_client_remote));
+      grouping_id, std::move(rir_delegate_client_remote),
+      std::move(rir_delegate_receiver));
+}
+
+void HostFrameSinkManager::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& render_input_routers) {
+  frame_sink_manager_->NotifyRendererBlockStateChanged(blocked,
+                                                       render_input_routers);
 }
 
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(

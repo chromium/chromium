@@ -49,8 +49,10 @@ import {
   assertInstanceof,
   assertNotReached,
 } from '../core/utils/assert.js';
+import {stopPropagation} from '../core/utils/event_handler.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
@@ -173,8 +175,6 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly shouldShowLanguagePicker =
     this.platformHandler.isMultipleLanguageAvailable();
 
-  private readonly downloadPerfCollected = signal(false);
-
   private readonly transcriptionLanguageExpanded = signal(false);
 
   private readonly transcriptionConsentDialog =
@@ -182,17 +182,6 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
-
-  override updated(): void {
-    if (this.summaryDownloadRequested.value &&
-        !this.downloadPerfCollected.value &&
-        this.platformHandler.summaryModelLoader.state.value.kind ===
-          'installed') {
-      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
-      this.platformHandler.perfLogger.finish('summaryModelDownload');
-      this.downloadPerfCollected.value = true;
-    }
-  }
 
   show(): void {
     this.dialog.value?.show();
@@ -231,7 +220,12 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <span slot="description">
           ${i18n.settingsOptionsSummaryDescription}
-          <a href=${HELP_URL} target="_blank">
+          <a
+            href=${HELP_URL}
+            target="_blank"
+            @click=${stopPropagation}
+            aria-label=${i18n.settingsOptionsSummaryLearnMoreLinkAriaLabel}
+          >
             ${i18n.settingsOptionsSummaryLearnMoreLink}
           </a>
         </span>
@@ -240,6 +234,7 @@ export class SettingsMenu extends ReactiveLitElement {
           button-style="secondary"
           .label=${i18n.settingsOptionsSummaryDownloadButton}
           @click=${this.onDownloadSummaryClick}
+          aria-label=${i18n.settingsOptionsSummaryDownloadButtonAriaLabel}
         ></cra-button>
       `;
     }
@@ -326,7 +321,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return nothing;
     }
     let description = '';
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
     if (selectedLanguage !== null) {
       const sodaState = this.platformHandler.getSodaState(selectedLanguage);
       const langPackInfo =
@@ -451,16 +446,6 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
-  private onInstallSodaClick() {
-    if (!toggleTranscriptionEnabled()) {
-      this.transcriptionConsentDialog.value?.show();
-      return;
-    }
-    // Forces transcription to be enabled.
-    enableTranscription();
-    setTranscriptionLanguage(LanguageCode.EN_US);
-  }
-
   private get transcriptionEnabled() {
     return (
       settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED
@@ -470,12 +455,20 @@ export class SettingsMenu extends ReactiveLitElement {
   private renderTranscriptionDescriptionAndAction() {
     const defaultLang = LanguageCode.EN_US;
     const sodaState = this.platformHandler.getSodaState(defaultLang).value;
+    const onInstallSodaClick = () => {
+      if (!enableTranscription()) {
+        this.transcriptionConsentDialog.value?.show();
+        return;
+      }
+      setTranscriptionLanguage(defaultLang);
+    };
     const downloadButton = html`
       <cra-button
         slot="action"
         button-style="secondary"
         .label=${i18n.settingsOptionsTranscriptionDownloadButton}
-        @click=${this.onInstallSodaClick}
+        @click=${onInstallSodaClick}
+        aria-label=${i18n.settingsOptionsTranscriptionDownloadButtonAriaLabel}
       ></cra-button>
     `;
     if (sodaState.kind === 'notInstalled') {
@@ -634,6 +627,7 @@ export class SettingsMenu extends ReactiveLitElement {
             shape="circle"
             @click=${this.onCloseClick}
             aria-label=${i18n.closeDialogButtonTooltip}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="close"></cra-icon>
           </cra-icon-button>

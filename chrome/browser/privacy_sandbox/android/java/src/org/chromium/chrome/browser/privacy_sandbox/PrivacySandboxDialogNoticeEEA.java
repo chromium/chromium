@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -44,6 +46,14 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
         ackButton.setOnClickListener(this);
+        ButtonCompat ackButtonEqualized = mContentView.findViewById(R.id.ack_button_equalized);
+        ackButtonEqualized.setOnClickListener(this);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
+            ackButton.setVisibility(View.GONE);
+        } else {
+            ackButtonEqualized.setVisibility(View.GONE);
+        }
         ButtonCompat settingsButton = mContentView.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(this);
 
@@ -90,11 +100,13 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.ack_button) {
+        if (id == R.id.ack_button || id == R.id.ack_button_equalized) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeEeaDialog.AckClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeEeaDialog.OpenSettingsClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();

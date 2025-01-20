@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/chrome_views_delegate.h"
-
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
+#include "chrome/browser/ui/views/chrome_views_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -64,13 +63,15 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
   // The context should be associated with a root window. If the context has a
   // null root window (e.g. the context window has no parent) it will trigger
   // the fallback case below. https://crbug.com/828626 https://crrev.com/230793
-  if (params->context)
+  if (params->context) {
     params->context = params->context->GetRootWindow();
+  }
 
   // Ash requires a parent or a context that it can use to look up a root window
   // to find a WindowParentingClient.
-  if (!params->parent && !params->context)
+  if (!params->parent && !params->context) {
     params->context = ash::Shell::GetRootWindowForNewWindows();
+  }
 
   // By returning null Widget creates the default NativeWidget implementation,
   // which for Chrome OS is NativeWidgetAura.

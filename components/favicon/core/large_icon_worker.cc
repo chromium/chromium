@@ -61,64 +61,36 @@ gfx::Image ResizeLargeIconOnBackgroundThread(
   return gfx::Image::CreateFrom1xBitmap(resized);
 }
 
-// Processes the `db_result` and writes the result into `raw_result` if
-// `raw_result` is not nullptr or to `bitmap`, otherwise. If `db_result` is not
-// valid or is smaller than `min_source_size`, the resulting fallback style is
-// written into `fallback_icon_style`.
-void ProcessIconOnBackgroundThread(
-    const favicon_base::FaviconRawBitmapResult& db_result,
-    int min_source_size,
-    int size_to_resize_to,
-    LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior,
-    favicon_base::FaviconRawBitmapResult* raw_result,
-    SkBitmap* bitmap,
-    GURL* icon_url,
-    std::unique_ptr<favicon_base::FallbackIconStyle>* fallback_icon_style) {
-  if (ShouldReturnBitmap(db_result, min_source_size,
-                         no_big_enough_icon_behavior)) {
-    gfx::Image image =
-        ResizeLargeIconOnBackgroundThread(db_result, size_to_resize_to);
-
-    if (!image.IsEmpty()) {
-      if (raw_result) {
-        *raw_result = db_result;
-        if (size_to_resize_to != 0) {
-          raw_result->pixel_size =
-              gfx::Size(size_to_resize_to, size_to_resize_to);
-        }
-        raw_result->bitmap_data = image.As1xPNGBytes();
-      }
-      if (bitmap) {
-        *bitmap = image.AsBitmap();
-      }
-      if (icon_url) {
-        *icon_url = db_result.icon_url;
-      }
-      return;
-    }
+// Returns `fallback_icon_style` or a default value picked based on
+// `no_big_enough_icon_behavior`.
+std::unique_ptr<favicon_base::FallbackIconStyle> FallbackIconStyleOrDefault(
+    std::unique_ptr<favicon_base::FallbackIconStyle> fallback_icon_style,
+    LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior) {
+  if (no_big_enough_icon_behavior !=
+      NoBigEnoughIconBehavior::kReturnFallbackColor) {
+    return nullptr;
   }
+  return fallback_icon_style
+             ? std::move(fallback_icon_style)
+             : std::make_unique<favicon_base::FallbackIconStyle>();
+}
 
-  if (!fallback_icon_style ||
-      no_big_enough_icon_behavior !=
-          NoBigEnoughIconBehavior::kReturnFallbackColor) {
+void LogFallbackIconSizeIfNeeded(
+    int favicon_width_according_to_database,
+    LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior) {
+  if (no_big_enough_icon_behavior !=
+      NoBigEnoughIconBehavior::kReturnFallbackColor) {
     return;
   }
-
-  *fallback_icon_style = std::make_unique<favicon_base::FallbackIconStyle>();
-  int fallback_icon_size = 0;
-  if (db_result.is_valid()) {
-    favicon_base::SetDominantColorAsBackground(*db_result.bitmap_data,
-                                               fallback_icon_style->get());
-    // The size must be positive, we cap to 128 to avoid the sparse histogram
-    // to explode (having too many different values, server-side). Size 128
-    // already indicates that there is a problem in the code, 128 px _should_ be
-    // enough in all current UI surfaces.
-    fallback_icon_size = db_result.pixel_size.width();
-    DCHECK_GT(fallback_icon_size, 0);
-    fallback_icon_size = std::min(fallback_icon_size, 128);
-  }
+  // The size must be positive, we cap to 128 to avoid the sparse histogram
+  // to explode (having too many different values, server-side). Size 128
+  // already indicates that there is a problem in the code, 128 px _should_
+  // be enough in all current UI surfaces.
+  DCHECK_GE(favicon_width_according_to_database, 0);
+  favicon_width_according_to_database =
+      std::min(favicon_width_according_to_database, 128);
   base::UmaHistogramSparse("Favicons.LargeIconService.FallbackSize",
-                           fallback_icon_size);
+                           favicon_width_according_to_database);
 }
 
 }  // namespace
@@ -147,15 +119,32 @@ LargeIconWorker::~LargeIconWorker() = default;
 
 void LargeIconWorker::OnIconLookupComplete(
     const favicon_base::FaviconRawBitmapResult& db_result) {
-  tracker_->PostTaskAndReply(
-      background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &ProcessIconOnBackgroundThread, db_result, min_source_size_in_pixel_,
-          size_in_pixel_to_resize_to_, no_big_enough_icon_behavior_,
-          raw_bitmap_callback_ ? &raw_bitmap_result_ : nullptr,
-          image_callback_ ? &bitmap_result_ : nullptr,
-          image_callback_ ? &icon_url_ : nullptr, &fallback_icon_style_),
-      base::BindOnce(&LargeIconWorker::OnIconProcessingComplete, this));
+  icon_url_ = db_result.icon_url;
+  favicon_width_according_to_database_ =
+      db_result.is_valid() ? db_result.pixel_size.width() : 0;
+  fallback_icon_style_ = std::make_unique<favicon_base::FallbackIconStyle>();
+
+  if (ShouldReturnBitmap(db_result, min_source_size_in_pixel_,
+                         no_big_enough_icon_behavior_)) {
+    tracker_->PostTaskAndReply(
+        background_task_runner_.get(), FROM_HERE,
+        base::BindOnce(&LargeIconWorker::ResizeAndEncodeOnBackgroundThread,
+                       this, db_result),
+        base::BindOnce(&LargeIconWorker::OnIconProcessingComplete, this));
+    return;
+  }
+  if (no_big_enough_icon_behavior_ ==
+          NoBigEnoughIconBehavior::kReturnFallbackColor &&
+      db_result.is_valid()) {
+    tracker_->PostTaskAndReply(
+        background_task_runner_.get(), FROM_HERE,
+        base::BindOnce(&LargeIconWorker::ComputeDominantColorOnBackgroundThread,
+                       this, db_result.bitmap_data),
+        base::BindOnce(&LargeIconWorker::OnIconProcessingComplete, this));
+    return;
+  }
+
+  OnIconProcessingComplete();
 }
 
 // static
@@ -194,6 +183,33 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
       base::BindOnce(&LargeIconWorker::OnIconLookupComplete, worker), tracker);
 }
 
+void LargeIconWorker::ResizeAndEncodeOnBackgroundThread(
+    const favicon_base::FaviconRawBitmapResult& db_result) {
+  gfx::Image image =
+      ResizeLargeIconOnBackgroundThread(db_result, size_in_pixel_to_resize_to_);
+  if (image.IsEmpty()) {
+    return;
+  }
+
+  if (raw_bitmap_callback_) {
+    raw_bitmap_result_ = db_result;
+    if (size_in_pixel_to_resize_to_ != 0) {
+      raw_bitmap_result_.pixel_size =
+          gfx::Size(size_in_pixel_to_resize_to_, size_in_pixel_to_resize_to_);
+    }
+    raw_bitmap_result_.bitmap_data = image.As1xPNGBytes();
+  }
+  if (image_callback_) {
+    bitmap_result_ = image.AsBitmap();
+  }
+}
+
+void LargeIconWorker::ComputeDominantColorOnBackgroundThread(
+    scoped_refptr<base::RefCountedMemory> favicon_bytes) {
+  favicon_base::SetDominantColorAsBackground(*favicon_bytes,
+                                             fallback_icon_style_.get());
+}
+
 void LargeIconWorker::OnIconProcessingComplete() {
   // If `raw_bitmap_callback_` is provided, return the raw result.
   if (raw_bitmap_callback_) {
@@ -202,8 +218,11 @@ void LargeIconWorker::OnIconProcessingComplete() {
           .Run(favicon_base::LargeIconResult(raw_bitmap_result_));
       return;
     }
+    LogFallbackIconSizeIfNeeded(favicon_width_according_to_database_,
+                                no_big_enough_icon_behavior_);
     std::move(raw_bitmap_callback_)
-        .Run(favicon_base::LargeIconResult(fallback_icon_style_.release()));
+        .Run(favicon_base::LargeIconResult(FallbackIconStyleOrDefault(
+            std::move(fallback_icon_style_), no_big_enough_icon_behavior_)));
     return;
   }
 
@@ -213,8 +232,11 @@ void LargeIconWorker::OnIconProcessingComplete() {
             gfx::Image::CreateFrom1xBitmap(bitmap_result_), icon_url_));
     return;
   }
+  LogFallbackIconSizeIfNeeded(favicon_width_according_to_database_,
+                              no_big_enough_icon_behavior_);
   std::move(image_callback_)
-      .Run(favicon_base::LargeIconImageResult(fallback_icon_style_.release()));
+      .Run(favicon_base::LargeIconImageResult(FallbackIconStyleOrDefault(
+          std::move(fallback_icon_style_), no_big_enough_icon_behavior_)));
 }
 
 }  // namespace favicon

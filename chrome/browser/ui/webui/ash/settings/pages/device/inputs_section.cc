@@ -344,9 +344,6 @@ void AddInputMethodOptionsLoadTimeData(
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
           is_physical_keyboard_predictive_writing_allowed);
   html_source->AddBoolean(
-      "allowAutocorrectToggle",
-      base::FeatureList::IsEnabled(features::kAutocorrectToggle));
-  html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
   html_source->AddBoolean(
@@ -520,8 +517,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "languagePacksInSettingsEnabled",
       base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
-  html_source->AddBoolean("isShortcutCustomizationEnabled",
-                          ::features::IsShortcutCustomizationEnabled());
+  // TODO(b/290861003): Update the settings code and remove this.
+  html_source->AddBoolean("isShortcutCustomizationEnabled", true);
 
   AddInputMethodOptionsLoadTimeData(
       html_source,

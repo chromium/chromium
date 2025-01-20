@@ -20,6 +20,13 @@ struct SharedStorageValueArgument {
   mojo_base.mojom.String16 data;
 };
 
+// Represents the lock resource name in the Web Locks API. The lock name
+// cannot start with '-', which will be validated during serialization.
+// https://w3c.github.io/web-locks/#resource-name
+struct LockName {
+  string data;
+};
+
 // Request to set the entry at `key` to `value`. If `ignore_if_present` is true,
 // the entry is not updated if `key` already exists.
 struct SharedStorageSetMethod {
@@ -47,4 +54,14 @@ union SharedStorageModifierMethod {
   SharedStorageAppendMethod append_method;
   SharedStorageDeleteMethod delete_method;
   SharedStorageClearMethod clear_method;
+};
+
+// Request to execute `method` with optional parameters.
+struct SharedStorageModifierMethodWithOptions {
+  // The method to execute.
+  SharedStorageModifierMethod method;
+
+  // If provided, the `method` will be executed with a lock acquired on the
+  // resource with name `with_lock`. `with_lock` shouldn't start with '-'.
+  LockName? with_lock;
 };

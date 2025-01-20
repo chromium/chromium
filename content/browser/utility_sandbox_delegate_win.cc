@@ -13,7 +13,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/utility/sandbox_delegate_data.mojom.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -21,7 +20,6 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace content {
 namespace {
@@ -103,7 +101,6 @@ bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
   return true;
 }
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
 // Sets the sandbox policy for the print backend service process.
 bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -117,7 +114,6 @@ bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   return true;
 }
-#endif
 
 std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
   return base::WideToUTF8(cmd_line.GetProgram().value());
@@ -197,7 +193,6 @@ bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
   return true;
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
                               sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
@@ -214,7 +209,6 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
 
   return true;
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 // Adds preload-libraries to the delegate blob for utility_main() to access
 // before lockdown is initialized.
@@ -253,7 +247,6 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     case sandbox::mojom::Sandbox::kXrCompositing:
       *appcontainer_id = UtilityAppContainerId(cmd_line_);
       return true;
-#if BUILDFLAG(ENABLE_PRINTING)
     case sandbox::mojom::Sandbox::kPrintCompositor:
       if (base::FeatureList::IsEnabled(
               sandbox::policy::features::kPrintCompositorLPAC)) {
@@ -261,7 +254,6 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
         return true;
       }
       return false;
-#endif
     default:
       return false;
   }
@@ -320,13 +312,11 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     }
   }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
     if (!ScreenAIInitializeConfig(config, sandbox_type_)) {
       return false;
     }
   }
-#endif
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
@@ -364,6 +354,9 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     if (result != sandbox::SBOX_ALL_OK) {
       return false;
     }
+
+    config->SetFilterEnvironment(base::FeatureList::IsEnabled(
+        sandbox::policy::features::kWinSboxFilterServiceEnvironment));
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
@@ -374,15 +367,13 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
       return false;
     }
   }
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
   if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
     if (!PrintBackendInitializeConfig(config)) {
       return false;
     }
   }
-#endif
 
-#if BUILDFLAG(ENABLE_PRINTING)
   if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor &&
       base::FeatureList::IsEnabled(
           sandbox::policy::features::kPrintCompositorLPAC) &&
@@ -394,7 +385,6 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
       return false;
     }
   }
-#endif
 
   return GetContentClient()->browser()->PreSpawnChild(
       config, sandbox_type_,

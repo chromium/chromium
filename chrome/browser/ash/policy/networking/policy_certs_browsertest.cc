@@ -139,7 +139,7 @@ class WebTrustedCertsChangedObserver
 // cert change has occurred.
 class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
  public:
-  CertDatabaseChangedObserver() {}
+  CertDatabaseChangedObserver() = default;
 
   CertDatabaseChangedObserver(const CertDatabaseChangedObserver&) = delete;
   CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
@@ -495,7 +495,7 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
       const PolicyProvidedCertsOnUserSessionInitTest&) = delete;
 
  protected:
-  PolicyProvidedCertsOnUserSessionInitTest() {}
+  PolicyProvidedCertsOnUserSessionInitTest() = default;
 
   void GetPolicySettings(em::CloudPolicySettings* policy) const override {
     std::string user_policy_blob = GetTestCertsFileContents(kRootCaCertOnc);
@@ -532,8 +532,8 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsOnUserSessionInitTest,
 // Testing policy-provided client cert import.
 class PolicyProvidedClientCertsTest : public DevicePolicyCrosBrowserTest {
  protected:
-  PolicyProvidedClientCertsTest() {}
-  ~PolicyProvidedClientCertsTest() override {}
+  PolicyProvidedClientCertsTest() = default;
+  ~PolicyProvidedClientCertsTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // Set up the mock policy provider.

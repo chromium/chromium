@@ -40,15 +40,15 @@ these are advisory and not policy.
 
 #### Expectations for all reviewers
 
-  * Aim to provide some kind of actionable response within 24 hours of receipt
-    (not counting weekends and holidays). This doesn't mean you have to do a
-    complete review, but you should be able to give some initial feedback,
-    request more time, or suggest another reviewer.
+*   As a reviewer, aim to provide actionable feedback 3 times per work day. The
+    expectation is that if you're in the same time zone as the CL author, there
+    are 3 review iterations. If there is a time zone divide, aim for 2 review
+    iterations.
 
-  * Use the status field in Gerrit settings to indicate if you're away and when
+*   Use the status field in Gerrit settings to indicate if you're away and when
     you'll be back.
 
-  * Don't generally discourage people from sending you code reviews. This
+*   Don't generally discourage people from sending you code reviews. This
     includes using a blanket "slow" in your status field.
 
 ## OWNERS files
@@ -237,6 +237,9 @@ matters is when you are gardening. For example, if you want to revert or
 disable a test, your Owners-Override on the CL is not enough. You also need
 either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 +1` from the [rubber-stamper bot](#automated-code_review).
+
+When setting Owners-Override it is your responsibility to confirm that every
+file (and line) in the patch has been appropriately reviewed.
 
 ## Mechanical changes
 

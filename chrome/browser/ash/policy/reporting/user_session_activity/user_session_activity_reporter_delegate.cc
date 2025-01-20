@@ -58,13 +58,13 @@ UserSessionActivityReporterDelegate::QueryIdleStatus() const {
 bool UserSessionActivityReporterDelegate::IsUserActive(
     const ash::power::ml::IdleEventNotifier::ActivityData& activity_data)
     const {
-  // Calculate local time of day because that's how
-  // `activity_data.last_activity_time_of_day` is calculated.
-  const base::TimeDelta local_time_of_day_now =
-      base::Time::Now() - base::Time::Now().LocalMidnight();
+  // Calculate current time the same way
+  // activity_data.last_activity_time_of_day` is calculated.
+  const base::Time time_now = base::Time::Now();
+  const base::TimeDelta local_time = time_now - time_now.LocalMidnight();
 
   const base::TimeDelta time_since_last_activity =
-      local_time_of_day_now - activity_data.last_activity_time_of_day;
+      local_time - activity_data.last_activity_time_of_day;
 
   return (time_since_last_activity < kActiveIdleStateCollectionFrequency) ||
          activity_data.is_video_playing;

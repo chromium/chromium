@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/singleton_tabs.h"
+
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 

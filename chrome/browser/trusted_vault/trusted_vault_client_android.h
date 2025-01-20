@@ -31,7 +31,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Callback that returns account information identified by |gaia_id| or an
   // empty CoreAccountInfo if the account is not found.
   using GetAccountInfoByGaiaIdCallback =
-      base::RepeatingCallback<CoreAccountInfo(const std::string& gaia_id)>;
+      base::RepeatingCallback<CoreAccountInfo(const GaiaId& gaia_id)>;
 
   explicit TrustedVaultClientAndroid(
       const GetAccountInfoByGaiaIdCallback& gaia_account_info_by_gaia_id_cb);
@@ -47,7 +47,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   void FetchKeysCompleted(
       JNIEnv* env,
       jint request_id,
-      const base::android::JavaParamRef<jstring>& gaia_id,
+      std::string& gaia_id,
       const base::android::JavaParamRef<jobjectArray>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()
@@ -82,14 +82,14 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
       override;
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
                             base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+  void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure cb) override;

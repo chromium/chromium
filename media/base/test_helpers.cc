@@ -655,19 +655,38 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
   return output;
 }
 
-void VerifyBitstreamAudioBus(AudioBus* bus,
-                             size_t data_size,
-                             uint8_t start,
-                             uint8_t increment) {
+void VerifyBitstreamAudioBus(AudioBus* bus, uint8_t start, uint8_t increment) {
   ASSERT_TRUE(bus->is_bitstream_format());
 
   // Values in channel 0 will be:
   //   start
   //   start + increment
   //   start + 2 * increment, ...
-  uint8_t* buffer = reinterpret_cast<uint8_t*>(bus->channel(0));
-  for (size_t i = 0; i < data_size; ++i) {
-    ASSERT_EQ(buffer[i], static_cast<uint8_t>(start + i * increment));
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data()) {
+    EXPECT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+}
+
+void VerifyBitstreamIECDtsAudioBus(AudioBus* bus,
+                                   size_t data_size,
+                                   uint8_t start,
+                                   uint8_t increment) {
+  ASSERT_TRUE(bus->is_bitstream_format());
+
+  // Values in channel 0 will be:
+  //   start
+  //   start + increment
+  //   start + 2 * increment, ...
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data().first(data_size)) {
+    ASSERT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+
+  for (uint8_t datum : bus->bitstream_data().subspan(data_size)) {
+    ASSERT_EQ(datum, 0u);
   }
 }
 
@@ -725,7 +744,7 @@ scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
       base::MakeRefCounted<DecoderBuffer>(buffer_size));
 
   const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {};
   buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
       std::string(reinterpret_cast<const char*>(kFakeKeyId),
                   std::size(kFakeKeyId)),

@@ -5,33 +5,27 @@
 #include "chrome/browser/ash/lobster/lobster_service.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
-#include "chrome/browser/ash/lobster/lobster_feedback.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/manta/snapper_provider.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_constants.h"
-
-namespace {
-
-constexpr std::string_view kLobsterKey(
-    "\xB3\x3A\x4C\xFC\x84\xA0\x2B\xBE\xAC\x88\x48\x09\xCF\x5E\xD6\xD9\x28\xEC"
-    "\x20\x2A",
-    base::kSHA1Length);
-
-}  // namespace
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
     Profile* profile)
     : profile_(profile),
+      // `LobsterService` is only created for regular profiles as specified in
+      // the `LobsterServiceProvider` constructor, so the below call should
+      // always return a non-null pointer.
+      account_id_(CHECK_DEREF(ash::AnnotatedAccountId::Get(profile))),
       image_provider_(std::move(snapper_provider)),
       image_fetcher_(image_provider_.get(), &candidate_id_generator_),
       resizer_(&image_fetcher_),
@@ -70,18 +64,10 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
       image_bytes, std::move(insert_status_callback));
 }
 
-bool LobsterService::SubmitFeedback(const std::string& query,
-                                    const std::string& model_version,
-                                    const std::string& description,
-                                    const std::string& image_bytes) {
-  return SendLobsterFeedback(profile_, /*query=*/query, /*model_version=*/"",
-                             /*user_description=*/description,
-                             /*image_bytes=*/image_bytes);
-}
-
 void LobsterService::LoadUI(std::optional<std::string> query,
-                            ash::LobsterMode mode) {
-  bubble_coordinator_.LoadUI(profile_, query, mode);
+                            ash::LobsterMode mode,
+                            const gfx::Rect& caret_bounds) {
+  bubble_coordinator_.LoadUI(profile_, query, mode, caret_bounds);
 }
 
 void LobsterService::ShowUI() {
@@ -90,27 +76,6 @@ void LobsterService::ShowUI() {
 
 void LobsterService::CloseUI() {
   bubble_coordinator_.CloseUI();
-}
-
-bool LobsterService::UserHasAccess() {
-  // Command line looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --lobster-feature-key="INSERT KEY HERE" --enable-features=Lobster
-  if (base::SHA1HashString(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              ash::switches::kLobsterFeatureKey)) == kLobsterKey) {
-    return true;
-  }
-
-  // Internal Google accounts do not need the key.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-  return identity_manager != nullptr &&
-         gaia::IsGoogleInternalAccountEmail(
-             identity_manager
-                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                 .email);
 }
 
 void LobsterService::OnFocus(int context_id) {

@@ -60,7 +60,7 @@ class IOSChromePasswordReuseDetectionManagerClient
   // safe_browsing::PasswordReuseDetectionManagerClient implementation.
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const;
 
@@ -100,6 +100,7 @@ class IOSChromePasswordReuseDetectionManagerClient
   safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::LogManager> log_manager_;
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>

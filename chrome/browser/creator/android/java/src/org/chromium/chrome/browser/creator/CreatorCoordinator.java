@@ -396,16 +396,7 @@ public class CreatorCoordinator
     private void initBottomSheet() {
         mScrim =
                 new ScrimCoordinator(
-                        mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        mCreatorViewGroup,
-                        mActivity.getColor(R.color.default_scrim_color));
+                        mActivity, /* systemUiScrimDelegate= */ null, mCreatorViewGroup);
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);
@@ -661,6 +652,11 @@ public class CreatorCoordinator
             mFaviconHelper = new FaviconHelper();
             mFaviconSize =
                     mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
+        }
+
+        /** Destroys the native favicon helper. */
+        public void destroy() {
+            mFaviconHelper.destroy();
         }
 
         /**

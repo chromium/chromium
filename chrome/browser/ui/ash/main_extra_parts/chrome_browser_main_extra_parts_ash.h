@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/common/buildflags.h"
+#include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 
 namespace ash {
@@ -82,6 +83,7 @@ class SystemTrayClientImpl;
 class TabClusterUIClient;
 class TabletModePageBehavior;
 class VpnListForwarder;
+class WallpaperAsh;
 class WallpaperControllerClientImpl;
 
 namespace internal {
@@ -124,6 +126,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   class UserProfileLoadedObserver;
 
   std::unique_ptr<UserProfileLoadedObserver> user_profile_loaded_observer_;
+  std::unique_ptr<WallpaperAsh> wallpaper_ash_;
 
   // Initialized in PreProfileInit in all configs before Shell init:
   std::unique_ptr<NetworkConnectDelegate> network_connect_delegate_;
@@ -171,6 +174,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       mahi_media_app_events_proxy_;
   std::unique_ptr<chromeos::MahiMediaAppContentManager>
       mahi_media_app_content_manager_;
+  std::optional<ash::LoginReadaheadPerformer> login_readahead_performer_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

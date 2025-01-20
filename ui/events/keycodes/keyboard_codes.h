@@ -8,9 +8,9 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/events/keycodes/keyboard_codes_win.h"
+#include "ui/events/keycodes/keyboard_codes_win.h" // IWYU pragma: export
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h" // IWYU pragma: export
 #endif
 
 #endif  // UI_EVENTS_KEYCODES_KEYBOARD_CODES_H_

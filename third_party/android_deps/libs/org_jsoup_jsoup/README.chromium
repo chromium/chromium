@@ -2,7 +2,7 @@ Name: jsoup Java HTML Parser
 Short Name: jsoup
 URL: https://jsoup.org/
 Version: 1.15.1
-License: The MIT License
+License: MIT
 License File: LICENSE
 CPEPrefix: cpe:/a:jsoup:jsoup:1.14.3
 Security Critical: no

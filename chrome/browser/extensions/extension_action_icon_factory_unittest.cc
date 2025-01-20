@@ -98,7 +98,7 @@ class ExtensionActionIconFactoryTest
   ExtensionActionIconFactoryTest& operator=(
       const ExtensionActionIconFactoryTest&) = delete;
 
-  ~ExtensionActionIconFactoryTest() override {}
+  ~ExtensionActionIconFactoryTest() override = default;
 
   void WaitForIconUpdate() {
     quit_in_icon_updated_ = true;

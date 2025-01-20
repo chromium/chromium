@@ -223,6 +223,16 @@ function shouldShowSeaPenIntroductionDialogReducer(
   }
 }
 
+function shouldShowSeaPenFreeformIntroductionDialogReducer(
+    state: boolean, action: SeaPenActions): boolean {
+  switch (action.name) {
+    case SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG:
+      return action.shouldShowFreeformDialog;
+    default:
+      return state;
+  }
+}
+
 function errorReducer(state: string|null, action: SeaPenActions): string|null {
   switch (action.name) {
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
@@ -269,6 +279,9 @@ export function seaPenReducer(
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
         pendingSelectedReducer(state.pendingSelected, action, state),
+    shouldShowSeaPenFreeformIntroductionDialog:
+        shouldShowSeaPenFreeformIntroductionDialogReducer(
+            state.shouldShowSeaPenFreeformIntroductionDialog, action),
     shouldShowSeaPenIntroductionDialog:
         shouldShowSeaPenIntroductionDialogReducer(
             state.shouldShowSeaPenIntroductionDialog, action),

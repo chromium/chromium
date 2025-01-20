@@ -423,17 +423,6 @@ class PasswordManagerSyncTest : public SyncTest {
   AccountInfo signed_in_account_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class PasswordManagerSyncExplicitParamTest
-    : public PasswordManagerSyncTest,
-      public base::test::WithFeatureOverride {
- public:
-  PasswordManagerSyncExplicitParamTest()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop) {}
-};
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
@@ -931,64 +920,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptOutSurvivesSignout) {
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  // Re-signin should be offered if the user is signed out now but in the past
-  // some account opted in. No opt-in yet, so no re-signin.
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
-
-  SignIn(kTestUserEmail);
-
-  // Still no opt-in. Plus, the user is signed-in already.
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
-
-  // If the user isn't already opted-in, do it.
-  password_manager::features_util::OptInToAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
-
-  // Now there's an opt-in but the user is signed-in already.
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
-
-  SignOut();
-
-  // If kExplicitBrowserSigninUIOnDesktop is enabled, re-signin should never be
-  // offered. Otherwise, the preconditions are now met and re-signin should be
-  // offered for all pages, except the Gaia sign-in page where it's useless.
-  // Native UI can offer re-signin too, in that case the GURL is empty.
-  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
-                GetProfile(0)->GetPrefs(), GetSyncService(0),
-                GURL("http://www.example.com")),
-            !IsParamFeatureEnabled());
-  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
-                GetProfile(0)->GetPrefs(), GetSyncService(0),
-                GURL("https://www.example.com")),
-            !IsParamFeatureEnabled());
-  EXPECT_EQ(password_manager::features_util::ShouldShowAccountStorageReSignin(
-                GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()),
-            !IsParamFeatureEnabled());
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0),
-          GaiaUrls::GetInstance()->gaia_url()));
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0),
-          GaiaUrls::GetInstance()->gaia_url().Resolve("path")));
-
-  SignIn(kTestUserEmail);
-
-  // Once the user signs in, no re-signin offered anymore.
-  EXPECT_FALSE(
-      password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        KeepOptInAccountStorageSettingsOnlyForUsers) {
   ASSERT_TRUE(SetupClients());
@@ -1040,8 +971,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordManagerSyncExplicitParamTest);
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -1253,7 +1182,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
     waiter.Wait();
   }
 
-  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+  password_manager::features_util::OptOutOfAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
 
   {

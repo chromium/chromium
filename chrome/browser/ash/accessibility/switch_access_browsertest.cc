@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
@@ -10,12 +11,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -29,11 +30,12 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
   void SetUpOnMainThread() override {
     switch_access_test_utils_ = std::make_unique<SwitchAccessTestUtils>(
         AccessibilityManager::Get()->profile());
+    generator_ = std::make_unique<ui::test::EventGenerator>(
+        Shell::Get()->GetPrimaryRootWindow());
   }
 
   void SendVirtualKeyPress(ui::KeyboardCode key) {
-    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        nullptr, key, false, false, false, false)));
+    generator_->PressAndReleaseKey(key);
   }
 
   // Returns cursor client for root window at location (in DIPs) |x| and |y|.
@@ -71,6 +73,7 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
 
  private:
   std::unique_ptr<SwitchAccessTestUtils> switch_access_test_utils_;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 
 // Flaky. See https://crbug.com/1224254.

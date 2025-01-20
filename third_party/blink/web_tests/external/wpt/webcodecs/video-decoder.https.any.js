@@ -1,6 +1,5 @@
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/utils.js
-//
 
 const detachedArrayBuffer = new ArrayBuffer(4);
 var b = detachedArrayBuffer.transferToFixedLength();
@@ -94,6 +93,10 @@ const validButUnsupportedConfigs = [
     comment: 'Possible future AV1 codec string',
     config: {codec: 'av01.9.99M.08'},
   },
+  {
+    comment: 'codec with spaces',
+    config: {codec: '  vp09.00.10.08  '},
+  },
 ];  //  validButUnsupportedConfigs
 
 validButUnsupportedConfigs.forEach(entry => {
@@ -151,10 +154,6 @@ promise_test(t => {
 }, 'Test VideoDecoder construction');
 
 const validConfigs = [
-  {
-    comment: 'valid codec with spaces',
-    config: {codec: '  vp09.00.10.08  '},
-  },
   {
     comment: 'variant 1 of h264 codec string',
     config: {codec: 'avc3.42001E'},

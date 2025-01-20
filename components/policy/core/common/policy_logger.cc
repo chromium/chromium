@@ -138,6 +138,9 @@ void PolicyLogger::LogHelper::StreamLog() const {
   if (log_type_ == LogHelper::LogType::kDLog) {
     return;
   }
+#else
+  // Suppress a -Wunused-private-field warning.
+  (void)log_type_;
 #endif
 
   // Check for verbose logging.

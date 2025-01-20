@@ -126,6 +126,8 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="OpenInk2SidePanel"/>
   <int value="97" label="OpenInk2BottomToolbarFirst"/>
   <int value="98" label="OpenInk2BottomToolbar"/>
+  <int value="99" label="SaveSearchifiedFirst"/>
+  <int value="100" label="SaveSearchified"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">
@@ -143,6 +145,82 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Full XFA"/>
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
+
+<!-- LINT.IfChange(PDFInk2StrokeBrushSize) -->
+
+<enum name="PDFInk2StrokeBrushSize">
+  <int value="0" label="ExtraThin"/>
+  <int value="1" label="Thin"/>
+  <int value="2" label="Medium"/>
+  <int value="3" label="Thick"/>
+  <int value="4" label="ExtraThick"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeBrushSize) -->
+
+<!-- LINT.IfChange(PDFInk2StrokeBrushType) -->
+
+<enum name="PDFInk2StrokeBrushType">
+  <int value="0" label="Pen"/>
+  <int value="1" label="Highlighter"/>
+  <int value="2" label="Eraser"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeBrushType) -->
+
+<!-- LINT.IfChange(PDFInk2StrokeHighlighterColor) -->
+
+<enum name="PDFInk2StrokeHighlighterColor">
+  <int value="0" label="LightRed"/>
+  <int value="1" label="LightYellow"/>
+  <int value="2" label="LightGreen"/>
+  <int value="3" label="LightBlue"/>
+  <int value="4" label="LightOrange"/>
+  <int value="5" label="Red"/>
+  <int value="6" label="Yellow"/>
+  <int value="7" label="Green"/>
+  <int value="8" label="Blue"/>
+  <int value="9" label="Orange"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeHighlighterColor) -->
+
+<!-- LINT.IfChange(PDFInk2StrokeInputDeviceType) -->
+
+<enum name="PDFInk2StrokeInputDeviceType">
+  <int value="0" label="Mouse"/>
+  <int value="1" label="Touch"/>
+  <int value="2" label="Pen"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeInputDeviceType) -->
+
+<!-- LINT.IfChange(PDFInk2StrokePenColor) -->
+
+<enum name="PDFInk2StrokePenColor">
+  <int value="0" label="Black"/>
+  <int value="1" label="DarkGrey2"/>
+  <int value="2" label="DarkGrey1"/>
+  <int value="3" label="LightGrey"/>
+  <int value="4" label="White"/>
+  <int value="5" label="Red1"/>
+  <int value="6" label="Yellow1"/>
+  <int value="7" label="Green1"/>
+  <int value="8" label="Blue1"/>
+  <int value="9" label="Tan1"/>
+  <int value="10" label="Red2"/>
+  <int value="11" label="Yellow2"/>
+  <int value="12" label="Green2"/>
+  <int value="13" label="Blue2"/>
+  <int value="14" label="Tan2"/>
+  <int value="15" label="Red3"/>
+  <int value="16" label="Yellow3"/>
+  <int value="17" label="Green3"/>
+  <int value="18" label="Blue3"/>
+  <int value="19" label="Tan3"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokePenColor) -->
 
 <enum name="PDFPostMessageDataType">
 <!-- This must be kept current with PostMessageDataType in

@@ -15,10 +15,11 @@ namespace media_router {
 
 void RecordAppAvailabilityResult(cast_channel::GetAppAvailabilityResult result,
                                  base::TimeDelta duration) {
-  if (result == cast_channel::GetAppAvailabilityResult::kUnknown)
+  if (result == cast_channel::GetAppAvailabilityResult::kUnknown) {
     UMA_HISTOGRAM_TIMES(kHistogramAppAvailabilityFailure, duration);
-  else
+  } else {
     UMA_HISTOGRAM_TIMES(kHistogramAppAvailabilitySuccess, duration);
+  }
 }
 
 void RecordLaunchSessionResponseAppType(const base::Value* app_type) {

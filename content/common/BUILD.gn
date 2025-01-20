@@ -156,8 +156,6 @@ source_set("common") {
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
-    "peak_gpu_memory_callback.cc",
-    "peak_gpu_memory_callback.h",
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
@@ -189,6 +187,8 @@ source_set("common") {
     "user_level_memory_pressure_signal_features.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
+    "web_ui_loading_util.cc",
+    "web_ui_loading_util.h",
     "webid/identity_url_loader_throttle.cc",
     "webid/identity_url_loader_throttle.h",
   ]
@@ -220,7 +220,6 @@ source_set("common") {
     "//base",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
     "//components/input",
@@ -339,8 +338,8 @@ source_set("common") {
     sources += [
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
-      "mac/task_port_policy.cc",
-      "mac/task_port_policy.h",
+      "mac/system_policy.cc",
+      "mac/system_policy.h",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
   }
@@ -374,7 +373,7 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources -= [ "cursors/webcursor_ash.cc" ]
   }
 
@@ -506,6 +505,10 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "gin_java_bridge.mojom" ]
+  }
+
+  if (is_win) {
+    sources += [ "sandbox_support.mojom" ]
   }
 
   enabled_features = []
@@ -674,7 +677,7 @@ mojom("mojo_bindings") {
   if (is_mac) {
     sources += [
       "render_widget_host_ns_view.mojom",
-      "sandbox_support_mac.mojom",
+      "sandbox_support.mojom",
       "web_contents_ns_view_bridge.mojom",
     ]
     public_deps += [

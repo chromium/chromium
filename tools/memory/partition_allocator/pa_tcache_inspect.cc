@@ -624,8 +624,7 @@ int main(int argc, char** argv) {
         base::Value::Dict dump = Dump(root_inspector);
         std::string json_string;
         ok = base::JSONWriter::WriteWithOptions(
-            dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT,
-            &json_string);
+            dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
         if (ok) {
           auto f =
               base::File(json_filename, base::File::Flags::FLAG_OPEN_ALWAYS |

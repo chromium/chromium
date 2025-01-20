@@ -1082,7 +1082,7 @@ TEST_F(DataPipeTest, WrapAround) {
             hss.satisfiable_signals);
 
   // Read 10 bytes.
-  unsigned char read_buffer[1000] = {0};
+  unsigned char read_buffer[1000] = {};
   num_bytes = 10u;
   ASSERT_EQ(MOJO_RESULT_OK, ReadData(read_buffer, &num_bytes, true));
   ASSERT_EQ(10u, num_bytes);

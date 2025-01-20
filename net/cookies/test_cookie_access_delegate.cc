@@ -37,6 +37,15 @@ CookieAccessSemantics TestCookieAccessDelegate::GetAccessSemantics(
   return CookieAccessSemantics::UNKNOWN;
 }
 
+CookieScopeSemantics TestCookieAccessDelegate::GetScopeSemantics(
+    const CanonicalCookie& cookie) const {
+  auto it = expectations_scoped_.find(GetKeyForDomainValue(cookie.Domain()));
+  if (it != expectations_scoped_.end()) {
+    return it->second;
+  }
+  return CookieScopeSemantics::UNKNOWN;
+}
+
 bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
     const SiteForCookies& site_for_cookies) const {
@@ -123,6 +132,12 @@ void TestCookieAccessDelegate::SetExpectationForCookieDomain(
     const std::string& cookie_domain,
     CookieAccessSemantics access_semantics) {
   expectations_[GetKeyForDomainValue(cookie_domain)] = access_semantics;
+}
+
+void TestCookieAccessDelegate::SetExpectationForCookieScope(
+    const std::string& cookie_domain,
+    CookieScopeSemantics scoped_semantics) {
+  expectations_scoped_[GetKeyForDomainValue(cookie_domain)] = scoped_semantics;
 }
 
 void TestCookieAccessDelegate::SetIgnoreSameSiteRestrictionsScheme(

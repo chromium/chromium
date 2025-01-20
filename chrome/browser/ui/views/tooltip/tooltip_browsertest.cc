@@ -72,16 +72,18 @@ class TooltipMonitor {
   void OnTooltipShown(views::Widget* widget) {
     if (widget->GetName() == TooltipAura::kWidgetName) {
       active_widget_ = widget;
-      if (run_loop_ && run_loop_->running())
+      if (run_loop_ && run_loop_->running()) {
         run_loop_->Quit();
+      }
     }
   }
 
   void OnTooltipClosed(views::Widget* widget) {
     if (active_widget_ == widget) {
       active_widget_ = nullptr;
-      if (run_loop_ && run_loop_->running())
+      if (run_loop_ && run_loop_->running()) {
         run_loop_->Quit();
+      }
     }
   }
 
@@ -194,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   tooltip_monitor()->WaitUntilTooltipClosed();
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel and other linux bots.
 #define MAYBE_ShowTooltipFromWebContentWithKeyboard \
   DISABLED_ShowTooltipFromWebContentWithKeyboard

@@ -108,7 +108,7 @@ void OnConsentReceived(ConsentProviderImpl::Consent* log,
 
 class FileSystemApiConsentProviderTest : public testing::Test {
  public:
-  FileSystemApiConsentProviderTest() {}
+  FileSystemApiConsentProviderTest() = default;
 
   void SetUp() override {
     testing_pref_service_ = std::make_unique<TestingPrefServiceSimple>();

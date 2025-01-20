@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test callback arguments, case Function
+  Refused to evaluate a string as JavaScript because this document requires 'Trusted Type' assignment.
+Harness: the test ran to completion.

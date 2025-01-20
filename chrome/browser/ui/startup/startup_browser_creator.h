@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 
@@ -60,7 +59,7 @@ enum class StartupProfileModeReason {
 
   // Cases when the profile picker is not shown:
   kGuestModeRequested = 10,
-  kGuestSessionLacros = 11,
+  // Deleted kGuestSessionLacros = 11,
   kProfileDirSwitch = 12,
   kProfileEmailSwitch = 13,
   kIgnoreProfilePicker = 14,
@@ -77,7 +76,7 @@ enum class StartupProfileModeReason {
   kNotificationLaunchIdWin1 = 23,
   kNotificationLaunchIdWin2 = 24,
   kPickerDisabledByPolicy = 25,
-  kProfilesDisabledLacros = 26,
+  // Deleted kProfilesDisabledLacros = 26
   kSingleProfile = 27,
   kInactiveProfiles = 28,
   kUserOptedOut = 29,
@@ -164,13 +163,12 @@ class StartupBrowserCreator {
   // `restore_tabbed_browser` should only be flipped false by Ash full restore
   // code path, suppressing restoring a normal browser when there were only PWAs
   // open in previous session. See crbug.com/1463906.
-  void LaunchBrowser(
-      const base::CommandLine& command_line,
-      Profile* profile,
-      const base::FilePath& cur_dir,
-      chrome::startup::IsProcessStartup process_startup,
-      chrome::startup::IsFirstRun is_first_run,
-      bool restore_tabbed_browser);
+  void LaunchBrowser(const base::CommandLine& command_line,
+                     Profile* profile,
+                     const base::FilePath& cur_dir,
+                     chrome::startup::IsProcessStartup process_startup,
+                     chrome::startup::IsFirstRun is_first_run,
+                     bool restore_tabbed_browser);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
   // launches browser for `profile_info`. `restore_tabbed_browser` should
@@ -333,7 +331,7 @@ StartupProfilePathInfo GetStartupProfilePath(
     const base::CommandLine& command_line,
     bool ignore_profile_picker);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // Returns the profile that should be loaded on process startup. This is either
 // the profile returned by GetStartupProfilePath, or the guest profile along
 // with StartupProfileMode::kProfilePicker mode if the profile picker should be
@@ -346,6 +344,6 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
 // GetStartupProfile() returns kError. This may return kError if neither any
 // profile nor the profile picker can be opened.
 StartupProfileInfo GetFallbackStartupProfile();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_H_

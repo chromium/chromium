@@ -107,6 +107,7 @@ static_library("test_support") {
   configs += [ "//media:media_config" ]
   deps = [
     "//base",
+    "//gpu:test_support",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
     "//media/base:test_support",

@@ -4,7 +4,10 @@
 
 package org.chromium.components.feature_engagement;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** EventConstants contains the String name of all in-product help events. */
+@NullMarked
 public final class EventConstants {
     /** The page load has failed and user has landed on an offline dino page. */
     public static final String USER_HAS_SEEN_DINO = "user_has_seen_dino";
@@ -64,6 +67,10 @@ public final class EventConstants {
     /** The keyboard accessory was used to fill payment data into a form. */
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
             "autofill_virtual_card_suggestion_accepted";
+
+    /** The keyboard accessory was used to fill card info retrieval data into a form. */
+    public static final String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED =
+            "autofill_card_info_retrieval_suggestion_accepted";
 
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
@@ -156,6 +163,9 @@ public final class EventConstants {
     public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
             "app_menu_new_incognito_tab_clicked";
 
+    /** User has activated menu allowing them to move the toolbar to the bottom of the screen. */
+    public static final String BOTTOM_TOOLBAR_MENU_TRIGGERED = "bottom_toolbar_menu_triggered";
+
     /** Voice search button click on NTP. */
     public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
 
@@ -202,8 +212,6 @@ public final class EventConstants {
             "restore_tabs_on_first_run_show_promo";
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
-
-    public static final String TAB_GROUP_SYNC_ON_STRIP_USED = "tab_group_sync_on_strip_used";
 
     /** Description text for tab group sync functionality in the tab group creation dialog. */
     public static final String TAB_GROUP_CREATION_DIALOG_SHOWN = "tab_group_creation_dialog_shown";

@@ -135,6 +135,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
             return {
                 INTERFACE_PAIR(IUpdateStateUser),
                 INTERFACE_PAIR(IUpdaterUser),
+                INTERFACE_PAIR(IUpdater2User),
                 INTERFACE_PAIR(ICompleteStatusUser),
                 INTERFACE_PAIR(IUpdaterObserverUser),
                 INTERFACE_PAIR(IUpdaterCallbackUser),
@@ -158,6 +159,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
             return {
                 INTERFACE_PAIR(IUpdateStateSystem),
                 INTERFACE_PAIR(IUpdaterSystem),
+                INTERFACE_PAIR(IUpdater2System),
                 INTERFACE_PAIR(ICompleteStatusSystem),
                 INTERFACE_PAIR(IUpdaterObserverSystem),
                 INTERFACE_PAIR(IUpdaterCallbackSystem),
@@ -548,6 +550,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       // Updater user typelib.
       {__uuidof(ICompleteStatusUser), kUpdaterUserIndex},
       {__uuidof(IUpdaterUser), kUpdaterUserIndex},
+      {__uuidof(IUpdater2User), kUpdaterUserIndex},
       {__uuidof(IUpdaterObserverUser), kUpdaterUserIndex},
       {__uuidof(IUpdateStateUser), kUpdaterUserIndex},
       {__uuidof(IUpdaterCallbackUser), kUpdaterUserIndex},
@@ -557,6 +560,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       // Updater system typelib.
       {__uuidof(ICompleteStatusSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdaterSystem), kUpdaterSystemIndex},
+      {__uuidof(IUpdater2System), kUpdaterSystemIndex},
       {__uuidof(IUpdaterObserverSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdateStateSystem), kUpdaterSystemIndex},
       {__uuidof(IUpdaterCallbackSystem), kUpdaterSystemIndex},

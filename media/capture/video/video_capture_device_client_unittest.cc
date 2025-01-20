@@ -18,12 +18,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/mock_video_frame_receiver.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
@@ -31,6 +32,7 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/test/fake_video_effects_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +57,10 @@ using ::testing::SaveArg;
 namespace media {
 
 namespace {
+
+// Setting some default usage in order to get a mappable shared image.
+constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
@@ -168,8 +174,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
-      gpu_memory_buffer_manager_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   // Will be nullopt until `Init()` has been called:
   std::optional<video_effects::FakeVideoEffectsProcessor>
       fake_video_effects_processor_;
@@ -186,8 +191,8 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   void Init(scoped_refptr<VideoCaptureBufferPoolImpl> buffer_pool) {
     auto controller = std::make_unique<NiceMock<MockVideoFrameReceiver>>();
     receiver_ = controller.get();
-    gpu_memory_buffer_manager_ =
-        std::make_unique<unittest_internal::MockGpuMemoryBufferManager>();
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         std::move(controller), buffer_pool,
@@ -240,11 +245,13 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
   const gfx::Size kBufferDimensions(10, 10);
   const VideoCaptureFormat kFrameFormatNV12(
       kBufferDimensions, 30.0f /*frame_rate*/, PIXEL_FORMAT_NV12);
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
-      gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
-          kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-          gpu::kNullSurfaceHandle, nullptr);
+
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kBufferDimensions, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoCaptureDeviceClientTest"},
+      gpu::kNullSurfaceHandle,
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+
   {
     InSequence s;
     const int expected_buffer_id = 0;
@@ -254,8 +261,9 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
                     Field(&ReadyFrameInBuffer::buffer_id, expected_buffer_id)));
     EXPECT_CALL(*receiver_, OnBufferRetired(expected_buffer_id));
   }
-  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-      buffer.get(), kFrameFormatNV12, 0 /*clockwise rotation*/,
+
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
+      std::move(shared_image), kFrameFormatNV12, 0 /*clockwise rotation*/,
       base::TimeTicks(), base::TimeDelta(),
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 
@@ -314,11 +322,12 @@ TEST_F(VideoCaptureDeviceClientTest,
 
   for (const auto& effect_variant : kEffectVariants) {
     metadata.background_blur = effect_variant;
-    std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
-        gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
-            kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            gpu::kNullSurfaceHandle, nullptr);
+
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, kBufferDimensions, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "VideoCaptureDeviceClientTest"},
+        gpu::kNullSurfaceHandle,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
 
     EXPECT_CALL(
         *receiver_,
@@ -327,8 +336,8 @@ TEST_F(VideoCaptureDeviceClientTest,
             Pointee(Field(&mojom::VideoFrameInfo::metadata,
                           Field(&media::VideoFrameMetadata::background_blur,
                                 CreateOptionalMatcher(effect_variant)))))));
-    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-        buffer.get(), kFrameFormatNV12, 0 /*clockwise rotation*/,
+    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
+        std::move(shared_image), kFrameFormatNV12, 0 /*clockwise rotation*/,
         base::TimeTicks(), base::TimeDelta(),
         /*capture_begin_timestamp=*/std::nullopt, metadata);
     Mock::VerifyAndClearExpectations(receiver_);
@@ -371,12 +380,14 @@ TEST_F(VideoCaptureDeviceClientTest,
                         Field(&media::VideoFrameMetadata::capture_begin_time,
                               Optional(expected_timestamp)))))));
   auto resolution = gfx::Size(32, 32);
-  auto buffer = gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
-      resolution, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, gpu::kNullSurfaceHandle,
-      nullptr);
-  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-      buffer.get(), VideoCaptureFormat(resolution, 30.0f, PIXEL_FORMAT_NV12), 0,
+
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, resolution, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoCaptureDeviceClientTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
+      std::move(shared_image),
+      VideoCaptureFormat(resolution, 30.0f, PIXEL_FORMAT_NV12), 0,
       base::TimeTicks(), base::TimeDelta(), expected_timestamp,
       /*metadata=*/std::nullopt);
 
@@ -561,12 +572,11 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
   for (const auto& size_and_rotation : kSizeAndRotationsNV12) {
     params.requested_format = VideoCaptureFormat(
         size_and_rotation.input_resolution, 30.0f, PIXEL_FORMAT_NV12);
-    std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
-        gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
-            size_and_rotation.input_resolution,
-            gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-            gpu::kNullSurfaceHandle, nullptr);
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, size_and_rotation.input_resolution,
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "VideoCaptureDeviceClientTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
 
     gfx::Size coded_size;
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer)
@@ -574,9 +584,9 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
         .WillOnce(Invoke([&coded_size](ReadyFrameInBuffer frame) {
           coded_size = frame.frame_info->coded_size;
         }));
-    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-        buffer.get(), params.requested_format, size_and_rotation.rotation,
-        base::TimeTicks(), base::TimeDelta(),
+    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedImage(
+        std::move(shared_image), params.requested_format,
+        size_and_rotation.rotation, base::TimeTicks(), base::TimeDelta(),
         /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 
     EXPECT_EQ(coded_size.width(), size_and_rotation.output_resolution.width());
@@ -589,7 +599,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
   Cleanup();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 // Tests that the VideoEffectsManager remote is closed on the correct task
 // runner. Destruction on the wrong task runner will cause a crash.
 TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
@@ -601,5 +611,6 @@ TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
   EXPECT_NO_FATAL_FAILURE(device_client_.reset());
   run_loop.Run();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+
 }  // namespace media

@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink::scheduler {
 
@@ -185,24 +186,29 @@ TEST_F(BlinkSchedulerSingleThreadTaskRunnerTest,
 
 TEST_F(BlinkSchedulerSingleThreadTaskRunnerTest,
        PostingToShutDownThreadLeaksObject) {
-  std::unique_ptr<NonMainThread> thread =
-      NonMainThread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
-                                      .SetThreadNameForTest("TestThread"));
-  scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner =
-      thread->GetTaskRunner();
-  thread.reset();
+  {
+    std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(
+        ThreadCreationParams(ThreadType::kTestThread)
+            .SetThreadNameForTest("TestThread"));
+    scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner =
+        thread->GetTaskRunner();
+    thread.reset();
 
-  int counter = 0;
-  std::unique_ptr<TestObject> test_object =
-      std::make_unique<TestObject>(&counter);
-  TestObject* unowned_test_object = test_object.get();
-  bool result =
-      thread_task_runner->DeleteSoon(FROM_HERE, std::move(test_object));
-  // This should always return true.
-  EXPECT_TRUE(result);
-  EXPECT_EQ(0, counter);
-  // Delete this manually since it leaked.
-  delete (unowned_test_object);
+    int counter = 0;
+    std::unique_ptr<TestObject> test_object =
+        std::make_unique<TestObject>(&counter);
+    TestObject* unowned_test_object = test_object.get();
+    bool result =
+        thread_task_runner->DeleteSoon(FROM_HERE, std::move(test_object));
+    // This should always return true.
+    EXPECT_TRUE(result);
+    EXPECT_EQ(0, counter);
+    // Delete this manually since it leaked.
+    delete (unowned_test_object);
+  }
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
 }
 
 }  // namespace blink::scheduler

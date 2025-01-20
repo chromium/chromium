@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Comment on a schema that has extended attributes on a previous line.
+[nodoc]
+interface PrecedingExtendedAttributes {
+
+  // Blank for now.
+  // TODO(crbug.com/340297705): Add similar here for functions.
+};
+
+partial interface Browser {
+  static attribute PrecedingExtendedAttributes precedingExtendedAttributes;
+};

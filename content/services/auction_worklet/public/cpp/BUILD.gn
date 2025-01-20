@@ -4,6 +4,8 @@ source_set("cpp") {
     "auction_downloader.h",
     "auction_network_events_delegate.cc",
     "auction_network_events_delegate.h",
+    "auction_worklet_features.cc",
+    "auction_worklet_features.h",
     "private_aggregation_reporting.cc",
     "private_aggregation_reporting.h",
     "real_time_reporting.h",
@@ -29,12 +31,23 @@ source_set("cpp") {
 static_library("test_support") {
   testonly = true
 
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
   sources = [
     "cbor_test_util.cc",
     "cbor_test_util.h",
+    "test_bid_builder.cc",
+    "test_bid_builder.h",
   ]
 
-  deps = [ "//base/test:test_support" ]
+  deps = [
+    "//base/test:test_support",
+    "//content/services/auction_worklet/public/mojom:for_content_tests",
+  ]
 
   public_deps = [
     "//base",

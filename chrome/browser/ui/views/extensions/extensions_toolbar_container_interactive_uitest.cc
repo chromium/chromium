@@ -1042,8 +1042,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Add site access requests for extensions A and B.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extensionA, web_contents);
-  AddSiteAccessRequest(*extensionB, web_contents);
+  AddHostAccessRequest(*extensionA, web_contents);
+  AddHostAccessRequest(*extensionB, web_contents);
   WaitForAnimation();
 
   // Verify request access button is visible because extensions A and B have
@@ -1167,8 +1167,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Add site access requests for extensions A and B.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extensionA, web_contents);
-  AddSiteAccessRequest(*extensionB, web_contents);
+  AddHostAccessRequest(*extensionA, web_contents);
+  AddHostAccessRequest(*extensionB, web_contents);
   WaitForAnimation();
 
   // Verify request access button is visible because extensions A and B have
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(
   // access request for the extension.
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   NavigateToUrl(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
   WaitForAnimation();
 
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Add site access request for extension A. This should make the request
   // access button visible.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extensionA, web_contents);
+  AddHostAccessRequest(*extensionA, web_contents);
 
   // Verify order of visible items in container:
   //   A | ExtensionsRequestAccessButton | ExtensionsToolbarButton
@@ -1526,23 +1526,23 @@ class ExtensionsToolbarContainerFeatureInteractiveTest
   }
 
   // Adds a site access request for `extension` on `tab_index`.
-  void AddSiteAccessRequest(int tab_index,
+  void AddHostAccessRequest(int tab_index,
                             const extensions::Extension& extension) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetWebContentsAt(tab_index);
     CHECK(web_contents);
     int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension);
+    permissions_manager_->AddHostAccessRequest(web_contents, tab_id, extension);
   }
 
   // Removes site access requests for `extension` on `tab_index`.
-  void RemoveSiteAccessRequest(int tab_index,
+  void RemoveHostAccessRequest(int tab_index,
                                const extensions::Extension& extension) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetWebContentsAt(tab_index);
     CHECK(web_contents);
     int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    permissions_manager_->RemoveSiteAccessRequest(tab_id, extension.id());
+    permissions_manager_->RemoveHostAccessRequest(tab_id, extension.id());
   }
 
   // Returns whether `expected_extensions` match the extensions in the request
@@ -1569,7 +1569,7 @@ class ExtensionsToolbarContainerFeatureInteractiveTest
 // but the request access button only shows extensions's requests for the
 // current tab.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureInteractiveTest,
-                       SiteAccessRequestsForMultipleTabs) {
+                       HostAccessRequestsForMultipleTabs) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   const GURL first_url("https://one.com/");
@@ -1600,14 +1600,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureInteractiveTest,
 
       // Add a site access request for extension A on the (active) first tab.
       // Verify extension A is visible on the request access button.
-      Do([&]() { AddSiteAccessRequest(first_tab_index, *extensionA); }),
+      Do([&]() { AddHostAccessRequest(first_tab_index, *extensionA); }),
       WaitForShow(kExtensionsRequestAccessButtonElementId),
       CheckView(kExtensionsRequestAccessButtonElementId,
                 CheckExtensionsInRequestAccessButton({extensionA->id()})),
 
       // Add a site access request for extension B on the (inactive) second tab.
       // Verify only extension A is visible on the request access button.
-      Do([&]() { AddSiteAccessRequest(second_tab_index, *extensionB); }),
+      Do([&]() { AddHostAccessRequest(second_tab_index, *extensionB); }),
       WaitForShow(kExtensionsRequestAccessButtonElementId),
       CheckView(kExtensionsRequestAccessButtonElementId,
                 CheckExtensionsInRequestAccessButton({extensionA->id()})),
@@ -1622,7 +1622,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureInteractiveTest,
       // Remove site access request from the second tab. Verify request access
       // button is no longer visible since no extension have a request for such
       // tab.
-      Do([&]() { RemoveSiteAccessRequest(second_tab_index, *extensionB); }),
+      Do([&]() { RemoveHostAccessRequest(second_tab_index, *extensionB); }),
       WaitForHide(kExtensionsRequestAccessButtonElementId),
 
       // Activate the first tab. Verify request access button is visible because

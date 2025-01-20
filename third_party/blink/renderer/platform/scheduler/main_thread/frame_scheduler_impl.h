@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
@@ -43,10 +42,6 @@ namespace sequence_manager {
 class TaskQueue;
 }  // namespace sequence_manager
 }  // namespace base
-
-namespace ukm {
-class UkmRecorder;
-}
 
 namespace blink {
 
@@ -84,9 +79,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
   FrameSchedulerImpl& operator=(const FrameSchedulerImpl&) = delete;
   ~FrameSchedulerImpl() override;
-
-  // FrameOrWorkerScheduler implementation:
-  void SetPreemptedForCooperativeScheduling(Preempted) override;
 
   // FrameScheduler implementation:
   void SetFrameVisible(bool frame_visible) override;
@@ -132,6 +124,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
   void OnMainFrameInteractive() override;
   void OnDispatchLoadEvent() override;
+  void OnDidInstallNewDocument() override;
   base::TimeDelta UnreportedTaskTime() const override;
 
   bool IsWaitingForContentfulPaint() const;
@@ -190,9 +183,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // scheduler. Note that the main thread's policy should be upto date to
   // compute the correct priority.
   TaskPriority ComputePriority(MainThreadTaskQueue* task_queue) const;
-
-  ukm::SourceId GetUkmSourceId() override;
-  ukm::UkmRecorder* GetUkmRecorder();
 
   // FrameTaskQueueController::Delegate implementation.
   void OnTaskQueueCreated(
@@ -380,8 +370,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   StateTracer<TracingCategory::kInfo> url_tracer_;
   TraceableState<ThrottlingType, TracingCategory::kInfo> throttling_type_;
   Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
-  TraceableState<bool, TracingCategory::kInfo>
-      preempted_for_cooperative_scheduling_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.
   int aggressive_throttling_opt_out_count_;
   TraceableState<bool, TracingCategory::kInfo>

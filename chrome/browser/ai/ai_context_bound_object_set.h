@@ -8,10 +8,8 @@
 #include <variant>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
-#include "content/public/browser/document_user_data.h"
 
 // The data structure that supports adding and removing `AIContextBoundObject`.
 class AIContextBoundObjectSet : public base::SupportsUserData::Data {
@@ -29,11 +27,6 @@ class AIContextBoundObjectSet : public base::SupportsUserData::Data {
   static AIContextBoundObjectSet* GetFromContext(
       base::SupportsUserData& context_user_data);
 
-  // Returns a weak pointer for testing purposes only.
-  base::WeakPtr<AIContextBoundObjectSet> GetWeakPtrForTesting() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   // Remove the `AIContextBoundObject` from the set.
   void RemoveContextBoundObject(AIContextBoundObject* object);
 
@@ -41,9 +34,6 @@ class AIContextBoundObjectSet : public base::SupportsUserData::Data {
   base::flat_set<std::unique_ptr<AIContextBoundObject>,
                  base::UniquePtrComparator>
       context_bound_object_set_;
-
- private:
-  base::WeakPtrFactory<AIContextBoundObjectSet> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_AI_AI_CONTEXT_BOUND_OBJECT_SET_H_

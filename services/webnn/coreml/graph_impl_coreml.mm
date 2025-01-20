@@ -28,7 +28,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -39,6 +38,7 @@
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/queueable_resource_state_base.h"
@@ -192,9 +192,11 @@ class GraphImplCoreml::ComputeResources
       base::flat_map<std::string,
                      scoped_refptr<QueueableResourceState<BufferContent>>>
           named_output_buffer_states,
-      base::OnceClosure completion_closure) const {
+      base::OnceClosure completion_closure,
+      ScopedTrace scoped_trace) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    scoped_trace.AddStep("Set up prediction");
     base::ElapsedTimer model_predict_timer;
 
     NSString* feature_name;
@@ -298,6 +300,8 @@ class GraphImplCoreml::ComputeResources
     auto wrapped_completion_closure =
         base::BindPostTaskToCurrentDefault(std::move(completion_closure));
 
+    scoped_trace.AddStep("Trigger prediction");
+
     // Run the MLModel asynchronously.
     [ml_model_
         predictionFromFeatures:feature_provider
@@ -306,14 +310,17 @@ class GraphImplCoreml::ComputeResources
                  base::CallbackToBlock(base::BindOnce(
                      &GraphImplCoreml::ComputeResources::DidDispatch, this,
                      std::move(model_predict_timer), std::move(output_backings),
-                     std::move(wrapped_completion_closure)))];
+                     std::move(wrapped_completion_closure),
+                     std::move(scoped_trace)))];
   }
 
   void DidDispatch(base::ElapsedTimer model_predict_timer,
                    NSMutableDictionary* output_backing_buffers,
                    base::OnceClosure completion_closure,
+                   ScopedTrace scoped_trace,
                    id<MLFeatureProvider> output_features,
                    NSError* error) const {
+    scoped_trace.AddStep("Process prediction");
     DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs."
                                           "ModelPredictWithDispatch",
                                           model_predict_timer.Elapsed());
@@ -567,7 +574,8 @@ void GraphImplCoreml::DispatchImpl(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("gpu", "webnn::coreml::GraphImpl::DispatchImpl");
+
+  ScopedTrace scoped_trace("GraphImplCoreml::DispatchImpl");
 
   base::flat_map<std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
@@ -591,6 +599,7 @@ void GraphImplCoreml::DispatchImpl(
       named_output_buffer_states, std::back_inserter(exclusive_resources),
       [](const auto& name_and_state) { return name_and_state.second; });
 
+  scoped_trace.AddStep("Acquire resources");
   auto task = base::MakeRefCounted<ResourceTask>(
       std::move(shared_resources), std::move(exclusive_resources),
       base::BindOnce(
@@ -603,13 +612,14 @@ void GraphImplCoreml::DispatchImpl(
                  std::string,
                  scoped_refptr<QueueableResourceState<BufferContent>>>
                  named_output_buffer_states,
-             base::OnceClosure completion_closure) {
+             ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
             compute_resources->DoDispatch(std::move(named_input_buffer_states),
                                           std::move(named_output_buffer_states),
-                                          std::move(completion_closure));
+                                          std::move(completion_closure),
+                                          std::move(scoped_trace));
           },
           compute_resources_, std::move(named_input_buffer_states),
-          std::move(named_output_buffer_states)));
+          std::move(named_output_buffer_states), std::move(scoped_trace)));
   task->Enqueue();
 }
 

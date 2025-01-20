@@ -66,7 +66,7 @@ class AmplitudePeakDetectorTest : public testing::TestWithParam<int> {
       const SampleLocation& location) {
     auto bus = GetSilentAudioBus();
 
-    bus->channel(location.channel)[location.index] = value;
+    bus->channel_span(location.channel)[location.index] = value;
 
     return bus;
   }

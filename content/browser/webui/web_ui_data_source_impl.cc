@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -33,6 +34,16 @@
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+#include "base/base_paths.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "content/public/common/content_switches.h"
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 
 namespace content {
 
@@ -71,6 +82,44 @@ void GetDataResourceBytesOnWorkerThread(
               },
               resource_id, std::move(callback)));
 }
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+void GetDataResourceBytesOnWorkerThreadFromDisk(
+    std::string filepath,
+    URLDataSource::GotDataCallback callback) {
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](std::string filepath,
+                 URLDataSource::GotDataCallback callback) {
+                base::FilePath exe_dir;
+                base::PathService::Get(base::DIR_EXE, &exe_dir);
+                base::FilePath file_path =
+                    exe_dir.Append(base::FilePath::FromUTF8Unsafe(filepath))
+                        .NormalizePathSeparators();
+
+                if (file_path.ReferencesParent()) {
+                  // Convert to absolute, otherwise ReadFileToString()
+                  // will refuse to load the file.
+                  base::FilePath absolute_file_path =
+                      base::MakeAbsoluteFilePath(file_path);
+                  file_path = absolute_file_path;
+                }
+
+                std::string content;
+                const bool ok = base::ReadFileToString(file_path, &content);
+                CHECK(ok) << "Failed to load from disk: " << filepath;
+                scoped_refptr<base::RefCountedString> response =
+                    base::MakeRefCounted<base::RefCountedString>(
+                        std::move(content));
+                std::move(callback).Run(response.get());
+              },
+              filepath, std::move(callback)));
+}
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 
 const int kNonExistentResource = -1;
 
@@ -149,7 +198,21 @@ WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
     : URLDataSourceImpl(source_name,
                         std::make_unique<InternalDataSource>(this)),
       source_name_(source_name),
-      default_resource_(kNonExistentResource) {}
+      default_resource_(kNonExistentResource) {
+  // |source_name| is assumed to match one of the following patterns:
+  //
+  // some-host
+  // chrome-untrusted://some-host/
+  // some-scheme://
+  //
+  // Source names of the form "some-scheme://" are explicitly disallowed.
+  CHECK(!source_name.ends_with("://"));
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+  load_from_disk_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kLoadWebUIfromDisk);
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+}
 
 WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 
@@ -214,8 +277,15 @@ void WebUIDataSourceImpl::AddResourcePath(std::string_view path,
 
 void WebUIDataSourceImpl::AddResourcePaths(
     base::span<const webui::ResourcePath> paths) {
-  for (const auto& path : paths)
-    AddResourcePath(path.path, path.id);
+  for (const auto& resource : paths) {
+    AddResourcePath(resource.path, resource.id);
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+    if (load_from_disk_ && resource.filepath.has_value()) {
+      CHECK(strlen(resource.filepath.value()) > 0u);
+      idr_to_file_map_[resource.id] = resource.filepath.value();
+    }
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+  }
 }
 
 void WebUIDataSourceImpl::SetDefaultResource(int resource_id) {
@@ -297,12 +367,28 @@ std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
 }
 
-std::string WebUIDataSourceImpl::GetScheme() {
-  auto pos = source_name_.find("://");
-  if (pos == std::string::npos) {
-    return kChromeUIScheme;
+url::Origin WebUIDataSourceImpl::GetOrigin() {
+  // |source_name_| is assumed to match one of the following patterns:
+  //
+  // some-host
+  // chrome-untrusted://some-host/
+  //
+  // so we use the GURL parser to differentiate the two cases.
+  url::Origin result;
+  GURL url(source_name_);
+  if (url.is_valid()) {
+    // |source_name_| must be of the form "chrome-untrusted://some-host/",
+    // which means it serves URLs of the form "chrome-untrusted://some-host/".
+    CHECK(url.SchemeIs(kChromeUIUntrustedScheme));
+    result = url::Origin::Create(url);
+  } else {
+    // |source_name_| must be of the form "some-host", which means it serves
+    // URLs of the form "chrome://some-host/".
+    result = url::Origin::CreateFromNormalizedTuple(kChromeUIScheme,
+                                                    source_name_, 0);
   }
-  return source_name_.substr(0, pos);
+  CHECK(!result.opaque());
+  return result;
 }
 
 void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
@@ -390,9 +476,22 @@ void WebUIDataSourceImpl::StartDataRequest(
   int resource_id = URLToIdrOrDefault(url);
   if (resource_id == kNonExistentResource) {
     std::move(callback).Run(nullptr);
-  } else {
-    GetDataResourceBytesOnWorkerThread(resource_id, std::move(callback));
+    return;
   }
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+  if (load_from_disk_) {
+    auto it = idr_to_file_map_.find(resource_id);
+    if (it != idr_to_file_map_.end()) {
+      GetDataResourceBytesOnWorkerThreadFromDisk(it->second,
+                                                 std::move(callback));
+      return;
+    }
+    // Fall back to reading from the .pak file.
+  }
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+
+  GetDataResourceBytesOnWorkerThread(resource_id, std::move(callback));
 }
 
 void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(

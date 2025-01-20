@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Daftar kredensial yang terisi dengan gestur sentuhan sedang terbuka sepenuhnya.</translation>
 <translation id="5591247451101092906">Gunakan sandi atau kunci sandi tersimpan?</translation>
 <translation id="5624120631404540903">Kelola sandi</translation>
+<translation id="592182999816790476">Sandi untuk <ph name="USERNAME" /> disimpan untuk <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Kunci sandi untuk <ph name="USERNAME" />, gunakan kunci layar</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Sandi baru untuk situs ini}other{Sandi baru untuk situs ini}}</translation>
 <translation id="7286867818472074330">Pilih kunci sandi</translation>

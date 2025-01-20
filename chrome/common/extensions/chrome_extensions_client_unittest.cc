@@ -34,9 +34,9 @@ class ChromeExtensionsClientTest : public testing::Test {
 };
 
 base::span<const char* const> GetFeatureList() {
-  constexpr const char* feature_list[] = {"AllowedFeature",
-                                          "DisallowedFeature"};
-  return base::make_span(feature_list);
+  static constexpr const char* feature_list[] = {"AllowedFeature",
+                                                 "DisallowedFeature"};
+  return base::span(feature_list);
 }
 
 bool FeatureDelegatedCheck(const std::string& api_full_name,

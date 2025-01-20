@@ -12,6 +12,7 @@ namespace syncer {
 class SyncService;
 }
 
+class GaiaId;
 class PrefService;
 
 namespace password_manager::features_util {
@@ -22,8 +23,6 @@ namespace password_manager::features_util {
 enum class PasswordAccountStorageUserState {
   // Signed-out user (and no account storage opt-in exists).
   kSignedOutUser,
-  // Signed-out user, but an account storage opt-in exists.
-  kSignedOutAccountStoreUser,
   // Signed-in non-syncing user, not opted in to the account storage (but may
   // save passwords to the account storage by default).
   kSignedInUser,
@@ -93,29 +92,6 @@ bool CanCreateAccountStore(const PrefService* pref_service);
 bool IsOptedInForAccountStorage(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
 
-// Whether it makes sense to ask the user to opt-in for account-based
-// password storage. This is true if the opt-in doesn't exist yet, but all
-// other requirements are met (i.e. there is a signed-in user, Sync-the-feature
-// is not enabled, etc).
-// |pref_service| must not be null.
-// |sync_service| may be null (commonly the case in incognito mode), in which
-// case this will simply return false.
-// See PasswordFeatureManager::ShouldShowAccountStorageOptIn.
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service);
-
-// Whether it makes sense to ask the user to signin again to access the
-// account-based password storage. This is true if a user on this device
-// previously opted into using the account store but is signed-out now.
-// |current_page_url| is the current URL, used to suppress the promo on the
-// Google signin page (no point in asking the user to sign in while they're
-// already doing that). For non-web contexts (e.g. native UIs), it is valid to
-// pass an empty GURL.
-// See PasswordFeatureManager::ShouldShowAccountStorageReSignin.
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
-                                      const GURL& current_page_url);
-
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
 // Always returns an actual value, never kNotSet.
@@ -165,16 +141,6 @@ void OptInToAccountStorage(PrefService* pref_service,
 void OptOutOfAccountStorage(PrefService* pref_service,
                             syncer::SyncService* sync_service);
 
-// Clears the opt-in to using account storage for passwords for the
-// current signed-in user (unconsented primary account), as well as all other
-// associated settings (e.g. default store choice).
-// WARNING: this does not clear the account key from prefs like
-// KeepAccountStorageSettingsOnlyForUsers().
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
-void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
-                                            syncer::SyncService* sync_service);
-
 // Sets the default storage location for signed-in but non-syncing users. This
 // store is used for saving new credentials and adding blacking listing entries.
 // |pref_service| and |sync_service| must not be null.
@@ -189,28 +155,12 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 // |pref_service| must not be null.
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
-    const std::vector<std::string>& gaia_ids);
-
-// When the user declines the opt-in offer during saving, the default
-// store pref is set to kProfileStore, to signal the opt-in shouldn't be
-// offered again (see PasswordFeatureManagerImpl::
-// ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()).
-// This function additionally ensures that the opt-in pref is explicitly
-// set to false in that state, which is relevant for GetUserSettings().
-// Opt-in offers from other flows are unaffected (e.g. filling).
-// See crbug.com/1509865.
-void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service);
+    const std::vector<GaiaId>& gaia_ids);
 
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
-
-// Necessary but not sufficient condition to promote account storage opt-in
-// for users currently opted-out. In particular for
-// ShouldShowAccountStorageOptIn() and ShouldShowAccountStorageReSignin().
-// If the promos are disallowed, no reauth is required to enable the feature.
-bool AreAccountStorageOptInPromosAllowed();
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

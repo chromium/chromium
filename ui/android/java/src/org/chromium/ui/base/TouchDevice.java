@@ -11,9 +11,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Simple proxy for querying input device properties from C++. */
 @JNINamespace("ui")
+@NullMarked
 public class TouchDevice {
 
     /** Static methods only so make constructor private. */

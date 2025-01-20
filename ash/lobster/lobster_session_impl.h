@@ -54,7 +54,9 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                        LobsterPreviewFeedbackCallback) override;
   bool SubmitFeedback(int candidate_id,
                       const std::string& description) override;
-  void LoadUI(std::optional<std::string> query, LobsterMode mode) override;
+  void LoadUI(std::optional<std::string> query,
+              LobsterMode mode,
+              const gfx::Rect& caret_bounds) override;
   void ShowUI() override;
   void CloseUI() override;
   void RecordWebUIMetricEvent(ash::LobsterMetricState metric_event) override;

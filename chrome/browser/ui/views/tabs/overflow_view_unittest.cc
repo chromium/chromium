@@ -102,12 +102,15 @@ class OverflowViewTest : public testing::Test {
   static int InterpolateByTens(int minimum,
                                int preferred,
                                views::SizeBound bound) {
-    if (!bound.is_bounded())
+    if (!bound.is_bounded()) {
       return preferred;
-    if (bound.value() <= minimum)
+    }
+    if (bound.value() <= minimum) {
       return minimum;
-    if (bound.value() >= preferred)
+    }
+    if (bound.value() >= preferred) {
       return preferred;
+    }
     return minimum + 10 * ((bound.value() - minimum) / 10);
   }
 

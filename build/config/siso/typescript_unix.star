@@ -38,9 +38,6 @@ def __step_config(ctx, step_config):
                     "*.json",
                 ],
             },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "remote": remote_run,
             "timeout": "2m",
             "handler": "typescript_ts_library",
@@ -56,9 +53,6 @@ def __step_config(ctx, step_config):
                     "*.json",
                 ],
             },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
             "remote": remote_run,
             "timeout": "2m",
             "handler": "typescript_ts_definitions",

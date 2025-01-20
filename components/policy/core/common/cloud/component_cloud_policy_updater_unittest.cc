@@ -30,6 +30,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -119,10 +120,10 @@ void ComponentCloudPolicyUpdaterTest::SetUp() {
                                            /* max_cache_size */ std::nullopt);
   store_ = std::make_unique<ComponentCloudPolicyStore>(
       &store_delegate_, cache_.get(), dm_protocol::kChromeExtensionPolicyType);
-  store_->SetCredentials(PolicyBuilder::kFakeUsername,
-                         PolicyBuilder::kFakeGaiaId, PolicyBuilder::kFakeToken,
-                         PolicyBuilder::kFakeDeviceId, public_key_,
-                         PolicyBuilder::kFakePublicKeyVersion);
+  store_->SetCredentials(
+      PolicyBuilder::kFakeUsername, GaiaId(PolicyBuilder::kFakeGaiaId),
+      PolicyBuilder::kFakeToken, PolicyBuilder::kFakeDeviceId, public_key_,
+      PolicyBuilder::kFakePublicKeyVersion);
   auto url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &loader_factory_);

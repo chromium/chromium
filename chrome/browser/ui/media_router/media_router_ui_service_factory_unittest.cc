@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -10,7 +12,6 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
-#include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/pref_names.h"
@@ -35,8 +36,8 @@ namespace media_router {
 
 class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
  public:
-  MediaRouterUIServiceFactoryUnitTest() {}
-  ~MediaRouterUIServiceFactoryUnitTest() override {}
+  MediaRouterUIServiceFactoryUnitTest() = default;
+  ~MediaRouterUIServiceFactoryUnitTest() override = default;
 
   void SetUp() override {
     TestingProfile::Builder builder;

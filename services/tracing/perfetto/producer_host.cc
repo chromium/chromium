@@ -13,10 +13,8 @@
 
 #include "base/functional/bind.h"
 #include "base/process/process.h"
-#include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
@@ -25,8 +23,7 @@
 
 namespace tracing {
 
-ProducerHost::ProducerHost(base::tracing::PerfettoTaskRunner* task_runner)
-    : task_runner_(task_runner) {}
+ProducerHost::ProducerHost() = default;
 
 ProducerHost::~ProducerHost() {
   // Manually reset to prevent any callbacks from the ProducerEndpoint
@@ -160,6 +157,11 @@ void ProducerHost::CommitData(const perfetto::CommitDataRequest& data_request,
 void ProducerHost::RegisterDataSource(
     const perfetto::DataSourceDescriptor& registration_info) {
   producer_endpoint_->RegisterDataSource(registration_info);
+}
+
+void ProducerHost::UpdateDataSource(
+    const perfetto::DataSourceDescriptor& registration_info) {
+  producer_endpoint_->UpdateDataSource(registration_info);
 }
 
 void ProducerHost::RegisterTraceWriter(uint32_t writer_id,

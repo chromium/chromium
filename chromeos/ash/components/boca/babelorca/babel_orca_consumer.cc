@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/service_process_host.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -96,7 +97,7 @@ std::unique_ptr<TachyonAuthedClient> CreateStreamingClient(
 std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::unique_ptr<CaptionController> caption_controller,
     std::unique_ptr<BabelOrcaCaptionTranslator> translator,
     PrefService* pref_service,
@@ -114,7 +115,7 @@ std::unique_ptr<BabelOrcaController> BabelOrcaConsumer::Create(
 BabelOrcaConsumer::BabelOrcaConsumer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     std::unique_ptr<CaptionController> caption_controller,
     TokenManager* tachyon_oauth_token_manager,
     TachyonRequestDataProvider* tachyon_request_data_provider,
@@ -132,12 +133,6 @@ BabelOrcaConsumer::BabelOrcaConsumer(
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       translator_(std::move(translator)) {
   pref_change_registrar_->Init(pref_service_);
-  current_language_ =
-      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode);
-  pref_change_registrar_->Add(
-      prefs::kLiveTranslateTargetLanguageCode,
-      base::BindRepeating(&BabelOrcaConsumer::OnTranslationPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 BabelOrcaConsumer::~BabelOrcaConsumer() {
@@ -166,17 +161,6 @@ void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
     StopReceiving();
     return;
   }
-  if (session_translations_enabled_) {
-    // TODO(377696975) re-factor translator.
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  } else {
-    // TODO(377544063) Handle in flight transcriptions rather than drop them.
-    translator_->UnsetOnTranslationCallback();
-  }
   signed_in_ = tachyon_request_data_provider_->tachyon_token().has_value();
   StartReceiving();
 }
@@ -195,15 +179,6 @@ void BabelOrcaConsumer::OnLocalCaptionConfigUpdated(
   StartReceiving();
 }
 
-void BabelOrcaConsumer::OnTranslationPrefChanged() {
-  if (session_translations_enabled_) {
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  }
-}
 
 void BabelOrcaConsumer::DispatchTranscription(
     const media::SpeechRecognitionResult& result) {
@@ -224,20 +199,6 @@ void BabelOrcaConsumer::OnTranslationCallback(
   }
 }
 
-void BabelOrcaConsumer::HandleLanguageAndDispatch(
-    const media::SpeechRecognitionResult& transcript,
-    const std::string& language) {
-  if (language != current_language_) {
-    current_language_ = language;
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  }
-
-  translator_->Translate(transcript);
-}
 
 void BabelOrcaConsumer::StartReceiving() {
   if (!local_captions_enabled_ || !session_captions_enabled_) {
@@ -287,12 +248,13 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
   join_group_authed_client_ = std::make_unique<TachyonAuthedClientImpl>(
       std::make_unique<TachyonClientImpl>(url_loader_factory_),
       join_group_token_manager_.get());
-  join_group_url_ = base::StrCat(
-      {boca::kSchoolToolsApiBaseUrl,
-       base::ReplaceStringPlaceholders(
-           boca::kJoinTachyonGroupUrlTemplate,
-           {gaia_id_, tachyon_request_data_provider_->session_id().value()},
-           /*=offsets*/ nullptr)});
+  join_group_url_ =
+      base::StrCat({boca::kSchoolToolsApiBaseUrl,
+                    base::ReplaceStringPlaceholders(
+                        boca::kJoinTachyonGroupUrlTemplate,
+                        {gaia_id_.ToString(),
+                         tachyon_request_data_provider_->session_id().value()},
+                        /*=offsets*/ nullptr)});
   auto request_data = std::make_unique<RequestDataWrapper>(
       kTrafficAnnotation, join_group_url_, /*max_retries_param=*/3,
       base::BindOnce(&BabelOrcaConsumer::OnJoinGroupResponse,
@@ -316,7 +278,12 @@ void BabelOrcaConsumer::OnTranscriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
   if (session_translations_enabled_) {
-    HandleLanguageAndDispatch(transcript, language);
+    translator_->Translate(
+        transcript,
+        base::BindOnce(&BabelOrcaConsumer::DispatchTranscription,
+                       weak_ptr_factory_.GetWeakPtr()),
+        language,
+        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
     return;
   }
 

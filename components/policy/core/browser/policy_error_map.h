@@ -42,8 +42,8 @@ class POLICY_EXPORT PolicyErrorMap {
   // IsReady is true. IsReady will be true once the UI message loop has started.
   bool IsReady() const;
 
-  // Adds an entry with key |policy|, the error message corresponding to
-  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // Adds an entry with key `policy`, the error message corresponding to
+  // `message_id` in grit/generated_resources.h and its error_path `error_path`
   // to the map.
   void AddError(
       const std::string& policy,
@@ -51,10 +51,10 @@ class POLICY_EXPORT PolicyErrorMap {
       PolicyErrorPath error_path = {},
       PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
-  // Adds an entry with key |policy|, the error message corresponding to
-  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // Adds an entry with key `policy`, the error message corresponding to
+  // `message_id` in grit/generated_resources.h and its error_path `error_path`
   // to the map and replaces the placeholder within the error message with
-  // |replacement_string|.
+  // `replacement_string`.
   void AddError(
       const std::string& policy,
       int message_id,
@@ -78,21 +78,27 @@ class POLICY_EXPORT PolicyErrorMap {
       PolicyErrorPath error_path = {},
       PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
-  // Returns true if there is any error for |policy|.
+  // Returns true if there is any error for `policy`.
   bool HasError(const std::string& policy);
 
   // Returns true if there is any fatal error (PolicyMap::MessageType::kError)
-  // for |policy|. Returns false if |policy| only has non-fatal errors
+  // for `policy`. Returns false if `policy` only has non-fatal errors
   // (PolicyMap::MessageType::kInfo or PolicyMap::MessageType::kWarning) or no
   // errors at all.
   bool HasFatalError(const std::string& policy);
 
-  // Returns all the error messages stored for |policy|, separated by a white
-  // space. Returns an empty string if there are no errors for |policy|.
+  // Returns all the error messages stored for `policy`, separated by a white
+  // space. Returns an empty string if there are no errors for `policy`.
   std::u16string GetErrorMessages(const std::string& policy);
 
-  // Returns all the error metadata stored for |policy| in a vector. Returns an
-  // empty vector if there are no errors for |policy|.
+  // Returns all the messages stored for `policy` with matching `message_type`,
+  // separated by a white space. Returns an empty string if there are no such
+  // messages for `policy`.
+  std::u16string GetErrorMessages(const std::string& policy,
+                                  PolicyMap::MessageType message_type);
+
+  // Returns all the error metadata stored for `policy` in a vector. Returns an
+  // empty vector if there are no errors for `policy`.
   std::vector<Data> GetErrors(const std::string& policy);
 
   bool empty() const;
@@ -107,10 +113,10 @@ class POLICY_EXPORT PolicyErrorMap {
   // Maps the error when ready, otherwise adds it to the pending errors list.
   void AddError(std::unique_ptr<PendingError> error);
 
-  // Converts a PendingError into a |map_| entry.
+  // Converts a PendingError into a `map_` entry.
   void Convert(PendingError* error);
 
-  // Converts all pending errors to |map_| entries.
+  // Converts all pending errors to `map_` entries.
   void CheckReadyAndConvert();
 
   std::vector<std::unique_ptr<PendingError>> pending_;

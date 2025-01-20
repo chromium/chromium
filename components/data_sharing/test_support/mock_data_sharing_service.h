@@ -7,10 +7,12 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/group_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace data_sharing {
@@ -37,13 +39,16 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD0(ReadAllGroups, std::set<GroupData>());
   MOCK_METHOD2(GetPossiblyRemovedGroupMember,
                std::optional<GroupMemberPartialData>(const GroupId&,
-                                                     const std::string&));
-  MOCK_METHOD1(
-      ReadAllGroups,
-      void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));
+                                                     const GaiaId&));
+  MOCK_METHOD1(GetPossiblyRemovedGroup,
+               std::optional<GroupData>(const GroupId&));
   MOCK_METHOD2(
-      ReadGroup,
+      ReadGroupDeprecated,
       void(const GroupId&,
+           base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
+  MOCK_METHOD2(
+      ReadNewGroup,
+      void(const GroupToken&,
            base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
   MOCK_METHOD2(
       CreateGroup,
@@ -81,9 +86,19 @@ class MockDataSharingService : public DataSharingService {
       GetSharedEntitiesPreview,
       void(const GroupToken&,
            base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>));
+  MOCK_METHOD(void,
+              GetAvatarImageForURL,
+              (const GURL&,
+               int,
+               base::OnceCallback<void(const gfx::Image&)>,
+               image_fetcher::ImageFetcher*));
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
+  MOCK_METHOD1(AddGroupDataForTesting, void(GroupData));
+  MOCK_METHOD1(SetPreviewServerProxyForTesting,
+               void(std::unique_ptr<PreviewServerProxy>));
+  MOCK_METHOD0(GetPreviewServerProxyForTesting, PreviewServerProxy*());
 };
 
 }  // namespace data_sharing

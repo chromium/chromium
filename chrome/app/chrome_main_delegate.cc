@@ -63,9 +63,9 @@
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/profiler/process_type.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "chrome/grit/generated_resources.h"
@@ -225,7 +225,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/scoped_add_feature_flags.h"
-#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
@@ -957,6 +956,11 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_WIN)
+  ChromeProcessSingleton::GetInstance()
+      ->ChromeProcessSingleton::InitializeFeatures();
+#endif
 
   CommonEarlyInitialization(invoked_in);
 

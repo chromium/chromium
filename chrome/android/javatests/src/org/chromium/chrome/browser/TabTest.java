@@ -444,7 +444,10 @@ public class TabTest {
                     sActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                     return sActivityTestRule
                             .getActivity()
                             .getCurrentTabCreator()

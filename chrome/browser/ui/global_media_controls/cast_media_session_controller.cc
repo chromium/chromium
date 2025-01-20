@@ -27,12 +27,13 @@ CastMediaSessionController::CastMediaSessionController(
     mojo::Remote<media_router::mojom::MediaController> route_controller)
     : route_controller_(std::move(route_controller)) {}
 
-CastMediaSessionController::~CastMediaSessionController() {}
+CastMediaSessionController::~CastMediaSessionController() = default;
 
 void CastMediaSessionController::Send(
     media_session::mojom::MediaSessionAction action) {
-  if (!media_status_)
+  if (!media_status_) {
     return;
+  }
 
   switch (action) {
     case media_session::mojom::MediaSessionAction::kPlay:
@@ -84,25 +85,29 @@ void CastMediaSessionController::OnMediaStatusUpdated(
   // which we seek forward or backward. We must do this because the Cast
   // receiver only gives an update when the playback state changes (e.g. paused,
   // seeked), and not when the current position is incremented every second.
-  if (IsPlaying(media_status_))
+  if (IsPlaying(media_status_)) {
     IncrementCurrentTimeAfterOneSecond();
+  }
 }
 
 void CastMediaSessionController::SeekTo(base::TimeDelta time) {
-  if (!media_status_)
+  if (!media_status_) {
     return;
+  }
   route_controller_->Seek(time);
 }
 
 void CastMediaSessionController::SetMute(bool mute) {
-  if (!media_status_)
+  if (!media_status_) {
     return;
+  }
   route_controller_->SetMute(mute);
 }
 
 void CastMediaSessionController::SetVolume(float volume) {
-  if (!media_status_)
+  if (!media_status_) {
     return;
+  }
   route_controller_->SetVolume(volume);
 }
 
@@ -117,10 +122,12 @@ CastMediaSessionController::GetMediaStatusForTesting() {
 
 base::TimeDelta CastMediaSessionController::PutWithinBounds(
     const base::TimeDelta& time) {
-  if (time.is_negative() || !media_status_)
+  if (time.is_negative() || !media_status_) {
     return base::TimeDelta();
-  if (time > media_status_->duration)
+  }
+  if (time > media_status_->duration) {
     return media_status_->duration;
+  }
   return time;
 }
 
@@ -136,11 +143,13 @@ void CastMediaSessionController::IncrementCurrentTimeAfterOneSecond() {
 }
 
 void CastMediaSessionController::IncrementCurrentTime() {
-  if (!IsPlaying(media_status_))
+  if (!IsPlaying(media_status_)) {
     return;
+  }
 
-  if (media_status_->current_time < media_status_->duration)
+  if (media_status_->current_time < media_status_->duration) {
     IncrementCurrentTimeAfterOneSecond();
+  }
   media_status_->current_time =
       PutWithinBounds(media_status_->current_time + base::Seconds(1));
 }

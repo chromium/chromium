@@ -39,7 +39,7 @@ const char kForceSearchEngineChoiceScreen[] =
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kSearchEngineChoiceGuestExperience,
              "SearchEngineChoiceGuestExperience",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.
@@ -100,11 +100,10 @@ BASE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests,
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kTemplateUrlReconciliation,
              "TemplateUrlReconciliation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kReconcileWithAllKnownEngines(
     &kTemplateUrlReconciliation,
     "reconcile_with_all_known_engines",
-    false);
-
+    true);
 }  // namespace switches

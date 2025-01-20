@@ -645,7 +645,7 @@ TEST_F(ShortcutMenuHandlingSubManagerExecuteTest,
   test::UninstallAllWebApps(profile());
   ASSERT_FALSE(
       OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   SynchronizeOsOptions options;
   options.force_unregister_os_integration = true;

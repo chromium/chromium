@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "build/buildflag.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -23,6 +24,7 @@
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_observation_group.h"
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 #include "content/browser/file_system_access/file_system_access_observer_observation.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
@@ -40,6 +42,8 @@
 namespace content {
 
 using WatchType = FileSystemAccessWatchScope::WatchType;
+using UsageChangeResult =
+    FileSystemAccessObserverQuotaManager::UsageChangeResult;
 
 namespace {
 
@@ -55,67 +59,6 @@ storage::FileSystemURL ToFileSystemURL(storage::FileSystemContext& context,
 }
 
 }  // namespace
-
-FileSystemAccessWatcherManager::Observation::Change::Change(
-    storage::FileSystemURL url,
-    FileSystemAccessChangeSource::ChangeInfo change_info)
-    : url(std::move(url)), change_info(std::move(change_info)) {}
-FileSystemAccessWatcherManager::Observation::Change::~Change() = default;
-
-FileSystemAccessWatcherManager::Observation::Change::Change(
-    const FileSystemAccessWatcherManager::Observation::Change& other)
-    : url(other.url), change_info(std::move(other.change_info)) {}
-FileSystemAccessWatcherManager::Observation::Change::Change(
-    FileSystemAccessWatcherManager::Observation::Change&&) noexcept = default;
-
-FileSystemAccessWatcherManager::Observation::Change&
-FileSystemAccessWatcherManager::Observation::Change::operator=(
-    const FileSystemAccessWatcherManager::Observation::Change&) = default;
-FileSystemAccessWatcherManager::Observation::Change&
-FileSystemAccessWatcherManager::Observation::Change::operator=(
-    FileSystemAccessWatcherManager::Observation::Change&&) noexcept = default;
-
-FileSystemAccessWatcherManager::Observation::Observation(
-    FileSystemAccessWatcherManager* watcher_manager,
-    FileSystemAccessWatchScope scope,
-    base::PassKey<FileSystemAccessWatcherManager> /*pass_key*/)
-    : scope_(std::move(scope)) {
-  CHECK(watcher_manager);
-  obs_.Observe(watcher_manager);
-}
-FileSystemAccessWatcherManager::Observation::~Observation() = default;
-
-void FileSystemAccessWatcherManager::Observation::SetCallback(
-    OnChangesCallback on_change_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!on_change_callback_);
-  on_change_callback_ = std::move(on_change_callback);
-}
-
-void FileSystemAccessWatcherManager::Observation::SetUsageCallback(
-    OnUsageChangesCallback on_usage_change_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!on_usage_change_callback_);
-  on_usage_change_callback_ = std::move(on_usage_change_callback);
-}
-
-void FileSystemAccessWatcherManager::Observation::NotifyOfChanges(
-    const std::optional<std::list<Change>>& changes_or_error,
-    base::PassKey<FileSystemAccessWatcherManager> pass_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (on_change_callback_) {
-    on_change_callback_.Run(std::move(changes_or_error));
-  }
-}
-
-void FileSystemAccessWatcherManager::Observation::NotifyOfUsageChange(
-    size_t old_usage,
-    size_t new_usage) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (on_usage_change_callback_) {
-    on_usage_change_callback_.Run(old_usage, new_usage);
-  }
-}
 
 FileSystemAccessWatcherManager::FileSystemAccessWatcherManager(
     FileSystemAccessManagerImpl* manager,
@@ -148,7 +91,9 @@ void FileSystemAccessWatcherManager::RemoveObserverHost(
 }
 
 void FileSystemAccessWatcherManager::GetFileObservation(
+    const blink::StorageKey& storage_key,
     const storage::FileSystemURL& file_url,
+    ukm::SourceId ukm_source_id,
     GetObservationCallback get_observation_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -156,13 +101,15 @@ void FileSystemAccessWatcherManager::GetFileObservation(
   EnsureSourceIsInitializedForScope(
       scope, base::BindOnce(
                  &FileSystemAccessWatcherManager::PrepareObservationForScope,
-                 weak_factory_.GetWeakPtr(), scope,
+                 weak_factory_.GetWeakPtr(), storage_key, scope, ukm_source_id,
                  std::move(get_observation_callback)));
 }
 
 void FileSystemAccessWatcherManager::GetDirectoryObservation(
+    const blink::StorageKey& storage_key,
     const storage::FileSystemURL& directory_url,
     bool is_recursive,
+    ukm::SourceId ukm_source_id,
     GetObservationCallback get_observation_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -172,7 +119,7 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
   EnsureSourceIsInitializedForScope(
       scope, base::BindOnce(
                  &FileSystemAccessWatcherManager::PrepareObservationForScope,
-                 weak_factory_.GetWeakPtr(), scope,
+                 weak_factory_.GetWeakPtr(), storage_key, scope, ukm_source_id,
                  std::move(get_observation_callback)));
 }
 
@@ -218,15 +165,16 @@ void FileSystemAccessWatcherManager::OnRawChange(
 
   std::optional<storage::FileSystemURL> moved_from_url =
       is_move_event ? std::make_optional(
-                          ToFileSystemURL(*manager()->context(), changed_url,
+                          ToFileSystemURL(*manager_->context(), changed_url,
                                           change_info.moved_from_path.value()))
                     : std::nullopt;
 
-  const std::optional<std::list<Observation::Change>> changes_or_error =
-      error ? std::nullopt
-            : std::make_optional(
-                  std::list<Observation::Change>({{changed_url, change_info}}));
-  for (auto& observation : observations_) {
+  const std::optional<std::list<Change>> changes_or_error =
+      error
+          ? std::nullopt
+          : std::make_optional<std::list<Change>>({{changed_url, change_info}});
+
+  for (auto& observation_group : observation_groups_) {
     // TODO(crbug.com/376134535): We identify a change source by its scope.
     // Observations that have the same scope belong to that change source. The
     // bucket file system being the exception.
@@ -235,7 +183,7 @@ void FileSystemAccessWatcherManager::OnRawChange(
     // ChangeSource. However we will have to do some refactoring because of the
     // bucket file system exception.
     if (scope.GetWatchType() != WatchType::kAllBucketFileSystems &&
-        observation.scope() != scope) {
+        observation_group.scope() != scope) {
       continue;
     }
 
@@ -243,13 +191,14 @@ void FileSystemAccessWatcherManager::OnRawChange(
     // observations based on their scope but based on the source the
     // observations are tied to.
     if (error) {
-      observation.NotifyOfChanges(
-          changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
+      observation_group.NotifyOfChanges(changes_or_error);
       continue;
     }
-    bool modified_url_in_scope = observation.scope().Contains(changed_url);
+    bool modified_url_in_scope =
+        observation_group.scope().Contains(changed_url);
     bool moved_from_url_in_scope =
-        is_move_event && observation.scope().Contains(moved_from_url.value());
+        is_move_event &&
+        observation_group.scope().Contains(moved_from_url.value());
 
     if (!modified_url_in_scope && !moved_from_url_in_scope) {
       continue;
@@ -263,10 +212,8 @@ void FileSystemAccessWatcherManager::OnRawChange(
             change_info.file_path_type,
             FileSystemAccessChangeSource::ChangeType::kCreated,
             change_info.modified_path);
-        observation.NotifyOfChanges(
-            std::list<Observation::Change>(
-                {{changed_url, std::move(updated_change_info)}}),
-            base::PassKey<FileSystemAccessWatcherManager>());
+        observation_group.NotifyOfChanges(
+            std::list<Change>({{changed_url, std::move(updated_change_info)}}));
         continue;
       }
       if (!modified_url_in_scope) {
@@ -276,18 +223,15 @@ void FileSystemAccessWatcherManager::OnRawChange(
             change_info.file_path_type,
             FileSystemAccessChangeSource::ChangeType::kDeleted,
             change_info.moved_from_path.value());
-        observation.NotifyOfChanges(
-            std::list<Observation::Change>(
-                {{moved_from_url.value(), std::move(updated_change_info)}}),
-            base::PassKey<FileSystemAccessWatcherManager>());
+        observation_group.NotifyOfChanges(std::list<Change>(
+            {{moved_from_url.value(), std::move(updated_change_info)}}));
         continue;
       }
     }
 
     // The default case, including move within scope, should notify the changes
     // as is.
-    observation.NotifyOfChanges(
-        changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
+    observation_group.NotifyOfChanges(changes_or_error);
   }
 }
 
@@ -300,7 +244,7 @@ void FileSystemAccessWatcherManager::OnUsageChange(
   // The bucket file system's usage should not change.
   CHECK(scope.GetWatchType() != WatchType::kAllBucketFileSystems);
 
-  for (auto& observation : observations_) {
+  for (auto& observation_group : observation_groups_) {
     // TODO(crbug.com/376134535): We identify a change source by its scope.
     // Observations that have the same scope belong to that change source. The
     // bucket file system being the exception.
@@ -308,11 +252,11 @@ void FileSystemAccessWatcherManager::OnUsageChange(
     // Eventually we will want Observations to directly watch their
     // ChangeSource. However we will have to do some refactoring because of the
     // bucket file system exception.
-    if (observation.scope() != scope) {
+    if (observation_group.scope() != scope) {
       continue;
     }
 
-    observation.NotifyOfUsageChange(old_usage, new_usage);
+    observation_group.NotifyOfUsageChange(old_usage, new_usage);
   }
 }
 
@@ -325,6 +269,13 @@ void FileSystemAccessWatcherManager::OnSourceBeingDestroyed(
   CHECK_EQ(count_removed, 1u);
 }
 
+void FileSystemAccessWatcherManager::RegisterSourceForTesting(
+    FileSystemAccessChangeSource* source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RegisterSource(source);
+}
+
 void FileSystemAccessWatcherManager::RegisterSource(
     FileSystemAccessChangeSource* source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -333,17 +284,19 @@ void FileSystemAccessWatcherManager::RegisterSource(
   all_sources_.emplace_back(*source);
 }
 
-void FileSystemAccessWatcherManager::AddObserver(Observation* observation) {
+void FileSystemAccessWatcherManager::AddObserver(
+    FileSystemAccessObservationGroup* observation_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  observations_.AddObserver(observation);
+  observation_groups_.AddObserver(observation_group);
 }
 
-void FileSystemAccessWatcherManager::RemoveObserver(Observation* observation) {
+void FileSystemAccessWatcherManager::RemoveObserver(
+    FileSystemAccessObservationGroup* observation_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto newly_unobserved_scope = observation->scope();
-  observations_.RemoveObserver(observation);
+  const auto newly_unobserved_scope = observation_group->scope();
+  observation_groups_.RemoveObserver(observation_group);
 
   // Remove the respective source if we own it and it was the only observer
   // for this scope.
@@ -353,10 +306,25 @@ void FileSystemAccessWatcherManager::RemoveObserver(Observation* observation) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source->scope().Contains(newly_unobserved_scope) &&
            base::ranges::none_of(
-               observations_, [&source](const auto& observation) {
+               observation_groups_, [&source](const auto& observation) {
                  return source->scope().Contains(observation.scope());
                });
   });
+}
+
+void FileSystemAccessWatcherManager::RemoveObservationGroup(
+    const blink::StorageKey& storage_key,
+    const FileSystemAccessWatchScope& scope) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  watch_scope_obs_groups_map_.erase({storage_key, scope});
+}
+
+void FileSystemAccessWatcherManager::RemoveQuotaManager(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  quota_managers_.erase(storage_key);
 }
 
 bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
@@ -369,9 +337,22 @@ bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
       });
 }
 
+FileSystemAccessObserverQuotaManager*
+FileSystemAccessWatcherManager::GetQuotaManagerForTesting(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto quota_manager_iter = quota_managers_.find(storage_key);
+  if (quota_manager_iter == quota_managers_.end()) {
+    return nullptr;
+  }
+
+  return &quota_manager_iter->second.get();
+}
+
 void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
     FileSystemAccessWatchScope scope,
-    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr, size_t)>
         on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -395,7 +376,8 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
       // TODO(crbug.com/40105284): Watching `scope` is not supported.
       std::move(on_source_initialized)
           .Run(file_system_access_error::FromStatus(
-              blink::mojom::FileSystemAccessStatus::kNotSupportedError));
+                   blink::mojom::FileSystemAccessStatus::kNotSupportedError),
+               /*source_current_usage=*/0);
       return;
     }
     raw_change_source = owned_change_source.get();
@@ -411,7 +393,7 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
 
 void FileSystemAccessWatcherManager::DidInitializeSource(
     base::WeakPtr<FileSystemAccessChangeSource> source,
-    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr, size_t)>
         on_source_initialized,
     blink::mojom::FileSystemAccessErrorPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -420,7 +402,8 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
     // `source` was destroyed as we tried to initialize it. Abort.
     std::move(on_source_initialized)
         .Run(file_system_access_error::FromStatus(
-            blink::mojom::FileSystemAccessStatus::kOperationFailed));
+                 blink::mojom::FileSystemAccessStatus::kOperationFailed),
+             /*source_current_usage=*/0);
     return;
   }
 
@@ -438,13 +421,89 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
         });
   }
 
-  std::move(on_source_initialized).Run(std::move(result));
+  std::move(on_source_initialized)
+      .Run(std::move(result), source->current_usage());
+}
+
+FileSystemAccessObserverQuotaManager::Handle
+FileSystemAccessWatcherManager::GetOrCreateQuotaManagerForTesting(
+    const blink::StorageKey& storage_key,
+    ukm::SourceId ukm_source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetOrCreateQuotaManager(storage_key, ukm_source_id);
+}
+
+FileSystemAccessObserverQuotaManager::Handle
+FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
+    blink::StorageKey storage_key,
+    ukm::SourceId ukm_source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto quota_manager_iter = quota_managers_.find(storage_key);
+  if (quota_manager_iter != quota_managers_.end()) {
+    return quota_manager_iter->second.get().CreateHandle();
+  }
+
+  // ukm_source_id is expected to be unique per navigation ID and could be
+  // different for the same StorageKey, if opened from different tabs.
+  // For the purpose of UKM analysis, the first ukm_source_id used to create
+  // FileSystemAccessObserverQuotaManager is used for the same StorageKey,
+  // since it will be sliced per URL anyways.
+  FileSystemAccessObserverQuotaManager* quota_manager =
+      new FileSystemAccessObserverQuotaManager(storage_key, ukm_source_id,
+                                               *this);
+
+  quota_managers_.emplace(std::piecewise_construct,
+                          std::forward_as_tuple(std::move(storage_key)),
+                          std::forward_as_tuple(*quota_manager));
+
+  return quota_manager->CreateHandle();
+}
+
+base::optional_ref<FileSystemAccessObservationGroup>
+FileSystemAccessWatcherManager::GetOrCreateObservationGroup(
+    blink::StorageKey storage_key,
+    FileSystemAccessWatchScope scope,
+    size_t source_current_usage,
+    ukm::SourceId ukm_source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::pair<blink::StorageKey, FileSystemAccessWatchScope> key(storage_key,
+                                                               scope);
+
+  auto observation_group_iter = watch_scope_obs_groups_map_.find(key);
+  if (observation_group_iter != watch_scope_obs_groups_map_.end()) {
+    return observation_group_iter->second;
+  }
+
+  FileSystemAccessObserverQuotaManager::Handle quota_manager =
+      GetOrCreateQuotaManager(storage_key, ukm_source_id);
+  UsageChangeResult usage_change_result =
+      quota_manager.OnUsageChange(source_current_usage);
+  if (usage_change_result == UsageChangeResult::kQuotaUnavailable) {
+    return std::nullopt;
+  }
+
+  auto [created_observation_group_iter, inserted] =
+      watch_scope_obs_groups_map_.emplace(
+          std::piecewise_construct, std::forward_as_tuple(key),
+          std::forward_as_tuple(
+              std::move(quota_manager), *this, std::move(storage_key),
+              std::move(scope),
+              base::PassKey<FileSystemAccessWatcherManager>()));
+  CHECK(inserted);
+
+  return created_observation_group_iter->second;
 }
 
 void FileSystemAccessWatcherManager::PrepareObservationForScope(
+    blink::StorageKey storage_key,
     FileSystemAccessWatchScope scope,
+    ukm::SourceId ukm_source_id,
     GetObservationCallback get_observation_callback,
-    blink::mojom::FileSystemAccessErrorPtr source_initialization_result) {
+    blink::mojom::FileSystemAccessErrorPtr source_initialization_result,
+    size_t source_current_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (source_initialization_result->status !=
@@ -454,10 +513,28 @@ void FileSystemAccessWatcherManager::PrepareObservationForScope(
     return;
   }
 
-  std::move(get_observation_callback)
-      .Run(std::make_unique<Observation>(
-          this, std::move(scope),
-          base::PassKey<FileSystemAccessWatcherManager>()));
+  std::pair<blink::StorageKey, FileSystemAccessWatchScope> key(storage_key,
+                                                               scope);
+  auto observation_group_iter = watch_scope_obs_groups_map_.find(key);
+  if (observation_group_iter != watch_scope_obs_groups_map_.end()) {
+    // No need to report the usage change to the quota manager, since an
+    // existing observation group is used.
+    std::move(get_observation_callback)
+        .Run(observation_group_iter->second.CreateObserver());
+    return;
+  }
+
+  base::optional_ref<FileSystemAccessObservationGroup> observation_group =
+      GetOrCreateObservationGroup(std::move(storage_key), std::move(scope),
+                                  source_current_usage, ukm_source_id);
+  if (observation_group.has_value()) {
+    std::move(get_observation_callback)
+        .Run(observation_group->CreateObserver());
+  } else {
+    std::move(get_observation_callback)
+        .Run(base::unexpected(file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kOperationFailed)));
+  }
 }
 
 std::unique_ptr<FileSystemAccessChangeSource>
@@ -485,7 +562,7 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
   return nullptr;
 #else
   auto new_source = std::make_unique<FileSystemAccessLocalPathWatcher>(
-      std::move(scope), base::WrapRefCounted(manager()->context()),
+      std::move(scope), base::WrapRefCounted(manager_->context()),
       base::PassKey<FileSystemAccessWatcherManager>());
   RegisterSource(new_source.get());
   return new_source;

@@ -13,6 +13,8 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace webid {
+
 const std::vector<content::IdentityRequestDialogDisclosureField>
     kDefaultDisclosureFields = {
         content::IdentityRequestDialogDisclosureField::kName,
@@ -287,3 +289,5 @@ void AccountSelectionViewTestBase::CheckDisclosureText(
 
   EXPECT_EQ(disclosure_label->GetText(), expected_disclosure_text);
 }
+
+}  // namespace webid

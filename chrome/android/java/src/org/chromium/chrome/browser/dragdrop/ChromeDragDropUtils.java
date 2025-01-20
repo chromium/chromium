@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.content.Intent;
 import android.text.format.DateUtils;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 
 /** Utility class for Chrome drag and drop implementations. */
 public class ChromeDragDropUtils {
@@ -43,5 +47,21 @@ public class ChromeDragDropUtils {
                 MAX_TAB_TEARING_FAILURE_COUNT_PER_DAY + 1);
         prefs.writeInt(
                 ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT, failureCount + 1);
+    }
+
+    /**
+     * Gets the {@link DragDropType} for dragged data that uses an intent to create a new Chrome
+     * instance.
+     *
+     * @param intent The source intent.
+     * @return The {@link DragDropType} of the dragged data.
+     */
+    public static @DragDropType int getDragDropTypeFromIntent(Intent intent) {
+        return switch (intent.getIntExtra(
+                IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN)) {
+            case UrlIntentSource.LINK -> DragDropType.LINK_TO_NEW_INSTANCE;
+            case UrlIntentSource.TAB_IN_STRIP -> DragDropType.TAB_STRIP_TO_NEW_INSTANCE;
+            default -> DragDropType.UNKNOWN_TO_NEW_INSTANCE;
+        };
     }
 }

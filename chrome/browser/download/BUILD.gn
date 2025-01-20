@@ -17,6 +17,7 @@ source_set("download") {
     "//components/offline_items_collection/core",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/strings",
     "//ui/base",
     "//ui/color:color_headers",
     "//ui/gfx",

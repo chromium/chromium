@@ -192,8 +192,7 @@ ProcessesEventRouter::ProcessesEventRouter(content::BrowserContext* context)
       browser_context_(context),
       listeners_(0) {}
 
-ProcessesEventRouter::~ProcessesEventRouter() {
-}
+ProcessesEventRouter::~ProcessesEventRouter() = default;
 
 void ProcessesEventRouter::ListenerAdded() {
   UpdateRefreshTypesFlagsBasedOnListeners();
@@ -472,7 +471,8 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   // TODO(crbug.com/41345944): chrome.processes.getProcessIdForTab API
   // incorrectly assumes a *single* renderer process per tab.
-  const int process_id = contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  const int process_id =
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   return RespondNow(ArgumentList(
       api::processes::GetProcessIdForTab::Results::Create(process_id)));
 }
@@ -616,7 +616,7 @@ ProcessesGetProcessInfoFunction::OnTasksRefreshedWithBackgroundCalculations(
   GatherDataAndRespond(task_ids);
 }
 
-ProcessesGetProcessInfoFunction::~ProcessesGetProcessInfoFunction() {}
+ProcessesGetProcessInfoFunction::~ProcessesGetProcessInfoFunction() = default;
 
 void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
     const task_manager::TaskIdList& task_ids) {

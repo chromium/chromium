@@ -45,6 +45,7 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state) {
 std::optional<autofill::FormData> JsonStringToFormData(
     NSString* json_string,
     const GURL& page_url,
+    const url::Origin& frame_origin,
     const autofill::FieldDataManager& field_data_manager,
     const std::string& frame_id) {
   std::unique_ptr<base::Value> formValue = autofill::ParseJson(json_string);
@@ -58,13 +59,12 @@ std::optional<autofill::FormData> JsonStringToFormData(
   }
 
   return autofill::ExtractFormData(*dict, false, std::u16string(), page_url,
-                                   page_url.DeprecatedGetOriginAsURL(),
-                                   field_data_manager, frame_id);
+                                   frame_origin, field_data_manager, frame_id);
 }
 
 bool IsCrossOriginIframe(web::WebState* web_state,
                          bool frame_is_main_frame,
-                         const GURL& frame_security_origin) {
+                         const url::Origin& frame_security_origin) {
   return !frame_is_main_frame &&
          !url::Origin::Create(web_state->GetLastCommittedURL())
               .IsSameOriginWith(frame_security_origin);

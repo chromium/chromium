@@ -151,8 +151,10 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,
-              (std::string, GURL, base::OnceCallback<void(bool)>),
+              (std::string, GURL, HlsDemuxerStatusCallback),
               (override));
+
+  MOCK_METHOD(void, Quit, (HlsDemuxerStatus), (override));
 
   MOCK_METHOD(void,
               ReadStream,

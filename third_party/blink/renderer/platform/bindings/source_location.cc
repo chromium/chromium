@@ -78,6 +78,13 @@ SourceLocation::CreateFromNonEmptyV8StackTraceInternal(
                          std::move(stack_trace), script_id));
 }
 
+SourceLocation::SourceLocation(const String& url, int char_position)
+    : url_(url),
+      line_number_(0),
+      column_number_(0),
+      char_position_(char_position),
+      script_id_(0) {}
+
 SourceLocation::SourceLocation(
     const String& url,
     const String& function,
@@ -89,6 +96,7 @@ SourceLocation::SourceLocation(
       function_(function),
       line_number_(line_number),
       column_number_(column_number),
+      char_position_(-1),
       stack_trace_(std::move(stack_trace)),
       script_id_(script_id) {}
 
@@ -133,18 +141,17 @@ void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
   if (!stack_trace_ || stack_trace_->isEmpty()) {
     return;
   }
-
-  // TODO(altimin): Consider replacing nested dict-inside-array with just an
-  // array here.
-  auto array = std::move(context).WriteArray();
-  auto dict = array.AppendDictionary();
   // TODO(altimin): Add TracedValue support to v8::StringView and remove
   // ToPlatformString calls.
-  dict.Add("functionName", ToPlatformString(stack_trace_->topFunctionName()));
-  dict.Add("scriptId", String::Number(stack_trace_->topScriptId()));
-  dict.Add("url", ToPlatformString(stack_trace_->topSourceURL()));
-  dict.Add("lineNumber", stack_trace_->topLineNumber());
-  dict.Add("columnNumber", stack_trace_->topColumnNumber());
+  auto array = std::move(context).WriteArray();
+  for (const auto& frame : stack_trace_->frames()) {
+    auto dict = array.AppendDictionary();
+    dict.Add("functionName", ToPlatformString(frame.functionName).Utf8());
+    dict.Add("scriptId", String::Number(frame.scriptId));
+    dict.Add("url", ToPlatformString(frame.sourceURL).Utf8());
+    dict.Add("lineNumber", frame.lineNumber);
+    dict.Add("columnNumber", frame.columnNumber);
+  }
 }
 
 void SourceLocation::ToTracedValue(TracedValue* value, const char* name) const {

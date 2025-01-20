@@ -48,8 +48,9 @@ Value::Dict GenerateDict() {
 
 // Generates a tree-like dictionary value with a size of O(breadth ** depth).
 Value::Dict GenerateLayeredDict(int breadth, int depth) {
-  if (depth == 1)
+  if (depth == 1) {
     return GenerateDict();
+  }
 
   Value::Dict root = GenerateDict();
   Value::Dict next = GenerateLayeredDict(breadth, depth - 1);

@@ -17,7 +17,11 @@
 TabGroupHighlight::TabGroupHighlight(TabGroupViews* tab_group_views,
                                      const tab_groups::TabGroupId& group,
                                      const TabGroupStyle& style)
-    : tab_group_views_(tab_group_views), group_(group), style_(style) {}
+    : tab_group_views_(tab_group_views), group_(group), style_(style) {
+  // Don't accept any mouse events, otherwise this will prevent tabs and group
+  // headers from getting clicked.
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 void TabGroupHighlight::UpdateBounds(views::View* leading_view,
                                      views::View* trailing_view) {
@@ -40,12 +44,6 @@ void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
       TabStyle::TabSelectionState::kSelected, /*hovered=*/false,
       GetWidget()->ShouldPaintAsActive(), *GetColorProvider()));
   canvas->DrawPath(path, flags);
-}
-
-bool TabGroupHighlight::GetCanProcessEventsWithinSubtree() const {
-  // Don't accept any mouse events, otherwise this will prevent tabs and group
-  // headers from getting clicked.
-  return false;
 }
 
 SkPath TabGroupHighlight::GetPath() const {

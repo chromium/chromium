@@ -7,7 +7,7 @@
 namespace WTF {
 
 StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
-                                     UTF8ConversionMode mode) {
+                                     Utf8ConversionMode mode) {
   if (string.empty())
     return;
   // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses

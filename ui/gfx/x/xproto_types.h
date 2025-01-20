@@ -20,10 +20,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/gfx/x/error.h"
 
 namespace x11 {
-
-class Error;
 
 // A memory buffer where the size of the memory buffer is unknown because its
 // given as `void*` from a C api which expects us to dynamically cast it to

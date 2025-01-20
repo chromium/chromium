@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -35,9 +36,6 @@ namespace {
 const base::TimeDelta kRefreshAdvancedProtectionDelay = base::Days(1);
 const base::TimeDelta kRetryDelay = base::Minutes(5);
 const base::TimeDelta kMinimumRefreshDelay = base::Minutes(1);
-
-const char kForceTreatUserAsAdvancedProtection[] =
-    "safe-browsing-treat-user-as-advanced-protection";
 
 void RecordUMA(AdvancedProtectionStatusManager::UmaEvent event) {
   base::UmaHistogramEnumeration("SafeBrowsing.AdvancedProtection.Enabled",
@@ -108,7 +106,7 @@ void AdvancedProtectionStatusManager::Shutdown() {
   UnsubscribeFromSigninEvents();
 }
 
-AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() {}
+AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() = default;
 
 void AdvancedProtectionStatusManager::SubscribeToSigninEvents() {
   identity_manager_->AddObserver(this);
@@ -269,8 +267,9 @@ bool AdvancedProtectionStatusManager::IsUnderAdvancedProtection() const {
     return false;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kForceTreatUserAsAdvancedProtection))
+          switches::kForceTreatUserAsAdvancedProtection)) {
     return true;
+  }
 
   return is_under_advanced_protection_;
 }

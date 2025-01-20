@@ -15,16 +15,29 @@
 // Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on
 // x86 - use force_align_arg_pointer to realign the stack at the JNI
 // boundary. crbug.com/655248
-#define JNI_BOUNDARY_EXPORT \
+#define JNI_ZERO_BOUNDARY_EXPORT \
   extern "C" __attribute__((visibility("default"), force_align_arg_pointer))
 #else
-#define JNI_BOUNDARY_EXPORT extern "C" __attribute__((visibility("default")))
+#define JNI_ZERO_BOUNDARY_EXPORT \
+  extern "C" __attribute__((visibility("default")))
 #endif
 
-#if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
-#define JNI_POSSIBLE_BOUNDARY_EXPORT extern "C" __attribute__((always_inline))
+#if defined(__clang__) && __has_attribute(noinline)
+#define JNI_ZERO_NEVER_INLINE [[clang::noinline]]
+#elif __has_attribute(noinline)
+#define JNI_ZERO_NEVER_INLINE __attribute__((noinline))
 #else
-#define JNI_POSSIBLE_BOUNDARY_EXPORT JNI_BOUNDARY_EXPORT
+#define JNI_ZERO_NEVER_INLINE
 #endif
+
+#if defined(__clang__) && __has_attribute(always_inline)
+#define JNI_ZERO_ALWAYS_INLINE [[clang::always_inline]]
+#elif __has_attribute(always_inline)
+#define JNI_ZERO_ALWAYS_INLINE __attribute__((__always_inline__))
+#else
+#define JNI_ZERO_ALWAYS_INLINE
+#endif
+
+#define JNI_ZERO_MUXED_ENTRYPOINT extern "C" JNI_ZERO_ALWAYS_INLINE
 
 #endif  // JNI_ZERO_JNI_EXPORT_H_

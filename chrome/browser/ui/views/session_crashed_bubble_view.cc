@@ -127,7 +127,8 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
     if (dialog_model()
             ->GetCheckboxByUniqueId(kUmaConsentCheckboxId)
             ->is_checked()) {
-      ChangeMetricsReportingState(true);
+      ChangeMetricsReportingState(
+          true, ChangeMetricsReportingStateCalledFrom::kSessionCrashedDialog);
     }
   }
 

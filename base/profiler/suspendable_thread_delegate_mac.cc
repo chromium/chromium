@@ -18,6 +18,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/check.h"
 #include "base/profiler/profile_builder.h"
+#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
@@ -61,8 +62,9 @@ SuspendableThreadDelegateMac::ScopedSuspendThread::ScopedSuspendThread(
 // NO HEAP ALLOCATIONS. The MACH_CHECK is OK because it provides a more noisy
 // failure mode than deadlocking.
 SuspendableThreadDelegateMac::ScopedSuspendThread::~ScopedSuspendThread() {
-  if (!WasSuccessful())
+  if (!WasSuccessful()) {
     return;
+  }
 
   kern_return_t kr = thread_resume(thread_port_);
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "thread_resume";

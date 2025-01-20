@@ -35,6 +35,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace ash {
@@ -225,7 +226,8 @@ class EncryptionMigrationTest : public EncryptionMigrationTestBase {
  public:
   EncryptionMigrationTest()
       : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId("user@gmail.com", "user")}) {}
+            AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("user"))}) {
+  }
   ~EncryptionMigrationTest() override = default;
 
   EncryptionMigrationTest(const EncryptionMigrationTest& other) = delete;
@@ -238,7 +240,8 @@ class EncryptionMigrationChildUserTest : public EncryptionMigrationTestBase {
  public:
   EncryptionMigrationChildUserTest()
       : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId("userchild@gmail.com", "userchild"),
+            AccountId::FromUserEmailGaiaId("userchild@gmail.com",
+                                           GaiaId("userchild")),
             test::kDefaultAuthSetup, user_manager::UserType::kChild}) {}
   ~EncryptionMigrationChildUserTest() override = default;
 

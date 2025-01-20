@@ -54,21 +54,13 @@ suite('<settings-internet-detail-subpage>', () => {
         },
       },
     },
-    // Added use_shared_proxies and lacros_proxy_controlling_extension because
-    // triggering a change in PREFS without it will fail a "Pref is missing"
-    // assertion in the network-proxy-section
+    // Added use_shared_proxies because triggering a change in PREFS without it
+    // will fail a "Pref is missing" assertion in the network-proxy-section
     'settings': {
       'use_shared_proxies': {
         key: 'use_shared_proxies',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
-      },
-    },
-    'ash': {
-      'lacros_proxy_controlling_extension': {
-        key: 'ash.lacros_proxy_controlling_extension',
-        type: chrome.settingsPrivate.PrefType.DICTIONARY,
-        value: {},
       },
     },
   };
@@ -148,19 +140,19 @@ suite('<settings-internet-detail-subpage>', () => {
 
   function getDefaultDeviceStateProps(): DeviceStateProperties {
     return {
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: null,
       scanning: false,
-      simLockStatus: undefined,
-      simInfos: undefined,
+      simLockStatus: null,
+      simInfos: null,
       inhibitReason: InhibitReason.kNotInhibited,
       simAbsent: false,
       deviceState: DeviceStateType.kUninitialized,
       type: NetworkType.kCellular,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: false,
       isFlashing: false,
     };
@@ -216,7 +208,6 @@ suite('<settings-internet-detail-subpage>', () => {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
-      showMeteredToggle: true,
     });
 
     mojoApi.resetForTest();
@@ -528,9 +519,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kUserPolicyEnforced,
           policyValue: '',
         },
-        manual: undefined,
-        excludeDomains: undefined,
-        pac: undefined,
+        manual: null,
+        excludeDomains: null,
+        pac: null,
       };
       mojoApi.setManagedPropertiesForTest(wifiNetwork);
 
@@ -554,9 +545,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kDevicePolicyEnforced,
           policyValue: '',
         },
-        manual: undefined,
-        excludeDomains: undefined,
-        pac: undefined,
+        manual: null,
+        excludeDomains: null,
+        pac: null,
       };
       mojoApi.setManagedPropertiesForTest(wifiNetwork);
 
@@ -841,43 +832,43 @@ suite('<settings-internet-detail-subpage>', () => {
 
     function getDefaultManagedOpenVpnProps(): ManagedOpenVPNProperties {
       return {
-        auth: undefined,
-        authRetry: undefined,
-        authNoCache: undefined,
-        cipher: undefined,
-        clientCertPkcs11Id: undefined,
-        clientCertPattern: undefined,
-        clientCertProvisioningProfileId: undefined,
-        clientCertRef: undefined,
-        clientCertType: undefined,
-        compressionAlgorithm: undefined,
-        extraHosts: undefined,
-        ignoreDefaultRoute: undefined,
-        keyDirection: undefined,
-        nsCertType: undefined,
-        password: undefined,
-        port: undefined,
-        proto: undefined,
-        pushPeerInfo: undefined,
-        remoteCertEku: undefined,
-        remoteCertKu: undefined,
-        remoteCertTls: undefined,
-        renegSec: undefined,
-        saveCredentials: undefined,
-        serverCaPems: undefined,
-        serverCaRefs: undefined,
-        serverCertRef: undefined,
-        serverPollTimeout: undefined,
-        shaper: undefined,
-        staticChallenge: undefined,
-        tlsAuthContents: undefined,
-        tlsRemote: undefined,
-        tlsVersionMin: undefined,
-        userAuthenticationType: undefined,
-        username: undefined,
-        verb: undefined,
-        verifyHash: undefined,
-        verifyX509: undefined,
+        auth: null,
+        authRetry: null,
+        authNoCache: null,
+        cipher: null,
+        clientCertPkcs11Id: null,
+        clientCertPattern: null,
+        clientCertProvisioningProfileId: null,
+        clientCertRef: null,
+        clientCertType: null,
+        compressionAlgorithm: null,
+        extraHosts: null,
+        ignoreDefaultRoute: null,
+        keyDirection: null,
+        nsCertType: null,
+        password: null,
+        port: null,
+        proto: null,
+        pushPeerInfo: null,
+        remoteCertEku: null,
+        remoteCertKu: null,
+        remoteCertTls: null,
+        renegSec: null,
+        saveCredentials: null,
+        serverCaPems: null,
+        serverCaRefs: null,
+        serverCertRef: null,
+        serverPollTimeout: null,
+        shaper: null,
+        staticChallenge: null,
+        tlsAuthContents: null,
+        tlsRemote: null,
+        tlsVersionMin: null,
+        userAuthenticationType: null,
+        username: null,
+        verb: null,
+        verifyHash: null,
+        verifyX509: null,
       };
     }
 
@@ -889,7 +880,7 @@ suite('<settings-internet-detail-subpage>', () => {
       const defaultManagedStringProps = {
         activeValue: '',
         policySource: PolicySource.kNone,
-        policyValue: undefined,
+        policyValue: null,
       };
       const vpn1 = OncMojo.getDefaultManagedProperties(
           NetworkType.kVPN, 'vpn1_guid', 'vpn1');
@@ -950,9 +941,9 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kNone,
           policyValue: [],
         },
-        ipAddresses: undefined,
-        privateKey: undefined,
-        publicKey: undefined,
+        ipAddresses: null,
+        privateKey: null,
+        publicKey: null,
       };
       wg1.staticIpConfig = {
         ipAddress: {
@@ -960,11 +951,11 @@ suite('<settings-internet-detail-subpage>', () => {
           policySource: PolicySource.kNone,
           policyValue: '',
         },
-        gateway: undefined,
-        nameServers: undefined,
-        routingPrefix: undefined,
+        gateway: null,
+        nameServers: null,
+        routingPrefix: null,
         type: IPConfigType.kIPv4,
-        webProxyAutoDiscoveryUrl: undefined,
+        webProxyAutoDiscoveryUrl: null,
       };
       initManagedVpn(wg1);
     }
@@ -1165,7 +1156,7 @@ suite('<settings-internet-detail-subpage>', () => {
           cellularNetwork.typeProperties.cellular!.paymentPortal = {
             url: 'url',
             method: '',
-            postData: undefined,
+            postData: null,
           };
           mojoApi.setManagedPropertiesForTest(cellularNetwork);
 
@@ -1823,12 +1814,12 @@ suite('<settings-internet-detail-subpage>', () => {
           accessPointName: '',
           id: '',
           authentication: ApnAuthenticationType.kAutomatic,
-          language: undefined,
-          localizedName: undefined,
-          name: undefined,
-          password: undefined,
-          username: undefined,
-          attach: undefined,
+          language: null,
+          localizedName: null,
+          name: null,
+          password: null,
+          username: null,
+          attach: null,
           state: ApnState.kEnabled,
           ipType: ApnIpType.kAutomatic,
           apnTypes: [],
@@ -1906,12 +1897,12 @@ suite('<settings-internet-detail-subpage>', () => {
               accessPointName: '',
               id: '',
               authentication: ApnAuthenticationType.kAutomatic,
-              language: undefined,
-              localizedName: undefined,
-              name: undefined,
-              password: undefined,
-              username: undefined,
-              attach: undefined,
+              language: null,
+              localizedName: null,
+              name: null,
+              password: null,
+              username: null,
+              attach: null,
               state: ApnState.kEnabled,
               ipType: ApnIpType.kAutomatic,
               apnTypes: [],
@@ -2322,10 +2313,10 @@ suite('<settings-internet-detail-subpage>', () => {
         connectable: false,
         connectRequested: false,
         connectionState: ConnectionStateType.kOnline,
-        errorState: undefined,
+        errorState: null,
         name: '',
         portalState: PortalState.kUnknown,
-        portalProbeUrl: undefined,
+        portalProbeUrl: null,
         priority: 0,
         proxyMode: ProxyMode.kDirect,
         prohibitedByPolicy: false,

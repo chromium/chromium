@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "media/base/mock_media_log.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -236,9 +237,8 @@ class TrackRunIteratorTest : public testing::Test {
         sample_depends_on = kSampleDependsOnReserved;
         break;
       default:
-        CHECK(false) << "Invalid sample dependency character '"
-                     << str[0] << "'";
-        break;
+        NOTREACHED() << "Invalid sample dependency character '" << str[0]
+                     << "'";
     }
 
     switch(str[1]) {
@@ -249,9 +249,7 @@ class TrackRunIteratorTest : public testing::Test {
         is_non_sync_sample = true;
         break;
       default:
-        CHECK(false) << "Invalid sync sample character '"
-                     << str[1] << "'";
-        break;
+        NOTREACHED() << "Invalid sync sample character '" << str[1] << "'";
     }
     uint32_t flags = static_cast<uint32_t>(sample_depends_on) << 24;
     if (is_non_sync_sample)

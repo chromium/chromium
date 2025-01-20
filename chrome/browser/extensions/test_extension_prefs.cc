@@ -52,7 +52,7 @@ class TestExtensionPrefs::IncrementalClock : public base::Clock {
   IncrementalClock(const IncrementalClock&) = delete;
   IncrementalClock& operator=(const IncrementalClock&) = delete;
 
-  ~IncrementalClock() override {}
+  ~IncrementalClock() override = default;
 
   base::Time Now() const override {
     current_time_ += base::Seconds(10);
@@ -77,8 +77,7 @@ TestExtensionPrefs::TestExtensionPrefs(
   RecreateExtensionPrefs();
 }
 
-TestExtensionPrefs::~TestExtensionPrefs() {
-}
+TestExtensionPrefs::~TestExtensionPrefs() = default;
 
 ExtensionPrefs* TestExtensionPrefs::prefs() {
   return ExtensionPrefs::Get(&profile_);

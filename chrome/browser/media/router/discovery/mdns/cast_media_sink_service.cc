@@ -35,7 +35,7 @@ CastMediaSinkService::~CastMediaSinkService() {
 void CastMediaSinkService::Initialize(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,
     base::RepeatingClosure discovery_permission_rejected_cb,
-    MediaSinkServiceBase* dial_media_sink_service) {
+    DialMediaSinkServiceImpl* dial_media_sink_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!impl_);
   discovery_permission_rejected_cb_ = discovery_permission_rejected_cb;
@@ -89,7 +89,7 @@ void CastMediaSinkService::StopObservingPrefChanges() {
 std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
 CastMediaSinkService::CreateImpl(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,
-    MediaSinkServiceBase* dial_media_sink_service) {
+    DialMediaSinkServiceImpl* dial_media_sink_service) {
   cast_channel::CastSocketService* cast_socket_service =
       cast_channel::CastSocketService::GetInstance();
   scoped_refptr<base::SequencedTaskRunner> task_runner =

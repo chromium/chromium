@@ -46,7 +46,7 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
       const ShellIntegrationWinMigrateShortcutTest&) = delete;
 
  protected:
-  ShellIntegrationWinMigrateShortcutTest() {}
+  ShellIntegrationWinMigrateShortcutTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

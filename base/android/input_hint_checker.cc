@@ -41,13 +41,14 @@ InputHintChecker* g_test_instance;
 BASE_EXPORT
 BASE_FEATURE(kYieldWithInputHint,
              "YieldWithInputHint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Min time delta between checks for the input hint. Must be a smaller than
 // time to produce a frame, but a bit longer than the time it takes to retrieve
 // the hint.
+// Note: Do not use the prepared macro as of no need for a local cache.
 const base::FeatureParam<int> kPollIntervalMillisParam{&kYieldWithInputHint,
-                                                       "poll_interval_ms", 3};
+                                                       "poll_interval_ms", 1};
 
 // Class calling a private method of InputHintChecker.
 // This allows not to declare the method called by pthread_create in the public

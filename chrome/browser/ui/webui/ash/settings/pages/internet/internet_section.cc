@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
 
 #include <array>
@@ -26,7 +21,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -42,6 +36,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::network_config {
 namespace mojom = chromeos::network_config::mojom;
@@ -781,9 +776,6 @@ InternetSection::InternetSection(Profile* profile,
 InternetSection::~InternetSection() = default;
 
 void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool isRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"deviceInfoPopupMenuItemTitle",
        IDS_SETTINGS_DEVICE_INFO_POPUP_MENU_ITEM_TITLE},
@@ -843,9 +835,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_TOGGLE_WIFI_ACCESSIBILITY_LABEL},
       {"knownNetworksAll", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_ALL},
       {"knownNetworksButton", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_BUTTON},
-      {"knownNetworksMessage",
-       isRevampEnabled ? IDS_OS_SETTINGS_REVAMP_INTERNET_KNOWN_NETWORKS_MESSAGE
-                       : IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE},
+      {"knownNetworksMessage", IDS_OS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE},
       {"knownNetworksPreferred",
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_PREFFERED},
       {"knownNetworksMenuAddPreferred",
@@ -904,7 +894,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkNameserversLearnMore", IDS_LEARN_MORE},
       {"networkPrefer", IDS_SETTINGS_INTERNET_NETWORK_PREFER},
       {"networkPreferDescription",
-       IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_PREFER_DESCRIPTION},
+       IDS_OS_SETTINGS_INTERNET_NETWORK_PREFER_DESCRIPTION},
       {"networkPrimaryUserControlled",
        IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED},
       {"networkA11yManagedByAdministrator",
@@ -934,9 +924,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSectionProxyExpandA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY_ACCESSIBILITY_LABEL},
       {"networkShared", IDS_SETTINGS_INTERNET_NETWORK_SHARED},
-      {"networkSharedOwner",
-       isRevampEnabled ? IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_SHARED_OWNER
-                       : IDS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER},
+      {"networkSharedOwner", IDS_OS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER},
       {"networkSharedNotOwner", IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER},
       {"networkVpnBuiltin", IDS_NETWORK_TYPE_VPN_BUILTIN},
       {"networkOutOfRange", IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE},
@@ -1158,9 +1146,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           features::kCellularBypassESimInstallationConnectivityCheck));
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
-  html_source->AddBoolean(
-      "showMeteredToggle",
-      base::FeatureList::IsEnabled(::features::kMeteredShowToggle));
   html_source->AddBoolean(
       "trafficCountersForWifiTesting",
       ash::features::IsTrafficCountersForWiFiTestingEnabled());
@@ -1406,27 +1391,29 @@ std::string InternetSection::ModifySearchResultUrl(
   std::string modified_url =
       OsSettingsSection::ModifySearchResultUrl(type, id, url_to_modify);
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails) &&
+      connected_ethernet_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_ethernet_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails) &&
+      connected_wifi_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_wifi_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails)) {
+  if ((IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails) ||
+       IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) &&
+      active_cellular_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) {
-    return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
-  }
-
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails) &&
+      connected_tether_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails) &&
+      connected_vpn_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_vpn_guid_);
   }
 
@@ -1633,9 +1620,7 @@ void InternetSection::OnNetworkList(
       case NetworkType::kWiFi:
         connected_wifi_guid_ = network->guid;
         updater.AddSearchTags(GetWifiConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
-          updater.AddSearchTags(GetWifiMeteredSearchConcepts());
-        }
+        updater.AddSearchTags(GetWifiMeteredSearchConcepts());
         if (base::FeatureList::IsEnabled(
                 ::features::kShowHiddenNetworkToggle)) {
           updater.AddSearchTags(GetWifiHiddenSearchConcepts());
@@ -1644,9 +1629,7 @@ void InternetSection::OnNetworkList(
 
       case NetworkType::kCellular:
         updater.AddSearchTags(GetCellularConnectedSearchConcepts());
-        if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle)) {
-          updater.AddSearchTags(GetCellularMeteredSearchConcepts());
-        }
+        updater.AddSearchTags(GetCellularMeteredSearchConcepts());
         break;
 
       case NetworkType::kTether:

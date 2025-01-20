@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -1028,7 +1029,7 @@ DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
 KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
     unsigned int hardware_code) {
   // This function assumes that X11 is using evdev-based keycodes.
-  static const KeyboardCode kHardwareKeycodeMap[] = {
+  static const auto kHardwareKeycodeMap = std::to_array<KeyboardCode>({
       // Please refer to below links for the table content:
       // http://www.w3.org/TR/DOM-Level-3-Events-code/#keyboard-101
       // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode
@@ -1169,7 +1170,7 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       VKEY_LWIN,               // 0x85: KEY_LEFTMETA         Super_L
       VKEY_RWIN,               // 0x86: KEY_RIGHTMETA        Super_R
       VKEY_COMPOSE,            // 0x87: KEY_COMPOSE          Menu
-  };
+  });
 
   if (hardware_code >= std::size(kHardwareKeycodeMap)) {
     // Additional keycodes used by the Chrome OS top row special function keys.

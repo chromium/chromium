@@ -66,7 +66,12 @@ export class Options implements CameraUi {
       }
     });
     dom.get('#open-settings', HTMLButtonElement)
-        .addEventListener('click', () => nav.open(ViewName.SETTINGS));
+        .addEventListener('click', () => {
+          if (state.get(state.State.TAKING)) {
+            return;
+          }
+          nav.open(ViewName.SETTINGS);
+        });
 
     this.initOpenMirrorPanel();
     this.initOpenGridPanel();

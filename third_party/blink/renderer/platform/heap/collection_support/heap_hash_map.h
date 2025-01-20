@@ -38,7 +38,8 @@ class HeapHashMap final
  private:
   template <typename T>
   static constexpr bool IsValidNonTraceableType() {
-    return !WTF::IsTraceable<T>::value && !WTF::IsPointerToGced<T>::value;
+    return !WTF::IsTraceable<T>::value &&
+           !WTF::IsPointerToGarbageCollectedType<T>;
   }
 
   struct TypeConstraints {

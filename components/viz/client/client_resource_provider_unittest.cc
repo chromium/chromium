@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/client/client_resource_provider.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -189,8 +185,9 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
 }
 
 TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
-  TransferableResource tran[] = {MakeTransferableResource(use_gpu(), 'a', 15),
-                                 MakeTransferableResource(use_gpu(), 'b', 16)};
+  auto tran = std::to_array<TransferableResource>(
+      {MakeTransferableResource(use_gpu(), 'a', 15),
+       MakeTransferableResource(use_gpu(), 'b', 16)});
   ResourceId id1 = provider().ImportResource(tran[0], base::DoNothing());
   ResourceId id2 = provider().ImportResource(tran[1], base::DoNothing());
 
@@ -281,7 +278,8 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
   struct Data {
     TransferableResource tran;
     ResourceId id;
-  } data[5];
+  };
+  std::array<Data, 5> data;
   for (int i = 0; i < 5; ++i) {
     data[i].tran = MakeTransferableResource(use_gpu(), 'a', 15);
     data[i].id = provider().ImportResource(
@@ -693,7 +691,7 @@ TEST_P(ClientResourceProviderTest, ReleaseMultipleResources) {
   MockReleaseCallback release;
 
   // Make 5 resources, put them in a non-sorted order.
-  ResourceId resources[5];
+  std::array<ResourceId, 5> resources;
   for (int i = 0; i < 5; ++i) {
     TransferableResource tran = MakeTransferableResource(use_gpu(), 'a', 1 + i);
     resources[i] = provider().ImportResource(
@@ -739,7 +737,7 @@ TEST_P(ClientResourceProviderTest, ReleaseMultipleResourcesBeforeReturn) {
   MockReleaseCallback release;
 
   // Make 5 resources, put them in a non-sorted order.
-  ResourceId resources[5];
+  std::array<ResourceId, 5> resources;
   for (int i = 0; i < 5; ++i) {
     TransferableResource tran = MakeTransferableResource(use_gpu(), 'a', 1 + i);
     resources[i] = provider().ImportResource(
@@ -786,7 +784,7 @@ TEST_P(ClientResourceProviderTest, ReturnDuplicateResourceBeforeRemove) {
   MockReleaseCallback release;
 
   // Make 5 resources, put them in a non-sorted order.
-  ResourceId resources[5];
+  std::array<ResourceId, 5> resources;
   for (int i = 0; i < 5; ++i) {
     TransferableResource tran = MakeTransferableResource(use_gpu(), 'a', 1 + i);
     resources[i] = provider().ImportResource(
@@ -830,7 +828,7 @@ TEST_P(ClientResourceProviderTest, ReturnDuplicateResourceAfterRemove) {
   MockReleaseCallback release;
 
   // Make 5 resources, put them in a non-sorted order.
-  ResourceId resources[5];
+  std::array<ResourceId, 5> resources;
   for (int i = 0; i < 5; ++i) {
     TransferableResource tran = MakeTransferableResource(use_gpu(), 'a', 1 + i);
     resources[i] = provider().ImportResource(

@@ -32,11 +32,15 @@ DriveItem& DriveItem::operator=(const DriveItem& other) {
   viewed_by_me_time = other.viewed_by_me_time;
   shared_with_me_time = other.shared_with_me_time;
   parent_identifier = [other.parent_identifier copy];
+  is_shortcut = other.is_shortcut;
+  shortcut_target_identifier = [other.shortcut_target_identifier copy];
+  shortcut_target_mime_type = [other.shortcut_target_mime_type copy];
   is_shared_drive = other.is_shared_drive;
   is_folder = other.is_folder;
   mime_type = [other.mime_type copy];
   size = other.size;
   can_download = other.can_download;
+  md5_checksum = [other.md5_checksum copy];
   return *this;
 }
 
@@ -52,11 +56,15 @@ DriveItem& DriveItem::operator=(DriveItem&& other) {
   std::swap(viewed_by_me_time, other.viewed_by_me_time);
   std::swap(shared_with_me_time, other.shared_with_me_time);
   std::swap(parent_identifier, other.parent_identifier);
+  std::swap(is_shortcut, other.is_shortcut);
+  std::swap(shortcut_target_identifier, other.shortcut_target_identifier);
+  std::swap(shortcut_target_mime_type, other.shortcut_target_mime_type);
   std::swap(is_shared_drive, other.is_shared_drive);
   std::swap(is_folder, other.is_folder);
   std::swap(mime_type, other.mime_type);
   std::swap(size, other.size);
   std::swap(can_download, other.can_download);
+  std::swap(md5_checksum, other.md5_checksum);
   return *this;
 }
 

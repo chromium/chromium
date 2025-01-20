@@ -62,10 +62,12 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
     }
   }
 
-  if (!objects_.empty() || !platform_representations_.empty()) {
+  if (!objects_.empty() || !raw_objects_.empty() ||
+      !platform_representations_.empty()) {
     Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
-        buffer_, objects_, std::move(platform_representations_),
-        std::move(data_src_), privacy_types_);
+        buffer_, objects_, std::move(raw_objects_),
+        std::move(platform_representations_), std::move(data_src_),
+        privacy_types_);
   }
 }
 
@@ -194,9 +196,7 @@ void ScopedClipboardWriter::WritePickledData(
   raw_data.data = std::vector<uint8_t>(
       reinterpret_cast<const uint8_t*>(pickle.data()),
       reinterpret_cast<const uint8_t*>(pickle.data()) + pickle.size());
-  Clipboard::Data data = std::move(raw_data);
-  const size_t index = data.index();
-  objects_[index] = Clipboard::ObjectMapParams(std::move(data));
+  raw_objects_.emplace_back(std::move(raw_data));
 }
 
 void ScopedClipboardWriter::WriteData(const std::u16string& format,
@@ -229,6 +229,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();
+  raw_objects_.clear();
   platform_representations_.clear();
   registered_formats_.clear();
   privacy_types_ = 0;

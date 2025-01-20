@@ -36,7 +36,7 @@ DataSharingPageHandler::DataSharingPageHandler(
   RequestAccessToken();
 }
 
-DataSharingPageHandler::~DataSharingPageHandler() {}
+DataSharingPageHandler::~DataSharingPageHandler() = default;
 
 void DataSharingPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
@@ -46,8 +46,8 @@ void DataSharingPageHandler::ShowUI() {
 }
 
 void DataSharingPageHandler::CloseUI(int status_code) {
-  // TODO(crbug.com/368634445): In addition to closing the WebUI bubble some special
-  // codes should trigger follow up native info dialogs.
+  // TODO(crbug.com/368634445): In addition to closing the WebUI bubble some
+  // special codes should trigger follow up native info dialogs.
   auto embedder = webui_controller_->embedder();
   if (embedder) {
     embedder->CloseUI();
@@ -148,10 +148,10 @@ void DataSharingPageHandler::OnAccessTokenFetched(
 }
 
 void DataSharingPageHandler::ReadGroups(
-    std::vector<std::string> group_ids,
+    data_sharing::mojom::ReadGroupsParamsPtr read_group_params,
     data_sharing::mojom::Page::ReadGroupsCallback callback) {
   CHECK(api_initialized_);
-  page_->ReadGroups(group_ids, std::move(callback));
+  page_->ReadGroups(std::move(read_group_params), std::move(callback));
 }
 
 void DataSharingPageHandler::DeleteGroup(

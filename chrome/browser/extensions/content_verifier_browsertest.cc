@@ -102,8 +102,8 @@ ChromeContentVerifierDelegate::VerifyInfo GetVerifyInfoAndForceHashes(
 
 class ContentVerifierTest : public ExtensionBrowserTest {
  public:
-  ContentVerifierTest() {}
-  ~ContentVerifierTest() override {}
+  ContentVerifierTest() = default;
+  ~ContentVerifierTest() override = default;
 
   void SetUp() override {
     // Override content verification mode before ExtensionSystemImpl initializes

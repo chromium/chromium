@@ -133,7 +133,7 @@ class TestProfileProvider : public ProfileProvider {
 // real collections from debugd.
 class ProfileProviderRealCollectionTest : public testing::Test {
  public:
-  ProfileProviderRealCollectionTest() {}
+  ProfileProviderRealCollectionTest() = default;
 
   ProfileProviderRealCollectionTest(const ProfileProviderRealCollectionTest&) =
       delete;

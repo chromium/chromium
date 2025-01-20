@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/services/speech/audio_source_consumer.h"
+#include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -101,10 +102,20 @@ class SpeechRecognitionRecognizerImpl
 
   void MarkDone() override;
 
+  void UpdateRecognitionContext(
+      media::mojom::SpeechRecognitionRecognitionContextPtr recognition_context);
+
   // AudioSourceConsumer:
   void AddAudio(media::mojom::AudioDataS16Ptr buffer) override;
   void OnAudioCaptureEnd() override;
   void OnAudioCaptureError() override;
+
+  // Either create a real soda client or configure one for testing.
+  void CreateSodaClient(const base::FilePath& binary_path);
+  void SetSodaClientForTesting(std::unique_ptr<::soda::SodaClient> soda_client);
+
+  // Retrieve the soda config output for testing.
+  soda::chrome::ExtendedSodaConfigMsg* GetExtendedSodaConfigMsgForTesting();
 
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
@@ -154,7 +165,9 @@ class SpeechRecognitionRecognizerImpl
   // the speech recognition service to the browser process.
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> client_remote_;
 
-  std::unique_ptr<soda::SodaClient> soda_client_;
+  std::unique_ptr<::soda::SodaClient> soda_client_;
+
+  soda::chrome::ExtendedSodaConfigMsg config_msg_;
 
   // The callback that is eventually executed on a speech recognition event
   // which passes the transcribed audio back to the caller via the speech

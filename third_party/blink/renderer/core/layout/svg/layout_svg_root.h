@@ -49,8 +49,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   void IntrinsicSizingInfoChanged();
   void UnscaledIntrinsicSizingInfo(const SVGRect* override_viewbox,
-                                   IntrinsicSizingInfo&) const;
-  void UnscaledIntrinsicSizingInfo(IntrinsicSizingInfo& sizing_info) const {
+                                   NaturalSizingInfo&) const;
+  void UnscaledIntrinsicSizingInfo(NaturalSizingInfo& sizing_info) const {
     NOT_DESTROYED();
     UnscaledIntrinsicSizingInfo(nullptr, sizing_info);
   }
@@ -141,7 +141,12 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return true;
   }
 
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
+  bool ShouldApplyObjectViewBox() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 

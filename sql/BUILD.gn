@@ -3,6 +3,15 @@
 # found in the LICENSE file.
 
 import("//testing/test.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
+
+generate_allowlist_from_histograms_file("sql_name_variants") {
+  namespace = "sql_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/sql/histograms.xml"
+  output_file = "sql_name_variants.h"
+  tag = "variant"
+  allow_list_name = "DatabaseTag"
+}
 
 component("sql") {
   sources = [
@@ -42,12 +51,16 @@ component("sql") {
     "vfs_wrapper.h",
   ]
 
+  #sources += get_target_outputs(":sql_name_variants")
+
   defines = [ "IS_SQL_IMPL" ]
 
   deps = [
     "//base",
     "//third_party/sqlite",
   ]
+
+  public_deps = [ ":sql_name_variants" ]
 
   # For vfs_wrapper.cc time-machine exclusions.
   if (is_mac) {

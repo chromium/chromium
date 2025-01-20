@@ -37,6 +37,7 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class PointerEvent;
 
 enum class ClosedByState {
   kAny,
@@ -52,9 +53,17 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
+  // ignore_open_attribute ensures that the closing steps are run even if the
+  // open attribute is removed by script.
+  // async_focus makes previously_focused_element_ get focused after waiting
+  // for a task instead of getting focused synchronously.
   void close(const String& return_value = String(),
-             bool ignore_open_attribute = false);
-  void requestClose(const String& return_value = String());
+             bool ignore_open_attribute = false,
+             bool async_focus = false);
+  void requestClose(ExceptionState& exception_state) {
+    requestClose(String(), exception_state);
+  }
+  void requestClose(const String& return_value, ExceptionState&);
   void show(ExceptionState&);
   void showModal(ExceptionState&);
   void RemovedFrom(ContainerNode&) override;
@@ -71,7 +80,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   String closedBy() const;
   void setClosedBy(const String& return_value);
 
-  static void HandleDialogLightDismiss(const Event& event,
+  static void HandleDialogLightDismiss(const PointerEvent& pointer_event,
                                        const Node& target_node);
 
   void CloseWatcherFiredCancel(Event*);
@@ -84,8 +93,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior) const override {
     return FocusableState::kFocusable;
   }
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
 
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.
@@ -120,6 +130,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // false after the call to close() finishes.
   bool is_closing_ = false;
   String return_value_;
+  String request_close_return_value_;
   WeakMember<Element> previously_focused_element_;
 
   Member<CloseWatcher> close_watcher_;

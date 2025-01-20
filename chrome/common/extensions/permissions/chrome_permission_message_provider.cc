@@ -56,11 +56,9 @@ using ComparablePermissions = std::vector<ComparablePermission>;
 
 typedef std::set<PermissionMessage> PermissionMsgSet;
 
-ChromePermissionMessageProvider::ChromePermissionMessageProvider() {
-}
+ChromePermissionMessageProvider::ChromePermissionMessageProvider() = default;
 
-ChromePermissionMessageProvider::~ChromePermissionMessageProvider() {
-}
+ChromePermissionMessageProvider::~ChromePermissionMessageProvider() = default;
 
 PermissionMessages ChromePermissionMessageProvider::GetPermissionMessages(
     const PermissionIDSet& permissions) const {

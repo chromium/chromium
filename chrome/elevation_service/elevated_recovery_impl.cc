@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 
 #include <objbase.h>
@@ -23,7 +28,8 @@
 #include "base/version.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/install_static/install_util.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "components/crx_file/crx_verifier.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -71,11 +77,10 @@ HRESULT OpenCallingProcess(uint32_t proc_id, base::Process* process) {
   DCHECK(proc_id);
   DCHECK(process);
 
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-
-  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
+    return impersonate_client.result();
+  }
 
   *process = base::Process::OpenWithAccess(proc_id, PROCESS_DUP_HANDLE);
   return process->IsValid() ? S_OK : HRESULTFromLastError();
@@ -89,11 +94,10 @@ HRESULT OpenFileImpersonated(const base::FilePath& file_path,
                              base::File* file) {
   DCHECK(file);
 
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-
-  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
+    return impersonate_client.result();
+  }
 
   file->Initialize(file_path, flags);
   if (!file->IsValid())
@@ -184,9 +188,13 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
   if (!zip::Unzip(to_crx_path, to_dir.GetPath()))
     return E_UNEXPECTED;
 
-  LOG_IF(WARNING, !base::DeleteFile(to_crx_path));
+  if (!base::DeleteFile(to_crx_path)) {
+    PLOG(WARNING) << "Failed to delete " << to_crx_path;
+  }
 
-  LOG_IF(WARNING, !unpacked_crx_dir->Set(to_dir.Take()));
+  if (!unpacked_crx_dir->Set(to_dir.Take())) {
+    LOG(WARNING) << "Failed to transfer ownership of " << to_dir.GetPath();
+  }
   return S_OK;
 }
 

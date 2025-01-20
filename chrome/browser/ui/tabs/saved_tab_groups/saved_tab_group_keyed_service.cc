@@ -477,9 +477,6 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   tabs_in_group = tab_group->tab_count();
   CHECK(tabs_in_group == tabs_in_saved_group);
 
-  UpdateWebContentsToMatchSavedTabGroupTabs(tab_strip_model, saved_group,
-                                            tab_group->ListTabs());
-
   model_->OnGroupOpenedInTabStrip(saved_guid, local_group_id);
   UpdateGroupVisualData(saved_guid, local_group_id);
 
@@ -487,14 +484,16 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
       *model_->Get(saved_guid),
       GetTabToGuidMappingForSavedGroup(tab_strip_model, saved_group,
                                        tab_group->ListTabs()));
+
+  UpdateWebContentsToMatchSavedTabGroupTabs(tab_strip_model, saved_group,
+                                            tab_group->ListTabs());
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   // One time migration from Saved Tab Group V1 to V2
-  // TODO(b/333742126): Remove migration code in M135.
+  // TODO(crbug.com/333742126): Remove migration code in M140.
   PrefService* pref_service = profile()->GetPrefs();
-  if (IsTabGroupsSaveUIUpdateEnabled() &&
-      !saved_tab_groups::prefs::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
+  if (!saved_tab_groups::prefs::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
     model_->MigrateTabGroupSavesUIUpdate();
     saved_tab_groups::prefs::SetTabGroupSavesUIUpdateMigrated(pref_service);
   }

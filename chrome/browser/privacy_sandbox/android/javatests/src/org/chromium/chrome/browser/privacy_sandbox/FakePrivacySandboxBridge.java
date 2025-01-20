@@ -236,4 +236,9 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile) {
         return false;
     }
+
+    @Override
+    public boolean shouldUsePrivacyPolicyChinaDomain(Profile profile) {
+        return false;
+    }
 }

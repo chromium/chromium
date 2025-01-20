@@ -9,6 +9,8 @@
 #include "ash/events/test_event_capturer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_controller.h"
+#include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,6 +85,8 @@ class EventRewriterWrapper : public ui::EventRewriter {
   }
 };
 
+}  // namespace
+
 class MouseKeysTest : public AshTestBase {
  protected:
   MouseKeysTest()
@@ -116,6 +120,36 @@ class MouseKeysTest : public AshTestBase {
 
   void SetEnabled(bool enabled) {
     Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(enabled);
+  }
+
+  MouseKeysBubbleController* GetBubbleController() const {
+    return Shell::Get()
+        ->mouse_keys_controller()
+        ->GetMouseKeysBubbleControllerForTest();
+  }
+
+  MouseKeysBubbleView* GetBubbleView() const {
+    return GetBubbleController()->mouse_keys_bubble_view_;
+  }
+
+  bool IsBubbleVisible() {
+    // Add a null check for widget_.
+    if (GetBubbleController()->widget_ == nullptr) {
+      return false;
+    }
+    return GetBubbleController()->widget_->IsVisible();
+  }
+
+  const std::u16string GetBubbleText() const {
+    return GetBubbleView()->GetTextForTesting();
+  }
+
+  bool IsButtonChangeIconVisible() const {
+    return GetBubbleView()->GetMouseButtonChangeIconForTesting()->GetVisible();
+  }
+
+  bool IsMouseDraggedIconVisible() const {
+    return GetBubbleView()->GetMouseDragIconForTesting()->GetVisible();
   }
 
   const std::vector<ui::KeyEvent>& CheckForKeyEvents() {
@@ -299,13 +333,24 @@ class MouseKeysTest : public AshTestBase {
     prefs->SetDouble(prefs::kAccessibilityMouseKeysMaxSpeed, factor);
   }
 
+  gfx::Point GetLastMousePositionFromEvents() {
+    auto events = CheckForMouseEvents();
+    EXPECT_FALSE(events.empty());
+    return events.back().location();
+  }
+
+  void ShowMouseKeysBubble() {
+    EXPECT_FALSE(IsBubbleVisible());
+    PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+    EXPECT_TRUE(IsBubbleVisible());
+    EXPECT_EQ(GetBubbleText(), u"Right mouse button");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestEventCapturer event_capturer_;
   EventRewriterWrapper rewriter_;
 };
-
-}  // namespace
 
 TEST_F(MouseKeysTest, ToggleEnabled) {
   std::vector<ui::MouseEvent> events;
@@ -434,7 +479,16 @@ TEST_F(MouseKeysTest, SelectButtonRightHand) {
 
   // Press , and the mouse action should be the right button.
   ClearEvents();
+  EXPECT_FALSE(IsBubbleVisible());
   PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+
+  // Bubble view with right button change message and button change icon
+  // should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Right mouse button");
+  EXPECT_TRUE(IsButtonChangeIconVisible());
+  EXPECT_FALSE(IsMouseDraggedIconVisible());
+
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ExpectClick(CheckForMouseEvents(), ui::EF_RIGHT_MOUSE_BUTTON,
@@ -443,6 +497,14 @@ TEST_F(MouseKeysTest, SelectButtonRightHand) {
   // Press , and the mouse action should be both buttons.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+
+  // Bubble view with both mouse buttons change message
+  // and button change icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Both mouse buttons");
+  EXPECT_TRUE(IsButtonChangeIconVisible());
+  EXPECT_FALSE(IsMouseDraggedIconVisible());
+
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ExpectClick(CheckForMouseEvents(),
@@ -452,6 +514,14 @@ TEST_F(MouseKeysTest, SelectButtonRightHand) {
   // Press , and the mouse action should be the left button.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+
+  // Bubble view with left mouse buttons change message
+  // and button change icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Left mouse button");
+  EXPECT_TRUE(IsButtonChangeIconVisible());
+  EXPECT_FALSE(IsMouseDraggedIconVisible());
+
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
@@ -468,6 +538,7 @@ TEST_F(MouseKeysTest, SelectButtonLeftHand) {
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_W);
   EXPECT_EQ(0u, CheckForKeyEvents().size());
+  LOG(ERROR) << "[LKupo] this is the first click event";
   ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
               kDefaultPosition);
 
@@ -561,6 +632,37 @@ TEST_F(MouseKeysTest, IgnoreKeyRepeat) {
   EXPECT_EQ(ui::EventType::kMouseReleased, mouse_events[0].type());
   EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
   EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+}
+
+TEST_F(MouseKeysTest, MouseKeysBubbleMovesWithMouse) {
+  // Initialize mouse and enable Mouse Keys.
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  ClearEvents();
+
+  // Get initial mouse position with a small move up-left.
+  PressAndReleaseKey(ui::VKEY_7);
+  gfx::Point initialMousePosition = GetLastMousePositionFromEvents();
+
+  // Show the bubble and get its initial position.
+  ShowMouseKeysBubble();
+  gfx::Point initialBubblePosition =
+      GetBubbleView()->GetAnchorRect().CenterPoint();
+
+  // Simulate mouse movement up-left.
+  PressAndReleaseKey(ui::VKEY_7);
+
+  // Get the final mouse position.
+  auto finalMousePosition = GetLastMousePositionFromEvents();
+
+  // Get the final bubble position.
+  gfx::Point finalBubblePosition =
+      GetBubbleView()->GetAnchorRect().CenterPoint();
+
+  // Verify mouse and bubble movements match.
+  EXPECT_EQ(finalMousePosition - initialMousePosition,
+            finalBubblePosition - initialBubblePosition);
 }
 
 TEST_F(MouseKeysTest, Move) {
@@ -955,6 +1057,13 @@ TEST_F(MouseKeysTest, Dragging) {
   // Start Drag.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_M);
+
+  // Bubble view with the correct message and icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Press \".\" to release");
+  EXPECT_TRUE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
+
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());
@@ -965,6 +1074,9 @@ TEST_F(MouseKeysTest, Dragging) {
   // Move right.
   ClearEvents();
   PressKey(ui::VKEY_O);
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_TRUE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
   task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
   ReleaseKey(ui::VKEY_O);
   mouse_events = CheckForMouseEvents();
@@ -981,6 +1093,7 @@ TEST_F(MouseKeysTest, Dragging) {
   // Stop Drag.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_OEM_PERIOD);
+  EXPECT_FALSE(IsBubbleVisible());
   mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());
@@ -1004,6 +1117,7 @@ TEST_F(MouseKeysTest, DragWithClick) {
   // Start Drag.
   ClearEvents();
   PressKey(ui::VKEY_I);
+  EXPECT_FALSE(IsBubbleVisible());
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());
@@ -1030,6 +1144,7 @@ TEST_F(MouseKeysTest, DragWithClick) {
   // Stop Drag.
   ClearEvents();
   ReleaseKey(ui::VKEY_I);
+  EXPECT_FALSE(IsBubbleVisible());
   mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(1u, mouse_events.size());
@@ -1104,6 +1219,12 @@ TEST_F(MouseKeysTest, Accelerator) {
   accelerator_controller->PerformActionIfEnabled(
       AcceleratorAction::kToggleMouseKeys, {});
 
+  // Bubble view with the paused message and no icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Mouse keys paused");
+  EXPECT_FALSE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
+
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
@@ -1111,6 +1232,12 @@ TEST_F(MouseKeysTest, Accelerator) {
   // Toggle Mouse Keys on, and we should see the original behaviour.
   accelerator_controller->PerformActionIfEnabled(
       AcceleratorAction::kToggleMouseKeys, {});
+
+  // Bubble view with the resumed message and no icon should be displayed.
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(GetBubbleText(), u"Mouse keys resumed");
+  EXPECT_FALSE(IsMouseDraggedIconVisible());
+  EXPECT_FALSE(IsButtonChangeIconVisible());
 
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_I);

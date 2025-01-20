@@ -80,7 +80,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
   SessionRestoreTestChromeOS()
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
-  ~SessionRestoreTestChromeOS() override {}
+  ~SessionRestoreTestChromeOS() override = default;
 
  protected:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {

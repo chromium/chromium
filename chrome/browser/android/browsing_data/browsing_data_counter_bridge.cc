@@ -22,26 +22,20 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     Profile* profile,
-    jint data_type,
-    jint clear_browsing_data_tab)
+    jint selected_time_period,
+    jint data_type)
     : jobject_(obj) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
             static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
-  DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LE(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
   TRACE_EVENT1("browsing_data",
                "BrowsingDataCounterBridge::BrowsingDataCounterBridge",
                "data_type", data_type);
 
-  clear_browsing_data_tab_ =
-      static_cast<browsing_data::ClearBrowsingDataTab>(clear_browsing_data_tab);
-
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
           static_cast<browsing_data::BrowsingDataType>(data_type),
-          clear_browsing_data_tab_, &pref)) {
+          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
     return;
   }
 
@@ -51,14 +45,27 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
   if (!counter_)
     return;
 
-  counter_->Init(
-      profile_->GetPrefs(), clear_browsing_data_tab_,
+  counter_->InitWithoutPeriodPref(
+      profile_->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+      CalculateBeginDeleteTime(
+          static_cast<browsing_data::TimePeriod>(selected_time_period)),
       base::BindRepeating(&BrowsingDataCounterBridge::onCounterFinished,
                           base::Unretained(this)));
   counter_->Restart();
 }
 
-BrowsingDataCounterBridge::~BrowsingDataCounterBridge() {
+BrowsingDataCounterBridge::~BrowsingDataCounterBridge() = default;
+
+void BrowsingDataCounterBridge::SetSelectedTimePeriod(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint selected_time_period) {
+  if (!counter_) {
+    return;
+  }
+
+  counter_->SetBeginTime(CalculateBeginDeleteTime(
+      static_cast<browsing_data::TimePeriod>(selected_time_period)));
 }
 
 void BrowsingDataCounterBridge::Destroy(JNIEnv* env,
@@ -75,12 +82,12 @@ void BrowsingDataCounterBridge::onCounterFinished(
                                                                   profile_));
 }
 
-static jlong JNI_BrowsingDataCounterBridge_Init(
+static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     Profile* profile,
-    jint data_type,
-    jint clear_browsing_data_tab) {
+    jint selected_time_period,
+    jint data_type) {
   return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
-      env, obj, profile, data_type, clear_browsing_data_tab));
+      env, obj, profile, selected_time_period, data_type));
 }

@@ -33,12 +33,12 @@ class SuggestionWindowViewTest
     : public ChromeViewsTestBase,
       public ::testing::WithParamInterface<SuggestionWindowView::Orientation> {
  public:
-  SuggestionWindowViewTest() {}
+  SuggestionWindowViewTest() = default;
 
   SuggestionWindowViewTest(const SuggestionWindowViewTest&) = delete;
   SuggestionWindowViewTest& operator=(const SuggestionWindowViewTest&) = delete;
 
-  ~SuggestionWindowViewTest() override {}
+  ~SuggestionWindowViewTest() override = default;
 
  protected:
   void SetUp() override {

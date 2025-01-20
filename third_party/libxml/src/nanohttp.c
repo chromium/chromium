@@ -1581,7 +1581,7 @@ xmlNanoHTTPFetch(const char *URL, const char *filename, char **contentType) {
     if (ctxt == NULL) return(-1);
 
     if (!strcmp(filename, "-"))
-        fd = 0;
+        fd = 1; /* STDOUT_FILENO */
     else {
         fd = open(filename, O_CREAT | O_WRONLY, 00644);
 	if (fd < 0) {
@@ -1627,7 +1627,7 @@ xmlNanoHTTPSave(void *ctxt, const char *filename) {
     if ((ctxt == NULL) || (filename == NULL)) return(-1);
 
     if (!strcmp(filename, "-"))
-        fd = 0;
+        fd = 1; /* STDOUT_FILENO */
     else {
         fd = open(filename, O_CREAT | O_WRONLY, 0666);
 	if (fd < 0) {

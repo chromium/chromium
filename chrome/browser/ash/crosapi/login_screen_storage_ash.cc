@@ -12,7 +12,7 @@
 
 namespace crosapi {
 
-LoginScreenStorageAsh::LoginScreenStorageAsh() {}
+LoginScreenStorageAsh::LoginScreenStorageAsh() = default;
 LoginScreenStorageAsh::~LoginScreenStorageAsh() = default;
 
 void LoginScreenStorageAsh::BindReceiver(

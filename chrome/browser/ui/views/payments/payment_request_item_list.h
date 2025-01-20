@@ -16,7 +16,7 @@
 namespace views {
 class ImageView;
 class View;
-}
+}  // namespace views
 
 namespace payments {
 

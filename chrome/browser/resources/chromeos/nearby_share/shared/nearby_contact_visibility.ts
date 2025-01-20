@@ -146,6 +146,14 @@ export class NearbyContactVisibilityElement extends
         type: String,
         value: '',
       },
+
+      /**
+       * Determines whether the QuickShareV2 flag is enabled.
+       */
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+      },
     };
   }
 
@@ -172,6 +180,7 @@ export class NearbyContactVisibilityElement extends
   private downloadTimeoutId_: number|null;
   private isDarkModeActive_: boolean;
   private isAllContactsToggledOn_: boolean;
+  private isQuickShareV2Enabled_: boolean;
   private numUnreachable_: number;
   private numUnreachableMessage_: string;
 
@@ -226,6 +235,10 @@ export class NearbyContactVisibilityElement extends
       |null {
     switch (visibilityString) {
       case 'contacts':
+        if (this.isQuickShareV2Enabled_) {
+          return Visibility.kAllContacts
+        }
+
         if (this.isAllContactsToggledOn_) {
           return Visibility.kAllContacts;
         }
@@ -339,6 +352,10 @@ export class NearbyContactVisibilityElement extends
    * @return true when checkboxes should be shown for contacts.
    */
   private showContactCheckBoxes_(): boolean {
+    if (this.isQuickShareV2Enabled_) {
+      return false;
+    }
+
     return this.getSelectedVisibility() === Visibility.kSelectedContacts;
   }
 
@@ -399,6 +416,7 @@ export class NearbyContactVisibilityElement extends
     }
 
     return selectedVisibility === 'none' ||
+        selectedVisibility === 'yourDevices' ||
         contactsState === ContactsState.HAS_CONTACTS;
   }
 
@@ -416,6 +434,10 @@ export class NearbyContactVisibilityElement extends
 
   private showAllContactsToggle_(
       selectedVisibility: string, contactsState: ContactsState): boolean {
+    if (this.isQuickShareV2Enabled_) {
+      return false;
+    }
+
     return selectedVisibility === 'contacts' &&
         contactsState === ContactsState.HAS_CONTACTS;
   }

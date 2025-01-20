@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -91,11 +90,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mActivity = activity;
         mBackPressListener = backPressListener;
 
-        int contentLayoutId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.layout.account_picker_bottom_sheet_view
-                        : R.layout.account_picker_bottom_sheet_view_old;
+        int contentLayoutId = R.layout.account_picker_bottom_sheet_view;
 
         mContentView = LayoutInflater.from(mActivity).inflate(contentLayoutId, null);
 
@@ -138,10 +133,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 .findViewById(R.id.confirm_management_cancel_button)
                 .setOnClickListener((View v) -> handleBackPress());
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
-        }
+        getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
     }
 
     /** The account list view is visible when the account list is expanded. */
@@ -177,9 +169,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
 
         mViewFlipper.setDisplayedChild(state);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && state == ViewState.SIGNIN_IN_PROGRESS
-                && mCurrentViewState != null) {
+        if (state == ViewState.SIGNIN_IN_PROGRESS && mCurrentViewState != null) {
             // The goal here is to make the progress view take the height of the previously shown
             // view, to prevent the bottom sheet from "jumping" visually.
             // (See https://crbug.com/327127097)

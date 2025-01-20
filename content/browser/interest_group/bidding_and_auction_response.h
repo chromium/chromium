@@ -70,6 +70,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
 
     KAnonJoinCandidate candidate;
     blink::InterestGroupKey interest_group;
+    // `non_kanon_private_aggregation_request` will only have reject reason
+    // contributions, which the server will guarantee.
+    auction_worklet::mojom::PrivateAggregationRequestPtr
+        non_kanon_private_aggregation_request;
     std::optional<GhostWinnerForTopLevelAuction> ghost_winner;
   };
 
@@ -164,6 +168,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // to store the outcome if we finish parsing the response before the component
   // auctions start the bidding phase.
   AuctionResult result = AuctionResult::kInvalidServerResponse;
+
+  // Nonce used to match against the Ad-Auction-Result-Nonce header in a fetch
+  // response from the seller.
+  std::optional<std::string> nonce;
 
   bool is_chaff = false;  // indicates this response should be ignored.
   // TODO(behamilton): Add support for creative dimensions to the response from

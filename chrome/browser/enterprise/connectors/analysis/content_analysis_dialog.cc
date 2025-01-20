@@ -18,6 +18,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -281,6 +282,20 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 void ContentAnalysisDialog::ShowDialogNow() {
   if (will_be_deleted_soon_) {
     DVLOG(1) << __func__ << ": aborting since dialog will be deleted soon";
+    return;
+  }
+
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
+  if (!manager) {
+    // `manager` being null indicates that `web_contents()` doesn't correspond
+    // to a browser tab (ex: an extension background page reading the
+    // clipboard). In such a case, we don't show a dialog and instead simply
+    // accept/cancel the result immediately. See crbug.com/374120523 and
+    // crbug.com/388049470 for more context.
+    if (!is_pending()) {
+      CancelButtonCallback();
+    }
     return;
   }
 

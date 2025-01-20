@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "crypto/secure_hash.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 namespace {
@@ -72,7 +73,7 @@ std::string GetGroupName(
 
 // Returns a random-like float in range [0, 1) that is computed
 // deterministically from `gaia_id` and `salt`.
-float DeterministicFloatBetweenZeroAndOneFromGaiaId(std::string_view gaia_id,
+float DeterministicFloatBetweenZeroAndOneFromGaiaId(const GaiaId& gaia_id,
                                                     std::string_view salt) {
   CHECK(!gaia_id.empty());
 
@@ -81,7 +82,7 @@ float DeterministicFloatBetweenZeroAndOneFromGaiaId(std::string_view gaia_id,
 
   std::unique_ptr<crypto::SecureHash> sha256(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  sha256->Update(gaia_id.data(), gaia_id.length());
+  sha256->Update(gaia_id.ToString().data(), gaia_id.ToString().length());
   sha256->Update(salt.data(), salt.length());
   sha256->Update(kSuffix.data(), kSuffix.length());
   sha256->Finish(&value, sizeof(value));
@@ -90,7 +91,7 @@ float DeterministicFloatBetweenZeroAndOneFromGaiaId(std::string_view gaia_id,
   return 1.0f * (value % kResolution) / kResolution;
 }
 
-bool ShouldSampleGaiaIdWithTenPercentProbability(std::string_view gaia_id) {
+bool ShouldSampleGaiaIdWithTenPercentProbability(const GaiaId& gaia_id) {
   const float kGaiaIdSamplingFactor = 0.1f;
   const std::string_view kSaltForUserSampling = "UserSampling";
 
@@ -142,7 +143,7 @@ TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::operator=(
     TrustedVaultAutoUpgradeSyntheticFieldTrialGroup&&) = default;
 
 void TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
-    LogValidationMetricsUponOnProfileLoad(std::string_view gaia_id) const {
+    LogValidationMetricsUponOnProfileLoad(const GaiaId& gaia_id) const {
   CHECK(is_valid());
 
   if (gaia_id.empty()) {
@@ -161,7 +162,7 @@ void TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
 }
 
 void TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::LogValidationMetrics(
-    std::string_view gaia_id,
+    const GaiaId& gaia_id,
     std::string_view short_metric_name) const {
   const struct {
     const std::string_view name_suffix;
@@ -204,15 +205,14 @@ void TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::LogValidationMetrics(
 // static
 float TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
     DeterministicFloatBetweenZeroAndOneFromGaiaIdForTest(
-        std::string_view gaia_id,
+        const GaiaId& gaia_id,
         std::string_view salt) {
   return DeterministicFloatBetweenZeroAndOneFromGaiaId(gaia_id, salt);
 }
 
 // static
 bool TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
-    ShouldSampleGaiaIdWithTenPercentProbabilityForTest(
-        std::string_view gaia_id) {
+    ShouldSampleGaiaIdWithTenPercentProbabilityForTest(const GaiaId& gaia_id) {
   return ShouldSampleGaiaIdWithTenPercentProbability(gaia_id);
 }
 

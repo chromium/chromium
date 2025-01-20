@@ -14,11 +14,11 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace content {
@@ -86,7 +86,6 @@ class AutofillKeyboardAccessoryControllerImpl
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
-  void PinView() override;
 
   // AutofillKeyboardAccessoryController:
   std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
@@ -154,10 +153,6 @@ class AutofillKeyboardAccessoryControllerImpl
   // during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).
   bool disable_threshold_for_testing_ = false;
-
-  // If set to true, the popup will never be hidden because of stale data or if
-  // the user interacts with native UI.
-  bool is_view_pinned_ = false;
 
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.

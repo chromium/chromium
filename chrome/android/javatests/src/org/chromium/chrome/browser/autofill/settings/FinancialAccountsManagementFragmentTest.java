@@ -53,6 +53,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -67,6 +68,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
+    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
     ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES
 })
 @Batch(Batch.PER_CLASS)
@@ -83,22 +85,37 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Mock private Callback<String> mFinancialAccountManageLinkOpenerCallback;
 
-    private static final GURL PIX_BANK_ACCOUNT_DISPLAY_ICON_URL = new GURL("http://example.com");
+    private static final GURL FINANCIAL_ACCOUNT_DISPLAY_ICON_URL = new GURL("http://example.com");
     private static final BankAccount PIX_BANK_ACCOUNT =
             new BankAccount.Builder()
                     .setPaymentInstrument(
                             new PaymentInstrument.Builder()
                                     .setInstrumentId(100L)
                                     .setNickname("nickname")
-                                    .setDisplayIconUrl(PIX_BANK_ACCOUNT_DISPLAY_ICON_URL)
+                                    .setDisplayIconUrl(FINANCIAL_ACCOUNT_DISPLAY_ICON_URL)
                                     .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
                                     .build())
                     .setBankName("bank_name")
                     .setAccountNumberSuffix("account_number_suffix")
                     .setAccountType(AccountType.CHECKING)
                     .build();
-    private static final Bitmap PIX_BANK_ACCOUNT_DISPLAY_ICON_BITMAP =
+    private static final Bitmap FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
+
+    private static final Ewallet EWALLET_ACCOUNT =
+            new Ewallet.Builder()
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100)
+                                    .setNickname("nickname")
+                                    .setDisplayIconUrl(FINANCIAL_ACCOUNT_DISPLAY_ICON_URL)
+                                    .setSupportedPaymentRails(
+                                            new int[] {PaymentRail.PAYMENT_HYPERLINK})
+                                    .setIsFidoEnrolled(true)
+                                    .build())
+                    .setEwalletName("eWallet name")
+                    .setAccountDisplayName("Ewallet account display name")
+                    .build();
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -110,7 +127,7 @@ public class FinancialAccountsManagementFragmentTest {
                     PersonalDataManager personalDataManager =
                             AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
                     personalDataManager.setImageFetcherForTesting(
-                            new TestImageFetcher(PIX_BANK_ACCOUNT_DISPLAY_ICON_BITMAP));
+                            new TestImageFetcher(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP));
                     // Cache the test image in AutofillImageFetcher. Only cached images are returned
                     // immediately by the AutofillImageFetcher. If the image is not cached, it'll
                     // trigger an async fetch from the above TestImageFetcher and cache it for the
@@ -118,11 +135,20 @@ public class FinancialAccountsManagementFragmentTest {
                     personalDataManager
                             .getImageFetcherForTesting()
                             .addImageToCacheForTesting(
-                                    PIX_BANK_ACCOUNT_DISPLAY_ICON_URL,
-                                    PIX_BANK_ACCOUNT_DISPLAY_ICON_BITMAP,
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
                                     CardIconSpecs.create(
                                             ContextUtils.getApplicationContext(), ImageSize.LARGE));
-                    // Set the Pix pref to true.
+                    personalDataManager
+                            .getImageFetcherForTesting()
+                            .addImageToCacheForTesting(
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
+                                    CardIconSpecs.create(
+                                            ContextUtils.getApplicationContext(),
+                                            ImageSize.SQUARE));
+                    // Set the eWallet and Pix pref to true.
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
                 });
     }
@@ -138,7 +164,133 @@ public class FinancialAccountsManagementFragmentTest {
                 });
     }
 
-    // Test that when Pix accounts are available the Pix preference toggle is shown.
+    // Test that when both eWallet and Pix are available the eWallet and Pix
+    // preference toggles are shown.
+    @Test
+    @MediumTest
+    public void testEwalletAndPixAccountAvailable_bothSwitchesShown() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(eWalletSwitch).isNotNull();
+        assertThat(pixSwitch).isNotNull();
+    }
+
+    // Test that when eWallet accounts are available and Pix accounts are not, only
+    // the eWallet preference toggle is shown.
+    @Test
+    @MediumTest
+    public void testEwalletAccountAvailable_eWalletSwitchShown() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(eWalletSwitch).isNotNull();
+        assertThat(pixSwitch).isNull();
+    }
+
+    // Test that when eWallet accounts are not available the eWallet preference toggle is not shown.
+    @Test
+    @MediumTest
+    public void testEwalletAccountNotAvailable_eWalletSwitchNotShown() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the switch preference for eWallet is not displayed.
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch).isNull();
+    }
+
+    // Test that when eWallet preference is set to true, the eWallet toggle is checked.
+    @Test
+    @MediumTest
+    public void testEwalletPrefEnabled_eWalletSwitchEnabled() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isTrue();
+    }
+
+    // Test that when the eWallet preference is set to false, the eWallet toggle is not
+    // checked.
+    @Test
+    @MediumTest
+    public void testEwalletPrefDisabled_eWalletSwitchDisabled() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, false);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isFalse();
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletAndPixAccountShown() throws Exception {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        String expectedEwalletItemSummary =
+                String.format("eWallet  •  %s", EWALLET_ACCOUNT.getAccountDisplayName());
+        Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref.getTitle()).isEqualTo(EWALLET_ACCOUNT.getEwalletName());
+        assertThat(eWalletPref.getSummary()).isEqualTo(expectedEwalletItemSummary);
+        assertThat(eWalletPref.getWidgetLayoutResource())
+                .isEqualTo(R.layout.autofill_server_data_label);
+        assertThat(((BitmapDrawable) eWalletPref.getIcon()).getBitmap())
+                .isEqualTo(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
+
+        String expectedPixItemSummary =
+                String.format(
+                        "Pix  •  %s ••••%s",
+                        activity.getString(R.string.bank_account_type_checking),
+                        PIX_BANK_ACCOUNT.getAccountNumberSuffix());
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+        assertThat(bankAccountPref.getTitle()).isEqualTo(PIX_BANK_ACCOUNT.getBankName());
+        assertThat(bankAccountPref.getSummary()).isEqualTo(expectedPixItemSummary);
+        assertThat(bankAccountPref.getWidgetLayoutResource())
+                .isEqualTo(R.layout.autofill_server_data_label);
+        assertThat(((BitmapDrawable) bankAccountPref.getIcon()).getBitmap())
+                .isEqualTo(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletAccountShown() {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        String expectedPrefSummary =
+                String.format("eWallet  •  %s", EWALLET_ACCOUNT.getAccountDisplayName());
+        Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref.getTitle()).isEqualTo(EWALLET_ACCOUNT.getEwalletName());
+        assertThat(eWalletPref.getSummary()).isEqualTo(expectedPrefSummary);
+        assertThat(eWalletPref.getWidgetLayoutResource())
+                .isEqualTo(R.layout.autofill_server_data_label);
+        assertThat(((BitmapDrawable) eWalletPref.getIcon()).getBitmap())
+                .isEqualTo(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
+    }
+
+    // Test that when Pix accounts are available and eWallets accounts are not, only
+    // the Pix preference toggle is shown.
     @Test
     @MediumTest
     public void testPixAccountAvailable_pixSwitchShown() throws Exception {
@@ -146,9 +298,12 @@ public class FinancialAccountsManagementFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the switch preference for Pix is displayed.
+        // Verify that the Pix switch preference is displayed and the eWallet switch
+        // is not..
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
         assertThat(pixSwitch).isNotNull();
+        assertThat(eWalletSwitch).isNull();
     }
 
     // Test that when Pix accounts are not available the Pix preference toggle is not shown.
@@ -214,7 +369,7 @@ public class FinancialAccountsManagementFragmentTest {
         assertThat(bankAccountPref.getWidgetLayoutResource())
                 .isEqualTo(R.layout.autofill_server_data_label);
         assertThat(((BitmapDrawable) bankAccountPref.getIcon()).getBitmap())
-                .isEqualTo(PIX_BANK_ACCOUNT_DISPLAY_ICON_BITMAP);
+                .isEqualTo(FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP);
     }
 
     @Test
@@ -311,11 +466,51 @@ public class FinancialAccountsManagementFragmentTest {
                 .isTrue();
     }
 
+    // Test that eWallet accounts are removed when the eWallet toggle is turned
+    // off.
+    @Test
+    @MediumTest
+    public void testEwalletSwitchDisabled_eWalletRowItemsRemoved() throws TimeoutException {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref).isNotNull();
+
+        // Set the eWallet toggle to off.
+        rule.clickOnPreferenceAndWait(eWalletSwitch);
+
+        // Verify that the eWallet preference is now null.
+        eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref).isNull();
+    }
+
+    // Test that eWallet accounts are added when the eWallet toggle is turned on.
+    @Test
+    @MediumTest
+    public void testEwalletSwitchEnabled_eWalletRowItemsAdded() throws TimeoutException {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, false);
+                });
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        Preference eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref).isNull();
+
+        // Set the eWallet toggle to on.
+        rule.clickOnPreferenceAndWait(eWalletSwitch);
+        // Verify that the eWallet account preference is now not null.
+        eWalletPref = getEwalletPreference(activity, EWALLET_ACCOUNT);
+        assertThat(eWalletPref).isNotNull();
+    }
+
     // Test that Pix bank accounts are removed when the Pix toggle is turned off.
     @Test
     @MediumTest
     @RequiresRestart("crbug.com/344671557")
-    public void testPixSwitchDisabled_bankAccountPrefsRemoved() {
+    public void testPixSwitchDisabled_bankAccountPrefsRemoved() throws TimeoutException {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
@@ -323,10 +518,7 @@ public class FinancialAccountsManagementFragmentTest {
         assertThat(bankAccountPref).isNotNull();
 
         // Set the Pix toggle to off.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    pixSwitch.performClick();
-                });
+        rule.clickOnPreferenceAndWait(pixSwitch);
 
         // Verify that the bank account preference is now null.
         bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
@@ -336,7 +528,7 @@ public class FinancialAccountsManagementFragmentTest {
     // Test that Pix bank accounts are added when the Pix toggle is turned on.
     @Test
     @MediumTest
-    public void testPixSwitchEnabled_bankAccountPrefsAdded() {
+    public void testPixSwitchEnabled_bankAccountPrefsAdded() throws TimeoutException {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -349,10 +541,7 @@ public class FinancialAccountsManagementFragmentTest {
         assertThat(bankAccountPref).isNull();
 
         // Set the Pix toggle to on.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    pixSwitch.performClick();
-                });
+        rule.clickOnPreferenceAndWait(pixSwitch);
 
         // Verify that the bank account preference is now not null.
         bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
@@ -383,7 +572,7 @@ public class FinancialAccountsManagementFragmentTest {
         var pixToggleEnabledHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         FinancialAccountsManagementFragment
-                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                                .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         true);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
@@ -400,24 +589,67 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
-    public void testPixToggleTurnedOff_histogramLogged() {
+    public void testPixToggleTurnedOff_histogramLogged() throws TimeoutException {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         var pixToggleDisabledHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         FinancialAccountsManagementFragment
-                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                                .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         false);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
         assertThat(pixSwitch.isChecked()).isTrue();
 
         // Set the Pix toggle to off.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    pixSwitch.performClick();
-                });
+        rule.clickOnPreferenceAndWait(pixSwitch);
 
         pixToggleDisabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @RequiresRestart("crbug.com/344671557")
+    public void testEwalletToggleTurnedOn_histogramLogged() {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, false);
+                });
+        var eWalletToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
+                        true);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isFalse();
+
+        // Set the eWallet toggle to on.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    eWalletSwitch.performClick();
+                });
+
+        eWalletToggleEnabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletToggleTurnedOff_histogramLogged() throws TimeoutException {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        var eWalletToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
+                        false);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isTrue();
+
+        // Set the eWallet toggle to off.
+        rule.clickOnPreferenceAndWait(eWalletSwitch);
+
+        eWalletToggleEnabledHistogram.assertExpected();
     }
 
     @Test
@@ -474,10 +706,24 @@ public class FinancialAccountsManagementFragmentTest {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
+    private static ChromeSwitchPreference getEwalletSwitchPreference(SettingsActivity activity) {
+        return (ChromeSwitchPreference)
+                getPreferenceScreen(activity)
+                        .findPreference(FinancialAccountsManagementFragment.PREFERENCE_KEY_EWALLET);
+    }
+
     private static ChromeSwitchPreference getPixSwitchPreference(SettingsActivity activity) {
         return (ChromeSwitchPreference)
                 getPreferenceScreen(activity)
                         .findPreference(FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX);
+    }
+
+    private static Preference getEwalletPreference(SettingsActivity activity, Ewallet eWallet) {
+        String eWalletPrefKey =
+                String.format(
+                        FinancialAccountsManagementFragment.PREFERENCE_KEY_EWALLET_ACCOUNT,
+                        eWallet.getInstrumentId());
+        return getPreferenceScreen(activity).findPreference(eWalletPrefKey);
     }
 
     private static Preference getBankAccountPreference(

@@ -14,14 +14,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
@@ -105,10 +106,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
 
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
-
-  // Called if no suggestions were found. Assumed to be mutually exclusive with
-  // |OnAddPasswordFillData|.
-  void OnNoCredentialsFound();
 
   PasswordManualFallbackMetricsRecorder&
   GetPasswordManualFallbackMetricsRecorder() {
@@ -240,9 +237,9 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   std::unique_ptr<PasswordManualFallbackMetricsRecorder>
       manual_fallback_metrics_recorder_;
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
   // Stores the controller of warning popup UI on cross domain filling.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
       cross_domain_confirmation_controller_;
 #endif

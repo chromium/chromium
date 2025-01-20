@@ -32,7 +32,6 @@ namespace autotestPrivate {
   // A mapping of apps::mojom::Type
   enum AppType {
     Arc,
-    BuiltIn,
     Crostini,
     Extension,
     Web,
@@ -282,46 +281,6 @@ namespace autotestPrivate {
   callback IsArcProvisionedCallback = void (boolean arcProvisioned);
 
   callback IsArcPackageListInitialRefreshedCallback = void (boolean refreshed);
-
-  // A mapping of crosapi::BrowserManager::State
-  enum LacrosState {
-    NotInitialized,
-    Reloading,
-    Mounting,
-    Unavailable,
-    Stopped,
-    PreparingForLaunch,
-    PreLaunched,
-    Starting,
-    Running,
-    WaitingForMojoDisconnected,
-    WaitingForProcessTerminated
-  };
-
-  // A mapping of crosapi::browser_util::LacrosMode
-  enum LacrosMode {
-    Disabled,
-    Only
-  };
-
-  dictionary LacrosInfo {
-    // The state of lacros.
-    LacrosState state;
-    // True iff keepalive is enabled for lacros.
-    boolean isKeepAlive;
-    // Path to lacros-chrome directory. Note that this may change over time if
-    // omaha is used. This also may be empty if lacros is not running.
-    DOMString lacrosPath;
-    // Specifies the mode Lacros is currently running.
-    // For a full list of supported mode, see LacrosMode enum definition.
-    // DEPRECATED: please use isEnabled.
-    // TODO(crbug.com/40286020): Remove this field after tests are fixed.
-    LacrosMode mode;
-    // True iff Lacros is enabled for the current user session's primary user.
-    boolean isEnabled;
-  };
-
-  callback GetLacrosInfoCallback = void (LacrosInfo info);
 
   dictionary ArcAppDict {
     DOMString name;
@@ -973,10 +932,6 @@ namespace autotestPrivate {
     // [deprecated="Use getArcState()"]
     static void isArcProvisioned(
         IsArcProvisionedCallback callback);
-
-    // Gets various information about the state of lacros on the system.
-    static void getLacrosInfo(
-        GetLacrosInfoCallback callback);
 
     // Gets information about the requested ARC app.
     static void getArcApp(

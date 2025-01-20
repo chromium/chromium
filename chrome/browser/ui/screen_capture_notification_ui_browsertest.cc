@@ -32,8 +32,9 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
     on_started_result_ = screen_capture_notification_ui_->OnStarted(
         base::BindOnce(
             [](ScreenCaptureNotificationUiBrowserTest* test) {
-              if (test->run_loop_)
+              if (test->run_loop_) {
                 test->run_loop_->QuitWhenIdle();
+              }
             },
             base::Unretained(this)),
         content::MediaStreamUI::SourceCallback(),

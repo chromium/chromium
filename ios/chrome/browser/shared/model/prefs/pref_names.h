@@ -64,6 +64,10 @@ inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 // A map of a scene and a profile.
 inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 
+// List of profiles' name that has been marked for deletion.
+inline constexpr char kProfilesToRemove[] =
+    "ios.multiprofile.profiles_marked_for_deletion";
+
 // A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
 
@@ -342,6 +346,12 @@ inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 // compromised, dismissed, reused, and weak by the most recent Safety Check run.
 inline constexpr char kIosSafetyCheckManagerInsecurePasswordCounts[] =
     "ios.safety_check_manager.insecure_password_counts";
+
+// Time preference containing the timestamp when a Safety Check notification was
+// first set to present in the device's notification center and has not been
+// interacted with or dismissed.
+inline constexpr char kIosSafetyCheckNotificationFirstPresentTimestamp[] =
+    "ios.safety_check.notifications.first_present_timestamp";
 
 // Integer preference containing which Safety Check notification type was sent
 // last.
@@ -712,6 +722,18 @@ inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
 // notification silent authorization state has been shown.
 inline constexpr char kProminenceNotificationAlertImpressionCount[] =
     "ios.push_notification.prominence_alert_impressions";
+
+// Integer value controlling the data region to store covered data from Chrome.
+// By default, no preference is selected.
+// - 0: No preference
+// - 1: United States
+// - 2: Europe
+inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
+
+// A boolean used to determine if the Youtube Incognito Interstitial sheet has
+// been shown.
+inline constexpr char kYoutubeIncognitoHasBeenShown[] =
+    "ios.youtube_incognito.has_been_shown";
 
 }  // namespace prefs
 

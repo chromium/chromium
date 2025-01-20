@@ -36,7 +36,7 @@ class PermissionMessageCombinationsUnittest : public testing::Test {
   PermissionMessageCombinationsUnittest& operator=(
       const PermissionMessageCombinationsUnittest&) = delete;
 
-  ~PermissionMessageCombinationsUnittest() override {}
+  ~PermissionMessageCombinationsUnittest() override = default;
 
   // Overridden from testing::Test:
   void SetUp() override {

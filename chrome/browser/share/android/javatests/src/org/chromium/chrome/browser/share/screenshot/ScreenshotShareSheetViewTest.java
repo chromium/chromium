@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.screenshot;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,23 +14,36 @@ import android.widget.LinearLayout;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for the {@link ScreenshotShareSheetView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class ScreenshotShareSheetViewTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private ScreenshotShareSheetView mScreenshotView;
     private PropertyModel mScreenshotModel;
     private PropertyModelChangeProcessor mScreenshotMCP;
@@ -55,22 +69,25 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
                 }
             };
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup view = new LinearLayout(getActivity());
+                    ViewGroup view = new LinearLayout(sActivity);
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.MATCH_PARENT);
-                    getActivity().setContentView(view, params);
+                    sActivity.setContentView(view, params);
 
                     mScreenshotView =
                             (ScreenshotShareSheetView)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.screenshot_share_sheet, null);
 
@@ -139,9 +156,8 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
         mSaveClicked.set(false);
     }
 
-    @Override
+    @After
     public void tearDownTest() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mScreenshotMCP::destroy);
-        super.tearDownTest();
     }
 }

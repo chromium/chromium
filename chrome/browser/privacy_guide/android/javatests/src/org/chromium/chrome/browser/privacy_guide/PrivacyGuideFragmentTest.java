@@ -77,6 +77,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -90,10 +91,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS
-})
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
@@ -127,7 +125,7 @@ public class PrivacyGuideFragmentTest {
     @Before
     public void setUp() {
         mAllFragments = PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER;
-        mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
@@ -144,12 +142,6 @@ public class PrivacyGuideFragmentTest {
 
     private void launchPrivacyGuide() {
         mPrivacyGuideTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
-    }
-
-    private void launchPrivacySettingsAndOpenPrivacyGuide() {
-        mPrivacySettingsTestRule.startSettingsActivity();
-        onViewWaiting(withText(R.string.privacy_guide_pref_summary)).perform(click());
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
@@ -185,11 +177,11 @@ public class PrivacyGuideFragmentTest {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition < numberOfMaxSteps - 1);
         if (cardPosition == 0) {
-            onView(withText(R.string.privacy_guide_start_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_start_button)).perform(click());
         } else if (cardPosition == numberOfMaxSteps - 2) {
-            onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+            onViewWaiting(withText(R.string.privacy_guide_finish_button)).perform(click());
         } else {
-            onView(withText(R.string.next)).perform(click());
+            onViewWaiting(withText(R.string.next)).perform(click());
         }
         @FragmentType int nextCardType = getNextCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(nextCardType)));
@@ -198,7 +190,7 @@ public class PrivacyGuideFragmentTest {
     private void navigateFromCardToPrevious(@FragmentType int cardType) {
         int cardPosition = mAllFragments.indexOf(cardType);
         assertTrue(cardPosition > 0);
-        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.back)).perform(click());
         @FragmentType int previousCardType = getPreviousCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(previousCardType)));
     }
@@ -456,7 +448,7 @@ public class PrivacyGuideFragmentTest {
 
         pressBack();
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
-        onView(withId(R.id.msbb_switch)).perform(click());
+        // msbb_switch is checked because history_sync_switch was checked above.
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();

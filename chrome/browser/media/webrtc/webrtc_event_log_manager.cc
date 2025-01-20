@@ -85,13 +85,12 @@ class PeerConnectionTrackerProxyImpl
 
 // Check whether remote-bound logging is generally allowed, although not
 // necessarily for any given user profile.
-// 1. Certain platforms (mobile) are blocked from remote-bound logging.
-// 2. There is a Finch-controlled kill-switch for the feature.
+// Certain platforms (mobile) are blocked from remote-bound logging.
 bool IsRemoteLoggingFeatureEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   bool enabled = false;
 #else
-  bool enabled = base::FeatureList::IsEnabled(features::kWebRtcRemoteEventLog);
+  bool enabled = true;
 #endif
 
   VLOG(1) << "WebRTC remote-bound event logging "
@@ -403,7 +402,6 @@ bool WebRtcEventLogManager::IsRemoteLoggingAllowedForBrowserContext(
   if (!remote_logging_feature_enabled_) {
     return false;
   }
-
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
 
@@ -429,15 +427,14 @@ std::unique_ptr<LogFileWriter::Factory>
 WebRtcEventLogManager::CreateRemoteLogFileWriterFactory() {
   if (remote_log_file_writer_factory_for_testing_) {
     return std::move(remote_log_file_writer_factory_for_testing_);
+  } else {
 #if !BUILDFLAG(IS_ANDROID)
-  } else if (base::FeatureList::IsEnabled(
-                 features::kWebRtcRemoteEventLogGzipped)) {
     return std::make_unique<GzippedLogFileWriterFactory>(
         std::make_unique<GzipLogCompressorFactory>(
             std::make_unique<DefaultGzippedSizeEstimator::Factory>()));
-#endif
-  } else {
+#else
     return std::make_unique<BaseLogFileWriterFactory>();
+#endif
   }
 }
 
@@ -471,7 +468,7 @@ void WebRtcEventLogManager::RenderProcessHostExitedDestroyed(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::RenderProcessExitedInternal,
-                     base::Unretained(this), host->GetID()));
+                     base::Unretained(this), host->GetDeprecatedID()));
 }
 
 void WebRtcEventLogManager::OnPeerConnectionAdded(

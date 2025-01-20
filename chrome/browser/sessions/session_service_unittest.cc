@@ -910,8 +910,8 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   entry1->SetURL(GURL("http://google.com"));
   entry1->SetTitle(u"title1");
   entry1->SetHasPostData(true);
-  entry1->SetPostData(network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size()));
+  entry1->SetPostData(network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data)));
   SerializedNavigationEntry nav1 =
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
           0 /* == index*/, entry1.get());
@@ -1462,11 +1462,11 @@ TEST_F(SessionServiceTest, DisableSaving) {
 #if BUILDFLAG(IS_CHROMEOS)
 class SessionServiceKioskTest : public SessionServiceTest {
  public:
-  void LogIn(const std::string& email) override {
-    chromeos::SetUpFakeKioskSession(email);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    chromeos::SetUpFakeKioskSession(std::string(email));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash_test_helper()->test_session_controller_client()->AddUserSession(
-        email, user_manager::UserType::kKioskApp);
+        std::string(email), user_manager::UserType::kKioskApp);
 #endif
   }
 };

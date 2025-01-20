@@ -190,6 +190,7 @@ class UpdaterIPCTestCase : public testing::Test {
                 (const std::string& app_id,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -199,6 +200,7 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& install_data_index,
                  Priority priority,
                  PolicySameVersionUpdate policy_same_version_update,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -213,6 +215,7 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& client_install_data,
                  const std::string& install_data_index,
                  Priority priority,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -224,6 +227,7 @@ class UpdaterIPCTestCase : public testing::Test {
                  const std::string& install_args,
                  const std::string& install_data,
                  const std::string& install_settings,
+                 const std::string& language,
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
@@ -305,6 +309,7 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
           [](const std::string& app_id, const std::string& install_data_index,
              UpdateService::Priority priority,
              UpdateService::PolicySameVersionUpdate policy_same_version_update,
+             const std::string& language,
              base::RepeatingCallback<void(const UpdateService::UpdateState&)>
                  state_change_callback,
              base::OnceCallback<void(UpdateService::Result)> callback) {
@@ -313,6 +318,7 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             EXPECT_EQ(priority, UpdateService::Priority::kBackground);
             EXPECT_EQ(policy_same_version_update,
                       UpdateService::PolicySameVersionUpdate::kAllowed);
+            EXPECT_EQ(language, "en-us");
 
             for (const UpdateService::UpdateState& state :
                  GetExampleUpdateStates()) {
@@ -325,13 +331,14 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       .WillOnce(
           [](const RegistrationRequest&, const std::string& client_install_data,
              const std::string& install_data_index,
-             UpdateService::Priority priority,
+             UpdateService::Priority priority, const std::string& language,
              base::RepeatingCallback<void(const UpdateService::UpdateState&)>
                  state_change_callback,
              base::OnceCallback<void(UpdateService::Result)> callback) {
             EXPECT_EQ(client_install_data, "client_install_data");
             EXPECT_EQ(install_data_index, "install_data_index");
             EXPECT_EQ(priority, UpdateService::Priority::kForeground);
+            EXPECT_EQ(language, "en-us");
 
             for (const UpdateService::UpdateState& state :
                  GetExampleUpdateStates()) {
@@ -347,7 +354,7 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       .WillOnce(
           [](const std::string& app_id, const base::FilePath& installer_path,
              const std::string& install_args, const std::string& install_data,
-             const std::string& install_settings,
+             const std::string& install_settings, const std::string& language,
              base::RepeatingCallback<void(const UpdateService::UpdateState&)>
                  state_change_callback,
              base::OnceCallback<void(UpdateService::Result)> callback) {
@@ -356,6 +363,7 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             EXPECT_EQ(install_args, "install_args");
             EXPECT_EQ(install_data, "install_data");
             EXPECT_EQ(install_settings, "install_settings");
+            EXPECT_EQ(language, "en-us");
 
             for (const UpdateService::UpdateState& state :
                  GetExampleUpdateStates()) {
@@ -444,18 +452,18 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
   }
   {
     base::RunLoop run_loop;
-    client_proxy->Update("ex1", "install_data_index",
-                         UpdateService::Priority::kBackground,
-                         UpdateService::PolicySameVersionUpdate::kAllowed,
-                         UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
-                         UpdaterIPCTestCase::ExpectResultCallback(run_loop));
+    client_proxy->Update(
+        "ex1", "install_data_index", UpdateService::Priority::kBackground,
+        UpdateService::PolicySameVersionUpdate::kAllowed, "en-us",
+        UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
+        UpdaterIPCTestCase::ExpectResultCallback(run_loop));
     run_loop.Run();
   }
   {
     base::RunLoop run_loop;
     RegistrationRequest request;
     client_proxy->Install(request, "client_install_data", "install_data_index",
-                          UpdateService::Priority::kForeground,
+                          UpdateService::Priority::kForeground, "en-us",
                           UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
                           UpdaterIPCTestCase::ExpectResultCallback(run_loop));
     run_loop.Run();
@@ -468,7 +476,7 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
     base::RunLoop run_loop;
     client_proxy->RunInstaller(
         "ex1", base::FilePath("/path/to/installer"), "install_args",
-        "install_data", "install_settings",
+        "install_data", "install_settings", "en-us",
         UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
         UpdaterIPCTestCase::ExpectResultCallback(run_loop));
     run_loop.Run();

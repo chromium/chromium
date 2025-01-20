@@ -4,15 +4,20 @@
 
 package org.chromium.support_lib_boundary;
 
+import android.os.CancellationSignal;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
-import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Executor;
 
 /** Boundary interface for Profile. */
+@NullMarked
 public interface ProfileBoundaryInterface {
     String getName();
 
@@ -26,22 +31,21 @@ public interface ProfileBoundaryInterface {
 
     void prefetchUrl(
             String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+            @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
+            /* PrefetchOperationCallback */ InvocationHandler callback);
 
     void prefetchUrl(
             String url,
-            /* PrefetchParamsBoundaryInterface */ InvocationHandler prefetchParams,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
-
-    void cancelPrefetch(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+            @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
+            /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
+            /* PrefetchOperationCallback */ InvocationHandler callback);
 
     void clearPrefetch(
             String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+            Executor callbackExecutor,
+            /* PrefetchOperationCallback */ InvocationHandler callback);
+
+    void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
 }

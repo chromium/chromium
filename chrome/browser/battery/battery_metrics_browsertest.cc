@@ -26,7 +26,7 @@ namespace {
 void RetryForHistogramBucketUntilCountReached(
     base::HistogramTester* histogram_tester,
     const std::string& histogram_name,
-    base::HistogramBase::Sample target_bucket,
+    base::HistogramBase::Sample32 target_bucket,
     size_t count) {
   base::RunLoop().RunUntilIdle();
   for (size_t attempt = 0; attempt < 50; ++attempt) {

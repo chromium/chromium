@@ -42,17 +42,17 @@ TEST_F(DevToolsClientImplTest, DeleteGlobalJSON) {
   Status status{kOk};
   ASSERT_TRUE(StatusOk(SetUpConnection()));
   Timeout timeout{base::Seconds(60)};
-  status = target_utils::WaitForPage(*browser_client_, timeout);
+  status = target_utils::WaitForTab(*browser_client_, timeout);
   ASSERT_TRUE(StatusOk(status));
   WebViewsInfo views_info;
-  status =
-      target_utils::GetWebViewsInfo(*browser_client_, &timeout, views_info);
+  status = target_utils::GetTopLevelViewsInfo(*browser_client_, &timeout,
+                                              views_info);
   ASSERT_TRUE(StatusOk(status));
   const WebViewInfo* view_info = views_info.FindFirst(WebViewInfo::kPage);
   ASSERT_NE(view_info, nullptr);
   std::unique_ptr<DevToolsClient> client;
-  status = target_utils::AttachToPageTarget(*browser_client_, view_info->id,
-                                            &timeout, client);
+  status = target_utils::AttachToPageOrTabTarget(
+      *browser_client_, view_info->id, &timeout, client, /*is_tab=*/false);
   ASSERT_TRUE(StatusOk(status));
 
   DevToolsClientImpl* browser_client_impl =

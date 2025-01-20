@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "chrome/common/buildflags.h"
 
 class Browser;
 class BrowserView;
@@ -20,6 +21,7 @@ class TabStripModel;
 class ToastController;
 class ToastService;
 class DataSharingOpenGroupHelper;
+class DownloadToolbarUIController;
 
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -33,6 +35,10 @@ class TabDeclutterController;
 namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
+
+namespace tabs {
+class GlicNudgeController;
+}
 
 namespace lens {
 class LensOverlayEntryPointController;
@@ -121,6 +127,9 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
+  tabs::GlicNudgeController* glic_nudge_controller() {
+    return glic_nudge_controller_.get();
+  }
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
@@ -144,6 +153,10 @@ class BrowserWindowFeatures {
 
   DataSharingOpenGroupHelper* data_sharing_open_group_helper() {
     return data_sharing_open_group_helper_.get();
+  }
+
+  DownloadToolbarUIController* download_toolbar_ui_controller() {
+    return download_toolbar_ui_controller_.get();
   }
 
  protected:
@@ -191,8 +204,11 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 
-  std::unique_ptr<media_router::CastBrowserController>
-      cast_browser_controller_;
+  std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
+
+  std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
+
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

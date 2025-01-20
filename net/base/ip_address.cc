@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/ip_address.h"
 
 #include <stddef.h>
@@ -49,8 +44,9 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
   for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
-    if (ip_address[i] != ip_prefix[i])
+    if (ip_address[i] != UNSAFE_TODO(ip_prefix[i])) {
       return false;
+    }
   }
 
   // In case the prefix was not a multiple of 8, there will be 1 byte
@@ -59,8 +55,9 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   if (remaining_bits != 0) {
     uint8_t mask = 0xFF << (8 - remaining_bits);
     size_t i = num_entire_bytes_in_prefix;
-    if ((ip_address[i] & mask) != (ip_prefix[i] & mask))
+    if ((ip_address[i] & mask) != UNSAFE_TODO((ip_prefix[i] & mask))) {
       return false;
+    }
   }
   return true;
 }
@@ -188,20 +185,7 @@ bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
 
 }  // namespace
 
-IPAddressBytes::IPAddressBytes() : size_(0) {}
-
-IPAddressBytes::IPAddressBytes(base::span<const uint8_t> data) {
-  Assign(data);
-}
-
 IPAddressBytes::~IPAddressBytes() = default;
-IPAddressBytes::IPAddressBytes(IPAddressBytes const& other) = default;
-
-void IPAddressBytes::Assign(base::span<const uint8_t> data) {
-  CHECK_GE(16u, data.size());
-  size_ = data.size();
-  base::span(*this).copy_from(data);
-}
 
 bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
   if (size_ == other.size_)
@@ -247,40 +231,6 @@ std::optional<IPAddress> IPAddress::FromIPLiteral(std::string_view ip_literal) {
   return address;
 }
 
-IPAddress::IPAddress() = default;
-
-IPAddress::IPAddress(const IPAddress& other) = default;
-
-IPAddress::IPAddress(const IPAddressBytes& address) : ip_address_(address) {}
-
-IPAddress::IPAddress(base::span<const uint8_t> address)
-    : ip_address_(address) {}
-
-IPAddress::IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
-  const uint8_t bytes[] = {b0, b1, b2, b3};
-  ip_address_.Assign(bytes);
-}
-
-IPAddress::IPAddress(uint8_t b0,
-                     uint8_t b1,
-                     uint8_t b2,
-                     uint8_t b3,
-                     uint8_t b4,
-                     uint8_t b5,
-                     uint8_t b6,
-                     uint8_t b7,
-                     uint8_t b8,
-                     uint8_t b9,
-                     uint8_t b10,
-                     uint8_t b11,
-                     uint8_t b12,
-                     uint8_t b13,
-                     uint8_t b14,
-                     uint8_t b15) {
-  const uint8_t bytes[] = {b0, b1, b2,  b3,  b4,  b5,  b6,  b7,
-                           b8, b9, b10, b11, b12, b13, b14, b15};
-  ip_address_.Assign(bytes);
-}
 
 IPAddress::~IPAddress() = default;
 

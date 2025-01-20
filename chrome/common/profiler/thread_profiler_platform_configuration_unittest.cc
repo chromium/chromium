@@ -79,7 +79,11 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::BETA));
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
+#else   // BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   EXPECT_TRUE(config()->IsSupported(std::nullopt));
 #endif
@@ -90,25 +94,26 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ((RelativePopulations{0, 0, 100}),
+  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
             config()->GetEnableRates(version_info::Channel::CANARY));
-  EXPECT_EQ((RelativePopulations{0, 0, 100}),
+  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
             config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{0, 0, 100}),
+  EXPECT_EQ((RelativePopulations{0.0, 0.0, 100.0}),
             config()->GetEnableRates(version_info::Channel::BETA));
   // Note: death tests aren't supported on Android. Otherwise this test would
   // check that the other inputs result in CHECKs.
 #else
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::UNKNOWN));
-  EXPECT_EQ((RelativePopulations{0, 80, 20}),
+  EXPECT_EQ((RelativePopulations{0.0, 80.0, 20.0}),
             config()->GetEnableRates(version_info::Channel::CANARY));
-  EXPECT_EQ((RelativePopulations{0, 80, 20}),
+  EXPECT_EQ((RelativePopulations{0.0, 80.0, 20.0}),
             config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{90, 0, 10}),
+  EXPECT_EQ((RelativePopulations{90.0, 0.0, 10.0}),
             config()->GetEnableRates(version_info::Channel::BETA));
-  EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::STABLE));
+  EXPECT_EQ((RelativePopulations{100.0 - 0.006, 0.0, 0.006}),
+            config()->GetEnableRates(version_info::Channel::STABLE));
 
-  EXPECT_EQ((RelativePopulations{0, 100, 0}),
+  EXPECT_EQ((RelativePopulations{0.0, 100.0, 0.0}),
             config()->GetEnableRates(std::nullopt));
 #endif
 }
@@ -156,21 +161,10 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
         continue;
       }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-      if (process == sampling_profiler::ProfilerProcessType::kBrowser &&
-          thread == sampling_profiler::ProfilerThreadType::kMain) {
-        EXPECT_TRUE(config()->IsEnabledForThread(
-            process, thread, version_info::Channel::CANARY));
-      } else {
-        EXPECT_FALSE(config()->IsEnabledForThread(
-            process, thread, version_info::Channel::CANARY));
-      }
-#else
       EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
                                                version_info::Channel::CANARY));
-#endif
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#if BUILDFLAG(IS_ANDROID)
       auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return true; }));
@@ -179,25 +173,6 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
       auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return false; }));
-      EXPECT_FALSE(android_config2->IsEnabledForThread(
-          process, thread, version_info::Channel::DEV));
-#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-      auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return true; }));
-      auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
-          /* browser_test_mode_enabled=*/false,
-          base::BindLambdaForTesting([](double probability) { return false; }));
-
-      if (process == sampling_profiler::ProfilerProcessType::kBrowser &&
-          thread == sampling_profiler::ProfilerThreadType::kMain) {
-        EXPECT_TRUE(android_config1->IsEnabledForThread(
-            process, thread, version_info::Channel::DEV));
-      } else {
-        EXPECT_FALSE(android_config1->IsEnabledForThread(
-            process, thread, version_info::Channel::DEV));
-      }
-
       EXPECT_FALSE(android_config2->IsEnabledForThread(
           process, thread, version_info::Channel::DEV));
 #else

@@ -4,11 +4,19 @@
 
 package org.chromium.ui.display;
 
-import android.annotation.SuppressLint;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
-import android.graphics.Point;
+import android.graphics.Insets;
+import android.graphics.Rect;
+import android.os.Build;
 import android.view.Display;
 import android.view.Surface;
+
+import androidx.annotation.RequiresApi;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 import java.util.WeakHashMap;
@@ -20,6 +28,7 @@ import java.util.WeakHashMap;
  * anywhere, as long as the corresponding WindowAndroids are destroyed. The observers are
  * held weakly so to not lead to leaks.
  */
+@NullMarked
 public class DisplayAndroid {
     /** DisplayAndroidObserver interface for changes to this Display. */
     public interface DisplayAndroidObserver {
@@ -49,14 +58,14 @@ public class DisplayAndroid {
          *
          * @param supportedModes the array of supported modes.
          */
-        default void onDisplayModesChanged(List<Display.Mode> supportedModes) {}
+        default void onDisplayModesChanged(@Nullable List<Display.Mode> supportedModes) {}
 
         /**
          * Called whenever the attached display's current mode is changed.
          *
          * @param currentMode the current display mode.
          */
-        default void onCurrentModeChanged(Display.Mode currentMode) {}
+        default void onCurrentModeChanged(Display.@Nullable Mode currentMode) {}
     }
 
     private static final DisplayAndroidObserver[] EMPTY_OBSERVER_ARRAY =
@@ -66,7 +75,9 @@ public class DisplayAndroid {
     // Do NOT add strong references to objects with potentially complex lifetime, like Context.
 
     private final int mDisplayId;
-    private Point mSize;
+    private @Nullable String mName;
+    private Rect mBounds;
+    private @Nullable Insets mInsets;
     private float mDipScale;
     private float mXdpi;
     private float mYdpi;
@@ -74,10 +85,11 @@ public class DisplayAndroid {
     private int mBitsPerComponent;
     private int mRotation;
     private float mRefreshRate;
-    private Display.Mode mCurrentDisplayMode;
-    private List<Display.Mode> mDisplayModes;
+    private Display.@Nullable Mode mCurrentDisplayMode;
+    private @Nullable List<Display.Mode> mDisplayModes;
     private boolean mIsHdr;
     private float mHdrMaxLuminanceRatio = 1.0f;
+    private boolean mIsInternal;
     protected boolean mIsDisplayWideColorGamut;
     protected boolean mIsDisplayServerWideColorGamut;
 
@@ -106,39 +118,56 @@ public class DisplayAndroid {
     }
 
     /**
-     * @return Display id that does not necessarily match the one defined in Android's Display.
+     * Returns the display id that does not necessarily match the one defined in Android's Display.
      */
     public int getDisplayId() {
         return mDisplayId;
     }
 
-    /**
-     * Note: For JB pre-MR1, this can sometimes return values smaller than the actual screen.
-     * https://crbug.com/829318
-     * @return Display height in physical pixels.
-     */
+    /** Returns the name of the display. */
+    public @Nullable String getDisplayName() {
+        return mName;
+    }
+
+    /** Returns display height in physical pixels. */
     public int getDisplayHeight() {
-        return mSize.y;
+        return mBounds.height();
     }
 
-    /**
-     * Note: For JB pre-MR1, this can sometimes return values smaller than the actual screen.
-     * @return Display width in physical pixels.
-     */
+    /** Returns display width in physical pixels. */
     public int getDisplayWidth() {
-        return mSize.x;
+        return mBounds.width();
     }
 
-    /**
-     * @return current orientation. One of Surface.ORIENTATION_* values.
-     */
+    /** Returns the bounds of the display. */
+    public Rect getBounds() {
+        return new Rect(mBounds);
+    }
+
+    /** Returns the bounds as an array. */
+    public int[] getBoundsAsArray() {
+        return new int[] {mBounds.left, mBounds.top, mBounds.right, mBounds.bottom};
+    }
+
+    /** Returns the insets of the display. */
+    @RequiresApi(Build.VERSION_CODES.R)
+    public Insets getInsets() {
+        return assumeNonNull(mInsets);
+    }
+
+    /** Returns the insets as an array. */
+    @RequiresApi(Build.VERSION_CODES.R)
+    public int[] getInsetsAsArray() {
+        Insets insets = assumeNonNull(mInsets);
+        return new int[] {insets.left, insets.top, insets.right, insets.bottom};
+    }
+
+    /** Returns current orientation. One of Surface.ORIENTATION_* values. */
     public int getRotation() {
         return mRotation;
     }
 
-    /**
-     * @return current orientation in degrees. One of the values 0, 90, 180, 270.
-     */
+    /** Returns current orientation in degrees. One of the values 0, 90, 180, 270. */
     public int getRotationDegrees() {
         switch (getRotation()) {
             case Surface.ROTATION_0:
@@ -156,93 +185,84 @@ public class DisplayAndroid {
         return 0;
     }
 
-    /**
-     * @return A scaling factor for the Density Independent Pixel unit.
-     */
+    /** Returns the scaling factor for the Density Independent Pixel unit. */
     public float getDipScale() {
         return mDipScale;
     }
 
-    /**
-     * @return The exact physical pixels per inch of the screen in the X dimension.
-     */
+    /** Returns the exact physical pixels per inch of the screen in the X dimension. */
     public float getXdpi() {
         return mXdpi;
     }
 
-    /**
-     * @return The exact physical pixels per inch of the screen in the Y dimension.
-     */
+    /** Returns the exact physical pixels per inch of the screen in the Y dimension. */
     public float getYdpi() {
         return mYdpi;
     }
 
-    /**
-     * @return Number of bits per pixel.
-     */
+    /** Returns the number of bits per pixel. */
     /* package */ int getBitsPerPixel() {
         return mBitsPerPixel;
     }
 
-    /**
-     * @return Number of bits per each color component.
-     */
+    /** Returns the number of bits per each color component. */
     @SuppressWarnings("deprecation")
     /* package */ int getBitsPerComponent() {
         return mBitsPerComponent;
     }
 
     /**
-     * @return Whether or not it is possible to use wide color gamut rendering with this display.
+     * Returns whether or not it is possible to use wide color gamut rendering with this display.
      */
     public boolean getIsWideColorGamut() {
         return mIsDisplayWideColorGamut && mIsDisplayServerWideColorGamut;
     }
 
-    /**
-     * @return Display's refresh rate in frames per second.
-     */
+    /** Returns display's refresh rate in frames per second. */
     public float getRefreshRate() {
         return mRefreshRate;
     }
 
-    /*
-     * @return Display.Modes supported by this Display.
-     */
-    public List<Display.Mode> getSupportedModes() {
+    /** Returns Display.Modes supported by this Display. */
+    public @Nullable List<Display.Mode> getSupportedModes() {
         return mDisplayModes;
     }
 
-    /*
-     * @return Current Display.Mode for the display.
-     */
-    public Display.Mode getCurrentMode() {
+    /** Returns current Display.Mode for the display. */
+    public Display.@Nullable Mode getCurrentMode() {
         return mCurrentDisplayMode;
     }
 
     /**
-     * Whether or not the display is HDR capable. If false then getHdrMaxLuminanceRatio will
-     * always return 1.0.
+     * Whether or not the display is HDR capable. If false then getHdrMaxLuminanceRatio will always
+     * return 1.0.
+     * Package private only because no client needs to access this from java.
      */
-    // Package private only because no client needs to access this from java.
-    boolean getIsHdr() {
+    /* package */ boolean getIsHdr() {
         return mIsHdr;
     }
 
     /**
      * Max luminance HDR content can display, represented as a multiple of the SDR white luminance
      * (so a display that is incapable of HDR would have a value of 1.0).
+     * Package private only because no client needs to access this from java.
      */
-    // Package private only because no client needs to access this from java.
-    float getHdrMaxLuminanceRatio() {
+    /* package */ float getHdrMaxLuminanceRatio() {
         return mHdrMaxLuminanceRatio;
     }
 
     /**
-     * Return window context for display android. Implemented by @{@link PhysicalDisplayAndroid}
-     * @return window context.
+     * Returns whether or not the display is internal. Internal screens are part of the device.
+     * Package private only because no client needs to access this from java.
      */
-    public Context getWindowContext() {
+    /* package */ boolean isInternal() {
+        return mIsInternal;
+    }
+
+    /**
+     * Return window context for display android. Implemented by @{@link PhysicalDisplayAndroid}.
+     */
+    public @Nullable Context getWindowContext() {
         return null;
     }
 
@@ -262,7 +282,10 @@ public class DisplayAndroid {
     protected DisplayAndroid(int displayId) {
         mDisplayId = displayId;
         mObservers = new WeakHashMap<>();
-        mSize = new Point();
+        mBounds = new Rect();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mInsets = Insets.of(0, 0, 0, 0);
+        }
     }
 
     private DisplayAndroidObserver[] getObservers() {
@@ -270,72 +293,51 @@ public class DisplayAndroid {
         return mObservers.keySet().toArray(EMPTY_OBSERVER_ARRAY);
     }
 
-    public void updateIsDisplayServerWideColorGamut(Boolean isDisplayServerWideColorGamut) {
+    public void updateIsDisplayServerWideColorGamut(
+            @Nullable Boolean isDisplayServerWideColorGamut) {
         update(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                /* name= */ null,
+                /* bounds= */ null,
+                /* insets= */ null,
+                /* dipScale= */ null,
+                /* xdpi= */ null,
+                /* ydpi= */ null,
+                /* bitsPerPixel= */ null,
+                /* bitsPerComponent= */ null,
+                /* rotation= */ null,
+                /* isDisplayWideColorGamut= */ null,
                 isDisplayServerWideColorGamut,
-                null,
-                null,
-                null,
+                /* refreshRate= */ null,
+                /* currentMode= */ null,
+                /* supportedModes= */ null,
                 /* isHdr= */ null,
-                /* hdrMaxLuminanceRatio= */ null);
+                /* hdrMaxLuminanceRatio= */ null,
+                /* isInternal= */ null);
     }
 
     /** Update the display to the provided parameters. Null values leave the parameter unchanged. */
-    @SuppressLint("NewApi")
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/98
     protected void update(
-            Point size,
-            Float dipScale,
-            Integer bitsPerPixel,
-            Integer bitsPerComponent,
-            Integer rotation,
-            Boolean isDisplayWideColorGamut,
-            Boolean isDisplayServerWideColorGamut,
-            Float refreshRate,
-            Display.Mode currentMode,
-            List<Display.Mode> supportedModes) {
-        update(
-                size,
-                dipScale,
-                null,
-                null,
-                bitsPerPixel,
-                bitsPerComponent,
-                rotation,
-                isDisplayWideColorGamut,
-                isDisplayServerWideColorGamut,
-                refreshRate,
-                currentMode,
-                supportedModes,
-                /* isHdr= */ null,
-                /* hdrMaxLuminanceRatio= */ null);
-    }
-
-    /** Update the display to the provided parameters. Null values leave the parameter unchanged. */
-    @SuppressLint("NewApi")
-    protected void update(
-            Point size,
-            Float dipScale,
-            Float xdpi,
-            Float ydpi,
-            Integer bitsPerPixel,
-            Integer bitsPerComponent,
-            Integer rotation,
-            Boolean isDisplayWideColorGamut,
-            Boolean isDisplayServerWideColorGamut,
-            Float refreshRate,
-            Display.Mode currentMode,
-            List<Display.Mode> supportedModes,
-            Boolean isHdr,
-            Float hdrMaxLuminanceRatio) {
-        boolean sizeChanged = size != null && !mSize.equals(size);
+            @Nullable String name,
+            @Nullable Rect bounds,
+            @Nullable Insets insets,
+            @Nullable Float dipScale,
+            @Nullable Float xdpi,
+            @Nullable Float ydpi,
+            @Nullable Integer bitsPerPixel,
+            @Nullable Integer bitsPerComponent,
+            @Nullable Integer rotation,
+            @Nullable Boolean isDisplayWideColorGamut,
+            @Nullable Boolean isDisplayServerWideColorGamut,
+            @Nullable Float refreshRate,
+            Display.@Nullable Mode currentMode,
+            @Nullable List<Display.Mode> supportedModes,
+            @Nullable Boolean isHdr,
+            @Nullable Float hdrMaxLuminanceRatio,
+            @Nullable Boolean isInternal) {
+        boolean nameChanged = name != null && !name.equals(mName);
+        boolean boundsChanged = bounds != null && !bounds.equals(mBounds);
+        boolean insetsChanged = insets != null && !insets.equals(mInsets);
         // Intentional comparison of floats: we assume that if scales differ, they differ
         // significantly.
         boolean dipScaleChanged = dipScale != null && mDipScale != dipScale;
@@ -357,10 +359,13 @@ public class DisplayAndroid {
         boolean currentModeChanged =
                 currentMode != null && !currentMode.equals(mCurrentDisplayMode);
         boolean isHdrChanged = isHdr != null && isHdr != mIsHdr;
-        boolean hdrMaxLuninanceRatioChanged =
+        boolean hdrMaxLuminanceRatioChanged =
                 hdrMaxLuminanceRatio != null && hdrMaxLuminanceRatio != mHdrMaxLuminanceRatio;
+        boolean isInternalChanged = isInternal != null && mIsInternal != isInternal;
         boolean changed =
-                sizeChanged
+                nameChanged
+                        || boundsChanged
+                        || insetsChanged
                         || dipScaleChanged
                         || bitsPerPixelChanged
                         || bitsPerComponentChanged
@@ -371,10 +376,13 @@ public class DisplayAndroid {
                         || displayModesChanged
                         || currentModeChanged
                         || isHdrChanged
-                        || hdrMaxLuninanceRatioChanged;
+                        || hdrMaxLuminanceRatioChanged
+                        || isInternalChanged;
         if (!changed) return;
 
-        if (sizeChanged) mSize = size;
+        if (nameChanged) mName = name;
+        if (boundsChanged) mBounds = bounds;
+        if (insetsChanged) mInsets = insets;
         if (dipScaleChanged) mDipScale = dipScale;
         if (xdpiChanged) mXdpi = xdpi;
         if (ydpiChanged) mYdpi = ydpi;
@@ -386,12 +394,13 @@ public class DisplayAndroid {
             mIsDisplayServerWideColorGamut = isDisplayServerWideColorGamut;
         }
         if (isHdrChanged) mIsHdr = isHdr;
-        if (hdrMaxLuninanceRatioChanged) {
+        if (hdrMaxLuminanceRatioChanged) {
             mHdrMaxLuminanceRatio = hdrMaxLuminanceRatio;
         }
         if (isRefreshRateChanged) mRefreshRate = refreshRate;
         if (displayModesChanged) mDisplayModes = supportedModes;
         if (currentModeChanged) mCurrentDisplayMode = currentMode;
+        if (isInternalChanged) mIsInternal = isInternal;
 
         getManager().updateDisplayOnNativeSide(this);
         if (rotationChanged) {

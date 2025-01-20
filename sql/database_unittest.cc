@@ -23,6 +23,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,14 +33,17 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -55,6 +59,7 @@
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -136,7 +141,7 @@ class SQLDatabaseTest : public testing::Test,
     db_.reset();
     ASSERT_TRUE(base::DeleteFile(db_path_));
 
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(db_->Open(db_path_));
     ASSERT_TRUE(base::PathExists(db_path_));
   }
@@ -436,6 +441,7 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
 
   {
+    base::HistogramTester tester;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
@@ -443,6 +449,8 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
     ASSERT_FALSE(db_->DoesTableExist("foo"));
     ASSERT_FALSE(db_->DoesColumnExist("foo", "id"));
     ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
   }
 }
 
@@ -626,6 +634,88 @@ class LifeTracker {
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<bool> flag_ptr_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
+
+int TestVfsOpen(sqlite3_vfs* vfs,
+                const char* full_path,
+                sqlite3_file* result_file,
+                int requested_flags,
+                int* granted_flags) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+  return SQLITE_ERROR;
+}
+int TestVfsFullPathname(sqlite3_vfs* vfs,
+                        const char* file_path,
+                        int result_size,
+                        char* result) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+
+  if (result_size < 0) {
+    return SQLITE_CANTOPEN;
+  }
+
+  const size_t expected_result_size = result_size;
+  base::cstring_view file_path_view(file_path);
+  if (expected_result_size < file_path_view.size() + sizeof(*file_path)) {
+    return SQLITE_CANTOPEN;
+  }
+
+  // `copy()` returns an output iterator just past the last char copied. Write
+  // the string terminator to that location.
+  *std::ranges::copy(file_path_view,
+                     base::span(result, expected_result_size).begin())
+       .out = 0;
+  return SQLITE_OK;
+}
+
+TEST_P(SQLDatabaseTest, UseVfs) {
+  uint64_t call_count = 0;
+
+  constexpr const char kVFSName[] = "test_vfs";
+  static constexpr int kSqliteVfsApiVersion = 3;
+  static constexpr int kSqliteMaxPathSize = 512;
+
+  sqlite3_vfs vfs{
+      kSqliteVfsApiVersion,
+      sizeof(sqlite3_vfs),
+      kSqliteMaxPathSize,
+      /*pNext=*/nullptr,
+      kVFSName,
+      // Provide pointer to `call_count` so it can be modified from within calls
+      // to the VFS and used in test assertions.
+      /*pAppData=*/&call_count,
+      TestVfsOpen,
+      /*xDelete*/ nullptr,
+      /*xAccess*/ nullptr,
+      TestVfsFullPathname,
+      /*xDlOpen=*/nullptr,
+      /*xDlError=*/nullptr,
+      /*xDlSym=*/nullptr,
+      /*xDlClose=*/nullptr,
+      /*xRandomness*/ nullptr,
+      /*xSleep*/ nullptr,
+      /*xCurrentTime=*/nullptr,
+      /*xGetLastError*/ nullptr,
+      /*xCurrentTimeInt64*/ nullptr,
+      /*xSetSystemCall=*/nullptr,
+      /*xGetSystemCall=*/nullptr,
+      /*xNextSystemCall=*/nullptr,
+  };
+
+  sqlite3_vfs_register(&vfs, /*makeDflt=*/false);
+  absl::Cleanup vfs_unregisterer = [&vfs]() { sqlite3_vfs_unregister(&vfs); };
+
+  DatabaseOptions options = GetDBOptions();
+  options.vfs_name_discouraged = kVFSName;
+  Database other_db(options, test::kTestTag);
+
+  // Since the vfs's Open function is not implemented `Open()` will fail.
+  ASSERT_FALSE(other_db.Open(db_path_));
+
+  // Vfs implementation called twice, once for open and once for path name.
+  ASSERT_EQ(call_count, 2ull);
+}
 
 // base::BindRepeating() can curry arguments to be passed by const reference to
 // the callback function. If the error callback function calls
@@ -960,7 +1050,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size});
+  Database db({.page_size = initial_page_size}, test::kTestTag);
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -970,7 +1060,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database razed_db({.page_size = final_page_size});
+  Database razed_db({.page_size = final_page_size}, test::kTestTag);
   ASSERT_TRUE(razed_db.Open(db_path));
   // Raze will use the page size set in the connection object, which may not
   // match the file's page size.
@@ -1021,7 +1111,7 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
       "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   // Check that the second connection sees the table.
@@ -1036,7 +1126,7 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
 TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasWriteLock) {
   ASSERT_TRUE(db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   Transaction other_db_transaction(&other_db);
@@ -1061,7 +1151,7 @@ TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasReadLock) {
     return;
   }
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   Statement select(other_db.GetUniqueStatement("SELECT id FROM rows"));
@@ -1163,8 +1253,11 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // fail with SQLITE_CORRUPT, as will this PRAGMA.
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     ASSERT_FALSE(db_->Execute("PRAGMA auto_vacuum"));
     db_->Close();
     ASSERT_TRUE(expecter.SawExpectedErrors());
@@ -1623,7 +1716,7 @@ TEST_P(SQLDatabaseTest, AttachDatabase) {
       db_path_.DirName().AppendASCII("attach_database_test.db");
   static constexpr char kAttachmentPoint[] = "other";
   {
-    Database other_db;
+    Database other_db(test::kTestTag);
     ASSERT_TRUE(other_db.Open(attach_path));
     ASSERT_TRUE(
         other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1657,7 +1750,7 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
       db_path_.DirName().AppendASCII("attach_database_test.db");
   static constexpr char kAttachmentPoint[] = "other";
   {
-    Database other_db;
+    Database other_db(test::kTestTag);
     ASSERT_TRUE(other_db.Open(attach_path));
     ASSERT_TRUE(
         other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1848,7 +1941,7 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   DatabaseOptions options = GetDBOptions();
   options.mmap_alt_status_discouraged = true;
   options.enable_views_discouraged = true;
-  db_ = std::make_unique<Database>(options);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
   {
@@ -1933,7 +2026,7 @@ TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
   DatabaseOptions options = GetDBOptions();
   options.mmap_alt_status_discouraged = true;
   options.enable_views_discouraged = true;
-  db_ = std::make_unique<Database>(options);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
   ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
@@ -2105,7 +2198,7 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-  db_ = std::make_unique<Database>(options);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
   // The value for the last inserted row should be valid.
@@ -2130,7 +2223,7 @@ class SQLDatabaseTestExclusiveFileLockMode
   ~SQLDatabaseTestExclusiveFileLockMode() override = default;
 
   void SetUp() override {
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("maybelocked.sqlite");
     ASSERT_TRUE(db_->Open(db_path_));
@@ -2183,7 +2276,7 @@ TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto db_path = temp_dir.GetPath().AppendASCII("database_test_locked.sqlite");
 
-  Database db({.exclusive_database_file_lock = true});
+  Database db({.exclusive_database_file_lock = true}, test::kTestTag);
 
   EXPECT_CHECK_DEATH_WITH(
       { std::ignore = db.Open(db_path); },
@@ -2198,7 +2291,7 @@ class SQLDatabaseTestExclusiveMode : public testing::Test,
   ~SQLDatabaseTestExclusiveMode() override = default;
 
   void SetUp() override {
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_->Open(db_path_));
@@ -2268,6 +2361,91 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "2");
 }
 
+#if BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to read from the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_CANTOPEN);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to write to the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_READONLY);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kExclusive));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_IOERR_READ);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+// This test is simulating an common error code received on Windows when
+// the database file is being copied by a third-party. The common API used
+// is CopyFileEx(...) which is acquiring a shared lock on the file.
+TEST_P(SQLDatabaseTest, OpenFails_SharedLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kShared));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_BUSY);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   // The database file ends up empty if we don't create at least one table.
   ASSERT_TRUE(
@@ -2277,8 +2455,11 @@ TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 }
@@ -2310,6 +2491,7 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
 
     {
       sql::test::ScopedErrorExpecter expecter;
+      base::HistogramTester tester;
       expecter.ExpectError(SQLITE_CORRUPT);
 
       // When `corrupt_after_recovery` is true, `Database::Open()` will return
@@ -2318,6 +2500,12 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
       // thus `Database::Open()`'s second attempt at opening the database will
       // succeed.
       ASSERT_EQ(db_->Open(db_path_), !corrupt_after_recovery);
+      tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                                SqliteResultCode::kCorrupt, 1);
+      if (corrupt_after_recovery) {
+        tester.ExpectUniqueSample("Sql.Database.Open.SecondAttempt.Error.Test",
+                                  SqliteResultCode::kCorrupt, 1);
+      }
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ(error_count, 1u);
@@ -2336,8 +2524,11 @@ TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2360,8 +2551,11 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2375,7 +2569,7 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
 }
 
 TEST(SQLEmptyPathDatabaseTest, EmptyPathTest) {
-  Database db;
+  Database db(test::kTestTag);
   EXPECT_TRUE(db.OpenInMemory());
   EXPECT_TRUE(db.is_open());
   EXPECT_TRUE(db.DbPath().empty());

@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -19,16 +19,11 @@ class ProfileInvalidationProvider;
 // A BrowserContextKeyedServiceFactory to construct InvalidationServices wrapped
 // in ProfileInvalidationProviders.
 class IOSChromeProfileInvalidationProviderFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   static invalidation::ProfileInvalidationProvider* GetForProfile(
       ProfileIOS* profile);
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
-
-  IOSChromeProfileInvalidationProviderFactory(
-      const IOSChromeProfileInvalidationProviderFactory&) = delete;
-  IOSChromeProfileInvalidationProviderFactory& operator=(
-      const IOSChromeProfileInvalidationProviderFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>;

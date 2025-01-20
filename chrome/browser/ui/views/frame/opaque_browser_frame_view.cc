@@ -91,8 +91,9 @@ class CaptionButtonBackgroundImageSource : public gfx::CanvasImageSource {
   ~CaptionButtonBackgroundImageSource() override = default;
 
   void Draw(gfx::Canvas* canvas) override {
-    if (bg_image_.isNull())
+    if (bg_image_.isNull()) {
       return;
+    }
 
     gfx::ScopedCanvas scoped_canvas(canvas);
 
@@ -148,7 +149,7 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
 }
 
-OpaqueBrowserFrameView::~OpaqueBrowserFrameView() {}
+OpaqueBrowserFrameView::~OpaqueBrowserFrameView() = default;
 
 void OpaqueBrowserFrameView::InitViews() {
   web_app::AppBrowserController* controller =
@@ -232,8 +233,9 @@ void OpaqueBrowserFrameView::InitViews() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (browser_view()->AppUsesWindowControlsOverlay())
+  if (browser_view()->AppUsesWindowControlsOverlay()) {
     UpdateCaptionButtonToolTipsForWindowControlsOverlay();
+  }
 #endif
 }
 
@@ -261,8 +263,9 @@ int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
 }
 
 void OpaqueBrowserFrameView::UpdateThrobber(bool running) {
-  if (window_icon_)
+  if (window_icon_) {
     window_icon_->Update();
+  }
 }
 
 void OpaqueBrowserFrameView::WindowControlsOverlayEnabledChanged() {
@@ -311,11 +314,13 @@ gfx::Rect OpaqueBrowserFrameView::GetWindowBoundsForClientBounds(
 
 int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   int super_component = BrowserNonClientFrameView::NonClientHitTest(point);
-  if (super_component != HTNOWHERE)
+  if (super_component != HTNOWHERE) {
     return super_component;
+  }
 
-  if (!bounds().Contains(point))
+  if (!bounds().Contains(point)) {
     return HTNOWHERE;
+  }
 
   int frame_component = frame()->client_view()->NonClientHitTest(point);
 
@@ -325,15 +330,18 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     gfx::Rect sysmenu_rect(GetIconBounds());
     // In maximized mode we extend the rect to the screen corner to take
     // advantage of Fitts' Law.
-    if (IsFrameCondensed())
+    if (IsFrameCondensed()) {
       sysmenu_rect.SetRect(0, 0, sysmenu_rect.right(), sysmenu_rect.bottom());
+    }
     sysmenu_rect = GetMirroredRect(sysmenu_rect);
-    if (sysmenu_rect.Contains(point))
+    if (sysmenu_rect.Contains(point)) {
       return HTSYSMENU;
+    }
   }
 
-  if (frame_component != HTNOWHERE)
+  if (frame_component != HTNOWHERE) {
     return frame_component;
+  }
 
   // BrowserView covers the frame view when Window Controls Overlay is enabled.
   // The native window that encompasses Web Contents gets the mouse events meant
@@ -343,18 +351,23 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
       (HitTestCaptionButton(minimize_button_, point) ||
        HitTestCaptionButton(maximize_button_, point) ||
        HitTestCaptionButton(restore_button_, point) ||
-       HitTestCaptionButton(close_button_, point)))
+       HitTestCaptionButton(close_button_, point))) {
     return HTCLIENT;
+  }
 
   // Then see if the point is within any of the window controls.
-  if (HitTestCaptionButton(close_button_, point))
+  if (HitTestCaptionButton(close_button_, point)) {
     return HTCLOSE;
-  if (HitTestCaptionButton(restore_button_, point))
+  }
+  if (HitTestCaptionButton(restore_button_, point)) {
     return HTMAXBUTTON;
-  if (HitTestCaptionButton(maximize_button_, point))
+  }
+  if (HitTestCaptionButton(maximize_button_, point)) {
     return HTMAXBUTTON;
-  if (HitTestCaptionButton(minimize_button_, point))
+  }
+  if (HitTestCaptionButton(minimize_button_, point)) {
     return HTMINBUTTON;
+  }
 
   if (browser_view()->IsWindowControlsOverlayEnabled() &&
       caption_button_placeholder_container_ &&
@@ -391,8 +404,9 @@ void OpaqueBrowserFrameView::GetWindowMask(const gfx::Size& size,
                                            SkPath* window_mask) {
   DCHECK(window_mask);
 
-  if (IsFrameCondensed())
+  if (IsFrameCondensed()) {
     return;
+  }
 
   views::GetDefaultWindowMask(size, window_mask);
 }
@@ -406,8 +420,9 @@ void OpaqueBrowserFrameView::ResetWindowControls() {
 }
 
 void OpaqueBrowserFrameView::UpdateWindowIcon() {
-  if (window_icon_)
+  if (window_icon_) {
     window_icon_->SchedulePaint();
+  }
 }
 
 void OpaqueBrowserFrameView::UpdateWindowTitle() {
@@ -427,7 +442,7 @@ bool OpaqueBrowserFrameView::ShouldTabIconViewAnimate() const {
   // TabIconView we host is initialized, so we need to null check the selected
   // WebContents because in this condition there is not yet a selected tab.
   WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab ? current_tab->IsLoading() : false;
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
@@ -534,11 +549,11 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
                  GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
                      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   }
-    gfx::Rect web_app_toolbar_bounds = GetBoundsForWebAppFrameToolbar(
-        browser_view()->GetWebAppFrameToolbarPreferredSize());
-    if (!web_app_toolbar_bounds.IsEmpty()) {
-      top_height = std::max(top_height, web_app_toolbar_bounds.bottom());
-    }
+  gfx::Rect web_app_toolbar_bounds = GetBoundsForWebAppFrameToolbar(
+      browser_view()->GetWebAppFrameToolbarPreferredSize());
+  if (!web_app_toolbar_bounds.IsEmpty()) {
+    top_height = std::max(top_height, web_app_toolbar_bounds.bottom());
+  }
   return top_height;
 }
 
@@ -592,8 +607,9 @@ int OpaqueBrowserFrameView::WebAppButtonHeight() const {
 // views::View:
 void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   TRACE_EVENT0("views.frame", "OpaqueBrowserFrameView::OnPaint");
-  if (frame()->IsFullscreen())
+  if (frame()->IsFullscreen()) {
     return;  // Nothing is visible, so don't bother to paint.
+  }
 
   const bool active = ShouldPaintAsActive();
   SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
@@ -623,10 +639,11 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     }
   }
 
-  if (IsFrameCondensed())
+  if (IsFrameCondensed()) {
     PaintMaximizedFrameBorder(canvas);
-  else
+  } else {
     PaintRestoredFrameBorder(canvas);
+  }
 
   // The window icon and title are painted by their respective views.
   /* TODO(pkasting):  If this window is active, we should also draw a drop
@@ -638,8 +655,9 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
 
   // Custom tab bar mode draws the toolbar as a unified part of the titlebar, so
   // it shouldn't have a client edge.
-  if (!browser_view()->toolbar()->custom_tab_bar())
+  if (!browser_view()->toolbar()->custom_tab_bar()) {
     PaintClientEdge(canvas);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -748,8 +766,9 @@ OpaqueBrowserFrameView::GetProcessedBackgroundImageForCaptionButon(
   const gfx::ImageSkia* bg_image =
       tp->GetImageSkiaNamed(IDR_THEME_WINDOW_CONTROL_BACKGROUND);
 
-  if (!bg_image)
+  if (!bg_image) {
     return gfx::ImageSkia();
+  }
 
   const bool is_rtl = base::i18n::IsRTL();
   const int bg_x_offset = CalculateCaptionButtonBackgroundXOffset(view_id);
@@ -789,11 +808,13 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
 
 bool OpaqueBrowserFrameView::GetShowWindowTitleBar() const {
   // Do not show the custom title bar if the system title bar option is enabled.
-  if (!frame()->UseCustomFrame())
+  if (!frame()->UseCustomFrame()) {
     return false;
+  }
 
-  if (frame()->IsFullscreen())
+  if (frame()->IsFullscreen()) {
     return false;
+  }
 
   // Do not show caption buttons if the window manager is forcefully providing a
   // title bar (e.g., in Ubuntu Unity, if the window is maximized).
@@ -835,8 +856,9 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
       layout_->CalculateClientAreaBounds(width(), height());
 
   // In maximized mode, the only edge to draw is the top one, so we're done.
-  if (IsFrameCondensed())
+  if (IsFrameCondensed()) {
     return;
+  }
 
   int y = client_bounds.y();
   const gfx::Rect toolbar_bounds = browser_view()->toolbar()->bounds();

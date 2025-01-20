@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -173,7 +174,8 @@ void FullscreenControllerInteractiveTest::ToggleBrowserFullscreen(
 }
 
 void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
-    bool enter_fullscreen, bool retry_until_success) {
+    bool enter_fullscreen,
+    bool retry_until_success) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   do {
     ui_test_utils::FullscreenWaiter waiter(
@@ -187,12 +189,12 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
     // Repeat ToggleFullscreenModeForTab until the correct state is entered.
     // This addresses flakiness on test bots running many fullscreen
     // tests in parallel.
-  } while (retry_until_success &&
-           !IsFullscreenForBrowser() &&
+  } while (retry_until_success && !IsFullscreenForBrowser() &&
            browser()->window()->IsFullscreen() != enter_fullscreen);
   ASSERT_EQ(IsWindowFullscreenForTabOrPending(), enter_fullscreen);
-  if (!IsFullscreenForBrowser())
+  if (!IsFullscreenForBrowser()) {
     ASSERT_EQ(browser()->window()->IsFullscreen(), enter_fullscreen);
+  }
 }
 
 // Tests ///////////////////////////////////////////////////////////////////////
@@ -202,8 +204,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestNewTabExitsFullscreen) {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
   // Flaky in Linux interactive_ui_tests_wayland: crbug.com/1200036
-  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland")
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
     GTEST_SKIP();
+  }
 #endif
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -255,8 +258,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
           })));
   // Lambda may run synchronously on some platforms. If it did not already run,
   // block until it has.
-  if (!lambda_called)
+  if (!lambda_called) {
     run_loop.Run();
+  }
   EXPECT_TRUE(lambda_called);
 }
 
@@ -337,8 +341,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        TestTabDoesntExitFullscreenOnSubFrameNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  GURL url(ui_test_utils::GetTestUrl(base::FilePath(
-      base::FilePath::kCurrentDirectory), base::FilePath(kSimpleFile)));
+  GURL url(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kSimpleFile)));
   GURL url_with_fragment(url.spec() + "#fragment");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -874,19 +879,22 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
 
     if (GetParam()) {
-      embedded_https_test_server().ServeFilesFromSourceDirectory(
-          GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
-      ASSERT_TRUE(embedded_https_test_server().Start());
-      auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-          browser()->profile(), embedded_https_test_server().GetOrigin());
+      std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+          web_app::IsolatedWebAppBuilder(
+              web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kFullscreen))
+              .BuildBundle();
+      app->TrustSigningKey();
+      web_app::IsolatedWebAppUrlInfo url_info =
+          app->InstallChecked(browser()->profile());
       allow_automatic_fullscreen(url_info.origin().GetURL());
       auto* frame =
           web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
       web_contents_ = content::WebContents::FromRenderFrameHost(frame);
     } else {
-      ASSERT_TRUE(embedded_https_test_server().Start());
       GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
       allow_automatic_fullscreen(url);
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

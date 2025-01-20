@@ -16,7 +16,7 @@ namespace {
 
 class DummySharedURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
-  DummySharedURLLoaderFactory() {}
+  DummySharedURLLoaderFactory() = default;
 
   // network::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -60,7 +60,7 @@ TestBlocklistStateFetcher::TestBlocklistStateFetcher(
   fetcher_->url_loader_factory_ = url_loader_factory_.get();
 }
 
-TestBlocklistStateFetcher::~TestBlocklistStateFetcher() {}
+TestBlocklistStateFetcher::~TestBlocklistStateFetcher() = default;
 
 void TestBlocklistStateFetcher::SetBlocklistVerdict(
     const std::string& id,

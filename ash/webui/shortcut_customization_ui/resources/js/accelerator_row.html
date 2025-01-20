@@ -1,4 +1,4 @@
-<style include="shortcut-customization-shared">
+<style include="shortcut-customization-shared cr-shared-style">
   #container {
     align-items: flex-start;
     column-gap: 24px;
@@ -48,11 +48,14 @@
   }
 
   #descriptionText {
-    align-items: center;
+    align-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
     color: var(--cros-text-color-primary);
-    display: flex;
+    display: -webkit-box;
     font: var(--cros-body-2-font);
     height: 62px;
+    overflow: hidden;
     padding: 0; /* Remove padding coming from <th> tag. */
     text-align: initial;
   }
@@ -81,13 +84,24 @@
   #noShortcutAssignedContainer[hidden] {
     display: none;
   }
+
+  paper-tooltip {
+    --paper-tooltip-min-width: 0;
+  }
 </style>
 
 <tr id="container" tabindex="-1" role="row"
     on-focus="onFocusOrMouseEnter" on-blur="onBlur"
     on-mouseenter="onFocusOrMouseEnter"
     aria-label$="[[getAriaLabel(description, acceleratorInfos)]]">
-  <th id="descriptionText" scope="row">[[description]]</th>
+  <th id="descriptionText" on-mouseenter="onMouseEnterDescriptionText_" scope="row">[[description]]</th>
+  <paper-tooltip
+      hidden="[[!isEllipsisActive_]]"
+      fit-to-visible-bounds
+      offset="0"
+      for="descriptionText">
+    [[description]]
+  </paper-tooltip>
   <td>
     <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
       <template is="dom-repeat" items="[[acceleratorInfos]]" as="item"

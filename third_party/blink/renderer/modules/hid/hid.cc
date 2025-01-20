@@ -34,25 +34,6 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
-bool IsContextSupported(ExecutionContext* context) {
-  // Since WebHID on Web Workers is in the process of being implemented, we
-  // check here if the runtime flag for the appropriate worker is enabled.
-  // TODO(https://crbug.com/365932453): Remove this check once the feature has
-  // shipped.
-  if (!context) {
-    return false;
-  }
-
-  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope() ||
-         context->IsServiceWorkerGlobalScope());
-  DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
-         RuntimeEnabledFeatures::WebHIDOnDedicatedWorkersEnabled());
-  DCHECK(!context->IsServiceWorkerGlobalScope() ||
-         RuntimeEnabledFeatures::WebHIDOnServiceWorkersEnabled());
-
-  return true;
-}
-
 // Carries out basic checks for the web-exposed APIs, to make sure the minimum
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
@@ -60,7 +41,7 @@ bool IsContextSupported(ExecutionContext* context) {
 bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
                                ExecutionContext* context,
                                ExceptionState* exception_state) {
-  if (!IsContextSupported(context)) {
+  if (!context) {
     if (exception_state) {
       exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                          kContextGone);
@@ -359,8 +340,6 @@ void HID::EnsureServiceConnection() {
 
   if (service_.is_bound())
     return;
-
-  DCHECK(IsContextSupported(GetExecutionContext()));
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);

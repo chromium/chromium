@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.tab;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.NativePageBitmapCapturer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -33,6 +34,7 @@ import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.UiUtils;
 import org.chromium.url.GURL;
 
 /** Implementation class of {@link TabWebContentsDelegateAndroid}. */
@@ -234,9 +236,13 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     public void visibleSSLStateChanged() {
         PolicyAuditor auditor = PolicyAuditor.maybeCreate();
         if (auditor != null) {
-            auditor.notifyCertificateFailure(
-                    PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
-                    ContextUtils.getApplicationContext());
+            WebContents webContents = mTab.getWebContents();
+            // Speculative fix for crbug.com/384566650
+            if (webContents != null && !webContents.isDestroyed()) {
+                auditor.notifyCertificateFailure(
+                        PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
+                        ContextUtils.getApplicationContext());
+            }
         }
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onSSLStateUpdated(mTab);
@@ -438,8 +444,19 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
+    public boolean supportsForwardTransitionAnimation() {
+        var window = mTab.getWindowAndroid().getWindow();
+        if (window == null) {
+            return true;
+        }
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                        && ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled())
+                || !UiUtils.isGestureNavigationMode(window);
+    }
+
+    @Override
     public Bitmap maybeCopyContentAreaAsBitmapSync() {
-        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab);
+        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab, getTopControlsHeight());
     }
 
     @Override
@@ -467,11 +484,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         }
     }
 
-    void showFramebustBlockInfobarForTesting(String url) {
-        TabWebContentsDelegateAndroidImplJni.get()
-                .showFramebustBlockInfoBar(mTab.getWebContents(), url);
-    }
-
     @Override
     public void didChangeCloseSignalInterceptStatus() {
         mTab.didChangeCloseSignalInterceptStatus();
@@ -485,8 +497,5 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
-
-        void showFramebustBlockInfoBar(
-                WebContents webContents, @JniType("std::u16string") String url);
     }
 }

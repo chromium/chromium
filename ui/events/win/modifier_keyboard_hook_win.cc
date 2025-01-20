@@ -190,7 +190,7 @@ bool ModifierKeyboardHookWinImpl::Register() {
 }
 
 void ModifierKeyboardHookWinImpl::ClearModifierStates() {
-  BYTE keyboard_state[kKeyboardStateArraySize] = {0};
+  BYTE keyboard_state[kKeyboardStateArraySize] = {};
   if (!GetKeyboardState(keyboard_state)) {
     PLOG(ERROR) << "GetKeyboardState() failed: ";
     return;
@@ -284,7 +284,7 @@ bool ModifierKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
 
 void ModifierKeyboardHookWinImpl::UpdateModifierState(DWORD vk,
                                                       bool is_key_down) {
-  BYTE keyboard_state[kKeyboardStateArraySize] = {0};
+  BYTE keyboard_state[kKeyboardStateArraySize] = {};
   if (!GetKeyboardState(keyboard_state)) {
     PLOG(ERROR) << "GetKeyboardState() failed: ";
     return;

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/signin/core/browser",
+  "+components/signin/public/android/java",
   "+content/public/android",
   "+content/public/test/android",
 ]

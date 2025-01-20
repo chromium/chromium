@@ -116,7 +116,7 @@ class AccountsCookieMutator {
 
   // Indicates that an account previously listed via ListAccounts should now
   // be removed.
-  virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
+  virtual void RemoveLoggedOutAccountByGaiaId(const GaiaId& gaia_id) = 0;
 };
 
 }  // namespace signin

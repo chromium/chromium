@@ -21,7 +21,7 @@ def CheckNoBannedFunctions(input_api, output_api):
         (r'\bFormControlType\(\)',
          'Consider FormControlTypeForAutofill() instead.'),
         (r'\bForm\(\)',
-         'Consider GetOwningForm() instead.'),
+         'Consider GetOwningFormForAutofill() instead.'),
         (r'\bGetFormControlElements\(\)',
          'Consider GetOwnedFormControls() instead.'),
         (r'\bUnassociatedFormControls\(\)',

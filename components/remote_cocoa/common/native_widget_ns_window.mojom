@@ -9,6 +9,7 @@ import "components/remote_cocoa/common/menu.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
+import "ui/base/mojom/color_mode.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/events/mojom/event_constants.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -227,6 +228,18 @@ interface NativeWidgetNSWindow {
   // Set the window level of the NSWindow.
   SetWindowLevel(int32 level);
 
+  // Set or un-set the NSWindow as being "activation independent". This sets
+  // two properties:
+  //
+  // - If Chromium is hidden (from the Dock menu or programmatically), the
+  //   NSWindow is not forced to be hidden as well.
+  // - The NSWindow can be interacted with without causing Chromium to be
+  //   activated.
+  //
+  // To accomplish this, the activation independence state of all ancestor
+  // NSWindows is set as well.
+  SetActivationIndependence(bool independence);
+
   // Set the aspect ratio of the NSWindow. `aspect_ratio` must not be empty.
   // The aspect ratio refers to the client area only; system-drawn window
   // decorations like a title bar are not considered in the aspect ratio.
@@ -324,4 +337,7 @@ interface NativeWidgetNSWindow {
 
   // Set whether the window should be included in screenshots or not.
   SetAllowScreenshots(bool allow);
+
+  // Set the color mode of the window.
+  SetColorMode(ui.mojom.ColorMode color_mode);
 };

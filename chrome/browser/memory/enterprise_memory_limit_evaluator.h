@@ -74,7 +74,7 @@ class EnterpriseMemoryLimitEvaluator {
 // They are then passed to the Performance Manager's Graph and a task gets
 // posted to the proper task runner when new data is available.
 class EnterpriseMemoryLimitEvaluator::GraphObserver
-    : public performance_manager::SystemNode::ObserverDefaultImpl,
+    : public performance_manager::SystemNodeObserver,
       public performance_manager::GraphOwned {
  public:
   // The constructor of this class takes 2 parameters: the callback to run each
@@ -85,11 +85,11 @@ class EnterpriseMemoryLimitEvaluator::GraphObserver
 
   ~GraphObserver() override;
 
-  // GraphOwned implementation, called on the PM sequence:
+  // GraphOwned, called on the PM sequence:
   void OnPassedToGraph(performance_manager::Graph* graph) override;
   void OnTakenFromGraph(performance_manager::Graph* graph) override;
 
-  // SystemNode::ObserverDefaultImpl, called on the PM sequence:
+  // SystemNodeObserver, called on the PM sequence:
   void OnProcessMemoryMetricsAvailable(
       const performance_manager::SystemNode* system_node) override;
 

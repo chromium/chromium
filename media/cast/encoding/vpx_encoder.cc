@@ -22,8 +22,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
-using Dependency = openscreen::cast::EncodedFrame::Dependency;
-
 namespace media {
 namespace cast {
 
@@ -100,8 +98,9 @@ VpxEncoder::VpxEncoder(
 
 VpxEncoder::~VpxEncoder() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_initialized())
+  if (is_initialized()) {
     vpx_codec_destroy(&encoder_);
+  }
 }
 
 void VpxEncoder::Initialize() {
@@ -125,8 +124,9 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
       config_.g_w = frame_size.width();
       config_.g_h = frame_size.height();
       config_.rc_min_quantizer = codec_params_->min_qp;
-      if (vpx_codec_enc_config_set(&encoder_, &config_) == VPX_CODEC_OK)
+      if (vpx_codec_enc_config_set(&encoder_, &config_) == VPX_CODEC_OK) {
         return;
+      }
       DVLOG(1) << "libvpx rejected the attempt to use a smaller frame size in "
                   "the current instance.";
     }
@@ -242,8 +242,9 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // Initialize on-demand.  Later, if the video frame size has changed, update
   // the encoder configuration.
   const gfx::Size frame_size = video_frame->visible_rect().size();
-  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size)
+  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size) {
     ConfigureForNewFrameSize(frame_size);
+  }
 
   // Wrapper for vpx_codec_encode() to access the YUV data in the |video_frame|.
   // Only the VISIBLE rectangle within |video_frame| is exposed to the codec.
@@ -329,17 +330,17 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
 
   // Pull data from the encoder, populating a new EncodedFrame.
   encoded_frame->frame_id = next_frame_id_;
-  const vpx_codec_cx_pkt_t* pkt = NULL;
-  vpx_codec_iter_t iter = NULL;
-  while ((pkt = vpx_codec_get_cx_data(&encoder_, &iter)) != NULL) {
-    if (pkt->kind != VPX_CODEC_CX_FRAME_PKT)
+  const vpx_codec_cx_pkt_t* pkt = nullptr;
+  vpx_codec_iter_t iter = nullptr;
+  while ((pkt = vpx_codec_get_cx_data(&encoder_, &iter)) != nullptr) {
+    if (pkt->kind != VPX_CODEC_CX_FRAME_PKT) {
       continue;
-    if (pkt->data.frame.flags & VPX_FRAME_IS_KEY) {
-      // TODO(hubbe): Replace "dependency" with a "bool is_key_frame".
-      encoded_frame->dependency = Dependency::kKeyFrame;
+    }
+
+    encoded_frame->is_key_frame = pkt->data.frame.flags & VPX_FRAME_IS_KEY;
+    if (encoded_frame->is_key_frame) {
       encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     } else {
-      encoded_frame->dependency = Dependency::kDependent;
       // Frame dependencies could theoretically be relaxed by looking for the
       // VPX_FRAME_IS_DROPPABLE flag, but in recent testing (Oct 2014), this
       // flag never seems to be set.
@@ -374,7 +375,6 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // used as the lossy utilization.
   const double actual_bitrate =
       encoded_frame->data.size() * 8.0 / predicted_frame_duration.InSecondsF();
-  encoded_frame->encoder_bitrate = actual_bitrate;
   const double target_bitrate = 1000.0 * config_.rc_target_bitrate;
   DCHECK_GT(target_bitrate, 0.0);
   const double bitrate_utilization = actual_bitrate / target_bitrate;
@@ -393,10 +393,8 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
            << ", lossiness: " << encoded_frame->lossiness
            << " (quantizer chosen by the encoder was " << quantizer << ')';
 
-  if (encoded_frame->dependency == Dependency::kKeyFrame) {
+  if (encoded_frame->is_key_frame) {
     key_frame_requested_ = false;
-  }
-  if (encoded_frame->dependency == Dependency::kKeyFrame) {
     encoding_speed_acc_.Reset(kHighestEncodingSpeed, video_frame->timestamp());
   } else {
     // Equivalent encoding speed considering both cpu_used setting and
@@ -444,12 +442,14 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
 void VpxEncoder::UpdateRates(uint32_t new_bitrate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!is_initialized())
+  if (!is_initialized()) {
     return;
+  }
 
   uint32_t new_bitrate_kbit = new_bitrate / 1000;
-  if (config_.rc_target_bitrate == new_bitrate_kbit)
+  if (config_.rc_target_bitrate == new_bitrate_kbit) {
     return;
+  }
 
   config_.rc_target_bitrate = bitrate_kbit_ = new_bitrate_kbit;
 

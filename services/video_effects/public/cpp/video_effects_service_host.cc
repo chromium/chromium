@@ -8,7 +8,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/chrome_ml_holder.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 
 namespace {

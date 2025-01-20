@@ -4,13 +4,10 @@
 
 #include "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 
-#include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
@@ -41,7 +38,7 @@ AcceptLanguagesServiceForProfile::AcceptLanguagesServiceForProfile(
     PrefService* prefs)
     : accept_languages_(prefs, language::prefs::kAcceptLanguages) {}
 
-AcceptLanguagesServiceForProfile::~AcceptLanguagesServiceForProfile() {}
+AcceptLanguagesServiceForProfile::~AcceptLanguagesServiceForProfile() = default;
 
 }  // namespace
 
@@ -55,17 +52,16 @@ AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
 language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   AcceptLanguagesServiceForProfile* service =
-      static_cast<AcceptLanguagesServiceForProfile*>(
-          GetInstance()->GetServiceForBrowserState(profile, true));
+      GetInstance()->GetServiceForProfileAs<AcceptLanguagesServiceForProfile>(
+          profile, /*create=*/true);
   return &service->accept_languages();
 }
 
 AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AcceptLanguagesServiceForProfile",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("AcceptLanguagesServiceForProfile",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
-AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
+AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
@@ -73,9 +69,4 @@ AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<AcceptLanguagesServiceForProfile>(
       profile->GetPrefs());
-}
-
-web::BrowserState* AcceptLanguagesServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

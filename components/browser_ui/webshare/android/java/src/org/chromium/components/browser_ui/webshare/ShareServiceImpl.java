@@ -4,13 +4,9 @@
 
 package org.chromium.components.browser_ui.webshare;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -21,7 +17,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.mojom.Url;
@@ -33,7 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 
@@ -69,82 +63,42 @@ public class ShareServiceImpl implements ShareService {
     // - //chrome/browser/webshare/share_service_impl.cc
 
     private static final Set<String> PERMITTED_EXTENSIONS =
-            Collections.unmodifiableSet(
-                    CollectionUtil.newHashSet(
-                            "avif", // image/avif
-                            "bmp", // image/bmp / image/x-ms-bmp
-                            "css", // text/css
-                            "csv", // text/csv / text/comma-separated-values
-                            "ehtml", // text/html
-                            "flac", // audio/flac
-                            "gif", // image/gif
-                            "htm", // text/html
-                            "html", // text/html
-                            "ico", // image/x-icon
-                            "jfif", // image/jpeg
-                            "jpeg", // image/jpeg
-                            "jpg", // image/jpeg
-                            "m4a", // audio/x-m4a
-                            "m4v", // video/mp4
-                            "mp3", // audio/mpeg audio/mp3
-                            "mp4", // video/mp4
-                            "mpeg", // video/mpeg
-                            "mpg", // video/mpeg
-                            "oga", // audio/ogg
-                            "ogg", // audio/ogg
-                            "ogm", // video/ogg
-                            "ogv", // video/ogg
-                            "opus", // audio/ogg
-                            "pdf", // application/pdf
-                            "pjp", // image/jpeg
-                            "pjpeg", // image/jpeg
-                            "png", // image/png
-                            "shtm", // text/html
-                            "shtml", // text/html
-                            "svg", // image/svg+xml
-                            "svgz", // image/svg+xml
-                            "text", // text/plain
-                            "tif", // image/tiff
-                            "tiff", // image/tiff
-                            "txt", // text/plain
-                            "wav", // audio/wav
-                            "weba", // audio/webm
-                            "webm", // video/webm
-                            "webp", // image/webp
-                            "xbm" // image/x-xbitmap
-                            ));
+            Set.of(
+                    "avif", "bmp", "css", "csv", "ehtml", "flac", "gif", "htm", "html", "ico",
+                    "jfif", "jpeg", "jpg", "m4a", "m4v", "mp3", "mp4", "mpeg", "mpg", "oga", "ogg",
+                    "ogm", "ogv", "opus", "pdf", "pjp", "pjpeg", "png", "shtm", "shtml", "svg",
+                    "svgz", "text", "tif", "tiff", "txt", "wav", "weba", "webm", "webp", "xbm");
 
     private static final Set<String> PERMITTED_MIME_TYPES =
-            Collections.unmodifiableSet(
-                    CollectionUtil.newHashSet(
-                            "audio/flac",
-                            "application/pdf",
-                            "audio/mp3",
-                            "audio/mpeg",
-                            "audio/ogg",
-                            "audio/wav",
-                            "audio/webm",
-                            "audio/x-m4a",
-                            "image/avif",
-                            "image/bmp",
-                            "image/gif",
-                            "image/jpeg",
-                            "image/png",
-                            "image/svg+xml",
-                            "image/tiff",
-                            "image/webp",
-                            "image/x-icon",
-                            "image/x-ms-bmp",
-                            "image/x-xbitmap",
-                            "text/comma-separated-values",
-                            "text/css",
-                            "text/csv",
-                            "text/html",
-                            "text/plain",
-                            "video/mp4",
-                            "video/mpeg",
-                            "video/ogg",
-                            "video/webm"));
+            Set.of(
+                    "audio/flac",
+                    "application/pdf",
+                    "audio/mp3",
+                    "audio/mpeg",
+                    "audio/ogg",
+                    "audio/wav",
+                    "audio/webm",
+                    "audio/x-m4a",
+                    "image/avif",
+                    "image/bmp",
+                    "image/gif",
+                    "image/jpeg",
+                    "image/png",
+                    "image/svg+xml",
+                    "image/tiff",
+                    "image/webp",
+                    "image/x-icon",
+                    "image/x-ms-bmp",
+                    "image/x-xbitmap",
+                    "text/comma-separated-values",
+                    "text/css",
+                    "text/csv",
+                    "text/html",
+                    "text/plain",
+                    "video/mp4",
+                    "video/mpeg",
+                    "video/ogg",
+                    "video/webm");
 
     private static final TaskRunner TASK_RUNNER =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
@@ -325,15 +279,5 @@ public class ShareServiceImpl implements ShareService {
 
     static boolean isDangerousMimeType(String contentType) {
         return !PERMITTED_MIME_TYPES.contains(contentType);
-    }
-
-    @Nullable
-    private static Activity activityFromWebContents(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-
-        return window.getActivity().get();
     }
 }

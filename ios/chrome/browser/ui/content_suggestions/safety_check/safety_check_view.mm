@@ -114,6 +114,11 @@ bool IsDefault(SafetyCheckState* state) {
       updateNotificationsOptInVisibility:_state.showNotificationsOptIn];
 
   int checkIssuesCount = [_state numberOfIssues];
+
+  // Determine whether the separator should be hidden.
+  BOOL hideSeparator = checkIssuesCount > 1;
+  [_contentViewDelegate updateSeparatorVisibility:hideSeparator];
+
   BOOL isRunning = IsRunning(_state);
   BOOL isDefault = IsDefault(_state);
   SafetyCheckItemType itemType;

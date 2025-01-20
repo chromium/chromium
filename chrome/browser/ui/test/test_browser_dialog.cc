@@ -50,10 +50,11 @@ class WidgetCloser {
 
  private:
   void CloseWidget(bool async) {
-    if (async)
+    if (async) {
       widget_->Close();
-    else
+    } else {
       widget_->CloseNow();
+    }
   }
 
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_;
@@ -88,8 +89,9 @@ bool TestBrowserDialog::VerifyUi() {
 
   // Force pending layouts of all existing widgets. This ensures any
   // anchor Views are in the correct position.
-  for (views::Widget* widget : widgets_)
+  for (views::Widget* widget : widgets_) {
     widget->LayoutRootViewIfNecessary();
+  }
 
   // Get the list of added dialog widgets. Ignore non-dialog widgets, including
   // those added by tests to anchor dialogs and the browser's status bubble.
@@ -135,11 +137,13 @@ bool TestBrowserDialog::VerifyUi() {
     LOG(INFO) << "VerifyUi(): Pixel compare failed.";
     return false;
   }
-  if (is_active)
+  if (is_active) {
     dialog_widget->Activate();
+  }
 
-  if (!should_verify_dialog_bounds_)
+  if (!should_verify_dialog_bounds_) {
     return true;
+  }
 
   // Verify that the dialog's dimensions do not exceed the display's work area
   // bounds, which may be smaller than its bounds(), e.g. in the case of the
@@ -199,8 +203,9 @@ std::string TestBrowserDialog::GetNonDialogName() {
 void TestBrowserDialog::UpdateWidgets() {
   widgets_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
+  for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
     views::Widget::GetAllChildWidgets(root_window, &widgets_);
+  }
 #elif defined(TOOLKIT_VIEWS)
   widgets_ = views::test::WidgetTest::GetAllWidgets();
 #else

@@ -109,6 +109,15 @@ class EditorTestUtils {
     );
   }
 
+  sendCutShortcutKey() {
+    return this.sendKey(
+      "x",
+      this.window.navigator.platform.includes("Mac")
+        ? this.kMeta
+        : this.kControl
+    );
+  }
+
   sendPasteShortcutKey() {
     return this.sendKey(
       "v",
@@ -116,6 +125,24 @@ class EditorTestUtils {
         ? this.kMeta
         : this.kControl
     );
+  }
+
+  sendPasteAsPlaintextShortcutKey() {
+    // Ctrl/Cmd - Shift - v on Chrome and Firefox
+    // Cmd - Alt - Shift - v on Safari
+    const accel = this.window.navigator.platform.includes("Mac") ? this.kMeta : this.kControl;
+    const isSafari = this.window.navigator.userAgent.includes("Safari");
+    let actions = new this.window.test_driver.Actions();
+    actions = actions.keyDown(accel).keyDown(this.kShift);
+    if (isSafari) {
+      actions = actions.keyDown(this.kAlt);
+    }
+    actions = actions.keyDown("v").keyUp("v");
+    actions = actions.keyUp(accel).keyUp(this.kShift);
+    if (isSafari) {
+      actions = actions.keyUp(this.kAlt);
+    }
+    return actions.send();
   }
 
   // Similar to `setupDiv` in editing/include/tests.js, this method sets

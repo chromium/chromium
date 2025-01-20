@@ -158,6 +158,8 @@ component("net") {
     "base/backoff_entry.h",
     "base/backoff_entry_serializer.cc",
     "base/backoff_entry_serializer.h",
+    "base/base64.cc",
+    "base/base64.h",
     "base/cache_type.h",
     "base/chunked_upload_data_stream.cc",
     "base/chunked_upload_data_stream.h",
@@ -165,6 +167,8 @@ component("net") {
     "base/completion_repeating_callback.h",
     "base/connection_endpoint_metadata.cc",
     "base/connection_endpoint_metadata.h",
+    "base/connection_migration_information.cc",
+    "base/connection_migration_information.h",
     "base/data_url.cc",
     "base/data_url.h",
     "base/datagram_buffer.cc",
@@ -428,6 +432,8 @@ component("net") {
     "cookies/site_for_cookies.h",
     "cookies/static_cookie_policy.cc",
     "cookies/static_cookie_policy.h",
+    "cookies/unique_cookie_key.cc",
+    "cookies/unique_cookie_key.h",
     "device_bound_sessions/session_key.cc",
     "device_bound_sessions/session_key.h",
     "disk_cache/backend_cleanup_tracker.cc",
@@ -479,6 +485,7 @@ component("net") {
     "disk_cache/memory/mem_backend_impl.h",
     "disk_cache/memory/mem_entry_impl.cc",
     "disk_cache/memory/mem_entry_impl.h",
+    "disk_cache/memory_entry_data_hints.h",
     "disk_cache/net_log_parameters.cc",
     "disk_cache/net_log_parameters.h",
     "disk_cache/simple/post_operation_waiter.cc",
@@ -649,6 +656,8 @@ component("net") {
     "http/http_stream_pool.h",
     "http/http_stream_pool_attempt_manager.cc",
     "http/http_stream_pool_attempt_manager.h",
+    "http/http_stream_pool_attempt_manager_quic_task.cc",
+    "http/http_stream_pool_attempt_manager_quic_task.h",
     "http/http_stream_pool_group.cc",
     "http/http_stream_pool_group.h",
     "http/http_stream_pool_handle.cc",
@@ -657,10 +666,8 @@ component("net") {
     "http/http_stream_pool_job.h",
     "http/http_stream_pool_job_controller.cc",
     "http/http_stream_pool_job_controller.h",
-    "http/http_stream_pool_quic_task.cc",
-    "http/http_stream_pool_quic_task.h",
-    "http/http_stream_pool_switching_info.cc",
-    "http/http_stream_pool_switching_info.h",
+    "http/http_stream_pool_request_info.cc",
+    "http/http_stream_pool_request_info.h",
     "http/http_stream_request.cc",
     "http/http_stream_request.h",
     "http/http_transaction.h",
@@ -670,6 +677,8 @@ component("net") {
     "http/http_vary_data.cc",
     "http/http_vary_data.h",
     "http/http_version.h",
+    "http/no_vary_search_cache.cc",
+    "http/no_vary_search_cache.h",
     "http/partial_data.cc",
     "http/partial_data.h",
     "http/proxy_client_socket.cc",
@@ -935,6 +944,8 @@ component("net") {
     "socket/stream_attempt.h",
     "socket/stream_socket.cc",
     "socket/stream_socket.h",
+    "socket/stream_socket_close_reason.cc",
+    "socket/stream_socket_close_reason.h",
     "socket/stream_socket_handle.cc",
     "socket/stream_socket_handle.h",
     "socket/tcp_client_socket.cc",
@@ -1010,6 +1021,8 @@ component("net") {
     "ssl/cert_compression.h",
     "ssl/client_cert_identity.cc",
     "ssl/client_cert_identity.h",
+    "ssl/client_cert_matcher.cc",
+    "ssl/client_cert_matcher.h",
     "ssl/client_cert_store.h",
     "ssl/openssl_private_key.cc",
     "ssl/openssl_private_key.h",
@@ -1104,6 +1117,7 @@ component("net") {
     "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
+    "//third_party/simdutf:simdutf",
   ]
 
   public_deps = [
@@ -2000,6 +2014,8 @@ static_library("test_support") {
     "cookies/cookie_store_unittest.h",
     "cookies/test_cookie_access_delegate.cc",
     "cookies/test_cookie_access_delegate.h",
+    "device_bound_sessions/test_support.cc",
+    "device_bound_sessions/test_support.h",
     "disk_cache/disk_cache_test_base.cc",
     "disk_cache/disk_cache_test_base.h",
     "disk_cache/disk_cache_test_util.cc",
@@ -2616,6 +2632,7 @@ target(_test_target_type, "net_unittests") {
     "base/address_list_unittest.cc",
     "base/backoff_entry_serializer_unittest.cc",
     "base/backoff_entry_unittest.cc",
+    "base/base64_unittest.cc",
     "base/chunked_upload_data_stream_unittest.cc",
     "base/data_url_unittest.cc",
     "base/datagram_buffer_unittest.cc",
@@ -2781,6 +2798,7 @@ target(_test_target_type, "net_unittests") {
     "http/http_vary_data_unittest.cc",
     "http/mock_allow_http_auth_preferences.cc",
     "http/mock_allow_http_auth_preferences.h",
+    "http/no_vary_search_cache_unittest.cc",
     "http/test_upload_data_stream_not_allow_http1.cc",
     "http/test_upload_data_stream_not_allow_http1.h",
     "http/transport_security_persister_unittest.cc",
@@ -3042,6 +3060,7 @@ target(_test_target_type, "net_unittests") {
     "//third_party/abseil-cpp:absl",
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
     "//third_party/protobuf:protobuf_lite",
+    "//third_party/simdutf:simdutf",
     "//third_party/zlib",
     "//url",
     "//url:buildflags",
@@ -3373,6 +3392,10 @@ target(_test_target_type, "net_unittests") {
     sources += [
       "device_bound_sessions/cookie_craving_unittest.cc",
       "device_bound_sessions/jwk_utils_unittest.cc",
+      "device_bound_sessions/mock_session_service.cc",
+      "device_bound_sessions/mock_session_service.h",
+      "device_bound_sessions/mock_session_store.cc",
+      "device_bound_sessions/mock_session_store.h",
       "device_bound_sessions/registration_fetcher_param_unittest.cc",
       "device_bound_sessions/registration_fetcher_unittest.cc",
       "device_bound_sessions/session_binding_utils_unittest.cc",
@@ -3383,12 +3406,11 @@ target(_test_target_type, "net_unittests") {
       "device_bound_sessions/session_store_impl_unittest.cc",
       "device_bound_sessions/session_store_unittest.cc",
       "device_bound_sessions/session_unittest.cc",
-      "device_bound_sessions/test_util.cc",
-      "device_bound_sessions/test_util.h",
       "device_bound_sessions/unexportable_key_service_factory_unittest.cc",
     ]
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:test_support",
       "//components/unexportable_keys:unexportable_keys",
     ]
   }
@@ -3653,14 +3675,35 @@ fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
   ]
 }
 
+proto_library("canonical_cookie_proto") {
+  proto_in_dir = "//"
+  sources = [ "cookies/canonical_cookie.proto" ]
+  deps = [ "//testing/libfuzzer/proto:url_proto" ]
+}
+
+source_set("canonical_cookie_proto_converter") {
+  sources = [
+    "cookies/canonical_cookie_proto_converter.cc",
+    "cookies/canonical_cookie_proto_converter.h",
+  ]
+  deps = [
+    ":canonical_cookie_proto",
+    "//base",
+    "//net",
+    "//testing/libfuzzer/proto:url_proto",
+    "//testing/libfuzzer/proto:url_proto_converter",
+  ]
+}
+
 fuzzer_test("net_canonical_cookie_fuzzer") {
   sources = [ "cookies/canonical_cookie_fuzzer.cc" ]
   deps = [
+    ":canonical_cookie_proto",
+    ":canonical_cookie_proto_converter",
     ":net_fuzzer_test_support",
     "//net",
+    "//third_party/libprotobuf-mutator",
   ]
-  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
-  seed_corpus = "data/fuzzer_data/cookies/"
 }
 
 fuzzer_test("net_cookie_partition_key_fuzzer") {

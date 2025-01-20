@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface Window {
-  chooseEntryResult?: Entry|null;
-  step: (() => void)|null;
-  autoStep(): void;
-  autostep: boolean;
-  currentStep: Promise<void>|null;
+declare module globalThis {
+  /* eslint-disable no-var */
+  var chooseEntryResult: string|undefined;
+  var step: (() => void)|null;
+  var autoStep: () => void;
+  var autostep: boolean;
+  var currentStep: Promise<void>|null;
+  /* eslint-enable no-var */
 }
 
 // TODO(b/319189127): Remove these when the integration tests extension is

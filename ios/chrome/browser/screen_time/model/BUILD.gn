@@ -27,11 +27,12 @@ if (ios_enable_screen_time) {
       "screen_time_history_deleter_factory.mm",
     ]
     deps = [
+      ":feature_flags",
       "//base",
       "//components/history/core/browser",
-      "//components/keyed_service/core",
-      "//components/keyed_service/ios",
       "//ios/chrome/browser/history/model",
+      "//ios/chrome/browser/shared/model/profile",
+      "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
       "//net",
     ]
   }

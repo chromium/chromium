@@ -5,11 +5,11 @@
 #include "base/process/process_metrics.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
+#include <winternl.h>
 
 #include <psapi.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <winternl.h>
 
 #include <algorithm>
 
@@ -158,6 +158,23 @@ size_t GetHandleLimit() {
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
     ProcessHandle process) {
   return WrapUnique(new ProcessMetrics(process));
+}
+
+base::expected<ProcessMemoryInfo, ProcessUsageError>
+ProcessMetrics::GetMemoryInfo() const {
+  if (!process_.is_valid()) {
+    return base::unexpected(ProcessUsageError::kProcessNotFound);
+  }
+  PROCESS_MEMORY_COUNTERS_EX pmc;
+  if (!::GetProcessMemoryInfo(process_.get(),
+                              reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
+                              sizeof(pmc))) {
+    return base::unexpected(ProcessUsageError::kSystemError);
+  }
+  ProcessMemoryInfo counters;
+  counters.private_bytes = pmc.PrivateUsage;
+  counters.resident_set_bytes = pmc.WorkingSetSize;
+  return counters;
 }
 
 base::expected<TimeDelta, ProcessCPUUsageError>

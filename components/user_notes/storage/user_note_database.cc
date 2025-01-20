@@ -27,7 +27,8 @@ const int kCompatibleVersionNumber = 1;
 }  // namespace
 
 UserNoteDatabase::UserNoteDatabase(const base::FilePath& path_to_database_dir)
-    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}),
+    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128},
+          /*tag=*/"UserNotes"),
       db_file_path_(path_to_database_dir.Append(kDatabaseName)) {}
 
 UserNoteDatabase::~UserNoteDatabase() {
@@ -47,7 +48,6 @@ bool UserNoteDatabase::Init() {
   // run.
   db_.set_error_callback(base::BindRepeating(
       &UserNoteDatabase::DatabaseErrorCallback, base::Unretained(this)));
-  db_.set_histogram_tag("UserNotes");
 
   const base::FilePath dir = db_file_path_.DirName();
   if (!base::DirectoryExists(dir) && !base::CreateDirectory(dir)) {

@@ -2,13 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Fake GBM is a GBM "implementation" designed to run in a completely headless
+// environment. This means that fake GBM does not need an actual GEM driver to
+// operate, and instead uses simple tmpfiles to back its memory allocation.
+//
+// The motivation behind Fake GBM is that it was discovered that not all system
+// GBM implementations behave the same, and this can sometimes cause problems
+// when testing hardware accelerated video decoders on different systems, even
+// when using the fake VA-API backend.
+//
+// Fake GBM should be ABI compatible with Minigbm. So usually the shared library
+// built for Fake GBM will simply be DLL injected (using LD_PRELOAD generally)
+// into the test process.
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // We need to conform to the GBM API, which unfortunately involves a lot of
 // unsafe buffer access to maintain C99 compatibility.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "media/gpu/vaapi/test/fake_libva_driver/fake_gbm.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -19,9 +30,25 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "third_party/minigbm/src/gbm.h"
 
 #define PAGE_SIZE 4096
 #define ALIGN(x, y) (((x + y - 1) / y) * y)
+
+#define DRM_NODE_RENDER 2
+
+#define GBM_EXPORT __attribute__((visibility("default")))
+
+// This is an opaque type in GBM, so its definition does not really matter.
+struct gbm_device {
+  uint8_t pad;
+};
+
+// This is technically not GBM, it's DRM, but it's necessary for some GBM and
+// libva clients to be happy with our fake drivers.
+extern "C" GBM_EXPORT int drmGetNodeTypeFromFd(int fd) {
+  return DRM_NODE_RENDER;
+}
 
 struct gbm_bo {
   struct gbm_import_fd_modifier_data meta;
@@ -201,8 +228,9 @@ extern "C" GBM_EXPORT int gbm_bo_get_fd(struct gbm_bo* bo) {
 }
 
 extern "C" GBM_EXPORT int gbm_bo_get_fd_for_plane(struct gbm_bo* bo,
-                                                  size_t plane) {
+                                                  int plane) {
   CHECK(bo);
+  CHECK(plane >= 0);
   CHECK(static_cast<int>(plane) < gbm_bo_get_plane_count(bo));
 
   return gbm_bo_get_fd(bo);

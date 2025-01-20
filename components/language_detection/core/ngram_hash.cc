@@ -10,10 +10,11 @@
 #include "components/language_detection/core/ngram_hash.h"
 
 #include <string>
+
 #include "components/language_detection/core/ngram_hash_ops_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/util.h"
-#include "third_party/smhasher/src/MurmurHash2.h"
+#include "third_party/smhasher/src/src/MurmurHash2.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/kernel_util.h"
 #include "third_party/tflite/src/tensorflow/lite/string_util.h"
 

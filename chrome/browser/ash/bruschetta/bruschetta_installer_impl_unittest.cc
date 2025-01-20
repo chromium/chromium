@@ -239,7 +239,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   auto InstallPflashCallback(std::optional<bool> success) {
     return [this, success]() {
       if (success.has_value()) {
-        vm_tools::concierge::InstallPflashResponse response;
+        vm_tools::concierge::SuccessFailureResponse response;
         response.set_success(*success);
         FakeConciergeClient()->set_install_pflash_response(std::move(response));
       } else {

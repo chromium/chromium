@@ -180,8 +180,7 @@ class DeletionTestProperty {
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DeletionTestProperty,
-                                   kDeletionTestPropertyKey,
-                                   nullptr)
+                                   kDeletionTestPropertyKey)
 
 }  // namespace
 

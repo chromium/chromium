@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/accelerators/accelerator_prefs_delegate.h"
@@ -42,6 +44,8 @@
 #include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -78,6 +82,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
@@ -117,8 +122,9 @@ TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
 
 content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
     gfx::NativeWindow window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
   return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
@@ -259,16 +265,19 @@ void ChromeShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);
-  if (!contents)
+  if (!contents) {
     return true;
+  }
   content::RenderWidgetHostView* render_widget_host_view =
       contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view)
+  if (!render_widget_host_view) {
     return true;
+  }
   content::RenderWidgetHost* render_widget_host =
       render_widget_host_view->GetRenderWidgetHost();
-  if (!render_widget_host)
+  if (!render_widget_host) {
     return true;
+  }
   std::optional<cc::TouchAction> allowed_touch_action =
       render_widget_host->GetAllowedTouchAction();
   return allowed_touch_action.has_value()
@@ -279,12 +288,14 @@ bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
 bool ChromeShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);
-  if (!contents)
+  if (!contents) {
     return false;
+  }
   content::RenderWidgetHostView* render_widget_host_view =
       contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view)
+  if (!render_widget_host_view) {
     return false;
+  }
   return !!render_widget_host_view->GetRenderWidgetHost();
 }
 
@@ -307,8 +318,9 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
   ash::multidevice_setup::MultiDeviceSetupService* service =
       ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
           ProfileManager::GetPrimaryUserProfile());
-  if (service)
+  if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
+  }
 }
 
 void ChromeShellDelegate::BindMultiCaptureService(
@@ -368,8 +380,9 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
       arc_session_manager->RequestDisable();
     } else {
       // Re-enable ARC if needed.
-      if (arc::IsArcPlayStoreEnabledForProfile(profile))
+      if (arc::IsArcPlayStoreEnabledForProfile(profile)) {
         arc_session_manager->RequestEnable();
+      }
     }
   }
 
@@ -398,8 +411,9 @@ int ChromeShellDelegate::GetUiDevToolsPort() const {
 }
 
 bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
-  if (disable_logging_redirect_for_testing.has_value())
+  if (disable_logging_redirect_for_testing.has_value()) {
     return disable_logging_redirect_for_testing.value();
+  }
 
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableLoggingRedirect);
@@ -408,13 +422,15 @@ bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
 base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
+  if (!primary_user) {
     return base::FilePath();
+  }
 
   Profile* user_profile =
       ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  if (user_profile)
+  if (user_profile) {
     return file_manager::util::GetDownloadsFolderForProfile(user_profile);
+  }
 
   return base::FilePath();
 }
@@ -428,10 +444,38 @@ void ChromeShellDelegate::OpenFeedbackDialog(
                              description_template, category_tag);
 }
 
-void ChromeShellDelegate::OpenProfileManager() {
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    crosapi::BrowserManager::Get()->OpenProfileManager();
+bool ChromeShellDelegate::SendSpecializedFeatureFeedback(
+    const AccountId& account_id,
+    int product_id,
+    std::string description,
+    std::optional<std::string> image,
+    std::optional<std::string> image_mime_type) {
+  // NOTE: `FeedbackUploaderFactoryChrome` (in //chrome/browser/feedback/)
+  // returns different instances to `FeedbackUploaderFactory` (in
+  // //components/feedback/content). The correct instance should be obtained
+  // from `FeedbackUploaderFactoryChrome`.
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!browser_context) {
+    return false;
   }
+
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          browser_context);
+  if (!uploader) {
+    return false;
+  }
+
+  specialized_features::SendFeedback(*uploader, product_id,
+                                     std::move(description), std::move(image),
+                                     std::move(image_mime_type));
+  return true;
+}
+
+void ChromeShellDelegate::OpenProfileManager() {
+  NOTREACHED();
 }
 
 // static
@@ -457,8 +501,9 @@ const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
       const extensions::AppWindow* app_window =
           extensions::AppWindowRegistry::Get(profile)
               ->GetAppWindowForNativeWindow(window);
-      if (app_window)
+      if (app_window) {
         contents = app_window->web_contents();
+      }
     }
   }
 
@@ -502,14 +547,9 @@ ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
 }
 
 void ChromeShellDelegate::OpenMultitaskingSettings() {
-  const auto& sub_page_path =
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? std::string_view(
-                chromeos::settings::mojom::kSystemPreferencesSectionPath)
-          : std::string_view(
-                chromeos::settings::mojom::kPersonalizationSectionPath);
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(), sub_page_path,
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kSystemPreferencesSectionPath,
       chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
 }
 

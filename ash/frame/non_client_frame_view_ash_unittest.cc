@@ -739,6 +739,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
   chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
+  delegate->SetCanMaximize(true);
   widget->Maximize();
 
   std::unique_ptr<WideFrameView> wide_frame_view =

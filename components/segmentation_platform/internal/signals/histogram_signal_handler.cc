@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+
 #include <cstdint>
 
 #include "base/containers/contains.h"
@@ -53,8 +54,9 @@ void HistogramSignalHandler::SetRelevantHistograms(
 }
 
 void HistogramSignalHandler::EnableMetrics(bool enable_metrics) {
-  if (metrics_enabled_ == enable_metrics)
+  if (metrics_enabled_ == enable_metrics) {
     return;
+  }
 
   metrics_enabled_ = enable_metrics;
 }
@@ -63,9 +65,10 @@ void HistogramSignalHandler::OnHistogramSample(
     proto::SignalType signal_type,
     const char* histogram_name,
     uint64_t name_hash,
-    base::HistogramBase::Sample sample) {
-  if (!metrics_enabled_)
+    base::HistogramBase::Sample32 sample) {
+  if (!metrics_enabled_) {
     return;
+  }
 
   db_->WriteSample(signal_type, name_hash, sample,
                    base::BindOnce(&HistogramSignalHandler::OnSampleWritten,
@@ -87,14 +90,17 @@ void HistogramSignalHandler::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HistogramSignalHandler::OnSampleWritten(const std::string& histogram_name,
-                                             base::HistogramBase::Sample sample,
-                                             bool success) {
-  if (!success)
+void HistogramSignalHandler::OnSampleWritten(
+    const std::string& histogram_name,
+    base::HistogramBase::Sample32 sample,
+    bool success) {
+  if (!success) {
     return;
+  }
 
-  for (Observer& ob : observers_)
+  for (Observer& ob : observers_) {
     ob.OnHistogramSignalUpdated(histogram_name, sample);
+  }
 }
 
 }  // namespace segmentation_platform

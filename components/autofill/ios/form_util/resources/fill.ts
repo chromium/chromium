@@ -9,6 +9,7 @@ import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -407,14 +408,14 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
 gCrWeb.fill.webFormElementToFormData = function(
     frame: Window, formElement: HTMLFormElement,
     formControlElement: fillConstants.FormControlElement,
-    form: fillUtil.AutofillFormData,
-    field?: fillUtil.AutofillFormFieldData): boolean {
+    form: fillUtil.AutofillFormData, field?: fillUtil.AutofillFormFieldData,
+    extractChildFrames: boolean = true): boolean {
   if (!frame) {
     return false;
   }
 
   form.name = gCrWeb.form.getFormIdentifier(formElement);
-  form.origin = gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = gCrWeb.fill.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
@@ -434,10 +435,18 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = gCrWeb.form.getFormControlElements(formElement);
 
-  const iframeElements =
-      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+  let iframeElements = extractChildFrames &&
+          gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       gCrWeb.form.getIframeElements(formElement) :
       [];
+
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
 
   return formOrFieldsetsToFormData(
       formElement, formControlElement, /*fieldsets=*/[], controlElements,
@@ -650,11 +659,18 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     return false;
   }
   form.name = '';
-  form.origin = gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = '';
 
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
+
   if (!restrictUnownedFieldsToFormlessCheckout) {
-    // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
         /*formElement=*/ null, /*formControlElement=*/ null, fieldsets,
         controlElements, /*iframeElements=*/ iframeElements, form);
@@ -672,7 +688,6 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index]!;
     if (title.includes(keyword) || path.includes(keyword)) {
-      // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
           /* formElement= */ null, /* formControlElement= */ null, fieldsets,
           controlElements, /* iframeElements= */ iframeElements, form);

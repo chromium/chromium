@@ -135,27 +135,17 @@ const base::FeatureParam<std::string>
         &kRelaxLimitAImageReaderMaxSizeToOne,
         "RelaxLimitAImageReaderMaxSizeToOneModelBlocklist", ""};
 
-// Increase number of buffers and pipeline depth for high frame rate devices.
-BASE_FEATURE(kIncreaseBufferCountForHighFrameRate,
-             "IncreaseBufferCountForHighFrameRate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string>
-    kDisableIncreaseBufferCountForHighFrameRate{
-        &kIncreaseBufferCountForHighFrameRate,
-        "DisableIncreaseBufferCountForHighFrameRate", ""};
-
 // Allows using recommended AHardwareBuffer usage from Vulkan, that should allow
 // drivers to pick most optimal layout.
 BASE_FEATURE(kUseHardwareBufferUsageFlagsFromVulkan,
              "UseHardwareBufferUsageFlagsFromVulkan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Same as above (and depends on it) and allows using extra usage even if we use
 // USAGE_COMPOSER_OVERLAY.
 BASE_FEATURE(kAllowHardwareBufferUsageFlagsFromVulkanForScanout,
              "AllowHardwareBufferUsageFlagsFromVulkanForScanout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif
 
@@ -273,10 +263,9 @@ const base::FeatureParam<std::string> kWebGPUUnsafeFeatures{
 const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
     &kWebGPUService, "UnsafeWGSLFeatures", ""};
 
-BASE_FEATURE(kWebGPUUseDXC, "WebGPUUseDXC2", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebGPUUseTintIR,
              "WebGPUUseTintIR",
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -373,11 +362,18 @@ BASE_FEATURE(kSkiaGraphitePrecompilation,
 
 BASE_FEATURE(kConditionallySkipGpuChannelFlush,
              "ConditionallySkipGpuChannelFlush",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// To enable on ChromeOS, test failures must be investigated
+// (crrev.com/c/5435673).
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
-    &kSkiaGraphite, "dawn_skip_validation", true};
+    &kSkiaGraphite, "dawn_skip_validation", !DCHECK_IS_ON()};
 
 // Whether Dawn backend validation is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
@@ -407,9 +403,6 @@ BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage,
              "RoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "SWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              "ViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage",
@@ -458,6 +451,26 @@ BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
 BASE_FEATURE(kHandleOverlaysSwapFailure,
              "HandleOverlaysSwapFailure",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature allows enabling specific entries in
+// software_rendering_list.json, via experimentation. The entries must have
+// test_group property and test_group feature parameter should be set in the
+// experiment for the entries that need to be enabled.
+BASE_FEATURE(kGPUBlockListTestGroup,
+             "GPUBlockListTestGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGPUBlockListTestGroupId{&kGPUBlockListTestGroup,
+                                                       "test_group", 0};
+
+// This feature allows enabling specific entries in gpu_driver_bug_list.json,
+// via experimentation. The entries must have test_group property and
+// test_group feature parameter should be set in the experiment for the entries
+// that need to be enabled.
+BASE_FEATURE(kGPUDriverBugListTestGroup,
+             "GPUDriverBugListTestGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGPUDriverBugListTestGroupId{
+    &kGPUDriverBugListTestGroup, "test_group", 0};
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
@@ -559,6 +572,12 @@ bool IsDrDcEnabled() {
     return false;
   if (IsDeviceBlocked(build_info->android_build_fp(),
                       kDrDcBlockListByAndroidBuildFP.Get()))
+    return false;
+
+  // Chrome on Android desktop aims to be Vulkan-only, which can result
+  // in crashes when enabled together with DrDc. Re-enable DrDc after
+  // crbug.com/380295059 is fixed if it is shown beneficial on desktop.
+  if (build_info->is_desktop())
     return false;
 
   if (!base::FeatureList::IsEnabled(kEnableDrDc))
@@ -826,10 +845,7 @@ bool IncreaseBufferCountForHighFrameRate() {
           base::android::SdkVersion::SDK_VERSION_R &&
       IsAndroidSurfaceControlEnabled() &&
       base::android::EnableAndroidImageReader() &&
-      base::android::SysUtils::AmountOfPhysicalMemoryKB() > RAM_8GB_CUTOFF &&
-      base::FeatureList::IsEnabled(kIncreaseBufferCountForHighFrameRate) &&
-      !IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
-                       kDisableIncreaseBufferCountForHighFrameRate.Get());
+      base::android::SysUtils::AmountOfPhysicalMemoryKB() > RAM_8GB_CUTOFF;
   return increase;
 }
 

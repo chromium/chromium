@@ -159,8 +159,13 @@ class TabGridViewBinder {
             FrameLayout container =
                     (FrameLayout) view.fastFindViewById(R.id.tab_group_color_view_container);
             TabCardViewBinderUtils.updateTabGroupColorView(container, provider);
-        } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
-            view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
+        } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TextResolver contentDescriptionTextResolver =
+                    model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
+            CharSequence contentDescriptionString =
+                    TabCardViewBinderUtils.resolveNullSafe(
+                            contentDescriptionTextResolver, view.getContext());
+            view.setContentDescription(contentDescriptionString);
         } else if (TabProperties.GRID_CARD_SIZE == propertyKey) {
             final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
             int height = cardSize.getHeight();
@@ -223,10 +228,15 @@ class TabGridViewBinder {
                 LargeMessageCardView.showPriceDropTooltip(
                         priceCardView.findViewById(R.id.current_price));
             }
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TextResolver actionButtonDescriptionTextResolver =
+                    model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+            CharSequence actionButtonDescriptionString =
+                    actionButtonDescriptionTextResolver == null
+                            ? null
+                            : actionButtonDescriptionTextResolver.resolve(view.getContext());
             view.fastFindViewById(R.id.action_button)
-                    .setContentDescription(
-                            model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
+                    .setContentDescription(actionButtonDescriptionString);
         } else if (TabProperties.QUICK_DELETE_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
                     .hideTabGridCardViewForQuickDelete(

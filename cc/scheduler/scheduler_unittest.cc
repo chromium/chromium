@@ -195,7 +195,6 @@ class FakeSchedulerClient : public SchedulerClient,
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
     return DrawResult::kSuccess;
   }
-  void ScheduledActionUpdateDisplayTree() override { NOTIMPLEMENTED(); }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
@@ -1560,6 +1559,76 @@ TEST_F(SchedulerTest, FrameIntervalUpdated) {
       viz::BeginFrameArgs::NORMAL);
   fake_external_begin_frame_source_->TestOnBeginFrame(args4);
   EXPECT_EQ(client_->frame_interval(), interval);
+}
+
+TEST_F(SchedulerTest, BeginMainFrameThrottling) {
+  // Verify that the SchedulerClient gets updates when the begin frame interval
+  // changes.
+  SetUpScheduler(EXTERNAL_BFS);
+  constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
+  uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
+
+  // No throttling at 60Hz.
+  base::TimeDelta interval = base::Hertz(60);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  EXPECT_TRUE(
+      scheduler_->state_machine().main_frame_throttled_interval().is_zero());
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kThrottleMainFrameTo60Hz);
+
+    // No throttling when the feature is disabled.
+    interval = base::Hertz(240);
+    scheduler_->SetNeedsRedraw();
+    task_runner_->AdvanceMockTickClock(interval);
+    args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+        task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+        viz::BeginFrameArgs::NORMAL);
+    fake_external_begin_frame_source_->TestOnBeginFrame(args);
+    EXPECT_EQ(client_->frame_interval(), interval);
+    EXPECT_TRUE(
+        scheduler_->state_machine().main_frame_throttled_interval().is_zero());
+  }
+
+  // Enable the feature for the rest of the test.
+  base::test::ScopedFeatureList feature_list{
+      features::kThrottleMainFrameTo60Hz};
+
+  // Throttling at 120fps.
+  interval = base::Hertz(120);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  constexpr float kSlackFactor = .9;
+  EXPECT_EQ(scheduler_->state_machine().main_frame_throttled_interval(),
+            base::Hertz(60) * kSlackFactor);
+
+  // Not at 90Hz.
+  interval = base::Hertz(90);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  EXPECT_TRUE(
+      scheduler_->state_machine().main_frame_throttled_interval().is_zero());
 }
 
 TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateCommit) {

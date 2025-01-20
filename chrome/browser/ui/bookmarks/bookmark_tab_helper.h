@@ -17,7 +17,7 @@ class BookmarkTabHelperObserver;
 namespace bookmarks {
 class BookmarkModel;
 struct BookmarkNodeData;
-}
+}  // namespace bookmarks
 
 namespace content {
 class WebContents;
@@ -38,7 +38,7 @@ class BookmarkTabHelper
     virtual void OnDrop(const bookmarks::BookmarkNodeData& data) = 0;
 
    protected:
-    virtual ~BookmarkDrag() {}
+    virtual ~BookmarkDrag() = default;
   };
 
   BookmarkTabHelper(const BookmarkTabHelper&) = delete;

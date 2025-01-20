@@ -5,13 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_LANGUAGE_MODEL_URL_LANGUAGE_HISTOGRAM_FACTORY_H_
 #define IOS_CHROME_BROWSER_LANGUAGE_MODEL_URL_LANGUAGE_HISTOGRAM_FACTORY_H_
 
-#import <memory>
+#include <memory>
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#include "base/no_destructor.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace language {
 class UrlLanguageHistogram;
@@ -21,14 +18,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class UrlLanguageHistogramFactory : public BrowserStateKeyedServiceFactory {
+class UrlLanguageHistogramFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static language::UrlLanguageHistogram* GetForProfile(ProfileIOS* profile);
   static UrlLanguageHistogramFactory* GetInstance();
-
-  UrlLanguageHistogramFactory(const UrlLanguageHistogramFactory&) = delete;
-  UrlLanguageHistogramFactory& operator=(const UrlLanguageHistogramFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<UrlLanguageHistogramFactory>;

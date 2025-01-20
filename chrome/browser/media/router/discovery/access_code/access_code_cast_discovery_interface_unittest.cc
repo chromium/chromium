@@ -178,7 +178,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
       const AccessCodeCastDiscoveryInterfaceTest&
           access_code_cast_discovery_interface_test) = delete;
 
-  ~AccessCodeCastDiscoveryInterfaceTest() override {}
+  ~AccessCodeCastDiscoveryInterfaceTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());

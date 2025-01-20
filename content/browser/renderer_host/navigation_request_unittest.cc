@@ -480,7 +480,6 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                            blink::features::kSharedStorageAPIM118,
                             blink::features::kFencedFrames},
       /*disabled_features=*/{});
 
@@ -780,7 +779,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
 
     navigation->ReadyToCommit();
@@ -1227,8 +1226,6 @@ TEST_F(PersistentOriginTrialNavigationRequestTest,
       "SI"
       "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPersistentOriginTrials);
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
 
   const GURL kUrl = GURL("https://example.com");

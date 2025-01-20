@@ -31,6 +31,7 @@
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
@@ -86,7 +87,7 @@ void RulesetManager::AddRuleset(const ExtensionId& extension_id,
   DCHECK(!GetMatcherForExtension(extension_id))
       << "AddRuleset called twice in succession for " << extension_id;
 
-  base::Time update_time = prefs_->GetLastUpdateTime(extension_id);
+  base::Time update_time = GetLastUpdateTime(prefs_, extension_id);
   rulesets_.emplace(extension_id, update_time, std::move(matcher));
   extension_install_times_[extension_id] = update_time;
 
@@ -513,12 +514,15 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
     const WebRequestInfo& request,
     bool is_incognito_context,
     PageAccess& host_permission_access) const {
-  // Extensions should not generally have access to requests initiated by other
-  // extensions, though the --extensions-on-chrome-urls switch overrides that
-  // restriction.
+  // Extensions should not generally have access to non-main-frame requests
+  // initiated by other extensions, though the --extensions-on-chrome-urls
+  // switch overrides that restriction.
+  // Note: For discussions regarding handling of extension initiated navigations
+  //       see https://crbug.com/918137 and https://crbug.com/382670035.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kExtensionsOnChromeURLs) &&
-      request.initiator) {
+      request.initiator &&
+      request.web_request_type != WebRequestResourceType::MAIN_FRAME) {
     // Checking the precursor is necessary here since requests initiated by
     // manifest sandbox pages have an opaque initiator origin, but still
     // originate from an extension.

@@ -71,6 +71,7 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
   void StateChanged(ButtonState old_state) override;
+  void UpdateAccessibleCheckedState() override;
 
   // Returns the path to draw the focus ring around for this ToggleButton.
   virtual SkPath GetFocusRingPath() const;

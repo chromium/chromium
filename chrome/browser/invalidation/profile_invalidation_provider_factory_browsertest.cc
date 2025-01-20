@@ -45,10 +45,10 @@ class ProfileInvalidationProviderFactoryTestBase : public InProcessBrowserTest {
 };
 
 ProfileInvalidationProviderFactoryTestBase::
-    ProfileInvalidationProviderFactoryTestBase() {}
+    ProfileInvalidationProviderFactoryTestBase() = default;
 
 ProfileInvalidationProviderFactoryTestBase::
-    ~ProfileInvalidationProviderFactoryTestBase() {}
+    ~ProfileInvalidationProviderFactoryTestBase() = default;
 
 bool ProfileInvalidationProviderFactoryTestBase::
     CanConstructProfileInvalidationProvider(Profile* profile) {
@@ -72,10 +72,10 @@ class ProfileInvalidationProviderFactoryLoginScreenBrowserTest
 };
 
 ProfileInvalidationProviderFactoryLoginScreenBrowserTest::
-    ProfileInvalidationProviderFactoryLoginScreenBrowserTest() {}
+    ProfileInvalidationProviderFactoryLoginScreenBrowserTest() = default;
 
 ProfileInvalidationProviderFactoryLoginScreenBrowserTest::
-    ~ProfileInvalidationProviderFactoryLoginScreenBrowserTest() {}
+    ~ProfileInvalidationProviderFactoryLoginScreenBrowserTest() = default;
 
 void ProfileInvalidationProviderFactoryLoginScreenBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -108,10 +108,10 @@ class ProfileInvalidationProviderFactoryGuestBrowserTest
 };
 
 ProfileInvalidationProviderFactoryGuestBrowserTest::
-    ProfileInvalidationProviderFactoryGuestBrowserTest() {}
+    ProfileInvalidationProviderFactoryGuestBrowserTest() = default;
 
 ProfileInvalidationProviderFactoryGuestBrowserTest::
-    ~ProfileInvalidationProviderFactoryGuestBrowserTest() {}
+    ~ProfileInvalidationProviderFactoryGuestBrowserTest() = default;
 
 void ProfileInvalidationProviderFactoryGuestBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {

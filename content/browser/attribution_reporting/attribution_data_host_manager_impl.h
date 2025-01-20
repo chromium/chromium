@@ -393,6 +393,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   data_decoder::DataDecoder data_decoder_;
 
+  // Holds the time value for the last registration received. Used for
+  // 'Conversions.RegistrationProcessed.TimeSinceLastRegistration' metric.
+  std::optional<base::Time> last_registration_time_;
+  // Holds the time value of the construction of the manager. Used for
+  // 'Conversions.RegistrationProcessed.TimeSinceManagerStartup' metric.
+  base::Time manager_startup_time_ = base::Time::Now();
+
   base::WeakPtrFactory<AttributionDataHostManagerImpl> weak_factory_{this};
 };
 

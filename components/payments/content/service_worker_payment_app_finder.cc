@@ -211,7 +211,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       is_payment_app_crawler_finished_using_resources_ = false;
       crawler_->Start(
           requested_method_data_,
-          /*method_manifest_urls_for_icon_refresh=*/std::set<GURL>(),
+          /*method_manifest_urls_for_metadata_refresh=*/std::set<GURL>(),
           base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
                              OnPaymentAppsCrawledForInstallation,
                          weak_ptr_factory_.GetWeakPtr()),
@@ -248,14 +248,14 @@ class SelfDeletingServiceWorkerPaymentAppFinder
           requested_method_data_,
           std::move(method_manifest_urls_for_icon_refresh),
           base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
-                             OnPaymentAppsCrawledForUpdatedInfo,
+                             OnPaymentAppsCrawledForUpdatedMetadata,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
                              OnPaymentAppsCrawlerFinishedUsingResources,
                          weak_ptr_factory_.GetWeakPtr()));
 
       // Deliberately copy installed_apps_, as it is still needed in
-      // |OnPaymentAppsCrawledForUpdatedInfo|.
+      // |OnPaymentAppsCrawledForUpdatedMetadata|.
       content::InstalledPaymentAppsFinder::PaymentApps installed_apps_copy;
       for (const auto& app : installed_apps_) {
         installed_apps_copy[app.first] =
@@ -278,14 +278,15 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
   void OnPaymentAppsCrawledForInstallation(
       std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> apps_info,
-      std::map<GURL, std::unique_ptr<RefetchedIcon>> refetched_icons,
+      std::map<GURL, std::unique_ptr<RefetchedMetadata>> refetched_app_metadata,
       const std::string& error_message) {
     // This path should only be hit when there were no apps already installed;
     // see |OnPaymentAppsVerified|.
     CHECK(installed_apps_.empty());
 
-    // Icons should not be refetched when crawling for installable apps.
-    CHECK(refetched_icons.empty());
+    // Payment app metadata should not be refetched when crawling for
+    // installable apps.
+    CHECK(refetched_app_metadata.empty());
 
     if (first_error_message_.empty())
       first_error_message_ = error_message;
@@ -294,63 +295,69 @@ class SelfDeletingServiceWorkerPaymentAppFinder
                              std::move(apps_info), first_error_message_);
   }
 
-  void OnPaymentAppsCrawledForUpdatedInfo(
+  void OnPaymentAppsCrawledForUpdatedMetadata(
       std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> apps_info,
-      std::map<GURL, std::unique_ptr<RefetchedIcon>> refetched_icons,
+      std::map<GURL, std::unique_ptr<RefetchedMetadata>> refetched_app_metadata,
       // We deliberately ignore the error message, as this method is an optional
       // asynchronous update - if it failed, it is ok to fail silently.
       const std::string& ignored_error_message) {
-    // This crawl should only have been triggered for refetched icons, and in
+    // This crawl should only have been triggered for refetched metadata, and in
     // that mode the crawler should not suggest installable apps to us.
     DCHECK(apps_info.empty());
 
     // TODO(crbug.com/40259220): Consider optimizing either these database
     // writes or the entire re-crawling process to avoid fetching/saving icons
     // when nothing has changed in the manifest.
-    for (auto& refetched_icon : refetched_icons) {
-      GURL web_app_manifest_url = refetched_icon.first;
-      RefetchedIcon* data = refetched_icon.second.get();
+    for (auto& refetched_metadata : refetched_app_metadata) {
+      GURL web_app_manifest_url = refetched_metadata.first;
+      RefetchedMetadata* data = refetched_metadata.second.get();
       for (auto& app : installed_apps_) {
         // It is possible (unlikely) to have multiple apps with same origins.
         // The proper validation is to store web_app_manifest_url in
         // StoredPaymentApp and confirm that it is the same as the
-        // web_app_manifest_url from which icon is fetched.
+        // web_app_manifest_url from which metadata is fetched.
         if (crawler_->IsSameOriginWith(GURL(app.second->scope),
                                        web_app_manifest_url)) {
-          UpdatePaymentAppIcon(app.second, data->icon, data->method_name);
-          app.second->icon = std::move(data->icon);
+          UpdatePaymentAppMetadata(app.second, data->icon, data->method_name,
+                                   data->supported_delegations);
           break;
         }
       }
     }
   }
 
-  void UpdatePaymentAppIcon(
+  void UpdatePaymentAppMetadata(
       const std::unique_ptr<content::StoredPaymentApp>& app,
       const std::unique_ptr<SkBitmap>& icon,
-      const std::string& method_name) {
-    number_of_app_icons_to_update_++;
+      const std::string& method_name,
+      const content::SupportedDelegations& supported_delegations) {
+    number_of_app_metadata_to_update_++;
 
-    DCHECK(!icon->empty());
-    gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(*(icon));
+    // If fetching a new icon failed (e.g., due to CSP policy on the given
+    // page), make sure we don't override the old icon with nothing.
+    bool fetched_new_icon = icon && !icon->empty();
+    gfx::Image decoded_image =
+        gfx::Image::CreateFrom1xBitmap(fetched_new_icon ? *icon : *app->icon);
     scoped_refptr<base::RefCountedMemory> raw_data =
         decoded_image.As1xPNGBytes();
     std::string string_encoded_icon = base::Base64Encode(*raw_data);
 
     content::PaymentAppProvider::GetOrCreateForWebContents(owner_)
-        ->UpdatePaymentAppIcon(
+        ->UpdatePaymentAppMetadata(
             app->registration_id, app->scope.spec(), app->name,
-            string_encoded_icon, method_name, app->supported_delegations,
+            string_encoded_icon, method_name, supported_delegations,
             base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
-                               OnUpdatePaymentAppIcon,
+                               OnUpdatePaymentAppMetadata,
                            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnUpdatePaymentAppIcon(payments::mojom::PaymentHandlerStatus status) {
-    DCHECK(number_of_app_icons_to_update_ > 0);
-    number_of_app_icons_to_update_--;
-    if (number_of_app_icons_to_update_ == 0)
+  void OnUpdatePaymentAppMetadata(
+      payments::mojom::PaymentHandlerStatus status) {
+    DCHECK(number_of_app_metadata_to_update_ > 0);
+    number_of_app_metadata_to_update_--;
+    if (number_of_app_metadata_to_update_ == 0) {
       FinishUsingResourcesIfReady();
+    }
   }
 
   void OnPaymentAppsCrawlerFinishedUsingResources() {
@@ -371,7 +378,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     if (is_payment_verifier_finished_using_resources_ &&
         is_payment_app_crawler_finished_using_resources_ &&
         !finished_using_resources_callback_.is_null() &&
-        number_of_app_icons_to_update_ == 0) {
+        number_of_app_metadata_to_update_ == 0) {
       downloader_.reset();
       parser_.reset();
       std::move(finished_using_resources_callback_).Run();
@@ -407,7 +414,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
   content::InstalledPaymentAppsFinder::PaymentApps installed_apps_;
 
-  size_t number_of_app_icons_to_update_ = 0;
+  size_t number_of_app_metadata_to_update_ = 0;
 
   base::WeakPtrFactory<SelfDeletingServiceWorkerPaymentAppFinder>
       weak_ptr_factory_{this};

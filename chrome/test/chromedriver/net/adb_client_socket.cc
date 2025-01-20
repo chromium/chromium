@@ -77,7 +77,7 @@ class AdbTransportSocket : public AdbClientSocket {
   }
 
  private:
-  ~AdbTransportSocket() {}
+  ~AdbTransportSocket() = default;
 
   void OnConnected(int result) {
     if (!CheckNetResultOrDie(result))
@@ -142,8 +142,7 @@ class HttpOverAdbSocket {
   }
 
  private:
-  ~HttpOverAdbSocket() {
-  }
+  ~HttpOverAdbSocket() = default;
 
   void Connect(int port,
                const std::string& serial,
@@ -276,8 +275,7 @@ class AdbQuerySocket : AdbClientSocket {
   }
 
  private:
-  ~AdbQuerySocket() {
-  }
+  ~AdbQuerySocket() = default;
 
   void SendNextQuery(int result) {
     if (!CheckNetResultOrDie(result))
@@ -347,7 +345,7 @@ class AdbSendFileSocket : AdbClientSocket {
   }
 
  private:
-  ~AdbSendFileSocket() {}
+  ~AdbSendFileSocket() = default;
 
   void SendTransport(int result) {
     if (!CheckNetResultOrDie(result))
@@ -495,8 +493,7 @@ void AdbClientSocket::HttpQuery(int port,
 
 AdbClientSocket::AdbClientSocket(int port) : port_(port) {}
 
-AdbClientSocket::~AdbClientSocket() {
-}
+AdbClientSocket::~AdbClientSocket() = default;
 
 void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
   // In a IPv4/IPv6 dual stack environment, getaddrinfo for localhost could

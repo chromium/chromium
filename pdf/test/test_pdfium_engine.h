@@ -109,7 +109,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, DiscardStroke, (int, InkStrokeId), (override));
 
-  MOCK_METHOD((std::map<InkModeledShapeId, ink::ModeledShape>),
+  MOCK_METHOD((std::map<InkModeledShapeId, ink::PartitionedMesh>),
               LoadV2InkPathsForPage,
               (int),
               (override));
@@ -127,6 +127,11 @@ class TestPDFiumEngine : public PDFiumEngine {
   MOCK_METHOD(void, OnDocumentCanceled, (), (override));
 
   MOCK_METHOD(void, SetFormHighlight, (bool), (override));
+
+  MOCK_METHOD(void,
+              HighlightTextFragments,
+              (const base::span<const std::string>),
+              (override));
 
   MOCK_METHOD(void, ClearTextSelection, (), (override));
 

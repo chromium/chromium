@@ -1,0 +1,2 @@
+input.accessibilitySelectedTextRange={loc: 0, len: 5}
+input.accessibilitySelectedText='hello'

@@ -9,13 +9,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
-#include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace performance_manager {
 class Node;
+class ProcessNode;
 }
 
 namespace resource_attribution {
@@ -23,31 +22,6 @@ namespace resource_attribution {
 // Graph changes that can affect resource measurement distribution.
 // These are all passed on the stack so don't need to use raw_ptr.
 struct NoGraphChange {};
-
-struct GraphChangeAddFrame {
-  explicit GraphChangeAddFrame(const FrameNode* node) : frame_node(node) {}
-
-  raw_ptr<const FrameNode> frame_node;
-};
-
-struct GraphChangeRemoveFrame {
-  explicit GraphChangeRemoveFrame(const FrameNode* node) : frame_node(node) {}
-
-  raw_ptr<const FrameNode> frame_node;
-};
-
-struct GraphChangeAddWorker {
-  explicit GraphChangeAddWorker(const WorkerNode* node) : worker_node(node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-};
-
-struct GraphChangeRemoveWorker {
-  explicit GraphChangeRemoveWorker(const WorkerNode* node)
-      : worker_node(node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-};
 
 // Not technically a graph change, but modifies the distribution of FrameNode
 // and WorkerNode measurements to OriginInBrowsingInstanceContexts the same way
@@ -77,10 +51,6 @@ struct GraphChangeUpdateProcessPriority {
 };
 
 using GraphChange = absl::variant<NoGraphChange,
-                                  GraphChangeAddFrame,
-                                  GraphChangeRemoveFrame,
-                                  GraphChangeAddWorker,
-                                  GraphChangeRemoveWorker,
                                   GraphChangeUpdateOrigin,
                                   GraphChangeUpdateProcessPriority>;
 

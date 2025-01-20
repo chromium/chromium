@@ -61,8 +61,8 @@ bool IsInternalPage(content::WebContents* contents) {
 
 class SysInfoDelegate : public SessionRestorePolicy::Delegate {
  public:
-  SysInfoDelegate() {}
-  ~SysInfoDelegate() override {}
+  SysInfoDelegate() = default;
+  ~SysInfoDelegate() override = default;
 
   size_t GetNumberOfCores() const override {
     return base::SysInfo::NumberOfProcessors();
@@ -531,9 +531,9 @@ void SessionRestorePolicy::UpdateSiteEngagementScoreForTesting(
   it->second->site_engagement = score;
 }
 
-SessionRestorePolicy::Delegate::Delegate() {}
+SessionRestorePolicy::Delegate::Delegate() = default;
 
-SessionRestorePolicy::Delegate::~Delegate() {}
+SessionRestorePolicy::Delegate::~Delegate() = default;
 
 SessionRestorePolicy::TabData::TabData() = default;
 

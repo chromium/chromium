@@ -301,7 +301,7 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
     }
   }
 
-  ~ZeroconfPrinterDetectorImpl() override {}
+  ~ZeroconfPrinterDetectorImpl() override = default;
 
   // PrinterDetector override.
   void RegisterPrintersFoundCallback(OnPrintersFoundCallback cb) override {

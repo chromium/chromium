@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -670,12 +669,25 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // g-issues.chromium.org/issues/349835587
 // https://github.com/WICG/canvas-place-element
 static bool IsCanvasPlacedElement(const Element* element) {
-  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element) {
-    // Only want to do the different layout if placeElement has been called.
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element &&
+      element->IsInCanvasSubtree()) {
+    // Placed elements are always immediate children of the canvas.
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->HasPlacedElements();
     }
+  }
+
+  return false;
+}
+
+static bool IsCanvasWithPlacedElements(const Element* element) {
+  if (!RuntimeEnabledFeatures::CanvasPlaceElementEnabled() || !element) {
+    return false;
+  }
+
+  if (const auto* canvas = DynamicTo<HTMLCanvasElement>(element)) {
+    return canvas->HasPlacedElements();
   }
 
   return false;
@@ -728,6 +740,10 @@ void StyleAdjuster::AdjustStyleForDisplay(
       builder.SetIsInInlinifyingDisplay();
       builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
     }
+  }
+
+  if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 
   if (builder.Display() == EDisplay::kBlock) {
@@ -884,18 +900,34 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
-  // TODO(crbug.com/1346169): Full style invalidation is needed when this
+  const bool is_writable = IsEditableElement(element, builder) &&
+                           !IsPasswordFieldWithUnrevealedPassword(element);
+  // TODO(crbug.com/40232387): Full style invalidation is needed when this
   // feature status changes at runtime as it affects the computed style.
   if (RuntimeEnabledFeatures::StylusHandwritingEnabled() &&
       (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
-      IsEditableElement(element, builder) &&
-      !IsPasswordFieldWithUnrevealedPassword(element)) {
+      is_writable) {
     element_touch_action &= ~TouchAction::kInternalNotWritable;
   }
 
+  const TouchAction effective_touch_action =
+      (element_touch_action & inherited_action) | enforced_by_policy;
   // Apply the adjusted parent effective touch actions.
-  builder.SetEffectiveTouchAction((element_touch_action & inherited_action) |
-                                  enforced_by_policy);
+  builder.SetEffectiveTouchAction(effective_touch_action);
+
+  // crbug.com/378027646 : This use counter counts how many pages would lose
+  // handwriting capabilities on platforms that support it if the handwriting
+  // keyword were implemented on this CSS attribute. Please see the linked bug
+  // for more information.
+  const bool would_lose_handwriting =
+      is_writable && effective_touch_action != TouchAction::kNone &&
+      (effective_touch_action & TouchAction::kInternalHandwriting) !=
+          TouchAction::kInternalHandwriting;
+  if (would_lose_handwriting) {
+    UseCounter::Count(
+        element->GetDocument(),
+        WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting);
+  }
 
   // Propagate touch action to child frames.
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(element)) {
@@ -1115,7 +1147,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasPlacedElement(element)) {
+      IsCanvasPlacedElement(element) || IsCanvasWithPlacedElements(element)) {
     builder.SetForcesStackingContext(true);
   }
 
@@ -1231,9 +1263,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetElementIsViewTransitionParticipant();
   }
 
-  if (RuntimeEnabledFeatures::
-          CSSContentVisibilityImpliesContainIntrinsicSizeAutoEnabled() &&
-      builder.ContentVisibility() == EContentVisibility::kAuto) {
+  if (builder.ContentVisibility() == EContentVisibility::kAuto) {
     builder.SetContainIntrinsicSizeAuto();
   }
 }

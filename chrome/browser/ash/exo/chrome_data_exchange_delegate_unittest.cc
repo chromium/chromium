@@ -7,7 +7,6 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -97,16 +96,6 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   aura::Window* crostini_window =
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
-
-  // Lacros:
-  aura::Window* lacros_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), &container_window);
-  exo::SetShellApplicationId(lacros_toplevel, "org.chromium.lacros.");
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(lacros_toplevel));
-  aura::Window* lacros_window =
-      aura::test::CreateTestWindowWithBounds(gfx::Rect(), lacros_toplevel);
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(
-      lacros_window->GetToplevelWindow()));
 
   // Plugin VM:
   aura::Window* plugin_vm_toplevel = aura::test::CreateTestWindowWithDelegate(

@@ -165,9 +165,13 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
     int rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
         reported_counts) {
-  if (rph_id !=
-      web_contents()->GetPrimaryPage().GetMainDocument().GetProcess()->GetID())
+  if (rph_id != web_contents()
+                    ->GetPrimaryPage()
+                    .GetMainDocument()
+                    .GetProcess()
+                    ->GetDeprecatedID()) {
     return;
+  }
   if (!reported_counts.count(
           crash_reporter::CrashMetricsReporter::ProcessedCrashCounts::
               kRendererForegroundVisibleOom)) {

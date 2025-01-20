@@ -46,10 +46,6 @@ class WebappsIconUtils {
   static int GetIdealIconSizeForIconType(webapk::Image::Usage usage,
                                          webapk::Image::Purpose purpose);
 
-  // Returns if the Android version supports Adaptive Icon (i.e. API level >=
-  // 26)
-  static bool DoesAndroidSupportMaskableIcons();
-
   // Finalize the launcher icon from |icon|. |start_url| is used to generate the
   // icon if |icon| is empty or is not large enough. When complete, posts
   // |callback| on |ui_thread_task_runner| binding:

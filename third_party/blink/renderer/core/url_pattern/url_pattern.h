@@ -4,7 +4,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_PATTERN_URL_PATTERN_H_
 
-#include "base/containers/enum_set.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component.h"
@@ -29,9 +28,6 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
     bool ignore_case;
   };
   using Component = url_pattern::Component;
-  using ComponentSet = base::EnumSet<Component::Type,
-                                     Component::Type::kProtocol,
-                                     Component::Type::kHash>;
 
  public:
   // Used to convert the convenience types that may be passed to WebIDL APIs in
@@ -140,14 +136,6 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   Member<Component> search_;
   Member<Component> hash_;
   const Options options_;
-
-  // For data analysis: the components which would be wildcarded but are empty
-  // due to the string parsing.
-  ComponentSet wildcard_with_string_format_change_;
-
-  // For data analysis: the components which would be wildcarded but are
-  // replicated from the base URL.
-  ComponentSet wildcard_with_base_url_change_;
 };
 
 }  // namespace blink

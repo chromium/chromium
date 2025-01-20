@@ -13,10 +13,9 @@ _THIS_DIR = pathlib.Path(__file__).resolve().parent
 # Bundles will be placed under //tools/utr/.bundles/.
 _CIPD_ROOT_BASE_DIR = _THIS_DIR.joinpath('.bundles')
 
-# TODO(crbug.com/40712760): Remove non-inclusive terms when repo changes name.
 _CHROME_RECIPE_BUNDLE = (
-    'infra_internal/recipe_bundles/chrome-internal.googlesource.com/chrome/'
-    'tools/build_limited/scripts/slave')  # nocheck
+    'infra_internal/recipe_bundles/chrome-internal.googlesource.com/'
+    'chrome/tools/build')
 _CHROMIUM_RECIPE_BUNDLE = (
     'infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build')
 _RECIPE_BUNDLE_VERSION = 'refs/heads/main'

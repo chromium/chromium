@@ -36,7 +36,7 @@ class IdentityMintRequestQueue {
 
   class Request {
    public:
-    virtual ~Request() {}
+    virtual ~Request() = default;
     virtual void StartMintToken(IdentityMintRequestQueue::MintType type) = 0;
   };
 

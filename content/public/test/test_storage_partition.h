@@ -167,7 +167,10 @@ class TestStoragePartition : public StoragePartition {
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  void DeleteStaleSessionOnlyCookiesAfterDelay() override {}
+  network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
+      override;
+
+  void DeleteStaleSessionData() override {}
 
   void set_browsing_topics_site_data_manager(
       BrowsingTopicsSiteDataManager* manager) {

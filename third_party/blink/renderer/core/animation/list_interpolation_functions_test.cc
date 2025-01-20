@@ -225,7 +225,7 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 2.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 4.0);
@@ -252,7 +252,7 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 2u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
@@ -284,7 +284,7 @@ TEST(ListInterpolationFunctionsTest,
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
@@ -311,7 +311,7 @@ TEST(ListInterpolationFunctionsTest,
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
-  CSSToLengthConversionData length_resolver;
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   ASSERT_EQ(result.length(), 3u);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
   EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);

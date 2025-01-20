@@ -40,6 +40,7 @@ class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
+class SpeechRecognitionMediaStreamAudioSink;
 class V8MediaStreamTrackState;
 class V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats;
 
@@ -131,6 +132,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual void RegisterMediaStream(MediaStream*) = 0;
   virtual void UnregisterMediaStream(MediaStream*) = 0;
+  virtual void RegisterSink(SpeechRecognitionMediaStreamAudioSink* sink) = 0;
 
   // EventTarget
   const AtomicString& InterfaceName() const override = 0;

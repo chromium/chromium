@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_CONCEPT_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_SEARCH_CONCEPT_H_
 
+#include <array>
+
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
@@ -61,7 +63,7 @@ struct SearchConcept {
   // Example 1 - Five alternate tags: [1234, 1235, 1236, 1237, 1238]
   // Example 2 - Two alternate tags: [1234, 1235, kAltTagEnd, _, _]
   // Example 3 - Zero alternate tags: [kAltTagEnd, _, _, _, _]
-  int alt_tag_ids[kMaxAltTagsPerConcept] = {kAltTagEnd};
+  std::array<int, kMaxAltTagsPerConcept> alt_tag_ids{kAltTagEnd};
 };
 
 }  // namespace ash::settings

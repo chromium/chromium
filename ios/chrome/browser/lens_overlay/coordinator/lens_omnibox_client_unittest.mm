@@ -60,8 +60,7 @@ class LensOmniboxClientTest : public PlatformTest {
     lens_omnibox_client_->OnAutocompleteAccept(
         match.destination_url, match.post_content.get(),
         WindowOpenDisposition::CURRENT_TAB, match.transition, match.type,
-        base::TimeTicks(), false, false, input_text, match, match,
-        IDNA2008DeviationCharacter::kNone);
+        base::TimeTicks(), false, false, input_text, match, match);
   }
 
  protected:
@@ -88,7 +87,7 @@ TEST_F(LensOmniboxClientTest, AutocompleteAccept) {
 
   OCMExpect([mock_delegate_ omniboxDidAcceptText:match.fill_into_edit
                                   destinationURL:match.destination_url
-                                thumbnailRemoved:NO]);
+                                   textClobbered:NO]);
   UseAutocompleteMatch(input_text, match);
 
   EXPECT_OCMOCK_VERIFY(mock_delegate_);

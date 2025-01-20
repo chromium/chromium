@@ -220,10 +220,6 @@ class TestSingleWebFeedSurface : public TestSurfaceBase {
       std::string = "",
       SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
 };
-class TestSupervisedFeedSurface : public TestSurfaceBase {
- public:
-  explicit TestSupervisedFeedSurface(FeedStream* stream = nullptr);
-};
 
 class TestImageFetcher : public ImageFetcher {
  public:
@@ -534,7 +530,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
-  bool IsSupervisedAccount() override;
   bool IsSigninAllowed() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
@@ -598,7 +593,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_offline_ = false;
   AccountInfo account_info_ = TestAccountInfo();
   bool is_signin_allowed_ = true;
-  bool is_supervised_account_ = false;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;

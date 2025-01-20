@@ -15,7 +15,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="110877069173485804">This is your Chrome</translation>
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
-<translation id="1149651794389918149">Sign in to Chrome. If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1157985233335035034">Recent languages</translation>
@@ -34,7 +33,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1363996462118479832">Chrome OS could not sync your data due to an error signing in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
-<translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1407223320754252908">Chrome has Google Translate built in so that you can translate when you need it</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen.}=1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your incognito window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # incognito windows won't reopen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -49,7 +47,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
 <translation id="1597911401261118146">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">To make Chrome safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
-<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chrome to consider.</translation>
 <translation id="1628000112320670027">Get help with Chrome</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1651617469580841801">When you use Google Lens, the page title, URL and content, including PDFs, are sent to Google. <ph name="LEARN_MORE" /></translation>
@@ -67,6 +64,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
 <translation id="178701303897325119">This extension is no longer supported. Chrome recommends that you remove it instead.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
+<translation id="1838374766361614909">Clear search</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -80,6 +78,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chrome recommends that you remove it.}other{These extensions are no longer supported. Chrome recommends that you remove them.}}</translation>
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
 <translation id="2018879682492276940">Installation failed. Please try again.</translation>
+<translation id="2024959665595762054">To use and save Chrome data in your Google Account, verify that it's you</translation>
 <translation id="2034233344106846793">Chrome upgrades insecure connections to HTTPS automatically when possible</translation>
 <translation id="207902854391093810">When trials are on, ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
@@ -103,7 +102,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2216543877350048334">To remove your Google Account from Chrome, sign out</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="223889379102603431">Information about how Chrome manages its root certificates</translation>
-<translation id="2258103955319320201">To access your Chrome browser across all your devices, sign in, then turn on sync</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
@@ -132,7 +130,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2632707915638608719">Get more done with extensions for Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
@@ -141,7 +138,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
 <translation id="2681444469812712297">Open <ph name="URL" /> in a new tab in Google Chrome.</translation>
 <translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
-<translation id="2727713483500953825">Select images/text to search with Lens</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="2753623023919742414">Click to search</translation>
@@ -149,6 +145,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="2797864378188255696">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chrome with the same account</translation>
+<translation id="2799162042226656283">Your Chrome</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2825024317344269723">Dangerous site. Chrome removed notifications.</translation>
 <translation id="2841525013647267359">Translate from</translation>
@@ -167,7 +164,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2928420929544864228">Installation complete.</translation>
-<translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
@@ -177,7 +173,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
-<translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
 <translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
@@ -185,15 +180,16 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3112458742631356345">Chrome blocked this download because the file isn't commonly downloaded and it may be dangerous</translation>
 <translation id="3114643501466072395">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome blocked this download because the archive file includes other files that may hide malware</translation>
+<translation id="3135560418014806498">Add Chrome profile</translation>
 <translation id="3137969841538672700">Drag to search</translation>
 <translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3161522574479303604">All languages</translation>
-<translation id="3169523567916669830">During the trials, you can see and remove topics of interest sites used to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="3196187562065225381">Chrome blocked this download because the file is dangerous</translation>
 <translation id="3222857603094643834">Search anything on this page with Google Lens</translation>
 <translation id="3226612997184048185">If you also save your bookmarks in your Google Account, you can track product prices in Chrome and get notified when the price drops</translation>
 <translation id="3234642784688107085">Try out new AI features to create themes, get writing help and stay organised</translation>
+<translation id="3242123554343253302">Add Chrome profile</translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3261565993776444564">Try out a new colour to customise your browser</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
@@ -211,9 +207,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="345171907106878721">Add yourself to Chrome</translation>
 <translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="3503306920980160878">Chrome needs access to your location to share your location with this site</translation>
+<translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
 <translation id="3541482654983822893">Chrome can't check your passwords. Try again after 24 hours.</translation>
-<translation id="3556766595644676153">Chrome preloads pages which makes browsing and searching faster.</translation>
 <translation id="3564543103555793392">When you sign in to Chrome, you can save bookmarks, passwords and more, then use them on your phone</translation>
 <translation id="3576528680708590453">Your system administrator has configured Google Chrome to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sync and personalise Chrome across your devices</translation>
@@ -224,7 +220,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3609788354808247807">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
-<translation id="3625345586754200168">Try Lens</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
@@ -235,7 +230,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chrome recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Get help with Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -244,15 +238,14 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="383928141529488001">Google Chrome needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
-<translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3873044882194371212">Open link in Chrome inco&amp;gnito window</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
+<translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome wants to delete your Google Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="398236277091248993">Chrome stays fast with performance-boosting features</translation>
-<translation id="3999683152997576765">You can see and remove topics of interest that sites use to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
@@ -260,13 +253,13 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="408393047846373801">To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.</translation>
 <translation id="4084404300720192944">To share your window, allow screen recording for Chrome in System Preferences.</translation>
-<translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4110895483821904099">Set up your new Chrome profile</translation>
 <translation id="4111566860456076004">Chrome can't verify where this extension comes from, and it might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="4128488089242627000">Chrome runs faster and features that use JavaScript should work as designed (recommended)</translation>
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
+<translation id="415112847282352845">To get your addresses and more on all your devices, sign in to Chrome. This address will be saved in your Google Account after you sign in.</translation>
 <translation id="4153934450158521343">Chrome will soon close and delete data</translation>
 <translation id="4173512894976930765">Sites will probably work as expected. You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome.</translation>
 <translation id="4175922240926474352">Chrome blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
@@ -277,25 +270,21 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4242034826641750751">Chrome needs camera and microphone permissions for this site</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251615635259297716">Link my Chrome data to this account</translation>
-<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
 <translation id="430327780270213103">Allow extension to show access requests in the Chrome toolbar</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="4334294535648607276">Download complete.</translation>
-<translation id="4335235004908507846">Chrome can help keep you safe from data breaches, bad extensions and more</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> has been added to Chrome</translation>
 <translation id="4348548358339558429">To get personalisation, include Chrome in Web &amp; App Activity</translation>
 <translation id="436060642166082913">Chrome blocked this download because the file can harm your personal and social network accounts</translation>
 <translation id="4367027658822022112">You can pin Google Lens for easy access; click the Pin button at the top of the side panel</translation>
-<translation id="4384570495110188418">Chrome can't check your passwords because you're not signed in</translation>
 <translation id="4389991535395284064">When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Sign in to Chrome as <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Search any image or text with Lens</translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
@@ -303,21 +292,19 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4575717501879784448">Chrome can make these tabs inactive to improve your browsing experience and free up resources.</translation>
-<translation id="4595162648538023956">You can sign in to get your stuff, or use Chrome without an account</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
-<translation id="4601439950572737842">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4627412468266359539">Optional: Help improve Chrome OS Flex features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="4633000520311261472">To make Chrome safer, we disabled some extensions that aren't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="4680828127924988555">Cancel installation</translation>
-<translation id="469553575393225953">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store</translation>
 <translation id="4710245680469034439">Personalise your browser with themes inspired by nature, artists collections and more</translation>
 <translation id="4720851490453439956">Google updater internal service</translation>
 <translation id="4724676981607797757">Installation failed because of an unsupported protocol error.</translation>
 <translation id="4728575227883772061">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4741235124132242877">Pinned! Use Google Lens again from the toolbar</translation>
 <translation id="4747730611090640388">Chrome can estimate your interests.  Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
+<translation id="475321580758063259">Update Chrome to keeping using the Chrome data in your Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
@@ -362,7 +349,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
-<translation id="5357889879764279201">Get help with Chrome OS Flex</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
@@ -379,6 +365,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome does more to keep you safe online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
+<translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Your administrator asks that you relaunch Chrome to apply this update}=1{Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -402,13 +389,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
 <translation id="5953954252731207958">You haven't visited recently. Chrome removed <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
+<translation id="6008161919456049856">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6025087594896450715">Google Chrome will restart in <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604424701295382420">Pinned! You can access Google Lens again from the new button on the toolbar</translation>
-<translation id="6060842547856900641">Open Lens</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
@@ -457,7 +445,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6515549163407364048">To get your extensions on all your computers, sign in to Chrome</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>
-<translation id="6600016381025017075">Search anything on this page</translation>
 <translation id="6632473616050862500">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Sign in to Chrome?</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
@@ -503,11 +490,9 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7099479769133613710">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7100085796996987445">To share your screen, allow screen recording for Chrome in System Preferences</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
-<translation id="7113423803153683764">Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
-<translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="7193885263065350793">Your organisation closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> manages Chrome</translation>
@@ -530,7 +515,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7477130805345743099">Chrome will warn you before loading any site using an insecure connection</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="749228101751499733">While you're signed in, you can use your passwords and more from your Google Account in Chrome. <ph name="SHORTCUT" /> can change your Google services settings.</translation>
-<translation id="7512187482580860950">Chrome can understand more types of information and autofill your forms faster. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
+<translation id="7496017508659652909">Chrome preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google updater service</translation>
 <translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -538,6 +523,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
+<translation id="7617512710641355143">Chrome is managed</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS terms.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
@@ -595,6 +581,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8077579734294125741">Other Chrome Profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
 <translation id="8111297389482307122">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.</translation>
+<translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
@@ -610,17 +597,16 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8321888067342493336">Save as image</translation>
 <translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
-<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
-<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome can estimate your interests. Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
-<translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
+<translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8429214465555795676">To continue, you'll need to sign in to Chrome with <ph name="EMAIL" />. This ensures compliance with your organisation's policies.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
@@ -631,7 +617,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
-<translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
@@ -641,10 +626,11 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
-<translation id="8708721325840166640">Your passwords and other Chrome data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chrome.</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
+<translation id="8748735421235723888">Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Remove this app's data from Chrome</translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8781673607513845160">To use your camera, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>
@@ -656,15 +642,17 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8825634023950448068">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. And if Chrome gets it wrong or you don't want to see certain ads, you can remove an interest.</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
 <translation id="8843389967774722327">Chrome regularly adds new features that help you get things done</translation>
+<translation id="8843516219908676469">Chrome understands forms better and can autofill them faster for you</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
-<translation id="8877608230252444082">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.</translation>
 <translation id="8908277254462331033">View safety features</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
+<translation id="8983860655274963234">Chrome understands forms better and can autofill them faster for you. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
+<translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
 <translation id="9014771989710951291">Multiple organisations manage Chrome</translation>

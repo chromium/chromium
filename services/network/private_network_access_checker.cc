@@ -189,9 +189,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
-  if (is_potentially_trustworthy_same_origin_ &&
-      base::FeatureList::IsEnabled(
-          features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin)) {
+  if (is_potentially_trustworthy_same_origin_) {
     return Result::kAllowedPotentiallyTrustworthySameOrigin;
   }
 

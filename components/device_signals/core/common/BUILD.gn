@@ -39,20 +39,3 @@ source_set("features") {
 
   public_deps = [ "//base" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "signals_features_unittest.cc" ]
-
-  deps = [
-    ":common",
-    ":features",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  if (is_win) {
-    deps += [ "//components/device_signals/core/common/win:unit_tests" ]
-  }
-}

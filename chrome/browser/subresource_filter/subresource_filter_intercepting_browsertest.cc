@@ -40,7 +40,7 @@ class SubresourceFilterInterceptingBrowserTest
   SubresourceFilterInterceptingBrowserTest& operator=(
       const SubresourceFilterInterceptingBrowserTest&) = delete;
 
-  ~SubresourceFilterInterceptingBrowserTest() override {}
+  ~SubresourceFilterInterceptingBrowserTest() override = default;
 
   net::test_server::EmbeddedTestServer* safe_browsing_test_server() {
     return safe_browsing_test_server_.get();

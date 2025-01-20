@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Use Chromium on iPad by default</translation>
 <translation id="1471084500615228555">Delete browsing data in Chromium</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
+<translation id="148576268809812097">Save your passwords in Chromium</translation>
 <translation id="1501302548410882220">Use Chromium everywhere</translation>
 <translation id="1503199973012840174">Your Chromium is out of date. Update it to stay safe.</translation>
 <translation id="1515748263297244785">Use Chromium for iPad by default</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">To get personalisation and other features, include Chromium in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
+<translation id="1839447949248872139">Open links in Chromium by default</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps in Chromium</translation>
@@ -53,6 +55,7 @@
 <translation id="2236584955986023187">This means that Chromium will request the desktop site every time.</translation>
 <translation id="2270466829363945454">Shop</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
+<translation id="2314220608288760290">Chromium automatically opens YouTube Incognito links in Incognito.</translation>
 <translation id="231828342043114302">To receive personalised content based on your interests, sign in to Chromium.</translation>
 <translation id="2326738825692478496">Some of your Chromium data hasn't been saved in your Google Account yet.
 
@@ -81,7 +84,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="2832168932648876507">Search with voice in Chromium.</translation>
 <translation id="2843571538056574338">Use Chromium for Autofill</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
-<translation id="2930158679684712936">Chromium tips</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="3044857325852340337">Deleted Chromium data</translation>
@@ -150,6 +152,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4856138222358683580">Chromium actions</translation>
+<translation id="4863800915967098115">Signing in adds your account to Chromium for work-related browsing.</translation>
 <translation id="4904452304169763785">Alerts on any privacy or security issues that Chromium detects for you.</translation>
 <translation id="4962295957157529683">Finish what you were doing in your other open Chromium window.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
@@ -160,6 +163,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5048795749726991615">To get your saved passwords in your other apps easily, use Chromium for auto-fill</translation>
 <translation id="5053429694249468757">Deleting Chromium data…</translation>
 <translation id="5071749685031362629">Chromium for iOS</translation>
+<translation id="5088872414922783602">Access Chromium faster from your Home Screen Dock.</translation>
 <translation id="5124429847818367226">You can now use Chromium any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="5131565040785979529">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chromium is used.</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
@@ -273,6 +277,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="800380310260616129">Download Chromium here.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8014091604604659473">Chromium is signed out</translation>
+<translation id="8035379487371146621">Move Chromium to the Dock</translation>
 <translation id="8104697640054703121">Get Chromium's strongest security from dangerous sites</translation>
 <translation id="8119542592987737574">Access Chromium faster from your iPhone's Home Screen Dock.</translation>
 <translation id="8164086860209325020">Go to Chromium settings</translation>
@@ -280,6 +285,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>
 <translation id="8254729934443216898">Explore new features that help you get the most out of Chromium.</translation>
 <translation id="829047622686389424">A custom feed made for you.</translation>
+<translation id="8293572045658095405">You're in Chromium Incognito</translation>
 <translation id="830951810931292870">Opens the inputted URLs in Chromium in Incognito.</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>

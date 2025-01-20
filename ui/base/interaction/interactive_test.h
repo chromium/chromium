@@ -8,6 +8,7 @@
 #include <concepts>
 #include <functional>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -553,8 +554,9 @@ class InteractiveTestApi {
   static void AddStep(MultiStep& dest, StepBuilder src);
   static void AddStep(MultiStep& dest, MultiStep src);
 
-  // Equivalent to calling FormatDescription(format) on every step in `steps`.
-  static void AddDescription(MultiStep& steps, std::string_view format);
+  // Equivalent to calling `AddDescriptionPrefix(prefix)` on every step in
+  // `steps`.
+  static void AddDescriptionPrefix(MultiStep& steps, std::string_view prefix);
 
   // Call this from any test verb which requires an environment suitable for
   // interactive testing. Typically, this means the test must be in an
@@ -778,7 +780,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElementRelative(
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InAnyContext(T&& step) {
   return std::move(step.SetContext(InteractionSequence::ContextMode::kAny)
-                       .FormatDescription("InAnyContext( %s )"));
+                       .AddDescriptionPrefix("InAnyContext()"));
 }
 
 // static
@@ -786,16 +788,16 @@ template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InSameContext(T&& step) {
   return std::move(
       step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-          .FormatDescription("InSameContext( %s )"));
+          .AddDescriptionPrefix("InSameContext()"));
 }
 
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InContext(
     ElementContext context,
     T&& step) {
-  const auto fmt = base::StringPrintf("InContext( %p, %%s )",
-                                      static_cast<const void*>(context));
-  return std::move(step.SetContext(context).FormatDescription(fmt));
+  return std::move(
+      step.SetContext(context).AddDescriptionPrefix(base::StringPrintf(
+          "InContext( %p, )", static_cast<const void*>(context))));
 }
 
 // static
@@ -811,7 +813,7 @@ template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::WithoutDelay(T&& step) {
   return std::move(
       step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
-          .FormatDescription("WithoutDelay( %s )"));
+          .AddDescriptionPrefix("WithoutDelay()"));
 }
 
 // static
@@ -1058,7 +1060,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
   auto result = Steps(WithElement(internal::kInteractiveTestPivotElementId,
                                   std::move(wait_callback)),
                       WaitForShow(id.identifier()));
-  AddDescription(result, "WaitForState( %s )");
+  AddDescriptionPrefix(result, "WaitForState()");
   return result;
 }
 

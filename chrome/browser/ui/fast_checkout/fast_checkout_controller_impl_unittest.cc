@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +28,7 @@ struct MockFastCheckoutView : FastCheckoutView {
   MOCK_METHOD(void,
               Show,
               (const std::vector<const AutofillProfile*>&,
-               const std::vector<CreditCard*>&),
+               const std::vector<const CreditCard*>&),
               (override));
 };
 
@@ -84,8 +85,8 @@ TEST_F(FastCheckoutControllerImplTest, Show) {
 
   CreditCard credit_card1 = autofill::test::GetCreditCard();
   CreditCard credit_card2 = autofill::test::GetCreditCard2();
-  std::vector<autofill::CreditCard*> credit_cards = {&credit_card1,
-                                                     &credit_card2};
+  std::vector<const autofill::CreditCard*> credit_cards = {&credit_card1,
+                                                           &credit_card2};
 
   EXPECT_CALL(
       mock_view_,

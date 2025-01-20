@@ -121,8 +121,9 @@ HomePageUndoBubbleCoordinator::~HomePageUndoBubbleCoordinator() = default;
 
 void HomePageUndoBubbleCoordinator::Show(const GURL& undo_url,
                                          bool undo_value_is_ntp) {
-  if (tracker_.view())
+  if (tracker_.view()) {
     tracker_.view()->GetWidget()->Close();
+  }
 
   auto undo_bubble = std::make_unique<HomePageUndoBubble>(
       anchor_view_, prefs_, undo_url, undo_value_is_ntp);

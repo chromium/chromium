@@ -64,6 +64,7 @@ TEST(ExtensionProcessMapTest, Test) {
   // Test behavior when empty.
   EXPECT_FALSE(map.Contains("a", 1));
   EXPECT_FALSE(map.Remove(1));
+  EXPECT_FALSE(map.ExtensionHasProcess("a"));
   EXPECT_EQ(0u, map.size());
 
   // Test insertion and behavior with one item.
@@ -71,6 +72,8 @@ TEST(ExtensionProcessMapTest, Test) {
   EXPECT_TRUE(map.Contains("a", 1));
   EXPECT_FALSE(map.Contains("a", 2));
   EXPECT_FALSE(map.Contains("b", 1));
+  EXPECT_TRUE(map.ExtensionHasProcess("a"));
+  EXPECT_FALSE(map.ExtensionHasProcess("b"));
   EXPECT_EQ(1u, map.size());
 
   // Test inserting a duplicate item.
@@ -93,6 +96,9 @@ TEST(ExtensionProcessMapTest, Test) {
   EXPECT_FALSE(map.Contains("b", 2));
   EXPECT_FALSE(map.Contains("a", 5));
   EXPECT_FALSE(map.Contains("c", 3));
+
+  EXPECT_TRUE(map.ExtensionHasProcess("a"));
+  EXPECT_TRUE(map.ExtensionHasProcess("b"));
 
   // At this point we have {a,1}, {a,2}, {b,3}, and {b,4} in the map. Test
   // removal of these processes.

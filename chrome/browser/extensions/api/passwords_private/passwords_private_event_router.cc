@@ -28,7 +28,7 @@ PasswordsPrivateEventRouter::PasswordsPrivateEventRouter(
   event_router_ = EventRouter::Get(context_);
 }
 
-PasswordsPrivateEventRouter::~PasswordsPrivateEventRouter() {}
+PasswordsPrivateEventRouter::~PasswordsPrivateEventRouter() = default;
 
 void PasswordsPrivateEventRouter::OnSavedPasswordsListChanged(
     const std::vector<api::passwords_private::PasswordUiEntry>& entries) {

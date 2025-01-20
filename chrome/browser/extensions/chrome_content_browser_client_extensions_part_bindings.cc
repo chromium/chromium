@@ -31,7 +31,7 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RendererStartupHelper::BindForRenderer, host->GetID()));
+      &RendererStartupHelper::BindForRenderer, host->GetDeprecatedID()));
 }
 
 void ChromeContentBrowserClientExtensionsPart::
@@ -60,7 +60,7 @@ void ChromeContentBrowserClientExtensionsPart::
     ExposeInterfacesToRendererForRenderFrameHost(
         content::RenderFrameHost& frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  int render_process_id = frame_host.GetProcess()->GetID();
+  int render_process_id = frame_host.GetProcess()->GetDeprecatedID();
   associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_id));
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -212,8 +212,9 @@ void OfficeFallbackDialog::OnDialogClosed(const std::string& choice) {
   // Delete class.
   SystemWebDialogDelegate::OnDialogClosed(choice);
   // Run callback after dialog closed.
-  if (callback)
+  if (callback) {
     std::move(callback).Run(choice);
+  }
 }
 
 OfficeFallbackDialog::OfficeFallbackDialog(

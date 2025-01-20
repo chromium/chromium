@@ -136,8 +136,9 @@ bool KeyboardLockController::HandleKeyEvent(
   // active keyboard lock request which requires press and hold, then we just
   // return as the simple 'press esc to exit' case is handled by the caller
   // (which is the ExclusiveAccessManager in this case).
-  if (!RequiresPressAndHoldEscToExit())
+  if (!RequiresPressAndHoldEscToExit()) {
     return false;
+  }
 
   // Note: This logic handles exiting fullscreen but the UI feedback element is
   // created and managed by the FullscreenControlHost class.
@@ -162,8 +163,9 @@ bool KeyboardLockController::HandleKeyEvent(
 }
 
 void KeyboardLockController::CancelKeyboardLockRequest(WebContents* tab) {
-  if (tab == exclusive_access_tab())
+  if (tab == exclusive_access_tab()) {
     UnlockKeyboard();
+  }
 }
 
 void KeyboardLockController::LockKeyboard(
@@ -245,8 +247,9 @@ void KeyboardLockController::ReShowExitBubbleIfNeeded() {
                                              /*force_update=*/true);
     esc_keypress_tracker_.clear();
 
-    if (esc_repeat_triggered_for_test_)
+    if (esc_repeat_triggered_for_test_) {
       std::move(esc_repeat_triggered_for_test_).Run();
+    }
   }
 }
 

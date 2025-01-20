@@ -191,8 +191,9 @@ const gfx::FontList& Combobox::GetFontList() const {
 }
 
 void Combobox::SetSelectedIndex(std::optional<size_t> index) {
-  if (selected_index_ == index)
+  if (selected_index_ == index) {
     return;
+  }
   // TODO(pbos): Add (D)CHECKs to validate the selected index.
   selected_index_ = index;
 
@@ -267,13 +268,15 @@ void Combobox::SetTooltipTextAndAccessibleName(
 }
 
 void Combobox::SetInvalid(bool invalid) {
-  if (invalid == invalid_)
+  if (invalid == invalid_) {
     return;
+  }
 
   invalid_ = invalid;
 
-  if (views::FocusRing::Get(this))
+  if (views::FocusRing::Get(this)) {
     views::FocusRing::Get(this)->SetInvalid(invalid);
+  }
 
   UpdateBorder();
   OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
@@ -310,8 +313,9 @@ void Combobox::SetEventHighlighting(bool should_highlight) {
 }
 
 void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
-  if (size_to_largest_label_ == size_to_largest_label)
+  if (size_to_largest_label_ == size_to_largest_label) {
     return;
+  }
 
   size_to_largest_label_ = size_to_largest_label;
   content_size_ = GetContentSize();
@@ -338,8 +342,9 @@ std::optional<size_t> Combobox::GetSelectedRow() {
 void Combobox::SetSelectedRow(std::optional<size_t> row) {
   std::optional<size_t> prev_index = selected_index_;
   SetSelectedIndex(row);
-  if (selected_index_ != prev_index)
+  if (selected_index_ != prev_index) {
     OnPerformAction();
+  }
 }
 
 std::u16string Combobox::GetTextForRow(size_t row) {
@@ -412,8 +417,9 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   const auto index_at_or_after = [](ui::ComboboxModel* model,
                                     size_t index) -> std::optional<size_t> {
     for (; index < model->GetItemCount(); ++index) {
-      if (!model->IsItemSeparatorAt(index) && model->IsItemEnabledAt(index))
+      if (!model->IsItemSeparatorAt(index) && model->IsItemEnabledAt(index)) {
         return index;
+      }
     }
     return std::nullopt;
   };
@@ -421,8 +427,9 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
                                size_t index) -> std::optional<size_t> {
     for (; index > 0; --index) {
       const auto prev = index - 1;
-      if (!model->IsItemSeparatorAt(prev) && model->IsItemEnabledAt(prev))
+      if (!model->IsItemSeparatorAt(prev) && model->IsItemEnabledAt(prev)) {
         return prev;
+      }
     }
     return std::nullopt;
   };
@@ -431,8 +438,9 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   switch (e.key_code()) {
     // Show the menu on F4 without modifiers.
     case ui::VKEY_F4:
-      if (e.IsAltDown() || e.IsAltGrDown() || e.IsControlDown())
+      if (e.IsAltDown() || e.IsAltGrDown() || e.IsControlDown()) {
         return false;
+      }
       ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
       return true;
 
@@ -486,8 +494,9 @@ void Combobox::OnPaint(gfx::Canvas* canvas) {
 }
 
 void Combobox::OnFocus() {
-  if (GetInputMethod())
+  if (GetInputMethod()) {
     GetInputMethod()->SetFocusedTextInputClient(GetPrefixSelector());
+  }
 
   View::OnFocus();
   // Border renders differently when focused.
@@ -495,11 +504,13 @@ void Combobox::OnFocus() {
 }
 
 void Combobox::OnBlur() {
-  if (GetInputMethod())
+  if (GetInputMethod()) {
     GetInputMethod()->DetachTextInputClient(GetPrefixSelector());
+  }
 
-  if (selector_)
+  if (selector_) {
     selector_->OnViewBlur();
+  }
   // Border renders differently when focused.
   SchedulePaint();
 }
@@ -645,13 +656,16 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
 }
 
 void Combobox::ArrowButtonPressed(const ui::Event& event) {
-  if (!GetEnabled())
+  if (!GetEnabled()) {
     return;
+  }
 
   // TODO(hajimehoshi): Fix the problem that the arrow button blinks when
   // cliking this while the dropdown menu is opened.
-  if ((base::TimeTicks::Now() - closed_time_) > kMinimumTimeBetweenButtonClicks)
+  if ((base::TimeTicks::Now() - closed_time_) >
+      kMinimumTimeBetweenButtonClicks) {
     ShowDropDownMenu(ui::GetMenuSourceTypeForEvent(event));
+  }
 }
 
 void Combobox::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
@@ -671,8 +685,9 @@ void Combobox::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   gfx::Rect bounds(menu_position, lb.size());
   // If check marks exist in the combobox, adjust with bounds width to account
   // for them.
-  if (!size_to_largest_label_)
+  if (!size_to_largest_label_) {
     bounds.set_width(MaybeAdjustWidthForCheckmarks(bounds.width()));
+  }
 
   Button::ButtonState original_state = arrow_button_->GetState();
   arrow_button_->SetState(Button::STATE_PRESSED);
@@ -716,8 +731,9 @@ void Combobox::MenuSelectionAt(size_t index) {
 void Combobox::OnPerformAction() {
   SchedulePaint();
 
-  if (callback_)
+  if (callback_) {
     callback_.Run();
+  }
 
   // Note |this| may be deleted by |callback_|.
 }
@@ -727,8 +743,9 @@ gfx::Size Combobox::GetContentSize() const {
   int height = font_list.GetHeight();
   int width = 0;
   for (size_t i = 0; i < GetModel()->GetItemCount(); ++i) {
-    if (model_->IsItemSeparatorAt(i))
+    if (model_->IsItemSeparatorAt(i)) {
       continue;
+    }
 
     if (size_to_largest_label_ || i == selected_index_) {
       int item_width = 0;
@@ -736,8 +753,9 @@ gfx::Size Combobox::GetContentSize() const {
       std::u16string text = GetModel()->GetItemAt(i);
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia;
-        if (GetWidget())
+        if (GetWidget()) {
           icon_skia = icon.Rasterize(GetColorProvider());
+        }
         item_width += icon_skia.width();
         height = std::max(height, icon_skia.height());
 
@@ -754,8 +772,9 @@ gfx::Size Combobox::GetContentSize() const {
         item_width += gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
       }
 
-      if (size_to_largest_label_)
+      if (size_to_largest_label_) {
         item_width = MaybeAdjustWidthForCheckmarks(item_width);
+      }
       width = std::max(width, item_width);
     }
   }
@@ -776,8 +795,9 @@ void Combobox::OnContentSizeMaybeChanged() {
 }
 
 PrefixSelector* Combobox::GetPrefixSelector() {
-  if (!selector_)
+  if (!selector_) {
     selector_ = std::make_unique<PrefixSelector>(this, this);
+  }
   return selector_.get();
 }
 

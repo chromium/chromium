@@ -43,10 +43,10 @@
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/discardable_memory_utils.h"
-#include "content/renderer/media/codec_factory.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_codec_factory.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -87,7 +87,7 @@ class ClientSharedImageInterface;
 }
 
 namespace media {
-class GpuVideoAcceleratorFactories;
+class MojoGpuVideoAcceleratorFactories;
 }
 
 namespace mojo {
@@ -102,7 +102,6 @@ class RasterContextProvider;
 
 namespace content {
 class AgentSchedulingGroup;
-class GpuVideoAcceleratorFactoriesImpl;
 class RenderFrameImpl;
 class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
@@ -427,7 +426,8 @@ class CONTENT_EXPORT RenderThreadImpl
       const std::string& user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
       const std::vector<std::string>& cors_exempt_header_list,
-      blink::mojom::OriginTrialsSettingsPtr origin_trial_settings) override;
+      blink::mojom::OriginTrialsSettingsPtr origin_trial_settings,
+      uint64_t trace_id) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
@@ -462,7 +462,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
 
-  std::unique_ptr<CodecFactory> CreateMediaCodecFactory(
+  std::unique_ptr<media::MojoCodecFactory> CreateMediaMojoCodecFactory(
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
       bool enable_video_decode_accelerator,
       bool enable_video_encode_accelerator);
@@ -514,7 +514,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // TODO(dcastagna): This should be just one scoped_ptr once
   // http://crbug.com/580386 is fixed.
   // NOTE(dcastagna): At worst this accumulates a few bytes per context lost.
-  std::vector<std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>> gpu_factories_;
+  std::vector<std::unique_ptr<media::MojoGpuVideoAcceleratorFactories>>
+      gpu_factories_;
 
   // Thread or sequenced task runner (depending on
   // kBlinkMediaIsPooledSequencedTaskRunner) for running multimedia operations

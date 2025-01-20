@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_SUBTREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_SUBTREE_H_
 
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -80,6 +81,7 @@ class GridSubtree {
   }
 
   // Pointer to the tree shared by multiple subtree instances.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   GridTreePtr grid_tree_{nullptr};
 
   // Index of this subtree's root node.

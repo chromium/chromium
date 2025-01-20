@@ -338,7 +338,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
         install_error_log_entry_.TakeErrorDict());
   }
 
-  base::UmaHistogramEnumeration("WebApp.InstallResult.Sync", code);
+  base::UmaHistogramEnumeration("Webapp.InstallResult.Sync", code);
   CompleteAndSelfDestruct(
       success ? CommandResult::kSuccess : CommandResult::kFailure, app_id,
       code);

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <numeric>
-
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+
+#include <numeric>
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -160,8 +160,9 @@ AccessCodeCastHandler::AccessCodeCastHandler(
 AccessCodeCastHandler::~AccessCodeCastHandler() {
   AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(
       access_code_not_found_count_);
-  if (media_route_starter_)
+  if (media_route_starter_) {
     media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
+  }
 }
 
 void AccessCodeCastHandler::Init() {
@@ -213,8 +214,9 @@ bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
 // attempt to create route parameters before the sink is in QRM will fail.
 void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   // Dialog  has already notified (with most likely an error).
-  if (!add_sink_callback_)
+  if (!add_sink_callback_) {
     return;
+  }
   DCHECK(sink_id_) << "Must have a sink id to complete!";
   DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
@@ -234,8 +236,9 @@ void AccessCodeCastHandler::OnSinkAddedResult(
     std::optional<MediaSink::Id> sink_id) {
   DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
 
-  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND)
+  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND) {
     access_code_not_found_count_++;
+  }
 
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
@@ -400,8 +403,9 @@ void AccessCodeCastHandler::SetSyncServiceForTesting(
 }
 
 bool AccessCodeCastHandler::IsAccountSyncEnabled() {
-  if (!identity_manager_ || !sync_service_)
+  if (!identity_manager_ || !sync_service_) {
     return false;
+  }
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
          sync_service_->IsSyncFeatureActive();
 }

@@ -60,7 +60,8 @@ class CORE_EXPORT RootFrameViewport final
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish) override;
+                       ScrollCallback on_finish,
+                       bool targeted_scroll = false) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,

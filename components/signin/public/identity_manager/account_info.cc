@@ -6,17 +6,22 @@
 
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountId_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountInfo_jni.h"
+#include "components/signin/public/android/jni_headers/GaiaId_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #endif
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -26,11 +31,13 @@ namespace {
 bool UpdateField(std::string* field,
                  const std::string& new_value,
                  const char* default_value) {
-  if (*field == new_value || new_value.empty())
+  if (*field == new_value || new_value.empty()) {
     return false;
+  }
 
-  if (!field->empty() && default_value && new_value == default_value)
+  if (!field->empty() && default_value && new_value == default_value) {
     return false;
+  }
 
   *field = new_value;
   return true;
@@ -41,6 +48,17 @@ bool UpdateField(std::string* field,
 template <typename T>
 bool UpdateField(T* field, T new_value, T default_value) {
   if (*field == new_value || new_value == default_value) {
+    return false;
+  }
+
+  *field = new_value;
+  return true;
+}
+
+// Updates |field| with |new_value| if non-empty. Returns whether |field| was
+// changed.
+bool UpdateField(GaiaId* field, const GaiaId& new_value) {
+  if (*field == new_value || new_value.empty()) {
     return false;
   }
 
@@ -62,9 +80,6 @@ bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
 }
 
 }  // namespace
-
-// This must be a string which can never be a valid domain.
-const char kNoHostedDomainFound[] = "NO_HOSTED_DOMAIN";
 
 // This must be a string which can never be a valid picture URL.
 const char kNoPictureURLFound[] = "NO_PICTURE_URL";
@@ -118,7 +133,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   }
 
   bool modified = false;
-  modified |= UpdateField(&gaia, other.gaia, nullptr);
+  modified |= UpdateField(&gaia, other.gaia);
   modified |= UpdateField(&email, other.email, nullptr);
   modified |= UpdateField(&full_name, other.full_name, nullptr);
   modified |= UpdateField(&given_name, other.given_name, nullptr);
@@ -184,23 +199,32 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
   return signin::Java_CoreAccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
-      base::android::ConvertUTF8ToJavaString(env, account_info.gaia));
+      signin::Java_GaiaId_Constructor(env, account_info.gaia.ToString()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info) {
   CHECK(!account_info.IsEmpty());
-  gfx::Image avatar_image = account_info.account_image;
+  // Empty domain means that the management status is unknown, which is
+  // represented by `null` hostedDomain on the Java side.
+  base::android::ScopedJavaLocalRef<jstring> hosted_domain =
+      account_info.hosted_domain.empty()
+          ? nullptr
+          : base::android::ConvertUTF8ToJavaString(env,
+                                                   account_info.hosted_domain);
+  base::android::ScopedJavaLocalRef<jobject> account_image =
+      account_info.account_image.IsEmpty()
+          ? nullptr
+          : gfx::ConvertToJavaBitmap(
+                *account_info.account_image.AsImageSkia().bitmap());
   return signin::Java_AccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
-      base::android::ConvertUTF8ToJavaString(env, account_info.gaia),
+      signin::Java_GaiaId_Constructor(env, account_info.gaia.ToString()),
       base::android::ConvertUTF8ToJavaString(env, account_info.full_name),
       base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
-      avatar_image.IsEmpty()
-          ? nullptr
-          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()),
+      hosted_domain, account_image,
       account_info.capabilities.ConvertToJavaAccountCapabilities(env));
 }
 
@@ -209,7 +233,14 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
     const CoreAccountId& account_id) {
   CHECK(!account_id.empty());
   return signin::Java_CoreAccountId_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, account_id.ToString()));
+      env, signin::Java_GaiaId_Constructor(env, account_id.ToString()));
+}
+
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaGaiaId(
+    JNIEnv* env,
+    const GaiaId& gaia_id) {
+  CHECK(!gaia_id.empty());
+  return signin::Java_GaiaId_Constructor(env, gaia_id.ToString());
 }
 
 CoreAccountInfo ConvertFromJavaCoreAccountInfo(
@@ -219,10 +250,31 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
   CoreAccountInfo account;
   account.account_id = ConvertFromJavaCoreAccountId(
       env, signin::Java_CoreAccountInfo_getId(env, j_core_account_info));
-  account.gaia = base::android::ConvertJavaStringToUTF8(
-      signin::Java_CoreAccountInfo_getGaiaId(env, j_core_account_info));
+  account.gaia = GaiaId(signin::Java_GaiaId_toString(
+      env, signin::Java_CoreAccountInfo_getGaiaId(env, j_core_account_info)));
   account.email = base::android::ConvertJavaStringToUTF8(
       signin::Java_CoreAccountInfo_getEmail(env, j_core_account_info));
+  return account;
+}
+
+AccountInfo ConvertFromJavaAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_account_info) {
+  CHECK(j_account_info);
+  AccountInfo account;
+  account.account_id = ConvertFromJavaCoreAccountId(
+      env, signin::Java_CoreAccountInfo_getId(env, j_account_info));
+  account.gaia = ConvertFromJavaGaiaId(
+      env, signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info));
+  account.email = base::android::ConvertJavaStringToUTF8(
+      signin::Java_CoreAccountInfo_getEmail(env, j_account_info));
+  account.full_name = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getFullName(env, j_account_info));
+  account.given_name = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getGivenName(env, j_account_info));
+  account.hosted_domain = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getRawHostedDomain(env, j_account_info));
+  // TODO(crbug.com/348373729): Marshal account image & capabilities from Java.
   return account;
 }
 
@@ -232,7 +284,14 @@ CoreAccountId ConvertFromJavaCoreAccountId(
   CHECK(j_core_account_id);
   CoreAccountId id =
       CoreAccountId::FromString(base::android::ConvertJavaStringToUTF8(
-          signin::Java_CoreAccountId_getId(env, j_core_account_id)));
+          signin::Java_CoreAccountId_toString(env, j_core_account_id)));
   return id;
 }
+
+GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& j_gaia_id) {
+  CHECK(j_gaia_id);
+  return GaiaId(signin::Java_GaiaId_toString(env, j_gaia_id));
+}
+
 #endif

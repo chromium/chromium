@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -71,6 +70,7 @@ void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
 
 CSSVariableData* CSSVariableData::Create(const String& original_text,
                                          bool is_animation_tainted,
+                                         bool is_attr_tainted,
                                          bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
@@ -80,12 +80,12 @@ CSSVariableData* CSSVariableData::Create(const String& original_text,
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
                     has_line_height_units);
   }
-  return Create(original_text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
+  return Create(original_text, is_animation_tainted, is_attr_tainted,
+                needs_variable_resolution, has_font_units, has_root_font_units,
+                has_line_height_units);
 }
 
 String CSSVariableData::Serialize() const {
-  const bool is_tainted = IsAttrTainted(OriginalText());
   if (length_ > 0 && OriginalText()[length_ - 1] == '\\') {
     // https://drafts.csswg.org/css-syntax/#consume-escaped-code-point
     // '\' followed by EOF is consumed as U+FFFD.
@@ -122,42 +122,38 @@ String CSSVariableData::Serialize() const {
       serialized_text.Append(')');
     }
 
-    return is_tainted ? RemoveAttrTaintToken(serialized_text.ReleaseString())
-                      : serialized_text.ReleaseString();
+    return serialized_text.ReleaseString();
   }
 
-  return is_tainted ? RemoveAttrTaintToken(OriginalText())
-                    : OriginalText().ToString();
+  return OriginalText().ToString();
 }
 
-bool CSSVariableData::operator==(const CSSVariableData& other) const {
+bool CSSVariableData::EqualsIgnoringAttrTainting(
+    const CSSVariableData& other) const {
   return OriginalText() == other.OriginalText();
 }
 
-bool CSSVariableData::EqualsIgnoringTaint(const CSSVariableData& other) const {
-  if (IsAttrTainted(OriginalText()) || IsAttrTainted(other.OriginalText())) {
-    return Serialize() == other.Serialize();
-  } else {
-    // Faster, since we don't have to allocate a new string.
-    return OriginalText() == other.OriginalText();
-  }
+bool CSSVariableData::operator==(const CSSVariableData& other) const {
+  return OriginalText() == other.OriginalText() &&
+         IsAttrTainted() == other.IsAttrTainted();
 }
 
 CSSVariableData::CSSVariableData(PassKey,
                                  StringView original_text,
                                  bool is_animation_tainted,
+                                 bool is_attr_tainted,
                                  bool needs_variable_resolution,
                                  bool has_font_units,
                                  bool has_root_font_units,
                                  bool has_line_height_units)
     : length_(original_text.length()),
       is_animation_tainted_(is_animation_tainted),
+      is_attr_tainted_(is_attr_tainted),
       needs_variable_resolution_(needs_variable_resolution),
       is_8bit_(original_text.Is8Bit()),
       has_font_units_(has_font_units),
       has_root_font_units_(has_root_font_units),
-      has_line_height_units_(has_line_height_units),
-      unused_(0) {
+      has_line_height_units_(has_line_height_units) {
   if (is_8bit_) {
     base::ranges::copy(original_text.Span8(),
                        reinterpret_cast<LChar*>(this + 1));
@@ -175,7 +171,7 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   // relative URL resolution.
   return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
-                      is_animation_tainted_);
+                      is_animation_tainted_, is_attr_tainted_);
 }
 
 }  // namespace blink

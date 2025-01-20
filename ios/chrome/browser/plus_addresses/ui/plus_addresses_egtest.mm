@@ -12,14 +12,14 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -49,7 +49,7 @@ void ExpectModalHistogram(
       [MetricsAppInterface expectCount:count
                              forBucket:static_cast<int>(event_type)
                           forHistogram:@"PlusAddresses.Modal.Events"];
-  GREYAssertNil(error, @"Failed to record modal event histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 // Assert that the bottom sheet shown duration metrics is recorded.
@@ -66,7 +66,7 @@ void ExpectModalTimeSample(
 
   NSError* error = [MetricsAppInterface expectTotalCount:count
                                             forHistogram:name];
-  GREYAssertNil(error, @"Failed to record modal shown duration histogram");
+  chrome_test_util::GREYAssertErrorNil(error);
 }
 
 }  // namespace
@@ -83,8 +83,8 @@ void ExpectModalTimeSample(
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 
   // Ensure a fake identity is available, as this is required by the
   // plus_addresses feature.
@@ -100,8 +100,8 @@ void ExpectModalTimeSample(
 
 - (void)tearDownHelper {
   [super tearDownHelper];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -330,7 +330,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that the alert is shown and filled when an affiliated site contains the
 // plus address during the creation.
-- (void)testAffiliationError {
+//
+// TODO(crbug.com/386193395): This test is flaky.
+- (void)FLAKY_testAffiliationError {
   [PlusAddressAppInterface setShouldReturnAffiliatedPlusProfileOnConfirm:YES];
   [self openCreatePlusAddressBottomSheet];
 

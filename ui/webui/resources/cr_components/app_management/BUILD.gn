@@ -70,10 +70,10 @@ build_webui("build") {
   grd_prefix = "cr_components_app_management"
 
   non_web_component_files = [
+    "browser_proxy.ts",
     "constants.ts",
     "permission_constants.ts",
     "permission_util.ts",
-    "browser_proxy.ts",
     "util.ts",
   ]
 

@@ -27,53 +27,70 @@ class VIEWS_EXPORT PlatformStyle {
 
   // Whether the ok button is in the leading position (left in LTR) in a
   // typical Cancel/OK button group.
-  static const bool kIsOkButtonLeading;
-
-  // Minimum size for platform-styled buttons.
-  static const int kMinLabelButtonWidth;
-  static const int kMinLabelButtonHeight;
+  static constexpr bool kIsOkButtonLeading = BUILDFLAG(IS_WIN);
 
   // Whether the default button for a dialog can be the Cancel button.
-  static const bool kDialogDefaultButtonCanBeCancel;
+  static constexpr bool kDialogDefaultButtonCanBeCancel = !BUILDFLAG(IS_MAC);
 
   // Whether right clicking on text, selects the word under cursor.
-  static const bool kSelectWordOnRightClick;
+  static constexpr bool kSelectWordOnRightClick = BUILDFLAG(IS_MAC);
 
   // Whether right clicking inside an unfocused text view selects all the text.
-  static const bool kSelectAllOnRightClickWhenUnfocused;
+  static constexpr bool kSelectAllOnRightClickWhenUnfocused = BUILDFLAG(IS_MAC);
 
   // Whether the Space key clicks a button on key press or key release.
-  static const Button::KeyClickAction kKeyClickActionOnSpace;
+  static constexpr Button::KeyClickAction kKeyClickActionOnSpace =
+#if BUILDFLAG(IS_MAC)
+      Button::KeyClickAction::kOnKeyPress;
+#else
+      Button::KeyClickAction::kOnKeyRelease;
+#endif
 
   // Whether the Return key clicks the focused control (on key press).
   // Otherwise, Return does nothing unless it is handled by an accelerator.
-  static const bool kReturnClicksFocusedControl;
+  // On Mac, the Return key is used to perform the default action even when a
+  // control is focused.
+  static constexpr bool kReturnClicksFocusedControl = !BUILDFLAG(IS_MAC);
 
   // Whether cursor left and right can be used in a TableView to select and
   // resize columns and whether a focus ring should be shown around the active
   // cell.
-  static const bool kTableViewSupportsKeyboardNavigationByCell;
+  static constexpr bool kTableViewSupportsKeyboardNavigationByCell =
+      !BUILDFLAG(IS_MAC);
 
   // Whether selecting a row in a TreeView selects the entire row or only the
   // label for that row.
-  static const bool kTreeViewSelectionPaintsEntireRow;
+  static constexpr bool kTreeViewSelectionPaintsEntireRow = BUILDFLAG(IS_MAC);
 
   // Whether ripples should be used for visual feedback on control activation.
-  static const bool kUseRipples;
+  static constexpr bool kUseRipples = !BUILDFLAG(IS_MAC);
 
   // Whether text fields should use a "drag" cursor when not actually
   // dragging but available to do so.
-  static const bool kTextfieldUsesDragCursorWhenDraggable;
+  static constexpr bool kTextfieldUsesDragCursorWhenDraggable =
+      !BUILDFLAG(IS_MAC);
 
   // Whether controls in inactive widgets appear disabled.
-  static const bool kInactiveWidgetControlsAppearDisabled;
+  static constexpr bool kInactiveWidgetControlsAppearDisabled =
+      BUILDFLAG(IS_MAC);
 
   // Default setting at bubble creation time for whether arrow will be adjusted
-  // for bubbles going off-screen to bring more bubble area into view.
-  static const bool kAdjustBubbleIfOffscreen;
+  // for bubbles going off-screen to bring more bubble area into view. Linux
+  // clips bubble windows that extend outside their parent window bounds.
+  static constexpr bool kAdjustBubbleIfOffscreen = !BUILDFLAG(IS_LINUX);
 
   // Default focus behavior on the platform.
-  static const View::FocusBehavior kDefaultFocusBehavior;
+  static constexpr View::FocusBehavior kDefaultFocusBehavior =
+#if BUILDFLAG(IS_MAC)
+      View::FocusBehavior::ACCESSIBLE_ONLY;
+#else
+      View::FocusBehavior::ALWAYS;
+#endif
+
+  // On Windows, the first menu item is automatically selected when a menu
+  // is opened with the keyboard.
+  static constexpr bool kAutoSelectFirstMenuItemFromKeyboard =
+      BUILDFLAG(IS_WIN);
 
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(

@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -179,7 +182,14 @@ void BrowserActions::InitializeBrowserActions() {
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
                               kActionSidePanelShowShoppingInsights, browser,
+                              false),
+              SidePanelAction(SidePanelEntryId::kMerchantTrust,
+                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
+                              IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
+                              vector_icons::kStorefrontIcon,
+                              kActionSidePanelShowMerchantTrust, browser,
                               false))
+
           .Build());
 
   if (side_panel::history_clusters::
@@ -205,19 +215,8 @@ void BrowserActions::InitializeBrowserActions() {
           if (!browser) {
             return;
           }
-
-          LensOverlayController* controller = browser->GetActiveTabInterface()
-                                                  ->GetTabFeatures()
-                                                  ->lens_overlay_controller();
-
-          // Toggle the Lens overlay. There's no need to show or hide the side
-          // panel as the overlay controller will handle that.
-          if (controller->IsOverlayShowing()) {
-            controller->CloseUIAsync(
-                lens::LensOverlayDismissalSource::kToolbar);
-          } else {
-            controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
-          }
+          lens::LensOverlayEntryPointController::InvokeAction(
+              browser->GetActiveTabInterface(), context);
         },
         browser->AsWeakPtr());
     const gfx::VectorIcon& icon =
@@ -480,22 +479,39 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
 
     if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
-    root_action_item_->AddChild(
-        StatefulChromeMenuAction(
-            base::BindRepeating(
-                [](Browser* browser, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  // TODO(crbug.com/356468503): Figure out how to capture action
-                  // invocation location.
-                  browser->browser_window_features()
-                      ->cast_browser_controller()
-                      ->ToggleDialog();
-                },
-                base::Unretained(browser)),
-            kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-            IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
-            .SetEnabled(chrome::CanRouteMedia(browser))
-            .Build());
+      root_action_item_->AddChild(
+          StatefulChromeMenuAction(
+              base::BindRepeating(
+                  [](Browser* browser, actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
+                    // TODO(crbug.com/356468503): Figure out how to capture
+                    // action invocation location.
+                    browser->browser_window_features()
+                        ->cast_browser_controller()
+                        ->ToggleDialog();
+                  },
+                  base::Unretained(browser)),
+              kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+              IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
+              .SetEnabled(chrome::CanRouteMedia(browser))
+              .Build());
+    }
+
+    if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton) &&
+        download::IsDownloadBubbleEnabled()) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 browser->GetFeatures()
+                                     .download_toolbar_ui_controller()
+                                     ->InvokeUI();
+                               },
+                               base::Unretained(browser)),
+                           kActionShowDownloads, IDS_SHOW_DOWNLOADS,
+                           IDS_TOOLTIP_DOWNLOAD_ICON,
+                           kDownloadToolbarButtonChromeRefreshIcon)
+              .Build());
     }
 
     AddListeners();

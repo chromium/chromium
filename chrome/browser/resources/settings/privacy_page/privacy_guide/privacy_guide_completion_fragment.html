@@ -53,14 +53,26 @@
         shouldShowV2AdPrivacySubLabel_)]]"
       start-icon="privacy20:ads-click" external
       on-click="onPrivacySandboxClick_">
-      <div slot="label" class="label">
-        $i18n{privacyGuideCompletionCardPrivacySandboxLabel}
-      </div>
+    <div slot="label" class="label">
+      $i18n{privacyGuideCompletionCardPrivacySandboxLabel}
+    </div>
   </cr-link-row>
   <div aria-disabled="true" role="none">
     <a id="privacySandboxLink" href="adPrivacy"
         target="_blank" tabindex="-1" aria-disabled="true"
         role="none"></a>
+  </div>
+</template>
+<!-- TODO(crbug.com/362225975): Update icon and strings for AI row. -->
+<template is="dom-if" if="[[shouldShowAiSettings_]]">
+  <cr-link-row id="aiRow" using-slotted-label
+      sub-label="$i18n{privacyGuideCompletionCardAiSettingsLabel}"
+      start-icon="settings20:magic" external on-click="onAiRowClick_">
+    <div slot="label" class="label">$i18n{aiInnovationsPageTitle}</div>
+  </cr-link-row>
+  <div aria-disabled="true" role="none">
+    <a id="aiRowLink" href="ai" target="_blank" tabindex="-1"
+        aria-disabled="true" role="none"></a>
   </div>
 </template>
 <template is="dom-if" if="[[shouldShowWaa_]]">

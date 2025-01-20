@@ -48,9 +48,6 @@ class GURL;
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
 
-// Whether the user is currently panning the selection UI.
-@property(nonatomic, readonly) BOOL isPanningSelectionUI;
-
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
 
@@ -75,6 +72,10 @@ class GURL;
 
 // Resets the selection area to the initial position.
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion;
+
+// Hides the user selected region/text without resetting to initial position.
+// Currently, there is no API to unhide the selection.
+- (void)hideUserSelection;
 
 // Updates the visibility of the top icons.
 - (void)setTopIconsHidden:(BOOL)hidden;

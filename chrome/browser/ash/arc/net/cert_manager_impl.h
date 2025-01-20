@@ -8,11 +8,12 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/net/cert_manager.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/net/cert_manager.h"
 #include "net/cert/nss_cert_database.h"
 
 namespace arc {
@@ -26,6 +27,8 @@ constexpr char kPrivateKeyPEMHeader[] = "PRIVATE KEY";
 // key store (chaps).
 class CertManagerImpl : public CertManager {
  public:
+  using DeleteCertCallback = base::OnceCallback<void()>;
+
   explicit CertManagerImpl(Profile* profile);
 
   CertManagerImpl(const CertManagerImpl&) = delete;
@@ -59,8 +62,9 @@ class CertManagerImpl : public CertManager {
   std::string ImportUserCert(const std::string& cert_pem,
                              net::NSSCertDatabase* database);
 
-  void DeleteCertAndKey(const std::string& cert_pem,
-                        net::NSSCertDatabase* database);
+  void DeleteCertAndKeyAsync(const std::string& cert_pem,
+                             net::NSSCertDatabase* database,
+                             DeleteCertCallback callback);
 
   // Get the private slot ID used by this class.
   int GetSlotID(net::NSSCertDatabase* database);
@@ -72,6 +76,18 @@ class CertManagerImpl : public CertManager {
                                      const std::string& cert_pem,
                                      ImportPrivateKeyAndCertCallback callback,
                                      net::NSSCertDatabase* database);
+
+  // Import a PEM-formatted private key and user certificate into the NSS
+  // certificate database. Calls a callback with its ID and the slot ID of the
+  // database. Prior to importing the private key and certificate, attempt to
+  // remove them from the NSS certificate database to avoid import failures. See
+  // the comments in the implementation for more details.
+  void DeleteAndImportPrivateKeyAndCertWithDB(
+      const std::string& key_pem,
+      const std::string& cert_pem,
+      ImportPrivateKeyAndCertCallback callback,
+      net::NSSCertDatabase* database);
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
   base::WeakPtrFactory<CertManagerImpl> weak_factory_{this};
 

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -124,8 +125,14 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   void InvokePresentationTimeCallback(
       MockPaintTimingCallbackManager* callback_manager) {
+    base::TimeTicks presentation_time = test_task_runner_->NowTicks();
+    DOMHighResTimeStamp timestamp =
+        (presentation_time -
+         DOMWindowPerformance::performance(*GetDocument().domWindow())
+             ->GetTimeOriginInternal())
+            .InMillisecondsF();
     callback_manager->InvokePresentationTimeCallback(
-        test_task_runner_->NowTicks());
+        test_task_runner_->NowTicks(), {timestamp, timestamp});
   }
 
   base::TimeTicks LargestPaintTime() {

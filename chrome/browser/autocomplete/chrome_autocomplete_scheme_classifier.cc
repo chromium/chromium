@@ -44,8 +44,8 @@ ChromeAutocompleteSchemeClassifier::ChromeAutocompleteSchemeClassifier(
     : profile_(profile) {
 }
 
-ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() {
-}
+ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() =
+    default;
 
 metrics::OmniboxInputType
 ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(

@@ -347,18 +347,14 @@ void AddressFieldParserNG::AddClassifications(
     if (!field_ptr) {
       continue;
     }
-    // TODO(crbug.com/320965828): Support MatchInfo.
+    // TODO(crbug.com/320965828): Support MatchInfo. The NG parser doesn't track
+    // how matches are found. `kHighQualityLabel` is merely a placeholder.
     AddClassification(
         FieldAndMatchInfo{field_ptr,
-                          {.matched_attribute = MatchAttribute::kLabel}},
+                          {.matched_attribute =
+                               MatchInfo::MatchAttribute::kHighQualityLabel}},
         field_type, kBaseAddressParserScore, field_candidates);
   }
-}
-
-base::span<const MatchPatternRef> AddressFieldParserNG::GetMatchPatterns(
-    std::string_view name) {
-  return ::autofill::GetMatchPatterns(name, context_->page_language,
-                                      context_->pattern_file);
 }
 
 std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
@@ -409,8 +405,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     // preferred attribute match.
     auto MatchAttribute = [&](bool match_label) -> std::optional<double> {
       if (FieldMatchesMatchPatternRef(
-              *context_, GetMatchPatterns(pattern_name), *scanner_->Cursor(),
-              pattern_name.data(),
+              *context_, *scanner_->Cursor(), pattern_name,
               {match_label ? MatchOnlyLabel : MatchOnlyName,
                match_pattern_projection})) {
         return score + (match_label == prefer_label ? 0.05 : 0.0);
@@ -618,6 +613,8 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case NAME_LAST_PREFIX:
+    case NAME_LAST_CORE:
     case ALTERNATIVE_FULL_NAME:
     case ALTERNATIVE_GIVEN_NAME:
     case ALTERNATIVE_FAMILY_NAME:
@@ -670,6 +667,15 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
     case IMPROVED_PREDICTION:
+    case PASSPORT_NAME_TAG:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY_TAG:
+    case PASSPORT_EXPIRATION_DATE_TAG:
+    case PASSPORT_ISSUE_DATE_TAG:
+    case PASSPORT_COUNTRY_OF_BIRTH_TAG:
+    case LOYALTY_CARD_PROGRAM:
+    case LOYALTY_CARD_PROVIDER:
+    case LOYALTY_CARD_MEMBER_ID:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }

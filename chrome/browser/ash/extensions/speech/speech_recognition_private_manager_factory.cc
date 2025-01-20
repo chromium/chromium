@@ -42,9 +42,10 @@ SpeechRecognitionPrivateManagerFactory::SpeechRecognitionPrivateManagerFactory()
   DependsOn(EventRouterFactory::GetInstance());
 }
 
-KeyedService* SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SpeechRecognitionPrivateManager(context);
+  return std::make_unique<SpeechRecognitionPrivateManager>(context);
 }
 
 }  // namespace extensions

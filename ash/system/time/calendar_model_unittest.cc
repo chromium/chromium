@@ -163,11 +163,12 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
 }
 
 class CalendarModelTest
-    : public AshTestBase,
+    : public NoSessionAshTestBase,
       public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
  public:
   CalendarModelTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
   }
@@ -177,13 +178,12 @@ class CalendarModelTest
   ~CalendarModelTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     // Register a mock `CalendarClient` to the `CalendarController`.
     const std::string email = "user1@email.com";
-    AccountId account_id = AccountId::FromUserEmail(email);
-    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
-        account_id);
+    auto account_id = AccountId::FromUserEmail(email);
+    SimulateUserLogin(account_id);
     calendar_model_ = std::make_unique<CalendarModel>();
     calendar_client_ =
         std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
@@ -202,7 +202,7 @@ class CalendarModelTest
     calendar_model_.reset();
     scoped_feature_list_.Reset();
 
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
   bool IsMultiCalendarEnabled() { return GetParam(); }
@@ -297,19 +297,13 @@ class CalendarModelTest
     return true;
   }
 
-  void UpdateSession(uint32_t session_id,
-                     const std::string& email,
-                     bool is_child = false) {
-    UserSession session;
-    session.session_id = session_id;
-    session.user_info.type = is_child ? user_manager::UserType::kChild
-                                      : user_manager::UserType::kRegular;
-    session.user_info.account_id = AccountId::FromUserEmail(email);
-    session.user_info.display_name = email;
-    session.user_info.display_email = email;
-    session.user_info.is_new_profile = false;
-
-    SessionController::Get()->UpdateUserSession(session);
+  AccountId SimulateLogin(const std::string& email, bool is_child = false) {
+    auto account_id = AccountId::FromUserEmail(email);
+    SimulateUserLogin(account_id, is_child ? user_manager::UserType::kChild
+                                           : user_manager::UserType::kRegular);
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id, calendar_client_.get());
+    return account_id;
   }
 
   void TestMultiDayEvent(SingleDayEventList events,
@@ -907,7 +901,6 @@ TEST_P(CalendarModelTest, SessionStateChange) {
   SessionInfo session_info;
   session_info.state = session_manager::SessionState::LOCKED;
   SessionController::Get()->SetSessionInfo(session_info);
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
 }
@@ -916,17 +909,16 @@ TEST_P(CalendarModelTest, ActiveUserChange) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
+  // Set up two users, user1 is the active user.
+  auto account_id1 = SimulateLogin("user1@test.com");
+  auto account_id2 = SimulateLogin("user2@test.com");
+  SwitchActiveUser(account_id1);
+  // Switching a user clears the cache. Fetch calendars again.
   if (IsMultiCalendarEnabled()) {
+    FetchCalendars();
     EXPECT_TRUE(calendar_list_model()->get_is_cached());
     EXPECT_EQ(1u, calendar_list_model()->GetCachedCalendarList().size());
   }
-
-  // Set up two users, user1 is the active user.
-  UpdateSession(1u, "user1@test.com");
-  UpdateSession(2u, "user2@test.com");
-  std::vector<uint32_t> order = {1u, 2u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
 
   // Current date is just `kStartTime0`.
   SetTodayFromStr(kStartTime0);
@@ -956,9 +948,8 @@ TEST_P(CalendarModelTest, ActiveUserChange) {
   EXPECT_TRUE(events.size() == 1);
 
   // Make user2 the active user, and we should clear the cached events.
-  order = {2u, 1u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
+  SwitchActiveUser(account_id2);
+
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
   EXPECT_TRUE(event_months().empty());
@@ -968,17 +959,17 @@ TEST_P(CalendarModelTest, ActiveChildUserChange) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
+  // Set up two users, user1 is the active user.
+  auto account_id1 = SimulateLogin("user1@test.com", /*is_child*/ true);
+  auto account_id2 = SimulateLogin("user2@test.com", /*is_child*/ true);
+  SwitchActiveUser(account_id1);
+
   if (IsMultiCalendarEnabled()) {
+    // Switching a user clears the cache. Fetch calendars again.
+    FetchCalendars();
     EXPECT_TRUE(calendar_list_model()->get_is_cached());
     EXPECT_EQ(1u, calendar_list_model()->GetCachedCalendarList().size());
   }
-
-  // Set up two users, user1 is the active user.
-  UpdateSession(1u, "user1@test.com", /*is_child*/ true);
-  UpdateSession(2u, "user2@test.com", /*is_child*/ true);
-  std::vector<uint32_t> order = {1u, 2u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
 
   // Current date is just `kStartTime0`.
   SetTodayFromStr(kStartTime0);
@@ -1008,9 +999,8 @@ TEST_P(CalendarModelTest, ActiveChildUserChange) {
   EXPECT_TRUE(events.size() == 1);
 
   // Make user2 the active user, and we should clear the cached events.
-  order = {2u, 1u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
+  SwitchActiveUser(account_id2);
+
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
   EXPECT_TRUE(event_months().empty());

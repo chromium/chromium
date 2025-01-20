@@ -77,15 +77,17 @@ class TestInputMethodManager : public MockInputMethodManager {
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override {
       for (const InputMethodDescriptor& descriptor : input_methods_) {
-        if (input_method_id == descriptor.id())
+        if (input_method_id == descriptor.id()) {
           return &descriptor;
+        }
       }
       return nullptr;
     }
     InputMethodDescriptor GetCurrentInputMethod() const override {
       for (const InputMethodDescriptor& descriptor : input_methods_) {
-        if (current_ime_id_ == descriptor.id())
+        if (current_ime_id_ == descriptor.id()) {
           return descriptor;
+        }
       }
       return InputMethodUtil::GetFallbackInputMethodDescriptor();
     }
@@ -103,7 +105,7 @@ class TestInputMethodManager : public MockInputMethodManager {
 
    protected:
     friend base::RefCounted<InputMethodManager::State>;
-    ~TestState() override {}
+    ~TestState() override = default;
   };
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {}

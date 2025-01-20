@@ -34,7 +34,7 @@
     text-align: center;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #updateRowIcon {
+  #updateRowIcon {
     margin-inline-end: 16px;
   }
 
@@ -58,7 +58,7 @@
   iron-icon[icon='os-settings:about-update-error'] {
     fill: var(--cros-sys-error);
   }
-  :host-context(body.revamp-wayfinding-enabled)  iron-icon[icon='cr20:domain'] {
+  iron-icon[icon='cr20:domain'] {
     fill: var(--cros-sys-primary);
   }
 
@@ -97,10 +97,6 @@
   eol-offer-section {
     margin: 6px 3px 16px 3px;
   }
-
-  :host-context(body:not(.revamp-wayfinding-enabled)) #copyrightCard {
-    margin-top: var(--cr-section-vertical-margin);
-  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
@@ -120,35 +116,16 @@
         <div class="settings-box two-line">
           <!-- Set the icon from the iconset (when it's obsolete/EOL and
             when update is done) or set the src (when it's updating). -->
-          <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-            <div class="icon-container"
-                hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-              <!-- TODO(crbug.com/40637166): Don't use browser icons here. Fork
-                them. -->
-              <iron-icon id="updateRowIcon"
-                  icon$="[[getUpdateStatusIcon_(
-                      hasEndOfLife_, currentUpdateStatusEvent_,
-                      showExtendedUpdatesOption_)]]"
-                  src="[[getThrobberSrcIfUpdating_(
-                      isDarkModeActive_,
-                      hasEndOfLife_,
-                      currentUpdateStatusEvent_,
-                      showExtendedUpdatesOption_)]]">
-              </iron-icon>
-            </div>
-          </template>
-          <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-            <iron-icon id="updateRowIcon"
-                icon$="[[getUpdateStatusIcon_(
-                    hasEndOfLife_, currentUpdateStatusEvent_,
-                    showExtendedUpdatesOption_)]]"
-                src="[[getThrobberSrcIfUpdating_(
-                    isDarkModeActive_,
-                    hasEndOfLife_,
-                    currentUpdateStatusEvent_,
-                    showExtendedUpdatesOption_)]]">
-            </iron-icon>
-          </template>
+          <iron-icon id="updateRowIcon"
+              icon$="[[getUpdateStatusIcon_(
+                  hasEndOfLife_, currentUpdateStatusEvent_,
+                  showExtendedUpdatesOption_)]]"
+              src="[[getThrobberSrcIfUpdating_(
+                  isDarkModeActive_,
+                  hasEndOfLife_,
+                  currentUpdateStatusEvent_,
+                  showExtendedUpdatesOption_)]]">
+          </iron-icon>
           <div class="start padded">
             <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
               <div id="updateStatusMessageInner" tabindex="-1"
@@ -218,7 +195,7 @@
         <cr-link-row
             id="aboutTPMFirmwareUpdate"
             class="hr"
-            start-icon="[[rowIcons_.powerWash]]"
+            start-icon="os-settings:startup"
             hidden$="[[!showTPMFirmwareUpdateLineItem_]]"
             label="$i18n{aboutTPMFirmwareUpdateTitle}"
             on-click="onTpmFirmwareUpdateClick_">
@@ -232,17 +209,17 @@
         </cr-link-row>
         <template is="dom-if" if="[[hasInternetConnection_]]">
           <cr-link-row class="hr" id="releaseNotesOnline"
-              start-icon="[[rowIcons_.releaseNotes]]"
+              start-icon="os-settings:about-release-notes"
               on-click="onReleaseNotesClick_"
               label="$i18n{aboutShowReleaseNotes}"
-              sub-label="[[getShowReleaseNotesSublabel_()]]"
+              sub-label="$i18n{aboutShowReleaseNotesDescription}"
               external
               deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
           </cr-link-row>
         </template>
         <template is="dom-if" if="[[!hasInternetConnection_]]">
           <cr-link-row class="hr" id="releaseNotesOffline"
-              start-icon="[[rowIcons_.releaseNotes]]"
+              start-icon="os-settings:about-release-notes"
               on-click="onReleaseNotesClick_"
               label="$i18n{aboutShowReleaseNotes}"
               title="$i18n{aboutReleaseNotesOffline}"
@@ -251,34 +228,34 @@
           </cr-link-row>
         </template>
         <cr-link-row class="hr" id="help"
-            start-icon="[[rowIcons_.help]]"
+            start-icon="os-settings:about-help"
             on-click="onHelpClick_"
             label="$i18n{aboutGetHelpUsingChromeOs}"
-            sub-label="[[getHelpUsingChromeOsSublabel_()]]"
+            sub-label="$i18n{aboutGetHelpDescription}"
             external
             deep-link-focus-id$="[[Setting.kGetHelpWithChromeOs]]">
         </cr-link-row>
   <if expr="_google_chrome">
         <cr-link-row class="hr" id="reportIssue"
-            start-icon="[[rowIcons_.feedback]]"
+            start-icon="os-settings:about-feedback"
             on-click="onReportIssueClick_"
             hidden="[[!prefs.feedback_allowed.value]]"
             label="[[getReportIssueLabel_()]]"
-            sub-label="[[getReportIssueSublabel_()]]"
+            sub-label="$i18n{aboutSendFeedbackDescription}"
             external
             deep-link-focus-id$="[[Setting.kReportAnIssue]]">
         </cr-link-row>
   </if>
         <cr-link-row class="hr" id="diagnostics"
-            start-icon="[[rowIcons_.diagnostics]]"
+            start-icon="os-settings:about-diagnostics"
             on-click="onDiagnosticsClick_"
             label="$i18n{aboutDiagnostics}"
-            sub-label="[[getDiagnosticsSublabel_()]]"
+            sub-label="$i18n{aboutDiagnosticseDescription}"
             external
             deep-link-focus-id$="[[Setting.kDiagnostics]]">
         </cr-link-row>
         <cr-link-row class="hr" id="firmwareUpdates"
-            start-icon="[[rowIcons_.firmwareUpdates]]"
+            start-icon="os-settings:about-firmware-updates"
             on-click="onFirmwareUpdatesClick_"
             label="$i18n{aboutFirmwareUpdates}"
             sub-label="[[getFirmwareSublabel_(firmwareUpdateCount_)]]"
@@ -297,7 +274,7 @@
           </div>
         </cr-link-row>
         <cr-link-row class="hr" id="detailedBuildInfoTrigger"
-            start-icon="[[rowIcons_.additionalDetails]]"
+            start-icon="os-settings:about-additional-details"
             on-click="onDetailedBuildInfoClick_"
             label="$i18n{aboutDetailedBuildInfo}"
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -309,9 +286,7 @@
         </cr-link-row>
       </settings-card>
 
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <crostini-settings-card prefs="{{prefs}}"></crostini-settings-card>
-      </template>
+      <crostini-settings-card prefs="{{prefs}}"></crostini-settings-card>
 
       <settings-card id="copyrightCard">
         <div class="settings-box padded block first">
@@ -369,79 +344,77 @@
     </template>
 
     <!-- Crostini settings subpages -->
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-      <template is="dom-if" route-path="/crostini/details">
-        <os-settings-subpage page-title="$i18n{crostiniPageLabel}">
-          <settings-crostini-subpage prefs="{{prefs}}">
-          </settings-crostini-subpage>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/details">
+      <os-settings-subpage page-title="$i18n{crostiniPageLabel}">
+        <settings-crostini-subpage prefs="{{prefs}}">
+        </settings-crostini-subpage>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/androidAdb">
-        <os-settings-subpage page-title="$i18n{crostiniArcAdbTitle}">
-          <settings-crostini-arc-adb prefs="{{prefs}}">
-          </settings-crostini-arc-adb>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/androidAdb">
+      <os-settings-subpage page-title="$i18n{crostiniArcAdbTitle}">
+        <settings-crostini-arc-adb prefs="{{prefs}}">
+        </settings-crostini-arc-adb>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/portForwarding">
-        <os-settings-subpage page-title="$i18n{crostiniPortForwarding}">
-          <settings-crostini-port-forwarding prefs="{{prefs}}">
-          </settings-crostini-port-forwarding>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/portForwarding">
+      <os-settings-subpage page-title="$i18n{crostiniPortForwarding}">
+        <settings-crostini-port-forwarding prefs="{{prefs}}">
+        </settings-crostini-port-forwarding>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/exportImport">
-        <os-settings-subpage page-title="$i18n{crostiniExportImportTitle}">
-          <settings-crostini-export-import prefs="{{prefs}}">
-          </settings-crostini-export-import>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/exportImport">
+      <os-settings-subpage page-title="$i18n{crostiniExportImportTitle}">
+        <settings-crostini-export-import prefs="{{prefs}}">
+        </settings-crostini-export-import>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/sharedPaths">
-        <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
-          <settings-guest-os-shared-paths
-              guest-os-type="crostini" prefs="{{prefs}}">
-          </settings-guest-os-shared-paths>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/sharedPaths">
+      <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
+        <settings-guest-os-shared-paths
+            guest-os-type="crostini" prefs="{{prefs}}">
+        </settings-guest-os-shared-paths>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/sharedUsbDevices">
-        <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-          <settings-crostini-shared-usb-devices prefs="{{prefs}}">
-          </settings-crostini-shared-usb-devices>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/sharedUsbDevices">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+        <settings-crostini-shared-usb-devices prefs="{{prefs}}">
+        </settings-crostini-shared-usb-devices>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/crostini/extraContainers">
-        <os-settings-subpage page-title="$i18n{crostiniExtraContainersLabel}">
-          <settings-crostini-extra-containers guest-os-type="crostini">
-          </settings-crostini-extra-containers>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/crostini/extraContainers">
+      <os-settings-subpage page-title="$i18n{crostiniExtraContainersLabel}">
+        <settings-crostini-extra-containers guest-os-type="crostini">
+        </settings-crostini-extra-containers>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/bruschetta/details">
-        <os-settings-subpage page-title="$i18n{bruschettaPageLabel}">
-          <settings-bruschetta-subpage prefs="{{prefs}}">
-          </settings-bruschetta-subpage>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/bruschetta/details">
+      <os-settings-subpage page-title="$i18n{bruschettaPageLabel}">
+        <settings-bruschetta-subpage prefs="{{prefs}}">
+        </settings-bruschetta-subpage>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
-        <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-          <settings-guest-os-shared-usb-devices guest-os-type="bruschetta"
-            prefs="{{prefs}}">
-          </settings-guest-os-shared-usb-devices>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+        <settings-guest-os-shared-usb-devices guest-os-type="bruschetta"
+          prefs="{{prefs}}">
+        </settings-guest-os-shared-usb-devices>
+      </os-settings-subpage>
+    </template>
 
-      <template is="dom-if" route-path="/bruschetta/sharedPaths">
-        <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
-          <settings-guest-os-shared-paths
-              guest-os-type="bruschetta" prefs="{{prefs}}">
-          </settings-guest-os-shared-paths>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/bruschetta/sharedPaths">
+      <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
+        <settings-guest-os-shared-paths
+            guest-os-type="bruschetta" prefs="{{prefs}}">
+        </settings-guest-os-shared-paths>
+      </os-settings-subpage>
     </template>
 
     <!-- Internal subpages -->

@@ -22,7 +22,7 @@ namespace {
 class TestReceivingUiHandler : public ReceivingUiHandler {
  public:
   TestReceivingUiHandler() = default;
-  ~TestReceivingUiHandler() override {}
+  ~TestReceivingUiHandler() override = default;
 
   void DisplayNewEntries(
       const std::vector<const SendTabToSelfEntry*>& new_entries) override {

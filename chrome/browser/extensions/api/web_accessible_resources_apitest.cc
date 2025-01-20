@@ -243,11 +243,11 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
     // content.js
     static constexpr char kTestScript[] = R"(
       // Verify that web accessible resource can be fetched.
-      async function run(isAllowed, filename, identifier) {
+      async function run(isAllowed, filename, identifier, query = '') {
         return new Promise(async resolve => {
           // Verify URL.
-          let expected = chrome.runtime.getURL(filename);
-          let url = `chrome-extension://${identifier}/${filename}`;
+          let expected = chrome.runtime.getURL(`${filename}${query}`);
+          let url = `chrome-extension://${identifier}/${filename}${query}`;
           chrome.test.assertEq(isAllowed, expected == url);
 
           // Verify contents of fetched web accessible resource.
@@ -258,7 +258,13 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
 
           // Fetch web accessible resource.
           fetch(url)
-              .then(result => result.text())
+              .then(result => {
+                // With `use_dynamic_url` set to `true`, we redirect from the
+                // first URL using the GUID to the static extension origin.
+                // Ensure query parameters are not lost in the redirect.
+                chrome.test.assertEq(new URL(result.url).search, query);
+                return result.text();
+              })
               .catch(error => verify(error))
               .then(text => verify(text));
         });
@@ -272,6 +278,7 @@ class WebAccessibleResourcesDynamicUrlScriptingApiTest
       // Run tests with arguments [[isAllowed, filename, identifier]].
       const testCases = [
         [true, 'dynamic_web_accessible_resource.html', dynamicId],
+        [true, 'dynamic_web_accessible_resource.html', dynamicId, '?foo=bar'],
         [true, 'web_accessible_resource.html', id],
         [false, 'web_accessible_resource.html', 'error'],
         [false, 'dynamic_web_accessible_resource.html', 'error'],

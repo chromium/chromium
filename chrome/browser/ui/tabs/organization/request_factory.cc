@@ -107,8 +107,10 @@ void OnTabOrganizationModelExecutionResult(
                                std::move(response_tab_ids), group_id);
   }
 
-  const std::string execution_id =
-      log_entry->log_ai_data_request()->model_execution_info().execution_id();
+  const std::string execution_id = log_entry->log_ai_data_request()
+                                       ->tab_organization()
+                                       .model_execution_info()
+                                       .execution_id();
 
   std::unique_ptr<TabOrganizationResponse> local_response =
       std::make_unique<TabOrganizationResponse>(
@@ -147,8 +149,7 @@ void PerformTabOrganizationExecution(
   // groups, complete without running the model to show the "No groups found"
   // error state.
   bool should_request_organization = valid_tabs > 1;
-  if (valid_tabs == 1 &&
-      base::FeatureList::IsEnabled(features::kTabReorganization)) {
+  if (valid_tabs == 1) {
     const auto* tab_group_model =
         request->tab_datas()[0]->original_tab_strip_model()->group_model();
     should_request_organization =
@@ -209,8 +210,14 @@ void PerformTabOrganizationExecution(
     }
   }
 
-  tab_organization_request.set_allow_reorganizing_existing_groups(
-      base::FeatureList::IsEnabled(features::kTabReorganization));
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    if (request->user_instruction().has_value()) {
+      tab_organization_request.set_user_command(
+          request->user_instruction().value());
+    }
+  }
+
+  tab_organization_request.set_allow_reorganizing_existing_groups(true);
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

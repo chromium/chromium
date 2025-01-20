@@ -89,13 +89,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
         const GURL& page_url,
         const std::string& reason,
         int net_error_code) = 0;
-#if !BUILDFLAG(IS_ANDROID)
     virtual void TriggerUrlFilteringInterstitialExtensionEventIfDesired(
         content::WebContents* web_contents,
         const GURL& page_url,
         const std::string& threat_type,
         safe_browsing::RTLookupResponse rt_lookup_response) = 0;
-#endif
 
     // Gets the NoStatePrefetchContents instance associated with |web_contents|
     // if one exists (i.e., if |web_contents| is being prerendered).
@@ -211,7 +209,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const std::string& reason,
       int net_error_code);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Invokes TriggerUrlFilteringInterstitialExtensionEventIfDesired() on
   // |delegate_|.
   void ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
@@ -219,7 +216,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const GURL& page_url,
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response);
-#endif
 
   const std::string app_locale() const override;
   history::HistoryService* history_service(

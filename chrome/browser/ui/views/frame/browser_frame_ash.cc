@@ -48,15 +48,14 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   BrowserWindowStateDelegate& operator=(const BrowserWindowStateDelegate&) =
       delete;
 
-  ~BrowserWindowStateDelegate() override {}
+  ~BrowserWindowStateDelegate() override = default;
 
   // Overridden from ash::WindowStateDelegate.
   bool ToggleFullscreen(ash::WindowState* window_state) override {
-    // TODO(crbug.com/377507116): Replace CanMaximize() with CanFullscreen().
-    DCHECK(window_state->IsFullscreen() || window_state->CanMaximize());
-    // Windows which cannot be maximized should not be fullscreened.
-    if (!window_state->IsFullscreen() && !window_state->CanMaximize())
+    DCHECK(window_state->IsFullscreen() || window_state->CanFullscreen());
+    if (!window_state->IsFullscreen() && !window_state->CanFullscreen()) {
       return true;
+    }
     chrome::ToggleFullscreenMode(browser_, /*user_initiated=*/true);
     return true;
   }
@@ -86,11 +85,12 @@ BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
 
   // Turn on auto window management if we don't need an explicit bounds.
   // This way the requested bounds are honored.
-  if (!browser->bounds_overridden() && !browser->is_session_restore())
+  if (!browser->bounds_overridden() && !browser->is_session_restore()) {
     SetWindowAutoManaged();
+  }
 }
 
-BrowserFrameAsh::~BrowserFrameAsh() {}
+BrowserFrameAsh::~BrowserFrameAsh() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameAsh, views::NativeWidgetAura overrides:
@@ -155,8 +155,9 @@ void BrowserFrameAsh::GetWindowPlacement(
       }
     }
 
-    if (!used_window_state_restore_bounds)
+    if (!used_window_state_restore_bounds) {
       *bounds = GetWidget()->GetRestoredBounds();
+    }
     *show_state = window->GetProperty(aura::client::kShowStateKey);
   }
 
@@ -258,6 +259,7 @@ bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
 void BrowserFrameAsh::SetWindowAutoManaged() {
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
-  if (browser_view_->browser()->is_type_normal())
+  if (browser_view_->browser()->is_type_normal()) {
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
+  }
 }

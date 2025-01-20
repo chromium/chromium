@@ -41,7 +41,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->routing_id = frame->GetRoutingID();
   frame_info->agent_scheduling_group_id =
       frame->GetAgentSchedulingGroup().id_for_debugging();
-  frame_info->process_id = frame->GetProcess()->GetID();
+  frame_info->process_id = frame->GetProcess()->GetDeprecatedID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()
           ? std::make_optional(frame->GetLastCommittedURL())
@@ -114,7 +114,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   // Execute over all frames appending any frames encountered to the parent's
   // subframe data.
-  frame->ForEachRenderFrameHostWithAction(
+  frame->ForEachRenderFrameHostImplWithAction(
       [web_contents, outermost_frame = frame, type,
        &all_frame_info](RenderFrameHostImpl* rfh) {
         // We've already handled the outermost frame outside of this.
@@ -318,7 +318,7 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     }
 
     // Retrieve prerendering root frames.
-    web_contents->ForEachRenderFrameHost(
+    web_contents->ForEachRenderFrameHostImpl(
         [web_contents, &prerender_root_frames = info->prerender_root_frames](
             RenderFrameHostImpl* rfh) {
           CollectPrerenders(web_contents, rfh, prerender_root_frames);

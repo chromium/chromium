@@ -217,6 +217,17 @@ notes = """
 https://github.com/rust-lang/rfcs/blob/master/text/2582-raw-reference-mir-operator.md
 """
 
+[[audits.anyhow]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.93 -> 1.0.94"
+notes = "No behavioral changes"
+
+[[audits.anyhow]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.94 -> 1.0.95"
+
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
@@ -301,6 +312,24 @@ shipped as binary blobs. They have not been reviewed here.Ability to
 track partial audits is tracked in
 https://github.com/mozilla/cargo-vet/issues/380.
 """
+
+[[audits.bstr]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.10.0 -> 1.11.0"
+notes = "Changes two unsafe blocks to use core::mem::align_of<usize> instead of core::mem::size_of<usize> which shouldn't differ on mainstream platforms."
+
+[[audits.bstr]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.11.0 -> 1.11.1"
+notes = "This release just excludes Unicode data files from being published to crates.io"
+
+[[audits.bstr]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.11.1 -> 1.11.3"
+notes = "No unsafe changes"
 
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -394,6 +423,18 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.18.0 -> 1.19.0"
 notes = "No code changes - just comment changes and adding the track_caller attribute."
 
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.19.0 -> 1.20.0"
+notes = "`unsafe` review can be found at https://crrev.com/c/6096767"
+
+[[audits.bytemuck]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.20.0 -> 1.21.0"
+notes = "Unsafe review at https://chromium-review.googlesource.com/c/chromium/src/+/6111154/"
+
 [[audits.bytemuck_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -440,6 +481,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.7.1 -> 1.8.0"
 notes = "Unsafe review: https://crrev.com/c/5921014"
 
+[[audits.bytemuck_derive]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.8.0 -> 1.8.1"
+notes = "Changes do not impact safety."
+
 [[audits.byteorder]]
 who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -479,6 +526,12 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.7.2 -> 1.8.0"
 notes = "smol change, does not add unsafe code, majority of change is new tests"
+
+[[audits.bytes]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.8.0 -> 1.9.0"
+notes = "Reviewed in https://crrev.com/c/6072366."
 
 [[audits.cfg-if]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -590,6 +643,16 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.18 -> 4.5.20"
 notes = "Trivial changes"
 
+[[audits.clap]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.20 -> 4.5.21"
+
+[[audits.clap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.21 -> 4.5.23"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -668,6 +731,16 @@ criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.18 -> 4.5.20"
 notes = "No new unsafe"
 
+[[audits.clap_builder]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.20 -> 4.5.21"
+
+[[audits.clap_builder]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.21 -> 4.5.23"
+
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -693,6 +766,16 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.7.1 -> 0.7.2"
 notes = "No `.rs` changes in the delta."
+
+[[audits.clap_lex]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.2 -> 0.7.3"
+
+[[audits.clap_lex]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.3 -> 0.7.4"
 
 [[audits.codespan-reporting]]
 who = "danakj@chromium.org"
@@ -774,6 +857,11 @@ delta = "1.0.123 -> 1.0.124"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.124 -> 1.0.126"
+
+[[audits.cxx]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.129 -> 1.0.130"
 
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
@@ -869,6 +957,36 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.128 -> 1.0.129"
 
+[[audits.cxxbridge-cmd]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.129 -> 1.0.130"
+
+[[audits.cxxbridge-cmd]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.130 -> 1.0.131"
+
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.131 -> 1.0.134"
+notes = "No code changes in the delta."
+
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.134 -> 1.0.135"
+notes = """
+Minimal change in `syntax/parse.rs`
+(coming from my https://github.com/dtolnay/cxx/pull/1414)
+"""
+
+[[audits.cxxbridge-cmd]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.135 -> 1.0.136"
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -912,6 +1030,28 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.128 -> 1.0.129"
 
+[[audits.cxxbridge-flags]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.129 -> 1.0.130"
+
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.130 -> 1.0.131"
+notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
+
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.131 -> 1.0.135"
+notes = "No code changes in the delta"
+
+[[audits.cxxbridge-flags]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.135 -> 1.0.136"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"
@@ -936,6 +1076,11 @@ delta = "1.0.123 -> 1.0.124"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.124 -> 1.0.126"
+
+[[audits.cxxbridge-macro]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.129 -> 1.0.130"
 
 [[audits.either]]
 who = "agl@chromium.org"
@@ -986,6 +1131,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.3.5 -> 0.3.6"
 notes = "No unsafe, no crypto, mysterious tables replaced with const expressions"
 
+[[audits.fdeflate]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.3.6 -> 0.3.7"
+
 [[audits.fend-core]]
 who = "jiwan@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -1023,6 +1173,11 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.5.2 -> 1.5.3"
 notes = "No new unsafe, fs, net."
+
+[[audits.fend-core]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.5.3 -> 1.5.5"
 
 [[audits.flate2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1107,6 +1262,29 @@ The delta also contains some changes to `src/ffi/c.rs` which is *NOT* used by Ch
 and therefore hasn't been covered by this partial audit.
 """
 
+[[audits.flate2]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.34 -> 1.0.35"
+notes = "There are no significant code changes in this delta (just one string constant change). Note that prior audits may have been partial."
+
+[[audits.foldhash]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.3"
+notes = """
+`ub-risk-2` review notes can be found in https://crrev.com/c/6071306/5/third_party/rust/chromium_crates_io/vendor/foldhash-0.1.3/src/seed.rs
+
+`does-not-implement-crypto` based on `README.md` which explicitly says that
+\"Foldhash is **not appropriate for any cryptographic purpose**.\"
+"""
+
+[[audits.foldhash]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.1.3 -> 0.1.4"
+notes = "No changes to safety-relevant code"
+
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
@@ -1186,6 +1364,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.7.2 -> 0.7.3"
 notes = "Wrapping math for Fixed type, no new unsafe."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.7.3 -> 0.8.2"
+notes = "No new unsafe, more inlining, checked add. Minor spec compliance issues."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1220,6 +1404,12 @@ No unsafe. The crate's purpose is to find files based on a glob, so it
 uses the fs module for that and returns lists of paths. There's no net
 usage or crypto.
 """
+
+[[audits.glob]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.3.1 -> 0.3.2"
+notes = "Still no unsafe"
 
 [[audits.heck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1278,6 +1468,14 @@ Straightforward diff between 1.0.10 and 1.0.11 - only 3 commits:
 * A touch up of comments
 * And my own PR to make `unsafe` blocks more granular:
   https://github.com/dtolnay/itoa/pull/42
+"""
+
+[[audits.itoa]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.11 -> 1.0.14"
+notes = """
+Unsafe review at https://crrev.com/c/6051067
 """
 
 [[audits.lazy_static]]
@@ -1370,6 +1568,11 @@ I've grepped for `-i cipher`, `-i crypto`, `\bfs\b`, `\bnet\b`, and
 and in `Readme.md`).
 '''
 
+[[audits.miniz_oxide]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.8.0 -> 0.8.2"
+
 [[audits.nom]]
 who = "danakj@chromium.org"
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-1"]
@@ -1396,6 +1599,16 @@ can be found at go/image-crate-chromium-security-review.
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.17.13 -> 0.17.14"
+
+[[audits.png]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.17.14 -> 0.17.15"
+
+[[audits.png]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.17.15 -> 0.17.16"
 
 [[audits.ppv-lite86]]
 who = "danakj@chromium.org"
@@ -1508,6 +1721,17 @@ Biggest change is adding error handling in build.rs.
 Some config related changes in wrapper.rs.
 """
 
+[[audits.proc-macro2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.89 -> 1.0.92"
+notes = """
+I looked at the delta and the previous discussion at
+https://chromium-review.googlesource.com/c/chromium/src/+/5385745/3#message-a8e2813129fa3779dab15acede408ee26d67b7f3
+and the changes look okay to me (including the `unsafe fn from_str_unchecked`
+changes in `wrapper.rs`).
+"""
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1529,6 +1753,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.12.6 -> 0.13.3"
 
+[[audits.prost]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.3 -> 0.13.4"
+
 [[audits.prost-derive]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
@@ -1549,6 +1778,12 @@ notes = "No changes here; presumably a bump of the `prost` crate."
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.12.6 -> 0.13.3"
+
+[[audits.prost-derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.13.3 -> 0.13.4"
+notes = "No code changes in this delta."
 
 [[audits.qr_code]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1586,12 +1821,18 @@ delta = "1.0.35 -> 1.0.36"
 
 [[audits.quote]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.36 -> 1.0.37"
 notes = """
 The delta just 1) inlines/expands `impl ToTokens` that used to be handled via
 `primitive!` macro and 2) adds `impl ToTokens` for `CStr` and `CString`.
 """
+
+[[audits.quote]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.37 -> 1.0.38"
+notes = "Still no unsafe"
 
 [[audits.rand]]
 who = "danakj@chromium.org"
@@ -1633,6 +1874,16 @@ Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no h
 For overall `safe-to-deploy` and `does-not-implement-crypto` I am mostly
 relying on certification by the Chromium engineers who work on the library
 (mostly drott@chromium.org).
+"""
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.25.3"
+notes = """
+Fixes for hdmx processing (use explicit record size), overflow fixes for packed
+point numbers. Fixes for midpoint computation, and follow-up fix to reinstate
+FreeType equivalence. Feature gating experimential spec features.
 """
 
 [[audits.read-fonts]]
@@ -1938,14 +2189,20 @@ delta = "1.0.15 -> 1.0.16"
 
 [[audits.rustversion]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.16 -> 1.0.17"
 notes = "Just updates windows compat"
 
 [[audits.rustversion]]
 who = "Liza Burakova <liza@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.17 -> 1.0.18"
+
+[[audits.rustversion]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.18 -> 1.0.19"
+notes = "No unsafe, just doc changes"
 
 [[audits.semver]]
 who = "danakj@chromium.org"
@@ -1971,6 +2228,12 @@ delta = "1.0.21 -> 1.0.22"
 who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.22 -> 1.0.23"
+
+[[audits.semver]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.23 -> 1.0.24"
+notes = "Minor, `ptr_eq`-related changes."
 
 [[audits.serde]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2055,6 +2318,23 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.213 -> 1.0.214"
 notes = "No unsafe, no crypto"
 
+[[audits.serde]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.214 -> 1.0.215"
+
+[[audits.serde]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.215 -> 1.0.216"
+notes = "The delta makes minor changes in `build.rs` - switching to the `?` syntax sugar."
+
+[[audits.serde]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.216 -> 1.0.217"
+notes = "Minimal changes, nothing unsafe"
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -2135,6 +2415,24 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.213 -> 1.0.214"
 notes = "No changes to unsafe, no crypto"
 
+[[audits.serde_derive]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.214 -> 1.0.215"
+notes = "Minor changes should not impact UB risk"
+
+[[audits.serde_derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.215 -> 1.0.216"
+notes = "The delta adds `#[automatically_derived]` in a few places.  Still no `unsafe`."
+
+[[audits.serde_derive]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.216 -> 1.0.217"
+notes = "No changes"
+
 [[audits.serde_json]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2211,6 +2509,17 @@ New methods for converting Number to i128 or u128 in number.rs
 No new unsafe changes.
 """
 
+[[audits.serde_json]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.132 -> 1.0.133"
+notes = "No changes affecting safety-to-run and still no crypto"
+
+[[audits.serde_json]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.133 -> 1.0.134"
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -2247,6 +2556,11 @@ Reviewed in https://crrev.com/c/5385822
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "0.2.1 -> 0.2.3"
+
+[[audits.serde_json_lenient]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.2.3 -> 0.2.4"
 
 [[audits.simd-adler32]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2333,6 +2647,18 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.24.0 -> 0.24.1"
 notes = "COLRv1 bounds fix, fixes for underflows/overflows."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.24.1 -> 0.26.3"
+notes = "Support for fonts that rely on hinting (like FreeType's \"tricky\" font detection). Overflow fixes, cycle detection in autohinting. cff overflow fixes."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.26.3 -> 0.26.4"
+notes = "Improvements for computing advances for hinted variable fonts, when hvar is missing."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
@@ -2478,6 +2804,11 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.7.0 -> 1.8.0"
 
+[[audits.tinyvec]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.8.0 -> 1.8.1"
+
 [[audits.unicode-ident]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -2498,6 +2829,12 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.12 -> 1.0.13"
 notes = "Lots of table updates, and tables are assumed correct with unsafe `.get_unchecked()`, so ub-risk-2 is appropriate"
+
+[[audits.unicode-ident]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.13 -> 1.0.14"
+notes = "Minimal delta in `.rs` files: new test assertions + doc changes."
 
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

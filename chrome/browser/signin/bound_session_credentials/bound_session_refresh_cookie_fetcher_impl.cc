@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -60,6 +61,29 @@ std::string UpdateDebugInfoAndSerializeToHeader(
   std::string serialized = debug_info.SerializeAsString();
   return base::Base64Encode(serialized);
 }
+
+std::string_view GetRotationHttpResultHistogramName(
+    bool had_previously_received_challenge,
+    bool request_contained_challenge_response) {
+  static constexpr std::string_view kHistogramNameWithoutChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithoutChallenge";
+  static constexpr std::string_view kHistogramNameWithCachedChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithCachedChallenge";
+  static constexpr std::string_view kHistogramNameWithFreshChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithFreshChallenge";
+  if (had_previously_received_challenge) {
+    DUMP_WILL_BE_CHECK(request_contained_challenge_response);
+    return kHistogramNameWithFreshChallenge;
+  }
+
+  return request_contained_challenge_response
+             ? kHistogramNameWithCachedChallenge
+             : kHistogramNameWithoutChallenge;
+}
+
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
@@ -187,6 +211,11 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
               "BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete",
               perfetto::Flow::FromPointer(this), "net_error", net_error);
 
+  base::UmaHistogramSparse(
+      GetRotationHttpResultHistogramName(
+          IsChallengeReceived(), sec_session_challenge_response_.has_value()),
+      headers ? headers->response_code() : net_error);
+
   std::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
   if (challenge_header_value) {
@@ -240,6 +269,12 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
   if (response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
     // Server error 5xx.
     return Result::kServerTransientError;
+  }
+
+  if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+    // Treat proxy errors as connection errors. It makes sense to retry again
+    // once the user responds to the authentication challenge.
+    return Result::kConnectionError;
   }
 
   if (response_code >= net::HTTP_BAD_REQUEST) {

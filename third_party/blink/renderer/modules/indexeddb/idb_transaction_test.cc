@@ -86,7 +86,7 @@ class IDBTransactionTest : public testing::Test,
     auto* execution_context = scope.GetExecutionContext();
 
     db_ = MakeGarbageCollected<IDBDatabase>(
-        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
+        execution_context, mojo::NullAssociatedReceiver(),
         mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);

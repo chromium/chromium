@@ -105,8 +105,9 @@ CastActivityManager::CastActivityManager(
   for (const auto& sink_id_session : session_tracker_->GetSessions()) {
     const MediaSinkInternal* sink =
         media_sink_service_->GetSinkById(sink_id_session.first);
-    if (!sink)
+    if (!sink) {
       break;
+    }
     AddNonLocalActivity(*sink, *sink_id_session.second);
   }
   session_tracker_->AddObserver(this);
@@ -189,8 +190,9 @@ void CastActivityManager::LaunchSessionParsed(
   // function is a default constructed `result`, which is supposed to be
   // ignored.
   std::optional<base::Value> opt_result = std::nullopt;
-  if (result.has_value() && !result->is_none())
+  if (result.has_value() && !result->is_none()) {
     opt_result = std::move(*result);
+  }
 
   DoLaunchSessionParams params(route, cast_source, sink, origin,
                                frame_tree_node_id, std::move(opt_result),
@@ -295,10 +297,12 @@ AppActivity* CastActivityManager::FindActivityForAutoJoin(
       [&cast_source, &origin, frame_tree_node_id](const auto& pair) {
         AutoJoinPolicy policy = cast_source.auto_join_policy();
         const AppActivity* activity = pair.second;
-        if (!activity->route().is_local())
+        if (!activity->route().is_local()) {
           return false;
-        if (!cast_source.ContainsApp(activity->app_id()))
+        }
+        if (!cast_source.ContainsApp(activity->app_id())) {
           return false;
+        }
         return activity->HasJoinableClient(policy, origin, frame_tree_node_id);
       });
   return it == app_activities_.end() ? nullptr : it->second;
@@ -818,8 +822,9 @@ const MediaRoute* CastActivityManager::GetRoute(
 std::vector<MediaRoute> CastActivityManager::GetRoutes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<MediaRoute> routes;
-  for (const auto& activity : activities_)
+  for (const auto& activity : activities_) {
     routes.push_back(activity.second->route());
+  }
 
   return routes;
 }
@@ -1037,8 +1042,9 @@ void CastActivityManager::HandleLaunchSessionResponseFailures(
                  PresentationConnectionCloseReason::CONNECTION_ERROR);
 
   if (result_code != mojom::RouteRequestResultCode::USER_NOT_ALLOWED &&
-      result_code != mojom::RouteRequestResultCode::NOTIFICATION_DISABLED)
+      result_code != mojom::RouteRequestResultCode::NOTIFICATION_DISABLED) {
     SendFailedToCastIssue(params.sink.id(), params.route.media_route_id());
+  }
 }
 
 void CastActivityManager::HandleLaunchSessionResponseMiddleStages(
@@ -1116,8 +1122,9 @@ std::string CastActivityManager::ChooseAppId(
     const MediaSinkInternal& sink) const {
   const auto& sink_capabilities = sink.cast_data().capabilities;
   for (const auto& info : source.app_infos()) {
-    if (sink_capabilities.HasAll(info.required_capabilities))
+    if (sink_capabilities.HasAll(info.required_capabilities)) {
       return info.app_id;
+    }
   }
   DUMP_WILL_BE_NOTREACHED() << "Can't determine app ID from capabilities.";
   return source.app_infos()[0].app_id;
@@ -1174,8 +1181,9 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
       frame_tree_node_id(frame_tree_node_id),
       creation_time(base::Time::Now()),
       callback(std::move(callback)) {
-  if (app_params)
+  if (app_params) {
     this->app_params = app_params->Clone();
+  }
 }
 
 void CastActivityManager::AddMirroringActivityForTest(

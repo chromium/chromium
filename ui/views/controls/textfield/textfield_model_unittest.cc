@@ -63,8 +63,9 @@ class TextfieldModelTest : public ViewsTestBase,
   const std::vector<std::u16string> GetAllSelectionTexts(
       TextfieldModel* model) const {
     std::vector<std::u16string> selected_texts;
-    for (auto range : model->render_text()->GetAllSelections())
+    for (auto range : model->render_text()->GetAllSelections()) {
       selected_texts.push_back(model->GetTextFromRange(range));
+    }
     return selected_texts;
   }
 
@@ -73,8 +74,9 @@ class TextfieldModelTest : public ViewsTestBase,
       std::vector<std::u16string> expected_selected_texts) const {
     std::vector<std::u16string> selected_texts = GetAllSelectionTexts(model);
     EXPECT_EQ(expected_selected_texts.size(), selected_texts.size());
-    for (size_t i = 0; i < selected_texts.size(); ++i)
+    for (size_t i = 0; i < selected_texts.size(); ++i) {
       EXPECT_EQ(expected_selected_texts[i], selected_texts[i]);
+    }
   }
 
   bool composition_text_confirmed_or_cleared_ = false;
@@ -963,9 +965,10 @@ TEST_F(TextfieldModelTest, SelectWordTest_MixScripts) {
       0);
   for (size_t i = 0; i < word_and_cursor.size(); ++i) {
     model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
-    for (size_t j = 0; j < i; ++j)
+    for (size_t j = 0; j < i; ++j) {
       model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                        gfx::SELECTION_NONE);
+    }
     model.SelectWord();
     SelectWordTestVerifier(model, base::WideToUTF16(word_and_cursor[i].word),
                            word_and_cursor[i].cursor);

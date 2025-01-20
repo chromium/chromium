@@ -18,8 +18,8 @@
 
 class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  MultiTabLoadingPageLoadMetricsBrowserTest() {}
-  ~MultiTabLoadingPageLoadMetricsBrowserTest() override {}
+  MultiTabLoadingPageLoadMetricsBrowserTest() = default;
+  ~MultiTabLoadingPageLoadMetricsBrowserTest() override = default;
 
  protected:
   GURL GetTestURL() { return embedded_test_server()->GetURL("/simple.html"); }

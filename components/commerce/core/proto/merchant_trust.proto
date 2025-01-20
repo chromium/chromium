@@ -31,4 +31,7 @@ message MerchantTrustSignalsV2 {
 
   // Whether proactively showing message is disabled for the merchant.
   optional bool proactive_message_disabled = 7;
+
+  // Summary of shoppers' reviews.
+  optional string shopper_voice_summary = 8;
 }

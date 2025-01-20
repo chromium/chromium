@@ -2438,7 +2438,9 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
             request.url, request.site_for_cookies,
             request.trusted_params->isolation_info.top_frame_origin(),
             URLLoader::CalculateCookieSettingOverrides(
-                net::CookieSettingOverrides(), request));
+                /*factory_overrides=*/net::CookieSettingOverrides(),
+                /*devtools_overrides=*/net::CookieSettingOverrides(), request,
+                /*emit_metrics=*/false));
   }
 
   ResourceRequest CreateNoCorsResourceRequest(

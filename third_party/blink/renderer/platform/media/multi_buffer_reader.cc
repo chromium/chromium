@@ -99,19 +99,24 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
                                     &buffers);
   int64_t bytes_read = 0;
   for (auto& buffer : buffers) {
-    if (buffer->end_of_stream())
+    if (buffer->end_of_stream()) {
       break;
-    int64_t offset = pos & ((1LL << multibuffer_->block_size_shift()) - 1);
-    if (offset > static_cast<int64_t>(buffer->data_size()))
+    }
+    const size_t offset = pos & ((1LL << multibuffer_->block_size_shift()) - 1);
+    if (offset > buffer->size()) {
       break;
-    int64_t tocopy = std::min(len - bytes_read, buffer->data_size() - offset);
-    memcpy(data, buffer->data() + offset, static_cast<size_t>(tocopy));
+    }
+    const auto tocopy =
+        std::min<size_t>(len - bytes_read, buffer->size() - offset);
+    memcpy(data, buffer->data().data() + offset, tocopy);
     data += tocopy;
     bytes_read += tocopy;
-    if (bytes_read == len)
+    if (bytes_read == len) {
       break;
-    if (block(pos + tocopy) != block(pos) + 1)
+    }
+    if (block(pos + tocopy) != block(pos) + 1) {
       break;
+    }
     pos += tocopy;
   }
   return bytes_read;

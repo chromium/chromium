@@ -115,7 +115,8 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
                             const std::string& password) {
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email, kNewUserGaiaId);
+    fake_gaia_mixin_.fake_gaia()->MapEmailToGaiaId(email,
+                                                   GaiaId(kNewUserGaiaId));
 
     auto* context =
         LoginDisplayHost::default_host()->GetWizardContextForTesting();

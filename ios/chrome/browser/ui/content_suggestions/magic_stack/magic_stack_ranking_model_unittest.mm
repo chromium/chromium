@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -208,7 +210,9 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
-                 didRemoveItem:(MagicStackModule*)item {
+                 didRemoveItem:(MagicStackModule*)item
+                       animate:(BOOL)animate
+                withCompletion:(ProceduralBlock)completion {
 }
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
@@ -236,7 +240,8 @@ class MagicStackRankingModelTest : public PlatformTest {
         segmentation_platform::kEphemeralModuleBackendRankerTestOverride,
         "price_tracking_notification_promo");
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
+        {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}},
+        {kIOSDisableParcelTracking});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -637,7 +642,9 @@ TEST_F(MagicStackRankingModelTest, TestMostVisitedTilesMediatorDelegate) {
                                          atIndex:1]);
   [_magicStackRankingModel didReceiveInitialMostVistedTiles];
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
+                                   didRemoveItem:[OCMArg any]
+                                         animate:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
   [_magicStackRankingModel removeMostVisitedTilesModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
@@ -665,7 +672,9 @@ TEST_F(MagicStackRankingModelTest,
 
   _magicStackRankingModel.delegate = mockDelegate;
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
+                                   didRemoveItem:[OCMArg any]
+                                         animate:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
   [_magicStackRankingModel removeSafetyCheckModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
@@ -677,7 +686,7 @@ TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
   _magicStackRankingModel.delegate = mockDelegate;
-  [_magicStackRankingModel removeTipsModule];
+  [_magicStackRankingModel removeTipsModuleWithCompletion:nil];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 
   FakeMagicStackRankingModelDelegate* fakeDelegate =
@@ -692,8 +701,10 @@ TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
 
   _magicStackRankingModel.delegate = mockDelegate;
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
-  [_magicStackRankingModel removeTipsModule];
+                                   didRemoveItem:[OCMArg any]
+                                         animate:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
+  [_magicStackRankingModel removeTipsModuleWithCompletion:nil];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
@@ -725,7 +736,7 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
         {{segmentation_platform::features::
               kEphemeralCardRankerForceShowCardParam,
           segmentation_platform::kPriceTrackingNotificationPromo}}}},
-      {});
+      {kIOSDisableParcelTracking});
   commerce::MockShoppingService* shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForProfile(GetProfile()));

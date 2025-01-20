@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Webview Win Win10.20h2 Win11 Win11-arm64 iOS17-simulator ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -30,7 +30,7 @@ crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.
 crbug.com/1508160 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.html [ Skip ]
 
 # As above. The tests in this file load very large values (128kB) into memory, making execution excessively slow.
-crbug.com/1506625 [ Linux ] external/wpt/IndexedDB/request-event-ordering2.html [ Skip ]
+crbug.com/1506625 [ Linux ] external/wpt/IndexedDB/request-event-ordering.html [ Skip ]
 
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
@@ -52,6 +52,9 @@ crbug.com/856601 [ Linux ] fast/css/visited-link-hang.html [ Pass Timeout ]
 # Flaky-timeout on MSAN; incorrectly attributed to crbug.com/856601
 crbug.com/856601 [ Linux ] fast/js/toString-stack-overflow.html [ Pass Timeout ]
 
+# Failing on Linux MSAN
+crbug.com/379199004 [ Linux ] external/wpt/ai/translator/* [ Failure ]
+
 # Sheriff 2019-02-13
 crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout ]
 
@@ -60,9 +63,6 @@ crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout
 
 
 crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.tentative.any.serviceworker.html [ Pass Timeout ]
-
-# Sheriff 2020-01-10
-crbug.com/1041052 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Timeout ]
 
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
@@ -74,12 +74,10 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-
 # Sheriff 2021-03-22
 
 # Sheriff 2021-05-31
-crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Pass Timeout ]
+crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Pass Timeout Crash ]
 
 # Sheriff 2021-06-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
-
-# Sheriff 2022-08-29
 
 # Flaking on WebKit Linux MSAN
 crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
@@ -111,6 +109,8 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Timeout ]
 
+# Slow on MSAN
+crbug.com/386487960 external/wpt/dom/nodes/Element-classlist.html [ Pass Timeout ]
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
 
@@ -130,3 +130,23 @@ crbug.com/377507247 external/wpt/webidl/ecmascript-binding/window-named-properti
 
 # Gardener 2024-11-12
 crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
+
+# Failing on WebKit Linux MSAN
+crbug.com/40667709 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Failure Pass Timeout ]
+crbug.com/40667709 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html [ Failure Pass Timeout ]
+
+# Gardener 2025-01-08
+crbug.com/388428511 [ Linux ] external/wpt/webrtc/protocol/crypto-suite.https.html [ Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Crash Failure Pass ]
+crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Crash Failure Pass ]
+
+# Gardener 2025-01-10
+# Very slow under MSAN. Similar to crbug.com/40948871.
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.serviceworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.sharedworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.worker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.serviceworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.sharedworker.html [ Skip ]
+crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Skip ]

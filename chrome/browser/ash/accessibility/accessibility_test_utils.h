@@ -13,7 +13,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/ime/input_method_base.h"
@@ -21,7 +21,7 @@
 
 namespace ash {
 
-using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
+using ContextType = ::extensions::browser_test_util::ContextType;
 using ::extensions::ErrorConsole;
 
 enum class ManifestVersion { kTwo, kThree };
@@ -112,7 +112,7 @@ class HistogramWaiter {
   void Wait();
   void OnHistogramCallback(const char* metric_name,
                            uint64_t name_hash,
-                           base::HistogramBase::Sample sample);
+                           base::HistogramBase::Sample32 sample);
 
  private:
   std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>

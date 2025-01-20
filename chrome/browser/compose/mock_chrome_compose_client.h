@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_COMPOSE_MOCK_CHROME_COMPOSE_CLIENT_H_
 
 #include "chrome/browser/compose/chrome_compose_client.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 

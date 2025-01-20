@@ -40,14 +40,14 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   void Trace(Visitor*) const override;
 
   void requestCacheNames(
-      protocol::Maybe<String> maybe_security_origin,
-      protocol::Maybe<String> maybe_storage_key,
-      protocol::Maybe<protocol::Storage::StorageBucket> maybe_storage_bucket,
+      std::optional<String> maybe_security_origin,
+      std::optional<String> maybe_storage_key,
+      std::unique_ptr<protocol::Storage::StorageBucket> maybe_storage_bucket,
       std::unique_ptr<RequestCacheNamesCallback>) override;
   void requestEntries(const String& cache_id,
-                      protocol::Maybe<int> skip_count,
-                      protocol::Maybe<int> page_size,
-                      protocol::Maybe<String> path_filter,
+                      std::optional<int> skip_count,
+                      std::optional<int> page_size,
+                      std::optional<String> path_filter,
                       std::unique_ptr<RequestEntriesCallback>) override;
   void deleteCache(const String& cache_id,
                    std::unique_ptr<DeleteCacheCallback>) override;

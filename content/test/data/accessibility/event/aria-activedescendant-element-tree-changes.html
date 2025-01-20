@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<label for="input">Mammal</label>
+<input id="input" type="text" aria-controls="listbox">
+<div id="listbox" role="listbox" aria-label="list">
+  <div role="option">Otter</div>
+  <div>
+    <template shadowrootmode="open">
+      <div role="option">Opossum</div>
+    </template>
+  </div>
+</div>
+
+<script>
+  var input = document.getElementById("input");
+  input.focus();
+
+  var listbox = document.getElementById("listbox");
+
+  var opt1 = listbox.firstElementChild;
+
+  var opt2 = document.createElement("div");
+  opt2.role = "option";
+  opt2.innerText = "Ocelot";
+
+  var shadow_host = opt1.nextElementSibling;
+  var opt3 = shadow_host.shadowRoot.firstElementChild;
+
+  const go_passes = [
+    /* Vanilla example */
+    () => input.ariaActiveDescendantElement = opt1,
+    /* Set aria-activedescendant and then move out of shadow DOM */
+    () => input.ariaActiveDescendantElement = opt2,
+    () => listbox.append(opt2),
+    /* Set aria-activedescendant and then add element to DOM */
+    () => input.ariaActiveDescendantElement = opt3,
+    () => listbox.append(opt3),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

@@ -9,8 +9,8 @@
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a135m
-#             android-sm-a235m android-sm-s911u1 android-moto-g-power-5g---2023
+#             android-pixel-6 android-shield-android-tv android-sm-a137f
+#             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -221,7 +220,6 @@ crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
 # Test is too slow for old phones and laptops, and in Debug and ASAN.
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ android android-moto-g-power-5G---2023 ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
@@ -257,8 +255,8 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ win ] Pixel_RenderPasses [ Skip ]
 [ fuchsia ] Pixel_RenderPasses [ Skip ]
 
-# This test ensures correctness of a delegated compositing implementation,
-# enabled today in Lacros. So far verified only on ChromeOS and MacOS.
+# This test ensures correctness of a delegated compositing implementation.
+# So far verified only on ChromeOS and MacOS.
 [ linux ] Pixel_PerspectiveTest [ Skip ]
 [ android ] Pixel_PerspectiveTest [ Skip ]
 [ win ] Pixel_PerspectiveTest [ Skip ]
@@ -266,6 +264,14 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 
 # Fuchsia devices timeout due to this test drawing 300 frames before completion.
 [ fuchsia ] Pixel_Canvas2DBlitText [ Skip ]
+
+# This test specifies to use GL for the ANGLE backend, which conflicts with
+# Graphite since Metal is required for that on Mac.
+[ mac graphite-enabled ] Pixel_OffscreenCanvasIBRCWorkerAngleGL [ Skip ]
+
+# Relies on WebglExtension_EXT_color_buffer_half_float, which is not available
+# on these devices.
+crbug.com/1372155 [ android android-sm-a137f ] Pixel_WebGLFloat [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -320,11 +326,13 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Nexus 5x consistently fail for View transition capture on webview.
-crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
-
 # Flaky timeout on Linux
 crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
+
+crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
+
+crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
+crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -334,7 +342,7 @@ crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 [ android android-pixel-2 ] Pixel_SVGHuge [ Slow ]
 [ android android-pixel-4 ] Pixel_SVGHuge [ Slow ]
 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
-[ android android-sm-a135m ] Pixel_SVGHuge [ Slow ]
+[ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a235m ] Pixel_SVGHuge [ Slow ]
 # Also applies to Windows arm64.
 [ win qualcomm-0x41333430 ] Pixel_SVGHuge [ Slow ]
@@ -348,6 +356,9 @@ crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 
 # Long-running test, can flakily time out on old/slow hardware.
 [ mac amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
+
+# Hitting timeout with graphite
+crbug.com/381211724 [ mac amd-0x679e release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
 
 # Mac Asan timeouts
 crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUDisplayP3 [ Slow ]
@@ -370,6 +381,9 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
+# Nexus 5x consistently fail for View transition capture on webview.
+crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
+
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
@@ -380,7 +394,6 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 # should have made this test flaky instead of always failing. Need to
 # investigate later. Filed a bug to track the debug.
 crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
-
 
 # Times out / fails on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
@@ -400,37 +413,13 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
-crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
-
+crbug.com/40241616 [ android android-sm-a137f ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
-
-# Lacros consistent failures on CrOS devices, skip to save some time
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_MP4 [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_VP9 [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLContextRestored [ Skip ]
-crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
-
-# jacuzzi produces the wrong aspect ratio image
-crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-
-
-crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
-crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
-
-
-# Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ asan graphite-enabled intel mac no-clang-coverage release ] Pixel_CSSFilterEffects [ Failure ]
-crbug.com/1494227 [ graphite-enabled intel mac no-asan no-clang-coverage ] Pixel_CSSFilterEffects [ Failure ]
-
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
-
-crbug.com/354152172 [ amd-0x67ef angle-opengl mac ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
-crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
@@ -442,7 +431,6 @@ crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displ
 crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
 
-
 # Flaky failures vulkan queue submission, causing dchecks on CQ
 # finder:disable-narrowing
 crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
@@ -451,15 +439,8 @@ crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_
 crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 # finder:enable-narrowing
 
-# ChromeOS Volteer failures
-crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
-
-# Broadly flaky unsymbolized crashes on Jacuzzi
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
-
 # ChromeOS failures
 crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer-skia-gl ] Pixel_RenderPasses [ Failure ]
-
 
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
@@ -477,13 +458,18 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Flaky on Mac ASAN
-crbug.com/372055518 [ mac asan ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 # Flaky failure on Pixel 6
 crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vulkan ] Pixel_Video_HEVC [ Failure ]
 
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
+
+# Flaky timeout on Mac Retina Debug (AMD) pixel_skia_gold_metal_passthrough_graphite_test
+crbug.com/389654097 [ mac amd debug angle-metal graphite-enabled ] Pixel_CSSFilterEffects [ Failure ]
+
+crbug.com/389977403 [ win11 nvidia-0x2783 ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

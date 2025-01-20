@@ -95,6 +95,16 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
       return "BlingPrototyping";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION:
+      return "PasswordChangeSubmission";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
+      return "ScamDetection";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
+      return "PermissionsAi";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
+      return "WritingAssistanceApi";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

@@ -6,9 +6,8 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
+import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
-import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
-import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
@@ -29,8 +28,10 @@ enum ModelAvailabilityCheckResult {
   // The model is not available because the feature flag gating on-device model
   // execution was disabled.
   kNoFeatureNotEnabled = 4,
+  // DEPRECATED: it's now split into kModelNotEligible and
+  // kNoInsufficientDiskSpace.
   // The model is not available because there was no on-device model available.
-  kNoModelNotAvailable = 5,
+  // kNoModelNotAvailable = 5,
   // The model is not available because the on-device model was available but
   // there was not an execution config available for the feature.
   kNoConfigNotAvailableForFeature = 6,
@@ -61,6 +62,10 @@ enum ModelAvailabilityCheckResult {
   kNoValidationPending = 15,
   // Validation failed for the model.
   kNoValidationFailed = 16,
+  // The device is not eligible for running on-device model.
+  kModelNotEligible = 17,
+  // The device does not have sufficient disk space for the on-device model.
+  kNoInsufficientDiskSpace = 18,
 
   // Append new line here
 };
@@ -92,9 +97,7 @@ interface AIManagerCreateSummarizerClient {
 
 // The manager that could create a new session for the model.
 interface AIManager {
-  // Returns if it is possible to create a language model. For example, when
-  // the service in charge of model loading and session creation is not
-  // available, this should return false.
+  // Returns language model availability info from the underlying service.
   CanCreateLanguageModel() => (ModelAvailabilityCheckResult result);
   // Creates a new language model.
   // Note that this could return nullptr even if the previous
@@ -106,9 +109,7 @@ interface AIManager {
     pending_remote<AIManagerCreateLanguageModelClient> client,
     AILanguageModelCreateOptions options
   );
-  // Returns if it is possible to create a summarizer. For example, when
-  // the service in charge of model loading and session creation is not
-  // available, this should return false.
+  // Returns summarizer model availability info from the underlying service.
   CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
   // Creates a summarizer.
   CreateSummarizer(
@@ -118,12 +119,18 @@ interface AIManager {
   GetModelInfo() => (
     AIModelInfo model_info
   );
+  // Returns writer model availability info from the underlying service.
+  CanCreateWriter(AIWriterCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
   // Creates a new AIWriter, and returns it through the passed client. When
   // the passed client is disconnected, the creation process will be aborted.
   // `shared_context` in `options` is a string that is set in the
   // AIWriterCreateOptions when the JS API `ai.writer.create()` is called.
   CreateWriter(pending_remote<AIManagerCreateWriterClient> client,
                AIWriterCreateOptions options);
+  // Returns rewriter model availability info from the underlying service.
+  CanCreateRewriter(AIRewriterCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
   // Creates a new AIRewriter, and returns it through the passed client.
   // When the passed client is disconnected, the creation process will be
   // aborted.

@@ -6,18 +6,20 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -25,6 +27,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -55,15 +58,8 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     public static class CardBenefitsPreferenceTestParams implements ParameterProvider {
         private static List<ParameterSet> sCardBenefitsPreferenceTestParams =
                 Arrays.asList(
-                        new ParameterSet()
-                                .value(true, true)
-                                .name("AmexFlagIsEnabledAndCapitalOneFlagIsEnabled"),
-                        new ParameterSet()
-                                .value(true, false)
-                                .name("AmexFlagIsEnabledAndCapitalOneFlagIsDisabled"),
-                        new ParameterSet()
-                                .value(false, true)
-                                .name("AmexFlagIsDisabledAndCapitalOneFlagIsEnabled"));
+                        new ParameterSet().value(true).name("AmexFlagIsEnabled"),
+                        new ParameterSet().value(false).name("AmexFlagIsDisabled"));
 
         @Override
         public List<ParameterSet> getParameters() {
@@ -83,10 +79,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE
-    })
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS})
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenFlagsAreOffAndAutofillIsEnabled_notShown()
             throws Exception {
@@ -99,17 +92,15 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     }
 
     // Test to verify that the card benefit preference is not displayed when autofill credit
-    // card is disabled, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
+    // card is disabled, across both combinations of the flag
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS.
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
-    public void testCardBenefitsPref_whenAutofillIsDisabled_notShown(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+    public void testCardBenefitsPref_whenAutofillIsDisabled_notShown(boolean isAmexFlagEnabled)
+            throws Exception {
+        setCardBenefitsFlags(isAmexFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
@@ -118,43 +109,30 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         assertThat(cardBenefitsPref).isNull();
     }
 
-    // Test to verify that the card benefit preference is displayed when autofill credit
-    // card is enabled, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS})
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
-    public void testCardBenefitsPref_whenAutofillIsEnabled_shown(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+    public void testCardBenefitsPref_whenAutofillIsEnabled_shown() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
-        Assert.assertEquals(
+        assertEquals(
                 cardBenefitsPref.getTitle(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_label));
-        Assert.assertEquals(
+        assertEquals(
                 cardBenefitsPref.getSummary(),
                 activity.getString(
                         R.string.autofill_settings_page_card_benefits_preference_summary));
     }
 
-    // Test to verify that clicking the card benefit preference opens the credit card benefits
-    // fragment, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE.
-    // i.e. (True, True), (True, False), (False, True)
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
-    public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment(
-            boolean isAmexFlagEnabled, boolean isCaptialOneFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isCaptialOneFlagEnabled);
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS})
+    public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment()
+            throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
@@ -163,19 +141,15 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         ThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
         mRule.waitForFragmentToBeShown();
 
-        Assert.assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
+        assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
     }
 
-    private static void setCardBenefitsFlags(
-            boolean isAmexFlagEnabled, boolean isCapOneFlagEnabled) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-                isAmexFlagEnabled);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE,
-                isCapOneFlagEnabled);
-        FeatureList.setTestValues(testValues);
+    private static void setCardBenefitsFlags(boolean isAmexFlagEnabled) {
+        FeatureOverrides.newBuilder()
+                .flag(
+                        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+                        isAmexFlagEnabled)
+                .apply();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

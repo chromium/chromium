@@ -29,6 +29,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -692,7 +693,7 @@ void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path) {
     }
   }
 
-  CHECK(false) << "Public slot is invalid.";
+  NOTREACHED() << "Public slot is invalid.";
 }
 
 }  // namespace crypto

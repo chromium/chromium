@@ -57,7 +57,7 @@ PlatformAppBrowserTest::PlatformAppBrowserTest()
   ChromeAppDelegate::DisableExternalOpenForTesting();
 }
 
-PlatformAppBrowserTest::~PlatformAppBrowserTest() {}
+PlatformAppBrowserTest::~PlatformAppBrowserTest() = default;
 
 void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   // Skips ExtensionApiTest::SetUpCommandLine.

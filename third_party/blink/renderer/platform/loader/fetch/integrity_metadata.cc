@@ -17,17 +17,4 @@ IntegrityMetadataPair IntegrityMetadata::ToPair() const {
   return IntegrityMetadataPair(digest_, algorithm_);
 }
 
-bool IntegrityMetadata::SetsEqual(const IntegrityMetadataSet& set1,
-                                  const IntegrityMetadataSet& set2) {
-  if (set1.size() != set2.size())
-    return false;
-
-  for (const IntegrityMetadataPair& metadata : set1) {
-    if (!set2.Contains(metadata))
-      return false;
-  }
-
-  return true;
-}
-
 }  // namespace blink

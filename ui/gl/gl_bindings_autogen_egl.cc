@@ -18,20 +18,14 @@
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/startup_trace.h"
 
 namespace gl {
 
-DriverEGL g_driver_egl;  // Exists in .bss
+DriverEGL g_driver_egl = {};
 
 void DriverEGL::InitializeStaticBindings() {
-#if DCHECK_IS_ON()
-  // Ensure struct has been zero-initialized.
-  auto bytes = base::byte_span_from_ref(*this);
-  for (auto byte : bytes) {
-    DCHECK_EQ(0, byte);
-  };
-#endif
-
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeStaticBindings");
   fn.eglAcquireExternalContextANGLEFn =
       reinterpret_cast<eglAcquireExternalContextANGLEProc>(
           GetGLProcAddress("eglAcquireExternalContextANGLE"));
@@ -266,6 +260,7 @@ void DriverEGL::InitializeStaticBindings() {
 }
 
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -306,6 +301,7 @@ void ClientExtensionsEGL::InitializeClientExtensionSettings() {
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
@@ -425,8 +421,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 }
 
 void DriverEGL::ClearBindings() {
-  auto bytes = base::byte_span_from_ref(*this);
-  std::ranges::fill(bytes, 0);
+  *this = {};
 }
 
 void EGLApiBase::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,

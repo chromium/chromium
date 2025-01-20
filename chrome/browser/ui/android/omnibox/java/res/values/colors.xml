@@ -26,7 +26,6 @@ found in the LICENSE file.
     <color name="locationbar_status_separator_color_light">@color/white_alpha_60</color>
     <color name="locationbar_status_separator_color_incognito">@color/baseline_neutral_variant_60</color>
 
-    <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
     <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>
 
     <color name="branded_url_text_on_dark_bg">@color/baseline_neutral_100</color>

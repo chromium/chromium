@@ -35,12 +35,12 @@
 //
 class PrintPreviewDataStore {
  public:
-  PrintPreviewDataStore() {}
+  PrintPreviewDataStore() = default;
 
   PrintPreviewDataStore(const PrintPreviewDataStore&) = delete;
   PrintPreviewDataStore& operator=(const PrintPreviewDataStore&) = delete;
 
-  ~PrintPreviewDataStore() {}
+  ~PrintPreviewDataStore() = default;
 
   // Get the preview page for the specified `index`.
   void GetPreviewDataForIndex(
@@ -111,11 +111,9 @@ PrintPreviewDataService* PrintPreviewDataService::GetInstance() {
   return base::Singleton<PrintPreviewDataService>::get();
 }
 
-PrintPreviewDataService::PrintPreviewDataService() {
-}
+PrintPreviewDataService::PrintPreviewDataService() = default;
 
-PrintPreviewDataService::~PrintPreviewDataService() {
-}
+PrintPreviewDataService::~PrintPreviewDataService() = default;
 
 void PrintPreviewDataService::GetDataEntry(
     int32_t preview_ui_id,

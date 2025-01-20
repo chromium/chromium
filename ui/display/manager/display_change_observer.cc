@@ -442,8 +442,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfoInternal(
 
   gfx::RoundedCornersF panel_radii;
 
-  if (display::features::IsRoundedDisplayEnabled() &&
-      snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+  if (snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
     panel_radii = internal_panel_radii_.value_or(gfx::RoundedCornersF());
   }
 

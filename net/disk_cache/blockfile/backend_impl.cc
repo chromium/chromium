@@ -10,6 +10,7 @@
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -620,7 +621,7 @@ scoped_refptr<EntryImpl> BackendImpl::OpenNextEntryImpl(
     return nullptr;
 
   const int kListsToSearch = 3;
-  scoped_refptr<EntryImpl> entries[kListsToSearch];
+  std::array<scoped_refptr<EntryImpl>, kListsToSearch> entries;
   if (!iterator->my_rankings) {
     iterator->my_rankings = &rankings_;
     bool ret = false;
@@ -650,7 +651,7 @@ scoped_refptr<EntryImpl> BackendImpl::OpenNextEntryImpl(
 
   int newest = -1;
   int oldest = -1;
-  Time access_times[kListsToSearch];
+  std::array<Time, kListsToSearch> access_times;
   for (int i = 0; i < kListsToSearch; i++) {
     if (entries[i].get()) {
       access_times[i] = entries[i]->GetLastUsed();

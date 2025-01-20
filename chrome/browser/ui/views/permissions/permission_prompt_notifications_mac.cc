@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
+
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"

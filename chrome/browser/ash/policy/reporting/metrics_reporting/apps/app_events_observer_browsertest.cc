@@ -8,7 +8,6 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
@@ -94,8 +93,7 @@ bool IsMetricEventOfType(MetricEventType metric_event_type,
 class AppEventsObserverBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
-  AppEventsObserverBrowserTest()
-      : scoped_feature_list_(kEnableAppEventsObserver) {
+  AppEventsObserverBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     crypto_home_mixin_.ApplyAuthConfig(
         affiliation_mixin_.account_id(),
@@ -144,7 +142,6 @@ class AppEventsObserverBrowserTest
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, PRE_ReportInstalledApp) {

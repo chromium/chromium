@@ -28,15 +28,6 @@ build_webui("build") {
   mojo_files_deps =
       [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
 
-  # TODO(crbug.com/365448173): Get rid of unnecessary mojom files after splitting
-  # lens mojom file.
-  mojo_files = [
-    "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/translate.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/overlay_object.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",
-  ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/lens/core/mojom/lens_ghost_loader.mojom-webui.ts" ]
   webui_context_type = "relative"
 }

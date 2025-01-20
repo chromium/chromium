@@ -19,9 +19,9 @@
 
 namespace safe_browsing {
 
-BinaryFeatureExtractor::BinaryFeatureExtractor() {}
+BinaryFeatureExtractor::BinaryFeatureExtractor() = default;
 
-BinaryFeatureExtractor::~BinaryFeatureExtractor() {}
+BinaryFeatureExtractor::~BinaryFeatureExtractor() = default;
 
 bool BinaryFeatureExtractor::ExtractImageFeatures(
     const base::FilePath& file_path,

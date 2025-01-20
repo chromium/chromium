@@ -11,8 +11,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
@@ -86,6 +86,9 @@ Rule::Restriction DlpEventRestriction2RuleRestriction(
       return Rule::Restriction::kFiles;
     case DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION:
       return Rule::Restriction::kUnknownRestriction;
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Restriction_DlpPolicyEvent_Restriction_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
   }
 }
 
@@ -384,6 +387,8 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
           DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case DlpPolicyEvent_Mode_DlpPolicyEvent_Mode_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
   }
   report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),

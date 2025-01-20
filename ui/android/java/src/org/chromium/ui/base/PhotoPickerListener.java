@@ -8,10 +8,13 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The callback used to indicate what action the user took in the picker. */
+@NullMarked
 public interface PhotoPickerListener {
     /** The action the user took in the picker. */
     @IntDef({

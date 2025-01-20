@@ -124,10 +124,6 @@ public class LocationBarLayoutTest {
         return mActivityTestRule.getActivity().findViewById(R.id.delete_button);
     }
 
-    private ImageButton getMicButton() {
-        return mActivityTestRule.getActivity().findViewById(R.id.mic_button);
-    }
-
     private View getStatusIconView() {
         return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon_frame);
     }

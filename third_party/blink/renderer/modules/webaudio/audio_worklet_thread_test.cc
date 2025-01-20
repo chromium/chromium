@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <tuple>
 
@@ -310,8 +306,8 @@ TEST_P(AudioWorkletThreadInteractionTest,
   // SemiRealtimeAudioWorkletThread, or OfflineAudioWorkletThread with
   // different backing threads.
   constexpr int number_of_threads = 5;
-  std::unique_ptr<WorkerThread> worklet_threads[number_of_threads];
-  Thread* worklet_backing_threads[number_of_threads];
+  std::array<std::unique_ptr<WorkerThread>, number_of_threads> worklet_threads;
+  std::array<Thread*, number_of_threads> worklet_backing_threads;
   for (int i = 0; i < number_of_threads; i++) {
     worklet_threads[i] =
         CreateAudioWorkletThread(has_realtime_constraint_, is_top_level_frame_);

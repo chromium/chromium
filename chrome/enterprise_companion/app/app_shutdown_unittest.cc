@@ -36,9 +36,6 @@ constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
-  MockEnterpriseCompanionService() = default;
-  ~MockEnterpriseCompanionService() override = default;
-
   MOCK_METHOD(void, Shutdown, (base::OnceClosure callback), (override));
   MOCK_METHOD(void, FetchPolicies, (StatusCallback callback), (override));
 };

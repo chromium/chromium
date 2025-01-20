@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 
-#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "build/build_config.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -51,7 +46,17 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   return 0;
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
+int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // Truncate the input.
+  // SAFETY: Wrapping arguments from libFuzzer in a span.
+  auto data_span =
+      UNSAFE_BUFFERS(base::span(data, base::saturated_cast<wtf_size_t>(size)));
+  // Odd sizes are handled in various ways, depending how they arrive.
+  // Let's not worry about that case here.
+  if (data_span.size() % sizeof(UChar)) {
+    return 0;
+  }
+
   test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>();
   page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -60,15 +65,6 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "text/plain", 12));
   blob_info_array->emplace_back(WebBlobInfo::FileForTesting(
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "path", "text/plain"));
-
-  // Odd sizes are handled in various ways, depending how they arrive.
-  // Let's not worry about that case here.
-  if (data_size % sizeof(UChar))
-    return 0;
-
-  // Truncate the input.
-  auto data_span =
-      base::make_span(data, base::saturated_cast<wtf_size_t>(data_size));
 
   // Used to control what kind of extra data is provided to the deserializer.
   unsigned hash = StringHasher::HashMemory(data_span);

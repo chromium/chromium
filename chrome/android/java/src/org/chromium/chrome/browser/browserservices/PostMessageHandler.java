@@ -195,8 +195,6 @@ public class PostMessageHandler implements OriginVerificationListener {
                         mChannel[0].postMessage(new MessagePayload(message), null);
                     }
                 });
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.PostMessage.PostMessageFromClientApp", true);
         return CustomTabsService.RESULT_SUCCESS;
     }
 

@@ -17,8 +17,9 @@ NativeBrowserFrameFactory* factory = nullptr;
 NativeBrowserFrame* NativeBrowserFrameFactory::CreateNativeBrowserFrame(
     BrowserFrame* browser_frame,
     BrowserView* browser_view) {
-  if (!factory)
+  if (!factory) {
     factory = new NativeBrowserFrameFactory;
+  }
   return factory->Create(browser_frame, browser_view);
 }
 

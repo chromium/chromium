@@ -23,10 +23,9 @@ struct TestPreconditionListProvider::PreconditionData {
   ~PreconditionData() = default;
 
   FeaturePromoPrecondition::Identifier identifier;
-  FeaturePromoResult::Failure failure;
   std::string description;
-  bool default_value = true;
-  std::map<const base::Feature*, bool> overrides;
+  FeaturePromoResult default_result = FeaturePromoResult::Success();
+  std::map<const base::Feature*, FeaturePromoResult> overrides;
 };
 
 class TestPreconditionListProvider::TestPrecondition
@@ -39,16 +38,14 @@ class TestPreconditionListProvider::TestPrecondition
 
   // FeaturePromoPrecondition:
   Identifier GetIdentifier() const override { return data_->identifier; }
-  FeaturePromoResult::Failure GetFailure() const override {
-    return data_->failure;
-  }
   const std::string& GetDescription() const override {
     return data_->description;
   }
 
-  bool IsAllowed() const override {
-    const bool* value = base::FindOrNull(data_->overrides, &iph_feature_.get());
-    return value ? *value : data_->default_value;
+  FeaturePromoResult CheckPrecondition(ComputedData&) const override {
+    const auto* result =
+        base::FindOrNull(data_->overrides, &iph_feature_.get());
+    return result ? *result : data_->default_result;
   }
 
  private:
@@ -70,24 +67,22 @@ void TestPreconditionListProvider::ClearExpectedPromoForFutureQueries() {
 
 void TestPreconditionListProvider::Add(
     FeaturePromoPrecondition::Identifier identifier,
-    FeaturePromoResult::Failure failure,
     std::string description,
-    bool initially_allowed) {
+    FeaturePromoResult default_result) {
   auto data = std::make_unique<PreconditionData>();
   data->identifier = identifier;
-  data->failure = failure;
   data->description = description;
-  data->default_value = initially_allowed;
+  data->default_result = default_result;
   data_.emplace_back(std::move(data));
 }
 
 void TestPreconditionListProvider::SetDefault(
     FeaturePromoPrecondition::Identifier id,
-    bool is_allowed) {
+    FeaturePromoResult default_result) {
   bool found = false;
   for (const auto& entry : data_) {
     if (entry->identifier == id) {
-      entry->default_value = is_allowed;
+      entry->default_result = default_result;
       found = true;
       break;
     }
@@ -98,25 +93,11 @@ void TestPreconditionListProvider::SetDefault(
 void TestPreconditionListProvider::SetForFeature(
     const base::Feature& iph_feature,
     FeaturePromoPrecondition::Identifier id,
-    bool is_allowed) {
+    FeaturePromoResult result) {
   bool found = false;
   for (auto& entry : data_) {
     if (entry->identifier == id) {
-      entry->overrides[&iph_feature] = is_allowed;
-      found = true;
-      break;
-    }
-  }
-  CHECK(found);
-}
-
-void TestPreconditionListProvider::SetFailure(
-    FeaturePromoPrecondition::Identifier id,
-    FeaturePromoResult::Failure failure) {
-  bool found = false;
-  for (const auto& entry : data_) {
-    if (entry->identifier == id) {
-      entry->failure = failure;
+      entry->overrides[&iph_feature] = result;
       found = true;
       break;
     }
@@ -125,11 +106,13 @@ void TestPreconditionListProvider::SetFailure(
 }
 
 FeaturePromoPreconditionList TestPreconditionListProvider::GetPreconditions(
-    const FeaturePromoSpecification& spec) const {
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& params) const {
   if (next_query_spec_.has_value()) {
     EXPECT_EQ(*next_query_spec_, &spec);
     next_query_spec_ = nullptr;
   }
+  EXPECT_EQ(spec.feature(), &params.feature.get());
   FeaturePromoPreconditionList result;
   for (const auto& entry : data_) {
     result.AddPrecondition(
@@ -137,5 +120,8 @@ FeaturePromoPreconditionList TestPreconditionListProvider::GetPreconditions(
   }
   return result;
 }
+
+MockPreconditionListProvider::MockPreconditionListProvider() = default;
+MockPreconditionListProvider::~MockPreconditionListProvider() = default;
 
 }  // namespace user_education::test

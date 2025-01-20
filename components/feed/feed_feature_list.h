@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -18,92 +19,110 @@
 namespace feed {
 
 namespace switches {
-extern const char kEnableRssLinkReader[];
+// Specifies whether RssLinkReader is enabled.
+inline constexpr char kEnableRssLinkReader[] = "enable-rss-link-reader";
 }
 
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kInterestFeedV2);
-BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
-BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
-
-// Feature that allows the client to automatically dismiss the notice card based
-// on the clicks and views on the notice card.
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
-#endif
 
 // Use the new DiscoFeed endpoint.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 
 // Feature that enables xsurface to provide the metrics reporting state to an
 // xsurface feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 
 // Feature that shows placeholder cards instead of a loading spinner at first
 // load.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
 // Feature that enables StAMP cards in the feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedStamp);
 
 // Feature that provides the user assistance in discovering the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedAwareness);
 
 // Feature that provides the user assistance in using the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedOnboarding);
 
 // Feature that enables sorting by different heuristics in the web feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedSort);
 
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsCormorantEnabledForLocale(std::string country);
 
 // Personalize feed for unsigned users.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 
 // Returns the consent level needed to request a personalized feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
-// Feature that enables tracking the acknowledgement state for the info cards.
-BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
-
 // When enabled, no view cache is used.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
 
 // When enabled, allow show sign in command to request a user signs in / syncs.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 
 // When enabled, depending on params selected, enable different
 // performance-oriented features in Feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 
 // When enabled, allows the server to unilaterally alter capabilities sent
 // by the client, primarily to retroactively work around bugs.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 
 // Feature that enables signed-out view demotion.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
 
 // Feature that enables dynamic colors in the feed.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedDynamicColors);
 
 // Feature that enables UI update for Follow.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
 
 // Feature that enables refreshing feed when Chrome restarts.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 
 // Feature that enables feed containment.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedContainment);
 
 // Kill-switch for the web feed feature.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
 
 // Feature that enables feed low-memory improvement.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
 
+// Feature that unmount RecyclerBinder on view detach to fix a memory leak.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
+
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed

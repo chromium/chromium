@@ -142,6 +142,21 @@ chrome.test.runTests([
 
   // Test that an error is returned if a user script does not specify any
   // script source to inject.
+  async function invalidScriptSource_NoJs() {
+    await chrome.userScripts.unregister();
+
+    const scriptId = 'noJs';
+    const scripts = [{id: scriptId, matches: ['*://notused.com/*']}];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.register(scripts),
+        `Error: User script with ID '${scriptId}' must specify at least one ` +
+            `js source.`);
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned if a user script specify an empty list of
+  // script sources to inject.
   async function invalidScriptSource_EmptyJs() {
     await chrome.userScripts.unregister();
 
@@ -223,7 +238,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function registeringScriptWithInvalidWorldIdThrowsAnError() {
+  async function invalidWorldId_UnderscoreError() {
     await chrome.userScripts.unregister();
 
     const scripts = [{
@@ -236,6 +251,23 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.register(scripts),
         `Error: World IDs beginning with '_' are reserved.`);
+    chrome.test.succeed();
+  },
+
+  async function invalidWorldId_MainWorldError() {
+    await chrome.userScripts.unregister();
+
+    const scripts = [{
+      id: 'invalidMatchPattern',
+      matches: ['http://example.com/*'],
+      js: [{file: 'script.js'}],
+      world: 'MAIN',
+      worldId: '123'
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.register(scripts),
+        `Error: World ID can only be specified for USER_SCRIPT worlds.`);
     chrome.test.succeed();
   },
 

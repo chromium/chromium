@@ -16,7 +16,6 @@
 
 package org.chromium.third_party.android.provider;
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -29,6 +28,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
@@ -96,10 +96,8 @@ public class MediaStoreUtils {
             mInsertValues.put(MediaColumns.MIME_TYPE, Objects.requireNonNull(mimeType));
             mInsertValues.put(MediaColumns.DATE_ADDED, now);
             mInsertValues.put(MediaColumns.DATE_MODIFIED, now);
-            try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 setPendingContentValues(this.mInsertValues, true);
-            } catch (Exception e) {
-                Log.e(TAG, "Unable to set pending content values.", e);
             }
         }
 
@@ -109,7 +107,7 @@ public class MediaStoreUtils {
          *
          * @see DownloadColumns#DOWNLOAD_URI
          */
-        @TargetApi(Build.VERSION_CODES.Q)
+        @RequiresApi(Build.VERSION_CODES.Q)
         public void setDownloadUri(@Nullable Uri downloadUri) {
             if (downloadUri == null) {
                 mInsertValues.remove(DownloadColumns.DOWNLOAD_URI);
@@ -124,7 +122,7 @@ public class MediaStoreUtils {
          *
          * @see DownloadColumns#REFERER_URI
          */
-        @TargetApi(Build.VERSION_CODES.Q)
+        @RequiresApi(Build.VERSION_CODES.Q)
         public void setRefererUri(@Nullable Uri refererUri) {
             if (refererUri == null) {
                 mInsertValues.remove(DownloadColumns.REFERER_URI);
@@ -194,10 +192,12 @@ public class MediaStoreUtils {
          *         published media.
          */
         public @NonNull Uri publish() {
-            try {
-                final ContentValues values = new ContentValues();
+            ContentValues values = new ContentValues();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 setPendingContentValues(values, false);
-                values.putNull("date_expires");
+            }
+            values.putNull("date_expires");
+            try {
                 mContext.getContentResolver().update(mUri, values, null, null);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to publish pending session.", e);
@@ -229,9 +229,8 @@ public class MediaStoreUtils {
      * @param values ContentValues to be set.
      * @param isPending Whether the item is pending.
      */
-    @TargetApi(Build.VERSION_CODES.Q)
-    private static void setPendingContentValues(ContentValues values, boolean isPending)
-            throws Exception {
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private static void setPendingContentValues(ContentValues values, boolean isPending) {
         values.put(MediaColumns.IS_PENDING, isPending ? 1 : 0);
     }
 }

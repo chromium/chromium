@@ -394,7 +394,6 @@ enum class AppListSearchResultType {
   kInstalledApp,  // Installed apps.
   kPlayStoreApp,  // Installable apps from PlayStore.
   kInstantApp,    // Instant apps.
-  kInternalApp,   // Chrome OS apps.
   kOmnibox,       // Results from Omnibox.
   kLauncher,      // Results from launcher search (currently only from Files).
   kAnswerCard,    // WebContents based answer card.
@@ -684,11 +683,12 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutKeyboardBacklightToggle,
     kKeyboardShortcutKeyboardBrightnessDown,
     kKeyboardShortcutKeyboardBrightnessUp,
-    kKeyboardShortcutKeyboardRightAlt,
+    kKeyboardShortcutKeyboardQuickInsert,
     kKeyboardShortcutAccessibility,
     kKeyboardShortcutBrowserHome,
     kKeyboardShortcutMediaLaunchMail,
     kKeyboardShortcutContextMenu,
+    kKeyboardShortcutDoNotDisturb,
   };
 
   // Only used for SearchResultTextItemType kString

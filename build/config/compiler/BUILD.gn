@@ -18,7 +18,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
-import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -327,6 +326,17 @@ config("compiler") {
   # TODO(mpdenton): remove is_clang once GCC bug is fixed.
   if ((!is_nacl || is_nacl_saigo) && !is_ubsan && is_clang) {
     cflags += [ "-fno-delete-null-pointer-checks" ]
+  }
+
+  # Make signed overflow and pointer overflowdefined to wrap.
+  # This avoids risking miscompilations and security bugs on overflow.
+  # When UBSan is enabled, we want to continue flagging overflows as a bug.
+  if (!is_ubsan && (!is_win || is_clang)) {
+    if (is_win) {
+      cflags += [ "/clang:-fwrapv" ]
+    } else {
+      cflags += [ "-fwrapv" ]
+    }
   }
 
   # Don't emit the GCC version ident directives, they just end up in the
@@ -1028,17 +1038,6 @@ config("compiler") {
   # Rust compiler flags setup.
   # ---------------------------
   rustflags += [
-    # Overflow checks are optional in Rust, but even if switched
-    # off they do not cause undefined behavior (the overflowing
-    # behavior is defined). Because containers are bounds-checked
-    # in safe Rust, they also can't provoke buffer overflows.
-    # As such these checks may be less important in Rust than C++.
-    # But in (simplistic) testing they have negligible performance
-    # overhead, and this helps to provide consistent behavior
-    # between different configurations, so we'll keep them on until
-    # we discover a reason to turn them off.
-    "-Coverflow-checks=on",
-
     # By default Rust passes `-nodefaultlibs` to the linker, however this
     # conflicts with our `--unwind=none` flag for Android dylibs, as the latter
     # is then unused and produces a warning/error. So this removes the
@@ -1824,9 +1823,6 @@ config("treat_warnings_as_errors") {
   # Note we apply the actual lint flags in config("compiler"). All warnings
   # are suppressed in third-party crates.
   rustflags = [ "-Dwarnings" ]
-
-  # TODO(https://crbug.com/326247202): Fix unused imports and remove this flag.
-  rustflags += [ "-Aunused-imports" ]
 }
 
 # default_warnings ------------------------------------------------------------
@@ -1994,10 +1990,8 @@ config("default_warnings") {
         # TODO(crbug.com/356172342): Fix and re-enable.
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
 
-        if (llvm_force_head_revision) {
-          # TODO(crbug.com/376641662): Fix and re-enable.
-          cflags += [ "-Wno-nontrivial-memaccess" ]
-        }
+        # TODO(crbug.com/376641662): Fix and re-enable.
+        cflags += [ "-Wno-nontrivial-memcall" ]
       }
     }
 
@@ -2070,6 +2064,25 @@ config("prevent_unsafe_narrowing") {
       ]
     }
   }
+}
+
+config("rust_integer_overflow_checks") {
+  rustflags = [
+    # Overflow checks are optional in Rust, but even if switched off they do
+    # not cause undefined behavior (the overflowing behavior is defined).
+    # Because containers are bounds-checked in safe Rust, they also can't
+    # provoke buffer overflows.  As such these checks may be less important in
+    # Rust than C++ and by default the Rust compiler checks for unexpected
+    # integer overflows only in debug mode (where such overflows panic) and
+    # skips the checks in release mode (where the overflows wrap around).
+    #
+    # But in (simplistic) testing the checks have negligible performance
+    # overhead, and this helps to provide consistent behavior between different
+    # configurations, so in Chromium we diverge from the default Rust compiler
+    # behavior and keep the integer overflow checks even in release mode.  We
+    # may revisit if we discover a reason to turn them off.
+    "-Coverflow-checks=on",
+  ]
 }
 
 # chromium_code ---------------------------------------------------------------
@@ -2227,10 +2240,6 @@ config("no_chromium_code") {
       ]
     }
   }
-
-  # Suppress all warnings in third party, as Cargo does:
-  # https://doc.rust-lang.org/rustc/lints/levels.html#capping-lints
-  rustflags = [ "--cap-lints=allow" ]
 
   configs = [ ":default_warnings" ]
 
@@ -2435,7 +2444,6 @@ if (is_win) {
 
   if (is_official_build) {
     common_optimize_on_ldflags += [ "/OPT:REF" ]  # Remove unreferenced data.
-    # TODO(thakis): Add LTO/PGO clang flags eventually, https://crbug.com/598772
   }
 
   if (is_clang) {

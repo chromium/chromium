@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 # This target forms the core of the IdentityManager implementation
@@ -62,7 +61,6 @@ source_set("identity_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/identity_manager:tribool",
@@ -107,7 +105,10 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_chromeos.cc",
       "profile_oauth2_token_service_delegate_chromeos.h",
     ]
-    deps += [ "//components/account_manager_core" ]
+    deps += [
+      "//ash/constants",
+      "//components/account_manager_core",
+    ]
   }
 
   if (enable_bound_session_credentials) {
@@ -118,10 +119,6 @@ source_set("identity_manager") {
       "token_binding_oauth2_access_token_fetcher.h",
     ]
     deps += [ "//components/unexportable_keys" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
   }
 
   if (!is_android && !is_ios) {
@@ -150,7 +147,6 @@ source_set("identity_manager") {
 
 source_set("capabilities") {
   sources = [
-    "account_capabilities_constants.cc",
     "account_capabilities_constants.h",
     "account_capabilities_list.h",
   ]
@@ -176,7 +172,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/os_crypt/async/browser:test_support",
@@ -196,6 +191,7 @@ source_set("unit_tests") {
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -209,11 +205,10 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
-    deps += [ "//components/account_manager_core:test_support" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//components/account_manager_core:test_support",
+    ]
   }
 
   if (is_ios) {
@@ -260,7 +255,7 @@ static_library("test_support") {
     "mock_profile_oauth2_token_service_observer.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "test_profile_oauth2_token_service_delegate_chromeos.cc",
       "test_profile_oauth2_token_service_delegate_chromeos.h",

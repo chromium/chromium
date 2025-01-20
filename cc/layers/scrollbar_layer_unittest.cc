@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -1178,8 +1175,8 @@ TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbPosition) {
 }
 
 TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbVerticalAdjust) {
-  SolidColorScrollbarLayerImpl* layers[2] =
-      { horizontal_scrollbar_layer_.get(), vertical_scrollbar_layer_.get() };
+  std::array<SolidColorScrollbarLayerImpl*, 2> layers = {
+      horizontal_scrollbar_layer_.get(), vertical_scrollbar_layer_.get()};
   for (size_t i = 0; i < 2; ++i) {
     layers[i]->SetCurrentPos(25.f);
     layers[i]->SetClipLayerLength(25.f);
@@ -1263,7 +1260,7 @@ class ScrollbarLayerTestResourceCreationAndRelease : public ScrollbarLayerTest {
 TEST_F(ScrollbarLayerTestResourceCreationAndRelease, ResourceUpload) {
   bool use_solid_color_scrollbars = false;
   TestResourceUpload(0, 0, 0, 0, use_solid_color_scrollbars);
-  int num_updates[3] = {1, 5, 10};
+  std::array<int, 3> num_updates = {1, 5, 10};
   int created = 0;
   int deleted = 0;
   for (int j = 0; j < 3; j++) {
@@ -1549,24 +1546,22 @@ class ScaledScrollbarLayerTestScaledRasterization : public ScrollbarLayerTest {
 
     DCHECK(bitmap);
 
-    const SkColor* pixels =
-        reinterpret_cast<const SkColor*>(bitmap->GetPixels().data());
     SkColor color = argb_to_skia(
         scrollbar_layer->fake_scrollbar()->paint_fill_color());
     int width = bitmap->GetSize().width();
     int height = bitmap->GetSize().height();
 
     // Make sure none of the corners of the bitmap were inadvertently clipped.
-    EXPECT_EQ(color, pixels[0])
+    EXPECT_EQ(color, GetColorAt(bitmap, 0, 0))
         << "Top left pixel doesn't match scrollbar color.";
 
-    EXPECT_EQ(color, pixels[width - 1])
+    EXPECT_EQ(color, GetColorAt(bitmap, width - 1, 0))
         << "Top right pixel doesn't match scrollbar color.";
 
-    EXPECT_EQ(color, pixels[width * (height - 1)])
+    EXPECT_EQ(color, GetColorAt(bitmap, 0, height - 1))
         << "Bottom left pixel doesn't match scrollbar color.";
 
-    EXPECT_EQ(color, pixels[width * height - 1])
+    EXPECT_EQ(color, GetColorAt(bitmap, width - 1, height - 1))
         << "Bottom right pixel doesn't match scrollbar color.";
   }
 
@@ -1577,6 +1572,13 @@ class ScaledScrollbarLayerTestScaledRasterization : public ScrollbarLayerTest {
              (SkColorGetR(c) << SK_R32_SHIFT) |
              (SkColorGetG(c) << SK_G32_SHIFT) |
              (SkColorGetB(c) << SK_B32_SHIFT);
+  }
+
+  static SkColor GetColorAt(UIResourceBitmap* bitmap, int x, int y) {
+    EXPECT_EQ(bitmap->GetFormat(), UIResourceBitmap::RGBA8);
+    size_t byte_offset = 4u * (y * bitmap->GetSize().width() + x);
+    return base::U32FromLittleEndian(
+        bitmap->GetPixels().subspan(byte_offset).first<4>());
   }
 };
 

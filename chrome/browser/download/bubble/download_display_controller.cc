@@ -195,35 +195,23 @@ void DownloadDisplayController::HandleButtonPressed() {
 }
 
 void DownloadDisplayController::ShowToolbarButton() {
-  if (!display_->IsShowing()) {
-    display_->Enable();
-    display_->Show();
-  }
+  // If toolbar pinning is enabled Show should be called regardless of whether
+  // the toolbar button is showing because it may be already showing due to
+  // being pinned and should remain showing even if unpinned until
+  // HideToolbarButton is called.
+  display_->Enable();
+  display_->Show();
 }
 
 void DownloadDisplayController::HideToolbarButton() {
   // TODO(chlily): This should only hide the bubble/button when it is not open.
-  if (display_->IsShowing()) {
-    display_->Hide();
-  }
+  display_->Hide();
 }
 
 void DownloadDisplayController::HideBubble() {
   if (display_->IsShowingDetails()) {
     display_->HideDetails();
   }
-}
-
-bool DownloadDisplayController::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  // This method is currently used only for Lacros download notifications.
-  // This is called when a notification is clicked, and shows the download
-  // bubble in the Lacros browser window. In Lacros browser fullscreen (always
-  // immersive), the immersive fullscreen toolbar is shown (handled by display_)
-  // so no special case is needed here. In Lacros tab fullscreen (not
-  // immersive), the notification is not visible and can't be clicked, so we
-  // don't need to check display_->IsFullscreenWithParentViewHidden() here.
-  return display_->OpenMostSpecificDialog(content_id);
 }
 
 void DownloadDisplayController::ListenToFullScreenChanges() {

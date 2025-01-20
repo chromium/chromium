@@ -32,6 +32,9 @@ CRASH_TYPE_BROWSER = 'browser'
 CRASH_TYPE_GPU = 'gpu-process'
 CRASH_TYPE_RENDERER = 'renderer'
 
+EXPECTED_CRASHES_PLATFORM_DEFAULT = ''
+EXPECTED_CRASHES_PLATFORM_FUCHSIA = 'fuchsia'
+
 SHORT_GLOBAL_TIMEOUT = 30
 
 # Meant to be used when we know a test is going to be noisy, and we want any
@@ -71,7 +74,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       browser_args: Optional[BrowserArgType] = None,
       restart_browser_after_test: bool = False,
       other_args: Optional[dict] = None,
-      expected_per_process_crashes: Optional[Dict[str, int]] = None,
+      expected_per_process_crashes: Optional[Dict[str, Dict[str, int]]] = None,
       timeout: int = 300,
       should_capture_full_screenshot_func: Optional[Callable[
           [browser_module.Browser], bool]] = None,
@@ -95,8 +98,8 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     # full_size.
     self.other_args = other_args
     # This lets the test runner know that one or more crashes are expected as
-    # part of the test. Should be a map of process type (str) to expected number
-    # of crashes (int).
+    # part of the test. Should be a map of platform name (str) to a map of
+    # process type (str) to crashes (int)
     self.expected_per_process_crashes = expected_per_process_crashes or {}
     # Test timeout
     self.timeout = timeout
@@ -343,7 +346,17 @@ class PixelTestPages():
                 sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
                 TestActionCrashGpuProcess(),
                 sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-            ]),
+            ],
+            expected_per_process_crashes={
+                # Fuchsia is special cased due to the way it checks for crashes
+                # (asking the browser) vs. how other platforms handle it
+                # (looking for minidumps). The method for crashing the GPU
+                # process in this test is recorded as a crash but does not
+                # generate a minidump.
+                EXPECTED_CRASHES_PLATFORM_FUCHSIA: {
+                    CRASH_TYPE_GPU: 1,
+                },
+            }),
         PixelTestPage(
             'pixel_webgl_sad_canvas.html',
             base_name + '_WebGLSadCanvas',
@@ -354,7 +367,17 @@ class PixelTestPages():
                 sghitb.TestActionWaitForContinue(SHORT_GLOBAL_TIMEOUT),
                 TestActionCrashGpuProcess(),
                 sghitb.TestActionWaitForFinish(SHORT_GLOBAL_TIMEOUT),
-            ]),
+            ],
+            expected_per_process_crashes={
+                # Fuchsia is special cased due to the way it checks for crashes
+                # (asking the browser) vs. how other platforms handle it
+                # (looking for minidumps). The method for crashing the GPU
+                # process in this test is recorded as a crash but does not
+                # generate a minidump.
+                EXPECTED_CRASHES_PLATFORM_FUCHSIA: {
+                    CRASH_TYPE_GPU: 2,
+                },
+            }),
         PixelTestPage('pixel_scissor.html',
                       base_name + '_ScissorTestWithPreserveDrawingBuffer',
                       crop_action=standard_crop),
@@ -459,8 +482,11 @@ class PixelTestPages():
                 max_different_pixels=31700,
                 pixel_per_channel_delta_threshold=10),
             expected_per_process_crashes={
-                CRASH_TYPE_GPU: 1,
-            }),
+                EXPECTED_CRASHES_PLATFORM_DEFAULT: {
+                    CRASH_TYPE_GPU: 1,
+                },
+            },
+            restart_browser_after_test=True),
 
         # The VP9 test clip is primarily software decoded on bots.
         PixelTestPage(('pixel_video_context_loss.html'
@@ -473,8 +499,11 @@ class PixelTestPages():
                           edge_threshold=250,
                           ignored_border_thickness=1),
                       expected_per_process_crashes={
-                          CRASH_TYPE_GPU: 1,
-                      }),
+                          EXPECTED_CRASHES_PLATFORM_DEFAULT: {
+                              CRASH_TYPE_GPU: 1,
+                          },
+                      },
+                      restart_browser_after_test=True),
         PixelTestPage(
             'pixel_video_backdrop_filter.html?width=240&height=135&use_timer=1',
             base_name + '_Video_BackdropFilter',
@@ -1217,9 +1246,6 @@ class PixelTestPages():
         # All bots are connected with a power source, however, we want to to
         # test with the code path that's enabled with battery power.
         cba.DISABLE_DIRECT_COMPOSITION_VP_SCALING,
-        # This feature ensures that addSwapCompletionEventListener in
-        # gpu_benchmarking only sends completion event on a succdessful commit.
-        '--enable-features=ReportFCPOnlyOnSuccessfulCommit',
     ]
     browser_args_NV12 = browser_args + [
         '--direct-composition-video-swap-chain-format=nv12'

@@ -136,7 +136,7 @@ void CheckDeprecatedManifestVersionError(const ExtensionError* error,
 class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
  public:
   ErrorConsoleBrowserTest() : error_console_(nullptr) {}
-  ~ErrorConsoleBrowserTest() override {}
+  ~ErrorConsoleBrowserTest() override = default;
 
  protected:
   // A helper class in order to wait for the proper number of errors to be

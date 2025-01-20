@@ -48,6 +48,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/user_manager/user_names.h"
 #include "components/variations/pref_names.h"
 #include "content/public/browser/browser_context.h"
@@ -64,6 +65,7 @@
 using password_manager::FakePasswordStoreBackend;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
+using signin::constants::kNoHostedDomainFound;
 using ::testing::_;
 using ::testing::ElementsAre;
 
@@ -106,7 +108,7 @@ namespace safe_browsing {
 
 class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
  public:
-  ChromePasswordProtectionServiceBrowserTest() {}
+  ChromePasswordProtectionServiceBrowserTest() = default;
 
   ChromePasswordProtectionServiceBrowserTest(
       const ChromePasswordProtectionServiceBrowserTest&) = delete;

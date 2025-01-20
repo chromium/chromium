@@ -8,13 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
-class PrefRegistrySimple;
 class TestingPrefServiceSimple;
 
 namespace bookmarks {
@@ -79,12 +79,14 @@ void AddProductInfoToExistingBookmark(
 void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                          bool enabled);
 
-// Register prefs related to commerce in the provided prefs.
-void RegisterCommercePrefs(PrefRegistrySimple* registry);
-
 // Set the tab compare enterprise policy for testing.
 void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                        int enabled_state);
+
+// Set up price insights eligibility for testing.
+void SetUpPriceInsightsEligibility(base::test::ScopedFeatureList* feature_list,
+                                   MockAccountChecker* account_checker,
+                                   bool is_eligible);
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data = false,

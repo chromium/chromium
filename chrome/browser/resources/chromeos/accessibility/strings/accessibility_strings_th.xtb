@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">ใช้ 2 นิ้วแตะเพื่อหยุดเสียงที่กำลังพูดอยู่</translation>
 <translation id="2573256689920773241">วิธีพื้นฐานในการไปยังส่วนต่างๆ</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>
+<translation id="2577127557293415225">หลับตาทั้ง 2 ข้างไว้สักครู่</translation>
 <translation id="2582407057977008361">ส่วนที่ไม่เกี่ยวข้อง</translation>
 <translation id="2592212930811759050">แตะสองครั้งเพื่อเริ่มแก้ไข</translation>
 <translation id="2598495320872286378">ข้อผิดพลาดด้านไวยากรณ์</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">คอลัมน์</translation>
 <translation id="6387719785439924554">ส่วนที่ไม่เกี่ยวข้อง</translation>
 <translation id="6393014464788431702">ปิดใช้ตัวกรองเหตุการณ์ทั้งหมด</translation>
+<translation id="6406989068857078334">ลดความเร็วเมาส์แล้ว โปรด<ph name="GESTURE" />อีกครั้งเพื่อคลิก</translation>
 <translation id="6411569524720229058">ฤดูใบไม้ร่วง</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{เครื่องหมายทวิภาค}other{# เครื่องหมายทวิภาค}}</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8205922869661890178">เปิดหน้าบันทึกของนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8212109599554677485">เปลี่ยนรูปแบบการแสดงผลเป็นการแสดงคู่กัน</translation>
 <translation id="8215202828671303819">เลือกหลายรายการ</translation>
+<translation id="822316432305106615">เริ่มการคลิกอย่างแม่นยำ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" /> ความทึบแสง <ph name="OPACITY_PERCENTAGE" />%</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="826825447994856889">บทนำ</translation>

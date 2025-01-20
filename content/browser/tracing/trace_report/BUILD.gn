@@ -28,6 +28,7 @@ mojom("mojo_bindings") {
       traits_sources = [
         "//content/browser/tracing/trace_report/trace_report_mojom_traits.cc",
       ]
+      traits_deps = [ "//sql:sql_name_variants" ]
     },
   ]
 }

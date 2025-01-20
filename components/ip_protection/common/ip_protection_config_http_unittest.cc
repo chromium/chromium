@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "components/ip_protection/common/ip_protection_config_http.h"
 
-#include <string_view>
+#include <map>
+#include <memory>
+#include <string>
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -11,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/features.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"

@@ -32,6 +32,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -251,10 +252,11 @@ class ScrollView::Viewport : public View {
              contents->layer()->type() == ui::LAYER_TEXTURED;
     }};
 
-    if (!contents || has_textured_layer(contents))
+    if (!contents || has_textured_layer(contents)) {
       return ui::LAYER_NOT_DRAWN;
-    else
+    } else {
       return ui::LAYER_TEXTURED;
+    }
   }
 
   // Initializes or updates the layer of |contents_viewport|.
@@ -570,8 +572,9 @@ View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
 }
 
 void ScrollView::ClipHeightTo(int min_height, int max_height) {
-  if (min_height != min_height_ || max_height != max_height_)
+  if (min_height != min_height_ || max_height != max_height_) {
     PreferredSizeChanged();
+  }
 
   min_height_ = min_height;
   max_height_ = max_height;
@@ -855,8 +858,9 @@ bool ScrollView::OnKeyPressed(const ui::KeyEvent& event) {
     processed = vert_sb_->OnKeyPressed(event);
   }
 
-  if (!processed && IsHorizontalScrollEnabled())
+  if (!processed && IsHorizontalScrollEnabled()) {
     processed = horiz_sb_->OnKeyPressed(event);
+  }
 
   return processed;
 }
@@ -871,8 +875,9 @@ bool ScrollView::OnMouseWheel(const ui::MouseWheelEvent& e) {
           : e;
 
   // TODO(crbug.com/40471184): Use composited scrolling.
-  if (IsVerticalScrollEnabled())
+  if (IsVerticalScrollEnabled()) {
     processed = vert_sb_->OnMouseWheel(to_propagate);
+  }
 
   if (IsHorizontalScrollEnabled()) {
     // When there is no vertical scrollbar, allow vertical scroll events to be
@@ -1005,8 +1010,9 @@ void ScrollView::ScrollToPosition(ScrollBar* source, int position) {
   }
   ScrollToOffset(offset);
 
-  if (!ScrollsWithLayers())
+  if (!ScrollsWithLayers()) {
     contents_->SchedulePaintInRect(contents_->GetVisibleBounds());
+  }
 }
 
 int ScrollView::GetScrollIncrement(ScrollBar* source,
@@ -1040,10 +1046,11 @@ void ScrollView::UpdateViewportLayerForClipping() {
   if (has_layer == needs_layer) {
     return;
   }
-  if (needs_layer)
+  if (needs_layer) {
     EnableViewportLayer();
-  else
+  } else {
     contents_viewport_->DestroyLayer();
+  }
 }
 
 View* ScrollView::ReplaceChildView(View* parent,
@@ -1418,8 +1425,9 @@ int VariableRowHeightScrollHelper::GetPageScrollIncrement(
     // Align the row on the previous page to to the top of the view.
     int last_page_y = y - vis_height;
     RowInfo last_page_info = GetRowInfo(std::max(0, last_page_y));
-    if (last_page_y != last_page_info.origin)
+    if (last_page_y != last_page_info.origin) {
       return std::max(0, y - last_page_info.origin - last_page_info.height);
+    }
     return std::max(0, y - last_page_info.origin);
   }
 }
@@ -1469,3 +1477,9 @@ VariableRowHeightScrollHelper::RowInfo FixedRowHeightScrollHelper::GetRowInfo(
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(
+    views::ScrollView::ScrollBarMode,
+    {views::ScrollView::ScrollBarMode::kDisabled, u"kDisabled"},
+    {views::ScrollView::ScrollBarMode::kHiddenButEnabled, u"kHiddenButEnabled"},
+    {views::ScrollView::ScrollBarMode::kEnabled, u"kEnabled"})

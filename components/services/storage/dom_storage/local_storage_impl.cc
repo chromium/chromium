@@ -821,7 +821,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     database_->RunDatabaseTask(
         base::BindOnce([](const DomStorageDatabase& db) {
           std::vector<DomStorageDatabase::KeyValuePair> data;
-          db.GetPrefixed(base::make_span(kWriteMetaPrefix), &data);
+          db.GetPrefixed(base::span(kWriteMetaPrefix), &data);
           return data;
         }),
         base::BindOnce(&LocalStorageImpl::OnGotWriteMetaData,
@@ -973,7 +973,7 @@ void LocalStorageImpl::DeleteStaleStorageAreas() {
   database_->RunDatabaseTask(
       base::BindOnce([](const DomStorageDatabase& db) {
         std::vector<DomStorageDatabase::KeyValuePair> data;
-        db.GetPrefixed(base::make_span(kMetaPrefix), &data);
+        db.GetPrefixed(base::span(kMetaPrefix), &data);
         return data;
       }),
       base::BindOnce(&LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas,

@@ -74,6 +74,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
     virtual ~TestObserver() = default;
   };
 
+  explicit RulesMonitorService(content::BrowserContext* browser_context);
   RulesMonitorService(const RulesMonitorService&) = delete;
   RulesMonitorService& operator=(const RulesMonitorService&) = delete;
 
@@ -91,6 +92,8 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   static std::unique_ptr<RulesMonitorService> CreateInstanceForTesting(
       content::BrowserContext* context);
 
+  // Sets a `throttle` which blocks ruleset loads from completing on the UI
+  // thread until released.
   static base::AutoReset<LoadRulesetThrottleCallback*>
   SetLoadRulesetThrottleCallbackForTesting(
       LoadRulesetThrottleCallback* throttle);
@@ -167,10 +170,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   class ApiCallQueue;
 
   friend class BrowserContextKeyedAPIFactory<RulesMonitorService>;
-
-  // The constructor is kept private since this should only be created by the
-  // BrowserContextKeyedAPIFactory.
-  explicit RulesMonitorService(content::BrowserContext* browser_context);
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "RulesMonitorService"; }

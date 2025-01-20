@@ -514,7 +514,8 @@ export default [
         // much simpler.
         {
           selector: 'CallExpression[callee.property.name="forEach"]',
-          message: 'forEach are not allowed. (go/tsstyle#iterating-containers)',
+          message: 'Prefers for (... of ...) over forEach. ' +
+            '(http://go/tsjs-practices/iteration)',
         },
         // Disallow function() {...}. (go/tsstyle#function-declarations)
         {

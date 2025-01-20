@@ -44,7 +44,7 @@ void ContentRendererClientMixinsImpl::RenderFrameCreated(
       std::make_unique<UrlRewriteRulesProvider>(
           &render_frame,
           base::BindOnce(&ContentRendererClientMixinsImpl::OnRenderFrameRemoved,
-                         base::Unretained(this))));
+                         weak_factory_.GetWeakPtr())));
 }
 
 bool ContentRendererClientMixinsImpl::DeferMediaLoad(

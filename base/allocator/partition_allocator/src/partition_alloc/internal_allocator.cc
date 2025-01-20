@@ -37,8 +37,4 @@ void InternalPartitionAllocated::operator delete(void* ptr, std::align_val_t) {
   InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
 }
 
-// A deleter for `std::unique_ptr<T>`.
-void InternalPartitionDeleter::operator()(void* ptr) const {
-  InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
-}
 }  // namespace partition_alloc::internal

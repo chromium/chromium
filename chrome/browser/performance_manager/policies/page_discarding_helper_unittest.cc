@@ -25,7 +25,6 @@
 namespace performance_manager {
 namespace policies {
 
-using CanDiscardResult = PageDiscardingHelper::CanDiscardResult;
 using DiscardReason = PageDiscardingHelper::DiscardReason;
 using ::testing::Return;
 
@@ -183,6 +182,7 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
   // is run on the default page_node() overrides audio properties, so need to
   // create a new page node and make it discardable by hand.
   TestNodeWrapper<PageNodeImpl> new_page_node = CreateNode<PageNodeImpl>();
+  new_page_node->SetType(PageType::kTab);
   TestNodeWrapper<FrameNodeImpl> new_frame_node =
       CreateFrameNodeAutoId(process_node(), new_page_node.get());
   new_page_node->SetIsVisible(false);
@@ -240,7 +240,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithoutMainFrame) {
   ResetFrameNode();
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardExtension) {
@@ -631,6 +631,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
 
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  page_node2->SetType(PageType::kTab);
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
 

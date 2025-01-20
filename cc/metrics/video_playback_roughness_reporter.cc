@@ -32,10 +32,6 @@ void RecordUmaVideoFrameSubmitter(bool is_media_stream,
     base::UmaHistogramTimes("Media.VideoFrameSubmitter.Video.PresentationDelay",
                             time_since_decode);
   }
-
-  // TODO(crbug.com/364352012): This will be removed once expired, kept for now
-  // due to internal dependencies.
-  base::UmaHistogramTimes("Media.VideoFrameSubmitter", time_since_decode);
 }
 
 }  // namespace

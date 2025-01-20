@@ -89,3 +89,15 @@ EnclaveManagerFactory::BuildServiceInstanceForBrowserContext(
                           : profile->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess());
 }
+
+bool EnclaveManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // In order that the GPM PIN can be considered for renewal, the
+  // EnclaveManager should be created when a Profile is created. At the time of
+  // writing, this happens because a `TrustedVaultEncryptionKeysTabHelper` is
+  // created for each tab, and that triggers the creation of the EnclaveManager
+  // too.
+  //
+  // It would be nice to return `true` here to ensure the creation in a more
+  // direct fashion, but this appears to upset a large number of tests.
+  return false;
+}

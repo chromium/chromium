@@ -12,6 +12,8 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/common_types.proto";
 
 message ExecuteRequest {
+  reserved 3;
+
   // The feature that this execution request is for.
   optional ModelExecutionFeature feature = 1;
 
@@ -50,7 +52,7 @@ enum ErrorState {
 }
 
 enum ModelExecutionFeature {
-  reserved 11;
+  reserved 11, 16;
 
   MODEL_EXECUTION_FEATURE_UNSPECIFIED = 0;
   MODEL_EXECUTION_FEATURE_COMPOSE = 1;
@@ -71,4 +73,8 @@ enum ModelExecutionFeature {
   MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS = 10;
   MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT = 12;
   MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING = 13;
+  MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION = 14;
+  MODEL_EXECUTION_FEATURE_SCAM_DETECTION = 15;
+  MODEL_EXECUTION_FEATURE_PERMISSIONS_AI = 17;
+  MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API = 18;
 }

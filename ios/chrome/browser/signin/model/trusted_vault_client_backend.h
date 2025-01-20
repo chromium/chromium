@@ -35,7 +35,6 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Types for the different callbacks.
   using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
-  using KeyFetchedCallback = KeysFetchedCallback;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
   using CancelDialogCallback =

@@ -25,7 +25,7 @@ import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.TrackingProtectionFeatureType;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
@@ -116,8 +116,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
                         getContext(),
                         (view) -> {
                             mOnCookieSettingsLinkClicked.run();
@@ -318,9 +318,5 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         }
         mTpTitle.setTitle(
                 getQuantityString(R.plurals.page_info_tracking_protection_title_off, days));
-    }
-
-    private boolean willCreatePermanentException() {
-        return "0d".equals(PageInfoFeatures.getUserBypassExpiration());
     }
 }

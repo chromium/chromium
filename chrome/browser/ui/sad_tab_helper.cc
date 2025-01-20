@@ -31,32 +31,36 @@ SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
 
 }  // namespace
 
-SadTabHelper::~SadTabHelper() {}
+SadTabHelper::~SadTabHelper() = default;
 
 SadTabHelper::SadTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<SadTabHelper>(*web_contents) {}
 
 void SadTabHelper::ReinstallInWebView() {
-  if (sad_tab_)
+  if (sad_tab_) {
     sad_tab_->ReinstallInWebView();
+  }
 }
 
 void SadTabHelper::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+  if (content::ShouldSkipEarlyCommitPendingForCrashedFrame()) {
     sad_tab_.reset();
+  }
 }
 
 void SadTabHelper::RenderViewReady() {
-  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame()) {
     sad_tab_.reset();
+  }
 }
 
 void SadTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame()) {
     return;
+  }
   // If the navigation did not commit and we went back to the crashed frame,
   // reinstall the sad tab, if needed.
   if (!sad_tab_ && !navigation_handle->HasCommitted() &&
@@ -70,14 +74,17 @@ void SadTabHelper::PrimaryMainFrameRenderProcessGone(
   // Only show the sad tab if we're not in browser shutdown, so that WebContents
   // objects that are not in a browser (e.g., HTML dialogs) and thus are
   // visible do not flash a sad tab page.
-  if (browser_shutdown::HasShutdownStarted())
+  if (browser_shutdown::HasShutdownStarted()) {
     return;
+  }
 
-  if (sad_tab_)
+  if (sad_tab_) {
     return;
+  }
 
-  if (SadTab::ShouldShow(status))
+  if (SadTab::ShouldShow(status)) {
     InstallSadTab(status);
+  }
 }
 
 void SadTabHelper::InstallSadTab(base::TerminationStatus status) {

@@ -77,7 +77,10 @@ import java.io.OutputStream;
 @DoNotBatch(reason = "The ReauthenticationManager setup should not leak between tests.")
 @EnableFeatures(
         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-@DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+@DisableFeatures({
+    ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING,
+    ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID
+})
 public class PasswordAccessLossExportDialogCoordinatorTest {
     private static final Uri TEMP_EXPORT_FILE_URI = Uri.parse("tmp/fake/test/path/file.ext");
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");

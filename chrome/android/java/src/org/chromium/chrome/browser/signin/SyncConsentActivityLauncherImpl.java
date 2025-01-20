@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
@@ -20,31 +20,36 @@ import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
- * SyncConsentActivityLauncher creates the proper intent and then launches the
- * {@link SyncConsentActivity} in different scenarios.
+ * SyncConsentActivityLauncher creates the proper intent and then launches the {@link
+ * SyncConsentActivity} in different scenarios.
  */
 public final class SyncConsentActivityLauncherImpl implements SyncConsentActivityLauncher {
-    private static SyncConsentActivityLauncher sLauncher;
+    private static SyncConsentActivityLauncher sLauncherForTest;
+    private final Profile mProfile;
 
-    /** Singleton instance getter */
-    public static SyncConsentActivityLauncher get() {
-        if (sLauncher == null) {
-            sLauncher = new SyncConsentActivityLauncherImpl();
+    /** Get a {@link SyncConsentActivityLauncher} associated with a given profile. */
+    public static SyncConsentActivityLauncher getForProfile(Profile profile) {
+        if (sLauncherForTest != null) {
+            return sLauncherForTest;
         }
-        return sLauncher;
+        return new SyncConsentActivityLauncherImpl(profile);
     }
 
     public static void setLauncherForTest(@Nullable SyncConsentActivityLauncher launcher) {
-        var oldValue = sLauncher;
-        sLauncher = launcher;
-        ResettersForTesting.register(() -> sLauncher = oldValue);
+        var oldValue = sLauncherForTest;
+        sLauncherForTest = launcher;
+        ResettersForTesting.register(() -> sLauncherForTest = oldValue);
     }
 
-    private SyncConsentActivityLauncherImpl() {}
+    private SyncConsentActivityLauncherImpl(Profile profile) {
+        assert !profile.isOffTheRecord();
+        mProfile = profile;
+    }
 
     /**
      * Launches the {@link SyncConsentActivity} with default sign-in flow from personalized sign-in
      * promo.
+     *
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
@@ -85,22 +90,22 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
 
     /**
      * Launches the {@link SyncConsentActivity} if signin is allowed.
+     *
      * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
      * @return a boolean indicating if the {@link SyncConsentActivity} is launched.
      */
     @Override
     public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
-        SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         if (signinManager.isSyncOptInAllowed()) {
             launchInternal(context, SyncConsentFragmentBase.createArguments(accessPoint, null));
             return true;
         }
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SyncDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
+                    "Signin.SyncDisabledNotificationShown", accessPoint,
+                     SigninAccessPoint.MAX_VALUE);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         return false;

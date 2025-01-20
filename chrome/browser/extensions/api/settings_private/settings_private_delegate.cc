@@ -27,8 +27,7 @@ SettingsPrivateDelegate::SettingsPrivateDelegate(Profile* profile)
   prefs_util_ = std::make_unique<PrefsUtil>(profile);
 }
 
-SettingsPrivateDelegate::~SettingsPrivateDelegate() {
-}
+SettingsPrivateDelegate::~SettingsPrivateDelegate() = default;
 
 std::optional<base::Value::Dict> SettingsPrivateDelegate::GetPref(
     const std::string& name) {

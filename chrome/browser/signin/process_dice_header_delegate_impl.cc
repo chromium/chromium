@@ -81,9 +81,8 @@ void AttemptChromeSignin(CoreAccountId account_id,
            access_point);
 
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramEnumeration(
-        "Signin.SigninManager.SigninAccessPoint", access_point,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                  access_point);
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account_id, signin::ConsentLevel::kSignin, access_point);
   }

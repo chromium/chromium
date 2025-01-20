@@ -8,13 +8,13 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 class Vector3dF;
 
-class GEOMETRY_EXPORT Quaternion {
+class COMPONENT_EXPORT(GEOMETRY) Quaternion {
  public:
   constexpr Quaternion() = default;
   constexpr Quaternion(double x, double y, double z, double w)

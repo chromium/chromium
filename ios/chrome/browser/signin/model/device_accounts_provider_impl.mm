@@ -10,6 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/types/pass_key.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -17,6 +18,8 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -96,7 +99,7 @@ ConvertSystemIdentitiesToAccountInfos(NSArray<id<SystemIdentity>>* identities) {
   for (id<SystemIdentity> identity : identities) {
     CHECK(identity);
     AccountInfo account_info;
-    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
+    account_info.gaia = GaiaId(identity.gaiaID);
     account_info.email = base::SysNSStringToUTF8(identity.userEmail);
 
     // If hosted domain is nil, then it means the information has not been
@@ -122,12 +125,23 @@ DeviceAccountsProviderImpl::DeviceAccountsProviderImpl(
     ChromeAccountManagerService* account_manager_service)
     : account_manager_service_(account_manager_service) {
   DCHECK(account_manager_service_);
+  chrome_account_manager_observation_.Observe(account_manager_service_);
 }
 
 DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() = default;
 
+void DeviceAccountsProviderImpl::AddObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DeviceAccountsProviderImpl::RemoveObserver(
+    DeviceAccountsProvider::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void DeviceAccountsProviderImpl::GetAccessToken(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
@@ -165,4 +179,10 @@ DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
       account_manager_service_->GetAllIdentitiesOnDevice(
           base::PassKey<DeviceAccountsProviderImpl>());
   return ConvertSystemIdentitiesToAccountInfos(identities);
+}
+
+void DeviceAccountsProviderImpl::OnIdentitiesOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
 }

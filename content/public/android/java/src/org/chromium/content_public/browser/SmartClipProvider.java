@@ -6,6 +6,7 @@ package org.chromium.content_public.browser;
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.UsedByReflection;
  * hierarchy.
  */
 @UsedByReflection("ExternalOemSupport")
+@NullMarked
 public interface SmartClipProvider {
     /**
      * Initiate extraction of text, HTML, and other information for clipping puposes (smart clip)

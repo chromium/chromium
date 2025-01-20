@@ -43,6 +43,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
@@ -93,13 +94,19 @@ const ApiList kAlwaysLog[] = {
 
 // Columns in the main database table.  See the file-level comment for a
 // discussion of how data is stored and the meanings of the _x columns.
-const char* const kTableContentFields[] = {
-    "count", "extension_id_x", "time", "action_type", "api_name_x", "args_x",
-    "page_url_x", "page_title_x", "arg_url_x", "other_x"};
-const char* const kTableFieldTypes[] = {
-    "INTEGER NOT NULL DEFAULT 1", "INTEGER NOT NULL", "INTEGER", "INTEGER",
-    "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER",
-    "INTEGER"};
+constexpr base::cstring_view kTableContentFields[] = {
+    "count",  "extension_id_x", "time",         "action_type", "api_name_x",
+    "args_x", "page_url_x",     "page_title_x", "arg_url_x",   "other_x"};
+constexpr base::cstring_view kTableFieldTypes[] = {"INTEGER NOT NULL DEFAULT 1",
+                                                   "INTEGER NOT NULL",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER"};
 
 // Miscellaneous SQL commands for initializing the database; these should be
 // idempotent.
@@ -174,7 +181,7 @@ CountingPolicy::CountingPolicy(Profile* profile)
   }
 }
 
-CountingPolicy::~CountingPolicy() {}
+CountingPolicy::~CountingPolicy() = default;
 
 bool CountingPolicy::InitDatabase(sql::Database* db) {
   if (!string_table_.Initialize(db))
@@ -184,8 +191,8 @@ bool CountingPolicy::InitDatabase(sql::Database* db) {
 
   // Create the unified activity log entry table.
   if (!ActivityDatabase::InitializeTable(db, "activitylog_compressed",
-                                         kTableContentFields, kTableFieldTypes,
-                                         std::size(kTableContentFields))) {
+                                         kTableContentFields,
+                                         kTableFieldTypes)) {
     return false;
   }
 

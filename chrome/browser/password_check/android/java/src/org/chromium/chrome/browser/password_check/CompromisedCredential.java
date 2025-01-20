@@ -8,6 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.url.GURL;
 
@@ -125,12 +126,12 @@ public class CompromisedCredential implements Parcelable {
     }
 
     @CalledByNative
-    public String getSignonRealm() {
+    public @JniType("std::string") String getSignonRealm() {
         return mSignonRealm;
     }
 
     @CalledByNative
-    public String getUsername() {
+    public @JniType("std::u16string") String getUsername() {
         return mUsername;
     }
 
@@ -140,7 +141,7 @@ public class CompromisedCredential implements Parcelable {
     }
 
     @CalledByNative
-    public String getPassword() {
+    public @JniType("std::u16string") String getPassword() {
         return mPassword;
     }
 

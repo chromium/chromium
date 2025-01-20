@@ -14,7 +14,6 @@ BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
              "SendTabToSelfEnableNotificationTimeOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSendTabToSelfV2,
              "SendTabToSelfV2",
@@ -46,6 +45,18 @@ bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() {
     return base::GetFieldTrialParamByFeatureAsBool(
         kSendTabToSelfIOSPushNotifications,
         kSendTabIOSPushNotificationsWithMagicStackCardParam, false);
+  }
+  return false;
+}
+
+const char kSendTabIOSPushNotificationsWithTabRemindersParam[] =
+    "variant_with_tab_reminders";
+
+bool IsSendTabIOSPushNotificationsEnabledWithTabReminders() {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kSendTabToSelfIOSPushNotifications,
+        kSendTabIOSPushNotificationsWithTabRemindersParam, false);
   }
   return false;
 }

@@ -382,6 +382,18 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreInts) {
   RunTestCase("CustomMarginsAreInts");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreNotEmpty) {
+  RunTestCase("CustomMarginsAreNotEmpty");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreNotNegative) {
+  RunTestCase("CustomMarginsAreNotNegative");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreNotStrings) {
+  RunTestCase("CustomMarginsAreNotStrings");
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
   RunTestCase("PrintToGoogleDriveCros");
@@ -395,6 +407,21 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
                        UserSelectedOptionsOverridePolicyDefaults) {
   RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsDisabledViaExperiment) {
+  RunTestCase("ManagedPrintOptionsDisabledViaExperiment");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsSupportedDefaultValues) {
+  RunTestCase("ManagedPrintOptionsSupportedDefaultValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsUnsupportedDefaultValues) {
+  RunTestCase("ManagedPrintOptionsUnsupportedDefaultValues");
 }
 #endif
 

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -63,17 +63,11 @@ public class ContinuousSearchFullUiTest {
     private GURL mUrl;
 
     public ContinuousSearchFullUiTest() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTINUOUS_SEARCH,
-                ContinuousSearchListMediator.TRIGGER_MODE_PARAM,
-                "0");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTINUOUS_SEARCH,
-                ContinuousSearchListMediator.SHOW_RESULT_TITLE_PARAM,
-                "true");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.CONTINUOUS_SEARCH)
+                .param(ContinuousSearchListMediator.TRIGGER_MODE_PARAM, 0)
+                .param(ContinuousSearchListMediator.SHOW_RESULT_TITLE_PARAM, true)
+                .apply();
     }
 
     @Before

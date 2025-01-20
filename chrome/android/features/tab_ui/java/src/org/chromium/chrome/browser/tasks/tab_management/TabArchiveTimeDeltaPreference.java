@@ -23,7 +23,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
 public class TabArchiveTimeDeltaPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
     // The time delta options.
-    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 30};
+    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 21};
     private static final String TIME_DELTA_HISTOGRAM = "Tabs.ArchiveSettings.TimeDeltaPreference";
 
     private RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];

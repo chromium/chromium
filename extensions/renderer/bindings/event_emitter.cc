@@ -229,8 +229,8 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
     // (through e.g. calling alert() or print()). That should suspend this
     // message loop as well (though a nested message loop will run). This is a
     // bit ugly, but should hopefully be safe.
-    v8::MaybeLocal<v8::Value> maybe_result = js_runner->RunJSFunctionSync(
-        listener, context, args->size(), args->data());
+    v8::MaybeLocal<v8::Value> maybe_result =
+        js_runner->RunJSFunctionSync(listener, context, *args);
 
     // Any of the listeners could invalidate the context. If that happens,
     // bail out.
@@ -297,7 +297,7 @@ void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
   CHECK(v8::Function::New(context, &DispatchAsyncHelper, data)
             .ToLocal(&function));
 
-  JSRunner::Get(context)->RunJSFunction(function, context, 0, nullptr,
+  JSRunner::Get(context)->RunJSFunction(function, context, {},
                                         std::move(callback));
 }
 

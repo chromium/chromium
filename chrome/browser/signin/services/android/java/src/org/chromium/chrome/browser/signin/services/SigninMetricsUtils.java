@@ -65,7 +65,7 @@ public class SigninMetricsUtils {
      */
     public static void logSyncConsentStarted(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
+                "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     /**
@@ -76,7 +76,7 @@ public class SigninMetricsUtils {
      */
     public static void logSigninStarted(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX);
+                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     /** Logs signin user action for a given {@link SigninAccessPoint}. */
@@ -97,14 +97,14 @@ public class SigninMetricsUtils {
     public static void logHistorySyncAcceptButtonClicked(
             @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX_VALUE);
         recordButtonTypeClicked(syncButtonType);
     }
 
     public static void logHistorySyncDeclineButtonClicked(
             @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX);
+                "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX_VALUE);
         recordButtonTypeClicked(syncButtonType);
     }
 

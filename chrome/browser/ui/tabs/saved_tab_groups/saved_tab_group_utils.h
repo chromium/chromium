@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -25,7 +26,11 @@ class Profile;
 namespace content {
 class NavigationHandle;
 class WebContents;
-}
+}  // namespace content
+
+namespace collaboration::messaging {
+struct ActivityLogItem;
+}  // namespace collaboration::messaging
 
 namespace tab_groups {
 
@@ -35,6 +40,7 @@ class TabGroupSyncService;
 class SavedTabGroupUtils {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeaveGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
@@ -61,6 +67,8 @@ class SavedTabGroupUtils {
   static void UngroupSavedGroup(const Browser* browser,
                                 const base::Uuid& saved_group_guid);
   static void DeleteSavedGroup(const Browser* browser,
+                               const base::Uuid& saved_group_guid);
+  static void LeaveSharedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
 
   // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
@@ -155,6 +163,25 @@ class SavedTabGroupUtils {
 
   // Returns true if the sync setting is on for saved tab groups.
   static bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
+
+  // Returns true if shared tab groups are supported.
+  static bool SupportsSharedTabGroups();
+
+  // Returns true if the user is the owner of the shared tab group.
+  static bool IsOwnerOfSharedTabGroup(Profile* profile,
+                                      const base::Uuid& sync_id);
+
+  // Returns the GroupId for this tab group's collaboration.
+  static std::optional<data_sharing::GroupId> GetDataSharingGroupId(
+      Profile* profile,
+      LocalTabGroupID group_id);
+
+  // Returns whether this tab group has Recent Activity.
+  static bool HasRecentActivity(Profile* profile, LocalTabGroupID group_id);
+
+  // Returns the Recent Activity Log for this tab group.
+  static std::vector<collaboration::messaging::ActivityLogItem>
+  GetRecentActivity(Profile* profile, LocalTabGroupID group_id);
 };
 
 }  // namespace tab_groups

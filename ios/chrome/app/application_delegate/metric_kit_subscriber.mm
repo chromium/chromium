@@ -220,7 +220,7 @@ std::string HistogramPrefix(bool include_mismatch) {
     DCHECK_LE(end - start, 10);
     double sample = (end + start) / 2;
     histogramUMA->AddCount(
-        base::saturated_cast<base::HistogramBase::Sample>(sample),
+        base::saturated_cast<base::HistogramBase::Sample32>(sample),
         bucket.bucketCount);
   }
 }

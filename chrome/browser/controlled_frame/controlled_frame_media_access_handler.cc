@@ -54,18 +54,14 @@ ControlledFrameMediaAccessHandler::~ControlledFrameMediaAccessHandler() =
     default;
 
 bool ControlledFrameMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  if (!web_contents || extension) {
+  if (!render_frame_host || extension) {
     return false;
   }
-
-  // TODO(b/40238394): |GuestView| should be looked up from |RenderFrameHost|
-  // instead of |WebContents|. To fix this, |SupportsStreamType| could pass
-  // |RenderFrameHost| instead of |WebContents|.
   extensions::WebViewGuest* web_view =
-      extensions::WebViewGuest::FromWebContents(web_contents);
+      extensions::WebViewGuest::FromRenderFrameHost(render_frame_host);
 
   bool is_controlled_frame = web_view && web_view->attached() &&
                              web_view->IsOwnedByControlledFrameEmbedder();

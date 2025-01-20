@@ -118,6 +118,8 @@ public class HistoryManager
      * @param shouldShowClearData Whether the 'Clear browsing data' button should be shown.
      * @param launchedForApp Whether history UI is launched for app-specific history.
      * @param showAppFilter Whether history page will show app filter UI.
+     * @param openHistoryItemCallback Optional callback which is run when a history item is opened
+     *     (not called when history manager is in a separate activity).
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
@@ -132,7 +134,8 @@ public class HistoryManager
             @Nullable String clientPackageName,
             boolean shouldShowClearData,
             boolean launchedForApp,
-            boolean showAppFilter) {
+            boolean showAppFilter,
+            @Nullable Runnable openHistoryItemCallback) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -189,7 +192,8 @@ public class HistoryManager
                         historyProvider,
                         clientPackageName,
                         launchedForApp,
-                        showAppFilter);
+                        showAppFilter,
+                        openHistoryItemCallback);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
         if (mContentManager.showAppFilter()) {
@@ -576,7 +580,7 @@ public class HistoryManager
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
-                mActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+                mActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
     }
 
     // HistoryContentManager.Observer

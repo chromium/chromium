@@ -73,8 +73,9 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     int count = 0;
     for (int x = 0; x < bitmap.width(); ++x) {
       for (int y = 0; y < bitmap.height(); ++y) {
-        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y)))
+        if (ColorsApproximatelyEqual(color, bitmap.getColor(x, y))) {
           count++;
+        }
       }
     }
     return count * 100.0f / (bitmap.width() * bitmap.height());

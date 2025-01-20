@@ -13,8 +13,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -434,7 +435,8 @@ void PasswordManualFallbackFlow::EnsureCrossDomainPasswordUsageGetsConsent(
         password_client_->ShowCrossDomainConfirmationPopup(
             bounds_, text_direction_,
             password_manager_driver_->GetLastCommittedURL(),
-            payload.display_signon_realm, std::move(on_allowed));
+            payload.display_signon_realm, /*show_warning_text=*/false,
+            std::move(on_allowed));
     return;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||

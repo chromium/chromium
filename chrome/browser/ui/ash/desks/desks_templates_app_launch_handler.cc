@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
@@ -51,8 +50,9 @@ std::string GetBrowserAppName(
     const std::string& app_id) {
   const bool app_type_browser =
       app_restore_data->browser_extra_info.app_type_browser.value_or(false);
-  if (!app_type_browser)
+  if (!app_type_browser) {
     return std::string();
+  }
 
   const std::optional<std::string>& maybe_app_name =
       app_restore_data->browser_extra_info.app_name;
@@ -97,12 +97,15 @@ void DesksTemplatesAppLaunchHandler::LaunchTemplate(
   auto restore_data = desk_template.desk_restore_data()->Clone();
   DCHECK(!restore_data->app_id_to_launch_list().empty());
 
+  // Note: Keep this until we have an OS Stepping Stone that performs the final
+  // Lacros cleanup. See b/380780352.
+  restore_data->RemoveApp(app_constants::kLacrosAppId);
+
   read_handler_->SetRestoreData(launch_id_, restore_data->Clone());
   set_restore_data(std::move(restore_data));
 
   // Launch the different types of apps. They can be done in any order.
   MaybeLaunchArcApps();
-  MaybeLaunchLacrosBrowsers();
   LaunchApps();
   LaunchBrowsers();
 }
@@ -180,8 +183,9 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // Do not try sending an existing window to the active desk and launch a new
   // instance.
-  if (is_multi_instance_window)
+  if (is_multi_instance_window) {
     return true;
+  }
 
   const bool should_launch =
       ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromSavedDesk(
@@ -189,8 +193,9 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // Notify performance tracker that some tracked windows will be moving.
   if (!should_launch) {
-    for (const auto& window : launch_list)
+    for (const auto& window : launch_list) {
       NotifyMovedSingleInstanceApp(window.first);
+    }
   }
 
   return should_launch;
@@ -252,8 +257,9 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
             chromeos::ToWindowShowState(*window_state_type);
       }
 
-      if (!current_bounds.IsEmpty())
+      if (!current_bounds.IsEmpty()) {
         create_params.initial_bounds = current_bounds;
+      }
 
       if (type_ == Type::kCoral) {
         create_params.should_trigger_session_restore = false;
@@ -336,8 +342,9 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   auto* arc_task_handler =
       ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
           profile());
-  if (!arc_task_handler)
+  if (!arc_task_handler) {
     return;
+  }
 
   if (auto* launch_handler =
           arc_task_handler->GetDeskTemplateArcAppQueueRestoreHandler(
@@ -345,57 +352,6 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
     launch_handler->set_desk_template_launch_id(launch_id_);
     launch_handler->RestoreArcApps(this);
   }
-}
-
-void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
-  DCHECK(restore_data());
-
-  const auto& launch_list = restore_data()->app_id_to_launch_list();
-  for (const auto& iter : launch_list) {
-    const std::string& app_id = iter.first;
-    if (app_id != app_constants::kLacrosAppId)
-      continue;
-
-    // Count the number of lacros windows ash intends to launch. Will be
-    // checked at lacros side to see if anything is missing between ash and
-    // lacros when restoring saved desk.
-    // TODO(crbug.com/40910343): Remove after issue is root caused.
-    int windows_count = 0;
-
-    for (const auto& [restore_window_id, app_restore_data] : iter.second) {
-      const app_restore::BrowserExtraInfo& browser_extra_info =
-          app_restore_data->browser_extra_info;
-      if (browser_extra_info.urls.empty()) {
-        continue;
-      }
-      const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
-      if (!app_name.empty() && !IsBrowserAppInstalled(app_name)) {
-        continue;
-      }
-
-      // TODO(crbug.com/40910343): Remove after issue is root caused.
-      windows_count++;
-      LOG(ERROR) << "window " << restore_window_id << " launched by Ash with "
-                 << app_restore_data->browser_extra_info.urls.size() << " tabs";
-
-      crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-          browser_extra_info.urls,
-          app_restore_data->window_info.current_bounds.value_or(gfx::Rect()),
-          browser_extra_info.tab_group_infos,
-          chromeos::ToWindowShowState(
-              app_restore_data->window_info.window_state_type.value_or(
-                  chromeos::WindowStateType::kDefault)),
-          browser_extra_info.active_tab_index.value_or(0),
-          // Values of 0 will be ignored, other type constraints are
-          // enforced on the browser side.
-          browser_extra_info.first_non_pinned_tab_index.value_or(0), app_name,
-          restore_window_id, browser_extra_info.lacros_profile_id.value_or(0));
-    }
-    // TODO(crbug.com/40910343): Remove after issue is root caused.
-    LOG(ERROR) << windows_count
-               << " windows launched by Ash in total for this desk";
-  }
-  restore_data()->RemoveApp(app_constants::kLacrosAppId);
 }
 
 void DesksTemplatesAppLaunchHandler::NotifyMovedSingleInstanceApp(

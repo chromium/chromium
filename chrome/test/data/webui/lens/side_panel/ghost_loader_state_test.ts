@@ -38,13 +38,12 @@ suite('SearchboxBackButton', () => {
     assertTrue(isVisible(ghostLoader));
     await waitAfterNextRender(lensSidePanelElement);
     // Notify side panel to hide ghost loader.
-    testBrowserProxy.page.updateGhostLoaderState(
-        /*suppress_ghost_loader=*/ true, /*reset_loading_state=*/ true);
+    testBrowserProxy.page.suppressGhostLoader();
     await waitAfterNextRender(lensSidePanelElement);
     assertFalse(isVisible(ghostLoader));
   });
 
-  test('reset ghost loader loading state', async () => {
+  test('input resets ghost loader loading state', async () => {
     const ghostLoader = lensSidePanelElement.shadowRoot!
                             .querySelector<SearchboxGhostLoaderElement>(
                                 'cr-searchbox-ghost-loader')!;
@@ -53,9 +52,38 @@ suite('SearchboxBackButton', () => {
     await waitAfterNextRender(lensSidePanelElement);
     assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
     // Notify side panel to reset the ghost loader to loading state.
-    testBrowserProxy.page.updateGhostLoaderState(
-        /*suppress_ghost_loader=*/ false, /*reset_loading_state=*/ true);
+    assertTrue(isVisible(lensSidePanelElement.$.searchbox));
+    // Mock sending input to the searchbox.
+    lensSidePanelElement.$.searchbox.$.input.value = 'hello';
+    lensSidePanelElement.dispatchEvent(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'o',
+    }));
+
     await waitAfterNextRender(lensSidePanelElement);
+    // State should be switched back to loading state after any input.
+    assertTrue(
+        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+  });
+
+  test('click resets ghost loader loading state', async () => {
+    const ghostLoader = lensSidePanelElement.shadowRoot!
+                            .querySelector<SearchboxGhostLoaderElement>(
+                                'cr-searchbox-ghost-loader')!;
+    ghostLoader.showErrorStateForTesting();
+    lensSidePanelElement.makeGhostLoaderVisibleForTesting();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
+    // Click into the searchbox.
+    lensSidePanelElement.$.searchbox.dispatchEvent(
+        new KeyboardEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+        }));
+
+    await waitAfterNextRender(lensSidePanelElement);
+    // State should be switched back to loading state clicking into searchbox.
     assertTrue(
         isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
   });

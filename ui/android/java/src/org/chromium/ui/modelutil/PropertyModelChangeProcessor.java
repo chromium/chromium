@@ -4,6 +4,7 @@
 
 package org.chromium.ui.modelutil;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 /**
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
  * @param <V> The view object that is changing.
  * @param <P> The property of the view that changed.
  */
+@NullMarked
 public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P> {
     /**
      * A generic view binder that associates a view with a model.

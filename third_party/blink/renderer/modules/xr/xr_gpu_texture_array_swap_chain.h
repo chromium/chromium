@@ -20,6 +20,7 @@ class XRGPUTextureArraySwapChain final : public XRGPUSwapChain {
  public:
   XRGPUTextureArraySwapChain(GPUDevice* device,
                              XRGPUSwapChain* wrapped_swap_chain,
+                             wgpu::TextureFormat format,
                              uint32_t layers);
   ~XRGPUTextureArraySwapChain() override = default;
 
@@ -37,9 +38,20 @@ class XRGPUTextureArraySwapChain final : public XRGPUSwapChain {
   void Trace(Visitor* visitor) const override;
 
  private:
+  void DirectCopy(wgpu::CommandEncoder command_encoder,
+                  GPUTexture* source_texture,
+                  GPUTexture* dest_texture);
+  void RenderCopy(wgpu::CommandEncoder command_encoder,
+                  GPUTexture* source_texture,
+                  GPUTexture* dest_texture);
+
+  wgpu::RenderPipeline GetCopyPipelineForFormat(wgpu::TextureFormat format);
+
   Member<XRGPUSwapChain> wrapped_swap_chain_;
   wgpu::TextureDescriptor descriptor_;
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
+  wgpu::RenderPipeline copy_pipeline_;
+  wgpu::TextureFormat copy_pipeline_format_;
 };
 
 }  // namespace blink

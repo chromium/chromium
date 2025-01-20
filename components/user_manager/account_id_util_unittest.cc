@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_manager {
@@ -35,7 +36,7 @@ class AccountIdUtilTest : public testing::Test {
 
  protected:
   const AccountId kDefaultAccountId =
-      AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
 };
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithGaiaId) {
@@ -50,7 +51,7 @@ TEST_F(AccountIdUtilTest, LoadGoogleAccountWithGaiaId) {
   EXPECT_EQ(result->GetAccountType(), AccountType::GOOGLE);
   EXPECT_EQ(result->GetUserEmail(), kUserEmail);
   ASSERT_TRUE(result->HasAccountIdKey());
-  ASSERT_EQ(result->GetGaiaId(), kGaiaID);
+  ASSERT_EQ(result->GetGaiaId().ToString(), kGaiaID);
 }
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithoutGaiaId) {
@@ -125,7 +126,7 @@ TEST_F(AccountIdUtilTest, MatchByGaiaIdSameEmail) {
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
                                .Set("gaia_id", kGaiaID);
-  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
+  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
@@ -134,7 +135,7 @@ TEST_F(AccountIdUtilTest, MatchByGaiaIdOtherEmail) {
                                .Set("account_type", "google")
                                .Set("email", kUserEmail)
                                .Set("gaia_id", kGaiaID);
-  AccountId id = AccountId::FromUserEmailGaiaId(kOtherEmail, kGaiaID);
+  AccountId id = AccountId::FromUserEmailGaiaId(kOtherEmail, GaiaId(kGaiaID));
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
@@ -154,7 +155,7 @@ TEST_F(AccountIdUtilTest, StoreEmailOnly) {
 }
 
 TEST_F(AccountIdUtilTest, StoreGoogleAccount) {
-  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
+  AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
   base::Value::Dict dict;
   StoreAccountId(id, dict);
   EXPECT_EQ(dict.Find("account_type")->GetString(), "google");

@@ -20,6 +20,7 @@
  *
  */
 
+#include "base/memory/stack_allocated.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -132,7 +133,7 @@ class CORE_EXPORT RuleData {
            unsigned position,
            const StyleScope*,
            AddRuleFlags,
-           Vector<unsigned>& bloom_hash_backing);
+           Vector<uint16_t>& bloom_hash_backing);
 
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_.Get(); }
@@ -151,9 +152,6 @@ class CORE_EXPORT RuleData {
   bool SelectorIsEasy() const { return is_easy_; }
   bool IsStartingStyle() const { return is_starting_style_; }
 
-  bool ContainsUncommonAttributeSelector() const {
-    return contains_uncommon_attribute_selector_;
-  }
   unsigned Specificity() const { return specificity_; }
   unsigned LinkMatchType() const { return link_match_type_; }
   ValidPropertyFilter GetValidPropertyFilter(
@@ -164,14 +162,14 @@ class CORE_EXPORT RuleData {
   }
 
   // Member functions related to the descendant Bloom filter.
-  const base::span<const unsigned> DescendantSelectorIdentifierHashes(
-      const Vector<unsigned>& backing) const {
+  const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
+      const Vector<uint16_t>& backing) const {
     return {backing.data() + bloom_hash_pos_, bloom_hash_size_};
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
-                                Vector<unsigned>& backing);
-  void MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
-                               Vector<unsigned>& new_backing,
+                                Vector<uint16_t>& backing);
+  void MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
+                               Vector<uint16_t>& new_backing,
                                unsigned new_position);
 
   void Trace(Visitor*) const;
@@ -190,8 +188,8 @@ class CORE_EXPORT RuleData {
   Member<StyleRule> rule_;
   unsigned selector_index_ : kSelectorIndexBits;
   unsigned position_ : kPositionBits;
-  unsigned contains_uncommon_attribute_selector_ : 1;
-  // 32 bits above
+  unsigned unused_bit_ : 1;
+  // 31 bits above (1 free bit).
   unsigned specificity_ : 24;
   unsigned link_match_type_ : 2;
   unsigned valid_property_filter_ : 3;
@@ -272,10 +270,6 @@ class RuleMap {
       const RuleSet& old_rule_set,
       RuleSet& new_rule_set);
   base::span<const RuleData> Find(const AtomicString& key) const {
-    if (buckets.IsNull()) {
-      return {};
-    }
-
     // Go through all the buckets and check for equality, brute force.
     // Note that we don't check for IsNull() to get an early abort
     // on empty buckets; the comparison of AtomicString is so cheap
@@ -299,6 +293,9 @@ class RuleMap {
   void Trace(Visitor* visitor) const { visitor->Trace(backing); }
 
   struct ConstIterator {
+    STACK_ALLOCATED();
+
+   public:
     RobinHoodMap<AtomicString, Extent>::const_iterator sub_it;
     const RuleMap* rule_map;
 
@@ -378,7 +375,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   RuleSet(const RuleSet&) = delete;
   RuleSet& operator=(const RuleSet&) = delete;
 
-  void AddRulesFromSheet(StyleSheetContents*,
+  void AddRulesFromSheet(const StyleSheetContents*,
                          const MediaQueryEvaluator&,
                          CascadeLayer* = nullptr,
                          const StyleScope* = nullptr);
@@ -513,6 +510,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     }
   }
 
+  void AssertCompacted() const { DCHECK(!need_compaction_); }
+
   bool HasSlottedRules() const {
     return !slotted_pseudo_element_rules_.empty();
   }
@@ -583,7 +582,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Interval<StyleScope>>& ScopeIntervals() const {
     return scope_intervals_;
   }
-  const Vector<unsigned>& BloomHashBacking() const {
+  const Vector<uint16_t>& BloomHashBacking() const {
     return bloom_hash_backing_;
   }
 
@@ -636,7 +635,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   };
 
   template <BucketCoverage bucket_coverage>
-  void FindBestRuleSetAndAdd(CSSSelector&, const RuleData&);
+  void FindBestRuleSetAndAdd(CSSSelector&, const RuleData&, const StyleScope*);
 
   void AddRule(StyleRule*,
                unsigned selector_index,
@@ -663,6 +662,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void CompactRules();
   static void CreateSubstringMatchers(
       RuleMap& attr_map,
+      const HeapVector<Interval<StyleScope>>& scope_intervals,
       SubstringMatcherMap& substring_matcher_map);
 
 #if DCHECK_IS_ON()
@@ -773,14 +773,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Backing store for the Bloom filter hashes for each RuleData.
   // It is stored here so that we can have a variable number of them
   // (without the overhead of a Vector in each RuleData).
-  //
-  // Note that we only really use the bottom 24 bits of each hash,
-  // so we could in theory save some more bytes here by storing 3-byte
-  // instead of 4-byte ints. However, even for sites using a fair bit
-  // of descendant selectors, we typically see <50 kB potential savings
-  // here, so we haven't gone down that route yet. (Perhaps it could
-  // in theory help with cache efficiency.)
-  Vector<unsigned> bloom_hash_backing_;
+  Vector<uint16_t> bloom_hash_backing_;
 
 #if DCHECK_IS_ON()
   HeapVector<RuleData> all_rules_;

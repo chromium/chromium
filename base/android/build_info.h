@@ -60,33 +60,19 @@ class BASE_EXPORT BuildInfo {
   // available even if the process is in a crash state. Sadly
   // std::string.c_str() doesn't guarantee that memory won't be allocated when
   // it is called.
-  const char* device() const {
-    return device_;
-  }
+  const char* device() const { return device_; }
 
-  const char* manufacturer() const {
-    return manufacturer_;
-  }
+  const char* manufacturer() const { return manufacturer_; }
 
-  const char* model() const {
-    return model_;
-  }
+  const char* model() const { return model_; }
 
-  const char* brand() const {
-    return brand_;
-  }
+  const char* brand() const { return brand_; }
 
-  const char* android_build_id() const {
-    return android_build_id_;
-  }
+  const char* android_build_id() const { return android_build_id_; }
 
-  const char* android_build_fp() const {
-    return android_build_fp_;
-  }
+  const char* android_build_fp() const { return android_build_fp_; }
 
-  const char* gms_version_code() const {
-    return gms_version_code_;
-  }
+  const char* gms_version_code() const { return gms_version_code_; }
 
   void set_gms_version_code_for_test(const std::string& gms_version_code);
 
@@ -111,25 +97,17 @@ class BASE_EXPORT BuildInfo {
   // This will default to an empty string if we were unable to retrieve it.
   std::string host_signing_cert_sha256();
 
-  const char* package_version_code() const {
-    return package_version_code_;
-  }
+  const char* package_version_code() const { return package_version_code_; }
 
-  const char* package_version_name() const {
-    return package_version_name_;
-  }
+  const char* package_version_name() const { return package_version_name_; }
 
-  const char* package_name() const {
-    return package_name_;
-  }
+  const char* package_name() const { return package_name_; }
 
   const char* custom_themes() const { return custom_themes_; }
 
   const char* resources_version() const { return resources_version_; }
 
-  const char* build_type() const {
-    return build_type_;
-  }
+  const char* build_type() const { return build_type_; }
 
   const char* board() const { return board_; }
 
@@ -137,9 +115,7 @@ class BASE_EXPORT BuildInfo {
 
   const char* abi_name() const { return abi_name_; }
 
-  int sdk_int() const {
-    return sdk_int_;
-  }
+  int sdk_int() const { return sdk_int_; }
 
   // Returns the targetSdkVersion of the currently running app. If called from a
   // library, this returns the embedding app's targetSdkVersion.

@@ -78,8 +78,7 @@ class BlobFlattenerTest : public testing::Test {
   }
 
   scoped_refptr<BlobDataItem> CreateDataItem(const char* memory, size_t size) {
-    return BlobDataItem::CreateBytes(
-        base::as_bytes(base::make_span(memory, size)));
+    return BlobDataItem::CreateBytes(base::as_bytes(base::span(memory, size)));
   }
 
   scoped_refptr<BlobDataItem> CreateFileItem(size_t offset, size_t size) {

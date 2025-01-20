@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/main_function_params.h"
@@ -93,7 +94,7 @@ class CONTENT_EXPORT ContentMainDelegate {
 
   // Fatal errors during initialization are reported by this function, so that
   // the embedder can implement graceful exit by displaying some message and
-  // returning initialization error code. Default behavior is CHECK(false).
+  // returning initialization error code. Default behavior is NOTREACHED().
   virtual int TerminateForFatalInitializationError();
 
   // Allows the embedder to prevent locking the scheme registry. The scheme

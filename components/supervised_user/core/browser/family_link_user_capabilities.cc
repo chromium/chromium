@@ -4,7 +4,10 @@
 
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 
-#include "base/no_destructor.h"
+#include <array>
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -15,11 +18,11 @@ namespace {
 
 // Returns the list of capabilities observed by
 // FamilyLinkUserCapabilitiesObserver.
-const std::vector<std::string>& GetFamilyLinkUserCapabilityNames() {
-  static base::NoDestructor<std::vector<std::string>> names{
+base::span<const std::string_view> GetFamilyLinkUserCapabilityNames() {
+  static constexpr auto kNames = std::to_array<std::string_view>(
       {kIsSubjectToParentalControlsCapabilityName,
-       kCanFetchFamilyMemberInfoCapabilityName}};
-  return *names;
+       kCanFetchFamilyMemberInfoCapabilityName});
+  return kNames;
 }
 
 }  // namespace
@@ -58,7 +61,7 @@ void FamilyLinkUserCapabilitiesObserver::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  for (const std::string& name : GetFamilyLinkUserCapabilityNames()) {
+  for (std::string_view name : GetFamilyLinkUserCapabilityNames()) {
     signin::Tribool new_capability_value =
         info.capabilities.GetCapabilityByName(name);
     // Do not override known capability values with kUnknown.
@@ -85,7 +88,7 @@ void FamilyLinkUserCapabilitiesObserver::OnPrimaryAccountChanged(
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       // Update and notify previously known capabilities.
-      for (const std::string& name : GetFamilyLinkUserCapabilityNames()) {
+      for (std::string_view name : GetFamilyLinkUserCapabilityNames()) {
         NotifyCapabilityChange(name, CapabilityUpdateState::kDetached);
       }
       break;
@@ -102,7 +105,7 @@ void FamilyLinkUserCapabilitiesObserver::OnIdentityManagerShutdown(
 }
 
 void FamilyLinkUserCapabilitiesObserver::NotifyCapabilityChange(
-    const std::string& name,
+    std::string_view name,
     CapabilityUpdateState capability_update_state) {
   if (name == kIsSubjectToParentalControlsCapabilityName) {
     OnIsSubjectToParentalControlsCapabilityChanged(capability_update_state);

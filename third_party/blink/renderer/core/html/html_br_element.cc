@@ -42,7 +42,7 @@ bool HTMLBRElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLBRElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kClearAttr) {
     // If the string is empty, then don't add the clear property.
     // <br clear> and <br clear=""> are just treated like <br> by Gecko, Mac IE,

@@ -459,9 +459,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
     if (!render_frame_host->GetParentOrOuterDocument()) {
-      // TODO(crbug.com/40065854): `client_->IsPageMainFrame()` didn't return
-      // the correct status.
-      base::debug::DumpWithoutCrashing();
+      // TODO(crbug.com/40065854): This can be removed once
+      // PageLoadMetricsUpdateDispatcher::IsPageMainFrame() is made consistent
+      // with the main-frame status reported by the RenderFrameHost.
+      LOG(ERROR) << "IsPageMainFrame() did not correctly identify the "
+                    "RenderFrameHost as a main frame.";
       return;
     }
 

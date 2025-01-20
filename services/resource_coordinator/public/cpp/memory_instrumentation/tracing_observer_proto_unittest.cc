@@ -20,7 +20,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +45,7 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -172,8 +170,16 @@ TEST_F(TracingObserverProtoTest,
   data_source_tester.EndTracing();
 }
 
+// TODO(crbug.com/376596183): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  DISABLED_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#else
+#define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+#endif
 TEST_F(TracingObserverProtoTest,
-       AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+       MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled) {
   auto* tracing_observer =
       memory_instrumentation::TracingObserverProto::GetInstance();
   tracing::DataSourceTester data_source_tester(tracing_observer);

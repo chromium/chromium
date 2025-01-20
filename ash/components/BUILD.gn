@@ -18,10 +18,14 @@ test("ash_components_unittests") {
   deps = [
     "//ash/components/arc:unit_tests",
     "//ash/components/arc/mojom:unit_tests",
-    "//ash/components/arc/session:unit_tests",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/chaps_util:unit_tests",
     "//mojo/core/embedder",
+
+    # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+    # from here for arc directory migration. Fix this later.
+    "//chromeos/ash/experiences/arc/intent_helper:unit_tests",
+    "//chromeos/ash/experiences/arc/session:unit_tests",
   ]
 }

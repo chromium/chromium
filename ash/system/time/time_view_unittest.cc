@@ -139,8 +139,15 @@ TEST_F(TimeViewTest, Basics) {
   ASSERT_FALSE(vertical_time_label_container()->GetVisible());
 }
 
+// TODO(crbug.com/355355015): flaky test.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_TimeViewFiresAccessibilityEvents \
+  DISABLED_TimeViewFiresAccessibilityEvents
+#else
+#define MAYBE_TimeViewFiresAccessibilityEvents TimeViewFiresAccessibilityEvents
+#endif
 // Test accessibility events emitted by the time view's labels during updates.
-TEST_F(TimeViewTest, TimeViewFiresAccessibilityEvents) {
+TEST_F(TimeViewTest, MAYBE_TimeViewFiresAccessibilityEvents) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
 
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);

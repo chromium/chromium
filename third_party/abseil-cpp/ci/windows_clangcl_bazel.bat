@@ -39,7 +39,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
 :: /google/data/rw/teams/absl/kokoro/windows.
 ::
 :: TODO(absl-team): Remove -Wno-microsoft-cast
-%KOKORO_GFILE_DIR%\bazel-7.0.0-windows-x86_64.exe ^
+%KOKORO_GFILE_DIR%\bazel-8.0.0-windows-x86_64.exe ^
   test ... ^
   --compilation_mode=%COMPILATION_MODE% ^
   --compiler=clang-cl ^

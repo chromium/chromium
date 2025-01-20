@@ -177,8 +177,9 @@ bool IsSupported(const base::FilePath& file_path) {
 
   // Then attempt to match based on `file_path` extension.
   for (const auto& file_match_pattern : kFileMatchPatterns) {
-    if (re2::RE2::FullMatch(file_path.Extension(), file_match_pattern.first))
+    if (re2::RE2::FullMatch(file_path.Extension(), file_match_pattern.first)) {
       return true;
+    }
   }
 
   return false;
@@ -231,13 +232,15 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
         callback_(std::move(callback)) {}
 
   ~ThumbnailLoaderNativeMessageHost() override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run("");
+    }
   }
 
   void OnMessage(const std::string& message) override {
-    if (response_received_)
+    if (response_received_) {
       return;
+    }
     response_received_ = true;
 
     // Detach the callback from the message host in case the extension closes
@@ -448,8 +451,9 @@ void ThumbnailLoader::OnThumbnailLoaded(
     const base::UnguessableToken& request_id,
     const gfx::Size& requested_size,
     const std::string& data) {
-  if (!requests_.count(request_id))
+  if (!requests_.count(request_id)) {
     return;
+  }
 
   if (data.empty()) {
     RespondToRequest(request_id, requested_size, /*bitmap=*/nullptr,
@@ -472,8 +476,9 @@ void ThumbnailLoader::RespondToRequest(const base::UnguessableToken& request_id,
                                        base::File::Error error) {
   thumbnail_decoders_.erase(request_id);
   auto request_it = requests_.find(request_id);
-  if (request_it == requests_.end())
+  if (request_it == requests_.end()) {
     return;
+  }
 
   // To work around cropping limitations of the image loader, we requested a
   // square image. If requested dimensions were non-square, we need to perform

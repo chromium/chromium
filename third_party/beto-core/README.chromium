@@ -2,9 +2,9 @@ Name: Better together core components
 Short Name: beto-core
 URL: https://beto-core.googlesource.com/beto-core
 Version: N/A
-Date: 04/10/2023
+Date: 2023-04-10
 Revision: 9bfc955731213b299f893dbf4ca86874b31e6b18
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

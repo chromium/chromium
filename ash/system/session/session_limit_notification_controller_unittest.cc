@@ -183,7 +183,7 @@ TEST_F(SessionLimitNotificationControllerLoginTest,
   EXPECT_FALSE(GetNotification());
 
   // Notification is shown after login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_TRUE(GetNotification());
 
   RemoveNotification();
@@ -196,7 +196,7 @@ TEST_F(SessionLimitNotificationControllerLoginTest,
 
   // Notification should be absent.
   UpdateSessionLengthLimitInMin(kNotificationThresholdInMinutes + 10);
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_FALSE(GetNotification());
 
   RemoveNotification();

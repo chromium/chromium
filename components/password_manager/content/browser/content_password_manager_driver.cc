@@ -10,6 +10,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -130,7 +131,7 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
   // ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() will
   // call ContentPasswordManagerDriver::SendLoggingAvailability() on `this` to
   // do it actually.
-  if (autofill::LogManager* log_manager = client_->GetLogManager()) {
+  if (autofill::LogManager* log_manager = client_->GetCurrentLogManager()) {
     // RenderFrameHost might be a speculative one: it hasn't committed its
     // document. We don't know if its is safe to use the whole
     // PasswordAutofillAgent interface. For this reason, we use directly
@@ -187,11 +188,9 @@ void ContentPasswordManagerDriver::SetPasswordFillData(
   }
 }
 
-void ContentPasswordManagerDriver::InformNoSavedCredentials(
-    bool should_show_popup_without_passwords) {
-  GetPasswordAutofillManager()->OnNoCredentialsFound();
+void ContentPasswordManagerDriver::InformNoSavedCredentials() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->InformNoSavedCredentials(should_show_popup_without_passwords);
+    agent->InformNoSavedCredentials();
   }
 }
 
@@ -227,6 +226,10 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
       generation_element_id, password);
 }
 
+void ContentPasswordManagerDriver::GeneratedPasswordRejected() {
+  GetPasswordGenerationAgent()->GeneratedPasswordRejected();
+}
+
 void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
   GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
 }
@@ -237,6 +240,24 @@ void ContentPasswordManagerDriver::FillField(
   if (const auto& agent = GetPasswordAutofillAgent()) {
     LogFilledFieldType();
     agent->FillField(last_triggering_field_id_, value, suggestion_source);
+  }
+}
+
+void ContentPasswordManagerDriver::SubmitChangePasswordForm(
+    autofill::FieldRendererId password_element_id,
+    autofill::FieldRendererId new_password_element_id,
+    autofill::FieldRendererId confirm_password_element_id,
+    const std::u16string& old_password,
+    const std::u16string& new_password,
+    base::OnceCallback<void(const autofill::FormData&)> form_data_callback) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    LogFilledFieldType();
+    agent->SubmitChangePasswordForm(
+        password_element_id, new_password_element_id,
+        confirm_password_element_id, old_password, new_password,
+        base::BindOnce(
+            &ContentPasswordManagerDriver::OnChangePasswordFormFilled,
+            weak_factory_.GetWeakPtr(), std::move(form_data_callback)));
   }
 }
 
@@ -337,7 +358,8 @@ ContentPasswordManagerDriver::GetPasswordAutofillManager() {
 
 void ContentPasswordManagerDriver::SendLoggingAvailability() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SetLoggingState(client_->GetLogManager()->IsLoggingActive());
+    autofill::LogManager* log_manager = client_->GetCurrentLogManager();
+    agent->SetLoggingState(log_manager && log_manager->IsLoggingActive());
   }
 }
 
@@ -398,15 +420,18 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
   if (!HasValidURL(render_frame_host_))
     return;
 
-  auto logger =
-      std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-          client_->GetLogManager());
+  autofill::LogManager* log_manager = client_->GetCurrentLogManager();
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
+  if (log_manager && log_manager->IsLoggingActive()) {
+    logger = std::make_unique<BrowserSavePasswordProgressLogger>(log_manager);
+  }
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms) {
     SetFrameAndFormMetaData(render_frame_host_, form);
-    logger->LogFormData(password_manager::BrowserSavePasswordProgressLogger::
-                            STRING_FORM_IS_PASSWORD,
-                        form);
+    if (logger) {
+      logger->LogFormData(
+          BrowserSavePasswordProgressLogger::STRING_FORM_IS_PASSWORD, form);
+    }
   }
 
   GetPasswordManager()->OnPasswordFormsParsed(this, forms);
@@ -513,7 +538,7 @@ void ContentPasswordManagerDriver::RecordSavePasswordProgress(
   // chrome://password-manager-internals based debugging.
   if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
     return;
-  LOG_AF(client_->GetLogManager())
+  LOG_AF(client_->GetCurrentLogManager())
       << autofill::Tag{"div"}
       << autofill::Attrib{"class", "preserve-white-space"} << log
       << autofill::CTag{"div"};
@@ -689,6 +714,24 @@ ContentPasswordManagerDriver::GetPasswordGenerationAgent() {
   }
 
   return password_gen_agent_;
+}
+
+void ContentPasswordManagerDriver::OnChangePasswordFormFilled(
+    base::OnceCallback<void(const autofill::FormData&)> form_data_callback,
+    const autofill::FormData& raw_form) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_)) {
+    return;
+  }
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_)) {
+    return;
+  }
+
+  std::move(form_data_callback)
+      .Run(GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
 }
 
 }  // namespace password_manager

@@ -11,7 +11,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_update_observer.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"
@@ -61,14 +61,14 @@ class WebKioskAppManager : public KioskAppManagerBase {
   const WebKioskAppData* GetAppByAccountId(const AccountId& account_id) const;
 
   // Updates app by the data obtained during installation.
-  void UpdateAppByAccountId(const AccountId& account_id,
-                            const web_app::WebAppInstallInfo& app_info);
+  void UpdateAppFromInstallInfo(const AccountId& account_id,
+                                const web_app::WebAppInstallInfo& app_info);
 
   // Updates app by title, start_url and icon_bitmaps.
-  void UpdateAppByAccountId(const AccountId& account_id,
-                            const std::string& title,
-                            const GURL& start_url,
-                            const web_app::IconBitmaps& icon_bitmaps);
+  void UpdateApp(const AccountId& account_id,
+                 const std::string& title,
+                 const GURL& start_url,
+                 const web_app::IconBitmaps& icon_bitmaps);
 
   // Adds fake apps in tests.
   void AddAppForTesting(const AccountId& account_id, const GURL& install_url);
@@ -89,7 +89,9 @@ class WebKioskAppManager : public KioskAppManagerBase {
 
   // Observes web Kiosk app updates. Persists through the whole web Kiosk
   // session.
-  std::unique_ptr<WebKioskAppUpdateObserver> app_update_observer_;
+  std::unique_ptr<chromeos::KioskWebAppUpdateObserver> app_update_observer_;
+
+  base::WeakPtrFactory<WebKioskAppManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

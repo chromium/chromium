@@ -42,7 +42,6 @@ namespace {
 // for a window with an NSToolbar.
 constexpr int kTrafficLightsWidth = 62;
 constexpr int kTabAlignmentInset = 4;
-constexpr base::TimeDelta kTabSlideAnimationDuration = base::Milliseconds(149);
 
 class ImmersiveModeFocusSearchMac : public views::FocusSearch {
  public:
@@ -66,12 +65,6 @@ class ImmersiveModeFocusSearchMac : public views::FocusSearch {
   raw_ptr<BrowserView> browser_view_;
 };
 
-bool ShouldAnimateTabs() {
-  return base::FeatureList::IsEnabled(features::kFullscreenAnimateTabs) &&
-         !base::FeatureList::IsEnabled(
-             remote_cocoa::features::kFullscreenAlwaysShowTrafficLights);
-}
-
 }  // namespace
 
 ImmersiveModeControllerMac::RevealedLock::RevealedLock(
@@ -79,8 +72,9 @@ ImmersiveModeControllerMac::RevealedLock::RevealedLock(
     : controller_(std::move(controller)) {}
 
 ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
-  if (auto* controller = controller_.get())
+  if (auto* controller = controller_.get()) {
     controller->LockDestroyed();
+  }
 }
 
 ImmersiveModeControllerMac::ImmersiveModeControllerMac(bool separate_tab_strip)
@@ -188,15 +182,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // If the window is maximized OnViewBoundsChanged will not be called
     // when transitioning to full screen. Call it now.
     OnViewBoundsChanged(browser_view_->top_container());
-
-    if (separate_tab_strip_) {
-      tab_bounds_animator_ = std::make_unique<views::BoundsAnimator>(
-          browser_view_->tab_overlay_view(), false);
-      tab_bounds_animator_->SetAnimationDuration(kTabSlideAnimationDuration);
-    }
   } else {
     if (separate_tab_strip_) {
-      tab_bounds_animator_.reset();
       browser_view_->tab_overlay_widget()->Hide();
       browser_view_->tab_strip_region_view()->SetBorder(nullptr);
       browser_view_->top_container()->AddChildViewAt(
@@ -209,8 +196,9 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // Notify BrowserView about the fullscreen exit so that the top container
     // can be reparented, otherwise it might be destroyed along with the
     // overlay widget.
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnImmersiveFullscreenExited();
+    }
 
     // Rollback the view shuffling from enablement.
     MoveChildren(browser_view_->overlay_widget(), browser_view_->GetWidget());
@@ -238,14 +226,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 }
 
 gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
-  // Inset the start of `tab_strip_region_view` by `kTabAlignmentInset` +
-  // `kTrafficLightsWidth`. This leaves a hole for the traffic lights to appear.
-  // When tab animation is enabled, only inset by `kTabAlignmentInset`, this
-  // keeps the tab strip aligned with the toolbar. The tab strip will slide out
-  // of the way when the traffic lights appear.
-  int right_left_inset = ShouldAnimateTabs()
-                             ? kTabAlignmentInset
-                             : kTabAlignmentInset + kTrafficLightsWidth;
+  int right_left_inset = kTabAlignmentInset + kTrafficLightsWidth;
 
   // Without this +1 top inset the tabs sit 1px too high. I assume this is
   // because in fullscreen there is no resize handle.
@@ -349,8 +330,9 @@ void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
   if (browser_view_->top_container()->Contains(focused_now) ||
       browser_view_->tab_overlay_view()->Contains(focused_now)) {
-    if (!focus_lock_)
+    if (!focus_lock_) {
       focus_lock_ = GetRevealedLock(ANIMATE_REVEAL_NO);
+    }
   } else {
     focus_lock_.reset();
   }
@@ -469,28 +451,9 @@ void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
 
 void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(
     double reveal_amount) {
-  bool should_shift_tabs = reveal_amount == 1 || reveal_amount > reveal_amount_;
   reveal_amount_ = reveal_amount;
   if (!browser_view_->infobar_container()->IsEmpty()) {
     browser_view_->InvalidateLayout();
-  }
-
-  if (!ShouldAnimateTabs() || !tab_bounds_animator_.get()) {
-    return;
-  }
-
-  if (should_shift_tabs) {
-    tab_bounds_animator_->AnimateViewTo(
-        browser_view_->tab_strip_region_view(),
-        gfx::Rect(kTrafficLightsWidth, 0,
-                  browser_view_->tab_overlay_view()->size().width() -
-                      kTrafficLightsWidth,
-                  browser_view_->tab_strip_region_view()->height()));
-  } else {
-    tab_bounds_animator_->AnimateViewTo(
-        browser_view_->tab_strip_region_view(),
-        gfx::Rect(0, 0, browser_view_->tab_overlay_view()->size().width(),
-                  browser_view_->tab_strip_region_view()->height()));
   }
 }
 

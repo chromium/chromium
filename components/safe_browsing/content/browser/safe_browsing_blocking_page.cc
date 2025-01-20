@@ -14,10 +14,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -126,7 +126,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
               TriggerType::SECURITY_INTERSTITIAL, web_contents,
               unsafe_resources[0], url_loader_factory, history_service_,
               navigation_observer_manager_,
-              sb_error_ui()->get_error_display_options());
+              TriggerManager::DataCollectionPermissions(
+                  sb_error_ui()->get_error_display_options()));
       warning_shown_ts_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
     }
   }
@@ -262,8 +263,9 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   auto report_sent_result = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),
       delay, did_proceed, num_visits,
-      sb_error_ui()->get_error_display_options(), warning_shown_ts_,
-      is_hats_candidate);
+      TriggerManager::DataCollectionPermissions(
+          sb_error_ui()->get_error_display_options()),
+      warning_shown_ts_, is_hats_candidate);
   if (!report_sent_result.are_threat_details_available &&
       report_sent_result.should_send_report && unsafe_resources().size() == 1) {
     // If reports are not sent because threat details are not available, send a

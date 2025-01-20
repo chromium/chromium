@@ -4,6 +4,8 @@
 
 package org.chromium.ui.util;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +13,7 @@ import java.util.Set;
  * Helper class for holding tokens, useful when multiple entities need to manipulate the same
  * boolean state, e.g. visibility of a view.
  */
+@NullMarked
 public class TokenHolder {
     /** An invalid token; this can be used to indicate no token is being held. */
     public static final int INVALID_TOKEN = -1;

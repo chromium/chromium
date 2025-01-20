@@ -133,7 +133,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (cookies) {
       uint64_t data_type_mask =
           BrowsingDataRemover::DATA_TYPE_COOKIES |
-          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
+          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
           net::CookiePartitionKey::BoolToAncestorChainBit(
               partition_key_cross_site);
@@ -152,7 +153,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (storage || cache) {
       uint64_t data_type_mask =
           (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
-                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX
+                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+                         BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS
                    : 0) |
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
       data_type_mask &=
@@ -755,10 +757,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, MAYBE_Credentials) {
 // Tests that the credentials flag is correctly taken into account when it
 // interpretation changes after redirect.
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, CredentialsOnRedirect) {
-  GURL urls[2] = {
+  auto urls = std::to_array<GURL, 2>({
       https_server()->GetURL("origin1.com", "/image.png"),
       https_server()->GetURL("origin2.com", "/image.png"),
-  };
+  });
 
   AddQuery(&urls[0], "header", kClearCookiesHeader);
   AddQuery(&urls[1], "header", kClearCookiesHeader);

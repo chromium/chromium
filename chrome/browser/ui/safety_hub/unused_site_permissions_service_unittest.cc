@@ -59,6 +59,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::UnorderedElementsAre;
+
 namespace {
 
 const char url1[] = "https://example1.com:443";
@@ -843,8 +845,8 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
@@ -855,10 +857,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing the changes should add `url1` back to the list of revoked
@@ -874,10 +876,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing `url2` adds it back to the revoked permissions lists.
@@ -893,8 +895,8 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
     ExpectRevokedAbusiveNotificationSettingValues(url2);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   // Undoing `url3` adds it back to the revoked abusive notification permissions
@@ -954,10 +956,10 @@ TEST_P(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
   }
 
   clock()->Advance(base::Days(70));
@@ -1122,8 +1124,8 @@ TEST_P(UnusedSitePermissionsServiceTest,
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(1U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url2, /*ignore_future_revocation=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
@@ -1136,8 +1138,8 @@ TEST_P(UnusedSitePermissionsServiceTest,
   }
   if (ShouldSetupAbusiveNotificationSites()) {
     ExpectRevokedAbusiveNotificationPermissionSize(0U);
-    ExpectCleanedUpAbusiveNotificationSettingValues(
-        url3, /*ignore_future_revocation=*/false);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/false);
   }
 
   // Grant the revoked chooser permissions again from url5, and check that
@@ -1233,19 +1235,11 @@ TEST_P(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   base::Value::Dict dict = result->ToDictValue();
   auto* revoked_origins_list = dict.FindList(kUnusedSitePermissionsResultKey);
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(3U, revoked_origins_list->size());
-    EXPECT_EQ(url1, revoked_origins_list->front().GetString());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));
   } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2));
   } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url2, url3));
   }
 }
 

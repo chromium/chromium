@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 
 #include "base/functional/bind.h"
@@ -17,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/skyvault_resources.h"
@@ -26,6 +20,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace policy::local_user_files {
 
@@ -62,9 +57,8 @@ LocalFilesMigrationUI::LocalFilesMigrationUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSkyvaultResources, kSkyvaultResourcesSize),
-      IDR_SKYVAULT_LOCAL_FILES_HTML);
+  webui::SetupWebUIDataSource(source, kSkyvaultResources,
+                              IDR_SKYVAULT_LOCAL_FILES_HTML);
 
   webui::EnableTrustedTypesCSP(source);
 }

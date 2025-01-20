@@ -143,6 +143,8 @@ class ViewEventTestBase : public ChromeViewsTestBase {
 // Convenience macro for defining a ViewEventTestBase. See class description
 // of ViewEventTestBase for details.
 #define VIEW_TEST(test_class, name) \
-  TEST_F(test_class, name) { StartMessageLoopAndRunTest(); }
+  TEST_F(test_class, name) {        \
+    StartMessageLoopAndRunTest();   \
+  }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TEST_VIEW_EVENT_TEST_BASE_H_

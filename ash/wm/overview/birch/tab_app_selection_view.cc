@@ -32,6 +32,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -139,7 +140,7 @@ class TabAppSelectionView::TabAppSelectionItemView
         owner_(params.owner) {
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
-        .SetAccessibleName(u"TempAccessibleName")
+        .SetAccessibleName(base::UTF8ToUTF16(params.title))
         .SetBetweenChildSpacing(kItemChildSpacing)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
         .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
@@ -179,6 +180,8 @@ class TabAppSelectionView::TabAppSelectionItemView
       close_button_->layer()->SetOpacity(0.f);
       close_button_->SetEnabled(false);
       close_button_->SetID(TabAppSelectionView::kCloseButtonID);
+      close_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP));
     }
 
     auto* delegate = Shell::Get()->saved_desk_delegate();
@@ -195,7 +198,7 @@ class TabAppSelectionView::TabAppSelectionItemView
 
     switch (params.type) {
       case InitParams::Type::kTab: {
-        delegate->GetFaviconForUrl(params.identifier, /*lacros_profile_id=*/0,
+        delegate->GetFaviconForUrl(params.identifier,
                                    std::move(set_icon_image_callback),
                                    &cancelable_favicon_task_tracker_);
         return;
@@ -289,7 +292,7 @@ BEGIN_METADATA(TabAppSelectionView, TabAppSelectionItemView)
 END_METADATA
 
 // -----------------------------------------------------------------------------
-// UserFeedbackView:
+// TabAppSelectionView::UserFeedbackView:
 // A view that allows users to give feedback via the thumb up and thumb down
 // buttons.
 //
@@ -305,7 +308,7 @@ END_METADATA
 //   `UserFeedbackView`
 // TODO(crbug.com/374117101): Add hover state for thumb up/down buttons.
 // TODO(crbug.com/374116829): Localization and proper accessibility names.
-class UserFeedbackView : public views::BoxLayoutView {
+class TabAppSelectionView::UserFeedbackView : public views::BoxLayoutView {
   METADATA_HEADER(UserFeedbackView, views::BoxLayoutView)
 
  public:
@@ -348,6 +351,7 @@ class UserFeedbackView : public views::BoxLayoutView {
     StyleUtil::SetUpInkDropForButton(thumb_up_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
+    thumb_up_button_->SetID(TabAppSelectionView::ViewID::kThumbsUpID);
 
     thumb_down_button_ =
         thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
@@ -362,6 +366,7 @@ class UserFeedbackView : public views::BoxLayoutView {
     StyleUtil::SetUpInkDropForButton(thumb_down_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
+    thumb_down_button_->SetID(TabAppSelectionView::ViewID::kThumbsDownID);
   }
 
   UserFeedbackView(const UserFeedbackView&) = delete;
@@ -416,7 +421,7 @@ class UserFeedbackView : public views::BoxLayoutView {
   raw_ptr<IconButton> thumb_down_button_;
 };
 
-BEGIN_METADATA(UserFeedbackView)
+BEGIN_METADATA(TabAppSelectionView, UserFeedbackView)
 END_METADATA
 
 // -----------------------------------------------------------------------------

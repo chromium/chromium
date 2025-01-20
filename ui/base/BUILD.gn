@@ -117,6 +117,10 @@ component("base") {
   sources = [
     "accelerators/accelerator.cc",
     "accelerators/accelerator.h",
+    "accelerators/command.cc",
+    "accelerators/command.h",
+    "class_properties.cc",
+    "class_properties.h",
     "class_property.cc",
     "class_property.h",
     "default_style.h",
@@ -401,6 +405,13 @@ component("base") {
       ]
     }
 
+    if (is_linux) {
+      sources += [
+        "linux/xdg_shortcut.cc",
+        "linux/xdg_shortcut.h",
+      ]
+    }
+
     if (is_linux || is_chromeos) {
       sources += [
         "accelerators/menu_label_accelerator_util_linux.cc",
@@ -412,8 +423,8 @@ component("base") {
 
     if (is_chromeos) {
       sources += [
-        "accelerators/ash/right_alt_event_property.cc",
-        "accelerators/ash/right_alt_event_property.h",
+        "accelerators/ash/quick_insert_event_property.cc",
+        "accelerators/ash/quick_insert_event_property.h",
       ]
     }
 
@@ -496,8 +507,8 @@ component("base") {
     "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings",
+    "//ui/webui/resources:resources_grit",
     "//url",
   ]
 
@@ -1054,6 +1065,14 @@ test("ui_base_unittests") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_unittest.cc" ]
+    deps += [
+      "//ui/base/accelerators/global_accelerator_listener",
+      "//ui/events:events_base",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
   }
@@ -1282,6 +1301,20 @@ test("ui_base_unittests") {
 
   if (use_glib) {
     sources += [ "glib/scoped_gsignal_unittest.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [ "linux/xdg_shortcut_unittest.cc" ]
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_linux_unittest.cc" ]
+    deps += [
+      "//components/dbus",
+      "//content/test:test_support",
+      "//dbus:test_support",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
   }
 }
 

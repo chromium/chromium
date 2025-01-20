@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -269,15 +271,25 @@ class CORE_EXPORT StyleCascade {
     String OriginalText() { return original_text_.ToString(); }
 
     bool Append(StringView str,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(CSSVariableData* data,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(const CSSValue* data,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
-    void Append(const CSSParserToken&, StringView string);
+    void Append(const CSSParserToken&, bool is_attr_tainted, StringView string);
 
     // NOTE: Strips trailing whitespace.
-    bool AppendFallback(const TokenSequence&, wtf_size_t byte_limit);
+    bool AppendFallback(const TokenSequence&,
+                        bool is_attr_tainted,
+                        wtf_size_t byte_limit);
+
+    const Vector<std::pair<wtf_size_t, wtf_size_t>>* GetAttrTaintedRanges()
+        const {
+      return &attr_taint_ranges_;
+    }
 
     CSSVariableData* BuildVariableData();
 
@@ -310,6 +322,8 @@ class CORE_EXPORT StyleCascade {
     bool has_font_units_ = false;
     bool has_root_font_units_ = false;
     bool has_line_height_units_ = false;
+    // Attr tainted intervals [start, end).
+    Vector<std::pair<wtf_size_t, wtf_size_t>> attr_taint_ranges_;
   };
 
   // Resolving Values
@@ -391,21 +405,17 @@ class CORE_EXPORT StyleCascade {
   bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          const CSSParserContext&,
-                         const FunctionContext&,
+                         const FunctionContext*,
                          CSSParserTokenType stop_type,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       const CSSParserContext&,
+                      const FunctionContext*,
                       TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       const CSSParserContext&,
-                      TokenSequence&);
-  bool ResolveArgInto(CSSParserTokenStream&,
-                      CascadeResolver&,
-                      const CSSParserContext&,
-                      const FunctionContext&,
                       TokenSequence&);
   bool ResolveAttrInto(CSSParserTokenStream&,
                        CascadeResolver&,
@@ -416,8 +426,6 @@ class CORE_EXPORT StyleCascade {
                                            const CSSParserContext&,
                                            TokenSequence&);
 
-  void AppendTaintToken(TokenSequence& out);
-
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to
   // resolve arguments given to this function. See comment within the
@@ -426,15 +434,15 @@ class CORE_EXPORT StyleCascade {
                            CSSParserTokenStream& stream,
                            CascadeResolver& resolver,
                            const CSSParserContext& context,
-                           const FunctionContext& function_context,
+                           const FunctionContext* function_context,
                            TokenSequence& out);
 
   const CSSValue* ResolveFunctionExpression(
       StringView expr,
-      const StyleRuleFunction::Type& type,
+      const CSSSyntaxDefinition& type,
       CascadeResolver& resolver,
       const CSSParserContext& context,
-      const FunctionContext& function_context);
+      const FunctionContext* function_context);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
@@ -461,6 +469,14 @@ class CORE_EXPORT StyleCascade {
   // Marks a CSSProperty as having a reference to a custom property. Needed to
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
+  // Set ComputedStyle bits that require parsing unresolved env() variables.
+  void ApplyUnresolvedEnv();
+  // See comments on IsBottomRelativeToSafeAreaInset in
+  // computed_style_extra_fields.json5.
+  void ApplyIsBottomRelativeToSafeAreaInset();
+  // See comments on ReferencesSafeAreaInsetBottom in
+  // computed_style_extra_fields.json5.
+  void ApplyReferencesSafeAreaInsetBottom();
 
   // Declarations originating from @position-try rules are treated as
   // revert-layer if we're not out-of-flow positioned. Since such declarations

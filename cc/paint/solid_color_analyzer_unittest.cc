@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/solid_color_analyzer.h"
 
+#include <array>
 #include <optional>
 
 #include "base/memory/ref_counted.h"
@@ -328,11 +324,12 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
   PaintFlags flags;
   flags.setColor(SkColors::kWhite);
 
-  struct {
+  struct Cases {
     SkVector offset;
     SkVector offset_scale;
     bool expected;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // Not within bounding box of |rr|.
       {SkVector::Make(100, 100), SkVector::Make(100, 100), false},
 
@@ -367,7 +364,7 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
 
       // In center
       {SkVector::Make(-100, -100), SkVector::Make(-100, -100), true},
-  };
+  });
 
   for (int case_scale = 0; case_scale < 2; ++case_scale) {
     bool scaled = case_scale > 0;

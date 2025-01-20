@@ -14,7 +14,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/download/public/background_service/background_download_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -46,6 +45,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main
@@ -60,8 +60,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // Metrics mediator used to check and update the metrics accordingly to the
   // user preferences.
   MetricsMediator* _metricsMediator;
-  // Container for startup information.
-  id<StartupInformation> _startupInformation;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -82,9 +80,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     _mainController = [[MainController alloc] init];
     _metricsMediator = [[MetricsMediator alloc] init];
     [_mainController setMetricsMediator:_metricsMediator];
-    _startupInformation = _mainController;
-    _appState =
-        [[AppState alloc] initWithStartupInformation:_startupInformation];
+    _appState = [[AppState alloc] initWithStartupInformation:_mainController];
     _pushNotificationDelegate =
         [[PushNotificationDelegate alloc] initWithAppState:_appState];
     [_mainController setAppState:_appState];
@@ -345,7 +341,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 
   // Register if it's a cold start or when bringing Chrome to foreground with
   // Content Push Notifications available.
-  if (_startupInformation.isColdStart ||
+  if (_mainController.isColdStart ||
       [self provisionalNotificationTypesEnabled]) {
     [PushNotificationUtil
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:

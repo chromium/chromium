@@ -47,6 +47,7 @@ namespace content {
 class BrowserContext;
 class PageDelegate;
 class RenderFrameHostDelegate;
+class RenderFrameProxyHost;
 class RenderViewHostDelegate;
 class RenderViewHostImpl;
 class RenderFrameHostManager;
@@ -199,6 +200,16 @@ class CONTENT_EXPORT FrameTree {
     // Returns this FrameTree's opener if this FrameTree represents a
     // picture-in-picture window.
     virtual FrameTree* GetPictureInPictureOpenerFrameTree() = 0;
+
+    // Called when the visibility of the RenderFrameProxyHost changes.
+    // This method should only handle visibility for inner WebContents and
+    // will eventually notify all the RenderWidgetHostViews belonging to that
+    // WebContents. If this is not an inner WebContents or the inner WebContents
+    // FrameTree root does not match `render_frame_proxy_host` FrameTreeNode it
+    // should return false.
+    virtual bool OnRenderFrameProxyVisibilityChanged(
+        RenderFrameProxyHost* render_frame_proxy_host,
+        blink::mojom::FrameVisibility visibility) = 0;
   };
 
   // Type of FrameTree instance.
@@ -608,9 +619,8 @@ class CONTENT_EXPORT FrameTree {
   // A map to store RenderViewHosts, keyed by SiteInstanceGroup ID.
   // This map does not cover all RenderViewHosts in a FrameTree. See
   // `speculative_render_view_host_`.
-  using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
-                                               RenderViewHostImpl*,
-                                               RenderViewHostMapId::Hasher>;
+  using RenderViewHostMap =
+      std::unordered_map<RenderViewHostMapId, RenderViewHostImpl*>;
   // Map of RenderViewHostMapId to RenderViewHost. This allows us to look up the
   // RenderViewHost for a given SiteInstance when creating RenderFrameHosts.
   // Each RenderViewHost maintains a refcount and is deleted when there are no

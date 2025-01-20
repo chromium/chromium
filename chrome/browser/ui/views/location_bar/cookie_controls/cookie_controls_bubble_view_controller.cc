@@ -125,7 +125,7 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     base::Time expiration) {
   bool is_permanent_exception = expiration == base::Time();
   std::u16string label_title;
-  int bubble_title, label_description;
+  int label_description;
   if (is_permanent_exception ||
       enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
     label_title = l10n_util::GetStringUTF16(
@@ -141,15 +141,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     label_description =
         IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
   }
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    bubble_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
-  } else {
-    bubble_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE;
-  }
-
-  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(
       label_title, l10n_util::GetStringUTF16(label_description));
   // ACT feature toggle matches protections state (off when protections off).
@@ -158,15 +151,10 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
-  int label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE;
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    label_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
-  } else if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
-    label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE;
-  }
-  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(label_title));
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
+      blocking_status_ == CookieBlocking3pcdStatus::kLimited
+          ? IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE
+          : IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),

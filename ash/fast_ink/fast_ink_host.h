@@ -78,9 +78,8 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
 
   // FrameSinkHost:
   void Init(aura::Window* host_window) override;
-  void InitForTesting(
-      aura::Window* host_window,
-      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) override;
+  void InitForTesting(aura::Window* host_window,
+                      FrameSinkFactory frame_sink_factory) override;
 
  protected:
   // FrameSinkHost:

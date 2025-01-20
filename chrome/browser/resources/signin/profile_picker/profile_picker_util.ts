@@ -14,6 +14,7 @@ export function createDummyProfileState(): ProfileState {
     userName: '',
     avatarBadge: '',
     avatarIcon: '',
+    profileCardButtonLabel: '',
   };
 }
 

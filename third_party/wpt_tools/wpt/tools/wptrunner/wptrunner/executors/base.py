@@ -34,7 +34,8 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
                        "target_platform": run_info_data["os"]}
 
     if test_type in ("reftest", "print-reftest"):
-        executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
+        screenshot_cache = test_environment.screenshot_caches[test_type, subsuite.name]
+        executor_kwargs["screenshot_cache"] = screenshot_cache
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
 
     if test_type == "wdspec":
@@ -417,7 +418,7 @@ class RefTestImplementation:
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi, page_ranges):
-        key = (self.subsuite, test.url, viewport_size, dpi)
+        key = (test.url, viewport_size, dpi)
 
         if key not in self.screenshot_cache:
             success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges)
@@ -462,19 +463,19 @@ class RefTestImplementation:
                                                           lhs_screenshots,
                                                           rhs_screenshots)):
             comparison_screenshots = (lhs_screenshot, rhs_screenshot)
-            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
-                equal = lhs_hash == rhs_hash
-                # sometimes images can have different hashes, but pixels can be identical.
-                if not equal:
-                    self.logger.info("Image hashes didn't match%s, checking pixel differences" %
-                                     ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
-                    max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
-                                                                             urls)
-                    equal = pixels_different == 0 and max_per_channel == 0
+            if lhs_hash == rhs_hash:
+                max_per_channel, pixels_different = 0, 0
             else:
+                # sometimes images can have different hashes, but pixels can be identical.
+                self.logger.info("Image hashes didn't match%s, checking pixel differences" %
+                                 ("" if len(hashes) == 1 else " on page %i" % (page_idx + 1)))
                 max_per_channel, pixels_different = self.get_differences(comparison_screenshots,
                                                                          urls,
                                                                          page_idx if len(hashes) > 1 else None)
+
+            if not fuzzy or fuzzy == ((0, 0), (0, 0)):
+                equal = pixels_different == 0 and max_per_channel == 0
+            else:
                 allowed_per_channel, allowed_different = fuzzy
                 self.logger.info("Allowed %s pixels different, maximum difference per channel %s" %
                                  ("-".join(str(item) for item in allowed_different),

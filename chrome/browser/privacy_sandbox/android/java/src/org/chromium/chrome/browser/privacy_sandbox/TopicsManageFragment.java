@@ -22,7 +22,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashSet;
@@ -52,8 +52,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
 
         populateTopics();
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.PageOpened");
@@ -153,6 +152,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private void onLearnMoreClicked(View view) {
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 }

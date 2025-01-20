@@ -15,6 +15,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +23,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/any_widget_observer.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -39,9 +42,22 @@ syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
   for (int i = 0; i < item_count; ++i) {
     syncer::LocalDataItemModel item;
     item.id = syncer::LocalDataItemModel::DataId(base::ToString(i));
-    item.icon_url = type == syncer::DataType::PASSWORDS
-                        ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
-                        : GURL();
+
+    switch (type) {
+      case syncer::DataType::PASSWORDS:
+        item.icon = syncer::LocalDataItemModel::PageUrlIcon(
+            GURL("https://chromium.org"));
+        break;
+      case syncer::DataType::BOOKMARKS:
+        item.icon = syncer::LocalDataItemModel::FolderIcon();
+        break;
+      case syncer::DataType::CONTACT_INFO:
+        item.icon = syncer::LocalDataItemModel::NoIcon();
+        break;
+      default:
+        NOTREACHED();
+    }
+
     item.title =
         data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
     item.subtitle =
@@ -84,18 +100,30 @@ const TestParam kTestParams[] = {
 
     // Hero type means the type will be shown in the subtitle of the dialog.
     // Password is a hero type.
-    {.test_suffix = "SingleSectionHeroTypeWithOneItem",
+    {.test_suffix = "SingleSectionPasswordsHeroTypeWithOneItem",
      .section_item_count_type = {{1, syncer::DataType::PASSWORDS}}},
-    {.test_suffix = "SingleSectionHeroTypeWithMultipleItems",
+    {.test_suffix = "SingleSectionPasswordsHeroTypeWithMultipleItems",
      .section_item_count_type = {{5, syncer::DataType::PASSWORDS}}},
 
     // Hero type with multiple sections. Should show "and other items" in the
     // subtitle of the dialog.
-    {.test_suffix = "MultipleSectionsHeroTypeWithOneItem",
+    {.test_suffix = "MultipleSectionsPasswordsHeroTypeWithOneItem",
      .section_item_count_type = {{1, syncer::DataType::PASSWORDS},
                                  {3, syncer::DataType::CONTACT_INFO}}},
-    {.test_suffix = "MultipleSectionsHeroTypeWithMultipleItems",
+    {.test_suffix = "MultipleSectionsPasswordsHeroTypeWithMultipleItems",
      .section_item_count_type = {{5, syncer::DataType::PASSWORDS},
+                                 {3, syncer::DataType::CONTACT_INFO}}},
+
+    // Bookmarks hero type.
+    {.test_suffix = "SingleSectionBookmarksHeroTypeWithOneItem",
+     .section_item_count_type = {{1, syncer::DataType::BOOKMARKS}}},
+    {.test_suffix = "SingleSectionBookmarksHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, syncer::DataType::BOOKMARKS}}},
+    {.test_suffix = "MultipleSectionsBookmarksHeroTypeWithOneItem",
+     .section_item_count_type = {{1, syncer::DataType::BOOKMARKS},
+                                 {3, syncer::DataType::CONTACT_INFO}}},
+    {.test_suffix = "MultipleSectionsBookmarksHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, syncer::DataType::BOOKMARKS},
                                  {3, syncer::DataType::CONTACT_INFO}}},
 
     // Addresses is not a hero type. It should not show in the subtitle.

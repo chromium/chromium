@@ -11,9 +11,11 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -565,8 +567,7 @@ class HTMLFastPathParser {
       static HTMLElement* Create(Document& document) {
         // Body is only supported as an element for adding children, and not
         // a node that is created by this code.
-        CHECK(false);
-        return nullptr;
+        NOTREACHED();
       }
     };
 
@@ -1664,24 +1665,6 @@ UnsupportedTagType UnsupportedTagTypeValueForNode(const Node& node) {
   return UnsupportedTagType::kNotHtml;
 }
 
-// Histogram names used when logging unsupported tag type.
-const char* kUnsupportedTagTypeCompositeName =
-    "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2";
-const char* kUnsupportedTagTypeMaskNames[] = {
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2",
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2",
-    "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2",
-};
-
-// Histogram names used when logging unsupported context tag type.
-const char* kUnsupportedContextTagTypeCompositeName =
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2";
-const char* kUnsupportedContextTagTypeMaskNames[] = {
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0V2",
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2",
-    "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2",
-};
-
 // Logs histograms for either an unsupported tag or unsupported context tag.
 // `type_mask` is a bitmask of the unsupported tags that were encountered. As
 // the uma frontend doesn't handle large bitmasks well, there are 4 separate
@@ -1693,9 +1676,10 @@ const char* kUnsupportedContextTagTypeMaskNames[] = {
 //   . bit 1 set if `type_mask` has at least one bit set in bits 1-8.
 //   . bit 2 set if `type_mask` has at least one bit set in bits 9-16.
 //   . bit 3 set if `type_mask` has at least one bit set in bits 17-24.
-void LogFastPathUnsupportedTagTypeDetails(uint32_t type_mask,
-                                          const char* composite_histogram_name,
-                                          const char* mask_histogram_names[]) {
+void LogFastPathUnsupportedTagTypeDetails(
+    uint32_t type_mask,
+    std::string_view composite_histogram_name,
+    base::span<const std::string_view, 3> mask_histogram_names) {
   // This should only be called once an unsupported tag is encountered.
   DCHECK_NE(static_cast<uint32_t>(0), type_mask);
   uint32_t chunk_mask = 0;
@@ -1732,7 +1716,6 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
   number_of_bytes_parsed = parser.NumberOfBytesParsed();
   // The time needed to parse is typically < 1ms (even at the 99%).
   if (success) {
-    root_node.ParserFinishedBuildingDocumentFragment();
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.HTMLFastPathParser.SuccessfulParseTime2", parse_timer.Elapsed(),
         base::Microseconds(1), base::Milliseconds(10), 100);
@@ -1756,8 +1739,12 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
     if (context_tag_type != UnsupportedTagType::kSupported) {
       LogFastPathUnsupportedTagTypeDetails(
           static_cast<uint32_t>(context_tag_type),
-          kUnsupportedContextTagTypeCompositeName,
-          kUnsupportedContextTagTypeMaskNames);
+          "Blink.HTMLFastPathParser.UnsupportedContextTag.CompositeMaskV2",
+          base::span<const std::string_view, 3>({
+              "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask0V2",
+              "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask1V2",
+              "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2",
+          }));
     }
   }
   if (success) {
@@ -1801,9 +1788,13 @@ void LogTagsForUnsupportedTagTypeFailure(DocumentFragment& fragment) {
   // The mask may still be 0 in some cases, such as empty text, or tags that
   // don't create nodes (frameset).
   if (type_mask != 0) {
-    LogFastPathUnsupportedTagTypeDetails(type_mask,
-                                         kUnsupportedTagTypeCompositeName,
-                                         kUnsupportedTagTypeMaskNames);
+    LogFastPathUnsupportedTagTypeDetails(
+        type_mask, "Blink.HTMLFastPathParser.UnsupportedTag.CompositeMaskV2",
+        base::span<const std::string_view, 3>({
+            "Blink.HTMLFastPathParser.UnsupportedTag.Mask0V2",
+            "Blink.HTMLFastPathParser.UnsupportedTag.Mask1V2",
+            "Blink.HTMLFastPathParser.UnsupportedTag.Mask2V2",
+        }));
   }
 }
 

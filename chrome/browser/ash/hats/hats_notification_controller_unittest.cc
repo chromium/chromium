@@ -132,7 +132,7 @@ class HatsNotificationControllerTest
   HatsNotificationControllerTest& operator=(
       const HatsNotificationControllerTest&) = delete;
 
-  ~HatsNotificationControllerTest() override {}
+  ~HatsNotificationControllerTest() override = default;
 
   // BrowserWithTestWindowTest:
   void SetUp() override {

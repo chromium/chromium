@@ -49,6 +49,15 @@ namespace ash {
 
 namespace {
 
+// New ChromeOS feedback dialog (crbug.com/40941303) passes description template
+// as query parameters in GURL with character limit 2097152 (defined in
+// url.mojom.kMaxURLChars).
+//
+// Calculates characters as 1000-char (around 200-word) template with maximum
+// model input & output (12k tokens in total) we likely want to include in the
+// description.
+const uint32_t kFeedbackDescriptionTemplateMaxChars = 49000;  // 1000 + 4 * 12k
+
 std::string_view SodaInstallerErrorCodeToString(
     speech::SodaInstaller::ErrorCode error) {
   switch (error) {
@@ -133,8 +142,7 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIRecorderAppHost);
 
-  source->AddResourcePaths(
-      base::make_span(kRecorderAppResources, kRecorderAppResourcesSize));
+  source->AddResourcePaths(kRecorderAppResources);
 
   source->AddResourcePath("", IDR_RECORDER_APP_INDEX_HTML);
 
@@ -302,19 +310,23 @@ void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
         feature == on_device_model::mojom::FormatFeature::kAudioTitle);
   recorder_app::mojom::ModelInfoPtr model_info =
       recorder_app::mojom::ModelInfo::New();
-  model_info->input_token_limit = kInputTokenLimit;
-  if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
-    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+
+  if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+    model_info->input_token_limit = kInputTokenXsModelLimit;
+
+    if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =
           base::Uuid::ParseCaseInsensitive(kSummaryXsModelUuid);
     } else {
       model_info->model_id =
-          base::Uuid::ParseCaseInsensitive(kSummaryXxsModelUuid);
+          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXsModelUuid);
     }
   } else {
-    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+    model_info->input_token_limit = kInputTokenXxsModelLimit;
+
+    if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =
-          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXsModelUuid);
+          base::Uuid::ParseCaseInsensitive(kSummaryXxsModelUuid);
     } else {
       model_info->model_id =
           base::Uuid::ParseCaseInsensitive(kTitleSuggestionXxsModelUuid);
@@ -692,6 +704,12 @@ void RecorderAppUI::LoadSpeechRecognizer(
 void RecorderAppUI::OpenAiFeedbackDialog(
     const std::string& description_template) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (description_template.length() > kFeedbackDescriptionTemplateMaxChars) {
+    LOG(ERROR)
+        << "Refusing to open feedback dialog as description template exceeds "
+        << kFeedbackDescriptionTemplateMaxChars << " characters";
+    return;
+  }
   delegate_->OpenAiFeedbackDialog(description_template);
 }
 

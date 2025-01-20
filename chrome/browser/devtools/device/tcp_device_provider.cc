@@ -166,5 +166,4 @@ void TCPDeviceProvider::set_release_callback_for_test(
   release_callback_ = std::move(callback);
 }
 
-TCPDeviceProvider::~TCPDeviceProvider() {
-}
+TCPDeviceProvider::~TCPDeviceProvider() = default;

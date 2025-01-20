@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1066101356081285416">‏Chrome ان سائٹس پر ٹریکنگ نمبرز کا پتہ لگائے گا جو آپ ملاحظہ کرتے ہیں اور نئے ٹیب کے صفحہ پر آپ کو پیکیج کی اپ ڈیٹس دکھائے گا۔ پیکیج ٹریکنگ نمبر اور ویب سائٹ کا نام Google کو بھیجا جائے گا تاکہ یہ خصوصیت فراہم کی جا سکے اور ہر کسی کے لیے Google خریداری کی خصوصیت کو بہتر بنایا جا سکے۔ آپ اسے کسی بھی وقت <ph name="BEGIN_LINK" />پیکیج ٹریکنگ کی ترتیبات<ph name="END_LINK" /> میں اپ ڈیٹ کر سکتے ہیں۔</translation>
+<translation id="1076643793026027628">‏‫Chrome خودکار طور پر YouTube پوشیدگی کے لنکس کو پوشیدگی میں کھولتا ہے۔</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
 <translation id="1143896152279775643">‏آپ کا پاس ورڈ <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
 <translation id="1146503048444965320">‏‫Chrome میں نیا ٹیب کھولیں</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">‏جب بھی آپ پیغامات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو Chrome استعمال کریں۔</translation>
 <translation id="1229222343402087523">‏Chrome میں {searchPhrase}$ تلاش کریں</translation>
 <translation id="1237769345474105984">‏‫Chrome سے</translation>
-<translation id="1240190568154816272">‏Chrome کی تجاویز</translation>
 <translation id="124228879633599436">‏آپ کا Chrome پرانا ہے۔ محفوظ رہنے کے لیے اسے اپ ڈیٹ کریں۔</translation>
 <translation id="1333745675627230582">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="1352919863522755794">‏Google پاس ورڈ مینیجر آپ کے پاس ورڈز چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">‏‫Chrome کو بطور ڈیفالٹ براؤزر سیٹ کرنے کیلئے، Chrome کی ترتیب کھلتی ہے۔</translation>
 <translation id="1670609221633730681">‏‫Chrome کی تجویز: اپنے ایڈریس بار کی پوزیشن منتخب کریں</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">‏اپنے پاس ورڈز کو Chrome میں محفوظ کریں</translation>
 <translation id="1790080846677398234">‏Chrome میں آپ کے بُک مارکس میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
 <translation id="1799920918471566157">‏Chrome کی تجاویز</translation>
 <translation id="1830634592642484976">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں۔</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">‏اس کا مطلب ہے کہ Chrome ہر بار موبائل سائٹ کی درخواست کرے گا۔</translation>
 <translation id="3740397331642243698">‏درج کردہ URLs کو Google Chrome میں پوشیدگی میں کھولتا ہے۔</translation>
 <translation id="3741995255368156336">‏Chrome کی پڑھنے کی فہرست کھولتا ہے۔</translation>
+<translation id="3808570423967020928">‏اپنے ہوم اسکرین ڈاک سے Chrome تک تیزی سے رسائی حاصل کریں</translation>
 <translation id="3827545470516145620">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="384394811301901750">‏Google Chrome ابھی آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
 <translation id="3863841106411295595">‏Chrome میں آپ کی پڑھنے کی فہرست میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">‏اس سائٹ اور Chrome پر سائن ان کریں۔</translation>
 <translation id="4646014602299206846">‏‫Chrome آپ کی ملاحظہ کردہ سائٹس پر پیکیج ٹریکنگ نمبروں کا پتہ لگائے گا اور نئے ٹیب کے صفحہ پر آپ کو پیکیج اپ ڈیٹس دکھائے گا۔ یہ خصوصیت فراہم کرنے اور ہر کسی کے لیے خریداری کو بہتر بنانے کے لیے آپ کے ڈیٹا کا اشتراک Google کے ساتھ کیا جائے گا۔</translation>
 <translation id="4647910807533196601">‏‫Chrome میں میرا تازہ ترین ٹیب کھولیں۔</translation>
+<translation id="4693084815234024320">‏آپ Chrome پوشیدگی میں ہیں</translation>
 <translation id="4724297637870447613">‏‫Chrome کو ہر جگہ استعمال کریں</translation>
 <translation id="4738647308035481133">‏‫Google Chrome صفحہ</translation>
 <translation id="4742795653798179840">‏Chrome کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
@@ -219,9 +222,12 @@
 
 آپ کے Chrome کے تجربے کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کرنے والی مزید ترتیبات کے لیے <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="6922332667202044570">‏‫Chrome میں براؤزنگ ڈیٹا کو حذف کریں۔</translation>
+<translation id="6924922227983877439">‏‫Chrome میں بطور ڈیفالٹ لنکس کھولیں</translation>
+<translation id="6931601805528922498">‏سائن ان کرنے سے کام سے متعلق براؤزنگ کے لیے آپ کا اکاؤنٹ Chrome میں شامل ہو جاتا ہے۔</translation>
 <translation id="6975725306479268850">‏Chrome برائے آٹو فل کا انتخاب کریں</translation>
 <translation id="7056826488869329999">‏Chrome میں سیفٹی چیک کھولتا اور چلاتا ہے۔</translation>
 <translation id="7061455974939528301">‏‫Chrome آئیکن کو چھوئیں اور دبائے رکھیں اور "ہوم اسکرین میں ترمیم کریں" پر کلک کریں</translation>
+<translation id="7065813315247345131">‏‫Chrome کو ڈاک میں منتقل کریں</translation>
 <translation id="7124339256045485976">‏Chrome کو اپ ٹو ڈیٹ رکھیں</translation>
 <translation id="7161390184744336561">‏Google Chrome پرانا ہے</translation>
 <translation id="7165736900384873061">‏Google Chrome QR اسکینر استعمال کرنا شروع کریں</translation>

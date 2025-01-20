@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_CONTENTS_DATA_H_
 #define CHROME_BROWSER_UI_TABS_TAB_CONTENTS_DATA_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <vector>

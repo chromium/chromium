@@ -10,10 +10,13 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_features/window_error/catch_gcrweb_script_errors_java_script_feature.h"
@@ -32,6 +35,18 @@ namespace {
 // A key used to associate a WKWebViewConfigurationProvider with a BrowserState.
 const char kWKWebViewConfigProviderKeyName[] = "wk_web_view_config_provider";
 
+// Converts `uuid` to an NSUUID.
+NSUUID* ToNSUUID(const base::Uuid& uuid) {
+  DCHECK(uuid.is_valid());
+  // base::Uuid(...) uses lower-case but NSUUID uses upper-case, so convert
+  // to upper-case before calling -initWithUUIDString: to avoid case issues.
+  const std::string uuid_string = base::ToUpperASCII(uuid.AsLowercaseString());
+  NSString* uuid_nsstring = base::SysUTF8ToNSString(uuid_string);
+  NSUUID* nsuuid = [[NSUUID alloc] initWithUUIDString:uuid_nsstring];
+  DCHECK(nsuuid);
+  return nsuuid;
+}
+
 }  // namespace
 
 // static
@@ -45,6 +60,19 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
   }
   return *(static_cast<WKWebViewConfigurationProvider*>(
       browser_state->GetUserData(kWKWebViewConfigProviderKeyName)));
+}
+
+// static
+void WKWebViewConfigurationProvider::DeleteDataStorageForIdentifier(
+    const base::Uuid& uuid,
+    base::OnceCallback<void(NSError*)> callback) {
+  if (@available(iOS 17.0, *)) {
+    [WKWebsiteDataStore removeDataStoreForIdentifier:ToNSUUID(uuid)
+                                   completionHandler:base::CallbackToBlock(
+                                                         std::move(callback))];
+  } else {
+    NOTREACHED();
+  }
 }
 
 base::WeakPtr<WKWebViewConfigurationProvider>
@@ -85,19 +113,15 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
       [configuration_
           setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
     } else {
-      const std::string& storage_id = browser_state_->GetWebKitStorageID();
-      if (!storage_id.empty()) {
+      const base::Uuid& storage_id = browser_state_->GetWebKitStorageID();
+      if (storage_id.is_valid()) {
         if (@available(iOS 17.0, *)) {
           // Set the data store to configuration when the browser state is not
           // incognito and the storage ID exists. `dataStoreForIdentifier:` is
           // available after iOS 17. Otherwise, use the default data store.
-          [configuration_
-              setWebsiteDataStore:
-                  [WKWebsiteDataStore
-                      dataStoreForIdentifier:
-                          [[NSUUID alloc]
-                              initWithUUIDString:base::SysUTF8ToNSString(
-                                                     storage_id)]]];
+          NSUUID* uuid = ToNSUUID(storage_id);
+          [configuration_ setWebsiteDataStore:[WKWebsiteDataStore
+                                                  dataStoreForIdentifier:uuid]];
         }
       }
     }

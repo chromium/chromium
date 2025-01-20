@@ -210,9 +210,10 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # This is empty because we automatically compile any tests required for
-    # the builders that triggered this.
-    targets = targets.bundle(targets = []),
+    # crbug.com/390061059: Explicitly compile android_lint to have lint coverage
+    targets = targets.bundle(
+        additional_compile_targets = "android_lint",
+    ),
     gardener_rotations = gardener_rotations.ANDROID,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
@@ -256,6 +257,18 @@ ci.thin_tester(
                     "14-desktop-x64-emulator",
                     "emulator-8-cores",
                 ],
+                per_test_modifications = {
+                    "android_browsertests": targets.mixin(
+                        args = [
+                            "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.android_browsertests.filter",
+                        ],
+                    ),
+                    "unit_tests": targets.mixin(
+                        args = [
+                            "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.unit_tests.filter",
+                        ],
+                    ),
+                },
             ),
         ],
     ),

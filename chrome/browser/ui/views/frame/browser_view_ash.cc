@@ -124,7 +124,7 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
     }
   }
 
-  if (contents_webview->background_radii() != contents_webview_radii) {
+  if (contents_webview->GetBackgroundRadii() != contents_webview_radii) {
     contents_webview->SetBackgroundRadii(contents_webview_radii);
   }
 }

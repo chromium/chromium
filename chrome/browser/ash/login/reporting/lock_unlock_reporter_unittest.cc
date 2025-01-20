@@ -122,7 +122,7 @@ class LockUnlockTestHelper {
 class LockUnlockReporterTest
     : public ::testing::TestWithParam<LockUnlockReporterTestCase> {
  protected:
-  LockUnlockReporterTest() {}
+  LockUnlockReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 

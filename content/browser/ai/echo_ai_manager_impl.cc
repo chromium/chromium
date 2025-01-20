@@ -22,7 +22,7 @@ namespace content {
 
 namespace {
 
-const int kMockDownloadPreperationTimeMillisecond = 300;
+const int kMockDownloadPreparationTimeMillisecond = 300;
 const int kMockModelSizeBytes = 3000;
 
 }  // namespace
@@ -33,7 +33,6 @@ EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
-    base::SupportsUserData& context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   static base::NoDestructor<EchoAIManagerImpl> ai;
   ai->receivers_.Add(ai.get(), std::move(receiver));
@@ -52,20 +51,37 @@ void EchoAIManagerImpl::CreateLanguageModel(
   mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client_remote(
       std::move(client));
 
+  if (options->system_prompt.has_value() &&
+      options->system_prompt->size() > kMaxContextSizeInTokens) {
+    client_remote->OnError(blink::mojom::AIManagerCreateLanguageModelError::
+                               kInitialPromptsTooLarge);
+    return;
+  }
+
+  auto return_langauge_model_callback =
+      base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+
   // In order to test the model download progress handling, the
   // `EchoAIManagerImpl` will always start from the `after-download` state, and
   // we simulate the downloading time by posting a delayed task.
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote)),
-      base::Milliseconds(kMockDownloadPreperationTimeMillisecond));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(return_langauge_model_callback)),
+      base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
     CanCreateSummarizerCallback callback) {
-  std::move(callback).Run(
-      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+  if (!summarizer_downloaded_) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
+  } else {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kReadily);
+  }
 }
 
 void EchoAIManagerImpl::CreateSummarizer(
@@ -73,10 +89,23 @@ void EchoAIManagerImpl::CreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
-  mojo::PendingRemote<blink::mojom::AISummarizer> summarizer;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
-                              summarizer.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(summarizer));
+  auto return_summarizer_task =
+      base::BindOnce(&EchoAIManagerImpl::ReturnAISummarizerCreationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+
+  if (!summarizer_downloaded_) {
+    // In order to test the model download progress handling, the
+    // `EchoAIManagerImpl` will always start from the `after-download` state,
+    // and we simulate the downloading time by posting a delayed task.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(return_summarizer_task)),
+        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
+  } else {
+    std::move(return_summarizer_task).Run();
+  }
 }
 
 void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
@@ -84,6 +113,12 @@ void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelMaxTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+}
+
+void EchoAIManagerImpl::CanCreateWriter(
+    blink::mojom::AIWriterCreateOptionsPtr options,
+    CanCreateWriterCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
 void EchoAIManagerImpl::CreateWriter(
@@ -95,6 +130,12 @@ void EchoAIManagerImpl::CreateWriter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIWriter>(),
                               writer.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(writer));
+}
+
+void EchoAIManagerImpl::CanCreateRewriter(
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    CanCreateRewriterCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
 void EchoAIManagerImpl::CreateRewriter(
@@ -118,15 +159,23 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInfo::New(
           kMaxContextSizeInTokens,
+          /*current_tokens=*/0,
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::
                   GetOnDeviceModelDefaultTemperature())));
 }
 
-void EchoAIManagerImpl::DoMockDownloadingAndReturn(
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote) {
+void EchoAIManagerImpl::ReturnAISummarizerCreationResult(
+    mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote) {
+  summarizer_downloaded_ = true;
+  mojo::PendingRemote<blink::mojom::AISummarizer> summarizer;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
+                              summarizer.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(summarizer));
+}
+
+void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {
   // Mock the downloading process update for testing.
   for (auto& observer : download_progress_observers_) {
     observer->OnDownloadProgressUpdate(kMockModelSizeBytes / 3,
@@ -137,7 +186,7 @@ void EchoAIManagerImpl::DoMockDownloadingAndReturn(
                                        kMockModelSizeBytes);
   }
 
-  ReturnAILanguageModelCreationResult(std::move(client_remote));
+  std::move(callback).Run();
 }
 
 void EchoAIManagerImpl::AddModelDownloadProgressObserver(

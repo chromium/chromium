@@ -164,20 +164,6 @@ size_t SchemefulSite::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(site_as_origin_);
 }
 
-bool SchemefulSite::operator==(const SchemefulSite& other) const {
-  return site_as_origin_ == other.site_as_origin_;
-}
-
-bool SchemefulSite::operator!=(const SchemefulSite& other) const {
-  return !(*this == other);
-}
-
-// Allows SchemefulSite to be used as a key in STL containers (for example, a
-// std::set or std::map).
-bool SchemefulSite::operator<(const SchemefulSite& other) const {
-  return site_as_origin_ < other.site_as_origin_;
-}
-
 // static
 std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     base::PassKey<NetworkAnonymizationKey>,

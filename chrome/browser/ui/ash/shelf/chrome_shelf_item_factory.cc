@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -13,11 +12,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/arc_playstore_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -57,24 +55,5 @@ ChromeShelfItemFactory::CreateShelfItemDelegateForAppId(
   if (app_id == arc::kPlayStoreAppId) {
     return std::make_unique<ArcPlaystoreShortcutShelfItemController>();
   }
-
-  auto* proxy =
-      apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile_);
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
-
-  // Note: In addition to other kinds of web apps, standalone browser hosted
-  // apps are also handled by browser app shelf item controller.
-  if (BrowserAppShelfControllerShouldHandleApp(app_id, profile_)) {
-    return std::make_unique<BrowserAppShelfItemController>(ash::ShelfID(app_id),
-                                                           profile_);
-  }
-
-  // Standalone browser platform apps are handled by standalone browser
-  // extension app shelf item controller.
-  if (app_type == apps::AppType::kStandaloneBrowserChromeApp) {
-    return std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
-        ash::ShelfID(app_id));
-  }
-
   return std::make_unique<AppShortcutShelfItemController>(ash::ShelfID(app_id));
 }

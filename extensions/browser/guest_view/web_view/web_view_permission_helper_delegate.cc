@@ -23,4 +23,10 @@ bool WebViewPermissionHelperDelegate::
   return false;
 }
 
+bool WebViewPermissionHelperDelegate::
+    ForwardEmbeddedMediaPermissionChecksAsEmbedder(
+        const url::Origin& embedder_origin) {
+  return false;
+}
+
 }  // namespace extensions

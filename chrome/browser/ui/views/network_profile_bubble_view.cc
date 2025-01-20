@@ -70,7 +70,7 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkProfileBubbleView, private:
 
-NetworkProfileBubbleView::~NetworkProfileBubbleView() {}
+NetworkProfileBubbleView::~NetworkProfileBubbleView() = default;
 
 void NetworkProfileBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());

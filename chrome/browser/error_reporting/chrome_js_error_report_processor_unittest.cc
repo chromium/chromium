@@ -140,9 +140,6 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
   EXPECT_THAT(actual_report->query, HasSubstr("type=JavascriptError"));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_THAT(actual_report->query, HasSubstr("build_time_millis="));
-#endif
   EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
   EXPECT_THAT(actual_report->query, HasSubstr("renderer_process_uptime_ms=0"));
   // TODO(iby) research why URL is repeated...

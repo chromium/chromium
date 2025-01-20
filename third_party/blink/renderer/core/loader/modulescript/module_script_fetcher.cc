@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
@@ -40,8 +39,11 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     HeapVector<Member<ConsoleMessage>>* error_messages) {
   DCHECK(error_messages);
   if (resource) {
-    SubresourceIntegrityHelper::GetConsoleMessages(
-        resource->IntegrityReportInfo(), error_messages);
+    for (const auto& message : resource->IntegrityReport().Messages()) {
+      error_messages->push_back(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kSecurity,
+          mojom::blink::ConsoleMessageLevel::kError, message));
+    }
   }
 
   // <spec step="9">... response's type is "error" ...</spec>

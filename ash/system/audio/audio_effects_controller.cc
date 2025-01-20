@@ -29,8 +29,7 @@ bool IsStyleTransferSupportedByVc() {
   if (CrasAudioHandler::Get()->GetAudioEffectDlcs() == std::nullopt) {
     return false;
   }
-  return CrasAudioHandler::Get()->IsStyleTransferSupportedForDevice(
-      CrasAudioHandler::Get()->GetPrimaryActiveInputNode());
+  return CrasAudioHandler::Get()->style_transfer_supported();
 }
 
 // Vc can only support either noise cancellation or style transfer. So we skip

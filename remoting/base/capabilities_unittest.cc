@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/base/capabilities.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 #include <vector>
 
@@ -51,22 +47,22 @@ TEST(CapabilitiesTest, Empty) {
 }
 
 TEST(CapabilitiesTest, HasCapability) {
-  HasCapabilityTestData data[] = {
-    { "", "", false },
-    { "a", "", false },
-    { "a", "a", true },
-    { "a a", "", false },
-    { "a a", "a", true },
-    { "a a", "z", false },
-    { "a b", "", false },
-    { "a b", "a", true },
-    { "a b", "b", true },
-    { "a b", "z", false },
-    { "a b c", "", false },
-    { "a b c", "a", true },
-    { "a b c", "b", true },
-    { "a b c", "z", false }
-  };
+  auto data = std::to_array<HasCapabilityTestData>({
+      {"", "", false},
+      {"a", "", false},
+      {"a", "a", true},
+      {"a a", "", false},
+      {"a a", "a", true},
+      {"a a", "z", false},
+      {"a b", "", false},
+      {"a b", "a", true},
+      {"a b", "b", true},
+      {"a b", "z", false},
+      {"a b c", "", false},
+      {"a b c", "a", true},
+      {"a b c", "b", true},
+      {"a b c", "z", false},
+  });
 
   // Verify that HasCapability(|capabilities|, |key|) returns |result|.
   // |result|.
@@ -84,21 +80,21 @@ TEST(CapabilitiesTest, HasCapability) {
 TEST(CapabilitiesTest, Intersect) {
   EXPECT_EQ(IntersectCapabilities("a", "a"), "a");
 
-  IntersectTestData data[] = {
-    { "", "", "" },
-    { "a", "", "" },
-    { "a", "a", "a" },
-    { "a", "b", "" },
-    { "a b", "", "" },
-    { "a b", "a", "a" },
-    { "a b", "b", "b" },
-    { "a b", "z", "" },
-    { "a b c", "a", "a" },
-    { "a b c", "b", "b" },
-    { "a b c", "a b", "a b" },
-    { "a b c", "b a", "a b" },
-    { "a b c", "z", "" }
-  };
+  auto data = std::to_array<IntersectTestData>({
+      {"", "", ""},
+      {"a", "", ""},
+      {"a", "a", "a"},
+      {"a", "b", ""},
+      {"a b", "", ""},
+      {"a b", "a", "a"},
+      {"a b", "b", "b"},
+      {"a b", "z", ""},
+      {"a b c", "a", "a"},
+      {"a b c", "b", "b"},
+      {"a b c", "a b", "a b"},
+      {"a b c", "b a", "a b"},
+      {"a b c", "z", ""},
+  });
 
   // Verify that intersection of |right| with all permutations of |left| yields
   // |result|.

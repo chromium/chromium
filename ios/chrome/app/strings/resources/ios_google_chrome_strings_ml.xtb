@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1066101356081285416">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളിലെ ട്രാക്ക് ചെയ്യൽ നമ്പറുകൾ Chrome കണ്ടെത്തുകയും പുതിയ ടാബ് പേജിൽ പാക്കേജ് അപ്‌ഡേറ്റുകൾ കാണിക്കുകയും ചെയ്യും. ഈ ഫീച്ചർ നൽകാനും എല്ലാവർക്കും Google ഷോപ്പിംഗ് ഫീച്ചറുകൾ മെച്ചപ്പെടുത്താനും പാക്കേജ് ട്രാക്ക് ചെയ്യൽ നമ്പറും വെബ്‌സൈറ്റിന്റെ പേരും Google-ലേക്ക് അയയ്ക്കും. നിങ്ങൾക്ക് ഇത് ഏതുസമയത്തും <ph name="BEGIN_LINK" />പാക്കേജ് ട്രാക്ക് ചെയ്യൽ ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അപ്ഡേറ്റ് ചെയ്യാം.</translation>
+<translation id="1076643793026027628">അദൃശ്യ മോഡിൽ, YouTube അദൃശ്യ മോഡ് ലിങ്കുകൾ Chrome സ്വയമേവ തുറക്കുന്നു.</translation>
 <translation id="1086486568852410168">Google Lens ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="1143896152279775643">നിങ്ങളുടെ പാസ്‌വേഡ് <ph name="EMAIL" /> എന്നതിനുള്ള Google പാസ്‌വേഡ് മാനേജറിൽ സംരക്ഷിക്കും.</translation>
 <translation id="1146503048444965320">Chrome-ൽ പുതിയ ടാബ് തുറക്കുക</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">നിങ്ങൾ സന്ദേശങ്ങൾ, മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകളിൽ ടാപ്പ് ചെയ്യുമ്പോഴെല്ലാം Chrome ഉപയോഗിക്കുക.</translation>
 <translation id="1229222343402087523">Chrome-ൽ ${searchPhrase} തിരയുക</translation>
 <translation id="1237769345474105984">Chrome-ൽ നിന്ന്</translation>
-<translation id="1240190568154816272">Chrome നുറുങ്ങുകൾ</translation>
 <translation id="124228879633599436">നിങ്ങളുടെ Chrome കാലഹരണപ്പെട്ടു. സുരക്ഷിതമായി തുടരാൻ ഇത് അപ്ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="1333745675627230582">Chrome ദിനോസർ ഗെയിം കളിക്കുക</translation>
 <translation id="1352919863522755794">Google Password Manager-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനായില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് നോക്കൂ.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കാൻ Chrome ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="1670609221633730681">Chrome നുറുങ്ങ്: നിങ്ങളുടെ വിലാസ ബാറിന്റെ സ്ഥാനം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chrome-ൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="1790080846677398234">നൽകിയിട്ടുള്ള URL-കൾ Chrome-ലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളിലേക്ക് ചേർക്കുന്നു.</translation>
 <translation id="1799920918471566157">Chrome നുറുങ്ങുകൾ</translation>
 <translation id="1830634592642484976">ഈ വിലാസം നിലവിൽ Chrome-ൽ സംരക്ഷിച്ചിരിക്കുന്നു. Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാൻ, ഇത് നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിക്കുക.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Chrome ഓരോ തവണയും മൊബൈൽ സൈറ്റ് ആവശ്യപ്പെടുമെന്നാണ് ഇതിനർത്ഥം.</translation>
 <translation id="3740397331642243698">Google Chrome-ൽ നൽകിയിട്ടുള്ള URL-കൾ അദൃശ്യ മോഡിൽ തുറക്കുന്നു.</translation>
 <translation id="3741995255368156336">Chrome-ലെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് തുറക്കുന്നു.</translation>
+<translation id="3808570423967020928">നിങ്ങളുടെ ഹോം സ്ക്രീൻ ഡോക്കിൽ നിന്ന് വേഗത്തിൽ Chrome ആക്‌സസ് ചെയ്യൂ.</translation>
 <translation id="3827545470516145620">ഈ ഉപകരണത്തിൽ നിങ്ങൾക്ക് സാധാരണ സുരക്ഷാ പരിരക്ഷ ലഭിക്കുന്നു</translation>
 <translation id="384394811301901750">Google Chrome-ന് ഇപ്പോൾ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനാവില്ല</translation>
 <translation id="3863841106411295595">നൽകിയിട്ടുള്ള URL-കൾ Chrome-ലെ നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ചേർക്കുന്നു.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">ഈ സൈറ്റിലും Chrome-ലും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="4646014602299206846">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളിലെ പാക്കേജ് ട്രാക്ക് ചെയ്യൽ നമ്പറുകൾ Chrome കണ്ടെത്തുകയും പുതിയ ടാബ് പേജിൽ പാക്കേജ് അപ്‌ഡേറ്റുകൾ കാണിക്കുകയും ചെയ്യും. ഈ ഫീച്ചർ നൽകാനും എല്ലാവർക്കുമുള്ള ഷോപ്പിംഗ് അനുഭവം മെച്ചപ്പെടുത്താനും നിങ്ങളുടെ ഡാറ്റ Google-മായി പങ്കിടും.</translation>
 <translation id="4647910807533196601">Chrome-ൽ എന്റെ ഏറ്റവും പുതിയ ടാബ് തുറക്കുക.</translation>
+<translation id="4693084815234024320">നിങ്ങൾ Chrome അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="4724297637870447613">എല്ലായിടത്തും Chrome ഉപയോഗിക്കുക</translation>
 <translation id="4738647308035481133">Google Chrome പേജ്</translation>
 <translation id="4742795653798179840">Chrome ഡാറ്റ ഇല്ലാതാക്കി</translation>
@@ -219,9 +222,12 @@
 
 നിങ്ങളുടെ Chrome അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="6922332667202044570">Chrome-ലെ ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക.</translation>
+<translation id="6924922227983877439">ഡിഫോൾട്ടായി Chrome-ൽ ലിങ്കുകൾ തുറക്കുക</translation>
+<translation id="6931601805528922498">സൈൻ ഇൻ ചെയ്യുന്നത്, ജോലിയുമായി ബന്ധപ്പെട്ട ബ്രൗസിംഗിനായി Chrome-ലേക്ക് നിങ്ങളുടെ അക്കൗണ്ട് ചേർക്കുന്നു.</translation>
 <translation id="6975725306479268850">സ്വയമേവ പൂരിപ്പിക്കുന്നതിന് Chrome തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7056826488869329999">Chrome-ൽ സുരക്ഷാ പരിശോധന തുറക്കുന്നു, റണ്‍ ചെയ്യുന്നു.</translation>
 <translation id="7061455974939528301">Chrome ഐക്കണിൽ അമർത്തിപ്പിടിച്ച് "ഹോം സ്ക്രീൻ എഡിറ്റ് ചെയ്യുക" ക്ലിക്ക് ചെയ്യൂ</translation>
+<translation id="7065813315247345131">ഡോക്കിലേക്ക് Chrome നീക്കുക</translation>
 <translation id="7124339256045485976">Chrome അപ് ടു ഡേറ്റ് ആയി നിലനിർത്തുക</translation>
 <translation id="7161390184744336561">Google Chrome കാലഹരണപ്പെട്ടു</translation>
 <translation id="7165736900384873061">Google Chrome QR സ്‌കാനർ ഉപയോഗിക്കാൻ തുടങ്ങൂ</translation>

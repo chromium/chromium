@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -55,6 +56,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,11 +73,11 @@ AccountId CreateDeviceLocalAccountId(const std::string& account_id,
 constexpr char kDeviceLocalAccountId[] = "device_local_account";
 
 const AccountId kOwnerAccountId =
-    AccountId::FromUserEmailGaiaId("owner@example.com", "1234567890");
+    AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1234567890"));
 const AccountId kAccountId0 =
-    AccountId::FromUserEmailGaiaId("user0@example.com", "0123456789");
+    AccountId::FromUserEmailGaiaId("user0@example.com", GaiaId("0123456789"));
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId("user1@example.com", "9012345678");
+    AccountId::FromUserEmailGaiaId("user1@example.com", GaiaId("9012345678"));
 const AccountId kKioskAccountId =
     CreateDeviceLocalAccountId(kDeviceLocalAccountId,
                                policy::DeviceLocalAccountType::kKioskApp);
@@ -268,7 +270,8 @@ class UserManagerTest : public testing::Test {
         user_manager::prefs::kDeviceLocalAccountsWithSavedData,
         base::Value(base::Value::List().Append(email)));
     user_manager::KnownUser(local_state_->Get())
-        .SaveKnownUser(AccountId::FromUserEmailGaiaId(email, "fake_gaia_id"));
+        .SaveKnownUser(
+            AccountId::FromUserEmailGaiaId(email, GaiaId("fake_gaia_id")));
   }
 
   size_t GetArcKioskAccountsWithSavedDataCount() {
@@ -714,6 +717,35 @@ TEST_F(UserManagerTest,
       user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName,
       user_manager::UserManagerImpl::DeprecatedArcKioskUserStatus::kHidden,
       /* expected_count= */ 1);
+}
+
+// Test that profile prefs is available for `User` under its profile created
+// callback.
+TEST_F(UserManagerTest, ProfilePrefs) {
+  // Simulates login.
+  user_manager_->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
+                              /*browser_restart=*/false,
+                              /*is_child=*/false);
+
+  // Adds a profile created callback and verifies profile prefs is available
+  // when the callback runs.
+  bool callback_called = false;
+  user_manager::User* user = user_manager_->GetActiveUser();
+  user->AddProfileCreatedObserver(base::BindLambdaForTesting([&]() {
+    EXPECT_NE(user->GetProfilePrefs(), nullptr);
+    callback_called = true;
+  }));
+
+  // Triggers profile created callback.
+  TestingPrefServiceSimple prefs;
+  user_manager::UserManagerImpl::RegisterProfilePrefs(prefs.registry());
+  user_manager_->OnUserProfileCreated(kAccountId0, &prefs);
+
+  // Profile created callback should be called.
+  EXPECT_TRUE(callback_called);
+
+  // Cleans up references to `prefs` since it will go out of scope.
+  user_manager_->OnUserProfileWillBeDestroyed(kAccountId0);
 }
 
 }  // namespace ash

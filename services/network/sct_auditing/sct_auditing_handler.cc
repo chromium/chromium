@@ -140,8 +140,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     // Do not report if this is a known popular SCT.
     if (owner_network_context_->network_service()
             ->sct_auditing_cache()
-            ->IsPopularSCT(
-                base::as_bytes(base::make_span(sct_metadata->leaf_hash)))) {
+            ->IsPopularSCT(base::as_byte_span(sct_metadata->leaf_hash))) {
       RecordPopularSCTSkippedMetrics(true);
       return;
     }

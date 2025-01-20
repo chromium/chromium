@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_RECEIVER_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -16,11 +16,15 @@ class PasswordReceiverService;
 
 // Creates instances of PasswordReceiverService per profile.
 class IOSChromePasswordReceiverServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the factory instance.
+  static IOSChromePasswordReceiverServiceFactory* GetInstance();
+
+  // Returns the IOSChromePasswordReceiverServiceFactory associated with
+  // `profile`.
   static password_manager::PasswordReceiverService* GetForProfile(
       ProfileIOS* profile);
-  static IOSChromePasswordReceiverServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromePasswordReceiverServiceFactory>;

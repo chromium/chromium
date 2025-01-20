@@ -63,7 +63,7 @@ std::string ClipboardFormatType::Serialize() const {
 
 // static
 ClipboardFormatType ClipboardFormatType::Deserialize(
-    const std::string& serialization) {
+    std::string_view serialization) {
   int clipboard_format = -1;
   // |serialization| is expected to be a string representing the Windows
   // data_.cfFormat (format number) returned by GetType.
@@ -78,10 +78,10 @@ std::string ClipboardFormatType::WebCustomFormatName(int index) {
 
 // static
 ClipboardFormatType ClipboardFormatType::CustomPlatformType(
-    const std::string& format_string) {
+    std::string_view format_string) {
+  CHECK(base::IsStringASCII(format_string));
   // Once these formats are registered, `RegisterClipboardFormat` just returns
   // the `cfFormat` associated with it and doesn't register a new format.
-  DCHECK(base::IsStringASCII(format_string));
   return ClipboardFormatType(
       RegisterClipboardFormatChecked(base::ASCIIToWide(format_string).c_str()));
 }
@@ -107,18 +107,9 @@ bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
 
 // Predefined ClipboardFormatTypes.
 
-// static
-ClipboardFormatType ClipboardFormatType::GetType(
-    const std::string& format_string) {
-  return ClipboardFormatType(
-      RegisterClipboardFormatChecked(base::ASCIIToWide(format_string).c_str()));
-}
-
 // The following formats can be referenced by clipboard_util::GetPlainText.
 // Clipboard formats are initialized in a thread-safe manner, using static
 // initialization. COM requires this thread-safe initialization.
-// TODO(dcheng): We probably need to make static initialization of "known"
-// ClipboardFormatTypes thread-safe on all platforms.
 
 // static
 const ClipboardFormatType& ClipboardFormatType::FilenamesType() {

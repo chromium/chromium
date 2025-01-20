@@ -42,8 +42,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -83,7 +81,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /** Unit tests for {@link RequestDesktopUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -194,8 +191,6 @@ public class RequestDesktopUtilsUnitTest {
 
     private Resources mResources;
 
-    private final TestValues mTestValues = new TestValues();
-
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String GOOGLE_COM = "[*.]google.com/";
     private ShadowPackageManager mShadowPackageManager;
@@ -290,7 +285,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @After
     public void tearDown() {
-        FeatureList.setTestValues(null);
         ShadowDisplayAndroid.setDisplayAndroid(null);
         if (mSharedPreferencesManager != null) {
             mSharedPreferencesManager.removeKey(
@@ -903,21 +897,5 @@ public class RequestDesktopUtilsUnitTest {
 
     private Tab createTab() {
         return mock(Tab.class);
-    }
-
-    private void enableFeature(String featureName, boolean enable) {
-        enableFeatureWithParams(featureName, null, enable);
-    }
-
-    private void enableFeatureWithParams(
-            String featureName, Map<String, String> params, boolean enable) {
-        mTestValues.addFeatureFlagOverride(featureName, enable);
-        if (params != null) {
-            for (Entry<String, String> param : params.entrySet()) {
-                mTestValues.addFieldTrialParamOverride(
-                        featureName, param.getKey(), param.getValue());
-            }
-        }
-        FeatureList.setTestValues(mTestValues);
     }
 }

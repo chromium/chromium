@@ -33,8 +33,8 @@ class AllUrlsApiTest : public ExtensionApiTest {
   AllUrlsApiTest& operator=(const AllUrlsApiTest&) = delete;
 
  protected:
-  AllUrlsApiTest() {}
-  ~AllUrlsApiTest() override {}
+  AllUrlsApiTest() = default;
+  ~AllUrlsApiTest() override = default;
 
   const Extension* content_script() const { return content_script_.get(); }
   const Extension* execute_script() const { return execute_script_.get(); }

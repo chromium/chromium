@@ -146,8 +146,7 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
 
   if (!shared_buffer_) {
     shared_buffer_ = std::make_unique<device::WebXrSharedBuffer>();
-    shared_buffer_->local_texture.target =
-        device::XrImageTransportBase::SharedBufferTextureTarget();
+    shared_buffer_->local_texture.target = GL_TEXTURE_2D;
     glGenTextures(1, &shared_buffer_->local_texture.id);
   }
 

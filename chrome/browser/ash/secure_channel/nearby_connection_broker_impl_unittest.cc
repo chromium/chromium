@@ -23,12 +23,12 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
-#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/ash/services/secure_channel/util/histogram_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -272,8 +272,7 @@ class NearbyConnectionBrokerImplTest
     base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                           base::File::Flags::FLAG_WRITE);
     output_file.WriteAndCheck(
-        /*offset=*/0,
-        base::make_span(kFakeFileContent.begin(), kFakeFileContent.end()));
+        /*offset=*/0, base::span(kFakeFileContent));
     output_file.Flush();
     output_file.Close();
     base::File input_file(

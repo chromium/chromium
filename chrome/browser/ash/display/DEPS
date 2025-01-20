@@ -30,4 +30,7 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+content/public/test",
   ],
+  "display_gpu_crash_browsertest\.cc": [
+     "+cc/trees",
+  ],
 }

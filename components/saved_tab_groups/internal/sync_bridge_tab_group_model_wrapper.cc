@@ -7,6 +7,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/sync/base/data_type.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 
@@ -84,7 +85,8 @@ const SavedTabGroup* SyncBridgeTabGroupModelWrapper::MergeRemoteGroupMetadata(
     std::optional<size_t> position,
     std::optional<std::string> creator_cache_guid,
     std::optional<std::string> last_updater_cache_guid,
-    base::Time update_time) {
+    base::Time update_time,
+    GaiaId updated_by) {
   // Verify that the group corresponds to the data type.
   const SavedTabGroup* group = model_->Get(group_id);
   CHECK(group);
@@ -92,7 +94,7 @@ const SavedTabGroup* SyncBridgeTabGroupModelWrapper::MergeRemoteGroupMetadata(
 
   return model_->MergeRemoteGroupMetadata(
       group_id, title, color, position, std::move(creator_cache_guid),
-      std::move(last_updater_cache_guid), update_time);
+      std::move(last_updater_cache_guid), update_time, updated_by);
 }
 
 const SavedTabGroupTab* SyncBridgeTabGroupModelWrapper::MergeRemoteTab(

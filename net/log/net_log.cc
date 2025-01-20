@@ -83,7 +83,7 @@ void NetLog::AddGlobalEntryWithStringParams(NetLogEventType type,
 }
 
 uint32_t NetLog::NextID() {
-  return base::subtle::NoBarrier_AtomicIncrement(&last_id_, 1);
+  return last_id_.fetch_add(1, std::memory_order_relaxed) + 1;
 }
 
 void NetLog::AddObserver(NetLog::ThreadSafeObserver* observer,
@@ -149,7 +149,7 @@ void NetLog::UpdateObserverCaptureModes() {
     NetLogCaptureModeSetAdd(observer->capture_mode_, &capture_mode_set);
   }
 
-  base::subtle::NoBarrier_Store(&observer_capture_modes_, capture_mode_set);
+  observer_capture_modes_.store(capture_mode_set, std::memory_order_relaxed);
 
   // Notify any capture mode observers with the new |capture_mode_set|.
   for (net::NetLog::ThreadSafeCaptureModeObserver* capture_mode_observer :
@@ -228,8 +228,8 @@ const char* NetLog::EventPhaseToString(NetLogEventPhase phase) {
 }
 
 void NetLog::InitializeSourceIdPartition() {
-  int32_t old_value = base::subtle::NoBarrier_AtomicExchange(
-      &last_id_, std::numeric_limits<base::subtle::Atomic32>::min());
+  int32_t old_value = last_id_.exchange(std::numeric_limits<int32_t>::min(),
+                                        std::memory_order_relaxed);
   DCHECK_EQ(old_value, 0) << " NetLog::InitializeSourceIdPartition() called "
                              "after NextID() or called multiple times";
 }

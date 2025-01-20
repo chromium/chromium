@@ -10,6 +10,7 @@
 
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/translation_util.h"
 
 namespace ash {
 
@@ -30,7 +31,7 @@ class BabelOrcaTranslationDispatcherImpl
   void GetTranslation(const std::string& result,
                       const std::string& source_language,
                       const std::string& target_language,
-                      ::captions::OnTranslateEventCallback callback) override;
+                      ::captions::TranslateEventCallback callback) override;
 
  private:
   const std::unique_ptr<::captions::TranslationDispatcher>

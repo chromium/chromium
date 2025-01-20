@@ -89,7 +89,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      */
     @CalledByNative
     public void requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
-        mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+        mComponent.showSheetForPix((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
     }
 
     /**

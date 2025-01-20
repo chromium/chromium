@@ -17,7 +17,7 @@ namespace views {
 class FocusManager;
 class Widget;
 class View;
-}
+}  // namespace views
 
 // A chrome specific helper class that handles focus management.
 class ChromeWebContentsViewFocusHelper

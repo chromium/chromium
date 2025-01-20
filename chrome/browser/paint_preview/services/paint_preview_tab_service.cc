@@ -259,10 +259,8 @@ jboolean PaintPreviewTabService::IsCacheInitializedAndroid(JNIEnv* env) {
   return static_cast<jboolean>(CacheInitialized());
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-PaintPreviewTabService::GetPathAndroid(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, GetFileMixin()->GetFileManager()->GetPath().AsUTF8Unsafe());
+std::string PaintPreviewTabService::GetPathAndroid(JNIEnv* env) {
+  return GetFileMixin()->GetFileManager()->GetPath().AsUTF8Unsafe();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

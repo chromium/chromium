@@ -15,6 +15,8 @@
 #include "base/trace_event/named_trigger.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/tracing/perfetto/test_utils.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -305,6 +307,8 @@ class TracingScenarioTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment task_environment;
+  tracing::TracedProcessForTesting traced_process{
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
   TestTracingScenarioDelegate delegate;
   TestNestedTracingScenarioDelegate nested_delegate;
   std::unique_ptr<content::BackgroundTracingManager>

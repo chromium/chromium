@@ -19,6 +19,12 @@
 
 namespace content {
 
+namespace {
+constexpr char kResponsePrefix[] =
+    "On-device model is not available in Chromium, this API is just echoing "
+    "back the input:\n";
+}
+
 EchoAILanguageModel::EchoAILanguageModel() = default;
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
@@ -32,22 +38,23 @@ void EchoAILanguageModel::DoMockExecution(
     return;
   }
 
-  const std::string response =
-      "On-device model is not available in Chromium, this API is just echoing "
-      "back the input:\n" +
-      input;
-  // To make EchoAILanguageModel simple, we will use the string length as the
-  // size in tokens, and the `current_tokens_` will only keep track of the
-  // response size. Once overflow, it will be cleared.
-  current_tokens_ += response.size();
-  bool did_overflow = false;
-  if (current_tokens_ > EchoAIManagerImpl::kMaxContextSizeInTokens) {
-    current_tokens_ = 0;
-    did_overflow = true;
+  if (input.size() > EchoAIManagerImpl::kMaxContextSizeInTokens) {
+    responder->OnError(blink::mojom::ModelStreamingResponseStatus::
+                           kErrorPromptRequestTooLarge);
+    return;
   }
-  responder->OnStreaming(response);
-  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-      current_tokens_, did_overflow));
+  if (current_tokens_ >
+      EchoAIManagerImpl::kMaxContextSizeInTokens - input.size()) {
+    current_tokens_ = input.size();
+    responder->OnContextOverflow();
+  }
+  current_tokens_ += input.size();
+  responder->OnStreaming(kResponsePrefix,
+                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnStreaming(input,
+                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnCompletion(
+      blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
 }
 
 void EchoAILanguageModel::Prompt(
@@ -84,7 +91,7 @@ void EchoAILanguageModel::Fork(
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInfo::New(
-          EchoAIManagerImpl::kMaxContextSizeInTokens,
+          EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
           blink::mojom::AILanguageModelSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::

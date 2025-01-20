@@ -352,7 +352,7 @@ scoped_refptr<base::SingleThreadTaskRunner>
 RendererWebAudioDeviceImpl::GetSilentSinkTaskRunner() {
   if (!silent_sink_task_runner_) {
     silent_sink_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_VISIBLE,
+        {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
   return silent_sink_task_runner_;

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "sql/database.h"
 #include "sql/statement.h"
 
 namespace app_list {
@@ -39,8 +40,7 @@ constexpr double kDefaultScore = 0.7;
 constexpr double kRelevanceWeight = 0.9;
 constexpr int kVersionNumber = 6;
 
-constexpr char kSqlDatabaseUmaTag[] =
-    "Apps.AppList.AnnotationStorage.SqlDatabase.Status";
+constexpr char kSqlDatabaseUmaTag[] = "AnnotationStorage";
 
 // These values persist to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -121,7 +121,7 @@ AnnotationStorage::AnnotationStorage(
     : annotation_worker_(std::move(annotation_worker)),
       sql_database_(
           std::make_unique<SqlDatabase>(path_to_db,
-                                        kSqlDatabaseUmaTag,
+                                        sql::Database::Tag(kSqlDatabaseUmaTag),
                                         current_version_number,
                                         base::BindRepeating(CreateNewSchema),
                                         base::BindRepeating(MigrateSchema))) {
@@ -161,6 +161,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                IndexingSource indexing_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Insert " << image_info.path;
+  if (indexing_source == IndexingSource::kIca) {
+    LogIcaUma(IcaStatus::kIcaInsertStart);
+  } else if (indexing_source == IndexingSource::kOcr) {
+    LogIcaUma(IcaStatus::kOcrInsertStart);
+  }
 
   int64_t document_id;
   if (!DocumentsTable::InsertOrIgnore(sql_database_.get(), image_info.path,
@@ -170,6 +175,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                      document_id)) {
     LOG(ERROR) << "Failed to insert into the db.";
     LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+    if (indexing_source == IndexingSource::kIca) {
+      LogIcaUma(IcaStatus::kIcaDocumentInsertFailed);
+    } else if (indexing_source == IndexingSource::kOcr) {
+      LogIcaUma(IcaStatus::kOcrDocumentInsertFailed);
+    }
     return;
   }
 
@@ -189,6 +199,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                                         document_id, indexing_source)) {
           LOG(ERROR) << "Failed to insert into the db from OCR.";
           LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          LogIcaUma(IcaStatus::kOcrAnnotationInsertFailed);
           return;
         }
       }
@@ -210,6 +221,7 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
                 annotation_info.y, annotation_info.area)) {
           LOG(ERROR) << "Failed to insert into the db from ICA.";
           LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+          LogIcaUma(IcaStatus::kIcaAnnotationInsertFailed);
           return;
         }
       }
@@ -221,6 +233,11 @@ void AnnotationStorage::Insert(const ImageInfo& image_info,
   if (!execution_succeed) {
     LOG(ERROR) << "Failed to update the document table.";
     LogErrorUma(ErrorStatus::kFailedToInsertInDb);
+    if (indexing_source == IndexingSource::kIca) {
+      LogIcaUma(IcaStatus::kIcaUpdateFailed);
+    } else if (indexing_source == IndexingSource::kOcr) {
+      LogIcaUma(IcaStatus::kOcrUpdateFailed);
+    }
   }
 }
 

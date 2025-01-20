@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -261,7 +262,7 @@ TEST(KeyConverter, ToggleModifiers) {
 TEST(KeyConverter, MAYBE_AllEnglishKeyboardSymbols) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   std::u16string keys;
-  const ui::KeyboardCode kSymbolKeyCodes[] = {
+  const auto kSymbolKeyCodes = std::to_array<ui::KeyboardCode>({
       ui::VKEY_OEM_3,
       ui::VKEY_OEM_MINUS,
       ui::VKEY_OEM_PLUS,
@@ -272,7 +273,8 @@ TEST(KeyConverter, MAYBE_AllEnglishKeyboardSymbols) {
       ui::VKEY_OEM_7,
       ui::VKEY_OEM_COMMA,
       ui::VKEY_OEM_PERIOD,
-      ui::VKEY_OEM_2};
+      ui::VKEY_OEM_2,
+  });
   std::string kLowerSymbols = "`-=[]\\;',./";
   std::string kUpperSymbols = "~_+{}|:\"<>?";
   for (size_t i = 0; i < kLowerSymbols.length(); ++i)
@@ -307,15 +309,16 @@ TEST(KeyConverter, AllEnglishKeyboardTextChars) {
 
 TEST(KeyConverter, AllSpecialWebDriverKeysOnEnglishKeyboard) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
-  const char kTextForKeys[] = {
+  const auto kTextForKeys = std::to_array<char>({
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      0, 0, 0, 0, '\t', 0, '\r', '\r', 0, 0, 0, 0, 0,
+      0,   0,   0,   0,   '\t', 0,   '\r', '\r', 0,   0,   0,   0,   0,
 #else
-      0, 0, 0, 0, 0, 0, '\r', '\r', 0, 0, 0, 0, 0,
+      0,   0,   0,   0,   0,   0,   '\r', '\r', 0,   0,   0,   0,   0,
 #endif
-      ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ';', '=',
-      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-      '*', '+', ',', '-', '.', '/'};
+      ' ', 0,   0,   0,   0,    0,   0,    0,    0,   0,   0,   ';', '=',
+      '0', '1', '2', '3', '4',  '5', '6',  '7',  '8', '9', '*', '+', ',',
+      '-', '.', '/',
+  });
   for (size_t i = 0; i <= 0x3D; ++i) {
     if (i > 0x29 && i < 0x31)
       continue;

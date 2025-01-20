@@ -176,12 +176,33 @@ public class PageZoomUtils {
         return getDefaultZoomLevel(context);
     }
 
+    /**
+     * Records UMA histogram for a measure of the Page Zoom feature usage by checking if the user
+     * has any saved zoom levels or a default zoom setting, considering either as a user that has
+     * interacted with the feature. Recorded during post-native initialization.
+     *
+     * @param BrowserContextHandle The profile to check feature usage against
+     */
+    public static void recordFeatureUsage(BrowserContextHandle lastUsedRegularProfile) {
+        boolean hasAnySavedZoomLevels =
+                !HostZoomMap.getAllHostZoomLevels(lastUsedRegularProfile).isEmpty();
+
+        // The default (unset) zoom level is 0.0 (which maps to 100% by 1.2^0 = 1, see comment at
+        // top of file). We will fetch the current profile's default zoom level, and any non-zero
+        // value will be considered a user choice (non-default).
+        boolean hasDefaultZoomLevel =
+                Math.abs(getDefaultZoomLevel(lastUsedRegularProfile)) > MathUtils.EPSILON;
+
+        PageZoomUma.logFeatureUsageHistogram(hasAnySavedZoomLevels, hasDefaultZoomLevel);
+    }
+
     // Methods to interact with SharedPreferences. These do not use SharedPreferencesManager so
     // that they can be used in //components.
 
     /**
-     * Returns true if the user has set a choice for always showing the Zoom AppMenu
-     * item (set in Accessibility Settings). This setting is Chrome Android specific.
+     * Returns true if the user has set a choice for always showing the Zoom AppMenu item (set in
+     * Accessibility Settings). This setting is Chrome Android specific.
+     *
      * @return boolean
      */
     public static boolean hasUserSetShouldAlwaysShowZoomMenuItemOption() {

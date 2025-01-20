@@ -35,21 +35,21 @@ class CSSContainerValuesTest : public PageTestBase {
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         horizontal, vertical,
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone));
   }
 
   CSSContainerValues* CreateSnappedValues(ContainerSnappedFlags snapped) {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped,
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
-        static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone));
   }
 
-  CSSContainerValues* CreateOverflowingValues(
-      ContainerOverflowingFlags horizontal,
-      ContainerOverflowingFlags vertical) {
+  CSSContainerValues* CreateScrollableValues(
+      ContainerScrollableFlags horizontal,
+      ContainerScrollableFlags vertical) {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
         ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
@@ -166,70 +166,70 @@ TEST_F(CSSContainerValuesTest, SnappedBoth) {
   EXPECT_TRUE(values->Snapped());
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingHorizontalTbLtr) {
+TEST_F(CSSContainerValuesTest, ScrollableHorizontalTbLtr) {
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(),
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
-  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
-                                            ContainerOverflowing::kStart));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingHorizontalTbRtl) {
+TEST_F(CSSContainerValuesTest, ScrollableHorizontalTbRtl) {
   SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kRtl);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
-                                             ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
-                                            ContainerOverflowing::kStart));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingVerticalLrLtr) {
+TEST_F(CSSContainerValuesTest, ScrollableVerticalLrLtr) {
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kLtr);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
-                                             ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingBlock(),
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd));
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingVerticalLrRtl) {
+TEST_F(CSSContainerValuesTest, ScrollableVerticalLrRtl) {
   SetContainerWritingDirection(WritingMode::kVerticalLr, TextDirection::kRtl);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(),
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
-  EXPECT_EQ(values->OverflowingBlock(),
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd));
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingVerticalRlLtr) {
+TEST_F(CSSContainerValuesTest, ScrollableVerticalRlLtr) {
   SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kLtr);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(), static_cast<ContainerOverflowingFlags>(
-                                             ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
-                                            ContainerOverflowing::kStart));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
 }
 
-TEST_F(CSSContainerValuesTest, OverflowingVerticalRlRtl) {
+TEST_F(CSSContainerValuesTest, ScrollableVerticalRlRtl) {
   SetContainerWritingDirection(WritingMode::kVerticalRl, TextDirection::kRtl);
-  MediaValues* values = CreateOverflowingValues(
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd),
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart));
-  EXPECT_EQ(values->OverflowingInline(),
-            static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd));
-  EXPECT_EQ(values->OverflowingBlock(), static_cast<ContainerOverflowingFlags>(
-                                            ContainerOverflowing::kStart));
+  MediaValues* values = CreateScrollableValues(
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd),
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
+  EXPECT_EQ(values->ScrollableInline(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd));
+  EXPECT_EQ(values->ScrollableBlock(),
+            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart));
 }
 
 }  // namespace blink

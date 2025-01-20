@@ -233,7 +233,10 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
                      gfx::PointF(gesture_event->data.scroll_update.delta_x,
                                  gesture_event->data.scroll_update.delta_y)
                          .ToString());
-  gfx::PointF predicted_accumulated_delta = current_event_accumulated_delta_;
+  gfx::PointF predicted_accumulated_delta =
+      last_predicted_accumulated_delta_ +
+      gfx::Vector2dF(gesture_event->data.scroll_update.delta_x,
+                     gesture_event->data.scroll_update.delta_y);
 
   base::TimeDelta prediction_delta = frame_time - gesture_event->TimeStamp();
   bool predicted = false;

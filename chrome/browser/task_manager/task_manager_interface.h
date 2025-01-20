@@ -142,8 +142,14 @@ class TaskManagerInterface {
   virtual const base::ProcessHandle& GetProcessHandle(TaskId task_id) const = 0;
   virtual const base::ProcessId& GetProcessId(TaskId task_id) const = 0;
 
+  // Returns the task id of the process which spawned |task_id|.
+  virtual TaskId GetRootTaskId(TaskId task_id) const = 0;
+
   // Returns the type of the task with |task_id|.
   virtual Task::Type GetType(TaskId task_id) const = 0;
+
+  // Returns the subtype of the task with |task_id|.
+  virtual Task::SubType GetSubType(TaskId task_id) const = 0;
 
   // Gets the unique ID of the tab if the task with |task_id| represents a
   // WebContents of a tab. Returns -1 otherwise.

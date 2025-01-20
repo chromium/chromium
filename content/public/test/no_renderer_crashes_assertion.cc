@@ -76,7 +76,7 @@ void NoRendererCrashesAssertion::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
   if (NoRendererCrashesAssertion::Suspensions::GetInstance().IsSuspended(
-          host->GetID())) {
+          host->GetDeprecatedID())) {
     return;
   }
 
@@ -115,7 +115,7 @@ ScopedAllowRendererCrashes::ScopedAllowRendererCrashes()
 
 ScopedAllowRendererCrashes::ScopedAllowRendererCrashes(
     RenderProcessHost* process)
-    : process_id_(process ? process->GetID()
+    : process_id_(process ? process->GetDeprecatedID()
                           : ChildProcessHost::kInvalidUniqueID) {
   NoRendererCrashesAssertion::Suspensions::GetInstance().AddSuspension(
       process_id_);

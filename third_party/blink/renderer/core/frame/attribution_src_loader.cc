@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/attribution_reporting/attribution_src_request_status.h"
@@ -78,6 +79,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -109,21 +111,22 @@ void RecordAttributionSrcRequestStatus(const ResourceRequestHead& request,
 void LogAuditIssue(ExecutionContext* execution_context,
                    AttributionReportingIssueType issue_type,
                    HTMLElement* element,
+                   const String& request_url,
                    std::optional<uint64_t> request_id,
                    const String& invalid_parameter) {
-  String id_string;
-  if (request_id) {
-    id_string = IdentifiersFactory::SubresourceRequestId(*request_id);
-  }
-
+  String devtools_request_id =
+      request_id ? IdentifiersFactory::SubresourceRequestId(*request_id)
+                 : String();
   AuditsIssue::ReportAttributionIssue(execution_context, issue_type, element,
-                                      id_string, invalid_parameter);
+                                      request_url, devtools_request_id,
+                                      invalid_parameter);
 }
 
 base::expected<attribution_reporting::RegistrationInfo,
                attribution_reporting::RegistrationInfoError>
 GetRegistrationInfo(const HTTPHeaderMap& map,
                     ExecutionContext* execution_context,
+                    const String& request_url,
                     uint64_t request_id,
                     bool cross_app_web_enabled) {
   AtomicString info_header = map.Get(http_names::kAttributionReportingInfo);
@@ -136,7 +139,7 @@ GetRegistrationInfo(const HTTPHeaderMap& map,
   if (!parsed_registration_info.has_value()) {
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kInvalidInfoHeader,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/info_header);
   }
   return parsed_registration_info;
@@ -152,6 +155,7 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
   if (!network::HasAttributionSupport(loader.GetSupport())) {
     LogAuditIssue(window, AttributionReportingIssueType::kNoWebOrOsSupport,
                   element,
+                  /*url=*/String(),
                   /*request_id=*/std::nullopt,
                   /*invalid_parameter=*/String());
     return {};
@@ -164,7 +168,7 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
   // operations and DevTools issues.
   for (wtf_size_t i = 0; i < strings.size(); i++) {
     KURL url = window->CompleteURL(strings[i]);
-    if (loader.CanRegister(url, element, /*request_id=*/std::nullopt)) {
+    if (loader.CanRegister(url, element)) {
       urls.emplace_back(std::move(url));
     }
   }
@@ -198,13 +202,16 @@ struct AttributionSrcLoader::AttributionHeaders {
   AtomicString web_trigger;
   AtomicString os_source;
   AtomicString os_trigger;
+  String request_url;
   uint64_t request_id;
 
   AttributionHeaders(const HTTPHeaderMap& map,
+                     const String& request_url,
                      uint64_t request_id,
                      bool cross_app_web_enabled)
       : web_source(map.Get(http_names::kAttributionReportingRegisterSource)),
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
+        request_url(request_url),
         request_id(request_id) {
     if (cross_app_web_enabled) {
       os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
@@ -226,7 +233,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!os_source.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kOsSourceIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/os_source);
   }
 
@@ -234,7 +241,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!os_trigger.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kOsTriggerIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/os_trigger);
   }
 
@@ -242,7 +249,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!web_source.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kSourceIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/web_source);
   }
 
@@ -250,7 +257,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!web_trigger.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kTriggerIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/web_trigger);
   }
 
@@ -286,7 +293,7 @@ struct AttributionSrcLoader::AttributionHeaders {
         case IssueType::kWebAndOsHeaders:
           LogAuditIssue(execution_context,
                         AttributionReportingIssueType::kWebAndOsHeaders,
-                        /*element=*/nullptr, request_id,
+                        /*element=*/nullptr, request_url, request_id,
                         /*invalid_parameter=*/String());
           break;
         case IssueType::kWebIgnored:
@@ -309,7 +316,7 @@ struct AttributionSrcLoader::AttributionHeaders {
               is_source
                   ? AttributionReportingIssueType::kNoRegisterSourceHeader
                   : AttributionReportingIssueType::kNoRegisterTriggerHeader,
-              /*element=*/nullptr, request_id,
+              /*element=*/nullptr, request_url, request_id,
               /*invalid_parameter=*/String());
           break;
         case IssueType::kNoOsHeader:
@@ -318,7 +325,7 @@ struct AttributionSrcLoader::AttributionHeaders {
               is_source
                   ? AttributionReportingIssueType::kNoRegisterOsSourceHeader
                   : AttributionReportingIssueType::kNoRegisterOsTriggerHeader,
-              /*element=*/nullptr, request_id,
+              /*element=*/nullptr, request_url, request_id,
               /*invalid_parameter=*/String());
           break;
       }
@@ -372,8 +379,7 @@ class AttributionSrcLoader::ResourceClient
 
  private:
   void HandleResponseHeaders(Resource* resource,
-                             const ResourceResponse& response,
-                             uint64_t request_id);
+                             const ResourceResponse& response);
 
   void HandleSourceRegistration(
       const AttributionHeaders&,
@@ -454,8 +460,8 @@ void AttributionSrcLoader::Register(
     HTMLElement* element,
     network::mojom::ReferrerPolicy referrer_policy) {
   CreateAndSendRequests(ParseAttributionSrc(attribution_src, element),
-                        /*attribution_src_token=*/std::nullopt,
-                        referrer_policy);
+                        /*attribution_src_token=*/std::nullopt, referrer_policy,
+                        DataHostSharedRemote());
 }
 
 std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
@@ -469,6 +475,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
                   AttributionReportingIssueType::
                       kNavigationRegistrationWithoutTransientUserActivation,
                   element,
+                  /*request_url=*/String(),
                   /*request_id=*/std::nullopt,
                   /*invalid_parameter=*/String());
     return std::nullopt;
@@ -483,12 +490,12 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   const Impression impression;
 
   if (CreateAndSendRequests(std::move(attribution_src_urls),
-                            impression.attribution_src_token,
-                            referrer_policy)) {
+                            impression.attribution_src_token, referrer_policy,
+                            DataHostSharedRemote())) {
     return impression;
   }
 
-  if (CanRegister(navigation_url, element, /*request_id=*/std::nullopt)) {
+  if (CanRegister(navigation_url, element)) {
     return impression;
   }
 
@@ -523,10 +530,89 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
       /*element=*/nullptr, has_transient_user_activation, referrer_policy);
 }
 
+std::optional<Impression> AttributionSrcLoader::PrepareContextMenuNavigation(
+    const KURL& navigation_url,
+    HTMLAnchorElementBase* anchor) {
+  if (!anchor) {
+    return std::nullopt;
+  }
+
+  const AtomicString& attribution_src =
+      anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+  if (attribution_src.IsNull()) {
+    return std::nullopt;
+  }
+
+  Vector<KURL> urls = ParseAttributionSrc(attribution_src, anchor);
+
+  if (urls.empty() && !CanRegister(navigation_url, anchor)) {
+    return std::nullopt;
+  }
+
+  Impression impression;
+
+  if (!urls.empty()) {
+    auto& entry = context_menu_data_hosts_.emplace_back(
+        impression.attribution_src_token, DataHostSharedRemote());
+
+    PrepareNavigationDataHost(urls, impression.attribution_src_token,
+                              entry.second);
+  }
+
+  return impression;
+}
+
+void AttributionSrcLoader::RegisterFromContextMenuNavigation(
+    const std::optional<Impression>& impression,
+    HTMLAnchorElementBase* anchor) {
+  if (!impression.has_value()) {
+    context_menu_data_hosts_.clear();
+    return;
+  }
+
+  // This vector should almost always have size at most 1, so linear search is
+  // acceptable.
+  auto entry = base::ranges::find(context_menu_data_hosts_,
+                                  impression->attribution_src_token,
+                                  &ContextMenuDataHostEntry::first);
+  if (entry == context_menu_data_hosts_.end()) {
+    return;
+  }
+  if (!anchor) {
+    context_menu_data_hosts_.erase(entry);
+    return;
+  }
+
+  DataHostSharedRemote data_host = std::move(entry->second);
+  DCHECK(data_host.is_bound());
+  context_menu_data_hosts_.erase(entry);
+
+  const AtomicString& attribution_src =
+      anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+  if (attribution_src.IsNull()) {
+    return;
+  }
+
+  // Adapted from `HTMLAnchorElementBase::HandleClick()`.
+  auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+  if (anchor->HasRel(kRelationNoReferrer)) {
+    referrer_policy = network::mojom::ReferrerPolicy::kNever;
+  } else if (anchor->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
+    SecurityPolicy::ReferrerPolicyFromString(
+        anchor->FastGetAttribute(html_names::kReferrerpolicyAttr),
+        kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
+  }
+
+  CreateAndSendRequests(ParseAttributionSrc(attribution_src, anchor),
+                        impression->attribution_src_token, referrer_policy,
+                        std::move(data_host));
+}
+
 bool AttributionSrcLoader::CreateAndSendRequests(
     Vector<KURL> urls,
     std::optional<AttributionSrcToken> attribution_src_token,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    DataHostSharedRemote data_host) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached() || urls.empty()) {
     return false;
@@ -534,21 +620,42 @@ bool AttributionSrcLoader::CreateAndSendRequests(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-                      WrapPersistentIfNeeded(this), std::move(urls),
-                      attribution_src_token, referrer_policy));
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+        WrapPersistentIfNeeded(this), std::move(urls), attribution_src_token,
+        referrer_policy, std::move(data_host)));
     return false;
   }
 
-  return DoRegistration(urls, attribution_src_token, referrer_policy);
+  return DoRegistration(urls, attribution_src_token, referrer_policy,
+                        std::move(data_host));
+}
+
+void AttributionSrcLoader::PrepareNavigationDataHost(
+    const Vector<KURL>& urls,
+    const AttributionSrcToken attribution_src_token,
+    DataHostSharedRemote& data_host) {
+  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      &conversion_host);
+
+  if (KeepaliveResponsesHandledInBrowser()) {
+    conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
+        attribution_src_token,
+        /*expected_registrations=*/urls.size());
+  }
+
+  conversion_host->RegisterNavigationDataHost(
+      data_host.BindNewPipeAndPassReceiver(), attribution_src_token);
 }
 
 bool AttributionSrcLoader::DoRegistration(
     const Vector<KURL>& urls,
     const std::optional<AttributionSrcToken> attribution_src_token,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    DataHostSharedRemote data_host) {
   DCHECK(!urls.empty());
+  DCHECK(!data_host.is_bound() || attribution_src_token.has_value());
 
   if (!local_frame_->IsAttached()) {
     return false;
@@ -558,29 +665,22 @@ bool AttributionSrcLoader::DoRegistration(
                                ? RegistrationEligibility::kSource
                                : RegistrationEligibility::kSourceOrTrigger;
 
-  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
-  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      &conversion_host);
+  const auto source_type = attribution_src_token.has_value()
+                               ? SourceType::kNavigation
+                               : SourceType::kEvent;
 
-  mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost> data_host;
+  if (!data_host.is_bound()) {
+    if (attribution_src_token.has_value()) {
+      PrepareNavigationDataHost(urls, *attribution_src_token, data_host);
+    } else {
+      mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+      local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+          &conversion_host);
 
-  if (KeepaliveResponsesHandledInBrowser() &&
-      attribution_src_token.has_value()) {
-    conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
-        *attribution_src_token,
-        /*expected_registrations=*/urls.size());
-  }
-
-  SourceType source_type;
-  if (attribution_src_token.has_value()) {
-    conversion_host->RegisterNavigationDataHost(
-        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
-    source_type = SourceType::kNavigation;
-  } else {
-    conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                      eligibility,
-                                      /*is_for_background_requests=*/true);
-    source_type = SourceType::kEvent;
+      conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
+                                        eligibility,
+                                        /*is_for_background_requests=*/true);
+    }
   }
 
   for (const KURL& url : urls) {
@@ -626,6 +726,7 @@ std::optional<attribution_reporting::SuitableOrigin>
 AttributionSrcLoader::ReportingOriginForUrlIfValid(
     const KURL& url,
     HTMLElement* element,
+    const String& request_url,
     std::optional<uint64_t> request_id,
     bool log_issues) {
   LocalDOMWindow* window = local_frame_->DomWindow();
@@ -638,7 +739,7 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
       return;
     }
 
-    LogAuditIssue(window, issue_type, element, request_id,
+    LogAuditIssue(window, issue_type, element, request_url, request_id,
                   /*invalid_parameter=*/
                   invalid_origin ? invalid_origin->ToString() : String());
   };
@@ -700,9 +801,10 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
 
 bool AttributionSrcLoader::CanRegister(const KURL& url,
                                        HTMLElement* element,
-                                       std::optional<uint64_t> request_id,
                                        bool log_issues) {
-  return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
+  return !!ReportingOriginForUrlIfValid(url, element, /*request_url=*/String(),
+                                        /*request_id=*/std::nullopt,
+                                        log_issues);
 }
 
 network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
@@ -730,14 +832,15 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   const uint64_t request_id = request.InspectorId();
+  const KURL& request_url = request.Url();
   const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
           local_frame_->DomWindow()) &&
       base::FeatureList::IsEnabled(
           network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_enabled);
+  AttributionHeaders headers(response.HttpHeaderFields(), request_url,
+                             request_id, cross_app_web_enabled);
 
   // Only handle requests which are attempting to invoke the API.
   if (headers.count() == 0) {
@@ -746,7 +849,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   std::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       ReportingOriginForUrlIfValid(response.ResponseUrl(),
-                                   /*element=*/nullptr, request_id);
+                                   /*element=*/nullptr, request_url,
+                                   request_id);
   if (!reporting_origin) {
     return false;
   }
@@ -790,8 +894,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   auto registration_info = GetRegistrationInfo(
-      response.HttpHeaderFields(), local_frame_->DomWindow(), request_id,
-      cross_app_web_enabled);
+      response.HttpHeaderFields(), local_frame_->DomWindow(), request.Url(),
+      request_id, cross_app_web_enabled);
   if (!registration_info.has_value()) {
     return false;
   }
@@ -848,7 +952,7 @@ String AttributionSrcLoader::ResourceClient::DebugName() const {
 void AttributionSrcLoader::ResourceClient::ResponseReceived(
     Resource* resource,
     const ResourceResponse& response) {
-  HandleResponseHeaders(resource, response, resource->InspectorId());
+  HandleResponseHeaders(resource, response);
 }
 
 bool AttributionSrcLoader::ResourceClient::RedirectReceived(
@@ -860,7 +964,7 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     RecordAttributionSrcRequestStatus(request,
                                       AttributionSrcRequestStatus::kRedirected);
   }
-  HandleResponseHeaders(resource, response, request.InspectorId());
+  HandleResponseHeaders(resource, response);
   return true;
 }
 
@@ -902,15 +1006,16 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     Resource* resource,
-    const ResourceResponse& response,
-    uint64_t request_id) {
+    const ResourceResponse& response) {
   const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
           loader_->local_frame_->DomWindow()) &&
       base::FeatureList::IsEnabled(
           network::features::kAttributionReportingCrossAppWeb);
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_enabled);
+  const KURL& request_url = resource->Url();
+  const uint64_t request_id = resource->InspectorId();
+  AttributionHeaders headers(response.HttpHeaderFields(), request_url,
+                             request_id, cross_app_web_enabled);
   const bool has_header = headers.count() > 0;
   base::UmaHistogramBoolean(
       "Conversions.HasAttributionHeaderInAttributionSrcResponse", has_header);
@@ -925,14 +1030,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
   std::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       loader_->ReportingOriginForUrlIfValid(response.ResponseUrl(),
-                                            /*element=*/nullptr, request_id);
+                                            /*element=*/nullptr, request_url,
+                                            request_id);
   if (!reporting_origin) {
     return;
   }
 
   auto registration_info = GetRegistrationInfo(
       response.HttpHeaderFields(), loader_->local_frame_->DomWindow(),
-      request_id, cross_app_web_enabled);
+      request_url, request_id, cross_app_web_enabled);
   if (!registration_info.has_value()) {
     return;
   }
@@ -967,7 +1073,8 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       if (has_source && has_trigger) {
         LogAuditIssue(loader_->local_frame_->DomWindow(),
                       AttributionReportingIssueType::kSourceAndTriggerHeaders,
-                      /*element=*/nullptr, headers.request_id,
+                      /*element=*/nullptr, headers.request_url,
+                      headers.request_id,
                       /*invalid_parameter=*/String());
         return;
       }
@@ -1189,7 +1296,7 @@ void AttributionSrcLoader::ResourceClient::
 
   CHECK(!header.IsNull());
   LogAuditIssue(loader_->local_frame_->DomWindow(), issue_type,
-                /*element=*/nullptr, headers.request_id,
+                /*element=*/nullptr, headers.request_url, headers.request_id,
                 /*invalid_parameter=*/header);
   if (report_header_errors) {
     data_host_->ReportRegistrationHeaderError(

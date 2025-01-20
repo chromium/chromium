@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -77,13 +79,15 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->tab_search_container();
+    return browser_view()
+        ->tab_strip_region_view()
+        ->tab_search_container_for_testing();
   }
 
   ProductSpecificationsButton* product_specifications_button() {
     return browser_view()
         ->tab_strip_region_view()
-        ->product_specifications_button();
+        ->GetProductSpecificationsButton();
   }
 
   MockProductSpecificationsEntryPointController* controller() {
@@ -118,11 +122,17 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
   auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
-  if (GetRenderTabSearchBeforeTabStrip()) {
+
+  if (features::IsTabstripComboButtonEnabled()) {
+    TabStripActionContainer* action_container =
+        browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
+    ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
+                    .has_value());
+  } else if (GetRenderTabSearchBeforeTabStrip()) {
     ASSERT_EQ(tab_search_container(), tab_strip_region_view->children()[0]);
     ASSERT_EQ(product_specifications_button(),
               tab_strip_region_view->children()[1]);
-  } else {
+  } else if (!features::IsTabstripComboButtonEnabled()) {
     auto tab_search_index =
         tab_strip_region_view->GetIndexOf(tab_search_container());
     auto product_specifications_index =

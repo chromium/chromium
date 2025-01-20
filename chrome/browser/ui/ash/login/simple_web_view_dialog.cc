@@ -201,9 +201,18 @@ void SimpleWebViewDialog::Init() {
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
   forward_ = forward.get();
 
-  // Location bar.
+  // Location bar. Passing in nullptr as there's no browser in this case. This
+  // may lead to crash, which was discussed in crbug.com/379534750 and was
+  // mitigated in crrev.com/c/6043176. So far simple_web_view_dialog, which is
+  // specifically for ChromeOS, is one of the only two classes that passes in
+  // nullptr as the browser argument, when initiating a location_bar_view in
+  // production code. The other known case is presentation_receiver_window_view.
+  // There is discussion to move simple_web_view_dialog away from using
+  // location_bar_view to avoid this unwanted nullptr situation. As for
+  // presentation_receiver_window_view, it is about to be sunsetted in a year or
+  // so.
   auto location_bar = std::make_unique<LocationBarView>(
-      nullptr, profile_, command_updater_.get(), this, true);
+      /*browser=*/nullptr, profile_, command_updater_.get(), this, true);
   location_bar_ = location_bar.get();
 
   // Reload button.

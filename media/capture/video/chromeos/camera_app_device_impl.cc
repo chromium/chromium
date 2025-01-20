@@ -177,7 +177,7 @@ void CameraAppDeviceImpl::SetCameraDeviceContext(
 }
 
 void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
-    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     VideoRotation rotation) {
   {
     base::AutoLock lock(document_corners_observers_lock_);
@@ -188,8 +188,8 @@ void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread,
-                     weak_ptr_factory_for_mojo_.GetWeakPtr(), std::move(gmb),
-                     rotation));
+                     weak_ptr_factory_for_mojo_.GetWeakPtr(),
+                     std::move(shared_image), rotation));
 }
 
 bool CameraAppDeviceImpl::IsMultipleStreamsEnabled() {
@@ -387,7 +387,7 @@ bool CameraAppDeviceImpl::IsCloseToPreviousDetectionRequest() {
 }
 
 void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
-    std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     VideoRotation rotation) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
@@ -396,12 +396,14 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
     return;
   }
 
-  DCHECK(image);
-  if (!image->Map()) {
+  CHECK(shared_image);
+
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
     LOG(ERROR) << "Failed to map frame buffer";
     return;
   }
-  auto frame_size = image->GetSize();
+  auto frame_size = scoped_mapping->Size();
   int width = frame_size.width();
   int height = frame_size.height();
 
@@ -415,11 +417,10 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
   auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
 
   int status = libyuv::NV12Scale(
-      static_cast<uint8_t*>(image->memory(0)), image->stride(0),
-      static_cast<uint8_t*>(image->memory(1)), image->stride(1), width, height,
-      y_data, kDetectionWidth, uv_data, kDetectionWidth, kDetectionWidth,
-      kDetectionHeight, libyuv::FilterMode::kFilterNone);
-  image->Unmap();
+      scoped_mapping->GetMemoryForPlane(0).data(), scoped_mapping->Stride(0),
+      scoped_mapping->GetMemoryForPlane(1).data(), scoped_mapping->Stride(1),
+      width, height, y_data, kDetectionWidth, uv_data, kDetectionWidth,
+      kDetectionWidth, kDetectionHeight, libyuv::FilterMode::kFilterNone);
   if (status != 0) {
     LOG(ERROR) << "Failed to scale buffer";
     return;

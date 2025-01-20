@@ -481,10 +481,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
     DCHECK(coded_size.GetCheckedArea().IsValid());
     auto layout = media::VideoFrameLayout::CreateWithStrides(
         format, coded_size,
-        {static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY)),
-         static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU)),
-         static_cast<int32_t>(
-             decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV))});
+        {decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY),
+         decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU),
+         decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV)});
     if (!layout)
       return;
 

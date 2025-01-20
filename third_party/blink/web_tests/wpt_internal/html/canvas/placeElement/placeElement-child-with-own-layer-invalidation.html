@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html class="reftest-wait">
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement(): Placed elements' children with independent paint layers get
+    invalidated properly.</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <link rel="match" href="placeElement-ref.html">
+  <!-- Use fuzzy matching to compensate for the 0.9999 opacity trick. -->
+  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
+  <meta name="fuzzy" content="maxDifference=0-98; totalPixels=0-3">
+  <style>
+    #placed {
+      background-color: green;
+    }
+
+    #child {
+      /* So that the child gets its own paint layer */
+      opacity: 0.9999;
+      color: magenta;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="placed">
+      <div id="child">Placed Element</div>
+    </div>
+  </canvas>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+  const placed = document.getElementById("placed");
+  const child = document.getElementById("child");
+  ctx.placeElement(placed, 0, 0);
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      child.style.color = "black";
+      document.documentElement.classList.remove("reftest-wait");
+    }, 0);
+  });
+</script>
+
+</html>

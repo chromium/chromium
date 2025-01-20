@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/android_apps_handler.h"
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +24,7 @@ AndroidAppsHandler::AndroidAppsHandler(Profile* profile,
                                        apps::AppServiceProxy* app_service_proxy)
     : profile_(profile), app_service_proxy_(app_service_proxy) {}
 
-AndroidAppsHandler::~AndroidAppsHandler() {}
+AndroidAppsHandler::~AndroidAppsHandler() = default;
 
 void AndroidAppsHandler::RegisterMessages() {
   // Note: requestAndroidAppsInfo must be called before observers will be added.

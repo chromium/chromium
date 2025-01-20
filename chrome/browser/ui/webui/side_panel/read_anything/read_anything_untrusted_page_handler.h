@@ -28,6 +28,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/session/session_observer.h"
+#else
+#include "extensions/browser/extension_registry_observer.h"
 #endif
 
 namespace content {
@@ -87,6 +89,7 @@ class ReadAnythingUntrustedPageHandler :
     public ash::SessionObserver,
 #else
     public content::UpdateLanguageStatusDelegate,
+    public extensions::ExtensionRegistryObserver,
 #endif
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
@@ -111,13 +114,34 @@ class ReadAnythingUntrustedPageHandler :
       ui::AXLocationAndScrollUpdates& details);
   void PrimaryPageChanged();
   void WebContentsDestroyed();
+  void OnActiveAXTreeIDChanged();
 
   // read_anything::mojom::UntrustedPageHandler:
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
+  void OnSpeechRateChange(double rate) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;
+  void OnLineSpaceChange(
+      read_anything::mojom::LineSpacing line_spacing) override;
+  void OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing letter_spacing) override;
+  void OnFontChange(const std::string& font) override;
+  void OnFontSizeChange(double font_size) override;
+  void OnLinksEnabledChanged(bool enabled) override;
+  void OnImagesEnabledChanged(bool enabled) override;
+  void OnColorChange(read_anything::mojom::Colors color) override;
+  void OnHighlightGranularityChanged(
+      read_anything::mojom::HighlightGranularity granularity) override;
+  void GetVoicePackInfo(const std::string& language) override;
+  void InstallVoicePack(const std::string& language) override;
+  void UninstallVoice(const std::string& language) override;
+
+  // TranslateDriver::LanguageDetectionObserver:
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
   // ash::SessionObserver
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -139,12 +163,13 @@ class ReadAnythingUntrustedPageHandler :
   void OnUpdateLanguageStatus(const std::string& lang,
                               content::LanguageInstallStatus install_status,
                               const std::string& error) override;
-#endif
+  // extensions::ExtensionRegistryObserver implementation.
 
-  // TranslateDriver::LanguageDetectionObserver:
-  void OnLanguageDetermined(
-      const translate::LanguageDetectionDetails& details) override;
-  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
+  // OnExtensionReady is called even if the TTS engine was previously installed,
+  // which read anything needs to know about to access the new voices.
+  void OnExtensionReady(content::BrowserContext* browser_context,
+                        const extensions::Extension* extension) override;
+#endif
 
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
@@ -152,22 +177,8 @@ class ReadAnythingUntrustedPageHandler :
   // read_anything::mojom::UntrustedPageHandler:
   void GetDependencyParserModel(
       GetDependencyParserModelCallback callback) override;
-  void GetVoicePackInfo(const std::string& language) override;
-  void InstallVoicePack(const std::string& language) override;
-  void UninstallVoice(const std::string& language) override;
   void OnCopy() override;
-  void OnLineSpaceChange(
-      read_anything::mojom::LineSpacing line_spacing) override;
-  void OnLetterSpaceChange(
-      read_anything::mojom::LetterSpacing letter_spacing) override;
-  void OnFontChange(const std::string& font) override;
-  void OnFontSizeChange(double font_size) override;
-  void OnLinksEnabledChanged(bool enabled) override;
-  void OnImagesEnabledChanged(bool enabled) override;
-  void OnColorChange(read_anything::mojom::Colors color) override;
-  void OnSpeechRateChange(double rate) override;
-  void OnHighlightGranularityChanged(
-      read_anything::mojom::HighlightGranularity granularity) override;
+
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,
@@ -193,8 +204,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnSidePanelControllerDestroyed() override;
 
   void SetUpPdfObserver();
-
-  void OnActiveAXTreeIDChanged();
 
   void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 

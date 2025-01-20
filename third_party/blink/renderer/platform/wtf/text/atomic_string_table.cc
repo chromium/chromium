@@ -442,8 +442,8 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
 }
 
 scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
-    const char* characters_start,
-    const char* characters_end) {
+    const uint8_t* characters_start,
+    const uint8_t* characters_end) {
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
   unsigned utf16_length = unicode::CalculateStringLengthFromUTF8(

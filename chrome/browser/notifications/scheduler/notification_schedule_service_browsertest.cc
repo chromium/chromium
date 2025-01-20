@@ -38,7 +38,7 @@ const base::FilePath::CharType kTestDir[] =
 
 class TestClient : public NotificationSchedulerClient {
  public:
-  TestClient() {}
+  TestClient() = default;
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
@@ -129,7 +129,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   NotificationScheduleServiceTest& operator=(
       const NotificationScheduleServiceTest&) = delete;
 
-  ~NotificationScheduleServiceTest() override {}
+  ~NotificationScheduleServiceTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {

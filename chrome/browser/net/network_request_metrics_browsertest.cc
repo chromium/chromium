@@ -82,7 +82,7 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
   WaitForMainFrameResourceObserver& operator=(
       const WaitForMainFrameResourceObserver&) = delete;
 
-  ~WaitForMainFrameResourceObserver() override {}
+  ~WaitForMainFrameResourceObserver() override = default;
 
   // content::WebContentsObserver implementation:
   void ResourceLoadComplete(

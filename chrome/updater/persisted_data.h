@@ -167,6 +167,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                        base::OnceClosure callback) override;
   int GetInstallDate(const std::string& id) const override;
   void SetInstallDate(const std::string& id, int install_date) override;
+  std::string GetInstallId(const std::string& app_id) const override;
+  void SetInstallId(const std::string& app_id,
+                    const std::string& install_id) override;
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;

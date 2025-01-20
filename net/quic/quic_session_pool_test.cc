@@ -558,7 +558,7 @@ void QuicSessionPoolTest::VerifyInitialization(
   QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
   const AlternativeService alternative_service1(
-      kProtoQUIC, kDefaultServerHostName, kDefaultServerPort);
+      NextProto::kProtoQUIC, kDefaultServerHostName, kDefaultServerPort);
   AlternativeServiceInfoVector alternative_service_info_vector;
   base::Time expiration = base::Time::Now() + base::Days(1);
   alternative_service_info_vector.push_back(
@@ -570,7 +570,7 @@ void QuicSessionPoolTest::VerifyInitialization(
       network_anonymization_key1, alternative_service_info_vector);
 
   const AlternativeService alternative_service2(
-      kProtoQUIC, quic_server_id2.host(), quic_server_id2.port());
+      NextProto::kProtoQUIC, quic_server_id2.host(), quic_server_id2.port());
   AlternativeServiceInfoVector alternative_service_info_vector2;
   alternative_service_info_vector2.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
@@ -12591,7 +12591,7 @@ TEST_P(QuicSessionPoolTest,
     QuicSessionPoolPeer::SetTaskRunner(factory_.get(), runner_.get());
 
     const AlternativeService alternative_service1(
-        kProtoQUIC, kDefaultServerHostName, kDefaultServerPort);
+        NextProto::kProtoQUIC, kDefaultServerHostName, kDefaultServerPort);
     AlternativeServiceInfoVector alternative_service_info_vector;
     base::Time expiration = base::Time::Now() + base::Days(1);
     alternative_service_info_vector.push_back(

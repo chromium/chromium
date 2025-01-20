@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include <array>
 #include <list>
 
 #include "base/command_line.h"
@@ -2283,13 +2279,13 @@ TEST_F(GestureRecognizerTest, GestureEventTouchLockSelectsCorrectWindow) {
   ui::GestureConsumer* target;
   const int kNumWindows = 4;
 
-  std::unique_ptr<GestureEventConsumeDelegate* []> delegates(
-      new GestureEventConsumeDelegate*[kNumWindows]);
+  auto delegates =
+      base::HeapArray<GestureEventConsumeDelegate*>::Uninit(kNumWindows);
 
   ui::GestureConfiguration::GetInstance()
       ->set_max_separation_for_gesture_touches_in_pixels(499);
 
-  gfx::Rect window_bounds[kNumWindows];
+  std::array<gfx::Rect, kNumWindows> window_bounds;
   window_bounds[0] = gfx::Rect(0, 0, 1, 1);
   window_bounds[1] = gfx::Rect(500, 0, 1, 1);
   window_bounds[2] = gfx::Rect(0, 500, 1, 1);
@@ -4272,7 +4268,7 @@ TEST_F(GestureRecognizerTest, PinchAlternatelyConsumedTest) {
   EXPECT_TRUE(delegate->pinch_update());
   delegate->Reset();
 
-  const float expected_scales[] = {1.5f, 1.2f, 1.125f};
+  constexpr std::array expected_scales{1.5f, 1.2f, 1.125f};
 
   for (int i = 0; i < 3; ++i) {
     x += 50;
@@ -4309,10 +4305,10 @@ TEST_F(GestureRecognizerTest, PinchAlternatelyConsumedTest) {
     delegate->Reset();
   }
 
-  const float delta_y[] = {-550, 550};
-  const float expected_angles[] = {45, -45};
+  constexpr std::array delta_y{-550, 550};
+  constexpr std::array expected_angles{45, -45};
 
-  for (int i = 0; i < 2; ++i) {
+  for (size_t i = 0; i < delta_y.size(); ++i) {
     y += delta_y[i];
     ui::TouchEvent move4(
         ui::EventType::kTouchMoved, gfx::Point(x, y), tes.Now(),

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
@@ -140,21 +141,21 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
 // static
 const AtomicString& PointerEventFactory::PointerTypeNameForWebPointPointerType(
     WebPointerProperties::PointerType type) {
-  // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
-  // See spec https://github.com/w3c/pointerevents/issues/134
   switch (type) {
     case WebPointerProperties::PointerType::kUnknown:
       return g_empty_atom;
-    case WebPointerProperties::PointerType::kTouch:
-      return pointer_type_names::kTouch;
-    case WebPointerProperties::PointerType::kPen:
-      return pointer_type_names::kPen;
     case WebPointerProperties::PointerType::kMouse:
       return pointer_type_names::kMouse;
-    default:
-      DUMP_WILL_BE_NOTREACHED();
-      return g_empty_atom;
+    case WebPointerProperties::PointerType::kPen:
+      return pointer_type_names::kPen;
+    case WebPointerProperties::PointerType::kTouch:
+      return pointer_type_names::kTouch;
+    case WebPointerProperties::PointerType::kEraser:
+      // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
+      // See spec https://github.com/w3c/pointerevents/issues/134
+      return pointer_type_names::kPen;
   }
+  NOTREACHED();
 }
 
 HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(

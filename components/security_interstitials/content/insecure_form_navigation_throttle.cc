@@ -123,7 +123,7 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
   url::Origin form_originating_origin =
       handle->GetInitiatorOrigin().value_or(url::Origin());
   if (!security_interstitials::IsInsecureFormActionOnSecureSource(
-          form_originating_origin.GetURL(), handle->GetURL())) {
+          form_originating_origin, handle->GetURL())) {
     // Currently we only warn for insecure forms in secure pages.
     return content::NavigationThrottle::PROCEED;
   }

@@ -1,9 +1,9 @@
 Name: bstr
 URL: https://crates.io/crates/bstr
-Version: 1.10.0
-Revision: e223ec63cab2de544625b8946e372e6d50ab53d2
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/LICENSE-APACHE
+Version: 1.11.3
+Revision: cbe2c692782d772f7c2fd8be0972bf9b91889a97
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/bstr-1.11.3/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

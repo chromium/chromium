@@ -9,8 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "base/memory/raw_ptr.h"
-#include "base/observer_list_types.h"
 
 namespace base {
 class TimeDelta;
@@ -26,18 +24,6 @@ namespace ash::holding_space_metrics {
 enum class DownloadsAction {
   kClick = 0,
   kMaxValue = kClick,
-};
-
-// Enumeration of sources for events that occur in (and to) holding space.
-enum class EventSource {
-  kHoldingSpaceBubble = 0,
-  kHoldingSpaceItem = 1,
-  kHoldingSpaceItemContextMenu = 2,
-  kHoldingSpaceTray = 3,
-  kFilesApp = 4,
-  kTest = 5,
-  kWallpaper = 6,
-  kMaxValue = kWallpaper,
 };
 
 // Enumeration of binding contexts for the file picker used to create a file in
@@ -72,9 +58,7 @@ enum class ItemAction {
   kCancel = 7,
   kPause = 8,
   kResume = 9,
-  kShowInBrowser = 10,
-  kViewDetailsInBrowser = 11,
-  kMaxValue = kViewDetailsInBrowser,
+  kMaxValue = kResume,
 };
 
 // Enumeration of reasons that a holding space item might fail to launch. These
@@ -157,8 +141,7 @@ ASH_PUBLIC_EXPORT void RecordFilesAppChipAction(FilesAppChipAction action);
 // Records the specified `action` taken on a set of holding space `items`.
 ASH_PUBLIC_EXPORT void RecordItemAction(
     const std::vector<const HoldingSpaceItem*>& items,
-    ItemAction action,
-    EventSource event_source);
+    ItemAction action);
 
 // Records an attempt to launch a holding space item of the specified `type`
 // backed by the empty file at the specified `file_path`.
@@ -205,36 +188,6 @@ ASH_PUBLIC_EXPORT void RecordUserPreferences(UserPreferences user_preferences);
 // Records counts for the visible holding space `items` specified.
 ASH_PUBLIC_EXPORT void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
-
-// Observation -----------------------------------------------------------------
-
-// An observer which receives notification of holding space metrics events.
-class ASH_PUBLIC_EXPORT Observer : public base::CheckedObserver {
- public:
-  // Invoked when holding space item action metrics are recorded.
-  // See `RecordItemAction()`.
-  virtual void OnHoldingSpaceItemActionRecorded(
-      const std::vector<const HoldingSpaceItem*>& items,
-      ItemAction action,
-      EventSource event_source) {}
-
-  // Invoked when holding space pod action metrics are recorded.
-  // See `RecordPodAction()`.
-  virtual void OnHoldingSpacePodActionRecorded(PodAction action) {}
-};
-
-// A scoped object which registers a specified `observer` to receive
-// notification of holding space metrics events until its destruction.
-class ASH_PUBLIC_EXPORT ScopedObservation {
- public:
-  explicit ScopedObservation(Observer* observer);
-  ScopedObservation(const ScopedObservation&) = delete;
-  ScopedObservation& operator=(const ScopedObservation&) = delete;
-  ~ScopedObservation();
-
- private:
-  const raw_ptr<Observer> observer_;
-};
 
 }  // namespace ash::holding_space_metrics
 

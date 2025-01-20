@@ -8,9 +8,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +21,9 @@ namespace web_app {
 
 namespace {
 
-class MockInstallIsolatedWebAppCommand : public InstallIsolatedWebAppCommand {
+class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
  public:
-  MockInstallIsolatedWebAppCommand(
+  MockInstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
       const std::optional<base::Version>& expected_version,
@@ -112,7 +114,7 @@ void MockIsolatedWebAppInstallCommandWrapper::ScheduleCommand() {
   CHECK(callback_.has_value());
   command_was_scheduled_ = true;
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<MockInstallIsolatedWebAppCommand>(
+      std::make_unique<MockInstallIsolatedWebApp>(
           *url_info_, *install_source_, *expected_version_,
           IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
               *profile_),

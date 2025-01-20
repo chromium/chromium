@@ -36,16 +36,23 @@ dependencyCheck {
     ]
 }
 
-// See https://github.com/google/guava/releases/tag/v32.1.0
+// See https://github.com/google/guava/releases/tag/v33.3.1
 dependencies.constraints {
-  compile("com.google.guava:guava:32.1.3-android") {
+  compile("com.google.guava:guava:33.3.1-android") {
     attributes {
       attribute(
         TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
         objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
     }
   }
-  buildCompile("com.google.guava:guava:32.1.3-jre") {
+  buildCompile("com.google.guava:guava:33.3.1-jre") {
+    attributes {
+      attribute(
+        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+    }
+  }
+  testCompile("com.google.guava:guava:33.3.1-jre") {
     attributes {
       attribute(
         TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
@@ -106,12 +113,6 @@ dependencies {
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
 
-    compile 'io.grpc:grpc-binder:1.49.0'
-    compile 'io.grpc:grpc-context:1.49.0'
-    compile 'io.grpc:grpc-protobuf-lite:1.49.0'
-    compile 'io.grpc:grpc-stub:1.49.0'
-    compile 'io.grpc:grpc-api:1.49.0'
-
     // Needed by androidx.room, but by default it selects a lower version that
     // does not exist in CIPD.
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
@@ -136,12 +137,11 @@ dependencies {
     // The -android version is missing symbols (e.g. ImmutableList stream APIs).
     // Thus, we need both for now, but we should be able to consolidate once O is our minSdkVersion.
     // https://github.com/google/guava/wiki/Compatibility
-    compile "com.google.guava:guava:32.1.3-android"
-    buildCompile "com.google.guava:guava:32.1.3-jre"
+    compile "com.google.guava:guava:33.3.1-android"
+    buildCompile "com.google.guava:guava:33.3.1-jre"
 
     String daggerVersion = '2.52'
     compile "com.google.dagger:dagger:${daggerVersion}"
-    compile "com.google.dagger:hilt-core:${daggerVersion}"
 
     // Used by ModuleInterfaceProcessor.java
     buildCompile 'com.squareup:javapoet:1.13.0'
@@ -191,7 +191,7 @@ dependencies {
     androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
 
     // Use testCompile to have is_robolectric = true set on targets.
-    testCompile "org.robolectric:robolectric:4.12.1"
+    testCompile "org.robolectric:robolectric:4.14.1"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

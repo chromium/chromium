@@ -224,7 +224,7 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
   // rewriting Quaternion and Rotation to have unresolved versions.
   return ConvertRotation(
       OptionalRotation(StyleBuilderConverter::ConvertRotation(
-          CSSToLengthConversionData(), value)));
+          CSSToLengthConversionData(&state->GetElement()), value)));
 }
 
 InterpolationValue

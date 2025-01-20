@@ -19,6 +19,7 @@
 <translation id="146407871188825689">iPad પર ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="1471084500615228555">Chromiumમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="1472013873724362412">તમારું એકાઉન્ટ Chromium પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
+<translation id="148576268809812097">Chromiumમાં તમારા પાસવર્ડ સાચવો</translation>
 <translation id="1501302548410882220">સર્વત્ર Chromium નો ઉપયોગ કરો</translation>
 <translation id="1503199973012840174">તમારા Chromiumનું વર્ઝન જૂનું છે. સુરક્ષિત રહેવા માટે તેને અપડેટ કરો.</translation>
 <translation id="1515748263297244785">iPad માટે ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">તમારો પાસવર્ડ તમારા એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="1811860791247653035">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromiumનો <ph name="FEATURE_NAME_1" /> અને <ph name="FEATURE_NAME_2" />માં સમાવેશ કરો</translation>
 <translation id="1838412507805038478">Chromium એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર જારી કર્યું છે.</translation>
+<translation id="1839447949248872139">ડિફૉલ્ટ તરીકે Chromiumમાં લિંક ખોલો</translation>
 <translation id="1843424232666537147">Chromium માં એવી સુવિધાઓ છે જે તમારા ઇન્ટરનેટ ડેટા અને તમે કેટલી ઝડપથી વેબ પૃષ્ઠોને લોડ કરવામાં સમર્થ છો તેનું સંચાલન કરવામાં તમારી સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromiumમાં Maps</translation>
@@ -53,6 +55,7 @@
 <translation id="2236584955986023187">આનો અર્થ છે કે Chromium દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
 <translation id="2270466829363945454">ખરીદો</translation>
 <translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
+<translation id="2314220608288760290">Chromium ઑટોમૅટિક રીતે YouTube છૂપા મોડની લિંકને છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="231828342043114302">તમારી રુચિઓના આધારે મનગમતું બનાવેલું કન્ટેન્ટ મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો.</translation>
 <translation id="2326738825692478496">Chromiumનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
 
@@ -81,7 +84,6 @@
 <translation id="2832168932648876507">Chromiumમાં વૉઇસની સુવિધા વડે શોધો.</translation>
 <translation id="2843571538056574338">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="2918709798697875261">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromiumમાં સાઇન આઉટ કરીને રાખો.</translation>
-<translation id="2930158679684712936">Chromium વિશે ટિપ</translation>
 <translation id="2942241131342758843">લિંક ખોલવા, વિજેટથી શોધવા અને અન્ય ઍપમાં પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
 <translation id="3044857325852340337">Chromium ડેટા ડિલીટ કર્યો</translation>
@@ -150,6 +152,7 @@
 <translation id="4790638144988730920">તમારા Google એકાઉન્ટમાં Chromiumના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો.</translation>
 <translation id="4828317641996116749">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4856138222358683580">Chromium ઍક્શન</translation>
+<translation id="4863800915967098115">સાઇન ઇન કરવાથી તમારું એકાઉન્ટ કાર્ય સંબંધિત બ્રાઉઝિંગ માટે Chromiumમાં ઉમેરાય છે.</translation>
 <translation id="4904452304169763785">તમારા માટે Chromium ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટેના અલર્ટ.</translation>
 <translation id="4962295957157529683">તમે અન્ય ખુલ્લી Chromium વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
 <translation id="4985291216379576555">ઑફલાઇન, Chromium અપડેટ ચેક કરી શકતાં નથી</translation>
@@ -160,6 +163,7 @@
 <translation id="5048795749726991615">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા માટે, Chromiumની ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="5053429694249468757">Chromiumનો ડેટા ડિલીટ કરી રહ્યાં છીએ…</translation>
 <translation id="5071749685031362629">iOS માટે Chromium</translation>
+<translation id="5088872414922783602">તમારી હોમ સ્ક્રીનના ડૉકમાંથી Chromiumને વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="5124429847818367226">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="5131565040785979529">તમારી સંસ્થા <ph name="DOMAIN" />, તમે જેમાં સાઇન ઇન કર્યું હોય તે એકાઉન્ટને અને Chromiumના વપરાશની રીતને મેનેજ કરે છે.</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
@@ -273,6 +277,7 @@
 <translation id="800380310260616129">અહીંથી Chromium ડાઉનલોડ કરો.</translation>
 <translation id="8013573822802650211">તમે જ્યાંથી Chromiumનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
 <translation id="8014091604604659473">Chromiumમાંથી સાઇન આઉટ થયા</translation>
+<translation id="8035379487371146621">Chromiumને ડૉક પર ખસેડો</translation>
 <translation id="8104697640054703121">જોખમી સાઇટથી Chromiumની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="8119542592987737574">તમારા iPhoneની હોમ સ્ક્રીનના ડૉકમાંથી Chromium વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="8164086860209325020">Chromium સેટિંગ પર જાઓ</translation>
@@ -280,6 +285,7 @@
 <translation id="8240981428553046115">Chromium અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="8254729934443216898">Chromiumનો સૌથી વધુ લાભ મેળવવામાં તમારી સહાય કરે એવી નવી સુવિધાઓ વિશે શોધખોળ કરો.</translation>
 <translation id="829047622686389424">તમારા માટે બનાવવામાં આવેલું કસ્ટમ ફીડ.</translation>
+<translation id="8293572045658095405">તમે Chromiumના છૂપા મોડમાં છે</translation>
 <translation id="830951810931292870">ઇનપુટ કરેલા URLsને Chromiumમાં છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="8409374867500149834">નુકસાનકારક વેબસાઇટ સામે તમે Chromiumની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}}</translation>

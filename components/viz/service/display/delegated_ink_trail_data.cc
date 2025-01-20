@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 
 #include <string>
@@ -55,10 +50,6 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
 void DelegatedInkTrailData::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
     gfx::DelegatedInkMetadata* metadata) {
-  if (!features::ShouldDrawPredictedInkPoints()) {
-    return;
-  }
-
   TRACE_EVENT0("delegated_ink_trails", "DelegatedInkTrailData::PredictPoints");
 
   base::TimeDelta latency_improvement_with_prediction;

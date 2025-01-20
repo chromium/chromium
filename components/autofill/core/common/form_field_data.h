@@ -56,9 +56,13 @@ enum FieldPropertiesFlags : uint32_t {
   // Whether a field was filled because the user used the password manual
   // fallbacks feature.
   kAutofilledPasswordFormFilledViaManualFallback = 1u << 6,
+  // Whether a change password filled was autofilled as part of change password
+  // process. Filling happens on page-load although it's initiated by a user.
+  kAutofilledChangePasswordFormOnPageLoad = 1u << 7,
   // A value was autofilled on any of the triggers.
   kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad |
-                kAutofilledPasswordFormFilledViaManualFallback,
+                kAutofilledPasswordFormFilledViaManualFallback |
+                kAutofilledChangePasswordFormOnPageLoad,
 };
 
 // FieldPropertiesMask is used to contain combinations of FieldPropertiesFlags
@@ -260,10 +264,6 @@ class FormFieldData {
   bool IsFocusable() const {
     return is_focusable() && role() != RoleAttribute::kPresentation;
   }
-
-  bool DidUserType() const;
-  bool HadFocus() const;
-  bool WasPasswordAutofilled() const;
 
   // NOTE: Update `SameFieldAs()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.

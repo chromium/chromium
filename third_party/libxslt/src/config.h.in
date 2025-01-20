@@ -93,6 +93,9 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
+/* plugin file extension */
+#undef MODULE_EXTENSION
+
 /* Name of package */
 #undef PACKAGE
 

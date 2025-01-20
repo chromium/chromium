@@ -34,8 +34,8 @@ constexpr int64_t kUnifiedDisplayId = -10;
 constexpr int32_t kInvalidYearOfManufacture = -1;
 
 // Used to determine if the two scale factor values are considered the same.
-// TODO(crbug.com/40255259): Remove this when the scale factor precision issue
-// in lacros is fixed.
+// TODO(crbug.com/40255259): Remove this once the scale factor precision
+// issue is fixed for ARC.
 constexpr float kDeviceScaleFactorErrorTolerance = 0.01f;
 
 // The minimum HDR headroom for an HDR capable display. On macOS, when a

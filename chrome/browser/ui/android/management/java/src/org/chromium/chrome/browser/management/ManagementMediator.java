@@ -16,7 +16,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
@@ -71,8 +71,8 @@ public class ManagementMediator {
 
     private SpannableString getLearnMoreClickableText(String url) {
         final Context context = mHost.getContext();
-        final NoUnderlineClickableSpan clickableLearnMoreSpan =
-                new NoUnderlineClickableSpan(
+        final ChromeClickableSpan clickableLearnMoreSpan =
+                new ChromeClickableSpan(
                         context,
                         (v) -> {
                             showHelpCenterArticle(url);
@@ -128,8 +128,8 @@ public class ManagementMediator {
             return new SpannableString(text);
         }
 
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
                         context,
                         v -> {
                             mHost.loadUrl(

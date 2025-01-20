@@ -55,9 +55,11 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
   UpdateAccessibleHasPopup();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetID(VIEW_ID_RELOAD_BUTTON);
+
+  UpdateCachedTooltipText();
 }
 
-ReloadButton::~ReloadButton() {}
+ReloadButton::~ReloadButton() = default;
 
 void ReloadButton::ChangeMode(Mode mode, bool force) {
   intended_mode_ = mode;
@@ -115,19 +117,21 @@ bool ReloadButton::GetMenuEnabled() const {
 void ReloadButton::SetMenuEnabled(bool enable) {
   menu_enabled_ = enable;
   UpdateAccessibleHasPopup();
+  UpdateCachedTooltipText();
 }
 
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseExited(event);
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, true);
+  }
 }
 
-std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
-  int reload_tooltip = menu_enabled_ ?
-      IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
-  return l10n_util::GetStringUTF16(
-      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP);
+void ReloadButton::UpdateCachedTooltipText() {
+  int reload_tooltip =
+      menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
+  SetCachedTooltipText(l10n_util::GetStringUTF16(
+      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
 
 bool ReloadButton::ShouldShowMenu() {
@@ -182,6 +186,8 @@ void ReloadButton::SetVisibleMode(Mode mode) {
       SetVectorIcons(*stop_icon_, *stop_touch_icon_);
       break;
   }
+
+  UpdateCachedTooltipText();
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {
@@ -234,15 +240,17 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
 }
 
 void ReloadButton::ExecuteBrowserCommand(int command, int event_flags) {
-  if (!command_updater_)
+  if (!command_updater_) {
     return;
+  }
   command_updater_->ExecuteCommandWithDisposition(
       command, ui::DispositionFromEventFlags(event_flags));
 }
 
 void ReloadButton::OnDoubleClickTimer() {
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, false);
+  }
 }
 
 void ReloadButton::OnStopToReloadTimer() {

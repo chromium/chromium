@@ -57,7 +57,7 @@ void WaylandShmBuffer::Initialize(WaylandBufferFactory* buffer_factory) {
   stride_ = stride;
 }
 
-uint8_t* WaylandShmBuffer::GetMemory() const {
+uint8_t* WaylandShmBuffer::GetMemory() {
   if (!IsValid() || !shared_memory_mapping_.IsValid())
     return nullptr;
   return shared_memory_mapping_.GetMemoryAs<uint8_t>();

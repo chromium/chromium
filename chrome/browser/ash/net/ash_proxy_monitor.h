@@ -19,7 +19,6 @@
 
 class PrefService;
 class PrefChangeRegistrar;
-class PrefRegistrySimple;
 class Profile;
 class ProfileManager;
 
@@ -50,8 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AshProxyMonitor
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) Observer
       : public base::CheckedObserver {
    public:
-    // Called when the effective proxy config changes in Ash or when the
-    // metadata of the Lacros extension controlling the proxy changes.
+    // Called when the effective proxy config changes.
     virtual void OnProxyChanged() = 0;
   };
 
@@ -64,25 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AshProxyMonitor
   // Multiple observers can be added.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-  // Indicates if the proxy is controlled by an extension running in the primary
-  // profile in Lacros.
-  bool IsLacrosExtensionControllingProxy() const;
-  // Stores as a user preference the metadata about the extension which is
-  // controlling the pref in the Lacros primary profile. The metadata can be
-  // retrieved by calling `GetLacrosExtensionControllingTheProxy` method.
-  void SetLacrosExtensionControllingProxyInfo(const std::string& name,
-                                              const std::string& id,
-                                              bool can_be_disabled);
-  // If the `kProxy` pref is controlled by an extension running in the Lacros
-  // browser associated with the primary profile, these method returns metadata
-  // about the extension, otherwise it returns a null object.
-  std::optional<ExtensionMetadata> GetLacrosExtensionControllingTheProxy()
-      const;
-
-  void ClearLacrosExtensionControllingProxyInfo();
 
   void SetProfileForTesting(Profile* profile);
 

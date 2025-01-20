@@ -74,8 +74,8 @@ TEST_F(DTSUtilTest, GetDTSSamplesPerFrameTest) {
 }
 
 TEST_F(DTSUtilTest, WrapDTSWithIEC61937IncorrectInputTest) {
-  constexpr uint8_t short_input[2048 - 7] = {0};
-  constexpr uint8_t long_input[2048 + 3] = {0};
+  constexpr uint8_t short_input[2048 - 7] = {};
+  constexpr uint8_t long_input[2048 + 3] = {};
   std::vector<uint8_t> input_data;
   std::vector<uint8_t> output_data(2048);
 
@@ -95,8 +95,8 @@ TEST_F(DTSUtilTest, WrapDTSWithIEC61937NormalInputTest) {
                                  0x0B, 0x00, 0x00, 0x20};
   constexpr uint8_t payload[4] = {1, 2, 3, 4};
   constexpr uint8_t swapped_payload[4] = {2, 1, 4, 3};
-  uint8_t input[512] = {0};
-  uint8_t output[2048] = {0};
+  uint8_t input[512] = {};
+  uint8_t output[2048] = {};
   std::vector<uint8_t> output_data(2048);
 
   memcpy(input, payload, 4);

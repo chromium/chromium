@@ -684,14 +684,6 @@ void PeerConnectionTracker::OnThermalStateChange(
   }
 }
 
-void PeerConnectionTracker::OnSpeedLimitChange(int32_t speed_limit) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  current_speed_limit_ = speed_limit;
-  for (auto& entry : peer_connection_local_id_map_) {
-    entry.key->OnSpeedLimitChange(speed_limit);
-  }
-}
-
 void PeerConnectionTracker::StartEventLog(int peer_connection_local_id,
                                           int output_period_ms) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
@@ -984,7 +976,7 @@ void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "close", String(""));
+  SendPeerConnectionUpdate(id, "close", g_empty_string);
 }
 
 void PeerConnectionTracker::TrackSignalingStateChange(
@@ -1091,7 +1083,7 @@ void PeerConnectionTracker::TrackOnRenegotiationNeeded(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "negotiationneeded", String(""));
+  SendPeerConnectionUpdate(id, "negotiationneeded", g_empty_string);
 }
 
 void PeerConnectionTracker::TrackGetUserMedia(
@@ -1116,12 +1108,12 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
   // empty string when there is no such track.
   String audio_track_info =
       stream->getAudioTracks().empty()
-          ? String("")
+          ? g_empty_string
           : String("id:") + stream->getAudioTracks()[0]->id() +
                 String(" label:") + stream->getAudioTracks()[0]->label();
   String video_track_info =
       stream->getVideoTracks().empty()
-          ? String("")
+          ? g_empty_string
           : String("id:") + stream->getVideoTracks()[0]->id() +
                 String(" label:") + stream->getVideoTracks()[0]->label();
 
@@ -1162,12 +1154,12 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
   // empty string when there is no such track.
   String audio_track_info =
       stream->getAudioTracks().empty()
-          ? String("")
+          ? g_empty_string
           : String("id:") + stream->getAudioTracks()[0]->id() +
                 String(" label:") + stream->getAudioTracks()[0]->label();
   String video_track_info =
       stream->getVideoTracks().empty()
-          ? String("")
+          ? g_empty_string
           : String("id:") + stream->getVideoTracks()[0]->id() +
                 String(" label:") + stream->getVideoTracks()[0]->label();
 

@@ -89,16 +89,18 @@ bool AutoProtectMemory::ChangeProtection(void* address, size_t bytes) {
 
   // Change the page protection so that we can write.
   MEMORY_BASIC_INFORMATION memory_info;
-  if (!VirtualQuery(address, &memory_info, sizeof(memory_info)))
+  if (!VirtualQuery(address, &memory_info, sizeof(memory_info))) {
     return false;
+  }
 
   DWORD is_executable = (PAGE_EXECUTE | PAGE_EXECUTE_READ |
                          PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY) &
                         memory_info.Protect;
 
   DWORD protect = is_executable ? PAGE_EXECUTE_READWRITE : PAGE_READWRITE;
-  if (!VirtualProtect(address, bytes, protect, &old_protect_))
+  if (!VirtualProtect(address, bytes, protect, &old_protect_)) {
     return false;
+  }
 
   changed_ = true;
   address_ = address;
@@ -107,8 +109,9 @@ bool AutoProtectMemory::ChangeProtection(void* address, size_t bytes) {
 }
 
 void AutoProtectMemory::RevertProtection() {
-  if (!changed_)
+  if (!changed_) {
     return;
+  }
 
   DCHECK(address_);
   DCHECK(bytes_);
@@ -126,23 +129,28 @@ void EATPatch(HMODULE module,
               const char* function_name,
               void* new_function,
               void** old_function) {
-  if (!module)
+  if (!module) {
     return;
+  }
 
   base::win::PEImage pe(module);
-  if (!pe.VerifyMagic())
+  if (!pe.VerifyMagic()) {
     return;
+  }
 
   DWORD* eat_entry = pe.GetExportEntry(function_name);
-  if (!eat_entry)
+  if (!eat_entry) {
     return;
+  }
 
-  if (!(*old_function))
+  if (!(*old_function)) {
     *old_function = pe.RVAToAddr(*eat_entry);
+  }
 
   AutoProtectMemory memory;
-  if (!memory.ChangeProtection(eat_entry, sizeof(DWORD)))
+  if (!memory.ChangeProtection(eat_entry, sizeof(DWORD))) {
     return;
+  }
 
   // Perform the patch.
   *eat_entry =
@@ -156,8 +164,9 @@ std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
                                                       const char* function_name,
                                                       void* new_function,
                                                       void** old_function) {
-  if (!module)
+  if (!module) {
     return nullptr;
+  }
 
   auto patch = std::make_unique<base::win::IATPatchFunction>();
   __try {
@@ -188,22 +197,25 @@ std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
 
 // static
 void HandleHooks::AddIATPatch(HMODULE module) {
-  if (!module)
+  if (!module) {
     return;
+  }
 
   auto close_handle_patch =
       IATPatch(module, "CloseHandle", reinterpret_cast<void*>(&CloseHandleHook),
                reinterpret_cast<void**>(&g_close_function));
-  if (!close_handle_patch)
+  if (!close_handle_patch) {
     return;
+  }
   // This is intentionally leaked.
   std::ignore = close_handle_patch.release();
 
   auto duplicate_handle_patch = IATPatch(
       module, "DuplicateHandle", reinterpret_cast<void*>(&DuplicateHandleHook),
       reinterpret_cast<void**>(&g_duplicate_function));
-  if (!duplicate_handle_patch)
+  if (!duplicate_handle_patch) {
     return;
+  }
   // This is intentionally leaked.
   std::ignore = duplicate_handle_patch.release();
 }

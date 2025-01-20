@@ -12,7 +12,7 @@
 // Implement UserInterfaceItemCommandHandler by validating items using global
 // chrome:: functions and executing commands with chrome::ExecuteCommand().
 @interface BrowserWindowCommandHandler
-    : NSObject<UserInterfaceItemCommandHandler>
+    : NSObject <UserInterfaceItemCommandHandler>
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_BROWSER_WINDOW_COMMAND_HANDLER_H_

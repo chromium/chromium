@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -186,19 +188,6 @@ public class ShareSheetTest {
                 });
     }
 
-    private void replaceAllShareHistory(Map<String, Integer> all) {
-        // Not implemented yet. This method will require a new JNI interface
-        // via ShareHistoryBridge, since there's currently no way to add
-        // historical data, because production code never needs to do this.
-        // TODO(crbug.com/40791331): Implement.
-    }
-
-    private void replaceStoredRanking(String type, List<String> apps) {
-        // Not implemented yet. There's no JNI interface for replacing the stored
-        // ranking, but there will be in the future.
-        // TODO(crbug.com/40791331): Implement.
-    }
-
     private void replaceSystemApps(List<String> apps) {
         mAvailableResolveInfos = createTestResolveInfos(apps);
     }
@@ -292,6 +281,9 @@ public class ShareSheetTest {
     @SmallTest
     // 3P share sheet is not supported on auto.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/351025215")
     public void nothingFromDefaultRankingAvailable() {
         replaceRecentShareHistory(defaultTestHistory());
         replaceSystemApps(defaultTestSystemApps());

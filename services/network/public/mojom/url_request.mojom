@@ -321,6 +321,12 @@ struct URLRequest {
   // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
+  // The set of public keys asserted in `fetch_integrity`, which will be used
+  // to populate an `Accept-Signatures` header.
+  //
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  array<string> expected_signatures;
+
   // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;
 
@@ -505,11 +511,35 @@ struct URLRequest {
   NetLogSource? net_log_reference_info;
 
   // The IP address space to which the target endpoint of this request should
-  // belong, or `kUnknown` if there is no such requirement.
-  // If the target endpoint of the network socket does not belong to this
-  // address space, the request is failed with a CORS error.
+  // belong, or `kUnknown` if there is no such requirement. Used to implement
+  // the Private Network Access API. If the target endpoint of the network
+  // socket does not belong to this address space, the request is failed with
+  // a CORS error.
+  //
   // Clients outside the network service must not set this field to a value
   // other than `kUnknown`.
+  //
+  // If the ClientSecurityState::private_network_request_policy for the
+  // request is kPreflightBlock, then the behavior is as follows:
+  //
+  // CorsURLLoader will send requests (both preflights and non-preflights)
+  // with the default value of `kUnknown`. If URLLoader gets a connection to
+  // a private network, it will fail the request with
+  // `ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS` and populate
+  // `URLLoaderCompletionStatus::cors_error_status` with information about the
+  // address space that was returned.
+  //
+  // Then, regardless of whether that was a preflight request or not,
+  // CorsURLLoader will create a new preflight URLLoader with
+  // `target_ip_address_space` set to the value of the connection that was made,
+  // which will let the preflight request through the checks that blocked the
+  // original one (assume a connection on the same network was returned).
+  //
+  // Then CorsURLLoader will check the headers of the preflight, and if they
+  // allow access to the more private network (and, if other CORS permissions
+  // are needed, those pass as well), the actual request will be made, with the
+  // same `target_ip_address_space` value, which will again bypass the checks,
+  // if a connection on the same network is received.
   IPAddressSpace target_ip_address_space;
 
   // The target address space to which a given fetch operation is expected to
@@ -541,6 +571,12 @@ struct URLRequest {
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
+
+  // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive
+  // request.
+  // Used in UKM logging to identify the lifetime of a fetch keepalive request.
+  // TODO(crbug.com/382527001): Consider merge this field with `keepalive`.
+  mojo_base.mojom.UnguessableToken? keepalive_token;
 
   // Indicates whether this request has been determined to be used for
   // advertising purposes.

@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/scoped_clear_last_error.h"
+#include "base/strings/span_printf.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
@@ -32,7 +33,7 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
   va_copy(ap_copy, ap);
 
   base::ScopedClearLastError last_error;
-  int result = vsnprintf(stack_buf, std::size(stack_buf), format, ap_copy);
+  int result = VSpanPrintf(stack_buf, format, ap_copy);
   va_end(ap_copy);
 
   if (result >= 0 && static_cast<size_t>(result) < std::size(stack_buf)) {
@@ -75,7 +76,7 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
     // NOTE: You can only use a va_list once.  Since we're in a while loop, we
     // need to make a new copy each time so we don't use up the original.
     va_copy(ap_copy, ap);
-    result = vsnprintf(&mem_buf[0], mem_length, format, ap_copy);
+    result = VSpanPrintf(mem_buf, format, ap_copy);
     va_end(ap_copy);
 
     if ((result >= 0) && (static_cast<size_t>(result) < mem_length)) {

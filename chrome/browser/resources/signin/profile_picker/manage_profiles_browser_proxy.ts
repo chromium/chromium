@@ -16,6 +16,8 @@ export interface ProfileState {
   gaiaName: string;
   userName: string;
   avatarIcon: string;
+  // Contains the aria label of the profile card button.
+  profileCardButtonLabel: string;
   // Empty if no badge should be set.
   avatarBadge: string;
 }
@@ -156,6 +158,12 @@ export interface ManageProfilesBrowserProxy {
    * by +/-1 depending on the change direction.
    */
   updateProfileOrder(fromIndex: number, toIndex: number): void;
+
+  /**
+   * Loads the last used profile; opens/uses a browser and open the "Sign in to
+   * Chrome" Help center page. Does not close the Picker.
+   */
+  onLearnMoreClicked(): void;
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -234,6 +242,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   updateProfileOrder(fromIndex: number, toIndex: number) {
     chrome.send('updateProfileOrder', [fromIndex, toIndex]);
+  }
+
+  onLearnMoreClicked(): void {
+    chrome.send('onLearnMoreClicked');
   }
 
   static getInstance(): ManageProfilesBrowserProxy {

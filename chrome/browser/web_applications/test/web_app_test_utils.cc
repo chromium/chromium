@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 
 #include <stddef.h>
@@ -71,6 +66,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -84,7 +80,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -290,23 +285,6 @@ std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
   return protocol_handlers;
 }
 
-std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
-  std::vector<apps::UrlHandlerInfo> url_handlers;
-
-  for (unsigned int i = 0; i < 3; ++i) {
-    std::string suffix_str =
-        base::NumberToString(suffix) + base::NumberToString(i);
-
-    apps::UrlHandlerInfo url_handler;
-    url_handler.origin =
-        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-    url_handler.has_origin_wildcard = true;
-    url_handlers.push_back(std::move(url_handler));
-  }
-
-  return url_handlers;
-}
-
 ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
                                             RandomHelper& random) {
   ScopeExtensions scope_extensions;
@@ -314,11 +292,18 @@ ScopeExtensions CreateRandomScopeExtensions(uint32_t suffix,
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
 
-    ScopeExtensionInfo scope_extension;
-    scope_extension.origin =
-        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
-    scope_extension.has_origin_wildcard = random.next_bool();
-    scope_extensions.insert(std::move(scope_extension));
+    if (random.next_bool()) {
+      auto scope_extension = ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/")),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    } else {
+      std::string random_scope = base::NumberToString(random.next_uint());
+      auto scope_extension = ScopeExtensionInfo::CreateForScope(
+          GURL("https://app-" + suffix_str + ".com/" + random_scope),
+          /*has_origin_wildcard*/ random.next_bool());
+      scope_extensions.insert(std::move(scope_extension));
+    }
   }
 
   return scope_extensions;
@@ -512,9 +497,11 @@ proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
   }
 
   // Randomly fill run_on_os_login.
-  const proto::RunOnOsLoginMode run_on_os_login_modes[3] = {
-      proto::RunOnOsLoginMode::NOT_RUN, proto::RunOnOsLoginMode::WINDOWED,
-      proto::RunOnOsLoginMode::MINIMIZED};
+  const std::array<proto::RunOnOsLoginMode, 3> run_on_os_login_modes = {
+      proto::RunOnOsLoginMode::NOT_RUN,
+      proto::RunOnOsLoginMode::WINDOWED,
+      proto::RunOnOsLoginMode::MINIMIZED,
+  };
   state.mutable_run_on_os_login()->set_run_on_os_login_mode(
       run_on_os_login_modes[random.next_uint(/*bound=*/3)]);
 
@@ -586,6 +573,31 @@ std::optional<IsolatedWebAppIntegrityBlockData> CreateIntegrityBlockData(
   signatures.erase(signatures.begin() + signatures_count, signatures.end());
 
   return IsolatedWebAppIntegrityBlockData(std::move(signatures));
+}
+
+std::vector<blink::Manifest::RelatedApplication>
+CreateRandomRelatedApplications(RandomHelper& random) {
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+  const std::array<std::string, 7> platforms = {
+      "chrome_web_store", "play",    "chromeos_play", "webapp",
+      "windows",          "f-droid", "amazon"};
+  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+    blink::Manifest::RelatedApplication related_application;
+    related_application.platform =
+        base::UTF8ToUTF16(platforms[random.next_uint(platforms.size())]);
+    bool set_url = random.next_bool();
+    bool set_id = !set_url || random.next_bool();
+    if (set_url) {
+      related_application.url =
+          GURL("https://example.com/" + base::NumberToString(i));
+    }
+    if (set_id) {
+      related_application.id =
+          base::UTF8ToUTF16("id" + base::NumberToString(i));
+    }
+    related_applications.push_back(std::move(related_application));
+  }
+  return related_applications;
 }
 
 }  // namespace
@@ -746,10 +758,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
                                         proto::InstallState_MAX>());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
-  const sync_pb::WebAppSpecifics::UserDisplayMode user_display_modes[3] = {
-      sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER,
-      sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE,
-      sync_pb::WebAppSpecifics_UserDisplayMode_TABBED};
+  const std::array<sync_pb::WebAppSpecifics::UserDisplayMode, 3>
+      user_display_modes = {
+          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER,
+          sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE,
+          sync_pb::WebAppSpecifics_UserDisplayMode_TABBED,
+      };
   // Explicitly set a UserDisplayMode for each platform (instead of calling
   // `SetUserDisplayMode` which sets the current platform's value only) so the
   // test expectations are consistent across platforms.
@@ -785,9 +799,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetFirstInstallTime(random.next_time());
 
-  const DisplayMode display_modes[4] = {
-      DisplayMode::kBrowser, DisplayMode::kMinimalUi, DisplayMode::kStandalone,
-      DisplayMode::kFullscreen};
+  const std::array<DisplayMode, 4> display_modes = {
+      DisplayMode::kBrowser,
+      DisplayMode::kMinimalUi,
+      DisplayMode::kStandalone,
+      DisplayMode::kFullscreen,
+  };
   app->SetDisplayMode(display_modes[random.next_uint(4)]);
 
   // Add only unique display modes.
@@ -847,7 +864,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
   }
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
-  app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   app->SetScopeExtensions(
       CreateRandomScopeExtensions(random.next_uint(), random));
 
@@ -1125,10 +1141,37 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetSupportedLinksOfferDismissCount(random.next_uint());
 
   app->SetIsDiyApp(random.next_bool());
+
+  app->SetWasShortcutApp(random.next_bool());
+
+  app->SetRelatedApplications(CreateRandomRelatedApplications(random));
   return app;
 }
 
+void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
+  if (!base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
+    return;
+  }
+  bool is_shortcut = app.scope().is_empty() ||
+                     (app.latest_install_source().has_value() &&
+                      app.latest_install_source() ==
+                          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  if (is_shortcut) {
+    app.SetIsDiyApp(true);
+    // Shortcut apps are separated from other web apps based on the fact that
+    // they have an empty scope. DIY apps do not have that distinction, so
+    // populate the scope from the start_url of the web app.
+    if (!app.scope().is_valid() || app.scope().is_empty()) {
+      CHECK(app.start_url().is_valid());
+      GURL scope(app.start_url().GetWithoutFilename());
+      app.SetScope(scope);
+    }
+    app.SetWasShortcutApp(true);
+  }
+}
+
 void TestAcceptDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -1138,6 +1181,7 @@ void TestAcceptDialogCallback(
 }
 
 void TestDeclineDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {

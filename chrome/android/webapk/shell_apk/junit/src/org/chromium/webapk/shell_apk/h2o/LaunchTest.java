@@ -41,10 +41,10 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
-import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
 import org.chromium.webapk.shell_apk.TestBrowserInstaller;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
+import org.chromium.webapk.shell_apk.WebApkUtils;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.util.ArrayList;
@@ -107,6 +107,7 @@ public final class LaunchTest {
         Assert.assertEquals(5, launchedIntents.size());
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(1).getPackage());
+        Assert.assertNull(launchedIntents.get(1).getSelector());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(2));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(3));
@@ -148,6 +149,7 @@ public final class LaunchTest {
         assertIntentComponentClassNameEquals(H2OMainActivity.class, launchedIntents.get(0));
         Assert.assertEquals(
                 BROWSER_PACKAGE_NAME, launchedIntents.get(1).getComponent().getPackageName());
+        assertIntentHasBrowserSelector(launchedIntents.get(1));
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(2));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(3));
@@ -181,6 +183,7 @@ public final class LaunchTest {
                         H2OMainActivity.class);
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(BROWSER_PACKAGE_NAME, launchedIntents.get(0).getPackage());
+        Assert.assertNull(launchedIntents.get(0).getSelector());
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(1));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(2));
@@ -218,6 +221,7 @@ public final class LaunchTest {
         Assert.assertEquals(4, launchedIntents.size());
         Assert.assertEquals(
                 BROWSER_PACKAGE_NAME, launchedIntents.get(0).getComponent().getPackageName());
+        assertIntentHasBrowserSelector(launchedIntents.get(0));
         assertIntentComponentClassNameEquals(
                 H2OTransparentLauncherActivity.class, launchedIntents.get(1));
         assertIntentComponentClassNameEquals(SplashActivity.class, launchedIntents.get(2));
@@ -620,7 +624,7 @@ public final class LaunchTest {
     private static void assertIntentIsForCustomBrowserLaunch(
             Intent intent, String browserPackage, String expectedStartUrl) {
         assertIntentIsForCustomBrowserLaunchWithCustomAction(
-                intent, browserPackage, expectedStartUrl, HostBrowserLauncher.ACTION_START_WEBAPK);
+                intent, browserPackage, expectedStartUrl, HostBrowserUtils.ACTION_START_WEBAPK);
     }
 
     private static void assertIntentIsForBrowserLaunchWithViewAction(
@@ -637,6 +641,20 @@ public final class LaunchTest {
         Assert.assertTrue(intent.hasExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME));
         Assert.assertNotEquals(
                 "", intent.getStringExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Checks that the passed-in intent contains a Selector which will restrict the set of potential
+     * intent receivers down to actual browsers, and not WebAPKs.
+     */
+    private static void assertIntentHasBrowserSelector(Intent intent) {
+        Intent selector = intent.getSelector();
+        Assert.assertNotNull(selector);
+
+        Intent queryBrowsersIntent = WebApkUtils.getQueryInstalledBrowsersIntent();
+        Assert.assertEquals(selector.getAction(), queryBrowsersIntent.getAction());
+        Assert.assertEquals(selector.getCategories(), queryBrowsersIntent.getCategories());
+        Assert.assertEquals(selector.getData(), queryBrowsersIntent.getData());
     }
 
     private static void registerWebApkWithDefaultHostBrowser(boolean isNewStyleWebApk) {

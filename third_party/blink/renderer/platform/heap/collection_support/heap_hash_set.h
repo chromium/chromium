@@ -45,4 +45,17 @@ ASSERT_SIZE(HeapHashSet<int>, HashSet<int>);
 
 }  // namespace blink
 
+namespace WTF {
+
+template <typename ValueArg, typename TraitsArg, typename VectorType>
+inline void CopyToVector(const blink::HeapHashSet<ValueArg, TraitsArg>& set,
+                         VectorType& vector) {
+  CopyToVector(
+      static_cast<const HashSet<ValueArg, TraitsArg, blink::HeapAllocator>&>(
+          set),
+      vector);
+}
+
+}  //  namespace WTF
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_SET_H_

@@ -45,18 +45,16 @@ class DownloadBubbleUIController;
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
                               public views::FocusChangeListener,
-                              public views::ViewTargeterDelegate,
                               public DownloadBubbleRowViewInfoObserver {
   METADATA_HEADER(DownloadBubbleRowView, views::View)
 
  public:
-  explicit DownloadBubbleRowView(
+  DownloadBubbleRowView(
       const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       base::WeakPtr<Browser> browser,
-      int fixed_width,
-      bool is_in_partial_view = false);
+      int fixed_width);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -109,9 +107,6 @@ class DownloadBubbleRowView : public views::View,
   void SetInputProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector> input_protector);
 
-  // views::ViewTargeterDelegate
-  View* TargetForRect(View* root, const gfx::Rect& rect) override;
-
  protected:
   // Overrides ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -133,7 +128,6 @@ class DownloadBubbleRowView : public views::View,
   void UpdateButtons();
   void UpdateProgressBar();
   void UpdateLabels();
-  void UpdateDeepScanNotice();
   void RecordMetricsOnUpdate();
   void RecordDownloadDisplayed();
 
@@ -231,10 +225,6 @@ class DownloadBubbleRowView : public views::View,
 
   raw_ptr<views::InkDropContainerView> inkdrop_container_;
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<views::View> deep_scan_notice_;
-#endif
-
   // Drag and drop:
   // Whether we are dragging the download bubble row.
   bool dragging_ = false;
@@ -253,11 +243,6 @@ class DownloadBubbleRowView : public views::View,
 
   // Mitigates the risk of clickjacking by enforcing a delay in click input.
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
-
-  // Used for metrics to study clickjacking potential.
-  const base::Time shown_time_;
-  // False in tests.
-  const bool is_in_partial_view_ = false;
 
   // TODO(crbug.com/40233803): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound

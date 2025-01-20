@@ -63,8 +63,7 @@ StreamContainer::StreamContainer(
       stream_url_(transferrable_loader_->url),
       response_headers_(transferrable_loader_->head->headers) {}
 
-StreamContainer::~StreamContainer() {
-}
+StreamContainer::~StreamContainer() = default;
 
 base::WeakPtr<StreamContainer> StreamContainer::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -123,6 +122,12 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
 }
 
+void MimeHandlerViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  preferences.can_accept_load_drops = true;
+}
+
 void MimeHandlerViewGuest::SetBeforeUnloadController(
     mojo::PendingRemote<mime_handler::BeforeUnloadControl>
         pending_before_unload_control) {
@@ -139,6 +144,7 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
 
 void MimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     GuestPageCreatedCallback callback) {
   const std::string* stream_id =
@@ -175,7 +181,7 @@ void MimeHandlerViewGuest::CreateInnerPage(
   // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the
   // wrong `HostZoomMap` will be used, and the `RenderFrameHost` for the guest
   // `WebContents` will need to be swapped.
-  scoped_refptr<content::SiteInstance> guest_site_instance;
+  bool use_current_site_instance_if_present = true;
 #if BUILDFLAG(ENABLE_PDF)
   // TODO(crbug.com/40216386): Using `SiteInstance::CreateForURL()` creates a
   // new `BrowsingInstance`, which causes problems for features like background
@@ -183,16 +189,25 @@ void MimeHandlerViewGuest::CreateInnerPage(
   // handles the multiple `StoragePartitionConfig` case, or when no
   // `MimeHandlerView` extension depends on background pages.
   if (mime_handler_extension->id() == extension_misc::kPdfExtensionId) {
-    guest_site_instance = content::SiteInstance::CreateForURL(
-        browser_context(), stream_->handler_url());
-  } else {
+    use_current_site_instance_if_present = false;
+  }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+  scoped_refptr<content::SiteInstance> guest_site_instance;
+  if (use_current_site_instance_if_present) {
     ProcessManager* process_manager = ProcessManager::Get(browser_context());
     guest_site_instance =
         process_manager->GetSiteInstanceForURL(stream_->handler_url());
-#if BUILDFLAG(ENABLE_PDF)
   }
-#endif  // BUILDFLAG_ENABLE_PDF)
+
+  // `guest_site_instance` may be null if either we are meant to create a new
+  // SiteInstance (`use_current_site_instance_if_present` is false) or if the
+  // SiteInstance returned from the ProcessManager is null. Create a new
+  // SiteInstance in that case.
+  if (!guest_site_instance) {
+    guest_site_instance = content::SiteInstance::CreateForURL(
+        browser_context(), stream_->handler_url());
+  }
 
   // Clear the zoom level for the mime handler extension. The extension is
   // responsible for managing its own zoom. This is necessary for OOP PDF, as
@@ -223,8 +238,10 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
   DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   GetController().LoadURL(stream_->handler_url(), content::Referrer(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-  web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
-  web_contents()->SyncRendererPrefs();
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
+    web_contents()->SyncRendererPrefs();
+  }
 }
 
 void MimeHandlerViewGuest::DidInitialize(
@@ -330,10 +347,20 @@ bool MimeHandlerViewGuest::PreHandleGestureEvent(
 }
 
 content::JavaScriptDialogManager*
+MimeHandlerViewGuest::GuestGetJavascriptDialogManager() {
+  if (content::GuestPageHolder::Delegate* guest =
+          guest_view::GuestViewBase::FromRenderFrameHost(GetEmbedderFrame())) {
+    return guest->GuestGetJavascriptDialogManager();
+  }
+  auto* delegate = owner_web_contents()->GetDelegate();
+  return delegate ? delegate->GetJavaScriptDialogManager(owner_web_contents())
+                  : nullptr;
+}
+
+content::JavaScriptDialogManager*
 MimeHandlerViewGuest::GetJavaScriptDialogManager(
     WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
   // WebContentsDelegates often service multiple WebContentses, and use the
   // WebContents* parameter to tell which WebContents made the request. If we
   // pass in our own pointer to the delegate call, the delegate will be asked,
@@ -473,12 +500,7 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void MimeHandlerViewGuest::GuestViewDocumentOnLoadCompleted() {
   DCHECK(GetEmbedderFrame());
   DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
 
@@ -532,8 +554,13 @@ void MimeHandlerViewGuest::DidFinishNavigation(
 
 #if BUILDFLAG(ENABLE_PDF)
     if (stream_->extension_id() == extension_misc::kPdfExtensionId) {
-      // Host zoom level should match the override set in `CreateWebContents()`.
-      DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
+      // Host zoom level should match the override set in `CreateInnerPage()`.
+      if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+        // TODO(crbug.com/376084060): Add an equivalent CHECK under MPArch.
+        NOTIMPLEMENTED();
+      } else {
+        DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
+      }
     }
 #endif  // BUILDFLAG(ENABLE_PDF)
   }

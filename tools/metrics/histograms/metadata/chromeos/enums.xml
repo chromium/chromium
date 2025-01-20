@@ -189,6 +189,9 @@ chromium-metrics-reviews@google.com.
   <int value="135" label="TilingWindowResizeDown"/>
   <int value="136" label="ToggleMouseKeys"/>
   <int value="137" label="ResizePipWindow"/>
+  <int value="138" label="ToggleGeminiApp"/>
+  <int value="139" label="ToggleDoNotDisturb"/>
+  <int value="140" label="ToggleCameraAllowed"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>
@@ -1228,6 +1231,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Dictation"/>
   <int value="23" label="PrivacyScreenToggle"/>
   <int value="24" label="Accessibility"/>
+  <int value="25" label="DoNotDisturb"/>
 </enum>
 
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">
@@ -1413,6 +1417,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Outline"/>
   <int value="2" label="Settings Button"/>
   <int value="3" label="QA"/>
+  <int value="4" label="Elucidation Button"/>
+  <int value="5" label="Summary of Selection Button"/>
 </enum>
 
 <enum name="MahiFeature">
@@ -1428,6 +1434,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="3" label="Condensed Menu Button"/>
   <int value="4" label="Settings Button"/>
   <int value="5" label="Elucidation Button"/>
+  <int value="6" label="Summary of Selection Button"/>
 </enum>
 
 <enum name="MahiProviderCreationStatus">

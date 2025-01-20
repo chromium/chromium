@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -24,7 +23,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
 using ::chromeos::settings::mojom::kStorageSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
@@ -80,17 +78,13 @@ StorageSection::StorageSection(Profile* profile,
 StorageSection::~StorageSection() = default;
 
 void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kStorageStrings[] = {
       {"storageExternal", IDS_SETTINGS_STORAGE_EXTERNAL},
       {"storageExternalStorageEmptyListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_EMPTY_LIST_HEADER},
       {"storageExternalStorageListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
-      {"storageItemApps", kIsRevampEnabled ? IDS_OS_SETTINGS_STORAGE_ITEM_APPS
-                                           : IDS_SETTINGS_STORAGE_ITEM_APPS},
+      {"storageItemApps", IDS_OS_SETTINGS_STORAGE_ITEM_APPS},
       {"storageItemOffline", IDS_SETTINGS_STORAGE_ITEM_OFFLINE},
       {"storageItemAvailable", IDS_SETTINGS_STORAGE_ITEM_AVAILABLE},
       {"storageItemCrostini", IDS_SETTINGS_STORAGE_ITEM_CROSTINI},
@@ -158,14 +152,9 @@ int StorageSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section StorageSection::GetSection() const {
-  // Note: This is a subsection that exists under Device or System Preferences.
-  // This section will no longer exist under the Device section once the
-  // OsSettingsRevampWayfinding feature is fully launched.
   // This is not a top-level section and does not have a respective declaration
   // in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kDevice;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon StorageSection::GetSectionIcon() const {
@@ -173,9 +162,7 @@ mojom::SearchResultIcon StorageSection::GetSectionIcon() const {
 }
 
 const char* StorageSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kDeviceSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool StorageSection::LogMetric(mojom::Setting setting,

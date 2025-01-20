@@ -62,7 +62,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion16ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0xFF10, 0xFF0D, 0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
+      SerializedScriptValue::Create(base::as_byte_span(data));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -75,7 +75,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion13ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0xFF0D, 0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
+      SerializedScriptValue::Create(base::as_byte_span(data));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -88,7 +88,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ByteSwapping) {
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
   const UChar data[] = {0x5400};
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
+      SerializedScriptValue::Create(base::as_byte_span(data));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(scope.GetIsolate());
   EXPECT_TRUE(deserialized->IsTrue());
@@ -115,7 +115,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
   data.resize(257);  // (508 pixel data + 6 header bytes) / 2
 
   scoped_refptr<SerializedScriptValue> serializedScriptValue =
-      SerializedScriptValue::Create(base::as_bytes(base::make_span(data)));
+      SerializedScriptValue::Create(base::as_byte_span(data));
   v8::Local<v8::Value> deserialized =
       serializedScriptValue->Deserialize(isolate);
   ASSERT_TRUE(deserialized->IsObject());

@@ -27,7 +27,6 @@ class DriveTabHelperTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
     profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());

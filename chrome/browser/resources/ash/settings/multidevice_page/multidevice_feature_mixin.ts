@@ -13,7 +13,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {Constructor} from '../common/types.js';
 
 import type {MultiDevicePageContentData} from './multidevice_constants.js';
@@ -251,9 +250,7 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
          * (i.e. [iron-iconset-svg name]:[SVG <g> tag id]) for a given feature.
          */
         getIconName(feature: MultiDeviceFeature): string {
-          const deviceIcon = isRevampWayfindingEnabled() ?
-              'os-settings:connected-devices-android-phone' :
-              'os-settings:multidevice-better-together-suite';
+          const deviceIcon = 'os-settings:connected-devices-android-phone';
 
           switch (feature) {
             case MultiDeviceFeature.BETTER_TOGETHER_SUITE:

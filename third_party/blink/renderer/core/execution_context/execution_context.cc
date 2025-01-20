@@ -233,10 +233,9 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  // On desktop, enable transfer for the reverse Origin Trial, or if the
-  // Finch "kill switch" is on, or if enabled by Enterprise Policy.
+  // On desktop, enable transfer for the reverse Origin Trial, or if enabled by
+  // Enterprise Policy.
   return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
-         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled() ||
          RuntimeEnabledFeatures::
              SharedArrayBufferUnrestrictedAccessAllowedEnabled();
 #endif
@@ -405,13 +404,13 @@ void ExecutionContext::SetContentSecurityPolicy(
 }
 
 void ExecutionContext::SetRequireTrustedTypes() {
-  DCHECK(require_safe_types_ ||
-         content_security_policy_->IsRequireTrustedTypes());
-  require_safe_types_ = true;
+  DCHECK(require_trusted_types_ ||
+         content_security_policy_->TrustedTypesRequired());
+  require_trusted_types_ = true;
 }
 
 void ExecutionContext::SetRequireTrustedTypesForTesting() {
-  require_safe_types_ = true;
+  require_trusted_types_ = true;
 }
 
 network::mojom::blink::WebSandboxFlags ExecutionContext::GetSandboxFlags()
@@ -643,7 +642,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::RequireTrustedTypes() const {
-  return require_safe_types_;
+  return require_trusted_types_;
 }
 
 namespace {
@@ -717,7 +716,7 @@ bool ExecutionContext::IsInjectionMitigatedContext() const {
     return false;
   }
   return GetContentSecurityPolicy()->IsStrictPolicyEnforced() &&
-         GetContentSecurityPolicy()->RequiresTrustedTypes();
+         GetContentSecurityPolicy()->TrustedTypesRequired();
 }
 
 }  // namespace blink

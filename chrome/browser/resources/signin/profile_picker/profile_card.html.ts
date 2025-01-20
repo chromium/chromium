@@ -5,13 +5,13 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ProfileCardElement} from './profile_card.js';
+import {isGlicVersion} from './profile_picker_flags.js';
 
 export function getHtml(this: ProfileCardElement) {
   return html`<!--_html_template_start_-->
 <div id="profileCardContainer">
   <cr-button id="profileCardButton" @click="${this.onProfileClick_}"
-      aria-label="${this.i18n(
-          'profileCardButtonLabel', this.profileState.localProfileName)}">
+      aria-label="${this.profileState.profileCardButtonLabel}">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" .src="${this.profileState.avatarIcon}">
       <div id="iconContainer"
@@ -38,11 +38,14 @@ export function getHtml(this: ProfileCardElement) {
         @blur="${this.onProfileNameInputBlur_}" pattern="${this.pattern_}"
         auto-validate spellcheck="false"
         @pointerenter="${this.onNameInputPointerEnter_}"
-        @pointerleave="${this.onNameInputPointerLeave_}" required>
+        @pointerleave="${this.onNameInputPointerLeave_}"
+        ?disabled="${isGlicVersion()}" required>
     </cr-input>
     <div id="hoverUnderline"></div>
   </div>
-  <profile-card-menu .profileState="${this.profileState}"></profile-card-menu>
+  <profile-card-menu .profileState="${this.profileState}"
+      ?hidden="${isGlicVersion()}">
+  </profile-card-menu>
 </div>
 <cr-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
     position="bottom" aria-hidden="true">

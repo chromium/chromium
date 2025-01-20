@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using blink::protocol::Array;
-using blink::protocol::Maybe;
 using blink::protocol::IndexedDB::DatabaseWithObjectStores;
 using blink::protocol::IndexedDB::DataEntry;
 using blink::protocol::IndexedDB::Key;
@@ -105,9 +104,9 @@ const char kNoDocumentError[] = "No document for given frame found";
 
 base::expected<LocalFrame*, protocol::Response> ResolveFrame(
     InspectedFrames* inspected_frames,
-    const protocol::Maybe<String>& security_origin,
-    const protocol::Maybe<String>& storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket>& storage_bucket) {
+    const std::optional<String>& security_origin,
+    const std::optional<String>& storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket>& storage_bucket) {
   if (!!security_origin + !!storage_key + !!storage_bucket != 1) {
     return base::unexpected(protocol::Response::InvalidParams(
         "At least and at most one of security_origin, "
@@ -142,7 +141,7 @@ class ExecutableWithIdbFactory
 
   static void Start(
       LocalFrame* frame,
-      protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+      std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
       IdbFactoryGetterCallback request_callback) {
     ExecutableWithIdbFactory* idb_factory_getter =
         MakeGarbageCollected<ExecutableWithIdbFactory>(
@@ -154,7 +153,7 @@ class ExecutableWithIdbFactory
 
  private:
   void SetUp(LocalFrame* frame,
-             protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket) {
+             std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket) {
     if (storage_bucket && storage_bucket->hasName()) {
       GetBucketIDBFactory(frame, storage_bucket->getName(""));
     } else {
@@ -256,7 +255,7 @@ class ExecutableWithDatabase
   virtual void Execute(IDBDatabase*, ScriptState*) = 0;
   virtual RequestCallback* GetRequestCallback() = 0;
   void Start(LocalFrame* frame,
-             protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+             std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
              const String& database_name) {
     if (!frame) {
       SendFailure(protocol::Response::ServerError(kNoDocumentError));
@@ -846,9 +845,9 @@ protocol::Response InspectorIndexedDBAgent::disable() {
 }
 
 void InspectorIndexedDBAgent::requestDatabaseNames(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     std::unique_ptr<RequestDatabaseNamesCallback> request_callback) {
   base::expected<LocalFrame*, protocol::Response> frame_or_response =
       ResolveFrame(inspected_frames_.Get(), security_origin, storage_key,
@@ -881,9 +880,9 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
 }
 
 void InspectorIndexedDBAgent::requestDatabase(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     std::unique_ptr<RequestDatabaseCallback> request_callback) {
   base::expected<LocalFrame*, protocol::Response> frame_or_response =
@@ -900,15 +899,15 @@ void InspectorIndexedDBAgent::requestDatabase(
 }
 
 void InspectorIndexedDBAgent::requestData(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     const String& object_store_name,
     const String& index_name,
     int skip_count,
     int page_size,
-    Maybe<protocol::IndexedDB::KeyRange> key_range,
+    std::unique_ptr<protocol::IndexedDB::KeyRange> key_range,
     std::unique_ptr<RequestDataCallback> request_callback) {
   IDBKeyRange* idb_key_range =
       key_range ? IdbKeyRangeFromKeyRange(&*key_range) : nullptr;
@@ -1062,9 +1061,9 @@ void GetMetadataListener::NotifySubtaskDone(scoped_refptr<GetMetadata> owner,
 }
 
 void InspectorIndexedDBAgent::getMetadata(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<GetMetadataCallback> request_callback) {
@@ -1158,9 +1157,9 @@ class DeleteObjectStoreEntries final
 };
 
 void InspectorIndexedDBAgent::deleteObjectStoreEntries(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<protocol::IndexedDB::KeyRange> key_range,
@@ -1266,9 +1265,9 @@ class ClearObjectStore final
 };
 
 void InspectorIndexedDBAgent::clearObjectStore(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<ClearObjectStoreCallback> request_callback) {
@@ -1286,9 +1285,9 @@ void InspectorIndexedDBAgent::clearObjectStore(
 }
 
 void InspectorIndexedDBAgent::deleteDatabase(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket,
+    std::optional<String> security_origin,
+    std::optional<String> storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> storage_bucket,
     const String& database_name,
     std::unique_ptr<DeleteDatabaseCallback> request_callback) {
   base::expected<LocalFrame*, protocol::Response> frame_or_response =

@@ -14,6 +14,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // #include "components/user_manager/fake_chrome_user_manager.h"
@@ -36,7 +37,7 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
 
   const AccountId MakeAccountId() {
     return AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
-                                          "1234567890");
+                                          GaiaId("1234567890"));
   }
 
   ash::StubInstallAttributes& stub_install_attributes() {
@@ -53,10 +54,10 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashAllowedForRegularUser) {
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  fake_chrome_user_manager_->AddUser(account_id);
+  auto* user = fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->LoginUser(account_id);
 
-  EXPECT_TRUE(IsPowerwashAllowed());
+  EXPECT_TRUE(IsPowerwashAllowed(user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForGuestUser) {
@@ -64,17 +65,17 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForGuestUser) {
   auto* user = fake_chrome_user_manager_->AddGuestUser();
   fake_chrome_user_manager_->LoginUser(user->GetAccountId());
 
-  EXPECT_FALSE(IsPowerwashAllowed());
+  EXPECT_FALSE(IsPowerwashAllowed(user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForChildUser) {
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  fake_chrome_user_manager_->AddChildUser(account_id);
+  auto* user = fake_chrome_user_manager_->AddChildUser(account_id);
   fake_chrome_user_manager_->set_current_user_child(true);
   fake_chrome_user_manager_->LoginUser(account_id);
 
-  EXPECT_FALSE(IsPowerwashAllowed());
+  EXPECT_FALSE(IsPowerwashAllowed(user));
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForManagedUser) {
@@ -82,10 +83,10 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForManagedUser) {
 
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
-  fake_chrome_user_manager_->AddUser(account_id);
+  auto* user = fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->LoginUser(account_id);
 
-  EXPECT_FALSE(IsPowerwashAllowed());
+  EXPECT_FALSE(IsPowerwashAllowed(user));
 }
 
 }  // namespace ash::settings

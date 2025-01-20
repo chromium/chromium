@@ -111,6 +111,20 @@
           "parameters": [],
           "does_not_support_promises": "Synchronous return and callback crbug.com/1143032"
         }
+      },
+      {
+        "name": "setClientHintsEnabled",
+        "type": "function",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "instanceId"
+          },
+          {
+            "type": "boolean",
+            "name": "enabled"
+          }
+        ]
       }
     ]
   }

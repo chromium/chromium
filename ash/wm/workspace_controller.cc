@@ -30,8 +30,7 @@ ASH_EXPORT extern const aura::WindowProperty<ash::WorkspaceController*>* const
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::WorkspaceController*)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ash::WorkspaceController,
-                                   kWorkspaceController,
-                                   nullptr)
+                                   kWorkspaceController)
 
 namespace ash {
 namespace {

@@ -44,8 +44,9 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     model->tab_observers_.push_back(
         std::make_unique<HungPagesTableModel::WebContentsObserverImpl>(
             model, web_contents));
-    if (model->observer_)
+    if (model->observer_) {
       model->observer_->OnModelChanged();
+    }
     dialog->UpdateLabels();
   }
 

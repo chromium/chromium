@@ -40,7 +40,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -57,6 +56,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/window_open_disposition.h"
 
 using testing::_;
@@ -141,7 +141,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
   SearchEngineChoiceDialogBrowserTest& operator=(
       const SearchEngineChoiceDialogBrowserTest&) = delete;
 
-  ~SearchEngineChoiceDialogBrowserTest() override {}
+  ~SearchEngineChoiceDialogBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);

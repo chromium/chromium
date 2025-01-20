@@ -90,7 +90,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getValue()
                 .onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, false);
+        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.IGNORE);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getContentView()
                 .findViewById(R.id.confirmation_button)
                 .callOnClick();
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, true);
+        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.ACCEPT);
         verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }
 
@@ -127,7 +127,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getContentView()
                 .findViewById(R.id.cancel_button)
                 .callOnClick();
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, false);
+        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.BACK);
         verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }
 }

@@ -290,7 +290,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         mStatus = HeightStatus.TRANSITION;
         if (autoResize) mMoveStartY = window.getAttributes().y;
-        mTabAnimator.start(attrs.y, end, targetStatus, autoResize);
+        mTabAnimator.start(attrs.y, end, targetStatus);
     }
 
     @Override
@@ -984,7 +984,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private static class TabAnimator {
         private final ValueAnimator mAnimator;
         private @HeightStatus int mTargetStatus;
-        private boolean mAutoResize;
 
         private TabAnimator(
                 ValueAnimator.AnimatorUpdateListener listener,
@@ -1006,19 +1005,14 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mAnimator.setDuration(animTime);
         }
 
-        private void start(int startY, int endY, int targetStatus, boolean autoResize) {
+        private void start(int startY, int endY, int targetStatus) {
             mTargetStatus = targetStatus;
-            mAutoResize = autoResize;
             mAnimator.setIntValues(startY, endY);
             mAnimator.start();
         }
 
         private @HeightStatus int getTargetStatus() {
             return mTargetStatus;
-        }
-
-        private boolean wasAutoResized() {
-            return mAutoResize;
         }
 
         private void cancel() {

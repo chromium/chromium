@@ -15,7 +15,7 @@ StringDataSource::StringDataSource(base::span<const char> data,
   switch (mode) {
     case AsyncWritingMode::STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION:
       data_ = std::string(data.data(), data.size());
-      data_view_ = base::make_span(data_);
+      data_view_ = base::span(data_);
       break;
     case AsyncWritingMode::STRING_STAYS_VALID_UNTIL_COMPLETION:
       data_view_ = data;

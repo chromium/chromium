@@ -2,7 +2,7 @@ Name: bitflags
 URL: https://crates.io/crates/bitflags
 Version: 2.6.0
 Revision: 13513699141432af1dea2a6208e99e7bf21958db
-License: Apache 2.0
+License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/bitflags-2.6.0/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes

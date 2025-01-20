@@ -142,8 +142,9 @@ bool IsValidBookmarkDropLocation(
 
 GURL GetURLToBookmark(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  if (search::IsInstantNTP(web_contents))
+  if (search::IsInstantNTP(web_contents)) {
     return GURL(kChromeUINewTabURL);
+  }
   // Users cannot bookmark Reader Mode pages directly, so the bookmark
   // interaction is as if it were with the original page.
   if (dom_distiller::url_utils::IsDistilledPage(
@@ -158,8 +159,9 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
                               std::u16string* title) {
   GURL u = GetURLToBookmark(web_contents);
-  if (!u.is_valid())
+  if (!u.is_valid()) {
     return false;
+  }
   *url = u;
   if (dom_distiller::url_utils::IsDistilledPage(
           web_contents->GetVisibleURL())) {
@@ -173,8 +175,9 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   }
 
   // Use "New tab" as title if the current page is NTP even in incognito mode.
-  if (u == GURL(chrome::kChromeUINewTabURL))
+  if (u == GURL(chrome::kChromeUINewTabURL)) {
     *title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+  }
 
   return true;
 }
@@ -199,8 +202,9 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
 
   // If username is present, we must not omit the scheme because FixupURL() will
   // subsequently interpret the username as a scheme. crbug.com/639126
-  if (url.has_username())
+  if (url.has_username()) {
     format_types &= ~url_formatter::kFormatUrlOmitHTTP;
+  }
 
   return url_formatter::FormatUrl(url, format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
@@ -237,22 +241,27 @@ int GetBookmarkDragOperation(content::BrowserContext* browser_context,
       model->client()->IsNodeManaged(node)) {
     move = ui::DragDropTypes::DRAG_NONE;
   }
-  if (node->is_url())
+  if (node->is_url()) {
     return ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK | move;
+  }
   return ui::DragDropTypes::DRAG_COPY | move;
 }
 
 DragOperation GetPreferredBookmarkDropOperation(int source_operations,
                                                 int operations) {
   int common_ops = (source_operations & operations);
-  if (!common_ops)
+  if (!common_ops) {
     return DragOperation::kNone;
-  if (ui::DragDropTypes::DRAG_COPY & common_ops)
+  }
+  if (ui::DragDropTypes::DRAG_COPY & common_ops) {
     return DragOperation::kCopy;
-  if (ui::DragDropTypes::DRAG_LINK & common_ops)
+  }
+  if (ui::DragDropTypes::DRAG_LINK & common_ops) {
     return DragOperation::kLink;
-  if (ui::DragDropTypes::DRAG_MOVE & common_ops)
+  }
+  if (ui::DragDropTypes::DRAG_MOVE & common_ops) {
     return DragOperation::kMove;
+  }
   return DragOperation::kNone;
 }
 

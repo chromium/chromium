@@ -21,6 +21,7 @@ import android.widget.TextView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +62,7 @@ import java.util.List;
 
 /** Tests for {@link CreatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Ignore("Entire test class fails in multiple builds. crbug.com/381939495")
 public class CreatorCoordinatorTest {
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;

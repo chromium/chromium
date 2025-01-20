@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/saved_tab_groups/public/tab_group_sync_service.h",
-  "+ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h",
-  "+ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h",
-  "+ios/chrome/browser/ui/tab_switcher/tab_group_confirmation_coordinator.h",
-  "+ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h",
-]

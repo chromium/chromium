@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -38,7 +39,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -110,6 +110,29 @@ IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
                                                /*foreground=*/true);
   return ui_test_utils::NavigateToURLWithDisposition(
       window, url, disposition, ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+UpdateDiscoveryTaskResultWaiter::UpdateDiscoveryTaskResultWaiter(
+    WebAppProvider& provider,
+    const webapps::AppId expected_app_id,
+    TaskResultCallback callback)
+    : expected_app_id_(expected_app_id),
+      callback_(std::move(callback)),
+      provider_(provider) {
+  observation_.Observe(&provider.iwa_update_manager());
+}
+
+UpdateDiscoveryTaskResultWaiter::~UpdateDiscoveryTaskResultWaiter() = default;
+
+// IsolatedWebAppUpdateManager::Observer:
+void UpdateDiscoveryTaskResultWaiter::OnUpdateDiscoveryTaskCompleted(
+    const webapps::AppId& app_id,
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  if (app_id != expected_app_id_) {
+    return;
+  }
+  std::move(callback_).Run(status);
+  observation_.Reset();
 }
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(

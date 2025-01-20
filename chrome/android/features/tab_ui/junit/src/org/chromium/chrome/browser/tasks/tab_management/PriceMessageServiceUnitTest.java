@@ -17,15 +17,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -42,13 +44,13 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceMessageServiceUnitTest {
-
     private static final int BINDING_TAB_ID = 456;
     private static final int INITIAL_SHOW_COUNT = 0;
     private static final int MAX_SHOW_COUNT = 20;
-
     private static final String PRICE = "$300";
     private static final String PREVIOUS_PRICE = "$400";
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock PriceMessageService.PriceWelcomeMessageProvider mMessageProvider;
     @Mock PriceMessageService.PriceWelcomeMessageReviewActionProvider mReviewActionProvider;
@@ -61,7 +63,6 @@ public class PriceMessageServiceUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mPriceTabData =
                 new PriceTabData(
@@ -71,11 +72,9 @@ public class PriceMessageServiceUnitTest {
         doNothing().when(mMessageObserver).messageReady(anyInt(), any());
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);

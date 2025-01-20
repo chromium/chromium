@@ -9,37 +9,39 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
- * The initial and main Settings screen.
+ * A Settings screen.
  *
- * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
+ * @param <FragmentT> type of ChromeBaseSettingsFragment shown in this screen
  */
-public class SettingsStation extends Station<SettingsActivity> {
-    private FragmentElement<MainSettings, SettingsActivity> mMainSettings;
+public class SettingsStation<FragmentT extends ChromeBaseSettingsFragment>
+        extends Station<SettingsActivity> {
+    private final Class<FragmentT> mFragmentClass;
+    private FragmentElement<FragmentT, SettingsActivity> mFragmentElement;
 
-    public SettingsStation() {
+    public SettingsStation(Class<FragmentT> fragmentClass) {
         super(SettingsActivity.class);
+        mFragmentClass = fragmentClass;
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        mMainSettings =
-                elements.declareElement(
-                        new FragmentElement<>(MainSettings.class, mActivityElement));
+        mFragmentElement =
+                elements.declareElement(new FragmentElement<>(mFragmentClass, mActivityElement));
     }
 
     public PreferenceFacility scrollToPref(String prefKey) {
         assertSuppliersCanBeUsed();
-        String title = mMainSettings.get().findPreference(prefKey).getTitle().toString();
+        String title = mFragmentElement.get().findPreference(prefKey).getTitle().toString();
         return enterFacilitySync(
                 new PreferenceFacility(title),
                 Transition.newOptions().withPossiblyAlreadyFulfilled().build(),
                 () ->
                         ThreadUtils.runOnUiThreadBlocking(
-                                () -> mMainSettings.get().scrollToPreference(prefKey)));
+                                () -> mFragmentElement.get().scrollToPreference(prefKey)));
     }
 }

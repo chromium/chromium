@@ -27,6 +27,7 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
 
   // NearbyShareDelegate
   bool IsEnabled() override;
+  void SetEnabled(bool enabled) override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
   bool IsEnableHighVisibilityRequestActive() const override;

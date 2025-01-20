@@ -10,20 +10,27 @@
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #import "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
 #import "components/saved_tab_groups/internal/tab_group_sync_coordinator_impl.h"
+#import "components/saved_tab_groups/internal/tab_group_sync_service_test_utils.h"
 #import "components/saved_tab_groups/public/features.h"
-#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
@@ -36,40 +43,14 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 
 namespace tests_hook {
-
-class IOSFakeTabGroupSyncService : public tab_groups::FakeTabGroupSyncService {
- public:
-  void SetTabGroupSyncDelegate(
-      std::unique_ptr<tab_groups::TabGroupSyncDelegate> delegate) override;
-
-  void SetCoordinator(
-      std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator);
-
- private:
-  // The UI coordinator to apply changes between local tab groups and the
-  // TabGroupSyncService.
-  std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator_;
-};
-
-void IOSFakeTabGroupSyncService::SetTabGroupSyncDelegate(
-    std::unique_ptr<tab_groups::TabGroupSyncDelegate> delegate) {
-  auto coordinator = std::make_unique<tab_groups::TabGroupSyncCoordinatorImpl>(
-      std::move(delegate), this);
-  SetCoordinator(std::move(coordinator));
-}
-
-void IOSFakeTabGroupSyncService::SetCoordinator(
-    std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator) {
-  CHECK(!coordinator_);
-  coordinator_ = std::move(coordinator);
-  AddObserver(coordinator_.get());
-}
 
 bool DisableAppGroupAccess() {
   return true;
@@ -109,9 +90,10 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisablePromoManagerFullScreenPromos() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnablePromoManagerFullscreenPromos);
+bool DisablePromoManagerDisplayingPromo() {
+  // In EG tests, all promos are disabled unless explicitly activated by
+  // `kEnableIPH`.
+  return false;
 }
 
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
@@ -204,7 +186,18 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
       !command_line->HasSwitch(test_switches::kEnableFakeTabGroupSyncService)) {
     return nullptr;
   }
-  auto sync_service = std::make_unique<IOSFakeTabGroupSyncService>();
+
+  syncer::DeviceInfoTracker* device_info_tracker =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
+          ->GetDeviceInfoTracker();
+  auto model = std::make_unique<tab_groups::SavedTabGroupModel>();
+  auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  std::unique_ptr<tab_groups::TabGroupSyncService> sync_service =
+      tab_groups::test::CreateTabGroupSyncService(
+          std::move(model), DataTypeStoreServiceFactory::GetForProfile(profile),
+          profile->GetPrefs(), device_info_tracker, opt_guide,
+          identity_manager);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
@@ -216,16 +209,25 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
       std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(
           browser_list, sync_service.get(), std::move(local_update_observer));
-
-  sync_service->SetCoordinator(
-      std::make_unique<tab_groups::TabGroupSyncCoordinatorImpl>(
-          std::move(delegate), sync_service.get()));
+  sync_service->SetTabGroupSyncDelegate(std::move(delegate));
 
   return sync_service;
 }
 
-std::unique_ptr<ShareKitService> CreateShareKitService() {
-  return std::make_unique<TestShareKitService>();
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service) {
+  auto preview_server_proxy =
+      std::make_unique<data_sharing::MockPreviewServerProxy>();
+  data_sharing_service->SetPreviewServerProxyForTesting(
+      std::move(preview_server_proxy));
+}
+
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
+    tab_groups::TabGroupSyncService* sync_service) {
+  return std::make_unique<TestShareKitService>(
+      data_sharing_service, collaboration_service, sync_service);
 }
 
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

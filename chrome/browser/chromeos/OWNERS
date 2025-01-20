@@ -5,3 +5,11 @@ file://chrome/browser/ash/OWNERS
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
+
+# We're trying to avoid taking new dependencies on ash. But when they
+# happen, we want the chrome-side review to be easy for OWNERS there,
+# leaving the ash-side to approve or reject the new dependency.
+per-file DEPS=set noparent
+per-file DEPS=file://chrome/browser/ash/REFACTORING_OWNERS
+per-file .../DEPS=set noparent
+per-file .../DEPS=file://chrome/browser/ash/REFACTORING_OWNERS

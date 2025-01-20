@@ -26,7 +26,7 @@ using std::make_unique;
 
 namespace {
 constexpr int kTabstripComboButtonCornerRadius = 10;
-constexpr int kTabstripComboButtonFlatCornerRadius = 4;
+constexpr int kTabstripComboButtonFlatCornerRadius = 0;
 
 class ControlButtonHighlightPathGenerator
     : public views::HighlightPathGenerator {

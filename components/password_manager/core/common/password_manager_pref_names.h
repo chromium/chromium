@@ -212,6 +212,14 @@ inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
 // Whether the post password migration sheet ahould be shown at startup.
 inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
     "should_show_post_password_migration_sheet_at_startup";
+
+// Whether the passwords who couldn't be migrated to UPM have been
+// saved as a CSV. The user can then choose to export the CSV out of Chrome
+// via a separate flow. The pref is also set to true if there were no
+// saved passwords. The value is used as a signal that the login db
+// can stop being used.
+inline constexpr char kUpmUnmigratedPasswordsExported[] =
+    "profile.upm_unmigrated_passwords_exported";
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -336,6 +344,13 @@ inline constexpr char kAutofillableCredentialsProfileStoreLoginDatabase[] =
 // A cache of whether the account LoginDatabase has autofillable credentials.
 inline constexpr char kAutofillableCredentialsAccountStoreLoginDatabase[] =
     "password_manager.autofillable_credentials_account_store_login_database";
+#endif
+
+#if !BUILDFLAG(IS_IOS)
+// Boolean pref indicating whether the user has accepted the privacy notice
+// agreement for starting the password change flow.
+inline constexpr char kPasswordChangeFlowNoticeAgreement[] =
+    "password_manager.password_change_flow_notice_agreement";
 #endif
 
 // Boolean pref indicating whether password sharing is enabled. Enables both

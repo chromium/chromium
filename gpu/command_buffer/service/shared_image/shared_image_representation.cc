@@ -84,10 +84,8 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
   AccessMode access_mode;
   if (mode == kReadAccessMode) {
     access_mode = AccessMode::kRead;
-    backing()->OnReadSucceeded();
   } else {
     access_mode = AccessMode::kWrite;
-    backing()->OnWriteSucceeded();
   }
 
   return std::make_unique<ScopedAccess>(
@@ -338,8 +336,6 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
       return nullptr;
     }
 
-    backing()->OnWriteSucceeded();
-
     return std::make_unique<ScopedGaneshWriteAccess>(
         base::PassKey<SkiaGaneshImageRepresentation>(), this,
         std::move(surfaces), std::move(end_state));
@@ -350,8 +346,6 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     LOG(ERROR) << "Unable to initialize GrPromiseImageTexture";
     return nullptr;
   }
-
-  backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedGaneshWriteAccess>(
       base::PassKey<SkiaGaneshImageRepresentation>(), this,
@@ -413,10 +407,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
-    auto color_type =
-        format.PrefersExternalSampler()
-            ? ToClosestSkColorTypeExternalSampler(format)
-            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    auto color_type = format.PrefersExternalSampler()
+                          ? ToClosestSkColorTypeExternalSampler(format)
+                          : viz::ToClosestSkColorType(format);
     return SkImages::BorrowTextureFrom(
         context_state->gr_context(), promise_image_texture()->backendTexture(),
         surface_origin, color_type, alpha_type, sk_color_space,
@@ -460,8 +453,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
 
   auto surface_origin = representation()->surface_origin();
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
-  auto color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  auto color_type = viz::ToClosestSkColorType(format, plane_index);
   return SkImages::BorrowTextureFrom(
       context_state->gr_context(),
       promise_image_texture(plane_index)->backendTexture(), surface_origin,
@@ -510,8 +502,6 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
     LOG(ERROR) << "Unable to initialize GrPromiseImageTexture";
     return nullptr;
   }
-
-  backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedGaneshReadAccess>(
       base::PassKey<SkiaGaneshImageRepresentation>(), this,
@@ -592,8 +582,6 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
       return nullptr;
     }
 
-    backing()->OnWriteSucceeded();
-
     return std::make_unique<ScopedGraphiteWriteAccess>(
         base::PassKey<SkiaGraphiteImageRepresentation>(), this,
         std::move(surfaces));
@@ -604,8 +592,6 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
     LOG(ERROR) << "Unable to initialize graphite::BackendTextures";
     return nullptr;
   }
-
-  backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedGraphiteWriteAccess>(
       base::PassKey<SkiaGraphiteImageRepresentation>(), this,
@@ -660,10 +646,9 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     CHECK_EQ(static_cast<int>(graphite_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
-    auto color_type =
-        format.PrefersExternalSampler()
-            ? ToClosestSkColorTypeExternalSampler(format)
-            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    auto color_type = format.PrefersExternalSampler()
+                          ? ToClosestSkColorTypeExternalSampler(format)
+                          : viz::ToClosestSkColorType(format);
     auto origin = representation()->surface_origin() == kTopLeft_GrSurfaceOrigin
                       ? skgpu::Origin::kTopLeft
                       : skgpu::Origin::kBottomLeft;
@@ -697,8 +682,7 @@ sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
   CHECK_EQ(static_cast<int>(graphite_textures_.size()),
            format.NumberOfPlanes());
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
-  auto color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  auto color_type = viz::ToClosestSkColorType(format, plane_index);
   return SkImages::WrapTexture(context_state->gpu_main_graphite_recorder(),
                                graphite_texture(plane_index), color_type,
                                alpha_type, /*colorSpace=*/nullptr,
@@ -735,8 +719,6 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
     LOG(ERROR) << "Unable to initialize graphite::BackendTextures";
     return nullptr;
   }
-
-  backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedGraphiteReadAccess>(
       base::PassKey<SkiaGraphiteImageRepresentation>(), this,
@@ -808,8 +790,6 @@ OverlayImageRepresentation::BeginScopedReadAccess() {
     return nullptr;
   }
 
-  backing()->OnReadSucceeded();
-
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<OverlayImageRepresentation>(), this,
       std::move(acquire_fence));
@@ -874,10 +854,8 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
   AccessMode access_mode;
   if (usage & kWriteUsage) {
     access_mode = AccessMode::kWrite;
-    backing()->OnWriteSucceeded();
   } else {
     access_mode = AccessMode::kRead;
-    backing()->OnReadSucceeded();
   }
 
   return std::make_unique<ScopedAccess>(

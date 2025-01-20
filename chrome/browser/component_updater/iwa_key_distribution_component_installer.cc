@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,11 +18,15 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/update_client/update_client.h"
 
 namespace {
@@ -33,21 +38,51 @@ constexpr std::array<uint8_t, 32> kIwaKeyDistributionPublicKeySHA256 = {
     0x2e, 0x40, 0xaf, 0x4e, 0x07, 0x18, 0xfa, 0xae, 0x6e, 0x0e, 0xdb,
     0x46, 0xfc, 0xc9, 0x36, 0x50, 0xcf, 0x38, 0xfa, 0xf9, 0xab};
 
+constexpr std::string_view kPreloadedKey = "is_preloaded";
+constexpr std::string_view kIwaKdcExpCohortAttribute = "_iwa_kdc_exp_cohort";
+
+void OnDemandUpdateCompleted(update_client::Error err) {
+  VLOG(1) << "On-demand update for the "
+             "Iwa Key Distribution Component "
+             "finished with result "
+          << base::to_underlying(err);
+}
+
 }  // namespace
 
 namespace component_updater {
 
 BASE_FEATURE(kIwaKeyDistributionComponent,
              "IwaKeyDistributionComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
 
 IwaKeyDistributionComponentInstallerPolicy::
-    IwaKeyDistributionComponentInstallerPolicy(
-        ComponentReadyCallback on_component_ready)
-    : on_component_ready_(std::move(on_component_ready)) {}
-
+    IwaKeyDistributionComponentInstallerPolicy() = default;
 IwaKeyDistributionComponentInstallerPolicy::
     ~IwaKeyDistributionComponentInstallerPolicy() = default;
+
+// static
+bool IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate(
+    base::PassKey<web_app::IwaKeyDistributionInfoProvider>) {
+  // static
+  if (!g_browser_process ||
+      !base::FeatureList::IsEnabled(kIwaKeyDistributionComponent)) {
+    return false;
+  }
+
+  VLOG(1) << "Queueing on-demand update for the Iwa Key Distribution Component";
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      crx_file::id_util::GenerateIdFromHash(kIwaKeyDistributionPublicKeySHA256),
+      OnDemandUpdater::Priority::BACKGROUND,
+      base::BindOnce(&OnDemandUpdateCompleted));
+
+  return true;
+}
 
 bool IwaKeyDistributionComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
@@ -82,14 +117,18 @@ void IwaKeyDistributionComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty() || !version.IsValid()) {
     return;
   }
+
   VLOG(1) << "Iwa Key Distribution Component ready, version " << version
           << " in " << install_dir;
-  on_component_ready_.Run(version, install_dir.Append(kDataFileName));
+  web_app::IwaKeyDistributionInfoProvider::GetInstance()
+      ->LoadKeyDistributionData(
+          version, install_dir.Append(kDataFileName),
+          /*is_preloaded=*/manifest.FindBool(kPreloadedKey).value_or(false));
 }
 
 base::FilePath
 IwaKeyDistributionComponentInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(FILE_PATH_LITERAL("IwaKeyDistribution"));
+  return base::FilePath(kRelativeInstallDirName);
 }
 
 void IwaKeyDistributionComponentInstallerPolicy::GetHash(
@@ -104,7 +143,15 @@ std::string IwaKeyDistributionComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 IwaKeyDistributionComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kIwaKeyDistributionComponentExpCohort)) {
+    attributes.emplace(
+        kIwaKdcExpCohortAttribute,
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kIwaKeyDistributionComponentExpCohort));
+  }
+  return attributes;
 }
 
 void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {
@@ -112,15 +159,9 @@ void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {
     return;
   }
 
-  using Handler = web_app::IwaKeyDistributionInfoProvider;
-
-  // `base::Unretained()` is safe here as IwaKeyDistributionInfoProvider is a
-  // singleton that never goes away.
   base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>(
-          base::BindRepeating(&Handler::LoadKeyDistributionData,
-                              base::Unretained(Handler::GetInstance()))),
-      /*action_handler=*/nullptr, base::TaskPriority::BEST_EFFORT)
+      std::make_unique<IwaKeyDistributionComponentInstallerPolicy>(),
+      /*action_handler=*/nullptr, base::TaskPriority::USER_VISIBLE)
       ->Register(cus, base::DoNothing());
 }
 

@@ -68,12 +68,12 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -81,8 +81,6 @@ import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -197,36 +195,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int BUTTON_STATE_DEFAULT = CustomTabsIntent.SHARE_STATE_DEFAULT;
     }
 
-    /**
-     * Parameter that, if true, indicates that the {@link EXTRA_AUTO_TRANSLATE_LANGUAGE} should be
-     * automatically allowed from any first party package name.
-     */
-    public static final BooleanCachedFieldTrialParameter AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_AUTO_TRANSLATE, "allow_all_first_parties", false);
-
-    /**
-     * Parameter that lists a pipe ("|") separated list of package names from which the {@link
-     * EXTRA_AUTO_TRANSLATE_LANGUAGE} should be allowed. This defaults to a single list item
-     * consisting of the package name of the Android Google Search App.
-     */
-    public static final StringCachedFieldTrialParameter AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_AUTO_TRANSLATE,
-                    "package_names_allowlist",
-                    "com.google.android.googlequicksearchbox");
-
-    /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
-    // TODO(b/40239922): remove when no longer relevant.
-    private static final String DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES =
-            BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : "";
-
-    public static final StringCachedFieldTrialParameter OMNIBOX_ALLOWED_PACKAGE_NAMES =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.SEARCH_IN_CCT,
-                    "omnibox_allowed_package_names",
-                    DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES);
-
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
 
@@ -278,27 +246,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY =
             "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL";
 
-    private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
     private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
     private static final String DEFAULT_POLICY_USE_ALLOWLIST = "use-allowlist";
-    private static final String ALLOWLIST_ENTRIES_PARAM_NAME = "allowlist_entries";
-    private static final String DENYLIST_ENTRIES_PARAM_NAME = "denylist_entries";
-
-    public static final StringCachedFieldTrialParameter THIRD_PARTIES_DEFAULT_POLICY =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-                    DEFAULT_POLICY_PARAM_NAME,
-                    DEFAULT_POLICY_USE_DENYLIST);
-    public static final StringCachedFieldTrialParameter DENYLIST_ENTRIES =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-                    DENYLIST_ENTRIES_PARAM_NAME,
-                    "");
-    public static final StringCachedFieldTrialParameter ALLOWLIST_ENTRIES =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-                    ALLOWLIST_ENTRIES_PARAM_NAME,
-                    "");
 
     /**
      * Extra that specifies the {@link PendingIntent} to be sent when the user swipes up from the
@@ -325,7 +274,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
 
     private final Intent mIntent;
-    private final CustomTabsSessionToken mSession;
+    private final SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
     private final Intent mKeepAliveServiceIntent;
     private Bundle mAnimationBundle;
@@ -395,22 +344,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are
-     * from a trusted source. Trusted in this case means from the app itself or
-     * via a first-party application.
+     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are from a trusted source.
+     * Trusted in this case means from the app itself or via a first-party application.
      *
      * @param intent The Intent used to start the custom tabs activity, or null.
      * @param session The connected session for the custom tabs activity, or null.
      * @return True if the intent or session are trusted.
      */
-    public static boolean isTrustedCustomTab(Intent intent, CustomTabsSessionToken session) {
+    public static boolean isTrustedCustomTab(Intent intent, SessionHolder<?> session) {
         if (IntentHandler.wasIntentSenderChrome(intent)) return true;
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
     static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
-            Intent intent, CustomTabsSessionToken session) {
+            Intent intent, SessionHolder<?> session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (!TextUtils.isEmpty(packageNameFromSession)) return packageNameFromSession;
@@ -424,7 +372,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
         boolean isTrustedCustomTab = isTrustedCustomTab(intent, session);
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         @Px
@@ -541,7 +489,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (intent == null) assert false;
         mIntent = intent;
 
-        mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        mSession = token != null ? new SessionHolder<>(token) : null;
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
 
         mAnimationBundle =
@@ -556,7 +505,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        mUiType = verifiedUiType(requestedUiType);
+        mUiType = getCustomTabsUiType(requestedUiType);
 
         mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
 
@@ -790,11 +739,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Get the verified UI type, according to the intent extras, and whether the intent is trusted.
+     * Get the verified custom tabs UI type, according to the intent extras, and whether
+     * the intent is trusted.
+     *
+     * If the intent extras include a valid EXTRA_NETWORK, consider that the custom tab is
+     * used for captive portal scenarios especially and the UI hides the "Open in Chrome browser"
+     * menu item accordingly.
+     *
      * @param requestedUiType requested UI type in the intent, unqualified
      * @return verified UI type
      */
-    private int verifiedUiType(int requestedUiType) {
+    @BrowserServicesIntentDataProvider.CustomTabsUiType
+    private int getCustomTabsUiType(int requestedUiType) {
+        if (mNetwork != null) return CustomTabsUiType.NETWORK_BOUND_TAB;
         if (!isTrustedIntent()) {
             if (VersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
@@ -1042,14 +999,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /**
      * Logs the usage of intents of all CCT features to a large enum histogram in order to track
      * usage by apps.
+     *
      * @param intent The intent used to launch the CCT.
      * @param colorScheme The requested color scheme to use with the CCT.
      * @param isUsingDynamicFeatures Whether the intent specified Features to dynamically enable or
-     *                               disable.
+     *     disable.
      */
     private void logCustomTabFeatures(
             Intent intent, int colorScheme, boolean isUsingDynamicFeatures) {
-        if (!CustomTabsFeatureUsage.isEnabled()) return;
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by CustomTabsFeature enum, when they apply.
@@ -1202,7 +1159,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<CustomTabsSessionToken> getSession() {
         return mSession;
     }
 
@@ -1462,10 +1419,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     private boolean isAllowedToAutoTranslate() {
-        if (!ChromeFeatureList.sCctAutoTranslate.isEnabled()) return false;
-        if (mIsTrustedIntent && AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.getValue()) return true;
+        if (!ChromeFeatureList.sCctAutoTranslate.isEnabled()) {
+            return false;
+        }
+        if (mIsTrustedIntent
+                && ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.getValue()) {
+            return true;
+        }
         return isPackageNameInList(
-                getClientPackageName(), AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.getValue());
+                getClientPackageName(),
+                ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.getValue());
     }
 
     @Override
@@ -1546,11 +1509,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     static boolean isAllowedThirdParty(String packageName) {
         if (packageName == null) return false;
-        String defaultPolicy = THIRD_PARTIES_DEFAULT_POLICY.getValue();
+        String defaultPolicy =
+                ChromeFeatureList.sCctResizableForThirdPartiesDefaultPolicy.getValue();
         if (defaultPolicy.equals(DEFAULT_POLICY_USE_ALLOWLIST)) {
-            return isPackageNameInList(packageName, ALLOWLIST_ENTRIES.getValue());
+            return isPackageNameInList(
+                    packageName,
+                    ChromeFeatureList.sCctResizableForThirdPartiesAllowlistEntries.getValue());
         } else if (defaultPolicy.equals(DEFAULT_POLICY_USE_DENYLIST)) {
-            return !isPackageNameInList(packageName, DENYLIST_ENTRIES.getValue());
+            return !isPackageNameInList(
+                    packageName,
+                    ChromeFeatureList.sCctResizableForThirdPartiesDenylistEntries.getValue());
         }
         assert false : "We can't get here since the default policy is use denylist.";
         return false;
@@ -1611,7 +1579,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (BuildInfo.getInstance().isAutomotive) return false;
 
         return isPackageNameInList(
-                getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
+                getClientPackageName(),
+                ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.getValue());
     }
 
     @Override

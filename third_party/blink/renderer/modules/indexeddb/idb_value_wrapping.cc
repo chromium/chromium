@@ -214,9 +214,7 @@ void IDBValueWrapper::MaybeCompress() {
     wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
   }
 
-  wire_data_ = base::make_span(
-      reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
-      wire_data_buffer_.size());
+  wire_data_ = base::as_byte_span(wire_data_buffer_);
 }
 
 void IDBValueWrapper::MaybeStoreInBlob() {
@@ -251,9 +249,7 @@ void IDBValueWrapper::MaybeStoreInBlob() {
                                wire_data_buffer_);
   IDBValueWrapper::WriteVarInt(blob_info_.size() - 1, wire_data_buffer_);
 
-  wire_data_ = base::make_span(
-      reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
-      wire_data_buffer_.size());
+  wire_data_ = base::as_byte_span(wire_data_buffer_);
   DCHECK(!wire_data_buffer_.empty());
 }
 
@@ -407,7 +403,7 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
     return false;
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.Append(current_, length);
+  result.AppendSpan(base::span(current_, end_).first(length));
   value = std::move(result);
   current_ += length;
   return true;

@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2024, Alliance for Open Media. All rights reserved.
+; Copyright (c) 2025, Alliance for Open Media. All rights reserved.
 ;
 ; This source code is subject to the terms of the BSD 2 Clause License and
 ; the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -28,6 +28,7 @@ CONFIG_COLLECT_COMPONENT_TIMING equ 0
 CONFIG_COLLECT_PARTITION_STATS equ 0
 CONFIG_COLLECT_RD_STATS equ 0
 CONFIG_CWG_C013 equ 0
+CONFIG_CWG_E050 equ 0
 CONFIG_DEBUG equ 0
 CONFIG_DENOISE equ 1
 CONFIG_DISABLE_FULL_PIXEL_SPLIT_8X8 equ 1

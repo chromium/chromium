@@ -71,7 +71,7 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
 
 class SessionRestoreObserverTest : public InProcessBrowserTest {
  protected:
-  SessionRestoreObserverTest() {}
+  SessionRestoreObserverTest() = default;
 
   SessionRestoreObserverTest(const SessionRestoreObserverTest&) = delete;
   SessionRestoreObserverTest& operator=(const SessionRestoreObserverTest&) =

@@ -24,11 +24,13 @@ import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * A simple file server for java tests.
  *
  * An example use:
+ *
  * <pre>
  * EmbeddedTestServer s = EmbeddedTestServer.createAndStartServer(context);
  *
@@ -470,12 +472,12 @@ public class EmbeddedTestServer {
         }
     }
 
-    /** Get the full URLs for the given relative URLs.
+    /**
+     * Get the full URLs for the given relative URLs.
      *
-     *  @see #getURL(String)
-     *
-     *  @param relativeUrls The relative URLs for which full URLs will be obtained.
-     *  @return The URLs as a String array.
+     * @see #getURL(String)
+     * @param relativeUrls The relative URLs for which full URLs will be obtained.
+     * @return The URLs as a String array.
      */
     public String[] getURLs(String... relativeUrls) {
         String[] absoluteUrls = new String[relativeUrls.length];
@@ -486,9 +488,36 @@ public class EmbeddedTestServer {
     }
 
     /**
+     * Get the request headers observed on the server for the given relative URL.
+     *
+     * @param relativeUrl The relative URL for which request headers should be returned.
+     * @return The map of the header key and value pairs.
+     */
+    public HashMap<String, String> getRequestHeadersForUrl(final String relativeUrl) {
+        try {
+            synchronized (mImplMonitor) {
+                checkServiceLocked();
+                String[] headers_array = mImpl.getRequestHeadersForUrl(relativeUrl);
+                // The length of the vector should be even, as the vector alternates between header
+                // names (even indices) and their corresponding values (odd indices).
+                Assert.assertEquals(0, headers_array.length % 2);
+
+                HashMap<String, String> headers = new HashMap<String, String>();
+                for (int i = 0; i < headers_array.length; i += 2) {
+                    headers.put(headers_array[i], headers_array[i + 1]);
+                }
+                return headers;
+            }
+        } catch (RemoteException e) {
+            throw new EmbeddedTestServerFailure(
+                    "Failed to get request headers for " + relativeUrl, e);
+        }
+    }
+
+    /**
      * Stop and destroy the server.
      *
-     *  This handles stopping the server and destroying the native object.
+     * This handles stopping the server and destroying the native object.
      */
     public void stopAndDestroyServer() {
         synchronized (mImplMonitor) {

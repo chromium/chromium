@@ -139,7 +139,7 @@ TEST(DataPackTest, LoadFromFileRegion) {
 
   // Construct a file which has a non page-aligned zero-filled header followed
   // by the actual pak file content.
-  const uint8_t kPadding[5678] = {0};
+  const uint8_t kPadding[5678] = {};
   ASSERT_TRUE(base::WriteFile(data_path, kPadding));
   ASSERT_TRUE(
       base::AppendToFile(data_path, {kSamplePakContentsV4, kSamplePakSizeV4}));

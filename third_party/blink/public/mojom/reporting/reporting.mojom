@@ -7,6 +7,9 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+// ReportingServiceProxy is called from renderer process to browser process,
+// to send Reporting API's reports.
+// See https://developer.mozilla.org/en-US/docs/Web/API/Reporting_API
 interface ReportingServiceProxy {
   // Attempts to queue an Intervention report using the Reporting API.
   //
@@ -57,6 +60,20 @@ interface ReportingServiceProxy {
                                     string? source_file,
                                     int32 line_number,
                                     int32 column_number);
+
+  // Attempts to queue a Potential Permissions Policy violation report using the Reporting API.
+  //
+  // (See //third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h.)
+  QueuePotentialPermissionsPolicyViolationReport(url.mojom.Url url,
+                                    string endpoint,
+                                    string policy_id,
+                                    string disposition,
+                                    string? message,
+                                    string? allow_attribute,
+                                    string? source_file,
+                                    int32 line_number,
+                                    int32 column_number);
+
   // Attempts to queue a Document Policy violation report using the Reporting API.
   //
   // (See //third_party/blink/renderer/core/frame/document_policy_violation_report_body.h.)
@@ -68,4 +85,14 @@ interface ReportingServiceProxy {
                                      string? source_file,
                                      int32 line_number,
                                      int32 column_number);
+
+  // Attempts to queue a CSP hash report using the Reporting API.
+  //
+  // (See //third_party/blink/renderer/core/frame/subresource_report_body.h.)
+  QueueCSPHashReport(url.mojom.Url url,
+                     string endpoint,
+                     string subresource_url,
+                     string integrity_hash,
+                     string type,
+                     string destination);
 };

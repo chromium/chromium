@@ -71,7 +71,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
   ManagedBookmarkServiceTest& operator=(const ManagedBookmarkServiceTest&) =
       delete;
 
-  ~ManagedBookmarkServiceTest() override {}
+  ~ManagedBookmarkServiceTest() override = default;
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;

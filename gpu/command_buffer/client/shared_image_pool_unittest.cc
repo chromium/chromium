@@ -11,6 +11,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::AtLeast;
+
 namespace gpu {
 
 class SharedImagePoolTest : public testing::Test {
@@ -495,11 +497,34 @@ TEST_F(SharedImagePoolTest, FlushCalledAfterReclaiming) {
   auto image = pool->GetImage();
   pool->ReleaseImage(std::move(image));
 
-  // Expect that Flush() will be called on the SharedImageInterface.
-  EXPECT_CALL(*test_sii_, DoFlush()).Times(1);
+  // Expect that Flush() will be called on the SharedImageInterface. Flush() can
+  // be called more than once,i.e., once during reclaiming resource after
+  // expiration and another during SharedImagePool destruction.
+  EXPECT_CALL(*test_sii_, DoFlush()).Times(AtLeast(1));
 
   // Advance time past the expiration time.
   task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
+}
+
+// Test to check that images created by different pools have unique pool IDs.
+TEST_F(SharedImagePoolTest, DifferentPoolsHaveDifferentPoolIds) {
+  ImageInfo info1 = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  auto pool1 = SharedImagePool<ClientImage>::Create(info1, test_sii_);
+
+  ImageInfo info2 = {
+      gfx::Size(200, 200), viz::SinglePlaneFormat::kBGRA_8888, {}};
+  auto pool2 = SharedImagePool<ClientImage>::Create(info2, test_sii_);
+
+  auto image_from_first_pool = pool1->GetImage();
+  auto image_from_second_pool = pool2->GetImage();
+
+  ASSERT_NE(image_from_first_pool, nullptr);
+  ASSERT_NE(image_from_second_pool, nullptr);
+
+  // Verify that pool IDs are different for images from different pools.
+  EXPECT_NE(image_from_first_pool->GetPoolIdForTesting(),
+            image_from_second_pool->GetPoolIdForTesting());
 }
 
 }  // namespace gpu

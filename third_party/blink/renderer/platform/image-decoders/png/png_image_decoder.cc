@@ -48,6 +48,7 @@
 #include "base/containers/adapters.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
+#include "skia/ext/cicp.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -207,30 +208,8 @@ static std::unique_ptr<ColorProfile> ParseCicpChunk(
   uint8_t matrix_coefficients = chunk.data[2];
   uint8_t range_u8 = chunk.data[3];
 
-  // Per PNG spec, matrix_coefficients must be 0, i.e. RGB (YUV is explicitly
-  // disallowed).
-  if (matrix_coefficients) {
-    return nullptr;
-  }
-  // range must be 0 or 1.
-  if (range_u8 != 0 && range_u8 != 1) {
-    return nullptr;
-  }
-  const auto range = range_u8 == 1 ? gfx::ColorSpace::RangeID::FULL
-                                   : gfx::ColorSpace::RangeID::LIMITED;
-  if (range == gfx::ColorSpace::RangeID::LIMITED) {
-    // TODO(crbug/1339019): Implement this if needed.
-    DLOG(WARNING) << "Limited range RGB is not fully supported";
-  }
-  media::VideoColorSpace color_space(primaries, trc, 0, range);
-
-  // If not valid, do not return anything.
-  if (!color_space.IsSpecified()) {
-    return nullptr;
-  }
-
-  sk_sp<SkColorSpace> sk_color_space =
-      color_space.ToGfxColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+  sk_sp<SkColorSpace> sk_color_space = skia::CICPGetSkColorSpace(
+      primaries, trc, matrix_coefficients, range_u8, /*prefer_srgb_trfn=*/true);
   if (!sk_color_space) {
     return nullptr;
   }
@@ -271,21 +250,11 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
     return ColorProfile::Create(base::as_bytes(base::span(buffer, length)));
   }
 
-  png_fixed_point chrm[8];
-  if (!png_get_cHRM_fixed(png, info, &chrm[0], &chrm[1], &chrm[2], &chrm[3],
-                          &chrm[4], &chrm[5], &chrm[6], &chrm[7])) {
-    return nullptr;
-  }
-
   png_fixed_point inverse_gamma;
-  if (!png_get_gAMA_fixed(png, info, &inverse_gamma)) {
+  bool got_gama_chunk = png_get_gAMA_fixed(png, info, &inverse_gamma);
+  if (!got_gama_chunk) {
     return nullptr;
   }
-
-  // cHRM and gAMA tags are both present. The PNG spec states that cHRM is
-  // valid even without gAMA but we cannot apply the cHRM without guessing
-  // a gAMA. Color correction is not a guessing game: match the behavior
-  // of Safari and Firefox instead (compat).
 
   struct pngFixedToFloat {
     explicit pngFixedToFloat(png_fixed_point value)
@@ -293,6 +262,39 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
     operator float() { return float_value; }
     float float_value;
   };
+
+  png_fixed_point chrm[8];
+  if (!png_get_cHRM_fixed(png, info, &chrm[0], &chrm[1], &chrm[2], &chrm[3],
+                          &chrm[4], &chrm[5], &chrm[6], &chrm[7])) {
+    if (got_gama_chunk) {
+      // `kPngGammaThreshold` mimics `PNG_GAMMA_THRESHOLD_FIXED` from `libpng`
+      // without using internal/private `png_muldiv` and/or
+      // `png_gamma_significant`.
+      constexpr float kPngGammaThreshold = 0.05f;
+      constexpr float kMinNeutralValue = 1.0f - kPngGammaThreshold;
+      constexpr float kMaxNeutralValue = 1.0f + kPngGammaThreshold;
+      float floating_inverse_gamma = pngFixedToFloat(inverse_gamma);
+      float tmp = floating_inverse_gamma * 2.2f;
+      bool is_neutral = kMinNeutralValue < tmp && tmp < kMaxNeutralValue;
+      if (!is_neutral) {
+        skcms_ICCProfile profile;
+        skcms_Init(&profile);
+        skcms_SetXYZD50(&profile, &SkNamedGamut::kSRGB);
+
+        skcms_TransferFunction fn = SkNamedTransferFn::k2Dot2;
+        fn.g = 1.0f / floating_inverse_gamma;
+        skcms_SetTransferFunction(&profile, &fn);
+
+        return std::make_unique<ColorProfile>(profile);
+      }
+    }
+    return nullptr;
+  }
+
+  // cHRM and gAMA tags are both present. The PNG spec states that cHRM is
+  // valid even without gAMA but we cannot apply the cHRM without guessing
+  // a gAMA. Color correction is not a guessing game: match the behavior
+  // of Safari and Firefox instead (compat).
 
   float rx = pngFixedToFloat(chrm[2]);
   float ry = pngFixedToFloat(chrm[3]);
@@ -332,7 +334,8 @@ static inline void ReadHDRMetadata(
   for (size_t chunk_index = 0; chunk_index < num_unknown_chunks;
        chunk_index++) {
     const auto& chunk = unknown_chunks[chunk_index];
-    if (strcmp(reinterpret_cast<const char*>(chunk.name), "cLLi") == 0) {
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "cLLi") == 0 ||
+        strcmp(reinterpret_cast<const char*>(chunk.name), "cLLI") == 0) {
       if (chunk.size != 8) {
         continue;
       }
@@ -345,7 +348,8 @@ static inline void ReadHDRMetadata(
       clli.emplace(max_cll_times_10000 / 10000, max_fall_times_10000 / 10000);
       continue;
     }
-    if (strcmp(reinterpret_cast<const char*>(chunk.name), "mDCv") == 0) {
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "mDCv") == 0 ||
+        strcmp(reinterpret_cast<const char*>(chunk.name), "mDCV") == 0) {
       if (chunk.size != 24) {
         continue;
       }
@@ -395,12 +399,6 @@ void PNGImageDecoder::SetColorSpace() {
   }
   png_structp png = reader_->PngPtr();
   png_infop info = reader_->InfoPtr();
-  const int color_type = png_get_color_type(png, info);
-  if (!(color_type & PNG_COLOR_MASK_COLOR)) {
-    return;
-  }
-  // We only support color profiles for color PALETTE and RGB[A] PNG.
-  // TODO(msarett): Add GRAY profile support, block CYMK?
   if (auto profile = ReadColorProfile(png, info)) {
     SetEmbeddedColorProfile(std::move(profile));
   }
@@ -472,22 +470,6 @@ void PNGImageDecoder::HeaderAvailable() {
   if (color_type == PNG_COLOR_TYPE_GRAY ||
       color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
     png_set_gray_to_rgb(png);
-  }
-
-  if (!HasEmbeddedColorProfile()) {
-    const double kInverseGamma = 0.45455;
-    const double kDefaultGamma = 2.2;
-    double gamma;
-    if (!IgnoresColorSpace() && png_get_gAMA(png, info, &gamma)) {
-      const double kMaxGamma = 21474.83;
-      if ((gamma <= 0.0) || (gamma > kMaxGamma)) {
-        gamma = kInverseGamma;
-        png_set_gAMA(png, info, gamma);
-      }
-      png_set_gamma(png, kDefaultGamma, gamma);
-    } else {
-      png_set_gamma(png, kDefaultGamma, kInverseGamma);
-    }
   }
 
   // process eXIf chunk

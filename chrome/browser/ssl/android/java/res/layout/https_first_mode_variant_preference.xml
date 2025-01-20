@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:focusable="false">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/mode_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/balanced"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:background="?attr/selectableItemBackground"
+          app:primaryText="@string/settings_https_first_mode_enabled_balanced_label"/>
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/strict"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:background="?attr/selectableItemBackground"
+          app:primaryText="@string/settings_https_first_mode_enabled_strict_label"
+          app:descriptionText="@string/settings_https_first_mode_enabled_strict_sublabel"/>
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+</LinearLayout>

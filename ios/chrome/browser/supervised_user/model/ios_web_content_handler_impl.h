@@ -10,6 +10,8 @@
 #import "components/supervised_user/core/browser/web_content_handler.h"
 #import "url/gurl.h"
 
+@protocol ParentAccessCommands;
+
 namespace web {
 class WebState;
 }
@@ -21,7 +23,9 @@ class UrlFormatter;
 // iOS-specific implementation of the web content handler.
 class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
  public:
-  IOSWebContentHandlerImpl(web::WebState* web_state, bool is_main_frame);
+  IOSWebContentHandlerImpl(web::WebState* web_state,
+                           id<ParentAccessCommands> commands_handler,
+                           bool is_main_frame);
 
   IOSWebContentHandlerImpl(const IOSWebContentHandlerImpl&) = delete;
   IOSWebContentHandlerImpl& operator=(const IOSWebContentHandlerImpl&) = delete;
@@ -38,11 +42,18 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   void GoBack() override;
 
  private:
+  // Processes the outcome of the local approval request.
+  void OnLocalApprovalRequestCompleted(
+      supervised_user::SupervisedUserSettingsService& settings_service,
+      const GURL& url,
+      base::TimeTicks start_time,
+      supervised_user::LocalApprovalResult approval_result);
   // Closes the tab linked to the web_state_.
   void Close();
 
   const bool is_main_frame_;
   raw_ptr<web::WebState> web_state_;
+  __weak id<ParentAccessCommands> commands_handler_;
   base::WeakPtrFactory<IOSWebContentHandlerImpl> weak_factory_{this};
 };
 

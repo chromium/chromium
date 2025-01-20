@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/test_support/graph/mock_process_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,26 +21,6 @@ namespace performance_manager {
 namespace {
 
 using LifecycleState = PageNodeImpl::LifecycleState;
-
-class LenientMockProcessNodeObserver : public ProcessNode::ObserverDefaultImpl {
- public:
-  LenientMockProcessNodeObserver() = default;
-
-  LenientMockProcessNodeObserver(const LenientMockProcessNodeObserver&) =
-      delete;
-  LenientMockProcessNodeObserver& operator=(
-      const LenientMockProcessNodeObserver&) = delete;
-
-  ~LenientMockProcessNodeObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnAllFramesInProcessFrozen,
-              (const ProcessNode*),
-              (override));
-};
-
-using MockProcessNodeObserver =
-    ::testing::StrictMock<LenientMockProcessNodeObserver>;
 
 }  // namespace
 
@@ -126,7 +107,7 @@ TEST_F(FrozenFrameAggregatorTest, NotCurrent) {
 }
 
 TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
-  MockProcessNodeObserver obs;
+  LenientMockProcessNodeObserver obs;
   graph()->AddProcessNodeObserver(&obs);
 
   ExpectProcessData(0, 0);

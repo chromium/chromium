@@ -90,7 +90,6 @@ class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
   std::unordered_map<uint32_t, bool> event_name_filtering_per_session_;
 };
 
-
 }  // namespace
 
 static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
@@ -549,8 +548,7 @@ static void JNI_TraceEvent_StartAsync(JNIEnv* env,
       });
 }
 
-static void JNI_TraceEvent_FinishAsync(JNIEnv* env,
-                                       jlong jid) {
+static void JNI_TraceEvent_FinishAsync(JNIEnv* env, jlong jid) {
   TRACE_EVENT_END(internal::kJavaTraceCategory,
                   perfetto::Track(static_cast<uint64_t>(jid)));
 }

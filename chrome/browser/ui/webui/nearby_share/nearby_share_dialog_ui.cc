@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 
 #include <string>
@@ -28,13 +23,13 @@
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources_map.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/components/sharesheet/constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -46,10 +41,12 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace nearby_share {
 
-// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+// Keep in sync with
+// chrome/browser/resources/chromeos/nearby_share/shared/types.ts
 enum class CloseReason {
   kUnknown = 0,
   kTransferStarted = 1,
@@ -61,8 +58,9 @@ enum class CloseReason {
 
 bool NearbyShareDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (browser_context->IsOffTheRecord())
+  if (browser_context->IsOffTheRecord()) {
     return false;
+  }
   return NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
       browser_context);
 }
@@ -82,9 +80,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 
-  webui::SetupWebUIDataSource(html_source,
-                              base::make_span(kNearbyShareDialogResources,
-                                              kNearbyShareDialogResourcesSize),
+  webui::SetupWebUIDataSource(html_source, kNearbyShareDialogResources,
                               IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
@@ -127,6 +123,9 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   SetAttachmentFromQueryParameter(url);
+
+  html_source->AddBoolean("isQuickShareV2Enabled",
+                          chromeos::features::IsQuickShareV2Enabled());
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
@@ -197,8 +196,9 @@ void NearbyShareDialogUI::WebContentsCreated(
 }
 
 void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
-  if (!sharesheet_controller_)
+  if (!sharesheet_controller_) {
     return;
+  }
 
   CHECK_EQ(1u, args.size());
   CHECK_GE(args[0].GetInt(), 0);

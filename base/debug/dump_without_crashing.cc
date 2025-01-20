@@ -78,9 +78,7 @@ bool ShouldDumpWithoutCrashWithLocationAndUniqueId(
 
 }  // namespace
 
-namespace base {
-
-namespace debug {
+namespace base::debug {
 
 bool DumpWithoutCrashingUnthrottled() {
   TRACE_EVENT0("base", "DumpWithoutCrashingUnthrottled");
@@ -147,5 +145,4 @@ void ClearMapsForTesting() {
   LocationAndUniqueIdentifierToTimestampMap().clear();
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

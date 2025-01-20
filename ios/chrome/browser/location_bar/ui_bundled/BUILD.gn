@@ -26,6 +26,7 @@ source_set("ui_bundled") {
   ]
   deps = [
     ":constants",
+    ":fakebox_buttons_snapshot",
     ":location_bar_model_delegate",
     "//base",
     "//components/feature_engagement/public",
@@ -47,14 +48,24 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
+    "//ios/chrome/browser/omnibox/ui_bundled:ui_bundled",
+    "//ios/chrome/browser/omnibox/ui_bundled/keyboard_assist",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/orchestrator/ui_bundled:ui_bundled",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
@@ -75,19 +86,9 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ssl/model",
+    "//ios/chrome/browser/toolbar/ui_bundled/buttons",
+    "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
-    "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:ui",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
-    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
-    "//ios/chrome/browser/ui/omnibox:omnibox",
-    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
-    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
-    "//ios/chrome/browser/ui/omnibox:omnibox_util",
-    "//ios/chrome/browser/ui/omnibox/keyboard_assist",
-    "//ios/chrome/browser/ui/omnibox/popup",
-    "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/voice/ui_bundled:voice",
     "//ios/chrome/browser/web/model",
@@ -112,7 +113,7 @@ source_set("ui_bundled") {
     "UIKit.framework",
   ]
   allow_circular_includes_from =
-      [ "//ios/chrome/browser/ui/omnibox:omnibox_internal" ]
+      [ "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal" ]
 }
 
 source_set("location_bar_model_delegate") {
@@ -152,6 +153,10 @@ source_set("constants") {
   ]
 }
 
+source_set("fakebox_buttons_snapshot") {
+  sources = [ "fakebox_buttons_snapshot_provider.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -170,6 +175,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/location_bar/ui_bundled/test",
+    "//ios/chrome/browser/omnibox/ui_bundled",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/model/test",
@@ -178,9 +184,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/omnibox",
-    "//ios/chrome/browser/ui/toolbar",
-    "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/toolbar/ui_bundled:coordinator",
+    "//ios/chrome/browser/toolbar/ui_bundled/test",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:test_support",

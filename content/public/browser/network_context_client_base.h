@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_NETWORK_CONTEXT_CLIENT_BASE_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -42,9 +41,6 @@ class CONTENT_EXPORT NetworkContextClientBase
       const std::string& auth_negotiate_android_account_type,
       const std::string& spn,
       OnGenerateHttpNegotiateAuthTokenCallback callback) override;
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed() override;
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void OnCanSendSCTAuditingReport(

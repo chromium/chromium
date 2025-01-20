@@ -18,8 +18,6 @@
 #include "base/threading/thread_checker.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -36,7 +34,7 @@ class TextureLayerClient;
 // to display gpu or software resources, depending if the compositor is working
 // in gpu or software compositing mode (the resources must match the compositing
 // mode).
-class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
+class CC_EXPORT TextureLayer : public Layer {
  public:
   class CC_EXPORT TransferableResourceHolder
       : public base::RefCountedThreadSafe<TransferableResourceHolder> {
@@ -98,15 +96,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  // Sets whether this texture should be Y-flipped at draw time. Defaults to
-  // true.
-  void SetFlipped(bool flipped);
-  bool flipped() const { return flipped_.Read(*this); }
-
-  // Sets whether this texture should use nearest neighbor interpolation as
-  // opposed to bilinear. Defaults to false.
-  void SetNearestNeighbor(bool nearest_neighbor);
-
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
@@ -131,20 +120,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() const override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
-
-  // Request a mapping from SharedBitmapId to SharedMemory be registered via the
-  // LayerTreeFrameSink with the display compositor. Once this mapping is
-  // registered, the SharedBitmapId can be used in TransferableResources given
-  // to the TextureLayer for display. The SharedBitmapId registration will end
-  // when the returned SharedBitmapIdRegistration object is destroyed.
-  // Implemented as a SharedBitmapIdRegistrar interface so that clients can
-  // have a limited API access.
-  SharedBitmapIdRegistration RegisterSharedBitmapId(
-      const viz::SharedBitmapId& id,
-      scoped_refptr<CrossThreadSharedBitmap> bitmap) override;
 
   const viz::TransferableResource current_transferable_resource() const {
     if (const auto& resource_holder = resource_holder_.Read(*this))
@@ -159,6 +134,11 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
  protected:
   explicit TextureLayer(TextureLayerClient* client);
   ~TextureLayer() override;
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
   bool HasDrawableContent() const override;
 
  private:
@@ -167,19 +147,11 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
       viz::ReleaseCallback release_callback,
       bool requires_commit);
 
-  // Friends to give access to UnregisterSharedBitmapId().
-  friend SharedBitmapIdRegistration;
-  // Remove a mapping from SharedBitmapId to SharedMemory in the display
-  // compositor.
-  void UnregisterSharedBitmapId(viz::SharedBitmapId id);
-
   // Dangling on `mac-rel` in `blink_web_tests`:
   // `fast/events/touch/touch-handler-iframe-plugin-assert.html`
   ProtectedSequenceForbidden<raw_ptr<TextureLayerClient, DanglingUntriaged>>
       client_;
 
-  ProtectedSequenceReadable<bool> flipped_;
-  ProtectedSequenceReadable<bool> nearest_neighbor_;
   ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
   ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
   // [bottom left, top left, top right, bottom right]
@@ -190,25 +162,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   ProtectedSequenceWritable<scoped_refptr<TransferableResourceHolder>>
       resource_holder_;
   ProtectedSequenceWritable<bool> needs_set_resource_;
-
-  typedef base::flat_map<viz::SharedBitmapId,
-                         scoped_refptr<CrossThreadSharedBitmap>>
-      BitMapMap;
-
-  // The set of SharedBitmapIds to register with the LayerTreeFrameSink on the
-  // compositor thread. These requests are forwarded to the TextureLayerImpl to
-  // use, then stored in |registered_bitmaps_| to re-send if the
-  // TextureLayerImpl object attached to this layer changes, by moving out of
-  // the LayerTreeHost.
-  ProtectedSequenceWritable<BitMapMap> to_register_bitmaps_;
-  // The set of previously registered SharedBitmapIds for the current
-  // LayerTreeHost. If the LayerTreeHost changes, these must be re-sent to the
-  // (new) TextureLayerImpl to be re-registered.
-  ProtectedSequenceWritable<BitMapMap> registered_bitmaps_;
-  // The SharedBitmapIds to unregister on the compositor thread, passed to the
-  // TextureLayerImpl.
-  ProtectedSequenceWritable<std::vector<viz::SharedBitmapId>>
-      to_unregister_bitmap_ids_;
 
   const base::WeakPtrFactory<TextureLayer> weak_ptr_factory_{this};
 };

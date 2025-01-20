@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_fetcher.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -173,6 +175,7 @@ CodeCacheFetcher::CodeCacheFetcher(CodeCacheHost& code_cache_host,
 
 void CodeCacheFetcher::Start() {
   CHECK(code_cache_host_);
+  time_of_last_fetch_start_ = base::TimeTicks::Now();
   (*code_cache_host_)
       ->FetchCachedCode(code_cache_type_, initial_url_,
                         WTF::BindOnce(&CodeCacheFetcher::DidReceiveCachedCode,
@@ -199,6 +202,12 @@ std::optional<mojo_base::BigBuffer> CodeCacheFetcher::TakeCodeCacheForResponse(
 
 void CodeCacheFetcher::DidReceiveCachedCode(base::Time response_time,
                                             mojo_base::BigBuffer data) {
+  if (!time_of_last_fetch_start_.is_null()) {
+    base::UmaHistogramTimes("Blink.ResourceRequest.CodeFetchLatency",
+                            base::TimeTicks::Now() - time_of_last_fetch_start_);
+    time_of_last_fetch_start_ = base::TimeTicks();
+  }
+
   is_waiting_ = false;
   code_cache_data_ = std::move(data);
   if (did_receive_cached_metadata_from_url_loader_) {

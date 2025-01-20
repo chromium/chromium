@@ -16,6 +16,9 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
+import {
+  chunkContentByWord,
+} from '../../core/utils/utils.js';
 
 import {PlatformHandler} from './handler.js';
 import {
@@ -42,6 +45,13 @@ function parseResponse(res: string): string {
 // The minimum transcript token length for title generation and summarization.
 const MIN_TOKEN_LENGTH = 200;
 
+// The maximum content input length for T&S model.
+// Based on tests, 1k input tokens is the most efficient.
+// According to the Gemini tokenizer documentation
+// (https://ai.google.dev/gemini-api/docs/tokens), 100 tokens are roughly
+// equivalent to 60-80 English words, chose 700 since it is average.
+const MAX_TS_MODEL_INPUT_WORD_LENGTH = 700;
+
 abstract class OnDeviceModel<T> implements Model<T> {
   constructor(
     private readonly remote: OnDeviceModelRemote,
@@ -51,13 +61,45 @@ abstract class OnDeviceModel<T> implements Model<T> {
     // TODO(pihsun): Handle disconnection error
   }
 
-  abstract execute(content: string): Promise<ModelResponse<T>>;
-
-  private async executeRaw(text: string): Promise<ModelResponse<string>> {
+  async execute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>> {
     const session = new SessionRemote();
     this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
-    const inputPiece = {text};
-    const {size} = await session.getSizeInTokens({pieces: [inputPiece]});
+    const result =
+      await this.executeInRemoteSession(content, language, session);
+    session.$.close();
+    return result;
+  }
+
+  /**
+   * Execute in one remote session for performance concern.
+   * Each model should override this function and share the session for all
+   * model actions.
+   */
+  abstract executeInRemoteSession(
+    content: string, language: LanguageCode, session: SessionRemote
+  ): Promise<ModelResponse<T>>;
+
+  /**
+   * Get input token size through the model.
+   * Share the session from params without creating new session.
+   */
+  protected async getInputTokenSize(text: string, session: SessionRemote):
+    Promise<number> {
+    const inputPieces = {pieces: [{text}]};
+    const {size} = await session.getSizeInTokens(inputPieces);
+    return size;
+  }
+
+  /**
+   * Conduct the model execute.
+   * Check input token size first and then execute.
+   * Share the session from params without creating new session.
+   */
+  private async executeRaw(text: string, session: SessionRemote):
+    Promise<ModelResponse<string>> {
+    const inputPieces = {pieces: [{text}]};
+    const size = await this.getInputTokenSize(text, session);
 
     if (size < MIN_TOKEN_LENGTH) {
       return {
@@ -86,22 +128,18 @@ abstract class OnDeviceModel<T> implements Model<T> {
         responseRouter.removeListener(onResponseId);
         responseRouter.removeListener(onCompleteId);
         responseRouter.$.close();
-        session.$.close();
         resolve(response.join('').trimStart());
       },
     );
     session.execute(
       {
-        // TODO: b/363288363 - Migrate to `input`.
-        text,
         ignoreContext: false,
-        maxTokens: null,
-        tokenOffset: null,
-        maxOutputTokens: null,
-        unusedSafetyInterval: null,
+        maxTokens: 0,
+        tokenOffset: 0,
+        maxOutputTokens: 0,
         topK: 1,
         temperature: 0,
-        input: null,
+        input: inputPieces,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );
@@ -112,17 +150,27 @@ abstract class OnDeviceModel<T> implements Model<T> {
   private async contentIsUnsafe(
     content: string,
     safetyFeature: SafetyFeature,
+    language: LanguageCode,
   ): Promise<boolean> {
-    const {safetyInfo} = await this.remote.classifyTextSafety(content);
-    if (safetyInfo === null) {
-      return false;
+    // Split the content into chunks due to model performance considerations.
+    const contentChunks =
+      chunkContentByWord(content, MAX_TS_MODEL_INPUT_WORD_LENGTH, language);
+    for (const chunk of contentChunks) {
+      const {safetyInfo} = await this.remote.classifyTextSafety(chunk);
+      if (safetyInfo === null) {
+        continue;
+      }
+
+      const {isSafe} = await this.pageRemote.validateSafetyResult(
+        safetyFeature,
+        chunk,
+        safetyInfo,
+      );
+      if (!isSafe) {
+        return true;
+      }
     }
-    const {isSafe} = await this.pageRemote.validateSafetyResult(
-      safetyFeature,
-      content,
-      safetyInfo,
-    );
-    return !isSafe;
+    return false;
   }
 
   close(): void {
@@ -154,20 +202,26 @@ abstract class OnDeviceModel<T> implements Model<T> {
     requestSafetyFeature: SafetyFeature,
     responseSafetyFeature: SafetyFeature,
     fields: Record<string, string>,
+    session: SessionRemote,
+    language: LanguageCode,
   ): Promise<ModelResponse<string>> {
     const prompt = await this.formatInput(formatFeature, fields);
     if (prompt === null) {
       console.error('formatInput returns null, wrong model?');
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
-    if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
+    if (await this.contentIsUnsafe(prompt, requestSafetyFeature, language)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
-    const response = await this.executeRaw(prompt);
+    const response = await this.executeRaw(prompt, session);
     if (response.kind === 'error') {
       return response;
     }
-    if (await this.contentIsUnsafe(response.result, responseSafetyFeature)) {
+    if (await this.contentIsUnsafe(
+          response.result,
+          responseSafetyFeature,
+          language,
+        )) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     return {kind: 'success', result: response.result};
@@ -175,14 +229,30 @@ abstract class OnDeviceModel<T> implements Model<T> {
 }
 
 export class SummaryModel extends OnDeviceModel<string> {
-  override async execute(content: string): Promise<ModelResponse<string>> {
+  override async executeInRemoteSession(
+    content: string,
+    language: LanguageCode,
+    session: SessionRemote,
+  ): Promise<ModelResponse<string>> {
+    const inputTokenSize = await this.getInputTokenSize(content, session);
+    const bulletPointsRequest = this.getBulletPointsRequest(inputTokenSize);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
       SafetyFeature.kAudioSummaryRequest,
       SafetyFeature.kAudioSummaryResponse,
       {
         transcription: content,
+        language,
+        /**
+         * Param format is requested by model.
+         * See
+         * http://google3/chromeos/odml_foundations/lib/inference/features/models/audio_summary_v2.cc.
+         */
+        /* eslint-disable @typescript-eslint/naming-convention */
+        bullet_points_request: bulletPointsRequest,
       },
+      session,
+      language,
     );
     // TODO(pihsun): `Result` monadic helper class?
     if (resp.kind === 'error') {
@@ -191,17 +261,44 @@ export class SummaryModel extends OnDeviceModel<string> {
     const summary = parseResponse(resp.result);
     return {kind: 'success', result: summary};
   }
+
+  /**
+   * Map inputTokenSize to bullet points.
+   */
+  private getBulletPointsRequest(inputTokenSize: number): string {
+    if (inputTokenSize < 250) {
+      return '1 bullet point';
+    } else if (inputTokenSize < 600) {
+      return '2 bullet points';
+    } else if (inputTokenSize < 4000) {
+      return '3 bullet points';
+    } else if (inputTokenSize < 6600) {
+      return '4 bullet points';
+    } else if (inputTokenSize < 9300) {
+      return '5 bullet points';
+    } else {
+      return '6 bullet points';
+    }
+  }
 }
 
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
-  override async execute(content: string): Promise<ModelResponse<string[]>> {
+  // For title suggestion, model input only needs transcription.
+  override async executeInRemoteSession(
+    content: string,
+    language: LanguageCode,
+    session: SessionRemote,
+  ): Promise<ModelResponse<string[]>> {
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
       SafetyFeature.kAudioTitleResponse,
       {
         transcription: content,
+        language,
       },
+      session,
+      language,
     );
     if (resp.kind === 'error') {
       return resp;
@@ -312,7 +409,7 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
       };
     }
     try {
-      return await model.execute(content);
+      return await model.execute(content, language);
     } finally {
       model.close();
     }

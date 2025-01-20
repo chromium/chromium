@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ui/cocoa/task_manager_mac.h"
+
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 #include <stddef.h>
@@ -20,7 +22,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/cocoa/task_manager_mac.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
@@ -91,8 +92,9 @@ class TaskManagerMacTest : public InProcessBrowserTest {
 
   void ClearStoredColumnSettings() const {
     PrefService* local_state = g_browser_process->local_state();
-    if (!local_state)
+    if (!local_state) {
       FAIL();
+    }
 
     local_state->SetDict(prefs::kTaskManagerColumnVisibility,
                          base::Value::Dict());
@@ -119,8 +121,9 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     std::unique_ptr<TaskManagerTester> tester =
         TaskManagerTester::Create(base::RepeatingClosure());
     for (size_t i = 0; i < tester->GetRowCount(); ++i) {
-      if (tester->GetTabId(i) == tab_id)
+      if (tester->GetTabId(i) == tab_id) {
         return i;
+      }
     }
     return std::nullopt;
   }
@@ -129,8 +132,9 @@ class TaskManagerMacTest : public InProcessBrowserTest {
 // Tests that all defined columns have a corresponding string IDs for keying
 // into the user preferences dictionary.
 IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, AllColumnsHaveStringIds) {
-  for (size_t i = 0; i < kColumnsSize; ++i)
+  for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_NE("", GetColumnIdAsString(kColumns[i].id));
+  }
 }
 
 // In the case of no settings stored in the user preferences local store, test
@@ -303,8 +307,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
   std::vector<content::WebContents*> tabs;
   for (size_t i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.
-    if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
+    if (!base::MatchPattern(tester->GetRowTitle(i), pattern)) {
       continue;
+    }
     content::WebContents* tab = FindWebContentsByTabId(tester->GetTabId(i));
     EXPECT_NE(nullptr, tab);
     tabs.push_back(tab);
@@ -405,8 +410,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
   std::vector<content::WebContents*> tabs;
   for (size_t i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.
-    if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
+    if (!base::MatchPattern(tester->GetRowTitle(i), pattern)) {
       continue;
+    }
     content::WebContents* tab = FindWebContentsByTabId(tester->GetTabId(i));
     EXPECT_NE(nullptr, tab);
     tabs.push_back(tab);

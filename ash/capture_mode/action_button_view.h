@@ -14,6 +14,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
@@ -22,7 +26,6 @@ namespace views {
 class BoxLayout;
 class ImageView;
 class Label;
-class Throbber;
 }  // namespace views
 
 namespace ash {
@@ -45,29 +48,21 @@ class ASH_EXPORT ActionButtonView : public views::Button {
 
   ActionButtonRank rank() const { return rank_; }
 
-  void set_show_throbber_when_pressed(bool show_throbber_when_pressed) {
-    show_throbber_when_pressed_ = show_throbber_when_pressed;
-  }
-
   // views::Button:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
-  void OnEnabledChanged() override;
-  void StateChanged(ButtonState old_state) override;
 
   // Collapses the action button, hiding its label so that only the icon
   // shows.
   void CollapseToIconButton();
 
+  // Fades in the action button from fully transparent to fully opaque.
+  void PerformFadeInAnimation(base::TimeDelta fade_in_duration);
+
   const views::ImageView* image_view_for_testing() const { return image_view_; }
   const views::Label* label_for_testing() const { return label_; }
 
  private:
-  // Sets the color of the background and label, and sets a new icon based on
-  // the enabled state.
-  void UpdateColorsAndIcon();
-
   // Rank used to determine ordering of action buttons.
   const ActionButtonRank rank_;
 
@@ -75,21 +70,13 @@ class ASH_EXPORT ActionButtonView : public views::Button {
 
   raw_ptr<views::BoxLayout> box_layout_ = nullptr;
 
-  // The icon to display in the image view.
-  const raw_ptr<const gfx::VectorIcon> icon_;
-
-  // The image view for the action button icon.
+  // The image view for the action button icon. May be `nullptr` if the action
+  // button does not have an icon.
   raw_ptr<views::ImageView> image_view_ = nullptr;
 
   // The label containing the action button text. This label is hidden when the
   // action button is collapsed.
   raw_ptr<views::Label> label_ = nullptr;
-
-  // Loading throbber shown when the button's action is in progress.
-  // TODO(crbug.com/378023303): The loading throbber is only temporary and
-  // should be removed once the finalized loading animation is implemented.
-  raw_ptr<views::Throbber> throbber_ = nullptr;
-  bool show_throbber_when_pressed_ = false;
 };
 
 }  // namespace ash

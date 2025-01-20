@@ -12,7 +12,10 @@ import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
 # into the build.
 group("test") {
   testonly = true
-  deps = [ "renderer_fuzzing:test" ]
+  deps = [
+    "renderer_fuzzing:test",
+    "webidl_fuzzing:test",
+  ]
 }
 
 if (fuzzing_engine_supports_custom_main) {
@@ -77,6 +80,10 @@ if (!is_android) {
       "page_load_in_process_fuzzer_seed_corpus/simple.textproto",
     ]
     testcase_proto_kind = "test.fuzzing.page_load_fuzzing.FuzzCase"
+  }
+  in_process_proto_fuzzer("speech_synthesis_in_process_fuzzer") {
+    sources = [ "speech_synthesis_in_process_fuzzer.cc" ]
+    proto_source = "speech_synthesis_in_process_fuzzer.proto"
   }
   in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
     sources = [
@@ -143,10 +150,38 @@ if (!is_android) {
     ]
   }
 
+  domatolpm_fuzzer("notification_service_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/template.js"
+    grammars = [ "notification_service_fuzzer://chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/notification_service.txt" ]
+  }
+
+  copy("notification_service_in_process_fuzzer_html") {
+    sources = [ "//chrome/test/fuzzing/notification_service_in_process_fuzzer_grammar/notification_service_in_process_fuzzer.html" ]
+    outputs = [ "$root_out_dir/notification_service_in_process_fuzzer.html" ]
+  }
+
+  in_process_fuzzer("notification_service_in_process_fuzzer") {
+    sources = [ "notification_service_in_process_fuzzer.cc" ]
+
+    deps = [
+      ":notification_service_fuzzer_grammar",
+      ":notification_service_in_process_fuzzer_html",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data_deps = [ ":notification_service_in_process_fuzzer_html" ]
+    data = [ "$root_gen_dir/" ]
+  }
+
   if (is_linux) {
     in_process_proto_fuzzer("atspi_in_process_fuzzer") {
       sources = [ "atspi_in_process_fuzzer.cc" ]
-      libfuzzer_options = [ "max_len=4096" ]
+      libfuzzer_options = [
+        "max_len=4096",
+        "timeout=90",
+      ]
+      centipede_options = [ "timeout=90" ]
       proto_source = "atspi_in_process_fuzzer.proto"
       deps = [ "//sql" ]
     }

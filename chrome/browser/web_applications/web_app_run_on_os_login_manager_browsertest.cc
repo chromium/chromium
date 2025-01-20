@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -66,7 +68,6 @@ namespace {
 
 inline constexpr char kTestApp[] = "https://test.test";
 inline constexpr char kTestAppName[] = "WebApp";
-constexpr std::string_view kUpdateManifestFileName = "update_manifest.json";
 constexpr std::string_view kBundleFileName = "bundle.swbn";
 
 class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
@@ -89,12 +90,12 @@ class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
   }
 };
 
-class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
+class RunOnOsLoginTestHandlerMixin : public IsolatedWebAppUpdateServerMixin {
  public:
   explicit RunOnOsLoginTestHandlerMixin(
       InProcessBrowserTestMixinHost* mixin_host,
       InProcessBrowserTest* test_base)
-      : InProcessBrowserTestMixin(mixin_host),
+      : IsolatedWebAppUpdateServerMixin(mixin_host),
         test_base_(test_base),
         // ROOL startup done manually to ensure that SetUpOnMainThread is run
         // before.
@@ -104,12 +105,14 @@ class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
   void SetUpOnMainThread() override {
     profile_ = test_base_->browser()->profile();
     provider_ = WebAppProvider::GetForTest(profile_);
+    IsolatedWebAppUpdateServerMixin::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     test_base_ = nullptr;
     profile_ = nullptr;
     provider_ = nullptr;
+    IsolatedWebAppUpdateServerMixin::TearDownOnMainThread();
   }
 
   void AddRoolApp(const std::string& manifest_id,
@@ -633,8 +636,6 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
     // directory instead.
     temp_dir_ = profile()->GetPath().AppendASCII("iwa-temp-for-testing");
     EXPECT_TRUE(base::CreateDirectory(temp_dir_));
-    iwa_server_.ServeFilesFromDirectory(temp_dir_);
-    EXPECT_TRUE(iwa_server_.Start());
 
     auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
         key_pair_.public_key);
@@ -672,21 +673,9 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
           }));
         });
       )");
-    base::FilePath bundle_304_path = temp_dir_.Append(kBundleFileName);
-    bundle_304_ = builder.BuildBundle(bundle_304_path, key_pair_);
 
-    EXPECT_TRUE(base::WriteFile(
-        temp_dir_.Append(kUpdateManifestFileName),
-        base::ReplaceStringPlaceholders(
-            R"(
-              {
-                "versions": [
-                  {"version": "1.0.0", "src": "$1"}
-                ]
-              }
-            )",
-            {iwa_server_.GetURL(base::StrCat({"/", kBundleFileName})).spec()},
-            /*offsets=*/nullptr)));
+    run_on_os_login_handler_.AddBundle(
+        builder.BuildBundle(temp_dir_.Append(kBundleFileName), key_pair_));
   }
 
   Browser* FindAppBrowser(GURL app_url) {
@@ -723,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,
           base::Value::Dict()
               .Set(kPolicyWebBundleIdKey, url_info_->web_bundle_id().id())
               .Set(kPolicyUpdateManifestUrlKey,
-                   iwa_server_
-                       .GetURL(base::StrCat({"/", kUpdateManifestFileName}))
+                   run_on_os_login_handler_
+                       .GetUpdateManifestUrl(url_info_->web_bundle_id())
                        .spec())));
 
   ASSERT_EQ(url_info_->app_id(), observer.Wait());

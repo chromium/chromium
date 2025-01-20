@@ -23,8 +23,7 @@ namespace autofillPrivate {
     boolean isAutofillSyncToggleEnabled;
   };
 
-  // A copy of FieldType from
-  // chrome/common/extensions/api/autofill_private.idl
+  // A copy of FieldType from components/autofill/core/browser/field_types.h.
   enum FieldType {
     NO_SERVER_DATA,
     UNKNOWN_TYPE,
@@ -91,6 +90,8 @@ namespace autofillPrivate {
     ADDRESS_HOME_HOUSE_NUMBER,
     ADDRESS_HOME_SUBPREMISE,
     ADDRESS_HOME_OTHER_SUBUNIT,
+    NAME_LAST_PREFIX,
+    NAME_LAST_CORE,
     NAME_LAST_FIRST,
     NAME_LAST_CONJUNCTION,
     NAME_LAST_SECOND,
@@ -125,6 +126,15 @@ namespace autofillPrivate {
     ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
     SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
     IMPROVED_PREDICTION,
+    PASSPORT_NAME_TAG,
+    PASSPORT_NUMBER,
+    PASSPORT_ISSUING_COUNTRY_TAG,
+    PASSPORT_EXPIRATION_DATE_TAG,
+    PASSPORT_ISSUE_DATE_TAG,
+    PASSPORT_COUNTRY_OF_BIRTH_TAG,
+    LOYALTY_CARD_PROGRAM,
+    LOYALTY_CARD_PROVIDER,
+    LOYALTY_CARD_MEMBER_ID,
     MAX_VALID_FIELD_TYPE
   };
 

@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -76,6 +75,25 @@ class StyleResolverTest : public PageTestBase {
                      ElementRuleCollector& collector) {
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
+  }
+
+  MatchedPropertiesVector MatchedAuthorProperties(Document& document,
+                                                  Element& element) {
+    StyleResolverState state(GetDocument(), element);
+    SelectorFilter filter;
+    MatchResult match_result;
+    ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                   filter, match_result,
+                                   EInsideLink::kNotInsideLink);
+    MatchAllRules(state, collector);
+
+    MatchedPropertiesVector matched_properties =
+        match_result.GetMatchedProperties();
+    EraseIf(matched_properties,
+            [](const MatchedProperties& matched_properties) {
+              return matched_properties.data_.origin != CascadeOrigin::kAuthor;
+            });
+    return matched_properties;
   }
 
   bool IsUseCounted(mojom::WebFeature feature) {
@@ -1378,6 +1396,71 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     EXPECT_EQ(properties[1].data_.origin, CascadeOrigin::kAuthor);
     EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].data_.tree_order),
               root.GetTreeScope());
+  }
+}
+
+TEST_F(StyleResolverTest, QuietlySwapActiveStyleSheets) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { z-index: 1; }
+    </style>
+    <div id=div>Test</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+
+  // Before swap:
+  {
+    MatchedPropertiesVector matched_properties =
+        MatchedAuthorProperties(GetDocument(), *div);
+    ASSERT_EQ(1u, matched_properties.size());
+    EXPECT_EQ("1", matched_properties.back().properties->GetPropertyValue(
+                       CSSPropertyID::kZIndex));
+  }
+
+  ScopedStyleResolver* scoped_resolver = GetDocument().GetScopedStyleResolver();
+  ASSERT_TRUE(scoped_resolver);
+
+  RuleSet* alt_rule_set = css_test_helpers::CreateRuleSet(GetDocument(), R"CSS(
+    div { z-index: 2; }
+    div:is(div) { z-index: 3; }
+  )CSS");
+
+  ActiveStyleSheetVector active_stylesheets =
+      scoped_resolver->GetActiveStyleSheets();
+  ASSERT_EQ(1u, active_stylesheets.size());
+  active_stylesheets.front().second = alt_rule_set;
+
+  // Quietly swapping out the active stylesheets should not make anything dirty.
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  scoped_resolver->QuietlySwapActiveStyleSheets(active_stylesheets);
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+
+  // After the swap, we should be able to match rules against the swapped
+  // stylesheet vector.
+  {
+    MatchedPropertiesVector matched_properties =
+        MatchedAuthorProperties(GetDocument(), *div);
+    ASSERT_EQ(2u, matched_properties.size());
+    EXPECT_EQ("2", matched_properties[0].properties->GetPropertyValue(
+                       CSSPropertyID::kZIndex));
+    EXPECT_EQ("3", matched_properties[1].properties->GetPropertyValue(
+                       CSSPropertyID::kZIndex));
+  }
+
+  // Restore the original active stylesheets:
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  scoped_resolver->QuietlySwapActiveStyleSheets(active_stylesheets);
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+
+  {
+    MatchedPropertiesVector matched_properties =
+        MatchedAuthorProperties(GetDocument(), *div);
+    ASSERT_EQ(1u, matched_properties.size());
+    EXPECT_EQ("1", matched_properties.back().properties->GetPropertyValue(
+                       CSSPropertyID::kZIndex));
   }
 }
 
@@ -3758,7 +3841,7 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
 }
 
-TEST_F(StyleResolverTest, CssRulesForElementIncludeStartingStyle) {
+TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3774,18 +3857,18 @@ TEST_F(StyleResolverTest, CssRulesForElementIncludeStartingStyle) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target->GetComputedStyle(), nullptr);
-  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);
-  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 }
 
-TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
+TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3811,7 +3894,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
       GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
           target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 2u);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -3822,10 +3905,8 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
   pseudo_rules = GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
       target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 2u);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
   EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
-            "#target::before { color: red; }");
-  EXPECT_EQ(pseudo_rules->at(1).first->cssText(),
             "#target::before { content: \"X\"; color: green; }");
 }
 

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<style>
+  @font-face {
+    font-family: 'ahem';
+    src: url(Ahem.ttf);
+  }
+  html {
+    font-family: 'ahem';
+    font-size: 30px;
+    width: 300px;
+    height: 300px;
+  }
+  @property --reg-prop {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 11px;
+  }
+  div {
+    --prop: 13px;
+    font-size: 15px;
+    width: 150px;
+    height: 150px;
+    background-color: blueviolet;
+  }
+  .outer {
+    font-size: 10px;
+    width: 100px;
+    height: 100px;
+    background-color: ghostwhite;
+  }
+  .inner {
+    font-size: 5px;
+    width: 50px;
+    height: 50px;
+    background-color: slateblue;
+  }
+  div::after {
+    content: 'test';
+    font-size: 3px;
+    width: 30px;
+    height: 30px;
+  }
+  div::before {
+    font-size: 3px;
+    width: 30px;
+    height: 30px;
+  }
+</style>
+
+<div class="outer">
+  <div class="inner">test</div>
+</div>

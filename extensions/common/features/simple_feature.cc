@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/features/simple_feature.h"
 
 #include <algorithm>
@@ -471,20 +466,6 @@ bool SimpleFeature::IsIdInBlocklist(const HashedExtensionId& hashed_id) const {
 
 bool SimpleFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
   return IsIdInList(hashed_id, allowlist_);
-}
-
-// static
-bool SimpleFeature::IsIdInArray(const ExtensionId& extension_id,
-                                const char* const array[],
-                                size_t array_length) {
-  if (!IsValidExtensionId(extension_id))
-    return false;
-
-  const char* const* start = array;
-  const char* const* end = array + array_length;
-
-  return ((std::find(start, end, extension_id) != end) ||
-          (std::find(start, end, HashedIdInHex(extension_id)) != end));
 }
 
 // static

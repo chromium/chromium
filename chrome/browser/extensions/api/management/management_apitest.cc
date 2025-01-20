@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/auto_reset.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -50,6 +53,18 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
+constexpr char kManifest[] =
+    R"({
+          "name": "Management API Test",
+          "version": "0.1",
+          "manifest_version": 2,
+          "background": {
+            "scripts": ["background.js"],
+            "persistent": true
+          },
+          "replacement_web_app": "%s"
+        })";
+
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = nullptr;
@@ -71,7 +86,7 @@ bool ExpectChromeAppsDefaultEnabled() {
 
 }  // namespace
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionManagementApiTest
     : public extensions::ExtensionApiTest,
@@ -203,9 +218,6 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
   ~InstallReplacementWebAppApiTest() override = default;
 
  protected:
-  static const char kManifest[];
-  static const char kAppManifest[];
-
   void SetUpOnMainThread() override {
     ExtensionManagementApiTest::SetUpOnMainThread();
     https_test_server_.ServeFilesFromDirectory(test_data_dir_);
@@ -215,13 +227,14 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
         web_app::WebAppProvider::GetForTest(profile()));
   }
 
-  void RunTest(const char* manifest,
-               const char* web_app_path,
-               const char* background_script,
+  void RunTest(std::string manifest,
+               std::string_view web_app_path,
+               std::string_view background_script,
                bool from_webstore) {
     extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifest(base::StringPrintfNonConstexpr(
-        manifest, https_test_server_.GetURL(web_app_path).spec().c_str()));
+    base::ReplaceFirstSubstringAfterOffset(
+        &manifest, 0, "%s", https_test_server_.GetURL(web_app_path).spec());
+    extension_dir.WriteManifest(manifest);
     extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                             background_script);
     extensions::ResultCatcher catcher;
@@ -237,9 +250,9 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 
-  void RunInstallableWebAppTest(const char* manifest,
-                                const char* web_app_url,
-                                const char* web_app_start_url) {
+  void RunInstallableWebAppTest(std::string manifest,
+                                std::string_view web_app_url,
+                                std::string_view web_app_start_url) {
     static constexpr char kInstallReplacementWebApp[] =
         R"(chrome.test.runWithUserGesture(function() {
              chrome.management.installReplacementWebApp(function() {
@@ -253,7 +266,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
-    EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(web_app_id));
+    EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(web_app_id));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
@@ -265,7 +278,7 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     // Call API again. It should launch the app.
-    RunTest(manifest, web_app_url, kInstallReplacementWebApp,
+    RunTest(std::move(manifest), web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
     EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
               web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
@@ -284,29 +297,6 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          InstallReplacementWebAppApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
-
-const char InstallReplacementWebAppApiTest::kManifest[] =
-    R"({
-          "name": "Management API Test",
-          "version": "0.1",
-          "manifest_version": 2,
-          "background": {
-            "scripts": ["background.js"],
-            "persistent": true
-          },
-          "replacement_web_app": "%s"
-        })";
-
-const char InstallReplacementWebAppApiTest::kAppManifest[] =
-    R"({
-          "name": "Management API Test",
-          "version": "0.1",
-          "manifest_version": 2,
-          "app": {
-            "background": { "scripts": ["background.js"] }
-          },
-          "replacement_web_app": "%s"
-        })";
 
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, NotWebstore) {
   static constexpr char kBackground[] = R"(
@@ -376,6 +366,16 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
                        InstallableWebAppInPlatformApp) {
+  static constexpr char kAppManifest[] =
+      R"({
+          "name": "Management API Test",
+          "version": "0.1",
+          "manifest_version": 2,
+          "app": {
+            "background": { "scripts": ["background.js"] }
+          },
+          "replacement_web_app": "%s"
+        })";
   static constexpr char kGoodWebAppURL[] =
       "/management/install_replacement_web_app/acceptable_web_app/index.html";
 

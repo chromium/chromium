@@ -266,10 +266,10 @@ bool GamepadStateCompareResult::CompareTouches(Gamepad* old_gamepad,
                           new_touch->surfaceId() == old_touch->surfaceId() &&
                           new_touch->HasSurfaceDimensions() ==
                               old_touch->HasSurfaceDimensions() &&
-                          !Compare(new_touch->surfaceDimensions(),
-                                   old_touch->surfaceDimensions()) &&
-                          !Compare(new_touch->position(),
-                                   old_touch->position());
+                          !Compare(new_touch->surfaceDimensions().Get(),
+                                   old_touch->surfaceDimensions().Get()) &&
+                          !Compare(new_touch->position().Get(),
+                                   old_touch->position().Get());
                  });
 }
 

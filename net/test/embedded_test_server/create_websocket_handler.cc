@@ -5,6 +5,7 @@
 #include "net/test/embedded_test_server/create_websocket_handler.h"
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -43,6 +44,7 @@ std::unique_ptr<HttpResponse> MakeErrorResponse(HttpStatusCode code,
 EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
     std::string_view handle_path,
     WebSocketHandlerCreator websocket_handler_creator,
+    EmbeddedTestServer* server,
     const HttpRequest& request,
     HttpConnection* connection) {
   DVLOG(3) << "Handling WebSocket upgrade for path: " << handle_path;
@@ -135,7 +137,7 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
   CHECK(socket);
 
   auto websocket_connection = base::MakeRefCounted<WebSocketConnection>(
-      std::move(socket), sec_websocket_key_iter->second);
+      std::move(socket), sec_websocket_key_iter->second, server);
 
   auto handler = websocket_handler_creator.Run(websocket_connection);
   handler->OnHandshake(request);
@@ -148,9 +150,14 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
 
 EmbeddedTestServer::HandleUpgradeRequestCallback CreateWebSocketHandler(
     std::string_view handle_path,
-    WebSocketHandlerCreator websocket_handler_creator) {
+    WebSocketHandlerCreator websocket_handler_creator,
+    EmbeddedTestServer* server) {
+  // Note: The callback registered in ControllableHttpResponse will not be
+  // called after the server has been destroyed. This guarantees that the
+  // EmbeddedTestServer pointer remains valid for the lifetime of the
+  // ControllableHttpResponse instance.
   return base::BindRepeating(&HandleWebSocketUpgrade, handle_path,
-                             websocket_handler_creator);
+                             websocket_handler_creator, server);
 }
 
 }  // namespace net::test_server

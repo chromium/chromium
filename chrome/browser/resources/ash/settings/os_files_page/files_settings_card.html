@@ -1,6 +1,5 @@
 <style include="settings-shared">
-  :host-context(body.revamp-wayfinding-enabled)
-      #disconnectGoogleDriveAccountToggle {
+  #disconnectGoogleDriveAccountToggle {
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
@@ -22,7 +21,7 @@
 
 <settings-card header-text="$i18n{filesPageTitle}">
   <cr-link-row id="googleDriveRow"
-      start-icon="[[rowIcons_.googleDrive]]"
+      start-icon="os-settings:google-drive"
       on-click="onClickGoogleDrive_"
       label="$i18n{googleDriveLabel}"
       role-description="$i18n{subpageArrowRoleDescription}">
@@ -33,7 +32,7 @@
 
   <template is="dom-if" if="[[shouldShowOneDriveSettings_]]">
     <cr-link-row id="oneDriveRow"
-        start-icon="[[rowIcons_.oneDrive]]"
+        start-icon="settings20:onedrive"
         class="hr"
         on-click="onClickOneDrive_"
         label="$i18n{oneDriveLabel}"
@@ -45,7 +44,7 @@
   <template is="dom-if" if="[[shouldShowOfficeSettings_]]">
     <cr-link-row id="officeRow"
           class="hr"
-          start-icon="[[rowIcons_.ms365]]"
+          start-icon="os-settings:ms365"
           on-click="onClickOffice_"
           label="$i18n{officeLabel}"
           sub-label="$i18n{officeSublabel}"
@@ -53,38 +52,36 @@
       </cr-link-row>
   </template>
 
-  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-    <template is="dom-if" if="[[shouldShowAddSmbButton_]]" restamp>
-      <div id="addSmbSharesRow" class="settings-box two-line">
-        <iron-icon id="smbSharesIcon" icon="[[rowIcons_.smbShares]]">
-        </iron-icon>
-        <div id="smbSharesTextContainer" class="start">
-          <div class="settings-box-text">
-            <div>
-              $i18n{smbSharesTitle}
-            </div>
-            <div id="secondaryText" class="secondary">
-              <localized-link
-                  localized-string="$i18n{smbSharesTitleDescription}"
-                  link-url="$i18n{smbSharesLearnMoreURL}">
-              </localized-link>
-            </div>
+  <template is="dom-if" if="[[shouldShowAddSmbButton_]]" restamp>
+    <div id="addSmbSharesRow" class="settings-box two-line">
+      <iron-icon id="smbSharesIcon" icon="os-settings:folder-shared">
+      </iron-icon>
+      <div id="smbSharesTextContainer" class="start">
+        <div class="settings-box-text">
+          <div>
+            $i18n{smbSharesTitle}
+          </div>
+          <div id="secondaryText" class="secondary">
+            <localized-link
+                localized-string="$i18n{smbSharesTitleDescription}"
+                link-url="$i18n{smbSharesLearnMoreURL}">
+            </localized-link>
           </div>
         </div>
-        <controlled-button id="addShareButton"
-            on-click="openAddSmbDialog_"
-            label="$i18n{addSmbShare}"
-            disabled="[[!prefs.network_file_shares.allowed.value]]"
-            pref="[[prefs.network_file_shares.allowed]]"
-            end-justified>
-        </controlled-button>
       </div>
-    </template>
+      <controlled-button id="addShareButton"
+          on-click="openAddSmbDialog_"
+          label="$i18n{addSmbShare}"
+          disabled="[[!prefs.network_file_shares.allowed.value]]"
+          pref="[[prefs.network_file_shares.allowed]]"
+          end-justified>
+      </controlled-button>
+    </div>
   </template>
 
   <template is="dom-if" if="[[computeShowSmbLinkRow_(shouldShowAddSmbButton_)]]" restamp>
     <cr-link-row id="smbSharesRow"
-        start-icon="[[rowIcons_.smbShares]]"
+        start-icon="os-settings:folder-shared"
         class="hr"
         on-click="onClickSmbShares_"
         label="$i18n{smbSharesTitle}"

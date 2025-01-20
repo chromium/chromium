@@ -108,6 +108,7 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mShouldSendTypingStartedEvent;
 
     private boolean mPendingScroll;
+    private boolean mIsInCct;
 
     // Captures the current intended text scroll type.
     // This may not be effective if mPendingScroll is true.
@@ -355,6 +356,11 @@ public class UrlBar extends AutocompleteEditText {
         mAllowFocus = allowFocus;
         setFocusable(allowFocus);
         setFocusableInTouchMode(allowFocus);
+    }
+
+    /** Sets the property indicating the URL bar is used by Custom Tab. */
+    public void setIsInCct(boolean isInCct) {
+        mIsInCct = isInCct;
     }
 
     /**
@@ -1138,6 +1144,10 @@ public class UrlBar extends AutocompleteEditText {
         // receive additional wide space on top and bottom, shifting the content upwards.
         // We suppress Y translation here, as the Omnibox is not a vertically scrollable view, and
         // our font height computation logic appears to produce correct glyph sizes.
+        //
+        // Allows translation in CCT that has to animate URL bar text for branding.
+        // TODO(crbug.com/357399658): Consider a new approach to remove this exception for CCT.
+        if (mIsInCct) super.setTranslationY(translationY);
     }
 
     @Override
@@ -1224,6 +1234,10 @@ public class UrlBar extends AutocompleteEditText {
     float getMaxHeightOfFont() {
         var fontMetrics = getPaint().getFontMetrics();
         return fontMetrics.bottom - fontMetrics.top;
+    }
+
+    boolean getIsInCctForTesting() {
+        return mIsInCct;
     }
 
     /**

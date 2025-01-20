@@ -23,3 +23,16 @@ source_set("model") {
     "//ios/chrome/browser/sync/model/prefs",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_pref_service_factory_unittest.cc" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/pref_registry",
+    "//components/sync/base:features",
+    "//components/sync_preferences",
+    "//testing/gtest",
+  ]
+}

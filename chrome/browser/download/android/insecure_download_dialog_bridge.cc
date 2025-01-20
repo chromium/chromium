@@ -60,9 +60,8 @@ void InsecureDownloadDialogBridge::CreateDialog(
 
   Java_InsecureDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF16ToJavaString(
-          env, base::UTF8ToUTF16(base_name.value())),
-      download->GetTotalBytes(), callback_id);
+      base::UTF8ToUTF16(base_name.value()), download->GetTotalBytes(),
+      callback_id);
 }
 
 void InsecureDownloadDialogBridge::OnConfirmed(JNIEnv* env,

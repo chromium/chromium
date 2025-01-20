@@ -133,20 +133,12 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
       int index,
       size_t data_size,
       base::TimeDelta presentation_time) override;
-  MediaCodecResult QueueInputBlock(int index,
-                                   base::span<const uint8_t> data,
-                                   base::TimeDelta presentation_time,
-                                   bool is_eos) override;
   MediaCodecResult QueueSecureInputBuffer(
       int index,
       base::span<const uint8_t> data,
-      const std::string& key_id,
-      const std::string& iv,
-      const std::vector<SubsampleEntry>& subsamples,
-      EncryptionScheme encryption_scheme,
-      std::optional<EncryptionPattern> encryption_pattern,
-      base::TimeDelta presentation_time) override;
-  void QueueEOS(int input_buffer_index) override;
+      base::TimeDelta presentation_time,
+      const DecryptConfig& decrypt_config) override;
+  MediaCodecResult QueueEOS(int input_buffer_index) override;
   MediaCodecResult DequeueInputBuffer(base::TimeDelta timeout,
                                       int* index) override;
   MediaCodecResult DequeueOutputBuffer(base::TimeDelta timeout,
@@ -174,12 +166,19 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecBridgeImpl(CodecType codec_type,
                        std::optional<VideoCodec> video_decoder_codec,
                        base::android::ScopedJavaGlobalRef<jobject> j_bridge,
+                       bool use_block_model = false,
                        base::RepeatingClosure on_buffers_available_cb =
                            base::RepeatingClosure());
 
   // Fills the given input buffer. Returns false if |data_size| exceeds the
   // input buffer's capacity (and doesn't touch the input buffer in that case).
   [[nodiscard]] bool FillInputBuffer(int index, base::span<const uint8_t> data);
+
+  // Used by QueueInputBuffer() when `use_block_model_` is true. Parameters
+  // match those given to QueueInputBuffer().
+  MediaCodecResult QueueInputBlock(int index,
+                                   base::span<const uint8_t> data,
+                                   base::TimeDelta presentation_time);
 
   // Gets the address of the data in the given output buffer given by |index|
   // and |offset|. The number of bytes available to read is written to
@@ -195,6 +194,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
       const base::android::JavaParamRef<jobject>& /* obj */) override;
 
   void ReportAnyErrorToUMA(MediaCodecStatus status);
+
+  const bool use_block_model_;
 
   const CodecType codec_type_;
 

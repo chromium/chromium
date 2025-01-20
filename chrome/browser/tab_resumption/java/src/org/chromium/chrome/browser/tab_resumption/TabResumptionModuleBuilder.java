@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -57,7 +58,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         mProfileSupplier = profileSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mUseSalientImage = TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue();
+        mUseSalientImage = ChromeFeatureList.sTabResumptionModuleAndroidUseSalientImage.getValue();
     }
 
     /** Build {@link ModuleProvider} for the tab resumption module. */
@@ -212,7 +213,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         return new MixedTabResumptionDataProvider(
                 localTabProvider,
                 syncDerivedProvider,
-                TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND.getValue());
+                ChromeFeatureList.sTabResumptionModuleAndroidDisableBlend.getValue());
     }
 
     private void maybeInitImageServiceBridge(Profile profile) {

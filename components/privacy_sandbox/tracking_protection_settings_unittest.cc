@@ -34,6 +34,7 @@ class MockTrackingProtectionSettingsObserver
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
+  MOCK_METHOD(void, OnFpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
 };
@@ -54,7 +55,10 @@ class TrackingProtectionSettingsTest : public testing::Test {
         prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false,
         /*should_record_metrics=*/false);
-    feature_list_.InitWithFeatures({privacy_sandbox::kIpProtectionV1}, {});
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kIpProtectionV1,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
             prefs(), host_content_settings_map_.get(),
@@ -98,8 +102,17 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_FALSE(tracking_protection_settings()->IsIpProtectionEnabled());
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
+}
 
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
+TEST_F(TrackingProtectionSettingsTest,
+       IsFpProtectionEnabledOnlyReturnsTrueInIncognito) {
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                         /*is_incognito=*/true)
+                  .IsFpProtectionEnabled());
+  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          /*is_incognito=*/false)
+                   .IsFpProtectionEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -127,27 +140,27 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
       tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingReturnsAllow) {
+// Content settings
+
+using HasTrackingProtectionExceptionTest = TrackingProtectionSettingsTest;
+
+TEST_F(HasTrackingProtectionExceptionTest,
+       ReturnsTrueWhenTrackingProtectionContentSettingForUrlIsAllow) {
   host_content_settings_map()->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURL(GetTestUrl()),
       ContentSettingsType::TRACKING_PROTECTION,
       ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl()),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingReturnsBlockByDefault) {
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl()),
-            CONTENT_SETTING_BLOCK);
+TEST_F(HasTrackingProtectionExceptionTest, ReturnsFalseByDefault) {
+  EXPECT_FALSE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingFillsSettingInfo) {
+TEST_F(HasTrackingProtectionExceptionTest, FillsSettingInfo) {
   content_settings::TestUtils::OverrideProvider(
       host_content_settings_map(),
       std::make_unique<content_settings::MockProvider>(),
@@ -159,9 +172,8 @@ TEST_F(TrackingProtectionSettingsTest,
       ContentSetting::CONTENT_SETTING_ALLOW);
 
   content_settings::SettingInfo info;
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl(), &info),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl(), &info));
   EXPECT_EQ(info.primary_pattern, ContentSettingsPattern::Wildcard());
   EXPECT_EQ(info.secondary_pattern,
             ContentSettingsPattern::FromURL(GetTestUrl()));
@@ -170,30 +182,13 @@ TEST_F(TrackingProtectionSettingsTest,
 
 TEST_F(TrackingProtectionSettingsTest,
        AddTrackingProtectionExceptionAddsContentSetting) {
-  tracking_protection_settings()->AddTrackingProtectionException(
-      GetTestUrl(), /*is_user_bypass_exception=*/false);
-
+  tracking_protection_settings()->AddTrackingProtectionException(GetTestUrl());
   content_settings::SettingInfo info;
   EXPECT_EQ(host_content_settings_map()->GetContentSetting(
                 GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
                 &info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(info.metadata.expiration().is_null());
-}
-
-TEST_F(
-    TrackingProtectionSettingsTest,
-    AddTrackingProtectionExceptionAddsContentSettingWithUserBypassException) {
-  tracking_protection_settings()->AddTrackingProtectionException(
-      GetTestUrl(), /*is_user_bypass_exception=*/true);
-
-  content_settings::SettingInfo info;
-  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
-                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
-                &info),
-            CONTENT_SETTING_ALLOW);
-
-  EXPECT_FALSE(info.metadata.expiration().is_null());
 }
 
 TEST_F(TrackingProtectionSettingsTest,
@@ -205,26 +200,6 @@ TEST_F(TrackingProtectionSettingsTest,
       ContentSetting::CONTENT_SETTING_ALLOW);
   tracking_protection_settings()->RemoveTrackingProtectionException(
       GetTestUrl());
-
-  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
-                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION),
-            CONTENT_SETTING_BLOCK);
-}
-
-TEST_F(TrackingProtectionSettingsTest,
-       AddThenRemoveTrackingProtectionExceptionResetsContentSetting) {
-  tracking_protection_settings()->AddTrackingProtectionException(
-      GetTestUrl(), /*is_user_bypass_exception=*/false);
-
-  content_settings::SettingInfo info;
-  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
-                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
-                &info),
-            CONTENT_SETTING_ALLOW);
-
-  tracking_protection_settings()->RemoveTrackingProtectionException(
-      GetTestUrl());
-
   EXPECT_EQ(host_content_settings_map()->GetContentSetting(
                 GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION),
             CONTENT_SETTING_BLOCK);
@@ -273,6 +248,19 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForFpp) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
@@ -285,23 +273,5 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
-
-class TrackingProtectionSettingsTestWithIppDogfood
-    : public TrackingProtectionSettingsTest {
- public:
-  TrackingProtectionSettingsTestWithIppDogfood() {
-    features_.InitAndEnableFeature(
-        privacy_sandbox::kIpProtectionDogfoodDefaultOn);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(TrackingProtectionSettingsTestWithIppDogfood, VerifyDogfoodPrefs) {
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kIpProtectionInitializedByDogfood));
-}
-
 }  // namespace
 }  // namespace privacy_sandbox

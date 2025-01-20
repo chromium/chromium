@@ -101,7 +101,7 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
 }
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    const std::vector<CreditCard>& cards) {
+    base::span<const CreditCard> cards) {
   constexpr auto kLoggedNetworks =
       base::MakeFixedFlatSet<std::string_view>({kMasterCard, kVisaCard});
   CardMetadataLoggingContext metadata_logging_context;
@@ -119,8 +119,7 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     // denote in the `metadata_logging_context` that we have shown an enriched
     // card art so we can log it later.
     if (card.HasRichCardArtImageFromMetadata()) {
-      metadata_logging_context.card_art_image_shown =
-          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+      metadata_logging_context.card_art_image_shown = true;
     }
 
     bool card_has_metadata = !card.product_description().empty() ||

@@ -68,6 +68,9 @@ cargo_crate("lib") {
   build_deps = [ "//third_party/rust/rustc_version/v0_4:buildrs_support" ]
   build_root = "//third_party/rust/chromium_crates_io/vendor/rstest_macros-0.22.0/build.rs"
   build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rstest_macros-0.22.0/build.rs" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

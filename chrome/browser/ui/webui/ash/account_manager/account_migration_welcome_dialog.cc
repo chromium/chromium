@@ -33,7 +33,7 @@ AccountMigrationWelcomeDialog::AccountMigrationWelcomeDialog(
       email_(email),
       id_(gurl.spec()) {}
 
-AccountMigrationWelcomeDialog::~AccountMigrationWelcomeDialog() {}
+AccountMigrationWelcomeDialog::~AccountMigrationWelcomeDialog() = default;
 
 // static
 AccountMigrationWelcomeDialog* AccountMigrationWelcomeDialog::Show(

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
@@ -50,7 +51,8 @@ bool LabelsNodeList::ElementMatches(const Element& element) const {
 }
 
 ContainerNode& LabelsNodeList::RootNode() const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return LiveNodeList::RootNode();
   }
 
@@ -133,7 +135,8 @@ Element* LabelsNodeList::Previous(Element& current) const {
 }
 
 Element* LabelsNodeList::TraverseToFirst() const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return LiveNodeList::TraverseToFirst();
   }
 
@@ -148,7 +151,8 @@ Element* LabelsNodeList::TraverseToFirst() const {
 }
 
 Element* LabelsNodeList::TraverseToLast() const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return LiveNodeList::TraverseToLast();
   }
 
@@ -166,7 +170,8 @@ Element* LabelsNodeList::TraverseForwardToOffset(
     unsigned offset,
     Element& current_node,
     unsigned& current_offset) const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return LiveNodeList::TraverseForwardToOffset(offset, current_node,
                                                  current_offset);
   }
@@ -186,7 +191,8 @@ Element* LabelsNodeList::TraverseBackwardToOffset(
     unsigned offset,
     Element& current_node,
     unsigned& current_offset) const {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return LiveNodeList::TraverseBackwardToOffset(offset, current_node,
                                                   current_offset);
   }

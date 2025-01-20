@@ -76,8 +76,8 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_CHANGED" /> onglets modifiés, <ph name="ANY_CLOSED" /> fermés}}</translation>
 <translation id="4371591986692297148">Inactif</translation>
+<translation id="4431937619879060901">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
-<translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs?}}</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
@@ -98,16 +98,16 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté}one{<ph name="MANY_ADDED" /> onglet ajouté}other{<ph name="MANY_ADDED" /> onglets ajoutés}}</translation>
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5339733443032484186">Votre dernier onglet</translation>
+<translation id="5380159289133845234">Archiver les onglets en doubles</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Retirer l'onglet et quitter le groupe</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
-<translation id="5615302411300498438">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le.
-
-Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="TITLE_OF_GROUP" /> ».</translation>
 <translation id="5627941783489838464">Aucune mise à jour des onglets</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurer l'onglet}one{Restaurer l'onglet}other{Restaurer les onglets}}</translation>
+<translation id="5647702255748985085">Quitter le groupe?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5901630391730855834">Jaune</translation>
@@ -116,7 +116,7 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets «�
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6051432659151380973">Vos groupes d'onglets sont automatiquement enregistrés</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Vous perdrez immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la copie la plus récemment utilisée.</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
@@ -143,9 +143,10 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets «�
 <translation id="731648547091221002">Couleur sélectionnée : <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consultez la politique de retour et plus</translation>
 <translation id="7352298686197644113">Voir quel article dans vos onglets ouverts est offert à meilleur prix</translation>
-<translation id="7421293530411019405">Quitter le groupe d'onglets?</translation>
+<translation id="742664698522525515">Conserver le groupe?</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
+<translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder.</translation>
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
@@ -175,9 +176,7 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets «�
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_ADDED" /> onglet ajouté, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_ADDED" /> onglets ajoutés, <ph name="ANY_CLOSED" /> fermés}}</translation>
-<translation id="8631711675211020168">Tous les utilisateurs perdront immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" />, et celui-ci sera supprimé de tous les appareils</translation>
 <translation id="8633025649649592204">Activité récente</translation>
-<translation id="8635399646025169806">Conserver le groupe d'onglets?</translation>
 <translation id="870736955561925754">Fermer l'onglet et supprimer le groupe?</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">Terminé</translation>
@@ -188,10 +187,11 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets «�
 <translation id="8887921976452567404">Vos onglets et groupes fermés peuvent être rouverts à partir de la section Onglets récents et de la section Groupes d'onglets.</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
-<translation id="9111228330448174435">Afficher la boîte de dialogue lors de la création d'un groupe d'onglets</translation>
 <translation id="9114502155681725011">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et celui-ci sera supprimé de tous les appareils</translation>
 <translation id="9169594135889675189">Ajouter un onglet au groupe</translation>
 <translation id="9216898458513705996">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
+<translation id="94870150074703282">Supprimer le groupe?</translation>
 <translation id="992256792861109788">Rose</translation>
 </translationbundle>

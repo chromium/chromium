@@ -84,7 +84,7 @@ class InstallObserver {
   virtual void OnShutdown() {}
 
  protected:
-  virtual ~InstallObserver() {}
+  virtual ~InstallObserver() = default;
 };
 
 }  // namespace extensions

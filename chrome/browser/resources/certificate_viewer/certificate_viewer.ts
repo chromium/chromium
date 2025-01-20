@@ -6,7 +6,8 @@ import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import './constraint_list.js';
+import './browser_proxy.js';
+import './modifications_panel.js';
 
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
@@ -29,7 +30,8 @@ export enum CertificateTrust {
 
 interface CertificateMetadata {
   trust: CertificateTrust;
-  constraints: string[];
+  constraints?: string[];
+  isEditable: boolean;
 }
 
 interface CertificateInfo {
@@ -109,15 +111,17 @@ function getCertificateMetadata(certInfo: CertificateInfo) {
   assert(modificationsTab);
   modificationsTab.hidden = false;
 
-  const trustStateSelect =
-      document.querySelector<HTMLSelectElement>('#trust-state-select');
-  assert(trustStateSelect);
-  trustStateSelect.value = certInfo.certMetadata.trust.toString();
+  const modificationsPanel = document.querySelector('modifications-panel');
+  assert(modificationsPanel);
+  modificationsPanel.trustStateValue = certInfo.certMetadata.trust.toString();
 
-  const constraintsElement = document.querySelector('constraint-list');
-  assert(constraintsElement);
+  if (certInfo.certMetadata.isEditable) {
+    modificationsPanel.isEditable = true;
+  }
 
-  constraintsElement.constraints = certInfo.certMetadata.constraints;
+  if (certInfo.certMetadata.constraints !== undefined) {
+    modificationsPanel.constraints = certInfo.certMetadata.constraints;
+  }
 }
 
 /**

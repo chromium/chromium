@@ -100,6 +100,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   shouldShowSeaPenIntroductionDialogResponse = true;
 
+  shouldShowSeaPenFreeformIntroductionDialogResponse = true;
+
   isInTabletModeResponse = false;
 
   constructor() {
@@ -113,6 +115,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'deleteRecentSeaPenImage',
       'shouldShowSeaPenIntroductionDialog',
       'handleSeaPenIntroductionDialogClosed',
+      'shouldShowSeaPenFreeformIntroductionDialog',
+      'handleSeaPenFreeformIntroductionDialogClosed',
       'isInTabletMode',
       'makeTransparent',
     ]);
@@ -161,7 +165,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   deleteRecentSeaPenImage(id: SeaPenImageId) {
     assertTrue(
-        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
+        isSeaPenImageId(id), `id must rbe SeaPenImageId but received: ${id}`);
     this.methodCalled('deleteRecentSeaPenImage', id);
     this.recentImageIds = this.recentImageIds.filter(x => x !== id);
     return Promise.resolve({success: true});
@@ -181,6 +185,19 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   handleSeaPenIntroductionDialogClosed() {
     this.methodCalled('handleSeaPenIntroductionDialogClosed');
     this.shouldShowSeaPenIntroductionDialogResponse = false;
+  }
+
+  shouldShowSeaPenFreeformIntroductionDialog() {
+    this.methodCalled('shouldShowSeaPenFreeformIntroductionDialog');
+    return Promise.resolve({
+      shouldShowFreeformDialog:
+          this.shouldShowSeaPenFreeformIntroductionDialogResponse
+    });
+  }
+
+  handleSeaPenFreeformIntroductionDialogClosed() {
+    this.methodCalled('handleSeaPenFreeformIntroductionDialogClosed');
+    this.shouldShowSeaPenFreeformIntroductionDialogResponse = false;
   }
 
   isInTabletMode() {

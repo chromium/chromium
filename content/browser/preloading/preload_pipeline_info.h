@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/public/browser/preloading.h"
 
@@ -47,11 +48,13 @@ class CONTENT_EXPORT PreloadPipelineInfo final
   }
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
 
+  const base::UnguessableToken& id() const { return id_; }
+
  private:
   friend class base::RefCounted<PreloadPipelineInfo>;
   ~PreloadPipelineInfo();
 
-  // TODO(crbug.com/342089492): Add `const base::UnguessableToken id_;`
+  const base::UnguessableToken id_;
 
   PreloadingEligibility prefetch_eligibility_ =
       PreloadingEligibility::kUnspecified;

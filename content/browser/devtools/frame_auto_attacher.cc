@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -295,7 +296,7 @@ void FrameAutoAttacher::UpdateFrames() {
   DevToolsAgentHost::List new_auction_worklet_hosts;
   DevToolsAgentHost::List new_shared_storage_worklet_hosts;
   if (render_frame_host_) {
-    render_frame_host_->ForEachRenderFrameHostWithAction(
+    render_frame_host_->ForEachRenderFrameHostImplWithAction(
         [root = render_frame_host_, &new_hosts](RenderFrameHostImpl* rfh) {
           if (rfh == root || !rfh->is_local_root())
             return RenderFrameHost::FrameIterationAction::kContinue;
@@ -304,7 +305,9 @@ void FrameAutoAttacher::UpdateFrames() {
           // |root|.
           FrameTreeNode* node = rfh->frame_tree_node();
           bool should_create =
-              !node->IsMainFrame() || node->IsFencedFrameRoot();
+              !node->IsMainFrame() || node->IsFencedFrameRoot() ||
+              (base::FeatureList::IsEnabled(features::kGuestViewMPArch) &&
+               node->GetFrameType() == FrameType::kGuestMainFrame);
           if (should_create) {
             scoped_refptr<DevToolsAgentHost> new_host =
                 RenderFrameDevToolsAgentHost::GetOrCreateFor(node);

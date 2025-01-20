@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ai.mojom;
+
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+
+// Used to bridge a mojo service and execute query requests related to the AI
+// prototyping feature. Usually instantiated in a mediator. When a call is made
+// to the service, the service creates a call to the service implementation
+// which executes a query request, receives a response, and bubbles the response
+// back up where the response can be used to update the UI, update model logic,
+// etc.
+interface AIPrototypingService {
+  // Used to execute server query.
+  ExecuteServerQuery(mojo_base.mojom.ProtoWrapper request) => (string output);
+
+  // Used to execute on device model query.
+  ExecuteOnDeviceQuery(mojo_base.mojom.ProtoWrapper request)
+      => (string output);
+};

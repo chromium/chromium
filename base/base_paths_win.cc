@@ -35,15 +35,17 @@ bool PathProviderWin(int key, FilePath* result) {
   FilePath cur;
   switch (key) {
     case base::FILE_EXE:
-      if (GetModuleFileName(NULL, system_buffer, MAX_PATH) == 0)
+      if (GetModuleFileName(NULL, system_buffer, MAX_PATH) == 0) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::FILE_MODULE: {
       // the resource containing module is assumed to be the one that
       // this code lives in, whether that's a dll or exe
-      if (GetModuleFileName(CURRENT_MODULE(), system_buffer, MAX_PATH) == 0)
+      if (GetModuleFileName(CURRENT_MODULE(), system_buffer, MAX_PATH) == 0) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     }
@@ -58,8 +60,9 @@ bool PathProviderWin(int key, FilePath* result) {
     case base::DIR_PROGRAM_FILESX86:
       if (win::OSInfo::GetArchitecture() != win::OSInfo::X86_ARCHITECTURE) {
         if (FAILED(SHGetFolderPath(NULL, CSIDL_PROGRAM_FILESX86, NULL,
-                                   SHGFP_TYPE_CURRENT, system_buffer)))
+                                   SHGFP_TYPE_CURRENT, system_buffer))) {
           return false;
+        }
         cur = FilePath(system_buffer);
         break;
       }
@@ -67,8 +70,9 @@ bool PathProviderWin(int key, FilePath* result) {
       [[fallthrough]];
     case base::DIR_PROGRAM_FILES:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_PROGRAM_FILES6432:
@@ -80,64 +84,74 @@ bool PathProviderWin(int key, FilePath* result) {
         // 32-bit process running in WOW64 sets ProgramW6432 environment
         // variable. See
         // https://msdn.microsoft.com/library/windows/desktop/aa384274.aspx.
-        if (!env->GetVar("ProgramW6432", &programfiles_w6432))
+        if (!env->GetVar("ProgramW6432", &programfiles_w6432)) {
           return false;
+        }
         // GetVar returns UTF8 - convert back to Wide.
         cur = FilePath(UTF8ToWide(programfiles_w6432));
         break;
       }
 #endif
       if (FAILED(SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_IE_INTERNET_CACHE:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_INTERNET_CACHE, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_COMMON_START_MENU:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_COMMON_PROGRAMS, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_START_MENU:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_PROGRAMS, NULL, SHGFP_TYPE_CURRENT,
-                                 system_buffer)))
+                                 system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_COMMON_STARTUP:
       if (FAILED(SHGetFolderPath(nullptr, CSIDL_COMMON_STARTUP, nullptr,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_USER_STARTUP:
       if (FAILED(SHGetFolderPath(nullptr, CSIDL_STARTUP, nullptr,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_ROAMING_APP_DATA:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT,
-                                 system_buffer)))
+                                 system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_COMMON_APP_DATA:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_LOCAL_APP_DATA:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL,
-                                 SHGFP_TYPE_CURRENT, system_buffer)))
+                                 SHGFP_TYPE_CURRENT, system_buffer))) {
         return false;
+      }
       cur = FilePath(system_buffer);
       break;
     case base::DIR_SRC_TEST_DATA_ROOT: {
@@ -151,8 +165,9 @@ bool PathProviderWin(int key, FilePath* result) {
     case base::DIR_APP_SHORTCUTS: {
       base::win::ScopedCoMem<wchar_t> path_buf;
       if (FAILED(SHGetKnownFolderPath(FOLDERID_ApplicationShortcuts, 0, NULL,
-                                      &path_buf)))
+                                      &path_buf))) {
         return false;
+      }
 
       cur = FilePath(path_buf.get());
       break;
@@ -172,8 +187,9 @@ bool PathProviderWin(int key, FilePath* result) {
       cur = FilePath(system_buffer);
       break;
     case base::DIR_USER_QUICK_LAUNCH:
-      if (!PathService::Get(base::DIR_ROAMING_APP_DATA, &cur))
+      if (!PathService::Get(base::DIR_ROAMING_APP_DATA, &cur)) {
         return false;
+      }
       // According to various sources, appending
       // "Microsoft\Internet Explorer\Quick Launch" to %appdata% is the only
       // reliable way to get the quick launch folder across all versions of
@@ -185,15 +201,17 @@ bool PathProviderWin(int key, FilePath* result) {
                 .Append(FILE_PATH_LITERAL("Quick Launch"));
       break;
     case base::DIR_TASKBAR_PINS: {
-      if (!PathService::Get(base::DIR_USER_QUICK_LAUNCH, &cur))
+      if (!PathService::Get(base::DIR_USER_QUICK_LAUNCH, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("User Pinned"))
                 .Append(FILE_PATH_LITERAL("TaskBar"));
       break;
     }
     case base::DIR_IMPLICIT_APP_SHORTCUTS:
-      if (!PathService::Get(base::DIR_USER_QUICK_LAUNCH, &cur))
+      if (!PathService::Get(base::DIR_USER_QUICK_LAUNCH, &cur)) {
         return false;
+      }
       cur = cur.Append(FILE_PATH_LITERAL("User Pinned"))
                 .Append(FILE_PATH_LITERAL("ImplicitAppShortcuts"));
       break;

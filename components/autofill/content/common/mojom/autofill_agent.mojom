@@ -44,6 +44,16 @@ interface AutofillAgent {
   // be found and extracted.
   ExtractForm(FormRendererId form) => (FormData? form);
 
+  // Tries to extract the node value from the DOM and returns the extracted
+  // value back to the browser process. The response string contains the
+  // node value if present. If the string is empty, it means no node value
+  // was found.
+  // See `form_util::ExtractFinalCheckoutAmountFromDom()` for details.
+  ExtractLabeledTextNodeValue(mojo_base.mojom.String16 value_regex,
+                        mojo_base.mojom.String16 label_regex,
+                        uint32 number_of_ancestor_levels_to_search) =>
+      (string value);
+
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
@@ -125,7 +135,7 @@ interface PasswordAutofillAgent {
 
   // Informs that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials(bool should_show_popup_without_passwords);
+  InformNoSavedCredentials();
 
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(
@@ -140,6 +150,18 @@ interface PasswordAutofillAgent {
   // `FieldPropertiesMask` of the filled fields.
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
     AutofillSuggestionTriggerSource suggestion_source);
+
+  // Fills and submits a given change password form, specifically
+  // `password_element_id` with `old_password` and `new_password_element_id`,
+  // `confirm_password_element_id` with `new_password`. Upon completion
+  // asynchronously returns `form_data` with filled values. Submission
+  // happens by simulating Enter on the last input field.
+  SubmitChangePasswordForm(FieldRendererId password_element_id,
+                         FieldRendererId new_password_element_id,
+                         FieldRendererId confirm_password_element_id,
+                         mojo_base.mojom.String16 old_password,
+                         mojo_base.mojom.String16 new_password)
+      => (FormData form_data);
 
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
@@ -168,6 +190,10 @@ interface PasswordGenerationAgent {
   // Tells the renderer to populate the correct password fields with this
   // generated password.
   GeneratedPasswordAccepted(mojo_base.mojom.String16 generated_password);
+
+  // Tells the renderer that the generated password was rejected by the user
+  // and should not be shown again in the same generation flow.
+  GeneratedPasswordRejected();
 
   // Tells the renderer to find a focused element, and if it is a password field
   // eligible for generation then to trigger generation by returning

@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -806,7 +807,8 @@ class VideoEncoderTest : public ::testing::Test {
         }
       }
     }
-    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr));
+    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr,
+                               &std::unique_ptr<BitstreamProcessor>::get));
     return bitstream_processors;
   }
 

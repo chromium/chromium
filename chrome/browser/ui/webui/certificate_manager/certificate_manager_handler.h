@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
@@ -88,6 +89,8 @@ class CertificateManagerPageHandler
 #if !BUILDFLAG(IS_CHROMEOS)
   void SetIncludeSystemTrustStore(bool include) override;
 #endif
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
   // Returns a reference to the CertSource object corresponding to `source`.

@@ -66,7 +66,10 @@ bool ShouldBlockAccessToPath(const base::FilePath& path) {
     return false;
   }
 
-  CHECK(path.IsAbsolute());
+  // Block any empty or non-absolute paths.
+  if (!path.IsAbsolute()) {
+    return true;
+  }
 
   constexpr int kBlockedPaths[] = {
       base::DIR_ANDROID_APP_DATA,

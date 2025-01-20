@@ -65,6 +65,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -202,7 +203,7 @@ class CrostiniManagerTest : public testing::Test {
 
     // Login user for crostini, link gaia for DriveFS.
     AccountId account_id = AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), "12345");
+        profile()->GetProfileUserName(), GaiaId("12345"));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
@@ -2461,7 +2462,7 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
             profile_.get());
     ansible_management_test_helper_ =
         std::make_unique<AnsibleManagementTestHelper>(profile_.get());
-    ansible_management_test_helper_->SetUpAnsibleInfra();
+    ansible_management_test_helper_->SetUpAnsiblePlaybookPreference();
     SetUpViewsEnvironmentForTesting();
   }
 

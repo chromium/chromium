@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
@@ -68,7 +69,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
             long totalBytes,
             @ConnectionType int connectionType,
             @DownloadLocationDialogType int dialogType,
-            String suggestedPath,
+            @JniType("std::string") String suggestedPath,
             Profile profile) {
         mWindowAndroid = windowAndroid;
         mProfile = profile;
@@ -216,10 +217,13 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     @NativeMethods
     public interface Natives {
         void onComplete(
-                long nativeDownloadDialogBridge, DownloadDialogBridge caller, String returnedPath);
+                long nativeDownloadDialogBridge,
+                DownloadDialogBridge caller,
+                @JniType("std::string") String returnedPath);
 
         void onCanceled(long nativeDownloadDialogBridge, DownloadDialogBridge caller);
 
-        void setDownloadAndSaveFileDefaultDirectory(PrefService prefs, String directory);
+        void setDownloadAndSaveFileDefaultDirectory(
+                PrefService prefs, @JniType("std::string") String directory);
     }
 }

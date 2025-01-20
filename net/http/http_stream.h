@@ -19,6 +19,7 @@
 #include <string_view>
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_migration_information.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
@@ -208,7 +209,7 @@ class NET_EXPORT_PRIVATE HttpStream {
   // before any requests are made.
   virtual std::string_view GetAcceptChViaAlps() const = 0;
 
-  // Represents detailed QUIC errors returned by GetQuicErrorDetails().
+  // Represents detailed QUIC errors stored in `QuicConnectionDetails`.
   struct QuicErrorDetails {
     // Internal connection error of the stream.
     quic::QuicErrorCode connection_error = quic::QUIC_NO_ERROR;
@@ -220,11 +221,17 @@ class NET_EXPORT_PRIVATE HttpStream {
     uint64_t ietf_application_error = 0;
   };
 
+  // Represents details for QUIC connections.
+  struct QuicConnectionDetails {
+    QuicErrorDetails error;
+    ConnectionMigrationInformation connection_migration_info;
+  };
+
   // If `this` is using a QUIC stream, returns error details of the QUIC stream.
   // Otherwise returns nullopt. Detailed QUIC errors are only available after
   // the stream has been initialized. Use PopulateNetErrorDetails() for errors
   // that happened during the initialization.
-  virtual std::optional<QuicErrorDetails> GetQuicErrorDetails() const;
+  virtual std::optional<QuicConnectionDetails> GetQuicConnectionDetails() const;
 };
 
 }  // namespace net

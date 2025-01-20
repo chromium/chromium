@@ -236,7 +236,7 @@ PermissionBlockedMessageDelegate::Delegate::~Delegate() {
   Closing();
 }
 
-PermissionBlockedMessageDelegate::Delegate::Delegate() {}
+PermissionBlockedMessageDelegate::Delegate::Delegate() = default;
 
 PermissionBlockedMessageDelegate::Delegate::Delegate(
     const base::WeakPtr<permissions::PermissionPromptAndroid>&

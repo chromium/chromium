@@ -10,9 +10,7 @@
 #include "base/containers/span.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 
-namespace url_formatter {
-
-namespace common_words {
+namespace url_formatter::common_words {
 
 namespace {
 
@@ -35,6 +33,4 @@ void ResetCommonWordDAFSAForTesting() {
   g_dafsa_params = kDafsa;
 }
 
-}  // namespace common_words
-
-}  // namespace url_formatter
+}  // namespace url_formatter::common_words

@@ -123,7 +123,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // Restores the saved columns settings from a previous session into
   // |columns_settings_| and updates the table view.
-  void RetrieveSavedColumnsSettingsAndUpdateTable();
+  void RetrieveSavedColumnsSettingsAndUpdateTable(
+      bool default_sorted_column_to_cpu = false);
 
   // Stores the current values in |column_settings_| to the user prefs so that
   // it can be restored later next time the task manager view is opened.

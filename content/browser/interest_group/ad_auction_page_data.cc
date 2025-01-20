@@ -51,6 +51,23 @@ bool AdAuctionPageData::WitnessedAuctionResultForOrigin(
   return it->second.contains(response);
 }
 
+void AdAuctionPageData::AddAuctionResultNonceWitnessForOrigin(
+    const url::Origin& origin,
+    const std::string& nonce) {
+  origin_auction_result_nonce_map_[origin].insert(nonce);
+}
+
+bool AdAuctionPageData::WitnessedAuctionResultNonceForOrigin(
+    const url::Origin& origin,
+    const std::string& nonce) const {
+  auto it = origin_auction_result_nonce_map_.find(origin);
+  if (it == origin_auction_result_nonce_map_.end()) {
+    return false;
+  }
+
+  return it->second.contains(nonce);
+}
+
 void AdAuctionPageData::AddAuctionSignalsWitnessForOrigin(
     const url::Origin& origin,
     const std::string& response) {
@@ -121,12 +138,14 @@ AdAuctionPageData::TakeAuctionAdditionalBidsForOriginAndNonce(
 void AdAuctionPageData::RegisterAdAuctionRequestContext(
     const base::Uuid& id,
     AdAuctionRequestContext context) {
-  context_map_.insert(std::make_pair(id, std::move(context)));
+  url::Origin seller = context.seller;
+  context_map_.insert(
+      std::make_pair(ContextMapKey(id, seller), std::move(context)));
 }
 
 AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
-    const base::Uuid& id) {
-  auto it = context_map_.find(id);
+    const ContextMapKey& key) {
+  auto it = context_map_.find(key);
   if (it == context_map_.end()) {
     return nullptr;
   }

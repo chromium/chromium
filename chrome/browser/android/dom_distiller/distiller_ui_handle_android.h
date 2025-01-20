@@ -18,12 +18,12 @@ namespace android {
 
 class DistillerUIHandleAndroid : public DistillerUIHandle {
  public:
-  DistillerUIHandleAndroid() {}
+  DistillerUIHandleAndroid() = default;
 
   DistillerUIHandleAndroid(const DistillerUIHandleAndroid&) = delete;
   DistillerUIHandleAndroid& operator=(const DistillerUIHandleAndroid&) = delete;
 
-  ~DistillerUIHandleAndroid() override {}
+  ~DistillerUIHandleAndroid() override = default;
 
   void set_render_frame_host(content::RenderFrameHost* host) {
     render_frame_host_ = host;

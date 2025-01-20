@@ -21,6 +21,7 @@ include_rules = [
     "+base/containers/span_or_size.h",
     "+base/containers/span_reader.h",
     "+base/containers/span_writer.h",
+    "+base/containers/to_vector.h",
     "+base/dcheck_is_on.h",
     "+base/debug",
     "+base/feature_list.h",
@@ -84,6 +85,7 @@ include_rules = [
     "+base/types/optional_util.h",
     "+base/types/pass_key.h",
     "+base/types/strong_alias.h",
+    "+base/types/zip.h",
     "+build",
     "+cc/input/hit_test_opaqueness.h",
     "+cc/paint",
@@ -106,6 +108,7 @@ include_rules = [
     "-ui/base/l10n",
     "-ui/base/resource",
 
+    "+ui/accessibility/ax_constants.mojom-blink.h",
     "+ui/base/cursor/mojom/cursor_type.mojom-blink.h",
     "+ui/base/dragdrop/mojom",
     "+ui/events/keycodes/dom",

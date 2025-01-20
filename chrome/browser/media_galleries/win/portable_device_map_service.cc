@@ -66,11 +66,8 @@ PortableDeviceMapService::PortableDeviceInfo::PortableDeviceInfo(
       scheduled_to_delete(false) {
 }
 
-PortableDeviceMapService::PortableDeviceInfo::~PortableDeviceInfo() {
-}
+PortableDeviceMapService::PortableDeviceInfo::~PortableDeviceInfo() = default;
 
-PortableDeviceMapService::PortableDeviceMapService() {
-}
+PortableDeviceMapService::PortableDeviceMapService() = default;
 
-PortableDeviceMapService::~PortableDeviceMapService() {
-}
+PortableDeviceMapService::~PortableDeviceMapService() = default;

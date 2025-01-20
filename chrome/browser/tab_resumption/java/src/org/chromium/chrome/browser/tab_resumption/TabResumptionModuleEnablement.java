@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,7 +22,7 @@ public class TabResumptionModuleEnablement {
 
     static class LocalTab {
         static boolean isFeatureEnabled() {
-            return HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.getValue();
+            return ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.getValue();
         }
 
         static boolean isAllowedByConfig() {
@@ -64,12 +63,12 @@ public class TabResumptionModuleEnablement {
 
         static boolean isV2Enabled() {
             return ChromeFeatureList.isEnabled(ChromeFeatureList.VISITED_URL_RANKING_SERVICE)
-                    && TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
+                    && ChromeFeatureList.sTabResumptionModuleAndroidEnableV2.getValue();
         }
 
         static boolean isV2EnabledWithHistory() {
             return isV2Enabled()
-                    && TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.getValue();
+                    && ChromeFeatureList.sTabResumptionModuleAndroidFetchHistoryBackend.getValue();
         }
 
         static boolean shouldMakeProvider(Profile profile) {

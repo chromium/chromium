@@ -5,9 +5,9 @@
 #include "base/power_monitor/speed_limit_observer_win.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <powerbase.h>
-#include <winternl.h>
 
 #include <algorithm>
 #include <memory>

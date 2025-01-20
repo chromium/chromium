@@ -5,8 +5,6 @@
 #ifndef REMOTING_CODEC_VIDEO_ENCODER_VPX_H_
 #define REMOTING_CODEC_VIDEO_ENCODER_VPX_H_
 
-#include <stdint.h>
-
 #include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -80,7 +78,7 @@ class VideoEncoderVpx : public VideoEncoder {
   base::HeapArray<uint8_t> image_buffer_;
 
   // Active map used to optimize out processing of un-changed macroblocks.
-  std::unique_ptr<uint8_t[]> active_map_;
+  base::HeapArray<uint8_t> active_map_;
   webrtc::DesktopSize active_map_size_;
 
   // True if the codec wants unchanged frames to finish topping-off with.

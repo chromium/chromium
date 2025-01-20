@@ -39,7 +39,6 @@
 #include "base/threading/thread.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -99,12 +98,7 @@ const int32_t kSendBufferSizeForDevTools = 256 * 1024 * 1024;  // 256Mb
 const int32_t kReceiveBufferSizeForDevTools = 100 * 1024 * 1024;  // 100Mb
 
 const char kRemoteUrlPattern[] =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    "https://chrome-devtools-frontend.appspot.com/serve_internal_file/%s/"
-    "%s.html";
-#else
     "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html";
-#endif
 
 constexpr net::NetworkTrafficAnnotationTag
     kDevtoolsHttpHandlerTrafficAnnotation =
@@ -361,8 +355,7 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
     constexpr char kMsg[] =
         "{\"method\":\"Inspector.detached\","
         "\"params\":{\"reason\":\"target_closed\"}}";
-    DispatchProtocolMessage(
-        agent_host, base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
+    DispatchProtocolMessage(agent_host, base::byte_span_from_cstring(kMsg));
 
     agent_host_ = nullptr;
     task_runner_->PostTask(
@@ -819,7 +812,7 @@ void DevToolsHttpHandler::OnWebSocketMessage(int connection_id,
                                              std::string data) {
   auto it = connection_to_client_.find(connection_id);
   if (it != connection_to_client_.end()) {
-    it->second->OnMessage(base::as_bytes(base::make_span(data)));
+    it->second->OnMessage(base::as_byte_span(data));
   }
 }
 

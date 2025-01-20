@@ -26,10 +26,12 @@ concept IsPointer = std::is_pointer_v<T>;
 // and `y` are equal. It's called with `(*a, *b)` when `a != b && a && b`.
 template <typename T, typename Predicate = std::equal_to<>>
 bool ValuesEquivalent(const T* a, const T* b, Predicate p = {}) {
-  if (a == b)
+  if (a == b) {
     return true;
-  if (!a || !b)
+  }
+  if (!a || !b) {
     return false;
+  }
   return p(*a, *b);
 }
 

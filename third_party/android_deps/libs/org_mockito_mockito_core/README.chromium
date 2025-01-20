@@ -2,7 +2,7 @@ Name: mockito-core
 Short Name: mockito-core
 URL: https://github.com/mockito/mockito
 Version: 5.11.0
-License: The MIT License
+License: MIT
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no

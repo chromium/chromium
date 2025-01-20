@@ -162,9 +162,8 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
         int width = drawable.getIntrinsicWidth();
         int height = drawable.getIntrinsicHeight();
 
-        BitmapDrawable d3 =
-                BrandingSecurityButtonAnimationDelegate.resizeToBitmapDrawable(
-                        resources, drawable, width - 1, height - 1);
+        BrandingSecurityButtonAnimationDelegate.resizeToBitmapDrawable(
+                resources, drawable, width - 1, height - 1);
     }
 
     private void setupInitialImageButtonState() {

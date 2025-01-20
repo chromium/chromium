@@ -81,10 +81,6 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
             return mWasDialogShown;
         }
 
-        public PropertyModel getDialogPropertyModel() {
-            return mDialogPropertyModel;
-        }
-
         @Override
         public void onDialogAdded(PropertyModel model) {
             mWasAnyDialogShown = true;
@@ -110,7 +106,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         }
     }
 
-    private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
+    private static final String TEST_PAGE = "/chrome/test/data/android/dc_mdocs.html";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

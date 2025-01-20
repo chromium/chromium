@@ -57,6 +57,19 @@ enum class TabSearchRecentlyClosedToggleAction {
   kMaxValue = kCollapse,
 };
 
+class DuplicateTabsObserver : public content::WebContentsObserver {
+ public:
+  DuplicateTabsObserver(
+      content::WebContents* web_contents,
+      base::RepeatingCallback<void()> on_url_changed_callback);
+  ~DuplicateTabsObserver() override;
+
+  void PrimaryPageChanged(content::Page& page) override;
+
+ private:
+  base::RepeatingCallback<void()> on_url_changed_callback_;
+};
+
 class TabSearchPageHandler
     : public tab_search::mojom::PageHandler,
       public TabStripModelObserver,
@@ -78,7 +91,8 @@ class TabSearchPageHandler
 
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
-  void DeclutterTabs(const std::vector<int32_t>& tab_ids) override;
+  void DeclutterTabs(const std::vector<int32_t>& tab_ids,
+                     const std::vector<GURL>& urls) override;
   void AcceptTabOrganization(
       int32_t session_id,
       int32_t organization_id,
@@ -89,8 +103,9 @@ class TabSearchPageHandler
                              int32_t organization_id,
                              const std::u16string& name) override;
   void ExcludeFromStaleTabs(int32_t tab_id) override;
+  void ExcludeFromDuplicateTabs(const GURL& url) override;
   void GetProfileData(GetProfileDataCallback callback) override;
-  void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetUnusedTabs(GetUnusedTabsCallback callback) override;
   void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
   void GetTabOrganizationFeature(
       GetTabOrganizationFeatureCallback callback) override;
@@ -108,8 +123,6 @@ class TabSearchPageHandler
   void RejectSession(int32_t session_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
-  void SetTabSearchSection(
-      tab_search::mojom::TabSearchSection section) override;
   void SetOrganizationFeature(
       tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;
@@ -118,8 +131,9 @@ class TabSearchPageHandler
   void OpenHelpPage() override;
   void SetTabOrganizationModelStrategy(
       tab_search::mojom::TabOrganizationModelStrategy strategy) override;
+  void SetTabOrganizationUserInstruction(
+      const std::string& user_instruction) override;
   void SetUserFeedback(int32_t session_id,
-                       int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
   void NotifyOrganizationUIReadyToShow() override;
   void NotifySearchUIReadyToShow() override;
@@ -134,7 +148,9 @@ class TabSearchPageHandler
                     TabChangeType change_type) override;
 
   // TabDeclutterObserver:
-  void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) override;
+  void OnUnusedTabsProcessed(
+      std::vector<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) override;
 
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
@@ -171,8 +187,15 @@ class TabSearchPageHandler
     return stale_tabs_;
   }
 
+  std::map<GURL, std::vector<tabs::TabInterface*>>
+  duplicate_tabs_for_testing() {
+    return duplicate_tabs_;
+  }
+
   void SetTabDeclutterControllerForTesting(
       tabs::TabDeclutterController* tab_declutter_controller);
+
+  static constexpr int kMinRecentlyClosedItemDisplayCount = 8;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -183,6 +206,8 @@ class TabSearchPageHandler
   // previously added to the ProfileData will not be added more than once by
   // leveraging DedupKey comparisons.
   typedef std::tuple<GURL, std::optional<base::Token>> DedupKey;
+
+  enum class UnusedTabType { kInactive, kDuplicate };
 
   // Encapsulates tab details to facilitate performing an action on a tab.
   struct TabDetails {
@@ -203,7 +228,7 @@ class TabSearchPageHandler
   void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
-  void UpdateStaleTabs();
+  void UpdateUnusedTabs();
 
   void SetTabDeclutterController(
       tabs::TabDeclutterController* tab_declutter_controller);
@@ -254,21 +279,46 @@ class TabSearchPageHandler
 
   void NotifyShowFREPrefChanged(const Profile* profile);
 
+  mojo::StructPtr<tab_search::mojom::UnusedTabInfo> GetMojoUnusedTabs();
   std::vector<mojo::StructPtr<tab_search::mojom::Tab>> GetMojoStaleTabs();
+  base::flat_map<std::string,
+                 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+  GetMojoDuplicateTabs();
 
   void UnregisterTabCallbacks();
-  void RegisterTabDeclutterCallbacks(tabs::TabInterface* tab);
+  void RegisterInactiveTabDeclutterCallbacks(tabs::TabInterface* tab);
+  void RegisterDuplicateTabDeclutterCallbacks(tabs::TabInterface* tab);
+
   void OnStaleTabDidEnterForeground(tabs::TabInterface* tab);
-  void OnStaleTabWillDetach(tabs::TabInterface* tab,
-                            tabs::TabInterface::DetachReason reason);
-  void OnStaleTabPinnedStateChanged(tabs::TabInterface* tab,
-                                    bool new_pinned_state);
-  void OnStaleTabGroupChanged(tabs::TabInterface* tab,
-                              std::optional<tab_groups::TabGroupId> new_group);
+  void OnDuplicateTabWillDiscardWebContents(tabs::TabInterface* tab,
+                                            content::WebContents* old_content,
+                                            content::WebContents* new_content);
+
+  void OnUnusedTabWillDetach(tabs::TabInterface* tab,
+                             tabs::TabInterface::DetachReason reason,
+                             UnusedTabType type);
+  void OnUnusedTabPinnedStateChanged(tabs::TabInterface* tab,
+                                     bool new_pinned_state,
+                                     UnusedTabType type);
+  void OnUnusedTabGroupChanged(tabs::TabInterface* tab,
+                               std::optional<tab_groups::TabGroupId> new_group,
+                               UnusedTabType type);
+
   void RemoveStaleTab(tabs::TabInterface* tab);
+
+  // Removes a tab from the duplicate tab list, along with its associated
+  // subscriptions and observations. If the duplicate list for the tab's URL
+  // contains only one remaining tab after removal, that tab is also removed,
+  // and the list is erased from the map. If the tab is not found, the method
+  // exits without performing any action.
+  void RemoveDuplicateTab(tabs::TabInterface* tab);
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
+
+  std::vector<tabs::TabInterface*> FilterDuplicateTabsFromStaleTabs(
+      std::vector<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
@@ -312,8 +362,16 @@ class TabSearchPageHandler
       listened_sessions_;
 
   std::vector<tabs::TabInterface*> stale_tabs_;
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs_;
+
   std::map<tabs::TabInterface*, std::vector<base::CallbackListSubscription>>
-      tab_declutter_subscriptions_map_;
+      inactive_tab_subscriptions_map_;
+
+  std::map<tabs::TabInterface*, std::vector<base::CallbackListSubscription>>
+      duplicate_tab_subscriptions_map_;
+
+  std::map<tabs::TabInterface*, std::unique_ptr<DuplicateTabsObserver>>
+      duplicate_tab_webcontents_observers_;
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};

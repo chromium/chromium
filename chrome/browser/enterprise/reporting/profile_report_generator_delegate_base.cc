@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace em = enterprise_management;
 
@@ -56,7 +57,7 @@ void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
     return;
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(account_info.email);
-  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia);
+  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia.ToString());
 }
 
 std::unique_ptr<policy::PolicyConversionsClient>

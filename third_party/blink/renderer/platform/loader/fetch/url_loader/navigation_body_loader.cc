@@ -20,7 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -131,7 +131,7 @@ void ReadFromDataPipeImpl(BodyReader& reader,
       reader.FinishedReading(/*has_error=*/true);
       return;
     }
-    const size_t chunk_size = network::features::kMaxNumConsumedBytesInTask;
+    const size_t chunk_size = network::kMaxNumConsumedBytesInTask;
     DCHECK_LE(num_bytes_consumed, chunk_size);
     buffer = buffer.first(
         std::min<size_t>(buffer.size(), chunk_size - num_bytes_consumed));

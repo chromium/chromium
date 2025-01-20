@@ -10,19 +10,24 @@ from typing import Dict
 import unittest
 from unittest import mock
 
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+
 from unexpected_passes import gpu_expectations
 from unexpected_passes_common import data_types
 
 # pylint: disable=protected-access
 
 
-class CreateTestExpectationMapUnittest(unittest.TestCase):
+class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
+
   def setUp(self) -> None:
+    self.setUpPyfakefs()
     self.instance = gpu_expectations.GpuExpectations()
 
     self._expectation_content: Dict[str, str] = {}
-    self._content_patcher = mock.patch.object(
-        self.instance, '_GetNonRecentExpectationContent')
+    self._content_patcher = mock.patch(
+        'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
 
@@ -33,8 +38,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
   def testSlowExpectationsDropped(self) -> None:
     """Tests that slow expectations get dropped from the generated map."""
-    filename = '/tmp/foo'
-    self._expectation_content[filename] = """\
+    filename = '/foo'
+    expectation_content = """\
 # tags: [ win linux ]
 # tags: [ nvidia intel ]
 # results: [ Failure Slow ]
@@ -44,6 +49,10 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 [ linux nvidia ] foo/test [ Slow ]
 [ linux intel ] foo/test [ Failure ]
 """
+    self._expectation_content[filename] = expectation_content
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(expectation_content)
+
     expectation_map = self.instance.CreateTestExpectationMap(
         filename, None, datetime.timedelta(days=0))
     # The Slow expectations should be omitted.

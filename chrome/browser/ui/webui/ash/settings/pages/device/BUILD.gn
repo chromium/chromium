@@ -53,7 +53,6 @@ static_library("device") {
     "//chrome/browser/ash/note_taking",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -70,6 +69,7 @@ static_library("device") {
     "//ui/display/manager",
     "//ui/display/types",
     "//ui/events/ash",
+    "//ui/webui",
   ]
 
   if (is_chrome_branded) {

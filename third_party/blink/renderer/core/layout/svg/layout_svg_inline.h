@@ -65,6 +65,13 @@ class LayoutSVGInline : public LayoutInline {
                        const PhysicalOffset& additional_offset,
                        OutlineType) const final;
 
+  void InvalidateObjectBoundingBox() {
+    NOT_DESTROYED();
+    needs_update_bounding_box_ = true;
+  }
+
+  void Paint(const PaintInfo&) const final;
+
  private:
   void WillBeDestroyed() final;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;
@@ -76,10 +83,18 @@ class LayoutSVGInline : public LayoutInline {
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
 
+  // Return true if this can have an object bounding box.
+  // bounding_box_ can be dirty even if this flag is true.
   bool IsObjectBoundingBoxValid() const;
 
   static void ObjectBoundingBoxForCursor(InlineCursor& cursor,
                                          gfx::RectF& bounds);
+
+  // `bounding_box_` and `needs_update_bounding_box_` are mutable for
+  // on-demand computation of bounding_box_.
+  mutable gfx::RectF bounding_box_;
+  // True if we need to update bounding_box_.
+  mutable bool needs_update_bounding_box_ = true;
 };
 
 template <>

@@ -13,6 +13,8 @@ blink_core_sources_html = [
   "anchor_element_observer.h",
   "blocking_attribute.cc",
   "blocking_attribute.h",
+  "canvas/canvas_2d_color_params.cc",
+  "canvas/canvas_2d_color_params.h",
   "canvas/canvas_async_blob_creator.cc",
   "canvas/canvas_async_blob_creator.h",
   "canvas/canvas_context_creation_attributes_core.cc",
@@ -118,6 +120,7 @@ blink_core_sources_html = [
   "forms/color_chooser_ui_controller.h",
   "forms/color_input_type.cc",
   "forms/color_input_type.h",
+  "forms/control_key.h",
   "forms/date_input_type.cc",
   "forms/date_input_type.h",
   "forms/date_time_chooser.cc",
@@ -358,6 +361,7 @@ blink_core_sources_html = [
   "html_param_element.h",
   "html_permission_element.cc",
   "html_permission_element.h",
+  "html_permission_element_strings_map.h",
   "html_picture_element.cc",
   "html_picture_element.h",
   "html_plugin_element.cc",
@@ -545,6 +549,7 @@ blink_core_sources_html = [
   "trust_token_attribute_parsing.h",
   "window_name_collection.cc",
   "window_name_collection.h",
+  "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.cc",
 ]
 
 # Optimizing the HTML parser for speed yields significant gains in performance
@@ -649,6 +654,7 @@ blink_core_tests_html = [
   "fenced_frame/fence_test.cc",
   "fenced_frame/fenced_frame_config_test.cc",
   "fenced_frame/html_fenced_frame_element_test.cc",
+  "forms/control_key_test.cc",
   "forms/email_input_type_test.cc",
   "forms/external_date_time_chooser_test.cc",
   "forms/external_popup_menu_test.cc",
@@ -670,6 +676,7 @@ blink_core_tests_html = [
   "forms/text_control_element_test.cc",
   "forms/type_ahead_test.cc",
   "html_anchor_element_test.cc",
+  "html_attribute_fuzztest.cc",
   "html_dimension_test.cc",
   "html_element_test.cc",
   "html_embed_element_test.cc",

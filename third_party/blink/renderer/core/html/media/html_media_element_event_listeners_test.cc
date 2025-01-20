@@ -60,9 +60,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
   double Duration() const override { return duration_; }
 
   WebTimeRanges Seekable() const override {
-    WebTimeRange single_range[] = {WebTimeRange(0, Duration())};
-
-    return WebTimeRanges(single_range, 1);
+    return WebTimeRanges(0, Duration());
   }
 
   void Seek(double seconds) override { last_seek_time_ = seconds; }

@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <atomic>
 #include <list>
 #include <memory>
@@ -387,7 +388,8 @@ void CopyRowsToP010Buffer(int first_row,
   DCHECK_NE(dest_stride_uv, 0);
   DCHECK_EQ(0, first_row % 2);
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
-  DCHECK_LE(width * 2, source_frame->stride(VideoFrame::Plane::kY));
+  DCHECK_LE(static_cast<size_t>(width * 2),
+            source_frame->stride(VideoFrame::Plane::kY));
 
   const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
       source_frame->visible_data(VideoFrame::Plane::kY) +
@@ -475,7 +477,8 @@ void CopyRowsToNV12Buffer(int first_row,
         dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv,
         bytes_per_row_y, rows_y);
   } else {
-    DCHECK_LE(width * 2, source_frame->stride(VideoFrame::Plane::kY));
+    DCHECK_LE(static_cast<size_t>(width * 2),
+              source_frame->stride(VideoFrame::Plane::kY));
 
     const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
         source_frame->visible_data(VideoFrame::Plane::kY) +
@@ -919,9 +922,11 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
       VideoPixelFormat pixel_format = VideoFormat(output_format);
       for (int dst_plane = 0; dst_plane < 3; ++dst_plane) {
-        static constexpr VideoFrame::Plane kSrcPlanes[3] = {
-            VideoFrame::Plane::kY, VideoFrame::Plane::kV,
-            VideoFrame::Plane::kU};
+        constexpr static std::array<VideoFrame::Plane, 3> kSrcPlanes = {
+            VideoFrame::Plane::kY,
+            VideoFrame::Plane::kV,
+            VideoFrame::Plane::kU,
+        };
         VideoFrame::Plane src_plane = kSrcPlanes[dst_plane];
 
         const size_t plane_row_start =
@@ -1201,29 +1206,20 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
                                         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    bool add_scanout_usage = true;
-
-    // SCANOUT usage was historically added unconditionally. However, it
-    // actually should be added only if scanout of SharedImages for this use
-    // case is supported.
-    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            features::
-                kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-      auto si_caps = sii->GetCapabilities();
-
+    // SCANOUT usage should be added only if scanout of SharedImages for this
+    // use case is supported.
+    auto si_caps = sii->GetCapabilities();
 #if BUILDFLAG(IS_WIN)
-      // On Windows, overlays are in general not supported. However, in some
-      // cases they are supported for the software video frame use case in
-      // particular. This cap details whether that support is present.
-      add_scanout_usage =
-          si_caps.supports_scanout_shared_images_for_software_video_frames;
+    // On Windows, overlays are in general not supported. However, in some
+    // cases they are supported for the software video frame use case in
+    // particular. This cap details whether that support is present.
+    bool add_scanout_usage =
+        si_caps.supports_scanout_shared_images_for_software_video_frames;
 #else
-      // On all other platforms, whether scanout for SharedImages is supported
-      // for this particular use case is no different than the general case.
-      add_scanout_usage = si_caps.supports_scanout_shared_images;
+    // On all other platforms, whether scanout for SharedImages is supported
+    // for this particular use case is no different than the general case.
+    bool add_scanout_usage = si_caps.supports_scanout_shared_images;
 #endif
-    }
 
     if (add_scanout_usage) {
       si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;

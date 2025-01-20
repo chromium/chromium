@@ -16,34 +16,25 @@
 
 namespace net {
 
+namespace {
+// Check that the given `reason` is valid, i.e., is within the range of values
+// allowed by the `CookieInclusionStatus::WarningReason` enum.
+bool IsWarningReasonOutOfBounds(CookieInclusionStatus::WarningReason reason) {
+  return reason < 0 ||
+         reason >= CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS;
+}
+
+// Check that the given `reason` is valid, i.e., is within the range of values
+// allowed by the `CookieInclusionStatus::ExclusionReason` enum.
+bool IsExclusionReasonOutOfBounds(
+    CookieInclusionStatus::ExclusionReason reason) {
+  return reason < 0 ||
+         reason >=
+             CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS;
+}
+}  // namespace
+
 CookieInclusionStatus::CookieInclusionStatus() = default;
-
-CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason) {
-  exclusion_reasons_[reason] = true;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason,
-                                             WarningReason warning) {
-  exclusion_reasons_[reason] = true;
-  warning_reasons_[warning] = true;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
-  warning_reasons_[warning] = true;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(
-    std::vector<ExclusionReason> exclusions,
-    std::vector<WarningReason> warnings,
-    ExemptionReason exemption) {
-  for (ExclusionReason reason : exclusions) {
-    exclusion_reasons_[reason] = true;
-  }
-  for (WarningReason warning : warnings) {
-    warning_reasons_[warning] = true;
-  }
-  exemption_reason_ = exemption;
-}
 
 CookieInclusionStatus::CookieInclusionStatus(
     const CookieInclusionStatus& other) = default;
@@ -52,31 +43,35 @@ CookieInclusionStatus& CookieInclusionStatus::operator=(
     const CookieInclusionStatus& other) = default;
 
 bool CookieInclusionStatus::operator==(
-    const CookieInclusionStatus& other) const {
-  return exclusion_reasons_ == other.exclusion_reasons_ &&
-         warning_reasons_ == other.warning_reasons_ &&
-         exemption_reason_ == other.exemption_reason_;
-}
+    const CookieInclusionStatus& other) const = default;
 
 bool CookieInclusionStatus::operator!=(
-    const CookieInclusionStatus& other) const {
-  return !operator==(other);
-}
+    const CookieInclusionStatus& other) const = default;
 
 bool CookieInclusionStatus::IsInclude() const {
   return exclusion_reasons_.none();
 }
 
 bool CookieInclusionStatus::HasExclusionReason(ExclusionReason reason) const {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return false;
+  }
   return exclusion_reasons_[reason];
 }
 
 bool CookieInclusionStatus::HasOnlyExclusionReason(
     ExclusionReason reason) const {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return false;
+  }
   return exclusion_reasons_[reason] && exclusion_reasons_.count() == 1;
 }
 
 void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return;
+  }
+
   exclusion_reasons_[reason] = true;
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
@@ -89,6 +84,9 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return;
+  }
   exclusion_reasons_[reason] = false;
 }
 
@@ -108,7 +106,9 @@ CookieInclusionStatus::ExclusionReasonsWithout(
     const std::vector<ExclusionReason>& reasons) const {
   CookieInclusionStatus::ExclusionReasonBitset result(exclusion_reasons_);
   for (const ExclusionReason reason : reasons) {
-    result[reason] = false;
+    if (!IsExclusionReasonOutOfBounds(reason)) {
+      result[reason] = false;
+    }
   }
   return result;
 }
@@ -159,6 +159,9 @@ bool CookieInclusionStatus::ShouldWarn() const {
 }
 
 bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return false;
+  }
   return warning_reasons_[reason];
 }
 
@@ -189,10 +192,16 @@ bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
 }
 
 void CookieInclusionStatus::AddWarningReason(WarningReason reason) {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return;
+  }
   warning_reasons_[reason] = true;
 }
 
 void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return;
+  }
   warning_reasons_[reason] = false;
 }
 
@@ -272,6 +281,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {EXCLUDE_DISALLOWED_CHARACTER, "EXCLUDE_DISALLOWED_CHARACTER"},
       {EXCLUDE_THIRD_PARTY_PHASEOUT, "EXCLUDE_THIRD_PARTY_PHASEOUT"},
       {EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
+      {EXCLUDE_ALIASING, "EXCLUDE_ALIASING"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReason::NUM_EXCLUSION_REASONS,
@@ -378,16 +388,14 @@ std::string CookieInclusionStatus::GetDebugString() const {
 }
 
 bool CookieInclusionStatus::HasExactlyExclusionReasonsForTesting(
-    std::vector<CookieInclusionStatus::ExclusionReason> reasons) const {
-  CookieInclusionStatus expected =
-      MakeFromReasonsForTesting(std::move(reasons));
+    const std::vector<CookieInclusionStatus::ExclusionReason>& reasons) const {
+  CookieInclusionStatus expected = MakeFromReasonsForTesting(reasons);
   return expected.exclusion_reasons_ == exclusion_reasons_;
 }
 
 bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
-    std::vector<WarningReason> reasons) const {
-  CookieInclusionStatus expected =
-      MakeFromReasonsForTesting({}, std::move(reasons));
+    const std::vector<WarningReason>& reasons) const {
+  CookieInclusionStatus expected = MakeFromReasonsForTesting({}, reasons);
   return expected.warning_reasons_ == warning_reasons_;
 }
 
@@ -404,14 +412,9 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
 }
 
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
-    std::vector<ExclusionReason> exclusions,
-    std::vector<WarningReason> warnings,
-    ExemptionReason exemption,
-    bool use_literal) {
-  CookieInclusionStatus literal_status(exclusions, warnings, exemption);
-  if (use_literal) {
-    return literal_status;
-  }
+    const std::vector<ExclusionReason>& exclusions,
+    const std::vector<WarningReason>& warnings,
+    ExemptionReason exemption) {
   CookieInclusionStatus status;
   for (ExclusionReason reason : exclusions) {
     status.AddExclusionReason(reason);
@@ -421,7 +424,19 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
   }
   status.MaybeSetExemptionReason(exemption);
 
-  CHECK_EQ(status, literal_status);
+  for (auto reason : exclusions) {
+    CHECK(status.HasExclusionReason(reason))
+        << "Exemption " << reason << " could not be applied";
+  }
+  CHECK_EQ(status.exclusion_reasons_.count(), exclusions.size());
+  for (auto reason : warnings) {
+    CHECK(status.HasWarningReason(reason))
+        << "Warning " << reason << " could not be applied";
+  }
+  CHECK_EQ(status.warning_reasons_.count(), warnings.size());
+  CHECK_EQ(status.exemption_reason(), exemption)
+      << "Exemption " << static_cast<int>(exemption) << " could not be applied";
+
   return status;
 }
 

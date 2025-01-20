@@ -50,6 +50,7 @@ namespace {
 
 using testing::NotNull;
 
+// THIS TEST MIGHT NEED TO BE DELETED
 class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
@@ -57,7 +58,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
     features_.InitWithFeatures(
         {tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {tab_groups::kTabGroupsSaveUIUpdate});
+        {});
   }
 
   void OnWillBeDestroyed() override {
@@ -306,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
             GURL("http://www.google.com/1"));
 }
 
+// SaveTabGroup with position set is always placed before the one without
+// position set. If both have position set, the one with lower position number
+// should place before. If both positions are the same or both are not set, the
+// one with more recent update time should place before.
 // Regression test. See crbug.com/370013915.
 IN_PROC_BROWSER_TEST_F(
     TabGroupSyncDelegateBrowserTest,
@@ -323,37 +328,55 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
   WaitUntilCallbackReceived();
-  std::optional<SavedTabGroup> group_1 = service->GetGroup(local_id);
-  EXPECT_TRUE(group_1);
+
+  // The first group is automatically set to 0. it should be first in the list.
+  std::optional<SavedTabGroup> locally_created_group_at_0 =
+      service->GetGroup(local_id);
+  ASSERT_TRUE(locally_created_group_at_0);
+  ASSERT_EQ(0, locally_created_group_at_0->position());
   EXPECT_EQ(2u, saved_tab_group_bar->children().size());
 
-  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kPink, {}, 2);
+  // const std::u16string& title,
+  // const tab_groups::TabGroupColorId& color,
+  // const std::vector<SavedTabGroupTab>& urls,
+  // std::optional<size_t> position = std::nullopt,
+  SavedTabGroup group_with_position_set_2(
+      u"Group 2",                          // title
+      tab_groups::TabGroupColorId::kPink,  // color
+      {},                                  // urls
+      2                                    // position
+  );
   SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
-                        group_2.saved_guid(),
+                        group_with_position_set_2.saved_guid(),
                         /*position=*/0);
-  group_2.AddTabLocally(tab2);
+  group_with_position_set_2.AddTabLocally(tab2);
 
-  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kGreen, {},
-                        10);
+  SavedTabGroup group_with_position_set_10(
+      u"Group 3", tab_groups::TabGroupColorId::kGreen, {}, 10);
   SavedTabGroupTab tab3(GURL("about:blank"), u"about:blank",
-                        group_3.saved_guid(),
+                        group_with_position_set_10.saved_guid(),
                         /*position=*/0);
-  group_3.AddTabLocally(tab3);
+  group_with_position_set_10.AddTabLocally(tab3);
 
-  const base::Uuid sync_id_1 = group_1->saved_guid();
-  const base::Uuid sync_id_2 = group_2.saved_guid();
-  const base::Uuid sync_id_3 = group_3.saved_guid();
+  const base::Uuid sync_id_1 = locally_created_group_at_0->saved_guid();
+  const base::Uuid sync_id_2 = group_with_position_set_2.saved_guid();
+  const base::Uuid sync_id_3 = group_with_position_set_10.saved_guid();
 
   // FromSync calls are asynchronous, so wait for the task to complete.
-  model_->AddedFromSync(std::move(group_3));
+  model_->AddedFromSync(std::move(group_with_position_set_10));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service->GetGroup(sync_id_3).has_value(); }));
   EXPECT_EQ(3u, saved_tab_group_bar->children().size());
 
-  model_->AddedFromSync(std::move(group_2));
+  model_->AddedFromSync(std::move(group_with_position_set_2));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service->GetGroup(sync_id_2).has_value(); }));
   EXPECT_EQ(4u, saved_tab_group_bar->children().size());
+
+  // Make sure positions werent updated.
+  ASSERT_EQ(service->GetGroup(sync_id_1).value().position(), 0);
+  ASSERT_EQ(service->GetGroup(sync_id_2).value().position(), 2);
+  ASSERT_EQ(service->GetGroup(sync_id_3).value().position(), 10);
 
   // Verify the ordering is group 1, group 2, group 3
   EXPECT_TRUE(views::IsViewClass<SavedTabGroupButton>(
@@ -401,7 +424,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
       saved_group->saved_guid(), u"title", TabGroupColorId::kRed,
       /*position=*/std::nullopt, /*creator_cache_guid=*/std::nullopt,
       /*last_updater_cache_guid=*/std::nullopt,
-      /*update_time=*/base::Time::Now());
+      /*update_time=*/base::Time::Now(),
+      /*updated_by=*/GaiaId());
 
   // Wait for the tab group update to complete because sync updates are
   // asynchronous.
@@ -412,6 +436,64 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
   // The local group should still be collapsed.
   EXPECT_TRUE(local_group->visual_data()->is_collapsed());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       TabRemovalsFromSyncDontCauseZeroTabStateInLocal) {
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(this);
+
+  // Starts with one tab.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Add a tab and create a group.
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), 0, false);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  const LocalTabGroupID local_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  TabGroup* local_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
+  ASSERT_THAT(local_group, NotNull());
+  ASSERT_EQ(1, local_group->tab_count());
+  local_group->SetVisualData(
+      TabGroupVisualData(u"Title", tab_groups::TabGroupColorId::kBlue,
+                         /*is_collapsed=*/true),
+      /*is_customized=*/true);
+
+  // Verify that the group is saved and has exactly one tab.
+  WaitUntilCallbackReceived();
+  std::optional<SavedTabGroup> saved_group = service->GetGroup(local_id);
+  ASSERT_TRUE(saved_group.has_value());
+  ASSERT_EQ(1u, saved_group->saved_tabs().size());
+  base::Uuid saved_group_id = saved_group->saved_guid();
+  base::Uuid saved_tab_id = saved_group->saved_tabs()[0].saved_tab_guid();
+
+  // Simulate three updates received by sync: one tab removal, two tab
+  // additions. This could generate transient zero tab state but shouldn't close
+  // the group locally. We send the addition first and removal next because this
+  // is the order merges are sent from bridge. If removal is sent first, model
+  // will delete the group instead for last tab closure.
+  const SavedTabGroupTab added_tab1(GURL(chrome::kChromeUINewTabURL),
+                                    u"New Tab 1", saved_group_id,
+                                    /*position=*/0);
+  const SavedTabGroupTab added_tab2(GURL(chrome::kChromeUINewTabURL),
+                                    u"New Tab 2", saved_group_id,
+                                    /*position=*/1);
+  model_->AddTabToGroupFromSync(saved_group_id, added_tab1);
+  model_->AddTabToGroupFromSync(saved_group_id, added_tab2);
+  model_->RemoveTabFromGroupFromSync(saved_group_id, saved_tab_id);
+  WaitUntilCallbackReceived();
+  WaitUntilCallbackReceived();
+
+  saved_group = service->GetGroup(local_id);
+  ASSERT_EQ(2u, saved_group->saved_tabs().size());
+
+  // Verify that the group still exists in the tab strip and has 2 tabs in
+  // total.
+  EXPECT_EQ(2u, SavedTabGroupUtils::GetTabsInGroup(local_id).size());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
 }
 
 }  // namespace

@@ -21,7 +21,7 @@ namespace policy {
 DefaultGeolocationPolicyHandler::DefaultGeolocationPolicyHandler()
     : IntRangePolicyHandlerBase(key::kDefaultGeolocationSetting, 1, 3, false) {}
 
-DefaultGeolocationPolicyHandler::~DefaultGeolocationPolicyHandler() {}
+DefaultGeolocationPolicyHandler::~DefaultGeolocationPolicyHandler() = default;
 
 bool DefaultGeolocationPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,

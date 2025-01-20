@@ -325,8 +325,7 @@ TEST_F(BlobMemoryControllerTest, PageToDisk) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -401,8 +400,7 @@ TEST_F(BlobMemoryControllerTest, CancelMemoryRequest) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -577,9 +575,9 @@ TEST_F(BlobMemoryControllerTest, MultipleFilesPaged) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data1.Populate(base::as_bytes(base::make_span(kData1, kSize1)));
+  future_data1.Populate(base::as_byte_span(kData1));
   items1[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
-  future_data2.Populate(base::as_bytes(base::make_span(kData2, kSize2)));
+  future_data2.Populate(base::as_byte_span(kData2));
   items2[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> both_items = {items1[0],
@@ -829,8 +827,7 @@ TEST_F(BlobMemoryControllerTest, DisableDiskWithFileAndMemoryPending) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging it to disk.
-  future_data.Populate(
-      base::as_bytes(base::make_span(kDataMemoryData, kFirstMemorySize)));
+  future_data.Populate(base::as_byte_span(kDataMemoryData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 

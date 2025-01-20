@@ -73,10 +73,10 @@ void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
 
-  StartPrefetchRequest();
+  StartLoadCachedPrefetchResponse();
 }
 
-void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
+void CacheAliasSearchPrefetchURLLoader::StartLoadCachedPrefetchResponse() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;

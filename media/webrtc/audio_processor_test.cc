@@ -81,9 +81,7 @@ void DisableDefaultSettings(AudioProcessingSettings& settings) {
   settings.echo_cancellation = false;
   settings.noise_suppression = false;
   settings.automatic_gain_control = false;
-  settings.high_pass_filter = false;
   settings.multi_channel_capture_processing = false;
-  settings.stereo_mirroring = false;
 }
 
 }  // namespace
@@ -160,7 +158,6 @@ class AudioProcessorTest : public ::testing::Test {
     const webrtc::AudioProcessing::Config config =
         *audio_processor.GetAudioProcessingModuleConfigForTesting();
 
-    EXPECT_TRUE(config.high_pass_filter.enabled);
     EXPECT_FALSE(config.pre_amplifier.enabled);
     EXPECT_TRUE(config.echo_canceller.enabled);
 
@@ -183,13 +180,6 @@ class AudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Android and iOS use echo cancellation optimized for mobiles.
-    EXPECT_TRUE(config.echo_canceller.mobile_mode);
-#else
-    EXPECT_FALSE(config.echo_canceller.mobile_mode);
-#endif
   }
 
   media::AudioParameters params_;
@@ -384,15 +374,12 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
       // Turn off the audio processing.
       DisableDefaultSettings(settings);
     }
-    // Turn on the stereo channels mirroring.
-    settings.stereo_mirroring = true;
     std::unique_ptr<AudioProcessor> audio_processor = AudioProcessor::Create(
         mock_capture_callback_.Get(), LogCallbackForTesting(), settings,
         params_, GetProcessorOutputParams(params_, settings));
     EXPECT_EQ(audio_processor->has_webrtc_audio_processing(), use_apm);
     // There's no sense in continuing if this fails.
     ASSERT_EQ(2, audio_processor->output_format().channels());
-
     // Run the test consecutively to make sure the stereo channels are not
     // flipped back and forth.
     const base::TimeTicks pushed_capture_time = base::TimeTicks::Now();
@@ -433,10 +420,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
               EXPECT_NE(right_channel_energy, 0);
             } else {
               // Stereo output. Output channels are independent.
-              // Note that after stereo mirroring, the _right_ channel is
-              // non-zero.
-              EXPECT_EQ(left_channel_energy, 0);
-              EXPECT_NE(right_channel_energy, 0);
+              EXPECT_NE(left_channel_energy, 0);
+              EXPECT_EQ(right_channel_energy, 0);
             }
           });
       // Process one more frame of audio.
@@ -519,7 +504,6 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
                          params_,
                          params_,
                          mock_webrtc_apm_,
-                         /*stereo_mirroring=*/false,
                          /*needs_playout_reference=*/true) {}
 
   rtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;

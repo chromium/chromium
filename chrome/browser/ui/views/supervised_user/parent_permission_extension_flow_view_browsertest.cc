@@ -283,7 +283,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
                                     2);
 }
 
-
 class ExtensionManagementApiTestSupervised
     : public ExtensionEnableFlowTestSupervised {
  public:

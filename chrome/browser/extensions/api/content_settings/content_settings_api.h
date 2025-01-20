@@ -22,7 +22,7 @@ class ContentSettingsContentSettingClearFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contentSettings.clear", CONTENTSETTINGS_CLEAR)
 
  protected:
-  ~ContentSettingsContentSettingClearFunction() override {}
+  ~ContentSettingsContentSettingClearFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -33,7 +33,7 @@ class ContentSettingsContentSettingGetFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contentSettings.get", CONTENTSETTINGS_GET)
 
  protected:
-  ~ContentSettingsContentSettingGetFunction() override {}
+  ~ContentSettingsContentSettingGetFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -44,7 +44,7 @@ class ContentSettingsContentSettingSetFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("contentSettings.set", CONTENTSETTINGS_SET)
 
  protected:
-  ~ContentSettingsContentSettingSetFunction() override {}
+  ~ContentSettingsContentSettingSetFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -57,7 +57,8 @@ class ContentSettingsContentSettingGetResourceIdentifiersFunction
                              CONTENTSETTINGS_GETRESOURCEIDENTIFIERS)
 
  protected:
-  ~ContentSettingsContentSettingGetResourceIdentifiersFunction() override {}
+  ~ContentSettingsContentSettingGetResourceIdentifiersFunction() override =
+      default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

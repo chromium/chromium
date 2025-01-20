@@ -5,15 +5,22 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_ENCRYPTED_METADATA_KEY_H_
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_ENCRYPTED_METADATA_KEY_H_
 
-#include <cstdint>
-#include <vector>
+#include <stdint.h>
+
+#include <array>
+
+#include "base/containers/span.h"
+#include "chrome/browser/nearby_sharing/certificates/constants.h"
 
 // Holds the encrypted symmetric key--the key used to encrypt user/device
 // metatdata--as well as the salt used to encrypt the key.
 struct NearbyShareEncryptedMetadataKey {
  public:
-  NearbyShareEncryptedMetadataKey(std::vector<uint8_t> salt,
-                                  std::vector<uint8_t> encrypted_key);
+  NearbyShareEncryptedMetadataKey(
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>
+          salt,
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>
+          encrypted_key);
   NearbyShareEncryptedMetadataKey(const NearbyShareEncryptedMetadataKey&);
   NearbyShareEncryptedMetadataKey& operator=(
       const NearbyShareEncryptedMetadataKey&);
@@ -21,12 +28,18 @@ struct NearbyShareEncryptedMetadataKey {
   NearbyShareEncryptedMetadataKey& operator=(NearbyShareEncryptedMetadataKey&&);
   ~NearbyShareEncryptedMetadataKey();
 
-  const std::vector<uint8_t>& salt() const { return salt_; }
-  const std::vector<uint8_t>& encrypted_key() const { return encrypted_key_; }
+  base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>
+  salt() const {
+    return salt_;
+  }
+  base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>
+  encrypted_key() const {
+    return encrypted_key_;
+  }
 
  private:
-  std::vector<uint8_t> salt_;
-  std::vector<uint8_t> encrypted_key_;
+  std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt> salt_;
+  std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKey> encrypted_key_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_ENCRYPTED_METADATA_KEY_H_

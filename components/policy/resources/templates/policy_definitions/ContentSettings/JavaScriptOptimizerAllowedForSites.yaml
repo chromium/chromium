@@ -33,11 +33,11 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
-- chrome.*
-- chrome_os
-- fuchsia
+supported_on:
+- android:133-
+- chrome.*:133-
+- chrome_os:133-
+- fuchsia:133-
 owners:
 - ellyjones@chromium.org
 - wfh@chromium.org

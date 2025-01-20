@@ -13,16 +13,19 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
-namespace history_embeddings {
-
+namespace passage_embeddings {
 class PassageEmbeddingsServiceController;
+}  // namespace passage_embeddings
+
+namespace history_embeddings {
 
 // An embedder that returns embeddings from a machine learning model.
 class MlEmbedder : public Embedder,
                    public optimization_guide::OptimizationTargetModelObserver {
  public:
   MlEmbedder(optimization_guide::OptimizationGuideModelProvider* model_provider,
-             PassageEmbeddingsServiceController* service_controller);
+             passage_embeddings::PassageEmbeddingsServiceController*
+                 service_controller);
   ~MlEmbedder() override;
 
   // Embedder:
@@ -40,13 +43,16 @@ class MlEmbedder : public Embedder,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  // The provider of the embeddings model. Guaranteed to outlive `this`, since
-  // model_provider will be owned by OptimizationGuideKeyedServiceFactory, which
-  // HistoryEmbeddingsServiceFactory depends on.
+  // The provider of the embeddings model. It may be nullptr if
+  // `optimization_guide::kOptimizationHints` feature is disabled. Otherwise, it
+  // is guaranteed to outlive `this` since HistoryEmbeddingsServiceFactory
+  // depends on OptimizationGuideKeyedServiceFactory.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
 
   // The controller used to interact with the PassageEmbeddingsService.
-  raw_ptr<PassageEmbeddingsServiceController> service_controller_;
+  // It is a singleton and guaranteed not to be nullptr.
+  raw_ptr<passage_embeddings::PassageEmbeddingsServiceController>
+      service_controller_;
 
   // Called once the embedder is ready.
   OnEmbedderReadyCallback on_embedder_ready_;

@@ -14,6 +14,18 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 enum class SafetyCheckNotificationType;
+enum class SafetyCheckNotificationsOptInSource;
+
+// Logs the source of a user's decision to opt-in or opt-out of Safety Check
+// notifications. Determines the current notification permission status
+// internally using
+// `push_notification_settings::GetMobileNotificationPermissionStatusForClient`
+// and records the appropriate histogram value in
+// `IOS.Notifications.SafetyCheck.NotificationsOptInSource` based on whether
+// notifications are enabled or disabled.
+void LogSafetyCheckNotificationOptInSource(
+    SafetyCheckNotificationsOptInSource opt_in_source,
+    SafetyCheckNotificationsOptInSource opt_out_source);
 
 // Returns a notification request for the most critical Password issue
 // found using `state` and `insecure_password_counts`. Returns `nil` if no

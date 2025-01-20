@@ -406,19 +406,6 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   // TODO(devlin): Add constants for main world id, no extension group.
 }
 
-void ExtensionFrameHelper::DidCommitProvisionalLoad(
-    ui::PageTransition transition) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
-    return;
-  }
-  // Grant cross browsing instance frame lookup if we are an extension. This
-  // should match the conditions in FindFrame.
-  content::RenderFrame* frame = render_frame();
-  if (GetExtensionFromFrame(frame))
-    frame->SetAllowsCrossBrowsingInstanceFrameLookup();
-}
-
 void ExtensionFrameHelper::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
@@ -591,13 +578,12 @@ void ExtensionFrameHelper::DidClearWindowObject() {
   // Calling this multiple times in a page load is safe because
   // SetAllowsCrossBrowsingInstanceFrameLookup() just sets a bool to true on the
   // SecurityOrigin.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
-    // Grant cross browsing instance frame lookup if we are an extension. This
-    // should match the conditions in FindFrame.
-    content::RenderFrame* frame = render_frame();
-    if (GetExtensionFromFrame(frame))
-      frame->SetAllowsCrossBrowsingInstanceFrameLookup();
+
+  // Grant cross browsing instance frame lookup if we are an extension. This
+  // should match the conditions in FindFrame.
+  content::RenderFrame* frame = render_frame();
+  if (GetExtensionFromFrame(frame)) {
+    frame->SetAllowsCrossBrowsingInstanceFrameLookup();
   }
 }
 

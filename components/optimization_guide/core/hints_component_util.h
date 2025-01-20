@@ -28,7 +28,7 @@ enum class ProcessHintsComponentResult {
   kFailedInvalidParameters = 1,
   kFailedReadingFile = 2,
   kFailedInvalidConfiguration = 3,
-  kFailedFinishProcessing = 4,
+  kDeprecatedFailedFinishProcessing = 4,
   kSkippedProcessingHints = 5,
   kProcessedNoHints = 6,
   kFailedPreviouslyAttemptedVersionInvalid = 7,

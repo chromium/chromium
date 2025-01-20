@@ -158,4 +158,4 @@ std::u16string ExternalProcessImporterBridge::GetLocalizedString(
   return base::UTF8ToUTF16(localized_strings_[message_id]);
 }
 
-ExternalProcessImporterBridge::~ExternalProcessImporterBridge() {}
+ExternalProcessImporterBridge::~ExternalProcessImporterBridge() = default;

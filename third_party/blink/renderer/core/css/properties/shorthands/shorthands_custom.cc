@@ -89,7 +89,6 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationRangeEnd:
       // New animation-* properties are  "reset only", see
       // IsResetOnlyAnimationProperty.
-      DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
       return nullptr;
     default:
       NOTREACHED();
@@ -228,27 +227,6 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
                                        style.Animations());
 }
 
-bool AlternativeAnimationWithTimeline::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseAnimationShorthand(alternativeAnimationWithTimelineShorthand(),
-                                 important, stream, context, local_context,
-                                 properties);
-}
-
-const CSSValue*
-AlternativeAnimationWithTimeline::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSValueFromComputedAnimation(
-      alternativeAnimationWithTimelineShorthand(), style.Animations());
-}
-
 namespace {
 
 // Consume a single <animation-range-start> and a single
@@ -302,8 +280,6 @@ bool AnimationRange::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
-
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
   using css_parsing_utils::IsImplicitProperty;
@@ -2498,6 +2474,55 @@ const CSSValue* Marker::CSSValueFromComputedStyleInternal(
     return marker_start;
   }
   return nullptr;
+}
+
+bool MasonryFlow::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const StylePropertyShorthand::Properties& longhands =
+      masonryFlowShorthand().properties();
+  DCHECK_EQ(longhands.size(), 2u);
+
+  if (longhands[0]->PropertyID() != CSSPropertyID::kMasonryDirection ||
+      longhands[1]->PropertyID() != CSSPropertyID::kMasonryFill) {
+    return false;
+  }
+
+  const CSSValue* masonry_direction = css_parsing_utils::ParseLonghand(
+      longhands[0]->PropertyID(), masonryFlowShorthand().id(), context, stream);
+
+  if (!masonry_direction) {
+    return false;
+  }
+
+  const CSSValue* masonry_fill = css_parsing_utils::ParseLonghand(
+      longhands[1]->PropertyID(), masonryFlowShorthand().id(), context, stream);
+
+  if (!masonry_fill) {
+    return false;
+  }
+
+  AddProperty(longhands[0]->PropertyID(), masonryFlowShorthand().id(),
+              *masonry_direction, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(longhands[1]->PropertyID(), masonryFlowShorthand().id(),
+              *masonry_fill, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
+const CSSValue* MasonryFlow::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForShorthandProperty(
+      masonryFlowShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
 }
 
 bool MasonryTrack::ParseShorthand(

@@ -9,6 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -29,9 +31,11 @@ namespace data_sharing::conversion {
 
 ScopedJavaLocalRef<jobject> CreateJavaGroupMember(JNIEnv* env,
                                                   const GroupMember& member) {
+  auto gaia_id = member.gaia_id.empty()
+                     ? ScopedJavaLocalRef<jobject>()
+                     : ConvertToJavaGaiaId(env, member.gaia_id);
   return Java_GroupMember_createGroupMember(
-      env, ConvertUTF8ToJavaString(env, member.gaia_id),
-      ConvertUTF8ToJavaString(env, member.display_name),
+      env, gaia_id, ConvertUTF8ToJavaString(env, member.display_name),
       ConvertUTF8ToJavaString(env, member.email), static_cast<int>(member.role),
       url::GURLAndroid::FromNativeGURL(env, member.avatar_url),
       ConvertUTF8ToJavaString(env, member.given_name));
@@ -56,7 +60,7 @@ ScopedJavaLocalRef<jobject> CreateJavaGroupData(JNIEnv* env,
       ConvertUTF8ToJavaString(env, group_data.group_token.group_id.value()),
       ConvertUTF8ToJavaString(env, group_data.display_name),
       ToTypedJavaArrayOfObjects(
-          env, base::make_span(j_members),
+          env, base::span(j_members),
           org_chromium_components_data_1sharing_GroupMember_clazz(env)),
       ConvertUTF8ToJavaString(env, group_data.group_token.access_token));
 }
@@ -72,7 +76,7 @@ ScopedJavaLocalRef<jobjectArray> CreateGroupedDataArray(
   ScopedJavaLocalRef<jobjectArray> j_group_array;
   if (!j_groups_data.empty()) {
     j_group_array = ToTypedJavaArrayOfObjects(
-        env, base::make_span(j_groups_data),
+        env, base::span(j_groups_data),
         org_chromium_components_data_1sharing_GroupData_clazz(env));
   }
 
@@ -92,7 +96,7 @@ ScopedJavaLocalRef<jobject> CreateJavaSharedTabGroupPreview(
   ScopedJavaLocalRef<jobjectArray> j_tabs_array;
   if (!j_tabs.empty()) {
     j_tabs_array = ToTypedJavaArrayOfObjects(
-        env, base::make_span(j_tabs),
+        env, base::span(j_tabs),
         org_chromium_components_data_1sharing_TabPreview_clazz(env));
   }
   return Java_SharedTabGroupPreview_createSharedTabGroupPreview(

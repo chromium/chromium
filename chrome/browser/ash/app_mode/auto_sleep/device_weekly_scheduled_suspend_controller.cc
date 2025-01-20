@@ -13,13 +13,14 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
@@ -77,31 +78,30 @@ bool AllWeeklyTimeIntervalsAreValid(const base::Value::List& policy_config) {
   return all_intervals_valid && IntervalsDoNotOverlap(intervals);
 }
 
-std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>>
-BuildIntervalExecutorsFromConfig(
-    RepeatingTimeIntervalTaskExecutor::Factory* task_executor_factory,
+std::vector<std::unique_ptr<WeeklyIntervalTimer>> BuildIntervalTimersFromConfig(
+    WeeklyIntervalTimer::Factory* interval_timer_factory,
     const base::Value::List& policy_config,
     const base::RepeatingCallback<void(base::TimeDelta)>& on_start_callback) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals =
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
 
-  std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>> executors;
+  std::vector<std::unique_ptr<WeeklyIntervalTimer>> timers;
   std::ranges::transform(
-      intervals, std::back_inserter(executors),
+      intervals, std::back_inserter(timers),
       [&](const std::unique_ptr<WeeklyTimeInterval>& interval) {
-        CHECK(interval != nullptr);
-        return task_executor_factory->Create(std::move(*interval),
-                                             on_start_callback);
+        CHECK_NE(interval, nullptr);
+        return interval_timer_factory->Create(std::move(*interval),
+                                              on_start_callback);
       });
-  return executors;
+  return timers;
 }
 
 }  // namespace
 
 DeviceWeeklyScheduledSuspendController::DeviceWeeklyScheduledSuspendController(
     PrefService* pref_service)
-    : task_executor_factory_(
-          std::make_unique<RepeatingTimeIntervalTaskExecutor::Factory>()) {
+    : weekly_interval_timer_factory_(
+          std::make_unique<WeeklyIntervalTimer::Factory>()) {
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       prefs::kDeviceWeeklyScheduledSuspend,
@@ -155,14 +155,16 @@ void DeviceWeeklyScheduledSuspendController::DarkSuspendImminent() {
       power_manager::USER_ACTIVITY_OTHER);
 }
 
-const RepeatingTimeIntervalTaskExecutors&
-DeviceWeeklyScheduledSuspendController::GetIntervalExecutorsForTesting() const {
-  return interval_executors_;
+const WeeklyIntervalTimers&
+DeviceWeeklyScheduledSuspendController::GetWeeklyIntervalTimersForTesting()
+    const {
+  return device_suspension_timers_;
 }
 
-void DeviceWeeklyScheduledSuspendController::SetTaskExecutorFactoryForTesting(
-    std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory) {
-  task_executor_factory_ = std::move(factory);
+void DeviceWeeklyScheduledSuspendController::
+    SetWeeklyIntervalTimerFactoryForTesting(
+        std::unique_ptr<WeeklyIntervalTimer::Factory> factory) {
+  weekly_interval_timer_factory_ = std::move(factory);
 }
 
 void DeviceWeeklyScheduledSuspendController::SetClockForTesting(
@@ -180,24 +182,20 @@ void DeviceWeeklyScheduledSuspendController::
       g_browser_process->local_state()->GetList(
           prefs::kDeviceWeeklyScheduledSuspend);
 
-  interval_executors_.clear();
+  device_suspension_timers_.clear();
 
   if (!AllWeeklyTimeIntervalsAreValid(policy_config)) {
     return;
   }
 
-  interval_executors_ = BuildIntervalExecutorsFromConfig(
-      task_executor_factory_.get(), policy_config,
+  device_suspension_timers_ = BuildIntervalTimersFromConfig(
+      weekly_interval_timer_factory_.get(), policy_config,
       base::BindRepeating(
-          &DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart,
+          &DeviceWeeklyScheduledSuspendController::OnWeeklyIntervalStart,
           weak_factory_.GetWeakPtr()));
-
-  for (const auto& executor : interval_executors_) {
-    executor->ScheduleTimer();
-  }
 }
 
-void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart(
+void DeviceWeeklyScheduledSuspendController::OnWeeklyIntervalStart(
     base::TimeDelta duration) {
   // Suspend the device for the specified duration. The device does NOT fully
   // resume automatically; rather, the powerd wake alarm triggers a dark resume

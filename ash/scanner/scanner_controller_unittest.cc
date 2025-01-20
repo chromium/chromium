@@ -5,38 +5,70 @@
 #include "ash/scanner/scanner_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
-#include "ash/public/cpp/scanner/scanner_system_state.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/auto_reset.h"
+#include "ash/test_shell_delegate.h"
+#include "base/containers/span.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/string_split.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 namespace {
 
+using ::base::test::InvokeFuture;
+using ::base::test::IsJson;
 using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Return;
 using ::testing::SizeIs;
+using ::testing::StartsWith;
+using ::testing::WithArg;
+
+constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
+constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
+
+FakeScannerDelegate* GetFakeScannerDelegate(
+    ScannerController& scanner_controller) {
+  return static_cast<FakeScannerDelegate*>(
+      scanner_controller.delegate_for_testing());
+}
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
@@ -51,31 +83,44 @@ class ScannerControllerTest : public AshTestBase {
   ScannerControllerTest& operator=(const ScannerControllerTest&) = delete;
   ~ScannerControllerTest() override = default;
 
+  // AshTestBase:
+  void SetUp() override {
+    auto shell_delegate = std::make_unique<TestShellDelegate>();
+    shell_delegate->SetSendSpecializedFeatureFeedbackCallback(
+        mock_send_specialized_feature_feedback_.Get());
+    AshTestBase::SetUp(std::move(shell_delegate));
+  }
+
+  base::MockCallback<TestShellDelegate::SendSpecializedFeatureFeedbackCallback>&
+  mock_send_specialized_feature_feedback() {
+    return mock_send_specialized_feature_feedback_;
+  }
+
  private:
+  testing::StrictMock<base::MockCallback<
+      TestShellDelegate::SendSpecializedFeatureFeedbackCallback>>
+      mock_send_specialized_feature_feedback_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
-  base::AutoReset<bool> ignore_scanner_update_secret_key_ =
-      switches::SetIgnoreScannerUpdateSecretKeyForTest();
 };
 
-TEST_F(ScannerControllerTest, CanStartSessionIfSystemStateEnabled) {
+TEST_F(ScannerControllerTest, CanStartSessionIfFeatureChecksPass) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-          GetSystemState)
-      .WillByDefault(Return(
-          ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{})));
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
   EXPECT_TRUE(scanner_controller->CanStartSession());
   EXPECT_TRUE(scanner_controller->StartNewSession());
 }
 
-TEST_F(ScannerControllerTest, CanNotStartSessionIfSystemStateBlocked) {
+TEST_F(ScannerControllerTest, CanNotStartSessionIfFeatureChecksFail) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-          GetSystemState)
-      .WillByDefault(Return(
-          ScannerSystemState(ScannerStatus::kBlocked, /*failed_checks=*/{})));
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
 
   EXPECT_FALSE(scanner_controller->CanStartSession());
   EXPECT_FALSE(scanner_controller->StartNewSession());
@@ -108,6 +153,252 @@ TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
                                            actions_future.GetCallback());
 
   EXPECT_THAT(actions_future.Take(), IsEmpty());
+}
+
+TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
+  SimulateUserLogin("user1@gmail.com");
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  EXPECT_TRUE(scanner_controller->HasActiveSessionForTesting());
+
+  // Switch to a different user.
+  SimulateUserLogin("user2@gmail.com");
+
+  EXPECT_FALSE(scanner_controller->HasActiveSessionForTesting());
+}
+
+TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event 1");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  // Notification should be shown while action is executing.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              SizeIs(1));
+
+  // Finish executing the action.
+  fetch_action_details_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(output),
+      manta::MantaStatus());
+
+  // Notification should be hidden.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              IsEmpty());
+}
+
+TEST_F(ScannerControllerTest, ShowsToastAfterActionSuccess) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  // Mock a successful action.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
+}
+
+TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event title");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(std::move(output), manta::MantaStatus()));
+  // Mock a failure to fetch action details.
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(RunOnceCallback<2>(
+          /*output=*/nullptr,
+          manta::MantaStatus{.status_code =
+                                 manta::MantaStatusCode::kBackendFailure}));
+
+  // Fetch an action and try to execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  scanner_controller->ExecuteAction(actions[0]);
+
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionFailureToastId));
+}
+
+TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_title("🌏");
+  new_event.set_description("formerly \"Geo Sync\"");
+  new_event.set_dates("20241014T160000/20241014T161500");
+  new_event.set_location("Wonderland");
+  auto image = base::MakeRefCounted<base::RefCountedString>("testimage");
+
+  scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
+
+  auto [account_id, feedback_dialog_info, unused_send_feedback_callback] =
+      feedback_info_future.Take();
+  EXPECT_EQ(account_id,
+            Shell::Get()->session_controller()->GetActiveAccountId());
+  EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
+    "new_event": {
+      "title": "🌏",
+      "description": "formerly \"Geo Sync\"",
+      "dates": "20241014T160000/20241014T161500",
+      "location": "Wonderland",
+    }
+  })json"));
+  ASSERT_TRUE(feedback_dialog_info.screenshot);
+  EXPECT_EQ(base::as_string_view(*feedback_dialog_info.screenshot),
+            "testimage");
+}
+
+TEST_F(ScannerControllerTest, OpenFeedbackDialogCallbackSendsFeedback) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  base::test::TestFuture<std::string> description_future;
+  EXPECT_CALL(mock_send_specialized_feature_feedback(),
+              Run(/*account_id=*/Shell::Get()
+                      ->session_controller()
+                      ->GetActiveAccountId(),
+                  /*product_id=*/feedback::kScannerFeedbackProductId,
+                  /*description=*/_,
+                  /*image=*/Optional(Eq("testimage")),
+                  /*image_mime_type=*/Optional(Eq("image/jpeg"))))
+      .WillOnce(
+          DoAll(WithArg<2>(InvokeFuture(description_future)), Return(true)));
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_title("🌏");
+  new_event.set_description("formerly \"Geo Sync\"");
+  new_event.set_dates("20241014T160000/20241014T161500");
+  new_event.set_location("Wonderland");
+  auto image = base::MakeRefCounted<base::RefCountedString>("testimage");
+
+  scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
+  auto [unused_account_id, feedback_dialog_info, send_feedback_callback] =
+      feedback_info_future.Take();
+  std::move(send_feedback_callback)
+      .Run(std::move(feedback_dialog_info), "user description");
+
+  std::string description = description_future.Take();
+  std::vector<std::string_view> split_description =
+      base::SplitStringPieceUsingSubstr(
+          description,
+          "\nuser_description:", base::WhitespaceHandling::KEEP_WHITESPACE,
+          base::SplitResult::SPLIT_WANT_ALL);
+  constexpr std::string_view kPrefix = "details:  ";
+  ASSERT_THAT(split_description,
+              ElementsAre(StartsWith(kPrefix), "  user description\n"));
+  std::string_view details = split_description[0];
+  details.remove_prefix(kPrefix.size());
+  EXPECT_THAT(details, IsJson(R"json({
+    "new_event": {
+      "title": "🌏",
+      "description": "formerly \"Geo Sync\"",
+      "dates": "20241014T160000/20241014T161500",
+      "location": "Wonderland",
+    }
+  })json"));
+}
+
+TEST_F(ScannerControllerTest,
+       OpenFeedbackDialogCallbackSendsFeedbackWithOriginalAccount) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo,
+                         ScannerDelegate::SendFeedbackCallback>
+      feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  AccountId original_account =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  EXPECT_CALL(mock_send_specialized_feature_feedback(),
+              Run(/*account_id=*/original_account,
+                  /*product_id=*/_,
+                  /*description=*/_,
+                  /*image=*/_,
+                  /*image_mime_type=*/_))
+      .WillOnce(Return(true));
+
+  scanner_controller->OpenFeedbackDialog(
+      manta::proto::ScannerAction(),
+      base::MakeRefCounted<base::RefCountedString>());
+  auto [account_id, feedback_dialog_info, send_feedback_callback] =
+      feedback_info_future.Take();
+  ASSERT_EQ(Shell::Get()->session_controller()->GetActiveAccountId(),
+            original_account);
+  AccountId new_account =
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("fakegaia"));
+  GetSessionControllerClient()->AddUserSession(
+      new_account, /*display_email=*/account_id.GetUserEmail());
+  GetSessionControllerClient()->SwitchActiveUser(new_account);
+  ASSERT_NE(Shell::Get()->session_controller()->GetActiveAccountId(),
+            original_account);
+  std::move(send_feedback_callback)
+      .Run(std::move(feedback_dialog_info), "user description");
 }
 
 }  // namespace

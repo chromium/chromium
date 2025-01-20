@@ -182,20 +182,20 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
   waiter.WaitForUserPermissionsSettingsChange();
 }
 
-void ExtensionsToolbarUnitTest::AddSiteAccessRequest(
+void ExtensionsToolbarUnitTest::AddHostAccessRequest(
     const extensions::Extension& extension,
     content::WebContents* web_contents,
     const std::optional<URLPattern>& filter) {
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension,
+  permissions_manager_->AddHostAccessRequest(web_contents, tab_id, extension,
                                              filter);
 }
 
-void ExtensionsToolbarUnitTest::RemoveSiteAccessRequest(
+void ExtensionsToolbarUnitTest::RemoveHostAccessRequest(
     const extensions::Extension& extension,
     content::WebContents* web_contents) {
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  permissions_manager_->RemoveSiteAccessRequest(tab_id, extension.id());
+  permissions_manager_->RemoveHostAccessRequest(tab_id, extension.id());
 }
 
 PermissionsManager::UserSiteSetting
@@ -232,8 +232,9 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
 #else
       const bool is_visible = action->GetVisible();
 #endif
-      if (is_visible)
+      if (is_visible) {
         result.push_back(action);
+      }
     }
   }
   return result;

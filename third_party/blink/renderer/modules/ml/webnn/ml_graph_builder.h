@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -28,7 +29,6 @@ class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
 class MLClampOptions;
-class MLConstantOperand;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
 class MLCumulativeSumOptions;
@@ -50,6 +50,7 @@ class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
+class MLReverseOptions;
 class MLScatterOptions;
 class MLSliceOptions;
 class MLSplitOptions;
@@ -96,7 +97,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
   MLOperand* constant(ScriptState* script_state,
                       const MLOperandDescriptor* desc,
-                      NotShared<DOMArrayBufferView> buffer_view,
+                      AllowSharedBufferSource* buffer,
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
@@ -188,6 +189,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                            MLOperand* b,
                            const MLOperatorOptions* options,
                            ExceptionState& exception_state);
+  MLOperand* notEqual(MLOperand* a,
+                      MLOperand* b,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
   MLOperand* logicalAnd(MLOperand* a,
                         MLOperand* b,
                         const MLOperatorOptions* options,
@@ -292,13 +297,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> gru(MLOperand* input,
-                                          MLOperand* weight,
-                                          MLOperand* recurrent_weight,
-                                          const uint32_t steps,
-                                          const uint32_t hidden_size,
-                                          MLGruOptions* options,
-                                          ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> gru(MLOperand* input,
+                                    MLOperand* weight,
+                                    MLOperand* recurrent_weight,
+                                    const uint32_t steps,
+                                    const uint32_t hidden_size,
+                                    MLGruOptions* options,
+                                    ExceptionState& exception_state);
 
   MLOperand* gruCell(MLOperand* input,
                      MLOperand* weight,
@@ -333,22 +338,22 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLLinearOptions* options,
                     ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstm(MLOperand* input,
-                                           MLOperand* weight,
-                                           MLOperand* recurrent_weight,
-                                           const uint32_t steps,
-                                           const uint32_t hidden_size,
-                                           MLLstmOptions* options,
-                                           ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> lstm(MLOperand* input,
+                                     MLOperand* weight,
+                                     MLOperand* recurrent_weight,
+                                     const uint32_t steps,
+                                     const uint32_t hidden_size,
+                                     MLLstmOptions* options,
+                                     ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstmCell(MLOperand* input,
-                                               MLOperand* weight,
-                                               MLOperand* recurrent_weight,
-                                               MLOperand* hidden_state,
-                                               MLOperand* cell_state,
-                                               uint32_t hidden_size,
-                                               MLLstmCellOptions* options,
-                                               ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> lstmCell(MLOperand* input,
+                                         MLOperand* weight,
+                                         MLOperand* recurrent_weight,
+                                         MLOperand* hidden_state,
+                                         MLOperand* cell_state,
+                                         uint32_t hidden_size,
+                                         MLLstmCellOptions* options,
+                                         ExceptionState& exception_state);
 
   MLOperand* matmul(MLOperand* a,
                     MLOperand* b,
@@ -425,6 +430,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
 
+  MLOperand* reverse(MLOperand* input,
+                     const MLReverseOptions* options,
+                     ExceptionState& exception_state);
+
   MLOperand* resample2d(ScriptState* script_state,
                         MLOperand* input,
                         const MLResample2dOptions* options,
@@ -468,14 +477,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> split(MLOperand* input,
-                                            const uint32_t splits,
-                                            const MLSplitOptions* options,
-                                            ExceptionState& exception_state);
-  HeapVector<Member<const MLOperand>> split(MLOperand* input,
-                                            const Vector<uint32_t>& splits,
-                                            const MLSplitOptions* options,
-                                            ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> split(MLOperand* input,
+                                      const uint32_t splits,
+                                      const MLSplitOptions* options,
+                                      ExceptionState& exception_state);
+  HeapVector<Member<MLOperand>> split(MLOperand* input,
+                                      const Vector<uint32_t>& splits,
+                                      const MLSplitOptions* options,
+                                      ExceptionState& exception_state);
 
   MLOperand* tanh(MLOperand* input,
                   const MLOperatorOptions* options,
@@ -527,11 +536,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   [[nodiscard]] base::expected<void, String> ValidateInputs(
       const HeapVector<Member<MLOperand>>& inputs);
 
-  // Releases the memory held by all constant operands associated with this
-  // builder. This should be called when the builder is no longer able to make a
-  // graph, to avoid keeping this data around unnecessarily.
-  void ReleaseConstantData();
-
   Member<MLContext> ml_context_;
 
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder> remote_;
@@ -539,14 +543,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Tracks whether `build()` has been called (with valid inputs). If so, `this`
   // is effectively invalid and all methods should reject.
   bool has_built_ = false;
-
-  // Tracks all the constant operands created by this builder. The constant data
-  // owned by these operands will be copied to the remote graph builder
-  // when `build()` is called, then can be released.
-  //
-  // TODO(crbug.com/349428379): Consider eagerly transferring constant data
-  // rather than waiting until build().
-  HeapVector<Member<MLConstantOperand>> constant_operands_;
 
   // Keep the unresolved `ScriptPromiseResolver` which will be rejected when the
   // Mojo pipe is unexpectedly disconnected.

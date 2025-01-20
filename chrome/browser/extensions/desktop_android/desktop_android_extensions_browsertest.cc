@@ -410,4 +410,34 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+// Tests reading a chrome.extension.* property.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       ExtensionPropertyRead) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "chrome.extension property read",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function readProperty() {
+              // Test that we can read a property.
+              let incognito = chrome.extension.inIncognitoContext;
+              chrome.test.assertFalse(incognito);
+              chrome.test.succeed();
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher result_catcher;
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 }  // namespace extensions

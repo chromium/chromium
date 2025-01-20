@@ -1063,7 +1063,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
             current_visible_rect_size_from_origin ||
         metadata.hw_protected != currently_uses_protected) {
       received_id_to_decoded_frame_map_.clear();
-      generated_id_to_decoded_frame_map_.clear();
+      generated_token_to_decoded_frame_map_.clear();
     }
   }
 
@@ -1085,8 +1085,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       return;
     }
     received_id_to_decoded_frame_map_[received_gmb_id] = native_pixmap_frame;
-    generated_id_to_decoded_frame_map_[native_pixmap_frame
-                                           ->GetSharedMemoryId()] =
+    generated_token_to_decoded_frame_map_[native_pixmap_frame
+                                              ->tracking_token()] =
         native_pixmap_frame.get();
     frame_to_wrap = std::move(native_pixmap_frame);
   }
@@ -1155,13 +1155,13 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
 }
 
 FrameResource* OOPVideoDecoder::GetOriginalFrame(
-    gfx::GenericSharedMemoryId frame_id) {
+    const base::UnguessableToken& tracking_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(frame_id.is_valid());
-  auto it = generated_id_to_decoded_frame_map_.find(frame_id);
-  return (it == generated_id_to_decoded_frame_map_.end()) ? nullptr
-                                                          : it->second;
+  CHECK(!tracking_token.is_empty());
+  auto it = generated_token_to_decoded_frame_map_.find(tracking_token);
+  return (it == generated_token_to_decoded_frame_map_.end()) ? nullptr
+                                                             : it->second;
 }
 
 }  // namespace media

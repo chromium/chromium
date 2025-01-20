@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
 #include <map>
@@ -82,8 +77,9 @@ bool IsGooglePhotosUrl(const GURL& url) {
   };
 
   for (const char* const suffix : kGooglePhotosHostSuffixes) {
-    if (base::EndsWith(url.host_piece(), suffix))
+    if (base::EndsWith(url.host_piece(), suffix)) {
       return true;
+    }
   }
   return false;
 }
@@ -93,8 +89,7 @@ bool IsGooglePhotosUrl(const GURL& url) {
 void SanitizedImageSource::DataDecoderDelegate::DecodeImage(
     const std::string& data,
     DecodeImageCallback callback) {
-  base::span<const uint8_t> bytes = base::make_span(
-      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  base::span<const uint8_t> bytes = base::as_byte_span(data);
 
   data_decoder::DecodeImage(
       &data_decoder_, bytes, data_decoder::mojom::ImageCodec::kDefault,
@@ -105,8 +100,7 @@ void SanitizedImageSource::DataDecoderDelegate::DecodeImage(
 void SanitizedImageSource::DataDecoderDelegate::DecodeAnimation(
     const std::string& data,
     DecodeAnimationCallback callback) {
-  base::span<const uint8_t> bytes = base::make_span(
-      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  base::span<const uint8_t> bytes = base::as_byte_span(data);
 
   data_decoder::DecodeAnimation(&data_decoder_, bytes, /*shrink_to_fit=*/true,
                                 kMaxImageSizeInBytes, std::move(callback));

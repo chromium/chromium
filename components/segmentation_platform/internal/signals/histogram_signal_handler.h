@@ -67,10 +67,10 @@ class HistogramSignalHandler {
   void OnHistogramSample(proto::SignalType signal_type,
                          const char* histogram_name,
                          uint64_t name_hash,
-                         base::HistogramBase::Sample sample);
+                         base::HistogramBase::Sample32 sample);
 
   void OnSampleWritten(const std::string& histogram_name,
-                       base::HistogramBase::Sample sample,
+                       base::HistogramBase::Sample32 sample,
                        bool success);
 
   const std::string profile_id_;

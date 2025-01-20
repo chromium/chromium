@@ -132,3 +132,24 @@ mojom("element_id") {
     },
   ]
 }
+
+mojom("paint_flags") {
+  generate_java = true
+  sources = [ "paint_flags.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.FilterQuality"
+          cpp = "::cc::PaintFlags::FilterQuality"
+        },
+        {
+          mojom = "cc.mojom.DynamicRangeLimit"
+          cpp = "::cc::PaintFlags::DynamicRangeLimitMixture"
+        },
+      ]
+      traits_headers = [ "paint_flags_mojom_traits.h" ]
+      traits_public_deps = [ "//cc/paint" ]
+    },
+  ]
+}

@@ -98,13 +98,8 @@ template("_androidx_prebuilt") {
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
       ]
-    } else if (target_name == "androidx_room_room_guava_java") {
-      deps -= [ ":androidx_room_room_runtime_jvm_java" ]
-      deps += [ ":androidx_room_room_runtime_android_java" ]
-    } else if (target_name == "androidx_sqlite_sqlite_framework_android_java" ||
-               target_name == "androidx_room_room_runtime_android_java") {
-      deps -= [ ":androidx_sqlite_sqlite_jvm_java" ]
-      deps += [ ":androidx_sqlite_sqlite_android_java" ]
+    } else if (target_name == "androidx_datastore_datastore_core_android_java") {
+      ignore_native_libraries = true
     }
   }
 
@@ -121,8 +116,11 @@ template("androidx_java_prebuilt") {
     forward_variables_from(invoker, "*")
     target_type = "java_prebuilt"
 
-    # https://crbug.com/1412551
-    requires_android = true
+    # If this target only "supports_android", then it will not be allowed to
+    # depend on a target that "requires_android". https://crbug.com/1412551
+    if (target_name != "androidx_annotation_annotation_jvm_java") {
+      requires_android = true
+    }
   }
 }
 

@@ -92,11 +92,17 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_NoTokenOrPolicies) {
   TestConnectorsService service;
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kPolicyDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 
@@ -108,16 +114,25 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidProfilePolicy) {
                                  policy::POLICY_SCOPE_USER);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(
+      service.GetDMTokenForRealTimeUrlCheck().error(),
+      ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_machine_dm_token();
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(
+      service.GetDMTokenForRealTimeUrlCheck().error(),
+      ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 
@@ -129,16 +144,25 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_InvalidMachinePolicy) {
                                  policy::POLICY_SCOPE_MACHINE);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_connectors_enabled(true);
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(
+      service.GetDMTokenForRealTimeUrlCheck().error(),
+      ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 
   service.set_profile_dm_token();
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(
+      service.GetDMTokenForRealTimeUrlCheck().error(),
+      ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::kNoDmToken);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(), REAL_TIME_CHECK_DISABLED);
 }
 

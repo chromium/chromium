@@ -370,7 +370,13 @@ template("proto_library") {
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     args = protos
 
-    sources = proto_sources
+    sources =
+        proto_sources + [
+          # Add this here as there are some protos which import descriptor.proto
+          # directly or indirectly.
+          "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+        ]
+
     outputs =
         get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
                       "abspath")
@@ -716,7 +722,7 @@ template("protoc_convert") {
              "--infile",
              "{{source}}",
              "--outfile",
-             rebase_path(invoker.output_pattern),
+             rebase_path(invoker.output_pattern, root_build_dir),
            ] + invoker.args
   }
 }

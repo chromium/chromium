@@ -30,8 +30,7 @@ TraceReportInternalsUI::TraceReportInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUITracesInternalsHost);
 
-  source->AddResourcePaths(base::make_span(kTracesInternalsResources,
-                                           kTracesInternalsResourcesSize));
+  source->AddResourcePaths(kTracesInternalsResources);
   source->AddResourcePath("", IDR_TRACES_INTERNALS_TRACE_REPORT_INTERNALS_HTML);
 
   // Add TrustedTypes policies necessary for using Polymer.

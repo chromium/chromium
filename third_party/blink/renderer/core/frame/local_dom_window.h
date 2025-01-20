@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/frame/window_event_handlers.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
@@ -94,7 +95,6 @@ class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
-class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
 
@@ -112,6 +112,7 @@ enum PageTransitionEventPersistence {
 class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                                          public ExecutionContext,
                                          public WindowOrWorkerGlobalScope,
+                                         public UniversalGlobalScope,
                                          public WindowEventHandlers,
                                          public Supplementable<LocalDOMWindow> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
@@ -195,6 +196,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       mojom::blink::PolicyDisposition,
       const std::optional<String>& reporting_endpoint,
       const String& message = g_empty_string) const final;
+  void ReportPotentialPermissionsPolicyViolation(
+      mojom::blink::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const std::optional<String>& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,
@@ -348,9 +355,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   int webkitRequestAnimationFrame(V8FrameRequestCallback*);
   void cancelAnimationFrame(int id);
 
-  // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
-  void queueMicrotask(V8VoidFunction*);
-
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
 
@@ -365,8 +369,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void captureEvents() {}
   void releaseEvents() {}
   External* external();
-
-  bool isSecureContext() const;  // NOLINT(bugprone-virtual-near-miss)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
 
@@ -427,7 +429,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             scheduler::TaskAttributionInfo* parent_task);
+                             scheduler::TaskAttributionInfo* parent_task,
+                             bool has_ua_visual_transition);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 

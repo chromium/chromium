@@ -10,7 +10,6 @@
 #include "base/functional/function_ref.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -24,7 +23,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -730,9 +728,6 @@ TEST(SourceRegistrationTest, ParseAggregatableDebugReportingConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
@@ -787,9 +782,6 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionScopes);
-
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
     SCOPED_TRACE(test_case.desc);
@@ -842,9 +834,6 @@ TEST(SourceRegistrationTest, ParseAggregatableNamedBudgetDefs) {
               SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid),
       },
   };
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableNamedBudgets);
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -909,9 +898,6 @@ TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
           })json",
       },
   };
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableNamedBudgets);
 
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),

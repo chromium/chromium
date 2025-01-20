@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 
 #include "build/build_config.h"
@@ -264,20 +259,43 @@ ExternalSource GetExternalSourceFromExternalImage(
 
   // TODO(crbug.com/1471372): It would be better if GetSourceImageForCanvas()
   // would always return a StaticBitmapImage.
+  sk_sp<SkImage> sk_image = nullptr;
+  bool image_is_default_orientation = image_for_canvas->HasDefaultOrientation();
   if (auto* image = DynamicTo<StaticBitmapImage>(image_for_canvas.get())) {
-    external_source.image = image;
+    if (image_is_default_orientation) {
+      external_source.image = image;
+    } else {
+      // Handle non default orientation for StaticBitmapImage and ensure
+      // it is not texture backed.
+      sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+
+      if (!sk_image) {
+        return external_source;
+      }
+    }
   } else {
-    // HTMLImageElement input
+    // HTMLImageElement input.
+    // Below logic refs to ImageBitmap creation with ImageElementBase.
+    // ImageExtractor recruit ImageDecoder to do decoder when:
+    // - image is a BitmapImage, it usually happens when image contains coded
+    // data.
+    //   e.g. loaded image files *.png, *.jpg, *.bmp, *.ico, *.webp, *.avif,
+    //   *.gif.
+    // - alphaType, colorSpace are not equal to dst. Issuing a redecode to
+    // generate
+    //   required results.
     ImageExtractor image_extractor(image_for_canvas.get(),
                                    external_image_dst_info.premultiplied_alpha,
                                    PredefinedColorSpaceToSkColorSpace(
                                        external_image_dst_info.color_space));
-    auto sk_image = image_extractor.GetSkImage();
+    sk_image = image_extractor.GetSkImage();
 
     if (!sk_image) {
       return external_source;
     }
-    // Handle LazyGenerated images.
+    // It is possible that some HTMLImageElement contains content which cannot
+    // be decoded. e.g svg files. Using this path to handle them by converting
+    // it to SkBitmap first and raster it.
     if (sk_image->isLazyGenerated()) {
       SkBitmap bitmap;
       auto image_info = sk_image->imageInfo();
@@ -288,10 +306,36 @@ ExternalSource GetExternalSourceFromExternalImage(
 
       sk_image = SkImages::RasterFromBitmap(bitmap);
     }
-
-    external_source.image = UnacceleratedStaticBitmapImage::Create(
-        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
   }
+
+  if (sk_image) {
+    CHECK(!external_source.image);
+
+    // Create UnacceleratedStaticBitmapImage to create a most suitable
+    // PaintImageBuilder. Use the builder to create PaintImage internally.
+    // Store the orientation metadata but no transforms apply to the content.
+    auto image = UnacceleratedStaticBitmapImage::Create(
+        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
+
+    // Recruit Image::ResizeAndOrientImage() to apply transformation based on
+    // orientation metadata. This API helps rotate contents based on orientation
+    // metadata. After the transformation, reading content in default
+    // orientation get the transformed results. Recreate unaccelerated static
+    // bitmap with the transformed content with default orientation for post
+    // processing.
+    if (!image_is_default_orientation) {
+      PaintImage paint_image = image->PaintImageForCurrentFrame();
+      paint_image = Image::ResizeAndOrientImage(
+          paint_image, image_for_canvas->CurrentFrameOrientation(),
+          gfx::Vector2dF(1, 1), 1, kInterpolationNone);
+
+      // Have default orientation now.
+      image = UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
+    }
+
+    external_source.image = image;
+  }
+
   external_source.width = static_cast<uint32_t>(external_source.image->width());
   external_source.height =
       static_cast<uint32_t>(external_source.image->height());
@@ -414,12 +458,8 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
           DOMExceptionCode::kOperationError,
           "Instance dropped in onSubmittedWorkDone");
       break;
-    case wgpu::QueueWorkDoneStatus::DeviceLost:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Device lost during onSubmittedWorkDone (do not use this error for "
-          "recovery - it is NOT guaranteed to happen on device loss)");
-      break;
+    default:
+      DCHECK(false);
   }
 }
 
@@ -447,8 +487,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            const MaybeShared<DOMArrayBufferView>& data,
                            uint64_t data_element_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
-                  data->BaseAddressMaybeShared(), data->TypeSize(),
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), data->TypeSize(),
                   data_element_offset, {}, exception_state);
 }
 
@@ -459,8 +499,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            uint64_t data_element_offset,
                            uint64_t data_element_count,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
-                  data->BaseAddressMaybeShared(), data->TypeSize(),
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), data->TypeSize(),
                   data_element_offset, data_element_count, exception_state);
 }
 
@@ -470,8 +510,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            const DOMArrayBufferBase* data,
                            uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
-                  data->DataMaybeShared(), 1, data_byte_offset, {},
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), 1, data_byte_offset, {},
                   exception_state);
 }
 
@@ -482,30 +522,29 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            uint64_t data_byte_offset,
                            uint64_t byte_size,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
-                  data->DataMaybeShared(), 1, data_byte_offset, byte_size,
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), 1, data_byte_offset, byte_size,
                   exception_state);
 }
 
 void GPUQueue::WriteBufferImpl(ScriptState* script_state,
                                GPUBuffer* buffer,
                                uint64_t buffer_offset,
-                               uint64_t data_byte_length,
-                               const void* data_base_ptr,
+                               base::span<const uint8_t> data,
                                unsigned data_bytes_per_element,
                                uint64_t data_element_offset,
                                std::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
   CHECK_LE(data_bytes_per_element, 8u);
 
-  if (data_element_offset > data_byte_length / data_bytes_per_element) {
+  if (data_element_offset > data.size() / data_bytes_per_element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Data offset is too large");
     return;
   }
 
   uint64_t data_byte_offset = data_element_offset * data_bytes_per_element;
-  uint64_t max_write_size = data_byte_length - data_byte_offset;
+  uint64_t max_write_size = data.size() - data_byte_offset;
 
   uint64_t write_byte_size = max_write_size;
   if (data_element_count.has_value()) {
@@ -525,18 +564,17 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
   }
 
   // Check that the write size can be cast to a size_t. This should always be
-  // the case since data_byte_length comes from an ArrayBuffer size.
+  // the case since `data` comes from an ArrayBuffer.
   if (write_byte_size > uint64_t(std::numeric_limits<size_t>::max())) {
     exception_state.ThrowRangeError(
         "writeSize larger than size_t (please report a bug if you see this)");
     return;
   }
 
-  const uint8_t* data_base_ptr_bytes =
-      static_cast<const uint8_t*>(data_base_ptr);
-  const uint8_t* data_ptr = data_base_ptr_bytes + data_byte_offset;
-  GetHandle().WriteBuffer(buffer->GetHandle(), buffer_offset, data_ptr,
-                          static_cast<size_t>(write_byte_size));
+  auto data_span = data.subspan(static_cast<size_t>(data_byte_offset),
+                                static_cast<size_t>(write_byte_size));
+  GetHandle().WriteBuffer(buffer->GetHandle(), buffer_offset, data_span.data(),
+                          data_span.size());
   EnsureFlush(ToEventLoop(script_state));
 }
 
@@ -546,9 +584,8 @@ void GPUQueue::writeTexture(ScriptState* script_state,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(script_state, destination, data->BaseAddressMaybeShared(),
-                   data->byteLength(), data_layout, write_size,
-                   exception_state);
+  WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
+                   data_layout, write_size, exception_state);
 }
 
 void GPUQueue::writeTexture(ScriptState* script_state,
@@ -557,15 +594,13 @@ void GPUQueue::writeTexture(ScriptState* script_state,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(script_state, destination, data->DataMaybeShared(),
-                   data->ByteLength(), data_layout, write_size,
-                   exception_state);
+  WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
+                   data_layout, write_size, exception_state);
 }
 
 void GPUQueue::WriteTextureImpl(ScriptState* script_state,
                                 GPUImageCopyTexture* destination,
-                                const void* data,
-                                size_t data_size,
+                                base::span<const uint8_t> data,
                                 GPUImageDataLayout* data_layout,
                                 const V8GPUExtent3D* write_size,
                                 ExceptionState& exception_state) {
@@ -586,7 +621,7 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
     }
   }
 
-  if (dawn_data_layout.offset > data_size) {
+  if (dawn_data_layout.offset > data.size()) {
     device_->InjectError(wgpu::ErrorType::Validation,
                          "Data offset is too large");
     return;
@@ -595,9 +630,7 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
   // Handle the data layout offset by offsetting the data pointer instead. This
   // helps move less data between then renderer and GPU process (otherwise all
   // the data from 0 to offset would be copied over as well).
-  const void* data_ptr =
-      static_cast<const uint8_t*>(data) + dawn_data_layout.offset;
-  data_size -= dawn_data_layout.offset;
+  auto data_span = data.subspan(static_cast<size_t>(dawn_data_layout.offset));
   dawn_data_layout.offset = 0;
 
   // Compute a tight upper bound of the number of bytes to send for this
@@ -608,10 +641,11 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
   size_t data_size_upper_bound = EstimateWriteTextureBytesUpperBound(
       dawn_data_layout, dawn_write_size, destination->texture()->Format(),
       dawn_destination.aspect);
-  size_t required_copy_size = std::min(data_size, data_size_upper_bound);
+  size_t required_copy_size = std::min(data_span.size(), data_size_upper_bound);
 
-  GetHandle().WriteTexture(&dawn_destination, data_ptr, required_copy_size,
-                           &dawn_data_layout, &dawn_write_size);
+  GetHandle().WriteTexture(&dawn_destination, data_span.data(),
+                           required_copy_size, &dawn_data_layout,
+                           &dawn_write_size);
   EnsureFlush(ToEventLoop(script_state));
   return;
 }
@@ -962,7 +996,10 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     size_t size = static_cast<size_t>(buffer_desc.size);
     void* data = intermediate_buffer.GetMappedRange(0, size);
 
-    auto dest_pixels = base::span<uint8_t>(static_cast<uint8_t*>(data), size);
+    // SAFETY: Mapped Range already checked
+    auto dest_pixels = data != nullptr ? UNSAFE_BUFFERS(base::span<uint8_t>(
+                                             static_cast<uint8_t*>(data), size))
+                                       : base::span<uint8_t>();
 
     SkImageInfo copy_rect_info = source_image_info.makeWH(
         image_source_copy_rect.width(), image_source_copy_rect.height());

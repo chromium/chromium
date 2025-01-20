@@ -63,11 +63,6 @@ public final class ServicificationDownloadTest {
             mDownloadCompleted = true;
             return 0;
         }
-
-        public void waitForDownloadCompletion() {
-            CriteriaHelper.pollUiThread(
-                    () -> mDownloadCompleted, "Failed waiting for the download to complete.");
-        }
     }
 
     private static class DownloadUpdateObserver implements OfflineContentProvider.Observer {

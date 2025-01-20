@@ -31,8 +31,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -472,9 +472,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // exists.
   bool CanDragAcrossSeparator(views::View* dragged_view) const;
 
-  // If there is a drag operation in progress it's canceled. If |modified_index|
-  // is valid, the new position of the corresponding item is returned.
-  std::optional<size_t> CancelDrag(std::optional<size_t> modified_index);
+  // If there is a drag operation in progress it's canceled.
+  void CancelDrag();
+
+  // Resets state set for handling drag interactions, including removing ghost
+  // views.
+  void ClearDragState();
 
   // Returns rectangle bounds used for drag insertion.
   gfx::Rect GetBoundsForDragInsertInScreen();
@@ -692,9 +695,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::unique_ptr<display::ScopedDisplayForNewWindows>
       scoped_display_for_new_windows_;
 
-  // True when an item being inserted or removed in the model cancels a drag.
-  bool cancelling_drag_model_changed_ = false;
-
   // The item with an in-flight async request for a context menu or selection
   // (which shows a shelf item application menu if multiple windows are open).
   // Used to avoid multiple concurrent menu requests. The value is null if none.
@@ -719,9 +719,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Last received drag icon bounds during drag and drop received using
   // `ApplicationDragAndDropHost` interface.
   gfx::Rect drag_icon_bounds_in_screen_;
-
-  // The original launcher item's size before the dragging operation.
-  gfx::Size pre_drag_and_drop_size_;
 
   // True when the icon was dragged off the shelf.
   bool dragged_off_shelf_ = false;
@@ -748,15 +745,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // A view used to make accessibility announcements (changes in the shelf's
   // alignment or auto-hide state).
   raw_ptr<views::View> announcement_view_ = nullptr;  // Owned by ShelfView
-
-  // For dragging: -1 if scrolling back, 1 if scrolling forward, 0 if neither.
-  int drag_scroll_dir_ = 0;
-
-  // Used to periodically call ScrollForUserDrag.
-  base::RepeatingTimer scrolling_timer_;
-
-  // Used to call SpeedUpDragScrolling.
-  base::OneShotTimer speed_up_drag_scrolling_;
 
   // Whether this view should focus its last focusable child (instead of its
   // first) when focused.

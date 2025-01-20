@@ -38,8 +38,7 @@ enum FamilyRole {
   UNCONFIRMED_MEMBER = 5;
 }
 // LINT.ThenChange(//components/supervised_user/core/browser/child_account_service.cc,
-// //components/supervised_user/test_support/account_repository.cc:family_role_parser,
-// //components/supervised_user/core/common/supervised_user_constants.h:family_link_user_state)
+// //components/supervised_user/test_support/account_repository.cc:family_role_parser)
 
 // Data about a family member.
 message FamilyMember {

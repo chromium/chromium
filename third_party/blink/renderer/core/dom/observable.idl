@@ -45,7 +45,7 @@ dictionary SubscribeOptions {
 typedef (ObserverCallback or Observer) ObserverUnion;
 typedef (ObserverCallback or ObservableInspector) ObservableInspectorUnion;
 
-[Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
+[Exposed=(Window,Worker,ShadowRealm), RuntimeEnabled=ObservableAPI] // TODO(crbug.com/40282760): This should be Exposed=*
 interface Observable {
   [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
   [CallWith=ScriptState] void subscribe(optional ObserverUnion observer = {}, optional SubscribeOptions options = {});

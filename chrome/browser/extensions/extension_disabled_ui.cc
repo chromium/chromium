@@ -118,7 +118,7 @@ ExtensionDisabledGlobalError::ExtensionDisabledGlobalError(
   registry_observation_.Observe(ExtensionRegistry::Get(service->profile()));
 }
 
-ExtensionDisabledGlobalError::~ExtensionDisabledGlobalError() {}
+ExtensionDisabledGlobalError::~ExtensionDisabledGlobalError() = default;
 
 GlobalError::Severity ExtensionDisabledGlobalError::GetSeverity() {
   return SEVERITY_LOW;
@@ -133,19 +133,16 @@ int ExtensionDisabledGlobalError::MenuItemCommandID() {
 }
 
 std::u16string ExtensionDisabledGlobalError::MenuItemLabel() {
-  std::string extension_name = extension_->name();
+  std::u16string extension_name =
+      util::GetFixupExtensionNameForUIDisplay(extension_->name());
   // Ampersands need to be escaped to avoid being treated like
   // mnemonics in the menu.
-  base::ReplaceChars(extension_name, "&", "&&", &extension_name);
+  base::ReplaceChars(extension_name, u"&", u"&&", &extension_name);
 
-  if (is_remote_install_) {
-    return l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE,
-        base::UTF8ToUTF16(extension_name));
-  } else {
-    return l10n_util::GetStringFUTF16(IDS_EXTENSION_DISABLED_ERROR_TITLE,
-                                      base::UTF8ToUTF16(extension_name));
-  }
+  return l10n_util::GetStringFUTF16(
+      is_remote_install_ ? IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE
+                         : IDS_EXTENSION_DISABLED_ERROR_TITLE,
+      extension_name);
 }
 
 void ExtensionDisabledGlobalError::ExecuteMenuItem(Browser* browser) {
@@ -153,14 +150,12 @@ void ExtensionDisabledGlobalError::ExecuteMenuItem(Browser* browser) {
 }
 
 std::u16string ExtensionDisabledGlobalError::GetBubbleViewTitle() {
-  if (is_remote_install_) {
-    return l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE,
-        base::UTF8ToUTF16(extension_->name()));
-  } else {
-    return l10n_util::GetStringFUTF16(IDS_EXTENSION_DISABLED_ERROR_TITLE,
-                                      base::UTF8ToUTF16(extension_->name()));
-  }
+  std::u16string extension_name =
+      util::GetFixupExtensionNameForUIDisplay(extension_->name());
+  return l10n_util::GetStringFUTF16(
+      is_remote_install_ ? IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE
+                         : IDS_EXTENSION_DISABLED_ERROR_TITLE,
+      extension_name);
 }
 
 std::vector<std::u16string>

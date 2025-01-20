@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list_internal.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -27,7 +29,9 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,6 +56,8 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 
 }  // namespace
 
+constexpr int kMinBoundsForInstallDialog = 50;
+
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   std::u16string normalized = title;
   if (base::StartsWith(normalized, u"https://")) {
@@ -63,8 +69,21 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   return normalized;
 }
 
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
+  const gfx::Size& current_size = widget->GetSize();
+  const gfx::Size& preferred_size =
+      widget->GetContentsView()->GetPreferredSize();
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
+  return current_size.width() < min_width || current_size.height() < min_height;
+}
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
                                       kDiyAppsDialogOkButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
+                                      kPwaInstallDialogInstallButton);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(WebAppInstallDialogDelegate,
+                                       kInstalledPWAEventId);
 
 WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     content::WebContents* web_contents,
@@ -109,9 +128,10 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
   }
 }
 
-void WebAppInstallDialogDelegate::StartObservingForPictureInPictureOcclusion(
+void WebAppInstallDialogDelegate::StartObservingWidgetForChanges(
     views::Widget* install_dialog_widget) {
   occlusion_observation_.Observe(install_dialog_widget);
+  widget_observation_.Observe(install_dialog_widget);
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {
@@ -140,6 +160,21 @@ void WebAppInstallDialogDelegate::OnAccept() {
     install_info_->title = text_field_contents_;
     install_info_->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
+  }
+
+  // The password manager PWA installation tutorial requires the
+  // `kInstalledPWAEventId` event to be fired from the detailed install dialog.
+  // See `kPasswordManagerTutorialMetricPrefix` in
+  // `MaybeRegisterChromeTutorials()` for more information.
+  if (dialog_type_ == InstallDialogType::kDetailed) {
+    auto* element_tracker = ui::ElementTracker::GetElementTracker();
+    auto* element_framework = ui::ElementTracker::GetFrameworkDelegate();
+    CHECK(element_tracker);
+    auto* ok_button =
+        element_tracker->GetElementInAnyContext(kPwaInstallDialogInstallButton);
+    if (ok_button && element_framework) {
+      element_framework->NotifyCustomEvent(ok_button, kInstalledPWAEventId);
+    }
   }
 
   CHECK(callback_);
@@ -216,11 +251,26 @@ void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
 }
 
 void WebAppInstallDialogDelegate::OnOcclusionStateChanged(bool occluded) {
-  // If a picture-in-picture window is occluding the dialog, froce it to close
+  // If a picture-in-picture window is occluding the dialog, force it to close
   // to prevent spoofing.
   if (occluded) {
     PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
   }
+}
+
+void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppInstallDialogDelegate::CloseDialogAsIgnored,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WebAppInstallDialogDelegate::OnWidgetDestroyed(views::Widget* widget) {
+  widget_observation_.Reset();
 }
 
 void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {

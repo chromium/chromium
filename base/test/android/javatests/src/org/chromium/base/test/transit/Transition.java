@@ -139,7 +139,9 @@ public abstract class Transition {
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            mConditionWaiter.waitFor(toDebugString());
+            mConditionWaiter.waitFor();
+        } catch (TravelException e) {
+            throw e;
         } catch (Throwable e) {
             throw newTransitionException(e);
         }

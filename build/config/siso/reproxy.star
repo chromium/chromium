@@ -5,12 +5,12 @@
 """Siso configuration for rewriting remote calls into reproxy config."""
 
 load("@builtin//encoding.star", "json")
-load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 load("./platform.star", "platform")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
@@ -212,8 +212,9 @@ def __rewrite_rewrapper(ctx, cmd, use_large = False):
         })
 
         # Some large compiles take longer than the default timeout 2m.
-        rwcfg["exec_timeout"] = "4m"
-        rwcfg["reclient_timeout"] = "4m"
+        # same as clang_exception.star.
+        rwcfg["exec_timeout"] = "10m"
+        rwcfg["reclient_timeout"] = "10m"
     ctx.actions.fix(
         args = args,
         reproxy_config = json.encode(rwcfg),
@@ -240,17 +241,7 @@ __handlers = {
 }
 
 def __use_reclient(ctx):
-    use_remoteexec = False
-    use_reclient = None
-    if "args.gn" in ctx.metadata:
-        gn_args = gn.args(ctx)
-        if gn_args.get("use_remoteexec") == "true":
-            use_remoteexec = True
-        if gn_args.get("use_reclient") == "false":
-            use_reclient = False
-    if use_reclient == None:
-        use_reclient = use_remoteexec
-    return use_reclient
+    return gn_logs.read(ctx).get("use_reclient") == "true"
 
 def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.
@@ -323,8 +314,9 @@ def __step_config(ctx, step_config):
             },
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
             "exec_strategy": exec_strategy,
-            "exec_timeout": rule.get("timeout", "10m"),
-            "reclient_timeout": rule.get("timeout", "10m"),
+            # TODO: crbug.com/380755128 - Make each compile unit smaller.
+            "exec_timeout": rule.get("timeout", "30m"),
+            "reclient_timeout": rule.get("timeout", "15m"),
             "download_outputs": True,
         }
         new_rules.append(rule)

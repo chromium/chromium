@@ -33,7 +33,7 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
   TestDownloadCoreService(const TestDownloadCoreService&) = delete;
   TestDownloadCoreService& operator=(const TestDownloadCoreService&) = delete;
 
-  ~TestDownloadCoreService() override {}
+  ~TestDownloadCoreService() override = default;
 
   void Shutdown() override {
     DownloadCoreServiceImpl::Shutdown();
@@ -67,12 +67,12 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
 
 class DownloadsApiUnitTest : public ExtensionApiUnittest {
  public:
-  DownloadsApiUnitTest() {}
+  DownloadsApiUnitTest() = default;
 
   DownloadsApiUnitTest(const DownloadsApiUnitTest&) = delete;
   DownloadsApiUnitTest& operator=(const DownloadsApiUnitTest&) = delete;
 
-  ~DownloadsApiUnitTest() override {}
+  ~DownloadsApiUnitTest() override = default;
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
 

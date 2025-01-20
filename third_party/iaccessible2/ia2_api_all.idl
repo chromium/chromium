@@ -181,7 +181,7 @@ enum IA2ScrollType {
   /** Scroll the object or substring such that as much as possible of the 
    object or substring is within the top level window.  The placement of 
    the object is dependent on the application.  For example, the object or
-   substring may be scrolled to to closest edge, the furthest edge, or midway
+   substring may be scrolled to the closest edge, the furthest edge, or midway
    between those two edges.
   */
   IA2_SCROLL_TYPE_ANYWHERE
@@ -1030,7 +1030,7 @@ enum IA2Role {
 
   /** A run of content that is marked or highlighted, such as for reference
    purposes, or to call it out as having a special purpose that is clear from
-   context. If the mark is used in conjuction with a related content section
+   context. If the mark is used in conjunction with a related content section
    in the document, then IA2_RELATION_DETAILS should be used to link the
    related content (and the reverse relation IA2_RELATION_DETAILS_FOR should
    link back to the IA2_ROLE_MARK object). If the mark has related information
@@ -1221,7 +1221,7 @@ IA2_STATE_STALE =					0x4000,
 /** Indicates that the object implements autocompletion.
 
  This state indicates that a text control will respond to the input of 
- one ore more characters and cause a sub-item to become selected.  The 
+ one or more characters and cause a sub-item to become selected.  The 
  selection may also result in events fired on the parent object.
 */
 IA2_STATE_SUPPORTS_AUTOCOMPLETION =	0x8000,
@@ -1414,7 +1414,7 @@ IA2_STATE_PINNED =					0x80000
  
   %IAccessible2 is a trademark of the Linux Foundation. The %IAccessible2 
   mark may be used in accordance with the
-  <a href="http://www.linuxfoundation.org/collaborate/workgroups/accessibility/trademark-policy">
+  <a href="https://www.linuxfoundation.org/legal/trademark-usage">
   Linux Foundation Trademark Policy</a> to indicate compliance with the %IAccessible2 specification. 
 
  @page _generalInfo General Information 
@@ -2042,7 +2042,7 @@ interface IAccessible2_2 : IAccessible2
    @retval E_INVALIDARG if bad [in] passed.
    @note The output value is a VARIANT.  Typically it will be a VT_BSTR, but there
      are some cases where it will be a VT_I4 or VT_BOOL.  Refer to the <a href=
-     "http://www.linuxfoundation.org/collaborate/workgroups/accessibility/iaccessible2/objectattributesIAccessible2">
+     "https://wiki.linuxfoundation.org/accessibility/iaccessible2/objectattributes">
      Object Attributes specification</a> for more information.
   */
   [propget] HRESULT attribute
@@ -2085,11 +2085,6 @@ interface IAccessible2_2 : IAccessible2
     );
 
 }
-
-
-
-
-
 
 /**
  * This structure represents a directional range of the content. It is defined
@@ -2290,6 +2285,7 @@ interface IAccessibleComponent : IUnknown
      [out, retval] IA2Color *background
     );
 }
+
 /*************************************************************************
  *
  *  File Name (AccessibleValue.idl)
@@ -2609,7 +2605,7 @@ interface IAccessibleText : IUnknown
     attributes match those of offset. (0 based)
    @param [out] textAttributes  
     A string of attributes describing the text.  The attributes are described in the
-    <a href="http://www.linuxfoundation.org/en/Accessibility/IAccessible2/TextAttributes">
+    <a href="https://wiki.linuxfoundation.org/accessibility/iaccessible2/textattributes">
     text attributes specification</a> on the %IAccessible2 web site.
    @retval S_OK
    @retval S_FALSE if there is nothing to return, [out] values are 0s and NULL respectively 
@@ -3225,7 +3221,6 @@ interface IAccessibleText2 : IAccessibleText
     );
 
 }
-
 /*************************************************************************
  *
  *  File Name (accessibleTextSelectionContainer.idl)
@@ -3998,8 +3993,8 @@ interface IAccessibleHypertext : IAccessibleText
 
 /** @brief This interface exposes information about hypertext in a document.
 
- The %IAccessibleHypertext2 interface extends the functinality of the
- %IAccessibleHypertext inteface.
+ The %IAccessibleHypertext2 interface extends the functionality of the
+ %IAccessibleHypertext interface.
 */
 [object, uuid(CF64D89F-8287-4B44-8501-A827453A6077)]
 interface IAccessibleHypertext2 : IAccessibleHypertext
@@ -4639,7 +4634,7 @@ interface IAccessibleTable : IUnknown
  Please also refer to the IAccessibleTableCell interface.
 
  If you want to support older applications you should also support the
-  IAccessibleTable inteface.
+  IAccessibleTable interface.
 */
 [object, uuid(6167f295-06f0-4cdd-a1fa-02e25153d869)]
 interface IAccessibleTable2 : IUnknown
@@ -5134,7 +5129,7 @@ interface IAccessibleTableCell : IUnknown
      [out, retval] boolean *isSelected
     );
 
-  /** @brief Returns a reference to the accessbile of the containing table.
+  /** @brief Returns a reference to the accessible of the containing table.
 
    @param [out] table
     Returns a reference to the IUnknown of the containing table.

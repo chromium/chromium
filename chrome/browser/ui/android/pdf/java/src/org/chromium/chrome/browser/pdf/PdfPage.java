@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pdf;
 import android.app.Activity;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -99,6 +100,14 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.destroy();
     }
 
+    /**
+     * Called after pdf download complete.
+     *
+     * @param pdfFileName The filename of the downloaded pdf document.
+     * @param pdfFilePath The filepath of the downloaded pdf document.
+     * @param isDownloadSafe Whether the pdf download is safe. Mixed-content download is considered
+     *     unsafe.
+     */
     public void onDownloadComplete(String pdfFileName, String pdfFilePath, boolean isDownloadSafe) {
         mTitle = pdfFileName;
         mIsDownloadSafe = isDownloadSafe;
@@ -114,7 +123,30 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.onDownloadComplete(pdfFilePath);
     }
 
+    /**
+     * Show pdf specific find in page UI.
+     *
+     * @return whether the pdf specific find in page UI is shown.
+     */
     public boolean findInPage() {
         return mPdfCoordinator.findInPage();
+    }
+
+    /**
+     * Retrieve uri of the pdf document.
+     *
+     * @return Uri of the pdf document. The uri might be null if the pdf is downloading.
+     */
+    public @Nullable Uri getUri() {
+        return mPdfCoordinator.getUri();
+    }
+
+    /**
+     * Build structured data including content uri and grant permission.
+     *
+     * @param isWorkProfile Whether Chrome is running in the Android work profile.
+     */
+    public String requestAssistContent(boolean isWorkProfile) {
+        return mPdfCoordinator.requestAssistContent(getTitle(), isWorkProfile);
     }
 }

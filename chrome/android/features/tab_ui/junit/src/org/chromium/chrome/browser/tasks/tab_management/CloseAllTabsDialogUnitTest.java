@@ -17,11 +17,13 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -83,6 +85,8 @@ public class CloseAllTabsDialogUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private Context mContext;
     private MockModalDialogManager mMockModalDialogManager;
     private boolean mRunnableCalled;
@@ -93,7 +97,6 @@ public class CloseAllTabsDialogUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTabModelMock.isIncognito()).thenReturn(false);
         when(mIncognitoTabModelMock.isIncognito()).thenReturn(true);
         when(mTabModelSelectorMock.getModel(false)).thenReturn(mTabModelMock);

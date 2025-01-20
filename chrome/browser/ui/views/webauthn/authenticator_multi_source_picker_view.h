@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_MULTI_SOURCE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_MULTI_SOURCE_PICKER_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

@@ -92,8 +92,8 @@ class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
   bool IsSuitableHost(RenderProcessHost* process_host,
                       const GURL& site_url) override {
-    return (privileged_process_id_ == process_host->GetID()) ==
-        site_url.SchemeIs(kPrivilegedScheme);
+    return (privileged_process_id_ == process_host->GetDeprecatedID()) ==
+           site_url.SchemeIs(kPrivilegedScheme);
   }
 
   void set_privileged_process_id(int process_id) {
@@ -609,10 +609,8 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   // default SiteInstance creation on all platforms.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /* enable */ {features::kProcessSharingWithDefaultSiteInstances},
+      /* enable */ {},
       /* disable */ {features::kProcessSharingWithStrictSiteInstances});
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      features::kProcessSharingWithDefaultSiteInstances));
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       features::kProcessSharingWithStrictSiteInstances));
 
@@ -655,7 +653,7 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
       &browser_context, GURL("http://foo.com"));
   SiteInstanceDestructionObserver observer(site_instance.get());
 
-  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
             site_instance->IsDefaultSiteInstance());
 
   site_instance.reset();
@@ -1224,7 +1222,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
 
   // Simulate granting WebUI bindings for the process.
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-      webui_host->GetID(), BindingsPolicySet({BindingsPolicyValue::kWebUi}));
+      webui_host->GetDeprecatedID(),
+      BindingsPolicySet({BindingsPolicyValue::kWebUi}));
 
   EXPECT_TRUE(webui_instance->HasProcess());
   EXPECT_TRUE(webui_instance->IsSuitableForUrlInfo(
@@ -1938,11 +1937,11 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
       SiteInstanceImpl::CreateForTesting(context(), GURL(url::kAboutBlankURL));
   auto instance5 = SiteInstanceImpl::CreateForTesting(context(), kCustomUrl);
 
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_FALSE(instance1->IsDefaultSiteInstance());
     EXPECT_EQ(kNonIsolatedUrl, instance1->GetSiteURL());
+  } else {
+    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
   }
   EXPECT_TRUE(instance1->DoesSiteInfoForURLMatch(
       UrlInfo::CreateForTesting(kNonIsolatedUrl)));
@@ -1972,12 +1971,12 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 
   // Test the standard effective URL case.
   EXPECT_TRUE(instance5->HasSite());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(instance5->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_FALSE(instance5->IsDefaultSiteInstance());
     EXPECT_EQ("custom-standard://custom/", instance5->GetSiteURL());
     EXPECT_EQ("http://foo.com/", instance5->GetSiteInfo().process_lock_url());
+  } else {
+    EXPECT_TRUE(instance5->IsDefaultSiteInstance());
   }
   EXPECT_TRUE(instance5->DoesSiteInfoForURLMatch(
       UrlInfo::CreateForTesting(kCustomUrl)));
@@ -2316,7 +2315,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceCrossSite) {
 
   // Without full Site Isolation, we'll group different sites in the default
   // SiteInstance.
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(derived_instance.get(), base_instance.get());
     return;
   }
@@ -2363,7 +2362,7 @@ TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginCrossSite) {
 
   // Without full Site Isolation, we'll group different sites in the default
   // SiteInstance.
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(derived_instance.get(), base_instance.get());
     return;
   }
@@ -2449,7 +2448,7 @@ TEST_F(SiteInstanceTest, GroupTokensRelatedSiteInstances) {
 
   // Without full Site Isolation, we'll group different sites in the default
   // SiteInstance.
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(derived_instance.get(), base_instance.get());
     return;
   }

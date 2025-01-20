@@ -129,7 +129,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
         service_worker_dir_.GetPath().Append(
             FILE_PATH_LITERAL("scope")), nullptr));
   }
-  ~ChromeServiceWorkerTest() override {}
+  ~ChromeServiceWorkerTest() override = default;
 
   void WriteFile(const base::FilePath::StringType& filename,
                  std::string_view contents) {
@@ -605,8 +605,8 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
       delete;
 
  protected:
-  ChromeServiceWorkerFetchTest() {}
-  ~ChromeServiceWorkerFetchTest() override {}
+  ChromeServiceWorkerFetchTest() = default;
+  ~ChromeServiceWorkerFetchTest() override = default;
 
   void SetUpOnMainThread() override {
     WriteServiceWorkerFetchTestFiles();
@@ -755,8 +755,8 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
       const ChromeServiceWorkerLinkFetchTest&) = delete;
 
  protected:
-  ChromeServiceWorkerLinkFetchTest() {}
-  ~ChromeServiceWorkerLinkFetchTest() override {}
+  ChromeServiceWorkerLinkFetchTest() = default;
+  ~ChromeServiceWorkerLinkFetchTest() override = default;
   void SetUpOnMainThread() override {
     // Map all hosts to localhost and setup the EmbeddedTestServer for
     // redirects.
@@ -912,8 +912,8 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
       const ChromeServiceWorkerFetchPPAPITest&) = delete;
 
  protected:
-  ChromeServiceWorkerFetchPPAPITest() {}
-  ~ChromeServiceWorkerFetchPPAPITest() override {}
+  ChromeServiceWorkerFetchPPAPITest() = default;
+  ~ChromeServiceWorkerFetchPPAPITest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeServiceWorkerFetchTest::SetUpCommandLine(command_line);

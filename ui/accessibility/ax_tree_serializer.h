@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/accessibility/ax_common.h"
@@ -146,7 +147,7 @@ class AXTreeSerializer {
   // as explored by the serializer.
   size_t ClientTreeNodeCount() const;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   std::vector<AXNodeID> ClientTreeNodeIds() const;
 
   AXSourceNode ParentOf(AXNodeID id);
@@ -385,7 +386,7 @@ size_t AXTreeSerializer<AXSourceNode,
   return client_id_map_.size();
 }
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,
           typename AXTreeUpdateType,
@@ -420,7 +421,7 @@ AXSourceNode AXTreeSerializer<AXSourceNode,
   }
   return tree_->GetFromId(node->parent->id);
 }
-#endif
+#endif  // AX_FAIL_FAST_BUILD()
 
 template <typename AXSourceNode,
           typename AXSourceNodeVectorType,
@@ -661,7 +662,7 @@ AXTreeSerializer<AXSourceNode,
     base::debug::SetCrashKeyString(missing_parent_err,
                                    error.str().substr(0, 230));
     if (crash_on_error_) {
-      CHECK(false) << error.str();
+      NOTREACHED() << error.str();
     } else {
       LOG(ERROR) << error.str();
       // Different from other errors, not calling Reset() here to avoid breaking
@@ -859,7 +860,7 @@ void AXTreeSerializer<AXSourceNode,
     // caller makes it difficult to debug whether extra resets / lost virtual
     // buffer positions are occurring because of this code. Therefore, a DCHECK
     // has been added in order to debug if or when this condition may occur.
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
     CHECK(!crash_on_error_)
         << "Attempt to delete entire client subtree, including the root.";
 #else
@@ -1011,7 +1012,7 @@ bool AXTreeSerializer<AXSourceNode,
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
       if (crash_on_error_) {
-        CHECK(false) << error.str();
+        NOTREACHED() << error.str();
       } else {
         LOG(ERROR) << error.str();
         Reset();
@@ -1126,7 +1127,7 @@ bool AXTreeSerializer<AXSourceNode,
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
         base::debug::SetCrashKeyString(dupe_id_err, error.str().substr(0, 230));
         if (crash_on_error_) {
-          CHECK(false) << error.str();
+          NOTREACHED() << error.str();
         } else {
           LOG(ERROR) << error.str();
           Reset();

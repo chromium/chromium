@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/event_generator.h"
@@ -45,7 +46,7 @@ constexpr const char kTestUserGaiaId[] = "test_user_gaia_id";
 
 LoginManagerMixin::TestUserInfo GetTestUserInfo() {
   return LoginManagerMixin::TestUserInfo(
-      AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestUserGaiaId)));
 }
 
 // Waiter that blocks in the |Wait| method until a given |AssistantStatus|
@@ -61,8 +62,9 @@ class AssistantStatusWaiter : private AssistantStateObserver {
   ~AssistantStatusWaiter() override { state_->RemoveObserver(this); }
 
   void RunUntilExpectedStatus() {
-    if (state_->assistant_status() == expected_status_)
+    if (state_->assistant_status() == expected_status_) {
       return;
+    }
 
     // Wait until we're ready or we hit the timeout.
     base::RunLoop run_loop;
@@ -76,8 +78,9 @@ class AssistantStatusWaiter : private AssistantStateObserver {
 
  private:
   void OnAssistantStatusChanged(AssistantStatus status) override {
-    if (status == expected_status_ && quit_loop_)
+    if (status == expected_status_ && quit_loop_) {
       std::move(quit_loop_).Run();
+    }
   }
 
   const raw_ptr<AssistantState> state_;
@@ -101,13 +104,15 @@ class ResponseWaiter : private views::ViewObserver {
   }
 
   ~ResponseWaiter() override {
-    if (parent_view_)
+    if (parent_view_) {
       parent_view_->RemoveObserver(this);
+    }
   }
 
   void RunUntilResponseReceived() {
-    if (HasResponse())
+    if (HasResponse()) {
       return;
+    }
 
     // Wait until we're ready or we hit the timeout.
     base::RunLoop run_loop;
@@ -127,8 +132,9 @@ class ResponseWaiter : private views::ViewObserver {
   void OnViewHierarchyChanged(
       views::View* observed_view,
       const views::ViewHierarchyChangedDetails& details) override {
-    if (quit_loop_ && HasResponse())
+    if (quit_loop_ && HasResponse()) {
       std::move(quit_loop_).Run();
+    }
   }
 
   void OnViewIsDeleting(views::View* observed_view) override {
@@ -156,8 +162,9 @@ class ResponseWaiter : private views::ViewObserver {
       return response_maybe.value() + "\n";
     } else {
       std::stringstream result;
-      for (views::View* child : view->children())
+      for (views::View* child : view->children()) {
         result << GetResponseTextRecursive(child);
+      }
       return result.str();
     }
   }
@@ -183,8 +190,9 @@ class ExpectedResponseWaiter : public ResponseWaiter {
   bool HasResponse() const override {
     std::string response = GetResponseText();
     for (const std::string& expected : expected_responses_) {
-      if (response.find(expected) != std::string::npos)
+      if (response.find(expected) != std::string::npos) {
         return true;
+      }
     }
     return false;
   }
@@ -199,8 +207,9 @@ class ExpectedResponseWaiter : public ResponseWaiter {
   std::string FormatExpectedResponses() const {
     std::stringstream result;
     result << "{\n";
-    for (const std::string& expected : expected_responses_)
+    for (const std::string& expected : expected_responses_) {
       result << "    \"" << expected << "\",\n";
+    }
     result << "}";
     return result.str();
   }
@@ -249,8 +258,9 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
   // ExpectedResponseWaiter overrides:
   std::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
-    if (view->GetClassName() == class_name_)
+    if (view->GetClassName() == class_name_) {
       return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
+    }
     return std::nullopt;
   }
 
@@ -269,8 +279,9 @@ class CallbackViewHierarchyChangedObserver : views::ViewObserver {
   }
 
   ~CallbackViewHierarchyChangedObserver() override {
-    if (parent_view_)
+    if (parent_view_) {
       parent_view_->RemoveObserver(this);
+    }
   }
 
   // ViewObserver:
@@ -283,8 +294,9 @@ class CallbackViewHierarchyChangedObserver : views::ViewObserver {
   void OnViewIsDeleting(views::View* view) override {
     DCHECK_EQ(view, parent_view_);
 
-    if (parent_view_)
+    if (parent_view_) {
       parent_view_->RemoveObserver(this);
+    }
 
     parent_view_ = nullptr;
   }
@@ -504,8 +516,9 @@ void AssistantTestMixin::ExpectTimersResponse(
   // We expect the textual representation of a timers response to be of the form
   // "<timer1 remaining time in seconds>\n<timer2 remaining time in seconds>..."
   std::stringstream expected_response;
-  for (const auto& timer : timers)
+  for (const auto& timer : timers) {
     expected_response << timer.InSeconds() << "\n";
+  }
 
   const base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE, wait_timeout);
   TypedExpectedResponseWaiter waiter("AssistantTimersElementView",

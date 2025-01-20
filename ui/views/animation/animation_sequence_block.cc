@@ -99,7 +99,7 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetClipRect(
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
     ui::Layer* target,
-    SkColor color,
+    SkColor4f color,
     gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::COLOR},
                       Element(color, tween_type));
@@ -107,7 +107,7 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
     ui::LayerOwner* target,
-    SkColor color,
+    SkColor4f color,
     gfx::Tween::Type tween_type) {
   return SetColor(target->layer(), color, tween_type);
 }
@@ -306,7 +306,7 @@ void AnimationSequenceBlock::TerminateBlock() {
         break;
       case ui::LayerAnimationElement::COLOR:
         element = ui::LayerAnimationElement::CreateColorElement(
-            absl::get<SkColor>(pair.second.animation_value_), duration);
+            absl::get<SkColor4f>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::CLIP:
         element = ui::LayerAnimationElement::CreateClipRectElement(

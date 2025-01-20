@@ -28,7 +28,7 @@ class TranslateInternalsUI : public content::WebUIController {
   TranslateInternalsUI(const TranslateInternalsUI&) = delete;
   TranslateInternalsUI& operator=(const TranslateInternalsUI&) = delete;
 
-  ~TranslateInternalsUI() override {}
+  ~TranslateInternalsUI() override = default;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_

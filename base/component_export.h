@@ -61,7 +61,7 @@
 // or absense of an extra comma can be used to conditionally shift subsequent
 // argument positions and thus influence which argument is selected.
 #define COMPONENT_MACRO_CONDITIONAL_COMMA_(...) \
-  COMPONENT_MACRO_CONDITIONAL_COMMA_IMPL_(__VA_ARGS__,)
+  COMPONENT_MACRO_CONDITIONAL_COMMA_IMPL_(__VA_ARGS__, )
 #define COMPONENT_MACRO_CONDITIONAL_COMMA_IMPL_(x, ...) \
   COMPONENT_MACRO_CONDITIONAL_COMMA_##x##_
 #define COMPONENT_MACRO_CONDITIONAL_COMMA_1_ ,

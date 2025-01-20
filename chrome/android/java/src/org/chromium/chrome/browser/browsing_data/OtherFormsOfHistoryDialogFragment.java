@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Informs the user about the existence of other forms of browsing history. */
@@ -53,7 +53,7 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         getContext(),
                                         (widget) -> {
                                             new ChromeAsyncTabLauncher(/* incognito= */ false)

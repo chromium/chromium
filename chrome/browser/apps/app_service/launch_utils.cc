@@ -45,21 +45,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom-shared.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_extensions_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 // Use manual mapping for launch container and window open disposition because
 // we cannot use mojom traits for crosapi::mojom::LaunchParams yet. Move to auto
@@ -242,9 +230,7 @@ AppLaunchParams CreateAppLaunchParamsForIntent(
     params.override_url = intent->url.value();
   }
 
-  // On Lacros, the caller of this function attaches the intent files to the
-  // AppLaunchParams.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!intent->files.empty()) {
     std::vector<GURL> file_urls;
     for (const auto& intent_file : intent->files) {
@@ -262,7 +248,7 @@ AppLaunchParams CreateAppLaunchParamsForIntent(
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   params.intent = std::move(intent);
 
@@ -372,7 +358,7 @@ int GetSessionIdForRestoreFromWebContents(
   return browser->session_id().id();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   if (!window_info) {
     return nullptr;
@@ -388,9 +374,6 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   return arc_window_info;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
     const AppLaunchParams& params,
     Profile* profile) {
@@ -505,21 +488,13 @@ void MaybeLaunchPreferredAppForUrl(Profile* profile,
       return;
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(ash::NewWindowDelegate::GetPrimary());
 
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
                                       const GURL& url,
                                       LaunchSource launch_source) {
@@ -543,6 +518,6 @@ void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

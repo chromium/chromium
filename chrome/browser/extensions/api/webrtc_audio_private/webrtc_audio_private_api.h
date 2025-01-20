@@ -91,7 +91,7 @@ class WebrtcAudioPrivateFunction : public ExtensionFunction {
 
 class WebrtcAudioPrivateGetSinksFunction : public WebrtcAudioPrivateFunction {
  protected:
-  ~WebrtcAudioPrivateGetSinksFunction() override {}
+  ~WebrtcAudioPrivateGetSinksFunction() override = default;
 
  private:
   using SinkInfoVector = std::vector<api::webrtc_audio_private::SinkInfo>;

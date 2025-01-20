@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/eye_dropper/eye_dropper_view.h"
-
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/eye_dropper/eye_dropper_view.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"

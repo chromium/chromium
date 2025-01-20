@@ -56,7 +56,7 @@ class MockPrintingManager
   MockPrintingManager(const MockPrintingManager&) = delete;
   MockPrintingManager& operator=(const MockPrintingManager&) = delete;
 
-  ~MockPrintingManager() override {}
+  ~MockPrintingManager() override = default;
 
   MOCK_METHOD(void,
               DeleteAllPrintJobs,

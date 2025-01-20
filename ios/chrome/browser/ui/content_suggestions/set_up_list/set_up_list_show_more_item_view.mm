@@ -191,6 +191,10 @@ NSAttributedString* Strikethrough(NSString* text) {
                        IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE)
                  : l10n_util::GetNSString(
                        IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
+    case SetUpListItemType::kDocking:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE);
+    case SetUpListItemType::kAddressBar:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -237,6 +241,12 @@ NSAttributedString* Strikethrough(NSString* text) {
                        IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION)
                  : l10n_util::GetNSString(
                        IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION);
+    case SetUpListItemType::kDocking:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_DOCK_CHROME_SHORT_DESCRIPTION);
+    case SetUpListItemType::kAddressBar:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_ADDRESS_BAR_LONG_DESCRIPTION);
     case SetUpListItemType::kAllSet:
     case SetUpListItemType::kFollow:
       NOTREACHED();

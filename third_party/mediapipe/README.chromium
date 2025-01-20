@@ -3,8 +3,8 @@ Short Name: mediapipe
 URL: https://github.com/google/mediapipe
 Version: 6d6e93c7b550b3bbb5bf35369ca592be2d7eed3d
 Revision: 905eade19971467bca916bbb80da6936a994095f
-Date: 2024-09-12
-License: Apache 2.0
+Date: 2024-12-11
+License: Apache-2.0, X11-Lucent
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
@@ -15,6 +15,9 @@ MediaPipe Tasks provides the core programming interface of the MediaPipe
 Solutions suite, including a set of libraries for deploying innovative ML
 solutions onto devices with a minimum of code. It supports multiple platforms,
 including Android, Web / JavaScript, Python, and support for iOS is coming soon.
+
+Note that this library includes some of its own third-party libraries (e.g.
+com_google_audio_tools).
 
 To update this library
 ======================
@@ -63,6 +66,12 @@ does not use it anyways, and building all those ops is not necessary.
 Chromium binary size requirements.
 
 * unnecessary-const.patch - Removes an unnecessary "const".
+
+* audio_tools_porting_nan.patch
+ On Windows, compiler throws "constexpr variable must be initialized by a
+ constant expression" in third_party/com_google_audio_tools/audio/dsp/porting.h,
+ This fixes the issue by using std::numeric_limits instead of NAN defined in
+ <cmath>.
 
 
 Patches which need to be upstreamed differently than they are patched

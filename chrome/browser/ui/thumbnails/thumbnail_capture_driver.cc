@@ -45,8 +45,9 @@ void ThumbnailCaptureDriver::SetCanCapture(bool can_capture) {
 }
 
 void ThumbnailCaptureDriver::GotFrame() {
-  if (capture_state_ == CaptureState::kCooldown)
+  if (capture_state_ == CaptureState::kCooldown) {
     captured_cooldown_frame_ = true;
+  }
 }
 
 void ThumbnailCaptureDriver::SetCapturePermittedByScheduler(bool scheduled) {
@@ -67,8 +68,9 @@ void ThumbnailCaptureDriver::UpdateCaptureState() {
   if (!scheduled_) {
     client_->StopCapture();
 
-    if (capture_state_ < CaptureState::kHaveFinalCapture)
+    if (capture_state_ < CaptureState::kHaveFinalCapture) {
       capture_state_ = CaptureState::kNoCapture;
+    }
 
     return;
   }
@@ -178,8 +180,9 @@ void ThumbnailCaptureDriver::StartCooldown() {
 }
 
 void ThumbnailCaptureDriver::OnCooldownEnded() {
-  if (capture_state_ < CaptureState::kCooldown)
+  if (capture_state_ < CaptureState::kCooldown) {
     return;
+  }
 
   if (!captured_cooldown_frame_ &&
       cooldown_retry_count_ < kMaxCooldownRetries) {

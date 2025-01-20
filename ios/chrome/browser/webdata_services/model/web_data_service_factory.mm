@@ -11,13 +11,11 @@
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/search_engines/keyword_web_data_service.h"
 #import "components/signin/public/webdata/token_web_data.h"
 #import "components/webdata_services/web_data_service_wrapper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -44,8 +42,8 @@ WebDataServiceWrapper* WebDataServiceFactory::GetForProfile(
     ServiceAccessType access_type) {
   DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
          !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -54,8 +52,8 @@ WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
     ServiceAccessType access_type) {
   DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
          !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
+      profile, /*create*/ false);
 }
 
 // static
@@ -115,24 +113,15 @@ WebDataServiceFactory::GetDefaultFactory() {
 }
 
 WebDataServiceFactory::WebDataServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "WebDataService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("WebDataService",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {}
 
 WebDataServiceFactory::~WebDataServiceFactory() {}
 
 std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildWebDataService(context);
-}
-
-web::BrowserState* WebDataServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool WebDataServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

@@ -28,7 +28,8 @@ class WebState;
 // YES if the coordinator has started. If YES, start is a no-op.
 @property(nonatomic, readonly) BOOL started;
 
-// The ViewController that this coordinator managers.
+// The view containing most visited tabs. If it's included in the magic stack,
+// the value would be `nil`.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsViewController* viewController;
 

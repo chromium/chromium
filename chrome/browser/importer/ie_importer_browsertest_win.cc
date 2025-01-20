@@ -326,7 +326,7 @@ class TestObserver : public ProfileWriter,
   }
 
  private:
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   size_t bookmark_count_;
   size_t history_count_;
@@ -376,7 +376,7 @@ class MalformedFavoritesRegistryTestObserver
   }
 
  private:
-  ~MalformedFavoritesRegistryTestObserver() override {}
+  ~MalformedFavoritesRegistryTestObserver() override = default;
 
   size_t bookmark_count_;
   base::OnceClosure quit_closure_;

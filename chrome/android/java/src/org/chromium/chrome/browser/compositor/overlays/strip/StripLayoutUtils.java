@@ -9,12 +9,19 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.base.LocalizationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StripLayoutUtils {
     // Position Constants.
@@ -22,7 +29,7 @@ public class StripLayoutUtils {
     // calculated as:
     // closeButtonEndPadding(10) + tabContainerEndPadding(16) + groupTitleStartMargin(13)
     //         - overlap(28-16) =
-    @VisibleForTesting static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
+    static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
     static final float MIN_TAB_WIDTH_DP = 108.f;
     static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     static final float TAB_OVERLAP_WIDTH_DP = 28.f;
@@ -79,17 +86,6 @@ public class StripLayoutUtils {
     }
 
     /**
-     * @param model The {@link TabModel} that holds the given tab.
-     * @param stripTab The {@link StripLayoutTab} to find the root ID for.
-     * @return The root ID for the given tab. {@code Tab.INVALID_TAB_ID} if no {@link Tab} found.
-     */
-    static int getRootId(TabModel model, StripLayoutTab stripTab) {
-        if (stripTab == null) return Tab.INVALID_TAB_ID;
-        Tab tab = model.getTabById(stripTab.getTabId());
-        return tab == null ? Tab.INVALID_TAB_ID : tab.getRootId();
-    }
-
-    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
@@ -98,6 +94,43 @@ public class StripLayoutUtils {
         for (int i = 0; i < groupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = groupTitles[i];
             if (groupTitle.getRootId() == rootId) return groupTitle;
+        }
+        return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param tabGroupId The {@link Token} for the tab group title we're searching for.
+     * @return The {@link StripLayoutGroupTitle} with the {@link Token}. {@code null} otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitle(
+            StripLayoutGroupTitle[] groupTitles, Token tabGroupId) {
+        for (int i = 0; i < groupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = groupTitles[i];
+            if (groupTitle.getTabGroupId().equals(tabGroupId)) return groupTitle;
+        }
+        return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param collaborationId The sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
+     *     otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitleByCollaborationId(
+            StripLayoutGroupTitle[] groupTitles,
+            String collaborationId,
+            TabGroupSyncService tabGroupSyncService) {
+        for (StripLayoutGroupTitle groupTitle : groupTitles) {
+            SavedTabGroup savedTabGroup =
+                    tabGroupSyncService.getGroup(new LocalTabGroupId(groupTitle.getTabGroupId()));
+            if (savedTabGroup != null
+                    && savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
+                return groupTitle;
+            }
         }
         return null;
     }
@@ -118,29 +151,20 @@ public class StripLayoutUtils {
         return groupTitle.getWidth() + totalTabWidth;
     }
 
+    static List<StripLayoutTab> getGroupedTabs(
+            TabModel tabModel, StripLayoutTab[] stripTabs, int rootId) {
+        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
+        for (int i = 0; i < stripTabs.length; ++i) {
+            final StripLayoutTab stripTab = stripTabs[i];
+            final Tab tab = tabModel.getTabById(stripTab.getTabId());
+            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
+        }
+        return groupedTabs;
+    }
+
     // ============================================================================================
     // StripLayoutView/Tab array util methods
     // ============================================================================================
-
-    /**
-     * @param stripViews The list of all of the tab strip's views.
-     * @param stripTabs The list of all of the tab strip's tabs.
-     * @param stripTabIndex The index in the list of tabs.
-     * @return The index in the list of views.
-     */
-    static int findStripViewIndexForStripTab(
-            StripLayoutView[] stripViews, StripLayoutTab[] stripTabs, int stripTabIndex) {
-        if (stripTabIndex == TabModel.INVALID_TAB_INDEX) {
-            return TabModel.INVALID_TAB_INDEX;
-        }
-        assert stripTabIndex < stripTabs.length;
-        StripLayoutTab curTab = stripTabs[stripTabIndex];
-        if (stripViews == null || curTab == null) return TabModel.INVALID_TAB_INDEX;
-        for (int i = 0; i < stripViews.length; i++) {
-            if (stripViews[i] instanceof StripLayoutTab tab && curTab == tab) return i;
-        }
-        return TabModel.INVALID_TAB_INDEX;
-    }
 
     /**
      * @param stripTabs The list of {@link StripLayoutTab}.
@@ -166,6 +190,39 @@ public class StripLayoutUtils {
         for (int i = 0; i < stripTabs.length; i++) {
             if (stripTabs[i].getTabId() == id) return stripTabs[i];
         }
+        return null;
+    }
+
+    /**
+     * @param views The list of {@link StripLayoutView}.
+     * @param x The x position to use to retrieve view.
+     * @param includeGroupTitles Whether to include group title when finding view.
+     * @return View at x position.{@code null} if no view at position or if input criteria not met.
+     */
+    public static StripLayoutView findViewAtPositionX(
+            StripLayoutView[] views, float x, boolean includeGroupTitles) {
+        for (StripLayoutView view : views) {
+            float leftEdge;
+            float rightEdge;
+            if (view instanceof StripLayoutTab tab) {
+                leftEdge = tab.getTouchTargetLeft();
+                rightEdge = tab.getTouchTargetRight();
+                if (LocalizationUtils.isLayoutRtl()) {
+                    leftEdge -= tab.getTrailingMargin();
+                } else {
+                    rightEdge += tab.getTrailingMargin();
+                }
+            } else {
+                if (!includeGroupTitles) continue;
+                leftEdge = view.getDrawX();
+                rightEdge = leftEdge + view.getWidth();
+            }
+
+            if (view.isVisible() && leftEdge <= x && x <= rightEdge) {
+                return view;
+            }
+        }
+
         return null;
     }
 
@@ -208,6 +265,14 @@ public class StripLayoutUtils {
             array[i + 1] = array[i];
         }
         array[newIndex] = elem;
+    }
+
+    static <T> boolean arrayContains(T[] array, T desiredElem) {
+        for (int i = 0; i < array.length; i++) {
+            final T elem = array[i];
+            if (elem == desiredElem) return true;
+        }
+        return false;
     }
 
     // Other methods.

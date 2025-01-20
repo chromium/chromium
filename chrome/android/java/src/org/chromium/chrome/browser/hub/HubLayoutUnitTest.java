@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -255,14 +254,10 @@ public class HubLayoutUnitTest {
         doAnswer(
                         invocation -> {
                             var args = invocation.getArguments();
-                            return new LayoutTab(
-                                    (Integer) args[0],
-                                    (Boolean) args[1],
-                                    ((Float) args[2]).intValue(),
-                                    ((Float) args[3]).intValue());
+                            return new LayoutTab((Integer) args[0], (Boolean) args[1], -1, -1);
                         })
                 .when(mUpdateHost)
-                .createLayoutTab(anyInt(), anyBoolean(), anyFloat(), anyFloat());
+                .createLayoutTab(anyInt(), anyBoolean());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);

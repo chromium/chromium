@@ -53,7 +53,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -462,7 +461,7 @@ GetTestPublicKeyCredentialRequestOptions() {
   auto options = PublicKeyCredentialRequestOptions::New();
   options->extensions = AuthenticationExtensionsClientInputs::New();
   options->relying_party_id = std::string(kTestRelyingPartyId);
-  options->challenge.assign(32, 0x0A);
+  options->challenge = std::vector<uint8_t>(32, 0x0A);
   options->timeout = base::Minutes(1);
   options->user_verification = device::UserVerificationRequirement::kPreferred;
   options->allow_credentials = GetTestCredentials();
@@ -7424,6 +7423,45 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
   }
 }
 
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       MakeCredentialRkPreferredStorageFull_LargeBlob) {
+  device::VirtualCtap2Device::Config config;
+  config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
+                           std::end(device::kCtap2Versions2_1)};
+  config.internal_uv_support = true;
+  config.resident_key_support = true;
+  config.resident_credential_storage = 0;
+  config.large_blob_support = true;
+  config.pin_uv_auth_token_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        make_credential_options(device::ResidentKeyRequirement::kPreferred);
+    options->large_blob_enable = device::LargeBlobSupport::kRequired;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
+  }
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        make_credential_options(device::ResidentKeyRequirement::kPreferred);
+    options->large_blob_enable = device::LargeBlobSupport::kPreferred;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    EXPECT_TRUE(result.response->echo_large_blob);
+    EXPECT_FALSE(result.response->supports_large_blob);
+    EXPECT_EQ(1u,
+              virtual_device_factory_->mutable_state()->registrations.size());
+    const device::VirtualFidoDevice::RegistrationData& registration =
+        virtual_device_factory_->mutable_state()->registrations.begin()->second;
+    EXPECT_FALSE(registration.is_resident);
+    EXPECT_FALSE(registration.large_blob);
+    EXPECT_FALSE(registration.large_blob_key);
+  }
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredSetsPIN) {
   device::VirtualCtap2Device::Config config;
   config.pin_support = true;
@@ -8899,10 +8937,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
 // specialized to the chosen credential ID and post-request account selection UI
 // to be skipped.
 TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
-  device::VirtualCtap2Device::Config config;
-  config.resident_key_support = true;
-  config.internal_uv_support = true;
-  virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->SetTransport(
       device::FidoTransportProtocol::kInternal);
   virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
@@ -8920,19 +8954,28 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       kSecondCredentialId, kTestRelyingPartyId, kSecondUserId, std::nullopt,
       std::nullopt));
+  for (bool has_pin_uv_auth_token : {false, true}) {
+    SCOPED_TRACE(has_pin_uv_auth_token);
+    device::VirtualCtap2Device::Config config;
+    config.pin_uv_auth_token_support = has_pin_uv_auth_token;
+    config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    virtual_device_factory_->SetCtap2Config(std::move(config));
 
-  // |SelectAccount| should not be called if an account was chosen from
-  // pre-select UI.
-  test_client_.delegate_config.expected_accounts = "<invalid>";
+    // |SelectAccount| should not be called if an account was chosen from
+    // pre-select UI.
+    test_client_.delegate_config.expected_accounts = "<invalid>";
 
-  for (const auto& id : {kFirstCredentialId, kSecondCredentialId}) {
-    test_client_.delegate_config.preselected_credential_id = id;
-    test_client_.delegate_config.preselected_authenticator_id =
-        kAuthenticatorId;
-    PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
-    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
-    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-    EXPECT_EQ(result.response->info->raw_id, id);
+    for (const auto& id : {kFirstCredentialId, kSecondCredentialId}) {
+      test_client_.delegate_config.preselected_credential_id = id;
+      test_client_.delegate_config.preselected_authenticator_id =
+          kAuthenticatorId;
+      PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+      GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      EXPECT_EQ(result.response->info->raw_id, id);
+    }
   }
 }
 
@@ -9837,7 +9880,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
 
   std::unique_ptr<network::mojom::NetworkContext> network_context_;
-  uint8_t peer_identity_x962_[device::kP256X962Length] = {0};
+  uint8_t peer_identity_x962_[device::kP256X962Length] = {};
   device::VirtualCtap2Device virtual_device_{DeviceState(), DeviceConfig()};
   std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings_;
   base::OnceCallback<void(

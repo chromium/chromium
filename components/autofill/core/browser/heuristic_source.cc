@@ -41,8 +41,8 @@ std::optional<PatternFile> HeuristicSourceToPatternFile(
     case HeuristicSource::kDefaultRegexes:
     case HeuristicSource::kExperimentalRegexes:
       return PatternFile::kDefault;
-    case HeuristicSource::kPredictionImprovementRegexes:
-      return PatternFile::kPredictionImprovements;
+    case HeuristicSource::kAutofillAiRegexes:
+      return PatternFile::kAutofillAi;
 #endif
     case HeuristicSource::kAutofillMachineLearning:
     case HeuristicSource::kPasswordManagerMachineLearning:

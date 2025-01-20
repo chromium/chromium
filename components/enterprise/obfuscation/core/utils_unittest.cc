@@ -19,7 +19,7 @@ namespace {
 // Helper function to divide data in chunks of random sizes.
 void ObfuscateTestDataInChunks(base::span<const uint8_t> test_data,
                                std::vector<uint8_t>& obfuscated_content) {
-  std::vector<uint8_t> derived_key;
+  std::array<uint8_t, kKeySize> derived_key;
   std::vector<uint8_t> nonce_prefix;
   auto header = CreateHeader(&derived_key, &nonce_prefix);
   ASSERT_TRUE(header.has_value());
@@ -81,7 +81,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   // Obfuscate the data chunk.
   std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
 
-  std::vector<uint8_t> derived_key;
+  std::array<uint8_t, kKeySize> derived_key;
   std::vector<uint8_t> nonce_prefix;
   auto header = CreateHeader(&derived_key, &nonce_prefix);
   constexpr uint32_t kInitialChunkCounter = 0;
@@ -114,7 +114,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   EXPECT_EQ(chunk_size.value(), test_data.size() + kAuthTagSize);
 
   auto deobfuscated_chunk = DeobfuscateDataChunk(
-      base::make_span(obfuscated_chunk.value())
+      base::span(obfuscated_chunk.value())
           .subspan(kChunkSizePrefixSize, chunk_size.value()),
       header_data.value().derived_key, header_data.value().nonce_prefix,
       kInitialChunkCounter, true);
@@ -124,7 +124,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   // Deobfuscation should fail when we modify the ciphertext.
   obfuscated_chunk.value()[kChunkSizePrefixSize] ^= 1;
   deobfuscated_chunk = DeobfuscateDataChunk(
-      base::make_span(obfuscated_chunk.value())
+      base::span(obfuscated_chunk.value())
           .subspan(kChunkSizePrefixSize, chunk_size.value()),
       header_data.value().derived_key, header_data.value().nonce_prefix,
       kInitialChunkCounter, true);
@@ -197,15 +197,14 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateVariableChunks) {
 
   while (offset < obfuscated_content.size()) {
     // Read chunk size
-    auto chunk_size =
-        GetObfuscatedChunkSize(base::make_span(obfuscated_content)
-                                   .subspan(offset, kChunkSizePrefixSize));
+    auto chunk_size = GetObfuscatedChunkSize(
+        base::span(obfuscated_content).subspan(offset, kChunkSizePrefixSize));
     ASSERT_TRUE(chunk_size.has_value());
     offset += kChunkSizePrefixSize;
 
     // Deobfuscate chunk
     auto deobfuscated_chunk = DeobfuscateDataChunk(
-        base::make_span(obfuscated_content).subspan(offset, chunk_size.value()),
+        base::span(obfuscated_content).subspan(offset, chunk_size.value()),
         header_data.value().derived_key, header_data.value().nonce_prefix,
         counter++, (offset + chunk_size.value() >= obfuscated_content.size()));
     ASSERT_TRUE(deobfuscated_chunk.has_value());

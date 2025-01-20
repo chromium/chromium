@@ -63,7 +63,7 @@ class WebFrameImplTest : public web::WebTest {
   WKContentWorld* last_received_content_world_;
 
   FakeWebState fake_web_state_;
-  GURL security_origin_;
+  url::Origin security_origin_;
 };
 
 // Tests creation of a WebFrame for the main frame.

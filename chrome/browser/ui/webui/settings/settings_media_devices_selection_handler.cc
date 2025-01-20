@@ -235,8 +235,9 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
   }
 #endif
 
-  if (facing_info.empty())
+  if (facing_info.empty()) {
     return device.descriptor.display_name();
+  }
   return device.descriptor.display_name() + " " + facing_info;
 }
 

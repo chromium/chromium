@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #import "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -21,11 +20,21 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+// Returns the application global variation service.
+variations::VariationsService* GetVariationsService() {
+  return GetApplicationContext()->GetVariationsService();
+}
+
+}  // namespace
+
 // static
 safe_browsing::RealTimeUrlLookupService*
 RealTimeUrlLookupServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<safe_browsing::RealTimeUrlLookupService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<safe_browsing::RealTimeUrlLookupService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -36,9 +45,7 @@ RealTimeUrlLookupServiceFactory::GetInstance() {
 }
 
 RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "RealTimeUrlLookupService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("RealTimeUrlLookupService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());
@@ -52,6 +59,17 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
+
+  // If referrer chains become supported, this callback will need to change
+  // to provide the minimum allowed timestamp instead.
+  base::RepeatingCallback<base::Time()>
+      min_allowed_timestamp_for_referrer_chains_getter = base::NullCallback();
+
+  // Referrer chain provider is currently not available on iOS. Once it
+  // is implemented, inject it to enable referrer chain in real time
+  // requests.
+  safe_browsing::ReferrerChainProvider* referrer_chain_provider = nullptr;
+
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
@@ -64,21 +82,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
-      profile->IsOffTheRecord(),
-      base::BindRepeating(
-          &RealTimeUrlLookupServiceFactory::GetVariationsService),
-      // If referrer chains become supported, this callback will need to change
-      // to provide the minimum allowed timestamp instead.
-      /*min_allowed_timestamp_for_referrer_chains_getter=*/base::NullCallback(),
-      // Referrer chain provider is currently not available on iOS. Once it
-      // is implemented, inject it to enable referrer chain in real time
-      // requests.
-      /*referrer_chain_provider=*/nullptr,
+      profile->IsOffTheRecord(), base::BindRepeating(&GetVariationsService),
+      min_allowed_timestamp_for_referrer_chains_getter, referrer_chain_provider,
       /*webui_delegate=*/nullptr);
-}
-
-// static
-variations::VariationsService*
-RealTimeUrlLookupServiceFactory::GetVariationsService() {
-  return GetApplicationContext()->GetVariationsService();
 }

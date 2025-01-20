@@ -86,7 +86,7 @@ def generate_async_iterator_blink_impl_class(iterator_class_like=None,
         CodeGenAccumulator.require_class_decls(
             set.union(header_forward_decls, source_forward_decls)))
     headers = set([
-        "third_party/blink/renderer/platform/bindings/async_iterator_base.h",
+        "third_party/blink/renderer/bindings/core/v8/async_iterator_base.h",
     ])
     headers.update(header_include_headers)
     for idl_type in key_value_type_list:

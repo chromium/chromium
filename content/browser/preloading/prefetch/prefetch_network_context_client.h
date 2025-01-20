@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_CLIENT_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
@@ -41,9 +40,6 @@ class PrefetchNetworkContextClient
       const std::string& auth_negotiate_android_account_type,
       const std::string& spn,
       OnGenerateHttpNegotiateAuthTokenCallback callback) override;
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed() override;
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void OnCanSendSCTAuditingReport(

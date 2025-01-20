@@ -31,8 +31,7 @@ const int kShadowElevationVirtualKeyboard = 2;
 }  // namespace
 
 ChromeKeyboardUI::ChromeKeyboardUI(content::BrowserContext* context)
-    : browser_context_(context) {
-}
+    : browser_context_(context) {}
 
 ChromeKeyboardUI::~ChromeKeyboardUI() {
   DCHECK(!keyboard_controller());

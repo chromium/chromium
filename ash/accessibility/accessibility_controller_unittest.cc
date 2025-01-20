@@ -14,6 +14,7 @@
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
@@ -214,7 +215,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityCaretHighlightEnabled));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
-  EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityCursorColorEnabled));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
@@ -341,6 +341,14 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityFaceGazePrecisionClick));
   EXPECT_TRUE(prefs()->FindPreference(
       prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor));
+  EXPECT_TRUE(
+      prefs()->FindPreference(prefs::kAccessibilityFaceGazeEnabledSentinel));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeActionsEnabledSentinel));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));
@@ -471,21 +479,28 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
 }
 
 TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
-  EXPECT_FALSE(controller()->cursor_color().enabled());
-
   TestAccessibilityObserver observer;
   controller()->AddObserver(&observer);
   EXPECT_EQ(0, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
-  controller()->cursor_color().SetEnabled(true);
-  EXPECT_TRUE(controller()->cursor_color().enabled());
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 1);
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
-  controller()->cursor_color().SetEnabled(false);
-  EXPECT_FALSE(controller()->cursor_color().enabled());
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosCursorColor", 1);
+
+  // Set to custom color, and return back to default cursor color to ensure
+  // that second duration is still counted.
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 1);
+  EXPECT_EQ(3, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
+
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+  EXPECT_EQ(4, observer.status_changed_count_);
+  ExpectSessionDurationMetricCount("CrosCursorColor", 2);
 
   controller()->RemoveObserver(&observer);
 }
@@ -776,13 +791,18 @@ TEST_F(AccessibilityControllerTest, SetMouseKeysEnabled) {
   controller()->AddObserver(&observer);
   EXPECT_EQ(0, observer.status_changed_count_);
 
+  MouseKeysController* mouse_keys_controller =
+      Shell::Get()->mouse_keys_controller();
+
   mouse_keys.SetEnabled(true);
   EXPECT_TRUE(mouse_keys.enabled());
+  EXPECT_FALSE(mouse_keys_controller->paused());
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosMouseKeys", 0);
 
   mouse_keys.SetEnabled(false);
   EXPECT_FALSE(mouse_keys.enabled());
+  EXPECT_FALSE(mouse_keys_controller->paused());
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosMouseKeys", 1);
 
@@ -1343,7 +1363,6 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
   // Simulate using chrome settings webui to set cursor color, which also turns
   // on the cursor color enabled pref.
   prefs()->SetInteger(prefs::kAccessibilityCursorColor, SK_ColorBLUE);
-  prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, true);
 
   CursorWindowController* cursor_window_controller =
       Shell::Get()->window_tree_host_manager()->cursor_window_controller();
@@ -1360,11 +1379,10 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
 
   // Simulate using chrome settings webui to set cursor color to black, which
   // which also turns off the cursor color enabled pref.
-  prefs()->SetInteger(prefs::kAccessibilityCursorColor, 0);
-  prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, false);
+  prefs()->SetInteger(prefs::kAccessibilityCursorColor, kDefaultCursorColor);
+
   EXPECT_EQ(kDefaultCursorColor,
             cursor_window_controller->GetCursorColorForTest());
-  ExpectSessionDurationMetricCount("CrosCursorColor", 1);
 }
 
 TEST_F(AccessibilityControllerTest, SetMonoAudioEnabled) {
@@ -1842,9 +1860,11 @@ TEST_F(AccessibilityControllerTest, LogsDurationAtShutdown) {
   ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 }
 
-// Verifies that the FilterKeysEventRewriter isn't initialized, since the
-// feature flag is off in this test suite.
-TEST_F(AccessibilityControllerTest, FilterKeysEventRewriterNotInitialized) {
+TEST_F(AccessibilityControllerTest,
+       FilterKeysEventRewriterNotInitializedWhenBounceKeysFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kAccessibilityBounceKeys);
   // Initialize the EventRewriterController manually so that all EventRewriters
   // get initialized.
   EventRewriterController::Get()->Initialize(nullptr, nullptr);
@@ -1853,7 +1873,7 @@ TEST_F(AccessibilityControllerTest, FilterKeysEventRewriterNotInitialized) {
   ASSERT_EQ(controller()->GetFilterKeysEventRewriterForTest(), nullptr);
 }
 
-TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
+TEST_F(AccessibilityControllerTest, FaceGazeNotifications) {
   ASSERT_FALSE(
       prefs()->GetBoolean(prefs::kFaceGazeDlcSuccessNotificationHasBeenShown));
   ASSERT_FALSE(
@@ -1880,10 +1900,10 @@ TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
 
-  // The failure notification shouldn't be shown again.
+  // The failure notification should be shown every time the DLC fails.
   controller()->ShowNotificationForFaceGaze(
       FaceGazeNotificationType::kDlcFailed);
-  ASSERT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
+  ASSERT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
 namespace {
@@ -2555,19 +2575,19 @@ TEST_F(AccessibilityControllerDisableTouchpadTest,
   controller->RemoveObserver(&observer);
 }
 
-class AccessibilityControllerFilterKeysTest
+class AccessibilityControllerBounceKeysTest
     : public AccessibilityControllerTestBase {
  protected:
-  AccessibilityControllerFilterKeysTest() = default;
-  AccessibilityControllerFilterKeysTest(
-      const AccessibilityControllerFilterKeysTest&) = delete;
-  AccessibilityControllerFilterKeysTest& operator=(
-      const AccessibilityControllerFilterKeysTest&) = delete;
-  ~AccessibilityControllerFilterKeysTest() override = default;
+  AccessibilityControllerBounceKeysTest() = default;
+  AccessibilityControllerBounceKeysTest(
+      const AccessibilityControllerBounceKeysTest&) = delete;
+  AccessibilityControllerBounceKeysTest& operator=(
+      const AccessibilityControllerBounceKeysTest&) = delete;
+  ~AccessibilityControllerBounceKeysTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFilterKeys);
+        ::features::kAccessibilityBounceKeys);
 
     AccessibilityControllerTestBase::SetUp();
 
@@ -2580,7 +2600,7 @@ class AccessibilityControllerFilterKeysTest
   }
 };
 
-TEST_F(AccessibilityControllerFilterKeysTest, ToggleBounceKeysEnabledPref) {
+TEST_F(AccessibilityControllerBounceKeysTest, ToggleBounceKeysEnabledPref) {
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kAccessibilityBounceKeysEnabled));
   ASSERT_FALSE(controller()->bounce_keys().enabled());
   ASSERT_FALSE(filter_keys_event_rewriter()->IsBounceKeysEnabled());
@@ -2594,7 +2614,7 @@ TEST_F(AccessibilityControllerFilterKeysTest, ToggleBounceKeysEnabledPref) {
   EXPECT_FALSE(filter_keys_event_rewriter()->IsBounceKeysEnabled());
 }
 
-TEST_F(AccessibilityControllerFilterKeysTest, UpdateBounceKeysDelayPref) {
+TEST_F(AccessibilityControllerBounceKeysTest, UpdateBounceKeysDelayPref) {
   ASSERT_EQ(prefs()->GetInteger(prefs::kAccessibilityBounceKeysDelayMs),
             kDefaultAccessibilityBounceKeysDelay.InMilliseconds());
   ASSERT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(),

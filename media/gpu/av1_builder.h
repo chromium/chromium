@@ -19,6 +19,7 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
  public:
   struct SequenceHeader;
   struct FrameHeader;
+  static constexpr uint32_t kMaxTemporalLayerNum = 3;
 
   AV1BitstreamBuilder();
   ~AV1BitstreamBuilder();
@@ -35,8 +36,9 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
   void WriteBool(bool val);
   // Spec 5.3.2.
   void WriteOBUHeader(libgav1::ObuType type,
-                      bool extension_flag,
-                      bool has_size);
+                      bool has_size,
+                      bool extension_flag = false,
+                      std::optional<uint8_t> temporal_id = std::nullopt);
   // Writes a value encoded in LEB128. Spec 4.10.5.
   void WriteValueInLeb128(uint32_t value,
                           std::optional<int> fixed_size = std::nullopt);
@@ -56,8 +58,9 @@ class MEDIA_GPU_EXPORT AV1BitstreamBuilder {
 // Parameters used to build OBUs.
 struct AV1BitstreamBuilder::SequenceHeader {
   uint32_t profile;
-  uint32_t level;
-  uint32_t tier;
+  uint32_t operating_points_cnt_minus_1;
+  std::array<uint32_t, kMaxTemporalLayerNum> level;
+  std::array<uint32_t, kMaxTemporalLayerNum> tier;
   uint32_t frame_width_bits_minus_1;
   uint32_t frame_height_bits_minus_1;
   uint32_t width;
@@ -85,28 +88,29 @@ struct AV1BitstreamBuilder::FrameHeader {
   bool disable_frame_end_update_cdf;
   uint32_t base_qindex;
   uint8_t order_hint;
-  uint32_t filter_level[2];
+  std::array<uint32_t, 2> filter_level;
   uint32_t filter_level_u;
   uint32_t filter_level_v;
   uint32_t sharpness_level;
   bool loop_filter_delta_enabled;
   uint8_t primary_ref_frame;
-  uint8_t ref_frame_idx[7];
+  std::array<uint8_t, 7> ref_frame_idx;
   uint8_t refresh_frame_flags;
-  uint32_t ref_order_hint[8];
-  uint8_t cdef_y_pri_strength[8];
-  uint8_t cdef_y_sec_strength[8];
-  uint8_t cdef_uv_pri_strength[8];
-  uint8_t cdef_uv_sec_strength[8];
+  std::array<uint32_t, 8> ref_order_hint;
+  std::array<uint8_t, 8> cdef_y_pri_strength;
+  std::array<uint8_t, 8> cdef_y_sec_strength;
+  std::array<uint8_t, 8> cdef_uv_pri_strength;
+  std::array<uint8_t, 8> cdef_uv_sec_strength;
   bool reduced_tx_set;
   bool segmentation_enabled;
   bool segmentation_update_map;
   bool segmentation_temporal_update;
   bool segmentation_update_data;
   uint32_t segment_number;
-  uint32_t feature_mask[8 /*libgav1::kMaxSegments*/];
-  uint32_t feature_data[8 /*libgav1::kMaxSegments*/]
-                       [8 /*libgav1::kSegmentFeatureMax*/];
+  std::array<uint32_t, 8 /*libgav1::kMaxSegments*/> feature_mask;
+  std::array<std::array<uint32_t, 8 /*libgav1::kMaxSegments*/>,
+             8 /*libgav1::kSegmentFeatureMax*/>
+      feature_data;
 };
 
 }  // namespace media

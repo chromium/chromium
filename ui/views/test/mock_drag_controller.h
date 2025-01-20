@@ -5,9 +5,8 @@
 #ifndef UI_VIEWS_TEST_MOCK_DRAG_CONTROLLER_H_
 #define UI_VIEWS_TEST_MOCK_DRAG_CONTROLLER_H_
 
-#include "ui/views/drag_controller.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/drag_controller.h"
 
 namespace gfx {
 class Point;

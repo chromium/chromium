@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   // Add a tab and make sure that the counters get updated.
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   browser()->tab_strip_model()->CloseWebContentsAt(1, 0);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   Browser* new_browser = CreateBrowser(browser()->profile());
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 1, GURL("about:blank"),
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 
   CloseBrowserSynchronously(new_browser);
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
   tab_stats_tracker_->reporting_delegate_for_testing()
-      ->ReportTabDuplicateMetrics();
+      ->ReportTabDuplicateMetrics(false);
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 }
 

@@ -39,7 +39,8 @@ class IsolatedWebAppInstallerShelfItemControllerTest : public ash::AshTestBase {
 
     auto* delegate_ptr = shelf_model()->GetShelfItemDelegate(shelf_id);
     ASSERT_TRUE(delegate_ptr);
-    static_cast<LacrosShelfItemController*>(delegate_ptr)->AddWindow(window());
+    static_cast<IsolatedWebAppInstallerShelfItemController*>(delegate_ptr)
+        ->AddWindow(window());
   }
 
   ash::ShelfModel* shelf_model() { return ash::ShelfModel::Get(); }

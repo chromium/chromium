@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/services/cros_safety/cloud_safety_session.h"
 #include "chromeos/ash/services/cros_safety/public/mojom/cros_safety.mojom.h"
@@ -40,6 +42,9 @@ class CrosSafetyService
       mojo::PendingReceiver<cros_safety::mojom::CrosSafetyService> receiver);
 
   // cros_safety::mojom::CrosSafetyService overrides
+  // Get the OnDeviceSafetySession, which is implemented at the ARCVM side, via
+  // ArcBridge. This function should only be called during the primary user's
+  // session.
   void CreateOnDeviceSafetySession(
       mojo::PendingReceiver<cros_safety::mojom::OnDeviceSafetySession> session,
       CreateOnDeviceSafetySessionCallback callback) override;
@@ -48,6 +53,9 @@ class CrosSafetyService
       CreateCloudSafetySessionCallback callback) override;
 
  private:
+  void GetArcSafetySessionComplete(
+      CreateOnDeviceSafetySessionCallback callback,
+      arc::mojom::GetArcSafetySessionResult result);
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
   void Request(
       chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
@@ -62,6 +70,8 @@ class CrosSafetyService
 
   // Receivers for external CrosSafetyService requests.
   mojo::ReceiverSet<cros_safety::mojom::CrosSafetyService> receiver_set_;
+
+  base::WeakPtrFactory<CrosSafetyService> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

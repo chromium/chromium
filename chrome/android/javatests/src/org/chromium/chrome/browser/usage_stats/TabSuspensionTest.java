@@ -180,7 +180,7 @@ public class TabSuspensionTest {
         mActivityTestRule.loadUrl(mStartingUrl);
         final int originalTabIndex =
                 mActivity.getTabModelSelector().getCurrentModel().indexOf(mTab);
-        Tab tab2 = mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
+        mActivityTestRule.loadUrlInNewTab(mDifferentUrl);
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         ThreadUtils.runOnUiThreadBlocking(
@@ -392,8 +392,8 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/339003346): Failing on tablets, fix and re-enable.
     @Restriction(DeviceFormFactor.PHONE)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/339003346
     public void testSuspendNullCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);

@@ -168,6 +168,39 @@ TARGET_DEVICES = {
         'jetstream2.crossbench': 4,
         'motionmark1.3.crossbench': 4,
     },
+    'linux-r350-perf': {
+        'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2-minorms': {
+            'JetStream2': 5,
+        },
+        # set speedometer to 20 shards to help warm up speedometer2
+        # benchmark runs b/325578543
+        'speedometer': {
+            'http://browserbench.org/Speedometer/': 20,
+        },
+        'speedometer2-minorms': {
+            'Speedometer2': 20,
+        },
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer2-predictable': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+        'speedometer3-minorms': {
+            'Speedometer3': 20,
+        },
+        'speedometer3-predictable': {
+            'Speedometer3': 20,
+        },
+        'speedometer3.crossbench': 20,
+        'jetstream2.crossbench': 20,
+    },
     'win-10_laptop_low_end-perf': {
         'jetstream2': {
             'JetStream2': 5,
@@ -253,17 +286,17 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
-            'JetStream2': 5,
+            'JetStream2': 6,
         },
         'jetstream2-minorms': {
             'JetStream2': 5,
         },
         'jetstream2.crossbench': 5,
         'speedometer2': {
-            'Speedometer2': 28,
+            'Speedometer2': 20,
         },
         'speedometer2-minorms': {
-            'Speedometer2': 28,
+            'Speedometer2': 20,
         },
         'speedometer3': {
             'Speedometer3': 28,
@@ -277,11 +310,11 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf-pgo': {
         'jetstream2': {
-            'JetStream2': 4,
+            'JetStream2': 6,
         },
         'jetstream2.crossbench': 4,
         'speedometer2': {
-            'Speedometer2': 7,
+            'Speedometer2': 5,
         },
         'speedometer3': {
             'Speedometer3': 7,

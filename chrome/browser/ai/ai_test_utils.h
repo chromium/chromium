@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 
 #include "base/supports_user_data.h"
-#include "chrome/browser/ai/ai_manager_keyed_service.h"
+#include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,8 +21,6 @@
 
 class AITestUtils {
  public:
-  class MockSupportsUserData : public base::SupportsUserData {};
-
   class MockModelStreamingResponder
       : public blink::mojom::ModelStreamingResponder {
    public:
@@ -34,7 +33,11 @@ class AITestUtils {
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
     BindNewPipeAndPassRemote();
 
-    MOCK_METHOD(void, OnStreaming, (const std::string& text), (override));
+    MOCK_METHOD(void,
+                OnStreaming,
+                (const std::string& text,
+                 blink::mojom::ModelStreamingResponderAction action),
+                (override));
     MOCK_METHOD(void,
                 OnError,
                 (blink::mojom::ModelStreamingResponseStatus status),
@@ -43,6 +46,7 @@ class AITestUtils {
                 OnCompletion,
                 (blink::mojom::ModelExecutionContextInfoPtr context_info),
                 (override));
+    MOCK_METHOD(void, OnContextOverflow, (), (override));
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
@@ -91,6 +95,11 @@ class AITestUtils {
          blink::mojom::AILanguageModelInfoPtr info),
         (override));
 
+    MOCK_METHOD(void,
+                OnError,
+                (blink::mojom::AIManagerCreateLanguageModelError error),
+                (override));
+
    private:
     mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
         this};
@@ -109,9 +118,7 @@ class AITestUtils {
     void SetupNullOptimizationGuideKeyedService();
 
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
-    MockSupportsUserData& mock_host() { return *mock_host_.get(); }
-    void ResetMockHost();
-    size_t GetAIManagerReceiversSize();
+    size_t GetAIManagerContextBoundObjectSetSize();
     size_t GetAIManagerDownloadProgressObserversSize();
     void MockDownloadProgressUpdate(uint64_t downloaded_bytes,
                                     uint64_t total_bytes);
@@ -120,12 +127,19 @@ class AITestUtils {
         mock_optimization_guide_keyed_service_;
 
    private:
-    AIManagerKeyedService* GetAIManager();
-    std::unique_ptr<MockSupportsUserData> mock_host_;
+    std::unique_ptr<AIManager> ai_manager_;
   };
 
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
+
+  static void CheckWritingAssistanceApiRequest(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::string& expected_shared_context,
+      const std::string& expected_context,
+      const optimization_guide::proto::WritingAssistanceApiOptions&
+          expected_options,
+      const std::string& expected_input);
 };
 
 #endif  // CHROME_BROWSER_AI_AI_TEST_UTILS_H_

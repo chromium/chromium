@@ -17,8 +17,7 @@ RefreshTokenRevoker::RefreshTokenRevoker()
                     g_browser_process->system_network_context_manager()
                         ->GetSharedURLLoaderFactory()) {}
 
-RefreshTokenRevoker::~RefreshTokenRevoker() {
-}
+RefreshTokenRevoker::~RefreshTokenRevoker() = default;
 
 void RefreshTokenRevoker::Revoke(const std::string& token) {
   DVLOG(1) << "Starting RefreshTokenRevoker for token: " << token;

@@ -32,8 +32,6 @@ class ASH_EXPORT BirchRecentTabsProvider : public BirchDataProvider {
   // foreign sessions changed.
   void OnForeignSessionsChanged();
 
-  void OnTabsRetrieved(std::vector<crosapi::mojom::TabSuggestionItemPtr> items);
-
  private:
   raw_ptr<Profile> profile_ = nullptr;
 

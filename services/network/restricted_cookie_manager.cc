@@ -297,6 +297,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
              .IncludeForRequestURL(
                  url_, options_,
                  net::CookieAccessParams{change.access_result.access_semantics,
+                                         change.access_result.scope_semantics,
                                          delegate_treats_url_as_trustworthy})
              .status.IsInclude()) {
       return;
@@ -1034,7 +1035,8 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
   if (force_disable_third_party_cookies) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
   }
-  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides);
+  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides,
+                                        /*emit_metrics=*/true);
   return overrides;
 }
 

@@ -76,8 +76,8 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="427987768447457592">Nuwe oortjiegroep</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> oortjie is verander, <ph name="ANY_CLOSED" /> is toegemaak}other{<ph name="MANY_CHANGED" /> oortjies is verander, <ph name="ANY_CLOSED" /> is toegemaak}}</translation>
 <translation id="4371591986692297148">Onaktief</translation>
+<translation id="4431937619879060901">Jy sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor en dit sal van al jou toestelle uitgevee word</translation>
 <translation id="4460014764210899310">Ongroepeer</translation>
-<translation id="4590027107044272416">Jy kan nou ’n nuwe oortjie hier oopmaak</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Maak 1 onaktiewe oortjie toe?}other{Maak <ph name="TAB_COUNT_MANY" /> onaktiewe oortjies toe?}}</translation>
 <translation id="4686942373615810936">Pas geskep</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Maak ná 1 dag toe}other{Maak ná <ph name="DAY_COUNT_MANY" /> dae toe}}</translation>
@@ -98,16 +98,16 @@ As jy dit uitvee sal almal onmiddellik toegang tot die “<ph name="TITLE_OF_GRO
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg}}</translation>
 <translation id="5161254044473106830">Titel word vereis</translation>
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
+<translation id="5380159289133845234">Argiveer duplikaatoortjies</translation>
 <translation id="5400836586163650660">Grys</translation>
+<translation id="5446043142172831860">Verwyder oortjie en verlaat groep</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Maak oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> toe.}other{Maak oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> toe.}}</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
-<translation id="5615302411300498438">Hou hierdie groep om later oortjie by te voeg, of verlaat dit.
-
-As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROUP" />”-oortjiegroep verloor.</translation>
 <translation id="5627941783489838464">Geen oortjie-opdaterings nie</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Stel oortjie terug}other{Stel oortjies terug}}</translation>
+<translation id="5647702255748985085">Verlaat groep?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skakel vanaf Chrome}other{<ph name="TABS_COUNT_MANY" /> skakels vanaf Chrome}}</translation>
 <translation id="58326064309361797">Sleep oortjies om hulle te groepeer</translation>
 <translation id="5901630391730855834">Geel</translation>
@@ -116,7 +116,7 @@ As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROU
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6051432659151380973">Jou oortjiegroepe stoor outomaties</translation>
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
-<translation id="6082313992897617440">Jy sal onmiddellik toegang tot die <ph name="GROUP_NAME" />-oortjiegroep verloor</translation>
+<translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6271513594716432922">Maak alle onaktiewe oortjies toe</translation>
@@ -143,9 +143,10 @@ As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROU
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> is gekies</translation>
 <translation id="7326879924029668159">Lees terugsendingbeleid en meer</translation>
 <translation id="7352298686197644113">Sien watter item in jou oop oortjies 'n laer prys het</translation>
-<translation id="7421293530411019405">Verlaat oortjiegroep?</translation>
+<translation id="742664698522525515">Behou groep?</translation>
 <translation id="7452985128687107478">Oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
 <translation id="747459581954555080">Stel alles terug</translation>
+<translation id="750886945254958667">Hou hierdie groep om later oortjies by te voeg, of verlaat dit as jy nie meer toegang daartoe wil hê nie</translation>
 <translation id="753732157349120914">Oortjiewisselaar</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> resensie van Google af}other{<ph name="REVIEWS_COUNT_MANY" /> resensies van Google af}}</translation>
 <translation id="7559245342362162951">Wys groep se oortjies in volskermrooster</translation>
@@ -175,9 +176,7 @@ As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROU
 <translation id="8398929769197326728">Nuwe vouer – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg, <ph name="ANY_CLOSED" /> is toegemaak}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg, <ph name="ANY_CLOSED" /> is toegemaak}}</translation>
-<translation id="8631711675211020168">Almal sal onmiddellik toegang tot die <ph name="GROUP_NAME" />-oortjiegroep verloor en dit sal van alle toestelle af uitgevee word</translation>
 <translation id="8633025649649592204">Onlangse aktiwiteit</translation>
-<translation id="8635399646025169806">Hou oortjiegroep?</translation>
 <translation id="870736955561925754">Maak oortjie toe en vee groep uit?</translation>
 <translation id="8714939927607906138">Laer prys</translation>
 <translation id="8730621377337864115">Gedoen</translation>
@@ -188,10 +187,11 @@ As jy dit verlaat, sal jy onmiddellik toegang tot die “<ph name="TITLE_OF_GROU
 <translation id="8887921976452567404">Jou toegemaakte oortjies en groepe kan weer van die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling af oopgemaak word.</translation>
 <translation id="8915916167043355778">Maak alles toe</translation>
 <translation id="9090098097337832354">Inligting oor hierdie winkel is toegemaak</translation>
-<translation id="9111228330448174435">Wys dialoog in nuwe oortjiegroepskepping</translation>
 <translation id="9114502155681725011">Maak die oortjiegroep se handelingkieslys vir oortjiegroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" /> oop.</translation>
+<translation id="9169141410816678175">Almal sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor en dit sal van alle toestelle uitgevee word</translation>
 <translation id="9169594135889675189">Voeg nuwe oortjie by groep</translation>
 <translation id="9216898458513705996">Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Vou oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> uit.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> uit.}}</translation>
+<translation id="94870150074703282">Vee groep uit?</translation>
 <translation id="992256792861109788">Pienk</translation>
 </translationbundle>

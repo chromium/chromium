@@ -79,7 +79,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   ServiceWorkerPaymentAppFinderBrowserTest& operator=(
       const ServiceWorkerPaymentAppFinderBrowserTest&) = delete;
 
-  ~ServiceWorkerPaymentAppFinderBrowserTest() override {}
+  ~ServiceWorkerPaymentAppFinderBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // HTTPS server only serves a valid cert for localhost, so this is needed to
@@ -858,13 +858,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
   }
 }
 
-// Tests that service worker payment apps are able to respond to the icon
-// changing in their manifest file.
-class ServiceWorkerPaymentAppFinderIconRefreshBrowserTest
+// Tests that service worker payment apps are able to respond to icon and
+// supported delegations changing in their manifest file.
+class ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest
     : public ServiceWorkerPaymentAppFinderBrowserTest {
  public:
-  ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() = default;
-  ~ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() override = default;
+  ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest() = default;
+  ~ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest() override = default;
 
   content::InstalledPaymentAppsFinder::PaymentApps GetInstalledPaymentApps() {
     content::WebContents* web_contents =
@@ -882,7 +882,7 @@ class ServiceWorkerPaymentAppFinderIconRefreshBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
                        PaymentAppUpdatesWhenIconChanges) {
   // Start by installing the KylePay app directly, with an initial icon.
   ASSERT_TRUE(
@@ -919,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
                                           original_icon));
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
                        FailedIconFetchDoesNotOverrideOldIcon) {
   // Start by installing the KylePay app directly, with an initial icon.
   ASSERT_TRUE(
@@ -950,6 +950,59 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
   ASSERT_EQ(updated_apps.size(), 1u);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*updated_apps.begin()->second->icon,
                                          original_icon));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
+                       PaymentAppUpdatesWhenSupportedDelegationsChanges) {
+  // Start by installing the KylePay app directly, without any supported
+  // delegations.
+  ASSERT_TRUE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()->tab_strip_model()->GetActiveWebContents(),
+          kylepay_.GetURL("kylepay.test", "/app.js"),
+          "https://kylepay.test/webpay",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
+  content::InstalledPaymentAppsFinder::PaymentApps original_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(original_apps.size(), 1u);
+
+  content::SupportedDelegations original_supported_delegations =
+      original_apps.begin()->second->supported_delegations;
+  ASSERT_FALSE(original_supported_delegations.shipping_address);
+  ASSERT_FALSE(original_supported_delegations.payer_name);
+  ASSERT_FALSE(original_supported_delegations.payer_phone);
+  ASSERT_FALSE(original_supported_delegations.payer_email);
+
+  // Next, initialize a lookup against KylePay. This should trigger a manifest
+  // fetch, and asynchronously pick up the supported delegations specified in
+  // KylePay's manifest - which are different than
+  // InstallPaymentAppForPaymentMethodIdentifier.
+  GetAllPaymentAppsForMethods({"https://kylepay.test/webpay"});
+
+  // Because metadata update is asynchronous, the app returned by
+  // GetAllPaymentAppsForMethods will still have the old supported delegations.
+  ASSERT_EQ(apps().size(), 1u);
+  content::SupportedDelegations new_supported_delegations =
+      apps().begin()->second->supported_delegations;
+  EXPECT_FALSE(new_supported_delegations.shipping_address);
+  EXPECT_FALSE(new_supported_delegations.payer_name);
+  EXPECT_FALSE(new_supported_delegations.payer_phone);
+  EXPECT_FALSE(new_supported_delegations.payer_email);
+  EXPECT_TRUE(installable_apps().empty());
+  EXPECT_TRUE(error_message().empty());
+
+  // But if we now get updated information on the installed app, it should have
+  // the new supported delegations associated with it.
+  content::InstalledPaymentAppsFinder::PaymentApps updated_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(updated_apps.size(), 1u);
+  content::SupportedDelegations updated_supported_delegations =
+      updated_apps.begin()->second->supported_delegations;
+  EXPECT_TRUE(updated_supported_delegations.shipping_address);
+  EXPECT_TRUE(updated_supported_delegations.payer_name);
+  EXPECT_TRUE(updated_supported_delegations.payer_phone);
+  EXPECT_TRUE(updated_supported_delegations.payer_email);
 }
 
 // The parameterized test fixture that resets the CSP checker after N=GetParam()

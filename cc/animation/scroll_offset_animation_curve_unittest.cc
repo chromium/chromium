@@ -7,7 +7,6 @@
 #include "base/time/time.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 using DurationBehavior = cc::ScrollOffsetAnimationCurve::DurationBehavior;
@@ -17,12 +16,6 @@ const double kDurationDivisor = 60.0;
 const double kInverseDeltaMaxDuration = 12.0;
 
 namespace cc {
-namespace {
-
-// This is the value of the default Impulse bezier curve when t = 0.5
-constexpr double halfway_through_default_impulse_curve = 0.874246;
-
-}  // namespace
 
 TEST(ScrollOffsetAnimationCurveTest, DeltaBasedDuration) {
   gfx::PointF target_value(100.f, 200.f);
@@ -156,103 +149,6 @@ TEST(ScrollOffsetAnimationCurveTest, EaseInOutUpdateTarget) {
               0.0002f);
 }
 
-TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget) {
-  gfx::PointF initial_value(0.f, 0.f);
-  gfx::PointF initial_target_value(0.f, 3600.f);
-  gfx::Vector2dF initial_delta = initial_target_value - initial_value;
-  std::unique_ptr<ScrollOffsetAnimationCurve> curve(
-      ScrollOffsetAnimationCurveFactory::CreateImpulseAnimationForTesting(
-          initial_target_value));
-  curve->SetInitialValue(initial_value);
-
-  base::TimeDelta initial_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(initial_delta,
-                                                         base::TimeDelta());
-  EXPECT_NEAR(initial_duration.InSecondsF(), curve->Duration().InSecondsF(),
-              0.0002f);
-  EXPECT_NEAR(initial_delta.y() * halfway_through_default_impulse_curve,
-              curve->GetValue(initial_duration / 2).y(), 0.01f);
-  EXPECT_NEAR(initial_delta.y(), curve->GetValue(initial_duration).y(),
-              0.0002f);
-
-  base::TimeDelta time_of_update = initial_duration / 2;
-  gfx::PointF distance_halfway_through_initial_animation =
-      curve->GetValue(time_of_update);
-
-  gfx::PointF new_target_value(0.f, 9900.f);
-  curve->UpdateTarget(time_of_update, new_target_value);
-
-  gfx::Vector2dF new_delta =
-      new_target_value - distance_halfway_through_initial_animation;
-  base::TimeDelta updated_segment_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(new_delta,
-                                                         base::TimeDelta());
-
-  base::TimeDelta overall_duration = time_of_update + updated_segment_duration;
-  EXPECT_NEAR(overall_duration.InSecondsF(), curve->Duration().InSecondsF(),
-              0.0002f);
-  EXPECT_NEAR(distance_halfway_through_initial_animation.y(),
-              curve->GetValue(time_of_update).y(), 0.01f);
-  EXPECT_NEAR(new_target_value.y(), curve->GetValue(overall_duration).y(),
-              0.0002f);
-
-  // Ensure that UpdateTarget increases the initial slope of the generated curve
-  // (for velocity matching). To test this, we check if the value is greater
-  // than the default value would be half way through.
-  // Also - to ensure it isn't passing just due to floating point imprecision,
-  // some epsilon is added to the default amount.
-  EXPECT_LT(
-      new_delta.y() * halfway_through_default_impulse_curve + 0.01f,
-      curve->GetValue(time_of_update + (updated_segment_duration / 2)).y());
-}
-
-TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTargetSwitchDirections) {
-  gfx::PointF initial_value(0.f, 0.f);
-  gfx::PointF initial_target_value(0.f, 200.f);
-  double initial_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-          initial_target_value.OffsetFromOrigin(), base::TimeDelta())
-          .InSecondsF();
-
-  std::unique_ptr<ScrollOffsetAnimationCurve> curve(
-      ScrollOffsetAnimationCurveFactory::CreateImpulseAnimationForTesting(
-          initial_target_value));
-  curve->SetInitialValue(initial_value);
-  EXPECT_NEAR(initial_duration, curve->Duration().InSecondsF(), 0.0002f);
-  EXPECT_NEAR(initial_target_value.y() * halfway_through_default_impulse_curve,
-              curve->GetValue(base::Seconds(initial_duration / 2.0)).y(),
-              0.01f);
-
-  // Animate back to 0. This should force the new curve's initial velocity to be
-  // 0, so the default curve will be generated.
-  gfx::PointF updated_initial_value(
-      0, initial_target_value.y() * halfway_through_default_impulse_curve);
-  gfx::PointF updated_target(0.f, 0.f);
-  curve->UpdateTarget(base::Seconds(initial_duration / 2), updated_target);
-
-  EXPECT_NEAR(initial_target_value.y() * halfway_through_default_impulse_curve,
-              curve->GetValue(base::Seconds(initial_duration / 2.0)).y(),
-              0.01f);
-
-  double updated_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-          gfx::Vector2dF(updated_initial_value.x(), updated_initial_value.y()),
-          base::TimeDelta())
-          .InSecondsF();
-  EXPECT_NEAR(
-      updated_initial_value.y() * (1.0 - halfway_through_default_impulse_curve),
-      curve
-          ->GetValue(
-              base::Seconds(initial_duration / 2.0 + updated_duration / 2.0))
-          .y(),
-      0.01f);
-  EXPECT_NEAR(
-      0.0,
-      curve->GetValue(base::Seconds(initial_duration / 2.0 + updated_duration))
-          .y(),
-      0.0002f);
-}
-
 TEST(ScrollOffsetAnimationCurveTest, InverseDeltaDuration) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
@@ -298,27 +194,6 @@ TEST(ScrollOffsetAnimationCurveTest, LinearAnimation) {
   curve->SetInitialValue(current_offset, base::TimeDelta(),
                          autoscroll_velocity);
   EXPECT_FLOAT_EQ(0.f, curve->Duration().InSecondsF());
-}
-
-TEST(ScrollOffsetAnimationCurveTest, ImpulseDuration) {
-  // The duration of an impulse-style curve in milliseconds is simply 1.5x the
-  // scroll distance in physical pixels, with a minimum of 200ms and a maximum
-  // of 500ms.
-  gfx::Vector2dF small_delta(0.f, 100.f);
-  gfx::Vector2dF moderate_delta(0.f, 250.f);
-  gfx::Vector2dF large_delta(0.f, 400.f);
-
-  base::TimeDelta duration = ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-      small_delta, base::TimeDelta());
-  EXPECT_FLOAT_EQ(duration.InMillisecondsF(), 200.f);
-
-  duration = ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-      moderate_delta, base::TimeDelta());
-  EXPECT_NEAR(duration.InMillisecondsF(), moderate_delta.y() * 1.5f, 0.0002f);
-
-  duration = ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-      large_delta, base::TimeDelta());
-  EXPECT_FLOAT_EQ(duration.InMillisecondsF(), 500.f);
 }
 
 TEST(ScrollOffsetAnimationCurveTest, CurveWithDelay) {

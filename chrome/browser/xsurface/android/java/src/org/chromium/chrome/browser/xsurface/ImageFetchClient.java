@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Implemented in Chromium.
  *
  * An object that can send an HTTP GET request and receive bytes in response. This interface should
  * only be used for fetching images.
  */
+@NullMarked
 public interface ImageFetchClient {
     /** HTTP response. */
     public interface HttpResponse {

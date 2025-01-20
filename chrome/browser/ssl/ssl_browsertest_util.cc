@@ -121,7 +121,7 @@ SecurityStateWebContentsObserver::SecurityStateWebContentsObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-SecurityStateWebContentsObserver::~SecurityStateWebContentsObserver() {}
+SecurityStateWebContentsObserver::~SecurityStateWebContentsObserver() = default;
 
 void SecurityStateWebContentsObserver::WaitForDidChangeVisibleSecurityState() {
   run_loop_.Run();

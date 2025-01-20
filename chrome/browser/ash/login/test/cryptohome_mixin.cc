@@ -154,6 +154,12 @@ void CryptohomeMixin::SetPinLocked(const AccountId& user, bool locked) {
       kCryptohomePinLabel, locked);
 }
 
+void CryptohomeMixin::SetPinType(const AccountId& user, bool legacy) {
+  return TestApi::SetPinType(
+      cryptohome::CreateAccountIdentifierFromAccountId(user),
+      kCryptohomePinLabel, legacy);
+}
+
 bool CryptohomeMixin::HasPinFactor(const AccountId& user) {
   return TestApi::HasPinFactor(
       cryptohome::CreateAccountIdentifierFromAccountId(user));

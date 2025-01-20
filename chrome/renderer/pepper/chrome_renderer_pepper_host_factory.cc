@@ -19,7 +19,7 @@ ChromeRendererPepperHostFactory::ChromeRendererPepperHostFactory(
     content::RendererPpapiHost* host)
     : host_(host) {}
 
-ChromeRendererPepperHostFactory::~ChromeRendererPepperHostFactory() {}
+ChromeRendererPepperHostFactory::~ChromeRendererPepperHostFactory() = default;
 
 std::unique_ptr<ResourceHost>
 ChromeRendererPepperHostFactory::CreateResourceHost(

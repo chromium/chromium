@@ -30,19 +30,20 @@
 #include "media/base/media_export.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "media/cdm/cdm_auxiliary_helper.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class AudioFramesImpl;
-class CdmAuxiliaryHelper;
 class CdmWrapper;
 
 class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
                                       public CdmContext,
                                       public Decryptor,
                                       public cdm::Host_10,
-                                      public cdm::Host_11 {
+                                      public cdm::Host_11,
+                                      public cdm::Host_12 {
  public:
   using CreateCdmFunc = void* (*)(int cdm_interface_version,
                                   const char* key_system,
@@ -156,8 +157,11 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
                                     cdm::Status decoder_status) override;
   cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) override;
   void RequestStorageId(uint32_t version) override;
+  void ReportMetrics(cdm::MetricName metric_name, uint64_t value) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CdmAdapterTestWithMockCdm, RecordUMA);
+
   CdmAdapter(const CdmConfig& cdm_config,
              CreateCdmFunc create_cdm_func,
              std::unique_ptr<CdmAuxiliaryHelper> helper,
@@ -208,6 +212,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // cdm::FileIO.
   void OnFileRead(int file_size_bytes);
 
+  // Set `frames_processed_` for testing
+  void SetFrameCountForTesting(uint64_t count) { frames_processed_ = count; }
+
   const CdmConfig cdm_config_;
 
   CreateCdmFunc create_cdm_func_;
@@ -252,9 +259,16 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   bool uma_for_output_protection_query_reported_ = false;
   bool uma_for_output_protection_positive_result_reported_ = false;
 
+  // Track number of frames processed since last call to
+  // InitializeVideoDecoder().
+  uint64_t frames_processed_ = 0;
+
   // Tracks CDM file IO related states.
   int last_read_file_size_kb_ = 0;
   bool file_size_uma_reported_ = false;
+
+  // Tracks UKM related data.
+  CdmMetricsData cdm_metrics_data_;
 
   // Used to keep track of promises while the CDM is processing the request.
   CdmPromiseAdapter cdm_promise_adapter_;

@@ -7,8 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
-namespace assistant {
+namespace chromeos::assistant {
 
 // HTTP request related constants.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
@@ -24,7 +23,9 @@ extern const char kSampleServiceIdRequest[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
 extern const char kServiceIdRequestPayload[];
 
-}  // namespace assistant
-}  // namespace chromeos
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kEntryPointId[];
+
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_SHARED_CONSTANTS_H_

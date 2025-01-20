@@ -12,7 +12,7 @@
 #import "base/functional/callback.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
-#import "ios/web/web_view/error_translation_util.h"
+#import "ios/web/util/error_translation_util.h"
 #import "net/base/net_errors.h"
 
 namespace {

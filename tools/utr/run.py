@@ -74,8 +74,8 @@ def add_common_args(parser):
       '-o',
       type=pathlib.Path,
       help='Path to the build dir to use for compilation and/or for invoking '
-      'test binaries. Will use the output path used by the builder if not '
-      'specified (likely //out/Release/).')
+      'test binaries. Will use a build dir in //out/ named after the builder '
+      'if not specified: //out/UTR${{builder_name}}')
   parser.add_argument(
       '--recipe-dir',
       '--recipe-path',
@@ -88,6 +88,12 @@ def add_common_args(parser):
   parser.add_argument('--reuse-task',
                       type=str,
                       help='Ruse the cas digest of the provided swarming task')
+  parser.add_argument(
+      '--no-siso',
+      action='store_true',
+      help='Disables the use of siso ("use_siso" GN arg) in the compile, as '
+      "well as the use of siso when isolating tests. Will use the builder's "
+      'settings if not specified.')
 
 
 def add_compile_args(parser):
@@ -95,11 +101,6 @@ def add_compile_args(parser):
       '--no-rbe',
       action='store_true',
       help='Disables the use of rbe ("use_remoteexec" GN arg) in the compile. '
-      "Will use the builder's settings if not specified.")
-  parser.add_argument(
-      '--no-siso',
-      action='store_true',
-      help='Disables the use of siso ("use_siso" GN arg) in the compile. '
       "Will use the builder's settings if not specified.")
   parser.add_argument(
       '--no-coverage-instrumentation',
@@ -211,6 +212,13 @@ def main():
   if not builder_props:
     return 1
 
+  build_dir = args.build_dir
+  if not args.build_dir:
+    build_dir = _SRC_DIR.joinpath('out', 'UTR' + '_'.join(args.builder.split()))
+    logging.info('[cyan]Using the following build dir:[/]')
+    logging.getLogger('basic_logger').info(build_dir)
+    logging.info('')
+
   if not args.recipe_dir:
     recipes_path = cipd.fetch_recipe_bundle(project,
                                             args.verbosity).joinpath('recipes')
@@ -229,10 +237,12 @@ def main():
       skip_compile,
       skip_test,
       args.force,
-      args.build_dir,
+      build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
+      no_rbe=not skip_compile and args.no_rbe,
+      no_siso=args.no_siso,
   )
   exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2)

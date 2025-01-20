@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -59,6 +59,7 @@ class MockPasswordManagerDriver
                autofill::FieldRendererId,
                const std::u16string&),
               (override));
+  MOCK_METHOD(void, GeneratedPasswordRejected, (), (override));
   MOCK_METHOD(PasswordGenerationFrameHelper*,
               GetPasswordGenerationHelper,
               (),
@@ -333,6 +334,17 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
   EXPECT_CALL(driver(), FocusNextFieldAfterPasswords);
   controller->PasswordAccepted();
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       InformsDriverAboutPasswordRejection) {
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh());
+
+  EXPECT_CALL(driver(), GeneratedPasswordRejected());
+  controller->PasswordRejected();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -32,7 +32,7 @@ class Page;
 namespace toasts {
 enum class ToastCloseReason;
 class ToastView;
-}
+}  // namespace toasts
 
 namespace ui {
 class MenuModel;

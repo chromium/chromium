@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/side_panel/side_panel_prefs.h"
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/ui_features.h"

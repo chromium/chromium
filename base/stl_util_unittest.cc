@@ -90,7 +90,7 @@ TEST(STLUtilTest, STLSetDifference) {
     std::set<int> difference;
     difference.insert(1);
     difference.insert(2);
-    EXPECT_EQ(difference, STLSetDifference<std::set<int> >(a1, a2));
+    EXPECT_EQ(difference, STLSetDifference<std::set<int>>(a1, a2));
   }
 
   {
@@ -98,14 +98,14 @@ TEST(STLUtilTest, STLSetDifference) {
     difference.insert(5);
     difference.insert(6);
     difference.insert(7);
-    EXPECT_EQ(difference, STLSetDifference<std::set<int> >(a2, a1));
+    EXPECT_EQ(difference, STLSetDifference<std::set<int>>(a2, a1));
   }
 
   {
     std::vector<int> difference;
     difference.push_back(1);
     difference.push_back(2);
-    EXPECT_EQ(difference, STLSetDifference<std::vector<int> >(a1, a2));
+    EXPECT_EQ(difference, STLSetDifference<std::vector<int>>(a1, a2));
   }
 
   {
@@ -113,7 +113,7 @@ TEST(STLUtilTest, STLSetDifference) {
     difference.push_back(5);
     difference.push_back(6);
     difference.push_back(7);
-    EXPECT_EQ(difference, STLSetDifference<std::vector<int> >(a2, a1));
+    EXPECT_EQ(difference, STLSetDifference<std::vector<int>>(a2, a1));
   }
 }
 
@@ -140,7 +140,7 @@ TEST(STLUtilTest, STLSetUnion) {
     result.insert(5);
     result.insert(6);
     result.insert(7);
-    EXPECT_EQ(result, STLSetUnion<std::set<int> >(a1, a2));
+    EXPECT_EQ(result, STLSetUnion<std::set<int>>(a1, a2));
   }
 
   {
@@ -152,7 +152,7 @@ TEST(STLUtilTest, STLSetUnion) {
     result.insert(5);
     result.insert(6);
     result.insert(7);
-    EXPECT_EQ(result, STLSetUnion<std::set<int> >(a2, a1));
+    EXPECT_EQ(result, STLSetUnion<std::set<int>>(a2, a1));
   }
 
   {
@@ -164,7 +164,7 @@ TEST(STLUtilTest, STLSetUnion) {
     result.push_back(5);
     result.push_back(6);
     result.push_back(7);
-    EXPECT_EQ(result, STLSetUnion<std::vector<int> >(a1, a2));
+    EXPECT_EQ(result, STLSetUnion<std::vector<int>>(a1, a2));
   }
 
   {
@@ -176,7 +176,7 @@ TEST(STLUtilTest, STLSetUnion) {
     result.push_back(5);
     result.push_back(6);
     result.push_back(7);
-    EXPECT_EQ(result, STLSetUnion<std::vector<int> >(a2, a1));
+    EXPECT_EQ(result, STLSetUnion<std::vector<int>>(a2, a1));
   }
 }
 
@@ -198,28 +198,28 @@ TEST(STLUtilTest, STLSetIntersection) {
     std::set<int> result;
     result.insert(3);
     result.insert(4);
-    EXPECT_EQ(result, STLSetIntersection<std::set<int> >(a1, a2));
+    EXPECT_EQ(result, STLSetIntersection<std::set<int>>(a1, a2));
   }
 
   {
     std::set<int> result;
     result.insert(3);
     result.insert(4);
-    EXPECT_EQ(result, STLSetIntersection<std::set<int> >(a2, a1));
+    EXPECT_EQ(result, STLSetIntersection<std::set<int>>(a2, a1));
   }
 
   {
     std::vector<int> result;
     result.push_back(3);
     result.push_back(4);
-    EXPECT_EQ(result, STLSetIntersection<std::vector<int> >(a1, a2));
+    EXPECT_EQ(result, STLSetIntersection<std::vector<int>>(a1, a2));
   }
 
   {
     std::vector<int> result;
     result.push_back(3);
     result.push_back(4);
-    EXPECT_EQ(result, STLSetIntersection<std::vector<int> >(a2, a1));
+    EXPECT_EQ(result, STLSetIntersection<std::vector<int>>(a2, a1));
   }
 }
 

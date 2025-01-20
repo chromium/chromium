@@ -7,7 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "base/types/pass_key.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 
@@ -236,7 +238,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       is_allowed_to_access_secure_cookies = true;
       if (SecureAttribute() ||
           (cookie_util::IsSchemeBoundCookiesEnabled() &&
-           source_scheme_ == CookieSourceScheme::kSecure)) {
+           source_scheme_ == CookieSourceScheme::kSecure &&
+           params.scope_semantics != net::CookieScopeSemantics::LEGACY)) {
         status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -266,7 +269,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
   if (source_scheme_ == CookieSourceScheme::kSecure &&
       cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
       !status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY)) {
-    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
@@ -276,7 +280,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
   // kCryptographic urls.
   else if (source_scheme_ == CookieSourceScheme::kNonSecure &&
            cookie_access_scheme == CookieAccessScheme::kCryptographic) {
-    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
@@ -298,7 +303,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       cookie_access_scheme == CookieAccessScheme::kTrustworthy &&
       source_port_ == 443;
   if (!port_matches && !trustworthy_and_443) {
-    if (cookie_util::IsPortBoundCookiesEnabled()) {
+    if (cookie_util::IsPortBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_PORT_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
@@ -378,7 +384,7 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
                                      &status, false /* is_cookie_being_set */);
 
   CookieAccessResult result{effective_same_site, status,
-                            params.access_semantics,
+                            params.access_semantics, params.scope_semantics,
                             is_allowed_to_access_secure_cookies};
 
   PostIncludeForRequestURL(result, options, cookie_inclusion_context);
@@ -548,26 +554,29 @@ std::string CookieBase::DomainWithoutDot() const {
   return cookie_util::CookieDomainAsHost(domain_);
 }
 
-CookieBase::UniqueCookieKey CookieBase::UniqueKey() const {
+UniqueCookieKey CookieBase::UniqueKey() const {
   std::optional<CookieSourceScheme> source_scheme =
       cookie_util::IsSchemeBoundCookiesEnabled()
           ? std::make_optional(source_scheme_)
           : std::nullopt;
-  std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
-                                       ? std::make_optional(source_port_)
-                                       : std::nullopt;
 
-  return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme,
-                         source_port);
+  if (IsHostCookie()) {
+    std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                         ? std::make_optional(source_port_)
+                                         : std::nullopt;
+
+    return UniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
+                                 name_, domain_, path_, source_scheme,
+                                 source_port);
+  }
+
+  return UniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
+                                 name_, domain_, path_, source_scheme);
 }
 
-CookieBase::UniqueDomainCookieKey CookieBase::UniqueDomainKey() const {
-  std::optional<CookieSourceScheme> source_scheme =
-      cookie_util::IsSchemeBoundCookiesEnabled()
-          ? std::make_optional(source_scheme_)
-          : std::nullopt;
-
-  return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme);
+UniqueCookieKey CookieBase::LegacyUniqueKey() const {
+  return UniqueCookieKey::Legacy(base::PassKey<CookieBase>(), partition_key_,
+                                 name_, domain_, path_);
 }
 
 void CookieBase::SetSourcePort(int port) {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/audio_pump.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -147,33 +143,21 @@ TEST_F(AudioPumpTest, DownmixAudioPacket) {
   ASSERT_TRUE(source_->callback());
 
   // Generate several audio packets with different channel counts.
-  static const int kChannels[] = {
-    AudioPacket::CHANNELS_7_1,
-    AudioPacket::CHANNELS_6_1,
-    AudioPacket::CHANNELS_5_1,
-    AudioPacket::CHANNELS_STEREO,
-    AudioPacket::CHANNELS_MONO,
-    AudioPacket::CHANNELS_7_1,
-    AudioPacket::CHANNELS_7_1,
-    AudioPacket::CHANNELS_7_1,
-    AudioPacket::CHANNELS_7_1,
-    AudioPacket::CHANNELS_6_1,
-    AudioPacket::CHANNELS_6_1,
-    AudioPacket::CHANNELS_6_1,
-    AudioPacket::CHANNELS_6_1,
-    AudioPacket::CHANNELS_5_1,
-    AudioPacket::CHANNELS_5_1,
-    AudioPacket::CHANNELS_5_1,
-    AudioPacket::CHANNELS_5_1,
-    AudioPacket::CHANNELS_STEREO,
-    AudioPacket::CHANNELS_STEREO,
-    AudioPacket::CHANNELS_STEREO,
-    AudioPacket::CHANNELS_STEREO,
-    AudioPacket::CHANNELS_MONO,
-    AudioPacket::CHANNELS_MONO,
-    AudioPacket::CHANNELS_MONO,
-    AudioPacket::CHANNELS_MONO,
-  };
+  static const auto kChannels = std::to_array<int>({
+      AudioPacket::CHANNELS_7_1,    AudioPacket::CHANNELS_6_1,
+      AudioPacket::CHANNELS_5_1,    AudioPacket::CHANNELS_STEREO,
+      AudioPacket::CHANNELS_MONO,   AudioPacket::CHANNELS_7_1,
+      AudioPacket::CHANNELS_7_1,    AudioPacket::CHANNELS_7_1,
+      AudioPacket::CHANNELS_7_1,    AudioPacket::CHANNELS_6_1,
+      AudioPacket::CHANNELS_6_1,    AudioPacket::CHANNELS_6_1,
+      AudioPacket::CHANNELS_6_1,    AudioPacket::CHANNELS_5_1,
+      AudioPacket::CHANNELS_5_1,    AudioPacket::CHANNELS_5_1,
+      AudioPacket::CHANNELS_5_1,    AudioPacket::CHANNELS_STEREO,
+      AudioPacket::CHANNELS_STEREO, AudioPacket::CHANNELS_STEREO,
+      AudioPacket::CHANNELS_STEREO, AudioPacket::CHANNELS_MONO,
+      AudioPacket::CHANNELS_MONO,   AudioPacket::CHANNELS_MONO,
+      AudioPacket::CHANNELS_MONO,
+  });
 
   for (size_t i = 0; i < std::size(kChannels); i++) {
     source_->callback().Run(MakeAudioPacket(kChannels[i]));

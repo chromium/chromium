@@ -29,7 +29,6 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -61,7 +60,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
@@ -338,7 +337,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
         base::BindRepeating(&MediaStreamDispatcherHostTest::MockOnBadMessage,
                             base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::CrasAudioClient::InitializeFake();
     ash::CrasAudioHandler::InitializeForTesting();
 #endif
@@ -346,7 +345,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   ~MediaStreamDispatcherHostTest() override {
     audio_manager_->Shutdown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::CrasAudioHandler::Shutdown();
     ash::CrasAudioClient::Shutdown();
 #endif

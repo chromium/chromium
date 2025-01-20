@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "cc/trees/property_tree.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -226,6 +227,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   bool IsAffectedByOuterViewportBoundsDelta() const {
     return DirectCompositingReasons() &
            CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  }
+
+  bool IsAffectedBySafeAreaBottom() const {
+    return DirectCompositingReasons() &
+           CompositingReason::kAffectedBySafeAreaBottom;
   }
 
   // If true, this node is a descendant of the page scale transform. This is

@@ -129,15 +129,15 @@ using segmentation_platform::TipIdentifier;
   tips_prefs::DisableTipsInMagicStack(_profilePrefService);
 }
 
-- (void)removeModule {
-  [self.delegate removeTipsModule];
+- (void)removeModuleWithCompletion:(ProceduralBlock)completion {
+  [self.delegate removeTipsModuleWithCompletion:completion];
 }
 
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (tips_prefs::IsTipsInMagicStackDisabled(_profilePrefService)) {
-    [self.delegate removeTipsModule];
+    [self.delegate removeTipsModuleWithCompletion:nil];
   }
 }
 

@@ -96,13 +96,11 @@ Animation* Animatable::animate(
   animation->setId(options_dict->id());
 
   // ViewTimeline options.
-  if (options_dict->hasRangeStart() &&
-      RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
+  if (options_dict->hasRangeStart()) {
     animation->SetRangeStartInternal(TimelineOffset::Create(
         element, options_dict->rangeStart(), 0, exception_state));
   }
-  if (options_dict->hasRangeEnd() &&
-      RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
+  if (options_dict->hasRangeEnd()) {
     animation->SetRangeEndInternal(TimelineOffset::Create(
         element, options_dict->rangeEnd(), 100, exception_state));
   }

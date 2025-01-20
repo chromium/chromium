@@ -9,11 +9,21 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/attribution_reporting/data_host.mojom-blink.h"
+#include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_registration.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +47,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -55,6 +66,7 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
@@ -146,6 +158,98 @@ void RegisterMockedImageURLLoad(const String& url) {
       test::CoreTestDataPath(kTestResourceFilename), kTestResourceMimeType);
 }
 
+class MockAttributionHost
+    : public mojom::blink::AttributionHost,
+      public attribution_reporting::mojom::blink::DataHost {
+ public:
+  explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider)
+      : provider_(provider), on_data_host_bound_(base::DoNothing()) {
+    provider_->OverrideBinderForTesting(
+        mojom::blink::AttributionHost::Name_,
+        WTF::BindRepeating(&MockAttributionHost::BindReceiver,
+                           WTF::Unretained(this)));
+  }
+
+  ~MockAttributionHost() override {
+    CHECK(provider_);
+    provider_->OverrideBinderForTesting(mojom::blink::AttributionHost::Name_,
+                                        base::NullCallback());
+  }
+
+  size_t NumBoundDataHosts() {
+    // Ensure that any pending disconnects have been propagated.
+    receiver_.FlushForTesting();
+    return data_hosts_.size();
+  }
+
+  void WaitUntilDataHostsBound(size_t expected) {
+    if (data_hosts_.size() >= expected) {
+      return;
+    }
+    base::RunLoop wait_loop;
+    on_data_host_bound_ = base::BarrierClosure(expected - data_hosts_.size(),
+                                               wait_loop.QuitClosure());
+    wait_loop.Run();
+  }
+
+ private:
+  // mojom::blink::AttributionHost:
+
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<mojom::blink::AttributionHost>(
+            std::move(handle)));
+  }
+
+  void RegisterDataHost(
+      mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>,
+      attribution_reporting::mojom::RegistrationEligibility,
+      bool is_for_background_requests) override {}
+
+  void RegisterNavigationDataHost(
+      mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
+          data_host,
+      const AttributionSrcToken&) override {
+    data_hosts_.Add(this, std::move(data_host));
+    on_data_host_bound_.Run();
+  }
+
+  void NotifyNavigationWithBackgroundRegistrationsWillStart(
+      const AttributionSrcToken&,
+      uint32_t expected_registrations) override {}
+
+  // attribution_reporting::mojom::blink::DataHost:
+
+  void SourceDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      attribution_reporting::SourceRegistration,
+      bool was_fetched_via_serivce_worker) override {}
+
+  void TriggerDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      attribution_reporting::TriggerRegistration,
+      bool was_fetched_via_serivce_worker) override {}
+
+  void OsSourceDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>,
+      bool was_fetched_via_serivce_worker) override {}
+
+  void OsTriggerDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>,
+      bool was_fetched_via_serivce_worker) override {}
+
+  void ReportRegistrationHeaderError(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      attribution_reporting::RegistrationHeaderError) override {}
+
+  blink::AssociatedInterfaceProvider* provider_;
+  mojo::AssociatedReceiver<mojom::blink::AttributionHost> receiver_{this};
+
+  base::RepeatingClosure on_data_host_bound_;
+
+  mojo::ReceiverSet<attribution_reporting::mojom::blink::DataHost> data_hosts_;
+};
+
 }  // namespace
 
 template <>
@@ -205,6 +309,8 @@ class ContextMenuControllerTest : public testing::Test {
   const TestWebFrameClientImpl& GetWebFrameClient() const {
     return web_frame_client_;
   }
+
+  TestWebFrameClientImpl& GetWebFrameClient() { return web_frame_client_; }
 
   void DurationChanged(HTMLVideoElement* video) { video->DurationChanged(); }
 
@@ -1939,7 +2045,7 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
       {
           .href = kInsecureURL,
           .attributionsrc = kSecureURL,
-          .impression_expected = false,
+          .impression_expected = true,
       },
       {
           .href = kSecureURL,
@@ -1963,31 +2069,112 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
       },
   };
 
-  for (const auto& test_case : kTestCases) {
-    Persistent<HTMLAnchorElement> anchor =
-        MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
-    anchor->setInnerText("abc");
+  for (bool use_anchor : {true, false}) {
+    for (const auto& test_case : kTestCases) {
+      Persistent<HTMLAnchorElementBase> anchor;
+      if (use_anchor) {
+        anchor = MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
+      } else {
+        anchor = MakeGarbageCollected<HTMLAreaElement>(*GetDocument());
+      }
 
-    if (test_case.href)
-      anchor->SetHref(AtomicString(test_case.href));
+      anchor->setInnerText("abc");
 
-    if (test_case.attributionsrc) {
-      anchor->setAttribute(html_names::kAttributionsrcAttr,
-                           AtomicString(test_case.attributionsrc));
+      if (test_case.href) {
+        anchor->SetHref(AtomicString(test_case.href));
+      }
+
+      if (test_case.attributionsrc) {
+        anchor->setAttribute(html_names::kAttributionsrcAttr,
+                             AtomicString(test_case.attributionsrc));
+      }
+
+      GetPage()->SetAttributionSupport(
+          network::mojom::AttributionSupport::kWeb);
+
+      GetDocument()->body()->AppendChild(anchor);
+      ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));
+
+      ContextMenuData context_menu_data =
+          GetWebFrameClient().GetContextMenuData();
+
+      EXPECT_EQ(context_menu_data.impression.has_value(),
+                test_case.impression_expected);
     }
+  }
+}
 
-    GetPage()->SetAttributionSupport(network::mojom::AttributionSupport::kWeb);
+TEST_F(ContextMenuControllerTest, AttributionSrc_DataHostLifetime) {
+  // The context must be secure for attributionsrc to work at all.
+  frame_test_helpers::LoadHTMLString(
+      LocalMainFrame(), R"(<html><body>)",
+      url_test_helpers::ToKURL("https://test.com/"));
 
-    GetDocument()->body()->AppendChild(anchor);
+  Persistent<HTMLAnchorElement> anchor =
+      MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
+  anchor->setInnerText("abc");
+
+  anchor->SetHref(AtomicString("https://a.com/"));
+
+  anchor->setAttribute(html_names::kAttributionsrcAttr,
+                       AtomicString("https://b.com/ https://c.com/"));
+
+  GetPage()->SetAttributionSupport(network::mojom::AttributionSupport::kWeb);
+
+  GetDocument()->body()->AppendChild(anchor);
+
+  enum CloseMechanism {
+    kContextMenuClosedInvalidNavigationUrl,
+    kContextMenuClosedValidNavigationUrl,
+    kClearContextMenu,
+  };
+
+  for (CloseMechanism close_mechanism :
+       {kContextMenuClosedInvalidNavigationUrl,
+        kContextMenuClosedValidNavigationUrl, kClearContextMenu}) {
+    SCOPED_TRACE(close_mechanism);
+
+    MockAttributionHost host(
+        GetWebFrameClient().GetRemoteNavigationAssociatedInterfaces());
+
     ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));
 
-    url_test_helpers::ServeAsynchronousRequests();
+    // https://b.com/ and https://c.com/ should share a single data host.
+    host.WaitUntilDataHostsBound(/*expected=*/1);
 
     ContextMenuData context_menu_data =
         GetWebFrameClient().GetContextMenuData();
 
-    EXPECT_EQ(context_menu_data.impression.has_value(),
-              test_case.impression_expected);
+    ASSERT_TRUE(context_menu_data.impression.has_value());
+
+    switch (close_mechanism) {
+      case kContextMenuClosedInvalidNavigationUrl:
+        GetPage()->GetContextMenuController().ContextMenuClosed(
+            KURL(), context_menu_data.impression);
+        EXPECT_EQ(host.NumBoundDataHosts(), 0u);
+        break;
+      case kContextMenuClosedValidNavigationUrl:
+        RegisterMockedImageURLLoad("https://b.com/");
+        RegisterMockedImageURLLoad("https://c.com/");
+
+        GetPage()->GetContextMenuController().ContextMenuClosed(
+            url_test_helpers::ToKURL("https://d.com/"),
+            context_menu_data.impression);
+
+        // The data host should remain bound because it will be used to handle
+        // responses from https://b.com/ and https://c.com/.
+        EXPECT_EQ(host.NumBoundDataHosts(), 1u);
+
+        // Flush the image-loading microtasks to prevent DCHECK failure on test
+        // exit.
+        base::RunLoop().RunUntilIdle();
+        url_test_helpers::ServeAsynchronousRequests();
+        break;
+      case kClearContextMenu:
+        GetPage()->GetContextMenuController().ClearContextMenu();
+        EXPECT_EQ(host.NumBoundDataHosts(), 0u);
+        break;
+    }
   }
 }
 

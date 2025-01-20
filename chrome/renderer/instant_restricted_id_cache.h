@@ -95,8 +95,7 @@ InstantRestrictedIDCache<T>::InstantRestrictedIDCache(size_t max_cache_size)
 }
 
 template <typename T>
-InstantRestrictedIDCache<T>::~InstantRestrictedIDCache() {
-}
+InstantRestrictedIDCache<T>::~InstantRestrictedIDCache() = default;
 
 template <typename T>
 void InstantRestrictedIDCache<T>::AddItems(const ItemVector& items) {

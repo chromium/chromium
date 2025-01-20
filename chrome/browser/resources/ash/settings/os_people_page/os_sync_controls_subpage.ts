@@ -137,11 +137,11 @@ export class OsSyncControlsSubpageElement extends
    * RouteObserverMixin override
    */
   override currentRouteChanged(newRoute: Route, oldRoute: Route): void {
-    if (newRoute === routes.OS_SYNC) {
+    if (newRoute === routes.OS_SYNC_CONTROLS) {
       this.browserProxy_.didNavigateToOsSyncPage();
       this.attemptDeepLink();
     }
-    if (oldRoute === routes.OS_SYNC) {
+    if (oldRoute === routes.OS_SYNC_CONTROLS) {
       this.browserProxy_.didNavigateAwayFromOsSyncPage();
     }
   }

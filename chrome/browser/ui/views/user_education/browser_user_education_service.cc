@@ -34,13 +34,14 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -256,20 +257,6 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillManualFallbackFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHAutofillManualFallbackFeature,
-          kAutofillManualFallbackElementId, IDS_AUTOFILL_IPH_MANUAL_FALLBACK,
-          IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(
-              123, "theocristea@chromium.org",
-              "User focuses a field, but autofill cannot be triggered "
-              "automatically because the field has autocomplete=garbage. In "
-              "this case, autofill can be triggered from the context menu.")));
-
   // kIPHAutofillPredictionImprovementsFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
@@ -284,8 +271,8 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!browser) {
                   return;
                 }
-                chrome::ShowSettingsSubPage(
-                    browser, chrome::kAutofillPredictionImprovementsSubPage);
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kAutofillAiSubPage);
               }))
           .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -317,6 +304,19 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(100, "siyua@chromium.org",
                        "Triggered after autofill popup appears.")));
+
+  // kIPHAutofillCardInfoRetrievalSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature,
+          kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(135, "jialihuang@google.com",
+                       "Triggered after autofill popup appears for a card "
+                       "enrolled in card info retrieval.")));
 
   // kIPHAutofillDisabledVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -563,6 +563,27 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_LIVE_CAPTION_PROMO_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
+
+  // kIPHGlicPromoFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHGlicPromoFeature, kGlicButtonElementId,
+          IDS_GLIC_PROMO_BODY, IDS_GLIC_PROMO_CUSTOM_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext context,
+                 user_education::FeaturePromoHandle promo_handle) {
+                if (auto* const button =
+                        views::ElementTrackerViews::GetInstance()
+                            ->GetUniqueViewAs<glic::GlicButton>(
+                                kGlicButtonElementId, context)) {
+                  button->LaunchUI();
+                }
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
+          .SetMetadata(
+              133, "dfried@chromium.org",
+              "Attempts to trigger when the user is on a supported page.")));
 
   // kIPHGMCCastStartStopFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
@@ -1060,6 +1081,19 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(120, "yuezhanggg@chromium.org",
                        "Triggered when a price tracking is enabled.")));
 
+  // kIPHMerchantTrustFeature
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHMerchantTrustFeature,
+                    kMerchantTrustChipElementId, IDS_MERCHANT_TRUST_IPH_BODY,
+                    IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetBubbleTitleText(IDS_MERCHANT_TRUST_IPH_TITLE)
+                    .SetBubbleIcon(&vector_icons::kStorefrontIcon)
+                    .SetMetadata(134, "tommasin@chromium.org",
+                                 "Triggered when the merchant trust entry "
+                                 "point is shown and expanded.")));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // kIPHDownloadEsbPromoFeature:
   registry.RegisterFeature(std::move(
@@ -1224,27 +1258,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetInAnyContext(true)
           .SetMetadata(130, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
-
-  // kIPHToolbarManagementButtonFeature
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHToolbarManagementButtonFeature,
-          kToolbarManagementButtonElementId,
-          IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED, IDS_LEARN_MORE,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser);
-              }))
-          .SetCustomActionIsDefault(true)
-          .SetMetadata(129, "ydago@chromium.org",
-                       "Triggered after a user uses managed browser where the "
-                       "toolbar management button is visible.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -1521,13 +1534,14 @@ void MaybeRegisterChromeTutorials(
 
             // Bubble step - "Install" row
             TutorialDescription::BubbleStep(
-                PWAConfirmationBubbleView::kInstallButton)
+                web_app::WebAppInstallDialogDelegate::
+                    kPwaInstallDialogInstallButton)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_INSTALL)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
-            // Event step - Click on "Add shortcut"
+            // Event step - Click on "Install"
             TutorialDescription::EventStep(
-                PWAConfirmationBubbleView::kInstalledPWAEventId)
+                web_app::WebAppInstallDialogDelegate::kInstalledPWAEventId)
                 .InSameContext(),
 
             // Completion of the tutorial.
@@ -1649,14 +1663,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       lens::features::kLensOverlay,
       user_education::Metadata(126, "jdonnelly@google.com, dfried@google.com",
                                "Shown in app and web context menus.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      autofill::features::kAutofillForUnclassifiedFieldsAvailable,
-      user_education::Metadata(
-          125, "vidhanj@google.com",
-          "Shown in the autofill section of the context menu for address and "
-          "credit card autofill entries when autofill for unclassified fields "
-          "is enabled.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       plus_addresses::features::kPlusAddressFallbackFromContextMenu,

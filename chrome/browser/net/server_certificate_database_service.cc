@@ -13,39 +13,50 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/net/server_certificate_database_nss_migrator.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #endif
 
 namespace net {
 
+#if BUILDFLAG(IS_CHROMEOS)
 ServerCertificateDatabaseService::ServerCertificateDatabaseService(
-    Profile* profile)
-    : profile_(profile) {
+    base::FilePath profile_path,
+    PrefService* prefs,
+    ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter)
+    : profile_path_(std::move(profile_path)),
+      prefs_(prefs),
+      nss_slot_getter_(std::move(nss_slot_getter))
+#else
+ServerCertificateDatabaseService::ServerCertificateDatabaseService(
+    base::FilePath profile_path)
+    : profile_path_(std::move(profile_path))
+#endif
+{
   if (base::FeatureList::IsEnabled(
           ::features::kEnableCertManagementUIV2Write)) {
     server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-        profile->GetPath());
+        profile_path_);
   }
 }
 
 ServerCertificateDatabaseService::~ServerCertificateDatabaseService() = default;
 
-void ServerCertificateDatabaseService::AddOrUpdateUserCertificate(
-    net::ServerCertificateDatabase::CertInformation cert_info,
+void ServerCertificateDatabaseService::AddOrUpdateUserCertificates(
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos,
     base::OnceCallback<void(bool)> callback) {
   server_cert_database_
-      .AsyncCall(&net::ServerCertificateDatabase::InsertOrUpdateCert)
-      .WithArgs(std::move(cert_info))
+      .AsyncCall(&net::ServerCertificateDatabase::InsertOrUpdateCerts)
+      .WithArgs(std::move(cert_infos))
       .Then(base::BindOnce(
           &ServerCertificateDatabaseService::HandleModificationResult,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -60,14 +71,13 @@ void ServerCertificateDatabaseService::GetAllCertificates(
   // database. Migration will only be done once per profile. If called multiple
   // times before migration completes, all the callbacks will be queued and
   // processed once the migration is done.
-  if (profile_->GetPrefs()->GetInteger(
-          prefs::kNSSCertsMigratedToServerCertDb) ==
+  if (prefs_->GetInteger(prefs::kNSSCertsMigratedToServerCertDb) ==
       static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
     if (!nss_migrator_) {
       DVLOG(1) << "starting migration for profile "
-               << profile_->GetPath().AsUTF8Unsafe();
-      nss_migrator_ =
-          std::make_unique<ServerCertificateDatabaseNSSMigrator>(profile_);
+               << profile_path_.AsUTF8Unsafe();
+      nss_migrator_ = std::make_unique<ServerCertificateDatabaseNSSMigrator>(
+          this, std::move(nss_slot_getter_));
       // Unretained is safe as ServerCertificateDatabaseNSSMigrator will not
       // run the callback after it is deleted.
       nss_migrator_->MigrateCerts(base::BindOnce(
@@ -88,7 +98,7 @@ void ServerCertificateDatabaseService::GetAllCertificates(
 #if BUILDFLAG(IS_CHROMEOS)
 void ServerCertificateDatabaseService::NSSMigrationComplete(
     ServerCertificateDatabaseNSSMigrator::MigrationResult result) {
-  DVLOG(1) << "Migration for " << profile_->GetPath().AsUTF8Unsafe()
+  DVLOG(1) << "Migration for " << profile_path_.AsUTF8Unsafe()
            << " finished: nss cert count=" << result.cert_count
            << " errors=" << result.error_count;
   NSSMigrationResultHistogram result_for_histogram;
@@ -107,7 +117,7 @@ void ServerCertificateDatabaseService::NSSMigrationComplete(
       "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished",
       get_certificates_pending_migration_.size());
 
-  profile_->GetPrefs()->SetInteger(
+  prefs_->SetInteger(
       prefs::kNSSCertsMigratedToServerCertDb,
       static_cast<int>((result.error_count == 0)
                            ? NSSMigrationResultPref::kMigratedSuccessfully
@@ -161,5 +171,15 @@ void ServerCertificateDatabaseService::HandleModificationResult(
     observers_.Notify();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ServerCertificateDatabaseService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kNSSCertsMigratedToServerCertDb,
+      static_cast<int>(net::ServerCertificateDatabaseService::
+                           NSSMigrationResultPref::kNotMigrated));
+}
+#endif
 
 }  // namespace net

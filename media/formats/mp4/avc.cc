@@ -25,7 +25,8 @@ namespace mp4 {
 static constexpr uint8_t kAnnexBStartCode[] = {0, 0, 0, 1};
 static constexpr int kAnnexBStartCodeSize = 4;
 
-static bool ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
+// static
+bool AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
   const size_t kLengthSize = 4;
   size_t pos = 0;
   while (buf->size() > kLengthSize && buf->size() - kLengthSize > pos) {

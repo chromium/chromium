@@ -401,3 +401,98 @@ AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
   assertOutputFlush();
   assertEventDefault();
 });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest',
+    'NoActiononMenuItemCollapsedWhenNoMenuPopupStart', async function() {
+      const site = `
+        <ol role="menu">
+          <li role="menuitem" aria-expanded="false" id="1">
+          </li>
+        </ol>`;
+      const root = await this.runWithLoadedTree(site);
+      const menuItem = root.find({role: RoleType.MENU_ITEM});
+      assertTrue(Boolean(menuItem));
+      const state = {[StateType.COLLAPSED]: false, [StateType.EXPANDED]: true};
+      Object.defineProperty(menuItem, 'state', {get: () => state});
+      Object.defineProperty(menuItem, 'selected', {get: () => true});
+      assertTrue(menuItem.state.expanded);
+      assertFalse(DesktopAutomationInterface.instance.isSubMenuShowing_);
+
+      const assertNoEventDefault = this.prepareToExpectMethodNotCalled(
+          DesktopAutomationInterface.instance, 'onEventDefault');
+      state[StateType.COLLAPSED] = true;
+      state[StateType.EXPANDED] = false;
+      const collapsedEvent =
+          new CustomAutomationEvent(EventType.COLLAPSED, menuItem);
+      this.handler_.onMenuItemCollapsed(collapsedEvent);
+      await this.waitForPendingMethods();
+      assertTrue(menuItem.state.collapsed);
+      assertTrue(menuItem.selected);
+      assertNoEventDefault();
+    });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest',
+    'onMenuItemCollapsedAfterMenuPopupStart', async function() {
+      const site = `
+      <ol role="menu">
+        <li role="menuitem" aria-expanded="false" id="1">
+        </li>
+      </ol>`;
+      const root = await this.runWithLoadedTree(site);
+      const menu = root.find({role: RoleType.MENU});
+      const menuItem = root.find({role: RoleType.MENU_ITEM});
+      assertTrue(Boolean(menu));
+      assertTrue(Boolean(menuItem));
+
+      const state = {[StateType.COLLAPSED]: false, [StateType.EXPANDED]: true};
+      Object.defineProperty(menuItem, 'state', {get: () => state});
+      Object.defineProperty(menuItem, 'selected', {get: () => true});
+      const event = new CustomAutomationEvent(EventType.MENU_POPUP_START, menu);
+      this.handler_.onMenuPopupStart_(event);
+      assertTrue(DesktopAutomationInterface.instance.isSubMenuShowing_);
+
+      const assertEventDefault = this.prepareToExpectMethodCall(
+          DesktopAutomationInterface.instance, 'onEventDefault');
+      state[StateType.COLLAPSED] = true;
+      state[StateType.EXPANDED] = false;
+      const collapsedEvent =
+          new CustomAutomationEvent(EventType.COLLAPSED, menuItem);
+      this.handler_.onMenuItemCollapsed(collapsedEvent);
+      await this.waitForPendingMethods();
+      assertTrue(menuItem.state.collapsed);
+      assertTrue(menuItem.selected);
+      assertEventDefault();
+    });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest',
+    'ResetIsSubMenuShowingStateWhenFocusChanges', async function() {
+      const site = `
+      <ol role="menu">
+        <li role="menuitem" aria-expanded="false" id="1">
+        </li>
+      </ol>
+      <button>`;
+      const root = await this.runWithLoadedTree(site);
+      const menu = root.find({role: RoleType.MENU});
+      const menuItem = root.find({role: RoleType.MENU_ITEM});
+      const button = root.find({role: RoleType.BUTTON});
+      assertTrue(Boolean(menu));
+      assertTrue(Boolean(menuItem));
+      assertTrue(Boolean(button));
+
+      const state = {[StateType.COLLAPSED]: false, [StateType.EXPANDED]: true};
+      Object.defineProperty(menuItem, 'state', {get: () => state});
+      Object.defineProperty(menuItem, 'selected', {get: () => true});
+      const event = new CustomAutomationEvent(EventType.MENU_POPUP_START, menu);
+      this.handler_.onMenuPopupStart_(event);
+      assertTrue(DesktopAutomationInterface.instance.isSubMenuShowing_);
+
+      const focusEvent = new CustomAutomationEvent(EventType.FOCUS, button);
+      this.handler_.onFocus_(focusEvent);
+      await this.waitForPendingMethods();
+
+      assertFalse(DesktopAutomationInterface.instance.isSubMenuShowing_);
+    });

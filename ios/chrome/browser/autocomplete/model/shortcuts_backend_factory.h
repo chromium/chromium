@@ -7,7 +7,7 @@
 
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class ShortcutsBackend;
@@ -15,8 +15,7 @@ class ShortcutsBackend;
 namespace ios {
 // Singleton that owns all ShortcutsBackends and associates them with
 // ProfileIOS.
-class ShortcutsBackendFactory
-    : public RefcountedBrowserStateKeyedServiceFactory {
+class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
   static scoped_refptr<ShortcutsBackend> GetForProfile(ProfileIOS* profile);
   static scoped_refptr<ShortcutsBackend> GetForProfileIfExists(
@@ -24,9 +23,6 @@ class ShortcutsBackendFactory
   static ShortcutsBackendFactory* GetInstance();
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
-
-  ShortcutsBackendFactory(const ShortcutsBackendFactory&) = delete;
-  ShortcutsBackendFactory& operator=(const ShortcutsBackendFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ShortcutsBackendFactory>;
@@ -37,7 +33,6 @@ class ShortcutsBackendFactory
   // BrowserStateKeyedServiceFactory implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace ios

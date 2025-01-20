@@ -68,16 +68,6 @@ bool IsEventLevelReportingUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
 }
 
-const blink::InterestGroup::Ad& ChosenAd(
-    const SingleStorageInterestGroup& storage_interest_group,
-    const GURL& winning_ad_url) {
-  auto chosen_ad = base::ranges::find(
-      *storage_interest_group->interest_group.ads, winning_ad_url,
-      [](const blink::InterestGroup::Ad& ad) { return ad.render_url(); });
-  CHECK(chosen_ad != storage_interest_group->interest_group.ads->end());
-  return *chosen_ad;
-}
-
 bool IsKAnonForReporting(
     const SingleStorageInterestGroup& storage_interest_group,
     const blink::InterestGroup::Ad& chosen_ad,
@@ -180,17 +170,6 @@ bool ValidateReportingPrivateAggregationRequests(
 
 }  // namespace
 
-BASE_FEATURE(kFledgeRounding,
-             "FledgeRounding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// For now default bid and score to full resolution.
-const base::FeatureParam<int> kFledgeBidReportingBits{
-    &kFledgeRounding, "fledge_bid_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeScoreReportingBits{
-    &kFledgeRounding, "fledge_score_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeAdCostReportingBits{
-    &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
-
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo(
@@ -203,7 +182,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo::operator=(
 
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(
     const SingleStorageInterestGroup& storage_interest_group)
-    : storage_interest_group(std::move(storage_interest_group)) {}
+    : storage_interest_group(storage_interest_group) {}
 InterestGroupAuctionReporter::WinningBidInfo::WinningBidInfo(WinningBidInfo&&) =
     default;
 InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
@@ -408,7 +387,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
 
 /* static */
 double InterestGroupAuctionReporter::RoundBidStochastically(double bid) {
-  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get());
+  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits);
 }
 
 /* static */
@@ -500,6 +479,8 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
       seller_info->auction_config->seller_experiment_group_id,
       seller_info->auction_config->non_shared_params
           .trusted_scoring_signals_coordinator,
+      seller_info->auction_config->send_creative_scanning_metadata,
+      /*process_assigned_callback=*/base::OnceClosure(),
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                      base::Unretained(this), base::Unretained(seller_info),
                      top_seller_signals),
@@ -592,13 +573,14 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   std::optional<std::string>
       browser_signal_selected_buyer_and_seller_reporting_id;
 
-  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
-                            winning_bid_info_.render_url);
-  if (IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+  // For B&A server components, we already checked k-anonymity on the server.
+  if ((top_level_with_components &&
+       component_seller_winning_bid_info_->saved_response.has_value()) ||
+      IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =
-        chosen_ad.buyer_and_seller_reporting_id;
+        winning_bid_info_.bid_ad->buyer_and_seller_reporting_id;
     browser_signal_selected_buyer_and_seller_reporting_id =
         winning_bid_info_.selected_buyer_and_seller_reporting_id;
   }
@@ -622,10 +604,9 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       /*browser_signal_selected_buyer_and_seller_reporting_id=*/
       browser_signal_selected_buyer_and_seller_reporting_id,
       winning_bid_info_.render_url, seller_info->rounded_bid, bid_currency,
-      RoundStochasticallyToKBits(seller_info->score,
-                                 kFledgeScoreReportingBits.Get()),
+      RoundStochasticallyToKBits(seller_info->score, kFledgeScoreReportingBits),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version, seller_info->trace_id,
@@ -832,9 +813,6 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<std::string> buyer_and_seller_reporting_id;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
-  const blink::InterestGroup::Ad& chosen_ad = ChosenAd(
-      winning_bid_info_.storage_interest_group, winning_bid_info_.render_url);
-
   // If k-anonymity enforcement is on we can only reveal the winning reporting
   // id in reportWin if the winning ad's reporting_ads_kanon entry is
   // k-anonymous.
@@ -843,14 +821,14 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
       IsKAnonForReporting(
-          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.storage_interest_group, *winning_bid_info_.bid_ad,
           winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
-        winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
-        reporting_id_field, interest_group_name_reporting_id,
-        buyer_reporting_id, buyer_and_seller_reporting_id,
-        selected_buyer_and_seller_reporting_id);
+        winning_bid_info_.selected_buyer_and_seller_reporting_id,
+        *winning_bid_info_.bid_ad, reporting_id_field,
+        interest_group_name_reporting_id, buyer_reporting_id,
+        buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id);
   }
   base::UmaHistogramEnumeration(
       top_level_seller_winning_bid_info_.saved_response.has_value()
@@ -864,7 +842,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<double> rounded_ad_cost;
   if (winning_bid_info_.ad_cost.has_value()) {
     rounded_ad_cost = RoundStochasticallyToKBits(
-        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits.Get());
+        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits);
   }
   std::optional<uint16_t> noised_and_masked_modeling_signals;
   if (winning_bid_info_.modeling_signals) {
@@ -914,7 +892,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       winning_bid_info_.bid_currency,
       /*browser_signal_highest_scoring_other_bid=*/
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency, made_highest_scoring_other_bid,
       rounded_ad_cost, noised_and_masked_modeling_signals,
       NoiseAndBucketJoinCount(
@@ -933,6 +911,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           : std::optional<url::Origin>(),
       auction_config->non_shared_params.reporting_timeout,
       winning_bid_info_.bidding_signals_data_version,
+      /*aggregate_win_signals=*/winning_bid_info_.aggregate_win_signals,
       top_level_seller_winning_bid_info_.trace_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderReportWinComplete,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -63,7 +63,6 @@ source_set("tab_helper") {
     "//base",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
@@ -107,11 +106,11 @@ source_set("service_factory") {
   deps = [
     ":service",
     "//base",
-    "//components/keyed_service/ios",
     "//components/pref_registry:pref_registry",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/public/provider/chrome/browser/follow:follow_api",
   ]
 }

@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -24,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -91,6 +93,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
+#include "third_party/blink/renderer/platform/media/player_id_generator.h"
 #include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
@@ -428,6 +431,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       encrypted_client_(encrypted_client),
       delegate_(delegate),
       delegate_has_audio_(HasUnmutedAudio()),
+      player_id_(GetNextMediaPlayerId()),
       defer_load_cb_(std::move(defer_load_cb)),
       isolate_(frame_->GetAgentGroupScheduler()->Isolate()),
       demuxer_manager_(std::make_unique<media::DemuxerManager>(
@@ -1476,9 +1480,7 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // TODO(dalecurtis): Technically this allows seeking on media which return an
   // infinite duration so long as DataSource::IsStreaming() is false. While not
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
-  const WebTimeRange seekable_range(0.0,
-                                    force_seeks_to_zero ? 0.0 : seekable_end);
-  return WebTimeRanges(&seekable_range, 1);
+  return WebTimeRanges(0.0, force_seeks_to_zero ? 0.0 : seekable_end);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
@@ -3010,6 +3012,7 @@ media::PipelineStatus WebMediaPlayerImpl::OnDemuxerCreated(
     attempting_suspended_start_ = true;
   }
 
+  media_metrics_provider_->SetDemuxerType(demuxer->GetDemuxerType());
   pipeline_controller_->Start(start_type, demuxer, this, is_streaming,
                               is_static);
   return media::OkStatus();
@@ -3649,10 +3652,6 @@ bool WebMediaPlayerImpl::IsOpaque() const {
   return opaque_;
 }
 
-int WebMediaPlayerImpl::GetDelegateId() {
-  return delegate_id_;
-}
-
 std::optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
   if (!surface_layer_for_video_enabled_)
     return std::nullopt;
@@ -3832,6 +3831,9 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
   // we should plumb the pause reason from here all the way through to
   // `WebMediaPlayerImpl::Pause`, where the reset is done.
   client_->PausePlayback(pause_reason);
+
+  // NOTE: The reason MUST be set AFTER `PausePlayback()` is called, since it
+  // will call `Pause()` which clears the `visibility_pause_reason_`.
   visibility_pause_reason_ = pause_reason;
 }
 
@@ -3935,38 +3937,42 @@ void WebMediaPlayerImpl::SwitchToLocalRenderer(
 
 template <uint32_t Flags, typename... T>
 void WebMediaPlayerImpl::WriteSplitHistogram(
-    void (*UmaFunction)(const std::string&, T...),
+    void (*UmaFunction)(std::string_view, T...),
     SplitHistogramName key,
     const T&... values) {
-  std::string strkey = std::string(GetHistogramName(key));
+  const char* strkey = GetHistogramName(key);
 
   if constexpr (Flags & kEncrypted) {
-    if (is_encrypted_)
-      UmaFunction(strkey + ".EME", values...);
+    if (is_encrypted_) {
+      UmaFunction(base::StrCat({strkey, ".EME"}), values...);
+    }
 #if BUILDFLAG(IS_WIN)
     if (renderer_type_ == media::RendererType::kMediaFoundation) {
-      UmaFunction(strkey + ".MediaFoundationRenderer", values...);
+      UmaFunction(base::StrCat({strkey, ".MediaFoundationRenderer"}),
+                  values...);
     }
 #endif  // BUILDFLAG(IS_WIN)
   }
 
-  if constexpr (Flags & kTotal)
-    UmaFunction(strkey + ".All", values...);
+  if constexpr (Flags & kTotal) {
+    UmaFunction(base::StrCat({strkey, ".All"}), values...);
+  }
 
   if constexpr (Flags & kPlaybackType) {
     auto demuxer_type = GetDemuxerType();
-    if (!demuxer_type.has_value())
+    if (!demuxer_type.has_value()) {
       return;
+    }
     switch (*demuxer_type) {
       case media::DemuxerType::kChunkDemuxer:
-        UmaFunction(strkey + ".MSE", values...);
+        UmaFunction(base::StrCat({strkey, ".MSE"}), values...);
         break;
       case media::DemuxerType::kManifestDemuxer:
       case media::DemuxerType::kMediaUrlDemuxer:
-        UmaFunction(strkey + ".HLS", values...);
+        UmaFunction(base::StrCat({strkey, ".HLS"}), values...);
         break;
       default:
-        UmaFunction(strkey + ".SRC", values...);
+        UmaFunction(base::StrCat({strkey, ".SRC"}), values...);
         break;
     }
   }

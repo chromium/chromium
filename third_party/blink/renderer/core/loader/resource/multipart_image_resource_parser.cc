@@ -167,11 +167,13 @@ bool MultipartImageResourceParser::ParseHeaders() {
 // doesn't require the dashes to exist.  See nsMultiMixedConv::FindToken.
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
-  auto it = base::ranges::search(data, *boundary);
-  if (it == data.end())
+  auto found_boundary = std::ranges::search(data, *boundary);
+  if (found_boundary.begin() == data.end()) {
     return kNotFound;
+  }
 
-  wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.begin());
+  wtf_size_t boundary_position =
+      static_cast<wtf_size_t>(found_boundary.begin() - data.begin());
   // Back up over -- for backwards compat
   // TODO(tc): Don't we only want to do this once?  Gecko code doesn't seem to
   // care.

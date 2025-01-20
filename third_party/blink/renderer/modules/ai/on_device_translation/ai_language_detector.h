@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_detector_detect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/language_detection/detect.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
@@ -19,8 +19,10 @@ class AILanguageDetector final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AILanguageDetector();
+  explicit AILanguageDetector(LanguageDetectionModel* language_detection_model);
   ~AILanguageDetector() override = default;
+
+  void Trace(Visitor* visitor) const override;
 
   ScriptPromise<IDLSequence<LanguageDetectionResult>> detect(
       ScriptState* script_state,
@@ -31,11 +33,14 @@ class AILanguageDetector final : public ScriptWrappable {
 
   // TODO(crbug.com/349927087): Make the functions below free functions.
   static HeapVector<Member<LanguageDetectionResult>> ConvertResult(
-      WTF::Vector<LanguagePrediction> predictions);
+      WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions);
   static void OnDetectComplete(
       ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>* resolver,
-      base::expected<WTF::Vector<LanguagePrediction>, DetectLanguageError>
-          result);
+      base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
+                     DetectLanguageError> result);
+
+ private:
+  Member<LanguageDetectionModel> language_detection_model_;
 };
 
 }  // namespace blink

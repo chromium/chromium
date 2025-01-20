@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -136,6 +137,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/google/core/common/google_util.h"
+#include "components/language_detection/core/constants.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -155,7 +157,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1085,19 +1086,6 @@ void MoveActiveTabToNewWindow(Browser* browser) {
                       std::vector<int>(selection.begin(), selection.end()));
 }
 
-void ToggleCompactMode(Browser* browser) {
-  const bool current_pref =
-      browser->profile()->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
-  browser->profile()->GetPrefs()->SetBoolean(prefs::kCompactModeEnabled,
-                                             !current_pref);
-}
-
-bool ShouldUseCompactMode(Profile* profile) {
-  CHECK(profile);
-  return base::FeatureList::IsEnabled(features::kCompactMode) &&
-         profile->GetPrefs()->GetBoolean(prefs::kCompactModeEnabled);
-}
-
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
   if (browser->is_type_app()) {
@@ -1276,7 +1264,7 @@ void CreateNewTabGroup(Browser* browser) {
   NewTab(browser);
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),
-      TabStripModel::ContextMenuCommand::CommandAddToNewGroup);
+      TabStripModel::ContextMenuCommand::CommandAddToNewGroupFromMenuItem);
 }
 
 void MuteSite(Browser* browser) {
@@ -1631,7 +1619,7 @@ void ShowTranslateBubble(Browser* browser) {
   // If the source language matches the target language, we change the source
   // language to unknown, so that we display "Detected Language".
   if (source_language == target_language) {
-    source_language = translate::kUnknownLanguageCode;
+    source_language = language_detection::kUnknownLanguageCode;
   }
 
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
@@ -2312,8 +2300,7 @@ void ExecLensRegionSearch(Browser* browser) {
     lens_region_search_controller_data->lens_region_search_controller =
         std::make_unique<lens::LensRegionSearchController>();
     lens_region_search_controller_data->lens_region_search_controller->Start(
-        contents, lens::features::IsLensFullscreenSearchEnabled(),
-        /*force_open_in_new_tab=*/false, is_google_dsp, entry_point);
+        contents, /*use_fullscreen_capture=*/false, is_google_dsp, entry_point);
     browser->SetUserData(lens::LensRegionSearchControllerData::kDataKey,
                          std::move(lens_region_search_controller_data));
   }
@@ -2323,11 +2310,6 @@ void ExecLensRegionSearch(Browser* browser) {
 void OpenCommerceProductSpecificationsTab(Browser* browser,
                                           const std::vector<GURL>& urls,
                                           const int position) {
-  if (static_cast<int>(urls.size()) <
-      commerce::kProductSpecificationsMinTabsCount) {
-    return;
-  }
-
   auto* prefs = browser->profile()->GetPrefs();
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.

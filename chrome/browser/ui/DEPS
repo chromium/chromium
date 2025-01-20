@@ -6,6 +6,7 @@ include_rules = [
   "+components/browser_ui/device_lock/android",
   "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/util/android/url_constants.h",
+  "+components/chrome_urls_ui",
   "+components/collaboration/public",
   "+components/country_codes",
   "+components/data_sharing/public",
@@ -13,6 +14,7 @@ include_rules = [
   "+components/enterprise",
   "+components/fingerprinting_protection_filter/browser",
   "+components/infobars/android",
+  "+components/language_detection/core",
   "+components/live_caption",
   "+components/omnibox",
   "+components/page_image_service",
@@ -65,6 +67,9 @@ specific_include_rules = {
   ],
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
+  ],
+  "fullscreen_controller_browsertest\.cc": [
+    "+ash/wm/window_pin_util.h",
   ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",

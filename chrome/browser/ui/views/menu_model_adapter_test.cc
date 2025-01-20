@@ -40,13 +40,12 @@ const int kSubMenuBaseId = 200;
 //  virtual std::u16string GetLabelAt(int index) const = 0;
 class CommonMenuModel : public ui::MenuModel {
  public:
-  CommonMenuModel() {
-  }
+  CommonMenuModel() = default;
 
   CommonMenuModel(const CommonMenuModel&) = delete;
   CommonMenuModel& operator=(const CommonMenuModel&) = delete;
 
-  ~CommonMenuModel() override {}
+  ~CommonMenuModel() override = default;
 
  protected:
   // ui::MenuModel:
@@ -89,11 +88,9 @@ class SubMenuModel final : public CommonMenuModel {
   SubMenuModel(const SubMenuModel&) = delete;
   SubMenuModel& operator=(const SubMenuModel&) = delete;
 
-  ~SubMenuModel() override {}
+  ~SubMenuModel() override = default;
 
-  bool showing() const {
-    return showing_;
-  }
+  bool showing() const { return showing_; }
 
  private:
   // ui::MenuModel implementation.
@@ -122,17 +119,14 @@ class SubMenuModel final : public CommonMenuModel {
 
 class TopMenuModel final : public CommonMenuModel {
  public:
-  TopMenuModel() {
-  }
+  TopMenuModel() = default;
 
   TopMenuModel(const TopMenuModel&) = delete;
   TopMenuModel& operator=(const TopMenuModel&) = delete;
 
-  ~TopMenuModel() override {}
+  ~TopMenuModel() override = default;
 
-  bool IsSubmenuShowing() {
-    return sub_menu_model_.showing();
-  }
+  bool IsSubmenuShowing() { return sub_menu_model_.showing(); }
 
  private:
   // ui::MenuModel implementation.

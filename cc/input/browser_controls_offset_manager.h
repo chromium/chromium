@@ -90,6 +90,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   viz::OffsetTag BottomControlsOffsetTag() const;
 
+  bool HasOffsetTag() const;
+
   // Valid shown ratio range for the top controls. The values will be (0, 1) if
   // there is no animation running.
   std::pair<float, float> TopControlsShownRatioRange();

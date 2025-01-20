@@ -3,7 +3,7 @@ Short Name: fishhook
 URL: https://github.com/facebook/fishhook
 Version: 0.2
 Revision: 8ef82f0711494ecc78d16bf6ce76f5ad92e5f67b
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: no

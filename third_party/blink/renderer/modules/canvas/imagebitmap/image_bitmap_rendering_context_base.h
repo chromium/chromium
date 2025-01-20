@@ -41,10 +41,17 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
+
+  SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
+  SkColorType GetSkColorType() const override { return kN32_SkColorType; }
+  gfx::ColorSpace GetColorSpace() const override {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return SkColorSpace::MakeSRGB();
+  }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
-  bool IsOriginTopLeft() const override;
-  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   cc::Layer* CcLayer() const final;
   // TODO(junov): handle lost contexts when content is GPU-backed

@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/video_effects_processor_webgpu.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -27,35 +27,10 @@
 
 namespace video_effects {
 
-// Abstract interface that is used by `VideoEffectsServiceImpl` to obtain
-// instances of `gpu::GpuChannelHost`. Those are then going to be used to
-// create context providers over which the communication to GPU service will
-// happen.
-class GpuChannelHostProvider {
- public:
-  virtual ~GpuChannelHostProvider() = default;
-
-  // Returns the context provider for WebGPU.
-  virtual scoped_refptr<viz::ContextProviderCommandBuffer>
-  GetWebGpuContextProvider() = 0;
-
-  // Returns the context provider for the raster interface.
-  virtual scoped_refptr<viz::RasterContextProvider>
-  GetRasterInterfaceContextProvider() = 0;
-
-  // Returns the SharedImageInterface.
-  virtual scoped_refptr<gpu::ClientSharedImageInterface>
-  GetSharedImageInterface() = 0;
-
- protected:
-  // Return a connected `gpu::GpuChannelHost`. Implementations should expect
-  // this method to be called somewhat frequently when a new Video Effects
-  // Processor is created.
-  virtual scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() = 0;
-};
-
-class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
-                                  public viz::ContextLostObserver {
+class VideoEffectsProcessorImpl
+    : public mojom::VideoEffectsProcessor,
+      public GpuChannelHostProvider::Observer,
+      public media::mojom::VideoEffectsConfigurationObserver {
  public:
   // `gpu_channel_host_provider` must outlive this processor.
   // `on_unrecoverable_error` will be called after an unrecoverable condition
@@ -66,7 +41,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
       wgpu::Device device,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
+      scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
       base::OnceClosure on_unrecoverable_error);
 
   ~VideoEffectsProcessorImpl() override;
@@ -89,8 +64,13 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
                    PostProcessCallback callback) override;
 
  private:
-  // viz::ContextLostObserver:
-  void OnContextLost() override;
+  // GpuChannelHostProvider::Observer:
+  void OnContextLost(scoped_refptr<GpuChannelHostProvider>) override;
+  void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
+
+  // media::mojom::VideoEffectsConfigurationObserver impl.
+  void OnConfigurationChanged(
+      media::mojom::VideoEffectsConfigurationPtr configuration) override;
 
   // Registered as a disconnect handler for `manager_remote_` and
   // `processor_receiver_`. Calling it will cause this processor to become
@@ -104,13 +84,16 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   void MaybeCallOnUnrecoverableError();
 
   bool initialized_ = false;
+  bool permanent_error_ = false;
 
   wgpu::Device device_;
 
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
+  mojo::Receiver<media::mojom::VideoEffectsConfigurationObserver>
+      configuration_observer_{this};
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
 
-  std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;
+  scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
   // Called when this processor enters a defunct state.
   base::OnceClosure on_unrecoverable_error_;
@@ -122,12 +105,6 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<VideoEffectsProcessorWebGpu> processor_webgpu_;
-  std::vector<uint8_t> background_segmentation_model_blob_;
-
-  // We'll keep track of how many context losses we've experienced. If this
-  // number is too high, we'll make this processor defunct, assuming that
-  // it is causing some instability with GPU service.
-  int num_context_losses_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

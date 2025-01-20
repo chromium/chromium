@@ -10,6 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -38,6 +40,10 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // This enum is also used in Java.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AccountManagedStatusFinderOutcome
+  //
   // LINT.IfChange(AccountManagedStatusFinderOutcome)
   enum class Outcome {
     // Check isn't complete yet.
@@ -55,18 +61,25 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
     kEnterpriseGoogleDotCom = 5,
     // The account is an enterprise account but *not* an @google.com one.
     kEnterprise = 6,
+    // The timeout was reached before the management status could be decided.
+    kTimeout = 7,
 
-    kMaxValue = kEnterprise
+    kMaxValue = kTimeout
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountManagedStatusFinderOutcome)
 
   // After an AccountManagedStatusFinder is instantiated, the account type may
   // or may not be known immediately. The `async_callback` will only be run if
   // the account type was *not* known immediately, i.e. if `GetOutcome()` was
-  // still `kPending` when the constructor returned.
+  // still `kPending` when the constructor returned. If the supplied `timeout`
+  // value is equal to `base::TimeDelta::Max()` - `AccountManagedStatusFinder`
+  // will wait for the managed status indefinitely (or until `IdentityManager`
+  // is shut down); otherwise the management status will be set to `kTimeout`
+  // after `timeout` time delay.
   AccountManagedStatusFinder(signin::IdentityManager* identity_manager,
                              const CoreAccountInfo& account,
-                             base::OnceClosure async_callback);
+                             base::OnceClosure async_callback,
+                             base::TimeDelta timeout = base::TimeDelta::Max());
   ~AccountManagedStatusFinder() override;
 
   const CoreAccountInfo& GetAccountInfo() const { return account_; }
@@ -77,21 +90,36 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Implementation for JNI methods.
+  void DestroyNativeObject(JNIEnv* env);
+  jint GetOutcomeFromNativeObject(JNIEnv* env) const;
+#endif
+
  private:
+  void OnTimeoutReached();
+
   Outcome DetermineOutcome() const;
 
   void OutcomeDeterminedAsync(Outcome type);
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountInfo account_;
+  bool ignore_persistent_auth_errors_ = true;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  base::OneShotTimer timeout_timer_;
 
   base::OnceClosure callback_;
 

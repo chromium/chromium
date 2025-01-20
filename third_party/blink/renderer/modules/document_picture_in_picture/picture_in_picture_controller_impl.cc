@@ -175,7 +175,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   }
 
   picture_in_picture_service_->StartSession(
-      video_element->GetWebMediaPlayer()->GetDelegateId(),
+      video_element->GetWebMediaPlayer()->GetPlayerId(),
       std::move(media_player_remote),
       video_element->GetWebMediaPlayer()->GetSurfaceId().value(),
       video_element->GetWebMediaPlayer()->NaturalSize(),
@@ -547,7 +547,7 @@ void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
       media_player_remote.InitWithNewEndpointAndPassReceiver());
 
   picture_in_picture_session_->Update(
-      picture_in_picture_element_->GetWebMediaPlayer()->GetDelegateId(),
+      picture_in_picture_element_->GetWebMediaPlayer()->GetPlayerId(),
       std::move(media_player_remote),
       picture_in_picture_element_->GetWebMediaPlayer()->GetSurfaceId().value(),
       picture_in_picture_element_->GetWebMediaPlayer()->NaturalSize(),

@@ -12,6 +12,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -54,6 +55,9 @@ class MultiprocessTestHelper {
   MultiprocessTestHelper& operator=(const MultiprocessTestHelper&) = delete;
 
   ~MultiprocessTestHelper();
+
+  // Initialize Mojo according to process type.
+  static void InitForMultiprocessTest();
 
   // Start a child process and run the "main" function "named" |test_child_name|
   // declared using |MOJO_MULTIPROCESS_TEST_CHILD_MAIN()| or

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/apps/apk_web_app_installer.h"
+
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -89,7 +90,7 @@ class FakeApkWebAppInstaller : public ApkWebAppInstaller {
 class ApkWebAppInstallerTest : public ChromeRenderViewHostTestHarness,
                                public ApkWebAppInstaller::Owner {
  public:
-  ApkWebAppInstallerTest() {}
+  ApkWebAppInstallerTest() = default;
   ~ApkWebAppInstallerTest() override = default;
 
  protected:

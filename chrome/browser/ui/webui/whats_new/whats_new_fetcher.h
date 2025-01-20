@@ -12,7 +12,6 @@ class Browser;
 
 namespace whats_new {
 
-extern const char kChromeWhatsNewURL[];
 extern const char kChromeWhatsNewV2URL[];
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -27,12 +26,6 @@ enum class LoadEvent {
   kLoadAbort = 6,
   kMaxValue = kLoadAbort,
 };
-
-// Gets the server side URL for the What's New page for the current version of
-// Chrome. If |may_redirect| is true, return a server URL that will redirect to
-// the closest milestone page. Otherwise, return the direct URL of the current
-// version, which may return 404 if there is no page for this milestone.
-GURL GetServerURL(bool may_redirect, bool is_staging = false);
 
 // Whats New V2 API
 // Gets the server side URL for the What's New page for the current version

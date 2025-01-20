@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -34,17 +33,11 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   // CrasAudioHandler::AudioObserver
   void OnInputMutedBySecurityCurtainChanged(bool muted) override;
 
-  void SetPrivacyPageOpenedTimeStampForTesting(base::TimeTicks time_stamp);
-
  protected:
   // content::WebUIMessageHandler
   void RegisterMessages() override;
 
   void NotifyJS(const std::string& event_name, const base::Value& value);
-
-  void HandlePrivacyPageOpened(const base::Value::List& args);
-
-  void HandlePrivacyPageClosed(const base::Value::List& args);
 
   void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
   void HandleInitialMicrophoneMutedBySecurityCurtainState(
@@ -60,11 +53,8 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   // return the callback_id
   const base::ValueView ValidateArgs(const base::Value::List& args);
 
-  void TriggerHatsIfPageWasOpened();
-
   bool mic_muted_by_security_curtain_ = false;
 
-  std::optional<base::TimeTicks> privacy_page_opened_timestamp_;
   base::WeakPtrFactory<PrivacyHubHandler> weak_factory_{this};
 };
 

@@ -34,7 +34,7 @@ namespace views {
 namespace test {
 class ComboboxTestApi;
 class InteractionTestUtilSimulatorViews;
-}
+}  // namespace test
 
 class MenuRunner;
 class PrefixSelector;
@@ -72,10 +72,8 @@ class VIEWS_EXPORT Combobox : public View,
     callback_ = std::move(callback);
   }
 
-  // Set menu model.
-  void SetMenuModel(std::unique_ptr<ui::MenuModel> menu_model) {
-    menu_model_ = std::move(menu_model);
-  }
+  // Gets the matching menu-model adapter for testing.
+  ui::MenuModel* menu_model_for_testing() const { return menu_model_.get(); }
 
   // Gets/Sets the selected index.
   std::optional<size_t> GetSelectedIndex() const { return selected_index_; }

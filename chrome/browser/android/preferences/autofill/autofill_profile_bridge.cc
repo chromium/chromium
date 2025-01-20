@@ -11,9 +11,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
@@ -40,12 +40,10 @@ using ::i18n::addressinput::GetRegionCodes;
 using ::i18n::addressinput::Localization;
 using ::i18n::addressinput::RECIPIENT;
 
-static ScopedJavaLocalRef<jstring>
-JNI_AutofillProfileBridge_GetDefaultCountryCode(JNIEnv* env) {
-  std::string default_country_code =
-      autofill::AutofillCountry::CountryCodeForLocale(
-          g_browser_process->GetApplicationLocale());
-  return ConvertUTF8ToJavaString(env, default_country_code);
+static std::string JNI_AutofillProfileBridge_GetDefaultCountryCode(
+    JNIEnv* env) {
+  return autofill::AutofillCountry::CountryCodeForLocale(
+      g_browser_process->GetApplicationLocale());
 }
 
 static void JNI_AutofillProfileBridge_GetSupportedCountries(
@@ -74,9 +72,8 @@ static void JNI_AutofillProfileBridge_GetSupportedCountries(
 
 static void JNI_AutofillProfileBridge_GetRequiredFields(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_country_code,
+    std::string& country_code,
     const JavaParamRef<jobject>& j_required_fields_list) {
-  std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   std::vector<int> required;
 
   // Iterating over fields in AddressField to ensure that only fields from
@@ -93,11 +90,10 @@ static void JNI_AutofillProfileBridge_GetRequiredFields(
                                             j_required_fields_list);
 }
 
-static ScopedJavaLocalRef<jstring>
-JNI_AutofillProfileBridge_GetAddressUiComponents(
+static std::string JNI_AutofillProfileBridge_GetAddressUiComponents(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_country_code,
-    const JavaParamRef<jstring>& j_language_code,
+    std::string& country_code,
+    std::string& language_code,
     jint j_validation_type,
     const JavaParamRef<jobject>& j_id_list,
     const JavaParamRef<jobject>& j_name_list,
@@ -111,15 +107,10 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   Localization localization;
   localization.SetGetter(l10n_util::GetStringUTF8);
 
-  std::string language_code;
-  if (j_language_code != NULL) {
-    language_code = ConvertJavaStringToUTF8(env, j_language_code);
-  }
   if (language_code.empty()) {
     language_code = g_browser_process->GetApplicationLocale();
   }
 
-  std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   AutofillCountry country(country_code);
   std::vector<AutofillAddressUIComponent> ui_components =
       ConvertAddressUiComponents(
@@ -157,7 +148,7 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   Java_AutofillProfileBridge_intArrayToList(
       env, ToJavaIntArray(env, component_length), j_length_list);
 
-  return ConvertUTF8ToJavaString(env, best_language_tag);
+  return best_language_tag;
 }
 
 }  // namespace autofill

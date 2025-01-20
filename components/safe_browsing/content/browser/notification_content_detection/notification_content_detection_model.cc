@@ -10,11 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 
@@ -59,10 +61,13 @@ NotificationContentDetectionModel::~NotificationContentDetectionModel() =
 void NotificationContentDetectionModel::Execute(
     blink::PlatformNotificationData& notification_data,
     const GURL& origin,
-    bool did_match_allowlist) {
+    bool is_allowlisted_by_user,
+    bool did_match_allowlist,
+    ModelVerdictCallback model_verdict_callback) {
   // If there is no model version, then there is no valid notification content
   // detection model loaded from the server so don't check the model.
   if (!GetModelInfo() || !GetModelInfo()->GetVersion()) {
+    std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
     return;
   }
 
@@ -71,17 +76,21 @@ void NotificationContentDetectionModel::Execute(
   ExecuteModelWithInput(
       base::BindOnce(&NotificationContentDetectionModel::PostprocessCategories,
                      weak_ptr_factory_.GetWeakPtr(), origin,
-                     did_match_allowlist),
+                     is_allowlisted_by_user, did_match_allowlist,
+                     std::move(model_verdict_callback)),
       GetFormattedNotificationContentsForModelInput(notification_data));
 }
 
 void NotificationContentDetectionModel::PostprocessCategories(
     const GURL& origin,
+    bool is_allowlisted_by_user,
     bool did_match_allowlist,
+    ModelVerdictCallback model_verdict_callback,
     const std::optional<std::vector<tflite::task::core::Category>>& output) {
   // If the model does not have an output, return without collecting metrics.
   // This can happen if the model times out and this should not cause a crash.
   if (!output.has_value()) {
+    std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
     return;
   }
   // Validate model response and obtain suspicious and not suspicious confidence
@@ -94,9 +103,15 @@ void NotificationContentDetectionModel::PostprocessCategories(
                                    100 * category.score);
       permissions::PermissionUmaUtil::RecordPermissionUsageNotificationShown(
           did_match_allowlist, 100 * category.score, browser_context_, origin);
+      bool is_suspicious =
+          (100 * category.score >
+           kShowWarningsForSuspiciousNotificationsScoreThreshold.Get()) &&
+          !is_allowlisted_by_user;
+      std::move(model_verdict_callback).Run(is_suspicious);
       return;
     }
   }
+  std::move(model_verdict_callback).Run(/*is_suspicious=*/false);
   // Enforce this crash on debug builds only.
   DCHECK(false) << "Could not find the right class name in the model response";
 }

@@ -145,11 +145,13 @@ void DelegateSimpleThreadPool::JoinAll() {
 void DelegateSimpleThreadPool::AddWork(Delegate* delegate,
                                        size_t repeat_count) {
   AutoLock locked(lock_);
-  for (size_t i = 0; i < repeat_count; ++i)
+  for (size_t i = 0; i < repeat_count; ++i) {
     delegates_.push(delegate);
+  }
   // If we were empty, signal that we have work now.
-  if (!dry_.IsSignaled())
+  if (!dry_.IsSignaled()) {
     dry_.Signal();
+  }
 }
 
 void DelegateSimpleThreadPool::Run() {
@@ -159,21 +161,24 @@ void DelegateSimpleThreadPool::Run() {
     dry_.Wait();
     {
       AutoLock locked(lock_);
-      if (!dry_.IsSignaled())
+      if (!dry_.IsSignaled()) {
         continue;
+      }
 
       DCHECK(!delegates_.empty());
       work = delegates_.front();
       delegates_.pop();
 
       // Signal to any other threads that we're currently out of work.
-      if (delegates_.empty())
+      if (delegates_.empty()) {
         dry_.Reset();
+      }
     }
 
     // A NULL delegate pointer signals us to quit.
-    if (!work)
+    if (!work) {
       break;
+    }
 
     work->Run();
   }

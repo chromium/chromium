@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "ui/actions/action_id.h"
 
 class AppMenuButton;
 class AvatarToolbarButton;
@@ -21,12 +22,16 @@ class ToolbarButton;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
+
+namespace page_actions {
+class PageActionView;
+}  // namespace page_actions
 
 namespace views {
 class AccessiblePaneView;
 class View;
-}
+}  // namespace views
 
 // An interface implemented by a view contains and provides access to toolbar
 // buttons in a BrowserView.
@@ -46,6 +51,12 @@ class ToolbarButtonProvider {
   virtual PageActionIconView* GetPageActionIconView(
       PageActionIconType type) = 0;
 
+  // Page actions are currently undergoing a migration. The following method
+  // should be used for the new path, and will eventually replace
+  // `GetPageActionIconView`.
+  virtual page_actions::PageActionView* GetPageActionView(
+      actions::ActionId action_id) = 0;
+
   // Gets the app menu button.
   virtual AppMenuButton* GetAppMenuButton() = 0;
 
@@ -59,9 +70,9 @@ class ToolbarButtonProvider {
   // Returns the toolbar as an AccessiblePaneView.
   virtual views::AccessiblePaneView* GetAsAccessiblePaneView() = 0;
 
-  // Returns the appropriate anchor view for the page action icon.
+  // Returns the appropriate anchor view for the action id.
   virtual views::View* GetAnchorView(
-      std::optional<PageActionIconType> type) = 0;
+      std::optional<actions::ActionId> action_id) = 0;
 
   // See comment in browser_window.h for more info.
   virtual void ZoomChangedForActiveTab(bool can_show_bubble) = 0;
@@ -83,7 +94,7 @@ class ToolbarButtonProvider {
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:
-  virtual ~ToolbarButtonProvider() {}
+  virtual ~ToolbarButtonProvider() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOOLBAR_BUTTON_PROVIDER_H_

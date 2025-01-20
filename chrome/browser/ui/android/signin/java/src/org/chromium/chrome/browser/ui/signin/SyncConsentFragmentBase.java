@@ -59,7 +59,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.lang.annotation.Retention;
@@ -283,8 +283,10 @@ public abstract class SyncConsentFragmentBase extends Fragment
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
-        mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
-        assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT,
+                                              SigninAccessPoint.MAX_VALUE);
+        assert mSigninAccessPoint <=
+            SigninAccessPoint.MAX_VALUE : "Cannot find SigninAccessPoint!";
 
         // TODO(crbug.com/40828116): remove usage of Profile.isChild() and the need for a bundle
         // argument in the FRE, but moving to a new API for determining device supervision status.
@@ -554,7 +556,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
         final @Nullable Object settingsLinkSpan =
                 addSettingsLink
-                        ? new NoUnderlineClickableSpan(getContext(), this::onSettingsLinkClicked)
+                        ? new ChromeClickableSpan(getContext(), this::onSettingsLinkClicked)
                         : null;
         final SpanApplier.SpanInfo spanInfo =
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);

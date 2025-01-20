@@ -434,7 +434,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
   Vector<char> data;
   switch (content_transfer_encoding) {
     case MIMEHeader::Encoding::kBase64:
-      if (!Base64Decode(StringView(content.data(), content.size()), data)) {
+      if (!Base64Decode(StringView(base::as_byte_span(content)), data)) {
         DVLOG(1) << "Invalid base64 content for MHTML part.";
         return nullptr;
       }

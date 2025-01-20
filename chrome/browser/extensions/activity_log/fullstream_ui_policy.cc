@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
@@ -39,29 +40,29 @@ namespace constants = activity_log_constants;
 
 namespace extensions {
 
-const char* const FullStreamUIPolicy::kTableContentFields[] = {
-  "extension_id", "time", "action_type", "api_name", "args", "page_url",
-  "page_title", "arg_url", "other"
-};
-const char* const FullStreamUIPolicy::kTableFieldTypes[] = {
-  "LONGVARCHAR NOT NULL", "INTEGER", "INTEGER", "LONGVARCHAR", "LONGVARCHAR",
-  "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR"
-};
-const int FullStreamUIPolicy::kTableFieldCount =
-    std::size(FullStreamUIPolicy::kTableContentFields);
+namespace {
+
+constexpr base::cstring_view kTableContentFields[] = {
+    "extension_id", "time",       "action_type", "api_name", "args",
+    "page_url",     "page_title", "arg_url",     "other"};
+constexpr base::cstring_view kTableFieldTypes[] = {
+    "LONGVARCHAR NOT NULL", "INTEGER",     "INTEGER",
+    "LONGVARCHAR",          "LONGVARCHAR", "LONGVARCHAR",
+    "LONGVARCHAR",          "LONGVARCHAR", "LONGVARCHAR"};
+
+}  // namespace
 
 FullStreamUIPolicy::FullStreamUIPolicy(Profile* profile)
     : ActivityLogDatabasePolicy(
           profile,
           FilePath(chrome::kExtensionActivityLogFilename)) {}
 
-FullStreamUIPolicy::~FullStreamUIPolicy() {}
+FullStreamUIPolicy::~FullStreamUIPolicy() = default;
 
 bool FullStreamUIPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
   return ActivityDatabase::InitializeTable(
-      db, "activitylog_full", kTableContentFields, kTableFieldTypes,
-      std::size(kTableContentFields));
+      db, "activitylog_full", kTableContentFields, kTableFieldTypes);
 }
 
 bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {

@@ -7,7 +7,10 @@
 #include <stddef.h>
 #include <time.h>
 
+#include <algorithm>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -17,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 
@@ -31,14 +35,11 @@ const size_t kTouchLogTimestampMaxSize = 80;
 
 // Return the values in an array in one string. Used for touch logging.
 template <typename T>
-std::string DumpArrayProperty(const std::vector<T>& value, const char* format) {
-  std::string ret;
-  for (size_t i = 0; i < value.size(); ++i) {
-    if (i > 0)
-      ret.append(", ");
-    ret.append(base::StringPrintfNonConstexpr(format, value[i]));
-  }
-  return ret;
+std::string DumpArrayProperty(const std::vector<T>& value) {
+  std::vector<std::string> strs;
+  strs.reserve(value.size());
+  std::ranges::transform(value, std::back_inserter(strs), &base::ToString<T>);
+  return base::JoinString(strs, ", ");
 }
 
 // Return the values in a gesture property in one string. Used for touch
@@ -46,15 +47,15 @@ std::string DumpArrayProperty(const std::vector<T>& value, const char* format) {
 std::string DumpGesturePropertyValue(GesturesProp* property) {
   switch (property->type()) {
     case GesturePropertyProvider::PT_INT:
-      return DumpArrayProperty(property->GetIntValue(), "%d");
+      return DumpArrayProperty(property->GetIntValue());
     case GesturePropertyProvider::PT_SHORT:
-      return DumpArrayProperty(property->GetShortValue(), "%d");
+      return DumpArrayProperty(property->GetShortValue());
     case GesturePropertyProvider::PT_BOOL:
-      return DumpArrayProperty(property->GetBoolValue(), "%d");
+      return DumpArrayProperty(property->GetBoolValue());
     case GesturePropertyProvider::PT_STRING:
       return "\"" + property->GetStringValue() + "\"";
     case GesturePropertyProvider::PT_REAL:
-      return DumpArrayProperty(property->GetDoubleValue(), "%lf");
+      return DumpArrayProperty(property->GetDoubleValue());
     default:
       NOTREACHED();
   }

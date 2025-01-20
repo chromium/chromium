@@ -184,7 +184,7 @@ TEST(FormDataTest, SerializeAndDeserialize) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
@@ -198,7 +198,7 @@ TEST(FormDataTest, Serialize_v1_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
@@ -212,7 +212,7 @@ TEST(FormDataTest, Serialize_v2_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
@@ -226,7 +226,7 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
@@ -241,7 +241,7 @@ TEST(FormDataTest, Serialize_v3_Deserialize_vCurrent_IsFormTagFalse) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
@@ -255,7 +255,7 @@ TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
@@ -269,7 +269,7 @@ TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
@@ -283,7 +283,7 @@ TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
@@ -297,7 +297,7 @@ TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
@@ -311,7 +311,7 @@ TEST(FormDataTest, Serialize_v8_Deserialize_vCurrent) {
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
 
-  EXPECT_TRUE(actual.SameFormAs(data));
+  EXPECT_TRUE(FormData::DeepEqual(actual, data));
 }
 
 TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
@@ -326,7 +326,7 @@ TEST(FormDataTest, SerializeIncorrectFormatAndDeserialize) {
   EXPECT_FALSE(DeserializeFormData(&iter, &actual));
 
   FormData empty;
-  EXPECT_TRUE(actual.SameFormAs(empty));
+  EXPECT_TRUE(FormData::DeepEqual(actual, empty));
 }
 
 }  // namespace

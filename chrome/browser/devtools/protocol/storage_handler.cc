@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/protocol/storage_handler.h"
+
 #include <memory>
 
 #include "chrome/browser/devtools/protocol/storage.h"
-#include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/dips_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 
@@ -21,14 +22,16 @@ StorageHandler::StorageHandler(content::WebContents* web_contents,
 
 StorageHandler::~StorageHandler() = default;
 
+// TODO: crbug.com/380896828 - move CDP support for DIPS to //content.
 void StorageHandler::RunBounceTrackingMitigations(
     std::unique_ptr<RunBounceTrackingMitigationsCallback> callback) {
-  DIPSService* dips_service =
-      web_contents_ ? DIPSService::Get(web_contents_->GetBrowserContext())
-                    : nullptr;
+  content::BtmService* dips_service =
+      web_contents_
+          ? content::BtmService::Get(web_contents_->GetBrowserContext())
+          : nullptr;
 
   if (!dips_service) {
-    callback->sendFailure(protocol::Response::ServerError("No DIPSService"));
+    callback->sendFailure(protocol::Response::ServerError("No BtmService"));
     return;
   }
 

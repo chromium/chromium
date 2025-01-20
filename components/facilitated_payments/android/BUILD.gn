@@ -8,12 +8,15 @@ static_library("android") {
   sources = [
     "facilitated_payments_api_client_android.cc",
     "facilitated_payments_api_client_android.h",
+    "secure_payload_android.cc",
+    "secure_payload_android.h",
   ]
 
   deps = [
     "//base",
     "//components/facilitated_payments/android/java:jni_headers",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
   ]
@@ -21,10 +24,14 @@ static_library("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "facilitated_payments_api_client_android_unittest.cc" ]
+  sources = [
+    "facilitated_payments_api_client_android_unittest.cc",
+    "secure_payload_android_unittest.cc",
+  ]
   deps = [
     ":android",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gtest",

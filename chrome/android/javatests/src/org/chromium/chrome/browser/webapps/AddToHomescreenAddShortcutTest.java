@@ -214,9 +214,7 @@ public class AddToHomescreenAddShortcutTest {
         // a web app and would, under normal circumstances, install a webapk, but because universal
         // install is in play, a shortcut gets created. If the universal install flag is disabled,
         // the assert in canSubmit (above) fires.
-        loadUrl(
-                WebappTestPage.getServiceWorkerUrl(mTestServerRule.getServer()),
-                WebappTestPage.PAGE_TITLE);
+        loadUrl(WebappTestPage.getTestUrl(mTestServerRule.getServer()), WebappTestPage.PAGE_TITLE);
         addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.SHORTCUT);
     }
 
@@ -332,7 +330,7 @@ public class AddToHomescreenAddShortcutTest {
     @Feature("{Webapp}")
     public void testAddWebappShortcutAppInstalledEvent() throws Exception {
         loadUrl(
-                WebappTestPage.getServiceWorkerUrlWithAction(
+                WebappTestPage.getTestUrlWithAction(
                         mTestServerRule.getServer(), "verify_appinstalled"),
                 WebappTestPage.PAGE_TITLE);
 

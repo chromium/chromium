@@ -76,7 +76,7 @@ class CoordinatorImplTest : public testing::Test {
 
   void SetUp() override {
     coordinator_ = std::make_unique<NiceMock<FakeCoordinatorImpl>>();
-    tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 

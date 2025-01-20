@@ -53,6 +53,7 @@
         .clockwiseRotations="${this.clockwiseRotations_}"
         .docLength="${this.docLength_}"
         .pdfCr23Enabled="${this.pdfCr23Enabled}"
+        .strings="${this.strings}"
         @change-page="${this.onChangePage_}"
         @change-page-and-xy="${this.onChangePageAndXy_}"
         @navigate="${this.onNavigate_}"
@@ -72,6 +73,7 @@
           <viewer-bottom-toolbar .currentColor="${this.currentBrushColor_}"
               .currentSize="${this.currentBrushSize_}"
               .currentType="${this.currentBrushType_}"
+              .strings="${this.strings}"
               @current-color-changed="${this.onBrushColorChanged_}"
               @current-size-changed="${this.onBrushSizeChanged_}"
               @current-type-changed="${this.onBrushTypeChanged_}">

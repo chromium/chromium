@@ -27,7 +27,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
@@ -39,8 +42,10 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -48,6 +53,18 @@
 namespace blink {
 
 namespace {
+
+constexpr auto kSupportedContentEncodingsValues =
+    base::MakeFixedFlatSet<std::string_view>({
+        "",
+        "br",
+        "dcb",
+        "dcz",
+        "deflate",
+        "gzip",
+        "identity",
+        "zstd",
+    });
 
 template <typename Interface>
 Vector<Interface> IsolatedCopy(const Vector<Interface>& src) {
@@ -419,6 +436,13 @@ std::optional<base::Time> ResourceResponse::LastModified(
   return last_modified_;
 }
 
+std::optional<IdentityDigest> ResourceResponse::IdentityDigest() const {
+  if (!RuntimeEnabledFeatures::IdentityDigestEnabled()) {
+    return std::nullopt;
+  }
+  return IdentityDigest::Create(HttpHeaderFields());
+}
+
 bool ResourceResponse::IsAttachment() const {
   static const char kAttachmentString[] = "attachment";
   String value = http_header_fields_.Get(http_names::kContentDisposition);
@@ -432,6 +456,18 @@ bool ResourceResponse::IsAttachment() const {
 AtomicString ResourceResponse::HttpContentType() const {
   return ExtractMIMETypeFromMediaType(
       HttpHeaderField(http_names::kContentType).LowerASCII());
+}
+
+AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
+  AtomicString content_encoding =
+      HttpHeaderField(http_names::kContentEncoding).LowerASCII();
+  if (content_encoding.IsNull()) {
+    return g_empty_atom;
+  }
+  if (kSupportedContentEncodingsValues.contains(content_encoding.Ascii())) {
+    return content_encoding;
+  }
+  return AtomicString("unknown");
 }
 
 bool ResourceResponse::WasCached() const {

@@ -116,7 +116,7 @@ class PLATFORM_EXPORT LayerTreeView
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  void NotifyThroughputTrackerResults(
+  void NotifyCompositorMetricsTrackerResults(
       cc::CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
@@ -23,13 +22,12 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash.
-  if (is_chromeos_ash) {
+  # WebUI bindings are only needed on ChromeOS.
+  if (is_chromeos) {
     webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
 
-    # Used by ash/webui/resources/common/network_health, which is still using
-    # Closure Compiler, so generate WebUI bindings in JavaScript.
-    generate_webui_js_bindings = true
+    # Still used by blink targets.
+    generate_legacy_js_bindings = true
   }
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
@@ -229,8 +227,8 @@ mojom("mojom_shared_storage") {
   public_deps = [ "//mojo/public/mojom/base" ]
 
   if (!is_ios) {
-    export_class_attribute_blink = "BLINK_MODULES_EXPORT"
-    export_define_blink = "BLINK_MODULES_IMPLEMENTATION=1"
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
 
@@ -244,6 +242,10 @@ mojom("mojom_shared_storage") {
         {
           mojom = "network.mojom.SharedStorageValueArgument"
           cpp = "::std::u16string"
+        },
+        {
+          mojom = "network.mojom.LockName"
+          cpp = "::std::string"
         },
       ]
       traits_headers =
@@ -260,6 +262,10 @@ mojom("mojom_shared_storage") {
         },
         {
           mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.LockName"
           cpp = "::WTF::String"
         },
       ]
@@ -473,6 +479,7 @@ mojom("url_loader_base") {
     "accept_ch_frame_observer.mojom",
     "blocked_by_response_reason.mojom",
     "chunked_data_pipe_getter.mojom",
+    "clear_data_filter.mojom",
     "client_security_state.mojom",
     "content_security_policy.mojom",
     "cors.mojom",
@@ -487,6 +494,7 @@ mojom("url_loader_base") {
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
+    "integrity_algorithm.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
     "link_header.mojom",
@@ -504,6 +512,7 @@ mojom("url_loader_base") {
     "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
+    "sri_message_signature.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
     "trust_token_access_observer.mojom",
@@ -528,6 +537,7 @@ mojom("url_loader_base") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_shared_storage",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -1459,7 +1469,6 @@ mojom("mojom") {
   sources = [
     "cert_verifier_service.mojom",
     "cert_verifier_service_updater.mojom",
-    "clear_data_filter.mojom",
     "cookie_encryption_provider.mojom",
     "cors_origin_pattern.mojom",
     "default_credentials.mojom",

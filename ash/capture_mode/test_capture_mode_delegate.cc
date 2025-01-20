@@ -110,6 +110,10 @@ bool TestCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
   return is_allowed_by_policy_;
 }
 
+bool TestCaptureModeDelegate::IsSearchAllowedByPolicy() const {
+  return is_search_allowed_by_policy_;
+}
+
 void TestCaptureModeDelegate::StartObservingRestrictedContent(
     const aura::Window* window,
     const gfx::Rect& bounds,
@@ -166,6 +170,10 @@ base::FilePath TestCaptureModeDelegate::GetLinuxFilesPath() const {
 }
 
 base::FilePath TestCaptureModeDelegate::GetOneDriveMountPointPath() const {
+  return fake_one_drive_mount_path_.GetPath();
+}
+
+base::FilePath TestCaptureModeDelegate::GetOneDriveVirtualPath() const {
   return fake_one_drive_mount_path_.GetPath();
 }
 
@@ -238,6 +246,12 @@ void TestCaptureModeDelegate::SendMultimodalSearch(
     ash::OnSearchUrlFetchedCallback callback) {
   ++num_multimodal_search_requests_;
   std::move(callback).Run(GURL("kTestUrl"));
+}
+
+void TestCaptureModeDelegate::DeleteRemoteFile(
+    const base::FilePath& path,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
 }
 
 }  // namespace ash

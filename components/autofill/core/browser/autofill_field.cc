@@ -30,13 +30,10 @@ using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
 template <>
-struct DenseSetTraits<FieldPrediction::Source> {
-  static constexpr FieldPrediction::Source kMinValue =
-      FieldPrediction::Source(0);
-  static constexpr FieldPrediction::Source kMaxValue =
-      FieldPrediction::Source_MAX;
-  static constexpr bool kPacked = false;
-};
+struct DenseSetTraits<FieldPrediction::Source>
+    : EnumDenseSetTraits<FieldPrediction::Source,
+                         FieldPrediction::Source_MIN,
+                         FieldPrediction::Source_MAX> {};
 
 namespace {
 
@@ -68,13 +65,18 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_HOUSE_NUMBER, HtmlFieldType::kStreetAddress},
-         {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress}});
+         {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress},
+         {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalName},
+         {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalNameInitial},
+         {NAME_LAST_CORE, HtmlFieldType::kFamilyName}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The
 // list is used for new field types that the server may have learned
 // incorrectly. In these cases, the local heuristics predictions will be used to
 // determine the field type.
+// TODO(crbug.com/359768803): Remove overrides for alternative names once the
+// feature is rolled out.
 static constexpr auto kAutofillHeuristicsVsServerOverrides =
     base::MakeFixedFlatSet<std::pair<FieldType, FieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
@@ -95,7 +97,14 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2},
-         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE3}});
+         {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE3},
+         {ALTERNATIVE_FULL_NAME, NAME_FULL},
+         {ALTERNATIVE_GIVEN_NAME, NAME_FIRST},
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST},
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_SECOND},
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_CORE},
+         {NAME_LAST_PREFIX, NAME_MIDDLE},
+         {NAME_LAST_CORE, NAME_LAST}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.

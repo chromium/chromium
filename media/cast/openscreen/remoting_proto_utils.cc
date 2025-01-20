@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/openscreen/remoting_proto_utils.h"
 
 #include <algorithm>
@@ -97,7 +92,7 @@ void ConvertDecoderBufferToProto(
   buffer_message->set_back_discard_usec(
       decoder_buffer.discard_padding().second.InMicroseconds());
 
-  if (decoder_buffer.has_side_data() &&
+  if (decoder_buffer.side_data() &&
       !decoder_buffer.side_data()->alpha_data.empty()) {
     buffer_message->set_side_data(
         decoder_buffer.side_data()->alpha_data.data(),
@@ -142,7 +137,7 @@ base::HeapArray<uint8_t> DecoderBufferToByteArray(
   const size_t decoder_buffer_size =
       decoder_buffer.end_of_stream() ? 0 : decoder_buffer.size();
   const size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
-                      decoder_buffer_message.ByteSize() +
+                      decoder_buffer_message.ByteSizeLong() +
                       kDataBufferHeaderSize + decoder_buffer_size;
   const auto message_cached_size =
       // GetCachedSize() is only valid after ByteSize() is called above.
@@ -201,9 +196,9 @@ void ConvertAudioDecoderConfigToProto(
     LOG(WARNING) << "mismatch between extra data and AAC extra data.";
   }
 #endif
-  const bool isAac = audio_config.codec() == media::AudioCodec::kAAC;
+  const bool is_aac = audio_config.codec() == media::AudioCodec::kAAC;
   const std::vector<uint8_t>& extra_data =
-      isAac ? audio_config.aac_extra_data() : audio_config.extra_data();
+      is_aac ? audio_config.aac_extra_data() : audio_config.extra_data();
 
   if (!extra_data.empty()) {
     audio_message->set_extra_data(extra_data.data(), extra_data.size());
@@ -216,24 +211,23 @@ bool ConvertProtoToAudioDecoderConfig(
   DCHECK(audio_config);
 
   // Either "extra_data" or "aac_extra_data" should be populated but not both.
-  const bool isAac =
+  const bool is_aac =
       audio_message.codec() == openscreen::cast::AudioDecoderConfig::kCodecAAC;
-  const auto extra_data = base::make_span(audio_message.extra_data().begin(),
-                                          audio_message.extra_data().end());
+  const auto extra_data = base::span(audio_message.extra_data());
   audio_config->Initialize(
       ToMediaAudioCodec(audio_message.codec()).value(),
       ToMediaSampleFormat(audio_message.sample_format()).value(),
       ToMediaChannelLayout(audio_message.channel_layout()).value(),
       audio_message.samples_per_second(),
-      isAac ? std::vector<uint8_t>{}
-            : std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
+      is_aac ? std::vector<uint8_t>{}
+             : std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
       media::EncryptionScheme::kUnencrypted,
       base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
 
   // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
   // is removed as part of a media/ cleanup.
-  if (isAac) {
+  if (is_aac) {
     audio_config->set_aac_extra_data(
         std::vector<uint8_t>(extra_data.begin(), extra_data.end()));
   }

@@ -39,7 +39,7 @@ std::optional<std::vector<uint8_t>> SignString(
   if (!key_pair || !key_pair->key()) {
     return std::nullopt;
   }
-  return key_pair->key()->SignSlowly(base::as_bytes(base::make_span(str)));
+  return key_pair->key()->SignSlowly(base::as_byte_span(str));
 }
 
 void OnSignatureGenerated(

@@ -22,7 +22,6 @@
 #include "components/sessions/core/session_id.h"
 
 class DesksTemplatesAppLaunchHandler;
-class LacrosAppWindowObserver;
 class Profile;
 
 namespace ash {
@@ -200,10 +199,6 @@ class DesksClient : public ash::SessionObserver {
   std::optional<DesksClient::DeskActionError> SwitchDesk(
       const base::Uuid& desk_uuid);
 
-  // If `window` is a lacros window that has an app id, return it.
-  std::optional<std::string> GetAppIdForLacrosWindow(
-      aura::Window* window) const;
-
  private:
   class LaunchPerformanceTracker;
   class DeskEventObserver;
@@ -287,9 +282,6 @@ class DesksClient : public ash::SessionObserver {
 
   // Wrapper desk model to house both desk types backend storage.
   std::unique_ptr<desks_storage::DeskModelWrapper> saved_desk_storage_manager_;
-
-  // Monitors lacros app windows for use in saved desks.
-  std::unique_ptr<LacrosAppWindowObserver> lacros_app_window_observer_;
 
   // The stored JSON values of preconfigured desk templates
   base::flat_map<AccountId, std::string> preconfigured_desk_templates_json_;

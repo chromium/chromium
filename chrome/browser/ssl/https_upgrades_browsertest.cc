@@ -1119,8 +1119,16 @@ IN_PROC_BROWSER_TEST_P(
     // enforcement list, no duration should be recorded yet.
     histograms()->ExpectTotalCount(
         kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname, 1);
   } else {
     histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname, 0);
   }
 
   // Lower HTTPS engagement score. This disables HFM on the site. Also advance
@@ -1161,7 +1169,7 @@ IN_PROC_BROWSER_TEST_P(
             contents));
     if (IsSiteEngagementHeuristicEnabled()) {
       // Verify that the interstitial metrics were correctly recorded. The
-      // interstitial was once and navigated away from.
+      // interstitial was shown once and navigated away from.
       histograms()->ExpectTotalCount("interstitial.https_first_mode.decision",
                                      2);
       histograms()->ExpectBucketCount(
@@ -1210,6 +1218,12 @@ IN_PROC_BROWSER_TEST_P(
     histograms()->ExpectTimeBucketCount(
         kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1),
         1);
+
+    // This bucket was recorded once previously, shouldn't be recorded again.
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname, 1);
+
   } else {
     // Event histogram shouldn't change because Site Engagement heuristic didn't
     // kick in.
@@ -1223,6 +1237,10 @@ IN_PROC_BROWSER_TEST_P(
         kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
     histograms()->ExpectTotalCount(
         kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname, 0);
   }
 }
 
@@ -3411,7 +3429,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
-      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+      AutocompleteMatch());
   nav_observer.Wait();
 
   if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
@@ -3446,7 +3464,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::NAVSUGGEST,
       base::TimeTicks(), false, false, std::u16string(), AutocompleteMatch(),
-      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+      AutocompleteMatch());
   nav_observer.Wait();
 
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
@@ -3482,7 +3500,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
-      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+      AutocompleteMatch());
   nav_observer.Wait();
 
   // URL should not have been upgraded, and site should now be in the allowlist.
@@ -3983,6 +4001,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Engagement heuristic shouldn't handle any navigation events.
   histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+
+  // Security level histogram should not record kHttpsEnforcedOnHostname.
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname, 0);
 }
 
 // Minimal test fixture for testing the interaction between the

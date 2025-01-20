@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "policy_url_blocking_service.h",
     "policy_url_blocking_service.mm",
+    "policy_url_blocking_service_factory.h",
+    "policy_url_blocking_service_factory.mm",
     "policy_url_blocking_tab_helper.h",
     "policy_url_blocking_tab_helper.mm",
   ]
@@ -13,11 +15,13 @@ source_set("model") {
     ":util",
     "//base",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/web",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
+    "//ios/web/public/navigation",
     "//net",
   ]
 }

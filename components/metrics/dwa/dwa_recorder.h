@@ -26,9 +26,9 @@
 namespace metrics::dwa {
 
 // Enables DWA recording.
-COMPONENT_EXPORT(DWA) BASE_DECLARE_FEATURE(kDwaFeature);
+COMPONENT_EXPORT(DWA_RECORDER) BASE_DECLARE_FEATURE(kDwaFeature);
 
-class COMPONENT_EXPORT(DWA) DwaRecorder {
+class COMPONENT_EXPORT(DWA_RECORDER) DwaRecorder {
  public:
   DwaRecorder();
 

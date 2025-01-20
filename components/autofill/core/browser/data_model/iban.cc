@@ -112,7 +112,7 @@ Iban& Iban::operator=(const Iban& iban) = default;
 
 PaymentsMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
-  PaymentsMetadata metadata(*this);
+  PaymentsMetadata metadata(usage_history_information_);
   metadata.id = record_type_ == Iban::kLocalIban
                     ? guid()
                     : base::NumberToString(instrument_id());
@@ -495,8 +495,8 @@ bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
                           : base::NumberToString(instrument_id()))) {
     return false;
   }
-  set_use_count(metadata.use_count);
-  set_use_date(metadata.use_date);
+  usage_history_information_.set_use_count(metadata.use_count);
+  usage_history_information_.set_use_date(metadata.use_date);
   return true;
 }
 
@@ -638,8 +638,9 @@ std::string Iban::GetCountryCode() const {
 
 void Iban::RecordAndLogUse() {
   autofill_metrics::LogDaysSinceLastIbanUse(*this);
-  RecordUseDate(AutofillClock::Now());
-  set_use_count(use_count() + 1);
+  usage_history_information_.RecordUseDate(AutofillClock::Now());
+  usage_history_information_.set_use_count(
+      usage_history_information_.use_count() + 1);
 }
 
 std::u16string Iban::GetIdentifierStringForAutofillDisplay(
@@ -696,6 +697,13 @@ bool Iban::MatchesPrefixAndSuffix(const Iban& iban) const {
   }
 
   return true;
+}
+
+UsageHistoryInformation& Iban::usage_history() {
+  return usage_history_information_;
+}
+const UsageHistoryInformation& Iban::usage_history() const {
+  return usage_history_information_;
 }
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban) {

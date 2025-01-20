@@ -43,7 +43,7 @@ class CastWebContentsScopes {
                             /* listenToActivityState= */ true,
                             IntentRequestTracker.createFromActivity(activity),
                             /* insetObserver= */ null,
-                            /* trackOcclusion= */ false);
+                            /* trackOcclusion= */ true);
                 },
                 backgroundColor);
     }

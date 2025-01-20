@@ -25,20 +25,10 @@
 namespace component_updater {
 
 class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
- public:
-  ChromeComponentUpdaterConfiguratorTest() = default;
-
-  ChromeComponentUpdaterConfiguratorTest(
-      const ChromeComponentUpdaterConfiguratorTest&) = delete;
-  ChromeComponentUpdaterConfiguratorTest& operator=(
-      const ChromeComponentUpdaterConfiguratorTest&) = delete;
-
-  ~ChromeComponentUpdaterConfiguratorTest() override = default;
-
+ protected:
   // Overrides from testing::Test.
   void SetUp() override;
 
- protected:
   TestingPrefServiceSimple* pref_service() { return pref_service_.get(); }
 
  private:

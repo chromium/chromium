@@ -8,9 +8,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -266,37 +264,6 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
 
   testing::NiceMock<MockSyncScheduler> mock_sync_scheduler;
   EXPECT_CALL(mock_sync_scheduler, OnReceivedGuRetryDelay(base::Seconds(900)));
-
-  SyncCycleContext context(&dcm,
-                           /*extensions_activity=*/nullptr,
-                           /*listeners=*/{},
-                           /*debug_info_getter=*/nullptr,
-                           /*data_type_registry=*/nullptr, "cache_guid",
-                           "birthday",
-                           /*bag_of_chips=*/"", base::Seconds(100));
-  SyncCycle cycle(&context, &mock_sync_scheduler);
-
-  ClientToServerResponse response;
-  DataTypeSet partial_failure_data_types;
-  SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
-      DefaultGetUpdatesRequest(), &response, &cycle,
-      &partial_failure_data_types);
-  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
-}
-
-TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
-  base::test::ScopedFeatureList feature_overrides;
-  feature_overrides.InitAndEnableFeature(
-      syncer::kSyncIgnoreGetUpdatesRetryDelay);
-
-  ClientToServerResponse response_to_return = DefaultGetUpdatesResponse();
-  response_to_return.mutable_client_command()->set_gu_retry_delay_seconds(900);
-  FakeConnectionManager dcm(response_to_return);
-
-  // Verify that OnReceivedGuRetryDelay is not called despite
-  // gu_retry_delay_seconds command.
-  testing::NiceMock<MockSyncScheduler> mock_sync_scheduler;
-  EXPECT_CALL(mock_sync_scheduler, OnReceivedGuRetryDelay).Times(0);
 
   SyncCycleContext context(&dcm,
                            /*extensions_activity=*/nullptr,

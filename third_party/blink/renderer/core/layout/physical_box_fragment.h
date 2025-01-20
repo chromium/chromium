@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 
@@ -15,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -33,7 +29,7 @@
 namespace blink {
 
 class BoxFragmentBuilder;
-class Element;
+class Node;
 enum class OutlineType;
 struct FrameSetLayoutData;
 
@@ -99,12 +95,12 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
   base::span<const PhysicalFragmentLink> Children() const {
     DCHECK(children_valid_);
-    return base::make_span(children_);
+    return base::span(children_);
   }
 
-  const HeapVector<Member<Element>>* ReadingFlowElements() const {
+  const HeapVector<Member<Node>>* ReadingFlowNodes() const {
     if (rare_data_) {
-      return rare_data_->reading_flow_elements_;
+      return rare_data_->reading_flow_nodes_;
     }
     return nullptr;
   }
@@ -123,7 +119,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
    protected:
     friend class OutOfFlowLayoutPart;
     base::span<PhysicalFragmentLink> Children() const {
-      return base::make_span(buffer_, num_children_);
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      return UNSAFE_TODO(base::span(buffer_, num_children_));
     }
 
    private:
@@ -173,6 +170,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   bool ForceInlineBaselineSynthesis() const {
     return use_last_baseline_for_inline_baseline_ && IsScrollContainer() &&
            !Style().ShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  }
+
+  const GapFragmentData::GapGeometry* GapGeometry() const {
+    return rare_data_->gap_geometry_.Get();
   }
 
   LogicalRect TableGridRect() const {
@@ -534,7 +535,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     }
     base::span<PhysicalFragmentLink> Children() const {
       DCHECK(fragment_.children_valid_);
-      return base::make_span(fragment_.children_);
+      return base::span(fragment_.children_);
     }
 
     // Remove existing children, and add those from new_fragment.
@@ -677,8 +678,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   const FragmentItems* ComputeItemsAddress() const {
     DCHECK(HasItems());
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     return reinterpret_cast<const FragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(this + 1), alignof(FragmentItems)));
+        reinterpret_cast<const uint8_t*>(UNSAFE_TODO(this + 1)),
+        alignof(FragmentItems)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

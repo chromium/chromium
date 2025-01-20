@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/preinstalled_apps.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -46,8 +42,8 @@ bool IsLocaleSupported() {
   std::string locale =
       extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale();
   static constexpr const char* unsupported_locales[] = {"CN", "TR", "IR"};
-  for (size_t i = 0; i < std::size(unsupported_locales); ++i) {
-    if (base::EndsWith(locale, unsupported_locales[i],
+  for (const char* unsupported : unsupported_locales) {
+    if (base::EndsWith(locale, unsupported,
                        base::CompareCase::INSENSITIVE_ASCII)) {
       return false;
     }

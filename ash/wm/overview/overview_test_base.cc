@@ -237,7 +237,7 @@ void OverviewTestBase::CheckOverviewEnterExitHistogram(
   // animation throughput data to be passed from cc to ui.
   ui::Compositor* compositor =
       Shell::GetPrimaryRootWindow()->layer()->GetCompositor();
-  while (compositor->has_throughput_trackers_for_testing()) {
+  while (compositor->has_compositor_metrics_trackers_for_testing()) {
     compositor->ScheduleFullRedraw();
     std::ignore =
         ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));

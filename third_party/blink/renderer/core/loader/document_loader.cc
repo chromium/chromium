@@ -478,7 +478,7 @@ class DocumentLoader::EncodedBodyData : public BodyData {
   }
 
   void Buffer(DocumentLoader* loader) override {
-    loader->data_buffer_->Append(data_.data(), data_.size());
+    loader->data_buffer_->Append(data_);
   }
 
   base::SpanOrSize<const char> EncodedData() const override {
@@ -990,7 +990,9 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id);
+      soft_navigation_heuristics_task_id,
+      LocalFrame::HasTransientUserActivation(frame_),
+      /*has_ua_visual_transition*/ false);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1004,9 +1006,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristics_task_id,
+    bool has_transient_user_activation,
+    bool has_ua_visual_transition) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
-
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
 
@@ -1056,6 +1059,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
                              frame_->DomWindow()->GetSecurityOrigin()) &&
                              Url().ProtocolIsInHTTPFamily()
                        : true;
+
+  last_navigation_had_transient_user_activation_ =
+      has_transient_user_activation;
 
   // We want to allow same-document text fragment navigations if they're coming
   // from the browser or same-origin. Do this only on a standard navigation so
@@ -1114,7 +1120,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics =
       SoftNavigationHeuristics::From(*frame_->DomWindow());
-  if (heuristics && is_browser_initiated) {
+  if (heuristics && is_browser_initiated && !is_prerendering_) {
     if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
       // For browser-initiated navigations, we never started the soft
       // navigation (as this is the first we hear of it in the renderer). We
@@ -1168,7 +1174,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
       frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
-                                                 navigation_task_state);
+                                                 navigation_task_state,
+                                                 has_ua_visual_transition);
     }
   }
 
@@ -1786,9 +1793,6 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   is_client_redirect_ =
       client_redirect == ClientRedirectPolicy::kClientRedirect;
 
-  last_navigation_had_transient_user_activation_ =
-      has_transient_user_activation;
-
   // Events fired in UpdateForSameDocumentNavigation() might change view state,
   // so stash for later restore.
   std::optional<HistoryItem::ViewState> view_state;
@@ -1803,7 +1807,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id);
+      soft_navigation_heuristics_task_id, has_transient_user_activation,
+      has_ua_visual_transition);
   if (!frame_)
     return;
 
@@ -2879,6 +2884,23 @@ void DocumentLoader::CommitNavigation() {
     }
   }
 
+  // Temporary measurement to evaluate the change proposed in
+  // https://github.com/w3c/webappsec-mixed-content/issues/73.
+  if (!frame_->GetSecurityContext()
+           ->GetSecurityOrigin()
+           ->IsPotentiallyTrustworthy() &&
+      !frame_->IsOutermostMainFrame() &&
+      // IsOutermostMainFrame() can be false with a null Parent() in the case of
+      // fenced frames.
+      frame_->Tree().Parent() &&
+      frame_->Tree()
+          .Parent()
+          ->GetSecurityContext()
+          ->GetSecurityOrigin()
+          ->IsLocalhost()) {
+    CountUse(WebFeature::kMixedFrameEmbeddedByLocalhost);
+  }
+
   SecurityContextInit security_init(frame_->DomWindow());
 
   // The document constructed by XSLTProcessor and ScriptController should
@@ -2899,7 +2921,7 @@ void DocumentLoader::CommitNavigation() {
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
-        FencedFrameProperties());
+        FencedFrameProperties(), url_);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
@@ -2937,12 +2959,6 @@ void DocumentLoader::CommitNavigation() {
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
-  for (const auto& policy : security_init.PermissionsPolicyHeader()) {
-    if (policy.deprecated_feature.has_value()) {
-      Deprecation::CountDeprecation(frame_->DomWindow(),
-                                    *policy.deprecated_feature);
-    }
-  }
 
   frame_->ClearScrollSnapshotClients();
 
@@ -3479,6 +3495,11 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
   if (!response_.HttpHeaderField(http_names::kNoVarySearch).IsNull())
     CountUse(WebFeature::kNoVarySearch);
+
+  if (frame_->IsOutermostMainFrame() &&
+      !response_.HttpHeaderField(http_names::kRequestOTR).IsNull()) {
+    CountUse(WebFeature::kRequestOTRMainFrame);
+  }
 
   if (was_blocked_by_document_policy_)
     CountUse(WebFeature::kDocumentPolicyCausedPageUnload);

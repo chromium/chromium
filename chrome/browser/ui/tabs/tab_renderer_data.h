@@ -18,6 +18,10 @@ class TabStripModel;
 class TabResourceUsage;
 class ThumbnailImage;
 
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
 // Wraps the state needed by the renderers.
 struct TabRendererData {
   static TabRendererData FromTabInModel(const TabStripModel* model, int index);
@@ -59,6 +63,8 @@ struct TabRendererData {
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
+  base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging = nullptr;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
   int64_t discarded_memory_savings_in_bytes = 0;

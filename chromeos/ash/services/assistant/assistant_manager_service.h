@@ -12,6 +12,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 #include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 
 namespace ash::assistant {
@@ -25,10 +26,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   class StateObserver;
 
   struct UserInfo {
-    UserInfo(const std::string& gaia_id, const std::string& access_token)
+    UserInfo(const GaiaId& gaia_id, const std::string& access_token)
         : gaia_id(gaia_id), access_token(access_token) {}
 
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string access_token;
   };
 

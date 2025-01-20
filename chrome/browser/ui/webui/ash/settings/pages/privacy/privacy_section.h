@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PRIVACY_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PRIVACY_SECTION_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
@@ -49,7 +47,7 @@ class PrivacySection : public OsSettingsSection {
   bool AreFingerprintSettingsAllowed();
   void UpdateRemoveFingerprintSearchTags();
 
-  std::optional<SyncSection> sync_subsection_;
+  SyncSection sync_subsection_;
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar fingerprint_pref_change_registrar_;

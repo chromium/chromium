@@ -17,9 +17,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/user_prefs/user_prefs.h"
@@ -44,7 +44,7 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
   TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
   TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
 
-  virtual ~TestCardUnmaskDelegate() = default;
+  ~TestCardUnmaskDelegate() override = default;
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
@@ -120,12 +120,14 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   payments::PaymentsAutofillClient::PaymentsRpcResult GetVerificationResult()
       const override {
-    if (expected_failure_temporary_)
+    if (expected_failure_temporary_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kTryAgainFailure;
-    if (expected_failure_permanent_)
+    }
+    if (expected_failure_permanent_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kPermanentFailure;
+    }
 
     return payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   }
@@ -144,8 +146,9 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   void ShowVerificationResult(const std::u16string verification_message,
                               bool allow_retry) {
     // It's possible the prompt has been closed.
-    if (!view())
+    if (!view()) {
       return;
+    }
     view()->GotVerificationResult(verification_message, allow_retry);
   }
 
@@ -180,8 +183,9 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     CreditCard card = test::GetMaskedServerCard();
-    if (name == kExpiryExpired)
+    if (name == kExpiryExpired) {
       card.SetExpirationYear(2016);
+    }
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(

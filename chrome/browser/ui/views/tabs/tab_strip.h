@@ -20,10 +20,10 @@
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_container_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -111,6 +111,8 @@ class TabStrip : public views::View,
   // doesn't close.
   bool IsTabStripCloseable() const;
 
+  base::WeakPtr<TabStrip> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
   // Returns true if the tab strip is editable. Returns false if the tab strip
   // is being dragged or animated to prevent extensions from messing things up
   // while that's happening.
@@ -187,6 +189,11 @@ class TabStrip : public views::View,
   // Invoked when a tab needs to show UI that it needs the user's attention.
   void SetTabNeedsAttention(int model_index, bool attention);
 
+  // Invoked when a tab group needs to show UI that it needs the user's
+  // attention.
+  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
+                                 bool attention);
+
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
     return tab_container_->GetGroupViews(id)->header();
@@ -198,7 +205,7 @@ class TabStrip : public views::View,
   // Returns the index of the specified view in the model coordinate system, or
   // std::nullopt if view is closing not a tab, or is not in this tabstrip.
   // TODO(tbergquist): This should return an optional<size_t>.
-  std::optional<int> GetModelIndexOf(const TabSlotView* view) const override;
+  std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
 
   // Gets the number of Tabs in the tab strip.
   int GetTabCount() const;
@@ -267,12 +274,12 @@ class TabStrip : public views::View,
   void ShiftTabPrevious(Tab* tab) override;
   void MoveTabFirst(Tab* tab) override;
   void MoveTabLast(Tab* tab) override;
+  using TabSlotController::ToggleTabGroupCollapsedState;
   void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) override;
-  void NotifyTabGroupEditorBubbleOpened() override;
-  void NotifyTabGroupEditorBubbleClosed() override;
+      ToggleTabGroupCollapsedStateOrigin origin) override;
+  void NotifyTabstripBubbleOpened() override;
+  void NotifyTabstripBubbleClosed() override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override;
@@ -371,6 +378,8 @@ class TabStrip : public views::View,
   void Init();
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
+
+  void MaybeUpdateGroupOnTabChanged(int model_index);
 
   // Returns whether the close button should be highlighted after a remove.
   bool ShouldHighlightCloseButtonAfterRemove();
@@ -503,6 +512,8 @@ class TabStrip : public views::View,
                               base::Unretained(this)));
 
   TabContextMenuController context_menu_controller_{this};
+
+  base::WeakPtrFactory<TabStrip> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_H_

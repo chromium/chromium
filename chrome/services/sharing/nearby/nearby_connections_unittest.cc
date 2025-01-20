@@ -424,7 +424,8 @@ class NearbyConnectionsTest : public testing::Test {
           }
           client->StartedDiscovery(std::string{service_id}, options.strategy,
                                    std::move(listener),
-                                   /* mediums= */ {});
+                                   /* mediums= */ {},
+                                   /* operation_result_with_medium= */ {});
           EXPECT_TRUE(callback);
           callback({Status::kAlreadyDiscovering});
         });
@@ -471,9 +472,10 @@ class NearbyConnectionsTest : public testing::Test {
           EXPECT_TRUE(options.enforce_topology_constraints);
           EXPECT_EQ(endpoint_info, ByteArrayToMojom(info.endpoint_info));
 
-          client_proxy->StartedAdvertising(std::string{service_id},
-                                           options.strategy, info.listener,
-                                           /* mediums= */ {});
+          client_proxy->StartedAdvertising(
+              std::string{service_id}, options.strategy, info.listener,
+              /* mediums= */ {},
+              /* operation_result_with_medium= */ {});
           ConnectionOptions connection_options{
               .auto_upgrade_bandwidth = options.auto_upgrade_bandwidth,
               .enforce_topology_constraints =
@@ -1250,7 +1252,7 @@ TEST_F(NearbyConnectionsTest, SendFilePayload) {
                                    base::File::Flags::FLAG_WRITE);
   ASSERT_TRUE(output_file.IsValid());
   EXPECT_TRUE(output_file.WriteAndCheck(
-      /* offset= */ 0, base::make_span(expected_payload)));
+      /* offset= */ 0, base::span(expected_payload)));
   EXPECT_TRUE(output_file.Flush());
   output_file.Close();
 
@@ -1526,8 +1528,7 @@ TEST_F(NearbyConnectionsTest, ReceiveFilePayload) {
 
         base::File& file = payload->content->get_file()->file;
         std::vector<uint8_t> buffer(file.GetLength());
-        EXPECT_TRUE(
-            file.ReadAndCheck(/* offset= */ 0, base::make_span(buffer)));
+        EXPECT_TRUE(file.ReadAndCheck(/* offset= */ 0, base::span(buffer)));
         EXPECT_EQ(expected_payload, buffer);
 
         payload_run_loop.Quit();
@@ -1993,7 +1994,7 @@ TEST_F(NearbyConnectionsTest, OnPayloadReceivedV3ReceiveFilePayload) {
 
         base::File& file = payload->content->get_file()->file;
         std::vector<uint8_t> buffer(file.GetLength());
-        EXPECT_TRUE(file.ReadAndCheck(/*offset=*/0, base::make_span(buffer)));
+        EXPECT_TRUE(file.ReadAndCheck(/*offset=*/0, base::span(buffer)));
         EXPECT_EQ(expected_payload, buffer);
 
         on_payload_received_run_loop.Quit();

@@ -282,53 +282,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreAndroidLocalBackendTest,
-       CallsBridgeForRemoveLoginsByURLAndTime) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_deletion_reply;
-  base::RepeatingCallback<bool(const GURL&)> url_filter = base::BindRepeating(
-      [](const GURL& url) { return url == GURL(kTestUrl); });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-
-  // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
-  // first.
-  const JobId kGetLoginsJobId{13387};
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, url_filter, delete_begin, delete_end,
-      base::OnceCallback<void(bool)>(), mock_deletion_reply.Get());
-
-  // Imitate login retrieval and check that it triggers the removal of matching
-  // forms.
-  const JobId kRemoveLoginJobId{13388};
-  EXPECT_CALL(*bridge_helper(), RemoveLogin)
-      .WillOnce(Return(kRemoveLoginJobId));
-  PasswordForm form_to_delete = CreateEntry("tod", "qwerty", GURL(kTestUrl));
-  form_to_delete.date_created = base::Time::FromTimeT(1500);
-  PasswordForm form_to_keep =
-      CreateEntry("username", "pass", GURL("https://differentsite.com"));
-  form_to_keep.date_created = base::Time::FromTimeT(1500);
-
-  consumer().OnCompleteWithLogins(kGetLoginsJobId,
-                                  {form_to_delete, form_to_keep});
-  RunUntilIdle();
-  task_environment_.FastForwardBy(kTestLatencyDelta);
-
-  // Verify that the callback is called.
-  PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
-  EXPECT_CALL(mock_deletion_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
-  RunUntilIdle();
-}
-
 // Error from GMSCore doesn't cause unenrollment.
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        ExternalErrorDontCauseUnenrollment) {

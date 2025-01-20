@@ -60,7 +60,8 @@ class InputObserver : public RenderWidgetHost::InputEventObserver {
 
   ~InputObserver() override { EXPECT_TRUE(expected_events_.empty()); }
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     CHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kMouseWheel);
 
     const blink::WebMouseWheelEvent& wheel_event =
@@ -144,7 +145,7 @@ class TestTab {
 
   WebContentsMediaCaptureId GetWebContentsMediaCaptureId() const {
     RenderFrameHost* const rfh = web_contents_->GetPrimaryMainFrame();
-    return WebContentsMediaCaptureId(rfh->GetProcess()->GetID(),
+    return WebContentsMediaCaptureId(rfh->GetProcess()->GetDeprecatedID(),
                                      rfh->GetRoutingID());
   }
 
@@ -460,8 +461,9 @@ TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEvent) {
 TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTarget) {
   const RenderFrameHost* const new_main_rfh =
       new_capturee_->web_contents()->GetPrimaryMainFrame();
-  const WebContentsMediaCaptureId new_wc_id(new_main_rfh->GetProcess()->GetID(),
-                                            new_main_rfh->GetRoutingID());
+  const WebContentsMediaCaptureId new_wc_id(
+      new_main_rfh->GetProcess()->GetDeprecatedID(),
+      new_main_rfh->GetRoutingID());
   controller_->UpdateCaptureTarget(new_wc_id);
 
   AwaitWebContentsResolution();

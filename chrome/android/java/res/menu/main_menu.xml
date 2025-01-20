@@ -110,6 +110,9 @@ found in the LICENSE file.
         <item android:id="@+id/readaloud_menu_id"
             android:title="@string/menu_listen_to_this_page"
             android:icon="@drawable/ic_play_circle" />
+        <item android:id="@+id/open_with_id"
+            android:title="@string/menu_open_with"
+            android:icon="@drawable/ic_open_in_new" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:icon="@drawable/ic_add_to_home_screen" />

@@ -27,21 +27,27 @@ inline char* strdup(const char* str) {
   return _strdup(str);
 }
 
-inline int vsnprintf(char* buffer, size_t size,
-                     const char* format, va_list arguments) {
+inline int vsnprintf(char* buffer,
+                     size_t size,
+                     const char* format,
+                     va_list arguments) {
   int length = vsnprintf_s(buffer, size, size - 1, format, arguments);
-  if (length < 0)
+  if (length < 0) {
     return _vscprintf(format, arguments);
+  }
   return length;
 }
 
-inline int vswprintf(wchar_t* buffer, size_t size,
-                     const wchar_t* format, va_list arguments) {
+inline int vswprintf(wchar_t* buffer,
+                     size_t size,
+                     const wchar_t* format,
+                     va_list arguments) {
   DCHECK(IsWprintfFormatPortable(format));
 
   int length = _vsnwprintf_s(buffer, size, size - 1, format, arguments);
-  if (length < 0)
+  if (length < 0) {
     return _vscwprintf(format, arguments);
+  }
   return length;
 }
 
@@ -199,7 +205,7 @@ BASE_EXPORT std::wstring JoinString(
 
 BASE_EXPORT std::wstring ReplaceStringPlaceholders(
     std::wstring_view format_string,
-    const std::vector<std::wstring>& subst,
+    base::span<const std::wstring> subst,
     std::vector<size_t>* offsets);
 
 }  // namespace base

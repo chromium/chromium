@@ -16,4 +16,5 @@ enum LogSource {
   TEXT_CLASSIFIER,
   MODEL_EXECUTION,
   NTP_MODULE,
+  BUILT_IN_AI,
 };

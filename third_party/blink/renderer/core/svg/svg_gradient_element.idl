@@ -29,14 +29,14 @@
     Exposed=Window
 ] interface SVGGradientElement : SVGElement {
     // Spread Method Types
-    [MeasureAs=SVG1DOMPaintServer] const unsigned short SVG_SPREADMETHOD_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMPaintServer] const unsigned short SVG_SPREADMETHOD_PAD     = 1;
-    [MeasureAs=SVG1DOMPaintServer] const unsigned short SVG_SPREADMETHOD_REFLECT = 2;
-    [MeasureAs=SVG1DOMPaintServer] const unsigned short SVG_SPREADMETHOD_REPEAT  = 3;
+    const unsigned short SVG_SPREADMETHOD_UNKNOWN = 0;
+    const unsigned short SVG_SPREADMETHOD_PAD     = 1;
+    const unsigned short SVG_SPREADMETHOD_REFLECT = 2;
+    const unsigned short SVG_SPREADMETHOD_REPEAT  = 3;
 
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration   gradientUnits;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedTransformList gradientTransform;
-    [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration   spreadMethod;
+    readonly attribute SVGAnimatedEnumeration   gradientUnits;
+    readonly attribute SVGAnimatedTransformList gradientTransform;
+    readonly attribute SVGAnimatedEnumeration   spreadMethod;
 };
 
 SVGGradientElement includes SVGURIReference;

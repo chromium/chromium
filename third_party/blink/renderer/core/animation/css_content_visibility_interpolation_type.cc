@@ -126,7 +126,7 @@ InterpolationValue CSSContentVisibilityInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EContentVisibility underlying_content_visibility =
       To<CSSContentVisibilityNonInterpolableValue>(
           *underlying.non_interpolable_value)

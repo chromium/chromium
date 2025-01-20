@@ -10,27 +10,27 @@ namespace net {
 
 NextProto NextProtoFromString(std::string_view proto_string) {
   if (proto_string == "http/1.1") {
-    return kProtoHTTP11;
+    return NextProto::kProtoHTTP11;
   }
   if (proto_string == "h2") {
-    return kProtoHTTP2;
+    return NextProto::kProtoHTTP2;
   }
   if (proto_string == "quic" || proto_string == "hq") {
-    return kProtoQUIC;
+    return NextProto::kProtoQUIC;
   }
 
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 const char* NextProtoToString(NextProto next_proto) {
   switch (next_proto) {
-    case kProtoHTTP11:
+    case NextProto::kProtoHTTP11:
       return "http/1.1";
-    case kProtoHTTP2:
+    case NextProto::kProtoHTTP2:
       return "h2";
-    case kProtoQUIC:
+    case NextProto::kProtoQUIC:
       return "quic";
-    case kProtoUnknown:
+    case NextProto::kProtoUnknown:
       break;
   }
   return "unknown";

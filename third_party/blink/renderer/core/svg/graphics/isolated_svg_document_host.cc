@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -168,8 +169,7 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
       break;
     case kNotStarted:
     case kWaitingForAsyncLoadCompletion:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 }
 
@@ -225,8 +225,7 @@ void IsolatedSVGDocumentHost::LoadCompleted() {
 
     case kNotStarted:
     case kCompleted:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 }
 

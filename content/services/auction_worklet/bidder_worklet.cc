@@ -44,6 +44,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
@@ -278,18 +279,9 @@ std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
 
 size_t GetNumberOfGroupByOriginContextsToKeep() {
   if (base::FeatureList::IsEnabled(
-          blink::features::
-              kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
-    // Avoid using multiple contexts for the testing population
-    // unless otherwise specified by
-    // kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.
-    if (blink::features::
-            kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting.Get() ||
-        !base::FeatureList::IsEnabled(
-            features::kCookieDeprecationFacilitatedTesting)) {
-      return blink::features::
-          kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue.Get();
-    }
+          features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeep)) {
+    return features::kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue
+        .Get();
   }
   return 1;
 }
@@ -298,11 +290,11 @@ size_t CalculateNumberOfContextsToPreparePerThread(
     size_t max_expected_required_contexts,
     size_t threads) {
   return fmin(
-      blink::features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
-      fmax(1, (max_expected_required_contexts *
-               blink::features::kFledgeBidderContextsMultiplier.Get()) /
-                  (threads *
-                   blink::features::kFledgeBidderContextsDivisor.Get())));
+      features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
+      fmax(features::kFledgeMinBidderContextsPerThreadInAdvance.Get(),
+           (max_expected_required_contexts *
+            features::kFledgeBidderContextsMultiplier.Get()) /
+               (threads * features::kFledgeBidderContextsDivisor.Get())));
 }
 
 // Check if trusted bidding signals, if any, are same-origin or cross-origin.
@@ -401,6 +393,7 @@ BidderWorklet::BidderWorklet(
                  /*automatically_send_requests=*/false, top_window_origin,
                  *trusted_bidding_signals_url, experiment_group_id,
                  trusted_bidding_signals_slot_size_param, std::move(public_key),
+                 /*send_creative_scanning_metadata=*/false,
                  v8_helpers_[GetNextThreadIndex()].get())
            : nullptr);
 
@@ -489,10 +482,7 @@ bool BidderWorklet::IsComponentAdKAnon(
 
 // static
 bool BidderWorklet::SupportMultiBid() {
-  // Multi-bid is auto-disabled in mode-A/B trials.
-  return base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid) &&
-         !base::FeatureList::IsEnabled(
-             features::kCookieDeprecationFacilitatedTesting);
+  return base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid);
 }
 
 void BidderWorklet::BeginGenerateBid(
@@ -642,6 +632,7 @@ void BidderWorklet::ReportWin(
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
     std::optional<uint32_t> bidding_signals_data_version,
+    const std::optional<std::string>& aggregate_win_signals,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -685,6 +676,7 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_reporting_timeout =
       browser_signal_reporting_timeout;
   report_win_task->bidding_signals_data_version = bidding_signals_data_version;
+  report_win_task->aggregate_win_signals = aggregate_win_signals;
   report_win_task->trace_id = trace_id;
   report_win_task->callback = std::move(report_win_callback);
 
@@ -901,6 +893,7 @@ void BidderWorklet::V8State::ReportWin(
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
     const std::optional<uint32_t>& bidding_signals_data_version,
+    const std::optional<std::string>& aggregate_win_signals,
     uint64_t trace_id,
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -1036,9 +1029,7 @@ void BidderWorklet::V8State::ReportWin(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value())) ||
-      (base::FeatureList::IsEnabled(
-           blink::features::kFledgePassKAnonStatusToReportWin) &&
-       !kanon_status.empty() &&
+      (!kanon_status.empty() &&
        !browser_signals_dict.Set("kAnonStatus", kanon_status)) ||
       (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
        !browser_signals_dict.Set("reportingTimeout",
@@ -1106,7 +1097,8 @@ void BidderWorklet::V8State::ReportWin(
     return;
   }
 
-  context_recycler.AddReportBindings();
+  context_recycler.AddReportBindings(
+      /*queue_report_aggregate_win_allowed=*/true);
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddRegisterAdMacroBindings();
 
@@ -1444,7 +1436,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
       execution_mode_string = "frozen-context";
       if (!base::FeatureList::IsEnabled(
-              blink::features::kFledgeAlwaysReuseBidderContext)) {
+              features::kFledgeAlwaysReuseBidderContext)) {
         should_deep_freeze = true;
       }
       if (context_recycler_for_frozen_context_) {
@@ -1490,9 +1482,10 @@ BidderWorklet::V8State::RunGenerateBidOnce(
               errors_out);
       ++non_premade_contexts_created;
     } else {
-      fresh_context_recycler = std::move(unused_context_recyclers_.back());
+      std::tie(fresh_context_recycler, script_timed_out, errors_out) =
+          std::move(unused_context_recyclers_.back());
       unused_context_recyclers_.pop_back();
-      if (should_deep_freeze) {
+      if (fresh_context_recycler && should_deep_freeze) {
         ContextRecyclerScope scope(*fresh_context_recycler);
         v8::Local<v8::Context> context = scope.GetContext();
         if (!DeepFreezeContext(context, errors_out)) {
@@ -1523,7 +1516,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
     // Save the context for next time (if applicable).
     if (base::FeatureList::IsEnabled(
-            blink::features::kFledgeAlwaysReuseBidderContext)) {
+            features::kFledgeAlwaysReuseBidderContext)) {
       context_recycler_for_always_reuse_feature_ =
           std::move(fresh_context_recycler);
     } else {
@@ -1712,9 +1705,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       (SupportMultiBid() &&
        !browser_signals_dict.Set("multiBidLimit",
                                  static_cast<uint32_t>(multi_bid_limit))) ||
-      (base::FeatureList::IsEnabled(
-           blink::features::kFledgePassRecencyToGenerateBid) &&
-       !browser_signals_dict.Set("recency",
+      (!browser_signals_dict.Set("recency",
                                  browser_signal_recency.InMilliseconds())) ||
       !SetDataVersion(trusted_signals_relation, bidding_signals_data_version,
                       browser_signals_dict) ||
@@ -1867,9 +1858,6 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
 void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  // This context is not yet associated with a particular interest group,
-  // so we don't have anywhere to put the errors. If this fails or
-  // times out (using the default time out) we simply ignore it.
   bool script_timed_out;
   std::vector<std::string> errors_out;
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
@@ -1880,9 +1868,8 @@ void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
       CreateContextRecyclerAndRunTopLevelForGenerateBid(
           trace_id, *total_timeout, /*should_deep_freeze=*/false,
           script_timed_out, errors_out);
-  if (context_recycler) {
-    unused_context_recyclers_.push_back(std::move(context_recycler));
-  }
+  unused_context_recyclers_.push_back(std::make_tuple(
+      std::move(context_recycler), script_timed_out, errors_out));
 }
 
 bool BidderWorklet::V8State::DeepFreezeContext(
@@ -2225,10 +2212,9 @@ void BidderWorklet::RunReadyTasks() {
 
 void BidderWorklet::MaybePrepareContexts() {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgePrepareBidderContextsInAdvance) ||
+          features::kFledgePrepareBidderContextsInAdvance) ||
       generate_bid_tasks_.empty() || !IsCodeReady() ||
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgeAlwaysReuseBidderContext)) {
+      base::FeatureList::IsEnabled(features::kFledgeAlwaysReuseBidderContext)) {
     return;
   }
 
@@ -2629,7 +2615,8 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->browser_signal_reporting_timeout),
-          std::move(task->bidding_signals_data_version), task->trace_id,
+          std::move(task->bidding_signals_data_version),
+          std::move(task->aggregate_win_signals), task->trace_id,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/simple/simple_file_tracker.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -116,7 +112,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
 }
 
 SimpleFileTracker::TrackedFiles::TrackedFiles() {
-  std::fill(state, state + kSimpleEntryTotalFileCount, TF_NO_REGISTRATION);
+  std::ranges::fill(state, TF_NO_REGISTRATION);
 }
 
 SimpleFileTracker::TrackedFiles::~TrackedFiles() = default;

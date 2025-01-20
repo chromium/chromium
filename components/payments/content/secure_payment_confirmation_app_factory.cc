@@ -35,6 +35,7 @@
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -219,6 +220,7 @@ struct SecurePaymentConfirmationAppFactory::Request
   mojom::SecurePaymentConfirmationRequestPtr mojo_request;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator;
   std::map<IconType, IconInfo> icon_infos;
+  std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 };
 
 void SecurePaymentConfirmationAppFactory::
@@ -362,18 +364,24 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   if (!request->delegate || !request->web_contents())
     return;
 
-  if (!result || result->GetType() != SECURE_PAYMENT_CONFIRMATION) {
+  if (result && result->GetType() == SECURE_PAYMENT_CONFIRMATION) {
+    std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+        credentials = static_cast<WDResult<std::vector<
+            std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
+                          result.get())
+                          ->GetValue();
+    OnRetrievedCredentials(std::move(request), std::move(credentials));
+  } else if (result && result->GetType() == BROWSER_BOUND_KEY) {
+    std::optional<std::vector<uint8_t>> browser_bound_key_id =
+        static_cast<WDResult<std::optional<std::vector<uint8_t>>>*>(
+            result.get())
+            ->GetValue();
+    OnRetrievedBrowserBoundKeyId(std::move(request),
+                                 std::move(browser_bound_key_id));
+  } else {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
-
-  std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
-      credentials = static_cast<WDResult<
-          std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
-                        result.get())
-                        ->GetValue();
-
-  OnRetrievedCredentials(std::move(request), std::move(credentials));
 }
 
 void SecurePaymentConfirmationAppFactory::OnGetMatchingCredentialIdsFromStore(
@@ -394,13 +402,30 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
     std::unique_ptr<Request> request,
     std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
         credentials) {
-  std::unique_ptr<SecurePaymentConfirmationCredential> credential;
-
   // For the pilot phase, arbitrarily use the first matching credential.
   // TODO(crbug.com/40142088): Handle multiple credentials.
   if (!credentials.empty())
-    credential = std::move(credentials.front());
+    request->credential = std::move(credentials.front());
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
+    WebDataServiceBase::Handle handle =
+        request->web_data_service->GetBrowserBoundKey(
+            request->credential->credential_id,
+            request->credential->relying_party_id, this);
+    requests_[handle] = std::move(request);
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  OnRetrievedBrowserBoundKeyId(std::move(request),
+                               /*browser_bound_key_id=*/std::nullopt);
+}
+
+void SecurePaymentConfirmationAppFactory::OnRetrievedBrowserBoundKeyId(
+    std::unique_ptr<Request> request,
+    std::optional<std::vector<uint8_t>> browser_bound_key_id) {
   // Download the icons for the payment instrument, network icon, and issuer
   // icon. These download URLs were passed into the PaymentRequest API. If given
   // icon URL wasn't specified, then DownloadImageInFrame will simply return an
@@ -424,8 +449,8 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   auto barrier_closure = base::BarrierClosure(
       request_ptr->icon_infos.size(),
       base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadAllIcons,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(credential),
-                     std::move(request)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(browser_bound_key_id), std::move(request)));
 
   gfx::Size preferred_size(kSecurePaymentConfirmationIconMaximumWidthPx,
                            kSecurePaymentConfirmationIconHeightPx);
@@ -443,7 +468,7 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
 }
 
 void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
-    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
+    std::optional<std::vector<uint8_t>> browser_bound_key_id,
     std::unique_ptr<Request> request) {
   DCHECK(request);
   if (!request->delegate || !request->web_contents())
@@ -470,7 +495,8 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     request->mojo_request->instrument->icon = GURL();
   }
 
-  if (!request->delegate->GetSpec() || !request->authenticator || !credential) {
+  if (!request->delegate->GetSpec() || !request->authenticator ||
+      !request->credential) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -495,10 +521,11 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
-          request->web_contents(), credential->relying_party_id,
+          request->web_contents(), request->credential->relying_party_id,
           payment_instrument_label,
           std::make_unique<SkBitmap>(payment_instrument_icon),
-          std::move(credential->credential_id),
+          std::move(request->credential->credential_id),
+          std::move(browser_bound_key_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),

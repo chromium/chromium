@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -217,6 +216,11 @@ std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
 AuthenticatorRequestClientDelegate::CreatePlatformDiscoveries() {
   return {};
 }
+
+void AuthenticatorRequestClientDelegate::ProvideChallengeUrl(
+    const GURL& url,
+    base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+        callback) {}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}

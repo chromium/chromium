@@ -33,8 +33,7 @@ void RunFaviconCallbackIfNotCanceled(
 ChromeFaviconClient::ChromeFaviconClient(Profile* profile) : profile_(profile) {
 }
 
-ChromeFaviconClient::~ChromeFaviconClient() {
-}
+ChromeFaviconClient::~ChromeFaviconClient() = default;
 
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

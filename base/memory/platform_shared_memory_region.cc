@@ -12,8 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
 
-namespace base {
-namespace subtle {
+namespace base::subtle {
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateWritable(
@@ -43,11 +42,13 @@ std::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     uint64_t offset,
     size_t size,
     SharedMemoryMapper* mapper) const {
-  if (!IsValid())
+  if (!IsValid()) {
     return std::nullopt;
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return std::nullopt;
+  }
 
   size_t end_byte;
   if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
@@ -61,8 +62,9 @@ std::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     return std::nullopt;
   }
 
-  if (!mapper)
+  if (!mapper) {
     mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
 
   // The backing mapper expects offset to be aligned to
   // `SysInfo::VMAllocationGranularity()`.
@@ -100,5 +102,4 @@ void PlatformSharedMemoryRegion::Unmap(span<uint8_t> mapping,
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(mapping.size());
 }
 
-}  // namespace subtle
-}  // namespace base
+}  // namespace base::subtle

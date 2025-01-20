@@ -18,4 +18,18 @@ message OnDeviceBaseModelMetadata {
   optional string base_model_name = 1;
   // The version of the base model currently stored on-device.
   optional string base_model_version = 2;
+  // The performance hints supported for the device and base model combination.
+  //
+  // If not set, the device only supports the highest quality performance hint.
+  repeated OnDeviceModelPerformanceHint supported_performance_hints = 3;
+}
+
+enum OnDeviceModelPerformanceHint {
+  ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED = 0;
+  // Allows for use of the highest quality model for the feature, which is only
+  // supported for "high-end" devices.
+  ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY = 1;
+  // Allows for use of the smaller model for the feature, which can result in
+  // degraded quality but results in higher user reach.
+  ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE = 2;
 }

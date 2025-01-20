@@ -6,6 +6,8 @@ package org.chromium.components.feature_engagement;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -25,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
+    FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
     FeatureConstants.CCT_HISTORY_FEATURE,
     FeatureConstants.CCT_MINIMIZED_FEATURE,
     FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK,
@@ -51,6 +54,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION,
@@ -63,14 +67,12 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
-    FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
     FeatureConstants.TAB_GROUPS_SURFACE_ON_HIDE,
-    FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
     FeatureConstants.FEED_HEADER_MENU_FEATURE,
     FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
     FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE,
@@ -105,13 +107,14 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
-    FeatureConstants.PRICE_DROP_NTP_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
     FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab";
@@ -131,6 +134,7 @@ public @interface FeatureConstants {
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
+    String BOTTOM_TOOLBAR_FEATURE = "IPH_BottomToolbarTip";
     String CCT_HISTORY_FEATURE = "IPH_CCTHistory";
     String CCT_MINIMIZED_FEATURE = "IPH_CCTMinimized";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
@@ -151,6 +155,8 @@ public @interface FeatureConstants {
     String EPHEMERAL_TAB_FEATURE = "IPH_EphemeralTab";
     String KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE = "IPH_KeyboardAccessoryAddressFilling";
     String KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE = "IPH_KeyboardAccessoryPasswordFilling";
+    String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE =
+            "IPH_AutofillCardInfoRetrievalSuggestion";
     String KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE = "IPH_KeyboardAccessoryPaymentFilling";
     String KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE = "IPH_KeyboardAccessoryPaymentOffer";
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
@@ -217,6 +223,13 @@ public @interface FeatureConstants {
      */
     String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE = "IPH_TabGroupCreationDialogSyncText";
 
+    /**
+     * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on
+     * the group title when the group is collapsed and on updated tabs when the group is expanded.
+     */
+    String TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE =
+            "IPH_TabGroupSharedNotificationBubbleOnStrip";
+
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
 
@@ -228,9 +241,6 @@ public @interface FeatureConstants {
      * tabs are present.
      */
     String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
-
-    /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
-    String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
 
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
@@ -292,12 +302,6 @@ public @interface FeatureConstants {
      */
     String IDENTITY_DISC_FEATURE = "IPH_IdentityDisc";
 
-    /**
-     * An IPH feature showing up the first time the user is presented with the quieter version of
-     * the permission prompt (for notifications).
-     */
-    String QUIET_NOTIFICATION_PROMPTS_FEATURE = "IPH_QuietNotificationPrompts";
-
     /** An IPH feature to show on the feed header menu button of the FeedNewTabPage. */
     String FEED_HEADER_MENU_FEATURE = "IPH_FeedHeaderMenu";
 
@@ -343,9 +347,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub. */
     String SHARING_HUB_WEBNOTES_STYLIZE_FEATURE = "IPH_SharingHubWebnotesStylize";
-
-    /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
-    String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
 
     /**
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.

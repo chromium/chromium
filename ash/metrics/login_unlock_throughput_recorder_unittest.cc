@@ -68,6 +68,7 @@ class MockPostLoginEventObserver : public PostLoginEventObserver {
                const cc::FrameSequenceMetrics::CustomReportData& data),
               (override));
   MOCK_METHOD(void, OnArcUiReady, (base::TimeTicks ts), (override));
+  MOCK_METHOD(void, OnDeferredTasksStarted, (base::TimeTicks ts), (override));
   MOCK_METHOD(void,
               OnShelfIconsLoadedAndSessionRestoreDone,
               (base::TimeTicks ts),
@@ -200,7 +201,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
   }
 
   void LoginOwner() {
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_REGULAR);
   }
@@ -353,6 +354,7 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
     // OnShelfAnimationFinished is triggered immediately as no shelf animation
     // is ongoing at this point.
     EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
+    EXPECT_CALL(mock_observer, OnDeferredTasksStarted(_)).Times(1);
 
     EXPECT_CALL(check_point, Call("shelf_icons_loaded")).Times(1);
 
@@ -577,6 +579,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
     // OnShelfAnimationFinished is triggered immediately as no shelf animation
     // is ongoing at this point.
     EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
+    EXPECT_CALL(mock_observer, OnDeferredTasksStarted(_)).Times(1);
 
     EXPECT_CALL(check_point, Call("shelf_icons_loaded")).Times(1);
 
@@ -668,6 +671,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
       EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
           .Times(1);
       EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
+      EXPECT_CALL(mock_observer, OnDeferredTasksStarted(_)).Times(1);
 
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
     } else {
@@ -676,6 +680,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
       EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
           .Times(1);
       EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
+      EXPECT_CALL(mock_observer, OnDeferredTasksStarted(_)).Times(1);
 
       EXPECT_CALL(check_point, Call("all_windows_shown")).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);

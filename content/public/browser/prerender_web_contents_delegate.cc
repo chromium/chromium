@@ -127,7 +127,8 @@ bool PrerenderWebContentsDelegate::ShouldAllowRunningInsecureContent(
 }
 
 PreloadingEligibility PrerenderWebContentsDelegate::IsPrerender2Supported(
-    WebContents& web_contents) {
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   // This should be checked in the initiator's WebContents.
   NOTREACHED();
 }

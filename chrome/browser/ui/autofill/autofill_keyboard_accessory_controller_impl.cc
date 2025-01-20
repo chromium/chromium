@@ -25,15 +25,14 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -136,13 +135,6 @@ AutofillKeyboardAccessoryControllerImpl::
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -358,10 +350,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
   if (!confirmed) {
-    if (filling_product == FillingProduct::kAddress) {
-      autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
-          /*user_accepted_delete=*/false);
-    }
     return;
   }
 
@@ -382,7 +370,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
       }
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
@@ -391,7 +378,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
       break;
   }
 
@@ -528,10 +515,6 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   } else {
     Hide(SuggestionHidingReason::kNoSuggestions);
   }
-}
-
-void AutofillKeyboardAccessoryControllerImpl::PinView() {
-  is_view_pinned_ = true;
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {

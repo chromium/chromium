@@ -580,6 +580,62 @@ HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {
   return HttpsFirstModeSetting::kDisabled;
 }
 
+bool HttpsFirstModeService::UpdatePrefs(
+    const HttpsFirstModeSetting& selection) {
+  if (selection != HttpsFirstModeSetting::kDisabled &&
+      selection != HttpsFirstModeSetting::kEnabledBalanced &&
+      selection != HttpsFirstModeSetting::kEnabledFull) {
+    return false;
+  }
+
+  if (!IsBalancedModeAvailable() &&
+      selection == HttpsFirstModeSetting::kEnabledBalanced) {
+    return false;
+  }
+
+  // Update both HTTPS-First Mode preferences to match the selection.
+  //
+  // Note that the HttpsFirstModeSetting::kEnabledBalanced is not available by
+  // default. If the feature flag is disabled, then the kEnabledFull and
+  // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
+  //
+  // Note: The Security.HttpsFirstMode.SettingChanged* histograms are logged
+  // here instead of in HttpsFirstModeService::OnHttpsFirstModePrefChanged()
+  // because this will fire the pref observer _twice_, so logging the histogram
+  // in the pref observer would cause double counting.
+  if (IsBalancedModeAvailable()) {
+    switch (selection) {
+      case HttpsFirstModeSetting::kDisabled:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kDisabled);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+      case HttpsFirstModeSetting::kEnabledBalanced:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kEnabledBalanced);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+        break;
+      case HttpsFirstModeSetting::kEnabledFull:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kEnabledFull);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+    }
+  } else {
+    // TODO(crbug.com/349860796): Remove old settings path once Balanced Mode
+    // is launched.
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged",
+                              selection == HttpsFirstModeSetting::kEnabledFull);
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kHttpsOnlyModeEnabled,
+        selection == HttpsFirstModeSetting::kEnabledFull);
+  }
+  return true;
+}
+
 void HttpsFirstModeService::IncrementRecentNavigationCount() {
   if (navigation_counter_->Increment()) {
     profile_->GetPrefs()->SetDict(prefs::kHttpsUpgradeNavigations,

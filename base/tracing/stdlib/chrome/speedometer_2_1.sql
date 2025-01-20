@@ -80,13 +80,13 @@ FROM data, mark_type;
 -- between the sync-end and async-end marks.
 CREATE PERFETTO TABLE chrome_speedometer_2_1_measure(
   -- Start timestamp of the measure slice
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the measure slice
-  dur INT,
+  dur DURATION,
   -- Full measure name
   name STRING,
   -- Speedometer iteration the slice belongs to.
-  iteration INT,
+  iteration LONG,
   -- Suite name
   suite_name STRING,
   -- Test name
@@ -174,13 +174,13 @@ FROM base;
 -- returns the values in ms these here and in ns.
 CREATE PERFETTO TABLE chrome_speedometer_2_1_iteration(
   -- Start timestamp of the iteration
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the iteration
-  dur INT,
+  dur DURATION,
   -- Iteration name
   name STRING,
   -- Iteration number
-  iteration INT,
+  iteration LONG,
   -- Geometric mean of the suite durations for this iteration.
   geomean DOUBLE,
   -- Speedometer score for this iteration (The total score for a run in the
@@ -218,7 +218,7 @@ SELECT AVG(score) FROM chrome_speedometer_2_1_iteration;
 -- Returns the utid for the main thread that ran Speedometer 2.1
 CREATE PERFETTO FUNCTION chrome_speedometer_2_1_renderer_main_utid()
 -- Renderer main utid
-RETURNS INT
+RETURNS LONG
 AS
 SELECT utid
 FROM thread_track

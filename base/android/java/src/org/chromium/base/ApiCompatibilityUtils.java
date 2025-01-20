@@ -25,7 +25,7 @@ import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +40,7 @@ import java.util.List;
  * Do not inline because we use many new APIs, and if they are inlined, they could cause dex
  * validation errors on low Android versions.
  */
+@NullMarked
 public class ApiCompatibilityUtils {
     private static final String TAG = "ApiCompatUtil";
 
@@ -72,10 +73,14 @@ public class ApiCompatibilityUtils {
             // For Android Oreo+, Resources.getDrawable(id, null) delegates to
             // Resources.getDrawableForDensity(id, 0, null), but before that the two functions are
             // independent. This check can be removed after Oreo becomes the minimum supported API.
+            Drawable ret;
             if (density == 0) {
-                return res.getDrawable(id, null);
+                ret = res.getDrawable(id, null);
+            } else {
+                ret = res.getDrawableForDensity(id, density, null);
             }
-            return res.getDrawableForDensity(id, density, null);
+            assert ret != null : "Drawable " + id;
+            return ret;
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
@@ -114,7 +119,6 @@ public class ApiCompatibilityUtils {
      * @return A list of display ids. Empty if there is none or version is less than Q, or
      *     windowAndroid does not contain an activity.
      */
-    @NonNull
     public static List<Integer> getTargetableDisplayIds(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             List<Integer> displayList = new ArrayList<>();
@@ -146,8 +150,7 @@ public class ApiCompatibilityUtils {
      *
      * @param options {@ActivityOptions} to set the required mode to.
      */
-    public static void setActivityOptionsBackgroundActivityStartMode(
-            @NonNull ActivityOptions options) {
+    public static void setActivityOptionsBackgroundActivityStartMode(ActivityOptions options) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         options.setPendingIntentBackgroundActivityStartMode(
                 ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
@@ -160,7 +163,7 @@ public class ApiCompatibilityUtils {
      * @param options {@ActivityOptions} to set the required mode to.
      */
     public static void setCreatorActivityOptionsBackgroundActivityStartMode(
-            @NonNull ActivityOptions options) {
+            ActivityOptions options) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         options.setPendingIntentCreatorBackgroundActivityStartMode(
                 ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);

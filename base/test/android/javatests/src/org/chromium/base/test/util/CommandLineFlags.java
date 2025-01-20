@@ -10,8 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -129,14 +128,14 @@ public final class CommandLineFlags {
         // Apply changes to the CommandLine.
         boolean anyChanges = applyChanges(newFlags);
 
-        // Apply changes to FeatureList.
-        TestValues testValues = fieldTrials.createTestValues();
+        // Apply changes to FeatureOverrides.
+        FeatureOverrides.Builder overrides = fieldTrials.createTestOverrides();
         // If flags did not change, and no feature-related flags are present, then do not clobber
         // flag values so that a test can use FeatureList.setTestValues() in @BeforeClass.
-        if (anyChanges || !testValues.isEmpty()) {
+        if (anyChanges || !overrides.isEmpty()) {
             // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
             //     native feature list has been initialized.
-            FeatureList.setTestValuesNoResetForTesting(testValues);
+            overrides.applyNoResetForTesting();
         }
     }
 

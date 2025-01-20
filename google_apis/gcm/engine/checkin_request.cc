@@ -196,15 +196,6 @@ void CheckinRequest::Start() {
   resource_request->credentials_mode =
       google_apis::GetOmitCredentialsModeForGaiaRequests();
 
-  DVLOG(1) << "Performing check-in request with android id: "
-           << request_info_.android_id
-           << ", security token: " << request_info_.security_token
-           << ", user serial number: " << kDefaultUserSerialNumber
-           << ", version: " << kRequestVersionValue
-           << "and digest: " << request.digest();
-  DVLOG(1) << "Check-in URL: " << checkin_url_.possibly_invalid_spec();
-  DVLOG(1) << "Registration request body: " << upload_data;
-
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   url_loader_->AttachStringForUpload(upload_data, kRequestContentType);
@@ -224,9 +215,6 @@ void CheckinRequest::RetryWithBackoff() {
   backoff_entry_.InformOfRequest(false);
   url_loader_.reset();
 
-  DVLOG(1) << "Delay GCM checkin for: "
-           << backoff_entry_.GetTimeUntilRelease().InMilliseconds()
-           << " milliseconds.";
   recorder_->RecordCheckinDelayedDueToBackoff(
       backoff_entry_.GetTimeUntilRelease().InMilliseconds());
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
@@ -239,7 +227,6 @@ void CheckinRequest::RetryWithBackoff() {
 void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
                                        std::unique_ptr<std::string> body) {
   if (source->NetError() != net::OK) {
-    LOG(ERROR) << "Check-in request got net error: " << source->NetError();
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNetError,
                                     recorder_, /* will_retry= */ true);
 
@@ -248,7 +235,6 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
   }
 
   if (!source->ResponseInfo()) {
-    LOG(ERROR) << "Check-in response is missing response info!";
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoResponse,
                                     recorder_, /* will_retry= */ true);
     RetryWithBackoff();
@@ -256,7 +242,6 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
   }
 
   if (!source->ResponseInfo()->headers) {
-    LOG(ERROR) << "Check-in response is missing headers!";
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNoHeaders,
                                     recorder_, /* will_retry= */ true);
     RetryWithBackoff();
@@ -274,8 +259,6 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
     CheckinRequestStatus status = response_status == net::HTTP_BAD_REQUEST
                                       ? CheckinRequestStatus::kBadRequest
                                       : CheckinRequestStatus::kUnauthorized;
-    LOG(ERROR) << "Check-in response failed with status: "
-               << GetCheckinRequestStatusString(status);
     RecordCheckinStatusAndReportUMA(status, recorder_, /* will_retry= */ false);
     std::move(callback_).Run(response_status, response_proto);
     return;
@@ -283,9 +266,6 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
 
   if (response_status != net::HTTP_OK || !body ||
       !response_proto.ParseFromString(*body)) {
-    LOG(ERROR) << "Failed to parse checkin response. HTTP Status: "
-               << response_status << ". Retrying.";
-
     CheckinRequestStatus status =
         response_status != net::HTTP_OK
             ? CheckinRequestStatus::kStatusNotOK
@@ -299,25 +279,12 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
       !response_proto.has_security_token() ||
       response_proto.android_id() == 0 ||
       response_proto.security_token() == 0) {
-    LOG(ERROR) << "Check-in response: "
-               << (response_proto.has_android_id()
-                       ? (response_proto.android_id() == 0 ? "has 0 AID, "
-                                                           : "has valid AID, ")
-                       : "is missing AID, ")
-               << (response_proto.has_security_token()
-                       ? (response_proto.security_token() == 0
-                              ? "has 0 security_token"
-                              : "has valid security_token")
-                       : "is missing security_token");
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kZeroIdOrToken,
                                     recorder_, /* will_retry= */ true);
     RetryWithBackoff();
     return;
   }
 
-  DVLOG(1) << "Check-in succeeded. Response has AID: "
-           << response_proto.android_id()
-           << " and security_token: " << response_proto.security_token();
   RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kSuccess, recorder_,
                                   /* will_retry= */ false);
   std::move(callback_).Run(response_status, response_proto);

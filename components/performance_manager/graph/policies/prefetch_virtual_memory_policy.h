@@ -15,7 +15,7 @@ namespace performance_manager::policies {
 // the NeedToRefresh function. Currently it is just elapsed time since the
 // last refresh. Initial timestamp is from creation of the policy.
 class PrefetchVirtualMemoryPolicy : public GraphOwned,
-                                    public ProcessNode::ObserverDefaultImpl {
+                                    public ProcessNodeObserver {
  public:
   explicit PrefetchVirtualMemoryPolicy(const base::FilePath file_to_prefetch);
   PrefetchVirtualMemoryPolicy(const PrefetchVirtualMemoryPolicy&) = delete;

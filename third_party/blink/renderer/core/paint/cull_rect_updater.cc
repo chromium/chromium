@@ -574,7 +574,20 @@ void CullRectUpdater::PaintPropertiesChanged(
   }
 
   if (object.HasLayer()) {
-    To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
+    PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
+    layer->SetNeedsCullRectUpdate();
+
+    // For change of scroll properties (e.g. contents rect), SetNeedsRepaint to
+    // force proactive update of cull rect because the ChangedEnough logic
+    // doesn't apply. In most cases, other code paths also SetNeedsRepaint
+    // on such changes, but not for the case where a containing-block-order
+    // descendant causing the change is not a paint-order descendant of the
+    // scroller.
+    if (properties_changed.scroll_changed >=
+        PaintPropertyChangeType::kChangedOnlySimpleValues) {
+      layer->SetNeedsRepaint();
+    }
+
     // Fixed-position cull rects depend on view clip. See
     // ComputeFragmentCullRect().
     if (const auto* layout_view = DynamicTo<LayoutView>(object)) {

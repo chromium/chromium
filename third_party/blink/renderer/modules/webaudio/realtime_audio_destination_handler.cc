@@ -263,7 +263,11 @@ void RealtimeAudioDestinationHandler::Render(
 
   context->HandlePostRenderTasks();
 
+  // Handle audibility before handling the volume multiplier since the volume
+  // multiplier should not be taken into account for audibility.
   context->HandleAudibility(destination_bus);
+
+  context->HandleVolumeMultiplier(destination_bus);
 
   // Advances the current sample-frame.
   AdvanceCurrentSampleFrame(number_of_frames);
@@ -291,23 +295,13 @@ void RealtimeAudioDestinationHandler::OnRenderError() {
   Context()->OnRenderError();
 }
 
-// A flag for using FakeAudioWorker when an AudioContext with "playback"
-// latency outputs silence.
-BASE_FEATURE(kUseFakeAudioWorkerForPlaybackLatency,
-             "UseFakeAudioWorkerForPlaybackLatency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
     bool has_automatic_pull_nodes) {
-  // Use a FakeAudioWorker for a silent AudioContext with playback latency only
-  // when it is allowed by a command line flag.
-  if (base::FeatureList::IsEnabled(kUseFakeAudioWorkerForPlaybackLatency)) {
-    // For playback latency, relax the callback timing restriction so the
-    // SilentSinkSuspender can fall back a FakeAudioWorker if necessary.
-    if (latency_hint_.Category() == WebAudioLatencyHint::kCategoryPlayback) {
-      DCHECK(is_detecting_silence_);
-      return;
-    }
+  // For playback latency, relax the callback timing restriction so the
+  // SilentSinkSuspender can fall back a FakeAudioWorker if necessary.
+  if (latency_hint_.Category() == WebAudioLatencyHint::kCategoryPlayback) {
+    DCHECK(is_detecting_silence_);
+    return;
   }
 
   // For other latency profiles (interactive, balanced, exact), use the

@@ -37,10 +37,6 @@ class HeavyAdService;
 
 namespace page_load_metrics {
 
-namespace features {
-BASE_DECLARE_FEATURE(kRestrictedNavigationAdTagging);
-}
-
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
 class AdsPageLoadMetricsObserver
@@ -81,7 +77,8 @@ class AdsPageLoadMetricsObserver
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
       content::WebContents* web_contents,
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
-      const ApplicationLocaleGetter& application_local_getter);
+      const ApplicationLocaleGetter& application_local_getter,
+      bool is_incognito);
 
   // For a given frame, returns whether or not the frame's url would be
   // considered same origin to the outermost main frame's url.
@@ -93,6 +90,7 @@ class AdsPageLoadMetricsObserver
   explicit AdsPageLoadMetricsObserver(
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       const ApplicationLocaleGetter& application_local_getter,
+      bool is_incognito,
       base::TickClock* clock = nullptr,
       heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
 
@@ -277,9 +275,7 @@ class AdsPageLoadMetricsObserver
 
   // Per-frame memory usage by V8 in bytes. Memory data is stored for each frame
   // on the page during the navigation.
-  std::unordered_map<content::FrameTreeNodeId,
-                     uint64_t,
-                     content::FrameTreeNodeId::Hasher>
+  std::unordered_map<content::FrameTreeNodeId, uint64_t>
       v8_current_memory_usage_map_;
 
   // Tracks page-level information for the navigation.
@@ -300,10 +296,6 @@ class AdsPageLoadMetricsObserver
   // Whether the page load currently being observed is a reload of a previous
   // page.
   bool page_load_is_reload_ = false;
-
-  // Whether the restricted navigation ad tagging feature is enabled on this
-  // page load.
-  const bool restricted_navigation_ad_tagging_enabled_;
 
   // Stores whether the heavy ad intervention is blocklisted or not for the user
   // on the URL of this page. Incognito Profiles will cause this to be set to
@@ -340,6 +332,9 @@ class AdsPageLoadMetricsObserver
 
   // Tracks number of memory updates received.
   int memory_update_count_ = 0;
+
+  // Whether the WebContents being observed is for an Incognito profile.
+  bool is_incognito_;
 };
 
 }  // namespace page_load_metrics

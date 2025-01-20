@@ -28,7 +28,7 @@ using BookmarksApiWatcherObserver = extensions::BookmarksApiWatcher::Observer;
 // Provides a stub class to inherit from to support overriding the destructor.
 class BookmarksApiWatcherObserver {
  public:
-  virtual ~BookmarksApiWatcherObserver() {}
+  virtual ~BookmarksApiWatcherObserver() = default;
 };
 #endif
 

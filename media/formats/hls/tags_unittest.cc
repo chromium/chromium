@@ -95,11 +95,9 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
                                       SourceString::CreateForTesting(*source))
                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
-  if (!result.has_value()) {
-    CHECK(false) << from.ToString() << "\n"
-                 << MediaSerializeForTesting(std::move(result).error());
-    NOTREACHED();
-  }
+  CHECK(result.has_value())
+      << from.ToString() << "\n"
+      << MediaSerializeForTesting(std::move(result).error());
   return OkTestResult<T>{.tag = std::move(result).value(),
                          .source = std::move(source)};
 }

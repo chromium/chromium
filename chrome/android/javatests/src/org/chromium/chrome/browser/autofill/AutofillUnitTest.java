@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.junit.Assert.assertEquals;
+
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -22,7 +23,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
@@ -178,24 +178,23 @@ public class AutofillUnitTest {
     @Feature({"autofill"})
     public void testAutofillWithDifferentNumberSuggestions() {
         openAutofillPopupAndWaitUntilReady(createTwoAutofillSuggestionArray());
-        Assert.assertEquals(2, mAutofillPopup.getListView().getCount());
+        assertEquals(2, mAutofillPopup.getListView().getCount());
 
         openAutofillPopupAndWaitUntilReady(createFiveAutofillSuggestionArray());
-        Assert.assertEquals(5, mAutofillPopup.getListView().getCount());
+        assertEquals(5, mAutofillPopup.getListView().getCount());
     }
 
     @Test
     @SmallTest
     @Feature({"autofill"})
-    @DisabledTest(message = "https://crbug.com/1338184")
     public void testAutofillClickFirstSuggestion() {
         AutofillSuggestion[] suggestions = createTwoAutofillSuggestionArray();
         openAutofillPopupAndWaitUntilReady(suggestions);
-        Assert.assertEquals(2, mAutofillPopup.getListView().getCount());
+        assertEquals(2, mAutofillPopup.getListView().getCount());
 
         TouchCommon.singleClickView(mAutofillPopup.getListView().getChildAt(0));
         mMockAutofillCallback.waitForCallback();
 
-        Assert.assertEquals(0, mMockAutofillCallback.mListIndex);
+        assertEquals(0, mMockAutofillCallback.mListIndex);
     }
 }

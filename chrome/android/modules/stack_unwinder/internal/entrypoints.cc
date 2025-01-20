@@ -9,7 +9,7 @@
 extern "C" {
 // This JNI registration method is found and called by module framework
 // code.
-JNI_BOUNDARY_EXPORT bool JNI_OnLoad_stack_unwinder(JNIEnv* env) {
+JNI_ZERO_BOUNDARY_EXPORT bool JNI_OnLoad_stack_unwinder(JNIEnv* env) {
   if (!stack_unwinder::RegisterNatives(env)) {
     return false;
   }

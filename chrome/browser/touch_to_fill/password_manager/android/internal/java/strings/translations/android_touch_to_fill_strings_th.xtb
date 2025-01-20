@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">รายการข้อมูลเข้าสู่ระบบที่จะกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="5591247451101092906">ใช้รหัสผ่านหรือพาสคีย์ที่บันทึกไว้ไหม</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
+<translation id="592182999816790476">บันทึกรหัสผ่านของ <ph name="USERNAME" /> ไว้สำหรับ <ph name="WEBSITE" /> แล้ว</translation>
 <translation id="6560306912274274630">พาสคีย์สำหรับ <ph name="USERNAME" /> ใช้การล็อกหน้าจอ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
 <translation id="7286867818472074330">เลือกพาสคีย์</translation>

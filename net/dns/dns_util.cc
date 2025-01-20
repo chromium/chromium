@@ -186,13 +186,13 @@ std::string GetDohProviderIdForHistogramFromServerConfig(
   const auto& entries = DohProviderEntry::GetList();
   const auto it = base::ranges::find(entries, doh_server,
                                      &DohProviderEntry::doh_server_config);
-  return it != entries.end() ? (*it)->provider : "Other";
+  return it != entries.end() ? std::string((*it)->provider) : "Other";
 }
 
 std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver) {
   const auto entries = GetDohProviderEntriesFromNameservers({nameserver});
-  return entries.empty() ? "Other" : entries[0]->provider;
+  return entries.empty() ? "Other" : std::string(entries[0]->provider);
 }
 
 std::string SecureDnsModeToString(const SecureDnsMode secure_dns_mode) {

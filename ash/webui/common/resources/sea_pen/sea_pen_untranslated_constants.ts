@@ -26,7 +26,6 @@ export const SEA_PEN_SUGGESTIONS: string[] = [
   'lightning',
   'bokeh effect',
   'with color grading',
-  'cinematic shot',
   'volumetric light',
   'negative space',
   'digital art',

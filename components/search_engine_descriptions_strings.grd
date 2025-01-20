@@ -3,7 +3,7 @@
 locale. The strings in the file are not translated by the Chrome translation
 process but are generated using a script that pulls them from outside the repo.-->
 
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/search_engine_descriptions_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">„Chrome“ automatiškai atidaro „YouTube“ inkognito nuorodas inkognito režimu.</translation>
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose ir kitose programose.</translation>
 <translation id="1229222343402087523">Ieškoti pagal užklausą „${searchPhrase}“ naršyklėje „Chrome“</translation>
 <translation id="1237769345474105984">Jei naudojate „Chrome“</translation>
-<translation id="1240190568154816272">„Chrome“ patarimai</translation>
 <translation id="124228879633599436">Jūsų „Chrome“ pasenusi. Atnaujinkite, kad užtikrintumėte saugą.</translation>
 <translation id="1333745675627230582">„Chrome“ dinozauro žaidimas</translation>
 <translation id="1352919863522755794">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
 <translation id="1670609221633730681">„Chrome“ patarimas: pasirinkite adreso juostos padėtį</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Slaptažodžių išsaugojimas naršyklėje „Chrome“</translation>
 <translation id="1790080846677398234">Pridedami įvesti URL prie žymių naršyklėje „Chrome“.</translation>
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1830634592642484976">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="3655656110921623717">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks svetainės mobiliesiems užklausą.</translation>
 <translation id="3740397331642243698">Atidaromi įvesti URL naršyklėje „Google Chrome“ inkognito režimu.</translation>
 <translation id="3741995255368156336">Atidaromas „Chrome“ skaitymo sąrašas.</translation>
+<translation id="3808570423967020928">Greičiau pasiekite „Chrome“ naudodami pagrindinio ekrano doką.</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="384394811301901750">„Google Chrome“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="3863841106411295595">Pridedami įvesti URL prie skaitymo sąrašo naršyklėje „Chrome“.</translation>
@@ -125,6 +127,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="4636900170638246267">Prisijunkite prie šios svetainės ir „Chrome“.</translation>
 <translation id="4646014602299206846">„Chrome“ aptiks siuntinių stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems.</translation>
 <translation id="4647910807533196601">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
+<translation id="4693084815234024320">Naudojate „Chrome“ inkognito režimą</translation>
 <translation id="4724297637870447613">„Chrome“ naudojimas visuose įrenginiuose</translation>
 <translation id="4738647308035481133">„Google Chrome“ puslapis</translation>
 <translation id="4742795653798179840">Ištrinti „Chrome“ duomenys</translation>
@@ -219,9 +222,12 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 
 Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
+<translation id="6924922227983877439">Atidaryti nuorodas naršyklėje „Chrome“ pagal numatytuosius nustatymus</translation>
+<translation id="6931601805528922498">Prisijungus paskyra pridedama prie „Chrome“ ir galima naršyti su darbu susijusius puslapius.</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
+<translation id="7065813315247345131">„Chrome“ perkėlimas į doką</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>

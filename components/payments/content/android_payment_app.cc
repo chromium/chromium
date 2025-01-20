@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "build/chromeos_buildflags.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payer_data.h"
@@ -93,10 +92,6 @@ std::u16string AndroidPaymentApp::GetMissingInfoLabel() const {
 
 bool AndroidPaymentApp::HasEnrolledInstrument() const {
   return true;
-}
-
-void AndroidPaymentApp::RecordUse() {
-  NOTIMPLEMENTED();
 }
 
 bool AndroidPaymentApp::NeedsInstallation() const {

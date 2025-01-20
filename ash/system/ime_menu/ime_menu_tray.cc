@@ -55,6 +55,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -396,6 +397,9 @@ ImeMenuTray::ImeMenuTray(Shelf* shelf)
   // Show the tray even if virtual keyboard is shown. (Other tray buttons will
   // be hidden).
   set_show_with_virtual_keyboard(true);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME));
 }
 
 ImeMenuTray::~ImeMenuTray() {
@@ -486,10 +490,6 @@ bool ImeMenuTray::ShouldShowKeyboardToggle() const {
 void ImeMenuTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   UpdateTrayLabel();
-}
-
-std::u16string ImeMenuTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
 
 void ImeMenuTray::HandleLocaleChange() {

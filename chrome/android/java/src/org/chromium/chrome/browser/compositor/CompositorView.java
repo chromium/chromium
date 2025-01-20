@@ -25,7 +25,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -34,6 +33,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.resources.StaticResourcePreloads;
 import org.chromium.chrome.browser.compositor.resources.SystemResourcePreloads;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -47,8 +47,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
 
-import java.util.Locale;
-
 /**
  * The is the {@link View} displaying the ui compositor results; including webpages and tabswitcher.
  */
@@ -56,8 +54,6 @@ import java.util.Locale;
 public class CompositorView extends FrameLayout
         implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
                 WindowAndroid.SelectionHandlesObserver {
-    private static final int EXCESSIVE_SURFACE_SIZE = 1000000;
-
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
 
@@ -456,20 +452,6 @@ public class CompositorView extends FrameLayout
 
     @Override
     public void surfaceChanged(Surface surface, int format, int width, int height) {
-        if (width >= EXCESSIVE_SURFACE_SIZE
-                || height >= EXCESSIVE_SURFACE_SIZE
-                || width < 0
-                || height < 0) {
-            JavaExceptionReporter.reportException(
-                    new RuntimeException(
-                            String.format(
-                                    Locale.US,
-                                    "w:%d h:%d vw:%d vh:%d)",
-                                    width,
-                                    height,
-                                    getWidth(),
-                                    getHeight())));
-        }
         if (mNativeCompositorView == 0) return;
 
         InputTransferToken browserInputToken = null;
@@ -695,12 +677,21 @@ public class CompositorView extends FrameLayout
     @CalledByNative
     private void notifyWillUseSurfaceControl() {
         mIsSurfaceControlEnabled = true;
+
+        // mIsSurfaceControlEnabled can change the output of `getSurfacePixelFormat`. Re-request
+        // the current surface format to keep it up-to-date.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL)
+                && mCompositorSurfaceManager != null
+                && mCompositorSurfaceManager.getFormatOfOwnedSurface() != getSurfacePixelFormat()) {
+            mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
+        }
     }
 
     /**
-     * Converts the layout into compositor layers. This is to be called on every frame the layout
-     * is changing.
-     * @param provider               Provides the layout to be rendered.
+     * Converts the layout into compositor layers. This is to be called on every frame the layout is
+     * changing.
+     *
+     * @param provider Provides the layout to be rendered.
      */
     public void finalizeLayers(final LayoutProvider provider) {
         TraceEvent.begin("CompositorView:finalizeLayers");

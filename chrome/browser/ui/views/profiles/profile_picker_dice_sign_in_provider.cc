@@ -32,7 +32,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
@@ -53,10 +52,12 @@ bool IsTwoFactorIntersitial(const GURL& url) {
 bool IsExternalURL(const GURL& url) {
   // Empty URL is used initially, about:blank is used to stop navigation after
   // sign-in succeeds.
-  if (url.is_empty() || url == GURL(url::kAboutBlankURL))
+  if (url.is_empty() || url == GURL(url::kAboutBlankURL)) {
     return false;
-  if (gaia::HasGaiaSchemeHostPort(url))
+  }
+  if (gaia::HasGaiaSchemeHostPort(url)) {
     return false;
+  }
   return true;
 }
 
@@ -108,13 +109,13 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
         profile_path_, /*incognito=*/false, std::move(profile_init_callback));
     DCHECK(profile_exists);
   } else {
-    size_t icon_index = profiles::GetPlaceholderAvatarIndex();
     // Silently create the new profile for browsing on GAIA (so that the sign-in
     // cookies are stored in the right profile).
     ProfileManager::CreateMultiProfileAsync(
-        profile_manager->GetProfileAttributesStorage().ChooseNameForNewProfile(
-            icon_index),
-        icon_index, /*is_hidden=*/true, std::move(profile_init_callback));
+        profile_manager->GetProfileAttributesStorage()
+            .ChooseNameForNewProfile(),
+        profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/true,
+        std::move(profile_init_callback));
   }
 }
 
@@ -126,8 +127,9 @@ void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
 }
 
 void ProfilePickerDiceSignInProvider::NavigateBack() {
-  if (!IsInitialized() || !contents())
+  if (!IsInitialized() || !contents()) {
     return;
+  }
 
   if (contents()->GetController().CanGoBack()) {
     contents()->GetController().GoBack();
@@ -164,8 +166,7 @@ content::WebContents* ProfilePickerDiceSignInProvider::AddNewContents(
   // them while Force Signin is enabled.
   // TODO(crbug.com/41493894): Remove this check if the SAML speedbump is
   // removed or if the links on the page are removed.
-  if (signin_util::IsForceSigninEnabled() &&
-      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+  if (signin_util::IsForceSigninEnabled()) {
     return nullptr;
   }
 
@@ -208,8 +209,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
   } else if (IsExternalURL(contents_->GetVisibleURL()) &&
              // SAML with ForceSignin in Profile Picker should follow the
              // regular flow.
-             (!signin_util::IsForceSigninEnabled() ||
-              !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker))) {
+             !signin_util::IsForceSigninEnabled()) {
     // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
     // after a successful sign-in.
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());

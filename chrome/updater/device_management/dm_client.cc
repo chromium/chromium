@@ -73,8 +73,6 @@ class DefaultConfigurator : public DMClient::Configurator {
         policy_service_proxy_configuration_(
             std::move(policy_service_proxy_configuration)) {}
 
-  ~DefaultConfigurator() override = default;
-
   GURL GetDMServerUrl() const override { return server_url_; }
 
   std::string GetAgentParameter() const override {

@@ -155,7 +155,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     ssl_data->ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
     if (stream_type_ == HTTP2_HANDSHAKE_STREAM)
-      ssl_data->next_proto = kProtoHTTP2;
+      ssl_data->next_proto = NextProto::kProtoHTTP2;
     ASSERT_TRUE(ssl_data->ssl_info.cert.get());
     url_request_context_host_.AddSSLSocketDataProvider(std::move(ssl_data));
   }

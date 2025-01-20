@@ -68,8 +68,7 @@ class WebViewPermissionHelper {
   static WebViewPermissionHelper* FromRenderFrameHostId(
       const content::GlobalRenderFrameHostId& render_frame_host_id);
 
-  void RequestMediaAccessPermission(content::WebContents* source,
-                                    const content::MediaStreamRequest& request,
+  void RequestMediaAccessPermission(const content::MediaStreamRequest& request,
                                     content::MediaResponseCallback callback);
 
   void RequestMediaAccessPermissionForControlledFrame(

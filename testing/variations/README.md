@@ -11,9 +11,10 @@ extensions_browsertests, interactive_ui_tests, and sync_integration_tests, and
 [web platform tests](/docs/testing/web_platform_tests.md)). It is not used by
 unit test targets.
 
-> Note: This configuration applies specifically to Chromium developer builds.
-> Chrome branded / official builds do not use these definitions by default.
-> They can, however, be enabled with the `--enable-field-trial-config` switch.
+> Note: This configuration applies specifically to Chromium developer and
+> [Chrome for Testing branded](https://goo.gle/chrome-for-testing) builds.
+> Chrome branded builds do not use these definitions by default. They can, however,
+> be enabled with the `--enable-field-trial-config` switch.
 > For Chrome branded Android builds, due to binary size constraints, the
 > configuration cannot be applied by this switch.
 

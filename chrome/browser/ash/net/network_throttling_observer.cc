@@ -29,7 +29,7 @@ NetworkThrottlingObserver::NetworkThrottlingObserver(PrefService* local_state)
                              throttle_callback);
 }
 
-NetworkThrottlingObserver::~NetworkThrottlingObserver() {}
+NetworkThrottlingObserver::~NetworkThrottlingObserver() = default;
 
 void NetworkThrottlingObserver::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNetworkThrottlingEnabled);

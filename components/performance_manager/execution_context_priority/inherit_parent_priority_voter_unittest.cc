@@ -22,43 +22,6 @@ const execution_context::ExecutionContext* GetExecutionContext(
   return execution_context::ExecutionContext::From(frame_node);
 }
 
-// The BoostingVoteAggregator, the InheritParentPriorityVoter and the voting
-// channel are all expected live on the graph, without being actual GraphOwned
-// objects. This class wraps them to allow this.
-class GraphOwnedWrapper : public GraphOwned {
- public:
-  GraphOwnedWrapper()
-      : inherit_parent_priority_voter_(observer_.BuildVotingChannel()),
-        voter_id_(inherit_parent_priority_voter_.voter_id()) {}
-
-  ~GraphOwnedWrapper() override = default;
-
-  GraphOwnedWrapper(const GraphOwnedWrapper&) = delete;
-  GraphOwnedWrapper& operator=(const GraphOwnedWrapper&) = delete;
-
-  // GraphOwned:
-  void OnPassedToGraph(Graph* graph) override {
-    graph->AddInitializingFrameNodeObserver(&inherit_parent_priority_voter_);
-  }
-  void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveInitializingFrameNodeObserver(&inherit_parent_priority_voter_);
-  }
-
-  // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return observer_; }
-
-  VoterId voter_id() const { return voter_id_; }
-
- private:
-  DummyVoteObserver observer_;
-  InheritParentPriorityVoter inherit_parent_priority_voter_;
-  VoterId voter_id_;
-};
-
-static const char kDummyReason[] = "reason";
-
-}  // namespace
-
 class InheritParentPriorityVoterTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
@@ -73,17 +36,28 @@ class InheritParentPriorityVoterTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    wrapper_ = graph()->PassToGraph(std::make_unique<GraphOwnedWrapper>());
+    inherit_parent_priority_voter_.InitializeOnGraph(
+        graph(), observer_.BuildVotingChannel());
+  }
+
+  void TearDown() override {
+    inherit_parent_priority_voter_.TearDownOnGraph(graph());
+    Super::TearDown();
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return wrapper_->observer(); }
+  const DummyVoteObserver& observer() const { return observer_; }
 
-  VoterId voter_id() const { return wrapper_->voter_id(); }
+  VoterId voter_id() const { return inherit_parent_priority_voter_.voter_id(); }
 
  private:
-  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
+  DummyVoteObserver observer_;
+  InheritParentPriorityVoter inherit_parent_priority_voter_;
 };
+
+static const char kDummyReason[] = "reason";
+
+}  // namespace
 
 // Tests that the InheritParentPriorityVoter correctly casts a vote to each
 // child of a frame.

@@ -173,15 +173,13 @@ TEST_F(GeneratedPasswordSavedMessageDelegateTest, TestUsernameAddedCallback) {
 
   const std::u16string username = u"test username";
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_string = base::android::ConvertUTF16ToJavaString(env, username);
 
   {
     testing::InSequence s;
     EXPECT_CALL(*form_manager_raw_ptr, OnUpdateUsernameFromPrompt(username));
     EXPECT_CALL(*form_manager_raw_ptr, Save);
   }
-  username_bridge_raw_ptr->OnDialogAccepted(
-      env, base::android::JavaParamRef<jstring>(env, j_string.obj()));
+  username_bridge_raw_ptr->OnDialogAccepted(env, username);
 }
 
 // Tests that message properties (title, description, icon, button text) are

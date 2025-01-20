@@ -1,7 +1,12 @@
-Liberation Sans Width Variants Test Font
-License: SIL Open Font License 1.1
-License File: LICENSE.txt
+Name: Liberation Sans Width Variants Test Font
+Short Name: LiberationSansWidthVariants
+URL: https://github.com/liberationfonts/liberation-fonts
+Version: 2.000
+License: OFL-1.1
+License File: LICENSE
+Security Critical: no
 Shipped: no
+Package Excluded: yes
 
 1. Source Origin
 https://fedorahosted.org/liberation-fonts/

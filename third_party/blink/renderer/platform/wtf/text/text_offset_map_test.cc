@@ -35,6 +35,10 @@ TEST(TextOffsetMapTest, MergeConstructor) {
       {{{3, 2}, {7, 5}}, {{3, 2}, {6, 4}}, {{4, 2}, {8, 4}}},
       // "ABC" -> "AaBCc" -> "AbaBCdc"
       {{{1, 2}, {3, 5}}, {{1, 2}, {4, 6}}, {{1, 3}, {3, 7}}},
+
+      // crbug.com/379254069
+      // "A" -> "Aab" -> "Ab"
+      {{{1, 3}}, {{2, 1}}, {{1, 2}}},
   };
 
   for (const auto& data : kTestData) {
@@ -48,7 +52,7 @@ TEST(TextOffsetMapTest, MergeConstructor) {
       map23.Append(entry.source, entry.target);
     }
 
-    TextOffsetMap merged(map12, map23);
+    TextOffsetMap merged(map12, map23, /* fix_crash */ true);
     EXPECT_EQ(merged.Entries(), data.expected);
   }
 }

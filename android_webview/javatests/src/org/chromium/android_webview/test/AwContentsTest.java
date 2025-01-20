@@ -1261,7 +1261,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // This test is specifically about relative file urls
         awSettings.setAllowFileAccess(true);
-        awSettings.setAllowFileAccessFromFileURLs(true);
+        awSettings.setAllowFileAccessFromFileUrls(true);
 
         // This test runs some javascript to verify if it passes
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);

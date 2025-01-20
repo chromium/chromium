@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/schemeful_site.h"
+
+#include <array>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/url_util.h"
@@ -37,7 +34,7 @@ TEST(SchemefulSiteTest, DifferentOriginSameRegisterableDomain) {
 TEST(SchemefulSiteTest, Operators) {
   // Create a list of origins that should all have different schemeful sites.
   // These are in ascending order.
-  url::Origin kTestOrigins[] = {
+  auto kTestOrigins = std::to_array<url::Origin>({
       url::Origin::Create(GURL("data:text/html,<body>Hello World</body>")),
       url::Origin::Create(GURL("file://foo")),
       url::Origin::Create(GURL("http://a.bar.test")),
@@ -47,7 +44,8 @@ TEST(SchemefulSiteTest, Operators) {
       url::Origin::Create(GURL("https://a.bar.test")),
       url::Origin::Create(GURL("https://c.test")),
       url::Origin::Create(GURL("https://d.test")),
-      url::Origin::Create(GURL("https://a.foo.test"))};
+      url::Origin::Create(GURL("https://a.foo.test")),
+  });
 
   // Compare each origin to every other origin and ensure the operators work as
   // expected.

@@ -140,18 +140,6 @@
     padding-inline-start: 8px;
   }
 
-  #policyCertIndicator {
-    color: rgb(106, 106, 106);
-    display: flex;
-    padding-inline-start: 15px;
-  }
-
-  #policyCertIcon {
-    height: 20px;
-    padding-top: 8px;
-    width: 20px;
-  }
-
   .title-icon {
     /* #1a73e8 */
     --iron-icon-fill-color: rgb(26, 115, 232);
@@ -287,16 +275,6 @@
 
 <div id="body" hidden="[[!isSigninFrameDisplayed]]">
   <div id="samlContainer">
-    <div id="policyCertIndicator"
-        hidden="[[!policyProvidedTrustedAnchorsUsed()]]">
-      <cr-tooltip-icon id="policyCertIcon" icon-class="cr:domain"
-          tooltip-text="[[i18nDynamic(locale,
-              'policyProvidedCaCertsTooltipMessage', authDomain)]]"
-          icon-aria-label="[[i18nDynamic(locale,
-              'policyProvidedCaCertsTooltipMessage', authDomain)]]"
-          tooltip-position="bottom">
-      </cr-tooltip-icon>
-    </div>
     <div id="samlHeader" saml-notice-message$="[[isSaml]]">
       <span id="samlNoticeMessage" hidden="[[!isSaml]]">
         [[i18n('samlNotice', authDomain)]]

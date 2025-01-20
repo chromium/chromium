@@ -8,7 +8,6 @@
  * Nearby Share feature.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -20,7 +19,7 @@ import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
 import {getContactManager} from '/shared/nearby_contact_manager.js';
-import type {ReceiveManagerInterface, ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
+import type {ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
 import type {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -37,11 +36,12 @@ import {Router, routes} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
 import type {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
-import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
+import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
 import {dataUsageStringToEnum} from './types.js';
 
-const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S = 300;
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 600;
 
 const SettingsNearbyShareSubpageElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
@@ -110,6 +110,14 @@ export class SettingsNearbyShareSubpageElement extends
       },
 
       /**
+       * Determines whether the QuickShareV2 flag is enabled.
+       */
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -130,29 +138,6 @@ export class SettingsNearbyShareSubpageElement extends
                 settings.isFastInitiationHardwareSupported)`,
       },
 
-      /**
-       * Determines whether the QuickShareV2 flag is enabled.
-       */
-      isQuickShareV2Enabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
-      },
-
-      isDeviceVisible_: {
-        type: Boolean,
-        value: true,  // Correctly populated on settings load.
-      },
-
-      selectedVisibilityLabel_: {
-        type: String,
-        value: '',  // Populated on settings load.
-      },
-
-      isEveryoneModeOnlyForTenMinutes_: {
-        type: Boolean,
-        value: true,
-      },
-
       yourDevicesLabel_: {
         type: String,
         value: 'Your devices',
@@ -162,58 +147,34 @@ export class SettingsNearbyShareSubpageElement extends
         type: String,
         value: 'Contacts',
       },
-
-      everyoneLabel_: {
-        type: String,
-        value: 'Everyone',
-      },
-
-      yourDevicesSublabel_: {
-        type: String,
-        computed: 'getYourDevicesVisibilitySublabel_(profileLabel_)',
-      },
-
-      isChangingHighVisibilityStatus_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   static get observers() {
     return [
       'enabledChange_(settings.enabled)',
-      'setSettingsVisibilityMenu_(settings.visibility)',
     ];
   }
 
   isSettingsRetreived: boolean;
   settings: NearbySettings;
-  private isChangingHighVisibilityStatus_: boolean;
-  private isDeviceVisible_: boolean;
-  private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
-  private receiveManager_: ReceiveManagerInterface|null;
   private receiveObserver_: ReceiveObserverReceiver|null;
-  private selectedVisibilityLabel_: string;
   private shouldShowFastInititationNotificationToggle_: boolean;
   private showDataUsageDialog_: boolean;
   private showDeviceNameDialog_: boolean;
   private showReceiveDialog_: boolean;
   private showVisibilityDialog_: boolean;
   private yourDevicesLabel_: string;
-  private yourDevicesSublabel_: string;
   private contactsLabel_: string;
-  private everyoneLabel_: string;
 
   constructor() {
     super();
 
-    this.receiveManager_ = null;
     this.receiveObserver_ = null;
   }
 
@@ -238,7 +199,6 @@ export class SettingsNearbyShareSubpageElement extends
           this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
-    this.receiveManager_ = getReceiveManager();
     this.receiveObserver_ = observeReceiveManager(this);
   }
 
@@ -298,19 +258,6 @@ export class SettingsNearbyShareSubpageElement extends
    */
   onHighVisibilityChanged(inHighVisibility: boolean): void {
     this.inHighVisibility_ = inHighVisibility;
-
-    if (!this.isQuickShareV2Enabled_) {
-      return;
-    }
-
-    //  When Quick Share v2 is enabled, ensure that `setSettingsVisibilityMenu_`
-    //  is not called when `this` is in the process of changing the high
-    //  visibility status (un/register receive surface + execute callback).
-    if (this.isChangingHighVisibilityStatus_) {
-      return;
-    }
-
-    this.setSettingsVisibilityMenu_();
   }
 
   /**
@@ -360,6 +307,22 @@ export class SettingsNearbyShareSubpageElement extends
     if (visibility === undefined) {
       return '';
     }
+
+    if (this.isQuickShareV2Enabled_) {
+      switch (visibility) {
+        case Visibility.kAllContacts:
+          return this.i18n('nearbyShareContactVisiblityContactsButton');
+        case Visibility.kNoOne:
+          return this.i18n('nearbyShareContactVisibilityNone');
+        case Visibility.kUnknown:
+          return this.i18n('nearbyShareContactVisibilityUnknown');
+        case Visibility.kYourDevices:
+          return this.i18n('nearbyShareContactVisibilityYourDevices');
+        default:
+          assertNotReached();
+      }
+    }
+
     switch (visibility) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
@@ -401,9 +364,12 @@ export class SettingsNearbyShareSubpageElement extends
     // TODO(crbug.com/40159645): Add logic to show how much time the user
     // actually has left.
     return inHighVisibility ?
-        this.i18n('nearbyShareHighVisibilityOn', 5) :
+        this.i18n(
+            'nearbyShareHighVisibilityOn',
+            this.isQuickShareV2Enabled_ ? 10 : 5) :
         this.i18nAdvanced(
-            'nearbyShareHighVisibilityOff', {substitutions: ['5']});
+            'nearbyShareHighVisibilityOff',
+            {substitutions: [this.isQuickShareV2Enabled_ ? '10' : '5']});
   }
 
   private getDataUsageLabel_(dataUsageValue: string): string {
@@ -475,7 +441,10 @@ export class SettingsNearbyShareSubpageElement extends
 
   private showHighVisibilityPage_(timeoutInSeconds?: number): void {
     const shutoffTimeoutInSeconds =
-        timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
+        timeoutInSeconds || this.isQuickShareV2Enabled_ ?
+        DEFAULT_HIGH_VISIBILITY_TIMEOUT_S :
+        DEFAULT_HIGH_VISIBILITY_TIMEOUT_LEGACY_S;
+
     this.showReceiveDialog_ = true;
     flush();
     this.shadowRoot!
@@ -531,70 +500,6 @@ export class SettingsNearbyShareSubpageElement extends
     return isHardwareSupported;
   }
 
-  /**
-   * Called when the Quick Share toggle is toggled.
-   * - If Quick Share is toggled to on, set visibility to the previously
-   * selected visibility if one exists
-   * - If Quick Share is toggled to off, set visibility to NoOne
-   */
-  private onQuickShareVisibilityToggled_(): void {
-    if (this.isDeviceVisible_) {
-      this.isDeviceVisible_ = false;
-      if (this.inHighVisibility_) {
-        this.attemptSetVisibilityFromEveryoneVisibility_(Visibility.kNoOne);
-        return;
-      }
-
-      this.setVisibility_(Visibility.kNoOne);
-      return;
-    }
-
-    this.isDeviceVisible_ = true;
-    switch (this.selectedVisibilityLabel_) {
-      case this.everyoneLabel_:
-        this.attemptSetEveryoneVisibility_(Visibility.kNoOne);
-        break;
-      case this.yourDevicesLabel_:
-      case this.contactsLabel_:
-        const newVisibility: Visibility =
-            this.getVisibilityByLabel_(this.selectedVisibilityLabel_);
-        this.setVisibility_(newVisibility);
-        break;
-      default:
-        console.error(
-            'Previously set visibility undetected or unset. Defaulting to Your devices visibility.');
-        this.setVisibility_(Visibility.kYourDevices);
-    }
-  }
-
-  /**
-   * Called when user selects a new visibility in the visibility menu excluding
-   * toggling Quick Share on/off. If Everyone is selected or deselected, attempt
-   * to enable/disable high power scanning, respectively. Set the settings
-   * visibility to the newly selected visibility.
-   * @param e a CustomEvent containing a string, the label of the newly selected
-   *     visibility.
-   */
-  private onSelectedVisibilityChange_(e: CustomEvent<{value: string}>): void {
-    const newSelectedVisibilityLabel: string = e.detail.value;
-    const currentSelectedVisibilityLabel: string =
-        this.selectedVisibilityLabel_;
-
-    if (newSelectedVisibilityLabel === this.everyoneLabel_) {
-      this.attemptSetEveryoneVisibility_(this.settings.visibility);
-      return;
-    }
-
-    const newSelectedVisibility: Visibility =
-        this.getVisibilityByLabel_(newSelectedVisibilityLabel);
-    if (currentSelectedVisibilityLabel === this.everyoneLabel_) {
-      this.attemptSetVisibilityFromEveryoneVisibility_(newSelectedVisibility);
-      return;
-    }
-
-    this.setVisibility_(newSelectedVisibility);
-  }
-
   private setVisibility_(visibility: Visibility): void {
     this.set('settings.visibility', visibility);
   }
@@ -609,214 +514,7 @@ export class SettingsNearbyShareSubpageElement extends
         return Visibility.kUnknown;
     }
   }
-
-  private isEveryoneModeSelected_(): boolean {
-    return this.selectedVisibilityLabel_ === this.everyoneLabel_;
-  }
-
-  private getSelectedVisibility_(): Visibility|null {
-    switch (this.selectedVisibilityLabel_) {
-      case this.yourDevicesLabel_:
-        return Visibility.kYourDevices;
-      case this.contactsLabel_:
-        return Visibility.kAllContacts;
-      case this.everyoneLabel_:
-        return Visibility.kAllContacts;
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * Sets the toggle and checked states of objects in the settings menu
-  according to visibility settings and whether the device is in high visibility
-  mode. Called on change in settings visibility and change in high visibility
-  status.
-   */
-  private setSettingsVisibilityMenu_(): void {
-    if (!this.isQuickShareV2Enabled_) {
-      return;
-    }
-
-    // Everyone visibility case. Since in the codebase 'Everyone' is a different
-    // mode of advertisement and not an enumerated visibility (like Your
-    // devices), it must be handled outside of the switch statement.
-    if (this.inHighVisibility_) {
-      this.isDeviceVisible_ = true;
-      this.selectedVisibilityLabel_ = this.everyoneLabel_;
-      return;
-    }
-
-    const visibility: Visibility = this.settings.visibility;
-    switch (visibility) {
-      case Visibility.kNoOne:
-        this.isDeviceVisible_ = false;
-        break;
-      case Visibility.kAllContacts:
-        this.isDeviceVisible_ = true;
-        this.selectedVisibilityLabel_ = this.contactsLabel_;
-        break;
-      case Visibility.kSelectedContacts:
-        // Selected contacts visibility does not exist in Quick Share v2. Set
-        // visibility to Your devices.
-        this.isDeviceVisible_ = true;
-        this.setVisibility_(Visibility.kYourDevices);
-        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
-        break;
-      case Visibility.kYourDevices:
-        this.isDeviceVisible_ = true;
-        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
-        break;
-      default:
-        // If visibility is unset, default to Your devices.
-        this.isDeviceVisible_ = true;
-        this.setVisibility_(Visibility.kYourDevices);
-        this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
-        break;
-    }
-  }
-
-  private getYourDevicesVisibilitySublabel_(): TrustedHTML {
-    return this.i18nAdvanced(
-        'quickShareV2VisibilityYourDevicesSublabel',
-        {substitutions: [this.profileLabel_]});
-  }
-
-  /**
-   * Attempts to activate high power scanning. Called when the user has selected
-   * Everyone visibility in the visibility menu.
-   * - If attempt is unsuccessful, log error message
-   * On success,
-   * - If previously selected visibility is NoOne, set visibility to Your
-   * devices
-   * - Otherwise, restore the previously set visibility
-   * @param previouslySetVisibility.
-   */
-  private attemptSetEveryoneVisibility_(previouslySetVisibility: Visibility):
-      void {
-    this.isChangingHighVisibilityStatus_ = true;
-    this.activateHighPowerScanning_().then((result: number) => {
-      // `result` = 0 indicates success, positive integers indicate failure.
-      if (!result) {
-        this.isDeviceVisible_ = true;
-        this.selectedVisibilityLabel_ = this.everyoneLabel_;
-
-        this.isChangingHighVisibilityStatus_ = false;
-        return;
-      }
-
-      switch (previouslySetVisibility) {
-        case Visibility.kAllContacts:
-          this.setVisibility_(Visibility.kAllContacts);
-          this.selectedVisibilityLabel_ = this.contactsLabel_;
-          break;
-        default:
-          // All remaining cases fall to Your devices visibility:
-          // - Your devices: trivial
-          // - Selected contacts: doesn't exist in Quick Share v2, default to
-          // most similar setting Your devices
-          // - Unknown/NoOne: user wants to enable Quick Share, but Everyone
-          // isn't available, default to most private visibility Your devices
-          this.setVisibility_(Visibility.kYourDevices);
-          this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
-      }
-
-      this.isChangingHighVisibilityStatus_ = false;
-    });
-  }
-
-  /**
-   * Attempts to deactivate high power scanning. Called when user has selected
-   * any visibility other than Everyone, or turned Quick Share off, and Everyone
-   * is the previously selected visibility.
-   * - If attempt is unsuccessful, keep visibility set to Everyone
-   * On success,
-   * - If the newly selected visibility is NoOne, turn Quick Share off,
-   * `isDeviceVisible_` is set to false
-   * - Otherwise, set visibility to `newVisibility`
-   * @param newVisibility.
-   */
-
-  private attemptSetVisibilityFromEveryoneVisibility_(newVisibility:
-                                                          Visibility): void {
-    this.isChangingHighVisibilityStatus_ = true;
-    this.deactivateHighPowerScanning_().then((success: boolean) => {
-      if (success) {
-        switch (newVisibility) {
-          case Visibility.kAllContacts:
-            this.setVisibility_(Visibility.kAllContacts);
-            this.selectedVisibilityLabel_ = this.contactsLabel_;
-            break;
-          case Visibility.kNoOne:
-            this.setVisibility_(Visibility.kNoOne);
-            this.isDeviceVisible_ = false;
-            break;
-          default:
-            this.setVisibility_(Visibility.kYourDevices);
-            this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
-        }
-        this.isChangingHighVisibilityStatus_ = false;
-        return;
-      }
-
-      console.error('Unable to unregister Foreground receive surface.');
-      if (newVisibility === Visibility.kNoOne) {
-        this.isDeviceVisible_ = true;
-      }
-      this.selectedVisibilityLabel_ = this.everyoneLabel_;
-      this.isChangingHighVisibilityStatus_ = false;
-    });
-  }
-
-  /**
-   * Register a foreground receive surface and returns a success status:
-   * - 0 indicates success
-   * - any positive integer indicates an error
-   * @returns a Promise of a number, the success status of the attempt to
-   *     register a foreground receive surface.
-   */
-
-  private async activateHighPowerScanning_(): Promise<number> {
-    if (!this.receiveManager_) {
-      console.error('Receive manager not connected.');
-      return 1;
-    }
-    const callStatus: number =
-        await this.receiveManager_!.registerForegroundReceiveSurface().then(
-            (result) => {
-              if (!result) {
-                return 1;
-              }
-              return result.result;
-            });
-
-    return callStatus;
-  }
-
-  /**
-   * Unregisters a foreground receive surface.
-   * @returns a Promise of a boolean, indicates whether the foreground receive
-   *     surface was successfully unregistered.
-   */
-
-  private async deactivateHighPowerScanning_(): Promise<boolean> {
-    if (!this.receiveManager_) {
-      console.error('Receive manager not connected.');
-      return false;
-    }
-
-    const callSuccess: boolean =
-        await this.receiveManager_!.unregisterForegroundReceiveSurface().then(
-            (result) => {
-              if (!result) {
-                return false;
-              }
-              return result.success;
-            });
-    return callSuccess;
-  }
 }
-
 
 declare global {
   interface HTMLElementTagNameMap {

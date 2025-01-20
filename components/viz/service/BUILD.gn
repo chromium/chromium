@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
@@ -124,7 +123,6 @@ viz_component("service") {
     "display/resolved_frame_data.h",
     "display/resource_fence.cc",
     "display/resource_fence.h",
-    "display/shared_bitmap_manager.h",
     "display/skia_output_surface.cc",
     "display/skia_output_surface.h",
     "display/skia_renderer.cc",
@@ -149,8 +147,6 @@ viz_component("service") {
     "display_embedder/output_surface_provider.h",
     "display_embedder/output_surface_provider_impl.cc",
     "display_embedder/output_surface_provider_impl.h",
-    "display_embedder/server_shared_bitmap_manager.cc",
-    "display_embedder/server_shared_bitmap_manager.h",
     "display_embedder/skia_output_device.cc",
     "display_embedder/skia_output_device.h",
     "display_embedder/skia_output_device_buffer_queue.cc",
@@ -228,6 +224,8 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/peak_gpu_memory_tracker_impl.cc",
+    "input/peak_gpu_memory_tracker_impl.h",
     "input/render_input_router_delegate_impl.cc",
     "input/render_input_router_delegate_impl.h",
     "input/render_input_router_iterator_impl.cc",
@@ -274,7 +272,6 @@ viz_component("service") {
 
   deps = [
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc/animation",
     "//cc/base",
     "//cc/paint",
@@ -337,7 +334,7 @@ viz_component("service") {
     "//ui/latency",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "display_embedder/output_surface_unified.cc",
       "display_embedder/output_surface_unified.h",
@@ -351,7 +348,7 @@ viz_component("service") {
     ]
 
     if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 
@@ -421,8 +418,10 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
-      "input/android_input_callback.cc",
-      "input/android_input_callback.h",
+      "input/android_state_transfer_handler.cc",
+      "input/android_state_transfer_handler.h",
+      "input/fling_scheduler_android.cc",
+      "input/fling_scheduler_android.h",
       "input/render_input_router_support_android.cc",
       "input/render_input_router_support_android.h",
     ]
@@ -463,10 +462,26 @@ viz_component("service") {
       "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
+      "display_embedder/software_output_device_win_base.cc",
+      "display_embedder/software_output_device_win_base.h",
+      "display_embedder/software_output_device_win_swapchain.cc",
+      "display_embedder/software_output_device_win_swapchain.h",
       "frame_sinks/external_begin_frame_source_win.cc",
       "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
+    ]
+
+    libs = [
+      "d3d11.lib",
+      "dxgi.lib",
+      "dcomp.lib",
+    ]
+
+    ldflags = [
+      "/DELAYLOAD:d3d11.dll",
+      "/DELAYLOAD:dxgi.dll",
+      "/DELAYLOAD:dcomp.dll",
     ]
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.
@@ -580,7 +595,6 @@ viz_source_set("unit_tests") {
     "display/viz_pixel_test.cc",
     "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
-    "display_embedder/server_shared_bitmap_manager_unittest.cc",
     "display_embedder/skia_output_device_buffer_queue_unittest.cc",
     "display_embedder/skia_output_surface_impl_unittest.cc",
     "display_embedder/software_output_surface_unittest.cc",
@@ -615,7 +629,6 @@ viz_source_set("unit_tests") {
     ":viz_debugger",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/input",
@@ -689,7 +702,10 @@ viz_source_set("unit_tests") {
       "display/overlay_processor_surface_control_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
+      "frame_sinks/fling_scheduler_android_unittest.cc",
+      "input/android_state_transfer_handler_unittest.cc",
     ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
 
   if (enable_vulkan) {

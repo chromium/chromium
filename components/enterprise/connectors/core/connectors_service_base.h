@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/policy/core/common/policy_types.h"
@@ -22,10 +23,23 @@ namespace enterprise_connectors {
 // Abstract class to access Connector policy values and related information.
 class ConnectorsServiceBase {
  public:
+  enum class NoDMTokenForRealTimeUrlCheckReason {
+    // Connectors are not enabled, such as for incognito mode.
+    kConnectorsDisabled = 0,
+    // Connectors are enabled, but the `kEnterpriseRealTimeUrlCheckMode` policy
+    // is disabled.
+    kPolicyDisabled = 1,
+    // Connectors and the `kEnterpriseRealTimeUrlCheckMode` policy are enabled,
+    // but there is still no token found.
+    kNoDmToken = 2,
+    kMaxValue = kNoDmToken,
+  };
+
   // DM token accessor function for real-time URL checks. Returns a profile or
-  // browser DM token depending on the policy scope, and std::nullopt if there
-  // is no token to use.
-  std::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+  // browser DM token depending on the policy scope. If there is no token to
+  // use, returns the reason why.
+  base::expected<std::string, NoDMTokenForRealTimeUrlCheckReason>
+  GetDMTokenForRealTimeUrlCheck() const;
 
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
@@ -39,7 +53,7 @@ class ConnectorsServiceBase {
 
   virtual std::optional<ReportingSettings> GetReportingSettings();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> GetProfileDmToken() const;
 #endif
 

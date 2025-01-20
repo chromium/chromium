@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.Handle;
 
 import java.io.Closeable;
@@ -13,6 +14,7 @@ import java.io.Closeable;
  *
  * @param <H> The type of the owned handle.
  */
+@NullMarked
 public interface HandleOwner<H extends Handle> extends Closeable {
 
     /** Pass the handle owned by this class. */

@@ -52,7 +52,7 @@ async function awaitAsyncTestResult(resultPromise: Promise<void|any>) {
  * name to run. Use the configuration/details to setup the test environment,
  * then run the test case using chrome.test.RunTests.
  */
-window.addEventListener('load', async () => {
+(async () => {
   // Request the guest mode state.
   remoteCall = new RemoteCallFilesApp(FILE_MANAGER_SWA_ID);
   const mode = await sendBrowserTestCommand({name: 'isInGuestMode'});
@@ -85,4 +85,4 @@ window.addEventListener('load', async () => {
 
   // Run the test.
   chrome.test.runTests([testCase[testCaseName]!]);
-});
+})();

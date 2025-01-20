@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
+import("//build/config/chrome_build.gni")
 import("//chrome/version.gni")
 
 declare_args() {
@@ -12,13 +13,16 @@ declare_args() {
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
   use_dawn = is_apple || is_win || is_chromeos || (is_linux && !is_castos) ||
-             (is_android && target_cpu != "x86" && target_cpu != "x64")
+             (is_android && target_cpu != "x86" && target_cpu != "x64") ||
+             is_desktop_android
 
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
-  enable_validating_command_decoder = is_android
+  # desktop android devices exclusively use angle and thus should not use
+  # the validating command decoder
+  enable_validating_command_decoder = is_android && !is_desktop_android
 }
 
 declare_args() {

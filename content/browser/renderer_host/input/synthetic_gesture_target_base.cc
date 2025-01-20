@@ -67,28 +67,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
       LOG(WARNING) << "Mouse wheel position is not within content bounds.";
       return;
     }
-    if (web_wheel.delta_units != ui::ScrollGranularity::kScrollByPercentage)
-      DispatchWebMouseWheelEventToPlatform(web_wheel, latency_info);
-    else {
-      // Percentage-based mouse wheel scrolls are implemented in the UI layer by
-      // converting a native event's wheel tick amount to a percentage and
-      // setting that directly on WebMouseWheelEvent (i.e. it does not read the
-      // ui::MouseWheelEvent). However, when dispatching a synthetic
-      // ui::MouseWheelEvent, the created WebMouseWheelEvent will copy values
-      // from the ui::MouseWheelEvent. ui::MouseWheelEvent does
-      // not have a float value for delta, so that codepath ends up truncating.
-      // So instead, dispatch the WebMouseWheelEvent directly through the
-      // RenderWidgetHostInputEventRouter attached to the RenderWidgetHostImpl.
-
-      DCHECK(host_->delegate());
-      DCHECK(host_->delegate()->IsWidgetForPrimaryMainFrame(host_));
-      DCHECK(host_->delegate()->GetInputEventRouter());
-
-      std::unique_ptr<WebInputEvent> wheel_evt_ptr = web_wheel.Clone();
-      host_->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
-          host_->GetView(),
-          static_cast<WebMouseWheelEvent*>(wheel_evt_ptr.get()), latency_info);
-    }
+    DispatchWebMouseWheelEventToPlatform(web_wheel, latency_info);
   } else if (WebInputEvent::IsMouseEventType(event.GetType())) {
     const WebMouseEvent& web_mouse =
         static_cast<const WebMouseEvent&>(event);

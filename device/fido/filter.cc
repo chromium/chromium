@@ -71,13 +71,13 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
 }
 
 std::optional<std::vector<FilterStep>> ParseJSON(std::string_view json) {
-  std::optional<base::Value> v =
-      base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!v || !v->is_dict()) {
+  auto dict =
+      base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* filters = v->GetDict().FindList("filters");
+  const base::Value::List* filters = dict->FindList("filters");
   if (!filters) {
     return std::nullopt;
   }
@@ -332,7 +332,8 @@ ScopedFilterForTesting::~ScopedFilterForTesting() {
 }
 
 bool ParseForTesting(std::string_view json) {
-  CHECK(base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS)) << json;
+  CHECK(base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS))
+      << json;
   return MaybeParseFilter(json);
 }
 

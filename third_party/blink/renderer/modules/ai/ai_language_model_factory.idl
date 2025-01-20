@@ -9,6 +9,7 @@ enum AILanguageModelPromptRole { "user", "assistant" };
 
 [
   Exposed=(Window,Worker),
+  SecureContext,
   RuntimeEnabled=AIPromptAPI
 ]
 interface AILanguageModelCapabilities {
@@ -28,6 +29,7 @@ interface AILanguageModelCapabilities {
 
 [
   Exposed=(Window,Worker),
+  SecureContext,
   RuntimeEnabled=AIPromptAPI
 ]
 interface AILanguageModelFactory {

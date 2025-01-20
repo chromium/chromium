@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -173,7 +168,7 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   //
   // Note: Strict is set by V8.
   v8::Isolate* isolate = script_state_of_event_target->GetIsolate();
-  v8::Local<v8::String> parameter_list[5];
+  std::array<v8::Local<v8::String>, 5> parameter_list;
   size_t parameter_list_size = 0;
   if (IsOnErrorEventHandler() && window) {
     // SVG requires to introduce evt as an alias to event in event handlers.
@@ -190,9 +185,8 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
     parameter_list[parameter_list_size++] =
         V8String(isolate, element && element->IsSVGElement() ? "evt" : "event");
   }
-  DCHECK_LE(parameter_list_size, std::size(parameter_list));
 
-  v8::Local<v8::Object> scopes[3];
+  std::array<v8::Local<v8::Object>, 3> scopes;
   size_t scopes_size = 0;
   if (element) {
     scopes[scopes_size++] =
@@ -209,7 +203,6 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
         ToV8Traits<Element>::ToV8(script_state_of_event_target, element)
             .As<v8::Object>();
   }
-  DCHECK_LE(scopes_size, std::size(scopes));
 
   v8::ScriptOrigin origin(
       V8String(isolate, source_url_), position_.line_.ZeroBasedInt(),
@@ -222,9 +215,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
     v8::TryCatch block(isolate);
     block.SetVerbose(true);
     v8::MaybeLocal<v8::Function> maybe_result =
-        v8::ScriptCompiler::CompileFunction(v8_context_of_event_target, &source,
-                                            parameter_list_size, parameter_list,
-                                            scopes_size, scopes);
+        v8::ScriptCompiler::CompileFunction(
+            v8_context_of_event_target, &source, parameter_list_size,
+            parameter_list.data(), scopes_size, scopes.data());
 
     // Step 7. If body is not parsable as FunctionBody or if parsing detects an
     // early error, then follow these substeps:

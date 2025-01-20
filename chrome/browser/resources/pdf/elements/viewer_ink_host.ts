@@ -275,7 +275,7 @@ export class ViewerInkHostElement extends PolymerElement {
   async saveDocument(): Promise<{fileName: string, dataToSave: ArrayBuffer}> {
     if (this.state_ === State.ACTIVE) {
       const pdf = await this.ink_!.getPdfDestructive();
-      this.buffer_ = await pdf.buffer;
+      this.buffer_ = pdf.buffer;
       this.state_ = State.IDLE;
     }
     return {

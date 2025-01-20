@@ -63,8 +63,9 @@ int CompareTextSelectionBounds(const gfx::SelectionBound& b1,
       b1.edge_start().x() < b2.edge_start().x()) {
     return -1;
   }
-  if (b1 == b2)
+  if (b1 == b2) {
     return 0;
+  }
   return 1;
 }
 
@@ -167,10 +168,11 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   void SimulateSelectionHandleDrag(gfx::Vector2d v, int selection_handle) {
     TouchSelectionControllerImpl* controller = GetSelectionController();
     views::View* handle = nullptr;
-    if (selection_handle == 1)
+    if (selection_handle == 1) {
       handle = controller->GetHandle1View();
-    else
+    } else {
       handle = controller->GetHandle2View();
+    }
 
     gfx::Point grip_location =
         gfx::Point(handle->size().width() / 2, handle->size().height() / 2);
@@ -315,8 +317,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     CreateTextfield();
     std::string some_text("some text");
     std::string textfield_text;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; ++i) {
       textfield_text += some_text;
+    }
     textfield_->SetText(ASCIIToUTF16(textfield_text));
 
     // Tap the textfield to invoke selection.
@@ -1110,14 +1113,16 @@ class TestTouchEditable : public ui::TouchEditable {
   void ConvertPointToScreen(gfx::Point* point) override {
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window_->GetRootWindow());
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointToScreen(window_, point);
+    }
   }
   void ConvertPointFromScreen(gfx::Point* point) override {
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window_->GetRootWindow());
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointFromScreen(window_, point);
+    }
   }
   void OpenContextMenu(const gfx::Point& anchor) override { NOTREACHED(); }
   void DestroyTouchSelection() override { NOTREACHED(); }

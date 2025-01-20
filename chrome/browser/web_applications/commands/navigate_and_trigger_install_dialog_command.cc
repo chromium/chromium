@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -16,11 +17,15 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -32,6 +37,7 @@ NavigateAndTriggerInstallDialogCommand::NavigateAndTriggerInstallDialogCommand(
     const GURL& install_url,
     const GURL& origin_url,
     bool is_renderer_initiated,
+    webapps::WebappInstallSource source,
     NavigateAndTriggerInstallDialogCommandCallback callback,
     base::WeakPtr<WebAppUiManager> ui_manager,
     std::unique_ptr<webapps::WebAppUrlLoader> url_loader,
@@ -46,6 +52,7 @@ NavigateAndTriggerInstallDialogCommand::NavigateAndTriggerInstallDialogCommand(
       install_url_(install_url),
       origin_url_(origin_url),
       is_renderer_initiated_(is_renderer_initiated),
+      source_(source),
       ui_manager_(ui_manager),
       url_loader_(std::move(url_loader)),
       data_retriever_(std::move(data_retriever)),
@@ -161,7 +168,23 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
     return;
   }
   CHECK(!app_id_.empty());
-  if (app_lock_->registrar().IsInstalled(app_id_)) {
+
+  bool is_installable;
+  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
+    is_installable = true;
+  } else {
+    switch (app_lock_->registrar().GetInstallState(app_id_).value()) {
+      case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+        is_installable = true;
+        break;
+      case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
+      case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
+        is_installable = false;
+        break;
+    }
+  }
+
+  if (!is_installable) {
     // If the app is already installed, we don't show the dialog. Since nothing
     // went wrong, this is still considered a success.
     CompleteAndSelfDestruct(
@@ -169,7 +192,8 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
         NavigateAndTriggerInstallDialogCommandResult::kAlreadyInstalled);
     return;
   }
-  ui_manager_->TriggerInstallDialog(web_contents_.get());
+  ui_manager_->TriggerInstallDialog(web_contents_.get(), source_,
+                                    base::DoNothing());
   CompleteAndSelfDestruct(
       CommandResult::kSuccess,
       NavigateAndTriggerInstallDialogCommandResult::kDialogShown);

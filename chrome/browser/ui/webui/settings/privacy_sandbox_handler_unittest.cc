@@ -289,9 +289,7 @@ class PrivacySandboxPrivacyGuideAdTopicsShownTest
     : public PrivacySandboxMessageHandlerTest,
       public testing::WithParamInterface<std::pair<bool, bool>> {
  public:
-  void SetUp() override {
-    PrivacySandboxMessageHandlerTest::SetUp();
-  }
+  void SetUp() override { PrivacySandboxMessageHandlerTest::SetUp(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;

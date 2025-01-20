@@ -212,7 +212,7 @@ bool HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
   }
 
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-          contents->GetPrimaryMainFrame()->GetProcess()->GetID())) {
+          contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID())) {
     CHECK(contents->GetSiteInstance()->IsGuest());
     return true;
   }

@@ -53,7 +53,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void ActivateWindow() = 0;
     virtual void CloseWindow() = 0;
     virtual void Inspect(scoped_refptr<content::DevToolsAgentHost> host) = 0;

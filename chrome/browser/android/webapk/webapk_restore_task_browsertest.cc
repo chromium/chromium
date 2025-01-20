@@ -158,7 +158,9 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, StartUrlNotLoadable) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, ManifestIdMismatch) {
+// TODO(crbug.com/379851961): The test is flaky.
+IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest,
+                       DISABLED_ManifestIdMismatch) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   GURL test_url = embedded_test_server()->GetURL("/manifest_test_page.html");

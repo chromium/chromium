@@ -21,14 +21,11 @@ source_set("safe_browsing_service") {
 
   deps = [
     "//base:base",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
-
-  if (is_android) {
-    deps += [ "//components/safe_browsing/android:referring_app_info" ]
-  }
 }
 
 # NOTE: This target is separated from :browser as
@@ -84,6 +81,8 @@ source_set("browser") {
     "browser_url_loader_throttle.h",
     "client_report_util.cc",
     "client_report_util.h",
+    "content_unsafe_resource_util.cc",
+    "content_unsafe_resource_util.h",
     "mojo_safe_browsing_impl.cc",
     "mojo_safe_browsing_impl.h",
     "safe_browsing_controller_client.cc",
@@ -96,8 +95,6 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
-    "unsafe_resource_util.cc",
-    "unsafe_resource_util.h",
     "url_checker_holder.cc",
     "url_checker_holder.h",
     "web_contents_key.cc",
@@ -117,12 +114,14 @@ source_set("browser") {
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
+    "//components/safe_browsing/core/browser/utils:url_loader_factory_params",
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
@@ -286,6 +285,7 @@ source_set("client_side_detection") {
     ":client_side_detection_images_cache",
     ":client_side_detection_service",
     "//base:base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/permissions:permissions",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
@@ -302,6 +302,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core:unsafe_resource",
     "//components/variations",
     "//components/zoom:zoom",
     "//content/public/browser",

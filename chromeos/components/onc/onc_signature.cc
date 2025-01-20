@@ -589,8 +589,8 @@ const OncFieldSignature* GetFieldSignature(const OncValueSignature& signature,
 namespace {
 
 struct CredentialEntry {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // This field is not a raw_ptr<> because it only ever points to statically-
+  // allocated data which is never freed, and thus can never dangle.
   RAW_PTR_EXCLUSION const OncValueSignature* value_signature;
   const char* field_name;
 };

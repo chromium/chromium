@@ -1,8 +1,5 @@
 {
   "description": "One unique scopes set per reporting origin per navigation - no scopes",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       {

@@ -26,7 +26,7 @@ namespace {
 class MockChrome : public StubChrome {
  public:
   MockChrome() : web_view_("1") {}
-  ~MockChrome() override {}
+  ~MockChrome() override = default;
 
   Status GetWebViewById(const std::string& id, WebView** web_view) override {
     if (id == web_view_.GetId()) {

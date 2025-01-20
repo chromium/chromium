@@ -168,6 +168,11 @@ CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+network::mojom::DeviceBoundSessionManager*
+TestStoragePartition::GetDeviceBoundSessionManager() {
+  return nullptr;
+}
+
 BrowsingTopicsSiteDataManager*
 TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
   return browsing_topics_site_data_manager_;

@@ -34,114 +34,31 @@ namespace {
 
 using content_settings::SettingSource;
 
+using Variant = permissions::EmbeddedPermissionPromptFlowModel::Variant;
+
 // An upper bound on the maximum number of screens that we can record in
 // metrics. Practically speaking the actual number should never be more than 3
 // but a higher bound allows us to detect via metrics if this happens in the
 // wild.
 constexpr int SCREEN_COUNTER_MAXIMUM = 10;
 
-bool CanGroupVariants(EmbeddedPermissionPrompt::Variant a,
-                      EmbeddedPermissionPrompt::Variant b) {
-  // Ask and PreviouslyDenied are a special case and can be grouped together.
-  if ((a == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied &&
-       b == EmbeddedPermissionPrompt::Variant::kAsk) ||
-      (a == EmbeddedPermissionPrompt::Variant::kAsk &&
-       b == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied)) {
-    return true;
-  }
-
-  return (a == b);
-}
-
-bool IsPermissionSetByAdministator(ContentSetting setting,
-                                   const content_settings::SettingInfo& info) {
-  return ((setting == ContentSetting::CONTENT_SETTING_BLOCK ||
-           setting == ContentSetting::CONTENT_SETTING_ALLOW) &&
-          (info.source == SettingSource::kPolicy ||
-           info.source == SettingSource::kSupervised));
-}
-
-// TODO(41014586): Integrate policy-set media permissions into
-// SettingsSource.policy. Currently, AudioCaptureAllowed, VideoCaptureAllowed
-// are not checked within |IsPermissionSetByAdministrator|, so
-// |IsPermissionBlockedByDevicePolicy| and |IsPermissionAllowedByDevicePolicy|
-// methods are needed to show the appropriate policy screen.
-bool IsPermissionBlockedByDevicePolicy(
-    content::WebContents* web_contents,
-    ContentSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) {
-  if (IsPermissionSetByAdministator(setting, info) &&
-      setting == CONTENT_SETTING_BLOCK) {
-    return true;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                           prefs::kAudioCaptureAllowed,
-                           prefs::kAudioCaptureAllowedUrls) ==
-           MediaStreamDevicePolicy::ALWAYS_DENY;
-  }
-
-  if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                           prefs::kVideoCaptureAllowed,
-                           prefs::kVideoCaptureAllowedUrls) ==
-           MediaStreamDevicePolicy::ALWAYS_DENY;
-  }
-
-  return false;
-}
-
-bool IsPermissionAllowedByDevicePolicy(
-    content::WebContents* web_contents,
-    ContentSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) {
-  if (IsPermissionSetByAdministator(setting, info) &&
-      setting == CONTENT_SETTING_ALLOW) {
-    return true;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                           prefs::kAudioCaptureAllowed,
-                           prefs::kAudioCaptureAllowedUrls) ==
-           MediaStreamDevicePolicy::ALWAYS_ALLOW;
-  }
-
-  if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
-                           prefs::kVideoCaptureAllowed,
-                           prefs::kVideoCaptureAllowedUrls) ==
-           MediaStreamDevicePolicy::ALWAYS_ALLOW;
-  }
-
-  return false;
-}
-
-permissions::ElementAnchoredBubbleVariant GetVariant(
-    EmbeddedPermissionPrompt::Variant variant) {
+permissions::ElementAnchoredBubbleVariant GetVariant(Variant variant) {
   switch (variant) {
-    case EmbeddedPermissionPrompt::Variant::kUninitialized:
+    case Variant::kUninitialized:
       return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
-    case EmbeddedPermissionPrompt::Variant::kAdministratorGranted:
+    case Variant::kAdministratorGranted:
       return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED;
-    case EmbeddedPermissionPrompt::Variant::kPreviouslyGranted:
+    case Variant::kPreviouslyGranted:
       return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED;
-    case EmbeddedPermissionPrompt::Variant::kOsSystemSettings:
+    case Variant::kOsSystemSettings:
       return permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS;
-    case EmbeddedPermissionPrompt::Variant::kOsPrompt:
+    case Variant::kOsPrompt:
       return permissions::ElementAnchoredBubbleVariant::OS_PROMPT;
-    case EmbeddedPermissionPrompt::Variant::kAsk:
+    case Variant::kAsk:
       return permissions::ElementAnchoredBubbleVariant::ASK;
-    case EmbeddedPermissionPrompt::Variant::kPreviouslyDenied:
+    case Variant::kPreviouslyDenied:
       return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED;
-    case EmbeddedPermissionPrompt::Variant::kAdministratorDenied:
+    case Variant::kAdministratorDenied:
       return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
   }
 
@@ -155,54 +72,14 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
+  prompt_model_ =
+      std::make_unique<permissions::EmbeddedPermissionPromptFlowModel>(
+          web_contents, delegate);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/true);
 }
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
   CloseViewAndScrim();
-}
-
-EmbeddedPermissionPrompt::Variant
-EmbeddedPermissionPrompt::DeterminePromptVariant(
-    ContentSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) {
-  // If the administrator blocked the permission, there is nothing the user can
-  // do. Presenting them with a different screen in unproductive.
-  if (IsPermissionBlockedByDevicePolicy(web_contents(), setting, info, type)) {
-    return Variant::kAdministratorDenied;
-  }
-
-  // Determine if we can directly show one of the OS views. The "System
-  // Settings" view is higher priority then all the other remaining options,
-  // whereas the "OS Prompt" view is only higher priority then the views that
-  // are associated with a site-level allowed state.
-  // TODO(crbug.com/40275129): Handle going to Windows settings.
-  if (system_permission_settings::IsDenied(type)) {
-    return Variant::kOsSystemSettings;
-  }
-
-  if (setting == CONTENT_SETTING_ALLOW &&
-      system_permission_settings::CanPrompt(type)) {
-    return Variant::kOsPrompt;
-  }
-
-  if (IsPermissionAllowedByDevicePolicy(web_contents(), setting, info, type)) {
-    return Variant::kAdministratorGranted;
-  }
-
-  switch (setting) {
-    case CONTENT_SETTING_ASK:
-      return Variant::kAsk;
-    case CONTENT_SETTING_ALLOW:
-      return Variant::kPreviouslyGranted;
-    case CONTENT_SETTING_BLOCK:
-      return Variant::kPreviouslyDenied;
-    default:
-      break;
-  }
-
-  return Variant::kUninitialized;
 }
 
 void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
@@ -211,25 +88,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     CloseView();
   }
 
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  content_settings::SettingInfo info;
-
-  for (const auto& request : delegate()->Requests()) {
-    ContentSettingsType type = request->GetContentSettingsType();
-    ContentSetting setting =
-        map->GetContentSetting(delegate()->GetRequestingOrigin(),
-                               delegate()->GetEmbeddingOrigin(), type, &info);
-    Variant current_request_variant =
-        DeterminePromptVariant(setting, info, type);
-    PrioritizeAndMergeNewVariant(current_request_variant, type);
-  }
-
-  RebuildRequests();
+  prompt_model_->CalculateCurrentVariant();
 
   EmbeddedPermissionPromptBaseView* prompt_view = nullptr;
 
-  switch (embedded_prompt_variant_) {
+  switch (prompt_variant()) {
     case Variant::kAsk:
       prompt_view = new EmbeddedPermissionPromptAskView(
           browser(), weak_factory_.GetWeakPtr());
@@ -263,8 +126,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           delegate()->Requests(),
           permissions::ElementAnchoredBubbleVariant::OS_PROMPT);
       current_variant_first_display_time_ = base::Time::Now();
-// This view has no buttons, so the OS level prompt should be triggered at the
-// same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
+      // This view has no buttons, so the OS level prompt should be triggered at
+      // the same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
       PromptForOsPermission();
       break;
     case Variant::kOsSystemSettings:
@@ -331,7 +194,7 @@ void EmbeddedPermissionPrompt::RecordOsMetrics(
 
   permissions::OsScreen screen;
 
-  switch (embedded_prompt_variant_) {
+  switch (prompt_variant()) {
     case Variant::kOsPrompt:
       screen = permissions::OsScreen::OS_PROMPT;
       break;
@@ -360,7 +223,7 @@ void EmbeddedPermissionPrompt::RecordPermissionActionUKM(
       delegate_->Requests(),
       // This only contains the requests for the currently active screen, which
       // could sometimes be a subset of all requests for the entire prompt.
-      Requests(), action, GetVariant(embedded_prompt_variant_),
+      Requests(), action, GetVariant(prompt_variant()),
       prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
       delegate_->GetAssociatedWebContents(),
       delegate_->GetAssociatedWebContents()->GetBrowserContext());
@@ -378,11 +241,9 @@ bool EmbeddedPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
 }
 
 void EmbeddedPermissionPrompt::PrecalculateVariantsForMetrics() {
-  if (embedded_prompt_variant_ == Variant::kUninitialized) {
+  if (prompt_variant() == Variant::kUninitialized) {
     return;
   }
-
-  site_level_prompt_variant_ = embedded_prompt_variant_;
 
   if (os_prompt_variant_ == Variant::kUninitialized) {
     for (const auto& request : delegate()->Requests()) {
@@ -411,8 +272,8 @@ EmbeddedPermissionPrompt::GetPromptVariants() const {
 
   // Current prompt variant when the user takes an action on a site level
   // prompt.
-  if (embedded_prompt_variant_ != Variant::kUninitialized) {
-    variants.push_back(GetVariant(embedded_prompt_variant_));
+  if (prompt_variant() != Variant::kUninitialized) {
+    variants.push_back(GetVariant(prompt_variant()));
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -428,7 +289,7 @@ EmbeddedPermissionPrompt::GetPromptVariants() const {
 }
 
 bool EmbeddedPermissionPrompt::IsAskPrompt() const {
-  return (embedded_prompt_variant_ == Variant::kAsk);
+  return (prompt_variant() == Variant::kAsk);
 }
 
 std::optional<permissions::feature_params::PermissionElementPromptPosition>
@@ -485,15 +346,15 @@ void EmbeddedPermissionPrompt::StopAllowing() {
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-// TODO(crbug.com/40275129) Chrome always shows the first permission in a group,
-// as it is not possible to open multiple System Setting pages. Figure out a
-// better way to handle this scenario.
+  // TODO(crbug.com/40275129) Chrome always shows the first permission in a
+  // group, as it is not possible to open multiple System Setting pages. Figure
+  // out a better way to handle this scenario.
   RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);
   system_permission_settings::OpenSystemSettings(
       delegate()->GetAssociatedWebContents(),
-      requests_[0]->GetContentSettingsType());
+      Requests()[0]->GetContentSettingsType());
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
@@ -503,7 +364,7 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
 
 const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
 EmbeddedPermissionPrompt::Requests() const {
-  return requests_;
+  return prompt_model_->requests();
 }
 
 void EmbeddedPermissionPrompt::DismissScrim() {
@@ -519,11 +380,12 @@ void EmbeddedPermissionPrompt::DismissScrim() {
 }
 
 void EmbeddedPermissionPrompt::PromptForOsPermission() {
+  const auto& prompt_types = prompt_model_->prompt_types();
   // We currently support <=2 grouped permissions.
-  CHECK_LE(prompt_types_.size(), 2U);
+  CHECK_LE(prompt_types.size(), 2U);
 
-  std::vector<ContentSettingsType> types(prompt_types_.begin(),
-                                         prompt_types_.end());
+  std::vector<ContentSettingsType> types(prompt_types.begin(),
+                                         prompt_types.end());
 
   for (unsigned int idx = 0; idx < types.size(); idx++) {
     system_permission_settings::Request(
@@ -588,48 +450,13 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
   }
 }
 
-void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
-    EmbeddedPermissionPrompt::Variant new_variant,
-    ContentSettingsType new_type) {
-  // The new variant can be grouped with the already existing one.
-  if (CanGroupVariants(embedded_prompt_variant_, new_variant)) {
-    prompt_types_.insert(new_type);
-    embedded_prompt_variant_ = std::max(embedded_prompt_variant_, new_variant);
-    return;
-  }
-
-  // The existing variant is higher priority than the new one.
-  if (embedded_prompt_variant_ > new_variant) {
-    return;
-  }
-
-  // The new variant has higher priority than the existing one.
-  prompt_types_.clear();
-  prompt_types_.insert(new_type);
-  embedded_prompt_variant_ = new_variant;
-}
-
-void EmbeddedPermissionPrompt::RebuildRequests() {
-  if (requests_.size() != prompt_types_.size()) {
-    const auto& requests = delegate()->Requests();
-    for (permissions::PermissionRequest* request : requests) {
-      if (prompt_types_.contains(request->GetContentSettingsType())) {
-        requests_.push_back(request);
-      }
-    }
-  }
-}
-
 void EmbeddedPermissionPrompt::CloseView() {
   if (auto* prompt_view = static_cast<EmbeddedPermissionPromptBaseView*>(
           prompt_view_tracker_.view())) {
     prompt_view->PrepareToClose();
     prompt_view->GetWidget()->Close();
     prompt_view_tracker_.SetView(nullptr);
-
-    requests_.clear();
-    prompt_types_.clear();
-    embedded_prompt_variant_ = Variant::kUninitialized;
+    prompt_model_->Clear();
   }
 }
 

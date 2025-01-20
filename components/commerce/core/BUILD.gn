@@ -8,13 +8,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-source_set("public") {
-  sources = [
-    "discount_consent_handler.h",
-    "shopping_prompt.h",
-  ]
-}
-
 source_set("commerce_info_cache") {
   sources = [
     "commerce_info_cache.cc",
@@ -128,11 +121,6 @@ if (is_android) {
     sources = [ "proto/merchant_signal_db_content.proto" ]
   }
 } else {
-  proto_library("cart_db_content_proto") {
-    proto_in_dir = "//"
-    sources = [ "proto/cart_db_content.proto" ]
-  }
-
   proto_library("coupon_db_content_proto") {
     proto_in_dir = "//"
     sources = [ "proto/coupon_db_content.proto" ]
@@ -158,6 +146,11 @@ proto_library("commerce_subscription_db_content_proto") {
 proto_library("discounts_db_content_proto") {
   proto_in_dir = "//"
   sources = [ "proto/discounts_db_content.proto" ]
+}
+
+proto_library("cart_db_content_proto") {
+  proto_in_dir = "//"
+  sources = [ "proto/cart_db_content.proto" ]
 }
 
 source_set("commerce_heuristics_data") {
@@ -204,21 +197,6 @@ source_set("heuristics_provider") {
   ]
 }
 
-source_set("heuristics_provider_unittests") {
-  testonly = true
-  sources = [ "heuristics/commerce_heuristics_provider_unittest.cc" ]
-  deps = [
-    ":feature_list",
-    ":heuristics_provider",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-    "//third_party/re2:re2",
-    "//url:url",
-  ]
-}
-
 static_library("shopping_service") {
   sources = [
     "bookmark_update_manager.cc",
@@ -242,6 +220,7 @@ static_library("shopping_service") {
   ]
 
   deps = [
+    ":cart_db_content_proto",
     ":commerce_constants",
     ":commerce_info_cache",
     ":commerce_subscription_db_content_proto",
@@ -438,8 +417,11 @@ source_set("account_checker_test_support") {
 
   deps = [
     ":account_checker",
+    ":pref_names",
     "//base",
+    "//components/optimization_guide/core:features",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync/base",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",

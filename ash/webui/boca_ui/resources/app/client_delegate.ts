@@ -24,7 +24,10 @@ export function getStudentActivityMojomToUI(activities: Activity[]):
                                                undefined,
           isCaptionEnabled: item.activity.isCaptionEnabled,
           isHandRaised: item.activity.isHandRaised,
-          joinMethod: item.activity.joinMethod.valueOf()
+          joinMethod: item.activity.joinMethod.valueOf(),
+          viewScreenSessionCode: item.activity.viewScreenSessionCode ?
+              item.activity.viewScreenSessionCode :
+              undefined,
         }
     }
   })
@@ -37,9 +40,7 @@ export function getSessionConfigMojomToUI(session: Config|
   return {
   sessionDurationInMinutes:
     Number(session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
-        sessionStartTime: session.sessionStartTime?.msec ?
-        new Date(session.sessionStartTime.msec) :
-        undefined,
+        sessionStartTime: session.sessionStartTime || undefined,
         teacher: session.teacher ? {
           id: session.teacher.id,
           name: session.teacher.name,
@@ -98,6 +99,9 @@ export class ClientDelegateFactory {
   private clientDelegateImpl: ClientApiDelegate;
   constructor(pageHandler: PageHandlerRemote) {
     this.clientDelegateImpl = {
+      authenticateWebview: async () => {
+        return (await pageHandler.authenticateWebview()).success;
+      },
       getWindowsTabsList: async () => {
         const result = await pageHandler.getWindowsTabsList();
         return result.windowList.map((window: Window) => {
@@ -119,8 +123,7 @@ export class ClientDelegateFactory {
           return {
             id: course.id,
             name: course.name,
-            // TODO(b/356706279): Add section data.
-            section: '',
+            section: course.section,
           };
         });
       },
@@ -224,6 +227,10 @@ export class ClientDelegateFactory {
           return SubmitAccessCodeResult.SUCCESS;
         }
         return SubmitAccessCodeResult.INVALID_CODE;
+      },
+      viewStudentScreen: async (id: string) => {
+        const result = await pageHandler.viewStudentScreen(id);
+        return !resultHasError(result);
       }
     };
   }

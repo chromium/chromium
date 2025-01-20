@@ -9,14 +9,9 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gfx/native_widget_types.h"
-#else
-#include "base/unguessable_token.h"
-#endif
 
 class Profile;
 
@@ -34,13 +29,7 @@ class AppInstallService {
 
   virtual ~AppInstallService();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   using WindowIdentifier = gfx::NativeWindow;
-#else
-  // This token is the window ID as registered in the
-  // BrowserAppInstanceRegistry.
-  using WindowIdentifier = base::UnguessableToken;
-#endif
 
   // Behaves the same as InstallApp() unless `serialized_package_id` isn't
   // recognized in which case it falls back to asking Almanac for an install URL
@@ -51,9 +40,6 @@ class AppInstallService {
       std::string serialized_package_id,
       std::optional<WindowIdentifier> anchor_window,
       base::OnceClosure callback) = 0;
-
-// Not needed by Lacros clients, so can avoid adding to the crosapi.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Requests installation of the app with ID `package_id` from `surface`. This
   // communicates with the Almanac app API to retrieve app data, and then
@@ -86,7 +72,6 @@ class AppInstallService {
       AppInstallSurface surface,
       AppInstallData data,
       base::OnceCallback<void(bool success)> callback) = 0;
-#endif
 };
 
 }  // namespace apps

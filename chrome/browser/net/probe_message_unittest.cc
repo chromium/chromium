@@ -18,9 +18,9 @@ namespace chrome_browser_net {
 
 class ProbeMessageTest : public ::testing::Test {
  protected:
-  ProbeMessageTest() {}
+  ProbeMessageTest() = default;
 
-  ~ProbeMessageTest() override {}
+  ~ProbeMessageTest() override = default;
 };
 
 TEST_F(ProbeMessageTest, TestGenerateProbeRequest) {
@@ -46,7 +46,7 @@ TEST_F(ProbeMessageTest, TestGenerateProbeRequest) {
   EXPECT_EQ(probe_packet.probe_size_bytes(), probe_size);
   EXPECT_EQ(probe_packet.pacing_interval_micros(), pacing_interval_micros);
   EXPECT_EQ(probe_packet.number_probe_packets(), number_probe_packets);
-  EXPECT_GE(probe_packet.ByteSize(), static_cast<int>(probe_size));
+  EXPECT_GE(probe_packet.ByteSizeLong(), probe_size);
 }
 
 TEST_F(ProbeMessageTest, TestSetPacketHeader) {

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef DEVICE_VR_PUBLIC_MOJOM_RGBA_TUPLE_F16_H_
 #define DEVICE_VR_PUBLIC_MOJOM_RGBA_TUPLE_F16_H_
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 namespace device {
 
@@ -34,7 +31,7 @@ struct RgbaTupleF16 {
   uint16_t alpha() const { return components[3]; }
   void set_alpha(uint16_t alpha) { components[3] = alpha; }
 
-  uint16_t components[kNumComponents];
+  std::array<Component, kNumComponents> components;
 };
 
 static_assert(sizeof(RgbaTupleF16) == sizeof(RgbaTupleF16::Component) *

@@ -18,6 +18,7 @@
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 @class WKFrameInfo;
 
@@ -33,7 +34,7 @@ class WebFrameImpl final : public WebFrame,
   WebFrameImpl(WKFrameInfo* frame_info,
                const std::string& frame_id,
                bool is_main_frame,
-               GURL security_origin,
+               url::Origin security_origin,
                web::WebState* web_state,
                ContentWorld content_world);
 
@@ -49,7 +50,7 @@ class WebFrameImpl final : public WebFrame,
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
-  GURL GetSecurityOrigin() const override;
+  url::Origin GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
 
   bool CallJavaScriptFunction(const std::string& name,
@@ -164,7 +165,7 @@ class WebFrameImpl final : public WebFrame,
   // Whether or not the receiver represents the main frame.
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
-  GURL security_origin_;
+  url::Origin security_origin_;
   // The associated web state.
   raw_ptr<web::WebState> web_state_ = nullptr;
   // The frame's content world.

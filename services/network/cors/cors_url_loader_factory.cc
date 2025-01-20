@@ -231,6 +231,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               ? params->client_security_state->cross_origin_embedder_policy
               : CrossOriginEmbedderPolicy()),
       coep_reporter_(std::move(params->coep_reporter)),
+      dip_reporter_(std::move(params->dip_reporter)),
       client_security_state_(params->client_security_state.Clone()),
       url_loader_network_service_observer_(
           std::move(params->url_loader_network_observer)),
@@ -239,6 +240,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       require_cross_site_request_for_cookies_(
           params->require_cross_site_request_for_cookies),
       factory_cookie_setting_overrides_(params->cookie_setting_overrides),
+      devtools_cookie_setting_overrides_(
+          params->devtools_cookie_setting_overrides),
       origin_access_list_(origin_access_list),
       owner_(owner) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
@@ -475,7 +478,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
           shared_dictionary_storage,
           shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                       : nullptr,
-          context_, factory_cookie_setting_overrides_);
+          context_, factory_cookie_setting_overrides_,
+          devtools_cookie_setting_overrides_);
     } else {
       loader = std::make_unique<CorsURLLoader>(
           std::move(receiver), process_id_, request_id, options,
@@ -493,7 +497,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
           shared_dictionary_storage,
           shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                       : nullptr,
-          context_, factory_cookie_setting_overrides_);
+          context_, factory_cookie_setting_overrides_,
+          devtools_cookie_setting_overrides_);
     }
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));

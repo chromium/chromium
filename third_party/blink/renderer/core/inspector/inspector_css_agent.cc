@@ -25,11 +25,16 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 
+#include <optional>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/renderer/core/animation/animation_utils.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
+#include "third_party/blink/renderer/core/animation/css/css_transition.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/auto_registration.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -48,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
@@ -59,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
@@ -68,9 +75,14 @@
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
+#include "third_party/blink/renderer/core/css/properties/shorthand.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
@@ -84,6 +96,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -105,6 +118,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -149,10 +163,11 @@ class FrontendOperationScope {
 };
 
 Element* GetPseudoIdAndTag(Element* element,
+                           PseudoElement*& pseudo_element,
                            PseudoId& element_pseudo_id,
                            AtomicString& view_transition_name) {
   auto* resolved_element = element;
-  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+  if ((pseudo_element = DynamicTo<PseudoElement>(element))) {
     resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
                            ? pseudo_element->UltimateOriginatingElement()
                            : pseudo_element->ParentOrShadowHostElement();
@@ -228,6 +243,15 @@ void CollectPlatformFontsFromRunFontDataList(
   }
 }
 
+CSSSyntaxDefinition CreateCombinedSyntax() {
+  CSSParserTokenStream stream(
+      "<number> | <length> | <percentage> | <angle> | <color> | <time>");
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      CSSSyntaxDefinition::Consume(stream);
+  DCHECK(syntax_definition.has_value());
+  return *syntax_definition;
+}
+
 }  // namespace
 
 typedef blink::protocol::CSS::Backend::EnableCallback EnableCallback;
@@ -260,6 +284,7 @@ enum ForcePseudoClassFlags {
   kPseudoPlaceholderShown = 1 << 21,
   kPseudoAutofill = 1 << 22,
   kPseudoLink = 1 << 23,
+  kPseudoOpen = 1 << 24,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -289,6 +314,7 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, placeholderShown, ("placeholder-shown"));
   DEFINE_STATIC_LOCAL(String, autofill, ("autofill"));
   DEFINE_STATIC_LOCAL(String, link, ("link"));
+  DEFINE_STATIC_LOCAL(String, open, ("open"));
 
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
@@ -343,6 +369,8 @@ static unsigned ComputePseudoClassMask(
       result |= kPseudoAutofill;
     } else if (pseudo_class == link) {
       result |= kPseudoLink;
+    } else if (pseudo_class == open) {
+      result |= kPseudoOpen;
     }
   }
   return result;
@@ -755,6 +783,7 @@ void InspectorCSSAgent::Reset() {
 
 void InspectorCSSAgent::ResetNonPersistentData() {
   ResetPseudoStates();
+  ResetStartingStyles();
 }
 
 void InspectorCSSAgent::enable(std::unique_ptr<EnableCallback> prp_callback) {
@@ -1055,11 +1084,31 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
     case CSSSelector::kPseudoAutofill:
       force = forced_pseudo_state & kPseudoAutofill;
       break;
+    case CSSSelector::kPseudoOpen:
+      force = forced_pseudo_state & kPseudoOpen;
+      break;
     default:
       break;
   }
   if (force)
     *result = true;
+}
+
+void InspectorCSSAgent::ForceStartingStyle(Element* element, bool* result) {
+  if (node_id_to_forced_starting_style_.empty()) {
+    return;
+  }
+
+  int node_id = dom_agent_->BoundNodeId(element);
+  if (!node_id) {
+    return;
+  }
+
+  if (!node_id_to_forced_starting_style_.Contains(node_id)) {
+    return;
+  }
+
+  *result = true;
 }
 
 protocol::Response InspectorCSSAgent::getMediaQueries(
@@ -1203,28 +1252,87 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorCSSAgent::getAnimatedStylesForNode(
+    int node_id,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>*
+        animation_styles,
+    std::unique_ptr<protocol::CSS::CSSStyle>* transitions_style,
+    std::unique_ptr<
+        protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>*
+        inherited) {
+  protocol::Response response = AssertEnabled();
+  Element* element = nullptr;
+  response = dom_agent_->AssertElement(node_id, element);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Element* animating_element = element;
+  PseudoId element_pseudo_id = kPseudoIdNone;
+  AtomicString view_transition_name = g_null_atom;
+  PseudoElement* pseudo_element = nullptr;
+  // If the requested element is a pseudo element, `element` becomes
+  // the first non-pseudo parent element or shadow host element
+  // after `GetPseudoIdAndTag` call below.
+  element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
+                              view_transition_name);
+  if (!element) {
+    return protocol::Response::ServerError("Pseudo element has no parent");
+  }
+
+  // `UpdateViewportSize` makes sure that while getting the values
+  // of the interpolated properties, we have the `viewport_size_` defined.
+  // Otherwise, when there is a resize is in progress and we try to
+  // get the values of the interpolated properties, call to `GetViewportSize()`
+  // causes a crash because `viewport_size_` is not defined.
+  animating_element->GetDocument().GetStyleEngine().UpdateViewportSize();
+  *animation_styles = BuildArrayForCSSAnimationStyleList(animating_element);
+  *transitions_style = BuildObjectForTransitionsStyle(animating_element);
+
+  // Inherited styles.
+  *inherited = std::make_unique<
+      protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>();
+  Element* parent_element =
+      element_pseudo_id ? element : FlatTreeTraversal::ParentElement(*element);
+  while (parent_element) {
+    std::unique_ptr<protocol::CSS::InheritedAnimatedStyleEntry> entry =
+        protocol::CSS::InheritedAnimatedStyleEntry::create()
+            .setAnimationStyles(
+                BuildArrayForCSSAnimationStyleList(parent_element))
+            .setTransitionsStyle(BuildObjectForTransitionsStyle(parent_element))
+            .build();
+    (*inherited)->emplace_back(std::move(entry));
+    parent_element = FlatTreeTraversal::ParentElement(*parent_element);
+  }
+
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     int node_id,
-    Maybe<protocol::CSS::CSSStyle>* inline_style,
-    Maybe<protocol::CSS::CSSStyle>* attributes_style,
-    Maybe<protocol::Array<protocol::CSS::RuleMatch>>* matched_css_rules,
-    Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>>*
+    std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+    std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style,
+    std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>*
+        matched_css_rules,
+    std::unique_ptr<protocol::Array<protocol::CSS::PseudoElementMatches>>*
         pseudo_id_matches,
-    Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::InheritedStyleEntry>>*
         inherited_entries,
-    Maybe<protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
+    std::unique_ptr<
+        protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
         inherited_pseudo_id_matches,
-    Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules,
-    Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
         css_position_try_rules,
-    Maybe<int>* active_position_fallback_index,
-    Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
-    Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
+    std::optional<int>* active_position_fallback_index,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*
+        css_property_rules,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
-    Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+    std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
         css_font_palette_values_rule,
-    Maybe<int>* parent_layout_node_id) {
+    std::optional<int>* parent_layout_node_id) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1241,7 +1349,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   // If the requested element is a pseudo element, `element` becomes
   // the first non-pseudo parent element or shadow host element
   // after `GetPseudoIdAndTag` call below.
-  element = GetPseudoIdAndTag(element, element_pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
+                              view_transition_name);
   if (!element)
     return protocol::Response::ServerError("Pseudo element has no parent");
 
@@ -1250,7 +1360,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   if (!document.IsActive())
     return protocol::Response::ServerError("Document is not active");
 
-  base::AutoReset<bool> ignore_mutation(&ignore_stylesheet_mutation_, true);
   InspectorGhostRules ghost_rules;
 
   // The source text of mutable stylesheets needs to be updated
@@ -1258,7 +1367,13 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorStyleSheet* stylesheet :
        css_style_sheet_to_inspector_style_sheet_.Values()) {
     stylesheet->SyncTextIfNeeded();
-    ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+      ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    }
+  }
+
+  if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+    ghost_rules.Activate(document);
   }
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
@@ -1299,8 +1414,17 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       CustomPropertiesForNode(element);
 
   // Pseudo elements.
-  if (element_pseudo_id)
-    return protocol::Response::Success();
+  // Some pseudo elements can have nested pseudo elements,
+  // and we need to show them in the originating pseudo element's
+  // styles.
+  if (pseudo_element) {
+    if (!pseudo_element->CanHaveNestedPseudoElement()) {
+      return protocol::Response::Success();
+    }
+    element = pseudo_element;
+    resolver =
+        InspectorStyleResolver(pseudo_element, kPseudoIdNone, g_null_atom);
+  }
 
   InspectorStyleSheetForInlineStyle* inline_style_sheet =
       AsInspectorStyleSheet(element);
@@ -1777,8 +1901,8 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
 
 protocol::Response InspectorCSSAgent::getInlineStylesForNode(
     int node_id,
-    Maybe<protocol::CSS::CSSStyle>* inline_style,
-    Maybe<protocol::CSS::CSSStyle>* attributes_style) {
+    std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+    std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style) {
   protocol::Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1849,6 +1973,155 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
                                .setValue(it.value->CssText())
                                .build());
   }
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::resolveValues(
+    std::unique_ptr<protocol::Array<String>> values,
+    int node_id,
+    std::optional<String> property_name_str,
+    std::optional<protocol::DOM::PseudoType> pseudo_type,
+    std::optional<String> pseudo_identifier,
+    std::unique_ptr<protocol::Array<String>>* results) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Node* node = nullptr;
+  response = dom_agent_->AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return protocol::Response::ServerError("Node is not an element.");
+  }
+
+  Document& document = element->GetDocument();
+  CSSParserContext* parser_context =
+      MakeGarbageCollected<CSSParserContext>(document);
+  ExecutionContext* execution_context = element->GetExecutionContext();
+
+  if (pseudo_type.has_value()) {
+    AtomicString view_transition_name = pseudo_identifier.has_value()
+                                            ? AtomicString(*pseudo_identifier)
+                                            : g_null_atom;
+    element = element->GetStyledPseudoElement(
+        InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(*pseudo_type),
+        view_transition_name);
+    if (!element) {
+      return protocol::Response::ServerError(
+          "Could not retrieve pseudo element.");
+    }
+  }
+
+  std::optional<CSSPropertyName> property_name;
+  const AtomicString custom_property_name(
+      ("--" + base::UnguessableToken::Create().ToString()).c_str());
+  std::optional<AutoRegistration> auto_registration;
+
+  if (property_name_str.has_value()) {
+    property_name =
+        CSSPropertyName::From(execution_context, *property_name_str);
+
+    if (!property_name.has_value()) {
+      return protocol::Response::ServerError(
+          "Could not resolve property name.");
+    }
+  } else {
+    property_name = CSSPropertyName(custom_property_name);
+    CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
+    PropertyRegistration* property_registration =
+        MakeGarbageCollected<PropertyRegistration>(
+            custom_property_name, syntax_definition, /* inherits */ false,
+            /* initial */ nullptr);
+    // Temporary register property with combined syntax.
+    auto_registration.emplace(document, custom_property_name,
+                              *property_registration);
+  }
+  DCHECK(property_name.has_value());
+
+  *results = std::make_unique<protocol::Array<String>>();
+  for (auto value : *values) {
+    const CSSValue* parsed_value = nullptr;
+    if (property_name->IsCustomProperty()) {
+      CustomProperty custom_property(property_name->ToAtomicString(), document);
+      auto local_context = CSSParserLocalContext();
+      parsed_value =
+          custom_property.Parse(value, *parser_context, local_context);
+    } else {
+      parsed_value = CSSParser::ParseSingleValue(property_name->Id(), value,
+                                                 parser_context);
+    }
+
+    if (!parsed_value) {
+      (*results)->emplace_back(String());
+      continue;
+    }
+
+    const CSSValue* computed_value =
+        StyleResolver::ComputeValue(element, *property_name, *parsed_value);
+
+    if (!computed_value) {
+      (*results)->emplace_back(String());
+      continue;
+    }
+
+    (*results)->emplace_back(computed_value->CssText());
+  }
+
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::getLonghandProperties(
+    const String& shorthand_name,
+    const String& value,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>*
+        longhand_properties) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  CSSPropertyID property_id =
+      CssPropertyID(/*execution_context=*/nullptr, shorthand_name);
+  if (!IsValidCSSPropertyID(property_id)) {
+    return protocol::Response::ServerError("Invalid shorthandName");
+  }
+  const CSSProperty& property = CSSProperty::Get(property_id);
+
+  CSSParserTokenStream stream(value);
+
+  const CSSParserContext* parser_context =
+      MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
+                                             SecureContextMode::kSecureContext);
+  const auto local_context =
+      CSSParserLocalContext().WithCurrentShorthand(property.PropertyID());
+
+  HeapVector<CSSPropertyValue, 64> css_longhand_properties;
+  const auto* shorthand = DynamicTo<Shorthand>(property);
+  if (!shorthand) {
+    return protocol::Response::ServerError("Invalid shorthandName");
+  }
+  bool res = shorthand->ParseShorthand(false, stream, *parser_context,
+                                       local_context, css_longhand_properties);
+  if (!res) {
+    return protocol::Response::ServerError("Error parsing shorthand.");
+  }
+
+  *longhand_properties =
+      std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
+  for (auto longhand_property : css_longhand_properties) {
+    std::unique_ptr<protocol::CSS::CSSProperty> protocol_longhand =
+        protocol::CSS::CSSProperty::create()
+            .setName(longhand_property.Name().ToAtomicString())
+            .setValue(longhand_property.Value().CssText())
+            .build();
+    (*longhand_properties)->emplace_back(std::move(protocol_longhand));
+  }
+
   return protocol::Response::Success();
 }
 
@@ -1961,7 +2234,7 @@ protocol::Response InspectorCSSAgent::collectClassNames(
 protocol::Response InspectorCSSAgent::setStyleSheetText(
     const String& style_sheet_id,
     const String& text,
-    protocol::Maybe<String>* source_map_url) {
+    std::optional<String>* source_map_url) {
   FrontendOperationScope scope;
   InspectorStyleSheetBase* inspector_style_sheet = nullptr;
   protocol::Response response =
@@ -2180,7 +2453,7 @@ protocol::Response InspectorCSSAgent::MultipleStyleTextsActions(
 
 protocol::Response InspectorCSSAgent::setStyleTexts(
     std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>> edits,
-    protocol::Maybe<int> node_for_property_syntax_validation,
+    std::optional<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* result) {
   FrontendOperationScope scope;
   HeapVector<Member<StyleSheetAction>> actions;
@@ -2420,7 +2693,7 @@ protocol::Response InspectorCSSAgent::addRule(
     const String& style_sheet_id,
     const String& rule_text,
     std::unique_ptr<protocol::CSS::SourceRange> location,
-    protocol::Maybe<int> node_for_property_syntax_validation,
+    std::optional<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::CSS::CSSRule>* result) {
   FrontendOperationScope scope;
   InspectorStyleSheet* inspector_style_sheet = nullptr;
@@ -2504,6 +2777,37 @@ protocol::Response InspectorCSSAgent::forcePseudoState(
        (current_forced_pseudo_state & kPseudoFocusWithin) ==
            kPseudoFocusWithin)) {
     DecrementFocusedCountForAncestors(element);
+  }
+
+  element->GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
+      StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::forceStartingStyle(int node_id,
+                                                         bool forced) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  Element* element = nullptr;
+  response = dom_agent_->AssertElement(node_id, element);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  bool current_forced_starting_style =
+      node_id_to_forced_starting_style_.Contains(node_id);
+  bool need_style_recalc = forced != current_forced_starting_style;
+
+  if (!need_style_recalc) {
+    return protocol::Response::Success();
+  }
+
+  if (forced) {
+    node_id_to_forced_starting_style_.insert(node_id);
+  } else {
+    node_id_to_forced_starting_style_.erase(node_id);
   }
 
   element->GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
@@ -3282,13 +3586,139 @@ InspectorCSSAgent::BuildObjectForAttributesStyle(Element* element) {
     return nullptr;
 
   // FIXME: Ugliness below.
-  auto* mutable_attribute_style = DynamicTo<MutableCSSPropertyValueSet>(
-      const_cast<CSSPropertyValueSet*>(element->PresentationAttributeStyle()));
-  if (!mutable_attribute_style)
+  const CSSPropertyValueSet* attribute_style =
+      element->PresentationAttributeStyle();
+  if (!attribute_style)
     return nullptr;
 
   InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
-      mutable_attribute_style->EnsureCSSStyleDeclaration(
+      attribute_style->MutableCopy()->EnsureCSSStyleDeclaration(
+          element->GetExecutionContext()),
+      nullptr, nullptr);
+  return inspector_style->BuildObjectForStyle();
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+      animation_styles =
+          std::make_unique<protocol::Array<protocol::CSS::CSSAnimationStyle>>();
+  ElementAnimations* element_animations =
+      element->GetAnimationTarget()->GetElementAnimations();
+  if (!element_animations || element_animations->IsEmpty()) {
+    return animation_styles;
+  }
+
+  HeapVector<Member<Animation>> animations;
+  for (const auto& entry : element_animations->Animations()) {
+    Animation& animation = *entry.key;
+    AnimationEffect* effect = animation.effect();
+    // We only include active CSS animations & WAAPI animations here.
+    if (animation.IsCSSTransition() || !effect || !effect->IsInEffect()) {
+      continue;
+    }
+
+    animations.push_back(animation);
+  }
+
+  // Sort animations based on their composite ordering so that
+  // the animations are in the order of their application.
+  std::sort(animations.begin(), animations.end(),
+            [](Animation* a, Animation* b) {
+              return Animation::HasLowerCompositeOrdering(
+                  b, a, Animation::CompareAnimationsOrdering::kPointerOrder);
+            });
+
+  for (auto& animation : animations) {
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(animation->effect());
+    if (!effect) {
+      continue;
+    }
+
+    String name;
+    if (CSSAnimation* css_animation = DynamicTo<CSSAnimation>(*animation)) {
+      name = css_animation->animationName();
+    }
+
+    auto property_pass_filter = [](const PropertyHandle& property) {
+      return property.IsCSSProperty();
+    };
+
+    EffectStack& effect_stack = element_animations->GetEffectStack();
+    HashSet<PropertyHandle> affected_properties =
+        effect_stack.AffectedProperties(
+            KeyframeEffect::Priority::kDefaultPriority);
+    ActiveInterpolationsMap active_interpolations =
+        EffectStack::ActiveInterpolations(
+            &effect_stack,
+            /*new_animations=*/nullptr,
+            /*suppressed_animations=*/nullptr,
+            KeyframeEffect::Priority::kDefaultPriority, property_pass_filter,
+            effect);
+
+    PropertyHandleSet animation_properties = effect->Model()->Properties();
+    MutableCSSPropertyValueSet* property_values =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(
+            CSSParserMode::kHTMLStandardMode);
+
+    AnimationUtils::ForEachInterpolatedPropertyValue(
+        element, animation_properties, active_interpolations,
+        [property_values](PropertyHandle property, const CSSValue* value) {
+          property_values->SetProperty(property.GetCSSPropertyName(), *value);
+        });
+
+    InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
+        property_values->EnsureCSSStyleDeclaration(
+            element->GetExecutionContext()),
+        nullptr, nullptr);
+
+    std::unique_ptr<protocol::CSS::CSSAnimationStyle> animation_style =
+        protocol::CSS::CSSAnimationStyle::create()
+            .setStyle(inspector_style->BuildObjectForStyle())
+            .build();
+
+    if (!name.IsNull()) {
+      animation_style->setName(name);
+    }
+
+    animation_styles->emplace_back(std::move(animation_style));
+  }
+  return animation_styles;
+}
+
+std::unique_ptr<protocol::CSS::CSSStyle>
+InspectorCSSAgent::BuildObjectForTransitionsStyle(Element* element) {
+  auto property_pass_filter = [](const PropertyHandle& property) {
+    return property.IsCSSProperty();
+  };
+
+  ElementAnimations* element_animations =
+      element->GetAnimationTarget()->GetElementAnimations();
+  if (!element_animations || element_animations->IsEmpty()) {
+    return nullptr;
+  }
+
+  EffectStack& effect_stack = element_animations->GetEffectStack();
+  HashSet<PropertyHandle> affected_properties = effect_stack.AffectedProperties(
+      KeyframeEffect::Priority::kTransitionPriority);
+  ActiveInterpolationsMap active_interpolations =
+      EffectStack::ActiveInterpolations(
+          &effect_stack,
+          /*new_animations=*/nullptr,
+          /*suppressed_animations=*/nullptr,
+          KeyframeEffect::Priority::kTransitionPriority, property_pass_filter,
+          nullptr);
+
+  MutableCSSPropertyValueSet* property_values =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(
+          CSSParserMode::kHTMLStandardMode);
+  AnimationUtils::ForEachInterpolatedPropertyValue(
+      element, affected_properties, active_interpolations,
+      [property_values](PropertyHandle property, const CSSValue* value) {
+        property_values->SetProperty(property.GetCSSPropertyName(), *value);
+      });
+  InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
+      property_values->EnsureCSSStyleDeclaration(
           element->GetExecutionContext()),
       nullptr, nullptr);
   return inspector_style->BuildObjectForStyle();
@@ -3309,6 +3739,7 @@ void InspectorCSSAgent::WillRemoveDOMNode(Node* node) {
   int node_id = dom_agent_->BoundNodeId(node);
   DCHECK(node_id);
   node_id_to_forced_pseudo_state_.erase(node_id);
+  node_id_to_forced_starting_style_.erase(node_id);
   computed_style_updated_node_ids_.erase(node_id);
 
   NodeToInspectorStyleSheet::iterator it =
@@ -3333,12 +3764,6 @@ void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
 }
 
 void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
-  if (ignore_stylesheet_mutation_) {
-    // The mutation comes from InspectorGhostRules. We don't care about these
-    // mutations, because they'll be reverted when getMatchedStylesForNode
-    // returns.
-    return;
-  }
   auto it = css_style_sheet_to_inspector_style_sheet_.find(css_style_sheet);
   if (it == css_style_sheet_to_inspector_style_sheet_.end())
     return;
@@ -3387,11 +3812,28 @@ void InspectorCSSAgent::ResetPseudoStates() {
   }
 }
 
+void InspectorCSSAgent::ResetStartingStyles() {
+  HeapHashSet<Member<Document>> documents_to_change;
+  for (auto& node_id : node_id_to_forced_starting_style_) {
+    if (auto* element = To<Element>(dom_agent_->NodeForId(node_id))) {
+      documents_to_change.insert(&element->GetDocument());
+    }
+  }
+
+  node_id_to_forced_starting_style_.clear();
+  for (auto& document : documents_to_change) {
+    document->GetStyleEngine().MarkAllElementsForStyleRecalc(
+        StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
+  }
+}
+
 HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
   PseudoId pseudo_id = kPseudoIdNone;
   AtomicString view_transition_name = g_null_atom;
-  element = GetPseudoIdAndTag(element, pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, pseudo_id,
+                              view_transition_name);
   if (!element)
     return {};
 
@@ -3559,9 +4001,9 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
 
 protocol::Response InspectorCSSAgent::getBackgroundColors(
     int node_id,
-    Maybe<protocol::Array<String>>* background_colors,
-    Maybe<String>* computed_font_size,
-    Maybe<String>* computed_font_weight) {
+    std::unique_ptr<protocol::Array<String>>* background_colors,
+    std::optional<String>* computed_font_size,
+    std::optional<String>* computed_font_weight) {
   Element* element = nullptr;
   protocol::Response response = dom_agent_->AssertElement(node_id, element);
   if (!response.IsSuccess())
@@ -3629,7 +4071,7 @@ protocol::Response InspectorCSSAgent::startRuleUsageTracking() {
 }
 
 protocol::Response InspectorCSSAgent::trackComputedStyleUpdatesForNode(
-    protocol::Maybe<int> node_id) {
+    std::optional<int> node_id) {
   if (node_id.has_value()) {
     node_id_for_computed_style_updated_events_ = node_id.value();
   } else {

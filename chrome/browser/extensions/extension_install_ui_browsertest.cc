@@ -35,13 +35,13 @@ using extensions::Extension;
 
 class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstallUIBrowserTest() {}
+  ExtensionInstallUIBrowserTest() = default;
 
   ExtensionInstallUIBrowserTest(const ExtensionInstallUIBrowserTest&) = delete;
   ExtensionInstallUIBrowserTest& operator=(
       const ExtensionInstallUIBrowserTest&) = delete;
 
-  ~ExtensionInstallUIBrowserTest() override {}
+  ~ExtensionInstallUIBrowserTest() override = default;
 
   // Checks that a theme info bar is currently visible and issues an undo to
   // revert to the previous theme.

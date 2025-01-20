@@ -10,9 +10,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 // This class implements all the listener interface for android mediaplayer.
 // Callbacks will be sent to the native class for processing.
 @JNINamespace("media")
+@NullMarked
 class MediaPlayerListener
         implements MediaPlayer.OnPreparedListener,
                 MediaPlayer.OnCompletionListener,

@@ -134,11 +134,9 @@ const ThemeInfo* GetInfo(const Extension* extension) {
 
 }  // namespace
 
-ThemeInfo::ThemeInfo() {
-}
+ThemeInfo::ThemeInfo() = default;
 
-ThemeInfo::~ThemeInfo() {
-}
+ThemeInfo::~ThemeInfo() = default;
 
 // static
 const base::Value::Dict* ThemeInfo::GetImages(const Extension* extension) {
@@ -165,11 +163,9 @@ const base::Value::Dict* ThemeInfo::GetDisplayProperties(
   return theme_info ? &theme_info->theme_display_properties_ : nullptr;
 }
 
-ThemeHandler::ThemeHandler() {
-}
+ThemeHandler::ThemeHandler() = default;
 
-ThemeHandler::~ThemeHandler() {
-}
+ThemeHandler::~ThemeHandler() = default;
 
 bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value::Dict* theme_dict =

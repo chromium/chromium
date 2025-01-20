@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
+import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -133,6 +134,7 @@ public class ShareDelegateImplIntegrationTest {
                                         Supplier<TabModelSelector> tabModelSelectorProvider,
                                         Supplier<Profile> profileSupplier,
                                         Callback<Tab> printCallback,
+                                        TabGroupSharingController tabGroupSharingController,
                                         int shareOrigin,
                                         long shareStartTime,
                                         boolean sharingHubEnabled) {
@@ -151,7 +153,11 @@ public class ShareDelegateImplIntegrationTest {
                                     sActivityTestRule.getActivity().getTabModelSelectorSupplier(),
                                     new ObservableSupplierImpl<>(),
                                     delegate,
-                                    false)
+                                    false,
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getRootUiCoordinatorForTesting()
+                                            .getDataSharingTabManager())
                             .share(
                                     sActivityTestRule.getActivity().getActivityTab(),
                                     false,

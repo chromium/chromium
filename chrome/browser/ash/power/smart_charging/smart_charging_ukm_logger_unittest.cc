@@ -25,7 +25,7 @@ using ChargeHistoryState = power_manager::ChargeHistoryState;
 
 class SmartChargingUkmLoggerTest : public ChromeRenderViewHostTestHarness {
  public:
-  SmartChargingUkmLoggerTest() {}
+  SmartChargingUkmLoggerTest() = default;
   ~SmartChargingUkmLoggerTest() override = default;
   SmartChargingUkmLoggerTest(const SmartChargingUkmLoggerTest&) = delete;
   SmartChargingUkmLoggerTest& operator=(const SmartChargingUkmLoggerTest&) =

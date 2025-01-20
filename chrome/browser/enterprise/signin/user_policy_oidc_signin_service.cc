@@ -48,6 +48,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -59,8 +60,13 @@ bool IsOidcManagedProfile(Profile* profile) {
                     ->GetProfileAttributesStorage()
                     .GetProfileAttributesWithPath(profile->GetPath());
 
-  return entry && !entry->GetProfileManagementOidcTokens().auth_token.empty() &&
-         !entry->GetProfileManagementOidcTokens().id_token.empty();
+  if (!entry) {
+    return false;
+  }
+  auto oidc_token = entry->GetProfileManagementOidcTokens();
+
+  return (oidc_token.is_token_encrypted || !oidc_token.auth_token.empty()) &&
+         !oidc_token.id_token.empty();
 }
 
 bool IsDasherlessProfile(Profile* profile) {
@@ -269,8 +275,8 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
     policy::CloudPolicyManager* user_policy_manager =
         profile_->GetUserCloudPolicyManager();
 
-    std::string gaia_id =
-        user_policy_manager->core()->store()->policy()->gaia_id();
+    GaiaId gaia_id =
+        GaiaId(user_policy_manager->core()->store()->policy()->gaia_id());
 
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "GAIA ID retrieved from user policy for "
                                     << user_email << ": " << gaia_id << ".";

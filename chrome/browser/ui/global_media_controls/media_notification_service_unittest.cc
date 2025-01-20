@@ -16,7 +16,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
@@ -67,9 +66,7 @@ using testing::Expectation;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -199,9 +196,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-
     presentation_manager_ =
         std::make_unique<NiceMock<MockWebContentsPresentationManager>>();
     media_router::WebContentsPresentationManager::SetTestInstance(
@@ -320,7 +314,6 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
 
  private:
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
-  base::test::ScopedFeatureList feature_list_;
   base::MockCallback<base::OnceClosure> remote_disconnect_handler_;
   base::MockCallback<base::OnceClosure> receiver_disconnect_handler_;
 };

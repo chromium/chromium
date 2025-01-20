@@ -66,12 +66,12 @@ void InitCandidateWindowWithCandidatesFilled(
 
 class CandidateWindowViewTest : public views::ViewsTestBase {
  public:
-  CandidateWindowViewTest() {}
+  CandidateWindowViewTest() = default;
 
   CandidateWindowViewTest(const CandidateWindowViewTest&) = delete;
   CandidateWindowViewTest& operator=(const CandidateWindowViewTest&) = delete;
 
-  ~CandidateWindowViewTest() override {}
+  ~CandidateWindowViewTest() override = default;
 
  protected:
   void SetUp() override {

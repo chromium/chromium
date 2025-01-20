@@ -169,8 +169,9 @@ void BidirectionalStream::SendvData(
 }
 
 NextProto BidirectionalStream::GetProtocol() const {
-  if (!stream_impl_)
-    return kProtoUnknown;
+  if (!stream_impl_) {
+    return NextProto::kProtoUnknown;
+  }
 
   return stream_impl_->GetProtocol();
 }
@@ -414,7 +415,7 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 void BidirectionalStream::OnQuicBroken() {}
 
 void BidirectionalStream::OnSwitchesToHttpStreamPool(
-    HttpStreamPoolSwitchingInfo switching_info) {
+    HttpStreamPoolRequestInfo request_info) {
   NOTREACHED();
 }
 

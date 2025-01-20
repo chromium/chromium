@@ -34,7 +34,7 @@ constexpr char kSendTabsRequest[] = "tabs.sendRequest";
 TabsHooksDelegate::TabsHooksDelegate(
     NativeRendererMessagingService* messaging_service)
     : messaging_service_(messaging_service) {}
-TabsHooksDelegate::~TabsHooksDelegate() {}
+TabsHooksDelegate::~TabsHooksDelegate() = default;
 
 RequestResult TabsHooksDelegate::HandleRequest(
     const std::string& method_name,

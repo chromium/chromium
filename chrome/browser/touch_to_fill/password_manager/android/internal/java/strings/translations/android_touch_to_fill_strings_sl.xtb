@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polni višini.</translation>
 <translation id="5591247451101092906">Ali želite uporabiti shranjen ključ za dostop ali geslo?</translation>
 <translation id="5624120631404540903">Upravljanje gesel</translation>
+<translation id="592182999816790476">Geslo za uporabnika <ph name="USERNAME" /> je shranjeno za spletno mesto <ph name="WEBSITE" />.</translation>
 <translation id="6560306912274274630">Ključ za dostop za uporabnika <ph name="USERNAME" />, uporabite zaklepanje zaslona</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Novo geslo za to spletno mesto}one{Nova gesla za to spletno mesto}two{Nova gesla za to spletno mesto}few{Nova gesla za to spletno mesto}other{Nova gesla za to spletno mesto}}</translation>
 <translation id="7286867818472074330">Izberi ključ za dostop</translation>

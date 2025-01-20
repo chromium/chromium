@@ -354,8 +354,6 @@ crbug.com/1266821 compositing/overflow/rotate-then-clip.html [ Failure ]
 crbug.com/1266821 compositing/overflow/tiled-mask.html [ Failure ]
 crbug.com/1266821 compositing/perpendicular-layer-sorting.html [ Failure ]
 crbug.com/1266821 css3/blending/background-blend-mode-overlapping-accelerated-elements.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-border-radius.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-clip-rect-zoom.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-clamping-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined-hw.html [ Failure ]
@@ -440,4 +438,5 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 crbug.com/1491883 [ Linux ] fast/forms/date/date-with-csp.html [ Failure ]  # Reftest image failure
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/388319476 virtual/threaded/external/wpt/css/css-view-transitions/navigation/with-types/navigation-supersedes-types-same-rule.html [ Crash ]
 crbug.com/361611468 virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc [ Failure ]

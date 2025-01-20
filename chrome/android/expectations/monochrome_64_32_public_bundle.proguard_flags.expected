@@ -140,16 +140,16 @@
 # Use assumevalues in addition to assumenosideeffects block because Google3 proguard cannot parse
 # assumenosideeffects blocks which overwrite return value.
 -assumevalues class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *(...) return _NONNULL_;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...) return _NONNULL_;
 }
 -assumenosideeffects class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *(...);
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...);
 }
 -assumevalues class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** * return _NONNULL_;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** * return _NONNULL_;
 }
 -assumenosideeffects class ** {
-  @org.chromium.build.annotations.AssumeNonNull *** *;
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *;
 }
 
 # File: ../../base/android/proguard/chromium_apk.flags
@@ -188,6 +188,13 @@
 }
 -keepclassmembers class !cr_allowunused,** extends androidx.fragment.app.Fragment {
   public <init>();
+}
+
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum !cr_allowunused,** {
+    public static **[] values();
 }
 
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
@@ -484,10 +491,25 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
--keep class ** implements androidx.appsearch.app.DocumentClassFactory { *; }
--keep class ** implements androidx.appsearch.app.AppSearchDocumentClassMap { *; }
+# Keep DocumentClassFactory classes only when DocumentClassFactoryRegistry is used. Since
+# DocumentClassFactoryRegistry loads these classes by name, also do not obfuscate names.
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keep,allowoptimization class ** implements androidx.appsearch.app.DocumentClassFactory {}
 
--keep @androidx.appsearch.annotation.Document class *
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keepnames,allowoptimization @androidx.appsearch.annotation.Document class ** {}
+
+# Keep AppSearchDocumentClassMap name for ServiceLoader
+-keepnames,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
+
+# If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
+# AppSearchDocumentClassMap#getMap() is used to populate the global map.
+-if class androidx.appsearch.app.AppSearchDocumentClassMap {
+  public static java.util.Map getGlobalMap();
+}
+-keep,allowoptimization class ** implements androidx.appsearch.app.AppSearchDocumentClassMap {
+  public java.util.Map getMap();
+}
 
 # File: obj/third_party/androidx/androidx_biometric_biometric_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
@@ -899,7 +921,7 @@
 -dontwarn javax.annotation.**
 -dontwarn org.checkerframework.**
 -dontwarn com.google.errorprone.annotations.**
--dontwarn org.jspecify.nullness.NullMarked
+-dontwarn org.jspecify.annotations.NullMarked
 
 # Annotations no longer exist. Suppression prevents ProGuard failures in
 # SDKs which depend on earlier versions of play-services-basement.
@@ -1071,12 +1093,19 @@
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/com_google_dagger_dagger/dagger-2.52.jar:META-INF/com.android.tools/r8/r8.pro
--identifiernamestring @dagger.internal.IdentifierNameString class ** {
-    static java.lang.String *;
+# File: ../../third_party/android_deps/cipd/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar:META-INF/proguard/androidx-annotations.pro
+-keep @android.support.annotation.Keep class * {*;}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <methods>;
 }
--keepclassmembers,includedescriptorclasses,allowobfuscation,allowshrinking class * {
-   @dagger.internal.KeepFieldType <fields>;
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <init>(...);
 }
 
 # File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.8.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro

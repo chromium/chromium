@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/autocomplete_input.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/logging.h"
@@ -29,201 +25,202 @@ TEST(AutocompleteInputTest, InputType) {
   struct test_data {
     const std::u16string input;
     const metrics::OmniboxInputType type;
-  } input_cases[] = {
-    {std::u16string(), metrics::OmniboxInputType::EMPTY},
-    {u"?", metrics::OmniboxInputType::QUERY},
-    {u"?foo", metrics::OmniboxInputType::QUERY},
-    {u"?foo bar", metrics::OmniboxInputType::QUERY},
-    {u"?http://foo.com/bar", metrics::OmniboxInputType::QUERY},
-    {u"foo", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo._", metrics::OmniboxInputType::QUERY},
-    {u"foo.c", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo.com", metrics::OmniboxInputType::URL},
-    {u"-foo.com", metrics::OmniboxInputType::URL},
-    {u"foo-.com", metrics::OmniboxInputType::URL},
-    {u"foo_.com", metrics::OmniboxInputType::URL},
-    {u"foo.-com", metrics::OmniboxInputType::QUERY},
-    {u"foo/", metrics::OmniboxInputType::URL},
-    {u"foo/bar", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo/bar%00", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo/bar/", metrics::OmniboxInputType::URL},
-    {u"foo/bar baz\\", metrics::OmniboxInputType::URL},
-    {u"foo.com/bar", metrics::OmniboxInputType::URL},
-    {u"foo;bar", metrics::OmniboxInputType::QUERY},
-    {u"foo/bar baz", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo bar.com", metrics::OmniboxInputType::QUERY},
-    {u"foo bar", metrics::OmniboxInputType::QUERY},
-    {u"foo+bar", metrics::OmniboxInputType::QUERY},
-    {u"foo+bar.com", metrics::OmniboxInputType::UNKNOWN},
-    {u"\"foo:bar\"", metrics::OmniboxInputType::QUERY},
-    {u"link:foo.com", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo:81", metrics::OmniboxInputType::URL},
-    {u"www.foo.com:81", metrics::OmniboxInputType::URL},
-    {u"foo.com:123456", metrics::OmniboxInputType::QUERY},
-    {u"foo.com:abc", metrics::OmniboxInputType::QUERY},
-    {u"1.2.3.4:abc", metrics::OmniboxInputType::QUERY},
-    {u"user@foo", metrics::OmniboxInputType::UNKNOWN},
-    {u"user@foo.com", metrics::OmniboxInputType::UNKNOWN},
-    {u"user@foo/", metrics::OmniboxInputType::URL},
-    {u"user@foo/z", metrics::OmniboxInputType::URL},
-    {u"user@foo/z z", metrics::OmniboxInputType::URL},
-    {u"user@foo.com/z", metrics::OmniboxInputType::URL},
-    {u"user @foo/", metrics::OmniboxInputType::UNKNOWN},
-    {u"us er@foo/z", metrics::OmniboxInputType::UNKNOWN},
-    {u"u ser@foo/z z", metrics::OmniboxInputType::UNKNOWN},
-    {u"us er@foo.com/z", metrics::OmniboxInputType::UNKNOWN},
-    {u"user:pass@", metrics::OmniboxInputType::UNKNOWN},
-    {u"user:pass@!foo.com", metrics::OmniboxInputType::UNKNOWN},
-    {u"user:pass@foo", metrics::OmniboxInputType::URL},
-    {u"user:pass@foo.c", metrics::OmniboxInputType::URL},
-    {u"user:pass@foo.com", metrics::OmniboxInputType::URL},
-    {u"space user:pass@foo", metrics::OmniboxInputType::UNKNOWN},
-    {u"space user:pass@foo.c", metrics::OmniboxInputType::UNKNOWN},
-    {u"space user:pass@foo.com", metrics::OmniboxInputType::UNKNOWN},
-    {u"user:pass@foo.com:81", metrics::OmniboxInputType::URL},
-    {u"user:pass@foo:81", metrics::OmniboxInputType::URL},
-    {u".1", metrics::OmniboxInputType::QUERY},
-    {u".1/3", metrics::OmniboxInputType::QUERY},
-    {u"1.2", metrics::OmniboxInputType::QUERY},
-    {u".1.2", metrics::OmniboxInputType::UNKNOWN},
-    {u"1.2/", metrics::OmniboxInputType::URL},
-    {u"1.2/45", metrics::OmniboxInputType::QUERY},
-    {u"6008/32768", metrics::OmniboxInputType::QUERY},
-    {u"12345678/", metrics::OmniboxInputType::QUERY},
-    {u"123456789/", metrics::OmniboxInputType::URL},
-    {u"1.2:45", metrics::OmniboxInputType::QUERY},
-    {u"user@1.2:45", metrics::OmniboxInputType::QUERY},
-    {u"user@foo:45", metrics::OmniboxInputType::URL},
-    {u"user:pass@1.2:45", metrics::OmniboxInputType::URL},
-    {u"host?query", metrics::OmniboxInputType::UNKNOWN},
-    {u"host#", metrics::OmniboxInputType::UNKNOWN},
-    {u"host#ref", metrics::OmniboxInputType::UNKNOWN},
-    {u"host# ref", metrics::OmniboxInputType::UNKNOWN},
-    {u"host/page.html", metrics::OmniboxInputType::UNKNOWN},
-    {u"host/#ref", metrics::OmniboxInputType::URL},
-    {u"host/?#ref", metrics::OmniboxInputType::URL},
-    {u"host/?#", metrics::OmniboxInputType::URL},
-    {u"host.com#ref", metrics::OmniboxInputType::URL},
-    {u"http://host#ref", metrics::OmniboxInputType::URL},
-    {u"host/path?query", metrics::OmniboxInputType::URL},
-    {u"host/path#ref", metrics::OmniboxInputType::URL},
-    {u"en.wikipedia.org/wiki/Jim Beam", metrics::OmniboxInputType::URL},
-    // In Chrome itself, mailto: will get handled by ShellExecute, but in
-    // unittest mode, we don't have the data loaded in the external protocol
-    // handler to know this.
-    // { u"mailto:abuse@foo.com", metrics::OmniboxInputType::URL },
-    {u"view-source:http://www.foo.com/", metrics::OmniboxInputType::URL},
-    {u"javascript", metrics::OmniboxInputType::UNKNOWN},
-    {u"javascript:alert(\"Hi there\");", metrics::OmniboxInputType::URL},
-    {u"javascript:alert%28\"Hi there\"%29;", metrics::OmniboxInputType::URL},
-    {u"javascript:foo", metrics::OmniboxInputType::UNKNOWN},
-    {u"javascript:foo;", metrics::OmniboxInputType::URL},
-    {u"javascript:\"foo\"", metrics::OmniboxInputType::URL},
-    {u"javascript:", metrics::OmniboxInputType::UNKNOWN},
-    {u"javascript:the cromulent parts", metrics::OmniboxInputType::UNKNOWN},
-    {u"javascript:foo.getter", metrics::OmniboxInputType::URL},
-    {u"JavaScript:Tutorials", metrics::OmniboxInputType::UNKNOWN},
+  };
+  auto input_cases = std::to_array<test_data>({
+      {std::u16string(), metrics::OmniboxInputType::EMPTY},
+      {u"?", metrics::OmniboxInputType::QUERY},
+      {u"?foo", metrics::OmniboxInputType::QUERY},
+      {u"?foo bar", metrics::OmniboxInputType::QUERY},
+      {u"?http://foo.com/bar", metrics::OmniboxInputType::QUERY},
+      {u"foo", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo._", metrics::OmniboxInputType::QUERY},
+      {u"foo.c", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo.com", metrics::OmniboxInputType::URL},
+      {u"-foo.com", metrics::OmniboxInputType::URL},
+      {u"foo-.com", metrics::OmniboxInputType::URL},
+      {u"foo_.com", metrics::OmniboxInputType::URL},
+      {u"foo.-com", metrics::OmniboxInputType::QUERY},
+      {u"foo/", metrics::OmniboxInputType::URL},
+      {u"foo/bar", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo/bar%00", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo/bar/", metrics::OmniboxInputType::URL},
+      {u"foo/bar baz\\", metrics::OmniboxInputType::URL},
+      {u"foo.com/bar", metrics::OmniboxInputType::URL},
+      {u"foo;bar", metrics::OmniboxInputType::QUERY},
+      {u"foo/bar baz", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo bar.com", metrics::OmniboxInputType::QUERY},
+      {u"foo bar", metrics::OmniboxInputType::QUERY},
+      {u"foo+bar", metrics::OmniboxInputType::QUERY},
+      {u"foo+bar.com", metrics::OmniboxInputType::UNKNOWN},
+      {u"\"foo:bar\"", metrics::OmniboxInputType::QUERY},
+      {u"link:foo.com", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo:81", metrics::OmniboxInputType::URL},
+      {u"www.foo.com:81", metrics::OmniboxInputType::URL},
+      {u"foo.com:123456", metrics::OmniboxInputType::QUERY},
+      {u"foo.com:abc", metrics::OmniboxInputType::QUERY},
+      {u"1.2.3.4:abc", metrics::OmniboxInputType::QUERY},
+      {u"user@foo", metrics::OmniboxInputType::UNKNOWN},
+      {u"user@foo.com", metrics::OmniboxInputType::UNKNOWN},
+      {u"user@foo/", metrics::OmniboxInputType::URL},
+      {u"user@foo/z", metrics::OmniboxInputType::URL},
+      {u"user@foo/z z", metrics::OmniboxInputType::URL},
+      {u"user@foo.com/z", metrics::OmniboxInputType::URL},
+      {u"user @foo/", metrics::OmniboxInputType::UNKNOWN},
+      {u"us er@foo/z", metrics::OmniboxInputType::UNKNOWN},
+      {u"u ser@foo/z z", metrics::OmniboxInputType::UNKNOWN},
+      {u"us er@foo.com/z", metrics::OmniboxInputType::UNKNOWN},
+      {u"user:pass@", metrics::OmniboxInputType::UNKNOWN},
+      {u"user:pass@!foo.com", metrics::OmniboxInputType::UNKNOWN},
+      {u"user:pass@foo", metrics::OmniboxInputType::URL},
+      {u"user:pass@foo.c", metrics::OmniboxInputType::URL},
+      {u"user:pass@foo.com", metrics::OmniboxInputType::URL},
+      {u"space user:pass@foo", metrics::OmniboxInputType::UNKNOWN},
+      {u"space user:pass@foo.c", metrics::OmniboxInputType::UNKNOWN},
+      {u"space user:pass@foo.com", metrics::OmniboxInputType::UNKNOWN},
+      {u"user:pass@foo.com:81", metrics::OmniboxInputType::URL},
+      {u"user:pass@foo:81", metrics::OmniboxInputType::URL},
+      {u".1", metrics::OmniboxInputType::QUERY},
+      {u".1/3", metrics::OmniboxInputType::QUERY},
+      {u"1.2", metrics::OmniboxInputType::QUERY},
+      {u".1.2", metrics::OmniboxInputType::UNKNOWN},
+      {u"1.2/", metrics::OmniboxInputType::URL},
+      {u"1.2/45", metrics::OmniboxInputType::QUERY},
+      {u"6008/32768", metrics::OmniboxInputType::QUERY},
+      {u"12345678/", metrics::OmniboxInputType::QUERY},
+      {u"123456789/", metrics::OmniboxInputType::URL},
+      {u"1.2:45", metrics::OmniboxInputType::QUERY},
+      {u"user@1.2:45", metrics::OmniboxInputType::QUERY},
+      {u"user@foo:45", metrics::OmniboxInputType::URL},
+      {u"user:pass@1.2:45", metrics::OmniboxInputType::URL},
+      {u"host?query", metrics::OmniboxInputType::UNKNOWN},
+      {u"host#", metrics::OmniboxInputType::UNKNOWN},
+      {u"host#ref", metrics::OmniboxInputType::UNKNOWN},
+      {u"host# ref", metrics::OmniboxInputType::UNKNOWN},
+      {u"host/page.html", metrics::OmniboxInputType::UNKNOWN},
+      {u"host/#ref", metrics::OmniboxInputType::URL},
+      {u"host/?#ref", metrics::OmniboxInputType::URL},
+      {u"host/?#", metrics::OmniboxInputType::URL},
+      {u"host.com#ref", metrics::OmniboxInputType::URL},
+      {u"http://host#ref", metrics::OmniboxInputType::URL},
+      {u"host/path?query", metrics::OmniboxInputType::URL},
+      {u"host/path#ref", metrics::OmniboxInputType::URL},
+      {u"en.wikipedia.org/wiki/Jim Beam", metrics::OmniboxInputType::URL},
+      // In Chrome itself, mailto: will get handled by ShellExecute, but in
+      // unittest mode, we don't have the data loaded in the external protocol
+      // handler to know this.
+      // { u"mailto:abuse@foo.com", metrics::OmniboxInputType::URL },
+      {u"view-source:http://www.foo.com/", metrics::OmniboxInputType::URL},
+      {u"javascript", metrics::OmniboxInputType::UNKNOWN},
+      {u"javascript:alert(\"Hi there\");", metrics::OmniboxInputType::URL},
+      {u"javascript:alert%28\"Hi there\"%29;", metrics::OmniboxInputType::URL},
+      {u"javascript:foo", metrics::OmniboxInputType::UNKNOWN},
+      {u"javascript:foo;", metrics::OmniboxInputType::URL},
+      {u"javascript:\"foo\"", metrics::OmniboxInputType::URL},
+      {u"javascript:", metrics::OmniboxInputType::UNKNOWN},
+      {u"javascript:the cromulent parts", metrics::OmniboxInputType::UNKNOWN},
+      {u"javascript:foo.getter", metrics::OmniboxInputType::URL},
+      {u"JavaScript:Tutorials", metrics::OmniboxInputType::UNKNOWN},
 #if BUILDFLAG(IS_WIN)
-    {u"C:\\Program Files", metrics::OmniboxInputType::URL},
-    {u"\\\\Server\\Folder\\File", metrics::OmniboxInputType::URL},
+      {u"C:\\Program Files", metrics::OmniboxInputType::URL},
+      {u"\\\\Server\\Folder\\File", metrics::OmniboxInputType::URL},
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-    {u"file:///foo", metrics::OmniboxInputType::QUERY},
-    {u"/foo", metrics::OmniboxInputType::QUERY},
+      {u"file:///foo", metrics::OmniboxInputType::QUERY},
+      {u"/foo", metrics::OmniboxInputType::QUERY},
 #else
-    {u"file:///foo", metrics::OmniboxInputType::URL},
+      {u"file:///foo", metrics::OmniboxInputType::URL},
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-    {u"http:foo", metrics::OmniboxInputType::URL},
-    {u"http://foo", metrics::OmniboxInputType::URL},
-    {u"http://foo._", metrics::OmniboxInputType::UNKNOWN},
-    {u"http://foo.c", metrics::OmniboxInputType::URL},
-    {u"http://foo.com", metrics::OmniboxInputType::URL},
-    {u"http://foo_bar.com", metrics::OmniboxInputType::URL},
-    {u"http://foo/bar%00", metrics::OmniboxInputType::URL},
-    {u"http://foo/bar baz", metrics::OmniboxInputType::URL},
-    {u"http://-foo.com", metrics::OmniboxInputType::URL},
-    {u"http://foo-.com", metrics::OmniboxInputType::URL},
-    {u"http://foo_.com", metrics::OmniboxInputType::URL},
-    {u"http://foo.-com", metrics::OmniboxInputType::UNKNOWN},
-    {u"http://_foo_.com", metrics::OmniboxInputType::URL},
-    {u"http://foo.com:abc", metrics::OmniboxInputType::QUERY},
-    {u"http://foo.com:123456", metrics::OmniboxInputType::QUERY},
-    {u"http://1.2.3.4:abc", metrics::OmniboxInputType::QUERY},
-    {u"http:user@foo.com", metrics::OmniboxInputType::URL},
-    {u"http://user@foo.com", metrics::OmniboxInputType::URL},
-    {u"http://space user@foo.com", metrics::OmniboxInputType::URL},
-    {u"http://user:pass@foo", metrics::OmniboxInputType::URL},
-    {u"http://space user:pass@foo", metrics::OmniboxInputType::URL},
-    {u"http:space user:pass@foo", metrics::OmniboxInputType::URL},
-    {u"http:user:pass@foo.com", metrics::OmniboxInputType::URL},
-    {u"http://user:pass@foo.com", metrics::OmniboxInputType::URL},
-    {u"http://1.2", metrics::OmniboxInputType::URL},
-    {u"http:user@1.2", metrics::OmniboxInputType::URL},
-    {u"http://1.2/45", metrics::OmniboxInputType::URL},
-    {u"http:ps/2 games", metrics::OmniboxInputType::URL},
-    {u"https://foo.com", metrics::OmniboxInputType::URL},
-    {u"127.0.0.1", metrics::OmniboxInputType::URL},
-    {u"127.0.1", metrics::OmniboxInputType::QUERY},
-    {u"127.0.1/", metrics::OmniboxInputType::URL},
-    {u"0.0.0", metrics::OmniboxInputType::QUERY},
-    {u"0.0.0.0", metrics::OmniboxInputType::URL},
-    {u"0.0.0.1", metrics::OmniboxInputType::QUERY},
-    {u"http://0.0.0.1/", metrics::OmniboxInputType::QUERY},
-    {u"browser.tabs.closeButtons", metrics::OmniboxInputType::UNKNOWN},
-    {u"\u6d4b\u8bd5", metrics::OmniboxInputType::UNKNOWN},
-    {u"[2001:]", metrics::OmniboxInputType::QUERY},
-    {u"[2001:dB8::1]", metrics::OmniboxInputType::URL},
-    {u"192.168.0.256", metrics::OmniboxInputType::QUERY},
-    {u"[foo.com]", metrics::OmniboxInputType::QUERY},
-    {u"filesystem:http://a.com/t/bar", metrics::OmniboxInputType::URL},
-    {u"filesystem:http://a.com/", metrics::OmniboxInputType::QUERY},
-    {u"filesystem:file://", metrics::OmniboxInputType::QUERY},
-    {u"filesystem:http", metrics::OmniboxInputType::QUERY},
-    {u"filesystem:", metrics::OmniboxInputType::QUERY},
-    {u"chrome-search://", metrics::OmniboxInputType::QUERY},
-    {u"chrome-devtools:", metrics::OmniboxInputType::UNKNOWN},
-    {u"chrome-devtools://", metrics::OmniboxInputType::UNKNOWN},
-    {u"chrome-devtools://x", metrics::OmniboxInputType::UNKNOWN},
-    {u"devtools:", metrics::OmniboxInputType::QUERY},
-    {u"devtools://", metrics::OmniboxInputType::QUERY},
-    {u"devtools://x", metrics::OmniboxInputType::URL},
-    {u"about://f;", metrics::OmniboxInputType::URL},
-    {u"://w", metrics::OmniboxInputType::UNKNOWN},
-    {u":w", metrics::OmniboxInputType::UNKNOWN},
-    {u".\u062A", metrics::OmniboxInputType::UNKNOWN},
-    // These tests are for https://tools.ietf.org/html/rfc6761.
-    {u"localhost", metrics::OmniboxInputType::URL},
-    {u"localhost:8080", metrics::OmniboxInputType::URL},
-    {u"foo.localhost", metrics::OmniboxInputType::URL},
-    {u"foo localhost", metrics::OmniboxInputType::QUERY},
-    {u"foo.example", metrics::OmniboxInputType::URL},
-    {u"foo example", metrics::OmniboxInputType::QUERY},
-    {u"http://example/", metrics::OmniboxInputType::URL},
-    {u"example", metrics::OmniboxInputType::UNKNOWN},
-    {u"example ", metrics::OmniboxInputType::UNKNOWN},
-    {u" example", metrics::OmniboxInputType::UNKNOWN},
-    {u" example ", metrics::OmniboxInputType::UNKNOWN},
-    {u"example.", metrics::OmniboxInputType::UNKNOWN},
-    {u".example", metrics::OmniboxInputType::UNKNOWN},
-    {u".example.", metrics::OmniboxInputType::UNKNOWN},
-    {u"example:", metrics::OmniboxInputType::UNKNOWN},
-    {u"example:80/ ", metrics::OmniboxInputType::URL},
-    {u"http://foo.invalid", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo.invalid/", metrics::OmniboxInputType::QUERY},
-    {u"foo.invalid", metrics::OmniboxInputType::QUERY},
-    {u"foo invalid", metrics::OmniboxInputType::QUERY},
-    {u"invalid", metrics::OmniboxInputType::UNKNOWN},
-    {u"foo.test", metrics::OmniboxInputType::URL},
-    {u"foo test", metrics::OmniboxInputType::QUERY},
-    {u"test", metrics::OmniboxInputType::UNKNOWN},
-    {u"test..", metrics::OmniboxInputType::UNKNOWN},
-    {u"..test", metrics::OmniboxInputType::UNKNOWN},
-    {u"test:80/", metrics::OmniboxInputType::URL},
-    {u"foo.local", metrics::OmniboxInputType::URL},
-    {u"foo local", metrics::OmniboxInputType::QUERY},
-    {u"local", metrics::OmniboxInputType::UNKNOWN},
-    {u".local", metrics::OmniboxInputType::UNKNOWN},
-  };
+      {u"http:foo", metrics::OmniboxInputType::URL},
+      {u"http://foo", metrics::OmniboxInputType::URL},
+      {u"http://foo._", metrics::OmniboxInputType::UNKNOWN},
+      {u"http://foo.c", metrics::OmniboxInputType::URL},
+      {u"http://foo.com", metrics::OmniboxInputType::URL},
+      {u"http://foo_bar.com", metrics::OmniboxInputType::URL},
+      {u"http://foo/bar%00", metrics::OmniboxInputType::URL},
+      {u"http://foo/bar baz", metrics::OmniboxInputType::URL},
+      {u"http://-foo.com", metrics::OmniboxInputType::URL},
+      {u"http://foo-.com", metrics::OmniboxInputType::URL},
+      {u"http://foo_.com", metrics::OmniboxInputType::URL},
+      {u"http://foo.-com", metrics::OmniboxInputType::UNKNOWN},
+      {u"http://_foo_.com", metrics::OmniboxInputType::URL},
+      {u"http://foo.com:abc", metrics::OmniboxInputType::QUERY},
+      {u"http://foo.com:123456", metrics::OmniboxInputType::QUERY},
+      {u"http://1.2.3.4:abc", metrics::OmniboxInputType::QUERY},
+      {u"http:user@foo.com", metrics::OmniboxInputType::URL},
+      {u"http://user@foo.com", metrics::OmniboxInputType::URL},
+      {u"http://space user@foo.com", metrics::OmniboxInputType::URL},
+      {u"http://user:pass@foo", metrics::OmniboxInputType::URL},
+      {u"http://space user:pass@foo", metrics::OmniboxInputType::URL},
+      {u"http:space user:pass@foo", metrics::OmniboxInputType::URL},
+      {u"http:user:pass@foo.com", metrics::OmniboxInputType::URL},
+      {u"http://user:pass@foo.com", metrics::OmniboxInputType::URL},
+      {u"http://1.2", metrics::OmniboxInputType::URL},
+      {u"http:user@1.2", metrics::OmniboxInputType::URL},
+      {u"http://1.2/45", metrics::OmniboxInputType::URL},
+      {u"http:ps/2 games", metrics::OmniboxInputType::URL},
+      {u"https://foo.com", metrics::OmniboxInputType::URL},
+      {u"127.0.0.1", metrics::OmniboxInputType::URL},
+      {u"127.0.1", metrics::OmniboxInputType::QUERY},
+      {u"127.0.1/", metrics::OmniboxInputType::URL},
+      {u"0.0.0", metrics::OmniboxInputType::QUERY},
+      {u"0.0.0.0", metrics::OmniboxInputType::URL},
+      {u"0.0.0.1", metrics::OmniboxInputType::QUERY},
+      {u"http://0.0.0.1/", metrics::OmniboxInputType::QUERY},
+      {u"browser.tabs.closeButtons", metrics::OmniboxInputType::UNKNOWN},
+      {u"\u6d4b\u8bd5", metrics::OmniboxInputType::UNKNOWN},
+      {u"[2001:]", metrics::OmniboxInputType::QUERY},
+      {u"[2001:dB8::1]", metrics::OmniboxInputType::URL},
+      {u"192.168.0.256", metrics::OmniboxInputType::QUERY},
+      {u"[foo.com]", metrics::OmniboxInputType::QUERY},
+      {u"filesystem:http://a.com/t/bar", metrics::OmniboxInputType::URL},
+      {u"filesystem:http://a.com/", metrics::OmniboxInputType::QUERY},
+      {u"filesystem:file://", metrics::OmniboxInputType::QUERY},
+      {u"filesystem:http", metrics::OmniboxInputType::QUERY},
+      {u"filesystem:", metrics::OmniboxInputType::QUERY},
+      {u"chrome-search://", metrics::OmniboxInputType::QUERY},
+      {u"chrome-devtools:", metrics::OmniboxInputType::UNKNOWN},
+      {u"chrome-devtools://", metrics::OmniboxInputType::UNKNOWN},
+      {u"chrome-devtools://x", metrics::OmniboxInputType::UNKNOWN},
+      {u"devtools:", metrics::OmniboxInputType::QUERY},
+      {u"devtools://", metrics::OmniboxInputType::QUERY},
+      {u"devtools://x", metrics::OmniboxInputType::URL},
+      {u"about://f;", metrics::OmniboxInputType::URL},
+      {u"://w", metrics::OmniboxInputType::UNKNOWN},
+      {u":w", metrics::OmniboxInputType::UNKNOWN},
+      {u".\u062A", metrics::OmniboxInputType::UNKNOWN},
+      // These tests are for https://tools.ietf.org/html/rfc6761.
+      {u"localhost", metrics::OmniboxInputType::URL},
+      {u"localhost:8080", metrics::OmniboxInputType::URL},
+      {u"foo.localhost", metrics::OmniboxInputType::URL},
+      {u"foo localhost", metrics::OmniboxInputType::QUERY},
+      {u"foo.example", metrics::OmniboxInputType::URL},
+      {u"foo example", metrics::OmniboxInputType::QUERY},
+      {u"http://example/", metrics::OmniboxInputType::URL},
+      {u"example", metrics::OmniboxInputType::UNKNOWN},
+      {u"example ", metrics::OmniboxInputType::UNKNOWN},
+      {u" example", metrics::OmniboxInputType::UNKNOWN},
+      {u" example ", metrics::OmniboxInputType::UNKNOWN},
+      {u"example.", metrics::OmniboxInputType::UNKNOWN},
+      {u".example", metrics::OmniboxInputType::UNKNOWN},
+      {u".example.", metrics::OmniboxInputType::UNKNOWN},
+      {u"example:", metrics::OmniboxInputType::UNKNOWN},
+      {u"example:80/ ", metrics::OmniboxInputType::URL},
+      {u"http://foo.invalid", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo.invalid/", metrics::OmniboxInputType::QUERY},
+      {u"foo.invalid", metrics::OmniboxInputType::QUERY},
+      {u"foo invalid", metrics::OmniboxInputType::QUERY},
+      {u"invalid", metrics::OmniboxInputType::UNKNOWN},
+      {u"foo.test", metrics::OmniboxInputType::URL},
+      {u"foo test", metrics::OmniboxInputType::QUERY},
+      {u"test", metrics::OmniboxInputType::UNKNOWN},
+      {u"test..", metrics::OmniboxInputType::UNKNOWN},
+      {u"..test", metrics::OmniboxInputType::UNKNOWN},
+      {u"test:80/", metrics::OmniboxInputType::URL},
+      {u"foo.local", metrics::OmniboxInputType::URL},
+      {u"foo local", metrics::OmniboxInputType::QUERY},
+      {u"local", metrics::OmniboxInputType::UNKNOWN},
+      {u".local", metrics::OmniboxInputType::UNKNOWN},
+  });
 
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
@@ -240,7 +237,8 @@ TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
     const std::u16string input;
     const metrics::OmniboxInputType type;
     const std::string spec;  // Unused if not a URL.
-  } input_cases[] = {
+  };
+  auto input_cases = std::to_array<test_data>({
       {u"401k", metrics::OmniboxInputType::URL,
        std::string("http://www.401k.com/")},
       {u"56", metrics::OmniboxInputType::URL,
@@ -263,7 +261,7 @@ TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
       {u"abc.com", metrics::OmniboxInputType::URL,
        std::string("http://abc.com/")},
       {u"foo bar", metrics::OmniboxInputType::QUERY, std::string()},
-  };
+  });
 
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
@@ -293,7 +291,8 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
     const std::u16string input;
     const Component scheme;
     const Component host;
-  } input_cases[] = {
+  };
+  auto input_cases = std::to_array<test_data>({
       {std::u16string(), kInvalidComponent, kInvalidComponent},
       {u"?", kInvalidComponent, kInvalidComponent},
       {u"?http://foo.com/bar", kInvalidComponent, kInvalidComponent},
@@ -316,15 +315,13 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
       {u"blob:www.foo.com", kInvalidComponent, Component(5, 11)},
       {u"blob:", Component(0, 4), kInvalidComponent},
       {u"blob:garbage", kInvalidComponent, Component(5, 7)},
-  };
+  });
 
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     Component scheme, host;
-    AutocompleteInput::ParseForEmphasizeComponents(input_cases[i].input,
-                                                   TestSchemeClassifier(),
-                                                   &scheme,
-                                                   &host);
+    AutocompleteInput::ParseForEmphasizeComponents(
+        input_cases[i].input, TestSchemeClassifier(), &scheme, &host);
     EXPECT_EQ(input_cases[i].scheme.begin, scheme.begin);
     EXPECT_EQ(input_cases[i].scheme.len, scheme.len);
     EXPECT_EQ(input_cases[i].host.begin, host.begin);
@@ -338,7 +335,8 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
     size_t cursor_position;
     const std::u16string normalized_input;
     size_t normalized_cursor_position;
-  } input_cases[] = {
+  };
+  auto input_cases = std::to_array<test_data>({
       {u"foo bar", std::u16string::npos, u"foo bar", std::u16string::npos},
 
       // Regular case, no changes.
@@ -357,7 +355,7 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
       {u"  ?foo bar", 4, u"?foo bar", 2},
       {u"?  foo bar", 4, u"?  foo bar", 4},
       {u"  ?  foo bar", 6, u"?  foo bar", 4},
-  };
+  });
 
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
@@ -515,4 +513,68 @@ TEST(AutocompleteInputTest, TypedURLHadHTTPSchemeTest) {
     EXPECT_EQ(test_case.expected_typed_url_had_http_scheme,
               input.typed_url_had_http_scheme());
   }
+}
+
+TEST(AutocompleteInputTest, GetFeaturedKeywordMode) {
+  struct TestData {
+    const std::u16string input;
+    AutocompleteInput::FeaturedKeywordMode expected_mode;
+  };
+
+  const TestData test_cases[] = {
+      {u"", AutocompleteInput::FeaturedKeywordMode::kFalse},
+      {u"@", AutocompleteInput::FeaturedKeywordMode::kExact},
+      {u"@x", AutocompleteInput::FeaturedKeywordMode::kPrefix},
+      {u"x@", AutocompleteInput::FeaturedKeywordMode::kFalse},
+  };
+  for (const TestData& test_case : test_cases) {
+    AutocompleteInput input(test_case.input, std::u16string::npos,
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier(),
+                            /*should_use_https_as_default_scheme=*/true);
+    EXPECT_EQ(input.GetFeaturedKeywordMode(), test_case.expected_mode);
+  }
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithCredentials) {
+  std::u16string input = u"login:password@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:password@domain:1234/path", canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithScheme) {
+  std::u16string input = u"http://login:pass word@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:pass%20word@domain:1234/path",
+            canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithSearchQuery) {
+  std::u16string input = u"site:wikipedia.org ch4@zeolite";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_FALSE(parts.username.is_nonempty());
+  EXPECT_FALSE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::QUERY, input_type);
+  EXPECT_FALSE(canonicalized_url.is_valid());
 }

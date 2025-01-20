@@ -420,7 +420,7 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
       skcms_TransferFunction trfn;
       // Detect scaled versions of sRGB and linear for HDR content.
       if (color_space.GetTransferFunction(&trfn)) {
-        if (skia::IsScaledTransferFunction(SkNamedTransferFnExt::kSRGB, trfn,
+        if (skia::IsScaledTransferFunction(SkNamedTransferFn::kSRGB, trfn,
                                            &extended_range_brightness_ratio)) {
           dataspace |= TRANSFER_SRGB;
           return true;

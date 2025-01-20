@@ -15,7 +15,7 @@ namespace {
 bool IsValidPageSize(int page_size) {
   if (page_size < 512 || page_size > 65536)
     return false;
-  return base::bits::IsPowerOfTwoDeprecatedDoNotUse(page_size);
+  return std::has_single_bit(static_cast<uint16_t>(page_size));
 }
 
 }  // namespace

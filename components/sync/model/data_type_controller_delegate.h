@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -30,7 +31,8 @@ class DataTypeControllerDelegate {
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
 
-  virtual ~DataTypeControllerDelegate() = default;
+  DataTypeControllerDelegate();
+  virtual ~DataTypeControllerDelegate();
 
   // Gathers additional information needed before the processor can be
   // connected to a sync worker. Once the metadata has been loaded, the info
@@ -67,6 +69,14 @@ class DataTypeControllerDelegate {
 
   // Simulates model error from the bridge.
   virtual void ReportBridgeErrorForTest() = 0;
+
+  // Returns a WeakPtr of this object.
+  base::WeakPtr<DataTypeControllerDelegate> GetWeakPtr();
+
+ private:
+  // Must be the last member variable. See WeakPtrFactory documentation for
+  // details.
+  base::WeakPtrFactory<DataTypeControllerDelegate> weak_factory_{this};
 };
 
 }  // namespace syncer

@@ -85,8 +85,9 @@ void InfoBubble::Show() {
 
 void InfoBubble::Hide() {
   Widget* widget = GetWidget();
-  if (widget && !widget->IsClosed())
+  if (widget && !widget->IsClosed()) {
     widget->Close();
+  }
 }
 
 std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
@@ -103,8 +104,9 @@ std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
 
 gfx::Size InfoBubble::CalculatePreferredSize(
     const SizeBounds& available_size) const {
-  if (preferred_width_ == 0)
+  if (preferred_width_ == 0) {
     return BubbleDialogDelegateView::CalculatePreferredSize(available_size);
+  }
 
   int pref_width = preferred_width_;
   pref_width -= frame_->GetInsets().width();
@@ -116,14 +118,16 @@ gfx::Size InfoBubble::CalculatePreferredSize(
 void InfoBubble::OnWidgetBoundsChanged(Widget* widget,
                                        const gfx::Rect& new_bounds) {
   BubbleDialogDelegateView::OnWidgetBoundsChanged(widget, new_bounds);
-  if (anchor_widget() == widget)
+  if (anchor_widget() == widget) {
     frame_->set_available_bounds(widget->GetWindowBoundsInScreen());
+  }
 }
 
 void InfoBubble::UpdatePosition() {
   Widget* const widget = GetWidget();
-  if (!widget)
+  if (!widget) {
     return;
+  }
 
   if (anchor_widget()->IsVisible() &&
       !GetAnchorView()->GetVisibleBounds().IsEmpty()) {

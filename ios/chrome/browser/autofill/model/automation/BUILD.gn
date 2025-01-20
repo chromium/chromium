@@ -19,7 +19,7 @@ source_set("eg2_tests") {
     "//components/autofill/ios/browser:autofill_test_bundle_data",
     "//components/strings",
     "//ios/chrome/browser/autofill/model:constants",
-    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/browser/infobars/ui_bundled:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",

@@ -217,8 +217,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
   int result;
   if (is_ssl_server()) {
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(local_cert_)));
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(local_cert_));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);
@@ -251,8 +250,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     ssl_config.require_ecdhe = true;
 
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(remote_cert_)));
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(remote_cert_));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);

@@ -303,7 +303,7 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       uint32_t raw_key_type;
       uint32_t modulus_length_bits;
       uint32_t public_exponent_size;
-      const void* public_exponent_bytes;
+      base::span<const uint8_t> public_exponent;
       uint32_t raw_hash;
       WebCryptoAlgorithmId hash;
       if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id) ||
@@ -311,13 +311,13 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
           !AsymmetricKeyTypeFromWireFormat(raw_key_type, &key_type) ||
           !ReadUint32(&modulus_length_bits) ||
           !ReadUint32(&public_exponent_size) ||
-          !ReadRawBytes(public_exponent_size, &public_exponent_bytes) ||
-          !ReadUint32(&raw_hash) || !AlgorithmIdFromWireFormat(raw_hash, &hash))
+          !ReadRawBytesToSpan(public_exponent_size, &public_exponent) ||
+          !ReadUint32(&raw_hash) ||
+          !AlgorithmIdFromWireFormat(raw_hash, &hash)) {
         return nullptr;
+      }
       algorithm = WebCryptoKeyAlgorithm::CreateRsaHashed(
-          id, modulus_length_bits,
-          reinterpret_cast<const unsigned char*>(public_exponent_bytes),
-          public_exponent_size, hash);
+          id, modulus_length_bits, public_exponent, hash);
       break;
     }
     case kEcKeyTag: {
@@ -373,17 +373,17 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
 
   // Read key data.
   uint32_t key_data_length;
-  const void* key_data;
+  base::span<const uint8_t> key_data;
   if (!ReadUint32(&key_data_length) ||
-      !ReadRawBytes(key_data_length, &key_data))
+      !ReadRawBytesToSpan(key_data_length, &key_data)) {
     return nullptr;
+  }
 
   WebCryptoKey key = WebCryptoKey::CreateNull();
   if (!Platform::Current()->Crypto()->DeserializeKeyForClone(
-          algorithm, key_type, extractable, usages,
-          reinterpret_cast<const unsigned char*>(key_data), key_data_length,
-          key))
+          algorithm, key_type, extractable, usages, key_data, key)) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<CryptoKey>(key);
 }

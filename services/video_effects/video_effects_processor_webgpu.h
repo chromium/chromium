@@ -50,6 +50,8 @@ class VideoEffectsProcessorWebGpu {
       media::VideoPixelFormat result_pixel_format,
       mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
+  void SetBackgroundSegmentationModel(base::span<const uint8_t> model_blob);
+
  private:
   // Ensures that awaiting WebGPUInterface commands are flushed.
   void EnsureFlush();
@@ -69,6 +71,11 @@ class VideoEffectsProcessorWebGpu {
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   scoped_refptr<viz::RasterContextProvider> raster_interface_context_provider_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+
+  // Model to be used for background segmentation. It will be empty if the model
+  // is unavailable. This can happen either when we have not received the model
+  // yet, or if we have been told to stop using an existing model.
+  std::vector<uint8_t> background_segmentation_model_;
 
   // Compute pipeline executing basic compute shader on a video frame.
   wgpu::ComputePipeline compute_pipeline_;

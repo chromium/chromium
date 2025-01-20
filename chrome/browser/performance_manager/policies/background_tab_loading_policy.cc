@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -16,13 +18,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -34,6 +43,22 @@ namespace {
 BackgroundTabLoadingPolicy* g_background_tab_loading_policy = nullptr;
 
 const char kDescriberName[] = "BackgroundTabLoadingPolicy";
+
+size_t GetSiteEngagementScore(content::WebContents* contents) {
+  // Get the active navigation entry. Restored tabs should always have one.
+  auto& controller = contents->GetController();
+  auto* nav_entry =
+      controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
+  DCHECK(nav_entry);
+
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
+      Profile::FromBrowserContext(contents->GetBrowserContext()));
+  double engagement =
+      engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
+
+  // Return the engagement as an integer.
+  return engagement;
+}
 
 }  // namespace
 
@@ -83,14 +108,27 @@ void ScheduleLoadForRestoredTabs(
     DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
     DCHECK_NE(content->GetLastCommittedURL(), GURL());
 
+    // Without kBackgroundTabLoadingRestoreMainFrameState, use the incorrect
+    // lookup method to get bug-for-bug compatibility with TabLoader.
+    // TODO(crbug.com/40121561): Remove this after comparing the performance.
+    auto notification_permission =
+        features::kBackgroundTabLoadingRestoreMainFrameState.Get()
+            ? permission_controller
+                  ->GetPermissionResultForOriginWithoutContext(
+                      blink::PermissionType::NOTIFICATIONS,
+                      url::Origin::Create(content->GetLastCommittedURL()))
+                  .status
+            : permission_controller->GetPermissionStatusForCurrentDocument(
+                  blink::PermissionType::NOTIFICATIONS,
+                  content->GetPrimaryMainFrame());
+
     page_node_data_vector.emplace_back(
         PerformanceManager::GetPrimaryPageNodeForWebContents(content),
-        content->GetLastCommittedURL(),
-        permission_controller
-            ->GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::NOTIFICATIONS,
-                url::Origin::Create(content->GetLastCommittedURL()))
-            .status);
+        content->GetLastCommittedURL(), notification_permission);
+    if (features::kBackgroundTabLoadingMinSiteEngagement.Get() > 0) {
+      page_node_data_vector.back().site_engagement =
+          GetSiteEngagementScore(content);
+    }
   }
 
   performance_manager::PerformanceManager::CallOnGraph(
@@ -225,9 +263,13 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     // Setting main frame restored state ensures that the notification
     // permission status and background title/favicon update properties are set
     // correctly when `ScoreTab` scores the page.
-    PageNodeImpl::FromNode(page_node)->SetMainFrameRestoredState(
-        page_node_data.main_frame_url,
-        page_node_data.notification_permission_status);
+    // TODO(crbug.com/40121561): Remove the feature check after comparing the
+    // performance to TabLoader, which lacks this call.
+    if (features::kBackgroundTabLoadingRestoreMainFrameState.Get()) {
+      PageNodeImpl::FromNode(page_node)->SetMainFrameRestoredState(
+          page_node_data.main_frame_url,
+          page_node_data.notification_permission_status);
+    }
 
     // No need to schedule a load if the page is already loading.
     if (base::Contains(page_nodes_loading_, page_node)) {
@@ -237,8 +279,8 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     }
 
     // Put the page in the queue for loading.
-    page_nodes_to_load_.push_back(
-        std::make_unique<PageNodeToLoadData>(page_node));
+    page_nodes_to_load_.push_back(std::make_unique<PageNodeToLoadData>(
+        page_node, page_node_data.site_engagement));
   }
 
   // Asynchronously determine whether pages added to `page_nodes_to_load_` are
@@ -279,10 +321,18 @@ BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(
-    PageNode* page_node)
-    : page_node(page_node) {}
+    const PageNode* page_node,
+    std::optional<size_t> site_engagement)
+    : page_node(page_node), site_engagement(site_engagement) {}
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::~PageNodeToLoadData() = default;
+
+bool BackgroundTabLoadingPolicy::PageNodeToLoadData::
+    UsesBackgroundCommunication() const {
+  return page_node->GetNotificationPermissionStatus() ==
+             blink::mojom::PermissionStatus::GRANTED ||
+         updates_title_or_favicon_in_bg.value();
+}
 
 struct BackgroundTabLoadingPolicy::ScoredTabComparator {
   bool operator()(const std::unique_ptr<PageNodeToLoadData>& tab0,
@@ -318,7 +368,8 @@ base::Value::Dict BackgroundTabLoadingPolicy::DescribeSystemNodeData(
   return dict;
 }
 
-bool BackgroundTabLoadingPolicy::ShouldLoad(const PageNode* page_node) {
+bool BackgroundTabLoadingPolicy::ShouldLoad(
+    const PageNodeToLoadData& page_node_data) {
   if (tab_loads_started_ < kMinTabsToLoad)
     return true;
 
@@ -331,13 +382,24 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(const PageNode* page_node) {
     return false;
 
   // Enforce a max time since last use.
-  if (page_node->GetTimeSinceLastVisibilityChange() >
+  if (page_node_data.page_node->GetTimeSinceLastVisibilityChange() >
       kMaxTimeSinceLastUseToLoad) {
     return false;
   }
 
-  // TODO(crbug.com/40126611): Enforce the site engagement score for tabs that
-  // don't make use of background communication mechanisms.
+  // Enforce a minimum site engagement score if applicable.
+  // Only enforce the site engagement score for tabs that don't make use of
+  // background communication mechanisms. These sites often have low engagements
+  // because they are only used very sporadically, but it is important that they
+  // are loaded because if not loaded the user can miss important messages.
+  const size_t min_site_engagement =
+      features::kBackgroundTabLoadingMinSiteEngagement.Get();
+  if (!page_node_data.UsesBackgroundCommunication() &&
+      page_node_data.site_engagement.value_or(min_site_engagement) <
+          min_site_engagement) {
+    return false;
+  }
+
   return true;
 }
 
@@ -405,9 +467,7 @@ void BackgroundTabLoadingPolicy::ScoreTab(
   // Give higher priorities to tabs used in the background, and lowest
   // priority to internal tabs. Apps and pinned tabs are simply treated as
   // normal tabs.
-  if (page_node_to_load_data->page_node->GetNotificationPermissionStatus() ==
-          blink::mojom::PermissionStatus::GRANTED ||
-      page_node_to_load_data->updates_title_or_favicon_in_bg.value()) {
+  if (page_node_to_load_data->UsesBackgroundCommunication()) {
     score = 2;
   } else if (!page_node_to_load_data->page_node->GetMainFrameUrl().SchemeIs(
                  content::kChromeUIScheme)) {
@@ -523,7 +583,7 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
   // Find the next PageNode to load.
   while (!page_nodes_to_load_.empty()) {
     const PageNode* page_node = page_nodes_to_load_.front()->page_node;
-    if (ShouldLoad(page_node)) {
+    if (ShouldLoad(*page_nodes_to_load_.front())) {
       InitiateLoad(page_node);
       return;
     }

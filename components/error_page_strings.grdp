@@ -23,21 +23,6 @@
     <message name="IDS_ERRORPAGES_BUTTON_DOWNLOADING" desc="Label for the button on an error page when it is clicked to queue the download for the failed-to-load page">
       Waiting for connection…
     </message>
-    <message name="IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON" desc="Label for the button on the error page popup that describes detailed error status and debugging tips">
-      OK
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_TITLE" desc="Title of the offline content list shown in an error page presenting content available while offline">
-      Explore while offline
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_OPEN_ALL_BUTTON" desc="Label for the button on the 'no connection' error page. Button will take the user to the downloads home, attached the offline content list shown in an error page">
-      See all
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_SUMMARY_DESCRIPTION" desc="Description of the offline content summary card shown in an error page, offering the user access to content available while offline">
-      While waiting for a connection, you can visit Downloads to read offline articles.
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_SUMMARY_BUTTON" desc="Label for the button that will take the user to the downloads home, attached to the offline content summary card shown in an error page">
-      Take me there now
-    </message>
     <message name="IDS_ERRORPAGES_SAVE_PAGE_BUTTON" desc="Label for the button that will save the page for later. The saved page is not retained in Downloads, unlike with the DOWNLOAD button.">
       Load page later
     </message>
@@ -113,7 +98,7 @@
     The client and server don't support a common SSL protocol version or cipher suite.
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN" desc="When a webpage fails to load, sometimes we suggest to the user that they might navigate to the page's origin.">
-    Try <ph name="BEGIN_LINK">&lt;a jsvalues="href:originURL;.jstdata:$this" onmousedown="linkClicked(this.jstdata)"&gt;</ph>visiting the site's homepage<ph name="END_LINK">&lt;/a&gt;</ph>.
+    Try <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>visiting the site's homepage<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ERRORPAGES_HEADING_NOT_AVAILABLE" desc="Heading in the error page when we can't connect to a site.">
     This site can’t be reached
@@ -133,6 +118,9 @@
   <message name="IDS_ERRORPAGES_MESSAGE_IWA_CONNECTION_REFUSED" desc="Message of the error page for when an IWA can't connect to dev server.">
     The development server for this application cannot be reached
   </message>
+  <message name="IDS_ERRORPAGES_MESSAGE_IWA_INSTALLED_IN_DEV_MODE" desc="Message of the error page for when an IWA was installed in Isolated Web App Developer Mode, but that mode was disabled.">
+    To run this app, re-enable Isolated Web App Developer Mode
+  </message>
   <message name="IDS_ERRORPAGES_HEADING_CACHE_READ_FAILURE" desc="Heading in the error page when we encountered an error reading from the cache.  Generally this happens when the disk cache is corrupted from improper shutdown.">
     This site can’t be loaded from the cache
   </message>
@@ -140,40 +128,40 @@
     Your connection was interrupted
   </message>
   <message name="IDS_ERRORPAGES_HEADING_NOT_FOUND" desc="Heading in the error page when the server returns a 404 or 410.">
-    This <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph> page can’t be found
+    This <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.whatever.com</ex></ph> page can’t be found
   </message>
   <message name="IDS_ERRORPAGES_HEADING_FILE_NOT_FOUND" desc="Heading in the error page when the local file could not be accessed.">
     Your file couldn’t be accessed
   </message>
   <message name="IDS_ERRORPAGES_HEADING_BLOCKED" desc="Heading of the error page when a request is blocked by the administrator policy, extension or the browser itself.">
-    <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.example.com</ex></ph> is blocked
+    <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.example.com</ex></ph> is blocked
   </message>
   <message name="IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME" desc="Heading of the error page when a URL Scheme is blocked by the administrator policy, extension or the browser itself.">
-    “<ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>mailto</ex></ph>” links are blocked
+    “<ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>mailto</ex></ph>” links are blocked
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_NOT_AVAILABLE" desc="Summary in the error page when we can't connect to a site.">
-    The webpage at <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;</ph> might be temporarily down or it may have moved permanently to a new web address.
+    The webpage at <ph name="URL">&lt;strong&gt;$1&lt;/strong&gt;</ph> might be temporarily down or it may have moved permanently to a new web address.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_TIMED_OUT" desc="Summary in the error page when a page takes too long to load.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> took too long to respond.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> took too long to respond.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_CONNECTION_RESET" desc="Summary in the error page when the connection was reset.">
     The connection was reset.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED" desc="Summary in the error page when the connection was closed.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> unexpectedly closed the connection.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> unexpectedly closed the connection.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED" desc="Summary in the error page when the connection failed or unreachable.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> is currently unreachable.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> is currently unreachable.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_NETWORK_CHANGED" desc="Summary in the error page when the connection failed because the network has changed.">
     A network change was detected.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_CONNECTION_REFUSED" desc="Summary in the error page when we try and connect to a server, but the server doesn't let us.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> refused to connect.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> refused to connect.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_NAME_NOT_RESOLVED" desc="Summary in the error page when a dns look up fails.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph>’s server IP address could not be found.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph>’s server IP address could not be found.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_ICANN_NAME_COLLISION" desc="Summary in the error page when a dns look up fails due to having contained 127.0.53.53.">
     This site on the company, organization or school intranet has the same URL as an external website.
@@ -181,10 +169,10 @@
     Try contacting your system administrator.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_ADDRESS_UNREACHABLE" desc="Summary in the error page when we can't reach a site.  This is slightly more specific than just being unable to connect, as it means we can't find a route to the server.">
-    <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;<ex>http://www.google.com/</ex></ph> is unreachable.
+    <ph name="URL">&lt;strong&gt;$1&lt;/strong&gt;<ex>http://www.google.com/</ex></ph> is unreachable.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_FILE_ACCESS_DENIED" desc="Summary in the error page when we can't open a file.">
-    The file at <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;<ex>http://www.google.com/</ex></ph> is not readable.  It may have been removed, moved, or file permissions may be preventing access.
+    The file at <ph name="URL">&lt;strong&gt;$1&lt;/strong&gt;<ex>http://www.google.com/</ex></ph> is not readable.  It may have been removed, moved, or file permissions may be preventing access.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_NETWORK_ACCESS_DENIED" desc="Summary in the error page when we're not being allowed to access the network.">
     Firewall or antivirus software may have blocked the connection.
@@ -206,26 +194,26 @@
     </message>
   </if>
   <message name="IDS_ERRORPAGES_SUMMARY_NOT_FOUND" desc="Summary in the error page when the server returns a 404.">
-    No webpage was found for the web address: <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;</ph>
+    No webpage was found for the web address: <ph name="URL">&lt;strong&gt;$1&lt;/strong&gt;</ph>
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_FILE_NOT_FOUND" desc="Summary in the error page when a local file could not be accessed.">
     It may have been moved, edited, or deleted.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_TOO_MANY_REDIRECTS" desc="Summary in the error page when there are too many URL redirects.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> redirected you too many times.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> redirected you too many times.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_EMPTY_RESPONSE" desc="Summary in the error page when no data is received.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t send any data.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t send any data.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_INVALID_RESPONSE" desc="Summary in the error page when a response from the server contains duplicate headers.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> sent an invalid response.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> sent an invalid response.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_DNS_PROBE_RUNNING" desc="Summary in the error page when DNS resolution failed and we are running a probe to figure out why. The 'abbr' tag is used to indicate that 'DNS address' is an abbreviation.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph>’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; could not be found. Diagnosing the problem.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph>’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; could not be found. Diagnosing the problem.
   </message>
 
   <message name="IDS_ERRORPAGES_HEADING_ACCESS_DENIED" desc="Heading in the error page when a server returns a 403.  Also suitable for similar error codes.">
-    Access to <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph> was denied
+    Access to <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.whatever.com</ex></ph> was denied
   </message>
   <message name="IDS_ERRORPAGES_HEADING_FILE_ACCESS_DENIED" desc="Heading in the error page when a file is denied access.">
     Access to the file was denied
@@ -244,26 +232,26 @@
     If the problem continues, contact the site owner.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_WEBSITE_CANNOT_HANDLE_REQUEST" desc="Summary in the error page when the server returns a 501 or 505.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> is currently unable to handle this request.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> is currently unable to handle this request.
   </message>
 
   <message name="IDS_ERRORPAGES_SUMMARY_GATEWAY_TIMEOUT" desc="Summary in the error page when the server returns a 504.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> took too long to respond.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> took too long to respond.
   </message>
 
   <message name="IDS_ERRORPAGES_SUMMARY_SSL_SECURITY_ERROR" desc="Summary in the error page for SSL security errors.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> doesn't adhere to security standards.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> doesn't adhere to security standards.
   </message>
 
   <message name="IDS_ERRORPAGES_SUMMARY_SSL_VERSION_OR_CIPHER_MISMATCH" desc="Summary in the error page for SSL cipher and version errors.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> uses an unsupported protocol.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> uses an unsupported protocol.
   </message>
 
   <message name="IDS_ERRORPAGES_HEADING_INSECURE_CONNECTION" desc="Heading in the error page for insecure connections.">
     This site can’t provide a secure connection
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT" desc="Summary in the error page when the server rejected the connection due to a SSL client certificate authentication failure.">
-    <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t accept your login certificate, or one may not have been provided.
+    <ph name="HOST_NAME">&lt;strong&gt;$1&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t accept your login certificate, or one may not have been provided.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_SSL_CLIENT_AUTH_SIGNATURE_FAILED" desc="Summary in the error page when authenticating with the user's SSL client certificate failed.">
     There was a problem using your login certificate.
@@ -331,13 +319,13 @@
     Try contacting the system admin.
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY" desc="The message displayed in a list of suggestions when a webpage fails to load. A link provided to the help center to learn more about the failure. The suggestions list is prefixed with 'Try:'.">
-    <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Learning more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> about this problem.
+    <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>Learning more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> about this problem.
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY_STANDALONE" desc="When a webpage fails to load, we provide a link to the help center to learn more about the failure.">
-    <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> about this problem.
+    <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> about this problem.
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY" desc="The message displayed following a network error suggesting the user could try deleting their cookies. We also provide a link to the help center to learn more about the failure.">
-    <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Try deleting your cookies<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex>.</ph>
+    <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>Try deleting your cookies<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex>.</ph>
   </message>
   <if expr="is_ios or is_android">
     <message name="IDS_ERRORPAGES_SUGGESTION_TURN_OFF_AIRPLANE_SUMMARY" desc="When a page fails to load and the device is offline, we provide a suggestion that the user try turning off airplane mode. The suggestions list is prefixed with 'Try:'.">
@@ -360,7 +348,7 @@
     Try disabling your extensions.
   </message>
   <message name="IDS_ERRORPAGES_CHECK_TYPO_SUMMARY" desc="When a page fails to load, we provide a suggestion to the user to check for spelling errors">
-    Check if there is a typo in <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph>.
+    Check if there is a typo in <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.whatever.com</ex></ph>.
   </message>
 
   <if expr="is_macosx">

@@ -197,7 +197,6 @@ class AnchoredNudgeManagerImpl::AnchorViewWidgetObserver
                            views::View* anchor_view,
                            AnchoredNudgeManagerImpl* anchored_nudge_manager)
       : anchored_nudge_(anchored_nudge),
-        anchor_view_(anchor_view),
         anchored_nudge_manager_(anchored_nudge_manager) {
     DCHECK(anchor_view->GetWidget());
     active_widget_ = anchor_view->GetWidget();
@@ -224,7 +223,6 @@ class AnchoredNudgeManagerImpl::AnchorViewWidgetObserver
   void OnWidgetDestroying(views::Widget* widget) override {
     widget->RemoveObserver(this);
     active_widget_ = nullptr;
-    anchor_view_ = nullptr;
     anchored_nudge_ = nullptr;
   }
 
@@ -233,16 +231,14 @@ class AnchoredNudgeManagerImpl::AnchorViewWidgetObserver
     const std::string id = anchored_nudge_->id();
     // Make sure the nudge bubble no longer observes the anchor view.
     anchored_nudge_->SetAnchorView(nullptr);
-    anchor_view_->GetWidget()->RemoveObserver(this);
+    active_widget_->RemoveObserver(this);
     active_widget_ = nullptr;
-    anchor_view_ = nullptr;
     anchored_nudge_ = nullptr;
     anchored_nudge_manager_->Cancel(id);
   }
 
   // Owned by the views hierarchy.
   raw_ptr<AnchoredNudge> anchored_nudge_;
-  raw_ptr<views::View> anchor_view_;
   raw_ptr<views::Widget> active_widget_;
 
   // `AnchorViewWidgetObserver` is guaranteed to not outlive

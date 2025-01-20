@@ -120,8 +120,7 @@ CrowdDenySafeBrowsingRequest::CrowdDenySafeBrowsingRequest(
   client_->CheckOrigin(origin);
 }
 
-CrowdDenySafeBrowsingRequest::~CrowdDenySafeBrowsingRequest() {
-}
+CrowdDenySafeBrowsingRequest::~CrowdDenySafeBrowsingRequest() = default;
 
 void CrowdDenySafeBrowsingRequest::OnReceivedResult(Verdict verdict) {
   base::UmaHistogramTimes("Permissions.CrowdDeny.SafeBrowsing.RequestDuration",

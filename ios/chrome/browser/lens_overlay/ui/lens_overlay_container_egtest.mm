@@ -21,11 +21,6 @@
   return config;
 }
 
-- (void)testShowAndHideLensOverlayContainer {
-  // TODO(crbug.com/359195500): Rewrite `testShowAndHideLensOverlayContainer`
-  // after accesibility label is added to the button in Lens integration
-}
-
 // Tests that when pressing the escape keyboard button, closes the overlay
 // container.
 - (void)testPressEscapeHidesLensOverlayContainer {

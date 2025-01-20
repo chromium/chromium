@@ -11,20 +11,20 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -57,6 +57,7 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 // Prefs passed in setupModalViewControllerWithPrefs:.
 @property(nonatomic, copy) NSString* cardholderName;
 @property(nonatomic, strong) UIImage* cardIssuerIcon;
+@property(nonatomic, copy) NSString* cardNetwork;
 @property(nonatomic, copy) NSString* cardNumber;
 @property(nonatomic, copy) NSString* expirationMonth;
 @property(nonatomic, copy) NSString* expirationYear;
@@ -74,6 +75,7 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
   self.cardholderName = [prefs[kCardholderNamePrefKey] stringValue];
   self.cardIssuerIcon = prefs[kCardIssuerIconNamePrefKey];
+  self.cardNetwork = prefs[kCardNetworkPrefKey];
   self.cardNumber = prefs[kCardNumberPrefKey];
   self.expirationMonth = prefs[kExpirationMonthPrefKey];
   self.expirationYear = prefs[kExpirationYearPrefKey];
@@ -254,6 +256,34 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
   EXPECT_FALSE(consumer.inLoadingState);
 }
 
+// Tests that calling -saveCardWithCardholderName goes straight to confirmation
+// without showing the loading spinner when the card is saved locally.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
+       OnSaveShowConfirmation) {
+  base::HistogramTester histogramTester;
+
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
+                              base::SysNSStringToUTF16(month),
+                              base::SysNSStringToUTF16(year)));
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  EXPECT_FALSE(consumer.inLoadingState);
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded",
+      /*sample=*/true, 1);
+}
+
 class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
     : public SaveCardInfobarModalOverlayMediatorTest {
  public:
@@ -271,8 +301,8 @@ class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that calling saveCardWithCardholderName shows loading state when
-// loading and confirmation flag is enabled.
+// Tests that calling saveCardWithCardholderName shows loading state when the
+// card is uploaded.
 TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
        OnSaveShowLoading) {
   FakeSaveCardModalConsumer* consumer =

@@ -145,9 +145,8 @@ class MemoryTracingIntegrationTest : public testing::Test {
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
     TraceLog::GetInstance()->InitializePerfettoIfNeeded();
-    tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
-
     TracingObserverProto::GetInstance()->ResetForTesting();
   }
 
@@ -222,14 +221,12 @@ class MemoryTracingIntegrationTest : public testing::Test {
  protected:
   void EnableMemoryInfraTracing() {
     TraceLog::GetInstance()->SetEnabled(
-        TraceConfig(MemoryDumpManager::kTraceCategory, ""),
-        TraceLog::RECORDING_MODE);
+        TraceConfig(MemoryDumpManager::kTraceCategory, ""));
   }
 
   void EnableMemoryInfraTracingWithTraceConfig(
       const std::string& trace_config) {
-    TraceLog::GetInstance()->SetEnabled(TraceConfig(trace_config),
-                                        TraceLog::RECORDING_MODE);
+    TraceLog::GetInstance()->SetEnabled(TraceConfig(trace_config));
   }
 
   void DisableTracing() { TraceLog::GetInstance()->SetDisabled(); }
@@ -492,10 +489,8 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
   auto thread =
       std::make_unique<base::TestIOThread>(base::TestIOThread::kAutoStart);
 
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kMemoryInfraTracingOnly,
-                  base::trace_event::RECORD_UNTIL_FULL),
-      TraceLog::RECORDING_MODE);
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(
+      kMemoryInfraTracingOnly, base::trace_event::RECORD_UNTIL_FULL));
 
   // Creating a new thread after tracing has started causes the posted
   // TRACE_EVENT0 to initialize and register a new ThreadLocalEventBuffer.
@@ -523,10 +518,8 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
   // The bug here conisted in MemoryDumpManager::InvokeOnMemoryDump() to hit
   // that (which in turn causes an invalidation of the ThreadLocalEventBuffer)
   // after having checked that the MDP is valid and having decided to invoke it.
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kMemoryInfraTracingOnly,
-                  base::trace_event::RECORD_CONTINUOUSLY),
-      TraceLog::RECORDING_MODE);
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(
+      kMemoryInfraTracingOnly, base::trace_event::RECORD_CONTINUOUSLY));
   EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::kExplicitlyTriggered,
                                        MemoryDumpLevelOfDetail::kDetailed));
   DisableTracing();

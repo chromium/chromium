@@ -14,11 +14,14 @@ import android.view.inputmethod.InputConnection;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** This is a fake View that is only exposed to InputMethodManager. */
+@NullMarked
 public class ThreadedInputConnectionProxyView extends View {
     private static final String TAG = "ImeProxyView";
     private static final boolean DEBUG_LOGS = false;
@@ -110,7 +113,7 @@ public class ThreadedInputConnectionProxyView extends View {
     }
 
     @Override
-    public View getRootView() {
+    public @Nullable View getRootView() {
         // Returning a null here matches mCurRootView being null value in InputMethodManager,
         // which represents that the current focused window is not IME target window.
         // In this case, you are still able to type.
@@ -134,7 +137,7 @@ public class ThreadedInputConnectionProxyView extends View {
     }
 
     @Override
-    public IBinder getWindowToken() {
+    public @Nullable IBinder getWindowToken() {
         if (DEBUG_LOGS) Log.w(TAG, "getWindowToken");
         return mWindowToken.get();
     }

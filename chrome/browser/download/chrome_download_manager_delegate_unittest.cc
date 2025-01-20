@@ -91,10 +91,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/download/download_prompt_status.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/infobars/core/infobar_manager.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -126,7 +122,7 @@ namespace {
 
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  ~MockWebContentsDelegate() override {}
+  ~MockWebContentsDelegate() override = default;
   MOCK_METHOD(void,
               CanDownload,
               (const GURL&,
@@ -157,7 +153,7 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
                              ReturnArg<1>()));
   }
 
-  ~TestChromeDownloadManagerDelegate() override {}
+  ~TestChromeDownloadManagerDelegate() override = default;
 
   // The concrete implementation talks to the ExtensionDownloadsEventRouter to
   // dispatch a OnDeterminingFilename event. While we would like to test this as
@@ -903,7 +899,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
       kUrl, "", "", mime_type, "", 10, false /*is_transient*/, nullptr);
   EXPECT_TRUE(should_intercept);
   histograms.ExpectUniqueSample("Download.Blocked.ContentType.Automotive",
-                                download::DownloadContent::PDF, 1);
+                                download::DownloadContent::kPdf, 1);
 
   EXPECT_EQ(1, message_bridge->GetMessageShownCount());
 }
@@ -2610,38 +2606,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, DeobfuscationBeforeCompletion) {
 #if BUILDFLAG(IS_ANDROID)
 
 namespace {
-
-class AndroidDownloadInfobarCounter
-    : public infobars::InfoBarManager::Observer {
- public:
-  explicit AndroidDownloadInfobarCounter(content::WebContents* web_contents)
-      : infobar_manager_(
-            infobars::ContentInfoBarManager::FromWebContents(web_contents)) {
-    infobar_manager_->AddObserver(this);
-  }
-
-  ~AndroidDownloadInfobarCounter() override {
-    infobar_manager_->RemoveObserver(this);
-  }
-
-  int CheckAndResetInfobarCount() {
-    int count = infobar_count_;
-    infobar_count_ = 0;
-    return count;
-  }
-
- private:
-  void OnInfoBarAdded(infobars::InfoBar* infobar) override {
-    if (infobar->delegate()->GetIdentifier() ==
-        infobars::InfoBarDelegate::DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_ANDROID)
-      ++infobar_count_;
-    infobar->delegate()->InfoBarDismissed();
-    infobar->RemoveSelf();
-  }
-
-  raw_ptr<infobars::ContentInfoBarManager> infobar_manager_ = nullptr;
-  int infobar_count_ = 0;
-};
 
 class TestDownloadDialogBridge : public DownloadDialogBridge {
  public:

@@ -275,7 +275,7 @@ static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
         TextResourceDecoderOptions::kPlainTextContent,
         WTF::TextEncoding("ISO-8859-1")));
   }
-  return std::unique_ptr<TextResourceDecoder>();
+  return nullptr;
 }
 
 static void MaybeEncodeTextContent(const String& text_content,
@@ -579,9 +579,9 @@ protocol::Response InspectorPageAgent::disable() {
 
 protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     const String& source,
-    Maybe<String> world_name,
-    Maybe<bool> include_command_line_api,
-    Maybe<bool> runImmediately,
+    std::optional<String> world_name,
+    std::optional<bool> include_command_line_api,
+    std::optional<bool> runImmediately,
     String* identifier) {
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
   auto result = std::max_element(
@@ -625,9 +625,8 @@ protocol::Response InspectorPageAgent::removeScriptToEvaluateOnNewDocument(
 protocol::Response InspectorPageAgent::addScriptToEvaluateOnLoad(
     const String& source,
     String* identifier) {
-  return addScriptToEvaluateOnNewDocument(source, Maybe<String>(""),
-                                          Maybe<bool>(false),
-                                          Maybe<bool>(false), identifier);
+  return addScriptToEvaluateOnNewDocument(source, std::optional<String>(""),
+                                          false, false, identifier);
 }
 
 protocol::Response InspectorPageAgent::removeScriptToEvaluateOnLoad(
@@ -689,9 +688,9 @@ protocol::Response InspectorPageAgent::setAdBlockingEnabled(bool enable) {
 }
 
 protocol::Response InspectorPageAgent::reload(
-    Maybe<bool> optional_bypass_cache,
-    Maybe<String> optional_script_to_evaluate_on_load,
-    Maybe<String> loader_id) {
+    std::optional<bool> optional_bypass_cache,
+    std::optional<String> optional_script_to_evaluate_on_load,
+    std::optional<String> loader_id) {
   if (loader_id.has_value() && inspected_frames_->Root()
                                        ->Loader()
                                        .GetDocumentLoader()
@@ -792,7 +791,7 @@ void InspectorPageAgent::getResourceContent(
 
 protocol::Response InspectorPageAgent::getAdScriptId(
     const String& frame_id,
-    Maybe<protocol::Page::AdScriptId>* ad_script_id) {
+    std::unique_ptr<protocol::Page::AdScriptId>* ad_script_id) {
   if (ad_script_identifiers_.Contains(frame_id)) {
     AdScriptIdentifier* ad_script_identifier =
         ad_script_identifiers_.at(frame_id);
@@ -844,8 +843,8 @@ void InspectorPageAgent::searchInResource(
     const String& frame_id,
     const String& url,
     const String& query,
-    Maybe<bool> optional_case_sensitive,
-    Maybe<bool> optional_is_regex,
+    std::optional<bool> optional_case_sensitive,
+    std::optional<bool> optional_is_regex,
     std::unique_ptr<SearchInResourceCallback> callback) {
   if (!enabled_.Get()) {
     callback->sendFailure(
@@ -1595,11 +1594,11 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
 }
 
 protocol::Response InspectorPageAgent::startScreencast(
-    Maybe<String> format,
-    Maybe<int> quality,
-    Maybe<int> max_width,
-    Maybe<int> max_height,
-    Maybe<int> every_nth_frame) {
+    std::optional<String> format,
+    std::optional<int> quality,
+    std::optional<int> max_width,
+    std::optional<int> max_height,
+    std::optional<int> every_nth_frame) {
   screencast_enabled_.Set(true);
   return protocol::Response::Success();
 }
@@ -1709,8 +1708,8 @@ protocol::Response InspectorPageAgent::getLayoutMetrics(
 
 void InspectorPageAgent::createIsolatedWorld(
     const String& frame_id,
-    Maybe<String> world_name,
-    Maybe<bool> grant_universal_access,
+    std::optional<String> world_name,
+    std::optional<bool> grant_universal_access,
     std::unique_ptr<CreateIsolatedWorldCallback> callback) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
@@ -1805,7 +1804,8 @@ protocol::Response InspectorPageAgent::setFontFamilies(
 
 protocol::Response InspectorPageAgent::setFontFamilies(
     std::unique_ptr<protocol::Page::FontFamilies> font_families,
-    Maybe<protocol::Array<protocol::Page::ScriptFontFamilies>> for_scripts) {
+    std::unique_ptr<protocol::Array<protocol::Page::ScriptFontFamilies>>
+        for_scripts) {
   LocalFrame* frame = inspected_frames_->Root();
   auto* settings = frame->GetSettings();
   if (!settings) {
@@ -1925,7 +1925,7 @@ void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
       IdentifiersFactory::FrameId(frame),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
                : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
-      element ? Maybe<int>(element->GetDomNodeId()) : Maybe<int>());
+      element ? std::optional<int>(element->GetDomNodeId()) : std::nullopt);
 }
 
 protocol::Response InspectorPageAgent::produceCompilationCache(
@@ -1967,8 +1967,9 @@ protocol::Response InspectorPageAgent::setInterceptFileChooserDialog(
   return protocol::Response::Success();
 }
 
-protocol::Response InspectorPageAgent::generateTestReport(const String& message,
-                                                          Maybe<String> group) {
+protocol::Response InspectorPageAgent::generateTestReport(
+    const String& message,
+    std::optional<String> group) {
   LocalDOMWindow* window = inspected_frames_->Root()->DomWindow();
 
   // Construct the test report.

@@ -98,7 +98,7 @@ void LowUserEngagementModel::ExecuteModelWithInput(
   }
 
   float result = 0;
-  bool weeks[4]{};
+  std::array<bool, 4> weeks = {};
   for (unsigned i = 0; i < 28; ++i) {
     int week_idx = i / 7;
     weeks[week_idx] = weeks[week_idx] || inputs[i];

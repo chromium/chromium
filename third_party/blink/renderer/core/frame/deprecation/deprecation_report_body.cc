@@ -10,13 +10,9 @@
 
 namespace blink {
 
-ScriptValue DeprecationReportBody::anticipatedRemoval(
+ScriptObject DeprecationReportBody::anticipatedRemoval(
     ScriptState* script_state) const {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  if (!anticipated_removal_)
-    return ScriptValue::CreateNull(isolate);
-  return ScriptValue(isolate, ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-                                  script_state, *anticipated_removal_));
+  return ToV8FromDate(script_state, anticipated_removal_);
 }
 
 std::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {

@@ -33,6 +33,10 @@ inline void PrepareReferenceData(base::span<char> buffer) {
   }
 }
 
+inline void PrepareReferenceData(base::span<uint8_t> buffer) {
+  PrepareReferenceData(base::as_writable_chars(buffer));
+}
+
 Vector<char> ReadFile(StringView file_name);
 Vector<char> ReadFile(const char* dir, const char* file_name);
 

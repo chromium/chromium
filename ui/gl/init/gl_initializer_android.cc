@@ -15,6 +15,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
+#include "ui/gl/startup_trace.h"
 
 namespace gl {
 namespace init {
@@ -22,10 +23,18 @@ namespace init {
 namespace {
 
 bool InitializeStaticNativeEGLInternal() {
-  base::NativeLibrary gles_library = LoadLibraryAndPrintError("libGLESv2.so");
+  base::NativeLibrary gles_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    gles_library = LoadLibraryAndPrintError("libGLESv2.so");
+  }
   if (!gles_library)
     return false;
-  base::NativeLibrary egl_library = LoadLibraryAndPrintError("libEGL.so");
+  base::NativeLibrary egl_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    egl_library = LoadLibraryAndPrintError("libEGL.so");
+  }
   if (!egl_library) {
     base::UnloadNativeLibrary(gles_library);
     return false;

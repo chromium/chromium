@@ -19,23 +19,33 @@ source_set("feedback_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//build:chromeos_buildflags",
     "//components/feedback",
-    "//components/feedback/content",
-    "//components/feedback/redaction_tool",
-    "//components/variations/net",
-    "//content/public/browser",
     "//extensions/browser:browser_sources",
-    "//extensions/common",
     "//extensions/common/api",
-    "//google_apis",
-    "//net",
     "//services/data_decoder/public/cpp",
+    "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos) {
+  deps = [
+    "//components/account_id",
+    "//components/feedback/content",
+    "//components/variations/net",
+    "//content/public/browser",
+    "//extensions/browser/api/feedback_private/proto",
+    "//extensions/common",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//third_party/boringssl",
+  ]
+
+  if (!is_chromeos) {
+    deps += [ "//components/feedback/redaction_tool" ]
+  } else {
     sources += [
       "access_rate_limiter.cc",
       "access_rate_limiter.h",
@@ -45,17 +55,16 @@ source_set("feedback_private") {
       "log_source_resource.h",
     ]
 
+    public_deps += [
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//components/feedback/redaction_tool",
+    ]
+
     deps += [
       "//ash/public/cpp",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-      "//chromeos/ash/components/dbus/debug_daemon",
       "//chromeos/ash/services/assistant/public/cpp",
-      "//chromeos/ash/services/assistant/public/mojom",
-      "//components/account_id",
-      "//components/user_manager",
-      "//extensions/browser/api/feedback_private/proto",
-      "//third_party/boringssl",
     ]
   }
 }

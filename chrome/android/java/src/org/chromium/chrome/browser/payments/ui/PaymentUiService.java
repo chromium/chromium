@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressRequestDelegate;
 import org.chromium.components.autofill.AutofillProfile;
@@ -49,7 +48,6 @@ import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.payments.AbortReason;
-import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
@@ -58,6 +56,7 @@ import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
 import org.chromium.components.payments.Section;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.AddressErrors;
@@ -123,7 +122,7 @@ public class PaymentUiService
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
     private final Queue<Runnable> mRetryQueue = new LinkedList<>();
-    private final TabModelSelectorObserver mSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final TabModelObserver mTabModelObserver;
     private ContactEditor mContactEditor;
     private PaymentHandlerCoordinator mPaymentHandlerUi;
@@ -320,13 +319,6 @@ public class PaymentUiService
         mCurrencyFormatterMap = new HashMap<>();
         mIsOffTheRecord = isOffTheRecord;
         mPaymentAppComparator = new PaymentAppComparator(/* params= */ mParams);
-        mSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
-                    }
-                };
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -1155,10 +1147,14 @@ public class PaymentUiService
         // Catch any time the user switches tabs. Because the dialog is modal, a user shouldn't be
         // allowed to switch tabs, which can happen if the user receives an external Intent.
         if (mObservedTabModelSelector != null) {
-            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+            mObservedTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mCurrentTabModelObserver);
         }
         mObservedTabModelSelector = tabModelSelector;
-        mObservedTabModelSelector.addObserver(mSelectorObserver);
+        mObservedTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addObserver(mCurrentTabModelObserver);
         if (mObservedTabModel != null) {
             mObservedTabModel.removeObserver(mTabModelObserver);
         }
@@ -1434,7 +1430,9 @@ public class PaymentUiService
     /** Removes all of the observers that observe users leaving the tab. */
     private void removeLeavingTabObservers() {
         if (mObservedTabModelSelector != null) {
-            mObservedTabModelSelector.removeObserver(mSelectorObserver);
+            mObservedTabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mCurrentTabModelObserver);
             mObservedTabModelSelector = null;
         }
 
@@ -1620,5 +1618,11 @@ public class PaymentUiService
 
         removeLeavingTabObservers();
         destroyCurrencyFormatters();
+    }
+
+    private void onTabModelSelected(@Nullable TabModel newTabModel) {
+        if (mObservedTabModel == newTabModel) return;
+
+        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
     }
 }

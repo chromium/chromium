@@ -29,16 +29,16 @@ build_webui("build") {
   web_component_files = [
     "alert_indicator.ts",
     "alert_indicators.ts",
+    "tab.ts",
     "tab_group.ts",
     "tab_list.ts",
-    "tab.ts",
   ]
   html_to_wrapper_template = "native"
 
   non_web_component_files = [
     "drag_manager.ts",
-    "tabs_api_proxy.ts",
     "tab_swiper.ts",
+    "tabs_api_proxy.ts",
   ]
 
   mojo_files_deps = [

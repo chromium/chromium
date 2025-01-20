@@ -70,12 +70,13 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             Function<TabGroupModelFilter, List<Tab>> tabsFetcher,
             boolean trailing,
             @Nullable TabModelActionListener listener) {
-        assert mTabGroupModelFilterSupplier.hasValue();
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-
+        TabGroupModelFilterInternal filter = getTabGroupModelFilter();
         @Nullable List<Tab> tabs = tabsFetcher.apply(filter);
         if (tabs == null || tabs.isEmpty()) return;
 
+        if (listener != null) {
+            listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        }
         doUngroupTabs(filter, tabs, trailing);
         if (listener != null) {
             listener.onConfirmationDialogResult(
@@ -84,7 +85,9 @@ public class PassthroughTabUngrouper implements TabUngrouper {
     }
 
     static void doUngroupTabs(
-            @NonNull TabGroupModelFilter filter, @NonNull List<Tab> tabs, boolean trailing) {
+            @NonNull TabGroupModelFilterInternal filter,
+            @NonNull List<Tab> tabs,
+            boolean trailing) {
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroupInDirection(tab.getId(), trailing);
         }
@@ -97,5 +100,13 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
     static @Nullable List<Tab> getTabsToUngroup(@NonNull TabGroupModelFilter filter, int rootId) {
         return filter.getRelatedTabListForRootId(rootId);
+    }
+
+    private TabGroupModelFilterInternal getTabGroupModelFilter() {
+        @Nullable
+        TabGroupModelFilterInternal tabGroupModelFilter =
+                (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
+        assert tabGroupModelFilter != null;
+        return tabGroupModelFilter;
     }
 }

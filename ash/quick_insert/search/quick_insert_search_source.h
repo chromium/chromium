@@ -19,7 +19,8 @@ enum class QuickInsertSearchSource {
   kEditorRewrite,
   kLobsterWithNoSelectedText,
   kLobsterWithSelectedText,
-  kMaxValue = kLobsterWithSelectedText,
+  kGifs,
+  kMaxValue = kGifs,
 };
 }
 

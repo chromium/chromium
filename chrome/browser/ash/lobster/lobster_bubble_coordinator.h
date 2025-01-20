@@ -28,7 +28,8 @@ class LobsterBubbleCoordinator : public views::WidgetObserver {
 
   void LoadUI(Profile* profile,
               std::optional<std::string_view> query,
-              LobsterMode mode);
+              LobsterMode mode,
+              const gfx::Rect& caret_bounds);
   void ShowUI();
   void CloseUI();
 

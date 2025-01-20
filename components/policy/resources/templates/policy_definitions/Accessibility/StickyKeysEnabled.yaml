@@ -17,8 +17,7 @@ items:
 - caption: Allow the user to decide
   value: null
 owners:
-- amraboelkher@chromium.org
-- emaxx@chromium.org
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_on:

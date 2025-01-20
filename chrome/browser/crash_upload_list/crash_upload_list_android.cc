@@ -44,7 +44,7 @@ CrashUploadListAndroid::CrashUploadListAndroid(
     const base::FilePath& upload_log_path)
     : TextLogUploadList(upload_log_path) {}
 
-CrashUploadListAndroid::~CrashUploadListAndroid() {}
+CrashUploadListAndroid::~CrashUploadListAndroid() = default;
 
 // static
 bool CrashUploadListAndroid::BrowserCrashMetricsInitialized() {
@@ -72,9 +72,7 @@ CrashUploadListAndroid::LoadUploadList() {
 
 void CrashUploadListAndroid::RequestSingleUpload(const std::string& local_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_local_id =
-      base::android::ConvertUTF8ToJavaString(env, local_id);
-  Java_MinidumpUploadServiceImpl_tryUploadCrashDumpWithLocalId(env, j_local_id);
+  Java_MinidumpUploadServiceImpl_tryUploadCrashDumpWithLocalId(env, local_id);
 }
 
 void CrashUploadListAndroid::LoadUnsuccessfulUploadList(

@@ -200,11 +200,11 @@ void SyncFileSystemGetFileStatusFunction::DidGetFileStatus(
       SyncFileStatusToExtensionEnum(sync_file_status))));
 }
 
-SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() {
-}
+SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() =
+    default;
 
 SyncFileSystemGetFileStatusesFunction::
-    ~SyncFileSystemGetFileStatusesFunction() {}
+    ~SyncFileSystemGetFileStatusesFunction() = default;
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
   if (base::FeatureList::IsEnabled(features::kDeprecateSyncFileSystemApis)) {

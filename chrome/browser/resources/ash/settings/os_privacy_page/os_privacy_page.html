@@ -10,7 +10,7 @@
     outline: none;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  settings-toggle-button {
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
@@ -19,29 +19,23 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <cr-link-row id="privacyHubSubpageTrigger"
-            start-icon="[[rowIcons_.privacyHub]]"
-            on-click="onPrivacyHubClick_"
-            label="$i18n{privacyHubTitle}"
-            sub-label="$i18n{privacyHubSubtext}"
+      <cr-link-row id="privacyHubSubpageTrigger"
+          start-icon="os-settings:privacy-controls"
+          on-click="onPrivacyHubClick_"
+          label="$i18n{privacyHubTitle}"
+          sub-label="$i18n{privacyHubSubtext}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+        <cr-link-row id="syncSetupRow" class="hr"
+            start-icon="os-settings:sync"
+            label="$i18n{syncAndNonPersonalizedServices}"
+            sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
+            on-click="onSyncClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <div class="hr"></div>
-      </template>
-      <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-          <cr-link-row id="syncSetupRow"
-              start-icon="[[rowIcons_.sync]]"
-              label="$i18n{syncAndNonPersonalizedServices}"
-              sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
-              on-click="onSyncClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <div class="hr"></div>
-        </template>
-        <cr-link-row id="lockScreenRow"
-            start-icon="[[rowIcons_.lockScreen]]"
+        <cr-link-row id="lockScreenRow" class="hr"
+            start-icon="os-settings:lock"
             on-click="onConfigureLockClick_"
             label="[[selectLockScreenTitleString_(hasPinLogin)]]"
             sub-label="[[getPasswordState_(hasPin,
@@ -49,20 +43,18 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <cr-link-row id="manageOtherPeopleRow" class="hr"
-            start-icon="[[rowIcons_.manageOtherPeople]]"
+            start-icon="os-settings:privacy-manage-people"
             label="$i18n{manageOtherPeople}"
             on-click="onManageOtherPeople_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <div class="hr"></div>
         <template is="dom-if" if="[[isSmartPrivacyEnabled_]]" restamp>
-          <cr-link-row id="smartPrivacySubpageTrigger"
-              start-icon="[[rowIcons_.smartPrivacy]]"
+          <cr-link-row id="smartPrivacySubpageTrigger" class="hr"
+              start-icon="os-settings:privacy-smart-privacy"
               on-click="onSmartPrivacy_"
               label="$i18n{smartPrivacyTitle}"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
-          <div class="hr"></div>
         </template>
       </template>
 
@@ -70,31 +62,23 @@
       <template is="dom-if" if="[[isRevenBranding_]]">
         <settings-toggle-button
             id="enable-hw-data-usage"
+            class="hr"
             pref="{{prefs.cros.reven.enable_hw_data_usage}}"
             label="[[i18n('enableHWDataUsage')]]"
             sub-label="[[i18n('enableHWDataUsageDesc')]]">
-          </settings-toggle-button>
-        <div class="hr"></div>
+        </settings-toggle-button>
       </template>
 </if>
       <settings-toggle-button
           id="verifiedAccessToggle"
-          icon="[[rowIcons_.verifiedAccess]]"
+          class="hr"
+          icon="os-settings:privacy-verified-access"
           pref="{{
             prefs.cros.device.attestation_for_content_protection_enabled}}"
           label="$i18n{enableContentProtectionAttestation}"
           on-settings-boolean-control-change="onVerifiedAccessChange_"
           deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
-      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-        <cr-link-row id="privacyHubSubpageTrigger"
-            class="hr"
-            on-click="onPrivacyHubClick_"
-            label="$i18n{privacyHubTitle}"
-            sub-label="$i18n{privacyHubSubtext}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
       <template is="dom-if" if="[[isThunderboltSupported_]]">
         <div class="hr"></div>
         <!-- This toggle is always disabled. The underlying pref state is
@@ -107,7 +91,7 @@
           <settings-toggle-button
               id="crosSettingDataAccessToggle"
               class="peripheral-data-access-protection"
-              icon="[[rowIcons_.dataAccessProtection]]"
+              icon="os-settings:privacy-data-access-protection"
               pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
               label="$i18n{peripheralDataAccessProtectionToggleTitle}"
               sub-label=
@@ -124,7 +108,7 @@
           <settings-toggle-button
               id="localStateDataAccessToggle"
               class="peripheral-data-access-protection"
-              icon="[[rowIcons_.dataAccessProtection]]"
+              icon="os-settings:privacy-data-access-protection"
               pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
               label="$i18n{peripheralDataAccessProtectionToggleTitle}"
               sub-label=
@@ -179,24 +163,24 @@
   </template>
 
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-      <template is="dom-if" route-path="/osSyncSetup">
-        <os-settings-subpage
-            page-title="$i18n{syncPageTitle}"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <os-settings-sync-subpage
-              sync-status="[[syncStatus]]" prefs="{{prefs}}">
-          </os-settings-sync-subpage>
-        </os-settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/osSync">
-        <os-settings-subpage page-title="[[getSyncAdvancedTitle_()]]"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <os-sync-controls-subpage>
-          </os-sync-controls-subpage>
-        </os-settings-subpage>
-      </template>
+    <template is="dom-if" route-path="/osSyncSetup">
+      <os-settings-subpage
+          page-title="$i18n{syncPageTitle}"
+          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+        <os-settings-sync-subpage
+            sync-status="[[syncStatus]]" prefs="{{prefs}}">
+        </os-settings-sync-subpage>
+      </os-settings-subpage>
     </template>
+
+    <template is="dom-if" route-path="/osSync">
+      <os-settings-subpage page-title="[[getSyncAdvancedTitle_()]]"
+          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+        <os-sync-controls-subpage>
+        </os-sync-controls-subpage>
+      </os-settings-subpage>
+    </template>
+
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen-subpage id="lockScreen"

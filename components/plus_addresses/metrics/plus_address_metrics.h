@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/plus_addresses/plus_address_types.h"
 
 class GoogleServiceAuthError;

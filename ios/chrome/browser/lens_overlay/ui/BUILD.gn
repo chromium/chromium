@@ -2,13 +2,65 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("ui") {
+  sources = []
+  public_deps = [
+    ":accessibility_identifier_constants",
+    ":consent_presenter",
+    ":container_presenter",
+    ":lvf_transition_manager",
+    ":network_issue_alert_presenter",
+    ":progress_bar",
+    ":protocols",
+    ":results_page_presenter",
+    ":view_controller",
+  ]
+}
+
 source_set("protocols") {
   sources = [
     "lens_overlay_bottom_sheet_presentation_delegate.h",
+    "lens_overlay_error_handler.h",
     "lens_overlay_result_consumer.h",
     "lens_result_page_mutator.h",
     "lens_toolbar_consumer.h",
     "lens_toolbar_mutator.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("results_page_presenter") {
+  sources = [
+    "lens_overlay_results_page_presenter.h",
+    "lens_overlay_results_page_presenter.mm",
+    "lens_overlay_results_page_presenter_delegate.h",
+  ]
+  deps = [
+    ":protocols",
+    ":view_controller",
+    "//base",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("container_presenter") {
+  sources = [
+    "lens_overlay_container_presenter.h",
+    "lens_overlay_container_presenter.mm",
+  ]
+  deps = [
+    ":protocols",
+    ":view_controller",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/ui/device_orientation",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -24,21 +76,23 @@ source_set("view_controller") {
     "lens_result_page_view_controller.mm",
   ]
   deps = [
-    ":lens_overlay_accessibility_identifier_constants",
-    ":lens_overlay_progress_bar",
+    ":accessibility_identifier_constants",
+    ":progress_bar",
     ":protocols",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/ui/resources",
     "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
-    "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
@@ -52,7 +106,7 @@ source_set("view_controller") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("lens_overlay_progress_bar") {
+source_set("progress_bar") {
   sources = [
     "lens_overlay_progress_bar.h",
     "lens_overlay_progress_bar.mm",
@@ -82,11 +136,49 @@ source_set("entry_point") {
   ]
 }
 
-source_set("lens_overlay_accessibility_identifier_constants") {
+source_set("accessibility_identifier_constants") {
   sources = [
     "lens_overlay_accessibility_identifier_constants.h",
     "lens_overlay_accessibility_identifier_constants.mm",
   ]
+}
+
+source_set("network_issue_alert_presenter") {
+  sources = [
+    "lens_overlay_network_issue_alert_presenter.h",
+    "lens_overlay_network_issue_alert_presenter.mm",
+  ]
+  deps = [
+    ":protocols",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("consent_presenter") {
+  sources = [
+    "lens_overlay_consent_presenter.h",
+    "lens_overlay_consent_presenter.mm",
+  ]
+  deps = [
+    ":protocols",
+    ":view_controller",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("lvf_transition_manager") {
+  sources = [
+    "lens_view_finder_transition_manager.h",
+    "lens_view_finder_transition_manager.mm",
+  ]
+  deps = []
 }
 
 source_set("eg2_tests") {
@@ -94,7 +186,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "lens_overlay_container_egtest.mm" ]
   deps = [
-    ":lens_overlay_accessibility_identifier_constants",
+    ":accessibility_identifier_constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+
 #include <memory>
 #include <tuple>
 
@@ -10,11 +12,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -55,8 +56,8 @@ class AutofillOfferManagerTest : public testing::Test {
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     personal_data_manager_.SetSyncServiceForTest(&sync_service_);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
-    autofill_offer_manager_ =
-        std::make_unique<AutofillOfferManager>(&personal_data_manager_);
+    autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
+        &personal_data_manager_.payments_data_manager());
   }
 
   CreditCard CreateCreditCard(std::string guid,
@@ -222,7 +223,7 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnNothingWhenFindNoMatch) {
           card1, "5%", /*expired=*/false,
           {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
 
-  AutofillOfferData* result =
+  const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(nullptr, result);
 }
@@ -246,7 +247,7 @@ TEST_F(AutofillOfferManagerTest,
   personal_data_manager_.test_payments_data_manager().AddAutofillOfferData(
       offer2);
 
-  AutofillOfferData* result =
+  const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(offer2, *result);
 }

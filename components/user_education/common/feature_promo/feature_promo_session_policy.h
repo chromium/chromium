@@ -37,6 +37,9 @@ class FeaturePromoPriorityProvider {
   struct PromoPriorityInfo {
     PromoWeight weight = PromoWeight::kLight;
     PromoPriority priority = PromoPriority::kLow;
+
+    // Used in tests to do comparisons.
+    auto operator<=>(const PromoPriorityInfo& other) const = default;
   };
 
   FeaturePromoPriorityProvider() = default;

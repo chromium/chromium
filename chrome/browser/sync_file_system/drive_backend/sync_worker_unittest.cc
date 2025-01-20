@@ -54,7 +54,7 @@ class MockSyncTask : public ExclusiveTask {
   MockSyncTask(const MockSyncTask&) = delete;
   MockSyncTask& operator=(const MockSyncTask&) = delete;
 
-  ~MockSyncTask() override {}
+  ~MockSyncTask() override = default;
 
   void RunExclusive(SyncStatusCallback callback) override {
     std::move(callback).Run(SYNC_STATUS_OK);
@@ -68,7 +68,7 @@ class MockExtensionService : public TestExtensionService {
   MockExtensionService(const MockExtensionService&) = delete;
   MockExtensionService& operator=(const MockExtensionService&) = delete;
 
-  ~MockExtensionService() override {}
+  ~MockExtensionService() override = default;
 
   void AddExtension(const extensions::Extension* extension) override {
     registry_.AddEnabled(base::WrapRefCounted(extension));
@@ -100,12 +100,12 @@ class MockExtensionService : public TestExtensionService {
 
 class SyncWorkerTest : public testing::Test {
  public:
-  SyncWorkerTest() {}
+  SyncWorkerTest() = default;
 
   SyncWorkerTest(const SyncWorkerTest&) = delete;
   SyncWorkerTest& operator=(const SyncWorkerTest&) = delete;
 
-  ~SyncWorkerTest() override {}
+  ~SyncWorkerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());

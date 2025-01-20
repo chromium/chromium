@@ -8,7 +8,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
@@ -20,18 +19,20 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Preferences for features related to price tracking. */
@@ -40,8 +41,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
 
     @VisibleForTesting static final String PREF_EMAIL_NOTIFICATIONS = "send_email_switch";
 
-    private final PrefChangeRegistrar mPrefChangeRegistrar = new PrefChangeRegistrar();
-
+    private PrefChangeRegistrar mPrefChangeRegistrar;
     private PrefService mPrefService;
     private TextMessagePreference mMobileNotificationsText;
     private ChromeSwitchPreference mEmailNotificationsSwitch;
@@ -58,12 +58,6 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
                 (TextMessagePreference) findPreference(PREF_MOBILE_NOTIFICATIONS);
         updateMobileNotificationsText();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // App settings are only available on O+.
-            getPreferenceScreen().removePreference(mMobileNotificationsText);
-            mMobileNotificationsText = null;
-        }
-
         mEmailNotificationsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
         mEmailNotificationsSwitch.setOnPreferenceChangeListener(this::onPreferenceChange);
@@ -75,6 +69,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
             String email = info.getEmail();
             mEmailNotificationsSwitch.setSummary(
                     getString(R.string.price_notifications_settings_email_description, email));
+            mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
             mPrefChangeRegistrar.addObserver(
                     Pref.PRICE_EMAIL_NOTIFICATIONS_ENABLED, this::updateEmailNotificationSwitch);
             updateEmailNotificationSwitch();
@@ -94,6 +89,14 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         updateMobileNotificationsText();
 
         ShoppingServiceFactory.getForProfile(getProfile()).fetchPriceEmailPref();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+        }
+        super.onDestroy();
     }
 
     /** Handle preference changes from any of the toggles in this UI. */
@@ -137,24 +140,24 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
                 new SpanApplier.SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(getContext(), (view) -> launchAppSettings()));
+                        new ChromeClickableSpan(getContext(), (view) -> launchAppSettings()));
         SpanApplier.applySpans(settingsFullText, info);
 
         mMobileNotificationsText.setSummary(SpanApplier.applySpans(settingsFullText, info));
     }
 
-    /** @return True if both app-level and price tracking notifications are enabled. */
+    /**
+     * @return True if both app-level and price tracking notifications are enabled.
+     */
     private boolean arePriceTrackingNotificationsEnabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel =
-                    NotificationManagerProxyImpl.getInstance()
-                            .getNotificationChannel(
-                                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
-            if (NotificationManagerProxyImpl.getInstance().areNotificationsEnabled()
-                    && channel != null
-                    && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
-                return true;
-            }
+        NotificationChannel channel =
+                NotificationManagerProxyImpl.getInstance()
+                        .getNotificationChannel(
+                                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+        if (NotificationProxyUtils.areNotificationsEnabled()
+                && channel != null
+                && channel.getImportance() != NotificationManager.IMPORTANCE_NONE) {
+            return true;
         }
         return false;
     }

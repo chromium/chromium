@@ -98,7 +98,6 @@
     // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
     // https://wicg.github.io/origin-policy/#monkeypatch-html-windoworworkerglobalscope
     [Replaceable] readonly attribute DOMString origin;
-    void queueMicrotask(VoidFunction callback);
 
     // AnimationFrameProvider mixin
     // https://html.spec.whatwg.org/C/#animation-frames
@@ -207,9 +206,6 @@
     // Event handler attributes
     attribute EventHandler onsearch;
 
-    // https://w3c.github.io/webappsec-secure-contexts/#monkey-patching-global-object
-    readonly attribute boolean isSecureContext;
-
     // TrustedTypes API: http://github.com/w3c/trusted-types
     [CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
 
@@ -224,4 +220,5 @@
 
 Window includes GlobalEventHandlers;
 Window includes WindowEventHandlers;
+Window includes UniversalGlobalScope;
 Window includes WindowOrWorkerGlobalScope;

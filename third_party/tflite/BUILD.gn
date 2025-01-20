@@ -48,6 +48,7 @@ config("tflite_config") {
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
+  defines = [ "TFL_STATIC_LIBRARY_BUILD" ]
   if (is_android) {
     libs = [ "log" ]
   }
@@ -176,6 +177,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/sign_custom.cc",
     "src/tensorflow/lite/kernels/stablehlo_add.cc",
     "src/tensorflow/lite/kernels/stablehlo_and.cc",
+    "src/tensorflow/lite/kernels/stablehlo_case.cc",
     "src/tensorflow/lite/kernels/stablehlo_composite.cc",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
     "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
@@ -208,6 +210,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
 
   visibility = [
     ":tflite_benchmark",
+    "//components/optimization_guide/internal/*",
     "//services/webnn/*",
     "//third_party/mediapipe/*",
   ]
@@ -618,6 +621,26 @@ flatbuffer("weight_cache_schema_generated") {
   args = [ "--gen-object-api" ]
 }
 
+source_set("tflite_compiler_utils") {
+  sources = [
+    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.cc",
+    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.h",
+    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc",
+    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.h",
+  ]
+  configs += [ ":tflite_config" ]
+  public_deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_proto",
+    ":tflite_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+  ]
+  visibility = [ ":*" ]
+}
+
 # TODO(crbug.com/1147996): Update to a component build. Will require updating the
 # tflite version.
 # TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
@@ -673,6 +696,8 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/delegates/interpreter_utils.cc",
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
+    "src/tensorflow/lite/delegates/serialization.cc",
+    "src/tensorflow/lite/delegates/serialization.h",
     "src/tensorflow/lite/delegates/utils.cc",
     "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
@@ -746,8 +771,6 @@ tflite_static_library("tflite") {
       "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.cc",
       "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.cc",
       "src/tensorflow/lite/delegates/nnapi/quant_lstm_sup.h",
-      "src/tensorflow/lite/delegates/serialization.cc",
-      "src/tensorflow/lite/delegates/serialization.h",
       "src/tensorflow/lite/nnapi/nnapi_implementation.cc",
     ]
   } else {
@@ -795,7 +818,6 @@ tflite_static_library("tflite") {
     "//third_party/fft2d",
     "//third_party/fp16",
     "//third_party/neon_2_sse",
-    "//third_party/ruy",
   ]
 
   conditional_deps = [
@@ -814,17 +836,20 @@ tflite_static_library("tflite") {
   conditional_public_deps = [ ":tflite_kernels" ]
 
   public_deps = [
+    ":tflite_compiler_utils",
     ":tflite_kernel_common_headers",
     ":tflite_kernel_internals",
     ":tflite_proto",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
     "//third_party/gemmlowp",
+    "//third_party/ruy",
   ]
 
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
     "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
     "//third_party/eigen3:eigen_includes",
     ":tflite_flags",
   ]

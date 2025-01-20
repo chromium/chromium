@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -100,6 +101,7 @@ struct CORE_EXPORT InlineItemResult {
                   const String& indent = "") const;
 
   // The InlineItem and its index.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const InlineItem* item = nullptr;
   unsigned item_index = 0;
 

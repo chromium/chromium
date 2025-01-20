@@ -210,7 +210,7 @@ void InputStream::OnCreated(bool initially_muted) {
   SendLogMessage("%s({muted=%s})", __func__,
                  initially_muted ? "true" : "false");
 
-  base::ReadOnlySharedMemoryRegion shared_memory_region =
+  base::UnsafeSharedMemoryRegion shared_memory_region =
       writer_->TakeSharedMemoryRegion();
   if (!shared_memory_region.IsValid()) {
     OnStreamPlatformError();

@@ -11,9 +11,9 @@ const char kHttpsEngagementSessionPercentage[] =
     "Navigation.EngagementTime.Ratio";
 }
 
-HttpsEngagementService::HttpsEngagementService() {}
+HttpsEngagementService::HttpsEngagementService() = default;
 
-HttpsEngagementService::~HttpsEngagementService() {}
+HttpsEngagementService::~HttpsEngagementService() = default;
 
 void HttpsEngagementService::RecordTimeOnPage(base::TimeDelta foreground_time,
                                               PageScheme scheme) {

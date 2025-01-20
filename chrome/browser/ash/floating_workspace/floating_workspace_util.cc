@@ -62,7 +62,7 @@ bool IsFloatingWorkspaceV2Enabled() {
   // and FloatingWorkspaceV2Enabled policies. The former was originally used to
   // control V2 behavior and there are testers who might still rely on it. The
   // latter will be used in the next round of testing. Before it starts, we let
-  // any of the two policies control the feature.
+  // any of the two policies enable the feature.
   for (const auto& pref_name : {policy::policy_prefs::kFloatingWorkspaceEnabled,
                                 prefs::kFloatingWorkspaceV2Enabled}) {
     const PrefService::Preference* floating_workspace_pref =
@@ -70,9 +70,9 @@ bool IsFloatingWorkspaceV2Enabled() {
 
     DCHECK(floating_workspace_pref);
 
-    if (floating_workspace_pref->IsManaged()) {
-      // If there is a policy managing the pref, return what is set by policy.
-      return pref_service->GetBoolean(pref_name);
+    if (floating_workspace_pref->IsManaged() &&
+        pref_service->GetBoolean(pref_name)) {
+      return true;
     }
   }
 

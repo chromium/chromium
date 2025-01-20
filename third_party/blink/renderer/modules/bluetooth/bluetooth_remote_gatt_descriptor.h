@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-class DOMDataView;
 class ExceptionState;
 class BluetoothRemoteGATTCharacteristic;
 class ScriptState;
@@ -39,7 +39,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
     return characteristic_.Get();
   }
   String uuid() { return descriptor_->uuid; }
-  DOMDataView* value() const { return value_.Get(); }
+  NotShared<DOMDataView> value() const { return value_; }
   ScriptPromise<NotShared<DOMDataView>> readValue(ScriptState*,
                                                   ExceptionState&);
   ScriptPromise<IDLUndefined> writeValue(ScriptState*,
@@ -71,7 +71,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
 
   mojom::blink::WebBluetoothRemoteGATTDescriptorPtr descriptor_;
   Member<BluetoothRemoteGATTCharacteristic> characteristic_;
-  Member<DOMDataView> value_;
+  NotShared<DOMDataView> value_;
 };
 
 }  // namespace blink

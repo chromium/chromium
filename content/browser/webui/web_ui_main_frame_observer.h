@@ -14,11 +14,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 
-namespace blink {
-namespace mojom {
+namespace blink::mojom {
 enum class ConsoleMessageLevel;
-}
-}  // namespace blink
+}  // namespace blink::mojom
 
 namespace content {
 class NavigationHandle;
@@ -42,9 +40,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   // Override from WebContentsObserver
   void PrimaryPageChanged(Page& page) override;
 
-// TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
-// thunking issues. Fix & re-enable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // On official Google builds, capture and report JavaScript error messages on
   // WebUI surfaces back to Google. This allows us to fix JavaScript errors and
   // exceptions.
@@ -55,24 +51,16 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       int32_t line_no,
       const std::u16string& source_id,
       const std::optional<std::u16string>& untrusted_stack_trace) override;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
-  void DidFirstVisuallyNonEmptyPaint() override;
-
  private:
-  const GURL& GetUrlForLogging() const;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void MaybeEnableWebUIJavaScriptErrorReporting(
       NavigationHandle* navigation_handle);
 
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-  bool pending_non_empty_paint_ = false;
 
   raw_ptr<WebUIImpl> web_ui_;
 };

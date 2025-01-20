@@ -64,7 +64,7 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
     bool visibility;
     float brightness;
     float grayscale;
-    SkColor color;
+    SkColor4f color;
     gfx::Rect clip_rect;
     gfx::RoundedCornersF rounded_corners;
     gfx::LinearGradient gradient_mask;
@@ -139,7 +139,7 @@ class COMPOSITOR_EXPORT LayerAnimationElement {
   // Creates an element that transitions to the given color. The caller owns the
   // return value.
   static std::unique_ptr<LayerAnimationElement> CreateColorElement(
-      SkColor color,
+      SkColor4f color,
       base::TimeDelta duration);
 
   // Creates an element that transitions the clip rect of the layer to the given

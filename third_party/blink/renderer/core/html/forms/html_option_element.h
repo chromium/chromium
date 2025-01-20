@@ -99,7 +99,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   HTMLFormElement* form() const;
   bool SpatialNavigationFocused() const;
 
-  bool IsDisplayNone() const;
+  bool IsDisplayNone(bool ensure_style);
 
   int ListIndex() const;
 
@@ -140,7 +140,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
 
-  String CollectOptionInnerText() const;
+  enum class IncludeAltText {
+    kIncludeAltText,
+    kDontIncludeAltText,
+  };
+  String CollectOptionInnerText(IncludeAltText include_alt_text) const;
 
   void UpdateLabel();
 

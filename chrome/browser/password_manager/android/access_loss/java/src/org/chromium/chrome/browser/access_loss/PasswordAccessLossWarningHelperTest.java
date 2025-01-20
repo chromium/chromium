@@ -56,7 +56,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
@@ -98,14 +98,13 @@ public class PasswordAccessLossWarningHelperTest {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(mActivity, view -> {})))
+                                new ChromeClickableSpan(mActivity, view -> {})))
                 .toString();
     }
 
     private void clickSpan(SpannableString spannableString) {
-        NoUnderlineClickableSpan[] spans =
-                spannableString.getSpans(
-                        0, spannableString.length(), NoUnderlineClickableSpan.class);
+        ChromeClickableSpan[] spans =
+                spannableString.getSpans(0, spannableString.length(), ChromeClickableSpan.class);
         spans[0].onClick(new View(mActivity.getBaseContext()));
     }
 

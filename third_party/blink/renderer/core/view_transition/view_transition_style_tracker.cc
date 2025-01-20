@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -467,10 +466,12 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
   ImageWrapperPseudoElement(Element* parent,
                             PseudoId pseudo_id,
                             const AtomicString& view_transition_name,
+                            bool is_generated_name,
                             const ViewTransitionStyleTracker* style_tracker)
       : ViewTransitionPseudoElementBase(parent,
                                         pseudo_id,
                                         view_transition_name,
+                                        is_generated_name,
                                         style_tracker) {}
 
   ~ImageWrapperPseudoElement() override = default;
@@ -717,10 +718,12 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
 
 AtomicString ViewTransitionStyleTracker::GenerateAutoName(
     Element& element,
-    const TreeScope* scope) {
+    const TreeScope* scope,
+    bool allow_from_id) {
   // The flag should be checked much earlier than this, in the CSS parser.
-  CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
-  if (element.HasID() && scope && *scope == element.GetTreeScope()) {
+  CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
+  if (allow_from_id && element.HasID() && scope &&
+      *scope == element.GetTreeScope()) {
     return element.GetIdAttribute();
   }
   StringBuilder builder;
@@ -763,15 +766,23 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
 
     // ATM this will be null if the scope of the view-transition-name comes from
     // e.g. devtools.
-    auto* relevant_tree_scope =
-        RuntimeEnabledFeatures::ViewTransitionTreeScopedNamesEnabled()
-            ? view_transition_name->GetTreeScope()
-            : &node->GetTreeScope();
+    auto* relevant_tree_scope = view_transition_name->GetTreeScope();
 
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
-      current_name = view_transition_name->IsAuto()
-                         ? GenerateAutoName(*To<Element>(node), tree_scope)
-                         : view_transition_name->CustomName();
+      switch (view_transition_name->GetType()) {
+        case StyleViewTransitionName::Type::kAuto:
+          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+                                          /*allow_from_id=*/true);
+          break;
+        case StyleViewTransitionName::Type::kMatchElement:
+          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+                                          /*allow_from_id=*/false);
+          break;
+        case StyleViewTransitionName::Type::kCustom:
+          current_name = view_transition_name->CustomName();
+          break;
+      }
+
       AddTransitionElement(DynamicTo<Element>(node), current_name,
                            containing_group_stack.empty()
                                ? g_null_atom
@@ -954,6 +965,9 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     // already sorted.
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
+
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -1165,6 +1179,9 @@ bool ViewTransitionStyleTracker::Start() {
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
 
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
+
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
@@ -1291,6 +1308,10 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
 
+  bool is_generated_name =
+      view_transition_name &&
+      element_data_map_.find(view_transition_name)->value->is_generated_name;
+
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
       return MakeGarbageCollected<ViewTransitionTransitionElement>(parent,
@@ -1298,11 +1319,11 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
     case kPseudoIdViewTransitionGroup: {
       return MakeGarbageCollected<ViewTransitionPseudoElementBase>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
     }
     case kPseudoIdViewTransitionImagePair:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
 
     case kPseudoIdViewTransitionOld: {
       DCHECK(view_transition_name);
@@ -1328,7 +1349,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       // update it when the value changes.
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/false, this);
+          /*is_live_content_element=*/false, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, reference_rect_in_enclosing_layer_space,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
@@ -1347,7 +1368,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/true, this);
+          /*is_live_content_element=*/true, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, border_box_rect,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
@@ -1407,10 +1428,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     // large to fit into a texture but non-root elements clip in this case
     // instead. It would be better to clip the root like we do child elements,
     // rather than skipping (and that would comply better with the spec).
-
-    // For main frames the capture size should never be bigger than the
-    // window so we only expect to end up here due to large subframes.
-    CHECK(!document_->GetFrame()->IsOutermostMainFrame());
+    // Note that this can also happen for main frames, both in WebView and
+    // on Android Chrome. See crbug.com/365502351
     return false;
   }
 

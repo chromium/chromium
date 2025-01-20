@@ -236,8 +236,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_synchronized_scrolling =
       base::FeatureList::IsEnabled(::features::kSynchronizedScrolling);
   Platform* platform = Platform::Current();
-  settings.percent_based_scrolling =
-      ::features::IsPercentBasedScrollingEnabled();
 
   settings.commit_to_active_tree = !is_threaded;
   settings.is_for_embedded_frame = is_for_embedded_frame;
@@ -600,6 +598,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   std::tie(settings.tiling_interest_area_padding,
            settings.skewport_extrapolation_limit_in_screen_pixels) =
       GetTilingInterestAreaSizes();
+
+  settings.dynamic_safe_area_insets_on_scroll_enabled =
+      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled();
   return settings;
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

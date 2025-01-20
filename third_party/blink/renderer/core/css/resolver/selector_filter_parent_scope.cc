@@ -7,8 +7,6 @@
 
 namespace blink {
 
-SelectorFilterParentScope* SelectorFilterParentScope::current_scope_ = nullptr;
-
 void SelectorFilterParentScope::PushAncestors(Element& element) {
   if (Element* ancestor = FlatTreeTraversal::ParentElement(element)) {
     PushAncestors(*ancestor);

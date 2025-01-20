@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/device_reauth/device_authenticator.h"
 
@@ -130,6 +130,8 @@ class MandatoryReauthManager {
   // Return the authentication method to be used on this device. Used for metric
   // logging.
   virtual MandatoryReauthAuthenticationMethod GetAuthenticationMethod();
+
+  PaymentsDataManager& GetPaymentsDataManager();
 
   void SetDeviceAuthenticatorPtrForTesting(
       std::unique_ptr<device_reauth::DeviceAuthenticator>

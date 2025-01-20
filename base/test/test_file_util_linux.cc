@@ -50,12 +50,15 @@ int posix_fadvise(int fd, off_t offset, off_t len, int advice) {
 
 bool EvictFileFromSystemCache(const FilePath& file) {
   ScopedFD fd(open(file.value().c_str(), O_RDONLY));
-  if (!fd.is_valid())
+  if (!fd.is_valid()) {
     return false;
-  if (fdatasync(fd.get()) != 0)
+  }
+  if (fdatasync(fd.get()) != 0) {
     return false;
-  if (posix_fadvise(fd.get(), 0, 0, POSIX_FADV_DONTNEED) != 0)
+  }
+  if (posix_fadvise(fd.get(), 0, 0, POSIX_FADV_DONTNEED) != 0) {
     return false;
+  }
   return true;
 }
 

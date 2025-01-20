@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -48,48 +50,60 @@ constexpr base::TimeDelta kNonVisiblePagesUrgentProtectionTime =
 // Time during which a tab cannot be discarded after having played audio.
 constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
+// Whether a page can be discarded.
+enum class CanDiscardResult {
+  // The page can be discarded. The user should experience minimal disruption
+  // from discarding.
+  kEligible,
+  // The page can be discarded. The user will likely find discarding disruptive.
+  kProtected,
+  // The page cannot be discarded.
+  kDisallowed,
+};
+
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
  public:
   PageNodeSortProxy(const PageNode* page_node,
-                    bool is_marked,
+                    CanDiscardResult can_discard_result,
                     bool is_visible,
-                    bool is_protected,
                     bool is_focused,
                     base::TimeDelta last_visible)
       : page_node_(page_node),
-        is_marked_(is_marked),
+        can_discard_result_(can_discard_result),
         is_visible_(is_visible),
-        is_protected_(is_protected),
         is_focused_(is_focused),
         last_visible_(last_visible) {}
 
   const PageNode* page_node() const { return page_node_; }
-  bool is_marked() const { return is_marked_; }
-  bool is_protected() const { return is_protected_; }
+  bool is_disallowed() const {
+    return can_discard_result_ == CanDiscardResult::kDisallowed;
+  }
+  bool is_protected() const {
+    return can_discard_result_ == CanDiscardResult::kProtected;
+  }
   bool is_visible() const { return is_visible_; }
   bool is_focused() const { return is_focused_; }
   base::TimeDelta last_visible() const { return last_visible_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
-    if (is_marked_ != rhs.is_marked_) {
-      return rhs.is_marked_;
+    if (is_disallowed() != rhs.is_disallowed()) {
+      return rhs.is_disallowed();
     }
     if (is_visible_ != rhs.is_visible_) {
       return rhs.is_visible_;
     }
-    if (is_protected_ != rhs.is_protected_) {
-      return rhs.is_protected_;
+    if (is_protected() != rhs.is_protected()) {
+      return rhs.is_protected();
     }
     return last_visible_ > rhs.last_visible_;
   }
 
  private:
   raw_ptr<const PageNode> page_node_;
-  bool is_marked_;
+  CanDiscardResult can_discard_result_;
   bool is_visible_;
-  bool is_protected_;
   bool is_focused_;
   // Delta between current time and last visibility change time.
   base::TimeDelta last_visible_;
@@ -101,17 +115,9 @@ class PageNodeSortProxy {
 // PageDiscardingHelper::GetFromGraph(graph()).
 class PageDiscardingHelper
     : public GraphOwnedAndRegistered<PageDiscardingHelper>,
-      public NodeDataDescriberDefaultImpl {
+      public NodeDataDescriberDefaultImpl,
+      public PageNodeObserver {
  public:
-  enum class CanDiscardResult {
-    // Discarding eligible nodes is hard to notice for user.
-    kEligible,
-    // Discarding protected nodes is noticeable to user.
-    kProtected,
-    // Marked nodes can never be discarded.
-    kMarked,
-  };
-
   // Export discard reason in the public interface.
   using DiscardReason = ::mojom::LifecycleUnitDiscardReason;
   // DiscardCallback passes the time of first discarding is done.
@@ -124,6 +130,10 @@ class PageDiscardingHelper
   ~PageDiscardingHelper() override;
   PageDiscardingHelper(const PageDiscardingHelper& other) = delete;
   PageDiscardingHelper& operator=(const PageDiscardingHelper&) = delete;
+
+  base::WeakPtr<PageDiscardingHelper> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Selects a tab to discard and posts to the UI thread to discard it. This
   // will try to discard a tab until there's been a successful discard or until
@@ -174,6 +184,18 @@ class PageDiscardingHelper
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
 
+  // Sets an additional callback that should be invoked whenever the
+  // SetNoDiscardPatternsForProfile() or ClearNoDiscardPatternsForProfile()
+  // methosd is called, with the method's `browser_context_id` argument.
+  void SetOptOutPolicyChangedCallback(
+      base::RepeatingCallback<void(std::string_view)> callback);
+
+  bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
+                                  const GURL& url) const;
+
+  // PageNodeObserver:
+  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
+
  protected:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
@@ -184,9 +206,6 @@ class PageDiscardingHelper
       const PageNode* page_node) const;
 
  private:
-  bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
-                                  const GURL& url) const;
-
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
@@ -207,9 +226,12 @@ class PageDiscardingHelper
   std::unique_ptr<mechanism::PageDiscarder> page_discarder_;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
-      profiles_no_discard_patterns_;
+      profiles_no_discard_patterns_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
+
+  base::RepeatingCallback<void(std::string_view)>
+      opt_out_policy_changed_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

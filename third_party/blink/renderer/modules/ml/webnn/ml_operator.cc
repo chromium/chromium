@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reverse_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_slice_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -63,6 +64,8 @@ String MLOperator::OperatorKindToString(
           return "lesser";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
           return "lesserOrEqual";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kNotEqual:
+          return "notEqual";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
           return "logicalAnd";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
@@ -234,6 +237,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kResample2d:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "resample2d";
+    case webnn::mojom::blink::Operation::Tag::kReverse:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "reverse";
     case webnn::mojom::blink::Operation::Tag::kScatterElements:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "scatterElements";
@@ -303,16 +309,16 @@ const MLOperatorOptions* MLOperator::Options() const {
   return options_.Get();
 }
 
-const HeapVector<Member<const MLOperand>>& MLOperator::Inputs() const {
+const HeapVector<Member<MLOperand>>& MLOperator::Inputs() const {
   return inputs_;
 }
 
-const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
+const HeapVector<Member<MLOperand>>& MLOperator::Outputs() const {
   return outputs_;
 }
 
 void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
-                         HeapVector<Member<const MLOperand>> outputs) {
+                         HeapVector<Member<MLOperand>> outputs) {
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
   for (auto& input : inputs) {
@@ -428,6 +434,20 @@ const Vector<uint32_t>& MLPadOperator::BeginningPadding() const {
 
 const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
   return ending_padding_;
+}
+
+MLReverseOperator::MLReverseOperator(MLGraphBuilder* builder,
+                                     Vector<uint32_t> axes,
+                                     const MLReverseOptions* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kReverse,
+                 options),
+      axes_(std::move(axes)) {}
+
+MLReverseOperator::~MLReverseOperator() = default;
+
+const Vector<uint32_t>& MLReverseOperator::Axes() const {
+  return axes_;
 }
 
 MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,

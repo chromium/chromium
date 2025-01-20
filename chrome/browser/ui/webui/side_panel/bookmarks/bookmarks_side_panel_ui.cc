@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 
 #include <string>
@@ -23,12 +18,12 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources_map.h"
@@ -56,13 +51,18 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIBookmarksSidePanelHost) {}
 
 bool BookmarksSidePanelUIConfig::IsPreloadable() {
-  return true;
+  // TODO(crbug.com/373838921): re-enable preloading once the backend image
+  // service is no longer overwhelmed. This might be fixed by either adding a
+  // backend caching layer (crbug.com/379143109), or by us not requesting image
+  // during preloading.
+  return false;
 }
 
 std::optional<int> BookmarksSidePanelUIConfig::GetCommandIdForTesting() {
@@ -177,8 +177,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"primaryFilterHeading", IDS_BOOKMARKS_PRIMARY_FILTER_HEADING},
       {"secondaryFilterHeading", IDS_BOOKMARKS_SECONDARY_FILTER_HEADING},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
@@ -236,12 +237,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   const int resource = IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML;
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kSidePanelBookmarksResources,
-                                              kSidePanelBookmarksResourcesSize),
-                              resource);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelBookmarksResources, resource);
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
@@ -269,6 +266,14 @@ void BookmarksSidePanelUI::BindInterface(
         shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
   shopping_service_factory_receiver_.reset();
   shopping_service_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BookmarksSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_tracking::mojom::PriceTrackingHandlerFactory>
+        receiver) {
+  price_tracking_factory_receiver_.reset();
+  price_tracking_factory_receiver_.Bind(std::move(receiver));
 }
 
 void BookmarksSidePanelUI::BindInterface(
@@ -304,7 +309,6 @@ void BookmarksSidePanelUI::CreateBookmarksPageHandler(
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -316,11 +320,27 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker, nullptr, nullptr);
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker, nullptr, nullptr);
+}
+
+void BookmarksSidePanelUI::CreatePriceTrackingHandler(
+    mojo::PendingRemote<commerce::price_tracking::mojom::Page> page,
+    mojo::PendingReceiver<commerce::price_tracking::mojom::PriceTrackingHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
+      std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
+      bookmark_model);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
-          bookmark_model, shopping_service, shopping_service_handler_.get());
+          bookmark_model, shopping_service, price_tracking_handler_.get());
 }
 
 bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {

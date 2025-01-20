@@ -16,10 +16,10 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -108,7 +108,7 @@ class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
     size_t index = start_index;
     while (index < text_value.size()) {
       index = std::min(index + chars_at_a_time, text_value.size());
-      logger()->OnAfterTextFieldDidChange(
+      logger()->OnAfterTextFieldValueChanged(
           *autofill_manager(), form_id, field_id,
           std::u16string(text_value.substr(0, index)));
     }
@@ -116,8 +116,8 @@ class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
 
   void SimulateClearingField(autofill::FormGlobalId form_id,
                              autofill::FieldGlobalId field_id) {
-    logger()->OnAfterTextFieldDidChange(*autofill_manager(), form_id, field_id,
-                                        u"");
+    logger()->OnAfterTextFieldValueChanged(*autofill_manager(), form_id,
+                                           field_id, u"");
   }
 
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -374,9 +374,9 @@ TEST_F(ComposeTextUsageLoggerTest, LastChangeClearsField) {
       std::make_unique<autofill::FormStructure>(form_data));
   SimulateTyping(form_data.global_id(), form_data.fields()[0].global_id(),
                  u"Some text");
-  logger()->OnAfterTextFieldDidChange(*autofill_manager(),
-                                      form_data.global_id(),
-                                      form_data.fields()[0].global_id(), u"");
+  logger()->OnAfterTextFieldValueChanged(
+      *autofill_manager(), form_data.global_id(),
+      form_data.fields()[0].global_id(), u"");
 
   DeleteContents();
 

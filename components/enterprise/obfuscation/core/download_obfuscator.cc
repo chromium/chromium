@@ -180,7 +180,7 @@ DownloadObfuscator::CalculateDeobfuscationOverhead(base::File& file) {
         if (!bytes_read.has_value() || *bytes_read != size) {
           return base::unexpected(Error::kDeobfuscationFailed);
         }
-        return base::as_bytes(base::make_span(size_buffer));
+        return base::as_byte_span(size_buffer);
       });
 }
 

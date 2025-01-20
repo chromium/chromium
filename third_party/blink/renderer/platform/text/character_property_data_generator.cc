@@ -92,6 +92,8 @@ class CharacterPropertyValues {
   void Initialize() {
     memset(values_.get(), 0, sizeof(CharacterProperty) * kSize);
 
+    SetIsCJKIdeographOrSymbolForEmoji();
+
 #define SET(name)                                     \
   SetForRanges(name##Ranges, std::size(name##Ranges), \
                CharacterProperty::name);              \
@@ -104,6 +106,13 @@ class CharacterPropertyValues {
     SetForRanges(kIsHangulRanges, std::size(kIsHangulRanges),
                  CharacterProperty::kIsHangul);
     SetHanKerning();
+  }
+
+  // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property as CJK
+  // symbol characters.
+  void SetIsCJKIdeographOrSymbolForEmoji() {
+    SetForUnicodeSet("[:Emoji_Presentation:]",
+                     CharacterProperty::kIsCJKIdeographOrSymbol);
   }
 
   void SetHanKerning() {
@@ -148,6 +157,10 @@ class CharacterPropertyValues {
 
   // For `patterns`, see:
   // https://unicode-org.github.io/icu/userguide/strings/unicodeset.html#unicodeset-patterns
+  void SetForUnicodeSet(const char* pattern, CharacterProperty value) {
+    SetForUnicodeSet(pattern, value, value);
+  }
+
   void SetForUnicodeSet(const char* pattern,
                         CharacterProperty value,
                         CharacterProperty mask) {
@@ -157,6 +170,7 @@ class CharacterPropertyValues {
     const int32_t range_count = set.getRangeCount();
     for (int32_t i = 0; i < range_count; ++i) {
       const UChar32 end = set.getRangeEnd(i);
+      CHECK_LE(end, kMaxCodepoint);
       for (UChar32 ch = set.getRangeStart(i); ch <= end; ++ch) {
         CHECK_EQ(static_cast<unsigned>(values_[ch] & mask), 0u);
         values_[ch] |= value;

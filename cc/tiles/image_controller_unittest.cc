@@ -497,6 +497,22 @@ TEST_F(ImageControllerTest, QueueImageDecodeLockedImageControllerChange) {
   EXPECT_EQ(0, cache()->number_of_refs());
 }
 
+TEST_F(ImageControllerTest, DecodeRequestedBeforeCacheIsSet) {
+  scoped_refptr<SimpleTask> task(new SimpleTask);
+  cache()->SetTaskToUse(task);
+  controller()->SetImageDecodeCache(nullptr);
+  base::RunLoop run_loop;
+  DecodeClient decode_client;
+  controller()->QueueImageDecode(
+      image(),
+      base::BindOnce(&DecodeClient::Callback, base::Unretained(&decode_client),
+                     run_loop.QuitClosure()));
+  controller()->SetImageDecodeCache(cache());
+  RunOrTimeout(&run_loop);
+  EXPECT_EQ(ImageController::ImageDecodeResult::SUCCESS,
+            decode_client.result());
+}
+
 TEST_F(ImageControllerTest, DispatchesDecodeCallbacksAfterCacheReset) {
   scoped_refptr<SimpleTask> task(new SimpleTask);
   cache()->SetTaskToUse(task);

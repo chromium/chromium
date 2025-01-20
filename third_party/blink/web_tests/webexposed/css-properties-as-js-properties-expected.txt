@@ -287,6 +287,10 @@ maskPosition
 maskRepeat
 maskSize
 maskType
+masonryAutoTracks
+masonryDirection
+masonryFill
+masonryFlow
 masonrySlack
 masonryTemplateTracks
 masonryTrack
@@ -379,6 +383,7 @@ range
 readingFlow
 removeProperty
 resize
+result
 right
 rotate
 rowGap
@@ -388,6 +393,7 @@ rx
 ry
 scale
 scrollBehavior
+scrollInitialTarget
 scrollMargin
 scrollMarginBlock
 scrollMarginBlockEnd
@@ -417,7 +423,6 @@ scrollSnapType
 scrollStart
 scrollStartBlock
 scrollStartInline
-scrollStartTarget
 scrollStartX
 scrollStartY
 scrollTimeline

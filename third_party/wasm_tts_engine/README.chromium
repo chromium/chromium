@@ -1,0 +1,44 @@
+Name: Chrome built-in TTS extension WASM bindings
+URL: https://chromium.googlesource.com/chromium/wasm-tts-engine/
+Version: N/A
+Revision: DEPS
+License: BSD-3-Clause
+License File: LICENSE
+Shipped: Yes
+Security Critical: Yes
+
+Description:
+Javascript bindings connecting the Chrome Desktop TTS engine component
+extension with a WASM TTS engine.  It passes text to be spoken, and voice
+information to the TTS engine, and receives synthesized audio.
+
+The extension does the download of new languages, unzips them into memory, and
+passes the information to the wasm module via the bindings.  It also receives
+the speech requests, passes them in to the wasm module, and gets audio back,
+then sends that to an audio channel.
+
+The Eigen dependency below is used by the WASM TTS Engine's audio syntheis
+libraries.
+
+This extension is hosted at
+https://chromium.googlesource.com/chromium/wasm-tts-engine, which is a mirror
+of a compiled blob file in Google3.
+
+Local Modifications: None
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Eigen
+Short Name: eigen
+URL: https://gitlab.com/libeigen/eigen
+Version: 3.4
+License: Apache-2.0
+License File: EIGEN_LICENSE
+Shipped: yes
+Security Critical: no
+
+Description:
+Eigen is a C++ template library for linear algebra, matrices, vectors,
+numerical solvers, and related algorithms.
+
+Local Modifications: None

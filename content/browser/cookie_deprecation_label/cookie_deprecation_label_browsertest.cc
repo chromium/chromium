@@ -160,8 +160,8 @@ class CookieDeprecationLabelEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
                        HeaderAddedOnceOptedIn) {
   base::HistogramTester histograms;
-  constexpr base::HistogramBase::Sample kNoCookie = 2;
-  constexpr base::HistogramBase::Sample kHeaderSet = 0;
+  constexpr base::HistogramBase::Sample32 kNoCookie = 2;
+  constexpr base::HistogramBase::Sample32 kHeaderSet = 0;
 
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   auto response_a_a =

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.chrome.test.util.TabBinningUtil.group;
 
 import androidx.test.filters.MediumTest;
 
@@ -34,8 +35,11 @@ import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardFacility;
+import org.chromium.chrome.test.transit.hub.UndoGroupSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -213,5 +217,49 @@ public class TabSwitcherListEditorPTTest {
         // Go back to PageStation for InitialStateRule to reset
         pageStation = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         assertFinalDestination(pageStation);
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoCreateTabGroup() {
+        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+
+        TabModel tabModel = firstPage.getActivity().getCurrentTabModel();
+
+        // Open 3 tabs
+        int firstTabId = firstPage.getLoadedTab().getId();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        int secondTabId = secondPage.getLoadedTab().getId();
+        RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
+        int thirdTabId = thirdPage.getLoadedTab().getId();
+        RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
+
+        // Group first and second tabs
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+        NewTabGroupDialogFacility dialog = editor.openAppMenuWithEditor().groupTabs();
+        dialog.pressDone();
+        TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId), thirdTabId);
+
+        // Group all tabs; needed to bypass the New Tab Group dialog
+        editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabGroupToSelection(0, List.of(firstTabId, secondTabId));
+        editor = editor.addTabToSelection(1, thirdTabId);
+        var groupMergedResult = editor.openAppMenuWithEditor().groupTabsWithoutDialog();
+        TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId, thirdTabId));
+
+        // Ungroup and revert to only first and second tabs grouped, and third tab by itself
+        UndoGroupSnackbarFacility undoSnackbar = groupMergedResult.second;
+        undoSnackbar.pressUndo();
+        tabSwitcher.expectGroupCard(
+                List.of(firstTabId, secondTabId),
+                TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
+        TabSwitcherTabCardFacility thirdTabCard = tabSwitcher.expectTabCard(thirdTabId, "New tab");
+        TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId), thirdTabId);
+
+        // Go back to PageStation for InitialStateRule to reset
+        thirdPage = thirdTabCard.clickCard(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(thirdPage);
     }
 }

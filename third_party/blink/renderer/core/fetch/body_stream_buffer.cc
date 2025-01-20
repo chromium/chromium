@@ -372,20 +372,18 @@ void BodyStreamBuffer::OnStateChange() {
       GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
 
   switch (consumer_->GetPublicState()) {
     case BytesConsumer::PublicState::kReadableOrWaiting:
       break;
     case BytesConsumer::PublicState::kClosed:
-      Close(exception_state);
+      Close(PassThroughException(script_state_->GetIsolate()));
       return;
     case BytesConsumer::PublicState::kErrored:
       GetError();
       return;
   }
-  ProcessData(exception_state);
+  ProcessData(PassThroughException(script_state_->GetIsolate()));
 }
 
 void BodyStreamBuffer::ContextDestroyed() {

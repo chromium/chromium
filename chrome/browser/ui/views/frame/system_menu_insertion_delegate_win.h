@@ -12,14 +12,14 @@
 // place we insert items into the system menu.
 class SystemMenuInsertionDelegateWin : public views::MenuInsertionDelegateWin {
  public:
-  SystemMenuInsertionDelegateWin() {}
+  SystemMenuInsertionDelegateWin() = default;
 
   SystemMenuInsertionDelegateWin(const SystemMenuInsertionDelegateWin&) =
       delete;
   SystemMenuInsertionDelegateWin& operator=(
       const SystemMenuInsertionDelegateWin&) = delete;
 
-  ~SystemMenuInsertionDelegateWin() override {}
+  ~SystemMenuInsertionDelegateWin() override = default;
 
   // Overridden from views::MenuInsertionDelegateWin:
   size_t GetInsertionIndex(HMENU native_menu) override;

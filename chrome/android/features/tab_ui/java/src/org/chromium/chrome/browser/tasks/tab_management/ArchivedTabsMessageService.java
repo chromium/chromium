@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -142,6 +143,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull Runnable mAppendMessageRunnable;
     private final @NonNull ObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -167,7 +169,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull Tracker tracker,
             @NonNull Runnable appendMessageRunnable,
             @NonNull ObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mActivity = activity;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -209,9 +212,13 @@ public class ArchivedTabsMessageService extends MessageService
         } else {
             mArchivedTabModelOrchestrator.addObserver(mArchivedTabModelOrchestratorObserver);
         }
+
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
+    @Override
     public void destroy() {
+        super.destroy();
         if (mTabArchiveSettings != null) {
             mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }
@@ -337,7 +344,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mBackPressManager,
                         mTabArchiveSettings,
                         mModalDialogManager,
-                        mDesktopWindowStateManager);
+                        mDesktopWindowStateManager,
+                        mEdgeToEdgeSupplier);
     }
 
     private void updateModelProperties() {

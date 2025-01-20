@@ -100,10 +100,10 @@ class BASE_EXPORT JSONParser {
 
  private:
   enum Token {
-    T_OBJECT_BEGIN,           // {
-    T_OBJECT_END,             // }
-    T_ARRAY_BEGIN,            // [
-    T_ARRAY_END,              // ]
+    T_OBJECT_BEGIN,  // {
+    T_OBJECT_END,    // }
+    T_ARRAY_BEGIN,   // [
+    T_ARRAY_END,     // ]
     T_STRING,
     T_NUMBER,
     T_BOOL_TRUE,              // true
@@ -220,7 +220,8 @@ class BASE_EXPORT JSONParser {
 
   // Given the line and column number of an error, formats one of the error
   // message contants from json_reader.h for human display.
-  static std::string FormatErrorMessage(int line, int column,
+  static std::string FormatErrorMessage(int line,
+                                        int column,
                                         const std::string& description);
 
   // base::JSONParserOptions that control parsing.

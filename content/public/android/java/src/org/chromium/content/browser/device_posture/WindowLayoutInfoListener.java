@@ -4,10 +4,11 @@
 
 package org.chromium.content.browser.device_posture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.window.extensions.core.util.function.Consumer;
 import androidx.window.extensions.layout.WindowLayoutInfo;
@@ -16,6 +17,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.window.WindowUtil;
 
@@ -23,13 +26,14 @@ import org.chromium.window.WindowUtil;
  * WindowLayoutInfoListener This class listen for WindowLayoutInfo changes and inform the device
  * posture service with the values.
  */
+@NullMarked
 public class WindowLayoutInfoListener implements UnownedUserData {
     private static final UnownedUserDataKey<WindowLayoutInfoListener> KEY =
             new UnownedUserDataKey<>(WindowLayoutInfoListener.class);
     private final Consumer<WindowLayoutInfo> mWindowLayoutInfoChangedCallback;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
     private ObserverList<DevicePosturePlatformProviderAndroid> mObservers = new ObserverList<>();
-    private WindowLayoutInfo mCurrentWindowLayoutInfo;
+    private @Nullable WindowLayoutInfo mCurrentWindowLayoutInfo;
 
     private WindowLayoutInfoListener(WindowAndroid window) {
         assert window != null;
@@ -51,6 +55,7 @@ public class WindowLayoutInfoListener implements UnownedUserData {
     }
 
     public void addObserver(DevicePosturePlatformProviderAndroid observer) {
+        assumeNonNull(mWindowAndroid);
         assert !mObservers.hasObserver(observer);
         Context context = mWindowAndroid.getContext().get();
         if (mObservers.isEmpty() && context != null) {

@@ -130,7 +130,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
         // Set an updated content description on the chosen color container.
         String hexColor = String.format("#%06X", (0xFFFFFF & newColor));
         mChosenColorContainer.setContentDescription(
-                getContext().getString(R.string.color_picker_button_suggestions) + hexColor);
+                getContext().getString(R.string.color_picker_label_chosen_color) + hexColor);
     }
 
     void setCustomColorPickedCallback(Callback<Integer> callback) {

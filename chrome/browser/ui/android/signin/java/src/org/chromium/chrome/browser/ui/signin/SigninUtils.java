@@ -13,12 +13,9 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper functions for sign-in and accounts. */
 public final class SigninUtils {
@@ -121,39 +118,21 @@ public final class SigninUtils {
                 profileData.getAccountEmail());
     }
 
-    /**
-     * Returns whether the new sign-in flow should be shown instead of the usual one (sign-in and
-     * enable sync for instance) for an sign-in access point eligible to the new flow.
-     */
-    public static boolean shouldShowNewSigninFlow() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-    }
-
     public static View wrapInDialogWhenLargeLayout(View promoContentView) {
         return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(promoContentView);
-    }
-
-    /** Returns whether the activity shows on tablet or automotive. */
-    public static boolean isTabletOrAuto(Activity activity) {
-        return BuildInfo.getInstance().isAutomotive
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
     }
 
     /**
      * Returns whether dual panes horizontal layout can be used on full screen views (e.g. FRE or
      * Upgrade promo sub-views) given the configuration.
      */
-    public static boolean shouldShowDualPanesHorizontalLayout(Activity activity) {
-        Configuration configuration = activity.getResources().getConfiguration();
+    public static boolean shouldShowDualPanesHorizontalLayout(Context context) {
+        Configuration configuration = context.getResources().getConfiguration();
 
         // Since the landscape view has two panes the minimum screenWidth to show it is set to
         // 600dp for phones.
-        // Also, the landscape layout is disabled on tablet/auto or large phones since the
-        // fullscreen promo is mostly shown as dialog.
         return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
                 && configuration.screenWidthDp >= DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH
-                && !isTabletOrAuto(activity)
-                && !DialogWhenLargeContentLayout.shouldShowAsDialog(activity);
+                && !DialogWhenLargeContentLayout.shouldShowAsDialog(context);
     }
 }

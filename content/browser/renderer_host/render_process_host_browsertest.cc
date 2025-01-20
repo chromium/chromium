@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
       base::BindRepeating(HandleBeacon));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     // Isolate "foo.com" so we are guaranteed that navigations to this site
     // will be in a different process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1103,13 +1103,15 @@ struct BoostRenderProcessForLoadingBrowserTestParam {
   std::string target_urls;
   bool renderer_initiated_navigation;
   bool expect_render_process_backgrounded;
+  bool prioritize_restore;
+  bool expect_render_process_backgrounded_on_restore;
 };
 
 // This test verifies `kBoostRenderProcessForLoading` feature can keep the
 // RenderProcessHost foregrounded until `DOMContentLoaded` comes.
 class BoostRenderProcessForLoadingBrowserTest
     : public RenderProcessHostTestBase,
-      public content::WebContentsObserver,
+      public WebContentsObserver,
       public ::testing::WithParamInterface<
           BoostRenderProcessForLoadingBrowserTestParam> {
  public:
@@ -1119,7 +1121,10 @@ class BoostRenderProcessForLoadingBrowserTest
           {{blink::features::kBoostRenderProcessForLoading,
             {{blink::features::kBoostRenderProcessForLoadingTargetUrls.name,
               GetParam().target_urls},
-             {"prioritize_renderer_initiated", "false"}}}},
+             {"prioritize_renderer_initiated", "false"},
+             {blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
+                  .name,
+              GetParam().prioritize_restore ? "true" : "false"}}}},
           {});
     } else {
       feature_list_.InitAndDisableFeature(
@@ -1127,29 +1132,25 @@ class BoostRenderProcessForLoadingBrowserTest
     }
   }
 
-  void SetUpOnMainThread() override {
-    content::WebContentsObserver::Observe(&web_contents());
-    RenderProcessHostTestBase::SetUpOnMainThread();
+  WebContents& web_contents() { return *shell()->web_contents(); }
+
+  void StartObservingDOMContentLoaded(WebContents& web_contents) {
+    WebContentsObserver::Observe(&web_contents);
   }
 
-  content::WebContents& web_contents() { return *shell()->web_contents(); }
-
  private:
-  // content::WebContentsObserver:
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
-    if (!check_if_render_process_backgrounded_on_dom_content_loaded_) {
-      return;
-    }
+  // Override WebContentsObserver.
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
     RenderProcessHost* render_process_host = render_frame_host->GetProcess();
     // Emulate render_process_host is not visible to users.
     SetVisibleClients(render_process_host, 0);
-    EXPECT_EQ(render_process_host->GetPriority() ==
-                  base::Process::Priority::kBestEffort,
-              GetParam().expect_render_process_backgrounded);
+    last_process_priority_on_domcontentloaded_ =
+        render_process_host->GetPriority();
   }
 
  protected:
-  bool check_if_render_process_backgrounded_on_dom_content_loaded_ = false;
+  std::optional<base::Process::Priority>
+      last_process_priority_on_domcontentloaded_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1160,18 +1161,32 @@ const BoostRenderProcessForLoadingBrowserTestParam
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[]",
+            .renderer_initiated_navigation = false,
+            .expect_render_process_backgrounded = false,
+            .prioritize_restore = true,
+            .expect_render_process_backgrounded_on_restore = false,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = true,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1179,6 +1194,8 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://b.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1186,12 +1203,16 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://c.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[\"http://a.co.jp/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
 };
 
@@ -1208,22 +1229,43 @@ IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), empty_url));
 
-  // `BoostRenderProcessForLoadingBrowserTest::DOMContentLoaded()` will be
-  // called during `NavigateToURL()` to check the renderer process priority.
-  check_if_render_process_backgrounded_on_dom_content_loaded_ = true;
-  if (GetParam().renderer_initiated_navigation) {
-    EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
-    EXPECT_TRUE(WaitForLoadStop(&web_contents()));
-  } else {
-    EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  {
+    StartObservingDOMContentLoaded(web_contents());
+    if (GetParam().renderer_initiated_navigation) {
+      EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
+      EXPECT_TRUE(WaitForLoadStop(&web_contents()));
+    } else {
+      EXPECT_TRUE(NavigateToURL(shell(), test_url));
+    }
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(web_contents().GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
   }
 
-  // Emulate render_process_host is not visible to users.
-  RenderProcessHost* render_process_host =
-      web_contents().GetPrimaryMainFrame()->GetProcess();
-  SetVisibleClients(render_process_host, 0);
-  EXPECT_EQ(render_process_host->GetPriority(),
-            base::Process::Priority::kBestEffort);
+  {
+    // Clone the tab and restore the page.
+    std::unique_ptr<WebContents> new_tab = web_contents().Clone();
+    StartObservingDOMContentLoaded(*new_tab);
+    TestNavigationObserver clone_observer(new_tab.get());
+    NavigationHandleCommitObserver observer(new_tab.get(), test_url);
+    new_tab->GetController().LoadIfNecessary();
+    clone_observer.Wait();
+    EXPECT_EQ(observer.navigation_type(),
+              blink::mojom::NavigationType::RESTORE);
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded_on_restore
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(new_tab->GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
+  }
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method
@@ -1472,7 +1514,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
                             .root();
   RenderFrameHostImpl* original_rfh = root->current_frame_host();
   RenderProcessHost* original_process = original_rfh->GetProcess();
-  int original_process_id = original_process->GetID();
+  int original_process_id = original_process->GetDeprecatedID();
   EXPECT_FALSE(original_process->IsInitializedAndNotDead());
   EXPECT_FALSE(original_rfh->IsRenderFrameLive());
 
@@ -1543,7 +1585,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* replaced_rfh = root->current_frame_host();
   ASSERT_EQ(original_process, replaced_rfh->GetProcess());
-  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetID());
+  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(replaced_rfh->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(replaced_rfh->IsRenderFrameLive());
   EXPECT_FALSE(original_process->FastShutdownStarted());
@@ -1561,7 +1603,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 
@@ -1590,7 +1632,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   RenderFrameHostImpl* child_rfh0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child_rfh1 = root->child_at(1)->current_frame_host();
   RenderViewHostImpl* rvh_b = child_rfh0->render_view_host();
-  int process_b_id = child_rfh0->GetProcess()->GetID();
+  int process_b_id = child_rfh0->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(child_rfh0->GetProcess(), child_rfh1->GetProcess());
   EXPECT_TRUE(child_rfh0->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(child_rfh0->IsRenderFrameLive());
@@ -1680,7 +1722,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh1 = root->child_at(1)->current_frame_host();
-  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetID());
+  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(new_child_rfh1->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(new_child_rfh1->IsRenderFrameLive());
   EXPECT_EQ(0, process_exits_);
@@ -1706,7 +1748,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
   Observe(process_a);
 
   // Navigate cross-process and evict process A from the back-forward cache.
@@ -1718,7 +1760,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 }
@@ -1788,7 +1830,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
 
   // Listen for RenderFrameDeleted and count the other RenderFrameHosts in the
   // process at the time.
@@ -1803,7 +1845,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
 
   // RenderFrameDeleted should have been called for both the main frame and
   // subframe in process A.
@@ -2452,6 +2494,45 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
       base::Seconds(5));
   run_loop_2.Run();
   ASSERT_TRUE(VerifyAndClearExpectations());
+}
+
+// Asserts RenderProcessHosts are configured to reflect the embedder's policy
+// defined by `ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()`.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       DisallowV8FeatureFlagOverridesAppliedToHosts) {
+  class DisallowV8FeatureOverridesContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    // ContentBrowserTestContentBrowserClient:
+    bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
+      return site_url.host() == "a.com";
+    }
+  };
+  DisallowV8FeatureOverridesContentBrowserClient content_browser_client;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  scoped_refptr<SiteInstanceImpl> site_instance_a =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_a);
+  scoped_refptr<SiteInstanceImpl> site_instance_b =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_b);
+
+  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_a.get());
+  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_b.get());
+  process_a->Init();
+  process_b->Init();
+
+  EXPECT_TRUE(process_a->DisallowV8FeatureFlagOverrides());
+  EXPECT_FALSE(process_b->DisallowV8FeatureFlagOverrides());
+
+  process_a->Cleanup();
+  process_b->Cleanup();
 }
 
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

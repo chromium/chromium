@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
@@ -310,7 +311,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoNthLastOfType)
     DEFINE_STRING_MAPPING(PseudoPart)
     DEFINE_STRING_MAPPING(PseudoState)
-    DEFINE_STRING_MAPPING(PseudoStateDeprecatedSyntax)
     DEFINE_STRING_MAPPING(PseudoLink)
     DEFINE_STRING_MAPPING(PseudoVisited)
     DEFINE_STRING_MAPPING(PseudoAny)
@@ -347,10 +347,10 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoInvalid)
     DEFINE_STRING_MAPPING(PseudoIndeterminate)
     DEFINE_STRING_MAPPING(PseudoTarget)
-    DEFINE_STRING_MAPPING(PseudoCheck)
+    DEFINE_STRING_MAPPING(PseudoCheckMark)
     DEFINE_STRING_MAPPING(PseudoBefore)
     DEFINE_STRING_MAPPING(PseudoAfter)
-    DEFINE_STRING_MAPPING(PseudoSelectArrow)
+    DEFINE_STRING_MAPPING(PseudoPickerIcon)
     DEFINE_STRING_MAPPING(PseudoMarker)
     DEFINE_STRING_MAPPING(PseudoBackdrop)
     DEFINE_STRING_MAPPING(PseudoLang)
@@ -368,8 +368,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoScrollbarTrackPiece)
     DEFINE_STRING_MAPPING(PseudoScrollMarker)
     DEFINE_STRING_MAPPING(PseudoScrollMarkerGroup)
-    DEFINE_STRING_MAPPING(PseudoScrollNextButton)
-    DEFINE_STRING_MAPPING(PseudoScrollPrevButton)
+    DEFINE_STRING_MAPPING(PseudoScrollButton)
     DEFINE_STRING_MAPPING(PseudoColumn)
     DEFINE_STRING_MAPPING(PseudoWindowInactive)
     DEFINE_STRING_MAPPING(PseudoCornerPresent)
@@ -412,7 +411,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoListBox)
     DEFINE_STRING_MAPPING(PseudoMultiSelectFocus)
     DEFINE_STRING_MAPPING(PseudoOpen)
-    DEFINE_STRING_MAPPING(PseudoClosed)
     DEFINE_STRING_MAPPING(PseudoPicker)
     DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)
     DEFINE_STRING_MAPPING(PseudoPopoverInTopLayer)
@@ -423,6 +421,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoXrOverlay)
     DEFINE_STRING_MAPPING(PseudoSearchText)
     DEFINE_STRING_MAPPING(PseudoTargetText)
+    DEFINE_STRING_MAPPING(PseudoTargetCurrent)
     DEFINE_STRING_MAPPING(PseudoSelectorFragmentAnchor)
     DEFINE_STRING_MAPPING(PseudoModal)
     DEFINE_STRING_MAPPING(PseudoHighlight)
@@ -856,6 +855,7 @@ const char kScrollbarChanged[] = "Scrollbar changed";
 const char kDisplayLock[] = "Display lock";
 const char kDevtools[] = "Inspected by devtools";
 const char kAnchorPositioning[] = "Anchor positioning";
+const char kScrollMarkersChanged[] = "::scroll-markers changed";
 }  // namespace layout_invalidation_reason
 
 void inspector_layout_invalidation_tracking_event::Data(
@@ -1253,13 +1253,12 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
 void inspector_paint_event::Data(perfetto::TracedValue context,
                                  LocalFrame* frame,
                                  const LayoutObject* layout_object,
-                                 const gfx::QuadF& quad,
-                                 int layer_id) {
+                                 const gfx::Rect& contents_cull_rect) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
-  CreateQuad(dict.AddItem("clip"), quad);
+  CreateQuad(dict.AddItem("clip"), gfx::QuadF(gfx::RectF(contents_cull_rect)));
   SetGeneratingNodeInfo(dict, layout_object, "nodeId");
-  dict.Add("layerId", layer_id);
+  dict.Add("layerId", 0);  // For backward compatibility.
   SetCallStack(frame->DomWindow()->GetIsolate(), dict);
 }
 
@@ -1664,6 +1663,79 @@ void inspector_set_layer_tree_id::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("layerTreeId",
            frame->GetPage()->GetChromeClient().GetLayerTreeId(*frame));
+}
+
+struct DOMStats : public GarbageCollected<DOMStats>,
+                  public GarbageCollectedMixin {
+  unsigned int total_elements = 0;
+  unsigned int max_children = 0;
+  unsigned int max_depth = 0;
+  Member<Node> max_children_node;
+  Member<Node> max_depth_node;
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(max_children_node);
+    visitor->Trace(max_depth_node);
+  }
+};
+
+void GetDOMStats(Node& node, DOMStats* dom_stats, unsigned int current_depth) {
+  if (node.IsElementNode()) {
+    ++dom_stats->total_elements;
+  }
+
+  unsigned int num_child_elements = 0;
+  for (Element& child : ElementTraversal::ChildrenOf(node)) {
+    ++num_child_elements;
+    GetDOMStats(child, dom_stats, current_depth + 1);
+
+    if (ShadowRoot* shadowRoot = child.AuthorShadowRoot()) {
+      GetDOMStats(*shadowRoot, dom_stats, current_depth + 1);
+    }
+  }
+
+  if (num_child_elements > dom_stats->max_children) {
+    dom_stats->max_children = num_child_elements;
+    dom_stats->max_children_node = node;
+  }
+
+  if (current_depth > dom_stats->max_depth) {
+    dom_stats->max_depth = current_depth;
+    dom_stats->max_depth_node = node;
+  }
+}
+
+void inspector_dom_stats::Data(perfetto::TracedValue context,
+                               LocalFrame* frame) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+
+  DOMStats* dom_stats = MakeGarbageCollected<DOMStats>();
+  Document* document = frame->GetDocument();
+  if (Element* document_element = document->documentElement()) {
+    dom_stats->total_elements = 1;
+    dom_stats->max_children_node = document_element;
+    dom_stats->max_depth_node = document_element;
+    if (HTMLElement* body = document->body()) {
+      dom_stats->max_children = 1;
+      GetDOMStats(*body, dom_stats, 1);
+    }
+  }
+  dict.Add("totalElements", dom_stats->total_elements);
+
+  if (dom_stats->max_children_node) {
+    auto max_children_dict = dict.AddDictionary("maxChildren");
+    max_children_dict.Add("numChildren", dom_stats->max_children);
+    SetNodeInfo(max_children_dict, dom_stats->max_children_node, "nodeId",
+                "nodeName");
+  }
+
+  if (dom_stats->max_depth_node) {
+    auto max_depth_dict = dict.AddDictionary("maxDepth");
+    max_depth_dict.Add("depth", dom_stats->max_depth);
+    SetNodeInfo(max_depth_dict, dom_stats->max_depth_node, "nodeId",
+                "nodeName");
+  }
 }
 
 void inspector_animation_event::Data(perfetto::TracedValue context,

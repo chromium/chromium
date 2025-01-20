@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
-#import "ios/web/public/web_state.h"
 
 @protocol AIPrototypingMutator;
 
 // View controller that displays a debug UI menu for AI prototyping.
+// This wraps multiple pages, each representing an AI feature.
 // Functionality in this view are noop when compile flag
 // `BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE` is disabled.
 @interface AIPrototypingViewController

@@ -5,7 +5,6 @@
 #include "base/profiler/suspendable_thread_delegate_win.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <vector>
@@ -45,8 +44,9 @@ win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
   // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the handle in
   // SamplingProfilerThreadToken.
-  if (thread_id == ::GetCurrentThreadId())
+  if (thread_id == ::GetCurrentThreadId()) {
     return GetCurrentThreadHandle();
+  }
 
   // TODO(http://crbug.com/947459): Remove the test_handle* CHECKs once we
   // understand which flag is triggering the failure.
@@ -73,8 +73,9 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
   // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the TEB* in
   // SamplingProfilerThreadToken.
-  if (thread_id == ::GetCurrentThreadId())
+  if (thread_id == ::GetCurrentThreadId()) {
     return reinterpret_cast<TEB*>(NtCurrentTeb());
+  }
 
   // Define types not in winternl.h needed to invoke NtQueryInformationThread().
   constexpr auto ThreadBasicInformation = static_cast<THREADINFOCLASS>(0);
@@ -92,8 +93,9 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
   NTSTATUS status = ::NtQueryInformationThread(
       thread_handle, ThreadBasicInformation, &basic_info,
       sizeof(THREAD_BASIC_INFORMATION), nullptr);
-  if (status != 0)
+  if (status != 0) {
     return nullptr;
+  }
 
   return basic_info.Teb;
 }
@@ -140,8 +142,9 @@ ScopedDisablePriorityBoost::ScopedDisablePriorityBoost(HANDLE thread_handle)
 }
 
 ScopedDisablePriorityBoost::~ScopedDisablePriorityBoost() {
-  if (got_previous_boost_state_)
+  if (got_previous_boost_state_) {
     ::SetThreadPriorityBoost(thread_handle_, boost_state_was_disabled_);
+  }
 }
 
 }  // namespace
@@ -158,8 +161,9 @@ SuspendableThreadDelegateWin::ScopedSuspendThread::ScopedSuspendThread(
 // NO HEAP ALLOCATIONS. The CHECK is OK because it provides a more noisy failure
 // mode than deadlocking.
 SuspendableThreadDelegateWin::ScopedSuspendThread::~ScopedSuspendThread() {
-  if (!was_successful_)
+  if (!was_successful_) {
     return;
+  }
 
   // Disable the priority boost that the thread would otherwise receive on
   // resume. We do this to avoid artificially altering the dynamics of the
@@ -229,15 +233,17 @@ std::vector<uintptr_t*> SuspendableThreadDelegateWin::GetRegistersToRewrite(
   // Return the set of non-volatile registers.
   return {
 #if defined(ARCH_CPU_X86_64)
-    &thread_context->R12, &thread_context->R13, &thread_context->R14,
-        &thread_context->R15, &thread_context->Rdi, &thread_context->Rsi,
-        &thread_context->Rbx, &thread_context->Rbp, &thread_context->Rsp
+      &thread_context->R12, &thread_context->R13,
+      &thread_context->R14, &thread_context->R15,
+      &thread_context->Rdi, &thread_context->Rsi,
+      &thread_context->Rbx, &thread_context->Rbp,
+      &thread_context->Rsp
 #elif defined(ARCH_CPU_ARM64)
-    &thread_context->X19, &thread_context->X20, &thread_context->X21,
-        &thread_context->X22, &thread_context->X23, &thread_context->X24,
-        &thread_context->X25, &thread_context->X26, &thread_context->X27,
-        &thread_context->X28, &thread_context->Fp, &thread_context->Lr,
-        &thread_context->Sp
+      &thread_context->X19, &thread_context->X20, &thread_context->X21,
+      &thread_context->X22, &thread_context->X23, &thread_context->X24,
+      &thread_context->X25, &thread_context->X26, &thread_context->X27,
+      &thread_context->X28, &thread_context->Fp,  &thread_context->Lr,
+      &thread_context->Sp
 #endif
   };
 }

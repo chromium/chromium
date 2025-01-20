@@ -83,14 +83,18 @@ class CORE_EXPORT ScopedStyleResolver final
     return active_style_sheets_;
   }
 
+  // See InspectorGhostRules.
+  void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other) {
+    std::swap(active_style_sheets_, other);
+  }
+
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&,
                                         PartNames* part_names);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,
-                                      PartNames* part_names,
-                                      bool for_shadow_pseudo);
+                                      PartNames* part_names);
   void MatchPageRules(PageRuleCollector&);
   void CollectFeaturesTo(RuleFeatureSet&,
                          HeapHashSet<Member<const StyleSheetContents>>&

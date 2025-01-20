@@ -50,7 +50,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
-#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -60,11 +59,9 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
@@ -476,7 +473,6 @@ void PrefetchService::AddPrefetchContainer(
   if (!prefetch_container) {
     return;
   }
-
   PrefetchUrl(std::move(prefetch_container));
 }
 
@@ -488,6 +484,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
 void PrefetchService::PrefetchUrl(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   CHECK(prefetch_container);
+  TRACE_EVENT0("loading", "PrefetchService::PrefetchUrl");
 
   if (delegate_) {
     // If pre* actions are disabled then don't prefetch.
@@ -568,6 +565,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
         std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
         redirect_data) {
   CHECK(prefetch_container);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading",
+                                    "PrefetchService::CheckEligibility", this);
 
   // Inject failure in tests.
   if (GetForceIneligibilityForTesting().has_value()) {
@@ -660,6 +659,8 @@ void PrefetchService::CheckHasServiceWorker(
         std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
         redirect_data) {
   CHECK(prefetch_container);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "loading", "PrefetchService::CheckHasServiceWorker", this);
   // This service worker check assumes that the prefetch will only ever be
   // performed in a first-party context (main frame prefetch). At the moment
   // that is true but if it ever changes then the StorageKey will need to be
@@ -707,6 +708,9 @@ void PrefetchService::OnGotServiceWorkerResult(
                             network::mojom::URLResponseHeadPtr>> redirect_data,
     base::Time check_has_service_worker_start_time,
     ServiceWorkerCapability service_worker_capability) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "loading", "PrefetchService::CheckHasServiceWorker", this);
+  TRACE_EVENT0("loading", "PrefetchService::OnGotServiceWorkerResult");
   if (!prefetch_container) {
     OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
                      PreloadingEligibility::kEligible);
@@ -723,7 +727,15 @@ void PrefetchService::OnGotServiceWorkerResult(
   }
   switch (service_worker_capability) {
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
+      break;
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchServiceWorkerNoFetchHandlerFix)) {
+        OnGotEligibility(std::move(prefetch_container),
+                         std::move(redirect_data),
+                         PreloadingEligibility::kUserHasServiceWorker);
+        return;
+      }
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
       OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
@@ -756,6 +768,8 @@ void PrefetchService::OnGotServiceWorkerResult(
   StoragePartition* default_storage_partition =
       browser_context_->GetDefaultStoragePartition();
   CHECK(default_storage_partition);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading", "PrefetchService::CheckCookies",
+                                    this);
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
@@ -773,6 +787,9 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
                             network::mojom::URLResponseHeadPtr>> redirect_data,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "PrefetchService::CheckCookies",
+                                  this);
+  TRACE_EVENT0("loading", "PrefetchService::OnGotCookiesForEligibilityCheck");
   if (!prefetch_container) {
     OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
                      PreloadingEligibility::kEligible);
@@ -849,6 +866,8 @@ void PrefetchService::StartProxyLookupCheck(
     return;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("loading", "PrefetchService::ProxyCheck",
+                                    this);
   // Start proxy check for this prefetch, and give ownership of the
   // |ProxyLookupClientImpl| to |prefetch_container|.
   prefetch_container->TakeProxyLookupClient(
@@ -869,6 +888,9 @@ void PrefetchService::OnGotProxyLookupResult(
     std::optional<std::pair<net::RedirectInfo,
                             network::mojom::URLResponseHeadPtr>> redirect_data,
     bool has_proxy) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("loading", "PrefetchService::ProxyCheck",
+                                  this);
+  TRACE_EVENT0("loading", "PrefetchService::OnGotProxyLookupResult");
   if (!prefetch_container) {
     OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
                      PreloadingEligibility::kEligible);
@@ -891,6 +913,9 @@ void PrefetchService::OnGotEligibility(
     std::optional<std::pair<net::RedirectInfo,
                             network::mojom::URLResponseHeadPtr>> redirect_data,
     PreloadingEligibility eligibility) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("loading",
+                                  "PrefetchService::CheckEligibility", this);
+  TRACE_EVENT0("loading", "PrefetchService::OnGotEligibility");
   if (redirect_data.has_value()) {
     OnGotEligibilityForRedirect(std::move(prefetch_container),
                                 std::move(std::get<0>(redirect_data.value())),
@@ -907,6 +932,7 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
   if (!prefetch_container) {
     return;
   }
+  TRACE_EVENT0("loading", "PrefetchService::OnGotEligibilityForNonRedirect");
 
   const bool eligible = eligibility == PreloadingEligibility::kEligible;
   bool is_decoy = false;
@@ -966,6 +992,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
   if (!prefetch_container) {
     return;
   }
+  TRACE_EVENT0("loading", "PrefetchService::OnGotEligibilityForRedirect");
 
   const bool eligible = eligibility == PreloadingEligibility::kEligible;
   RecordRedirectResult(eligible
@@ -1011,17 +1038,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer && !prefetch_container->IsDecoy()) {
-    GURL previous_url = prefetch_container->GetPreviousURL();
-    auto redirect_head_info = network::ExtractDevToolsInfo(*redirect_head);
-    std::pair<const GURL&, const network::mojom::URLResponseHeadDevToolsInfo&>
-        redirect_info_for_devtools{previous_url, *redirect_head_info};
-    devtools_observer->OnStartSinglePrefetch(
-        prefetch_container->RequestId(),
-        *prefetch_container->GetResourceRequest(),
-        std::move(redirect_info_for_devtools));
-  }
+  prefetch_container->NotifyPrefetchRequestWillBeSent(&redirect_head);
 
   // If the redirect requires a change in network contexts, then stop the
   // current streaming URL loader and start a new streaming URL loader for the
@@ -1207,12 +1224,8 @@ void PrefetchService::StartSinglePrefetch(
       FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
   prefetch_container->MakeResourceRequest(additional_headers);
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer && !prefetch_container->IsDecoy()) {
-    devtools_observer->OnStartSinglePrefetch(
-        prefetch_container->RequestId(),
-        *prefetch_container->GetResourceRequest(), std::nullopt);
-  }
+  prefetch_container->NotifyPrefetchRequestWillBeSent(
+      /*redirect_head=*/nullptr);
 
   SendPrefetchRequest(prefetch_container);
 
@@ -1394,12 +1407,7 @@ PrefetchService::OnPrefetchResponseStarted(
     head->is_prefetch_with_cross_site_contamination = true;
   }
 
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer) {
-    devtools_observer->OnPrefetchResponseReceived(
-        prefetch_container->GetCurrentURL(), prefetch_container->RequestId(),
-        *head);
-  }
+  prefetch_container->NotifyPrefetchResponseReceived(*head);
 
   if (!head->headers) {
     return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;

@@ -729,7 +729,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
     switch (binary_type_) {
       case V8BinaryType::Enum::kBlob: {
         auto blob_data = std::make_unique<BlobData>();
-        blob_data->AppendBytes(base::make_span(buffer.data));
+        blob_data->AppendBytes(base::span(buffer.data));
         uint64_t blob_size = blob_data->length();
         auto* blob = MakeGarbageCollected<Blob>(
             BlobDataHandle::Create(std::move(blob_data), blob_size));

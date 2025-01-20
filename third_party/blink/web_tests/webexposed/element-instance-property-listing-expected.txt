@@ -364,7 +364,6 @@ html element a
     property href
     property hrefTranslate
     property hreflang
-    property interestAction
     property interestTargetElement
     property name
     property origin
@@ -388,13 +387,13 @@ html element acronym
 html element address
 html element area
     property alt
+    property attributionSrc
     property coords
     property download
     property hash
     property host
     property hostname
     property href
-    property interestAction
     property interestTargetElement
     property noHref
     property origin
@@ -516,7 +515,6 @@ html element button
     property formMethod
     property formNoValidate
     property formTarget
-    property interestAction
     property interestTargetElement
     property labels
     property name
@@ -727,6 +725,7 @@ html element img
     property alt
     property attributionSrc
     property border
+    property browsingTopics
     property complete
     property crossOrigin
     property currentSrc
@@ -773,7 +772,6 @@ html element input
     property height
     property incremental
     property indeterminate
-    property interestAction
     property interestTargetElement
     property labels
     property list
@@ -1609,7 +1607,6 @@ svg element a
     property getCTM
     property getScreenCTM
     property href
-    property interestAction
     property interestTargetElement
     property nearestViewportElement
     property requiredExtensions

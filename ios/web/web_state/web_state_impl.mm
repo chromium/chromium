@@ -172,6 +172,7 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
 }
 
 WebStateImpl::~WebStateImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_being_destroyed_ = true;
   if (pimpl_) {
     pimpl_->TearDown();
@@ -187,7 +188,9 @@ WebStateImpl* WebStateImpl::FromWebState(WebState* web_state) {
   }
 
   DCHECK(web_state->GetUserData(kWebStateIsWebStateImpl));
-  return static_cast<WebStateImpl*>(web_state);
+  WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(web_state_impl->sequence_checker_);
+  return web_state_impl;
 }
 
 /* static */
@@ -205,63 +208,78 @@ WebStateImpl::CreateWithFakeWebViewNavigationProxyForTesting(
 #pragma mark - WebState implementation
 
 CRWWebController* WebStateImpl::GetWebController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetWebController();
 }
 
 void WebStateImpl::SetWebController(CRWWebController* web_controller) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetWebController(web_controller);
 }
 
 void WebStateImpl::OnNavigationStarted(NavigationContextImpl* context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnNavigationStarted(context);
 }
 
 void WebStateImpl::OnNavigationRedirected(NavigationContextImpl* context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnNavigationRedirected(context);
 }
 
 void WebStateImpl::OnNavigationFinished(NavigationContextImpl* context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnNavigationFinished(context);
 }
 
 void WebStateImpl::OnBackForwardStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnBackForwardStateChanged();
 }
 
 void WebStateImpl::OnTitleChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnTitleChanged();
 }
 
 void WebStateImpl::OnRenderProcessGone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnRenderProcessGone();
 }
 
 void WebStateImpl::SetIsLoading(bool is_loading) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetIsLoading(is_loading);
 }
 
 void WebStateImpl::OnPageLoaded(const GURL& url, bool load_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnPageLoaded(url, load_success);
 }
 
 void WebStateImpl::OnFaviconUrlUpdated(
     const std::vector<FaviconURL>& candidates) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnFaviconUrlUpdated(candidates);
 }
 
 void WebStateImpl::OnStateChangedForPermission(Permission permission) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnStateChangedForPermission(permission);
 }
 
 void WebStateImpl::OnUnderPageBackgroundColorChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnUnderPageBackgroundColorChanged();
 }
 
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetNavigationManager();
 }
 
 int WebStateImpl::GetNavigationItemCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetNavigationItemCount();
   }
@@ -270,6 +288,7 @@ int WebStateImpl::GetNavigationItemCount() const {
 
 WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl(
     ContentWorld world) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(world, ContentWorld::kAllContentWorlds);
 
   if (!managers_[world]) {
@@ -280,25 +299,30 @@ WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl(
 
 SessionCertificatePolicyCacheImpl&
 WebStateImpl::GetSessionCertificatePolicyCacheImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetSessionCertificatePolicyCache();
 }
 
 void WebStateImpl::SetSessionCertificatePolicyCacheImpl(
     std::unique_ptr<SessionCertificatePolicyCacheImpl>
         session_certificate_policy_cache) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetSessionCertificatePolicyCache(
       std::move(session_certificate_policy_cache));
 }
 
 void WebStateImpl::CreateWebUI(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->CreateWebUI(url);
 }
 
 void WebStateImpl::ClearWebUI() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ClearWebUI();
 }
 
 bool WebStateImpl::HasWebUI() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->HasWebUI();
   }
@@ -308,10 +332,12 @@ bool WebStateImpl::HasWebUI() const {
 void WebStateImpl::HandleWebUIMessage(const GURL& source_url,
                                       std::string_view message,
                                       const base::Value::List& args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->HandleWebUIMessage(source_url, message, args);
 }
 
 void WebStateImpl::SetContentsMimeType(const std::string& mime_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetContentsMimeType(mime_type);
 }
 
@@ -319,6 +345,7 @@ void WebStateImpl::ShouldAllowRequest(
     NSURLRequest* request,
     WebStatePolicyDecider::RequestInfo request_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ShouldAllowRequest(request, std::move(request_info),
                                       std::move(callback));
 }
@@ -327,11 +354,13 @@ void WebStateImpl::ShouldAllowResponse(
     NSURLResponse* response,
     WebStatePolicyDecider::ResponseInfo response_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ShouldAllowResponse(response, std::move(response_info),
                                        std::move(callback));
 }
 
 UIView* WebStateImpl::GetWebViewContainer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetWebViewContainer();
   }
@@ -339,10 +368,12 @@ UIView* WebStateImpl::GetWebViewContainer() {
 }
 
 UserAgentType WebStateImpl::GetUserAgentForNextNavigation(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetUserAgentForNextNavigation(url);
 }
 
 UserAgentType WebStateImpl::GetUserAgentForSessionRestoration() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetUserAgentForSessionRestoration();
   }
@@ -350,16 +381,19 @@ UserAgentType WebStateImpl::GetUserAgentForSessionRestoration() const {
 }
 
 void WebStateImpl::SetUserAgent(UserAgentType user_agent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetWebStateUserAgent(user_agent);
 }
 
 void WebStateImpl::SendChangeLoadProgress(double progress) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SendChangeLoadProgress(progress);
 }
 
 void WebStateImpl::ShowRepostFormWarningDialog(
     FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ShowRepostFormWarningDialog(warning_type,
                                                std::move(callback));
 }
@@ -367,6 +401,7 @@ void WebStateImpl::ShowRepostFormWarningDialog(
 void WebStateImpl::RunJavaScriptAlertDialog(const GURL& origin_url,
                                             NSString* message_text,
                                             base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->RunJavaScriptAlertDialog(origin_url, message_text,
                                             std::move(callback));
 }
@@ -375,6 +410,7 @@ void WebStateImpl::RunJavaScriptConfirmDialog(
     const GURL& origin_url,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->RunJavaScriptConfirmDialog(origin_url, message_text,
                                               std::move(callback));
 }
@@ -384,11 +420,13 @@ void WebStateImpl::RunJavaScriptPromptDialog(
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->RunJavaScriptPromptDialog(
       origin_url, message_text, default_prompt_text, std::move(callback));
 }
 
 bool WebStateImpl::IsJavaScriptDialogRunning() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsJavaScriptDialogRunning();
   }
@@ -398,21 +436,25 @@ bool WebStateImpl::IsJavaScriptDialogRunning() {
 WebState* WebStateImpl::CreateNewWebState(const GURL& url,
                                           const GURL& opener_url,
                                           bool initiated_by_user) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->CreateNewWebState(url, opener_url, initiated_by_user);
 }
 
 void WebStateImpl::OnAuthRequired(NSURLProtectionSpace* protection_space,
                                   NSURLCredential* proposed_credential,
                                   WebStateDelegate::AuthCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnAuthRequired(protection_space, proposed_credential,
                                   std::move(callback));
 }
 
 void WebStateImpl::CancelDialogs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ClearDialogs();
 }
 
 id<CRWWebViewNavigationProxy> WebStateImpl::GetWebViewNavigationProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetWebViewNavigationProxy();
   }
@@ -422,10 +464,12 @@ id<CRWWebViewNavigationProxy> WebStateImpl::GetWebViewNavigationProxy() const {
 #pragma mark - WebFrame management
 
 void WebStateImpl::RetrieveExistingFrames() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->RetrieveExistingFrames();
 }
 
 void WebStateImpl::RemoveAllWebFrames() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& iterator : managers_) {
     iterator.second->RemoveAllWebFrames();
   }
@@ -435,6 +479,7 @@ void WebStateImpl::RequestPermissionsWithDecisionHandler(
     NSArray<NSNumber*>* permissions,
     const GURL& origin,
     PermissionDecisionHandler handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->RequestPermissionsWithDecisionHandler(permissions, origin,
                                                          handler);
 }
@@ -442,12 +487,14 @@ void WebStateImpl::RequestPermissionsWithDecisionHandler(
 #pragma mark - WebState implementation
 
 void WebStateImpl::SerializeToProto(proto::WebStateStorage& storage) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsRealized());
   pimpl_->SerializeToProto(storage);
 }
 
 void WebStateImpl::SerializeMetadataToProto(
     proto::WebStateMetadataStorage& storage) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) {
     proto::WebStateStorage full_storage;
     pimpl_->SerializeToProto(full_storage);
@@ -460,6 +507,7 @@ void WebStateImpl::SerializeMetadataToProto(
 }
 
 WebStateDelegate* WebStateImpl::GetDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetDelegate();
   }
@@ -467,10 +515,12 @@ WebStateDelegate* WebStateImpl::GetDelegate() {
 }
 
 void WebStateImpl::SetDelegate(WebStateDelegate* delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetDelegate(delegate);
 }
 
 std::unique_ptr<WebState> WebStateImpl::Clone() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsRealized());
   CHECK(!is_being_destroyed_);
 
@@ -478,10 +528,12 @@ std::unique_ptr<WebState> WebStateImpl::Clone() const {
 }
 
 bool WebStateImpl::IsRealized() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !!pimpl_;
 }
 
 WebState* WebStateImpl::ForceRealized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_being_destroyed_);
 
   if (!pimpl_) [[unlikely]] {
@@ -527,6 +579,7 @@ WebState* WebStateImpl::ForceRealized() {
 }
 
 bool WebStateImpl::IsWebUsageEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsWebUsageEnabled();
   }
@@ -534,12 +587,14 @@ bool WebStateImpl::IsWebUsageEnabled() const {
 }
 
 void WebStateImpl::SetWebUsageEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsWebUsageEnabled() != enabled) {
     RealizedState()->SetWebUsageEnabled(enabled);
   }
 }
 
 UIView* WebStateImpl::GetView() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetView();
   }
@@ -547,14 +602,17 @@ UIView* WebStateImpl::GetView() {
 }
 
 void WebStateImpl::DidCoverWebContent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->DidCoverWebContent();
 }
 
 void WebStateImpl::DidRevealWebContent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->DidRevealWebContent();
 }
 
 base::Time WebStateImpl::GetLastActiveTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetLastActiveTime();
   }
@@ -562,6 +620,7 @@ base::Time WebStateImpl::GetLastActiveTime() const {
 }
 
 base::Time WebStateImpl::GetCreationTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetCreationTime();
   }
@@ -569,18 +628,22 @@ base::Time WebStateImpl::GetCreationTime() const {
 }
 
 void WebStateImpl::WasShown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->WasShown();
 }
 
 void WebStateImpl::WasHidden() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->WasHidden();
 }
 
 void WebStateImpl::SetKeepRenderProcessAlive(bool keep_alive) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetKeepRenderProcessAlive(keep_alive);
 }
 
 BrowserState* WebStateImpl::GetBrowserState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetBrowserState();
   }
@@ -588,15 +651,18 @@ BrowserState* WebStateImpl::GetBrowserState() const {
 }
 
 base::WeakPtr<WebState> WebStateImpl::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 
 void WebStateImpl::OpenURL(const WebState::OpenURLParams& params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OpenURL(params);
 }
 
 void WebStateImpl::LoadSimulatedRequest(const GURL& url,
                                         NSString* response_html_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CRWWebController* web_controller = GetWebController();
   DCHECK(web_controller);
   [web_controller loadSimulatedRequest:url
@@ -606,6 +672,7 @@ void WebStateImpl::LoadSimulatedRequest(const GURL& url,
 void WebStateImpl::LoadSimulatedRequest(const GURL& url,
                                         NSData* response_data,
                                         NSString* mime_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CRWWebController* web_controller = GetWebController();
   DCHECK(web_controller);
   [web_controller loadSimulatedRequest:url
@@ -614,10 +681,12 @@ void WebStateImpl::LoadSimulatedRequest(const GURL& url,
 }
 
 void WebStateImpl::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->Stop();
 }
 
 const NavigationManager* WebStateImpl::GetNavigationManager() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return &pimpl_->GetNavigationManager();
   }
@@ -625,19 +694,23 @@ const NavigationManager* WebStateImpl::GetNavigationManager() const {
 }
 
 NavigationManager* WebStateImpl::GetNavigationManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &RealizedState()->GetNavigationManager();
 }
 
 WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &GetWebFramesManagerImpl(ContentWorld::kPageContentWorld);
 }
 
 WebFramesManager* WebStateImpl::GetWebFramesManager(ContentWorld world) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &GetWebFramesManagerImpl(world);
 }
 
 const SessionCertificatePolicyCache*
 WebStateImpl::GetSessionCertificatePolicyCache() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return &pimpl_->GetSessionCertificatePolicyCache();
   }
@@ -646,10 +719,12 @@ WebStateImpl::GetSessionCertificatePolicyCache() const {
 
 SessionCertificatePolicyCache*
 WebStateImpl::GetSessionCertificatePolicyCache() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &RealizedState()->GetSessionCertificatePolicyCache();
 }
 
 CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CRWSessionStorage* session_storage = nil;
   if (pimpl_) [[likely]] {
     proto::WebStateStorage storage;
@@ -681,14 +756,17 @@ CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
 void WebStateImpl::LoadData(NSData* data,
                             NSString* mime_type,
                             const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->LoadData(data, mime_type, url);
 }
 
 void WebStateImpl::ExecuteUserJavaScript(NSString* javascript) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ExecuteUserJavaScript(javascript);
 }
 
 NSString* WebStateImpl::GetStableIdentifier() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetStableIdentifier();
   }
@@ -696,6 +774,7 @@ NSString* WebStateImpl::GetStableIdentifier() const {
 }
 
 WebStateID WebStateImpl::GetUniqueIdentifier() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetUniqueIdentifier();
   }
@@ -703,7 +782,8 @@ WebStateID WebStateImpl::GetUniqueIdentifier() const {
 }
 
 const std::string& WebStateImpl::GetContentsMimeType() const {
-  static std::string kEmptyString;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr std::string kEmptyString;
   if (pimpl_) [[likely]] {
     return pimpl_->GetContentsMimeType();
   }
@@ -711,6 +791,7 @@ const std::string& WebStateImpl::GetContentsMimeType() const {
 }
 
 bool WebStateImpl::ContentIsHTML() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->ContentIsHTML();
   }
@@ -718,6 +799,7 @@ bool WebStateImpl::ContentIsHTML() const {
 }
 
 const std::u16string& WebStateImpl::GetTitle() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetTitle();
   }
@@ -725,6 +807,7 @@ const std::u16string& WebStateImpl::GetTitle() const {
 }
 
 bool WebStateImpl::IsLoading() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsLoading();
   }
@@ -732,6 +815,7 @@ bool WebStateImpl::IsLoading() const {
 }
 
 double WebStateImpl::GetLoadingProgress() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetLoadingProgress();
   }
@@ -739,6 +823,7 @@ double WebStateImpl::GetLoadingProgress() const {
 }
 
 bool WebStateImpl::IsVisible() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsVisible();
   }
@@ -746,6 +831,7 @@ bool WebStateImpl::IsVisible() const {
 }
 
 bool WebStateImpl::IsCrashed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsCrashed();
   }
@@ -753,6 +839,7 @@ bool WebStateImpl::IsCrashed() const {
 }
 
 bool WebStateImpl::IsEvicted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsEvicted();
   }
@@ -760,10 +847,12 @@ bool WebStateImpl::IsEvicted() const {
 }
 
 bool WebStateImpl::IsBeingDestroyed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_being_destroyed_;
 }
 
 bool WebStateImpl::IsWebPageInFullscreenMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->IsWebPageInFullscreenMode();
   }
@@ -771,6 +860,7 @@ bool WebStateImpl::IsWebPageInFullscreenMode() const {
 }
 
 const FaviconStatus& WebStateImpl::GetFaviconStatus() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetFaviconStatus();
   }
@@ -778,6 +868,7 @@ const FaviconStatus& WebStateImpl::GetFaviconStatus() const {
 }
 
 void WebStateImpl::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     pimpl_->SetFaviconStatus(favicon_status);
   } else {
@@ -786,6 +877,7 @@ void WebStateImpl::SetFaviconStatus(const FaviconStatus& favicon_status) {
 }
 
 const GURL& WebStateImpl::GetVisibleURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetVisibleURL();
   }
@@ -793,6 +885,7 @@ const GURL& WebStateImpl::GetVisibleURL() const {
 }
 
 const GURL& WebStateImpl::GetLastCommittedURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetLastCommittedURL();
   }
@@ -800,6 +893,7 @@ const GURL& WebStateImpl::GetLastCommittedURL() const {
 }
 
 std::optional<GURL> WebStateImpl::GetLastCommittedURLIfTrusted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetLastCommittedURLIfTrusted();
   }
@@ -807,6 +901,7 @@ std::optional<GURL> WebStateImpl::GetLastCommittedURLIfTrusted() const {
 }
 
 id<CRWWebViewProxy> WebStateImpl::GetWebViewProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetWebViewProxy();
   }
@@ -814,14 +909,17 @@ id<CRWWebViewProxy> WebStateImpl::GetWebViewProxy() const {
 }
 
 void WebStateImpl::DidChangeVisibleSecurityState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->DidChangeVisibleSecurityState();
 }
 
 WebState::InterfaceBinder* WebStateImpl::GetInterfaceBinderForMainFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->GetInterfaceBinderForMainFrame();
 }
 
 bool WebStateImpl::HasOpener() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->HasOpener();
   }
@@ -829,10 +927,12 @@ bool WebStateImpl::HasOpener() const {
 }
 
 void WebStateImpl::SetHasOpener(bool has_opener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetHasOpener(has_opener);
 }
 
 bool WebStateImpl::CanTakeSnapshot() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->CanTakeSnapshot();
   }
@@ -840,37 +940,45 @@ bool WebStateImpl::CanTakeSnapshot() const {
 }
 
 void WebStateImpl::TakeSnapshot(const CGRect rect, SnapshotCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->TakeSnapshot(rect, std::move(callback));
 }
 
 void WebStateImpl::CreateFullPagePdf(
     base::OnceCallback<void(NSData*)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->CreateFullPagePdf(std::move(callback));
 }
 
 void WebStateImpl::CloseMediaPresentations() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) {
     pimpl_->CloseMediaPresentations();
   }
 }
 
 void WebStateImpl::AddObserver(WebStateObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void WebStateImpl::RemoveObserver(WebStateObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
 void WebStateImpl::CloseWebState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->CloseWebState();
 }
 
 bool WebStateImpl::SetSessionStateData(NSData* data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return RealizedState()->SetSessionStateData(data);
 }
 
 NSData* WebStateImpl::SessionStateData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->SessionStateData();
   }
@@ -879,6 +987,7 @@ NSData* WebStateImpl::SessionStateData() {
 
 PermissionState WebStateImpl::GetStateForPermission(
     Permission permission) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetStateForPermission(permission);
   }
@@ -887,11 +996,13 @@ PermissionState WebStateImpl::GetStateForPermission(
 
 void WebStateImpl::SetStateForPermission(PermissionState state,
                                          Permission permission) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->SetStateForPermission(state, permission);
 }
 
 NSDictionary<NSNumber*, NSNumber*>* WebStateImpl::GetStatesForAllPermissions()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pimpl_) [[likely]] {
     return pimpl_->GetStatesForAllPermissions();
   }
@@ -899,6 +1010,7 @@ NSDictionary<NSNumber*, NSNumber*>* WebStateImpl::GetStatesForAllPermissions()
 }
 
 void WebStateImpl::AddPolicyDecider(WebStatePolicyDecider* decider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Despite the name, ObserverList is actually generic, so it is used for
   // deciders. This makes the call here odd looking, but it's really just
   // managing the list, not setting observers on deciders.
@@ -906,6 +1018,7 @@ void WebStateImpl::AddPolicyDecider(WebStatePolicyDecider* decider) {
 }
 
 void WebStateImpl::RemovePolicyDecider(WebStatePolicyDecider* decider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Despite the name, ObserverList is actually generic, so it is used for
   // deciders. This makes the call here odd looking, but it's really just
   // managing the list, not setting observers on deciders.
@@ -916,6 +1029,7 @@ void WebStateImpl::DownloadCurrentPage(
     NSString* destination_file,
     id<CRWWebViewDownloadDelegate> delegate,
     void (^handler)(id<CRWWebViewDownload>)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CRWWebController* web_controller = GetWebController();
   [web_controller downloadCurrentPageToDestinationPath:destination_file
                                               delegate:delegate
@@ -923,23 +1037,28 @@ void WebStateImpl::DownloadCurrentPage(
 }
 
 bool WebStateImpl::IsFindInteractionSupported() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return [GetWebController() findInteractionSupported];
 }
 
 bool WebStateImpl::IsFindInteractionEnabled() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return [GetWebController() findInteractionEnabled];
 }
 
 void WebStateImpl::SetFindInteractionEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [GetWebController() setFindInteractionEnabled:enabled];
 }
 
 id<CRWFindInteraction> WebStateImpl::GetFindInteraction()
     API_AVAILABLE(ios(16)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return [GetWebController() findInteraction];
 }
 
 id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsRealized()) [[unlikely]] {
     return nil;
   }
@@ -947,6 +1066,7 @@ id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
 }
 
 UIColor* WebStateImpl::GetThemeColor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsRealized()) [[unlikely]] {
     return nil;
   }
@@ -954,6 +1074,7 @@ UIColor* WebStateImpl::GetThemeColor() {
 }
 
 UIColor* WebStateImpl::GetUnderPageBackgroundColor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsRealized()) [[unlikely]] {
     return nil;
   }
@@ -963,6 +1084,7 @@ UIColor* WebStateImpl::GetUnderPageBackgroundColor() {
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsRealized()) [[unlikely]] {
     ForceRealized();
   }
@@ -972,6 +1094,7 @@ WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
 }
 
 void WebStateImpl::AddWebStateImplMarker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Store an empty base::SupportsUserData::Data that mark the current instance
   // as a WebStateImpl. Need to be done before anything else, so that casting
   // can safely be performed even before the end of the constructor.
@@ -980,6 +1103,7 @@ void WebStateImpl::AddWebStateImplMarker() {
 }
 
 void WebStateImpl::SendGlobalCreationEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(saved_ || pimpl_);
 
   // Send creation event.

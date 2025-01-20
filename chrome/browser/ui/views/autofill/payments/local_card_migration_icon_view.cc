@@ -39,7 +39,7 @@ LocalCardMigrationIconView::LocalCardMigrationIconView(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));
 }
 
-LocalCardMigrationIconView::~LocalCardMigrationIconView() {}
+LocalCardMigrationIconView::~LocalCardMigrationIconView() = default;
 
 views::BubbleDialogDelegate* LocalCardMigrationIconView::GetBubble() const {
   ManageMigrationUiController* controller = GetController();

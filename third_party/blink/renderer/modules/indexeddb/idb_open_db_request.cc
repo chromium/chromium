@@ -47,14 +47,12 @@ IDBOpenDBRequest::IDBOpenDBRequest(
     IDBTransaction::TransactionMojoRemote transaction_remote,
     int64_t transaction_id,
     int64_t version,
-    IDBRequest::AsyncTraceState metrics,
-    mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
+    IDBRequest::AsyncTraceState metrics)
     : IDBRequest(script_state, nullptr, nullptr, std::move(metrics)),
       callbacks_receiver_(std::move(callbacks_receiver)),
       transaction_remote_(std::move(transaction_remote)),
       transaction_id_(transaction_id),
       version_(version),
-      connection_lifetime_(std::move(connection_lifetime)),
       start_time_(base::Time::Now()) {
   DCHECK(!ResultAsAny());
 }
@@ -125,8 +123,7 @@ void IDBOpenDBRequest::OnUpgradeNeeded(
 
   auto* idb_database = MakeGarbageCollected<IDBDatabase>(
       GetExecutionContext(), std::move(callbacks_receiver_),
-      std::move(connection_lifetime_), std::move(pending_database),
-      connection_priority_);
+      std::move(pending_database), connection_priority_);
   idb_database->SetMetadata(metadata);
 
   if (old_version == IDBDatabaseMetadata::kNoVersion) {
@@ -174,8 +171,7 @@ void IDBOpenDBRequest::OnOpenDBSuccess(
 
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), std::move(callbacks_receiver_),
-        std::move(connection_lifetime_), std::move(pending_database),
-        connection_priority_);
+        std::move(pending_database), connection_priority_);
     SetResult(MakeGarbageCollected<IDBAny>(idb_database));
   }
   idb_database->SetMetadata(metadata);

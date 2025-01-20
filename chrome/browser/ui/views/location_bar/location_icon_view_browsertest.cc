@@ -16,13 +16,13 @@
 // TODO (spqchan): Refine tests. See crbug.com/770873.
 class LocationIconViewBrowserTest : public InProcessBrowserTest {
  public:
-  LocationIconViewBrowserTest() {}
+  LocationIconViewBrowserTest() = default;
 
   LocationIconViewBrowserTest(const LocationIconViewBrowserTest&) = delete;
   LocationIconViewBrowserTest& operator=(const LocationIconViewBrowserTest&) =
       delete;
 
-  ~LocationIconViewBrowserTest() override {}
+  ~LocationIconViewBrowserTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {

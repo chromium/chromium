@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -234,6 +235,7 @@ struct SessionState {
   bool handshake_runtime_eval_handled = false;
   bool handshake_page_enable_handled_ = false;
   bool connect_complete = false;
+  bool handshake_target_set_autoattach_handled_ = false;
 };
 
 class MultiSessionMockSyncWebSocket : public SyncWebSocket {
@@ -353,6 +355,13 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
       } else {
         return false;
       }
+    } else if (method == "Target.setAutoAttach") {
+      EXPECT_FALSE(session_state->handshake_target_set_autoattach_handled_);
+      if (!session_state->handshake_target_set_autoattach_handled_) {
+        session_state->handshake_target_set_autoattach_handled_ = true;
+      } else {
+        return false;
+      }
     } else {
       // Unexpected handshake command
       VLOG(0) << "unexpected handshake method: " << method;
@@ -361,8 +370,9 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
     }
 
     session_state->connect_complete =
-        session_state->handshake_add_script_handled &&
-        session_state->handshake_runtime_eval_handled;
+        session_state->handshake_target_set_autoattach_handled_ ||
+        (session_state->handshake_add_script_handled &&
+         session_state->handshake_runtime_eval_handled);
 
     base::Value::Dict result;
     result.Set("param", 1);
@@ -416,6 +426,7 @@ TEST_F(DevToolsClientImplTest, Ctor) {
   EXPECT_EQ(expected_session_id, client.SessionId());
   EXPECT_EQ(std::string(), client.TunnelSessionId());
   EXPECT_FALSE(client.IsMainPage());
+  EXPECT_FALSE(client.IsTabTarget());
   EXPECT_FALSE(client.IsConnected());
   EXPECT_TRUE(client.IsNull());
   EXPECT_FALSE(client.WasCrashed());
@@ -433,6 +444,11 @@ TEST_F(DevToolsClientImplTest, Ctor) {
   ASSERT_STREQ("old type", type.c_str());
   ASSERT_TRUE(
       StatusCodeIs<kNoSuchAlert>(client.HandleDialog(false, std::nullopt)));
+}
+
+TEST_F(DevToolsClientImplTest, CtorTabTarget) {
+  DevToolsClientImpl client("E2F4", "BC80031", /*is_tab=*/true);
+  EXPECT_TRUE(client.IsTabTarget());
 }
 
 TEST_F(DevToolsClientImplTest, SendCommand) {
@@ -1589,6 +1605,21 @@ TEST_F(DevToolsClientImplTest, ProcessOnConnectedFirstOnCommand) {
   listener3.VerifyCalled();
 }
 
+TEST_F(DevToolsClientImplTest, ProcessOnConnectedTabFirstOnCommand) {
+  SocketHolder<OnConnectedSyncWebSocket> socket_holder;
+  DevToolsClientImpl client("onconnected-id", "", /*is_tab=*/true);
+  OnConnectedListener listener1("DOM.getDocument", &client);
+  OnConnectedListener listener2("Runtime.enable", &client);
+  OnConnectedListener listener3("Page.enable", &client);
+  ASSERT_TRUE(socket_holder.ConnectSocket());
+  ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
+  base::Value::Dict params;
+  EXPECT_TRUE(StatusOk(client.SendCommand("Runtime.execute", params)));
+  listener1.VerifyCalled();
+  listener2.VerifyCalled();
+  listener3.VerifyCalled();
+}
+
 TEST_F(DevToolsClientImplTest, ProcessOnConnectedFirstOnHandleEventsUntil) {
   SocketHolder<OnConnectedSyncWebSocket> socket_holder;
   DevToolsClientImpl client("onconnected-id", "");
@@ -1779,7 +1810,7 @@ std::string JavaScriptDialogClosedEvent(bool result,
       "\"result\": %s,"
       "\"userInput\": \"%s\""
       "}}",
-      (result ? "true" : "false"), user_input.c_str());
+      base::ToString(result), user_input.c_str());
 }
 
 }  // namespace

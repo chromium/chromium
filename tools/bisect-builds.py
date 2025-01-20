@@ -16,6 +16,7 @@ import abc
 import argparse
 import base64
 import copy
+import functools
 import glob
 import importlib
 import json
@@ -29,10 +30,11 @@ import tarfile
 import tempfile
 import threading
 import traceback
-import urllib.request, urllib.parse
-from distutils.version import LooseVersion as BaseLooseVersion
+import urllib.parse
+import urllib.request
 from xml.etree import ElementTree
 import zipfile
+
 
 # These constants are used for android bisect which depends on
 # Catapult repo.
@@ -47,6 +49,8 @@ CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
                      '/chromium-browser-snapshots')
 ASAN_BASE_URL = ('http://commondatastorage.googleapis.com'
                  '/chromium-browser-asan')
+CHROME_FOR_TESTING_BASE_URL = ('https://storage.googleapis.com/'
+                               'chrome-for-testing-per-commit-public')
 
 GSUTILS_PATH = None
 
@@ -348,6 +352,30 @@ PATH_CONTEXT = {
         'mac': {},
         'win': {},
     },
+    'cft': {
+        'linux64': {
+            'listing_platform_dir': 'linux64/',
+            'binary_name': 'chrome',
+            'archive_name': 'chrome-linux64.zip',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver-linux64.zip',
+        },
+        'mac-arm': {
+            'listing_platform_dir': 'mac-arm64/',
+            'binary_name': 'Google Chrome for Testing.app/Contents/MacOS'
+            '/Google Chrome for Testing',
+            'archive_name': 'chrome-mac-arm64.zip',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver-mac-arm64.zip',
+        },
+        'win64': {
+            'listing_platform_dir': 'win64/',
+            'binary_name': 'chrome.exe',
+            'archive_name': 'chrome-win64.zip',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver-win64.zip',
+        },
+    },
 }
 
 CHROME_APK_FILENAMES = {
@@ -527,6 +555,21 @@ def GsutilList(*urls, ignore_fail=False):
     else:
       lines.append(parts[-1])
   return lines
+
+
+def join_args(args: list) -> str:
+  """Join the args into a single command line."""
+  if sys.platform.startswith('win'):
+    # subprocess.list2cmdline is an API for subprocess internal use. However to
+    # reduce the external dependency, we use it for Windows to quote the args.
+    return subprocess.list2cmdline(args)
+  else:
+    return shlex.join(args)
+
+
+def quote_arg(arg: str) -> str:
+  """Quote the arg for the shell."""
+  return join_args([arg])
 
 
 class ArchiveBuild(abc.ABC):
@@ -776,12 +819,12 @@ class ArchiveBuild(abc.ABC):
 
   def _launch_revision(self, tempdir, executables, args=()):
     args = [*self._get_extra_args(), *args]
-    args_str = shlex.join(args)
-    command = (self.command.replace(r'%p', shlex.quote(
+    args_str = join_args(args)
+    command = (self.command.replace(r'%p', quote_arg(
         executables['chrome'])).replace(r'%s', args_str).replace(
             r'%a', args_str).replace(r'%t', tempdir))
     if self.chromedriver:
-      command = command.replace(r'%d', shlex.quote(executables['chromedriver']))
+      command = command.replace(r'%d', quote_arg(executables['chromedriver']))
     return self._run(command, shell=True)
 
   def run_revision(self, download, tempdir, args=()):
@@ -796,7 +839,31 @@ class ArchiveBuild(abc.ABC):
     return result
 
 
-class LooseVersion(BaseLooseVersion):
+@functools.total_ordering
+class ChromiumVersion:
+  """Chromium version numbers consist of 4 parts: MAJOR.MINOR.BUILD.PATCH.
+
+  This class is used to compare the version numbers.
+  """
+  def __init__(self, vstring: str):
+    self.vstring = vstring
+    self.version = tuple(int(x) for x in vstring.split('.'))
+
+  def __str__ (self):
+    return self.vstring
+
+  def __repr__ (self):
+    return "ChromiumVersion ('%s')" % str(self)
+
+  def __lt__(self, other):
+    if isinstance(other, str):
+      other = ChromiumVersion(other)
+    return self.version < other.version
+
+  def __eq__(self, other):
+    if isinstance(other, str):
+      other = ChromiumVersion(other)
+    return self.version == other.version
 
   def __hash__(self):
     return hash(str(self))
@@ -806,8 +873,8 @@ class ReleaseBuild(ArchiveBuild):
 
   def __init__(self, options):
     super().__init__(options)
-    self.good_revision = LooseVersion(self.good_revision)
-    self.bad_revision = LooseVersion(self.bad_revision)
+    self.good_revision = ChromiumVersion(self.good_revision)
+    self.bad_revision = ChromiumVersion(self.bad_revision)
 
   @property
   def build_type(self):
@@ -823,7 +890,7 @@ class ReleaseBuild(ArchiveBuild):
     for path in GsutilList(self._get_release_bucket()):
       match = revision_re.search(path)
       if match:
-        build_numbers.append(LooseVersion(match[1]))
+        build_numbers.append(ChromiumVersion(match[1]))
     # Filter the versions between min_rev and max_rev.
     build_numbers = [
         x for x in build_numbers
@@ -845,7 +912,7 @@ class ReleaseBuild(ArchiveBuild):
                              ignore_fail=True):
         match = revision_re.search(path)
         if match:
-          final_list.append(LooseVersion(match[1]))
+          final_list.append(ChromiumVersion(match[1]))
     sys.stdout.write('\r')
     sys.stdout.flush()
     return final_list
@@ -864,13 +931,13 @@ class ReleaseBuild(ArchiveBuild):
     return self._get_archive_path('**')
 
   def _save_rev_list_cache(self, revisions):
-    # LooseVersion is not json-able, convert it back to string format.
+    # ChromiumVersion is not json-able, convert it back to string format.
     super()._save_rev_list_cache([str(x) for x in revisions])
 
   def _load_rev_list_cache(self):
-    # Convert to LooseVersion that revisions can be correctly compared.
+    # Convert to ChromiumVersion that revisions can be correctly compared.
     revisions = super()._load_rev_list_cache()
-    return [LooseVersion(x) for x in revisions]
+    return [ChromiumVersion(x) for x in revisions]
 
   def get_download_url(self, revision):
     if self.chromedriver:
@@ -931,9 +998,9 @@ class OfficialBuild(ArchiveBuildWithCommitPosition):
 
 class SnapshotBuild(ArchiveBuildWithCommitPosition):
 
-  def __init__(self, options):
-    self.base_url = CHROMIUM_BASE_URL
-    super().__init__(options)
+  @property
+  def base_url(self):
+    return CHROMIUM_BASE_URL
 
   @property
   def build_type(self):
@@ -1055,14 +1122,48 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
     return chrome_url
 
 
+class ChromeForTestingBuild(SnapshotBuild):
+  """Chrome for Testing pre-revision build is public through
+  storage.googleapis.com.
+
+  The archive URL format for CfT builds is:
+  https://storage.googleapis.com/chrome-for-testing-per-commit-public/{platform}/r{revision}/chrome-{platform}.zip
+  """
+
+  @property
+  def base_url(self):
+    return CHROME_FOR_TESTING_BASE_URL
+
+  @property
+  def build_type(self):
+    return 'cft'
+
+  def _get_marker_for_revision(self, revision):
+    return '%sr%d' % (self.listing_platform_dir, revision)
+
+  def get_download_url(self, revision):
+    url_prefix = '%s/%sr%d/' % (self.base_url, self.listing_platform_dir,
+                                revision)
+    chrome_url = url_prefix + self.archive_name
+    if self.chromedriver:
+      return {
+          'chrome': chrome_url,
+          'chromedriver': url_prefix + self.chromedriver_archive_name,
+      }
+    return chrome_url
+
+
 class ASANBuild(SnapshotBuild):
   """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
   with a different listing url."""
 
   def __init__(self, options):
     super().__init__(options)
-    self.base_url = ASAN_BASE_URL
     self.asan_build_type = 'release'
+
+  @property
+  def base_url(self):
+    return ASAN_BASE_URL
 
   @property
   def build_type(self):
@@ -1122,29 +1223,55 @@ class AndroidBuildMixin:
       raise BisectException('Failed to initialize device.')
     self.binary_name = self._get_apk_filename()
 
-  def _get_apk_filename(self, prefer_64bit=True):
+  def _get_apk_mapping(self):
     sdk = self.device.build_version_sdk
-    apk_mapping = None
     if 'webview' in self.apk.lower():
-      apk_mapping = WEBVIEW_APK_FILENAMES
+      return WEBVIEW_APK_FILENAMES
     # Need these logic to bisect very old build. Release binaries are stored
     # forever and occasionally there are requests to bisect issues introduced
     # in very old versions.
     elif sdk < version_codes.LOLLIPOP:
-      apk_mapping = CHROME_APK_FILENAMES
+      return CHROME_APK_FILENAMES
     elif sdk < version_codes.NOUGAT:
-      apk_mapping = CHROME_MODERN_APK_FILENAMES
+      return CHROME_MODERN_APK_FILENAMES
     else:
-      apk_mapping = MONOCHROME_APK_FILENAMES
+      return MONOCHROME_APK_FILENAMES
+
+  def _get_apk_filename(self):
+    apk_mapping = self._get_apk_mapping()
     if self.apk not in apk_mapping:
       raise BisectException(
           'Bisecting on Android only supported for these apks: [%s].' %
           '|'.join(apk_mapping))
     return apk_mapping[self.apk]
 
+  def _show_available_apks(self, tempdir):
+    """glob and show available apks for the path."""
+    available_apks = []
+    all_apks = []
+    reversed_apk_mapping = {v: k for k, v in self._get_apk_mapping().items()}
+    for apk_path in glob.glob(self._get_extract_binary_glob(tempdir, "*")):
+      apk_name = os.path.basename(apk_path)
+      if not re.search("\.apks?$", apk_name):
+        continue
+      all_apks.append(apk_name)
+      if apk_name in reversed_apk_mapping:
+        available_apks.append(reversed_apk_mapping[apk_name])
+    if available_apks:
+      print(f"The list of available --apk: {{{','.join(available_apks)}}}")
+    elif all_apks:
+      print("No supported apk found. But found following APK(s): "
+            f"{{{','.join(all_apks)}}}")
+    else:
+      print("No APK(s) found.")
+
   def _install_revision(self, download, tempdir):
-    apk_paths = super()._install_revision(download, tempdir)
-    InstallOnAndroid(self.device, apk_paths['chrome'])
+    UnzipFilenameToDir(download, tempdir)
+    apk_path = glob.glob(self._get_extract_binary_glob(tempdir))
+    if len(apk_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(f'Can not find {self.binary_name} from {tempdir}')
+    InstallOnAndroid(self.device, apk_path[0])
 
   def _launch_revision(self, tempdir, executables, args=()):
     if args:
@@ -1158,8 +1285,10 @@ class AndroidBuildMixin:
     LaunchOnAndroid(self.device, self.apk)
     return (0, sys.stdout, sys.stderr)
 
-  def _get_extract_binary_glob(self, tempdir):
-    return '%s/*/apks/%s' % (tempdir, self.binary_name)
+  def _get_extract_binary_glob(self, tempdir, binary_name=None):
+    if binary_name is None:
+      binary_name = self.binary_name
+    return '%s/*/apks/%s' % (tempdir, binary_name)
 
 
 class AndroidTrichromeMixin(AndroidBuildMixin):
@@ -1172,11 +1301,14 @@ class AndroidTrichromeMixin(AndroidBuildMixin):
       raise BisectException("Trichrome is only supported after Android Q.")
     self.library_binary_name = self._get_library_filename()
 
-  def _get_apk_filename(self, prefer_64bit=True):
+  def _get_apk_mapping(self, prefer_64bit=True):
     if self.platform in self._64bit_platforms and prefer_64bit:
-      apk_mapping = TRICHROME64_APK_FILENAMES
+      return TRICHROME64_APK_FILENAMES
     else:
-      apk_mapping = TRICHROME_APK_FILENAMES
+      return TRICHROME_APK_FILENAMES
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    apk_mapping = self._get_apk_mapping(prefer_64bit)
     if self.apk not in apk_mapping:
       raise BisectException(
           'Bisecting on Android only supported for these apks: [%s].' %
@@ -1194,6 +1326,23 @@ class AndroidTrichromeMixin(AndroidBuildMixin):
           'Bisecting for Android Trichrome only supported for these apks: [%s].'
           % '|'.join(apk_mapping))
     return apk_mapping[self.apk]
+
+  def _install_revision(self, download, tempdir):
+    UnzipFilenameToDir(download, tempdir)
+    trichrome_library_filename = self._get_library_filename()
+    trichrome_library_path = glob.glob(
+        f'{tempdir}/*/apks/{trichrome_library_filename}')
+    if len(trichrome_library_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(
+          f'Can not find {trichrome_library_filename} from {tempdir}')
+    trichrome_filename = self._get_apk_filename()
+    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
+    if len(trichrome_path) == 0:
+      self._show_available_apks(tempdir)
+      raise BisectException(f'Can not find {trichrome_filename} from {tempdir}')
+    InstallOnAndroid(self.device, trichrome_library_path[0])
+    InstallOnAndroid(self.device, trichrome_path[0])
 
 
 class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
@@ -1242,7 +1391,7 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
   def get_download_url(self, revision):
     # M112 is when we started serving 6432 to 4GB+ devices. Before this it was
     # only to 6GB+ devices.
-    if revision >= LooseVersion('112'):
+    if revision >= ChromiumVersion('112'):
       trichrome = self.binary_name
       trichrome_library = self.library_binary_name
     else:
@@ -1265,24 +1414,11 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
 
 class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
 
-  def _get_apk_filename(self, prefer_64bit=True):
-    filename = super()._get_apk_filename(prefer_64bit)
-    return filename.replace(".apks", ".minimal.apks")
-
-  def _install_revision(self, download, tempdir):
-    UnzipFilenameToDir(download, tempdir)
-    trichrome_library_filename = self._get_library_filename()
-    trichrome_library_path = glob.glob(
-        f'{tempdir}/*/apks/{trichrome_library_filename}')
-    if len(trichrome_library_path) == 0:
-      raise Exception(
-          f'Can not find {trichrome_library_filename} from {tempdir}')
-    trichrome_filename = self._get_apk_filename()
-    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
-    if len(trichrome_path) == 0:
-      raise Exception(f'Can not find {trichrome_filename} from {tempdir}')
-    InstallOnAndroid(self.device, trichrome_library_path[0])
-    InstallOnAndroid(self.device, trichrome_path[0])
+  def _get_apk_mapping(self, prefer_64bit=True):
+    return {
+        k: v.replace(".apks", ".minimal.apks")
+        for k, v in super()._get_apk_mapping(prefer_64bit).items()
+    }
 
 
 class LinuxReleaseBuild(ReleaseBuild):
@@ -1461,6 +1597,8 @@ def create_archive_build(options):
   elif options.build_type == 'asan':
     # ASANBuild is only supported on win/linux/mac.
     return ASANBuild(options)
+  elif options.build_type == 'cft':
+    return ChromeForTestingBuild(options)
   else:
     if options.archive.startswith('android'):
       return AndroidSnapshotBuild(options)
@@ -1913,7 +2051,7 @@ def GetReleaseChangeLogURL(version1, version2):
 
 def IsVersionNumber(revision):
   """Checks if provided revision is version_number"""
-  if isinstance(revision, LooseVersion):
+  if isinstance(revision, ChromiumVersion):
     return True
   if not isinstance(revision, str):
     return False
@@ -2162,6 +2300,14 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       'only) instead of Chromium archives.',
   )
   build_type_group.add_argument(
+      '-cft',
+      '--cft',
+      dest='build_type',
+      action='store_const',
+      const='cft',
+      help='Bisect across Chrome for Testing (publicly accessible) archives.',
+  )
+  build_type_group.add_argument(
       '--asan',
       dest='build_type',
       action='store_const',
@@ -2257,24 +2403,25 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       help='Test the first and last revisions in the range before proceeding '
       'with the bisect.',
   )
-  apk_choices = sorted(set().union(CHROME_APK_FILENAMES,
-                                   CHROME_MODERN_APK_FILENAMES,
-                                   MONOCHROME_APK_FILENAMES,
-                                   WEBVIEW_APK_FILENAMES))
+  apk_choices = sorted(
+      set().union(CHROME_APK_FILENAMES, CHROME_MODERN_APK_FILENAMES,
+                  MONOCHROME_APK_FILENAMES, WEBVIEW_APK_FILENAMES,
+                  TRICHROME_APK_FILENAMES, TRICHROME64_APK_FILENAMES))
   parser.add_argument(
       '--apk',
       choices=apk_choices,
       dest='apk',
-      default='chromium',
+      # default='chromium', when using android archives
       metavar='{chromium,chrome_dev,android_webview...}',
-      help='Apk you want to bisect {%s}.' % ','.join(apk_choices),
+      help=(f'Apk you want to bisect {{{",".join(apk_choices)}}}. '
+            '(Default: chromium/chrome)'),
   )
   parser.add_argument(
       '--ipa',
       dest='ipa',
-      default='canary.ipa',
+      # default='canary.ipa', when using ios archives
       metavar='{canary,beta,stable...}',
-      help='ipa you want to bisect.',
+      help='ipa you want to bisect. (Default: canary)',
   )
   parser.add_argument(
       '--signed',
@@ -2306,8 +2453,14 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   return parser
 
 
-def _DetectArchive():
+def _DetectArchive(opts=None):
   """Detect the buildbot archive to use based on local environment."""
+  if opts:
+    if opts.apk:
+      return 'android-arm64'
+    elif opts.ipa:
+      return 'ios-simulator'
+
   os_name = None
   plat = sys.platform
   if plat.startswith('linux'):
@@ -2335,7 +2488,7 @@ def ParseCommandLine(args=None):
   opts = parser.parse_args(args)
 
   if opts.archive is None:
-    archive = _DetectArchive()
+    archive = _DetectArchive(opts)
     if archive:
       print('The buildbot archive (-a/--archive) detected as:', archive)
       opts.archive = archive
@@ -2353,11 +2506,29 @@ def ParseCommandLine(args=None):
                  f'To bisect for {opts.archive}, please choose from '
                  f'{", ".join(supported_build_types)}')
 
-  if opts.signed and not (opts.archive.startswith('android-')
-                          or opts.archive.startswith('ios')):
-    parser.error('--signed is only supported for Android and iOS platform.')
+  all_archives = sorted(
+      set(arch for build in PATH_CONTEXT for arch in PATH_CONTEXT[build]))
+  android_archives = [x for x in all_archives if x.startswith('android-')]
+  ios_archives = [x for x in all_archives if x.startswith('ios')]
 
-  if opts.signed and not opts.build_type == 'release':
+  # Set default apk/ipa for mobile platforms.
+  if opts.archive in android_archives and not opts.apk:
+    opts.apk = 'chromium' if opts.build_type == 'snapshot' else 'chrome'
+  elif opts.archive in ios_archives and not opts.ipa:
+    opts.ipa = 'canary'
+  # Or raise error if apk/ipa is set for non-mobile platforms.
+  if opts.apk and opts.archive not in android_archives:
+    parser.error('--apk is only supported for Android platform (-a/--archive): '
+                 f'{{{",".join(android_archives)}}}')
+  elif opts.ipa and opts.archive not in ios_archives:
+    parser.error('--ipa is only supported for iOS platform (-a/--archive): '
+                 f'{{{",".join(ios_archives)}}}')
+
+  if opts.signed and opts.archive not in (android_archives + ios_archives):
+    parser.error('--signed is only supported for Android and iOS platform '
+                 '(-a/--archive): '
+                 f'{{{",".join(android_archives+ios_archives)}}}')
+  elif opts.signed and not opts.build_type == 'release':
     parser.error('--signed is only supported for release bisection.')
 
   if opts.build_type == 'official':
@@ -2456,8 +2627,8 @@ def MaybeSwitchBuildType(opts, good, bad):
   new_opts.signed = False  # --signed is only supported by release builds
   new_opts.build_type = 'official'
   new_opts.verify_range = True  # always verify_range when switching the build
-  new_opts.good = str(good)  # good could be LooseVersion
-  new_opts.bad = str(bad)  # bad could be LooseVersion
+  new_opts.good = str(good)  # good could be ChromiumVersion
+  new_opts.bad = str(bad)  # bad could be ChromiumVersion
   rev_list = None
   if opts.use_local_cache:
     print('Checking available official builds (-o) for %s.' % new_opts.archive)
@@ -2481,7 +2652,7 @@ def MaybeSwitchBuildType(opts, good, bad):
         "You could try to get a more precise culprit range with the continuous "
         "official build (-o) using the following command:")
   command_line = GenerateCommandLine(new_opts)
-  print(shlex.join(command_line))
+  print(join_args(command_line))
   return command_line
 
 

@@ -39,7 +39,7 @@ class TranscriptBuilder {
 
  private:
   std::vector<Result> MaybeMergeTranscript(
-      const mojom::TranscriptPartPtr& transcript_part,
+      mojom::TranscriptPartPtr transcript_part,
       bool is_previous);
 
   void Update(mojom::TranscriptPartPtr transcript_part);

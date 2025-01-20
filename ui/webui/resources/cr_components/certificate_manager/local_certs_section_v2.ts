@@ -105,6 +105,13 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   override ready() {
     super.ready();
+    this.onMetadataRefresh_();
+    const proxy = CertificatesV2BrowserProxy.getInstance();
+    proxy.callbackRouter.triggerMetadataUpdate.addListener(
+        this.onMetadataRefresh_.bind(this));
+  }
+
+  private onMetadataRefresh_() {
     const proxy = CertificatesV2BrowserProxy.getInstance();
     proxy.handler.getCertManagementMetadata().then(
         (results: {metadata: CertManagementMetadata}) => {

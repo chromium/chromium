@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/printing_context_win.h"
 
 #include <winspool.h>
@@ -17,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_number_conversions.h"
@@ -155,22 +151,24 @@ mojom::ResultCode PrintingContextWin::UseDefaultSettings() {
                             nullptr, 2, printer_info_buffer.data(),
                             bytes_needed, &bytes_needed, &count_returned);
   if (ret && count_returned) {  // have printers
-    // Open the first successfully found printer.
-    const PRINTER_INFO_2* info_2 =
-        reinterpret_cast<PRINTER_INFO_2*>(printer_info_buffer.data());
-    const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
-    for (; info_2 < info_2_end; ++info_2) {
-      ScopedPrinterHandle printer;
-      if (!printer.OpenPrinterWithName(info_2->pPrinterName)) {
-        continue;
+    UNSAFE_TODO({
+      // Open the first successfully found printer.
+      const PRINTER_INFO_2* info_2 =
+          reinterpret_cast<PRINTER_INFO_2*>(printer_info_buffer.data());
+      const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
+      for (; info_2 < info_2_end; ++info_2) {
+        ScopedPrinterHandle printer;
+        if (!printer.OpenPrinterWithName(info_2->pPrinterName)) {
+          continue;
+        }
+        std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
+            CreateDevMode(printer.Get(), nullptr);
+        if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) ==
+            mojom::ResultCode::kSuccess) {
+          return mojom::ResultCode::kSuccess;
+        }
       }
-      std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
-          CreateDevMode(printer.Get(), nullptr);
-      if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) ==
-          mojom::ResultCode::kSuccess) {
-        return mojom::ResultCode::kSuccess;
-      }
-    }
+    });
     if (context_) {
       return mojom::ResultCode::kSuccess;
     }
@@ -185,7 +183,7 @@ gfx::Size PrintingContextWin::GetPdfPaperSizeDeviceUnits() {
 
   // Get settings from locale. Paper type buffer length is at most 4.
   const int paper_type_buffer_len = 4;
-  wchar_t paper_type_buffer[paper_type_buffer_len] = {0};
+  wchar_t paper_type_buffer[paper_type_buffer_len] = {};
   GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IPAPERSIZE, paper_type_buffer,
                 paper_type_buffer_len);
   if (wcslen(paper_type_buffer)) {  // The call succeeded.

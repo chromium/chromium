@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
 import org.chromium.url.GURL;
 
@@ -48,11 +49,6 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    public void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback) {
-        DataSharingServiceImplJni.get().readAllGroups(mNativePtr, callback);
-    }
-
-    @Override
     public void readGroup(String groupId, Callback<GroupDataOrFailureOutcome> callback) {
         DataSharingServiceImplJni.get().readGroup(mNativePtr, groupId, callback);
     }
@@ -65,6 +61,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     public void deleteGroup(String groupId, Callback<Integer> callback) {
         DataSharingServiceImplJni.get().deleteGroup(mNativePtr, groupId, callback);
+    }
+
+    @Override
+    public void leaveGroup(String groupId, Callback<Integer> callback) {
+        DataSharingServiceImplJni.get().leaveGroup(mNativePtr, groupId, callback);
     }
 
     @Override
@@ -120,6 +121,10 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Override
     public void getSharedEntitiesPreview(
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback) {
+        if (sSharedEntitiesPreviewForTesting != null) {
+            callback.onResult(sSharedEntitiesPreviewForTesting);
+            return;
+        }
         DataSharingServiceImplJni.get()
                 .getSharedEntitiesPreview(
                         mNativePtr, groupToken.collaborationId, groupToken.accessToken, callback);
@@ -130,6 +135,21 @@ public class DataSharingServiceImpl implements DataSharingService {
         return DataSharingServiceImplJni.get().getUiDelegate(mNativePtr);
     }
 
+    private static SharedDataPreviewOrFailureOutcome sSharedEntitiesPreviewForTesting;
+
+    /** Sets a test preview data to return for all preview requests. */
+    public static void setSharedEntitiesPreviewForTesting(
+            SharedDataPreviewOrFailureOutcome preview) {
+        sSharedEntitiesPreviewForTesting = preview;
+        ResettersForTesting.register(() -> sSharedEntitiesPreviewForTesting = null);
+    }
+
+    /** Static utility to get the data sharing URL for testing. */
+    public static GURL getDataSharingUrlForTesting(GroupToken groupToken) {
+        return DataSharingServiceImplJni.get()
+                .getDataSharingUrlForTesting(groupToken.groupId, groupToken.accessToken);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -138,10 +158,6 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     @NativeMethods
     interface Natives {
-        void readAllGroups(
-                long nativeDataSharingServiceAndroid,
-                Callback<GroupsDataSetOrFailureOutcome> callback);
-
         void readGroup(
                 long nativeDataSharingServiceAndroid,
                 String groupId,
@@ -151,6 +167,9 @@ public class DataSharingServiceImpl implements DataSharingService {
                 long nativeDataSharingServiceAndroid,
                 String groupName,
                 Callback<GroupDataOrFailureOutcome> callback);
+
+        void leaveGroup(
+                long nativeDataSharingServiceAndroid, String groupId, Callback<Integer> callback);
 
         void deleteGroup(
                 long nativeDataSharingServiceAndroid, String groupId, Callback<Integer> callback);
@@ -195,5 +214,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
         DataSharingUIDelegate getUiDelegate(long nativeDataSharingServiceAndroid);
+
+        GURL getDataSharingUrlForTesting(String groupId, String accessToken);
     }
 }

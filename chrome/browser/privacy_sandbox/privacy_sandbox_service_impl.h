@@ -25,8 +25,11 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
+
+DECLARE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
 
 class Browser;
 class PrefService;
@@ -74,9 +77,15 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void PromptOpenedForBrowser(Browser* browser, views::Widget* widget) override;
   void PromptClosedForBrowser(Browser* browser) override;
   bool IsPromptOpenForBrowser(Browser* browser) override;
+  void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
+                           messaging_priority_handle) override;
+  bool IsNoticeQueued() override;
+  void MaybeUnqueueNotice(NoticeQueueState unqueue_source) override;
+  void MaybeQueueNotice(NoticeQueueState queue_source) override;
+  bool IsHoldingHandle() override;
+  void SetSuppressQueue(bool suppress_queue) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
-  void EmitPrivacySandboxAccountPromptStartupMetrics() override;
   bool IsPrivacySandboxRestricted() override;
   bool IsRestrictedNoticeEnabled() override;
   void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) override;
@@ -107,6 +116,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override;
   bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() override;
+  bool ShouldUsePrivacyPolicyChinaDomain() override;
   void TopicsToggleChanged(bool new_value) const override;
   bool TopicsConsentRequired() const override;
   bool TopicsHasActiveConsent() const override;
@@ -123,6 +133,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
  protected:
   friend class PrivacySandboxServiceTest;
+  friend class PrivacySandboxQueueTestNoticeWithSearchEngine;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
@@ -203,6 +214,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
       RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxQueueTestNoticeWithSearchEngine,
+                           PromptSuppressed);
 
   // Contains all possible privacy sandbox states, recorded on startup.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -270,33 +283,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
     kMaxValue = kNoPromptRequiredDisabled,
   };
 
-  // Contains the possible states of the prompt start up states for m1.
-  // Must be kept in sync with SettingsPrivacySandboxPromptStartupState in
-  // histograms/enums.xml
-  enum class PromptStartupState {
-    kEEAConsentPromptWaiting = 0,
-    kEEANoticePromptWaiting = 1,
-    kROWNoticePromptWaiting = 2,
-    kEEAFlowCompletedWithTopicsAccepted = 3,
-    kEEAFlowCompletedWithTopicsDeclined = 4,
-    kROWNoticeFlowCompleted = 5,
-    kPromptNotShownDueToPrivacySandboxRestricted = 6,
-    kPromptNotShownDueTo3PCBlocked = 7,
-    kPromptNotShownDueToTrialConsentDeclined = 8,
-    kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
-    kPromptNotShownDueToManagedState = 10,
-    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
-    kRestrictedNoticePromptWaiting = 12,
-    kRestrictedNoticeFlowCompleted = 13,
-    kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
-    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
-    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
-
-    // Add values above this line with a corresponding label in
-    // tools/metrics/histograms/enums.xml
-    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
-  };
-
   // Helper function to log first party sets state.
   void RecordFirstPartySetsStateHistogram(FirstPartySetsState state);
 
@@ -314,18 +300,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
       base::OnceCallback<void(std::vector<std::string>)> callback,
       std::vector<content::InterestGroupManager::InterestGroupDataKey>
           data_keys);
-
-  // Contains the logic which powers GetRequiredPromptType(). Static to allow
-  // EXPECT_DCHECK_DEATH testing, which does not work well with many of the
-  // other dependencies of this service. It is also for this reason the 3P
-  // cookie block state is passed in, as CookieSettings cannot be used in
-  // death tests.
-  static PrivacySandboxService::PromptType GetRequiredPromptTypeInternal(
-      PrefService* pref_service,
-      profile_metrics::BrowserProfileType profile_type,
-      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      bool third_party_cookies_blocked,
-      bool is_chrome_build);
 
   // Checks to see if initialization of the user's RWS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
@@ -357,6 +331,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
+  raw_ptr<user_education::ProductMessagingController>
+      product_messaging_controller_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -364,14 +340,26 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<signin::IdentityManager> identity_manager_;
   PrimaryAccountUserGroups primary_account_state_ =
       PrimaryAccountUserGroups::kNotSet;
+  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
+  // stores information about the dark launch notice that uses the non-synced
+  // pref.
+  int prompt_suppression_bitmap_ = 0;
+  // Stores bitmaps for prompt suppression, 0 is not suppressed. This variable
+  // stores information about the dark launch notice that uses the synced pref.
+  int prompt_suppression_bitmap_sync_ = 0;
 
   PrefChangeRegistrar user_prefs_registrar_;
+
+  user_education::RequiredNoticePriorityHandle notice_handle_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // A map of Browser windows which have an open Privacy Sandbox prompt,
   // to the Widget for that prompt.
   std::map<Browser*, raw_ptr<views::Widget, CtnExperimental>>
       browsers_to_open_prompts_;
+
+  // Returns instance of product messaging controller.
+  user_education::ProductMessagingController* GetProductMessagingController();
 #endif
 
   // Fake implementation for current and blocked topics.
@@ -386,6 +374,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);
 
+  // Record user startup state metrics on both client and profile level.
+  void RecordPromptStartupStateHistograms(
+      PrivacySandboxService::PromptStartupState state);
+
   // Called when the Topics preference is changed.
   void OnTopicsPrefChanged();
 
@@ -395,14 +387,31 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Called when the Ad measurement preference is changed.
   void OnAdMeasurementPrefChanged();
 
+  // Called on Startup to initialize the IdentityManager observation +
+  // histograms.
+  void MaybeInitIdentityManager();
+
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();
+
+  // Sets member variable primary_account_state_
+  void SetPrimaryAccountState(PrimaryAccountUserGroups user_group_to_set);
 
   // Returns true if _any_ of the k-API prefs are disabled via policy or
   // the prompt was suppressed via policy.
   static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
 
+  // Emits startup histograms relating to the user's sign in status.
+  void MaybeEmitPromptStartupAccountMetrics();
+
+  // Emits histograms relating to a fake notice's shown or suppression status.
+  void MaybeEmitFakeNoticePromptMetrics(bool third_party_cookies_blocked);
+
   bool force_chrome_build_for_tests_ = false;
+  bool should_emit_dark_launch_startup_metrics_ = true;
+  // Temporary flag signifying not to requeue if the prompt has been suppressed.
+  // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
+  bool suppress_queue_ = false;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};
 };

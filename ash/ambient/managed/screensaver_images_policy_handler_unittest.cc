@@ -65,7 +65,7 @@ struct ScreensaverImagesPolicyHandlerTestCase {
   std::string base_directory;
 };
 
-class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
+class ScreensaverImagesPolicyHandlerTest : public NoSessionAshTestBase {
  public:
   ScreensaverImagesPolicyHandlerTest() = default;
 
@@ -116,30 +116,9 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
               policy_handler.image_downloader_->GetDowloadDirForTesting());
   }
 
-  void RegisterUserWithUserPrefs(const AccountId& account_id,
-                                 user_manager::UserType user_type) {
-    // Create a fake user prefs map.
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-
-    // Keep a raw pointer to the user prefs before transferring ownership.
-    active_prefs_ = user_prefs.get();
-
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(
-        kUserEmail, user_type,
-        /*provide_pref_service=*/false);
-    GetSessionControllerClient()->SetUserPrefService(account_id,
-                                                     std::move(user_prefs));
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-    GetSessionControllerClient()->SetSessionState(
-        session_manager::SessionState::ACTIVE);
-  }
-
   TestingPrefServiceSimple* active_prefs() {
-    CHECK(active_prefs_);
-    return active_prefs_;
+    return static_cast<TestingPrefServiceSimple*>(
+        Shell::Get()->session_controller()->GetActivePrefService());
   }
 
   network::TestURLLoaderFactory& url_loader_factory() {
@@ -160,9 +139,6 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   std::unique_ptr<base::ScopedPathOverride> home_dir_override_;
   std::unique_ptr<base::ScopedPathOverride> managed_screensaver_dir_override_;
 
-  // Ownership of this pref service is transferred to the session controller
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> active_prefs_ = nullptr;
-
   // Class under test
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;
 };
@@ -179,8 +155,8 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestSignin) {
 }
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
   // User
-  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                            user_manager::UserType::kRegular);
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail),
+                    user_manager::UserType::kRegular);
   auto handler = ScreensaverImagesPolicyHandler::Create(active_prefs());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
@@ -191,8 +167,8 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestManagedGuest) {
   // Managed Guest
   GetSessionControllerClient()->RequestSignOut();
-  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                            user_manager::UserType::kPublicAccount);
+  SimulateUserLogin(AccountId::FromUserEmail(kUserEmail),
+                    user_manager::UserType::kPublicAccount);
   auto handler = ScreensaverImagesPolicyHandler::Create(
       Shell::Get()->session_controller()->GetActivePrefService());
   // Verify that the policy handler detected the new user and created a new
@@ -207,34 +183,27 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
       public ::testing::WithParamInterface<
           ScreensaverImagesPolicyHandlerTestCase> {
  public:
-  ScreensaverImagesPolicyHandlerForAnySessionTest() {
-    TestSessionControllerClient::DisableAutomaticallyProvideSigninPref();
-  }
+  ScreensaverImagesPolicyHandlerForAnySessionTest() = default;
+
   // ScreensaverImagesPolicyHandlerTest:
   void SetUp() override {
     ScreensaverImagesPolicyHandlerTest::SetUp();
-    RegisterProfilePrefs();
+    LoginIfNecessary();
     CreateScreensaverImagesPolicyHandler();
   }
 
-  void RegisterProfilePrefs() {
+  void LoginIfNecessary() {
     ScreensaverImagesPolicyHandlerTestCase test_case = GetParam();
     switch (test_case.handle_type) {
       case ScreensaverImagesPolicyHandler::HandlerType::kUser:
-        RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                                  user_manager::UserType::kRegular);
+        SimulateUserLogin(AccountId::FromUserEmail(kUserEmail),
+                          user_manager::UserType::kRegular);
         break;
       case ScreensaverImagesPolicyHandler::HandlerType::kSignin: {
-        auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-        active_prefs_ = pref_service.get();
-        RegisterSigninProfilePrefs(pref_service->registry(), /*country=*/"",
-                                   /*for_test=*/true);
-        TestSessionControllerClient* client = GetSessionControllerClient();
-        client->SetSigninScreenPrefService(std::move(pref_service));
       } break;
       case ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest:
-        RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
-                                  user_manager::UserType::kPublicAccount);
+        SimulateUserLogin(AccountId::FromUserEmail(kUserEmail),
+                          user_manager::UserType::kPublicAccount);
         break;
     }
   }
@@ -244,11 +213,11 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
     switch (test_case.handle_type) {
       case ScreensaverImagesPolicyHandler::HandlerType::kUser:
         policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
-            active_prefs_, ScreensaverImagesPolicyHandler::HandlerType::kUser);
+            active_prefs(), ScreensaverImagesPolicyHandler::HandlerType::kUser);
         break;
       case ScreensaverImagesPolicyHandler::HandlerType::kSignin: {
         policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
-            active_prefs_,
+            active_prefs(),
             ScreensaverImagesPolicyHandler::HandlerType::kSignin);
 
         VerifyPrivateImageDownloaderDownloadFolder(
@@ -257,7 +226,7 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
       } break;
       case ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest:
         policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>(
-            active_prefs_,
+            active_prefs(),
             ScreensaverImagesPolicyHandler::HandlerType::kManagedGuest);
         break;
     }

@@ -14,10 +14,10 @@
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/payments/content/icon/icon_size.h"
@@ -72,8 +72,9 @@ class ThemeTrackingLabel : public views::Label {
   // views::Label:
   void OnThemeChanged() override {
     Label::OnThemeChanged();
-    if (enabled_color_id_.has_value())
+    if (enabled_color_id_.has_value()) {
       SetEnabledColor(GetColorProvider()->GetColor(*enabled_color_id_));
+    }
   }
 
  private:
@@ -133,8 +134,9 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     label->SetTextStyle(text_style);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled)
+    if (!enabled) {
       label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
+    }
     container->AddChildView(std::move(label));
   }
 
@@ -142,8 +144,9 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     auto label = std::make_unique<ThemeTrackingLabel>(s2);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_2));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled)
+    if (!enabled) {
       label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
+    }
     container->AddChildView(std::move(label));
   }
 
@@ -151,8 +154,9 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     auto label = std::make_unique<ThemeTrackingLabel>(s3);
     label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_3));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!enabled)
+    if (!enabled) {
       label->set_enabled_color_id(ui::kColorLabelForegroundDisabled);
+    }
     container->AddChildView(std::move(label));
   }
 
@@ -204,7 +208,7 @@ class PaymentRequestRowBorderPainter : public views::Painter {
   PaymentRequestRowBorderPainter& operator=(
       const PaymentRequestRowBorderPainter&) = delete;
 
-  ~PaymentRequestRowBorderPainter() override {}
+  ~PaymentRequestRowBorderPainter() override = default;
 
   // views::Painter:
   gfx::Size GetMinimumSize() const override {
@@ -242,8 +246,9 @@ std::unique_ptr<views::ImageView> CreateAppIconView(
     float width = base::checked_cast<float>(img.width());
     float height = base::checked_cast<float>(img.height());
     float ratio = 1;
-    if (width && height)
+    if (width && height) {
       ratio = width / height;
+    }
     // We should set image size in density indepent pixels here, since
     // views::ImageView objects are rastered at the device scale factor.
     icon_view->SetImageSize(gfx::Size(

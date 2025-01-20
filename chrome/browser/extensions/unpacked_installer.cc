@@ -64,19 +64,6 @@ const char kImportMinVersionNewer[] =
 const char kImportMissing[] = "'import' extension is not installed.";
 const char kImportNotSharedModule[] = "'import' is not a shared module.";
 
-// Deletes files reserved for use by the Extension system in the kMetadataFolder
-// and the kMetadataFolder itself if it is empty.
-void MaybeCleanupMetadataFolder(const base::FilePath& extension_path) {
-  const std::vector<base::FilePath> reserved_filepaths =
-      file_util::GetReservedMetadataFilePaths(extension_path);
-  for (const auto& file : reserved_filepaths)
-    base::DeletePathRecursively(file);
-
-  const base::FilePath& metadata_dir = extension_path.Append(kMetadataFolder);
-  if (base::IsDirectoryEmpty(metadata_dir))
-    base::DeletePathRecursively(metadata_dir);
-}
-
 }  // namespace
 
 // static
@@ -95,8 +82,7 @@ UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-UnpackedInstaller::~UnpackedInstaller() {
-}
+UnpackedInstaller::~UnpackedInstaller() = default;
 
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());
@@ -262,7 +248,7 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
   // Clean up the kMetadataFolder if necessary. This prevents spurious
   // warnings/errors and ensures we don't treat a user provided file as one by
   // the Extension system.
-  MaybeCleanupMetadataFolder(extension_path_);
+  file_util::MaybeCleanupMetadataFolder(extension_path_);
 
   // Treat presence of illegal filenames as a hard error for unpacked
   // extensions. Don't do so for command line extensions since this breaks

@@ -173,6 +173,12 @@
       permissions_policy_name: "ch-ua-form-factors",
     },
     {
+      name: "ClientHintUAHighEntropyValues",
+      permissions_policy_name: "ch-ua-high-entropy-values",
+      feature_default: "EnableForAll",
+      depends_on: ["ClientHintUAHighEntropyValuesPermissionPolicy"],
+    },
+    {
       name: "ClientHintUAPlatform",
       permissions_policy_name: "ch-ua-platform",
       feature_default: "EnableForAll",
@@ -241,11 +247,13 @@
     {
       name: "DeferredFetch",
       permissions_policy_name: "deferred-fetch",
+      feature_default: "EnableForSelf",
       depends_on: ["FetchLaterAPI"],
     },
     {
       name: "DeferredFetchMinimal",
       permissions_policy_name: "deferred-fetch-minimal",
+      feature_default: "EnableForAll",
       depends_on: ["FetchLaterAPI"],
     },
     {

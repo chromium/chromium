@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">Dotknij ekranu 2 palcami, by zatrzymać odczytywanie</translation>
 <translation id="2573256689920773241">Nawigacja podstawowa</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2577127557293415225">Zamknij na chwilę oboje oczu</translation>
 <translation id="2582407057977008361">Z boku</translation>
 <translation id="2592212930811759050">Kliknij dwukrotnie, by rozpocząć edycję</translation>
 <translation id="2598495320872286378">Błąd gramatyczny</translation>
@@ -809,7 +810,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktywuj</translation>
 <translation id="6122013438240733403">btn</translation>
-<translation id="6132506484792346370">Pole listy lub pole złożone</translation>
+<translation id="6132506484792346370">Pole listy lub pole kombi</translation>
 <translation id="613344593214611552">Usuń poprzednie zdanie</translation>
 <translation id="6142308968191113180">Nagłówek 4</translation>
 <translation id="6150023170003443621">Żółtozielony</translation>
@@ -833,7 +834,7 @@
 <translation id="6322856989298155004">Dźwięki</translation>
 <translation id="6324551002951139333">Wykryto błąd gramatyczny</translation>
 <translation id="6325241889020214828">skopiuj <ph name="TEXT" />.</translation>
-<translation id="6348657800373377022">Pole złożone</translation>
+<translation id="6348657800373377022">Pole kombi</translation>
 <translation id="6348869651006731065">Przyćmiony szary</translation>
 <translation id="6350358010104919766">{COUNT,plural, =1{punktor}few{# punktory}many{# punktorów}other{# punktora}}</translation>
 <translation id="6357433033180746873">Nie ma komórki z prawej strony</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">kol.</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Wyłącz wszystkie filtry zdarzeń</translation>
+<translation id="6406989068857078334">Zmniejszono prędkość myszy. Aby kliknąć, wykonaj ponownie gest <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Jesień</translation>
 <translation id="6417265370957905582">Asystent Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dwukropek}few{# dwukropki}many{# dwukropków}other{# colons}}</translation>
@@ -874,7 +876,7 @@
 <translation id="6689672606256159458">Ciemny łososiowy</translation>
 <translation id="669617842401078250">Pobieranie wstrzymane: <ph name="FILE_NAME" /></translation>
 <translation id="6696967141280706829">Wstęp</translation>
-<translation id="6697092096875747123">Poprzednie pole złożone</translation>
+<translation id="6697092096875747123">Poprzednie pole kombi</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{wykrzyknik}few{# wykrzykniki}many{# wykrzykników}other{# wykrzyknika}}</translation>
 <translation id="670717715607710284">Ekran wyłączony</translation>
 <translation id="6714813999819678458">Poprzedni nagłówek poziomu 2</translation>
@@ -909,7 +911,7 @@
 <translation id="6955705049214951590">Mglisty różany</translation>
 <translation id="696356426651109308">Przeskocz na początek</translation>
 <translation id="6994042831499278539">Odniesienie do słownika</translation>
-<translation id="6996566555547746822">Następne pole złożone</translation>
+<translation id="6996566555547746822">Następne pole kombi</translation>
 <translation id="6997224546856374593">Czytając wielkie litery:</translation>
 <translation id="6999752561504308105">Witamy w samouczku czytnika ChromeVox. Aby w dowolnej chwili zamknąć samouczek, przesuń dwoma palcami z prawej do lewej. Aby w dowolnej chwili włączyć lub wyłączyć czytnik ChromeVox, naciśnij i przytrzymaj przez 5 sekund oba przyciski głośności. Gdy zechcesz przejść do następnej lekcji, dotknij dwukrotnie ekranu jednym palcem.</translation>
 <translation id="700202842116345659">Pozycja bibliograficzna</translation>
@@ -959,7 +961,7 @@
 <translation id="7271278495464744706">Włącz szczegółowe opisy</translation>
 <translation id="7273174640290488576">Pusty</translation>
 <translation id="7274770952766771364">Odsyłacz</translation>
-<translation id="7275004401821193978">Nie ma poprzedniego pola wyboru</translation>
+<translation id="7275004401821193978">Nie ma poprzedniego pola kombi</translation>
 <translation id="7285387653379749618">Tabele</translation>
 <translation id="7289186959554153431">Nagłówek 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -1020,7 +1022,7 @@
 <translation id="7696631298608145306">Przejdź do następnego słowa</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701196182766842984">autolst</translation>
-<translation id="7714340021005120797">Nie ma następnego pola wyboru</translation>
+<translation id="7714340021005120797">Nie ma następnego pola kombi</translation>
 <translation id="7715455358521357192">Zmrużenie prawego oka</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7731785449856576010">Nie ma widżetu następnego pliku multimedialnego</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8205922869661890178">Otwórz stronę dziennika dla dewelopera</translation>
 <translation id="8212109599554677485">Zmień styl wyświetlania na Obok siebie</translation>
 <translation id="8215202828671303819">Wybór wielokrotny</translation>
+<translation id="822316432305106615">Rozpocznij precyzyjne klikanie</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, przezroczystość <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="826825447994856889">Wprowadzenie</translation>

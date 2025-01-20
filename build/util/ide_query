@@ -76,6 +76,7 @@ def main():
   parser.add_argument('--out-dir',
     help=('Output directory, containing args.gn, which specifies the build '
           'configuration.'))
+  parser.add_argument('--log-dir', help=('Directory to save log files to.'))
   options = parser.parse_args()
 
   this_dir = os.path.dirname(__file__)
@@ -108,6 +109,8 @@ def main():
         '-C',
         options.out_dir,
     ])
+    if options.log_dir:
+        args.extend(['-log_dir', options.log_dir])
     args.extend(targets)
     env = os.environ.copy()
     if use_prepare_header_only:

@@ -9,11 +9,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.window.InputTransferToken;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A wrapper for sending InputTransferToken over Binder. InputTransferToken is parcelable itself but
  * we can't directly pass it over since it was only introduced in SDK level 35 and the java compiler
  * complains about "Field requires API level 35" in the stub generated for aidl file.
  */
+@NullMarked
 public class InputTransferTokenWrapper implements Parcelable {
     private InputTransferToken mToken;
 

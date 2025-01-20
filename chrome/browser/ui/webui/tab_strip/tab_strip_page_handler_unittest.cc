@@ -563,7 +563,8 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindowsInBetweenGroup) {
                      1);
 
   ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
-  ASSERT_EQ(group_id, browser()->tab_strip_model()->GetTabAtIndex(1)->group());
+  ASSERT_EQ(group_id,
+            browser()->tab_strip_model()->GetTabAtIndex(1)->GetGroup());
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();

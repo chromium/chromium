@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -143,7 +144,8 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
                         "<p>page</p>");
     ExtensionTestMessageListener extension_oninstall_listener_fired(
         "installed listener fired");
-    const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+    const Extension* extension = LoadExtension(
+        test_dir->UnpackedPath(), {.wait_for_registration_stored = true});
     test_extension_dirs_.push_back(std::move(test_dir));
     ASSERT_TRUE(extension);
     extension_ = extension;
@@ -601,9 +603,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
             ServiceWorkerTaskQueue::BrowserState::kReady);
 
   // Deactivate extension.
-  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
-  ASSERT_TRUE(task_queue);
-  task_queue->DeactivateExtension(extension());
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  extension_service->DisableExtension(extension()->id(),
+                                      disable_reason::DISABLE_USER_ACTION);
 
   // Confirm the worker state does not exist.
   worker_state = GetWorkerState();

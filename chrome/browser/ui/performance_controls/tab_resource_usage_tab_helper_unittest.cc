@@ -15,10 +15,8 @@ constexpr uint64_t kTestMemoryUsageBytes = 100000;
 class TabResourceUsageTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   TabResourceUsageTabHelper* InitializeTabHelper() {
-    TabResourceUsageTabHelper::CreateForWebContents(
-        web_contents());
-    return TabResourceUsageTabHelper::
-        FromWebContents(web_contents());
+    TabResourceUsageTabHelper::CreateForWebContents(web_contents());
+    return TabResourceUsageTabHelper::FromWebContents(web_contents());
   }
 };
 

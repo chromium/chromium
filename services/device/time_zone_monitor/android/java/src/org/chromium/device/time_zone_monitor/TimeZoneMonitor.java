@@ -15,9 +15,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 /** Android implementation details for device::TimeZoneMonitorAndroid. */
 @JNINamespace("device")
+@NullMarked
 class TimeZoneMonitor {
     private static final String TAG = "TimeZoneMonitor";
 
@@ -26,7 +28,7 @@ class TimeZoneMonitor {
             new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
+                    if (!Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction())) {
                         Log.e(TAG, "unexpected intent");
                         return;
                     }

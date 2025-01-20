@@ -298,11 +298,10 @@ const FieldTranslationEntry static_or_saved_ipconfig_fields[] = {
     {nullptr}};
 
 struct OncValueTranslationEntry {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // These fields are not raw_ptr<>s because each layer of pointer only ever
+  // points to statically-allocated data which is never freed, and thus can
+  // never dangle.
   RAW_PTR_EXCLUSION const chromeos::onc::OncValueSignature* onc_signature;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
   RAW_PTR_EXCLUSION const FieldTranslationEntry* field_translation_table;
 };
 
@@ -338,12 +337,11 @@ const OncValueTranslationEntry onc_value_translation_table[] = {
     {nullptr}};
 
 struct NestedShillDictionaryEntry {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // These fields are not raw_ptr<>s because each layer of pointer only ever
+  // points to statically-allocated data which is never freed, and thus can
+  // never dangle.
   RAW_PTR_EXCLUSION const chromeos::onc::OncValueSignature* onc_signature;
   // nullptr terminated list of Shill property keys.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
   RAW_PTR_EXCLUSION const char* const* shill_property_path;
 };
 

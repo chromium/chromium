@@ -11,13 +11,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
@@ -273,7 +273,7 @@ class AutofillAiFunnelMetricsTest
         test_api(*form).PushField();
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::HeuristicSource::kAutofillAiRegexes,
         autofill::IMPROVED_PREDICTION);
 #else
     prediction_improvement_field.set_heuristic_type(
@@ -353,21 +353,20 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
 
   if (user_saw_suggestions()) {
     manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kRetrievePredictionImprovements},
-        form->ToFormData(), autofill::FormFieldData(),
+        {autofill::SuggestionType::kRetrieveAutofillAi}, form->ToFormData(),
+        autofill::FormFieldData(),
         /*update_suggestions_callback=*/{});
   }
   if (user_triggered_loading()) {
     manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kPredictionImprovementsLoadingState},
-        form->ToFormData(), autofill::FormFieldData(),
+        {autofill::SuggestionType::kAutofillAiLoadingState}, form->ToFormData(),
+        autofill::FormFieldData(),
         /*update_suggestions_callback=*/{});
   }
   if (user_saw_filling_suggestions()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kFillPredictionImprovements},
-        form->ToFormData(), autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
+    manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
+                                 form->ToFormData(), autofill::FormFieldData(),
+                                 /*update_suggestions_callback=*/{});
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(form->global_id());

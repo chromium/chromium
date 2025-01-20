@@ -544,11 +544,11 @@ bool HistoryTabHelper::IsEligibleTab(
 #if BUILDFLAG(IS_ANDROID)
 static void JNI_HistoryTabHelper_SetAppIdNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& japp_id,
+    std::string& app_id,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
-  history_tab_helper->SetAppId(base::android::ConvertJavaStringToUTF8(japp_id));
+  history_tab_helper->SetAppId(app_id);
 }
 #endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

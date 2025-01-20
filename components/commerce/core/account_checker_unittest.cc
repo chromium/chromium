@@ -192,27 +192,4 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
   ASSERT_EQ(true, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
 }
 
-TEST_F(AccountCheckerTest, TestBookmarksSyncState) {
-  syncer::UserSelectableTypeSet type_set;
-  type_set.Put(syncer::UserSelectableType::kBookmarks);
-  sync_service_->GetUserSettings()->SetSelectedTypes(false,
-                                                     std::move(type_set));
-
-  ASSERT_TRUE(account_checker_->IsSyncingBookmarks());
-
-  sync_service_->SetPersistentAuthError();
-  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
-}
-
-TEST_F(AccountCheckerTest, TestBookmarksSyncState_NoBookmarks) {
-  // Intentionally pass an empty set to the set of things that are synced.
-  sync_service_->GetUserSettings()->SetSelectedTypes(
-      false, syncer::UserSelectableTypeSet());
-
-  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
-
-  sync_service_->SetPersistentAuthError();
-  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
-}
-
 }  // namespace commerce

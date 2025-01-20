@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import type {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -11,13 +11,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     super([
       'recordAction',
       'recordBooleanHistogram',
-      'recordSafetyCheckInteractionHistogram',
-      'recordSafetyCheckNotificationsListCountHistogram',
-      'recordSafetyCheckNotificationsModuleInteractionsHistogram',
-      'recordSafetyCheckNotificationsModuleEntryPointShown',
-      'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
-      'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
-      'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown',
       'recordSettingsPageHistogram',
       'recordPrivacyGuideFlowLengthHistogram',
       'recordSafeBrowsingInteractionHistogram',
@@ -55,47 +48,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordBooleanHistogram(histogramName: string, visible: boolean) {
     this.methodCalled('recordBooleanHistogram', [histogramName, visible]);
-  }
-
-  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
-    this.methodCalled('recordSafetyCheckInteractionHistogram', interaction);
-  }
-
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
-    this.methodCalled(
-        'recordSafetyCheckNotificationsListCountHistogram', suggestions);
-  }
-
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    this.methodCalled(
-        'recordSafetyCheckNotificationsModuleInteractionsHistogram',
-        interaction);
-  }
-
-  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
-    this.methodCalled(
-        'recordSafetyCheckNotificationsModuleEntryPointShown', visible);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
-                                                               number) {
-    this.methodCalled(
-        'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
-        suggestions);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
-    this.methodCalled(
-        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
-        interaction);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:
-                                                                  boolean) {
-    this.methodCalled(
-        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown', visible);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

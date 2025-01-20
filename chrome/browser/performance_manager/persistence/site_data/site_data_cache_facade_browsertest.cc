@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -30,7 +29,6 @@
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
@@ -119,30 +117,17 @@ class TestSiteDataRecorderHeuristics final : public SiteDataRecorderHeuristics {
   }
 };
 
-struct PMThreadingConfiguration {
-  bool run_on_main_thread;
-  bool run_on_main_thread_sync;
-};
-
-// Tests SiteDataCacheFacade in different threading configurations.
-class SiteDataCacheFacadeBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
   using Super = InProcessBrowserTest;
 
  protected:
-  SiteDataCacheFacadeBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
-                                              GetParam());
-  }
+  SiteDataCacheFacadeBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     Super::SetUpOnMainThread();
 
-    RunInGraph([] {
-      SiteDataRecorder::SetHeuristicsImplementationForTesting(
-          std::make_unique<TestSiteDataRecorderHeuristics>());
-    });
+    SiteDataRecorder::SetHeuristicsImplementationForTesting(
+        std::make_unique<TestSiteDataRecorderHeuristics>());
 
     // Serve test HTML from any domain.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -150,9 +135,7 @@ class SiteDataCacheFacadeBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    RunInGraph([] {
-      SiteDataRecorder::SetHeuristicsImplementationForTesting(nullptr);
-    });
+    SiteDataRecorder::SetHeuristicsImplementationForTesting(nullptr);
     Super::TearDownOnMainThread();
   }
 
@@ -194,15 +177,13 @@ class SiteDataCacheFacadeBrowserTest
       reader->RegisterDataLoadedCallback(quit_on_exit.Release());
     });
 
-    RunInGraph([&] {
-      EXPECT_EQ(reader->UpdatesTitleInBackground(),
-                expected_updates_title_in_background);
-      EXPECT_EQ(writer->impl_for_testing()->is_dirty(), expected_is_dirty);
+    EXPECT_EQ(reader->UpdatesTitleInBackground(),
+              expected_updates_title_in_background);
+    EXPECT_EQ(writer->impl_for_testing()->is_dirty(), expected_is_dirty);
 
-      // The reader and writer must be destroyed on the graph sequence.
-      reader.reset();
-      writer.reset();
-    });
+    // The reader and writer must be destroyed on the graph sequence.
+    reader.reset();
+    writer.reset();
   }
 
   // Adapted from InProcessBrowserTest::AddTabAtIndex() to open a background
@@ -244,16 +225,13 @@ class SiteDataCacheFacadeBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ClearSiteDataOnProfileDestroyed> clear_site_data_;
 };
-
-INSTANTIATE_TEST_SUITE_P(, SiteDataCacheFacadeBrowserTest, ::testing::Bool());
 
 // TODO(crbug.com/330771327): This test is consistently failing across multiple
 // builders. Pre-test: Sets up state before the main test by writing some
 // feature usage for a site.
-IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
+IN_PROC_BROWSER_TEST_F(SiteDataCacheFacadeBrowserTest,
                        DISABLED_PRE_PRE_ClearAllSiteData) {
   // Should start from a clean profile.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureUsageUnknown,
@@ -271,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
 // builders. Main test: clears the feature usage written in
 // PRE_PRE_ClearAllSiteData, to validate that the DB is updated when racing with
 // shutdown.
-IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
+IN_PROC_BROWSER_TEST_F(SiteDataCacheFacadeBrowserTest,
                        DISABLED_PRE_ClearAllSiteData) {
   // Make sure the site DB was written before the browser restarted.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureInUse,
@@ -283,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
 // TODO(crbug.com/330771327): This test is consistently failing across multiple
 // builders. Post-test: validates that PRE_ClearAllSiteData deleted the feature
 // usage written in PRE_PRE_ClearAllSiteData.
-IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
+IN_PROC_BROWSER_TEST_F(SiteDataCacheFacadeBrowserTest,
                        DISABLED_ClearAllSiteData) {
   // Site data should have been deleted before browser exited.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureUsageUnknown,

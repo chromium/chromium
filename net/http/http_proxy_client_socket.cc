@@ -133,7 +133,7 @@ bool HttpProxyClientSocket::WasEverUsed() const {
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
   // proxy, this object represents the tunneled TCP connection to the origin.
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool HttpProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {

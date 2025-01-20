@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -299,20 +300,20 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
   return std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len);
 }
 
-int SSLClientSocketImpl::ExportKeyingMaterial(std::string_view label,
-                                              bool has_context,
-                                              std::string_view context,
-                                              unsigned char* out,
-                                              unsigned int outlen) {
+int SSLClientSocketImpl::ExportKeyingMaterial(
+    std::string_view label,
+    std::optional<base::span<const uint8_t>> context,
+    base::span<uint8_t> out) {
+  DCHECK(base::IsStringASCII(label));
   if (!IsConnected())
     return ERR_SOCKET_NOT_CONNECTED;
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   if (!SSL_export_keying_material(
-          ssl_.get(), out, outlen, label.data(), label.size(),
-          reinterpret_cast<const unsigned char*>(context.data()),
-          context.length(), has_context ? 1 : 0)) {
+          ssl_.get(), out.data(), out.size(), label.data(), label.size(),
+          context.has_value() ? context->data() : nullptr,
+          context.has_value() ? context->size() : 0, context.has_value())) {
     LOG(ERROR) << "Failed to export keying material.";
     return ERR_FAILED;
   }
@@ -463,7 +464,7 @@ SSLClientSocketImpl::GetPeerApplicationSettings() const {
 }
 
 bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
-  ssl_info->Reset();
+  *ssl_info = SSLInfo();
   if (!server_cert_)
     return false;
 
@@ -1125,7 +1126,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
     int ct_result = CheckCTRequirements();
     TransportSecurityState::PKPStatus pin_validity =
         context_->transport_security_state()->CheckPublicKeyPins(
-            host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
+            host_and_port_.host(),
+            server_cert_verify_result_.is_issued_by_known_root,
             server_cert_verify_result_.public_key_hashes);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
@@ -1173,7 +1175,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
 int SSLClientSocketImpl::CheckCTRequirements() {
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       context_->transport_security_state()->CheckCTRequirements(
-          host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
+          host_and_port_.host(),
+          server_cert_verify_result_.is_issued_by_known_root,
           server_cert_verify_result_.public_key_hashes,
           server_cert_verify_result_.verified_cert.get(),
           server_cert_verify_result_.policy_compliance);
@@ -1573,8 +1576,9 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
 }
 
 bool SSLClientSocketImpl::IsRenegotiationAllowed() const {
-  if (negotiated_protocol_ == kProtoUnknown)
+  if (negotiated_protocol_ == NextProto::kProtoUnknown) {
     return ssl_config_.renego_allowed_default;
+  }
 
   for (NextProto allowed : ssl_config_.renego_allowed_for_protos) {
     if (negotiated_protocol_ == allowed)
@@ -1616,7 +1620,7 @@ ssl_private_key_result_t SSLClientSocketImpl::PrivateKeySignCallback(
 
   signature_result_ = ERR_IO_PENDING;
   client_private_key_->Sign(
-      algorithm, base::make_span(in, in_len),
+      algorithm, base::span(in, in_len),
       base::BindOnce(&SSLClientSocketImpl::OnPrivateKeyComplete,
                      weak_factory_.GetWeakPtr()));
   return ssl_private_key_retry;
@@ -1703,8 +1707,8 @@ void SSLClientSocketImpl::LogConnectEndEvent(int rv) {
 }
 
 void SSLClientSocketImpl::RecordNegotiatedProtocol() const {
-  UMA_HISTOGRAM_ENUMERATION("Net.SSLNegotiatedAlpnProtocol",
-                            negotiated_protocol_, kProtoLast + 1);
+  base::UmaHistogramEnumeration("Net.SSLNegotiatedAlpnProtocol",
+                                negotiated_protocol_);
 }
 
 int SSLClientSocketImpl::MapLastOpenSSLError(

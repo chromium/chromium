@@ -47,6 +47,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
  public:
   UrlCheckerDelegateImplTest()
       : browser_state_(std::make_unique<web::FakeBrowserState>()),
+        client_(/*pref_service=*/nullptr),
         delegate_(
             base::MakeRefCounted<UrlCheckerDelegateImpl>(nullptr,
                                                          client_.AsWeakPtr())),

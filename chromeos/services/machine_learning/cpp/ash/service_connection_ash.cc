@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-
 #include <utility>
 
 #include "base/component_export.h"
@@ -12,8 +10,9 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -115,7 +114,7 @@ void ServiceConnectionAsh::BindPrimordialMachineLearningServiceIfNeeded() {
   // Include an initial Mojo pipe in the invitation.
   mojo::ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(ml::kBootstrapMojoConnectionChannelToken);
-  if (mojo::core::IsMojoIpczEnabled()) {
+  if (!mojo::core::GetConfiguration().is_broker_process) {
     // IPCz requires an application to explicitly opt in to broker sharing
     // and inheritance when establishing a direct connection between two
     // non-broker nodes.

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html class="reftest-wait">
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement(): A change to background color invalidates a placed element.</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <link rel="match" href="placeElement-ref.html">
+  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
+  <meta name="fuzzy" content="maxDifference=0-98; totalPixels=0-2">
+  <style>
+    #fallback {
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const ctx = document.querySelector("canvas").getContext("2d");
+  const fallback = document.getElementById("fallback");
+  ctx.placeElement(fallback, 0, 0);
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      fallback.style.backgroundColor = "green";
+      document.documentElement.classList.remove("reftest-wait");
+    }, 0);
+  });
+</script>
+
+</html>

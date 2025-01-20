@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -425,6 +426,24 @@ bool OriginTrialContext::InstallFeatures(
 
     installed_features_.insert(enabled_feature);
 
+    if (enabled_feature ==
+        mojom::blink::OriginTrialFeature::kBackgroundPageFreezeOptOut) {
+      if (auto* rc = document.GetResourceCoordinator()) {
+        UseCounter::Count(document.GetExecutionContext(),
+                          WebFeature::kPageFreezeOptOut);
+
+        // Inform the browser process that the document is opted-out from
+        // freezing via origin trial. This state prevents the browser process
+        // from freezing any document in the same "browsing context group" as
+        // this one and is displayed at chrome://discards for debugging.
+        //
+        // Note: The browser process cannot determine whether a document is
+        // opted-out from freezing via origin trial without participation from
+        // the renderer (crbug.com/40189223).
+        rc->OnFreezingOriginTrialOptOut();
+      }
+    }
+
     if (InstallSettingFeature(document, enabled_feature))
       continue;
 
@@ -506,9 +525,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "AdInterestGroupAPI")
     return base::FeatureList::IsEnabled(features::kInterestGroupStorage);
 
-  if (trial_name == "TrustTokens")
-    return base::FeatureList::IsEnabled(network::features::kFledgePst);
-
   if (trial_name == "SpeculationRulesPrefetchFuture") {
     return base::FeatureList::IsEnabled(
         features::kSpeculationRulesPrefetchFuture);
@@ -538,7 +554,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   // TODO(crbug.com/362675965): remove after origin trial.
   if (trial_name == "AISummarizationAPI") {
-    return base::FeatureList::IsEnabled(features::kEnableAISummarizationAPI);
+    return base::FeatureList::IsEnabled(features::kAISummarizationAPI);
   }
 
   if (trial_name == "LanguageDetectionAPI") {
@@ -546,13 +562,12 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "AIPromptAPIForExtension") {
-    return base::FeatureList::IsEnabled(
-        features::kEnableAIPromptAPIForExtension);
+    return base::FeatureList::IsEnabled(features::kAIPromptAPIForExtension);
   }
 
   if (trial_name == "TranslationAPI") {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    return base::FeatureList::IsEnabled(features::kEnableTranslationAPI);
+    return base::FeatureList::IsEnabled(features::kTranslationAPI);
 #else
     return false;
 #endif

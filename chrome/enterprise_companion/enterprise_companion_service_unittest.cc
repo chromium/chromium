@@ -26,9 +26,6 @@ namespace {
 
 class MockDMClient final : public DMClient {
  public:
-  MockDMClient() = default;
-  ~MockDMClient() override = default;
-
   MOCK_METHOD(void,
               RegisterPolicyAgent,
               (scoped_refptr<EnterpriseCompanionEventLogger> event_logger,

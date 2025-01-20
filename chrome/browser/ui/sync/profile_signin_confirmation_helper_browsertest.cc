@@ -20,7 +20,7 @@
 
 class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
  public:
-  ProfileSigninConfirmationHelperBrowserTest() {}
+  ProfileSigninConfirmationHelperBrowserTest() = default;
 
   ProfileSigninConfirmationHelperBrowserTest(
       const ProfileSigninConfirmationHelperBrowserTest&) = delete;

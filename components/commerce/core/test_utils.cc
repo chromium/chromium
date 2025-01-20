@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -88,18 +89,18 @@ void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
   prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
 }
 
-void RegisterCommercePrefs(PrefRegistrySimple* registry) {
-  RegisterPrefs(registry);
-  registry->RegisterIntegerPref(
-      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
-      0);
-}
-
 void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                        int enabled_state) {
   prefs->SetManagedPref(
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
       base::Value(enabled_state));
+}
+
+void SetUpPriceInsightsEligibility(base::test::ScopedFeatureList* feature_list,
+                                   MockAccountChecker* account_checker,
+                                   bool is_eligible) {
+  feature_list->InitAndEnableFeature(kPriceInsights);
+  account_checker->SetAnonymizedUrlDataCollectionEnabled(is_eligible);
 }
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(

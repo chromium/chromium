@@ -50,7 +50,7 @@ class FakeDelegate : public PlatformVerificationFlow::Delegate {
   FakeDelegate(const FakeDelegate&) = delete;
   FakeDelegate& operator=(const FakeDelegate&) = delete;
 
-  ~FakeDelegate() override {}
+  ~FakeDelegate() override = default;
 
   bool IsInSupportedMode() override { return is_in_supported_mode_; }
 

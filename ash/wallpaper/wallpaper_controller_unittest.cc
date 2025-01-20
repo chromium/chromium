@@ -84,7 +84,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/version.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
@@ -92,6 +91,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -153,12 +153,14 @@ std::string GetDummyFileName(const AccountId& account_id) {
 }
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId kAccountId1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
 const std::string kWallpaperFilesId1 = GetDummyFileId(kAccountId1);
 const std::string kFileName1 = GetDummyFileName(kAccountId1);
 
 constexpr char kUser2[] = "user2@test.com";
-const AccountId kAccountId2 = AccountId::FromUserEmailGaiaId(kUser2, kUser2);
+const AccountId kAccountId2 =
+    AccountId::FromUserEmailGaiaId(kUser2, GaiaId(kUser2));
 const std::string kWallpaperFilesId2 = GetDummyFileId(kAccountId2);
 const std::string kFileName2 = GetDummyFileName(kAccountId2);
 
@@ -930,7 +932,7 @@ class WallpaperControllerTestBase : public AshTestBase {
   raw_ptr<TestWallpaperDriveFsDelegate, DanglingUntriaged> drivefs_delegate_;
 
   const AccountId kChildAccountId =
-      AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
+      AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId(kChildEmail));
 
  private:
   InProcessDataDecoder decoder_;
@@ -949,10 +951,10 @@ class WallpaperControllerTest
     std::vector<base::test::FeatureRef> disabled_features;
     switch (GetParam()) {
       case TimeOfDayFeatureCombination::kDisabled:
-        disabled_features = personalization_app::GetTimeOfDayDisabledFeatures();
+        disabled_features = personalization_app::GetTimeOfDayFeatures();
         break;
       case TimeOfDayFeatureCombination::kTimeOfDay:
-        enabled_features = personalization_app::GetTimeOfDayEnabledFeatures();
+        enabled_features = personalization_app::GetTimeOfDayFeatures();
         break;
     }
     enabled_features.push_back(features::kSeaPen);
@@ -4431,7 +4433,7 @@ class WallpaperControllerPrefTest : public AshTestBase {
  public:
   WallpaperControllerPrefTest() {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
     base::Value::Dict property;
     property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
     property.Set("width", 800);
@@ -6369,288 +6371,6 @@ TEST_P(WallpaperControllerDailyRefreshSchedulerTest,
   RunAllTasksUntilIdle();
 
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
-}
-
-class WallpaperControllerVersionedWallpaperInfoTest
-    : public WallpaperControllerTestBase {
- public:
-  WallpaperControllerVersionedWallpaperInfoTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVersionedWallpaperInfo,
-         features::kFeatureManagementTimeOfDayWallpaper},
-        {});
-  }
-  ~WallpaperControllerVersionedWallpaperInfoTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       RecordNotSupportedNoLocationMigrationStatus) {
-  WallpaperInfo unmigrated_info = {"", WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Now()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
-                                       MigrationStatus::kNotSupportedNoLocation,
-                                       1);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
-                                      1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       RecordNotSupportedNoCollectionMigrationStatus) {
-  WallpaperInfo unmigrated_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Now()};
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  histogram_tester().ExpectBucketCount(
-      "Ash.Wallpaper.Online.MigrationStatus",
-      MigrationStatus::kNotSupportedNoCollection, 1);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
-                                      1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       OnlineWallpaperMigratedSuccessfullyOnLogin) {
-  WallpaperInfo unmigrated_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Now()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo migrated_info;
-  ASSERT_TRUE(
-      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
-  EXPECT_TRUE(migrated_info.version.IsValid());
-  EXPECT_TRUE(migrated_info.unit_id.has_value());
-  EXPECT_FALSE(migrated_info.variants.empty());
-  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
-                                       MigrationStatus::kSucceeded, 1);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
-                                      1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       GooglePhotosWallpaperMigratedSuccessfullyOnLogin) {
-  WallpaperInfo unmigrated_info =
-      InfoWithType(WallpaperType::kOnceGooglePhotos);
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo migrated_info;
-  ASSERT_TRUE(
-      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
-  EXPECT_TRUE(migrated_info.version.IsValid());
-  EXPECT_EQ(migrated_info.type, WallpaperType::kOnceGooglePhotos);
-  histogram_tester().ExpectBucketCount(
-      "Ash.Wallpaper.OnceGooglePhotos.MigrationStatus",
-      MigrationStatus::kSucceeded, 1);
-  histogram_tester().ExpectTotalCount(
-      "Ash.Wallpaper.OnceGooglePhotos.MigrationLatency", 1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       MigratedLocalWallpaperSyncOutSuccessfully) {
-  WallpaperInfo unmigrated_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Now()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo synced_info;
-  WallpaperInfo local_info;
-  ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &synced_info));
-  ASSERT_TRUE(pref_manager_->GetLocalWallpaperInfo(kAccountId1, &local_info));
-  EXPECT_TRUE(synced_info.version.IsValid());
-  EXPECT_TRUE(synced_info.unit_id.has_value());
-  EXPECT_FALSE(synced_info.variants.empty());
-  EXPECT_TRUE(local_info.MatchesAsset(synced_info));
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       LocalWallpaperOverwrittenBySyncedInfoSuccessfully) {
-  WallpaperInfo unmigrated_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Min()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnceGooglePhotos);
-  pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo local_info;
-  ASSERT_TRUE(pref_manager_->GetLocalWallpaperInfo(kAccountId1, &local_info));
-  EXPECT_TRUE(local_info.version.IsValid());
-  EXPECT_TRUE(local_info.MatchesAsset(synced_info));
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       UnsuccessfullyMigratedWallpaperDoesNotSyncOut) {
-  WallpaperInfo unmigrated_info = {"https://expected_to_fail_url",
-                                   WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Min()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                        prefs::kUserWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo synced_info;
-  EXPECT_FALSE(
-      pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &synced_info));
-  histogram_tester().ExpectUniqueSample("Ash.Wallpaper.Online.MigrationStatus",
-                                        MigrationStatus::kFailed, 1);
-  histogram_tester().ExpectBucketCount(
-      "Ash.Wallpaper.MigrationFailureReason",
-      MigrationFailureReason::kOnlineVariantsFetchFailure, 1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       SyncedInOnlineWallpaperMigratedSuccessfully) {
-  {
-    WallpaperInfo unmigrated_local_info =
-        InfoWithType(WallpaperType::kOnceGooglePhotos);
-    unmigrated_local_info.version = base::Version();
-    ScopedDictPrefUpdate wallpaper_update(local_state(),
-                                          prefs::kUserWallpaperInfo);
-    wallpaper_update->Set(kAccountId1.GetUserEmail(),
-                          unmigrated_local_info.ToDict());
-  }
-  {
-    WallpaperInfo unmigrated_synced_info = {
-        kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kOnline,
-        base::Time::Now()};
-    unmigrated_synced_info.collection_id =
-        TestWallpaperControllerClient::kDummyCollectionId;
-    unmigrated_synced_info.version = base::Version();
-    ScopedDictPrefUpdate wallpaper_update(
-        GetProfilePrefService(kAccountId1),
-        prefs::kSyncableVersionedWallpaperInfo);
-    wallpaper_update->Set(kAccountId1.GetUserEmail(),
-                          unmigrated_synced_info.ToDict());
-  }
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo migrated_info;
-  ASSERT_TRUE(
-      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
-  EXPECT_TRUE(migrated_info.version.IsValid());
-  EXPECT_TRUE(migrated_info.unit_id.has_value());
-  EXPECT_FALSE(migrated_info.variants.empty());
-  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
-                                       MigrationStatus::kSucceeded, 1);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
-                                      1);
-  histogram_tester().ExpectBucketCount(
-      "Ash.Wallpaper.OnceGooglePhotos.MigrationStatus",
-      MigrationStatus::kSucceeded, 1);
-  histogram_tester().ExpectTotalCount(
-      "Ash.Wallpaper.OnceGooglePhotos.MigrationLatency", 1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       ShouldNotSyncInForUnsuccessfullyMigratedWallpaper) {
-  WallpaperInfo unmigrated_info = {"https://expected_to_fail",
-                                   WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kOnline, base::Time::Now()};
-  unmigrated_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  unmigrated_info.version = base::Version();
-  ScopedDictPrefUpdate wallpaper_update(GetProfilePrefService(kAccountId1),
-                                        prefs::kSyncableVersionedWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo migrated_info;
-  EXPECT_FALSE(
-      pref_manager_->GetLocalWallpaperInfo(kAccountId1, &migrated_info));
-  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
-                                       MigrationStatus::kFailed, 1);
-  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
-                                      1);
-}
-
-TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       ShowPreviouslySyncedWallpaperWhenUserLogsInANewDevice) {
-  WallpaperInfo prev_synced_info;
-  prev_synced_info.location = kDummyUrl;
-  prev_synced_info.layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
-  prev_synced_info.type = WallpaperType::kOnline;
-  prev_synced_info.collection_id =
-      TestWallpaperControllerClient::kDummyCollectionId;
-  prev_synced_info.date = base::Time::Now();
-
-  ScopedDictPrefUpdate wallpaper_update(GetProfilePrefService(kAccountId1),
-                                        prefs::kSyncableWallpaperInfo);
-  wallpaper_update->Set(kAccountId1.GetUserEmail(), prev_synced_info.ToDict());
-
-  ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfoFromDeprecatedPref(
-      kAccountId1, &prev_synced_info));
-
-  SimulateUserLogin(kAccountId1);
-  RunAllTasksUntilIdle();
-
-  WallpaperInfo local_info;
-  WallpaperInfo synced_info;
-  EXPECT_TRUE(pref_manager_->GetLocalWallpaperInfo(kAccountId1, &local_info));
-  EXPECT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &synced_info));
-  EXPECT_TRUE(local_info.MatchesAsset(synced_info));
-  EXPECT_TRUE(local_info.version.IsValid());
-  EXPECT_FALSE(local_info.variants.empty());
-  EXPECT_TRUE(local_info.unit_id.has_value());
-
-  // Expects deprecated pref to be cleared.
-  EXPECT_FALSE(pref_manager_->GetSyncedWallpaperInfoFromDeprecatedPref(
-      kAccountId1, &synced_info));
 }
 
 }  // namespace ash

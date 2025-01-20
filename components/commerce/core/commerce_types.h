@@ -152,7 +152,8 @@ struct UrlInfo {
   UrlInfo(const GURL& url,
           const std::u16string& title,
           const std::optional<GURL> favicon_url = std::nullopt,
-          const std::optional<GURL> thumbnail_url = std::nullopt);
+          const std::optional<GURL> thumbnail_url = std::nullopt,
+          const std::optional<std::string> previewText = std::nullopt);
   UrlInfo(const UrlInfo&);
   UrlInfo& operator=(const UrlInfo&);
   bool operator==(const UrlInfo& other) const {
@@ -164,6 +165,7 @@ struct UrlInfo {
   std::u16string title;
   std::optional<GURL> favicon_url;
   std::optional<GURL> thumbnail_url;
+  std::optional<std::string> previewText;
 };
 
 // Information provided by the product specifications backend.

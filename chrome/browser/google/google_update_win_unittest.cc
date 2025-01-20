@@ -91,7 +91,7 @@ class MockUpdateCheckDelegate : public UpdateCheckDelegate {
 // instance.
 class GoogleUpdateFactory {
  public:
-  virtual ~GoogleUpdateFactory() {}
+  virtual ~GoogleUpdateFactory() = default;
   virtual HRESULT Create(
       Microsoft::WRL::ComPtr<IGoogleUpdate3Web>* google_update) = 0;
 };
@@ -100,10 +100,10 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
                          public ICurrentState {
  public:
   BEGIN_COM_MAP(MockCurrentState)
-    COM_INTERFACE_ENTRY(ICurrentState)
+  COM_INTERFACE_ENTRY(ICurrentState)
   END_COM_MAP()
 
-  MockCurrentState() {}
+  MockCurrentState() = default;
 
   MockCurrentState(const MockCurrentState&) = delete;
   MockCurrentState& operator=(const MockCurrentState&) = delete;
@@ -137,72 +137,72 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   }
 
   // ICurrentState:
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             get_stateValue,
-                             HRESULT(LONG *));
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, get_stateValue, HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_availableVersion,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_bytesDownloaded,
-                             HRESULT(ULONG *));
+                             HRESULT(ULONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_totalBytesToDownload,
-                             HRESULT(ULONG *));
+                             HRESULT(ULONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_downloadTimeRemainingMs,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_nextRetryTime,
-                             HRESULT(ULONGLONG *));
+                             HRESULT(ULONGLONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_installProgress,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_installTimeRemainingMs,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_isCanceled,
-                             HRESULT(VARIANT_BOOL *));
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             get_errorCode,
-                             HRESULT(LONG *));
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             get_extraCode1,
-                             HRESULT(LONG *));
+                             HRESULT(VARIANT_BOOL*));
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, get_errorCode, HRESULT(LONG*));
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, get_extraCode1, HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_completionMessage,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_installerResultCode,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_installerResultExtraCode1,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_postInstallLaunchCommandLine,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_postInstallUrl,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_postInstallAction,
-                             HRESULT(LONG *));
+                             HRESULT(LONG*));
 
   // IDispatch:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfoCount,
-                             HRESULT(UINT *));
+                             HRESULT(UINT*));
   MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfo,
-                             HRESULT(UINT, LCID, ITypeInfo **));
+                             HRESULT(UINT, LCID, ITypeInfo**));
   MOCK_METHOD5_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetIDsOfNames,
-                             HRESULT(REFIID, LPOLESTR *, UINT, LCID, DISPID *));
+                             HRESULT(REFIID, LPOLESTR*, UINT, LCID, DISPID*));
   MOCK_METHOD8_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              Invoke,
-                             HRESULT(DISPID, REFIID, LCID, WORD, DISPPARAMS *,
-                                     VARIANT *, EXCEPINFO *, UINT *));
+                             HRESULT(DISPID,
+                                     REFIID,
+                                     LCID,
+                                     WORD,
+                                     DISPPARAMS*,
+                                     VARIANT*,
+                                     EXCEPINFO*,
+                                     UINT*));
 
  private:
   std::u16string completion_message_;
@@ -214,7 +214,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
 class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
  public:
   BEGIN_COM_MAP(MockApp)
-    COM_INTERFACE_ENTRY(IAppWeb)
+  COM_INTERFACE_ENTRY(IAppWeb)
   END_COM_MAP()
 
   MockApp() {
@@ -227,33 +227,25 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   MockApp& operator=(const MockApp&) = delete;
 
   // IAppWeb:
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             get_appId,
-                             HRESULT(BSTR *));
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, get_appId, HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_currentVersionWeb,
-                             HRESULT(IDispatch **));
+                             HRESULT(IDispatch**));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_nextVersionWeb,
-                             HRESULT(IDispatch **));
+                             HRESULT(IDispatch**));
   MOCK_METHOD2_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_command,
-                             HRESULT(BSTR, IDispatch **));
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             cancel,
-                             HRESULT());
+                             HRESULT(BSTR, IDispatch**));
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, cancel, HRESULT());
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_currentState,
-                             HRESULT(IDispatch **));
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             launch,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             uninstall,
-                             HRESULT());
+                             HRESULT(IDispatch**));
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, launch, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, uninstall, HRESULT());
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_serverInstallDataIndex,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              put_serverInstallDataIndex,
                              HRESULT(BSTR));
@@ -261,17 +253,23 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   // IDispatch:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfoCount,
-                             HRESULT(UINT *));
+                             HRESULT(UINT*));
   MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfo,
-                             HRESULT(UINT, LCID, ITypeInfo **));
+                             HRESULT(UINT, LCID, ITypeInfo**));
   MOCK_METHOD5_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetIDsOfNames,
-                             HRESULT(REFIID, LPOLESTR *, UINT, LCID, DISPID *));
+                             HRESULT(REFIID, LPOLESTR*, UINT, LCID, DISPID*));
   MOCK_METHOD8_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              Invoke,
-                             HRESULT(DISPID, REFIID, LCID, WORD, DISPPARAMS *,
-                                     VARIANT *, EXCEPINFO *, UINT *));
+                             HRESULT(DISPID,
+                                     REFIID,
+                                     LCID,
+                                     WORD,
+                                     DISPPARAMS*,
+                                     VARIANT*,
+                                     EXCEPINFO*,
+                                     UINT*));
 
   // Adds a MockCurrentState to the back of the sequence to be returned by the
   // mock IAppWeb.
@@ -288,8 +286,8 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
     mock_state->ExpectCompletionMessage(completion_message);
     if (installer_result_code != -1) {
       EXPECT_CALL(*mock_state, get_installerResultCode(_))
-          .WillRepeatedly(DoAll(SetArgPointee<0>(installer_result_code),
-                                Return(S_OK)));
+          .WillRepeatedly(
+              DoAll(SetArgPointee<0>(installer_result_code), Return(S_OK)));
     }
   }
 
@@ -359,10 +357,10 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
                       public IAppBundleWeb {
  public:
   BEGIN_COM_MAP(MockAppBundle)
-    COM_INTERFACE_ENTRY(IAppBundleWeb)
+  COM_INTERFACE_ENTRY(IAppBundleWeb)
   END_COM_MAP()
 
-  MockAppBundle() {}
+  MockAppBundle() = default;
 
   MockAppBundle(const MockAppBundle&) = delete;
   MockAppBundle& operator=(const MockAppBundle&) = delete;
@@ -379,61 +377,51 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
                              HRESULT());
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_displayLanguage,
-                             HRESULT(BSTR *));
+                             HRESULT(BSTR*));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              put_displayLanguage,
                              HRESULT(BSTR));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              put_parentHWND,
                              HRESULT(ULONG_PTR));
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             get_length,
-                             HRESULT(int *));
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, get_length, HRESULT(int*));
   MOCK_METHOD2_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_appWeb,
-                             HRESULT(int, IDispatch **));
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             initialize,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             checkForUpdate,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             download,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             install,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             pause,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             resume,
-                             HRESULT());
-  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE,
-                             cancel,
-                             HRESULT());
+                             HRESULT(int, IDispatch**));
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, initialize, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, checkForUpdate, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, download, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, install, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, pause, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, resume, HRESULT());
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, cancel, HRESULT());
   MOCK_METHOD2_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              downloadPackage,
                              HRESULT(BSTR, BSTR));
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              get_currentState,
-                             HRESULT(VARIANT *));
+                             HRESULT(VARIANT*));
 
   // IDispatch:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfoCount,
-                             HRESULT(UINT *));
+                             HRESULT(UINT*));
   MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfo,
-                             HRESULT(UINT, LCID, ITypeInfo **));
+                             HRESULT(UINT, LCID, ITypeInfo**));
   MOCK_METHOD5_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetIDsOfNames,
-                             HRESULT(REFIID, LPOLESTR *, UINT, LCID, DISPID *));
+                             HRESULT(REFIID, LPOLESTR*, UINT, LCID, DISPID*));
   MOCK_METHOD8_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              Invoke,
-                             HRESULT(DISPID, REFIID, LCID, WORD, DISPPARAMS *,
-                                     VARIANT *, EXCEPINFO *, UINT *));
+                             HRESULT(DISPID,
+                                     REFIID,
+                                     LCID,
+                                     WORD,
+                                     DISPPARAMS*,
+                                     VARIANT*,
+                                     EXCEPINFO*,
+                                     UINT*));
 
   // Returns a MockApp for the given |app_guid| that will be returned by this
   // instance's get_appWeb method. The returned instance is only valid for use
@@ -452,8 +440,7 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
     // successive indices.
     mock_app->AddRef();
     EXPECT_CALL(*this, get_appWeb(0, _))
-        .WillOnce(DoAll(SetArgPointee<1>(mock_app),
-                        Return(S_OK)));
+        .WillOnce(DoAll(SetArgPointee<1>(mock_app), Return(S_OK)));
 
     return mock_app;
   }
@@ -465,10 +452,10 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
                          public IGoogleUpdate3Web {
  public:
   BEGIN_COM_MAP(MockGoogleUpdate)
-    COM_INTERFACE_ENTRY(IGoogleUpdate3Web)
+  COM_INTERFACE_ENTRY(IGoogleUpdate3Web)
   END_COM_MAP()
 
-  MockGoogleUpdate() {}
+  MockGoogleUpdate() = default;
 
   MockGoogleUpdate(const MockGoogleUpdate&) = delete;
   MockGoogleUpdate& operator=(const MockGoogleUpdate&) = delete;
@@ -481,17 +468,23 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
   // IDispatch:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfoCount,
-                             HRESULT(UINT *));
+                             HRESULT(UINT*));
   MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetTypeInfo,
-                             HRESULT(UINT, LCID, ITypeInfo **));
+                             HRESULT(UINT, LCID, ITypeInfo**));
   MOCK_METHOD5_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              GetIDsOfNames,
-                             HRESULT(REFIID, LPOLESTR *, UINT, LCID, DISPID *));
+                             HRESULT(REFIID, LPOLESTR*, UINT, LCID, DISPID*));
   MOCK_METHOD8_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              Invoke,
-                             HRESULT(DISPID, REFIID, LCID, WORD, DISPPARAMS *,
-                                     VARIANT *, EXCEPINFO *, UINT *));
+                             HRESULT(DISPID,
+                                     REFIID,
+                                     LCID,
+                                     WORD,
+                                     DISPPARAMS*,
+                                     VARIANT*,
+                                     EXCEPINFO*,
+                                     UINT*));
 
   // Returns a MockAppBundle that will be returned by this instance's
   // createAppBundleWeb method. The returned instance is only valid for use in
@@ -501,8 +494,7 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
     CComObject<MockAppBundle>* mock_app_bundle = nullptr;
     EXPECT_EQ(S_OK,
               CComObject<MockAppBundle>::CreateInstance(&mock_app_bundle));
-    EXPECT_CALL(*mock_app_bundle, initialize())
-        .WillOnce(Return(S_OK));
+    EXPECT_CALL(*mock_app_bundle, initialize()).WillOnce(Return(S_OK));
     // Give this instance a ref to the bundle which it will return when created.
     mock_app_bundle->AddRef();
     EXPECT_CALL(*this, createAppBundleWeb(_))
@@ -514,7 +506,7 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
 // A mock factory for creating an IGoogleUpdate3Web instance.
 class MockGoogleUpdateFactory : public GoogleUpdateFactory {
  public:
-  MockGoogleUpdateFactory() {}
+  MockGoogleUpdateFactory() = default;
 
   MockGoogleUpdateFactory(const MockGoogleUpdateFactory&) = delete;
   MockGoogleUpdateFactory& operator=(const MockGoogleUpdateFactory&) = delete;
@@ -637,10 +629,12 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     CComObject<MockAppBundle>* app_bundle = google_update->MakeAppBundle();
     CComObject<MockApp>* app = app_bundle->MakeApp(kChromeGuid);
 
-    if (mock_app_bundle)
+    if (mock_app_bundle) {
       *mock_app_bundle = app_bundle;
-    if (mock_app)
+    }
+    if (mock_app) {
       *mock_app = app;
+    }
   }
 
   void TearDown() override {
@@ -748,8 +742,7 @@ TEST_P(GoogleUpdateWinTest, FailUpdateCheck) {
   MakeGoogleUpdateMocks(&mock_app_bundle, nullptr);
 
   // checkForUpdate will fail.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(E_FAIL));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(E_FAIL));
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR, _, _));
@@ -772,8 +765,7 @@ TEST_P(GoogleUpdateWinTest, UpdatesDisabledByPolicy) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
@@ -800,8 +792,7 @@ TEST_P(GoogleUpdateWinTest, ManualUpdatesDisabledByPolicy) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
@@ -825,8 +816,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckNoUpdate) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
@@ -849,8 +839,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckUpdateAvailable) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
@@ -872,11 +861,9 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
   // Expect the bundle to be called on to start the install.
-  EXPECT_CALL(*mock_app_bundle, install())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, install()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
@@ -923,11 +910,9 @@ TEST_P(GoogleUpdateWinTest, UpdateFailed) {
   MakeGoogleUpdateMocks(&mock_app_bundle, &mock_app);
 
   // Expect the bundle to be called on to start the update.
-  EXPECT_CALL(*mock_app_bundle, checkForUpdate())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, checkForUpdate()).WillOnce(Return(S_OK));
   // Expect the bundle to be called on to start the install.
-  EXPECT_CALL(*mock_app_bundle, install())
-      .WillOnce(Return(S_OK));
+  EXPECT_CALL(*mock_app_bundle, install()).WillOnce(Return(S_OK));
 
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);

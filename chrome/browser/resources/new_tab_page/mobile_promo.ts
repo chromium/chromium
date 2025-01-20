@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './mobile_promo.css.js';
@@ -46,6 +47,9 @@ export class MobilePromoElement extends CrLitElement {
 
   protected qrCode: string;
 
+  private blocklistedPromo_: boolean = false;
+  private eventTracker_: EventTracker = new EventTracker();
+
   constructor() {
     super();
     NewTabPageProxy.getInstance().handler.getMobilePromoQrCode().then(
@@ -54,16 +58,43 @@ export class MobilePromoElement extends CrLitElement {
         });
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
+
   protected onDismissButtonClick_() {
+    this.blocklistedPromo_ = true;
     NewTabPageProxy.getInstance().handler.onDismissMobilePromo();
     this.$.promoContainer.hidden = true;
     this.$.dismissPromoButtonToast.show();
   }
 
   protected onUndoDismissPromoButtonClick_() {
+    this.blocklistedPromo_ = false;
     NewTabPageProxy.getInstance().handler.onUndoDismissMobilePromo();
     this.$.promoContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
+  }
+
+  // Allow users to undo the dismissal of the mobile promo using Ctrl+Z (or
+  // Cmd+Z on macOS).
+  private onWindowKeydown_(e: KeyboardEvent) {
+    if (!this.blocklistedPromo_) {
+      return;
+    }
+    let ctrlKeyPressed = e.ctrlKey;
+    // <if expr="is_macosx">
+    ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
+    // </if>
+    if (ctrlKeyPressed && e.key === 'z') {
+      this.onUndoDismissPromoButtonClick_();
+    }
   }
 }
 

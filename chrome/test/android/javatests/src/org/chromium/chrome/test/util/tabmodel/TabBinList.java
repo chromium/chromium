@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.util.tabmodel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,5 +41,14 @@ public class TabBinList {
             this.cardIndexInTabSwitcher = cardIndexInTabSwitcher;
             this.tabIndexInGroup = tabIndexInGroup;
         }
+    }
+
+    /** Returns a representation of the bins like "{[11, 12], 13, [14], [15, 16, 17]}". */
+    public String getTabIdsAsString() {
+        List<String> tabBinListStrings = new ArrayList<>();
+        for (TabBin bin : tabBinList) {
+            tabBinListStrings.add(bin.getTabIdsAsString());
+        }
+        return "{" + String.join(", ", tabBinListStrings) + "}";
     }
 }

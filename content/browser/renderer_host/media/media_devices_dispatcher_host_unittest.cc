@@ -18,19 +18,24 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
+#include "content/browser/renderer_host/media/mock_preferred_audio_output_device_manager.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -40,7 +45,9 @@
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
+#include "media/base/output_device_info.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -66,6 +73,19 @@ const char kNoFormatsVideoDeviceID[] = "/dev/video1";
 const char kZeroResolutionVideoDeviceID[] = "/dev/video2";
 const char* const kDefaultVideoDeviceID = kZeroResolutionVideoDeviceID;
 const char kDefaultAudioDeviceID[] = "fake_audio_input_2";
+const char kHashedDeviceId[] =
+    "6e8234b71bf42fc1be87430dd3305da590577819e2bacef805b2cab540fd291e";
+const char kRawDeviceId[] = "Speaker (High Definition Audio)";
+
+// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
+// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
+// and `T` is the callback's type.
+ACTION_TEMPLATE(InvokeCallbackArgument,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_4_VALUE_PARAMS(status, param, device_id, renderer)) {
+  std::move(const_cast<T&>(std::get<k>(args)))
+      .Run(status, param, device_id, renderer);
+}
 
 void PhysicalDevicesEnumerated(base::OnceClosure quit_closure,
                                MediaDeviceEnumeration* out,
@@ -143,12 +163,31 @@ class FakeContentBrowserClient : public ContentBrowserClient {
 
 }  // namespace
 
+class MockAudioOutputAuthorizationHandler
+    : public AudioOutputAuthorizationHandler {
+ public:
+  explicit MockAudioOutputAuthorizationHandler(
+      MediaStreamManager* media_stream_manager)
+      : AudioOutputAuthorizationHandler(/*media::AudioSystem*=*/nullptr,
+                                        media_stream_manager,
+                                        /*render_process_id=*/0) {}
+  ~MockAudioOutputAuthorizationHandler() override = default;
+  MOCK_METHOD(void,
+              RequestDeviceAuthorization,
+              (int,
+               const base::UnguessableToken&,
+               const std::string&,
+               AudioOutputAuthorizationHandler::AuthorizationCompletedCallback),
+              (const, override));
+};
+
 class MediaDevicesDispatcherHostTest
     : public testing::TestWithParam<std::string> {
  public:
   MediaDevicesDispatcherHostTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         origin_(url::Origin::Create(GURL(GetParam()))) {
+
     // Make sure we use fake devices to avoid long delays.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
@@ -176,6 +215,7 @@ class MediaDevicesDispatcherHostTest
 
     InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
+        render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
         render_frame_host_->GetGlobalId(), media_stream_manager_.get());
     media_stream_manager_->media_devices_manager()
         ->set_get_salt_and_origin_cb_for_testing(base::BindRepeating(
@@ -186,6 +226,10 @@ class MediaDevicesDispatcherHostTest
                             base::Unretained(this)));
     host_->SetCaptureHandleConfigCallbackForTesting(base::BindRepeating(
         &MediaDevicesDispatcherHostTest::OnCaptureHandleConfigAccepted,
+        base::Unretained(this)));
+
+    host_->SetAuthorizationForTesting(base::BindRepeating(
+        &MediaDevicesDispatcherHostTest::CreateAuthorizationHandler,
         base::Unretained(this)));
   }
   ~MediaDevicesDispatcherHostTest() override {
@@ -356,6 +400,12 @@ class MediaDevicesDispatcherHostTest
       const std::vector<media::VideoCaptureFormat>& formats) {
     MockAvailableVideoInputDeviceFormatsCallback();
     EXPECT_EQ(formats, expected_video_capture_formats_);
+  }
+
+  std::unique_ptr<AudioOutputAuthorizationHandler>
+  CreateAuthorizationHandler() {
+    EXPECT_TRUE(mock_authorization_handler_);
+    return std::move(mock_authorization_handler_);
   }
 
  protected:
@@ -560,6 +610,11 @@ class MediaDevicesDispatcherHostTest
                                 std::move(callback));
   }
 
+  void SetAuthorizationHandler(
+      std::unique_ptr<AudioOutputAuthorizationHandler> authorization_handler) {
+    mock_authorization_handler_ = std::move(authorization_handler);
+  }
+
   void InitializeRenderFrameHost() {
     web_contents_ = TestWebContents::Create(
         &browser_context_, SiteInstanceImpl::Create(&browser_context_));
@@ -595,6 +650,7 @@ class MediaDevicesDispatcherHostTest
   FakeContentBrowserClient browser_client_;
   TestBrowserContext browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
+  std::unique_ptr<AudioOutputAuthorizationHandler> mock_authorization_handler_;
   raw_ptr<TestRenderFrameHost> render_frame_host_;
 };
 
@@ -892,9 +948,10 @@ TEST_P(MediaDevicesDispatcherHostTest,
        RegisterAndUnregisterWithMediaDevicesManager) {
   {
     mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
-    MediaDevicesDispatcherHost::Create(render_frame_host_->GetGlobalId(),
-                                       media_stream_manager_.get(),
-                                       client.BindNewPipeAndPassReceiver());
+    MediaDevicesDispatcherHost::Create(
+        render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
+        render_frame_host_->GetGlobalId(), media_stream_manager_.get(),
+        client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager_->media_devices_manager()
                   ->num_registered_dispatcher_hosts(),
@@ -906,6 +963,14 @@ TEST_P(MediaDevicesDispatcherHostTest,
   EXPECT_EQ(media_stream_manager_->media_devices_manager()
                 ->num_registered_dispatcher_hosts(),
             0u);
+}
+
+TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNoFeature) {
+  EXPECT_CALL(*this,
+              MockOnBadMessage(
+                  render_frame_host_->GetGlobalId().child_id,
+                  bad_message::MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE));
+  host_->SetPreferredSinkId(kDefaultAudioDeviceID, base::DoNothing());
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoFeature) {
@@ -921,7 +986,6 @@ class SelectAudioOutputTest : public MediaDevicesDispatcherHostTest {
  public:
   SelectAudioOutputTest()
       : feature_list_(blink::features::kSelectAudioOutput) {}
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -993,4 +1057,75 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaDevicesDispatcherHostTest,
                          testing::Values(std::string(), "https://test.com"));
+
+class SetPreferredSinkIdTest : public MediaDevicesDispatcherHostTest {
+ public:
+  SetPreferredSinkIdTest()
+      : feature_list_(blink::features::kPreferredAudioOutputDevices) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SetPreferredSinkIdTest, DispatchPreferredAudioOutputDeviceManager) {
+  auto mock_preferred_audio_output_device_manager =
+      std::make_unique<MockPreferredAudioOutputDeviceManager>();
+  MockPreferredAudioOutputDeviceManager* manager =
+      mock_preferred_audio_output_device_manager.get();
+
+  media_stream_manager_->SetPreferredAudioOutputDeviceManagerForTesting(
+      std::move(mock_preferred_audio_output_device_manager));
+
+  auto authorization_handler =
+      std::make_unique<MockAudioOutputAuthorizationHandler>(
+          media_stream_manager_.get());
+  MockAudioOutputAuthorizationHandler* mock_authorization_handler =
+      authorization_handler.get();
+  SetAuthorizationHandler(std::move(authorization_handler));
+
+  EXPECT_CALL(*mock_authorization_handler,
+              RequestDeviceAuthorization(_, _, kHashedDeviceId, _))
+      .WillOnce(
+          InvokeCallbackArgument<
+              3,
+              AudioOutputAuthorizationHandler::AuthorizationCompletedCallback>(
+              media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK,
+              media::AudioParameters(), kRawDeviceId, ""));
+
+  EXPECT_CALL(*manager, SetPreferredSinkId(_, kRawDeviceId, _)).Times(1);
+  host_->SetPreferredSinkId(kHashedDeviceId, base::DoNothing());
+}
+
+TEST_P(SetPreferredSinkIdTest,
+       DispatchPreferredAudioOutputDeviceManagerNoAuthorization) {
+  auto mock_preferred_audio_output_device_manager =
+      std::make_unique<MockPreferredAudioOutputDeviceManager>();
+  MockPreferredAudioOutputDeviceManager* manager =
+      mock_preferred_audio_output_device_manager.get();
+
+  media_stream_manager_->SetPreferredAudioOutputDeviceManagerForTesting(
+      std::move(mock_preferred_audio_output_device_manager));
+
+  auto authorization_handler =
+      std::make_unique<MockAudioOutputAuthorizationHandler>(
+          media_stream_manager_.get());
+  MockAudioOutputAuthorizationHandler* mock_authorization_handler =
+      authorization_handler.get();
+  SetAuthorizationHandler(std::move(authorization_handler));
+
+  EXPECT_CALL(*mock_authorization_handler,
+              RequestDeviceAuthorization(_, _, kHashedDeviceId, _))
+      .WillOnce(InvokeCallbackArgument<3, AudioOutputAuthorizationHandler::
+                                              AuthorizationCompletedCallback>(
+          media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
+          media::AudioParameters(), kRawDeviceId, ""));
+
+  EXPECT_CALL(*manager, SetPreferredSinkId(_, kRawDeviceId, _)).Times(0);
+  host_->SetPreferredSinkId(kHashedDeviceId, base::DoNothing());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SetPreferredSinkIdTest,
+                         testing::Values(std::string(), "https://test.com"));
+
 }  // namespace content

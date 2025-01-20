@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_TRANSLATE_TRANSLATE_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_TRANSLATE_TRANSLATE_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
 
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_language_selection_consumer.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_translate_language_selection_delegate.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_translate_modal_delegate.h"
+#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_translate_language_selection_consumer.h"
+#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_translate_modal_consumer.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_language_selection_delegate.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate/translate_infobar_modal_overlay_mediator_delegate.h"
 

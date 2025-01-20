@@ -21,7 +21,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 using RequestStatusForMetrics =
@@ -75,42 +74,53 @@ DigitalIdentityProviderAndroid::ShowDigitalIdentityInterstitial(
                      std::move(callback)));
 }
 
-void DigitalIdentityProviderAndroid::Request(content::WebContents* web_contents,
-                                             const url::Origin& origin,
-                                             const base::Value request,
-                                             DigitalIdentityCallback callback) {
+void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
+                                         const url::Origin& origin,
+                                         base::ValueView request,
+                                         DigitalIdentityCallback callback) {
   callback_ = std::move(callback);
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_origin =
-      ConvertUTF8ToJavaString(env, origin.Serialize());
+
   std::optional<std::string> request_str = base::WriteJson(request);
-  ScopedJavaLocalRef<jstring> j_request =
-      ConvertUTF8ToJavaString(env, *request_str);
+  CHECK(request_str.has_value());
 
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
-
   if (web_contents && web_contents->GetTopLevelNativeWindow()) {
     j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
   }
 
   Java_DigitalIdentityProvider_request(
-      env, j_digital_identity_provider_android_, j_window, j_origin,
-      j_request);
+      AttachCurrentThread(), j_digital_identity_provider_android_, j_window,
+      origin.Serialize(), *request_str);
+}
+
+void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
+                                            const url::Origin& origin,
+                                            const base::ValueView request,
+                                            DigitalIdentityCallback callback) {
+  callback_ = std::move(callback);
+  std::optional<std::string> request_str = base::WriteJson(request);
+  CHECK(request_str.has_value());
+  base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
+  if (web_contents && web_contents->GetTopLevelNativeWindow()) {
+    j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
+  }
+
+  Java_DigitalIdentityProvider_create(
+      AttachCurrentThread(), j_digital_identity_provider_android_, j_window,
+      origin.Serialize(), *request_str);
 }
 
 void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
-                                               jstring j_digital_identity,
+                                               jstring j_result,
                                                jint j_status_for_metrics) {
   if (callback_) {
-    std::string digital_identity =
-        ConvertJavaStringToUTF8(env, j_digital_identity);
+    std::string result = ConvertJavaStringToUTF8(env, j_result);
 
     auto status_for_metrics =
         static_cast<RequestStatusForMetrics>(j_status_for_metrics);
     std::move(callback_).Run(
         (status_for_metrics == RequestStatusForMetrics::kSuccess)
-            ? base::expected<std::string, RequestStatusForMetrics>(
-                  digital_identity)
+            ? base::expected<std::string, RequestStatusForMetrics>(result)
             : base::unexpected(status_for_metrics));
   }
 }

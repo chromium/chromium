@@ -29,9 +29,9 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
     // This implements both pull1Algorithm and pull2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -43,7 +43,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
       //     i. Set readAgainForBranch1 to true.
       engine_->read_again_for_branch_[branch_] = true;
       //     ii. Return a promise resolved with undefined.
-      return PromiseResolveWithUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     //   b. Set reading to true.
     engine_->reading_ = true;
@@ -62,7 +62,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
                                   exception_state);
     }
     //   f. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -82,9 +82,9 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamtee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -114,7 +114,7 @@ class ByteStreamTeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       engine_->cancel_promise_->Resolve(cancel_result);
     }
     //   d. Return cancelPromise.
-    return engine_->cancel_promise_->V8Promise();
+    return engine_->cancel_promise_->Promise();
   }
 
   void Trace(Visitor* visitor) const override {

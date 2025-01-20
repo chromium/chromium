@@ -5,8 +5,8 @@ include_rules = [
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/ui/content_suggestions",
-  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/signin/model",
 ]

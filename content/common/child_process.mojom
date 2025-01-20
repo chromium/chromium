@@ -13,7 +13,7 @@ import "services/tracing/public/mojom/system_tracing_service.mojom";
 
 // Information about how logging should be configured.
 // Corresponds to logging::LoggingSettings.
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 struct LoggingSettings {
   uint32 logging_dest;
   handle<platform> log_file_descriptor;
@@ -108,7 +108,7 @@ interface ChildProcess {
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   ReinitializeLogging(LoggingSettings settings);
 
   // Notifies a child process of current memory pressure level.

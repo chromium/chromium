@@ -89,13 +89,6 @@ bool AudioFileReader::OpenDemuxer() {
   if (!codec_context_)
     return false;
 
-  // Future versions of ffmpeg may copy the allow list from the format context.
-  if (!codec_context_->codec_whitelist) {
-    // Note: FFmpeg will try to free this string, so we must duplicate it.
-    codec_context_->codec_whitelist =
-        av_strdup(FFmpegGlue::GetAllowedAudioDecoders());
-  }
-
   DCHECK_EQ(codec_context_->codec_type, AVMEDIA_TYPE_AUDIO);
   return true;
 }

@@ -27,8 +27,12 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/common/process_type.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_set.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/extension_registry.h"  // nogncheck
+#include "extensions/common/extension_set.h"        // nogncheck
+#endif                                              // !BUILDFLAG(IS_ANDROID)
+
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -76,6 +80,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
     case PROCESS_TYPE_NACL_BROKER:
       return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_NACL_BROKER_PREFIX);
     case PROCESS_TYPE_NACL_LOADER: {
+#if !BUILDFLAG(IS_ANDROID)
       auto* profile_manager = g_browser_process->profile_manager();
       if (profile_manager) {
         // TODO(afakhry): Fix the below looping by plumbing a way to get the
@@ -98,6 +103,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
           }
         }
       }
+#endif  // !BUILDFLAG(IS_ANDROID)
       return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_NACL_PREFIX,
                                         result_title);
     }
@@ -168,10 +174,10 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
       v8_memory_used_(-1),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),
+      process_subtype_(subtype),
       uses_v8_memory_(UsesV8Memory(process_type_)) {}
 
-ChildProcessTask::~ChildProcessTask() {
-}
+ChildProcessTask::~ChildProcessTask() = default;
 
 void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
                                int64_t refresh_flags) {
@@ -216,6 +222,17 @@ Task::Type ChildProcessTask::GetType() const {
       return Task::RENDERER;
     default:
       return Task::UNKNOWN;
+  }
+}
+
+Task::SubType ChildProcessTask::GetSubType() const {
+  switch (process_subtype_) {
+    case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
+      return Task::SubType::kSpareRenderer;
+    case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
+      return Task::SubType::kUnknownRenderer;
+    default:
+      return Task::SubType::kNoSubType;
   }
 }
 

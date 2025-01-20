@@ -55,7 +55,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
@@ -73,7 +72,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"
@@ -2341,38 +2339,23 @@ void LockContentsView::UpdateSystemInfoColors() {
 }
 
 void LockContentsView::UpdateBottomStatusIndicatorColors() {
-  const bool jelly_style = chromeos::features::IsJellyrollEnabled();
   switch (bottom_status_indicator_state_) {
     case BottomIndicatorState::kNone:
       return;
     case BottomIndicatorState::kManagedDevice: {
-      if (jelly_style) {
-        bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
-                                          cros_tokens::kCrosSysOnSurface, 20);
-        bottom_status_indicator_->SetEnabledTextColorIds(
-            cros_tokens::kCrosSysOnSurface);
-        bottom_status_indicator_->SetImageLabelSpacing(16);
-      } else {
-        bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
-                                          kColorAshIconColorPrimary);
-        bottom_status_indicator_->SetEnabledTextColorIds(
-            kColorAshTextColorPrimary);
-      }
+      bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
+                                        cros_tokens::kCrosSysOnSurface, 20);
+      bottom_status_indicator_->SetEnabledTextColorIds(
+          cros_tokens::kCrosSysOnSurface);
+      bottom_status_indicator_->SetImageLabelSpacing(16);
       break;
     }
     case BottomIndicatorState::kAdbSideLoadingEnabled: {
-      if (jelly_style) {
-        bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
-                                          cros_tokens::kCrosSysError, 20);
-        bottom_status_indicator_->SetEnabledTextColorIds(
-            cros_tokens::kCrosSysError);
-        bottom_status_indicator_->SetImageLabelSpacing(16);
-      } else {
-        bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
-                                          kColorAshIconColorAlert);
-        bottom_status_indicator_->SetEnabledTextColorIds(
-            kColorAshTextColorAlert);
-      }
+      bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
+                                        cros_tokens::kCrosSysError, 20);
+      bottom_status_indicator_->SetEnabledTextColorIds(
+          cros_tokens::kCrosSysError);
+      bottom_status_indicator_->SetImageLabelSpacing(16);
       break;
     }
   }

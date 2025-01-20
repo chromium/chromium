@@ -23,7 +23,7 @@ constexpr int kFakeBaseGenerationSeed = 10;
 
 class LobsterCandidateResizerTest : public testing::Test {
  public:
-  LobsterCandidateResizerTest() {}
+  LobsterCandidateResizerTest() = default;
   LobsterCandidateResizerTest(const LobsterCandidateResizerTest&) = delete;
   LobsterCandidateResizerTest& operator=(const LobsterCandidateResizerTest&) =
       delete;

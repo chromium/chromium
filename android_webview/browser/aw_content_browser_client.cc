@@ -188,10 +188,6 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::FrameTreeNodeId frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    return nullptr;
-  }
   content::WebContents* web_contents = wc_getter.Run();
   // Check whether current frame is a pre-rendered frame. WebView does not
   // support NoStatePrefetch, so we do not check for that.
@@ -339,7 +335,7 @@ void AwContentBrowserClient::RenderProcessWillLaunch(
   // per-view access checks, and access is granted by default (see
   // AwSettings.mAllowContentUrlAccess).
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      host->GetID(), url::kContentScheme);
+      host->GetDeprecatedID(), url::kContentScheme);
 }
 
 bool AwContentBrowserClient::IsExplicitNavigation(
@@ -582,8 +578,9 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   }
 }
 
-void AwContentBrowserClient::OverrideWebkitPrefs(
+void AwContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if (aw_settings) {
@@ -699,7 +696,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      /* async_check_tracker */ async_check_tracker));
+      /* async_check_tracker */ async_check_tracker,
+      /*referring_app_info=*/std::nullopt));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -747,7 +745,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      /* async_check_tracker */ nullptr));
+      /* async_check_tracker */ nullptr, /*referring_app_info=*/std::nullopt));
 
   return result;
 }
@@ -871,6 +869,7 @@ AwContentBrowserClient::CreateLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
+    content::GuestPageHolder* guest,
     LoginAuthRequiredCallback auth_required_callback) {
   return std::make_unique<AwHttpAuthHandler>(auth_info, web_contents,
                                              first_auth_attempt,
@@ -1264,8 +1263,7 @@ bool AwContentBrowserClient::HasErrorPage(int http_status_code) {
 
 bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      features::kWebViewSuppressDifferentOriginSubframeJSDialogs);
+  return false;
 }
 
 bool AwContentBrowserClient::ShouldPreconnectNavigation(

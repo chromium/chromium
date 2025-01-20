@@ -106,14 +106,15 @@ void FloatingSsoService::UpdateUrlMatchers() {
 
   if (!blocklist.empty()) {
     base::MatcherStringPattern::ID block_id = 0;
-    url_matcher::util::AddFilters(block_url_matcher_.get(), /*allow=*/false,
-                                  &block_id, blocklist);
+    url_matcher::util::AddFiltersWithLimit(
+        block_url_matcher_.get(), /*allow=*/false, &block_id, blocklist);
   }
 
   if (!blocklist_exceptions.empty()) {
     base::MatcherStringPattern::ID except_id = 0;
-    url_matcher::util::AddFilters(except_url_matcher_.get(), /*allow=*/true,
-                                  &except_id, blocklist_exceptions);
+    url_matcher::util::AddFiltersWithLimit(except_url_matcher_.get(),
+                                           /*allow=*/true, &except_id,
+                                           blocklist_exceptions);
   }
 }
 
@@ -133,6 +134,7 @@ bool FloatingSsoService::IsFloatingSsoEnabled() {
   // The feature is restricted to Beta users for the initial testing
   // period. Unknown channel is added to support test execution in CQ,
   // where tests are run on non-branded builds.
+  // TODO(crbug.com/379092376): remove this once Floating SSO is out of beta.
   version_info::Channel channel = chrome::GetChannel();
   if (channel != version_info::Channel::BETA &&
       channel != version_info::Channel::DEV &&
@@ -160,6 +162,13 @@ void FloatingSsoService::RunWhenCookiesAreReady(base::OnceClosure callback) {
     std::move(callback).Run();
   } else {
     on_no_changes_in_progress_callback_ = std::move(callback);
+  }
+}
+
+void FloatingSsoService::MarkToNotOverride(const net::CanonicalCookie& cookie) {
+  std::optional<std::string> storage_key = SerializedKey(cookie);
+  if (storage_key) {
+    bridge_->AddToLocallyPreferredCookies(storage_key.value());
   }
 }
 
@@ -303,6 +312,13 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
 
 bool FloatingSsoService::ShouldSyncCookie(
     const net::CanonicalCookie& cookie) const {
+  // We only sync cookies from HTTP headers because:
+  // 1) this should be enough to transfer auth-related cookies
+  // 2) JavaScript and/or extensions might update cookies much more frequently
+  // and we want to limit the number of Sync requests
+  if (cookie.SourceType() != net::CookieSourceType::kHTTP) {
+    return false;
+  }
   // Filter out session cookies (except when Floating Workspace is enabled).
   if (!cookie.IsPersistent() &&
       !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {

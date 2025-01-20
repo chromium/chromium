@@ -78,8 +78,9 @@ void UMABrowsingActivityObserver::OnAppTerminating() const {
 void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {
   const base::Time upgrade_detected_time =
       UpgradeDetector::GetInstance()->upgrade_detected_time();
-  if (upgrade_detected_time.is_null())
+  if (upgrade_detected_time.is_null()) {
     return;
+  }
   const base::TimeDelta time_since_upgrade =
       base::Time::Now() - upgrade_detected_time;
   constexpr int kMaxDays = 30;

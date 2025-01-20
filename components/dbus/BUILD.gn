@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("dbus") {
+  public_deps = [
+    "//components/dbus/properties",
+    "//components/dbus/utils",
+  ]
+  if (is_linux) {
+    public_deps += [
+      "//components/dbus/menu",
+      "//components/dbus/thread_linux",
+      "//components/dbus/xdg",
+    ]
+  }
+}
+
+group("unit_tests") {
+  testonly = true
+  public_deps = [
+    "//components/dbus/properties:unit_tests",
+    "//components/dbus/utils:unit_tests",
+  ]
+  if (is_linux) {
+    public_deps += [
+      "//components/dbus/menu:unit_tests",
+      "//components/dbus/xdg:unit_tests",
+    ]
+  }
+}

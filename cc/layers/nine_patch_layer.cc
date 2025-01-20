@@ -16,8 +16,7 @@ scoped_refptr<NinePatchLayer> NinePatchLayer::Create() {
   return base::WrapRefCounted(new NinePatchLayer());
 }
 
-NinePatchLayer::NinePatchLayer()
-    : UIResourceLayer(), fill_center_(false), nearest_neighbor_(false) {}
+NinePatchLayer::NinePatchLayer() : UIResourceLayer(), fill_center_(false) {}
 
 NinePatchLayer::~NinePatchLayer() = default;
 
@@ -49,14 +48,6 @@ void NinePatchLayer::SetFillCenter(bool fill_center) {
   SetNeedsCommit();
 }
 
-void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
-    return;
-
-  nearest_neighbor_.Write(*this) = nearest_neighbor;
-  SetNeedsCommit();
-}
-
 void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
   if (layer_occlusion_.Read(*this) == occlusion)
     return;
@@ -65,20 +56,24 @@ void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
   SetNeedsCommit();
 }
 
-void NinePatchLayer::PushPropertiesTo(
+void NinePatchLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  UIResourceLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "NinePatchLayer::PushPropertiesTo");
-  NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
+  UIResourceLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
+                                         unsafe_state);
 
-  if (resource_id()) {
-    DCHECK(IsAttached());
-    layer_impl->SetLayout(image_aperture_.Read(*this), border_.Read(*this),
-                          layer_occlusion_.Read(*this),
-                          fill_center_.Read(*this),
-                          nearest_neighbor_.Read(*this));
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "NinePatchLayer::PushPropertiesTo");
+    NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
+
+    if (resource_id()) {
+      DCHECK(IsAttached());
+      layer_impl->SetLayout(image_aperture_.Read(*this), border_.Read(*this),
+                            layer_occlusion_.Read(*this),
+                            fill_center_.Read(*this));
+    }
   }
 }
 

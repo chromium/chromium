@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CollectionUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,7 @@ import java.util.Map;
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
+@SuppressWarnings("UnusedMethod") // Some of private getters are unused, but exist for completeness.
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;
@@ -56,6 +59,7 @@ public class AutofillProfile {
         private String mGUID = "";
         private @RecordType int mRecordType = RecordType.LOCAL_OR_SYNCABLE;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
+        private ValueWithStatus mAlternativeFullName = ValueWithStatus.EMPTY;
         private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
         private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
         private ValueWithStatus mRegion = ValueWithStatus.EMPTY;
@@ -85,6 +89,17 @@ public class AutofillProfile {
 
         public Builder setFullName(String fullName, @VerificationStatus int status) {
             mFullName = new ValueWithStatus(fullName, status);
+            return this;
+        }
+
+        public Builder setAlternativeFullName(String alternativeFullName) {
+            mAlternativeFullName =
+                    new ValueWithStatus(alternativeFullName, VerificationStatus.USER_VERIFIED);
+            return this;
+        }
+
+        public Builder setAlternativeFullName(String alternativeFullName, @VerificationStatus int status) {
+            mAlternativeFullName = new ValueWithStatus(alternativeFullName, status);
             return this;
         }
 
@@ -200,6 +215,7 @@ public class AutofillProfile {
                     mGUID,
                     mRecordType,
                     mFullName,
+                    mAlternativeFullName,
                     mCompanyName,
                     mStreetAddress,
                     mRegion,
@@ -233,6 +249,7 @@ public class AutofillProfile {
             String guid,
             @RecordType int recordType,
             ValueWithStatus fullName,
+            ValueWithStatus alternativeFullName,
             ValueWithStatus companyName,
             ValueWithStatus streetAddress,
             ValueWithStatus region,
@@ -246,6 +263,7 @@ public class AutofillProfile {
             String languageCode) {
         this(guid, recordType, languageCode);
         mFields.put(FieldType.NAME_FULL, fullName);
+        mFields.put(FieldType.ALTERNATIVE_FULL_NAME, alternativeFullName);
         mFields.put(FieldType.COMPANY_NAME, companyName);
         mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
         mFields.put(FieldType.ADDRESS_HOME_STATE, region);
@@ -271,7 +289,7 @@ public class AutofillProfile {
 
     @CalledByNative
     private @JniType("std::vector<int32_t>") int[] getFieldTypes() {
-        return mFields.keySet().stream().mapToInt(i -> i).toArray();
+        return CollectionUtil.integerCollectionToIntArray(mFields.keySet());
     }
 
     @CalledByNative
@@ -437,6 +455,10 @@ public class AutofillProfile {
 
     public void setFullName(String fullName) {
         setInfo(FieldType.NAME_FULL, fullName);
+    }
+
+    public void setAlternativeFullName(String alternativeFullName) {
+        setInfo(FieldType.ALTERNATIVE_FULL_NAME, alternativeFullName);
     }
 
     public void setCompanyName(String companyName) {

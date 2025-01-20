@@ -37,14 +37,14 @@ SessionAccessor::Ptr SessionAccessor::Create(
     const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model,
-    on_device_model::AdaptationAssets adaptation_assets) {
+    on_device_model::mojom::LoadAdaptationParamsPtr params) {
   Ptr handle(new SessionAccessor(chrome_ml, task_runner, model),
              base::OnTaskRunnerDeleter(task_runner));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&SessionAccessor::CreateInternal,
-                                       base::Unretained(handle.get()),
-                                       std::move(adaptation_assets)));
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::CreateInternal,
+                     base::Unretained(handle.get()), std::move(params)));
   return handle;
 }
 
@@ -109,21 +109,24 @@ void SessionAccessor::CloneFrom(SessionAccessor* other) {
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::CreateInternal(
-    on_device_model::AdaptationAssets adaptation_assets) {
+    on_device_model::mojom::LoadAdaptationParamsPtr params) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (adaptation_assets.weights.IsValid() ||
-      !adaptation_assets.weights_path.empty()) {
-    ChromeMLModelData data;
-    std::string weights_path_str =
-        adaptation_assets.weights_path.AsUTF8Unsafe();
-    if (adaptation_assets.weights.IsValid()) {
-      data.weights_file = adaptation_assets.weights.TakePlatformFile();
-    } else {
-      data.model_path = weights_path_str.data();
-    }
+  if (params) {
     ChromeMLAdaptationDescriptor descriptor = {
-        .model_data = &data,
+        .max_tokens = params->max_tokens,
+        .enable_image_input = params->enable_image_input,
     };
+
+    ChromeMLModelData data;
+    std::string weights_path_str = params->assets.weights_path.AsUTF8Unsafe();
+    if (params->assets.weights.IsValid() || !weights_path_str.empty()) {
+      if (params->assets.weights.IsValid()) {
+        data.weights_file = params->assets.weights.TakePlatformFile();
+      } else {
+        data.model_path = weights_path_str.data();
+      }
+      descriptor.model_data = &data;
+    }
     session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
   } else {
     session_ = chrome_ml_->api().CreateSession(model_, nullptr);
@@ -138,17 +141,14 @@ void SessionAccessor::ExecuteInternal(
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLExecuteOptions options{
-      .prompt = input->text.c_str(),
-      .max_tokens = input->max_tokens.value_or(0),
-      .token_offset = input->token_offset.value_or(0),
-      .max_output_tokens = input->max_output_tokens.value_or(0),
+      .max_tokens = input->max_tokens,
+      .token_offset = input->token_offset,
+      .max_output_tokens = input->max_output_tokens,
       .top_k = input->top_k.value_or(1),
       .temperature = input->temperature.value_or(0),
   };
-  if (input->input) {
-    options.input = input->input->pieces.data();
-    options.input_size = input->input->pieces.size();
-  }
+  options.input = input->input->pieces.data();
+  options.input_size = input->input->pieces.size();
   if (context_saved_fn) {
     options.context_saved_fn = &context_saved_fn;
   }

@@ -55,21 +55,24 @@ Iterator::Iterator(CRBProtocolObservers* protocol_observers)
 }
 
 Iterator::~Iterator() {
-  if (protocol_observers_ && --protocol_observers_->_invocationDepth == 0)
+  if (protocol_observers_ && --protocol_observers_->_invocationDepth == 0) {
     [protocol_observers_ compact];
+  }
 }
 
 id Iterator::GetNext() {
-  if (!protocol_observers_)
+  if (!protocol_observers_) {
     return nil;
+  }
   auto& observers = protocol_observers_->_observers;
   // Skip nil elements.
   size_t max_index = std::min(max_index_, observers.size());
-  while (index_ < max_index && !observers[index_])
+  while (index_ < max_index && !observers[index_]) {
     ++index_;
+  }
   return index_ < max_index ? observers[index_++] : nil;
 }
-}
+}  // namespace
 
 @interface CRBProtocolObservers ()
 
@@ -104,8 +107,9 @@ id Iterator::GetNext() {
   DCHECK(observer);
   DCHECK([observer conformsToProtocol:self.protocol]);
 
-  if (base::Contains(_observers, observer))
+  if (base::Contains(_observers, observer)) {
     return;
+  }
 
   _observers.push_back(observer);
 }
@@ -114,18 +118,20 @@ id Iterator::GetNext() {
   DCHECK(observer);
   auto it = base::ranges::find(_observers, observer);
   if (it != _observers.end()) {
-    if (_invocationDepth)
+    if (_invocationDepth) {
       *it = nil;
-    else
+    } else {
       _observers.erase(it);
+    }
   }
 }
 
 - (BOOL)empty {
   int count = 0;
   for (id observer : _observers) {
-    if (observer != nil)
+    if (observer != nil) {
       ++count;
+    }
   }
   return count == 0;
 }
@@ -134,21 +140,24 @@ id Iterator::GetNext() {
 
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
   NSMethodSignature* signature = [super methodSignatureForSelector:selector];
-  if (signature)
+  if (signature) {
     return signature;
+  }
 
   // Look for a required method in the protocol. protocol_getMethodDescription
   // returns a struct whose fields are null if a method for the selector was
   // not found.
   struct objc_method_description description =
       protocol_getMethodDescription(self.protocol, selector, YES, YES);
-  if (description.types)
+  if (description.types) {
     return [NSMethodSignature signatureWithObjCTypes:description.types];
+  }
 
   // Look for an optional method in the protocol.
   description = protocol_getMethodDescription(self.protocol, selector, NO, YES);
-  if (description.types)
+  if (description.types) {
     return [NSMethodSignature signatureWithObjCTypes:description.types];
+  }
 
   // There is neither a required nor optional method with this selector in the
   // protocol, so invoke -[NSObject doesNotRecognizeSelector:] to raise
@@ -159,25 +168,29 @@ id Iterator::GetNext() {
 
 - (void)forwardInvocation:(NSInvocation*)invocation {
   DCHECK(invocation);
-  if (_observers.empty())
+  if (_observers.empty()) {
     return;
+  }
   SEL selector = [invocation selector];
   Iterator it(self);
   id observer;
   while ((observer = it.GetNext()) != nil) {
-    if ([observer respondsToSelector:selector])
+    if ([observer respondsToSelector:selector]) {
       [invocation invokeWithTarget:observer];
+    }
   }
 }
 
 - (void)executeOnObservers:(ExecutionWithObserverBlock)callback {
   DCHECK(callback);
-  if (_observers.empty())
+  if (_observers.empty()) {
     return;
+  }
   Iterator it(self);
   id observer;
-  while ((observer = it.GetNext()) != nil)
+  while ((observer = it.GetNext()) != nil) {
     callback(observer);
+  }
 }
 
 #pragma mark - Private

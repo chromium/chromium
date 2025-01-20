@@ -45,7 +45,7 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
       frame_token_(local_frame_token.CopyAsOptional()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       main_thread_task_runner_(main_thread_task_runner) {
-  if (frame_token_.has_value()) {
+  if (frame_token_.has_value() && main_thread_task_runner_) {
     // It's only possible to retrieve a `RenderFrame` given a `LocalFrameToken`
     // on the main render thread.
     auto get_renderer_agent_task =

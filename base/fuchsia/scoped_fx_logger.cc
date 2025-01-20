@@ -107,8 +107,9 @@ void ScopedFxLogger::LogMessage(std::string_view file,
                                 uint32_t line_number,
                                 std::string_view msg,
                                 logging::LogSeverity severity) {
-  if (!socket_.is_valid())
+  if (!socket_.is_valid()) {
     return;
+  }
 
   auto fuchsia_severity = LogSeverityToFuchsiaLogSeverity(severity);
 
@@ -124,8 +125,9 @@ void ScopedFxLogger::LogMessage(std::string_view file,
   for (const auto& tag : tags_) {
     buffer.WriteKeyValue("tag", tag);
   }
-  if (!buffer.FlushRecord())
+  if (!buffer.FlushRecord()) {
     fprintf(stderr, "fuchsia_syslog.LogBuffer.FlushRecord() failed\n");
+  }
 }
 
 ScopedFxLogger::ScopedFxLogger(std::vector<std::string_view> tags,

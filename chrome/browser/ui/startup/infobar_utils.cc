@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,18 +38,20 @@
 
 namespace {
 bool ShouldShowBadFlagsSecurityWarnings() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   PrefService* local_state = g_browser_process->local_state();
-  if (!local_state)
+  if (!local_state) {
     return true;
+  }
 
   const auto* pref = local_state->FindPreference(
       prefs::kCommandLineFlagSecurityWarningsEnabled);
   DCHECK(pref);
 
   // The warnings can only be disabled by policy. Default to show warnings.
-  if (pref->IsManaged())
+  if (pref->IsManaged()) {
     return pref->GetValue()->GetBool();
+  }
 #endif
   return true;
 }
@@ -123,9 +124,10 @@ void AddInfoBarsIfNecessary(Browser* browser,
   }
 
   // Web apps should not display the session restore bubble (crbug.com/1264121)
-  if (!is_web_app && HasPendingUncleanExit(browser->profile()))
+  if (!is_web_app && HasPendingUncleanExit(browser->profile())) {
     SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
         browser, /*skip_tab_checking=*/false);
+  }
 
   // These info bars are not shown when the browser is being controlled by
   // automated tests, so that they don't interfere with tests that assume no

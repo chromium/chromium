@@ -16,7 +16,8 @@
 #include "chrome/browser/net/server_certificate_database_nss_migrator.h"
 #endif
 
-class Profile;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace net {
 
@@ -52,7 +53,14 @@ class ServerCertificateDatabaseService : public KeyedService {
   using GetCertificatesCallback = base::OnceCallback<void(
       std::vector<net::ServerCertificateDatabase::CertInformation>)>;
 
-  explicit ServerCertificateDatabaseService(Profile* profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  explicit ServerCertificateDatabaseService(
+      base::FilePath profile_path,
+      PrefService* prefs,
+      ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter);
+#else
+  explicit ServerCertificateDatabaseService(base::FilePath profile_path);
+#endif
 
   ServerCertificateDatabaseService(const ServerCertificateDatabaseService&) =
       delete;
@@ -64,9 +72,9 @@ class ServerCertificateDatabaseService : public KeyedService {
   // Register a callback to be run every time the database is changed.
   base::CallbackListSubscription AddObserver(base::RepeatingClosure callback);
 
-  // Add or update user settings with the included certificate.
-  void AddOrUpdateUserCertificate(
-      net::ServerCertificateDatabase::CertInformation cert_info,
+  // Add or update user settings with the included certificates.
+  void AddOrUpdateUserCertificates(
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos,
       base::OnceCallback<void(bool)> callback);
 
   // Read all certificates from the database.
@@ -89,6 +97,10 @@ class ServerCertificateDatabaseService : public KeyedService {
   void DeleteCertificate(const std::string& sha256hash_hex,
                          base::OnceCallback<void(bool)> callback);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+#endif
+
  private:
   void HandleModificationResult(base::OnceCallback<void(bool)> callback,
                                 bool success);
@@ -98,10 +110,12 @@ class ServerCertificateDatabaseService : public KeyedService {
       ServerCertificateDatabaseNSSMigrator::MigrationResult result);
 #endif
 
-  const raw_ptr<Profile> profile_;
+  const base::FilePath profile_path_;
 
   base::SequenceBound<net::ServerCertificateDatabase> server_cert_database_;
 #if BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<PrefService> prefs_;
+  ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter_;
   std::unique_ptr<ServerCertificateDatabaseNSSMigrator> nss_migrator_;
   std::vector<GetCertificatesCallback> get_certificates_pending_migration_;
 #endif

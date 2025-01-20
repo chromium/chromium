@@ -1,0 +1,164 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 7 0 R
+  /Lang (en-US)
+  /MarkInfo <<
+    /Type /MarkInfo
+    /Marked true
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Contents 6 0 R
+  /Parent 2 0 R
+  /MediaBox [0 0 612 792]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+      /F2 5 0 R
+    >>
+  >>
+  /StructParents 0
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 6 0}} <<
+  {{streamlen}}
+>>
+stream
+/Art <</MCID 0 >>BDC
+BT
+/F1 12 Tf
+20 50 Td
+(Article) Tj
+ET
+EMC
+/BlockQuote <</MCID 1 >>BDC
+BT
+/F1 12 Tf
+20 150 Td
+(BlockQuote) Tj
+ET
+EMC
+/P <</MCID 2 >>BDC
+BT
+/F1 12 Tf
+20 250 Td
+(Paragraph) Tj
+ET
+EMC
+/H1 <</MCID 3 >>BDC
+BT
+/F2 16 Tf
+20 350 Td
+(Heading1) Tj
+ET
+EMC
+/H2 <</MCID 4 >>BDC
+BT
+/F2 14 Tf
+20 550 Td
+(Heading2) Tj
+ET
+EMC
+endstream
+endobj
+{{object 7 0}} <<
+  /Type /StructTreeRoot
+  /K 8 0 R
+  /ParentTree 9 0 R
+  /ParentTreeNextKey 1
+>>
+endobj
+{{object 8 0}} <<
+  /Type /StructElem
+  /S /Document
+  /Lang (en-US)
+  /P 7 0 R
+  /K [10 0 R 11 0 R 12 0 R 13 0 R 14 0 R]
+>>
+endobj
+{{object 9 0}} <<
+  /Type /ParentTree
+  /Nums [0 [10 0 R 11 0 R 12 0 R 13 0 R 14 0 R]]
+>>
+endobj
+{{object 10 0}} <<
+  /Type /StructElem
+  /S /Art
+  /P 8 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 0
+  >>
+>>
+endobj
+{{object 11 0}} <<
+  /Type /StructElem
+  /S /BlockQuote
+  /P 8 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 1
+  >>
+>>
+endobj
+{{object 12 0}} <<
+  /Type /StructElem
+  /S /P
+  /P 8 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 2
+  >>
+>>
+endobj
+{{object 13 0}} <<
+  /Type /StructElem
+  /S /H1
+  /P 8 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 3
+  >>
+>>
+endobj
+{{object 14 0}} <<
+  /Type /StructElem
+  /S /H2
+  /P 8 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 4
+  >>
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

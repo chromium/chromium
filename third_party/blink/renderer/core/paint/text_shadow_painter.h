@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_SHADOW_PAINTER_H_
 
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -20,11 +21,12 @@ class ScopedTextShadowPainter {
 
  public:
   ScopedTextShadowPainter(GraphicsContext& context,
-                          const TextPaintStyle& text_style) {
+                          const TextPaintStyle& text_style,
+                          const bool is_horizontal) {
     if (!text_style.shadow) {
       return;
     }
-    ApplyShadowList(context, text_style);
+    ApplyShadowList(context, text_style, is_horizontal);
   }
   ~ScopedTextShadowPainter() {
     if (context_) {
@@ -34,7 +36,9 @@ class ScopedTextShadowPainter {
   bool HasEffectiveShadow() const { return context_; }
 
  private:
-  void ApplyShadowList(GraphicsContext&, const TextPaintStyle&);
+  void ApplyShadowList(GraphicsContext&,
+                       const TextPaintStyle&,
+                       const bool is_horizontal);
 
   GraphicsContext* context_ = nullptr;
 };
@@ -45,16 +49,23 @@ enum class TextShadowPaintPhase {
 };
 
 template <typename PaintProc>
-void PaintWithTextShadow(PaintProc paint_proc,
-                         GraphicsContext& context,
-                         const TextPaintStyle& text_style) {
-  if (text_style.shadow) {
-    ScopedTextShadowPainter shadow_painter(context, text_style);
+void PaintWithTextShadow(
+    PaintProc paint_proc,
+    GraphicsContext& context,
+    const TextPaintStyle& text_style,
+    const bool is_horizontal,
+    const TextPainter::ShadowMode shadow_mode =
+        TextPainter::ShadowMode::kBothShadowsAndTextProper) {
+  if (text_style.shadow &&
+      shadow_mode != TextPainter::ShadowMode::kTextProperOnly) {
+    ScopedTextShadowPainter shadow_painter(context, text_style, is_horizontal);
     if (shadow_painter.HasEffectiveShadow()) {
       paint_proc(TextShadowPaintPhase::kShadow);
     }
   }
-  paint_proc(TextShadowPaintPhase::kForeground);
+  if (shadow_mode != TextPainter::ShadowMode::kShadowsOnly) {
+    paint_proc(TextShadowPaintPhase::kForeground);
+  }
 }
 
 }  // namespace blink

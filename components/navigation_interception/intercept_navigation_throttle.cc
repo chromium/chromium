@@ -4,6 +4,7 @@
 
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/navigation_handle.h"
@@ -69,12 +70,14 @@ InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
                                   weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::PROCEED;
   }
+  auto weak_this = weak_factory_.GetWeakPtr();
   // No need to set |should_ignore_| since if it is true, we'll cancel the
   // navigation immediately.
   return should_ignore_callback_.Run(navigation_handle())
              ? content::NavigationThrottle::CANCEL_AND_IGNORE
              : content::NavigationThrottle::PROCEED;
-  // Careful, |this| can be deleted at this point.
+  // Clients should not synchronously cause the navigation to be deleted.
+  CHECK(weak_this);
 }
 
 void InterceptNavigationThrottle::RunCheckAsync() {
@@ -84,8 +87,8 @@ void InterceptNavigationThrottle::RunCheckAsync() {
   bool final_deferred_check = deferring_ && pending_checks_ == 0;
   auto weak_this = weak_factory_.GetWeakPtr();
   bool should_ignore = should_ignore_callback_.Run(navigation_handle());
-  if (!weak_this)
-    return;
+  // Clients should not synchronously cause the navigation to be deleted.
+  CHECK(weak_this);
 
   should_ignore_ |= should_ignore;
   if (!final_deferred_check)

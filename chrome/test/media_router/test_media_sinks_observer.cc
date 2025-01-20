@@ -15,8 +15,7 @@ TestMediaSinksObserver::TestMediaSinksObserver(MediaRouter* router,
                                                const url::Origin& origin)
     : MediaSinksObserver(router, source, origin) {}
 
-TestMediaSinksObserver::~TestMediaSinksObserver() {
-}
+TestMediaSinksObserver::~TestMediaSinksObserver() = default;
 
 void TestMediaSinksObserver::OnSinksReceived(
     const std::vector<MediaSink>& result) {

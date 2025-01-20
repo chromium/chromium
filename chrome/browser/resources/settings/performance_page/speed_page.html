@@ -14,8 +14,8 @@
 <settings-toggle-button id="preloadingToggle"
     pref="{{prefs.net.network_prediction_options}}"
     label="$i18n{preloadingPageTitle}"
-    sub-label="$i18n{preloadingToggleSummary}"
-    learn-more-url="$i18n{preloadingLearnMoreUrl}"
+    sub-label-with-link="$i18n{preloadingToggleSummary}"
+    on-sub-label-link-clicked="onPreloadingLearnMoreLinkClick_"
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[networkPredictionOptionsEnum_.STANDARD]]"
     on-change="onPreloadingStateChange_">
@@ -39,7 +39,7 @@
         <div slot="collapse" class="settings-columned-section">
           <div class="column">
             <h2 class="description-header">
-              $i18n{privacyGuideFeatureDescriptionHeader}
+              $i18n{columnHeadingWhenOn}
             </h2>
             <ul>
               <li class="secondary">
@@ -52,7 +52,7 @@
           </div>
           <div class="column">
             <h2 class="description-header">
-              $i18n{privacyGuideThingsToConsider}
+              $i18n{columnHeadingConsider}
             </h2>
             <ul>
               <li class="secondary">
@@ -77,7 +77,7 @@
         <div slot="collapse" class="settings-columned-section">
           <div class="column">
             <h2 class="description-header">
-              $i18n{privacyGuideFeatureDescriptionHeader}
+              $i18n{columnHeadingWhenOn}
             </h2>
             <ul>
               <li class="secondary">
@@ -90,7 +90,7 @@
           </div>
           <div class="column">
             <h2 class="description-header">
-              $i18n{privacyGuideThingsToConsider}
+              $i18n{columnHeadingConsider}
             </h2>
             <ul>
               <li class="secondary">

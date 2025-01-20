@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 
 namespace content {
 
@@ -48,7 +49,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManager {
   // spare before the navigation. Using `GetSpares()` and comparing pointers
   // wouldn't work because there is always a chance that a RPH is destroyed and
   // a new one is created reusing the same address).
-  virtual std::vector<int> GetSpareIds() = 0;
+  virtual std::vector<ChildProcessId> GetSpareIds() = 0;
 
   // Possibly start an unbound, spare RenderProcessHost. A subsequent creation
   // of a RenderProcessHost with a matching browser_context may use this

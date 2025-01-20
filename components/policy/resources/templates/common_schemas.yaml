@@ -271,11 +271,19 @@ TimeUsageLimitEntry:
 UsbDeviceId:
   properties:
     product_id:
+      maximum: 65535
+      minimum: 0
       type: integer
     vendor_id:
+      maximum: 65535
+      minimum: 0
       type: integer
+  required:
+  - product_id
+  - vendor_id
   type: object
 UsbDeviceIdInclusive:
+  description: Use UsbDeviceId in new code.
   properties:
     product_id:
       type: integer

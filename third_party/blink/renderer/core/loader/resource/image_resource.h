@@ -98,6 +98,11 @@ class CORE_EXPORT ImageResource final
   // For compatibility, images keep loading even if there are HTTP errors.
   bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
 
+  void UpdateResourceInfoFromObservers() override;
+  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
+      const override;
+  bool HasNonDegenerateSizeForDecode() const override;
+
   // MultipartImageResourceParser::Client
   void OnePartInMultipartReceived(const ResourceResponse&) final;
   void MultipartDataReceived(base::span<const uint8_t> bytes) final;
@@ -125,9 +130,6 @@ class CORE_EXPORT ImageResource final
   void DecodeError(bool all_data_received);
   bool IsAccessAllowed(
       ImageResourceInfo::DoesCurrentFrameHaveSingleSecurityOrigin) const;
-
-  std::pair<ResourcePriority, ResourcePriority> ComputePriorityFromObservers()
-      override;
 
   bool HasClientsOrObservers() const override;
 

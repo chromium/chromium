@@ -7,12 +7,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -43,10 +39,20 @@
 #include "content/public/common/content_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 namespace extensions {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // A helper class to wait until a given WebContents is audible or inaudible.
 // TODO(devlin): Put this somewhere common? //content/public/test/?
 class AudioWaiter : public content::WebContentsObserver {
@@ -79,6 +85,7 @@ class AudioWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool expected_state_ = false;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Sets the extension to be enabled in incognito mode.
 scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
@@ -115,20 +122,26 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
 
 }  // namespace
 
-class OffscreenApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class OffscreenApiTest : public ExtensionApiTestBase {
  public:
   OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -228,86 +241,89 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
       << message_;
 }
 
-// Tests creating, querying, and closing offscreen documents in an incognito
-// split mode extension.
-// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
-// objects which are intended to be leaked.
-// TODO(crbug.com/345326424): Flaky on Mac builds.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
-#define MAYBE_IncognitoModeHandling_SplitMode \
-  DISABLED_IncognitoModeHandling_SplitMode
-#else
-#define MAYBE_IncognitoModeHandling_SplitMode IncognitoModeHandling_SplitMode
-#endif
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
-                       MAYBE_IncognitoModeHandling_SplitMode) {
-  // `split` incognito mode is required in order to allow the extension to
-  // have a separate process in incognito.
+// Tests opening and immediately closing an offscreen document (so that the
+// close happens before it's fully loaded). Regression test for
+// https://crbug.com/1450784.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function openAndRapidlyClose() {
+             const openResult =
+                 chrome.offscreen.createDocument(
+                     {
+                       url: 'offscreen.html',
+                       reasons: ['TESTING'],
+                       justification: 'Testing'
+                     });
+             chrome.offscreen.closeDocument();
+             await chrome.test.assertPromiseRejects(
+                 openResult,
+                 'Error: Offscreen document closed before fully loading.');
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
+ public:
+  OffscreenApiTestWithoutCommandLineFlag() = default;
+  ~OffscreenApiTestWithoutCommandLineFlag() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Explicitly don't call OffscreenApiTest's version to avoid adding the
+    // commandline flag.
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests that the `TESTING` reason is disallowed without the appropriate
+// commandline switch.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
+                       TestingReasonNotAllowed) {
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",
            "manifest_version": 3,
            "version": "0.1",
-           "background": {"service_worker": "background.js"},
            "permissions": ["offscreen"],
-           "incognito": "split"
+           "background": { "service_worker": "background.js" }
          })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function cannotCreateDocumentWithTestingReason() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.offscreen.createDocument(
+                     {
+                         url: 'offscreen.html',
+                         reasons: ['TESTING'],
+                         justification: 'testing'
+                     }),
+                 'Error: The `TESTING` reason is only available with the ' +
+                 '--offscreen-document-testing commandline switch applied.');
+             chrome.test.succeed();
+           },
+         ]);)";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     "<html>offscreen</html>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
 
-  scoped_refptr<const Extension> extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  extension = SetExtensionIncognitoEnabled(*extension, *profile());
-  ASSERT_TRUE(extension);
-
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_browser);
-  Profile* incognito_profile = incognito_browser->profile();
-
-  // We're going to be executing scripts in the service worker context, so
-  // ensure the service worker is active.
-  // TODO(devlin): Should BackgroundScriptExecutor handle that for us? (Perhaps
-  // optionally?)
-  WakeUpServiceWorker(*extension, *profile());
-  WakeUpServiceWorker(*extension, *incognito_profile);
-
-  auto has_offscreen_document = [this, extension](Profile& profile) {
-    bool programmatic =
-        ProgrammaticallyCheckIfHasOffscreenDocument(*extension, profile);
-    bool in_manager =
-        OffscreenDocumentManager::Get(&profile)
-            ->GetOffscreenDocumentForExtension(*extension) != nullptr;
-    EXPECT_EQ(programmatic, in_manager) << "Mismatch between manager and API.";
-    return programmatic && in_manager;
-  };
-
-  // Create an offscreen document in the on-the-record profile. Only it should
-  // have a document; the off-the-record profile is considered distinct.
-  ProgrammaticallyCreateOffscreenDocument(*extension, *profile());
-  EXPECT_TRUE(has_offscreen_document(*profile()));
-  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
-
-  // Now, create a new document in the off-the-record profile.
-  ProgrammaticallyCreateOffscreenDocument(*extension,
-                                          *incognito_browser->profile());
-  EXPECT_TRUE(has_offscreen_document(*profile()));
-  EXPECT_TRUE(has_offscreen_document(*incognito_profile));
-
-  // Close the off-the-record profile - the on-the-record profile's offscreen
-  // document should remain open.
-  ProgrammaticallyCloseOffscreenDocument(*extension, *incognito_profile);
-  EXPECT_TRUE(has_offscreen_document(*profile()));
-  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
-
-  // Finally, close the on-the-record profile's document.
-  ProgrammaticallyCloseOffscreenDocument(*extension, *profile());
-  EXPECT_FALSE(has_offscreen_document(*profile()));
-  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
 // Tests creating, querying, and closing offscreen documents in an incognito
@@ -346,9 +362,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   extension = SetExtensionIncognitoEnabled(*extension, *profile());
   ASSERT_TRUE(extension);
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_browser);
-  Profile* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Wake up the on-the-record service worker (the only one we have, as a
   // spanning mode extension).
@@ -383,6 +398,87 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
             incognito_manager->GetOffscreenDocumentForExtension(*extension));
 }
 
+// Tests creating, querying, and closing offscreen documents in an incognito
+// split mode extension.
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+// TODO(crbug.com/345326424): Flaky on Mac builds.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_IncognitoModeHandling_SplitMode \
+  DISABLED_IncognitoModeHandling_SplitMode
+#else
+#define MAYBE_IncognitoModeHandling_SplitMode IncognitoModeHandling_SplitMode
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
+                       MAYBE_IncognitoModeHandling_SplitMode) {
+  // `split` incognito mode is required in order to allow the extension to
+  // have a separate process in incognito.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"],
+           "incognito": "split"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     "<html>offscreen</html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  extension = SetExtensionIncognitoEnabled(*extension, *profile());
+  ASSERT_TRUE(extension);
+
+  Profile* incognito_profile = GetOrCreateIncognitoProfile();
+
+  // We're going to be executing scripts in the service worker context, so
+  // ensure the service worker is active.
+  // TODO(devlin): Should BackgroundScriptExecutor handle that for us? (Perhaps
+  // optionally?)
+  WakeUpServiceWorker(*extension, *profile());
+  WakeUpServiceWorker(*extension, *incognito_profile);
+
+  auto has_offscreen_document = [this, extension](Profile& profile) {
+    bool programmatic =
+        ProgrammaticallyCheckIfHasOffscreenDocument(*extension, profile);
+    bool in_manager =
+        OffscreenDocumentManager::Get(&profile)
+            ->GetOffscreenDocumentForExtension(*extension) != nullptr;
+    EXPECT_EQ(programmatic, in_manager) << "Mismatch between manager and API.";
+    return programmatic && in_manager;
+  };
+
+  // Create an offscreen document in the on-the-record profile. Only it should
+  // have a document; the off-the-record profile is considered distinct.
+  ProgrammaticallyCreateOffscreenDocument(*extension, *profile());
+  EXPECT_TRUE(has_offscreen_document(*profile()));
+  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
+
+  // Now, create a new document in the off-the-record profile.
+  ProgrammaticallyCreateOffscreenDocument(*extension, *incognito_profile);
+  EXPECT_TRUE(has_offscreen_document(*profile()));
+  EXPECT_TRUE(has_offscreen_document(*incognito_profile));
+
+  // Close the off-the-record profile - the on-the-record profile's offscreen
+  // document should remain open.
+  ProgrammaticallyCloseOffscreenDocument(*extension, *incognito_profile);
+  EXPECT_TRUE(has_offscreen_document(*profile()));
+  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
+
+  // Finally, close the on-the-record profile's document.
+  ProgrammaticallyCloseOffscreenDocument(*extension, *profile());
+  EXPECT_FALSE(has_offscreen_document(*profile()));
+  EXPECT_FALSE(has_offscreen_document(*incognito_profile));
+}
+
+// TODO(crbug.com/378916068): Enable more tests on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   static constexpr char kManifest[] =
       R"({
@@ -464,44 +560,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   EXPECT_FALSE(manager->GetOffscreenDocumentForExtension(*extension));
 }
 
-// Tests opening and immediately closing an offscreen document (so that the
-// close happens before it's fully loaded). Regression test for
-// https://crbug.com/1450784.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "background.js"},
-           "permissions": ["offscreen"]
-         })";
-  static constexpr char kBackgroundJs[] =
-      R"(chrome.test.runTests([
-           async function openAndRapidlyClose() {
-             const openResult =
-                 chrome.offscreen.createDocument(
-                     {
-                       url: 'offscreen.html',
-                       reasons: ['TESTING'],
-                       justification: 'Testing'
-                     });
-             chrome.offscreen.closeDocument();
-             await chrome.test.assertPromiseRejects(
-                 openResult,
-                 'Error: Offscreen document closed before fully loading.');
-             chrome.test.succeed();
-           },
-         ]);)";
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
-
-  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
-}
-
 // TODO(crbug.com/40272130): Failing on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
@@ -523,18 +581,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-
-class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
- public:
-  OffscreenApiTestWithoutCommandLineFlag() = default;
-  ~OffscreenApiTestWithoutCommandLineFlag() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Explicitly don't call OffscreenApiTest's version to avoid adding the
-    // commandline flag.
-    ExtensionApiTest::SetUpCommandLine(command_line);
-  }
-};
 
 // Tests opening an offscreen document that takes awhile to load properly waits
 // for the document to load before resolving the promise, ensuring the document
@@ -647,40 +693,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-
-// Tests that the `TESTING` reason is disallowed without the appropriate
-// commandline switch.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
-                       TestingReasonNotAllowed) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "permissions": ["offscreen"],
-           "background": { "service_worker": "background.js" }
-         })";
-  static constexpr char kBackgroundJs[] =
-      R"(chrome.test.runTests([
-           async function cannotCreateDocumentWithTestingReason() {
-             await chrome.test.assertPromiseRejects(
-                 chrome.offscreen.createDocument(
-                     {
-                         url: 'offscreen.html',
-                         reasons: ['TESTING'],
-                         justification: 'testing'
-                     }),
-                 'Error: The `TESTING` reason is only available with the ' +
-                 '--offscreen-document-testing commandline switch applied.');
-             chrome.test.succeed();
-           },
-         ]);)";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
-
-  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
-}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

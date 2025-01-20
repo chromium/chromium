@@ -81,13 +81,15 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->Close();
+  }
 }
 
 bool SecurePaymentConfirmationNoCredsDialogView::ClickOptOutForTesting() {
-  if (!model_->opt_out_visible())
+  if (!model_->opt_out_visible()) {
     return false;
+  }
   OnOptOutClicked();
   return true;
 }
@@ -103,14 +105,16 @@ SecurePaymentConfirmationNoCredsDialogView::GetWeakPtr() {
 
 void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
   auto callback = std::move(response_callback_);
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   std::move(callback).Run();
   HideDialog();
 
-  if (observer_for_test_)
+  if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
+  }
 }
 
 void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {

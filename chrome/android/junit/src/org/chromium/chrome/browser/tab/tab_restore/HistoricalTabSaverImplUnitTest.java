@@ -60,7 +60,7 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver.ignoreUrlSchemesForTesting(true);
 
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         mSecondaryTabModelSupplier.set(mSecondaryTabModel);
     }

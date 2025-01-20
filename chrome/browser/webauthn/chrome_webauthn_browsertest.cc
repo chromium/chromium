@@ -1032,7 +1032,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
 
   // Allow the virtual device to respond to requests, then simulate clicking the
   // "Sign in with another device…" button and wait for a result.
-  base::RunLoop run_loop;
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return true; });
@@ -1493,6 +1492,292 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor,
                       kMakeDiscoverableCredential));
   EXPECT_TRUE(trace_.str().find("TYPE: mc\n") != std::string::npos)
       << trace_.str();
+}
+
+class ChallengeUrlBrowserTest : public WebAuthnBrowserTest {
+ public:
+  static constexpr char kValidChallenge[] = "1234567890123456";
+
+  class DelegateObserver
+      : public ChromeAuthenticatorRequestDelegate::TestObserver {
+   public:
+    explicit DelegateObserver(ChallengeUrlBrowserTest* test_instance)
+        : test_instance_(test_instance) {}
+    virtual ~DelegateObserver() = default;
+
+    void WaitForUI() {
+      ui_shown_run_loop_->Run();
+      ui_shown_run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    // ChromeAuthenticatorRequestDelegate::TestObserver:
+    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
+      test_instance_->UpdateRequestDelegate(delegate);
+    }
+
+    void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
+      test_instance_->UpdateRequestDelegate(nullptr);
+    }
+
+    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
+      ui_shown_run_loop_->QuitWhenIdle();
+    }
+
+   private:
+    raw_ptr<ChallengeUrlBrowserTest> test_instance_;
+    std::unique_ptr<base::RunLoop> ui_shown_run_loop_ =
+        std::make_unique<base::RunLoop>();
+  };
+  class ModelObserver : public AuthenticatorRequestDialogModel::Observer {
+   public:
+    explicit ModelObserver(AuthenticatorRequestDialogModel* model)
+        : model_(model) {
+      model_->observers.AddObserver(this);
+    }
+
+    ~ModelObserver() override {
+      if (model_) {
+        model_->observers.RemoveObserver(this);
+        model_ = nullptr;
+      }
+    }
+
+    // Call this before the state transition you are looking to observe.
+    void SetStepToObserve(AuthenticatorRequestDialogModel::Step step) {
+      ASSERT_FALSE(run_loop_);
+      step_ = step;
+      run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    // Call this to observer the next step change, whatever it might be.
+    void ObserveNextStep() {
+      ASSERT_FALSE(run_loop_);
+      run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    // This will return after a transition to the state previously specified by
+    // `SetStepToObserve`. Returns immediately if the current step matches.
+    void WaitForStep() {
+      if (model_->step() == step_) {
+        run_loop_.reset();
+        return;
+      }
+      ASSERT_TRUE(run_loop_);
+      run_loop_->Run();
+      // When waiting for `kClosed` the model is deleted at this point.
+      if (step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
+        CHECK_EQ(step_, model_->step());
+      }
+      Reset();
+    }
+
+    // AuthenticatorRequestDialogModel::Observer:
+    void OnStepTransition() override {
+      if (run_loop_ && step_ == model_->step()) {
+        run_loop_->QuitWhenIdle();
+      }
+    }
+
+    void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
+      model_ = nullptr;
+    }
+
+    void Reset() {
+      step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
+      run_loop_.reset();
+    }
+
+   private:
+    raw_ptr<AuthenticatorRequestDialogModel> model_;
+    AuthenticatorRequestDialogModel::Step step_ =
+        AuthenticatorRequestDialogModel::Step::kNotStarted;
+    std::unique_ptr<base::RunLoop> run_loop_;
+  };
+
+  void SetUpOnMainThread() override {
+    // Handlers have to be registered before the server is started.
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&ChallengeUrlBrowserTest::HandleChallengeRequest,
+                            base::Unretained(this)));
+    WebAuthnBrowserTest::SetUpOnMainThread();
+
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory_ = virtual_device_factory.get();
+    virtual_device_factory->mutable_state()->InjectResidentKey(
+        kCredentialID, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
+        "flandre", "Flandre Scarlet");
+    virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
+    device::VirtualCtap2Device::Config config;
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    virtual_device_factory->SetCtap2Config(std::move(config));
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(virtual_device_factory));
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+    delegate_observer_ = std::make_unique<DelegateObserver>(this);
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
+        delegate_observer_.get());
+  }
+
+  void PostRunTestOnMainThread() override {
+    // To avoid dangling raw_ptr's these values need to be destroyed before
+    // this test class.
+    virtual_device_factory_ = nullptr;
+    auth_env_.reset();
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
+    WebAuthnBrowserTest::PostRunTestOnMainThread();
+  }
+
+  void SetRequestHandlerOverride(
+      net::EmbeddedTestServer::HandleRequestCallback override) {
+    request_handler_override_ = std::move(override);
+  }
+
+  void UpdateRequestDelegate(ChromeAuthenticatorRequestDelegate* delegate) {
+    request_delegate_ = delegate;
+    if (request_delegate_) {
+      model_observer_ =
+          std::make_unique<ModelObserver>(delegate->dialog_model());
+    }
+  }
+
+  ChromeAuthenticatorRequestDelegate* request_delegate() {
+    return request_delegate_;
+  }
+
+  DelegateObserver* delegate_observer() { return delegate_observer_.get(); }
+
+  ModelObserver* model_observer() { return model_observer_.get(); }
+
+ protected:
+  static constexpr std::string kChallengePath = "/challenge";
+
+  static constexpr char kGetAssertionWithChallengeUrl[] = R"((() => {
+    let cred_id = new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+    return navigator.credentials.get({ publicKey: {
+      challengeUrl: '/challenge',
+      timeout: 10000,
+      userVerification: 'discouraged',
+      allowCredentials: [{type: 'public-key', id: cred_id}],
+      }}).then(c => { var decoder = new TextDecoder("utf-8");
+                      window.domAutomationController.send(
+                          decoder.decode(new Uint8Array(
+                              c.response.clientDataJSON))); },
+               e => window.domAutomationController.send('error ' + e));
+    })())";
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleChallengeRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kChallengePath) {
+      return nullptr;
+    }
+
+    if (request_handler_override_) {
+      return std::move(request_handler_override_).Run(request);
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("application/x-webauthn-challenge");
+    http_response->set_content(kValidChallenge);
+
+    return http_response;
+  }
+
+  net::EmbeddedTestServer::HandleRequestCallback request_handler_override_;
+  std::unique_ptr<DelegateObserver> delegate_observer_;
+  std::unique_ptr<ModelObserver> model_observer_;
+  raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
+  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest, ChallengeUrlGetAssertion) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionWithChallengeUrl);
+
+  std::string encoded_challenge;
+  base::Base64UrlEncode(kValidChallenge,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_challenge);
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_THAT(result, testing::HasSubstr(encoded_challenge));
+}
+
+// TODO(https://crbug.com/389255414): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
+                       DISABLED_ChallengeUrlEmptyChallenge) {
+  SetRequestHandlerOverride(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+
+        http_response->set_code(net::HTTP_OK);
+        http_response->set_content_type("application/x-webauthn-challenge");
+        http_response->set_content("");
+
+        return http_response;
+      }));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionWithChallengeUrl);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kErrorFetchingChallenge);
+  model_observer()->WaitForStep();
+  request_delegate()->dialog_model()->CancelAuthenticatorRequest();
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
+}
+
+// TODO(https://crbug.com/389255414): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
+                       DISABLED_ChallengeUrlWrongContentType) {
+  SetRequestHandlerOverride(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+
+        http_response->set_code(net::HTTP_OK);
+        http_response->set_content_type("text/plain");
+        http_response->set_content(kValidChallenge);
+
+        return http_response;
+      }));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionWithChallengeUrl);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kErrorFetchingChallenge);
+  model_observer()->WaitForStep();
+
+  request_delegate()->dialog_model()->CancelAuthenticatorRequest();
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
 }
 
 }  // namespace

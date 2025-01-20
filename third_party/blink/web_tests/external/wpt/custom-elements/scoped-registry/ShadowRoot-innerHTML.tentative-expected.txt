@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] innerHTML on a disconnected element should use the associated scoped custom element registry
+  assert_true: expected true got false
+[FAIL] innerHTML on a connected shadow root should use its scoped custom element
+  assert_true: expected true got false
+[FAIL] innerHTML on an inserted element should use the scoped custom element of the ancestor shadow root
+  assert_true: expected true got false
+[FAIL] innerHTML should not upgrade a custom element inside a template element
+  assert_equals: expected "SomeElement" but got "SomeElement1"
+Harness: the test ran to completion.

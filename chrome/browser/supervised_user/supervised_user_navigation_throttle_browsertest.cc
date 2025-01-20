@@ -575,7 +575,7 @@ const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(
 bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
     content::FrameTreeNodeId frame_id) {
   std::string command =
-      "document.getElementsByClassName('supervised-user-block') != null";
+      "document.querySelector('.supervised-user-block') != null";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 

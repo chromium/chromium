@@ -25,7 +25,7 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
   StorageSchemaManifestHandlerTest()
       : scoped_channel_(version_info::Channel::DEV) {}
 
-  ~StorageSchemaManifestHandlerTest() override {}
+  ~StorageSchemaManifestHandlerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

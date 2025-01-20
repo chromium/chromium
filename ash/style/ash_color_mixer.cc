@@ -31,7 +31,6 @@ namespace {
 constexpr int kAlpha8 = SK_AlphaOPAQUE * 0.08f;
 constexpr int kAlpha10 = SK_AlphaOPAQUE * 0.1f;
 constexpr int kAlpha20 = SK_AlphaOPAQUE * 0.2f;
-constexpr int kAlpha24 = SK_AlphaOPAQUE * 0.24f;
 constexpr int kAlpha25 = SK_AlphaOPAQUE * 0.25f;
 constexpr int kAlpha40 = SK_AlphaOPAQUE * 0.4f;
 constexpr int kAlpha60 = SK_AlphaOPAQUE * 0.6f;
@@ -47,52 +46,24 @@ constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
 
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderKey& key) {
-  if (chromeos::features::IsJellyEnabled()) {
-    // Generally, shield and base colors are cros.sys.sys-base-elevated.  That
-    // is cros.sys.surface3 @ 90%.  So, map all shield colors to surface3 and
-    // keep all the opacities.
-    //
-    // New users should use cros.sys.sys-base-elevated directly.
-    mixer[kColorAshShieldAndBase20] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha20);
-    mixer[kColorAshShieldAndBase40] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha40);
-    mixer[kColorAshShieldAndBase60] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha60);
-    mixer[kColorAshShieldAndBase80] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha80);
-    mixer[kColorAshShieldAndBase90] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha90);
-    mixer[kColorAshShieldAndBase95] =
-        ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha95);
-    mixer[kColorAshShieldAndBaseOpaque] = {cros_tokens::kCrosSysSurface3};
-    return;
-  }
-
-  const bool use_dark_color =
-      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
-
-  // Colors of the Shield and Base layers.
-  const SkColor default_background_color =
-      use_dark_color ? gfx::kGoogleGrey900 : SK_ColorWHITE;
-  // TODO(minch|skau): Investigate/fix whether should DCHECK the existence of
-  // the value of `use_color` here.
-  const SkColor background_color =
-      key.user_color.value_or(default_background_color);
-
-  mixer[kColorAshShieldAndBase20] = {SkColorSetA(background_color, kAlpha20)};
-  mixer[kColorAshShieldAndBase40] = {SkColorSetA(background_color, kAlpha40)};
-  mixer[kColorAshShieldAndBase60] = {SkColorSetA(background_color, kAlpha60)};
-  mixer[kColorAshShieldAndBase80] = {SkColorSetA(background_color, kAlpha80)};
-  mixer[kColorAshInvertedShieldAndBase80] = {
-      SkColorSetA(color_utils::InvertColor(background_color), kAlpha80)};
-  mixer[kColorAshShieldAndBase90] = {SkColorSetA(background_color, kAlpha90)};
-  mixer[kColorAshShieldAndBase95] = {SkColorSetA(background_color, kAlpha95)};
-  mixer[kColorAshShieldAndBaseOpaque] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE)};
-
-  // TODO(b/270468758): Remove when the last caller has been deleted.
-  mixer[kColorAshShieldAndBase80Light] = {SkColorSetA(SK_ColorWHITE, kAlpha80)};
+  // Generally, shield and base colors are cros.sys.sys-base-elevated.  That
+  // is cros.sys.surface3 @ 90%.  So, map all shield colors to surface3 and
+  // keep all the opacities.
+  //
+  // New users should use cros.sys.sys-base-elevated directly.
+  mixer[kColorAshShieldAndBase20] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha20);
+  mixer[kColorAshShieldAndBase40] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha40);
+  mixer[kColorAshShieldAndBase60] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha60);
+  mixer[kColorAshShieldAndBase80] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha80);
+  mixer[kColorAshShieldAndBase90] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha90);
+  mixer[kColorAshShieldAndBase95] =
+      ui::SetAlpha(cros_tokens::kCrosSysSurface3, kAlpha95);
+  mixer[kColorAshShieldAndBaseOpaque] = {cros_tokens::kCrosSysSurface3};
 }
 
 // Mappings of Controls Colors for Material 2.
@@ -164,13 +135,9 @@ void AddContentColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
       ui::SetAlpha(kColorAshAppStateIndicatorColor, kDisabledColorOpacity);
   mixer[kColorAshShelfHandleColor] = {cros_tokens::kCrosSysOnSurface};
   mixer[kColorAshShelfTooltipBackgroundColor] = {
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshInvertedShieldAndBase80};
+      cros_tokens::kCrosSysOnSurface};
   mixer[kColorAshShelfTooltipForegroundColor] = {
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysInverseOnSurface)
-          : cros_tokens::kTextColorPrimaryInverted};
+      cros_tokens::kCrosSysInverseOnSurface};
   mixer[kColorAshSliderColorActive] = {kColorAshTextColorURL};
   mixer[kColorAshSliderColorInactive] = {kColorAshScrollBarColor};
   mixer[kColorAshRadioColorActive] = {kColorAshTextColorURL};
@@ -476,113 +443,6 @@ void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
       ui::kColorRefNeutralVariant100};
 }
 
-// Overrides some cros.sys colors in `mixer` with values that are appropriate
-// for pre-Jelly features.
-void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
-  mixer[cros_tokens::kCrosSysPrimary] = {dark_mode ? gfx::kGoogleBlue200
-                                                   : gfx::kGoogleBlue600};
-  mixer[cros_tokens::kCrosSysOnPrimary] = {dark_mode ? gfx::kGoogleGrey900
-                                                     : gfx::kGoogleGrey200};
-  mixer[cros_tokens::kCrosSysSecondary] = {cros_tokens::kColorSecondary};
-  mixer[cros_tokens::kCrosSysOnSecondary] = {dark_mode ? gfx::kGoogleGrey800
-                                                       : gfx::kGoogleGrey600};
-
-  if (dark_mode) {
-    // LightInkRipple in dark mode
-    mixer[cros_tokens::kCrosSysDisabledContainer] = ui::SetAlpha(
-        SK_ColorBLACK, StyleUtil::kLightInkDropOpacity * SK_AlphaOPAQUE);
-  } else {
-    // DarkInkRipple in dark mode
-    mixer[cros_tokens::kCrosSysDisabledContainer] = ui::SetAlpha(
-        SK_ColorWHITE, StyleUtil::kDarkInkDropOpacity * SK_AlphaOPAQUE);
-  }
-
-  mixer[cros_tokens::kCrosSysHoverOnSubtle] = {SK_ColorTRANSPARENT};
-  mixer[cros_tokens::kCrosSysSystemBaseElevated] = {kColorAshShieldAndBase80};
-  mixer[cros_tokens::kCrosSysSystemOnBase] = {
-      kColorAshControlBackgroundColorInactive};
-  mixer[cros_tokens::kCrosSysSystemOnNegativeContainer] = {
-      kColorAshTextColorPrimary};
-  mixer[cros_tokens::kCrosSysSystemOnPrimaryContainer] = {
-      dark_mode ? ui::ColorTransform(gfx::kGoogleGrey900)
-                : ui::ColorTransform(kColorAshTextColorPrimary)};
-
-  mixer[cros_tokens::kCrosSysSystemNegativeContainer] = {gfx::kGoogleRed300};
-  mixer[cros_tokens::kCrosSysPositive] = {cros_tokens::kColorPositive};
-
-  mixer[cros_tokens::kCrosSysSystemPrimaryContainer] = {
-      dark_mode ? gfx::kGoogleBlue200 : gfx::kGoogleBlue300};
-
-  // Colors for feature tile that differ from sys token mappings.
-  mixer[kColorAshTileSmallCircle] =
-      dark_mode ? ui::ColorTransform(cros_tokens::kCrosSysHighlightShape)
-                : ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12% opacity
-
-  // Remap the base color used in illustrations.
-  mixer[cros_tokens::kCrosSysAppBaseShaded] = {cros_tokens::kBgColor};
-
-  // Remap illo tokens to GM2 equivilants so GM3 assets will render reasonably
-  // if the jelly flag is flipped off for launch.
-  mixer[cros_tokens::kCrosSysIlloColor1] = {cros_tokens::kIllustrationColor1};
-  mixer[cros_tokens::kCrosSysIlloColor11] = {
-      cros_tokens::kIllustrationColor1Shade1};
-  mixer[cros_tokens::kCrosSysIlloColor12] = {
-      cros_tokens::kIllustrationColor1Shade2};
-  mixer[cros_tokens::kCrosSysIlloColor2] = {cros_tokens::kIllustrationColor2};
-  mixer[cros_tokens::kCrosSysIlloColor3] = {cros_tokens::kIllustrationColor3};
-  mixer[cros_tokens::kCrosSysIlloColor4] = {cros_tokens::kIllustrationColor4};
-  mixer[cros_tokens::kCrosSysIlloColor5] = {cros_tokens::kIllustrationColor5};
-  mixer[cros_tokens::kCrosSysIlloColor6] = {cros_tokens::kIllustrationColor6};
-  mixer[cros_tokens::kCrosSysIlloBase] = {cros_tokens::kIllustrationBaseColor};
-  mixer[cros_tokens::kCrosSysIlloSecondary] = {
-      cros_tokens::kIllustrationSecondaryColor};
-  // Card colors are new in GM3 and have no equivalent GM2 token. As such as map
-  // them to hex codes directly as specified in go/cros-tokens.
-  mixer[cros_tokens::kCrosSysIlloCardColor1] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x42, 0x4d, 0x63))
-                : SkColorSetRGB(0xff, 0xca, 0xd1);
-  mixer[cros_tokens::kCrosSysIlloCardOnColor1] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xf6, 0xae, 0xa9))
-                : SkColorSetRGB(0xa5, 0x0e, 0x0e);
-  mixer[cros_tokens::kCrosSysIlloCardColor2] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x62, 0x5a, 0x47))
-                : SkColorSetRGB(0xfb, 0xe0, 0x97);
-  mixer[cros_tokens::kCrosSysIlloCardOnColor2] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xfd, 0xe2, 0x93))
-                : SkColorSetRGB(0x9b, 0x61, 0x00);
-  mixer[cros_tokens::kCrosSysIlloCardColor3] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x4d, 0x63, 0x52))
-                : SkColorSetRGB(0xc6, 0xeb, 0xcb);
-  mixer[cros_tokens::kCrosSysIlloCardOnColor3] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xa8, 0xda, 0xb5))
-                : SkColorSetRGB(0x0d, 0x65, 0x2d);
-  mixer[cros_tokens::kCrosSysIlloCardColor4] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x42, 0x4d, 0x63))
-                : SkColorSetRGB(0xd0, 0xe1, 0xfa);
-  mixer[cros_tokens::kCrosSysIlloCardOnColor4] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xae, 0xcb, 0xfa))
-                : SkColorSetRGB(0x18, 0x5a, 0xbc);
-  mixer[cros_tokens::kCrosSysIlloCardColor5] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x51, 0x40, 0x64))
-                : SkColorSetRGB(0xf6, 0xe9, 0xf8);
-  mixer[cros_tokens::kCrosSysIlloCardOnColor5] =
-      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xd7, 0xae, 0xfb))
-                : SkColorSetRGB(0x75, 0x09, 0x9b);
-  // Some GM2 assets are "elevated" meaning they have slightly different
-  // colors to improve contrast on their elevated surfaces in dark mode. To
-  // handle this we create "elevated" sys tokens that are the same as their
-  // unelevated counterparts when the jelly flag is on but resolve to higher
-  // contrast GM2 colors when jelly is off and dark mode is on.
-  mixer[cros_tokens::kCrosSysIlloElevatedColor11] = {
-      cros_tokens::kIllustrationElevationColor1Shade1};
-  mixer[cros_tokens::kCrosSysIlloElevatedColor12] = {
-      cros_tokens::kIllustrationElevationColor1Shade2};
-  mixer[cros_tokens::kCrosSysIlloElevatedBase] = {
-      cros_tokens::kIllustrationElevationBaseColor};
-  mixer[cros_tokens::kCrosSysIlloElevatedSecondary] = {
-      cros_tokens::kIllustrationElevationSecondaryColor};
-}
-
 // Maps colors used in Skottie images to their cros.sys values.
 void RemapIllustrationColors(ui::ColorMixer& mixer) {
   mixer[ui::kColorNativeColor1] = {cros_tokens::kCrosSysIlloColor1};
@@ -634,11 +494,9 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   bool dark_mode = key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
-  if (chromeos::features::IsJellyEnabled()) {
-    AddRefPalette(mixer, key);
-  } else {
-    cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
-  }
+
+  AddRefPalette(mixer, key);
+
   // Add after ref colors since it needs to override them.
   AddHarmonizedColors(mixer, key);
   AddSparkleColors(mixer, key);
@@ -646,19 +504,12 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
   // Gaming colors override sys colors (so need to be added later).
   AddGamingColors(mixer, key);
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Overrides some cros.sys colors with pre-Jelly values so they can used in
-    // UI with the Jelly flag off.
-    ReverseMapSysColors(mixer, dark_mode);
-  }
 
   // TODO(b/234400002): Remove legacy colors once all usages are cleaned up.
   cros_tokens::AddLegacySemanticColorsToMixer(mixer, dark_mode);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    RemapLegacySemanticColors(mixer);
-    RemapIllustrationColors(mixer);
-  }
+  RemapLegacySemanticColors(mixer);
+  RemapIllustrationColors(mixer);
 }
 
 void AddAshColorMixer(ui::ColorProvider* provider,
@@ -666,7 +517,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
   const bool use_dark_color =
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
@@ -712,17 +562,12 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshOnboardingFocusRing] = {cros_tokens::kColorProminentDark};
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(
-                chromeos::features::IsSystemBlurEnabled()
-                    ? cros_tokens::kCrosSysSystemBaseElevated
-                    : cros_tokens::kCrosSysSystemBaseElevatedOpaque)
-          : kColorAshShieldAndBase80};
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
-          : kColorAshInkDrop};
+      cros_tokens::kCrosSysHoverOnSubtle};
 
   mixer[ui::kColorAshSystemUIMenuSeparator] = {cros_tokens::kCrosSysSeparator};
 
@@ -747,9 +592,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       cros_tokens::kCrosSysSystemOnBase};
 
   mixer[kColorAshSystemInfoBarChartColorForeground] = {
-      use_dark_color
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryDark)
-          : static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)};
+      use_dark_color ? cros_tokens::kCrosSysPrimaryDark
+                     : cros_tokens::kCrosSysPrimary};
 
   mixer[kColorAshSystemInfoBarChartWarningColorForeground] = {
       cros_tokens::kCrosSysError};
@@ -779,31 +623,23 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       use_dark_color ? cros_tokens::kCrosRefNeutral20
                      : cros_tokens::kCrosRefNeutral80};
 
-  if (is_jelly_enabled) {
-    mixer[ui::kColorRadioButtonForegroundChecked] = {
-        cros_tokens::kCrosSysPrimary};
-    mixer[ui::kColorRadioButtonForegroundUnchecked] = {
-        cros_tokens::kCrosSysSecondary};
-  }
+  mixer[ui::kColorRadioButtonForegroundChecked] = {
+      cros_tokens::kCrosSysPrimary};
+  mixer[ui::kColorRadioButtonForegroundUnchecked] = {
+      cros_tokens::kCrosSysSecondary};
 
   // Ambient shadow colors.
-  mixer[ui::kColorShadowValueAmbientShadowElevationFour] =
-      is_jelly_enabled
-          ? ui::SetAlpha(
-                use_dark_color
-                    ? static_cast<ui::ColorId>(cros_tokens::kCrosRefNeutral0)
-                    : static_cast<ui::ColorId>(cros_tokens::kCrosSysShadow),
-                kAlpha10)
-          : ui::SetAlpha(SK_ColorBLACK, kAlpha10);
+  mixer[ui::kColorShadowValueAmbientShadowElevationFour] = ui::SetAlpha(
+      use_dark_color ? cros_tokens::kCrosRefNeutral0
+                     : static_cast<ui::ColorId>(cros_tokens::kCrosSysShadow),
+      kAlpha10);
   mixer[ui::kColorShadowValueAmbientShadowElevationTwelve] = {
       ui::kColorShadowValueAmbientShadowElevationFour};
   mixer[ui::kColorShadowValueAmbientShadowElevationTwentyFour] =
-      is_jelly_enabled
-          ? ui::SetAlpha(cros_tokens::kCrosSysShadow, kAlpha10)
-          : ui::ColorTransform(ui::kColorShadowValueAmbientShadowElevationFour);
+      ui::SetAlpha(cros_tokens::kCrosSysShadow, kAlpha10);
 
   // Key shadow colors.
-  int key_shadow_opacity = is_jelly_enabled ? kAlpha20 : kAlpha24;
+  int key_shadow_opacity = kAlpha20;
   mixer[ui::kColorShadowValueKeyShadowElevationFour] = ui::SetAlpha(
       ui::kColorShadowValueAmbientShadowElevationFour, key_shadow_opacity);
   mixer[ui::kColorShadowValueKeyShadowElevationTwelve] = ui::SetAlpha(
@@ -829,7 +665,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
   mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
 
-  if (is_jelly_enabled && !key.custom_theme &&
+  if (!key.custom_theme &&
       key.user_color_source == ui::ColorProviderKey::UserColorSource::kAccent) {
     // Only override frame color if there's no custom theme or we'll override
     // the value from the theme. Fallback to the default ui/color definition for

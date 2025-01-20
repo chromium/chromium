@@ -29,7 +29,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -329,8 +329,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // Fill in text with link to Settings.
         TextView promoText = view.findViewById(R.id.contextual_search_promo_text);
 
-        NoUnderlineClickableSpan settingsLink =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan settingsLink =
+                new ChromeClickableSpan(
                         view.getContext(),
                         (View ignored) ->
                                 ContextualSearchPromoControl.this.handleClickSettingsLink());

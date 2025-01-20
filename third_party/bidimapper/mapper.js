@@ -174,14 +174,14 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    // keep-sorted end
     var BiDiModule;
     (function (BiDiModule) {
         // keep-sorted start
         BiDiModule["Bluetooth"] = "bluetooth";
         BiDiModule["Browser"] = "browser";
         BiDiModule["BrowsingContext"] = "browsingContext";
-        BiDiModule["Cdp"] = "cdp";
+        BiDiModule["Cdp"] = "goog:cdp";
+        BiDiModule["DeprecatedCdp"] = "cdp";
         BiDiModule["Input"] = "input";
         BiDiModule["Log"] = "log";
         BiDiModule["Network"] = "network";
@@ -385,19 +385,28 @@
      * limitations under the License.
      */
     class BidiNoOpParser {
-        // Bluetooth domain
+        // Bluetooth module
         // keep-sorted start block=yes
         parseHandleRequestDevicePromptParams(params) {
             return params;
         }
+        parseSimulateAdapterParameters(params) {
+            return params;
+        }
+        parseSimulateAdvertisementParameters(params) {
+            return params;
+        }
+        parseSimulatePreconnectedPeripheralParameters(params) {
+            return params;
+        }
         // keep-sorted end
-        // Browser domain
+        // Browser module
         // keep-sorted start block=yes
         parseRemoveUserContextParams(params) {
             return params;
         }
         // keep-sorted end
-        // Browsing Context domain
+        // Browsing Context module
         // keep-sorted start block=yes
         parseActivateParams(params) {
             return params;
@@ -436,7 +445,7 @@
             return params;
         }
         // keep-sorted end
-        // CDP domain
+        // CDP module
         // keep-sorted start block=yes
         parseGetSessionParams(params) {
             return params;
@@ -448,7 +457,7 @@
             return params;
         }
         // keep-sorted end
-        // Script domain
+        // Script module
         // keep-sorted start block=yes
         parseAddPreloadScriptParams(params) {
             return params;
@@ -469,7 +478,7 @@
             return params;
         }
         // keep-sorted end
-        // Input domain
+        // Input module
         // keep-sorted start block=yes
         parsePerformActionsParams(params) {
             return params;
@@ -481,7 +490,7 @@
             return params;
         }
         // keep-sorted end
-        // Network domain
+        // Network module
         // keep-sorted start block=yes
         parseAddInterceptParams(params) {
             return params;
@@ -508,20 +517,19 @@
             return params;
         }
         // keep-sorted end
-        // Permissions domain
+        // Permissions module
         // keep-sorted start block=yes
         parseSetPermissionsParams(params) {
             return params;
         }
         // keep-sorted end
-        // Session domain
+        // Session module
         // keep-sorted start block=yes
         parseSubscribeParams(params) {
             return params;
         }
         // keep-sorted end
-        // Storage domain
-        // keep-sorted start block=yes
+        // Storage module
         parseDeleteCookiesParams(params) {
             return params;
         }
@@ -551,8 +559,10 @@
      */
     class BrowserProcessor {
         #browserCdpClient;
-        constructor(browserCdpClient) {
+        #browsingContextStorage;
+        constructor(browserCdpClient, browsingContextStorage) {
             this.#browserCdpClient = browserCdpClient;
+            this.#browsingContextStorage = browsingContextStorage;
         }
         close() {
             // Ensure that it is put at the end of the event loop.
@@ -606,6 +616,35 @@
                     }),
                 ],
             };
+        }
+        async #getWindowInfo(targetId) {
+            const windowInfo = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId });
+            return {
+                // `active` is not supported in CDP yet.
+                active: false,
+                clientWindow: `${windowInfo.windowId}`,
+                state: windowInfo.bounds.windowState ?? 'normal',
+                height: windowInfo.bounds.height ?? 0,
+                width: windowInfo.bounds.width ?? 0,
+                x: windowInfo.bounds.left ?? 0,
+                y: windowInfo.bounds.top ?? 0,
+            };
+        }
+        async getClientWindows() {
+            const topLevelTargetIds = this.#browsingContextStorage
+                .getTopLevelContexts()
+                .map((b) => b.cdpTarget.id);
+            const clientWindows = await Promise.all(topLevelTargetIds.map(async (targetId) => await this.#getWindowInfo(targetId)));
+            const uniqueClientWindowIds = new Set();
+            const uniqueClientWindows = new Array();
+            // Filter out duplicated client windows.
+            for (const window of clientWindows) {
+                if (!uniqueClientWindowIds.has(window.clientWindow)) {
+                    uniqueClientWindowIds.add(window.clientWindow);
+                    uniqueClientWindows.push(window);
+                }
+            }
+            return { clientWindows: uniqueClientWindows };
         }
     }
 
@@ -842,7 +881,7 @@
             catch (error) {
                 // Swallow error that arise from the page being destroyed
                 // Example is navigating to faulty SSL certificate
-                if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (!(error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
                     error.message === 'Not attached to an active page')) {
                     throw error;
                 }
@@ -1876,15 +1915,23 @@
             assert(result.result.type === 'boolean');
             return result.result.value;
         };
+        #browsingContextStorage;
         #tickStart = 0;
         #tickDuration = 0;
         #inputState;
-        #context;
+        #contextId;
         #isMacOS;
-        constructor(inputState, context, isMacOS) {
+        constructor(inputState, browsingContextStorage, contextId, isMacOS) {
+            this.#browsingContextStorage = browsingContextStorage;
             this.#inputState = inputState;
-            this.#context = context;
+            this.#contextId = contextId;
             this.#isMacOS = isMacOS;
+        }
+        /**
+         * The context can be disposed between action ticks, so need to get it each time.
+         */
+        get #context() {
+            return this.#browsingContextStorage.getContext(this.#contextId);
         }
         async dispatchActions(optionsByTick) {
             await this.#inputState.queue.run(async () => {
@@ -2169,25 +2216,18 @@
             } while (!last);
         }
         async #getFrameOffset() {
+            if (this.#context.id === this.#context.cdpTarget.id) {
+                return { x: 0, y: 0 };
+            }
             // https://github.com/w3c/webdriver/pull/1847 proposes dispatching events from
             // the top-level browsing context. This implementation dispatches it on the top-most
             // same-target frame, which is not top-level one in case of OOPiF.
             // TODO: switch to the top-level browsing context.
-            try {
-                const { backendNodeId } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getFrameOwner', { frameId: this.#context.id });
-                const { model: frameBoxModel } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getBoxModel', {
-                    backendNodeId,
-                });
-                return { x: frameBoxModel.content[0], y: frameBoxModel.content[1] };
-            }
-            catch (e) {
-                if (e.code === -32000 &&
-                    e.message === 'Frame with the given id does not belong to the target.') {
-                    // Heuristic to determine if the browsing context is top-level in the target session.
-                    return { x: 0, y: 0 };
-                }
-                throw e;
-            }
+            const { backendNodeId } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getFrameOwner', { frameId: this.#context.id });
+            const { model: frameBoxModel } = await this.#context.cdpTarget.cdpClient.sendCommand('DOM.getBoxModel', {
+                backendNodeId,
+            });
+            return { x: frameBoxModel.content[0], y: frameBoxModel.content[1] };
         }
         async #getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY) {
             let targetX;
@@ -2768,7 +2808,7 @@
             const context = this.#browsingContextStorage.getContext(params.context);
             const inputState = this.#inputStateManager.get(context.top);
             const actionsByTick = this.#getActionsByTick(params, inputState);
-            const dispatcher = new ActionDispatcher(inputState, context, await ActionDispatcher.isMacOS(context).catch(() => false));
+            const dispatcher = new ActionDispatcher(inputState, this.#browsingContextStorage, params.context, await ActionDispatcher.isMacOS(context).catch(() => false));
             await dispatcher.dispatchActions(actionsByTick);
             return {};
         }
@@ -2776,7 +2816,7 @@
             const context = this.#browsingContextStorage.getContext(params.context);
             const topContext = context.top;
             const inputState = this.#inputStateManager.get(topContext);
-            const dispatcher = new ActionDispatcher(inputState, context, await ActionDispatcher.isMacOS(context).catch(() => false));
+            const dispatcher = new ActionDispatcher(inputState, this.#browsingContextStorage, params.context, await ActionDispatcher.isMacOS(context).catch(() => false));
             await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
             this.#inputStateManager.delete(topContext);
             return {};
@@ -2942,9 +2982,270 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const URLPattern = globalThis.URLPattern;
-    if (!URLPattern) {
-        throw new Error('Unable to find URLPattern');
+    /**
+     * Encodes a string to base64.
+     *
+     * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
+     * @param {string} base64Str
+     * @return {string}
+     */
+    function base64ToString(base64Str) {
+        // Available only if run in a browser context.
+        if ('atob' in globalThis) {
+            return globalThis.atob(base64Str);
+        }
+        // Available only if run in a NodeJS context.
+        return Buffer.from(base64Str, 'base64').toString('ascii');
+    }
+
+    /*
+     * Copyright 2023 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     *
+     */
+    function computeHeadersSize(headers) {
+        const requestHeaders = headers.reduce((acc, header) => {
+            return `${acc}${header.name}: ${header.value.value}\r\n`;
+        }, '');
+        return new TextEncoder().encode(requestHeaders).length;
+    }
+    /** Converts from CDP Network domain headers to BiDi network headers. */
+    function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
+        if (!headers) {
+            return [];
+        }
+        return Object.entries(headers).map(([name, value]) => ({
+            name,
+            value: {
+                type: 'string',
+                value,
+            },
+        }));
+    }
+    /** Converts from Bidi network headers to CDP Fetch domain header entries. */
+    function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
+        if (headers === undefined) {
+            return undefined;
+        }
+        return headers.map(({ name, value }) => ({
+            name,
+            value: value.value,
+        }));
+    }
+    function networkHeaderFromCookieHeaders(headers) {
+        if (headers === undefined) {
+            return undefined;
+        }
+        const value = headers.reduce((acc, value, index) => {
+            if (index > 0) {
+                acc += ';';
+            }
+            const cookieValue = value.value.type === 'base64'
+                ? btoa(value.value.value)
+                : value.value.value;
+            acc += `${value.name}=${cookieValue}`;
+            return acc;
+        }, '');
+        return {
+            name: 'Cookie',
+            value: {
+                type: 'string',
+                value,
+            },
+        };
+    }
+    /** Converts from Bidi auth action to CDP auth challenge response. */
+    function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
+        switch (action) {
+            case 'default':
+                return 'Default';
+            case 'cancel':
+                return 'CancelAuth';
+            case 'provideCredentials':
+                return 'ProvideCredentials';
+        }
+    }
+    /**
+     * Converts from CDP Network domain cookie to BiDi network cookie.
+     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
+     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+     */
+    function cdpToBiDiCookie(cookie) {
+        const result = {
+            name: cookie.name,
+            value: { type: 'string', value: cookie.value },
+            domain: cookie.domain,
+            path: cookie.path,
+            size: cookie.size,
+            httpOnly: cookie.httpOnly,
+            secure: cookie.secure,
+            sameSite: cookie.sameSite === undefined
+                ? "none" /* Network.SameSite.None */
+                : sameSiteCdpToBiDi(cookie.sameSite),
+            ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
+        };
+        // Extending with CDP-specific properties with `goog:` prefix.
+        result[`goog:session`] = cookie.session;
+        result[`goog:priority`] = cookie.priority;
+        result[`goog:sameParty`] = cookie.sameParty;
+        result[`goog:sourceScheme`] = cookie.sourceScheme;
+        result[`goog:sourcePort`] = cookie.sourcePort;
+        if (cookie.partitionKey !== undefined) {
+            result[`goog:partitionKey`] = cookie.partitionKey;
+        }
+        if (cookie.partitionKeyOpaque !== undefined) {
+            result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
+        }
+        return result;
+    }
+    /**
+     * Decodes a byte value to a string.
+     * @param {Network.BytesValue} value
+     * @return {string}
+     */
+    function deserializeByteValue(value) {
+        if (value.type === 'base64') {
+            return base64ToString(value.value);
+        }
+        return value.value;
+    }
+    /**
+     * Converts from BiDi set network cookie params to CDP Network domain cookie.
+     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
+     */
+    function bidiToCdpCookie(params, partitionKey) {
+        const deserializedValue = deserializeByteValue(params.cookie.value);
+        const result = {
+            name: params.cookie.name,
+            value: deserializedValue,
+            domain: params.cookie.domain,
+            path: params.cookie.path ?? '/',
+            secure: params.cookie.secure ?? false,
+            httpOnly: params.cookie.httpOnly ?? false,
+            ...(partitionKey.sourceOrigin !== undefined && {
+                partitionKey: {
+                    hasCrossSiteAncestor: false,
+                    // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
+                    topLevelSite: partitionKey.sourceOrigin,
+                },
+            }),
+            ...(params.cookie.expiry !== undefined && {
+                expires: params.cookie.expiry,
+            }),
+            ...(params.cookie.sameSite !== undefined && {
+                sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
+            }),
+        };
+        // Extending with CDP-specific properties with `goog:` prefix.
+        if (params.cookie[`goog:url`] !== undefined) {
+            result.url = params.cookie[`goog:url`];
+        }
+        if (params.cookie[`goog:priority`] !== undefined) {
+            result.priority = params.cookie[`goog:priority`];
+        }
+        if (params.cookie[`goog:sameParty`] !== undefined) {
+            result.sameParty = params.cookie[`goog:sameParty`];
+        }
+        if (params.cookie[`goog:sourceScheme`] !== undefined) {
+            result.sourceScheme = params.cookie[`goog:sourceScheme`];
+        }
+        if (params.cookie[`goog:sourcePort`] !== undefined) {
+            result.sourcePort = params.cookie[`goog:sourcePort`];
+        }
+        return result;
+    }
+    function sameSiteCdpToBiDi(sameSite) {
+        switch (sameSite) {
+            case 'Strict':
+                return "strict" /* Network.SameSite.Strict */;
+            case 'None':
+                return "none" /* Network.SameSite.None */;
+            case 'Lax':
+                return "lax" /* Network.SameSite.Lax */;
+            default:
+                // Defaults to `Lax`:
+                // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+                return "lax" /* Network.SameSite.Lax */;
+        }
+    }
+    function sameSiteBiDiToCdp(sameSite) {
+        switch (sameSite) {
+            case "strict" /* Network.SameSite.Strict */:
+                return 'Strict';
+            case "lax" /* Network.SameSite.Lax */:
+                return 'Lax';
+            case "none" /* Network.SameSite.None */:
+                return 'None';
+        }
+        throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
+    }
+    /**
+     * Returns true if the given protocol is special.
+     * Special protocols are those that have a default port.
+     *
+     * Example inputs: 'http', 'http:'
+     *
+     * @see https://url.spec.whatwg.org/#special-scheme
+     */
+    function isSpecialScheme(protocol) {
+        return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(protocol.replace(/:$/, ''));
+    }
+    function getScheme(url) {
+        return url.protocol.replace(/:$/, '');
+    }
+    /** Matches the given URLPattern against the given URL. */
+    function matchUrlPattern(pattern, url) {
+        // Roughly https://w3c.github.io/webdriver-bidi/#match-url-pattern
+        // plus some differences based on the URL parsing methods.
+        const parsedUrl = new URL(url);
+        if (pattern.protocol !== undefined &&
+            pattern.protocol !== getScheme(parsedUrl)) {
+            return false;
+        }
+        if (pattern.hostname !== undefined &&
+            pattern.hostname !== parsedUrl.hostname) {
+            return false;
+        }
+        if (pattern.port !== undefined && pattern.port !== parsedUrl.port) {
+            return false;
+        }
+        if (pattern.pathname !== undefined &&
+            pattern.pathname !== parsedUrl.pathname) {
+            return false;
+        }
+        if (pattern.search !== undefined && pattern.search !== parsedUrl.search) {
+            return false;
+        }
+        return true;
+    }
+    function bidiBodySizeFromCdpPostDataEntries(entries) {
+        let size = 0;
+        for (const entry of entries) {
+            size += atob(entry.bytes ?? '').length;
+        }
+        return size;
+    }
+    function getTiming(timing, offset = 0) {
+        if (!timing) {
+            return 0;
+        }
+        if (timing <= 0 || timing + offset <= 0) {
+            return 0;
+        }
+        return timing + offset;
     }
 
     /**
@@ -2963,7 +3264,7 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** Dispatches Network domain commands. */
+    /** Dispatches Network module commands. */
     class NetworkProcessor {
         #browsingContextStorage;
         #networkStorage;
@@ -3139,78 +3440,143 @@
         }
         static parseUrlPatterns(urlPatterns) {
             return urlPatterns.map((urlPattern) => {
+                let patternUrl = '';
+                let hasProtocol = true;
+                let hasHostname = true;
+                let hasPort = true;
+                let hasPathname = true;
+                let hasSearch = true;
                 switch (urlPattern.type) {
                     case 'string': {
-                        NetworkProcessor.parseUrlString(urlPattern.pattern);
-                        return urlPattern;
+                        patternUrl = unescapeURLPattern(urlPattern.pattern);
+                        break;
                     }
-                    case 'pattern':
-                        // No params signifies intercept all
-                        if (urlPattern.protocol === undefined &&
-                            urlPattern.hostname === undefined &&
-                            urlPattern.port === undefined &&
-                            urlPattern.pathname === undefined &&
-                            urlPattern.search === undefined) {
-                            return urlPattern;
+                    case 'pattern': {
+                        if (urlPattern.protocol === undefined) {
+                            hasProtocol = false;
+                            patternUrl += 'http';
                         }
-                        if (urlPattern.protocol) {
+                        else {
+                            if (urlPattern.protocol === '') {
+                                throw new InvalidArgumentException('URL pattern must specify a protocol');
+                            }
                             urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
                             if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
                                 throw new InvalidArgumentException('Forbidden characters');
                             }
+                            patternUrl += urlPattern.protocol;
                         }
-                        if (urlPattern.hostname) {
+                        const scheme = patternUrl.toLocaleLowerCase();
+                        patternUrl += ':';
+                        if (isSpecialScheme(scheme)) {
+                            patternUrl += '//';
+                        }
+                        if (urlPattern.hostname === undefined) {
+                            if (scheme !== 'file') {
+                                patternUrl += 'placeholder';
+                            }
+                            hasHostname = false;
+                        }
+                        else {
+                            if (urlPattern.hostname === '') {
+                                throw new InvalidArgumentException('URL pattern must specify a hostname');
+                            }
+                            if (urlPattern.protocol === 'file') {
+                                throw new InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
+                            }
                             urlPattern.hostname = unescapeURLPattern(urlPattern.hostname);
+                            let insideBrackets = false;
+                            for (const c of urlPattern.hostname) {
+                                if (c === '/' || c === '?' || c === '#') {
+                                    throw new InvalidArgumentException(`'/', '?', '#' are forbidden in hostname`);
+                                }
+                                if (!insideBrackets && c === ':') {
+                                    throw new InvalidArgumentException(`':' is only allowed inside brackets in hostname`);
+                                }
+                                if (c === '[') {
+                                    insideBrackets = true;
+                                }
+                                if (c === ']') {
+                                    insideBrackets = false;
+                                }
+                            }
+                            patternUrl += urlPattern.hostname;
                         }
-                        if (urlPattern.port) {
+                        if (urlPattern.port === undefined) {
+                            hasPort = false;
+                        }
+                        else {
+                            if (urlPattern.port === '') {
+                                throw new InvalidArgumentException(`URL pattern must specify a port`);
+                            }
                             urlPattern.port = unescapeURLPattern(urlPattern.port);
+                            patternUrl += ':';
+                            if (!urlPattern.port.match(/^\d+$/)) {
+                                throw new InvalidArgumentException('Forbidden characters');
+                            }
+                            patternUrl += urlPattern.port;
                         }
-                        if (urlPattern.pathname) {
+                        if (urlPattern.pathname === undefined) {
+                            hasPathname = false;
+                        }
+                        else {
                             urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
                             if (urlPattern.pathname[0] !== '/') {
-                                urlPattern.pathname = `/${urlPattern.pathname}`;
+                                patternUrl += '/';
                             }
                             if (urlPattern.pathname.includes('#') ||
                                 urlPattern.pathname.includes('?')) {
                                 throw new InvalidArgumentException('Forbidden characters');
                             }
+                            patternUrl += urlPattern.pathname;
                         }
-                        else if (urlPattern.pathname === '') {
-                            urlPattern.pathname = '/';
+                        if (urlPattern.search === undefined) {
+                            hasSearch = false;
                         }
-                        if (urlPattern.search) {
+                        else {
                             urlPattern.search = unescapeURLPattern(urlPattern.search);
                             if (urlPattern.search[0] !== '?') {
-                                urlPattern.search = `?${urlPattern.search}`;
+                                patternUrl += '?';
                             }
                             if (urlPattern.search.includes('#')) {
                                 throw new InvalidArgumentException('Forbidden characters');
                             }
+                            patternUrl += urlPattern.search;
                         }
-                        if (urlPattern.protocol === '') {
-                            throw new InvalidArgumentException(`URL pattern must specify a protocol`);
-                        }
-                        if (urlPattern.hostname === '') {
-                            throw new InvalidArgumentException(`URL pattern must specify a hostname`);
-                        }
-                        if ((urlPattern.hostname?.length ?? 0) > 0) {
-                            if (urlPattern.protocol?.match(/^file/i)) {
-                                throw new InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
-                            }
-                            if (urlPattern.hostname?.includes(':')) {
-                                throw new InvalidArgumentException(`URL pattern hostname must not contain a colon`);
-                            }
-                        }
-                        if (urlPattern.port === '') {
-                            throw new InvalidArgumentException(`URL pattern must specify a port`);
-                        }
-                        try {
-                            new URLPattern(urlPattern);
-                        }
-                        catch (error) {
-                            throw new InvalidArgumentException(`${error}`);
-                        }
-                        return urlPattern;
+                        break;
+                    }
+                }
+                const serializePort = (url) => {
+                    const defaultPorts = {
+                        'ftp:': 21,
+                        'file:': null,
+                        'http:': 80,
+                        'https:': 443,
+                        'ws:': 80,
+                        'wss:': 443,
+                    };
+                    if (isSpecialScheme(url.protocol) &&
+                        defaultPorts[url.protocol] !== null &&
+                        (!url.port || String(defaultPorts[url.protocol]) === url.port)) {
+                        return '';
+                    }
+                    else if (url.port) {
+                        return url.port;
+                    }
+                    return undefined;
+                };
+                try {
+                    const url = new URL(patternUrl);
+                    return {
+                        protocol: hasProtocol ? url.protocol.replace(/:$/, '') : undefined,
+                        hostname: hasHostname ? url.hostname : undefined,
+                        port: hasPort ? serializePort(url) : undefined,
+                        pathname: hasPathname && url.pathname ? url.pathname : undefined,
+                        search: hasSearch ? url.search : undefined,
+                    };
+                }
+                catch (err) {
+                    throw new InvalidArgumentException(`${err.message} '${patternUrl}'`);
                 }
             });
         }
@@ -3915,278 +4281,20 @@
                 },
             };
         }
-        async subscribe(params, channel = null) {
-            await this.#eventManager.subscribe(params.events, params.contexts ?? [null], channel);
+        async subscribe(params, channel = {}) {
+            const subscription = await this.#eventManager.subscribe(params.events, params.contexts ?? [], channel);
+            return {
+                subscription,
+            };
+        }
+        async unsubscribe(params, channel = {}) {
+            await this.#eventManager.unsubscribe(params.events, params.contexts ?? [], channel);
             return {};
         }
-        async unsubscribe(params, channel = null) {
-            await this.#eventManager.unsubscribe(params.events, params.contexts ?? [null], channel);
-            return {};
-        }
     }
 
     /**
-     * Copyright 2024 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    /**
-     * Encodes a string to base64.
-     *
-     * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
-     * @param {string} base64Str
-     * @return {string}
-     */
-    function base64ToString(base64Str) {
-        // Available only if run in a browser context.
-        if ('atob' in globalThis) {
-            return globalThis.atob(base64Str);
-        }
-        // Available only if run in a NodeJS context.
-        return Buffer.from(base64Str, 'base64').toString('ascii');
-    }
-
-    /*
-     * Copyright 2023 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     *
-     */
-    function computeHeadersSize(headers) {
-        const requestHeaders = headers.reduce((acc, header) => {
-            return `${acc}${header.name}: ${header.value.value}\r\n`;
-        }, '');
-        return new TextEncoder().encode(requestHeaders).length;
-    }
-    /** Converts from CDP Network domain headers to BiDi network headers. */
-    function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
-        if (!headers) {
-            return [];
-        }
-        return Object.entries(headers).map(([name, value]) => ({
-            name,
-            value: {
-                type: 'string',
-                value,
-            },
-        }));
-    }
-    /** Converts from Bidi network headers to CDP Fetch domain header entries. */
-    function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
-        if (headers === undefined) {
-            return undefined;
-        }
-        return headers.map(({ name, value }) => ({
-            name,
-            value: value.value,
-        }));
-    }
-    function networkHeaderFromCookieHeaders(headers) {
-        if (headers === undefined) {
-            return undefined;
-        }
-        const value = headers.reduce((acc, value, index) => {
-            if (index > 0) {
-                acc += ';';
-            }
-            const cookieValue = value.value.type === 'base64'
-                ? btoa(value.value.value)
-                : value.value.value;
-            acc += `${value.name}=${cookieValue}`;
-            return acc;
-        }, '');
-        return {
-            name: 'Cookie',
-            value: {
-                type: 'string',
-                value,
-            },
-        };
-    }
-    /** Converts from Bidi auth action to CDP auth challenge response. */
-    function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
-        switch (action) {
-            case 'default':
-                return 'Default';
-            case 'cancel':
-                return 'CancelAuth';
-            case 'provideCredentials':
-                return 'ProvideCredentials';
-        }
-    }
-    /**
-     * Converts from CDP Network domain cookie to BiDi network cookie.
-     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
-     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-     */
-    function cdpToBiDiCookie(cookie) {
-        const result = {
-            name: cookie.name,
-            value: { type: 'string', value: cookie.value },
-            domain: cookie.domain,
-            path: cookie.path,
-            size: cookie.size,
-            httpOnly: cookie.httpOnly,
-            secure: cookie.secure,
-            sameSite: cookie.sameSite === undefined
-                ? "none" /* Network.SameSite.None */
-                : sameSiteCdpToBiDi(cookie.sameSite),
-            ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
-        };
-        // Extending with CDP-specific properties with `goog:` prefix.
-        result[`goog:session`] = cookie.session;
-        result[`goog:priority`] = cookie.priority;
-        result[`goog:sameParty`] = cookie.sameParty;
-        result[`goog:sourceScheme`] = cookie.sourceScheme;
-        result[`goog:sourcePort`] = cookie.sourcePort;
-        if (cookie.partitionKey !== undefined) {
-            result[`goog:partitionKey`] = cookie.partitionKey;
-        }
-        if (cookie.partitionKeyOpaque !== undefined) {
-            result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
-        }
-        return result;
-    }
-    /**
-     * Decodes a byte value to a string.
-     * @param {Network.BytesValue} value
-     * @return {string}
-     */
-    function deserializeByteValue(value) {
-        if (value.type === 'base64') {
-            return base64ToString(value.value);
-        }
-        return value.value;
-    }
-    /**
-     * Converts from BiDi set network cookie params to CDP Network domain cookie.
-     * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-     * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
-     */
-    function bidiToCdpCookie(params, partitionKey) {
-        const deserializedValue = deserializeByteValue(params.cookie.value);
-        const result = {
-            name: params.cookie.name,
-            value: deserializedValue,
-            domain: params.cookie.domain,
-            path: params.cookie.path ?? '/',
-            secure: params.cookie.secure ?? false,
-            httpOnly: params.cookie.httpOnly ?? false,
-            ...(partitionKey.sourceOrigin !== undefined && {
-                partitionKey: {
-                    hasCrossSiteAncestor: false,
-                    // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
-                    topLevelSite: partitionKey.sourceOrigin,
-                },
-            }),
-            ...(params.cookie.expiry !== undefined && {
-                expires: params.cookie.expiry,
-            }),
-            ...(params.cookie.sameSite !== undefined && {
-                sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
-            }),
-        };
-        // Extending with CDP-specific properties with `goog:` prefix.
-        if (params.cookie[`goog:url`] !== undefined) {
-            result.url = params.cookie[`goog:url`];
-        }
-        if (params.cookie[`goog:priority`] !== undefined) {
-            result.priority = params.cookie[`goog:priority`];
-        }
-        if (params.cookie[`goog:sameParty`] !== undefined) {
-            result.sameParty = params.cookie[`goog:sameParty`];
-        }
-        if (params.cookie[`goog:sourceScheme`] !== undefined) {
-            result.sourceScheme = params.cookie[`goog:sourceScheme`];
-        }
-        if (params.cookie[`goog:sourcePort`] !== undefined) {
-            result.sourcePort = params.cookie[`goog:sourcePort`];
-        }
-        return result;
-    }
-    function sameSiteCdpToBiDi(sameSite) {
-        switch (sameSite) {
-            case 'Strict':
-                return "strict" /* Network.SameSite.Strict */;
-            case 'None':
-                return "none" /* Network.SameSite.None */;
-            case 'Lax':
-                return "lax" /* Network.SameSite.Lax */;
-            default:
-                // Defaults to `Lax`:
-                // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
-                return "lax" /* Network.SameSite.Lax */;
-        }
-    }
-    function sameSiteBiDiToCdp(sameSite) {
-        switch (sameSite) {
-            case "strict" /* Network.SameSite.Strict */:
-                return 'Strict';
-            case "lax" /* Network.SameSite.Lax */:
-                return 'Lax';
-            case "none" /* Network.SameSite.None */:
-                return 'None';
-        }
-        throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
-    }
-    /** Matches the given URLPattern against the given URL. */
-    function matchUrlPattern(urlPattern, url) {
-        switch (urlPattern.type) {
-            case 'string': {
-                const pattern = new URLPattern(urlPattern.pattern);
-                return new URLPattern({
-                    protocol: pattern.protocol,
-                    hostname: pattern.hostname,
-                    port: pattern.port,
-                    pathname: pattern.pathname,
-                    search: pattern.search,
-                }).test(url);
-            }
-            case 'pattern':
-                return new URLPattern(urlPattern).test(url);
-        }
-    }
-    function bidiBodySizeFromCdpPostDataEntries(entries) {
-        let size = 0;
-        for (const entry of entries) {
-            size += atob(entry.bytes ?? '').length;
-        }
-        return size;
-    }
-    function getTiming(timing) {
-        if (!timing) {
-            return 0;
-        }
-        if (timing < 0) {
-            return 0;
-        }
-        return timing;
-    }
-
-    /**
-     * Responsible for handling the `storage` domain.
+     * Responsible for handling the `storage` module.
      */
     class StorageProcessor {
         #browserCdpClient;
@@ -4390,7 +4498,7 @@
     class OutgoingMessage {
         #message;
         #channel;
-        constructor(message, channel = null) {
+        constructor(message, channel) {
             this.#message = message;
             this.#channel = channel;
         }
@@ -4456,7 +4564,7 @@
             this.#logger = logger;
             this.#bluetoothProcessor = bluetoothProcessor;
             // keep-sorted start block=yes
-            this.#browserProcessor = new BrowserProcessor(browserCdpClient);
+            this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage);
             this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
             this.#inputProcessor = new InputProcessor(browsingContextStorage);
@@ -4469,28 +4577,25 @@
         }
         async #processCommand(command) {
             switch (command.method) {
-                case 'session.end':
-                    // TODO: Implement.
-                    break;
-                // Bluetooth domain
+                // Bluetooth module
                 // keep-sorted start block=yes
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
                 case 'bluetooth.simulateAdapter':
-                    return await this.#bluetoothProcessor.simulateAdapter(command.params);
+                    return await this.#bluetoothProcessor.simulateAdapter(this.#parser.parseSimulateAdapterParameters(command.params));
                 case 'bluetooth.simulateAdvertisement':
-                    return await this.#bluetoothProcessor.simulateAdvertisement(command.params);
+                    return await this.#bluetoothProcessor.simulateAdvertisement(this.#parser.parseSimulateAdvertisementParameters(command.params));
                 case 'bluetooth.simulatePreconnectedPeripheral':
-                    return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(command.params);
+                    return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(this.#parser.parseSimulatePreconnectedPeripheralParameters(command.params));
                 // keep-sorted end
-                // Browser domain
+                // Browser module
                 // keep-sorted start block=yes
                 case 'browser.close':
                     return this.#browserProcessor.close();
                 case 'browser.createUserContext':
                     return await this.#browserProcessor.createUserContext(command.params);
                 case 'browser.getClientWindows':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#browserProcessor.getClientWindows();
                 case 'browser.getUserContexts':
                     return await this.#browserProcessor.getUserContexts();
                 case 'browser.removeUserContext':
@@ -4498,7 +4603,7 @@
                 case 'browser.setClientWindowState':
                     throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 // keep-sorted end
-                // Browsing Context domain
+                // Browsing Context module
                 // keep-sorted start block=yes
                 case 'browsingContext.activate':
                     return await this.#browsingContextProcessor.activate(this.#parser.parseActivateParams(command.params));
@@ -4525,7 +4630,17 @@
                 case 'browsingContext.traverseHistory':
                     return await this.#browsingContextProcessor.traverseHistory(this.#parser.parseTraverseHistoryParams(command.params));
                 // keep-sorted end
-                // CDP domain
+                // CDP module
+                // keep-sorted start block=yes
+                case 'goog:cdp.getSession':
+                    return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
+                case 'goog:cdp.resolveRealm':
+                    return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
+                case 'goog:cdp.sendCommand':
+                    return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
+                // keep-sorted end
+                // CDP deprecated domain.
+                // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
                 // keep-sorted start block=yes
                 case 'cdp.getSession':
                     return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
@@ -4534,7 +4649,7 @@
                 case 'cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
                 // keep-sorted end
-                // Input domain
+                // Input module
                 // keep-sorted start block=yes
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
@@ -4543,7 +4658,7 @@
                 case 'input.setFiles':
                     return await this.#inputProcessor.setFiles(this.#parser.parseSetFilesParams(command.params));
                 // keep-sorted end
-                // Network domain
+                // Network module
                 // keep-sorted start block=yes
                 case 'network.addIntercept':
                     return await this.#networkProcessor.addIntercept(this.#parser.parseAddInterceptParams(command.params));
@@ -4562,12 +4677,12 @@
                 case 'network.setCacheBehavior':
                     return await this.#networkProcessor.setCacheBehavior(this.#parser.parseSetCacheBehavior(command.params));
                 // keep-sorted end
-                // Permissions domain
+                // Permissions module
                 // keep-sorted start block=yes
                 case 'permissions.setPermission':
                     return await this.#permissionsProcessor.setPermissions(this.#parser.parseSetPermissionsParams(command.params));
                 // keep-sorted end
-                // Script domain
+                // Script module
                 // keep-sorted start block=yes
                 case 'script.addPreloadScript':
                     return await this.#scriptProcessor.addPreloadScript(this.#parser.parseAddPreloadScriptParams(command.params));
@@ -4582,8 +4697,10 @@
                 case 'script.removePreloadScript':
                     return await this.#scriptProcessor.removePreloadScript(this.#parser.parseRemovePreloadScriptParams(command.params));
                 // keep-sorted end
-                // Session domain
+                // Session module
                 // keep-sorted start block=yes
+                case 'session.end':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'session.new':
                     return await this.#sessionProcessor.new(command.params);
                 case 'session.status':
@@ -4593,7 +4710,7 @@
                 case 'session.unsubscribe':
                     return await this.#sessionProcessor.unsubscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
                 // keep-sorted end
-                // Storage domain
+                // Storage module
                 // keep-sorted start block=yes
                 case 'storage.deleteCookies':
                     return await this.#storageProcessor.deleteCookies(this.#parser.parseDeleteCookiesParams(command.params));
@@ -4602,11 +4719,18 @@
                 case 'storage.setCookie':
                     return await this.#storageProcessor.setCookie(this.#parser.parseSetCookieParams(command.params));
                 // keep-sorted end
+                // WebExtension module
+                // keep-sorted start block=yes
+                case 'webExtension.install':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                case 'webExtension.uninstall':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                // keep-sorted end
             }
             // Intentionally kept outside the switch statement to ensure that
             // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
             // command is added.
-            throw new UnknownCommandException(`Unknown command '${command.method}'.`);
+            throw new UnknownCommandException(`Unknown command '${command?.method}'.`);
         }
         // Workaround for as zod.union always take the first schema
         // https://github.com/w3c/webdriver-bidi/issues/635
@@ -4678,6 +4802,10 @@
         }
         async simulateAdapter(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
+            // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
+            // perspective, we need to disable the emulation first.
+            // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
                 state: params.state,
             });
@@ -4798,6 +4926,30 @@
     }
 
     /**
+     * Copyright 2024 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    function getTimestamp() {
+        // `timestamp` from the event is MonotonicTime, not real time, so
+        // the best Mapper can do is to set the timestamp to the epoch time
+        // of the event arrived.
+        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
+        return new Date().getTime();
+    }
+
+    /**
      * Copyright 2023 Google LLC.
      * Copyright (c) Microsoft Corporation.
      *
@@ -4875,7 +5027,8 @@
                 delete deepSerializedValue['weakLocalObjectReference'];
             }
             if (deepSerializedValue.type === 'node' &&
-                Object.hasOwn(deepSerializedValue?.value, 'frameId')) {
+                deepSerializedValue.value &&
+                Object.hasOwn(deepSerializedValue.value, 'frameId')) {
                 // `frameId` is not needed in BiDi as it is not yet specified.
                 delete deepSerializedValue.value['frameId'];
             }
@@ -4947,7 +5100,7 @@
         }
         #registerEvent(event) {
             if (this.associatedBrowsingContexts.length === 0) {
-                this.#eventManager.registerEvent(event, null);
+                this.#eventManager.registerGlobalEvent(event);
             }
             else {
                 for (const browsingContext of this.associatedBrowsingContexts) {
@@ -5075,7 +5228,7 @@
                 // Heuristic to determine if the problem is in the argument.
                 // The check can be done on the `deserialization` step, but this approach
                 // helps to save round-trips.
-                if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
                     [
                         'Could not find object with given id',
                         'Argument should belong to the same JavaScript world as target object',
@@ -5263,7 +5416,7 @@
             catch (error) {
                 // Heuristic to determine if the problem is in the unknown handler.
                 // Ignore the error if so.
-                if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                if (!(error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
                     error.message === 'Invalid remote object id')) {
                     throw error;
                 }
@@ -5468,7 +5621,7 @@
                 catch (error) {
                     // Heuristic to detect "no such node" exception. Based on the  specific
                     // CDP implementation.
-                    if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+                    if (error.code === -32e3 /* CdpErrorConstants.GENERIC_ERROR */ &&
                         error.message === 'No node with given id found') {
                         throw new NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
                     }
@@ -5491,6 +5644,366 @@
         }
     }
 
+    /*
+     *  Copyright 2024 Google LLC.
+     *  Copyright (c) Microsoft Corporation.
+     *
+     *  Licensed under the Apache License, Version 2.0 (the "License");
+     *  you may not use this file except in compliance with the License.
+     *  You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     *  Unless required by applicable law or agreed to in writing, software
+     *  distributed under the License is distributed on an "AS IS" BASIS,
+     *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     *  See the License for the specific language governing permissions and
+     *  limitations under the License.
+     *
+     */
+    /**
+     * A URL matches about:blank if its scheme is "about", its path contains a single string
+     * "blank", its username and password are the empty string, and its host is null.
+     * https://html.spec.whatwg.org/multipage/urls-and-fetching.html#matches-about:blank
+     * @param {string} url
+     * @return {boolean}
+     */
+    function urlMatchesAboutBlank(url) {
+        // An empty string is a special case, and considered to be about:blank.
+        // https://html.spec.whatwg.org/multipage/nav-history-apis.html#window-open-steps
+        if (url === '') {
+            return true;
+        }
+        try {
+            const parsedUrl = new URL(url);
+            const schema = parsedUrl.protocol.replace(/:$/, '');
+            return (schema.toLowerCase() === 'about' &&
+                parsedUrl.pathname.toLowerCase() === 'blank' &&
+                parsedUrl.username === '' &&
+                parsedUrl.password === '' &&
+                parsedUrl.host === '');
+        }
+        catch (err) {
+            // Wrong URL considered do not match about:blank.
+            if (err instanceof TypeError) {
+                return false;
+            }
+            // Re-throw other unexpected errors.
+            throw err;
+        }
+    }
+
+    /*
+     *  Copyright 2024 Google LLC.
+     *  Copyright (c) Microsoft Corporation.
+     *
+     *  Licensed under the Apache License, Version 2.0 (the "License");
+     *  you may not use this file except in compliance with the License.
+     *  You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     *  Unless required by applicable law or agreed to in writing, software
+     *  distributed under the License is distributed on an "AS IS" BASIS,
+     *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     *  See the License for the specific language governing permissions and
+     *  limitations under the License.
+     *
+     */
+    class NavigationResult {
+        eventName;
+        message;
+        constructor(eventName, message) {
+            this.eventName = eventName;
+            this.message = message;
+        }
+    }
+    class NavigationState {
+        navigationId = uuidv4();
+        #browsingContextId;
+        #started = false;
+        #finished = new Deferred();
+        url;
+        loaderId;
+        #isInitial;
+        #eventManager;
+        #navigated = false;
+        isFragmentNavigation;
+        get finished() {
+            return this.#finished;
+        }
+        constructor(url, browsingContextId, isInitial, eventManager) {
+            this.#browsingContextId = browsingContextId;
+            this.url = url;
+            this.#isInitial = isInitial;
+            this.#eventManager = eventManager;
+        }
+        navigationInfo() {
+            return {
+                context: this.#browsingContextId,
+                navigation: this.navigationId,
+                timestamp: getTimestamp(),
+                url: this.url,
+            };
+        }
+        start() {
+            if (!this.#isInitial && !this.#started) {
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: BrowsingContext$2.EventNames.NavigationStarted,
+                    params: this.navigationInfo(),
+                }, this.#browsingContextId);
+            }
+            this.#started = true;
+        }
+        #finish(navigationResult) {
+            this.#started = true;
+            if (!this.#isInitial &&
+                !this.#finished.isFinished &&
+                navigationResult.eventName !== "browsingContext.load" /* NavigationEventName.Load */) {
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: navigationResult.eventName,
+                    params: this.navigationInfo(),
+                }, this.#browsingContextId);
+            }
+            this.#finished.resolve(navigationResult);
+        }
+        frameNavigated() {
+            this.#navigated = true;
+        }
+        fragmentNavigated() {
+            this.#navigated = true;
+            this.#finish(new NavigationResult("browsingContext.fragmentNavigated" /* NavigationEventName.FragmentNavigated */));
+        }
+        load() {
+            this.#finish(new NavigationResult("browsingContext.load" /* NavigationEventName.Load */));
+        }
+        fail(message) {
+            this.#finish(new NavigationResult(this.#navigated
+                ? "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */
+                : "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */, message));
+        }
+    }
+    /**
+     * Keeps track of navigations. Details: http://go/webdriver:bidi-navigation
+     */
+    class NavigationTracker {
+        #eventManager;
+        #logger;
+        #loaderIdToNavigationsMap = new Map();
+        #browsingContextId;
+        #currentNavigation;
+        // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
+        // `None`, the command result should have `navigation` value, but mapper does not have
+        // it yet. This value will be set to `navigationId` after next .
+        #pendingNavigation;
+        // Flags if the initial navigation to `about:blank` is in progress.
+        #isInitialNavigation = true;
+        constructor(url, browsingContextId, eventManager, logger) {
+            this.#browsingContextId = browsingContextId;
+            this.#eventManager = eventManager;
+            this.#logger = logger;
+            this.#isInitialNavigation = true;
+            this.#currentNavigation = new NavigationState(url, browsingContextId, urlMatchesAboutBlank(url), this.#eventManager);
+        }
+        /**
+         * Returns current started ongoing navigation. It can be either a started pending
+         * navigation, or one is already navigated.
+         */
+        get currentNavigationId() {
+            if (this.#pendingNavigation?.loaderId !== undefined) {
+                return this.#pendingNavigation.navigationId;
+            }
+            return this.#currentNavigation.navigationId;
+        }
+        /**
+         * Flags if the current navigation relates to the initial to `about:blank` navigation.
+         */
+        get isInitialNavigation() {
+            return this.#isInitialNavigation;
+        }
+        /**
+         * Url of the last navigated navigation.
+         */
+        get url() {
+            return this.#currentNavigation.url;
+        }
+        /**
+         * Creates a pending navigation e.g. when navigation command is called. Required to
+         * provide navigation id before the actual navigation is started. It will be used when
+         * navigation started. Can be aborted, failed, fragment navigated, or became a current
+         * navigation.
+         */
+        createPendingNavigation(url, canBeInitialNavigation = false) {
+            this.#logger?.(LogType.debug, 'createCommandNavigation');
+            this.#isInitialNavigation =
+                canBeInitialNavigation &&
+                    this.#isInitialNavigation &&
+                    urlMatchesAboutBlank(url);
+            this.#pendingNavigation?.fail('navigation canceled by concurrent navigation');
+            const navigation = new NavigationState(url, this.#browsingContextId, this.#isInitialNavigation, this.#eventManager);
+            this.#pendingNavigation = navigation;
+            return navigation;
+        }
+        dispose() {
+            this.#pendingNavigation?.fail('navigation canceled by context disposal');
+            this.#currentNavigation.fail('navigation canceled by context disposal');
+        }
+        // Update the current url.
+        onTargetInfoChanged(url) {
+            this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
+            this.#currentNavigation.url = url;
+        }
+        #getNavigationForFrameNavigated(url, loaderId) {
+            if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+                return this.#loaderIdToNavigationsMap.get(loaderId);
+            }
+            if (this.#pendingNavigation !== undefined &&
+                this.#pendingNavigation?.loaderId === undefined) {
+                // This can be a pending navigation to `about:blank` created by a command. Use the
+                // pending navigation in this case.
+                return this.#pendingNavigation;
+            }
+            // Create a new pending navigation.
+            return this.createPendingNavigation(url, true);
+        }
+        /**
+         * @param {string} unreachableUrl indicated the navigation is actually failed.
+         */
+        frameNavigated(url, loaderId, unreachableUrl) {
+            this.#logger?.(LogType.debug, `frameNavigated ${url}`);
+            if (unreachableUrl !== undefined &&
+                !this.#loaderIdToNavigationsMap.has(loaderId)) {
+                // The navigation failed before started. Get or create pending navigation and fail
+                // it.
+                const navigation = this.#pendingNavigation ??
+                    this.createPendingNavigation(unreachableUrl, true);
+                navigation.url = unreachableUrl;
+                navigation.start();
+                navigation.fail('the requested url is unreachable');
+                return;
+            }
+            const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
+            navigation.frameNavigated();
+            if (navigation !== this.#currentNavigation) {
+                this.#currentNavigation.fail('navigation canceled by concurrent navigation');
+            }
+            navigation.url = url;
+            navigation.loaderId = loaderId;
+            this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+            navigation.start();
+            this.#currentNavigation = navigation;
+            if (this.#pendingNavigation === navigation) {
+                this.#pendingNavigation = undefined;
+            }
+        }
+        navigatedWithinDocument(url, navigationType) {
+            this.#logger?.(LogType.debug, `navigatedWithinDocument ${url}, ${navigationType}`);
+            // Current navigation URL should be updated.
+            this.#currentNavigation.url = url;
+            if (navigationType !== 'fragment') {
+                // TODO: check for other navigation types, like `javascript`.
+                return;
+            }
+            // There is no way to guaranteed match pending navigation with finished fragment
+            // navigations. So assume any pending navigation without loader id is the fragment
+            // one.
+            const fragmentNavigation = this.#pendingNavigation !== undefined &&
+                this.#pendingNavigation.loaderId === undefined
+                ? this.#pendingNavigation
+                : new NavigationState(url, this.#browsingContextId, false, this.#eventManager);
+            // Finish ongoing navigation.
+            fragmentNavigation.fragmentNavigated();
+            if (fragmentNavigation === this.#pendingNavigation) {
+                this.#pendingNavigation = undefined;
+            }
+        }
+        frameRequestedNavigation(url) {
+            this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
+            // The page is about to navigate to the url.
+            this.createPendingNavigation(url, true);
+        }
+        /**
+         * Required to mark navigation as fully complete.
+         * TODO: navigation should be complete when it became the current one on
+         * `Page.frameNavigated` or on navigating command finished with a new loader Id.
+         */
+        loadPageEvent(loaderId) {
+            this.#logger?.(LogType.debug, 'loadPageEvent');
+            // Even if it was an initial navigation, it is finished.
+            this.#isInitialNavigation = false;
+            this.#loaderIdToNavigationsMap.get(loaderId)?.load();
+        }
+        /**
+         * Fail navigation due to navigation command failed.
+         */
+        failNavigation(navigation, errorText) {
+            this.#logger?.(LogType.debug, 'failCommandNavigation');
+            navigation.fail(errorText);
+        }
+        /**
+         * Updates the navigation's `loaderId` and sets it as current one, if it is a
+         * cross-document navigation.
+         */
+        navigationCommandFinished(navigation, loaderId) {
+            this.#logger?.(LogType.debug, `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`);
+            if (loaderId !== undefined) {
+                navigation.loaderId = loaderId;
+                this.#loaderIdToNavigationsMap.set(loaderId, navigation);
+            }
+            navigation.isFragmentNavigation = loaderId === undefined;
+            if (loaderId === undefined || this.#currentNavigation === navigation) {
+                // If the command's navigation is same-document or is already the current one,
+                // nothing to do.
+                return;
+            }
+            this.#currentNavigation.fail('navigation canceled by concurrent navigation');
+            navigation.start();
+            this.#currentNavigation = navigation;
+            if (this.#pendingNavigation === navigation) {
+                this.#pendingNavigation = undefined;
+            }
+        }
+        /**
+         * Emulated event, tight to `Network.requestWillBeSent`.
+         */
+        frameStartedNavigating(url, loaderId) {
+            this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
+            if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+                // The `frameStartedNavigating` is tight to the `Network.requestWillBeSent` event
+                // which can be emitted several times, e.g. in case of redirection. Nothing to do in
+                // such a case.
+                return;
+            }
+            const pendingNavigation = this.#pendingNavigation ?? this.createPendingNavigation(url, true);
+            pendingNavigation.url = url;
+            pendingNavigation.start();
+            pendingNavigation.loaderId = loaderId;
+            this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
+        }
+        /**
+         * In case of `beforeunload` handler, the pending navigation should be marked as started
+         * for consistency, as the `browsingContext.navigationStarted` should be emitted before
+         * user prompt.
+         */
+        beforeunload() {
+            this.#logger?.(LogType.debug, `beforeunload`);
+            if (this.#pendingNavigation === undefined) {
+                this.#logger?.(LogType.debugError, `Unexpectedly no pending navigation on beforeunload`);
+                return;
+            }
+            this.#pendingNavigation.start();
+        }
+        /**
+         * If there is a navigation with the loaderId equals to the network request id, it means
+         * that the navigation failed.
+         */
+        networkLoadingFailed(loaderId, errorText) {
+            this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
+        }
+    }
+
     /**
      * Copyright 2022 Google LLC.
      * Copyright (c) Microsoft Corporation.
@@ -5510,6 +6023,8 @@
     var _a$5;
     class BrowsingContextImpl {
         static LOGGER_PREFIX = `${LogType.debug}:browsingContext`;
+        /** Direct children browsing contexts. */
+        #children = new Set();
         /** The ID of this browsing context. */
         #id;
         userContext;
@@ -5517,48 +6032,26 @@
          * The ID of the parent browsing context.
          * If null, this is a top-level context.
          */
+        #loaderId;
         #parentId = null;
-        /** Direct children browsing contexts. */
-        #children = new Set();
-        #browsingContextStorage;
+        // Keeps track of the previously set viewport.
+        #previousViewport = { width: 0, height: 0 };
+        #originalOpener;
         #lifecycle = {
             DOMContentLoaded: new Deferred(),
             load: new Deferred(),
         };
-        #navigation = {
-            withinDocument: new Deferred(),
-        };
-        #url;
-        #eventManager;
-        #realmStorage;
-        #loaderId;
         #cdpTarget;
-        // The deferred will be resolved when the default realm is created.
         #defaultRealmDeferred = new Deferred();
+        #browsingContextStorage;
+        #eventManager;
         #logger;
-        // Keeps track of the previously set viewport.
-        #previousViewport = { width: 0, height: 0 };
-        // The URL of the navigation that is currently in progress. A workaround of the CDP
-        // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
-        // Set on `Page.navigate`, `Page.reload` commands, on `Page.frameRequestedNavigation` or
-        // on a deprecated `Page.frameScheduledNavigation` event. The latest is required as the
-        // `Page.frameRequestedNavigation` event is not emitted for same-document navigations.
-        #pendingNavigationUrl;
-        // Navigation ID is required, as CDP `loaderId` cannot be mapped 1:1 to all the
-        // navigations (e.g. same document navigations). Updated after each navigation,
-        // including same-document ones.
-        #navigationId = uuidv4();
-        // When a new navigation is started via `BrowsingContext.navigate` with `wait` set to
-        // `None`, the command result should have `navigation` value, but mapper does not have
-        // it yet. This value will be set to `navigationId` after next .
-        #pendingNavigationId;
-        // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
-        // The promise is resolved when the navigation is finished or rejected when canceled.
-        #pendingCommandNavigation;
-        #originalOpener;
+        #navigationTracker;
+        #realmStorage;
+        // The deferred will be resolved when the default realm is created.
+        #unhandledPromptBehavior;
         // Set when the user prompt is opened. Required to provide the type in closing event.
         #lastUserPromptType;
-        #unhandledPromptBehavior;
         constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
             this.#cdpTarget = cdpTarget;
             this.#id = id;
@@ -5569,8 +6062,8 @@
             this.#realmStorage = realmStorage;
             this.#unhandledPromptBehavior = unhandledPromptBehavior;
             this.#logger = logger;
-            this.#url = url;
             this.#originalOpener = originalOpener;
+            this.#navigationTracker = new NavigationTracker(url, id, eventManager, logger);
         }
         static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
             const context = new _a$5(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger);
@@ -5606,13 +6099,6 @@
             }), context.id, BrowsingContext$2.EventNames.ContextCreated);
             return context;
         }
-        static getTimestamp() {
-            // `timestamp` from the event is MonotonicTime, not real time, so
-            // the best Mapper can do is to set the timestamp to the epoch time
-            // of the event arrived.
-            // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
-            return new Date().getTime();
-        }
         /**
          * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
          */
@@ -5620,10 +6106,10 @@
             return this.#loaderId;
         }
         get navigationId() {
-            return this.#navigationId;
+            return this.#navigationTracker.currentNavigationId;
         }
         dispose(emitContextDestroyed) {
-            this.#pendingCommandNavigation?.reject(new UnknownErrorException('navigation canceled by context disposal'));
+            this.#navigationTracker.dispose();
             this.#deleteAllChildren();
             this.#realmStorage.deleteRealms({
                 browsingContextId: this.id,
@@ -5712,7 +6198,7 @@
             this.#initListeners();
         }
         get url() {
-            return this.#url;
+            return this.#navigationTracker.url;
         }
         async lifecycleLoaded() {
             await this.#lifecycle.load;
@@ -5766,103 +6252,62 @@
             };
         }
         onTargetInfoChanged(params) {
-            this.#url = params.targetInfo.url;
+            this.#navigationTracker.onTargetInfoChanged(params.targetInfo.url);
         }
         #initListeners() {
+            this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
+                // Detect navigation errors like `net::ERR_BLOCKED_BY_RESPONSE`.
+                // Network related to navigation has request id equals to navigation's loader id.
+                this.#navigationTracker.networkLoadingFailed(params.requestId, params.errorText);
+            });
             this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
                 if (this.id !== params.frame.id) {
                     return;
                 }
-                this.#url = params.frame.url + (params.frame.urlFragment ?? '');
-                this.#pendingNavigationUrl = undefined;
+                this.#navigationTracker.frameNavigated(params.frame.url + (params.frame.urlFragment ?? ''), params.frame.loaderId, 
+                // `unreachableUrl` indicates if the navigation failed.
+                params.frame.unreachableUrl);
                 // At the point the page is initialized, all the nested iframes from the
                 // previous page are detached and realms are destroyed.
                 // Delete children from context.
                 this.#deleteAllChildren();
+                this.#documentChanged(params.frame.loaderId);
+            });
+            this.#cdpTarget.on("frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */, (params) => {
+                this.#logger?.(LogType.debugInfo, `Received ${"frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */} event`, params);
+                // The frame ID can be either a browsing context id, or not set in case of the frame
+                // is the top-level in the current CDP target.
+                const possibleFrameIds = [
+                    this.id,
+                    ...(this.cdpTarget.id === this.id ? [undefined] : []),
+                ];
+                if (!possibleFrameIds.includes(params.frameId)) {
+                    return;
+                }
+                this.#navigationTracker.frameStartedNavigating(params.url, params.loaderId);
             });
             this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
                 if (this.id !== params.frameId) {
                     return;
                 }
+                this.#navigationTracker.navigatedWithinDocument(params.url, params.navigationType);
                 if (params.navigationType === 'historyApi') {
-                    this.#url = params.url;
                     this.#eventManager.registerEvent({
                         type: 'event',
                         method: 'browsingContext.historyUpdated',
                         params: {
                             context: this.id,
-                            url: this.#url,
+                            url: this.#navigationTracker.url,
                         },
                     }, this.id);
                     return;
                 }
-                this.#pendingNavigationUrl = undefined;
-                const timestamp = _a$5.getTimestamp();
-                this.#url = params.url;
-                this.#navigation.withinDocument.resolve();
-                if (params.navigationType === 'fragment') {
-                    this.#eventManager.registerEvent({
-                        type: 'event',
-                        method: BrowsingContext$2.EventNames.FragmentNavigated,
-                        params: {
-                            context: this.id,
-                            navigation: this.#navigationId,
-                            timestamp,
-                            url: this.#url,
-                        },
-                    }, this.id);
-                }
-            });
-            this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
-                if (this.id !== params.frameId) {
-                    return;
-                }
-                // Use `pendingNavigationId` if navigation initiated by BiDi
-                // `BrowsingContext.navigate` or generate a new navigation id.
-                this.#navigationId = this.#pendingNavigationId ?? uuidv4();
-                this.#pendingNavigationId = undefined;
-                this.#eventManager.registerEvent({
-                    type: 'event',
-                    method: BrowsingContext$2.EventNames.NavigationStarted,
-                    params: {
-                        context: this.id,
-                        navigation: this.#navigationId,
-                        timestamp: _a$5.getTimestamp(),
-                        // The URL of the navigation that is currently in progress. Although the URL
-                        // is not yet known in case of user-initiated navigations, it is possible to
-                        // provide the URL in case of BiDi-initiated navigations.
-                        // TODO: provide proper URL in case of user-initiated navigations.
-                        url: this.#pendingNavigationUrl ?? 'UNKNOWN',
-                    },
-                }, this.id);
-            });
-            // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
-            this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
-                if (this.id !== params.frameId) {
-                    return;
-                }
-                this.#pendingNavigationUrl = params.url;
             });
             this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
                 if (this.id !== params.frameId) {
                     return;
                 }
-                if (this.#pendingCommandNavigation !== undefined) {
-                    // The pending navigation was aborted by the new one.
-                    this.#eventManager.registerEvent({
-                        type: 'event',
-                        method: BrowsingContext$2.EventNames.NavigationAborted,
-                        params: {
-                            context: this.id,
-                            navigation: this.#navigationId,
-                            timestamp: _a$5.getTimestamp(),
-                            url: this.#url,
-                        },
-                    }, this.id);
-                    this.#pendingCommandNavigation.reject(BrowsingContext$2.EventNames.NavigationAborted);
-                    this.#pendingCommandNavigation = undefined;
-                }
-                this.#pendingNavigationUrl = params.url;
+                this.#navigationTracker.frameRequestedNavigation(params.url);
             });
             this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
                 if (this.id !== params.frameId) {
@@ -5886,32 +6331,39 @@
                 if (params.loaderId !== this.#loaderId) {
                     return;
                 }
-                const timestamp = _a$5.getTimestamp();
                 switch (params.name) {
                     case 'DOMContentLoaded':
-                        this.#eventManager.registerEvent({
-                            type: 'event',
-                            method: BrowsingContext$2.EventNames.DomContentLoaded,
-                            params: {
-                                context: this.id,
-                                navigation: this.#navigationId,
-                                timestamp,
-                                url: this.#url,
-                            },
-                        }, this.id);
+                        if (!this.#navigationTracker.isInitialNavigation) {
+                            // Do not emit for the initial navigation.
+                            this.#eventManager.registerEvent({
+                                type: 'event',
+                                method: BrowsingContext$2.EventNames.DomContentLoaded,
+                                params: {
+                                    context: this.id,
+                                    navigation: this.#navigationTracker.currentNavigationId,
+                                    timestamp: getTimestamp(),
+                                    url: this.#navigationTracker.url,
+                                },
+                            }, this.id);
+                        }
                         this.#lifecycle.DOMContentLoaded.resolve();
                         break;
                     case 'load':
-                        this.#eventManager.registerEvent({
-                            type: 'event',
-                            method: BrowsingContext$2.EventNames.Load,
-                            params: {
-                                context: this.id,
-                                navigation: this.#navigationId,
-                                timestamp,
-                                url: this.#url,
-                            },
-                        }, this.id);
+                        if (!this.#navigationTracker.isInitialNavigation) {
+                            // Do not emit for the initial navigation.
+                            this.#eventManager.registerEvent({
+                                type: 'event',
+                                method: BrowsingContext$2.EventNames.Load,
+                                params: {
+                                    context: this.id,
+                                    navigation: this.#navigationTracker.currentNavigationId,
+                                    timestamp: getTimestamp(),
+                                    url: this.#navigationTracker.url,
+                                },
+                            }, this.id);
+                        }
+                        // The initial navigation is finished.
+                        this.#navigationTracker.loadPageEvent(params.loaderId);
                         this.#lifecycle.load.resolve();
                         break;
                 }
@@ -5998,6 +6450,9 @@
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
                 const promptType = _a$5.#getPromptType(params.type);
+                if (params.type === 'beforeunload') {
+                    this.#navigationTracker.beforeunload();
+                }
                 // Set the last prompt type to provide it in closing event.
                 this.#lastUserPromptType = promptType;
                 const promptHandler = this.#getPromptHandler(promptType);
@@ -6061,13 +6516,6 @@
         }
         #documentChanged(loaderId) {
             if (loaderId === undefined || this.#loaderId === loaderId) {
-                // Same document navigation. Document didn't change.
-                if (this.#navigation.withinDocument.isFinished) {
-                    this.#navigation.withinDocument = new Deferred();
-                }
-                else {
-                    this.#logger?.(_a$5.LOGGER_PREFIX, 'Document changed (navigatedWithinDocument)');
-                }
                 return;
             }
             // Document changed.
@@ -6105,16 +6553,7 @@
             catch {
                 throw new InvalidArgumentException(`Invalid URL: ${url}`);
             }
-            this.#pendingCommandNavigation?.reject(new UnknownErrorException('navigation canceled by concurrent navigation'));
-            await this.targetUnblockedOrThrow();
-            // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
-            // event.
-            // TODO: detect navigation start not from CDP. Check if
-            //  `Page.frameRequestedNavigation` can be used for this purpose.
-            this.#pendingNavigationUrl = url;
-            const navigationId = uuidv4();
-            this.#pendingNavigationId = navigationId;
-            this.#pendingCommandNavigation = new Deferred();
+            const navigationState = this.#navigationTracker.createPendingNavigation(url);
             // Navigate and wait for the result. If the navigation fails, the error event is
             // emitted and the promise is rejected.
             const cdpNavigatePromise = (async () => {
@@ -6124,90 +6563,82 @@
                 });
                 if (cdpNavigateResult.errorText) {
                     // If navigation failed, no pending navigation is left.
-                    this.#pendingNavigationUrl = undefined;
-                    this.#eventManager.registerEvent({
-                        type: 'event',
-                        method: BrowsingContext$2.EventNames.NavigationFailed,
-                        params: {
-                            context: this.id,
-                            navigation: navigationId,
-                            timestamp: _a$5.getTimestamp(),
-                            url,
-                        },
-                    }, this.id);
+                    this.#navigationTracker.failNavigation(navigationState, cdpNavigateResult.errorText);
                     throw new UnknownErrorException(cdpNavigateResult.errorText);
                 }
+                this.#navigationTracker.navigationCommandFinished(navigationState, cdpNavigateResult.loaderId);
                 this.#documentChanged(cdpNavigateResult.loaderId);
-                return cdpNavigateResult;
             })();
-            if (wait === "none" /* BrowsingContext.ReadinessState.None */) {
-                // Do not wait for the result of the navigation promise.
-                this.#pendingCommandNavigation?.resolve();
-                this.#pendingCommandNavigation = undefined;
-                return {
-                    navigation: navigationId,
-                    url,
-                };
-            }
-            const cdpNavigateResult = await cdpNavigatePromise;
             // Wait for either the navigation is finished or canceled by another navigation.
-            await Promise.race([
+            const result = await Promise.race([
                 // No `loaderId` means same-document navigation.
-                this.#waitNavigation(wait, cdpNavigateResult.loaderId === undefined),
+                this.#waitNavigation(wait, cdpNavigatePromise, navigationState),
                 // Throw an error if the navigation is canceled.
-                this.#pendingCommandNavigation,
-            ]).catch((e) => {
-                // Aborting navigation should not fail the original navigation command for now.
-                // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-                if (e !== BrowsingContext$2.EventNames.NavigationAborted) {
-                    throw e;
+                navigationState.finished,
+            ]);
+            if (result instanceof NavigationResult) {
+                if (
+                // TODO: check after decision on the spec is done:
+                //  https://github.com/w3c/webdriver-bidi/issues/799.
+                result.eventName === "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */ ||
+                    result.eventName === "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */) {
+                    throw new UnknownErrorException(result.message ?? 'unknown exception');
                 }
-            });
-            // `#pendingCommandNavigation` can be already rejected and set to undefined.
-            this.#pendingCommandNavigation?.resolve();
-            this.#pendingCommandNavigation = undefined;
+            }
             return {
-                navigation: navigationId,
-                // Url can change due to redirect. Get the latest one.
-                url: this.#url,
+                navigation: navigationState.navigationId,
+                // Url can change due to redirects. Get the one from commandNavigation.
+                url: navigationState.url,
             };
         }
-        async #waitNavigation(wait, withinDocument) {
-            if (withinDocument) {
-                await this.#navigation.withinDocument;
+        async #waitNavigation(wait, cdpCommandPromise, navigationState) {
+            if (wait === "none" /* BrowsingContext.ReadinessState.None */) {
                 return;
             }
-            switch (wait) {
-                case "none" /* BrowsingContext.ReadinessState.None */:
-                    return;
-                case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
-                    await this.#lifecycle.DOMContentLoaded;
-                    return;
-                case "complete" /* BrowsingContext.ReadinessState.Complete */:
-                    await this.#lifecycle.load;
-                    return;
+            await cdpCommandPromise;
+            if (navigationState.isFragmentNavigation === true) {
+                // After the cdp command is finished, the `fragmentNavigation` should be already
+                // settled. If it's the fragment navigation, wait for the `navigationStatus` to be
+                // finished, which happens after the fragment navigation happened. No need to wait for
+                // DOM events.
+                await navigationState.finished;
+                return;
             }
+            if (wait === "interactive" /* BrowsingContext.ReadinessState.Interactive */) {
+                await this.#lifecycle.DOMContentLoaded;
+                return;
+            }
+            if (wait === "complete" /* BrowsingContext.ReadinessState.Complete */) {
+                await this.#lifecycle.load;
+                return;
+            }
+            throw new InvalidArgumentException(`Wait condition ${wait} is not supported`);
         }
         // TODO: support concurrent navigations analogous to `navigate`.
         async reload(ignoreCache, wait) {
             await this.targetUnblockedOrThrow();
             this.#resetLifecycleIfFinished();
-            await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+            const navigationState = this.#navigationTracker.createPendingNavigation(this.#navigationTracker.url);
+            const cdpReloadPromise = this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
                 ignoreCache,
             });
-            switch (wait) {
-                case "none" /* BrowsingContext.ReadinessState.None */:
-                    break;
-                case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
-                    await this.#lifecycle.DOMContentLoaded;
-                    break;
-                case "complete" /* BrowsingContext.ReadinessState.Complete */:
-                    await this.#lifecycle.load;
-                    break;
+            // Wait for either the navigation is finished or canceled by another navigation.
+            const result = await Promise.race([
+                // No `loaderId` means same-document navigation.
+                this.#waitNavigation(wait, cdpReloadPromise, navigationState),
+                // Throw an error if the navigation is canceled.
+                navigationState.finished,
+            ]);
+            if (result instanceof NavigationResult) {
+                if (result.eventName === "browsingContext.navigationAborted" /* NavigationEventName.NavigationAborted */ ||
+                    result.eventName === "browsingContext.navigationFailed" /* NavigationEventName.NavigationFailed */) {
+                    throw new UnknownErrorException(result.message ?? 'unknown exception');
+                }
             }
             return {
-                navigation: this.#navigationId,
-                url: this.url,
+                navigation: navigationState.navigationId,
+                // Url can change due to redirects. Get the one from commandNavigation.
+                url: navigationState.url,
             };
         }
         async setViewport(viewport, devicePixelRatio) {
@@ -6262,9 +6693,6 @@
                 throw new UnsupportedOperationException(`Non-top-level 'context' (${params.context}) is currently not supported`);
             }
             const formatParameters = getImageFormatParameters(params);
-            // XXX: Focus the original tab after the screenshot is taken.
-            // This is needed because the screenshot gets blocked until the active tab gets focus.
-            await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
             let captureBeyondViewport = false;
             let script;
             params.origin ??= 'viewport';
@@ -6474,6 +6902,8 @@
         }
         async #getLocatorDelegate(realm, locator, maxNodeCount, startNodes) {
             switch (locator.type) {
+                case 'context':
+                    throw new Error('Unreachable');
                 case 'css':
                     return {
                         functionDeclaration: String((cssSelector, maxNodeCount, ...startNodes) => {
@@ -6723,6 +7153,36 @@
             }
         }
         async #locateNodesByLocator(realm, locator, startNodes, maxNodeCount, serializationOptions) {
+            if (locator.type === 'context') {
+                if (startNodes.length !== 0) {
+                    throw new InvalidArgumentException('Start nodes are not supported');
+                }
+                const contextId = locator.value.context;
+                if (!contextId) {
+                    throw new InvalidSelectorException('Invalid context');
+                }
+                const context = this.#browsingContextStorage.getContext(contextId);
+                const parent = context.parent;
+                if (!parent) {
+                    throw new InvalidArgumentException('This context has no container');
+                }
+                try {
+                    const { backendNodeId } = await parent.#cdpTarget.cdpClient.sendCommand('DOM.getFrameOwner', {
+                        frameId: contextId,
+                    });
+                    const { object } = await parent.#cdpTarget.cdpClient.sendCommand('DOM.resolveNode', {
+                        backendNodeId,
+                    });
+                    const locatorResult = await realm.callFunction(`function () { return this; }`, false, { handle: object.objectId }, [], "none" /* Script.ResultOwnership.None */, serializationOptions);
+                    if (locatorResult.type === 'exception') {
+                        throw new Error('Unknown exception');
+                    }
+                    return { nodes: [locatorResult.result] };
+                }
+                catch {
+                    throw new InvalidArgumentException('Context does not exist');
+                }
+            }
             const locatorDelegate = await this.#getLocatorDelegate(realm, locator, maxNodeCount, startNodes);
             serializationOptions = {
                 ...serializationOptions,
@@ -7274,7 +7734,7 @@
     }
     _a$4 = LogManager;
 
-    class CdpTarget {
+    class CdpTarget extends EventEmitter {
         #id;
         #cdpClient;
         #browserCdpClient;
@@ -7290,7 +7750,6 @@
         #logger;
         #deviceAccessEnabled = false;
         #cacheDisableState = false;
-        #networkDomainEnabled = false;
         #fetchDomainStages = {
             request: false,
             response: false,
@@ -7306,6 +7765,7 @@
             return cdpTarget;
         }
         constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
+            super();
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
@@ -7371,7 +7831,11 @@
                         // prerendered pages. Generic catch, as the error can vary between CdpClient
                         // implementations: Tab vs Puppeteer.
                     }),
-                    this.toggleNetworkIfNeeded(),
+                    // Enabling CDP Network domain is required for navigation detection:
+                    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
+                    this.#cdpClient
+                        .sendCommand('Network.enable')
+                        .then(() => this.toggleNetworkIfNeeded()),
                     this.#cdpClient.sendCommand('Target.setAutoAttach', {
                         autoAttach: true,
                         waitForDebuggerOnStart: true,
@@ -7422,12 +7886,9 @@
         }
         async toggleFetchIfNeeded() {
             const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
-            if (
-            // Only toggle interception when Network is enabled
-            !this.#networkDomainEnabled ||
-                (this.#fetchDomainStages.request === stages.request &&
-                    this.#fetchDomainStages.response === stages.response &&
-                    this.#fetchDomainStages.auth === stages.auth)) {
+            if (this.#fetchDomainStages.request === stages.request &&
+                this.#fetchDomainStages.response === stages.response &&
+                this.#fetchDomainStages.auth === stages.auth) {
                 return;
             }
             const patterns = [];
@@ -7471,25 +7932,19 @@
             }
         }
         /**
-         * Toggles both Network and Fetch domains.
+         * Toggles CDP "Fetch" domain and enable/disable network cache.
          */
         async toggleNetworkIfNeeded() {
-            const enabled = this.isSubscribedTo(BiDiModule.Network);
-            if (enabled === this.#networkDomainEnabled) {
-                return;
-            }
-            this.#networkDomainEnabled = enabled;
+            // Although the Network domain remains active, Fetch domain activation and caching
+            // settings should be managed dynamically.
             try {
                 await Promise.all([
-                    this.#cdpClient
-                        .sendCommand(enabled ? 'Network.enable' : 'Network.disable')
-                        .then(async () => await this.toggleSetCacheDisabled()),
+                    this.toggleSetCacheDisabled(),
                     this.toggleFetchIfNeeded(),
                 ]);
             }
             catch (err) {
                 this.#logger?.(LogType.debugError, err);
-                this.#networkDomainEnabled = !enabled;
                 if (!this.#isExpectedError(err)) {
                     throw err;
                 }
@@ -7498,8 +7953,7 @@
         async toggleSetCacheDisabled(disable) {
             const defaultCacheDisabled = this.#networkStorage.defaultCacheBehavior === 'bypass';
             const cacheDisabled = disable ?? defaultCacheDisabled;
-            if (!this.#networkDomainEnabled ||
-                this.#cacheDisableState === cacheDisabled) {
+            if (this.#cacheDisableState === cacheDisabled) {
                 return;
             }
             this.#cacheDisableState = cacheDisabled;
@@ -7517,7 +7971,7 @@
             }
         }
         async toggleDeviceAccessIfNeeded() {
-            const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
+            const enabled = this.isSubscribedTo(Bluetooth$2.EventNames.RequestDevicePromptUpdated);
             if (this.#deviceAccessEnabled === enabled) {
                 return;
             }
@@ -7544,12 +7998,32 @@
                 this.#cdpClient.isCloseError(err));
         }
         #setEventListeners() {
+            this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
+                if (eventParams.loaderId === eventParams.requestId) {
+                    this.emit("frameStartedNavigating" /* TargetEvents.FrameStartedNavigating */, {
+                        loaderId: eventParams.loaderId,
+                        url: eventParams.request.url,
+                        frameId: eventParams.frameId,
+                    });
+                }
+            });
             this.#cdpClient.on('*', (event, params) => {
                 // We may encounter uses for EventEmitter other than CDP events,
                 // which we want to skip.
                 if (typeof event !== 'string') {
                     return;
                 }
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: `goog:cdp.${event}`,
+                    params: {
+                        event,
+                        params,
+                        session: this.cdpSessionId,
+                    },
+                }, this.id);
+                // Duplicate the event to the deprecated event name.
+                // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: `cdp.${event}`,
@@ -7560,15 +8034,6 @@
                     },
                 }, this.id);
             });
-        }
-        async #toggleNetwork(enable) {
-            this.#networkDomainEnabled = enable;
-            try {
-                await this.#cdpClient.sendCommand(enable ? 'Network.enable' : 'Network.disable');
-            }
-            catch {
-                this.#networkDomainEnabled = !enable;
-            }
         }
         async #enableFetch(stages) {
             const patterns = [];
@@ -7585,10 +8050,7 @@
                     requestStage: 'Response',
                 });
             }
-            if (
-            // Only enable interception when Network is enabled
-            this.#networkDomainEnabled &&
-                patterns.length) {
+            if (patterns.length) {
                 const oldStages = this.#fetchDomainStages;
                 this.#fetchDomainStages = stages;
                 try {
@@ -7621,20 +8083,12 @@
             const fetchChanged = this.#fetchDomainStages.request !== stages.request ||
                 this.#fetchDomainStages.response !== stages.response ||
                 this.#fetchDomainStages.auth !== stages.auth;
-            const networkEnable = this.isSubscribedTo(BiDiModule.Network);
-            const networkChanged = this.#networkDomainEnabled !== networkEnable;
-            this.#logger?.(LogType.debugInfo, 'Toggle Network', `Fetch (${fetchEnable}) ${fetchChanged}`, `Network (${networkEnable}) ${networkChanged}`);
-            if (networkEnable && networkChanged) {
-                await this.#toggleNetwork(true);
-            }
+            this.#logger?.(LogType.debugInfo, 'Toggle Network', `Fetch (${fetchEnable}) ${fetchChanged}`);
             if (fetchEnable && fetchChanged) {
                 await this.#enableFetch(stages);
             }
             if (!fetchEnable && fetchChanged) {
                 await this.#disableFetch();
-            }
-            if (!networkEnable && networkChanged && !fetchEnable && !fetchChanged) {
-                await this.#toggleNetwork(false);
             }
         }
         /**
@@ -7960,6 +8414,9 @@
          * Waits for a context with the given ID to be added and returns it.
          */
         waitForContext(browsingContextId) {
+            if (this.#contexts.has(browsingContextId)) {
+                return Promise.resolve(this.getContext(browsingContextId));
+            }
             return new Promise((resolve) => {
                 const listener = (event) => {
                     if (event.browsingContext.id === browsingContextId) {
@@ -7984,7 +8441,10 @@
                 return null;
             }
             const maybeContext = this.findContext(id);
-            const parentId = maybeContext?.parentId ?? null;
+            if (!maybeContext) {
+                return null;
+            }
+            const parentId = maybeContext.parentId ?? null;
             if (parentId === null) {
                 return id;
             }
@@ -8021,6 +8481,42 @@
                 }
             }
             return foundContexts;
+        }
+    }
+
+    /**
+     * Copyright 2023 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    /**
+     * A subclass of Map whose functionality is almost the same as its parent
+     * except for the fact that DefaultMap never returns undefined. It provides a
+     * default value for keys that do not exist.
+     */
+    class DefaultMap extends Map {
+        /** The default value to return whenever a key is not present in the map. */
+        #getDefaultValue;
+        constructor(getDefaultValue, entries) {
+            super(entries);
+            this.#getDefaultValue = getDefaultValue;
+        }
+        get(key) {
+            if (!this.has(key)) {
+                this.set(key, this.#getDefaultValue(key));
+            }
+            return super.get(key);
         }
     }
 
@@ -8102,9 +8598,9 @@
             const fragment = this.#request.info?.request.urlFragment ??
                 this.#request.paused?.request.urlFragment ??
                 '';
-            const url = this.#response.info?.url ??
-                this.#response.paused?.request.url ??
+            const url = this.#response.paused?.request.url ??
                 this.#requestOverrides?.url ??
+                this.#response.info?.url ??
                 this.#request.auth?.request.url ??
                 this.#request.info?.request.url ??
                 this.#request.paused?.request.url ??
@@ -8184,7 +8680,19 @@
         get #requestHeaders() {
             let headers = [];
             if (this.#requestOverrides?.headers) {
-                headers = this.#requestOverrides.headers;
+                const headerMap = new DefaultMap(() => []);
+                for (const header of this.#requestOverrides.headers) {
+                    headerMap.get(header.name).push(header.value.value);
+                }
+                for (const [name, value] of headerMap.entries()) {
+                    headers.push({
+                        name,
+                        value: {
+                            type: 'string',
+                            value: value.join('\n').trimEnd(),
+                        },
+                    });
+                }
             }
             else {
                 headers = [
@@ -8217,24 +8725,36 @@
             return authChallenges;
         }
         get #timings() {
+            // The timing in the CDP events are provided relative to the event's baseline.
+            // However, the baseline can be different for different events, and the events have to
+            // be normalized throughout resource events. Normalize events timestamps  by the
+            // request.
+            // TODO: Verify this is correct.
+            const responseTimeOffset = getTiming(getTiming(this.#response.info?.timing?.requestTime) -
+                getTiming(this.#request.info?.timestamp));
             return {
                 // TODO: Verify this is correct
-                timeOrigin: getTiming(this.#response.info?.timing?.requestTime),
-                requestTime: getTiming(this.#response.info?.timing?.requestTime),
+                timeOrigin: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
+                // Timing baseline.
+                // TODO: Verify this is correct.
+                requestTime: 0,
+                // TODO: set if redirect detected.
                 redirectStart: 0,
+                // TODO: set if redirect detected.
                 redirectEnd: 0,
                 // TODO: Verify this is correct
                 // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
-                fetchStart: getTiming(this.#response.info?.timing?.requestTime),
-                dnsStart: getTiming(this.#response.info?.timing?.dnsStart),
-                dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd),
-                connectStart: getTiming(this.#response.info?.timing?.connectStart),
-                connectEnd: getTiming(this.#response.info?.timing?.connectEnd),
-                tlsStart: getTiming(this.#response.info?.timing?.sslStart),
-                requestStart: getTiming(this.#response.info?.timing?.sendStart),
+                fetchStart: getTiming(this.#response.info?.timing?.workerFetchStart, responseTimeOffset),
+                // fetchStart: 0,
+                dnsStart: getTiming(this.#response.info?.timing?.dnsStart, responseTimeOffset),
+                dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd, responseTimeOffset),
+                connectStart: getTiming(this.#response.info?.timing?.connectStart, responseTimeOffset),
+                connectEnd: getTiming(this.#response.info?.timing?.connectEnd, responseTimeOffset),
+                tlsStart: getTiming(this.#response.info?.timing?.sslStart, responseTimeOffset),
+                requestStart: getTiming(this.#response.info?.timing?.sendStart, responseTimeOffset),
                 // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
-                responseStart: getTiming(this.#response.info?.timing?.receiveHeadersStart),
-                responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd),
+                responseStart: getTiming(this.#response.info?.timing?.receiveHeadersStart, responseTimeOffset),
+                responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd, responseTimeOffset),
             };
         }
         #phaseChanged() {
@@ -8561,9 +9081,16 @@
             }
             this.#phaseChanged();
             this.#emittedEvents[event.method] = true;
-            this.#eventManager.registerEvent(Object.assign(event, {
-                type: 'event',
-            }), this.#context);
+            if (this.#context) {
+                this.#eventManager.registerEvent(Object.assign(event, {
+                    type: 'event',
+                }), this.#context);
+            }
+            else {
+                this.#eventManager.registerGlobalEvent(Object.assign(event, {
+                    type: 'event',
+                }));
+            }
         }
         #getBaseEventParams(phase) {
             const interceptProps = {
@@ -8603,7 +9130,7 @@
                 // ),
             ];
             const authChallenges = this.#authChallenges;
-            return {
+            const response = {
                 url: this.url,
                 protocol: this.#response.info?.protocol ?? '',
                 status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
@@ -8624,13 +9151,15 @@
                     size: 0,
                 },
                 ...(authChallenges ? { authChallenges } : {}),
-                // @ts-expect-error this is a CDP-specific extension.
+            };
+            return {
+                ...response,
                 'goog:securityDetails': this.#response.info?.securityDetails,
             };
         }
         #getRequestData() {
             const headers = this.#requestHeaders;
-            return {
+            const request = {
                 request: this.#id,
                 url: this.url,
                 method: this.#method ?? _a$3.unknownParameter,
@@ -8638,12 +9167,83 @@
                 cookies: this.#cookies,
                 headersSize: computeHeadersSize(headers),
                 bodySize: this.#bodySize,
+                // TODO: populate
+                destination: this.#getDestination(),
+                // TODO: populate
+                initiatorType: this.#getInitiatorType(),
                 timings: this.#timings,
-                // @ts-expect-error CDP-specific attribute.
+            };
+            return {
+                ...request,
                 'goog:postData': this.#request.info?.request?.postData,
                 'goog:hasPostData': this.#request.info?.request?.hasPostData,
                 'goog:resourceType': this.#request.info?.type,
+                'goog:resourceInitiator': this.#request.info?.initiator,
             };
+        }
+        /**
+         * Heuristic trying to guess the destination.
+         * Specification: https://fetch.spec.whatwg.org/#concept-request-destination.
+         * Specified values: "audio", "audioworklet", "document", "embed", "font", "frame",
+         * "iframe", "image", "json", "manifest", "object", "paintworklet", "report", "script",
+         * "serviceworker", "sharedworker", "style", "track", "video", "webidentity", "worker",
+         * "xslt".
+         */
+        #getDestination() {
+            switch (this.#request.info?.type) {
+                case 'Script':
+                    return 'script';
+                case 'Stylesheet':
+                    return 'style';
+                case 'Image':
+                    return 'image';
+                case 'Document':
+                    // If request to document is initiated by parser, assume it is expected to
+                    // arrive in an iframe. Otherwise, fallback to empty string.
+                    return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
+                default:
+                    return '';
+            }
+        }
+        /**
+         * Heuristic trying to guess the initiator type.
+         * Specification: https://fetch.spec.whatwg.org/#request-initiator-type.
+         * Specified values: "audio", "beacon", "body", "css", "early-hints", "embed", "fetch",
+         * "font", "frame", "iframe", "image", "img", "input", "link", "object", "ping",
+         * "script", "track", "video", "xmlhttprequest", "other".
+         */
+        #getInitiatorType() {
+            if (this.#request.info?.initiator.type === 'parser') {
+                switch (this.#request.info?.type) {
+                    case 'Document':
+                        // The request to document is initiated by the parser. Assuming it's an iframe.
+                        return 'iframe';
+                    case 'Font':
+                        // If the document's url is not the parser's url, assume the resource is loaded
+                        // from css. Otherwise, it's a `font` element.
+                        return this.#request.info?.initiator?.url ===
+                            this.#request.info?.documentURL
+                            ? 'font'
+                            : 'css';
+                    case 'Image':
+                        // If the document's url is not the parser's url, assume the resource is loaded
+                        // from css. Otherwise, it's a `img` element.
+                        return this.#request.info?.initiator?.url ===
+                            this.#request.info?.documentURL
+                            ? 'img'
+                            : 'css';
+                    case 'Script':
+                        return 'script';
+                    case 'Stylesheet':
+                        return 'link';
+                    default:
+                        return null;
+                }
+            }
+            if (this.#request?.info?.type === 'Fetch') {
+                return 'fetch';
+            }
+            return null;
         }
         #getBeforeRequestEvent() {
             assert(this.#request.info, 'RequestWillBeSentEvent is not set');
@@ -8652,7 +9252,7 @@
                 params: {
                     ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
                     initiator: {
-                        type: _a$3.#getInitiatorType(this.#request.info.initiator.type),
+                        type: _a$3.#getInitiator(this.#request.info.initiator.type),
                         columnNumber: this.#request.info.initiator.columnNumber,
                         lineNumber: this.#request.info.initiator.lineNumber,
                         stackTrace: this.#request.info.initiator.stack,
@@ -8702,7 +9302,7 @@
             }
             return overrideHeaders;
         }
-        static #getInitiatorType(initiatorType) {
+        static #getInitiator(initiatorType) {
             switch (initiatorType) {
                 case 'parser':
                 case 'script':
@@ -9110,96 +9710,6 @@
     };
 
     /**
-     * Copyright 2023 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    /**
-     * A subclass of Map whose functionality is almost the same as its parent
-     * except for the fact that DefaultMap never returns undefined. It provides a
-     * default value for keys that do not exist.
-     */
-    class DefaultMap extends Map {
-        /** The default value to return whenever a key is not present in the map. */
-        #getDefaultValue;
-        constructor(getDefaultValue, entries) {
-            super(entries);
-            this.#getDefaultValue = getDefaultValue;
-        }
-        get(key) {
-            if (!this.has(key)) {
-                this.set(key, this.#getDefaultValue(key));
-            }
-            return super.get(key);
-        }
-    }
-
-    /*
-     * Copyright 2024 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    /**
-     * Returns an array of distinct values. Order is not guaranteed.
-     * @param values - The values to filter. Should be JSON-serializable.
-     * @return - An array of distinct values.
-     */
-    function distinctValues(values) {
-        const map = new Map();
-        for (const value of values) {
-            map.set(deterministicJSONStringify(value), value);
-        }
-        return Array.from(map.values());
-    }
-    /**
-     * Returns a stringified version of the object with keys sorted. This is required to
-     * ensure that the stringified version of an object is deterministic independent of the
-     * order of keys.
-     * @param obj
-     * @return {string}
-     */
-    function deterministicJSONStringify(obj) {
-        return JSON.stringify(normalizeObject(obj));
-    }
-    function normalizeObject(obj) {
-        if (obj === undefined ||
-            obj === null ||
-            Array.isArray(obj) ||
-            typeof obj !== 'object') {
-            return obj;
-        }
-        // Copy the original object key and values to a new object in sorted order.
-        const newObj = {};
-        for (const key of Object.keys(obj).sort()) {
-            const value = obj[key];
-            newObj[key] = normalizeObject(value); // Recursively sort nested objects
-        }
-        return newObj;
-    }
-
-    /**
      * Copyright 2022 Google LLC.
      * Copyright (c) Microsoft Corporation.
      *
@@ -9253,10 +9763,20 @@
         return (name.split('.').at(0)?.startsWith(BiDiModule.Cdp) ?? false);
     }
     /**
+     * Returns true if the given event is a deprecated CDP event.
+     * @see https://chromedevtools.github.io/devtools-protocol/
+     */
+    function isDeprecatedCdpEvent(name) {
+        return (name.split('.').at(0)?.startsWith(BiDiModule.DeprecatedCdp) ??
+            false);
+    }
+    /**
      * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
      */
     function assertSupportedEvent(name) {
-        if (!EVENT_NAMES.has(name) && !isCdpEvent(name)) {
+        if (!EVENT_NAMES.has(name) &&
+            !isCdpEvent(name) &&
+            !isDeprecatedCdpEvent(name)) {
             throw new InvalidArgumentException(`Unknown event: ${name}`);
         }
     }
@@ -9277,15 +9797,6 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /**
-     * Returns the cartesian product of the given arrays.
-     *
-     * Example:
-     *   cartesian([1, 2], ['a', 'b']); => [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
-     */
-    function cartesianProduct(...a) {
-        return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
-    }
     /** Expands "AllEvents" events into atomic events. */
     function unrollEvents(events) {
         const allEvents = new Set();
@@ -9318,92 +9829,69 @@
         return [...allEvents.values()];
     }
     class SubscriptionManager {
-        #subscriptionPriority = 0;
-        // BrowsingContext `null` means the event has subscription across all the
-        // browsing contexts.
-        // Channel `null` means no `channel` should be added.
-        #channelToContextToEventMap = new Map();
+        #subscriptions = [];
         #browsingContextStorage;
         constructor(browsingContextStorage) {
             this.#browsingContextStorage = browsingContextStorage;
         }
-        getChannelsSubscribedToEvent(eventMethod, contextId) {
-            const prioritiesAndChannels = Array.from(this.#channelToContextToEventMap.keys())
-                .map((channel) => ({
-                priority: this.#getEventSubscriptionPriorityForChannel(eventMethod, contextId, channel),
-                channel,
-            }))
-                .filter(({ priority }) => priority !== null);
-            // Sort channels by priority.
-            return prioritiesAndChannels
-                .sort((a, b) => a.priority - b.priority)
-                .map(({ channel }) => channel);
-        }
-        #getEventSubscriptionPriorityForChannel(eventMethod, contextId, channel) {
-            const contextToEventMap = this.#channelToContextToEventMap.get(channel);
-            if (contextToEventMap === undefined) {
-                return null;
-            }
-            const maybeTopLevelContextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
-            // `null` covers global subscription.
-            const relevantContexts = [...new Set([null, maybeTopLevelContextId])];
-            // Get all the subscription priorities.
-            const priorities = relevantContexts
-                .map((context) => {
-                // Get the priority for exact event name
-                const priority = contextToEventMap.get(context)?.get(eventMethod);
-                // For CDP we can't provide specific event name when subscribing
-                // to the module directly.
-                // Because of that we need to see event `cdp` exits in the map.
-                if (isCdpEvent(eventMethod)) {
-                    const cdpPriority = contextToEventMap
-                        .get(context)
-                        ?.get(BiDiModule.Cdp);
-                    // If we subscribe to the event directly and `cdp` module as well
-                    // priority will be different we take minimal priority
-                    return priority && cdpPriority
-                        ? Math.min(priority, cdpPriority)
-                        : // At this point we know that we have subscribed
-                            // to only one of the two
-                            (priority ?? cdpPriority);
+        getChannelsSubscribedToEvent(eventName, contextId) {
+            // Maps JSON stringified channel to a channel.
+            // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
+            const channels = new Map();
+            for (const subscription of this.#subscriptions) {
+                if (this.#isSubscribedTo(subscription, eventName, contextId)) {
+                    channels.set(JSON.stringify(subscription.channel), subscription.channel);
                 }
-                return priority;
-            })
-                .filter((p) => p !== undefined);
-            if (priorities.length === 0) {
-                // Not subscribed, return null.
-                return null;
             }
-            // Return minimal priority.
-            return Math.min(...priorities);
+            return Array.from(channels.values());
         }
-        /**
-         * @param module BiDi+ module
-         * @param contextId `null` == globally subscribed
-         *
-         * @returns
-         */
-        isSubscribedTo(moduleOrEvent, contextId = null) {
-            const topLevelContext = this.#browsingContextStorage.findTopLevelContextId(contextId);
-            for (const browserContextToEventMap of this.#channelToContextToEventMap.values()) {
-                for (const [id, eventMap] of browserContextToEventMap.entries()) {
-                    // Not subscribed to this context or globally
-                    if (topLevelContext !== id && id !== null) {
-                        continue;
-                    }
-                    for (const event of eventMap.keys()) {
-                        // This also covers the `cdp` case where
-                        // we don't unroll the event names
-                        if (
-                        // Event explicitly subscribed
-                        event === moduleOrEvent ||
-                            // Event subscribed via module
-                            event === moduleOrEvent.split('.').at(0) ||
-                            // Event explicitly subscribed compared to module
-                            event.split('.').at(0) === moduleOrEvent) {
-                            return true;
-                        }
-                    }
+        getChannelsSubscribedToEventGlobally(eventName) {
+            // Maps JSON stringified channel to a channel.
+            // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
+            const channels = new Map();
+            for (const subscription of this.#subscriptions) {
+                if (this.#isSubscribedTo(subscription, eventName)) {
+                    channels.set(JSON.stringify(subscription.channel), subscription.channel);
+                }
+            }
+            return Array.from(channels.values());
+        }
+        #isSubscribedTo(subscription, moduleOrEvent, contextId) {
+            let includesEvent = false;
+            for (const eventName of subscription.eventNames) {
+                // This also covers the `cdp` case where
+                // we don't unroll the event names
+                if (
+                // Event explicitly subscribed
+                eventName === moduleOrEvent ||
+                    // Event subscribed via module
+                    eventName === moduleOrEvent.split('.').at(0) ||
+                    // Event explicitly subscribed compared to module
+                    eventName.split('.').at(0) === moduleOrEvent) {
+                    includesEvent = true;
+                    break;
+                }
+            }
+            if (!includesEvent) {
+                return false;
+            }
+            // global subscription.
+            if (subscription.topLevelTraversableIds.size === 0) {
+                return true;
+            }
+            const topLevelContext = contextId
+                ? this.#browsingContextStorage.findTopLevelContextId(contextId)
+                : null;
+            if (topLevelContext !== null &&
+                subscription.topLevelTraversableIds.has(topLevelContext)) {
+                return true;
+            }
+            return false;
+        }
+        isSubscribedTo(moduleOrEvent, contextId) {
+            for (const subscription of this.#subscriptions) {
+                if (this.#isSubscribedTo(subscription, moduleOrEvent, contextId)) {
+                    return true;
                 }
             }
             return false;
@@ -9418,105 +9906,167 @@
          * events. If the contextId is null, it will return all the top-level contexts which were
          * not subscribed before the command.
          */
-        subscribe(event, contextId, channel) {
+        subscribe(eventNames, contextIds, channel) {
             // All the subscriptions are handled on the top-level contexts.
-            contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
-            // Check if subscribed event is a whole module
-            switch (event) {
-                case BiDiModule.BrowsingContext:
-                    return Object.values(BrowsingContext$2.EventNames)
-                        .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
-                        .flat();
-                case BiDiModule.Log:
-                    return Object.values(Log$1.EventNames)
-                        .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
-                        .flat();
-                case BiDiModule.Network:
-                    return Object.values(Network$2.EventNames)
-                        .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
-                        .flat();
-                case BiDiModule.Script:
-                    return Object.values(Script$2.EventNames)
-                        .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
-                        .flat();
-                case BiDiModule.Bluetooth:
-                    return Object.values(Bluetooth$2.EventNames)
-                        .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
-                        .flat();
-                // Intentionally left empty.
-            }
-            if (!this.#channelToContextToEventMap.has(channel)) {
-                this.#channelToContextToEventMap.set(channel, new Map());
-            }
-            const contextToEventMap = this.#channelToContextToEventMap.get(channel);
-            if (!contextToEventMap.has(contextId)) {
-                contextToEventMap.set(contextId, new Map());
-            }
-            const eventMap = contextToEventMap.get(contextId);
-            const affectedContextIds = (contextId === null
-                ? this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id)
-                : [contextId])
-                // There can be contexts that are already subscribed to the event. Do not include
-                // them to the output.
-                .filter((contextId) => !this.isSubscribedTo(event, contextId));
-            if (!eventMap.has(event)) {
-                // Add subscription only if it's not already subscribed.
-                eventMap.set(event, this.#subscriptionPriority++);
-            }
-            return affectedContextIds.map((contextId) => ({
-                event,
-                contextId,
-            }));
+            const subscription = {
+                id: uuidv4(),
+                eventNames: new Set(unrollEvents(eventNames)),
+                topLevelTraversableIds: new Set(contextIds.map((contextId) => {
+                    const topLevelContext = this.#browsingContextStorage.findTopLevelContextId(contextId);
+                    if (!topLevelContext) {
+                        throw new NoSuchFrameException(`Top-level navigable not found for context id ${contextId}`);
+                    }
+                    return topLevelContext;
+                })),
+                channel,
+            };
+            this.#subscriptions.push(subscription);
+            return subscription;
         }
         /**
          * Unsubscribes atomically from all events in the given contexts and channel.
+         *
+         * This is a legacy spec branch to unsubscribe by attributes.
          */
-        unsubscribeAll(events, contextIds, channel) {
-            // Assert all contexts are known.
-            for (const contextId of contextIds) {
-                if (contextId !== null) {
-                    this.#browsingContextStorage.getContext(contextId);
+        unsubscribe(inputEventNames, inputContextIds, channel) {
+            const eventNames = new Set(unrollEvents(inputEventNames));
+            for (const contextId of inputContextIds) {
+                // Validation that contexts exist.
+                this.#browsingContextStorage.getContext(contextId);
+            }
+            const topLevelTraversables = new Set(inputContextIds.map((contextId) => {
+                const topLevelContext = this.#browsingContextStorage.findTopLevelContextId(contextId);
+                if (!topLevelContext) {
+                    throw new NoSuchFrameException(`Top-level navigable not found for context id ${contextId}`);
+                }
+                return topLevelContext;
+            }));
+            const isGlobalUnsubscribe = topLevelTraversables.size === 0;
+            const newSubscriptions = [];
+            const eventsMatched = new Set();
+            const contextsMatched = new Set();
+            for (const subscription of this.#subscriptions) {
+                // `channel` is undefined or an object with 1 field, so `JSON.stringify` is stable.
+                if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
+                    newSubscriptions.push(subscription);
+                    continue;
+                }
+                // Skip subscriptions when none of the event names match.
+                if (intersection(subscription.eventNames, eventNames).size === 0) {
+                    newSubscriptions.push(subscription);
+                    continue;
+                }
+                if (isGlobalUnsubscribe) {
+                    // Skip non-global subscriptions.
+                    if (subscription.topLevelTraversableIds.size !== 0) {
+                        newSubscriptions.push(subscription);
+                        continue;
+                    }
+                    const subscriptionEventNames = new Set(subscription.eventNames);
+                    for (const eventName of eventNames) {
+                        if (subscriptionEventNames.has(eventName)) {
+                            eventsMatched.add(eventName);
+                            subscriptionEventNames.delete(eventName);
+                        }
+                    }
+                    // If some events remain in the subscription, we keep it.
+                    if (subscriptionEventNames.size !== 0) {
+                        newSubscriptions.push({
+                            ...subscription,
+                            eventNames: subscriptionEventNames,
+                        });
+                    }
+                }
+                else {
+                    // Skip global subscriptions.
+                    if (subscription.topLevelTraversableIds.size === 0) {
+                        newSubscriptions.push(subscription);
+                        continue;
+                    }
+                    // Splitting context subscriptions.
+                    const eventMap = new Map();
+                    for (const eventName of subscription.eventNames) {
+                        eventMap.set(eventName, new Set(subscription.topLevelTraversableIds));
+                    }
+                    for (const eventName of eventNames) {
+                        const eventContextSet = eventMap.get(eventName);
+                        if (!eventContextSet) {
+                            continue;
+                        }
+                        for (const toRemoveId of topLevelTraversables) {
+                            if (eventContextSet.has(toRemoveId)) {
+                                contextsMatched.add(toRemoveId);
+                                eventsMatched.add(eventName);
+                                eventContextSet.delete(toRemoveId);
+                            }
+                        }
+                        if (eventContextSet.size === 0) {
+                            eventMap.delete(eventName);
+                        }
+                    }
+                    for (const [eventName, remainingContextIds] of eventMap) {
+                        const partialSubscription = {
+                            id: subscription.id,
+                            channel: subscription.channel,
+                            eventNames: new Set([eventName]),
+                            topLevelTraversableIds: remainingContextIds,
+                        };
+                        newSubscriptions.push(partialSubscription);
+                    }
                 }
             }
-            const eventContextPairs = cartesianProduct(unrollEvents(events), contextIds);
-            // Assert all unsubscriptions are valid.
-            // If any of the unsubscriptions are invalid, do not unsubscribe from anything.
-            eventContextPairs
-                .map(([event, contextId]) => this.#checkUnsubscribe(event, contextId, channel))
-                .forEach((unsubscribe) => unsubscribe());
+            // If some events did not match, it is an invalid request.
+            if (!equal(eventsMatched, eventNames)) {
+                throw new InvalidArgumentException('No subscription found');
+            }
+            // If some contexts did not match, it is an invalid request.
+            if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
+                throw new InvalidArgumentException('No subscription found');
+            }
+            // Committing the new subscriptions.
+            this.#subscriptions = newSubscriptions;
         }
         /**
-         * Unsubscribes from the event in the given context and channel.
-         * Syntactic sugar for "unsubscribeAll".
+         * Unsubscribes by subscriptionId.
          */
-        unsubscribe(eventName, contextId, channel) {
-            this.unsubscribeAll([eventName], [contextId], channel);
+        unsubscribeById(_subscription) {
+            // TODO: implement.
         }
-        #checkUnsubscribe(event, contextId, channel) {
-            // All the subscriptions are handled on the top-level contexts.
-            contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
-            if (!this.#channelToContextToEventMap.has(channel)) {
-                throw new InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
+    }
+    /**
+     * Replace with Set.prototype.intersection once Node 20 is dropped.
+     */
+    function intersection(setA, setB) {
+        const result = new Set();
+        for (const a of setA) {
+            if (setB.has(a)) {
+                result.add(a);
             }
-            const contextToEventMap = this.#channelToContextToEventMap.get(channel);
-            if (!contextToEventMap.has(contextId)) {
-                throw new InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
-            }
-            const eventMap = contextToEventMap.get(contextId);
-            if (!eventMap.has(event)) {
-                throw new InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
-            }
-            return () => {
-                eventMap.delete(event);
-                // Clean up maps if empty.
-                if (eventMap.size === 0) {
-                    contextToEventMap.delete(event);
-                }
-                if (contextToEventMap.size === 0) {
-                    this.#channelToContextToEventMap.delete(channel);
-                }
-            };
         }
+        return result;
+    }
+    /**
+     * Replace with Set.prototype.difference once Node 20 is dropped.
+     */
+    function difference(setA, setB) {
+        const result = new Set();
+        for (const a of setA) {
+            if (!setB.has(a)) {
+                result.add(a);
+            }
+        }
+        return result;
+    }
+    function equal(setA, setB) {
+        if (setA.size !== setB.size) {
+            return false;
+        }
+        for (const a of setA) {
+            if (!setB.has(a)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -9571,7 +10121,7 @@
          */
         #eventBuffers = new Map();
         /**
-         * Maps `eventName` + `browsingContext` to  Map of channel to last id
+         * Maps `eventName` + `browsingContext` to  Map of json stringified channel to last id.
          * Used to avoid sending duplicated events when user
          * subscribes -> unsubscribes -> subscribes.
          */
@@ -9606,9 +10156,28 @@
                 value: event,
             }), contextId, event.method);
         }
+        registerGlobalEvent(event) {
+            this.registerGlobalPromiseEvent(Promise.resolve({
+                kind: 'success',
+                value: event,
+            }), event.method);
+        }
         registerPromiseEvent(event, contextId, eventName) {
             const eventWrapper = new EventWrapper(event, contextId);
             const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEvent(eventName, contextId);
+            this.#bufferEvent(eventWrapper, eventName);
+            // Send events to channels in the subscription priority.
+            for (const channel of sortedChannels) {
+                this.emit("event" /* EventManagerEvents.Event */, {
+                    message: OutgoingMessage.createFromPromise(event, channel),
+                    event: eventName,
+                });
+                this.#markEventSent(eventWrapper, channel, eventName);
+            }
+        }
+        registerGlobalPromiseEvent(event, eventName) {
+            const eventWrapper = new EventWrapper(event, null);
+            const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEventGlobally(eventName);
             this.#bufferEvent(eventWrapper, eventName);
             // Send events to channels in the subscription priority.
             for (const channel of sortedChannels) {
@@ -9630,13 +10199,29 @@
                     this.#browsingContextStorage.getContext(contextId);
                 }
             }
-            // List of the subscription items that were actually added. Each contains a specific
-            // event and context. No domain event (like "network") or global context subscription
-            // (like null) are included.
-            const addedSubscriptionItems = [];
-            for (const eventName of eventNames) {
-                for (const contextId of contextIds) {
-                    addedSubscriptionItems.push(...this.#subscriptionManager.subscribe(eventName, contextId, channel));
+            const unrolledEventNames = new Set(unrollEvents(eventNames));
+            const subscribeStepEvents = new Map();
+            const subscriptionNavigableIds = new Set(contextIds.length
+                ? contextIds.map((contextId) => {
+                    const id = this.#browsingContextStorage.findTopLevelContextId(contextId);
+                    if (!id) {
+                        throw new InvalidArgumentException('Invalid context id');
+                    }
+                    return id;
+                })
+                : this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id));
+            for (const eventName of unrolledEventNames) {
+                const subscribedNavigableIds = new Set(this.#browsingContextStorage
+                    .getTopLevelContexts()
+                    .map((c) => c.id)
+                    .filter((id) => {
+                    return this.#subscriptionManager.isSubscribedTo(eventName, id);
+                }));
+                subscribeStepEvents.set(eventName, difference(subscriptionNavigableIds, subscribedNavigableIds));
+            }
+            const subscription = this.#subscriptionManager.subscribe(eventNames, contextIds, channel);
+            for (const eventName of subscription.eventNames) {
+                for (const contextId of subscriptionNavigableIds) {
                     for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, channel)) {
                         // The order of the events is important.
                         this.emit("event" /* EventManagerEvents.Event */, {
@@ -9647,20 +10232,19 @@
                     }
                 }
             }
-            // Iterate over all new subscription items and call hooks if any. There can be
-            // duplicates, e.g. when subscribing to the whole domain and some specific event in
-            // the same time ("network", "network.responseCompleted"). `distinctValues` guarantees
-            // that hooks are called only once per pair event + context.
-            distinctValues(addedSubscriptionItems).forEach(({ contextId, event }) => {
-                this.#subscribeHooks.get(event).forEach((hook) => hook(contextId));
-            });
+            for (const [eventName, contextIds] of subscribeStepEvents) {
+                for (const contextId of contextIds) {
+                    this.#subscribeHooks.get(eventName).forEach((hook) => hook(contextId));
+                }
+            }
             await this.toggleModulesIfNeeded();
+            return subscription.id;
         }
         async unsubscribe(eventNames, contextIds, channel) {
             for (const name of eventNames) {
                 assertSupportedEvent(name);
             }
-            this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
+            this.#subscriptionManager.unsubscribe(eventNames, contextIds, channel);
             await this.toggleModulesIfNeeded();
         }
         async toggleModulesIfNeeded() {
@@ -9701,13 +10285,14 @@
                 return;
             }
             const lastSentMapKey = _a$2.#getMapKey(eventName, eventWrapper.contextId);
-            const lastId = Math.max(this.#lastMessageSent.get(lastSentMapKey)?.get(channel) ?? 0, eventWrapper.id);
+            const lastId = Math.max(this.#lastMessageSent.get(lastSentMapKey)?.get(JSON.stringify(channel)) ??
+                0, eventWrapper.id);
             const channelMap = this.#lastMessageSent.get(lastSentMapKey);
             if (channelMap) {
-                channelMap.set(channel, lastId);
+                channelMap.set(JSON.stringify(channel), lastId);
             }
             else {
-                this.#lastMessageSent.set(lastSentMapKey, new Map([[channel, lastId]]));
+                this.#lastMessageSent.set(lastSentMapKey, new Map([[JSON.stringify(channel), lastId]]));
             }
         }
         /**
@@ -9715,7 +10300,8 @@
          */
         #getBufferedEvents(eventName, contextId, channel) {
             const bufferMapKey = _a$2.#getMapKey(eventName, contextId);
-            const lastSentMessageId = this.#lastMessageSent.get(bufferMapKey)?.get(channel) ?? -Infinity;
+            const lastSentMessageId = this.#lastMessageSent.get(bufferMapKey)?.get(JSON.stringify(channel)) ??
+                -Infinity;
             const result = this.#eventBuffers
                 .get(bufferMapKey)
                 ?.get()
@@ -9768,10 +10354,8 @@
             });
         };
         #processOutgoingMessage = async (messageEntry) => {
-            const message = messageEntry.message;
-            if (messageEntry.channel !== null) {
-                message['channel'] = messageEntry.channel;
-            }
+            // Enrich message with channel data.
+            const message = { ...messageEntry.message, ...messageEntry.channel };
             await this.#transport.sendMessage(message);
         };
         constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger) {
@@ -9872,7 +10456,7 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** A error that will be thrown if/when the connection is closed. */
+    /** An error that will be thrown if/when the connection is closed. */
     class CloseError extends Error {
     }
     /** Represents a high-level CDP connection to the browser. */
@@ -10185,6 +10769,9 @@
         return json.replace(/"([^"]+)":/g, "$1:");
     };
     class ZodError extends Error {
+        get errors() {
+            return this.issues;
+        }
         constructor(issues) {
             super();
             this.issues = [];
@@ -10204,9 +10791,6 @@
             }
             this.name = "ZodError";
             this.issues = issues;
-        }
-        get errors() {
-            return this.issues;
         }
         format(_mapper) {
             const mapper = _mapper ||
@@ -10463,9 +11047,9 @@
             data: ctx.data,
             path: ctx.path,
             errorMaps: [
-                ctx.common.contextualErrorMap,
-                ctx.schemaErrorMap,
-                overrideMap,
+                ctx.common.contextualErrorMap, // contextual error map is first priority
+                ctx.schemaErrorMap, // then schema-bound map if available
+                overrideMap, // then global override map
                 overrideMap === errorMap ? undefined : errorMap, // then global default map
             ].filter((x) => !!x),
         });
@@ -10552,12 +11136,12 @@
     ***************************************************************************** */
 
     function __classPrivateFieldGet(receiver, state, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
         return state.get(receiver);
     }
 
     function __classPrivateFieldSet(receiver, state, value, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
         return (state.set(receiver, value)), value;
     }
 
@@ -10569,7 +11153,7 @@
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === undefined ? undefined : message.message;
     })(errorUtil || (errorUtil = {}));
 
     var _ZodEnum_cache, _ZodNativeEnum_cache;
@@ -10626,47 +11210,18 @@
             var _a, _b;
             const { message } = params;
             if (iss.code === "invalid_enum_value") {
-                return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+                return { message: message !== null && message !== undefined ? message : ctx.defaultError };
             }
             if (typeof ctx.data === "undefined") {
-                return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+                return { message: (_a = message !== null && message !== undefined ? message : required_error) !== null && _a !== undefined ? _a : ctx.defaultError };
             }
             if (iss.code !== "invalid_type")
                 return { message: ctx.defaultError };
-            return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+            return { message: (_b = message !== null && message !== undefined ? message : invalid_type_error) !== null && _b !== undefined ? _b : ctx.defaultError };
         };
         return { errorMap: customMap, description };
     }
     class ZodType {
-        constructor(def) {
-            /** Alias of safeParseAsync */
-            this.spa = this.safeParseAsync;
-            this._def = def;
-            this.parse = this.parse.bind(this);
-            this.safeParse = this.safeParse.bind(this);
-            this.parseAsync = this.parseAsync.bind(this);
-            this.safeParseAsync = this.safeParseAsync.bind(this);
-            this.spa = this.spa.bind(this);
-            this.refine = this.refine.bind(this);
-            this.refinement = this.refinement.bind(this);
-            this.superRefine = this.superRefine.bind(this);
-            this.optional = this.optional.bind(this);
-            this.nullable = this.nullable.bind(this);
-            this.nullish = this.nullish.bind(this);
-            this.array = this.array.bind(this);
-            this.promise = this.promise.bind(this);
-            this.or = this.or.bind(this);
-            this.and = this.and.bind(this);
-            this.transform = this.transform.bind(this);
-            this.brand = this.brand.bind(this);
-            this.default = this.default.bind(this);
-            this.catch = this.catch.bind(this);
-            this.describe = this.describe.bind(this);
-            this.pipe = this.pipe.bind(this);
-            this.readonly = this.readonly.bind(this);
-            this.isNullable = this.isNullable.bind(this);
-            this.isOptional = this.isOptional.bind(this);
-        }
         get description() {
             return this._def.description;
         }
@@ -10718,10 +11273,10 @@
             const ctx = {
                 common: {
                     issues: [],
-                    async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    async: (_a = params === null || params === undefined ? undefined : params.async) !== null && _a !== undefined ? _a : false,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -10729,6 +11284,48 @@
             };
             const result = this._parseSync({ data, path: ctx.path, parent: ctx });
             return handleResult(ctx, result);
+        }
+        "~validate"(data) {
+            var _a, _b;
+            const ctx = {
+                common: {
+                    issues: [],
+                    async: !!this["~standard"].async,
+                },
+                path: [],
+                schemaErrorMap: this._def.errorMap,
+                parent: null,
+                data,
+                parsedType: getParsedType(data),
+            };
+            if (!this["~standard"].async) {
+                try {
+                    const result = this._parseSync({ data, path: [], parent: ctx });
+                    return isValid(result)
+                        ? {
+                            value: result.value,
+                        }
+                        : {
+                            issues: ctx.common.issues,
+                        };
+                }
+                catch (err) {
+                    if ((_b = (_a = err === null || err === undefined ? undefined : err.message) === null || _a === undefined ? undefined : _a.toLowerCase()) === null || _b === undefined ? undefined : _b.includes("encountered")) {
+                        this["~standard"].async = true;
+                    }
+                    ctx.common = {
+                        issues: [],
+                        async: true,
+                    };
+                }
+            }
+            return this._parseAsync({ data, path: [], parent: ctx }).then((result) => isValid(result)
+                ? {
+                    value: result.value,
+                }
+                : {
+                    issues: ctx.common.issues,
+                });
         }
         async parseAsync(data, params) {
             const result = await this.safeParseAsync(data, params);
@@ -10740,10 +11337,10 @@
             const ctx = {
                 common: {
                     issues: [],
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                     async: true,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -10816,6 +11413,40 @@
         superRefine(refinement) {
             return this._refinement(refinement);
         }
+        constructor(def) {
+            /** Alias of safeParseAsync */
+            this.spa = this.safeParseAsync;
+            this._def = def;
+            this.parse = this.parse.bind(this);
+            this.safeParse = this.safeParse.bind(this);
+            this.parseAsync = this.parseAsync.bind(this);
+            this.safeParseAsync = this.safeParseAsync.bind(this);
+            this.spa = this.spa.bind(this);
+            this.refine = this.refine.bind(this);
+            this.refinement = this.refinement.bind(this);
+            this.superRefine = this.superRefine.bind(this);
+            this.optional = this.optional.bind(this);
+            this.nullable = this.nullable.bind(this);
+            this.nullish = this.nullish.bind(this);
+            this.array = this.array.bind(this);
+            this.promise = this.promise.bind(this);
+            this.or = this.or.bind(this);
+            this.and = this.and.bind(this);
+            this.transform = this.transform.bind(this);
+            this.brand = this.brand.bind(this);
+            this.default = this.default.bind(this);
+            this.catch = this.catch.bind(this);
+            this.describe = this.describe.bind(this);
+            this.pipe = this.pipe.bind(this);
+            this.readonly = this.readonly.bind(this);
+            this.isNullable = this.isNullable.bind(this);
+            this.isOptional = this.isOptional.bind(this);
+            this["~standard"] = {
+                version: 1,
+                vendor: "zod",
+                validate: (data) => this["~validate"](data),
+            };
+        }
         optional() {
             return ZodOptional.create(this, this._def);
         }
@@ -10826,7 +11457,7 @@
             return this.nullable().optional();
         }
         array() {
-            return ZodArray.create(this, this._def);
+            return ZodArray.create(this);
         }
         promise() {
             return ZodPromise.create(this, this._def);
@@ -10892,11 +11523,12 @@
     }
     const cuidRegex = /^c[^\s-]{8,}$/i;
     const cuid2Regex = /^[0-9a-z]+$/;
-    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
     // const uuidRegex =
     //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+    const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
     const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
     // from https://stackoverflow.com/a/46181/1550155
     // old version: too slow, didn't support unicode
@@ -10918,9 +11550,15 @@
     let emojiRegex;
     // faster, simpler, safer
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-    const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
+    // const ipv6Regex =
+    // /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+    const ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
     // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
     const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    // https://base64.guru/standards/base64url
+    const base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
     // simple
     // const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
     // no leap year validation
@@ -10957,6 +11595,38 @@
             return true;
         }
         if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+            return true;
+        }
+        return false;
+    }
+    function isValidJWT(jwt, alg) {
+        if (!jwtRegex.test(jwt))
+            return false;
+        try {
+            const [header] = jwt.split(".");
+            // Convert base64url to base64
+            const base64 = header
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .padEnd(header.length + ((4 - (header.length % 4)) % 4), "=");
+            const decoded = JSON.parse(atob(base64));
+            if (typeof decoded !== "object" || decoded === null)
+                return false;
+            if (!decoded.typ || !decoded.alg)
+                return false;
+            if (alg && decoded.alg !== alg)
+                return false;
+            return true;
+        }
+        catch (_a) {
+            return false;
+        }
+    }
+    function isValidCidr(ip, version) {
+        if ((version === "v4" || !version) && ipv4CidrRegex.test(ip)) {
+            return true;
+        }
+        if ((version === "v6" || !version) && ipv6CidrRegex.test(ip)) {
             return true;
         }
         return false;
@@ -11242,11 +11912,44 @@
                         status.dirty();
                     }
                 }
+                else if (check.kind === "jwt") {
+                    if (!isValidJWT(input.data, check.alg)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "jwt",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
+                else if (check.kind === "cidr") {
+                    if (!isValidCidr(input.data, check.version)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "cidr",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
                 else if (check.kind === "base64") {
                     if (!base64Regex.test(input.data)) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
                             validation: "base64",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
+                else if (check.kind === "base64url") {
+                    if (!base64urlRegex.test(input.data)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "base64url",
                             code: ZodIssueCode.invalid_string,
                             message: check.message,
                         });
@@ -11299,8 +12002,21 @@
         base64(message) {
             return this._addCheck({ kind: "base64", ...errorUtil.errToObj(message) });
         }
+        base64url(message) {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return this._addCheck({
+                kind: "base64url",
+                ...errorUtil.errToObj(message),
+            });
+        }
+        jwt(options) {
+            return this._addCheck({ kind: "jwt", ...errorUtil.errToObj(options) });
+        }
         ip(options) {
             return this._addCheck({ kind: "ip", ...errorUtil.errToObj(options) });
+        }
+        cidr(options) {
+            return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
         }
         datetime(options) {
             var _a, _b;
@@ -11315,10 +12031,10 @@
             }
             return this._addCheck({
                 kind: "datetime",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-                local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                offset: (_a = options === null || options === undefined ? undefined : options.offset) !== null && _a !== undefined ? _a : false,
+                local: (_b = options === null || options === undefined ? undefined : options.local) !== null && _b !== undefined ? _b : false,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         date(message) {
@@ -11334,8 +12050,8 @@
             }
             return this._addCheck({
                 kind: "time",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         duration(message) {
@@ -11352,8 +12068,8 @@
             return this._addCheck({
                 kind: "includes",
                 value: value,
-                position: options === null || options === void 0 ? void 0 : options.position,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                position: options === null || options === undefined ? undefined : options.position,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         startsWith(value, message) {
@@ -11392,8 +12108,7 @@
             });
         }
         /**
-         * @deprecated Use z.string().min(1) instead.
-         * @see {@link ZodString.min}
+         * Equivalent to `.min(1)`
          */
         nonempty(message) {
             return this.min(1, errorUtil.errToObj(message));
@@ -11455,8 +12170,15 @@
         get isIP() {
             return !!this._def.checks.find((ch) => ch.kind === "ip");
         }
+        get isCIDR() {
+            return !!this._def.checks.find((ch) => ch.kind === "cidr");
+        }
         get isBase64() {
             return !!this._def.checks.find((ch) => ch.kind === "base64");
+        }
+        get isBase64url() {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return !!this._def.checks.find((ch) => ch.kind === "base64url");
         }
         get minLength() {
             let min = null;
@@ -11484,7 +12206,7 @@
         return new ZodString({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodString,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -11738,7 +12460,7 @@
         return new ZodNumber({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodNumber,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -11750,17 +12472,16 @@
         }
         _parse(input) {
             if (this._def.coerce) {
-                input.data = BigInt(input.data);
+                try {
+                    input.data = BigInt(input.data);
+                }
+                catch (_a) {
+                    return this._getInvalidInput(input);
+                }
             }
             const parsedType = this._getType(input);
             if (parsedType !== ZodParsedType.bigint) {
-                const ctx = this._getOrReturnCtx(input);
-                addIssueToContext(ctx, {
-                    code: ZodIssueCode.invalid_type,
-                    expected: ZodParsedType.bigint,
-                    received: ctx.parsedType,
-                });
-                return INVALID;
+                return this._getInvalidInput(input);
             }
             let ctx = undefined;
             const status = new ParseStatus();
@@ -11813,6 +12534,15 @@
                 }
             }
             return { status: status.value, value: input.data };
+        }
+        _getInvalidInput(input) {
+            const ctx = this._getOrReturnCtx(input);
+            addIssueToContext(ctx, {
+                code: ZodIssueCode.invalid_type,
+                expected: ZodParsedType.bigint,
+                received: ctx.parsedType,
+            });
+            return INVALID;
         }
         gte(value, message) {
             return this.setLimit("min", value, true, errorUtil.toString(message));
@@ -11911,7 +12641,7 @@
         return new ZodBigInt({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodBigInt,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -11936,7 +12666,7 @@
     ZodBoolean.create = (params) => {
         return new ZodBoolean({
             typeName: ZodFirstPartyTypeKind.ZodBoolean,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -12046,7 +12776,7 @@
     ZodDate.create = (params) => {
         return new ZodDate({
             checks: [],
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             typeName: ZodFirstPartyTypeKind.ZodDate,
             ...processCreateParams(params),
         });
@@ -12474,10 +13204,10 @@
                     ? {
                         errorMap: (issue, ctx) => {
                             var _a, _b, _c, _d;
-                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === undefined ? undefined : _b.call(_a, issue, ctx).message) !== null && _c !== undefined ? _c : ctx.defaultError;
                             if (issue.code === "unrecognized_keys")
                                 return {
-                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== undefined ? _d : defaultError,
                                 };
                             return {
                                 message: defaultError,
@@ -13487,7 +14217,7 @@
     class ZodEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodEnum_cache.set(this, void 0);
+            _ZodEnum_cache.set(this, undefined);
         }
         _parse(input) {
             if (typeof input.data !== "string") {
@@ -13557,7 +14287,7 @@
     class ZodNativeEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodNativeEnum_cache.set(this, void 0);
+            _ZodNativeEnum_cache.set(this, undefined);
         }
         _parse(input) {
             const nativeEnumValues = util.getValidEnumValues(this._def.values);
@@ -14041,7 +14771,7 @@
                         : typeof params === "string"
                             ? { message: params }
                             : params;
-                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== undefined ? _a : fatal) !== null && _b !== undefined ? _b : true;
                     const p2 = typeof p === "string" ? { message: p } : p;
                     ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
                 }
@@ -14502,6 +15232,7 @@
         ScriptCommandSchema,
         SessionCommandSchema,
         StorageCommandSchema,
+        WebExtensionCommandSchema,
     ]));
     const ResultDataSchema = z.lazy(() => z.union([
         BrowsingContextResultSchema,
@@ -14510,6 +15241,7 @@
         ScriptResultSchema,
         SessionResultSchema,
         StorageResultSchema,
+        WebExtensionResultSchema,
     ]));
     const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);
     z.lazy(() => z.union([CommandResponseSchema, ErrorResponseSchema, EventSchema]));
@@ -14539,6 +15271,7 @@
         'invalid argument',
         'invalid selector',
         'invalid session id',
+        'invalid web extension',
         'move target out of bounds',
         'no such alert',
         'no such element',
@@ -14551,6 +15284,7 @@
         'no such script',
         'no such storage partition',
         'no such user context',
+        'no such web extension',
         'session not created',
         'unable to capture screen',
         'unable to close browser',
@@ -14579,7 +15313,11 @@
             z.object({}),
         ]));
     })(Session$1 || (Session$1 = {}));
-    const SessionResultSchema = z.lazy(() => z.union([Session$1.NewResultSchema, Session$1.StatusResultSchema]));
+    const SessionResultSchema = z.lazy(() => z.union([
+        Session$1.NewResultSchema,
+        Session$1.StatusResultSchema,
+        Session$1.SubscribeResultSchema,
+    ]));
     (function (Session) {
         Session.CapabilitiesRequestSchema = z.lazy(() => z.object({
             alwaysMatch: Session.CapabilityRequestSchema.optional(),
@@ -14660,7 +15398,25 @@
         Session.UserPromptHandlerTypeSchema = z.lazy(() => z.enum(['accept', 'dismiss', 'ignore']));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
+        Session.SubscriptionSchema = z.lazy(() => z.string());
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
         Session.SubscriptionRequestSchema = z.lazy(() => z.object({
+            events: z.array(z.string()).min(1),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.UnsubscribeByIdRequestSchema = z.lazy(() => z.object({
+            subscriptions: z.array(Session.SubscriptionSchema).min(1),
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.UnsubscribeByAttributesRequestSchema = z.lazy(() => z.object({
             events: z.array(z.string()).min(1),
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
@@ -14722,9 +15478,17 @@
         }));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
+        Session.SubscribeResultSchema = z.lazy(() => z.object({
+            subscription: Session.SubscriptionSchema,
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
         Session.UnsubscribeSchema = z.lazy(() => z.object({
             method: z.literal('session.unsubscribe'),
-            params: Session.SubscriptionRequestSchema,
+            params: z.union([
+                Session.UnsubscribeByAttributesRequestSchema,
+                Session.UnsubscribeByIdRequestSchema,
+            ]),
         }));
     })(Session$1 || (Session$1 = {}));
     const BrowserCommandSchema = z.lazy(() => z.union([
@@ -14905,6 +15669,7 @@
         BrowsingContext.LocatorSchema = z.lazy(() => z.union([
             BrowsingContext.AccessibilityLocatorSchema,
             BrowsingContext.CssLocatorSchema,
+            BrowsingContext.ContextLocatorSchema,
             BrowsingContext.InnerTextLocatorSchema,
             BrowsingContext.XPathLocatorSchema,
         ]));
@@ -14922,6 +15687,14 @@
         BrowsingContext.CssLocatorSchema = z.lazy(() => z.object({
             type: z.literal('css'),
             value: z.string(),
+        }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
+        BrowsingContext.ContextLocatorSchema = z.lazy(() => z.object({
+            type: z.literal('context'),
+            value: z.object({
+                context: BrowsingContext.BrowsingContextSchema,
+            }),
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
@@ -15405,11 +16178,11 @@
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.InitiatorSchema = z.lazy(() => z.object({
-            type: z.enum(['parser', 'script', 'preflight', 'other']),
             columnNumber: JsUintSchema.optional(),
             lineNumber: JsUintSchema.optional(),
-            stackTrace: Script$1.StackTraceSchema.optional(),
             request: Network.RequestSchema.optional(),
+            stackTrace: Script$1.StackTraceSchema.optional(),
+            type: z.enum(['parser', 'script', 'preflight', 'other']).optional(),
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -15427,6 +16200,8 @@
             cookies: z.array(Network.CookieSchema),
             headersSize: JsUintSchema,
             bodySize: z.union([JsUintSchema, z.null()]),
+            destination: z.string(),
+            initiatorType: z.union([z.string(), z.null()]),
             timings: Network.FetchTimingInfoSchema,
         }));
     })(Network$1 || (Network$1 = {}));
@@ -15631,7 +16406,7 @@
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.BeforeRequestSentParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
-            initiator: Network.InitiatorSchema,
+            initiator: Network.InitiatorSchema.optional(),
         })));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -16702,6 +17477,64 @@
             files: z.array(z.string()),
         }));
     })(Input$1 || (Input$1 = {}));
+    const WebExtensionCommandSchema = z.lazy(() => z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]));
+    const WebExtensionResultSchema = z.lazy(() => WebExtension.InstallResultSchema);
+    var WebExtension;
+    (function (WebExtension) {
+        WebExtension.ExtensionSchema = z.lazy(() => z.string());
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.InstallParametersSchema = z.lazy(() => z.object({
+            extensionData: WebExtension.ExtensionDataSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.InstallSchema = z.lazy(() => z.object({
+            method: z.literal('webExtension.install'),
+            params: WebExtension.InstallParametersSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.ExtensionDataSchema = z.lazy(() => z.union([
+            WebExtension.ExtensionArchivePathSchema,
+            WebExtension.ExtensionBase64EncodedSchema,
+            WebExtension.ExtensionPathSchema,
+        ]));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.ExtensionPathSchema = z.lazy(() => z.object({
+            type: z.literal('path'),
+            path: z.string(),
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.ExtensionArchivePathSchema = z.lazy(() => z.object({
+            type: z.literal('archivePath'),
+            path: z.string(),
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.ExtensionBase64EncodedSchema = z.lazy(() => z.object({
+            type: z.literal('base64'),
+            value: z.string(),
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.InstallResultSchema = z.lazy(() => z.object({
+            extension: WebExtension.ExtensionSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.UninstallSchema = z.lazy(() => z.object({
+            method: z.literal('webExtension.uninstall'),
+            params: WebExtension.UninstallParametersSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
+    (function (WebExtension) {
+        WebExtension.UninstallParametersSchema = z.lazy(() => z.object({
+            extension: WebExtension.ExtensionSchema,
+        }));
+    })(WebExtension || (WebExtension = {}));
 
     /**
      * Copyright 2022 Google LLC.
@@ -16962,22 +17795,44 @@
                 .HandleRequestDevicePromptParametersSchema);
         }
         Bluetooth.parseHandleRequestDevicePromptParams = parseHandleRequestDevicePromptParams;
+        function parseSimulateAdapterParams(params) {
+            return parseObject(params, Bluetooth$1.SimulateAdapterParametersSchema);
+        }
+        Bluetooth.parseSimulateAdapterParams = parseSimulateAdapterParams;
+        function parseSimulateAdvertisementParams(params) {
+            return parseObject(params, Bluetooth$1.SimulateAdvertisementParametersSchema);
+        }
+        Bluetooth.parseSimulateAdvertisementParams = parseSimulateAdvertisementParams;
+        function parseSimulatePreconnectedPeripheralParams(params) {
+            return parseObject(params, Bluetooth$1
+                .SimulatePreconnectedPeripheralParametersSchema);
+        }
+        Bluetooth.parseSimulatePreconnectedPeripheralParams = parseSimulatePreconnectedPeripheralParams;
     })(Bluetooth || (Bluetooth = {}));
 
     class BidiParser {
-        // Bluetooth domain
+        // Bluetooth module
         // keep-sorted start block=yes
         parseHandleRequestDevicePromptParams(params) {
             return Bluetooth.parseHandleRequestDevicePromptParams(params);
         }
+        parseSimulateAdapterParameters(params) {
+            return Bluetooth.parseSimulateAdapterParams(params);
+        }
+        parseSimulateAdvertisementParameters(params) {
+            return Bluetooth.parseSimulateAdvertisementParams(params);
+        }
+        parseSimulatePreconnectedPeripheralParameters(params) {
+            return Bluetooth.parseSimulatePreconnectedPeripheralParams(params);
+        }
         // keep-sorted end
-        // Browser domain
+        // Browser module
         // keep-sorted start block=yes
         parseRemoveUserContextParams(params) {
             return Browser.parseRemoveUserContextParams(params);
         }
         // keep-sorted end
-        // Browsing Context domain
+        // Browsing Context module
         // keep-sorted start block=yes
         parseActivateParams(params) {
             return BrowsingContext.parseActivateParams(params);
@@ -17016,7 +17871,7 @@
             return BrowsingContext.parseTraverseHistoryParams(params);
         }
         // keep-sorted end
-        // CDP domain
+        // CDP module
         // keep-sorted start block=yes
         parseGetSessionParams(params) {
             return Cdp.parseGetSessionRequest(params);
@@ -17028,7 +17883,7 @@
             return Cdp.parseSendCommandRequest(params);
         }
         // keep-sorted end
-        // Input domain
+        // Input module
         // keep-sorted start block=yes
         parsePerformActionsParams(params) {
             return Input.parsePerformActionsParams(params);
@@ -17040,7 +17895,7 @@
             return Input.parseSetFilesParams(params);
         }
         // keep-sorted end
-        // Network domain
+        // Network module
         // keep-sorted start block=yes
         parseAddInterceptParams(params) {
             return Network.parseAddInterceptParameters(params);
@@ -17067,13 +17922,13 @@
             return Network.parseSetCacheBehavior(params);
         }
         // keep-sorted end
-        // Permissions domain
+        // Permissions module
         // keep-sorted start block=yes
         parseSetPermissionsParams(params) {
             return Permissions.parseSetPermissionsParams(params);
         }
         // keep-sorted end
-        // Script domain
+        // Script module
         // keep-sorted start block=yes
         parseAddPreloadScriptParams(params) {
             return Script.parseAddPreloadScriptParams(params);
@@ -17094,14 +17949,13 @@
             return Script.parseRemovePreloadScriptParams(params);
         }
         // keep-sorted end
-        // Session domain
+        // Session module
         // keep-sorted start block=yes
         parseSubscribeParams(params) {
             return Session.parseSubscribeParams(params);
         }
         // keep-sorted end
-        // Storage domain
-        // keep-sorted start block=yes
+        // Storage module
         parseDeleteCookiesParams(params) {
             return Storage.parseDeleteCookiesParams(params);
         }
@@ -17164,6 +18018,7 @@
         // <div class="pre">...log message...</div>
         const lineElement = document.createElement('div');
         lineElement.className = 'pre';
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
         debugContainer.appendChild(lineElement);
         if (debugContainer.childNodes.length > 400) {
@@ -17186,7 +18041,7 @@
                 catch (e) {
                     const error = e instanceof Error ? e : new Error(e);
                     // Transport-level error does not provide channel.
-                    this.#respondWithError(message, "invalid argument" /* ErrorCode.InvalidArgument */, error, null);
+                    this.#respondWithError(message, "invalid argument" /* ErrorCode.InvalidArgument */, error, {});
                 }
             };
         }
@@ -17204,15 +18059,10 @@
         }
         #respondWithError(plainCommandData, errorCode, error, channel) {
             const errorResponse = _a.#getErrorResponse(plainCommandData, errorCode, error);
-            if (channel) {
-                this.sendMessage({
-                    ...errorResponse,
-                    channel,
-                });
-            }
-            else {
-                this.sendMessage(errorResponse);
-            }
+            this.sendMessage({
+                ...errorResponse,
+                ...(channel ?? {}),
+            });
         }
         static #getJsonType(value) {
             if (value === null) {
@@ -17270,15 +18120,23 @@
             if (paramsType !== 'object') {
                 throw new Error(`Expected object params but got ${paramsType}`);
             }
-            let channel = command.channel;
-            if (channel !== undefined) {
-                const channelType = _a.#getJsonType(channel);
+            let channel = {};
+            if (command['goog:channel'] !== undefined) {
+                const channelType = _a.#getJsonType(command['goog:channel']);
                 if (channelType !== 'string') {
-                    throw new Error(`Expected string channel but got ${channelType}`);
+                    throw new Error(`Expected string value of 'goog:channel' but got ${channelType}`);
                 }
-                // Empty string channel is considered as no channel provided.
-                if (channel === '') {
-                    channel = undefined;
+                if (command['goog:channel'] !== '') {
+                    channel = { 'goog:channel': command['goog:channel'] };
+                }
+            }
+            else if (command.channel !== undefined) {
+                const channelType = _a.#getJsonType(command.channel);
+                if (channelType !== 'string') {
+                    throw new Error(`Expected string 'channel' but got ${channelType}`);
+                }
+                if (command.channel !== '') {
+                    channel = { channel: command.channel };
                 }
             }
             return { id, method, params, channel };

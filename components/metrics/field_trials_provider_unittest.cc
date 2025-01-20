@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/field_trials_provider.h"
 
+#include <array>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
@@ -28,33 +25,43 @@ namespace {
 
 constexpr const char* kSuffix = "UKM";
 
-const ActiveGroup kFieldTrials[] = {{"Trial1", "Group1"},
-                                    {"Trial2", "Group2"},
-                                    {"Trial3", "Group3"}};
-const ActiveGroup kSyntheticFieldTrials[] = {{"Synthetic1", "SyntheticGroup1"},
-                                             {"Synthetic2", "SyntheticGroup2"}};
+const auto kFieldTrials = std::to_array<ActiveGroup>({
+    {"Trial1", "Group1"},
+    {"Trial2", "Group2"},
+    {"Trial3", "Group3"},
+});
+const auto kSyntheticFieldTrials = std::to_array<ActiveGroup>({
+    {"Synthetic1", "SyntheticGroup1"},
+    {"Synthetic2", "SyntheticGroup2"},
+});
 
 ActiveGroupId ToActiveGroupId(ActiveGroup active_group,
                               std::string suffix = "");
 
-const ActiveGroupId kFieldTrialIds[] = {ToActiveGroupId(kFieldTrials[0]),
-                                        ToActiveGroupId(kFieldTrials[1]),
-                                        ToActiveGroupId(kFieldTrials[2])};
-const ActiveGroupId kAllTrialIds[] = {
-    ToActiveGroupId(kFieldTrials[0]), ToActiveGroupId(kFieldTrials[1]),
-    ToActiveGroupId(kFieldTrials[2]), ToActiveGroupId(kSyntheticFieldTrials[0]),
-    ToActiveGroupId(kSyntheticFieldTrials[1])};
-const ActiveGroupId kAllTrialIdsWithSuffixes[] = {
+const auto kFieldTrialIds = std::to_array<ActiveGroupId>({
+    ToActiveGroupId(kFieldTrials[0]),
+    ToActiveGroupId(kFieldTrials[1]),
+    ToActiveGroupId(kFieldTrials[2]),
+});
+const auto kAllTrialIds = std::to_array<ActiveGroupId>({
+    ToActiveGroupId(kFieldTrials[0]),
+    ToActiveGroupId(kFieldTrials[1]),
+    ToActiveGroupId(kFieldTrials[2]),
+    ToActiveGroupId(kSyntheticFieldTrials[0]),
+    ToActiveGroupId(kSyntheticFieldTrials[1]),
+});
+const auto kAllTrialIdsWithSuffixes = std::to_array<ActiveGroupId>({
     ToActiveGroupId(kFieldTrials[0], kSuffix),
     ToActiveGroupId(kFieldTrials[1], kSuffix),
     ToActiveGroupId(kFieldTrials[2], kSuffix),
     ToActiveGroupId(kSyntheticFieldTrials[0], kSuffix),
-    ToActiveGroupId(kSyntheticFieldTrials[1], kSuffix)};
+    ToActiveGroupId(kSyntheticFieldTrials[1], kSuffix),
+});
 
 // Check that the field trials in |system_profile| correspond to |expected|.
 void CheckFieldTrialsInSystemProfile(
     const metrics::SystemProfileProto& system_profile,
-    const ActiveGroupId* expected) {
+    base::span<const ActiveGroupId> expected) {
   for (int i = 0; i < system_profile.field_trial_size(); ++i) {
     const metrics::SystemProfileProto::FieldTrial& field_trial =
         system_profile.field_trial(i);

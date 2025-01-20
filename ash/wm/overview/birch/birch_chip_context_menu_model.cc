@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -79,19 +80,24 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       break;
     case BirchSuggestionType::kCoral:
       // TODO(zxdan): Localize the strings.
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk), u"Open",
-                      CreateIconForMenuItem(kCoralOpenIcon));
-      if (features::IsCoralSavedDeskFeatureEnabled() &&
-          !display::Screen::GetScreen()->InTabletMode()) {
-        AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
-                        u"Save group for later",
-                        CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kCoralNewDesk),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP),
+          CreateIconForMenuItem(kCoralOpenIcon));
+      if (features::IsCoralFeatureEnabled() &&
+          !display::Screen::GetScreen()->InTabletMode() &&
+          !BirchBarController::Get()->is_informed_restore()) {
+        AddItemWithIcon(
+            base::to_underlying(CommandId::kCoralSaveForLater),
+            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP),
+            CreateIconForMenuItem(kSaveDeskForLaterIcon));
       }
       AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
-      AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
-                      u"Don't suggest group to resume",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideCoralSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     default:
       break;
@@ -114,7 +120,8 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   if (chip_type == BirchSuggestionType::kCoral) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),
-                    u"Send feedback", CreateIconForMenuItem(kFeedbackIcon));
+                    l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
+                    CreateIconForMenuItem(kFeedbackIcon));
   }
 }
 

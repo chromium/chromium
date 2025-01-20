@@ -31,8 +31,6 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
     return nullptr;
   }
 
-  result.default_search_provider_id =
-      keyword_table->GetDefaultSearchProviderID();
   result.metadata = {
       .builtin_keyword_data_version =
           keyword_table->GetBuiltinKeywordDataVersion(),
@@ -41,13 +39,6 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
       .starter_pack_version = keyword_table->GetStarterPackKeywordVersion(),
   };
   return std::make_unique<WDResult<WDKeywordsResult>>(KEYWORDS_RESULT, result);
-}
-
-WebDatabase::State SetDefaultSearchProviderIDImpl(TemplateURLID id,
-                                                  WebDatabase* db) {
-  return KeywordTable::FromWebDatabase(db)->SetDefaultSearchProviderID(id)
-             ? WebDatabase::COMMIT_NEEDED
-             : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State SetBuiltinKeywordDataVersionImpl(int version,
@@ -154,11 +145,6 @@ WebDataServiceBase::Handle KeywordWebDataService::GetKeywords(
 
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE, base::BindOnce(&GetKeywordsImpl), consumer);
-}
-
-void KeywordWebDataService::SetDefaultSearchProviderID(TemplateURLID id) {
-  wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::BindOnce(&SetDefaultSearchProviderIDImpl, id));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordDataVersion(int version) {

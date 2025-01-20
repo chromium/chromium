@@ -12,8 +12,8 @@ source_set("model") {
   public_deps = [
     ":metrics",
     "//base",
-    "//components/keyed_service/core",
   ]
+  deps = [ "//components/keyed_service/core" ]
 }
 
 source_set("policy") {
@@ -35,10 +35,9 @@ source_set("photos_service_factory") {
   deps = [
     ":model",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]

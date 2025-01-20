@@ -18,6 +18,7 @@
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,7 +88,7 @@ class SignalsAggregatorImplTest : public testing::Test {
   raw_ptr<MockSignalsCollector> hotfix_signal_collector_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  UserContext user_context_{kGaiaId};
+  UserContext user_context_{GaiaId(kGaiaId)};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   base::HistogramTester histogram_tester_;

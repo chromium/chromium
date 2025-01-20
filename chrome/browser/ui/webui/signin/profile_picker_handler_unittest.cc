@@ -14,13 +14,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -55,14 +56,21 @@ void VerifyProfileEntry(const base::Value::Dict& dict,
   EXPECT_EQ(dict.FindString("avatarBadge")->empty(),
             !AccountInfo::IsManaged(entry->GetHostedDomain()) &&
                 !entry->IsSupervised());
+  EXPECT_EQ(*dict.FindString("profileCardButtonLabel"),
+            base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+                (entry->IsSupervised()
+                     ? IDS_PROFILE_PICKER_PROFILE_CARD_LABEL_SUPERVISED
+                     : IDS_PROFILE_PICKER_PROFILE_CARD_LABEL),
+                entry->GetLocalProfileName())));
 }
 
 }  // namespace
 
 class ProfilePickerHandlerTest : public testing::Test {
  public:
-  ProfilePickerHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  explicit ProfilePickerHandlerTest(bool is_glic_version = false)
+      : is_glic_version_(is_glic_version),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitAndEnableFeature(
         supervised_user::kHideGuestModeForSupervisedUsers);
@@ -72,7 +80,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    handler_ = std::make_unique<ProfilePickerHandler>();
+    handler_ = std::make_unique<ProfilePickerHandler>(is_glic_version_);
     web_ui_profile_ = GetWebUIProfile();
     web_ui_.set_web_contents(
         web_contents_factory_.CreateWebContents(web_ui_profile_));
@@ -161,6 +169,8 @@ class ProfilePickerHandlerTest : public testing::Test {
   ProfilePickerHandler* handler() { return handler_.get(); }
 
  private:
+  const bool is_glic_version_;
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -474,4 +484,22 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
         entries_to_names(storage->GetAllProfilesAttributesSortedForDisplay()),
         expected_profile_order_names);
   }
+}
+
+class ProfilePickerHandlerGlicVersionTest : public ProfilePickerHandlerTest {
+ public:
+  ProfilePickerHandlerGlicVersionTest()
+      : ProfilePickerHandlerTest(/*is_glic_version=*/true) {}
+};
+
+TEST_F(ProfilePickerHandlerGlicVersionTest, FilteringProfileEntries) {
+  ProfileAttributesEntry* eligible_1 = CreateTestingProfile("E1");
+  eligible_1->SetIsGlicEligible(true);
+  ProfileAttributesEntry* eligible_2 = CreateTestingProfile("E2");
+  eligible_2->SetIsGlicEligible(true);
+
+  ProfileAttributesEntry* ineligible_1 = CreateTestingProfile("I1");
+  ineligible_1->SetIsGlicEligible(false);
+
+  InitializeMainViewAndVerifyProfileList({eligible_1, eligible_2});
 }

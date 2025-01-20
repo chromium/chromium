@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
 import './cra/cra-dropdown.js';
+import './cra/cra-icon.js';
 
 import {
   css,
@@ -35,12 +36,13 @@ export class LanguageDropdown extends ReactiveLitElement {
 
   languageList: LangPackInfo[] = [];
 
-  value: LanguageCode|null = null;
-
   private onChanged(ev: Event) {
-    this.value = checkEnumVariant(
+    const dropdownValue = checkEnumVariant(
       LanguageCode,
       assertInstanceof(ev.target, CraDropdown).value,
+    );
+    this.dispatchEvent(
+      new CustomEvent('dropdown-changed', {detail: dropdownValue}),
     );
   }
 
@@ -58,16 +60,13 @@ export class LanguageDropdown extends ReactiveLitElement {
 
   override render(): RenderResult {
     // CrOS dropdown does not support showing default text when no item
-    // selected. Use a disabled hint text as default option as a workaround.
-    // TODO: b/377629564 - Modify CrOS dropdown to support default text for
-    // correct a11y behavior.
-    // TODO(hsuanling): Add leading icon after UI spec is done.
+    // selected. Select the hint string by-default as a workaround.
     return html`
       <cra-dropdown @change=${this.onChanged}>
+        <cra-icon name="language" slot="leading"></cra-icon>
         <cros-dropdown-option
           headline=${i18n.languageDropdownHintOption}
           selected
-          disabled
         >
         </cros-dropdown-option>
         ${this.renderDropdownOptions()}

@@ -4,26 +4,34 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.data_sharing.protocol";
-
-option optimize_for = LITE_RUNTIME;
-
 package data_sharing_pb;
 
 import "components/data_sharing/public/protocol/group_data.proto";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.data_sharing.protocol";
+option optimize_for = LITE_RUNTIME;
+
 message CreateGroupParams {
   optional string display_name = 1;
-};
+}
 
 message CreateGroupResult {
   optional GroupData group_data = 1;
-};
+}
 
 message ReadGroupsParams {
+  // TODO(crbug.com/369856322): remove this field once all SDK implementations
+  // are migrated to use `group_params`.
   repeated string group_ids = 1;
-};
+
+  message GroupParams {
+    optional string group_id = 1;
+    // Might be empty if the client needs the most fresh data.
+    optional string consistency_token = 2;
+  }
+  repeated GroupParams group_params = 2;
+}
 
 message FailedReadGroupResult {
   optional string group_id = 1;
@@ -35,12 +43,12 @@ message FailedReadGroupResult {
     TRANSIENT_ERROR = 3;
   }
   optional FailureReason failure_reason = 2;
-};
+}
 
 message ReadGroupsResult {
   repeated GroupData group_data = 1;
   repeated FailedReadGroupResult failed_read_group_results = 2;
-};
+}
 
 message AddMemberParams {
   optional string group_id = 1;
@@ -50,12 +58,12 @@ message AddMemberParams {
     // To add current account to an unowned group.
     string access_token = 3;
   }
-};
+}
 
 message RemoveMemberParams {
   optional string group_id = 1;
   optional string member_gaia_id = 2;
-};
+}
 
 message LeaveGroupParams {
   optional string group_id = 1;
@@ -63,15 +71,15 @@ message LeaveGroupParams {
 
 message DeleteGroupParams {
   optional string group_id = 1;
-};
+}
 
 message LookupGaiaIdByEmailParams {
   optional string email = 1;
-};
+}
 
 message LookupGaiaIdByEmailResult {
   optional string gaia_id = 1;
-};
+}
 
 message AddAccessTokenParams {
   optional string group_id = 1;

@@ -148,7 +148,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
   void UpdateWindowRoundedCorners() override {
     if (!chromeos::features::IsRoundedWindowsEnabled() && GetFrameEnabled()) {
       header_view_->SetHeaderCornerRadius(
-          chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+          chromeos::GetWindowCornerRadius(frame()->GetNativeWindow()));
     }
 
     if (!GetWidget()) {

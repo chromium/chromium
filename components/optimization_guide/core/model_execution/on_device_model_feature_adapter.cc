@@ -28,6 +28,8 @@ OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
     proto::OnDeviceModelExecutionFeatureConfig&& config)
     : config_(config),
       redactor_(Redactor::FromProto(config.output_config().redact_rules())),
+      response_streaming_mode_(
+          config.output_config().response_streaming_mode()),
       parser_(
           ResponseParserRegistry::Get().CreateParser(config_.output_config())) {
   // Set limits values in `token_limits_`.
@@ -102,13 +104,16 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
   return redact_result;
 }
 
-bool OnDeviceModelFeatureAdapter::ShouldParseResponse(bool is_complete) const {
-  return is_complete || !parser_->SuppressParsingIncompleteResponse();
+bool OnDeviceModelFeatureAdapter::ShouldParseResponse(
+    ResponseCompleteness completeness) const {
+  return completeness == ResponseCompleteness::kComplete ||
+         !parser_->SuppressParsingIncompleteResponse();
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(
     const google::protobuf::MessageLite& request,
     const std::string& model_response,
+    size_t previous_response_pos,
     ResponseParser::ResultCallback callback) const {
   std::string redacted_response = model_response;
   auto redact_result = Redact(request, redacted_response);
@@ -121,7 +126,21 @@ void OnDeviceModelFeatureAdapter::ParseResponse(
     std::move(callback).Run(base::unexpected(ResponseParsingError::kFailed));
     return;
   }
-  parser_->ParseAsync(redacted_response, std::move(callback));
+
+  switch (response_streaming_mode_) {
+    case proto::ResponseStreamingMode::STREAMING_MODE_CURRENT_RESPONSE: {
+      parser_->ParseAsync(redacted_response, std::move(callback));
+      break;
+    }
+
+    case proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK: {
+      // The `redacted_response` is actually not redacted here because the
+      // redactor config and chunk-by-chunk mode are mutual exclusive.
+      parser_->ParseAsync(redacted_response.substr(previous_response_pos),
+                          std::move(callback));
+      break;
+    }
+  }
 }
 
 std::optional<proto::TextSafetyRequest>
@@ -151,14 +170,14 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
-std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
-    const {
+std::optional<SamplingParamsConfig>
+OnDeviceModelFeatureAdapter::MaybeSamplingParamsConfig() const {
   if (!config_.has_sampling_params()) {
     return std::nullopt;
   }
-  return SamplingParams{
-      .top_k = config_.sampling_params().top_k(),
-      .temperature = config_.sampling_params().temperature(),
+  return SamplingParamsConfig{
+      .default_top_k = config_.sampling_params().top_k(),
+      .default_temperature = config_.sampling_params().temperature(),
   };
 }
 

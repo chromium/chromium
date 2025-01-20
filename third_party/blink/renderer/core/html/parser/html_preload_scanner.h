@@ -95,7 +95,6 @@ struct CORE_EXPORT CachedDocumentParameters {
   bool viewport_meta_zero_values_quirk;
   bool viewport_meta_enabled;
   network::mojom::ReferrerPolicy referrer_policy;
-  SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
   // Work with the element locators. If the LCP candidate image is found and
   // that has a lazy loading indicator, ignore it and create preload request.

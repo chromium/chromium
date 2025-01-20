@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"

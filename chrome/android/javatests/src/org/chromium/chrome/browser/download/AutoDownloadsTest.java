@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.util.ArrayList;
 
@@ -60,16 +58,6 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     public void tearDown() {
         mDownloadTestRule.deleteFilesInDownloadDirectory(
                 new String[] {"test-image0.png", "test-image1.png"});
-    }
-
-    private void waitForDownloadDialog(ModalDialogManager manager) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(manager.isShowing(), Matchers.is(true));
-                    Criteria.checkThat(
-                            manager.getCurrentPresenterForTest(),
-                            Matchers.is(manager.getPresenterForTest(ModalDialogType.APP)));
-                });
     }
 
     @Test

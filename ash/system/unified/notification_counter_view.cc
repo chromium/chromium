@@ -165,9 +165,9 @@ void NotificationCounterView::Update() {
   int icon_id = std::min(notification_count, kTrayNotificationMaxCount + 1);
   if (icon_id != count_for_display_) {
     count_for_display_ = icon_id;
-    image_view()->SetImage(
+    image_view()->SetImage(ui::ImageModel::FromImageSkia(
         gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(this,
-                                                                     icon_id));
+                                                                     icon_id)));
     UpdateLabelOrImageViewColor(is_active());
   }
   SetVisible(true);
@@ -191,9 +191,9 @@ void NotificationCounterView::OnThemeChanged() {
 void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  image_view()->SetImage(
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(
       gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
-          this, count_for_display_));
+          this, count_for_display_)));
 }
 
 BEGIN_METADATA(NotificationCounterView)

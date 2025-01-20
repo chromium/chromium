@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/ntp/ui_bundled",
+]

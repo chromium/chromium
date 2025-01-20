@@ -7,8 +7,6 @@
 
 #include "base/time/time.h"
 
-class Profile;
-
 namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
@@ -27,14 +25,6 @@ class AppActivityReportInterface {
     // Whether any data were added to the report.
     bool anything_reported = false;
   };
-
-  // Factory method that returns object generating app activity for child user.
-  // feature. Provided to reduce the dependencies between API consumer and child
-  // user related code. AppActivityReportInterface object has a lifetime of a
-  // KeyedService.
-  static AppActivityReportInterface* Get(Profile* profile);
-
-  virtual ~AppActivityReportInterface();
 
   // Populates child status |report| with collected app activity.
   // Returns whether any data were populated.

@@ -15,9 +15,9 @@
 
 namespace performance_manager {
 
-class LoadingScenarioObserver : public FrameNode::ObserverDefaultImpl,
-                                public PageNode::ObserverDefaultImpl,
-                                public ProcessNode::ObserverDefaultImpl,
+class LoadingScenarioObserver : public FrameNodeObserver,
+                                public PageNodeObserver,
+                                public ProcessNodeObserver,
                                 public GraphOwned {
  public:
   LoadingScenarioObserver();

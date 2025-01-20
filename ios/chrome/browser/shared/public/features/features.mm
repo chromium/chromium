@@ -11,6 +11,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "components/country_codes/country_codes.h"
 #import "components/segmentation_platform/public/features.h"
+#import "components/sync/base/features.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
@@ -24,40 +25,6 @@ namespace {
 // is enabled, not if the capability was enabled at startup.
 bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
-}
-
-// Helper function that returns a vector of two booleans, with vector[0] being
-// the desired state for the combined MVT, and vector[1] being whether homestack
-// should be enabled.
-std::vector<bool> ShouldEnableCombinedMVTAndHomestack(
-    FeedActivityBucket feed_activity_bucket) {
-  if (!base::FeatureList::IsEnabled(kNewFeedPositioning)) {
-    return {false, false};
-  }
-  std::string mvt_state_param_name;
-  switch (feed_activity_bucket) {
-    case FeedActivityBucket::kNoActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
-      break;
-    case FeedActivityBucket::kLowActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
-      break;
-    case FeedActivityBucket::kMediumActivity:
-    case FeedActivityBucket::kHighActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
-      break;
-    default:
-      NOTREACHED() << "Should not reach engagement level: "
-                   << static_cast<int>(feed_activity_bucket);
-  }
-  bool should_combine_mvt = base::GetFieldTrialParamByFeatureAsBool(
-      kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
-  bool should_enable_homestack =
-      should_combine_mvt ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          kNewFeedPositioning, kNewFeedPositioningHomestackOnForAll,
-          /*default_value=*/true);
-  return {should_combine_mvt, should_enable_homestack};
 }
 
 }  // namespace
@@ -84,7 +51,7 @@ SegmentedDefaultBrowserExperimentTypeEnabled() {
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
              "IOSKeyboardAccessoryUpgrade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu,
              "IOSKeyboardAccessoryUpgradeShortManualFillMenu",
@@ -140,6 +107,9 @@ const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
 const char kSafetyCheckNotificationsProvisionalEnabled[] =
     "SafetyCheckNotificationsProvisionalEnabled";
 
+const char kSafetyCheckNotificationsSuppressDelayIfPresent[] =
+    "SafetyCheckNotificationsSuppressDelayIfPresent";
+
 const char kSafetyCheckNotificationsUserInactiveThreshold[] =
     "SafetyCheckNotificationsUserInactiveThreshold";
 
@@ -174,6 +144,13 @@ bool ProvisionalSafetyCheckNotificationsEnabled() {
       true);
 }
 
+const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kSafetyCheckNotifications,
+      kSafetyCheckNotificationsSuppressDelayIfPresent,
+      /*default_value=*/kSafetyCheckNotificationSuppressDelayIfPresent);
+}
+
 const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kSafetyCheckNotifications, kSafetyCheckNotificationsUserInactiveThreshold,
@@ -195,7 +172,7 @@ BASE_FEATURE(kSharedHighlightingIOS,
 
 BASE_FEATURE(kShareInWebContextMenuIOS,
              "ShareInWebContextMenuIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kModernTabStrip,
              "ModernTabStrip",
@@ -224,10 +201,6 @@ extern const char kModernTabStripHighContrastNTB[] =
     "modern-tab-strip-high-contrast-ntb";
 extern const char kModernTabStripDetachedTabs[] =
     "modern-tab-strip-detached-tabs";
-
-BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
-             "DefaultBrowserIntentsShowSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
@@ -259,14 +232,6 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
              "IOSDockingPromoPreventDeregistrationKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSEditMenuHideSearchWeb,
-             "IOSEditMenuHideSearchWeb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget,
-             "kEnableColorLensAndVoiceIconsInHomeScreenWidget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -274,12 +239,25 @@ BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
 BASE_FEATURE(kEnableLensOverlay,
              "EnableLensOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableLensViewFinderUnifiedExperience,
+             "EnableLensViewFinderUnifiedExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableLensContextMenuUnifiedExperience,
+             "EnableLensContextMenuUnifiedExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update to the correct milestone after launch.
 // Also update in components/omnibox/browser/autocomplete_result.cc.
 const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
 
 BASE_FEATURE(kLensOverlayDisablePriceInsights,
              "LensOverlayDisablePriceInsights",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayPriceInsightsCounterfactual,
+             "LensOverlayPriceInsightsCounterfactual",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableIPadCompatibility,
@@ -290,6 +268,10 @@ BASE_FEATURE(kLensOverlayEnableLocationBarEntrypoint,
              "LensOverlayEnableLocationBarEntrypoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP,
+             "LensOverlayEnableLocationBarEntrypointOnSRP",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
              "EnableLensOverlaySameTabNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -298,16 +280,24 @@ BASE_FEATURE(kLensOverlayForceShowOnboardingScreen,
              "EnableLensOverlayForceShowOnboardingScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kLensOverlayOnboardingParam[] = "kLensOverlayOnboardingParam";
+const char kLensOverlayOnboardingParamSpeedbumpMenu[] =
+    "kLensOverlayOnboardingParamSpeedbumpMenu";
+const char kLensOverlayOnboardingParamUpdatedStrings[] =
+    "kLensOverlayOnboardingParamUpdatedStrings";
+const char kLensOverlayOnboardingParamUpdatedStringsAndVisuals[] =
+    "kLensOverlayOnboardingParamUpdatedStringsAndVisuals";
+
+BASE_FEATURE(kLensOverlayAlternativeOnboarding,
+             "LensOverlayAlternativeOnboarding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTraitCollectionWorkAround,
              "EnableTraitCollectionWorkAround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRemoveExcessNTPs,
              "RemoveExcessNTPs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
-             "EnableShortenedPasswordAutoFillInstruction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTCRexKillSwitch,
@@ -332,7 +322,7 @@ bool IsContextualPanelForceShowEntrypointEnabled() {
 
 BASE_FEATURE(kContextualPanel,
              "ContextualPanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsContextualPanelEnabled() {
   return base::FeatureList::IsEnabled(kContextualPanel);
@@ -429,7 +419,7 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
       base::GetFieldTrialParamByFeatureAsInt(
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
-          (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
+          (int)SafetyCheckNotificationsExperimentalArm::kSuccinct));
 }
 
 SafetyCheckNotificationsImpressionTrigger
@@ -474,16 +464,12 @@ BASE_FEATURE(kIOSChooseFromDrive,
              "IOSChooseFromDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSSaveToDrive,
-             "IOSSaveToDrive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSSaveToPhotos,
-             "IOSSaveToPhotos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSManageAccountStorage,
+             "IOSManageAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWebChannels,
@@ -536,10 +522,6 @@ BASE_FEATURE(kContentNotificationDeliveredNAU,
 
 const char kDeliveredNAUMaxPerSession[] = "DeliveredNAUMaxPerSession";
 
-BASE_FEATURE(kIOSLargeFakebox,
-             "IOSLargeFakebox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -583,10 +565,6 @@ bool IsNewSyncOptInIllustration() {
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxColorIcons,
-             "OmniboxColorIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
@@ -835,10 +813,6 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly() {
           NotificationsExperimentTypeSetUpListsRegistrationOnly);
 }
 
-bool IsIOSLargeFakeboxEnabled() {
-  return base::FeatureList::IsEnabled(kIOSLargeFakebox);
-}
-
 bool IsKeyboardAccessoryUpgradeEnabled() {
   return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgrade) &&
          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
@@ -968,9 +942,31 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
 
 bool ShouldPutMostVisitedSitesInMagicStack(
     FeedActivityBucket feed_activity_bucket) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             kMagicStack, kMagicStackMostVisitedModuleParam, false) ||
-         ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[0];
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kMagicStack, kMagicStackMostVisitedModuleParam, false)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(kNewFeedPositioning)) {
+    std::string mvt_state_param_name;
+    switch (feed_activity_bucket) {
+      case FeedActivityBucket::kNoActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
+        break;
+      case FeedActivityBucket::kLowActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
+        break;
+      case FeedActivityBucket::kMediumActivity:
+      case FeedActivityBucket::kHighActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
+        break;
+      default:
+        NOTREACHED() << "Should not reach engagement level: "
+                     << static_cast<int>(feed_activity_bucket);
+    }
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
+  }
+  return false;
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
@@ -1030,7 +1026,7 @@ BASE_FEATURE(kSpotlightNeverRetainIndex,
 
 BASE_FEATURE(kIOSSaveToPhotosImprovements,
              "SaveToPhotosImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kSaveToPhotosContextMenuImprovementParam[] =
     "save-to-photos-context-menu-improvement";
@@ -1092,7 +1088,7 @@ bool IsHomeMemoryImprovementsEnabled() {
 
 BASE_FEATURE(kRichBubbleWithoutImage,
              "RichBubbleWithoutImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRichBubbleWithoutImageEnabled() {
   return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);
@@ -1146,15 +1142,24 @@ bool AreSeparateProfilesForManagedAccountsEnabled() {
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPostProfileSwitchActions,
-             "PostProfileSwitchActions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeStartupParametersAsync,
              "ChromeStartupParametersAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kYoutubeIncognito,
+             "YoutubeIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[] =
+    "youtube-incognito-error-handling-without-incognito-interstitial";
+
+bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kYoutubeIncognito,
+      kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam, false);
+}
 
 BASE_FEATURE(kIOSReactivationNotifications,
              "IOSReactivationNotifications",
@@ -1184,17 +1189,40 @@ const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
     "medium_engagement_combined_mvt";
 const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
     "low_engagement_combined_mvt";
-const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
-
-// Returns whether homestack should be enabled.
-bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket) {
-  return ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[1];
-}
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit{
+    &kDefaultBrowserBannerPromo, "DefaultBrowserBannerPromoImpressionLimit",
+    10};
+
 bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
+}
+
+constexpr base::FeatureParam<std::string>
+    kFRESignInSecondaryActionLabelUpdateParam{
+        &kFRESignInSecondaryActionLabelUpdate,
+        "FRESignInSecondaryActionLabelUpdateParam", "StaySignedOut"};
+
+const std::string_view kFRESignInSecondaryActionLabelUpdateParamStaySignedOut =
+    "StaySignedOut";
+
+BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
+             "FRESignInSecondaryActionLabelUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool FRESignInSecondaryActionLabelUpdate() {
+  return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
+}
+
+BASE_FEATURE(kIOSPasskeysM2,
+             "IOSPasskeysM2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IOSPasskeysM2Enabled() {
+  return syncer::IsWebauthnCredentialSyncEnabled() &&
+         base::FeatureList::IsEnabled(kIOSPasskeysM2);
 }

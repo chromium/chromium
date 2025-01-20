@@ -227,7 +227,7 @@ TEST_F(SampleVectorTest, Iterate) {
 
   int i;
   size_t index;
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   for (i = 1; !it->Done(); i++, it->Next()) {
@@ -268,7 +268,7 @@ TEST_F(SampleVectorTest, Iterator_InvalidSingleSample) {
 
   // Create an iterator. Verify that the new samples are returned, and that the
   // invalid sample is not (it was discarded).
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   it = samples.Iterator();
@@ -328,7 +328,7 @@ TEST_F(SampleVectorTest, IterateDoneDeath) {
 
   EXPECT_TRUE(it->Done());
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   EXPECT_DCHECK_DEATH(it->Get(&min, &max, &count));
@@ -361,7 +361,7 @@ TEST_F(SampleVectorTest, SingleSample) {
   EXPECT_EQ(600, samples.redundant_count());
 
   // Ensure that the iterator returns only one value.
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   std::unique_ptr<SampleCountIterator> it = samples.Iterator();
@@ -445,7 +445,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   EXPECT_EQ(200, samples2.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples2));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   std::unique_ptr<SampleCountIterator> it = samples2.Iterator();
@@ -540,7 +540,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   EXPECT_EQ(200, samples1.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
   HistogramBase::Count count;
   std::unique_ptr<SampleCountIterator> it = samples1.Iterator();

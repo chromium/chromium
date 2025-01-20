@@ -6,12 +6,10 @@
 
 #import "base/check.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
@@ -42,9 +40,8 @@ TabsSearchServiceFactory* TabsSearchServiceFactory::GetInstance() {
 }
 
 TabsSearchServiceFactory::TabsSearchServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "TabsSearchService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("TabsSearchService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -73,9 +70,4 @@ std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
       is_off_the_record ? TabsSearchService::WebHistoryServiceGetter()
                         : base::BindRepeating(&WebHistoryServiceGetter,
                                               profile->AsWeakPtr()));
-}
-
-web::BrowserState* TabsSearchServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
 }

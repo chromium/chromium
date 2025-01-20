@@ -19,8 +19,8 @@ namespace {
 base::expected<int, ProcessCPUUsageError> GetProcessCPU(pid_t pid) {
   struct kinfo_proc info;
   size_t length;
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
-                sizeof(struct kinfo_proc), 0 };
+  int mib[] = {
+      CTL_KERN, KERN_PROC, KERN_PROC_PID, pid, sizeof(struct kinfo_proc), 0};
 
   if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0) {
     return base::unexpected(ProcessCPUUsageError::kSystemError);
@@ -68,18 +68,18 @@ ProcessMetrics::GetCumulativeCPUUsage() {
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process)
-    : process_(process),
-      last_cpu_(0) {}
+    : process_(process), last_cpu_(0) {}
 
 size_t GetSystemCommitCharge() {
-  int mib[] = { CTL_VM, VM_METER };
+  int mib[] = {CTL_VM, VM_METER};
   int pagesize;
   struct vmtotal vmtotal;
   unsigned long mem_total, mem_free, mem_inactive;
   size_t len = sizeof(vmtotal);
 
-  if (sysctl(mib, std::size(mib), &vmtotal, &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), &vmtotal, &len, NULL, 0) < 0) {
     return 0;
+  }
 
   mem_total = vmtotal.t_vm;
   mem_free = vmtotal.t_free;
@@ -87,7 +87,7 @@ size_t GetSystemCommitCharge() {
 
   pagesize = getpagesize();
 
-  return mem_total - (mem_free*pagesize) - (mem_inactive*pagesize);
+  return mem_total - (mem_free * pagesize) - (mem_inactive * pagesize);
 }
 
 }  // namespace base

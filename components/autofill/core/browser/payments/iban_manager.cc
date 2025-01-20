@@ -5,11 +5,11 @@
 #include "components/autofill/core/browser/payments/iban_manager.h"
 
 #include "base/containers/contains.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/payments_suggestion_generator.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -22,8 +22,8 @@ constexpr int kFieldLengthLimitOnServerIbanSuggestion = 6;
 
 }  // namespace
 
-IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
-    : personal_data_manager_(personal_data_manager) {}
+IbanManager::IbanManager(PaymentsDataManager* payments_data_manager)
+    : payments_data_manager_(payments_data_manager) {}
 
 IbanManager::~IbanManager() = default;
 
@@ -38,14 +38,12 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  if (!personal_data_manager_ ||
-      !personal_data_manager_->payments_data_manager()
-           .IsAutofillPaymentMethodsEnabled()) {
+  if (!payments_data_manager_ ||
+      !payments_data_manager_->IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 
-  std::vector<Iban> ibans = personal_data_manager_->payments_data_manager()
-                                .GetOrderedIbansToSuggest();
+  std::vector<Iban> ibans = payments_data_manager_->GetOrderedIbansToSuggest();
   if (ibans.empty()) {
     return false;
   }

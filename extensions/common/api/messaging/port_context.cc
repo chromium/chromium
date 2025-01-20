@@ -17,9 +17,11 @@ PortContext::FrameContext::FrameContext() = default;
 
 PortContext::WorkerContext::WorkerContext(int thread_id,
                                           int64_t version_id,
+                                          int render_process_id,
                                           const ExtensionId& extension_id)
     : thread_id(thread_id),
       version_id(version_id),
+      render_process_id(render_process_id),
       extension_id(extension_id) {}
 PortContext::WorkerContext::WorkerContext() = default;
 
@@ -31,9 +33,11 @@ PortContext PortContext::ForFrame(int routing_id) {
 
 PortContext PortContext::ForWorker(int thread_id,
                                    int64_t version_id,
+                                   int render_process_id,
                                    const ExtensionId& extension_id) {
   PortContext context;
-  context.worker = WorkerContext(thread_id, version_id, extension_id);
+  context.worker =
+      WorkerContext(thread_id, version_id, render_process_id, extension_id);
   return context;
 }
 

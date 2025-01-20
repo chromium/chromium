@@ -41,7 +41,7 @@ class NetworkPortalNotificationControllerTest
   NetworkPortalNotificationControllerTest& operator=(
       const NetworkPortalNotificationControllerTest&) = delete;
 
-  ~NetworkPortalNotificationControllerTest() override {}
+  ~NetworkPortalNotificationControllerTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

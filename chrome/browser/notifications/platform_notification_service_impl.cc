@@ -40,6 +40,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,6 +63,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -82,6 +84,11 @@ using content::NotificationDatabaseData;
 using message_center::NotifierId;
 
 namespace {
+
+constexpr char
+    kNotificationContentDetectionDisplayPersistentNotificationEventHistogram[] =
+        "SafeBrowsing.NotificationContentDetection."
+        "DisplayPersistentNotificationEvent";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -158,6 +165,18 @@ class RevokeDeleteCountRecorder
   }
 
   size_t total_deleted_count_;
+};
+
+// The type of event when displaying a persistent notification. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class DisplayPersistentNotificationEvents {
+  // The event logged when requesting to display a persistent notification.
+  kRequested = 0,
+  // The event logged when model checking and displaying the persistent
+  // notification have completed.
+  kFinished = 1,
+  kMaxValue = kFinished,
 };
 
 }  // namespace
@@ -287,8 +306,31 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
     auto* notification_content_service = safe_browsing::
         NotificationContentDetectionServiceFactory::GetForProfile(profile_);
     if (notification_content_service) {
+      bool is_show_warnings_for_suspicious_notifications_enabled =
+          base::FeatureList::IsEnabled(
+              safe_browsing::kShowWarningsForSuspiciousNotifications);
       notification_content_service->MaybeCheckNotificationContentDetectionModel(
-          notification_data, origin);
+          notification_data, origin,
+          AreSuspiciousNotificationsAllowlistedByUser(origin),
+          is_show_warnings_for_suspicious_notifications_enabled
+              ? base::BindOnce(&PlatformNotificationServiceImpl::
+                                   UpdatePersistentMetadataThenDisplay,
+                               weak_ptr_factory_.GetWeakPtr(), notification,
+                               std::move(metadata))
+              : base::DoNothing());
+      // When this feature is enabled, the
+      // `MaybeCheckNotificationContentDetectionModel` method will also include
+      // displaying the notification. In this case, the metrics should be logged
+      // and the method should return without calling `Display`. Otherwise, the
+      // notification should be displayed below.
+      if (is_show_warnings_for_suspicious_notifications_enabled) {
+        base::UmaHistogramEnumeration(
+            kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
+            DisplayPersistentNotificationEvents::kRequested);
+        LogPersistentNotificationShownMetrics(notification_data, origin,
+                                              notification.origin_url());
+        return;
+      }
     }
   }
 
@@ -296,23 +338,8 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
       NotificationHandler::Type::WEB_PERSISTENT, notification,
       std::move(metadata));
 
-  NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
-      ->LogPersistentNotificationShown();
-  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
-    NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
-        ->LogPersistentNotificationSize(profile_, notification_data, origin);
-  }
-
-  auto* service =
-      NotificationsEngagementServiceFactory::GetForProfile(profile_);
-  // This service might be missing for incognito profiles and in tests.
-  if (service) {
-    service->RecordNotificationDisplayed(notification.origin_url());
-  }
-
-  permissions::PermissionUmaUtil::RecordPermissionUsage(
-      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
-      notification.origin_url());
+  LogPersistentNotificationShownMetrics(notification_data, origin,
+                                        notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::CloseNotification(
@@ -653,8 +680,8 @@ std::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
-    return web_app_provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-        web_app_hint_url);
+    return web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+        web_app_hint_url, web_app::WebAppFilter::InstalledInChrome());
   }
 #endif
 
@@ -668,9 +695,19 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // The PlatformNotificationServiceTest FindWebAppIconAndTitle seems to be
+    // verifying the availability of an icon and a title for notification
+    // purposes, even though the app is not installed with OS integration, which
+    // is surprising.
+    web_app::WebAppFilter filter = web_app::WebAppFilter::InstalledInChrome();
+#else
+    web_app::WebAppFilter filter =
+        web_app::WebAppFilter::SupportsOsNotifications();
+#endif
     const std::optional<webapps::AppId> app_id =
-        web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
-            web_app_hint_url);
+        web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+            web_app_hint_url, filter);
     if (app_id) {
       std::optional<WebAppIconAndTitle> icon_and_title;
       icon_and_title.emplace();
@@ -701,8 +738,64 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
   }
   const std::optional<webapps::AppId> app_id =
       web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-          web_app_url,
-          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+          web_app_url, web_app::WebAppFilter::SupportsOsNotifications());
   return app_id.has_value();
 #endif
+}
+
+void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
+    const message_center::Notification& notification,
+    std::unique_ptr<PersistentNotificationMetadata> metadata,
+    bool is_suspicious) {
+  base::UmaHistogramEnumeration(
+      kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
+      DisplayPersistentNotificationEvents::kFinished);
+  metadata->is_suspicious = is_suspicious;
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, notification,
+      std::move(metadata));
+}
+
+void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
+    const blink::PlatformNotificationData& notification_data,
+    const GURL& origin,
+    const GURL& notification_origin) {
+  NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
+      ->LogPersistentNotificationShown();
+  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+    NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
+        ->LogPersistentNotificationSize(profile_, notification_data, origin);
+  }
+
+  auto* service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile_);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationDisplayed(notification_origin);
+  }
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification_origin);
+}
+
+bool PlatformNotificationServiceImpl::
+    AreSuspiciousNotificationsAllowlistedByUser(const GURL& origin) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!hcsm || !origin.is_valid()) {
+    return false;
+  }
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm->GetWebsiteSetting(
+      origin, origin,
+      ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+      &info));
+  if (stored_value.is_none()) {
+    return false;
+  }
+  if (!stored_value.is_dict() || !stored_value.GetDict().contains(
+                                     safe_browsing::kIsAllowlistedByUserKey)) {
+    return false;
+  }
+  return stored_value.GetDict().Find(safe_browsing::kIsAllowlistedByUserKey);
 }

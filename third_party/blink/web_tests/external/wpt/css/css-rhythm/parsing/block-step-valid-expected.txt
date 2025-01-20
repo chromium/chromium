@@ -1,0 +1,71 @@
+This is a testharness.js-based test.
+[FAIL] e.style['block-step'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "none auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "none margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "none up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "auto none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "auto margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "auto up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "margin-box none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "margin-box auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "margin-box up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "up none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "up auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "up margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "auto up margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "none auto up margin-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "padding-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "content-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "center" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "down" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "nearest" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "none padding-box up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "content-box 100px up" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "content-box start 100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "100px center down padding-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "start 100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "end 100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "end nearest 100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step'] = "center content-box 100px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

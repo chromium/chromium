@@ -35,7 +35,7 @@ SBOX_TESTS_COMMAND int Process_CheckData(int argc, wchar_t** argv) {
   if (!delegate_data.has_value()) {
     return SBOX_TEST_FIRST_ERROR;
   }
-  if (!equals(delegate_data.value(), base::as_bytes(base::make_span(param)))) {
+  if (!equals(delegate_data.value(), base::as_byte_span(param))) {
     return SBOX_TEST_SECOND_ERROR;
   }
   return SBOX_TEST_SUCCEEDED;
@@ -44,7 +44,7 @@ SBOX_TESTS_COMMAND int Process_CheckData(int argc, wchar_t** argv) {
 TEST(ProcessDelegateData, AddDelegateData) {
   TestRunner runner(JobLevel::kLockdown, USER_UNPROTECTED, USER_UNPROTECTED);
   std::wstring message(L"Delegate-Data-For-The-Target");
-  runner.GetPolicy()->AddDelegateData(base::as_bytes(base::make_span(message)));
+  runner.GetPolicy()->AddDelegateData(base::as_byte_span(message));
   std::wstring command = L"Process_CheckData ";
   command.append(message);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()));
@@ -53,7 +53,7 @@ TEST(ProcessDelegateData, AddDelegateData) {
 TEST(ProcessDelegateData, AddDelegateDataAndRule) {
   TestRunner runner(JobLevel::kLockdown, USER_LIMITED, USER_LOCKDOWN);
   std::wstring message(L"Delegate-Data-For-The-Target");
-  runner.GetPolicy()->AddDelegateData(base::as_bytes(base::make_span(message)));
+  runner.GetPolicy()->AddDelegateData(base::as_byte_span(message));
   // Rule doesn't matter - but exercises having all three target regions.
   runner.AllowFileAccess(FileSemantics::kAllowAny, L"c:\\windows\\*");
   std::wstring command = L"Process_CheckData ";

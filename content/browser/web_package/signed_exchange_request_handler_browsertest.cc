@@ -719,8 +719,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  SetCookie(shell()->web_contents()->GetBrowserContext(),
-            GURL("https://test.example.org/test/"), "milk=1");
+  ASSERT_TRUE(SetCookie(shell()->web_contents()->GetBrowserContext(),
+                        GURL("https://test.example.org/test/"), "milk=1"));
 
   GURL url =
       embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");

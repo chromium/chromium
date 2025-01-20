@@ -53,13 +53,6 @@ bool CSSOMUtils::IsNoneValue(const CSSValue* value) {
 }
 
 // static
-bool CSSOMUtils::IsAutoValueList(const CSSValue* value) {
-  const CSSValueList* value_list = DynamicTo<CSSValueList>(value);
-  return value_list && value_list->length() == 1 &&
-         IsAutoValue(&value_list->Item(0));
-}
-
-// static
 bool CSSOMUtils::IsEmptyValueList(const CSSValue* value) {
   const CSSValueList* value_list = DynamicTo<CSSValueList>(value);
   return value_list && value_list->length() == 0;
@@ -127,63 +120,64 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 
   // 3- [ <line-names>? <string> <track-size>? <line-names>? ]+
   // [ / <track-list> ]?
-  if (IsAutoValueList(template_row_values)) {
-    list->Append(*template_area_values);
-  } else {
-    // "Note: Note that the repeat() function isn’t allowed in these track
-    // listings, as the tracks are intended to visually line up one-to-one with
-    // the rows/columns in the “ASCII art”."
-    //
-    // https://www.w3.org/TR/css-grid-2/#explicit-grid-shorthand
-    //
-    // Rows are always expected to be present and a `CSSValueList` in this case,
-    // but columns may not be.
-    const CSSValueList* template_row_value_list =
-        DynamicTo<CSSValueList>(template_row_values);
-    DCHECK(template_row_value_list);
-    if (HasGridRepeatValue(template_row_value_list) ||
-        HasGridRepeatValue(DynamicTo<CSSValueList>(template_column_values))) {
-      return list;
-    }
-
-    // In order to insert grid-area names in the correct positions, we need to
-    // construct a space-separated `CSSValueList` and append that to the
-    // existing list that gets returned.
-    CSSValueList* template_row_list = CSSValueList::CreateSpaceSeparated();
-    const cssvalue::CSSGridTemplateAreasValue* template_areas =
-        DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
-    DCHECK(template_areas);
-    const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
-    const wtf_size_t grid_area_column_count = template_areas->ColumnCount();
-    wtf_size_t grid_area_index = 0;
-
-    for (const auto& row_value : *template_row_value_list) {
-      if (row_value->IsGridLineNamesValue()) {
-        template_row_list->Append(*row_value);
-        continue;
-      }
-      StringBuilder grid_area_text;
-      for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
-        grid_area_text.Append(NamedGridAreaTextForPosition(
-            grid_area_map, grid_area_index, column));
-        if (column != grid_area_column_count - 1) {
-          grid_area_text.Append(' ');
-        }
-      }
-      if (!grid_area_text.empty()) {
-        template_row_list->Append(*MakeGarbageCollected<CSSStringValue>(
-            grid_area_text.ReleaseString()));
-        ++grid_area_index;
-      }
-
-      // Omit `auto` values.
-      if (!IsAutoValue(row_value.Get())) {
-        template_row_list->Append(*row_value);
-      }
-    }
-    list->Append(*template_row_list);
+  //
+  // "Note that the repeat() function isn’t allowed in these track listings, as
+  // the tracks are intended to visually line up one-to-one with the
+  // rows/columns in the “ASCII art”."
+  //
+  // https://www.w3.org/TR/css-grid-2/#explicit-grid-shorthand
+  const CSSValueList* template_row_value_list =
+      DynamicTo<CSSValueList>(template_row_values);
+  DCHECK(template_row_value_list);
+  if (HasGridRepeatValue(template_row_value_list) ||
+      HasGridRepeatValue(DynamicTo<CSSValueList>(template_column_values))) {
+    return list;
   }
 
+  // In this serialization, there must be a value for grid-areas.
+  const cssvalue::CSSGridTemplateAreasValue* template_areas =
+      DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
+  DCHECK(template_areas);
+  const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
+  const wtf_size_t grid_area_column_count = template_areas->ColumnCount();
+
+  // Handle [ <line-names>? <string> <track-size>? <line-names>? ]+
+  CSSValueList* template_row_list = CSSValueList::CreateSpaceSeparated();
+  wtf_size_t row = 0;
+  for (const auto& row_value : *template_row_value_list) {
+    if (row_value->IsGridLineNamesValue()) {
+      template_row_list->Append(*row_value);
+      continue;
+    }
+    StringBuilder grid_area_text;
+    for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
+      grid_area_text.Append(
+          NamedGridAreaTextForPosition(grid_area_map, row, column));
+      if (column != grid_area_column_count - 1) {
+        grid_area_text.Append(' ');
+      }
+    }
+    DCHECK(!grid_area_text.empty());
+    template_row_list->Append(
+        *MakeGarbageCollected<CSSStringValue>(grid_area_text.ReleaseString()));
+    ++row;
+
+    // Omit `auto` values.
+    if (!IsAutoValue(row_value.Get())) {
+      template_row_list->Append(*row_value);
+    }
+  }
+
+  // If the actual number of rows serialized via `grid-template-rows` doesn't
+  // match the rows defined via grid-areas, the shorthand cannot be serialized
+  // and we must return the empty string.
+  if (row != template_areas->RowCount()) {
+    return list;
+  }
+
+  list->Append(*template_row_list);
+
+  // Handle [ / <track-list> ]?
   if (!has_initial_template_columns) {
     list->Append(*template_column_values);
   }

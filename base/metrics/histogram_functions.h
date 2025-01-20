@@ -68,6 +68,7 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle);
 //
+// `kMaxValue` should be 1000 or less.
 // Note that there are code that refer implementation details of this function.
 // Keep them synchronized.
 // LINT.IfChange(UmaHistogramEnumeration)
@@ -81,6 +82,8 @@ void UmaHistogramEnumeration(std::string_view name, T sample) {
                 "Enumeration's kMaxValue is out of range of INT_MAX!");
   DCHECK_LE(static_cast<uintmax_t>(sample),
             static_cast<uintmax_t>(T::kMaxValue));
+  // While UmaHistogramExactLinear’s documentation states that the third
+  // argument should be 101 or less, a value up to 1001 is actually accepted.
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
                                  static_cast<int>(T::kMaxValue) + 1);
 }
@@ -101,11 +104,14 @@ void UmaHistogramEnumeration(std::string_view name, T sample) {
 //                                 kCount);
 // Note: The value in |sample| must be strictly less than |enum_size|. This is
 // otherwise functionally equivalent to the above.
+// `enum_size` must be less than or equal to 1001.
 template <typename T>
 void UmaHistogramEnumeration(std::string_view name, T sample, T enum_size) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
   DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
+  // While UmaHistogramExactLinear’s documentation states that the third
+  // argument should be 101 or less, a value up to 1001 is actually accepted.
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
                                  static_cast<int>(enum_size));
 }

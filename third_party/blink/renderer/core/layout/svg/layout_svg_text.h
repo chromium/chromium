@@ -74,6 +74,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   void UpdateFont();
   void UpdateTransformAffectsVectorEffect();
+  void InvalidateDescendantObjectBoundingBoxes();
 
   // bounding_box_* are mutable for on-demand computation in a const method.
   mutable gfx::RectF bounding_box_;

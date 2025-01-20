@@ -22,10 +22,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -88,7 +88,7 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
 }
 
 bool IsLoggingActive(password_manager::PasswordManagerClient* client) {
-  autofill::LogManager* log_manager = client->GetLogManager();
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
   return log_manager && log_manager->IsLoggingActive();
 }
 
@@ -132,29 +132,9 @@ void UserTriggeredManualGenerationFromContextMenu(
             kOverlappingWithPasswordGenerationPopup);
     autofill_client->HideAutofillFieldIph();
   }
-  if (!password_manager_client->GetPasswordFeatureManager()
-           ->ShouldShowAccountStorageOptIn()) {
-    password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
-    LogPasswordGenerationEvent(autofill::password_generation::
-                                   PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
-    return;
-  }
-  // The client ensures the callback won't be run if it is destroyed, so
-  // base::Unretained is safe.
-  password_manager_client->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu,
-      base::BindOnce(
-          [](password_manager::PasswordManagerClient* client,
-             password_manager::PasswordManagerClient::ReauthSucceeded
-                 succeeded) {
-            if (succeeded) {
-              client->GeneratePassword(PasswordGenerationType::kManual);
-              LogPasswordGenerationEvent(
-                  autofill::password_generation::
-                      PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
-            }
-          },
-          base::Unretained(password_manager_client)));
+  password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
+  LogPasswordGenerationEvent(
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
 }
 
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
@@ -366,7 +346,7 @@ bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state) {
   bool hadBiometricsAvailable =
       local_state->GetBoolean(password_manager::prefs::kHadBiometricsAvailable);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // We only want to check for feature flag if the device supports biometrics,
   // else we dilute experiment population.
   return hadBiometricsAvailable &&
@@ -395,7 +375,7 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
   if (!device_authenticator->CanAuthenticateWithBiometrics()) {
     return false;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Note: Hitting IsEnabled enrolls users in the experiment. Therefore, we only
   // want to limit this call to users who can authenticate with biometrics and
   // if we are here, then we know that to be the case.

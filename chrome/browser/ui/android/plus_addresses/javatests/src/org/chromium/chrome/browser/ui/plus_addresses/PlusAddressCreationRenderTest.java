@@ -42,6 +42,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;

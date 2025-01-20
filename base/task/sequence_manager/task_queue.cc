@@ -42,29 +42,28 @@ void TaskQueue::QueueEnabledVoter::SetVoteToEnable(bool enabled) {
   }
 }
 
-TaskQueue::TaskTiming::TaskTiming(bool has_wall_time, bool has_thread_time)
-    : has_wall_time_(has_wall_time), has_thread_time_(has_thread_time) {}
+TaskQueue::TaskTiming::TaskTiming(bool has_wall_time)
+    : has_wall_time_(has_wall_time) {}
 
 void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
   DCHECK_EQ(State::NotStarted, state_);
   state_ = State::Running;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
     start_time_ = now->Now();
-  if (has_thread_time())
-    start_thread_time_ = base::ThreadTicks::Now();
+  }
 }
 
 void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
   DCHECK(state_ == State::Running || state_ == State::Finished);
-  if (state_ == State::Finished)
+  if (state_ == State::Finished) {
     return;
+  }
   state_ = State::Finished;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
     end_time_ = now->Now();
-  if (has_thread_time())
-    end_thread_time_ = base::ThreadTicks::Now();
+  }
 }
 
 TaskQueue::Handle::Handle(std::unique_ptr<internal::TaskQueueImpl> task_queue)

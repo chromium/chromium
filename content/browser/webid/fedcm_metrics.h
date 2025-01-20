@@ -250,6 +250,41 @@ enum class FedCmRpParameters {
   kMaxValue = kHasParametersAndNonDefaultScope
 };
 
+// This enum tracks the user's result after using a different account. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class FedCmUseOtherAccountResult {
+  kUserSignsInWithNewAccount = 0,
+  kUserSignsInWithExistingAccount = 1,
+  kUserDoesNotSignIn = 2,
+
+  kMaxValue = kUserDoesNotSignIn
+};
+
+// This enum describes the outcome of the verifying dialog. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class FedCmVerifyingDialogResult {
+  kSuccessExplicit = 0,
+  kSuccessAutoReauthn = 1,
+  kCancelExplicit = 2,
+  kCancelAutoReauthn = 3,
+  kDestroyExplicit = 4,
+  kDestroyAutoReauthn = 5,
+
+  kMaxValue = kDestroyAutoReauthn
+};
+
+// This enum describes the third party cookies status. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class FedCmThirdPartyCookiesStatus {
+  kEnabledInSettings = 0,
+  kDisabledInSettings = 1,
+
+  kMaxValue = kDisabledInSettings
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   explicit FedCmMetrics(const ukm::SourceId page_source_id);
@@ -347,7 +382,10 @@ class CONTENT_EXPORT FedCmMetrics {
       const std::vector<GURL>& requested_providers,
       int num_idps_mismatch,
       const std::optional<GURL>& selected_idp_config_url,
-      const RpMode& rp_mode);
+      const RpMode& rp_mode,
+      std::optional<FedCmUseOtherAccountResult> use_other_account_result,
+      std::optional<FedCmVerifyingDialogResult> verifying_dialog_result,
+      FedCmThirdPartyCookiesStatus tpc_status);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,
@@ -457,6 +495,10 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordNumMatchingAccounts(size_t accounts_remaining,
                                  const std::string& filter_type);
 
+  // Records whether a FedCM API call gets rejected because other IdPs have
+  // already initiated an API call.
+  void RecordMultipleRequestsFromDifferentIdPs(bool has_collision);
+
   int session_id() { return session_id_; }
 
  private:
@@ -513,6 +555,9 @@ void RecordRawAccountsSize(int size);
 // Records the number of accounts received after applying login/domain hints
 // filter. If no account left, nothing will be recorded.
 void RecordReadyToShowAccountsSize(int size);
+
+// Records the count of identity providers in the request
+void RecordIdentityProvidersCount(int count);
 
 }  // namespace content
 

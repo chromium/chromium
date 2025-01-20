@@ -50,7 +50,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   // Shows the popup menu and notifies the RenderFrameHost of the selection/
   // cancellation. This call is blocking.
   void ShowPopupMenu(const gfx::Rect& bounds,
-                     int item_height,
                      double item_font_size,
                      int selected_item,
                      std::vector<blink::mojom::MenuItemPtr> items,

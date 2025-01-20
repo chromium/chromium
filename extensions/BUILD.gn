@@ -19,6 +19,7 @@ if (is_component_build) {
     visibility = [
       "//extensions/common:common_constants",
       "//extensions/common:export",
+      "//extensions/common:extension_features",
     ]
     public_deps = [
       "//extensions/common:constants_impl",

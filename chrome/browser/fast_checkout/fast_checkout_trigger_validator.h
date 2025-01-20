@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_H_
 
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/fast_checkout_enums.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/fast_checkout_enums.h"
 
 constexpr char kUmaKeyFastCheckoutTriggerOutcome[] =
     "Autofill.FastCheckout.TriggerOutcome";

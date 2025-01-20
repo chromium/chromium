@@ -29,6 +29,7 @@
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/common/user_script.h"
@@ -196,7 +197,7 @@ std::vector<const UserScript*> GetLoadedDynamicScripts(
 GURL GetEffectiveDocumentURL(
     content::RenderFrameHost* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // This is a simplification to avoid calling
   // `BrowserFrameContextData::CanAccess` which is unable to replicate all of
   // WebSecurityOrigin::CanAccess checks (e.g. universal access or file
@@ -324,7 +325,8 @@ bool DoWebViewScripstMatch(const Extension& extension,
       owner_site_url.host_piece() == extension.id()) {
     WebViewContentScriptManager* script_manager =
         WebViewContentScriptManager::Get(frame.GetBrowserContext());
-    int embedder_process_id = guest->owner_rfh()->GetProcess()->GetID();
+    int embedder_process_id =
+        guest->owner_rfh()->GetProcess()->GetDeprecatedID();
     std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
         embedder_process_id, guest->view_instance_id());
 

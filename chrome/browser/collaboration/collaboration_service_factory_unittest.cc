@@ -5,16 +5,23 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/collaboration/internal/collaboration_service_impl.h"
 #include "components/collaboration/internal/empty_collaboration_service.h"
 #include "components/data_sharing/public/features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace collaboration {
+
 namespace {
+std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
 
 class CollaborationServiceFactoryTest : public testing::Test {
  protected:
@@ -23,7 +30,13 @@ class CollaborationServiceFactoryTest : public testing::Test {
   ~CollaborationServiceFactoryTest() override = default;
 
   void InitService(bool enable_feature) {
-    profile_ = TestingProfile::Builder().Build();
+    profile_ = TestingProfile::Builder()
+                   .AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                      SyncServiceFactory::GetDefaultFactory())
+                   .Build();
+    test_sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_.get(), base::BindRepeating(&TestingSyncFactoryFunction)));
     if (enable_feature) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{data_sharing::features::kDataSharingFeature, {}}}, {});
@@ -36,6 +49,7 @@ class CollaborationServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<syncer::TestSyncService> test_sync_service_;
 };
 
 TEST_F(CollaborationServiceFactoryTest, FeatureEnabledUsesRealService) {
@@ -61,5 +75,7 @@ TEST_F(CollaborationServiceFactoryTest,
       CollaborationServiceFactory::GetForProfile(otr_profile);
   EXPECT_TRUE(service->IsEmptyService());
 }
+
 }  // namespace
+
 }  // namespace collaboration

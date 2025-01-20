@@ -8,6 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TERMS_CLICKED_USER_ACTION;
@@ -23,7 +27,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,7 +58,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-    ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE
 })
 public class AutofillCardBenefitsFragmentTest {
     @Rule public final AutofillTestRule mRule = new AutofillTestRule();
@@ -111,8 +113,8 @@ public class AutofillCardBenefitsFragmentTest {
     public void testCardBenefitsPreferenceScreen_shownWithTitle() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertNotNull(getPreferenceScreen(activity));
-        Assert.assertEquals(
+        assertNotNull(getPreferenceScreen(activity));
+        assertEquals(
                 activity.getTitle().toString(),
                 activity.getString(R.string.autofill_card_benefits_settings_page_title));
     }
@@ -133,14 +135,14 @@ public class AutofillCardBenefitsFragmentTest {
         ChromeSwitchPreference benefitTogglePreference =
                 (ChromeSwitchPreference)
                         getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
-        Assert.assertEquals(
+        assertEquals(
                 benefitTogglePreference.getTitle(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_label));
-        Assert.assertEquals(
+        assertEquals(
                 benefitTogglePreference.getSummary(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_toggle_summary));
-        Assert.assertTrue(benefitTogglePreference.isEnabled());
-        Assert.assertTrue(benefitTogglePreference.isChecked());
+        assertTrue(benefitTogglePreference.isEnabled());
+        assertTrue(benefitTogglePreference.isChecked());
     }
 
     // Test to verify that the Preference screen is displayed and the enable benefits toggle is
@@ -159,8 +161,8 @@ public class AutofillCardBenefitsFragmentTest {
         ChromeSwitchPreference benefitTogglePreference =
                 (ChromeSwitchPreference)
                         getPreferenceScreen(activity).findPreference(PREF_KEY_ENABLE_CARD_BENEFIT);
-        Assert.assertTrue(benefitTogglePreference.isEnabled());
-        Assert.assertFalse(benefitTogglePreference.isChecked());
+        assertTrue(benefitTogglePreference.isEnabled());
+        assertFalse(benefitTogglePreference.isChecked());
     }
 
     // Test to verify that the toggle status is linked with the correct preference and user
@@ -184,20 +186,18 @@ public class AutofillCardBenefitsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     benefitTogglePreference.performClick();
-                    Assert.assertFalse(
-                            getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
-                    Assert.assertFalse(benefitTogglePreference.isChecked());
-                    Assert.assertTrue(
+                    assertFalse(getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
+                    assertFalse(benefitTogglePreference.isChecked());
+                    assertTrue(
                             "User action should be logged when the user toggles card benefits off.",
                             mActionTester
                                     .getActions()
                                     .contains(CARD_BENEFITS_TOGGLED_OFF_USER_ACTION));
 
                     benefitTogglePreference.performClick();
-                    Assert.assertTrue(
-                            getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
-                    Assert.assertTrue(benefitTogglePreference.isChecked());
-                    Assert.assertTrue(
+                    assertTrue(getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
+                    assertTrue(benefitTogglePreference.isChecked());
+                    assertTrue(
                             "User action should be logged when the user toggles card benefits on.",
                             mActionTester
                                     .getActions()
@@ -213,13 +213,13 @@ public class AutofillCardBenefitsFragmentTest {
 
         Preference linkPreference =
                 getPreferenceScreen(activity).findPreference(PREF_KEY_LEARN_ABOUT);
-        Assert.assertEquals(
+        assertEquals(
                 linkPreference.getSummary().toString(),
                 activity.getString(
                                 R.string.autofill_settings_page_card_benefits_learn_about_link_text)
                         .replaceAll("<.?link>", ""));
         onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged when the user clicks on learn more link.",
                 mActionTester.getActions().contains(CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION));
     }
@@ -235,17 +235,17 @@ public class AutofillCardBenefitsFragmentTest {
 
         Preference cardPreference =
                 getPreferenceScreen(activity).findPreference(PREF_KEY_CARD_BENEFIT_TERM);
-        Assert.assertEquals(
+        assertEquals(
                 cardPreference.getTitle().toString(),
                 SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT.getProductDescription());
-        Assert.assertEquals(
+        assertEquals(
                 cardPreference.getSummary(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_issuer_term_text));
-        Assert.assertTrue(cardPreference.getIcon().isVisible());
+        assertTrue(cardPreference.getIcon().isVisible());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cardPreference.performClick();
-                    Assert.assertTrue(
+                    assertTrue(
                             "User action should be logged when the user clicks on terms.",
                             mActionTester
                                     .getActions()
@@ -260,7 +260,7 @@ public class AutofillCardBenefitsFragmentTest {
     public void testCardBenefitsPreferenceScreen_totalCount_noCardBenefit() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
+        assertEquals(2, getPreferenceScreen(activity).getPreferenceCount());
     }
 
     // Test to verify that when there is one card benefits, the benefit settings page only contains
@@ -273,7 +273,7 @@ public class AutofillCardBenefitsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
+        assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
     }
 
     // Test to verify terms for card with the same product (same product description and same
@@ -313,7 +313,7 @@ public class AutofillCardBenefitsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertEquals(1, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
+        assertEquals(1, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
     // Test to verify terms for different card products from the same issuer are listed.
@@ -350,48 +350,7 @@ public class AutofillCardBenefitsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
-    }
-
-    // Test to verify terms for cards with the same product description from the different issuers
-    // are listed.
-    @Test
-    @MediumTest
-    public void testCardBenefitsPreferenceScreen_withDuplicateCardProductDescription()
-            throws Exception {
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT);
-        mAutofillTestHelper.addServerCreditCard(
-                new CreditCard(
-                        /* guid= */ "",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        /* isVirtual= */ false,
-                        /* name= */ "capital one",
-                        /* number= */ "378282246310001",
-                        /* networkAndLastFourDigits= */ "",
-                        /* month= */ "10",
-                        /* year= */ AutofillTestHelper.nextYear(),
-                        /* basicCardIssuerNetwork= */ "Capital One",
-                        /* issuerIconDrawableId= */ R.drawable.capitalone_metadata_card,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "",
-                        /* instrumentId= */ 3333,
-                        /* cardLabel= */ "",
-                        /* nickname= */ "",
-                        /* cardArtUrl= */ null,
-                        /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
-                        /* productDescription= */ SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT
-                                .getProductDescription(),
-                        /* cardNameForAutofillDisplay= */ "Capital One",
-                        /* obfuscatedLastFourDigits= */ "• • • • 0001",
-                        /* cvc= */ "",
-                        /* issuerId= */ "capitalone",
-                        /* productTermsUrl= */ new GURL(
-                                "http://www.example.com/capitalone/terms")));
-
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        Assert.assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
+        assertEquals(2, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
     // Test to verify card with a invalid terms url won't be listed in the benefit page.
@@ -426,7 +385,7 @@ public class AutofillCardBenefitsFragmentTest {
                         /* productTermsUrl= */ new GURL("")));
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        Assert.assertEquals(0, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
+        assertEquals(0, getPreferenceCountWithKey(activity, PREF_KEY_CARD_BENEFIT_TERM));
     }
 
     private int getPreferenceCountWithKey(SettingsActivity activity, String preferenceKey) {

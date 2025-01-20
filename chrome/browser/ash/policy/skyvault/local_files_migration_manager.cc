@@ -70,7 +70,6 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
       continue;
     }
     // Ignore hidden files.
-    // TODO(aidazolic): Also Play and Linux?
     if (base::StartsWith(path.BaseName().value(), ".")) {
       continue;
     }
@@ -231,6 +230,16 @@ void LocalFilesMigrationManager::Initialize() {
       pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
       SkyVaultMigrationResetHistogram(true);
     }
+    // If migration is not configured, check whether there are already no files
+    // to migrate.
+    if (!local_user_files_allowed_) {
+      DCHECK(!IsMigrationEnabled(cloud_provider_));
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&IsMyFilesEmpty, profile),
+          base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
+                         weak_factory_.GetWeakPtr()));
+    }
     return;
   }
   // Migration is enabled.
@@ -249,12 +258,6 @@ void LocalFilesMigrationManager::Initialize() {
       return;
     }
     notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
-    return;
-  }
-
-  if (skip_empty_check_for_testing_) {
-    CHECK_IS_TEST();
-    OnMyFilesChecked(/*is_empty=*/false);
     return;
   }
 
@@ -294,11 +297,6 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
   coordinator_ = std::move(coordinator);
 }
 
-void LocalFilesMigrationManager::SetSkipEmptyCheckForTesting(bool skip) {
-  CHECK_IS_TEST();
-  skip_empty_check_for_testing_ = skip;
-}
-
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
@@ -317,10 +315,20 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     MaybeStopMigration(cloud_provider_old);
+    SkyVaultMigrationResetHistogram(true);
     if (local_user_files_allowed_) {
       SetLocalUserFilesWriteEnabled(/*enabled=*/true);
+    } else {
+      CHECK(state_ == State::kUninitialized);
+      // If migration is not configured, check whether there are already no
+      // files to migrate.
+      DCHECK(!IsMigrationEnabled(cloud_provider_));
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&IsMyFilesEmpty, profile),
+          base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
+                         weak_factory_.GetWeakPtr()));
     }
-    SkyVaultMigrationResetHistogram(true);
     return;
   }
   SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
@@ -360,11 +368,6 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
   // Local files are disabled and migration destination is set - initiate
   // migration if there are any files to upload.
   SetState(State::kPending);
-  if (skip_empty_check_for_testing_) {
-    CHECK_IS_TEST();
-    OnMyFilesChecked(/*is_empty=*/false);
-    return;
-  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
@@ -372,7 +375,17 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
 }
 
 void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
-  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+  if (local_user_files_allowed_) {
+    return;
+  }
+  if (!IsMigrationEnabled(cloud_provider_)) {
+    // If migration is not configured, but no files - proceed to clean up.
+    if (is_empty) {
+      // Notify to unmount local folder in volume manager.
+      NotifySuccess();
+      SetState(State::kCleanup);
+      CleanupLocalFiles();
+    }
     return;
   }
 
@@ -381,7 +394,7 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
     // observers and also cleanup empty folders.
     if (state_ != State::kCompleted) {
       NotifySuccess();
-      state_ = State::kCleanup;
+      SetState(State::kCleanup);
     }
   }
 
@@ -398,12 +411,10 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
       CleanupLocalFiles();
       break;
     case State::kCompleted:
-      // TODO(aidazolic): Consider if we should do any special handling.
       NotifySuccess();
       SetLocalUserFilesWriteEnabled(/*enabled=*/false);
       break;
     case State::kFailure:
-      // TODO(351971781): Process errors from the error log.
       break;
   }
 }
@@ -474,8 +485,6 @@ void LocalFilesMigrationManager::OnTimeoutExpired() {
                                          StateErrorContext::kTimeout, state_);
     return;
   }
-  // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
-  // enough, and the user clicks "Upload now" exactly then.
   SetState(State::kInProgress);
   notification_manager_->CloseDialog();
   GetPathsToUpload();

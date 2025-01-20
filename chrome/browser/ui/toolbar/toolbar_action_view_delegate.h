@@ -33,7 +33,7 @@ class ToolbarActionViewDelegate {
   virtual void OnPopupClosed() {}
 
  protected:
-  virtual ~ToolbarActionViewDelegate() {}
+  virtual ~ToolbarActionViewDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_DELEGATE_H_

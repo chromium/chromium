@@ -51,9 +51,9 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -85,8 +85,6 @@ constexpr char kExampleUrl2[] = "https://2.example.com/";
 constexpr char kExampleUrl3[] = "https://3.example.com/";
 constexpr char kExampleUrl4[] = "https://4.example.com/";
 constexpr char kExampleUrl5[] = "https://5.example.com/";
-constexpr char kExampleUrl6[] = "https://6.example.com/";
-constexpr char kExampleUrl7[] = "https://7.example.com/";
 
 constexpr char kExampleSourceUrl1[] = "1.example.com";
 constexpr char kExampleSourceUrl2[] = "2.example.com";
@@ -116,10 +114,7 @@ constexpr char kFilePath3[] = "test3.txt";
 constexpr char kFilePath4[] = "test4.txt";
 constexpr char kFilePath5[] = "test5.txt";
 
-constexpr char kStandaloneBrowserChromeAppId[] = "standaloneChromeApp";
 constexpr char kExtensionAppId[] = "extensionApp";
-constexpr char kStandaloneBrowserExtensionAppId[] =
-    "standaloneBrowserExtensionApp";
 constexpr char kChromeAppId[] = "chromeApp";
 constexpr char kArcAppId[] = "arcApp";
 constexpr char kCrostiniAppId[] = "crostiniApp";
@@ -127,8 +122,6 @@ constexpr char kPluginVmAppId[] = "pluginVmApp";
 constexpr char kWebAppId[] = "webApp";
 constexpr char kSystemWebAppId[] = "systemWebApp";
 constexpr char kUnknownAppId[] = "unknownApp";
-constexpr char kBuiltInAppId[] = "builtInApp";
-constexpr char kStandaloneBrowserAppId[] = "standaloneBrowserApp";
 constexpr char kRemoteAppId[] = "remoteApp";
 constexpr char kBorealisAppId[] = "borealisApp";
 constexpr char kBruschettaAppId[] = "bruschettaApp";
@@ -2106,17 +2099,10 @@ class DlpFilesAppLaunchTest_ExtensionApp
  protected:
   void SetUp() override {
     DlpFilesAppLaunchTest::SetUp();
-
-    CreateAndStoreFakeApp(kStandaloneBrowserChromeAppId,
-                          apps::AppType::kStandaloneBrowserChromeApp,
-                          kExampleUrl1);
     CreateAndStoreFakeApp(kExtensionAppId, apps::AppType::kExtension,
-                          kExampleUrl2);
-    CreateAndStoreFakeApp(kStandaloneBrowserExtensionAppId,
-                          apps::AppType::kStandaloneBrowserExtension,
-                          kExampleUrl3);
+                          kExampleUrl1);
     CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
-                          kExampleUrl4);
+                          kExampleUrl2);
   }
 };
 
@@ -2124,11 +2110,7 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesAppLaunchTest_ExtensionApp,
     ::testing::Values(
-        std::make_tuple(apps::AppType::kStandaloneBrowserChromeApp,
-                        kStandaloneBrowserChromeAppId),
         std::make_tuple(apps::AppType::kExtension, kExtensionAppId),
-        std::make_tuple(apps::AppType::kStandaloneBrowserExtension,
-                        kStandaloneBrowserExtensionAppId),
         std::make_tuple(apps::AppType::kChromeApp, kChromeAppId)));
 
 TEST_P(DlpFilesAppLaunchTest_ExtensionApp, CheckIfAppLaunchAllowed) {
@@ -2406,14 +2388,11 @@ class DlpFilesAppLaunchTest_Unsupported
     DlpFilesAppLaunchTest::SetUp();
 
     CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
-    CreateAndStoreFakeApp(kBuiltInAppId, apps::AppType::kBuiltIn, kExampleUrl2);
-    CreateAndStoreFakeApp(kStandaloneBrowserAppId,
-                          apps::AppType::kStandaloneBrowser, kExampleUrl4);
-    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl5);
+    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl2);
     CreateAndStoreFakeApp(kBorealisAppId, apps::AppType::kBorealis,
-                          kExampleUrl6);
+                          kExampleUrl3);
     CreateAndStoreFakeApp(kBruschettaAppId, apps::AppType::kBruschetta,
-                          kExampleUrl7);
+                          kExampleUrl4);
   }
 };
 
@@ -2421,9 +2400,6 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesAppLaunchTest_Unsupported,
     ::testing::Values(std::make_tuple(apps::AppType::kUnknown, kUnknownAppId),
-                      std::make_tuple(apps::AppType::kBuiltIn, kBuiltInAppId),
-                      std::make_tuple(apps::AppType::kStandaloneBrowser,
-                                      kStandaloneBrowserAppId),
                       std::make_tuple(apps::AppType::kRemote, kRemoteAppId),
                       std::make_tuple(apps::AppType::kBorealis, kBorealisAppId),
                       std::make_tuple(apps::AppType::kBruschetta,

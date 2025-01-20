@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -51,8 +50,9 @@ class BubbleDialogDelegateViewInteractiveTest : public test::WidgetTest {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
     // Create DesktopNativeWidgetAura for toplevel widgets, NativeWidgetAura
     // otherwise.
-    if (!params.parent)
+    if (!params.parent) {
       return new DesktopNativeWidgetAura(delegate);
+    }
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
     return new NativeWidgetAura(delegate);
   }

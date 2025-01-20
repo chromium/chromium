@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/filename_util.h"
 
 #if !BUILDFLAG(ENABLE_PROCESS_SINGLETON)
@@ -36,7 +37,7 @@
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
-  ChromeMainTest() {}
+  ChromeMainTest() = default;
 
   void Relaunch(const base::CommandLine& new_command_line) {
     base::LaunchProcess(new_command_line, base::LaunchOptionsForTest());
@@ -162,12 +163,12 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   Profile* profile1 = CreateProfile(kProfileDir1);
   ASSERT_TRUE(profile1);
   storage->GetProfileAttributesWithPath(profile1->GetPath())
-      ->SetAuthInfo("gaia_id_1", base::UTF8ToUTF16(kProfileEmail1),
+      ->SetAuthInfo(GaiaId("gaia_id_1"), base::UTF8ToUTF16(kProfileEmail1),
                     /*is_consented_primary_account=*/false);
   Profile* profile2 = CreateProfile(kProfileDir2);
   ASSERT_TRUE(profile2);
   storage->GetProfileAttributesWithPath(profile2->GetPath())
-      ->SetAuthInfo("gaia_id_2", base::UTF8ToUTF16(kProfileEmail2),
+      ->SetAuthInfo(GaiaId("gaia_id_2"), base::UTF8ToUTF16(kProfileEmail2),
                     /*is_consented_primary_account=*/false);
   base::RunLoop run_loop;
   g_browser_process->FlushLocalStateAndReply(

@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATA_RESULTS_H_
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -19,28 +20,29 @@ class WDTypedResult;
 // Result types for WebDataService.
 //
 typedef enum {
-  BOOL_RESULT = 1,               // WDResult<bool>
-  KEYWORDS_RESULT,               // WDResult<WDKeywordsResult>
-  INT64_RESULT,                  // WDResult<int64_t>
-#if BUILDFLAG(IS_WIN)            //
-  PASSWORD_IE7_RESULT,           // WDResult<IE7PasswordInfo>
-#endif                           //
-  WEB_APP_IMAGES,                // WDResult<WDAppImagesResult>
-  TOKEN_RESULT,                  // WDResult<TokenResult>
-  AUTOFILL_VALUE_RESULT,         // WDResult<std::vector<AutofillEntry>>
-  AUTOFILL_CLEANUP_RESULT,       // WDResult<size_t>
-  AUTOFILL_CHANGES,              // WDResult<std::vector<AutofillChange>>
-  AUTOFILL_PROFILES_RESULT,      // WDResult<std::vector<AutofillProfile>>
-  AUTOFILL_CLOUDTOKEN_RESULT,    // WDResult<std::vector<std::unique_ptr<
-                                 //     CreditCardCloudTokenData>>>
-  AUTOFILL_CREDITCARDS_RESULT,   // WDResult<std::vector<
-                                 //     std::unique_ptr<CreditCard>>>
-  AUTOFILL_IBANS_RESULT,         // WDResult<std::vector<
-                                 //     std::unique_ptr<Iban>>>
-  AUTOFILL_CUSTOMERDATA_RESULT,  // WDResult<std::unique_ptr<
-                                 //     PaymentsCustomerData>>
-  AUTOFILL_OFFER_DATA,           // WDResult<std::vector<std::unique_ptr<
-                                 //     AutofillOfferData>>>
+  BOOL_RESULT = 1,                   // WDResult<bool>
+  KEYWORDS_RESULT,                   // WDResult<WDKeywordsResult>
+  INT64_RESULT,                      // WDResult<int64_t>
+#if BUILDFLAG(IS_WIN)                //
+  PASSWORD_IE7_RESULT,               // WDResult<IE7PasswordInfo>
+#endif                               //
+  WEB_APP_IMAGES,                    // WDResult<WDAppImagesResult>
+  TOKEN_RESULT,                      // WDResult<TokenResult>
+  AUTOFILL_VALUE_RESULT,             // WDResult<std::vector<AutofillEntry>>
+  AUTOFILL_CLEANUP_RESULT,           // WDResult<size_t>
+  AUTOFILL_CHANGES,                  // WDResult<std::vector<AutofillChange>>
+  AUTOFILL_PROFILES_RESULT,          // WDResult<std::vector<AutofillProfile>>
+  AUTOFILL_ENTITY_INSTANCE_RESULT,   // WDResult<std::vector<EntityInstance>>
+  AUTOFILL_CLOUDTOKEN_RESULT,        // WDResult<std::vector<std::unique_ptr<
+                                     //     CreditCardCloudTokenData>>>
+  AUTOFILL_CREDITCARDS_RESULT,       // WDResult<std::vector<
+                                     //     std::unique_ptr<CreditCard>>>
+  AUTOFILL_IBANS_RESULT,             // WDResult<std::vector<
+                                     //     std::unique_ptr<Iban>>>
+  AUTOFILL_CUSTOMERDATA_RESULT,      // WDResult<std::unique_ptr<
+                                     //     PaymentsCustomerData>>
+  AUTOFILL_OFFER_DATA,               // WDResult<std::vector<std::unique_ptr<
+                                     //     AutofillOfferData>>>
   AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<
                                      //     VirtualCardUsageData>>
   CREDIT_CARD_BENEFIT_RESULT,        // WDResult<std::vector<std::unique_ptr<
@@ -48,14 +50,20 @@ typedef enum {
   MASKED_BANK_ACCOUNTS_RESULT,       // WDResult<std::vector<BankAccount>>
   PAYMENT_INSTRUMENT_RESULT,         // WDResult<std::vector<
                                      //     sync_pb::PaymentInstrument>>
-#if BUILDFLAG(USE_BLINK)         //
-  PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
-                                 //     mojom::WebAppManifestSectionPtr>>
-  PAYMENT_METHOD_MANIFEST,       // WDResult<std::vector<std::string>>
-  SECURE_PAYMENT_CONFIRMATION,   // WDResult<std::vector<std::unique_ptr<
-                                 //     SecurePaymentConfirmationInstrument>>>
-#endif                           //
-  PLUS_ADDRESS_RESULT,           // WDResult<std::vector<PlusProfile>>
+  PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,  // WDResult<std::vector<
+                                              //     sync_pb::PaymentInstrumentCreationOption>>
+#if BUILDFLAG(USE_BLINK)  //
+  // The browser bound key id is retrieved by the payments component
+  // during secure payment confirmation requests and payment credential
+  // creation.
+  BROWSER_BOUND_KEY,            // WDResult<std::vector<uint8_t>>
+  PAYMENT_WEB_APP_MANIFEST,     // WDResult<std::vector<
+                                //     mojom::WebAppManifestSectionPtr>>
+  PAYMENT_METHOD_MANIFEST,      // WDResult<std::vector<std::string>>
+  SECURE_PAYMENT_CONFIRMATION,  // WDResult<std::vector<std::unique_ptr<
+                                //     SecurePaymentConfirmationInstrument>>>
+#endif                          //
+  PLUS_ADDRESS_RESULT,          // WDResult<std::vector<PlusProfile>>
 } WDResultType;
 
 //

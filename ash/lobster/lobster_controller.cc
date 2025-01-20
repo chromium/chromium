@@ -19,15 +19,15 @@
 
 namespace ash {
 
-LobsterController::Trigger::Trigger(LobsterController* controller,
-                                    std::unique_ptr<LobsterClient> client,
+LobsterController::Trigger::Trigger(std::unique_ptr<LobsterClient> client,
                                     LobsterEntryPoint entry_point,
-                                    LobsterMode mode)
-    : controller_(controller),
-      client_(std::move(client)),
+                                    LobsterMode mode,
+                                    const gfx::Rect& caret_bounds)
+    : client_(std::move(client)),
       state_(State::kReady),
       entry_point_(entry_point),
-      mode_(mode) {}
+      mode_(mode),
+      caret_bounds_(caret_bounds) {}
 
 LobsterController::Trigger::~Trigger() = default;
 
@@ -37,8 +37,19 @@ void LobsterController::Trigger::Fire(std::optional<std::string> query) {
   }
 
   state_ = State::kDisabled;
-  controller_->StartSession(std::move(client_), std::move(query), entry_point_,
-                            mode_);
+
+  if (ash::Shell::Get() == nullptr) {
+    return;
+  }
+
+  LobsterController* controller = ash::Shell::Get()->lobster_controller();
+
+  if (controller == nullptr) {
+    return;
+  }
+
+  controller->StartSession(std::move(client_), std::move(query), entry_point_,
+                           mode_, caret_bounds_);
 }
 
 LobsterController::LobsterController() = default;
@@ -51,31 +62,31 @@ void LobsterController::SetClientFactory(LobsterClientFactory* client_factory) {
 
 std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
     LobsterEntryPoint entry_point,
-    bool support_image_insertion) {
+    bool support_image_insertion,
+    const gfx::Rect& caret_bounds) {
   if (client_factory_ == nullptr) {
     return nullptr;
   }
   std::unique_ptr<LobsterClient> client = client_factory_->CreateClient();
-  if (client == nullptr || !client->UserHasAccess()) {
+  if (client == nullptr) {
     return nullptr;
   }
 
   LobsterSystemState system_state = client->GetSystemState();
   return system_state.status != LobsterStatus::kBlocked
-             ? std::make_unique<Trigger>(this, std::move(client), entry_point,
+             ? std::make_unique<Trigger>(std::move(client), entry_point,
                                          support_image_insertion
                                              ? LobsterMode::kInsert
-                                             : LobsterMode::kDownload)
+                                             : LobsterMode::kDownload,
+                                         caret_bounds)
              : nullptr;
 }
 
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query,
                                      LobsterEntryPoint entry_point,
-                                     LobsterMode mode) {
-  if (!client->UserHasAccess()) {
-    return;
-  }
+                                     LobsterMode mode,
+                                     const gfx::Rect& caret_bounds) {
   // Before creating a new session, we need to inform the lobster client and
   // lobster session to clear their pointer to the session that is about to be
   // destroyed. This is to prevent them from holding a dangling pointer to the
@@ -87,7 +98,7 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
   active_session_ =
       std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
   lobster_client_ptr->SetActiveSession(active_session_.get());
-  active_session_->LoadUI(query, mode);
+  active_session_->LoadUI(query, mode, caret_bounds);
 }
 
 }  // namespace ash

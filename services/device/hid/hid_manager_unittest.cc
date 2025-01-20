@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -34,7 +35,7 @@ const uint64_t kTestDeviceIds[] = {0, 1, 2, 3};
 #elif BUILDFLAG(IS_WIN)
 const wchar_t* const kTestDeviceIds[] = {L"0", L"1", L"2", L"3"};
 #else
-const char* const kTestDeviceIds[] = {"0", "1", "2", "3"};
+const auto kTestDeviceIds = std::to_array<const char*>({"0", "1", "2", "3"});
 #endif
 
 class MockHidManagerClient : public mojom::HidManagerClient {

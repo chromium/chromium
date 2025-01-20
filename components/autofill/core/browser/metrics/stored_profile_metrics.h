@@ -53,6 +53,10 @@ void LogLocalProfileSupersetMetrics(
     std::vector<const AutofillProfile*> profiles,
     std::string_view app_locale);
 
+// Logs the number of profiles that have an alternative name set.
+void LogStoredProfileCountWithAlternativeName(
+    base::span<const AutofillProfile* const> profiles);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_STORED_PROFILE_METRICS_H_

@@ -42,8 +42,12 @@ static constexpr base::TimeDelta kActiveIdleStateCollectionFrequency =
 //
 // The following events imply that the user is active
 // * Keyboard, mouse interaction
-// * Media playing
+// * Video playing
 // * Changing the device's power source
+//
+// Note: Audio activity is excluded from user activity because
+// `chrome/browser/ash/power/ml/idle_event_notifier.cc` does not currently track
+// audio activity.
 //
 // The following types of user sessions are reported:
 // * Managed guest sessions
@@ -135,6 +139,10 @@ class UserSessionActivityReporter
   // ManagedSessionService::Observer
   // Called when device is locked.
   void OnLocked() override;
+
+  // ManagedSessionService::Observer
+  // Called when device is unlocked.
+  void OnUnlocked() override;
 
  private:
   // Starts the user session. Called by OnLogin() and OnUnlocked().

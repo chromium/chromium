@@ -7,11 +7,11 @@
 namespace blink {
 
 // static
-DOMDataView* BluetoothRemoteGATTUtils::ConvertSpanToDataView(
+NotShared<DOMDataView> BluetoothRemoteGATTUtils::ConvertSpanToDataView(
     base::span<const uint8_t> span) {
   static_assert(sizeof(*span.data()) == 1, "uint8_t should be a single byte");
   DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(span);
-  return DOMDataView::Create(dom_buffer, 0, span.size());
+  return NotShared(DOMDataView::Create(dom_buffer, 0, span.size()));
 }
 
 }  // namespace blink

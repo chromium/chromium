@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.base;
 
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -33,8 +35,10 @@ public class SplitCompatContentProvider extends ContentProvider {
         // when it is created.
         synchronized (mImplLock) {
             if (mImpl == null) {
-                Context context = SplitCompatApplication.createChromeContext(getContext());
-                mImpl = (Impl) BundleUtils.newInstance(context, mContentProviderClassName);
+                mImpl =
+                        (Impl)
+                                BundleUtils.newInstance(
+                                        mContentProviderClassName, CHROME_SPLIT_NAME);
                 mImpl.setContentProvider(this);
             }
             return mImpl;

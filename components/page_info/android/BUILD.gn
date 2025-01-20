@@ -57,7 +57,6 @@ android_resources("java_resources") {
     "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
     "java/res/xml/page_info_tracking_protection_launch_preference.xml",
-    "java/res/xml/page_info_tracking_protection_preference.xml",
   ]
   deps = [
     "//components/browser_ui/site_settings/android:java_resources",
@@ -90,10 +89,8 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoPreferenceSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoRowView.java",
     "java/src/org/chromium/components/page_info/PageInfoSubpageController.java",
-    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionController.java",
     "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionLaunchController.java",
     "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionLaunchSettings.java",
-    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoView.java",
     "java/src/org/chromium/components/page_info/PermissionParamsListBuilder.java",
     "java/src/org/chromium/components/page_info/SystemSettingsActivityRequiredListener.java",
@@ -135,6 +132,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",

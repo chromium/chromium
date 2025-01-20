@@ -24,6 +24,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
@@ -64,6 +65,9 @@ VirtualKeyboardTray::VirtualKeyboardTray(
     Shell::Get()->AddShellObserver(this);
     keyboard::KeyboardUIController::Get()->AddObserver(this);
   }
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME));
 }
 
 VirtualKeyboardTray::~VirtualKeyboardTray() {
@@ -107,11 +111,6 @@ void VirtualKeyboardTray::Initialize() {
   TrayBackgroundView::Initialize();
   SetVisiblePreferred(
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled());
-}
-
-std::u16string VirtualKeyboardTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME);
 }
 
 void VirtualKeyboardTray::HandleLocaleChange() {

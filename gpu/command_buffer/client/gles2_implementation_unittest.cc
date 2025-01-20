@@ -1440,7 +1440,7 @@ TEST_F(GLES2ImplementationTest, GetVertexAttrib) {
   GLint stride = 0;
   GLint type = 0;
   GLint normalized = 1;
-  float current[4] = { 0.0f, };
+  float current[4] = {};
 
   gl_->GetVertexAttribiv(
       kAttribIndex2, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &buffer_id);
@@ -3096,8 +3096,8 @@ TEST_F(GLES2ImplementationTest, MultiDrawArraysWEBGLLargerThanTransferBuffer) {
   const unsigned kDrawCount = kUsableSize / sizeof(int);
   const unsigned kChunkDrawCount = kDrawCount / 2;
   const unsigned kCountsOffset = kChunkDrawCount * sizeof(int);
-  GLint firsts[kDrawCount] = {0};
-  GLsizei counts[kDrawCount] = {0};
+  GLint firsts[kDrawCount] = {};
+  GLsizei counts[kDrawCount] = {};
 
   ExpectedMemoryInfo mem1 = GetExpectedMemory(kUsableSize);
   ExpectedMemoryInfo mem2 = GetExpectedMemory(kUsableSize);

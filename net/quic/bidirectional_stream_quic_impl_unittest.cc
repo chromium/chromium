@@ -321,7 +321,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   std::unique_ptr<base::RunLoop> loop_;
   quiche::HttpHeaderBlock response_headers_;
   quiche::HttpHeaderBlock trailers_;
-  NextProto next_proto_ = kProtoUnknown;
+  NextProto next_proto_ = NextProto::kProtoUnknown;
   int64_t received_bytes_ = 0;
   int64_t sent_bytes_ = 0;
   bool has_load_timing_info_ = false;
@@ -507,8 +507,7 @@ class BidirectionalStreamQuicImplTest
     }
 
     socket_data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span<MockRead>(),
-        base::make_span(mock_writes_.get(), writes_.size()));
+        base::span<MockRead>(), base::span(mock_writes_.get(), writes_.size()));
     socket_data_->set_printer(&printer_);
 
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
@@ -917,7 +916,7 @@ TEST_P(BidirectionalStreamQuicImplTest, GetRequest) {
 
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length +
@@ -1118,7 +1117,7 @@ TEST_P(BidirectionalStreamQuicImplTest, CoalesceDataBuffersNotHeadersFrame) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(
                 spdy_request_headers_frame_length + kBody1.length() +
                 kBody2.length() + kBody3.length() + kBody4.length() +
@@ -1218,7 +1217,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(
       static_cast<int64_t>(spdy_request_headers_frame_length + strlen(kBody1) +
                            strlen(kBody2) + header.length() + header2.length()),
@@ -1332,7 +1331,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(
                 spdy_request_headers_frame_length + kBody1.length() +
                 kBody2.length() + kBody3.length() + kBody4.length() +
@@ -1491,7 +1490,7 @@ TEST_P(BidirectionalStreamQuicImplTest, PostRequest) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length +
                                  strlen(kUploadData) + header.length()),
             delegate->GetTotalSentBytes());
@@ -1575,7 +1574,7 @@ TEST_P(BidirectionalStreamQuicImplTest, EarlyDataOverrideRequest) {
 
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length +
@@ -1686,7 +1685,7 @@ TEST_P(BidirectionalStreamQuicImplTest, InterleaveReadDataAndSendData) {
   EXPECT_THAT(delegate->ReadData(cb.callback()), IsOk());
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length +
                                  2 * strlen(kUploadData) + 2 * header.length()),
             delegate->GetTotalSentBytes());
@@ -1866,7 +1865,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeReadData) {
   EXPECT_THAT(delegate->error(), IsError(ERR_QUIC_PROTOCOL_ERROR));
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length),
@@ -2027,7 +2026,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamAfterReadData) {
 
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length),

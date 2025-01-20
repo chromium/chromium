@@ -9,9 +9,11 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/compare/compare_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -106,15 +108,21 @@ std::optional<uint64_t> Deserialize(const base::Value& value) {
 
 ClusterServerProxy::ClusterServerProxy(
     signin::IdentityManager* identity_manager,
-    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory)
+    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+    AccountChecker* account_checker)
     : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      account_checker_(account_checker) {}
 
 ClusterServerProxy::~ClusterServerProxy() = default;
 
 void ClusterServerProxy::GetComparableProducts(
     const std::vector<uint64_t>& product_cluster_ids,
     GetComparableProductsCallback callback) {
+  if (!commerce::CanFetchProductSpecificationsData(account_checker_)) {
+    std::move(callback).Run(std::vector<uint64_t>());
+    return;
+  }
   auto fetcher = CreateEndpointFetcher(
       GURL(kServiceBaseUrl.Get()),
       GetJsonStringForProductClusterIds(product_cluster_ids));
@@ -132,7 +140,7 @@ std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
       url_loader_factory_, kOAuthName, url, kPostHttpMethod, kContentType,
       std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
       post_data, kGetComparableProductsTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSignin);
+      signin::ConsentLevel::kSync);
 }
 
 void ClusterServerProxy::HandleCompareResponse(

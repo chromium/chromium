@@ -285,6 +285,6 @@ BrowserDMTokenStorageWin::BrowserDMTokenStorageWin()
     : com_sta_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})) {}
 
-BrowserDMTokenStorageWin::~BrowserDMTokenStorageWin() {}
+BrowserDMTokenStorageWin::~BrowserDMTokenStorageWin() = default;
 
 }  // namespace policy

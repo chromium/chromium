@@ -14,11 +14,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,7 +45,8 @@ AddressEditorController::AddressEditorController(
         },
         &pdm_.get());
   }
-  countries_.SetCountries(pdm_.get(), std::move(filter), locale_);
+  countries_.SetCountries(pdm_->address_data_manager(), std::move(filter),
+                          locale_);
   std::u16string profile_country_code =
       profile_to_edit_.GetRawInfo(ADDRESS_HOME_COUNTRY);
   UpdateEditorFields(base::UTF16ToASCII(profile_country_code));

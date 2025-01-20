@@ -23,8 +23,8 @@ namespace extensions {
 
 namespace content_verifier_test {
 
-DownloaderTestDelegate::DownloaderTestDelegate() {}
-DownloaderTestDelegate::~DownloaderTestDelegate() {}
+DownloaderTestDelegate::DownloaderTestDelegate() = default;
+DownloaderTestDelegate::~DownloaderTestDelegate() = default;
 
 void DownloaderTestDelegate::AddResponse(const ExtensionId& extension_id,
                                          const std::string& version_string,
@@ -71,7 +71,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
 }
 
 ForceInstallProvider::ForceInstallProvider(const ExtensionId& id) : id_(id) {}
-ForceInstallProvider::~ForceInstallProvider() {}
+ForceInstallProvider::~ForceInstallProvider() = default;
 
 std::string ForceInstallProvider::GetDebugPolicyProviderName() const {
   return "ForceInstallProvider";

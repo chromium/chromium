@@ -70,28 +70,34 @@ typedef void (*xmlRegExecCallbacks) (xmlRegExecCtxtPtr exec,
 /*
  * The progressive API
  */
+XML_DEPRECATED
 XMLPUBFUN xmlRegExecCtxtPtr
 		    xmlRegNewExecCtxt	(xmlRegexpPtr comp,
 					 xmlRegExecCallbacks callback,
 					 void *data);
+XML_DEPRECATED
 XMLPUBFUN void
 		    xmlRegFreeExecCtxt	(xmlRegExecCtxtPtr exec);
+XML_DEPRECATED
 XMLPUBFUN int
 		    xmlRegExecPushString(xmlRegExecCtxtPtr exec,
 					 const xmlChar *value,
 					 void *data);
+XML_DEPRECATED
 XMLPUBFUN int
 		    xmlRegExecPushString2(xmlRegExecCtxtPtr exec,
 					 const xmlChar *value,
 					 const xmlChar *value2,
 					 void *data);
 
+XML_DEPRECATED
 XMLPUBFUN int
 		    xmlRegExecNextValues(xmlRegExecCtxtPtr exec,
 					 int *nbval,
 					 int *nbneg,
 					 xmlChar **values,
 					 int *terminal);
+XML_DEPRECATED
 XMLPUBFUN int
 		    xmlRegExecErrInfo	(xmlRegExecCtxtPtr exec,
 					 const xmlChar **string,

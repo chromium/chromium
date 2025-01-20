@@ -6,8 +6,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -71,8 +71,9 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
   void ExpectNoShippingWarningMessage() {
     views::View* view = dialog_view()->GetViewByID(
         static_cast<int>(DialogViewID::WARNING_LABEL));
-    if (!view || !view->GetVisible())
+    if (!view || !view->GetVisible()) {
       return;
+    }
 
     EXPECT_EQ(std::u16string(), static_cast<views::Label*>(view)->GetText());
   }

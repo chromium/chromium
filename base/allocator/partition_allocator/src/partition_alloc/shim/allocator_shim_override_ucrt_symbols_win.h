@@ -453,7 +453,7 @@ errno_t _wdupenv_s_dbg(wchar_t** buffer,
 
 #endif  // !defined(NDEBUG)
 
-}  // extern "C"
+}       // extern "C"
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_UCRT_SYMBOLS_WIN_H_

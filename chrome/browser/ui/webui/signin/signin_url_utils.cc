@@ -18,9 +18,6 @@ constexpr char kStyleParamKey[] = "style";
 
 constexpr char kIsSyncPromoParamKey[] = "is_sync_promo";
 
-// Query parameter names of the reauth confirmation URL.
-constexpr char kAccessPointParamKey[] = "access_point";
-
 // URL tag to specify that the source is the ProfilePicker.
 constexpr char kFromProfilePickerParamKey[] = "from_profile_picker";
 
@@ -56,38 +53,7 @@ GURL AppendSyncConfirmationQueryParams(const GURL& url,
   return url_with_params;
 }
 
-signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
-    const GURL& url) {
-  std::string value;
-  if (!net::GetValueForKeyInQuery(url, kAccessPointParamKey, &value))
-    return signin_metrics::ReauthAccessPoint::kUnknown;
-
-  int access_point_int = -1;
-  base::StringToInt(value, &access_point_int);
-  auto access_point_enum =
-      static_cast<signin_metrics::ReauthAccessPoint>(access_point_int);
-  switch (access_point_enum) {
-    case signin_metrics::ReauthAccessPoint::kUnknown:
-    case signin_metrics::ReauthAccessPoint::kAutofillDropdown:
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveBubble:
-    case signin_metrics::ReauthAccessPoint::kPasswordSettings:
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
-      return access_point_enum;
-  }
-  return signin_metrics::ReauthAccessPoint::kUnknown;
-}
-
-GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point) {
-  GURL url = GURL(chrome::kChromeUISigninReauthURL);
-  url = net::AppendQueryParameter(
-      url, kAccessPointParamKey,
-      base::NumberToString(static_cast<int>(access_point)));
-  return url;
-}
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
   std::string style_str;
   int style_int;
@@ -106,7 +72,7 @@ GURL AppendProfileCustomizationQueryParams(const GURL& url,
       url, kStyleParamKey, base::NumberToString(static_cast<int>(style)));
   return url_with_params;
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 bool HasFromProfilePickerURLParameter(const GURL& url) {
   std::string from_profile_picker;

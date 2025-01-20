@@ -32,8 +32,33 @@ ENUM_FIXED_TYPE_ALLOWLIST = [
 
 
 class EnumDefinition:
-  def __init__(self, original_enum_name=None, class_name_override=None,
-               enum_package=None, entries=None, comments=None, fixed_type=None):
+
+  def __init__(self,
+               original_enum_name=None,
+               class_name_override=None,
+               enum_package=None,
+               entries=None,
+               comments=None,
+               fixed_type=None,
+               is_flag=False):
+    """Represents a C++ enum that must be converted to java.
+
+    Args:
+      original_enum_name: The name of the enum itself, without its package.
+        If every entry starts with this value, this prefix is removed.
+      class_name_override: the name for the enum in java.
+        If None, the original enum name is used.
+      enum_package: The java package in which this enum must be defined
+      entries: A list of pairs. Each pair contains an enum entry, followed by
+        either None or the value of this entry. The definition could be, for
+        example, an integer, an expression `2 << 5`, or another enun entry.
+      comments: A list of pairs. Each pair contains an entry and a comment
+        associated to this entry.
+      fixed_type: The type encoding this enum. Should belong to
+        `ENUM_FIXED_TYPE_ALLOWLIST`.
+      is_flag: Whether this value is used as a boolean flag whose entries can
+        be xored together.
+    """
     self.original_enum_name = original_enum_name
     self.class_name_override = class_name_override
     self.enum_package = enum_package
@@ -41,6 +66,7 @@ class EnumDefinition:
     self.comments = collections.OrderedDict(comments or [])
     self.prefix_to_strip = None
     self.fixed_type = fixed_type
+    self.is_flag = is_flag
 
   def AppendEntry(self, key, value):
     if key in self.entries:
@@ -98,8 +124,13 @@ class EnumDefinition:
       prefixes = [shout_case, self.original_enum_name,
                   'k' + self.original_enum_name]
 
+      # "kMaxValue" is a special enum entry representing the last value of an
+      # histogram enum. It is not expected to have prefix even when other values
+      # have a prefix.
+      standard_keys = [key for key in self.entries.keys() if key != "kMaxValue"]
+
       for prefix in prefixes:
-        if all(w.startswith(prefix) for w in self.entries.keys()):
+        if all(w.startswith(prefix) for w in standard_keys):
           prefix_to_strip = prefix
           break
       else:
@@ -148,8 +179,11 @@ class DirectiveSet:
   class_name_override_key = 'CLASS_NAME_OVERRIDE'
   enum_package_key = 'ENUM_PACKAGE'
   prefix_to_strip_key = 'PREFIX_TO_STRIP'
+  is_flag = 'IS_FLAG'
 
-  known_keys = [class_name_override_key, enum_package_key, prefix_to_strip_key]
+  known_keys = [
+      class_name_override_key, enum_package_key, prefix_to_strip_key, is_flag
+  ]
 
   def __init__(self):
     self._directives = {}
@@ -170,6 +204,8 @@ class DirectiveSet:
         DirectiveSet.enum_package_key)
     definition.prefix_to_strip = self._directives.get(
         DirectiveSet.prefix_to_strip_key)
+    definition.is_flag = self._directives.get(
+        DirectiveSet.is_flag) not in [None, 'false', '0']
 
 
 class HeaderParser:
@@ -398,7 +434,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({
+@IntDef(${FLAG_DEF}{
 ${INT_DEF}
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -441,10 +477,11 @@ ${ENUM_ENTRIES}
       'CLASS_NAME': enum_definition.class_name,
       'ENUM_ENTRIES': enum_entries_string,
       'PACKAGE': enum_definition.enum_package,
+      'FLAG_DEF': 'flag = true, value = ' if enum_definition.is_flag else '',
       'INT_DEF': enum_names_string,
       'SCRIPT_NAME': java_cpp_utils.GetScriptName(),
       'SOURCE_PATH': source_path,
-      'YEAR': str(date.today().year)
+      'YEAR': str(date.today().year),
   }
   return template.substitute(values)
 

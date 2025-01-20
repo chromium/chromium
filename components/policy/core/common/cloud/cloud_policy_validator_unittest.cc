@@ -17,22 +17,22 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace em = enterprise_management;
 
@@ -111,9 +111,11 @@ class CloudPolicyValidatorTest : public testing::Test {
     // Run validation and check the result.
     EXPECT_CALL(*this, ValidationCompletion(validator.get()))
         .WillOnce(check_action);
-
-    validator->RunValidation();
-    ValidationCompletion(validator.get());
+    UserCloudPolicyValidator::StartValidation(
+        std::move(validator),
+        base::BindOnce(&CloudPolicyValidatorTest::ValidationCompletion,
+                       base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(this);
   }
 
@@ -133,7 +135,7 @@ class CloudPolicyValidatorTest : public testing::Test {
     validator->ValidateTimestamp(timestamp_, timestamp_option_);
     if (validate_by_gaia_id_) {
       validator->ValidateUsernameAndGaiaId(
-          /*expected_user=*/std::string(), PolicyBuilder::kFakeGaiaId);
+          /*expected_user=*/std::string(), GaiaId(PolicyBuilder::kFakeGaiaId));
     } else {
       validator->ValidateUsername(PolicyBuilder::kFakeUsername);
     }
@@ -202,7 +204,7 @@ class CloudPolicyValidatorTest : public testing::Test {
   MOCK_METHOD1(ValidationCompletion, void(UserCloudPolicyValidator* validator));
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CloudPolicyValidatorTest,
        SuccessfulValidationWithDisableKeyVerificationOnTestImage) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -239,7 +241,7 @@ TEST_F(CloudPolicyValidatorTest,
       },
       "");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyValidatorTest, SuccessfulValidation) {
   Validate(Invoke(this, &CloudPolicyValidatorTest::CheckSuccessfulValidation));

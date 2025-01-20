@@ -258,6 +258,16 @@ void ResourceManagerImpl::RemoveResource(
   resources_[res_type].erase(res_id);
 }
 
+void ResourceManagerImpl::DumpIfNoResource(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jobj,
+    jint res_type,
+    jint res_id) {
+  if (resources_[res_type].find(res_id) == resources_[res_type].end()) {
+    base::debug::DumpWithoutCrashing();  // Investigating crbug.com/388600389.
+  }
+}
+
 bool ResourceManagerImpl::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

@@ -17,9 +17,9 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -73,22 +73,26 @@ AndroidAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillCrowdsourcingManager*
+autofill::AutofillCrowdsourcingManager&
 AndroidAutofillClient::GetCrowdsourcingManager() {
-  if (autofill::AutofillProvider::
-          is_crowdsourcing_manager_disabled_for_testing()) {
-    return nullptr;
-  }
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ =
-        std::make_unique<autofill::AutofillCrowdsourcingManager>(
-            this, GetChannel(), GetLogManager());
+        std::make_unique<autofill::AutofillCrowdsourcingManager>(this,
+                                                                 GetChannel());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
-autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
+autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
+  return votes_uploader_;
+}
+
+autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
+  NOTREACHED();
+}
+
+autofill::EntityDataManager* AndroidAutofillClient::GetEntityDataManager() {
   return nullptr;
 }
 
@@ -136,12 +140,6 @@ ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
   return nullptr;
 }
 
-ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
-  // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
-  // only).
-  return ukm::kInvalidSourceId;
-}
-
 autofill::AddressNormalizer* AndroidAutofillClient::GetAddressNormalizer() {
   return nullptr;
 }
@@ -181,18 +179,6 @@ void AndroidAutofillClient::ShowAutofillSettings(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED();
-}
-
-void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
@@ -214,10 +200,6 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature when delegating to Android
   // APIs.
-}
-
-void AndroidAutofillClient::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
 }
 
 void AndroidAutofillClient::HideAutofillSuggestions(
@@ -248,8 +230,7 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   NOTREACHED();
 }
 
-void AndroidAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::ActionPersistence action_persistence,
+void AndroidAutofillClient::DidFillForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -281,6 +262,11 @@ AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper
   // implementation.
   return {};
+}
+
+autofill::autofill_metrics::FormInteractionsUkmLogger&
+AndroidAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
 }
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {

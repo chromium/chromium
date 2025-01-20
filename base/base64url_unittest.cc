@@ -106,10 +106,22 @@ TEST(Base64UrlTest, EncodeOmitPaddingPolicy) {
   EXPECT_EQ("", output);
 }
 
+TEST(Base64UrlTest, EncodeInPlaceOmitPaddingPolicy) {
+  std::string input = "hello?world";
+  Base64UrlEncode(input, Base64UrlEncodePolicy::OMIT_PADDING, &input);
+  EXPECT_EQ("aGVsbG8_d29ybGQ", input);
+}
+
+TEST(Base64UrlTest, EncodeInPlaceIncludePaddingPolicy) {
+  std::string input = "hello?world";
+  Base64UrlEncode(input, Base64UrlEncodePolicy::INCLUDE_PADDING, &input);
+  EXPECT_EQ("aGVsbG8_d29ybGQ=", input);
+}
+
 TEST(Base64UrlTest, DecodeRequirePaddingPolicy) {
   std::string output;
-  ASSERT_TRUE(Base64UrlDecode("aGVsbG8_d29ybGQ=",
-                              Base64UrlDecodePolicy::REQUIRE_PADDING, &output));
+  ASSERT_TRUE(Base64UrlDecode(
+      "aGVsbG8_d29ybGQ=", Base64UrlDecodePolicy::REQUIRE_PADDING, &output));
 
   EXPECT_EQ("hello?world", output);
 
@@ -134,8 +146,8 @@ TEST(Base64UrlTest, DecodeIgnorePaddingPolicy) {
   EXPECT_EQ("hello?world", output);
 
   // Including the padding is accepted as well.
-  ASSERT_TRUE(Base64UrlDecode("aGVsbG8_d29ybGQ=",
-                              Base64UrlDecodePolicy::IGNORE_PADDING, &output));
+  ASSERT_TRUE(Base64UrlDecode(
+      "aGVsbG8_d29ybGQ=", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
 
   EXPECT_EQ("hello?world", output);
 }
@@ -174,14 +186,14 @@ TEST(Base64UrlTest, DecodeDisallowsBase64Alphabet) {
 TEST(Base64UrlTest, DecodeDisallowsPaddingOnly) {
   std::string output;
 
-  ASSERT_FALSE(Base64UrlDecode(
-      "=", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
-  ASSERT_FALSE(Base64UrlDecode(
-      "==", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
-  ASSERT_FALSE(Base64UrlDecode(
-      "===", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
-  ASSERT_FALSE(Base64UrlDecode(
-      "====", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
+  ASSERT_FALSE(
+      Base64UrlDecode("=", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
+  ASSERT_FALSE(
+      Base64UrlDecode("==", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
+  ASSERT_FALSE(
+      Base64UrlDecode("===", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
+  ASSERT_FALSE(
+      Base64UrlDecode("====", Base64UrlDecodePolicy::IGNORE_PADDING, &output));
 }
 
 }  // namespace

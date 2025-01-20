@@ -7,7 +7,6 @@
 #include <xcb/xcb.h>
 
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -51,7 +50,7 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_TRUE(keyev);
 
   KeyEventTestApi test(keyev.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(ui::DomKey::NONE, test.dom_key());
 #else
   EXPECT_EQ(ui::DomKey::ENTER, test.dom_key());

@@ -8,11 +8,16 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
 
 namespace tab_groups {
 class SavedTabGroup;
@@ -84,10 +89,25 @@ bool IsSaveableNavigation(web::NavigationContext* navigation_context);
 bool IsTabGroupShared(const TabGroup* tab_group,
                       TabGroupSyncService* sync_service);
 
+// Returns the `MemberRole` for the given `tab_group`. If
+// `tab_group_sync_service` or `collaboration_service` is nil, returns
+// `kUnknown`.
+data_sharing::MemberRole GetUserRoleForGroup(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service,
+    collaboration::CollaborationService* collaboration_service);
+
 // Returns the collabID of the given `tab_group` if it's shared.
-// Otherwise returns nil.
-NSString* GetTabGroupCollabID(const TabGroup* tab_group,
-                              TabGroupSyncService* sync_service);
+// Otherwise returns an empty collabID.
+CollaborationId GetTabGroupCollabID(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service);
+
+// Returns the collabID of the given `tab_group_id` if it's shared.
+// Otherwise returns an empty collabID.
+CollaborationId GetTabGroupCollabID(
+    const tab_groups::EitherGroupID& tab_group_id,
+    TabGroupSyncService* tab_group_sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

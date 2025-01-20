@@ -133,6 +133,14 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   }
 #endif  // IS_MAC
 
+#if BUILDFLAG(IS_WIN)
+  std::optional<bool> allow_dxgi_capturer =
+      options.GetBool("Allow-Dxgi-Capturer");
+  if (allow_dxgi_capturer.has_value()) {
+    desktop_capture_options_.set_allow_directx_capturer(*allow_dxgi_capturer);
+  }
+#endif  // IS_WIN
+
 #if defined(WEBRTC_USE_PIPEWIRE)
   desktop_capture_options_.set_allow_pipewire(true);
   desktop_capture_options_.set_pipewire_use_damage_region(true);

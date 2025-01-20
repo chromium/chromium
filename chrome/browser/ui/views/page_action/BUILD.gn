@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android, "Page actions are for desktop platforms only")
+
+source_set("page_action") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "action_ids.h",
+    "page_action_container_view.h",
+    "page_action_controller.h",
+    "page_action_model.h",
+    "page_action_model_observer.h",
+    "page_action_triggers.h",
+    "page_action_view.h",
+  ]
+
+  sources = [
+    "page_action_constants.h",
+    "page_action_container_view.cc",
+    "page_action_controller.cc",
+    "page_action_model.cc",
+    "page_action_triggers.cc",
+    "page_action_view.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//ui/actions:actions_headers",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+
+  deps = [ "//ui/gfx" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "page_action_container_view_unittest.cc",
+    "page_action_controller_unittest.cc",
+    "page_action_icon_view_unittest.cc",
+    "page_action_view_unittest.cc",
+  ]
+
+  deps = [
+    ":page_action",
+    "//chrome/test:test_support",
+    "//ui/events:test_support",
+  ]
+}

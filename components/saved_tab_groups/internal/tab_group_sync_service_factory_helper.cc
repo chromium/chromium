@@ -12,6 +12,7 @@
 #include "components/saved_tab_groups/internal/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/internal/tab_group_type_observer.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
@@ -23,6 +24,8 @@
 
 namespace tab_groups {
 namespace {
+const char kTabGroupTypeObserverKey[] = "tab_group_type_observer";
+
 std::unique_ptr<SyncDataTypeConfiguration>
 CreateSavedTabGroupDataTypeConfiguration(
     version_info::Channel channel,
@@ -38,8 +41,12 @@ std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupDataTypeConfiguration(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service) {
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  bool data_sharing_enabled =
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly);
+  if (!data_sharing_enabled) {
     return nullptr;
   }
 
@@ -58,7 +65,8 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
     syncer::DeviceInfoTracker* device_info_tracker,
     optimization_guide::OptimizationGuideDecider* optimization_guide,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<CollaborationFinder> collaboration_finder) {
+    std::unique_ptr<CollaborationFinder> collaboration_finder,
+    SyntheticFieldTrialHelper* synthetic_field_trial_helper) {
   auto metrics_logger =
       std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
   auto model = std::make_unique<SavedTabGroupModel>();
@@ -67,10 +75,14 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
   auto shared_config = MaybeCreateSharedTabGroupDataTypeConfiguration(
       channel, data_type_store_service);
 
-  return std::make_unique<TabGroupSyncServiceImpl>(
+  auto service = std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
       pref_service, std::move(metrics_logger), optimization_guide,
       identity_manager, std::move(collaboration_finder));
+  service->SetUserData(kTabGroupTypeObserverKey,
+                       std::make_unique<TabGroupTypeObserver>(
+                           service.get(), synthetic_field_trial_helper));
+  return service;
 }
 
 }  // namespace tab_groups

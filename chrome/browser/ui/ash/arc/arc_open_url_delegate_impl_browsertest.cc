@@ -26,7 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -106,8 +106,9 @@ void TestOpenSettingFromArc(Browser* browser,
   ui_test_utils::BrowserChangeObserver browser_opened(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
-  if (expected_setting_window)
+  if (expected_setting_window) {
     browser_opened.Wait();
+  }
 
   EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());
 

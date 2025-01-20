@@ -127,7 +127,7 @@ class JavaClass:
     return type_resolver.contextualize(self)
 
   def to_cpp(self):
-    return common.escape_class_name(self.full_name_with_slashes)
+    return common.jni_mangle(self.full_name_with_slashes)
 
   def as_type(self):
     return JavaType(java_class=self)
@@ -149,7 +149,11 @@ class JavaType:
   primitive_name: Optional[str] = None
   java_class: Optional[JavaClass] = None
   converted_type: Optional[str] = dataclasses.field(default=None, compare=False)
-  nullable: bool = True
+  nullable: bool = dataclasses.field(default=True, compare=False)
+
+  def __post_init__(self):
+    assert (self.java_class is None) != (self.primitive_name is None), self
+    assert not (self.is_primitive() and self.nullable), self
 
   @staticmethod
   def from_descriptor(descriptor):
@@ -164,7 +168,8 @@ class JavaType:
                       java_class=JavaClass(descriptor[1:-1]))
     primitive_name = _PRIMITIVE_TYPE_BY_DESCRIPTOR_CHAR[descriptor[0]]
     return JavaType(array_dimensions=array_dimensions,
-                    primitive_name=primitive_name)
+                    primitive_name=primitive_name,
+                    nullable=array_dimensions > 0)
 
   @property
   def non_array_full_name_with_slashes(self):
@@ -203,7 +208,8 @@ class JavaType:
     assert self.is_array()
     return JavaType(array_dimensions=self.array_dimensions - 1,
                     primitive_name=self.primitive_name,
-                    java_class=self.java_class)
+                    java_class=self.java_class,
+                    nullable=bool(self.java_class or self.array_dimensions > 1))
 
   def to_descriptor(self):
     """Converts a Java type into a JNI signature type."""
@@ -274,9 +280,6 @@ class JavaParamList(tuple):
     return ', '.join(
         p.to_java_declaration(type_resolver=type_resolver) for p in self)
 
-  def to_call_str(self):
-    return ', '.join(p.name for p in self)
-
 
 @dataclasses.dataclass(frozen=True, order=True)
 class JavaSignature:
@@ -333,18 +336,13 @@ class JavaSignature:
     param_list = self.param_list.to_proxy()
     return JavaSignature.from_params(return_type, param_list)
 
-  def with_params_reordered(self):
-    return JavaSignature.from_params(
-        self.return_type,
-        JavaParamList(
-            tuple(sorted(self.param_list,
-                         key=lambda x: x.java_type.to_proxy()))))
-
 
 class TypeResolver:
   """Converts type names to fully qualified names."""
-  def __init__(self, java_class):
+
+  def __init__(self, java_class, null_marked=False):
     self.java_class = java_class
+    self.null_marked = null_marked
     self.imports = []
     self.nested_classes = []
 
@@ -430,8 +428,8 @@ COLLECTION_CLASSES = (
 OBJECT = JavaType(java_class=OBJECT_CLASS)
 CLASS = JavaType(java_class=CLASS_CLASS)
 LIST = JavaType(java_class=_LIST_CLASS)
-INT = JavaType(primitive_name='int')
-VOID = JavaType(primitive_name='void')
+INT = JavaType(primitive_name='int', nullable=False)
+VOID = JavaType(primitive_name='void', nullable=False)
 
 _EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)
 EMPTY_PARAM_LIST = JavaParamList()

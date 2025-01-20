@@ -335,7 +335,7 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
                 attribute=None,
                 # If argc is small, just use argv-arr
                 then=SymbolScopeNode(
-                    code_nodes=[T("argv = base::make_span(argv_arr, argc);")]),
+                    code_nodes=[T("argv = base::span(argv_arr, argc);")]),
                 then_likeliness=Likeliness.LIKELY,
                 # If argc is large, create a vector instead
                 else_=SymbolScopeNode(code_nodes=[

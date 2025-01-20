@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 
 #include <stdint.h>
@@ -112,8 +107,7 @@ TEST_F(VpxQuantizerParserTest, InsufficientData) {
 
     const unsigned int first_partition_size =
         (frame->data[0] | (frame->data[1] << 8) | (frame->data[2] << 16)) >> 5;
-    if (frame->dependency ==
-        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+    if (frame->is_key_frame) {
       // Ten bytes should not be enough to decode the quantizer value
       // for a Key frame.
       EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data.first(10)));

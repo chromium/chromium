@@ -27,11 +27,7 @@ enum class SyncConfirmationStyle;
 namespace content {
 class WebContents;
 class WebContentsDelegate;
-}
-
-namespace signin_metrics {
-enum class ReauthAccessPoint;
-}
+}  // namespace content
 
 namespace views {
 class WebView;
@@ -63,10 +59,6 @@ class SigninViewControllerDelegateViews
       Browser* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  static std::unique_ptr<views::WebView> CreateReauthConfirmationWebView(
-      Browser* browser,
-      signin_metrics::ReauthAccessPoint);
-
   static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
       Browser* browser,
       bool is_local_profile_creation,

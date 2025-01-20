@@ -9,6 +9,7 @@
 
 #include "mojo/core/broker_host.h"
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -126,7 +127,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   std::vector<PlatformHandleInTransit> handles;
   handles.reserve(2);
   if (region.IsValid()) {
-    PlatformHandle h[2];
+    std::array<PlatformHandle, 2> h;
     ExtractPlatformHandlesFromSharedMemoryRegionHandle(
         region.PassPlatformHandle(), &h[0], &h[1]);
     handles.emplace_back(std::move(h[0]));

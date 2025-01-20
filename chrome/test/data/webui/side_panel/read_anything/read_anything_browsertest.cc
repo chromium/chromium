@@ -148,6 +148,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggle) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ImagesToggle) {
+  RunSidePanelTest("side_panel/read_anything/images_toggle_button_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayPause) {
   RunSidePanelTest("side_panel/read_anything/play_pause_test.js",
                    "mocha.run()");
@@ -210,21 +215,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
 class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
  protected:
   ReadAnythingReadAloudMochaTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/368057422): This test is flaky on Mac. Fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LinksToggledIntegration DISABLED_LinksToggledIntegration
-#else
-#define MAYBE_LinksToggledIntegration LinksToggledIntegration
-#endif
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
-                       MAYBE_LinksToggledIntegration) {
+                       LinksToggledIntegration) {
   RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }

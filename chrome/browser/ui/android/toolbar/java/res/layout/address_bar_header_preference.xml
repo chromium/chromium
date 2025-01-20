@@ -15,23 +15,13 @@ found in the LICENSE file.
     android:focusable="false" >
 
     <ImageView
-        android:id="@+id/toolbar_on_top"
+        android:id="@+id/toolbar_position_graphic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="24dp"
         android:paddingBottom="24dp"
         android:contentDescription="@string/address_bar_settings"
         android:scaleType="center"
-        app:srcCompat="@drawable/toolbar_on_top"/>
-
-    <ImageView
-        android:id="@+id/toolbar_on_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp"
-        android:contentDescription="@string/address_bar_settings"
-        android:scaleType="center"
-        app:srcCompat="@drawable/toolbar_on_bottom"/>
+        app:srcCompat="@drawable/toolbar_position_state_animation"/>
 
 </RelativeLayout>

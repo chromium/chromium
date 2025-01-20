@@ -21,9 +21,6 @@ namespace {
 
 class TestMethodsMac : public TestMethods {
  public:
-  TestMethodsMac() = default;
-  ~TestMethodsMac() override = default;
-
   base::FilePath GetTestExePath() override {
     return base::PathService::CheckedGet(base::DIR_EXE)
         .AppendASCII("EnterpriseCompanionTestApp")

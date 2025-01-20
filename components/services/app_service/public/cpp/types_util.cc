@@ -104,15 +104,11 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
       return true;
     case apps::AppType::kUnknown:
     case apps::AppType::kArc:
-    case apps::AppType::kBuiltIn:
     case apps::AppType::kCrostini:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       return false;
   }
   NOTREACHED();

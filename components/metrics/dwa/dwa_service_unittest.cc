@@ -59,7 +59,7 @@ class DwaServiceTest : public testing::Test {
   // Records a test data DWA metric into DwaRecorder.
   void RecordTestMetric() {
     ::dwa::DwaEntryBuilder builder("Kangaroo.Jumped");
-    builder.SetContent("adtech.com");
+    builder.SetContent("https://adtech.com");
     builder.SetMetric("Length", 5);
     builder.Record(DwaRecorder::Get());
   }

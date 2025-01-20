@@ -21,11 +21,13 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
@@ -33,6 +35,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -777,11 +780,13 @@ bool FilePathWatcherTest::SetupWatchWithChangeInfo(
   // Flush events before the watch begins.
   SpinEventLoopForABit();
 #endif
-  return watcher->WatchWithChangeInfo(
-      target, watch_options,
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &TestDelegateBase::OnFileChangedWithInfo, delegate->AsWeakPtr())),
-      base::DoNothingAs<void(size_t, size_t)>());
+  return watcher
+      ->WatchWithChangeInfo(
+          target, watch_options,
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &TestDelegateBase::OnFileChangedWithInfo, delegate->AsWeakPtr())),
+          base::DoNothingAs<void(size_t, size_t)>())
+      .has_value();
 }
 
 bool FilePathWatcherTest::SetupWatchWithUsageChanges(
@@ -793,12 +798,14 @@ bool FilePathWatcherTest::SetupWatchWithUsageChanges(
   // Flush events before the watch begins.
   SpinEventLoopForABit();
 #endif
-  return watcher.WatchWithChangeInfo(
-      target, watch_options,
-      base::DoNothingAs<void(const FilePathWatcher::ChangeInfo&,
-                             const base::FilePath&, bool)>(),
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &TestUsageDelegate::OnUsageChange, delegate.AsWeakPtr())));
+  return watcher
+      .WatchWithChangeInfo(
+          target, watch_options,
+          base::DoNothingAs<void(const FilePathWatcher::ChangeInfo&,
+                                 const base::FilePath&, bool)>(),
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
+              &TestUsageDelegate::OnUsageChange, delegate.AsWeakPtr())))
+      .has_value();
 }
 
 // Basic test: Create the file and verify that we notice.
@@ -1115,8 +1122,7 @@ TEST_F(FilePathWatcherTest, NonExistentDirectory) {
   // The delegate is only watching the file. Parent directory creation should
   // not trigger an event.
   ASSERT_TRUE(CreateDirectory(dir));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
-
+  delegate.SpinAndExpectNoEvents();
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
   ASSERT_TRUE(WriteFile(file, "content"));
@@ -1164,7 +1170,7 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   for (const auto& dir_name : dir_names) {
     sub_path = sub_path.AppendASCII(dir_name);
     ASSERT_TRUE(CreateDirectory(sub_path));
-    // TODO(crbug.com/40263777): Expect that no events are fired.
+    delegate.SpinAndExpectNoEvents();
   }
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
@@ -1238,12 +1244,10 @@ TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
-// TODO(crbug.com/40263777): Split into smaller tests.
-TEST_F(FilePathWatcherTest, WatchDirectory) {
+TEST_F(FilePathWatcherTest, WatchDirectoryWriteToFile) {
   FilePathWatcher watcher;
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file1(dir.AppendASCII("file1"));
-  base::FilePath file2(dir.AppendASCII("file2"));
   TestDelegate delegate;
   AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(SetupWatch(dir, &watcher, &delegate,
@@ -1277,6 +1281,29 @@ TEST_F(FilePathWatcherTest, WatchDirectory) {
 #endif
   delegate.RunUntilEventsMatch(event_expecter);
 #endif  // !BUILDFLAG(IS_APPLE)
+}
+
+TEST_F(FilePathWatcherTest, WatchDirectoryDeleteFileWriteToOtherFile) {
+  FilePathWatcher watcher;
+  base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+  base::FilePath file1(dir.AppendASCII("file1"));
+  base::FilePath file2(dir.AppendASCII("file2"));
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(dir, &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  ASSERT_TRUE(CreateDirectory(dir));
+  VLOG(1) << "Waiting for directory creation";
+  event_expecter.AddExpectedEventForPath(dir);
+  delegate.RunUntilEventsMatch(event_expecter);
+
+  ASSERT_TRUE(WriteFile(file1, "content"));
+  VLOG(1) << "Waiting for file1 creation + modification";
+  for (size_t i = 0; i < kExpectedEventsForNewFileWrite; ++i) {
+    event_expecter.AddExpectedEventForPath(dir);
+  }
+  delegate.RunUntilEventsMatch(event_expecter);
 
   ASSERT_TRUE(DeleteFile(file1));
   VLOG(1) << "Waiting for file1 deletion";
@@ -1308,8 +1335,7 @@ TEST_F(FilePathWatcherTest, MoveParent) {
   // We should only get notified on `subdir_delegate` of its creation.
   ASSERT_TRUE(CreateDirectory(subdir));
   subdir_event_expecter.AddExpectedEventForPath(subdir);
-  // TODO(crbug.com/40263777): Expect that no events are fired on the
-  // file delegate.
+  file_delegate.SpinAndExpectNoEvents();
   subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 
   ASSERT_TRUE(WriteFile(file, "content"));
@@ -1718,7 +1744,7 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart2) {
                          FilePathWatcher::Type::kNonRecursive));
 
   ASSERT_TRUE(CreateDirectory(dir));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
+  delegate.SpinAndExpectNoEvents();
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
@@ -1848,6 +1874,53 @@ TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
   }
 }
 
+TEST_F(FilePathWatcherTest, InotifyQuotaLimit) {
+  size_t quota_bucket_size = 100000;
+  size_t quota_min = 8192;
+  double quota_percent = 0.8;
+
+  base::FieldTrialParams params;
+  params["file_system_observer_quota_limit_linux_bucket_size"] =
+      base::ToString(quota_bucket_size);
+  params["file_system_observer_quota_limit_linux_min"] =
+      base::ToString(quota_min);
+  params["file_system_observer_quota_limit_linux_percent"] =
+      base::ToString(quota_percent);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFileSystemAccessObserverQuotaLimit, params);
+
+  // The quota limit is always set to the `quota_percent` of a "effective system
+  // limit" which is the system limit we choose and is less than or equal to the
+  // actual system limit.
+
+  // The first bucket's effective system limit is the `quota_min`.
+  size_t expected_min_quota_limit = quota_min * quota_percent;
+
+  // The first bucket should have a quota limit of `expected_min_quota_limit`.
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(0),
+            expected_min_quota_limit);
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(quota_bucket_size / 2),
+            expected_min_quota_limit);
+  EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(quota_bucket_size - 1),
+            expected_min_quota_limit);
+
+  // Every other bucket should have an effective system limit of the bucket's
+  // minimum value.
+  for (size_t bucket = quota_bucket_size; bucket < 10 * quota_bucket_size;
+       bucket += quota_bucket_size) {
+    size_t expected_quota_limit = bucket * quota_percent;
+    EXPECT_EQ(GetQuotaLimitFromSystemLimitForTesting(bucket),
+              expected_quota_limit);
+    EXPECT_EQ(
+        GetQuotaLimitFromSystemLimitForTesting(bucket + quota_bucket_size / 2),
+        expected_quota_limit);
+    EXPECT_EQ(
+        GetQuotaLimitFromSystemLimitForTesting(bucket + quota_bucket_size - 1),
+        expected_quota_limit);
+  }
+}
+
 // Verify that "Watch()" returns false and callback is not invoked when limit is
 // hit during setup.
 TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
@@ -1856,7 +1929,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
   // "test_file()" is like "/tmp/__unique_path__/FilePathWatcherTest" and has 4
   // dir components ("/" + 3 named parts). "Watch()" creates inotify watches
   // for each dir component of the given dir. It would fail with limit set to 1.
-  ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+  auto max_inotify_watches = FilePathWatcher::SetQuotaLimitForTesting(1);
   ASSERT_FALSE(watcher->Watch(
       test_file(), FilePathWatcher::Type::kNonRecursive,
       base::BindLambdaForTesting(
@@ -1907,7 +1980,7 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
     ASSERT_TRUE(watcher->Watch(
         test_file(), FilePathWatcher::Type::kNonRecursive, watcher_callback));
 
-    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+    auto max_inotify_watches = FilePathWatcher::SetQuotaLimitForTesting(1);
 
     // Triggers update and over limit.
     ASSERT_TRUE(WriteFile(test_file(), "content"));
@@ -1961,8 +2034,8 @@ TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
                                watcher_callback));
 
     constexpr size_t kMaxLimit = 10u;
-    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(
-        kMaxLimit);
+    auto max_inotify_watches =
+        FilePathWatcher::SetQuotaLimitForTesting(kMaxLimit);
 
     // Triggers updates and over limit.
     for (size_t i = 0; i < kMaxLimit; ++i) {
@@ -2272,7 +2345,7 @@ TEST_F(FilePathWatcherTest, DirAttributesChanged) {
   // to access the file.
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, false));
   ASSERT_TRUE(ChangeFilePermissions(test_dir1, Read, true));
-  // TODO(crbug.com/40263777): Expect that no events are fired.
+  delegate.SpinAndExpectNoEvents();
 
   // We should get notified in this case because filepathwatcher can no
   // longer access the file.

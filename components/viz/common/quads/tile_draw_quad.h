@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_TILE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_TILE_DRAW_QUAD_H_
 
@@ -20,7 +15,6 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT TileDrawQuad : public ContentDrawQuadBase {
  public:
-  static const size_t kResourceIdIndex = 0;
   static constexpr Material kMaterial = Material::kTiledContent;
 
   TileDrawQuad();
@@ -55,8 +49,6 @@ class VIZ_COMMON_EXPORT TileDrawQuad : public ContentDrawQuadBase {
               bool force_anti_aliasing_off);
 
   static const TileDrawQuad* MaterialCast(const DrawQuad*);
-
-  ResourceId resource_id() const { return resources.ids[kResourceIdIndex]; }
 
  private:
   void ExtendValue(base::trace_event::TracedValue* value) const override;

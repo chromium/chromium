@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -81,7 +78,7 @@ class BrowserEncodingTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<EncodingTestData> {
  protected:
-  BrowserEncodingTest() {}
+  BrowserEncodingTest() = default;
 
   // Saves the current page and verifies that the output matches the expected
   // result.
@@ -117,8 +114,10 @@ class BrowserEncodingTest
     }
 
     // Add "Mark of the Web" path with source URL.
-    expected_contents = base::StringPrintfNonConstexpr(
-        expected_contents.c_str(), url.spec().length(), url.spec().c_str());
+    expected_contents =
+        base::StringPrintf("\n<!-- saved from url=(%04d)%s -->\n",
+                           url.spec().size(), url.spec().c_str()) +
+        expected_contents;
 
     EXPECT_EQ(expected_contents, actual_contents);
   }
@@ -183,50 +182,45 @@ IN_PROC_BROWSER_TEST_F(BrowserEncodingTest, TestEncodingAutoDetect) {
     const char* expected_result;  // File name of expected results.
     const char* expected_encoding;   // expected encoding.
   };
-  const EncodingAutoDetectTestData kTestDatas[] = {
-      { "Big5_with_no_encoding_specified.html",
-        "expected_Big5_saved_from_no_encoding_specified.html",
-        "Big5" },
-      { "GBK_with_no_encoding_specified.html",
-        "expected_GBK_saved_from_no_encoding_specified.html",
-        "GBK" },
-      { "iso-8859-1_with_no_encoding_specified.html",
-        "expected_iso-8859-1_saved_from_no_encoding_specified.html",
-        "windows-1252" },
-      { "ISO-8859-5_with_no_encoding_specified.html",
-        "expected_ISO-8859-5_saved_from_no_encoding_specified.html",
-        "ISO-8859-5" },
-      { "ISO-8859-6_with_no_encoding_specified.html",
-        "expected_ISO-8859-6_saved_from_no_encoding_specified.html",
-        "ISO-8859-6" },
-      { "ISO-8859-7_with_no_encoding_specified.html",
-        "expected_ISO-8859-7_saved_from_no_encoding_specified.html",
-        "ISO-8859-7" },
-      { "ISO-8859-8-I_with_no_encoding_specified.html",
-        "expected_ISO-8859-8-I_saved_from_no_encoding_specified.html",
-        "windows-1255" },
-      { "KOI8-R_with_no_encoding_specified.html",
-        "expected_KOI8-R_saved_from_no_encoding_specified.html",
-        "KOI8-R" },
-      { "Shift-JIS_with_no_encoding_specified.html",
-        "expected_Shift-JIS_saved_from_no_encoding_specified.html",
-        "Shift_JIS" },
-      { "EUC-KR_with_no_encoding_specified.html",
-        "expected_EUC-KR_saved_from_no_encoding_specified.html",
-        "EUC-KR" },
-      { "windows-1251_with_no_encoding_specified.html",
-        "expected_windows-1251_saved_from_no_encoding_specified.html",
-        "windows-1251" },
-      { "windows-1254_with_no_encoding_specified.html",
-        "expected_windows-1254_saved_from_no_encoding_specified.html",
-        "windows-1254" },
-      { "windows-1255_with_no_encoding_specified.html",
-        "expected_windows-1255_saved_from_no_encoding_specified.html",
-        "windows-1255" },
-      { "windows-1256_with_no_encoding_specified.html",
-        "expected_windows-1256_saved_from_no_encoding_specified.html",
-        "windows-1256" }
-    };
+  const auto kTestDatas = std::to_array<EncodingAutoDetectTestData>({
+      {"Big5_with_no_encoding_specified.html",
+       "expected_Big5_saved_from_no_encoding_specified.html", "Big5"},
+      {"GBK_with_no_encoding_specified.html",
+       "expected_GBK_saved_from_no_encoding_specified.html", "GBK"},
+      {"iso-8859-1_with_no_encoding_specified.html",
+       "expected_iso-8859-1_saved_from_no_encoding_specified.html",
+       "windows-1252"},
+      {"ISO-8859-5_with_no_encoding_specified.html",
+       "expected_ISO-8859-5_saved_from_no_encoding_specified.html",
+       "ISO-8859-5"},
+      {"ISO-8859-6_with_no_encoding_specified.html",
+       "expected_ISO-8859-6_saved_from_no_encoding_specified.html",
+       "ISO-8859-6"},
+      {"ISO-8859-7_with_no_encoding_specified.html",
+       "expected_ISO-8859-7_saved_from_no_encoding_specified.html",
+       "ISO-8859-7"},
+      {"ISO-8859-8-I_with_no_encoding_specified.html",
+       "expected_ISO-8859-8-I_saved_from_no_encoding_specified.html",
+       "windows-1255"},
+      {"KOI8-R_with_no_encoding_specified.html",
+       "expected_KOI8-R_saved_from_no_encoding_specified.html", "KOI8-R"},
+      {"Shift-JIS_with_no_encoding_specified.html",
+       "expected_Shift-JIS_saved_from_no_encoding_specified.html", "Shift_JIS"},
+      {"EUC-KR_with_no_encoding_specified.html",
+       "expected_EUC-KR_saved_from_no_encoding_specified.html", "EUC-KR"},
+      {"windows-1251_with_no_encoding_specified.html",
+       "expected_windows-1251_saved_from_no_encoding_specified.html",
+       "windows-1251"},
+      {"windows-1254_with_no_encoding_specified.html",
+       "expected_windows-1254_saved_from_no_encoding_specified.html",
+       "windows-1254"},
+      {"windows-1255_with_no_encoding_specified.html",
+       "expected_windows-1255_saved_from_no_encoding_specified.html",
+       "windows-1255"},
+      {"windows-1256_with_no_encoding_specified.html",
+       "expected_windows-1256_saved_from_no_encoding_specified.html",
+       "windows-1256"},
+  });
   const char* const kAutoDetectDir = "auto_detect";
   // Directory of the files of expected results.
   const char* const kExpectedResultDir = "expected_results";

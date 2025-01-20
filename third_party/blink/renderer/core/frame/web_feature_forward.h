@@ -23,6 +23,7 @@ using WebDXFeature = WebDXFeature;
 }  // namespace blink
 }  // namespace mojom
 using WebFeature = mojom::WebFeature;
+using WebDXFeature = mojom::blink::WebDXFeature;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FEATURE_FORWARD_H_

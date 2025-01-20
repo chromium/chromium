@@ -201,6 +201,7 @@
   "blink_python_tests": {
     "label": "//:blink_python_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "blink_pytype": {
     "label": "//third_party/blink/tools:blink_pytype",
@@ -409,6 +410,7 @@
   "chrome/updater:all": {
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "chrome_ai_wpt_tests": {
     "label": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
@@ -559,6 +561,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_py_tests",
     "type": "script",
     "script": "//testing/xvfb.py",
+    "skip_usage_check": True,
     "args": [
       "../../testing/scripts/run_chromedriver_tests.py",
       "../../chrome/test/chromedriver/test/run_py_tests.py",
@@ -571,6 +574,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
     "type": "script",
     "script": "//testing/scripts/run_chromedriver_tests.py",
+    "skip_usage_check": True,
     "args": [
       "../../chrome/test/chromedriver/test/run_py_tests.py",
       "--chromedriver=chromedriver",
@@ -582,6 +586,7 @@
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
     "type": "script",
     "script": "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",
+    "skip_usage_check": True,
   },
   "chromedriver_unittests": {
     "label": "//chrome/test/chromedriver:chromedriver_unittests",
@@ -672,6 +677,7 @@
     "label": "//components:components_perftests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "--xvfb",
       "--non-telemetry=true",
@@ -727,6 +733,11 @@
   "crashpad_tests": {
     "label": "//third_party/crashpad/crashpad:crashpad_tests",
     "type": "console_test_launcher",
+  },
+  "cronet_gn2bp_aosp_feedback_loop": {
+    "label": "//components/cronet/android:cronet_gn2bp_aosp_feedback_loop",
+    "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cronet_package": {
     "label": "//components/cronet:cronet_package",
@@ -919,6 +930,7 @@
     "label": "//third_party/flatbuffers:flatbuffers_unittests",
     "type": "script",
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
+    "skip_usage_check": True,
   },
   "fuchsia_pytype": {
     "label": "//testing:fuchsia_pytype",
@@ -1007,6 +1019,7 @@
     "label": "//tools/grit:grit_python_unittests",
     "type": "script",
     "script": "//testing/scripts/run_isolated_script_test.py",
+    "skip_usage_check": True,
     "args": [
       "../../tools/grit/grit/test_suite_all.py",
     ],
@@ -1029,6 +1042,10 @@
   },
   "headless_unittests": {
     "label": "//headless:headless_unittests",
+    "type": "console_test_launcher",
+  },
+  "highway_tests": {
+    "label": "//third_party/highway:highway_tests",
     "type": "console_test_launcher",
   },
   "image_processor_perf_test": {
@@ -1214,6 +1231,7 @@
   "mac_signing_tests": {
     "label": "//chrome/installer/mac:mac_signing_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "media_base_junit_tests": {
     "label": "//media/base/android:media_base_junit_tests",
@@ -1289,6 +1307,7 @@
     "label": "//mojo/public/tools:mojo_python_unittests",
     "type": "script",
     "script": "//testing/scripts/run_isolated_script_test.py",
+    "skip_usage_check": True,
     "args": [
       "../../mojo/public/tools/run_all_python_unittests.py",
     ],
@@ -1416,6 +1435,10 @@
     "type": "console_test_launcher",
     "skip_usage_check": True,
   },
+  "opt_target_coverage_test": {
+    "label": "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+    "type": "generated_script",
+  },
   "optimization_guide_gpu_unittests": {
     "label": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
     "type": "console_test_launcher",
@@ -1493,9 +1516,19 @@
   "performance_test_suite_android_clank_trichrome_bundle": {
     "label": "//chrome/test:performance_test_suite_android_clank_trichrome_bundle",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle": {
     "label": "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    "type": "generated_script",
+    "skip_usage_check": True,
+  },
+  "performance_test_suite_android_trichrome_chrome_google_64_32_bundle": {
+    "label": "//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+    "type": "generated_script",
+  },
+  "performance_test_suite_android_trichrome_chrome_google_bundle": {
+    "label": "//chrome/test:performance_test_suite_android_trichrome_chrome_google_bundle",
     "type": "generated_script",
   },
   "performance_web_engine_test_suite": {
@@ -1856,6 +1889,7 @@
   "updater_tests": {
     "label": "//chrome/updater:updater_tests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
     "args": [
       "--gtest_shuffle",
       "--test-launcher-timeout=180000",
@@ -1866,6 +1900,7 @@
   "updater_tests_system": {
     "label": "//chrome/updater:updater_tests_system",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
     "args": [
       "--gtest_shuffle",
       "--test-launcher-timeout=180000",
@@ -1878,6 +1913,7 @@
     "label": "//chrome/updater:updater_tests_win_uac",
     "type": "script",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "skip_usage_check": True,
     "args": [
       "test_service/run_command_as_standard_user.py",
       "--command=updater_tests.exe",
@@ -1952,6 +1988,7 @@
     "label": "//ui/views:views_perftests",
     "type": "script",
     "script": "//testing/scripts/run_performance_tests.py",
+    "skip_usage_check": True,
     "args": [
       "--xvfb",
       "--non-telemetry=true",

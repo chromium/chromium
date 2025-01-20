@@ -624,6 +624,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
   service_proxy_->CheckForUpdate(
       app_state->app_id(), Priority(),
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{},
       base::BindRepeating(
           [](scoped_refptr<AppState> app_state,
              const UpdateService::UpdateState& update_state) {
@@ -688,7 +689,7 @@ void UpdaterUtilApp::DoUpdateApp(scoped_refptr<AppState> app_state) {
   service_proxy_->Update(
       app_state->app_id(), /*install_data_index=*/"", Priority(),
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
-      base::BindRepeating(OnAppStateChanged),
+      /*language=*/{}, base::BindRepeating(OnAppStateChanged),
       base::BindOnce(
           [](base::OnceCallback<void(int)> cb, UpdateService::Result result) {
             OnUpdateComplete(std::move(cb), result);

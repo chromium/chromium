@@ -149,10 +149,6 @@ class CastWebContentsImpl : public CastWebContents,
       content::WebContentsObserver::MediaStoppedReason reason) override;
 
  private:
-  // Constructor used to create inner CastWebContents.
-  CastWebContentsImpl(content::WebContents* web_contents,
-                      mojom::CastWebViewParamsPtr params,
-                      CastWebContents* parent);
   void OnPageLoading();
   void OnPageLoaded();
   void UpdatePageState();
@@ -179,7 +175,6 @@ class CastWebContentsImpl : public CastWebContents,
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;
 
-  CastWebContents* const parent_cast_web_contents_ = nullptr;
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
   base::Value::Dict renderer_features_;
 

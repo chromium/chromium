@@ -6,7 +6,9 @@
 #define ASH_TEST_SHELL_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
@@ -49,6 +51,23 @@ class TestShellDelegate : public ShellDelegate {
       base::RepeatingCallback<std::unique_ptr<UserEducationDelegate>()>;
   void SetUserEducationDelegateFactory(UserEducationDelegateFactory factory) {
     user_education_delegate_factory_ = std::move(factory);
+  }
+
+  // Allows tests to override and mock `SendSpecializedFeatureFeedback`.
+  // For example:
+  //     base::MockCallback<
+  //         TestShellDelegate::SendSpecializedFeatureFeedbackCallback> cb;
+  //     EXPECT_CALL(cb, Run(_, kProductId, _, _, _));
+  //     shell_delegate.SetSendSpecializedFeatureFeedbackCallback(cb.Get());
+  using SendSpecializedFeatureFeedbackCallback =
+      base::RepeatingCallback<bool(const AccountId& account_id,
+                                   int product_id,
+                                   std::string description,
+                                   std::optional<std::string> image,
+                                   std::optional<std::string> image_mime_type)>;
+  void SetSendSpecializedFeatureFeedbackCallback(
+      SendSpecializedFeatureFeedbackCallback cb) {
+    send_specialized_feature_feedback_callback_ = std::move(cb);
   }
 
   // Overridden from ShellDelegate:
@@ -113,6 +132,12 @@ class TestShellDelegate : public ShellDelegate {
   void OpenFeedbackDialog(FeedbackSource source,
                           const std::string& description_template,
                           const std::string& category_tag) override;
+  bool SendSpecializedFeatureFeedback(
+      const AccountId& account_id,
+      int product_id,
+      std::string description,
+      std::optional<std::string> image,
+      std::optional<std::string> image_mime_type) override;
   void OpenProfileManager() override {}
   void SetLastCommittedURLForWindow(const GURL& url);
   version_info::Channel GetChannel() override;
@@ -147,6 +172,8 @@ class TestShellDelegate : public ShellDelegate {
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;
+  SendSpecializedFeatureFeedbackCallback
+      send_specialized_feature_feedback_callback_;
 
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_;
 

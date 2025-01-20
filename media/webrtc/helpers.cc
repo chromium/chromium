@@ -139,16 +139,10 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
       settings.multi_channel_capture_processing;
   apm_config.pipeline.capture_downmix_method =
       kWebRtcApmDownmixMethodParam.Get();
-  apm_config.high_pass_filter.enabled = settings.high_pass_filter;
   apm_config.noise_suppression.enabled = settings.noise_suppression;
   apm_config.noise_suppression.level =
       webrtc::AudioProcessing::Config::NoiseSuppression::Level::kHigh;
   apm_config.echo_canceller.enabled = settings.echo_cancellation;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  apm_config.echo_canceller.mobile_mode = true;
-#else
-  apm_config.echo_canceller.mobile_mode = false;
-#endif
   ConfigAutomaticGainControl(settings, apm_config);
   return webrtc::BuiltinAudioProcessingBuilder(apm_config)
       .Build(WebRtcEnvironment());

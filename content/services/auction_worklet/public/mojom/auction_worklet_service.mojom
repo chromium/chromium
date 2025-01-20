@@ -189,6 +189,10 @@ interface AuctionWorkletService {
   // `experiment_group_id`: An optional parameter to pass to trusted signals
   //  server and as part of AuctionConfig.
   //
+  // `send_creative_scanning_metadata`: If true, creative scanning data from
+  // the interest group will be sent to V1 trusted seller signals servers.
+  // Also part of AuctionConfig.
+  //
   // `load_seller_worklet_client` may be passed in to get a notification when
   // the `script_source_url` has been loaded, and is passed whether
   // `trusted_scoring_signals_url` may be requested. It's needed when
@@ -211,6 +215,7 @@ interface AuctionWorkletService {
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
       uint16? experiment_group_id,
+      bool? send_creative_scanning_metadata,
       TrustedSignalsPublicKey? public_key,
       pending_remote<LoadSellerWorkletClient>? load_seller_worklet_client);
 };

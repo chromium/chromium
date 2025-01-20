@@ -335,7 +335,7 @@ int GetIndicatorsTimeout() {
 UiSceneCreator::UiSceneCreator(UiScene* scene, Ui* ui, Model* model)
     : scene_(scene), ui_(ui), model_(model) {}
 
-UiSceneCreator::~UiSceneCreator() {}
+UiSceneCreator::~UiSceneCreator() = default;
 
 void UiSceneCreator::CreateScene() {
   CreateWebVrRoot();

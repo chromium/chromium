@@ -80,14 +80,6 @@ void CastBrowserController::OnFreezeInfoChanged() {
 // TODO(crbug.com/375030079): Move this logic to the profile controller to avoid
 // recalculating the icon for every browser.
 void CastBrowserController::UpdateIcon() {
-  auto* button = BrowserView::GetBrowserViewForBrowser(browser_)
-                     ->toolbar()
-                     ->GetCastButton();
-
-  if (!button) {
-    return;
-  }
-
   if (features::IsToolbarPinningEnabled() &&
       base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     auto* action_item = static_cast<actions::StatefulImageActionItem*>(
@@ -131,8 +123,11 @@ void CastBrowserController::UpdateIcon() {
     action_item->SetProperty(kActionItemUnderlineIndicatorKey, active);
   }
 
-  button->UpdateIcon();
-  UpdateLayoutInsetDelta();
+  if (ToolbarButton* button = GetToolbarButton()) {
+    button->UpdateIcon();
+    button->SetLayoutInsetDelta(
+        gfx::Insets(ui::TouchUiController::Get()->touch_ui() ? 4 : 0));
+  }
 }
 
 CastToolbarButtonController* CastBrowserController::GetActionController()
@@ -140,14 +135,20 @@ CastToolbarButtonController* CastBrowserController::GetActionController()
   return MediaRouterUIService::Get(browser_->profile())->action_controller();
 }
 
-void CastBrowserController::UpdateLayoutInsetDelta() {
-  // This icon is smaller than the touchable-UI expected 24dp, so we need to
-  // pad the insets to match.
-  auto* button = BrowserView::GetBrowserViewForBrowser(browser_)
-                     ->toolbar()
-                     ->GetCastButton();
-  button->SetLayoutInsetDelta(
-      gfx::Insets(ui::TouchUiController::Get()->touch_ui() ? 4 : 0));
+ToolbarButton* CastBrowserController::GetToolbarButton() const {
+  // if the browser view is missing for the given browser, then there's no view
+  // to update.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (!browser_view) {
+    return nullptr;
+  }
+
+  ToolbarView* toolbar = browser_view->toolbar();
+  if (!toolbar) {
+    return nullptr;
+  }
+
+  return toolbar->GetCastButton();
 }
 
 void CastBrowserController::ToggleDialog() {

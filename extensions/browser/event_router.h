@@ -29,6 +29,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -83,6 +84,7 @@ class EventRouter : public KeyedService,
                     public ExtensionRegistryObserver,
                     public EventListenerMap::Delegate,
                     public content::RenderProcessHostObserver,
+                    public ProcessManagerObserver,
                     public mojom::EventRouter {
  public:
   // These constants convey the state of our knowledge of whether we're in
@@ -160,6 +162,9 @@ class EventRouter : public KeyedService,
   static void BindForRenderer(
       int process_id,
       mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver);
+
+  void SwapReceiverForTesting(int render_process_id,
+                              mojom::EventRouter* new_impl);
 
   // An EventRouter is shared between |browser_context| and its associated
   // incognito context. |extension_prefs| may be NULL in tests.
@@ -443,6 +448,10 @@ class EventRouter : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // ProcessManagerObserver:
+  void OnStoppedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
+
   void AddLazyEventListenerImpl(std::unique_ptr<EventListener> listener,
                                 RegisteredEventType type);
   void RemoveLazyEventListenerImpl(std::unique_ptr<EventListener> listener,
@@ -537,6 +546,8 @@ class EventRouter : public KeyedService,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
 
   EventListenerMap listeners_{this};
 
@@ -710,5 +721,22 @@ struct EventListenerInfo {
 };
 
 }  // namespace extensions
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<extensions::EventRouter,
+                               extensions::EventRouter::TestObserver> {
+  static void AddObserver(extensions::EventRouter* source,
+                          extensions::EventRouter::TestObserver* observer) {
+    source->AddObserverForTesting(observer);
+  }
+  static void RemoveObserver(extensions::EventRouter* source,
+                             extensions::EventRouter::TestObserver* observer) {
+    source->RemoveObserverForTesting(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // EXTENSIONS_BROWSER_EVENT_ROUTER_H_

@@ -89,7 +89,9 @@ public class WebSigninBridge {
     @NativeMethods
     interface Natives {
         long create(
-                @JniType("Profile*") Profile profile, CoreAccountInfo account, Listener listener);
+                @JniType("Profile*") Profile profile,
+                @JniType("CoreAccountInfo") CoreAccountInfo account,
+                Listener listener);
 
         void destroy(long webSigninBridgePtr);
     }

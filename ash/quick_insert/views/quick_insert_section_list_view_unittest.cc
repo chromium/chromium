@@ -34,8 +34,15 @@ std::unique_ptr<QuickInsertImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
   return std::make_unique<QuickInsertImageItemView>(
       std::make_unique<QuickInsertGifView>(
-          /*frames_fetcher=*/base::DoNothing(),
-          /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
+          /*frames_fetcher=*/base::IgnoreArgs<
+              QuickInsertGifView::FramesFetchedCallback>(
+              base::ReturnValueOnce<std::unique_ptr<network::SimpleURLLoader>>(
+                  nullptr)),
+          /*preview_image_fetcher=*/
+          base::IgnoreArgs<QuickInsertGifView::PreviewImageFetchedCallback>(
+              base::ReturnValueOnce<std::unique_ptr<network::SimpleURLLoader>>(
+                  nullptr)),
+          gif_dimensions),
       u"gif", base::DoNothing());
 }
 

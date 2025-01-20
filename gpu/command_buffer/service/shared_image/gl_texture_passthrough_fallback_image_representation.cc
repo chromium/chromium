@@ -71,8 +71,7 @@ GLTexturePassthroughFallbackImageRepresentation::
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker) {
   for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
     const gfx::Size plane_size = format().GetPlaneSize(plane, size());
-    const SkColorType plane_ct = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format(), plane);
+    const SkColorType plane_ct = viz::ToClosestSkColorType(format(), plane);
     const SkImageInfo plane_info = SkImageInfo::Make(
         plane_size.width(), plane_size.height(), plane_ct, kPremul_SkAlphaType);
     static constexpr size_t kDefaultGLAlignment = 4;

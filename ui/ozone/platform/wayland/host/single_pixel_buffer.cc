@@ -38,7 +38,7 @@ void SinglePixelBuffer::Instantiate(WaylandConnection* connection,
   auto single_pixel_buffer =
       wl::Bind<wp_single_pixel_buffer_manager_v1>(registry, name, kVersion);
   if (!single_pixel_buffer) {
-    LOG(ERROR) << "Failed to bind surface_augmenter";
+    LOG(ERROR) << "Failed to bind wp_single_pixel_buffer_manager";
     return;
   }
   connection->single_pixel_buffer_ = std::make_unique<SinglePixelBuffer>(

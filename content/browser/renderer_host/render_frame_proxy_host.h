@@ -131,7 +131,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   int GetRoutingID() const { return routing_id_; }
   GlobalRoutingID GetGlobalID() const {
-    return GlobalRoutingID(GetProcess()->GetID(), routing_id_);
+    return GlobalRoutingID(GetProcess()->GetDeprecatedID(), routing_id_);
   }
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a

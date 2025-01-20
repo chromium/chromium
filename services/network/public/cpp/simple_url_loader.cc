@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/public/cpp/simple_url_loader.h"
 
 #include <stdint.h>
@@ -17,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -492,7 +486,7 @@ class BodyReader {
     // It's safe to delete the BodyReader during this call. If that happens,
     // |data| will still remain valid for the duration of the call, and the
     // returned net::Error will be ignored.
-    virtual net::Error OnDataRead(uint32_t length, const char* data) = 0;
+    virtual net::Error OnDataRead(base::span<const uint8_t> data) = 0;
 
     // Called when the pipe is closed by the remote size, the size limit is
     // reached, or OnDataRead returned an error. |error| is net::OK if the
@@ -613,22 +607,9 @@ class BodyReader {
       mojo::ScopedDataPipeConsumerHandle body_data_pipe =
           std::move(body_data_pipe_);
 
-      // TODO(mmenke): Remove this once https://crbug.com/875253 is understood
-      // and fixed.
-      std::string_view chars = base::as_string_view(body);
-      int total_bytes_read = total_bytes_read_;
-      int max_body_size = max_body_size_;
-      base::debug::Alias(&body);
-      base::debug::Alias(&max_body_size);
-      base::debug::Alias(&total_bytes_read);
-      base::debug::Alias(&copy_size);
-      // This is just to make sure the first byte of body_data is accessible.
-      char first_read_byte = chars[0];
-      base::debug::Alias(&first_read_byte);
-
       // This call may delete the BodyReader.
-      net::Error error = delegate_->OnDataRead(copy_size, chars.data());
-      body_data_pipe->EndReadData(chars.size());
+      net::Error error = delegate_->OnDataRead(body.first(copy_size));
+      body_data_pipe->EndReadData(body.size());
       if (!weak_this) {
         // This object was deleted, so nothing else to do.
         return;
@@ -781,13 +762,8 @@ class SaveToStringBodyHandler : public BodyHandler,
  private:
   // BodyReader::Delegate implementation.
 
-  net::Error OnDataRead(uint32_t length, const char* data) override {
-    // TODO(mmenke): Remove this once https://crbug.com/875253 is understood and
-    // fixed.
-    std::string* body = body_.get();
-    base::debug::Alias(&body);
-
-    body_->append(data, length);
+  net::Error OnDataRead(base::span<const uint8_t> data) override {
+    body_->append(base::as_string_view(data));
     ReportProgress(body_reader_->total_bytes_read());
     return net::OK;
   }
@@ -851,7 +827,7 @@ class HeadersOnlyBodyHandler : public BodyHandler, public BodyReader::Delegate {
 
  private:
   // BodyReader::Delegate implementation
-  net::Error OnDataRead(uint32_t length, const char* data) override {
+  net::Error OnDataRead(base::span<const uint8_t> data) override {
     return net::OK;
   }
 
@@ -1082,16 +1058,18 @@ class SaveToFileBodyHandler : public BodyHandler {
     }
 
     // BodyReader::Delegate implementation:
-    net::Error OnDataRead(uint32_t length, const char* data) override {
+    net::Error OnDataRead(base::span<const uint8_t> data) override {
       DCHECK(file_writer_task_runner_->RunsTasksInCurrentSequence());
-      while (length > 0) {
-        int written = file_.WriteAtCurrentPos(
-            data, std::min(length, static_cast<uint32_t>(
-                                       std::numeric_limits<int>::max())));
-        if (written < 0)
+      while (data.size() > 0) {
+        // Akwardly, the span version of File::WriteAtCurrentPos doesn't
+        // actually handle lengths > int_max w/o CHECKing.
+        base::span<const uint8_t> to_write = data.first(std::min(
+            data.size(), static_cast<size_t>(std::numeric_limits<int>::max())));
+        std::optional<size_t> written = file_.WriteAtCurrentPos(to_write);
+        if (!written.has_value()) {
           return net::MapSystemError(logging::GetLastSystemErrorCode());
-        length -= written;
-        data += written;
+        }
+        data = data.subspan(*written);
       }
 
       if (progress_callback_) {
@@ -1240,12 +1218,12 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
  private:
   // BodyReader::Delegate implementation.
 
-  net::Error OnDataRead(uint32_t length, const char* data) override {
+  net::Error OnDataRead(base::span<const uint8_t> data) override {
     in_recursive_call_ = true;
     base::WeakPtr<DownloadAsStreamBodyHandler> weak_this(
         weak_ptr_factory_.GetWeakPtr());
     stream_consumer_->OnDataReceived(
-        std::string_view(data, length),
+        base::as_string_view(data),
         base::BindOnce(&DownloadAsStreamBodyHandler::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
     // Protect against deletion.
@@ -1463,9 +1441,8 @@ void SimpleURLLoaderImpl::AttachStringForUploadInternal(
   resource_request_->request_body = new ResourceRequestBody();
 
   if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
-    int copy_length = base::checked_cast<int>(upload_data.length());
-    resource_request_->request_body->AppendBytes(upload_data.data(),
-                                                 copy_length);
+    resource_request_->request_body->AppendCopyOfBytes(
+        base::as_byte_span(upload_data));
   } else {
     // Don't attach the upload body here.  A new pipe will need to be created
     // each time the request is tried.
@@ -1491,9 +1468,8 @@ void SimpleURLLoaderImpl::AttachStringForUploadInternal(
   resource_request_->request_body = new ResourceRequestBody();
 
   if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
-    int copy_length = base::checked_cast<int>(upload_data.length());
-    resource_request_->request_body->AppendBytes(upload_data.data(),
-                                                 copy_length);
+    resource_request_->request_body->AppendCopyOfBytes(
+        base::as_byte_span(upload_data));
   } else {
     // Don't attach the upload body here.  A new pipe will need to be created
     // each time the request is tried.

@@ -34,8 +34,7 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
                                    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_omnibox_(env, obj) {}
 
-OmniboxPrerender::~OmniboxPrerender() {
-}
+OmniboxPrerender::~OmniboxPrerender() = default;
 
 static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {

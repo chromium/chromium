@@ -84,7 +84,10 @@ class ASH_EXPORT EcheTray
   // TODO(b/226687249): Move to ash/webui/eche_app_ui if dependency cycle error
   // is fixed. Enum representing the connection fail reason. These values are
   // persisted to logs. Entries should not be renumbered and numeric values
-  // should never be reused.
+  // should never be reused. Keep in sync with the ConnectionFailReason UMA enum
+  // defined in //tools/metrics/histograms/enums.xml.
+  //
+  // LINT.IfChange(ConnectionFailReason)
   enum class ConnectionFailReason {
     // Initial state.
     kUnknown = 0,
@@ -120,6 +123,7 @@ class ASH_EXPORT EcheTray
 
     kMaxValue = kConnectionFailRemoteDeviceOnCellular,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConnectionFailReason)
 
   using GracefulCloseCallback = base::OnceCallback<void()>;
   using GracefulGoBackCallback = base::RepeatingCallback<void()>;
@@ -135,7 +139,6 @@ class ASH_EXPORT EcheTray
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
@@ -266,6 +269,8 @@ class ASH_EXPORT EcheTray
     return initializer_webview_.get();
   }
   views::ImageButton* GetIcon();
+
+  std::u16string GetAccessibleName();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);

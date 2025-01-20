@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -28,6 +29,7 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -616,19 +618,28 @@ TEST_F(ImeMenuTrayTest, ImeMenuHasBottomInsetsOnLockScreen) {
   EXPECT_GT(container_margins->bottom(), 0);
 }
 
-TEST_F(ImeMenuTrayTest, BubbleViewAccessibleName) {
+TEST_F(ImeMenuTrayTest, AccessibleNames) {
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
       /*is_extra_input_options_enabled=*/true, /*is_emoji_enabled=*/true,
       /*is_handwriting_enabled=*/true, /*is_voice_enabled=*/true);
+
+  {
+    ui::AXNodeData node_data;
+    GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME));
+  }
 
   // Show IME tray bubble.
   GetTray()->ShowBubble();
 
   TrayBubbleView* bubble_view = GetTray()->GetBubbleView();
-  ui::AXNodeData node_data;
-  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            GetTray()->GetAccessibleNameForBubble());
+  {
+    ui::AXNodeData node_data;
+    bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              GetTray()->GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

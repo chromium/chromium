@@ -45,15 +45,11 @@ BASE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork,
              "LoadingPredictorDisregardAlwaysAccessesNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureState
-    kLoadingPredictorUseOptimizationGuideDefaultFeatureState =
-        kFeatureEnabledOnlyOnAndroid;
-
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
 BASE_FEATURE(kLoadingPredictorUseOptimizationGuide,
              "LoadingPredictorUseOptimizationGuide",
-             kLoadingPredictorUseOptimizationGuideDefaultFeatureState);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
     kFeatureEnabledOnlyOnAndroid;
@@ -98,12 +94,6 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       kLoadingPredictorUseOptimizationGuide, "always_retrieve_predictions",
       false);
 }
-
-// If this is enabled, LoadingPredictor avoids prefetching during
-// browser startup.
-BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
-             "AvoidLoadingPredictorPrefetchDuringBrowserStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If this is enabled, LoadingPredictor restricts the number of preconnects for
 // the same destination to one.

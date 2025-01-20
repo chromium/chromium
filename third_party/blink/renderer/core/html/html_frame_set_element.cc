@@ -84,10 +84,13 @@ bool HTMLFrameSetElement::IsPresentationAttribute(
 void HTMLFrameSetElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (name == html_names::kBordercolorAttr)
-    AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
-  else
+    HeapVector<CSSPropertyValue, 8>& style) {
+  if (name == html_names::kBordercolorAttr) {
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderLeftColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderRightColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderBottomColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderTopColor, value);
+  } else
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 

@@ -16,8 +16,6 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kRemotePageMetadata);
@@ -25,6 +23,10 @@ COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
+
+// Enables extraction of AnnotatedPageContent for every page load.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
 
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
@@ -65,10 +67,6 @@ int NumBitsForRAPPORMetrics();
 // Must be between 0 and 1.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 double NoiseProbabilityForRAPPORMetrics();
-
-// Returns if Page Visibility Batch Annotations are enabled.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool PageVisibilityBatchAnnotationsEnabled();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time
@@ -119,6 +117,30 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 // The maximum size of the visit annotation cache.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 size_t MaxVisitAnnotationCacheSize();
+
+// Returns true if AnnotatedPageContent extraction should be aggressively
+// prioritized by scheduling.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool IsAnnotatedPageContentOnCriticalPath();
+
+// Allows heuristically delaying the extraction for AnnotatedPageContent once
+// the page has loaded so it reaches a steady state.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+base::TimeDelta GetAnnotatedPageContentCaptureDelay();
+
+// Whether AnnotatedPageContent should include geometry for each ContentNode.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldAnnotatedPageContentIncludeGeometry();
+
+// Whether the AnnotatedPageContent study should also capture inner text for a
+// comparison.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldAnnotatedPageContentStudyIncludeInnerText();
+
+// Whether the AnnotatedPageContent study should include content which is not
+// being currently rendered but is discoverable via find-in-page.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldIncludeHiddenButSearchableContent();
 
 }  // namespace page_content_annotations::features
 

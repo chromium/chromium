@@ -17,17 +17,12 @@
 #include <utility>
 
 #include "apps/launcher.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/intent_common.mojom-forward.h"
 #include "ash/components/arc/mojom/intent_common.mojom-shared.h"
 #include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -53,7 +48,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -93,9 +93,7 @@ const char* const kDefaultAllowedAppIds[] = {
     NoteTakingHelper::kNoteTakingWebAppIdTest,
 };
 
-// Types of App Service apps that support note taking. Note that Note Taking
-// Chrome Apps are not supported in Lacros, so kStandaloneBrowserChromeApp is
-// not included.
+// Types of App Service apps that support note taking.
 // TODO (crbug.com/1336120): Add Android here.
 const apps::AppType kNoteTakingAppTypes[] = {apps::AppType::kWeb,
                                              apps::AppType::kChromeApp};

@@ -463,7 +463,7 @@ class TestRunner(object):
 
   def wipe_derived_data(self):
     """Removes the contents of Xcode's DerivedData directory."""
-    if os.path.exists(DERIVED_DATA):
+    if os.path.exists(DERIVED_DATA) and not xcode_util.is_local_run():
       shutil.rmtree(DERIVED_DATA)
       os.mkdir(DERIVED_DATA)
 
@@ -988,7 +988,9 @@ class DeviceTestRunner(TestRunner):
     self.restart = kwargs.get('restart') or False
 
   def uninstall_apps(self):
-    """Uninstalls all apps found on the device."""
+    """Uninstalls all apps found on the device unless a local run is detected"""
+    if xcode_util.is_local_run():
+      return
     for app in self.get_installed_packages():
       cmd = ['ideviceinstaller', '--udid', self.udid, '--uninstall', app]
       print_process_output(self.start_proc(cmd))
@@ -1009,10 +1011,10 @@ class DeviceTestRunner(TestRunner):
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
+    self.restart_usbmuxd()
     self.uninstall_apps()
     self.wipe_derived_data()
     self.install_app()
-    self.restart_usbmuxd()
 
   def extract_test_data(self):
     """Extracts data emitted by the test."""
@@ -1152,6 +1154,9 @@ class DeviceTestRunner(TestRunner):
           "Restarting usbmuxd to ensure device is re-paired to Xcode...")
       try:
         mac_util.kill_usbmuxd()
+        # Sleep for 10 seconds to give time for usbmuxd to restart
+        # and device to be recognized by the OS
+        time.sleep(10)
       except subprocess.CalledProcessError as e:
         logging.exception('Unable to restart usbmuxd:')
         logging.error(e)

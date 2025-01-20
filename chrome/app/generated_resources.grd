@@ -4,11 +4,11 @@
 This file contains definitions of resources that will be translated for each
 locale.  The variables is_win, is_macosx, is_linux, and is_posix are available
 for making strings OS specific.  Other platform defines such as use_titlecase
-are declared in tools/grit/grit_rule.gni.
+are declared in tools/grit/grit_args.gni.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/generated_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -298,6 +298,9 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />
 
+      <!-- Shortcut Input specific strings -->
+      <part file="shortcut_input_strings.grdp" />
+
       <!-- Chrome-OS-specific strings -->
       <if expr="is_chromeos">
         <part file="chromeos_shared_strings.grdp" />
@@ -332,11 +335,6 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Nearby Share specific strings -->
       <if expr="not is_android">
         <part file="nearby_share_strings.grdp" />
-      </if>
-
-      <!-- Welcome strings -->
-      <if expr="not chromeos_ash and not is_android">
-        <part file="welcome_strings.grdp" />
       </if>
 
       <!-- What's New strings -->
@@ -538,14 +536,14 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <message name="IDS_FOCUS_HELP_BUBBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when a general help bubble is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble pointing to a specific element is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble, then again to focus the element it is pointing to.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble that can start a tutorial is shown.">
           A series of tutorial bubbles with instructions will be displayed.
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus a bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus a bubble, then again to focus the element it is pointing to.
         </message>
       </if>
 
@@ -568,9 +566,6 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS" desc="This is a context menu entry. Upon clicking, it triggers the password selection bubble (for non-syncing users) or a submenu with more entries (for syncing users).">
-          Passwords
         </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
@@ -845,9 +840,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="The name of the Search Lens for Image command in the content area context menu">
             Search image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
-          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="The name of the Translate Image command in the content area context menu">
-            Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
             Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
@@ -872,21 +864,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and more
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment methods
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
@@ -896,9 +876,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No saved passwords
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1188,9 +1165,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="In Title Case: The name of the Search Lens for Image command in the content area context menu">
             Search Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
-          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="In Title Case: The name of the Translate Image command in the content area context menu">
-            Translate Text in Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
           </message>
@@ -1209,21 +1183,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="In Title Case: The name of the Autofill Feedback command in the content area context menu">
             Help Improve Autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="In Title Case: The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in Form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="In Title Case: The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and More
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment Methods
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and Passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select Password
@@ -1233,9 +1195,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest Password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="In Title Case: This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No Saved Passwords
           </message>
         </if>
 
@@ -1421,7 +1380,7 @@ are declared in tools/grit/grit_rule.gni.
             {NUM_PROFILES, plural, =1 {&amp;Close this profile} other {&amp;Close this profile (# windows)}}
           </message>
           <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="The text label of the Manage Google account item">
-            Manage your &amp;Google account
+            Manage your &amp;Google Account
           </message>
           <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
             Other Chrome profiles
@@ -1648,9 +1607,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;window...
         </message>
-        <message name="IDS_COMPACT_MODE" desc="The text label of the Toggle Compact Mode item, used to make the browser compact.">
-          &amp;Toggle Compact Mode
-        </message>
         <message name="IDS_CHROMELABS" desc="The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
         </message>
@@ -1700,9 +1656,6 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;Window...
-        </message>
-        <message name="IDS_COMPACT_MODE" desc="The text label of the Toggle Compact Mode item, used to make the browser compact.">
-          &amp;Toggle Compact Mode
         </message>
         <message name="IDS_CHROMELABS" desc="In Title Case: The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
@@ -3175,10 +3128,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that was interrupted and could not finish.">
         Couldn&#x2019;t finish download
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION"
-               desc="Status text for a download item that was blocked by the organization.">
-        Blocked by your organization
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
                desc="Subpage summary text for a download item that was blocked by the organization.">
         Your organization blocked this file because it didn't meet a security policy
@@ -3535,14 +3484,6 @@ are declared in tools/grit/grit_rule.gni.
               desc="Text shown in the download bubble to allow users to bypass a deep scan">
         Download suspicious file
       </message>
-      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE"
-               desc="Notice shown in the download bubble when deep scanning is going to happen automatically">
-        The next time Google Safe Browsing finds a suspicious download, it will automatically scan it as part of the <ph name="LINK">$1<ex>enhanced protection</ex></ph> you chose
-      </message>
-      <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE_LINK"
-               desc="Link text within the notice in the download bubble about deep scanning happening automatically. See IDS_DEEP_SCANNING_PROMPT_REMOVAL_NOTICE">
-        enhanced protection
-      </message>
 
       <!-- Local archive decryption in download bubble -->
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_LOCAL_DECRYPTION_STATUS"
@@ -3579,7 +3520,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Web App Window Title string -->
-      <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with app_title.">
+      <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with application-title.">
         <ph name="APP_NAME">$1<ex>Sample App</ex></ph> - <ph name="APP_TITLE">$2<ex>News</ex></ph>
       </message>
 
@@ -3891,7 +3832,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Bluetooth Device Credentials (i.e. PIN/Passkey) dialog -->
-      <if expr="is_win or is_linux">
+      <if expr="is_win or is_linux or is_chromeos">
         <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_TITLE" desc="Title of the Bluetooth device credentials prompt dialog.">
           Device Credentials
         </message>
@@ -4137,9 +4078,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_TITLE" desc="Title shown for the Tracking Protection bubble.">
-        Tracking Protection
-      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are allowed.">
         Third-party cookies allowed
       </message>
@@ -4185,15 +4123,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="In the feedback text box accessible from the cookie controls bubble, this is the default text the user replaces with their feedback.">
         Tell us why you allowed third-party cookies on this site
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are allowed.">
-        Allowed
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are blocked.">
-        Blocked
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are limited.">
-        Limited
-      </message>
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are allowed on the current site.">
         Third-party cookies allowed
       </message>
@@ -4205,9 +4134,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
         Site not working?
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL" desc="Tooltip for the Page Action (omnibox) icon for the Tracking Protection bubble entrypoint.">
-        Tracking Protection
       </message>
       <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked
@@ -4288,6 +4214,24 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_CERT_INFO_CONSTRAINTS_LABEL" desc="Label of the section displaying constraints restricting the usage of the certificate.">
           Constraints
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_LABEL" desc="Label of the section allowing users to add constraints restricting the usage of the certificate.">
+          Add Constraints
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_BUTTON_LABEL" desc="Label of the button users click to add a constraint restricting the usage of the certificate.">
+          Add
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_PLACEHOLDER" desc="Placeholder text for the Add constraint input field informing users what they can enter as a constraint.">
+          DNS or CIDR constraint
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being added to the certificate.">
+          There was an error adding the constraint
+        </message>
+        <message name="IDS_CERT_INFO_DELETE_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being deleted to the certificate.">
+          There was an error deleting the constraint
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_ERROR_MESSAGE" desc="Error text when an error has prevented a change to the trust state for a certificate.">
+          There was an error saving the trust state change
         </message>
         <message name="IDS_CERT_USAGE_SSL_CLIENT" desc="The description of a certificate that is verified for use as an SSL client">
           SSL Client Certificate
@@ -4879,307 +4823,305 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Task Manager Window -->
-      <if expr="not is_android">
-        <if expr="not use_titlecase">
-          <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
-            End process
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
-            Process ID
-          </message>
-          <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
-            GDI handles
-          </message>
-          <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
-            USER handles
-          </message>
-          <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
-            Task
-          </message>
-          <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-            NaCl debug port
-          </message>
-          <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
-            Network
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
-            CPU
-          </message>
-          <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
-            Start Time
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time usage column">
-            CPU Time
-          </message>
-          <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
-            Memory footprint
-          </message>
-          <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
-            Swapped memory
-          </message>
-          <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
-            Profile
-          </message>
-          <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
-            Idle wake ups
-          </message>
-          <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
-            Hard faults
-          </message>
-          <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
-            File descriptors
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
-            Process priority
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
-            Image cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
-            Script cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
-            CSS cache
-          </message>
-          <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
-            GPU memory
-          </message>
-          <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
-            SQLite memory
-          </message>
-          <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
-            JavaScript memory
-          </message>
-          <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
-            Keepalive count
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
-            End Process
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
-            Process ID
-          </message>
-          <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
-            GDI Handles
-          </message>
-          <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
-            USER Handles
-          </message>
-          <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
-            NaCl Debug Port
-          </message>
-          <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
-            Task
-          </message>
-          <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
-            Network
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
-            CPU
-          </message>
-          <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
-            Start Time
-          </message>
-          <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time column. This is the time that this process actually occupies the CPU.">
-            CPU Time
-          </message>
-          <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
-            Memory Footprint
-          </message>
-          <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
-            Swapped Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
-            Profile
-          </message>
-          <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
-            Idle Wake Ups
-          </message>
-          <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
-            Hard Faults
-          </message>
-          <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
-            File Descriptors
-          </message>
-          <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
-            Process Priority
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
-            Image Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
-            Script Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
-            CSS Cache
-          </message>
-          <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
-            GPU Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
-            SQLite Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
-            JavaScript Memory
-          </message>
-          <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
-            Keepalive Count
-          </message>
-        </if>
-        <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells.">
-          <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
+      <if expr="not use_titlecase">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
+          End process
         </message>
-        <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
-          <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
+          Process ID
         </message>
-        <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process.">
-          &#8211;
+        <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
+          GDI handles
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUNDED_TEXT" desc="The value displayed for a process with backgrounded priority">
-          Low
+        <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
+          USER handles
         </message>
-        <message name="IDS_TASK_MANAGER_FOREGROUNDED_TEXT" desc="The value displayed for a process with foregrounded priority">
-          Normal
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
+          Task
         </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT" desc="The value displayed for an unknown NaCl debug stub port in the task manager.">
-          Unknown
+        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
+          NaCl debug port
         </message>
-        <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
-          Disabled
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
+          Network
         </message>
-        <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
-          <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
+          CPU
         </message>
-        <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
-          Browser
+        <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
+          Start Time
         </message>
-        <message name="IDS_TASK_MANAGER_EXTENSION_PREFIX" desc="The prefix for a Task Manager extension row (always visible if the extension has a view)">
-          Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+        <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time usage column">
+          CPU Time
         </message>
-        <message name="IDS_TASK_MANAGER_EXTENSION_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito extension row (may not be visible if Incognito is not open)">
-          Incognito Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
+          Memory footprint
         </message>
-        <message name="IDS_TASK_MANAGER_APP_PREFIX" desc="The prefix for a Task Manager app row (always visible if the app has a view)">
-          App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+        <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
+          Swapped memory
         </message>
-        <message name="IDS_TASK_MANAGER_APP_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito app row (may not be visible if the app is not open in Incognito)">
-          Incognito App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+        <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
+          Profile
         </message>
-        <message name="IDS_TASK_MANAGER_TAB_PREFIX" desc="The prefix for a Task Manager Tab row">
-          Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+        <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
+          Idle wake ups
         </message>
-        <message name="IDS_TASK_MANAGER_TAB_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito Tab row (may not be visible if Incognito is not open)">
-          Incognito Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+        <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
+          Hard faults
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUND_APP_PREFIX" desc="The prefix for a Task Manager background app task representing a BackgroundContents">
-          Background App: <ph name="BACKGROUND_APP_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
+          File descriptors
         </message>
-        <message name="IDS_TASK_MANAGER_BACKGROUND_PREFIX" desc="The prefix for a Task Manager background page row">
-          Background Page: <ph name="BACKGROUND_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
+          Process priority
         </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX" desc="The prefix for a page stored in the Back/Forward Cache">
-          Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
+          Image cache
         </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX" desc="The prefix for an Incognito page stored in the Back/Forward Cache">
-          Incognito Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
+          Script cache
         </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_PREFIX" desc="The prefix for a Task Manager plugin row">
-          Plugin: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+        <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
+          CSS cache
         </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
-          Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column" formatter_data="android_java">
+          GPU memory
         </message>
-        <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
-          Preloaded UI Renderer
+        <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
+          SQLite memory
         </message>
-        <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
-        <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
-          Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+        <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
+          JavaScript memory
         </message>
-        <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager Prerender2 row">
-          Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX" desc="Task Manager row for a 'spare' render process. That is a render process that was started in anticipation of it being needed so that when it is needed it is immediately ready for use">
-          Spare Renderer
-        </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX" desc="Task Manager row for an 'unknown' render process. That is a render process that the Task Manager knows is running, but that the Task Manager doesn't have any other information about, so that it is unable to present it to the user classified more precisely">
-          Renderer
-        </message>
-        <message name="IDS_TASK_MANAGER_DEDICATED_WORKER_PREFIX" desc="The prefix for a Task Manager dedicated worker row">
-          Dedicated Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/dedicated-worker/basic/dedicated-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SHARED_WORKER_PREFIX" desc="The prefix for a Task Manager shared worker row">
-          Shared Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/shared-worker/basic/shared-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX" desc="The prefix for a Task Manager service worker row">
-          Service Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/service-worker/basic/service-worker.js</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME" desc="The prefix for a Task Manager plugin row">
-          Unknown plugin
-        </message>
-        <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
-          Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_NACL_PREFIX" desc="The prefix for a Task Manager Native Client module row">
-          Native Client module: <ph name="NEXE_NAME">$1<ex>Unknown Native Client module</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_NACL_BROKER_PREFIX" desc="Task Manager row for Native Client broker, which acts as the sanbox manager for NaCl processes">
-          Native Client security manager
-        </message>
-        <message name="IDS_TASK_MANAGER_GPU_PREFIX" desc="Task Manager row for the GPU process, which is the process doing all accelerated graphics rendering">
-          GPU Process
-        </message>
-        <message name="IDS_TASK_MANAGER_PRINT_PREFIX" desc="The prefix for a print preview process row in the Task Manager">
-          Print: <ph name="PRINT_NAME">$1<ex>Google Maps</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row in the Task Manager (these processes are created when site isolation is enabled)">
-          Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito out-of-process-iframe process row in the Task Manager (these processes are created when site isolation is enabled, in Incognito mode)">
-          Incognito Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row stored in the Back/Forward Cache">
-          Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row stored in the Back/Forward Cache">
-          Incognito Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
-          Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
-          Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_FENCED_FRAME_PREFIX" desc="The prefix for a fenced frame row in the Task Manager">
-          Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito fenced frame row in the Task Manager">
-          Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
-          App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
-          Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
-          Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
-          Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
-          System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
-          Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
-        </message>
-        <message name="IDS_TASK_MANAGER_PLUGIN_VM_PREFIX" desc="A row in the task manager for a Parallels Desktop Virtual Machine. Parallels Desktop is a 3rd-party product name that should remain in English.">
-          Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
+        <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
+          Keepalive count
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
+          End Process
+        </message>
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
+          Process ID
+        </message>
+        <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
+          GDI Handles
+        </message>
+        <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
+          USER Handles
+        </message>
+        <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
+          NaCl Debug Port
+        </message>
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
+          Task
+        </message>
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
+          Network
+        </message>
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
+          CPU
+        </message>
+        <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
+          Start Time
+        </message>
+        <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time column. This is the time that this process actually occupies the CPU.">
+          CPU Time
+        </message>
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
+          Memory Footprint
+        </message>
+        <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
+          Swapped Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_PROFILE_NAME_COLUMN" desc="The name of the column with the name of the profile in which the page is running, if any.">
+          Profile
+        </message>
+        <message name="IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN" desc="Task manager idle processor wakeups column">
+          Idle Wake Ups
+        </message>
+        <message name="IDS_TASK_MANAGER_HARD_FAULTS_COLUMN" desc="Task manager hard fault count column">
+          Hard Faults
+        </message>
+        <message name="IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN" desc="Task manager open fds (file descriptors) count column">
+          File Descriptors
+        </message>
+        <message name="IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN" desc="Task manager process priority column">
+          Process Priority
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN" desc="Task manager WebCore image cache size column.">
+          Image Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN" desc="Task manager WebCore scripts cache size column.">
+          Script Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
+          CSS Cache
+        </message>
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column" formatter_data="android_java">
+          GPU Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
+          SQLite Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
+          JavaScript Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
+          Keepalive Count
+        </message>
+      </if>
+      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells." formatter_data="android_java">
+        <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
+      </message>
+      <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
+        <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
+      </message>
+      <message name="IDS_TASK_MANAGER_NA_CELL_TEXT" desc="The value displayed for resource usage when the information is not available, or not applicable to the process." formatter_data="android_java">
+        &#8211;
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUNDED_TEXT" desc="The value displayed for a process with backgrounded priority">
+        Low
+      </message>
+      <message name="IDS_TASK_MANAGER_FOREGROUNDED_TEXT" desc="The value displayed for a process with foregrounded priority">
+        Normal
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT" desc="The value displayed for an unknown NaCl debug stub port in the task manager.">
+        Unknown
+      </message>
+      <message name="IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT" desc="The value displayed for NaCl debug stub port in the task manager when the flag #enable-nacl-debug is disabled.">
+        Disabled
+      </message>
+      <message name="IDS_TASK_MANAGER_HANDLES_CELL_TEXT" desc="The value displayed in the user/gdi cells.">
+        <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
+      </message>
+      <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
+        Browser
+      </message>
+      <message name="IDS_TASK_MANAGER_EXTENSION_PREFIX" desc="The prefix for a Task Manager extension row (always visible if the extension has a view)">
+        Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_EXTENSION_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito extension row (may not be visible if Incognito is not open)">
+        Incognito Extension: <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_APP_PREFIX" desc="The prefix for a Task Manager app row (always visible if the app has a view)">
+        App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_APP_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito app row (may not be visible if the app is not open in Incognito)">
+        Incognito App: <ph name="APP_NAME">$1<ex>Sample App</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TAB_PREFIX" desc="The prefix for a Task Manager Tab row">
+        Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TAB_INCOGNITO_PREFIX" desc="The prefix for a Task Manager Incognito Tab row (may not be visible if Incognito is not open)">
+        Incognito Tab: <ph name="TAB_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUND_APP_PREFIX" desc="The prefix for a Task Manager background app task representing a BackgroundContents">
+        Background App: <ph name="BACKGROUND_APP_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACKGROUND_PREFIX" desc="The prefix for a Task Manager background page row">
+        Background Page: <ph name="BACKGROUND_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX" desc="The prefix for a page stored in the Back/Forward Cache">
+        Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX" desc="The prefix for an Incognito page stored in the Back/Forward Cache">
+        Incognito Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_PREFIX" desc="The prefix for a Task Manager plugin row">
+        Plugin: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
+        Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
+        Preloaded UI Renderer
+      </message>
+      <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
+      <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
+        Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager Prerender2 row">
+        Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX" desc="Task Manager row for a 'spare' render process. That is a render process that was started in anticipation of it being needed so that when it is needed it is immediately ready for use">
+        Spare Renderer
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX" desc="Task Manager row for an 'unknown' render process. That is a render process that the Task Manager knows is running, but that the Task Manager doesn't have any other information about, so that it is unable to present it to the user classified more precisely">
+        Renderer
+      </message>
+      <message name="IDS_TASK_MANAGER_DEDICATED_WORKER_PREFIX" desc="The prefix for a Task Manager dedicated worker row">
+        Dedicated Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/dedicated-worker/basic/dedicated-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SHARED_WORKER_PREFIX" desc="The prefix for a Task Manager shared worker row">
+        Shared Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/shared-worker/basic/shared-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX" desc="The prefix for a Task Manager service worker row">
+        Service Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/service-worker/basic/service-worker.js</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME" desc="The prefix for a Task Manager plugin row">
+        Unknown plugin
+      </message>
+      <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
+        Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_NACL_PREFIX" desc="The prefix for a Task Manager Native Client module row">
+        Native Client module: <ph name="NEXE_NAME">$1<ex>Unknown Native Client module</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_NACL_BROKER_PREFIX" desc="Task Manager row for Native Client broker, which acts as the sanbox manager for NaCl processes">
+        Native Client security manager
+      </message>
+      <message name="IDS_TASK_MANAGER_GPU_PREFIX" desc="Task Manager row for the GPU process, which is the process doing all accelerated graphics rendering">
+        GPU Process
+      </message>
+      <message name="IDS_TASK_MANAGER_PRINT_PREFIX" desc="The prefix for a print preview process row in the Task Manager">
+        Print: <ph name="PRINT_NAME">$1<ex>Google Maps</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row in the Task Manager (these processes are created when site isolation is enabled)">
+        Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito out-of-process-iframe process row in the Task Manager (these processes are created when site isolation is enabled, in Incognito mode)">
+        Incognito Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX" desc="The prefix for a out-of-process-iframe row stored in the Back/Forward Cache">
+        Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row stored in the Back/Forward Cache">
+        Incognito Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
+        Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
+        Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_FENCED_FRAME_PREFIX" desc="The prefix for a fenced frame row in the Task Manager">
+        Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito fenced frame row in the Task Manager">
+        Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
+        App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
+        Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
+        Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
+        Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
+        System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
+        Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_PLUGIN_VM_PREFIX" desc="A row in the task manager for a Parallels Desktop Virtual Machine. Parallels Desktop is a 3rd-party product name that should remain in English.">
+        Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
+      </message>
 
       <if expr="chromeos_ash">
         <message name="IDS_UTILITY_PROCESS_IPP_PARSER_SERVICE_NAME" desc="The name of the utility process used for parsing IPP requests out-of-process.">
@@ -5804,6 +5746,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION" desc="Permission string for accessing network information.">
             Read ChromeOS network information
           </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_OMNIBOX_DIRECT_INPUT" desc="Permission string for omnibox labs.">
+            Read and save keyboard input from the address bar
+        </message>
         </if>
       </if>
 
@@ -6984,30 +6929,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_CHECKING_LABEL" desc="Checking label">
         Checking for status...
       </message>
-
-      <if expr="chromeos_ash">
-        <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the os://components page from ChromeOS which directs a user to a dialog showing Chrome browser specific components - enclosing url link.">
-          Looking for browser components? Visit
-        </message>
-        <message name="IDS_COMPONENTS_OS_TEXT2_LABEL" desc="End label text on the os://components page from ChromeOS which directs a user to a dialog showing Chrome browser specific components - enclosing url link.">
-          .
-        </message>
-        <message name="IDS_COMPONENTS_OS_LINK" translateable="false" desc="Label for a button on the os://components page from ChromeOS that will call a new window which allows to change Chrome browser components.">
-          chrome://components
-        </message>
-      </if>
-      <if expr="chromeos_lacros">
-        <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the chrome://components page from ChromeOS which directs a user to a dialog showing OS specific components - enclosing url link.">
-          Looking for system components? Visit
-        </message>
-        <message name="IDS_COMPONENTS_OS_TEXT2_LABEL" desc="End label text on the chrome://components page from ChromeOS which directs a user to a dialog showing OS specific components - enclosing url link.">
-          .
-        </message>
-        <message name="IDS_COMPONENTS_OS_LINK" translateable="false" desc="Label for button on the chrome://components page from ChromeOS that will call a new window which allows to change system components.">
-          os://components
-        </message>
-      </if>
-
       <message name="IDS_COMPONENTS_SVC_STATUS_NEW" desc="Service Status">
         New
       </message>
@@ -7180,6 +7101,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="The confirmation button label of the cross domain filling confirmation popup.">
         Use Password
+      </message>
+      <message name="IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION"
+      desc="The description of the cross domain password filling warning popup.">
+        <ph name="PASSWORD_DOMAIN">$1<ex>example.com</ex></ph> and <ph name="DOMAIN">$2<ex>example.de</ex></ph> seem to be related. Make sure you trust <ph name="DOMAIN">$2<ex>example.de</ex></ph> before using your password.
       </message>
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN" desc="In Title Case: The title of the Sign in button in the account chooser when there is one account.">
@@ -7424,17 +7349,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_SYS_PARSE_ERROR" desc="error message displayed if parsing of custom uploaded log fails">
           Unable to parse file: <ph name="FILE_NAME">$1<ex>Log.txt</ex></ph>
         </message>
-
-        <if expr="chromeos_ash">
-          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Ash side os://system page which directs a user to the Lacros side system page">
-          Looking for browser system page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-        <if expr="chromeos_lacros">
-          <message name="IDS_ABOUT_SYS_OS_LINK_CONTAINER" desc="Text and link on the Lacros side chrome://system page which directs a user to the Ash side system page">
-          Looking for OS system page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="osLinkHref" class="os-link-href"&gt;</ph><ph name="CHROME_ABOUT_SYS_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
       </if>
 
       <!-- chrome://browser-switch strings -->
@@ -7708,7 +7622,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         You can also ask things like “summarize”
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT" desc="The error text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page even though suggestions were failed to be generated.">
-        No suggestions available. Try asking things like “summarize this page” or your own question.
+        No suggested questions available
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can ask questions about the page.">
         Try asking things like “summarize this page” or your own question.
@@ -7856,6 +7770,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL" desc="The label for the option to customize toolbar icons in the customization menu on the New Tab Page. This is a button which opens a panel for customizing toolbar icons when clicked.">
         Toolbar
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL" desc="The label for the option to customize extensions in the customization menu in the customize chrome menu.">
+        Extensions
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
         Cards
@@ -8693,6 +8610,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Outlook Calendar card." translateable="false">
         Don't show Outlook Calendar
       </message>
+      <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISMISS_TOAST_MESSAGE" desc="Text shown on toast on the NTP indicating that the Outlook Calendar card has been dismissed">
+        Outlook Calendar hidden
+      </message>
       <message name="IDS_NTP_MODULES_CALENDAR_DOUBLE_BOOKED" desc="Text displaying that the calendar event is booked at the same time as another." meaning="The meeting takes place at the same time as another.">
         Double-Booked
       </message>
@@ -8804,8 +8724,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SENTENCE" desc="Name of the tabs in the Tab Resumption module in sentence case shown in various UIs.">
-        Tabs
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_MULTI_DISMISS" desc="String text for module dismissal in the Tab Resumption module.">
+        Tabs hidden
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SINGLE_DISMISS" desc="String text for single tab dismissal in the Tab Resumption module.">
+        Tab hidden
       </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED" desc="Default string text for when a tab was opened less than 60 seconds ago.">
         Recently opened
@@ -8839,6 +8762,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT" desc="Text shown on the Microsoft Authentication module's sign in button.">
        Sign in with Microsoft
+      </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION" desc="Text in the side panel describing the Microsoft Authentication module.">
+       If this card is disabled, your Microsoft cards such as Sharepoint and Outlook Calendar will be disabled as well.
       </message>
 
       <!-- Mobile NTP Middle Slot Promo -->
@@ -9112,6 +9038,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL" desc="The bookmarks bar menu item which opens the side panel">
         Open Side Panel to see All Bookmarks
+      </message>
+      <message name="IDS_BOOKMARKS_ACCOUNT_BOOKMARKS" desc="The header used for account bookmarks">
+        In your Google Account
+      </message>
+      <message name="IDS_BOOKMARKS_DEVICE_BOOKMARKS" desc="The header used for device bookmarks">
+        Only on this device
       </message>
       <message name="IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS" desc="Label on a button within the bookmarks side panel for filtering bookmarks by price tracking data.">
         Tracked products
@@ -9516,6 +9448,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST" desc="Label for status text when no space on disk prevents a voice from downloading from the Read Aloud language menu but there are already installed voices for the language.">
         For higher quality voices, clear space on your device
       </message>
+      <message name="IDS_READING_MODE_LANGUAGE_MENU_ITEM_LABEL" desc="Accessibility label for a line item in the language menu containing a language name and a preview button.">
+        <ph name="LANGUAGE">$1<ex>English</ex></ph>, use right arrow key to preview voice
+      </message>
       <message name="IDS_READING_MODE_VOICE_DOWNLOADED_TITLE" desc="Title for a notification to alert the user that a high quality TTS voice data file has been downloaded.">
         High-quality <ph name="LANGUAGE">$1<ex>English</ex></ph> voice files downloaded
       </message>
@@ -9728,35 +9663,71 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for tab declutter -->
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE" desc="Heading for the declutter button in the tab organization selector when dedupe is disabled.">
         {NUM_TABS, plural,
           =0 {No inactive tabs}
           =1 {Review 1 inactive tab}
           other {Review # inactive tabs}}
       </message>
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+        {NUM_TABS, plural,
+          =0 {No unused tabs}
+          =1 {Review 1 unused tab}
+          other {Review # unused tabs}}
+      </message>
       <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
         Keep your tabs clutter-free
       </message>
       <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
+        Clean up unused tabs
+      </message>
+      <message name="IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE" desc="The header text for the declutter inactive tab UI when dedupe is disabled">
         Review inactive tabs
       </message>
-      <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
+      <message name="IDS_DECLUTTER_INACTIVE_TITLE" desc="The header text for the declutter inactive tab UI">
+        Inactive tabs
+      </message>
+      <message name="IDS_DECLUTTER_INACTIVE_BODY" desc="The body text for the declutter inactive tab UI">
         Tabs you haven't used in <ph name="COUNT">$1<ex>7</ex></ph> or more days
+      </message>
+      <message name="IDS_DECLUTTER_DUPLICATE_TITLE" desc="The header text for the declutter duplicate tab UI">
+        Duplicate tabs
+      </message>
+      <message name="IDS_DECLUTTER_DUPLICATE_BODY" desc="The body text for the declutter duplicate tab UI">
+        Oldest copy kept when you close duplicates
       </message>
       <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
         Things look neat!
       </message>
-      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+      <message name="IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE" desc="The body text for the declutter empty state UI when dedupe is disabled">
         No inactive tabs right now
       </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
+      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+        No unused tabs right now
+      </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_SINGLE" desc="The title for an item in the duplicate tabs list with 1 duplicate">
+        <ph name="URL">$1<ex>google.com</ex></ph> • 1 duplicate
+      </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_MULTI" desc="The title for an item in the duplicate tabs list with multiple duplicates">
+        <ph name="URL">$1<ex>google.com</ex></ph> • <ph name="DUPLICATE_COUNT">$2<ex>2</ex></ph> duplicates
+      </message>
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE" desc="The tooltip for the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
+      </message>
+      <message name="IDS_TAB_DECLUTTER_NO_DEDUPE" desc="The text label of the Tab Declutter button when dedupe is disabled.">
+        Review inactive tabs?
+      </message>
+      <message name="IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE" desc="The accessible name for the Tab Declutter button when dedupe is disabled." is_accessibility_with_no_ui="true">
+        Review inactive tabs
+      </message>
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
+        Clean up unused tabs?
       </message>
       <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
-        Review inactive tabs?
+        Clean up unused tabs?
       </message>
       <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
-        Review inactive tabs
+        Clean up unused tabs
       </message>
       <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
         {NUM_DAYS, plural,
@@ -9766,13 +9737,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="In Title Case: The text label for the declutter app menu item when dedupe is disabled.">
             Review Inactive Tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+            Clean Up Unused Tabs
           </message>
         </then>
         <else>
-          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="The text label for the declutter app menu item when dedupe is disabled.">
             Review inactive tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+            Clean up unused tabs
           </message>
         </else>
       </if>
@@ -9784,6 +9761,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_DECLUTTER_CLOSE_TAB_TOOLTIP" desc="The declutter tooltip for the button which excludes a tab from the list">
         Remove tab from list
+      </message>
+      <message name="IDS_DECLUTTER_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the declutter list item." is_accessibility_with_no_ui="true">
+        Tab excluded from list
       </message>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
@@ -9909,105 +9889,99 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!--Desktop to iOS password promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop password promo bubble letting users know their password is saved.">
-              Your Password Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use This Password On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
-              Your password is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
-              Use this password on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
-            You can access it on Google Password Manager.
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop password promo bubble letting users know their password is saved.">
+            Your Password Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+            Use This Password On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop password promo bubble letting users know their password is saved.">
+            Your password is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+            Use this password on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
+          You can access it on Google Password Manager.
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Desktop to iOS address promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop address promo bubble letting users know their address is saved.">
-              Your Address Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
-              Use This Address On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop address promo bubble letting users know their address is saved.">
-              Your address is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
-              Use this address on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop address promo bubble which lets the user know they can access their saved addresses.">
-            You can find it in your Addresses and More
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop address promo bubble letting users know their address is saved.">
+            Your Address Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
+            Use This Address On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop address promo bubble letting users know their address is saved.">
+            Your address is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop address promo bubble suggesting to users that they can use their addresses on their iOS devices.">
+            Use this address on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop address promo bubble which lets the user know they can access their saved addresses.">
+          You can find it in your Addresses and More
+        </message>
+        <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Desktop to iOS payment promo strings-->
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <if expr="use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-              Your Card Is Saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
-              Use This Card On Your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
-              No Thanks
-            </message>
-          </if>
-          <if expr="not use_titlecase">
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
-              Your card is saved
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
-              Use this card on your iPhone
-            </message>
-            <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
-              No thanks
-            </message>
-          </if>
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
-            You can access it in your Payment Methods
+      <if expr="not is_android">
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="In Title Case: The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+            Your Card Is Saved
           </message>
-          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
-            Download Chrome with this QR code, and sign in to your Google Account.
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="In Title Case: The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+            Use This Card On Your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="In Title Case: The text inside the button allowing the user to decline.">
+            No Thanks
           </message>
         </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE" desc="The title for the iOS desktop payment promo bubble letting users know their card is saved.">
+            Your card is saved
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop payment promo bubble suggesting to users that they can use their saved cards on their iOS devices.">
+            Use this card on your iPhone
+          </message>
+          <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE" desc="The text inside the button allowing the user to decline.">
+            No thanks
+          </message>
+        </if>
+        <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop payment promo bubble which lets the user know they can access their saved payment methods.">
+          You can access it in your Payment Methods
+        </message>
+        <message name="IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop payment promo bubble footer which lets the user know how to use their saved payment methods on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          Download Chrome with this QR code, and sign in to your Google Account.
+        </message>
       </if>
 
       <!--Accessible name/action strings-->
@@ -10028,6 +10002,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_EXIT_FULLSCREEN" desc="The accessible name of the exit fullscreen button in the new merged menu">
         Exit full screen
+      </message>
+      <message name="IDS_ACCNAME_FULLSCREEN_DISABLED" desc="The accessible name of the disabled fullscreen button in the new merged menu">
+        Full screen disabled
       </message>
       <message name="IDS_ACCNAME_HOME" desc="The accessible name for the home button">
         Home
@@ -10271,11 +10248,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP" desc="Dynamic tooltip to display on hover over named tab group.">
         <ph name="GROUP_NAME">$1<ex>New Group</ex></ph> - <ph name="GROUP_CONTENT_STRING">$2<ex>"New Tab" and one other</ex></ph>
       </message>
-      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
-        Click the speaker icon to mute this tab
+      <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title.">
+        [placeholder text]
       </message>
+      <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text.">
+        [placeholder text]
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try It Out
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try it out
+        </message>
+      </if>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
+      </message>
+      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
+        Click the speaker icon to mute this tab
       </message>
       <if expr="use_titlecase">
         <message name="IDS_BATTERY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the battery saver mode in-product promo bubble.">
@@ -10660,9 +10653,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
 
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Save button text for password manager">
           Save
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON" desc="Text for action button in the save bubble that leads the user to opt in to the account-scoped password storage.">
-          Next
         </message>
         <message name="IDS_PASSWORD_MANAGER_MOVE_BUBBLE_CANCEL_BUTTON" desc="Text for the cancel button in the password manager move bubble.">
           No thanks
@@ -11093,12 +11083,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Error details:
         </message>
       </if>
-      <if expr="is_win or chromeos_ash">
+      <if expr="is_win or is_macosx or chromeos_ash">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY" desc="Status label: Upgrades disabled by policy">
           Updates are disabled by your administrator.
         </message>
       </if>
-      <if expr="is_win">
+      <if expr="is_win or is_macosx">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY_MANUAL" desc="Status label: Manual upgrades disabled by policy, automatic upgrades ok">
           Automatic updates are enabled. Manual updates are disabled by your administrator.
         </message>
@@ -11290,6 +11280,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           =1 {Add tab to new group}
           other {Add tabs to new group}}
         </message>
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+          Split tab with active tab
+        </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New group
         </message>
@@ -11387,6 +11380,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           {NUM_TABS, plural,
           =1 {Add Tab to New Group}
           other {Add Tabs to New Group}}
+        </message>
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+          Split Tab With Active Tab
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="In Title Case: The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New Group
@@ -11577,9 +11573,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE" desc="The header text for the success state in the tab organization UI, when there were no groups found for the selected tab">
         There are no similar tabs to organize, but you might like these groups
       </message>
-      <message name="IDS_TAB_ORGANIZATION_SUCCESS_TITLE" desc="The header text for the MVP success state in the tab organization UI">
-        Tab group suggestion
-      </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE" desc="The singular form header text for the success state in the tab organization UI">
         Tab group suggested
       </message>
@@ -11657,6 +11650,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL" desc="Accessibility label for the back button within a tab organization subpage." is_accessibility_with_no_ui="true">
         Click to navigate away from <ph name="TITLE">$1<ex>Auto Tab Groups</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the tab organization list item." is_accessibility_with_no_ui="true">
+        Tab excluded from suggested group
       </message>
 
       <!-- Strings for Window Titles in Menus -->
@@ -11852,6 +11848,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
           Share group
         </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
+          Recent activity
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
           Manage sharing
         </message>
@@ -11899,6 +11898,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
           Share Group
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
+          Recent Activity
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
           Manage Sharing
@@ -11982,6 +11984,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 =1 {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Other}
                 other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
               }
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> Other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> Others
             </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and Open
@@ -12123,6 +12134,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
               }
             </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> others
+            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and open
             </message>
@@ -12258,16 +12278,28 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
           Contact the sender to ask for a new link
         </message>
+        <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
+          Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
+        </message>
       <!-- /Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
         <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY" desc="The body for the leave group dialog.">
           You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and it will be deleted from all your devices
         </message>
+        <message name="IDS_DATA_SHARING_LEAVE_DIALOG_BODY_NO_GROUP_TITLE" desc="The body for the leave group dialog when the group does not have a title.">
+          You’ll immediately lose access to this tab group, and it will be deleted from all your devices
+        </message>
         <message name="IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM" desc="The text for the confirmation button for the leave group dialog.">
           Leave
         </message>
       <!-- /Data Sharing Leave Dialog -->
+
+      <!-- Data Sharing Block Dialog -->
+        <message name ="IDS_DATA_SHARING_BLOCK_DIALOG_TITLE" desc="The title of the block dialog.">
+          Block <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
+        </message>
+      <!-- /Data Sharing Block Dialog -->
 
       <!-- Data Sharing Block and Leave Dialog -->
         <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
@@ -12339,34 +12371,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- /Delete Last Tab Dialog -->
 
       <!-- Recent Activity -->
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TIME" desc="A display of time since for a row in the recent activity dialog.">
-          {TIME_DIMENSION, plural,
-            =0 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>m ago}
-            =1 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>h ago}
-            other {<ph name="TIME_COUNT">$1<ex>2</ex></ph>d ago}
-          }
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_TAB" desc="A description of the user changing the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_REMOVED_TAB" desc="A description of the user removing the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_TAB" desc="A description of the user adding the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_JOINED_GROUP" desc="A description of the user joining the group for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined the group
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_LEFT_GROUP" desc="A description of the user leaving the group for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> left the group
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_NAME" desc="A description of the user changing the group name for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group name
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_COLOR" desc="A description of the user changing the group color for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group color
-        </message>
         <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog.">
           <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
         </message>
@@ -12423,6 +12427,57 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
           Cancel
+        </message>
+        <message name ="IDS_DATA_SHARING_CLOSE" desc="Alt text of the close button for the data sharing dialog.">
+          Close
+        </message>
+        <message name ="IDS_DATA_SHARING_BACK" desc="Alt text of the back button for the data sharing dialog.">
+          Back
+        </message>
+        <message name ="IDS_DATA_SHARING_BLOCK" desc="Label of the block button for the data sharing dialog.">
+          Block
+        </message>
+        <message name ="IDS_DATA_SHARING_REMOVE" desc="Label of the remove button for the data sharing dialog.">
+          Remove
+        </message>
+        <message name ="IDS_DATA_SHARING_LEAVE_GROUP" desc="Text of menu item to leave the group">
+          Leave group
+        </message>
+        <message name ="IDS_DATA_SHARING_LOADING" desc="Alt text of the loading indicator for the data sharing dialog.">
+          Loading
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
+          Copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
+          Link copied
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_FAILED" desc="Label of the copy link button for the data sharing dialog after copy link fails.">
+          Failed to copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_YOU" desc="Text to indicate the current user">
+          You
+        </message>
+        <message name ="IDS_DATA_SHARING_OWNER" desc="Text to indicate the owner of the group">
+          Owner
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_SINGULAR" desc="Singular form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> member
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_PLURAL" desc="Plural form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> members
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_SINGULAR" desc="Singular form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> tab
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_PLURAL" desc="Plural form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> tabs
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS" desc="Aria label for the more options button">
+          More options
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION" desc="Aria description for the more options button">
+          Press enter or space for more options.
         </message>
       <!-- /Misc -->
 
@@ -12718,6 +12773,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_EXTENSIONS_ACCESS_REQUESTS_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about Extensions' access requests.">
           Learn more about access requests.
+        </message>
+
+        <!-- Extension upload to account dialog -->
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title of the dialog triggers the upload of a local extension to the signed in user's account.">
+          Save this extension in your Google Account?
+        </message>
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle of the dialog triggers the upload of a local extension to the signed in user's account.">
+          "<ph name="NAME">$1<ex>Google Cast</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
+        </message>
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="Text of the button that triggers the upload of a local extension to the signed in user's account in the extension upload dialog.">
+          Save in account
         </message>
 
         <!-- Reset Profile Settings strings -->
@@ -13078,10 +13144,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Clipboard History Menu feature. -->
-      <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
-          desc="Show the clipboard history menu.">
-          Clipboard
-      </message>
       <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
           desc="Open the context menu submenu that shows clipboard history items the user can paste.">
           Paste from clipboard
@@ -13816,11 +13878,6 @@ This can include information about installed software, files, your browser, and 
       <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE" desc="This string appears as a subheading on a screen, and it asks users if they want to turn on sync. This string explains to users that they can back up their Chrome data and use it on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. If there is no natural translation for the word 'stuff' in your language, the word can be translated as 'data' or similar. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting.">
         Back up your stuff and use it on any device
       </message>
-      <if expr="chromeos_lacros">
-        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS" desc="This string appears as a subheading on a screen, and it asks users if they want to turn on sync. This string explains to users that they can back up their Chrome browser data and use it on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. If there is no natural translation for the word 'stuff' in your language, the word can be translated as 'data' or similar. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting. Please keep translations consistent with TC 7137558043921529662 (Windows, Mac, Linux) and TC 3833960754549650885 (iOS).">
-          Back up your browser stuff and use it on any device
-        </message>
-      </if>
       <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2" desc="This string appears as a subheading on a pop-up dialog, and it asks users if they want to turn on sync. This string explains to users that they can back up their Chrome data and use it on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. If there is no natural translation for the word 'stuff' in your language, the word can be translated as 'data' or similar. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting.">
         Turn on sync to back up your stuff and use it on any device
       </message>
@@ -13842,12 +13899,6 @@ This can include information about installed software, files, your browser, and 
       <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC" desc="This string appears in the footer on a screen that asks users if they want to turn on sync. This string informs the user that if they choose to sync, then their history may be used to personalize Search and other services. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162">
         You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
       </message>
-
-      <if expr="chromeos_lacros">
-        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK" desc="This string appears in the footer on a screen that asks users if they want to turn on browser sync. It lets the user know that browser data is controlled in Chrome settings. If Apps data type sync is enabled, it lets the user know that app sync is controlled in ChromeOS device settings. We use the same message IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC at the end.">
-          You can always choose what browser data to sync in Chrome settings. In <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>device settings<ph name="LINK_END">&lt;/a&gt;</ph>, you can control sync for web apps installed from Chrome browser. Google may personalize Search and other services based on your history.
-        </message>
-      </if>
 
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
       <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="This string appears as a heading on a pop-up dialog that shows up after users create a new profile. It welcomes users. The tone should be friendly and inviting.">
@@ -14056,26 +14107,6 @@ This can include information about installed software, files, your browser, and 
       </message>
       <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the signin email confirmation dialog.">
         Continue
-      </message>
-
-      <!-- Account password storage reauth tab modal dialog -->
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_TITLE" desc="Title of the account password storage reauth tab modal dialog. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Use your Google Account to save and fill passwords and passkeys?
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC" desc="Body of the account password storage reauth tab modal dialog. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Passwords and passkeys in your Google Account will also be available on this device while you're signed in
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY" desc="Body of the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords and passkeys in your Google Account will also be available while you're signed in.
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the account password storage reauth tab modal dialog.">
-        Yes
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL" desc="Label of the close button in the account password storage reauth tab modal dialog.">
-        No thanks
-      </message>
-      <message name="IDS_ACCOUNT_PASSWORDS_REAUTH_CLOSE_BUTTON_LABEL_ALREADY_SAVED_LOCALLY" desc="Label of the close button in the account password storage reauth tab modal dialog, shown in the case where the password was already saved locally.">
-        No, this device only
       </message>
 
       <message name="IDS_PLUGIN_CRASHED_PROMPT" desc="Infobar message to notify about a crashed plugin">
@@ -14306,11 +14337,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu for the case where the error only affects sync-ed passwords..">
         Password sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Verify it's you to use and save passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+      </message>
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
         To continue saving passwords in your Google Account, verify it’s you
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your sync data
+      </message>
+      <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of a sync error header of desktop user menu that prompts the user to add recovery options.">
+        Verify it's you to make sure you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your saved passwords
@@ -14358,98 +14395,96 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <!-- Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <!-- Sync options dialog strings -->
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
-            Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
-          </message>
-        </if>
-        <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
-          Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
-        </message>
-        <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
-          Sync is disabled by your administrator.
-        </message>
-        <if expr="chromeos_ash">
-          <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
-            Sync has been stopped via the Google Dashboard.
-          </message>
-        </if>
-        <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
-          Confirm sync settings to start sync.
-        </message>
-        <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
-          Setup in progress...
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
-          Sync isn't working. Try signing in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
-          Sync isn't working. Try signing out and back in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
-          Enter your passphrase to sync your data
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
-          Enter passphrase
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
-          Verify it's you
-        </message>
-
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
-            Sign in again to resume sync
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out then sign in again to start sync
-          </message>
-        </if>
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
-            Sign in again
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out
-          </message>
-          <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
-            Your account sign-in details are out of date. Please sign out and sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
-            Your password has expired. Please sign out then sign in again to change it.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
-            Your password has been changed on the server. Please sign out then sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
-            Failed to get authentication token. Please sign out then sign in again to try again.
-          </message>
-        </if>
-        <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
-          Advanced settings
-        </message>
-
-        <if expr="chromeos_ash">
-          <!-- Spinner dialog for waiting sync backend to start up -->
-          <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
-            Please wait...
-          </message>
-        </if>
-
-        <!-- Encryption tab of the configure sync dialog -->
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
-          Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
-        </message>
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      <!-- Sync options dialog strings -->
+      <message name="IDS_SYNC_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
+          Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
         </message>
       </if>
+      <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
+        Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
+      </message>
+      <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
+        Sync is disabled by your administrator.
+      </message>
+      <if expr="chromeos_ash">
+        <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
+          Sync has been stopped via the Google Dashboard.
+        </message>
+      </if>
+      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
+        Confirm sync settings to start sync.
+      </message>
+      <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
+        Setup in progress...
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
+        Sync isn't working. Try signing in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
+        Sync isn't working. Try signing out and back in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
+        Enter your passphrase to sync your data
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
+        Enter passphrase
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
+        Verify it's you
+      </message>
+
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
+          Sign in again to resume sync
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out then sign in again to start sync
+        </message>
+      </if>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
+          Sign in again
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out
+        </message>
+        <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
+          Your account sign-in details are out of date. Please sign out and sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
+          Your password has expired. Please sign out then sign in again to change it.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
+          Your password has been changed on the server. Please sign out then sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
+          Failed to get authentication token. Please sign out then sign in again to try again.
+        </message>
+      </if>
+      <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
+        Advanced settings
+      </message>
+
+      <if expr="chromeos_ash">
+        <!-- Spinner dialog for waiting sync backend to start up -->
+        <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
+          Please wait...
+        </message>
+      </if>
+
+      <!-- Encryption tab of the configure sync dialog -->
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
+        Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
+      </message>
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
+        Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      </message>
 
       <!-- Translate Bubble -->
       <if expr="toolkit_views">
@@ -15885,6 +15920,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING" desc="Extra tool tip text, when the tab is presenting VR content to a headset.">
         This tab is presenting VR content to a headset
       </message>
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]">
+        [Placeholder String]
+      </message>
 
       <!-- Tab accessibility labels -->
       <message name="IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is recording media. Example: 'Google Hangouts - Camera and microphone recording'">
@@ -15936,6 +15974,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="WINDOW_TITLE">
           $1<ex>A VR-enabled website</ex>
         </ph> - VR presenting to headset
+      </message>
+      <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="[Placeholder Description]">
+        <ph name="WINDOW_TITLE">
+          $1<ex>Google Photos</ex>
+        </ph> - [Placeholder String]
       </message>
       <message name="IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Accessibility label text for a tab, when it is in a group that has not been named by the user. Example: 'Google Search - Part of unnamed group'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Part of unnamed group
@@ -16198,16 +16241,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="FILE_INFO">$2<ex>file:123</ex></ph>
         <ph name="EVENT_NAME">$3<ex>Event Description</ex></ph>
       </message>
-      <if expr="chromeos_ash">
-        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the os://device-log page from ChromeOS which directs a user to a page showing Chrome browser specific device-log">
-          Looking for the browser device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="#" id="os-link-href"&gt;</ph><ph name="CHROME_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-        </message>
-      </if>
-      <if expr="chromeos_lacros">
-        <message name="IDS_DEVICE_LOG_OS_LINK_CONTAINER" desc="Text and link on the chrome://device-log page from ChromeOS which directs a user to a dialog showing OS specific device-log">
-          Looking for the system device-log page? Visit<ph name="BEGIN_LINK">&lt;a href="$1" id="os-link-href"&gt;</ph><ph name="OS_DEVICE_LOG_LINK">$1</ph><ph name="END_LINK">&lt;/a&gt;</ph>.
-        </message>
-      </if>
 
     <!-- WebUsb Notification -->
     <message name="IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
@@ -17172,6 +17205,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in Google Password Manager.">
         Google Password Manager
       </message>
+      <message name="IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in a USB security key.">
+        USB security key
+      </message>
       <message name="IDS_WEBAUTHN_SOURCE_PHONE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in their phone.">
         From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
       </message>
@@ -17401,6 +17437,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT" translateable="false">
         QR code
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTING_TITLE" desc="The title of a dialog that is shown when the computer is connecting to a phone or tablet." translateable="false">
+        Connecting to your device
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE" desc="The title of a dialog that shows once the computer has successfully connected to the user's phone or tablet. That phone/tablet will be showing instructions for what to do next and the user should follow those instructions." translateable="false">
+        Follow the steps on your device
       </message>
 
     <!-- Interstitial shown prior to making digital identity request to wallet -->
@@ -17976,12 +18020,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE" desc="A user's profile picture, to be used in a list of items shared with a website">
       profile picture
     </message>
-    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_STRING" desc="A list of a number of items (that will be shared with a website), for example 'name and email address'.">
-      {count, plural,
-        =1 {{field_1}}
-        =2 {{field_1} and {field_2}}
-        other {{field_1}, {field_2}, and {field_3}}}
-    </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
       To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site.
     </message>
@@ -18190,62 +18228,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Press a keyboard key to customize
       </message>
     </if>
-
-    <!-- Privacy Sandbox Dialog strings -->
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The user must make a choice, and this page can’t be dismissed until they do. The title of the page. * The title needs to be framed so that clicking the accept button makes sense * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance.* “private web” is the promise of privacy sandbox.">
-      Help us build a more private web
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_TITLE" desc="CONTEXT: there are updates to the Chrome browser each month. Just after the user accepts the latest update, this message will appear. The title of the page. * “Help us” is intended to convey a sense of collaboration. Privacy Sandbox is an ongoing multi-year effort. There are sites participating to help us and we also need users to agree to these trials so that we can measure the effectiveness of the features we're building. * “build” is intended to convey that this is a process. The user is agreeing to an effort rather than a stable set of features. Something like “make” doesn't have the same nuance. * See www.privacysandbox.com for more context">
-      Help us build a better web
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_1"  desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      Limited sharing between sites
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" desc="The body text of the bubble.* “Chrome is finding new ways”: “finding” is meant to convey a work in progress, like “build” in the title. The features are live and functional, but still in beta. So we want a verb that’s stronger than “exploring” but weaker than “launching”. * “reduce tracking”: This used to read “reduce cross-site tracking”, but we’ve dropped “cross-site” because it makes the idea unnecessarily complicated. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). * “Then” is an important keyword. It suggests some amount of time later. The first step is that interests are generated. Later (minutes or weeks), a different site might request interests.">
-      Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> and enables you to manage them. Then, sites you visit can ask Chrome for your interests to show you ads.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK" desc="The user can choose “Go to settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Go to settings”, the user will navigate away from this page and won’t be able to return here.">
-      Go to settings
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK" desc="This will be inserted as a link in IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION instead of ESTIMATE_INTERESTS_LINK placeholder. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). ">
-      estimates your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK_A11Y_NAME" desc="The accessible text read for IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK. * “estimate your interests”: Topics of interest include things like “Live comedy” and “Rock music”. Chrome estimates these interests based on the sites users visit. It’s an “estimation”, and we don’t want to suggest that we know with certainty the user’s interests. Avoid words like “guess”, “establish”, “define”, etc. (in place of “estimate”). ">
-      estimates your interests - Chrome can estimate your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_DESCRIPTION_1" desc="The description beneath the “Limited sharing between sites” subtitle. * “exploring” conveys that this is a work in progress. * “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
-      We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_2" desc="2 of 2 subtitles on the page.That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      More control over the ads you see
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_HEADER" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-      Sites you visit that define your interests
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_LEARN_MORE_SECTION_2_BULLET_POINT_3"  desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
-      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data:<ph name="END_BOLD">&lt;/b&gt;</ph> To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_ACCEPT_BUTTON" desc="A button that allows the user to accept joining the Privacy Sandbox trials. If the user chooses “Yes, I’m in”: 1)  this consent page disappears and the flow is complete 2) The Privacy Sandbox trials are turned on for this user. These features include everything described above. The page that hosts the settings will appear at chrome://settings/privacySandbox. Saying “Yes, I’m in” is like turning the toggle on. “No thanks” is like keeping the toggle off.">
-      Yes, I’m in
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_DECLINE_BUTTON" desc="A button that allows the user to decline joining the Privacy Sandbox trials. If the user chooses “No thanks” this consent page disappears and the flow is complete.">
-      No thanks
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_HEADER_1" desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) Try more transparent ads 4) Yes, I’ll try it">
-      Limited sharing between sites
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_DESCRIPTION_1" desc="* “restrict” means to lessen. We don’t want to suggest that we’re “eliminating” cross-site tracking. * “cross-site tracking”: An example: a user visits site A and then site B. Based on how third-party cookies work today, when that user later visits site C, site C can be aware that the user visited sites A and B, and can even have some sense for what they did on those sites. * “stop ad spam and fraud”:  This feature isn’t really related to restricting cross-site tracking but we combined these features in the same sentence / section for structural reasons.">
-      We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BODY_HEADER_2" desc="2 of 2 subtitles on the page.That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
-      More control over the ads you see
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON" desc="The user can acknowledge the changes with “Got it”. This consent page disappears and the flow is complete.">
-      Got it
-    </message>
-    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_OPEN_SETTINGS_BUTTON" desc="The user can choose “Settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Settings”, the user will navigate away from this page and won’t be able to return here.">
-      Settings
-    </message>
 
     <!-- Battery Saver Toolbar strings  -->
     <if expr="not is_android">
@@ -18458,6 +18440,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOAST_CLOSE_TOOLTIP" desc="Tooltip for the X button on a toast notification that closes the toast.">
         Close
       </message>
+      <message name="IDS_TOAST_MENU_ITEM_DISMISS" desc="Menu item that allows a user to dismiss a toast.">
+        Dismiss
+      </message>
+      <message name="IDS_TOAST_MENU_ITEM_DONT_SHOW_AGAIN" desc="Menu item that allows a user to turn off similar toast messages in the future.">
+        Don't show this message again
+      </message>
     </if>
 
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
@@ -18663,7 +18651,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Chrome removed permissions from 1 site}
           other {Chrome removed permissions from {NUM_SITES} sites}}
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="Summary for the compromised passwords Safety Check module on the Magic Stack. Shown when Safety Check has identified insecure credentials.">
           {NUM_SITES, plural,
           =1 {Found 1 compromised password}
           other {Found {NUM_SITES} compromised passwords}}
@@ -18694,6 +18682,60 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_CHOOSE_DEVICE" desc="Text displayed above the list of audio output devices in the selection dialog.">
       Choose an audio output device
+    </message>
+
+    <!-- Internal debug pages disabled interstitial. -->
+    <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
+      Internal debugging pages are currently disabled.
+    </message>
+
+    <!-- Glic status tray icon strings -->
+    <if expr="enable_glic">
+      <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->
+      <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+        Open
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
+        Open glic
+      </message>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT" translateable="false" desc="This is the menu item for customizing the keyboard shortcut.">
+        Customize keyboard shortcut
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the menu bar.">
+          Disable glic in menu bar
+        </message>
+      </if>
+      <if expr="is_win or is_linux">
+        <message name="IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON" translateable="false" desc="This is the menu item for removing the glic icon from the notifications area.">
+          Disable glic in notifications area
+        </message>
+      </if>
+      <message name="IDS_GLIC_STATUS_ICON_MENU_SETTINGS" translateable="false" desc="This is the menu item for opening the glic settings.">
+        Settings...
+      </message>
+      <message name="IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE" translateable="false" desc="Help bubble above the toggle for turning off the glic os widget.">
+        Disable glic here
+      </message>
+      <message name="IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE" translateable="false" desc="Help bubble message above the keyboard shortcut editor that allows customizing it.">
+        Customize the keyboard shortcut here
+      </message>
+    </if>
+
+
+  <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
+    Chrome will stop flagging notifications from <ph name="URL">$1<ex>https://www.example-url.com/</ex></ph> as spam
+  </message>
+
+     <!-- Merchant Trust IPH strings -->
+    <message name="IDS_MERCHANT_TRUST_IPH_TITLE" desc="Title of in product help to introduce merchant trust feature." translateable="false">
+      What customers say
+    </message>
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY" desc="Content of in product help to introduce merchant trust feature." translateable="false">
+      Chrome now offers ratings and reviews for the stores you visit
+    </message>
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." translateable="false" is_accessibility_with_no_ui="true">
+      Chrome now offers ratings and reviews for the stores you visit
     </message>
   </messages>
 </release>

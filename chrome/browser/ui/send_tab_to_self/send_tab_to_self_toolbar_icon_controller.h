@@ -39,7 +39,6 @@ class SendTabToSelfToolbarIconController
   // BrowserListObserver implementation
   void OnBrowserSetLastActive(Browser* browser) override;
 
-
   void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
 
   void RemoveDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);

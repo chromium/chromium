@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.metrics;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Base class for defining methods where different behavior is required by downstream targets. */
+@NullMarked
 public class AppUpdateInfoDelegate {
     public void emitToHistogram() {}
 }

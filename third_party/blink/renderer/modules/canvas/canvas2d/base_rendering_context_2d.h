@@ -113,8 +113,8 @@ class OffscreenCanvas;
 class Path;
 class Path2D;
 class ScriptState;
-class SimpleFontData;
 class TextCluster;
+class TextClusterOptions;
 class TextMetrics;
 class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
@@ -258,11 +258,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
-  // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+  // https://github.com/WICG/canvas-place-element
   void placeElement(Element* element,
                     double x,
                     double y,
                     ExceptionState& exception_state);
+  void OnPlaceElementStateChanged(Element& element);
   void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,
@@ -462,17 +463,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   V8CanvasTextRendering textRendering() const;
   void setTextRendering(const V8CanvasTextRendering&);
 
-  String textRenderingAsString() const;
-  void setTextRenderingAsString(const String&);
-
   String fontKerning() const;
   void setFontKerning(const String&);
 
   V8CanvasFontStretch fontStretch() const;
   void setFontStretch(const V8CanvasFontStretch&);
-
-  String fontStretchAsString() const;
-  void setFontStretchAsString(const String&);
 
   String fontVariantCaps() const;
   void setFontVariantCaps(const String&);
@@ -490,6 +485,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // The x and y parameters are added to the values from the TextCluster to
   // position the cluster.
   void fillTextCluster(const TextCluster* text_cluster, double x, double y);
+  void fillTextCluster(const TextCluster* text_cluster,
+                       double x,
+                       double y,
+                       const TextClusterOptions* cluster_options);
 
   void Trace(Visitor*) const override;
 
@@ -649,7 +648,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual void FinalizeFrame(FlushReason) {}
 
-  float GetFontBaseline(const SimpleFontData&) const;
   virtual void DispatchContextLostEvent(TimerBase*);
   virtual void DispatchContextRestoredEvent(TimerBase*);
   virtual void TryRestoreContextEvent(TimerBase*) {}
@@ -662,15 +660,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   static const char kNormalKerningString[];
   static const char kNoneKerningString[];
   static const char kNormalVariantString[];
-  static const char kUltraCondensedString[];
-  static const char kExtraCondensedString[];
-  static const char kCondensedString[];
-  static const char kSemiCondensedString[];
-  static const char kNormalStretchString[];
-  static const char kSemiExpandedString[];
-  static const char kExpandedString[];
-  static const char kExtraExpandedString[];
-  static const char kUltraExpandedString[];
   static const char kSmallCapsVariantString[];
   static const char kAllSmallCapsVariantString[];
   static const char kPetiteVariantString[];
@@ -726,8 +715,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
+                        TextAlign align,
+                        TextBaseline baseline,
+                        unsigned run_start,
+                        unsigned run_end,
                         double* max_width = nullptr,
-                        const TextCluster* text_cluster = nullptr);
+                        const Font* cluster_font = nullptr);
 
   // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).

@@ -16,16 +16,11 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace gl {
-class SurfaceTexture;
-}  // namespace gl
-
 namespace gfx {
 class GpuFence;
 }  // namespace gfx
 
 namespace gpu {
-struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
 
@@ -43,12 +38,6 @@ using XrInitStatusCallback = base::OnceCallback<void(bool success)>;
 // purposes.
 class XrImageTransportBase {
  public:
-  // If true, use shared buffer transport aka DRAW_INTO_TEXTURE_MAILBOX.
-  // If false, use Surface transport aka SUBMIT_AS_MAILBOX_HOLDER.
-  static bool UseSharedBuffer();
-
-  static GLuint SharedBufferTextureTarget();
-
   explicit XrImageTransportBase(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
 
@@ -90,11 +79,7 @@ class XrImageTransportBase {
       const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>);
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token);
-  virtual void CopyMailboxToSurfaceAndSwap(const gfx::Size& frame_size,
-                                           const gpu::MailboxHolder& mailbox,
-                                           const gfx::Transform& uv_transform);
 
-  void SetFrameAvailableCallback(XrFrameCallback on_frame_available);
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
  protected:
@@ -122,29 +107,11 @@ class XrImageTransportBase {
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
  private:
-  // Used to disable UseSharedBuffer on platforms where the feature is available
-  // but unusable due to driver bugs. Must be mutable so that it can be switched
-  // to true persistently before retrying session creation, so it can't be
-  // constexpr or inline.
-  static bool disable_shared_buffer_;
-
-  void ResizeSurface(const gfx::Size& size);
   void OnMailboxBridgeReady(XrInitStatusCallback callback);
-  void OnFrameAvailable();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
 
   bool webgpu_session_ = false;
-
-  // Used for Surface transport (Android N)
-  //
-  // samplerExternalOES texture data for WebXR content image.
-  LocalTexture transport_texture_;
-  gfx::Size surface_size_;
-  scoped_refptr<gl::SurfaceTexture> transport_surface_texture_;
-  gfx::Transform transport_surface_texture_uv_transform_;
-  float transport_surface_texture_uv_matrix_[16];
-  XrFrameCallback on_transport_frame_available_;
 
   // Must be last.
   base::WeakPtrFactory<XrImageTransportBase> weak_ptr_factory_{this};

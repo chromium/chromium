@@ -61,6 +61,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -163,7 +164,8 @@ class WallpaperPolicyTest : public LoginManagerTest,
     EXPECT_TRUE(base::CreateDirectory(user_key_file.DirName()));
     EXPECT_TRUE(base::WriteFile(user_key_file, user_key_bits));
     user_policy_builder->policy_data().set_username(account_id.GetUserEmail());
-    user_policy_builder->policy_data().set_gaia_id(account_id.GetGaiaId());
+    user_policy_builder->policy_data().set_gaia_id(
+        account_id.GetGaiaId().ToString());
     return user_policy_builder;
   }
 

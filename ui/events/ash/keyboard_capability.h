@@ -184,6 +184,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   struct KeyboardInfo {
     KeyboardInfo();
+    KeyboardInfo(DeviceType device_type,
+                 KeyboardTopRowLayout top_row_layout,
+                 std::vector<uint32_t> top_row_scan_codes,
+                 std::vector<TopRowActionKey> top_row_action_keys);
     KeyboardInfo(KeyboardInfo&&);
     KeyboardInfo& operator=(KeyboardInfo&&);
     KeyboardInfo(const KeyboardInfo&) = delete;
@@ -289,6 +293,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if a given `action_key` exists on the given keyboard.
   bool HasTopRowActionKey(const KeyboardDevice& keyboard,
                           TopRowActionKey action_key) const;
+  bool HasTopRowActionKey(int device_id, TopRowActionKey action_key) const;
   bool HasTopRowActionKeyOnAnyKeyboard(TopRowActionKey action_key) const;
 
   // Check if the globe key exists on the given keyboard.
@@ -334,13 +339,13 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasFunctionKey(int device_id) const;
   bool HasFunctionKeyOnAnyKeyboard() const;
 
-  // Check if the RightAlt key exists on the given keyboard.
-  bool HasRightAltKey(const KeyboardDevice& keyboard) const;
-  bool HasRightAltKey(int device_id) const;
+  // Check if the QuickInsert key exists on the given keyboard.
+  bool HasQuickInsertKey(const KeyboardDevice& keyboard) const;
+  bool HasQuickInsertKey(int device_id) const;
 
-  // Check if the RightAlt key exists, but only for on OOBE screen.
-  bool HasRightAltKeyForOobe(const KeyboardDevice& keyboard) const;
-  bool HasRightAltKeyForOobe(int device_id) const;
+  // Check if the QuickInsert key exists, but only for on OOBE screen.
+  bool HasQuickInsertKeyForOobe(const KeyboardDevice& keyboard) const;
+  bool HasQuickInsertKeyForOobe(int device_id) const;
 
   // Returns the appropriate meta key present on the given keyboard.
   ui::mojom::MetaKey GetMetaKey(const KeyboardDevice& keyboard) const;

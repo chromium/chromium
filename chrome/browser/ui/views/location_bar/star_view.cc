@@ -107,8 +107,8 @@ views::BubbleDialogDelegate* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-    return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
-                       : omnibox::kStarChromeRefreshIcon;
+  return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
+                     : omnibox::kStarChromeRefreshIcon;
 }
 
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {

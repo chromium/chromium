@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -29,7 +30,7 @@ namespace mp2t {
 
 struct EsParserMpeg1Audio::Mpeg1AudioFrame {
   // Pointer to the ES data.
-  const uint8_t* data;
+  raw_ptr<const uint8_t> data;
 
   // Frame size.
   int size;
@@ -146,7 +147,7 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     }
 
     es_queue_->Pop(offset);
-    es_queue_->Peek(&mpeg1audio_frame->data, &es_size);
+    es_queue_->Peek(&mpeg1audio_frame->data.AsEphemeralRawAddr(), &es_size);
     mpeg1audio_frame->queue_offset = es_queue_->head();
     mpeg1audio_frame->size = header.frame_size;
     mpeg1audio_frame->sample_count = header.sample_count;

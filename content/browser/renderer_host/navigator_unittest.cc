@@ -131,11 +131,11 @@ TEST_F(NavigatorTest, SimpleBrowserInitiatedNavigationFromNonLiveRenderer) {
   EXPECT_TRUE(main_test_rfh()->IsActive());
   EXPECT_EQ(main_test_rfh()->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kActive);
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               main_test_rfh()->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   }
   EXPECT_EQ(kUrl, contents()->GetLastCommittedURL());
 
@@ -199,11 +199,11 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
   // Commit the navigation.
   navigation->Commit();
   EXPECT_TRUE(main_test_rfh()->IsActive());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl2),
               main_test_rfh()->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   }
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -721,10 +721,10 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   TestRenderFrameHost* speculative_rfh = GetSpeculativeRenderFrameHost(node);
   ASSERT_TRUE(speculative_rfh);
   auto site_instance_id_1 = speculative_rfh->GetSiteInstance()->GetId();
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(kUrl1SiteInfo, speculative_rfh->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   }
 
   // Request navigation to the 2nd URL; the NavigationRequest must have been
@@ -745,11 +745,11 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   ASSERT_TRUE(speculative_rfh);
   auto site_instance_id_2 = speculative_rfh->GetSiteInstance()->GetId();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(site_instance_id_1, site_instance_id_2);
+  } else {
     EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
     EXPECT_EQ(site_instance_id_1, site_instance_id_2);
-  } else {
-    EXPECT_NE(site_instance_id_1, site_instance_id_2);
   }
 
   navigation2->ReadyToCommit();
@@ -761,10 +761,10 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
 
   // Confirm that the commit corresponds to the new request.
   ASSERT_TRUE(main_test_rfh());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(kUrl2SiteInfo, main_test_rfh()->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   }
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
 
@@ -1064,11 +1064,11 @@ TEST_F(NavigatorTest, SpeculativeRendererWorksBaseCase) {
   auto site_instance_id = speculative_rfh->GetSiteInstance()->GetId();
   ASSERT_TRUE(speculative_rfh);
   EXPECT_NE(speculative_rfh, main_test_rfh());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   }
 
   navigation->ReadyToCommit();
@@ -1104,11 +1104,11 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   EXPECT_EQ(init_site_instance_id, main_test_rfh()->GetSiteInstance()->GetId());
   EXPECT_NE(speculative_rfh, main_test_rfh());
 
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrl),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
+  } else {
+    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
   }
 
   // It then redirects to yet another site.
@@ -1142,14 +1142,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
   // they should be associated with different BrowsingInstances.
   EXPECT_NE(init_site_instance_id, redirect_site_instance_id);
 
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
-    EXPECT_EQ(site_instance_id, redirect_site_instance_id);
-
-    // Verify the old speculative RenderFrameHost was not deleted because
-    // the SiteInstance stayed the same.
-    EXPECT_FALSE(rfh_deleted_observer.deleted());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(CreateExpectedSiteInfo(kUrlRedirect),
               speculative_rfh->GetSiteInstance()->GetSiteInfo());
     EXPECT_NE(site_instance_id, redirect_site_instance_id);
@@ -1157,6 +1150,13 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
     // Verify the old speculative RenderFrameHost was deleted because
     // the SiteInstance changed.
     EXPECT_TRUE(rfh_deleted_observer.deleted());
+  } else {
+    EXPECT_TRUE(speculative_rfh->GetSiteInstance()->IsDefaultSiteInstance());
+    EXPECT_EQ(site_instance_id, redirect_site_instance_id);
+
+    // Verify the old speculative RenderFrameHost was not deleted because
+    // the SiteInstance stayed the same.
+    EXPECT_FALSE(rfh_deleted_observer.deleted());
   }
 
   // Invoke DidCommitProvisionalLoad.
@@ -1290,12 +1290,12 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(current_instance, related_instance.get());
     EXPECT_NE(unrelated_instance.get(), related_instance.get());
 
-    if (AreDefaultSiteInstancesEnabled()) {
-      ASSERT_TRUE(related_instance->IsDefaultSiteInstance());
-    } else {
+    if (AreAllSitesIsolatedForTesting()) {
       EXPECT_EQ(SiteInfo::CreateForTesting(
                     current_instance->GetIsolationContext(), kUrlSameSiteAs2),
                 related_instance->GetSiteInfo());
+    } else {
+      ASSERT_TRUE(related_instance->IsDefaultSiteInstance());
     }
   }
 
@@ -1353,11 +1353,11 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(related_instance.get(), converted_instance_1.get());
     EXPECT_NE(unrelated_instance.get(), converted_instance_1.get());
 
-    if (AreDefaultSiteInstancesEnabled()) {
-      EXPECT_TRUE(converted_instance_1->IsDefaultSiteInstance());
-    } else {
+    if (AreAllSitesIsolatedForTesting()) {
       EXPECT_EQ(CreateExpectedSiteInfo(kUrlSameSiteAs2),
                 converted_instance_1->GetSiteInfo());
+    } else {
+      EXPECT_TRUE(converted_instance_1->IsDefaultSiteInstance());
     }
 
     scoped_refptr<SiteInstance> converted_instance_2 =
@@ -1397,7 +1397,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
 
   // Check the permissions policy before navigation.
   const blink::PermissionsPolicy* original_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
@@ -1405,7 +1405,7 @@ TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
 
   // Check the permissions policy after navigation.
   const blink::PermissionsPolicy* final_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(final_permissions_policy);
   ASSERT_NE(original_permissions_policy, final_permissions_policy);
 }
@@ -1420,7 +1420,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
 
   // Check the permissions policy before navigation.
   const blink::PermissionsPolicy* original_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
@@ -1428,7 +1428,7 @@ TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
 
   // Check the permissions policy after navigation.
   const blink::PermissionsPolicy* final_permissions_policy =
-      main_test_rfh()->permissions_policy();
+      main_test_rfh()->GetPermissionsPolicy();
   ASSERT_EQ(original_permissions_policy, final_permissions_policy);
 }
 
@@ -1446,7 +1446,7 @@ TEST_F(NavigatorTest, PermissionsPolicyNewChild) {
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, subframe_rfh);
 
   const blink::PermissionsPolicy* subframe_permissions_policy =
-      subframe_rfh->permissions_policy();
+      subframe_rfh->GetPermissionsPolicy();
   ASSERT_TRUE(subframe_permissions_policy);
   ASSERT_FALSE(subframe_permissions_policy->GetOriginForTest().opaque());
 }

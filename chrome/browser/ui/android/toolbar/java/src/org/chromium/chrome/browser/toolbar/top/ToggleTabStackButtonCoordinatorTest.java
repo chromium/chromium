@@ -31,8 +31,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -59,14 +57,18 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
+    @Mock private TabModel mStandardTabModel;
+    @Mock private TabModel mIncognitoTabModel;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
-    private boolean mIsIncognito;
-    private boolean mOverviewOpen;
+    private final ObservableSupplierImpl<Boolean> mNotificationDotSupplier =
+            new ObservableSupplierImpl<>(false);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
+
+    private boolean mIsIncognito;
+    private boolean mOverviewOpen;
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
     private ObservableSupplier<Integer> mTabCountSupplier;
@@ -102,6 +104,11 @@ public class ToggleTabStackButtonCoordinatorTest {
         mLayoutSateProviderOneshotSupplier = new OneshotSupplierImpl<>();
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
         mTabModelSelectorSupplier.set(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mStandardTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
 
         // Defaults most test cases expect, can be overridden by each test though.
         when(mToggleTabStackButton.isShown()).thenReturn(true);
@@ -126,6 +133,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                 mOnLongClickListener,
                 mTabCountSupplier,
                 mArchivedTabCountSupplier,
+                mNotificationDotSupplier,
                 () -> {},
                 () -> {});
         return coordinator;
@@ -301,7 +309,6 @@ public class ToggleTabStackButtonCoordinatorTest {
                 iphCommand.accessibilityStringId);
     }
 
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     @Test
     public void testSwitchToIncognitoIphIsShown() {
         ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator =
@@ -310,12 +317,9 @@ public class ToggleTabStackButtonCoordinatorTest {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
 
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
-        when(mTabModel.getCount()).thenReturn(1);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
 
         // Standard model with incognito tabs - show switch into incognito IPH.
-        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
         IphCommand iphCommand = verifyIphShown();
         assertEquals(
@@ -332,7 +336,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                 iphCommand.accessibilityStringId);
 
         // Incognito model - show switch out of incognito IPH.
-        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
         toggleTabStackButtonCoordinator.handlePageLoadFinished();
         iphCommand = verifyIphShown();
         assertEquals(

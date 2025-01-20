@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -130,11 +131,11 @@ TEST(ContentSecurityPolicyConversionUtilTest,
       [](CSPSourceList& source_list) {
         source_list.hashes.emplace_back(
             network::mojom::blink::CSPHashSource::New(
-                network::mojom::blink::CSPHashAlgorithm::SHA256,
+                network::mojom::blink::IntegrityAlgorithm::kSha256,
                 Vector<uint8_t>({'a', 'd'})));
         source_list.hashes.emplace_back(
             network::mojom::blink::CSPHashSource::New(
-                network::mojom::blink::CSPHashAlgorithm::SHA384,
+                network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'c', 'd', 'e'})));
       },
       [](CSPSourceList& source_list) { source_list.allow_self = true; },

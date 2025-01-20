@@ -6,25 +6,11 @@
 
 #include <memory>
 
-#include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"
-#include "base/profiler/unwinder.h"
 
 namespace base {
-
-namespace {
-
-std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
-  std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<FramePointerUnwinder>());
-  return unwinders;
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<StackSampler> StackSampler::Create(
@@ -33,11 +19,10 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
-  DCHECK(!core_unwinders_factory);
   return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateMac>(thread_token)),
-      std::move(stack_unwind_data), BindOnce(&CreateUnwinders),
+      std::move(stack_unwind_data), std::move(core_unwinders_factory),
       std::move(record_sample_callback), test_delegate));
 }
 

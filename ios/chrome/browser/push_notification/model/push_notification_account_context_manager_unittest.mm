@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager+testing.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -83,6 +84,11 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
     return GetApplicationContext()
         ->GetProfileManager()
         ->GetProfileAttributesStorage();
+  }
+
+  ProfileAttributesIOS profile_attributes() const {
+    return profile_attributes_storage()->GetAttributesForProfileWithName(
+        profile_name());
   }
 
   const std::string& profile_name() const { return profile_->GetProfileName(); }
@@ -257,6 +263,8 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   static const TestCase kUpdateTestCase[] = {{"0"}, {"2"}, {"4"}};
 
   PushNotificationClientId clientID = PushNotificationClientId::kCommerce;
+  std::string client_key =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
 
   for (const TestCase& test_case : kTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
@@ -265,6 +273,9 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
     ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID
                                                 forAccount:test_case.gaia],
               YES);
+    EXPECT_EQ(
+        profile_attributes().GetNotificationPermissions()->FindBool(client_key),
+        YES);
   }
 
   for (const TestCase& test_case : kUpdateTestCase) {
@@ -274,5 +285,8 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
     ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID
                                                 forAccount:test_case.gaia],
               NO);
+    EXPECT_EQ(
+        profile_attributes().GetNotificationPermissions()->FindBool(client_key),
+        NO);
   }
 }

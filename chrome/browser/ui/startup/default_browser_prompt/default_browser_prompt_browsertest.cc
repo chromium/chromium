@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DefaultBrowserPromptBrowserTest : public InProcessBrowserTest {
-public:
+ public:
   static constexpr char kStudyTestGroupName[] = "test_group_1";
 
   void SetUp() override {
@@ -35,9 +35,9 @@ public:
         {{}});
   }
 
-  PrefService *local_state() { return g_browser_process->local_state(); }
+  PrefService* local_state() { return g_browser_process->local_state(); }
 
-private:
+ private:
   base::test::ScopedFeatureList scoped_feature_list;
 };
 

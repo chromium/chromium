@@ -164,6 +164,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_NEW_TAB_PAGE,
         Component.UI_BROWSER_OMNIBOX,
         Component.UI_BROWSER_PASSWORDS,
+        Component.UI_BROWSER_PRIVACY_SANDBOX,
         Component.UI_BROWSER_SEARCH_VOICE,
         Component.UI_BROWSER_SHARING,
         Component.UI_BROWSER_SHOPPING,
@@ -213,6 +214,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
         String UI_BROWSER_PASSWORDS = "UI>Browser>Passwords";
+        String UI_BROWSER_PRIVACY_SANDBOX = "UI>Browser>Privacy Sandbox";
         String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
         String UI_BROWSER_SHARING = "UI>Browser>Sharing";
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
@@ -416,13 +418,6 @@ public class RenderTestRule extends TestWatcher {
         }
 
         return String.format("%s.%s.rev_%s", testClass, desc, mSkiaGoldRevision);
-    }
-
-    /**
-     * Returns a string encoding the device model and sdk. It is used to identify device goldens.
-     */
-    private static String modelSdkIdentifier() {
-        return Build.MODEL.replace(' ', '_') + "-" + Build.VERSION.SDK_INT;
     }
 
     /** Saves a the given |bitmap| to the |file|. */

@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">เปิด <ph name="URL" /> ในไคลเอ็นต์ไม่สำเร็จ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2366718077645204424">ไม่สามารถเข้าถึงโฮสต์ อาจเป็นเพราะการกำหนดค่าของเครือข่ายที่คุณกำลังใช้อยู่</translation>
+<translation id="242591256144136845">ลิขสิทธิ์ 2025 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="2504109125669302160">ให้สิทธิ์ "การเข้าถึง" กับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">เชื่อมต่อกับ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="2540992418118313681">คุณต้องการจะแชร์คอมพิวเตอร์เครื่องนี้เพื่อให้ผู้ใช้อื่นเห็นและควบคุมไหม</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">หน้าจอทำหน้าที่เหมือนหน้าจอสัมผัส</translation>
 <translation id="7116737094673640201">ยินดีต้อนรับสู่ Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
+<translation id="7298392173540380852">ลิขสิทธิ์ 2025 The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="7312846573060934304">โฮสต์ออฟไลน์</translation>
 <translation id="7319983568955948908">หยุดการแชร์</translation>
 <translation id="7359298090707901886">เบราว์เซอร์ที่เลือกไม่สามารถใช้เปิด URL ในคอมพิวเตอร์ในพื้นที่</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">รีเฟรชรายการโฮสต์</translation>
 <translation id="7714222945760997814">รายงานปัญหานี้</translation>
 <translation id="7868137160098754906">โปรดป้อน PIN สำหรับคอมพิวเตอร์ระยะไกล</translation>
-<translation id="7881455334687220899">ลิขสิทธิ์ 2024 The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="7895403300744144251">นโยบายการรักษาความปลอดภัยของคอมพิวเตอร์ระยะไกลไม่อนุญาตให้มีการเชื่อมต่อจากบัญชีของคุณ</translation>
 <translation id="7936528439960309876">จัดวางไว้ทางขวา</translation>
 <translation id="7970576581263377361">การตรวจสอบสิทธิ์ล้มเหลว โปรดลงชื่อเข้าใช้ Chromium อีกครั้ง</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">เซสชันขัดข้องหรือเริ่มต้นไม่สำเร็จ หากมี ~/.chrome-remote-desktop-session ในคอมพิวเตอร์ระยะไกล ให้ตรวจดูว่าได้เริ่มกระบวนการพื้นหน้าแบบระยะยาว เช่น สภาพแวดล้อมเดสก์ท็อปหรือตัวจัดการหน้าต่างแล้ว</translation>
 <translation id="8804164990146287819">นโยบายความเป็นส่วนตัว</translation>
 <translation id="8906511416443321782">ต้องได้รับสิทธิ์เข้าถึงไมโครโฟนเพื่อบันทึกเสียงและสตรีมไปยังไคลเอ็นต์ของ Chrome Remote Desktop</translation>
-<translation id="9042277333359847053">ลิขสิทธิ์ 2024 Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="9111855907838866522">คุณเชื่อมต่อกับอุปกรณ์ระยะไกลแล้ว โปรดใช้ 4 นิ้วแตะหน้าจอเพื่อเปิดเมนู</translation>
 <translation id="9126115402994542723">อย่าขอ PIN อีกเมื่อเชื่อมต่อไปยังโฮสต์นี้จากอุปกรณ์เครื่องนี้</translation>
 <translation id="916856682307586697">เปิด XSession เริ่มต้น</translation>

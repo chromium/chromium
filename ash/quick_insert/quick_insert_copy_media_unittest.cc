@@ -116,7 +116,7 @@ TEST_P(QuickInsertCopyMediaToastTest, ShowsToastAfterCopyingLink) {
   CopyMediaToClipboard(GetParam());
 
   EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
+      ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
 }
 
 }  // namespace

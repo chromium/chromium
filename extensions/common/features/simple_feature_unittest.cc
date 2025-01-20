@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/features/simple_feature.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -103,7 +99,7 @@ class SimpleFeatureTest : public testing::Test {
 };
 
 TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
-  const IsAvailableTestData tests[] = {
+  const auto tests = std::to_array<IsAvailableTestData>({
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, -1, kUnspecifiedContextId,
        Feature::IS_AVAILABLE},
@@ -124,11 +120,11 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
        Feature::IS_AVAILABLE},
       {"", Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
        Feature::UNSPECIFIED_PLATFORM, 25, kUnspecifiedContextId,
-       Feature::IS_AVAILABLE}};
+       Feature::IS_AVAILABLE},
+  });
 
   SimpleFeature feature;
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    const IsAvailableTestData& test = tests[i];
+  for (const auto& test : tests) {
     EXPECT_EQ(test.expected_result,
               feature
                   .IsAvailableToManifest(HashedExtensionId(test.extension_id),
@@ -463,7 +459,7 @@ TEST_F(SimpleFeatureTest, SessionType) {
   EXPECT_EQ("", error);
   ASSERT_TRUE(extension.get());
 
-  const FeatureSessionTypeTestData kTestData[] = {
+  const auto kTestData = std::to_array<FeatureSessionTypeTestData>({
       {"kiosk_feature in kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kKiosk,
@@ -538,32 +534,33 @@ TEST_F(SimpleFeatureTest, SessionType) {
       {"feature with kiosk session type in auto-launched kiosk session",
        Feature::IS_AVAILABLE,
        mojom::FeatureSessionType::kAutolaunchedKiosk,
-       {mojom::FeatureSessionType::kKiosk}}};
+       {mojom::FeatureSessionType::kKiosk}},
+  });
 
-  for (size_t i = 0; i < std::size(kTestData); ++i) {
+  for (const auto& entry : kTestData) {
     std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
-        ScopedCurrentFeatureSessionType(kTestData[i].current_session_type));
+        ScopedCurrentFeatureSessionType(entry.current_session_type));
 
     SimpleFeature feature;
-    feature.set_session_types(kTestData[i].feature_session_types);
+    feature.set_session_types(entry.feature_session_types);
 
-    EXPECT_EQ(kTestData[i].expected_availability,
+    EXPECT_EQ(entry.expected_availability,
               feature
                   .IsAvailableToContext(
                       extension.get(), mojom::ContextType::kPrivilegedExtension,
                       Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
                       TestContextData())
                   .result())
-        << "Failed test '" << kTestData[i].desc << "'.";
+        << "Failed test '" << entry.desc << "'.";
 
-    EXPECT_EQ(kTestData[i].expected_availability,
+    EXPECT_EQ(entry.expected_availability,
               feature
                   .IsAvailableToManifest(
                       extension->hashed_id(), Manifest::TYPE_UNKNOWN,
                       ManifestLocation::kInvalidLocation, -1,
                       Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
                   .result())
-        << "Failed test '" << kTestData[i].desc << "'.";
+        << "Failed test '" << entry.desc << "'.";
   }
 }
 
@@ -773,25 +770,6 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
-}
-
-TEST_F(SimpleFeatureTest, IsIdInArray) {
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", {}, 0));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray(
-      "bbbbccccdddddddddeeeeeeffffgghhh", {}, 0));
-
-  const char* const kIdArray[] = {
-    "bbbbccccdddddddddeeeeeeffffgghhh",
-    // aaaabbbbccccddddeeeeffffgggghhhh
-    "9A0417016F345C934A1A88F55CA17C05014EEEBA"
-  };
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, std::size(kIdArray)));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("bbbbccccdddddddddeeeeeeffffgghhh",
-                                         kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("aaaabbbbccccddddeeeeffffgggghhhh",
-                                         kIdArray, std::size(kIdArray)));
 }
 
 // Tests that all combinations of feature channel and Chrome channel correctly

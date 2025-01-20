@@ -32,6 +32,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -42,6 +44,19 @@ namespace sql {
 // static
 int64_t Statement::TimeToSqlValue(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+std::string GetSqlStatementStringForTracing(sqlite3_stmt* stmt) {
+  // See https://www.sqlite.org/c3ref/expanded_sql.html
+  // The SQLITE_OMIT_TRACE compile-time option causes sqlite3_expanded_sql() to
+  // always return NULL. Chromium is typically built with SQLITE_OMIT_TRACE
+  // defined, but conditionally expanding the statement allows us to make
+  // one-off builds that produce traces with visible expanded statements.
+#if defined(SQLITE_OMIT_TRACE)
+  return sqlite3_sql(stmt);
+#else
+  return sqlite3_expanded_sql(stmt);
+#endif
 }
 
 // This empty constructor initializes our reference with an empty one so that
@@ -94,10 +109,24 @@ SqliteResultCode Statement::StepInternal() {
   if (!CheckValid())
     return SqliteResultCode::kError;
 
+  base::ElapsedTimer timer;
+  if (!time_spent_stepping_) {
+    time_spent_stepping_ = base::TimeDelta();
+    TRACE_EVENT_BEGIN("sql", "Database::Statement",
+                      ref_->database()->GetTracingNamedTrack(),
+                      timer.start_time(), "statement",
+                      GetSqlStatementStringForTracing(ref_->stmt()));
+  }
+
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
+
+  auto elapsed = timer.Elapsed();
+  ref_->database()->RecordTimingHistogram("Sql.Statement.StepTime.", elapsed);
+  *time_spent_stepping_ += elapsed;
+
   return CheckSqliteResultCode(sqlite_result_code);
 }
 
@@ -110,13 +139,18 @@ void Statement::ReportQueryExecutionMetrics() const {
   const int kResetVMStepsToZero = 1;
   const int vm_steps = sqlite3_stmt_status(
       ref_->stmt(), SQLITE_STMTSTATUS_VM_STEP, kResetVMStepsToZero);
-  if (vm_steps > 0) {
-    const Database* database = ref_->database();
-    if (!database->histogram_tag().empty()) {
-      const std::string histogram_name =
-          "Sql.Statement." + database->histogram_tag() + ".VMSteps";
-      base::UmaHistogramCounts10000(histogram_name, vm_steps);
-    }
+  const Database* database = ref_->database();
+  if (vm_steps > 0 && !database->histogram_tag().empty()) {
+    const std::string histogram_name =
+        "Sql.Statement." + database->histogram_tag() + ".VMSteps";
+    base::UmaHistogramCounts10000(histogram_name, vm_steps);
+  }
+
+  if (time_spent_stepping_) {
+    TRACE_EVENT_END("sql", database->GetTracingNamedTrack(), "statement",
+                    GetSqlStatementStringForTracing(ref_->stmt()));
+    database->RecordTimingHistogram("Sql.Statement.ExecutionTime.",
+                                    *time_spent_stepping_);
   }
 }
 
@@ -170,6 +204,8 @@ void Statement::Reset(bool clear_bound_vars) {
   run_called_ = false;
   step_called_ = false;
 #endif  // DCHECK_IS_ON()
+
+  time_spent_stepping_ = std::nullopt;
 }
 
 bool Statement::Succeeded() const {
@@ -583,8 +619,8 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK(result_size == 0 || result_buffer != nullptr)
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
-  return base::make_span(static_cast<const uint8_t*>(result_buffer),
-                         base::checked_cast<size_t>(result_size));
+  return base::span(static_cast<const uint8_t*>(result_buffer),
+                    base::checked_cast<size_t>(result_size));
 }
 
 bool Statement::ColumnBlobAsString(int column_index, std::string* result) {

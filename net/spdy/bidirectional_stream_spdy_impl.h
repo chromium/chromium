@@ -97,7 +97,7 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   base::WeakPtr<SpdyStream> stream_;
   const NetLogSource source_dependency_;
 
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Buffers the data as it arrives asynchronously from the stream.
   SpdyReadQueue read_data_queue_;

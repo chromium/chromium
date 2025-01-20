@@ -17,6 +17,7 @@
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/quick_app_access_model.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -29,8 +30,10 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
@@ -52,6 +55,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -62,6 +66,7 @@
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -71,7 +76,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -109,6 +116,8 @@ constexpr base::TimeDelta kOverviewFadeAnimationDuration =
 
 // The app id for the settings app used for testing quick app access.
 constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
+
+bool g_sunfish_nudge_disabled_for_test = false;
 
 // Update layer animation settings for launcher scale and opacity animation that
 // runs on overview mode change.
@@ -353,6 +362,11 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kLauncherAppsCollectionsExperimentArm,
       static_cast<int>(
           AppsCollectionsController::ExperimentalArm::kDefaultValue));
+
+  // The prefs for the Sunfish launcher nudge.
+  registry->RegisterIntegerPref(prefs::kSunfishLauncherNudgeShownCount, 0);
+  registry->RegisterTimePref(prefs::kSunfishLauncherNudgeLastShown,
+                             base::Time());
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -443,14 +457,16 @@ bool AppListControllerImpl::IsVisible() {
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  if (IsKioskSession()) {
+    return;
+  }
+
   sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
   sunfish_enabled_->Init(
       prefs::kSunfishEnabled, pref_service,
       base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  if (IsKioskSession())
-    return;
+  UpdateSearchBoxUiVisibilities();
 
   if (!IsInTabletMode()) {
     DismissAppList();
@@ -1684,8 +1700,17 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
     last_visible_ = real_visibility;
 
     // Updates AppsContainerView in `fullscreen_presenter_`.
-    if (app_list_view)
+    if (app_list_view) {
       app_list_view->OnAppListVisibilityChanged(real_visibility);
+
+      // Only handle the tablet mode visibility changes, and let clamshell mode
+      // handle the nudge separately.
+      if (real_visibility && IsInTabletMode()) {
+        MaybeShowSunfishLauncherNudge(fullscreen_presenter_->GetView()
+                                          ->search_box_view()
+                                          ->sunfish_button());
+      }
+    }
 
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
@@ -1781,6 +1806,9 @@ void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
     return;
   }
 
+  client_->GetAssistantNewEntryPointEligibility(base::BindOnce(
+      &AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady,
+      weak_ptr_factory_.GetWeakPtr()));
   client_->RecalculateWouldTriggerLauncherSearchIph();
 }
 
@@ -2017,7 +2045,7 @@ void AppListControllerImpl::StartTrackingAnimationSmoothness(
     int64_t display_id) {
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
   auto* compositor = root_window->layer()->GetCompositor();
-  smoothness_tracker_ = compositor->RequestNewThroughputTracker();
+  smoothness_tracker_ = compositor->RequestNewCompositorMetricsTracker();
   smoothness_tracker_->Start(
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kHomescreenAnimationHistogram, smoothness);
@@ -2049,6 +2077,21 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
                                  : kShellWindowId_AppListContainer;
 }
 
+void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
+    bool eligible) {
+  if (eligible) {
+    std::optional<std::string> name = client_->GetAssistantNewEntryPointName();
+    CHECK(name.has_value()) << "New entry point name must be available "
+                               "if new entry point is available";
+
+    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
+        true, name.value());
+  } else {
+    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
+        false, /*name=*/std::string());
+  }
+}
+
 int AppListControllerImpl::GetPreferredBubbleWidth(
     aura::Window* root_window) const {
   DCHECK(bubble_presenter_);
@@ -2061,6 +2104,65 @@ bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
     return false;
   }
   return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
+}
+
+// static
+void AppListControllerImpl::SetSunfishNudgeDisabledForTest(bool is_disabled) {
+  g_sunfish_nudge_disabled_for_test = is_disabled;
+}
+
+void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
+    views::View* launcher_button) {
+  if (g_sunfish_nudge_disabled_for_test) {
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshNoNudges)) {
+    return;
+  }
+
+  if (!IsSunfishAllowedAndEnabled()) {
+    return;
+  }
+
+  // We don't want to show the nudge if the user is not signed in yet.
+  auto* session_controller = Shell::Get()->session_controller();
+  if (!session_controller || session_controller->IsUserSessionBlocked()) {
+    return;
+  }
+
+  auto* pref_service = session_controller->GetActivePrefService();
+  CHECK(pref_service);
+  CHECK(launcher_button);
+
+  const int shown_count =
+      pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount);
+  const base::Time last_shown_time =
+      pref_service->GetTime(prefs::kSunfishLauncherNudgeLastShown);
+
+  // Do not show the nudge more than three times, or if it has already been
+  // shown in the past 24 hours.
+  const base::Time now = base::Time::Now();
+  if ((shown_count >= capture_mode::kSunfishNudgeMaxShownCount) ||
+      ((now - last_shown_time) < capture_mode::kSunfishNudgeTimeBetweenShown)) {
+    return;
+  }
+
+  // Update the preferences.
+  pref_service->SetInteger(prefs::kSunfishLauncherNudgeShownCount,
+                           shown_count + 1);
+  pref_service->SetTime(prefs::kSunfishLauncherNudgeLastShown, now);
+
+  // TODO(hewer): Upload string for translation.
+  AnchoredNudgeData nudge_data = AnchoredNudgeData(
+      capture_mode::kSunfishLauncherNudgeId,
+      NudgeCatalogName::kSunfishLauncherNudge,
+      u"Select anything on your screen and let your Chromebook suggest best "
+      u"actions from there",
+      launcher_button);
+
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 }  // namespace ash

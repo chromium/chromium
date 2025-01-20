@@ -1073,7 +1073,7 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
 
   const unsigned length = end - start;
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(font, start, length, direction);
+      MakeGarbageCollected<ShapeResult>(start, length, direction);
   RangeContext range_data(font, direction, start, end);
   if (text_.Is8Bit()) {
     // 8-bit text is guaranteed to be horizontal latin-1.
@@ -1126,7 +1126,7 @@ ShapeResult* HarfBuzzShaper::Shape(
 
   const unsigned length = end - start;
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(font, start, length, direction);
+      MakeGarbageCollected<ShapeResult>(start, length, direction);
   RangeContext range_data(font, direction, start, end, options);
   for (const RunSegmenter::RunSegmenterRange& segmented_range : ranges) {
     DCHECK_GE(segmented_range.end, segmented_range.start);
@@ -1155,7 +1155,7 @@ ShapeResult* HarfBuzzShaper::Shape(
 
   const unsigned length = end - start;
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(font, start, length, direction);
+      MakeGarbageCollected<ShapeResult>(start, length, direction);
   RangeContext range_data(font, direction, start, end, options);
   ShapeSegment(&range_data, pre_segmented, result);
 

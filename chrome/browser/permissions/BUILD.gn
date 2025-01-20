@@ -10,8 +10,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("permissions") {
   sources = [
-    "adaptive_quiet_notification_permission_ui_enabler.cc",
-    "adaptive_quiet_notification_permission_ui_enabler.h",
     "chrome_permissions_client.cc",
     "chrome_permissions_client.h",
     "contextual_notification_permission_ui_selector.cc",
@@ -35,8 +33,6 @@ source_set("permissions") {
     "origin_keyed_permission_action_service_factory.h",
     "permission_actions_history_factory.cc",
     "permission_actions_history_factory.h",
-    "permission_auditing_service_factory.cc",
-    "permission_auditing_service_factory.h",
     "permission_decision_auto_blocker_factory.cc",
     "permission_decision_auto_blocker_factory.h",
     "permission_manager_factory.cc",
@@ -142,6 +138,7 @@ source_set("permissions") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/app_mode/isolated_web_app",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/shimless_rma",
@@ -177,7 +174,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "adaptive_quiet_notification_permission_ui_enabler_unittest.cc",
     "chrome_permission_manager_unittest.cc",
     "chrome_permission_request_manager_unittest.cc",
     "contextual_notification_permission_ui_selector_unittest.cc",

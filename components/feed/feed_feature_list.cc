@@ -17,31 +17,12 @@
 
 namespace feed {
 
-namespace switches {
-// Specifies whether RssLinkReader is enabled.
-const char kEnableRssLinkReader[] = "enable-rss-link-reader";
-}  // namespace switches
-
 // InterestFeedV2 takes precedence over InterestFeedContentSuggestions.
 // InterestFeedV2 is cached in ChromeCachedFlags. If the default value here is
 // changed, please update the cached one's default value in CachedFeatureFlags.
 BASE_FEATURE(kInterestFeedV2,
              "InterestFeedV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInterestFeedV2Hearts,
-             "InterestFeedV2Hearts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInterestFeedV2Scrolling,
-             "InterestFeedV2Scrolling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kInterestFeedNoticeCardAutoDismiss,
-             "InterestFeedNoticeCardAutoDismiss",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kDiscoFeedEndpoint,
              "DiscoFeedEndpoint",
@@ -80,10 +61,6 @@ signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
   return signin::ConsentLevel::kSignin;
 }
 
-BASE_FEATURE(kInfoCardAcknowledgementTracking,
-             "InfoCardAcknowledgementTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -106,7 +83,7 @@ BASE_FEATURE(kFeedSignedOutViewDemotion,
 
 BASE_FEATURE(kFeedDynamicColors,
              "FeedDynamicColors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedFollowUiUpdate,
              "FeedFollowUiUpdate",
@@ -126,6 +103,10 @@ BASE_FEATURE(kWebFeedKillSwitch,
 
 BASE_FEATURE(kFeedLowMemoryImprovement,
              "FeedLowMemoryImprovement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
+             "FeedRecyclerBinderUnmountOnDetach",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsWebFeedEnabledForLocale(const std::string& country) {

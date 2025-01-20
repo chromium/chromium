@@ -130,7 +130,9 @@ bool AttributionSuitableContext::operator==(
   const auto tie = [](const AttributionSuitableContext& c) {
     // We don't check the `attribution_data_host_manager_` property since we'd
     // consider two contexts equal even if the manager is no longer available.
-    return std::make_tuple(c.context_origin(), c.last_input_event(),
+    // We also don't check the `last_input_event_` property which is time
+    // sensitive.
+    return std::make_tuple(c.context_origin(),
                            c.is_nested_within_fenced_frame(),
                            c.last_navigation_id(), c.root_render_frame_id());
   };

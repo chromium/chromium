@@ -28,6 +28,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {AudioDevice, AudioSystemProperties} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import {AudioDeviceType, AudioEffectState, AudioEffectType, AudioSystemPropertiesObserverReceiver, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import type {VoiceIsolationUIAppearance} from '../mojom-webui/cros_audio_config.mojom-webui.js';
@@ -143,10 +144,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         type: Boolean,
       },
 
-      showHfpMicSr: {
-        type: Boolean,
-      },
-
       showSpatialAudio: {
         type: Boolean,
       },
@@ -161,7 +158,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected isAllowAGCEnabled: boolean;
   protected showAllowAGC: boolean;
   protected isHfpMicSrEnabled: boolean;
-  protected showHfpMicSr: boolean;
+  protected isHfpMicSrSupported: boolean;
   protected showSpatialAudio: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
@@ -179,7 +176,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
   private powerSoundsHidden_: boolean;
-  private isHfpMicSrSupported_: boolean;
   private voiceIsolationEffectModePrefValues_: {[key: string]: number};
 
   constructor() {
@@ -235,11 +231,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
     this.isHfpMicSrEnabled =
         (activeInputDevice?.hfpMicSrState === AudioEffectState.kEnabled);
-    this.isHfpMicSrSupported_ = activeInputDevice !== undefined &&
+    this.isHfpMicSrSupported = activeInputDevice !== undefined &&
         activeInputDevice?.hfpMicSrState !== AudioEffectState.kNotSupported;
-    this.showHfpMicSr =
-        (this.isHfpMicSrSupported_ &&
-         loadTimeData.getBoolean('enableAudioHfpMicSRToggle'));
 
     const activeOutputDevice = this.audioSystemProperties_.outputDevices.find(
         (device: AudioDevice) => device.isActive);
@@ -522,11 +515,25 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   }
 
   private onVoiceIsolationRowClicked_(): void {
-    this.crosAudioConfig_.refreshVoiceIsolationState();
+    // The pref change will be handled by
+    // CrasAudioHandler::OnVoiceIsolationPrefChanged().
+    // See also AudioDevicesPrefHandlerImpl::InitializePrefObservers().
+    this.crosAudioConfig_.recordVoiceIsolationEnabledChange();
   }
 
   private onVoiceIsolationEffectModeChanged_(): void {
-    this.crosAudioConfig_.refreshVoiceIsolationPreferredEffect();
+    // The pref change will be handled by
+    // CrasAudioHandler::OnVoiceIsolationPrefChanged().
+    // See also AudioDevicesPrefHandlerImpl::InitializePrefObservers().
+
+    // The pref value might not be updated yet, so only getting
+    // the UI value here to record to UMA.
+    const voiceIsolationEffectModes = strictQuery(
+        '#voiceIsolationEffectModeOptions', this.shadowRoot,
+        SettingsRadioGroupElement);
+    const selected: number = +voiceIsolationEffectModes.selected;
+    this.crosAudioConfig_.recordVoiceIsolationPreferredEffectChange(
+        selected as AudioEffectType);
   }
 
   private onSpatialAudioRowClicked_(): void {

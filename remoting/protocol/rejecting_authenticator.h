@@ -6,7 +6,9 @@
 #define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
 
 #include <string>
+#include <string_view>
 
+#include "base/location.h"
 #include "remoting/protocol/authenticator.h"
 
 namespace remoting::protocol {
@@ -14,7 +16,12 @@ namespace remoting::protocol {
 // Authenticator that accepts one message and rejects connection after that.
 class RejectingAuthenticator : public Authenticator {
  public:
-  RejectingAuthenticator(RejectionReason rejection_reason);
+  RejectingAuthenticator(
+      RejectionReason rejection_reason,
+      std::string_view rejection_message,
+      // Current() takes location info with default parameters, which is
+      // filled when this constructor is called.
+      const base::Location& rejection_location = base::Location::Current());
 
   RejectingAuthenticator(const RejectingAuthenticator&) = delete;
   RejectingAuthenticator& operator=(const RejectingAuthenticator&) = delete;
@@ -27,6 +34,7 @@ class RejectingAuthenticator : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
@@ -37,6 +45,7 @@ class RejectingAuthenticator : public Authenticator {
 
  private:
   RejectionReason rejection_reason_;
+  RejectionDetails rejection_details_;
   State state_ = WAITING_MESSAGE;
   std::string auth_key_;
 };

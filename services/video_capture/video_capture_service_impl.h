@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,11 +21,11 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "services/video_capture/ash/video_capture_device_factory_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "services/viz/public/cpp/gpu/gpu.h"
@@ -58,7 +57,7 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   ~VideoCaptureServiceImpl() override;
 
   // mojom::VideoCaptureService implementation.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InjectGpuDependencies(mojo::PendingRemote<mojom::AcceleratorFactory>
                                  accelerator_factory) override;
   void ConnectToCameraAppDeviceBridge(
@@ -67,7 +66,7 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
       override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<mojom::VideoSourceProvider> receiver) override;
   void BindControlsForTesting(
@@ -92,10 +91,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   // this function should be called on service startup.
   void InitializeDeviceMonitor();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnDisconnectedFromVCDFactoryAsh();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::DeviceMonitorMac> video_capture_device_monitor_mac_;
 #endif
@@ -110,7 +105,7 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   std::unique_ptr<VideoSourceProviderImpl> video_source_provider_;
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Must be destroyed before |device_factory_|.
   std::unique_ptr<crosapi::VideoCaptureDeviceFactoryAsh>
       device_factory_ash_adapter_;

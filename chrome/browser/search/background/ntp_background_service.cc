@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
-#include "chrome/browser/search/background/ntp_backgrounds.h"
 #include "components/search/ntp_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -661,12 +660,6 @@ void NtpBackgroundService::RemoveObserver(
 }
 
 bool NtpBackgroundService::IsValidBackdropUrl(const GURL& url) const {
-  for (auto& ntp_background : GetNtpBackgrounds()) {
-    if (ntp_background == url) {
-      return true;
-    }
-  }
-
   for (auto& image : collection_images_) {
     if (image.image_url == url)
       return true;

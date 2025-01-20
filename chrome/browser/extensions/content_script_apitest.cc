@@ -125,7 +125,7 @@ constexpr char kNewTabHtml[] = "<html>NewTabOverride!</html>";
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ContentScriptApiTest : public ExtensionApiTest {
  public:
@@ -135,7 +135,7 @@ class ContentScriptApiTest : public ExtensionApiTest {
   ContentScriptApiTest(const ContentScriptApiTest&) = delete;
   ContentScriptApiTest& operator=(const ContentScriptApiTest&) = delete;
 
-  ~ContentScriptApiTest() override {}
+  ~ContentScriptApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

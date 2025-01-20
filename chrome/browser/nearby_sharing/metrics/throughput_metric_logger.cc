@@ -14,7 +14,7 @@
 namespace nearby::share::metrics {
 
 ThroughputMetricLogger::ThroughputMetricLogger() = default;
-ThroughputMetricLogger::~ThroughputMetricLogger() {}
+ThroughputMetricLogger::~ThroughputMetricLogger() = default;
 
 void ThroughputMetricLogger::OnTransferStarted(const ShareTarget& share_target,
                                                long total_bytes) {

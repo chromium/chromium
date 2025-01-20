@@ -49,18 +49,17 @@ GroupId FakeDataSharingSDKDelegate::AddGroupAndReturnId(
 }
 
 void FakeDataSharingSDKDelegate::AddMember(const GroupId& group_id,
-                                           const std::string& member_gaia_id) {
+                                           const GaiaId& member_gaia_id) {
   auto group_it = groups_.find(group_id);
   ASSERT_TRUE(group_it != groups_.end());
 
   data_sharing_pb::GroupMember member;
-  member.set_gaia_id(member_gaia_id);
+  member.set_gaia_id(member_gaia_id.ToString());
   *group_it->second.add_members() = member;
 }
 
-void FakeDataSharingSDKDelegate::RemoveMember(
-    const GroupId& group_id,
-    const std::string& member_gaia_id) {
+void FakeDataSharingSDKDelegate::RemoveMember(const GroupId& group_id,
+                                              const GaiaId& member_gaia_id) {
   auto group_it = groups_.find(group_id);
   ASSERT_TRUE(group_it != groups_.end());
 
@@ -69,13 +68,13 @@ void FakeDataSharingSDKDelegate::RemoveMember(
       std::remove_if(
           mutable_members->begin(), mutable_members->end(),
           [&member_gaia_id](const data_sharing_pb::GroupMember& member) {
-            return member.gaia_id() == member_gaia_id;
+            return member.gaia_id() == member_gaia_id.ToString();
           }),
       mutable_members->end());
 }
 
 void FakeDataSharingSDKDelegate::AddAccount(const std::string& email,
-                                            const std::string& gaia_id) {
+                                            const GaiaId& gaia_id) {
   email_to_gaia_id_[email] = gaia_id;
 }
 
@@ -102,8 +101,9 @@ void FakeDataSharingSDKDelegate::ReadGroups(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
   data_sharing_pb::ReadGroupsResult result;
-  for (const auto& raw_group_id : params.group_ids()) {
-    const GroupId group_id(raw_group_id);
+  for (const data_sharing_pb::ReadGroupsParams::GroupParams& group_params :
+       params.group_params()) {
+    const GroupId group_id(group_params.group_id());
     if (groups_.find(group_id) != groups_.end()) {
       *result.add_group_data() = groups_[group_id];
     } else {
@@ -181,12 +181,12 @@ void FakeDataSharingSDKDelegate::LeaveGroup(
 
   absl::Status status = absl::OkStatus();
   auto* group_members = group_it->second.mutable_members();
-  std::string user_gaia_id = user_gaia_id_;
+  GaiaId user_gaia_id = user_gaia_id_;
   CHECK(!user_gaia_id.empty());
   auto member_it =
       std::find_if(group_members->begin(), group_members->end(),
                    [&user_gaia_id](const data_sharing_pb::GroupMember& member) {
-                     return member.gaia_id() == user_gaia_id;
+                     return member.gaia_id() == user_gaia_id.ToString();
                    });
   if (member_it != group_members->end()) {
     group_members->erase(member_it);
@@ -221,7 +221,7 @@ void FakeDataSharingSDKDelegate::LookupGaiaIdByEmail(
   auto it = email_to_gaia_id_.find(params.email());
   if (it != email_to_gaia_id_.end()) {
     data_sharing_pb::LookupGaiaIdByEmailResult result;
-    result.set_gaia_id(it->second);
+    result.set_gaia_id(it->second.ToString());
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -249,7 +249,7 @@ void FakeDataSharingSDKDelegate::AddAccessToken(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void FakeDataSharingSDKDelegate::SetUserGaiaId(const std::string& gaia_id) {
+void FakeDataSharingSDKDelegate::SetUserGaiaId(const GaiaId& gaia_id) {
   user_gaia_id_ = gaia_id;
 }
 

@@ -14,22 +14,20 @@ import android.view.inputmethod.CursorAnchorInfo;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 
-import java.util.Map;
-
 /** Test for {@link CursorAnchorInfoController}. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisableFeatures(BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE)
 public class CursorAnchorInfoControllerTest {
     private static final class TestViewDelegate implements CursorAnchorInfoController.ViewDelegate {
         public int locationX;
@@ -142,13 +140,6 @@ public class CursorAnchorInfoControllerTest {
             Assert.assertEquals(expecteSelectionStart, actual.getSelectionStart());
             Assert.assertEquals(expecteSelectionEnd, actual.getSelectionEnd());
         }
-    }
-
-    @Before
-    public void setUp() {
-        // Cannot access native features exposed to Java in tests without native initialization.
-        // Instead, assign a test value to the feature.
-        FeatureList.setTestFeatures(Map.of(BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE, false));
     }
 
     @Test

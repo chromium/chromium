@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.
-  EXPECT_EQ(u"A Web App - AppTitle",
+  EXPECT_EQ(u"A Web App - ApplicationTitle",
             app_browser->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
@@ -108,19 +108,21 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
   {
     // Add app title via script and validate title is updated.
     std::string add_app_title =
-        "var meta = document.createElement('meta'); meta.name = 'app-title'; "
-        "meta.content = 'AppTitle'; "
+        "var meta = document.createElement('meta'); meta.name = "
+        "'application-title'; "
+        "meta.content = 'ApplicationTitle'; "
         "document.getElementsByTagName('head')[0].appendChild(meta);";
     EXPECT_TRUE(content::ExecJs(web_contents, add_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-    EXPECT_EQ(u"A Web App - AppTitle",
+    EXPECT_EQ(u"A Web App - ApplicationTitle",
               app_browser->GetWindowTitleForCurrentTab(false));
   }
 
   {
     // Update app title via script and validate title is updated.
     std::string update_app_title =
-        "document.head.getElementsByTagName('meta')['app-title'].content = "
+        "document.head.getElementsByTagName('meta')['application-title']."
+        "content = "
         "'New'";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -131,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
   {
     // Remove app title via script and validate title is updated.
     std::string remove_app_title =
-        "document.head.getElementsByTagName('meta')['app-title'].remove()";
+        "document.head.getElementsByTagName('meta')['application-title']."
+        "remove()";
     EXPECT_TRUE(content::ExecJs(web_contents, remove_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
@@ -160,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.
-  EXPECT_EQ(u"A Web App - AppTitle",
+  EXPECT_EQ(u"A Web App - ApplicationTitle",
             app_browser->GetWindowTitleForCurrentTab(false));
 
   // Navigate to page without app title.
@@ -172,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   // Navigate to page with app title.
   web_contents->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(u"A Web App - AppTitle",
+  EXPECT_EQ(u"A Web App - ApplicationTitle",
             app_browser->GetWindowTitleForCurrentTab(false));
 
   // Navigate again to page without app title.
@@ -206,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.
-  EXPECT_EQ(u"A Web App - AppTitle",
+  EXPECT_EQ(u"A Web App - ApplicationTitle",
             app_browser->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
@@ -217,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
   // Update app title to empty via script and validate title is updated.
   {
     std::string update_app_title =
-        "document.head.getElementsByTagName('meta')['app-title'].content = ''";
+        "document.head.getElementsByTagName('meta')['application-title']."
+        "content = ''";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
@@ -226,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
   // Update app title to space via script and validate title is updated.
   {
     std::string update_app_title =
-        "document.head.getElementsByTagName('meta')['app-title'].content = ' '";
+        "document.head.getElementsByTagName('meta')['application-title']."
+        "content = ' '";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));

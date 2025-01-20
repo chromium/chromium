@@ -54,14 +54,6 @@ class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
-// Configures rounding on reported results from FLEDGE. This feature is intended
-// to be always enabled, but available to attach FeatureParams to so that we can
-// adjust the rounding setting via Finch.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeRounding);
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeBidReportingBits;
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeScoreReportingBits;
-CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeAdCostReportingBits;
-
 // Handles the reporting phase of FLEDGE auctions with a winner. Loads the
 // bidder, seller, and (if present) component seller worklets and invokes
 // reporting-related methods, and invokes reportResult() and reportWin() on
@@ -166,7 +158,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
         component_auction_modified_bid_params;
   };
 
-  // Information about the winning bit that is not specific to a seller.
+  // Information about the winning bid that is not specific to a seller.
   struct CONTENT_EXPORT WinningBidInfo {
     explicit WinningBidInfo(
         const SingleStorageInterestGroup& storage_interest_group);
@@ -176,7 +168,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     const SingleStorageInterestGroup storage_interest_group;
 
     GURL render_url;
-    std::vector<GURL> ad_components;
+
+    // Points to the InterestGroupAd within the `interest_group` owned by
+    // `storage_interest_group`.
+    raw_ptr<const blink::InterestGroup::Ad> bid_ad;
+
     std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
     // Bid returned by the bidder.
@@ -190,6 +186,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     // Modeling signals returned by the bidder.
     std::optional<uint16_t> modeling_signals;
+
+    // Arbitrary data passed from generateBid to use in `reportAggregateWin()`.
+    std::optional<std::string> aggregate_win_signals;
 
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
@@ -348,6 +347,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       unsigned k);
 
  private:
+  // Configures rounding on reported results from FLEDGE.
+  static constexpr int kFledgeBidReportingBits = 8;
+  static constexpr int kFledgeScoreReportingBits = 8;
+  static constexpr int kFledgeAdCostReportingBits = 8;
+
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on
   // success, OnSellerWorkletFatalError() on error.
   void RequestSellerWorklet(

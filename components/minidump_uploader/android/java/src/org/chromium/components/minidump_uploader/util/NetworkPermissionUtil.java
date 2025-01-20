@@ -7,10 +7,13 @@ package org.chromium.components.minidump_uploader.util;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A container for determining whether it's ok to upload crash reports over the currently active
  * network.
  */
+@NullMarked
 public class NetworkPermissionUtil {
     public static boolean isNetworkUnmetered(ConnectivityManager connectivityManager) {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();

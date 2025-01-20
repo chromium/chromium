@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
+import java.util.Optional;
 
 /** Util class for survey related testing. */
 public class TestSurveyUtils {
@@ -38,7 +39,13 @@ public class TestSurveyUtils {
             String trigger, String[] psdBitFields, String[] psdStringFields) {
         SurveyConfig.setSurveyConfigForTesting(
                 new SurveyConfig(
-                        trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
+                        trigger,
+                        TEST_TRIGGER_ID_FOO,
+                        1.0f,
+                        false,
+                        psdBitFields,
+                        psdStringFields,
+                        Optional.empty()));
     }
 
     /** Sets the flag that determines if we should forcefully use the testing configuration. */

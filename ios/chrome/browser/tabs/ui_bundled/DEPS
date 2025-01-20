@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/bubble/ui_bundled",
-  "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/tab_switcher",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/ntp/model",

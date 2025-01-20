@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -37,6 +40,7 @@ void WebAppTabHelper::Create(tabs::TabInterface* tab,
   // window, or vise versa, we want to keep the state on WebAppTabHelper.
   auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
   if (tab->GetContents() == contents && tab_helper) {
+    tab_helper->SubscribeToTabState(tab);
     return;
   }
 
@@ -48,6 +52,7 @@ void WebAppTabHelper::Create(tabs::TabInterface* tab,
   // discarding will no longer change the WebContents.
 
   auto helper = std::make_unique<WebAppTabHelper>(tab, contents);
+  helper->SubscribeToTabState(tab);
   contents->SetUserData(UserDataKey(), std::move(helper));
 }
 
@@ -76,8 +81,8 @@ WebAppTabHelper::GetAppIdForNotificationAttribution(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
   if (!web_app_provider ||
-      !web_app_provider->registrar_unsafe().IsInstallState(
-          *app_id, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_provider->registrar_unsafe().GetInstallState(*app_id) !=
+          proto::INSTALLED_WITH_OS_INTEGRATION) {
     return std::nullopt;
   }
   // Default apps are locally installed but unless an app shim has been created
@@ -112,7 +117,10 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   // If the app_id is changing, then it should exist in the database.
   DCHECK(app_id_ == app_id || !app_id ||
-         provider_->registrar_unsafe().IsInstalled(*app_id) ||
+         provider_->registrar_unsafe().IsInstallState(
+             *app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     return;
@@ -137,11 +145,25 @@ void WebAppTabHelper::SetIsInAppWindow(
   SetState(app_id(), std::move(window_app_id));
 }
 
+void WebAppTabHelper::SetCallbackToRunOnTabChanges(base::OnceClosure callback) {
+  on_tab_details_changed_callback_ = std::move(callback);
+}
+
+void WebAppTabHelper::OnTabBackgrounded(tabs::TabInterface*) {
+  MaybeNotifyTabChanged();
+}
+
+void WebAppTabHelper::OnTabDetached(tabs::TabInterface* tab_interface,
+                                    tabs::TabInterface::DetachReason) {
+  MaybeNotifyTabChanged();
+}
+
 void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    SetAppId(FindAppWithUrlInScope(url));
+    SetAppId(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+        url, web_app::WebAppFilter::InstalledInChrome()));
   }
 
   // If navigating to a Web App (including navigation in sub frames), let
@@ -191,19 +213,26 @@ void WebAppTabHelper::FlushLaunchQueueForTesting() const {
 WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
                                  content::WebContents* contents)
     : content::WebContentsUserData<WebAppTabHelper>(*contents),
-      content::WebContentsObserver(contents),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          tab->GetBrowserWindowInterface()->GetProfile())) {
+      content::WebContentsObserver(contents) {
+  CHECK(AreWebAppsEnabled(tab->GetBrowserWindowInterface()->GetProfile()));
+  provider_ = WebAppProvider::GetForLocalAppsUnchecked(
+      tab->GetBrowserWindowInterface()->GetProfile());
+  CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
-  SetState(FindAppWithUrlInScope(contents->GetLastCommittedURL()),
+  SetState(provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+               contents->GetLastCommittedURL(),
+               web_app::WebAppFilter::InstalledInChrome()),
            /*window_app_id=*/std::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
     const webapps::AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
+  // Which capability check (if any) would fit best here?
   std::optional<webapps::AppId> app_id =
-      FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL(),
+          web_app::WebAppFilter::InstalledInChrome());
   if (app_id == installed_app_id) {
     SetAppId(app_id);
   }
@@ -279,9 +308,21 @@ void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
       url, base::DoNothing());
 }
 
-std::optional<webapps::AppId> WebAppTabHelper::FindAppWithUrlInScope(
-    const GURL& url) const {
-  return provider_->registrar_unsafe().FindAppWithUrlInScope(url);
+void WebAppTabHelper::SubscribeToTabState(tabs::TabInterface* tab_interface) {
+  tab_subscriptions_.clear();
+  CHECK(tab_interface);
+  tab_subscriptions_.push_back(
+      tab_interface->RegisterWillDeactivate(base::BindRepeating(
+          &WebAppTabHelper::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(
+      tab_interface->RegisterWillDetach(base::BindRepeating(
+          &WebAppTabHelper::OnTabDetached, weak_factory_.GetWeakPtr())));
+}
+
+void WebAppTabHelper::MaybeNotifyTabChanged() {
+  if (on_tab_details_changed_callback_) {
+    std::move(on_tab_details_changed_callback_).Run();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

@@ -101,7 +101,6 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
 
   viz::TextureDrawQuad* quad =
       render_pass.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  constexpr bool kFlipped = false;
   constexpr bool kNearest = false;
   constexpr bool kPremultiplied = true;
   constexpr bool kSecureOutputOnly = false;
@@ -111,7 +110,7 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, needs_blending,
                viz_resource_id, kPremultiplied, uv_top_left(),
-               uv_bottom_right(), SkColors::kTransparent, kFlipped, kNearest,
+               uv_bottom_right(), SkColors::kTransparent, kNearest,
                kSecureOutputOnly, kVideoType);
 }
 

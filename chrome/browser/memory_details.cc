@@ -160,14 +160,14 @@ ProcessMemoryInformation::ProcessMemoryInformation()
 ProcessMemoryInformation::ProcessMemoryInformation(
     const ProcessMemoryInformation& other) = default;
 
-ProcessMemoryInformation::~ProcessMemoryInformation() {}
+ProcessMemoryInformation::~ProcessMemoryInformation() = default;
 
 bool ProcessMemoryInformation::operator<(
     const ProcessMemoryInformation& rhs) const {
   return private_memory_footprint_kb < rhs.private_memory_footprint_kb;
 }
 
-ProcessData::ProcessData() {}
+ProcessData::ProcessData() = default;
 
 ProcessData::ProcessData(const ProcessData& rhs)
     : name(rhs.name),
@@ -175,7 +175,7 @@ ProcessData::ProcessData(const ProcessData& rhs)
       processes(rhs.processes) {
 }
 
-ProcessData::~ProcessData() {}
+ProcessData::~ProcessData() = default;
 
 ProcessData& ProcessData::operator=(const ProcessData& rhs) {
   name = rhs.name;
@@ -218,7 +218,7 @@ void MemoryDetails::StartFetch() {
       base::BindOnce(&MemoryDetails::CollectProcessData, this, child_info));
 }
 
-MemoryDetails::~MemoryDetails() {}
+MemoryDetails::~MemoryDetails() = default;
 
 std::string MemoryDetails::ToLogString(bool include_tab_title) {
   std::string log;
@@ -306,7 +306,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
       DCHECK(process_map);
-      int rph_id = render_process_host->GetID();
+      int rph_id = render_process_host->GetDeprecatedID();
       process_is_for_extensions = process_map->Contains(rph_id);
 
       // For our purposes, don't count processes running hosted apps as

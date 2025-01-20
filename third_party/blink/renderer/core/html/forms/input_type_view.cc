@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -103,8 +102,8 @@ LayoutObject* InputTypeView::CreateLayoutObject(
   return LayoutObject::CreateObject(&GetElement(), style);
 }
 
-ControlPart InputTypeView::AutoAppearance() const {
-  return kNoControlPart;
+AppearanceValue InputTypeView::AutoAppearance() const {
+  return AppearanceValue::kNone;
 }
 
 TextDirection InputTypeView::ComputedTextDirection() {
@@ -131,6 +130,10 @@ bool InputTypeView::HasOpenedPopup() const {
   return false;
 }
 
+bool InputTypeView::IsPickerVisible() const {
+  return false;
+}
+
 bool InputTypeView::NeedsShadowSubtree() const {
   return true;
 }
@@ -148,13 +151,11 @@ void InputTypeView::CreateShadowSubtreeIfNeeded(bool is_type_changing) {
   // not fully be up to date, so that it's problematic to do the following.
   // Additionally the following is not necessary when the type is changing,
   // because HTMLInputElement effectively has similar logic.
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-      !is_type_changing) {
+  if (!is_type_changing) {
     if (needs_update_view_in_create_shadow_subtree_) {
       UpdateView();
     }
-    // When CreateInputShadowTreeDuringLayoutEnabled is true, placeholder
-    // updates are ignored. Update now if needed.
+    // Placeholder updates are ignored. Update now if needed.
     if (!GetElement().SuggestedValue().empty() ||
         GetElement().FastHasAttribute(html_names::kPlaceholderAttr)) {
       GetElement().UpdatePlaceholderVisibility();

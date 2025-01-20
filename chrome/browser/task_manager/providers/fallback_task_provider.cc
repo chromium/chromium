@@ -53,7 +53,7 @@ FallbackTaskProvider::FallbackTaskProvider(
   }
 }
 
-FallbackTaskProvider::~FallbackTaskProvider() {}
+FallbackTaskProvider::~FallbackTaskProvider() = default;
 
 Task* FallbackTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -211,7 +211,7 @@ FallbackTaskProvider::SubproviderSource::SubproviderSource(
     : fallback_task_provider_(fallback_task_provider),
       subprovider_(std::move(subprovider)) {}
 
-FallbackTaskProvider::SubproviderSource::~SubproviderSource() {}
+FallbackTaskProvider::SubproviderSource::~SubproviderSource() = default;
 
 void FallbackTaskProvider::SubproviderSource::TaskAdded(Task* task) {
   DCHECK(task);

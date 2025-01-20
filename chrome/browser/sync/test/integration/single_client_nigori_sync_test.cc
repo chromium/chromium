@@ -67,6 +67,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/ec_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/features.h"
@@ -79,7 +80,6 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/trusted_vault/features.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -139,7 +139,7 @@ MATCHER_P4(StatusLabelsMatch,
   return true;
 }
 
-std::string GetDefaultUserGaiaID() {
+GaiaId GetDefaultUserGaiaID() {
   return signin::GetTestGaiaIdForEmail(SyncTest::kDefaultUserEmail);
 }
 
@@ -1207,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   ASSERT_THAT(GetSyncStatusLabels(GetProfile(0)),
               StatusLabelsMatch(
                   SyncStatusMessageType::kPasswordsOnlySyncError,
-                  IDS_SETTINGS_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+                  IDS_SYNC_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
                   SyncStatusActionType::kRetrieveTrustedVaultKeys));
 
   // There needs to be an existing tab for the second tab (the retrieval flow)
@@ -1232,9 +1232,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(
-                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+              StatusLabelsMatch(SyncStatusMessageType::kSynced,
+                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
+                                SyncStatusActionType::kNoAction));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
@@ -1519,9 +1519,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(
-                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+              StatusLabelsMatch(SyncStatusMessageType::kSynced,
+                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
+                                SyncStatusActionType::kNoAction));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string is empty.
@@ -1868,9 +1868,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // No messages expected in settings.
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
-              StatusLabelsMatch(
-                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+              StatusLabelsMatch(SyncStatusMessageType::kSynced,
+                                IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
+                                SyncStatusActionType::kNoAction));
 
   // Mimic opening a web page where the user can interact with the degraded
   // recoverability flow. Before that, there needs to be an existing tab for the

@@ -78,6 +78,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -101,11 +102,6 @@
 #endif  // !defined(OFFICIAL_BUILD)
 
 namespace ash {
-
-const constexpr char kIconHealthMetricName[] =
-    "Webapp.SystemApps.IconsAreHealthyInSession";
-const constexpr char kIconsFixedOnReinstallMetricName[] =
-    "Webapp.SystemApps.IconsFixedOnReinstall";
 
 namespace {
 
@@ -219,10 +215,6 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
 }
 
 }  // namespace
-
-// static
-const char SystemWebAppManager::kInstallResultHistogramName[];
-const char SystemWebAppManager::kInstallDurationHistogramName[];
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
@@ -555,7 +547,8 @@ std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
   }
 
   std::optional<webapps::AppId> app_id =
-      provider_->registrar_unsafe().FindAppWithUrlInScope(url);
+      provider_->registrar_unsafe().FindBestAppWithUrlInScope(
+          url, web_app::WebAppFilter::InstalledInChrome());
   if (!app_id.has_value()) {
     return std::nullopt;
   }
@@ -650,7 +643,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
   DCHECK_GE(install_duration.InMilliseconds(), 0);
 
   if (!shutting_down_) {
-    base::UmaHistogramMediumTimes(kInstallDurationHistogramName,
+    base::UmaHistogramMediumTimes(kFreshInstallDurationHistogramName,
                                   install_duration);
   }
 }
@@ -778,17 +771,17 @@ void SystemWebAppManager::OnIconCheckResult(
     case SystemWebAppIconChecker::IconState::kNoAppInstalled:
       break;
     case SystemWebAppIconChecker::IconState::kBroken:
-      base::UmaHistogramBoolean(kIconHealthMetricName, false);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, false);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, false);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, false);
       }
       pref_service_->SetBoolean(kSystemWebAppSessionHasBrokenIconsPrefName,
                                 true);
       break;
     case SystemWebAppIconChecker::IconState::kOk:
-      base::UmaHistogramBoolean(kIconHealthMetricName, true);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, true);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, true);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, true);
       }
       pref_service_->ClearPref(kSystemWebAppSessionHasBrokenIconsPrefName);
       pref_service_->ClearPref(prefs::kSystemWebAppInstallFailureCount);

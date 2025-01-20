@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,11 +30,10 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -104,7 +102,7 @@ class TracingControllerTest : public ContentBrowserTest {
     enable_recording_done_callback_count_ = 0;
     disable_recording_done_callback_count_ = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::DebugDaemonClient::InitializeFake();
     // Set statistic provider for hardware class tests.
     ash::system::StatisticsProvider::SetTestProvider(
@@ -117,7 +115,7 @@ class TracingControllerTest : public ContentBrowserTest {
 
   void TearDown() override {
     ContentBrowserTest::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::DebugDaemonClient::Shutdown();
 #endif
   }
@@ -321,7 +319,7 @@ class TracingControllerTest : public ContentBrowserTest {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  protected:
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
@@ -412,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   ASSERT_TRUE(trace_config);
   EXPECT_EQ(TraceConfig().ToString(), *trace_config);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string* hardware_class = metadata_json->FindString("hardware-class");
   ASSERT_TRUE(hardware_class);
   EXPECT_EQ(*hardware_class, "test-hardware-class");
@@ -433,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   EXPECT_TRUE(KeyNotEquals(*metadata_json, "network-type", "__stripped__"));
   EXPECT_TRUE(KeyNotEquals(*metadata_json, "os-name", "__stripped__"));
   EXPECT_TRUE(KeyNotEquals(*metadata_json, "user-agent", "__stripped__"));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(KeyNotEquals(*metadata_json, "hardware-class", "__stripped__"));
 #endif
 
@@ -495,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_DoubleStopTracing) {
 }
 
 // Only CrOS and Cast support system tracing.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
 #define MAYBE_SystemTraceEvents SystemTraceEvents
 #else
 #define MAYBE_SystemTraceEvents DISABLED_SystemTraceEvents

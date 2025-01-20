@@ -389,8 +389,6 @@ def make_accessor_functions(cg_context):
 
     def make_check_assigned_value(member):
         idl_type = member.idl_type.unwrap(typedef=True)
-        if idl_type.is_object:
-            return F("DCHECK({}.IsObject());", member.value_var)
         if (member.type_info.is_gc_type and not idl_type.is_nullable):
             return F("DCHECK({});", member.value_var)
         return None
@@ -687,9 +685,9 @@ def make_trace_function(cg_context):
     body = func_def.body
 
     for member in cg_context.dictionary_own_members:
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.value_var)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.value_var)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_def.make_decl(override=True), func_def

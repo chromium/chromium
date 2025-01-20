@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -127,18 +129,17 @@ enum class IdentityConfirmationSnackbarDecision {
 
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
+  ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile());
-  NSArray<id<SystemIdentity>>* allIdentities =
-      accountManagerService->GetAllIdentities();
-  if ([allIdentities count] <= 1) {
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(profile);
+  if ([identitiesOnDevice count] <= 1) {
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 

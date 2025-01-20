@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -46,7 +47,8 @@ void SetListAccountsResponseWithParams(
   for (const auto& param : params) {
     std::string response_part = base::StringPrintf(
         "[\"b\", 0, \"n\", \"%s\", \"p\", 0, 0, 0, 0, %d, \"%s\"",
-        param.email.c_str(), param.valid ? 1 : 0, param.gaia_id.c_str());
+        param.email.c_str(), param.valid ? 1 : 0,
+        param.gaia_id.ToString().c_str());
     if (param.signed_out || !param.verified) {
       response_part +=
           base::StringPrintf(", null, null, null, %d, %d",
@@ -70,7 +72,7 @@ void SetListAccountsResponseNoAccounts(
 
 void SetListAccountsResponseOneAccount(
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     TestURLLoaderFactory* test_url_loader_factory) {
   CookieParams params = {email, gaia_id, /*valid=*/true,
                          /*signed_out=*/false, /*verified=*/true};
@@ -85,9 +87,9 @@ void SetListAccountsResponseOneAccountWithParams(
 
 void SetListAccountsResponseTwoAccounts(
     const std::string& email1,
-    const std::string& gaia_id1,
+    const GaiaId& gaia_id1,
     const std::string& email2,
-    const std::string& gaia_id2,
+    const GaiaId& gaia_id2,
     TestURLLoaderFactory* test_url_loader_factory) {
   SetListAccountsResponseWithParams(
       {{email1, gaia_id1, /*valid=*/true, /*signed_out=*/false,

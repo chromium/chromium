@@ -84,7 +84,7 @@ def merge_shard_results(summary_json, jsons_to_merge):
     if json_data:
       # Set-like fields.
       for key in ('all_tests', 'disabled_tests', 'global_tags'):
-        merged[key].update(json_data.get(key), [])
+        merged[key].update(json_data.get(key, []))
 
       # Dict-like fields.
       for key in ('test_locations', ):

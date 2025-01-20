@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -212,7 +213,6 @@ void Display::PresentationGroupTiming::OnPresent(
 }
 
 Display::Display(
-    SharedBitmapManager* bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* gpu_scheduler,
     const RendererSettings& settings,
@@ -223,8 +223,7 @@ Display::Display(
     std::unique_ptr<OverlayProcessorInterface> overlay_processor,
     std::unique_ptr<DisplaySchedulerBase> scheduler,
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
-    : bitmap_manager_(bitmap_manager),
-      shared_image_manager_(shared_image_manager),
+    : shared_image_manager_(shared_image_manager),
       gpu_scheduler_(gpu_scheduler),
       settings_(settings),
       debug_settings_(debug_settings),
@@ -241,7 +240,7 @@ Display::Display(
   DCHECK(output_surface_);
   DCHECK(frame_sink_id_.is_valid());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static bool logged = false;
   // TODO(b/329688656): Remove this after the issue is resolved.
   if (!logged && output_surface_->capabilities().max_texture_size > 0) {
@@ -352,6 +351,7 @@ void Display::SetLocalSurfaceId(const LocalSurfaceId& id,
   current_surface_id_ = SurfaceId(frame_sink_id_, id);
   device_scale_factor_ = device_scale_factor;
 
+  occlusion_culler_->UpdateDeviceScaleFactor(device_scale_factor_);
   damage_tracker_->SetNewRootSurface(current_surface_id_);
 }
 
@@ -473,7 +473,7 @@ void Display::InitializeRenderer() {
     resource_provider_ = std::move(resource_provider);
   } else {
     auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
-        bitmap_manager_, shared_image_manager_, gpu_scheduler_);
+        shared_image_manager_, gpu_scheduler_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
@@ -601,18 +601,17 @@ void DebugDrawFrame(
                         display_rect.origin(), display_rect.ToString());
       DBG_DRAW_TEXT_OPT(
           "frame.render_pass.resource_id", DBG_OPT_RED, display_rect.origin(),
-          base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
+          base::NumberToString(quad->resource_id.GetUnsafeValue()));
 
-      if (quad->resources.ids[0] != kInvalidResourceId) {
+      if (quad->resource_id != kInvalidResourceId) {
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_format", DBG_OPT_BLUE, display_rect.origin(),
-            resource_provider->GetSharedImageFormat(quad->resources.ids[0])
+            resource_provider->GetSharedImageFormat(quad->resource_id)
                 .ToString());
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_color_space", DBG_OPT_GREEN,
             display_rect.origin(),
-            resource_provider->GetColorSpace(quad->resources.ids[0])
-                .ToString());
+            resource_provider->GetColorSpace(quad->resource_id).ToString());
       }
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
     }
@@ -1011,7 +1010,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                                  "Graphics.Pipeline.DrawAndSwap",
                                  swapped_trace_id_, "Draw");
     base::ElapsedTimer draw_occlusion_timer;
-    occlusion_culler_->RemoveOverdrawQuads(&frame, device_scale_factor_);
+    occlusion_culler_->RemoveOverdrawQuads(&frame);
     DebugDrawFrameVisible(frame);
     UMA_HISTOGRAM_COUNTS_1000(
         "Compositing.Display.Draw.Occlusion.Calculation.Time",
@@ -1044,9 +1043,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     const auto& main_surfaces =
         surface_manager_->GetSurfacesReferencedByParent(current_surface_id_);
-    const bool main_frame_only_adpf_renderer_main =
-        base::FeatureList::IsEnabled(
-            features::kEnableMainFrameOnlyADPFRendererMain);
 
     const bool interactive_only_adpf_renderer = base::FeatureList::IsEnabled(
         features::kEnableInteractiveOnlyADPFRenderer);
@@ -1093,11 +1089,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         std::vector<Thread> surface_threads = surface->GetThreads();
         for (const auto& thread : surface_threads) {
           if (thread.type == Thread::Type::kMain &&
-              main_frame_only_adpf_renderer_main && !is_for_main_frame) {
-            continue;
-          }
-
-          if (thread.type == Thread::Type::kMain &&
               surface_id != current_surface_id_) {
             renderer_main_thread_ids.insert(thread.id);
           } else {
@@ -1116,6 +1107,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
         boost_type);
 
+    bool has_interactive_or_animated_frame = false;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
@@ -1124,6 +1116,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         if (helper) {
           presentation_group_timing.AddPresentationHelper(std::move(helper));
         }
+
+        has_interactive_or_animated_frame |=
+            surface->HasActiveFrame() &&
+            (surface->GetActiveFrameMetadata().is_handling_interaction ||
+             surface->GetActiveFrameMetadata().is_handling_animation);
       }
     }
 
@@ -1159,11 +1156,14 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     swap_frame_data.ca_layer_error_code =
         overlay_processor_->GetCALayerErrorCode();
 #endif
+    swap_frame_data.is_handling_interaction_or_animation =
+        has_interactive_or_animated_frame;
 
     // We must notify scheduler and increase |pending_swaps_| before calling
     // SwapBuffers() as it can call DidReceiveSwapBuffersAck synchronously.
-    if (scheduler_)
+    if (scheduler_) {
       scheduler_->DidSwapBuffers();
+    }
     pending_swaps_++;
 
     UMA_HISTOGRAM_COUNTS_100("Compositing.Display.PendingSwaps",

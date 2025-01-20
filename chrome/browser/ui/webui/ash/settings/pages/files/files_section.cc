@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,11 +25,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kFilesSectionPath;
 using ::chromeos::settings::mojom::kGoogleDriveSubpagePath;
 using ::chromeos::settings::mojom::kNetworkFileSharesSubpagePath;
 using ::chromeos::settings::mojom::kOfficeFilesSubpagePath;
@@ -248,7 +247,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"alwaysMoveToOneDrivePreferenceLabel",
        IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL},
       {"smbSharesTitleDescription",
-       IDS_OS_SETTINGS_REVAMP_DOWNLOADS_SMB_SHARES_DESCRIPTION},
+       IDS_OS_SETTINGS_DOWNLOADS_SMB_SHARES_DESCRIPTION},
       {"googleDriveFileSyncSectionTitle",
        IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SECTION_TITLE},
       {"googleDriveMirrorSyncLabel",

@@ -51,7 +51,7 @@ ExtensionServiceTestWithInstall::ExtensionServiceTestWithInstall(
           FeatureSwitch::prompt_for_external_extensions(),
           false) {}
 
-ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() {}
+ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() = default;
 
 void ExtensionServiceTestWithInstall::InitializeExtensionService(
     ExtensionServiceInitParams params) {

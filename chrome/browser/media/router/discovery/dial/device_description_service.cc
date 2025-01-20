@@ -130,8 +130,9 @@ void DeviceDescriptionService::FetchDeviceDescription(
 
   // Existing Fetcher.
   const auto& it = device_description_fetcher_map_.find(device_data.label());
-  if (it != device_description_fetcher_map_.end())
+  if (it != device_description_fetcher_map_.end()) {
     return;
+  }
 
   std::unique_ptr<DeviceDescriptionFetcher> device_description_fetcher =
       CreateFetcher(
@@ -172,8 +173,9 @@ const DeviceDescriptionService::CacheEntry*
 DeviceDescriptionService::CheckAndUpdateCache(
     const DialDeviceData& device_data) {
   const auto& it = description_cache_.find(device_data.label());
-  if (it == description_cache_.end())
+  if (it == description_cache_.end()) {
     return nullptr;
+  }
 
   // If the entry's config_id does not match, or it has expired, remove it.
   if (it->second.config_id != device_data.config_id() ||

@@ -35,7 +35,7 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
 
     // Non-translated strings:
     private static final String MSG_CATEGORY_SELECTION_TITLE = "Select categories";
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_CATEGORY_SELECTION_TITLE);
 
     private static final String SELECT_ALL_KEY = "select-all";
@@ -81,7 +81,7 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 
     private CheckBoxPreference createPreference(String category) {

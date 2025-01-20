@@ -73,9 +73,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   bool SupportsAcquireFence() const;
   bool SupportsViewporter() const;
   bool SupportsOverlays() const;
-  bool SupportsNonBackedSolidColorBuffers() const;
   bool SupportsSinglePixelBuffer() const;
-  uint32_t GetSurfaceAugmentorVersion() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //
@@ -103,13 +101,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                             uint64_t length,
                             const gfx::Size& size,
                             uint32_t buffer_id) override;
-  // Called by the GPU and asks to create a solid color wl_buffer. Check
-  // comments in the
-  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The
-  // availability of this depends on existence of surface-augmenter protocol.
-  void CreateSolidColorBuffer(const gfx::Size& size,
-                              const SkColor4f& color,
-                              uint32_t buffer_id) override;
   // Called by the GPU and asks to create a single pixel wl_buffer. Check
   // comments in the
   // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The

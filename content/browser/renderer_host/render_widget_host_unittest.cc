@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -335,7 +334,9 @@ FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
 // MockInputEventObserver -------------------------------------------------
 class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD1(OnInputEvent, void(const blink::WebInputEvent&));
+  MOCK_METHOD2(OnInputEvent,
+               void(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
@@ -969,7 +970,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->SetMockCompositorViewportPixelSize(gfx::Size());
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(original_size.size(), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(original_size.size(),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 
@@ -980,7 +982,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->ClearMockCompositorViewportPixelSize();
   host_->SynchronizeVisualProperties();
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(original_size.size(), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(original_size.size(),
+            host_->old_visual_properties_->new_size_device_px);
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = original_size.size();
   metadata.local_surface_id = std::nullopt;
@@ -1020,7 +1023,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(third_size.size(), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(third_size.size(),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 
@@ -1032,7 +1036,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
       .OnLocalSurfaceIdChanged(metadata);
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(third_size.size(), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(third_size.size(),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, widget_.ReceivedVisualProperties().size());
 
@@ -1045,7 +1050,7 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->SetBounds(gfx::Rect());
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(gfx::Size(), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(gfx::Size(), host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 
@@ -1055,7 +1060,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->SetBounds(gfx::Rect(0, 0, 0, 30));
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(gfx::Size(0, 30), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(gfx::Size(0, 30),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 
@@ -1064,7 +1070,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   // Set the same size again. It should not be sent again.
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(gfx::Size(0, 30), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(gfx::Size(0, 30),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, widget_.ReceivedVisualProperties().size());
 
@@ -1074,7 +1081,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->SetBounds(gfx::Rect(0, 0, 0, 31));
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(gfx::Size(0, 31), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(gfx::Size(0, 31),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 
@@ -1086,7 +1094,8 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   view_->InvalidateLocalSurfaceId();
   host_->SynchronizeVisualProperties();
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
-  EXPECT_EQ(gfx::Size(25, 25), host_->old_visual_properties_->new_size);
+  EXPECT_EQ(gfx::Size(25, 25),
+            host_->old_visual_properties_->new_size_device_px);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 }
@@ -1145,6 +1154,31 @@ TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
 }
 
+// Test that the reported new_size includes the scale factor.
+TEST_F(RenderWidgetHostTest, NewSizeIncludesScaleFactor) {
+  display::ScreenInfo screen_info;
+  screen_info.rect = gfx::Rect(0, 0, 800, 600);
+  screen_info.available_rect = gfx::Rect(0, 0, 800, 600);
+  screen_info.orientation_type =
+      display::mojom::ScreenOrientation::kPortraitPrimary;
+  screen_info.device_scale_factor = 2.f;
+
+  ClearVisualProperties();
+  view_->SetScreenInfo(screen_info);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, widget_.ReceivedVisualProperties().size());
+  gfx::Rect original_size(0, 0, 101, 100);
+  view_->SetBounds(original_size);
+  EXPECT_TRUE(host_->SynchronizeVisualProperties());
+  // blink::mojom::Widget::UpdateVisualProperties sent to the renderer.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, widget_.ReceivedVisualProperties().size());
+  auto new_size = widget_.ReceivedVisualProperties()[0].new_size_device_px;
+  EXPECT_EQ(202, new_size.width());
+  EXPECT_EQ(200, new_size.height());
+  EXPECT_TRUE(host_->visual_properties_ack_pending_);
+}
+
 // Ensure VisualProperties continues reporting the size of the current screen,
 // not the viewport, when the frame is fullscreen. See crbug.com/1367416.
 TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
@@ -1170,7 +1204,7 @@ TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
   blink::VisualProperties props = widget_.ReceivedVisualProperties().at(0);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
-  EXPECT_EQ(kViewBounds.size(), props.new_size);
+  EXPECT_EQ(kViewBounds.size(), props.new_size_device_px);
 
   // Enter fullscreen and do another VisualProperties sync.
   delegate_->set_is_fullscreen(true);
@@ -1181,7 +1215,7 @@ TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
   props = widget_.ReceivedVisualProperties().at(1);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
-  EXPECT_EQ(kViewBounds.size(), props.new_size);
+  EXPECT_EQ(kViewBounds.size(), props.new_size_device_px);
 
   // Exit fullscreen and do another VisualProperties sync.
   delegate_->set_is_fullscreen(false);
@@ -1192,7 +1226,7 @@ TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
   props = widget_.ReceivedVisualProperties().at(2);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
-  EXPECT_EQ(kViewBounds.size(), props.new_size);
+  EXPECT_EQ(kViewBounds.size(), props.new_size_device_px);
 }
 
 TEST_F(RenderWidgetHostTest, RootViewportSegments) {
@@ -2148,7 +2182,7 @@ TEST_F(RenderWidgetHostTest, VisualProperties) {
       compositor_viewport_pixel_rect.size());
 
   blink::VisualProperties visual_properties = host_->GetVisualProperties();
-  EXPECT_EQ(bounds.size(), visual_properties.new_size);
+  EXPECT_EQ(bounds.size(), visual_properties.new_size_device_px);
   EXPECT_EQ(compositor_viewport_pixel_rect,
             visual_properties.compositor_viewport_pixel_rect);
 }
@@ -2169,7 +2203,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
       DropDataToDragData(
-          drop_data, file_system_manager, process_->GetID(),
+          drop_data, file_system_manager, process_->GetDeprecatedID(),
           ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo::New());
@@ -2180,7 +2214,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   EXPECT_FALSE(host_->GetView());
   host_->StartDragging(
       DropDataToDragData(
-          drop_data, file_system_manager, process_->GetID(),
+          drop_data, file_system_manager, process_->GetDeprecatedID(),
           ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo::New());
@@ -2239,7 +2273,7 @@ TEST_F(RenderWidgetHostInitialSizeTest, InitialSize) {
   // SynchronizeVisualProperties calls should not result in new IPC (unless the
   // size has actually changed).
   EXPECT_FALSE(host_->SynchronizeVisualProperties());
-  EXPECT_EQ(initial_size_, host_->old_visual_properties_->new_size);
+  EXPECT_EQ(initial_size_, host_->old_visual_properties_->new_size_device_px);
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
 }
 
@@ -2253,7 +2287,7 @@ TEST_F(RenderWidgetHostTest, HideUnthrottlesResize) {
   {
     // Size sent to the renderer.
     EXPECT_EQ(gfx::Size(100, 100),
-              widget_.ReceivedVisualProperties().at(0).new_size);
+              widget_.ReceivedVisualProperties().at(0).new_size_device_px);
   }
   // An ack is pending, throttling further updates.
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
@@ -2306,38 +2340,6 @@ TEST_F(RenderWidgetHostTest, NavigateInBackgroundShowsBlank) {
   host_->StartNewContentRenderingTimeout();
   host_->WasShown({} /* record_tab_switch_time_request */);
   EXPECT_TRUE(host_->new_content_rendering_timeout_fired());
-}
-
-TEST_F(RenderWidgetHostTest, PendingUserActivationTimeout) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {features::kBrowserVerifiedUserActivationMouse,
-       features::kBrowserVerifiedUserActivationKeyboard},
-      {});
-
-  // One event allows one activation notification.
-  SimulateMouseEvent(WebInputEvent::Type::kMouseDown);
-  EXPECT_TRUE(host_->RemovePendingUserActivationIfAvailable());
-  EXPECT_FALSE(host_->RemovePendingUserActivationIfAvailable());
-
-  // Mouse move and up does not increase pending user activation counter.
-  SimulateMouseEvent(WebInputEvent::Type::kMouseMove);
-  SimulateMouseEvent(WebInputEvent::Type::kMouseUp);
-  EXPECT_FALSE(host_->RemovePendingUserActivationIfAvailable());
-
-  // 2 events allow 2 activation notifications.
-  SimulateMouseEvent(WebInputEvent::Type::kMouseDown);
-  SimulateKeyboardEvent(WebInputEvent::Type::kKeyDown);
-  EXPECT_TRUE(host_->RemovePendingUserActivationIfAvailable());
-  EXPECT_TRUE(host_->RemovePendingUserActivationIfAvailable());
-  EXPECT_FALSE(host_->RemovePendingUserActivationIfAvailable());
-
-  // Timer reset the pending activation.
-  SimulateMouseEvent(WebInputEvent::Type::kMouseDown);
-  SimulateMouseEvent(WebInputEvent::Type::kMouseDown);
-  task_environment_.FastForwardBy(
-      RenderWidgetHostImpl::kActivationNotificationExpireTime);
-  EXPECT_FALSE(host_->RemovePendingUserActivationIfAvailable());
 }
 
 // Tests that fling events are not dispatched when the wheel event is consumed.
@@ -2400,7 +2402,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       native_event, &latency_info, &event_latency_metadata);
 
@@ -2408,7 +2410,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->RemoveInputEventObserver(&observer);
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
@@ -2431,7 +2433,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(1);
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(
       native_event, &latency_info, &event_latency_metadata);
 
@@ -2439,7 +2441,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   scoped_observation.Reset();
 
   // Confirm InputEventObserver is removed.
-  EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
+  EXPECT_CALL(observer, OnInputEvent(_, _)).Times(0);
   latency_info = ui::LatencyInfo();
   event_latency_metadata = ui::EventLatencyMetadata();
   host_->GetRenderInputRouter()->DispatchInputEventWithLatencyInfo(

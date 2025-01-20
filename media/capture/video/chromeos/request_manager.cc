@@ -1122,8 +1122,11 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
         CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
             device_id_);
     if (camera_app_device && stream_type == StreamType::kPreviewOutput) {
+      // TODO(crbug.com/359601431): Get shared image directly from the
+      // |buffer->handle_provider| once all VideoCaptureBufferTracker are
+      // converted to create MappableSI.
       camera_app_device->MaybeDetectDocumentCorners(
-          stream_buffer_manager_->CreateGpuMemoryBuffer(
+          stream_buffer_manager_->CreateSharedImageFromGmbHandle(
               buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
               gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE),
           metadata.transformation->rotation);
@@ -1136,11 +1139,10 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     // new video buffer.
     stream_buffer_manager_->ReserveBuffer(stream_type);
   } else {
-    gfx::GpuMemoryBuffer* gmb = stream_buffer_manager_->GetGpuMemoryBufferById(
-        stream_type, buffer_ipc_id);
-    CHECK(gmb);
-    device_context_->SubmitCapturedGpuMemoryBuffer(
-        client_type, gmb,
+    auto shared_image =
+        stream_buffer_manager_->GetSharedImageById(stream_type, buffer_ipc_id);
+    device_context_->SubmitCapturedImage(
+        client_type, std::move(shared_image),
         stream_buffer_manager_->GetStreamCaptureFormat(stream_type),
         pending_result.reference_time, pending_result.timestamp);
     stream_buffer_manager_->ReleaseBufferFromCaptureResult(stream_type,
@@ -1154,20 +1156,20 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
   CaptureResult& pending_result = pending_results_[frame_number];
   gfx::Size buffer_dimension =
       stream_buffer_manager_->GetBufferDimension(stream_type);
-  gfx::GpuMemoryBuffer* gmb = stream_buffer_manager_->GetGpuMemoryBufferById(
-      stream_type, buffer_ipc_id);
-  CHECK(gmb);
-  if (!gmb->Map()) {
+  auto shared_image =
+      stream_buffer_manager_->GetSharedImageById(stream_type, buffer_ipc_id);
+  CHECK(shared_image);
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
     device_context_->SetErrorState(
         media::VideoCaptureError::
-            kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
-        FROM_HERE, "Failed to map GPU memory buffer");
+            kCrosHalV3BufferManagerFailedToCreateMappableSI,
+        FROM_HERE, "Failed to map the shared image.");
     return;
   }
-  absl::Cleanup unmap_gmb = [gmb] { gmb->Unmap(); };
-
   const Camera3JpegBlob* header = reinterpret_cast<Camera3JpegBlob*>(
-      reinterpret_cast<const uintptr_t>(gmb->memory(0)) +
+      reinterpret_cast<const uintptr_t>(
+          scoped_mapping->GetMemoryForPlane(0).data()) +
       buffer_dimension.width() - sizeof(Camera3JpegBlob));
   if (header->jpeg_blob_id != kCamera3JpegBlobId) {
     device_context_->SetErrorState(
@@ -1178,7 +1180,7 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
   // Still capture result from HALv3 already has orientation info in EXIF,
   // so just provide 0 as screen rotation in |blobify_callback_| parameters.
   mojom::BlobPtr blob = blobify_callback_.Run(
-      reinterpret_cast<const uint8_t*>(gmb->memory(0)), header->jpeg_size,
+      scoped_mapping->GetMemoryForPlane(0).data(), header->jpeg_size,
       stream_buffer_manager_->GetStreamCaptureFormat(stream_type), 0);
   if (blob) {
     if (stream_type == StreamType::kJpegOutput &&

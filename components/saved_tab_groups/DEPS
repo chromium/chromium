@@ -11,6 +11,7 @@ include_rules = [
   "+components/sync_device_info",
   "+components/ukm/test_ukm_recorder.h",
   "+components/url_formatter/url_formatter.h",
+  "+google_apis/gaia/gaia_id.h",
   "+services/metrics/public/cpp",
   "+ui/base/l10n",
   "+ui/gfx",

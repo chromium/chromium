@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -70,17 +71,18 @@ bool DecodeAudioFileData(
   destination_bus->Initialize(number_of_channels, number_of_frames,
                               file_sample_rate);
 
-  int dest_frame_offset = 0;
-  for (size_t k = 0; k < decoded_audio_packets.size(); ++k) {
-    AudioBus* packet = decoded_audio_packets[k].get();
-    int packet_length = packet->frames();
+  std::vector<base::SpanWriter<float>> dest_channels;
+  dest_channels.reserve(number_of_channels);
+  for (size_t ch = 0; ch < number_of_channels; ++ch) {
+    dest_channels.emplace_back(base::span(destination_bus->ChannelData(ch),
+                                          destination_bus->length()));
+  }
+
+  // Append all `decoded_audio_packets`, channel per channel.
+  for (const auto& packet : decoded_audio_packets) {
     for (size_t ch = 0; ch < number_of_channels; ++ch) {
-      float* dst = destination_bus->ChannelData(ch);
-      float* src = packet->channel(ch);
-      DCHECK_LE(dest_frame_offset + packet_length, number_of_frames);
-      memcpy(dst + dest_frame_offset, src, packet_length * sizeof(*dst));
+      dest_channels[ch].Write(packet->channel_span(ch));
     }
-    dest_frame_offset += packet_length;
   }
 
   DVLOG(1) << "Decoded file data (unknown duration)-"

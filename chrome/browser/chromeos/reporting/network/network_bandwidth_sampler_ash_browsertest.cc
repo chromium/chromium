@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
@@ -76,7 +75,6 @@ class NetworkBandwidthSamplerBrowserTest
   NetworkBandwidthSamplerBrowserTest() {
     // Initialize the MockClock.
     test::MockClock::Get();
-    scoped_feature_list_.InitAndEnableFeature(kEnableNetworkBandwidthReporting);
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     crypto_home_mixin_.ApplyAuthConfig(
         affiliation_mixin_.account_id(),
@@ -105,7 +103,6 @@ class NetworkBandwidthSamplerBrowserTest
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
   ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 

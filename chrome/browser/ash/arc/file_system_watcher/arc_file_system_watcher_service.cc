@@ -12,7 +12,6 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -54,7 +54,7 @@ constexpr base::FilePath::CharType kAndroidDownloadDir[] =
 // TODO(crbug.com/929031): Move this to arc_volume_mounter_bridge.h.
 // The MyFiles path inside ARC container. This will be the path that is used in
 // MediaScanner.scanFile request. UUID for the MyFiles volume is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr base::FilePath::CharType kAndroidMyFilesDir[] =
     FILE_PATH_LITERAL("/storage/0000000000000000000000000000CAFEF00D2019");
 

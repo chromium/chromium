@@ -263,6 +263,11 @@ __attribute__((visibility("default"))) void CloseMojoMode();
 __attribute__((visibility("default"))) bool InitializeConnectionFactory(
     uint32_t receiver_connection_factory_handle);
 
+// Bootstraps an implementation of a ConnectionFactory in the IME shared lib.
+// Returns false if the connection attempt was unsuccessful.
+__attribute__((visibility("default"))) bool InitializeConnectionFactoryV2(
+    uintptr_t receiver_connection_factory_handle);
+
 // Returns whether there's a direct Mojo connection to an input method.
 __attribute__((visibility("default"))) bool IsInputMethodConnected();
 

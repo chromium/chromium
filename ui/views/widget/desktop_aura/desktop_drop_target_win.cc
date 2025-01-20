@@ -28,18 +28,24 @@ namespace {
 int ConvertKeyStateToAuraEventFlags(DWORD key_state) {
   int flags = 0;
 
-  if (key_state & MK_CONTROL)
+  if (key_state & MK_CONTROL) {
     flags |= ui::EF_CONTROL_DOWN;
-  if (key_state & MK_ALT)
+  }
+  if (key_state & MK_ALT) {
     flags |= ui::EF_ALT_DOWN;
-  if (key_state & MK_SHIFT)
+  }
+  if (key_state & MK_SHIFT) {
     flags |= ui::EF_SHIFT_DOWN;
-  if (key_state & MK_LBUTTON)
+  }
+  if (key_state & MK_LBUTTON) {
     flags |= ui::EF_LEFT_MOUSE_BUTTON;
-  if (key_state & MK_MBUTTON)
+  }
+  if (key_state & MK_MBUTTON) {
     flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
-  if (key_state & MK_RBUTTON)
+  }
+  if (key_state & MK_RBUTTON) {
     flags |= ui::EF_RIGHT_MOUSE_BUTTON;
+  }
 
   return flags;
 }
@@ -75,8 +81,9 @@ DWORD DesktopDropTargetWin::OnDragOver(IDataObject* data_object,
   std::unique_ptr<ui::DropTargetEvent> event;
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
-  if (delegate)
+  if (delegate) {
     drag_operation = delegate->OnDragUpdated(*event).drag_operation;
+  }
 
   return ui::DragDropTypes::DragOperationToDropEffect(drag_operation);
 }
@@ -96,9 +103,10 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
   if (delegate) {
     auto drop_cb = delegate->GetDropCallback(*event);
-    if (drop_cb)
+    if (drop_cb) {
       std::move(drop_cb).Run(std::move(data), drag_operation,
                              /*drag_image_layer_owner=*/nullptr);
+    }
   }
   target_window_observation_.Reset();
   return ui::DragDropTypes::DragOperationToDropEffect(
@@ -158,8 +166,9 @@ void DesktopDropTargetWin::NotifyDragLeave() {
   }
   DragDropDelegate* delegate =
       aura::client::GetDragDropDelegate(target_window_observation_.GetSource());
-  if (delegate)
+  if (delegate) {
     delegate->OnDragExited();
+  }
   target_window_observation_.Reset();
 }
 

@@ -22,8 +22,8 @@
 
 namespace ash {
 
-class BirchModel;
 class CoralItemRemover;
+class Desk;
 
 class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public TabClusterUIController::Observer,
@@ -32,10 +32,26 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public aura::WindowObserver,
                                       public OverviewObserver {
  public:
-  explicit BirchCoralProvider(BirchModel* birch_model);
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer();
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
+
+    virtual void OnCoralGroupRemoved(const base::Token& group_id);
+    virtual void OnCoralEntityRemoved(const base::Token& group_id,
+                                      std::string_view identifier);
+    virtual void OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                          const std::string& title);
+  };
+
+  BirchCoralProvider();
   BirchCoralProvider(const BirchCoralProvider&) = delete;
   BirchCoralProvider& operator=(const BirchCoralProvider&) = delete;
   ~BirchCoralProvider() override;
+
+  const Desk* in_session_source_desk() const { return in_session_source_desk_; }
 
   static BirchCoralProvider* Get();
 
@@ -58,6 +74,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void OnPostLoginClusterRestored();
 
   mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
@@ -128,17 +147,18 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Observes all the valid app and browser windows associated with `response_`.
   void ObserveAllWindowsInResponse();
 
-  // Called when the `tab_item` is removed or moved to another inactive desk.
-  void OnTabRemovedFromActiveDesk(TabClusterUIItem* tab_item);
+  // Called when the `tab_item` is removed or moved from its source desk.
+  void OnTabRemovedFromSourceDesk(TabClusterUIItem* tab_item);
 
-  // Called when an `app_window` is removed or moved to another inactive desk.
-  void OnAppWindowRemovedFromActiveDesk(aura::Window* app_window);
+  // Called when an `app_window` is removed or moved from its source desk.
+  void OnAppWindowRemovedFromSourceDesk(aura::Window* app_window);
 
   // Removes the entity corresponding to the given `entity_identifier` from
   // current in-session `response_`.
   void RemoveEntity(std::string_view entity_identifier);
 
-  const raw_ptr<BirchModel> birch_model_;
+  // Resets raw pointers and window observations when exiting Overview mode.
+  void Reset();
 
   // The request sent to the coral backend.
   CoralRequest request_;
@@ -160,11 +180,20 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   ScopedSessionObserver session_observer_{this};
 
+  // Observe the windows related to the in-session group entities.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};
+
+  // The source desk of the in-session groups. It will be set to the current
+  // active desk once in-session groups are generated. It will be reset when the
+  // in-session groups are extracted, e.g. launched or hidden by user, or all of
+  // the group entities are removed, e.g. the source desk is closed or merged.
+  raw_ptr<const Desk> in_session_source_desk_ = nullptr;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<BirchCoralProvider> weak_ptr_factory_{this};
 };

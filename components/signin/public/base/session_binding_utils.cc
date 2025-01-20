@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -63,11 +64,12 @@ base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
       .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey));
 }
 
-base::Value::Dict CreateHybridPublicKeyInfo(const HybridEncryptionKey& key) {
+base::Value::Dict CreateHybridPublicKeyInfo(
+    std::string_view ephemeral_public_key) {
   return base::Value::Dict()
       .Set("kty",
            "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
-      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(key.ExportPublicKey()));
+      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(ephemeral_public_key));
 }
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
@@ -203,15 +205,16 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     std::string_view challenge,
     const GURL& destination_url,
     std::string_view name_space,
-    HybridEncryptionKey* ephemeral_key) {
+    std::string_view ephemeral_public_key) {
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
                      .Set("aud", destination_url.spec())
                      .Set("jti", challenge)
                      .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
                      .Set("namespace", name_space);
-  if (ephemeral_key) {
-    payload.Set("ephemeral_key", CreateHybridPublicKeyInfo(*ephemeral_key));
+  if (!ephemeral_public_key.empty()) {
+    payload.Set("ephemeral_key",
+                CreateHybridPublicKeyInfo(ephemeral_public_key));
   }
   return CreateHeaderAndPayloadWithCustomPayload(
       algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
@@ -227,10 +230,28 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
     if (!signature_holder.has_value()) {
       return std::nullopt;
     }
-    signature = base::make_span(*signature_holder);
+    signature = base::span(*signature_holder);
   }
 
   return base::StrCat({header_and_payload, ".", Base64UrlEncode(signature)});
+}
+
+std::string DecryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view base64_encrypted_value) {
+  std::optional<std::vector<uint8_t>> encrypted_value = base::Base64UrlDecode(
+      base64_encrypted_value, base::Base64UrlDecodePolicy::IGNORE_PADDING);
+  if (!encrypted_value.has_value()) {
+    return std::string();
+  }
+
+  std::optional<std::vector<uint8_t>> decryption_result =
+      ephemeral_key.Decrypt(*encrypted_value);
+  if (!decryption_result.has_value()) {
+    return std::string();
+  }
+
+  return std::string(decryption_result->begin(), decryption_result->end());
 }
 
 }  // namespace signin

@@ -105,8 +105,7 @@ Widget* DialogDelegate::CreateDialogWidget(
 
 // static
 bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(ENABLE_DESKTOP_AURA)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
   // The new style doesn't support unparented dialogs on Linux desktop.
   return parent != nullptr;
 #else
@@ -128,8 +127,9 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   params.delegate = delegate;
   params.bounds = bounds;
 
-  if (dialog)
+  if (dialog) {
     dialog->params_.custom_frame &= CanSupportCustomFrame(parent);
+  }
 
   if (!dialog || dialog->use_custom_frame()) {
     params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
@@ -164,8 +164,9 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
 }
 
 int DialogDelegate::GetDefaultDialogButton() const {
-  if (GetParams().default_button.has_value())
+  if (GetParams().default_button.has_value()) {
     return *GetParams().default_button;
+  }
   if (buttons() & static_cast<int>(ui::mojom::DialogButton::kOk)) {
     return static_cast<int>(ui::mojom::DialogButton::kOk);
   }
@@ -199,7 +200,7 @@ ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
   }
 
   return GetIsDefault(button) ? ui::ButtonStyle::kProminent
-                              : ui::ButtonStyle::kDefault;
+                              : ui::ButtonStyle::kTonal;
 }
 
 bool DialogDelegate::GetIsDefault(ui::mojom::DialogButton button) const {
@@ -251,13 +252,15 @@ bool DialogDelegate::RunCloseCallback(
 }
 
 View* DialogDelegate::GetInitiallyFocusedView() {
-  if (WidgetDelegate::HasConfiguredInitiallyFocusedView())
+  if (WidgetDelegate::HasConfiguredInitiallyFocusedView()) {
     return WidgetDelegate::GetInitiallyFocusedView();
+  }
 
   // Focus the default button if any.
   const DialogClientView* dcv = GetDialogClientView();
-  if (!dcv)
+  if (!dcv) {
     return nullptr;
+  }
   int default_button = GetDefaultDialogButton();
   if (default_button == static_cast<int>(ui::mojom::DialogButton::kNone)) {
     return nullptr;
@@ -290,8 +293,9 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateNonClientFrameView(
 }
 
 void DialogDelegate::WindowWillClose() {
-  if (already_started_close_)
+  if (already_started_close_) {
     return;
+  }
 
   const bool new_callback_present = close_callback_ ||
                                     HasCallback(cancel_callback_) ||
@@ -306,8 +310,9 @@ void DialogDelegate::WindowWillClose() {
     RunCloseCallback(close_callback_wrapped);
   }
 
-  if (new_callback_present)
+  if (new_callback_present) {
     return;
+  }
 
   // This is set here instead of before the invocations of Accept()/Cancel() so
   // that those methods can DCHECK that !already_started_close_. Otherwise,
@@ -335,8 +340,9 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
       std::make_unique<BubbleBorder>(BubbleBorder::FLOAT, kShadow);
   DialogDelegate* delegate = widget->widget_delegate()->AsDialogDelegate();
   if (delegate) {
-    if (delegate->GetParams().round_corners)
+    if (delegate->GetParams().round_corners) {
       border->SetCornerRadius(delegate->GetCornerRadius());
+    }
     frame->SetFootnoteView(delegate->DisownFootnoteView());
   }
   frame->SetBubbleBorder(std::move(border));
@@ -344,8 +350,9 @@ std::unique_ptr<NonClientFrameView> DialogDelegate::CreateDialogFrameView(
 }
 
 const DialogClientView* DialogDelegate::GetDialogClientView() const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return nullptr;
+  }
   return AsViewClass<DialogClientView>(GetWidget()->client_view());
 }
 
@@ -355,8 +362,9 @@ DialogClientView* DialogDelegate::GetDialogClientView() {
 }
 
 BubbleFrameView* DialogDelegate::GetBubbleFrameView() const {
-  if (!use_custom_frame())
+  if (!use_custom_frame()) {
     return nullptr;
+  }
 
   const NonClientView* view =
       GetWidget() ? GetWidget()->non_client_view() : nullptr;
@@ -382,8 +390,9 @@ views::View* DialogDelegate::GetExtraView() const {
 }
 
 views::View* DialogDelegate::GetFootnoteViewForTesting() const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return footnote_view_.get();
+  }
 
   NonClientFrameView* frame = GetWidget()->non_client_view()->frame_view();
 
@@ -413,15 +422,17 @@ void DialogDelegate::TriggerInputProtection(bool force_early) {
 }
 
 void DialogDelegate::SetDefaultButton(int button) {
-  if (params_.default_button == button)
+  if (params_.default_button == button) {
     return;
+  }
   params_.default_button = button;
   DialogModelChanged();
 }
 
 void DialogDelegate::SetButtons(int buttons) {
-  if (params_.buttons == buttons)
+  if (params_.buttons == buttons) {
     return;
+  }
   params_.buttons = buttons;
   DialogModelChanged();
 }
@@ -429,12 +440,14 @@ void DialogDelegate::SetButtons(int buttons) {
 void DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton dialog_button,
                                       bool enabled) {
   int button = static_cast<int>(dialog_button);
-  if (!!(params_.enabled_buttons & button) == enabled)
+  if (!!(params_.enabled_buttons & button) == enabled) {
     return;
-  if (enabled)
+  }
+  if (enabled) {
     params_.enabled_buttons |= button;
-  else
+  } else {
     params_.enabled_buttons &= ~button;
+  }
   DialogModelChanged();
 }
 
@@ -506,11 +519,25 @@ void DialogDelegate::AcceptDialog() {
   DEBUG_ALIAS_FOR_CSTR(last_widget_name, GetWidget()->GetName().c_str(), 64);
 
   DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
-  if (already_started_close_ || !Accept())
-    return;
 
+  // Widget (and maybe this delegate) may get destroyed from the Accept() call
+  // below. This will detect that condition.
+  auto weak_widget_ptr = GetWidget()->GetWeakPtr();
+
+  if (already_started_close_ || !Accept()) {
+    return;
+  }
+
+  // `this` may also have been destroyed as a result of the call to Accept().
+  // Checking whether the widget was destroyed is sufficient for either case. If
+  // only the Widget is destroyed, performing the following actions is
+  // irrelevant (and dangerous). If the widget and this delegate are destroyed
+  // together, then we still need to avoid the following actions.
+  if (!weak_widget_ptr) {
+    return;
+  }
   already_started_close_ = true;
-  GetWidget()->CloseWithReason(
+  weak_widget_ptr->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
@@ -518,14 +545,24 @@ void DialogDelegate::CancelDialog() {
   // If there's a close button available, this callback should only be reachable
   // if the cancel button is available. Otherwise this can be reached through
   // closing the dialog via Esc.
-  if (ShouldShowCloseButton())
+  if (ShouldShowCloseButton()) {
     DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
+  }
 
-  if (already_started_close_ || !Cancel())
+  // Widget (and maybe this delegate) may get destroyed from the Cancel() call
+  // below. This will detect that condition.
+  auto weak_widget_ptr = GetWidget()->GetWeakPtr();
+
+  if (already_started_close_ || !Cancel()) {
     return;
+  }
 
+  // See the comment above in AcceptDialog().
+  if (!weak_widget_ptr) {
+    return;
+  }
   already_started_close_ = true;
-  GetWidget()->CloseWithReason(
+  weak_widget_ptr->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
@@ -547,8 +584,9 @@ int DialogDelegate::GetCornerRadius() const {
     return 2;
   }
 #endif
-  if (params_.corner_radius)
+  if (params_.corner_radius) {
     return *params_.corner_radius;
+  }
   return LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kDialogRadius);
 }

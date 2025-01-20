@@ -10,6 +10,22 @@ proto_library("json_proto") {
   sources = [ "json.proto" ]
 }
 
+proto_library("url_proto") {
+  proto_in_dir = "//"
+  sources = [ "url.proto" ]
+}
+
+source_set("url_proto_converter") {
+  sources = [
+    "url_proto_converter.cc",
+    "url_proto_converter.h",
+  ]
+  deps = [
+    ":url_proto",
+    "//base",
+  ]
+}
+
 if (!is_cronet_build) {
   source_set("json_proto_converter") {
     sources = [
@@ -41,23 +57,8 @@ if (!is_cronet_build) {
     }
   }
 
-  source_set("url_proto_converter") {
-    sources = [
-      "url_proto_converter.cc",
-      "url_proto_converter.h",
-    ]
-    deps = [
-      ":url_proto",
-      "//base",
-    ]
-  }
-
   proto_library("skia_image_filter_proto") {
     sources = [ "skia_image_filter.proto" ]
-  }
-
-  proto_library("url_proto") {
-    sources = [ "url.proto" ]
   }
 
   proto_library("string_compare_proto") {

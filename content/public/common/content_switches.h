@@ -8,8 +8,8 @@
 #define CONTENT_PUBLIC_COMMON_CONTENT_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/common/buildflags.h"
 #include "media/media_buildflags.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 
@@ -127,7 +127,6 @@ CONTENT_EXPORT extern const char kEnableVtune[];
 CONTENT_EXPORT extern const char kEnableWebGLDeveloperExtensions[];
 CONTENT_EXPORT extern const char kEnableWebGLDraftExtensions[];
 CONTENT_EXPORT extern const char kEnableWebGLImageChromium[];
-CONTENT_EXPORT extern const char kEnforceWebRtcIPPermissionCheck[];
 CONTENT_EXPORT extern const char kEnableWebVR[];
 CONTENT_EXPORT extern const char kFileUrlPathAlias[];
 CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
@@ -144,6 +143,9 @@ CONTENT_EXPORT extern const char kIsolateOrigins[];
 CONTENT_EXPORT extern const char kIsolationByDefault[];
 CONTENT_EXPORT extern const char kJavaScriptHarmony[];
 CONTENT_EXPORT extern const char kLaunchAsBrowser[];
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+CONTENT_EXPORT extern const char kLoadWebUIfromDisk[];
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 CONTENT_EXPORT extern const char kLogGpuControlListDecisions[];
 CONTENT_EXPORT extern const char kLoggingLevel[];
 CONTENT_EXPORT extern const char kLogFile[];
@@ -209,7 +211,7 @@ CONTENT_EXPORT extern const char kUseFakeUIForFedCM[];
 CONTENT_EXPORT extern const char kUseFakeUIForMediaStream[];
 CONTENT_EXPORT extern const char kVideoImageTextureTarget[];
 #if BUILDFLAG(IS_WIN)
-CONTENT_EXPORT extern const char kUseSkiaFontManager[];
+CONTENT_EXPORT extern const char kUseFontDataManager[];
 #endif
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
 CONTENT_EXPORT extern const char kUseContextSnapshotSwitch[];
@@ -221,6 +223,7 @@ CONTENT_EXPORT extern const char kUtilityProcess[];
 CONTENT_EXPORT extern const char kUtilityStartupDialog[];
 CONTENT_EXPORT extern const char kUtilitySubType[];
 CONTENT_EXPORT extern const char kV8CacheOptions[];
+CONTENT_EXPORT extern const char kDisallowV8FeatureFlagOverrides[];
 CONTENT_EXPORT extern const char kVerifyPixels[];
 CONTENT_EXPORT extern const char kWaitForDebuggerChildren[];
 CONTENT_EXPORT extern const char kWaitForDebuggerOnNavigation[];
@@ -260,11 +263,8 @@ CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
 CONTENT_EXPORT extern const char kPreventResizingContentsForTesting[];
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 CONTENT_EXPORT extern const char kEnableSpeechDispatcher[];
-CONTENT_EXPORT extern const char kLLVMProfileFile[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

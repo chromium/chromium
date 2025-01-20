@@ -57,8 +57,6 @@ class TestRulesetService : public subresource_filter::RulesetService {
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
 
-  ~TestRulesetService() override = default;
-
   using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindexed_ruleset_info) override {
@@ -90,8 +88,6 @@ class SubresourceFilterMockComponentUpdateService
       const SubresourceFilterMockComponentUpdateService&) = delete;
   SubresourceFilterMockComponentUpdateService& operator=(
       const SubresourceFilterMockComponentUpdateService&) = delete;
-
-  ~SubresourceFilterMockComponentUpdateService() override = default;
 };
 
 subresource_filter::Configuration CreateConfigUsingRulesetFlavor(

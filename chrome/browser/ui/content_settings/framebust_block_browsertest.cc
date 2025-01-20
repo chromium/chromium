@@ -75,8 +75,9 @@ class FramebustBlockBrowserTest
 
   // UrlListManager::Observer:
   void BlockedUrlAdded(int32_t id, const GURL& blocked_url) override {
-    if (!blocked_url_added_closure_.is_null())
+    if (!blocked_url_added_closure_.is_null()) {
       std::move(blocked_url_added_closure_).Run();
+    }
   }
 
   content::WebContents* GetWebContents() {

@@ -50,4 +50,10 @@ found in the LICENSE file.
         android:key="fledge_page_footer"
         android:summary="@string/settings_fledge_page_footer_new"/>
 
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="fledge_page_disclaimer"
+        android:summary="@string/settings_site_suggested_ads_page_disclaimer_clank"
+        android:visibility="gone"
+        app:allowDividerAbove="false"/>
+
 </PreferenceScreen>

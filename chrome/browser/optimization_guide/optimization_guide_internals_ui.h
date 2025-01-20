@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
-#include "content/public/browser/webui_config.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/webui/resource_path.h"
@@ -21,12 +21,12 @@ class WebUI;
 }  // namespace content
 
 class OptimizationGuideInternalsUIConfig
-    : public content::DefaultWebUIConfig<OptimizationGuideInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<OptimizationGuideInternalsUI> {
  public:
   OptimizationGuideInternalsUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           optimization_guide_internals::
-                               kChromeUIOptimizationGuideInternalsHost) {}
+      : DefaultInternalWebUIConfig(
+            optimization_guide_internals::
+                kChromeUIOptimizationGuideInternalsHost) {}
 
   // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;

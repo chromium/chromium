@@ -122,11 +122,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
-<enum name="ClearBrowsingDataTab">
-  <int value="0" label="Basic"/>
-  <int value="1" label="Advanced"/>
-</enum>
-
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>
@@ -294,6 +289,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
   <int value="14" label="kCdmStorage"/>
+  <int value="15" label="kDeviceBoundSessions"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->

@@ -20,8 +20,7 @@ namespace extensions {
 // SettingsPrivateSetPrefFunction
 ////////////////////////////////////////////////////////////////////////////////
 
-SettingsPrivateSetPrefFunction::~SettingsPrivateSetPrefFunction() {
-}
+SettingsPrivateSetPrefFunction::~SettingsPrivateSetPrefFunction() = default;
 
 ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
   std::optional<api::settings_private::SetPref::Params> parameters =
@@ -56,8 +55,8 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
 // SettingsPrivateGetAllPrefsFunction
 ////////////////////////////////////////////////////////////////////////////////
 
-SettingsPrivateGetAllPrefsFunction::~SettingsPrivateGetAllPrefsFunction() {
-}
+SettingsPrivateGetAllPrefsFunction::~SettingsPrivateGetAllPrefsFunction() =
+    default;
 
 ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
   SettingsPrivateDelegate* delegate =
@@ -70,8 +69,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
 // SettingsPrivateGetPrefFunction
 ////////////////////////////////////////////////////////////////////////////////
 
-SettingsPrivateGetPrefFunction::~SettingsPrivateGetPrefFunction() {
-}
+SettingsPrivateGetPrefFunction::~SettingsPrivateGetPrefFunction() = default;
 
 ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
   std::optional<api::settings_private::GetPref::Params> parameters =
@@ -95,8 +93,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 
 SettingsPrivateGetDefaultZoomFunction::
-    ~SettingsPrivateGetDefaultZoomFunction() {
-}
+    ~SettingsPrivateGetDefaultZoomFunction() = default;
 
 ExtensionFunction::ResponseAction
     SettingsPrivateGetDefaultZoomFunction::Run() {
@@ -111,8 +108,7 @@ ExtensionFunction::ResponseAction
 ////////////////////////////////////////////////////////////////////////////////
 
 SettingsPrivateSetDefaultZoomFunction::
-    ~SettingsPrivateSetDefaultZoomFunction() {
-}
+    ~SettingsPrivateSetDefaultZoomFunction() = default;
 
 ExtensionFunction::ResponseAction
     SettingsPrivateSetDefaultZoomFunction::Run() {

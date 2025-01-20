@@ -338,8 +338,8 @@ void AssistantDialogPlate::InitLayout() {
   molecule_icon_ = AddChildView(std::make_unique<views::ImageView>());
   molecule_icon_->SetID(AssistantViewID::kModuleIcon);
   molecule_icon_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
-  molecule_icon_->SetImage(gfx::CreateVectorIcon(
-      chromeos::kAssistantIcon, kIconSizeDip, gfx::kPlaceholderColor));
+  molecule_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      chromeos::kAssistantIcon, gfx::kPlaceholderColor, kIconSizeDip));
 
   // Input modality layout container.
   input_modality_layout_container_ =

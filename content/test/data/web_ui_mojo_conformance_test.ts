@@ -4,7 +4,7 @@
 
 import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 
-import {ConformanceTestInterfaceCallbackRouter, PageHandlerFactory} from './validation_test_interfaces.mojom-webui.js';
+import {ConformanceTestInterfaceCallbackRouter, PageHandlerFactory} from './validation_test_interfaces.test-mojom-webui.js';
 
 // TODO(ffred): These test cases do not match their associated expectation.
 // Each case should be investigated and removed from this set.

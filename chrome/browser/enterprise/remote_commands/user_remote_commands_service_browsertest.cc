@@ -283,6 +283,13 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
   auto* remote_command_service =
       enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
           profile());
+
+  if (!base::FeatureList::IsEnabled(kUserRemoteCommands)) {
+    ASSERT_FALSE(remote_command_service);
+    return;
+  }
+
+  ASSERT_TRUE(remote_command_service);
   remote_command_service->Init();
 
   em::RemoteCommandResult result = WaitForResult(kCommandId);
@@ -298,6 +305,7 @@ INSTANTIATE_TEST_SUITE_P(
         FeaturesTestParam{
             .enabled_features = {
                 policy::
-                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled}}));
+                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled,
+                kUserRemoteCommands}}));
 
 }  // namespace enterprise_commands

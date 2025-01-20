@@ -45,13 +45,15 @@ class SafeWidgetDestroyedWaiter : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override {
     observation_.Reset();
-    if (!quit_closure_.is_null())
+    if (!quit_closure_.is_null()) {
       std::move(quit_closure_).Run();
+    }
   }
 
   void Wait() {
-    if (!observation_.IsObserving())
+    if (!observation_.IsObserving()) {
       return;
+    }
     DCHECK(quit_closure_.is_null());
     quit_closure_ = run_loop_.QuitClosure();
     run_loop_.Run();

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,7 +23,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -36,11 +34,7 @@ import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 /** Handles recording User Metrics for Custom Tab Activity. */
-@ActivityScope
 public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
     /**
@@ -131,15 +125,16 @@ public class CustomTabActivityLifecycleUmaTracker
         }
     }
 
-    @Inject
     public CustomTabActivityLifecycleUmaTracker(
-            BaseCustomTabActivity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
-        mIntentDataProvider = activity.getIntentDataProvider();
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Supplier<Bundle> savedInstanceStateSupplier,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     @Override

@@ -26,6 +26,24 @@ bool IsDeviceInDemoMode();
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether the device should fall back to manage guest sesison in demo mode.
+bool ShouldFallBackToMGS();
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether the device is in demo account session.
+void SetShouldFallBackMGS(bool is_demo_account_session);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Set to power idle action policy to do nothing and use the DemoModeIdleHandler
+// when idle.
+void SetDoNothingWhenPowerIdle();
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether force the session length count from ChromeOS session instead of first
+// user activity.
+bool ForceSessionLengthCountFromSessionStarts();
+
 }  // namespace ash::demo_mode
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEMO_MODE_UTILS_DEMO_SESSION_UTILS_H_

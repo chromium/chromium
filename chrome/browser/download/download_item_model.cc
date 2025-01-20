@@ -96,7 +96,7 @@ namespace {
 // DownloadItem, and the lifetime of the model is shorter than the DownloadItem.
 class DownloadItemModelData : public base::SupportsUserData::Data {
  public:
-  ~DownloadItemModelData() override {}
+  ~DownloadItemModelData() override = default;
 
   // Get the DownloadItemModelData object for |download|. Returns NULL if
   // there's no model data.
@@ -289,6 +289,10 @@ int64_t DownloadItemModel::GetCompletedBytes() const {
 int64_t DownloadItemModel::GetTotalBytes() const {
   return download_->AllDataSaved() ? download_->GetReceivedBytes()
                                    : download_->GetTotalBytes();
+}
+
+int64_t DownloadItemModel::GetUploadedBytes() const {
+  return download_->GetUploadedBytes();
 }
 
 // TODO(asanka,rdsmith): Once 'open' moves exclusively to the
@@ -1129,6 +1133,7 @@ void DownloadItemModel::CompleteSafeBrowsingScan() {
 
 void DownloadItemModel::ReviewScanningVerdict(
     content::WebContents* web_contents) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   auto command_callback =
       [](std::unique_ptr<DownloadItemModel> model,
          std::unique_ptr<DownloadCommands> download_commands,
@@ -1146,8 +1151,9 @@ void DownloadItemModel::ReviewScanningVerdict(
           command_callback, std::make_unique<DownloadItemModel>(download_),
           std::make_unique<DownloadCommands>(DownloadUIModel::GetWeakPtr()),
           DownloadCommands::DISCARD));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 bool DownloadItemModel::ShouldShowDropdown() const {
   // We don't show the dropdown for dangerous file types or for files

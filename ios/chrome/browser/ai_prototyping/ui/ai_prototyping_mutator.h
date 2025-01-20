@@ -9,8 +9,8 @@
 
 namespace optimization_guide {
 namespace proto {
-class BlingPrototypingRequest;
 class StringValue;
+class BlingPrototypingRequest;
 enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 }  // namespace proto
 }  // namespace optimization_guide

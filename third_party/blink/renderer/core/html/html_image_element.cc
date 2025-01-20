@@ -179,7 +179,7 @@ bool HTMLImageElement::IsPresentationAttribute(
 void HTMLImageElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
     if (FastHasAttribute(html_names::kHeightAttr)) {
@@ -211,7 +211,7 @@ void HTMLImageElement::CollectStyleForPresentationAttribute(
 }
 
 void HTMLImageElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (!source_)
     return;
 
@@ -404,7 +404,7 @@ void HTMLImageElement::ParseAttribute(
                                                               referrer_policy);
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
-             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+             RuntimeEnabledFeatures::SharedStorageAPIEnabled(
                  GetExecutionContext())) {
     if (!GetExecutionContext()->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -479,7 +479,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
     if (!source)
       continue;
 
-    if (!source->FastGetAttribute(html_names::kSrcAttr).IsNull()) {
+    if (source->FastHasAttribute(html_names::kSrcAttr)) {
       Deprecation::CountDeprecation(GetExecutionContext(),
                                     WebFeature::kPictureSourceSrc);
     }
@@ -494,8 +494,8 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
       continue;
 
     ImageCandidate candidate = BestFitSourceForSrcsetAttribute(
-        GetDocument().DevicePixelRatio(), SourceSize(*source),
-        source->FastGetAttribute(html_names::kSrcsetAttr), &GetDocument());
+        GetDocument().DevicePixelRatio(), SourceSize(*source), srcset,
+        &GetDocument());
     if (candidate.IsEmpty())
       continue;
     source_ = source;

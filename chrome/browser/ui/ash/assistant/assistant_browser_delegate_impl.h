@@ -12,7 +12,10 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/service.h"
@@ -38,10 +41,9 @@ class AssistantBrowserDelegateImpl
       delete;
   ~AssistantBrowserDelegateImpl() override;
 
-  void MaybeInit(Profile* profile);
   void MaybeStartAssistantOptInFlow();
 
-  // chromeos::assistant::AssisantClient overrides:
+  // chromeos::assistant::AssistantBrowserDelegate overrides:
   void OnAssistantStatusChanged(
       ash::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(
@@ -67,13 +69,36 @@ class AssistantBrowserDelegateImpl
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) override;
   void OpenUrl(GURL url) override;
+  base::expected<bool, AssistantBrowserDelegate::Error>
+  IsNewEntryPointEligibleForPrimaryProfile() override;
+  void OpenNewEntryPoint() override;
+  int GetNewEntryPointIconResourceId() override;
+  std::optional<std::string> GetNewEntryPointName() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
       mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
           receiver) override;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
+  void OverrideEntryPointIdForTesting(const std::string& test_entry_point_id);
+
  private:
+  // Gets `web_app::WebAppRegistrar` for querying information about new entry
+  // point. Use a pointer instead of a reference as `base::expected` is
+  // incompatible with a reference.
+  base::expected<const web_app::WebAppRegistrar*,
+                 ash::assistant::AssistantBrowserDelegate::Error>
+  GetWebAppRegistrarForNewEntryPoint();
+
+  // Resolves new entry point if a device or a profile is eligible. Note that
+  // it's guaranteed that the value is non-nullptr if provided.
+  base::expected<const web_app::WebApp*,
+                 ash::assistant::AssistantBrowserDelegate::Error>
+  ResolveNewEntryPointIfEligible();
+
+  void OnExternalManagersSynchronized();
+
+  void MaybeInit(Profile* profile);
   // signin::IdentityManager::Observer:
   // Retry to initiate Assistant service when account info has been updated.
   // This is necessary if previous calls of MaybeInit() failed due to Assistant
@@ -93,6 +118,10 @@ class AssistantBrowserDelegateImpl
   // Called when the application is terminating
   void OnAppTerminating();
 
+  // Initializes new entry point for a passed primary profile. Note that
+  // Assistant new entry point is eligible only for a primary profile.
+  void InitializeNewEntryPointFor(Profile* primary_profile);
+
   std::unique_ptr<DeviceActions> device_actions_;
   std::unique_ptr<ash::assistant::Service> service_;
   std::unique_ptr<AssistantSetup> assistant_setup_;
@@ -105,8 +134,17 @@ class AssistantBrowserDelegateImpl
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
+  // Stores a profile for Assistant new entry point. Note that
+  // `AssistantBrowserDelegateImpl::profile_` is only initialized when Assistant
+  // is allowed.
+  raw_ptr<Profile> profile_for_new_entry_point_ = nullptr;
+
+  std::string entry_point_id_for_testing_;
+
   base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
       assistant_state_observation_{this};
+
+  base::WeakPtrFactory<AssistantBrowserDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_BROWSER_DELEGATE_IMPL_H_

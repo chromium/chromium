@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.common.IGpuProcessCallback;
 import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
@@ -19,6 +20,7 @@ import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 
 @JNINamespace("content")
+@NullMarked
 class GpuProcessCallback extends IGpuProcessCallback.Stub {
     GpuProcessCallback() {}
 

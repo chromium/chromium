@@ -20,7 +20,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -30,6 +29,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,6 +37,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -197,7 +198,8 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator,
   ~RenderWidgetHostIteratorImpl() override = default;
 
   void Add(RenderWidgetHost* host) {
-    hosts_.emplace_back(host->GetProcess()->GetID(), host->GetRoutingID());
+    hosts_.emplace_back(host->GetProcess()->GetDeprecatedID(),
+                        host->GetRoutingID());
   }
 
   // RenderWidgetHostIterator:
@@ -402,6 +404,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       site_instance_group_(site_instance_group->GetWeakPtrToAllowDangling()),
       routing_id_(routing_id),
       is_hidden_(hidden),
+      was_ever_shown_(!hidden),
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
       should_disable_hang_monitor_(
@@ -435,8 +438,9 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
-          RenderWidgetHostID(agent_scheduling_group_->GetProcess()->GetID(),
-                             routing_id_),
+          RenderWidgetHostID(
+              agent_scheduling_group_->GetProcess()->GetDeprecatedID(),
+              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
 
@@ -469,6 +473,10 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   delegate_->RenderWidgetCreated(this);
   render_frame_metadata_provider_.AddObserver(this);
+
+  if (!hidden) {
+    first_shown_time_ = base::TimeTicks::Now();
+  }
 }
 
 RenderWidgetHostImpl::~RenderWidgetHostImpl() {
@@ -476,6 +484,20 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
       "Navigation.RenderWidgetHostDestructor");
   CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
+
+  if (was_ever_shown_) {
+    // Log UMA related to possible suppression of input events until the
+    // renderer has pushed content to viz (https://crbug.com/40057499).
+    base::UmaHistogramBoolean("Renderer.ContentProduction.SignalReceived",
+                              first_content_metadata_received_);
+    if (first_content_metadata_received_ &&
+        first_content_metadata_time_ > first_shown_time_) {
+      base::TimeDelta delay = first_content_metadata_time_ - first_shown_time_;
+      base::UmaHistogramTimes("Renderer.ContentProduction.DelayFromUnhide",
+                              delay);
+    }
+  }
+
   if (!destroyed_) {
     Destroy(false);
   }
@@ -541,7 +563,7 @@ viz::FrameSinkId RenderWidgetHostImpl::DefaultFrameSinkId(
     const SiteInstanceGroup& group,
     int routing_id) {
   return viz::FrameSinkId(
-      base::checked_cast<uint32_t>(group.process()->GetID()),
+      base::checked_cast<uint32_t>(group.process()->GetDeprecatedID()),
       base::checked_cast<uint32_t>(routing_id));
 }
 
@@ -572,10 +594,6 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
   GetRenderInputRouter()->SetView(view);
 }
 
-// static
-const base::TimeDelta RenderWidgetHostImpl::kActivationNotificationExpireTime =
-    base::Milliseconds(300);
-
 RenderProcessHost* RenderWidgetHostImpl::GetProcess() {
   return agent_scheduling_group_->GetProcess();
 }
@@ -585,6 +603,10 @@ int RenderWidgetHostImpl::GetRoutingID() {
 }
 
 RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() {
+  return view_.get();
+}
+
+const RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() const {
   return view_.get();
 }
 
@@ -721,7 +743,8 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
 
   GetRenderInputRouter()->BindRenderInputRouterInterfaces(
       std::move(browser_remote));
-  GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget);
+  GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget,
+                                                /*is_in_viz=*/false);
 
   // TODO(crbug.com/40162510): The `view_` can be null. :( Speculative
   // RenderViews along with the main frame and its widget before the
@@ -836,6 +859,10 @@ void RenderWidgetHostImpl::WasShown(
   TRACE_EVENT_WITH_FLOW0("renderer_host", "RenderWidgetHostImpl::WasShown",
                          routing_id_, TRACE_EVENT_FLAG_FLOW_OUT);
   is_hidden_ = false;
+  if (!was_ever_shown_) {
+    was_ever_shown_ = true;
+    first_shown_time_ = base::TimeTicks::Now();
+  }
 
   // If we navigated in background, clear the displayed graphics of the
   // previous page before going visible.
@@ -1024,7 +1051,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   visual_properties.min_size_for_auto_resize = min_size_for_auto_resize_;
   visual_properties.max_size_for_auto_resize = max_size_for_auto_resize_;
 
-  visual_properties.new_size = view_->GetRequestedRendererSize();
+  visual_properties.new_size_device_px =
+      view_->GetRequestedRendererSizeDevicePx();
 
   // This widget is for a frame that is the main frame of the outermost frame
   // tree. That makes it the top-most frame. OR this is a non-frame widget.
@@ -1238,9 +1266,9 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
     blink_widget_->UpdateVisualProperties(*visual_properties);
   }
 
-  bool width_changed =
-      !old_visual_properties_ || old_visual_properties_->new_size.width() !=
-                                     visual_properties->new_size.width();
+  bool width_changed = !old_visual_properties_ ||
+                       old_visual_properties_->new_size_device_px.width() !=
+                           visual_properties->new_size_device_px.width();
 
   // WidgetBase::UpdateSurfaceAndScreenInfo uses similar logic to detect
   // orientation changes on the display currently showing the widget.
@@ -1476,8 +1504,6 @@ void RenderWidgetHostImpl::DidNavigate() {
   if (view_) {
     view_->DidNavigate();
   }
-
-  ClearPendingUserActivation();
 }
 
 void RenderWidgetHostImpl::StartNewContentRenderingTimeout() {
@@ -1930,7 +1956,7 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
     blink_frame_widget_->DragTargetDrop(
         DropDataToDragData(drop_data_with_permissions,
                            storage_partition->GetFileSystemAccessManager(),
-                           GetProcess()->GetID(),
+                           GetProcess()->GetDeprecatedID(),
                            ChromeBlobStorageContext::GetFor(
                                GetProcess()->GetBrowserContext())),
         ConvertWindowPointToViewport(client_point), screen_point, key_modifiers,
@@ -2338,7 +2364,7 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);
   g_routing_id_widget_map.Get().erase(
-      RenderWidgetHostID(GetProcess()->GetID(), routing_id_));
+      RenderWidgetHostID(GetProcess()->GetDeprecatedID(), routing_id_));
 
   // The |delegate_| may have been destroyed (or is in the process of being
   // destroyed) and detached first.
@@ -2508,16 +2534,23 @@ void RenderWidgetHostImpl::ResetDelegatedInkPointPrediction(
   }
 }
 
-const cc::RenderFrameMetadata&
-RenderWidgetHostImpl::GetLastRenderFrameMetadata() {
-  return render_frame_metadata_provider()->LastRenderFrameMetadata();
+std::optional<bool> RenderWidgetHostImpl::IsDelegatedInkHovering() {
+  const std::optional<cc::DelegatedInkBrowserMetadata>& metadata =
+      render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .delegated_ink_metadata;
+
+  if (!metadata) {
+    return std::nullopt;
+  }
+
+  return metadata.value().delegated_ink_is_hovering;
 }
 
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
     const WebInputEvent& event) {
-  AddPendingUserActivation(event);
   for (auto& observer : input_event_observers_) {
-    observer.OnInputEvent(event);
+    observer.OnInputEvent(*this, event);
   }
 }
 
@@ -2526,7 +2559,7 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
     blink::mojom::InputEventResultState ack_result,
     const WebInputEvent& event) {
   for (auto& input_event_observer : input_event_observers_) {
-    input_event_observer.OnInputEventAck(ack_source, ack_result, event);
+    input_event_observer.OnInputEventAck(*this, ack_source, ack_result, event);
   }
 }
 
@@ -2536,9 +2569,9 @@ bool RenderWidgetHostImpl::PreHandleGestureEvent(
   return delegate()->PreHandleGestureEvent(event);
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<viz::PeakGpuMemoryTracker>
 RenderWidgetHostImpl::MakePeakGpuMemoryTracker(
-    input::PeakGpuMemoryTracker::Usage usage) {
+    viz::PeakGpuMemoryTracker::Usage usage) {
   return PeakGpuMemoryTrackerFactory::Create(usage);
 }
 
@@ -2571,8 +2604,9 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
   // `delegate_` may be null since this message may be received from when
   // the delegate shutdown but this widget is not yet destroyed.
   if (delegate_) {
-    delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                                 initial_screen_rect, anchor_screen_rect);
+    delegate_->ShowCreatedWidget(GetProcess()->GetDeprecatedID(),
+                                 GetRoutingID(), initial_screen_rect,
+                                 anchor_screen_rect);
   }
   std::move(callback).Run();
 }
@@ -2707,7 +2741,7 @@ void RenderWidgetHostImpl::StartDragging(
   //    renderer for any file paths in the drop.
   filtered_data.filenames.clear();
   for (const auto& file_info : drop_data.filenames) {
-    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path)) {
+    if (policy->CanReadFile(GetProcess()->GetDeprecatedID(), file_info.path)) {
       filtered_data.filenames.push_back(file_info);
     }
   }
@@ -2730,7 +2764,8 @@ void RenderWidgetHostImpl::StartDragging(
       continue;
     }
 
-    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url)) {
+    if (policy->CanReadFileSystemFile(GetProcess()->GetDeprecatedID(),
+                                      file_system_url)) {
       filtered_data.file_system_files.push_back(file_system_file);
     }
   }
@@ -2782,7 +2817,8 @@ bool RenderWidgetHostImpl::DidVisualPropertiesSizeChange(
            old_visual_properties.max_size_for_auto_resize !=
                new_visual_properties.max_size_for_auto_resize)) ||
          (!old_visual_properties.auto_resize_enabled &&
-          (old_visual_properties.new_size != new_visual_properties.new_size ||
+          (old_visual_properties.new_size_device_px !=
+               new_visual_properties.new_size_device_px ||
            (old_visual_properties.compositor_viewport_pixel_rect.IsEmpty() &&
             !new_visual_properties.compositor_viewport_pixel_rect.IsEmpty())));
 }
@@ -2798,7 +2834,7 @@ bool RenderWidgetHostImpl::DoesVisualPropertiesNeedAck(
   bool is_acking_applicable =
       g_check_for_pending_visual_properties_ack &&
       !new_visual_properties.auto_resize_enabled &&
-      !new_visual_properties.new_size.IsEmpty() &&
+      !new_visual_properties.new_size_device_px.IsEmpty() &&
       !new_visual_properties.compositor_viewport_pixel_rect.IsEmpty() &&
       new_visual_properties.local_surface_id;
 
@@ -2992,7 +3028,7 @@ void RenderWidgetHostImpl::OnStartStylusWriting() {
 
 void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)
-    const gfx::Rect& focus_rect_in_widget
+    const gfx::Rect& focus_widget_rect_in_dips
 #endif  // BUILDFLAG(IS_WIN)
 ) {
   if (blink_frame_widget_) {
@@ -3001,7 +3037,7 @@ void RenderWidgetHostImpl::UpdateElementFocusForStylusWriting(
         weak_factory_.GetWeakPtr());
     blink_frame_widget_->OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-        focus_rect_in_widget,
+        focus_widget_rect_in_dips,
 #endif  // BUILDFLAG(IS_WIN)
         std::move(callback));
   }
@@ -3015,7 +3051,7 @@ void RenderWidgetHostImpl::OnUpdateElementFocusForStylusWritingHandled(
 #if BUILDFLAG(IS_WIN)
   if (focus_result && focus_result->proximate_bounds) {
     if (focus_result->proximate_bounds->range.length() !=
-        focus_result->proximate_bounds->bounds.size()) {
+        focus_result->proximate_bounds->widget_bounds_in_dips.size()) {
       mojo::ReportBadMessage("mismatched range and bounds length received");
       return;
     }
@@ -3248,35 +3284,6 @@ void RenderWidgetHostImpl::DecrementInFlightEventCount(
   }
 }
 
-void RenderWidgetHostImpl::AddPendingUserActivation(
-    const WebInputEvent& event) {
-  if ((base::FeatureList::IsEnabled(
-           features::kBrowserVerifiedUserActivationMouse) &&
-       event.GetType() == WebInputEvent::Type::kMouseDown) ||
-      (base::FeatureList::IsEnabled(
-           features::kBrowserVerifiedUserActivationKeyboard) &&
-       (event.GetType() == WebInputEvent::Type::kKeyDown ||
-        event.GetType() == WebInputEvent::Type::kRawKeyDown))) {
-    pending_user_activation_timer_.Start(
-        FROM_HERE, kActivationNotificationExpireTime,
-        base::BindOnce(&RenderWidgetHostImpl::ClearPendingUserActivation,
-                       base::Unretained(this)));
-    pending_user_activation_counter_++;
-  }
-}
-
-void RenderWidgetHostImpl::ClearPendingUserActivation() {
-  pending_user_activation_counter_ = 0;
-  pending_user_activation_timer_.Stop();
-}
-
-bool RenderWidgetHostImpl::RemovePendingUserActivationIfAvailable() {
-  if (pending_user_activation_counter_ > 0) {
-    pending_user_activation_counter_--;
-    return true;
-  }
-  return false;
-}
 
 const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
 RenderWidgetHostImpl::GetAssociatedFrameWidget() {
@@ -3535,7 +3542,8 @@ void RenderWidgetHostImpl::GrantFileAccessFromDropData(DropData* drop_data) {
   RenderProcessHost* process = GetProcess();
   PrepareDropDataForChildProcess(
       drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+      process->GetDeprecatedID(),
+      process->GetStoragePartition()->GetFileSystemContext());
 }
 
 void RenderWidgetHostImpl::RequestCompositionUpdates(bool immediate_request,
@@ -3561,7 +3569,8 @@ void RenderWidgetHostImpl::CreateFrameSink(
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
          std::optional<mojo::PendingRemote<
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
-         uint32_t grouping_id, const viz::FrameSinkId& frame_sink_id) {
+         bool force_enable_zoom, base::UnguessableToken grouping_id,
+         const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
         if (input::IsTransferInputToVizSupported()) {
           DCHECK(viz_rir_client_remote.has_value());
@@ -3569,6 +3578,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
           config = input::mojom::RenderInputRouterConfig::New();
           config->rir_client = std::move(viz_rir_client_remote.value());
           config->grouping_id = grouping_id;
+          config->force_enable_zoom = force_enable_zoom;
         }
         GetHostFrameSinkManager()->CreateCompositorFrameSink(
             frame_sink_id, std::move(receiver), std::move(client),
@@ -3576,7 +3586,8 @@ void RenderWidgetHostImpl::CreateFrameSink(
       },
       std::move(compositor_frame_sink_receiver),
       std::move(compositor_frame_sink_client),
-      std::move(viz_rir_client_remote_));
+      std::move(viz_rir_client_remote_),
+      GetRenderInputRouter()->GetForceEnableZoom());
 
   MaybeDispatchBufferedFrameSinkRequest();
 }
@@ -3760,13 +3771,32 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedBeforeActivation(
 
 void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
+  if (!first_content_metadata_received_) {
+    first_content_metadata_received_ = true;
+    first_content_metadata_time_ = base::TimeTicks::Now();
+  }
+
   const auto& metadata =
       render_frame_metadata_provider_.LastRenderFrameMetadata();
 
-  bool is_mobile_optimized = metadata.is_mobile_optimized;
-  input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
-  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
-    touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
+  const bool mobile_optimized_state_changed =
+      (is_mobile_optimized_ != metadata.is_mobile_optimized);
+  is_mobile_optimized_ = metadata.is_mobile_optimized;
+
+  if (mobile_optimized_state_changed) {
+    input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized_);
+    // Notifies Viz only if the page's mobile optimized state has changed, since
+    // this is only used to set touch ack timeout delay for mobile sites in
+    // PassthroughTouchEventQueue.
+    if (auto* delegate_remote =
+            delegate()->GetRenderInputRouterDelegateRemote()) {
+      delegate_remote->NotifySiteIsMobileOptimized(is_mobile_optimized_,
+                                                   frame_sink_id_);
+    }
+    if (auto* touch_emulator =
+            GetTouchEmulator(/*create_if_necessary=*/false)) {
+      touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized_);
+    }
   }
 
   // TODO(danakj): Can this method be called during WebContents destruction?

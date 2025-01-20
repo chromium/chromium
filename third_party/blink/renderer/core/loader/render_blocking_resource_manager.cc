@@ -141,10 +141,6 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
 void RenderBlockingResourceManager::AddPendingParsingElementLink(
     const AtomicString& id,
     const HTMLLinkElement* link) {
-  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
-    return;
-  }
-
   CHECK(link);
 
   // We can only add resources until the body element is parsed.
@@ -168,10 +164,6 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
 void RenderBlockingResourceManager::RemovePendingParsingElement(
     const AtomicString& id,
     Element* element) {
-  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
-    return;
-  }
-
   if (element_render_blocking_links_.empty() || id.empty()) {
     return;
   }
@@ -196,10 +188,6 @@ void RenderBlockingResourceManager::RemovePendingParsingElement(
 void RenderBlockingResourceManager::RemovePendingParsingElementLink(
     const AtomicString& id,
     const HTMLLinkElement* link) {
-  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
-    return;
-  }
-
   // We don't add empty ids.
   if (id.empty()) {
     return;
@@ -222,10 +210,6 @@ void RenderBlockingResourceManager::RemovePendingParsingElementLink(
 }
 
 void RenderBlockingResourceManager::ClearPendingParsingElements() {
-  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
-    return;
-  }
-
   if (element_render_blocking_links_.empty()) {
     return;
   }

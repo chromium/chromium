@@ -36,9 +36,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 
-namespace payments {
-
-namespace internal {
+namespace payments::internal {
 
 // This class is the actual sheet that gets pushed on the view_stack_. It
 // implements views::FocusTraversable to trap focus within its hierarchy. This
@@ -56,8 +54,9 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
       const base::RepeatingCallback<void(bool*, const ui::Event&)>&
           enter_key_accelerator_callback)
       : enter_key_accelerator_callback_(enter_key_accelerator_callback) {
-    if (enter_key_accelerator_callback_)
+    if (enter_key_accelerator_callback_) {
       AddAccelerator(enter_key_accelerator_);
+    }
   }
   SheetView(const SheetView&) = delete;
   SheetView& operator=(const SheetView&) = delete;
@@ -92,8 +91,9 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
     // RequestFocus only works if we are in an accessible context, and is a
     // no-op otherwise. Thus, if the focused view didn't change, we need to
     // proceed with setting the focus for standard usage.
-    if (focus->GetFocusedView() == title)
+    if (focus->GetFocusedView() == title) {
       return;
+    }
 
     views::View* first_focusable = first_focusable_;
 
@@ -108,14 +108,16 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
           &dummy_focus_traversable, &dummy_focus_traversable_view);
     }
 
-    if (first_focusable)
+    if (first_focusable) {
       first_focusable->RequestFocus();
+    }
   }
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     if (accelerator != enter_key_accelerator_ ||
-        !enter_key_accelerator_callback_)
+        !enter_key_accelerator_callback_) {
       return views::View::AcceleratorPressed(accelerator);
+    }
 
     bool is_enabled = false;
     enter_key_accelerator_callback_.Run(&is_enabled,
@@ -125,8 +127,9 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
 
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override {
-    if (!details.is_add && details.child == first_focusable_)
+    if (!details.is_add && details.child == first_focusable_) {
       first_focusable_ = nullptr;
+    }
   }
 
   void SetVisible(bool visible) override {
@@ -263,9 +266,7 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
 BEGIN_METADATA(PaymentRequestBackArrowButton)
 END_METADATA
 
-}  // namespace internal
-
-}  // namespace payments
+}  // namespace payments::internal
 
 DEFINE_VIEW_BUILDER(, payments::internal::SheetView)
 
@@ -297,8 +298,9 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
               [](PaymentRequestSheetController* controller,
                  internal::SheetView* sheet_view) {
                 DialogViewID sheet_id;
-                if (controller->GetSheetId(&sheet_id))
+                if (controller->GetSheetId(&sheet_id)) {
                   sheet_view->SetID(static_cast<int>(sheet_id));
+                }
 
                 sheet_view->SetBackground(views::CreateThemedSolidBackground(
                     ui::kColorDialogBackground));
@@ -366,8 +368,9 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   // content) fills the dialog.
   view->SetFlexForView(scroll_ ? scroll_ : pane_, 1);
 
-  if (footer)
+  if (footer) {
     view->AddChildView(std::move(footer));
+  }
 
   UpdateContentView();
 
@@ -377,8 +380,9 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
 
 void PaymentRequestSheetController::UpdateContentView() {
   // Do not update the view if the payment request is being aborted.
-  if (!is_active_)
+  if (!is_active_) {
     return;
+  }
 
   content_view_->RemoveAllChildViews();
   FillContentView(content_view_);
@@ -387,8 +391,9 @@ void PaymentRequestSheetController::UpdateContentView() {
 
 void PaymentRequestSheetController::UpdateHeaderView() {
   // Do not update the view if the payment request is being aborted.
-  if (!is_active_)
+  if (!is_active_) {
     return;
+  }
 
   header_view_->RemoveAllChildViews();
   PopulateSheetHeaderView(header_view_);
@@ -412,8 +417,9 @@ void PaymentRequestSheetController::UpdateFocus(views::View* focused_view) {
 
 void PaymentRequestSheetController::RelayoutPane() {
   // Do not update the view if the payment request is being aborted.
-  if (!is_active_)
+  if (!is_active_) {
     return;
+  }
 
   content_view_->InvalidateLayout();
   pane_->SizeToPreferredSize();
@@ -437,8 +443,9 @@ PaymentRequestSheetController::GetPrimaryButtonCallback() {
   return base::BindRepeating(
       [](const base::WeakPtr<PaymentRequestDialogView>& dialog,
          const ui::Event& event) {
-        if (dialog->IsInteractive())
+        if (dialog->IsInteractive()) {
           dialog->Pay();
+        }
       },
       dialog());
 }
@@ -596,8 +603,9 @@ bool PaymentRequestSheetController::CanContentViewBeScrollable() {
 }
 
 void PaymentRequestSheetController::CloseButtonPressed(const ui::Event& event) {
-  if (dialog()->IsInteractive())
+  if (dialog()->IsInteractive()) {
     dialog()->CloseDialog();
+  }
 }
 
 int PaymentRequestSheetController::GetHeaderHeight() {
@@ -643,8 +651,9 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
   if (dialog()->IsInteractive() && primary_button_ &&
       primary_button_->GetEnabled()) {
     ButtonCallback callback = GetPrimaryButtonCallback();
-    if (callback)
+    if (callback) {
       callback.Run(event);
+    }
   }
 }
 
@@ -653,8 +662,9 @@ void PaymentRequestSheetController::Stop() {
 }
 
 void PaymentRequestSheetController::BackButtonPressed() {
-  if (dialog()->IsInteractive())
+  if (dialog()->IsInteractive()) {
     dialog()->GoBack();
+  }
 }
 
 }  // namespace payments

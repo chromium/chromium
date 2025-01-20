@@ -58,7 +58,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   DownloadDangerPromptTest(const DownloadDangerPromptTest&) = delete;
   DownloadDangerPromptTest& operator=(const DownloadDangerPromptTest&) = delete;
 
-  ~DownloadDangerPromptTest() override {}
+  ~DownloadDangerPromptTest() override = default;
 
   void SetUp() override {
     SafeBrowsingService::RegisterFactory(test_safe_browsing_factory_.get());

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/signin_profile_info_updater_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_error_controller_factory.h"
@@ -14,8 +13,8 @@
 // static
 SigninProfileInfoUpdater* SigninProfileInfoUpdaterFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SigninProfileInfoUpdater*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SigninProfileInfoUpdater>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -26,14 +25,14 @@ SigninProfileInfoUpdaterFactory::GetInstance() {
 }
 
 SigninProfileInfoUpdaterFactory::SigninProfileInfoUpdaterFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SigninProfileInfoUpdater",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SigninProfileInfoUpdater",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::SigninErrorControllerFactory::GetInstance());
 }
 
-SigninProfileInfoUpdaterFactory::~SigninProfileInfoUpdaterFactory() {}
+SigninProfileInfoUpdaterFactory::~SigninProfileInfoUpdaterFactory() = default;
 
 std::unique_ptr<KeyedService>
 SigninProfileInfoUpdaterFactory::BuildServiceInstanceFor(
@@ -43,12 +42,4 @@ SigninProfileInfoUpdaterFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile),
       ios::SigninErrorControllerFactory::GetForProfile(profile),
       profile->GetProfileName());
-}
-
-bool SigninProfileInfoUpdaterFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
-}
-
-bool SigninProfileInfoUpdaterFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

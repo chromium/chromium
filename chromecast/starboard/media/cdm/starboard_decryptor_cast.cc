@@ -615,7 +615,7 @@ void StarboardDecryptorCast::OnKeyStatusesChanged(
         reinterpret_cast<const char*>(&key_id.identifier),
         key_id.identifier_size);
     CHECK_GE(key_id.identifier_size, 0);
-    const size_t key_hash = base::FastHash(base::make_span(
+    const size_t key_hash = base::FastHash(base::span(
         key_id.identifier, static_cast<size_t>(key_id.identifier_size)));
     LOG(INFO) << "DRM key (hash) " << key_hash << " changed status to "
               << DrmKeyStatusToString(status) << " for DRM system with address "

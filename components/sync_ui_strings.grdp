@@ -61,4 +61,11 @@
       =3 {{website_1}, {website_2}, and 1 more}
       other {{website_1}, {website_2}, and {more_count} more}}
     </message>
+    <message name="IDS_BULK_UPLOAD_BOOKMARK_FOLDER_SUBTITLE" desc="Item listed in the Bookmarks section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. The list of items has three sections: Passwords, Bookmarks, and Addresses. This string is one of the items in the Bookmarks list: it lists the name of a bookmark folder and shows the number of bookmarks in that folder.">
+    {count, plural,
+      =0 {# bookmarks}
+      =1 {# bookmark}
+      other {# bookmarks}
+    }
+    </message>
 </grit-part>

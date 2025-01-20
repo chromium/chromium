@@ -18,8 +18,8 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/animation_throughput_reporter_test_base.h"
-#include "ui/compositor/test/throughput_report_checker.h"
+#include "ui/compositor/test/compositor_metrics_report_checker.h"
+#include "ui/compositor/test/compositor_metrics_reporter_test_base.h"
 
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||    \
@@ -100,9 +100,9 @@ class TestCompositorMonitor : public ui::CompositorObserver {
 };
 
 TotalAnimationThroughputReporter::ReportOnceCallback IgnoreTimestamps(
-    ThroughputReportChecker::ReportOnceCallback original) {
+    CompositorMetricsReportChecker::ReportOnceCallback original) {
   return base::BindOnce(
-      [](ThroughputReportChecker::ReportOnceCallback original,
+      [](CompositorMetricsReportChecker::ReportOnceCallback original,
          const cc::FrameSequenceMetrics::CustomReportData& data,
          base::TimeTicks first_animation_started_at,
          base::TimeTicks last_animation_finished_at) {
@@ -113,15 +113,14 @@ TotalAnimationThroughputReporter::ReportOnceCallback IgnoreTimestamps(
 
 }  // namespace
 
-using TotalAnimationThroughputReporterTest =
-    AnimationThroughputReporterTestBase;
+using TotalAnimationThroughputReporterTest = CompositorMetricsReporterTestBase;
 
 TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TestCompositorMonitor compositor_monitor(compositor());
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
@@ -152,7 +151,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(layer, 1.0f, base::Milliseconds(64));
@@ -169,7 +168,7 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(layer1, 1.0f, base::Milliseconds(48));
@@ -202,7 +201,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
   layer.SetLayerBrightness(0.5f);
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(layer, 1.0f, base::Milliseconds(48));
@@ -227,7 +226,7 @@ TEST_F(TotalAnimationThroughputReporterTest,
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(layer1, 1.0f, base::Milliseconds(48));
@@ -263,7 +262,7 @@ TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
   layer1->SetOpacity(0.5f);
   root_layer()->Add(layer1.get());
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   SetLayerOpacity(*layer1, 1.0f, base::Milliseconds(100));
@@ -289,7 +288,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StartWhileAnimating) {
 
   SetLayerOpacity(layer, 1.0f, base::Milliseconds(96));
   Advance(base::Milliseconds(32));
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
   EXPECT_TRUE(reporter.IsMeasuringForTesting());
@@ -307,7 +306,7 @@ TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
   layer.SetAnimator(animator);
 
   // |reporter| keeps reporting as long as it is alive.
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(compositor(),
                                             checker.repeating_callback());
 
@@ -376,7 +375,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   LayerAnimator* animator = new LayerAnimator(base::Milliseconds(32));
   layer.SetAnimator(animator);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(
       compositor(), IgnoreTimestamps(checker.once_callback()),
       /*should_delete=*/false);
@@ -487,9 +486,9 @@ TEST_F(TotalAnimationThroughputReporterTest, ThreadCheck) {
 
   ui::Compositor* c = compositor();
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   auto once_callback = checker.once_callback();
-  ThroughputReportChecker::ReportOnceCallback callback =
+  CompositorMetricsReportChecker::ReportOnceCallback callback =
       base::BindLambdaForTesting(
           [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
             // This call with fail if this is called on impl thread.

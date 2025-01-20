@@ -56,7 +56,7 @@ class AppMenuIconController : public GlobalErrorObserver,
     virtual void UpdateTypeAndSeverity(TypeAndSeverity type_and_severity) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates an instance of this class for the given |profile| that will notify

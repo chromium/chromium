@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -60,6 +61,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/mime_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,15 +112,15 @@ const char kTransientPathValidationHistogram[] =
     "Download.PathValidationResult.Transient";
 
 template <typename T>
-base::HistogramBase::Sample ToHistogramSample(T t) {
-  return static_cast<base::HistogramBase::Sample>(t);
+base::HistogramBase::Sample32 ToHistogramSample(T t) {
+  return static_cast<base::HistogramBase::Sample32>(t);
 }
 
 // No-op delegate.
 class NullWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  NullWebContentsDelegate() {}
-  ~NullWebContentsDelegate() override {}
+  NullWebContentsDelegate() = default;
+  ~NullWebContentsDelegate() override = default;
 };
 
 // Google Mock action that posts a task to the current message loop that invokes
@@ -1973,7 +1975,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedNoPrompt) {
   const base::FilePath::CharType* kInitialPath =
       FILE_PATH_LITERAL("some_path/bar.txt");
 
-  const DownloadTestCase kResumedTestCases[] = {
+  const auto kResumedTestCases = std::to_array<DownloadTestCase>({
       {// 0: Automatic Safe: Initial path is ignored since the user has not been
        // prompted before.
        AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -2013,7 +2015,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedNoPrompt) {
        DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
        EXPECT_LOCAL_PATH},
-  };
+  });
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
@@ -2092,7 +2094,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedWithPrompt) {
   const base::FilePath::CharType* kInitialPath =
       FILE_PATH_LITERAL("some_path/bar.txt");
 
-  const DownloadTestCase kResumedTestCases[] = {
+  const auto kResumedTestCases = std::to_array<DownloadTestCase>({
       {// 0: Automatic Safe
        AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
        DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.txt",
@@ -2112,24 +2114,32 @@ TEST_F(DownloadTargetDeterminerTest, ResumedWithPrompt) {
 
       {
           // 2: Automatic Dangerous
-          AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-          DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.kindabad",
-          "", FILE_PATH_LITERAL(""),
+          AUTOMATIC,
+          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+          DownloadFileType::NOT_DANGEROUS,
+          "http://example.com/foo.kindabad",
+          "",
+          FILE_PATH_LITERAL(""),
 
           FILE_PATH_LITERAL("foo.kindabad"),
-          DownloadItem::TARGET_DISPOSITION_PROMPT, EXPECT_CRDOWNLOAD,
+          DownloadItem::TARGET_DISPOSITION_PROMPT,
+          EXPECT_CRDOWNLOAD,
       },
 
       {
           // 3: Automatic Dangerous
-          AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-          DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.bad", "",
+          AUTOMATIC,
+          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+          DownloadFileType::NOT_DANGEROUS,
+          "http://example.com/foo.bad",
+          "",
           FILE_PATH_LITERAL(""),
 
-          FILE_PATH_LITERAL("foo.bad"), DownloadItem::TARGET_DISPOSITION_PROMPT,
+          FILE_PATH_LITERAL("foo.bad"),
+          DownloadItem::TARGET_DISPOSITION_PROMPT,
           EXPECT_CRDOWNLOAD,
       },
-  };
+  });
 
   ASSERT_EQ(
       DownloadFileType::ALLOW_ON_USER_GESTURE,
@@ -2175,7 +2185,8 @@ TEST_F(DownloadTargetDeterminerTest, IntermediateNameForResumed) {
     // Expected intermediate path relatvie to the test download path. An exact
     // match is performed if this string is non-empty. Ignored otherwise.
     const base::FilePath::CharType* expected_intermediate_path;
-  } kIntermediateNameTestCases[] = {
+  };
+  auto kIntermediateNameTestCases = std::to_array<IntermediateNameTestCase>({
       {{// 0: Automatic Safe
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.txt",
@@ -2238,7 +2249,7 @@ TEST_F(DownloadTargetDeterminerTest, IntermediateNameForResumed) {
         EXPECT_LOCAL_PATH},
        FILE_PATH_LITERAL("forced-foo.txt"),
        FILE_PATH_LITERAL("forced-foo.txt")},
-  };
+  });
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
@@ -2285,7 +2296,8 @@ TEST_F(DownloadTargetDeterminerTest, MIMETypeDetermination) {
 
     // Expected MIME type for test case.
     const char* expected_mime_type;
-  } kMIMETypeTestCases[] = {
+  };
+  auto kMIMETypeTestCases = std::to_array<MIMETypeTestCase>({
       {{// 0:
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.png",
@@ -2346,7 +2358,7 @@ TEST_F(DownloadTargetDeterminerTest, MIMETypeDetermination) {
 
         EXPECT_CRDOWNLOAD},
        ""},
-  };
+  });
 
   ON_CALL(
       *delegate(),
@@ -2386,7 +2398,8 @@ TEST_F(DownloadTargetDeterminerTest, MimeTypeFileExtension) {
 
     // Return value of DownloadItem::GetOriginalMimeType().
     std::string original_mime_type;
-  } kTestCases[] = {
+  };
+  auto kTestCases = std::to_array<MimeTypeFileExtensionTestCase>({
       {{// 0: Unsafe file extension generated by URL should not be replaced
         // to a safe extension to bypass the safe browsing check.
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -2443,7 +2456,8 @@ TEST_F(DownloadTargetDeterminerTest, MimeTypeFileExtension) {
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.png",
         "image/gif", FILE_PATH_LITERAL(""), FILE_PATH_LITERAL("foo.txt"),
         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_CRDOWNLOAD},
-       "foo.txt" /* suggested_file_name */}};
+       "foo.txt" /* suggested_file_name */},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     std::unique_ptr<download::MockDownloadItem> item =
@@ -2940,7 +2954,7 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
     DownloadTargetDeterminerTest::SetUp();
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         user_manager_->AddUserWithAffiliationAndTypeAndProfile(

@@ -7,6 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "content/common/buildflags.h"
+#include "content/public/browser/child_process_id.h"
 
 namespace content {
 class BrowserMessageFilter;
@@ -348,6 +349,7 @@ enum BadMessageReason {
   PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE = 320,
   RFH_INITIATOR_BASE_URL_IS_EMPTY = 321,
   MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE = 322,
+  MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE = 323,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
@@ -361,6 +363,11 @@ enum BadMessageReason {
 void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason);
 
 // Equivalent to the above, but callable from any thread.
+void ReceivedBadMessage(ChildProcessId render_process_id,
+                        BadMessageReason reason);
+
+// TODO(crbug.com/379869738): Deprecated, please use ReceivedBadMessage with
+// ChildProcessId above.
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)

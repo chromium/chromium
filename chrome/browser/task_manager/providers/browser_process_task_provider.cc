@@ -8,11 +8,9 @@
 
 namespace task_manager {
 
-BrowserProcessTaskProvider::BrowserProcessTaskProvider() {
-}
+BrowserProcessTaskProvider::BrowserProcessTaskProvider() = default;
 
-BrowserProcessTaskProvider::~BrowserProcessTaskProvider() {
-}
+BrowserProcessTaskProvider::~BrowserProcessTaskProvider() = default;
 
 Task* BrowserProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                       int route_id) {

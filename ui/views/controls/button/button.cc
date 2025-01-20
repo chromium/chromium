@@ -172,8 +172,9 @@ const Button* Button::AsButton(const views::View* view) {
 
 // static
 Button* Button::AsButton(views::View* view) {
-  if (view && view->GetProperty(kIsButtonProperty))
+  if (view && view->GetProperty(kIsButtonProperty)) {
     return static_cast<Button*>(view);
+  }
   return nullptr;
 }
 
@@ -197,23 +198,22 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 Button::~Button() = default;
 
 void Button::SetTooltipText(const std::u16string& tooltip_text) {
-  if (tooltip_text == tooltip_text_) {
+  std::u16string current_tooltip_text = GetCachedTooltipText();
+  if (tooltip_text == current_tooltip_text) {
     return;
   }
 
   if (GetViewAccessibility().GetCachedName().empty() ||
-      GetViewAccessibility().GetCachedName() == tooltip_text_) {
+      GetViewAccessibility().GetCachedName() == current_tooltip_text) {
     GetViewAccessibility().SetName(tooltip_text);
   }
 
-  tooltip_text_ = tooltip_text;
+  SetCachedTooltipText(tooltip_text);
   OnSetTooltipText(tooltip_text);
-  TooltipTextChanged();
-  OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
 }
 
 const std::u16string& Button::GetTooltipText() const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void Button::SetCallback(PressedCallback callback) {
@@ -223,8 +223,12 @@ void Button::SetCallback(PressedCallback callback) {
 void Button::AdjustAccessibleName(std::u16string& new_name,
                                   ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = tooltip_text_;
+    new_name = GetAlternativeAccessibleName();
   }
+}
+
+std::u16string Button::GetAlternativeAccessibleName() const {
+  return GetCachedTooltipText();
 }
 
 Button::ButtonState Button::GetState() const {
@@ -432,15 +436,17 @@ base::CallbackListSubscription Button::AddAnchorCountChangedCallback(
 
 Button::KeyClickAction Button::GetKeyClickActionForEvent(
     const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_SPACE)
+  if (event.key_code() == ui::VKEY_SPACE) {
     return PlatformStyle::kKeyClickActionOnSpace;
+  }
   // Note that default buttons also have VKEY_RETURN installed as an accelerator
   // in LabelButton::SetIsDefault(). On platforms where
   // PlatformStyle::kReturnClicksFocusedControl, the logic here will take
   // precedence over that.
   if (event.key_code() == ui::VKEY_RETURN &&
-      PlatformStyle::kReturnClicksFocusedControl)
+      PlatformStyle::kReturnClicksFocusedControl) {
     return KeyClickAction::kOnKeyPress;
+  }
   return KeyClickAction::kNone;
 }
 
@@ -464,16 +470,18 @@ gfx::Point Button::GetMenuPosition() const {
   }
 
   View::ConvertPointToScreen(this, &menu_position);
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     menu_position.Offset(-kMenuOffset.x(), kMenuOffset.y());
-  else
+  } else {
     menu_position += kMenuOffset;
+  }
 
   DCHECK(GetWidget());
   const int max_x_coordinate =
       GetWidget()->GetWorkAreaBoundsInScreen().right() - 1;
-  if (max_x_coordinate && max_x_coordinate <= menu_position.x())
+  if (max_x_coordinate && max_x_coordinate <= menu_position.x()) {
     menu_position.set_x(max_x_coordinate - 1);
+  }
   return menu_position;
 }
 
@@ -574,7 +582,7 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 }
 
 std::u16string Button::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
+  return GetCachedTooltipText();
 }
 
 void Button::ShowContextMenu(const gfx::Point& p,
@@ -628,8 +636,9 @@ void Button::VisibilityChanged(View* starting_from, bool visible) {
 }
 
 void Button::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
-  if (!details.is_add && state_ != STATE_DISABLED && details.child == this)
+  if (!details.is_add && state_ != STATE_DISABLED && details.child == this) {
     SetState(STATE_NORMAL);
+  }
   View::ViewHierarchyChanged(details);
 }
 
@@ -781,8 +790,9 @@ base::WeakPtr<Button> Button::GetWeakPtr() {
 }
 
 void Button::OnEnabledChanged() {
-  if (GetEnabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED))
+  if (GetEnabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED)) {
     return;
+  }
 
   if (GetEnabled()) {
     bool should_enter_hover_state = ShouldEnterHoveredState();
@@ -797,13 +807,6 @@ void Button::OnEnabledChanged() {
   UpdateAccessibleDefaultActionVerb();
 }
 
-void Button::ReleaseAnchorHighlight() {
-  if (0 == --anchor_count_) {
-    SetHighlighted(false);
-  }
-  anchor_count_changed_callbacks_.Notify(anchor_count_);
-}
-
 void Button::UpdateAccessibleCheckedState() {
   switch (state_) {
     case STATE_PRESSED:
@@ -813,6 +816,13 @@ void Button::UpdateAccessibleCheckedState() {
       GetViewAccessibility().RemoveCheckedState();
       break;
   }
+}
+
+void Button::ReleaseAnchorHighlight() {
+  if (0 == --anchor_count_) {
+    SetHighlighted(false);
+  }
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
 }
 
 void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {

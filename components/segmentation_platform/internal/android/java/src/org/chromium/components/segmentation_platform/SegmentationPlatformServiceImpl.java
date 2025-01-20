@@ -10,9 +10,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java
- * and C++. All method calls are delegated to the native C++ class.
+ * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java and C++. All method
+ * calls are delegated to the native C++ class.
  */
 @JNINamespace("segmentation_platform")
 public class SegmentationPlatformServiceImpl implements SegmentationPlatformService {
@@ -56,6 +60,17 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 .getCachedSegmentResult(mNativePtr, this, segmentationKey);
     }
 
+    @Override
+    public void getInputKeysForModel(String segmentationKey, Callback<Set<String>> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .getInputKeysForModel(
+                        mNativePtr,
+                        segmentationKey,
+                        (inputArray) -> {
+                            callback.onResult(new HashSet<>(Arrays.asList(inputArray)));
+                        });
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -81,5 +96,10 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 long nativeSegmentationPlatformServiceAndroid,
                 SegmentationPlatformServiceImpl caller,
                 String segmentationKey);
+
+        void getInputKeysForModel(
+                long nativeSegmentationPlatformServiceAndroid,
+                String segmentationKey,
+                Callback<String[]> callback);
     }
 }

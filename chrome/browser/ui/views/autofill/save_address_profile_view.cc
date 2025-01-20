@@ -18,16 +18,17 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
@@ -112,17 +113,18 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
-    std::unique_ptr<SaveAddressBubbleController> controller,
     views::View* anchor_view,
+    std::unique_ptr<SaveAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
   // TODO(crbug.com/40164487): Accept action should consider the selected
   // nickname when saving the address.
-  SetAcceptCallback(base::BindOnce(
-      &SaveAddressBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
-      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
+  SetAcceptCallback(
+      base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
+                     base::Unretained(controller_.get()),
+                     AutofillClient::AddressPromptUserDecision::kAccepted,
+                     controller_->GetAutofillProfile()));
   SetCancelCallback(base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
                                    base::Unretained(controller_.get()),
                                    controller_->GetCancelCallbackValue(),
@@ -265,8 +267,9 @@ void SaveAddressProfileView::Hide() {
   // do that here. This will clear out |controller_|'s reference to |this|. Note
   // that WindowClosing() happens only after the _asynchronous_ Close() task
   // posted in CloseBubble() completes, but we need to fix references sooner.
-  if (controller_)
+  if (controller_) {
     controller_->OnBubbleClosed();
+  }
 
   controller_ = nullptr;
 }
@@ -315,6 +318,9 @@ void SaveAddressProfileView::AlignIcons() {
                               gfx::Insets::VH(-height_difference, 0));
   }
 }
+
+BEGIN_METADATA(SaveAddressProfileView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveAddressProfileView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveAddressProfileView,

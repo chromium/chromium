@@ -36,10 +36,8 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
             NotificationMetadata metadata) {
         mContext = context;
         mBuilder = new Notification.Builder(mContext);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelsInitializer.safeInitialize(channelId);
-            mBuilder.setChannelId(channelId);
-        }
+        channelsInitializer.safeInitialize(channelId);
+        mBuilder.setChannelId(channelId);
         mMetadata = metadata;
     }
 
@@ -214,9 +212,6 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder setPriorityBeforeO(int pri) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            mBuilder.setPriority(pri);
-        }
         return this;
     }
 

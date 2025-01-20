@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
@@ -73,7 +74,8 @@ namespace {
 constexpr char kUniqueIdentifierTemplate[] = "iss:%s,sub:%s";
 
 bool IsValidOidcToken(const ProfileManagementOidcTokens& oidc_tokens) {
-  return !oidc_tokens.auth_token.empty() && !oidc_tokens.id_token.empty();
+  return (!oidc_tokens.auth_token.empty() || oidc_tokens.is_token_encrypted) &&
+         !oidc_tokens.id_token.empty();
 }
 
 }  // namespace
@@ -134,7 +136,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   for (const auto* entry : g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
-    if (!entry->GetProfileManagementOidcTokens().auth_token.empty() &&
+    if (!entry->GetProfileManagementOidcTokens().id_token.empty() &&
         entry->GetProfileManagementId() == unique_user_identifier_) {
       switch_to_entry_ = entry;
       break;
@@ -337,7 +339,8 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
           : base::TimeDelta();
   registration_helper_for_temporary_client_->StartRegistrationWithOidcTokens(
       oidc_tokens_.auth_token, oidc_tokens_.id_token, std::string(),
-      oidc_tokens_.state, timeout_duration, std::move(registration_callback));
+      oidc_tokens_.state, timeout_duration, oidc_tokens_.is_token_encrypted,
+      std::move(registration_callback));
 }
 
 void OidcAuthenticationSigninInterceptor::OnClientRegistered(

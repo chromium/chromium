@@ -36,6 +36,10 @@ BASE_FEATURE(kOidcEnrollmentAuthSource,
              "OidcEnrollmentAuthSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOidcAuthHeaderInterception,
+             "OidcAuthHeaderInterception",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allow Oidc Enrollment flow to use a stubbed DM token rather than fetching a
 // real one from DM server, if one is supplied.
 constexpr base::FeatureParam<std::string> kOidcAuthStubDmToken{
@@ -82,9 +86,14 @@ constexpr base::FeatureParam<bool> kOidcAuthForceTimeoutUi{
 constexpr base::FeatureParam<base::TimeDelta> kOidcEnrollRegistrationTimeout{
     &kOidcEnrollmentTimeout, "registration_timeout", base::Seconds(30)};
 
-// Allow Oidc Enrollment flow to consider more hosts as eligible authentication
-// sources.
+// Allow Oidc Enrollment URL flow to consider more hosts as eligible
+// authentication sources.
 constexpr base::FeatureParam<std::string> kOidcAuthAdditionalHosts{
     &kOidcEnrollmentAuthSource, "hosts", ""};
+
+// Allow Oidc Enrollment Header flow to consider more URLs as eligible
+// authentication sources.
+constexpr base::FeatureParam<std::string> kOidcAuthAdditionalUrls{
+    &kOidcAuthHeaderInterception, "urls", ""};
 
 }  // namespace profile_management::features

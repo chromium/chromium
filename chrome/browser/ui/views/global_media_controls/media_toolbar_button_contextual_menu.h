@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTEXTUAL_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTEXTUAL_MENU_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "ui/menus/simple_menu_model.h"
@@ -15,12 +17,9 @@ class MediaItemManager;
 }
 
 // The contextual menu of the media toolbar button has two items, both of which
-// are related to Cast. So this class should be instantiated only when
-// GlobalMediaControlsCastStartStop is enabled.
+// are related to Cast.
 class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
  public:
-  static std::unique_ptr<MediaToolbarButtonContextualMenu> Create(
-      Browser* browser);
   explicit MediaToolbarButtonContextualMenu(Browser* browser);
   MediaToolbarButtonContextualMenu(const MediaToolbarButtonContextualMenu&) =
       delete;

@@ -166,7 +166,6 @@ if (is_win) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//components/app_launch_prefetch",
       "//components/gwp_asan/buildflags",
       "//components/stability_report",
@@ -204,6 +203,8 @@ if (is_win) {
       "crash_export_thunks.h",
     ]
 
+    defines = [ "CRASH_IMPLEMENTATION" ]
+
     deps = [
       ":app",
       "//base",
@@ -215,6 +216,7 @@ if (is_win) {
   # time.
   source_set("crash_export_stubs") {
     testonly = true
+    defines = [ "CRASH_IMPLEMENTATION" ]
 
     sources = [
       "crash_export_stubs.cc",

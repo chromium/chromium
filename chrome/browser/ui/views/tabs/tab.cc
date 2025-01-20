@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/tabs/tab.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -35,7 +31,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -45,8 +40,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -279,12 +274,16 @@ Tab::Tab(TabSlotController* controller)
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
+  UpdateAccessibleName();
+
+  // Tab hover cards replace tooltips for tabs.
+  SetCachedTooltipText(std::u16string());
+
   root_name_changed_subscription_ =
       GetViewAccessibility().AddStringAttributeChangedCallback(
           ax::mojom::StringAttribute::kName,
           base::BindRepeating(&Tab::OnAXNameChanged,
                               weak_ptr_factory_.GetWeakPtr()));
-  UpdateAccessibleName();
 }
 
 Tab::~Tab() {
@@ -709,11 +708,6 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
-  // Tab hover cards replace tooltips for tabs.
-  return std::u16string();
-}
-
 // This function updates the accessible name for the tab whenever any of the
 // parameters that influence the accessible name change. It ultimately calls
 // BrowserView::GetAccessibleTabLabel to get the updated accessible name.
@@ -730,20 +724,6 @@ void Tab::UpdateAccessibleName() {
     // Under some conditions, |GetAccessibleTabName| returns an empty string.
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  }
-
-  if (group().has_value()) {
-    auto* tab_group = controller_->GetTabGroup(group().value());
-    if (tab_group && tab_group->ListTabs().length() > 0) {
-      // Since tab group naming can be based on the name of the first tab in the
-      // group, update the tab group name if this tab is the first in the group.
-      std::optional<int> tab_model_index = controller_->GetModelIndexOf(this);
-      std::optional<int> group_first_tab = tab_group->GetFirstTab();
-      if (tab_model_index.has_value() && group_first_tab.has_value() &&
-          tab_model_index.value() == group_first_tab.value()) {
-        tab_group->RunTabGroupVisualsChangedCallback();
-      }
-    }
   }
 }
 
@@ -861,6 +841,7 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
       break;
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::PIP_PLAYING:
+    case TabAlertState::GLIC_ACCESSING:
       group = 1;
       break;
     case TabAlertState::AUDIO_PLAYING:
@@ -875,19 +856,19 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
       break;
   }
 
-  const ui::ColorId color_ids[3][2][2] = {
-      {{kColorTabAlertMediaRecordingInactiveFrameInactive,
-        kColorTabAlertMediaRecordingInactiveFrameActive},
-       {kColorTabAlertMediaRecordingActiveFrameInactive,
-        kColorTabAlertMediaRecordingActiveFrameActive}},
-      {{kColorTabAlertPipPlayingInactiveFrameInactive,
-        kColorTabAlertPipPlayingInactiveFrameActive},
-       {kColorTabAlertPipPlayingActiveFrameInactive,
-        kColorTabAlertPipPlayingActiveFrameActive}},
-      {{kColorTabAlertAudioPlayingInactiveFrameInactive,
-        kColorTabAlertAudioPlayingInactiveFrameActive},
-       {kColorTabAlertAudioPlayingActiveFrameInactive,
-        kColorTabAlertAudioPlayingActiveFrameActive}}};
+  static constexpr std::array<std::array<std::array<ui::ColorId, 2>, 2>, 3>
+      color_ids{{{{{kColorTabAlertMediaRecordingInactiveFrameInactive,
+                    kColorTabAlertMediaRecordingInactiveFrameActive},
+                   {kColorTabAlertMediaRecordingActiveFrameInactive,
+                    kColorTabAlertMediaRecordingActiveFrameActive}}},
+                 {{{kColorTabAlertPipPlayingInactiveFrameInactive,
+                    kColorTabAlertPipPlayingInactiveFrameActive},
+                   {kColorTabAlertPipPlayingActiveFrameInactive,
+                    kColorTabAlertPipPlayingActiveFrameActive}}},
+                 {{{kColorTabAlertAudioPlayingInactiveFrameInactive,
+                    kColorTabAlertAudioPlayingInactiveFrameActive},
+                   {kColorTabAlertAudioPlayingActiveFrameInactive,
+                    kColorTabAlertAudioPlayingActiveFrameActive}}}}};
   return color_ids[group][tab_style_views()->GetApparentActiveState() ==
                           TabActive::kActive]
                   [GetWidget()->ShouldPaintAsActive()];

@@ -16,11 +16,11 @@
 #include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/crostini_installer_resources.h"
+#include "chrome/grit/crostini_installer_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -30,10 +30,10 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 void AddStringResources(content::WebUIDataSource* source) {
@@ -138,24 +138,15 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   auto* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICrostiniInstallerHost);
-  webui::EnableTrustedTypesCSP(source);
-  webui::SetJSModuleDefaults(source);
   AddStringResources(source);
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
 
-  source->AddResourcePath("app.js", IDR_CROSTINI_INSTALLER_APP_JS);
-  source->AddResourcePath("app.html.js", IDR_CROSTINI_INSTALLER_APP_HTML_JS);
-  source->AddResourcePath("browser_proxy.js",
-                          IDR_CROSTINI_INSTALLER_BROWSER_PROXY_JS);
-  source->AddResourcePath("crostini_installer.mojom-lite.js",
-                          IDR_CROSTINI_INSTALLER_MOJO_LITE_JS);
-  source->AddResourcePath("crostini_types.mojom-lite.js",
-                          IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS);
+  webui::SetupWebUIDataSource(source, kCrostiniInstallerResources,
+                              IDR_CROSTINI_INSTALLER_INDEX_HTML);
   source->AddResourcePath("images/linux_illustration.png",
                           IDR_LINUX_ILLUSTRATION);
   source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
-  source->SetDefaultResource(IDR_CROSTINI_INSTALLER_INDEX_HTML);
 }
 
 CrostiniInstallerUI::~CrostiniInstallerUI() = default;

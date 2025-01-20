@@ -22,21 +22,22 @@ import org.chromium.components.signin.AccountUtils;
 public class CoreAccountInfo {
     private final CoreAccountId mId;
     private final String mEmail;
-    private final String mGaiaId;
+    private final GaiaId mGaiaId;
 
     /**
      * Constructs a CoreAccountInfo with the provided parameters
+     *
      * @param id A CoreAccountId associated with the account, equal to either email or gaiaId.
      * @param email The email of the account.
-     * @param gaiaId String representation of the Gaia ID. Must not be an email address.
+     * @param gaiaId An object representing a Gaia ID.
      */
     @CalledByNative
     protected CoreAccountInfo(
-            @NonNull CoreAccountId id, @NonNull String email, @NonNull String gaiaId) {
+            @NonNull CoreAccountId id, @NonNull String email, @NonNull GaiaId gaiaId) {
         assert id != null;
         assert email != null;
         assert gaiaId != null;
-        assert !gaiaId.contains("@");
+        assert !gaiaId.toString().contains("@");
 
         mId = id;
         mEmail = email;
@@ -55,9 +56,9 @@ public class CoreAccountInfo {
         return mEmail;
     }
 
-    /** Returns the string representation of the Gaia ID */
+    /** Returns the Gaia ID */
     @CalledByNative
-    public String getGaiaId() {
+    public GaiaId getGaiaId() {
         return mGaiaId;
     }
 
@@ -115,12 +116,12 @@ public class CoreAccountInfo {
      *
      * @return {@link #getGaiaId()} ()} for the argument if it is not null, null otherwise.
      */
-    public static @Nullable String getGaiaIdFrom(@Nullable CoreAccountInfo accountInfo) {
+    public static @Nullable GaiaId getGaiaIdFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getGaiaId();
     }
 
     /** Creates a {@link CoreAccountInfo} object from email and gaiaID. */
-    public static CoreAccountInfo createFromEmailAndGaiaId(String email, String gaiaId) {
+    public static CoreAccountInfo createFromEmailAndGaiaId(String email, GaiaId gaiaId) {
         return new CoreAccountInfo(new CoreAccountId(gaiaId), email, gaiaId);
     }
 }

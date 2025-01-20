@@ -5,18 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_FACE_PILE_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_FACE_PILE_CONFIGURATION_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Configuration object for the ShareKit FacePile API.
 @interface ShareKitFacePileConfiguration : NSObject
 
 // Shared group ID.
 @property(nonatomic, copy) NSString* collabID;
-// The completion block to be called when the share button is tapped. CollabID
-// is the ID of the group that the user is invited to. IsSignedIn is YES if the
-// user is signed in.
-@property(nonatomic, copy) void (^completionBlock)
-    (NSString* collabID, BOOL isSignedIn);
+
+// The background color for the face pile when it is not empty.
+@property(nonatomic, strong) UIColor* backgroundColor;
+
+// Whether the face pile should be visible when the group is empty (not shared
+// or shared with no members).
+@property(nonatomic, assign) BOOL showsEmptyState;
+
+// The preferred size in points for the avatar icons.
+@property(nonatomic, assign) CGFloat avatarSize;
 
 @end
 

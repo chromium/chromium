@@ -215,12 +215,6 @@ void AndroidBatteryMetrics::OnThermalStateChange(DeviceThermalState new_state) {
                 base::android::ApplicationStatusListener::GetState()));
         event->set_device_thermal_state(ToTraceEnum(new_state));
       });
-
-  if (!app_visible_)
-    return;
-
-  base::UmaHistogramEnumeration(
-      "Power.ForegroundThermalState.ChangeEvent.Android", new_state);
 }
 
 void AndroidBatteryMetrics::OnSpeedLimitChange(int speed_limit) {}
@@ -296,7 +290,7 @@ void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
 
   // Also track the total capacity consumed in a single-bucket-histogram,
   // emitting one sample for every 100 uAh drained.
-  static constexpr base::Histogram::Sample kSampleFactor = 100;
+  static constexpr base::Histogram::Sample32 kSampleFactor = 100;
   UMA_HISTOGRAM_SCALED_EXACT_LINEAR("Power.ForegroundBatteryDrain",
                                     /*sample=*/1, capacity_consumed,
                                     /*sample_max=*/1, kSampleFactor);

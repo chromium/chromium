@@ -12,6 +12,7 @@ import {
 import {
   getDefaultWindowSize,
 } from './app_window.js';
+import {setup as setupAspectRatioOrder} from './aspect_ratio_order.js';
 import {
   assert,
   assertEnumVariant,
@@ -369,6 +370,8 @@ function setupSvgs() {
  * Setup Camera App and starts camera stream.
  */
 async function main() {
+  const setupAspectRatioOrderTask = setupAspectRatioOrder();
+
   const {intent, facing, mode} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
@@ -427,6 +430,10 @@ async function main() {
   };
 
   PerfLogger.initializeInstance();
+
+  // Wait for aspect ratio order to be setup right before constructing the
+  // camera manager, which needs the aspect ratio order info.
+  await setupAspectRatioOrderTask;
   const cameraManager = new CameraManager(facing, modeConstraints);
 
   const resultSaver = new DefaultResultSaver();

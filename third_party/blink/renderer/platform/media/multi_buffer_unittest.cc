@@ -114,7 +114,7 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
       block->writable_data()[x] =
           static_cast<uint8_t>((byte_pos * 15485863) >> 16);
     }
-    block->set_data_size(static_cast<int>(x));
+    block->set_size(static_cast<int>(x));
     fifo_.push_back(block);
     if (byte_pos == file_size_) {
       fifo_.push_back(media::DataBuffer::CreateEOSBuffer());

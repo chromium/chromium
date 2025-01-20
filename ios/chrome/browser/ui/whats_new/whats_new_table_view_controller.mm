@@ -208,7 +208,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
 
   // Add subtitle
-  if (IsPriceInsightsEnabled()) {
+  if (IsPriceInsightsRegionEnabled()) {
     [model addSectionWithIdentifier:SectionSubtitleIdentifier];
     [model setHeader:[self subtitleSectionCell]
         forSectionWithIdentifier:SectionSubtitleIdentifier];

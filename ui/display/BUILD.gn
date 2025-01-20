@@ -229,7 +229,7 @@ static_library("test_support") {
     ]
     deps += [
       "//remoting/host:display_layout",
-      "//remoting/host:x11_display_utils",
+      "//remoting/host/linux:x11_display_utils",
       "//ui/gfx/x:x",
     ]
   }

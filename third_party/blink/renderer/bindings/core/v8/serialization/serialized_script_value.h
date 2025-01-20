@@ -66,7 +66,7 @@ class DOMSharedArrayBuffer;
 class ExceptionState;
 class ExecutionContext;
 class MessagePort;
-class ScriptValue;
+class ScriptObject;
 class StaticBitmapImage;
 class Transferables;
 class UnpackedSerializedScriptValue;
@@ -237,7 +237,7 @@ class CORE_EXPORT SerializedScriptValue
   // Returns true if the array was filled, or false if the passed value was not
   // of an appropriate type.
   static bool ExtractTransferables(v8::Isolate*,
-                                   const HeapVector<ScriptValue>&,
+                                   const HeapVector<ScriptObject>&,
                                    Transferables&,
                                    ExceptionState&);
 

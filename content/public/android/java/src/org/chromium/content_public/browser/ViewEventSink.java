@@ -8,9 +8,11 @@ import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ViewEventSinkImpl;
 
 /** Interface for updating content with view events. */
+@NullMarked
 public interface ViewEventSink {
     /**
      * Interface that consumers of WebContents must implement to allow the proper

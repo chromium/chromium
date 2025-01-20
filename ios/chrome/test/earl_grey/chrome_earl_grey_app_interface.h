@@ -94,6 +94,18 @@ enum class TipsNotificationType;
 // framework (should only be used by performance tests)
 + (void)primesTakeMemorySnapshot:(NSString*)eventName;
 
+#pragma mark - Profile Utilities (EG2)
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
+// profile, more precisely the profile associated with the foreground active
+// scene.
++ (NSString*)currentProfileName;
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
++ (NSString*)personalProfileName;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Selects tab with given index in current mode (incognito or main
@@ -731,6 +743,11 @@ enum class TipsNotificationType;
 #pragma mark - Notification Utilities
 
 + (void)requestTipsNotification:(TipsNotificationType)type;
+
+#pragma mark - Variations Utilities
+
+// Forces an override of the variations stored permanent country.
++ (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
 
 @end
 

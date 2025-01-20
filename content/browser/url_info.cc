@@ -76,6 +76,28 @@ bool UrlInfo::RequestsOriginKeyedProcess(
           context.default_isolation_state().requires_origin_keyed_process());
 }
 
+void UrlInfo::WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const {
+  proto->set_url(url.possibly_invalid_spec());
+  if (origin.has_value()) {
+    proto->set_origin(origin->GetDebugString());
+  }
+  proto->set_is_sandboxed(is_sandboxed);
+  proto->set_is_pdf(is_pdf);
+  proto->set_is_coop_isolation_requested(is_coop_isolation_requested);
+  proto->set_origin_isolation_request(origin_isolation_request);
+  proto->set_is_prefetch_with_cross_site_contamination(
+      is_prefetch_with_cross_site_contamination);
+  if (web_exposed_isolation_info.has_value()) {
+    proto.Set(TraceProto::kWebExposedIsolationInfo,
+              *web_exposed_isolation_info);
+  }
+  if (storage_partition_config.has_value()) {
+    std::stringstream ss;
+    ss << *storage_partition_config;
+    proto->set_storage_partition_config(ss.str());
+  }
+}
+
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
 UrlInfoInit::UrlInfoInit(const GURL& url) : url_(url) {}

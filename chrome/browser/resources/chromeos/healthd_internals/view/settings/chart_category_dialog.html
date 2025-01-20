@@ -1,0 +1,26 @@
+<style include="healthd-internals-shared"></style>
+<cr-dialog id="dialog">
+  <div slot="title">Select displayed categories</div>
+  <div slot="body">
+    <healthd-internals-data-series-checkbox id="cpuUsageCheckbox">
+    </healthd-internals-data-series-checkbox>
+    <healthd-internals-data-series-checkbox id="cpuFrequencyCheckbox">
+    </healthd-internals-data-series-checkbox>
+    <healthd-internals-data-series-checkbox id="memoryCheckbox">
+    </healthd-internals-data-series-checkbox>
+    <healthd-internals-data-series-checkbox id="zramCheckbox">
+    </healthd-internals-data-series-checkbox>
+    <healthd-internals-data-series-checkbox id="batteryCheckbox">
+    </healthd-internals-data-series-checkbox>
+    <healthd-internals-data-series-checkbox id="thermalCheckbox">
+    </healthd-internals-data-series-checkbox>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClicked">
+      Cancel
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirmButtonClicked">
+      Confirm
+    </cr-button>
+  </div>
+</cr-dialog>

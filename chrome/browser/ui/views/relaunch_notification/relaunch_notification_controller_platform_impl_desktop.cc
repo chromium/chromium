@@ -35,8 +35,9 @@ RelaunchNotificationControllerPlatformImpl::
 RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() {
   DCHECK(!widget_);
-  if (on_visible_)
+  if (on_visible_) {
     BrowserList::RemoveObserver(this);
+  }
   CHECK(!WidgetObserver::IsInObserverList());
   CHECK(!BrowserListObserver::IsInObserverList());
 }
@@ -45,13 +46,15 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
     base::Time detection_time,
     bool /*past_deadline*/) {
   // Nothing to do if the bubble is visible.
-  if (widget_)
+  if (widget_) {
     return;
+  }
 
   // Show the bubble in the most recently active browser.
   Browser* browser = FindLastActiveTabbedBrowser();
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   widget_ = RelaunchRecommendedBubbleView::ShowBubble(
       browser, detection_time, base::BindRepeating(&chrome::AttemptRelaunch));
@@ -64,8 +67,9 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
     base::Time deadline,
     base::OnceCallback<base::Time()> on_visible) {
   // Nothing to do if the dialog is visible.
-  if (widget_)
+  if (widget_) {
     return;
+  }
 
   // Show the dialog in the active tabbed browser window.
   Browser* browser = chrome::FindBrowserWithActiveWindow();
@@ -77,8 +81,9 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 
   // If the instance is not already waiting for one to become active from a
   // previous call, start observing now.
-  if (!on_visible_)
+  if (!on_visible_) {
     BrowserList::AddObserver(this);
+  }
 
   // Hold on to the callback until an active tabbed browser is found.
   on_visible_ = std::move(on_visible);
@@ -113,8 +118,9 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 
   // Hold on to the new deadline if the instance is waiting for a Browser to
   // become active.
-  if (on_visible_)
+  if (on_visible_) {
     last_relaunch_deadline_ = deadline;
+  }
 }
 
 bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
@@ -132,8 +138,9 @@ void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(
 void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
     Browser* browser) {
   // Ignore non-tabbed browsers.
-  if (!browser->is_type_normal())
+  if (!browser->is_type_normal()) {
     return;
+  }
 
   BrowserList::RemoveObserver(this);
 

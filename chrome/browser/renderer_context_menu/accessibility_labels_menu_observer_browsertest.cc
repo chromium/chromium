@@ -8,7 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/common/pref_names.h"
@@ -17,11 +16,11 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #else
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -64,9 +63,11 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };
 
-AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() =
+    default;
 
-AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() {}
+AccessibilityLabelsMenuObserverTest::~AccessibilityLabelsMenuObserverTest() =
+    default;
 
 }  // namespace
 
@@ -86,14 +87,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
                        AccessibilityLabelsShowWithScreenReaderEnabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Enable Chromevox.
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
   content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
   InitMenu();

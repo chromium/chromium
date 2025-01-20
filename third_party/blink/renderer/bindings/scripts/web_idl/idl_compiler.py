@@ -184,18 +184,15 @@ class IdlCompiler(object):
                     arguments=[],
                     # The return type is a promise type resolving to an
                     # iterator result.
+                    # Note that we use 'any' instead of 'object' as the
+                    # promise type because the promise may resolve with
+                    # undefined, as that is our 'end of iteration' value.
                     # https://webidl.spec.whatwg.org/#iterator-result
                     return_type=self._idl_type_factory.promise_type(
-                        result_type=self._idl_type_factory.simple_type(
-                            'object'),
-                        extended_attributes=ExtendedAttributesMutable([
-                            ExtendedAttribute(
-                                key='IDLTypeImplementedAsV8Promise'),
-                        ])),
+                        result_type=self._idl_type_factory.simple_type('any')),
                     extended_attributes=ExtendedAttributesMutable([
                         ExtendedAttribute(key="CallWith",
                                           values="ScriptState"),
-                        ExtendedAttribute(key="RaisesException"),
                     ]),
                     component=component))
             # Define the 'return' property if and only if an asynchronous
@@ -219,18 +216,16 @@ class IdlCompiler(object):
                         ],
                         # The return type is a promise type resolving to an
                         # iterator result.
+                        # Note that we use 'any' instead of 'object' as the
+                        # promise type because the promise may resolve with
+                        # undefined, as that is our 'end of iteration' value.
                         # https://webidl.spec.whatwg.org/#iterator-result
                         return_type=self._idl_type_factory.promise_type(
                             result_type=self._idl_type_factory.simple_type(
-                                'object'),
-                            extended_attributes=ExtendedAttributesMutable([
-                                ExtendedAttribute(
-                                    key='IDLTypeImplementedAsV8Promise'),
-                            ])),
+                                'any')),
                         extended_attributes=ExtendedAttributesMutable([
                             ExtendedAttribute(key="CallWith",
                                               values="ScriptState"),
-                            ExtendedAttribute(key="RaisesException"),
                             ExtendedAttribute(key="ImplementedAs",
                                               values="returnForBinding"),
                         ]),

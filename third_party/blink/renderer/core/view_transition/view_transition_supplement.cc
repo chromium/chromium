@@ -339,7 +339,6 @@ void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
     bool cross_document_enabled,
     const Vector<String>& types) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
-  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || types.empty());
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled

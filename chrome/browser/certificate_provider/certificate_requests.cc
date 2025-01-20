@@ -24,9 +24,9 @@ const int kGetCertificatesTimeoutInMinutes = 5;
 
 // Holds state for a single certificate request.
 struct CertificateRequests::CertificateRequestState {
-  CertificateRequestState() {}
+  CertificateRequestState() = default;
 
-  ~CertificateRequestState() {}
+  ~CertificateRequestState() = default;
 
   // Extensions that are too slow are eventually dropped from a request.
   base::OneShotTimer timeout;
@@ -38,9 +38,9 @@ struct CertificateRequests::CertificateRequestState {
   base::OnceCallback<void(net::ClientCertIdentityList)> callback;
 };
 
-CertificateRequests::CertificateRequests() {}
+CertificateRequests::CertificateRequests() = default;
 
-CertificateRequests::~CertificateRequests() {}
+CertificateRequests::~CertificateRequests() = default;
 
 int CertificateRequests::AddRequest(
     const std::vector<std::string>& extension_ids,

@@ -24,7 +24,7 @@
 HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
     : signin_callback_(std::move(signin_callback)) {}
 
-HistoryLoginHandler::~HistoryLoginHandler() {}
+HistoryLoginHandler::~HistoryLoginHandler() = default;
 
 void HistoryLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -57,8 +57,9 @@ void HistoryLoginHandler::HandleOtherDevicesInitialized(
 
 void HistoryLoginHandler::ProfileInfoChanged() {
   bool signed_in = !profile_info_watcher_->GetAuthenticatedUsername().empty();
-  if (!signin_callback_.is_null())
+  if (!signin_callback_.is_null()) {
     signin_callback_.Run();
+  }
 
   FireWebUIListener("sign-in-state-changed", base::Value(signed_in));
 }

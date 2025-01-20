@@ -87,7 +87,7 @@
 /*
  * pseudo flag for the unification of HTML and XML tests
  */
-#define XML_PARSE_HTML 1 << 24
+#define XML_PARSE_HTML 1 << 30
 
 /*
  * O_BINARY is just for Windows compatibility - if it isn't defined
@@ -1600,6 +1600,231 @@ done:
     return(ret);
 }
 
+#if defined(LIBXML_HTML_ENABLED) && defined(LIBXML_PUSH_ENABLED)
+typedef struct {
+    int dataState;
+    int inCharacters;
+    const xmlChar *startTag;
+} xmlTokenizerConfig;
+
+static void
+startDocumentTokenizer(void *ctx) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    ctxt->instate = XML_PARSER_CONTENT;
+
+    if (config->dataState != 0) {
+        ctxt->endCheckState = config->dataState;
+        ctxt->name = config->startTag;
+    }
+}
+
+static void
+pendingTokenizer(xmlTokenizerConfig *config) {
+    if (config->inCharacters) {
+        fprintf(SAXdebug, "\n");
+        config->inCharacters = 0;
+    }
+}
+
+static void
+internalSubsetTokenizer(void *ctx, const xmlChar *name,
+                        const xmlChar *publicId, const xmlChar *systemId) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    pendingTokenizer(config);
+
+    fprintf(SAXdebug, "DOCTYPE\n%s\n%s\n%s\n",
+            name ? name : BAD_CAST "<none>",
+            publicId ? publicId : BAD_CAST "<none>",
+            systemId ? systemId : BAD_CAST "<none>");
+}
+
+static void
+startElementTokenizer(void *ctx, const xmlChar *name, const xmlChar **atts) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+    int i;
+
+    pendingTokenizer(config);
+
+    fprintf(SAXdebug, "StartTag\n%s", name);
+    if (atts != NULL) {
+        for (i = 0; atts[i] != NULL; i += 2) {
+	    fprintf(SAXdebug, " %s=", atts[i]);
+            if (atts[i+1] != NULL)
+	        fprintf(SAXdebug, "%s", atts[i+1]);
+        }
+    }
+    fprintf(SAXdebug, "\n");
+}
+
+static void
+endElementTokenizer(void *ctx, const xmlChar *name) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    pendingTokenizer(config);
+
+    fprintf(SAXdebug, "EndTag\n%s\n", name);
+}
+
+static void
+charactersTokenizer(void *ctx, const xmlChar *ch, int len) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    if (!config->inCharacters) {
+        fprintf(SAXdebug, "Character\n");
+        config->inCharacters = 1;
+    }
+
+    fwrite(ch, 1, len, SAXdebug);
+}
+
+static void
+commentTokenizer(void *ctx, const xmlChar *value) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    pendingTokenizer(config);
+
+    fprintf(SAXdebug, "Comment\n%s\n", value);
+}
+
+static void
+endDocumentTokenizer(void *ctx) {
+    xmlParserCtxtPtr ctxt = ctx;
+    xmlTokenizerConfig *config = ctxt->_private;
+
+    pendingTokenizer(config);
+}
+
+static xmlSAXHandler tokenizeHtmlSAXHandler = {
+    internalSubsetTokenizer,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    startDocumentTokenizer,
+    endDocumentTokenizer,
+    startElementTokenizer,
+    endElementTokenizer,
+    NULL,
+    charactersTokenizer,
+    NULL,
+    NULL,
+    commentTokenizer,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+/**
+ * htmlTokenizerTest:
+ * @filename: the file to parse
+ * @result: the file with expected result
+ * @err: the file with error messages
+ *
+ * Parse a file using the SAX API and check for errors.
+ *
+ * Returns 0 in case of success, an error code otherwise
+ */
+static int
+htmlTokenizerTest(const char *filename, const char *result,
+                  const char *err ATTRIBUTE_UNUSED,
+                  int options) {
+    xmlTokenizerConfig config;
+    char startTag[31];
+    FILE *input;
+    char *temp;
+    unsigned testNum, dataState, size;
+    int ret = 0, counter = 0;
+
+    nb_tests++;
+    temp = resultFilename(filename, temp_directory, ".res");
+    if (temp == NULL) {
+        fprintf(stderr, "out of memory\n");
+        fatalError();
+    }
+
+    SAXdebug = fopen(temp, "wb");
+    if (SAXdebug == NULL) {
+        fprintf(stderr, "Failed to write to %s\n", temp);
+	free(temp);
+	return(-1);
+    }
+
+    input = fopen(filename, "rb");
+    if (input == NULL) {
+        fprintf(stderr, "%s: failed to open\n", filename);
+        return(-1);
+    }
+
+    while (fscanf(input, "%u %30s %u %u%*1[\n]",
+                  &testNum, startTag, &dataState, &size) >= 4) {
+        htmlParserCtxtPtr ctxt;
+        char *data;
+
+        fprintf(SAXdebug, "%d\n", counter++);
+
+        data = xmlMalloc(size + 1);
+        if (fread(data, 1, size, input) != size) {
+            fprintf(stderr, "%s:%d: unexpected eof\n", filename, counter);
+            return(-1);
+        }
+
+        ctxt = htmlCreatePushParserCtxt(&tokenizeHtmlSAXHandler, NULL, NULL, 0,
+                                        NULL, XML_CHAR_ENCODING_UTF8);
+        config.dataState = dataState;
+        config.startTag = BAD_CAST startTag;
+        config.inCharacters = 0;
+        ctxt->_private = &config;
+        htmlCtxtUseOptions(ctxt, options | HTML_PARSE_HTML5);
+        htmlParseChunk(ctxt, data, size, 1);
+        htmlFreeParserCtxt(ctxt);
+
+        xmlFree(data);
+    }
+    if (!feof(input)) {
+        fprintf(stderr, "%s:%d: invalid format\n", filename, counter);
+        return(-1);
+    }
+
+    fclose(input);
+    fclose(SAXdebug);
+
+    if (compareFiles(temp, result)) {
+        fprintf(stderr, "Got a difference for %s\n", filename);
+        ret = 1;
+    }
+
+    if (temp != NULL) {
+        unlink(temp);
+        free(temp);
+    }
+
+    return(ret);
+}
+#endif /* HTML */
+
 /************************************************************************
  *									*
  *		Parse to tree based tests				*
@@ -1952,9 +2177,11 @@ pushBoundaryTest(const char *filename, const char *result,
                             *ctxt->input->cur :
                             base[cur];
 
-            if ((firstChar != '<') &&
-                ((options & XML_PARSE_HTML) || (firstChar != '&')))
-                isText = 1;
+            if (options & XML_PARSE_HTML) {
+                isText = ((ctxt->endCheckState) || (firstChar != '<'));
+            } else {
+                isText = ((firstChar != '<') && (firstChar != '&'));
+            }
         }
 
         oldConsumed = ctxt->input->consumed +
@@ -2024,8 +2251,13 @@ pushBoundaryTest(const char *filename, const char *result,
             } else if (isText) {
                 int c = *ctxt->input->cur;
 
-                /* 3 bytes for partial UTF-8 */
-                max = ((c == '<') || (c == '&')) ? 1 : 3;
+                if ((options & XML_PARSE_HTML) &&
+                    (ctxt->endCheckState)) {
+                    max = strlen((const char *) ctxt->name) + 2;
+                } else {
+                    /* 3 bytes for partial UTF-8 */
+                    max = ((c == '<') || (c == '&')) ? 1 : 3;
+                }
             } else if (ctxt->instate == XML_PARSER_CDATA_SECTION) {
                 /* 2 bytes for terminator, 3 bytes for UTF-8 */
                 max = 5;
@@ -3157,8 +3389,11 @@ static int urip_rlen;
  */
 static int
 uripMatch(const char * URI) {
-    if ((URI == NULL) || (!strcmp(URI, "file://" SYSCONFDIR "/xml/catalog")))
+#ifdef LIBXML_CATALOG_ENABLED
+    if ((URI == NULL) ||
+        (!strcmp(URI, "file://" XML_SYSCONFDIR "/xml/catalog")))
         return(0);
+#endif
     /* Verify we received the escaped URL */
     if (strcmp(urip_rcvsURLs[urip_current], URI))
 	urip_success = 0;
@@ -3176,8 +3411,11 @@ uripMatch(const char * URI) {
  */
 static void *
 uripOpen(const char * URI) {
-    if ((URI == NULL) || (!strcmp(URI, "file://" SYSCONFDIR "/xml/catalog")))
+#ifdef LIBXML_CATALOG_ENABLED
+    if ((URI == NULL) ||
+        (!strcmp(URI, "file://" XML_SYSCONFDIR "/xml/catalog")))
         return(NULL);
+#endif
     /* Verify we received the escaped URL */
     if (strcmp(urip_rcvsURLs[urip_current], URI))
 	urip_success = 0;
@@ -4949,6 +5187,11 @@ testDesc testDescriptions[] = {
     { "HTML SAX regression tests" ,
       saxParseTest, "./test/HTML/*", "result/HTML/", ".sax", NULL,
       XML_PARSE_HTML },
+#ifdef LIBXML_PUSH_ENABLED
+    { "HTML tokenization tests",
+      htmlTokenizerTest,
+      "./test/html-tokenizer/*.test", "result/html-tokenizer/", "", NULL, 0 },
+#endif
 #endif
 #ifdef LIBXML_VALID_ENABLED
     { "Valid documents regression tests" ,

@@ -14,6 +14,7 @@ import urllib.request
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_REPO = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
+LIBCXX_REPO = os.path.join(CHROMIUM_REPO, 'third_party', 'libc++', 'src')
 LLVM_REPO = ''  # This gets filled in by main().
 RUST_REPO = ''  # This gets filled in by main().
 
@@ -25,7 +26,6 @@ RUST_REPO = ''  # This gets filled in by main().
 # ./dashboard.py > /tmp/toolchain-dashboard.html
 # gsutil.py cp -a public-read /tmp/toolchain-dashboard.html gs://chromium-browser-clang/
 
-#TODO: Add libc++ graph.
 #TODO: Plot 30-day moving averages.
 #TODO: Overview with current age of each toolchain component.
 #TODO: Tables of last N rolls for each component.
@@ -100,6 +100,48 @@ def clang_rolls():
       rev = m.group(1)
     elif m := VERSION_RE_OLD.match(line):
       rev = m.group(1)
+    elif m := VERSION_RE_SVN.match(line):
+      rev = svn2git(m.group(1))
+
+    if rev:
+      assert (date)
+      rolls[date] = rev
+      date = None
+
+  return rolls
+
+
+def origin_git_rev(repository, revision):
+  '''Extract the GitOrigin-RevId for revision in repository.'''
+  log = subprocess.check_output(
+      ['git', '-C', repository, 'show', '-s', revision]).decode('utf-8')
+  return re.search(r'^\s+GitOrigin-RevId: ([0-9a-f]+)$', log,
+                   re.MULTILINE).group(1)
+
+
+def libcxx_rolls():
+  '''Return a dict from timestamp to libcxx revision rolled in at that time.'''
+  FIRST_ROLL = 'e7001969a4527bc416ef354a78195b942160e79c'
+  log = subprocess.check_output([
+      'git', '-C', CHROMIUM_REPO, 'log', '--date=unix', '--pretty=fuller', '-p',
+      f'{FIRST_ROLL}..origin/main', '--', 'buildtools/deps_revisions.gni'
+  ]).decode('utf-8')
+
+  DATE_RE = re.compile(r'^CommitDate: (\d+)$')
+  VERSION_RE = re.compile(r'^\+\s*libcxx_revision\s*=\s*"([0-9a-f]+)"$')
+  VERSION_RE_SVN = re.compile(r'^\+\s*libcxx_svn_revision\s*=\s*"(\d{1,6})"$')
+
+  rolls = {}
+  date = None
+  for line in log.splitlines():
+    m = DATE_RE.match(line)
+    if m:
+      date = int(m.group(1))
+      next
+
+    rev = None
+    if m := VERSION_RE.match(line):
+      rev = origin_git_rev(LIBCXX_REPO, m.group(1))
     elif m := VERSION_RE_SVN.match(line):
       rev = svn2git(m.group(1))
 
@@ -194,6 +236,7 @@ def print_dashboard():
       function drawCharts() {
         drawClangChart();
         drawRustChart();
+        drawLibcxxChart();
       }
 
       function drawClangChart() {
@@ -272,6 +315,44 @@ def print_dashboard():
         dashboard.draw(data);
       }
 
+      function drawLibcxxChart() {
+        var data = google.visualization.arrayToDataTable([
+['Date', 'libc++'],''')
+
+  libcxx_ages = roll_ages(libcxx_rolls(), LLVM_REPO)
+  for time_str, age in libcxx_ages:
+    print(f'[new Date("{time_str}"), {age:.1f}],')
+
+  print(''']);
+        var dashboard = new google.visualization.Dashboard(document.getElementById('libcxx_dashboard'));
+        var filter = new google.visualization.ControlWrapper({
+          controlType: 'ChartRangeFilter',
+          containerId: 'libcxx_filter',
+          options: {
+            filterColumnIndex: 0,
+            ui: { chartOptions: { interpolateNulls: true, } },
+          },
+          state: {
+            // Start showing roughly the last 6 months.
+            range: { start: new Date(Date.now() - 1000 * 3600 * 24 * 31 * 6), },
+          },
+        });
+        var chart = new google.visualization.ChartWrapper({
+          chartType: 'LineChart',
+          containerId: 'libcxx_chart',
+          options: {
+            width: 900,
+            title: 'Chromium Toolchain Age Over Time',
+            legend: 'top',
+            vAxis: { title: 'Age (days)' },
+            interpolateNulls: true,
+            chartArea: {'width': '80%', 'height': '80%'},
+          }
+        });
+        dashboard.bind(filter, chart);
+        dashboard.draw(data);
+      }
+
     </script>
   </head>
   <body>
@@ -290,6 +371,12 @@ def print_dashboard():
     <div id="rust_dashboard">
       <div id="rust_chart" style="width: 900px; height: 500px"></div>
       <div id="rust_filter" style="width: 900px; height: 50px"></div>
+    </div>
+
+    <h2 id="libcxx">libc++</h2>
+    <div id="libcxx_dashboard">
+      <div id="libcxx_chart" style="width: 900px; height: 500px"></div>
+      <div id="libcxx_filter" style="width: 900px; height: 50px"></div>
     </div>
   </body>
 </html>

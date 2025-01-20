@@ -6,6 +6,10 @@ import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 component("features") {
   output_name = "plus_addresses_features"
   defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
@@ -27,6 +31,12 @@ source_set("types") {
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("plus_address_java_enums") {
+    sources = [ "plus_address_types.h" ]
+  }
 }
 
 source_set("parsing") {
@@ -56,16 +66,7 @@ source_set("prefs") {
 }
 
 source_set("hats_utils") {
-  sources = [
-    "plus_address_hats_utils.cc",
-    "plus_address_hats_utils.h",
-  ]
-  deps = [
-    ":prefs",
-    "//base",
-    "//components/pref_registry",
-    "//components/prefs",
-  ]
+  sources = [ "plus_address_hats_utils.h" ]
 }
 
 proto_library("plus_address_blocklist_proto") {
@@ -77,11 +78,11 @@ source_set("blocklist_data") {
     "plus_address_blocklist_data.cc",
     "plus_address_blocklist_data.h",
   ]
-  deps = [
-    "//base",
+  deps = [ "//base" ]
+  public_deps = [
+    ":plus_address_blocklist_proto",
     "//third_party/re2",
   ]
-  public_deps = [ ":plus_address_blocklist_proto" ]
 }
 
 source_set("plus_addresses") {
@@ -93,7 +94,6 @@ source_set("plus_addresses") {
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
-    "plus_address_hats_utils.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
@@ -111,6 +111,7 @@ source_set("plus_addresses") {
   ]
   deps = [
     ":blocklist_data",
+    ":hats_utils",
     ":parsing",
     ":prefs",
     "//components/affiliations/core/browser:affiliations",
@@ -153,7 +154,6 @@ source_set("unit_tests") {
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_blocklist_data_unittest.cc",
-    "plus_address_hats_utils_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
@@ -204,11 +204,13 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
+    ":hats_utils",
     ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/plus_addresses/resources/strings",
     "//components/strings:components_strings_grit",

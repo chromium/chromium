@@ -99,7 +99,13 @@ DlcState CreateInstalledState() {
 DlcState CreateTtsInstalledState(const std::string& locale) {
   DlcState output;
   output.set_state(dlcservice::DlcState_State_INSTALLED);
-  output.set_id(base::StrCat({"tts-", locale, "-c"}));
+  if (locale == "en-us") {
+    // Note that en-US has ID ending in "-d" while all other TTS DLCs have
+    // ID ending in "-c".
+    output.set_id("tts-en-us-d");
+  } else {
+    output.set_id(base::StrCat({"tts-", locale, "-c"}));
+  }
   output.set_root_path("/path");
   return output;
 }

@@ -159,11 +159,11 @@ export class CertificateManagerV2Element extends
 
       clientPlatformSubpageLists_: {
         type: Array<SubpageCertificateList>,
-        // <if expr="chromeos_ash">
+        // <if expr="is_chromeos">
         computed: 'computeClientPlatformSubpageLists_(showClientCertImport_,' +
             'showClientCertImportAndBind_)',
         // </if>
-        // <if expr="not chromeos_ash">
+        // <if expr="not is_chromeos">
         computed: 'computeClientPlatformSubpageLists_()',
         // </if>
       },
@@ -176,19 +176,19 @@ export class CertificateManagerV2Element extends
               headerText: loadTimeData.getString(
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kUserTrustedCerts,
-              showImport: true,
+              showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kUserIntermediateCerts,
-              showImport: true,
+              showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kUserDistrustedCerts,
-              showImport: true,
+              showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
             },
           ];
         },
@@ -209,7 +209,7 @@ export class CertificateManagerV2Element extends
         value: false,
       },
 
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       showClientCertImport_: {
         type: Boolean,
         value() {
@@ -252,7 +252,7 @@ export class CertificateManagerV2Element extends
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
   private clientPlatformSubpageLists_: SubpageCertificateList[];
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private showClientCertImport_: boolean;
   private showClientCertImportAndBind_: boolean;
   // </if>
@@ -451,7 +451,7 @@ export class CertificateManagerV2Element extends
             'certificateManagerV2ClientCertsFromPlatform'),
         certSource: CertificateSource.kPlatformClientCert,
         hideExport: true,
-        // <if expr="chromeos_ash">
+        // <if expr="is_chromeos">
         showImport: this.showClientCertImport_,
         showImportAndBind: this.showClientCertImportAndBind_,
         // TODO(crbug.com/40928765): Figure out how we want to display the
@@ -464,7 +464,7 @@ export class CertificateManagerV2Element extends
         showImport: true,
         hideHeader: false,
         // </if>
-        // <if expr="not chromeos_ash and not is_linux">
+        // <if expr="not is_chromeos and not is_linux">
         hideHeader: true,
         // </if>
       },

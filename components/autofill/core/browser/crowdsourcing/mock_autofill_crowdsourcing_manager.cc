@@ -9,10 +9,10 @@
 namespace autofill {
 
 MockAutofillCrowdsourcingManager::MockAutofillCrowdsourcingManager(
-    AutofillClient* client)
+    AutofillClient* client,
+    LogManager* log_manager)
     : AutofillCrowdsourcingManager(client,
-                                   /*api_key=*/"",
-                                   /*log_manager=*/nullptr) {
+                                   /*api_key=*/"") {
   ON_CALL(*this, StartQueryRequest)
       .WillByDefault(
           [](const auto&, const auto&,

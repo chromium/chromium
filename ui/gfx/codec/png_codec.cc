@@ -24,7 +24,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
-#include "third_party/skia/experimental/rust_png/SkPngRustDecoder.h"
+#include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
 #endif
 
 namespace gfx {
@@ -210,7 +210,7 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
   }
 
-  if (!SkPngEncoder::Encode(&dst, src, options)) {
+  if (!skia::EncodePng(&dst, src, options)) {
     return std::nullopt;
   }
 

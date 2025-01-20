@@ -13,6 +13,11 @@ enum DisclosureVersion {
   kV1 = 1,
 };
 
+enum ShowSetDisposition {
+  kInNewTabs = 0,
+  kInNewWindow = 1,
+};
+
 // Browser-side handler for Compare-related requests from a WebUI page.
 interface ProductSpecificationsHandler {
   // Updates the user's accepted disclosure version for product specifications.
@@ -39,9 +44,22 @@ interface ProductSpecificationsHandler {
 
   // Show the product specifications set based on the uuid, `in_new_tab`
   // indicates whether the browser should open the set in a new tab or
-  // current tab.
+  // current tab. If in a new tab, the new tab will be focused.
   ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid,
       bool in_new_tab);
+
+  // Show the product specifications sets for the given uuids in either new tabs
+  // or a new browser window. If in new tabs, the tabs will be opened in the
+  // background. If in a new window, the window will be focused.
+  ShowProductSpecificationsSetsForUuids(
+      array<mojo_base.mojom.Uuid> uuids, ShowSetDisposition disposition);
+
+  // Show the chrome://compare page either in the current tab or a new tab.
+  ShowComparePage(bool in_new_tab);
+
+  // Get the URL for the comparison table with the given UUID.
+  GetComparisonTableUrlForUuid(mojo_base.mojom.Uuid uuid)
+      => (url.mojom.Url url);
 };
 
 // WebUI-side handler for requests from the browser.

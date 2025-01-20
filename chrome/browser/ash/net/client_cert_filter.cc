@@ -119,7 +119,7 @@ ClientCertFilter::ClientCertFilter(bool use_system_slot,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ClientCertFilter::~ClientCertFilter() {}
+ClientCertFilter::~ClientCertFilter() = default;
 
 bool ClientCertFilter::Init(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

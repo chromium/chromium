@@ -31,6 +31,6 @@ source_set("metrics") {
   deps = [
     "//base",
     "//components/language/core/common",
-    "//ui/accessibility:ax_base",
+    "//services/screen_ai/proto",
   ]
 }

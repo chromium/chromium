@@ -71,8 +71,6 @@ import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrarJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -87,6 +85,8 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -190,7 +190,8 @@ public class HistoryUiTest {
                         /* clientPackageName= */ null,
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
-                        /* showAppFilter= */ isAppSpecificHistoryEnabled);
+                        /* showAppFilter= */ isAppSpecificHistoryEnabled,
+                        /* openHistoryItemCallback= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
         mAdapter = mContentManager.getAdapter();
         mRecyclerView = mContentManager.getRecyclerView();
@@ -755,10 +756,12 @@ public class HistoryUiTest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        appId,
-                        true,
-                        true,
-                        false);
+                        /* clientPackageName= */ appId,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ true,
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
+
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
@@ -790,10 +793,11 @@ public class HistoryUiTest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        appId,
-                        true,
-                        true,
-                        false);
+                        /* clientPackageName= */ appId,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ true,
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
         Assert.assertFalse(headerPref.isVisible());
         HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();

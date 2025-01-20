@@ -94,7 +94,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
       const TetherNotificationPresenterTest&) = delete;
 
  protected:
-  TetherNotificationPresenterTest() {}
+  TetherNotificationPresenterTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

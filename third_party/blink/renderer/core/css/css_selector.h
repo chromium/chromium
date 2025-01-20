@@ -156,11 +156,15 @@ class CORE_EXPORT CSSSelector {
   ~CSSSelector();
 
   String SelectorText() const;
-  // Like `SelectorText`, but replaces any '&' selectors
-  // with ':is(<parent rule selector list>)'. This is needed
-  // by the :has() cache, because it uses the serialization of
-  // the selector as a key.
-  String SelectorTextExpandingPseudoParent() const;
+  // Like `SelectorText`, but replaces any "pseudo-references" with an expansion
+  // which makes the result useful as a key in the :has() cache.
+  // A "pseudo-reference" is either a '&' selector (which is replaced with
+  // :is(<parent rule selector list>)), or a :scope selector (which is replaced
+  // with :-internal-scope-<scope_id>).
+  //
+  // Note that this means that the returned text is not necessarily a valid
+  // selector.
+  String SelectorTextExpandingPseudoReferences(uintptr_t scope_id) const;
   String SimpleSelectorTextForDebug() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
@@ -234,7 +238,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoAutofillSelected,
     kPseudoBackdrop,
     kPseudoBefore,
-    kPseudoCheck,
+    kPseudoCheckMark,
     kPseudoChecked,
     kPseudoCornerPresent,
     kPseudoCurrent,
@@ -302,18 +306,13 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollbarTrack,
     kPseudoScrollbarTrackPiece,
     kPseudoSearchText,
-    kPseudoSelectArrow,
+    kPseudoPickerIcon,
     kPseudoPicker,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
     kPseudoStart,
-    // kPseudoState is for :state(foo). kPseudoStateDeprecated is for :--foo.
-    // :--foo is deprecated and is replacing :state(foo).
-    // TODO(crbug.com/1514397): Remove kPseudoStateDeprecatedSyntax after the
-    // deprecation is done.
     kPseudoState,
-    kPseudoStateDeprecatedSyntax,
     kPseudoTarget,
     kPseudoUnknown,
     // Something that was unparsable, but contained either a nesting
@@ -345,7 +344,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoWebKitCustomElement,
     // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
     kPseudoBlinkInternalElement,
-    kPseudoClosed,
     // Pseudo element for fragment styling
     kPseudoColumn,
     kPseudoCue,
@@ -374,6 +372,10 @@ class CORE_EXPORT CSSSelector {
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 
+    // Active ::scroll-marker styling.
+    // https://drafts.csswg.org/css-overflow-5/#active-scroll-marker
+    kPseudoTargetCurrent,
+
     // The following selectors are used to target pseudo elements created for
     // ViewTransition.
     // See https://drafts.csswg.org/css-view-transitions-1/#pseudo
@@ -386,9 +388,8 @@ class CORE_EXPORT CSSSelector {
     // Scroll markers pseudos for Carousel
     kPseudoScrollMarker,
     kPseudoScrollMarkerGroup,
-    // Scroll button pseudos for Carousel
-    kPseudoScrollNextButton,
-    kPseudoScrollPrevButton,
+    // Scroll button pseudo for Carousel
+    kPseudoScrollButton,
   };
 
   enum class AttributeMatchType : int {
@@ -423,11 +424,28 @@ class CORE_EXPORT CSSSelector {
                                      const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
-  // Replaces the parent pointer held by kPseudoParent selectors found
-  // within this simple selector (including inner selector lists).
+  // Re-nesting
+  // ==========
   //
-  // See also StyleRule::Reparent().
-  void Reparent(StyleRule* new_parent);
+  // During parsing, the parent pseudo-class ('&') gains a reference
+  // to its parent StyleRule (if any), see `parent_rule_for_nesting`
+  // passed to CSSSelectorParser. This is problematic for certain CSSOM
+  // mutations, e.g. selectorText="..." on an outer style rule, since
+  // any '&' selectors held within that outer style rule now need
+  // to be point to the modified selector/rule.
+  //
+  // Since the selector list of a StyleRule is effectively an inline part
+  // of the StyleRule itself (see AdditionalBytesForSelectors), and because
+  // RuleSet invalidation requires both the old and new rule to exist
+  // in a usable state at the same time (see RuleSetDiff), we handle such
+  // mutations by effectively making a copy of the nested rule and its selector
+  // list, except that any '&' selectors are updated to the point to the new
+  // outer rule.
+  //
+  // If this simple selector contains any parent pseudo-classes ('&'),
+  // returns a copy with any parent rule references updated to `new_parent`.
+  // Returns std::nullopt when no references needed an update.
+  std::optional<CSSSelector> Renest(StyleRule* new_parent) const;
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
@@ -588,10 +606,6 @@ class CORE_EXPORT CSSSelector {
   static bool IsElementBackedPseudoElement(CSSSelector::PseudoType pseudo);
   bool IsAllowedAfterPart() const;
 
-  // Returns true if the immediately preceding simple selector is ::part.
-  // TODO(https://crbug.com/40280846): Remove this when removing the
-  // CSSCascadeCorrectScope flag.
-  bool FollowsPart() const;
   // Returns true if the immediately preceding simple selector is ::slotted.
   bool FollowsSlotted() const;
 
@@ -675,26 +689,33 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
 
-  template <bool expand_pseudo_parent>
-  bool SerializeSimpleSelector(WTF::StringBuilder& builder) const;
+  template <bool expand_pseudo_references>
+  bool SerializeSimpleSelector(WTF::StringBuilder& builder,
+                               uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
-  const CSSSelector* SerializeCompound(WTF::StringBuilder&) const;
+  template <bool expand_pseudo_references>
+  const CSSSelector* SerializeCompound(WTF::StringBuilder&,
+                                       uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
+  template <bool expand_pseudo_references>
   static void SerializeSelectorList(const CSSSelectorList* selector_list,
-                                    WTF::StringBuilder& builder);
+                                    WTF::StringBuilder& builder,
+                                    uintptr_t scope_id);
 
-  template <bool expand_pseudo_parent>
-  String SelectorTextInternal() const;
+  template <bool expand_pseudo_references>
+  String SelectorTextInternal(uintptr_t scope_id) const;
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);
+    // Does not deep copy `selector_list_`.
+    RareData(const RareData&);
     ~RareData();
 
     bool MatchNth(unsigned count);
     int NthAValue() const { return bits_.nth_.a_; }
     int NthBValue() const { return bits_.nth_.b_; }
+    // See CSSSelector::Renest.
+    RareData* Renest(StyleRule* new_parent);
 
     AtomicString matching_value_;
     AtomicString serializing_value_;

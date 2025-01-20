@@ -4,21 +4,16 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Callback;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -43,7 +38,6 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
 
     private PrivacySandboxBridge mPrivacySandboxBridge;
-    private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private Callback<Context> mCookieSettingsNavigation;
 
@@ -77,34 +71,11 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+            getCustomTabLauncher()
+                    .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
             return true;
         }
         return false;
-    }
-
-    /**
-     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
-     * helpers are not modularized.
-     */
-    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
-        mCustomTabHelper = tabHelper;
-    }
-
-    protected void openUrlInCct(String url) {
-        assert (mCustomTabHelper != null)
-                : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a "
-                        + "link.";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 
     public void setSnackbarManagerSupplier(

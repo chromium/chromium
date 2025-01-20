@@ -53,9 +53,6 @@
 #include "components/cdm/common/cdm_manifest.h"
 #include "media/base/cdm_capability.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
-// component updated CDM on all desktop platforms and remove this.
-// This file is In SHARED_INTERMEDIATE_DIR.
-#include "widevine_cdm_version.h"  // nogncheck
 #endif
 
 namespace chromecast {

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.HashUtil;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -119,7 +120,9 @@ public class MismatchNotificationChecker {
     @VisibleForTesting
     String getAccountId() {
         CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        var hash = HashUtil.getMd5Hash(new HashUtil.Params(CoreAccountInfo.getGaiaIdFrom(account)));
+        GaiaId gaiaId = CoreAccountInfo.getGaiaIdFrom(account);
+        var hash =
+                HashUtil.getMd5Hash(new HashUtil.Params(gaiaId != null ? gaiaId.toString() : null));
         return hash.substring(0, 16);
     }
 

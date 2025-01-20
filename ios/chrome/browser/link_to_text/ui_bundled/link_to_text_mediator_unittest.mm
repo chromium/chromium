@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
-#import "base/time/time.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
@@ -11,11 +10,13 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
@@ -27,7 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"

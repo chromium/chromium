@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Popis vjerodajnica za unos dodirom otvoren je preko cijelog zaslona.</translation>
 <translation id="5591247451101092906">Želite li koristiti spremljenu zaporku ili pristupni ključ?</translation>
 <translation id="5624120631404540903">Upravljanje zaporkama</translation>
+<translation id="592182999816790476">Zaporka za <ph name="USERNAME" /> spremljena je za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Pristupni ključ za <ph name="USERNAME" />, upotrijebite zaključavanje zaslona</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova zaporka za ovu web-lokaciju}one{Nove zaporke za ovu web-lokaciju}few{Nove zaporke za ovu web-lokaciju}other{Nove zaporke za ovu web-lokaciju}}</translation>
 <translation id="7286867818472074330">Odaberite pristupni ključ</translation>

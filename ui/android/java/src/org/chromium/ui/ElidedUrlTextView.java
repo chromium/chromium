@@ -4,25 +4,32 @@
 
 package org.chromium.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.Layout;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
+
 /**
- * A TextView which truncates and displays a URL such that the origin is always visible.
- * The URL can be expanded by clicking on the it.
+ * A TextView which truncates and displays a URL such that the origin is always visible. The URL can
+ * be expanded by clicking on the it.
  */
+@NullMarked
 public class ElidedUrlTextView extends AppCompatTextView {
     // The number of lines to display when the URL is truncated. This number
     // should still allow the origin to be displayed. NULL before
     // setUrlAfterLayout() is called.
-    private Integer mTruncatedUrlLinesToDisplay;
+    private int mTruncatedUrlLinesToDisplay;
 
     // The number of lines to display when the URL is expanded. This should be enough to display
     // at most two lines of the fragment if there is one in the URL.
-    private Integer mFullLinesToDisplay;
+    private @Nullable Integer mFullLinesToDisplay;
 
     // If true, the text view will show the truncated text. If false, it
     // will show the full, expanded text.
@@ -50,7 +57,7 @@ public class ElidedUrlTextView extends AppCompatTextView {
      * a given index.
      */
     private int getLineForIndex(int index) {
-        Layout layout = getLayout();
+        Layout layout = assumeNonNull(getLayout());
         int endLine = 0;
         while (endLine < layout.getLineCount() && layout.getLineEnd(endLine) < index) {
             endLine++;
@@ -125,6 +132,7 @@ public class ElidedUrlTextView extends AppCompatTextView {
                                         : R.string.elided_url_text_view_url_expanded));
     }
 
+    @RequiresNonNull("mFullLinesToDisplay")
     private boolean updateMaxLines() {
         int maxLines = mFullLinesToDisplay;
         if (mIsShowingTruncatedText) {

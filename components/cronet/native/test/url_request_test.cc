@@ -272,10 +272,11 @@ void VerifyRequestFinishedInfoListener(
   VerifyRequestMetrics(Cronet_RequestFinishedInfo_metrics_get(request_info));
   auto finished_reason =
       Cronet_RequestFinishedInfo_finished_reason_get(request_info);
-  EXPECT_EQ(MapFinishedReason(callback.response_step_), finished_reason);
-  EXPECT_EQ(callback.original_response_info_,
+  EXPECT_EQ(MapFinishedReason(callback.response_step()), finished_reason);
+  EXPECT_EQ(callback.original_response_info(),
             test_request_finished_info_listener->url_response_info());
-  EXPECT_EQ(callback.last_error_, test_request_finished_info_listener->error());
+  EXPECT_EQ(callback.last_error(),
+            test_request_finished_info_listener->error());
 }
 
 // Parameterized off whether to use a direct executor, and whether (if so, how)
@@ -655,17 +656,17 @@ TEST_P(UrlRequestTest, InitChecks) {
 TEST_P(UrlRequestTest, SimpleGet) {
   const std::string url = cronet::TestServer::GetEchoMethodURL();
   auto callback = StartAndWaitForComplete(url);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
   // Default method is 'GET'.
-  EXPECT_EQ("GET", callback->response_as_string_);
-  EXPECT_EQ(0, callback->redirect_count_);
-  EXPECT_EQ(callback->response_step_, callback->ON_SUCCEEDED);
-  CheckResponseInfo(*callback->response_info_, url, 200, "OK");
+  EXPECT_EQ("GET", callback->response_as_string());
+  EXPECT_EQ(0, callback->redirect_count());
+  EXPECT_EQ(callback->response_step(), callback->ON_SUCCEEDED);
+  CheckResponseInfo(*callback->response_info(), url, 200, "OK");
   TestUrlRequestCallback::UrlResponseInfo expected_response_info(
       std::vector<std::string>({url}), "OK", 200, 86,
       std::vector<std::string>({"Connection", "close", "Content-Length", "3",
                                 "Content-Type", "text/plain"}));
-  ExpectResponseInfoEquals(expected_response_info, *callback->response_info_);
+  ExpectResponseInfoEquals(expected_response_info, *callback->response_info());
 }
 
 TEST_P(UrlRequestTest, UploadEmptyBodySync) {
@@ -680,8 +681,8 @@ TEST_P(UrlRequestTest, UploadEmptyBodySync) {
   EXPECT_EQ(0, data_provider.GetUploadedLength());
   EXPECT_EQ(0, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadSync) {
@@ -697,8 +698,8 @@ TEST_P(UrlRequestTest, UploadSync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, SSLCertificateError) {
@@ -718,9 +719,9 @@ TEST_P(UrlRequestTest, SSLCertificateError) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(0, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_EQ("", callback->response_as_string_);
-  EXPECT_EQ("net::ERR_CERT_INVALID", callback->last_error_message_);
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_EQ("", callback->response_as_string());
+  EXPECT_EQ("net::ERR_CERT_INVALID", callback->last_error_message());
 }
 
 TEST_P(UrlRequestTest, SSLUpload) {
@@ -739,10 +740,10 @@ TEST_P(UrlRequestTest, SSLUpload) {
   callback = StartAndWaitForComplete(kUrl, std::move(callback), std::string(),
                                      &data_provider, ssl_server.port());
   data_provider.AssertClosed();
-  EXPECT_NE(nullptr, callback->response_info_);
-  EXPECT_EQ("", callback->last_error_message_);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_THAT(callback->response_as_string_, HasSubstr(kUploadString));
+  EXPECT_NE(nullptr, callback->response_info());
+  EXPECT_EQ("", callback->last_error_message());
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_THAT(callback->response_as_string(), HasSubstr(kUploadString));
 }
 
 TEST_P(UrlRequestTest, UploadMultiplePiecesSync) {
@@ -761,8 +762,8 @@ TEST_P(UrlRequestTest, UploadMultiplePiecesSync) {
   EXPECT_EQ(16, data_provider.GetUploadedLength());
   EXPECT_EQ(4, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Yet another test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Yet another test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadMultiplePiecesAsync) {
@@ -781,8 +782,8 @@ TEST_P(UrlRequestTest, UploadMultiplePiecesAsync) {
   EXPECT_EQ(16, data_provider.GetUploadedLength());
   EXPECT_EQ(4, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Yet another test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Yet another test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadChangesDefaultMethod) {
@@ -795,9 +796,9 @@ TEST_P(UrlRequestTest, UploadChangesDefaultMethod) {
 
   callback = StartAndWaitForComplete(url, std::move(callback), std::string(),
                                      &upload_data_provider);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
   // Setting upload provider should change method to 'POST'.
-  EXPECT_EQ("POST", callback->response_as_string_);
+  EXPECT_EQ("POST", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadWithSetMethod) {
@@ -810,9 +811,9 @@ TEST_P(UrlRequestTest, UploadWithSetMethod) {
 
   callback = StartAndWaitForComplete(url, std::move(callback),
                                      std::string("PUT"), &upload_data_provider);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
   // Setting upload provider should change method to 'POST'.
-  EXPECT_EQ("PUT", callback->response_as_string_);
+  EXPECT_EQ("PUT", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadWithBigRead) {
@@ -827,9 +828,9 @@ TEST_P(UrlRequestTest, UploadWithBigRead) {
 
   callback = StartAndWaitForComplete(url, std::move(callback),
                                      std::string("PUT"), &upload_data_provider);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
   // Confirm that body is uploaded correctly.
-  EXPECT_EQ(std::string(32768, 'a'), callback->response_as_string_);
+  EXPECT_EQ(std::string(32768, 'a'), callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadWithDirectExecutor) {
@@ -844,8 +845,8 @@ TEST_P(UrlRequestTest, UploadWithDirectExecutor) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadRedirectSync) {
@@ -861,8 +862,8 @@ TEST_P(UrlRequestTest, UploadRedirectSync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(2, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadRedirectAsync) {
@@ -878,8 +879,8 @@ TEST_P(UrlRequestTest, UploadRedirectAsync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(2, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Test", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Test", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadWithBadLength) {
@@ -896,13 +897,14 @@ TEST_P(UrlRequestTest, UploadWithBadLength) {
   EXPECT_EQ(2, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find(
+            callback->last_error_message().find(
                 "Read upload data length 2 exceeds expected length 1"));
 }
 
@@ -923,13 +925,14 @@ TEST_P(UrlRequestTest, UploadWithBadLengthBufferAligned) {
   EXPECT_EQ(8192, data_provider.GetUploadedLength());
   EXPECT_EQ(512, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find(
+            callback->last_error_message().find(
                 "Read upload data length 8192 exceeds expected length 8191"));
 }
 
@@ -947,13 +950,14 @@ TEST_P(UrlRequestTest, UploadReadFailSync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find("Sync read failure"));
+            callback->last_error_message().find("Sync read failure"));
 }
 
 TEST_P(UrlRequestTest, UploadReadFailAsync) {
@@ -970,13 +974,14 @@ TEST_P(UrlRequestTest, UploadReadFailAsync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find("Async read failure"));
+            callback->last_error_message().find("Async read failure"));
 }
 
 TEST_P(UrlRequestTest, UploadRewindFailSync) {
@@ -993,12 +998,13 @@ TEST_P(UrlRequestTest, UploadRewindFailSync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find("Sync rewind failure"));
+            callback->last_error_message().find("Sync rewind failure"));
 }
 
 TEST_P(UrlRequestTest, UploadRewindFailAsync) {
@@ -1015,12 +1021,13 @@ TEST_P(UrlRequestTest, UploadRewindFailAsync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_NE(nullptr, callback->last_error_);
-  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK, callback->last_error_code_);
-  EXPECT_EQ(0ul, callback->last_error_message_.find(
+  EXPECT_NE(nullptr, callback->last_error());
+  EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_CALLBACK,
+            callback->last_error_code());
+  EXPECT_EQ(0ul, callback->last_error_message().find(
                      "Failure from UploadDataProvider"));
   EXPECT_NE(std::string::npos,
-            callback->last_error_message_.find("Async rewind failure"));
+            callback->last_error_message().find("Async rewind failure"));
 }
 
 TEST_P(UrlRequestTest, UploadChunked) {
@@ -1037,8 +1044,8 @@ TEST_P(UrlRequestTest, UploadChunked) {
   data_provider.AssertClosed();
   EXPECT_EQ(-1, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("Test Hello", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("Test Hello", callback->response_as_string());
 }
 
 TEST_P(UrlRequestTest, UploadChunkedLastReadZeroLengthBody) {
@@ -1059,8 +1066,8 @@ TEST_P(UrlRequestTest, UploadChunkedLastReadZeroLengthBody) {
   EXPECT_EQ(-1, data_provider.GetUploadedLength());
   // 2 read call for the first two data chunks, and 1 for final chunk.
   EXPECT_EQ(3, data_provider.num_read_calls());
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ("hello there!", callback->response_as_string_);
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ("hello there!", callback->response_as_string());
 }
 
 // Test where an upload fails without ever initializing the
@@ -1078,9 +1085,9 @@ TEST_P(UrlRequestTest, UploadFailsWithoutInitializingStream) {
   data_provider.AssertClosed();
   EXPECT_EQ(0, data_provider.num_read_calls());
   EXPECT_EQ(0, data_provider.num_rewind_calls());
-  EXPECT_EQ(nullptr, callback->response_info_);
-  EXPECT_EQ("", callback->response_as_string_);
-  EXPECT_TRUE(callback->on_error_called_);
+  EXPECT_EQ(nullptr, callback->response_info());
+  EXPECT_EQ("", callback->response_as_string());
+  EXPECT_TRUE(callback->on_error_called());
 }
 
 // TODO(crbug.com/41453771): Flakes in AssertClosed().
@@ -1102,7 +1109,7 @@ TEST_P(UrlRequestTest, DISABLED_UploadCancelReadSync) {
 
   EXPECT_EQ(11, data_provider.GetUploadedLength());
   EXPECT_EQ(2, data_provider.num_read_calls());
-  EXPECT_TRUE(callback->on_canceled_called_);
+  EXPECT_TRUE(callback->on_canceled_called());
 }
 
 TEST_P(UrlRequestTest, UploadCancelReadAsync) {
@@ -1122,7 +1129,7 @@ TEST_P(UrlRequestTest, UploadCancelReadAsync) {
 
   EXPECT_EQ(11, data_provider.GetUploadedLength());
   EXPECT_EQ(3, data_provider.num_read_calls());
-  EXPECT_TRUE(callback->on_canceled_called_);
+  EXPECT_TRUE(callback->on_canceled_called());
 }
 
 // TODO(crbug.com/41453771): Flakes in AssertClosed().
@@ -1141,7 +1148,7 @@ TEST_P(UrlRequestTest, DISABLED_UploadCancelRewindSync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_TRUE(callback->on_canceled_called_);
+  EXPECT_TRUE(callback->on_canceled_called());
 }
 
 TEST_P(UrlRequestTest, UploadCancelRewindAsync) {
@@ -1158,7 +1165,7 @@ TEST_P(UrlRequestTest, UploadCancelRewindAsync) {
   EXPECT_EQ(4, data_provider.GetUploadedLength());
   EXPECT_EQ(1, data_provider.num_read_calls());
   EXPECT_EQ(1, data_provider.num_rewind_calls());
-  EXPECT_TRUE(callback->on_canceled_called_);
+  EXPECT_TRUE(callback->on_canceled_called());
 }
 
 TEST_P(UrlRequestTest, SimpleRequest) {
@@ -1187,7 +1194,7 @@ TEST_P(UrlRequestTest, SimpleRequest) {
                                  test_callback);
   EXPECT_TRUE(test_callback.IsDone());
   ASSERT_EQ("The quick brown fox jumps over the lazy dog.",
-            test_callback.response_as_string_);
+            test_callback.response_as_string());
 
   Cronet_UrlRequestParams_Destroy(request_params);
   Cronet_UrlRequest_Destroy(request);
@@ -1278,10 +1285,10 @@ TEST_P(UrlRequestTest, UrlParamsAnnotationsUnchanged) {
 TEST_P(UrlRequestTest, MultiRedirect) {
   const std::string url = cronet::TestServer::GetMultiRedirectURL();
   auto callback = StartAndWaitForComplete(url);
-  EXPECT_EQ(2, callback->redirect_count_);
-  EXPECT_EQ(200, callback->response_info_->http_status_code);
-  EXPECT_EQ(2ul, callback->redirect_response_info_list_.size());
-  EXPECT_EQ(2ul, callback->redirect_url_list_.size());
+  EXPECT_EQ(2, callback->redirect_count());
+  EXPECT_EQ(200, callback->response_info()->http_status_code);
+  EXPECT_EQ(2ul, callback->redirect_response_info_list().size());
+  EXPECT_EQ(2ul, callback->redirect_url_list().size());
 
   // Check first redirect (multiredirect.html -> redirect.html).
   TestUrlRequestCallback::UrlResponseInfo first_expected_response_info(
@@ -1290,9 +1297,9 @@ TEST_P(UrlRequestTest, MultiRedirect) {
           {"Location", GURL(cronet::TestServer::GetRedirectURL()).path(),
            "redirect-header0", "header-value"}));
   ExpectResponseInfoEquals(first_expected_response_info,
-                           *callback->redirect_response_info_list_.front());
+                           *callback->redirect_response_info_list().front());
   EXPECT_EQ(cronet::TestServer::GetRedirectURL(),
-            callback->redirect_url_list_.front());
+            callback->redirect_url_list().front());
 
   // Check second redirect (redirect.html -> success.txt).
   TestUrlRequestCallback::UrlResponseInfo second_expected_response_info(
@@ -1303,9 +1310,9 @@ TEST_P(UrlRequestTest, MultiRedirect) {
           {"Location", GURL(cronet::TestServer::GetSuccessURL()).path(),
            "redirect-header", "header-value"}));
   ExpectResponseInfoEquals(second_expected_response_info,
-                           *callback->redirect_response_info_list_.back());
+                           *callback->redirect_response_info_list().back());
   EXPECT_EQ(cronet::TestServer::GetSuccessURL(),
-            callback->redirect_url_list_.back());
+            callback->redirect_url_list().back());
 
   // Check final response (success.txt).
   TestUrlRequestCallback::UrlResponseInfo final_expected_response_info(
@@ -1318,9 +1325,9 @@ TEST_P(UrlRequestTest, MultiRedirect) {
            "header-name", "header-value", "multi-header-name", "header-value1",
            "multi-header-name", "header-value2"}));
   ExpectResponseInfoEquals(final_expected_response_info,
-                           *callback->response_info_);
-  EXPECT_NE(0, callback->response_data_length_);
-  EXPECT_EQ(callback->ON_SUCCEEDED, callback->response_step_);
+                           *callback->response_info());
+  EXPECT_NE(0, callback->response_data_length());
+  EXPECT_EQ(callback->ON_SUCCEEDED, callback->response_step());
 }
 
 TEST_P(UrlRequestTest, CancelRequest) {
@@ -1350,9 +1357,9 @@ TEST_P(UrlRequestTest, CancelRequest) {
   MaybeVerifyRequestFinishedInfo(&test_request_finished_info_listener,
                                  test_callback);
   EXPECT_TRUE(test_callback.IsDone());
-  EXPECT_TRUE(test_callback.on_canceled_called_);
-  ASSERT_FALSE(test_callback.on_error_called_);
-  EXPECT_TRUE(test_callback.response_as_string_.empty());
+  EXPECT_TRUE(test_callback.on_canceled_called());
+  ASSERT_FALSE(test_callback.on_error_called());
+  EXPECT_TRUE(test_callback.response_as_string().empty());
 
   Cronet_UrlRequestParams_Destroy(request_params);
   Cronet_UrlRequest_Destroy(request);
@@ -1385,23 +1392,23 @@ TEST_P(UrlRequestTest, FailedRequestHostNotFound) {
   MaybeVerifyRequestFinishedInfo(&test_request_finished_info_listener,
                                  test_callback);
   EXPECT_TRUE(test_callback.IsDone());
-  EXPECT_TRUE(test_callback.on_error_called_);
-  EXPECT_FALSE(test_callback.on_canceled_called_);
+  EXPECT_TRUE(test_callback.on_error_called());
+  EXPECT_FALSE(test_callback.on_canceled_called());
 
-  EXPECT_TRUE(test_callback.response_as_string_.empty());
-  EXPECT_EQ(nullptr, test_callback.response_info_);
-  EXPECT_NE(nullptr, test_callback.last_error_);
+  EXPECT_TRUE(test_callback.response_as_string().empty());
+  EXPECT_EQ(nullptr, test_callback.response_info());
+  EXPECT_NE(nullptr, test_callback.last_error());
 
   EXPECT_EQ(Cronet_Error_ERROR_CODE_ERROR_HOSTNAME_NOT_RESOLVED,
-            Cronet_Error_error_code_get(test_callback.last_error_));
+            Cronet_Error_error_code_get(test_callback.last_error()));
   EXPECT_FALSE(
-      Cronet_Error_immediately_retryable_get(test_callback.last_error_));
+      Cronet_Error_immediately_retryable_get(test_callback.last_error()));
   EXPECT_STREQ("net::ERR_NAME_NOT_RESOLVED",
-               Cronet_Error_message_get(test_callback.last_error_));
+               Cronet_Error_message_get(test_callback.last_error()));
   EXPECT_EQ(-105,
-            Cronet_Error_internal_error_code_get(test_callback.last_error_));
+            Cronet_Error_internal_error_code_get(test_callback.last_error()));
   EXPECT_EQ(
-      0, Cronet_Error_quic_detailed_error_code_get(test_callback.last_error_));
+      0, Cronet_Error_quic_detailed_error_code_get(test_callback.last_error()));
 
   Cronet_UrlRequestParams_Destroy(request_params);
   Cronet_UrlRequest_Destroy(request);
@@ -1419,17 +1426,17 @@ void UrlRequestTest::TestCancel(
   callback->set_failure(failure_type, failure_step);
   const std::string url = cronet::TestServer::GetRedirectURL();
   callback = StartAndWaitForComplete(url, std::move(callback));
-  EXPECT_EQ(1, callback->redirect_count_);
-  EXPECT_EQ(1ul, callback->redirect_response_info_list_.size());
+  EXPECT_EQ(1, callback->redirect_count());
+  EXPECT_EQ(1ul, callback->redirect_response_info_list().size());
 
   if (failure_type == TestUrlRequestCallback::CANCEL_SYNC ||
       failure_type == TestUrlRequestCallback::CANCEL_ASYNC) {
-    EXPECT_EQ(TestUrlRequestCallback::ON_CANCELED, callback->response_step_);
+    EXPECT_EQ(TestUrlRequestCallback::ON_CANCELED, callback->response_step());
   }
 
-  EXPECT_EQ(expect_response_info, callback->response_info_ != nullptr);
-  EXPECT_EQ(expect_error, callback->last_error_ != nullptr);
-  EXPECT_EQ(expect_error, callback->on_error_called_);
+  EXPECT_EQ(expect_response_info, callback->response_info() != nullptr);
+  EXPECT_EQ(expect_error, callback->last_error() != nullptr);
+  EXPECT_EQ(expect_error, callback->on_error_called());
 
   // When |failure_type| is CANCEL_ASYNC_WITHOUT_PAUSE and |failure_step|
   // is ON_READ_COMPLETED, there might be an onSucceeded() task
@@ -1437,7 +1444,7 @@ void UrlRequestTest::TestCancel(
   // crbug.com/657415.
   if (!(failure_type == TestUrlRequestCallback::CANCEL_ASYNC_WITHOUT_PAUSE &&
         failure_step == TestUrlRequestCallback::ON_READ_COMPLETED)) {
-    EXPECT_TRUE(callback->on_canceled_called_);
+    EXPECT_TRUE(callback->on_canceled_called());
   }
 }
 
@@ -1502,7 +1509,7 @@ TEST_P(UrlRequestTest, PerfTest) {
                                    test_callback);
 
     EXPECT_TRUE(test_callback.IsDone());
-    ASSERT_EQ(kDownloadSize, test_callback.response_data_length_);
+    ASSERT_EQ(kDownloadSize, test_callback.response_data_length());
 
     CleanupRequestFinishedListener(request_params, engine);
     Cronet_UrlRequestParams_Destroy(request_params);
@@ -1587,7 +1594,7 @@ TEST_P(UrlRequestTest, GetStatus) {
   EXPECT_EQ(Cronet_UrlRequestStatusListener_Status_INVALID,
             GetRequestStatus(request, &test_callback));
   ASSERT_EQ("The quick brown fox jumps over the lazy dog.",
-            test_callback.response_as_string_);
+            test_callback.response_as_string());
 
   Cronet_UrlRequestParams_Destroy(request_params);
   Cronet_UrlRequest_Destroy(request);
@@ -1695,7 +1702,7 @@ TEST_F(UrlRequestTestNoParam,
   done_event.Wait();
   EXPECT_TRUE(test_callback.IsDone());
   ASSERT_EQ("The quick brown fox jumps over the lazy dog.",
-            test_callback.response_as_string_);
+            test_callback.response_as_string());
 
   Cronet_UrlRequestParams_Destroy(request_params);
   Cronet_UrlRequestCallback_Destroy(callback);
@@ -1825,7 +1832,7 @@ TEST_F(UrlRequestTestNoParam,
   test_callback.WaitForDone();
   EXPECT_TRUE(test_callback.IsDone());
   ASSERT_EQ("The quick brown fox jumps over the lazy dog.",
-            test_callback.response_as_string_);
+            test_callback.response_as_string());
 
   Cronet_UrlRequest_Destroy(request);
   Cronet_UrlRequestParams_Destroy(request_params);

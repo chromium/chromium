@@ -18,12 +18,27 @@ namespace blink {
 // `error_field_value`, and `error`.
 //
 // Checks all provided URLs. Does no validation of expiration time. Does no
-// validation of values expected to be in JSON, since ValidateInterestGroup()
-// does not validate JSON. Must be kept in sync with ValidateInterestGroup(),
-// which performs the exact same logic, except on mojom::InterestGroups, and is
-// used to validate InterestGroups received from a less trusted renderer
-// process.
+// validation of values expected to be in JSON, since
+// blink::InterestGroup::IsValid() does not validate JSON. Must be kept in sync
+// with blink::InterestGroup::IsValid(), which performs the exact same logic,
+// except on blink::InterestGroups.
 MODULES_EXPORT bool ValidateBlinkInterestGroup(
+    const mojom::blink::InterestGroup& group,
+    String& error_field_name,
+    String& error_field_value,
+    String& error);
+
+// Additional checks required only at join and update time. Specifically, this
+// validates that the selectedBuyerAndSellerReportingIds field on each ad object
+// does not exceed a Finch-controlled "soft limit".
+//
+// Note that this function is only called at join time. The reference to
+// update and the separation from ValidateBlinkInterestGroup above (which is
+// also called only at join time) are useful only in maintaining parity with
+// blink::InterestGroup::IsValidForJoinAndUpdate(), with which this function
+// must remain in sync. blink::InterestGroup::IsValidForJoinAndUpdate() performs
+// the exact same logic, except on blink::InterestGroups.
+MODULES_EXPORT bool PerformAdditionalJoinAndUpdateTimeValidations(
     const mojom::blink::InterestGroup& group,
     String& error_field_name,
     String& error_field_value,

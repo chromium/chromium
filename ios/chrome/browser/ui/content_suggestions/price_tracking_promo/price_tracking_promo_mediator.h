@@ -28,6 +28,10 @@ class PushNotificationService;
 @protocol SnackbarCommands;
 @protocol SystemIdentity;
 
+@protocol PriceTrackingPromoFaviconConsumer
+- (void)priceTrackingPromoFaviconCompleted:(UIImage*)faviconImage;
+@end
+
 class AuthenticationService;
 
 // Delegate used to communicate events back to the owner of
@@ -39,6 +43,9 @@ class AuthenticationService;
 
 // Price Tracking Promo is removed from the magic stack.
 - (void)removePriceTrackingPromo;
+
+// Price Tracking promo was tapped on.
+- (void)promoWasTapped;
 
 @end
 

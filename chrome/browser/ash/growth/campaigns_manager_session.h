@@ -77,9 +77,9 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   // Handles Arc instance update.
   void HandleArcInstanceUpdate(const apps::InstanceUpdate& update);
 
-  // Handles Chrome browser and Lacros browser instance update. It caches
-  // current web browser context but defers campaign trigger to
-  // PrimaryPageChanged when page navigations happens.
+  // Handles Chrome browser instance update. It caches current web browser
+  // context but defers campaign trigger to PrimaryPageChanged when page
+  // navigations happens.
   void HandleWebBrowserInstanceUpdate(const apps::InstanceUpdate& update);
 
   // Handles Pwa or Swa instance update.

@@ -22,11 +22,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 #include <algorithm>
@@ -74,6 +69,7 @@
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
@@ -264,12 +260,12 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
       Parent()->DirtyLinesFromChangedChild(this);
     }
     if (FirstInlineFragmentItemIndex()) {
-      DetachAbstractInlineTextBoxesIfNeeded();
+      DetachAxHooksIfNeeded();
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
-    DetachAbstractInlineTextBoxesIfNeeded();
+    DetachAxHooksIfNeeded();
     ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();
@@ -301,10 +297,10 @@ void LayoutText::WillBeDestroyed() {
 
 void LayoutText::DeleteTextBoxes() {
   NOT_DESTROYED();
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
 }
 
-void LayoutText::DetachAbstractInlineTextBoxes() {
+void LayoutText::DetachAxHooks() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
@@ -314,14 +310,21 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   InlineCursor cursor;
-  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
     AbstractInlineTextBox::WillDestroy(cursor);
+  }
+}
+
+void LayoutText::ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) {
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->ClearBlockFlowCachedData(FragmentItemsContainer());
+  }
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   first_fragment_item_index_ = 0u;
 }
 
@@ -330,7 +333,7 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   // Changing the first fragment item index causes
   // LayoutText::FirstAbstractInlineTextBox to return a box,
   // so notify the AX object for this LayoutText that it might need to
@@ -724,21 +727,11 @@ PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
-  unsigned length = text_.length();
-  if (text_.Is8Bit()) {
-    for (unsigned i = 0; i < length; ++i) {
-      if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  for (unsigned i = 0; i < length; ++i) {
-    if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters16()[i])) {
-      return false;
-    }
-  }
-  return true;
+  const ComputedStyle& style = StyleRef();
+  return WTF::VisitCharacters(text_, [&style](auto chars) {
+    return base::ranges::all_of(
+        chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
+  });
 }
 
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
@@ -913,7 +906,9 @@ String LayoutText::TransformAndSecureText(const String& original,
     }
     auto [masked, secure_map] = SecureText(transformed, mask);
     if (!secure_map.IsEmpty()) {
-      offset_map = TextOffsetMap(offset_map, secure_map);
+      offset_map = TextOffsetMap(
+          offset_map, secure_map,
+          RuntimeEnabledFeatures::TextTransformAndSecurityFixEnabled());
     }
     return masked;
   }

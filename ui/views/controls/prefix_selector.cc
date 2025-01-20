@@ -104,7 +104,7 @@ std::optional<gfx::Rect> PrefixSelector::GetProximateCharacterBounds(
 }
 
 std::optional<size_t> PrefixSelector::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     ui::IndexFromPointFlags flags) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;
@@ -238,12 +238,14 @@ void PrefixSelector::OnTextInput(const std::u16string& text) {
   // that they are control characters and will not affect the currently-active
   // prefix.
   if (text.length() == 1 &&
-      (text[0] == L'\t' || text[0] == L'\r' || text[0] == L'\n'))
+      (text[0] == L'\t' || text[0] == L'\r' || text[0] == L'\n')) {
     return;
+  }
 
   const size_t row_count = prefix_delegate_->GetRowCount();
-  if (row_count == 0)
+  if (row_count == 0) {
     return;
+  }
 
   // Search for |text| if it has been a while since the user typed, otherwise
   // append |text| to |current_text_| and search for that. If it has been a
@@ -254,8 +256,9 @@ void PrefixSelector::OnTextInput(const std::u16string& text) {
     current_text_ += text;
   } else {
     current_text_ = text;
-    if (prefix_delegate_->GetSelectedRow().has_value())
+    if (prefix_delegate_->GetSelectedRow().has_value()) {
       row = (row + 1) % row_count;
+    }
   }
   time_of_last_key_ = tick_clock_->NowTicks();
 

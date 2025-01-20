@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class DataSharingServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -34,7 +35,12 @@ IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, ReadGroup) {
   base::RunLoop run_loop;
   auto* service = data_sharing::DataSharingServiceFactory::GetForProfile(
       browser()->profile());
-  service->ReadGroup(
+  // TODO(crbug.com/338431049): This test should use synchronous ReadGroup()
+  // instead of ReadGroupDeprecated(). Note that this will require receiving a
+  // GroupId from the sync server first (as part of COLLABORATION_GROUP
+  // datatype) -> simplest way to achieve this is to derive test from SyncTest
+  // and inject COLLABORATION_GROUP into fake sync server.
+  service->ReadGroupDeprecated(
       data_sharing::GroupId("12345"),
       base::BindOnce(
           [](base::RunLoop* run_loop,
@@ -45,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, ReadGroup) {
             EXPECT_EQ("GROUP_NAME", result->display_name);
             EXPECT_EQ(1u, result->members.size());
             data_sharing::GroupMember member = result->members[0];
-            EXPECT_EQ("GAIA_ID", member.gaia_id);
+            EXPECT_EQ("GAIA_ID", member.gaia_id.ToString());
             EXPECT_EQ("MEMBER_NAME", member.display_name);
             EXPECT_EQ("test@gmail.com", member.email);
             EXPECT_EQ(data_sharing::MemberRole::kMember, member.role);

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -46,6 +47,14 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Attributes for the divider. */
     private int mDividerColor;
 
+    /** The tag indicating that this layer should be moved by viz. */
+    private OffsetTag mOffsetTag;
+
+    /** Whether the bottom chin has constraint applied that changes its scrollability. */
+    private boolean mHasConstraint;
+
+    // TODO(peilinwang) This can probably be removed, as updates to the property model will already
+    // trigger a new renderer frame via the CompositorModelChangeProcessor.
     private final Runnable mRequestRenderRunnable;
 
     /** Build a bottom chin scene layer. */
@@ -100,6 +109,18 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
         mRequestRenderRunnable.run();
     }
 
+    /** Whether there are safe area constraint for the bottom chin. */
+    public void setHasConstraint(boolean hasConstraint) {
+        mHasConstraint = hasConstraint;
+    }
+
+    /**
+     * @param offsetTag The view's OffsetTag, indicating that this layer will be moved by viz.
+     */
+    public void setOffsetTag(OffsetTag offsetTag) {
+        mOffsetTag = offsetTag;
+    }
+
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
@@ -126,7 +147,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                         mHeight,
                         mColor,
                         mDividerColor,
-                        viewport.height() + mCurrentYOffsetPx);
+                        viewport.height() + mCurrentYOffsetPx,
+                        mHasConstraint,
+                        mOffsetTag);
 
         return this;
     }
@@ -183,6 +206,8 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                 int containerHeight,
                 int colorARGB,
                 int dividerColor,
-                float yOffset);
+                float yOffset,
+                boolean hasConstraint,
+                OffsetTag offsetTag);
     }
 }

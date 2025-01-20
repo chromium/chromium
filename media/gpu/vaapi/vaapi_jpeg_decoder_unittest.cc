@@ -431,7 +431,7 @@ TEST_F(VaapiJpegDecoderTest, DecodeSucceedsForSupportedSizes) {
                                              {max_width, max_height}};
   for (const auto& test_size : test_sizes) {
     const std::vector<unsigned char> jpeg_data = GenerateJpegImage(test_size);
-    auto jpeg_data_span = base::as_bytes(base::make_span(jpeg_data));
+    auto jpeg_data_span = base::as_byte_span(jpeg_data);
     ASSERT_FALSE(jpeg_data.empty());
     std::unique_ptr<ScopedVAImage> scoped_image = Decode(jpeg_data_span);
     ASSERT_TRUE(scoped_image)
@@ -604,7 +604,7 @@ TEST_F(VaapiJpegDecoderTest, DecodeFailsForBelowMinSize) {
     const std::vector<unsigned char> jpeg_data = GenerateJpegImage(test_size);
     ASSERT_FALSE(jpeg_data.empty());
     VaapiImageDecodeStatus status = VaapiImageDecodeStatus::kSuccess;
-    ASSERT_FALSE(Decode(base::as_bytes(base::make_span(jpeg_data)), &status))
+    ASSERT_FALSE(Decode(base::as_byte_span(jpeg_data), &status))
         << "Decode unexpectedly succeeded for size = " << test_size.ToString();
     EXPECT_EQ(VaapiImageDecodeStatus::kUnsupportedImage, status);
     EXPECT_FALSE(Decoder()->GetScopedVASurface());
@@ -650,7 +650,7 @@ TEST_F(VaapiJpegDecoderTest, DecodeFailsForAboveMaxSize) {
     const std::vector<unsigned char> jpeg_data = GenerateJpegImage(test_size);
     ASSERT_FALSE(jpeg_data.empty());
     VaapiImageDecodeStatus status = VaapiImageDecodeStatus::kSuccess;
-    ASSERT_FALSE(Decode(base::as_bytes(base::make_span(jpeg_data)), &status))
+    ASSERT_FALSE(Decode(base::as_byte_span(jpeg_data), &status))
         << "Decode unexpectedly succeeded for size = " << test_size.ToString();
     EXPECT_EQ(VaapiImageDecodeStatus::kUnsupportedImage, status);
     EXPECT_FALSE(Decoder()->GetScopedVASurface());
@@ -664,7 +664,7 @@ TEST_F(VaapiJpegDecoderTest, DecodeFails) {
   ASSERT_TRUE(base::ReadFileToString(input_file, &jpeg_data))
       << "failed to read input data from " << input_file.value();
   VaapiImageDecodeStatus status = VaapiImageDecodeStatus::kSuccess;
-  ASSERT_FALSE(Decode(base::as_bytes(base::make_span(jpeg_data)), &status));
+  ASSERT_FALSE(Decode(base::as_byte_span(jpeg_data), &status));
   EXPECT_EQ(VaapiImageDecodeStatus::kUnsupportedSubsampling, status);
   EXPECT_FALSE(Decoder()->GetScopedVASurface());
 }

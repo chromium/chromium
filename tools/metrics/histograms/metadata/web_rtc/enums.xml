@@ -102,6 +102,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown error"/>
 </enum>
 
+<enum name="EncodeScalabilityMode">
+  <int value="0" label="NotSupported"/>
+  <int value="1" label="L1T1"/>
+  <int value="2" label="L1T2"/>
+  <int value="3" label="L1T3"/>
+</enum>
+
 <enum name="GenerateCertificateAlgorithms">
   <int value="0" label="ECDSA-P256"/>
   <int value="1" label="RSA-1024"/>
@@ -198,6 +205,43 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="OBSOLETE_GetCurrentBrowsingContextMedia"/>
   <int value="10" label="OBSOLETE_GetDisplayMediaSet"/>
   <int value="11" label="GetAllScreensMedia"/>
+  <int value="12" label="SetPreferredSinkId"/>
+</enum>
+
+<enum name="SdpMungingType">
+  <int value="0" label="NoModification"/>
+  <int value="1" label="UnknownModification"/>
+  <int value="2" label="WithoutCreateAnswer"/>
+  <int value="3" label="WithoutCreateOffer"/>
+  <int value="4" label="NumberOfContents"/>
+  <int value="5" label="NumberOfTransports"/>
+  <int value="6" label="OrderOfContents"/>
+  <int value="20" label="IceOptions"/>
+  <int value="21" label="IcePwd"/>
+  <int value="22" label="IceUfrag"/>
+  <int value="23" label="IceMode"/>
+  <int value="24" label="DtlsSetup"/>
+  <int value="25" label="Mid"/>
+  <int value="26" label="PayloadTypes"/>
+  <int value="27" label="Ssrcs"/>
+  <int value="40" label="RtpHeaderExtensionsRemoved"/>
+  <int value="41" label="RtpHeaderExtensionsAdded"/>
+  <int value="42" label="RtpHeaderExtensionsModified"/>
+  <int value="60" label="AudioCodecsRemoved"/>
+  <int value="61" label="AudioCodecsAdded"/>
+  <int value="62" label="AudioCodecsReordered"/>
+  <int value="63" label="AudioCodecsAddedMultiOpus"/>
+  <int value="64" label="AudioCodecsAddedL16"/>
+  <int value="65" label="AudioCodecsRtcpFbAudioNack"/>
+  <int value="66" label="AudioCodecsFmtpOpusFec"/>
+  <int value="67" label="AudioCodecsFmtpOpusPacketizationTime"/>
+  <int value="68" label="AudioCodecsFmtpOpusStereo"/>
+  <int value="69" label="AudioCodecsFmtpOpusDtx"/>
+  <int value="80" label="VideoCodecsRemoved"/>
+  <int value="81" label="VideoCodecsAdded"/>
+  <int value="82" label="VideoCodecsReordered"/>
+  <int value="83" label="VideoCodecsLegacySimulcast"/>
+  <int value="84" label="VideoCodecsFmtpH264SpsPpsIdrInKeyframe"/>
 </enum>
 
 <enum name="SocketErrorCode">

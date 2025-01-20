@@ -391,7 +391,6 @@ class ShowPopupWidgetWaiter
     void ShowPopupMenu(
         mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
         const gfx::Rect& bounds,
-        int32_t item_height,
         double font_size,
         int32_t selected_item,
         std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -827,15 +826,6 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents);
 // is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
 // against its view.
 void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
-
-// Blocks the current execution until the frame submitted via the browser's
-// compositor is presented on the screen.
-void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
-
-// Forces the browser to submit a compositor frame, even if nothing has changed
-// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
-// the frame's presentation.
-void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
 
 // Sets up a /redirect-on-second-navigation?url endpoint on the provided
 // `server`, which will return a 200 OK response for the first request, and

@@ -16,6 +16,7 @@
 class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoViewFactory;
+class PageInfoMerchantTrustCoordinator;
 
 // The views implementation of the page info UI.
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
@@ -41,7 +42,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       base::OnceClosure initialized_callback,
       PageInfoClosingCallback closing_callback,
       bool allow_about_this_site,
-      std::optional<ContentSettingsType> type = std::nullopt);
+      std::optional<ContentSettingsType> type = std::nullopt,
+      bool open_merchant_trust_page = false);
 
   // PageInfoNavigationHandler:
   void OpenMainPage(base::OnceClosure initialized_callback) override;
@@ -49,6 +51,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OpenPermissionPage(ContentSettingsType type) override;
   void OpenAdPersonalizationPage() override;
   void OpenCookiesPage() override;
+  void OpenMerchantTrustPage() override;
   void CloseBubble() override;
 
   // WebContentsObserver:
@@ -83,6 +86,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   std::unique_ptr<PageInfoViewFactory> view_factory_;
 
   std::unique_ptr<PageInfoHistoryController> history_controller_;
+
+  std::unique_ptr<PageInfoMerchantTrustCoordinator> merchant_trust_coordinator_;
 
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
 

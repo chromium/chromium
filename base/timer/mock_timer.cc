@@ -18,8 +18,9 @@ void FlushPendingTasks(TestSimpleTaskRunner* task_runner) {
   // TestSimpleTaskRunner::RunPendingTasks(), as its overridden
   // SingleThreadTaskRunner::CurrentDefaultHandle causes unexpected side
   // effects.
-  for (TestPendingTask& task : task_runner->TakePendingTasks())
+  for (TestPendingTask& task : task_runner->TakePendingTasks()) {
     std::move(task.task).Run();
+  }
 }
 
 }  // namespace

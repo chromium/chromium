@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -139,13 +140,13 @@ public class DseNewTabUrlManagerUnitTest {
         // Verifies that the URL is not overridden when {@link DseNewTabUrlManager.SWAP_OUT_NTP} is
         // false.
         doReturn(false).when(mProfile).isOffTheRecord();
-        assertFalse(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());
+        assertFalse(ChromeFeatureList.sNewTabSearchEngineUrlAndroidSwapOutNtp.getValue());
         assertEquals(
                 JUnitTestGURLs.NTP_URL,
                 mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
 
         // Verifies that the NTP URL should be overridden.
-        DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
+        ChromeFeatureList.sNewTabSearchEngineUrlAndroidSwapOutNtp.setForTesting(true);
         assertEquals(
                 NEW_TAB_URL,
                 mDseNewTabUrlManager

@@ -197,8 +197,6 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
                   kTransportModeWithSingleModel,
               extension_system_profile_.value()));
 
-      // TODO(crbug.com/377339175): Enable this for
-      // `kTransportModeWithSingleModel`.
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionSettingDataTypeController>(
               syncer::EXTENSION_SETTINGS, data_type_store_factory,
@@ -207,7 +205,7 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
                   syncer::EXTENSION_SETTINGS),
               dump_stack,
               browser_sync::ExtensionSettingDataTypeController::DelegateMode::
-                  kLegacyFullSyncModeOnly,
+                  kTransportModeWithSingleModel,
               extension_system_profile_.value()));
 
       controllers.push_back(

@@ -54,6 +54,7 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/preferences:pref_service_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",

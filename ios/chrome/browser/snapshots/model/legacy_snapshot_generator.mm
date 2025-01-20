@@ -8,6 +8,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
@@ -40,9 +41,8 @@ struct SnapshotInfo {
 }
 
 - (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  bool showing_native_content =
-      web::GetWebClient()->IsAppSpecificURL(_webState->GetLastCommittedURL());
-  if (!showing_native_content && _webState->CanTakeSnapshot()) {
+  bool isNTP = _webState->GetLastCommittedURL() == kChromeUINewTabURL;
+  if (!isNTP && _webState->CanTakeSnapshot()) {
     // Take the snapshot using the optimized WKWebView snapshotting API for
     // pages loaded in the web view when the WebState snapshot API is available.
     [self generateWKWebViewSnapshotWithCompletion:completion];
@@ -101,8 +101,7 @@ struct SnapshotInfo {
   if (!_webState) {
     return;
   }
-  DCHECK(
-      !web::GetWebClient()->IsAppSpecificURL(_webState->GetLastCommittedURL()));
+  CHECK(_webState->CanTakeSnapshot());
 
   if (![self canTakeSnapshot]) {
     if (completion) {

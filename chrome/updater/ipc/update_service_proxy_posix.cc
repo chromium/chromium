@@ -107,7 +107,7 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
       request.app_id, request.brand_code, request.brand_path, request.ap,
       request.version.GetString(), request.existence_checker_path,
       request.ap_path, request.ap_key, request.version_path,
-      request.version_key);
+      request.version_key, request.install_id);
 }
 
 class StateChangeObserverImpl : public mojom::StateChangeObserver {
@@ -120,7 +120,6 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
         complete_callback_(std::move(complete_callback)) {}
   StateChangeObserverImpl(const StateChangeObserverImpl&) = delete;
   StateChangeObserverImpl& operator=(const StateChangeObserverImpl&) = delete;
-  ~StateChangeObserverImpl() override = default;
 
   // Overrides for mojom::StateChangeObserver.
   void OnStateChange(mojom::UpdateStatePtr state_mojom) override {
@@ -309,6 +308,7 @@ void UpdateServiceProxyImpl::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -320,7 +320,7 @@ void UpdateServiceProxyImpl::CheckForUpdate(
       app_id, static_cast<mojom::UpdateService::Priority>(priority),
       static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
           policy_same_version_update),
-      MakeStateChangeObserver(state_update, std::move(callback)));
+      language, MakeStateChangeObserver(state_update, std::move(callback)));
 }
 
 void UpdateServiceProxyImpl::Update(
@@ -328,6 +328,7 @@ void UpdateServiceProxyImpl::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -339,7 +340,7 @@ void UpdateServiceProxyImpl::Update(
                   static_cast<mojom::UpdateService::Priority>(priority),
                   static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
                       policy_same_version_update),
-                  /*do_update_check_only=*/false,
+                  /*do_update_check_only=*/false, language,
                   MakeStateChangeObserver(state_update, std::move(callback)));
 }
 
@@ -360,6 +361,7 @@ void UpdateServiceProxyImpl::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     UpdateService::Priority priority,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -367,10 +369,10 @@ void UpdateServiceProxyImpl::Install(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
-  remote_->Install(MakeRegistrationRequest(registration), client_install_data,
-                   install_data_index,
-                   static_cast<mojom::UpdateService::Priority>(priority),
-                   MakeStateChangeObserver(state_update, std::move(callback)));
+  remote_->Install(
+      MakeRegistrationRequest(registration), client_install_data,
+      install_data_index, static_cast<mojom::UpdateService::Priority>(priority),
+      language, MakeStateChangeObserver(state_update, std::move(callback)));
 }
 
 void UpdateServiceProxyImpl::CancelInstalls(const std::string& app_id) {
@@ -386,6 +388,7 @@ void UpdateServiceProxyImpl::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -395,7 +398,7 @@ void UpdateServiceProxyImpl::RunInstaller(
   EnsureConnecting();
   remote_->RunInstaller(
       app_id, installer_path, install_args, install_data, install_settings,
-      MakeStateChangeObserver(state_update, std::move(callback)));
+      language, MakeStateChangeObserver(state_update, std::move(callback)));
 }
 
 void UpdateServiceProxyImpl::OnConnected(

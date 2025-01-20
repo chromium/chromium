@@ -132,10 +132,11 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
   static const int count = std::size(arrows);
   arrow_index = (arrow_index + count + (event.IsShiftDown() ? -1 : 1)) % count;
   BubbleBorder::Arrow arrow = arrows[arrow_index];
-  if (event.IsControlDown())
+  if (event.IsControlDown()) {
     arrow = BubbleBorder::NONE;
-  else if (event.IsAltDown())
+  } else if (event.IsAltDown()) {
     arrow = BubbleBorder::FLOAT;
+  }
 
   auto* provider = (*button)->GetColorProvider();
   // |bubble| will be destroyed by its widget when the widget is destroyed.
@@ -143,12 +144,13 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
   bubble->set_color(
       provider->GetColor(colors[(color_index++) % std::size(colors)]));
   bubble->set_shadow(shadow);
-  if (persistent)
+  if (persistent) {
     bubble->set_close_on_deactivate(false);
+  }
 
   BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
 
-  LogStatus(
+  PrintStatus(
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
       "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
 }

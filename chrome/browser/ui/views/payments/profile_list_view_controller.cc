@@ -63,7 +63,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
   ProfileItem(const ProfileItem&) = delete;
   ProfileItem& operator=(const ProfileItem&) = delete;
 
-  ~ProfileItem() override {}
+  ~ProfileItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -98,8 +98,9 @@ class ProfileItem : public PaymentRequestItemList::Item {
 
   void PerformSelectionFallback() override {
     // If enabled, the editor is opened to complete the invalid profile.
-    if (GetClickable())
+    if (GetClickable()) {
       controller_->ShowEditor(profile_);
+    }
   }
 
   void EditButtonPressed() override { controller_->ShowEditor(profile_); }
@@ -129,8 +130,9 @@ class ShippingProfileViewController : public ProfileListViewController,
       const ShippingProfileViewController&) = delete;
 
   ~ShippingProfileViewController() override {
-    if (spec())
+    if (spec()) {
       spec()->RemoveObserver(this);
+    }
   }
 
  protected:
@@ -217,8 +219,9 @@ class ShippingProfileViewController : public ProfileListViewController,
 
  private:
   void OnSpecUpdated() override {
-    if (!spec())
+    if (!spec()) {
       return;
+    }
 
     // If there's an error, stay on this screen so the user can select a
     // different address. Otherwise, go back to the payment sheet.
@@ -230,8 +233,9 @@ class ShippingProfileViewController : public ProfileListViewController,
         // The error profile is known, refresh the view to display it correctly.
         PopulateList();
         UpdateContentView();
-        if (spec()->has_shipping_address_error())
+        if (spec()->has_shipping_address_error()) {
           ShowEditor(state()->selected_shipping_option_error_profile());
+        }
       }
     }
   }
@@ -254,7 +258,7 @@ class ContactProfileViewController : public ProfileListViewController {
   ContactProfileViewController& operator=(const ContactProfileViewController&) =
       delete;
 
-  ~ContactProfileViewController() override {}
+  ~ContactProfileViewController() override = default;
 
  protected:
   // ProfileListViewController:
@@ -344,7 +348,7 @@ ProfileListViewController::ProfileListViewController(
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog), list_(dialog) {}
 
-ProfileListViewController::~ProfileListViewController() {}
+ProfileListViewController::~ProfileListViewController() = default;
 
 bool ProfileListViewController::IsEnabled(autofill::AutofillProfile* profile) {
   return true;
@@ -355,8 +359,9 @@ std::unique_ptr<views::View> ProfileListViewController::CreateHeaderView() {
 }
 
 void ProfileListViewController::PopulateList() {
-  if (!spec())
+  if (!spec()) {
     return;
+  }
 
   autofill::AutofillProfile* selected_profile = GetSelectedProfile();
 
@@ -388,8 +393,9 @@ void ProfileListViewController::FillContentView(views::View* content_view) {
       views::BoxLayout::CrossAxisAlignment::kStretch);
   content_view->SetLayoutManager(std::move(layout));
   std::unique_ptr<views::View> header_view = CreateHeaderView();
-  if (header_view)
+  if (header_view) {
     content_view->AddChildView(header_view.release());
+  }
   std::unique_ptr<views::View> list_view = list_.CreateListView();
   list_view->SetID(static_cast<int>(GetDialogViewId()));
   content_view->AddChildView(list_view.release());

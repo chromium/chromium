@@ -168,7 +168,7 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(
       WebTestControlHost::Get()->PrintMessageToStderr(
           "Protocol message: " + *protocol_message + "\n");
       agent_host_->DispatchProtocolMessage(
-          this, base::as_bytes(base::make_span(*protocol_message)));
+          this, base::as_byte_span(*protocol_message));
     }
     return;
   }

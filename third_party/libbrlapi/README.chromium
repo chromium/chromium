@@ -2,7 +2,7 @@ Name: libbrlapi
 URL: https://github.com/brltty/brltty
 Version: 0.8
 Revision: 4e5618edae97a9381cd58cad3f14f10ffb0e37c7
-License: LGPL 2.1
+License: LGPL-2.1
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

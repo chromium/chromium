@@ -5,11 +5,11 @@
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/system/sys_info.h"
 
 namespace extensions {
@@ -40,14 +40,15 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
   CHECK(NtQuerySystemInformation != NULL);
 
   int num_of_processors = base::SysInfo::NumberOfProcessors();
-  std::unique_ptr<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]> processor_info(
-      new SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[num_of_processors]);
+  auto processor_info =
+      base::HeapArray<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>::Uninit(
+          num_of_processors);
 
   ULONG returned_bytes = 0,
         bytes = sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) *
                 num_of_processors;
   if (!NT_SUCCESS(NtQuerySystemInformation(
-          SystemProcessorPerformanceInformation, processor_info.get(), bytes,
+          SystemProcessorPerformanceInformation, processor_info.data(), bytes,
           &returned_bytes))) {
     return false;
   }
@@ -60,7 +61,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
   }
 
   DCHECK_EQ(num_of_processors, static_cast<int>(infos->size()));
-  for (int i = 0; i < returned_num_of_processors; ++i) {
+  for (size_t i = 0; i < processor_info.size(); ++i) {
     double kernel = static_cast<double>(processor_info[i].KernelTime.QuadPart),
            user = static_cast<double>(processor_info[i].UserTime.QuadPart),
            idle = static_cast<double>(processor_info[i].IdleTime.QuadPart);

@@ -15,8 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "skia/ext/image_operations.h"
@@ -149,7 +149,7 @@ SaveAddressBubbleController::GetHeaderImages() const {
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {
   if (is_migration_to_account_ && web_contents()) {
-    PersonalDataManager* pdm =
+    PersonalDataManager& pdm =
         ContentAutofillClient::FromWebContents(web_contents())
             ->GetPersonalDataManager();
 
@@ -157,10 +157,9 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    int string_id =
-        pdm->address_data_manager().IsSyncFeatureEnabledForAutofill()
-            ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
-            : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
+    int string_id = pdm.address_data_manager().IsSyncFeatureEnabledForAutofill()
+                        ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
+                        : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
     return l10n_util::GetStringFUTF16(string_id,
                                       base::UTF8ToUTF16(account->email));

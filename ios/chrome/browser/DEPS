@@ -86,6 +86,7 @@ include_rules = [
   "+components/proxy_config",
   "+components/query_parser",
   "+components/reading_list",
+  "+components/regional_capabilities",
   "+components/rlz",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser",
@@ -163,6 +164,7 @@ include_rules = [
   "+third_party/libaddressinput",
   "+third_party/libxml/chromium/xml_writer.h",
   "+third_party/metrics_proto",
+  "+third_party/search_engines_data",
   "+ui",
 
   # Those depend on //content; exclude them.
@@ -196,6 +198,11 @@ include_rules = [
   "+components/grit",
   "+components/strings/grit",
   "+ios/chrome/grit",
+
+  # Temporary, remove when upstream updated
+  "+ios/chrome/browser/ui/popup_menu/popup_menu_constants.h",
+  "+ios/chrome/browser/ui/page_info/features.h",
+  "+ios/chrome/browser/ui/page_info/page_info_app_interface.h",
 ]
 
 specific_include_rules = {
@@ -205,8 +212,8 @@ specific_include_rules = {
     # TODO(crbug.com/40820398): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
-    # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead
-    "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
+    # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
+    "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
     # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
     "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
     # Blanket exception for tests to be allowed to depend on everything.

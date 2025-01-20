@@ -150,8 +150,7 @@ MTPDeviceAsyncDelegate* MTPDeviceMapService::GetMTPDeviceAsyncDelegate(
              : NULL;
 }
 
-MTPDeviceMapService::MTPDeviceMapService() {
-}
+MTPDeviceMapService::MTPDeviceMapService() = default;
 
 MTPDeviceMapService::~MTPDeviceMapService() {
   DCHECK(mtp_device_usage_map_.empty());

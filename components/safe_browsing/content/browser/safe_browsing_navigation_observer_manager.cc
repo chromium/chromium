@@ -789,11 +789,8 @@ void SafeBrowsingNavigationObserverManager::OnCopyURL(
     const GURL& url,
     const GURL& source_frame_url,
     const GURL& source_main_frame_url) {
-  if (base::FeatureList::IsEnabled(
-          kSafeBrowsingReferrerChainWithCopyPasteNavigation)) {
-    last_copy_paste_entry_.emplace(url, source_frame_url, source_main_frame_url,
-                                   base::Time::Now());
-  }
+  last_copy_paste_entry_.emplace(url, source_frame_url, source_main_frame_url,
+                                 base::Time::Now());
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
@@ -887,8 +884,6 @@ void SafeBrowsingNavigationObserverManager::RecordNotificationNavigationEvent(
   notification_navigation_events_
       [SafeBrowsingNavigationObserverManager::ClearURLRef(url)] =
           std::move(nav_event);
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded", true);
 }
 
 void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(

@@ -61,8 +61,15 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
 
   // Some more invalid inputs.
   const char* const invalid_inputs[] = {
-    "/", "/foo", "foo", "/foo/bar.", "foo/bar.", "/foo/bar./bazquux",
-    "foo/bar./bazquux", "foo/.app", "//foo",
+      "/",
+      "/foo",
+      "foo",
+      "/foo/bar.",
+      "foo/bar.",
+      "/foo/bar./bazquux",
+      "foo/bar./bazquux",
+      "foo/.app",
+      "//foo",
   };
   for (size_t i = 0; i < std::size(invalid_inputs); i++) {
     out = apple::GetAppBundlePath(FilePath(invalid_inputs[i]));
@@ -71,28 +78,28 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
 
   // Some valid inputs; this and |expected_outputs| should be in sync.
   struct {
-    const char *in;
-    const char *expected_out;
+    const char* in;
+    const char* expected_out;
   } valid_inputs[] = {
-    { "FooBar.app/", "FooBar.app" },
-    { "/FooBar.app", "/FooBar.app" },
-    { "/FooBar.app/", "/FooBar.app" },
-    { "//FooBar.app", "//FooBar.app" },
-    { "/Foo/Bar.app", "/Foo/Bar.app" },
-    { "/Foo/Bar.app/", "/Foo/Bar.app" },
-    { "/F/B.app", "/F/B.app" },
-    { "/F/B.app/", "/F/B.app" },
-    { "/Foo/Bar.app/baz", "/Foo/Bar.app" },
-    { "/Foo/Bar.app/baz/", "/Foo/Bar.app" },
-    { "/Foo/Bar.app/baz/quux.app/quuux", "/Foo/Bar.app" },
-    { "/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
-        "/Applications/Google Foo.app" },
+      {"FooBar.app/", "FooBar.app"},
+      {"/FooBar.app", "/FooBar.app"},
+      {"/FooBar.app/", "/FooBar.app"},
+      {"//FooBar.app", "//FooBar.app"},
+      {"/Foo/Bar.app", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/", "/Foo/Bar.app"},
+      {"/F/B.app", "/F/B.app"},
+      {"/F/B.app/", "/F/B.app"},
+      {"/Foo/Bar.app/baz", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/quux.app/quuux", "/Foo/Bar.app"},
+      {"/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
+       "/Applications/Google Foo.app"},
   };
   for (size_t i = 0; i < std::size(valid_inputs); i++) {
     out = apple::GetAppBundlePath(FilePath(valid_inputs[i].in));
     EXPECT_FALSE(out.empty()) << "loop: " << i;
-    EXPECT_STREQ(valid_inputs[i].expected_out,
-        out.value().c_str()) << "loop: " << i;
+    EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str())
+        << "loop: " << i;
   }
 }
 
@@ -193,8 +200,8 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {
   ASSERT_TRUE(base::CreateDirectory(dummy_folder_path));
   const char* quarantine_str = "0000;4b392bb2;Chromium;|org.chromium.Chromium";
   const char* file_path_str = dummy_folder_path.value().c_str();
-  EXPECT_EQ(0, setxattr(file_path_str, "com.apple.quarantine",
-      quarantine_str, strlen(quarantine_str), 0, 0));
+  EXPECT_EQ(0, setxattr(file_path_str, "com.apple.quarantine", quarantine_str,
+                        strlen(quarantine_str), 0, 0));
   EXPECT_EQ(static_cast<long>(strlen(quarantine_str)),
             getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
                      /*size=*/0, /*position=*/0, /*options=*/0));

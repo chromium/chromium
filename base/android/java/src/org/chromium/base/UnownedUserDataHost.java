@@ -4,14 +4,18 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -141,6 +145,7 @@ import java.util.Set;
  * @see UnownedUserDataKey for information about the type of key that is required.
  * @see UnownedUserData for the marker interface used for this type of data.
  */
+@NullMarked
 public final class UnownedUserDataHost {
     private static Looper retrieveNonNullLooperOrThrow() {
         Looper looper = Looper.myLooper();
@@ -155,10 +160,10 @@ public final class UnownedUserDataHost {
      * Handler to use to post {@link UnownedUserData#onDetachedFromHost(UnownedUserDataHost)}
      * invocations to.
      */
-    private Handler mHandler;
+    private @Nullable Handler mHandler;
 
     /** The core data structure within this host. */
-    private HashMap<UnownedUserDataKey<?>, WeakReference<? extends UnownedUserData>>
+    private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<? extends UnownedUserData>>
             mUnownedUserDataMap = new HashMap<>();
 
     public UnownedUserDataHost() {
@@ -179,8 +184,7 @@ public final class UnownedUserDataHost {
      * @param newValue the object to store.
      * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */ <T extends UnownedUserData> void set(
-            @NonNull UnownedUserDataKey<T> key, @NonNull T newValue) {
+    /* package */ <T extends UnownedUserData> void set(UnownedUserDataKey<T> key, T newValue) {
         checkState();
 
         // If we already have data, we might want to detach that first.
@@ -200,8 +204,8 @@ public final class UnownedUserDataHost {
      * @param <T> the type of {@link UnownedUserData}.
      * @return the stored version or {@code null} if it is not stored or has been garbage collected.
      */
-    @Nullable
-    /* package */ <T extends UnownedUserData> T get(@NonNull UnownedUserDataKey<T> key) {
+
+    /* package */ <T extends UnownedUserData> @Nullable T get(UnownedUserDataKey<T> key) {
         checkState();
 
         WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.get(key);
@@ -221,7 +225,7 @@ public final class UnownedUserDataHost {
      * @param key the key to use for the object.
      * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */ <T extends UnownedUserData> void remove(@NonNull UnownedUserDataKey<T> key) {
+    /* package */ <T extends UnownedUserData> void remove(UnownedUserDataKey<T> key) {
         checkState();
 
         WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.remove(key);
@@ -250,7 +254,7 @@ public final class UnownedUserDataHost {
         mThreadChecker.assertOnValidThread();
 
         // Protect against potential races.
-        if (mDestroyChecker.isDestroyed()) return;
+        if (isDestroyed()) return;
 
         // Create a shallow copy of all keys to ensure each held object can safely remove itself
         // from the map while iterating over their keys.
@@ -272,12 +276,23 @@ public final class UnownedUserDataHost {
         return mUnownedUserDataMap.size();
     }
 
+    @EnsuresNonNullIf(
+            value = {"mUnownedUserDataMap", "mHandler"},
+            result = false)
     /* package */ boolean isDestroyed() {
-        return mDestroyChecker.isDestroyed();
+        if (!mDestroyChecker.isDestroyed()) {
+            assumeNonNull(mUnownedUserDataMap);
+            assumeNonNull(mHandler);
+            return false;
+        }
+        return true;
     }
 
+    @EnsuresNonNull({"mUnownedUserDataMap", "mHandler"})
     private void checkState() {
         mThreadChecker.assertOnValidThread();
         mDestroyChecker.checkNotDestroyed();
+        assumeNonNull(mUnownedUserDataMap);
+        assumeNonNull(mHandler);
     }
 }

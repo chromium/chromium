@@ -81,6 +81,7 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   builder.SetIsEME(uma_info_.is_eme);
   builder.SetIsMSE(media_info_->is_mse);
   builder.SetRendererType(static_cast<int>(renderer_type_));
+  builder.SetDemuxerType(static_cast<int>(demuxer_type_));
   builder.SetKeySystem(GetKeySystemIntForUKM(key_system_));
   builder.SetHasWaitingForKey(has_waiting_for_key_);
   builder.SetIsHardwareSecure(is_hardware_secure_);
@@ -321,6 +322,10 @@ void MediaMetricsProvider::SetContainerName(
 
 void MediaMetricsProvider::SetRendererType(RendererType renderer_type) {
   renderer_type_ = renderer_type;
+}
+
+void MediaMetricsProvider::SetDemuxerType(DemuxerType demuxer_type) {
+  demuxer_type_ = demuxer_type;
 }
 
 void MediaMetricsProvider::SetKeySystem(const std::string& key_system) {

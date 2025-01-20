@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/chromeos/test_util.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 class Profile;
@@ -49,12 +49,12 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
   WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
-  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) =
-      delete;
+  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) = delete;
   ~WebAppBrowserTestBase() override = 0;
 
   WebAppProvider& provider();
 
+  // Returns the profile from the browser() object, during test set up.
   Profile* profile();
 
   webapps::AppId InstallPWA(const GURL& app_url);
@@ -119,6 +119,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void TearDownInProcessBrowserTestFixture() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void PreRunTestOnMainThread() override;
   void SetUpOnMainThread() override;
 
  private:
@@ -132,6 +133,9 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
+  // Store separately instead of accessing directly from `browser()`, as some
+  // tests close that browser (and thus make it a UAF).
+  base::WeakPtr<Profile> browser_profile_;
   base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 

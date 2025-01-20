@@ -110,14 +110,14 @@ class BackgroundContentsServiceTest : public testing::Test {
 class BackgroundContentsServiceNotificationTest
     : public BrowserWithTestWindowTest {
  public:
-  BackgroundContentsServiceNotificationTest() {}
+  BackgroundContentsServiceNotificationTest() = default;
 
   BackgroundContentsServiceNotificationTest(
       const BackgroundContentsServiceNotificationTest&) = delete;
   BackgroundContentsServiceNotificationTest& operator=(
       const BackgroundContentsServiceNotificationTest&) = delete;
 
-  ~BackgroundContentsServiceNotificationTest() override {}
+  ~BackgroundContentsServiceNotificationTest() override = default;
 
   // Overridden from testing::Test
   void SetUp() override {

@@ -226,7 +226,8 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   void SetUp() override {
     testing::Test::SetUp();
     profile_path_ = base::FilePath(FILE_PATH_LITERAL("/path/to/profile"));
-    account_id_ = AccountId::FromUserEmailGaiaId("test@example.com", "ID");
+    account_id_ =
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("ID"));
 
     disk_manager_ = std::make_unique<ash::disks::MockDiskMountManager>();
     identity_test_env_.MakePrimaryAccountAvailable(

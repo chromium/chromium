@@ -262,8 +262,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     const std::string* protocol_message = params[0].GetIfString();
     if (!agent_host_ || !protocol_message)
       return;
-    agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(*protocol_message)));
+    agent_host_->DispatchProtocolMessage(this,
+                                         base::as_byte_span(*protocol_message));
   } else if (*method == "loadCompleted") {
     CallClientFunction("DevToolsAPI", "setUseSoftMenu", base::Value(true));
   } else if (*method == "loadNetworkResource" && params.size() == 3) {

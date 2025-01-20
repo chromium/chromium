@@ -23,5 +23,30 @@
 /chromium_win_x86_64/UpdaterSetup_test.exe
 /chromium_win_x86_64/cipd/UpdaterSetup_test.exe
 
+/chrome_linux64_sans_iid/cipd/updater_test
+/chrome_linux64_sans_iid/updater_test
+/chrome_mac_universal_sans_iid/GoogleUpdater_test.app/
+/chrome_mac_universal_sans_iid/cipd/GoogleUpdater_test.app/
+/chrome_mac_universal_prod_sans_iid/GoogleUpdater.app/
+/chrome_mac_universal_prod_sans_iid/UpdaterSetup
+/chrome_mac_universal_prod_sans_iid/cipd/GoogleUpdater.app/
+/chrome_mac_universal_prod_sans_iid/cipd/UpdaterSetup
+/chrome_win_arm64_sans_iid/cipd/UpdaterSetup_test.exe
+/chrome_win_x86_sans_iid/UpdaterSetup_test.exe
+/chrome_win_x86_sans_iid/cipd/UpdaterSetup_test.exe
+/chrome_win_x86_64_sans_iid/UpdaterSetup_test.exe
+/chrome_win_x86_64_sans_iid/cipd/UpdaterSetup_test.exe
+/chromium_linux64_sans_iid/cipd/updater_test
+/chromium_linux64_sans_iid/updater_test
+/chromium_mac_amd64_sans_iid/ChromiumUpdater_test.app/
+/chromium_mac_amd64_sans_iid/cipd/ChromiumUpdater_test.app/
+/chromium_mac_arm64_sans_iid/ChromiumUpdater_test.app/
+/chromium_mac_arm64_sans_iid/cipd/ChromiumUpdater_test.app/
+/chromium_win_arm64_sans_iid/cipd/UpdaterSetup_test.exe
+/chromium_win_x86_sans_iid/UpdaterSetup_test.exe
+/chromium_win_x86_sans_iid/cipd/UpdaterSetup_test.exe
+/chromium_win_x86_64_sans_iid/UpdaterSetup_test.exe
+/chromium_win_x86_64_sans_iid/cipd/UpdaterSetup_test.exe
+
 # EdgeUpdater app
 /EdgeUpdater.app

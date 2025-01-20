@@ -59,7 +59,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests merging tab models for Android N+ multi-instance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
 public class TabModelMergingTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -427,8 +427,6 @@ public class TabModelMergingTest {
                         mActivity2.getTabModelSelector().getCurrentTab());
 
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabModelSelectorImpl tabModelSelector =
-                (TabModelSelectorImpl) mActivity2.getTabModelSelector();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity2

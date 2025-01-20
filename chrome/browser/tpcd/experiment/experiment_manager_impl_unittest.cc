@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -342,7 +343,7 @@ TEST_P(ExperimentManagerImplSyntheticTrialTest, ProfileOnboardedSetsPref) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
-      {{kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
+      {{kDisable3PCookiesName, base::ToString(disable_3p_cookies)},
        {kNeedOnboardingForSyntheticTrialName, "true"},
        {kEnableSilentOnboardingName, "true"}});
 
@@ -402,11 +403,11 @@ TEST_P(ExperimentManagerImplSyntheticTrialTest, CanRegister) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
+        {{kDisable3PCookiesName, base::ToString(disable_3p_cookies)},
          {kNeedOnboardingForSyntheticTrialName,
-          test_case.need_onboarding ? "true" : "false"},
+          base::ToString(test_case.need_onboarding)},
          {kEnableSilentOnboardingName,
-          test_case.enable_silent_onboarding ? "true" : "false"}});
+          base::ToString(test_case.enable_silent_onboarding)}});
 
     prefs().SetInteger(prefs::kTPCDExperimentClientState,
                        static_cast<int>(test_case.experiment_state));

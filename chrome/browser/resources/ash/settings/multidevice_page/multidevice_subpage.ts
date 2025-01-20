@@ -25,7 +25,6 @@ import './multidevice_forget_device_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
@@ -70,24 +69,10 @@ export class SettingsMultideviceSubpageElement extends
           Setting.kPhoneHubAppsOnOff,
         ]),
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
-      shouldShowForgetDeviceDialog_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   private browserProxy_: MultiDeviceBrowserProxy;
-  private isRevampWayfindingEnabled_: boolean;
-  private shouldShowForgetDeviceDialog_: boolean;
 
   constructor() {
     super();
@@ -125,14 +110,6 @@ export class SettingsMultideviceSubpageElement extends
         MultiDeviceSettingsMode.HOST_SET_VERIFIED;
   }
 
-  private handleForgetDeviceClick_(): void {
-    this.shouldShowForgetDeviceDialog_ = true;
-  }
-
-  private onCloseForgetDeviceDialog_(): void {
-    this.shouldShowForgetDeviceDialog_ = false;
-  }
-
   private getStatusInnerHtml_(): TrustedHTML {
     if ([
           MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
@@ -141,10 +118,7 @@ export class SettingsMultideviceSubpageElement extends
       return this.i18nAdvanced('multideviceVerificationText');
     }
 
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18nAdvanced(`multideviceSuiteToggleLabel`) :
-        (this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
-                            this.i18nAdvanced('multideviceDisabled'));
+    return this.i18nAdvanced('multideviceSuiteToggleLabel');
   }
 
   private getPhoneHubNotificationsTooltip_(): string {

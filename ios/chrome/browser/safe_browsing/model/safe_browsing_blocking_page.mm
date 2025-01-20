@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
-#import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/webui/web_ui_util.h"
@@ -62,7 +62,7 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      resource.IsMainPageLoadPendingWithSyncCheck(),
+      UnsafeResource::IsMainPageLoadPendingWithSyncCheck(resource.threat_type),
       /*is_extended_reporting_opt_in_allowed=*/false,
       /*is_off_the_record=*/false,
       /*is_extended_reporting=*/false,
@@ -95,7 +95,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     : IOSSecurityInterstitialPage(resource.weak_web_state.get(),
                                   GetMainFrameUrl(resource),
                                   client),
-      is_main_page_load_blocked_(resource.IsMainPageLoadPendingWithSyncCheck()),
+      is_main_page_load_blocked_(
+          UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
+              resource.threat_type)),
       error_ui_(std::make_unique<SafeBrowsingLoudErrorUI>(
           resource.url,
           GetUnsafeResourceInterstitialReason(resource),
@@ -159,6 +161,11 @@ void SafeBrowsingBlockingPage::ShowInfobar() {
   }
 
   client_->ShowEnhancedSafeBrowsingInfobar();
+}
+
+void SafeBrowsingBlockingPage::WasDismissed() {
+  client_->metrics_helper()->RecordUserDecision(
+      security_interstitials::MetricsHelper::DONT_PROCEED);
 }
 
 #pragma mark - SafeBrowsingBlockingPage::SafeBrowsingControllerClient

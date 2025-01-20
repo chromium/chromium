@@ -34,8 +34,9 @@ DbusAppmenuRegistrar* DbusAppmenuRegistrar::GetInstance() {
 void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
   // Make sure insertion succeeds, we should not already be tracking `menu`.
   CHECK(menus_.insert({menu, kUninitialized}).second);
-  if (service_has_owner_)
+  if (service_has_owner_) {
     InitializeMenu(menu);
+  }
 }
 
 void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
@@ -52,13 +53,8 @@ void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
   menus_.erase(menu);
 }
 
-DbusAppmenuRegistrar::DbusAppmenuRegistrar() {
-  dbus::Bus::Options bus_options;
-  bus_options.bus_type = dbus::Bus::SESSION;
-  bus_options.connection_type = dbus::Bus::PRIVATE;
-  bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
-
+DbusAppmenuRegistrar::DbusAppmenuRegistrar()
+    : bus_(dbus_thread_linux::GetSharedSessionBus()) {
   registrar_proxy_ = bus_->GetObjectProxy(
       kAppMenuRegistrarName, dbus::ObjectPath(kAppMenuRegistrarPath));
 
@@ -93,8 +89,9 @@ void DbusAppmenuRegistrar::OnMenuInitialized(DbusAppmenu* menu, bool success) {
   DCHECK(base::Contains(menus_, menu));
   DCHECK(menus_[menu] == kInitializing);
   menus_[menu] = success ? kInitializeSucceeded : kInitializeFailed;
-  if (success && service_has_owner_)
+  if (success && service_has_owner_) {
     RegisterMenu(menu);
+  }
 }
 
 void DbusAppmenuRegistrar::OnNameOwnerChanged(
@@ -107,8 +104,9 @@ void DbusAppmenuRegistrar::OnNameOwnerChanged(
     DbusAppmenu* menu = pair.first;
     switch (pair.second) {
       case kUninitialized:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           InitializeMenu(menu);
+        }
         break;
       case kInitializing:
         // Wait for Initialize() to finish.
@@ -117,14 +115,16 @@ void DbusAppmenuRegistrar::OnNameOwnerChanged(
         // Don't try to recover.
         break;
       case kInitializeSucceeded:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           RegisterMenu(menu);
+        }
         break;
       case kRegistered:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           RegisterMenu(menu);
-        else
+        } else {
           menus_[menu] = kInitializeSucceeded;
+        }
         break;
     }
   }

@@ -151,8 +151,9 @@ class DialogClientViewTest : public test::WidgetTest {
     }
     for (views::View* child : root->children()) {
       button = GetButtonByAccessibleName(child, name);
-      if (button)
+      if (button) {
         return button;
+      }
     }
     return nullptr;
   }
@@ -257,8 +258,6 @@ TEST_F(DialogClientViewTest, RemoveAndUpdateButtons) {
 
 // Test that views inside the dialog client view have the correct focus order.
 TEST_F(DialogClientViewTest, SetupFocusChain) {
-  const bool kIsOkButtonOnLeftSide = PlatformStyle::kIsOkButtonLeading;
-
   delegate()->GetContentsView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   // Initially the dialog client view only contains the content view.
   EXPECT_EQ(delegate()->GetContentsView(),
@@ -268,7 +267,7 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
   SetDialogButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
                    static_cast<int>(ui::mojom::DialogButton::kCancel));
 
-  if (kIsOkButtonOnLeftSide) {
+  if constexpr (PlatformStyle::kIsOkButtonLeading) {
     EXPECT_EQ(client_view()->ok_button(),
               FocusableViewAfter(delegate()->GetContentsView()));
     EXPECT_EQ(client_view()->cancel_button(),

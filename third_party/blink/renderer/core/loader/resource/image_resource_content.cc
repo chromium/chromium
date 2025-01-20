@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -154,7 +155,7 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
   if (info_->IsCacheValidator())
     return;
 
-  if (image_ && !image_->IsNull()) {
+  if (image_) {
     observer->ImageChanged(this, CanDeferInvalidation::kNo);
   }
 
@@ -210,18 +211,49 @@ static void PriorityFromObserver(
   }
 }
 
+void ImageResourceContent::UpdateResourceInfoFromObservers() {
+  ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
+
+  cached_info_.priority_ = ResourcePriority();
+  cached_info_.priority_excluding_image_loader_ = ResourcePriority();
+  cached_info_.max_size_ = gfx::Size();
+  cached_info_.max_interpolation_quality_ = kInterpolationNone;
+
+  auto update = [this](const ImageResourceObserver* observer) -> void {
+    PriorityFromObserver(observer, cached_info_.priority_,
+                         cached_info_.priority_excluding_image_loader_);
+    cached_info_.max_size_.SetToMax(observer->GetSpeculativeDecodeSize());
+    cached_info_.max_interpolation_quality_ =
+        std::max(cached_info_.max_interpolation_quality_,
+                 observer->GetSpeculativeDecodeQuality());
+  };
+
+  for (const auto& it : finished_observers_) {
+    update(it.key);
+  }
+  for (const auto& it : observers_) {
+    update(it.key);
+  }
+}
+
+bool ImageResourceContent::CanBeSpeculativelyDecoded() const {
+  for (const auto& it : finished_observers_) {
+    if (!it.key->CanBeSpeculativelyDecoded()) {
+      return false;
+    }
+  }
+  for (const auto& it : observers_) {
+    if (!it.key->CanBeSpeculativelyDecoded()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::pair<ResourcePriority, ResourcePriority>
 ImageResourceContent::PriorityFromObservers() const {
-  ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
-  ResourcePriority priority;
-  ResourcePriority priority_excluding_image_loader;
-
-  for (const auto& it : finished_observers_)
-    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
-  for (const auto& it : observers_)
-    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
-
-  return std::make_pair(priority, priority_excluding_image_loader);
+  return std::make_pair(cached_info_.priority_,
+                        cached_info_.priority_excluding_image_loader_);
 }
 
 std::optional<WebURLRequest::Priority> ImageResourceContent::RequestPriority()
@@ -369,8 +401,7 @@ void ImageResourceContent::UpdateToLoadedContentStatus(
       break;
 
     case ResourceStatus::kNotStarted:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   // Updates the status.
@@ -381,8 +412,7 @@ void ImageResourceContent::NotifyStartLoad() {
   // Checks ImageResourceContent's previous status.
   switch (GetContentStatus()) {
     case ResourceStatus::kPending:
-      CHECK(false);
-      break;
+      NOTREACHED();
 
     case ResourceStatus::kNotStarted:
       // Normal load start.
@@ -473,9 +503,9 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       // As per spec, zero intrinsic size SVG is a valid image so do not
       // consider such an image as DecodeError.
       // https://www.w3.org/TR/SVG/struct.html#SVGElementWidthAttribute
-      if (!image_ ||
-          (image_->IsNull() && (!IsA<SVGImage>(image_.get()) ||
-                                size_available_ == Image::kSizeUnavailable))) {
+      if (!image_ || (image_->Size().IsEmpty() &&
+                      (!IsA<SVGImage>(image_.get()) ||
+                       size_available_ == Image::kSizeUnavailable))) {
         ClearImage();
         return UpdateImageResult::kShouldDecodeError;
       }
@@ -626,7 +656,7 @@ ResourceStatus ImageResourceContent::GetContentStatus() const {
 }
 
 bool ImageResourceContent::IsAnimatedImage() const {
-  return image_ && !image_->IsNull() && image_->MaybeAnimated();
+  return image_ && image_->MaybeAnimated();
 }
 
 bool ImageResourceContent::IsPaintedFirstFrame() const {

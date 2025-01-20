@@ -7,20 +7,19 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -77,7 +76,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
     // `BrowserWindow::MaybeShowFeaturePromo()` doesn't work in tests unless the
     // IPH feature is explicitly enabled.
     iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHAutofillManualFallbackFeature});
+        {feature_engagement::kIPHAutofillPredictionImprovementsFeature});
   }
 
   void SetUpOnMainThread() override {
@@ -144,7 +143,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
   TestAutofillDriverInjector<ContentAutofillDriver> autofill_driver_injector_;
 };
 
-// This test displays a manual fallback IPH, and then tries to show the Autofill
+// This test displays an autofill field IPH, and then tries to show the Autofill
 // Popup on top of it (they would overlap). The expected behaviour is
 // that the IPH is hidden and the Autofill Popup is successfully shown.
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
@@ -152,17 +151,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   FormData form = test::CreateTestAddressFormData();
   test_api(form).field(0).set_bounds(gfx::RectF(10, 10));
   client()->ShowAutofillFieldIphForFeature(
-      form.fields()[0], AutofillClient::IphFeature::kManualFallback);
+      form.fields()[0], AutofillClient::IphFeature::kAutofillAi);
 
   // Set the bounds such that the Autofill Popup would overlap with the IPH (the
   // IPH is displayed right below `form.fields[0]`, whose bounds are set above).
   ShowSuggestions(/*bounds=*/gfx::RectF(100, 100));
   WaitUntilSuggestionsHaveBeenShown();
 
-  EXPECT_FALSE(chrome::FindBrowserWithTab(web_contents())
-                   ->window()
-                   ->IsFeaturePromoActive(
-                       feature_engagement::kIPHAutofillManualFallbackFeature));
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::kIPHAutofillPredictionImprovementsFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {

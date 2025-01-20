@@ -33,8 +33,9 @@ void GetViewsWithAssociatedWindow(
     std::map<views::View*, aura::Window*>* hosted_windows) {
   for (aura::Window* child : parent_window.children()) {
     View* host_view = child->GetProperty(kHostViewKey);
-    if (host_view)
+    if (host_view) {
       (*hosted_windows)[host_view] = child;
+    }
   }
 }
 
@@ -61,8 +62,9 @@ void GetOrderOfViewsWithLayers(
     order->push_back(view);
   }
 
-  for (views::View* child : view->GetChildrenInZOrder())
+  for (views::View* child : view->GetChildrenInZOrder()) {
     GetOrderOfViewsWithLayers(child, parent_layer, hosts, order);
+  }
 }
 
 }  // namespace
@@ -117,8 +119,9 @@ void WindowReorderer::AssociationObserver::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (key == kHostViewKey)
+  if (key == kHostViewKey) {
     reorderer_->ReorderChildWindows();
+  }
 }
 
 void WindowReorderer::AssociationObserver::OnWindowDestroying(
@@ -185,11 +188,13 @@ void WindowReorderer::ReorderChildWindows() {
     }
 
     DCHECK(!layers.empty());
-    if (window)
+    if (window) {
       parent_window.StackChildAtBottom(window);
+    }
 
-    for (ui::Layer* layer : layers)
+    for (ui::Layer* layer : layers) {
       children_layer_order.emplace_back(layer);
+    }
   }
   std::reverse(children_layer_order.begin(), children_layer_order.end());
   parent_window.layer()->StackChildrenAtBottom(children_layer_order);

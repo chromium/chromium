@@ -18,7 +18,6 @@
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -59,7 +58,7 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
   void TearDownOnMainThread() override {
     // Delete MemoryMeasurementProvider before tearing down the graph to avoid
     // dangling pointers.
-    performance_manager::RunInGraph([&] { memory_provider_.reset(); });
+    memory_provider_.reset();
     Super::TearDownOnMainThread();
   }
 
@@ -69,10 +68,7 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
     base::test::TestFuture<QueryResultMap> results_future;
     base::OnceCallback<void(QueryResultMap)> results_callback =
         results_future.GetSequenceBoundCallback();
-    performance_manager::RunInGraph([&](base::OnceClosure quit_closure) {
-      memory_provider_->RequestMemorySummary(
-          std::move(results_callback).Then(std::move(quit_closure)));
-    });
+    memory_provider_->RequestMemorySummary(std::move(results_callback));
     return results_future.Take();
   }
 

@@ -101,6 +101,13 @@ class Fakes {
                             public void runOnUiThread(Runnable r) {
                                 FakesJni.get().postTaskFromJava(nativeBluetoothTestAndroid, r);
                             }
+
+                            @Override
+                            public void postOnUiThreadDelayed(Runnable r, long delayMillis) {
+                                FakesJni.get()
+                                        .postDelayedTaskFromJava(
+                                                nativeBluetoothTestAndroid, r, delayMillis);
+                            }
                         };
                     }
                 });
@@ -308,6 +315,12 @@ class Fakes {
             }
         }
 
+        @CalledByNative("FakeBluetoothAdapter")
+        public void failCurrentLeScan(int errorCode) {
+            mFakeScanner.mScanCallback.onScanFailed(errorCode);
+            mFakeScanner.mScanCallback = null;
+        }
+
         // -----------------------------------------------------------------------------------------
         // BluetoothAdapterWrapper overrides:
 
@@ -483,7 +496,7 @@ class Fakes {
     }
 
     /** Fakes android.bluetooth.le.ScanResult */
-    static class FakeScanResult extends ScanResultWrapper {
+    static class FakeScanResult implements ScanResultWrapper {
         private final FakeBluetoothDevice mDevice;
         private final String mLocalName;
         private final int mRssi;
@@ -502,7 +515,6 @@ class Fakes {
                 int txPower,
                 Map<ParcelUuid, byte[]> serviceData,
                 SparseArray<byte[]> manufacturerData) {
-            super(null);
             mDevice = device;
             mLocalName = localName;
             mRssi = rssi;
@@ -1131,6 +1143,9 @@ class Fakes {
 
         // Bind to BluetoothTestAndroid::PostTaskFromJava.
         void postTaskFromJava(long nativeBluetoothTestAndroid, Runnable r);
+
+        // Bind to BluetoothTestAndroid::PostDelayedTaskFromJava.
+        void postDelayedTaskFromJava(long nativeBluetoothTestAndroid, Runnable r, long delayMillis);
 
         // Binds to BluetoothTestAndroid::OnFakeAdapterStateChanged.
         void onFakeAdapterStateChanged(long nativeBluetoothTestAndroid, boolean powered);

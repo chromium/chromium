@@ -115,8 +115,7 @@ std::string CreateKVv2RequestBody(std::string_view cbor_request_body) {
   size_t request_body_size = size_with_padding - kOhttpHeaderSize;
   request_body.resize(request_body_size, 0x00);
 
-  base::SpanWriter writer(
-      base::as_writable_bytes(base::make_span(request_body)));
+  base::SpanWriter writer(base::as_writable_byte_span(request_body));
 
   // Add framing header. First byte includes version and compression format.
   // Always set first byte to 0x00 because request body is uncompressed.
@@ -125,7 +124,7 @@ std::string CreateKVv2RequestBody(std::string_view cbor_request_body) {
       base::checked_cast<uint32_t>(cbor_request_body.size()));
 
   // Add CBOR string.
-  writer.Write(base::as_bytes(base::make_span(cbor_request_body)));
+  writer.Write(base::as_byte_span(cbor_request_body));
 
   DCHECK_EQ(writer.num_written(), size_before_padding - kOhttpHeaderSize);
   return request_body;
@@ -140,11 +139,10 @@ std::string CreateKVv2ResponseBody(std::string_view cbor_response_body,
   }
 
   std::string response_body(5 + cbor_response_body.size() + padding_length, 0);
-  base::SpanWriter writer(
-      base::as_writable_bytes(base::make_span(response_body)));
+  base::SpanWriter writer(base::as_writable_byte_span(response_body));
   writer.WriteU8BigEndian(compression_scheme);
   writer.WriteU32BigEndian(*advertised_cbor_length);
-  writer.Write(base::as_bytes(base::make_span(cbor_response_body)));
+  writer.Write(base::as_byte_span(cbor_response_body));
   return response_body;
 }
 

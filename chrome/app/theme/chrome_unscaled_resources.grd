@@ -5,7 +5,7 @@
      it is the caller's responsibility to do the right thing when the
      display is not at 100P device scale factor.
   -->
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/chrome_unscaled_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -101,8 +101,6 @@
       <if expr="chromeos_ash">
         <include name="IDR_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/chrome_app_icon_32.png" type="BINDATA" />
         <include name="IDR_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/chrome_app_icon_192.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_16" file="${branding_path_component}/chromeos/webstore_app_icon_16.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_128" file="${branding_path_component}/chromeos/webstore_app_icon_128.png" type="BINDATA" />
       </if>

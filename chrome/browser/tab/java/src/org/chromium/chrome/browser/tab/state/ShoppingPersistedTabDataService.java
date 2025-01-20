@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,12 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * refactor that will move it out of current folder.
  */
 public class ShoppingPersistedTabDataService {
-    public static final BooleanCachedFieldTrialParameter
-            SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.PRICE_CHANGE_MODULE,
-                            "skip_shopping_persisted_tab_data_delayed_initialization",
-                            true);
     private static ProfileKeyedMap<ShoppingPersistedTabDataService> sProfileToPriceDropService;
     private static ShoppingPersistedTabDataService sServiceForTesting;
 
@@ -190,7 +183,8 @@ public class ShoppingPersistedTabDataService {
                             callback.onResult(sortShoppingPersistedTabDataWithPriceDrops(results));
                         }
                     },
-                    SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION.getValue());
+                    ChromeFeatureList.sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit
+                            .getValue());
         }
     }
 

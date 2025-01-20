@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_
 
+#include <string>
+
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +28,15 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   void SetShowAssistantButton(bool show);
   bool show_assistant_button() const { return show_assistant_button_; }
 
+  void SetShowAssistantNewEntryPointButton(bool show, const std::string& name);
+  bool show_assistant_new_entry_point_button() const {
+    return show_assistant_new_entry_point_button_;
+  }
+
+  std::string assistant_new_entry_point_name() const {
+    return assistant_new_entry_point_name_;
+  }
+
   void SetShowSunfishButton(bool show);
   bool show_sunfish_button() const { return show_sunfish_button_; }
 
@@ -41,6 +52,8 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
  private:
   bool search_engine_is_google_ = false;
   bool show_assistant_button_ = false;
+  bool show_assistant_new_entry_point_button_ = false;
+  std::string assistant_new_entry_point_name_;
   bool show_sunfish_button_ = false;
 
   // `would_trigger_iph_` indicates whether we should START showing an IPH or

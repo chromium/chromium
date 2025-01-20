@@ -41,7 +41,6 @@ const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
@@ -85,7 +84,6 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInstalledApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kInstantApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kOmnibox:
     case AppListSearchResultType::kLauncher:
     case AppListSearchResultType::kAnswerCard:
@@ -526,8 +524,10 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Context menu.
     case kKeyboardShortcutContextMenu:
       return &kKsContextMenuIcon;
-    case kKeyboardShortcutKeyboardRightAlt:
+    case kKeyboardShortcutKeyboardQuickInsert:
       return &kQuickInsertIcon;
+    case kKeyboardShortcutDoNotDisturb:
+      return &kKsDoNotDisturbIcon;
     default:
       return nullptr;
   }

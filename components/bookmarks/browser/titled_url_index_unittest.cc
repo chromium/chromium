@@ -9,6 +9,7 @@
 
 #include "components/bookmarks/browser/titled_url_index.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -23,6 +24,7 @@
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/bookmarks/browser/typed_count_sorter.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/query_parser/query_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,11 +117,21 @@ class TitledUrlIndexFake : public TitledUrlIndex {
 
 namespace {
 
-class TitledUrlIndexTest : public testing::Test {
+class TitledUrlIndexTest : public testing::TestWithParam<bool> {
  public:
   const GURL kAboutBlankURL = GURL("about:blank");
 
-  TitledUrlIndexTest() { ResetNodes(); }
+  TitledUrlIndexTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          kBookmarksUseBinaryTreeInTitledUrlIndex);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          kBookmarksUseBinaryTreeInTitledUrlIndex);
+    }
+
+    ResetNodes();
+  }
 
   ~TitledUrlIndexTest() override = default;
 
@@ -236,6 +248,7 @@ class TitledUrlIndexTest : public testing::Test {
   TitledUrlIndexFake* index() { return index_.get(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::vector<std::unique_ptr<TestTitledUrlNode>> owned_nodes_;
   std::vector<std::unique_ptr<TestTitledUrlNode>> owned_path_nodes_;
   std::unique_ptr<TitledUrlIndexFake> index_;
@@ -243,7 +256,7 @@ class TitledUrlIndexTest : public testing::Test {
 
 // Various permutations with differing input, queries and output that exercises
 // all query paths.
-TEST_F(TitledUrlIndexTest, GetResultsMatching) {
+TEST_P(TitledUrlIndexTest, GetResultsMatching) {
   struct TestData {
     const std::string titles;
     const std::string query;
@@ -310,7 +323,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatching) {
   }
 }
 
-TEST_F(TitledUrlIndexTest, GetResultsMatchingAlwaysPrefixSearch) {
+TEST_P(TitledUrlIndexTest, GetResultsMatchingAlwaysPrefixSearch) {
   struct TestData {
     const std::string titles;
     const std::string query;
@@ -371,7 +384,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAlwaysPrefixSearch) {
 // Analogous to GetResultsMatching, this test tests various permutations
 // of title, URL, and input to see if the title/URL matches the input as
 // expected.
-TEST_F(TitledUrlIndexTest, GetResultsMatchingWithURLs) {
+TEST_P(TitledUrlIndexTest, GetResultsMatchingWithURLs) {
   struct TestData {
     const std::string query;
     const std::string title;
@@ -425,7 +438,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingWithURLs) {
   }
 }
 
-TEST_F(TitledUrlIndexTest, GetResultsMatchingWithSymbols) {
+TEST_P(TitledUrlIndexTest, GetResultsMatchingWithSymbols) {
   auto does_query_match_title = [&](std::string query, std::string title) {
     ResetNodes();
     AddNode(title, kAboutBlankURL);
@@ -464,7 +477,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingWithSymbols) {
   EXPECT_FALSE(does_query_match_title("@", "@"));
 }
 
-TEST_F(TitledUrlIndexTest, Normalization) {
+TEST_P(TitledUrlIndexTest, Normalization) {
   struct TestData {
     const char* const title;
     const char* const query;
@@ -491,7 +504,7 @@ TEST_F(TitledUrlIndexTest, Normalization) {
 }
 
 // Makes sure match positions are updated appropriately for title matches.
-TEST_F(TitledUrlIndexTest, MatchPositionsTitles) {
+TEST_P(TitledUrlIndexTest, MatchPositionsTitles) {
   struct TestData {
     const std::string title;
     const std::string query;
@@ -524,7 +537,7 @@ TEST_F(TitledUrlIndexTest, MatchPositionsTitles) {
 }
 
 // Makes sure match positions are updated appropriately for URL matches.
-TEST_F(TitledUrlIndexTest, MatchPositionsURLs) {
+TEST_P(TitledUrlIndexTest, MatchPositionsURLs) {
   // The encoded stuff between /wiki/ and the # is 第二次世界大戦
   const std::string ja_wiki_url =
       "http://ja.wikipedia.org/wiki/%E7%AC%AC%E4"
@@ -571,7 +584,7 @@ TEST_F(TitledUrlIndexTest, MatchPositionsURLs) {
 }
 
 // Makes sure index is updated when a node is removed.
-TEST_F(TitledUrlIndexTest, Remove) {
+TEST_P(TitledUrlIndexTest, Remove) {
   TitledUrlNode* n1 = AddNode("foo", GURL("http://foo")).first;
   TitledUrlNode* n2 = AddNode("bar", GURL("http://bar")).first;
   TitledUrlNode* n3 = AddNode("bar", GURL("http://bar/baz")).first;
@@ -592,7 +605,7 @@ TEST_F(TitledUrlIndexTest, Remove) {
 }
 
 // Makes sure index is updated when a node is removed.
-TEST_F(TitledUrlIndexTest, Remove_PathIndex) {
+TEST_P(TitledUrlIndexTest, Remove_PathIndex) {
   auto* parent_dir = AddNode("foo", GURL("http://foo"), "folder").second;
   ASSERT_EQ(1U, GetResultsMatching("foo folder", 10).size());
 
@@ -602,7 +615,7 @@ TEST_F(TitledUrlIndexTest, Remove_PathIndex) {
 }
 
 // Makes sure no more than max queries is returned.
-TEST_F(TitledUrlIndexTest, HonorMax) {
+TEST_P(TitledUrlIndexTest, HonorMax) {
   AddNode("abcd", kAboutBlankURL);
   AddNode("abcde", kAboutBlankURL);
 
@@ -611,7 +624,7 @@ TEST_F(TitledUrlIndexTest, HonorMax) {
 
 // Makes sure if the lower case string of a bookmark title is more characters
 // than the upper case string no match positions are returned.
-TEST_F(TitledUrlIndexTest, EmptyMatchOnMultiwideLowercaseString) {
+TEST_P(TitledUrlIndexTest, EmptyMatchOnMultiwideLowercaseString) {
   TitledUrlNode* n1 = AddNode(u"\u0130 i", GURL("http://www.google.com")).first;
 
   std::vector<TitledUrlMatch> matches = GetResultsMatching("i", 100);
@@ -620,17 +633,18 @@ TEST_F(TitledUrlIndexTest, EmptyMatchOnMultiwideLowercaseString) {
   EXPECT_TRUE(matches[0].title_match_positions.empty());
 }
 
-TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
+TEST_P(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
   struct TestData {
     const GURL url;
     const char* title;
     const int typed_count;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {GURL("http://www.google.com/"), "Google", 100},
       {GURL("http://maps.google.com/"), "Google Maps", 40},
       {GURL("http://docs.google.com/"), "Google Docs", 50},
       {GURL("http://reader.google.com/"), "Google Reader", 80},
-  };
+  });
 
   std::map<GURL, int> typed_count_map;
   for (const TestData& test_data : data)
@@ -667,7 +681,7 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
   index()->SetNodeSorter(nullptr);
 }
 
-TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {
+TEST_P(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {
   // When the query matches the node, should return non `nullopt`.
   EXPECT_TRUE(index()->MatchTitledUrlNodeWithQuery(u"matching", u"match"));
   // When the query approximately matches the node, should return `nullopt`.
@@ -676,7 +690,7 @@ TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {
   EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"natch", u"match"));
 }
 
-TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery_ApproximateNodeMatch) {
+TEST_P(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery_ApproximateNodeMatch) {
   // When the query matches the node, should return non `nullopt`.
   EXPECT_TRUE(index()->MatchTitledUrlNodeWithQuery(u"matching", u"match"));
   // When the query approximately matches the node, should return `nullopt`.
@@ -685,7 +699,7 @@ TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery_ApproximateNodeMatch) {
   EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"natch", u"match"));
 }
 
-TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
+TEST_P(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   TitledUrlNode* node =
       AddNode("term1 term2 other xyz ab", GURL("http://foo.com")).first;
 
@@ -716,7 +730,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   };
 }
 
-TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathMatch) {
+TEST_P(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathMatch) {
   ResetNodes();
   AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
   AddNode("no_match", GURL("http://no_match.com"), "path commo");
@@ -756,7 +770,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathMatch) {
   VerifyRetrieveNodesMatchingAnyTerms("commo commo", {2, 3, 4, 5});
 }
 
-TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathIndex) {
+TEST_P(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathIndex) {
   AddNode("term1 term2 other xyz ab", GURL("http://foo.com"), "parent");
   AddNode("term1 term3", GURL("http://foo.com"), "parent2");
 
@@ -773,7 +787,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathIndex) {
   VerifyRetrieveNodesMatchingAnyTerms("term2 term3 parent", {});
 }
 
-TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
+TEST_P(TitledUrlIndexTest, GetResultsMatchingAncestors) {
   TitledUrlNode* node =
       AddNode("leaf pare", GURL("http://foo.com"), "parent").first;
 
@@ -814,6 +828,13 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
       EXPECT_TRUE(matches.empty());
   };
 }
+
+INSTANTIATE_TEST_SUITE_P(ContainerType,
+                         TitledUrlIndexTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BinaryTree" : "FlatTree";
+                         });
 
 }  // namespace
 }  // namespace bookmarks

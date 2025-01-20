@@ -147,7 +147,7 @@ TEST_F(BrowserDownloadServiceTest, PkPassMimeType) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::PkPass),
+      static_cast<base::HistogramBase::Sample32>(DownloadMimeTypeResult::PkPass),
       1);
 }
 
@@ -165,7 +165,7 @@ TEST_F(BrowserDownloadServiceTest, UsdzExtension) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
+      static_cast<base::HistogramBase::Sample32>(DownloadMimeTypeResult::Other),
       1);
 }
 
@@ -183,7 +183,7 @@ TEST_F(BrowserDownloadServiceTest, RealityExtension) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
+      static_cast<base::HistogramBase::Sample32>(DownloadMimeTypeResult::Other),
       1);
 }
 // Tests that BrowserDownloadService uses ARQuickLookTabHelper for USDZ Mime
@@ -200,7 +200,7 @@ TEST_F(BrowserDownloadServiceTest, UsdzMimeType) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::UniversalSceneDescription),
       1);
 }
@@ -219,7 +219,7 @@ TEST_F(BrowserDownloadServiceTest, LegacyUsdzMimeType) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::LegacyUniversalSceneDescription),
       1);
 }
@@ -238,7 +238,7 @@ TEST_F(BrowserDownloadServiceTest, LegacyPixarUsdzMimeType) {
   ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::LegacyPixarUniversalSceneDescription),
       1);
 }
@@ -257,7 +257,7 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::AdobePortableDocumentFormat),
       1);
 }
@@ -275,7 +275,7 @@ TEST_F(BrowserDownloadServiceTest, ZipArchiveMimeType) {
   ASSERT_EQ(1U, download_manager_tab_helper()->tasks().size());
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
   histogram_tester_.ExpectUniqueSample("Download.IOSDownloadMimeType",
-                                       static_cast<base::HistogramBase::Sample>(
+                                       static_cast<base::HistogramBase::Sample32>(
                                            DownloadMimeTypeResult::ZipArchive),
                                        1);
 }
@@ -294,7 +294,7 @@ TEST_F(BrowserDownloadServiceTest, ExeMimeType) {
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::MicrosoftApplication),
       1);
 }
@@ -313,7 +313,7 @@ TEST_F(BrowserDownloadServiceTest, ApkMimeType) {
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadMimeTypeResult::AndroidPackageArchive),
       1);
 }

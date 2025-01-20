@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -163,16 +164,25 @@ String PerformanceEntry::GetNavigationId(ScriptState* script_state) {
   return local_dom_window->GetNavigationId();
 }
 
+DOMHighResTimeStamp PerformanceEntry::paintTime() const {
+  CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
+  return paint_timing_info_ ? paint_timing_info_->paint_time : 0;
+}
+std::optional<DOMHighResTimeStamp> PerformanceEntry::presentationTime() const {
+  CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
+  return paint_timing_info_ ? paint_timing_info_->presentation_time : 0;
+}
+
 void PerformanceEntry::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptValue PerformanceEntry::toJSONForBinding(
+ScriptObject PerformanceEntry::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   BuildJSONValue(result);
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
@@ -183,6 +193,12 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   if (RuntimeEnabledFeatures::NavigationIdEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddString("navigationId", navigationId());
+  }
+
+  if (paint_timing_info_ && RuntimeEnabledFeatures::PaintTimingMixinEnabled()) {
+    builder.AddNumber("paintTime", paint_timing_info_->paint_time);
+    builder.AddNumber("presentationTime",
+                      paint_timing_info_->presentation_time);
   }
 }
 

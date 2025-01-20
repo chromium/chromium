@@ -49,11 +49,6 @@ enum class PasskeyWelcomeScreenPurpose {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_PASSKEY_WELCOME_SCREEN_VIEW_CONTROLLER_H_

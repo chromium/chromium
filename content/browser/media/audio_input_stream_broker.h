@@ -55,7 +55,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
 
  private:
   void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
-                     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+                     media::mojom::ReadWriteAudioDataPipePtr data_pipe,
                      bool initially_muted,
                      const std::optional<base::UnguessableToken>& stream_id);
 

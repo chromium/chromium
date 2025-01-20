@@ -56,7 +56,7 @@ packager_builder(
         category = "packager|3pp|linux",
         short_name = "amd64",
     ),
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
@@ -318,6 +318,10 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-35;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-Baklava;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-Baklava/google_apis/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-34;android-desktop;x86_64",

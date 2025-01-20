@@ -29,10 +29,6 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
     debug_value.Set("result", "App not installed.");
     return;
   }
-  if (lock.registrar().IsShortcutApp(app_id)) {
-    debug_value.Set("result", "App is created as a shortcut.");
-    return;
-  }
 
   // When disabling, simply disable & exit because this doesn't need to affect
   // the state of other apps.

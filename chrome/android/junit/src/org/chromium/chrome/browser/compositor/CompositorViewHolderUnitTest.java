@@ -52,7 +52,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -220,7 +219,8 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
-        mCompositorViewHolder.onFinishNativeInitialization(mTabModelSelector, null, () -> 0);
+        mCompositorViewHolder.onFinishNativeInitialization(
+                mTabModelSelector, null, new ObservableSupplierImpl<>(0));
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
@@ -913,14 +913,10 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @DisableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
-    public void testSetBackgroundRunnable_NoDelay() {
+    public void testSetBackgroundRunnable() {
         int pendingFrameCount = 0;
         int framesUntilHideBackground = 1;
         boolean swappedCurrentSize = true;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
 
         // Mark that a frame has swapped, and the buffer has swapped once (still waiting on one).
         mCompositorViewHolder.didSwapFrame(pendingFrameCount);
@@ -931,108 +927,10 @@ public class CompositorViewHolderUnitTest {
         framesUntilHideBackground = 0;
         mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
         verifyBackgroundRemoved();
-
-        // Verify the relevant histogram is recorded.
-        mTabModelSelector.markTabStateInitialized();
-        histogramWatcher.assertExpected(
-                "Should have recorded time to initialize tab state after buffer swap.");
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
-    public void testSetBackgroundRunnable_Delay_TabStateInitialized() {
-        int pendingFrameCount = 0;
-        int framesUntilHideBackground = 0;
-        boolean swappedCurrentSize = true;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
-
-        // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
-        notifyTabRestored();
-        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
-        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
-        verifyBackgroundNotRemoved();
-
-        // Mark the tab state as initialized and verify that the temp background is now removed.
-        mTabModelSelector.markTabStateInitialized();
-        verifyBackgroundRemoved();
-
-        // Verify the relevant histogram is recorded.
-        histogramWatcher.assertExpected(
-                "Should have recorded time to initialize tab state after buffer swap.");
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
-    public void testSetBackgroundRunnable_Delay_TimedOut() {
-        int pendingFrameCount = 0;
-        int framesUntilHideBackground = 0;
-        boolean swappedCurrentSize = true;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabStrip.TimeToInitializeTabStateAfterBufferSwap");
-
-        // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
-        notifyTabRestored();
-        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
-        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
-        verifyBackgroundNotRemoved();
-
-        // Fake the timeout and verify that the temp background is now removed.
-        timeoutRunnable();
-        verifyBackgroundRemoved();
-
-        // Verify the relevant histogram is recorded.
-        mTabModelSelector.markTabStateInitialized();
-        histogramWatcher.assertExpected(
-                "Should have recorded time to initialize tab state after buffer swap.");
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
-    public void testSetBackgroundRunnable_Delay_CompositorNotReady() {
-        int pendingFrameCount = 0;
-        int framesUntilHideBackground = 1;
-        boolean swappedCurrentSize = true;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabStrip.TimeToBufferSwapAfterInitializeTabState");
-
-        // Mark the tab state as initialized and one frame has been swapped.
-        notifyTabRestored();
-        mTabModelSelector.markTabStateInitialized();
-        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
-        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
-        timeoutRunnable();
-        verifyBackgroundNotRemoved();
-
-        // Mark the buffer has swapped enough times and verify the temp background is now removed.
-        framesUntilHideBackground = 0;
-        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
-        verifyBackgroundRemoved();
-
-        // Verify the relevant histogram is recorded.
-        histogramWatcher.assertExpected(
-                "Should have recorded time to buffer swap after initializing tab state.");
-    }
-
-    private void notifyTabRestored() {
-        // To avoid some complexities, we don't actually add a tab to the MockTabModel(Selector) and
-        // instead use the method called whenever the CompositorViewHolder is notified of a new tab.
-        mCompositorViewHolder.maybeInitializeSetBackgroundRunnableTimeout();
     }
 
     private static void runCurrentTasks() {
         ShadowLooper.runUiThreadTasks();
-    }
-
-    private static void timeoutRunnable() {
-        // The timeout is implemented as a delayed task.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     private void verifyBackgroundNotRemoved() {

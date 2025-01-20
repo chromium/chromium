@@ -17,8 +17,8 @@ namespace {
 
 class FakeAdb : public Adb {
  public:
-  FakeAdb() {}
-  ~FakeAdb() override {}
+  FakeAdb() = default;
+  ~FakeAdb() override = default;
 
   Status GetDevices(std::vector<std::string>* devices) override {
     devices->push_back("a");
@@ -101,8 +101,8 @@ class ClearAppDataCalledFakeAdb : public FakeAdb {
 
 class SucceedsForwardPortFakeAdb : public FakeAdb {
  public:
-  SucceedsForwardPortFakeAdb() {}
-  ~SucceedsForwardPortFakeAdb() override {}
+  SucceedsForwardPortFakeAdb() = default;
+  ~SucceedsForwardPortFakeAdb() override = default;
 
   Status ForwardPort(const std::string& device_serial,
                      const std::string& remote_abstract,
@@ -126,8 +126,8 @@ class SucceedsForwardPortFakeAdb : public FakeAdb {
 
 class FailsForwardPortFakeAdb : public SucceedsForwardPortFakeAdb {
  public:
-  FailsForwardPortFakeAdb() {}
-  ~FailsForwardPortFakeAdb() override {}
+  FailsForwardPortFakeAdb() = default;
+  ~FailsForwardPortFakeAdb() override = default;
 
   Status ForwardPort(const std::string& device_serial,
                      const std::string& remote_abstract,

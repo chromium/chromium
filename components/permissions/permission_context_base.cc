@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -55,52 +55,13 @@ namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
 
-const char kPermissionBlockedKillSwitchMessage[] =
-    "%s permission has been blocked.";
-
-#if BUILDFLAG(IS_ANDROID)
-const char kPermissionBlockedRepeatedDismissalsMessage[] =
-    "%s permission has been blocked as the user has dismissed the permission "
-    "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/feature/6443143280984064 for more "
-    "information.";
-
-const char kPermissionBlockedRepeatedIgnoresMessage[] =
-    "%s permission has been blocked as the user has ignored the permission "
-    "prompt several times. This can be reset in Site Settings. See "
-    "https://www.chromestatus.com/feature/6443143280984064 for more "
-    "information.";
-#else
-const char kPermissionBlockedRepeatedDismissalsMessage[] =
-    "%s permission has been blocked as the user has dismissed the permission "
-    "prompt several times. This can be reset in Page Info which can be "
-    "accessed by clicking the tune icon next to the URL. See "
-    "https://www.chromestatus.com/feature/6443143280984064 for more "
-    "information.";
-
-const char kPermissionBlockedRepeatedIgnoresMessage[] =
-    "%s permission has been blocked as the user has ignored the permission "
-    "prompt several times. This can be reset in Page Info which can be "
-    "accessed by clicking the tune icon next to the URL. See "
-    "https://www.chromestatus.com/feature/6443143280984064 for more "
-    "information.";
-#endif
-
-const char kPermissionBlockedRecentDisplayMessage[] =
-    "%s permission has been blocked as the prompt has already been displayed "
-    "to the user recently.";
-
-const char kPermissionBlockedPermissionsPolicyMessage[] =
-    "%s permission has been blocked because of a permissions policy applied to"
-    " the current document. See https://goo.gl/EuHzyv for more details.";
-
 void LogPermissionBlockedMessage(content::RenderFrameHost* rfh,
-                                 const char* message,
+                                 std::string_view reason,
                                  ContentSettingsType type) {
   rfh->GetOutermostMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintfNonConstexpr(
-          message, PermissionUtil::GetPermissionString(type).c_str()));
+      base::StrCat({PermissionUtil::GetPermissionString(type),
+                    " permission has been blocked", reason}));
 }
 
 }  // namespace
@@ -120,7 +81,6 @@ PermissionContextBase::PermissionContextBase(
       content_settings_type_(content_settings_type),
       permissions_policy_feature_(permissions_policy_feature) {
   CHECK(permissions::PermissionUtil::IsPermission(content_settings_type_));
-  PermissionDecisionAutoBlocker::UpdateFromVariations();
 }
 
 PermissionContextBase::~PermissionContextBase() {
@@ -176,36 +136,60 @@ void PermissionContextBase::RequestPermission(
 
   if (!status_ignorable && (result.status == PermissionStatus::GRANTED ||
                             result.status == PermissionStatus::DENIED)) {
+    static constexpr char kResetInstructions[] =
+        " This can be reset in "
+#if BUILDFLAG(IS_ANDROID)
+        "Site Settings"
+#else
+        "Page Info which can be accessed by clicking the tune icon next to "
+        "the URL"
+#endif
+        ". See https://www.chromestatus.com/feature/6443143280984064 for "
+        "more information.";
     switch (result.source) {
       case content::PermissionStatusSource::KILL_SWITCH:
         // Block the request and log to the developer console.
-        LogPermissionBlockedMessage(rfh, kPermissionBlockedKillSwitchMessage,
+        static constexpr char kPermissionBlockedKillSwitchReason[] = ".";
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedKillSwitchReason,
                                     content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         std::move(callback).Run(CONTENT_SETTING_BLOCK);
         return;
       case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
-        LogPermissionBlockedMessage(rfh,
-                                    kPermissionBlockedRepeatedDismissalsMessage,
-                                    content_settings_type_);
+        static constexpr char kPermissionBlockedRepeatedDismissalsReason[] =
+            " as the user has dismissed the permission prompt several times.";
+        LogPermissionBlockedMessage(
+            rfh,
+            base::StrCat({kPermissionBlockedRepeatedDismissalsReason,
+                          kResetInstructions}),
+            content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         break;
       case content::PermissionStatusSource::MULTIPLE_IGNORES:
-        LogPermissionBlockedMessage(rfh,
-                                    kPermissionBlockedRepeatedIgnoresMessage,
-                                    content_settings_type_);
+        static constexpr char kPermissionBlockedRepeatedIgnoresReason[] =
+            " as the user has ignored the permission prompt several times.";
+        LogPermissionBlockedMessage(
+            rfh,
+            base::StrCat(
+                {kPermissionBlockedRepeatedIgnoresReason, kResetInstructions}),
+            content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
         break;
       case content::PermissionStatusSource::FEATURE_POLICY:
+        static constexpr char kPermissionBlockedPermissionsPolicyReason[] =
+            " because of a permissions policy applied to the current document. "
+            "See https://goo.gl/EuHzyv for more details.";
         LogPermissionBlockedMessage(rfh,
-                                    kPermissionBlockedPermissionsPolicyMessage,
+                                    kPermissionBlockedPermissionsPolicyReason,
                                     content_settings_type_);
         break;
       case content::PermissionStatusSource::RECENT_DISPLAY:
-        LogPermissionBlockedMessage(rfh, kPermissionBlockedRecentDisplayMessage,
+        static constexpr char kPermissionBlockedRecentDisplayReason[] =
+            " as the prompt has already been displayed to the user recently.";
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedRecentDisplayReason,
                                     content_settings_type_);
         break;
       case content::PermissionStatusSource::UNSPECIFIED:
@@ -656,27 +640,19 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
       is_one_time ? content_settings::mojom::SessionModel::ONE_TIME
                   : content_settings::mojom::SessionModel::DURABLE);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kRecordPermissionExpirationTimestamps)) {
-#endif  // BUILDFLAG(IS_ANDROID)
-    // The Permissions module in Safety check will revoke permissions after
-    // a finite amount of time if the permission can be revoked.
-    if (content_settings::CanBeAutoRevoked(content_settings_type_,
-                                           content_setting, is_one_time)) {
-      // For #2, by definition, that should be all of them. If that changes in
-      // the future, consider whether revocation for such permission makes
-      // sense, and/or change this to an early return so that we don't
-      // unnecessarily record timestamps where we don't need them.
-      constraints.set_track_last_visit_for_autoexpiration(true);
-    }
-#if BUILDFLAG(IS_ANDROID)
+  // The Permissions module in Safety check will revoke permissions after
+  // a finite amount of time if the permission can be revoked.
+  if (content_settings::CanBeAutoRevoked(content_settings_type_,
+                                         content_setting, is_one_time)) {
+    // For #2, by definition, that should be all of them. If that changes in
+    // the future, consider whether revocation for such permission makes
+    // sense, and/or change this to an early return so that we don't
+    // unnecessarily record timestamps where we don't need them.
+    constraints.set_track_last_visit_for_autoexpiration(true);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (is_one_time) {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kActiveContentSettingExpiry)) {
+    if (content_settings::ShouldTypeExpireActively(content_settings_type_)) {
       constraints.set_lifetime(kOneTimePermissionMaximumLifetime);
     }
   }

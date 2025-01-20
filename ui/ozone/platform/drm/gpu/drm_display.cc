@@ -18,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_snapshot.h"
@@ -197,12 +196,12 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not allow display_snapshot and connector property state to go out of
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid
   if (display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
-    output_primaries = SkNamedPrimariesExt::kRec2020;
+    output_primaries = SkNamedPrimaries::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
   } else {
@@ -460,7 +459,6 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
     case gfx::ColorSpace::TransferID::SRGB_HDR:
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       return gfx::HDRStaticMetadata::Eotf::kGammaHdrRange;
     default:
@@ -479,6 +477,11 @@ bool DrmDisplay::ClearHdrOutputMetadata() {
                  << "' property doesn't exist for connector "
                  << crtc_connector_pair.connector->connector_id;
       return false;
+    }
+
+    if (hdr_output_metadata_property->count_blobs == 0) {
+      // HDR metadata property was never set
+      return true;
     }
 
     // TODO(b/342617770): Atomically set connector properties across all
@@ -581,22 +584,37 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
     DCHECK(crtc_connector_pair.connector);
 
+    // Check whether the DRM device supports the colorspace property
     ScopedDrmPropertyPtr color_space_property(
         drm_->GetProperty(crtc_connector_pair.connector.get(), kColorSpace));
-    if (!color_space_property) {
-      PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
+    if (!color_space_property || !color_space_property->prop_id) {
+      PLOG(INFO) << "Couldn't query supported color spaces by the DRM device";
       return false;
+    }
+
+    // Get the current color space used by the DRM connector
+    uint64_t prop_value;
+    if (!GetConnectorPropertyValue(crtc_connector_pair.connector.get(),
+                                   color_space_property->prop_id,
+                                   &prop_value)) {
+      PLOG(INFO) << "Couldn't retrieve connector's color space configuration";
+      return false;
+    }
+
+    const uint64_t enum_value_for_colorspace =
+        GetEnumValueForName(*drm_, color_space_property->prop_id,
+                            GetNameForColorspace(color_space));
+    if (prop_value == enum_value_for_colorspace) {
+      // The connector color space is already set to the desired value
+      return true;
     }
 
     // TODO(b/342617770): Atomically set connector properties across all
     // connectors owned by DrmDisplay to prevent scenarios where SetProperty()
     // succeeds for a subset of the connectors and creates inconsistencies.
-    if (!color_space_property->prop_id ||
-        !drm_->SetProperty(
-            crtc_connector_pair.connector->connector_id,
-            color_space_property->prop_id,
-            GetEnumValueForName(*drm_, color_space_property->prop_id,
-                                GetNameForColorspace(color_space)))) {
+    if (!drm_->SetProperty(crtc_connector_pair.connector->connector_id,
+                           color_space_property->prop_id,
+                           enum_value_for_colorspace)) {
       PLOG(ERROR) << "Cannot set '" << GetNameForColorspace(color_space)
                   << "' to '" << kColorSpace << "' property for connector "
                   << crtc_connector_pair.connector->connector_id;

@@ -54,8 +54,9 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
   if (ampm_length) {
     int begin = ampm_field.getBeginIndex();
     // Doesn't include any spacing before the field.
-    if (begin)
+    if (begin) {
       begin--;
+    }
     time_string.removeBetween(begin, ampm_field.getEndIndex());
   }
   return i18n::UnicodeStringToString16(time_string);
@@ -89,10 +90,14 @@ icu::SimpleDateFormat CreateSimpleDateFormatter(
 
 UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
   switch (width) {
-    case DURATION_WIDTH_WIDE: return UMEASFMT_WIDTH_WIDE;
-    case DURATION_WIDTH_SHORT: return UMEASFMT_WIDTH_SHORT;
-    case DURATION_WIDTH_NARROW: return UMEASFMT_WIDTH_NARROW;
-    case DURATION_WIDTH_NUMERIC: return UMEASFMT_WIDTH_NUMERIC;
+    case DURATION_WIDTH_WIDE:
+      return UMEASFMT_WIDTH_WIDE;
+    case DURATION_WIDTH_SHORT:
+      return UMEASFMT_WIDTH_SHORT;
+    case DURATION_WIDTH_NARROW:
+      return UMEASFMT_WIDTH_NARROW;
+    case DURATION_WIDTH_NUMERIC:
+      return UMEASFMT_WIDTH_NUMERIC;
   }
   NOTREACHED();
 }

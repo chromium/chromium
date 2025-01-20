@@ -18,8 +18,10 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -41,6 +43,8 @@
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,7 +56,6 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_manager_core/account_manager_util.h"
-#include "google_apis/gaia/gaia_constants.h"
 #endif
 
 namespace extensions {
@@ -148,11 +151,11 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 
   std::set<std::string> scopes(oauth2_info.scopes.begin(),
                                oauth2_info.scopes.end());
-  std::string gaia_id;
+  GaiaId gaia_id;
 
   if (params->details) {
     if (params->details->account) {
-      gaia_id = params->details->account->id;
+      gaia_id = GaiaId(params->details->account->id);
     }
 
     if (params->details->scopes) {
@@ -196,13 +199,13 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 }
 
 void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   selected_gaia_id_ = gaia_id;
   if (gaia_id.empty()) {
     selected_gaia_id_ = IdentityAPI::GetFactoryInstance()
                             ->Get(GetProfile())
                             ->GetGaiaIdForExtension(token_key_.extension_id)
-                            .value_or("");
+                            .value_or(GaiaId());
   }
 
   CoreAccountInfo selected_account;
@@ -637,6 +640,13 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
     case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
       error = IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kCannotCreateWindow);
+      break;
+
+    case GaiaRemoteConsentFlow::SET_RESOLUTION_COOKIES_FAILED:
+      error = IdentityGetAuthTokenError(
+          IdentityGetAuthTokenError::State::
+              kSetRemoteConsentResolutionCookiesFailed);
+      break;
   }
 
   CompleteFunctionWithError(error);
@@ -644,9 +654,10 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
 
 void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     const std::string& consent_result,
-    const std::string& gaia_id) {
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-      "identity", "OnGaiaRemoteConsentFlowApproved", this, "gaia_id", gaia_id);
+    const GaiaId& gaia_id) {
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("identity",
+                                      "OnGaiaRemoteConsentFlowApproved", this,
+                                      "gaia_id", gaia_id.ToString());
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
@@ -791,7 +802,8 @@ void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   token_key_account_access_token_fetcher_ =
       identity_manager->CreateAccessTokenFetcherForAccount(
           token_key_.account_info.account_id,
-          kExtensionsIdentityAPIOAuthConsumerName, signin::ScopeSet(),
+          kExtensionsIdentityAPIOAuthConsumerName,
+          {GaiaConstants::kAnyApiOAuth2Scope},
           base::BindOnce(
               &IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted,
               base::Unretained(this)),
@@ -811,7 +823,7 @@ void IdentityGetAuthTokenFunction::MaybeShowChromeSigninDialog() {
   IdentityAPI* identity_api =
       IdentityAPI::GetFactoryInstance()->Get(GetProfile());
   identity_api->MaybeShowChromeSigninDialog(
-      extension()->name(),
+      util::GetFixupExtensionNameForUIDisplay(extension()->name()),
       base::BindOnce(
           &IdentityGetAuthTokenFunction::OnChromeSigninDialogDestroyed,
           weak_ptr_factory_.GetWeakPtr()));
@@ -905,12 +917,12 @@ bool IdentityGetAuthTokenFunction::enable_granular_permissions() const {
   return enable_granular_permissions_;
 }
 
-std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
+GaiaId IdentityGetAuthTokenFunction::GetSelectedUserId() const {
   if (selected_gaia_id_ == token_key_.account_info.gaia) {
     return selected_gaia_id_;
   }
 
-  return "";
+  return GaiaId();
 }
 
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(

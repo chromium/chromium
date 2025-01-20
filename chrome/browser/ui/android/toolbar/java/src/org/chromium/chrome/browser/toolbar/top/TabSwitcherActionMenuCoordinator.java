@@ -31,7 +31,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -163,8 +163,8 @@ public class TabSwitcherActionMenuCoordinator {
                 verticalPadding,
                 listView.getPaddingEnd(),
                 verticalPadding);
-        ListMenuButtonDelegate delegate =
-                new ListMenuButtonDelegate() {
+        ListMenuDelegate delegate =
+                new ListMenuDelegate() {
                     @Override
                     public ListMenu getListMenu() {
                         return listMenu;

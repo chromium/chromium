@@ -34,9 +34,9 @@ constexpr char kAdbSideloadingPowerwashOnRebootNotificationId[] =
 namespace ash {
 
 AdbSideloadingPolicyChangeNotification::
-    AdbSideloadingPolicyChangeNotification() {}
+    AdbSideloadingPolicyChangeNotification() = default;
 AdbSideloadingPolicyChangeNotification::
-    ~AdbSideloadingPolicyChangeNotification() {}
+    ~AdbSideloadingPolicyChangeNotification() = default;
 
 void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   std::u16string title, text;

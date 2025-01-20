@@ -79,7 +79,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   label()->SetSubpixelRenderingEnabled(false);
 }
 
-BrowserAppMenuButton::~BrowserAppMenuButton() {}
+BrowserAppMenuButton::~BrowserAppMenuButton() = default;
 
 void BrowserAppMenuButton::SetTypeAndSeverity(
     AppMenuIconController::TypeAndSeverity type_and_severity) {
@@ -88,8 +88,9 @@ void BrowserAppMenuButton::SetTypeAndSeverity(
 }
 
 void BrowserAppMenuButton::ShowMenu(int run_types) {
-  if (IsMenuShowing())
+  if (IsMenuShowing()) {
     return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (auto* input_method = GetInputMethod()) {
@@ -116,8 +117,9 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
   Browser* browser = toolbar_view_->browser();
   BrowserWindow* browser_window = browser->window();
 
-  if (browser_window == nullptr)
+  if (browser_window == nullptr) {
     return AlertMenuItem::kNone;
+  }
 
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(browser->profile());
@@ -268,7 +270,8 @@ void BrowserAppMenuButton::OnTouchUiChanged() {
 }
 
 void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
-  ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+  ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                                 views::MenuRunner::INVOKED_FROM_KEYBOARD)
                               : views::MenuRunner::NO_FLAGS);
 }
 

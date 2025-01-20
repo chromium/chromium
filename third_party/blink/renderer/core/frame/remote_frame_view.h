@@ -13,7 +13,7 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -67,9 +67,9 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void SetNeedsOcclusionTracking(bool);
   bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
 
-  bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
 
-  void SetIntrinsicSizeInfo(const IntrinsicSizingInfo& size_info);
+  void SetIntrinsicSizeInfo(const NaturalSizingInfo& size_info);
   bool HasIntrinsicSizingInfo() const override;
 
   bool CanThrottleRendering() const override;
@@ -126,7 +126,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   std::optional<gfx::Size> frozen_size_;
   float compositing_scale_factor_ = 1.0f;
 
-  IntrinsicSizingInfo intrinsic_sizing_info_;
+  NaturalSizingInfo intrinsic_sizing_info_;
   bool has_intrinsic_sizing_info_ = false;
   bool needs_occlusion_tracking_ = false;
   bool needs_frame_rect_propagation_ = false;

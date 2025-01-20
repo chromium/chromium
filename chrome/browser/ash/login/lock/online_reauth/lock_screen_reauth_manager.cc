@@ -165,7 +165,7 @@ void LockScreenReauthManager::CheckCredentials(
   }
 
   ProfileAuthData::Transfer(
-      lock_screen_partition, primary_profile_->GetDefaultStoragePartition(),
+      lock_screen_partition, primary_profile_,
       false /*transfer_auth_cookies_on_first_login*/,
       transfer_saml_auth_cookies_on_subsequent_login,
       base::BindOnce(&LockScreenReauthManager::OnCookiesTransferred,

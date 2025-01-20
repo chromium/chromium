@@ -35,8 +35,7 @@ MTPFileStreamReader::MTPFileStreamReader(
       expected_modification_time_(expected_modification_time),
       media_header_validated_(!do_media_header_validation) {}
 
-MTPFileStreamReader::~MTPFileStreamReader() {
-}
+MTPFileStreamReader::~MTPFileStreamReader() = default;
 
 int MTPFileStreamReader::Read(net::IOBuffer* buf,
                               int buf_len,

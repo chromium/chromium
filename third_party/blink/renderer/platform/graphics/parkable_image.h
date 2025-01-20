@@ -76,9 +76,6 @@ class PLATFORM_EXPORT ParkableImageImpl final
   void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   size_t size() const;
 
-  // Returns a ROBufferSegmentReader, wrapping the internal RWBuffer.
-  scoped_refptr<SegmentReader> GetROBufferSegmentReader() LOCKS_EXCLUDED(lock_);
-
   bool is_frozen() const { return !frozen_time_.is_null(); }
 
   bool ShouldReschedule() const LOCKS_EXCLUDED(lock_) {

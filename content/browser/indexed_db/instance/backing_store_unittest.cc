@@ -606,9 +606,12 @@ class BackingStoreTestWithExternalObjects
   std::vector<IndexedDBExternalObject> external_objects_;
 
   std::vector<std::string> blob_remote_uuids_;
+
+#if DCHECK_IS_ON()
   // Number of blob deletions previously counted by a call to
   // `VerifyNumBlobsRemoved()`.
   int removed_blobs_count_ = 0;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1729,8 +1732,8 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   base::File file1(file1_path,
                    base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
   ASSERT_TRUE(file1.IsValid());
-  ASSERT_TRUE(file1.WriteAtCurrentPosAndCheck(
-      base::as_bytes(base::make_span(kBlobFileData1))));
+  ASSERT_TRUE(
+      file1.WriteAtCurrentPosAndCheck(base::as_byte_span(kBlobFileData1)));
   ASSERT_TRUE(file1.SetTimes(external_objects()[1].last_modified(),
                              external_objects()[1].last_modified()));
   file1.Close();
@@ -1738,8 +1741,8 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   base::File file2(file2_path,
                    base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
   ASSERT_TRUE(file2.IsValid());
-  ASSERT_TRUE(file2.WriteAtCurrentPosAndCheck(
-      base::as_bytes(base::make_span(kBlobFileData2))));
+  ASSERT_TRUE(
+      file2.WriteAtCurrentPosAndCheck(base::as_byte_span(kBlobFileData2)));
   ASSERT_TRUE(file2.SetTimes(external_objects()[2].last_modified(),
                              external_objects()[2].last_modified()));
   file2.Close();

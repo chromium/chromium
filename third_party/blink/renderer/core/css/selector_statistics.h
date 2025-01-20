@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -17,6 +18,7 @@ struct RulePerfDataPerRequest {
       : rule(r), fast_reject(f), did_match(m), elapsed(e) {}
   // RuleData is Traceable but not owned here, so there's no need to Trace it
   // here. The RuleData is owned and traced by HeapVectors in RuleSet.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
   const RuleData* const rule;
   bool fast_reject;
   bool did_match;

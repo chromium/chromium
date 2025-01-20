@@ -23,10 +23,12 @@ namespace {
 std::wstring GetTargetForDefaultAppsSettings(std::wstring_view protocol) {
   static constexpr std::wstring_view kSystemSettingsDefaultAppsPrefix(
       L"SystemSettings_DefaultApps_");
-  if (base::EqualsCaseInsensitiveASCII(protocol, L"http"))
+  if (base::EqualsCaseInsensitiveASCII(protocol, L"http")) {
     return base::StrCat({kSystemSettingsDefaultAppsPrefix, L"Browser"});
-  if (base::EqualsCaseInsensitiveASCII(protocol, L"mailto"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(protocol, L"mailto")) {
     return base::StrCat({kSystemSettingsDefaultAppsPrefix, L"Email"});
+  }
   return L"SettingsPageAppsDefaultsProtocolView";
 }
 
@@ -44,17 +46,20 @@ bool LaunchDefaultAppsSettingsModernDialog(std::wstring_view protocol) {
   Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
   HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&activator));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return false;
+  }
 
   DWORD pid = 0;
   CoAllowSetForegroundWindow(activator.Get(), nullptr);
   hr = activator->ActivateApplication(
       kControlPanelAppModelId, L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return false;
-  if (protocol.empty())
+  }
+  if (protocol.empty()) {
     return true;
+  }
 
   hr = activator->ActivateApplication(
       kControlPanelAppModelId,

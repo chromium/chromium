@@ -41,6 +41,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
@@ -55,6 +56,9 @@
 #include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_provider.h"
+#include "components/omnibox/browser/featured_search_provider.h"
+#include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_scoring_signals_annotator.h"
@@ -62,7 +66,6 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 #include "components/omnibox/browser/most_visited_sites_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -70,10 +73,12 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -93,16 +98,10 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "components/omnibox/browser/featured_search_provider.h"
-#endif
-
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"  // nogncheck
-#include "components/history_embeddings/history_embeddings_features.h"  //nogncheck
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
-#include "components/omnibox/browser/history_embeddings_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -259,6 +258,12 @@ bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE ||
          match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
+}
+
+// Returns whether this match is provided by an extension in unscoped mode.
+bool IsUnscopedExtensionMatch(const AutocompleteMatch& match) {
+  return match.provider && match.provider->type() ==
+                               AutocompleteProvider::TYPE_UNSCOPED_EXTENSION;
 }
 
 // Returns which rich autocompletion type, if any, had (or would have had for
@@ -959,9 +964,9 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
   // can stop logging this deprecated field.
   search_terms_args.searchbox_stats.set_experiment_stats(experiment_stats);
 
-  // Append the ExperimentStatsV2 to the searchbox stats parameter to be logged
-  // in searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
+    // Append the ExperimentStatsV2 to the searchbox stats parameter to be
+    // logged in searchbox_stats.proto's `experiment_stats_v2` field.
     for (const auto& experiment_stat_v2 :
          zero_suggest_provider_->experiment_stats_v2s()) {
       // The string value consists of suggestion type/subtype pairs delimited
@@ -1065,10 +1070,13 @@ bool AutocompleteController::ShouldRunProvider(
     // mode and whether this provider should be run.
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
 
-    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
+    if (keyword_turl &&
+        (keyword_turl->starter_pack_id() > 0 ||
+         keyword_turl->policy_origin() ==
+             TemplateURLData::PolicyOrigin::kSearchAggregator)) {
       switch (provider->type()) {
         // Keyword provider creates the suggestion attached to the keyword chip
         // and search provider creates the SEARCH_OTHER_ENGINE suggestion
@@ -1100,6 +1108,10 @@ bool AutocompleteController::ShouldRunProvider(
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kTabs);
 
+        case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+          return keyword_turl->policy_origin() ==
+                 TemplateURLData::PolicyOrigin::kSearchAggregator;
+
         // No other providers should run when in a starter pack scope.
         default:
           return false;
@@ -1116,10 +1128,14 @@ bool AutocompleteController::ShouldRunProvider(
 
       // Don't run document provider, except for Google Drive.
       case AutocompleteProvider::TYPE_DOCUMENT:
-        return (keyword_turl &&
-                base::StartsWith(keyword_turl->url(),
-                                 "https://drive.google.com",
-                                 base::CompareCase::INSENSITIVE_ASCII));
+        return keyword_turl &&
+               base::StartsWith(keyword_turl->url(), "https://drive.google.com",
+                                base::CompareCase::INSENSITIVE_ASCII);
+
+      // Don't run aggregator provider unless the user is in a aggregator scope,
+      // which is handled above.
+      case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+        return false;
 
       // Treat all other providers as usual.
       default:
@@ -1130,6 +1146,8 @@ bool AutocompleteController::ShouldRunProvider(
   // Some providers should only run in starter pack mode or in the CrOS
   // launcher. If we reach here, we're not in starter pack mode.
   switch (provider->type()) {
+    case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return false;
     case AutocompleteProvider::TYPE_OPEN_TAB:
       return is_cros_launcher_;
 #if !BUILDFLAG(IS_IOS)
@@ -1187,6 +1205,11 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
     providers_.push_back(document_provider_.get());
   }
+  if (provider_types &
+      AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR) {
+    providers_.push_back(
+        new EnterpriseSearchAggregatorProvider(provider_client_.get()));
+  }
   if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
     on_device_head_provider_ =
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
@@ -1203,6 +1226,11 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
         new HistoryEmbeddingsProvider(provider_client_.get(), this));
   }
 #endif
+  if (provider_types & AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+    unscoped_extension_provider_ =
+        new UnscopedExtensionProvider(provider_client_.get(), this);
+    providers_.push_back(unscoped_extension_provider_.get());
+  }
 }
 
 void AutocompleteController::InitializeSyncProviders(int provider_types) {
@@ -1274,13 +1302,11 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
     providers_.push_back(open_tab_provider_.get());
   }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
     featured_search_provider_ =
         new FeaturedSearchProvider(provider_client_.get());
     providers_.push_back(featured_search_provider_.get());
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void AutocompleteController::UpdateResult(UpdateType update_type,
@@ -1489,12 +1515,10 @@ void AutocompleteController::PostProcessMatches() {
   // `AutocompleteProvider` interface and iterate all providers here.
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // `featured_search_provider_` isn't interested in "invisible" autocomplete
   // runs, e.g. when text is copied.
   if (featured_search_provider_ && !input_.omit_asynchronous_matches())
     featured_search_provider_->RegisterDisplayedMatches(internal_result_);
-#endif
 
   // Mark the rich autocompletion feature triggered if the top match, or
   // would-be-top-match if rich autocompletion is counterfactual enabled, is
@@ -1578,83 +1602,69 @@ void AutocompleteController::UpdateAssociatedKeywords(
   if (!keyword_provider_)
     return;
 
-  // Determine if the user's input is an exact keyword match.
-  std::u16string exact_keyword =
-      keyword_provider_->GetKeywordForText(input_.text());
+  // The keyword matching the user's input.
+  std::u16string input_text_keyword = keyword_provider_->GetKeywordForText(
+      input_.text(), template_url_service_);
+  TemplateURL* input_text_keyword_turl =
+      template_url_service_->GetTemplateURLForKeyword(input_text_keyword);
 
+  // Cache added keywords to avoid showing duplicate keywords.
   std::set<std::u16string> keywords;
+
+  auto add_keyword = [&](AutocompleteMatch& match,
+                         const std::u16string& keyword_text,
+                         const std::u16string& keyword) {
+    // There shouldn't be duplicate keywords.
+    CHECK(!keywords.count(keyword));
+    keywords.insert(keyword);
+    match.associated_keyword = std::make_unique<AutocompleteMatch>(
+        keyword_provider_->CreateVerbatimMatch(keyword_text, keyword, input_));
+  };
+
   for (AutocompleteMatch& match : *result) {
-    std::u16string keyword(
+    // Clear any keyword the match may have from previous passes.
+    match.associated_keyword.reset();
+
+    // If this match is in keyword mode (e.g. the user tabbed into a keyword
+    // then continued typing), don't attach a keyword chip to it.
+    std::u16string explicit_keyword(
         match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
-    if (!keyword.empty()) {
-      keywords.insert(keyword);
+    if (!explicit_keyword.empty() && !keywords.count(explicit_keyword)) {
+      // Also prevent other matches showing a keyword chip for the keyword the
+      // user is already in.
+      keywords.insert(explicit_keyword);
       continue;
     }
 
-    // When the user has typed an exact keyword, we want tab-to-search on the
-    // default match to select that keyword, even if the match
-    // inline-autocompletes to a different keyword.  (This prevents inline
-    // autocompletions from blocking a user's attempts to use an explicitly-set
-    // keyword of their own creation.)  So use |exact_keyword| if it's
-    // available.
-    if (!exact_keyword.empty() && !keywords.count(exact_keyword)) {
-      // Prevent starter-pack keywords from attaching to non-starter-pack
-      // matches. Those will have a dedicated UI with an explicit match
-      // selection to enter keyword mode.
-      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
-        TemplateURL* turl =
-            template_url_service_->GetTemplateURLForKeyword(exact_keyword);
-        // Note, starter pack matches that removed the '@' from the beginning of
-        // the keyword are still allowed to attach because those don't get the
-        // special UX, by design.
-        if (turl && turl->starter_pack_id() != 0 &&
-            turl->keyword().starts_with(u'@')) {
-          continue;
-        }
-      }
-
-      keywords.insert(exact_keyword);
-      // If the match has an answer, it will look strange to try to display
-      // it along with a keyword hint. Prefer the keyword hint, and revert
-      // to a typical search.
-      match.answer_template.reset();
-      match.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-      match.associated_keyword = std::make_unique<AutocompleteMatch>(
-          keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
-                                                 input_));
-#if BUILDFLAG(IS_ANDROID)
-      match.UpdateJavaAnswer();
-#endif
+    // When the input text matches a keyword, tab-to-search on the default
+    // match should select that keyword, even if the match inline-autocompletes
+    // to a different keyword.
+    if (!input_text_keyword.empty() && !keywords.count(input_text_keyword) &&
+        input_text_keyword_turl->starter_pack_id() == 0 &&
+        !input_text_keyword_turl->featured_by_policy()) {
+      add_keyword(match, input_text_keyword, input_text_keyword);
       continue;
     }
 
-    // Otherwise, set a match's associated keyword based on the match's
-    // fill_into_edit, which should take inline autocompletions into account.
-    keyword = keyword_provider_->GetKeywordForText(match.fill_into_edit);
+    // The keyword for the match text.
+    std::u16string match_text_keyword = keyword_provider_->GetKeywordForText(
+        match.fill_into_edit, template_url_service_);
+    TemplateURL* match_text_keyword_turl =
+        template_url_service_->GetTemplateURLForKeyword(match_text_keyword);
 
-    if (!keyword.empty()) {
-      // Prevent starter-pack keywords from attaching to non-starter-pack
-      // matches.
-      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
-        TemplateURL* turl =
-            template_url_service_->GetTemplateURLForKeyword(keyword);
-        if (turl && turl->starter_pack_id() != 0 &&
-            turl->keyword().starts_with(u'@')) {
-          continue;
-        }
-      }
+    // Featured keyword matches should always have their corresponding keyword
+    // or they won't work.
+    if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
+      CHECK(!match_text_keyword.empty());
+      add_keyword(match, match.fill_into_edit, match_text_keyword);
+      continue;
+    }
 
-      // Only add the keyword if the match does not have a duplicate keyword
-      // with a more relevant match.
-      if (!keywords.count(keyword) ||
-          (kIsDesktop && match.type == AutocompleteMatchType::STARTER_PACK)) {
-        keywords.insert(keyword);
-        match.associated_keyword = std::make_unique<AutocompleteMatch>(
-            keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
-                                                   keyword, input_));
-      } else {
-        match.associated_keyword.reset();
-      }
+    // Add keyword hints for typical matches.
+    if (!match_text_keyword.empty() && !keywords.count(match_text_keyword) &&
+        match_text_keyword_turl->starter_pack_id() == 0 &&
+        !match_text_keyword_turl->featured_by_policy()) {
+      add_keyword(match, match.fill_into_edit, match_text_keyword);
     }
   }
 }
@@ -1672,8 +1682,10 @@ void AutocompleteController::UpdateKeywordDescriptions(
   std::u16string last_keyword;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
-      if (AutocompleteMatchHasCustomDescription(*i))
+      if (AutocompleteMatchHasCustomDescription(*i) ||
+          IsUnscopedExtensionMatch(*i)) {
         continue;
+      }
       i->description.clear();
       i->description_class.clear();
       DCHECK(!i->keyword.empty());
@@ -1803,13 +1815,22 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
         num_zero_prefix_suggestions_shown);
   }
   searchbox_stats.set_num_zero_prefix_suggestions_shown(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->num_zero_prefix_suggestions_shown_in_session()
-          : num_zero_prefix_suggestions_shown);
+      result->num_zero_prefix_suggestions_shown_in_session());
   searchbox_stats.set_zero_prefix_enabled(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->zero_prefix_enabled_in_session()
-          : searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
+      result->zero_prefix_enabled_in_session());
+
+  // Append the GWS event ID hashes to the searchbox stats parameter to be
+  // logged in searchbox_stats.proto's `gws_event_id_hash` field.
+  if (zero_suggest_provider_) {
+    for (const auto& gws_event_id_hash :
+         zero_suggest_provider_->gws_event_id_hashes()) {
+      result->add_gws_event_id_hash_in_session(gws_event_id_hash);
+    }
+  }
+  for (const auto& gws_event_id_hash :
+       result->gws_event_id_hashes_in_session()) {
+    searchbox_stats.add_gws_event_id_hash(gws_event_id_hash);
+  }
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {
@@ -2482,36 +2503,35 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
 void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
-  if (input.current_page_classification() ==
-      metrics::OmniboxEventProto::NTP_REALBOX) {
+  if (!kIsDesktop || input.current_page_classification() ==
+                         metrics::OmniboxEventProto::NTP_REALBOX) {
     // Realbox doesn't support keyword mode yet, so keep original list intact.
     return;
   }
-  if (kIsDesktop && input.text().starts_with(u'@')) {
-    // When the input is '@' exactly, some special filtering rules are applied.
-    // Note: the rule preserving other matches with `associated_keyword` is
-    // not currently necessary, but is intended to make it easy to coexist
-    // with enterprise configured scopes when that feature is implemented.
-    if (input.text() == u"@") {
-      result->EraseMatchesWhere([](const AutocompleteMatch& match) {
-        return !(match.type == AutocompleteMatchType::STARTER_PACK ||
-                 match.contents == u"@" || match.associated_keyword);
-      });
-      // Simple sort is needed to restore verbatim '@' search as top/default
-      // match because a different default, e.g. "@hill", might have previously
-      // occupied the top spot while '@' was demoted below others.
-      std::sort(result->begin(), result->end(),
-                AutocompleteMatch::MoreRelevant);
-      // Put first defaultable match in top position since relevance
-      // ranking alone doesn't guarantee it.
-      auto default_match = std::find_if(
-          result->begin(), result->end(),
-          [](const auto& m) { return m.allowed_to_be_default_match; });
-      if (default_match != result->begin() && default_match != result->end()) {
-        std::rotate(result->begin(), default_match, default_match + 1);
-      }
-    }
 
+  if (input.GetFeaturedKeywordMode() ==
+      AutocompleteInput::FeaturedKeywordMode::kExact) {
+    result->EraseMatchesWhere([](const AutocompleteMatch& match) {
+      // When the input is '@' exactly, keep only the trivial search, starter
+      // pack, and featured enterprise suggestions.
+      return match.contents != u"@" && !match.associated_keyword;
+    });
+    // Simple sort is needed to restore verbatim '@' search as top/default
+    // match because a different default, e.g. "@hill", might have previously
+    // occupied the top spot while '@' was demoted below others.
+    std::sort(result->begin(), result->end(), AutocompleteMatch::MoreRelevant);
+    // Put first defaultable match in top position since relevance
+    // ranking alone doesn't guarantee it.
+    auto default_match = std::find_if(
+        result->begin(), result->end(),
+        [](const auto& m) { return m.allowed_to_be_default_match; });
+    if (default_match != result->begin() && default_match != result->end()) {
+      std::rotate(result->begin(), default_match, default_match + 1);
+    }
+  }
+
+  if (input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     // Intentionally avoid actions and remove button on first suggestion
     // which may interfere with keyword mode refresh.
     if (result->size() > 1 &&

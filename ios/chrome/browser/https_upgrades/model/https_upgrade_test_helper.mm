@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_test_helper.h"
+
 #import <map>
 #import <string>
-
-#import "ios/chrome/browser/https_upgrades/model/https_upgrade_test_helper.h"
 
 #import "base/functional/bind.h"
 #import "base/strings/escape.h"
@@ -16,6 +16,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/common/features.h"
@@ -127,8 +128,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungResponse(
   GREYAssertTrue(self.slowServer->Start(),
                  @"Test slow server failed to start.");
 
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:false];
@@ -137,8 +138,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungResponse(
 
 - (void)tearDown {
   // Release the histogram tester.
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 
   [super tearDown];
 }

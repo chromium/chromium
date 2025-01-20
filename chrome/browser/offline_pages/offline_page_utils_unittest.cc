@@ -194,7 +194,7 @@ class OfflinePageUtilsTest : public testing::Test,
 
 OfflinePageUtilsTest::OfflinePageUtilsTest() = default;
 
-OfflinePageUtilsTest::~OfflinePageUtilsTest() {}
+OfflinePageUtilsTest::~OfflinePageUtilsTest() = default;
 
 void OfflinePageUtilsTest::SetUp() {
   // Create a test web contents.

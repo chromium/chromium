@@ -79,12 +79,13 @@ bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
   }
 }
 
-base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
-  return trigger_delay_;
+uint64_t BackgroundTracingRule::GetFlowId() const {
+  return base::trace_event::TriggerFlowId(GetDefaultRuleName(),
+                                          triggered_value_);
 }
 
-std::string BackgroundTracingRule::GetDefaultRuleId() const {
-  return "org.chromium.background_tracing.trigger";
+std::string BackgroundTracingRule::GetDefaultRuleName() const {
+  return "trigger";
 }
 
 perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
@@ -98,14 +99,14 @@ perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
     config.set_delay_ms(delay_->InMilliseconds());
   }
 
-  config.set_name(rule_id_);
+  config.set_name(rule_name_);
 
   return config;
 }
 
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {
-  uint32_t name_hash = variations::HashName(rule_id());
+  uint32_t name_hash = variations::HashName(rule_name());
   out->set_name_hash(name_hash);
 }
 
@@ -121,9 +122,10 @@ void BackgroundTracingRule::Setup(
     activation_delay_ = base::Milliseconds(config.activation_delay_ms());
   }
   if (config.has_name()) {
-    rule_id_ = config.name();
+    rule_name_ = config.name();
   } else {
-    rule_id_ = GetDefaultRuleId();
+    rule_name_ = base::StrCat(
+        {"org.chromium.background_tracing.", GetDefaultRuleName()});
   }
 }
 
@@ -169,9 +171,7 @@ class NamedTriggerRule : public BackgroundTracingRule {
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return base::StrCat({"org.chromium.background_tracing.", named_event_});
-  }
+  std::string GetDefaultRuleName() const override { return named_event_; }
 
  private:
   std::string named_event_;
@@ -220,7 +220,7 @@ class HistogramRule : public BackgroundTracingRule,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
     BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
-        rule_id(), this);
+        rule_name(), this);
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
   }
 
@@ -228,7 +228,7 @@ class HistogramRule : public BackgroundTracingRule,
     histogram_sample_callback_.reset();
     BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
     BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
-        rule_id(), this);
+        rule_name(), this);
   }
 
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
@@ -255,21 +255,21 @@ class HistogramRule : public BackgroundTracingRule,
 
   // BackgroundTracingManagerImpl::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
-    agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id()),
-                          histogram_name_, histogram_lower_value_,
-                          histogram_upper_value_);
+    agent->SetUMACallback(
+        tracing::mojom::BackgroundTracingRule::New(rule_name()),
+        histogram_name_, histogram_lower_value_, histogram_upper_value_);
   }
 
   void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
     agent->ClearUMACallback(
-        tracing::mojom::BackgroundTracingRule::New(rule_id()));
+        tracing::mojom::BackgroundTracingRule::New(rule_name()));
   }
 
-  void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
-                                  base::Histogram::Sample reference_upper_value,
+  void OnHistogramChangedCallback(base::Histogram::Sample32 reference_lower_value,
+                                  base::Histogram::Sample32 reference_upper_value,
                                   const char* histogram_name,
                                   uint64_t name_hash,
-                                  base::Histogram::Sample actual_value) {
+                                  base::Histogram::Sample32 actual_value) {
     DCHECK_EQ(histogram_name, histogram_name_);
     if (reference_lower_value > actual_value ||
         reference_upper_value < actual_value) {
@@ -277,23 +277,22 @@ class HistogramRule : public BackgroundTracingRule,
     }
 
     // Add the histogram name and its corresponding value to the trace.
-    const auto trace_details = [&](perfetto::EventContext ctx) {
+    const auto trace_details = [&](perfetto::EventContext& ctx) {
       perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
           ctx.event()->set_chrome_histogram_sample();
       new_sample->set_name_hash(base::HashMetricName(histogram_name));
       new_sample->set_sample(actual_value);
+      perfetto::Flow::Global(GetFlowId())(ctx);
     };
     TRACE_EVENT_INSTANT(
-        "toplevel", "HistogramSampleTrigger",
+        "toplevel,latency", "HistogramSampleTrigger",
         perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current()),
         base::TimeTicks::Now(), trace_details);
     OnRuleTriggered(actual_value);
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return base::StrCat({"org.chromium.background_tracing.", histogram_name_});
-  }
+  std::string GetDefaultRuleName() const override { return histogram_name_; }
 
  private:
   std::string histogram_name_;
@@ -324,9 +323,7 @@ class TimerRule : public BackgroundTracingRule {
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return "org.chromium.background_tracing.timer";
-  }
+  std::string GetDefaultRuleName() const override { return "timer"; }
 };
 
 class RepeatingIntervalRule : public BackgroundTracingRule {
@@ -369,8 +366,8 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return "org.chromium.background_tracing.repeating_interval";
+  std::string GetDefaultRuleName() const override {
+    return "repeating_interval";
   }
 
  private:

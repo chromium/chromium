@@ -274,8 +274,4 @@ bool HoldingSpaceTestApi::RecentFilesPlaceholderShown() const {
   return placeholder && placeholder->GetVisible();
 }
 
-std::u16string HoldingSpaceTestApi::GetAccessibleNameForBubble() {
-  return holding_space_tray_->GetAccessibleNameForBubble();
-}
-
 }  // namespace ash

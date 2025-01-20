@@ -261,7 +261,8 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     EXPECT_TRUE(NavigateToURL(shell(), page_url));
 
     if (IsDifferentProcessForced()) {
-      int page_process_id = current_frame_host()->GetProcess()->GetID();
+      int page_process_id =
+          current_frame_host()->GetProcess()->GetDeprecatedID();
       int worker_process_id = GetServiceWorkerProcessId();
       ASSERT_NE(page_process_id, worker_process_id);
     }

@@ -101,8 +101,8 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
@@ -212,8 +212,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -251,11 +251,11 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
 
 TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   GURL url = web_contents()->GetLastCommittedURL();
 
   HostContentSettingsMap* host_content_settings_map =
@@ -312,11 +312,11 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
 // the bubble is re-opened.
 TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   GURL url = web_contents()->GetLastCommittedURL();
 
   HostContentSettingsMap* host_content_settings_map =
@@ -398,8 +398,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -467,8 +467,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -537,8 +537,8 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -1389,8 +1389,8 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, ValidUrl) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -1407,8 +1407,8 @@ TEST_F(ContentSettingBubbleModelTest, ValidUrl) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, InvalidUrl) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("about:blank"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("about:blank"));
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(

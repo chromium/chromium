@@ -108,8 +108,7 @@ void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,
 
 void OutputPresenterGL::ScheduleOverlayPlane(
     const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
-    ScopedOverlayAccess* access,
-    std::unique_ptr<gfx::GpuFence> acquire_fence) {
+    ScopedOverlayAccess* access) {
   // Note that |overlay_plane_candidate| has different types on different
   // platforms. On Android, Ozone, and Windows, it is an OverlayCandidate and on
   // macOS it is a CALayeroverlay.
@@ -137,17 +136,9 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
         << "Solid color quads must have color set.";
   }
-
-  if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
-    CHECK(access);
-    CHECK_EQ(gpu::GrContextType::kGL,
-             dependency_->GetSharedContextState()->gr_context_type());
-    CHECK(features::IsDelegatedCompositingEnabled());
-    CHECK(access->representation()->usage().Has(
-        gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING));
-  }
 #endif  // DCHECK_IS_ON()
-  // Access fence takes priority over composite fence iff it exists.
+
+  std::unique_ptr<gfx::GpuFence> acquire_fence;
   if (access) {
     auto access_fence = TakeGpuFence(access->TakeAcquireFence());
     if (access_fence) {

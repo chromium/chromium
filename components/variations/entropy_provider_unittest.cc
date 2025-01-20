@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -195,12 +196,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
   // _might_ actually give the same result, but we know that given the
   // particular client_id we use for unit tests they won't.
   SHA1EntropyProvider entropy_provider("client_id");
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -221,12 +222,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
   // the particular low_entropy_source we use for unit tests they won't.
   NormalizedMurmurHashEntropyProvider entropy_provider(
       {1234, kMaxLowEntropySize});
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -243,12 +244,12 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
   // for one time randomization produce the same group assignments.
   SHA1EntropyProvider entropy_provider("client_id");
   const uint32_t kCustomSeed = 9001;
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider, kCustomSeed),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider, kCustomSeed),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -267,12 +268,12 @@ TEST(EntropyProviderTest,
   NormalizedMurmurHashEntropyProvider entropy_provider(
       {1234, kMaxLowEntropySize});
   const uint32_t kCustomSeed = 9001;
-  scoped_refptr<base::FieldTrial> trials[] = {
+  auto trials = std::to_array<scoped_refptr<base::FieldTrial>>({
       base::FieldTrialList::FactoryGetFieldTrial("one", 100, "default",
                                                  entropy_provider, kCustomSeed),
       base::FieldTrialList::FactoryGetFieldTrial("two", 100, "default",
                                                  entropy_provider, kCustomSeed),
-  };
+  });
 
   for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
@@ -285,8 +286,8 @@ TEST(EntropyProviderTest,
 }
 
 TEST(EntropyProviderTest, SHA1Entropy) {
-  const double results[] = { GenerateSHA1Entropy("hi", "1"),
-                             GenerateSHA1Entropy("there", "1") };
+  const auto results = std::to_array<double>(
+      {GenerateSHA1Entropy("hi", "1"), GenerateSHA1Entropy("there", "1")});
 
   EXPECT_NE(results[0], results[1]);
   for (double result : results) {
@@ -301,9 +302,9 @@ TEST(EntropyProviderTest, SHA1Entropy) {
 }
 
 TEST(EntropyProviderTest, NormalizedMurmurHashEntropy) {
-  const double results[] = {
-      GenerateNormalizedMurmurHashEntropy({1234, kMaxLowEntropySize}, "1"),
-      GenerateNormalizedMurmurHashEntropy({4321, kMaxLowEntropySize}, "1")};
+  const auto results = std::to_array<double>(
+      {GenerateNormalizedMurmurHashEntropy({1234, kMaxLowEntropySize}, "1"),
+       GenerateNormalizedMurmurHashEntropy({4321, kMaxLowEntropySize}, "1")});
 
   EXPECT_NE(results[0], results[1]);
   for (double result : results) {

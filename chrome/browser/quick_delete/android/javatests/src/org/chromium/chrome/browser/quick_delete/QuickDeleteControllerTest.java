@@ -26,6 +26,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Instrumentation;
+import android.os.Build;
 import android.view.View;
 import android.widget.Spinner;
 
@@ -39,24 +40,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -77,7 +78,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests for quick delete controller. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class QuickDeleteControllerTest {
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
@@ -85,6 +85,8 @@ public class QuickDeleteControllerTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
@@ -94,7 +96,6 @@ public class QuickDeleteControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
 
@@ -105,14 +106,13 @@ public class QuickDeleteControllerTest {
                         (Answer<Void>)
                                 invocation -> {
                                     ((BrowsingDataBridge.OnClearBrowsingDataListener)
-                                                    invocation.getArgument(2))
+                                                    invocation.getArgument(1))
                                             .onBrowsingDataCleared();
                                     mCallbackHelper.notifyCalled();
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(
-                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         // Set the time for the initial tab to be outside of the quick delete time span.
         Tab initialTab = mActivity.getActivityTab();
@@ -133,7 +133,10 @@ public class QuickDeleteControllerTest {
                 () ->
                         mActivity
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
     }
 
     private void openQuickDeleteDialog() {
@@ -147,6 +150,15 @@ public class QuickDeleteControllerTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Click on quick delete menu item.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction
+                                        .LAST_15_MINUTES_SELECTED)
+                        .build();
+
         runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.callOnItemClick(
@@ -154,12 +166,14 @@ public class QuickDeleteControllerTest {
                 });
         onViewWaiting(withId(R.id.quick_delete_spinner), true)
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        histogramWatcher.assertExpected();
     }
 
     private void assertDataTypesCleared(@TimePeriod int timePeriod, int... types) {
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
-                        any(), any(), any(), eq(types), eq(timePeriod), any(), any(), any(), any());
+                        any(), any(), eq(types), eq(timePeriod), any(), any(), any(), any());
     }
 
     @Test
@@ -225,6 +239,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41496702")
     public void testQuickDeleteHistogram_WhenClickingDelete() throws TimeoutException {
         openQuickDeleteDialog();
 
@@ -338,8 +353,7 @@ public class QuickDeleteControllerTest {
         onViewWaiting(withId(R.id.negative_button)).perform(click());
 
         verify(mBrowsingDataBridgeMock, never())
-                .clearBrowsingData(
-                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         histogramWatcher.assertExpected();
     }
@@ -383,7 +397,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
-    public void testMoreOptions_Triggers_ClearBrowsingData_Advanced() {
+    public void testMoreOptions_OpensClearBrowsingData() {
         final Instrumentation.ActivityMonitor activityMonitor =
                 new Instrumentation.ActivityMonitor(SettingsActivity.class.getName(), null, false);
         InstrumentationRegistry.getInstrumentation().addMonitor(activityMonitor);
@@ -398,7 +412,7 @@ public class QuickDeleteControllerTest {
                         InstrumentationRegistry.getInstrumentation()
                                 .waitForMonitorWithTimeout(activityMonitor, ACTIVITY_WAIT_LONG_MS);
 
-        assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragmentAdvanced);
+        assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragment);
     }
 
     @Test

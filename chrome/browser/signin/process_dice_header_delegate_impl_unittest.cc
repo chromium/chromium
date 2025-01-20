@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,8 +115,8 @@ class ProcessDiceHeaderDelegateImplTest
         email_("foo@bar.com"),
         auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
     std::string kGaiaId = "12345";
-    account_info_.account_id = CoreAccountId::FromGaiaId(kGaiaId);
-    account_info_.gaia = kGaiaId;
+    account_info_.gaia = GaiaId(kGaiaId);
+    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
     account_info_.email = "email@gmail.com";
   }
 

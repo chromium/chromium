@@ -33,16 +33,19 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
  public:
   // Observes when web modal dialog is about to close as a result of a page
   // navigation.
-  class CloseOnNavigationObserver : public base::CheckedObserver {
+  class Observer : public base::CheckedObserver {
    public:
-    CloseOnNavigationObserver(const CloseOnNavigationObserver&) = delete;
-    CloseOnNavigationObserver& operator=(const CloseOnNavigationObserver&) =
-        delete;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
 
-    virtual void OnWillClose() = 0;
+    // Called when the web modal is closing due to host web contents navigation.
+    virtual void OnWillCloseOnNavigation() {}
+
+    // Called when ShowDialogWithManager() is called.
+    virtual void OnWillShow() {}
 
    protected:
-    CloseOnNavigationObserver() = default;
+    Observer() = default;
   };
 
   WebContentsModalDialogManager(const WebContentsModalDialogManager&) = delete;
@@ -69,8 +72,8 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
 
   // Manages observer for when dialogs are closed as a result of page
   // navigation.
-  void AddCloseOnNavigationObserver(CloseOnNavigationObserver* observer);
-  void RemoveCloseOnNavigationObserver(CloseOnNavigationObserver* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // SingleWebContentsDialogManagerDelegate:
   content::WebContents* GetWebContents() const override;
@@ -140,8 +143,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
 
-  base::ObserverList<CloseOnNavigationObserver>
-      close_on_navigation_observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -133,7 +133,7 @@ class SharedWorkerHostTest : public testing::Test {
         helper_->context()
             ->service_worker_client_owner()
             .CreateServiceWorkerClientForWorker(
-                mock_render_process_host_->GetID(),
+                mock_render_process_host_->GetDeprecatedID(),
                 ServiceWorkerClientInfo(host->token())));
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
@@ -154,7 +154,7 @@ class SharedWorkerHostTest : public testing::Test {
       SharedWorkerHost* host,
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client) {
     GlobalRenderFrameHostId dummy_render_frame_host_id(
-        mock_render_process_host_->GetID(), 22);
+        mock_render_process_host_->GetDeprecatedID(), 22);
 
     blink::MessagePortDescriptorPair port_pair;
     MessagePortChannel local_port(port_pair.TakePort0());

@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CSS_AGENT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -134,6 +135,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void Trace(Visitor*) const override;
 
   void ForcePseudoState(Element*, CSSSelector::PseudoType, bool* result);
+  void ForceStartingStyle(Element*, bool* result);
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
   void Restore() override;
   void FlushPendingProtocolNotifications() override;
@@ -156,32 +158,52 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void enable(std::unique_ptr<EnableCallback>) override;
   protocol::Response disable() override;
+  protocol::Response getAnimatedStylesForNode(
+      int node_id,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>*
+          animation_styles,
+      std::unique_ptr<protocol::CSS::CSSStyle>* transitions_style,
+      std::unique_ptr<
+          protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>*
+          inherited) override;
   protocol::Response getMatchedStylesForNode(
       int node_id,
-      protocol::Maybe<protocol::CSS::CSSStyle>* inline_style,
-      protocol::Maybe<protocol::CSS::CSSStyle>* attributes_style,
-      protocol::Maybe<protocol::Array<protocol::CSS::RuleMatch>>*
+      std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+      std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style,
+      std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>*
           matched_css_rules,
-      protocol::Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*,
-      protocol::Maybe<
+      std::unique_ptr<protocol::Array<protocol::CSS::PseudoElementMatches>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::InheritedStyleEntry>>*,
+      std::unique_ptr<
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
-      protocol::Maybe<int>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
-      protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
-      protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
+      std::optional<int>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
+      std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>*
           out_cssFontPaletteValuesRule,
-      protocol::Maybe<int>*) override;
+      std::optional<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
-      protocol::Maybe<protocol::CSS::CSSStyle>* inline_style,
-      protocol::Maybe<protocol::CSS::CSSStyle>* attributes_style) override;
+      std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
+      std::unique_ptr<protocol::CSS::CSSStyle>* attributes_style) override;
   protocol::Response getComputedStyleForNode(
       int node_id,
       std::unique_ptr<
           protocol::Array<protocol::CSS::CSSComputedStyleProperty>>*) override;
+  protocol::Response resolveValues(
+      std::unique_ptr<protocol::Array<String>> values,
+      int node_id,
+      std::optional<String> property_name_optional,
+      std::optional<protocol::DOM::PseudoType> pseudo_type,
+      std::optional<String> pseudo_identifier,
+      std::unique_ptr<protocol::Array<String>>* results) override;
+  protocol::Response getLonghandProperties(
+      const String& shorthand_name,
+      const String& value,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>*
+          longhand_properties) override;
   protocol::Response getPlatformFontsForNode(
       int node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::PlatformFontUsage>>* fonts)
@@ -194,7 +216,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response setStyleSheetText(
       const String& style_sheet_id,
       const String& text,
-      protocol::Maybe<String>* source_map_url) override;
+      std::optional<String>* source_map_url) override;
   protocol::Response setRuleSelector(
       const String& style_sheet_id,
       std::unique_ptr<protocol::CSS::SourceRange>,
@@ -213,7 +235,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response setStyleTexts(
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>
           edits,
-      protocol::Maybe<int> node_for_property_syntax_validation,
+      std::optional<int> node_for_property_syntax_validation,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* styles)
       override;
   protocol::Response setMediaText(
@@ -242,11 +264,12 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& style_sheet_id,
       const String& rule_text,
       std::unique_ptr<protocol::CSS::SourceRange>,
-      protocol::Maybe<int> node_for_property_syntax_validation,
+      std::optional<int> node_for_property_syntax_validation,
       std::unique_ptr<protocol::CSS::CSSRule>*) override;
   protocol::Response forcePseudoState(
       int node_id,
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;
+  protocol::Response forceStartingStyle(int node_id, bool forced) override;
   protocol::Response getMediaQueries(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>>*) override;
   protocol::Response getLayersForNode(
@@ -263,9 +286,9 @@ class CORE_EXPORT InspectorCSSAgent final
       const String& value) override;
   protocol::Response getBackgroundColors(
       int node_id,
-      protocol::Maybe<protocol::Array<String>>* background_colors,
-      protocol::Maybe<String>* computed_font_size,
-      protocol::Maybe<String>* computed_font_weight) override;
+      std::unique_ptr<protocol::Array<String>>* background_colors,
+      std::optional<String>* computed_font_size,
+      std::optional<String>* computed_font_weight) override;
 
   protocol::Response startRuleUsageTracking() override;
   protocol::Response takeCoverageDelta(
@@ -275,7 +298,7 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result)
       override;
   protocol::Response trackComputedStyleUpdatesForNode(
-      protocol::Maybe<int> node_id) override;
+      std::optional<int> node_id) override;
   protocol::Response trackComputedStyleUpdates(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>
           properties_to_track) override;
@@ -333,6 +356,7 @@ class CORE_EXPORT InspectorCSSAgent final
                                   // styles
   typedef HashMap<int, unsigned> NodeIdToForcedPseudoState;
   typedef HashMap<int, unsigned> NodeIdToNumberFocusedChildren;
+  typedef HashSet<int> NodeIdToForcedStartingStyle;
 
   void ResourceContentLoaded(std::unique_ptr<EnableCallback>);
   void CompleteEnabled();
@@ -407,10 +431,14 @@ class CORE_EXPORT InspectorCSSAgent final
       const InspectorGhostRules&,
       PseudoId pseudo_id = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+  BuildArrayForCSSAnimationStyleList(Element* element);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>
   BuildArrayForComputedStyleUpdatedNodes();
+  std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForTransitionsStyle(
+      Element*);
 
   // Container Queries implementation
   std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(
@@ -465,6 +493,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void StyleSheetChanged(InspectorStyleSheetBase*) override;
 
   void ResetPseudoStates();
+  void ResetStartingStyles();
 
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
@@ -491,6 +520,7 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeToInspectorStyleSheet node_to_inspector_style_sheet_;
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
+  NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
 
   Member<StyleRuleUsageTracker> tracker_;
 
@@ -517,10 +547,6 @@ class CORE_EXPORT InspectorCSSAgent final
   // computedStyleUpdatedForNode task
   HashSet<int> notify_computed_style_updated_node_ids_;
   WeakCellFactory<InspectorCSSAgent> weak_factory_{this};
-
-  // True while InspectorGhostRules is modifying a stylesheet. We don't
-  // need to respond to such mutations, because we're guaranteed to undo them.
-  bool ignore_stylesheet_mutation_ = false;
 
   // Node to be tracked for `ComputedStyleUpdated` events.
   // This is set via `trackComputedStyleUpdatesForNode` call.

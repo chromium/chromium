@@ -96,7 +96,7 @@ class NonWhiteContentCropAction(BaseCropAction):
   """Crops screenshots to remove all white (background) content."""
   OFF_WHITE_TOP_ROW_DEVICES = {
       # Samsung A13.
-      'SM-A135M',
+      'SM-A137F',
       # Samsung A23.
       'SM-A235M',
   }

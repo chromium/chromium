@@ -28,8 +28,8 @@ found in the LICENSE file.
             android:id="@+id/first_row"
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_touch_target_size"
+            android:layout_gravity="center_vertical"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:focusable="true"
             android:focusableInTouchMode="true">
             <include layout="@layout/toolbar_back_button"/>
@@ -40,14 +40,15 @@ found in the LICENSE file.
             <FrameLayout
                 android:id="@+id/share_button_container"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/min_touch_target_size"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/min_touch_target_size"
                 android:layout_marginEnd="12dp"
                 android:visibility="gone">
                 <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/share_button"
                     style="@style/DialogShareButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/share_button_height"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:minWidth="0dp"
                     android:minHeight="@dimen/share_button_height"
@@ -57,8 +58,6 @@ found in the LICENSE file.
                     android:text="@string/tab_grid_share_button_text"
                     android:paddingStart="@dimen/share_button_padding_start_end"
                     android:paddingEnd="@dimen/share_button_padding_start_end"
-                    android:paddingTop="@dimen/share_button_padding_top_bottom"
-                    android:paddingBottom="@dimen/share_button_padding_top_bottom"
                     app:verticalInset="0dp" />
             </FrameLayout>
             <FrameLayout
@@ -67,21 +66,23 @@ found in the LICENSE file.
                 android:layout_height="@dimen/min_touch_target_size"
                 android:minWidth="@dimen/min_touch_target_size"
                 android:layout_marginEnd="12dp"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:contentDescription="@string/manage_sharing_content_description"/>
             <include layout="@layout/toolbar_new_tab_and_menu_button"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/second_row"
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_touch_target_size"
+            android:layout_gravity="center_vertical"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:focusable="true"
             android:focusableInTouchMode="true">
             <FrameLayout
                 android:id="@+id/tab_group_color_icon_container"
                 android:layout_height="@dimen/min_touch_target_size"
-                android:layout_width="@dimen/min_touch_target_size">
+                android:layout_width="@dimen/min_touch_target_size"
+                android:layout_gravity="center">
                 <ImageView
                     android:id="@+id/tab_group_color_icon"
                     android:layout_gravity="center"
@@ -95,17 +96,20 @@ found in the LICENSE file.
             <EditText
                 tools:ignore="Autofill,LabelFor"
                 android:id="@+id/title"
+                android:theme="@style/TabGridDialogTitleTheme"
                 android:cursorVisible="false"
-                android:layout_height="@dimen/min_touch_target_size"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_gravity="start|center_vertical"
+                android:minHeight="@dimen/min_touch_target_size"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
                 android:inputType="text|textNoSuggestions"
                 android:imeOptions="actionDone"
-                android:theme="@style/TabGridDialogTitleTheme"
-                android:gravity="start|center_vertical"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
                 android:layout_marginEnd="8dp"
                 android:selectAllOnFocus="true"/>
         </LinearLayout>

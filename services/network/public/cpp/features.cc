@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -140,20 +139,14 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When set, only resources in the MDL that are part of the experiment group
-// will be loaded into the proxy's allow list.
-BASE_FEATURE_PARAM(int,
-                   kMaskedDomainListExperimentGroup,
-                   &kMaskedDomainList,
-                   /*name=*/"MaskedDomainListExperimentGroup",
-                   /*default_value=*/0);
-
 // Used to build the MDL component's installer attributes and possibly control
 // which release version is retrieved.
 // Altering this value via Finch does not have any effect for WebView.
-const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
-    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
-    /*default_value=*/""};
+BASE_FEATURE_PARAM(std::string,
+                   kMaskedDomainListExperimentalVersion,
+                   &kMaskedDomainList,
+                   /*name=*/"MaskedDomainListExperimentalVersion",
+                   /*default_value=*/"");
 
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
@@ -176,94 +169,10 @@ BASE_FEATURE(kAttributionReportingCrossAppWeb,
              "AttributionReportingCrossAppWeb",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables preprocessing requests with the Private State Tokens API Fetch flags
-// set, and handling their responses, according to the protocol.
-// (See https://github.com/WICG/trust-token-api.)
-BASE_FEATURE(kPrivateStateTokens,
-             "PrivateStateTokens",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Secondary flag used by the FLEDGE ads experiment in the interim before
-// PSTs are fully rolled out to stable.
-BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Determines which Trust Tokens operations require the TrustTokens origin trial
-// active in order to be used. This is runtime-configurable so that the Trust
-// Tokens operations of issuance, redemption, and signing are compatible with
-// both standard origin trials and third-party origin trials:
-//
-// - For standard origin trials, set kOnlyIssuanceRequiresOriginTrial. In Blink,
-// all of the interface will be enabled (so long as the base::Feature is!), and
-// issuance operations will check at runtime if the origin trial is enabled,
-// returning an error if it is not.
-// - For third-party origin trials, set kAllOperationsRequireOriginTrial. In
-// Blink, the interface will be enabled exactly when the origin trial is present
-// in the executing context (so long as the base::Feature is present).
-//
-// For testing, set kOriginTrialNotRequired. With this option, although all
-// operations will still only be available if the base::Feature is enabled, none
-// will additionally require that the origin trial be active.
-const base::FeatureParam<TrustTokenOriginTrialSpec>::Option
-    kTrustTokenOriginTrialParamOptions[] = {
-        {TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
-         "origin-trial-not-required"},
-        {TrustTokenOriginTrialSpec::kAllOperationsRequireOriginTrial,
-         "all-operations-require-origin-trial"},
-        {TrustTokenOriginTrialSpec::kOnlyIssuanceRequiresOriginTrial,
-         "only-issuance-requires-origin-trial"}};
-BASE_FEATURE_ENUM_PARAM(TrustTokenOriginTrialSpec,
-                        kTrustTokenOperationsRequiringOriginTrial,
-                        &kFledgePst,
-                        "TrustTokenOperationsRequiringOriginTrial",
-                        TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
-                        &kTrustTokenOriginTrialParamOptions);
-
 // Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
 // See:
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
 BASE_FEATURE(kAcceptCHFrame, "AcceptCHFrame", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable
-BASE_FEATURE(kGetCookiesStringUma,
-             "GetCookiesStringUma",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-namespace {
-
-// The default Mojo ring buffer size, used to send the content body.
-constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
-
-// The larger ring buffer size, used primarily for network::URLLoader loads.
-// This value was optimized via Finch: see crbug.com/1041006.
-constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
-
-// The smallest buffer size must be larger than the maximum MIME sniffing
-// chunk size. This is assumed several places in content/browser/loader.
-static_assert(kDefaultDataPipeAllocationSize < kLargerDataPipeAllocationSize);
-static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
-              "Smallest data pipe size must be at least as large as a "
-              "MIME-type sniffing buffer.");
-}  // namespace
-
-// static
-uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1306998): ChromeOS experiences a much higher OOM crash
-  // rate if the larger data pipe size is used.
-  return kDefaultDataPipeAllocationSize;
-#else
-  // For low-memory devices, always use the (smaller) default buffer size.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
-    return kDefaultDataPipeAllocationSize;
-  }
-  switch (option) {
-    case DataPipeAllocationSize::kDefaultSizeOnly:
-      return kDefaultDataPipeAllocationSize;
-    case DataPipeAllocationSize::kLargerSizeIfPossible:
-      return kLargerDataPipeAllocationSize;
-  }
-#endif
-}
 
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
@@ -299,20 +208,10 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
              "PrivateNetworkAccessPreflightShortTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allow potentially trustworthy same origin local network requests without
-// preflights.
-BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
-             "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When kPrivateNetworkAccessPermissionPrompt is enabled, public secure websites
 // are allowed to access private insecure subresources with user's permission.
 BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
-             "AccessControlAllowMethodsInCORSPreflightSpecConformant",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, then the network service will parse the Cookie-Indices header.
@@ -440,7 +339,7 @@ BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
 
 BASE_FEATURE(kStorageAccessHeaders,
              "StorageAccessHeaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStorageAccessHeadersTrial,
              "StorageAccessHeadersTrial",
@@ -456,5 +355,13 @@ BASE_FEATURE(kEnableLockCookieDatabaseByDefault,
              "EnableLockCookieDatabaseByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
+
+BASE_FEATURE(kSRIMessageSignatureEnforcement,
+             "SRIMessageSignatureEnforcement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCreateURLLoaderPipeAsync,
+             "CreateURLLoaderPipeAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace network::features

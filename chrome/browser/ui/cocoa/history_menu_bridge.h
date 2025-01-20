@@ -32,7 +32,7 @@ class ScopedProfileKeepAlive;
 namespace {
 class HistoryMenuBridgeTest;
 class HistoryMenuBridgeLifetimeTest;
-}
+}  // namespace
 
 namespace favicon_base {
 struct FaviconImageResult;

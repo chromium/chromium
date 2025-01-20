@@ -208,7 +208,7 @@ class VIEWS_EXPORT StyledLabel : public View {
         : range(range), style_info(style_info) {}
     ~StyleRange() = default;
 
-    bool operator<(const StyleRange& other) const;
+    auto operator<=>(const StyleRange& other) const;
 
     gfx::Range range;
     RangeStyleInfo style_info;

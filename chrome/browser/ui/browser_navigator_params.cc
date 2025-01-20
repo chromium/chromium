@@ -46,7 +46,7 @@ NavigateParams::NavigateParams(Profile* a_profile,
 
 NavigateParams::NavigateParams(NavigateParams&&) = default;
 
-NavigateParams::~NavigateParams() {}
+NavigateParams::~NavigateParams() = default;
 
 void NavigateParams::FillNavigateParamsFromOpenURLParams(
     const content::OpenURLParams& params) {

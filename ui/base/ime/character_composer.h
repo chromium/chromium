@@ -137,8 +137,9 @@ class TreeComposeChecker : public ComposeChecker {
   struct CompositionData {
     size_t maximum_sequence_length;
     int tree_entries;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
+    // This field is not a raw_ptr<> because it only ever points at statically-
+    // allocated memory which is never freed (kCompositionsTree), and hence
+    // can never dangle.
     RAW_PTR_EXCLUSION const uint16_t* tree;
   };
 

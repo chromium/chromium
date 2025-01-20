@@ -20,8 +20,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
  public:
@@ -539,5 +538,4 @@ TEST_F(ThreadPoolJobTaskSourceTest, GetTaskId) {
   registered_task_source.DidProcessTask();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

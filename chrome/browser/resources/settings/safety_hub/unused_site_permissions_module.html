@@ -10,14 +10,14 @@
     header="[[headerString_]]"
     subheader="[[subheaderString_]]"
     header-icon="[[headerIconString_]]"
-    button-aria-label-id="safetyCheckUnusedSitePermissionsAllowAgainAriaLabel"
+    button-aria-label-id="safetyHubUnusedSitePermissionsAllowAgainAriaLabel"
     button-icon="settings20:undo"
-    button-tooltip-text="$i18n{safetyCheckUnusedSitePermissionsAllowAgainLabel}"
+    button-tooltip-text="$i18n{safetyHubUnusedSitePermissionsAllowAgainLabel}"
     sites="[[sites_]]">
   <div slot="button-container">
     <cr-button id="gotItButton" on-click="onGotItClick_"
         hidden$="[[shouldShowCompletionInfo_]]">
-      $i18n{safetyCheckUnusedSitePermissionsGotItLabel}
+      $i18n{safetyHubUnusedSitePermissionsGotItLabel}
     </cr-button>
     <cr-icon-button id="moreActionButton" class="icon-more-vert"
         on-click="onMoreActionClick_" hidden$="[[shouldShowCompletionInfo_]]"
@@ -26,14 +26,14 @@
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
         on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]"
         on-focus="showUndoTooltip_" on-mouseenter="showUndoTooltip_"
-        aria-label$="$i18n{safetyCheckUnusedSitePermissionsUndoLabel}">
+        aria-label$="$i18n{safetyHubUnusedSitePermissionsUndoLabel}">
     </cr-icon-button>
   </div>
 </settings-safety-hub-module>
 <cr-toast id="undoToast" duration="5000">
   <div>[[toastText_]]</div>
   <cr-button id="toastUndoButton" on-click="onUndoClick_">
-    $i18n{safetyCheckUnusedSitePermissionsUndoLabel}
+    $i18n{safetyHubUnusedSitePermissionsUndoLabel}
   </cr-button>
 </cr-toast>
 <cr-action-menu id="headerActionMenu" role-description="$i18n{menu}">
@@ -43,5 +43,5 @@
   </button>
 </cr-action-menu>
 <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
-  $i18n{safetyCheckUnusedSitePermissionsUndoLabel}
+  $i18n{safetyHubUnusedSitePermissionsUndoLabel}
 </cr-tooltip>

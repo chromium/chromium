@@ -142,9 +142,7 @@ class BASE_EXPORT ImportantFileWriter {
       OnceClosure before_next_write_callback,
       OnceCallback<void(bool success)> after_next_write_callback);
 
-  TimeDelta commit_interval() const {
-    return commit_interval_;
-  }
+  TimeDelta commit_interval() const { return commit_interval_; }
 
   // Overrides the timer to use for scheduling writes with |timer_override|.
   void SetTimerForTesting(OneShotTimer* timer_override);

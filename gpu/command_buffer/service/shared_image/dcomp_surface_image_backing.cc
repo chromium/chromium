@@ -200,8 +200,7 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
       SkAlphaTypeIsOpaque(alpha_type) ? DXGI_ALPHA_MODE_IGNORE
                                       : DXGI_ALPHA_MODE_PREMULTIPLIED,
       &dcomp_surface);
-  base::UmaHistogramSparse("GPU.DirectComposition.DcompDeviceCreateSurface",
-                           hr);
+
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSurface failed: "
                 << logging::SystemErrorCodeToString(hr);
@@ -386,8 +385,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
   GrGLFramebufferInfo framebuffer_info = {0};
   DCHECK_EQ(gl_surface_->GetBackingFramebufferObject(), 0u);
 
-  SkColorType color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, format());
+  SkColorType color_type = viz::ToClosestSkColorType(format());
   switch (color_type) {
     case kRGBA_8888_SkColorType:
       framebuffer_info.fFormat = GL_RGBA8;

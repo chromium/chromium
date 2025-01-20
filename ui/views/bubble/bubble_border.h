@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -352,5 +353,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
 };
 
 }  // namespace views
+
+EXPORT_ENUM_CONVERTERS(views::BubbleBorder::Arrow, VIEWS_EXPORT)
 
 #endif  // UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_

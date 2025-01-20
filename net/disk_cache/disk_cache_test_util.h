@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,7 +31,7 @@ bool CreateCacheTestFile(const base::FilePath& name);
 bool DeleteCache(const base::FilePath& path);
 
 // Fills buffer with random values (may contain nulls unless no_nulls is true).
-void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls);
+void CacheTestFillBuffer(base::span<uint8_t> buffer, bool no_nulls);
 
 // Creates a buffer of size `len`, and fills in with random values, which
 // may contain 0 unless `no_nulls` is true.

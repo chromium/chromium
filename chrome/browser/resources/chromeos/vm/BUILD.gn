@@ -2,32 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/vm/",
-                root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ash/guest_os/",
-                root_build_dir),
-      ]
-  deps = [ ":app" ]
-}
+build_webui("build") {
+  grd_prefix = "vm"
 
-js_library("app") {
-  deps = [
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/ui/webui/ash/vm:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  static_files = [ "index.html" ]
+  web_component_files = [ "app.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ash/guest_os/guest_os_diagnostics.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/vm/vm.mojom-webui.ts",
   ]
-}
+  mojo_files_deps = [
+    "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom_ts__generator",
+    "//chrome/browser/ui/webui/ash/vm:mojo_bindings_ts__generator",
+  ]
 
-html_to_js("web_components") {
-  js_files = [ "app.js" ]
+  html_to_wrapper_template = "polymer"
+  webui_context_type = "trusted"
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
 }

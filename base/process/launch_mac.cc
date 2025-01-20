@@ -248,8 +248,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   std::vector<char*> argv_cstr;
   argv_cstr.reserve(argv.size() + 1);
-  for (const auto& arg : argv)
+  for (const auto& arg : argv) {
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
+  }
   argv_cstr.push_back(nullptr);
 
   base::HeapArray<char*> owned_environ;

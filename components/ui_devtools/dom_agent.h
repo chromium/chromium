@@ -47,7 +47,7 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       std::unique_ptr<protocol::Array<int>>* result) override;
   protocol::Response performSearch(
       const protocol::String& query,
-      protocol::Maybe<bool> include_user_agent_shadow_dom,
+      std::optional<bool> include_user_agent_shadow_dom,
       protocol::String* search_id,
       int* result_count) override;
   protocol::Response getSearchResults(

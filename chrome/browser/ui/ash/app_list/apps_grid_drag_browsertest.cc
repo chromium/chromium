@@ -20,7 +20,7 @@
 
 class AppsGridDragBrowserTest : public InProcessBrowserTest {
  public:
-  AppsGridDragBrowserTest() {}
+  AppsGridDragBrowserTest() = default;
   AppsGridDragBrowserTest(const AppsGridDragBrowserTest&) = delete;
   AppsGridDragBrowserTest& operator=(const AppsGridDragBrowserTest&) = delete;
   ~AppsGridDragBrowserTest() override = default;

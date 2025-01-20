@@ -7,7 +7,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -30,6 +32,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
@@ -46,7 +49,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -65,6 +72,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -141,7 +149,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       : views::test::WidgetTest(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
 
   SearchBoxViewTest(const SearchBoxViewTest&) = delete;
@@ -277,7 +284,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
   bool CanSelectSearchResults() override { return true; }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   AshColorProvider ash_color_provider_;
   raw_ptr<AppListSearchView, DanglingUntriaged> search_view_ = nullptr;
   AppListTestViewDelegate view_delegate_;
@@ -797,9 +803,8 @@ TEST_F(SearchBoxViewAssistantButtonTest,
 class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewFilterButtonTest() {
-    scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kJelly, features::kLauncherSearchControl,
+        {features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
         {});
   }
@@ -807,6 +812,9 @@ class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
   SearchBoxViewFilterButtonTest& operator=(
       const SearchBoxViewFilterButtonTest&) = delete;
   ~SearchBoxViewFilterButtonTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the filter button is invisible by default.
@@ -822,10 +830,7 @@ TEST_F(SearchBoxViewFilterButtonTest, FilterButtonVisibleAfterTyping) {
 
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
-  SearchBoxViewAutocompleteTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  SearchBoxViewAutocompleteTest() = default;
   SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
   SearchBoxViewAutocompleteTest& operator=(
       const SearchBoxViewAutocompleteTest&) = delete;
@@ -1323,14 +1328,143 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
+class AssistantNewEntryPointTestBase
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  explicit AssistantNewEntryPointTestBase(bool enable_new_entry_point) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::assistant::features::kEnableNewEntryPoint, enable_new_entry_point);
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().EnterTabletMode();
+    }
+  }
+
+  void TearDown() override {
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().LeaveTabletMode();
+    }
+
+    AshTestBase::TearDown();
+  }
+
+  ~AssistantNewEntryPointTestBase() override = default;
+
+  static std::string GenerateParamName(
+      const testing::TestParamInfo<bool>& info) {
+    return info.param ? "Tablet" : "Clamshell";
+  }
+
+ protected:
+  bool IsTabletMode() const { return GetParam(); }
+
+  assistant::ScopedAssistantBrowserDelegate scoped_assistant_browser_delegate_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AssistantNewEntryPointTest : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/true) {}
+  ~AssistantNewEntryPointTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonVisibility) {
+  GetAppListTestHelper()->ShowAppList();
+
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  EXPECT_TRUE(new_entry_point_button->GetVisible());
+
+  views::ImageButton* assistant_button =
+      GetAppListTestHelper()->GetSearchBoxView()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  EXPECT_FALSE(assistant_button->GetVisible());
+}
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
+  base::test::TestFuture<void> open_new_entry_point_future;
+  scoped_assistant_browser_delegate_.SetOpenNewEntryPointClosure(
+      open_new_entry_point_future.GetCallback());
+
+  base::UserActionTester user_action_tester;
+
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  ASSERT_TRUE(new_entry_point_button->GetVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  if (IsTabletMode()) {
+    generator->GestureTapAt(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+  } else {
+    generator->MoveMouseTo(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+
+  EXPECT_TRUE(open_new_entry_point_future.Wait())
+      << "Expect OpenNewEntryPoint to be called";
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Assistant.NewEntryPoint.Launcher"));
+}
+
+class AssistantNewEntryPointDisabledTest
+    : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointDisabledTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/false) {}
+  ~AssistantNewEntryPointDisabledTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointDisabledTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  EXPECT_FALSE(new_entry_point_button);
+}
+
 class SunfishLauncherButtonTest : public AshTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
   SunfishLauncherButtonTest() {
+    std::vector<base::test::FeatureRef> sunfish_features = {
+        features::kSunfishFeature,
+        features::kScannerUpdate,
+        features::kScannerDogfood,
+    };
     if (IsSunfishEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/sunfish_features, /*disabled_features=*/{});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/sunfish_features);
     }
   }
   ~SunfishLauncherButtonTest() override = default;
@@ -1339,8 +1473,6 @@ class SunfishLauncherButtonTest : public AshTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::AutoReset<bool> ignore_sunfish_secret_key =
-      switches::SetIgnoreSunfishSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SunfishLauncherButtonTest, testing::Bool());
@@ -1357,10 +1489,10 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_TRUE(home_button->IsShowingAppList());
   auto* sunfish_button =
       GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
-  ASSERT_EQ(IsSunfishEnabled(), !!sunfish_button);
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_EQ(sunfish_button->GetVisible(), IsSunfishEnabled());
 
   if (IsSunfishEnabled()) {
-    ASSERT_TRUE(sunfish_button->GetVisible());
     // `SetShowSunfishButton` should control the visibility of the button.
     GetSearchModel()->search_box()->SetShowSunfishButton(false);
     EXPECT_FALSE(sunfish_button->GetVisible());

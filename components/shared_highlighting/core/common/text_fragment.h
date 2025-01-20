@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 
@@ -23,6 +24,7 @@ class TextFragment {
                const std::string& prefix,
                const std::string& suffix);
   TextFragment(const TextFragment& other);
+  TextFragment& operator=(const TextFragment& other);
   ~TextFragment();
 
   // Returns a TextFragment instance created from a |fragment_string| whose
@@ -31,7 +33,7 @@ class TextFragment {
   // [prefix-,]textStart[,textEnd][,-suffix]
   // Returns |std::nullopt| if parsing failed.
   static std::optional<TextFragment> FromEscapedString(
-      std::string escaped_string);
+      std::string_view escaped_string);
 
   // Returns a TextFragment instance created from a dictionary |value|
   // containing the right set of values. The values stored in |value| must be
@@ -39,10 +41,10 @@ class TextFragment {
   // Returns |std::nullopt| if parsing failed.
   static std::optional<TextFragment> FromValue(const base::Value* value);
 
-  const std::string text_start() const { return text_start_; }
-  const std::string text_end() const { return text_end_; }
-  const std::string prefix() const { return prefix_; }
-  const std::string suffix() const { return suffix_; }
+  const std::string& text_start() const { return text_start_; }
+  const std::string& text_end() const { return text_end_; }
+  const std::string& prefix() const { return prefix_; }
+  const std::string& suffix() const { return suffix_; }
 
   // Converts the current fragment to its escaped URL parameter format:
   // text=[prefix-,]textStart[,textEnd][,-suffix]

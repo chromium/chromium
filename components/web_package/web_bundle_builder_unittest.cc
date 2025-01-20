@@ -32,7 +32,7 @@ std::string GetTestFileContents(const base::FilePath& path) {
 }
 
 std::vector<uint8_t> GetStringAsBytes(std::string_view contents) {
-  auto bytes = base::as_bytes(base::make_span(contents));
+  auto bytes = base::as_byte_span(contents);
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 

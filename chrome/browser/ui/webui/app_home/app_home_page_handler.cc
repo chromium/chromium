@@ -352,9 +352,20 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   app_info->icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
 
-  bool is_locally_installed = registrar.IsInstallState(
-      app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               web_app::proto::INSTALLED_WITH_OS_INTEGRATION});
+  bool is_locally_installed;
+  if (registrar.GetInstallState(app_id) == std::nullopt) {
+    is_locally_installed = false;
+  } else {
+    switch (registrar.GetInstallState(app_id).value()) {
+      case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+        is_locally_installed = false;
+        break;
+      case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
+      case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
+        is_locally_installed = true;
+        break;
+    }
+  }
 
   const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
   // Only show the Run on OS Login menu item for locally installed web apps

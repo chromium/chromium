@@ -40,7 +40,7 @@ TEST(CoreAPITest, GetTimeTicksNow) {
 // Tests that everything that takes a handle properly recognizes it.
 TEST(CoreAPITest, InvalidHandle) {
   MojoHandle h0, h1;
-  char buffer[10] = {0};
+  char buffer[10] = {};
   uint32_t buffer_size;
   void* write_pointer;
   const void* read_pointer;
@@ -155,7 +155,7 @@ TEST(CoreAPITest, BasicMessagePipe) {
 TEST(CoreAPITest, BasicDataPipe) {
   MojoHandle hp, hc;
   MojoHandleSignals sig;
-  char buffer[20] = {0};
+  char buffer[20] = {};
   uint32_t buffer_size;
   void* write_pointer;
   const void* read_pointer;

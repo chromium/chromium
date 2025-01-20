@@ -45,9 +45,6 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
   }
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override {}
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
 };
 
 TEST(LayerTreeFrameSinkTest, ContextLossInformsClient) {

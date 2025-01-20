@@ -231,11 +231,6 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
   ~MockPasswordManagerClient() override = default;
 
   // ChromePasswordManagerClient overrides.
-  MOCK_METHOD(void,
-              TriggerReauthForPrimaryAccount,
-              (signin_metrics::ReauthAccessPoint,
-               base::OnceCallback<void(ReauthSucceeded)>),
-              (override));
   const password_manager::MockPasswordFeatureManager*
   GetPasswordFeatureManager() const override {
     return &mock_password_feature_manager_;
@@ -1037,34 +1032,20 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
       1);
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldNotReauthForOptInIfExplicitSigninUIEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      switches::kExplicitBrowserSigninUIOnDesktop);
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, false);
-
+TEST_F(PasswordsPrivateDelegateImplTest, TestShouldOptInToAccountStorage) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
 
-  EXPECT_CALL(*client,
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
-      .Times(0);
+  EXPECT_CALL(*client->GetPasswordFeatureManager(), OptInToAccountStorage);
 
   auto delegate = CreateDelegate();
   delegate->SetAccountStorageEnabled(true, web_contents.get());
-
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
-
-  // Implicit and explicit sign-ins are treated alike.
-  delegate->SetAccountStorageEnabled(true, web_contents.get());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldNotReauthForOptOutAndShouldSetPref) {
+TEST_F(PasswordsPrivateDelegateImplTest, TestShouldOptOutOfAccountStorage) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -1073,10 +1054,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   ON_CALL(*feature_manager, IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(*client,
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
-      .Times(0);
   EXPECT_CALL(*feature_manager, OptOutOfAccountStorage);
 
   auto delegate = CreateDelegate();

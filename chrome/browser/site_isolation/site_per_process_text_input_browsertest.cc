@@ -279,14 +279,14 @@ class RecordActiveViewsObserver {
 // Main class for all TextInputState and IME related tests.
 class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
  public:
-  SitePerProcessTextInputManagerTest() {}
+  SitePerProcessTextInputManagerTest() = default;
 
   SitePerProcessTextInputManagerTest(
       const SitePerProcessTextInputManagerTest&) = delete;
   SitePerProcessTextInputManagerTest& operator=(
       const SitePerProcessTextInputManagerTest&) = delete;
 
-  ~SitePerProcessTextInputManagerTest() override {}
+  ~SitePerProcessTextInputManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -1246,7 +1246,7 @@ class ShowDefinitionForWordObserver
   ShowDefinitionForWordObserver& operator=(
       const ShowDefinitionForWordObserver&) = delete;
 
-  ~ShowDefinitionForWordObserver() override {}
+  ~ShowDefinitionForWordObserver() override = default;
 
   const std::string& WaitForWordLookUp() {
     if (did_receive_string_)
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t child_process_id = child_frame->GetProcess()->GetID();
+  int32_t child_process_id = child_frame->GetProcess()->GetDeprecatedID();
   int32_t child_frame_routing_id = child_frame->GetRoutingID();
 
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t main_frame_process_id = main_frame->GetProcess()->GetID();
+  int32_t main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int32_t main_frame_routing_id = main_frame->GetRoutingID();
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
       [](int32_t process_id, int32_t routing_id,

@@ -10,6 +10,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -17,7 +18,6 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
-#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,20 +29,17 @@
 namespace commerce {
 namespace {
 
-class MockShoppingServiceHandler : public ShoppingServiceHandler {
+class MockPriceTrackingHandler : public PriceTrackingHandler {
  public:
-  explicit MockShoppingServiceHandler(bookmarks::BookmarkModel* bookmark_model,
-                                      ShoppingService* shopping_service)
-      : ShoppingServiceHandler(
-            mojo::PendingRemote<shopping_service::mojom::Page>(),
-            mojo::PendingReceiver<
-                shopping_service::mojom::ShoppingServiceHandler>(),
-            bookmark_model,
-            shopping_service,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr) {}
+  explicit MockPriceTrackingHandler(bookmarks::BookmarkModel* bookmark_model,
+                                    ShoppingService* shopping_service)
+      : PriceTrackingHandler(mojo::PendingRemote<price_tracking::mojom::Page>(),
+                             mojo::PendingReceiver<
+                                 price_tracking::mojom::PriceTrackingHandler>(),
+                             nullptr,
+                             shopping_service,
+                             nullptr,
+                             bookmark_model) {}
 
   MOCK_METHOD(void, TrackPriceForBookmark, (int64_t bookmark_id));
   MOCK_METHOD(void, UntrackPriceForBookmark, (int64_t bookmark_id));
@@ -62,7 +59,7 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
     bookmark_ = AddProductBookmark(bookmark_model_.get(), u"product 1",
                                    GURL("http://example.com/1"), 123L, true,
                                    1230000, "usd");
-    handler_ = std::make_unique<MockShoppingServiceHandler>(
+    handler_ = std::make_unique<MockPriceTrackingHandler>(
         bookmark_model_.get(), shopping_service_.get());
     controller_ = std::make_unique<commerce::ShoppingListContextMenuController>(
         bookmark_model_.get(), shopping_service_.get(), handler_.get());
@@ -83,7 +80,7 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
 
   ui::SimpleMenuModel* menu_mode() { return menu_model_.get(); }
 
-  MockShoppingServiceHandler* handler() { return handler_.get(); }
+  MockPriceTrackingHandler* handler() { return handler_.get(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -93,9 +90,9 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
-  std::unique_ptr<commerce::ShoppingListContextMenuController> controller_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  std::unique_ptr<MockShoppingServiceHandler> handler_;
+  std::unique_ptr<MockPriceTrackingHandler> handler_;
+  std::unique_ptr<commerce::ShoppingListContextMenuController> controller_;
 };
 
 TEST_F(ShoppingListContextMenuControllerTest, AddMenuItem) {

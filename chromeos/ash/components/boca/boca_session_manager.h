@@ -43,10 +43,12 @@ class BocaSessionManager
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
-
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
-
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
+  inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
+  inline static constexpr int kSkipPollingBufferInSeconds = 2;
+  inline static constexpr char kPollingResultHistName[] =
+      "Ash.Boca.PollingResult";
 
   enum class BocaAction {
     kDefault = 0,
@@ -60,6 +62,17 @@ class BocaSessionManager
     kInfo = 0,
     kWarn = 1,
     kFatal = 2,
+  };
+
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // `BocaPollingResult` in src/tools/metrics/histograms/metadata/ash/enums.xml.
+  enum class BocaPollingResult {
+    kNoUpdate = 0,
+    kSessionStart = 1,
+    kSessionEnd = 2,
+    kInSessionUpdate = 3,
+    kMaxValue = kInSessionUpdate,
   };
 
   struct BocaError {
@@ -141,8 +154,9 @@ class BocaSessionManager
 
   void StartSessionPolling(bool in_session);
   void MaybeLoadCurrentSession();
-  virtual void LoadCurrentSession();
-  void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
+  virtual void LoadCurrentSession(bool from_polling);
+  void ParseSessionResponse(bool from_polling,
+                            base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
 
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
@@ -166,6 +180,10 @@ class BocaSessionManager
 
   SessionClientImpl* session_client_impl() { return session_client_impl_; }
 
+  base::OneShotTimer& session_duration_timer_for_testing() {
+    return session_duration_timer_;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -177,6 +195,8 @@ class BocaSessionManager
   bool IsSessionActive(const ::boca::Session* session);
   bool IsSessionTakeOver(const ::boca::Session* previous_session,
                          const ::boca::Session* current_session);
+  void RecordPollingResult(const ::boca::Session* previous_session,
+                           const ::boca::Session* current_session);
   void HandleTakeOver(bool dispatch_event,
                       std::unique_ptr<::boca::Session> session);
   void DispatchEvent();
@@ -185,6 +205,10 @@ class BocaSessionManager
   void NotifySessionCaptionConfigUpdate();
   void NotifyRosterUpdate();
   void NotifyConsumerActivityUpdate();
+  void HandleSessionUpdate(std::unique_ptr<::boca::Session> previous_session,
+                           std::unique_ptr<::boca::Session> current_session,
+                           bool dispatch_event);
+  void UpdateLocalSessionDurationTracker();
 
   const bool is_producer_;
   bool is_app_opened_ = false;
@@ -195,7 +219,17 @@ class BocaSessionManager
   base::RepeatingTimer in_session_timer_;
   // Timer used for indefinite session polling.
   base::RepeatingTimer indefinite_timer_;
+  // Timer used for tracking session duration on client. This is to make sure we
+  // still end the session in time if device lose network access.
+  base::OneShotTimer session_duration_timer_;
   base::TimeTicks last_session_load_;
+  // Tracking session start time from remote. Use remote session start time
+  // instead of local timesticks since device don't always join when session
+  // start. The calculation used by this time will be subject to device drift,
+  // but is in sync with the UI remaining time.
+  base::Time last_session_start_time_;
+  base::TimeDelta last_session_duration_;
+
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
   bool is_network_connected_ = false;

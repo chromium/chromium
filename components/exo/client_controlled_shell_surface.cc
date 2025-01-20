@@ -212,10 +212,8 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
     return;
   }
 
-  std::unique_ptr<ash::PresentationTimeRecorder> OnDragStarted(
-      int component) override {
+  void OnDragStarted(int component) override {
     shell_surface_->OnDragStarted(component);
-    return nullptr;
   }
 
   void OnDragFinished(bool canceled, const gfx::PointF& location) override {

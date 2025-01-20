@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -82,8 +83,8 @@ static constexpr char kServiceWorkerScript[] =
     )JS";
 
 // The boolean tuple describing:
-// 1. the feature flag value for `kEnableAIPromptAPIForWebPlatform`;
-// 2. the feature flag value for `kEnableAIPromptAPIForExtension`;
+// 1. the feature flag value for `kAIPromptAPIForWebPlatform`;
+// 2. the feature flag value for `kAIPromptAPIForExtension`;
 // 3. if the kill switch is triggered;
 // 4. if the extension requests for the right permission;
 // 5. if the extension is participating in the origin trial.
@@ -155,7 +156,8 @@ class ExtensionAILanguageModelBrowserTest
     std::vector<std::string_view> enabled_features;
     // Disable all the other AI APIs to avoid unexpected ai namespace.
     std::vector<std::string_view> disabled_features{
-        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI"};
+        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI",
+        "LanguageDetectionAPI"};
 
     if (IsPromptAPIForWebPlatformEnabled(GetParam())) {
       enabled_features.push_back("AIPromptAPIForWebPlatform");
@@ -183,14 +185,14 @@ class ExtensionAILanguageModelBrowserTest
     // The base feature for the web platform prompt API should be enabled so we
     // don't apply the kill switch to it.
     std::vector<base::test::FeatureRefAndParams> enabled_base_features{
-        {blink::features::kEnableAIPromptAPIForWebPlatform, {}}};
+        {blink::features::kAIPromptAPIForWebPlatform, {}}};
     std::vector<base::test::FeatureRef> disabled_base_features;
     if (IsPromptAPIForExtensionKillSwitchTriggered(GetParam())) {
       disabled_base_features.push_back(
-          {blink::features::kEnableAIPromptAPIForExtension});
+          {blink::features::kAIPromptAPIForExtension});
     } else {
       enabled_base_features.push_back(
-          {blink::features::kEnableAIPromptAPIForExtension, {}});
+          {blink::features::kAIPromptAPIForExtension, {}});
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_base_features,
                                                 disabled_base_features);
@@ -232,17 +234,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
                        MAYBE_TestLanguageModelFactoryExistence) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(GetManifest());
-  auto bool_to_str = [](bool value) { return value ? "true" : "false"; };
   bool is_self_ai_accessible = IsPromptAPIForWebPlatformEnabled(GetParam());
   bool is_chrome_ai_accessible =
       (IsPromptAPIForExtensionEnabled(GetParam()) ||
        IsExtensionParticipatingInOriginTrial(GetParam())) &&
       IsExtensionPermissionRequested(GetParam()) &&
       !IsPromptAPIForExtensionKillSwitchTriggered(GetParam());
-  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"),
-                     base::StringPrintf(kServiceWorkerScript,
-                                        bool_to_str(is_self_ai_accessible),
-                                        bool_to_str(is_chrome_ai_accessible)));
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("sw.js"),
+      base::StringPrintf(kServiceWorkerScript,
+                         base::ToString(is_self_ai_accessible),
+                         base::ToString(is_chrome_ai_accessible)));
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);

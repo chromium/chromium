@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -79,6 +80,13 @@ int GetLayoutConstant(LayoutConstant constant) {
       return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case LOCATION_BAR_TRAILING_ICON_SIZE:
       return 20;
+    case NEW_TAB_BUTTON_LEADING_MARGIN:
+      return features::IsTabstripComboButtonEnabled() &&
+                     !features::HasTabstripComboButtonWithBackground()
+                 ? 4
+                 : 0;
+    case STAR_RATING_ICON_SIZE:
+      return 14;
     case TAB_AFTER_TITLE_PADDING:
       return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:

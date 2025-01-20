@@ -27,28 +27,6 @@
 
 namespace os_crypt_async {
 
-namespace {
-
-// Helper function to verify that decryption using OSCrypt failed. This is
-// platform dependent, as Windows will fail, but other platforms will return the
-// ciphertext back.
-[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
-    const std::optional<std::string>& decrypted,
-    base::span<const uint8_t> ciphertext) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, decryption fails, and decrypted will have no valid value.
-  return !decrypted;
-#else
-  // On other platforms, OSCrypt does not recognise the data and it returns
-  // the data without decrypting.
-  if (!decrypted) {
-    return false;
-  }
-  return decrypted == std::string(ciphertext.begin(), ciphertext.end());
-#endif
-}
-
-}  // namespace
 class OSCryptAsyncTest : public ::testing::Test {
  protected:
   using ProviderList =
@@ -315,8 +293,7 @@ TEST_F(OSCryptAsyncTest, EncryptorOption) {
 
     // The first data that was encrypted with v20 cannot be decrypted.
     auto failing_plaintext = encryptor.DecryptData(*test_ciphertext);
-    EXPECT_TRUE(
-        MaybeVerifyFailedDecryptOperation(failing_plaintext, *test_ciphertext));
+    EXPECT_FALSE(failing_plaintext);
   }
 }
 
@@ -459,6 +436,24 @@ TEST_F(OSCryptAsyncTest, TestEncryptorInterface) {
   EXPECT_EQ(*decrypted, "testsecrets");
 }
 
+TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
+  auto encryptor = GetTestEncryptorForTesting();
+
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  encryptor.set_decryption_available_for_testing(false);
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+
+  encryptor.set_decryption_available_for_testing(std::nullopt);
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+  encryptor.set_encryption_available_for_testing(false);
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+
+  encryptor.set_encryption_available_for_testing(std::nullopt);
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+}
+
 class FailingKeyProvider : public TestKeyProvider {
  private:
   void GetKey(KeyCallback callback) override {
@@ -547,7 +542,7 @@ TEST_F(OSCryptAsyncTest, ShouldReencrypt) {
     Encryptor encryptor = GetInstanceSync(factory);
     ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
     // FOO should be used, as it's the higher precedence.
-    EXPECT_THAT(base::make_span(ciphertext).first(3u),
+    EXPECT_THAT(base::span(ciphertext).first<3>(),
                 ::testing::ElementsAreArray(base::span_from_cstring("FOO")));
     std::string plaintext;
     Encryptor::DecryptFlags flags;

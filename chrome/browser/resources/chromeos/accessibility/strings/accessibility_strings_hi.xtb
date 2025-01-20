@@ -241,6 +241,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2556326187583116255">ChromeVox को बोलने से रोकने के लिए, दो उंगलियों से टैप करें</translation>
 <translation id="2573256689920773241">बेसिक नेविगेशन</translation>
 <translation id="257674075312929031">ग्रुप</translation>
+<translation id="2577127557293415225">थोड़ी देर के लिए दोनों आंखें बंद करें</translation>
 <translation id="2582407057977008361">अलग</translation>
 <translation id="2592212930811759050">बदलाव शुरू करने के लिए दो बार टैप करें</translation>
 <translation id="2598495320872286378">व्याकरण की गड़बड़ी</translation>
@@ -793,7 +794,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5983179082906765664">मार्गदर्शक विवरण का स्‍तर बढ़ाएं</translation>
 <translation id="5988563937187882754">दाईं ओर देखें</translation>
 <translation id="5992285135956208197">ग्राफ़िक्स दस्तावेज़</translation>
-<translation id="5999630716831179808">ध्वनियां</translation>
+<translation id="5999630716831179808">आवाज़ें</translation>
 <translation id="6006050241733874051">फ़ॉर्म</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{बैकस्लैश}one{# बैकस्लैश}other{# बैकस्लैश}}</translation>
 <translation id="6010616110396250088">घटते क्रम में लगाएं</translation>
@@ -844,6 +845,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6385591741672306837">कॉलम</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">सभी इवेंट फ़िल्टर बंद करें</translation>
+<translation id="6406989068857078334">माउस की स्पीड कम हो गई है. क्लिक करने के लिए फिर से <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">पतझड़</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{विरामचिह्न}one{# विरामचिह्न}other{# विरामचिह्न}}</translation>
@@ -1097,6 +1099,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8205922869661890178">डेवलपर लॉग पेज खोलें</translation>
 <translation id="8212109599554677485">डिसप्ले शैली को बदलकर 'आमने-सामने' करें</translation>
 <translation id="8215202828671303819">एक से ज़्यादा चुनें</translation>
+<translation id="822316432305106615">प्रिसिजन क्लिक की सुविधा चालू करें</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ओपैसिटी.</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="826825447994856889">परिचय</translation>

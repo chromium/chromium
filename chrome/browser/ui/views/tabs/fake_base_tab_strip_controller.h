@@ -49,6 +49,8 @@ class FakeBaseTabStripController : public TabStripController {
   bool IsTabSelected(int index) const override;
   bool IsTabPinned(int index) const override;
   void SelectTab(int index, const ui::Event& event) override;
+  void RecordMetricsOnTabSelectionChange(
+      std::optional<tab_groups::TabGroupId> group) override;
   void ExtendSelectionTo(int index) override;
   void ToggleSelected(int index) override;
   void AddSelectionFromAnchorTo(int index) override;
@@ -102,6 +104,9 @@ class FakeBaseTabStripController : public TabStripController {
   Profile* GetProfile() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   const Browser* GetBrowser() const override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 

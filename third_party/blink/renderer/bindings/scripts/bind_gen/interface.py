@@ -21,7 +21,6 @@ from .code_node import SequenceNode
 from .code_node import SymbolDefinitionNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
-from .code_node import SymbolSensitiveSelectionNode
 from .code_node import TextNode
 from .code_node import WeakDependencyNode
 from .code_node_cxx import CxxBlockNode
@@ -319,6 +318,9 @@ def bind_callback_local_vars(code_node, cg_context):
         S("current_script_state",
           ("ScriptState* ${current_script_state} = "
            "ScriptState::From(${isolate}, ${current_context});")),
+        S("receiver_script_state",
+          ("ScriptState* ${receiver_script_state} = "
+           "ScriptState::ForRelevantRealm(${isolate}, ${v8_receiver});")),
         S("isolate", "v8::Isolate* ${isolate} = ${info}.GetIsolate();"),
         S("non_undefined_argument_length",
           ("const int ${non_undefined_argument_length} = "
@@ -334,11 +336,6 @@ def bind_callback_local_vars(code_node, cg_context):
     is_receiver_context = not (
         (cg_context.member_like and cg_context.member_like.is_static)
         or cg_context.constructor)
-
-    # creation_context
-    pattern = "const v8::Local<v8::Context>& ${creation_context} = {_1};"
-    _1 = "${receiver_context}" if is_receiver_context else "${current_context}"
-    local_vars.append(S("creation_context", _format(pattern, _1=_1)))
 
     # script_state
     pattern = "ScriptState* ${script_state} = {_1};"
@@ -402,9 +399,8 @@ def bind_callback_local_vars(code_node, cg_context):
 
         init_args = ["${isolate}"]
         if cg_context.is_return_type_promise_type:
-            init_args.append("${exception_context_type}")
-            init_args.append("${class_like_name}")
-            init_args.append("${property_name}")
+            init_args.append("ExceptionContext(${exception_context_type}, "
+                             "${class_like_name}, ${property_name})")
         node.append(
             F("ExceptionState ${exception_state}({init_args});",
               init_args=", ".join(init_args)))
@@ -412,70 +408,6 @@ def bind_callback_local_vars(code_node, cg_context):
 
     local_vars.append(
         S("exception_state", definition_constructor=create_exception_state))
-
-    # receiver_context
-    def create_receiver_context(symbol_node):
-        node = SymbolDefinitionNode(symbol_node)
-        # tl;dr: This is an optimization to leverage
-        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
-        # See also the comment in `create_receiver_script_state`.
-        #
-        # When ${receiver_script_state} is already defined,
-        #     ${receiver_script_state}->GetContext()
-        # is faster than
-        #     ${v8_receiver}->GetCreationContextChecked()
-        node.append(
-            SymbolSensitiveSelectionNode([
-                SymbolSensitiveSelectionNode.Choice(
-                    ["receiver_script_state"],
-                    T("v8::Local<v8::Context> ${receiver_context} = "
-                      "${receiver_script_state}->GetContext();")),
-                SymbolSensitiveSelectionNode.Choice(
-                    [],
-                    T("v8::Local<v8::Context> ${receiver_context} = "
-                      "${v8_receiver}->GetCreationContextChecked();")),
-            ]))
-        return node
-
-    local_vars.append(
-        S("receiver_context", definition_constructor=create_receiver_context))
-
-    # receiver_script_state
-    def create_receiver_script_state(symbol_node):
-        node = SymbolDefinitionNode(symbol_node)
-        # tl;dr: This is an optimization to leverage
-        # `v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext`.
-        #
-        # If ${receiver_context} is not used at all, or if
-        # ${receiver_script_state} is used before ${receiver_context} is used,
-        # then
-        #     v8::Object::GetAlignedPointerFromEmbedderDataInCreationContext
-        #   + ScriptState::GetContext
-        # i.e.
-        #     ScriptState::ForRelevantRealm(v8::Local<v8::Object>)
-        #   + ScriptState::GetContext
-        # is faster than
-        #     v8::Object::GetCreationContextChecked
-        #   + ScriptState::From(v8::Isolate*, v8::Local<v8::Context>)
-        # Depending on already-defined symbols, select the best way to get
-        # ${receiver_script_state}.
-        node.append(
-            SymbolSensitiveSelectionNode([
-                SymbolSensitiveSelectionNode.Choice(
-                    ["receiver_context"],
-                    T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::From(${isolate}, ${receiver_context});")),
-                SymbolSensitiveSelectionNode.Choice(
-                    [],
-                    T("ScriptState* ${receiver_script_state} = "
-                      "ScriptState::ForRelevantRealm(${isolate}, "
-                      "${v8_receiver});")),
-            ]))
-        return node
-
-    local_vars.append(
-        S("receiver_script_state",
-          definition_constructor=create_receiver_script_state))
 
 
     # blink_receiver
@@ -839,13 +771,6 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             (not cg_context.return_type
              or cg_context.return_type.unwrap().is_undefined)
             and not cg_context.does_override_idl_return_type)
-        is_return_type_promise = (
-            cg_context.return_type
-            and cg_context.return_type.unwrap().is_promise
-            and not "IDLTypeImplementedAsV8Promise"
-            in cg_context.return_type.unwrap().extended_attributes
-            and not "PromiseIDLTypeMismatch"
-            in cg_context.member_like.extended_attributes)
         if not (is_return_type_void
                 or cg_context.does_override_idl_return_type):
             return_type = blink_type_info(cg_context.return_type).value_t
@@ -853,12 +778,6 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             _, api_call = api_calls[0]
             if is_return_type_void:
                 nodes.append(F("{};", api_call))
-            elif is_return_type_promise:
-                return_type = "ScriptPromise<{}>".format(
-                    native_value_tag(
-                        cg_context.return_type.unwrap().result_type))
-                nodes.append(
-                    F("{} ${return_value} = {};", return_type, api_call))
             elif "ReflectOnly" in cg_context.member_like.extended_attributes:
                 # [ReflectOnly]
                 nodes.append(F("auto ${return_value} = {};", api_call))
@@ -1145,17 +1064,6 @@ def make_check_security_of_return_value(cg_context):
             "third_party/blink/renderer/bindings/core/v8/binding_security.h",
             "third_party/blink/renderer/core/frame/web_feature.h",
             "third_party/blink/renderer/platform/instrumentation/use_counter.h",
-        ]))
-    return node
-
-
-def make_cooperative_scheduling_safepoint(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    node = TextNode("BINDINGS_COOPERATIVE_SCHEDULING_SAFEPOINT();")
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/platform/bindings/cooperative_scheduling_helpers.h"
         ]))
     return node
 
@@ -1976,7 +1884,7 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
             args.append("bindings::V8ReturnValue::kMaybeCrossOrigin")
         elif cg_context.constructor or cg_context.member_like.is_static:
-            args.append("${creation_context}")
+            args.append("${current_context}")
         elif cg_context.for_world == cg_context.MAIN_WORLD:
             args.append("bindings::V8ReturnValue::kMainWorld")
         else:
@@ -2096,6 +2004,100 @@ def make_attribute_get_callback_def(cg_context, function_name):
     return func_def
 
 
+def nadc_parameter_v8_type_and_symbol_node(cg_context, argument, v8_arg_name,
+                                           blink_arg_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(v8_arg_name, str)
+    assert isinstance(blink_arg_name, str)
+    assert isinstance(argument, web_idl.Argument) or isinstance(
+        argument, web_idl.Attribute)
+
+    unwrapped_idl_type = argument.idl_type.unwrap()
+    if ("PassAsSpan" in argument.idl_type.effective_annotations
+            or unwrapped_idl_type.is_interface
+            or unwrapped_idl_type.is_sequence):
+        return ("v8::Local<v8::Value>",
+                make_v8_to_blink_value(blink_arg_name,
+                                       "${{{}}}".format(v8_arg_name),
+                                       argument.idl_type,
+                                       argument=argument,
+                                       error_exit_return_statement="return;",
+                                       cg_context=cg_context))
+    else:
+        return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_any else
+                blink_type_info(argument.idl_type).value_t,
+                SymbolNode(
+                    blink_arg_name,
+                    "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
+
+
+def make_attribute_set_nadc_callback_def(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    if not "NoAllocDirectCall" in cg_context.attribute.extended_attributes:
+        return None, None
+    if not "Setter" in cg_context.attribute.extended_attributes.get(
+            "NoAllocDirectCall").values:
+        return None, None
+
+    param_type, param_symbol = nadc_parameter_v8_type_and_symbol_node(
+        cg_context=cg_context,
+        argument=cg_context.attribute,
+        v8_arg_name="value",
+        blink_arg_name="blink_value")
+
+    func_name = callback_function_name(cg_context)
+    func_def = CxxFuncDefNode(
+        name=func_name,
+        arg_decls=[
+            "v8::Local<v8::Object> v8_arg0_receiver",
+            "{} value".format(param_type),
+            "v8::FastApiCallbackOptions& v8_arg_callback_options"
+        ],
+        return_type="void")
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    body.register_code_symbols([
+        SymbolNode(
+            "isolate",
+            "v8::Isolate* ${isolate} = v8_arg_callback_options.isolate;"),
+        SymbolNode("blink_receiver", (_format(
+            "{}* ${blink_receiver} = "
+            "${class_name}::ToWrappableUnsafe(${isolate}, v8_arg0_receiver);",
+            blink_class_name(cg_context.interface)))), param_symbol,
+        SymbolNode("handle_scope", "v8::HandleScope handle_scope(${isolate});")
+    ])
+
+    bind_callback_local_vars(body, cg_context)
+
+    # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
+    blink_arguments = list()
+    if "Isolate" in cg_context.attribute.extended_attributes.values_of(
+            "SetterCallWith"):
+        blink_arguments.append("${isolate}")
+
+    # If the value is of type Local<>, then open a HandleScope.
+    u = cg_context.attribute.idl_type.unwrap()
+    if (not u.is_numeric) and (not u.is_boolean):
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+
+    # Append the method arguments next.
+    blink_arguments.append("${blink_value}")
+
+    # Pass ${exception_state} after the method arguments.
+    if cg_context.may_throw_exception:
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+        blink_arguments.append("${exception_state}")
+
+    body.append(
+        FormatNode("${blink_receiver}->{member_func}({blink_arguments});",
+                   member_func=name_style.api_func(
+                       "set", cg_context.attribute.identifier),
+                   blink_arguments=", ".join(blink_arguments)))
+    return func_name, func_def
+
+
 def make_attribute_set_callback_def(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
@@ -2196,12 +2198,9 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             func_name = "PerformAttributeSetCEReactionsReflectTypeStringOrNull"
         else:
             return None
-        text = _format(
-            "bindings::{func_name}"
-            "(${info}, {content_attribute}, "
-            "${class_like_name}, ${property_name});",
-            func_name=func_name,
-            content_attribute=content_attribute)
+        text = _format("bindings::{func_name}(${info}, {content_attribute});",
+                       func_name=func_name,
+                       content_attribute=content_attribute)
         return TextNode(text)
 
     node = optimize_element_cereactions_reflect()
@@ -2237,8 +2236,7 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             FormatNode("auto&& observable_array = {attribute_get_call};",
                        attribute_get_call=attribute_get_call),
             TextNode("observable_array->PerformAttributeSet("
-                     "${script_state}, ${v8_property_value}, "
-                     "${exception_state});"),
+                     "${script_state}, ${v8_property_value});"),
         ])
         return func_def
 
@@ -2246,35 +2244,6 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
 
     if cg_context.is_interceptor_returning_v8intercepted:
         body.append(TextNode("return v8::Intercepted::kYes;"))
-
-    return func_def
-
-
-def make_constant_callback_def(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    logging_nodes = SequenceNode([
-        make_report_deprecate_as(cg_context),
-        make_report_measure_as(cg_context),
-        make_log_activity(cg_context),
-    ])
-    if not logging_nodes:
-        return None
-
-    func_def = _make_empty_callback_def(cg_context, function_name)
-    body = func_def.body
-
-    v8_set_return_value = _format(
-        "bindings::V8SetReturnValue(${info}, ${class_name}::Constant::{});",
-        constant_name(cg_context))
-    body.extend([
-        make_runtime_call_timer_scope(cg_context),
-        make_bindings_trace_event(cg_context),
-        logging_nodes,
-        EmptyNode(),
-        TextNode(v8_set_return_value),
-    ])
 
     return func_def
 
@@ -2302,7 +2271,6 @@ def make_overload_dispatcher_function_def(cg_context, function_name):
         body.append(make_promise_return_context(cg_context))
         body.append(make_operation_entry(cg_context))
         body.append(EmptyNode())
-        body.append(make_cooperative_scheduling_safepoint(cg_context))
         body.append(EmptyNode())
 
     if cg_context.constructor_group:
@@ -2575,7 +2543,6 @@ def list_no_alloc_direct_call_callbacks(cg_context):
             entries.append(Entry(operation, 0))
     return entries
 
-
 def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                            argument_count):
     """
@@ -2603,32 +2570,6 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             self.blink_arg_name = blink_arg_name
             self.symbol_node = symbol_node
 
-    def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
-        unwrapped_idl_type = argument.idl_type.unwrap()
-        if "PassAsSpan" in argument.idl_type.effective_annotations:
-            return ("v8::Local<v8::Value>",
-                    make_v8_to_blink_value(
-                        blink_arg_name,
-                        "${{{}}}".format(v8_arg_name),
-                        argument.idl_type,
-                        argument=argument,
-                        error_exit_return_statement="return;",
-                        cg_context=cg_context))
-        if unwrapped_idl_type.is_interface or unwrapped_idl_type.is_sequence:
-            return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_interface
-                    else "v8::Local<v8::Array>",
-                    make_v8_to_blink_value(
-                        blink_arg_name,
-                        "${{{}}}".format(v8_arg_name),
-                        argument.idl_type,
-                        argument=argument,
-                        error_exit_return_statement="return;",
-                        cg_context=cg_context))
-        else:
-            return (blink_type_info(argument.idl_type).value_t,
-                    S(blink_arg_name,
-                      "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
-
     arg_list = []
     for argument in function_like.arguments:
         if not (argument.index < argument_count):
@@ -2637,8 +2578,8 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                           argument.identifier)
         v8_arg_name = name_style.arg_f("v8_arg{}_{}", argument.index + 1,
                                        argument.identifier)
-        v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
-                                                       blink_arg_name)
+        v8_type, symbol_node = nadc_parameter_v8_type_and_symbol_node(
+            cg_context, argument, v8_arg_name, blink_arg_name)
 
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
@@ -4413,21 +4354,15 @@ def bind_installer_local_vars(code_node, cg_context):
               ("v8::Local<v8::FunctionTemplate> "
                "${interface_function_template} = "
                "${interface_template}.As<v8::FunctionTemplate>();")),
-            S("instance_object_template",
-              ("v8::Local<v8::ObjectTemplate> ${instance_object_template} = "
-               "${interface_function_template}->InstanceTemplate();")),
             S("instance_template",
-              ("v8::Local<v8::Template> ${instance_template} = "
-               "${instance_object_template};")),
-            S("prototype_object_template",
-              ("v8::Local<v8::ObjectTemplate> ${prototype_object_template} = "
-               "${interface_function_template}->PrototypeTemplate();")),
+              ("v8::Local<v8::ObjectTemplate> ${instance_template} = "
+               "${interface_function_template}->InstanceTemplate();")),
             S("prototype_template",
-              ("v8::Local<v8::Template> ${prototype_template} = "
-               "${prototype_object_template};")),
-            S("signature", ("v8::Local<v8::Signature> ${signature} = "
-                            "v8::Signature::New(${isolate}, "
-                            "${interface_function_template});")),
+              ("v8::Local<v8::ObjectTemplate> ${prototype_template} = "
+               "${interface_function_template}->PrototypeTemplate();")),
+            S("signature",
+              ("v8::Local<v8::Signature> ${signature} = "
+               "v8::Local<v8::Signature>::Cast(${interface_template});")),
         ])
     elif cg_context.namespace:
         local_vars.extend([
@@ -4436,9 +4371,9 @@ def bind_installer_local_vars(code_node, cg_context):
                "${namespace_object_template} = "
                "${interface_template}.As<v8::ObjectTemplate>();")),
             S("instance_template",
-              "v8::Local<v8::Template> ${instance_template};"),
+              "v8::Local<v8::ObjectTemplate> ${instance_template};"),
             S("prototype_template",
-              "v8::Local<v8::Template> ${prototype_template};"),
+              "v8::Local<v8::ObjectTemplate> ${prototype_template};"),
             S("signature", "v8::Local<v8::Signature> ${signature};"),
         ])
     elif cg_context.callback_interface:
@@ -4448,9 +4383,9 @@ def bind_installer_local_vars(code_node, cg_context):
                "${interface_function_template} = "
                "${interface_template}.As<v8::FunctionTemplate>();")),
             S("instance_template",
-              "v8::Local<v8::Template> ${instance_template};"),
+              "v8::Local<v8::ObjectTemplate> ${instance_template};"),
             S("prototype_template",
-              "v8::Local<v8::Template> ${prototype_template};"),
+              "v8::Local<v8::ObjectTemplate> ${prototype_template};"),
             S("signature", "v8::Local<v8::Signature> ${signature};"),
         ])
 
@@ -4598,10 +4533,17 @@ def _make_attribute_registration_table(table_name, attribute_entries):
 
     T = TextNode
 
+    no_alloc_direct_call_count = sum(
+        map(lambda entry: bool(entry.attr_set_nadc_callback_name),
+            attribute_entries))
+    assert (no_alloc_direct_call_count == 0
+            or no_alloc_direct_call_count == len(attribute_entries))
+    no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
+
     entry_nodes = []
+    attr_set_cfunctions = []
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{attribute_get_callback}, "
                "{attribute_set_callback}, "
                "{v8_property_attribute}, "
@@ -4613,7 +4555,20 @@ def _make_attribute_registration_table(table_name, attribute_entries):
                "{v8_side_effect}, "
                "{v8_cached_accessor}"
                "}},")
+    if no_alloc_direct_call_enabled:
+        pattern = "{{" + pattern + "{attr_set_nadc_callback_name}}},"
     for entry in attribute_entries:
+        # If no fast call callback exists for this function, we just pass "nullptr".
+        attr_set_nadc_callback_name = ""
+        if no_alloc_direct_call_enabled:
+            attr_set_nadc_callback_name = "k" + entry.attr_set_nadc_callback_name
+            attr_set_cfunctions.append(
+                FormatNode(
+                    "static const v8::CFunction {array_name}[] = "
+                    "{{v8::CFunctionBuilder().Fn({function_name}).Build()}};",
+                    function_name=entry.attr_set_nadc_callback_name,
+                    array_name=attr_set_nadc_callback_name))
+
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
@@ -4634,43 +4589,17 @@ def _make_attribute_registration_table(table_name, attribute_entries):
             v8_side_effect=_make_property_entry_v8_side_effect(
                 entry.property_),
             v8_cached_accessor=_make_property_entry_v8_cached_accessor(
-                entry.property_))
+                entry.property_),
+            attr_set_nadc_callback_name=attr_set_nadc_callback_name)
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static const IDLMemberInstaller::AttributeConfig " + table_name +
-          "[] = {"),
-        ListNode(entry_nodes),
-        T("};"),
-    ])
-
-
-def _make_constant_callback_registration_table(table_name, constant_entries):
-    assert isinstance(table_name, str)
-    assert isinstance(constant_entries, (list, tuple))
-    assert all(
-        isinstance(entry, _PropEntryConstant)
-        and isinstance(entry.const_callback_name, str)
-        for entry in constant_entries)
-
-    T = TextNode
-
-    entry_nodes = []
-    pattern = (
-        "{{"  #
-        "\"{property_name}\", "
-        "{constant_callback}"
-        "}},")
-    for entry in constant_entries:
-        text = _format(
-            pattern,
-            property_name=entry.property_.identifier,
-            constant_callback=entry.const_callback_name)
-        entry_nodes.append(T(text))
-
-    return ListNode([
-        T("static const IDLMemberInstaller::ConstantCallbackConfig " +
-          table_name + "[] = {"),
+        ListNode(attr_set_cfunctions),
+        FormatNode(
+            "static const IDLMemberInstaller::{config_name} {table_name}[] = {{",
+            config_name="NoAllocDirectCallAttributeConfig"
+            if no_alloc_direct_call_enabled else "AttributeConfig",
+            table_name=table_name),
         ListNode(entry_nodes),
         T("};"),
     ])
@@ -4680,8 +4609,7 @@ def _make_constant_value_registration_table(table_name, constant_entries):
     assert isinstance(table_name, str)
     assert isinstance(constant_entries, (list, tuple))
     assert all(
-        isinstance(entry, _PropEntryConstant)
-        and entry.const_callback_name is None for entry in constant_entries)
+        isinstance(entry, _PropEntryConstant) for entry in constant_entries)
 
     T = TextNode
 
@@ -4744,10 +4672,9 @@ def _make_operation_registration_table(table_name, operation_entries):
     T = TextNode
     F = FormatNode
 
-    no_alloc_direct_call_count = len(
-        list(
-            filter(lambda entry: entry.no_alloc_direct_call_callbacks,
-                   operation_entries)))
+    no_alloc_direct_call_count = sum(
+        map(lambda entry: bool(entry.no_alloc_direct_call_callbacks),
+            operation_entries))
     assert (no_alloc_direct_call_count == 0
             or no_alloc_direct_call_count == len(operation_entries))
     no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
@@ -4757,7 +4684,6 @@ def _make_operation_registration_table(table_name, operation_entries):
     nadc_overload_nodes = ListNode()
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{operation_callback}, "
                "{function_length}, "
                "{v8_property_attribute}, "
@@ -4890,25 +4816,26 @@ class _PropEntryBase(object):
 
 class _PropEntryAttribute(_PropEntryBase):
     def __init__(self, is_context_dependent, exposure_conditional, world,
-                 attribute, attr_get_callback_name, attr_set_callback_name):
+                 attribute, attr_get_callback_name, attr_set_callback_name,
+                 attr_set_nadc_callback_name):
         assert isinstance(attr_get_callback_name, str)
         assert _is_none_or_str(attr_set_callback_name)
+        assert _is_none_or_str(attr_set_nadc_callback_name)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, attribute)
         self.attr_get_callback_name = attr_get_callback_name
         self.attr_set_callback_name = attr_set_callback_name
+        self.attr_set_nadc_callback_name = attr_set_nadc_callback_name
 
 
 class _PropEntryConstant(_PropEntryBase):
     def __init__(self, is_context_dependent, exposure_conditional, world,
-                 constant, const_callback_name, const_constant_name):
-        assert _is_none_or_str(const_callback_name)
+                 constant, const_constant_name):
         assert isinstance(const_constant_name, str)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, constant)
-        self.const_callback_name = const_callback_name
         self.const_constant_name = const_constant_name
 
 
@@ -5020,11 +4947,18 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
     def process_attribute(attribute, is_context_dependent,
                           exposure_conditional, world):
         cgc_attr = cg_context.make_copy(attribute=attribute, for_world=world)
+        cgc = cgc_attr.make_copy(no_alloc_direct_call=True, attribute_set=True)
+
+        attr_set_nadc_callback_name, attr_set_nadc_callback_node = make_attribute_set_nadc_callback_def(
+            cgc)
+
         cgc = cgc_attr.make_copy(attribute_get=True)
         attr_get_callback_name = callback_function_name(cgc)
+
         attr_get_callback_node = make_attribute_get_callback_def(
             cgc, attr_get_callback_name)
         cgc = cgc_attr.make_copy(attribute_set=True)
+
         attr_set_callback_name = callback_function_name(cgc)
         attr_set_callback_node = make_attribute_set_callback_def(
             cgc, attr_set_callback_name)
@@ -5032,6 +4966,8 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
             attr_set_callback_name = None
 
         callback_def_nodes.extend([
+            attr_set_nadc_callback_node,
+            EmptyNode(),
             attr_get_callback_node,
             EmptyNode(),
             attr_set_callback_node,
@@ -5045,7 +4981,8 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 world=world,
                 attribute=attribute,
                 attr_get_callback_name=attr_get_callback_name,
-                attr_set_callback_name=attr_set_callback_name))
+                attr_set_callback_name=attr_set_callback_name,
+                attr_set_nadc_callback_name=attr_set_nadc_callback_name))
 
     def process_constant(constant, is_context_dependent, exposure_conditional,
                          world):
@@ -5053,19 +4990,9 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
             constant=constant,
             for_world=world,
             v8_callback_type=CodeGenContext.V8_ACCESSOR_NAME_GETTER_CALLBACK)
-        const_callback_name = callback_function_name(cgc)
-        const_callback_node = make_constant_callback_def(
-            cgc, const_callback_name)
-        if const_callback_node is None:
-            const_callback_name = None
         # IDL constant's C++ constant name
         const_constant_name = _format("${class_name}::Constant::{}",
                                       constant_name(cgc))
-
-        callback_def_nodes.extend([
-            const_callback_node,
-            EmptyNode(),
-        ])
 
         constant_entries.append(
             _PropEntryConstant(
@@ -5073,7 +5000,6 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 exposure_conditional=exposure_conditional,
                 world=world,
                 constant=constant,
-                const_callback_name=const_callback_name,
                 const_constant_name=const_constant_name))
 
     def process_constructor_group(constructor_group, is_context_dependent,
@@ -5323,7 +5249,7 @@ ${prototype_object}->Delete(
 // installed only per v8::Template (via
 // v8::Template::SetIntrinsicDataProperty). So the property installation
 // logic is reversed in this case like below.
-//   1. Unconditionally install the properties on prototype_object_template
+//   1. Unconditionally install the properties on prototype_template
 //      per V8 isolate in ${class_name}::InstallInterfaceTemplate.
 //   2. Conditionally remove the properties from prototype_object per V8
 //      context if they're not enabled.
@@ -5473,8 +5399,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
         body.extend([
             T("bindings::SetupIDLInterfaceTemplate("
               "${isolate}, ${wrapper_type_info}, "
-              "${instance_object_template}, "
-              "${prototype_object_template}, "
+              "${instance_template}, "
+              "${prototype_template}, "
               "${interface_function_template}, "
               "${parent_interface_template});"),
             EmptyNode(),
@@ -5516,8 +5442,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             FormatNode(
                 "bindings::SetupIDLIteratorTemplate("
                 "${isolate}, ${wrapper_type_info}, "
-                "${instance_object_template}, "
-                "${prototype_object_template}, "
+                "${instance_template}, "
+                "${prototype_template}, "
                 "${interface_function_template}, "
                 "{parent_intrinsic_prototype}, "
                 "\"{class_string}\");",
@@ -5579,8 +5505,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             T("""\
 // HTMLAllCollection-specific settings
 // https://html.spec.whatwg.org/C/#the-htmlallcollection-interface
-${instance_object_template}->SetCallAsFunctionHandler(ItemOperationCallback);
-${instance_object_template}->MarkAsUndetectable();
+${instance_template}->SetCallAsFunctionHandler(ItemOperationCallback);
+${instance_template}->MarkAsUndetectable();
 """))
 
     if class_like.identifier == "Location":
@@ -5609,8 +5535,8 @@ ${instance_template}->Set(
         v8::ReadOnly | v8::DontEnum | v8::DontDelete));
 // 7.7.4.2 [[SetPrototypeOf]] ( V )
 // https://html.spec.whatwg.org/C/#location-setprototypeof
-${instance_object_template}->SetImmutableProto();
-${prototype_object_template}->SetImmutableProto();
+${instance_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
 
     if (interface and interface.indexed_and_named_properties
@@ -5645,7 +5571,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
                 attribute=None,
                 body=[
                     TextNode("// [IsCodeLike]"),
-                    TextNode("${instance_object_template}->SetCodeLike();"),
+                    TextNode("${instance_template}->SetCodeLike();"),
                 ]))
 
     if "Global" in class_like.extended_attributes:
@@ -5654,8 +5580,8 @@ ${prototype_template}->SetIntrinsicDataProperty(
 // [Global]
 // 3.7.1. [[SetPrototypeOf]]
 // https://webidl.spec.whatwg.org/#platform-object-setprototypeof
-${instance_object_template}->SetImmutableProto();
-${prototype_object_template}->SetImmutableProto();
+${instance_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
     elif interface and any("Global" in derived.extended_attributes
                            for derived in interface.subclasses):
@@ -5664,7 +5590,7 @@ ${prototype_object_template}->SetImmutableProto();
 // [Global] - prototype object in the prototype chain of global objects
 // 3.7.1. [[SetPrototypeOf]]
 // https://webidl.spec.whatwg.org/#platform-object-setprototypeof
-${prototype_object_template}->SetImmutableProto();
+${prototype_template}->SetImmutableProto();
 """))
 
     func_call_pattern = ("{}(${isolate}, ${world}, ${instance_template}, "
@@ -5738,8 +5664,8 @@ def make_install_properties(cg_context, function_name, class_name,
         arg_decls = [
             "v8::Isolate* isolate",
             "const DOMWrapperWorld& world",
-            "v8::Local<v8::Template> instance_template",
-            "v8::Local<v8::Template> prototype_template",
+            "v8::Local<v8::ObjectTemplate> instance_template",
+            "v8::Local<v8::ObjectTemplate> prototype_template",
             "v8::Local<v8::Template> interface_template",
         ]
         arg_names = [
@@ -5875,62 +5801,79 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
             body.append(EmptyNode())
         for conditional, entries in conditional_to_entries.items():
             body.append(
-                CxxUnlikelyIfNode(cond=conditional,
-                                  attribute=None,
-                                  body=[
-                                      make_table_func(table_name, entries),
-                                      TextNode(installer_call_text),
-                                  ]))
+                CxxLikelyIfNode(cond=conditional,
+                                attribute=None,
+                                body=[
+                                    make_table_func(table_name, entries),
+                                    TextNode(installer_call_text),
+                                ]))
         body.append(EmptyNode())
 
     if is_per_context_install:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_object}, "
-                   "${prototype_object}, "
-                   "${interface_object}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_object}, "
+                                          "${prototype_object}, "
+                                          "${interface_object}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_object}, "
+                                       "${prototype_object}, "
+                                       "${interface_object}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
     else:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_template}, "
-                   "${prototype_template}, "
-                   "${interface_template}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_template}, "
+                                          "${prototype_template}, "
+                                          "${interface_template}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_template}, "
+                                       "${prototype_template}, "
+                                       "${interface_template}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
 
     table_name = "kAttributeTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallAttributes",
         table_name=table_name)
-    install_properties(table_name, attribute_entries,
-                       _make_attribute_registration_table, installer_call_text)
 
-    table_name = "kConstantCallbackTable"
-    installer_call_text = _format(
-        pattern,
-        install_func="IDLMemberInstaller::InstallConstants",
-        table_name=table_name)
-    constant_callback_entries = list(
-        filter(lambda entry: entry.const_callback_name, constant_entries))
-    install_properties(table_name, constant_callback_entries,
-                       _make_constant_callback_registration_table,
+    entries = list(
+        filter(lambda entry: not entry.attr_set_nadc_callback_name,
+               attribute_entries))
+
+    install_properties(table_name, entries, _make_attribute_registration_table,
+                       installer_call_text)
+
+    entries = list(
+        filter(lambda entry: entry.attr_set_nadc_callback_name,
+               attribute_entries))
+
+    install_properties(table_name, entries, _make_attribute_registration_table,
                        installer_call_text)
 
     table_name = "kConstantValueTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
-    constant_value_entries = list(
-        filter(lambda entry: not entry.const_callback_name, constant_entries))
-    install_properties(table_name, constant_value_entries,
+    install_properties(table_name, constant_entries,
                        _make_constant_value_registration_table,
                        installer_call_text)
 
     table_name = "kExposedConstructTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallExposedConstructs",
         table_name=table_name)
     install_properties(table_name, exposed_construct_entries,
@@ -5939,7 +5882,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kOperationTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallOperations",
         table_name=table_name)
     entries = list(
@@ -6018,9 +5961,9 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
             "NamedPropertyEnumeratorCallback"))
 
     if cg_context.class_like.identifier == "WindowProperties":
-        interceptor_template = "${prototype_object_template}"
+        interceptor_template = "${prototype_template}"
     else:
-        interceptor_template = "${instance_object_template}"
+        interceptor_template = "${instance_template}"
 
     if props.named_getter and "Global" not in interface.extended_attributes:
         impl_bridge = v8_bridge_class_name(
@@ -6276,7 +6219,7 @@ def make_cross_origin_property_callbacks_and_install_node(
 
     text = """\
 // Cross origin properties
-${instance_object_template}->SetAccessCheckCallbackAndHandler(
+${instance_template}->SetAccessCheckCallbackAndHandler(
     CrossOriginAccessCheckCallback,
     v8::NamedPropertyHandlerConfiguration(
         CrossOriginNamedGetterCallback,
@@ -6509,7 +6452,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
     ${class_name}::kMaxSubclassTag,
     {wrapper_type_prototype},
     {wrapper_class_id},
-    {active_script_wrappable_inheritance},
     {idl_definition_kind},
     {is_skipped_in_interface_object_prototype_chain},
 }};
@@ -6537,20 +6479,12 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
         wrapper_class_id = "WrapperTypeInfo::kNodeClassId"
     else:
         wrapper_class_id = "WrapperTypeInfo::kObjectClassId"
-    if class_like.code_generator_info.is_active_script_wrappable:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kInheritFromActiveScriptWrappable")
-    else:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kNotInheritFromActiveScriptWrappable")
-    if class_like.is_interface:
+    if class_like.is_interface or class_like.is_callback_interface:
         idl_definition_kind = "WrapperTypeInfo::kIdlInterface"
     elif class_like.is_namespace:
         idl_definition_kind = "WrapperTypeInfo::kIdlNamespace"
-    elif class_like.is_callback_interface:
-        idl_definition_kind = "WrapperTypeInfo::kIdlCallbackInterface"
     elif class_like.is_async_iterator or class_like.is_sync_iterator:
-        idl_definition_kind = "WrapperTypeInfo::kIdlAsyncOrSyncIterator"
+        idl_definition_kind = "WrapperTypeInfo::kIdlOtherType"
     else:
         assert False
     is_skipped_in_interface_object_prototype_chain = (
@@ -6562,8 +6496,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
           wrapper_type_info_of_inherited=wrapper_type_info_of_inherited,
           wrapper_type_prototype=wrapper_type_prototype,
           wrapper_class_id=wrapper_class_id,
-          active_script_wrappable_inheritance=(
-              active_script_wrappable_inheritance),
           idl_definition_kind=idl_definition_kind,
           is_skipped_in_interface_object_prototype_chain=(
               is_skipped_in_interface_object_prototype_chain)))
@@ -6665,9 +6597,6 @@ def _make_v8_context_snapshot_get_reference_table_function(
         if entry.exposure_conditional.is_always_true:
             callback_names.append(entry.attr_get_callback_name)
             callback_names.append(entry.attr_set_callback_name)
-    for entry in constant_entries:
-        if entry.exposure_conditional.is_always_true:
-            callback_names.append(entry.const_callback_name)
     for entry in constructor_entries:
         if entry.exposure_conditional.is_always_true:
             callback_names.append(entry.ctor_callback_name)
@@ -6747,8 +6676,8 @@ def _make_v8_context_snapshot_install_props_per_isolate_function(
     arg_decls = [
         "v8::Isolate* isolate",
         "const DOMWrapperWorld& world",
-        "v8::Local<v8::Template> instance_template",
-        "v8::Local<v8::Template> prototype_template",
+        "v8::Local<v8::ObjectTemplate> instance_template",
+        "v8::Local<v8::ObjectTemplate> prototype_template",
         "v8::Local<v8::Template> interface_template",
     ]
     arg_names = [

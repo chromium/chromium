@@ -116,6 +116,7 @@ group("gn_all") {
       "//third_party/angle/src/tests:angle_white_box_tests",
       "//third_party/distributed_point_functions/shim:distributed_point_functions_shim_unittests",
       "//third_party/flatbuffers:flatbuffers_unittests",
+      "//third_party/highway:highway_tests",
       "//third_party/liburlpattern:liburlpattern_unittests",
       "//third_party/rapidhash:rapidhash_fuzztests",
       "//tools/binary_size:binary_size_trybot_py",
@@ -359,9 +360,6 @@ group("gn_all") {
       deps += [
         "//chrome/credential_provider",
         "//chrome/credential_provider/test:gcp_unittests",
-
-        # TODO(grt): Remove when chrome depends on the service.
-        "//chrome/windows_services/elevated_tracing_service",
       ]
 
       if (enable_platform_experience) {
@@ -416,6 +414,7 @@ group("gn_all") {
         "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
         "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
         "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
+        "//tools/pgo:generate_profile_android_trichrome_chrome_bundle",
         "//ui:ui_junit_tests",
       ]
       deps -= [
@@ -436,16 +435,14 @@ group("gn_all") {
           "//chrome/android:chrome_public_test_apk",
           "//chrome/android:chrome_public_unit_test_apk",
           "//chrome/browser/android/examples/custom_tabs_client:custom_tabs_client_example_apk",
+          "//chrome/browser/android/examples/inline_autofill_service:inline_autofill_service_example_apk",
           "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
           "//content/shell/android:content_shell_test_apk",
         ]
       }
 
       if (enable_chrome_android_internal) {
-        deps += [
-          "//clank",
-          "//tools/pgo:generate_profile_android_clank_trichrome_bundle",
-        ]
+        deps += [ "//clank" ]
       }
     }
 
@@ -801,7 +798,6 @@ group("gn_all") {
         "//third_party/freetype-testing:fuzzers",
         "//third_party/grpc:fuzzers",
         "//third_party/icu/fuzzers",
-        "//third_party/qcms:fuzzers",
         "//third_party/ukey2/fuzzers",
         "//third_party/zlib/contrib/tests/fuzzers",
       ]
@@ -903,7 +899,7 @@ group("all_rust") {
       "//mojo/public/rust:mojo_rust_unittests",
     ]
   }
-  if (enable_rust_png) {
+  if (enable_rust_png && !is_cronet_build) {
     deps += [ "//skia" ]
   }
 }
@@ -1128,6 +1124,14 @@ if (use_blink && !is_cronet_build) {
       ":blink_wpt_tests",
       "//third_party/blink/public:all_blink",
     ]
+
+    if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android &&
+        !is_castos) {
+      deps += [
+        ":chrome_wpt_tests",
+        ":headless_shell_wpt",
+      ]
+    }
   }
 
   # Options shared by all script test targets that call `run_web_tests.py` or
@@ -1152,6 +1156,14 @@ if (use_blink && !is_cronet_build) {
                       root_out_dir) + ")",
     ]
   }
+  if (is_chrome_for_testing) {
+    _common_web_test_options += [
+      "--additional-expectations",
+      "@WrappedPath(" +
+          rebase_path("//third_party/blink/web_tests/CfTTestExpecations",
+                      root_out_dir) + ")",
+    ]
+  }
   if (is_msan) {
     _common_web_test_options += [
       "--enable-sanitizer",
@@ -1169,6 +1181,7 @@ if (use_blink && !is_cronet_build) {
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = _common_web_test_options + [ "--product=chrome" ]
@@ -1191,6 +1204,8 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }
+
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = _common_web_test_options + [
@@ -1502,6 +1517,9 @@ if (use_blink && !is_cronet_build) {
     if (is_asan) {
       data += [ "//third_party/blink/web_tests/ASANExpectations" ]
     }
+    if (is_chrome_for_testing) {
+      data += [ "//third_party/blink/web_tests/CfTTestExpecations" ]
+    }
     if (is_msan) {
       data += [ "//third_party/blink/web_tests/MSANExpectations" ]
     }
@@ -1546,6 +1564,7 @@ if (use_blink && !is_cronet_build) {
     }
   }
 
+  # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
   script_test("blink_wpt_tests") {
     script = _common_web_test_script
 
@@ -1558,9 +1577,9 @@ if (use_blink && !is_cronet_build) {
       "@WrappedPath(" +
           rebase_path("//third_party/blink/web_tests/TestLists/chrome.filter",
                       root_out_dir) + ")",
-      "--inverted-test-launcher-filter-file",
+      "--test-launcher-filter-file",
       "@WrappedPath(" + rebase_path(
-              "//third_party/blink/web_tests/TestLists/headless_shell.filter",
+              "//third_party/blink/web_tests/TestLists/content_shell.filter",
               root_out_dir) + ")",
     ]
 
@@ -1677,6 +1696,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/renderer/build/scripts/",
       "//third_party/blink/tools/",
       "//third_party/blink/web_tests/ASANExpectations",
+      "//third_party/blink/web_tests/CfTTestExpecations",
       "//third_party/blink/web_tests/FlagExpectations/",
       "//third_party/blink/web_tests/LeakExpectations",
       "//third_party/blink/web_tests/MSANExpectations",
@@ -1693,7 +1713,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/catapult/third_party/typ/",
       "//third_party/depot_tools/pylint-2.7",
       "//third_party/depot_tools/pylint_main.py",
-      "//third_party/depot_tools/pylintrc",
+      "//third_party/depot_tools/pylintrc-2.7",
       "//third_party/ply/",
       "//third_party/pyjson5/",
       "//third_party/wpt_tools/",

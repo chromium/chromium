@@ -30,7 +30,6 @@ enum class TouchAction {
   kPanY = kPanUp | kPanDown,
   kPan = kPanX | kPanY,
   kPinchZoom = 0x10,
-  kManipulation = kPan | kPinchZoom,
   kDoubleTapZoom = 0x20,
   // Used by swipe to move cursor feature. This is only used internally
   // for swipe to move cursor feature  and it is not a web-visible value. When
@@ -45,9 +44,15 @@ enum class TouchAction {
   // field and has kPan, we don't set this bit.
   kInternalNotWritable = 0x80,
 
+  // TODO(crbug.com/382525574): This value is currently being used to measure
+  // how many pages would lose handwriting if handwriting were to ship as a new
+  // touch action value as describedd in the linked bug.
+  kInternalHandwriting = 0x100,
+
+  kManipulation = kPan | kPinchZoom | kInternalHandwriting,
   kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls |
-          kInternalNotWritable,
-  kMax = (1 << 8) - 1
+          kInternalNotWritable | kInternalHandwriting,
+  kMax = (1 << 9) - 1
 };
 
 inline TouchAction operator|(TouchAction a, TouchAction b) {
@@ -78,6 +83,12 @@ inline const char* TouchActionToString(TouchAction touch_action) {
   // we skip printing kInternalNotWritable since it's not a web exposed
   // touch action field.
   touch_action &= ~TouchAction::kInternalNotWritable;
+
+  // Until handwriting is a web exposed feature, the combination of
+  // non-handwriting bits should result in values of auto / manipulation in the
+  // exposed CSS value.
+  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
+  touch_action &= ~TouchAction::kInternalHandwriting;
 
   switch (static_cast<int>(touch_action)) {
     case 0:
@@ -142,10 +153,10 @@ inline const char* TouchActionToString(TouchAction touch_action) {
       return "PAN_LEFT_PAN_Y_PINCH_ZOOM";
     case 30:
       return "PAN_RIGHT_PAN_Y_PINCH_ZOOM";
-    case 31:
-      return "MANIPULATION";
     case 32:
       return "DOUBLE_TAP_ZOOM";
+    case 31:
+      return "MANIPULATION";
     case 33:
       return "PAN_LEFT_DOUBLE_TAP_ZOOM";
     case 34:

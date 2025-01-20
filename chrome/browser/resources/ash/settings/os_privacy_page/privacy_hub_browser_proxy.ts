@@ -12,8 +12,6 @@ export interface PrivacyHubBrowserProxy {
   getCurrentTimeZoneName(): Promise<string>;
   getCurrentSunriseTime(): Promise<string>;
   getCurrentSunsetTime(): Promise<string>;
-  sendLeftOsPrivacyPage(): void;
-  sendOpenedOsPrivacyPage(): void;
 }
 
 let instance: PrivacyHubBrowserProxy|null = null;
@@ -45,14 +43,6 @@ export class PrivacyHubBrowserProxyImpl implements PrivacyHubBrowserProxy {
 
   getCurrentSunsetTime(): Promise<string> {
     return sendWithPromise('getCurrentSunsetTime');
-  }
-
-  sendLeftOsPrivacyPage(): void {
-    chrome.send('leftOsPrivacyPage');
-  }
-
-  sendOpenedOsPrivacyPage(): void {
-    chrome.send('osPrivacyPageWasOpened');
   }
 
   static getInstance(): PrivacyHubBrowserProxy {

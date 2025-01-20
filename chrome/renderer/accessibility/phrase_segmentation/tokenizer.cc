@@ -14,8 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 
 namespace {
-bool is_all_spaces(const std::u16string& str) {
-  return str.find_first_not_of(' ') == std::string::npos;
+bool is_all_spaces(std::u16string_view str) {
+  return str.find_first_not_of(u' ') == std::string::npos;
 }
 }  // namespace
 

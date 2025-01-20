@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::INCOMING_PASSWORD_SHARING_INVITATION));
 
-  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+  password_manager::features_util::OptOutOfAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
   EXPECT_TRUE(
       IncomingPasswordSharingInvitationInactiveChecker(GetSyncService(0))

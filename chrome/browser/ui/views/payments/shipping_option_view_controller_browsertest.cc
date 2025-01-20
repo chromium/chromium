@@ -7,9 +7,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +32,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // In MI state, shipping is $5.00.
   autofill::AutofillProfile michigan = autofill::test::GetFullProfile2();
-  michigan.set_use_count(100U);
+  michigan.usage_history().set_use_count(100U);
   AddAutofillProfile(michigan);
   // A Canadian address will have no shipping options.
   autofill::AutofillProfile canada = autofill::test::GetFullProfile();
   canada.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY, u"CA");
-  canada.set_use_count(50U);
+  canada.usage_history().set_use_count(50U);
   AddAutofillProfile(canada);
 
   InvokePaymentRequestUIWithJs(content::JsReplace(

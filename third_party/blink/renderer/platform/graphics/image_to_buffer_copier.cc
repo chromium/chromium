@@ -95,6 +95,7 @@ ImageToBufferCopier::CopyImage(Image* image) {
   gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(dest_scoped_si_access));
   sii_->VerifySyncToken(sync_token);
+  dest_shared_image_->UpdateDestructionSyncToken(sync_token);
   dest_si_texture.reset();
 
   static_image->UpdateSyncToken(sync_token);
@@ -106,14 +107,7 @@ ImageToBufferCopier::CopyImage(Image* image) {
 }
 
 void ImageToBufferCopier::CleanupDestImage() {
-  if (!dest_shared_image_) {
-    return;
-  }
-
-  gpu::SyncToken sync_token;
-  gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  sii_->DestroySharedImage(sync_token, std::move(dest_shared_image_));
+  dest_shared_image_.reset();
 }
 
 }  // namespace blink

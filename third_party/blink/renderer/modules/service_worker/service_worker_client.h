@@ -34,7 +34,7 @@ class MODULES_EXPORT ServiceWorkerClient : public ScriptWrappable {
   V8ClientLifecycleState lifecycleState() const;
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   HeapVector<ScriptValue> transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,

@@ -12,6 +12,9 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintDocumentInfo;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Wrapper for {@link PrintDocumentAdapter} for easier testing.
  *
@@ -21,8 +24,13 @@ import android.print.PrintDocumentInfo;
  * {@link PrintDocumentAdapter#onLayout} and {@link PrintDocumentAdapter#onWrite}. This class helps
  * bypassing the limitation.
  */
+@NullMarked
 public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     private PdfGenerator mPdfGenerator;
+
+    public PrintDocumentAdapterWrapper(PdfGenerator pdfGenerator) {
+        mPdfGenerator = pdfGenerator;
+    }
 
     public static interface PdfGenerator {
         void onStart();
@@ -32,7 +40,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
                 PrintAttributes newAttributes,
                 CancellationSignal cancellationSignal,
                 PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper callback,
-                Bundle metadata);
+                @Nullable Bundle metadata);
 
         void onWrite(
                 final PageRange[] ranges,
@@ -46,7 +54,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     public static interface LayoutResultCallbackWrapper {
         void onLayoutFinished(PrintDocumentInfo info, boolean changed);
 
-        void onLayoutFailed(CharSequence error);
+        void onLayoutFailed(@Nullable CharSequence error);
 
         void onLayoutCancelled();
     }
@@ -54,7 +62,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     public static interface WriteResultCallbackWrapper {
         void onWriteFinished(PageRange[] pages);
 
-        void onWriteFailed(CharSequence error);
+        void onWriteFailed(@Nullable CharSequence error);
 
         void onWriteCancelled();
     }
@@ -73,7 +81,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         }
 
         @Override
-        public void onLayoutFailed(CharSequence error) {
+        public void onLayoutFailed(@Nullable CharSequence error) {
             mCallback.onLayoutFailed(error);
         }
 
@@ -97,7 +105,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         }
 
         @Override
-        public void onWriteFailed(CharSequence error) {
+        public void onWriteFailed(@Nullable CharSequence error) {
             mCallback.onWriteFailed(error);
         }
 
@@ -105,10 +113,6 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         public void onWriteCancelled() {
             mCallback.onWriteCancelled();
         }
-    }
-
-    public void setPdfGenerator(PdfGenerator pdfGenerator) {
-        mPdfGenerator = pdfGenerator;
     }
 
     /** Initiates the printing process within the framework */

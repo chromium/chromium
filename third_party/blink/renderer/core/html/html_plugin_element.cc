@@ -476,8 +476,7 @@ NamedPropertySetterResult HTMLPlugInElement::AnonymousNamedSetter(
   v8::Local<v8::String> v8_name =
       V8AtomicString(script_state->GetIsolate(), name);
   v8::Local<v8::Object> this_wrapper =
-      ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this)
-          .As<v8::Object>();
+      ToV8Traits<HTMLPlugInElement>::ToV8(script_state, this).As<v8::Object>();
   bool instance_has_property;
   bool holder_has_property;
   if (!instance->HasOwnProperty(context, v8_name).To(&instance_has_property) ||
@@ -529,7 +528,7 @@ bool HTMLPlugInElement::IsPresentationAttribute(
 void HTMLPlugInElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else if (name == html_names::kHeightAttr) {
@@ -586,9 +585,9 @@ LayoutEmbeddedContent* HTMLPlugInElement::LayoutEmbeddedContentForJSBindings()
   return ExistingLayoutEmbeddedContent();
 }
 
-bool HTMLPlugInElement::IsKeyboardFocusable(
+bool HTMLPlugInElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  if (HTMLFrameOwnerElement::IsKeyboardFocusable(update_behavior)) {
+  if (HTMLFrameOwnerElement::IsKeyboardFocusableSlow(update_behavior)) {
     return true;
   }
 

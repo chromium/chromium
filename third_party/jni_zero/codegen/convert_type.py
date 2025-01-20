@@ -7,13 +7,13 @@ from codegen import header_common
 import java_types
 
 
-def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
+def to_jni_expression(sb, rvalue, java_type, clazz_snippet=None):
   """Writes a ToJniType() expression to |sb|.
 
   Args:
     rvalue: Snippet to use as input to ToJniType().
     java_type: Type containing the @JniType annotation.
-    clazz_param: Snippet to use as the third parameter for array conversions.
+    clazz_snippet: Snippet to use as the third parameter for array conversions.
   """
   assert java_type.converted_type
   if java_type.is_primitive():
@@ -39,8 +39,8 @@ def to_jni_expression(sb, rvalue, java_type, clazz_param=None):
   with sb.param_list() as plist:
     plist += ['env', rvalue]
     if not element_type.is_primitive():
-      if clazz_param:
-        plist += [clazz_param.name]
+      if clazz_snippet:
+        plist += [clazz_snippet]
       else:
         plist += [
             header_common.class_accessor_expression(element_type.java_class)

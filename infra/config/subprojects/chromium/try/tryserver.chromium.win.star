@@ -8,7 +8,6 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify_builder")
 load("//lib/targets.star", "targets")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
@@ -305,6 +304,8 @@ try_.builder(
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 3,
     tryjob = try_.job(
         location_filters = [
             "sandbox/win/.+",
@@ -314,19 +315,7 @@ try_.builder(
     use_clang_coverage = True,
 )
 
-try_.compilator_builder(
-    name = "win-arm64-rel-compilator",
-    branch_selector = branches.selector.WINDOWS_BRANCHES,
-    description_html = (
-        "Compilator for {}."
-    ).format(linkify_builder("ci", "win-arm64-rel")),
-    cores = 32 if settings.is_main else 16,
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    grace_period = 3 * time.minute,
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
+try_.builder(
     name = "win-arm64-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = (
@@ -346,10 +335,14 @@ try_.orchestrator_builder(
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
-    compilator = "win-arm64-rel-compilator",
+    builderless = True,
+    os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 4,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -409,6 +402,8 @@ try_.builder(
     os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 2,
     # Enable when stable.
     # main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -481,11 +476,29 @@ try_.gpu.optional_tests_builder(
             "win_optional_gpu_tests_rel_isolated_scripts",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_passthrough_graphite_test 10de:2184": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "trace_test 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
             ),
             "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests 10de:2184": targets.remove(
+                reason = "TODO(crbug.com/380431384): flaky crashes in random tests.",
             ),
             "xr_browser_tests 8086:9bc5": targets.mixin(
                 # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
@@ -504,6 +517,7 @@ try_.gpu.optional_tests_builder(
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
     main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.

@@ -15,13 +15,13 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -300,6 +300,13 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // Force VoiceOver to focus the heading of the view.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.navigationItem.titleView);
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   if ([self isMovingFromParentViewController]) {
@@ -563,6 +570,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)initBackgroundViews {
   _backgroundViewWrapper = [[UIView alloc] init];
   _backgroundViewWrapper.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundViewWrapper.isAccessibilityElement = YES;
   // Initialize background loading indicator view.
   _backgroundLoadingIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -700,6 +708,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       kCellTextToSecondaryTextVerticalPadding;
 
   driveFilePickerContentConfiguration.enabled = item.enabled;
+  driveFilePickerContentConfiguration.isShortcut = item.isShortcut;
   cell.contentConfiguration = driveFilePickerContentConfiguration;
 
   // Set up background.
@@ -768,12 +777,30 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setBackground:(DriveFilePickerBackground)background {
-  _backgroundLoadingIndicator.hidden =
-      background != DriveFilePickerBackground::kLoadingIndicator;
-  _backgroundEmptyFolderView.hidden =
-      background != DriveFilePickerBackground::kEmptyFolder;
-  _backgroundNoMatchingResultView.hidden =
-      background != DriveFilePickerBackground::kNoMatchingResults;
+  // Reset the background views.
+  _backgroundLoadingIndicator.hidden = YES;
+  _backgroundEmptyFolderView.hidden = YES;
+  _backgroundNoMatchingResultView.hidden = YES;
+  // Show the current background view or hide wrapper if no background.
+  UIView* backgroundView = nil;
+  switch (background) {
+    case DriveFilePickerBackground::kNoBackground:
+      backgroundView = nil;
+      break;
+    case DriveFilePickerBackground::kLoadingIndicator:
+      backgroundView = _backgroundLoadingIndicator;
+      break;
+    case DriveFilePickerBackground::kEmptyFolder:
+      backgroundView = _backgroundEmptyFolderView;
+      break;
+    case DriveFilePickerBackground::kNoMatchingResults:
+      backgroundView = _backgroundNoMatchingResultView;
+      break;
+  }
+  backgroundView.hidden = NO;
+  _backgroundViewWrapper.hidden = (backgroundView == nil);
+  // Update background wrapper accessibility label.
+  _backgroundViewWrapper.accessibilityLabel = backgroundView.accessibilityLabel;
 }
 
 - (void)populatePrimaryItems:(NSArray<DriveFilePickerItem*>*)primaryItems

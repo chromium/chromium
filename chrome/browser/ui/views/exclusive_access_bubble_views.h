@@ -20,7 +20,7 @@ class SlideAnimation;
 namespace views {
 class View;
 class Widget;
-}
+}  // namespace views
 
 class SubtleNotificationView;
 
@@ -66,7 +66,6 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   void UpdateBounds();
 
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
-
 
   // Returns the desired rect for the popup window in screen coordinates.
   gfx::Rect GetPopupRect() const;

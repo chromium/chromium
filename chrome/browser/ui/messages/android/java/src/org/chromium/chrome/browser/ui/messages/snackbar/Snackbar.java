@@ -133,7 +133,6 @@ public class Snackbar {
     private String mTemplateText;
     private String mActionText;
     private Object mActionData;
-    private String mAccessibilityActionAnnouncement;
     private int mBackgroundColor;
     private int mTextApperanceResId;
     private boolean mSingleLine = true;
@@ -201,19 +200,9 @@ public class Snackbar {
     }
 
     /**
-     * Sets the text to accessibility announce when the action button is pressed.
-     * @param accessibilityActionAnnouncement An optional string to be announced when the action
-     *        button is pressed.
-     */
-    public Snackbar setActionAccessibilityAnnouncement(String accessibilityActionAnnouncement) {
-        mAccessibilityActionAnnouncement = accessibilityActionAnnouncement;
-        return this;
-    }
-
-    /**
-     * Sets the identity profile image that will be displayed at the beginning of the snackbar.
-     * If null, there won't be a profile image. The ability to have an icon is exclusive to
-     * identity snackbars.
+     * Sets the identity profile image that will be displayed at the beginning of the snackbar. If
+     * null, there won't be a profile image. The ability to have an icon is exclusive to identity
+     * snackbars.
      */
     public Snackbar setProfileImage(Drawable profileImage) {
         mProfileImage = profileImage;
@@ -286,10 +275,6 @@ public class Snackbar {
 
     Object getActionData() {
         return mActionData;
-    }
-
-    String getActionAccessibilityAnnouncement() {
-        return mAccessibilityActionAnnouncement;
     }
 
     boolean getSingleLine() {

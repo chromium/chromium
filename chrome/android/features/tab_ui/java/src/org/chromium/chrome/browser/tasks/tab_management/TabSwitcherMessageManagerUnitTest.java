@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -88,7 +89,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
-
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -97,14 +98,15 @@ public class TabSwitcherMessageManagerUnitTest {
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
-
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
     private TabSwitcherMessageManager mMessageManager;
     private MockTab mTab1;
     private MockTab mTab2;
 
     @Before
     public void setUp() {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         TrackerFactory.setTrackerForTests(mTracker);
@@ -141,7 +143,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         mRootView,
                         mRegularTabCreator,
                         mBackPressManager,
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        mEdgeToEdgeSupplier);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator,

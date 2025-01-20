@@ -57,8 +57,8 @@ void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
 base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
   SkBitmap bitmap = frame_buffer.Bitmap();
   base::MD5Digest digest;
-  base::MD5Sum(base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                               bitmap.computeByteSize()),
+  base::MD5Sum(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                          bitmap.computeByteSize()),
                &digest);
   return digest;
 }
@@ -187,14 +187,13 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   EXPECT_TRUE(image_contents.size());
   std::unique_ptr<ImageDecoder> decoder(CreateImageDecoder());
   EXPECT_FALSE(decoder->Failed());
-  const char* data_ptr = reinterpret_cast<const char*>(&(image_contents.at(0)));
 
 #if !defined(CALCULATE_MD5_SUMS)
   // Test chunking file into half.
   const size_t partial_size = image_contents.size() / 2;
 
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_ptr, partial_size);
+      SharedBuffer::Create(base::span(image_contents).first(partial_size));
 
   // Make Sure the image decoder doesn't fail when we ask for the frame
   // buffer for this partial image.
@@ -206,8 +205,7 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
 #endif
 
   // Make sure passing the complete image results in successful decoding.
-  scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(data_ptr, image_contents.size());
+  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(image_contents);
   decoder->SetData(data, true);
   if (ShouldImageFail(image_path)) {
     blink::ImageFrame* const frame_buffer =

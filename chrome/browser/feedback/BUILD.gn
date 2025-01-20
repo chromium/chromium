@@ -29,6 +29,7 @@ source_set("feedback") {
       "//chrome/browser/feedback/android:jni_headers",
       "//chrome/browser/profiles:profile",
       "//content/public/browser",
+      "//google_apis",
       "//services/network/public/cpp",
     ]
   } else {

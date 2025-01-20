@@ -211,7 +211,7 @@ def IsTrackingBranchSet(cfg):
     return "[origin/%s" % cfg.sushi_branch_name() in output
 
 
-def PushToOriginWithoutReviewAndTrackIfNeeded(cfg):
+def PushToOriginWithoutReviewAndTrack(cfg):
     """Push the local branch to origin/ if we haven't yet."""
     cfg.chdir_to_ffmpeg_src()
     # If the tracking branch is unset, then assume that we haven't done this yet
@@ -357,7 +357,7 @@ def UploadForReview(robo_configuration):
         raise Exception(
             "Sushi branch is already uploaded for review!  (try git cl web)")
     shell.log("Uploading sushi branch for review.")
-    os.system("git cl upload")
+    robo_configuration.Call(["git", "cl", "upload", "-o", "banned-words~skip"])
 
 
 @RequiresCleanWorkingDirectory

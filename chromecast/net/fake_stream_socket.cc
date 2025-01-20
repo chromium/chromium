@@ -203,7 +203,7 @@ bool FakeStreamSocket::WasEverUsed() const {
 }
 
 net::NextProto FakeStreamSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool FakeStreamSocket::GetSSLInfo(net::SSLInfo* /* ssl_info */) {

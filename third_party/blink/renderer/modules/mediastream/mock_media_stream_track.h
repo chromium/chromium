@@ -126,6 +126,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MOCK_METHOD1(SetConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(RegisterMediaStream, void(MediaStream*));
   MOCK_METHOD1(UnregisterMediaStream, void(MediaStream*));
+  MOCK_METHOD1(RegisterSink, void(SpeechRecognitionMediaStreamAudioSink*));
   MOCK_METHOD2(AddedEventListener,
                void(const AtomicString&, RegisteredEventListener&));
   MOCK_METHOD1(BeingTransferred, void(const base::UnguessableToken&));

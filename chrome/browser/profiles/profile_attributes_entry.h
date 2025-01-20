@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 
@@ -41,6 +42,11 @@ enum class NameForm {
   kGaiaAndLocalName,
 };
 
+// TODO(381117479): Currently we support two different OIDC enrollment flows:
+// 1. by sending both Auth and ID token through URL param and
+// 2. by sending encrypted user information in the auth header
+// Method 1 is completed but it will be deprecated once we completely implement,
+// test and rollout method 2.
 struct ProfileManagementOidcTokens {
   ProfileManagementOidcTokens();
   ProfileManagementOidcTokens(const std::string& auth_token,
@@ -49,6 +55,9 @@ struct ProfileManagementOidcTokens {
   ProfileManagementOidcTokens(const std::string& auth_token,
                               const std::string& id_token,
                               const std::string& state);
+  // This will be the new format of the `ProfileManagementOidcTokens` struct,
+  // after we fully migrate.
+  explicit ProfileManagementOidcTokens(const std::string& encrypted_user_info);
 
   ProfileManagementOidcTokens(const ProfileManagementOidcTokens& other);
   ProfileManagementOidcTokens& operator=(
@@ -61,7 +70,8 @@ struct ProfileManagementOidcTokens {
   // Authorization token from the authorization response.
   std::string auth_token;
 
-  // ID token from the authorization response.
+  // ID token from the authorization response or the encrypted user information.
+  // Field will be renamed to encrypted_user_information once we fully migrate.
   std::string id_token;
 
   // Identity name of the profile. This is only relevant after the completion of
@@ -71,6 +81,10 @@ struct ProfileManagementOidcTokens {
   // OIDC configuration state. This is only relevant during profile
   // registration.
   std::string state;
+
+  // Whether the passing ID token/user info is encrypted. This field will be
+  // removed after we fully migrate.
+  bool is_token_encrypted = false;
 };
 
 class ProfileAttributesEntry {
@@ -130,7 +144,7 @@ class ProfileAttributesEntry {
   std::u16string GetGAIAGivenName() const;
   // Gets the opaque string representation of the profile's GAIA ID if it's
   // signed in.
-  std::string GetGAIAId() const;
+  GaiaId GetGAIAId() const;
   // Returns the GAIA picture for the given profile. This may return NULL
   // if the profile does not have a GAIA picture or if the picture must be
   // loaded from disk.
@@ -186,10 +200,10 @@ class ProfileAttributesEntry {
   // reserved for the guest profile.
   size_t GetMetricsBucketIndex();
   // Returns the hosted domain for the current signed-in account. Returns empty
-  // string if there is no signed-in account and returns |kNoHostedDomainFound|
-  // if the signed-in account has no hosted domain (such as when it is a
-  // standard gmail.com account). Unlike for other string getters, the returned
-  // value is UTF8 encoded.
+  // string if there is no signed-in account and returns
+  // |signin::constants::kNoHostedDomainFound| if the signed-in account has no
+  // hosted domain (such as when it is a standard gmail.com account). Unlike
+  // for other string getters, the returned value is UTF8 encoded.
   std::string GetHostedDomain() const;
 
   // Returns the enrollment token to get policies for a profile.
@@ -207,6 +221,10 @@ class ProfileAttributesEntry {
   // Returns an account id key of the user of the profile. Empty if the profile
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
+
+  // Returns whether the current profile state is glic eligibile or not based on
+  // the signed in account. Signed out profiles are ineligible.
+  bool IsGlicEligible() const;
 
   // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
   // known by the `IdentityManager`).
@@ -249,9 +267,11 @@ class ProfileAttributesEntry {
       const ProfileManagementOidcTokens& oidc_tokens);
   void SetProfileManagementId(const std::string& id);
 
-  void SetAuthInfo(const std::string& gaia_id,
+  void SetAuthInfo(const GaiaId& gaia_id,
                    const std::u16string& user_name,
                    bool is_consented_primary_account);
+
+  void SetIsGlicEligible(bool value);
 
   // Update info about accounts. These functions are idempotent, only the first
   // call for a given input matters.
@@ -279,6 +299,7 @@ class ProfileAttributesEntry {
   static const char kIsUsingDefaultAvatarKey[];
   static const char kUseGAIAPictureKey[];
   static const char kAccountIdKey[];
+  static const char kIsGlicEligible[];
 
  private:
   friend class ProfileAttributesStorage;

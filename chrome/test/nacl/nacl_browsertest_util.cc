@@ -212,8 +212,7 @@ NaClBrowserTestBase::NaClBrowserTestBase() {
   feature_list_.InitAndEnableFeature(kNaclAllow);
 }
 
-NaClBrowserTestBase::~NaClBrowserTestBase() {
-}
+NaClBrowserTestBase::~NaClBrowserTestBase() = default;
 
 void NaClBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kEnableNaCl);

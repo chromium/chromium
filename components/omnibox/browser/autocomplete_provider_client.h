@@ -15,22 +15,25 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-struct AutocompleteMatch;
 class AutocompleteClassifier;
 class AutocompleteSchemeClassifier;
-class RemoteSuggestionsService;
+class AutocompleteScoringModelService;
+class DocumentSuggestionsService;
+class UnscopedExtensionProvider;
+class UnscopedExtensionProviderDelegate;
 class GURL;
 class InMemoryURLIndex;
 class KeywordExtensionsDelegate;
 class KeywordProvider;
 class OmniboxPedalProvider;
 class OmniboxTriggeredFeatureService;
+class OnDeviceTailModelService;
 class PrefService;
+class RemoteSuggestionsService;
 class ShortcutsBackend;
 class TabMatcher;
 class ZeroSuggestCacheService;
-class AutocompleteScoringModelService;
-class OnDeviceTailModelService;
+struct AutocompleteMatch;
 struct ProviderStateService;
 
 namespace bookmarks {
@@ -39,8 +42,8 @@ class BookmarkModel;
 
 namespace history {
 class HistoryService;
-class URLDatabase;
 class TopSites;
+class URLDatabase;
 }  // namespace history
 
 namespace history_clusters {
@@ -86,6 +89,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
   virtual TemplateURLService* GetTemplateURLService() = 0;
   virtual const TemplateURLService* GetTemplateURLService() const = 0;
+  virtual DocumentSuggestionsService* GetDocumentSuggestionsService() const;
   virtual RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const = 0;
   virtual ZeroSuggestCacheService* GetZeroSuggestCacheService() = 0;
@@ -95,6 +99,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
   virtual std::unique_ptr<KeywordExtensionsDelegate>
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
+  virtual std::unique_ptr<UnscopedExtensionProviderDelegate>
+  GetUnscopedExtensionProviderDelegate(UnscopedExtensionProvider* provider) = 0;
   virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const = 0;
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()

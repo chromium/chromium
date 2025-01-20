@@ -91,8 +91,9 @@ class AnimationBuilderTest : public testing::Test {
     animator_controllers_.clear();
     AnimationBuilder::SetObserverDeletedCallbackForTesting(
         base::NullCallback());
-    if (expected_observers_deleted_)
+    if (expected_observers_deleted_) {
       EXPECT_EQ(expected_observers_deleted_.value(), deleted_observers_);
+    }
   }
 
   // Call this function to also ensure any implicitly created observers have

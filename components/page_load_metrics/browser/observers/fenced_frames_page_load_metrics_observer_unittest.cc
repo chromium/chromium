@@ -43,7 +43,7 @@ class FencedFramesPageLoadMetricsObserverTest
 
     // Add UmaPageLoadMetricsObserver to ensure existing observer's behavior
     // being not changed.
-    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>(false));
   }
 
   void PopulateTimingForHistograms(content::RenderFrameHost* rfh) {

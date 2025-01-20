@@ -352,8 +352,9 @@ void SidePanelCoordinator::OpenInNewTab() {
   }
 
   GURL new_tab_url = GetEntryForUniqueKey(*current_key_)->GetOpenInNewTabURL();
-  if (!new_tab_url.is_valid())
+  if (!new_tab_url.is_valid()) {
     return;
+  }
 
   SidePanelUtil::RecordNewTabButtonClicked(current_key_->key.id());
   content::OpenURLParams params(new_tab_url, content::Referrer(),
@@ -576,7 +577,7 @@ SidePanelCoordinator::GetUniqueKeyForKey(
   if (GetActiveContextualRegistry() &&
       GetActiveContextualRegistry()->GetEntryForKey(entry_key)) {
     return UniqueKey{
-        browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+        browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
         entry_key};
   }
 
@@ -633,8 +634,9 @@ void SidePanelCoordinator::PopulateSidePanel(
   auto* content = content_wrapper->AddChildView(
       content_view.has_value() ? std::move(content_view.value())
                                : entry->GetContent());
-  if (auto* contextual_registry = GetActiveContextualRegistry())
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
+  }
   current_key_ = unique_key;
   current_entry_ = entry->GetWeakPtr();
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
@@ -785,7 +787,7 @@ SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
   if (active_contextual_registry &&
       active_contextual_registry->active_entry()) {
     return UniqueKey{
-        browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+        browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
         (*active_contextual_registry->active_entry())->key()};
   }
 
@@ -951,7 +953,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show({browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+    Show({browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
           (*new_contextual_registry->active_entry())->key()},
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
          /*suppress_animations=*/true);

@@ -57,6 +57,7 @@
 extern "C" {
 #include <setjmp.h>
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
+
 #include "jpeglib.h"
 }
 

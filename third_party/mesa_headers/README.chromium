@@ -3,7 +3,7 @@ Version: 9.0.3
 CPEPrefix: cpe:/a:mesa3d:mesa:9.0.3
 URL: https://gitlab.freedesktop.org/mesa/mesa
 Revision: f75b27a53ed1160962729ac1b5276127169a5780
-License: MIT and SGI Free Software B License Version 2.0
+License: MIT, SGI-B-2.0
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes

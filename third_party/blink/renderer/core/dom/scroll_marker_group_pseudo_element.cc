@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -12,11 +13,69 @@
 
 namespace blink {
 
+ScrollMarkerChooser::ScrollAxis GetPrimaryScrollAxis(
+    const ScrollOffset& min_offset,
+    const ScrollOffset& max_offset) {
+  using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
+  const float vertical_range = std::abs(max_offset.y() - min_offset.y());
+  const float horizontal_range = std::abs(max_offset.x() - min_offset.x());
+  return vertical_range >= horizontal_range ? ScrollAxis::kY : ScrollAxis::kX;
+}
+
+ScrollMarkerChooser::ScrollTargetOffsetData
+ScrollMarkerChooser::GetScrollTargetOffsetData(
+    const ScrollMarkerPseudoElement* scroll_marker) {
+  const LayoutBox* target_box =
+      scroll_marker->UltimateOriginatingElement()->GetLayoutBox();
+  CHECK(target_box);
+  const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();
+  CHECK(scroll_marker_object);
+  PhysicalBoxStrut scroll_margin =
+      target_box->Style() ? target_box->Style()->ScrollMarginStrut()
+                          : PhysicalBoxStrut();
+  // Ignore sticky position offsets for the purposes of scrolling elements
+  // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
+  // details
+  const MapCoordinatesFlags flag =
+      (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
+          ? kIgnoreStickyOffset
+          : 0;
+  PhysicalRect rect_to_scroll = scroller_box_->AbsoluteToLocalRect(
+      scroll_marker_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
+  rect_to_scroll.Expand(scroll_margin);
+  ScrollOffset target_scroll_offset =
+      scroll_into_view_util::GetScrollOffsetToExpose(
+          *scrollable_area_, rect_to_scroll, scroll_margin,
+          scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
+              *target_box, kHorizontalScroll),
+          scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
+              *target_box, kVerticalScroll));
+  // The result of GetScrollOffsetToExpose is adjusted for the current scroll
+  // offset. Undo this adjustment as ScrollTargetOffsetData::layout_offset
+  // represents the offset in coordinates within the scrollable content
+  // area.
+  const ScrollOffset current_scroll_offset =
+      scrollable_area_->GetScrollOffset();
+  float current_scroll_position = axis_ == ScrollAxis::kY
+                                      ? current_scroll_offset.y()
+                                      : current_scroll_offset.x();
+  return axis_ == ScrollAxis::kY
+             ? ScrollTargetOffsetData(
+                   target_scroll_offset.y(),
+                   rect_to_scroll.Y() + current_scroll_position,
+                   rect_to_scroll.size.height)
+             : ScrollTargetOffsetData(
+                   target_scroll_offset.x(),
+                   rect_to_scroll.X() + current_scroll_position,
+                   rect_to_scroll.size.width);
+}
+
 ScrollMarkerGroupPseudoElement::ScrollMarkerGroupPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
-      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {}
+      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+}
 
 void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
@@ -27,23 +86,22 @@ void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
 
 void ScrollMarkerGroupPseudoElement::AddToFocusGroup(
     ScrollMarkerPseudoElement& scroll_marker) {
-  scroll_marker.SetScrollMarkerGroup(this);
   focus_group_.push_back(scroll_marker);
 }
 
 ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::FindNextScrollMarker(
-    const Element& current) {
+    const Element* current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
-    return focus_group_[index == focus_group_.size() - 1 ? 0u : index + 1];
+    return focus_group_[std::min(index + 1, focus_group_.size() - 1)];
   }
   return nullptr;
 }
 
 ScrollMarkerPseudoElement*
 ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker(
-    const Element& current) {
+    const Element* current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
-    return focus_group_[index == 0u ? focus_group_.size() - 1 : index - 1];
+    return focus_group_[index == 0 ? 0u : index - 1];
   }
   return nullptr;
 }
@@ -65,25 +123,16 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
   }
 }
 
-void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker(bool focus) {
-  ActivateScrollMarker(&ScrollMarkerGroupPseudoElement::FindNextScrollMarker,
-                       focus);
+void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker() {
+  ActivateScrollMarker(FindNextScrollMarker(Selected()));
 }
 
-void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker(bool focus) {
-  ActivateScrollMarker(
-      &ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker, focus);
+void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
+  ActivateScrollMarker(FindPreviousScrollMarker(Selected()));
 }
 
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
-    ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
-                                    find_scroll_marker_func)(const Element&),
-    bool focus) {
-  if (!selected_marker_) {
-    return;
-  }
-  ScrollMarkerPseudoElement* scroll_marker =
-      (this->*find_scroll_marker_func)(*Selected());
+    ScrollMarkerPseudoElement* scroll_marker) {
   if (!scroll_marker || scroll_marker == selected_marker_) {
     return;
   }
@@ -93,12 +142,10 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       scroll_into_view_util::CreateScrollIntoViewParams(
           *scroll_marker->parentElement()->GetComputedStyle());
   scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
-  if (focus) {
-    GetDocument().SetFocusedElement(scroll_marker,
-                                    FocusParams(SelectionBehaviorOnFocus::kNone,
-                                                mojom::blink::FocusType::kNone,
-                                                /*capabilities=*/nullptr));
-  }
+  GetDocument().SetFocusedElement(scroll_marker,
+                                  FocusParams(SelectionBehaviorOnFocus::kNone,
+                                              mojom::blink::FocusType::kNone,
+                                              /*capabilities=*/nullptr));
   SetSelected(*scroll_marker);
 }
 
@@ -109,6 +156,15 @@ bool ScrollMarkerGroupPseudoElement::SetSelected(
   }
   if (selected_marker_) {
     selected_marker_->SetSelected(false);
+    // When updating the active marker the following is meant to ensure that if
+    // the previously active marker was focused we update the focus to the new
+    // active marker.
+    if (selected_marker_->IsFocused()) {
+      GetDocument().SetFocusedElement(
+          &scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                      mojom::blink::FocusType::kNone,
+                                      /*capabilities=*/nullptr));
+    }
   }
   scroll_marker.SetSelected(true);
   selected_marker_ = scroll_marker;
@@ -133,6 +189,42 @@ void ScrollMarkerGroupPseudoElement::ClearFocusGroup() {
   focus_group_.clear();
 }
 
+ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::ChooseMarker(
+    const ScrollOffset& scroll_offset,
+    ScrollableArea* scrollable_area,
+    LayoutBox* scroller_box) {
+  using ScrollAxis = ScrollMarkerChooser::ScrollAxis;
+  ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
+  ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
+  ScrollAxis primary_axis = GetPrimaryScrollAxis(min_offset, max_offset);
+
+  ScrollMarkerPseudoElement* selected = nullptr;
+
+  ScrollMarkerChooser primary_chooser(scroll_offset, primary_axis,
+                                      scrollable_area, ScrollMarkers(),
+                                      scroller_box);
+  HeapVector<Member<ScrollMarkerPseudoElement>> primary_selection =
+      primary_chooser.Choose();
+  if (primary_selection.size() == 1) {
+    selected = primary_selection.at(0);
+  } else {
+    const ScrollAxis secondary_axis =
+        primary_axis == ScrollAxis::kY ? ScrollAxis::kX : ScrollAxis::kY;
+    const HeapVector<Member<ScrollMarkerPseudoElement>>& secondary_candidates =
+        primary_selection.empty() ? ScrollMarkers() : primary_selection;
+    ScrollMarkerChooser secondary_chooser(scroll_offset, secondary_axis,
+                                          scrollable_area, secondary_candidates,
+                                          scroller_box);
+    HeapVector<Member<ScrollMarkerPseudoElement>> secondary_selection =
+        secondary_chooser.Choose();
+    if (!secondary_selection.empty()) {
+      selected = secondary_selection.at(secondary_selection.size() - 1);
+    }
+  }
+
+  return selected;
+}
+
 bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
     const ScrollOffset& offset) {
   // Implements scroll tracking for scroll marker controls as per
@@ -145,60 +237,16 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
   if (!scroller || !scroller->IsScrollContainer()) {
     return false;
   }
-  ScrollMarkerPseudoElement* selected = nullptr;
-  PhysicalOffset scroll_offset = PhysicalOffset::FromVector2dFFloor(offset);
+
+  if (selected_marker_is_pinned_) {
+    return false;
+  }
+
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
   CHECK(scrollable_area);
-  ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
-  ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
-  for (ScrollMarkerPseudoElement* scroll_marker : ScrollMarkers()) {
-    if (!selected) {
-      selected = scroll_marker;
-    }
-    const LayoutBox* target_box =
-        scroll_marker->UltimateOriginatingElement()->GetLayoutBox();
-    if (!target_box) {
-      continue;
-    }
-    const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();
-    CHECK(scroll_marker_object);
-    PhysicalBoxStrut scroll_margin =
-        target_box->Style() ? target_box->Style()->ScrollMarginStrut()
-                            : PhysicalBoxStrut();
-    // Ignore sticky position offsets for the purposes of scrolling elements
-    // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
-    // details
-    const MapCoordinatesFlags flag =
-        (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
-            ? kIgnoreStickyOffset
-            : 0;
-    PhysicalRect rect_to_scroll = scroller->AbsoluteToLocalRect(
-        scroll_marker_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
-    rect_to_scroll.Expand(scroll_margin);
-    ScrollOffset target_scroll_offset =
-        scroll_into_view_util::GetScrollOffsetToExpose(
-            *scrollable_area, rect_to_scroll, scroll_margin,
-            scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-                *target_box, kHorizontalScroll),
-            scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
-                *target_box, kVerticalScroll));
-    PhysicalOffset target_offset(LayoutUnit(target_scroll_offset.x()),
-                                 LayoutUnit(target_scroll_offset.y()));
-    // Note: use of abs here is determined by the fact that for direction: rtl
-    // the scroll offset starts at zero and goes to the negative side, all the
-    // target offsets go to the negative side as well. We can't end up in
-    // situation of scroll offset to be on the wrong side of zero, so it's safe
-    // to do so.
-    // TODO(crbug.com/332396355): We should not really have to check the
-    // min/max-offsets.
-    if ((target_offset.left.Abs() <= scroll_offset.left.Abs() ||
-         max_offset.x() == min_offset.x()) &&
-        (target_offset.top.Abs() <= scroll_offset.top.Abs() ||
-         max_offset.y() == min_offset.y())) {
-      selected = scroll_marker;
-    }
-  }
-  if (selected) {
+
+  if (ScrollMarkerPseudoElement* selected =
+          ChooseMarker(offset, scrollable_area, scroller)) {
     // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not to
     // cause style to be dirty right after layout, which might violate lifecycle
     // expectations.
@@ -224,6 +272,182 @@ bool ScrollMarkerGroupPseudoElement::ValidateSnapshot() {
 
 bool ScrollMarkerGroupPseudoElement::ShouldScheduleNextService() {
   return false;
+}
+
+void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
+    bool performing_reattach) {
+  // Swap out the focus_group_ before iterating because
+  // ScrollMarkerPseudoElement::DetachLayoutTree() will modify focus_group_.
+  HeapVector<Member<ScrollMarkerPseudoElement>> focus_group;
+  std::swap(focus_group_, focus_group);
+  for (ScrollMarkerPseudoElement* scroll_marker : focus_group) {
+    scroll_marker->DetachLayoutTree(performing_reattach);
+  }
+  selected_marker_ = nullptr;
+  pending_selected_marker_ = nullptr;
+  PseudoElement::DetachLayoutTree(performing_reattach);
+}
+
+HeapVector<Member<ScrollMarkerPseudoElement>> ScrollMarkerChooser::Choose() {
+  if (min_position_ == max_position_) {
+    return candidates_;
+  }
+
+  bool within_start = intended_position_ < min_position_ + reserved_length_;
+  bool within_end = intended_position_ > max_position_ - reserved_length_;
+  HeapVector<Member<ScrollMarkerPseudoElement>> selection;
+  if (within_start || within_end) {
+    selection = ChooseReserved(candidates_);
+  }
+
+  if (selection.empty()) {
+    // This is independent of the within_{start, end} check because it can
+    // happen that we are within the reserved region but the scroll
+    // targets are positioned such that the first target is beyond the
+    // reserved region. In this case we should use generic selection.
+    selection = ChooseGeneric(candidates_);
+  }
+
+  if (selection.size() > 1) {
+    // There may be more than one item whose aligned scroll positions are the
+    // same. We might be able to separate them based on their visual/layout
+    // positions.
+    selection = ChooseVisual(selection);
+  }
+
+  return selection;
+}
+
+HeapVector<Member<ScrollMarkerPseudoElement>>
+ScrollMarkerChooser::ChooseReserved(
+    const HeapVector<Member<ScrollMarkerPseudoElement>>& candidates) {
+  bool within_start = intended_position_ < min_position_ + reserved_length_;
+
+  // First, find all candidates within the reserved region. Group candidates
+  // with the same offset together so we don't split the reserved range over
+  // more candidates than necessary.
+  HeapVector<Member<ScrollMarkerPseudoElement>> candidates_in_range;
+  std::set<int> unique_offsets;
+  for (const auto& candidate : candidates) {
+    ScrollTargetOffsetData candidate_data =
+        GetScrollTargetOffsetData(candidate);
+    float candidate_offset = candidate_data.aligned_scroll_offset;
+    bool keep_candidate =
+        within_start ? (candidate_offset < min_position_ + reserved_length_)
+                     : (candidate_offset > max_position_ - reserved_length_);
+    if (keep_candidate) {
+      int floored_offset = std::floor(candidate_offset);
+      auto find_it = unique_offsets.find(floored_offset);
+      if (find_it == unique_offsets.end()) {
+        unique_offsets.insert(floored_offset);
+        candidates_in_range.push_back(candidate);
+      }
+    }
+  }
+
+  // Next, extract only the candidate(s) at the offset that corresponds to the
+  // scroller's position within the reserved region.
+  HeapVector<Member<ScrollMarkerPseudoElement>> selection;
+  if (candidates_in_range.size()) {
+    const int num_within_range = candidates_in_range.size();
+    const float range_start =
+        within_start ? min_position_ : max_position_ - reserved_length_;
+    int winning_index_within_reserved =
+        ((intended_position_ - range_start) / reserved_length_) *
+        num_within_range;
+    winning_index_within_reserved =
+        std::clamp(winning_index_within_reserved, 0, num_within_range - 1);
+    const ScrollMarkerPseudoElement* winning_candidate =
+        candidates_in_range[winning_index_within_reserved];
+
+    const ScrollTargetOffsetData winning_candidate_data =
+        GetScrollTargetOffsetData(winning_candidate);
+    const float winning_offset = winning_candidate_data.aligned_scroll_offset;
+    for (const auto& candidate : candidates) {
+      const ScrollTargetOffsetData offset_data =
+          GetScrollTargetOffsetData(candidate);
+      const float candidate_offset = offset_data.aligned_scroll_offset;
+      // TODO: Some epsilon tolerance?
+      if (candidate_offset == winning_offset) {
+        selection.push_back(candidate);
+      }
+    }
+  }
+
+  return selection;
+}
+
+HeapVector<Member<ScrollMarkerPseudoElement>>
+ScrollMarkerChooser::ChooseGeneric(
+    const HeapVector<Member<ScrollMarkerPseudoElement>>& candidates) {
+  HeapVector<Member<ScrollMarkerPseudoElement>> selection;
+  std::optional<float> smallest_distance;
+  for (ScrollMarkerPseudoElement* scroll_marker : candidates) {
+    ScrollTargetOffsetData target_data =
+        GetScrollTargetOffsetData(scroll_marker);
+    float candidate_position = target_data.aligned_scroll_offset;
+    float candidate_distance =
+        std::abs(candidate_position - intended_position_);
+
+    if (selection.empty()) {
+      selection.push_back(scroll_marker);
+      smallest_distance = candidate_distance;
+      continue;
+    }
+
+    if (candidate_distance < smallest_distance) {
+      smallest_distance = candidate_distance;
+      selection.clear();
+      selection.push_back(scroll_marker);
+    } else if (candidate_distance == smallest_distance) {
+      selection.push_back(scroll_marker);
+    }
+  }
+  return selection;
+}
+
+HeapVector<Member<ScrollMarkerPseudoElement>> ScrollMarkerChooser::ChooseVisual(
+    const HeapVector<Member<ScrollMarkerPseudoElement>>& candidates) {
+  HeapVector<Member<ScrollMarkerPseudoElement>> selection;
+
+  bool within_end = intended_position_ > max_position_ - reserved_length_;
+  // If we are using the scroll targets' layout positions, pick the one whose
+  // start is closest to the start of the scrollport, unless we are in the end
+  // region in which case the winner is the one whose end edge is closest to the
+  // end of the scrollport. This allows a scroll container at the end of the
+  // scrollable content to be selected even if its start edge cannot be reached.
+  float scroll_position = intended_position_;
+  if (within_end) {
+    scroll_position +=
+        (axis_ == ScrollAxis::kY ? scrollable_area_->VisibleHeight()
+                                 : scrollable_area_->VisibleWidth());
+  }
+
+  std::optional<float> smallest_distance;
+  for (auto& candidate : candidates) {
+    ScrollTargetOffsetData target_data = GetScrollTargetOffsetData(candidate);
+    float candidate_position = target_data.layout_offset;
+    if (within_end) {
+      candidate_position += target_data.layout_size;
+    }
+
+    float distance = std::abs(candidate_position - scroll_position);
+    if (!smallest_distance) {
+      smallest_distance = distance;
+      selection.push_back(candidate);
+      continue;
+    }
+
+    if (distance < smallest_distance) {
+      smallest_distance = distance;
+      selection.clear();
+      selection.push_back(candidate);
+    } else if (distance == smallest_distance) {
+      selection.push_back(candidate);
+    }
+  }
+
+  return selection;
 }
 
 }  // namespace blink

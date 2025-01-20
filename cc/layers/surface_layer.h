@@ -59,15 +59,15 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   void SetIsReflection(bool is_reflection);
 
+  void SetOverrideChildPaintFlags(bool override_child_paint_flags);
+
   void SetMayContainVideo(bool may_contain_video);
 
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
+  bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   const viz::SurfaceId& surface_id() const {
     return surface_range_.Read(*this).end();
@@ -85,6 +85,12 @@ class CC_EXPORT SurfaceLayer : public Layer {
   SurfaceLayer();
   explicit SurfaceLayer(UpdateSubmissionStateCB);
   bool HasDrawableContent() const override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   ~SurfaceLayer() override;
@@ -114,6 +120,10 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   // This surface layer is reflecting the root surface of another display.
   ProtectedSequenceReadable<bool> is_reflection_;
+
+  // If true, then this layer should override its child layer's PaintFlags.
+  // This is used for SurfaceLayers where the child layer is in the same DOM.
+  ProtectedSequenceWritable<bool> override_child_paint_flags_{false};
 
   // Keep track when we change LayerTreeHosts as SurfaceLayerImpl needs to know
   // in order to keep the visibility callback state consistent.

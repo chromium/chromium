@@ -36,7 +36,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.device.mojom.ReportingMode;
@@ -96,9 +95,6 @@ public class PlatformSensorAndProviderTest {
 
     @Before
     public void setUp() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(testValues);
-
         MockitoAnnotations.initMocks(this);
         // Remove all mock sensors before the test.
         mMockSensors.clear();

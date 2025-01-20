@@ -48,8 +48,6 @@ struct DialSinkExtraData {
 struct CastSinkExtraData {
   net::IPEndPoint ip_endpoint;
 
-  int port = 0;
-
   // Model name of the sink.
   std::string model_name;
 

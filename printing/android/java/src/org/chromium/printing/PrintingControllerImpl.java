@@ -4,6 +4,8 @@
 
 package org.chromium.printing;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -15,6 +17,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.printing.PrintDocumentAdapterWrapper.PdfGenerator;
 
 import java.io.IOException;
@@ -29,6 +33,7 @@ import java.util.Iterator;
  * the print button. The singleton object lives in UI thread. Interaction with the native side is
  * carried through PrintingContext class.
  */
+@NullMarked
 public class PrintingControllerImpl implements PrintingController, PdfGenerator {
     private static final String TAG = "printing";
 
@@ -44,27 +49,27 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     private static final int PRINTING_STATE_FINISHED = 2;
 
     /** The singleton instance for this class. */
-    @VisibleForTesting protected static PrintingController sInstance;
+    @VisibleForTesting protected static @Nullable PrintingController sInstance;
 
-    private String mErrorMessage;
+    private @Nullable String mErrorMessage;
 
     private int mRenderProcessId;
     private int mRenderFrameId;
 
     /** The file descriptor into which the PDF will be written.  Provided by the framework. */
-    private ParcelFileDescriptor mFileDescriptor;
+    private @Nullable ParcelFileDescriptor mFileDescriptor;
 
     /** Dots per inch, as provided by the framework. */
     private int mDpi;
 
     /** Paper dimensions. */
-    private PrintAttributes.MediaSize mMediaSize;
+    private PrintAttributes.@Nullable MediaSize mMediaSize;
 
     /** Numbers of pages to be printed, zero indexed. */
-    private int[] mPages;
+    private int @Nullable [] mPages;
 
     /** The callback function to inform the result of PDF generation to the framework. */
-    private PrintDocumentAdapterWrapper.WriteResultCallbackWrapper mOnWriteCallback;
+    private PrintDocumentAdapterWrapper.@Nullable WriteResultCallbackWrapper mOnWriteCallback;
 
     /**
      * The callback function to inform the result of layout to the framework.  We save the callback
@@ -72,10 +77,10 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
      * number of expected pages back to the framework through this callback once the native side
      * has that information.
      */
-    private PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper mOnLayoutCallback;
+    private PrintDocumentAdapterWrapper.@Nullable LayoutResultCallbackWrapper mOnLayoutCallback;
 
     /** The object through which native PDF generation process is initiated. */
-    private Printable mPrintable;
+    private @Nullable Printable mPrintable;
 
     /** The object through which the framework will make calls for generating PDF. */
     private PrintDocumentAdapterWrapper mPrintDocumentAdapterWrapper;
@@ -84,12 +89,11 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     private boolean mIsBusy;
 
-    private PrintManagerDelegate mPrintManager;
+    private @Nullable PrintManagerDelegate mPrintManager;
 
     @VisibleForTesting
     protected PrintingControllerImpl() {
-        mPrintDocumentAdapterWrapper = new PrintDocumentAdapterWrapper();
-        mPrintDocumentAdapterWrapper.setPdfGenerator(this);
+        mPrintDocumentAdapterWrapper = new PrintDocumentAdapterWrapper(this);
     }
 
     /**
@@ -118,21 +122,21 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     @Override
     public int getFileDescriptor() {
-        return mFileDescriptor.getFd();
+        return assumeNonNull(mFileDescriptor).getFd();
     }
 
     @Override
     public int getPageHeight() {
-        return mMediaSize.getHeightMils();
+        return assumeNonNull(mMediaSize).getHeightMils();
     }
 
     @Override
     public int getPageWidth() {
-        return mMediaSize.getWidthMils();
+        return assumeNonNull(mMediaSize).getWidthMils();
     }
 
     @Override
-    public int[] getPageNumbers() {
+    public int @Nullable [] getPageNumbers() {
         return mPages == null ? null : mPages.clone();
     }
 
@@ -165,7 +169,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
             Log.d(TAG, "Pending print can't be started. PrintingController is busy.");
         } else if (mPrintManager == null) {
             Log.d(TAG, "Pending print can't be started. No PrintManager provided.");
-        } else if (!mPrintable.canPrint()) {
+        } else if (mPrintable == null || !mPrintable.canPrint()) {
             Log.d(TAG, "Pending print can't be started. Printable can't perform printing.");
         } else {
             canStartPrint = true;
@@ -174,6 +178,8 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         if (!canStartPrint) return;
 
         mIsBusy = true;
+        assert mPrintManager != null;
+        assert mPrintable != null;
         mPrintDocumentAdapterWrapper.print(mPrintManager, mPrintable.getTitle());
         mPrintManager = null;
     }
@@ -198,9 +204,9 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         closeFileDescriptor();
         if (pageCount > 0) {
             PageRange[] pageRanges = convertIntegerArrayToPageRanges(mPages, pageCount);
-            mOnWriteCallback.onWriteFinished(pageRanges);
+            assumeNonNull(mOnWriteCallback).onWriteFinished(pageRanges);
         } else {
-            mOnWriteCallback.onWriteFailed(mErrorMessage);
+            assumeNonNull(mOnWriteCallback).onWriteFailed(mErrorMessage);
             resetCallbacks();
         }
     }
@@ -216,10 +222,10 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
             PrintAttributes newAttributes,
             CancellationSignal cancellationSignal,
             PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper callback,
-            Bundle metadata) {
+            @Nullable Bundle metadata) {
         // NOTE: Chrome printing just supports one DPI, whereas Android has both vertical and
         // horizontal.  These two values are most of the time same, so we just pass one of them.
-        mDpi = newAttributes.getResolution().getHorizontalDpi();
+        mDpi = assumeNonNull(newAttributes.getResolution()).getHorizontalDpi();
         mMediaSize = newAttributes.getMediaSize();
 
         mOnLayoutCallback = callback;
@@ -230,7 +236,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
             resetCallbacks();
         } else {
             PrintDocumentInfo info =
-                    new PrintDocumentInfo.Builder(mPrintable.getTitle())
+                    new PrintDocumentInfo.Builder(assumeNonNull(mPrintable).getTitle())
                             .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
                             // Set page count to unknown since Android framework will get it from
                             // PDF file generated in onWrite.
@@ -270,7 +276,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
         // mRenderProcessId and mRenderFrameId could be invalid values, in this case we are going to
         // print the main frame.
-        if (mPrintable.print(mRenderProcessId, mRenderFrameId)) {
+        if (assumeNonNull(mPrintable).print(mRenderProcessId, mRenderFrameId)) {
             mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
         } else {
             mOnWriteCallback.onWriteFailed(mErrorMessage);
@@ -314,7 +320,8 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
         }
     }
 
-    private static PageRange[] convertIntegerArrayToPageRanges(int[] pagesArray, int pageCount) {
+    private static PageRange[] convertIntegerArrayToPageRanges(
+            int @Nullable [] pagesArray, int pageCount) {
         PageRange[] pageRanges;
         if (pagesArray != null) {
             pageRanges = new PageRange[pagesArray.length];
@@ -330,7 +337,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     }
 
     /** Gets an array of page ranges and returns an array of integers with all ranges expanded. */
-    private static int[] convertPageRangesToIntegerArray(final PageRange[] ranges) {
+    private static int @Nullable [] convertPageRangesToIntegerArray(final PageRange[] ranges) {
         if (ranges.length == 1 && ranges[0].equals(PageRange.ALL_PAGES)) {
             // null corresponds to all pages in Chromium printing logic.
             return null;

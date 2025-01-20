@@ -59,6 +59,9 @@ enum {
                                        // data resources are cached.
   DIR_DEVICE_POLICY_SCREENSAVER_DATA,  // Directory where the device policy
                                        // managed screensaver images are cached.
+  DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE,  // Directory under which a cache of
+                                       // force-installed IWAs is maintained for
+                                       // kiosk and MGS.
   PATH_END
 };
 

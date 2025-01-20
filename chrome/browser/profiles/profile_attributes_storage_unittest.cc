@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -46,6 +42,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -104,7 +101,7 @@ void TestAccessors(ProfileAttributesEntry** entry,
 void VerifyInitialValues(ProfileAttributesEntry* entry,
                          const base::FilePath& profile_path,
                          const std::u16string& profile_name,
-                         const std::string& gaia_id,
+                         const GaiaId& gaia_id,
                          const std::u16string& user_name,
                          bool is_consented_primary_account,
                          size_t icon_index,
@@ -189,7 +186,7 @@ class ProfileAttributesStorageTest : public testing::Test {
 #endif
   }
 
-  ~ProfileAttributesStorageTest() override {}
+  ~ProfileAttributesStorageTest() override = default;
 
  protected:
   void SetUp() override {
@@ -257,8 +254,8 @@ class ProfileAttributesStorageTest : public testing::Test {
     params.profile_path = profile_path;
     params.profile_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_name%" PRIuS, number_of_profiles));
-    params.gaia_id =
-        base::StringPrintf("testing_profile_gaia%" PRIuS, number_of_profiles);
+    params.gaia_id = GaiaId(
+        base::StringPrintf("testing_profile_gaia%" PRIuS, number_of_profiles));
     params.user_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_user%" PRIuS, number_of_profiles));
     params.is_consented_primary_account = true;
@@ -338,7 +335,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfile) {
   ProfileAttributesInitParams params;
   params.profile_path = GetProfilePath("new_profile_path_1");
   params.profile_name = u"new_profile_name_1";
-  params.gaia_id = "new_profile_gaia_1";
+  params.gaia_id = GaiaId("new_profile_gaia_1");
   params.user_name = u"new_profile_username_1";
   params.is_consented_primary_account = true;
   params.icon_index = 1;
@@ -459,20 +456,22 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfile) {
 TEST_F(ProfileAttributesStorageTest, RemoveProfileByAccountId) {
   DisableObserver();  // This test doesn't test observers.
   EXPECT_EQ(0u, storage()->GetNumberOfProfiles());
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     AccountId account_id;
     bool is_consented_primary_account;
-  } kTestCases[] = {
-      {"path_1", "name_1", AccountId::FromUserEmailGaiaId("email1", "111111"),
-       true},
-      {"path_2", "name_3", AccountId::FromUserEmailGaiaId("email2", "222222"),
-       true},
-      {"path_3", "name_3", AccountId::FromUserEmailGaiaId("email3", "333333"),
-       false},
-      {"path_4", "name_4", AccountId::FromUserEmailGaiaId("email4", "444444"),
-       false}};
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {"path_1", "name_1",
+       AccountId::FromUserEmailGaiaId("email1", GaiaId("111111")), true},
+      {"path_2", "name_3",
+       AccountId::FromUserEmailGaiaId("email2", GaiaId("222222")), true},
+      {"path_3", "name_3",
+       AccountId::FromUserEmailGaiaId("email3", GaiaId("333333")), false},
+      {"path_4", "name_4",
+       AccountId::FromUserEmailGaiaId("email4", GaiaId("444444")), false},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ProfileAttributesInitParams params;
@@ -609,7 +608,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"testing_profile_name";
-  params.gaia_id = "testing_profile_gaia";
+  params.gaia_id = GaiaId("testing_profile_gaia");
   params.user_name = u"testing_profile_username";
   params.is_consented_primary_account = true;
   params.icon_index = kIconIndex;
@@ -627,7 +626,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
       storage()->GetProfileAttributesWithPath(profile_path);
   VerifyInitialValues(
       entry, profile_path, /*profile_name=*/u"testing_profile_name",
-      /*gaia_id=*/"testing_profile_gaia",
+      /*gaia_id=*/GaiaId("testing_profile_gaia"),
       /*user_name=*/u"testing_profile_username",
       /*is_consented_primary_account=*/true, /*icon_index=*/kIconIndex,
       /*supervised_user_id=*/"testing_supervised_user_id",
@@ -661,7 +660,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   VerifyInitialValues(entry, profile_path, /*profile_name=*/std::u16string(),
-                      /*gaia_id=*/std::string(), /*user_name=*/std::u16string(),
+                      GaiaId(), /*user_name=*/std::u16string(),
                       /*is_consented_primary_account=*/false, /*icon_index=*/0,
                       /*supervised_user_id=*/std::string(),
                       /*is_ephemeral=*/false, /*is_omitted=*/false,
@@ -676,7 +675,8 @@ TEST_F(ProfileAttributesStorageTest, ModifyEntryWhileInitializing) {
   base::FilePath profile_path = GetProfilePath("test");
   {
     signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-    AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId("email", GaiaId("111111"));
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = u"Test";
@@ -950,18 +950,18 @@ TEST_F(ProfileAttributesStorageTest, AuthInfo) {
   ASSERT_NE(entry, nullptr);
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
-  entry->SetAuthInfo("", std::u16string(), false);
+  entry->SetAuthInfo(GaiaId(), std::u16string(), false);
   VerifyAndResetCallExpectations();
   ASSERT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
   EXPECT_EQ(std::u16string(), entry->GetUserName());
-  EXPECT_EQ("", entry->GetGAIAId());
+  EXPECT_EQ(GaiaId(), entry->GetGAIAId());
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
-  entry->SetAuthInfo("foo", u"bar", true);
+  entry->SetAuthInfo(GaiaId("foo"), u"bar", true);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsAuthenticated());
   EXPECT_EQ(u"bar", entry->GetUserName());
-  EXPECT_EQ("foo", entry->GetGAIAId());
+  EXPECT_EQ(GaiaId("foo"), entry->GetGAIAId());
 }
 
 TEST_F(ProfileAttributesStorageTest, GAIAName) {
@@ -1156,7 +1156,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   ProfileAttributesInitParams alpha_params;
   alpha_params.profile_path = GetProfilePath("alpha_path");
   alpha_params.profile_name = u"alpha";
-  alpha_params.gaia_id = "alpha_gaia";
+  alpha_params.gaia_id = GaiaId("alpha_gaia");
   alpha_params.user_name = u"alpha_username";
   alpha_params.is_consented_primary_account = true;
   alpha_params.icon_index = 1;
@@ -1165,7 +1165,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   ProfileAttributesInitParams lima_params;
   lima_params.profile_path = GetProfilePath("lime_path");
   lima_params.profile_name = u"lima";
-  lima_params.gaia_id = "lima_gaia";
+  lima_params.gaia_id = GaiaId("lima_gaia");
   lima_params.user_name = u"lima_username";
   lima_params.is_consented_primary_account = true;
   lima_params.icon_index = 1;
@@ -1302,7 +1302,7 @@ TEST_F(ProfileAttributesStorageTest, IsSigninRequiredOnInit_Authenticated) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"testing_profile_name";
-  params.gaia_id = "testing_profile_gaia";
+  params.gaia_id = GaiaId("testing_profile_gaia");
   params.user_name = u"testing_profile_username";
   params.is_consented_primary_account = true;
   storage()->AddProfile(std::move(params));
@@ -1326,7 +1326,7 @@ TEST_F(ProfileAttributesStorageTest,
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = u"testing_profile_name";
-    params.gaia_id = "testing_profile_gaia";
+    params.gaia_id = GaiaId("testing_profile_gaia");
     params.user_name = u"testing_profile_username";
     params.is_consented_primary_account = true;
     storage()->AddProfile(std::move(params));
@@ -1927,17 +1927,25 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
   // Mimic a pre-existing Directory with profiles that has legacy profile
   // names.
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     bool is_using_default_name;
-  } kTestCases[] = {
-      {"path_1", "Default Profile", true}, {"path_2", "First user", true},
-      {"path_3", "Lemonade", true},        {"path_4", "Batman", true},
-      {"path_5", "Batman", false},         {"path_6", "Person 2", true},
-      {"path_7", "Person 3", true},        {"path_8", "Person 1", true},
-      {"path_9", "Person 2", true},        {"path_10", "Person 1", true},
-      {"path_11", "Smith", false},         {"path_12", "Person 2", true}};
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {"path_1", "Default Profile", true},
+      {"path_2", "First user", true},
+      {"path_3", "Lemonade", true},
+      {"path_4", "Batman", true},
+      {"path_5", "Batman", false},
+      {"path_6", "Person 2", true},
+      {"path_7", "Person 3", true},
+      {"path_8", "Person 1", true},
+      {"path_9", "Person 2", true},
+      {"path_10", "Person 1", true},
+      {"path_11", "Smith", false},
+      {"path_12", "Person 2", true},
+  });
   const size_t kNumProfiles = std::size(kTestCases);
 
   ProfileAttributesEntry* entry = nullptr;

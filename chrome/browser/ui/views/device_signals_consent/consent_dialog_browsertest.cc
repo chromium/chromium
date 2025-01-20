@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -13,6 +11,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,7 +26,7 @@
 
 class ConsentDialogUiTest : public InProcessBrowserTest {
  public:
-  ConsentDialogUiTest() {}
+  ConsentDialogUiTest() = default;
 
   ConsentDialogUiTest(const ConsentDialogUiTest&) = delete;
   ConsentDialogUiTest& operator=(const ConsentDialogUiTest&) = delete;

@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -171,10 +172,11 @@ void EnrollmentScreenHandler::SetEnrollmentController(Controller* controller) {
 }
 
 void EnrollmentScreenHandler::Show() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
-  else
+  } else {
     DoShow();
+  }
 }
 
 void EnrollmentScreenHandler::Hide() {
@@ -310,7 +312,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -318,7 +320,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           }
           break;
         case policy::DM_STATUS_SERVICE_MISSING_LICENSES:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -354,7 +356,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               /*retry=*/true);
           break;
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
-          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
             ShowError(
                 IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
                 /*retry=*/true);
@@ -371,7 +373,12 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           break;
         case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
-                    true);
+                    /*retry=*/true);
+          break;
+        case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+          ShowError(
+              IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED,
+              /*retry=*/true);
           break;
         default:
           ShowErrorMessage(
@@ -492,7 +499,7 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // Use Next text since the setup is not finished.
     builder->Add("oauthEnrollDone", IDS_EULA_NEXT_BUTTON);
   } else {
@@ -651,7 +658,7 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = user;
-  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.gaia_id = GaiaId(gaia_id);
   signin_artifacts.password = password;
   signin_artifacts.using_saml = using_saml;
 
@@ -711,9 +718,10 @@ void EnrollmentScreenHandler::HandleDeviceAttributesProvided(
 }
 
 void EnrollmentScreenHandler::HandleOnLearnMore() {
-  if (!help_app_.get())
+  if (!help_app_.get()) {
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
+  }
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
 }
 
@@ -782,8 +790,9 @@ void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
   // If enrollment ends and the browser is being restarted, the renderers are
   // killed so we can not talk to them anymore.
-  if (shutdown_)
+  if (shutdown_) {
     return;
+  }
 
   signin_partition_name_ = partition_name;
 
@@ -818,8 +827,9 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty())
+  if (!app_locale.empty()) {
     screen_data.Set("hl", app_locale);
+  }
   const std::string& email = config_.enrollment_nudge_email;
   if (!email.empty()) {
     screen_data.Set("email", email);

@@ -28,7 +28,6 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -108,9 +107,6 @@ class SynchronousLayerTreeFrameSink
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
   void Invalidate(bool needs_draw) override;
 
   // viz::mojom::CompositorFrameSinkClient implementation.
@@ -163,11 +159,6 @@ class SynchronousLayerTreeFrameSink
 
   // Not owned.
   raw_ptr<SynchronousLayerTreeFrameSinkClient> sync_client_ = nullptr;
-
-  // Used to allocate bitmaps in the software Display.
-  // TODO(crbug.com/692814): The Display never sends its resources out of
-  // process so there is no reason for it to use a SharedBitmapManager.
-  viz::ServerSharedBitmapManager shared_bitmap_manager_;
 
   // Only valid (non-null) during a DemandDrawSw() call.
   raw_ptr<SkCanvas> current_sw_canvas_ = nullptr;

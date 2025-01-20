@@ -30,11 +30,11 @@ class ScrollStateQuerySnapshot
 
   ContainerStuckPhysical StuckHorizontal() const { return stuck_horizontal_; }
   ContainerStuckPhysical StuckVertical() const { return stuck_vertical_; }
-  ContainerOverflowingFlags OverflowingHorizontal() const {
-    return overflowing_horizontal_;
+  ContainerScrollableFlags ScrollableHorizontal() const {
+    return scrollable_horizontal_;
   }
-  ContainerOverflowingFlags OverflowingVertical() const {
-    return overflowing_vertical_;
+  ContainerScrollableFlags ScrollableVertical() const {
+    return scrollable_vertical_;
   }
 
   // ScrollSnapshotClient:
@@ -50,10 +50,10 @@ class ScrollStateQuerySnapshot
   Member<Element> container_;
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
-  ContainerOverflowingFlags overflowing_horizontal_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
-  ContainerOverflowingFlags overflowing_vertical_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags scrollable_horizontal_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  ContainerScrollableFlags scrollable_vertical_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
 };
 
 }  // namespace blink

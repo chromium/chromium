@@ -246,7 +246,7 @@ declare global {
 
       export const onKeyEvent: ChromeEvent<
           (engineID: string, keyData: KeyboardEvent, requestId: string) =>
-              boolean>;
+              boolean | undefined>;
 
       export const onCandidateClicked: ChromeEvent<
           (engineID: string, candidateID: number, button: MouseButton) => void>;

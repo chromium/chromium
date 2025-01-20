@@ -19,6 +19,7 @@ source_set("interactive_ui_tests") {
     "esim_ui_elements_interactive_uitest.cc",
     "psim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
+    "roaming_interactive_uitest.cc",
     "sim_lock_interactive_uitest.cc",
     "toggle_cellular_interactive_uitest.cc",
   ]

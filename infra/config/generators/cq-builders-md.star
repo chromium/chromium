@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/try.star", "location_filters_without_defaults", "try_")
+load("//lib/try.star", "location_filters_without_defaults", "owner_whitelist_group_without_defaults", "try_")
 load("//outages/config.star", outages_config = "config")
 
 _MD_HEADER = """\
@@ -76,6 +76,7 @@ def _get_main_config_group_builders(ctx):
 
 def _normalize_builder(builder):
     location_filters = location_filters_without_defaults(builder)
+    owner_whitelist_group = owner_whitelist_group_without_defaults(builder)
 
     return struct(
         name = builder.name,
@@ -84,6 +85,7 @@ def _normalize_builder(builder):
         location_filters = location_filters,
         mode_allowlist = builder.mode_allowlist,
         equivalent_to = proto.clone(builder).equivalent_to,
+        owner_whitelist_group = owner_whitelist_group,
     )
 
 def _group_builders_by_section(builders):
@@ -217,6 +219,12 @@ def _generate_cq_builders_md(ctx):
                         title = details.title,
                         url = details.url,
                     ))
+            if b.owner_whitelist_group:
+                lines.append("")
+                lines.append("  This builder is only run when the CL owner is in the group:")
+                for g in b.owner_whitelist_group:
+                    lines.append("  * [`{group}`](https://chrome-infra-auth.appspot.com/auth/lookup?p={group})".format(group = g))
+
             if getattr(b, "equivalent_to") and b.equivalent_to.name:
                 eq_project, eq_bucket, eq_name = b.equivalent_to.name.split("/")
                 eq_builder_url = _TRY_BUILDER_VIEW_URL.format(

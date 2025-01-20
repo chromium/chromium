@@ -40,40 +40,42 @@ class CONTENT_EXPORT PreferredAudioOutputDeviceManager {
 
   // Sets the preferred sink id for the main frame and all its subframes.
   // At this moment, all belonging to the frame tree of the main frame
-  // identified by `main_frame_id` will be updated with preferred sink id.
+  // identified by `main_frame_token` will be updated with preferred sink id.
   // `raw_device_id` is the id of the sink to be set as the preferred sink. It
   // is a raw device id, which could be acquired by
   // AudioOutputAuthorizationHandler.
   // `callback` is the callback to be called with the status of the sink id set.
-  virtual void SetPreferredSinkId(GlobalRenderFrameHostId main_frame_id,
-                                  const std::string& raw_device_id,
-                                  SetPreferredSinkIdCallback callback) = 0;
+  virtual void SetPreferredSinkId(
+      const GlobalRenderFrameHostToken& main_frame_token,
+      const std::string& raw_device_id,
+      SetPreferredSinkIdCallback callback) = 0;
   // Adds the device switcher to the device switchers list.
-  // `main_frame_id` is the id of the main frame to whose frame tree
+  // `main_frame_token` is the token of the main frame to whose frame tree
   // the device switcher belongs.
   // `device_switcher` is the device switcher to be added to the device
   // switchers list. The caller should call the RemoveSwitcher API if the
   // device switcher is no longer needed or the object is being destroyed
   // in order to prevent dangling pointers.
-  virtual void AddSwitcher(GlobalRenderFrameHostId main_frame_id,
+  virtual void AddSwitcher(const GlobalRenderFrameHostToken& main_frame_token,
                            AudioOutputDeviceSwitcher* device_switcher) = 0;
 
   // Removes the device switcher from the device switchers list.
-  // `main_frame_id` is the id of the main frame to whose frame tree
+  // `main_frame_token` is the token of the main frame to whose frame tree
   // the device switcher belongs.
   // `device_switcher` is the device switcher to be removed from the
   // device switchers list.
   // It is expected that the API is called with the same parameters of
   // AddSwitcher().
-  virtual void RemoveSwitcher(GlobalRenderFrameHostId main_frame_id,
-                              AudioOutputDeviceSwitcher* device_switcher) = 0;
+  virtual void RemoveSwitcher(
+      const GlobalRenderFrameHostToken& main_frame_token,
+      AudioOutputDeviceSwitcher* device_switcher) = 0;
 
   // Returns the preferred device id for the frame if it is
   // registered, or an empty device id otherwise.
-  // `main_frame_id` is the id of the main frame to whose frame tree
+  // `main_frame_token` is the token of the main frame to whose frame tree
   // the device switcher belongs.
   virtual const std::string& GetPreferredSinkId(
-      GlobalRenderFrameHostId main_frame_id) = 0;
+      const GlobalRenderFrameHostToken& main_frame_token) = 0;
 
   // Unregisters the main frame and all its subframes with their switchers.
   // `render_frame_host` is the frame for which the entry is to be
@@ -95,27 +97,28 @@ class CONTENT_EXPORT PreferredAudioOutputDeviceManagerImpl final
 
   ~PreferredAudioOutputDeviceManagerImpl() override;
 
-  void SetPreferredSinkId(GlobalRenderFrameHostId main_frame_id,
+  void SetPreferredSinkId(const GlobalRenderFrameHostToken& main_frame_token,
                           const std::string& hashed_sink_id,
                           SetPreferredSinkIdCallback callback) override;
-  void AddSwitcher(GlobalRenderFrameHostId main_frame_id,
+  void AddSwitcher(const GlobalRenderFrameHostToken& main_frame_token,
                    AudioOutputDeviceSwitcher* device_switcher) override;
-  void RemoveSwitcher(GlobalRenderFrameHostId main_frame_id,
+  void RemoveSwitcher(const GlobalRenderFrameHostToken& main_frame_token,
                       AudioOutputDeviceSwitcher* device_switcher) override;
   const std::string& GetPreferredSinkId(
-      GlobalRenderFrameHostId main_frame_id) override;
+      const GlobalRenderFrameHostToken& main_frame_token) override;
   void UnregisterMainFrameOnUIThread(
       RenderFrameHost* render_frame_host) override;
 
  private:
-  void UnregisterMainFrameOnIOThread(GlobalRenderFrameHostId main_frame_id);
-  void AddNewConfigEntry(GlobalRenderFrameHostId main_frame_id,
+  void UnregisterMainFrameOnIOThread(
+      const GlobalRenderFrameHostToken& main_frame_token);
+  void AddNewConfigEntry(const GlobalRenderFrameHostToken& main_frame_token,
                          const std::string& sink_id,
                          AudioOutputDeviceSwitcher* device_switcher);
 
   class MainFramePreferredSinkIdConfig;
   MainFramePreferredSinkIdConfig* FindSinkIdConfig(
-      GlobalRenderFrameHostId main_frame_id) const;
+      const GlobalRenderFrameHostToken& main_frame_token) const;
 
   // The MainFramePreferredSinkIdConfig list. It should
   // be accessed only in the IO thread.

@@ -131,7 +131,7 @@ void TestAtomicMemzero() {
   memcpy(&v, buf, sizeof(size_t));
   EXPECT_EQ(~size_t{0}, v);
   // Check buffer was copied correctly
-  static const unsigned char for_comparison[buffer_size] = {0};
+  static const unsigned char for_comparison[buffer_size] = {};
   EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size));
   // Check nothing after the buffer was changed
   memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t));

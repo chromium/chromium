@@ -4,8 +4,10 @@
 
 declare_args() {
   # WIP attempt to replace `libpng` with Rust `png` crate.
+  # See https://crbug.com/40278281 for more details.
   #
-  # TODO(https://crbug.com/360375227): Default to true when ready to start A/B
-  # experiments.
-  enable_rust_png = false
+  # TODO(https://crbug.com/360375227): Either: 1) remove (if/when
+  # shipped) or 2) change back to `false` before branchpoint (if not
+  # ready for Beta/Stable yet).
+  enable_rust_png = true
 }

@@ -40,6 +40,7 @@
 #include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
@@ -96,6 +97,7 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
@@ -120,6 +122,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "content/child/child_process_sandbox_support_impl_win.h"
 #include "content/renderer/font_data/font_data_manager.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/web/win/web_font_rendering.h"
@@ -212,7 +215,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 
 #if BUILDFLAG(IS_WIN)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseSkiaFontManager)) {
+            switches::kUseFontDataManager)) {
       sk_sp<font_data_service::FontDataManager> font_data_manager =
           sk_make_sp<font_data_service::FontDataManager>();
 
@@ -222,10 +225,13 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   if (sandboxEnabled()) {
 #if BUILDFLAG(IS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
+#elif BUILDFLAG(IS_WIN)
+    sandbox_support_ = std::make_unique<WebSandboxSupportWin>();
 #else
     sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader);
 #endif
@@ -283,7 +289,8 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 #endif
 
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   return sandbox_support_.get();
 #else
   // These platforms do not require sandbox support.
@@ -612,7 +619,7 @@ media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
 
 void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
     blink::WebLocalFrame* web_frame,
-    blink::WebString* ip_handling_policy,
+    blink::mojom::WebRtcIpHandlingPolicy* ip_handling_policy,
     uint16_t* udp_min_port,
     uint16_t* udp_max_port,
     bool* allow_mdns_obfuscation) {
@@ -625,13 +632,24 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
   if (!render_frame)
     return;
 
-  *ip_handling_policy = blink::WebString::FromUTF8(
-      render_frame->GetRendererPreferences().webrtc_ip_handling_policy);
+  GURL gurl = url::Origin(web_frame->Top()->GetSecurityOrigin()).GetURL();
+
+  *ip_handling_policy =
+      render_frame->GetRendererPreferences().webrtc_ip_handling_policy;
+  std::vector<blink::WebRtcIpHandlingUrlEntry> ip_handling_urls =
+      render_frame->GetRendererPreferences().webrtc_ip_handling_urls;
+  for (const auto& per_url_entry : ip_handling_urls) {
+    if (per_url_entry.url_pattern.Matches(gurl)) {
+      *ip_handling_policy = per_url_entry.handling;
+      break;
+    }
+  }
+
   *udp_min_port = render_frame->GetRendererPreferences().webrtc_udp_min_port;
   *udp_max_port = render_frame->GetRendererPreferences().webrtc_udp_max_port;
+  const std::string url(web_frame->GetSecurityOrigin().ToString().Utf8());
   const std::vector<std::string>& allowed_urls =
       render_frame->GetRendererPreferences().webrtc_local_ips_allowed_urls;
-  const std::string url(web_frame->GetSecurityOrigin().ToString().Utf8());
   for (const auto& allowed_url : allowed_urls) {
     if (base::MatchPattern(url, allowed_url)) {
       *allow_mdns_obfuscation = false;
@@ -731,9 +749,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
-          GURL(document_url), automatic_flushes, support_locking,
-          gpu::SharedMemoryLimits(), attributes,
+          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
+          support_locking, gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
 }
 
@@ -790,10 +807,10 @@ CreateWebGPUGraphicsContext3DImpl(
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
-          GURL(document_url), automatic_flushes, support_locking,
-          gpu::SharedMemoryLimits::ForWebGPUContext(), attributes,
-          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
+          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
+          support_locking, gpu::SharedMemoryLimits::ForWebGPUContext(),
+          attributes, viz::command_buffer_metrics::ContextType::WEBGPU,
+          buffer_mapper));
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
@@ -1034,6 +1051,11 @@ SkBitmap* RendererBlinkPlatformImpl::GetSadPageBitmap() {
 std::unique_ptr<blink::WebV8ValueConverter>
 RendererBlinkPlatformImpl::CreateWebV8ValueConverter() {
   return std::make_unique<V8ValueConverterImpl>();
+}
+
+bool RendererBlinkPlatformImpl::DisallowV8FeatureFlagOverrides() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisallowV8FeatureFlagOverrides);
 }
 
 void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(

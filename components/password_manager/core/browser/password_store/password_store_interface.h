@@ -107,27 +107,6 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   virtual void RemoveLogin(const base::Location& location,
                            const PasswordForm& form) = 0;
 
-  // Remove all logins whose origins match the given filter and that were
-  // created in the given date range. `completion` will be run after deletions
-  // have been completed and notifications have been sent out.
-  // If the platform supports sync, `sync_completion` will be run once the
-  // deletions have also been propagated to the server (or, in rare cases, if
-  // the user permanently disables Sync or deletions haven't been propagated
-  // after 30 seconds). This is only relevant for Sync users and for account
-  // store users - for other users, `sync_completion` will be run immediately
-  // after `completion`. `location` is used for logging purposes and
-  // investigations.
-  // TODO(crbug.com/327164204): remove this API and replace with
-  // RemoveLoginsCreatedBetween
-  virtual void RemoveLoginsByURLAndTime(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion = base::NullCallback(),
-      base::OnceCallback<void(bool)> sync_completion =
-          base::NullCallback()) = 0;
-
   // Removes all logins created in the given date range. `completion` is run
   // after deletions have been completed and notifications have been sent out.
   // If any logins were removed 'true' will be passed to `completion`, 'false'

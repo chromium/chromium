@@ -6,9 +6,11 @@ package org.chromium.content.browser;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.ProxyChangeListener;
 
 /** Implementations of {@link ContentViewStatics}. */
+@NullMarked
 public class ContentViewStaticsImpl {
     /**
      * Suspends Webkit timers in all renderers.

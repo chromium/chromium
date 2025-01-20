@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_node_handler.h"
 
 #include <algorithm>
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"

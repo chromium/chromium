@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_queue.h"
 
 #include <errno.h>
@@ -1372,7 +1377,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer(
 }
 
 std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
-    const gfx::GenericSharedMemoryId& id) {
+    const base::UnguessableToken& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No buffers allocated at the moment?
@@ -1385,7 +1390,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
     return std::nullopt;
   }
 
-  if (!id.is_valid()) {
+  if (id.is_empty()) {
     DVLOGF(1) << "Provided identifier was not valid";
     return std::nullopt;
   }

@@ -31,7 +31,7 @@ void OpenURLFromTabInternal(NavigateParams& new_tab_params) {
 }  // namespace
 
 SearchResultsView::SearchResultsView() : AshWebViewImpl(GetInitParams()) {
-  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(features::IsSunfishFeatureEnabled());
 }
 
 SearchResultsView::~SearchResultsView() = default;

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_KEY_ALGORITHM_PARAMS_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -116,12 +117,12 @@ class WebCryptoHmacKeyAlgorithmParams : public WebCryptoKeyAlgorithmParams {
 class WebCryptoRsaHashedKeyAlgorithmParams
     : public WebCryptoKeyAlgorithmParams {
  public:
-  WebCryptoRsaHashedKeyAlgorithmParams(unsigned modulus_length_bits,
-                                       const unsigned char* public_exponent,
-                                       unsigned public_exponent_size,
-                                       const WebCryptoAlgorithm& hash)
+  WebCryptoRsaHashedKeyAlgorithmParams(
+      unsigned modulus_length_bits,
+      base::span<const unsigned char> public_exponent,
+      const WebCryptoAlgorithm& hash)
       : modulus_length_bits_(modulus_length_bits),
-        public_exponent_(public_exponent, public_exponent_size),
+        public_exponent_(public_exponent),
         hash_(hash) {}
 
   unsigned ModulusLengthBits() const { return modulus_length_bits_; }

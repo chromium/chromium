@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -11,6 +12,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace blink {
@@ -73,17 +75,6 @@ gfx::Size WebGPUSwapBufferProvider::Size() const {
 cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
   DCHECK(!neutered_);
   return layer_.get();
-}
-
-void WebGPUSwapBufferProvider::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (filter_quality != filter_quality_) {
-    filter_quality_ = filter_quality;
-    if (layer_) {
-      layer_->SetNearestNeighbor(filter_quality ==
-                                 cc::PaintFlags::FilterQuality::kNone);
-    }
-  }
 }
 
 void WebGPUSwapBufferProvider::ReleaseWGPUTextureAccessIfNeeded() {
@@ -190,13 +181,17 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
                          kTopLeft_GrSurfaceOrigin,
                          alpha_mode};
 
-  // If there is no pool or if the pool configuration does not match with the
-  // currently needed configuration, then create/re-create the pool with current
-  // configuration. This will reset/clear the existing pool if any.
-  if (!swap_buffer_pool_ || swap_buffer_pool_->GetImageInfo() != info) {
+  // Note that if the pool already exists but have different ImageInfo than what
+  // is required, we reconfigure the same pool with new ImageInfo instead of
+  // deleting old pool and creating a new one. This is required to take
+  // advantage of the temporal information the pool might have from its previous
+  // use.
+  if (!swap_buffer_pool_) {
     swap_buffer_pool_ = gpu::SharedImagePool<SwapBuffer>::Create(
-        info, context_provider->ContextProvider()->SharedImageInterface(),
+        info, context_provider->ContextProvider().SharedImageInterface(),
         /*max_pool_size=*/4);
+  } else if (swap_buffer_pool_->GetImageInfo() != info) {
+    swap_buffer_pool_->Reconfigure(info);
   }
 
   // Get a swap buffer from pool.
@@ -228,10 +223,11 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     // Create a layer that will be used by the canvas and will ask for a
     // SharedImage each frame.
     layer_ = cc::TextureLayer::CreateForMailbox(this);
+    if (client_) {
+      client_->InitializeLayer(layer_.get());
+    }
     layer_->SetIsDrawable(true);
-    layer_->SetFlipped(false);
-    layer_->SetNearestNeighbor(filter_quality_ ==
-                               cc::PaintFlags::FilterQuality::kNone);
+
     // TODO(cwallez@chromium.org): These flags aren't taken into account when
     // the layer is promoted to an overlay. Make sure we have fallback /
     // emulation paths to keep the rendering correct in that cases.
@@ -284,30 +280,22 @@ WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
   return dawn_control_client_->GetContextProviderWeakPtr();
 }
 
-bool WebGPUSwapBufferProvider::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
-    viz::TransferableResource* out_resource,
+scoped_refptr<gpu::ClientSharedImage>
+WebGPUSwapBufferProvider::ExportCurrentSharedImage(
+    gpu::SyncToken& sync_token,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);
   if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
-    return false;
+    return nullptr;
   }
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image = GetCurrentSharedImage();
 
   ReleaseWGPUTextureAccessIfNeeded();
 
-  // Populate the output resource.
-  uint32_t texture_target =
-      current_swap_buffer_->GetSharedImage()->GetTextureTarget();
-
-  *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->GetSharedImage(), texture_target,
-      current_swap_buffer_->GetSyncToken(),
-      current_swap_buffer_->GetSharedImage()->size(), Format(),
-      current_swap_buffer_->GetSharedImage()->usage().Has(
-          gpu::SHARED_IMAGE_USAGE_SCANOUT),
-      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
-  out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
-  out_resource->hdr_metadata = hdr_metadata_;
+  // NOTE: This must be populated *after* the above call as that call updates
+  // the current swap buffer's sync token.
+  sync_token = current_swap_buffer_->GetSyncToken();
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
@@ -315,6 +303,30 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       WTF::BindOnce(&WebGPUSwapBufferProvider::MailboxReleased,
                     scoped_refptr<WebGPUSwapBufferProvider>(this),
                     std::move(current_swap_buffer_));
+
+  return shared_image;
+}
+
+bool WebGPUSwapBufferProvider::PrepareTransferableResource(
+    viz::TransferableResource* out_resource,
+    viz::ReleaseCallback* out_release_callback) {
+  gpu::SyncToken sync_token;
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      ExportCurrentSharedImage(sync_token, out_release_callback);
+  if (!shared_image) {
+    return false;
+  }
+
+  // Populate the output resource.
+  *out_resource = viz::TransferableResource::MakeGpu(
+      shared_image, shared_image->GetTextureTarget(), sync_token,
+      shared_image->size(), shared_image->format(),
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
+      viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
+  out_resource->color_space = shared_image->color_space();
+  out_resource->hdr_metadata = GetHDRMetadata();
+  out_resource->origin = shared_image->surface_origin();
 
   return true;
 }
@@ -381,6 +393,13 @@ WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
 
 WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() = default;
 
+#if BUILDFLAG(IS_CHROMEOS)
+// This feature is only used as a possible killswitch.
+BASE_FEATURE(kWebGPUSwapBufferProviderAllowScanout,
+             "WebGPUSwapBufferProviderAllowScanout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 gpu::SharedImageUsageSet
 WebGPUSwapBufferProvider::GetSharedImageUsagesForDisplay() {
 #if BUILDFLAG(IS_MAC)
@@ -389,6 +408,20 @@ WebGPUSwapBufferProvider::GetSharedImageUsagesForDisplay() {
   // when creating a SharedImage forces that SharedImage to be backed by an
   // IOSurface.
   return gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#elif BUILDFLAG(IS_CHROMEOS)
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  static bool is_scanout_allowed =
+      base::FeatureList::IsEnabled(kWebGPUSwapBufferProviderAllowScanout);
+
+  if (is_scanout_allowed && GetContextProviderWeakPtr() &&
+      GetContextProviderWeakPtr()
+          ->ContextProvider()
+          .SharedImageInterface()
+          ->GetCapabilities()
+          .supports_scanout_shared_images) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+  return usage;
 #else
   // On other platforms we cannot assume and do not require that a SharedImage
   // created with WebGPU usage be backed by a native buffer.

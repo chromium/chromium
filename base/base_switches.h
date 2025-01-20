@@ -50,6 +50,7 @@ extern const char kEnableCrashReporterForTesting[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidSkipChildServiceInitForTesting[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
 extern const char kHostPackageName[];

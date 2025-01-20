@@ -366,7 +366,11 @@ public class TabGroupsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.setIndex(2, TabSelectionType.FROM_USER);
-                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
 
         List<Tab> noTabs = getCurrentTabs();
@@ -483,16 +487,5 @@ public class TabGroupsTest {
                     }
                 });
         return tabs;
-    }
-
-    private List<Integer> getCurrentTabIds() {
-        List<Integer> tabIds = new ArrayList<>();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (int i = 0; i < mTabModel.getCount(); i++) {
-                        tabIds.add(mTabModel.getTabAt(i).getId());
-                    }
-                });
-        return tabIds;
     }
 }

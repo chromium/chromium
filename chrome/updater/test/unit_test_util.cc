@@ -74,7 +74,6 @@ class CustomLogPrinter : public testing::TestEventListener {
  public:
   // Takes ownership of impl.
   explicit CustomLogPrinter(testing::TestEventListener* impl) : impl_(impl) {}
-  ~CustomLogPrinter() override = default;
   CustomLogPrinter(const CustomLogPrinter&) = delete;
   CustomLogPrinter& operator=(const CustomLogPrinter&) = delete;
 
@@ -219,10 +218,10 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 }
 
 scoped_refptr<PolicyService> CreateTestPolicyService() {
-  std::vector<scoped_refptr<PolicyManagerInterface>> managers{
-      GetDefaultValuesPolicyManager()};
-  return base::MakeRefCounted<PolicyService>(std::move(managers),
-                                             /*persisted_data=*/nullptr);
+  return base::MakeRefCounted<PolicyService>(
+      /*external_constants=*/nullptr,
+      /*persisted_data=*/nullptr,
+      /*is_ceca_experiment_enabled=*/false);
 }
 
 std::string GetTestName() {

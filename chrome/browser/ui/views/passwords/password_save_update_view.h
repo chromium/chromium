@@ -51,11 +51,6 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
 
-  // views::WidgetDelegate override.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   // If the sign in promo should be shown, it will remove the current contents
   // of the bubble and replace them with the sign in promo. Returns true if the
   // bubble is not replaced with the promo, and therefore closed. Returns false
@@ -94,9 +89,6 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // True iff it is an update password bubble on creation. False iff it is a
   // save bubble.
   const bool is_update_bubble_;
-
-  // True if the bubble is showing the sign in promo. False if not.
-  bool is_signin_promo_bubble_ = false;
 
   // The views for the username and password dropdown elements.
   raw_ptr<views::EditableCombobox> username_dropdown_ = nullptr;

@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -229,6 +231,7 @@ void PWAHandler::InstallFromManifestId(
       webapps::WebappInstallSource::DEVTOOLS, contents->GetWeakPtr(),
       base::BindOnce(
           [](const std::string& in_manifest_id,
+             base::WeakPtr<web_app::WebAppScreenshotFetcher>,
              content::WebContents* initiator_web_contents,
              std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
              web_app::WebAppInstallationAcceptanceCallback
@@ -345,7 +348,7 @@ void PWAHandler::InstallFromInstallInfo(
 
 void PWAHandler::Install(
     const std::string& in_manifest_id,
-    protocol::Maybe<std::string> in_install_url_or_bundle_url,
+    std::optional<std::string> in_install_url_or_bundle_url,
     std::unique_ptr<InstallCallback> callback) {
   if (in_install_url_or_bundle_url) {
     InstallFromUrl(in_manifest_id,
@@ -384,7 +387,7 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
 }
 
 void PWAHandler::Launch(const std::string& in_manifest_id,
-                        protocol::Maybe<std::string> in_url,
+                        std::optional<std::string> in_url,
                         std::unique_ptr<LaunchCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
@@ -551,8 +554,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
     }
     return state->has_shortcut();
   }();
-  if (!provider->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                        shortcut_created)) {
+  if (!provider->ui_manager().CanReparentAppTabToWindow(
+          app_id, shortcut_created, contents)) {
     return protocol::Response::InvalidParams(
         base::StrCat({"The web app ", in_manifest_id,
                       " cannot be opened in its app. Check if the app is "
@@ -570,8 +573,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
 
 void PWAHandler::ChangeAppUserSettings(
     const std::string& in_manifest_id,
-    protocol::Maybe<bool> in_link_capturing,
-    protocol::Maybe<protocol::PWA::DisplayMode> in_display_mode,
+    std::optional<bool> in_link_capturing,
+    std::optional<protocol::PWA::DisplayMode> in_display_mode,
     std::unique_ptr<ChangeAppUserSettingsCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});

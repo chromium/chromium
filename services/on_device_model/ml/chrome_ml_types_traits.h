@@ -7,6 +7,8 @@
 
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
+#include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace mojo {
 
@@ -29,8 +31,34 @@ struct UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece> {
     return std::get<std::string>(input_piece);
   }
 
+  static const SkBitmap& bitmap(const ml::InputPiece& input_piece) {
+    return std::get<SkBitmap>(input_piece);
+  }
+
+  static bool unknown_type(const ml::InputPiece& input_piece) {
+    return std::get<bool>(input_piece);
+  }
+
   static bool Read(on_device_model::mojom::InputPieceDataView in,
                    ml::InputPiece* out);
+};
+
+template <>
+struct EnumTraits<on_device_model::mojom::ModelBackendType,
+                  ml::ModelBackendType> {
+  static on_device_model::mojom::ModelBackendType ToMojom(
+      ml::ModelBackendType input);
+  static bool FromMojom(on_device_model::mojom::ModelBackendType input,
+                        ml::ModelBackendType* output);
+};
+
+template <>
+struct EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+                  ml::ModelPerformanceHint> {
+  static on_device_model::mojom::ModelPerformanceHint ToMojom(
+      ml::ModelPerformanceHint input);
+  static bool FromMojom(on_device_model::mojom::ModelPerformanceHint input,
+                        ml::ModelPerformanceHint* output);
 };
 
 }  // namespace mojo

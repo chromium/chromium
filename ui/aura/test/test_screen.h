@@ -6,6 +6,7 @@
 #define UI_AURA_TEST_TEST_SCREEN_H_
 
 #include <map>
+#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"

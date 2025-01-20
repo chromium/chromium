@@ -19,6 +19,12 @@
 namespace {
 // Workaround for https://crbug.com/1369643
 const double kThinControllerHeight = 0.5;
+
+inline bool IsPermanentThinControllerEnabled() {
+  return base::FeatureList::IsEnabled(
+      remote_cocoa::features::kFullscreenPermanentThinController);
+}
+
 }  // namespace
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
@@ -152,7 +158,7 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
 }
 
 ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
-    NativeWidgetMacNSWindow* browser_window,
+    BrowserNativeWidgetWindow* browser_window,
     NativeWidgetMacOverlayNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
@@ -216,15 +222,6 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   immersive_mode_titlebar_view_controller_.layoutAttribute =
       NSLayoutAttributeBottom;
 
-  thin_titlebar_view_controller_ =
-      [[NSTitlebarAccessoryViewController alloc] init];
-  thin_titlebar_view_controller_.view = [[NSView alloc] init];
-  thin_titlebar_view_controller_.view.wantsLayer = YES;
-  thin_titlebar_view_controller_.view.layer.backgroundColor =
-      NSColor.blackColor.CGColor;
-  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
-  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
-
   display_observation_.Observe(display::Screen::GetScreen());
 }
 
@@ -233,7 +230,7 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.
-  [thin_titlebar_view_controller_ removeFromParentViewController];
+  DisableThinControllerIfNecessary();
   [overlay_content_view_ removeFromSuperview];
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
@@ -261,10 +258,7 @@ void ImmersiveModeControllerCocoa::Init() {
   [overlay_content_view_.centerYAnchor
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
-
-  thin_titlebar_view_controller_.hidden = YES;
-  [browser_window_
-      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
+  CreateThinControllerIfNecessary();
 }
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
@@ -614,6 +608,10 @@ void ImmersiveModeControllerCocoa::
 }
 
 void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
+  NSTitlebarAccessoryViewController* thin_controller =
+      IsPermanentThinControllerEnabled()
+          ? browser_window_.thinTitlebarViewController
+          : thin_titlebar_view_controller_;
   if (last_used_style_ == mojom::ToolbarVisibilityStyle::kNone &&
       immersive_mode_titlebar_view_controller_.revealAmount == 0) {
     // Needed when eventually exiting from content fullscreen and returning
@@ -636,12 +634,12 @@ void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
     // In short, when transitioning to `kNone` we need to take steps to
     // mitigate https://crbug.com/1369643 which is triggered when we
     // eventually transition out of `kNone`.
-    thin_titlebar_view_controller_.hidden = NO;
+    thin_controller.hidden = NO;
   } else {
     // The extra -setHidden:YES call is to clear a visual artifact when
     // transitioning from `kNone`.
-    thin_titlebar_view_controller_.hidden = YES;
-    thin_titlebar_view_controller_.hidden = IsToolbarRevealed();
+    thin_controller.hidden = YES;
+    thin_controller.hidden = IsToolbarRevealed();
   }
 }
 
@@ -683,6 +681,33 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
 
 void ImmersiveModeControllerCocoa::Reanchor() {
   LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
+}
+
+void ImmersiveModeControllerCocoa::CreateThinControllerIfNecessary() {
+  if (IsPermanentThinControllerEnabled()) {
+    // In this arm, the thin controller is created in BrowserNativeWidgetWindow
+    // and owned by the window.
+    return;
+  }
+  thin_titlebar_view_controller_ =
+      [[NSTitlebarAccessoryViewController alloc] init];
+  thin_titlebar_view_controller_.view = [[NSView alloc] init];
+  thin_titlebar_view_controller_.view.wantsLayer = YES;
+  thin_titlebar_view_controller_.view.layer.backgroundColor =
+      NSColor.blackColor.CGColor;
+  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
+  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
+  thin_titlebar_view_controller_.hidden = YES;
+  [browser_window_
+      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
+}
+
+void ImmersiveModeControllerCocoa::DisableThinControllerIfNecessary() {
+  if (IsPermanentThinControllerEnabled()) {
+    browser_window_.thinTitlebarViewController.hidden = YES;
+  } else {
+    [thin_titlebar_view_controller_ removeFromParentViewController];
+  }
 }
 
 }  // namespace remote_cocoa

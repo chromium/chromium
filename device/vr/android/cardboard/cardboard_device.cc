@@ -54,8 +54,7 @@ CardboardDevice::CardboardDevice(
 
   // Only support WebGPU sessions if the appropriate feature flag is enabled
   // and shared buffers will be used.
-  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding) &&
-      CardboardImageTransport::UseSharedBuffer()) {
+  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
     device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
   }
 

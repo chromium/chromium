@@ -168,6 +168,35 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"annotationSize16", IDS_PDF_ANNOTATION_SIZE16},
       {"annotationSize20", IDS_PDF_ANNOTATION_SIZE20},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
+      {"ink2Draw", IDS_PDF_INK2_DRAW},
+      {"ink2Size", IDS_PDF_INK2_ANNOTATION_SIZE},
+      {"ink2Color", IDS_PDF_INK2_ANNOTATION_COLOR},
+      {"ink2BrushSizeExtraThin", IDS_PDF_INK2_ANNOTATION_SIZE_EXTRA_THIN},
+      {"ink2BrushSizeThin", IDS_PDF_INK2_ANNOTATION_SIZE_THIN},
+      {"ink2BrushSizeMedium", IDS_PDF_INK2_ANNOTATION_SIZE_MEDIUM},
+      {"ink2BrushSizeThick", IDS_PDF_INK2_ANNOTATION_SIZE_THICK},
+      {"ink2BrushSizeExtraThick", IDS_PDF_INK2_ANNOTATION_SIZE_EXTRA_THICK},
+      {"ink2BrushColorLightRed", IDS_PDF_INK2_ANNOTATION_COLOR_LIGHT_RED},
+      {"ink2BrushColorLightYellow", IDS_PDF_INK2_ANNOTATION_COLOR_LIGHT_YELLOW},
+      {"ink2BrushColorDarkGrey1", IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_1},
+      {"ink2BrushColorDarkGrey2", IDS_PDF_INK2_ANNOTATION_COLOR_DARK_GREY_2},
+      {"ink2BrushColorRed1", IDS_PDF_INK2_ANNOTATION_COLOR_RED_1},
+      {"ink2BrushColorYellow1", IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_1},
+      {"ink2BrushColorGreen1", IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_1},
+      {"ink2BrushColorBlue1", IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_1},
+      {"ink2BrushColorTan1", IDS_PDF_INK2_ANNOTATION_COLOR_TAN_1},
+      {"ink2BrushColorRed2", IDS_PDF_INK2_ANNOTATION_COLOR_RED_2},
+      {"ink2BrushColorYellow2", IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_2},
+      {"ink2BrushColorGreen2", IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_2},
+      {"ink2BrushColorBlue2", IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_2},
+      {"ink2BrushColorTan2", IDS_PDF_INK2_ANNOTATION_COLOR_TAN_2},
+      {"ink2BrushColorRed3", IDS_PDF_INK2_ANNOTATION_COLOR_RED_3},
+      {"ink2BrushColorYellow3", IDS_PDF_INK2_ANNOTATION_COLOR_YELLOW_3},
+      {"ink2BrushColorGreen3", IDS_PDF_INK2_ANNOTATION_COLOR_GREEN_3},
+      {"ink2BrushColorBlue3", IDS_PDF_INK2_ANNOTATION_COLOR_BLUE_3},
+      {"ink2BrushColorTan3", IDS_PDF_INK2_ANNOTATION_COLOR_TAN_3},
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   };
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
@@ -237,6 +266,8 @@ void AddAdditionalData(bool enable_printing,
   dict->Set("pdfUseShowSaveFilePicker",
             base::FeatureList::IsEnabled(
                 chrome_pdf::features::kPdfUseShowSaveFilePicker));
+  dict->Set("pdfSearchifySaveEnabled",
+            chrome_pdf::features::IsPdfSearchifySaveEnabled());
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
@@ -268,6 +299,21 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
   event_router->DispatchEventToExtension(extension_misc::kPdfExtensionId,
                                          std::move(event));
   return true;
+}
+
+void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
+                                       const GURL& new_pdf_url) {
+  base::Value::List args;
+  args.Append(new_pdf_url.spec());
+
+  content::BrowserContext* context = embedder_host->GetBrowserContext();
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT,
+      extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName,
+      std::move(args), context);
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(context);
+  event_router->DispatchEventToExtension(extension_misc::kPdfExtensionId,
+                                         std::move(event));
 }
 
 }  // namespace pdf_extension_util

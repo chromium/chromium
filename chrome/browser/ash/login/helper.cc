@@ -117,8 +117,8 @@ int GetCurrentUserImageSize() {
 
 namespace login {
 
-NetworkStateHelper::NetworkStateHelper() {}
-NetworkStateHelper::~NetworkStateHelper() {}
+NetworkStateHelper::NetworkStateHelper() = default;
+NetworkStateHelper::~NetworkStateHelper() = default;
 
 std::u16string NetworkStateHelper::GetCurrentNetworkName() const {
   NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();

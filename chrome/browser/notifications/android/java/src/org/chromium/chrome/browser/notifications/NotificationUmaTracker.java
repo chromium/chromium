@@ -4,19 +4,15 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.Manifest;
 import android.app.Notification;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -24,6 +20,9 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -161,7 +160,8 @@ public class NotificationUmaTracker {
         ActionType.PRE_UNSUBSCRIBE,
         ActionType.UNDO_UNSUBSCRIBE,
         ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT,
-        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT
+        ActionType.COMMIT_UNSUBSCRIBE_EXPLICIT,
+        ActionType.SHOW_ORIGINAL_NOTIFICATION
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
@@ -238,8 +238,12 @@ public class NotificationUmaTracker {
         // to implicitly committing `PRE_UNSUBSCRIBE`.
         int COMMIT_UNSUBSCRIBE_IMPLICIT = 33;
 
-        // Number of real entries, excluding `UNKNWON`.
-        int NUM_ENTRIES = 34;
+        // The "Show notification" button, used only for persistent web notifications that are
+        // suspicious.
+        int SHOW_ORIGINAL_NOTIFICATION = 34;
+
+        // Number of real entries, excluding `UNKNOWN`.
+        int NUM_ENTRIES = 35;
     }
 
     /**
@@ -343,7 +347,7 @@ public class NotificationUmaTracker {
 
     // Cached objects.
     private final SharedPreferencesManager mSharedPreferences;
-    private final NotificationManagerCompat mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     public static NotificationUmaTracker getInstance() {
         return LazyHolder.INSTANCE;
@@ -351,7 +355,7 @@ public class NotificationUmaTracker {
 
     private NotificationUmaTracker() {
         mSharedPreferences = ChromeSharedPreferences.getInstance();
-        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
     }
 
     /**
@@ -367,11 +371,7 @@ public class NotificationUmaTracker {
             @SystemNotificationType int type, @Nullable Notification notification) {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, notification.getChannelId());
-        } else {
-            logNotificationShown(type, null);
-        }
+        logNotificationShown(type, notification.getChannelId());
     }
 
     /**
@@ -529,25 +529,9 @@ public class NotificationUmaTracker {
     /**
      * Records the result of an OS prompt for notification permissions.
      *
-     * @param permissions List of permissions requested, the only element should be the notification
-     *     permission.
-     * @param grantResults List of grant results.
+     * @param isPermissionGranted Whether permission is granted.
      */
-    public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        if (permissions == null
-                || permissions.length != 1
-                || grantResults.length != 1
-                || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-            assert permissions != null : "Parameter permissions should not be null";
-            assert permissions.length == 1 : "A single permission should have been requested";
-            assert grantResults.length == 1 : "A single result should have been returned";
-            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
-                    : "The requested permission should be for notifications";
-            return;
-        }
-
-        boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
+    public void recordNotificationPermissionRequestResult(boolean isPermissionGranted) {
         RecordHistogram.recordBooleanHistogram(
                 "Mobile.SystemNotification.Permission.OSPromptResult", isPermissionGranted);
     }
@@ -667,27 +651,40 @@ public class NotificationUmaTracker {
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {
-        if (!mNotificationManager.areNotificationsEnabled()) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
             logPotentialBlockedCause();
             recordHistogram("Mobile.SystemNotification.Blocked", type);
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && channelId != null
-                && isChannelBlocked(channelId)) {
-            recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+        if (channelId == null) {
+            saveLastShownNotification(type);
+            recordHistogram("Mobile.SystemNotification.Shown", type);
             return;
         }
-        saveLastShownNotification(type);
-        recordHistogram("Mobile.SystemNotification.Shown", type);
+
+        isChannelBlocked(
+                channelId,
+                (blocked) -> {
+                    if (blocked) {
+                        recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+                    } else {
+                        saveLastShownNotification(type);
+                        recordHistogram("Mobile.SystemNotification.Shown", type);
+                    }
+                });
     }
 
     @RequiresApi(26)
-    private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
-        NotificationChannelCompat channel =
-                mNotificationManager.getNotificationChannelCompat(channelId);
-        return channel != null
-                && channel.getImportance() == NotificationManagerCompat.IMPORTANCE_NONE;
+    private void isChannelBlocked(
+            @ChromeChannelDefinitions.ChannelId String channelId, Callback<Boolean> callback) {
+        mNotificationManager.getNotificationChannel(
+                channelId,
+                (channel) -> {
+                    callback.onResult(
+                            channel != null
+                                    && channel.getImportance()
+                                            == NotificationManagerCompat.IMPORTANCE_NONE);
+                });
     }
 
     private void saveLastShownNotification(@SystemNotificationType int type) {

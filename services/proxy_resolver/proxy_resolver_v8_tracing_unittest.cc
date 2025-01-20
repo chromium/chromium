@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -594,7 +591,7 @@ TEST_F(ProxyResolverV8TracingTest, DnsDuringInit) {
 
 void CrashCallback(int) {
   // Be extra sure that if the callback ever gets invoked, the test will fail.
-  CHECK(false);
+  NOTREACHED();
 }
 
 // Start some requests, cancel them all, and then destroy the resolver.
@@ -611,8 +608,9 @@ TEST_F(ProxyResolverV8TracingTest, CancelAll) {
       CreateResolver(mock_bindings.CreateBindings(), "dns.js");
 
   const size_t kNumRequests = 5;
-  net::ProxyInfo proxy_info[kNumRequests];
-  std::unique_ptr<net::ProxyResolver::Request> request[kNumRequests];
+  std::array<net::ProxyInfo, kNumRequests> proxy_info;
+  std::array<std::unique_ptr<net::ProxyResolver::Request>, kNumRequests>
+      request;
 
   for (size_t i = 0; i < kNumRequests; ++i) {
     resolver->GetProxyForURL(GURL("http://foo/"),
@@ -956,19 +954,19 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
   // Queue up work for each resolver (which will be running in parallel).
   // ------------------------
 
-  ProxyResolverV8Tracing* resolver[] = {
+  auto resolver = std::to_array<ProxyResolverV8Tracing*>({
       resolver0.get(),
       resolver1.get(),
       resolver2.get(),
       resolver3.get(),
-  };
+  });
 
   const size_t kNumResolvers = std::size(resolver);
   const size_t kNumIterations = 20;
   const size_t kNumResults = kNumResolvers * kNumIterations;
-  net::TestCompletionCallback callback[kNumResults];
-  net::ProxyInfo proxy_info[kNumResults];
-  std::unique_ptr<net::ProxyResolver::Request> request[kNumResults];
+  std::array<net::TestCompletionCallback, kNumResults> callback;
+  std::array<net::ProxyInfo, kNumResults> proxy_info;
+  std::array<std::unique_ptr<net::ProxyResolver::Request>, kNumResults> request;
 
   for (size_t i = 0; i < kNumResults; ++i) {
     size_t resolver_i = i % kNumResolvers;

@@ -54,6 +54,8 @@ QuickInsertSectionType SectionTypeFromSearchSource(
     case QuickInsertSearchSource::kLobsterWithNoSelectedText:
     case QuickInsertSearchSource::kLobsterWithSelectedText:
       return QuickInsertSectionType::kContentEditor;
+    case QuickInsertSearchSource::kGifs:
+      return QuickInsertSectionType::kSearchedGifs;
   }
 }
 
@@ -330,6 +332,7 @@ void QuickInsertSearchAggregator::PublishBurnInResults() {
            QuickInsertSectionType::kLocalFiles,
            QuickInsertSectionType::kClipboard,
            QuickInsertSectionType::kContentEditor,
+           QuickInsertSectionType::kSearchedGifs,
        }) {
     if (published_types.contains(type)) {
       continue;

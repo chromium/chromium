@@ -62,9 +62,7 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
       kPowerButtonMenuCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : kPowerButtonMenuBorderType));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetBackground(
       views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 

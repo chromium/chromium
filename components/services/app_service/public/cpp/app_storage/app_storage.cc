@@ -159,9 +159,8 @@ bool AppStorage::IsAppChanged(const AppUpdate& update) {
   }
 
   // Ideally this should not happen quite often. However, if due to new
-  // feature/requirements, etc, the app type could be modified, e.g.
-  // kChromeApp->kStandaloneBrowserChromeApp, so we allow the app type changed
-  // to align with the latest requirements.
+  // feature/requirements, etc, the app type could be modified, we allow the app
+  // type changed to align with the latest requirements.
   if (app->app_type != it->second->app_type) {
     return true;
   }

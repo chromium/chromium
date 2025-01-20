@@ -401,8 +401,7 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy(
     v8::Isolate* isolate) const {
   return GetFrame()
       ->GetWindowProxy(DOMWrapperWorld::MainWorld(isolate))
-      ->GlobalProxyIfNotDetached()
-      .ToLocalChecked();
+      ->GetGlobalProxy();
 }
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {

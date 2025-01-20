@@ -25,7 +25,7 @@ scoped_refptr<SegmentReader> CopyToROBufferSegmentReader(
   size_t position = 0;
   for (base::span<const uint8_t> segment = input->GetSomeData(position);
        !segment.empty(); segment = input->GetSomeData(position)) {
-    rw_buffer.Append(segment.data(), segment.size());
+    rw_buffer.Append(segment);
     position += segment.size();
   }
   return SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
@@ -53,7 +53,7 @@ TEST(FastSharedBufferReaderTest, nonSequentialReads) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -76,7 +76,7 @@ TEST(FastSharedBufferReaderTest, readBackwards) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -101,7 +101,7 @@ TEST(FastSharedBufferReaderTest, byteByByte) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -119,7 +119,7 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
   char reference_data[kDataSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, kDataSize);
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -136,7 +136,7 @@ TEST(SegmentReaderTest, readPastEndThenRead) {
   char reference_data[kDataSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(base::span(reference_data).subspan(0, kDefaultSegmentTestSize));
+  data->Append(base::span(reference_data).first(kDefaultSegmentTestSize));
   data->Append(base::span(reference_data)
                    .subspan(kDefaultSegmentTestSize, kDefaultSegmentTestSize));
 
@@ -183,6 +183,7 @@ TEST(SegmentReaderTest, variableSegments) {
   const size_t kDataSize = 3.5 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
   PrepareReferenceData(reference_data);
+  auto reference_data_span = base::as_byte_span(reference_data);
 
   scoped_refptr<SegmentReader> segment_reader;
   {
@@ -194,11 +195,11 @@ TEST(SegmentReaderTest, variableSegments) {
     // written to yet), but when appending a larger amount it may create a
     // larger segment.
     RWBuffer rw_buffer;
-    rw_buffer.Append(reference_data, kDefaultSegmentTestSize);
-    rw_buffer.Append(reference_data + kDefaultSegmentTestSize,
-                     2 * kDefaultSegmentTestSize);
-    rw_buffer.Append(reference_data + 3 * kDefaultSegmentTestSize,
-                     .5 * kDefaultSegmentTestSize);
+    rw_buffer.Append(reference_data_span.first(kDefaultSegmentTestSize));
+    rw_buffer.Append(reference_data_span.subspan(kDefaultSegmentTestSize,
+                                                 2 * kDefaultSegmentTestSize));
+    rw_buffer.Append(reference_data_span.subspan(3 * kDefaultSegmentTestSize,
+                                                 kDefaultSegmentTestSize / 2));
 
     segment_reader =
         SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
@@ -206,7 +207,6 @@ TEST(SegmentReaderTest, variableSegments) {
 
   size_t position = 0;
   size_t last_length = 0;
-  auto reference_data_span = base::as_byte_span(reference_data);
   for (base::span<const uint8_t> segment =
            segment_reader->GetSomeData(position);
        !segment.empty(); segment = segment_reader->GetSomeData(position)) {

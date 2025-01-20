@@ -38,6 +38,10 @@ void RequestSystemVideoCapturePermission(base::OnceClosure callback);
 // Sets the wrapper object for OS calls. For test mocking purposes.
 void SetMediaAuthorizationWrapperForTesting(MediaAuthorizationWrapper* wrapper);
 
+// Sets the value of `g_is_screen_capture_allowed_for_testing`, for test
+// purposes only. When set `IsScreenCaptureAllowed` will return this value.
+void SetIsScreenCaptureAllowedForTesting(bool is_screen_capture_allowed);
+
 }  // namespace system_permission_settings
 
 #endif  // CHROME_BROWSER_PERMISSIONS_SYSTEM_SYSTEM_MEDIA_CAPTURE_PERMISSIONS_MAC_H_

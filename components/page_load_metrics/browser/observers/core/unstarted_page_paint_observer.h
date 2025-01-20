@@ -46,12 +46,19 @@ class UnstartedPagePaintObserver
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override;
+  ObservePolicy OnHidden(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnShown() override;
 
  private:
   // Methods for handling unstarted page paints timer.
   void StartUnstartedPagePaintTimer();
   void StopUnstartedPagePaintTimer(bool first_content_paint);
-  void OnUnstartedPagePaintExpired() const;
+  void OnUnstartedPagePaintExpired();
+  void RecordUnstartedPagePaint(bool timeout_expired);
+
+  // Determines if observe policy should continue observing.
+  ObservePolicy GetObservePolicy() const;
 
   // Timer to monitor that a navigation is completed in a certain amount of
   // time. The timer should be started whenever a navigation starts and stopped
@@ -59,6 +66,10 @@ class UnstartedPagePaintObserver
   // navigation will be reported as not completed. A navigation is considered
   // completed when a first contentful paint is received for the page.
   base::OneShotTimer navigation_timeout_timer_;
+
+  // Determines if histogram has already been recorded, as we want to record it
+  // only once per navigation.
+  bool has_histogram_been_recorded_ = false;
 
   base::WeakPtrFactory<UnstartedPagePaintObserver> weak_factory_{this};
 };

@@ -35,17 +35,10 @@ void InitializeMojoCore() {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
   if (is_browser) {
-    // On Lacros, Chrome is not always the broker, because ash-chrome is.
-    // Otherwise, look at the command line flag to decide whether it is
-    // a broker.
+    // Look at the command line flag to decide whether it is a broker.
     config.is_broker_process =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        false
-#else
         !command_line.HasSwitch(switches::kDisableMojoBroker) &&
-        !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)
-#endif
-        ;
+        !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line);
     if (!config.is_broker_process)
       config.force_direct_shared_memory_allocation = true;
   } else {

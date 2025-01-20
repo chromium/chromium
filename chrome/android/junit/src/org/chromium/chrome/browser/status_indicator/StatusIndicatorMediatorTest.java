@@ -97,14 +97,14 @@ public class StatusIndicatorMediatorTest {
         // Show the status indicator.
         setViewHeight(70);
         mMediator.onLayoutChange(mStatusIndicatorView, 0, 0, 0, 0, 0, 0, 0, 0);
-        mMediator.onControlsOffsetChanged(0, 70, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 70, true, 0, 0, false, false, false);
 
         // Now, hide it. Listener shouldn't be removed.
         mMediator.updateVisibilityForTesting(true);
         verify(mBrowserControlsStateProvider, never()).removeObserver(mMediator);
 
         // Once the hiding animation is done...
-        mMediator.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 0, true, 0, 0, false, false, false);
         // The listener should be removed.
         verify(mBrowserControlsStateProvider).removeObserver(mMediator);
     }
@@ -114,16 +114,16 @@ public class StatusIndicatorMediatorTest {
         // Show the status indicator.
         setViewHeight(70);
         mMediator.onLayoutChange(mStatusIndicatorView, 0, 0, 0, 0, 0, 0, 0, 0);
-        mMediator.onControlsOffsetChanged(0, 70, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 70, true, 0, 0, false, false, false);
         // The Android view should be visible at this point.
         assertEquals(View.VISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         // Now hide it.
         mMediator.updateVisibilityForTesting(true);
         // The hiding animation...
-        mMediator.onControlsOffsetChanged(0, 30, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 30, true, 0, 0, false, false, false);
         // Android view will be gone once the animation starts.
         assertEquals(View.GONE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
-        mMediator.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 0, true, 0, 0, false, false, false);
         // Shouldn't make the Android view invisible. It should stay gone.
         assertEquals(View.GONE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
     }
@@ -135,22 +135,22 @@ public class StatusIndicatorMediatorTest {
         mMediator.onLayoutChange(mStatusIndicatorView, 0, 0, 0, 0, 0, 0, 0, 0);
         assertEquals(View.GONE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         // Assume the status indicator is completely hidden.
-        mMediator.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         assertEquals(View.INVISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         assertFalse(mModel.get(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE));
 
         // Status indicator is partially showing.
-        mMediator.onControlsOffsetChanged(0, 10, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 10, true, 0, 0, false, false, false);
         assertEquals(View.INVISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         assertTrue(mModel.get(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE));
 
         // Status indicator is fully showing, 20px.
-        mMediator.onControlsOffsetChanged(0, 20, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 20, true, 0, 0, false, false, false);
         assertEquals(View.VISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         assertTrue(mModel.get(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE));
 
         // Hide again.
-        mMediator.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 0, true, 0, 0, false, false, false);
         assertEquals(View.INVISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         assertFalse(mModel.get(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE));
     }
@@ -162,16 +162,16 @@ public class StatusIndicatorMediatorTest {
         // Show the status indicator.
         setViewHeight(70);
         mMediator.onLayoutChange(mStatusIndicatorView, 0, 0, 0, 0, 0, 0, 0, 0);
-        mMediator.onControlsOffsetChanged(0, 70, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 70, true, 0, 0, false, false, false);
         // The Android view should be visible at this point.
         assertEquals(View.VISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
         // Now hide it.
         mMediator.updateVisibilityForTesting(true);
         // The hiding animation...
-        mMediator.onControlsOffsetChanged(0, 30, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 30, true, 0, 0, false, false, false);
         // Android view will be VISIBLE during the animation.
         assertEquals(View.VISIBLE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));
-        mMediator.onControlsOffsetChanged(0, 0, 0, 0, false, false);
+        mMediator.onControlsOffsetChanged(0, 0, true, 0, 0, false, false, false);
         // The view will be GONE once the animation ends and the indicator is completely out of
         // screen bounds.
         assertEquals(View.GONE, mModel.get(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY));

@@ -59,6 +59,13 @@ export class OutlookCalendarModuleElement extends
     return [
       [
         {
+          action: 'dismiss',
+          icon: 'modules:visibility_off',
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'calendarModuleDismissHours'),
+        },
+        {
           action: 'disable',
           icon: 'modules:block',
           text: this.i18n('modulesOutlookCalendarDisableButtonText'),
@@ -85,7 +92,20 @@ export class OutlookCalendarModuleElement extends
     });
     this.dispatchEvent(disableEvent);
   }
+
+  protected onDismissButtonClick_() {
+    this.handler_.dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: this.i18n('modulesOutlookCalendarDismissToastMessage'),
+        restoreCallback: () => this.handler_.restoreModule(),
+      },
+    }));
+  }
 }
+
 
 customElements.define(
     OutlookCalendarModuleElement.is, OutlookCalendarModuleElement);

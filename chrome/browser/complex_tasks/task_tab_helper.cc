@@ -40,7 +40,7 @@ TaskTabHelper::TaskTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<TaskTabHelper>(*web_contents) {}
 
-TaskTabHelper::~TaskTabHelper() {}
+TaskTabHelper::~TaskTabHelper() = default;
 
 void TaskTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {

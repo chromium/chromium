@@ -5,6 +5,7 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,6 +42,7 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -144,12 +146,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     headless_web_contents_->browser_context()->RegisterWebContents(
         std::move(child_contents));
 
-    const gfx::Rect default_rect(
+    const gfx::Rect default_bounds(
         headless_web_contents_->browser()->options()->window_size);
-    const gfx::Rect rect = window_features.bounds.IsEmpty()
-                               ? default_rect
-                               : window_features.bounds;
-    raw_child_contents->SetBounds(rect);
+    const gfx::Rect bounds = window_features.bounds.IsEmpty()
+                                 ? default_bounds
+                                 : window_features.bounds;
+    raw_child_contents->SetBounds(bounds);
     return nullptr;
   }
 
@@ -172,7 +174,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         HeadlessWebContentsImpl* child_contents = HeadlessWebContentsImpl::From(
             headless_web_contents_->browser_context()
                 ->CreateWebContentsBuilder()
-                .SetWindowSize(source->GetContainerBounds().size())
+                .SetWindowBounds(source->GetContainerBounds())
                 .Build());
         target = child_contents->web_contents();
         break;
@@ -230,7 +232,8 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   }
 
   content::PreloadingEligibility IsPrerender2Supported(
-      content::WebContents& web_contents) override {
+      content::WebContents& web_contents,
+      content::PreloadingTriggerType trigger_type) override {
     return base::FeatureList::IsEnabled(features::kPrerender2InHeadlessMode)
                ? content::PreloadingEligibility::kEligible
                : content::PreloadingEligibility::
@@ -261,6 +264,18 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     return is_fullscreen_;
   }
 
+  blink::mojom::DisplayMode GetDisplayMode(
+      const content::WebContents* web_contents) override {
+    return IsFullscreenForTabOrPending(web_contents)
+               ? blink::mojom::DisplayMode::kFullscreen
+               : blink::mojom::DisplayMode::kBrowser;
+  }
+
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override {
+    headless_web_contents_->SetBounds(bounds);
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
@@ -272,33 +287,29 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
     is_fullscreen_ = fullscreen;
 
-    content::RenderViewHost* rvh =
-        web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
-    CHECK(rvh);
+    content::RenderWidgetHost* rwh =
+        web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
+    CHECK(rwh);
 
-    content::RenderWidgetHostView* view = rvh->GetWidget()->GetView();
-    if (view) {
+    if (content::RenderWidgetHostView* view = rwh->GetView()) {
       if (fullscreen) {
-        // Headless chrome does not have screen to set the view bounds to, so
-        // just double the size of the existing view to trigger the expected
-        // window size change notifications.
         before_fullscreen_bounds_ = view->GetViewBounds();
-        gfx::Rect bounds = before_fullscreen_bounds_;
-        bounds.set_width(bounds.width() * 2);
-        bounds.set_height(bounds.height() * 2);
+        gfx::Rect bounds = rwh->GetScreenInfo().rect;
         view->SetBounds(bounds);
       } else {
-        view->SetBounds(before_fullscreen_bounds_);
+        CHECK(before_fullscreen_bounds_);
+        view->SetBounds(before_fullscreen_bounds_.value());
+        before_fullscreen_bounds_.reset();
       }
     }
 
-    rvh->GetWidget()->SynchronizeVisualProperties();
+    rwh->SynchronizeVisualProperties();
   }
 
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
 
   bool is_fullscreen_ = false;
-  gfx::Rect before_fullscreen_bounds_;
+  std::optional<gfx::Rect> before_fullscreen_bounds_;
 };
 
 namespace {
@@ -360,7 +371,8 @@ std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
   headless_web_contents->begin_frame_control_enabled_ =
       builder->enable_begin_frame_control_ ||
       headless_web_contents->browser()->options()->enable_begin_frame_control;
-  headless_web_contents->InitializeWindow(gfx::Rect(builder->window_size_));
+  headless_web_contents->InitializeWindow(builder->window_bounds_,
+                                          builder->window_state_);
   if (!headless_web_contents->OpenURL(builder->initial_url_))
     return nullptr;
   return headless_web_contents;
@@ -377,19 +389,34 @@ HeadlessWebContentsImpl::CreateForChildContents(
   // Child contents have their own root window and inherit the BeginFrameControl
   // setting.
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
-  child->InitializeWindow(child->web_contents_->GetContainerBounds());
-
+  child->InitializeWindow(child->web_contents_->GetContainerBounds(),
+                          HeadlessWindowState::kNormal);
   return child;
 }
 
 void HeadlessWebContentsImpl::InitializeWindow(
-    const gfx::Rect& initial_bounds) {
+    const gfx::Rect& bounds,
+    HeadlessWindowState window_state) {
   static int window_id = 1;
   window_id_ = window_id++;
-  window_state_ = "normal";
 
   browser()->PlatformInitializeWebContents(this);
-  SetBounds(initial_bounds);
+  SetBounds(bounds);
+  SetWindowState(window_state);
+}
+
+void HeadlessWebContentsImpl::SetWindowState(HeadlessWindowState window_state) {
+  switch (window_state) {
+    case HeadlessWindowState::kNormal:
+    case HeadlessWindowState::kMaximized:
+    case HeadlessWindowState::kFullscreen:
+      web_contents_->WasShown();
+      break;
+    case HeadlessWindowState::kMinimized:
+      web_contents_->WasHidden();
+      break;
+  }
+  window_state_ = window_state;
 }
 
 void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
@@ -412,8 +439,8 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kForceWebRtcIPHandlingPolicy)) {
     web_contents_->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
-        command_line->GetSwitchValueASCII(
-            ::switches::kForceWebRtcIPHandlingPolicy);
+        blink::ToWebRTCIPHandlingPolicy(command_line->GetSwitchValueASCII(
+            ::switches::kForceWebRtcIPHandlingPolicy));
   }
 
   web_contents_->SetDelegate(web_contents_delegate_.get());
@@ -505,7 +532,7 @@ void HeadlessWebContentsImpl::BeginFrame(
 HeadlessWebContents::Builder::Builder(
     HeadlessBrowserContextImpl* browser_context)
     : browser_context_(browser_context),
-      window_size_(browser_context->options()->window_size()) {}
+      window_bounds_(browser_context->options()->window_size()) {}
 
 HeadlessWebContents::Builder::~Builder() = default;
 
@@ -517,9 +544,15 @@ HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetInitialURL(
   return *this;
 }
 
-HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowSize(
-    const gfx::Size& size) {
-  window_size_ = size;
+HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowBounds(
+    const gfx::Rect& bounds) {
+  window_bounds_ = bounds;
+  return *this;
+}
+
+HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowState(
+    HeadlessWindowState window_state) {
+  window_state_ = window_state;
   return *this;
 }
 

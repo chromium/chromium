@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -57,19 +58,17 @@ public interface AccountManagerDelegate {
      * @return The access token data fetched from the authenticator.
      * @throws AuthException Indicates a failure in fetching the auth token perhaps due to a
      *     transient error or when user intervention is required (like confirming the credentials)
-     *     which is expressed as an {@link Intent} to the handler. TODO(crbug.com/40745233): Rename
-     *     this method to getAccessToken.
+     *     which is expressed as an {@link Intent} to the handler.
      */
     @WorkerThread
-    AccessTokenData getAuthToken(Account account, String authTokenScope) throws AuthException;
+    AccessTokenData getAccessToken(Account account, String authTokenScope) throws AuthException;
 
     /**
      * @param authToken The auth token to invalidate.
      * @throws AuthException Indicates a failure clearing the auth token; can be transient.
-     *     TODO(crbug.com/40745233): Rename this method to invalidateAccessToken.
      */
     @WorkerThread
-    void invalidateAuthToken(String authToken) throws AuthException;
+    void invalidateAccessToken(String authToken) throws AuthException;
 
     /** Check whether the given account has a specific feature. */
     @WorkerThread
@@ -105,26 +104,25 @@ public interface AccountManagerDelegate {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
+     * Returns the Gaia id for the account associated with the given email address. If an account
+     * with the given email address is not installed on the device then null is returned.
      *
-     * This method will throw IllegalStateException if called on the main thread.
+     * <p>This method will throw IllegalStateException if called on the main thread.
      *
      * @param accountEmail The email address of a Google account.
      */
     @WorkerThread
     @Nullable
-    String getAccountGaiaId(String accountEmail);
+    GaiaId getAccountGaiaId(String accountEmail);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account.
      *
      * @param account The {@link Account} to confirm the credentials for.
      * @param activity The {@link Activity} context to use for launching a new authenticator-defined
-     *                 sub-Activity to prompt the user to confirm the account's password.
+     *     sub-Activity to prompt the user to confirm the account's password.
      * @param callback The callback to indicate whether the user successfully confirmed their
-     *                 knowledge of the account's credentials.
+     *     knowledge of the account's credentials.
      */
     void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
 }

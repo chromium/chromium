@@ -103,8 +103,7 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   // This CHECK is helping to track down https://crbug.com/819968, and should be
   // removed when that's fixed.
   CHECK(binding::IsContextValid(context));
-  JSRunner::Get(context)->RunJSFunction(function, context, std::size(args),
-                                        args);
+  JSRunner::Get(context)->RunJSFunction(function, context, args);
 }
 
 }  // namespace extensions

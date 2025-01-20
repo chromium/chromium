@@ -59,7 +59,7 @@ void {{class_name}}::CheckStep1__{{method.mojom_name}}(CheckCallback callback) {
 {%-      for param in method.response_parameters %}
 {%-        if param.kind is PendingReceiverKind or
               param.kind is PendingRemoteKind  %}
-    CHECK(false) <<
+    NOTREACHED() <<
         "Checking interface through response parameters are not supported.";
 {%-        endif %}
 {%-      endfor %}

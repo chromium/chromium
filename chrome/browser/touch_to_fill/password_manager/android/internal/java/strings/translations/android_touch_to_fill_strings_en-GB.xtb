@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">List of credentials to be filled in on touch opened at full height.</translation>
 <translation id="5591247451101092906">Use saved password or passkey?</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
+<translation id="592182999816790476">Password for <ph name="USERNAME" /> saved for <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Passkey for <ph name="USERNAME" />, use your screen lock</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7286867818472074330">Select passkey</translation>

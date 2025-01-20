@@ -104,6 +104,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/geometry/insets_conversions.h"
 
 namespace blink {
 
@@ -120,17 +121,22 @@ const int kTenFrames = 10;
 bool g_limit_max_frames_to_ten_for_testing = false;
 
 // static
-void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::Insets& safe_area) {
+void SetSafeAreaEnvVariables(LocalFrame* frame,
+                             const gfx::InsetsF& safe_area_in_physical_px) {
+  gfx::InsetsF safe_area =
+      ScaleInsets(safe_area_in_physical_px, 1.0f / frame->LayoutZoomFactor());
+
   DocumentStyleEnvironmentVariables& vars =
       frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.top()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.left()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaInsetBottom,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area.bottom()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.right()));
 }
 
 }  // namespace
@@ -938,43 +944,53 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
     return;
   }
 
-  gfx::Insets new_safe_area = gfx::Insets::TLBR(
-      max_safe_area_insets_.top(), max_safe_area_insets_.left(),
-      max_safe_area_insets_.bottom(), max_safe_area_insets_.right());
-  if (max_safe_area_insets_.bottom() > 0) {
+  gfx::InsetsF new_scaled_safe_area(scaled_max_safe_area_insets_);
+
+  // The calculation is done in the unit of physical pixel.
+  if (scaled_max_safe_area_insets_.bottom() > 0) {
     // Adjust the top / left / right is not needed, since they are set when
     // display insets was received at |SetSafeArea()|.
-    int inset_bottom = max_safe_area_insets_.bottom();
+    float inset_bottom = scaled_max_safe_area_insets_.bottom();
     int bottom_controls_full_height = browser_controls.BottomHeight();
     float control_ratio = browser_controls.BottomShownRatio();
-    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
-                          .device_scale_factor;
 
     // As control_ratio decrease, safe_area_inset_bottom will be added to the
     // web page to keep the bottom element out from the display cutout area.
     float safe_area_inset_bottom = std::max(
-        0.f,
-        inset_bottom - control_ratio * bottom_controls_full_height / dip_scale);
+        0.f, inset_bottom - control_ratio * bottom_controls_full_height);
 
-    new_safe_area.set_bottom(safe_area_inset_bottom);
+    new_scaled_safe_area.set_bottom(safe_area_inset_bottom);
   }
 
-  if (new_safe_area != applied_safe_area_insets_ || force_update) {
-    applied_safe_area_insets_ = new_safe_area;
-    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
+  if (new_scaled_safe_area != applied_safe_area_insets_ || force_update) {
+    applied_safe_area_insets_ = new_scaled_safe_area;
+    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_scaled_safe_area);
   }
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
-  max_safe_area_insets_ = max_safe_area;
+  // Update |scaled_max_safe_area_insets_| first.
+  float dsf = chrome_client_->GetScreenInfo(*setter).device_scale_factor;
+  gfx::InsetsF scaled_max_safe_area_insets =
+      ScaleInsets(gfx::InsetsF(max_safe_area), dsf);
+
+  if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
+    scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
+
+    // Update Chrome client CC for MaxSafeAreaInsets change.
+    GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
+  }
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
   // main frame needs to be set per browser controls state.
   if (GetSettings().GetDynamicSafeAreaInsetsEnabled() &&
       setter->IsMainFrame()) {
+    // |scaled_max_safe_area_insets_| should be updated before
+    // UpdateSafeAreaInsetWithBrowserControls() is called.
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
-    SetSafeAreaEnvVariables(setter, max_safe_area);
+    applied_safe_area_insets_ = scaled_max_safe_area_insets_;
+    SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
   }
 }
 

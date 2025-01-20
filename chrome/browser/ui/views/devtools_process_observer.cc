@@ -23,26 +23,30 @@ DevtoolsProcessObserver::~DevtoolsProcessObserver() {
 
 void DevtoolsProcessObserver::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
+  if (data.process_type == content::PROCESS_TYPE_GPU) {
     tracing_agent_->set_gpu_pid(data.GetProcess().Pid());
+  }
 }
 
 void DevtoolsProcessObserver::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
+  if (data.process_type == content::PROCESS_TYPE_GPU) {
     tracing_agent_->set_gpu_pid(base::kNullProcessId);
+  }
 }
 
 void DevtoolsProcessObserver::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
+  if (data.process_type == content::PROCESS_TYPE_GPU) {
     tracing_agent_->set_gpu_pid(base::kNullProcessId);
+  }
 }
 
 void DevtoolsProcessObserver::BrowserChildProcessKilled(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
+  if (data.process_type == content::PROCESS_TYPE_GPU) {
     tracing_agent_->set_gpu_pid(base::kNullProcessId);
+  }
 }

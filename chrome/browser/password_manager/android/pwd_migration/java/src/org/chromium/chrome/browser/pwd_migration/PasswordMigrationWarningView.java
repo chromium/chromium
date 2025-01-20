@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
@@ -226,10 +225,6 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         } catch (IllegalArgumentException exception) {
             mExceptionReporter.onResult(exception);
         }
-    }
-
-    private @Px int getDimensionPixelSize(int id) {
-        return mContentView.getContext().getResources().getDimensionPixelSize(id);
     }
 
     @Nullable

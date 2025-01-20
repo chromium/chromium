@@ -459,7 +459,8 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
       AudioTimestampHelper::FramesToTime(stream_latency_frames, sample_rate);
   const base::TimeDelta total_latency =
       audio_unit_latency +
-      (base::FeatureList::IsEnabled(kExcludeDeviceLatencyFromTotalLatency)
+      ((base::FeatureList::IsEnabled(kExcludeDeviceLatencyFromTotalLatency) &&
+        is_input)
            ? base::TimeDelta()
            : device_latency) +
       stream_latency;

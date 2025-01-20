@@ -114,7 +114,7 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
 
   const extensions::Extension* extension =
       extensions::ProcessMap::Get(browser_context)
-          ->GetEnabledExtensionByProcessID(host->GetID());
+          ->GetEnabledExtensionByProcessID(host->GetDeprecatedID());
   if (!extension) {
     return kRenderer;
   }

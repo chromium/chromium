@@ -7,13 +7,14 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 
 namespace android_autofill {
 namespace {
 
+// This test class is needed to make the constructor public.
 class TestAndroidAutofillClient : public AndroidAutofillClient {
  public:
   TestAndroidAutofillClient(content::WebContents* web_contents)

@@ -18,7 +18,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/mock_fast_checkout_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"

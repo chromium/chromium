@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/sync/base/data_type.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace tab_groups {
 
@@ -70,7 +71,8 @@ class SyncBridgeTabGroupModelWrapper {
       std::optional<size_t> position,
       std::optional<std::string> creator_cache_guid,
       std::optional<std::string> last_updater_cache_guid,
-      base::Time update_time);
+      base::Time update_time,
+      GaiaId updated_by);
 
   // Updates the tab with the given remote data.
   const SavedTabGroupTab* MergeRemoteTab(const SavedTabGroupTab& remote_tab);

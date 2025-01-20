@@ -415,7 +415,7 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
-// If duplicate ids are encountered, it crashes via CHECK(false).
+// If duplicate ids are encountered, it crashes via NOTREACHED().
 TEST_F(AXTreeSerializerTest, DuplicateIdsCrashes) {
   // (1 (2 (3 (4) 5)))
   treedata0_.root_id = 1;

@@ -196,7 +196,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                        const base::android::JavaParamRef<jstring>& element_type,
                        jboolean forwards,
                        jboolean can_wrap_to_last_element,
-                       jboolean use_default_predicate);
+                       jboolean use_default_predicate,
+                       jboolean is_talkback_enabled,
+                       jboolean is_only_talkback_enabled);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track

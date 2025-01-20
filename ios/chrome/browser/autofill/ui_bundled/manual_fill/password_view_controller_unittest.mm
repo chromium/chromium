@@ -116,7 +116,8 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
         [[ManualFillPlusAddressItem alloc] initWithPlusAddress:plus_address
                                                contentInjector:nil
                                                    menuActions:@[]
-                                   cellIndexAccessibilityLabel:nil];
+                                   cellIndexAccessibilityLabel:nil
+                                     isAddressManualFallbackUI:NO];
     [password_view_controller presentPlusAddresses:@[ item ]];
     // Override the type for the test.
     item.type = kItemTypeSampleTwo;
@@ -204,7 +205,8 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
       [[ManualFillPlusAddressItem alloc] initWithPlusAddress:plus_address
                                              contentInjector:nil
                                                  menuActions:@[]
-                                 cellIndexAccessibilityLabel:nil];
+                                 cellIndexAccessibilityLabel:nil
+                                   isAddressManualFallbackUI:NO];
   [password_view_controller presentPlusAddresses:@[ plus_address_item ]];
   // Override the type for the test.
   plus_address_item.type = kItemTypeSampleTwo;

@@ -46,10 +46,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (LoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
-              GetAllLoginsForAccountAsync,
-              (std::string, LoginsOrErrorReply callback),
-              (override));
-  MOCK_METHOD(void,
               FillMatchingLoginsAsync,
               (LoginsOrErrorReply callback,
                bool include_psl,
@@ -71,15 +67,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               RemoveLoginAsync,
               (const base::Location&,
                const PasswordForm& form,
-               PasswordChangesOrErrorReply callback),
-              (override));
-  MOCK_METHOD(void,
-              RemoveLoginsByURLAndTimeAsync,
-              (const base::Location&,
-               const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-               base::Time delete_begin,
-               base::Time delete_end,
-               base::OnceCallback<void(bool)> sync_completion,
                PasswordChangesOrErrorReply callback),
               (override));
   MOCK_METHOD(void,

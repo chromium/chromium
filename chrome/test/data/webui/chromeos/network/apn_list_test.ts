@@ -81,14 +81,14 @@ suite('ApnListTest', () => {
       id?: string, source: ApnSource = ApnSource.kUi): ApnProperties {
     return {
       accessPointName: accessPointName,
-      id: id,
+      id: id || null,
       authentication: ApnAuthenticationType.kAutomatic,
-      language: undefined,
-      localizedName: undefined,
-      name: name,
-      password: undefined,
-      username: undefined,
-      attach: undefined,
+      language: null,
+      localizedName: null,
+      name: name || null,
+      password: null,
+      username: null,
+      attach: null,
       state: state,
       ipType: ApnIpType.kAutomatic,
       apnTypes: apnTypes,
@@ -101,7 +101,7 @@ suite('ApnListTest', () => {
     return {
       activeValue: activeValue,
       policySource: PolicySource.kNone,
-      policyValue: undefined,
+      policyValue: null,
     };
   }
 
@@ -111,33 +111,33 @@ suite('ApnListTest', () => {
     return {
       activationState: ActivationStateType.kUnknown,
       simLocked: false,
-      allowRoaming: undefined,
-      allowTextMessages: undefined,
+      allowRoaming: null,
+      allowTextMessages: null,
       apnList: apnList,
-      autoConnect: undefined,
-      customApnList: customApnList,
-      eid: undefined,
-      esn: undefined,
-      family: undefined,
-      firmwareRevision: undefined,
-      foundNetworks: undefined,
-      hardwareRevision: undefined,
-      homeProvider: undefined,
-      iccid: undefined,
-      imei: undefined,
-      lastGoodApn: undefined,
-      connectedApn: connectedApn,
-      manufacturer: undefined,
-      mdn: undefined,
-      meid: undefined,
-      min: undefined,
-      modelId: undefined,
-      networkTechnology: undefined,
+      autoConnect: null,
+      customApnList: customApnList || null,
+      eid: null,
+      esn: null,
+      family: null,
+      firmwareRevision: null,
+      foundNetworks: null,
+      hardwareRevision: null,
+      homeProvider: null,
+      iccid: null,
+      imei: null,
+      lastGoodApn: null,
+      connectedApn: connectedApn || null,
+      manufacturer: null,
+      mdn: null,
+      meid: null,
+      min: null,
+      modelId: null,
+      networkTechnology: null,
       simLockType: '',
-      paymentPortal: undefined,
-      roamingState: undefined,
-      selectedApn: undefined,
-      servingOperator: undefined,
+      paymentPortal: null,
+      roamingState: null,
+      selectedApn: null,
+      servingOperator: null,
       signalStrength: 0,
       supportNetworkScan: false,
     };
@@ -288,7 +288,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
   });
 
   test('There is no Connected APN and no custom APNs', async () => {
@@ -313,7 +313,7 @@ suite('ApnListTest', () => {
     assertTrue(!!apns[1]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
-    assertFalse(apns[0].isConnected);
+    assertFalse(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 
@@ -329,7 +329,7 @@ suite('ApnListTest', () => {
         assertEquals(1, apns.length);
         assertTrue(!!apns[0]);
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isApnConnected);
         assertFalse(!!getZeroStateContent());
       });
 
@@ -349,7 +349,7 @@ suite('ApnListTest', () => {
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
-        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isApnConnected);
         assertFalse(!!getZeroStateContent());
       });
 
@@ -367,7 +367,7 @@ suite('ApnListTest', () => {
     assertTrue(OncMojo.apnMatch(apns[0].apn, customApn3));
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 
@@ -380,7 +380,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
 
     // Simulate the APN no longer being connected.
@@ -392,7 +392,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertFalse(apns[0].isConnected);
+    assertFalse(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 
@@ -736,9 +736,9 @@ suite('ApnListTest', () => {
                       id: 'id',
                       source: ApnSource.kModb,
                       state: ApnState.kEnabled,
-                      language: undefined,
-                      localizedName: undefined,
-                      attach: undefined,
+                      language: null,
+                      localizedName: null,
+                      attach: null,
                     };
                     let apnSelectionDialog = apnList.shadowRoot!.querySelector(
                         'apn-selection-dialog');

@@ -29,6 +29,10 @@ namespace resource_coordinator {
 // merged into TabManager directly.
 class SessionRestorePolicy {
  public:
+  // Minimum site engagement score for a tab to be restored, if it doesn't
+  // communicate in the background.
+  static constexpr uint32_t kMinSiteEngagementToRestore = 15;
+
   // Callback that is used by the policy engine to notify its embedder (the
   // TabLoaderDelegate) of changes to tab priorities as they occur. Zero or one
   // score updates may be delivered for each contents that is added; callbacks
@@ -262,9 +266,9 @@ class SessionRestorePolicy {
   base::TimeDelta max_time_since_last_use_to_restore_ = base::Days(30);
 
   // The minimum site engagement score in order for a tab to be restored.
-  // Setting this to zero means all tabs will be restored regardless of the
-  // site engagement score.
-  uint32_t min_site_engagement_to_restore_ = 15;
+  // Can be overridden for tests. Setting this to zero means all tabs will be
+  // restored regardless of the site engagement score.
+  uint32_t min_site_engagement_to_restore_ = kMinSiteEngagementToRestore;
 
   // The number of simultaneous tab loads that are permitted by policy. This
   // is computed based on the number of cores on the machine, except for in

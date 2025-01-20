@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -89,6 +90,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void set_enable_auth_check(bool enable_auth_check) {
       FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
+
+    void SetPinType(const cryptohome::AccountIdentifier& account_id,
+                    const std::string& label,
+                    bool legacy_pin);
 
     // Sets whether ARC disk quota is supported or not.
     void set_arc_quota_supported(bool supported) {

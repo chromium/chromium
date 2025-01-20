@@ -23,8 +23,9 @@ ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // The profile_manager might be NULL in testing environments.
-  if (profile_manager)
+  if (profile_manager) {
     profile_manager->GetProfileAttributesStorage().AddObserver(this);
+  }
 
   signin_allowed_pref_.Init(
       prefs::kSigninAllowed, profile_->GetPrefs(),
@@ -35,8 +36,9 @@ ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
 ProfileInfoWatcher::~ProfileInfoWatcher() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // The profile_manager might be NULL in testing environments.
-  if (profile_manager)
+  if (profile_manager) {
     profile_manager->GetProfileAttributesStorage().RemoveObserver(this);
+  }
 }
 
 void ProfileInfoWatcher::OnProfileAuthInfoChanged(
@@ -60,6 +62,7 @@ signin::IdentityManager* ProfileInfoWatcher::GetIdentityManager() const {
 }
 
 void ProfileInfoWatcher::RunCallback() {
-  if (GetIdentityManager())
+  if (GetIdentityManager()) {
     callback_.Run();
+  }
 }

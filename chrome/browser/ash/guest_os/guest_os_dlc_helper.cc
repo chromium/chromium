@@ -176,7 +176,7 @@ void GuestOsDlcInstallation::OnDlcInstallCompleted(
         return;
       }
       // If we're out of retries then we can't action this error ourselves.
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
 
     case Actionability::None:
       // Unless we know the cause of an error (because it was actionable or we

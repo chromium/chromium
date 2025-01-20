@@ -48,7 +48,7 @@ CorruptedExtensionReinstaller::CorruptedExtensionReinstaller(
     content::BrowserContext* context)
     : context_(context), backoff_entry_(&kCorruptedReinstallBackoffPolicy) {}
 
-CorruptedExtensionReinstaller::~CorruptedExtensionReinstaller() {}
+CorruptedExtensionReinstaller::~CorruptedExtensionReinstaller() = default;
 
 // static
 void CorruptedExtensionReinstaller::set_reinstall_action_for_test(

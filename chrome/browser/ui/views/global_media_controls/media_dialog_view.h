@@ -51,7 +51,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
                         public speech::SodaInstaller::Observer {
   METADATA_HEADER(MediaDialogView, views::BubbleDialogDelegateView)
  public:
-
   MediaDialogView(const MediaDialogView&) = delete;
   MediaDialogView& operator=(const MediaDialogView&) = delete;
 

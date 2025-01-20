@@ -12,8 +12,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"

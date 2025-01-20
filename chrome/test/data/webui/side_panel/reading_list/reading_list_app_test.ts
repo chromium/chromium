@@ -89,6 +89,9 @@ suite('ReadingListAppTest', () => {
   });
 
   test('return all entries', async () => {
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
+
     const urls = [
       'https://www.google.com',
       'https://www.apple.com',
@@ -145,23 +148,27 @@ suite('ReadingListAppTest', () => {
     const readingListItem =
         readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
-    const readingListItemUpdateStatusButton =
-        readingListItem.$.updateStatusButton;
-    readingListItemUpdateStatusButton.click();
+    assertEquals(
+        'cr:check-circle', readingListItem.$.updateStatusButton.ironIcon);
+    readingListItem.$.updateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
     assertEquals(expectedUrl, url.url);
     assertTrue(read);
   });
 
   test('Click on item mark as unread button triggers actions', async () => {
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
+
     const expectedUrl = 'https://www.bing.com';
 
     const readingListItem =
         readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
-    const readingListItemUpdateStatusButton =
-        readingListItem.$.updateStatusButton;
-    readingListItemUpdateStatusButton.click();
+    assertEquals(
+        'read-later:check-circle-reverse',
+        readingListItem.$.updateStatusButton.ironIcon);
+    readingListItem.$.updateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
     assertEquals(expectedUrl, url.url);
     assertFalse(read);
@@ -204,29 +211,26 @@ suite('ReadingListAppTest', () => {
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
-    const urls = [
-      'https://www.google.com',
-      'https://www.apple.com',
-      'https://www.bing.com',
-      'https://www.yahoo.com',
-    ];
+    readingListApp.setExpandedForTesting();
+    await microtasksFinished();
 
-    // Select first item.
-    readingListApp.selected =
-        readingListApp.shadowRoot!.querySelector(
-                                      'reading-list-item')!.dataset['url']!;
+    // First item (after header) should be selected by default.
+    assertEquals(1, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
-    assertEquals(urls[3], readingListApp.selected);
+    assertEquals(5, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
-    assertEquals(urls[0], readingListApp.selected);
+    assertEquals(1, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
-    assertEquals(urls[1], readingListApp.selected);
+    assertEquals(2, readingListApp.getFocusedIndexForTesting());
+
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
+    assertEquals(4, readingListApp.getFocusedIndexForTesting());
 
     keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
-    assertEquals(urls[0], readingListApp.selected);
+    assertEquals(2, readingListApp.getFocusedIndexForTesting());
   });
 
   test(

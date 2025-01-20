@@ -247,8 +247,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       // BookmarkNodeFaviconChanged() will never be called (e.g unfortunate
       // bookmark deletion timing) and we intentionally leak at most one request
       // in these cases which will clean up next drag.
-      if (!drag_node->is_favicon_loaded())
+      if (!drag_node->is_favicon_loaded()) {
         return;
+      }
 
       icon = ui::ImageModel::FromImage(image);
     } else {
@@ -290,8 +291,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
     // The Run() call above could have spun a nested message loop resulting in
     // our deletion.  Be sure to avoid double-free.
-    if (weak_this)
+    if (weak_this) {
       delete this;
+    }
   }
 
   base::WeakPtr<BookmarkDragHelper> GetWeakPtr() {
@@ -359,8 +361,9 @@ void DragBookmarksImpl(Profile* profile,
                        DoBookmarkDragCallback do_drag_callback) {
   DCHECK(!params.nodes.empty());
   static base::NoDestructor<base::WeakPtr<BookmarkDragHelper>> g_drag_helper;
-  if (*g_drag_helper)
+  if (*g_drag_helper) {
     delete g_drag_helper->get();
+  }
 
   DCHECK(!*g_drag_helper);
 

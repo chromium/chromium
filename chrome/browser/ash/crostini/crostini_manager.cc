@@ -2838,7 +2838,7 @@ void CrostiniManager::OnStartLxdProgress(
 void CrostiniManager::OnStopVm(
     std::string vm_name,
     CrostiniResultCallback callback,
-    std::optional<vm_tools::concierge::StopVmResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to stop termina vm. Empty response.";
     std::move(callback).Run(CrostiniResult::STOP_VM_NO_RESPONSE);
@@ -3879,7 +3879,7 @@ void CrostiniManager::OnImportLxdContainerProgress(
 
 void CrostiniManager::OnCancelDiskImageOp(
     const guest_os::GuestId& key,
-    std::optional<vm_tools::concierge::CancelDiskImageResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   auto it = disk_image_callbacks_.find(key);
   if (it == disk_image_callbacks_.end()) {
     LOG(ERROR) << "No export callback for " << key;

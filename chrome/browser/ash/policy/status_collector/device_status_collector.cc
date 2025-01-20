@@ -25,12 +25,9 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -70,7 +67,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -89,6 +85,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
@@ -662,8 +660,7 @@ em::ActiveTimePeriod::SessionType GetSessionType(
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
-      // TODO(crbug.com/369516363): add ActiveTimePeriod value for IWA.
-      return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
+      return em::ActiveTimePeriod::SESSION_IWA_KIOSK;
 
     default:
       NOTREACHED();
@@ -2310,9 +2307,7 @@ bool DeviceStatusCollector::GetActivityTimes(
         if (session_type == em::ActiveTimePeriod::SESSION_AFFILIATED_USER) {
           active_period->set_user_email(user_email);
         }
-        if (session_type != em::ActiveTimePeriod::SESSION_UNKNOWN &&
-            base::FeatureList::IsEnabled(
-                features::kActivityReportingSessionType)) {
+        if (session_type != em::ActiveTimePeriod::SESSION_UNKNOWN) {
           active_period->set_session_type(session_type);
         }
       }
@@ -3049,9 +3044,7 @@ bool DeviceStatusCollector::GetCrostiniUsage(
       last_launch_time_window_start);
   crostini_status->set_last_launch_vm_image_version(termina_version);
 
-  if (profile->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled) &&
-      base::FeatureList::IsEnabled(
-          features::kCrostiniAdditionalEnterpriseReporting)) {
+  if (profile->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
     const std::string& vm_kernel_version = profile->GetPrefs()->GetString(
         crostini::prefs::kCrostiniLastLaunchTerminaKernelVersion);
     crostini_status->set_last_launch_vm_kernel_version(vm_kernel_version);

@@ -11,6 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/media/media_engagement_service_factory.h"
+#include "chrome/browser/media/mock_media_engagement_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
@@ -62,15 +65,8 @@ namespace {
 const base::FilePath::CharType kAutoDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/autopip-document.html");
 
-const base::FilePath::CharType kAutoDocumentVideoVisibilityPipPage[] =
-    FILE_PATH_LITERAL(
-        "media/picture-in-picture/autopip-document-video-visibility.html");
-
 const base::FilePath::CharType kAutoVideoPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/autopip-video.html");
-
-const base::FilePath::CharType kAutoVideoVisibilityPipPage[] =
-    FILE_PATH_LITERAL("media/picture-in-picture/autopip-video-visibility.html");
 
 const base::FilePath::CharType kBlankPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/blank.html");
@@ -88,9 +84,16 @@ const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
     FILE_PATH_LITERAL(
         "media/picture-in-picture/autopip-toggle-registration.html");
 
+constexpr char kIframeAutoDocumentMediaPlaybackPipPage[] =
+    "/media/picture-in-picture/iframe-autopip-document-media-playback.html";
+
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
-  MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+  MOCK_METHOD(void,
+              OnInputEvent,
+              (const content::RenderWidgetHost& widget,
+               const blink::WebInputEvent&),
+              (override));
 };
 
 class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
@@ -172,6 +175,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -194,18 +198,10 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
-  void LoadAutoVideoVisibilityPipPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kAutoVideoVisibilityPipPage));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
-  }
-
-  void LoadAutoDocumentVideoVisibilityPipPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kAutoDocumentVideoVisibilityPipPage));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+  void LoadIframeAutoDocumentMediaPlaybackPipPage(Browser* browser) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, embedded_test_server()->GetURL(
+                     "a.com", kIframeAutoDocumentMediaPlaybackPipPage)));
   }
 
   void LoadCameraMicrophonePage(Browser* browser) {
@@ -261,6 +257,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
             content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
+  void PlayIframeVideo(content::RenderFrameHost* rfh) {
+    ASSERT_TRUE(ExecJs(rfh, R"(
+        playVideo();
+      )"));
+  }
+
   void PauseVideo(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"pauseVideo()", base::NullCallback(),
@@ -285,26 +287,17 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
-  void AddOverlayToVideo(content::WebContents* web_contents,
-                         bool should_occlude) {
-    const std::u16string script = base::UTF8ToUTF16(base::StrCat(
-        {"addOverlayToVideo(", should_occlude ? "true" : "false", ")"}));
-
-    web_contents->GetPrimaryMainFrame()
-        ->ExecuteJavaScriptWithUserGestureForTests(
-            script, base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
-  }
-
-  void ForceLifecycleUpdate(content::WebContents* web_contents) {
-    // Force a lifecycle update to trigger the |MediaVideoVisibilityTracker|
-    // computation.
-    ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
-  }
-
   void MuteVideo(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
             u"muteVideo()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
+  void TriggerNewPlayerCreation(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"triggerNewPlayerCreation()", base::NullCallback(),
             content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
@@ -512,7 +505,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
     MockInputObserver input_observer;
     rwh->AddInputEventObserver(&input_observer);
-    EXPECT_CALL(input_observer, OnInputEvent(_)).Times(expect_events ? 4 : 0);
+    EXPECT_CALL(input_observer, OnInputEvent(_, _))
+        .Times(expect_events ? 4 : 0);
 
     blink::WebMouseEvent mouse_event(
         blink::WebMouseEvent::Type::kMouseDown, /*position=*/{},
@@ -598,8 +592,15 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
  public:
   AutoPictureInPictureWithVideoPlaybackBrowserTest()
       : safe_browsing_factory_(
-            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
-  }
+            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()),
+        dependency_manager_subscription_(
+            BrowserContextDependencyManager::GetInstance()
+                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                    &AutoPictureInPictureWithVideoPlaybackBrowserTest::
+                        SetTestingFactory,
+                    // base::Unretained() is safe because `this` outlives the
+                    // dependency manager subscription.
+                    base::Unretained(this)))) {}
 
   AutoPictureInPictureWithVideoPlaybackBrowserTest(
       const AutoPictureInPictureWithVideoPlaybackBrowserTest&) = delete;
@@ -624,6 +625,17 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
     fake_safe_browsing_database_manager_->ClearDangerousUrl(dangerous_url);
   }
 
+  MediaEngagementService* GetMediaEngagementService() const {
+    return MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+  }
+
+  void SetExpectedHasHighEngagement(bool has_high_engagenent) const {
+    auto* mock_media_engagement_service =
+        static_cast<MockMediaEngagementService*>(GetMediaEngagementService());
+    EXPECT_CALL(*mock_media_engagement_service, HasHighEngagement(testing::_))
+        .WillRepeatedly(testing::Return(has_high_engagenent));
+  }
+
  protected:
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
@@ -636,11 +648,17 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
         safe_browsing_factory_.get());
   }
 
+  void SetTestingFactory(content::BrowserContext* context) {
+    MediaEngagementServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildMockMediaEngagementService));
+  }
+
  private:
   scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
       fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 }  // namespace
@@ -653,8 +671,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
@@ -669,48 +687,17 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       DoesNotVideoAutopip_VideoNotSufficientlyVisible) {
+                       DoesDocumentAutopip_VideoInLocalIframe) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  PlayVideo(web_contents);
-  WaitForAudioFocusGained();
-  WaitForMediaSessionPlaying(web_contents);
-
-  AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndDontExpectAutopip();
-}
-
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       DoesNotDocumentAutopip_VideoNotSufficientlyVisible) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoDocumentVideoVisibilityPipPage(browser());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  PlayVideo(web_contents);
-  WaitForAudioFocusGained();
-  WaitForMediaSessionPlaying(web_contents);
-
-  AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndDontExpectAutopip();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AutoPictureInPictureWithVideoPlaybackBrowserTest,
-    DoesNotDocumentAutopip_VideoSufficientlyVisibleInIframe) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  LoadAutoDocumentPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   // Move the video element into an iframe.
@@ -727,50 +714,57 @@ IN_PROC_BROWSER_TEST_F(
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // There should be a picture-in-picture window, since the video element is
+  // inside a local iframe.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
+                                        /*should_document_pip=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotDocumentAutopip_VideoInRemoteIFrame) {
+  // Load a page that registers for autopip.
+  LoadIframeAutoDocumentMediaPlaybackPipPage(browser());
+
+  // Get the render frame host for main_frame (a.com) and sub_frame (b.com).
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
+  auto* sub_frame = ChildFrameAt(main_frame, 0);
+
+  // Register message handler for b.com to handle `playVideo` message actions.
+  ASSERT_TRUE(ExecJs(sub_frame, R"(
+      window.addEventListener('message', (event) => {
+          console.log(`Received message: ${event.data.action}`);
+          if(event.data.action == 'playVideo') {
+            playVideo();
+          }
+      });
+  )"));
+
+  // Send a `postMessage` to b.com to start video playback.
+  PlayIframeVideo(main_frame);
+
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // There should not be a picture-in-picture window, since the video element is
-  // inside an iframe.
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
+  // inside a remote iframe.
   SwitchToNewTabAndDontExpectAutopip();
-}
 
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       OpensAndClosesVideoAutopip_VideoSufficientlyVisible) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  PlayVideo(web_contents);
-  WaitForAudioFocusGained();
-  WaitForMediaSessionPlaying(web_contents);
+  // Verify that `has_safe_url_` is false, since the video element is within a
+  // remote iframe.
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  EXPECT_FALSE(tab_helper->has_safe_url_);
 
-  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
-                                        /*should_document_pip=*/false);
-}
-
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       OpensAndClosesVideoAutopip_NonVisibleElementIgnored) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  PlayVideo(web_contents);
-  WaitForAudioFocusGained();
-  WaitForMediaSessionPlaying(web_contents);
-
-  // Add occluding overlay to video, followed by making the occluding overlay
-  // not visible.
-  AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      u"makeOccludingOverlayInvisible()", base::NullCallback(),
-      content::ISOLATED_WORLD_ID_GLOBAL);
-
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
-                                        /*should_document_pip=*/false);
+  // Verify that `MeetsMediaEngagementConditions` returns false (even though the
+  // mock high engagement is set to return true), since the video element is
+  // within a remote iframe.
+  EXPECT_FALSE(tab_helper->MeetsMediaEngagementConditions());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -781,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Wait for video to be recently audible, to ensure we start from a known
   // state. Then mute audio and wait for video to not be recently audible.
@@ -795,32 +789,30 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotVideoAutopip_DangerousURL) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
+  LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   AddDangerousUrl(web_contents->GetLastCommittedURL());
-
-  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  ForceLifecycleUpdate(web_contents);
+  SetExpectedHasHighEngagement(true);
   WaitForWasRecentlyAudible(web_contents);
+
   SwitchToNewTabAndDontExpectAutopip();
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotVideoAutopip_FromSafeToDangerousURL) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
+  LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
 
   // Expect AutoPiP since URL is safe.
-  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
 
@@ -832,17 +824,16 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesVideoAutopip_FromDangerousToSafeURL) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
+  LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   AddDangerousUrl(web_contents->GetLastCommittedURL());
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
 
   // Do not expect AutoPiP since URL is unsafe.
-  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
   SwitchToExistingTab(web_contents);
 
@@ -852,29 +843,63 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                                         /*should_document_pip=*/false);
 }
 
-// TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_OpensAndClosesDocumentAutopip_VideoSufficientlyVisible \
-  DISABLED_OpensAndClosesDocumentAutopip_VideoSufficientlyVisible
-#else
-#define MAYBE_OpensAndClosesDocumentAutopip_VideoSufficientlyVisible \
-  OpensAndClosesDocumentAutopip_VideoSufficientlyVisible
-#endif
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotVideoAutopip_LowEngagementScore) {
+  // Load a page, with HTTPS scheme, that registers for autopip and start video
+  // playback.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.com", "/media/picture-in-picture/autopip-video.html")));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents->GetLastCommittedURL().SchemeIs(url::kHttpsScheme));
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(false);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndDontExpectAutopip();
+}
+
 IN_PROC_BROWSER_TEST_F(
     AutoPictureInPictureWithVideoPlaybackBrowserTest,
-    MAYBE_OpensAndClosesDocumentAutopip_VideoSufficientlyVisible) {
+    DoesVideoAutopip_LowEngagementScoreAndUrlWithFileScheme) {
+  // Load a page, with file scheme, that registers for autopip and start video
+  // playback.
+  LoadAutoVideoPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents->GetLastCommittedURL().SchemeIsFile());
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(false);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    DoesVideoAutopip_ContentSettingAllowAndLowEngagementScore) {
   // Load a page that registers for autopip and start video playback.
-  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-
-  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
-                                        /*should_document_pip=*/true);
+
+  // Set content setting to allow and has high media engagement to false.
+  SetContentSetting(web_contents, CONTENT_SETTING_ALLOW);
+  SetExpectedHasHighEngagement(false);
+
+  // Verify that we did enter pip, even though media engagement is low. This is
+  // because media engagement is ignored when content setting is set to allow.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
@@ -960,6 +985,41 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/true);
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       PromptResultRecorded_VideoConferencing) {
+  // Load a page that registers for autopip and start video playback.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "VideoConferencing");
+
+  // Verify that the "allow once" prompt result is recorded for the "video
+  // conferencing" metric.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWithoutPlayback) {
   // Load a page that registers for autopip but doesn't start playback.
@@ -993,6 +1053,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   LOG(ERROR) << "DEBUG: waiting for playing";
   WaitForMediaSessionPlaying(original_web_contents);
   WaitForWasRecentlyAudible(original_web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Pause the video.
   LOG(ERROR) << "DEBUG: pausing playback";
@@ -1030,8 +1091,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   {
     // Open and switch to a new tab.
@@ -1054,8 +1115,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1477,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
+  SetExpectedHasHighEngagement(true);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1514,7 +1575,6 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndWaitForAutoPip();
   EXPECT_NE(nullptr, GetOverlayViewFromVideoPipWindow());
 }
@@ -1560,70 +1620,6 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   }
 
   tab_helper->set_auto_blocker_for_testing(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       MediaVideoVisibilityTrackerHistogramSamplesHaveCount) {
-  // Load a page that registers for autopip and start video playback.
-  LoadAutoVideoVisibilityPipPage(browser());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  base::HistogramTester histograms;
-  PlayVideo(web_contents);
-  WaitForAudioFocusGained();
-  WaitForMediaSessionPlaying(web_contents);
-
-  AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  ForceLifecycleUpdate(web_contents);
-  WaitForWasRecentlyAudible(web_contents);
-  SwitchToNewTabAndDontExpectAutopip();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  const char* const histogram_names[] = {
-      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea."
-      "TotalDuration",
-      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration",
-      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.ItemsInSetCount."
-      "TotalCount",
-      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentType."
-      "Percentage",
-      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentTypeCount."
-      "TotalCount",
-      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.SetConstruction."
-      "TotalDuration",
-      "Media.MediaVideoVisibilityTracker."
-      "HitTestedNodesContributingToOcclusionCount.ExponentialHistogram."
-      "TotalCount",
-      "Media.MediaVideoVisibilityTracker."
-      "HitTestedNodesContributingToOcclusionCount.LinearHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.HitTestedNodesCount."
-      "ExponentialHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.HitTestedNodesCount.LinearHistogram."
-      "TotalCount",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaque.Percentage",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaqueCount."
-      "ExponentialHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaqueCount."
-      "LinearHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRoot."
-      "Percentage",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRootCount."
-      "ExponentialHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRootCount."
-      "LinearHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.NodesContributingToOcclusion."
-      "Percentage",
-      "Media.MediaVideoVisibilityTracker.OccludingRectsCount."
-      "ExponentialHistogram.TotalCount",
-      "Media.MediaVideoVisibilityTracker.OccludingRectsCount.LinearHistogram."
-      "TotalCount",
-      "Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration",
-  };
-
-  for (const auto* histogram_name : histogram_names) {
-    auto samples = histograms.GetHistogramSamplesSinceCreation(histogram_name);
-    EXPECT_GE(samples->TotalCount(), 1);
-  }
 }
 
 // TODO(crbug.com/372777367): Test failing on Windows
@@ -1672,4 +1668,169 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   SwitchToExistingTab(second_web_contents);
   WaitForAutoPip(first_web_contents);
   EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
+}
+
+// TODO(crbug.com/382340033): Re-enable failing test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DISABLED_DevToolsMediaLogsRecordedForOpener
+#else
+#define MAYBE_DevToolsMediaLogsRecordedForOpener \
+  DevToolsMediaLogsRecordedForOpener
+#endif
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       MAYBE_DevToolsMediaLogsRecordedForOpener) {
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  // Trigger the creation of a new player. This will help us test if
+  // subsequently generated media logs are correctly routed.
+  TriggerNewPlayerCreation(web_contents);
+
+  {
+    // Start watching the DevTools logs and clear the latest media notification.
+    content::DevToolsInspectorLogWatcher log_watcher(
+        web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+    log_watcher.ClearLastMediaNotification();
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were recorded, since the player should be using
+    // the media element execution context of the opener document.
+    log_watcher.FlushAndStopWatching();
+    ASSERT_FALSE(log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DevToolsMediaLogsNotRecordedForPipWindow) {
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  {
+    // Start watching the DevTools logs.
+    auto* pip_web_contents =
+        PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+    ASSERT_NE(nullptr, pip_web_contents);
+    content::DevToolsInspectorLogWatcher pip_log_watcher(
+        pip_web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+
+    // Trigger the creation of a new player. This will help us test if
+    // subsequently generated media logs are correctly routed.
+    TriggerNewPlayerCreation(web_contents);
+
+    // Generate media logs.
+    PlayVideo(web_contents);
+    WaitForMediaSessionPlaying(web_contents);
+
+    // Verify that media logs were not recorded, since the player should be
+    // using the media element execution context of the opener document.
+    pip_log_watcher.FlushAndStopWatching();
+    ASSERT_TRUE(pip_log_watcher.last_media_notification().empty());
+  }
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       PromptResultRecorded_VideoPlayback) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "MediaPlayback");
+
+  // Verify that the "allow once" prompt result is recorded for the "media
+  // playback" metric.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       PromptResultRecorded_VideoConferencingTakesPrecedence) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Starts using camera/microphone.
+  GetUserMediaAndAccept(web_contents);
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "VideoConferencing");
+
+  // Verify that the "allow once" prompt result is recorded for the "video
+  // conferencing" metric, even though the site meets both enter auto picture in
+  // picture reasons: "video conferencing" and "media playback". This is because
+  // the video conferencing check is always performed first.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
 }

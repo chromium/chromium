@@ -35,6 +35,7 @@ source_set("model") {
     "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -153,4 +154,5 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
+  deps = [ "//ios/chrome/browser/shared/public/features" ]
 }

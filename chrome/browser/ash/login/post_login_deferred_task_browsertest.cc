@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,6 +27,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ash::full_restore::RestoreOption;
@@ -37,6 +39,8 @@ namespace {
 enum class StartMode {
   // Simulates ash starts from the login screen.
   kLogin,
+  // Simulates signing into a previously crashes user session.
+  kLoginIntoCrashed,
   // Simulates ash starts with a signed-in user, e.g. restart to apply flags.
   kRestart,
 };
@@ -89,7 +93,8 @@ class PostLoginDeferredTaskTest
   // LoginManagerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     switch (start_mode()) {
-      case StartMode::kLogin: {
+      case StartMode::kLogin:
+      case StartMode::kLoginIntoCrashed: {
         LoginManagerTest::SetUpCommandLine(command_line);
         command_line->AppendSwitch(switches::kOobeSkipPostLogin);
         break;
@@ -107,12 +112,17 @@ class PostLoginDeferredTaskTest
     }
   }
 
+  bool ShouldPerformLogin() const {
+    return start_mode() == StartMode::kLogin ||
+           start_mode() == StartMode::kLoginIntoCrashed;
+  }
+
   StartMode start_mode() const { return std::get<0>(GetParam()); }
 
   RestoreOption restore_option() const { return std::get<1>(GetParam()); }
 
   AccountId account_id() const {
-    return AccountId::FromUserEmailGaiaId(kTestUser, kTestGaiaId);
+    return AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestGaiaId));
   }
 
   SessionState session_state() const {
@@ -123,7 +133,9 @@ class PostLoginDeferredTaskTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     PostLoginDeferredTaskTest,
-    testing::Combine(testing::Values(StartMode::kLogin, StartMode::kRestart),
+    testing::Combine(testing::Values(StartMode::kLogin,
+                                     StartMode::kLoginIntoCrashed,
+                                     StartMode::kRestart),
                      testing::Values(RestoreOption::kAlways,
                                      RestoreOption::kAskEveryTime,
                                      RestoreOption::kDoNotRestore)),
@@ -132,6 +144,9 @@ INSTANTIATE_TEST_SUITE_P(
       switch (std::get<0>(params.param)) {
         case StartMode::kLogin:
           oss << "Login";
+          break;
+        case StartMode::kLoginIntoCrashed:
+          oss << "LoginIntoCrashed";
           break;
         case StartMode::kRestart:
           oss << "Restart";
@@ -154,7 +169,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Registers user to simulate existing user login.
 IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_PRE_Basic) {
-  if (start_mode() == StartMode::kLogin) {
+  if (ShouldPerformLogin()) {
     EXPECT_EQ(SessionState::OOBE, session_state());
     StartupUtils::MarkOobeCompleted();
   }
@@ -165,11 +180,10 @@ IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_PRE_Basic) {
 
 // PRE test to sets up the previous user session.
 IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_Basic) {
-  if (start_mode() == StartMode::kLogin) {
+  if (ShouldPerformLogin()) {
     EXPECT_EQ(SessionState::LOGIN_PRIMARY, session_state());
     LoginUser(account_id());
   }
-
   EXPECT_EQ(SessionState::ACTIVE, session_state());
 
   // Creates a browser window and loads page other than new tab page.
@@ -184,13 +198,27 @@ IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_Basic) {
                     static_cast<int>(restore_option()));
 
   DeferredTaskStartWaiter().Wait();
+
+  if (start_mode() == StartMode::kLoginIntoCrashed) {
+    auto* exit_service = ExitTypeService::GetInstanceForProfile(user_profile);
+    // `SetWaitingForUserToAckCrashForTest` to make ExitService not mark
+    // shutdown as clean.
+    exit_service->SetWaitingForUserToAckCrashForTest(true);
+  }
 }
 
 // Verifies that post login deferred tasks would run.
 IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, Basic) {
-  if (start_mode() == StartMode::kLogin) {
+  if (ShouldPerformLogin()) {
     EXPECT_EQ(SessionState::LOGIN_PRIMARY, session_state());
     LoginUser(account_id());
+  }
+
+  if (start_mode() == StartMode::kLoginIntoCrashed) {
+    // Last user session should be marked as crashed.
+    Profile* user_profile = ProfileManager::GetActiveUserProfile();
+    auto* exit_service = ExitTypeService::GetInstanceForProfile(user_profile);
+    ASSERT_EQ(ExitType::kCrashed, exit_service->last_session_exit_type());
   }
 
   EXPECT_EQ(SessionState::ACTIVE, session_state());

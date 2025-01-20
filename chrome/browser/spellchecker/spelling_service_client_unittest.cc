@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/browser/spelling_service_client.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -60,7 +56,7 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
                 &test_url_loader_factory_)) {
     SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
   }
-  ~TestingSpellingServiceClient() {}
+  ~TestingSpellingServiceClient() = default;
 
   void SetExpectedTextCheckResult(bool success,
                                   const std::string& sanitized_request_text,
@@ -113,12 +109,14 @@ class SpellingServiceClientTest
 
  protected:
   bool GetExpectedCountry(const std::string& language, std::string* country) {
-    static const struct {
+    struct Countries {
       const char* language;
       const char* country;
-    } kCountries[] = {
-        {"af", "ZAF"}, {"en", "USA"},
     };
+    static const auto kCountries = std::to_array<Countries>({
+        {"af", "ZAF"},
+        {"en", "USA"},
+    });
     for (size_t i = 0; i < std::size(kCountries); ++i) {
       if (!language.compare(kCountries[i].language)) {
         country->assign(kCountries[i].country);
@@ -368,9 +366,14 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSuggest));
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSpellcheck));
 
-  static constexpr const char* kSupported[] = {
-      "en-AU", "en-CA", "en-GB", "en-US", "da-DK", "es-ES",
-  };
+  constexpr static const auto kSupported = std::to_array<const char*>({
+      "en-AU",
+      "en-CA",
+      "en-GB",
+      "en-US",
+      "da-DK",
+      "es-ES",
+  });
   // If spellcheck is allowed, then suggest is not since spellcheck is a
   // superset of suggest.
   for (size_t i = 0; i < std::size(kSupported); ++i) {
@@ -385,12 +388,12 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
 
   // This function returns true for suggestions for all and false for
   // spellcheck for unsupported locales.
-  static constexpr const char* kUnsupported[] = {
+  constexpr static const auto kUnsupported = std::to_array<const char*>({
       "af-ZA", "bg-BG", "ca-ES", "cs-CZ", "de-DE", "el-GR", "et-EE", "fo-FO",
       "fr-FR", "he-IL", "hi-IN", "hr-HR", "hu-HU", "id-ID", "it-IT", "lt-LT",
       "lv-LV", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "ru-RU",
       "sk-SK", "sl-SI", "sh",    "sr",    "sv-SE", "tr-TR", "uk-UA", "vi-VN",
-  };
+  });
   for (size_t i = 0; i < std::size(kUnsupported); ++i) {
     SCOPED_TRACE(std::string("Expected language ") + kUnsupported[i]);
     base::Value::List dictionary;

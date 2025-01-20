@@ -25,7 +25,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
+#include "net/base/backoff_entry.h"
 
 class GURL;
 class Profile;
@@ -75,8 +76,20 @@ enum class IsolatedWebAppUpdateError {
 };
 
 struct IsolatedWebAppUpdateOptions {
+  IsolatedWebAppUpdateOptions(
+      const GURL& update_manifest_url,
+      UpdateChannel update_channel,
+      bool allow_downgrades,
+      const std::optional<base::Version>& pinned_version);
+
+  IsolatedWebAppUpdateOptions(const IsolatedWebAppUpdateOptions& other);
+  IsolatedWebAppUpdateOptions& operator=(IsolatedWebAppUpdateOptions&& other);
+  ~IsolatedWebAppUpdateOptions();
+
   GURL update_manifest_url;
   UpdateChannel update_channel;
+  bool allow_downgrades;
+  std::optional<base::Version> pinned_version;
 };
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
@@ -166,11 +179,18 @@ class IsolatedWebAppUpdateManager
 
   // Queues an update discovery task (and potentially an apply update task
   // afterwards if the discovery leads to a pending update) for the provided
-  // `url_info.app_id`. The result of the discover & apply chain will be
-  // communicated via observers.
+  // `url_info.app_id` and `update_channel`.
+  // If `pinned_version` is set, this specifies the version to which the IWA
+  // should be pinned, otherwise defaults to the latest version.
+  // Version pinning prevents any updates to a different version,
+  // effectively locking the IWA to the specified version.
+  // The result of the discover & apply chain will be communicated via
+  // observers.
   void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
                              const GURL& update_manifest_url,
                              const UpdateChannel& update_channel,
+                             bool allow_downgrades,
+                             const std::optional<base::Version>& pinned_version,
                              bool dev_mode);
 
   // Used to queue update discovery tasks manually from the
@@ -282,8 +302,10 @@ class IsolatedWebAppUpdateManager
   };
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
+
+  void QueueUpdatesForIwasAffectedByKeyRotation();
 
   bool IsAnyIwaInstalled();
 
@@ -387,6 +409,9 @@ class IsolatedWebAppUpdateManager
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
       key_distribution_info_observation_{this};
+
+  // Provides retry logic for updates initiated by key rotation.
+  net::BackoffEntry key_rotation_backoff_retry_entry_;
 
   class LocalDevModeUpdateDiscoverer;
   std::unique_ptr<LocalDevModeUpdateDiscoverer>

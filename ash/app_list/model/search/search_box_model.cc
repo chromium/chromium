@@ -4,6 +4,7 @@
 
 #include "ash/app_list/model/search/search_box_model.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/app_list/model/search/search_box_model_observer.h"
@@ -18,11 +19,44 @@ SearchBoxModel::SearchBoxModel() = default;
 SearchBoxModel::~SearchBoxModel() = default;
 
 void SearchBoxModel::SetShowAssistantButton(bool show) {
-  if (show_assistant_button_ == show)
+  if (show_assistant_button_ == show) {
     return;
+  }
+
   show_assistant_button_ = show;
-  for (auto& observer : observers_)
+
+  CHECK(!show_assistant_button_ || !show_assistant_new_entry_point_button_)
+      << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
+         "shown";
+
+  for (auto& observer : observers_) {
     observer.ShowAssistantChanged();
+  }
+}
+
+void SearchBoxModel::SetShowAssistantNewEntryPointButton(
+    bool show,
+    const std::string& name) {
+  if (show_assistant_new_entry_point_button_ == show) {
+    CHECK_EQ(assistant_new_entry_point_name_, name)
+        << "Currently changing only name is not supported";
+
+    return;
+  }
+
+  show_assistant_new_entry_point_button_ = show;
+  assistant_new_entry_point_name_ = name;
+
+  CHECK_EQ(!name.empty(), show)
+      << "Name must be set if assistant new entry button is shown.";
+
+  CHECK(!show_assistant_button_ || !show_assistant_new_entry_point_button_)
+      << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
+         "shown";
+
+  for (SearchBoxModelObserver& observer : observers_) {
+    observer.ShowAssistantNewEntryPointChanged();
+  }
 }
 
 void SearchBoxModel::SetShowSunfishButton(bool show) {

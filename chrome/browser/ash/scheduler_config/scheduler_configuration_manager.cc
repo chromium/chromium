@@ -40,7 +40,7 @@ SchedulerConfigurationManager::SchedulerConfigurationManager(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-SchedulerConfigurationManager::~SchedulerConfigurationManager() {}
+SchedulerConfigurationManager::~SchedulerConfigurationManager() = default;
 
 // static
 void SchedulerConfigurationManager::RegisterLocalStatePrefs(

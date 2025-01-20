@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -35,6 +36,7 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
@@ -78,9 +80,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -92,6 +96,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
@@ -203,14 +208,14 @@ class TestCaptureClientObserver : public aura::client::CaptureClientObserver {
 
 }  // namespace
 
-class CaptureModeTest : public AshTestBase {
+class CaptureModeTestBase : public AshTestBase {
  public:
-  CaptureModeTest() = default;
-  explicit CaptureModeTest(base::test::TaskEnvironment::TimeSource time)
+  CaptureModeTestBase() = default;
+  explicit CaptureModeTestBase(base::test::TaskEnvironment::TimeSource time)
       : AshTestBase(time) {}
-  CaptureModeTest(const CaptureModeTest&) = delete;
-  CaptureModeTest& operator=(const CaptureModeTest&) = delete;
-  ~CaptureModeTest() override = default;
+  CaptureModeTestBase(const CaptureModeTestBase&) = delete;
+  CaptureModeTestBase& operator=(const CaptureModeTestBase&) = delete;
+  ~CaptureModeTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -362,7 +367,76 @@ class CaptureModeTest : public AshTestBase {
     return controller->video_recording_watcher_for_testing()
         ->window_being_recorded();
   }
+
+ protected:
+  // Used in other fixtures to more easily initialise Sunfish and Scanner
+  // features.
+  void InitFeatures(bool sunfish_enabled, bool scanner_enabled) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    (sunfish_enabled ? enabled_features : disabled_features)
+        .push_back(features::kSunfishFeature);
+    (scanner_enabled ? enabled_features : disabled_features)
+        .push_back(features::kScannerUpdate);
+    (scanner_enabled ? enabled_features : disabled_features)
+        .push_back(features::kScannerDogfood);
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
 };
+
+std::string SunfishScannerTestName(bool sunfish_enabled, bool scanner_enabled) {
+  return base::StrCat({"Sunfish", sunfish_enabled ? "Enabled" : "Disabled",
+                       "Scanner", scanner_enabled ? "Enabled" : "Disabled"});
+}
+
+std::string SourceSunfishScannerTestName(CaptureModeSource source,
+                                         bool sunfish_enabled,
+                                         bool scanner_enabled) {
+  std::string test_name;
+  switch (source) {
+    case CaptureModeSource::kFullscreen:
+      test_name = "Fullscreen";
+      break;
+    case CaptureModeSource::kRegion:
+      test_name = "Region";
+      break;
+    case CaptureModeSource::kWindow:
+      test_name = "Window";
+      break;
+  }
+  test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+  return test_name;
+}
+
+class CaptureModeTest
+    : public CaptureModeTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CaptureModeTest() = default;
+  explicit CaptureModeTest(base::test::TaskEnvironment::TimeSource time)
+      : CaptureModeTestBase(time) {}
+
+  // CaptureModeTestBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeTestBase::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CaptureModeTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeTest::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
 
 class CaptureSessionWidgetClosed {
  public:
@@ -381,7 +455,7 @@ class CaptureSessionWidgetClosed {
   base::WeakPtr<views::Widget> widget_;
 };
 
-TEST_F(CaptureModeTest, StartStop) {
+TEST_P(CaptureModeTest, StartStop) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
@@ -398,7 +472,7 @@ TEST_F(CaptureModeTest, StartStop) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, CheckCursorVisibility) {
+TEST_P(CaptureModeTest, CheckCursorVisibility) {
   // Hide cursor before entering capture mode.
   auto* cursor_manager = Shell::Get()->cursor_manager();
   cursor_manager->SetCursor(CursorType::kPointer);
@@ -423,7 +497,7 @@ TEST_F(CaptureModeTest, CheckCursorVisibility) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
-TEST_F(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
+TEST_P(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
 
   // Enter tablet mode.
@@ -443,13 +517,13 @@ TEST_F(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
 }
 
 // Regression test for https://crbug.com/1172425.
-TEST_F(CaptureModeTest, NoCrashOnClearingCapture) {
+TEST_P(CaptureModeTest, NoCrashOnClearingCapture) {
   TestCaptureClientObserver observer(CreateTestWindow(gfx::Rect(200, 200)));
   auto* controller = StartImageRegionCapture();
   EXPECT_TRUE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, CheckWidgetClosed) {
+TEST_P(CaptureModeTest, CheckWidgetClosed) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
@@ -463,7 +537,7 @@ TEST_F(CaptureModeTest, CheckWidgetClosed) {
   EXPECT_TRUE(observer.GetWidgetClosed());
 }
 
-TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
+TEST_P(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   controller->SetType(CaptureModeType::kVideo);
@@ -480,7 +554,7 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, AccessibleCheckedState) {
+TEST_P(CaptureModeTest, AccessibleCheckedState) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);
   ui::AXNodeData data;
@@ -494,7 +568,7 @@ TEST_F(CaptureModeTest, AccessibleCheckedState) {
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
-TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
+TEST_P(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
@@ -520,7 +594,7 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
-TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
+TEST_P(CaptureModeTest, VideoRecordingUiBehavior) {
   // Start Capture Mode in a fullscreen video recording mode.
   CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
@@ -557,7 +631,7 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
       EndRecordingReason::kStopRecordingButton, 1);
 }
 
-TEST_F(CaptureModeTest, NoCrashOnMultipleClicksOnStopRecordingButton) {
+TEST_P(CaptureModeTest, NoCrashOnMultipleClicksOnStopRecordingButton) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   test_api.PerformCapture();
@@ -581,7 +655,7 @@ TEST_F(CaptureModeTest, NoCrashOnMultipleClicksOnStopRecordingButton) {
 }
 
 // Tests the behavior of repositioning a region with capture mode.
-TEST_F(CaptureModeTest, CaptureRegionRepositionBehavior) {
+TEST_P(CaptureModeTest, CaptureRegionRepositionBehavior) {
   // Use a set display size as we will be choosing points in this test.
   UpdateDisplay("800x700");
 
@@ -610,7 +684,7 @@ TEST_F(CaptureModeTest, CaptureRegionRepositionBehavior) {
 
 // Tests the behavior of resizing a region with capture mode using the corner
 // drag affordances.
-TEST_F(CaptureModeTest, CaptureRegionCornerResizeBehavior) {
+TEST_P(CaptureModeTest, CaptureRegionCornerResizeBehavior) {
   // Use a set display size as we will be choosing points in this test.
   UpdateDisplay("800x700");
 
@@ -673,7 +747,7 @@ TEST_F(CaptureModeTest, CaptureRegionCornerResizeBehavior) {
 
 // Tests the behavior of resizing a region with capture mode using the edge drag
 // affordances.
-TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
+TEST_P(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
   // Use a set display size as we will be choosing points in this test.
   UpdateDisplay("800x700");
 
@@ -755,7 +829,7 @@ TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
 
 // Tests that the capture region persists after exiting and reentering capture
 // mode.
-TEST_F(CaptureModeTest, CaptureRegionPersistsAfterExit) {
+TEST_P(CaptureModeTest, CaptureRegionPersistsAfterExit) {
   auto* controller = StartImageRegionCapture();
   const gfx::Rect region(100, 100, 200, 200);
   SelectRegion(region);
@@ -767,7 +841,7 @@ TEST_F(CaptureModeTest, CaptureRegionPersistsAfterExit) {
 
 // Tests that the capture region resets when clicking outside the current
 // capture regions bounds.
-TEST_F(CaptureModeTest, CaptureRegionResetsOnClickOutside) {
+TEST_P(CaptureModeTest, CaptureRegionResetsOnClickOutside) {
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(100, 100, 200, 200));
 
@@ -781,7 +855,14 @@ TEST_F(CaptureModeTest, CaptureRegionResetsOnClickOutside) {
 
 // Tests that buttons on the capture mode bar still work when a region is
 // "covering" them.
-TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
+TEST_P(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   UpdateDisplay("800x700");
 
   auto* controller = StartImageRegionCapture();
@@ -809,7 +890,7 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
 
 // Tests that the magnifying glass appears while fine tuning the capture region,
 // and that the cursor is hidden if the magnifying glass is present.
-TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
+TEST_P(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   const gfx::Vector2d kDragDelta(50, 50);
   UpdateDisplay("800x700");
 
@@ -887,7 +968,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
 }
 
 // Tests that the dimensions label properly renders for capture regions.
-TEST_F(CaptureModeTest, CaptureRegionDimensionsLabelLocation) {
+TEST_P(CaptureModeTest, CaptureRegionDimensionsLabelLocation) {
   UpdateDisplay("900x800");
 
   // Start Capture Mode in a region in image mode.
@@ -946,7 +1027,7 @@ TEST_F(CaptureModeTest, CaptureRegionDimensionsLabelLocation) {
   EXPECT_EQ(nullptr, GetDimensionsLabelWindow());
 }
 
-TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
+TEST_P(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
   UpdateDisplay("900x800");
 
   auto* controller = StartImageRegionCapture();
@@ -986,7 +1067,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
 // Tests some edge cases to ensure the capture button does not intersect the
 // capture bar and end up unclickable since it is stacked below the capture bar.
 // Regression test for https://crbug.com/1186462.
-TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
+TEST_P(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
   UpdateDisplay("800x700");
 
   StartImageRegionCapture();
@@ -1036,7 +1117,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
 // Tests that pressing on the capture bar and releasing the press outside of the
 // capture bar, the capture region could still be draggable and set. Regression
 // test for https://crbug.com/1325028.
-TEST_F(CaptureModeTest, SetCaptureRegionAfterPressOnCaptureBar) {
+TEST_P(CaptureModeTest, SetCaptureRegionAfterPressOnCaptureBar) {
   UpdateDisplay("800x600");
 
   auto* controller =
@@ -1058,7 +1139,7 @@ TEST_F(CaptureModeTest, SetCaptureRegionAfterPressOnCaptureBar) {
   EXPECT_EQ(controller->user_capture_region(), region_bounds);
 }
 
-TEST_F(CaptureModeTest, WindowCapture) {
+TEST_P(CaptureModeTest, WindowCapture) {
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window1(CreateTestWindow(bounds1));
@@ -1096,7 +1177,7 @@ TEST_F(CaptureModeTest, WindowCapture) {
   controller->Stop();
 }
 
-TEST_F(CaptureModeTest, WindowCaptureConfineBoundsDoNotOverlapWindowCaption) {
+TEST_P(CaptureModeTest, WindowCaptureConfineBoundsDoNotOverlapWindowCaption) {
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
@@ -1122,7 +1203,7 @@ TEST_F(CaptureModeTest, WindowCaptureConfineBoundsDoNotOverlapWindowCaption) {
 
 // Tests that the capture bar is located on the root with the cursor when
 // starting capture mode.
-TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
+TEST_P(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -1140,7 +1221,7 @@ TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
 }
 
 // Tests behavior of a capture mode session if the active display is removed.
-TEST_F(CaptureModeTest, DisplayRemoval) {
+TEST_P(CaptureModeTest, DisplayRemoval) {
   UpdateDisplay("1200x700,1201+0-800x700");
 
   // Start capture mode on the secondary display.
@@ -1166,7 +1247,7 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
 
 // Tests behavior of a capture mode session if the active display is removed
 // and countdown running.
-TEST_F(CaptureModeTest, DisplayRemovalWithCountdownVisible) {
+TEST_P(CaptureModeTest, DisplayRemovalWithCountdownVisible) {
   UpdateDisplay("800x700,801+0-800x700");
 
   // Start capture mode on the secondary display.
@@ -1186,7 +1267,7 @@ TEST_F(CaptureModeTest, DisplayRemovalWithCountdownVisible) {
 
 // Tests behavior of a capture mode session if the active display is removed,
 // countdown running, fullscreen window, and in overview mode.
-TEST_F(CaptureModeTest,
+TEST_P(CaptureModeTest,
        DisplayRemovalWithCountdownVisibleFullscreenWindowAndInOverview) {
   UpdateDisplay("800x700,801+0-800x700");
 
@@ -1213,7 +1294,7 @@ TEST_F(CaptureModeTest,
 
 // Tests that using fullscreen or window source, moving the mouse across
 // displays will change the root window of the capture session.
-TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
+TEST_P(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
@@ -1241,7 +1322,7 @@ TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
 
 // Tests that in region mode, moving the mouse across displays will not change
 // the root window of the capture session, but clicking on a new display will.
-TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
+TEST_P(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
@@ -1272,7 +1353,7 @@ TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
 
 // Tests that using touch on multi display setups works as intended. Regression
 // test for https://crbug.com/1159512.
-TEST_F(CaptureModeTest, MultiDisplayTouch) {
+TEST_P(CaptureModeTest, MultiDisplayTouch) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
@@ -1290,7 +1371,14 @@ TEST_F(CaptureModeTest, MultiDisplayTouch) {
   EXPECT_EQ(gfx::Size(200, 200), controller->user_capture_region().size());
 }
 
-TEST_F(CaptureModeTest, RegionCursorStates) {
+TEST_P(CaptureModeTest, RegionCursorStates) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
@@ -1424,7 +1512,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
 }
 
 // Regression testing for https://crbug.com/1334824.
-TEST_F(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
+TEST_P(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
   UpdateDisplay("800x600");
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
@@ -1446,7 +1534,7 @@ TEST_F(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
   EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
 }
 
-TEST_F(CaptureModeTest, FullscreenCursorStates) {
+TEST_P(CaptureModeTest, FullscreenCursorStates) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   CursorType original_cursor_type = cursor_manager->GetCursor().type();
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
@@ -1518,7 +1606,7 @@ TEST_F(CaptureModeTest, FullscreenCursorStates) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
-TEST_F(CaptureModeTest, WindowCursorStates) {
+TEST_P(CaptureModeTest, WindowCursorStates) {
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
@@ -1596,7 +1684,7 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
 }
 
 // Tests that nothing crashes when windows are destroyed while being observed.
-TEST_F(CaptureModeTest, WindowDestruction) {
+TEST_P(CaptureModeTest, WindowDestruction) {
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
   const gfx::Rect bounds2(150, 150, 200, 200);
@@ -1671,7 +1759,7 @@ TEST_F(CaptureModeTest, WindowDestruction) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
+TEST_P(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
   UpdateDisplay("600x400");
   const int64_t display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -1703,7 +1791,7 @@ TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
 
 // Tests that in Region mode, cursor compositing is used instead of the system
 // cursor when the cursor is being dragged.
-TEST_F(CaptureModeTest, RegionDragCursorCompositing) {
+TEST_P(CaptureModeTest, RegionDragCursorCompositing) {
   auto* event_generator = GetEventGenerator();
   auto* session = StartImageRegionCapture()->capture_mode_session();
   auto* cursor_manager = Shell::Get()->cursor_manager();
@@ -1749,7 +1837,7 @@ TEST_F(CaptureModeTest, RegionDragCursorCompositing) {
 
 // Test that during countdown, capture mode session should not handle any
 // incoming input events.
-TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
+TEST_P(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   // We need a non-zero duration to avoid infinite loop on countdown.
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -1783,7 +1871,7 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
 }
 
 // Test that during countdown, window changes or crashes are handled.
-TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
+TEST_P(CaptureModeTest, WindowChangesDuringCountdown) {
   // We need a non-zero duration to avoid infinite loop on countdown.
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -1831,7 +1919,7 @@ TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
 
 // Verifies that the video notification will show the same thumbnail image as
 // sent by recording service.
-TEST_F(CaptureModeTest, VideoNotificationThumbnail) {
+TEST_P(CaptureModeTest, VideoNotificationThumbnail) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
@@ -1863,7 +1951,7 @@ TEST_F(CaptureModeTest, VideoNotificationThumbnail) {
       gfx::test::AreBitmapsEqual(notification_thumbnail, service_thumbnail));
 }
 
-TEST_F(CaptureModeTest, LowDriveFsSpace) {
+TEST_P(CaptureModeTest, LowDriveFsSpace) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   const base::FilePath drive_fs_folder = CreateFolderOnDriveFS("test");
@@ -1887,7 +1975,7 @@ TEST_F(CaptureModeTest, LowDriveFsSpace) {
       EndRecordingReason::kLowDriveFsQuota, 1);
 }
 
-TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
+TEST_P(CaptureModeTest, WindowRecordingCaptureId) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
@@ -1906,7 +1994,7 @@ TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   EXPECT_FALSE(window->subtree_capture_id().is_valid());
 }
 
-TEST_F(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
+TEST_P(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
   views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
   auto* window = widget->GetNativeWindow();
   auto recorded_window = CreateTestWindow(gfx::Rect(200, 200));
@@ -1925,7 +2013,7 @@ TEST_F(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
   widget->Close();
 }
 
-TEST_F(CaptureModeTest, DimmingOfUnRecordedWindows) {
+TEST_P(CaptureModeTest, DimmingOfUnRecordedWindows) {
   auto win1 = CreateTestWindow(gfx::Rect(200, 200));
   auto win2 = CreateTestWindow(gfx::Rect(200, 200));
   auto recorded_window = CreateTestWindow(gfx::Rect(200, 200));
@@ -1982,7 +2070,7 @@ TEST_F(CaptureModeTest, DimmingOfUnRecordedWindows) {
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
 }
 
-TEST_F(CaptureModeTest, DimmingWithDesks) {
+TEST_P(CaptureModeTest, DimmingWithDesks) {
   auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
   auto* controller = StartSessionAndRecordWindow(recorded_window.get());
   auto* recording_watcher = controller->video_recording_watcher_for_testing();
@@ -2016,7 +2104,7 @@ TEST_F(CaptureModeTest, DimmingWithDesks) {
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
 }
 
-TEST_F(CaptureModeTest, DimmingWithDisplays) {
+TEST_P(CaptureModeTest, DimmingWithDisplays) {
   UpdateDisplay("500x400,401+0-800x700");
   auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
   auto* controller = StartSessionAndRecordWindow(recorded_window.get());
@@ -2041,7 +2129,7 @@ TEST_F(CaptureModeTest, DimmingWithDisplays) {
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(window.get()));
 }
 
-TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
+TEST_P(CaptureModeTest, MultiDisplayWindowRecording) {
   UpdateDisplay("500x400,401+0-800x700");
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());
@@ -2093,7 +2181,7 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
 }
 
 // Flaky especially on MSan: https://crbug.com/1293188
-TEST_F(CaptureModeTest, DISABLED_WindowResizing) {
+TEST_P(CaptureModeTest, DISABLED_WindowResizing) {
   UpdateDisplay("700x600");
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   auto* controller =
@@ -2145,7 +2233,7 @@ TEST_F(CaptureModeTest, DISABLED_WindowResizing) {
   EXPECT_EQ(window->bounds().size(), test_delegate->GetCurrentVideoSize());
 }
 
-TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
+TEST_P(CaptureModeTest, RotateDisplayWhileRecording) {
   UpdateDisplay("600x800");
 
   auto* controller =
@@ -2177,7 +2265,7 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
 
 // Regression test for https://crbug.com/1331095.
 // This is disabled due to flakiness: b/318349807
-TEST_F(CaptureModeTest, DISABLED_CornerRegionWithScreenRotation) {
+TEST_P(CaptureModeTest, DISABLED_CornerRegionWithScreenRotation) {
   UpdateDisplay("800x600");
 
   // Pick a region at the bottom right corner of the landscape screen, so that
@@ -2234,7 +2322,7 @@ TEST_F(CaptureModeTest, DISABLED_CornerRegionWithScreenRotation) {
 // This is a regression test for https://crbug.com/1214023.
 //
 // TODO(crbug.com/1439950): This test is flaky.
-TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
+TEST_P(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
   auto window = CreateTestWindow(gfx::Rect(100, 50, 200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
@@ -2332,7 +2420,7 @@ TEST_F(CaptureModeTest, DISABLED_VerifyWindowRecordingVideoFrames) {
 
 // Tests that the focus should be on the `Settings` button after closing the
 // settings menu.
-TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
+TEST_P(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kImage);
   auto* capture_mode_session =
@@ -2385,7 +2473,7 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
 // Tests that minimized window(s) will be ignored whereas four corners occluded
 // but overall partially occluded window will be focusable while tabbing through
 // in `kWindow` mode.
-TEST_F(CaptureModeTest, IgnoreMinimizeWindowsInKWindow) {
+TEST_P(CaptureModeTest, IgnoreMinimizeWindowsInKWindow) {
   // Layout of three windows: four corners of `window3` are occluded by
   // `window1` and `window2`.
   //
@@ -2441,7 +2529,7 @@ TEST_F(CaptureModeTest, IgnoreMinimizeWindowsInKWindow) {
 
 // Tests that partially occluded window(s) will be focusable even when four
 // edges are occluded by other windows while tabbing through in `kWindow` mode.
-TEST_F(CaptureModeTest, PartiallyOccludedWindowIsFocusableInKWindow) {
+TEST_P(CaptureModeTest, PartiallyOccludedWindowIsFocusableInKWindow) {
   // Layout of five windows: four edges of `window3` is occluded by `window1`,
   // `window2`, `window4` and `window5` respectively, but the middle part is not
   // occluded.
@@ -2503,7 +2591,7 @@ TEST_F(CaptureModeTest, PartiallyOccludedWindowIsFocusableInKWindow) {
 
 // Tests that fully occluded window(s) will be ignored while tabbing in
 // `kWindow`.
-TEST_F(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
+TEST_P(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
   // Layout of six windows: `window3` is fully occluded by `window1`, `window2`,
   // `window4`, `window5` and `window6`.
   //        +-----------+
@@ -2567,7 +2655,7 @@ TEST_F(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
 // Tests that only Tab and Shift + Tab events advance/reverse focus and stop
 // event propagation. Other events like Alt + Tab should still behave as
 // intended.
-TEST_F(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
+TEST_P(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
 
@@ -2631,7 +2719,7 @@ TEST_F(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
 
 // Tests that the capture region will be refreshed if in overview to reflect the
 // bounds of the overview item for this window in `kWindow` mode.
-TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
+TEST_P(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   auto window = CreateAppWindow(gfx::Rect(100, 50, 200, 200));
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
@@ -2657,9 +2745,9 @@ TEST_F(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   EXPECT_EQ(capture_region_in_overview, gfx::ToRoundedRect(target_bounds));
 }
 
-class CaptureModeSaveFileTest
-    : public CaptureModeTest,
-      public testing::WithParamInterface<CaptureModeType> {
+class CaptureModeSaveFileTest : public CaptureModeTestBase,
+                                public testing::WithParamInterface<
+                                    std::tuple<CaptureModeType, bool, bool>> {
  public:
   CaptureModeSaveFileTest() = default;
   CaptureModeSaveFileTest(
@@ -2667,15 +2755,23 @@ class CaptureModeSaveFileTest
   CaptureModeSaveFileTest& operator=(const CaptureModeSaveFileTest&) = delete;
   ~CaptureModeSaveFileTest() override = default;
 
+  // CaptureModeTestBase:
+  void SetUp() override {
+    auto [unused_type, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeTestBase::SetUp();
+  }
+
   void StartCaptureSessionWithParam() {
-    StartCaptureSession(CaptureModeSource::kFullscreen, GetParam());
+    StartCaptureSession(CaptureModeSource::kFullscreen,
+                        std::get<CaptureModeType>(GetParam()));
   }
 
   // Based on the `CaptureModeType`, it performs the capture and then returns
   // the path of the saved image or video files.
   base::FilePath PerformCapture() {
     auto* controller = CaptureModeController::Get();
-    switch (GetParam()) {
+    switch (std::get<CaptureModeType>(GetParam())) {
       case CaptureModeType::kImage:
         controller->PerformCapture();
         return WaitForCaptureFileToBeSaved();
@@ -2787,10 +2883,29 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeSaveFileTest,
-                         testing::Values(CaptureModeType::kImage,
-                                         CaptureModeType::kVideo));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeSaveFileTest,
+    testing::Combine(testing::Values(CaptureModeType::kImage,
+                                     CaptureModeType::kVideo),
+                     testing::Bool(),
+                     testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeSaveFileTest::ParamType>& info) {
+      auto type = std::get<CaptureModeType>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      std::string test_name;
+      switch (type) {
+        case CaptureModeType::kImage:
+          test_name = "Image";
+          break;
+        case CaptureModeType::kVideo:
+          test_name = "Video";
+          break;
+      }
+      test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+      return test_name;
+    });
 
 // Test fixture for verifying that the videos are recorded at the pixel size of
 // the targets being captured in all recording modes. This avoids having the
@@ -2849,13 +2964,24 @@ class CaptureModeRecordingSizeTest : public CaptureModeTest {
   std::unique_ptr<aura::Window> window_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CaptureModeRecordingSizeTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeRecordingSizeTest::ParamType>&
+           info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
 // TODO(crbug.com/1291073): Flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CaptureAtPixelsFullscreen DISABLED_CaptureAtPixelsFullscreen
 #else
 #define MAYBE_CaptureAtPixelsFullscreen CaptureAtPixelsFullscreen
 #endif
-TEST_F(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
+TEST_P(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
@@ -2914,7 +3040,7 @@ TEST_F(CaptureModeRecordingSizeTest, MAYBE_CaptureAtPixelsFullscreen) {
 }
 
 // The test is flaky. https://crbug.com/1287724.
-TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
+TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
@@ -2962,7 +3088,7 @@ TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsRegion) {
 }
 
 // The test is flaky. https://crbug.com/1287724.
-TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
+TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
   float dsf = 1.6f;
   SetDeviceScaleFactor(dsf);
   EXPECT_EQ(dsf, window_->GetHost()->device_scale_factor());
@@ -3014,16 +3140,18 @@ TEST_F(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
 // Tests the behavior of screen recording with the presence of HDCP secure
 // content on the screen in all capture mode sources (fullscreen, region, and
 // window) depending on the test param.
-class CaptureModeHdcpTest
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class CaptureModeHdcpTest : public CaptureModeTestBase,
+                            public ::testing::WithParamInterface<
+                                std::tuple<CaptureModeSource, bool, bool>> {
  public:
   CaptureModeHdcpTest() = default;
   ~CaptureModeHdcpTest() override = default;
 
-  // CaptureModeTest:
+  // CaptureModeTestBase:
   void SetUp() override {
-    CaptureModeTest::SetUp();
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeTestBase::SetUp();
     window_ = CreateTestWindow(gfx::Rect(200, 200));
     // Create a child window with protected content. This simulates the real
     // behavior of a browser window hosting a page with protected content, where
@@ -3041,12 +3169,13 @@ class CaptureModeHdcpTest
     protection_delegate_.reset();
     protected_content_window_.reset();
     window_.reset();
-    CaptureModeTest::TearDown();
+    CaptureModeTestBase::TearDown();
   }
 
   // Enters the capture mode session.
   void StartSessionForVideo() {
-    StartCaptureSession(GetParam(), CaptureModeType::kVideo);
+    StartCaptureSession(std::get<CaptureModeSource>(GetParam()),
+                        CaptureModeType::kVideo);
   }
 
   // Attempts video recording from the capture mode source set by the test
@@ -3055,7 +3184,7 @@ class CaptureModeHdcpTest
     auto* controller = CaptureModeController::Get();
     ASSERT_TRUE(controller->IsActive());
 
-    switch (GetParam()) {
+    switch (std::get<CaptureModeSource>(GetParam())) {
       case CaptureModeSource::kFullscreen:
       case CaptureModeSource::kRegion:
         controller->StartVideoRecordingImmediatelyForTesting();
@@ -3096,7 +3225,7 @@ TEST_P(CaptureModeHdcpTest, WindowBecomesProtectedWhileRecording) {
       EndRecordingReason::kHdcpInterruption, 1);
 }
 
-TEST_F(CaptureModeHdcpTest, ProtectedTabBecomesActiveAfterRecordingStarts) {
+TEST_P(CaptureModeHdcpTest, ProtectedTabBecomesActiveAfterRecordingStarts) {
   // Simulate protected content being on an inactive tab.
   protection_delegate_->SetProtection(display::CONTENT_PROTECTION_METHOD_HDCP,
                                       base::DoNothing());
@@ -3133,7 +3262,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
   // except when we're capturing a different |window_|.
   auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -3187,7 +3316,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   // Recording should be able to start (since the protected window is on the
   // first display) unless the protected window itself is the one being
   // recorded.
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     EXPECT_FALSE(controller->is_recording_in_progress());
   } else {
     WaitForRecordingToStart();
@@ -3207,13 +3336,23 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeHdcpTest,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHdcpTest,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHdcpTest::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
-TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
+TEST_P(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
@@ -3248,7 +3387,7 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
       EndRecordingReason::kDisplayOrWindowClosing, 1);
 }
 
-TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
+TEST_P(CaptureModeTest, DetachDisplayWhileWindowRecording) {
   UpdateDisplay("500x400,401+0-500x400");
   // Create a window on the second display.
   auto window = CreateTestWindow(gfx::Rect(450, 20, 200, 200));
@@ -3282,7 +3421,7 @@ TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
   EXPECT_TRUE(stop_recording_button->visible_preferred());
 }
 
-TEST_F(CaptureModeTest, SuspendWhileSessionIsActive) {
+TEST_P(CaptureModeTest, SuspendWhileSessionIsActive) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   EXPECT_TRUE(controller->IsActive());
@@ -3291,7 +3430,7 @@ TEST_F(CaptureModeTest, SuspendWhileSessionIsActive) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, SuspendAfterCountdownStarts) {
+TEST_P(CaptureModeTest, SuspendAfterCountdownStarts) {
   // User NORMAL_DURATION for the countdown animation so we can have predictable
   // timings.
   ui::ScopedAnimationDurationScaleMode animation_scale(
@@ -3308,7 +3447,7 @@ TEST_F(CaptureModeTest, SuspendAfterCountdownStarts) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
-TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
+TEST_P(CaptureModeTest, SuspendAfterRecordingStarts) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
@@ -3322,7 +3461,7 @@ TEST_F(CaptureModeTest, SuspendAfterRecordingStarts) {
       EndRecordingReason::kImminentSuspend, 1);
 }
 
-TEST_F(CaptureModeTest, SwitchUsersWhileRecording) {
+TEST_P(CaptureModeTest, SwitchUsersWhileRecording) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
@@ -3335,7 +3474,7 @@ TEST_F(CaptureModeTest, SwitchUsersWhileRecording) {
       EndRecordingReason::kActiveUserChange, 1);
 }
 
-TEST_F(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
+TEST_P(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
   // User NORMAL_DURATION for the countdown animation so we can have predictable
   // timings.
   ui::ScopedAnimationDurationScaleMode animation_scale(
@@ -3351,7 +3490,7 @@ TEST_F(CaptureModeTest, SwitchUsersAfterCountdownStarts) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
-TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
+TEST_P(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
   UpdateDisplay("500x400,401+0-500x400");
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());
@@ -3385,7 +3524,7 @@ TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
       EndRecordingReason::kDisplayOrWindowClosing, 1);
 }
 
-TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
+TEST_P(CaptureModeTest, ShuttingDownWhileRecording) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   auto* controller = CaptureModeController::Get();
@@ -3398,7 +3537,7 @@ TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
 }
 
 // Tests that metrics are recorded properly for capture mode bar buttons.
-TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
+TEST_P(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   constexpr char kClamshellHistogram[] =
       "Ash.CaptureModeController.BarButtons.ClamshellMode";
   constexpr char kTabletHistogram[] =
@@ -3454,7 +3593,14 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
                                      CaptureModeBarButtonType::kWindow, 1);
 }
 
-TEST_F(CaptureModeTest, CaptureSessionSwitchedModeMetric) {
+TEST_P(CaptureModeTest, CaptureSessionSwitchedModeMetric) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   constexpr char kHistogramName[] =
       "Ash.CaptureModeController.SwitchesFromInitialCaptureMode";
   base::HistogramTester histogram_tester;
@@ -3488,7 +3634,7 @@ TEST_F(CaptureModeTest, CaptureSessionSwitchedModeMetric) {
 }
 
 // Test that cancel recording during countdown won't cause crash.
-TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
+TEST_P(CaptureModeTest, CancelCaptureDuringCountDown) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
@@ -3505,7 +3651,7 @@ TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
   EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
 }
 
-TEST_F(CaptureModeTest, EscDuringCountDownWhileSettingsOpen) {
+TEST_P(CaptureModeTest, EscDuringCountDownWhileSettingsOpen) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
@@ -3526,7 +3672,7 @@ TEST_F(CaptureModeTest, EscDuringCountDownWhileSettingsOpen) {
 }
 
 // Tests that metrics are recorded properly for capture region adjustments.
-TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
+TEST_P(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   constexpr char kClamshellHistogram[] =
       "Ash.CaptureModeController.CaptureRegionAdjusted.ClamshellMode";
   constexpr char kTabletHistogram[] =
@@ -3607,7 +3753,7 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   histogram_tester.ExpectBucketCount(kTabletHistogram, 0, 1);
 }
 
-TEST_F(CaptureModeTest, ResizeRegionBoundedByDisplay) {
+TEST_P(CaptureModeTest, ResizeRegionBoundedByDisplay) {
   UpdateDisplay("800x700");
 
   auto* controller = StartImageRegionCapture();
@@ -3641,7 +3787,7 @@ TEST_F(CaptureModeTest, ResizeRegionBoundedByDisplay) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 700), controller->user_capture_region());
 }
 
-TEST_F(CaptureModeTest, FullscreenCapture) {
+TEST_P(CaptureModeTest, FullscreenCapture) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   CaptureModeController* controller = StartCaptureSession(
@@ -3663,7 +3809,7 @@ TEST_F(CaptureModeTest, FullscreenCapture) {
 
 // Tests that there is no crash when touching the capture label widget in tablet
 // mode when capturing a window. Regression test for https://crbug.com/1152938.
-TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
+TEST_P(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
   SwitchToTabletMode();
 
   // Enter capture window mode.
@@ -3687,7 +3833,14 @@ TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
 
 // Tests that after rotating a display, the capture session widgets are updated
 // and the capture region is reset.
-TEST_F(CaptureModeTest, DisplayRotation) {
+TEST_P(CaptureModeTest, DisplayRotation) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test crashes when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   UpdateDisplay("1200x600");
 
   auto* controller = StartImageRegionCapture();
@@ -3718,7 +3871,7 @@ TEST_F(CaptureModeTest, DisplayRotation) {
             capture_label_widget->GetWindowBoundsInScreen().CenterPoint());
 }
 
-TEST_F(CaptureModeTest, DisplayBoundsChange) {
+TEST_P(CaptureModeTest, DisplayBoundsChange) {
   UpdateDisplay("1200x600");
 
   auto* controller = StartImageRegionCapture();
@@ -3732,7 +3885,7 @@ TEST_F(CaptureModeTest, DisplayBoundsChange) {
             GetCaptureModeBarView()->GetBoundsInScreen().CenterPoint().x());
 }
 
-TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
+TEST_P(CaptureModeTest, ReenterOnSmallerDisplay) {
   UpdateDisplay("1200x600,1201+0-700x600");
 
   // Start off with the primary display as the targeted display. Create a region
@@ -3753,7 +3906,7 @@ TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
 }
 
 // Tests tabbing when in capture window mode.
-TEST_F(CaptureModeTest, KeyboardNavigationBasic) {
+TEST_P(CaptureModeTest, KeyboardNavigationBasic) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
 
@@ -3798,7 +3951,7 @@ TEST_F(CaptureModeTest, KeyboardNavigationBasic) {
 
 // Tests tabbing through windows on multiple displays when in capture window
 // mode.
-TEST_F(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
+TEST_P(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
   UpdateDisplay("800x700,801+0-800x700");
   std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows =
       Shell::GetAllRootWindows();
@@ -3909,7 +4062,7 @@ TEST_F(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
 }
 
 // Tests that a click will remove focus.
-TEST_F(CaptureModeTest, KeyboardNavigationClicksRemoveFocus) {
+TEST_P(CaptureModeTest, KeyboardNavigationClicksRemoveFocus) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
 
@@ -3922,7 +4075,14 @@ TEST_F(CaptureModeTest, KeyboardNavigationClicksRemoveFocus) {
 }
 
 // Tests that pressing space on a focused button will activate it.
-TEST_F(CaptureModeTest, KeyboardNavigationSpaceToActivateButton) {
+TEST_P(CaptureModeTest, KeyboardNavigationSpaceToActivateButton) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(200, 200));
 
@@ -3957,7 +4117,7 @@ TEST_F(CaptureModeTest, KeyboardNavigationSpaceToActivateButton) {
 
 // Tests that functionality to create and adjust a region with keyboard
 // shortcuts works as intended.
-TEST_F(CaptureModeTest, KeyboardNavigationSelectRegion) {
+TEST_P(CaptureModeTest, KeyboardNavigationSelectRegion) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ASSERT_TRUE(controller->user_capture_region().IsEmpty());
@@ -4020,7 +4180,14 @@ TEST_F(CaptureModeTest, KeyboardNavigationSelectRegion) {
 }
 
 // Tests behavior regarding the default region when using keyboard navigation.
-TEST_F(CaptureModeTest, KeyboardNavigationDefaultRegion) {
+TEST_P(CaptureModeTest, KeyboardNavigationDefaultRegion) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ASSERT_TRUE(controller->user_capture_region().IsEmpty());
@@ -4070,7 +4237,7 @@ TEST_F(CaptureModeTest, KeyboardNavigationDefaultRegion) {
   EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
 }
 
-TEST_F(CaptureModeTest, A11yEnterWithNoFocus) {
+TEST_P(CaptureModeTest, A11yEnterWithNoFocus) {
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(20, 20, 200, 200));
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
@@ -4083,7 +4250,7 @@ TEST_F(CaptureModeTest, A11yEnterWithNoFocus) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, A11yEnterWithFocusOnRegionKnob) {
+TEST_P(CaptureModeTest, A11yEnterWithFocusOnRegionKnob) {
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(20, 20, 200, 200));
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
@@ -4105,7 +4272,7 @@ TEST_F(CaptureModeTest, A11yEnterWithFocusOnRegionKnob) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, A11yEnterWithFocusOnWindow) {
+TEST_P(CaptureModeTest, A11yEnterWithFocusOnWindow) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
@@ -4124,7 +4291,7 @@ TEST_F(CaptureModeTest, A11yEnterWithFocusOnWindow) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, A11yEnterWithFocusOnFullscreenButton) {
+TEST_P(CaptureModeTest, A11yEnterWithFocusOnFullscreenButton) {
   auto* controller = StartImageRegionCapture();
   EXPECT_EQ(controller->source(), CaptureModeSource::kRegion);
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
@@ -4160,7 +4327,19 @@ TEST_F(CaptureModeTest, A11yEnterWithFocusOnFullscreenButton) {
 
 // Tests that the UAF issue caused by `NotifyAccessibilityEvent` after the
 // button been destroyed has been handled without leading to a crash.
-TEST_F(CaptureModeTest, KeyboardNavigationButtonDestroyedAfterBeenActivated) {
+TEST_P(CaptureModeTest, KeyboardNavigationButtonDestroyedAfterBeenActivated) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled) {
+    // This test crashes if Sunfish is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+  if (scanner_enabled) {
+    // This test fails if Sunfish is disabled and Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(200, 300));
 
@@ -4191,7 +4370,14 @@ TEST_F(CaptureModeTest, KeyboardNavigationButtonDestroyedAfterBeenActivated) {
 
 // Tests that accessibility overrides are set as expected on capture mode
 // widgets.
-TEST_F(CaptureModeTest, AccessibilityFocusAnnotator) {
+TEST_P(CaptureModeTest, AccessibilityFocusAnnotator) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   StartImageRegionCapture();
 
   // Helper that takes in a current widget and checks if the accessibility next
@@ -4230,7 +4416,7 @@ TEST_F(CaptureModeTest, AccessibilityFocusAnnotator) {
 }
 
 // Tests that a captured image is written to the clipboard.
-TEST_F(CaptureModeTest, ClipboardWrite) {
+TEST_P(CaptureModeTest, ClipboardWrite) {
   auto* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_NE(clipboard, nullptr);
 
@@ -4248,7 +4434,7 @@ TEST_F(CaptureModeTest, ClipboardWrite) {
 }
 
 // Tests the reverse tabbing behavior of the keyboard navigation.
-TEST_F(CaptureModeTest, ReverseTabbingTest) {
+TEST_P(CaptureModeTest, ReverseTabbingTest) {
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   auto* event_generator = GetEventGenerator();
   for (CaptureModeSource source :
@@ -4274,7 +4460,7 @@ TEST_F(CaptureModeTest, ReverseTabbingTest) {
 // calling `Close()` or `CloseNow()` on the widget, we get a UAF. This can
 // happen when all the windows in the window tree hierarchy gets deleted e.g.
 // when shutting down.
-TEST_F(CaptureModeTest, SettingsMenuWidgetDestruction) {
+TEST_P(CaptureModeTest, SettingsMenuWidgetDestruction) {
   CaptureModeTestApi().StartForFullscreen(true);
   ClickOnView(GetSettingsButton(), GetEventGenerator());
   auto* widget = GetCaptureModeSettingsWidget();
@@ -4292,8 +4478,18 @@ class CaptureModeMockTimeTest : public CaptureModeTest {
   ~CaptureModeMockTimeTest() override = default;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CaptureModeMockTimeTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeMockTimeTest::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
 // Tests that the consecutive screenshots histogram is recorded properly.
-TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
+TEST_P(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
   constexpr char kConsecutiveScreenshotsHistogram[] =
       "Ash.CaptureModeController.ConsecutiveScreenshots";
   base::HistogramTester histogram_tester;
@@ -4332,7 +4528,7 @@ TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
 }
 
 // Tests that the user capture region will be cleared up after a period of time.
-TEST_F(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
+TEST_P(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
   UpdateDisplay("900x800");
   auto* controller = StartImageRegionCapture();
   EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
@@ -4361,7 +4557,14 @@ TEST_F(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
 }
 
 // Tests that in Region mode, the capture bar hides and shows itself correctly.
-TEST_F(CaptureModeTest, CaptureBarOpacity) {
+TEST_P(CaptureModeTest, CaptureBarOpacity) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test fails when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4420,7 +4623,7 @@ TEST_F(CaptureModeTest, CaptureBarOpacity) {
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
 }
 
-TEST_F(CaptureModeTest, CaptureBarOpacityOnHoveringOnCaptureLabel) {
+TEST_P(CaptureModeTest, CaptureBarOpacityOnHoveringOnCaptureLabel) {
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4445,7 +4648,7 @@ TEST_F(CaptureModeTest, CaptureBarOpacityOnHoveringOnCaptureLabel) {
 }
 
 // Tests that the quick action histogram is recorded properly.
-TEST_F(CaptureModeTest, QuickActionHistograms) {
+TEST_P(CaptureModeTest, QuickActionHistograms) {
   constexpr char kQuickActionHistogramName[] =
       "Ash.CaptureModeController.QuickAction";
   base::HistogramTester histogram_tester;
@@ -4497,7 +4700,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
                                      CaptureQuickAction::kBacklight, 1);
 }
 
-TEST_F(CaptureModeTest, NotificationButtonOfVideoRecording) {
+TEST_P(CaptureModeTest, NotificationButtonOfVideoRecording) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
@@ -4518,7 +4721,7 @@ TEST_F(CaptureModeTest, NotificationButtonOfVideoRecording) {
   EXPECT_FALSE(GetPreviewNotification());
 }
 
-TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
+TEST_P(CaptureModeTest, CannotDoMultipleRecordings) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   auto* controller = CaptureModeController::Get();
@@ -4558,7 +4761,7 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
 }
 
 // Tests the basic settings menu functionality.
-TEST_F(CaptureModeTest, SettingsMenuVisibilityBasic) {
+TEST_P(CaptureModeTest, SettingsMenuVisibilityBasic) {
   auto* event_generator = GetEventGenerator();
   auto* controller = StartImageRegionCapture();
   EXPECT_TRUE(controller->IsActive());
@@ -4579,7 +4782,7 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityBasic) {
 // Tests how interacting with the rest of the screen (i.e. clicking outside of
 // the bar/menu, on other buttons) affects whether the settings menu should
 // close or not.
-TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
+TEST_P(CaptureModeTest, SettingsMenuVisibilityClicking) {
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4633,7 +4836,14 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
 
 // Tests capture bar and settings menu visibility / opacity when capture region
 // is being or after drawn.
-TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
+TEST_P(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test crashes when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
+
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4734,7 +4944,7 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
             capture_bar_layer->GetTargetOpacity());
 }
 
-TEST_F(CaptureModeTest, CaptureFolderSetting) {
+TEST_P(CaptureModeTest, CaptureFolderSetting) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate = controller->delegate_for_testing();
   const auto default_downloads_folder =
@@ -4752,7 +4962,7 @@ TEST_F(CaptureModeTest, CaptureFolderSetting) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeTest, CaptureFolderSetToDefaultDownloads) {
+TEST_P(CaptureModeTest, CaptureFolderSetToDefaultDownloads) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate = controller->delegate_for_testing();
 
@@ -4772,7 +4982,7 @@ TEST_F(CaptureModeTest, CaptureFolderSetToDefaultDownloads) {
   EXPECT_TRUE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeTest, UsesDefaultFolderWithCustomFolderSet) {
+TEST_P(CaptureModeTest, UsesDefaultFolderWithCustomFolderSet) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate = controller->delegate_for_testing();
 
@@ -4800,7 +5010,7 @@ TEST_F(CaptureModeTest, UsesDefaultFolderWithCustomFolderSet) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
+TEST_P(CaptureModeTest, CaptureFolderSetToEmptyPath) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate = controller->delegate_for_testing();
 
@@ -4820,7 +5030,7 @@ TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
   EXPECT_TRUE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
+TEST_P(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   StartVideoRecordingImmediately();
@@ -4846,7 +5056,7 @@ TEST_F(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
 
 // Tests that `CaptureScreenshotOfGivenWindow` can take window screenshot
 // successfully and that the image size matches the window size.
-TEST_F(CaptureModeTest, InstantScreenshotForkWindow) {
+TEST_P(CaptureModeTest, InstantScreenshotForkWindow) {
   const gfx::Rect window_bounds(10, 20, 700, 500);
   std::unique_ptr<aura::Window> window(CreateTestWindow(window_bounds));
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(window.get());
@@ -4857,7 +5067,7 @@ TEST_F(CaptureModeTest, InstantScreenshotForkWindow) {
 
 // Tests the capture mode behavior in the default capture mode session and
 // during video recording.
-TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
+TEST_P(CaptureModeTest, CaptureModeDefaultBehavior) {
   CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   ASSERT_TRUE(controller->IsActive());
@@ -4909,7 +5119,7 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
 // 'Ctrl + Shift + Overview' with `kImage` as the default type and `kRegion` as
 // the default source. And the screen recording can be ended with the keyboard
 // shortcut 'Search + Shift + X'.
-TEST_F(CaptureModeTest, KeyboardShortcutTest) {
+TEST_P(CaptureModeTest, KeyboardShortcutTest) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       kEndRecordingReasonInClamshellHistogramName,
@@ -4934,6 +5144,25 @@ TEST_F(CaptureModeTest, KeyboardShortcutTest) {
   histogram_tester.ExpectBucketCount(
       kEndRecordingReasonInClamshellHistogramName,
       EndRecordingReason::kKeyboardShortcut, 1);
+}
+
+TEST_P(CaptureModeTest, StopRecordingButtonTrayAccessibleName) {
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  test_api.PerformCapture();
+  test_api.FlushRecordingServiceForTesting();
+
+  auto* stop_recording_button = Shell::GetPrimaryRootWindowController()
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  EXPECT_TRUE(stop_recording_button->visible_preferred());
+
+  ui::AXNodeData tray_data;
+  stop_recording_button->GetViewAccessibility().GetAccessibleNodeData(
+      &tray_data);
+  EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME));
 }
 
 namespace {
@@ -5066,9 +5295,20 @@ class CaptureModeCursorOverlayTest : public CaptureModeTest {
   std::unique_ptr<TestVideoCaptureOverlay> fake_overlay_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CaptureModeCursorOverlayTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeCursorOverlayTest::ParamType>&
+           info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
 }  // namespace
 
-TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
+TEST_P(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -5085,7 +5325,7 @@ TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
 
 // Tests that the cursor is hidden while taking a screenshot in tablet mode and
 // remains hidden afterward.
-TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursor) {
+TEST_P(CaptureModeCursorOverlayTest, TabletModeHidesCursor) {
   // Enter tablet mode.
   SwitchToTabletMode();
 
@@ -5110,7 +5350,7 @@ TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursor) {
 
 // Tests that a cursor is hidden while taking a fullscreen screenshot
 // (crbug.com/1186652).
-TEST_F(CaptureModeCursorOverlayTest, CursorInFullscreenScreenshot) {
+TEST_P(CaptureModeCursorOverlayTest, CursorInFullscreenScreenshot) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   CaptureModeController* controller = StartCaptureSession(
@@ -5131,7 +5371,7 @@ TEST_F(CaptureModeCursorOverlayTest, CursorInFullscreenScreenshot) {
 
 // Tests that a cursor is hidden while taking a region screenshot
 // (crbug.com/1186652).
-TEST_F(CaptureModeCursorOverlayTest, CursorInPartialRegionScreenshot) {
+TEST_P(CaptureModeCursorOverlayTest, CursorInPartialRegionScreenshot) {
   // Use a set display size as we will be choosing points in this test.
   UpdateDisplay("800x700");
 
@@ -5155,7 +5395,7 @@ TEST_F(CaptureModeCursorOverlayTest, CursorInPartialRegionScreenshot) {
   CaptureScreenshotAndCheckCursorVisibility(controller);
 }
 
-TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInitiallyEnabled) {
+TEST_P(CaptureModeCursorOverlayTest, SoftwareCursorInitiallyEnabled) {
   // The software cursor is enabled before recording starts.
   SetDockedMagnifierEnabled(true);
   EXPECT_TRUE(IsCursorCompositingEnabled());
@@ -5165,7 +5405,7 @@ TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInitiallyEnabled) {
   EXPECT_TRUE(fake_overlay()->IsHidden());
 }
 
-TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInFullscreenRecording) {
+TEST_P(CaptureModeCursorOverlayTest, SoftwareCursorInFullscreenRecording) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -5182,7 +5422,7 @@ TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInFullscreenRecording) {
   EXPECT_FALSE(fake_overlay()->IsHidden());
 }
 
-TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInPartialRegionRecording) {
+TEST_P(CaptureModeCursorOverlayTest, SoftwareCursorInPartialRegionRecording) {
   CaptureModeController::Get()->SetUserCaptureRegion(gfx::Rect(20, 20),
                                                      /*by_user=*/true);
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kRegion);
@@ -5195,7 +5435,7 @@ TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInPartialRegionRecording) {
   EXPECT_TRUE(fake_overlay()->IsHidden());
 }
 
-TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInWindowRecording) {
+TEST_P(CaptureModeCursorOverlayTest, SoftwareCursorInWindowRecording) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -5209,7 +5449,7 @@ TEST_F(CaptureModeCursorOverlayTest, SoftwareCursorInWindowRecording) {
   EXPECT_FALSE(fake_overlay()->IsHidden());
 }
 
-TEST_F(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
+TEST_P(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -5242,7 +5482,7 @@ class FakeCursorShapeClient : public aura::client::CursorShapeClient {
 
 }  // namespace
 
-TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHiddenOrFails) {
+TEST_P(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHiddenOrFails) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -5295,7 +5535,7 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHiddenOrFails) {
 
 // Verifies that the cursor overlay bounds calculation takes into account the
 // cursor image scale factor. https://crbug.com/1222494.
-TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
+TEST_P(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
   UpdateDisplay("500x400");
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
   EXPECT_FALSE(fake_overlay()->IsHidden());
@@ -5369,12 +5609,10 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 
 }  // namespace
 
-class ProjectorCaptureModeIntegrationTests
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class ProjectorCaptureModeIntegrationTestsBase : public CaptureModeTestBase {
  public:
-  ProjectorCaptureModeIntegrationTests() = default;
-  ~ProjectorCaptureModeIntegrationTests() override = default;
+  ProjectorCaptureModeIntegrationTestsBase() = default;
+  ~ProjectorCaptureModeIntegrationTestsBase() override = default;
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
@@ -5383,9 +5621,9 @@ class ProjectorCaptureModeIntegrationTests
   }
   aura::Window* window() const { return window_.get(); }
 
-  // CaptureModeTest:
+  // CaptureModeTestBase:
   void SetUp() override {
-    CaptureModeTest::SetUp();
+    CaptureModeTestBase::SetUp();
     projector_helper_.SetUp();
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
     CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
@@ -5394,7 +5632,7 @@ class ProjectorCaptureModeIntegrationTests
 
   void TearDown() override {
     window_.reset();
-    CaptureModeTest::TearDown();
+    CaptureModeTestBase::TearDown();
   }
 
   void StartProjectorModeSession() {
@@ -5426,10 +5664,46 @@ class ProjectorCaptureModeIntegrationTests
   base::HistogramTester histogram_tester_;
 };
 
-// static
-constexpr gfx::Rect ProjectorCaptureModeIntegrationTests::kUserRegion;
+class ProjectorCaptureModeIntegrationTests
+    : public ProjectorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // ProjectorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    ProjectorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
 
-TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProjectorCaptureModeIntegrationTests,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        ProjectorCaptureModeIntegrationTests::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
+class ProjectorCaptureModeIntegrationTestsWithSource
+    : public ProjectorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CaptureModeSource, bool, bool>> {
+ public:
+  // ProjectorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    ProjectorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+// static
+constexpr gfx::Rect ProjectorCaptureModeIntegrationTestsBase::kUserRegion;
+
+TEST_P(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   // With the most recent source type set to kImage, starting capture mode for
   // the projector workflow will still force it to kVideo.
   auto* controller = CaptureModeController::Get();
@@ -5471,7 +5745,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
 }
 
 // Tests that the settings view is simplified in projector mode.
-TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
+TEST_P(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();
   auto* event_generator = GetEventGenerator();
@@ -5494,7 +5768,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
             controller->GetEffectiveAudioRecordingMode());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
+TEST_P(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
   auto* controller = CaptureModeController::Get();
   auto* delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -5507,7 +5781,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
   EXPECT_FALSE(projector_helper_.CanStartProjectorSession());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        AudioCaptureDisabledByPolicyAfterSessionStarts) {
   auto* controller = CaptureModeController::Get();
   auto* delegate =
@@ -5534,7 +5808,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 // Tests the keyboard navigation for projector mode. The `image_toggle_button_`
 // in `CaptureModeTypeView` and the `Off` audio input option in
 // `CaptureModeSettingsView` are not available in projector mode.
-TEST_F(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
+TEST_P(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
   auto* controller = CaptureModeController::Get();
   // Use `kFullscreen` here to minimize the number of tabs to reach the setting
   // button.
@@ -5569,7 +5843,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
             settings_test_api.GetMicrophoneOption());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
+TEST_P(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
@@ -5581,7 +5855,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   EXPECT_TRUE(GetVideoToggleButton()->selected());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
+TEST_P(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -5620,7 +5894,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
                                      /*expected_count=*/4);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionNeverStartsWhenCaptureModeIsBlocked) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -5637,7 +5911,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionNeverStartsWhenVideoRecordingIsOnGoing) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
@@ -5664,7 +5938,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 // that include the capture mode type, capture mode source and capture mode
 // audio settings will not be overridden by the projector-initiated capture mode
 // session.
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        RestoreCaptureSessionConfigurationsInNormalCaptureSession) {
   // Start an image capture mode session in window mode.
   auto* controller =
@@ -5732,7 +6006,7 @@ struct {
 
 }  // namespace
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionAbortedBeforeCountDownStarts) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -5778,7 +6052,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                                      /*expected_count=*/9);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionAbortedAfterCountDownStarts) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
@@ -5825,7 +6099,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                                      /*expected_count=*/9);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
+TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -5850,7 +6124,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        AnnotationsOverlayDockedMagnifier) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -5888,8 +6162,9 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
 }
 
-TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
-  const auto capture_source = GetParam();
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
+       AnnotationsOverlayWidgetBounds) {
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi test_api;
   AnnotationsOverlayController* overlay_controller =
@@ -5900,7 +6175,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
 }
 
 // Regression test for https://crbug.com/1322655.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBoundsSecondDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
@@ -5911,7 +6186,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
 
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   const auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
@@ -5926,7 +6201,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests the projector behavior in the projector-initiated capture mode session
 // and during video recording.
-TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource, ProjectorBehavior) {
   CaptureModeController* controller = CaptureModeController::Get();
   EXPECT_EQ(AudioRecordingMode::kOff,
             controller->GetEffectiveAudioRecordingMode());
@@ -5991,9 +6266,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
 
 // Tests that neither preview notification nor recording in tote is shown if in
 // projector mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        NotShowRecordingInToteOrNotificationForProjectorMode) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi().StopVideoRecording();
   WaitForCaptureFileToBeSaved();
@@ -6004,9 +6279,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests that metrics are recorded correctly for capture configuration entering
 // from projector in both clamshell and tablet mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorCaptureConfigurationMetrics) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   constexpr char kProjectorCaptureConfigurationHistogramBase[] =
       "CaptureConfiguration";
   ash::CaptureModeTestApi test_api;
@@ -6048,9 +6323,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests that metrics are recorded correctly for screen recording length
 // entering from projector in both clamshell and tablet mode.
-TEST_P(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorScreenRecordingLengthMetrics) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   constexpr char kProjectorRecordTimeHistogramBase[] = "ScreenRecordingLength";
   ash::CaptureModeTestApi test_api;
 
@@ -6081,7 +6356,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
 // Tests that metrics are recorded correctly for capture region adjustment
 // entering from projector in both clamshell and tablet mode.
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorCaptureRegionAdjustmentTest) {
   constexpr char kProjectorCaptureRegionAdjustmentHistogramBase[] =
       "CaptureRegionAdjusted";
@@ -6155,26 +6430,36 @@ TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
   VerifyActiveBehavior(BehaviorType::kProjector);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProjectorCaptureModeIntegrationTests,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProjectorCaptureModeIntegrationTestsWithSource,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
 
-class AnnotatorCaptureModeIntegrationTests
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+    [](const testing::TestParamInfo<
+        ProjectorCaptureModeIntegrationTestsWithSource::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
+
+class AnnotatorCaptureModeIntegrationTestsBase : public CaptureModeTestBase {
  public:
-  AnnotatorCaptureModeIntegrationTests() = default;
-  ~AnnotatorCaptureModeIntegrationTests() override = default;
+  AnnotatorCaptureModeIntegrationTestsBase() = default;
+  ~AnnotatorCaptureModeIntegrationTestsBase() override = default;
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
   aura::Window* window() const { return window_.get(); }
 
-  // CaptureModeTest:
+  // CaptureModeTestBase:
   void SetUp() override {
-    CaptureModeTest::SetUp();
+    CaptureModeTestBase::SetUp();
     annotator_helper_.SetUp();
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
     CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
@@ -6183,7 +6468,7 @@ class AnnotatorCaptureModeIntegrationTests
 
   void TearDown() override {
     window_.reset();
-    CaptureModeTest::TearDown();
+    CaptureModeTestBase::TearDown();
   }
 
   void StartRecordingFromSource(CaptureModeSource source) {
@@ -6213,7 +6498,43 @@ class AnnotatorCaptureModeIntegrationTests
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
+class AnnotatorCaptureModeIntegrationTests
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AnnotatorCaptureModeIntegrationTests,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTests::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
+class AnnotatorCaptureModeIntegrationTestsWithSource
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CaptureModeSource, bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
   PressAndReleaseKey(ui::VKEY_RETURN);
@@ -6235,7 +6556,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayDockedMagnifier) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6299,7 +6620,7 @@ class EventTargetCatcher : public ui::EventHandler {
 
 }  // namespace
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayWidgetTargeting) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6356,7 +6677,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
 
 // Tests that auto hidden shelf can be brought back if user moves mouse to the
 // shelf activation area even while annotation is active.
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        BringBackAutoHiddenShelfWhileAnnotationIsOn) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   // Set `shelf` to always auto-hidden.
@@ -6421,8 +6742,9 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
   }
 }
 
-TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
-  const auto capture_source = GetParam();
+TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
+       AnnotationsOverlayWidgetBounds) {
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   CaptureModeTestApi test_api;
   AnnotationsOverlayController* overlay_controller =
@@ -6432,7 +6754,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
   VerifyOverlayWindow(overlay_window, capture_source, kUserRegion);
 }
 
-TEST_P(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBoundsSecondDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
@@ -6443,7 +6765,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTests,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
 
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   const auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
@@ -6456,30 +6778,42 @@ TEST_P(AnnotatorCaptureModeIntegrationTests,
   VerifyOverlayWindow(overlay_window, capture_source, kUserRegion);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AnnotatorCaptureModeIntegrationTests,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AnnotatorCaptureModeIntegrationTestsWithSource,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTestsWithSource::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
 // -----------------------------------------------------------------------------
 // CaptureModeSettingsTest:
 
 // Test fixture for CaptureMode settings view.
-class CaptureModeSettingsTest : public CaptureModeTest {
+class CaptureModeSettingsTestBase : public CaptureModeTestBase {
  public:
-  CaptureModeSettingsTest() = default;
-  ~CaptureModeSettingsTest() override = default;
+  CaptureModeSettingsTestBase() = default;
+  ~CaptureModeSettingsTestBase() override = default;
 
-  // CaptureModeTest:
+  // CaptureModeTestBase:
   void SetUp() override {
-    CaptureModeTest::SetUp();
+    CaptureModeTestBase::SetUp();
     FakeFolderSelectionDialogFactory::Start();
   }
 
   void TearDown() override {
     FakeFolderSelectionDialogFactory::Stop();
-    CaptureModeTest::TearDown();
+    CaptureModeTestBase::TearDown();
   }
 
   CaptureModeSettingsView* GetCaptureModeSettingsView() const {
@@ -6496,101 +6830,32 @@ class CaptureModeSettingsTest : public CaptureModeTest {
   }
 };
 
-enum class NudgeDismissalCause {
-  kPressSettingsButton,
-  kCaptureViaEnterKey,
-  kCaptureViaClickOnScreen,
-  kCaptureViaLabelButton,
-};
-
-// Test fixture to test that various causes that lead to the dismissal of the
-// user nudge, they dismiss it forever.
-class CaptureModeNudgeDismissalTest
-    : public CaptureModeSettingsTest,
-      public ::testing::WithParamInterface<NudgeDismissalCause> {
+class CaptureModeSettingsTest
+    : public CaptureModeSettingsTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  // Starts a session appropriate for the test param.
-  CaptureModeController* StartSession() {
-    switch (GetParam()) {
-      case NudgeDismissalCause::kPressSettingsButton:
-      case NudgeDismissalCause::kCaptureViaEnterKey:
-      case NudgeDismissalCause::kCaptureViaClickOnScreen:
-        return StartCaptureSession(CaptureModeSource::kFullscreen,
-                                   CaptureModeType::kImage);
-      case NudgeDismissalCause::kCaptureViaLabelButton:
-        auto* controller = CaptureModeController::Get();
-        controller->SetUserCaptureRegion(gfx::Rect(200, 300), /*by_user=*/true);
-        StartCaptureSession(CaptureModeSource::kRegion,
-                            CaptureModeType::kImage);
-        return controller;
-    }
-  }
+  CaptureModeSettingsTest() = default;
+  ~CaptureModeSettingsTest() override = default;
 
-  void DoDismissalAction() {
-    auto* controller = CaptureModeController::Get();
-    auto* event_generator = GetEventGenerator();
-    switch (GetParam()) {
-      case NudgeDismissalCause::kPressSettingsButton:
-        ClickOnView(GetSettingsButton(), event_generator);
-        break;
-      case NudgeDismissalCause::kCaptureViaEnterKey:
-        PressAndReleaseKey(ui::VKEY_RETURN);
-        EXPECT_FALSE(controller->IsActive());
-        break;
-      case NudgeDismissalCause::kCaptureViaClickOnScreen:
-        event_generator->MoveMouseToCenterOf(Shell::GetPrimaryRootWindow());
-        event_generator->ClickLeftButton();
-        EXPECT_FALSE(controller->IsActive());
-        break;
-      case NudgeDismissalCause::kCaptureViaLabelButton:
-        auto* label_button_widget =
-            CaptureModeSessionTestApi(controller->capture_mode_session())
-                .GetCaptureLabelWidget();
-        EXPECT_TRUE(label_button_widget);
-        ClickOnView(label_button_widget->GetContentsView(), event_generator);
-        break;
-    }
+  // CaptureModeSettingsTestBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeSettingsTestBase::SetUp();
   }
 };
-
-TEST_P(CaptureModeNudgeDismissalTest, NudgeDismissedForever) {
-  auto* controller = StartSession();
-  auto* capture_session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
-  auto* capture_toast_controller = capture_session->capture_toast_controller();
-  auto* nudge_controller = GetUserNudgeController();
-  ASSERT_TRUE(nudge_controller);
-  EXPECT_TRUE(nudge_controller->is_visible());
-  EXPECT_TRUE(capture_toast_controller->capture_toast_widget());
-  ASSERT_TRUE(capture_toast_controller->current_toast_type());
-  EXPECT_EQ(*(capture_toast_controller->current_toast_type()),
-            CaptureToastType::kUserNudge);
-
-  // Trigger the action that dismisses the nudge forever, it should be removed
-  // in this session (if the action doesn't stop the session) and any future
-  // sessions.
-  DoDismissalAction();
-  if (controller->IsActive()) {
-    EXPECT_FALSE(GetUserNudgeController());
-    // Close the session in preparation for opening a new one.
-    controller->Stop();
-  }
-
-  // Reopen a new session, the nudge should not show anymore.
-  StartImageRegionCapture();
-  EXPECT_FALSE(GetUserNudgeController());
-}
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
-    CaptureModeNudgeDismissalTest,
-    testing::Values(NudgeDismissalCause::kPressSettingsButton,
-                    NudgeDismissalCause::kCaptureViaEnterKey,
-                    NudgeDismissalCause::kCaptureViaClickOnScreen,
-                    NudgeDismissalCause::kCaptureViaLabelButton));
+    ,
+    CaptureModeSettingsTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeSettingsTest::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
 
-TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
+TEST_P(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -6617,7 +6882,7 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
             session->current_root());
 }
 
-TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
+TEST_P(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -6635,7 +6900,9 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   event_generator->MoveMouseTo(gfx::Point(1000, 500));
   event_generator->PressLeftButton();
   EXPECT_FALSE(nudge_controller->is_visible());
-  event_generator->MoveMouseBy(50, 60);
+
+  // If we release without selecting a valid region (i.e., an empty region), the
+  // nudge should be visible again.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
@@ -6648,7 +6915,7 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
             session->current_root());
 }
 
-TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
+TEST_P(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
   struct {
     std::string trace;
     user_manager::UserType user_type;
@@ -6668,7 +6935,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
     SimulateUserLogin("example@gmail.com", test_case.user_type);
 
     auto* controller = StartImageRegionCapture();
-    EXPECT_EQ(test_case.can_see_nudge, controller->CanShowUserNudge());
+    EXPECT_EQ(test_case.can_see_nudge, controller->CanShowSunfishRegionNudge());
 
     auto* nudge_controller = GetUserNudgeController();
     EXPECT_EQ(test_case.can_see_nudge, !!nudge_controller);
@@ -6679,7 +6946,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
 
 // Tests that the capture mode settings menu is centered with respect to the
 // capture bar.
-TEST_F(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
+TEST_P(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
   auto* bar_widget = GetCaptureModeBarWidget();
   ASSERT_TRUE(bar_widget);
@@ -6693,7 +6960,7 @@ TEST_F(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
 
 // Tests that it's possbile to take a screenshot using the keyboard shortcut at
 // the login screen without any crashes. https://crbug.com/1266728.
-TEST_F(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
+TEST_P(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
   ClearLogin();
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
   WaitForCaptureFileToBeSaved();
@@ -6701,7 +6968,7 @@ TEST_F(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
 
 // Tests that clicking on audio input buttons updates the state in the
 // controller, and persists between sessions.
-TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
+TEST_P(CaptureModeSettingsTest, AudioInputSettingsMenu) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
 
@@ -6733,7 +7000,7 @@ TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
             controller->GetEffectiveAudioRecordingMode());
 }
 
-TEST_F(CaptureModeSettingsTest, AccessibleName) {
+TEST_P(CaptureModeSettingsTest, AccessibleName) {
   StartImageRegionCapture();
   ClickOnView(GetSettingsButton(), GetEventGenerator());
   CaptureModeSettingsTestApi test_api;
@@ -6747,7 +7014,7 @@ TEST_F(CaptureModeSettingsTest, AccessibleName) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
+TEST_P(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
   auto* controller = CaptureModeController::Get();
 
   // Even if audio recording is set to enabled, the policy setting will
@@ -6774,7 +7041,7 @@ TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
   EXPECT_FALSE(test_api.GetMicrophoneOption());
 }
 
-TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, SelectFolderFromDialog) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
@@ -6819,7 +7086,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
 
 // Tests that folder selection dialog can be opened without crash while in
 // window capture mode.
-TEST_F(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
+TEST_P(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(0, 0, 200, 300)));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
@@ -6831,7 +7098,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
   EXPECT_TRUE(IsFolderSelectionDialogShown());
 }
 
-TEST_F(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
+TEST_P(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
   auto* controller = StartImageRegionCapture();
   const auto old_capture_folder = controller->GetCurrentCaptureFolder();
 
@@ -6857,7 +7124,7 @@ TEST_F(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
             new_capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_folder(
@@ -6901,7 +7168,7 @@ TEST_F(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        InitializeSettingsViewWithUnavailableCustomFolder) {
   // Start a new session with a pre-configured unavailable custom folder.
   auto* controller = CaptureModeController::Get();
@@ -6948,7 +7215,7 @@ TEST_F(CaptureModeSettingsTest,
             save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_folder(
@@ -6989,7 +7256,7 @@ TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
+TEST_P(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
   // Start a new session with a pre-configured custom folder.
   ui::AXNodeData data;
   auto* controller = CaptureModeController::Get();
@@ -7018,7 +7285,7 @@ TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
-TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   controller->SetCustomCaptureFolder(
@@ -7045,7 +7312,7 @@ TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
+TEST_P(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_path(
@@ -7082,7 +7349,13 @@ TEST_F(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
 // Tests that when there's no overlap betwwen capture label widget and settings
 // widget, capture label widget is shown/hidden correctly after open/close the
 // folder selection window.
-TEST_F(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
+TEST_P(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test crashes when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
   // Update the display size to make sure capture label widget will not
   // overlap with settings widget
   UpdateDisplay("800x600");
@@ -7131,7 +7404,7 @@ TEST_F(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
 // label widget is shown/hidden correctly after open/close the folder selection
 // window, open/close settings menu. Regression test for
 // https://crbug.com/1279606.
-TEST_F(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
+TEST_P(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
   // Update display size to make capture label widget overlap with settings
   // widget.
   UpdateDisplay("1100x700");
@@ -7168,7 +7441,7 @@ TEST_F(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
   controller->Stop();
 }
 
-TEST_F(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
+TEST_P(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
@@ -7213,7 +7486,7 @@ TEST_F(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
 }
 
 // Tests the basic keyboard navigation functions for the settings menu.
-TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
+TEST_P(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
@@ -7307,7 +7580,7 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
 
 // Tests that the disabled option in the settings menu will be skipped while
 // tabbing through.
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        KeyboardNavigationForSettingsMenuWithDisabledOption) {
   // Start a new session with a pre-configured unavailable custom folder.
   auto* controller = CaptureModeController::Get();
@@ -7365,7 +7638,7 @@ TEST_F(CaptureModeSettingsTest,
 // Tests that selecting the default `Downloads` folder as the custom folder via
 // keyboard navigation doesn't lead to a crash. Regression test for
 // https://crbug.com/1269373.
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        KeyboardNavigationForRemovingCustomFolderOption) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
@@ -7426,7 +7699,7 @@ TEST_F(CaptureModeSettingsTest,
 // Tests that first time selecting a custom folder via keyboard navigation.
 // After the custom folder is selected, tabbing one more time will move focus
 // from the settings menu to the settings button.
-TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
+TEST_P(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
   auto* controller = CaptureModeController::Get();
   StartImageRegionCapture();
 
@@ -7484,7 +7757,7 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
 }
 
 // Tests the folder selection settings when it's recommended by policy.
-TEST_F(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
+TEST_P(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
   auto* controller = StartImageRegionCapture();
 
   // Set the pref to recommended values.
@@ -7518,7 +7791,7 @@ TEST_F(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
 }
 
 // Tests the folder selection settings when it's enforced by policy.
-TEST_F(CaptureModeSettingsTest, FolderSetByPolicy) {
+TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
   auto* controller = StartImageRegionCapture();
 
   // Set the pref to managed values.
@@ -7556,17 +7829,21 @@ TEST_F(CaptureModeSettingsTest, FolderSetByPolicy) {
 
 // Test fixture to verify screen capture histograms depending on the test
 // param (true for tablet mode, false for clamshell mode).
-class CaptureModeHistogramTest : public CaptureModeSettingsTest,
-                                 public ::testing::WithParamInterface<bool> {
+class CaptureModeHistogramTest
+    : public CaptureModeSettingsTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   CaptureModeHistogramTest() = default;
   ~CaptureModeHistogramTest() override = default;
 
-  // CaptureModeSettingsTest:
+  // CaptureModeSettingsTestBase:
   void SetUp() override {
-    CaptureModeSettingsTest::SetUp();
-    if (GetParam())
+    auto [unused_is_tablet, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeSettingsTestBase::SetUp();
+    if (std::get<0>(GetParam())) {
       SwitchToTabletMode();
+    }
   }
 
   void StartSessionForVideo() {
@@ -7580,10 +7857,11 @@ class CaptureModeHistogramTest : public CaptureModeSettingsTest,
 
   void OpenView(const views::View* view,
                 ui::test::EventGenerator* event_generator) {
-    if (GetParam())
+    if (std::get<0>(GetParam())) {
       TouchOnView(view, event_generator);
-    else
+    } else {
       ClickOnView(view, event_generator);
+    }
   }
 };
 
@@ -7791,6 +8069,18 @@ TEST_P(CaptureModeHistogramTest, CaptureModeSwitchToDefaultReasonMetric) {
       CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, CaptureModeHistogramTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHistogramTest,
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHistogramTest::ParamType>&
+           info) {
+      bool is_tablet_mode = std::get<0>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      std::string test_name = is_tablet_mode ? "Tablet" : "Clamshell";
+      test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+      return test_name;
+    });
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,6 +25,7 @@
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
@@ -62,7 +64,7 @@ DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
 }
 
 DesktopAndroidExtensionsBrowserClient::
-    ~DesktopAndroidExtensionsBrowserClient() {}
+    ~DesktopAndroidExtensionsBrowserClient() = default;
 
 bool DesktopAndroidExtensionsBrowserClient::IsShuttingDown() {
   return false;
@@ -110,7 +112,11 @@ BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOriginalContext(
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context) {
-  return context;
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      .Build()
+      .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
 content::BrowserContext*
@@ -138,13 +144,14 @@ bool DesktopAndroidExtensionsBrowserClient::IsGuestSession(
 bool DesktopAndroidExtensionsBrowserClient::IsExtensionIncognitoEnabled(
     const std::string& extension_id,
     content::BrowserContext* context) const {
-  return false;
+  return IsGuestSession(context) ||
+         util::IsIncognitoEnabled(extension_id, context);
 }
 
 bool DesktopAndroidExtensionsBrowserClient::CanExtensionCrossIncognito(
     const Extension* extension,
     content::BrowserContext* context) const {
-  return false;
+  return IsGuestSession(context) || util::CanCrossIncognito(extension, context);
 }
 
 base::FilePath DesktopAndroidExtensionsBrowserClient::GetBundleResourcePath(

@@ -16,6 +16,7 @@
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -33,6 +34,11 @@ namespace os_crypt_async {
 namespace {
 
 constexpr size_t kNonceLength = 96 / 8;  // AES_GCM_NONCE_LENGTH
+
+constexpr std::array<uint8_t, crypto::aes_cbc::kBlockSize> kFixedIvForAes128Cbc{
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+};
 
 }  // namespace
 
@@ -58,6 +64,9 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM:
       CHECK_EQ(key.size(), Key::kAES256GCMKeySize);
+      break;
+    case mojom::Algorithm::kAES128CBC:
+      CHECK_EQ(key.size(), Key::kAES128CBCKeySize);
       break;
   }
 }
@@ -141,6 +150,11 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
       ciphertext.insert(ciphertext.begin(), nonce.cbegin(), nonce.cend());
       return ciphertext;
     }
+    case mojom::Algorithm::kAES128CBC: {
+      std::vector<uint8_t> ciphertext = crypto::aes_cbc::Encrypt(
+          key_, base::as_byte_span(kFixedIvForAes128Cbc), plaintext);
+      return ciphertext;
+    }
   }
   LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(*algorithm_);
 }
@@ -177,6 +191,21 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
 
       return aead.Open(data, nonce, /*additional_data=*/{});
     }
+    case mojom::Algorithm::kAES128CBC: {
+      auto plaintext =
+          crypto::aes_cbc::Decrypt(key_, kFixedIvForAes128Cbc, ciphertext);
+      if (plaintext.has_value()) {
+        return plaintext;
+      }
+      // Decryption failed - try the empty fallback key. See
+      // https://crbug.com/40055416.
+      // PBKDF2-HMAC-SHA1(1 iteration, key = "", salt = "saltysalt")
+      constexpr auto kEmptyKey = std::to_array<uint8_t>(
+          {0xd0, 0xd0, 0xec, 0x9c, 0x7d, 0x77, 0xd4, 0x3a, 0xc5, 0x41, 0x87,
+           0xfa, 0x48, 0x18, 0xd1, 0x7f});
+      return crypto::aes_cbc::Decrypt(kEmptyKey, kFixedIvForAes128Cbc,
+                                      ciphertext);
+    }
   }
   LOG(FATAL) << "Unsupported algorithm" << static_cast<int>(*algorithm_);
 }
@@ -197,8 +226,7 @@ bool Encryptor::EncryptString(const std::string& plaintext,
 bool Encryptor::DecryptString(const std::string& ciphertext,
                               std::string* plaintext,
                               DecryptFlags* flags) const {
-  auto decrypted =
-      DecryptData(base::as_bytes(base::make_span(ciphertext)), flags);
+  auto decrypted = DecryptData(base::as_byte_span(ciphertext), flags);
 
   if (!decrypted.has_value()) {
     return false;
@@ -228,8 +256,7 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
   }
 
   const auto& [provider, key] = *it;
-  std::vector<uint8_t> ciphertext =
-      key.Encrypt(base::as_bytes(base::make_span(data)));
+  std::vector<uint8_t> ciphertext = key.Encrypt(base::as_byte_span(data));
 
   // This adds the provider prefix on the start of the data.
   ciphertext.insert(ciphertext.begin(), provider.cbegin(), provider.cend());

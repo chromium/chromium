@@ -59,8 +59,9 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
 
   // ChromeKeyboardControllerClient::Observer
   void OnKeyboardVisibilityChanged(bool visible) override {
-    if (visible == visible_)
+    if (visible == visible_) {
       run_loop_.QuitWhenIdle();
+    }
   }
 
  private:
@@ -82,8 +83,9 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
   }
 
   void Wait() {
-    if (ChromeKeyboardControllerClient::Get()->is_keyboard_loaded())
+    if (ChromeKeyboardControllerClient::Get()->is_keyboard_loaded()) {
       return;
+    }
     run_loop_.Run();
   }
 
@@ -132,18 +134,16 @@ ui::InputMethod* GetInputMethod() {
 
 class KeyboardControllerWebContentTest : public InProcessBrowserTest {
  public:
-  KeyboardControllerWebContentTest() {}
+  KeyboardControllerWebContentTest() = default;
 
   KeyboardControllerWebContentTest(const KeyboardControllerWebContentTest&) =
       delete;
   KeyboardControllerWebContentTest& operator=(
       const KeyboardControllerWebContentTest&) = delete;
 
-  ~KeyboardControllerWebContentTest() override {}
+  ~KeyboardControllerWebContentTest() override = default;
 
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void TearDown() override { InProcessBrowserTest::TearDown(); }
 
@@ -251,14 +251,14 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerWebContentTest,
 class KeyboardControllerAppWindowTest
     : public extensions::PlatformAppBrowserTest {
  public:
-  KeyboardControllerAppWindowTest() {}
+  KeyboardControllerAppWindowTest() = default;
 
   KeyboardControllerAppWindowTest(const KeyboardControllerAppWindowTest&) =
       delete;
   KeyboardControllerAppWindowTest& operator=(
       const KeyboardControllerAppWindowTest&) = delete;
 
-  ~KeyboardControllerAppWindowTest() override {}
+  ~KeyboardControllerAppWindowTest() override = default;
 
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -406,13 +406,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
 
 class KeyboardControllerStateTest : public InProcessBrowserTest {
  public:
-  KeyboardControllerStateTest() {}
+  KeyboardControllerStateTest() = default;
 
   KeyboardControllerStateTest(const KeyboardControllerStateTest&) = delete;
   KeyboardControllerStateTest& operator=(const KeyboardControllerStateTest&) =
       delete;
 
-  ~KeyboardControllerStateTest() override {}
+  ~KeyboardControllerStateTest() override = default;
 
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {

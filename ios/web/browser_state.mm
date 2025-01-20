@@ -11,6 +11,7 @@
 #import "base/location.h"
 #import "base/memory/ref_counted.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/no_destructor.h"
 #import "base/process/process_handle.h"
 #import "base/token.h"
 #import "components/leveldb_proto/public/proto_database_provider.h"
@@ -151,8 +152,9 @@ BrowserState::GetSharedURLLoaderFactory() {
   return shared_url_loader_factory_;
 }
 
-const std::string& BrowserState::GetWebKitStorageID() const {
-  return base::EmptyString();
+const base::Uuid& BrowserState::GetWebKitStorageID() const {
+  static const base::NoDestructor<base::Uuid> kInvalidUuid;
+  return *kInvalidUuid;
 }
 
 URLDataManagerIOSBackend*

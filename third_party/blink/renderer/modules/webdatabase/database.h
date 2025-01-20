@@ -117,7 +117,6 @@ class Database final : public ScriptWrappable {
   bool HadDeletes();
   void ResetAuthorizer();
 
-  Vector<String> TableNames();
   void ScheduleTransactionCallback(SQLTransaction*);
   void CloseImmediately();
   void CloseDatabase();
@@ -159,11 +158,9 @@ class Database final : public ScriptWrappable {
                       SQLTransaction::OnSuccessCallback*,
                       bool read_only,
                       const ChangeVersionData* = nullptr);
-  Vector<String> PerformGetTableNames();
 
   void ReportSqliteError(int sqlite_error_code);
   void LogErrorMessage(const String&);
-  static const char* DatabaseInfoTableName();
   String DatabaseDebugName() const {
     return context_thread_security_origin_->ToString() + "::" + name_;
   }

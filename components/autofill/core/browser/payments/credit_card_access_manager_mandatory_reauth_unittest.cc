@@ -7,7 +7,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
@@ -166,14 +166,11 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
        MandatoryReauth_FetchLocalCard) {
   base::HistogramTester histogram_tester;
   CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  card->set_cvc(kTestCvc16);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -183,10 +180,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   // enabled, but the mandatory re-auth authentication was not successful.
   if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
       !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
     EXPECT_TRUE(accessor_->number().empty());
   } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
     EXPECT_EQ(accessor_->number(), kTestNumber16);
     EXPECT_EQ(accessor_->cvc(), kTestCvc16);
   }
@@ -237,42 +232,38 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
        MandatoryReauth_FetchVirtualCard) {
   base::HistogramTester histogram_tester;
-  CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
-  CreditCard* virtual_card =
+  CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+                   CreditCard::RecordType::kVirtualCard);
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  virtual_card->set_record_type(CreditCard::RecordType::kVirtualCard);
 
   credit_card_access_manager().FetchCreditCard(
-      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                   accessor_->GetWeakPtr()));
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
   // unmasking flow.
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  // Mock server response with valid card information.
-  payments::UnmaskResponseDetails response;
-  response.real_pan = "4111111111111111";
-  response.dcvv = "321";
-  response.expiration_month = test::NextMonth();
-  response.expiration_year = test::NextYear();
-  response.card_type = PaymentsRpcCardType::kVirtualCard;
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
+  const CreditCard* virtual_card_enrolled_regular_card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+  CreditCard virtual_card = *virtual_card_enrolled_regular_card;
+  virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  virtual_card.set_cvc(u"321");
   SetUpDeviceAuthenticatorResponseMock();
-  credit_card_access_manager()
-      .OnVirtualCardRiskBasedAuthenticationResponseReceived(
-          PaymentsRpcResult::kSuccess, response);
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+          .with_result(CreditCardRiskBasedAuthenticator::
+                           RiskBasedAuthenticationResponse::Result::
+                               kNoAuthenticationRequired)
+          .with_card(virtual_card));
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
-      !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
-  } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
-    EXPECT_EQ(accessor_->number(), u"4111111111111111");
+  if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
+      MandatoryReauthResponseIsSuccess()) {
+    EXPECT_EQ(accessor_->number(), u"4234567890123456");
     EXPECT_EQ(accessor_->cvc(), u"321");
     EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
     EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
@@ -347,8 +338,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   CreditCard card = *masked_server_card;
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
@@ -358,11 +347,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
-      !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
-  } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
+      MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
   }
   std::string reauth_usage_histogram_name =
@@ -452,8 +438,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -472,15 +456,12 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
        MandatoryReauth_FetchLocalCard_NoCvcFillWorksCorrectly) {
   base::HistogramTester histogram_tester;
-  CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  CreateLocalCard(kTestGUID, kTestNumber, /*cvc=*/u"");
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  card->set_cvc(u"");
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -508,8 +489,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
@@ -532,10 +511,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
        MandatoryReauth_FetchMaskedServerCard_NoCvcFillWorksCorrectly) {
   base::HistogramTester histogram_tester;
   std::string test_number = "4444333322221111";
-  CreateServerCard(kTestGUID, test_number, kTestServerId);
-  CreditCard* masked_server_card =
+  CreateServerCard(kTestGUID, test_number, kTestServerId, /*cvc=*/u"");
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
-  masked_server_card->set_cvc(u"");
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
@@ -543,8 +521,6 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
                                          accessor_->GetWeakPtr()));
 
-  // TODO(crbug.com/40935048): Extract shared boilerplate code out for
-  // CreditCardAccessManagerMandatoryReauthTest tests.
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()

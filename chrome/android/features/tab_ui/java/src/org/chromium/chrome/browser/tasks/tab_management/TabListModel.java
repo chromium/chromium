@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -63,6 +64,17 @@ class TabListModel extends ModelList {
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return i;
         }
         return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /** Returns the property model of the first tab card or null if one does not exist. */
+    public @Nullable PropertyModel getFirstTabPropertyModel() {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                return model;
+            }
+        }
+        return null;
     }
 
     /**

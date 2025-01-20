@@ -4,6 +4,7 @@
 
 compile_js_files = [
   "animation.ts",
+  "aspect_ratio_order.ts",
   "app_window.ts",
   "assert.ts",
   "async_job_queue.ts",

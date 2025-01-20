@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -14,7 +9,6 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
@@ -27,6 +21,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace media_router {
 
@@ -41,10 +36,8 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIAccessCodeCastHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kAccessCodeCastResources, kAccessCodeCastResourcesSize),
-      IDR_ACCESS_CODE_CAST_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kAccessCodeCastResources,
+                              IDR_ACCESS_CODE_CAST_INDEX_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},

@@ -5,19 +5,9 @@
 module passage_embeddings.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-
-// Model parameters needed to run the passage embedder.
-struct PassageEmbeddingsLoadModelsParams {
-  // The tflite model for generating text embeddings.
-  mojo_base.mojom.ReadOnlyFile embeddings_model;
-  // The sentencepiece model to tokenize string input before embeddings
-  // generation.
-  mojo_base.mojom.ReadOnlyFile sp_model;
-  // The input window size expected by the embeddings model.
-  uint32 input_window_size;
-};
 
 // The embeddings generated with a single input passage, contains both the raw
 // embeddings and the original passage.
@@ -48,6 +38,27 @@ interface PassageEmbedder {
       => (array<PassageEmbeddingsResult> results);
 };
 
+// Model parameters needed to run the passage embedder.
+struct PassageEmbeddingsLoadModelsParams {
+  // The tflite model for generating text embeddings.
+  mojo_base.mojom.ReadOnlyFile embeddings_model;
+  // The sentencepiece model to tokenize string input before embeddings
+  // generation.
+  mojo_base.mojom.ReadOnlyFile sp_model;
+  // The input window size expected by the embeddings model.
+  uint32 input_window_size;
+};
+
+// Parameters used to run the passage embedder.
+struct PassageEmbedderParams {
+  // The number of threads to use for PassagePriority::kUserInitiated tasks.
+  uint32 user_initiated_priority_num_threads;
+  // The number of threads to use for PassagePriority::kPassive tasks.
+  uint32 passive_priority_num_threads;
+  // The size of the cache to use to limit execution on the same passage.
+  uint32 embedder_cache_size;
+};
+
 // Service for executing on-device embeddings model.
 // Functions in this interface will be called from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -55,6 +66,7 @@ interface PassageEmbedder {
 interface PassageEmbeddingsService {
   // Load the given models for generating embeddings.
   [AllowedContext=sandbox.mojom.Context.kBrowser]
-  LoadModels(PassageEmbeddingsLoadModelsParams params,
+  LoadModels(PassageEmbeddingsLoadModelsParams model_params,
+             PassageEmbedderParams params,
              pending_receiver<PassageEmbedder> model) => (bool success);
 };

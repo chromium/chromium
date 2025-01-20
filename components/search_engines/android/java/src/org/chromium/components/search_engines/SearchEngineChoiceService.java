@@ -9,9 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
@@ -335,28 +332,6 @@ public class SearchEngineChoiceService {
                 : supplier;
     }
 
-    private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {
-        if (mDeviceCountryPromise.isPending()) {
-            // When `SearchEngineCountryDelegate` replies with the result - the result will be
-            // reported to native using the queued callback.
-            mDeviceCountryPromise.then(
-                    deviceCountry ->
-                            SearchEngineChoiceServiceJni.get()
-                                    .processCountryFromPlayApi(ptrToNativeCallback, deviceCountry),
-                    ignoredException ->
-                            SearchEngineChoiceServiceJni.get()
-                                    .processCountryFromPlayApi(ptrToNativeCallback, null));
-            return;
-        }
-        // The result is ready - call native so it can save the result in prefs.
-        SearchEngineChoiceServiceJni.get()
-                .processCountryFromPlayApi(
-                        ptrToNativeCallback,
-                        mDeviceCountryPromise.isFulfilled()
-                                ? mDeviceCountryPromise.getResult()
-                                : null);
-    }
-
     private boolean isDefaultBrowserPromoSuppressedInternal() {
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) return false;
 
@@ -374,16 +349,5 @@ public class SearchEngineChoiceService {
         } catch (DateTimeException e) {
             return false;
         }
-    }
-
-    @CalledByNative
-    private static void requestCountryFromPlayApi(long ptrToNativeCallback) {
-        ThreadUtils.checkUiThread();
-        getInstance().requestCountryFromPlayApiInternal(ptrToNativeCallback);
-    }
-
-    @NativeMethods
-    public interface Natives {
-        void processCountryFromPlayApi(long ptrToNativeCallback, @Nullable String deviceCountry);
     }
 }

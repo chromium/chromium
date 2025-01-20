@@ -41,8 +41,7 @@ class AwContentsOriginMatcher
       const std::vector<std::string>& rules);
 
   // Java bindings for the java exposed version of this class
-  jboolean MatchesOrigin(JNIEnv* env,
-                         const base::android::JavaParamRef<jstring>& jorigin);
+  jboolean MatchesOrigin(JNIEnv* env, std::string& jorigin);
   base::android::ScopedJavaLocalRef<jobjectArray> UpdateRuleList(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& jrules);

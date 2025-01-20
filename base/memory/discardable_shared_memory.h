@@ -125,7 +125,8 @@ class BASE_EXPORT DiscardableSharedMemory {
   // requested. The actual mapped memory may be larger due to system alignment
   // requirements. See `SharedMemoryMapping::size()` vs
   // `SharedMemoryMapping::mapped_size()`.
-  span<uint8_t> memory() const;
+  span<uint8_t> memory();
+  span<const uint8_t> memory() const;
 
   // Returns the last known usage time for DiscardableSharedMemory object. This
   // may be earlier than the "true" usage time when memory has been used by a
@@ -177,7 +178,8 @@ class BASE_EXPORT DiscardableSharedMemory {
   // header. This may be larger than the region exposed through `memory()` due
   // to platform alignment requirements. Discardable memory must have been
   // mapped via Map().
-  span<uint8_t> mapped_memory() const;
+  span<uint8_t> mapped_memory();
+  span<const uint8_t> mapped_memory() const;
 
   // LockPages/UnlockPages are platform-native discardable page management
   // helper functions. Both expect |offset| to be specified relative to the

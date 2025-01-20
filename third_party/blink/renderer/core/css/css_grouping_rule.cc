@@ -53,7 +53,7 @@ StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent) {
   return FindClosestParentStyleRuleOrNull(parent->parentRule());
 }
 
-CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
+const CSSRule* FindClosestStyleOrScopeRule(const CSSRule* parent) {
   if (parent == nullptr) {
     return nullptr;
   }
@@ -63,58 +63,34 @@ CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
   return FindClosestStyleOrScopeRule(parent->parentRule());
 }
 
-bool IsWithinScopeRule(CSSRule* rule) {
-  if (rule == nullptr) {
-    return false;
-  }
-  if (IsA<CSSScopeRule>(rule)) {
-    return true;
-  }
-  return IsWithinScopeRule(rule->parentRule());
-}
-
 // Parsing child rules is highly dependent on the ancestor rules.
 // Under normal, full-stylesheet parsing, this information is available
 // on the stack, but for rule insertion we need to traverse and inspect
 // the ancestor chain.
 //
-// The 'is_nested_scope_rule' parameter is set to true when
-// `parent_rule` is a CSSScopeRule with an immediate CSSStyleRule parent,
-// making it a "nested group rule" [1]. Certain child rule insertions into
-// CSSScopeRule are only valid when it's a nested group rule.
-// TODO(crbug.com/351045927): This parameter can be removed once declarations
-// are valid directly in top-level @scope rules.
-//
 // [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
-void CalculateNestingContext(CSSRule& parent_rule,
-                             CSSNestingType& nesting_type,
-                             StyleRule*& parent_rule_for_nesting,
-                             bool& is_within_scope,
-                             bool& is_nested_scope_rule) {
-  nesting_type = CSSNestingType::kNone;
-  parent_rule_for_nesting = nullptr;
-  is_within_scope = false;
-  is_nested_scope_rule = false;
-
-  if (CSSRule* closest_style_or_scope_rule =
-          FindClosestStyleOrScopeRule(&parent_rule)) {
-    is_within_scope = IsWithinScopeRule(closest_style_or_scope_rule);
-    if (auto* style_rule =
+NestingContext CalculateNestingContext(const CSSRule* parent_rule) {
+  if (const CSSRule* closest_style_or_scope_rule =
+          FindClosestStyleOrScopeRule(parent_rule)) {
+    if (const auto* style_rule =
             DynamicTo<CSSStyleRule>(closest_style_or_scope_rule)) {
-      nesting_type = CSSNestingType::kNesting;
-      parent_rule_for_nesting = style_rule->GetStyleRule();
-    } else if (auto* scope_rule =
+      return {.nesting_type = CSSNestingType::kNesting,
+              .parent_rule_for_nesting = style_rule->GetStyleRule()};
+    } else if (const auto* scope_rule =
                    DynamicTo<CSSScopeRule>(closest_style_or_scope_rule)) {
-      nesting_type = CSSNestingType::kScope;
       // The <scope-start> selector acts as the parent style rule.
       // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
-      parent_rule_for_nesting =
-          scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
-      is_nested_scope_rule = IsA<CSSStyleRule>(scope_rule->parentRule());
+      return {
+          .nesting_type = CSSNestingType::kScope,
+          .parent_rule_for_nesting =
+              scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting()};
     } else {
       NOTREACHED();
     }
   }
+
+  return {.nesting_type = CSSNestingType::kNone,
+          .parent_rule_for_nesting = nullptr};
 }
 
 StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
@@ -140,26 +116,21 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     new_rule = CSSParser::ParseMarginRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
   } else {
-    CSSNestingType nesting_type;
-    StyleRule* parent_rule_for_nesting;
-    bool is_within_scope;
-    bool is_nested_scope_rule;
-    CalculateNestingContext(parent_rule, nesting_type, parent_rule_for_nesting,
-                            is_within_scope, is_nested_scope_rule);
+    NestingContext nesting_context = CalculateNestingContext(&parent_rule);
 
     new_rule = CSSParser::ParseRule(
-        context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-        parent_rule_for_nesting, is_within_scope, rule_string);
+        context, style_sheet ? style_sheet->Contents() : nullptr,
+        nesting_context.nesting_type, nesting_context.parent_rule_for_nesting,
+        rule_string);
 
     bool allow_nested_declarations =
-        (nesting_type == CSSNestingType::kNesting) || is_nested_scope_rule;
-    if (!new_rule && allow_nested_declarations &&
-        RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+        nesting_context.nesting_type != CSSNestingType::kNone;
+    if (!new_rule && allow_nested_declarations) {
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_type, parent_rule_for_nesting, is_within_scope,
-          rule_string);
+          context, nesting_context.nesting_type,
+          nesting_context.parent_rule_for_nesting, rule_string);
     }
   }
 
@@ -204,6 +175,34 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   }
 
   return new_rule;
+}
+
+void ParseAndQuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule_string,
+    unsigned index,
+    CSSRule& parent_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules,
+    HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  StyleRuleBase* new_rule =
+      ParseRuleForInsert(execution_context, rule_string, index,
+                         child_rules.size(), parent_rule, ASSERT_NO_EXCEPTION);
+  CHECK(new_rule);
+  child_rules.insert(index, new_rule);
+  child_rule_cssom_wrappers.insert(index, Member<CSSRule>(nullptr));
+}
+
+void QuietlyDeleteRule(unsigned index,
+                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  CHECK_LT(index, child_rules.size());
+  child_rules.EraseAt(index);
+  if (child_rule_cssom_wrappers[index]) {
+    child_rule_cssom_wrappers[index]->SetParentRule(nullptr);
+  }
+  child_rule_cssom_wrappers.EraseAt(index);
 }
 
 CSSGroupingRule::CSSGroupingRule(StyleRuleGroup* group_rule,
@@ -257,6 +256,20 @@ void CSSGroupingRule::deleteRule(unsigned index,
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+}
+
+void CSSGroupingRule::QuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule,
+    unsigned index) {
+  ParseAndQuietlyInsertRule(execution_context, rule, index,
+                            /*parent_rule=*/*this, group_rule_->ChildRules(),
+                            child_rule_cssom_wrappers_);
+}
+
+void CSSGroupingRule::QuietlyDeleteRule(unsigned index) {
+  blink::QuietlyDeleteRule(index, group_rule_->ChildRules(),
+                           child_rule_cssom_wrappers_);
 }
 
 void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {

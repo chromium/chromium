@@ -18,6 +18,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
+namespace webid {
 namespace {
 
 gfx::Rect ComputePopupWindowBounds(gfx::Rect source_window_bounds) {
@@ -44,7 +45,10 @@ FedCmModalDialogView::FedCmModalDialogView(
 
 FedCmModalDialogView::~FedCmModalDialogView() = default;
 
-content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
+content::WebContents* FedCmModalDialogView::ShowPopupWindow(
+    const GURL& url,
+    bool user_close_cancels_flow) {
+  user_close_cancels_flow_ = user_close_cancels_flow;
   // TODO(crbug.com/333933012): This is a hack for testing purposes. Add a
   // factory method to initialize FedCmModalDialogView.
   if (popup_window_) {
@@ -164,11 +168,21 @@ void FedCmModalDialogView::SetActiveModeSheetType(
   active_mode_sheet_type_ = sheet_type;
 }
 
+bool FedCmModalDialogView::UserCloseCancelsFlow() {
+  return user_close_cancels_flow_;
+}
+
 void FedCmModalDialogView::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
   ++num_lost_focus_;
 }
 
+void FedCmModalDialogView::ResetObserver() {
+  observer_ = nullptr;
+}
+
 FedCmModalDialogView::Observer* FedCmModalDialogView::GetObserverForTesting() {
   return observer_;
 }
+
+}  // namespace webid

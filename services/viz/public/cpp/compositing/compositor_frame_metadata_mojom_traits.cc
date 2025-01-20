@@ -37,6 +37,9 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->page_scale_factor = data.page_scale_factor();
   if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size))
     return false;
+  if (!data.ReadVisibleViewportSize(&out->visible_viewport_size)) {
+    return false;
+  }
 
   if (data.frame_token() == 0u)
     return false;
@@ -52,6 +55,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
   out->has_shared_element_resources = data.has_shared_element_resources();
   out->is_handling_interaction = data.is_handling_interaction();
+  out->is_handling_animation = data.is_handling_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
   out->min_page_scale_factor = data.min_page_scale_factor();
   out->is_software = data.is_software();

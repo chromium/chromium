@@ -16,8 +16,13 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
+#include "ash/wm/overview/birch/birch_chip_button_base.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "base/barrier_callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -108,6 +113,69 @@ bool BirchCoralItem::operator==(const BirchCoralItem& rhs) const = default;
 
 BirchCoralItem::~BirchCoralItem() = default;
 
+void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
+  // Record basic metrics.
+  RecordActionMetrics();
+
+  auto* birch_coral_provider = BirchCoralProvider::Get();
+
+  switch (source_) {
+    case CoralSource::kPostLogin: {
+      coral::mojom::GroupPtr group =
+          birch_coral_provider->ExtractGroupById(group_id_);
+      Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
+      BirchCoralProvider::Get()->OnPostLoginClusterRestored();
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kRestore);
+      // End the Overview after restore.
+      // TODO(zxdan|sammie): Consider the restoring failed cases.
+      OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
+                                             OverviewEnterExitType::kNormal);
+      break;
+    }
+    case CoralSource::kInSession: {
+      if (!DesksController::Get()->CanCreateDesks()) {
+        ToastData toast(
+            kMaxDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
+            l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED),
+            ToastData::kDefaultToastDuration,
+            /*visible_on_lock_screen=*/false);
+        Shell::Get()->toast_manager()->Show(std::move(toast));
+        return;
+      }
+
+      // Note that we should cache the active root window before launching the
+      // group. Otherwise, `birch_chip_button` will be removed.
+      aura::Window* active_root =
+          birch_chip_button->GetWidget()->GetNativeWindow()->GetRootWindow();
+
+      // Cache the in-session source desk before extracting the group in case
+      // the pointer gets reset.
+      const Desk* source_desk = birch_coral_provider->in_session_source_desk();
+      CHECK(source_desk);
+
+      coral::mojom::GroupPtr group =
+          birch_coral_provider->ExtractGroupById(group_id_);
+      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group),
+                                                             source_desk);
+
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kLaunchToNewDesk);
+
+      // Nudge the desk name on the same display with the `birch_chip_button`.
+      auto* overview_controller = Shell::Get()->overview_controller();
+      CHECK(overview_controller->InOverviewSession());
+      overview_controller->overview_session()
+          ->GetGridWithRootWindow(active_root)
+          ->desks_bar_view()
+          ->NudgeDeskName(DesksController::Get()->GetActiveDeskIndex());
+      break;
+    }
+    case CoralSource::kUnknown:
+      NOTREACHED() << "Invalid response with unknown source.";
+  }
+}
+
 BirchItemType BirchCoralItem::GetType() const {
   return BirchItemType::kCoral;
 }
@@ -140,38 +208,7 @@ base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
       base::Value::Dict().Set("title", title()).Set("items", std::move(items)));
 }
 
-void BirchCoralItem::PerformAction() {
-  switch (source_) {
-    case CoralSource::kPostLogin: {
-      coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
-      Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
-      BirchCoralProvider::Get()->OnPostLoginClusterRestored();
-      // End the Overview after restore.
-      // TODO(zxdan|sammie): Consider the restoring failed cases.
-      OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
-                                             OverviewEnterExitType::kNormal);
-      break;
-    }
-    case CoralSource::kInSession: {
-      if (!DesksController::Get()->CanCreateDesks()) {
-        ToastData toast(
-            kMaxDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
-            l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED),
-            ToastData::kDefaultToastDuration,
-            /*visible_on_lock_screen=*/false);
-        Shell::Get()->toast_manager()->Show(std::move(toast));
-        return;
-      }
-      coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
-      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
-      break;
-    }
-    case CoralSource::kUnknown:
-      NOTREACHED() << "Invalid response with unknown source.";
-  }
-}
+void BirchCoralItem::PerformAction() {}
 
 // TODO(b/362530155): Consider refactoring icon loading logic into
 // `CoralGroupedIconImage`.

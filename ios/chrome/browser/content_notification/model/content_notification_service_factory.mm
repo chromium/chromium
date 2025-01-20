@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -16,8 +15,8 @@
 // static
 ContentNotificationService* ContentNotificationServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<ContentNotificationService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<ContentNotificationService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -28,9 +27,7 @@ ContentNotificationServiceFactory::GetInstance() {
 }
 
 ContentNotificationServiceFactory::ContentNotificationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ContentNotificationService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ContentNotificationService") {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

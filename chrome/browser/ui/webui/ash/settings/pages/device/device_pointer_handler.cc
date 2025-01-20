@@ -10,9 +10,9 @@
 
 namespace ash::settings {
 
-PointerHandler::PointerHandler() {}
+PointerHandler::PointerHandler() = default;
 
-PointerHandler::~PointerHandler() {}
+PointerHandler::~PointerHandler() = default;
 
 void PointerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

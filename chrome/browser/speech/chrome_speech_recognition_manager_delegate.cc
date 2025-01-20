@@ -36,16 +36,11 @@
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "components/soda/soda_installer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#else  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -60,9 +55,8 @@ ChromeSpeechRecognitionManagerDelegate
 ::ChromeSpeechRecognitionManagerDelegate() {
 }
 
-ChromeSpeechRecognitionManagerDelegate
-::~ChromeSpeechRecognitionManagerDelegate() {
-}
+ChromeSpeechRecognitionManagerDelegate ::
+    ~ChromeSpeechRecognitionManagerDelegate() = default;
 
 void ChromeSpeechRecognitionManagerDelegate::OnRecognitionStart(
     int session_id) {
@@ -139,16 +133,6 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
       base::BindOnce(
           [](mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                  receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            // On LaCrOS, forward to Ash.
-            auto* service = chromeos::LacrosService::Get();
-            if (service &&
-                service->IsAvailable<crosapi::mojom::SpeechRecognition>()) {
-              service->GetRemote<crosapi::mojom::SpeechRecognition>()
-                  ->BindSpeechRecognitionContext(std::move(receiver));
-            }
-#else  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On other platforms (Ash, desktop), bind via the appropriate factory.
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
             auto* profile = ProfileManager::GetLastUsedProfileIfLoaded();
             auto* factory =
@@ -169,7 +153,6 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
               speech::SodaInstaller::GetInstance()->SetUninstallTimer(
                   pref_service, g_browser_process->local_state());
             }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
           },
           std::move(recognition_receiver)));
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -213,9 +196,8 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  extensions::mojom::ViewType view_type =
+      extensions::GetViewType(render_frame_host);
 
   if (view_type == extensions::mojom::ViewType::kTabContents ||
       view_type == extensions::mojom::ViewType::kAppWindow ||

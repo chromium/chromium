@@ -12,7 +12,7 @@ import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the ConditionalState. */
-public class SoftKeyboardElement extends Element<Void> {
+public class SoftKeyboardElement extends Element<Boolean> {
 
     private final Supplier<? extends Activity> mActivitySupplier;
 
@@ -22,7 +22,7 @@ public class SoftKeyboardElement extends Element<Void> {
     }
 
     @Override
-    public ConditionWithResult<Void> createEnterCondition() {
+    public ConditionWithResult<Boolean> createEnterCondition() {
         return new SoftKeyboardCondition(mActivitySupplier, /* expectShowing= */ true);
     }
 

@@ -91,7 +91,7 @@ void OnBeginFrameFinished(
     return;
   }
   if (!bitmap || bitmap->drawsNothing()) {
-    callback->sendSuccess(has_damage, Maybe<protocol::Binary>());
+    callback->sendSuccess(has_damage, std::nullopt);
     return;
   }
   std::optional<std::vector<uint8_t>> result = encoder.Run(*bitmap);
@@ -121,10 +121,10 @@ Response HeadlessHandler::Disable() {
   return Response::Success();
 }
 
-void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
-                                 Maybe<double> in_interval,
-                                 Maybe<bool> in_no_display_updates,
-                                 Maybe<ScreenshotParams> screenshot,
+void HeadlessHandler::BeginFrame(std::optional<double> in_frame_time_ticks,
+                                 std::optional<double> in_interval,
+                                 std::optional<bool> in_no_display_updates,
+                                 std::unique_ptr<ScreenshotParams> screenshot,
                                  std::unique_ptr<BeginFrameCallback> callback) {
   auto& headless_contents =
       CHECK_DEREF(HeadlessWebContentsImpl::From(web_contents_));
@@ -169,8 +169,8 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   base::TimeTicks deadline = frame_time_ticks + interval;
 
   BitmapEncoder encoder;
-  if (screenshot.has_value()) {
-    ScreenshotParams& params = screenshot.value();
+  if (screenshot) {
+    ScreenshotParams& params = *screenshot;
     auto encoder_or_response =
         GetEncoder(params.GetFormat(ScreenshotParams::FormatEnum::Png),
                    params.GetQuality(kDefaultScreenshotQuality),

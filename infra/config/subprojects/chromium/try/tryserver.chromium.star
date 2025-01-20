@@ -96,6 +96,7 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )
 
@@ -113,5 +114,6 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )

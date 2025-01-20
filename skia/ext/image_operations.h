@@ -99,19 +99,21 @@ class SK_API ImageOperations {
                          int dest_width,
                          int dest_height,
                          const SkIRect& dest_subset,
-                         SkBitmap::Allocator* allocator = NULL);
+                         SkBitmap::Allocator* allocator = nullptr);
   static SkBitmap Resize(const SkBitmap& source,
                          ResizeMethod method,
-                         int dest_width, int dest_height,
+                         int dest_width,
+                         int dest_height,
                          const SkIRect& dest_subset,
-                         SkBitmap::Allocator* allocator = NULL);
+                         SkBitmap::Allocator* allocator = nullptr);
 
   // Alternate version for resizing and returning the entire bitmap rather than
   // a subset.
   static SkBitmap Resize(const SkBitmap& source,
                          ResizeMethod method,
-                         int dest_width, int dest_height,
-                         SkBitmap::Allocator* allocator = NULL);
+                         int dest_width,
+                         int dest_height,
+                         SkBitmap::Allocator* allocator = nullptr);
 
  private:
   ImageOperations();  // Class for scoping only.

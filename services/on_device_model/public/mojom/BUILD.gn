@@ -12,6 +12,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//skia/public/mojom",
   ]
   webui_module_path = "/"
 
@@ -35,6 +36,14 @@ mojom("mojom") {
         {
           mojom = "on_device_model.mojom.InputPiece"
           cpp = "::ml::InputPiece"
+        },
+        {
+          mojom = "on_device_model.mojom.ModelBackendType"
+          cpp = "::ml::ModelBackendType"
+        },
+        {
+          mojom = "on_device_model.mojom.ModelPerformanceHint"
+          cpp = "::ml::ModelPerformanceHint"
         },
       ]
       traits_headers = [

@@ -41,10 +41,12 @@ const std::string& CrostiniPackageNotification::GetErrorMessageForTesting()
   return error_message_;
 }
 
-CrostiniPackageNotification::NotificationSettings::NotificationSettings() {}
+CrostiniPackageNotification::NotificationSettings::NotificationSettings() =
+    default;
 CrostiniPackageNotification::NotificationSettings::NotificationSettings(
     const NotificationSettings& rhs) = default;
-CrostiniPackageNotification::NotificationSettings::~NotificationSettings() {}
+CrostiniPackageNotification::NotificationSettings::~NotificationSettings() =
+    default;
 
 CrostiniPackageNotification::CrostiniPackageNotification(
     Profile* profile,

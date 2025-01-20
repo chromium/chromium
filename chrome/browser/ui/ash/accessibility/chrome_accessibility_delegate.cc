@@ -32,13 +32,15 @@ bool ChromeAccessibilityDelegate::ShouldShowAccessibilityMenu() const {
 }
 
 void ChromeAccessibilityDelegate::SaveScreenMagnifierScale(double scale) {
-  if (MagnificationManager::Get())
+  if (MagnificationManager::Get()) {
     MagnificationManager::Get()->SaveScreenMagnifierScale(scale);
+  }
 }
 
 double ChromeAccessibilityDelegate::GetSavedScreenMagnifierScale() {
-  if (MagnificationManager::Get())
+  if (MagnificationManager::Get()) {
     return MagnificationManager::Get()->GetSavedScreenMagnifierScale();
+  }
 
   return std::numeric_limits<double>::min();
 }

@@ -43,15 +43,19 @@
 
 namespace web_app {
 
-class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
+class WebAppScopeExtensionsBrowserTest
+    : public WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   WebAppScopeExtensionsBrowserTest()
       : WebAppScopeExtensionsBrowserTest(/*enabled=*/true) {}
+
   explicit WebAppScopeExtensionsBrowserTest(bool enabled)
       : primary_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         secondary_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
-        apps::test::GetFeaturesToEnableLinkCapturingUX();
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
     enabled_features.emplace_back(
         features::kPwaNavigationCapturingWithScopeExtensions,
         base::FieldTrialParams());
@@ -79,6 +83,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(primary_server_.Start());
     primary_origin_ = primary_server_.GetOrigin();
+    primary_scope_ = primary_server_.GetURL("/web_apps/basic.html");
 
     secondary_server_.AddDefaultHandlers(GetChromeTestDataDir());
     secondary_server_.RegisterRequestHandler(
@@ -86,6 +91,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(secondary_server_.Start());
     secondary_origin_ = secondary_server_.GetOrigin();
+    secondary_scope_ = secondary_server_.GetURL("/web_apps/basic.html");
 
     unrelated_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(unrelated_server_.Start());
@@ -143,19 +149,19 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
         /*browser=*/nullptr,
         ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    // Note: The 'self' target will likely soon be not supported as capturable
-    // on non-CrOS, so this method & it's functionality will have to change
-    // slightly. https://crbug.com/339095686.
+    // This always creates a new top level browsing context which is essential
+    // to trigger navigation capturing.
     WebAppNavigationBrowserTest::ClickLinkAndWaitForURL(
-        web_contents,
+        browser()->tab_strip_model()->GetActiveWebContents(),
         /*link_url=*/url,
-        /*target_url=*/url, WebAppNavigationBrowserTest::LinkTarget::SELF,
+        /*target_url=*/url, WebAppNavigationBrowserTest::LinkTarget::BLANK,
         /*rel=*/"");
 
-    // Navigation happened in the browser tab instead of being link captured.
-    if (web_contents->GetVisibleURL() == url) {
+    // If `ClickLinkAndWaitForURL()` does not perform navigation capturing, then
+    // it will open a new tab in the same browser, and the active web contents
+    // will change.
+    if (browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL() ==
+        url) {
       return false;
     }
 
@@ -170,9 +176,11 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
  protected:
   net::EmbeddedTestServer primary_server_;
   url::Origin primary_origin_;
+  GURL primary_scope_;
 
   net::EmbeddedTestServer secondary_server_;
   url::Origin secondary_origin_;
+  GURL secondary_scope_;
 
   net::EmbeddedTestServer unrelated_server_;
   GURL unrelated_url_;
@@ -185,9 +193,52 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   content::ContentMockCertVerifier cert_verifier_;
 };
 
-// TODO(crbug.com/376498171): Add test that verifies functionality of 'scope'
-// field in the well-known file.
-IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
+                       ExtendedLinkCapturingProperlyLimitsScope) {
+  InstallScopeExtendedWebApp(
+      /*manifest_file=*/base::ReplaceStringPlaceholders(
+          R"(
+          {
+            "Name": "Test app",
+            "start_url": "/",
+            "scope": "/",
+            "scope_extensions": [{
+              "origin": "$1"
+            }]
+          })",
+          {secondary_origin_.Serialize()}, nullptr),
+      /*association_file=*/base::ReplaceStringPlaceholders(
+          R"(
+          {
+            "$1" : { "scope": "/scope-limiter" }
+          })",
+          {primary_origin_.Serialize()}, nullptr));
+
+  EXPECT_THAT(app_->scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForOrigin(secondary_origin_)));
+
+  // We expect that validated scope extensions differ from the requested
+  // scope_extension defined in the app manifest.
+  EXPECT_NE(app_->scope_extensions(), app_->validated_scope_extensions());
+  GURL limited_scope(secondary_origin_.Serialize() + "/scope-limiter");
+  EXPECT_THAT(
+      app_->validated_scope_extensions(),
+      testing::ElementsAre(ScopeExtensionInfo::CreateForScope(limited_scope)));
+
+  // primary_server_ is the web app's server
+  GURL primary_server_launch_url =
+      primary_server_.GetURL("/web_apps/basic.html");
+  EXPECT_TRUE(WebAppCapturesUrl(primary_server_launch_url));
+
+  // secondary_server_ is the associate's server. We expect this navigation to
+  // not capture since it is not in the extended scope "/scope-limiter"
+  GURL secondary_server_launch_url =
+      secondary_server_.GetURL("/web_apps/basic.html");
+  EXPECT_FALSE(WebAppCapturesUrl(secondary_server_launch_url));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingBasic) {
   InstallScopeExtendedWebApp(
       /*manifest_file=*/base::ReplaceStringPlaceholders(
@@ -204,14 +255,17 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "$1" : {}
+            "$1" : { "scope": "/web_apps/basic.html" }
           })",
           {primary_origin_.Serialize()}, nullptr));
 
-  EXPECT_THAT(
-      app_->scope_extensions(),
-      testing::ElementsAre(ScopeExtensionInfo{.origin = secondary_origin_}));
-  EXPECT_EQ(app_->scope_extensions(), app_->validated_scope_extensions());
+  EXPECT_THAT(app_->scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForOrigin(secondary_origin_)));
+
+  EXPECT_THAT(app_->validated_scope_extensions(),
+              testing::ElementsAre(
+                  ScopeExtensionInfo::CreateForScope(secondary_scope_)));
 
   EXPECT_TRUE(
       WebAppCapturesUrl(primary_server_.GetURL("/web_apps/basic.html")));
@@ -219,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingFocusExisting) {
   InstallScopeExtendedWebApp(
       /*manifest_file=*/base::ReplaceStringPlaceholders(
@@ -274,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
   GURL extended_scope_url =
       secondary_server_.GetURL("/url/that/does/not/get/navigated/to");
   ClickLink(browser()->tab_strip_model()->GetActiveWebContents(),
-            /*link_url=*/extended_scope_url);
+            /*link_url=*/extended_scope_url, LinkTarget::BLANK);
 
   // Await the second LaunchParams in the same app document.
   EXPECT_EQ(
@@ -284,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
   EXPECT_EQ(app_web_contents->GetVisibleURL(), app_->start_url().spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingBadAssociationFile) {
   InstallScopeExtendedWebApp(
       /*manifest_file=*/base::ReplaceStringPlaceholders(
@@ -306,6 +360,18 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppScopeExtensionsBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
+
 class WebAppScopeExtensionsDisabledBrowserTest
     : public WebAppScopeExtensionsBrowserTest {
  public:
@@ -313,7 +379,7 @@ class WebAppScopeExtensionsDisabledBrowserTest
       : WebAppScopeExtensionsBrowserTest(/*enabled=*/false) {}
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppScopeExtensionsDisabledBrowserTest,
                        NoExtendedLinkCapturing) {
   InstallScopeExtendedWebApp(
       /*manifest_file=*/base::ReplaceStringPlaceholders(
@@ -342,6 +408,18 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
   EXPECT_FALSE(
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppScopeExtensionsDisabledBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
 
 class WebAppScopeExtensionsOriginTrialBrowserTest
     : public WebAppBrowserTestBase {
@@ -466,8 +544,9 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
 
   // Origin trial should grant the app access.
   base::flat_set<ScopeExtensionInfo> expected_scope_extensions = {
-      ScopeExtensionInfo(url::Origin::Create(GURL(kTestAssociatedOrigin)),
-                         /*has_origin_wildcard=*/false)};
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL(kTestAssociatedOrigin)),
+          /*has_origin_wildcard=*/false)};
   EXPECT_EQ(expected_scope_extensions,
             provider.registrar_unsafe().GetValidatedScopeExtensions(app_id));
   EXPECT_TRUE(provider.registrar_unsafe().IsUrlInAppExtendedScope(

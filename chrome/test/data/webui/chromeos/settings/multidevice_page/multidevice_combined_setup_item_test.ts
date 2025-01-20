@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/lazy_load.js'
+
 import {SettingsMultideviceCombinedSetupItemElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';

@@ -19,7 +19,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -38,7 +37,6 @@
 namespace quiche {
 class BlindSignAuthInterface;
 enum class ProxyLayer;
-struct BlindSignToken;
 }  // namespace quiche
 
 namespace android_webview {
@@ -49,21 +47,23 @@ namespace android_webview {
 // TODO(b/346997109): Refactor AwIpProtectionCoreHost to reduce code
 // duplication once a common implementation of IpProtectionConfigGetter is
 // added.
-class AwIpProtectionCoreHost : public KeyedService,
-                               public ip_protection::mojom::CoreHost {
+class AwIpProtectionCoreHost
+    : public KeyedService,
+      public ip_protection::mojom::CoreHost,
+      public ip_protection::IpProtectionTokenIpcFetcher::Delegate,
+      public ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate {
  public:
   explicit AwIpProtectionCoreHost(AwBrowserContext* aw_browser_context);
 
   ~AwIpProtectionCoreHost() override;
 
   AwIpProtectionCoreHost(const AwIpProtectionCoreHost&) = delete;
-  AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) =
-      delete;
+  AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) = delete;
 
   // IpProtectionConfigGetter:
   // Get a batch of blind-signed auth tokens.
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::mojom::ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;
@@ -78,13 +78,19 @@ class AwIpProtectionCoreHost : public KeyedService,
   // once.
   void Shutdown() override;
 
-  static AwIpProtectionCoreHost* Get(
-      AwBrowserContext* aw_browser_context);
+  static AwIpProtectionCoreHost* Get(AwBrowserContext* aw_browser_context);
 
   static bool CanIpProtectionBeEnabled();
-
-  // Checks if IP Protection is disabled.
   bool IsIpProtectionEnabled();
+
+  // `IpProtectionTokenIpcFetcher::Delegate` implementation.
+  bool IsTokenFetchEnabled() override;
+
+  // `IpProtectionProxyConfigDirectFetcher::Delegate` implementation
+  bool IsProxyConfigFetchEnabled() override;
+  void AuthenticateRequest(std::unique_ptr<network::ResourceRequest>,
+                           ip_protection::IpProtectionProxyConfigDirectFetcher::
+                               Delegate::AuthenticateRequestCallback) override;
 
   // Binds Mojo interfaces to be passed to a new network service.
   void AddNetworkService(
@@ -93,46 +99,15 @@ class AwIpProtectionCoreHost : public KeyedService,
 
   // Like `SetUp()`, but providing values for each of the member variables. Note
   // `bsa` is moved onto a separate sequence when initializing
-  // `ip_protection_token_ipc_fetcher_`.
+  // `ip_protection_token_fetcher_`.
   void SetUpForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
-  // Set up `ip_protection_token_ipc_fetcher_`
+  // Set up `ip_protection_token_fetcher_`
   // and`ip_protection_proxy_config_retriever_`, if not already initialized.
   void SetUp();
-
-  // `FetchBlindSignedToken()` uses the `ip_protection_token_ipc_fetcher_`
-  // to make an async call on the bound sequence into the
-  // `quiche::BlindSignAuth` library to request a blind-signed auth token for
-  // use at the IP Protection proxies.
-  void FetchBlindSignedToken(int batch_size,
-                             quiche::ProxyLayer quiche_proxy_layer,
-                             TryGetAuthTokensCallback callback);
-  void OnFetchBlindSignedTokenCompleted(
-      base::TimeTicks bsa_get_tokens_start_time,
-      TryGetAuthTokensCallback callback,
-      absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
-
-  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
-  // its callback.
-  void TryGetAuthTokensComplete(
-      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>
-          bsa_tokens,
-      TryGetAuthTokensCallback callback,
-      ip_protection::TryGetAuthTokensAndroidResult result,
-      std::optional<base::TimeDelta> duration = std::nullopt);
-
-  // Calculates the backoff time for the given result, based on
-  // `last_try_get_auth_tokens_..` fields, and updates those fields.
-  std::optional<base::TimeDelta> CalculateBackoff(
-      ip_protection::TryGetAuthTokensAndroidResult result);
-
-  void AuthenticateCallback(
-      std::unique_ptr<network::ResourceRequest>,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback);
 
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;
@@ -140,29 +115,12 @@ class AwIpProtectionCoreHost : public KeyedService,
   std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
 
-  // The thread pool task runner on which async calls are made to
-  // `ip_protection_token_ipc_fetcher` to fetch blind signed tokens. This
-  // is needed to move some of the expensive token generation work off the UI
-  // thread.
-  scoped_refptr<base::SequencedTaskRunner> token_fetcher_task_runner_;
-
-  // An IpProtectionTokenIpcFetcher instance that is bound to the given
-  // sequenced `token_fetcher_task_runner_` on which all calls to the
-  // `quiche::BlindSignAuth` library will happen on.
-  base::SequenceBound<ip_protection::IpProtectionTokenIpcFetcher>
-      ip_protection_token_ipc_fetcher_;
+  // An IpProtectionTokenIpcFetcher instance for fetching tokens.
+  std::unique_ptr<ip_protection::IpProtectionTokenIpcFetcher>
+      ip_protection_token_fetcher_;
 
   // Whether `Shutdown()` has been called.
   bool is_shutting_down_ = false;
-
-  // The result of the last call to `TryGetAuthTokens()`, and the
-  // backoff applied to `try_again_after`. `last_try_get_auth_tokens_backoff_`
-  // will be set to `base::TimeDelta::Max()` if no further attempts to get
-  // tokens should be made. These will be updated by calls from any receiver.
-  ip_protection::TryGetAuthTokensAndroidResult
-      last_try_get_auth_tokens_result_ =
-          ip_protection::TryGetAuthTokensAndroidResult::kSuccess;
-  std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.

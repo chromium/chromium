@@ -116,6 +116,13 @@ void SetAutofillWalletSpecificsFromPaymentInstrument(
     const sync_pb::PaymentInstrument& payment_instrument,
     sync_pb::AutofillWalletSpecifics& wallet_specifics);
 
+// Populates an `AutofillWalletSpecifics` object from a
+// `PaymentInstrumentCreationOption` object.
+void SetAutofillWalletSpecificsFromPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics);
+
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
 // Copies the metadata and the CVC data from the local cards (if
@@ -137,7 +144,9 @@ void PopulateWalletTypesFromSyncData(
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
     std::vector<BankAccount>& bank_accounts,
     std::vector<CreditCardBenefit>& benefits,
-    std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments,
+    std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison
@@ -156,6 +165,12 @@ bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
 bool AreAnyItemsDifferent(
     const std::vector<sync_pb::PaymentInstrument>& old_instruments,
     const std::vector<sync_pb::PaymentInstrument>& new_instruments);
+
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        old_creation_options,
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        new_creation_options);
 
 // Returns whether the Virtual Card Usage Data |specifics| is valid data.
 bool IsVirtualCardUsageDataSpecificsValid(
@@ -177,9 +192,13 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
 
 bool AreMaskedBankAccountSupported();
 
+bool IsBnplIssuerSupported();
+
 bool IsEwalletAccountSupported();
 
 bool IsGenericPaymentInstrumentSupported();
+
+bool IsPaymentInstrumentCreationOptionSupported();
 
 }  // namespace autofill
 

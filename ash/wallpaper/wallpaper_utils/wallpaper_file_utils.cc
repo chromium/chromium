@@ -134,8 +134,7 @@ bool SaveWallpaper(const gfx::ImageSkia& image,
     return false;
   }
 
-  if (!base::WriteFile(temp_path,
-                       base::make_span(data->front(), data->size()))) {
+  if (!base::WriteFile(temp_path, base::span(*data))) {
     LOG(WARNING) << "Failed to write wallpaper data to temporary file";
     base::DeleteFile(temp_path);
     return false;

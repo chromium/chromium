@@ -868,6 +868,8 @@ class AdsPageLoadMetricsObserverTest
 
   bool WithFencedFrames() { return GetParam(); }
 
+  virtual bool IsIncognito() { return false; }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
 
@@ -887,7 +889,7 @@ class AdsPageLoadMetricsObserverTest
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr,
         base::BindRepeating([]() { return std::string("en-US"); }),
-        clock_.get(), test_blocklist_.get());
+        IsIncognito(), clock_.get(), test_blocklist_.get());
     // Mock the noise provider to make tests deterministic. Tests can override
     // this again to test non-zero noise.
     observer->SetHeavyAdThresholdNoiseProviderForTesting(
@@ -2958,6 +2960,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoFirstContentfulPaint_NotRecorded) {
   histogram_tester().ExpectTotalCount(
       "AdPaintTiming.NavigationToFirstContentfulPaint3", 0);
   histogram_tester().ExpectTotalCount(
+      "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito", 0);
+  histogram_tester().ExpectTotalCount(
       "AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaint", 0);
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram(
@@ -3020,6 +3024,10 @@ TEST_P(AdsPageLoadMetricsObserverTest, FirstContentfulPaint_Recorded) {
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 100,
       1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito"),
+      100, 0);
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram(
@@ -3670,6 +3678,42 @@ TEST_P(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
   histogram_tester().ExpectUniqueSample(kMemoryMainFrameMaxHistogramId, 2000,
                                         1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
+}
+
+class AdsPageLoadMetricsObserverIncognitoTest
+    : public AdsPageLoadMetricsObserverTest {
+ private:
+  bool IsIncognito() override { return true; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AdsPageLoadMetricsObserverIncognitoTest,
+                         testing::Bool());
+
+TEST_P(AdsPageLoadMetricsObserverIncognitoTest, FirstContentfulPaint_Recorded) {
+  base::TimeTicks start = base::TimeTicks::Now();
+  RenderFrameHost* main_frame =
+      NavigateFrame(kNonAdUrl, web_contents()->GetPrimaryMainFrame(), start);
+
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(
+      kAdUrl, main_frame, start + base::Milliseconds(100));
+
+  // Load some bytes so that the frame is recorded.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 100);
+
+  // Set FirstContentfulPaint.
+  SimulateFirstContentfulPaint(ad_frame, base::Milliseconds(100));
+
+  // Navigate away and check the histogram.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AdPaintTiming.NavigationToFirstContentfulPaint3"), 100,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram(
+          "AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito"),
+      100, 1);
 }
 
 }  // namespace page_load_metrics

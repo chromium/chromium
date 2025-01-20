@@ -108,7 +108,7 @@ MockMotionEvent& MockMotionEvent::MovePoint(size_t index, float x, float y) {
   DCHECK_LT(index, GetPointerCount());
   PointerProperties& p = pointer(index);
   float dx = x - p.x;
-  float dy = x - p.y;
+  float dy = y - p.y;
   p.x = x;
   p.y = y;
   p.raw_x += dx;

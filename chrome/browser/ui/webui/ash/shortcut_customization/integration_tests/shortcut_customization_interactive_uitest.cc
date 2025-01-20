@@ -51,8 +51,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
     webcontents_id_ = kShortcutAppWebContentsId;
 
     feature_list_.InitWithFeatures(
-        {::features::kShortcutCustomization,
-         ash::features::kInputDeviceSettingsSplit,
+        {ash::features::kInputDeviceSettingsSplit,
          ash::features::kEnableKeyboardBacklightControlInSettings},
         {});
   }
@@ -655,8 +654,6 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTest,
                        AddAcceleratorDisruptive) {
-  ui::Accelerator default_accel =
-      GetDefaultAcceleratorForAction(AcceleratorAction::kToggleCalendar);
   ui::Accelerator feedback_accel =
       GetDefaultAcceleratorForAction(AcceleratorAction::kOpenFeedbackPage);
 

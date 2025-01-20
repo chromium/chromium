@@ -31,11 +31,7 @@ import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Utilities for use in power bookmarks. */
 // TODO(crbug.com/40234642): We should add a JNI layer for the native version of these utilities in
@@ -202,25 +198,6 @@ public class PowerBookmarkUtils {
         if (bookmarkId == null) return null;
 
         return bookmarkModel.getPowerBookmarkMeta(bookmarkId);
-    }
-
-    private static List<BookmarkId> getBookmarkIdsForClusterId(
-            Long clusterId, BookmarkModel bookmarkModel) {
-        List<BookmarkId> results = new ArrayList<>();
-        List<BookmarkId> products = bookmarkModel.getBookmarksOfType(PowerBookmarkType.SHOPPING);
-        if (products == null || products.size() == 0) return results;
-
-        for (BookmarkId product : products) {
-            PowerBookmarkMeta meta = bookmarkModel.getPowerBookmarkMeta(product);
-            if (meta == null || !meta.hasShoppingSpecifics()) continue;
-
-            Long productClusterId = meta.getShoppingSpecifics().getProductClusterId();
-            if (productClusterId.equals(clusterId)) {
-                results.add(product);
-            }
-        }
-
-        return results;
     }
 
     /** Sets the price-tracking eligibility to the test value given. */

@@ -60,9 +60,6 @@ device_management_storage::DMPolicyMap ToDMPolicyMap(
 
 class DMConfiguration : public policy::DeviceManagementService::Configuration {
  public:
-  DMConfiguration() = default;
-  ~DMConfiguration() override = default;
-
   std::string GetDMServerUrl() const override {
     return GetGlobalConstants()->DeviceManagementServerURL().spec();
   }
@@ -90,9 +87,6 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
 
 class ClientDataDelegate : public policy::ClientDataDelegate {
  public:
-  ClientDataDelegate() = default;
-  ~ClientDataDelegate() override = default;
-
   void FillRegisterBrowserRequest(
       enterprise_management::RegisterBrowserRequest* request,
       base::OnceClosure callback) const override {
@@ -319,10 +313,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
               cached_policy_info_->timestamp(), response);
       CHECK(validation_result) << "Policy validation result cannot be null";
       if (validation_result->status != FetchedPolicyValidator::VALIDATION_OK) {
-        LOG(ERROR) << "Policy validation failed for " << key.first
-                   << " response: "
-                   << FetchedPolicyValidator::StatusToString(
-                          validation_result->status);
+        VLOG(1) << "Policy validation failed for " << key.first << " response: "
+                << FetchedPolicyValidator::StatusToString(
+                       validation_result->status);
         last_result = validation_result->status;
       }
     }

@@ -18,8 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 namespace {
 
@@ -106,33 +106,9 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, UseNonEmptyService) {
   run_loop.Run();
 }
 
-TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroupsWithError) {
-  EXPECT_CALL(data_sharing_service_, ReadAllGroups(_))
-      .WillOnce([](base::OnceCallback<void(
-                       const data_sharing::DataSharingService::
-                           GroupsDataSetOrFailureOutcome&)> callback) {
-        std::move(callback).Run(
-            base::unexpected(data_sharing::DataSharingService::
-                                 PeopleGroupActionFailure::kTransientFailure));
-      });
-  base::RunLoop run_loop;
-  handler_->GetAllGroups(base::BindOnce(
-      [](base::RunLoop* run_loop, bool success,
-         std::vector<data_sharing::mojom::GroupDataPtr> result) {
-        ASSERT_FALSE(success);
-        run_loop->Quit();
-      },
-      &run_loop));
-  run_loop.Run();
-}
-
 TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroups) {
-  EXPECT_CALL(data_sharing_service_, ReadAllGroups(_))
-      .WillOnce([](base::OnceCallback<void(
-                       const data_sharing::DataSharingService::
-                           GroupsDataSetOrFailureOutcome&)> callback) {
-        std::move(callback).Run(base::ok(GetTestGroupDataSet()));
-      });
+  EXPECT_CALL(data_sharing_service_, ReadAllGroups())
+      .WillOnce(Return(GetTestGroupDataSet()));
   base::RunLoop run_loop;
   handler_->GetAllGroups(base::BindOnce(
       [](base::RunLoop* run_loop, bool success,

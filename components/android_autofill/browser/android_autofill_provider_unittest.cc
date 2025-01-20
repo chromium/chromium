@@ -27,9 +27,9 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_manager_test_api.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -186,7 +186,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
     OnAskForValuesToFillImpl(
         form, field.global_id(), caret_bounds,
-        AutofillSuggestionTriggerSource::kTextFieldDidChange);
+        AutofillSuggestionTriggerSource::kTextFieldValueChanged);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,
@@ -199,9 +199,10 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     OnFormSubmittedImpl(form, source);
   }
 
-  void SimulateOnTextFieldDidChange(const FormData& form,
-                                    const FormFieldData& field) {
-    OnTextFieldDidChangeImpl(form, field.global_id(), base::TimeTicks::Now());
+  void SimulateOnTextFieldValueChanged(const FormData& form,
+                                       const FormFieldData& field) {
+    OnTextFieldValueChangedImpl(form, field.global_id(),
+                                base::TimeTicks::Now());
   }
 
   void SimulateOnTextFieldDidScroll(const FormData& form,
@@ -292,6 +293,14 @@ class AndroidAutofillProviderTestBase
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  TestContentAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
+  }
+
+  AutofillDriver& autofill_driver(content::RenderFrameHost* rfh = nullptr) {
+    return android_autofill_manager(rfh).driver();
+  }
+
   TestAndroidAutofillManager& android_autofill_manager(
       content::RenderFrameHost* rfh = nullptr) {
     return *autofill_manager_injector_[rfh ? rfh : main_frame()];
@@ -348,7 +357,8 @@ TEST_F(AndroidAutofillProviderTest, HasServerPrediction) {
       android_autofill_manager().has_server_prediction(form.global_id()));
 
   // Resetting removes prediction state.
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
   EXPECT_FALSE(
       android_autofill_manager().has_server_prediction(form.global_id()));
 }
@@ -544,7 +554,7 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
 
 // Tests that value changes in the form of the Autofill session are propagated
 // to Java and to the state that `AndroidAutofillProvider` keeps.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChanged) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
@@ -557,8 +567,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
   test_api(form).field(1).set_value(form.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form,
-                                                          form.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form,
+                                                             form.fields()[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
   ASSERT_TRUE(test_api(autofill_provider()).form());
   EXPECT_EQ(test_api(autofill_provider()).form()->form().fields()[1].value(),
@@ -567,7 +577,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
 
 // Tests that value changes in a form that is not part of the current Autofill
 // session are ignored.
-TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
+TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChangedInUnrelatedForm) {
   FormData form1 = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   FormData form2 = CreateFormDataForFrame(
@@ -582,8 +592,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
   test_api(form2).field(1).set_value(form2.fields()[1].value() + u"x");
-  android_autofill_manager().SimulateOnTextFieldDidChange(form2,
-                                                          form2.fields()[1]);
+  android_autofill_manager().SimulateOnTextFieldValueChanged(form2,
+                                                             form2.fields()[1]);
 }
 
 // Tests that scrolling events in the form of the Autofill session are
@@ -795,7 +805,8 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
       form, form.fields().front());
 
   EXPECT_CALL(provider_bridge(), CancelSession());
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
 }
 
 class AndroidAutofillProviderWithCredManTest
@@ -918,6 +929,56 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
   EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 }
 
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LogConditionalPasskeysFlowPasskeysAvailableMetricWithPasskeys) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kHasPasskeys));
+
+  // Focus the form field.
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Keyboard is suppressed while CredMan is showing.
+  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  // Hide CredMan.
+  completed_callback.Run(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kHasPasskeys, 1);
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LogConditionalPasskeysFlowPasskeysAvailableMetricWithoutPasskeys) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
+
+  // Focus the form field.
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Keyboard is suppressed while CredMan is showing.
+  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  // Hide CredMan.
+  completed_callback.Run(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
+}
+
 TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
   EXPECT_CALL(provider_bridge(), OnFocusChanged);
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
@@ -968,7 +1029,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       form.global_id());
   android_autofill_manager().SimulateOnAskForValuesToFill(
       form, form.fields().front());
-  test_api(android_autofill_manager()).Reset();
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());

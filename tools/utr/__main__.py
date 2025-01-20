@@ -7,6 +7,8 @@
 Allows the UTR to be invoked like `python3 ./tools/utr ...`
 """
 
+import sys
+
 import run
 
-run.main()
+sys.exit(run.main())

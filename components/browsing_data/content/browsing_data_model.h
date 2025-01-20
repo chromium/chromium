@@ -22,6 +22,7 @@
 #include "content/public/browser/session_storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -59,9 +60,10 @@ class BrowsingDataModel {
     kSharedWorker,
     kCookie,
     kCdmStorage,
+    kDeviceBoundSession,
 
     kFirstType = kTrustTokens,
-    kLastType = kCdmStorage,
+    kLastType = kDeviceBoundSession,
     kExtendedDelegateRange =
         63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
@@ -82,7 +84,8 @@ class BrowsingDataModel {
                         net::SharedDictionaryIsolationKey,
                         browsing_data::SharedWorkerInfo,
                         net::CanonicalCookie,
-                        webid::FederatedIdentityDataModel::DataKey
+                        webid::FederatedIdentityDataModel::DataKey,
+                        net::device_bound_sessions::SessionKey
                         // TODO(crbug.com/40205603): Additional backend keys.
                         >
       DataKey;

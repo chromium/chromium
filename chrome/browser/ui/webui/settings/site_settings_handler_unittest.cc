@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -65,6 +66,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -121,6 +123,7 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
@@ -391,8 +394,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void TearDown() override {
     if (profile_) {
       auto* partition = profile_->GetDefaultStoragePartition();
-      if (partition)
+      if (partition) {
         partition->WaitForDeletionTasksForTesting();
+      }
     }
   }
 
@@ -408,7 +412,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         std::move(fake_user_manager));
 
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
     fake_user_manager_ptr->AddUserWithAffiliation(account_id,
                                                   /*is_affiliated=*/true);
     fake_user_manager_ptr->LoginUser(account_id);
@@ -544,7 +548,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     constraints.set_lifetime(lifetime);
     if (is_auto_granted) {
       constraints.set_session_model(
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+          content_settings::mojom::SessionModel::DURABLE);
+      constraints.set_decided_by_related_website_sets(true);
     }
 
     map->SetContentSettingCustomScope(
@@ -1802,9 +1807,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   // permissions are correctly transformed for usage by JS.
   const GURL url1("https://example.com");
   const GURL url2("http://example.com");
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   clock.Advance(base::Hours(2));
   clock.Advance(base::Hours(1));
@@ -1817,9 +1823,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(&clock);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     incognito_auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   handler()->HandleGetRecentSitePermissions(get_recent_permissions_args);
   {
@@ -2044,11 +2051,11 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   GURL start_url("http://abc.example.com/path");
-  RegisterWebApp(
-      profile(),
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url),
-              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
-              apps::InstallReason::kSync));
+  RegisterWebApp(profile(),
+                 MakeApp(web_app::GenerateAppId(
+                             /*manifest_id_path=*/std::nullopt, start_url),
+                         apps::AppType::kWeb, start_url.spec(),
+                         apps::Readiness::kReady, apps::InstallReason::kSync));
 
   SetupModel();
 
@@ -2390,10 +2397,14 @@ class Reset3pcCategoryPermissionTest
       public testing::WithParamInterface<bool> {
  public:
   Reset3pcCategoryPermissionTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.push_back(
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
+      enabled_features.push_back(
           privacy_sandbox::kTrackingProtectionContentSettingInSettings);
     }
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
  private:
@@ -2406,7 +2417,7 @@ TEST_P(Reset3pcCategoryPermissionTest,
        RemovesTrackingProtectionExceptionsWhenFeatureIsOff) {
   constexpr char kOrigin[] = "https://www.test.com:443";
   base::Value::List set_args;
-  set_args.Append("*");        // Primary pattern.
+  set_args.Append("*");      // Primary pattern.
   set_args.Append(kOrigin);  // Secondary pattern.
   set_args.Append(kTrackingProtection);
   set_args.Append(
@@ -2994,43 +3005,43 @@ class SiteSettingsHandlerIsolatedWebAppTest
  public:
   void SetUp() override {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    InstallIsolatedWebApp(iwa_url(), "IWA Name");
+    iwa_url_info_ = InstallIsolatedWebApp("IWA Name");
 
     SiteSettingsHandlerBaseTest::SetUp();
   }
 
  protected:
-  GURL iwa_url() {
-    return GURL(
-        "isolated-app://"
-        "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  std::optional<web_app::IsolatedWebAppUrlInfo> iwa_url_info_;
+
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      const std::string& name) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder().SetName(name))
+            .BuildBundle();
+    bundle->FakeInstallPageState(profile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(profile());
   }
 
-  webapps::AppId InstallIsolatedWebApp(const GURL& iwa_url,
-                                       const std::string& name) {
-    webapps::AppId app_id =
-        web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, name);
-    RegisterWebApp(profile(), MakeApp(app_id, apps::AppType::kWeb,
-                                      iwa_url.spec(), apps::Readiness::kReady,
-                                      apps::InstallReason::kUser));
-    return app_id;
-  }
-
-  content::HostZoomMap* GetIwaHostZoomMap(const GURL& url) {
-    auto url_info = *web_app::IsolatedWebAppUrlInfo::Create(url);
+  content::HostZoomMap* GetIwaHostZoomMap(
+      const web_app::IsolatedWebAppUrlInfo& url_info) {
     content::StoragePartition* iwa_partition = profile()->GetStoragePartition(
         url_info.storage_partition_config(profile()));
     return content::HostZoomMap::GetForStoragePartition(iwa_partition);
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
-  GURL https_url("https://" + iwa_url().host());
+  GURL https_url("https://" + iwa_url_info_->origin().host());
+  GURL iwa_origin_url = iwa_url_info_->origin().GetURL();
 
-  SetupModelWithIsolatedWebAppData({{iwa_url().spec(), 50}});
+  SetupModelWithIsolatedWebAppData({{iwa_url_info_->origin().Serialize(), 50}});
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(iwa_url(), iwa_url(),
+  map->SetContentSettingDefaultScope(iwa_origin_url, iwa_origin_url,
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_BLOCK);
   map->SetContentSettingDefaultScope(https_url, https_url,
@@ -3044,28 +3055,30 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, AllSitesDisplaysAppName) {
   const base::Value::Dict& origin1 =
       CHECK_DEREF(group1.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group1.FindString("groupingKey")),
-              IsOrigin(iwa_url()));
+              IsOrigin(iwa_origin_url));
   EXPECT_EQ(group1.FindString("etldPlus1"), nullptr);
   EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
-  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url());
+  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_origin_url);
   EXPECT_EQ(origin1.FindDouble("usage").value(), 50.0);
 
   const base::Value::Dict& group2 = site_groups[1].GetDict();
   const base::Value::Dict& origin2 =
       CHECK_DEREF(group2.FindList("origins"))[0].GetDict();
   EXPECT_THAT(CHECK_DEREF(group2.FindString("groupingKey")),
-              IsEtldPlus1(iwa_url().host()));
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_url().host());
-  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_url().host());
+              IsEtldPlus1(iwa_url_info_->origin().host()));
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")),
+            iwa_url_info_->origin().host());
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")),
+            iwa_url_info_->origin().host());
   EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
   EXPECT_EQ(origin2.FindDouble("usage").value(), 0.0);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
-  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(iwa_url());
+  content::HostZoomMap* iwa_host_zoom_map = GetIwaHostZoomMap(*iwa_url_info_);
 
-  std::string host_or_spec = url::Origin::Create(iwa_url()).Serialize();
-  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  std::string host_or_spec = iwa_url_info_->origin().Serialize();
+  iwa_host_zoom_map->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
   ValidateZoom({{host_or_spec, "IWA Name", "122%"}}, 1U);
 
   base::Value::List args;
@@ -3078,40 +3091,35 @@ TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel) {
 
   double default_level = iwa_host_zoom_map->GetDefaultZoomLevel();
   double level = iwa_host_zoom_map->GetZoomLevelForHostAndScheme(
-      "isolated-app", iwa_url().host());
+      "isolated-app", iwa_url_info_->origin().host());
   EXPECT_EQ(default_level, level);
 }
 
 TEST_F(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevelsSortedByAppName) {
-  GetIwaHostZoomMap(iwa_url())->SetZoomLevelForHost(iwa_url().host(), 1.1);
+  GetIwaHostZoomMap(*iwa_url_info_)
+      ->SetZoomLevelForHost(iwa_url_info_->origin().host(), 1.1);
 
   // Install 3 more IWAs.
-  GURL iwa3_url(
-      "isolated-app://"
-      "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa3_url, "IWA Name 3");
-  GetIwaHostZoomMap(iwa3_url)->SetZoomLevelForHost(iwa3_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa3_url_info =
+      InstallIsolatedWebApp("IWA Name 3");
+  GetIwaHostZoomMap(iwa3_url_info)
+      ->SetZoomLevelForHost(iwa3_url_info.origin().host(), 1.1);
 
-  GURL iwa2_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa2_url, "IWA Name 2");
-  GetIwaHostZoomMap(iwa2_url)->SetZoomLevelForHost(iwa2_url.host(), 1.1);
+  web_app::IsolatedWebAppUrlInfo iwa2_url_info =
+      InstallIsolatedWebApp("IWA Name 2");
+  GetIwaHostZoomMap(iwa2_url_info)
+      ->SetZoomLevelForHost(iwa2_url_info.origin().host(), 1.1);
 
   // Don't set a zoom for this app to make sure it's not in the list.
-  GURL iwa4_url(
-      "isolated-app://"
-      "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  InstallIsolatedWebApp(iwa4_url, "IWA Name 4");
+  web_app::IsolatedWebAppUrlInfo iwa4_url = InstallIsolatedWebApp("IWA Name 4");
 
   base::Value::List args;
   handler()->HandleFetchZoomLevels(args);
 
-  ValidateZoom(
-      {{url::Origin::Create(iwa_url()).Serialize(), "IWA Name", "122%"},
-       {url::Origin::Create(iwa2_url).Serialize(), "IWA Name 2", "122%"},
-       {url::Origin::Create(iwa3_url).Serialize(), "IWA Name 3", "122%"}},
-      2U);
+  ValidateZoom({{iwa_url_info_->origin().Serialize(), "IWA Name", "122%"},
+                {iwa2_url_info.origin().Serialize(), "IWA Name 2", "122%"},
+                {iwa3_url_info.origin().Serialize(), "IWA Name 3", "122%"}},
+               2U);
 }
 
 class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
@@ -3172,15 +3180,10 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   // On ChromeOS a user account is needed in order to check whether the user
   // account is affiliated with the device owner for the purposes of applying
   // enterprise policy.
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserAffiliated(
+        AccountId::FromUserEmailGaiaId(email, gaia_id), true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -3189,8 +3192,9 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
                                                            GURL* tab_url) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(tab_index);
-    if (tab_url)
+    if (tab_url) {
       *tab_url = web_contents->GetLastCommittedURL();
+    }
     return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }
 
@@ -3462,15 +3466,16 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   const ContentSettingsType content_settings_type =
       ContentSettingsType::NOTIFICATIONS;
   // Register WebUIAllowlist auto-granted permissions.
-  const url::Origin kWebUIOrigins[] = {
+  const auto kWebUIOrigins = std::to_array<url::Origin>({
       url::Origin::Create(GURL("chrome://test")),
       url::Origin::Create(GURL("chrome-untrusted://test")),
       url::Origin::Create(GURL("devtools://devtools")),
-  };
+  });
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   // Verify the auto-granted permissions are registered, and they are indeed
   // provided by WebUIAllowlist.
@@ -3558,8 +3563,9 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
   };
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   for (const url::Origin& origin : kWebUIOrigins) {
     base::Value::List get_origin_permissions_args;
@@ -4517,16 +4523,19 @@ class SiteSettingsHandlerChooserExceptionTest
   bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
                                              std::string_view origin) {
     const base::Value::List* sites = exception.FindList(site_settings::kSites);
-    if (!sites)
+    if (!sites) {
       return false;
+    }
 
     for (const auto& site : *sites) {
       const std::string* exception_origin =
           site.GetDict().FindString(site_settings::kOrigin);
-      if (!exception_origin)
+      if (!exception_origin) {
         continue;
-      if (*exception_origin == origin)
+      }
+      if (*exception_origin == origin) {
         return true;
+      }
     }
     return false;
   }
@@ -4541,8 +4550,9 @@ class SiteSettingsHandlerChooserExceptionTest
     for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
           exception.GetDict().FindString(site_settings::kDisplayName);
-      if (!exception_display_name)
+      if (!exception_display_name) {
         continue;
+      }
 
       if (*exception_display_name == display_name) {
         return ChooserExceptionContainsSiteException(exception.GetDict(),
@@ -6204,8 +6214,12 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6287,8 +6301,12 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6365,8 +6383,12 @@ TEST_F(SiteSettingsHandlerTest, ClearDurableStorage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6618,7 +6640,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
   handler()->ServicePendingRequests();
 
   ValidateUsageInfo(
-      /*expected_usage_host=*/iwa_url, /*expected_usage_string=*/"1,000 B",
+      /*expected_usage_origin=*/iwa_url, /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
       /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 }

@@ -13,7 +13,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/views/background.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/view_class_properties.h"
 
 #if defined(USE_AURA)
@@ -25,19 +25,20 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context),
-      status_bubble_(nullptr) {
+    : views::WebView(browser_context), status_bubble_(nullptr) {
+  // Draws the ContentsWebView background.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
 }
 
-ContentsWebView::~ContentsWebView() {
-}
+ContentsWebView::~ContentsWebView() = default;
 
 void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
   status_bubble_ = status_bubble;
   DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
-  if (status_bubble_)
+  if (status_bubble_) {
     status_bubble_->Reposition();
+  }
   OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
 }
 
@@ -47,19 +48,24 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
   background_visible_ = background_visible;
-  if (GetWidget())
-    UpdateBackgroundColor();
-}
-
-void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
-  if (background_radii_ == radii) {
-    return;
-  }
-
-  background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();
   }
+}
+
+const gfx::RoundedCornersF& ContentsWebView::GetBackgroundRadii() const {
+  const ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  return background_layer->rounded_corner_radii();
+}
+
+void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  background_layer->SetRoundedCornerRadius(radii);
+  background_layer->SetIsFastRoundedCorner(true);
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -67,8 +73,9 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  if (status_bubble_)
+  if (status_bubble_) {
     status_bubble_->Reposition();
+  }
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -77,17 +84,18 @@ void ContentsWebView::OnThemeChanged() {
 }
 
 void ContentsWebView::OnLetterboxingChanged() {
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  SkColor color = GetColorProvider()->GetColor(
+  const SkColor color = GetColorProvider()->GetColor(
       is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
                         : kColorWebContentsBackground);
-  SetBackground(background_visible_ ? views::CreateRoundedRectBackground(
-                                          color, background_radii_)
-                                    : nullptr);
+
+  ui::Layer* background_layer = layer();
+  background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
@@ -119,8 +127,9 @@ std::unique_ptr<ui::Layer> ContentsWebView::RecreateLayer() {
 }
 
 void ContentsWebView::CloneWebContentsLayer() {
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 #if defined(USE_AURA)
   // We don't need to clone the layers on non-Aura (Mac), because closing an
   // NSWindow does not animate.
@@ -131,9 +140,7 @@ void ContentsWebView::CloneWebContentsLayer() {
     return;
   }
 
-  SetPaintToLayer();
-
-  // The cloned layer is in a different coordinate system them our layer (which
+  // The cloned layer is in a different coordinate system than our layer (which
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
@@ -147,13 +154,13 @@ void ContentsWebView::CloneWebContentsLayer() {
 
 void ContentsWebView::DestroyClonedLayer() {
   cloned_layer_tree_.reset();
-  DestroyLayer();
 }
 
 void ContentsWebView::RenderViewReady() {
   // Set the background color to be the theme's ntp background on startup.
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
   WebView::RenderViewReady();
 }
 

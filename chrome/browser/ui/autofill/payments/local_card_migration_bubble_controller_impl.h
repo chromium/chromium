@@ -76,8 +76,7 @@ class LocalCardMigrationBubbleControllerImpl
   // clicking the Continue button.
   bool should_add_strikes_on_bubble_close_ = true;
 
-  base::ObserverList<LocalCardMigrationControllerObserver>
-      observer_list_;
+  base::ObserverList<LocalCardMigrationControllerObserver> observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

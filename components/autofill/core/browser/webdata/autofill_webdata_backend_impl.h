@@ -14,7 +14,9 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_data_results.h"
@@ -131,6 +133,21 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
       WebDatabase* db);
 
+  // Adds, updates, removes, or retrieves EntityInstances.
+  // See the identically named functions in `EntityTable`, especially on why
+  // RemoveEntityInstancesModifiedBetween() exists.
+  WebDatabase::State AddEntityInstance(const EntityInstance& entity,
+                                       WebDatabase* db);
+  WebDatabase::State UpdateEntityInstance(const EntityInstance& entity,
+                                          WebDatabase* db);
+  WebDatabase::State RemoveEntityInstance(const base::Uuid& guid,
+                                          WebDatabase* db);
+  WebDatabase::State RemoveEntityInstancesModifiedBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetEntityInstances(WebDatabase* db);
+
   // Returns the number of values such that all for autofill entries with that
   // value, the interval between creation date and last usage is entirely
   // contained between [|begin|, |end|).
@@ -218,6 +235,11 @@ class AutofillWebDataBackendImpl
 
   // Returns a vector of payment instruments from the web database.
   std::unique_ptr<WDTypedResult> GetPaymentInstruments(WebDatabase* db);
+
+  // Returns a vector of payment instrument creation options from the web
+  // database.
+  std::unique_ptr<WDTypedResult> GetPaymentInstrumentCreationOptions(
+      WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
 

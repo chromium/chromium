@@ -1041,7 +1041,7 @@ viz::FrameSinkId ChromeClientImpl::GetFrameSinkId(LocalFrame* frame) {
 }
 
 void ChromeClientImpl::RequestDecode(LocalFrame* frame,
-                                     const PaintImage& image,
+                                     const cc::DrawImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   FrameWidget* widget = frame->GetWidgetForLocalRoot();
   widget->RequestDecode(image, std::move(callback));
@@ -1052,8 +1052,7 @@ void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (!widget)
     return;
-  widget->NotifyPresentationTimeInBlink(
-      ConvertToBaseOnceCallback(std::move(callback)));
+  widget->NotifyPresentationTime(std::move(callback));
 }
 
 void ChromeClientImpl::RequestBeginMainFrameNotExpected(LocalFrame& frame,
@@ -1261,8 +1260,9 @@ void ChromeClientImpl::HandleKeyboardEventOnTextField(
 void ChromeClientImpl::DidChangeValueInTextField(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
-    fill_client->TextFieldDidChange(WebFormControlElement(&element));
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->TextFieldValueChanged(WebFormControlElement(&element));
+  }
 
   // Value changes caused by |document.execCommand| calls should not be
   // interpreted as a user action. See https://crbug.com/764760.
@@ -1327,8 +1327,9 @@ void ChromeClientImpl::TextFieldDataListChanged(HTMLInputElement& input) {
 void ChromeClientImpl::DidChangeSelectionInSelectControl(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
-    fill_client->SelectControlDidChange(WebFormControlElement(&element));
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->SelectControlSelectionChanged(WebFormControlElement(&element));
+  }
 }
 
 void ChromeClientImpl::SelectFieldOptionsChanged(
@@ -1362,6 +1363,12 @@ gfx::Transform ChromeClientImpl::GetDeviceEmulationTransform() const {
 void ChromeClientImpl::DidUpdateBrowserControls() const {
   DCHECK(web_view_);
   web_view_->DidUpdateBrowserControls();
+}
+
+void ChromeClientImpl::DidUpdateMaxSafeAreaInsets(
+    const gfx::InsetsF& max_safe_area_insets) const {
+  DCHECK(web_view_);
+  web_view_->DidUpdateMaxSafeAreaInsets(max_safe_area_insets);
 }
 
 void ChromeClientImpl::RegisterPopupOpeningObserver(

@@ -8,7 +8,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -24,12 +23,8 @@ base::LazyInstance<OriginTrialsFactory>::DestructorAtExit
 // static
 content::OriginTrialsControllerDelegate*
 OriginTrialsFactory::GetForBrowserContext(content::BrowserContext* context) {
-  if (origin_trials::features::IsPersistentOriginTrialsEnabled()) {
-    return static_cast<origin_trials::OriginTrials*>(
-        GetInstance()->GetServiceForBrowserContext(context, true));
-  } else {
-    return nullptr;
-  }
+  return static_cast<origin_trials::OriginTrials*>(
+      GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static

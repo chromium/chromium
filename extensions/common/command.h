@@ -11,18 +11,19 @@
 
 #include "base/values.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 
-class Command {
+class Command : public ui::Command {
  public:
-  Command();
+  Command() = default;
   Command(std::string_view command_name,
           std::u16string_view description,
           std::string_view accelerator,
           bool global);
-  Command(const Command& other);
-  ~Command();
+  Command(const Command& other) = default;
+  ~Command() override = default;
 
   // The platform value for the Command.
   static std::string CommandPlatform();
@@ -36,11 +37,6 @@ class Command {
   // shortcut text (like accelerator::GetShortcutText() does).
   static std::string AcceleratorToString(const ui::Accelerator& accelerator);
 
-  // Return true if the specified accelerator is one of the following multimedia
-  // keys: Next Track key, Previous Track key, Stop Media key, Play/Pause Media
-  // key, without any modifiers.
-  static bool IsMediaKey(const ui::Accelerator& accelerator);
-
   // Return true if the |command_name| is one of the following action events:
   // Action Command Event, Browser Action Command Event, Page Action Command
   // Event.
@@ -51,28 +47,7 @@ class Command {
              std::string_view command_name,
              int index,
              std::u16string* error);
-
-  // Accessors:
-  const std::string& command_name() const { return command_name_; }
-  const ui::Accelerator& accelerator() const { return accelerator_; }
-  const std::u16string& description() const { return description_; }
-  bool global() const { return global_; }
-
-  // Setter:
-  void set_accelerator(const ui::Accelerator& accelerator) {
-    accelerator_ = accelerator;
-  }
-  void set_global(bool global) { global_ = global; }
-
- private:
-  std::string command_name_;
-  ui::Accelerator accelerator_;
-  std::u16string description_;
-  bool global_;
 };
-
-// A mapping of command name (std::string) to a command object.
-using CommandMap = std::map<std::string, Command>;
 
 }  // namespace extensions
 

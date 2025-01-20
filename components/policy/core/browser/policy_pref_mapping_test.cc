@@ -28,7 +28,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -405,10 +404,8 @@ class PolicyTestCase {
   bool IsOsSupported() const {
 #if BUILDFLAG(IS_ANDROID)
     const std::string os("android");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
     const std::string os("chromeos_ash");
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    const std::string os("chromeos_lacros");
 #elif BUILDFLAG(IS_IOS)
     const std::string os("ios");
 #elif BUILDFLAG(IS_LINUX)

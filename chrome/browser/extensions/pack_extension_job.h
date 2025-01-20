@@ -31,7 +31,7 @@ class PackExtensionJob {
                                ExtensionCreator::ErrorType error_type) = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   PackExtensionJob(Client* client,

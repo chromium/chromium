@@ -11,8 +11,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_vm_data_migration_status.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base_switches.h"
@@ -27,6 +25,8 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -34,6 +34,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
@@ -327,19 +328,23 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   ash::ScopedStubInstallAttributes install_attributes(
       ash::StubInstallAttributes::CreateCloudManaged("test-domain",
                                                      "FAKE_DEVICE_ID"));
+  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
   user_manager::TypedScopedUserManager fake_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddUser(
-      AccountId::FromUserEmailGaiaId("user1@test.com", "1234567890-1"))));
-  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser(
-      AccountId::FromUserEmailGaiaId("user2@test.com", "1234567890-2"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddPublicAccountUser(
-      AccountId::FromUserEmailGaiaId("user3@test.com", "1234567890-3"))));
-  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddKioskAppUser(
-      AccountId::FromUserEmailGaiaId("user4@test.com", "1234567890-4"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddChildUser(
-      AccountId::FromUserEmailGaiaId("user5@test.com", "1234567890-5"))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1234567890-1")),
+      user_manager::UserType::kRegular)));
+  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser()));
+  EXPECT_TRUE(IsArcAllowedForUser(
+      fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
+          "user3@test.com", GaiaId("1234567890-3")))));
+  EXPECT_FALSE(IsArcAllowedForUser(
+      fake_user_manager->AddKioskAppUser(AccountId::FromUserEmailGaiaId(
+          "user4@test.com", GaiaId("1234567890-4")))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),
+      user_manager::UserType::kChild)));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.
@@ -349,7 +354,7 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
           /* include_list= */ std::vector<AccountId>{},
           /* exclude_list= */ std::vector<AccountId>{}));
   fake_user_manager->UserLoggedIn(
-      AccountId::FromUserEmailGaiaId("test@test.com", "9876543210"),
+      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")),
       "test@test.com-hash", false /* browser_restart */, false /* is_child */);
   const user_manager::User* ephemeral_user = fake_user_manager->GetActiveUser();
   ASSERT_TRUE(ephemeral_user);
@@ -758,7 +763,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_StopVmFailure) {
                                              future_no_response.GetCallback());
   EXPECT_FALSE(future_no_response.Get());
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(false);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
   base::test::TestFuture<bool> future_failure;
@@ -783,7 +788,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
         return (jobs_to_be_stopped.size() % 2) == 0;
       }));
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(true);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
 

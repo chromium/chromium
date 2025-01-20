@@ -4,7 +4,10 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Exception for the core mojo API. */
+@NullMarked
 public class MojoException extends RuntimeException {
 
     private final int mCode;

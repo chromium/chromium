@@ -17,3 +17,7 @@ enable_cardboard = false
 enable_openxr = false
 enable_vr = false
 use_chromecast_cdms = false
+
+# LASTCHANGE and CHROMIUM_GIT_VERSION must be real for the Cast devtools to
+# work on eng builds as well.
+use_dummy_lastchange = false

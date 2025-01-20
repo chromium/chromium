@@ -15,28 +15,39 @@ class ProfileOAuth2TokenService;
 class ShareKitService;
 class SystemIdentityManager;
 class TrustedVaultClientBackend;
-namespace drive {
-class DriveService;
-}
-namespace policy {
-class ConfigurationPolicyProvider;
-}
-namespace password_manager {
-class BulkLeakCheckServiceInterface;
-class RecipientsFetcher;
-}
-
-namespace plus_addresses {
-class PlusAddressService;
-}
-
-namespace tab_groups {
-class TabGroupSyncService;
-}
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
+namespace drive {
+class DriveService;
+}  // namespace drive
+
+namespace policy {
+class ConfigurationPolicyProvider;
+}  // namespace policy
+
+namespace password_manager {
+class BulkLeakCheckServiceInterface;
+class RecipientsFetcher;
+}  // namespace password_manager
+
+namespace plus_addresses {
+class PlusAddressService;
+}  // namespace plus_addresses
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
 
 namespace tests_hook {
 
@@ -68,9 +79,9 @@ bool DisableDefaultFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
-// Returns true if the Promo Manager should avoid displaying full-screen promos
+// Returns true if the Promo Manager should avoid displaying promos
 // on app startup to allow tests to run unimpeded.
-bool DisablePromoManagerFullScreenPromos();
+bool DisablePromoManagerDisplayingPromo();
 
 // Returns true if the search engine choice view, which would interfere with
 // many tests, should by default be skipped. Note that even in a target where
@@ -114,9 +125,16 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile);
 
+// Allows additional test setup for the DataSharingService.
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service);
+
 // Allows overriding the ShareKitService factory. The real factory will be
 // used if this hook returns null.
-std::unique_ptr<ShareKitService> CreateShareKitService();
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
+    tab_groups::TabGroupSyncService* sync_service);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

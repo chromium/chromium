@@ -33,6 +33,10 @@ class MEDIA_EXPORT AesCbcCrypto {
 
   // Initializes the encryptor using |key| and |iv|. Returns false if either
   // the key or the initialization vector cannot be used.
+  bool Initialize(base::span<const uint8_t> key, base::span<const uint8_t> iv);
+
+  // Deprecated initializer that takes a crypto::SymmetricKey. Do not add new
+  // uses of this - pass the key as a byte span instead.
   bool Initialize(const crypto::SymmetricKey& key,
                   base::span<const uint8_t> iv);
 

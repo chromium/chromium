@@ -25,10 +25,12 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
 
   static override get properties() {
     return {
+      buttonTitle: {type: String},
       showDropdown_: {type: Boolean},
     };
   }
 
+  buttonTitle: string = '';
   protected showDropdown_: boolean = false;
 
   private pluginController_: PluginController = PluginController.getInstance();

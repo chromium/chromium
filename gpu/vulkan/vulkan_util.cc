@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "build/android_buildflags.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -317,6 +318,11 @@ bool IsVulkanV3EnabledForAdreno(
   return true;
 }
 
+bool SkipVulkanBlocklist() {
+  // Expectation is for all desktop android devices to use vulkan
+  return BUILDFLAG(IS_DESKTOP_ANDROID);
+}
+
 #endif
 }  // namespace
 
@@ -480,6 +486,10 @@ bool CheckVulkanCompatibilities(
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
+   if (SkipVulkanBlocklist()) {
+    return true;
+  }
+
   if (IsBlockedByBuildInfo() && !ShouldBypassMediatekBlock(gpu_info)) {
     return false;
   }
@@ -512,6 +522,16 @@ bool CheckVulkanCompatibilities(
       if (base::MatchPattern(device_name, slow_gpu)) {
         return false;
       }
+    }
+
+    // Most Mali-G57 devices had vkCreateInstance() fail and would use GL. Add
+    // them to the blocklist to keep these devices from using Vulkan with
+    // Graphite. The exception is devices with driver version >= 41 had
+    // vkCreateInstance() pass and were running Vulkan. See
+    // https://crbug.com/384531040 for more info.
+    if (device_name == "G57" &&
+        device_properties.driver_version < VK_MAKE_VERSION(41, 0, 0)) {
+      return false;
     }
 
     return IsVulkanV1EnabledForMali(gpu_info) ||

@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <memory>
 #include <optional>
 
 #include "base/base_export.h"
@@ -19,6 +20,7 @@ struct ALooper;
 
 namespace base {
 
+class IOWatcher;
 class RunLoop;
 
 // This class implements a MessagePump needed for MessagePumpType::UI and
@@ -44,6 +46,7 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  IOWatcher* GetIOWatcher() override;
 
   static void InitializeFeatures();
 
@@ -121,6 +124,9 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
   // Whether this message serves a MessagePumpType::UI, and therefore can
   // consult with the input hint living on the UI thread.
   bool is_type_ui_ = false;
+
+  // The IOWatcher for this thread, lazily initialized as needed.
+  std::unique_ptr<IOWatcher> io_watcher_;
 };
 
 }  // namespace base

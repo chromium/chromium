@@ -18,7 +18,7 @@ class DeviceOrientationData;
 class DeviceOrientationEventPump;
 class Event;
 class ScriptState;
-class V8DeviceOrientationPermissionState;
+class V8PermissionState;
 
 class MODULES_EXPORT DeviceOrientationController
     : public DeviceSingleWindowEventController,
@@ -47,8 +47,7 @@ class MODULES_EXPORT DeviceOrientationController
       LocalFrame&,
       const AtomicString& event_name);
 
-  ScriptPromise<V8DeviceOrientationPermissionState> RequestPermission(
-      ScriptState*);
+  ScriptPromise<V8PermissionState> RequestPermission(ScriptState*);
 
  protected:
   void RegisterWithOrientationEventPump(bool absolute);

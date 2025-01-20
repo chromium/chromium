@@ -64,7 +64,8 @@ void ExtensionsGuestView::CanExecuteContentScript(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   WebViewRendererState::WebViewInfo info;
   const bool success = WebViewRendererState::GetInstance()->GetInfo(
-      render_process_id(), frame_id_.frame_routing_id, &info);
+      // TODO(crbug.com/379869738): Remove GetUnsafeValue
+      render_process_id().GetUnsafeValue(), frame_id_.frame_routing_id, &info);
   // GetInfo can fail if the process id does not correspond to a WebView. Those
   // cases are just defaulted to false.
   if (!success) {

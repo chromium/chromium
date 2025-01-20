@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Methods related to querying builder information from Buildbucket."""
 
-from __future__ import print_function
-
 import concurrent.futures
 import json
 import logging
@@ -12,8 +10,10 @@ import os
 import subprocess
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
+# vpython-provided modules.
 import six
 
+# //testing imports.
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 

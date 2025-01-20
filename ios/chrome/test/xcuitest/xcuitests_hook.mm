@@ -37,7 +37,7 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisablePromoManagerFullScreenPromos() {
+bool DisablePromoManagerDisplayingPromo() {
   return true;
 }
 
@@ -76,7 +76,13 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   return nullptr;
 }
 
-std::unique_ptr<ShareKitService> CreateShareKitService() {
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service) {}
+
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
+    tab_groups::TabGroupSyncService* sync_service) {
   return nullptr;
 }
 

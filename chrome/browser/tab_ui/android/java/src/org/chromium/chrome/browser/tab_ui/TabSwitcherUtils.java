@@ -4,9 +4,15 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 /** Utility methods for TabSwitcher related actions. */
 public class TabSwitcherUtils {
@@ -36,5 +42,32 @@ public class TabSwitcherUtils {
                 });
 
         layoutManager.showLayout(LayoutType.TAB_SWITCHER, animate);
+    }
+
+    /**
+     * Tries to open the tab group dialog for a tab group.
+     *
+     * @param syncId The id of the tab group, might or might not correspond to an open group.
+     * @param tabGroupSyncService Used to open closed groups and convert to local ids.
+     * @param tabGroupUiActionHandler Used to open a closed group.
+     * @param tabGroupModelFilter Used to get root id.
+     * @param requestOpenTabGroupDialog Callback to actually open a group dialog.
+     */
+    public static void openTabGroupDialog(
+            String syncId,
+            TabGroupSyncService tabGroupSyncService,
+            TabGroupUiActionHandler tabGroupUiActionHandler,
+            TabGroupModelFilter tabGroupModelFilter,
+            Callback<Integer> requestOpenTabGroupDialog) {
+        SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
+        if (syncGroup.localId == null) {
+            tabGroupUiActionHandler.openTabGroup(syncGroup.syncId);
+            syncGroup = tabGroupSyncService.getGroup(syncId);
+            assert syncGroup.localId != null;
+        }
+
+        int rootId = tabGroupModelFilter.getRootIdFromStableId(syncGroup.localId.tabGroupId);
+        if (rootId == Tab.INVALID_TAB_ID) return;
+        requestOpenTabGroupDialog.onResult(rootId);
     }
 }

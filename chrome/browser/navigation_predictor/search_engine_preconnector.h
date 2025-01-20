@@ -50,6 +50,8 @@ class SearchEnginePreconnector {
   // interacted by the user.
   bool IsBrowserAppLikelyInForeground() const;
 
+  int GetPreconnectIntervalSec() const;
+
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;
 

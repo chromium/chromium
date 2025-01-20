@@ -1,8 +1,8 @@
 Name: Guava: Google Core Libraries for Java
 Short Name: guava
 URL: https://github.com/google/guava
-Version: 32.1.3-android
-License: Apache 2.0
+Version: 33.3.1-android
+License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

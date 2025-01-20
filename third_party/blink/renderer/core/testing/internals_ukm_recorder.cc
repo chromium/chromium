@@ -16,7 +16,7 @@ namespace blink {
 InternalsUkmRecorder::InternalsUkmRecorder(Document* document)
     : source_id_(document->UkmSourceID()) {}
 
-HeapVector<ScriptValue> InternalsUkmRecorder::getMetrics(
+HeapVector<ScriptObject> InternalsUkmRecorder::getMetrics(
     ScriptState* script_state,
     const String& entry_name,
     const Vector<String>& metric_names) {
@@ -26,7 +26,7 @@ HeapVector<ScriptValue> InternalsUkmRecorder::getMetrics(
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
       recorder_.GetEntries(entry_name.Utf8(), names);
-  HeapVector<ScriptValue> result;
+  HeapVector<ScriptObject> result;
   for (const ukm::TestUkmRecorder::HumanReadableUkmEntry& entry : entries) {
     if (entry.source_id != source_id_) {
       continue;
@@ -36,7 +36,7 @@ HeapVector<ScriptValue> InternalsUkmRecorder::getMetrics(
     for (const auto& iterator : entry.metrics) {
       builder.AddNumber(String(iterator.first), iterator.second);
     }
-    result.push_back(builder.GetScriptValue());
+    result.push_back(builder.ToScriptObject());
   }
 
   return result;

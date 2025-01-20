@@ -1,8 +1,5 @@
 {
   "description": "Trigger only converts on source with matching scopes",
-  "api_config": {
-    "needs_attribution_scopes": true
-  },
   "input": {
     "registrations": [
       // S1: attribution scopes -> ["1"], destinations -> [D1].

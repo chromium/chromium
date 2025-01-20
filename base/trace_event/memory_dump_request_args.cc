@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 // static
 const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
@@ -26,10 +25,12 @@ MemoryDumpType StringToMemoryDumpType(const std::string& str) {
   if (str == "periodic_interval") {
     return MemoryDumpType::kPeriodicInterval;
   }
-  if (str == "explicitly_triggered")
+  if (str == "explicitly_triggered") {
     return MemoryDumpType::kExplicitlyTriggered;
-  if (str == "summary_only")
+  }
+  if (str == "summary_only") {
     return MemoryDumpType::kSummaryOnly;
+  }
   NOTREACHED();
 }
 
@@ -48,14 +49,16 @@ const char* MemoryDumpLevelOfDetailToString(
 
 MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
     const std::string& str) {
-  if (str == "background")
+  if (str == "background") {
     return MemoryDumpLevelOfDetail::kBackground;
-  if (str == "light")
+  }
+  if (str == "light") {
     return MemoryDumpLevelOfDetail::kLight;
-  if (str == "detailed")
+  }
+  if (str == "detailed") {
     return MemoryDumpLevelOfDetail::kDetailed;
+  }
   NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

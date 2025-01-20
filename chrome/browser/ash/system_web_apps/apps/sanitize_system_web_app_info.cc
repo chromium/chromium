@@ -60,7 +60,15 @@ bool SanitizeSystemAppDelegate::ShouldAllowResize() const {
   return false;
 }
 
+bool SanitizeSystemAppDelegate::ShouldAllowMaximize() const {
+  return false;
+}
+
 bool SanitizeSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool SanitizeSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 
@@ -72,5 +80,9 @@ gfx::Rect SanitizeSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
 }
 
 bool SanitizeSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool SanitizeSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return true;
 }

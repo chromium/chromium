@@ -22,16 +22,17 @@ void CreateAndAddHTMLSource(Profile* profile, const std::string& host_name) {
       content::WebUIDataSource::CreateAndAdd(profile, host_name);
 
   std::u16string page_title;
-  if (host_name == chrome::kChromeUIBookmarksHost)
+  if (host_name == chrome::kChromeUIBookmarksHost) {
     page_title = l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE);
-  else if (host_name == chrome::kChromeUIHistoryHost)
+  } else if (host_name == chrome::kChromeUIHistoryHost) {
     page_title = l10n_util::GetStringUTF16(IDS_HISTORY_TITLE);
-  else if (host_name == chrome::kChromeUIExtensionsHost)
+  } else if (host_name == chrome::kChromeUIExtensionsHost) {
     page_title = l10n_util::GetStringUTF16(IDS_EXTENSIONS_TOOLBAR_TITLE);
-  else if (host_name == password_manager::kChromeUIPasswordManagerHost)
+  } else if (host_name == password_manager::kChromeUIPasswordManagerHost) {
     page_title = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_TITLE);
-  else
+  } else {
     page_title = base::UTF8ToUTF16(host_name);
+  }
 
   source->AddString("pageTitle", page_title);
   std::u16string page_heading = l10n_util::GetStringFUTF16(

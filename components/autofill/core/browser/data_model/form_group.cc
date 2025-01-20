@@ -35,7 +35,9 @@ void FormGroup::GetMatchingTypesWithProfileSources(
   FieldTypeSet types;
   GetSupportedTypes(&types);
   for (FieldType type : types) {
-    if (comparator.Compare(canonicalized_text, GetInfo(type, app_locale))) {
+    if (comparator.Compare(canonicalized_text, GetInfo(type, app_locale),
+                           AutofillProfileComparator::DISCARD_WHITESPACE,
+                           type)) {
       matching_types->insert(type);
     }
   }

@@ -305,7 +305,7 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
   // |gmb_handle.id| is set to the GenericSharedMemoryId from |this|. This
   // allows for more predictable caching when converting to a VideoFrame.
-  gmb_handle.id = GetSharedMemoryId();
+  gmb_handle.id = id_;
   gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
   return gmb_handle;
 }
@@ -315,11 +315,6 @@ NativePixmapFrameResource::MapGMBOrSharedImage() const {
   // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
   // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
   return nullptr;
-}
-
-gfx::GenericSharedMemoryId NativePixmapFrameResource::GetSharedMemoryId()
-    const {
-  return id_;
 }
 
 const VideoFrameLayout& NativePixmapFrameResource::layout() const {
@@ -392,6 +387,13 @@ void NativePixmapFrameResource::set_metadata(
   metadata_.tracking_token = original_tracking_token;
 }
 
+const base::UnguessableToken& NativePixmapFrameResource::tracking_token()
+    const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
+}
+
 base::TimeDelta NativePixmapFrameResource::timestamp() const {
   return timestamp_;
 }
@@ -423,8 +425,8 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   // constructor.
   auto wrapping_frame = base::WrapRefCounted<NativePixmapFrameResource>(
       new NativePixmapFrameResource(layout(), visible_rect, natural_size,
-                                    timestamp(), GetSharedMemoryId(),
-                                    tracking_token(), buffer_usage_, pixmap_));
+                                    timestamp(), id_, tracking_token(),
+                                    buffer_usage_, pixmap_));
 
   // All other metadata is copied to the "wrapping" frame.
   wrapping_frame->metadata().MergeMetadataFrom(metadata());

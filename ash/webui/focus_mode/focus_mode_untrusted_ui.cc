@@ -34,8 +34,7 @@ FocusModeUntrustedUI::FocusModeUntrustedUI(content::WebUI* web_ui)
 
   // Add the content. We don't need to set up a default ("") path since the
   // trusted page will refer directly to player.html.
-  source->AddResourcePaths(base::make_span(kAshFocusModePlayerResources,
-                                           kAshFocusModePlayerResourcesSize));
+  source->AddResourcePaths(kAshFocusModePlayerResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
   // Enables the page to actually load media.

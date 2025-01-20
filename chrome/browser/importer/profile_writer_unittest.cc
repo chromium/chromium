@@ -57,17 +57,17 @@ class TestProfileWriter : public ProfileWriter {
  public:
   explicit TestProfileWriter(Profile* profile) : ProfileWriter(profile) {}
  protected:
-  ~TestProfileWriter() override {}
+  ~TestProfileWriter() override = default;
 };
 
 class ProfileWriterTest : public testing::Test {
  public:
-  ProfileWriterTest() {}
+  ProfileWriterTest() = default;
 
   ProfileWriterTest(const ProfileWriterTest&) = delete;
   ProfileWriterTest& operator=(const ProfileWriterTest&) = delete;
 
-  ~ProfileWriterTest() override {}
+  ~ProfileWriterTest() override = default;
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;

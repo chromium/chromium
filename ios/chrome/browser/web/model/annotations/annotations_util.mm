@@ -95,7 +95,8 @@ bool ShouldPresentConsentIPH(PrefService* prefs) {
   if (param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
     return true;
   }
-  if (param == web::features::kOneTapForMapsConsentModeIPHParam) {
+  if (param == web::features::kOneTapForMapsConsentModeIPHParam ||
+      param == "") {
     return !IsAddressAutomaticDetectionAccepted(prefs);
   }
   return false;
@@ -110,7 +111,8 @@ bool ShouldPresentConsentScreen(PrefService* prefs) {
   }
   if (param == web::features::kOneTapForMapsConsentModeDisabledParam ||
       param == web::features::kOneTapForMapsConsentModeIPHParam ||
-      param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
+      param == web::features::kOneTapForMapsConsentModeIPHForcedParam ||
+      param == "") {
     return false;
   }
   return !IsAddressAutomaticDetectionAccepted(prefs);

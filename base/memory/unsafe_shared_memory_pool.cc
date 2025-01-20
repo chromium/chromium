@@ -48,8 +48,9 @@ UnsafeSharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
   AutoLock lock(lock_);
 
   DCHECK_GE(region_size, 0u);
-  if (is_shutdown_)
+  if (is_shutdown_) {
     return nullptr;
+  }
 
   // Only change the configured size if bigger region is requested to avoid
   // unncecessary reallocations.
@@ -68,12 +69,14 @@ UnsafeSharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
   }
 
   auto region = UnsafeSharedMemoryRegion::Create(region_size_);
-  if (!region.IsValid())
+  if (!region.IsValid()) {
     return nullptr;
+  }
 
   WritableSharedMemoryMapping mapping = region.Map();
-  if (!mapping.IsValid())
+  if (!mapping.IsValid()) {
     return nullptr;
+  }
 
   return std::make_unique<Handle>(PassKey<UnsafeSharedMemoryPool>(),
                                   std::move(region), std::move(mapping), this);

@@ -193,15 +193,15 @@ class TimeTest : public testing::Test {
     // must be a time guaranteed to be outside of a DST fallback hour in
     // any timezone.
     struct tm local_comparison_tm = {
-      0,            // second
-      45,           // minute
-      12,           // hour
-      15,           // day of month
-      10 - 1,       // month
-      2007 - 1900,  // year
-      0,            // day of week (ignored, output only)
-      0,            // day of year (ignored, output only)
-      -1            // DST in effect, -1 tells mktime to figure it out
+        0,            // second
+        45,           // minute
+        12,           // hour
+        15,           // day of month
+        10 - 1,       // month
+        2007 - 1900,  // year
+        0,            // day of week (ignored, output only)
+        0,            // day of year (ignored, output only)
+        -1            // DST in effect, -1 tells mktime to figure it out
     };
 
     time_t converted_time = mktime(&local_comparison_tm);
@@ -618,11 +618,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch0) {
   Time parsed_time;
 
   // time_t == epoch == 0
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:00 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:00 +0100 1970", &parsed_time));
   EXPECT_EQ(0, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:00 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:00 GMT 1970", &parsed_time));
   EXPECT_EQ(0, parsed_time.ToTimeT());
 }
 
@@ -630,11 +628,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch1) {
   Time parsed_time;
 
   // time_t == 1 second after epoch == 1
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:01 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:01 +0100 1970", &parsed_time));
   EXPECT_EQ(1, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:01 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:01 GMT 1970", &parsed_time));
   EXPECT_EQ(1, parsed_time.ToTimeT());
 }
 
@@ -642,11 +638,9 @@ TEST_F(TimeTest, ParseTimeTestEpoch2) {
   Time parsed_time;
 
   // time_t == 2 seconds after epoch == 2
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:02 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 01:00:02 +0100 1970", &parsed_time));
   EXPECT_EQ(2, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:02 GMT 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:00:02 GMT 1970", &parsed_time));
   EXPECT_EQ(2, parsed_time.ToTimeT());
 }
 
@@ -654,11 +648,9 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg1) {
   Time parsed_time;
 
   // time_t == 1 second before epoch == -1
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:59 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:59 +0100 1970", &parsed_time));
   EXPECT_EQ(-1, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 1969",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 1969", &parsed_time));
   EXPECT_EQ(-1, parsed_time.ToTimeT());
 }
 
@@ -668,8 +660,7 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg1) {
 TEST_F(TimeTest, ParseTimeTestEpochNotNeg1) {
   Time parsed_time;
 
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 2100",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:59 GMT 2100", &parsed_time));
   EXPECT_NE(-1, parsed_time.ToTimeT());
 }
 
@@ -677,11 +668,9 @@ TEST_F(TimeTest, ParseTimeTestEpochNeg2) {
   Time parsed_time;
 
   // time_t == 2 seconds before epoch == -2
-  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:58 +0100 1970",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Thu Jan 01 00:59:58 +0100 1970", &parsed_time));
   EXPECT_EQ(-2, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:58 GMT 1969",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Dec 31 23:59:58 GMT 1969", &parsed_time));
   EXPECT_EQ(-2, parsed_time.ToTimeT());
 }
 
@@ -689,14 +678,11 @@ TEST_F(TimeTest, ParseTimeTestEpoch1960) {
   Time parsed_time;
 
   // time_t before Epoch, in 1960
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 19:40:01 +0100 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 19:40:01 +0100 1960", &parsed_time));
   EXPECT_EQ(-299999999, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 18:40:01 GMT 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 18:40:01 GMT 1960", &parsed_time));
   EXPECT_EQ(-299999999, parsed_time.ToTimeT());
-  EXPECT_TRUE(Time::FromString("Wed Jun 29 17:40:01 GMT 1960",
-                               &parsed_time));
+  EXPECT_TRUE(Time::FromString("Wed Jun 29 17:40:01 GMT 1960", &parsed_time));
   EXPECT_EQ(-300003599, parsed_time.ToTimeT());
 }
 
@@ -901,7 +887,7 @@ TEST_F(TimeTest, MaxConversions) {
   tval = t.ToTimeVal();
   EXPECT_EQ(std::numeric_limits<time_t>::max(), tval.tv_sec);
   EXPECT_EQ(static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1,
-      tval.tv_usec);
+            tval.tv_usec);
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -999,13 +985,14 @@ TEST_F(TimeTest, TimeTOverflow) {
 TEST_F(TimeTest, FromLocalExplodedCrashOnAndroid) {
   // This crashed inside Time:: FromLocalExploded() on Android 4.1.2.
   // See http://crbug.com/287821
-  Time::Exploded midnight = {2013,  // year
-                             10,    // month
-                             0,     // day_of_week
-                             13,    // day_of_month
-                             0,     // hour
-                             0,     // minute
-                             0,     // second
+  Time::Exploded midnight = {
+      2013,  // year
+      10,    // month
+      0,     // day_of_week
+      13,    // day_of_month
+      0,     // hour
+      0,     // minute
+      0,     // second
   };
   // The string passed to putenv() must be a char* and the documentation states
   // that it 'becomes part of the environment', so use a static buffer.
@@ -1396,8 +1383,9 @@ TEST(TimeTicks, Deltas) {
 static void HighResClockTest(TimeTicks (*GetTicks)()) {
   // IsHighResolution() is false on some systems.  Since the product still works
   // even if it's false, it makes this entire test questionable.
-  if (!TimeTicks::IsHighResolution())
+  if (!TimeTicks::IsHighResolution()) {
     return;
+  }
 
   // Why do we loop here?
   // We're trying to measure that intervals increment in a VERY small amount

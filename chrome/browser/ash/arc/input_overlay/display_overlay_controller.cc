@@ -85,82 +85,6 @@ std::unique_ptr<views::Widget> CreateTransientWidget(
 
 }  // namespace
 
-// -----------------------------------------------------------------------------
-// DisplayOverlayController::FocusCycler:
-
-class DisplayOverlayController::FocusCycler {
- public:
-  FocusCycler() {}
-  ~FocusCycler() = default;
-
-  // Adds `widget` to `widget_list_` if `widget` is visible and not in
-  // `widget_list_`. Otherwise, removes `widget` from `widget_list_`.
-  void RefreshWidget(views::Widget* widget) {
-    if (widget->IsVisible()) {
-      AddWidget(widget);
-    } else {
-      RemoveWidget(widget);
-    }
-  }
-
-  void MaybeChangeFocusWidget(ui::KeyEvent& event) {
-    // Only tab pressed is checked because the focus change is triggered by the
-    // tab pressed event. No need to change widget focus again on tab key
-    // released event.
-    if (event.type() == ui::EventType::kKeyReleased ||
-        !views::FocusManager::IsTabTraversalKeyEvent(event)) {
-      return;
-    }
-
-    const bool reverse = event.IsShiftDown();
-    auto* target_widget = views::Widget::GetWidgetForNativeWindow(
-        static_cast<aura::Window*>(event.target()));
-    auto* focus_manager = target_widget->GetFocusManager();
-
-    // Once there is next focusable view (dont_loop==true), it means the current
-    // focus is not the first or the last focusable view, so it doesn't need to
-    // change focus to the next widget.
-    if (focus_manager->GetNextFocusableView(
-            /*starting_view=*/focus_manager->GetFocusedView(),
-            /*starting_widget=*/target_widget, /*reverse=*/reverse,
-            /*dont_loop=*/true)) {
-      return;
-    }
-
-    // Change focus to the next widget.
-    if (auto* next_widget =
-            GetNextWidgetToFocus(widget_list_, target_widget, reverse)) {
-      next_widget->GetFocusManager()->AdvanceFocus(reverse);
-      // Change the event target.
-      ui::Event::DispatcherApi(&event).set_target(
-          next_widget->GetNativeWindow());
-    }
-  }
-
- private:
-  void AddWidget(views::Widget* widget) {
-    if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
-        it == widget_list_.end()) {
-      widget_list_.emplace_back(widget);
-      UpdateAccessibilityTree(widget_list_);
-    }
-  }
-
-  void RemoveWidget(views::Widget* widget) {
-    if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
-        it != widget_list_.end()) {
-      widget_list_.erase(it);
-      UpdateAccessibilityTree(widget_list_);
-    }
-  }
-
-  // Only contains visible and unique widgets.
-  std::vector<views::Widget*> widget_list_;
-};
-
-// -----------------------------------------------------------------------------
-// DisplayOverlayController:
-
 DisplayOverlayController::DisplayOverlayController(
     TouchInjector* touch_injector)
     : touch_injector_(touch_injector) {
@@ -176,7 +100,6 @@ DisplayOverlayController::DisplayOverlayController(
 DisplayOverlayController::~DisplayOverlayController() {
   touch_injector_->set_display_overlay_controller(nullptr);
 
-  widget_observations_.RemoveAllObservations();
   touch_injector_->window()->RemoveObserver(this);
   RemoveAllWidgets();
 
@@ -215,7 +138,6 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveActionHighlightWidget();
       RemoveDeleteEditShortcutWidget();
       RemoveEditingListWidget();
-      RemoveFocusCycler();
       if (GetActiveActionsSize() == 0u) {
         // If there is no active action in `kView` mode, it doesn't create
         // `input_mapping_widget_` to save resources. When switching from
@@ -247,16 +169,11 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
         AddInputMappingWidget();
       }
 
-      AddFocusCycler();
-
       // No matter if the mapping hint is hidden, `input_mapping_widget_` needs
       // to show up in `kEdit` mode.
       SetInputMappingVisible(/*visible=*/true);
 
-      // Since `focus_cycler_` was added in `kEdit` mode after
-      // `input_mapping_widget_` in general. Refresh `input_mapping_widget_` to
-      // make sure it is added in `focus_cycler_`.
-      focus_cycler_->RefreshWidget(input_mapping_widget_.get());
+      UpdateAccessibilityTree(GetTraversableWidgets());
 
       if (auto* input_mapping = GetInputMapping()) {
         input_mapping->SetDisplayMode(mode);
@@ -409,7 +326,6 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
       CreateTransientWidget(input_mapping_widget_->GetNativeWindow(),
                             /*widget_name=*/kButtonOptionsMenu,
                             /*accept_events=*/true);
-  widget_observations_.AddObservation(button_options_widget_.get());
   button_options_widget_->SetContentsView(
       std::make_unique<ButtonOptionsMenu>(this, action));
   UpdateButtonOptionsMenuWidgetBounds();
@@ -420,6 +336,7 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
   SetEditingListVisibility(/*visible=*/false);
 
   button_options_widget_->Show();
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
@@ -435,6 +352,7 @@ void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
 
   button_options_widget_->Close();
   button_options_widget_.reset();
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
@@ -451,6 +369,7 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
   } else {
     button_options_widget_->Hide();
   }
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 void DisplayOverlayController::AddDeleteEditShortcutWidget(
@@ -459,7 +378,6 @@ void DisplayOverlayController::AddDeleteEditShortcutWidget(
     delete_edit_shortcut_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
             std::make_unique<DeleteEditShortcut>(this, anchor_view)));
-    widget_observations_.AddObservation(delete_edit_shortcut_widget_.get());
   }
 
   if (auto* shortcut = GetDeleteEditShortcut();
@@ -468,12 +386,14 @@ void DisplayOverlayController::AddDeleteEditShortcutWidget(
   }
 
   delete_edit_shortcut_widget_->Show();
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
   if (delete_edit_shortcut_widget_) {
     delete_edit_shortcut_widget_->Close();
     delete_edit_shortcut_widget_.reset();
+    UpdateAccessibilityTree(GetTraversableWidgets());
   }
 }
 
@@ -561,8 +481,8 @@ void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void DisplayOverlayController::OnKeyEvent(ui::KeyEvent* event) {
-  if (focus_cycler_) {
-    focus_cycler_->MaybeChangeFocusWidget(*event);
+  if (display_mode_ == DisplayMode::kEdit) {
+    MaybeChangeFocusWidget(*event);
   }
 }
 
@@ -643,17 +563,6 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
   }
 }
 
-void DisplayOverlayController::OnWidgetVisibilityChanged(views::Widget* widget,
-                                                         bool visible) {
-  if (focus_cycler_) {
-    focus_cycler_->RefreshWidget(widget);
-  }
-}
-
-void DisplayOverlayController::OnWidgetDestroying(views::Widget* widget) {
-  widget_observations_.RemoveObservation(widget);
-}
-
 void DisplayOverlayController::SetInputMappingVisible(
     bool visible,
     bool store_visible_state) {
@@ -701,7 +610,7 @@ void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
   if (auto* delete_edit_view = GetDeleteEditShortcut()) {
     if (const auto bounds = delete_edit_view->GetBoundsInScreen();
-        !bounds.Contains(event.root_location())) {
+        !bounds.Contains(event.target()->GetScreenLocation(event))) {
       RemoveDeleteEditShortcutWidget();
     }
   }
@@ -761,7 +670,6 @@ void DisplayOverlayController::AddInputMappingWidget() {
   input_mapping_widget_ = CreateTransientWidget(touch_injector_->window(),
                                                 /*widget_name=*/kInputMapping,
                                                 /*accept_events=*/false);
-  widget_observations_.AddObservation(input_mapping_widget_.get());
   input_mapping_widget_->SetContentsView(
       std::make_unique<InputMappingView>(this));
   UpdateInputMappingWidgetBounds();
@@ -805,7 +713,6 @@ void DisplayOverlayController::AddEditingListWidget() {
   editing_list_widget_ = CreateTransientWidget(
       input_mapping_widget_->GetNativeWindow(), /*widget_name=*/kEditingList,
       /*accept_events=*/true);
-  widget_observations_.AddObservation(editing_list_widget_.get());
   editing_list_widget_->SetContentsView(std::make_unique<EditingList>(this));
 
   // Avoid active conflict with the game dashboard main menu.
@@ -813,13 +720,14 @@ void DisplayOverlayController::AddEditingListWidget() {
   UpdateEditingListWidgetBounds();
   editing_list_widget_->widget_delegate()->SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_LIST_A11Y_LABEL));
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 void DisplayOverlayController::RemoveEditingListWidget() {
   if (editing_list_widget_) {
     editing_list_widget_->Close();
     editing_list_widget_.reset();
-
+    UpdateAccessibilityTree(GetTraversableWidgets());
     UpdateFlagAndProperty(touch_injector_->window(),
                           ash::ArcGameControlsFlag::kEdit,
                           /*turn_on=*/false);
@@ -837,6 +745,7 @@ void DisplayOverlayController::SetEditingListVisibility(bool visible) {
   } else {
     editing_list_widget_->Hide();
   }
+  UpdateAccessibilityTree(GetTraversableWidgets());
 }
 
 EditingList* DisplayOverlayController::GetEditingList() {
@@ -855,18 +764,6 @@ ButtonOptionsMenu* DisplayOverlayController::GetButtonOptionsMenu() {
 
   return views::AsViewClass<ButtonOptionsMenu>(
       button_options_widget_->GetContentsView());
-}
-
-void DisplayOverlayController::AddFocusCycler() {
-  if (!focus_cycler_) {
-    focus_cycler_ = std::make_unique<FocusCycler>();
-  }
-}
-
-void DisplayOverlayController::RemoveFocusCycler() {
-  if (focus_cycler_) {
-    focus_cycler_.reset();
-  }
 }
 
 void DisplayOverlayController::EnterButtonPlaceMode(ActionType action_type) {
@@ -1009,6 +906,58 @@ void DisplayOverlayController::UpdateEventRewriteCapability() {
       !IsFlagSet(flags, ash::ArcGameControlsFlag::kEmpty) &&
       !IsFlagSet(flags, ash::ArcGameControlsFlag::kMenu) &&
       !IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit));
+}
+
+std::vector<views::Widget*> DisplayOverlayController::GetTraversableWidgets()
+    const {
+  std::vector<views::Widget*> widget_list;
+  if (input_mapping_widget_ && input_mapping_widget_->IsVisible()) {
+    widget_list.emplace_back(input_mapping_widget_.get());
+  }
+  if (editing_list_widget_ && editing_list_widget_->IsVisible()) {
+    widget_list.emplace_back(editing_list_widget_.get());
+  }
+  if (button_options_widget_ && button_options_widget_->IsVisible()) {
+    widget_list.emplace_back(button_options_widget_.get());
+  }
+  if (delete_edit_shortcut_widget_ &&
+      delete_edit_shortcut_widget_->IsVisible()) {
+    widget_list.emplace_back(delete_edit_shortcut_widget_.get());
+  }
+  return widget_list;
+}
+
+void DisplayOverlayController::MaybeChangeFocusWidget(ui::KeyEvent& event) {
+  // Only tab pressed is checked because the focus change is triggered by the
+  // tab pressed event. No need to change widget focus again on tab key
+  // released event.
+  if (event.type() == ui::EventType::kKeyReleased ||
+      !views::FocusManager::IsTabTraversalKeyEvent(event)) {
+    return;
+  }
+
+  const bool reverse = event.IsShiftDown();
+  auto* target_widget = views::Widget::GetWidgetForNativeWindow(
+      static_cast<aura::Window*>(event.target()));
+  auto* focus_manager = target_widget->GetFocusManager();
+
+  // Once there is next focusable view (dont_loop==true), it means the current
+  // focus is not the first or the last focusable view, so it doesn't need to
+  // change focus to the next widget.
+  if (focus_manager->GetNextFocusableView(
+          /*starting_view=*/focus_manager->GetFocusedView(),
+          /*starting_widget=*/target_widget, /*reverse=*/reverse,
+          /*dont_loop=*/true)) {
+    return;
+  }
+
+  // Change focus to the next widget.
+  if (auto* next_widget = GetNextWidgetToFocus(GetTraversableWidgets(),
+                                               target_widget, reverse)) {
+    next_widget->GetFocusManager()->AdvanceFocus(reverse);
+    // Change the event target.
+    ui::Event::DispatcherApi(&event).set_target(next_widget->GetNativeWindow());
+  }
 }
 
 }  // namespace arc::input_overlay

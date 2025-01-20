@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {
-}
+void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {}
 
 void ImmersiveModeControllerStub::SetEnabled(bool enabled) {
   NOTREACHED();
@@ -36,8 +35,7 @@ ImmersiveModeControllerStub::GetRevealedLock(AnimateReveal animate_reveal) {
 }
 
 void ImmersiveModeControllerStub::OnFindBarVisibleBoundsChanged(
-    const gfx::Rect& new_visible_bounds_in_screen) {
-}
+    const gfx::Rect& new_visible_bounds_in_screen) {}
 
 bool ImmersiveModeControllerStub::ShouldStayImmersiveAfterExitingFullscreen() {
   return false;

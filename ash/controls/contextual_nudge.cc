@@ -12,7 +12,6 @@
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -75,13 +74,9 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_->SetBorder(views::CreateEmptyBorder(margins));
-  if (chromeos::features::IsJellyEnabled()) {
-    label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                          *label_);
-  } else {
-    label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  }
+  label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *label_);
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 

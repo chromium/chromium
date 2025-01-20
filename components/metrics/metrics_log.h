@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -208,7 +207,7 @@ class MetricsLog {
       std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
       std::string* encoded_log);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Assigns a user ID to the log. This should be called immediately after
   // consotruction if it should be applied.
   void SetUserId(const std::string& user_id);

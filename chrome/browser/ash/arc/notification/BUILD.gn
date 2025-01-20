@@ -37,6 +37,7 @@ static_library("notification") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/components/mgs",
     "//chromeos/ui/vector_icons",
     "//components/account_id",

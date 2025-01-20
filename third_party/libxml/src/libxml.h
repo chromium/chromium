@@ -29,15 +29,6 @@
 #include "config.h"
 #include <libxml/xmlversion.h>
 
-/*
- * Due to some Autotools limitations, this variable must be passed as
- * compiler flag. Define a default value if the macro wasn't set by the
- * build system.
- */
-#ifndef SYSCONFDIR
-  #define SYSCONFDIR "/etc"
-#endif
-
 #if !defined(_WIN32) && \
     !defined(__CYGWIN__) && \
     (defined(__clang__) || \
@@ -57,6 +48,13 @@
   #define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
 #endif
 
+#if (defined(__clang__) && __clang_major__ >= 18) || \
+    (defined(__GNUC__) && __GNUC__ >= 15)
+  #define ATTRIBUTE_COUNTED_BY(c) __attribute__((__counted_by__(c)))
+#else
+  #define ATTRIBUTE_COUNTED_BY(c)
+#endif
+
 #if defined(__clang__) || \
     (defined(__GNUC__) && (__GNUC__ >= 8) && !defined(__EDG__))
   #define ATTRIBUTE_NO_SANITIZE(arg) __attribute__((no_sanitize(arg)))
@@ -65,7 +63,8 @@
 #endif
 
 #ifdef __clang__
-  #if __clang_major__ >= 12
+  #if (!defined(__apple_build_version__) && __clang_major__ >= 12) || \
+      (defined(__apple_build_version__) && __clang_major__ >= 13)
     #define ATTRIBUTE_NO_SANITIZE_INTEGER \
       ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow") \
       ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")

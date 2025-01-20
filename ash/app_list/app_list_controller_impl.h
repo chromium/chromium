@@ -42,7 +42,7 @@
 #include "components/prefs/pref_member.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -98,6 +98,10 @@ class ASH_EXPORT AppListControllerImpl
   };
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Set the value of global variable `g_sunfish_nudge_disabled_for_test` to
+  // disable showing the nudge.
+  static void SetSunfishNudgeDisabledForTest(bool is_disabled);
 
   AppListPresenterImpl* fullscreen_presenter() {
     return fullscreen_presenter_.get();
@@ -372,6 +376,9 @@ class ASH_EXPORT AppListControllerImpl
   // using an empty `app_id`.
   bool SetHomeButtonQuickApp(const std::string& app_id);
 
+  // May show the Sunfish education nudge, anchored to the `launcher_button`.
+  void MaybeShowSunfishLauncherNudge(views::View* launcher_button);
+
  private:
   // Convenience methods for getting models from `model_provider_`.
   AppListModel* GetModel();
@@ -429,6 +436,10 @@ class ASH_EXPORT AppListControllerImpl
 
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;
+
+  // Called when eligibility of Assistant new entry point is read. The read is
+  // done as an async operation.
+  void OnAssistantNewEntryPointEligibilityReady(bool eligible);
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)

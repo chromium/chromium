@@ -14,10 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
-DEFINE_UI_CLASS_PROPERTY_TYPE(int)
-DEFINE_UI_CLASS_PROPERTY_TYPE(float)
 
 namespace {
 
@@ -76,13 +75,10 @@ class AssignableTestProperty {
   bool was_move_assigned_ = false;
 };
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty,
-                                   kAssignableKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty, kAssignableKey)
 DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TestCascadingProperty,
-                                             kCascadingOwnedKey,
-                                             nullptr)
+                                             kCascadingOwnedKey)
 
 }  // namespace
 

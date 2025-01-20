@@ -306,7 +306,7 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
   NSString* entries_file_path =
-      [bundle_path stringByAppendingPathComponent:IsPriceInsightsEnabled()
+      [bundle_path stringByAppendingPathComponent:IsPriceInsightsRegionEnabled()
                                                       ? kfilePriceInsightsName
                                                       : kfileName];
   return entries_file_path;

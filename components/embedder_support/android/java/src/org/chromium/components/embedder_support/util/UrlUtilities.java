@@ -13,7 +13,6 @@ import androidx.core.text.BidiFormatter;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -21,8 +20,8 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -61,8 +60,8 @@ public class UrlUtilities {
                             UrlConstants.HTTPS_SCHEME));
 
     /** URI schemes that are internal to Chrome. */
-    private static final HashSet<String> INTERNAL_SCHEMES =
-            CollectionUtil.newHashSet(
+    private static final Set<String> INTERNAL_SCHEMES =
+            Set.of(
                     UrlConstants.CHROME_SCHEME,
                     UrlConstants.CHROME_NATIVE_SCHEME,
                     ContentUrlConstants.ABOUT_SCHEME);
@@ -71,7 +70,6 @@ public class UrlUtilities {
 
     /**
      * @param uri A URI.
-     *
      * @return True if the URI's scheme is phone number scheme.
      */
     public static boolean isTelScheme(GURL gurl) {
@@ -307,6 +305,15 @@ public class UrlUtilities {
         // chrome:// scheme so that GURL parses the host correctly.
         GURL gurl = UrlFormatter.fixupUrl(url);
         return isNtpUrl(gurl);
+    }
+
+    /**
+     * @param url The URL to check whether it is for the Chrome native pages.
+     * @return Whether the passed in URL is used to render a chrome native page.
+     */
+    public static boolean isChromeNativeUrl(GURL url) {
+        if (!url.isValid() || !isInternalScheme(url)) return false;
+        return TextUtils.equals(UrlConstants.CHROME_NATIVE_SCHEME, url.getScheme());
     }
 
     /**

@@ -4,10 +4,11 @@
 
 package org.chromium.components.minidump_uploader;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.crash.anr.AnrCollector;
 
 import java.io.File;
@@ -47,6 +48,7 @@ import java.util.regex.Pattern;
  *  6. foo.forcedNNNNN.tryM names a file that the user has manually requested to upload.
  *  7. foo.tmp is a temporary file.
  */
+@NullMarked
 public class CrashFileManager {
     private static final String TAG = "CrashFileManager";
 
@@ -168,7 +170,7 @@ public class CrashFileManager {
         return MINIDUMP_SANS_LOGCAT_PATTERN.matcher(path).find();
     }
 
-    public static String tryIncrementAttemptNumber(File mFileToUpload) {
+    public static @Nullable String tryIncrementAttemptNumber(File mFileToUpload) {
         String newName = filenameWithIncrementedAttemptNumber(mFileToUpload.getPath());
         return mFileToUpload.renameTo(new File(newName)) ? newName : null;
     }
@@ -197,7 +199,7 @@ public class CrashFileManager {
      *
      * @return The renamed file, or null if renaming failed.
      */
-    public static File trySetReadyForUpload(File fileToUpload) {
+    public static @Nullable File trySetReadyForUpload(File fileToUpload) {
         assert CrashFileManager.isMinidumpSansLogcat(fileToUpload.getName());
         File renamedFile = new File(fileToUpload.getPath() + READY_FOR_UPLOAD_SUFFIX);
         return fileToUpload.renameTo(renamedFile) ? renamedFile : null;
@@ -214,7 +216,7 @@ public class CrashFileManager {
      *
      * @return The renamed file, or null if renaming failed.
      */
-    public static File trySetForcedUpload(File fileToUpload) {
+    public static @Nullable File trySetForcedUpload(File fileToUpload) {
         if (fileToUpload.getName().contains(UPLOADED_MINIDUMP_SUFFIX)) {
             Log.w(
                     TAG,
@@ -387,7 +389,7 @@ public class CrashFileManager {
      *
      * @return a Map for crash report uuid to this crash info key-value pairs.
      */
-    public Map<String, Map<String, String>> importMinidumpsCrashKeys() {
+    public @Nullable Map<String, Map<String, String>> importMinidumpsCrashKeys() {
         File crashpadDir = getCrashpadDirectory();
         if (!crashpadDir.exists() || !ensureCrashDirExists()) {
             return null;
@@ -401,7 +403,7 @@ public class CrashFileManager {
      * minidump exists. This method begins by reading all minidumps from Crashpad's database and
      * rewriting them as MIME files in the Crash Reports directory.
      */
-    public File getMinidumpSansLogcatForPid(int pid) {
+    public @Nullable File getMinidumpSansLogcatForPid(int pid) {
         importCrashpadMinidumps();
         File[] foundFiles =
                 listCrashFiles(Pattern.compile("\\.dmp" + Integer.toString(pid) + "\\z"));
@@ -587,7 +589,7 @@ public class CrashFileManager {
      * @param localId The local ID of the crash report.
      * @return The matching File, or null if no matching file is found.
      */
-    public File getCrashFileWithLocalId(String localId) {
+    public @Nullable File getCrashFileWithLocalId(String localId) {
         for (File f : listCrashFiles(null)) {
             // Only match non-uploaded or previously skipped files. In particular, do not match
             // successfully uploaded files; nor files which are not minidump files, such as logcat
@@ -616,7 +618,7 @@ public class CrashFileManager {
      * @param fileName Crash File name.
      * @return Local ID string or null if not found.
      */
-    public static String getCrashLocalIdFromFileName(String fileName) {
+    public static @Nullable String getCrashLocalIdFromFileName(String fileName) {
         Matcher matcher = CRASH_LOCAL_ID_PATTERN.matcher(fileName);
         if (matcher.find()) {
             return matcher.group(1);
@@ -669,10 +671,12 @@ public class CrashFileManager {
     /**
      * Copy a minidump from the File Descriptor {@param fd}.
      * Use {@param tmpDir} as an intermediate location to store temporary files.
+     *
      * @return The new minidump file copied with the contents of the File Descriptor, or null if the
      *         copying failed.
      */
-    public File copyMinidumpFromFD(FileDescriptor fd, File tmpDir, int uid) throws IOException {
+    public @Nullable File copyMinidumpFromFD(FileDescriptor fd, File tmpDir, int uid)
+            throws IOException {
         File crashDirectory = getCrashDirectory();
         if (!ensureCrashDirExists()) {
             Log.e(TAG, "Crash directory doesn't exist");

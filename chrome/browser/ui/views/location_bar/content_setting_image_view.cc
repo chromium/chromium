@@ -112,8 +112,9 @@ ContentSettingImageView::ContentSettingImageView(
 
   std::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());
-  if (view_id)
+  if (view_id) {
     SetID(*view_id);
+  }
 
   // Because this view is focusable, it should always have an accessible name,
   // even if an announcement is not to be made.
@@ -224,11 +225,13 @@ void ContentSettingImageView::UpdateElementIdentifier() {
 }
 
 void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
-  if (icon_color_ == color)
+  if (icon_color_ == color) {
     return;
+  }
   icon_color_ = color;
-  if (content_setting_image_model_->is_visible())
+  if (content_setting_image_model_->is_visible()) {
     UpdateImage();
+  }
   OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
@@ -306,15 +309,17 @@ ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
 }
 
 views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
-  if (!bubble_view_)
+  if (!bubble_view_) {
     return nullptr;
+  }
 
   return bubble_view_->GetWidget();
 }
 
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
-  if (!bubble_view_ || bubble_view_->GetWidget() != widget)
+  if (!bubble_view_ || bubble_view_->GetWidget() != widget) {
     return;
+  }
 
 #if BUILDFLAG(IS_MAC)
   if (content_setting_image_model_->image_type() ==
@@ -335,8 +340,9 @@ void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
 void ContentSettingImageView::UpdateImage() {
   gfx::Image icon = content_setting_image_model_->GetIcon(icon_color_.value_or(
       color_utils::DeriveDefaultIconColor(GetForegroundColor())));
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     SetImageModel(ui::ImageModel::FromImage(icon));
+  }
 }
 
 void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {

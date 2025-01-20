@@ -43,6 +43,28 @@ public class AuxiliarySearchMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    @IntDef({
+        ClickInfo.OPT_IN,
+        ClickInfo.OPT_OUT,
+        ClickInfo.OPEN_SETTINGS,
+        ClickInfo.TURN_ON,
+        ClickInfo.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ClickInfo {
+        // Indicates users agree to keep the enabled state: clicking the "Got it" button.
+        int OPT_IN = 0;
+        // Indicates users agree to keep the disabled state: clicking the "No thanks" button.
+        int OPT_OUT = 1;
+        // Indicates users want to go to settings to config the status: clicking the
+        // "Go to settings" button
+        int OPEN_SETTINGS = 2;
+        // Indicates users want to enable the feature which is disabled by default: clicking the
+        // "Turn on" button.
+        int TURN_ON = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     /** Captures the amount of time spent deleting all content. */
     @VisibleForTesting
     public static final String HISTOGRAM_DELETION_TIME = "Search.AuxiliarySearch.DeleteTime";
@@ -131,6 +153,12 @@ public class AuxiliarySearchMetrics {
             "Search.AuxiliarySearch.Schedule.Favicon.DonateCount";
     private static final String SCHEDULE_FAVICON_FETCH_TIME_UMA =
             "Search.AuxiliarySearch.Schedule.Favicon.FetchTime";
+
+    private static final String HISTOGRAM_SHARE_TABS_WITH_OS =
+            "Search.AuxiliarySearch.ShareTabsWithOs";
+
+    private static final String HISTOGRAM_MODULE_CONSENT =
+            "Search.AuxiliarySearch.Module.ClickInfo";
 
     /** Record the amount of time spent deleting content from the auxiliary search. */
     public static void recordDeleteTime(
@@ -252,5 +280,16 @@ public class AuxiliarySearchMetrics {
     /** Records the total number of favicon donated via a background task. */
     static void recordScheduledFaviconDonateCount(int size) {
         RecordHistogram.recordCount1000Histogram(SCHEDULE_FAVICON_DONATE_COUNT_UMA, size);
+    }
+
+    /** Records whether sharing Tabs with the system is enabled. */
+    static void recordIsShareTabsWithOsEnabled(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_SHARE_TABS_WITH_OS, enabled);
+    }
+
+    /** Records the type of the button clicked on the module. */
+    public static void recordClickButtonInfo(@ClickInfo int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_MODULE_CONSENT, type, ClickInfo.NUM_ENTRIES);
     }
 }

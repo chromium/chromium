@@ -224,10 +224,6 @@ public class LocationPermissionUpdaterTest {
         verify(mStore).resetPermission(eq(ORIGIN), eq(ContentSettingsType.GEOLOCATION));
     }
 
-    private void verifyPermissionNotReset() {
-        verify(mStore, never()).resetPermission(eq(ORIGIN), eq(ContentSettingsType.GEOLOCATION));
-    }
-
     @Test
     @Feature("TrustedWebActivity")
     public void updatesPermissionOnlyOnce_incorrectReturnsFromTwaService() {

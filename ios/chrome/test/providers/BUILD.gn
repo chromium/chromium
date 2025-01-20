@@ -9,6 +9,7 @@ group("providers") {
     "//ios/chrome/test/providers/additional_features",
     "//ios/chrome/test/providers/app_distribution",
     "//ios/chrome/test/providers/app_utils",
+    "//ios/chrome/test/providers/application_mode_fetcher",
     "//ios/chrome/test/providers/branded_images",
     "//ios/chrome/test/providers/content_notification",
     "//ios/chrome/test/providers/context_menu",

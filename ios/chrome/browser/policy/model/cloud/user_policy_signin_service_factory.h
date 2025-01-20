@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -25,7 +25,7 @@ class UserPolicySigninService;
 // Warning: ONLY use the service when Enterprise Policy is enabled where
 // the policy system objects are enabled (eg. the BrowserPolicyConnector object
 // was instantiated).
-class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
+class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   // Returns an instance of the UserPolicySigninServiceFactory singleton.
   static UserPolicySigninServiceFactory* GetInstance();
@@ -39,11 +39,6 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
   static void SetDeviceManagementServiceForTesting(
       DeviceManagementService* device_management_service);
 
-  UserPolicySigninServiceFactory(const UserPolicySigninServiceFactory&) =
-      delete;
-  UserPolicySigninServiceFactory& operator=(
-      const UserPolicySigninServiceFactory&) = delete;
-
  protected:
   // BrowserStateKeyedServiceFactory implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
@@ -52,8 +47,6 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 
   friend struct base::DefaultSingletonTraits<UserPolicySigninServiceFactory>;
 

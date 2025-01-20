@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -43,7 +40,6 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
@@ -58,6 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -121,6 +118,62 @@ std::string SupervisionToString(
                                              : "ForAdultUser";
 }
 
+// Returned type is optional, because for the kButtonsStillLoading no buttons
+// are yet presented (consequently, no metric recorded).
+std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
+    SyncButtonsFeatureConfig config) {
+  switch (config) {
+    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
+      return ::signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
+    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
+      return ::signin_metrics::SyncButtonsType::
+          kSyncEqualWeightedFromCapability;
+    case SyncButtonsFeatureConfig::kDeadlined:
+      return ::signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
+    default:
+      return std::nullopt;
+  }
+}
+
+::signin_metrics::SyncButtonClicked ExpectedOptInButtonClickedMetric(
+    SyncButtonsFeatureConfig config) {
+  switch (config) {
+    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
+      return ::signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted;
+    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
+    case SyncButtonsFeatureConfig::kDeadlined:
+      return ::signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted;
+    default:
+      NOTREACHED();
+  }
+}
+
+::signin_metrics::SyncButtonClicked ExpectedDeclinedButtonClickedMetric(
+    SyncButtonsFeatureConfig config) {
+  switch (config) {
+    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
+      return ::signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted;
+    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
+    case SyncButtonsFeatureConfig::kDeadlined:
+      return ::signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted;
+    default:
+      NOTREACHED();
+  }
+}
+
+::signin_metrics::SyncButtonClicked ExpectedSettingsButtonClickedMetric(
+    SyncButtonsFeatureConfig config) {
+  switch (config) {
+    case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
+      return ::signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted;
+    case SyncButtonsFeatureConfig::kAsyncEqualButtons:
+    case SyncButtonsFeatureConfig::kDeadlined:
+      return ::signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted;
+    case SyncButtonsFeatureConfig::kButtonsStillLoading:
+      return ::signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
+  }
+}
+
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
   return info.param.test_suffix + SupervisionToString(info);
 }
@@ -178,8 +231,7 @@ class FirstRunInteractiveUiTestBase
                         base::OnceCallback<void(bool)>()) {
     ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
-    fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                        std::move(first_run_exited_callback));
+    fre_service()->OpenFirstRunIfNeeded(std::move(first_run_exited_callback));
 
     WaitForPickerWidgetCreated();
     view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);
@@ -267,6 +319,7 @@ class FirstRunInteractiveUiTestBase
         // chrome/test/data/webui/intro/sign_in_promo_test.ts
         PressJsButton(kWebContentsId, button));
   }
+
  private:
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
 };
@@ -329,19 +382,13 @@ class FirstRunParameterizedInteractiveUiTest
     FirstRunInteractiveUiTestBase::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    FirstRunInteractiveUiTestBase::SetUpInProcessBrowserTestFixture();
-    if (WithPrivacySandboxEnabled()) {
-      PrivacySandboxService::SetPromptDisabledForTests(false);
-    }
-  }
-
   void SetUpOnMainThread() override {
     FirstRunInteractiveUiTestBase::SetUpOnMainThread();
 
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
       embedded_test_server()->StartAcceptingConnections();
+      PrivacySandboxService::SetPromptDisabledForTests(false);
     }
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
@@ -562,8 +609,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
 
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -643,7 +691,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   if (WithPrivacySandboxEnabled()) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(chrome::kChromeUINewTabPageURL),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     // Test that the Privacy Sandbox prompt gets displayed in the browser after
     // the user makes a Search Engine Choice in the FRE.
@@ -689,6 +737,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      ExpectedOptInButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 
@@ -702,15 +756,17 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   // TODO(crbug.com/366082752): Re-enable this test
   should_skip_test = true;
 #endif  // WIN && ARCH_CPU_64_BITS
-  if (should_skip_test)
+  if (should_skip_test) {
     GTEST_SKIP() << "Test is flaky on win64";
+  }
 
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
   }
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -768,6 +824,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      ExpectedDeclinedButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
@@ -846,6 +908,16 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+
+  if (ExpectedButtonShownMetric(SyncButtonsFeatureConfig()).has_value()) {
+    histogram_tester().ExpectUniqueSample(
+        "Signin.SyncButtons.Shown",
+        *ExpectedButtonShownMetric(SyncButtonsFeatureConfig()), 1);
+  }
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      ExpectedSettingsButtonClickedMetric(SyncButtonsFeatureConfig()), 1);
+
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);

@@ -51,7 +51,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
 
   base::HistogramTester histogram_tester;
 
-  autofill_metrics::LogStoredOfferMetrics(offers);
+  LogStoredOfferMetrics(offers);
 
   auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);
@@ -77,8 +77,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
 TEST_F(OffersMetricsTest, LogStoredOfferMetrics_NoOffers) {
   base::HistogramTester histogram_tester;
 
-  autofill_metrics::LogStoredOfferMetrics(
-      std::vector<std::unique_ptr<AutofillOfferData>>());
+  LogStoredOfferMetrics(std::vector<std::unique_ptr<AutofillOfferData>>());
 
   auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);

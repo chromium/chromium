@@ -6,7 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PREDICTION_QUALITY_METRICS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 
@@ -167,8 +170,26 @@ enum RationalizationQualityMetric {
   NUM_RATIONALIZATION_QUALITY_METRICS
 };
 
+// This enum represents the power set of prediction mechanisms' alignment with
+// the submitted type. Intended for measuring the overlap between various
+// prediction mechanisms. See go/field-prediction-overlap-metric-design.
+// LINT.IfChange(FieldPredictionOverlapHeader)
+enum class FieldPredictionOverlapSourcesSuperset {
+  kNoneCorrect = 0,
+  kAutocompleteCorrect = 1,
+  kHeuristicsCorrect = 2,
+  kServerCorrect = 3,
+  kServerHeuristicsCorrect = 4,
+  kServerAutocompleteCorrect = 5,
+  kHeuristicsAutocompleteCorrect = 6,
+  kServerHeuristicsAutocompleteCorrect = 7,
+  kMaxValue = kServerHeuristicsAutocompleteCorrect
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:FieldPredictionOverlapXml)
+
 void LogHeuristicPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
@@ -177,24 +198,33 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
     const AutofillField& field);
 
 void LogMlPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
 
 void LogServerPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
 
 void LogOverallPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field);
+
+// Emits the "Autofill.LocalHeuristics.MatchedAttribute" metric.
+void LogLocalHeuristicMatchedAttribute(
+    DenseSet<MatchAttribute> match_attributes);
+
+void LogFieldPredictionOverlapMetrics(const AutofillField& field);
 
 }  // namespace autofill::autofill_metrics
 

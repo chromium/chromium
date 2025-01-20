@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -96,10 +95,8 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // If the old pair's source language matches any of the never-translate
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
-    const std::string& (base::Value::*get_string)() const =
-        &base::Value::GetString;
     if (base::Contains(prefs->GetList(prefs::kBlockedLanguages),
-                       old_language_pair.first, get_string)) {
+                       old_language_pair.first)) {
       continue;
     }
 
@@ -213,7 +210,7 @@ void TranslatePrefs::ResetToDefaults() {
 // static
 base::Value::List TranslatePrefs::GetDefaultBlockedLanguages() {
   base::Value::List languages;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Preferred languages.
   std::string language = language::kFallbackInputMethodLocale;
   language::ToTranslateLanguageSynonym(&language);

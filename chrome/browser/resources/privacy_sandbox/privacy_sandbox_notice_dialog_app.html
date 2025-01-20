@@ -1,6 +1,6 @@
 <style include="cr-shared-style shared-style"></style>
 
-<div fill-content role="main">
+<div id="notice" fill-content role="main" hidden$="[[hideNoticePage_]]">
   <div class="content-area custom-scrollbar" scrollable tabindex="-1">
     <div class="header">
       <img class="logo" alt="">
@@ -18,38 +18,88 @@
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRowDescription3}
     </div>
-    <privacy-sandbox-dialog-learn-more class="learn-more-section"
-        expanded="{{expanded_}}"
-        title="$i18n{m1NoticeRowLearnMoreExpandLabel}">
-      <div class="paragraph">
-        <h2>$i18n{m1NoticeRowLearnMoreHeading1}</h2>
-        <div class="cr-secondary-text">
-          $i18n{m1NoticeRowLearnMoreDescription1}
+    <template is="dom-if" if="[[!shouldShowV2()]]">
+      <div id="learnMoreAndLastText">
+        <privacy-sandbox-dialog-learn-more class="learn-more-section"
+            expanded="{{expanded_}}"
+            title="$i18n{m1NoticeRowLearnMoreExpandLabel}">
+          <div class="paragraph">
+            <h2>$i18n{m1NoticeRowLearnMoreHeading1}</h2>
+            <div class="cr-secondary-text">
+              $i18n{m1NoticeRowLearnMoreDescription1}
+            </div>
+            <ul class="cr-secondary-text">
+              <li>$i18n{m1NoticeRowLearnMoreBullet1}</li>
+              <li>$i18n{m1NoticeRowLearnMoreBullet2}</li>
+            </ul>
+          </div>
+          <div class="paragraph cr-secondary-text">
+            $i18n{m1NoticeRowLearnMoreDescription2}
+          </div>
+          <div class="paragraph cr-secondary-text">
+            $i18n{m1NoticeRowLearnMoreDescription3}
+          </div>
+          <div class="paragraph">
+            <h2>$i18n{m1NoticeRowLearnMoreHeading2}</h2>
+            <div class="cr-secondary-text">
+              $i18n{m1NoticeRowLearnMoreDescription4}
+            </div>
+          </div>
+          <div class="paragraph cr-secondary-text">
+            $i18n{m1NoticeRowLearnMoreDescription5}
+          </div>
+        </privacy-sandbox-dialog-learn-more>
+        <div class="section cr-secondary-text" id="lastTextElement">
+          $i18n{m1NoticeRowDescription4}
         </div>
-        <ul class="cr-secondary-text">
-          <li>$i18n{m1NoticeRowLearnMoreBullet1}</li>
-          <li>$i18n{m1NoticeRowLearnMoreBullet2}</li>
-        </ul>
       </div>
-      <div class="paragraph cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription2}
-      </div>
-      <div class="paragraph cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription3}
-      </div>
-      <div class="paragraph">
-        <h2>$i18n{m1NoticeRowLearnMoreHeading2}</h2>
-        <div class="cr-secondary-text">
-          $i18n{m1NoticeRowLearnMoreDescription4}
+    </template>
+    <template is="dom-if" if="[[shouldShowV2()]]">
+      <div id="learnMoreAndLastTextV2">
+        <privacy-sandbox-dialog-learn-more class="learn-more-section"
+            expanded="{{expanded_}}"
+            title="$i18n{m1NoticeRowLearnMoreExpandLabel}">
+          <div class="paragraph">
+            <h2>$i18n{m1NoticeRowLearnMoreHeading1}</h2>
+            <div class="cr-secondary-text">
+              $i18n{m1NoticeRowLearnMoreDescription1}
+            </div>
+            <ul class="cr-secondary-text">
+              <li>$i18n{m1NoticeRowLearnMoreBullet1}</li>
+              <li>$i18n{m1NoticeLearnMoreBullet2V2}</li>
+            </ul>
+          </div>
+          <div class="paragraph cr-secondary-text">
+            $i18n{m1NoticeRowLearnMoreDesription2V2}
+          </div>
+          <div class="paragraph cr-secondary-text">
+            $i18n{m1NoticeRowLearnMoreDescription3}
+          </div>
+          <div class="paragraph">
+            <h2>$i18n{m1NoticeRowLearnMoreHeading2}</h2>
+            <div class="cr-secondary-text">
+              $i18n{m1NoticeRowLearnMoreDescription4}
+            </div>
+          </div>
+          <div class="paragraph">
+            <h2>$i18n{m1NoticeRowLearnMoreHeading3}</h2>
+            <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
+              <div class="cr-secondary-text">
+                $i18nRaw{m1NoticeRowLearnMoreDescription5V2}
+              </div>
+            </template>
+            <template is="dom-if" if="[[!isPrivacyPolicyLinkEnabled_]]">
+              <div class="cr-secondary-text">
+                $i18nRaw{m1NoticeRowLearnMoreDescription5V2NoLink}
+              </div>
+            </template>
+          </div>
+        </privacy-sandbox-dialog-learn-more>
+        <div class="section cr-secondary-text" id="lastTextElementV2">
+          $i18n{m1NoticeRowLastText}
         </div>
       </div>
-      <div class="paragraph cr-secondary-text">
-        $i18n{m1NoticeRowLearnMoreDescription5}
-      </div>
-    </privacy-sandbox-dialog-learn-more>
-    <div class="section cr-secondary-text" id="lastTextElement">
-      $i18n{m1NoticeRowDescription4}
-    </div>
+    </template>
     <div class="buttons-container">
       <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
         $i18n{m1NoticeRowSettingsButton}
@@ -62,9 +112,16 @@
   </div>
   <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
     <cr-button id="moreButton" on-click="onNoticeMoreClicked"
-        class="action-button" aria-hidden="true" tabindex="-1">
+        class="action-button">
       $i18n{m1DialogMoreButton}
       <cr-icon icon="cr:expand-more"></cr-icon>
     </cr-button>
   </div>
 </div>
+<template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
+  <privacy-sandbox-privacy-policy-dialog
+      id="privacyPolicyDialog"
+      should-show="[[hideNoticePage_]]"
+      on-back-button-clicked="onBackButtonClicked_">
+  </privacy-sandbox-privacy-policy-dialog>
+</template>

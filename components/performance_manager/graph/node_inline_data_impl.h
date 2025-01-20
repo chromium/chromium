@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_IMPL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_IMPL_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <type_traits>

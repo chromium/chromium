@@ -15,6 +15,8 @@ using AtkKeyEventStruct = struct _AtkKeyEventStruct;
 
 namespace ui {
 
+class X11Extension;
+
 class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
  public:
   // Notifies if the PlatformWindow looses a mouse grab. This can be useful
@@ -36,7 +38,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
 
   // Returns true if this window should be in a forced override-redirect state
   // (not managed by the window manager).
-  virtual bool IsOverrideRedirect() const = 0;
+  virtual bool IsOverrideRedirect(const X11Extension& x11_extension) const = 0;
 
   // Returns guessed size we will have after the switch to/from fullscreen:
   // - (may) avoid transient states

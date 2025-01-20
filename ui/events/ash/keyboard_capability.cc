@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -82,7 +83,7 @@ const int kCustomNullScanCode = 0xC0000;
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
 
-constexpr auto kRightAltBlocklist =
+constexpr auto kQuickInsertBlocklist =
     base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
 
 constexpr std::string_view kRevenBoardName = "reven";
@@ -126,6 +127,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_DICTATE, TopRowActionKey::kDictation},
         {VKEY_PRIVACY_SCREEN_TOGGLE, TopRowActionKey::kPrivacyScreenToggle},
         {VKEY_ACCESSIBILITY, TopRowActionKey::kAccessibility},
+        {VKEY_DO_NOT_DISTURB, TopRowActionKey::kDoNotDisturb},
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.
@@ -531,6 +533,16 @@ KeyboardCapability::~KeyboardCapability() {
 }
 
 KeyboardCapability::KeyboardInfo::KeyboardInfo() = default;
+KeyboardCapability::KeyboardInfo::KeyboardInfo(
+    DeviceType device_type,
+    KeyboardTopRowLayout top_row_layout,
+    std::vector<uint32_t> top_row_scan_codes,
+    std::vector<TopRowActionKey> top_row_action_keys)
+    : device_type(device_type),
+      top_row_layout(top_row_layout),
+      top_row_scan_codes(std::move(top_row_scan_codes)),
+      top_row_action_keys(std::move(top_row_action_keys)) {}
+
 KeyboardCapability::KeyboardInfo::KeyboardInfo(KeyboardInfo&&) = default;
 KeyboardCapability::KeyboardInfo& KeyboardCapability::KeyboardInfo::operator=(
     KeyboardInfo&&) = default;
@@ -747,8 +759,8 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     modifier_keys.push_back(mojom::ModifierKey::kFunction);
   }
 
-  if (HasRightAltKey(keyboard)) {
-    modifier_keys.push_back(mojom::ModifierKey::kRightAlt);
+  if (HasQuickInsertKey(keyboard)) {
+    modifier_keys.push_back(mojom::ModifierKey::kQuickInsert);
   }
 
   return modifier_keys;
@@ -836,9 +848,10 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   // This metrics recording will happen once per keyboard per connection, since
   // GetKeyboardInfo is cached and isn't recomputed unless the keyboard
   // disconnects and reconnects.
-  RecordKeyboardInfoMetrics(keyboard_info,
-                            /*has_assistant_key=*/HasAssistantKey(keyboard),
-                            /*has_right_alt_key=*/HasRightAltKey(keyboard));
+  RecordKeyboardInfoMetrics(
+      keyboard_info,
+      /*has_assistant_key=*/HasAssistantKey(keyboard),
+      /*has_quick_insert_key=*/HasQuickInsertKey(keyboard));
 
   return &keyboard_info;
 }
@@ -973,7 +986,7 @@ const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
 }
 
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
-  if (HasRightAltKey(keyboard)) {
+  if (HasQuickInsertKey(keyboard)) {
     return false;
   }
 
@@ -1046,7 +1059,8 @@ bool KeyboardCapability::HasFunctionKeyOnAnyKeyboard() const {
   return false;
 }
 
-bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
+bool KeyboardCapability::HasQuickInsertKey(
+    const KeyboardDevice& keyboard) const {
   if (!ash::features::IsModifierSplitEnabled()) {
     return false;
   }
@@ -1055,7 +1069,7 @@ bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
     return true;
   }
 
-  if (kRightAltBlocklist.contains(board_name_)) {
+  if (kQuickInsertBlocklist.contains(board_name_)) {
     return false;
   }
 
@@ -1067,16 +1081,16 @@ bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
          keyboard.has_assistant_key;
 }
 
-bool KeyboardCapability::HasRightAltKey(int device_id) const {
+bool KeyboardCapability::HasQuickInsertKey(int device_id) const {
   auto keyboard = FindKeyboardWithId(device_id);
   if (!keyboard) {
     return false;
   }
 
-  return HasRightAltKey(*keyboard);
+  return HasQuickInsertKey(*keyboard);
 }
 
-bool KeyboardCapability::HasRightAltKeyForOobe(
+bool KeyboardCapability::HasQuickInsertKeyForOobe(
     const KeyboardDevice& keyboard) const {
   if (ash::features::IsModifierSplitEnabled()) {
     return false;
@@ -1086,7 +1100,7 @@ bool KeyboardCapability::HasRightAltKeyForOobe(
     return true;
   }
 
-  if (kRightAltBlocklist.contains(board_name_)) {
+  if (kQuickInsertBlocklist.contains(board_name_)) {
     return false;
   }
 
@@ -1094,18 +1108,18 @@ bool KeyboardCapability::HasRightAltKeyForOobe(
          keyboard.has_assistant_key;
 }
 
-bool KeyboardCapability::HasRightAltKeyForOobe(int device_id) const {
+bool KeyboardCapability::HasQuickInsertKeyForOobe(int device_id) const {
   auto keyboard = FindKeyboardWithId(device_id);
   if (!keyboard) {
     return false;
   }
 
-  return HasRightAltKeyForOobe(*keyboard);
+  return HasQuickInsertKeyForOobe(*keyboard);
 }
 
 bool KeyboardCapability::IsSplitModifierKeyboardForOverride(
     const KeyboardDevice& keyboard) const {
-  if (kRightAltBlocklist.contains(board_name_)) {
+  if (kQuickInsertBlocklist.contains(board_name_)) {
     return false;
   }
 
@@ -1228,10 +1242,12 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 
   auto sorted_keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
-  base::ranges::sort(sorted_keyboards, [](const ui::KeyboardDevice& device1,
-                                          const ui::KeyboardDevice& device2) {
-    return device1.id < device2.id;
-  });
+  std::vector<int> sorted_keyboard_ids;
+  sorted_keyboard_ids.reserve(sorted_keyboards.size());
+  base::ranges::transform(sorted_keyboards,
+                          std::back_inserter(sorted_keyboard_ids),
+                          &KeyboardDevice::id);
+  base::ranges::sort(sorted_keyboard_ids);
 
   // Generate a vector with only the device ids from the
   // `keyboard_info_map_` map. Guaranteed to be sorted as flat_map is always
@@ -1243,17 +1259,13 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
                           [](const auto& pair) { return pair.first; });
   DCHECK(base::ranges::is_sorted(cached_keyboard_info_ids));
 
-  // Compares the `cached_keyboard_info_ids` to the id field of
-  // `sorted_keyboards`. Ids that are in `cached_keyboard_info_ids` but not
-  // in `sorted_keyboards` are inserted into `keyboard_ids_to_remove`.
-  // `sorted_keyboards` and `cached_keyboard_info_ids` must be sorted.
+  // Compares the `cached_keyboard_info_ids` to `sorted_keyboard_ids`. Ids that
+  // are in `cached_keyboard_info_ids` but not in `sorted_keyboard_ids` are
+  // inserted into `keyboard_ids_to_remove`. `sorted_keyboard_ids` and
+  // `cached_keyboard_info_ids` must be sorted.
   std::vector<int> keyboard_ids_to_remove;
-  base::ranges::set_difference(
-      cached_keyboard_info_ids, sorted_keyboards,
-      std::back_inserter(keyboard_ids_to_remove),
-      /*Comp=*/base::ranges::less(),
-      /*Proj1=*/std::identity(),
-      /*Proj2=*/[](const KeyboardDevice& device) { return device.id; });
+  base::ranges::set_difference(cached_keyboard_info_ids, sorted_keyboard_ids,
+                               std::back_inserter(keyboard_ids_to_remove));
 
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);
@@ -1304,6 +1316,16 @@ bool KeyboardCapability::HasTopRowActionKey(const KeyboardDevice& keyboard,
   return base::Contains(keyboard_info->top_row_action_keys, action_key);
 }
 
+bool KeyboardCapability::HasTopRowActionKey(int device_id,
+                                            TopRowActionKey action_key) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasTopRowActionKey(*keyboard, action_key);
+}
+
 bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
     TopRowActionKey action_key) const {
   for (const ui::KeyboardDevice& keyboard :
@@ -1317,7 +1339,7 @@ bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
 
 bool KeyboardCapability::IsSplitModifierKeyboard(
     const KeyboardDevice& keyboard) const {
-  return HasRightAltKey(keyboard) && HasFunctionKey(keyboard);
+  return HasQuickInsertKey(keyboard) && HasFunctionKey(keyboard);
 }
 
 bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {

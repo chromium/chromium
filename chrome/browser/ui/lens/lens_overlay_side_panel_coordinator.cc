@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/companion/text_finder/text_finder_manager.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -24,6 +26,8 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -37,6 +41,11 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_util.h"
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace lens {
 
@@ -144,6 +153,52 @@ LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
   return nullptr;
 }
 
+bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
+    const GURL& nav_url) {
+  if (ShouldHandleTextDirectives(nav_url)) {
+    const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+                               ->GetContents()
+                               ->GetLastCommittedURL();
+    // Need to check if the page URL matches the navigation URL again. This is
+    // because in the case of the navigation URL being a search URL with a text
+    // fragment, it should open in a new tab instead of the side panel. This
+    // also adds an additional check to make sure the text query parameters
+    // match.
+    if (lens::IsValidSearchResultsUrl(nav_url)) {
+      auto page_url_text_query = lens::GetTextQueryParameterValue(page_url);
+      auto nav_url_text_query = lens::GetTextQueryParameterValue(nav_url);
+      if (page_url.host() != nav_url.host() ||
+          page_url.path() != nav_url.path() ||
+          page_url_text_query != nav_url_text_query) {
+        lens_overlay_controller_->GetTabInterface()
+            ->GetBrowserWindowInterface()
+            ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        return true;
+      }
+    }
+
+    // Nav url should have a text fragment.
+    auto text_fragments =
+        shared_highlighting::ExtractTextFragments(nav_url.ref());
+
+    // TODO(crbug.com/383575917): PDFs will likely need a different function
+    // call to PDFDocumentHelper to render these text highlights. Create and
+    // attach a `TextFinderManager` to the primary page.
+    content::Page& page = lens_overlay_controller_->GetTabInterface()
+                              ->GetContents()
+                              ->GetPrimaryPage();
+    companion::TextFinderManager* text_finder_manager =
+        companion::TextFinderManager::GetOrCreateForPage(page);
+    text_finder_manager->CreateTextFinders(
+        text_fragments,
+        base::BindOnce(
+            &LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete,
+            weak_ptr_factory_.GetWeakPtr(), nav_url));
+    return true;
+  }
+  return false;
+}
+
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
   return GetSidePanelUI(lens_overlay_controller_)
       ->IsSidePanelEntryShowing(
@@ -201,11 +256,13 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // Focus the web contents immediately, so that hotkey presses (i.e. escape)
   // are handled.
   GetSidePanelWebContents()->Focus();
+
+  const GURL& nav_url = navigation_handle->GetURL();
+
   // We only care about the navigation if it is the results frame, is HTTPS,
   // renderer initiated and NOT a same document navigation.
   if (!navigation_handle->IsRendererInitiated() ||
-      !navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() ||
-      navigation_handle->IsSameDocument() ||
+      !nav_url.SchemeIsHTTPOrHTTPS() || navigation_handle->IsSameDocument() ||
       navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->GetParentFrame() ||
       !navigation_handle->GetParentFrame()->IsInPrimaryMainFrame()) {
@@ -217,14 +274,55 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // certain navigations before they result in an error page, we should make
   // sure these error pages don't commit and instead open these URLs in a new
   // tab.
-  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL()) &&
-      lens::GetSearchResultsUrlFromRedirectUrl(navigation_handle->GetURL())
-          .is_empty()) {
+  if (!lens::IsValidSearchResultsUrl(nav_url) &&
+      lens::GetSearchResultsUrlFromRedirectUrl(nav_url).is_empty()) {
     navigation_handle->SetSilentlyIgnoreErrors();
+
+    content::WebContents* web_contents =
+        lens_overlay_controller_->GetTabInterface()->GetContents();
+
+#if BUILDFLAG(ENABLE_PDF)
+    // If a PDFDocumentHelper is found attached to the current web contents,
+    // that means that the PDF viewer is currently loaded in it.
+    if (ShouldHandlePDFViewportChange(nav_url)) {
+      auto* pdf_helper =
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      if (pdf_helper) {
+        pdf_extension_util::DispatchShouldUpdateViewportEvent(
+            web_contents->GetPrimaryMainFrame(), nav_url);
+        return;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+    // If the contextual search box is enabled, cross-origin navigations could
+    // be a citation that should be rendered as text highlights in the current
+    // tab.
+    if (MaybeHandleTextDirectives(nav_url)) {
+      return;
+    }
+
     lens_overlay_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
-        ->OpenGURL(navigation_handle->GetURL(),
-                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
+  // If the search URL should be opened in a new tab, open it here.
+  if (ShouldOpenSearchURLInNewTab(nav_url)) {
+    lens_overlay_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
+  // If the query has text directives, return early to allow the navigation
+  // throttle to handle the request. Have to check `ShouldHandleTextDirectives`
+  // separately in case the navigation happens to be a citation on a valid
+  // search result that would typically be loaded in the side panel. In this
+  // case, the navigation throttle will cancel the navigation and call
+  // `MaybeHandleTextDirectives` directly.
+  if (ShouldHandleTextDirectives(nav_url)) {
     return;
   }
 
@@ -232,7 +330,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // page and any feature-specific request headers.
   navigation_handle->SetRequestHeader(kChromeSideSearchVersionHeaderName,
                                       kChromeSideSearchVersionHeaderValue);
-  lens_overlay_controller_->SetSidePanelShowErrorPage(
+  lens_overlay_controller_->SetSidePanelIsOffline(
       net::NetworkChangeNotifier::IsOffline());
   lens_overlay_controller_->SetSidePanelIsLoadingResults(true);
 }
@@ -254,6 +352,95 @@ LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost() {
   return lens_overlay_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->GetWebContentsModalDialogHostForWindow();
+}
+
+bool LensOverlaySidePanelCoordinator::ShouldHandleTextDirectives(
+    const GURL& nav_url) {
+  // Only handle text directives if the feature is enabled and the overlay is
+  // not covering the current tab.
+  if (!lens::features::HandleSidePanelTextDirectivesEnabled() ||
+      lens_overlay_controller_->IsOverlayShowing()) {
+    return false;
+  }
+
+  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+                             ->GetContents()
+                             ->GetLastCommittedURL();
+  // Only handle text directives when the page URL and the URL being navigated
+  // to have the same host and path, or if the URL being navigated to is result
+  // search URL with a text fragment then it needs custom handling to open in a
+  // new tab rather than in the side panel. This ignores the ref and query
+  // attributes.
+  if ((page_url.host() != nav_url.host() ||
+       page_url.path() != nav_url.path()) &&
+      !lens::IsValidSearchResultsUrl(nav_url)) {
+    return false;
+  }
+
+  auto text_fragments =
+      shared_highlighting::ExtractTextFragments(nav_url.ref());
+  // If the url that is being navigated to does not have a text directive, then
+  // it cannot be handled.
+  return !text_fragments.empty();
+}
+
+bool LensOverlaySidePanelCoordinator::ShouldHandlePDFViewportChange(
+    const GURL& nav_url) {
+  // Only handle text directives if the feature is enabled and the overlay is
+  // not covering the current tab.
+  if (!lens::features::HandleSidePanelTextDirectivesEnabled() ||
+      lens_overlay_controller_->IsOverlayShowing()) {
+    return false;
+  }
+
+  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+                             ->GetContents()
+                             ->GetLastCommittedURL();
+  // Handle the PDF hash change if the URL being navigated to is the same as the
+  // URL loaded in the main tab. The URL being navigated to should also contain
+  // a fragment with viewport parameters that will be parsed in the extension.
+  return !nav_url.ref().empty() && page_url.host() == nav_url.host() &&
+         page_url.path() == nav_url.path() &&
+         page_url.query() == nav_url.query();
+}
+
+void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(
+    const GURL& nav_url,
+    const std::vector<std::pair<std::string, bool>>& lookup_results) {
+  if (lookup_results.empty()) {
+    lens_overlay_controller_->GetTabInterface()
+        ->GetBrowserWindowInterface()
+        ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    return;
+  }
+
+  std::vector<std::string> text_directives;
+  for (auto pair : lookup_results) {
+    // If any of the text fragments are not found, then open in a new tab.
+    if (!pair.second) {
+      lens_overlay_controller_->GetTabInterface()
+          ->GetBrowserWindowInterface()
+          ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      return;
+    }
+    text_directives.push_back(pair.first);
+  }
+
+  // Delete any existing `TextHighlighterManager` on the page. Without this, any
+  // text highlights after the first to be rendered on the page will not render.
+  auto& page = lens_overlay_controller_->GetTabInterface()
+                   ->GetContents()
+                   ->GetPrimaryPage();
+  if (companion::TextHighlighterManager::GetForPage(page)) {
+    companion::TextHighlighterManager::DeleteForPage(page);
+  }
+
+  // If every text fragment was found, then create a text highlighter manager to
+  // render the text highlights.
+  companion::TextHighlighterManager* text_highlighter_manager =
+      companion::TextHighlighterManager::GetOrCreateForPage(page);
+  text_highlighter_manager->CreateTextHighlightersAndRemoveExisting(
+      text_directives);
 }
 
 void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
@@ -318,6 +505,11 @@ GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
 LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return base::BindRepeating(
+        &LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel,
+        base::Unretained(this));
+  }
   return base::NullCallbackAs<std::unique_ptr<ui::MenuModel>()>();
 }
 

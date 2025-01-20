@@ -26,7 +26,7 @@ dictionary ObservableEventListenerOptions {
 };
 
 [
-    Exposed=(Window,Worker,AudioWorklet)
+    Exposed=(Window,Worker,AudioWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface EventTarget {
     [CallWith=ScriptState] constructor();
     void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);

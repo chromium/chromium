@@ -21,7 +21,7 @@ namespace policies {
 
 // Urgently discard a tab when receiving a memory pressure signal.
 class UrgentPageDiscardingPolicy : public GraphOwned,
-                                   public SystemNode::ObserverDefaultImpl {
+                                   public SystemNodeObserver {
  public:
   UrgentPageDiscardingPolicy();
   ~UrgentPageDiscardingPolicy() override;
@@ -32,6 +32,9 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
+
+  // When invoked, the policy will not discard pages on memory pressure.
+  static void DisableForTesting();
 
  private:
   // SystemNodeObserver:

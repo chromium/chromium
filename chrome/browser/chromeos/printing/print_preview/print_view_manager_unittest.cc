@@ -78,7 +78,7 @@ class PrintViewManagerCrosTest : public BrowserWithTestWindowTest {
   PrintViewManagerCrosTest() = default;
   PrintViewManagerCrosTest(const PrintViewManagerCrosTest&) = delete;
   PrintViewManagerCrosTest& operator=(const PrintViewManagerCrosTest&) = delete;
-  ~PrintViewManagerCrosTest() override {}
+  ~PrintViewManagerCrosTest() override = default;
 
   // Overridden from testing::Test
   void SetUp() override {

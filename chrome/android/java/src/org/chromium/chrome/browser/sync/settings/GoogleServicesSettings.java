@@ -22,7 +22,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -200,18 +199,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
-            if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                    && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
-                // Don't show signout dialog if there's no sync consent, as it never wipes the data.
-                IdentityServicesProvider.get()
-                        .getSigninManager(getProfile())
-                        .signOut(SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN, null, false);
-                mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
-                return true;
-            }
-
-            // TODO(crbug.com/350699437): Use a different SignoutReason.
             SignOutCoordinator.startSignOutFlow(
                     requireContext(),
                     getProfile(),

@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_GWP_ASAN_CLIENT_EXTREME_LIGHTWEIGHT_DETECTOR_MALLOC_SHIMS_H_
 #define COMPONENTS_GWP_ASAN_CLIENT_EXTREME_LIGHTWEIGHT_DETECTOR_MALLOC_SHIMS_H_
 
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 #include <cstddef>  // for size_t
 
 #include "components/gwp_asan/client/export.h"
@@ -29,5 +33,7 @@ GWP_ASAN_EXPORT partition_alloc::internal::LightweightQuarantineBranch&
 GetEludQuarantineBranchForLargeObjectsForTesting();
 
 }  // namespace gwp_asan::internal
+
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_EXTREME_LIGHTWEIGHT_DETECTOR_MALLOC_SHIMS_H_

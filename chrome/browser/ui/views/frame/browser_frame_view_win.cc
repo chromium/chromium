@@ -321,7 +321,9 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // pixels at the end of the top and bottom edges trigger diagonal resizing.
   constexpr int kResizeCornerWidth = 16;
 
-  const int top_border_thickness = GetLayoutConstant(TAB_STRIP_PADDING);
+  const int top_border_thickness = browser_view()->GetIsWebAppType()
+                                       ? FrameTopBorderThickness(false)
+                                       : GetLayoutConstant(TAB_STRIP_PADDING);
 
   const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
@@ -445,7 +447,7 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   }
 
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab && current_tab->IsLoading();
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel BrowserFrameViewWin::GetFaviconForTabIconView() {

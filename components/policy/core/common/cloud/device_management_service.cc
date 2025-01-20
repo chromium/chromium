@@ -151,6 +151,8 @@ std::string ResponseCodeToString(int response_code) {
       return "IllegalAccountForPackagedEDULicense";
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return "InvalidPackagedDeviceForKiosk";
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return "OrgUnitEnrollmentLimitExceeded";
   }
 
   return base::NumberToString(response_code);
@@ -185,6 +187,7 @@ const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
 const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
+const int DeviceManagementService::kOrgUnitEnrollmentLimitExceeded;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
@@ -425,14 +428,21 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
       // OAuth token is transferred as a HTTP query parameter.
       break;
     case DMAuthTokenType::kOidc:
-      // Send OIDC Auth token and ID token in auth header, send profile ID in
-      // URL parameter
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
-                        dm_protocol::kOidcAuthTokenHeaderPrefix, *oauth_token_,
-                        ",", dm_protocol::kOidcIdTokenHeaderPrefix,
-                        auth_data_.oidc_id_token()}));
+      if (oauth_token_ && !oauth_token_.value().empty()) {
+        rr->headers.SetHeader(
+            dm_protocol::kAuthHeader,
+            base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
+                          dm_protocol::kOidcAuthTokenHeaderPrefix,
+                          *oauth_token_, ",",
+                          dm_protocol::kOidcIdTokenHeaderPrefix,
+                          auth_data_.oidc_id_token()}));
+      } else {
+        rr->headers.SetHeader(
+            dm_protocol::kAuthHeader,
+            base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
+                          dm_protocol::kOidcEncryptedUserInfoPrefix,
+                          auth_data_.oidc_id_token()}));
+      }
       break;
   }
 

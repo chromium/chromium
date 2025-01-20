@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
 #include "url/gurl.h"
 
+class TabStripActionContainer;
 class TabStripModel;
 class TabSearchContainer;
 class BrowserWindowInterface;
@@ -70,40 +71,71 @@ class TabDeclutterController {
     return next_nudge_valid_time_ticks_;
   }
 
+  void set_next_nudge_valid_time_ticks_for_testing(
+      base::TimeTicks next_nudge_valid_time_ticks) {
+    next_nudge_valid_time_ticks_ = next_nudge_valid_time_ticks;
+  }
+
   base::TimeDelta nudge_timer_interval() const { return nudge_timer_interval_; }
 
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
+  void OnActionUIDismissed(base::PassKey<TabStripActionContainer>);
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   virtual std::vector<tabs::TabInterface*> GetStaleTabs();
 
-  std::map<GURL, std::vector<tabs::TabInterface*>> GetDuplicateTabs();
+  virtual std::map<GURL, std::vector<tabs::TabInterface*>> GetDuplicateTabs();
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   void ExcludeFromStaleTabs(tabs::TabInterface* tabs);
+
+  void ExcludeFromDuplicateTabs(GURL url);
 
   void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
 
   void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
 
   // Closes the tabs from the tabstrip if they are present.
-  void DeclutterTabs(std::vector<tabs::TabInterface*> tabs);
+  void DeclutterTabs(std::vector<tabs::TabInterface*> tabs,
+                     const std::vector<GURL>& urls);
 
  private:
   void StartDeclutterTimer();
 
-  bool DeclutterNudgeCriteriaMet(base::span<tabs::TabInterface*> stale_tabs);
+  // Returns whether the nudge should be shown in the tabstrip for declutter.
+  // Note: The calculation for stale tabs and duplicate tabs are considered
+  // independent of each other from the perspective of the controller. This
+  // means that the expected unused tabs for nudge might be different from that
+  // of the webUI in certain edge cases where a duplicate tab is also a stale
+  // tab.
+  bool DeclutterNudgeCriteriaMet(
+      base::span<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
 
+  bool DeclutterStaleTabsNudgeCriteriaMet(
+      base::span<tabs::TabInterface*> stale_tabs);
+
+  bool DeclutterDuplicateTabsNudgeCriteriaMet(
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
+
+  // Helper for computing `DeclutterNudgeCriteriaMet()` by calculating if there
+  // is a new unused tab from the previous nudge.
+  bool HasNewUnusedTabsForNudge(
+      base::span<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) const;
+
+  // Returns if `tabs` has an element not present in `tabs_previous_nudge_`.
+  bool IsNewTabDetectedForNudge(base::span<tabs::TabInterface*> tabs) const;
   void ProcessTabs();
 
-  void ProcessDuplicateTabs();
-
-  void ProcessStaleTabs();
-
   void StartNudgeTimer();
+
+  bool IsTabExcluded(tabs::TabInterface* tab) const;
+
+  void ResetAndDoubleNudgeTimer();
 
   // Duration of inactivity after which a tab is considered stale.
   base::TimeDelta stale_tab_threshold_duration_;
@@ -121,11 +153,12 @@ class TabDeclutterController {
   // The timer that is responsible for blocking the nudge from showing.
   base::TimeTicks next_nudge_valid_time_ticks_;
   // The list of tabs shown previously in a nudge.
-  std::set<tabs::TabInterface*> stale_tabs_previous_nudge_;
+  std::set<tabs::TabInterface*> tabs_previous_nudge_;
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
-  std::vector<tabs::TabInterface*> excluded_tabs_;
+  std::set<tabs::TabInterface*> excluded_tabs_;
+  std::set<GURL> excluded_urls_;
 
   bool is_active_;
   // Holds subscriptions for BrowserWindowInterface callbacks.

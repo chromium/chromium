@@ -27,6 +27,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -51,7 +52,10 @@ class MockDoHTemplatesUriResolver
     : public dns_over_https::TemplatesUriResolver {
  public:
   MockDoHTemplatesUriResolver() = default;
-  MOCK_METHOD(void, Update, (PrefService*), (override));
+  MOCK_METHOD(void,
+              Update,
+              (const PrefService&, const user_manager::User&),
+              (override));
   MOCK_METHOD(bool, GetDohWithIdentifiersActive, (), (override));
   MOCK_METHOD(std::string, GetEffectiveTemplates, (), (override));
   MOCK_METHOD(std::string, GetDisplayTemplates, (), (override));
@@ -191,11 +195,30 @@ class SecureDnsManagerTest : public testing::Test {
         ::prefs::kBuiltInDnsClientEnabled, true);
     local_state_.registry()->RegisterBooleanPref(
         ::prefs::kAdditionalDnsQueryTypesEnabled, true);
+
+    // Add a user for test.
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    fake_user_manager_.Reset(
+        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        "test-user@testdomain.com", GaiaId("1234567890"));
+    user_ = fake_user_manager_->AddGaiaUser(account_id,
+                                            user_manager::UserType::kRegular);
+    ASSERT_TRUE(user_);
+
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
                                                local_state_.registry());
     network_handler_test_helper_.InitializePrefs(&profile_prefs_,
                                                  &local_state_);
     network_handler_test_helper_.AddDefaultProfiles();
+
+    // Simulate login.
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+    fake_user_manager_->OnUserProfileCreated(account_id, &profile_prefs_);
 
     // SystemNetworkContextManager cannot be instantiated here,
     // which normally owns the StubResolverConfigReader instance, so
@@ -206,7 +229,7 @@ class SecureDnsManagerTest : public testing::Test {
         stub_resolver_config_reader_.get());
 
     secure_dns_manager_ = std::make_unique<SecureDnsManager>(
-        local_state(), /*profile_prefs=*/nullptr, /*is_profile_managed=*/true);
+        local_state(), *user_, /*is_profile_managed=*/true);
     secure_dns_manager_observer_ =
         std::make_unique<SecureDnsManagerObserver>(secure_dns_manager_.get());
   }
@@ -218,6 +241,12 @@ class SecureDnsManagerTest : public testing::Test {
     SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
         nullptr);
     stub_resolver_config_reader_.reset();
+
+    fake_user_manager_->OnUserProfileWillBeDestroyed(
+        AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
+                                       GaiaId("1234567890")));
+    user_ = nullptr;
+    fake_user_manager_.Reset();
   }
 
   void ChangeNetworkOncSource(const std::string& path,
@@ -234,6 +263,7 @@ class SecureDnsManagerTest : public testing::Test {
   }
 
   TestingPrefServiceSimple* local_state() { return &local_state_; }
+  user_manager::User& user() { return *user_; }
   PrefService* profile_prefs() { return &profile_prefs_; }
   SecureDnsManager* secure_dns_manager() { return secure_dns_manager_.get(); }
   SecureDnsManagerObserver* secure_dns_manager_observer() {
@@ -245,6 +275,9 @@ class SecureDnsManagerTest : public testing::Test {
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
   TestingPrefServiceSimple local_state_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+  raw_ptr<user_manager::User> user_;
   TestingPrefServiceSimple profile_prefs_;
   std::unique_ptr<SecureDnsManager> secure_dns_manager_;
   std::unique_ptr<SecureDnsManagerObserver> secure_dns_manager_observer_;
@@ -385,7 +418,7 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
 
   std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
       std::make_unique<MockDoHTemplatesUriResolver>();
-  EXPECT_CALL(*template_uri_resolver, Update(_)).Times(prefUpdatesCallCount);
+  EXPECT_CALL(*template_uri_resolver, Update(_, _)).Times(prefUpdatesCallCount);
   EXPECT_CALL(*template_uri_resolver, GetEffectiveTemplates())
       .Times(prefUpdatesCallCount)
       .WillRepeatedly(Return(effectiveTemplate));
@@ -416,18 +449,6 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
 }
 
 TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
-  // Setup an active user.
-  auto fake_user_manager_owned =
-      std::make_unique<user_manager::FakeUserManager>();
-  user_manager::FakeUserManager* fake_user_manager =
-      fake_user_manager_owned.get();
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
-      std::make_unique<user_manager::ScopedUserManager>(
-          std::move(fake_user_manager_owned));
-  const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890"));
-  fake_user_manager->AddUser(account_id);
-
   local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
                                 base::Value(SecureDnsConfig::kModeAutomatic));
   local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
@@ -449,18 +470,6 @@ TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
 }
 
 TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
-  // Setup an active user.
-  auto fake_user_manager_owned =
-      std::make_unique<user_manager::FakeUserManager>();
-  user_manager::FakeUserManager* fake_user_manager =
-      fake_user_manager_owned.get();
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
-      std::make_unique<user_manager::ScopedUserManager>(
-          std::move(fake_user_manager_owned));
-  const AccountId account_id(
-      AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890"));
-  fake_user_manager->AddUser(account_id);
-
   constexpr char kUriTemplateWithIdentifiers[] =
       "https://dns.google.alternativeuri/"
       "${USER_EMAIL}/{?dns}";
@@ -519,7 +528,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
   std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
       std::make_unique<MockDoHTemplatesUriResolver>();
 
-  ON_CALL(*template_uri_resolver, Update(_))
+  ON_CALL(*template_uri_resolver, Update(_, _))
       .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
         actual_uri_template_update_count++;
       }));
@@ -612,7 +621,7 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
       std::make_unique<MockDoHTemplatesUriResolver>();
 
-  ON_CALL(*template_uri_resolver, Update(_))
+  ON_CALL(*template_uri_resolver, Update(_, _))
       .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
         actual_uri_template_update_count++;
       }));
@@ -671,7 +680,7 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), profile_prefs(), /*is_profile_managed=*/false);
+        local_state(), user(), /*is_profile_managed=*/false);
     // Verify that the user-set local state prefs are copied to profile prefs
     // for unmanaged users.
     EXPECT_EQ(profile_prefs()->GetString(::prefs::kDnsOverHttpsMode),
@@ -685,7 +694,7 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), profile_prefs(), /*is_profile_managed=*/true);
+        local_state(), user(), /*is_profile_managed=*/true);
     // Verify that the user-set local state prefs are not copied to profile
     // prefs for managed users. SecureDnsConfig::kModeAutomatic is the default
     // value for secure DoH mode.
@@ -701,7 +710,7 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), profile_prefs(), /*is_profile_managed=*/false);
+        local_state(), user(), /*is_profile_managed=*/false);
     // When the profile prefs already have DoH prefs configured, verify that the
     // pref migration will not override them.
     EXPECT_EQ(profile_prefs()->GetString(::prefs::kDnsOverHttpsMode),
@@ -719,7 +728,7 @@ TEST_F(SecureDnsManagerTest, ObserverForUnmanagedUsers) {
   local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-      local_state(), profile_prefs(), /*is_profile_managed=*/false);
+      local_state(), user(), /*is_profile_managed=*/false);
   auto consumer_observer = std::make_unique<SecureDnsManagerObserver>(
       consumer_secure_dns_manager.get());
 

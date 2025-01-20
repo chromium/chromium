@@ -38,6 +38,7 @@ build_webui("build") {
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/history_embeddings"
   ts_composite = true
   ts_deps = [
+    "../page_image_service:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/history:build_ts",

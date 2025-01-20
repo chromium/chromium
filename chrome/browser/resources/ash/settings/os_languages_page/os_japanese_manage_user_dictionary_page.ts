@@ -63,6 +63,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
   override ready(): void {
     super.ready();
     this.addEventListener('dictionary-saved', this.getDictionaries_);
+    this.getDictionaries_();
   }
 
   // Loads the dictionary objects from IME user data service.

@@ -105,6 +105,21 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
     return outcome;
   }
 
+  absl::Status TestLeaveGroup() {
+    absl::Status outcome;
+    base::RunLoop run_loop;
+    data_sharing_pb::LeaveGroupParams params;
+    params.set_group_id(kTestGroupId);
+    delegate_->LeaveGroup(
+        params, base::BindLambdaForTesting(
+                    [&run_loop, &outcome](const absl::Status& result) {
+                      outcome = result;
+                      run_loop.Quit();
+                    }));
+    run_loop.Run();
+    return outcome;
+  }
+
   absl::Status TestDeleteGroup() {
     absl::Status outcome;
     base::RunLoop run_loop;
@@ -190,6 +205,11 @@ TEST_F(DataSharingSDKDelegateAndroidTest, TestAddMember) {
 TEST_F(DataSharingSDKDelegateAndroidTest, TestRemoveMember) {
   absl::Status outcome = TestRemoveMember();
   EXPECT_EQ(outcome, absl::CancelledError());
+}
+
+TEST_F(DataSharingSDKDelegateAndroidTest, TestLeaveGroup) {
+  absl::Status outcome = TestLeaveGroup();
+  EXPECT_EQ(outcome, absl::OkStatus());
 }
 
 TEST_F(DataSharingSDKDelegateAndroidTest, TestDeleteGroup) {

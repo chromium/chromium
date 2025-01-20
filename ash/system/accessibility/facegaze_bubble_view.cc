@@ -17,6 +17,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -71,7 +72,9 @@ std::unique_ptr<views::ImageView> CreateImageView(
 
 }  // namespace
 
-FaceGazeBubbleView::FaceGazeBubbleView() {
+FaceGazeBubbleView::FaceGazeBubbleView(
+    const base::RepeatingCallback<void()>& on_mouse_entered)
+    : on_mouse_entered_(std::move(on_mouse_entered)) {
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
@@ -88,6 +91,7 @@ FaceGazeBubbleView::FaceGazeBubbleView() {
   set_corner_radius(kRoundedCornerRadius);
   set_highlight_button_when_shown(false);
   SetCanActivate(false);
+  SetNotifyEnterExitOnChild(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetProperty(views::kElementIdentifierKey, kFaceGazeBubbleElementId);
@@ -109,6 +113,10 @@ void FaceGazeBubbleView::Update(const std::u16string& text, bool is_warning) {
 void FaceGazeBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   set_color(GetColorProvider()->GetColor(kBackgroundColor));
+}
+
+void FaceGazeBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
+  on_mouse_entered_.Run();
 }
 
 void FaceGazeBubbleView::UpdateColor(bool is_warning) {

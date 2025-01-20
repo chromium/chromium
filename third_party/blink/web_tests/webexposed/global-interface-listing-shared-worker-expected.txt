@@ -10,6 +10,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
+[Worker]     getter translator
 [Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
@@ -62,6 +63,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AIRewriter
 [Worker]     attribute @@toStringTag
+[Worker]     getter format
 [Worker]     getter length
 [Worker]     getter sharedContext
 [Worker]     getter tone
@@ -71,6 +73,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method rewriteStreaming
 [Worker] interface AIRewriterFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AISummarizer
@@ -87,10 +90,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter available
 [Worker]     method constructor
+[Worker]     method createOptionsAvailable
 [Worker]     method languageAvailable
-[Worker]     method supportsFormat
-[Worker]     method supportsLength
-[Worker]     method supportsType
 [Worker] interface AISummarizerFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method capabilities
@@ -101,19 +102,29 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method translate
+[Worker] interface AITranslatorCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     getter available
+[Worker]     method constructor
+[Worker]     method languagePairAvailable
 [Worker] interface AITranslatorFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AIWriter
 [Worker]     attribute @@toStringTag
+[Worker]     getter format
+[Worker]     getter length
 [Worker]     getter sharedContext
+[Worker]     getter tone
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method write
 [Worker]     method writeStreaming
 [Worker] interface AIWriterFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AbortController
@@ -132,6 +143,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method throwIfAborted
 [Worker]     setter onabort
+[Worker] interface AsyncDisposableStack
+[Worker]     attribute @@toStringTag
+[Worker]     getter disposed
+[Worker]     method Symbol(Symbol.asyncDispose)
+[Worker]     method adopt
+[Worker]     method constructor
+[Worker]     method defer
+[Worker]     method disposeAsync
+[Worker]     method move
+[Worker]     method use
 [Worker] interface BackgroundFetchManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -469,6 +490,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker] interface DisposableStack
+[Worker]     attribute @@toStringTag
+[Worker]     getter disposed
+[Worker]     method Symbol(Symbol.dispose)
+[Worker]     method adopt
+[Worker]     method constructor
+[Worker]     method defer
+[Worker]     method dispose
+[Worker]     method move
+[Worker]     method use
 [Worker] interface ErrorEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter colno
@@ -576,14 +607,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method readAsBinaryString
 [Worker]     method readAsDataURL
 [Worker]     method readAsText
-[Worker] interface FileSystemChangeRecord
-[Worker]     attribute @@toStringTag
-[Worker]     getter changedHandle
-[Worker]     getter relativePathComponents
-[Worker]     getter relativePathMovedFrom
-[Worker]     getter root
-[Worker]     getter type
-[Worker]     method constructor
 [Worker] interface FileSystemDirectoryHandle : FileSystemHandle
 [Worker]     attribute @@toStringTag
 [Worker]     method @@asyncIterator
@@ -677,6 +700,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestAdapter
 [Worker] interface GPUAdapter
 [Worker]     attribute @@toStringTag
+[Worker]     getter featureLevel
 [Worker]     getter features
 [Worker]     getter info
 [Worker]     getter isCompatibilityMode
@@ -689,6 +713,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter architecture
 [Worker]     getter description
 [Worker]     getter device
+[Worker]     getter subgroupMaxSize
+[Worker]     getter subgroupMinSize
 [Worker]     getter vendor
 [Worker]     method constructor
 [Worker] interface GPUBindGroup
@@ -951,7 +977,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxSampledTexturesPerShaderStage
 [Worker]     getter maxSamplersPerShaderStage
 [Worker]     getter maxStorageBufferBindingSize
+[Worker]     getter maxStorageBuffersInFragmentStage
+[Worker]     getter maxStorageBuffersInVertexStage
 [Worker]     getter maxStorageBuffersPerShaderStage
+[Worker]     getter maxStorageTexturesInFragmentStage
+[Worker]     getter maxStorageTexturesInVertexStage
 [Worker]     getter maxStorageTexturesPerShaderStage
 [Worker]     getter maxSubgroupSize
 [Worker]     getter maxTextureArrayLayers
@@ -1171,6 +1201,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter storageFormat
 [Worker]     getter width
 [Worker]     method constructor
+[Worker] interface LanguageTranslator
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method translate
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -1422,6 +1457,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fillRect
 [Worker]     method fillText
 [Worker]     method fillTextCluster
+[Worker]     method getContextAttributes
 [Worker]     method getImageData
 [Worker]     method getLineDash
 [Worker]     method getTextureFormat
@@ -1542,6 +1578,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter connectEnd
 [Worker]     getter connectStart
+[Worker]     getter contentEncoding
 [Worker]     getter contentType
 [Worker]     getter decodedBodySize
 [Worker]     getter deliveryType
@@ -1708,6 +1745,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method read
 [Worker]     method releaseLock
+[Worker] interface ReportBody
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method toJSON
 [Worker] interface ReportingObserver
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1873,6 +1914,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unwrapKey
 [Worker]     method verify
 [Worker]     method wrapKey
+[Worker] interface SuppressedError : Error
+[Worker]     attribute message
+[Worker]     attribute name
+[Worker]     method constructor
 [Worker] interface SyncManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1901,8 +1946,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter x
 [Worker]     getter y
 [Worker]     method constructor
-[Worker]     setter x
-[Worker]     setter y
 [Worker] interface TextDecoder
 [Worker]     attribute @@toStringTag
 [Worker]     getter encoding
@@ -1948,9 +1991,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter hangingBaseline
 [Worker]     getter ideographicBaseline
 [Worker]     getter width
-[Worker]     method caretPositionFromPoint
 [Worker]     method constructor
 [Worker]     method getActualBoundingBox
+[Worker]     method getIndexFromOffset
 [Worker]     method getSelectionRects
 [Worker]     method getTextClusters
 [Worker] interface TimestampTrigger
@@ -1971,7 +2014,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method terminate
 [Worker] interface Translation
 [Worker]     attribute @@toStringTag
+[Worker]     method canTranslate
 [Worker]     method constructor
+[Worker]     method createTranslator
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag

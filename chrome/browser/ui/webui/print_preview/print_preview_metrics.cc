@@ -78,14 +78,17 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
                                     : PrintSettingsBuckets::kPortrait);
   }
 
-  if (print_settings.FindInt(kSettingCopies).value_or(1) > 1)
+  if (print_settings.FindInt(kSettingCopies).value_or(1) > 1) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCopies);
+  }
 
-  if (preview_settings.FindInt(kSettingPagesPerSheet).value_or(1) != 1)
+  if (preview_settings.FindInt(kSettingPagesPerSheet).value_or(1) != 1) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPagesPerSheet);
+  }
 
-  if (print_settings.FindBool(kSettingCollate).value_or(false))
+  if (print_settings.FindBool(kSettingCollate).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kCollate);
+  }
 
   std::optional<int> duplex_mode_opt =
       print_settings.FindInt(kSettingDuplexMode);
@@ -120,11 +123,13 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
     }
   }
 
-  if (preview_settings.FindInt(kSettingMarginsType).value_or(0) != 0)
+  if (preview_settings.FindInt(kSettingMarginsType).value_or(0) != 0) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kNonDefaultMargins);
+  }
 
-  if (preview_settings.FindBool(kSettingHeaderFooterEnabled).value_or(false))
+  if (preview_settings.FindBool(kSettingHeaderFooterEnabled).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kHeadersAndFooters);
+  }
 
   if (preview_settings.FindBool(kSettingShouldPrintBackgrounds)
           .value_or(false)) {
@@ -136,8 +141,9 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
     ReportPrintSettingHistogram(PrintSettingsBuckets::kSelectionOnly);
   }
 
-  if (preview_settings.FindBool(kSettingRasterizePdf).value_or(false))
+  if (preview_settings.FindBool(kSettingRasterizePdf).value_or(false)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPrintAsImage);
+  }
 
   ScalingType scaling_type =
       static_cast<ScalingType>(preview_settings.FindInt(kSettingScalingType)
@@ -147,10 +153,11 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
   }
 
   if (is_pdf) {
-    if (scaling_type == ScalingType::FIT_TO_PAGE)
+    if (scaling_type == ScalingType::FIT_TO_PAGE) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPage);
-    else if (scaling_type == ScalingType::FIT_TO_PAPER)
+    } else if (scaling_type == ScalingType::FIT_TO_PAPER) {
       ReportPrintSettingHistogram(PrintSettingsBuckets::kFitToPaper);
+    }
   }
 
   int dpi_horizontal =
@@ -170,8 +177,9 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (print_settings.FindString(kSettingPinValue))
+  if (print_settings.FindString(kSettingPinValue)) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPin);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

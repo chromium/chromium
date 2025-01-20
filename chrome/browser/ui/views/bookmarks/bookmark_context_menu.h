@@ -17,7 +17,7 @@ class Browser;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 // Observer for the BookmarkContextMenu.
 class BookmarkContextMenuObserver {
@@ -34,7 +34,7 @@ class BookmarkContextMenuObserver {
   virtual void OnContextMenuClosed() = 0;
 
  protected:
-  virtual ~BookmarkContextMenuObserver() {}
+  virtual ~BookmarkContextMenuObserver() = default;
 };
 
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
@@ -46,7 +46,6 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                       Browser* browser,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
-                      const bookmarks::BookmarkNode* parent,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                                 VectorExperimental>>& selection,
                       bool close_on_remove);

@@ -9,7 +9,6 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
@@ -19,7 +18,8 @@
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 
 // Enable VLOG level 1.

@@ -24,8 +24,7 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
     ExtensionFunction* function)
     : function_(function) {}
 
-ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() {
-}
+ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() = default;
 
 extensions::WindowController*
 ChromeExtensionFunctionDetails::GetCurrentWindowController() const {

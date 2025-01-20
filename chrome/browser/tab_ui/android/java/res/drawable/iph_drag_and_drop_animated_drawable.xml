@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:drawable="@drawable/iph_drag_and_drop_drawable"
-    tools:targetApi="21">
+    android:drawable="@drawable/iph_drag_and_drop_drawable">
     <target
         android:name="hovered_card"
         android:animation="@anim/iph_hovered_card_animation"/>

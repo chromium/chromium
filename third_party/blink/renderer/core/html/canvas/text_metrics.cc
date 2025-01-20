@@ -137,8 +137,8 @@ void TextMetrics::Update(const Font& font,
   for (const auto& run : runs) {
     // Measure each run.
     TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
-                     /* directional_override */ false);
-    text_run.SetNormalizeSpace(true);
+                     /* directional_override */ false,
+                     /* normalize_space */ true);
 
     // Save the run for computing additional metrics. Whether we calculate the
     // ShapeResult objects right away, or lazily when needed, depends on the
@@ -323,7 +323,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   return selection_rects;
 }
 
-const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
+DOMRectReadOnly* TextMetrics::getActualBoundingBox(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {
@@ -519,7 +519,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
   return clusters_for_range;
 }
 
-unsigned TextMetrics::caretPositionFromPoint(double x) {
+unsigned TextMetrics::getIndexFromOffset(double x) {
   if (runs_with_offset_.empty()) {
     return 0;
   }

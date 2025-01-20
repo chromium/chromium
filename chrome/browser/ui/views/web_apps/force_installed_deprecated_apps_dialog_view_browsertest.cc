@@ -84,7 +84,7 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   base::test::ScopedFeatureList feature_list_;
   extensions::TestManagementPolicyProvider policy_provider_{
       extensions::TestManagementPolicyProvider::MUST_REMAIN_INSTALLED};
-  content::TestWebUI test_web_ui_{};
+  content::TestWebUI test_web_ui_;
 };
 
 IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,

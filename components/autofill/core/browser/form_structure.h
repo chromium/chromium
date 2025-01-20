@@ -93,10 +93,24 @@ class FormStructure {
   // auto-fillable, like google/yahoo/msn search, etc.
   bool IsAutofillable() const;
 
-  // Returns whether |this| form represents a complete Credit Card form, which
-  // consists in having at least a credit card number field and an expiration
-  // field.
-  bool IsCompleteCreditCardForm() const;
+  // This enum defines two different states of completeness for a credit card
+  // form, each used for a distinct purpose to check if the required credit card
+  // fields exist.
+  enum class CreditCardFormCompleteness {
+    // This represents a minimal complete credit card form which has at least a
+    // credit card number field and an expiration date field.
+    kCompleteCreditCardForm,
+    // This represents a credit card form which has a CVC field and a cardholder
+    // name field in addition to the credit card number field and the expiration
+    // date field. For example, this level is required for offering `Save and
+    // Fill`.
+    kCompleteCreditCardFormIncludingCvcAndName,
+  };
+
+  // Returns whether |this| form represents a complete Credit Card form, as
+  // defined by the given CreditCardFormCompleteness level.
+  bool IsCompleteCreditCardForm(
+      CreditCardFormCompleteness credit_card_form_completeness) const;
 
   // Resets |autofill_count_| and counts the number of auto-fillable fields.
   // This is used when we receive server data for form fields.  At that time,
@@ -130,6 +144,12 @@ class FormStructure {
   // Returns true if we should upload Autofill votes for this form to the
   // crowd-sourcing server. It is not applied for Password Manager votes.
   bool ShouldBeUploaded() const;
+
+  // Returns whether the form is considered parseable and meets a couple of
+  // other requirements which makes uploading UKM data worthwhile. E.g. the
+  // form should not be a search form, the forms should have at least one
+  // focusable input field with a type from heuristics or the server.
+  bool ShouldUploadUkm(bool require_classified_field) const;
 
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
@@ -252,11 +272,6 @@ class FormStructure {
   const AutofillField* GetFieldById(FieldGlobalId field_id) const;
   AutofillField* GetFieldById(FieldGlobalId field_id);
 
-  void AddSingleUsernameData(
-      AutofillUploadContents::SingleUsernameData single_username_data) {
-    single_username_data_.push_back(single_username_data);
-  }
-
   // Returns the number of fields that are part of the form signature and that
   // are included in queries to the Autofill server.
   size_t active_field_count() const;
@@ -373,11 +388,6 @@ class FormStructure {
 
   const GeoIpCountryCode& client_country() const { return client_country_; }
 
-  std::vector<AutofillUploadContents::SingleUsernameData> single_username_data()
-      const {
-    return single_username_data_;
-  }
-
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.
   struct FormAssociations {
@@ -390,10 +400,16 @@ class FormStructure {
     form_associations_ = associations;
   }
 
-  FormAssociations form_associations() const { return form_associations_; }
+  const FormAssociations& form_associations() const {
+    return form_associations_;
+  }
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-  GetServerPredictions() const;
+  GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
+
+  base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictions(
+      HeuristicSource source,
+      const std::vector<FieldGlobalId>& field_ids) const;
 
  private:
   friend class FormStructureTestApi;
@@ -474,7 +490,8 @@ class FormStructure {
   GURL source_url_;
 
   // The full source URL including query parameters and fragment identifiers.
-  // This value should be set only for password forms.
+  // If `kAutofillIncludeUrlInCrowdsourcing` is disabled, this value should only
+  // be set for password forms.
   GURL full_source_url_;
 
   // The target URL.
@@ -553,9 +570,6 @@ class FormStructure {
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;
-
-  // Single username details, if applicable.
-  std::vector<AutofillUploadContents::SingleUsernameData> single_username_data_;
 
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.

@@ -11,9 +11,9 @@
 namespace ash {
 namespace system {
 
-FakeInputDeviceSettings::FakeInputDeviceSettings() {}
+FakeInputDeviceSettings::FakeInputDeviceSettings() = default;
 
-FakeInputDeviceSettings::~FakeInputDeviceSettings() {}
+FakeInputDeviceSettings::~FakeInputDeviceSettings() = default;
 
 // Overriden from InputDeviceSettings.
 void FakeInputDeviceSettings::TouchpadExists(DeviceExistsCallback callback) {

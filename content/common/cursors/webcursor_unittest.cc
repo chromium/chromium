@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -63,22 +62,16 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
   // on aura platform.
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
   gfx::NativeCursor native_cursor = webcursor.GetNativeCursor();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Cursor is not scaled to device scale factor in lacros.
-  EXPECT_EQ(gfx::Point(10, 20), native_cursor.custom_hotspot());
-#else
   EXPECT_EQ(gfx::Point(5, 10), native_cursor.custom_hotspot());
-#endif
-
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
+
   // Test if the rotating custom cursor works correctly.
   display::Display display(/*id=*/1);
   display.set_panel_rotation(display::Display::ROTATE_90);
   TestScreen screen(display);
   webcursor.UpdateDisplayInfoForWindow(nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
 #else
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
@@ -87,11 +80,7 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
   native_cursor = webcursor.GetNativeCursor();
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In lacros rotation and scale is handled by ash. So the cursor
-  // is not rotated or scaled.
-  EXPECT_EQ(gfx::Point(10, 20), native_cursor.custom_hotspot());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Hotspot should be scaled & rotated. We're using the icon created for 2.0,
   // on the display with dsf=1.0, so the hotspot should be
   // ((32 - 20) / 2, 10 / 2) = (6, 5).
@@ -118,18 +107,13 @@ TEST(WebCursorTest, CursorScaleFactor) {
   TestScreen screen(display);
   webcursor.UpdateDisplayInfoForWindow(nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In Ash, the size of the cursor is capped at 64px unless the hardware
   // advertises support for bigger cursors.
   const gfx::Size kDefaultMaxSize = gfx::Size(64, 64);
   EXPECT_EQ(gfx::SkISizeToSize(
                 webcursor.GetNativeCursor().custom_bitmap().dimensions()),
             kDefaultMaxSize);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Bitmap doesn't get scaled to device scale factor in lacros.
-  EXPECT_EQ(gfx::SkISizeToSize(
-                webcursor.GetNativeCursor().custom_bitmap().dimensions()),
-            gfx::Size(128, 128));
 #else
   EXPECT_EQ(
       gfx::SkISizeToSize(
@@ -137,14 +121,9 @@ TEST(WebCursorTest, CursorScaleFactor) {
       gfx::ScaleToFlooredSize(gfx::Size(128, 128), kDeviceScale / kImageScale));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The scale factor of the cursor image should match the image scale.
-  EXPECT_EQ(webcursor.GetNativeCursor().image_scale_factor(), kImageScale);
-#else
   // The scale factor of the cursor image should match the device scale factor,
   // regardless of the cursor size.
   EXPECT_EQ(webcursor.GetNativeCursor().image_scale_factor(), kDeviceScale);
-#endif
 }
 #endif  // defined(USE_AURA)
 

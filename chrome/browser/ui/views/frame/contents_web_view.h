@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
+#include "chrome/common/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -18,7 +19,7 @@ class StatusBubbleViews;
 
 namespace ui {
 class LayerTreeOwner;
-}
+}  // namespace ui
 
 // ContentsWebView is used to present the WebContents of the active tab.
 class ContentsWebView : public views::WebView,
@@ -41,9 +42,7 @@ class ContentsWebView : public views::WebView,
   // Toggles whether the background is visible.
   void SetBackgroundVisible(bool background_visible);
 
-  const gfx::RoundedCornersF& background_radii() const {
-    return background_radii_;
-  }
+  const gfx::RoundedCornersF& GetBackgroundRadii() const;
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // WebView overrides:
@@ -65,8 +64,6 @@ class ContentsWebView : public views::WebView,
   raw_ptr<StatusBubbleViews> status_bubble_;
 
   bool background_visible_ = true;
-
-  gfx::RoundedCornersF background_radii_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };

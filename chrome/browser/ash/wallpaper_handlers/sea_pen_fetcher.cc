@@ -191,15 +191,19 @@ manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
     return manta::MantaStatusCode::kGenericError;
   }
   for (auto& filtered_datum : filtered_data) {
-    if (filtered_datum.reason() == manta::proto::FilteredReason::IMAGE_SAFETY ||
-        filtered_datum.reason() ==
-            manta::proto::FilteredReason::TEXT_BLOCKLIST) {
-      // If anything has been filtered due to safety, send the blocked
-      // outputs result.
-      return manta::MantaStatusCode::kBlockedOutputs;
+    if (filtered_datum.additional_reasons_size() > 0) {
+      if (std::find(filtered_datum.additional_reasons().begin(),
+                    filtered_datum.additional_reasons().end(),
+                    manta::proto::FilteredReason::IMAGE_SAFETY_PERSON) !=
+          filtered_datum.additional_reasons().end()) {
+        // Returns a kImageHasPerson error if any image has been filtered for
+        // showing a person.
+        return manta::MantaStatusCode::kImageHasPerson;
+      }
     }
   }
-  return manta::MantaStatusCode::kGenericError;
+  // All the images were filtered out due to our safety filters.
+  return manta::MantaStatusCode::kBlockedOutputs;
 }
 
 std::vector<ash::SeaPenImage> TakeValidImages(
@@ -338,7 +342,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                                 SeaPenApiType::kThumbnails);
 
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
-      LOG(WARNING) << "Failed to fetch manta response: " << status.message;
+      LOG(WARNING) << "Failed to fetch manta response: "
+                   << int32_t(status.status_code);
       std::move(pending_fetch_thumbnails_callback_)
           .Run(std::nullopt, status.status_code);
       return;
@@ -414,7 +419,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                                 SeaPenApiType::kWallpaper);
 
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
-      LOG(WARNING) << "Failed to fetch manta response: " << status.message;
+      LOG(WARNING) << "Failed to fetch manta response: "
+                   << int32_t(status.status_code);
       std::move(pending_fetch_wallpaper_callback_).Run(std::nullopt);
       return;
     }

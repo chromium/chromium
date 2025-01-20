@@ -484,7 +484,7 @@ double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
   for (int32_t feature : *rule->feature()) {
     const flat::Hash* hash = flatbuffer_model_->hashes()->Get(feature);
 
-    if (!hash->data()) {
+    if (!hash || !hash->data()) {
       return 0.0;
     }
 

@@ -101,7 +101,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         when(originalProfile.getOriginalProfile()).thenReturn(originalProfile);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         // Avoid leaking state from the previous test.
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(

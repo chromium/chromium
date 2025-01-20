@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -17,11 +18,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 #include "net/disk_cache/simple/simple_index_file.h"
 #include "net/disk_cache/simple/simple_test_util.h"
@@ -163,6 +167,16 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
     index_file_->load_result()->entries.emplace(
         hash_key, EntryMetadata(last_used_time,
                                 base::checked_cast<uint32_t>(entry_size)));
+  }
+
+  void InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      uint64_t hash_key,
+      base::Time last_used_time,
+      int entry_size) {
+    EntryMetadata entry_meta_data =
+        EntryMetadata(last_used_time, base::checked_cast<uint32_t>(entry_size));
+    entry_meta_data.SetInMemoryData(HINT_HIGH_PRIORITY);
+    index_file_->load_result()->entries.emplace(hash_key, entry_meta_data);
   }
 
   void ReturnIndexFile() {
@@ -663,6 +677,116 @@ TEST_F(SimpleIndexTest, EvictBySize2) {
   EXPECT_FALSE(index()->Has(hashes_.at<2>()));
   EXPECT_TRUE(index()->Has(hashes_.at<3>()));
   ASSERT_EQ(2u, last_doom_entry_hashes().size());
+}
+
+class SimpleIndexPrioritizedCachingTest : public SimpleIndexTest {
+ public:
+  SimpleIndexPrioritizedCachingTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSimpleCachePrioritizedCaching);
+  }
+  ~SimpleIndexPrioritizedCachingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritization) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 0.8, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period * 0.4, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The entry with the priority flag is kept, even if it's older.
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  // The entry without the priority flag is evicted, even if it's newer.
+  EXPECT_FALSE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
+}
+
+TEST_F(SimpleIndexPrioritizedCachingTest, EvictPrioritizationOutOfPeriod) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 2, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The older entry is evicted, even if it has the priority flag, when the
+  // entry is out of the prioritization period.
+  EXPECT_FALSE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
+}
+
+TEST_F(SimpleIndexTest, EvictPrioritizationFeatureDefaultDisabled) {
+  const auto caching_prioritization_period =
+      net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod.Get();
+  auto now = base::Time::Now();
+  index()->SetMaxSize(50000);
+  InsertIntoIndexFileWithPrioritizeCachingFlagReturn(
+      hashes_.at<1>(), now - caching_prioritization_period * 0.8, 20000u);
+  InsertIntoIndexFileReturn(hashes_.at<2>(),
+                            now - caching_prioritization_period * 0.4, 20000u);
+  ReturnIndexFile();
+  WaitForTimeChange();
+
+  index()->Insert(hashes_.at<3>());
+  // Confirm index is as expected: No eviction, everything there.
+  EXPECT_EQ(3, index()->GetEntryCount());
+  EXPECT_EQ(0, doom_entries_calls());
+  EXPECT_TRUE(index()->Has(hashes_.at<1>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+
+  // Trigger an eviction, and make sure the right things are tossed.
+  index()->UpdateEntrySize(hashes_.at<3>(), 20000u);
+  EXPECT_EQ(1, doom_entries_calls());
+  EXPECT_EQ(2, index()->GetEntryCount());
+  // The older entry is evicted, even if it has the priority flag, when the
+  // feature is disabled.
+  EXPECT_FALSE(index()->Has(hashes_.at<1>()));
+  // The newer entry is kept, even if it doesn't have the priority flag, when
+  // the feature is disabled.
+  EXPECT_TRUE(index()->Has(hashes_.at<2>()));
+  EXPECT_TRUE(index()->Has(hashes_.at<3>()));
+  ASSERT_EQ(1u, last_doom_entry_hashes().size());
 }
 
 // Confirm all the operations queue a disk write at some point in the

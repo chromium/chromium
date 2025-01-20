@@ -66,6 +66,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       const GURL& script_source_url,
       const url::Origin& data_origin,
       network::mojom::CredentialsMode credentials_mode,
+      blink::mojom::SharedStorageWorkletCreationMethod creation_method,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -74,8 +75,14 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageUpdate(
-      network::mojom::SharedStorageModifierMethodPtr method,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
       SharedStorageUpdateCallback callback) override;
+  void SharedStorageBatchUpdate(
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      const std::optional<std::string>& with_lock,
+      SharedStorageBatchUpdateCallback callback) override;
 
   base::WeakPtr<SharedStorageDocumentServiceImpl> GetWeakPtr();
 

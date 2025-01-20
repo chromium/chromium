@@ -47,7 +47,7 @@ DiceResponseParams& DiceResponseParams::operator=(DiceResponseParams&&) =
     default;
 
 DiceResponseParams::AccountInfo::AccountInfo() = default;
-DiceResponseParams::AccountInfo::AccountInfo(const std::string& gaia_id,
+DiceResponseParams::AccountInfo::AccountInfo(const GaiaId& gaia_id,
                                              const std::string& email,
                                              int session_index)
     : gaia_id(gaia_id), email(email), session_index(session_index) {}
@@ -92,8 +92,9 @@ bool RequestAdapter::HasHeader(const std::string& name) {
 }
 
 void RequestAdapter::RemoveRequestHeaderByName(const std::string& name) {
-  if (!base::Contains(*headers_to_remove_, name))
+  if (!base::Contains(*headers_to_remove_, name)) {
     headers_to_remove_->push_back(name);
+  }
 }
 
 void RequestAdapter::SetExtraHeaderByName(const std::string& name,
@@ -101,13 +102,14 @@ void RequestAdapter::SetExtraHeaderByName(const std::string& name,
   modified_headers_->SetHeader(name, value);
 
   auto it = base::ranges::find(*headers_to_remove_, name);
-  if (it != headers_to_remove_->end())
+  if (it != headers_to_remove_->end()) {
     headers_to_remove_->erase(it);
+  }
 }
 
 std::string BuildMirrorRequestCookieIfPossible(
     const GURL& url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask) {
@@ -172,7 +174,7 @@ bool IsUrlEligibleForMirrorCookie(const GURL& url) {
 void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
@@ -195,7 +197,7 @@ void AppendOrRemoveMirrorRequestHeader(
 bool AppendOrRemoveDiceRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool sync_enabled,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
@@ -206,7 +208,7 @@ bool AppendOrRemoveDiceRequestHeader(
   std::string dice_header_value;
   if (dice_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
     dice_header_value = dice_helper.BuildRequestHeader(
-        sync_enabled ? gaia_id : std::string(), device_id);
+        sync_enabled ? gaia_id : GaiaId(), device_id);
   }
   return dice_helper.AppendOrRemoveRequestHeader(
       request, redirect_url, kDiceRequestHeader, dice_header_value);

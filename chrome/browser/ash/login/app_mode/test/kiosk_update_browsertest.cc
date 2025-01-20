@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
+#include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/scoped_chromeos_version_info.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -20,38 +20,17 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_paths.h"
-#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "extensions/test/result_catcher.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 namespace {
-
-// An offline enable test app. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/iiigpodgfihagabpagjehoocpakbnclp
-// An app profile with version 1.0.0 installed is in
-//   chrome/test/data/chromeos/app_mode/offline_enabled_app_profile
-// The version 2.0.0 crx is in
-//   chrome/test/data/chromeos/app_mode/webstore/downloads/
-const char kTestOfflineEnabledKioskAppId[] = "iiigpodgfihagabpagjehoocpakbnclp";
-
-// An app to test local fs data persistence across app update. V1 app writes
-// data into local fs. V2 app reads and verifies the data.
-// Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/abbjjkefakmllanciinhgjgjamdmlbdg
-const char kTestLocalFsKioskAppId[] = "abbjjkefakmllanciinhgjgjamdmlbdg";
 
 // Testing apps for testing kiosk multi-app feature. All the crx files are in
 //    chrome/test/data/chromeos/app_mode/webstore/downloads.
@@ -95,20 +74,6 @@ const char kTestSharedModuleId[] = "hpanhkopkhnkpcmnedlnjmkfafmlamak";
 //         secondary_extension
 const char kTestSecondaryExtId[] = "meaknlbicgahoejcchpnkenkmbekcddf";
 
-// Fake usb stick mount path.
-const char kFakeUsbMountPathUpdatePass[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/update_pass";
-const char kFakeUsbMountPathNoManifest[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/no_manifest";
-const char kFakeUsbMountPathBadManifest[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/bad_manifest";
-const char kFakeUsbMountPathLowerAppVersion[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/lower_app_version";
-const char kFakeUsbMountPathLowerCrxVersion[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/lower_crx_version";
-const char kFakeUsbMountPathBadCrx[] =
-    "chromeos/app_mode/apps_and_extensions/external_update/bad_crx";
-
 // Placeholder for an icon, as the icon is required by the kiosk app manager.
 const char kFakeIconURL[] = "/chromeos/app_mode/red16x16.png";
 
@@ -130,36 +95,6 @@ extensions::Manifest::Type GetAppType(const std::string& app_id) {
   DCHECK(app);
   return app->GetType();
 }
-
-class KioskFakeDiskMountManager : public disks::FakeDiskMountManager {
- public:
-  KioskFakeDiskMountManager() = default;
-
-  KioskFakeDiskMountManager(const KioskFakeDiskMountManager&) = delete;
-  KioskFakeDiskMountManager& operator=(const KioskFakeDiskMountManager&) =
-      delete;
-
-  ~KioskFakeDiskMountManager() override = default;
-
-  void set_usb_mount_path(const std::string& usb_mount_path) {
-    usb_mount_path_ = usb_mount_path;
-  }
-
-  void MountUsbStick() {
-    DCHECK(!usb_mount_path_.empty());
-    MountPath(usb_mount_path_, "", "", {}, MountType::kDevice,
-              MountAccessMode::kReadOnly, base::DoNothing());
-  }
-
-  void UnMountUsbStick() {
-    DCHECK(!usb_mount_path_.empty());
-    UnmountPath(usb_mount_path_,
-                disks::DiskMountManager::UnmountPathCallback());
-  }
-
- private:
-  std::string usb_mount_path_;
-};
 
 }  // namespace
 
@@ -187,18 +122,6 @@ class KioskUpdateTest : public KioskBaseTest {
   };
 
  protected:
-  void SetUp() override {
-    fake_disk_mount_manager_ = new KioskFakeDiskMountManager();
-    disks::DiskMountManager::InitializeForTesting(fake_disk_mount_manager_);
-
-    KioskBaseTest::SetUp();
-  }
-
-  void TearDown() override {
-    disks::DiskMountManager::Shutdown();
-    KioskBaseTest::TearDown();
-  }
-
   void SetUpOnMainThread() override {
     // For update tests, we cache the app in the PRE part, and then we load it
     // in the test, so we need to both store the apps list on teardown (so that
@@ -229,58 +152,11 @@ class KioskUpdateTest : public KioskBaseTest {
       waiter.Wait();
     }
     EXPECT_TRUE(waiter.loaded());
-    std::string cached_version;
-    base::FilePath file_path;
-    EXPECT_TRUE(manager->GetCachedCrx(app_id, &file_path, &cached_version));
+
+    auto crx_info = manager->GetCachedCrx(app_id);
+    ASSERT_TRUE(crx_info.has_value());
+    auto& [_, cached_version] = crx_info.value();
     EXPECT_EQ(version, cached_version);
-  }
-
-  void UpdateExternalCache(const std::string& version,
-                           const std::string& crx_file) {
-    SetTestApp(test_app_id(), version, crx_file);
-    SetupTestAppUpdateCheck();
-
-    KioskChromeAppManager* manager = KioskChromeAppManager::Get();
-    TestAppDataLoadWaiter waiter(manager, test_app_id(), version);
-    KioskChromeAppManager::Get()->UpdateExternalCache();
-    waiter.Wait();
-    EXPECT_TRUE(waiter.loaded());
-    std::string cached_version;
-    base::FilePath file_path;
-    EXPECT_TRUE(
-        manager->GetCachedCrx(test_app_id(), &file_path, &cached_version));
-    EXPECT_EQ(version, cached_version);
-  }
-
-  void SetupFakeDiskMountManagerMountPath(const std::string& mount_path) {
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    test_data_dir = test_data_dir.AppendASCII(mount_path);
-    fake_disk_mount_manager_->set_usb_mount_path(test_data_dir.value());
-  }
-
-  void SimulateUpdateAppFromUsbStick(const std::string& usb_mount_path,
-                                     bool* app_update_notified,
-                                     bool* update_success) {
-    SetupFakeDiskMountManagerMountPath(usb_mount_path);
-    KioskAppExternalUpdateWaiter waiter(KioskChromeAppManager::Get(),
-                                        test_app_id());
-    fake_disk_mount_manager_->MountUsbStick();
-    waiter.Wait();
-    fake_disk_mount_manager_->UnMountUsbStick();
-    *update_success = waiter.update_success();
-    *app_update_notified = waiter.app_update_notified();
-  }
-
-  void PreCacheAndLaunchApp(const std::string& app_id,
-                            const std::string& version,
-                            const std::string& crx_file) {
-    SetTestApp(app_id, version, crx_file);
-    PrepareAppLaunch();
-    SimulateNetworkOnline();
-    EXPECT_TRUE(LaunchApp(test_app_id()));
-    WaitForAppLaunchSuccess();
-    EXPECT_EQ(version, GetInstalledAppVersion().GetString());
   }
 
   void LaunchKioskWithSecondaryApps(
@@ -460,385 +336,7 @@ class KioskUpdateTest : public KioskBaseTest {
     bool update_success_ = false;
     bool app_update_notified_ = false;
   };
-
-  // Owned by DiskMountManager.
-  raw_ptr<KioskFakeDiskMountManager, DanglingUntriaged>
-      fake_disk_mount_manager_;
 };
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoNetwork) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-}
-
-// Flaky. See b/284917673.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_LaunchOfflineEnabledAppNoNetwork) {
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  SimulateNetworkOffline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       PRE_LaunchCachedOfflineEnabledAppNoNetwork) {
-  PreCacheApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-              std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx",
-              /*wait_for_app_data=*/true);
-}
-
-// Flaky. See b/284917673.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_LaunchCachedOfflineEnabledAppNoNetwork) {
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  EXPECT_TRUE(KioskChromeAppManager::Get()->HasCachedCrx(
-      kTestOfflineEnabledKioskAppId));
-  SimulateNetworkOffline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-// Network offline, app v1.0 has run before, has cached v2.0 crx and v2.0 should
-// be installed and launched during next launch.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       PRE_LaunchCachedNewVersionOfflineEnabledAppNoNetwork) {
-  // Install and launch v1 app.
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-  // Update cache for v2 app.
-  UpdateExternalCache("2.0.0",
-                      std::string(kTestOfflineEnabledKioskAppId) + ".crx");
-  // The installed app is still in v1.
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       LaunchCachedNewVersionOfflineEnabledAppNoNetwork) {
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  EXPECT_TRUE(KioskChromeAppManager::Get()->HasCachedCrx(test_app_id()));
-
-  SimulateNetworkOffline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  // v2 app should have been installed.
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoUpdate) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchOfflineEnabledAppNoUpdate) {
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  fake_cws()->SetNoUpdate(test_app_id());
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppHasUpdate) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchOfflineEnabledAppHasUpdate) {
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  fake_cws()->SetUpdateCrx(test_app_id(),
-                           "iiigpodgfihagabpagjehoocpakbnclp.crx", "2.0.0");
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-// Pre-cache v1 kiosk app, then launch the app without network,
-// plug in usb stick with a v2 app for offline updating.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_UsbStickUpdateAppNoNetwork) {
-  PreCacheApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-              std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx",
-              /*wait_for_app_data=*/true);
-
-  SimulateNetworkOffline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v2 app on the stick.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathUpdatePass,
-                                &app_update_notified, &update_success);
-  EXPECT_TRUE(update_success);
-  EXPECT_TRUE(app_update_notified);
-
-  // The v2 kiosk app is loaded into external cache, but won't be installed
-  // until next time the device is started.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("2.0.0", cached_version);
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-}
-
-// Restart the device, verify the app has been updated to v2.
-// TODO(crbug.com/361292144): Re-enable this test
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, DISABLED_UsbStickUpdateAppNoNetwork) {
-  // Verify the kiosk app has been updated to v2.
-  SetTestApp(kTestOfflineEnabledKioskAppId);
-  SimulateNetworkOffline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-}
-
-// Usb stick is plugged in without a manifest file on it.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppNoManifest) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v2 app on the stick.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathNoManifest,
-                                &app_update_notified, &update_success);
-  EXPECT_FALSE(update_success);
-
-  // Kiosk app is not updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("1.0.0", cached_version);
-}
-
-// Usb stick is plugged in with a bad manifest file on it.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppBadManifest) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v2 app on the stick.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathBadManifest,
-                                &app_update_notified, &update_success);
-  EXPECT_FALSE(update_success);
-
-  // Kiosk app is not updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("1.0.0", cached_version);
-}
-
-// Usb stick is plugged in with a lower version of crx file specified in
-// manifest.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppLowerAppVersion) {
-  // Precache v2 version of app.
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + ".crx");
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v1 app on the stick.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathLowerAppVersion,
-                                &app_update_notified, &update_success);
-  EXPECT_FALSE(update_success);
-
-  // Kiosk app is NOT updated to the lower version.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("2.0.0", cached_version);
-}
-
-// Usb stick is plugged in with a v1 crx file, although the manifest says
-// this is a v3 version.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppLowerCrxVersion) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + ".crx");
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v1 crx file on the stick, although
-  // the manifest says it is v3 app.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathLowerCrxVersion,
-                                &app_update_notified, &update_success);
-  EXPECT_FALSE(update_success);
-
-  // Kiosk app is NOT updated to the lower version.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("2.0.0", cached_version);
-}
-
-// Usb stick is plugged in with a bad crx file.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppBadCrx) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-
-  // Simulate mounting of usb stick with v1 crx file on the stick, although
-  // the manifest says it is v3 app.
-  bool update_success;
-  bool app_update_notified;
-  SimulateUpdateAppFromUsbStick(kFakeUsbMountPathBadCrx, &app_update_notified,
-                                &update_success);
-  EXPECT_FALSE(update_success);
-
-  // Kiosk app is NOT updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
-  EXPECT_EQ("1.0.0", cached_version);
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_PermissionChange) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + ".crx");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PermissionChange) {
-  SetTestApp(
-      kTestOfflineEnabledKioskAppId, "2.0.0",
-      std::string(kTestOfflineEnabledKioskAppId) + "_v2_permission_change.crx");
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_PreserveLocalData) {
-  // Installs app and writes some local data.
-  SetTestApp(kTestLocalFsKioskAppId);
-
-  extensions::ResultCatcher catcher;
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false);
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PreserveLocalData) {
-  // Update existing app installed in PRE_PreserveLocalData to v2
-  // that reads and verifies the local data.
-  SetTestApp(
-      kTestLocalFsKioskAppId, "2.0.0",
-      std::string(kTestLocalFsKioskAppId) + "_v2_read_and_verify_data.crx");
-  extensions::ResultCatcher catcher;
-  StartExistingAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false);
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-// Tests the primary app install with required platform version. The test
-// has three runs:
-//   1. Install an app.
-//   2. App update is delayed because the required platform version is not
-//      compliant.
-//   3. Platform version changed and the new app is installed because it is
-//      compliant now.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       PRE_PRE_IncompliantPlatformDelayInstall) {
-  PreCacheAndLaunchApp(kTestOfflineEnabledKioskAppId, "1.0.0",
-                       std::string(kTestOfflineEnabledKioskAppId) + "_v1.crx");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_IncompliantPlatformDelayInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1233.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_TRUE(PrimaryAppUpdateIsPending());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformDelayInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_FALSE(PrimaryAppUpdateIsPending());
-}
-
-// Tests that app is installed for the first time even on an incompliant
-// platform.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, IncompliantPlatformFirstInstall) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_RELEASE_VERSION=1234.0.0", base::Time::Now());
-
-  SetTestApp(kTestOfflineEnabledKioskAppId, "2.0.0",
-             std::string(kTestOfflineEnabledKioskAppId) +
-                 "_v2_required_platform_version_added.crx");
-
-  // Fake auto launch.
-  ReloadAutolaunchKioskApps();
-  KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-      kTestOfflineEnabledKioskAppId);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchSuccess();
-
-  EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_FALSE(PrimaryAppUpdateIsPending());
-}
 
 /* ***** Test Kiosk multi-app feature ***** */
 

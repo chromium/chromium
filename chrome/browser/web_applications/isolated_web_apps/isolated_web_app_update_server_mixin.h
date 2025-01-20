@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -23,29 +24,12 @@ namespace web_app {
 
 class BundledIsolatedWebApp;
 
-struct BundleInfo {
-  BundleInfo();
-  ~BundleInfo();
-  BundleInfo(std::unique_ptr<BundledIsolatedWebApp> bundled_app,
-             std::optional<std::vector<UpdateChannel>> update_channels);
-  BundleInfo(const BundleInfo& other) = delete;
-  BundleInfo& operator=(const BundleInfo& other) = delete;
-  BundleInfo(BundleInfo&& other);
-  BundleInfo& operator=(BundleInfo&& other);
-
-  std::unique_ptr<BundledIsolatedWebApp> bundle;
-  std::optional<std::vector<UpdateChannel>> update_channels;
-};
-
 // This mixin starts a server that hosts update manifests and bundles.
 class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
  public:
   explicit IsolatedWebAppUpdateServerMixin(
       InProcessBrowserTestMixinHost* mixin_host);
   ~IsolatedWebAppUpdateServerMixin() override;
-
-  // Sets up `iwa_server_`.
-  void SetUpOnMainThread() override;
 
   // The returned URL has the following structure:
   //   * /<web_bundle_id>/update_manifest.json
@@ -57,7 +41,8 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
   base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt) const;
+      const std::optional<base::Version>& pinned_version = std::nullopt,
+      const bool allow_downgrades = false) const;
 
   // Adds a bundle to the update server and starts tracking it in the
   // corresponding update manifest.
@@ -79,9 +64,7 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
       const net::test_server::HttpRequest& request);
 
   net::EmbeddedTestServer iwa_server_;
-  base::flat_map<web_package::SignedWebBundleId,
-                 base::flat_map<base::Version, BundleInfo>>
-      bundle_versions_per_id_;
+  test::BundleVersionsStorage storage_;
 };
 
 }  // namespace web_app

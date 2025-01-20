@@ -15,6 +15,8 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -30,6 +32,7 @@
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 using base::ASCIIToUTF16;
 
@@ -211,17 +214,37 @@ class FocusTraversalTest : public FocusManagerTest {
  protected:
   FocusTraversalTest();
 
+  std::unique_ptr<Widget> CreateBubbleDialog() {
+    auto delegate = std::make_unique<BubbleDialogDelegate>(
+        style_tab_, BubbleBorder::TOP_LEFT);
+    auto root_view = std::make_unique<MdTextButton>(Button::PressedCallback(),
+                                                    u"bubble button");
+    delegate->SetContentsView(std::move(root_view));
+    auto params = views::Widget::InitParams(
+        Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
+        Widget::InitParams::Type::TYPE_BUBBLE);
+    params.delegate = delegate.release();
+    params.parent = GetWidget()->GetNativeView();
+    return std::make_unique<views::Widget>(std::move(params));
+  }
+
   View* FindViewByID(int id) {
     View* view = GetContentsView()->GetViewByID(id);
-    if (view)
+    if (view) {
       return view;
-    if (style_tab_)
-      view = style_tab_->GetSelectedTabContentView()->GetViewByID(id);
-    if (view)
+    }
+    if (style_tab_) {
+      view = style_tab_
+                 ->GetTabContentsForTesting(style_tab_->GetSelectedTabIndex())
+                 ->GetViewByID(id);
+    }
+    if (view) {
       return view;
+    }
     view = search_border_view_->GetContentsRootView()->GetViewByID(id);
-    if (view)
+    if (view) {
       return view;
+    }
     return nullptr;
   }
 
@@ -237,9 +260,10 @@ class FocusTraversalTest : public FocusManagerTest {
         GetFocusManager()->AdvanceFocus(reverse);
         View* focused_view = GetFocusManager()->GetFocusedView();
         EXPECT_NE(nullptr, focused_view);
-        if (focused_view)
+        if (focused_view) {
           EXPECT_EQ(traversal_ids[reverse ? traversal_ids.size() - j - 1 : j],
                     focused_view->GetID());
+        }
       }
     }
   }
@@ -264,8 +288,9 @@ class FocusTraversalTest : public FocusManagerTest {
                                      base::flat_set<View*> seen_views = {}) {
     std::vector<raw_ptr<View, VectorExperimental>> children_views =
         parent->children();
-    if (children_views.empty())
+    if (children_views.empty()) {
       return;
+    }
 
     View* first_child = children_views[0];
     std::vector<raw_ptr<View, VectorExperimental>> children_in_focus_order;
@@ -279,8 +304,9 @@ class FocusTraversalTest : public FocusManagerTest {
       seen_views.insert(child);
       children_in_focus_order.push_back(child);
 
-      if (child != first_child)
+      if (child != first_child) {
         child->InsertBeforeInFocusList(first_child);
+      }
 
       ReverseChildrenFocusOrderImpl(child, seen_views);
     }
@@ -335,9 +361,9 @@ void FocusTraversalTest::InitContentView() {
   //   NativeButton        * OK_BUTTON_ID
   //   NativeButton        * CANCEL_BUTTON_ID
   //   NativeButton        * HELP_BUTTON_ID
-  //   TabbedPane          * STYLE_CONTAINER_ID
+  //   TabbedPane
   //     TabStrip
-  //       Tab ("Style")
+  //       Tab ("Style")   * STYLE_CONTAINER_ID
   //       Tab ("Other")
   //     View
   //       View
@@ -894,6 +920,56 @@ TEST_F(FocusTraversalTest, TraversesFocusInFocusOrder) {
   AdvanceEntireFocusLoop(kTraversalIDs, false);
   GetFocusManager()->ClearFocus();
   AdvanceEntireFocusLoop(kTraversalIDs, true);
+}
+
+// Invisible bubble dialogs should not interact with parent focus traversal.
+TEST_F(FocusTraversalTest, SkipNonVisibleDialog) {
+  auto widget = CreateBubbleDialog();
+  widget->Hide();
+
+  // Clear focus in both the parent and child widgets.
+  widget->GetFocusManager()->ClearFocus();
+  GetFocusManager()->ClearFocus();
+
+  std::set<View*> focused_views;
+  while (true) {
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    View* outer_focused_view = GetFocusManager()->GetFocusedView();
+    View* inner_focused_view = widget->GetFocusManager()->GetFocusedView();
+
+    // Focus should never enter the child widget since it's hidden.
+    EXPECT_FALSE(inner_focused_view);
+
+    // When focus has cycled in the parent widget, the test has completed.
+    if (focused_views.contains(outer_focused_view)) {
+      break;
+    }
+    focused_views.insert(outer_focused_view);
+  }
+
+  // The child widget should stay invisible.
+  EXPECT_TRUE(!widget->IsVisible());
+}
+
+// Visible bubble dialogs should interact with parent focus traversal.
+TEST_F(FocusTraversalTest, EnterVisibleDialog) {
+  // Create a visible bubble.
+  auto widget = CreateBubbleDialog();
+  widget->Show();
+
+  // Clear focus in both the parent and child widgets.
+  widget->GetFocusManager()->ClearFocus();
+  GetFocusManager()->ClearFocus();
+
+  // Focus should eventually enter the child widget.
+  while (true) {
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    View* inner_focused_view = widget->GetFocusManager()->GetFocusedView();
+    if (inner_focused_view != nullptr) {
+      // Success.
+      break;
+    }
+  }
 }
 
 class FocusTraversalNonFocusableTest : public FocusManagerTest {

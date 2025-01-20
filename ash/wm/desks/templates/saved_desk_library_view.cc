@@ -79,6 +79,11 @@ constexpr base::TimeDelta kSaveAndRecallLaunchFadeDelay =
 constexpr base::TimeDelta kSaveAndRecallLaunchFadeDuration =
     base::Milliseconds(250);
 
+// Section label values.
+constexpr gfx::Size kLabelSizeLandscape = {708, 24};
+constexpr gfx::Size kLabelSizePortrait = {464, 24};
+constexpr int kLabelTextShadowElevation = 4;
+
 struct SavedDesks {
   // Saved desks created as templates.
   std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> desk_templates;
@@ -93,7 +98,7 @@ SavedDesks Group(
         saved_desks) {
   SavedDesks grouped;
 
-  for (const ash::DeskTemplate* saved_desk : saved_desks) {
+  for (const DeskTemplate* saved_desk : saved_desks) {
     switch (saved_desk->type()) {
       case DeskTemplateType::kTemplate:
         grouped.desk_templates.push_back(saved_desk);
@@ -126,6 +131,19 @@ std::unique_ptr<views::View> GetLabelAndGridGroupContents() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   return group_contents;
+}
+
+// TODO(zxdan): Style the label.
+std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
+  auto label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(label_string_id));
+  gfx::ShadowValues shadows =
+      gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+          kLabelTextShadowElevation);
+  label->SetShadows(shadows);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1, *label);
+  return label;
 }
 
 }  // namespace
@@ -290,6 +308,10 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   // Create grids depending on which features are enabled.
   if (saved_desk_util::AreDesksTemplatesEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
+    if (features::IsCoralFeatureEnabled()) {
+      grid_labels_.push_back(group_contents->AddChildView(
+          MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
+    }
     desk_template_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_.get());
@@ -298,14 +320,22 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   }
   if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     auto group_contents = GetLabelAndGridGroupContents();
+    if (features::IsCoralFeatureEnabled()) {
+      grid_labels_.push_back(group_contents->AddChildView(MakeGridLabel(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
+    }
     save_and_recall_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_.get());
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
-  if (features::IsCoralSavedDeskFeatureEnabled()) {
+  if (features::IsCoralFeatureEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
+    if (features::IsCoralFeatureEnabled()) {
+      grid_labels_.push_back(group_contents->AddChildView(
+          MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_CORAL_GRID_LABEL)));
+    }
     coral_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(coral_grid_view_.get());
@@ -335,7 +365,7 @@ SavedDeskLibraryView::~SavedDeskLibraryView() {
 
 SavedDeskItemView* SavedDeskLibraryView::GetItemForUUID(
     const base::Uuid& uuid) {
-  for (ash::SavedDeskGridView* grid_view : grid_views()) {
+  for (SavedDeskGridView* grid_view : grid_views()) {
     if (auto* item = grid_view->GetItemForUUID(uuid))
       return item;
   }
@@ -360,6 +390,10 @@ void SavedDeskLibraryView::AddOrUpdateEntries(
                                          animate);
   }
 
+  UpdateGridLabels();
+
+  // TODO(crbug.com/380312832): check if the immediate layout is necessary or at
+  // least only do layout when needed.
   DeprecatedLayoutImmediately();
 }
 
@@ -368,6 +402,10 @@ void SavedDeskLibraryView::DeleteEntries(const std::vector<base::Uuid>& uuids,
   for (SavedDeskGridView* grid_view : grid_views_) {
     grid_view->DeleteEntries(uuids, delete_animation);
   }
+  UpdateGridLabels();
+
+  // TODO(crbug.com/380312832): check if the immediate layout is necessary or at
+  // least only do layout when needed.
   DeprecatedLayoutImmediately();
 }
 
@@ -425,7 +463,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
 }
 
 bool SavedDeskLibraryView::IsAnimating() const {
-  for (ash::SavedDeskGridView* grid_view : grid_views()) {
+  for (SavedDeskGridView* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
       return true;
   }
@@ -436,8 +474,8 @@ bool SavedDeskLibraryView::IsAnimating() const {
 bool SavedDeskLibraryView::IntersectsWithUi(
     const gfx::Point& screen_location) const {
   // Check saved desk items.
-  for (ash::SavedDeskGridView* grid : grid_views()) {
-    for (ash::SavedDeskItemView* item : grid->grid_items()) {
+  for (SavedDeskGridView* grid : grid_views()) {
+    for (SavedDeskItemView* item : grid->grid_items()) {
       if (item->GetBoundsInScreen().Contains(screen_location))
         return true;
     }
@@ -488,7 +526,7 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
         break;
       }
 
-      for (ash::SavedDeskGridView* grid_view : grid_views()) {
+      for (SavedDeskGridView* grid_view : grid_views()) {
         for (SavedDeskItemView* grid_item : grid_view->grid_items())
           grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
       }
@@ -532,6 +570,23 @@ std::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
   return std::nullopt;
 }
 
+void SavedDeskLibraryView::UpdateGridLabels() {
+  if (!features::IsCoralFeatureEnabled()) {
+    return;
+  }
+
+  CHECK_EQ(grid_labels_.size(), grid_views_.size());
+
+  const bool landscape = width() >= kLandscapeMinWidth;
+  for (size_t i = 0; i < grid_labels_.size(); ++i) {
+    // Make the grid label invisible if the corresponding grid view is
+    // empty. This will exclude it from the box layout.
+    grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
+                                                : kLabelSizePortrait);
+  }
+}
+
 void SavedDeskLibraryView::AddedToWidget() {
   event_handler_ = std::make_unique<SavedDeskLibraryEventHandler>(this);
 
@@ -549,7 +604,7 @@ void SavedDeskLibraryView::Layout(PassKey) {
 
   const bool landscape = width() >= kLandscapeMinWidth;
   size_t total_saved_desks = 0;
-  for (ash::SavedDeskGridView* grid_view : grid_views()) {
+  for (SavedDeskGridView* grid_view : grid_views()) {
     grid_view->set_layout_mode(landscape
                                    ? SavedDeskGridView::LayoutMode::LANDSCAPE
                                    : SavedDeskGridView::LayoutMode::PORTRAIT);

@@ -16,7 +16,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
-                "shards-20",
+                "skylab-shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -156,51 +156,12 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_jacuzzi_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-                # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_jacuzzi_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-30",
+                "skylab-shards-30",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -230,43 +191,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_octopus_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_octopus_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
@@ -288,7 +212,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # trogdor is slow. So that we use more number of shards.
-                "shards-20",
+                "skylab-shards-20",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -345,7 +269,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # Board with more capacity will run full tast test with many shards.
-                "shards-30",
+                "skylab-shards-30",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -370,7 +294,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-50",
+                "skylab-shards-50",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -447,21 +371,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
-    basic_suites = {
-        # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
-        # enabled here, but are removed for various reasons. See the definition
-        # for gpu_fyi_chromeos_release_gtests in compound_suites.star for more
-        # information.
-        "gpu_common_gtests_passthrough": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_release_telemetry_tests_jacuzzi_skylab",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
@@ -493,42 +402,63 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
+    name = "gpu_fyi_chromeos_skyrim_telemetry_tests",
     basic_suites = {
-        "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
             variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+                "CROS_GPU_SKYRIM_RELEASE_LKGM",
             ],
         ),
     },
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_chromeos_skyrim_telemetry_tests",
+    name = "model_validation_gce_matrix_tests",
     basic_suites = {
-        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            # Run model validation tests on GCE when possible to save bare
+            # metal resources. This cannot be done for ondevice_stability_tests
+            # because it requires a GPU.
+            mixins = [
+                "gce",
+            ],
             variants = [
-                "CROS_GPU_SKYRIM_RELEASE_LKGM",
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+        "ondevice_stability_tests_light_suite": targets.legacy_matrix_config(
+            # For stability tests we need a GPU, so we run them on NVIDIA
+            # GeForce GTX 1660s, which are most available in the intelligence
+            # pool.
+            mixins = [
+                "nvidia_geforce_gtx_1660",
+            ],
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "model_validation_matrix_tests",
+    basic_suites = {
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
+            ],
+        ),
+        "ondevice_stability_tests_light_suite": targets.legacy_matrix_config(
+            variants = [
+                "CHANNEL_BETA",
+                "CHANNEL_DEV",
+                "CHANNEL_STABLE",
             ],
         ),
     },
@@ -618,6 +548,11 @@ targets.legacy_matrix_compound_suite(
                 "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
+        "opt_target_coverage_test_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
     },
 )
 
@@ -640,7 +575,29 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_win_script_tests",
+    name = "optimization_guide_win32_script_tests",
+    basic_suites = {
+        "model_validation_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "ondevice_stability_tests_suite": targets.legacy_matrix_config(
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "NVIDIA_GEFORCE_GTX_1660",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_win64_script_tests",
     basic_suites = {
         "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [

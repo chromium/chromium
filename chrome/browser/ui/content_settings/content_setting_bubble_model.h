@@ -39,7 +39,7 @@ class ProtocolHandlerRegistry;
 namespace content {
 class Page;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class Event;

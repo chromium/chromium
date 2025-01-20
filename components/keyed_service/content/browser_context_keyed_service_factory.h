@@ -165,12 +165,7 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceFactory
   //
   // Sub-classes implement one of these two forms:
   virtual std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const;
-
-  // DEPRECATED: allows incremental conversion to the unique_ptr<> form
-  // above. New code should not be using this form.
-  virtual KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const;
+      content::BrowserContext* context) const = 0;
 
   // A helper object actually listens for notifications about BrowserContext
   // destruction, calculates the order in which things are destroyed and then

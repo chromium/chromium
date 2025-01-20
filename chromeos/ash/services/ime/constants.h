@@ -30,10 +30,6 @@ extern const base::FilePath::CharType kInputMethodsDirName[];
 COMPONENT_EXPORT(ASH_IME_CONSTANTS)
 extern const base::FilePath::CharType kLanguageDataDirName[];
 
-// The domain of Google Keyboard language dictionary download URL.
-COMPONENT_EXPORT(ASH_IME_CONSTANTS)
-extern const char kGoogleKeyboardDownloadDomain[];
-
 }  // namespace ime
 }  // namespace ash
 

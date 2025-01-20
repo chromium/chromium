@@ -237,11 +237,6 @@ public class ToolbarButtonInProductHelpController
                 });
     }
 
-    // Private methods.
-    private static int getDataReductionMenuItemHighlight() {
-        return R.id.app_menu_footer;
-    }
-
     private void showDownloadHomeIph() {
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(

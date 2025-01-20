@@ -156,10 +156,11 @@ source_set("util") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/test:js_test_util_internal",
+    "//ios/web/util",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
-    "//ios/web/web_view:util",
+    "//ios/web/util",
     "//net",
     "//testing/gtest",
   ]

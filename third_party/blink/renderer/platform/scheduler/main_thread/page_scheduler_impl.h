@@ -123,14 +123,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // frames or pages that are stored in the back-forward cache
   bool has_ipc_detection_enabled_ = false;
 
-  // Generally UKMs are associated with the main frame of a page, but the
-  // implementation allows to request a recorder from any local frame with
-  // the same result (e.g. for OOPIF support), therefore we need to select
-  // any frame here.
-  // Note that selecting main frame doesn't work for OOPIFs where the main
-  // frame it not a local one.
-  FrameSchedulerImpl* SelectFrameForUkmAttribution();
-
   // Update policy for all frames.
   void UpdatePolicy();
 

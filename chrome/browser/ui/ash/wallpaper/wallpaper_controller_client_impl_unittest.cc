@@ -20,6 +20,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/value_store/testing_value_store.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -81,7 +82,7 @@ TEST_F(WallpaperControllerClientImplTest, Construction) {
 
 TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId("idontexist@test.com", "444444");
+      AccountId::FromUserEmailGaiaId("idontexist@test.com", GaiaId("444444"));
   EXPECT_FALSE(client()->WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
       account_id));
 }
@@ -116,7 +117,7 @@ TEST_F(WallpaperControllerClientImplTest, GetFilesIdForRemovedUser) {
 TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
   using ash::personalization_app::mojom::GooglePhotosPhotoPtr;
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId("idontexist@test.com", "444444");
+      AccountId::FromUserEmailGaiaId("idontexist@test.com", GaiaId("444444"));
 
   // Size big enough to have not hit the minimum cache size logic, but small
   // enough to make sure we're very unlikely to pass if the logic is broken,
@@ -144,8 +145,9 @@ TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
 
     last_ten.push_back(photo->id);
 
-    if (last_ten.size() > 10)
+    if (last_ten.size() > 10) {
       last_ten.pop_front();
+    }
   };
 
   for (int i = 0; i < 20; i++) {

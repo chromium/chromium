@@ -7,7 +7,6 @@
 interface LargestContentfulPaint : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp renderTime;
     readonly attribute DOMHighResTimeStamp loadTime;
-    [RuntimeEnabled=LCPAnimatedImagesWebExposed] readonly attribute DOMHighResTimeStamp firstAnimatedFrameTime;
     readonly attribute unsigned long long size;
     readonly attribute DOMString id;
     readonly attribute DOMString url;
@@ -15,3 +14,5 @@ interface LargestContentfulPaint : PerformanceEntry {
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };
+
+LargestContentfulPaint includes PaintTimingMixin;

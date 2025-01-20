@@ -62,10 +62,6 @@ void EditorMenuTextfieldView::Layout(PassKey) {
           (kArrowButtonSize.height() + kArrowButtonInsets.height()) / 2,
       kArrowButtonSize.width() + kArrowButtonInsets.width(),
       kArrowButtonSize.height() + kArrowButtonInsets.height());
-
-  // Update the placeholder text based on the widget width.
-  textfield_->SetPlaceholderText(
-      GetEditorMenuFreeformPromptInputFieldPlaceholder());
 }
 
 void EditorMenuTextfieldView::ContentsChanged(
@@ -95,7 +91,7 @@ void EditorMenuTextfieldView::InitLayout() {
   // autocorrect crash issue in native views
   textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   textfield_->SetPlaceholderText(
-      GetEditorMenuFreeformPromptInputFieldPlaceholder());
+      GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite());
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
   textfield_->SetExtraInsets(gfx::Insets::TLBR(

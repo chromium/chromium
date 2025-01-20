@@ -15,15 +15,7 @@ select.md-select {
   margin-bottom: 2px;
   margin-top: 2px;
   min-height: 32px;
-  padding-bottom: 1px;
-<if expr="is_win or is_macosx">
-  /* The following platform-specific rule is necessary to get adjacent
-   * buttons, text inputs, and so forth to align on their borders while
-   * also aligning on the text's baselines. */
-  padding-bottom: 2px;
-</if>
   padding-inline-end: 32px;
-  padding-top: 1px;
   user-select: none;
   --md-select-width: calc(100% - 2 * var(--print-preview-sidebar-margin));
 }

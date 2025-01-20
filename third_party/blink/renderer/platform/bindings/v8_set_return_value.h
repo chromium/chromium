@@ -455,27 +455,21 @@ void V8SetReturnValue(const CallbackInfo& info,
   V8ReturnValue::SetWrapper(info, wrappable, context);
 }
 
+// This `current_context` variant is for static operations where there is no
+// receiver object.
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
                       const ScriptWrappable* value,
-                      v8::Local<v8::Context> creation_context) {
+                      v8::Local<v8::Context> current_context) {
   if (!value) [[unlikely]] {
     return info.GetReturnValue().SetNull();
   }
   ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(value);
-  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable))
+  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable,
+                                   current_context)) {
     return;
-  V8ReturnValue::SetWrapper(info, wrappable, creation_context);
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      ScriptWrappable& value,
-                      v8::Local<v8::Context> creation_context) {
-  ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(&value);
-  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable))
-    return;
-  V8ReturnValue::SetWrapper(info, wrappable, creation_context);
+  }
+  V8ReturnValue::SetWrapper(info, wrappable, current_context);
 }
 
 // EnumerationBase

@@ -12,10 +12,10 @@ build_webui_tests("build") {
   files = [
     "app_management_test_support.ts",
     "app_test.ts",
-    "test_app_management_browser_proxy.ts",
     "file_handling_item_test.ts",
     "permission_item_test.ts",
     "supported_links_item_test.ts",
+    "test_app_management_browser_proxy.ts",
     "uninstall_button_test.ts",
     "window_mode_item_test.ts",
   ]

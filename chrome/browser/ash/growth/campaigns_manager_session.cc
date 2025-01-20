@@ -97,9 +97,7 @@ bool IsEligible() {
 }
 
 bool IsWebBrowserAppId(std::string_view app_id) {
-  return app_id == app_constants::kChromeAppId ||
-         app_id == app_constants::kAshDebugBrowserAppId ||
-         app_id == app_constants::kLacrosAppId;
+  return app_id == app_constants::kChromeAppId;
 }
 
 bool IsAppVisible(const apps::InstanceUpdate& update) {
@@ -444,9 +442,7 @@ void CampaignsManagerSession::OnInstanceUpdate(
 
   switch (app_type.value()) {
     case apps::AppType::kUnknown:
-      // e.g Ash debug browser.
       break;
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kChromeApp:
       HandleWebBrowserInstanceUpdate(update);
       break;

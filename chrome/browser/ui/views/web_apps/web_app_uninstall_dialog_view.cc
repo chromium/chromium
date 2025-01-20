@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -83,15 +84,17 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  SetShowIcon(true);
-  SetTitle(l10n_util::GetStringFUTF16(
-      IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
-      base::UTF8ToUTF16(
-          provider_->registrar_unsafe().GetAppShortName(app_id_))));
+  SetTitle(l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_TITLE));
 
+  AddChildView(WebAppIconNameAndOriginView::Create(
+                   image_,
+                   base::UTF8ToUTF16(
+                       provider_->registrar_unsafe().GetAppShortName(app_id_)),
+                   app_start_url)
+                   .release());
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
+      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
   SetAcceptCallback(
       base::BindOnce(&WebAppUninstallDialogDelegateView::OnDialogAccepted,
                      base::Unretained(this)));
@@ -105,25 +108,33 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  // Add margins for the icon plus the icon-title padding so that the dialog
-  // contents align with the title text.
+  // Dialog margins.
   gfx::Insets insets = layout_provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText);
-  set_margins(insets +
-              gfx::Insets::TLBR(0, insets.left() + kIconSizeInDip, 0, 0));
+  set_margins(insets + gfx::Insets::TLBR(insets.top(), 0, 0, 0));
 
-  // For IWAs checkbox will not be displayed, removal of
-  // storage is automatically enforced.
+  // Align the checkboxes to the start of the app name, not the start of the app
+  // icon.
+  constexpr int kOffset = 3;
+  views::View* checkbox_container =
+      AddChildView(std::make_unique<views::View>());
+  gfx::Insets checkbox_insets =
+      gfx::Insets::TLBR(0, insets.left() + kIconSizeInDip - kOffset, 0, 0);
+  checkbox_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, checkbox_insets));
+
+  // For IWAs checkbox will not be displayed, removal of storage is
+  // automatically enforced.
   if (!provider_->registrar_unsafe().IsIsolated(app_id_)) {
-    std::u16string checkbox_label = l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
-        url_formatter::FormatUrlForSecurityDisplay(
-            app_start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    std::u16string checkbox_label =
+        l10n_util::GetStringUTF16(IDS_APP_ALSO_DELETE_APPS_DATA);
 
     auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
     checkbox->SetMultiLine(true);
-    checkbox_ = AddChildView(std::move(checkbox));
+    checkbox_ = checkbox_container->AddChildView(std::move(checkbox));
   }
+
+  AddChildView(checkbox_container);
 
   uninstall_source_ = uninstall_source;
   install_manager_observation_.Observe(&provider_->install_manager());

@@ -76,8 +76,8 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> sekme değiştirildi, <ph name="ANY_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_CHANGED" /> sekme değiştirildi, <ph name="ANY_CLOSED" /> sekme kapatıldı}}</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
+<translation id="4431937619879060901">"<ph name="GROUP_NAME" />" sekme grubuna erişiminizi anında kaybedersiniz ve grup tüm cihazlarınızdan silinir</translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>
-<translation id="4590027107044272416">Buradan yeni bir sekme açabilirsiniz</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Etkin Olmayan 1 sekme kapatılsın mı?}other{Etkin olmayan <ph name="TAB_COUNT_MANY" /> sekme kapatılsın mı?}}</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
@@ -98,16 +98,16 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi}other{<ph name="MANY_ADDED" /> sekme eklendi}}</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
+<translation id="5380159289133845234">Kopya sekmeleri arşivle</translation>
 <translation id="5400836586163650660">Gri</translation>
+<translation id="5446043142172831860">Sekmeyi kaldır ve gruptan ayrıl</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}}</translation>
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
-<translation id="5615302411300498438">Daha sonra sekme eklemek için bu grubu tutun veya gruptan ayrılın.
-
-Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anında kaybedersiniz.</translation>
 <translation id="5627941783489838464">Sekme güncellemesi yok</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Sekmeyi geri yükle}other{Sekmeleri geri yükle}}</translation>
+<translation id="5647702255748985085">Gruptan ayrılmak istiyor musunuz?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> bağlantı}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> bağlantı}}</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
 <translation id="5901630391730855834">Sarı</translation>
@@ -116,7 +116,7 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6051432659151380973">Sekme gruplarınız otomatik olarak kaydedilir</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
-<translation id="6082313992897617440"><ph name="GROUP_NAME" /> sekme grubuna erişiminizi anında kaybedersiniz</translation>
+<translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6271513594716432922">Etkin olmayan tüm sekmeleri kapat</translation>
@@ -143,9 +143,10 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> seçili</translation>
 <translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>
 <translation id="7352298686197644113">Açık sekmelerinizdeki hangi öğenin fiyatının daha düşük olduğunu görün</translation>
-<translation id="7421293530411019405">Sekme grubundan ayrılmak istiyor musunuz?</translation>
+<translation id="742664698522525515">Grup silinsin mi?</translation>
 <translation id="7452985128687107478">Sekme grupları tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="747459581954555080">Tümünü geri yükle</translation>
+<translation id="750886945254958667">Daha sonra sekme eklemek için bu grubu tutun veya artık erişmek istemiyorsanız gruptan ayrılın</translation>
 <translation id="753732157349120914">Sekme Değiştirici</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> yorum}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>
@@ -175,9 +176,7 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> sekme eklendi, <ph name="ANY_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_ADDED" /> sekme eklendi, <ph name="ANY_CLOSED" /> sekme kapatıldı}}</translation>
-<translation id="8631711675211020168">Herkes <ph name="GROUP_NAME" /> sekme grubuna erişimini anında kaybeder ve grup tüm cihazlardan silinir</translation>
 <translation id="8633025649649592204">Son işlem</translation>
-<translation id="8635399646025169806">Sekme grubu tutulsun mu?</translation>
 <translation id="870736955561925754">Sekme kapatılıp grup silinsin mi?</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730621377337864115">Bitti</translation>
@@ -188,10 +187,11 @@ Ayrılırsanız "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişiminizi anınd
 <translation id="8887921976452567404">Kapattığınız sekmeleri ve grupları, Son sekmeler bölümünden ve Sekme grupları bölümünden yeniden açabilirsiniz.</translation>
 <translation id="8915916167043355778">Tümünü kapat</translation>
 <translation id="9090098097337832354">Bu mağazayla ilgili bilgiler kapatıldı</translation>
-<translation id="9111228330448174435">Yeni sekme grubu oluşturulurken iletişim kutusunu göster</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> <ph name="TITLE_OF_GROUP" /> sekme grubu için sekme grubu işlem menüsünü aç</translation>
+<translation id="9169141410816678175">Herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimi anında kaybeder ve grup tüm cihazlardan silinir</translation>
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>
 <translation id="9216898458513705996">Sekmeler bu cihazda açık kalır ancak grup, <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}}</translation>
+<translation id="94870150074703282">Grup silinsin mi?</translation>
 <translation id="992256792861109788">Pembe</translation>
 </translationbundle>

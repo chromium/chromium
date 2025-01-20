@@ -31,7 +31,6 @@ items:
   value: 2
 owners:
 - file://components/policy/OWNERS
-- emaxx@chromium.org
 schema:
   enum:
   - 0

@@ -276,7 +276,8 @@ TEST_F(IsolationInfoTest, RequestTypeOtherWithEmptySiteForCookies) {
 }
 
 TEST_F(IsolationInfoTest, CreateTransient) {
-  IsolationInfo isolation_info = IsolationInfo::CreateTransient();
+  IsolationInfo isolation_info =
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_TRUE(isolation_info.top_frame_origin()->opaque());
   EXPECT_TRUE(isolation_info.frame_origin()->opaque());
@@ -293,8 +294,7 @@ TEST_F(IsolationInfoTest, CreateTransient) {
 }
 
 TEST_F(IsolationInfoTest, CreateTransientWithNonce) {
-  IsolationInfo isolation_info =
-      IsolationInfo::CreateTransientWithNonce(kNonce1);
+  IsolationInfo isolation_info = IsolationInfo::CreateTransient(kNonce1);
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_TRUE(isolation_info.top_frame_origin()->opaque());
   EXPECT_TRUE(isolation_info.frame_origin()->opaque());
@@ -310,8 +310,7 @@ TEST_F(IsolationInfoTest, CreateTransientWithNonce) {
       isolation_info.CreateForRedirect(kOrigin3);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(redirected_isolation_info));
 
-  IsolationInfo new_info_same_nonce =
-      IsolationInfo::CreateTransientWithNonce(kNonce1);
+  IsolationInfo new_info_same_nonce = IsolationInfo::CreateTransient(kNonce1);
   ASSERT_TRUE(new_info_same_nonce.nonce().has_value());
   EXPECT_EQ(new_info_same_nonce.nonce().value(), kNonce1);
 
@@ -467,7 +466,7 @@ TEST_F(IsolationInfoTest, Serialization) {
   }
 
   const IsolationInfo kNegativeTestCases[] = {
-      IsolationInfo::CreateTransient(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       // With nonce (i.e transient).
       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
                             kOrigin2, SiteForCookies::FromOrigin(kOrigin1),

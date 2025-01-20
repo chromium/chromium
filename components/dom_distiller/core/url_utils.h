@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_URL_UTILS_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_URL_UTILS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 class GURL;

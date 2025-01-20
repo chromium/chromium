@@ -156,9 +156,6 @@ public class ContextualSearchManager
     /** A means of observing all the browser's tabs. */
     private final TabModelSelector mTabModelSelector;
 
-    /** A supplier of the last time the user interacted with the browser. */
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
-
     private final Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private ContextualSearchSelectionController mSelectionController;
@@ -263,8 +260,6 @@ public class ContextualSearchManager
      * @param browserControlsStateProvider Access to the current state of the browser controls.
      * @param windowAndroid A window to create the overlay panel with.
      * @param tabModelSelector A means of observing all tabs in the browser.
-     * @param lastUserInteractionTimeSupplier A supplier of the last time a user interacted with the
-     *     browser.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} when available.
      */
     public ContextualSearchManager(
@@ -277,7 +272,6 @@ public class ContextualSearchManager
             BrowserControlsStateProvider browserControlsStateProvider,
             WindowAndroid windowAndroid,
             TabModelSelector tabModelSelector,
-            Supplier<Long> lastUserInteractionTimeSupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mProfile = profile;
@@ -288,7 +282,6 @@ public class ContextualSearchManager
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mWindowAndroid = windowAndroid;
         mTabModelSelector = tabModelSelector;
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mDpToPx = mActivity.getResources().getDisplayMetrics().density;
 
@@ -451,13 +444,6 @@ public class ContextualSearchManager
     /** @return The Base Page's {@link WebContents}. */
     private @Nullable WebContents getBaseWebContents() {
         return mSelectionController.getBaseWebContents();
-    }
-
-    /** @return The Base Page's {@link GURL}. */
-    private @Nullable GURL getBasePageURL() {
-        WebContents baseWebContents = mSelectionController.getBaseWebContents();
-        if (baseWebContents == null) return null;
-        return baseWebContents.getVisibleUrl();
     }
 
     /** Notifies that the base page has started loading a page. */
@@ -701,7 +687,10 @@ public class ContextualSearchManager
     @CalledByNative
     @VisibleForTesting
     void onTextSurroundingSelectionAvailable(
-            final String encoding, final String surroundingText, int startOffset, int endOffset) {
+            final @JniType("std::string") String encoding,
+            final @JniType("std::u16string") String surroundingText,
+            int startOffset,
+            int endOffset) {
         if (mInternalStateController.isStillWorkingOn(InternalState.GATHERING_SURROUNDINGS)) {
             assert mContext != null;
             // Sometimes Blink returns empty surroundings and 0 offsets so reset in that case.
@@ -749,22 +738,22 @@ public class ContextualSearchManager
     public void onSearchTermResolutionResponse(
             boolean isNetworkUnavailable,
             int responseCode,
-            final String searchTerm,
-            final String displayText,
-            final String alternateTerm,
-            final String mid,
+            final @JniType("std::string") String searchTerm,
+            final @JniType("std::string") String displayText,
+            final @JniType("std::string") String alternateTerm,
+            final @JniType("std::string") String mid,
             boolean doPreventPreload,
             int selectionStartAdjust,
             int selectionEndAdjust,
-            final String contextLanguage,
-            final String thumbnailUrl,
-            final String caption,
-            final String quickActionUri,
+            final @JniType("std::string") String contextLanguage,
+            final @JniType("std::string") String thumbnailUrl,
+            final @JniType("std::string") String caption,
+            final @JniType("std::string") String quickActionUri,
             @QuickActionCategory final int quickActionCategory,
-            final String searchUrlFull,
-            final String searchUrlPreload,
+            final @JniType("std::string") String searchUrlFull,
+            final @JniType("std::string") String searchUrlPreload,
             @CardTag final int cocaCardTag,
-            final String relatedSearchesJson) {
+            final @JniType("std::string") String relatedSearchesJson) {
         ContextualSearchUma.logResolveReceived(mSelectionController.isTapSelection());
         ResolvedSearchTerm resolvedSearchTerm =
                 new ResolvedSearchTerm.Builder(
@@ -876,9 +865,10 @@ public class ContextualSearchManager
         // pronunciation.
         String pronunciation = null;
         int dotSeparatorLocation = searchTerm.indexOf(DEFINITION_MID_DOT);
-        if (dotSeparatorLocation > 0 && dotSeparatorLocation < searchTerm.length()) {
-            assert resolvedSearchTerm.cardTagEnum() == CardTag.CT_DEFINITION
-                    || resolvedSearchTerm.cardTagEnum() == CardTag.CT_CONTEXTUAL_DEFINITION;
+        if (dotSeparatorLocation > 0
+                && dotSeparatorLocation < searchTerm.length()
+                && (resolvedSearchTerm.cardTagEnum() == CardTag.CT_DEFINITION
+                        || resolvedSearchTerm.cardTagEnum() == CardTag.CT_CONTEXTUAL_DEFINITION)) {
             // Style with the pronunciation in gray in the second half.
             String word = searchTerm.substring(0, dotSeparatorLocation);
             pronunciation = searchTerm.substring(dotSeparatorLocation + 1);
@@ -1174,7 +1164,6 @@ public class ContextualSearchManager
                     pageTransition,
                     isRedirect,
                     hasUserGesture,
-                    mLastUserInteractionTimeSupplier.get(),
                     RedirectHandler.NO_COMMITTED_ENTRY_INDEX,
                     /* isInitialNavigation= */ true,
                     isRendererInitiated);
@@ -2035,7 +2024,7 @@ public class ContextualSearchManager
         void removeLastHistoryEntry(
                 long nativeContextualSearchManager,
                 ContextualSearchManager caller,
-                String historyUrl,
+                @JniType("std::string") String historyUrl,
                 long urlTimeMs);
     }
 }

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
@@ -26,11 +25,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -150,15 +146,6 @@ public class PriceDropNotifierUnitTest {
     private void invokeImageFetcherCallback(Bitmap bitmap) {
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-    }
-
-    private void sendPendingIntent(PendingIntent pendingIntent) {
-        // Simulate to send a PendingIntent by manually starting the TrampolineActivity.
-        ShadowPendingIntent shadowPendingIntent = Shadows.shadowOf(pendingIntent);
-        Robolectric.buildActivity(
-                        PriceDropNotificationManagerImpl.TrampolineActivity.class,
-                        shadowPendingIntent.getSavedIntent())
-                .create();
     }
 
     private void verifySetNotificationProperties() {

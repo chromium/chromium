@@ -18,7 +18,6 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/worker_watcher.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
@@ -61,31 +60,30 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   blink::DedicatedWorkerToken worker_token2;
   ASSERT_NE(worker_token, worker_token2);
 
-  worker_watcher->OnWorkerCreated(worker_token, rfh->GetProcess()->GetID(),
-                                  rfh->GetLastCommittedOrigin(),
-                                  rfh->GetGlobalId());
-  worker_watcher->OnWorkerCreated(worker_token2, rfh->GetProcess()->GetID(),
-                                  rfh->GetLastCommittedOrigin(),
-                                  rfh->GetGlobalId());
+  worker_watcher->OnWorkerCreated(
+      worker_token, rfh->GetProcess()->GetDeprecatedID(),
+      rfh->GetLastCommittedOrigin(), rfh->GetGlobalId());
+  worker_watcher->OnWorkerCreated(
+      worker_token2, rfh->GetProcess()->GetDeprecatedID(),
+      rfh->GetLastCommittedOrigin(), rfh->GetGlobalId());
   absl::Cleanup delete_workers = [&] {
     worker_watcher->OnBeforeWorkerDestroyed(worker_token, rfh->GetGlobalId());
     worker_watcher->OnBeforeWorkerDestroyed(worker_token2, rfh->GetGlobalId());
   };
 
   // Validate that the right worker nodes were created, save a pointer to one.
-  base::WeakPtr<WorkerNode> worker_node;
-  performance_manager::RunInGraph([&](Graph* graph) {
-    bool found_worker = false;
+  base::WeakPtr<WorkerNode> worker_node = [&]() -> base::WeakPtr<WorkerNode> {
+    Graph* graph = PerformanceManager::GetGraph();
     for (const WorkerNode* node : graph->GetAllWorkerNodes()) {
       EXPECT_THAT(node->GetWorkerToken(),
                   ::testing::AnyOf(worker_token, worker_token2));
       if (node->GetWorkerToken() == worker_token) {
-        worker_node = WorkerNodeImpl::FromNode(node)->GetWeakPtr();
-        found_worker = true;
+        return WorkerNodeImpl::FromNode(node)->GetWeakPtr();
       }
     }
-    EXPECT_TRUE(found_worker);
-  });
+    return nullptr;
+  }();
+  ASSERT_TRUE(worker_node);
 
   std::optional<WorkerContext> worker_context =
       WorkerContext::FromWorkerToken(worker_token);
@@ -94,18 +92,16 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
 
   base::WeakPtr<WorkerNode> worker_node_from_context =
       worker_context->GetWeakWorkerNode();
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(worker_node);
-    ASSERT_TRUE(worker_node_from_context);
-    EXPECT_EQ(worker_node.get(), worker_node_from_context.get());
+  ASSERT_TRUE(worker_node);
+  ASSERT_TRUE(worker_node_from_context);
+  EXPECT_EQ(worker_node.get(), worker_node_from_context.get());
 
-    EXPECT_EQ(worker_node.get(), worker_context->GetWorkerNode());
-    EXPECT_EQ(worker_context.value(), worker_node->GetResourceContext());
-    EXPECT_EQ(worker_context.value(),
-              WorkerContext::FromWorkerNode(worker_node.get()));
-    EXPECT_EQ(worker_context.value(),
-              WorkerContext::FromWeakWorkerNode(worker_node));
-  });
+  EXPECT_EQ(worker_node.get(), worker_context->GetWorkerNode());
+  EXPECT_EQ(worker_context.value(), worker_node->GetResourceContext());
+  EXPECT_EQ(worker_context.value(),
+            WorkerContext::FromWorkerNode(worker_node.get()));
+  EXPECT_EQ(worker_context.value(),
+            WorkerContext::FromWeakWorkerNode(worker_node));
 
   // Make sure a second worker gets a different context.
   std::optional<WorkerContext> worker_context2 =
@@ -118,12 +114,12 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   // Context still returns worker token, but it no longer matches any worker.
   EXPECT_EQ(worker_token, worker_context->GetWorkerToken());
   EXPECT_FALSE(WorkerContext::FromWorkerToken(worker_token).has_value());
-  performance_manager::RunInGraph([&](Graph* graph) {
-    EXPECT_EQ(graph->GetAllWorkerNodes().size(), 0u);
-    EXPECT_FALSE(worker_node);
-    EXPECT_EQ(nullptr, worker_context->GetWorkerNode());
-    EXPECT_EQ(std::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));
-  });
+
+  Graph* graph = PerformanceManager::GetGraph();
+  EXPECT_EQ(graph->GetAllWorkerNodes().size(), 0u);
+  EXPECT_FALSE(worker_node);
+  EXPECT_EQ(nullptr, worker_context->GetWorkerNode());
+  EXPECT_EQ(std::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));
 }
 
 TEST_F(ResourceAttrWorkerContextNoPMTest, WorkerContextWithoutPM) {

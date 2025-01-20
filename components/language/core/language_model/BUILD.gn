@@ -12,7 +12,6 @@ static_library("language_model") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",
@@ -29,7 +28,6 @@ source_set("unit_tests") {
   sources = [ "fluent_language_model_unittest.cc" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
     "//components/language/core/common",

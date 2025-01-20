@@ -28,6 +28,8 @@ source_set("bottom_sheet") {
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
     "//components/prefs",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
@@ -47,7 +49,9 @@ source_set("unit_tests") {
   deps = [
     ":bottom_sheet",
     "//base/test:test_support",
+    "//components/autofill/core/common:test_support",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util",
     "//components/infobars/core",
     "//components/password_manager/core/browser/features:password_features",

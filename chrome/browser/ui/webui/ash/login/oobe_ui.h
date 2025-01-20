@@ -150,8 +150,9 @@ class OobeUI : public ui::MojoWebUIController {
   THandler* GetHandler() {
     OobeScreenId expected_screen = THandler::kScreenId;
     for (BaseScreenHandler* handler : screen_handlers_) {
-      if (expected_screen == handler->oobe_screen())
+      if (expected_screen == handler->oobe_screen()) {
         return static_cast<THandler*>(handler);
+      }
     }
 
     NOTREACHED() << "Unable to find handler for screen " << expected_screen;

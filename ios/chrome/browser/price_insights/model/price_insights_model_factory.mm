@@ -5,15 +5,14 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 PriceInsightsModel* PriceInsightsModelFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<PriceInsightsModel*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PriceInsightsModel>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -23,9 +22,7 @@ PriceInsightsModelFactory* PriceInsightsModelFactory::GetInstance() {
 }
 
 PriceInsightsModelFactory::PriceInsightsModelFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PriceInsightsModel",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("PriceInsightsModel") {}
 
 PriceInsightsModelFactory::~PriceInsightsModelFactory() {}
 

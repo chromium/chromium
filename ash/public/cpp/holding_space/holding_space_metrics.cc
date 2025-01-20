@@ -12,9 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -48,12 +46,6 @@ constexpr size_t kExtensionsSize =
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the list of holding space metrics observers.
-base::ObserverList<Observer>& GetObserverList() {
-  static base::NoDestructor<base::ObserverList<Observer>> observer_list;
-  return *observer_list;
-}
-
 // Returns the `FilePickerBindingContext` representation of the specified
 // `file_picker_binding_context`. Note that these values are persisted to
 // histograms so should remain unchanged.
@@ -84,14 +76,10 @@ std::string ToString(ItemAction action) {
       return "Remove";
     case ItemAction::kResume:
       return "Resume";
-    case ItemAction::kShowInBrowser:
-      return "ShowInBrowser";
     case ItemAction::kShowInFolder:
       return "ShowInFolder";
     case ItemAction::kUnpin:
       return "Unpin";
-    case ItemAction::kViewDetailsInBrowser:
-      return "ViewDetailsInBrowser";
   }
   NOTREACHED();
 }
@@ -216,12 +204,7 @@ void RecordFilesAppChipAction(FilesAppChipAction action) {
 }
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
-                      ItemAction action,
-                      EventSource event_source) {
-  if (event_source == EventSource::kTest) {
-    CHECK_IS_TEST();
-  }
-
+                      ItemAction action) {
   const std::string action_string = ToString(action);
 
   for (const HoldingSpaceItem* item : items) {
@@ -244,11 +227,6 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
         base::StrCat(
             {"HoldingSpace.Item.Action.", action_string, ".FileSystemType"}),
         item->file().file_system_type);
-  }
-
-  // Notify observers.
-  for (Observer& observer : GetObserverList()) {
-    observer.OnHoldingSpaceItemActionRecorded(items, action, event_source);
   }
 }
 
@@ -274,11 +252,6 @@ void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
 
 void RecordPodAction(PodAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
-
-  // Notify observers.
-  for (Observer& observer : GetObserverList()) {
-    observer.OnHoldingSpacePodActionRecorded(action);
-  }
 }
 
 void RecordPodResizeAnimationSmoothness(int smoothness) {
@@ -332,16 +305,6 @@ void RecordUserPreferences(UserPreferences preferences) {
 void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts("HoldingSpace.Item.VisibleCount", items);
-}
-
-// Observation -----------------------------------------------------------------
-
-ScopedObservation::ScopedObservation(Observer* observer) : observer_(observer) {
-  GetObserverList().AddObserver(observer_);
-}
-
-ScopedObservation::~ScopedObservation() {
-  GetObserverList().RemoveObserver(observer_);
 }
 
 }  // namespace ash::holding_space_metrics

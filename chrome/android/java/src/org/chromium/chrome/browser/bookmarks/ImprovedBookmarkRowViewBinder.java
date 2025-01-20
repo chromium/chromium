@@ -46,7 +46,7 @@ public class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.ACCESSORY_VIEW) {
             row.setAccessoryView(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
         } else if (key == ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE) {
-            row.setListMenuButtonDelegate(
+            row.setListMenuDelegate(
                     model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         } else if (key == ImprovedBookmarkRowProperties.POPUP_LISTENER) {
             row.setPopupListener(

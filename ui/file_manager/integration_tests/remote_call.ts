@@ -15,13 +15,13 @@ export type MenuObject = ElementObject&{
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
-window.autoStep = () => {
-  window.autostep = window.autostep || false;
-  if (!window.autostep) {
-    window.autostep = true;
+globalThis.autoStep = () => {
+  globalThis.autostep = globalThis.autostep || false;
+  if (!globalThis.autostep) {
+    globalThis.autostep = true;
   }
-  if (window.autostep && typeof window.step === 'function') {
-    window.step();
+  if (globalThis.autostep && typeof globalThis.step === 'function') {
+    globalThis.step();
   }
 };
 
@@ -1252,18 +1252,18 @@ export class RemoteCallFilesApp extends RemoteCall {
       dialogParams: chrome.fileSystem.ChooseEntryOptions, volumeType: string,
       expectedSet: TestEntryInfo[], closeDialog: (a: string) => Promise<void>,
       useBrowserOpen: boolean = false,
-      debug: boolean = false): Promise<unknown> {
+      debug: boolean = false): Promise<string> {
     const caller = getCaller();
-    let resultPromise;
+    let resultPromise: () => Promise<string>;
     if (useBrowserOpen) {
       await sendTestMessage({name: 'runSelectFileDialog'});
-      resultPromise = async () => {
+      resultPromise = async(): Promise<string> => {
         return await sendTestMessage(
             {name: 'waitForSelectFileDialogNavigation'});
       };
     } else {
       await openEntryChoosingWindow(dialogParams);
-      resultPromise = () => {
+      resultPromise = (): Promise<string> => {
         return pollForChosenEntry(caller);
       };
     }
@@ -1436,12 +1436,14 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     microsoft_onedrive, google_drive.
    */
   async setLocalFilesMigrationDestination(provider: string) {
-    // Disable local storage - migration destination is ignored otherwise.
-    await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
-    // Set the destination.
+    // Set the destination first, otherwise migration can be complete
+    // immediately, if MyFiles are empty.
     await sendTestMessage({
-      name: 'setLocalFilesMigrationDestination',
+      name: 'skyvault:setMigrationDestination',
       provider: provider,
     });
+    // Disable local storage - migration destination is ignored otherwise.
+    await sendTestMessage(
+        {name: 'skyvault:setLocalFilesEnabled', enabled: false});
   }
 }

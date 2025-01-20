@@ -21,12 +21,13 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
 namespace {
 const AccountId kDefaultOwnerAccountId =
-    AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId);
+    AccountId::FromUserEmailGaiaId(test::kTestEmail, GaiaId(test::kTestGaiaId));
 const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
 const AccountId kActiveDirectoryUserAccountId =

@@ -64,6 +64,9 @@
   <message name="IDS_EXTENSIONS_REPAIR_CORRUPTED" desc="The link for repairing corrupted extensions.">
     Repair
   </message>
+  <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_ICON_TOOLTIP" desc="The tooltip displayed when the user hovers the button to move the extension to their account.">
+    Save in your Google Account
+  </message>
   <message name="IDS_EXTENSIONS_VIEW_IFRAME" desc="Text that signifies that the extension view is an iframe.">
     (iframe)
   </message>
@@ -75,6 +78,15 @@
   </message>
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE" desc="Text shown in the extension card for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS" desc="Text shown in the details extension view for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, but only if you trust the extension. It may contain experimental features and hasn't been reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST" desc="Text displayed in a toast popup message when extensions are disabled due to unsupported developer mode.">
+    Developer Mode Off. Some extensions were disabled.
   </message>
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
@@ -487,9 +499,6 @@
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL" desc="The label for a button to edit the shortcut.">
     Edit shortcut <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_NOT_SET" desc="The label to indicate that an extension has no shortcut set for a given command.">
-    Not set
-  </message>
   <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL" desc="The label for the dropdown menu that lets the user choose the scope of an extension command (within chrome or global).">
     Scope of <ph name="SHORTCUT">$1</ph> for <ph name="EXTENSION_NAME">$2</ph>
   </message>
@@ -543,12 +552,6 @@
   </message>
   <message name="IDS_EXTENSIONS_TOOLBAR_UPDATING_TOAST" desc="Text displayed in a toast popup message while extensions are updating.">
     Updating...
-  </message>
-  <message name="IDS_EXTENSIONS_SHORTCUT_SET" desc="Text used to notify screen readers when a shortcut is successfully set.">
-    Shortcut set: <ph name="IDS_SHORT_SET_COMMAND">$1<ex>Ctrl + S</ex></ph>
-  </message>
-  <message name="IDS_EXTENSIONS_TYPE_A_SHORTCUT" desc="The prompt to the user to enter a keyboard shortcut in order to assign it to an extension.">
-    Type a shortcut
   </message>
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
@@ -613,8 +616,8 @@
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the warning stage.">
     {NUM_EXTENSIONS, plural,
-      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
-      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
+      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
     }
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the disabled stage.">
@@ -627,7 +630,7 @@
     This extension may soon no longer be supported
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
-    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
+    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
     This extension was turned off because it is no longer supported
@@ -653,16 +656,9 @@
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_UNSUPPORTED_EXTENSION_OFF_TEXT" desc="The text that informs the user the extension was turned off because it's no longer supported.">
     This extension was turned off because it is no longer supported
   </message>
-<if expr="is_macosx">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
-    Include Ctrl, Alt, or ⌘
+  <message name="IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION" desc="The text shown to a user when they try to install an extension that is no longer supported by the browser.">
+    Cannot install extension because it uses an unsupported manifest version.
   </message>
-</if>
-<if expr="chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
-    Include Ctrl, Alt, or Search
-  </message>
-</if>
 <if expr="is_chromeos">
   <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
     {FILE_COUNT, plural,
@@ -671,22 +667,6 @@
     }
   </message>
 </if>
-<if expr="is_macosx or chromeos_ash">
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use so many modifiers in a shortcut.">
-    Invalid combination
-  </message>
-</if>
-<if expr="not is_macosx and not chromeos_ash">
-  <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control key or the Alt key.">
-    Include either Ctrl or Alt
-  </message>
-  <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use both Ctrl and Alt in a shortcut.">
-    Use either Ctrl or Alt
-  </message>
-</if>
-<message name="IDS_EXTENSIONS_NEED_CHARACTER" desc="Error message explaining that a shortcut needs a character. This is only shown if a valid modifier is already entered.">
-  Type a letter
-</message>
 
 <if expr="chromeos_ash">
   <!-- Extensions Kiosk apps -->

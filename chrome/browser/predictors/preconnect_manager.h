@@ -127,7 +127,7 @@ class PreconnectManager {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when a preconnect to |preconnect_url| is initiated for |url|.
     virtual void PreconnectInitiated(const GURL& url,
@@ -143,7 +143,7 @@ class PreconnectManager {
   // An observer for testing.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void OnPreconnectUrl(const GURL& url,
                                  int num_sockets,

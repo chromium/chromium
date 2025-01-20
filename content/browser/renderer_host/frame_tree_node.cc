@@ -49,8 +49,7 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-using FrameTreeNodeIdMap = std::
-    unordered_map<FrameTreeNodeId, FrameTreeNode*, FrameTreeNodeId::Hasher>;
+using FrameTreeNodeIdMap = std::unordered_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -811,32 +810,29 @@ bool FrameTreeNode::NotifyUserActivation(
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
-  if (base::FeatureList::IsEnabled(
-          features::kUserActivationSameOriginVisibility)) {
-    const url::Origin& current_origin =
-        this->current_frame_host()->GetLastCommittedOrigin();
-    for (FrameTreeNode* node : frame_tree().Nodes()) {
-      if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
-              current_origin)) {
-        node->current_frame_host()->ActivateUserActivation(notification_type,
-                                                           sticky_only);
-      }
+  const url::Origin& current_origin =
+      this->current_frame_host()->GetLastCommittedOrigin();
+  for (FrameTreeNode* node : frame_tree().Nodes()) {
+    if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
+            current_origin)) {
+      node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                         sticky_only);
     }
+  }
 
-    if (base::FeatureList::IsEnabled(
-            blink::features::kDocumentPictureInPictureUserActivation)) {
-      // If we own a picture-in-picture window, then also activate same-origin
-      // frames within the picture-in-picture window.
-      FrameTree* picture_in_picture_frame_tree =
-          frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
-      if (picture_in_picture_frame_tree) {
-        for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
-          if (node->current_frame_host()
-                  ->GetLastCommittedOrigin()
-                  .IsSameOriginWith(current_origin)) {
-            node->current_frame_host()->ActivateUserActivation(
-                notification_type, sticky_only);
-          }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDocumentPictureInPictureUserActivation)) {
+    // If we own a picture-in-picture window, then also activate same-origin
+    // frames within the picture-in-picture window.
+    FrameTree* picture_in_picture_frame_tree =
+        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+    if (picture_in_picture_frame_tree) {
+      for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
+        if (node->current_frame_host()
+                ->GetLastCommittedOrigin()
+                .IsSameOriginWith(current_origin)) {
+          node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                             sticky_only);
         }
       }
     }
@@ -893,17 +889,6 @@ bool FrameTreeNode::ClearUserActivation() {
   return true;
 }
 
-bool FrameTreeNode::VerifyUserActivation() {
-  DCHECK(base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationMouse) ||
-         base::FeatureList::IsEnabled(
-             features::kBrowserVerifiedUserActivationKeyboard));
-
-  return render_manager_.current_frame_host()
-      ->GetRenderWidgetHost()
-      ->RemovePendingUserActivationIfAvailable();
-}
-
 bool FrameTreeNode::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
@@ -915,19 +900,6 @@ bool FrameTreeNode::UpdateUserActivationState(
     case blink::mojom::UserActivationUpdateType::kNotifyActivation:
       update_result = NotifyUserActivation(notification_type);
       break;
-    case blink::mojom::UserActivationUpdateType::
-        kNotifyActivationPendingBrowserVerification: {
-      if (VerifyUserActivation()) {
-        update_result = NotifyUserActivation(
-            blink::mojom::UserActivationNotificationType::kInteraction);
-        update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
-      } else {
-        // TODO(crbug.com/40091540): We need to decide what to do when
-        // user activation verification failed. NOTREACHED here will make all
-        // unrelated tests that inject event to renderer fail.
-        return false;
-      }
-    } break;
     case blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly:
       update_result = NotifyUserActivationStickyOnly();
       break;
@@ -1254,13 +1226,15 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+    std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
     int http_response_code) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
       this, render_frame_host, is_same_document, url, origin,
       initiator_base_url, isolation_info_for_subresources, std::move(referrer),
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,
-      original_url, std::move(coep_reporter), http_response_code);
+      original_url, std::move(coep_reporter), std::move(dip_reporter),
+      http_response_code);
 }
 
 void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {

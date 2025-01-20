@@ -15,11 +15,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -52,12 +50,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -72,7 +70,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -101,17 +98,13 @@ import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.components.optimization_guide.OptimizationGuideDecision;
-import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
-import org.chromium.components.optimization_guide.proto.HintsProto;
-import org.chromium.components.payments.CurrencyFormatter;
-import org.chromium.components.payments.CurrencyFormatterJni;
+import org.chromium.components.payments.ui.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatterJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -123,7 +116,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING)
+@EnableFeatures(ChromeFeatureList.PRICE_ANNOTATIONS)
 @Batch(Batch.UNIT_TESTS)
 public class TabListViewHolderTest {
     private static final int TAB1_ID = 456;
@@ -160,6 +153,8 @@ public class TabListViewHolderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -253,7 +248,6 @@ public class TabListViewHolderTest {
         sActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         // Note: MockitoRule does not work here due to timing issues with
         // BlankUiTestActivityTestCase.
-        MockitoAnnotations.initMocks(this);
 
         ViewGroup view = new LinearLayout(sActivity);
         FrameLayout.LayoutParams params =
@@ -362,7 +356,7 @@ public class TabListViewHolderTest {
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
@@ -646,7 +640,13 @@ public class TabListViewHolderTest {
         Assert.assertNull(gridActionButton.getContentDescription());
 
         String closeTabDescription = "Close tab";
-        mGridModel.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, closeTabDescription);
+        TextResolver actionButtonDescriptionTextResolver =
+                (context) -> {
+                    return closeTabDescription;
+                };
+        mGridModel.set(
+                TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
+                actionButtonDescriptionTextResolver);
 
         Assert.assertEquals(closeTabDescription, listActionButton.getContentDescription());
         Assert.assertEquals(closeTabDescription, gridActionButton.getContentDescription());
@@ -742,6 +742,37 @@ public class TabListViewHolderTest {
         mStripModel.set(TabProperties.IS_SELECTED, false);
         button.performClick();
         Assert.assertFalse(mCloseClicked.get());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabCardLabel() {
+        TabCardLabelData data =
+                new TabCardLabelData(
+                        TabCardLabelType.ACTIVITY_UPDATE,
+                        context -> "Test label",
+                        /* asyncImageFactory= */ null,
+                        /* contentDescriptionResolver= */ null);
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, data);
+
+        TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
+        assertNotNull(gridLabel);
+        assertEquals(gridLabel.getVisibility(), View.VISIBLE);
+        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
+        assertEquals(listContainer.getChildCount(), 1);
+        TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
+        assertNotNull(listLabel);
+        assertEquals(listLabel.getVisibility(), View.VISIBLE);
+
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+
+        assertEquals(gridLabel.getVisibility(), View.GONE);
+        assertEquals(listLabel.getVisibility(), View.GONE);
+
+        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
+        assertNull(listLabel.getParent());
     }
 
     @Test
@@ -884,7 +915,7 @@ public class TabListViewHolderTest {
             int expectedVisibility,
             String expectedCurrentPrice,
             String expectedPreviousPrice) {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         testGridSelected(mTabGridView, mGridModel);
 
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
@@ -1175,52 +1206,6 @@ public class TabListViewHolderTest {
         Bitmap image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return new BitmapDrawable(resources, image);
-    }
-
-    private void mockCurrencyFormatter() {
-        doAnswer(
-                        new Answer<String>() {
-                            @Override
-                            public String answer(InvocationOnMock invocation) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(USD_CURRENCY_SYMBOL);
-                                sb.append(invocation.getArguments()[2]);
-                                return sb.toString();
-                            }
-                        })
-                .when(mCurrencyFormatterJniMock)
-                .format(anyLong(), any(CurrencyFormatter.class), anyString());
-    }
-
-    private void mockUrlUtilities() {
-        doAnswer(
-                        new Answer<String>() {
-                            @Override
-                            public String answer(InvocationOnMock invocation) {
-                                return (String) invocation.getArguments()[0];
-                            }
-                        })
-                .when(mUrlUtilitiesJniMock)
-                .escapeQueryParamValue(anyString(), anyBoolean());
-    }
-
-    private void mockOptimizationGuideResponse(
-            @OptimizationGuideDecision int decision, Any metadata) {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[2];
-                                callback.onOptimizationGuideDecision(decision, metadata);
-                                return null;
-                            }
-                        })
-                .when(mOptimizationGuideBridge)
-                .canApplyOptimization(
-                        any(GURL.class),
-                        any(HintsProto.OptimizationType.class),
-                        any(OptimizationGuideCallback.class));
     }
 
     @After

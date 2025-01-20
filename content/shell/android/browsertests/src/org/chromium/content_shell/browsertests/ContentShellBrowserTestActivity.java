@@ -68,7 +68,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                         /* listenToActivityState= */ true,
                         intentRequestTracker,
                         /* insetObserver= */ null,
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
         mShellManager.setWindow(mWindowAndroid);
 
         Window wind = this.getWindow();

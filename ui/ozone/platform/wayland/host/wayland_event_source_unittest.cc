@@ -42,10 +42,12 @@ class WaylandEventSourceTest
       public WaylandTestSimple {
  public:
   void SetUp() override {
-    CHECK(
-        !base::Contains(enabled_features_, kDispatchPointerEventsOnFrameEvent));
-    CHECK(!base::Contains(disabled_features_,
-                          kDispatchPointerEventsOnFrameEvent));
+    CHECK(!base::Contains(
+        enabled_features_,
+        base::test::FeatureRef(kDispatchPointerEventsOnFrameEvent)));
+    CHECK(!base::Contains(
+        disabled_features_,
+        base::test::FeatureRef(kDispatchPointerEventsOnFrameEvent)));
     if (GetParam().dispatch_mouse_events_on_frame_event) {
       enabled_features_.push_back(kDispatchPointerEventsOnFrameEvent);
     } else {

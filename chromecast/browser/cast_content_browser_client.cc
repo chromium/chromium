@@ -480,8 +480,9 @@ CastContentBrowserClient::GetSystemNetworkContext() {
   return cast_network_contexts_->GetSystemContext();
 }
 
-void CastContentBrowserClient::OverrideWebkitPrefs(
+void CastContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* prefs) {
   prefs->allow_scripts_to_close_windows = true;
 
@@ -588,7 +589,7 @@ base::OnceClosure CastContentBrowserClient::SelectClientCertificate(
       base::BindOnce(
           &CastContentBrowserClient::SelectClientCertificateOnIOThread,
           base::Unretained(this), requesting_url, session_id,
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID(),
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(

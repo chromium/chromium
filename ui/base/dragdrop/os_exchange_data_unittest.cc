@@ -139,7 +139,7 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
 
 TEST_F(OSExchangeDataTest, TestPickledData) {
   const ClipboardFormatType kTestFormat =
-      ClipboardFormatType::GetType("application/vnd.chromium.test");
+      ClipboardFormatType::CustomPlatformType("application/vnd.chromium.test");
 
   const OSExchangeData copy([&] {
     OSExchangeData data;

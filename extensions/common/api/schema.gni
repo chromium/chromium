@@ -13,8 +13,11 @@ extensions_api_schema_files_ = [
   "i18n.json",
   "idle.json",
   "offscreen.idl",
+  "power.idl",
   "runtime.json",
   "storage.json",
+  "system_cpu.idl",
+  "system_memory.idl",
   "test.json",
   "web_request.json",
 ]
@@ -67,7 +70,6 @@ if (enable_extensions) {
     "mime_handler_view_guest_internal.json",
     "mojo_private.idl",
     "networking_private.idl",
-    "power.idl",
     "printer_provider.idl",
     "printer_provider_internal.idl",
     "serial.idl",
@@ -75,9 +77,7 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_tcp_server.idl",
     "sockets_udp.idl",
-    "system_cpu.idl",
     "system_display.idl",
-    "system_memory.idl",
     "system_network.idl",
     "system_storage.idl",
     "scripts_internal.idl",
@@ -89,15 +89,12 @@ if (enable_extensions) {
     "web_view_internal.json",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     extensions_api_schema_files_ += [
       "diagnostics.idl",
       "media_perception_private.idl",
+      "webcam_private.idl",
     ]
-  }
-
-  if (is_chromeos) {
-    extensions_api_schema_files_ += [ "webcam_private.idl" ]
   }
 }
 

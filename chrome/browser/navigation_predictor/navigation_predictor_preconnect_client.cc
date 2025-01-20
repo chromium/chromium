@@ -199,13 +199,14 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
   timer_.Start(
-      FROM_HERE,
-      base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-          net::features::kNetUnusedIdleSocketTimeout,
-          "unused_idle_socket_timeout_seconds", 60)) +
-          retry_delay,
+      FROM_HERE, base::Seconds(GetPreconnectInterval()) + retry_delay,
       base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                      base::Unretained(this), preconnects_attempted + 1));
+}
+
+int NavigationPredictorPreconnectClient::GetPreconnectInterval() const {
+  constexpr int kPreconnectIntervalSec = 60;
+  return preconnect_interval_for_testing_.value_or(kPreconnectIntervalSec);
 }
 
 bool NavigationPredictorPreconnectClient::IsSearchEnginePage() const {
@@ -239,5 +240,9 @@ std::optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
 
 bool NavigationPredictorPreconnectClient::
     enable_preconnects_for_local_ips_for_testing_ = false;
+
+std::optional<int>
+    NavigationPredictorPreconnectClient::preconnect_interval_for_testing_ =
+        std::nullopt;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient);

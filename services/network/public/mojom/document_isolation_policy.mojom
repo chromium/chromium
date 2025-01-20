@@ -51,3 +51,15 @@ struct DocumentIsolationPolicy {
   // string.
   string? report_only_reporting_endpoint;
 };
+
+// Reports potential DocumentIsolationPolicy violations. This is mainly used by
+// the CORP check in the network service. Implemented in the browser process.
+interface DocumentIsolationPolicyReporter {
+  // Queues a report of CORP violation caused by DocumentIsolationPolicy.
+  QueueCorpViolationReport(url.mojom.Url blocked_url,
+                           network.mojom.RequestDestination destination,
+                           bool report_only);
+
+  // Connects a new pipe to this instance.
+  Clone(pending_receiver<DocumentIsolationPolicyReporter> receiver);
+};

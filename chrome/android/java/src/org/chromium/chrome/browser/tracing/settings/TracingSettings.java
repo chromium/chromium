@@ -60,7 +60,7 @@ public class TracingSettings extends PreferenceFragmentCompat
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
 
     @VisibleForTesting
@@ -228,7 +228,7 @@ public class TracingSettings extends PreferenceFragmentCompat
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 
     @Override

@@ -295,6 +295,8 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kSwitchToNextUser,
     AcceleratorAction::kSwitchToPreviousUser,
     AcceleratorAction::kStartAssistant,
+    AcceleratorAction::kToggleDoNotDisturb,
+    AcceleratorAction::kToggleCameraAllowed,
 
     // General > Apps
     AcceleratorAction::kOpenFileManager,
@@ -310,6 +312,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kToggleResizeLockMenu,
     AcceleratorAction::kShowTaskManager,
     AcceleratorAction::kOpenCrosh,
+    AcceleratorAction::kToggleGeminiApp,
 
     // Device
     // Device > Media

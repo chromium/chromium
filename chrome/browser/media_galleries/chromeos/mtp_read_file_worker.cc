@@ -42,8 +42,7 @@ MTPReadFileWorker::MTPReadFileWorker(const std::string& device_handle)
   DCHECK(!device_handle_.empty());
 }
 
-MTPReadFileWorker::~MTPReadFileWorker() {
-}
+MTPReadFileWorker::~MTPReadFileWorker() = default;
 
 void MTPReadFileWorker::WriteDataIntoSnapshotFile(
     SnapshotRequestInfo request_info,

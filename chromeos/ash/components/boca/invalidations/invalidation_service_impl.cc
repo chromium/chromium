@@ -60,7 +60,7 @@ void InvalidationServiceImpl::OnInvalidationReceived(
   // FCM message will be delivered even user not logged in. But
   // LoadCurrentSession has a validation to skip load if the current active user
   // doesn't match the profile user.
-  boca_session_manager_->LoadCurrentSession();
+  boca_session_manager_->LoadCurrentSession(/*from_polling=*/false);
 }
 
 void InvalidationServiceImpl::OnFCMRegistrationTokenChanged() {

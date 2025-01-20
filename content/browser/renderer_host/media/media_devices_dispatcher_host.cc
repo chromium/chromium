@@ -21,8 +21,10 @@
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -81,22 +83,30 @@ struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
 
 // static
 void MediaDevicesDispatcherHost::Create(
+    const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_stream_manager->media_devices_manager()->RegisterDispatcherHost(
-      std::make_unique<MediaDevicesDispatcherHost>(render_frame_host_id,
-                                                   media_stream_manager),
+      std::make_unique<MediaDevicesDispatcherHost>(
+          main_frame_host_token, render_frame_host_id, media_stream_manager),
       std::move(receiver));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
+    const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager)
-    : render_frame_host_id_(render_frame_host_id),
+    : main_frame_host_token_(main_frame_host_token),
+      render_frame_host_id_(render_frame_host_id),
       media_stream_manager_(media_stream_manager),
-      num_pending_audio_input_parameters_(0) {
+      num_pending_audio_input_parameters_(0),
+      authorization_handler_factory_callback_(base::BindRepeating(
+          &MediaDevicesDispatcherHost::CreateAuthorizationHandler,
+          // The callback is bound to the current instance of the dispatcher
+          // host, so it is safe to pass an Unretained pointer to the callback.
+          base::Unretained(this))) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(media_stream_manager_);
 }
@@ -335,6 +345,37 @@ void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
 }
 #endif
 
+void MediaDevicesDispatcherHost::SetPreferredSinkId(
+    const std::string& hashed_sink_id,
+    SetPreferredSinkIdCallback callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPreferredAudioOutputDevices)) {
+    ReceivedBadMessage(render_frame_host_id_.child_id,
+                       bad_message::MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE);
+    return;
+  }
+
+  CHECK(media_stream_manager_->preferred_audio_output_device_manager());
+
+  // The first thing is to validate whether the caller is permitted to set the
+  // preferred sink id, which uses the same permission like
+  // HTMLMediaElement::setSinkId. AudioOutputAuthorizationHandler will validate
+  // it.
+  // We call the AudioOutputAuthorizationHandler whether the `hashed_sink_id`
+  // is default id or not in order to prevent potential race issue.
+  std::unique_ptr<AudioOutputAuthorizationHandler> authorization_handler =
+      authorization_handler_factory_callback_.Run();
+
+  AudioOutputAuthorizationHandler* handler = authorization_handler.get();
+  handler->RequestDeviceAuthorization(
+      render_frame_host_id_.frame_routing_id, base::UnguessableToken(),
+      hashed_sink_id,
+      base::BindOnce(&MediaDevicesDispatcherHost::AuthorizationCompleted,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(authorization_handler), std::move(callback)));
+}
+
 void MediaDevicesDispatcherHost::OnVideoGotSaltAndOrigin(
     GetVideoInputCapabilitiesCallback client_callback,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
@@ -350,6 +391,37 @@ void MediaDevicesDispatcherHost::OnVideoGotSaltAndOrigin(
           &MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities,
           weak_factory_.GetWeakPtr(), std::move(client_callback),
           salt_and_origin));
+}
+
+// If authorization passed, it gets main frame id from the native frame id
+// it is already cached.
+// `authorization_handler` will be deleted in this function.
+// `raw_device_id` will be for the SetPreferredSinkId.
+void MediaDevicesDispatcherHost::AuthorizationCompleted(
+    std::unique_ptr<AudioOutputAuthorizationHandler> authorization_handler,
+    SetPreferredSinkIdCallback callback,
+    media::OutputDeviceStatus status,
+    const media::AudioParameters&,
+    const std::string& raw_device_id,
+    const std::string& device_id_for_renderer) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (status != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  media_stream_manager_->preferred_audio_output_device_manager()
+      ->SetPreferredSinkId(main_frame_host_token_, raw_device_id,
+                           std::move(callback));
+}
+
+std::unique_ptr<AudioOutputAuthorizationHandler>
+MediaDevicesDispatcherHost::CreateAuthorizationHandler() {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  return std::make_unique<AudioOutputAuthorizationHandler>(
+      media_stream_manager_->audio_system(), media_stream_manager_,
+      render_frame_host_id_.child_id);
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
@@ -768,6 +840,11 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!capture_handle_config_callback_for_testing_);
   capture_handle_config_callback_for_testing_ = std::move(callback);
+}
+
+void MediaDevicesDispatcherHost::SetAuthorizationForTesting(
+    AuthorizationHandlerCreateFactoryCallback authorization_handler) {
+  authorization_handler_factory_callback_ = std::move(authorization_handler);
 }
 
 }  // namespace content

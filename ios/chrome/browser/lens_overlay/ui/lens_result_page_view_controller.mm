@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_progress_bar.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -91,6 +91,9 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   /// Whether the web view should be hidden.
   BOOL _webViewHidden;
   NSLayoutConstraint* _omniboxLeadingConstraint;
+  /// When set, the omnibox tap target continues to "eat" the touches, but they
+  /// are ignored, effectively preventing omnibox interaction.
+  BOOL _ignoreOmniboxTaps;
 }
 
 - (instancetype)init {
@@ -246,8 +249,6 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateMutatorDarkMode)];
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
-                       withAction:@selector(updateMutatorContentSizeCategory)];
   }
 }
 
@@ -279,11 +280,6 @@ const CGFloat kButtonAnimationDuration = 0.2f;
       previousTraitCollection.userInterfaceStyle) {
     [self updateMutatorDarkMode];
   }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateMutatorContentSizeCategory];
-  }
 }
 #endif
 
@@ -309,7 +305,6 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 - (void)setMutator:(id<LensResultPageMutator>)mutator {
   _mutator = mutator;
   [self updateMutatorDarkMode];
-  [self updateMutatorContentSizeCategory];
 }
 
 - (void)setCancelButtonHidden:(BOOL)hidden animated:(BOOL)animated {
@@ -382,7 +377,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 }
 
 - (void)updateProgressBarVisibilityForProgress:(float)progress {
-  BOOL isLoading = progress != kProgressBarFull;
+  BOOL isLoading = (progress != kProgressBarFull);
   BOOL shouldShowProgressBar = isLoading && _progressBar.hidden;
   BOOL shouldHideProgressBar = !isLoading && !_progressBar.hidden;
 
@@ -440,10 +435,17 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   [self updateBackButtonVisibilityAnimated:YES];
 }
 
+- (void)setOmniboxEnabled:(BOOL)enabled {
+  _ignoreOmniboxTaps = !enabled;
+}
+
 #pragma mark - Private
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
+  if (_ignoreOmniboxTaps) {
+    return;
+  }
   [self.toolbarMutator focusOmnibox];
 }
 
@@ -503,11 +505,6 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 
   [self.mutator setIsDarkMode:self.traitCollection.userInterfaceStyle ==
                               UIUserInterfaceStyleDark];
-}
-
-- (void)updateMutatorContentSizeCategory {
-  [self.mutator
-      setContentSizeCategory:self.traitCollection.preferredContentSizeCategory];
 }
 
 @end

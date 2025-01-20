@@ -55,4 +55,7 @@ void TestUserEducationSessionProvider::StartNewSession() {
 MockUserEducationSessionManager::MockUserEducationSessionManager() = default;
 MockUserEducationSessionManager::~MockUserEducationSessionManager() = default;
 
+MockFeaturePromoSessionPolicy::MockFeaturePromoSessionPolicy() = default;
+MockFeaturePromoSessionPolicy::~MockFeaturePromoSessionPolicy() = default;
+
 }  // namespace user_education::test

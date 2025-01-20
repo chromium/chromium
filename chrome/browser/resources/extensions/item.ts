@@ -51,6 +51,7 @@ export interface ItemDelegate {
       reason: chrome.developerPrivate.SafetyCheckWarningReason): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
   setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
+  uploadItemToAccount(id: string): Promise<void>;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.
@@ -100,6 +101,9 @@ export class DummyItemDelegate {
       _id: string, _reason: chrome.developerPrivate.SafetyCheckWarningReason) {}
   setShowAccessRequestsInToolbar(_id: string, _showRequests: boolean) {}
   setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
+  uploadItemToAccount(_id: string) {
+    return Promise.resolve();
+  }
   recordUserAction(_metricName: string) {}
   getItemStateChangedTarget() {
     return new FakeChromeEvent();
@@ -258,6 +262,11 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
   }
 
+  protected onUploadClick_() {
+    assert(this.delegate);
+    this.delegate.uploadItemToAccount(this.data.id);
+  }
+
   protected onRepairClick_() {
     assert(this.delegate);
     this.delegate.repairItem(this.data.id);
@@ -348,8 +357,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return this.data.views.length <= 1;
   }
 
-  protected computeDevReloadButtonHidden_(): boolean {
-    return !this.canReloadItem();
+  protected showAccountUploadButton_(): boolean {
+    return this.data.canUploadAsAccountExtension;
+  }
+
+  protected showDevReloadButton_(): boolean {
+    return this.canReloadItem();
   }
 
   protected computeExtraInspectLabel_(): string {
@@ -364,6 +377,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
+        this.data.disableReasons.unsupportedDeveloperExtension ||
         this.data.runtimeWarnings.length > 0 || !!this.data.blocklistText;
   }
 

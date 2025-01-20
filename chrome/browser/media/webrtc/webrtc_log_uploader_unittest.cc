@@ -36,7 +36,7 @@ const char kTestLocalId[] = "local-id";
 
 class WebRtcLogUploaderTest : public testing::Test {
  public:
-  WebRtcLogUploaderTest() {}
+  WebRtcLogUploaderTest() = default;
 
   bool VerifyNumberOfLines(int expected_lines) {
     std::vector<std::string> lines = GetLinesFromListFile();

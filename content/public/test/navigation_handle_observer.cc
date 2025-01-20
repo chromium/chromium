@@ -61,6 +61,7 @@ void NavigationHandleObserver::DidFinishNavigation(
     if (!navigation_handle->IsErrorPage()) {
       page_transition_ = navigation_handle->GetPageTransition();
       last_committed_url_ = navigation_handle->GetURL();
+      last_initiator_origin_ = navigation_handle->GetInitiatorOrigin();
       response_headers_ = navigation_handle->GetResponseHeaders();
     } else {
       is_error_ = true;

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 
@@ -22,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -388,12 +385,14 @@ UpgradeDetectorImpl::AnnoyanceLevelToStagesIndex(
 // static
 UpgradeDetector::UpgradeNotificationAnnoyanceLevel
 UpgradeDetectorImpl::StageIndexToAnnoyanceLevel(size_t index) {
-  static constexpr UpgradeNotificationAnnoyanceLevel kIndexToLevel[] = {
-      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH,
-      UpgradeDetector::UPGRADE_ANNOYANCE_GRACE,
-      UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
-      UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
-      UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW};
+  constexpr static const auto kIndexToLevel =
+      std::to_array<UpgradeNotificationAnnoyanceLevel>({
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH,
+          UpgradeDetector::UPGRADE_ANNOYANCE_GRACE,
+          UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
+          UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
+          UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW,
+      });
   static_assert(std::size(kIndexToLevel) == kNumStages, "mismatch");
   DCHECK_LT(index, std::size(kIndexToLevel));
   return kIndexToLevel[index];

@@ -951,34 +951,34 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
     {
       scoped_refptr<net::X509Certificate> root_cert =
           test_server_for_user_added.GetRoot();
-      net::ServerCertificateDatabase::CertInformation user_root_info;
-      user_root_info.sha256hash_hex =
-          base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+      net::ServerCertificateDatabase::CertInformation user_root_info(
+          root_cert->cert_span());
       user_root_info.cert_metadata.mutable_trust()->set_trust_type(
           chrome_browser_server_certificate_database::CertificateTrust::
               CERTIFICATE_TRUST_TYPE_TRUSTED);
-      user_root_info.der_cert = base::ToVector(root_cert->cert_span());
 
       base::test::TestFuture<bool> future;
-      server_certificate_database_service->AddOrUpdateUserCertificate(
-          std::move(user_root_info), future.GetCallback());
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+      cert_infos.push_back(std::move(user_root_info));
+      server_certificate_database_service->AddOrUpdateUserCertificates(
+          std::move(cert_infos), future.GetCallback());
       ASSERT_TRUE(future.Get());
     }
     {
       scoped_refptr<net::X509Certificate> hint_cert =
           test_server_for_user_added.GetGeneratedIntermediate();
 
-      net::ServerCertificateDatabase::CertInformation user_hint_info;
-      user_hint_info.sha256hash_hex =
-          base::HexEncode(crypto::SHA256Hash(hint_cert->cert_span()));
+      net::ServerCertificateDatabase::CertInformation user_hint_info(
+          hint_cert->cert_span());
       user_hint_info.cert_metadata.mutable_trust()->set_trust_type(
           chrome_browser_server_certificate_database::CertificateTrust::
               CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
-      user_hint_info.der_cert = base::ToVector(hint_cert->cert_span());
 
       base::test::TestFuture<bool> future;
-      server_certificate_database_service->AddOrUpdateUserCertificate(
-          std::move(user_hint_info), future.GetCallback());
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+      cert_infos.push_back(std::move(user_hint_info));
+      server_certificate_database_service->AddOrUpdateUserCertificates(
+          std::move(cert_infos), future.GetCallback());
       ASSERT_TRUE(future.Get());
     }
 

@@ -138,8 +138,7 @@ TestGpuServiceHolder* TestGpuServiceHolder::GetInstance() {
   }
 
   if (!g_holder) {
-    g_holder = new TestGpuServiceHolder(gpu::gles2::ParseGpuPreferences(
-        base::CommandLine::ForCurrentProcess()));
+    g_holder = new TestGpuServiceHolder();
   }
   return g_holder;
 }
@@ -179,6 +178,10 @@ TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides::
   DCHECK(!g_disallow_feature_list_overrides);
   g_disallow_feature_list_overrides = true;
 }
+
+TestGpuServiceHolder::TestGpuServiceHolder()
+    : TestGpuServiceHolder(gpu::gles2::ParseGpuPreferences(
+          base::CommandLine::ForCurrentProcess())) {}
 
 TestGpuServiceHolder::TestGpuServiceHolder(
     const gpu::GpuPreferences& gpu_preferences)
@@ -317,7 +320,6 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
 #if BUILDFLAG(ENABLE_VULKAN)
   init_params.vulkan_implementation = vulkan_implementation_.get();
 #endif
-  init_params.exit_callback = base::DoNothing();
 
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)

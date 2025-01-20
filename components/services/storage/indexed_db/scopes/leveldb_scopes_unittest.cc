@@ -72,9 +72,10 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   WriteScopesMetadata(kScopeToResumeRevert, false);
 
   // Cleanup task that will be ignored.
-  cleanup_task_buffer_.mutable_delete_range()->set_begin(
+  cleanup_task_buffer_.mutable_delete_range_and_compact()->set_begin(
       kCleanupDeleteRangeBegin);
-  cleanup_task_buffer_.mutable_delete_range()->set_end(kCleanupDeleteRangeEnd);
+  cleanup_task_buffer_.mutable_delete_range_and_compact()->set_end(
+      kCleanupDeleteRangeEnd);
   WriteCleanupTask(kScopeToResumeRevert, /*sequence_number=*/0);
 
   // Undo task that will be executed.

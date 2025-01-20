@@ -20,8 +20,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/size.h"
 
-class SkColorInfo;
-
 namespace blink {
 
 class CanvasRenderingContext;
@@ -101,9 +99,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsRenderingContext2D() const;
   bool IsImageBitmapRenderingContext() const;
 
-  // Returns an SkColorInfo that best represents the canvas rendering context's
-  // contents.
-  SkColorInfo GetRenderingContextSkColorInfo() const;
+  SkAlphaType GetRenderingContextAlphaType() const;
+  SkColorType GetRenderingContextSkColorType() const;
+  sk_sp<SkColorSpace> GetRenderingContextSkColorSpace() const;
+  gfx::ColorSpace GetRenderingContextColorSpace() const;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;

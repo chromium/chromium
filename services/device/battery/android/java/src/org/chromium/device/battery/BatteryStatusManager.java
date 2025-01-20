@@ -4,13 +4,14 @@
 
 package org.chromium.device.battery;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -19,6 +20,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.device.mojom.BatteryStatus;
@@ -28,6 +31,7 @@ import org.chromium.device.mojom.BatteryStatus;
  * from the system and calls the callback passed on construction whenever a notification is
  * received.
  */
+@NullMarked
 class BatteryStatusManager {
     private static final String TAG = "BatteryStatusManager";
 
@@ -44,7 +48,7 @@ class BatteryStatusManager {
                     BatteryStatusManager.this.onReceive(intent);
                 }
             };
-    private AndroidBatteryManagerWrapper mAndroidBatteryManager;
+    private @Nullable AndroidBatteryManagerWrapper mAndroidBatteryManager;
     private volatile boolean mEnabled;
 
     private static final TaskRunner sSequencedTaskRunner =
@@ -130,7 +134,7 @@ class BatteryStatusManager {
 
     @VisibleForTesting
     void onReceive(Intent intent) {
-        if (!intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
+        if (!Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
             Log.e(TAG, "Unexpected intent.");
             return;
         }
@@ -189,15 +193,13 @@ class BatteryStatusManager {
     }
 
     private void updateBatteryStatus(BatteryStatus batteryStatus) {
+        AndroidBatteryManagerWrapper batteryManager = assumeNonNull(mAndroidBatteryManager);
         double remainingCapacityRatio =
-                mAndroidBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-                        / 100.0;
+                batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) / 100.0;
         double batteryCapacityMicroAh =
-                mAndroidBatteryManager.getIntProperty(
-                        BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
         double averageCurrentMicroA =
-                mAndroidBatteryManager.getIntProperty(
-                        BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
+                batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
 
         if (batteryStatus.charging) {
             if (batteryStatus.chargingTime == Double.POSITIVE_INFINITY

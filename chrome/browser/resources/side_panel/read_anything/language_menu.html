@@ -1,15 +1,12 @@
-<cr-dialog id="languageMenu" show-on-attach ignore-popstate>
+<cr-dialog id="languageMenu"
+    @close="${this.closeLanguageMenu_}"
+    close-text="$i18n{readingModeLanguageMenuClose}"
+    show-close-button show-on-attach ignore-popstate>
   <div slot="title" class="language-menu-title-bar">
     <div class="language-menu-title">$i18n{readingModeLanguageMenuTitle}</div>
-    <cr-icon-button id="close" class="action-icon language-menu-close-button"
-        iron-icon="cr:close"
-        @click="${this.closeLanguageMenu_}"
-        title="$i18n{readingModeLanguageMenuClose}"
-        aria-label="$i18n{readingModeLanguageMenuClose}">
-    </cr-icon-button>
   </div>
   <div slot="header">
-    <cr-input autofocus class="search-field" type="search"
+    <cr-input autofocus id="searchField" class="search-field" type="search"
         placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
         @value-changed="${this.onLanguageSearchValueChanged_}"
         .value="${this.languageSearchValue_}">
@@ -35,7 +32,8 @@
         <cr-toggle ?checked="${item.checked}" @change="${this.onToggleChange_}"
           data-index="${index}"
           ?disabled="${item.disabled}"
-          aria-labelledby="language-name-${index}">
+          aria-labelledby="language-name-${index}"
+          lang="${item.languageCode}">
         </cr-toggle>
       </div>
       <span id="notificationText"

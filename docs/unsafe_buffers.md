@@ -79,25 +79,17 @@ The common conversions to spans are:
   class fields.
 
 ### Span construction
-- `base::span()` constructor can make a span, and deduce the type and size,
-  from:
-  - a `T[N]` array
-  - `std::array<T, N>`
-  - `std::vector`
-  - `std::string`
-  - any contiguous range with `begin()` and `end()` methods.
-  - any type with `T* data()` and `size_t size()` methods.
-- `base::make_span<N>()` can make a fixed-size span from any range.
+- `base::span()` makes a span, deducing the type and size, from any contiguous
+  range. It can also take explicit begin/end or data/size pairs.
+- `base::to_fixed_extent<N>()` makes a fixed-size span from a dynamic one.
 - `base::as_bytes()` and `base::as_chars()` convert a span’s inner type to
    `uint8_t` or `char` respectively, making a byte-span or char-span.
 - `base::span_from_ref()` and `base::byte_span_from_ref()` make a span, or
   byte-span, from a single object.
-- `base::as_byte_span()` and `base::as_writable_byte_span()` to make a
-   byte-span (const or mutable) from any container that can convert to a
-   `base::span<T>`, such as `std::string` or `std::vector<Stuff>`.
+- `base::as_byte_span()` and `base::as_writable_byte_span()` make a
+  byte-span from any contiguous range.
 
 #### Padding bytes
-
 Note that if the type contains padding bytes that were not somehow explicitly
 initialized, this can create reads of uninitialized memory. Conversion to a
 byte-span is most commonly used for spans of primitive types, such as going from
@@ -179,26 +171,30 @@ and violates the rules of the C++ abstract machine.
 Instead, keep the byte array as a `base::span<uint8_t>`, and write to it
 directly by chunking it up into pieces of the size you want to write.
 
-Using `first()`:
+Using `take_first()` (good for repeated modifications and loops):
 ```cc
 void write_floats(base::span<uint8_t> out, float f1, float f2) {
-  out.first<4>().copy_from(base::byte_span_from_ref(f1));
-  out = out.subspan(4u);  // Advance the span past what we wrote.
-  out.first<4>().copy_from(base::byte_span_from_ref(f2));
+  // Write `f1` into `out`'s prefix, moving `out` forward.
+  out.take_first<4>().copy_from(base::byte_span_from_ref(f1));
+  // Write `f2` into `out`'s new prefix (after `f1`).
+  out.copy_prefix_from(base::byte_span_from_ref(f2));
 }
 ```
 
-Using `split_at()`:
+Using `split_at()` (good when there are exactly two pieces):
 ```cc
 void write_floats(base::span<uint8_t> out, float f1, float f2) {
+  // Split `out` into a prefix to write `f1` into, and a remainder.
   auto [write_f1, rem] = out.split_at<4>();
-  auto [write_f2, rem2] = rem.split_at<4>();
+  // Write `f1` into the prefix portion, `write_f1`.
   write_f1.copy_from(base::byte_span_from_ref(f1));
-  write_f2.copy_from(base::byte_span_from_ref(f2));
+  // Write `f2` into the beginning of the remainder.
+  rem.copy_prefix_from(base::byte_span_from_ref(f2));
 }
 ```
 
-Using `SpanWriter` and endian-aware `FloatToLittleEndian()`:
+Using `SpanWriter` and endian-aware `FloatToLittleEndian()` (good when non-fatal
+APIs are desired):
 ```cc
 void write_floats(base::span<uint8_t> out, float f1, float f2) {
   auto writer = base::SpanWriter(out);
@@ -224,9 +220,9 @@ Writing an array to a byte span with `copy_from()`:
 ```cc
 void write_floats(base::span<uint8_t> out, std::vector<const float> floats) {
   base::span<const uint8_t> byte_floats = base::as_byte_span(floats);
-  // Or skip the first() if you want to CHECK at runtime that all of `out` has
+  // Or use copy_from() if you want to CHECK at runtime that all of `out` has
   // been written to.
-  out.first(byte_floats.size()).copy_from(byte_floats);
+  out.copy_prefix_from(byte_floats);
 }
 ```
 
@@ -236,11 +232,11 @@ Instead of turning a `span<const uint8_t>` into a pointer of a larger type,
 which can cause Undefined Behaviour, read values out of the byte span and
 convert each one as a value (not as a pointer).
 
-Using `subspan()` and endian-aware conversion `FloatFromLittleEndian`:
+Using `take_first()` and endian-aware conversion `FloatFromLittleEndian`:
 ```cc
 void read_floats(base::span<const uint8_t> in, float& f1, float& f2) {
-  f1 = base::FloatFromLittleEndian(in.subspan<0, 4>());
-  f2 = base::FloatFromLittleEndian(in.subspan<4, 4>());
+  f1 = base::FloatFromLittleEndian(in.take_first<4>());
+  f2 = base::FloatFromLittleEndian(in.take_first<4>());
 }
 ```
 
@@ -283,19 +279,14 @@ Spanified:
 uint8_t array1[12];
 uint8_t array2[16];
 uint64_t array3[2];
-base::span(array1).first(4u).copy_from(base::span(array2).subspan(8u, 4u));
-base::span(array1).subspan(4u).copy_from(base::as_byte_span(array3).first(8u));
+base::span<uint8_t> span1(array1);
+span1.take_first<4>().copy_from(base::span(array2).subspan<8, 4>());
+span1.copy_from(base::as_byte_span(array3).first<8>());
 
 // Use `split_at()` to ensure `array1` is fully written.
-auto [from2, from3] = base::span(array1).split_at(4u);
-from2.copy_from(base::span(array2).subspan(8u, 4u));
-from3.copy_from(base::as_byte_span(array3).first(8u));
-
-// This can even be ensured at compile time (if sizes and offsets are all
-// constants).
-auto [from2, from3] = base::span(array1).split_at<4u>();
-from2.copy_from(base::span(array2).subspan<8u, 4u>());
-from3.copy_from(base::as_byte_span(array3).first<8u>());
+auto [from2, from3] = base::span(array1).split_at<4>();
+from2.copy_from(base::span(array2).subspan<8, 4>());
+from3.copy_from(base::as_byte_span(array3).first<8>());
 ```
 
 ### Zeroing arrays (`memset`)
@@ -321,9 +312,9 @@ Spanified:
 uint8_t array1[12];
 uint64_t array2[2];
 Object array3[4];
-std::ranges::fill(array1, 0u);
-std::ranges::fill(array2, 0u);
-std::ranges::fill(base::as_writable_byte_span(array3), 0u);
+std::ranges::fill(array1, 0);
+std::ranges::fill(array2, 0);
+std::ranges::fill(base::as_writable_byte_span(array3), 0);
 ```
 
 ### Comparing arrays (`memcmp`)

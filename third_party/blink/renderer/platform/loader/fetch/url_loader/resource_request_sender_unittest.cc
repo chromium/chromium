@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -534,7 +535,7 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncCancel) {
       base::BindRepeating([](const std::vector<std::string>& removed_headers,
                              const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
-        CHECK(false);
+        NOTREACHED();
       }));
 
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
@@ -723,7 +724,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowAfterCancel) {
       base::BindRepeating([](const std::vector<std::string>& removed_headers,
                              const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
-        CHECK(false);
+        NOTREACHED();
       }));
 
   net::RedirectInfo redirect_info;
@@ -1656,7 +1657,7 @@ TEST_F(ResourceRequestSenderTest, KeepaliveRequest) {
       std::make_unique<DummyCodeCacheHost>(base::BindLambdaForTesting(
           [&](mojom::blink::CodeCacheType cache_type, const KURL& url,
               FetchCachedCodeCallback callback) {
-            CHECK(false) << "FetchCachedCode shouold not be called";
+            NOTREACHED() << "FetchCachedCode shouold not be called";
           }));
 
   StartAsync(std::move(request), mock_client_,
@@ -1971,7 +1972,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectCancel) {
                    const std::vector<std::string>& removed_headers,
                    const net::HttpRequestHeaders& modified_headers) {
                   // FollowRedirect() must not be called.
-                  CHECK(false);
+                  NOTREACHED();
                 },
                 std::move(refcounted_client)));
           }));

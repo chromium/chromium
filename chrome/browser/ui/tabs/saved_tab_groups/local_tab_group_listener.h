@@ -82,12 +82,6 @@ class LocalTabGroupListener {
   // Returns whether the local group still exists after this update.
   [[nodiscard]] Liveness UpdateFromSync();
 
-  // Testing Accessors.
-  std::map<tabs::TabInterface*, SavedTabGroupWebContentsListener>&
-  GetTabListenerMappingForTesting() {
-    return tab_listener_mapping_;
-  }
-
  private:
   // Updates `tab` to match `saved_tab`, and ensures it is at
   // `target_index_in_tab_strip` in `tab_strip_model`.
@@ -109,9 +103,6 @@ class LocalTabGroupListener {
   // Whether local tab group changes will be ignored (`paused_` is true) or
   // reflected in the saved group (`paused_` is false).
   bool paused_ = false;
-
-  std::map<tabs::TabInterface*, SavedTabGroupWebContentsListener>
-      tab_listener_mapping_;
 
   // The service used to manage SavedTabGroups.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;

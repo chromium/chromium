@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/process/process_handle.h"
+#include "base/process/process_metrics.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -39,19 +40,22 @@ namespace memory_instrumentation {
 class COMPONENT_EXPORT(
     RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION) OSMetrics {
  public:
-  // Fills |dump| with memory information about |pid|. See class comments for
-  // restrictions on |pid|. |dump.platform_private_footprint| must be allocated
-  // before calling this function. If |pid| is null, the pid of the current
-  // process is used
-  static bool FillOSMemoryDump(base::ProcessId pid, mojom::RawOSMemDump* dump);
+  // Fills |dump| with memory information about |handle|. See class comments for
+  // restrictions on |handle|. |dump.platform_private_footprint| must be
+  // allocated before calling this function. If |handle| is null, the handle of
+  // the current process is used
+  static bool FillOSMemoryDump(base::ProcessHandle handle,
+                               mojom::RawOSMemDump* dump);
 #if BUILDFLAG(IS_APPLE)
-  static bool FillOSMemoryDumpFromTaskPort(mach_port_t task_port,
-                                           mojom::RawOSMemDump* dump);
+  static bool FillOSMemoryDump(base::ProcessHandle handle,
+                               base::PortProvider* port_provider,
+                               mojom::RawOSMemDump* dump);
 #endif
-  static bool FillProcessMemoryMaps(base::ProcessId,
+  static bool FillProcessMemoryMaps(base::ProcessHandle,
                                     mojom::MemoryMapOption,
                                     mojom::RawOSMemDump*);
-  static std::vector<mojom::VmRegionPtr> GetProcessMemoryMaps(base::ProcessId);
+  static std::vector<mojom::VmRegionPtr> GetProcessMemoryMaps(
+      base::ProcessHandle);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static void SetProcSmapsForTesting(FILE*);
@@ -67,8 +71,13 @@ class COMPONENT_EXPORT(
                            MemoryMaps);
 
 #if BUILDFLAG(IS_MAC)
-  static std::vector<mojom::VmRegionPtr> GetProcessModules(base::ProcessId);
+  static std::vector<mojom::VmRegionPtr> GetProcessModules(base::ProcessHandle);
 #endif
+
+#if !BUILDFLAG(IS_APPLE)
+  static base::expected<base::ProcessMemoryInfo, base::ProcessUsageError>
+  GetMemoryInfo(base::ProcessHandle handle);
+#endif  // !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Provides information on the dump state of resident pages. These values are

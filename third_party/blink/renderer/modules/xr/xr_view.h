@@ -44,7 +44,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
   XRFrame* frame() const;
   XRSession* session() const;
-  DOMFloat32Array* projectionMatrix() const;
+  NotShared<DOMFloat32Array> projectionMatrix() const;
   XRRigidTransform* refSpaceFromView() const;
   XRCamera* camera() const;
 
@@ -71,7 +71,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // The transform from the view to the reference space requested by
   // XRFrame::getViewerPose.
   Member<XRRigidTransform> ref_space_from_view_;
-  Member<DOMFloat32Array> projection_matrix_;
+  NotShared<DOMFloat32Array> projection_matrix_;
   Member<XRViewport> viewport_;
 };
 

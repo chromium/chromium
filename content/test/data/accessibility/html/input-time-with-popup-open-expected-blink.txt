@@ -34,7 +34,7 @@ rootWebArea
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++genericContainer
-++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer
 ++++++++++++++++++++listBox name='Hours' activedescendantId=listBoxOption
 ++++++++++++++++++++++listBoxOption name='01' selected=true
 ++++++++++++++++++++++++staticText name='01'

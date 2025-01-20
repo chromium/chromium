@@ -23,7 +23,7 @@ AXTreeUpdate& AXTreeUpdate::operator=(const AXTreeUpdate& other) = default;
 
 AXTreeUpdate::~AXTreeUpdate() = default;
 
-std::string AXTreeUpdate::ToString(bool verbose) const {
+std::string AXTreeUpdate::ToString(bool verbose, int max_items) const {
   std::string result;
 
   if (has_tree_data) {
@@ -60,6 +60,9 @@ std::string AXTreeUpdate::ToString(bool verbose) const {
   // parents.
   std::map<AXNodeID, int> id_to_indentation;
   for (const AXNodeData& node_data : nodes) {
+    if (max_items > 0 && max_items-- == 0) {
+      break;
+    }
     int indent = id_to_indentation[node_data.id];
     result += std::string(2 * indent, ' ');
     result += node_data.ToString(/*verbose*/ verbose) + "\n";

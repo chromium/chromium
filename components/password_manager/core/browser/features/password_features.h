@@ -30,7 +30,8 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // across quarters.
 BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 // Moves the "Use a passkey / Use a different passkey" to the context menu from
-// the autofill dropdown.
+// the autofill dropdown. This is now decoupled from
+// "PasswordManualFallbackAvailable" flag.
 BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -67,6 +68,10 @@ extern const base::FeatureParam<int>
 
 // Enable saving username in UFF on iOS.
 BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
+
+// Enables improving detecting the password fields when retrieving password
+// suggestions for filling.
+BASE_DECLARE_FEATURE(kIOSImprovePasswordFieldDetectionForFilling);
 
 // Enables the second version of the bottom sheet to fix a few bugs that we've
 // seen in production since the launch of the V1 of the feature.
@@ -114,10 +119,10 @@ BASE_DECLARE_FEATURE(kReuseDetectionBasedOnPasswordHashes);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables biometric authentication on for Password Autofill on ChromeOS.
 BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Displays at least the decryptable and never saved logins in the password
 // manager
@@ -150,10 +155,6 @@ inline constexpr base::FeatureParam<bool> kSimulateFailedMigration = {
 // authentication mandatory before password filling in untrusted locations.
 BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
 
-// Enables clearing the login database for the users who already migrated their
-// credentials to GMS Core.
-BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
-
 // If enabled, the profile login db will no longer be renamed to account
 // login db upon UPM with split stores activation. The db is cleared on
 // the following run anyway.
@@ -163,19 +164,16 @@ BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
 // Instead, it either uses the Android-specific storage or an empty backend
 // if the client isn't eligible for the former.
 BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
+
+inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
+    &kLoginDbDeprecationAndroid,
+    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/15};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from
 // affiliation service. It fixes problem with incorrect password suggestions on
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
-
-// Enables support of sending additional votes on username first flow. The votes
-// are sent on single password forms and contain information about preceding
-// single username forms.
-// TODO(crbug.com/40626063): Clean up if the main crowdsourcing is good enough
-// and we don't need additional signals.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
 // Enables new prediction that is based on votes from Username First Flow with
 // Intermediate Values.
@@ -185,13 +183,14 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 // First Flow.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
-// Enables async implementation of OSCrypt inside LoginDatabase.
+// Enables async implementation of OSCrypt inside LoginDatabase (Stage 1).
 BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
 
-// Enables async implementation of OSCrypt inside LoginDatabase.
+// Enables new encryption method of OSCrypt inside LoginDatabase (Stage 2).
 BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 
-// Enables re-encryption of all passwords. Done separately for each store.
+// Enables re-encryption of all passwords. Done separately for each store
+// (Stage 3).
 BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 
 // Marks all submitted credentials as leaked, useful for testing of a password

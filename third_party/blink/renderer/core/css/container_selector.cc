@@ -35,8 +35,8 @@ ContainerSelector::ContainerSelector(AtomicString name,
   if (feature_flags & MediaQueryExpNode::kFeatureSnap) {
     has_snap_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureOverflow) {
-    has_overflow_query_ = true;
+  if (feature_flags & MediaQueryExpNode::kFeatureScrollable) {
+    has_scrollable_query_ = true;
   }
   if (feature_flags & MediaQueryExpNode::kFeatureUnknown) {
     has_unknown_feature_ = true;
@@ -50,7 +50,7 @@ unsigned ContainerSelector::GetHash() const {
   WTF::AddIntToHash(hash, has_style_query_);
   WTF::AddIntToHash(hash, has_sticky_query_);
   WTF::AddIntToHash(hash, has_snap_query_);
-  WTF::AddIntToHash(hash, has_overflow_query_);
+  WTF::AddIntToHash(hash, has_scrollable_query_);
   return hash;
 }
 

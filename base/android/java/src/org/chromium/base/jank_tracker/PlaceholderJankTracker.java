@@ -4,7 +4,10 @@
 
 package org.chromium.base.jank_tracker;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Placeholder implementation of JankTracker. */
+@NullMarked
 public class PlaceholderJankTracker implements JankTracker {
     @Override
     public void startTrackingScenario(JankScenario scenario) {}

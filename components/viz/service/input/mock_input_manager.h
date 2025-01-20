@@ -30,6 +30,8 @@ class MockInputManager : public InputManager {
 
   RenderInputRouterSupportBase* GetSupportForFrameSink(const FrameSinkId& id);
 
+  input::RenderInputRouter* GetRenderInputRouterForId(const FrameSinkId& id);
+
   int GetInputEventRouterMapSize() { return rwhier_map_.size(); }
 };
 

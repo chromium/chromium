@@ -13,13 +13,25 @@
 namespace {
 
 /**
- * Retrieves the user's country code.
+ * Retrieves the latest country code from the variations service.
  *
- * Prioritizes the country code from the variations service if available.
- * Otherwise returns an empty string.
- *
+ * Returns an empty string if the variations service is not available.
  */
-std::string GetCountry(variations::VariationsService* variations_service) {
+std::string GetLatestCountry(
+    variations::VariationsService* variations_service) {
+  if (!variations_service) {
+    return "";
+  }
+  return variations_service->GetLatestCountry();
+}
+
+/**
+ * Retrieves the stored permanent country code from the variations service.
+ *
+ * Returns an empty string if the variations service is not available.
+ */
+std::string GetStoredPermanentCountry(
+    variations::VariationsService* variations_service) {
   if (!variations_service) {
     return "";
   }
@@ -40,7 +52,7 @@ constexpr auto kPrivacySandboxConsentCountries =
 bool PrivacySandboxCountriesImpl::IsConsentCountry() {
   CHECK(g_browser_process);
   return kPrivacySandboxConsentCountries.contains(
-      GetCountry(g_browser_process->variations_service()));
+      GetStoredPermanentCountry(g_browser_process->variations_service()));
 }
 
 bool PrivacySandboxCountriesImpl::IsRestOfWorldCountry() {
@@ -48,9 +60,15 @@ bool PrivacySandboxCountriesImpl::IsRestOfWorldCountry() {
   base::UmaHistogramBoolean(
       "PrivacySandbox.NoticeRequirement.IsVariationServiceReady",
       g_browser_process->variations_service() != nullptr);
-  std::string country = GetCountry(g_browser_process->variations_service());
+  std::string country =
+      GetStoredPermanentCountry(g_browser_process->variations_service());
   base::UmaHistogramBoolean(
       "PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty",
       country.empty());
   return !country.empty() && !kPrivacySandboxConsentCountries.contains(country);
+}
+
+bool PrivacySandboxCountriesImpl::IsLatestCountryChina() {
+  CHECK(g_browser_process);
+  return GetLatestCountry(g_browser_process->variations_service()) == "cn";
 }

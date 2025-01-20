@@ -123,8 +123,8 @@ Status UnzipArchive(const base::FilePath& unzip_dir,
 // Stream for writing binary data.
 class DataOutputStream {
  public:
-  DataOutputStream() {}
-  ~DataOutputStream() {}
+  DataOutputStream() = default;
+  ~DataOutputStream() = default;
 
   void WriteUInt16(uint16_t data) { WriteBytes(&data, sizeof(data)); }
 
@@ -153,7 +153,7 @@ class DataInputStream {
  public:
   DataInputStream(const char* data, int size)
       : data_(data), size_(size), iter_(0) {}
-  ~DataInputStream() {}
+  ~DataInputStream() = default;
 
   bool ReadUInt16(uint16_t* data) { return ReadBytes(data, sizeof(*data)); }
 

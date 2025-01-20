@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
@@ -51,7 +51,7 @@ class KioskAppData : public KioskAppDataBase,
     kError,    // Failed to load data.
   };
 
-  KioskAppData(KioskAppDataDelegate* delegate,
+  KioskAppData(KioskAppDataDelegate& delegate,
                const std::string& app_id,
                const AccountId& account_id,
                const GURL& update_url,
@@ -86,7 +86,7 @@ class KioskAppData : public KioskAppDataBase,
   void SetStatusForTest(Status status);
 
   static std::unique_ptr<KioskAppData> CreateForTest(
-      KioskAppDataDelegate* delegate,
+      KioskAppDataDelegate& delegate,
       const std::string& app_id,
       const AccountId& account_id,
       const GURL& update_url,
@@ -147,7 +147,7 @@ class KioskAppData : public KioskAppDataBase,
 
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
-  raw_ptr<KioskAppDataDelegate> delegate_;  // not owned.
+  const raw_ref<KioskAppDataDelegate> delegate_;
   Status status_;
 
   GURL update_url_;

@@ -42,11 +42,13 @@
 // 9. "driver_version" is a VERSION structure (defined below). On Windows
 //    this value can be retrieved by searching for the "Driver File Version" in
 //    dxdiag.txt
-// 10. "gl_type" is a string, valid values include "gl", "gles", and "angle".
-//    If "gl_version" is specified and "gl_type" is not, use the default value.
-//    The default value on Android is "gles", on Windows is "angle", on other
-//    platforms is "gl".
+// 10. "gl_type" is a string, valid values include "gles", "angle_vulkan",
+//     "angle_gles", and "angle_gl". "gles", "angle_vulkan", and "angle_gles"
+//     are supported on Android; "angle_vulkan", "angle_gles", and "angle_gl"
+//     are supported on Linux; "angle_vulkan" and "angle_gles" are supported on
+//     ChromeOS.
 // 11. "gl_version" is a VERSION structure (defined below).
+//     This is only supported on Linux, ChromeOS, and Android.
 // 12. "gl_vendor" is a string pattern.
 // 13. "gl_renderer" is a string pattern.
 // 14. "gl_extensions" is a string pattern.
@@ -73,7 +75,10 @@
 // 28. "test_group" is an non-negative integer. If not specified, it defaults
 //     to 0, which is Chrome's blocklist. Any entries with a non-zero test_group
 //     ID will be appended on top of the default group entries if Chrome runs
-//     with --gpu-blocklist-test-group=ID.
+//     with --gpu-blocklist-test-group=ID. Entries with non-zero test_group ID
+//     can also be enabled via experimentation. For example:
+//     --enable-features=GPUBlockListTestGroup:test_group/117 or
+//     --enable-features=GPUDriverBugListTestGroup:test_group/119
 // 29. "intel_gpu_series" is a list of gpu series names. Currently supported
 //     series include: "broadwater", "eaglelake", "ironlake", "sandybridge",
 //     "baytrail", "ivybridge", "haswell", "cherrytrail", "broadwell",
@@ -81,7 +86,7 @@
 //     "coffeelake", "whiskeylake", "cometlake", "cannonlake", "icelake",
 //     "elkhartlake", "jasperlake", "tigerlake", "rocketlake", "DG1",
 //     "alderlake", "alchemist", "raptorlake", "meteorlake", "arrowlake",
-//     "lunarlake", "battlemage".
+//     "lunarlake", "battlemage", "pantherlake".
 // 30. "hardware_overlay" is either "supported" or "unsupported". Currently it
 //     only applies on Windows where hardware overlays may be supported on
 //     certain Intel GPUs. By default it's "dont_care" and there is no need to

@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.omnibox;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 
@@ -28,11 +27,9 @@ public class OmniboxFacility extends Facility<PageStation> {
     public static final ViewSpec STATUS_ICON = viewSpec(withId(R.id.location_bar_status_icon));
     public static final ViewSpec URL_FIELD = viewSpec(withId(R.id.url_bar));
     public static final ViewSpec ACTION_CONTAINER = viewSpec(withId(R.id.url_action_container));
-
-    public static final ViewSpec MIC_BUTTON =
-            viewSpec(withId(R.id.mic_button), withParent(ACTION_CONTAINER.getViewMatcher()));
+    public static final ViewSpec MIC_BUTTON = ACTION_CONTAINER.descendant(withId(R.id.mic_button));
     public static final ViewSpec DELETE_BUTTON =
-            viewSpec(withId(R.id.delete_button), withParent(ACTION_CONTAINER.getViewMatcher()));
+            ACTION_CONTAINER.descendant(withId(R.id.delete_button));
     private final boolean mIncognito;
     private final FakeOmniboxSuggestions mFakeSuggestions;
 

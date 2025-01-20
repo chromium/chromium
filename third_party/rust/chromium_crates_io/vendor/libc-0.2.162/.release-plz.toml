@@ -1,3 +1,0 @@
-[workspace]
-git_release_name = "{{ version }}"
-git_tag_name = "{{ version }}"

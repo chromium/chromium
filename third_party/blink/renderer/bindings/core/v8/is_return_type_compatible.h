@@ -19,6 +19,9 @@ class KURL;
 
 namespace bindings {
 
+class DictionaryBase;
+class UnionBase;
+
 // A fall-through case.
 template <typename IDLType, typename ReturnType>
 inline constexpr bool IsReturnTypeCompatible = false;
@@ -31,25 +34,100 @@ inline constexpr bool IsReturnTypeCompatible<IDLAny, IDLType> = true;
 template <typename SameType>
 inline constexpr bool IsReturnTypeCompatible<SameType, SameType> = true;
 
+namespace internal {
+
+// In the normal case, we should not accept a function returning a "const
+// ReturnType*" if our expectation from the IDL is that it returns
+// "ReturnType*".  Exceptions below.
+template <typename ReturnType>
+inline constexpr bool CanRemoveCVQualifiers = false;
+
+// Union types are really only meant for JS consumers.  However, they
+// currently implement C++ const-ness behavior as though they're a struct,
+// meaning that a const union type can return non-const instances of the types
+// that it is a union of; it just can't be modified.  So const-ness of unions
+// isn't meaningfully reflected in JS.
+// TODO(dbaron) TODO(caseq): We should probably stop using const union types
+// and remove this exception.
+template <typename ReturnType>
+  requires std::derived_from<ReturnType, UnionBase>
+inline constexpr bool CanRemoveCVQualifiers<ReturnType> = true;
+
+// Dictionary types are copied when converting, so it's fine if the C++
+// returns a const dictionary even when the IDL doesn't reflect constness.
+template <typename ReturnType>
+  requires std::derived_from<ReturnType, DictionaryBase>
+inline constexpr bool CanRemoveCVQualifiers<ReturnType> = true;
+
+// This is like std::derived_from, except that std::derived_from always
+// removes cv-qualifiers, whereas this only remove cv-qualifiers in the cases
+// where we want to allow that removal.
+template <class Derived, class Base>
+concept DerivedFromAndIDLConvertible =
+    std::is_base_of_v<Base, Derived> &&
+    std::is_convertible_v<std::conditional_t<CanRemoveCVQualifiers<Derived>,
+                                             std::remove_cv_t<Derived>*,
+                                             Derived*>,
+                          Base*>;
+
+}  // namespace internal
+
 // Returning a wider type is fine.
 template <typename IDLType, typename ReturnType>
-  requires std::derived_from<std::remove_pointer_t<ReturnType>, IDLType>
+  requires internal::DerivedFromAndIDLConvertible<
+               std::remove_pointer_t<ReturnType>,
+               IDLType>
 inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
 
-// Pointers can be used to represent nullables, as long as types are compatible.
+// Types that have null values must be used directly to represent nullables.
+// This includes pointer types.
 template <typename IDLType, typename ReturnType>
-  requires IsReturnTypeCompatible<
-               IDLType,
-               std::remove_pointer_t<std::remove_const_t<ReturnType>>>
+  requires(NativeValueTraits<IDLType>::has_null_value &&
+           IsReturnTypeCompatible<IDLType, ReturnType>)
 inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLType>, ReturnType> =
     true;
 
-// std::optional<> is the way to implement nullable as long as inner types are
-// compatible.
+// std::optional<> is the way to implement nullable for types without null
+// values.
 template <typename IDLType, typename ReturnType>
+  requires(!NativeValueTraits<IDLType>::has_null_value &&
+           IsReturnTypeCompatible<IDLType, ReturnType>)
 inline constexpr bool
     IsReturnTypeCompatible<IDLNullable<IDLType>, std::optional<ReturnType>> =
-        IsReturnTypeCompatible<IDLType, ReturnType>;
+        true;
+
+// Nullable sequence and array types can also be represented as pointers
+// or with std::optional<> if their has_null_value is true.  (The case above
+// accepts std::optional<> when has_null_value is false.)
+// TODO(dbaron): We might consider removing the std::optional<> option here,
+// since std::optional<HeapVector<>> is somewhat suspicious, and disallowed on
+// the heap.
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLSequence<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLSequence<IDLType>,
+                                  std::remove_cv_t<ReturnType>>)
+inline constexpr bool
+    IsReturnTypeCompatible<IDLNullable<IDLSequence<IDLType>>, ReturnType*> =
+        true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLArray<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLArray<IDLType>,
+                                  std::remove_cv_t<ReturnType>>)
+inline constexpr bool
+    IsReturnTypeCompatible<IDLNullable<IDLArray<IDLType>>, ReturnType*> = true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLSequence<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLSequence<IDLType>, ReturnType>)
+inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLSequence<IDLType>>,
+                                             std::optional<ReturnType>> = true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLArray<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLArray<IDLType>, ReturnType>)
+inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLArray<IDLType>>,
+                                             std::optional<ReturnType>> = true;
 
 namespace internal {
 
@@ -90,7 +168,8 @@ inline constexpr bool
 // IDL types derived from IDLBaseHelper already have associated impl type,
 // so just use that.
 template <typename IDLType, typename ReturnType>
-  requires std::derived_from<IDLType, IDLBaseHelper<ReturnType>>
+  requires internal::DerivedFromAndIDLConvertible<IDLType,
+                                                  IDLBaseHelper<ReturnType>>
 inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
 
 // TODO(caseq): this is an exception as it loses type checks, remove and take
@@ -133,23 +212,11 @@ template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Object>> =
     true;
 
-// TODO(caseq): this shouldn't really be allowed, as ScriptValue may carry
-// values that are not objects, but keep it for now.
-template <>
-inline constexpr bool IsReturnTypeCompatible<IDLObject, ScriptValue> = true;
-
 // TODO(caseq): this shouldn't really be allowed, as v8::Value may carry
 // values that are not objects, but keep it for now.
 template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Value>> =
     true;
-
-// TODO(caseq): take care of this case, all promises should be returned as
-// ScriptPromise<PromiseType> and IDLTypeImplementedAsV8Promise extended
-// attribute should be removed.
-template <typename PromiseType>
-inline constexpr bool IsReturnTypeCompatible<blink::IDLPromise<PromiseType>,
-                                             v8::Local<v8::Promise>> = true;
 
 // Any IDL strings are compatible to any blink strings.
 template <typename IDLStringType>

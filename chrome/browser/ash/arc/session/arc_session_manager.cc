@@ -7,22 +7,14 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/metrics/stability_metrics_manager.h"
-#include "ash/components/arc/session/arc_data_remover.h"
-#include "ash/components/arc/session/arc_instance_mode.h"
-#include "ash/components/arc/session/arc_management_transition.h"
-#include "ash/components/arc/session/arc_session.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/session/serial_number_util.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -39,6 +31,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_pai_starter.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/arc/arc_demo_mode_delegate_impl.h"
+#include "chrome/browser/ash/arc/arc_dlc_install_notification_delegate_impl.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_mount_provider.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -63,10 +56,22 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/dlc_install_notification/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_data_remover.h"
+#include "chromeos/ash/experiences/arc/session/arc_instance_mode.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/session/serial_number_util.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
@@ -447,6 +452,25 @@ void UmaHistogramDeferActivationTimes(const std::string& name,
                                 base::Seconds(25), 125);
 }
 
+bool NeedRevenDLC() {
+  if (!ash::switches::IsRevenBranding()) {
+    return false;
+  }
+
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
+    return false;
+  }
+
+  if (!ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
+    VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
+               "install arcvm images.";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -795,6 +819,14 @@ void ArcSessionManager::TrimVmMemory(TrimVmMemoryCallback callback,
   arc_session_runner_->TrimVmMemory(std::move(callback), page_limit);
 }
 
+std::string ArcSessionManager::GetSerialNumberForKeyMint() {
+  DCHECK(arc::IsArcVmEnabled());
+  if (!arc_salt_on_disk_.has_value()) {
+    arc_salt_on_disk_ = ReadSaltOnDisk(base::FilePath(kArcSaltPath));
+  }
+  return GetSerialNumber();
+}
+
 std::string ArcSessionManager::GetSerialNumber() const {
   DCHECK(profile_);
   DCHECK(arc_salt_on_disk_);
@@ -827,6 +859,24 @@ void ArcSessionManager::Initialize() {
   if (arc_salt_on_disk_) {
     VLOG(1) << "Calling SetUserInfo() in ArcSessionManager::Initialize";
     SetUserInfo();
+  }
+
+  if (const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_)) {
+    if (!arc_dlc_install_notification_manager_) {
+      auto delegate =
+          std::make_unique<arc::ArcDlcInstallNotificationManagerDelegateImpl>(
+              profile_);
+      arc_dlc_install_notification_manager_ =
+          std::make_unique<arc::ArcDlcInstallNotificationManager>(
+              std::move(delegate), *account_id);
+    }
+    for (const auto& notification : dlc_install_pending_notifications_) {
+      arc_dlc_install_notification_manager_->Show(notification);
+    }
+    dlc_install_pending_notifications_.clear();
+  } else {
+    // TODO to clean up later.
+    CHECK_IS_TEST();
   }
 
   // Create the support host at initialization. Note that, practically,
@@ -888,6 +938,7 @@ void ArcSessionManager::Shutdown() {
   pai_starter_.reset();
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
+  arc_dlc_install_notification_manager_.reset();
   profile_ = nullptr;
   state_ = State::NOT_INITIALIZED;
   if (scoped_opt_in_tracker_) {
@@ -1264,48 +1315,46 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   activation_necessity_checker_.reset();
 
   is_activation_delayed_ = !result;
-  if (result) {
-    bool should_defer =
-        !activation_is_allowed_ && !session_manager::SessionManager::Get()
-                                        ->IsUserSessionStartUpTaskCompleted();
-    if (base::FeatureList::IsEnabled(
-            kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+  if (!result) {
+    VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
+    observer_list_.Notify(&ArcSessionManagerObserver::OnArcStartDelayed);
+    return;
+  }
+
+  // Check whether ARC is expected to be used soon.
+  if (base::FeatureList::IsEnabled(
+          kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+    if (activation_is_allowed_ || session_manager::SessionManager::Get()
+                                      ->IsUserSessionStartUpTaskCompleted()) {
+      // If the activation is already allowed, it is out of the targets to
+      // defer. Or, if session start up task is already completed, it does not
+      // need to wait activating ARC.
+      base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
+                                    DeferArcActivationCategory::kNotTarget);
+    } else {
+      const bool should_defer =
+          ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+              profile_->GetPrefs());
+      user_session_start_up_task_timer_.emplace(
+          UserSessionStartUpTaskTimer{base::ElapsedTimer(), should_defer});
+      base::UmaHistogramEnumeration(
+          "Arc.DeferActivation.Category",
+          should_defer ? DeferArcActivationCategory::kDeferred
+                       : DeferArcActivationCategory::kNotDeferred);
       if (should_defer) {
-        should_defer =
-            ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
-                profile_->GetPrefs());
-        if (should_defer) {
-          base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
-                                        DeferArcActivationCategory::kDeferred);
-        } else {
-          base::UmaHistogramEnumeration(
-              "Arc.DeferActivation.Category",
-              DeferArcActivationCategory::kNotDeferred);
-        }
-        user_session_start_up_task_timer_.emplace(
-            UserSessionStartUpTaskTimer{base::ElapsedTimer(), should_defer});
-      } else {
-        base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
-                                      DeferArcActivationCategory::kNotTarget);
+        // Wait for the user session start up task completion to prioritize
+        // resources for them.
+        VLOG(1) << "ARC activation is deferred until user sesssion start up "
+                << "tasks are completed";
+        return;
       }
     }
-    if (should_defer) {
-      // Wait for the user session start up task completion to prioritize
-      // resources for them.
-      VLOG(1) << "ARC activation is deferred until user sesssion start up "
-              << "tasks are completed";
-    } else {
-      // In AllowActivation, actual ARC instance is going to be launched,
-      // so call it here even if `activation_is_allowed_` checked above is
-      // true, intentionally.
-      AllowActivation(AllowActivationReason::kImmediateActivation);
-    }
-  } else {
-    VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
-    for (auto& observer : observer_list_) {
-      observer.OnArcStartDelayed();
-    }
   }
+
+  // In AllowActivation, actual ARC instance is going to be launched,
+  // so call it here even if `activation_is_allowed_` checked above is
+  // true, intentionally.
+  AllowActivation(AllowActivationReason::kImmediateActivation);
 }
 
 void ArcSessionManager::RequestDisable(bool remove_arc_data) {
@@ -1915,6 +1964,14 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   }
 }
 
+void ArcSessionManager::MaybeShowDlcInstallNotification(NotificationType type) {
+  if (arc_dlc_install_notification_manager_) {
+    arc_dlc_install_notification_manager_->Show(type);
+    return;
+  }
+  dlc_install_pending_notifications_.push_back(type);
+}
+
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   VLOG(1) << "Started expanding *.prop files";
 
@@ -1936,19 +1993,20 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
     return;
   }
 
-  // Only the reven board can install arcvm images from DLC. Other boards can
-  // implement their own checking logic after supporting DLC installation later.
-  if (ash::switches::IsRevenBranding() &&
-      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (NeedRevenDLC()) {
     // Check if the Reven device is compatible for ARC.
     hardware_checker_->IsRevenDeviceCompatibleForArc(
         base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
                        weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
   } else {
-    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
+}
+
+void ArcSessionManager::OnEnableArcOnRevenForTesting(std::deque<JobDesc> jobs,
+                                                     bool is_compatible) {
+  OnEnableArcOnReven(jobs, is_compatible);
 }
 
 void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
@@ -1958,6 +2016,10 @@ void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
                "from DLC.";
     dlcservice::InstallRequest install_request;
     install_request.set_id(kArcvmDlcId);
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. arc_vm preload will start during a reboot or
+    // when the Chrome session is restarted.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
     ash::DlcserviceClient::Get()->Install(
         install_request,
         base::BindOnce(&ArcSessionManager::OnDlcInstalled,
@@ -1974,6 +2036,11 @@ void ArcSessionManager::OnDlcInstalled(
     std::deque<JobDesc> jobs,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. A notification will be sent requesting the
+    // user to log out and log back in to use the VPN apps on Flex once the
+    // installation is complete.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
     jobs.emplace_front(JobDesc{
         kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
     ConfigureUpstartJobs(
@@ -1982,6 +2049,10 @@ void ArcSessionManager::OnDlcInstalled(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "Failed to install arcvm DLC: " << install_result.error;
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. An error notification will be sent if the DLC
+    // preload fails.
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }

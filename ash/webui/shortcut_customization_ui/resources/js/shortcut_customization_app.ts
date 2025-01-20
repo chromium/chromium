@@ -10,7 +10,6 @@ import './search/search_box.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
@@ -114,9 +113,15 @@ export class ShortcutCustomizationAppElement extends
         type: Boolean,
         value: true,
       },
+
+      restoreAllButtonHidden: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
+  protected restoreAllButtonHidden: boolean;
   protected showRestoreAllDialog: boolean;
   protected dialogShortcutTitle: string;
   protected dialogAccelerators: AcceleratorInfo[];
@@ -158,6 +163,7 @@ export class ShortcutCustomizationAppElement extends
         });
 
     this.fetchAccelerators();
+    this.updateHideRestoreAllButtonState();
     this.addEventListener('show-edit-dialog', this.showDialog);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
@@ -225,6 +231,7 @@ export class ShortcutCustomizationAppElement extends
   // AcceleratorsUpdatedObserverInterface:
   onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
     this.acceleratorlookupManager.setAcceleratorLookup(config);
+    this.updateHideRestoreAllButtonState();
     // Update subsections.
     this.$.navigationPanel.notifyEvent('updateSubsections');
 
@@ -334,8 +341,15 @@ export class ShortcutCustomizationAppElement extends
     this.showRestoreAllDialog = false;
   }
 
-  protected shouldHideRestoreAllButton(): boolean {
-    return !isCustomizationAllowed();
+  protected updateHideRestoreAllButtonState(): void {
+    if (!isCustomizationAllowed()) {
+      this.restoreAllButtonHidden = true;
+      return;
+    }
+    this.shortcutProvider.hasCustomAccelerators().then(
+        (result: {hasCustomAccelerators: boolean}) => {
+          this.restoreAllButtonHidden = !result.hasCustomAccelerators;
+        });
   }
 
   protected updateDialogAccelerators(

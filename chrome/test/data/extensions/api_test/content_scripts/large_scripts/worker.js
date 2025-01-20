@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
-
-function getInjectedElementIds() {
-  let childIds = [];
-  for (const child of document.body.children)
-    childIds.push(child.id);
-  return childIds.sort();
-};
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 chrome.test.runTests([
   async function checkContentScriptInjectionResults() {
@@ -26,14 +19,10 @@ chrome.test.runTests([
     const title = await getTitleForTab(tab.id);
     chrome.test.assertEq('I CHANGED TITLE!!!', title);
 
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
-
     // Only inject_element_1.js and change_title.js should be loaded/injected as
     // big.js exceeds the individual script size limit, and loading
     // inject_element_2.js would exceed the extension's total script size limit.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected'], results[0].result);
+    chrome.test.assertEq(['injected'], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },

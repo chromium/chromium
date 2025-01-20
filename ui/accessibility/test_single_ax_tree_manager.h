@@ -21,7 +21,7 @@ struct AXTreeUpdate;
 //
 // A basic implementation of AXTreeManager that supports a single tree,
 // and doesn't perform any walking across multiple trees.
-class AX_EXPORT TestSingleAXTreeManager : public AXTreeManager {
+class TestSingleAXTreeManager : public AXTreeManager {
  public:
   // This constructor does not create an empty AXTree. Call "SetTree" if you
   // need to manage a specific tree. Useful when you need to test for the
@@ -48,6 +48,9 @@ class AX_EXPORT TestSingleAXTreeManager : public AXTreeManager {
 
   // Creates and set the tree by a given AXTreeUpdate instance.
   AXTree* Init(AXTreeUpdate tree_update);
+
+  // Creates and set the tree from AXTreeUpdate represented by a string.
+  AXTree* Init(const std::string& tree_update);
 
   // Convenience functions to initialize directly from a few AXNodeData objects.
   AXTree* Init(const AXNodeData& node1,

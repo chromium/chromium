@@ -14,8 +14,8 @@
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillCountry;
-class PersonalDataManager;
 
 // A model for countries to be used to enter addresses.
 class CountryComboboxModel : public ui::ComboboxModel {
@@ -34,7 +34,7 @@ class CountryComboboxModel : public ui::ComboboxModel {
   // Empty callback can be used to retain all countries.
   // |manager| determines the default choice.
   void SetCountries(
-      const PersonalDataManager& manager,
+      const AddressDataManager& adm,
       const base::RepeatingCallback<bool(const std::string&)>& filter,
       const std::string& app_locale);
 

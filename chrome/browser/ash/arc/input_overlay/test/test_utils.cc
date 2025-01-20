@@ -6,13 +6,13 @@
 
 #include <cstddef>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"

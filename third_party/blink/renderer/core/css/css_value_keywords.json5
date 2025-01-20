@@ -1236,6 +1236,21 @@
     // luminance
     "match-source",
 
+    // masonry-auto-tracks
+    // min-content
+    // max-content
+    // auto
+
+    // masonry-direction
+    // row
+    // row-reverse
+    // column
+    // column-reverse
+
+    // masonry-fill
+    // normal
+    // reverse
+
     // color-interpolation / color-interpolation-filters
     // auto
     "srgb",
@@ -1371,6 +1386,27 @@
 
     // shapes
     "polygon",
+    "shape",
+    // "from",
+    // "to",
+    "by",
+    "line",
+    "close",
+    "hline",
+    "vline",
+    "arc",
+    // "rotate",
+    "cw",
+    "ccw",
+    // "large",
+    // "small",
+    // "of",
+    "curve",
+    // "smooth",
+    // "start",
+    // "end",
+    "origin",
+    "with",
 
     // @font-face src
     "format",
@@ -1797,6 +1833,9 @@
     "layered",
     // flat
 
+    // view-transition-name
+    "match-element",
+
     // container-type
     // inline-size,
     // normal,
@@ -1922,5 +1961,12 @@
     // interactivity
     // auto
     "inert",
+
+    // Used as functions in calc()
+    "sibling-count",
+    "sibling-index",
+
+    // @function
+    "returns",
   ],
 }

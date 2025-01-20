@@ -11,6 +11,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 
 namespace network {
 

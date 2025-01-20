@@ -2,7 +2,7 @@ Name: TagSoup
 Short Name: tagsoup
 URL: http://home.ccil.org/~cowan/XML/tagsoup/
 Version: 1.2.1
-License: Apache License 2.0
+License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no

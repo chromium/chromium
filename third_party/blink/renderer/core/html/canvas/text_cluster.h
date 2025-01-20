@@ -48,9 +48,6 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   TextBaseline GetTextBaseline() const { return baseline_; }
   const Member<TextMetrics> textMetrics() const { return text_metrics_; }
 
-  void setX(double x) { x_ = x; }
-  void setY(double y) { y_ = y; }
-
   void OffsetPosition(double x_offset, double y_offset);
   void OffsetCharacters(unsigned offset);
 

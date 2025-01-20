@@ -21,8 +21,7 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
   table_model_ = std::make_unique<TemplateURLTableModel>(url_model_);
 }
 
-KeywordEditorController::~KeywordEditorController() {
-}
+KeywordEditorController::~KeywordEditorController() = default;
 
 int KeywordEditorController::AddTemplateURL(const std::u16string& title,
                                             const std::u16string& keyword,
@@ -52,8 +51,9 @@ void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
 
   // Don't do anything if the entry didn't change.
   if ((template_url->short_name() == title) &&
-      (template_url->keyword() == keyword) && (template_url->url() == url))
+      (template_url->keyword() == keyword) && (template_url->url() == url)) {
     return;
+  }
 
   table_model_->ModifyTemplateURL(index.value(), title, keyword, url);
 
@@ -95,11 +95,9 @@ bool KeywordEditorController::ShouldConfirmDeletion(
 }
 
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
-  return url->created_by_policy() ==
-             TemplateURLData::CreatedByPolicy::kSiteSearch ||
-         (url->created_by_policy() ==
-              TemplateURLData::CreatedByPolicy::kDefaultSearchProvider &&
-          url->enforced_by_policy());
+  return (url->CreatedByDefaultSearchProviderPolicy() &&
+          url->enforced_by_policy()) ||
+         url->CreatedByNonDefaultSearchProviderPolicy();
 }
 
 void KeywordEditorController::RemoveTemplateURL(int index) {

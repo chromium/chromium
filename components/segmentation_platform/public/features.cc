@@ -169,6 +169,14 @@ BASE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker,
              "SegmentationPlatformURLVisitResumptionRanker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformEphemeralBottomRank,
+             "SegmentationPlatformEphemeralBottomRank",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 const char kEphemeralCardRankerForceShowCardParam[] =
     "EphemeralCardRankerForceShowCardParam";
 const char kEphemeralCardRankerForceHideCardParam[] =
@@ -178,7 +186,7 @@ const char kEphemeralCardRankerForceHideCardParam[] =
 BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
              "SegmentationPlatformEphemeralCardRanker",
 #if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
@@ -231,6 +239,19 @@ BASE_FEATURE(kEducationalTipModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
     &kEducationalTipModule, "max_default_browser_card_impressions",
-    /*default_value=*/4};
+    /*default_value=*/3};
+constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
+    &kEducationalTipModule, "max_tab_group_card_impressions",
+    /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
+    &kEducationalTipModule, "max_tab_group_sync_card_impressions",
+    /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxQuickDeleteCardImpressions{
+    &kEducationalTipModule, "max_quick_delete_card_impressions",
+    /*default_value=*/10};
+
+BASE_FEATURE(kSegmentationPlatformFedCmUser,
+             "SegmentationPlatformFedCmUser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace segmentation_platform::features

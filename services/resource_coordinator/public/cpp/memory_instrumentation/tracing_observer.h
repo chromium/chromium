@@ -35,7 +35,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // PerfettoTracedProcess::DataSourceBase implementation
   void StartTracingImpl(
-      tracing::PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
   void StopTracingImpl(
       base::OnceClosure stop_complete_callback = base::OnceClosure()) override;

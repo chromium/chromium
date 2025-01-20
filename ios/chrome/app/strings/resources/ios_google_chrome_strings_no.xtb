@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome åpner automatisk YouTube-inkognitolinker i inkognitomodus.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åpne en ny fane i Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="1229222343402087523">Søk etter ${searchPhrase} i Chrome</translation>
 <translation id="1237769345474105984">Fra Chrome</translation>
-<translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="124228879633599436">Chrome er utdatert. Oppdater den for å holde deg trygg.</translation>
 <translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
@@ -38,6 +38,7 @@ Du bør tenke på følgende:
 <translation id="1646463005043273333">Åpner Chrome-innstillingen for å angi Chrome som standardnettleser.</translation>
 <translation id="1670609221633730681">Chrome-tips: Velg plassering for adressefeltet</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Lagre passordene dine i Chrome</translation>
 <translation id="1790080846677398234">Legger til de angitte nettadressene i bokmerkene dine i Chrome.</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Denne adressen er for øyeblikket lagret i Chrome. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
 <translation id="3741995255368156336">Åpner Chrome-leselisten.</translation>
+<translation id="3808570423967020928">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen.</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
 <translation id="3863841106411295595">Legger til de angitte nettadressene på leselisten i Chrome.</translation>
@@ -125,6 +127,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="4636900170638246267">Logg på dette nettstedet og Chrome.</translation>
 <translation id="4646014602299206846">Chrome registrerer pakkesporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle.</translation>
 <translation id="4647910807533196601">Åpne den nyligste fanen min i Chrome.</translation>
+<translation id="4693084815234024320">Du er i Chrome Inkognito</translation>
 <translation id="4724297637870447613">Bruk Chrome overalt</translation>
 <translation id="4738647308035481133">Google Chrome-side</translation>
 <translation id="4742795653798179840">Slettede Chrome-data</translation>
@@ -219,9 +222,12 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 
 For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Slett nettlesingsdata i Chrome.</translation>
+<translation id="6924922227983877439">Åpne linker i Chrome som standard</translation>
+<translation id="6931601805528922498">Når du logger på, legges kontoen din til i Chrome for jobbrelatert surfing.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>
 <translation id="7056826488869329999">Åpner og kjører sikkerhetssjekken i Chrome.</translation>
 <translation id="7061455974939528301">Trykk og hold på Chrome-ikonet, og klikk på «Endre Hjem-skjermen»</translation>
+<translation id="7065813315247345131">Flytt Chrome til dokken</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>

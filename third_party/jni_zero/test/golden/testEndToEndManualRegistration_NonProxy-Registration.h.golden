@@ -21,9 +21,8 @@ inline jclass org_jni_1zero_SampleNonProxy_clazz(JNIEnv* env) {
 #endif
 
 
-// Forward declarations (methods).
-
-JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(
+// Forward Declarations.
+JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -31,7 +30,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBo
     jstring title,
     jboolean isFolder,
     jlong parentId);
-JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(
+JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -42,51 +41,51 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBo
     jbyteArray favicon,
     jstring title,
     jobject visits);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
     JNIEnv* env,
     jclass jcaller,
     jbyteArray state,
     jint tabIndex);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider);
-JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
     JNIEnv* env,
     jobject jcaller,
     jstring find);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
+JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
+JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
     JNIEnv* env,
     jclass jcaller,
     jstring url);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray(
+JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray(
     JNIEnv* env,
     jobject jcaller,
     jobject view);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(
     JNIEnv* env,
     jobject jcaller,
     jint nativeDataFetcherImplAndroid,
     jdouble alpha,
     jdouble beta,
     jdouble gamma);
-JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
+JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
+JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
     JNIEnv* env,
     jclass jcaller,
     jthrowable e);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -94,14 +93,13 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQue
     jstring selection,
     jobjectArray selectionArgs,
     jstring sortOrder);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults(
     JNIEnv* env,
     jobject jcaller,
     jint sessionId,
     jobjectArray results);
 
 // Helper Methods.
-
 namespace {
 
 bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
@@ -166,7 +164,7 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
           "nativeSetRecognitionResults",
           "(I[Ljava/lang/String;)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults)
-      }, 
+      },
   };
   jclass clazz = org_jni_1zero_SampleNonProxy_clazz(env);
   if (env->RegisterNatives(clazz, kMethods, std::size(kMethods)) < 0) {
@@ -181,7 +179,6 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
 }  // namespace
 
 // Main Register Function.
-
 namespace {
 
 bool RegisterNatives(JNIEnv* env) {
@@ -192,5 +189,6 @@ bool RegisterNatives(JNIEnv* env) {
 }
 
 }  // namespace
+
 
 #endif  // TEMP_DIR_HEADER_

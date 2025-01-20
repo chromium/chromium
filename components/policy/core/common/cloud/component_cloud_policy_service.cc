@@ -33,6 +33,7 @@
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -123,7 +124,7 @@ class ComponentCloudPolicyService::Backend
 
   // The passed credentials will be used to validate the policies.
   void SetCredentials(const std::string& username,
-                      const std::string& gaia_id,
+                      const GaiaId& gaia_id,
                       const std::string& dm_token,
                       const std::string& device_id,
                       const std::string& public_key,
@@ -200,7 +201,7 @@ void ComponentCloudPolicyService::Backend::ClearCache() {
 
 void ComponentCloudPolicyService::Backend::SetCredentials(
     const std::string& username,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& dm_token,
     const std::string& device_id,
     const std::string& public_key,
@@ -468,7 +469,7 @@ void ComponentCloudPolicyService::UpdateFromSuperiorStore() {
     // updates, to handle the case of the user registering for policy after the
     // session starts.
     std::string username = policy->username();
-    std::string gaia_id = policy->gaia_id();
+    GaiaId gaia_id(policy->gaia_id());
     std::string request_token = policy->request_token();
     std::string device_id =
         policy->has_device_id() ? policy->device_id() : std::string();

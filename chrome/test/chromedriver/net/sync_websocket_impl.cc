@@ -180,6 +180,9 @@ void SyncWebSocketImpl::Core::OnClose() {
   base::AutoLock lock(lock_);
   is_connected_ = false;
   on_update_event_.Signal();
+  if (notify_) {
+    owning_sequence_->PostTask(FROM_HERE, notify_);
+  }
 }
 
 void SyncWebSocketImpl::Core::SetNotificationCallback(

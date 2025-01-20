@@ -58,7 +58,7 @@ public class PersistedTabDataTest {
                     MockitoAnnotations.initMocks(this);
                 });
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
     }

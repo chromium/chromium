@@ -4,6 +4,8 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Wrapper alternative to android.bluetooth.BluetoothGattCallback allowing
  * clients and Fakes to
@@ -16,6 +18,7 @@ package org.chromium.device.bluetooth.wrapper;
  * necessary from the initial BluetoothDeviceWrapper.connectGatt
  * call.
  */
+@NullMarked
 public interface BluetoothGattCallbackWrapper {
     void onCharacteristicChanged(BluetoothGattCharacteristicWrapper characteristic);
 

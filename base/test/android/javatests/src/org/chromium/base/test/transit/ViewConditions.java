@@ -60,9 +60,14 @@ public class ViewConditions {
                     .append(StringDescription.toString(mMatcher))
                     .append(" (>= ")
                     .append(mOptions.mDisplayedPercentageRequired)
-                    .append("% displayed, ")
-                    .append(mOptions.mExpectEnabled ? "enabled" : "disabled")
-                    .append(")");
+                    .append("% displayed");
+            if (mOptions.mExpectEnabled) {
+                description.append(", enabled");
+            }
+            if (mOptions.mExpectDisabled) {
+                description.append(", disabled");
+            }
+            description.append(")");
             return description.toString();
         }
 
@@ -143,7 +148,7 @@ public class ViewConditions {
                     fulfilled = false;
                     messages.add("disabled");
                 }
-            } else { // Expected a displayed but disabled View.
+            } else if (mOptions.mExpectDisabled) {
                 if (mViewMatched.isEnabled()) {
                     fulfilled = false;
                     messages.add("enabled");
@@ -177,6 +182,7 @@ public class ViewConditions {
         /** Extra options for declaring DisplayedCondition. */
         public static class Options {
             boolean mExpectEnabled = true;
+            boolean mExpectDisabled;
             int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
 
             private Options() {}
@@ -186,9 +192,15 @@ public class ViewConditions {
                     return Options.this;
                 }
 
-                /** Whether the View is expected to be enabled or disabled. */
+                /** Whether the View is expected to be enabled. */
                 public Builder withExpectEnabled(boolean state) {
                     mExpectEnabled = state;
+                    return this;
+                }
+
+                /** Whether the View is expected to be disabled. */
+                public Builder withExpectDisabled(boolean state) {
+                    mExpectDisabled = state;
                     return this;
                 }
 

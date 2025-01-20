@@ -30,9 +30,7 @@ namespace wm {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
-                                   kPropertyKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager, kPropertyKey)
 
 // Returns true if the given `window` has a cycle in its transient window
 // hierarchy.

@@ -18,6 +18,10 @@ bool StubWebView::IsServiceWorker() const {
   return false;
 }
 
+void StubWebView::SetupChildView(std::unique_ptr<StubWebView> child) {
+  child_ = std::move(child);
+}
+
 std::string StubWebView::GetId() {
   return id_;
 }
@@ -192,7 +196,16 @@ Status StubWebView::WaitForPendingNavigations(const std::string& frame_id,
 }
 
 Status StubWebView::IsPendingNavigation(const Timeout* timeout,
-                                        bool* is_pending) const {
+                                        bool* is_pending) {
+  return Status(kOk);
+}
+
+Status StubWebView::WaitForPendingActivePage(const Timeout& timeout) {
+  return Status(kOk);
+}
+
+Status StubWebView::IsNotPendingActivePage(const Timeout* timeout,
+                                           bool* is_not_pending) const {
   return Status(kOk);
 }
 
@@ -302,6 +315,23 @@ Status StubWebView::CallFunctionWithTimeout(
 
 bool StubWebView::IsDialogOpen() const {
   return false;
+}
+
+bool StubWebView::IsTab() const {
+  return false;
+}
+
+PageTracker* StubWebView::GetPageTracker() const {
+  return nullptr;
+}
+
+std::string StubWebView::GetTabId() {
+  return "";
+}
+
+Status StubWebView::GetActivePage(WebView** web_view) {
+  *web_view = child_ ? child_.get() : nullptr;
+  return Status(kOk);
 }
 
 Status StubWebView::GetDialogMessage(std::string& message) const {

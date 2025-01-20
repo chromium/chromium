@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -1441,7 +1436,8 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
-  EXPECT_EQ(0, decomp->perspective[2]);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  EXPECT_EQ(0, UNSAFE_TODO(decomp->perspective[2]));
 }
 
 TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
@@ -1461,7 +1457,8 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
   std::optional<gfx::DecomposedTransform> decomp = transform.Decompose();
   ASSERT_TRUE(decomp);
-  EXPECT_EQ(-0.01, decomp->perspective[2]);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  EXPECT_EQ(-0.01, UNSAFE_TODO(decomp->perspective[2]));
 }
 
 TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {

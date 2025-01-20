@@ -14,6 +14,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -74,7 +75,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
             String givenName,
             @Nullable Bitmap avatar,
             @NonNull AccountCapabilities capabilities) {
-        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
+        GaiaId gaiaId = FakeAccountManagerFacade.toGaiaId(email);
         AccountInfo accountInfo =
                 new AccountInfo.Builder(email, gaiaId)
                         .fullName(fullName)

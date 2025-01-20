@@ -115,7 +115,7 @@ class ConnectorsManager : public ConnectorsManagerBase {
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
 
   // Get data location region from policy.
-  DataRegion GetDataRegion() const;
+  DataRegion GetDataRegion(AnalysisConnector connector) const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Close connection with local agent if all the relevant connectors are turned

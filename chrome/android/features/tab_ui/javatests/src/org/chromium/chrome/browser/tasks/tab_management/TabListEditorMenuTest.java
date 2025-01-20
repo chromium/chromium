@@ -35,7 +35,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -59,6 +60,7 @@ import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -103,6 +105,8 @@ public class TabListEditorMenuTest {
                     .setRevision(5)
                     .setDescription("New selection icons")
                     .build();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     static class FakeTabListEditorAction extends TabListEditorAction {
         private boolean mShouldEnableAction = true;
@@ -177,8 +181,6 @@ public class TabListEditorMenuTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(TAB_COUNT);
 
@@ -636,7 +638,7 @@ public class TabListEditorMenuTest {
     }
 
     /** Helper for detecting menu shown popup events. */
-    static class PopupListener implements ListMenuButton.PopupMenuShownListener {
+    static class PopupListener implements ListMenuHost.PopupMenuShownListener {
         private CallbackHelper mShown = new CallbackHelper();
         private CallbackHelper mHidden = new CallbackHelper();
 

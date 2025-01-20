@@ -106,6 +106,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
+      std::optional<bool> send_creative_scanning_metadata,
       mojom::TrustedSignalsPublicKeyPtr public_key,
       GetNextThreadIndexCallback next_thread_index_callback,
       mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
@@ -197,6 +198,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     ScoreAdTask();
     ~ScoreAdTask();
 
+    base::CancelableTaskTracker::TaskId context_prep_task_id =
+        base::CancelableTaskTracker::kBadTaskId;
+
     base::CancelableTaskTracker::TaskId task_id =
         base::CancelableTaskTracker::kBadTaskId;
 
@@ -278,6 +282,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     std::optional<std::string> direct_from_seller_seller_signals_header_ad_slot;
     std::optional<std::string>
         direct_from_seller_auction_signals_header_ad_slot;
+
+    size_t thread;
   };
 
   using ScoreAdTaskList = std::list<ScoreAdTask>;
@@ -380,6 +386,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const url::Origin& top_window_origin,
         mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
         std::optional<uint16_t> experiment_group_id,
+        std::optional<bool> send_creative_scanning_metadata,
         base::WeakPtr<SellerWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script,
@@ -452,6 +459,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void ConnectDevToolsAgent(
         mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
+    // Create a context recycler, run the top level script, and add bindings.
+    // This context recycler will be saved for later use by a ScoreAd call.
+    void PrepareContextRecycler(uint64_t trace_id);
+
    private:
     friend class base::DeleteHelper<V8State>;
     ~V8State();
@@ -500,6 +511,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         base::WeakPtr<SellerWorklet> parent,
         scoped_refptr<base::SequencedTaskRunner> user_thread);
 
+    std::unique_ptr<ContextRecycler> CreateContextRecyclerAndRunTopLevel(
+        uint64_t trace_id,
+        AuctionV8Helper::TimeLimit& total_timeout,
+        bool& script_timed_out,
+        std::vector<std::string>& errors_out);
+
     const scoped_refptr<AuctionV8Helper> v8_helper_;
     const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
     const base::WeakPtr<SellerWorklet> parent_;
@@ -517,6 +534,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const url::Origin top_window_origin_;
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<uint16_t> experiment_group_id_;
+    std::optional<bool> send_creative_scanning_metadata_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
@@ -526,6 +544,13 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // `kFledgeAlwaysReuseSellerContext` is disabled, a fresh `ContextRecycler`
     // will be created as needed.
     std::unique_ptr<ContextRecycler> context_recycler_for_context_reuse_;
+
+    // ContextRecyclers we prepare in advance, along with a bool indicating if
+    // there was a timeout and any errors in preparing the context.
+    std::vector<std::tuple<std::unique_ptr<ContextRecycler>,
+                           bool,
+                           std::vector<std::string>>>
+        unused_context_recyclers_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
@@ -632,6 +657,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   const GURL script_source_url_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
+  std::optional<bool> send_creative_scanning_metadata_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.

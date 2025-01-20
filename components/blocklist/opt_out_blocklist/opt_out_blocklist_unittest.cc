@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -585,12 +581,12 @@ TEST_F(OptOutBlocklistTest, TypeBlockListNoStore) {
 
 TEST_F(OptOutBlocklistTest, HostIndifferentBlocklist) {
   // Tests the block list behavior when a null OptOutStore is passed in.
-  const std::string hosts[] = {
+  const auto hosts = std::to_array<std::string>({
       "url_0.com",
       "url_1.com",
       "url_2.com",
       "url_3.com",
-  };
+  });
 
   int host_indifferent_threshold = 4;
 
@@ -893,12 +889,12 @@ TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnHostBlocklisted) {
 
 TEST_F(OptOutBlocklistTest, ObserverIsNotifiedOnUserBlocklisted) {
   // Tests the block list behavior when a null OptOutStore is passed in.
-  const std::string hosts[] = {
+  const auto hosts = std::to_array<std::string>({
       "url_0.com",
       "url_1.com",
       "url_2.com",
       "url_3.com",
-  };
+  });
 
   int host_indifferent_threshold = 4;
 
@@ -1087,12 +1083,12 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserRecentlyOptedOut) {
 TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserBlocklisted) {
   // Test that IsLoadedAndAllow, push checked BlocklistReasons to the
   // |passed_reasons| vector.
-  const std::string hosts[] = {
+  const auto hosts = std::to_array<std::string>({
       "http://www.url_0.com",
       "http://www.url_1.com",
       "http://www.url_2.com",
       "http://www.url_3.com",
-  };
+  });
 
   auto session_policy =
       std::make_unique<BlocklistData::Policy>(base::Seconds(1), 1u, 1);
@@ -1117,10 +1113,10 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserBlocklisted) {
       BlocklistReason::kUserOptedOutInGeneral,
       block_list_->IsLoadedAndAllowed(hosts[0], 1, false, &passed_reasons_));
 
-  BlocklistReason expected_reasons[] = {
+  auto expected_reasons = std::to_array<BlocklistReason>({
       BlocklistReason::kBlocklistNotLoaded,
       BlocklistReason::kUserOptedOutInSession,
-  };
+  });
   EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);
@@ -1153,11 +1149,11 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenHostBlocklisted) {
       BlocklistReason::kUserOptedOutOfHost,
       block_list_->IsLoadedAndAllowed(kTestHost1, 1, false, &passed_reasons_));
 
-  BlocklistReason expected_reasons[] = {
+  auto expected_reasons = std::to_array<BlocklistReason>({
       BlocklistReason::kBlocklistNotLoaded,
       BlocklistReason::kUserOptedOutInSession,
       BlocklistReason::kUserOptedOutInGeneral,
-  };
+  });
   EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);
@@ -1190,13 +1186,13 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenAllowed) {
       BlocklistReason::kAllowed,
       block_list_->IsLoadedAndAllowed(kTestHost1, 1, false, &passed_reasons_));
 
-  BlocklistReason expected_reasons[] = {
+  auto expected_reasons = std::to_array<BlocklistReason>({
       BlocklistReason::kBlocklistNotLoaded,
       BlocklistReason::kUserOptedOutInSession,
       BlocklistReason::kUserOptedOutInGeneral,
       BlocklistReason::kUserOptedOutOfHost,
       BlocklistReason::kUserOptedOutOfType,
-  };
+  });
   EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);

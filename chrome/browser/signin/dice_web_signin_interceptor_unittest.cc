@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -44,17 +46,25 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
 class MockDiceWebSigninInterceptorDelegate
     : public WebSigninInterceptor::Delegate {
  public:
+  base::WeakPtr<MockDiceWebSigninInterceptorDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   bool IsSigninInterceptionSupported(
       const content::WebContents& web_contents) override {
     return true;
@@ -80,6 +90,10 @@ class MockDiceWebSigninInterceptorDelegate
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }
+
+ private:
+  base::WeakPtrFactory<MockDiceWebSigninInterceptorDelegate> weak_factory_{
+      this};
 };
 
 MATCHER_P(HasSameAccountIdAs, other, "") {
@@ -161,11 +175,11 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   ~DiceWebSigninInterceptorTest() override = default;
 
   DiceWebSigninInterceptor* interceptor() {
-    return dice_web_signin_interceptor_.get();
+    return DiceWebSigninInterceptorFactory::GetForProfile(profile());
   }
 
   MockDiceWebSigninInterceptorDelegate* mock_delegate() {
-    return mock_delegate_;
+    return mock_delegate_.get();
   }
 
   content::WebContents* web_contents() {
@@ -257,21 +271,25 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
-    auto delegate = std::make_unique<
-        testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
-    mock_delegate_ = delegate.get();
-    dice_web_signin_interceptor_ = std::make_unique<DiceWebSigninInterceptor>(
-        profile(), std::move(delegate));
-
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL("http://foo/1"));
   }
 
  private:
   void TearDown() override {
-    dice_web_signin_interceptor_->Shutdown();
     identity_test_env_profile_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  std::unique_ptr<KeyedService> BuildDiceWebSigninInterceptor(
+      content::BrowserContext* browser_context) {
+    Profile* input_profile = Profile::FromBrowserContext(browser_context);
+    CHECK_EQ(input_profile, profile());
+    auto delegate = std::make_unique<
+        testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
+    mock_delegate_ = delegate->GetWeakPtr();
+    return std::make_unique<DiceWebSigninInterceptor>(profile(),
+                                                      std::move(delegate));
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -282,6 +300,13 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &test_url_loader_factory_)});
+
+    factories.push_back(
+        {DiceWebSigninInterceptorFactory::GetInstance(),
+         base::BindRepeating(
+             &DiceWebSigninInterceptorTest::BuildDiceWebSigninInterceptor,
+             base::Unretained(this))});
+
     return factories;
   }
 
@@ -293,8 +318,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
-  raw_ptr<MockDiceWebSigninInterceptorDelegate> mock_delegate_ = nullptr;
+  base::WeakPtr<MockDiceWebSigninInterceptorDelegate> mock_delegate_;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
@@ -315,7 +339,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
       profile_attributes_storage()->GetProfileAttributesWithPath(
           profile_2->GetPath());
   ASSERT_NE(entry, nullptr);
-  std::string kOtherGaiaID = "SomeOtherGaiaID";
+  const GaiaId kOtherGaiaID("SomeOtherGaiaID");
   ASSERT_NE(kOtherGaiaID, account_info.gaia);
   entry->SetAuthInfo(kOtherGaiaID, u"alice@gmail.com",
                      /*is_consented_primary_account=*/true);
@@ -1054,7 +1078,7 @@ TEST_F(DiceWebSigninInterceptorTest, HeuristicAccountNotAdded) {
       profile_attributes_storage()->GetProfileAttributesWithPath(
           profile_2->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo("dummy_gaia_id", base::UTF8ToUTF16(email),
+  entry->SetAuthInfo(GaiaId("dummy_gaia_id"), base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(
                 /*is_new_account=*/true, /*is_sync_signin=*/false, email),
@@ -1070,7 +1094,7 @@ TEST_F(DiceWebSigninInterceptorTest, HeuristicDefaultsToGmail) {
       profile_attributes_storage()->GetProfileAttributesWithPath(
           profile_2->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo("dummy_gaia_id", base::UTF8ToUTF16(email),
+  entry->SetAuthInfo(GaiaId("dummy_gaia_id"), base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
   // No domain defaults to gmail.com
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(
@@ -1088,7 +1112,7 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionDisabled) {
       profile_attributes_storage()->GetProfileAttributesWithPath(
           profile_2->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo("dummy_gaia_id", base::UTF8ToUTF16(email),
+  entry->SetAuthInfo(GaiaId("dummy_gaia_id"), base::UTF8ToUTF16(email),
                      /*is_consented_primary_account=*/false);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(
                 /*is_new_account=*/true, /*is_sync_signin=*/false, "bob"),
@@ -2033,6 +2057,34 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
       ShouldShowChromeSigninBubbleWithReason::kShouldShow, 1);
+}
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       EnforceManagedAccountAsPrimaryReauth) {
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::ENFORCED, std::nullopt));
+
+  // Reauth intercepted if enterprise confirmation not shown yet for forced
+  // managed separation.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Check that interception works otherwise, as a sanity check.
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, account_info, SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  TestAsynchronousInterception(
+      account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
 TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,

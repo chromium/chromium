@@ -42,6 +42,7 @@
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/views/native_window_tracker.h"
 
 namespace extensions {
@@ -208,7 +209,9 @@ void PrintJobSubmitter::OnPdfReadAndFlattened(
 // PDF to the printer like we would if it had been submitted directly.
 void PrintJobSubmitter::OnImageDataRead(std::string data,
                                         int64_t /*blob_total_size*/) {
-  sk_sp<SkData> image_data = SkData::MakeWithCopy(data.data(), data.size());
+  // Note: `data` must outlive `image_data` and `codec`.
+  sk_sp<SkData> image_data =
+      gfx::MakeSkDataFromSpanWithoutCopy(base::as_byte_span(data));
   std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(image_data, nullptr);
   if (!codec) {
     LOG(WARNING) << "Failed to decode PNG";
@@ -217,7 +220,7 @@ void PrintJobSubmitter::OnImageDataRead(std::string data,
   }
 
   auto img_tuple = codec->getImage();
-  CHECK(std::get<1>(img_tuple) == SkCodec::Result::kSuccess);
+  CHECK_EQ(std::get<1>(img_tuple), SkCodec::Result::kSuccess);
   sk_sp<SkImage> image = std::get<0>(img_tuple);
 
   SkDynamicMemoryWStream buffer;
@@ -233,7 +236,7 @@ void PrintJobSubmitter::OnImageDataRead(std::string data,
   // JavaScript, etc. So it is already flattened, and can be treated as such.
   sk_sp<SkData> pdf_data = buffer.detachAsData();
   auto metafile = std::make_unique<printing::MetafileSkia>();
-  CHECK(metafile->InitFromData({pdf_data->bytes(), pdf_data->size()}));
+  CHECK(metafile->InitFromData(gfx::SkDataToSpan(pdf_data)));
   OnPdfReadAndFlattened(
       std::make_unique<printing::FlattenPdfResult>(std::move(metafile), 1));
 }

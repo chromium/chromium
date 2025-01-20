@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Scatter elements along axis 0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] Scatter elements along axis 1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+Harness: the test ran to completion.
+

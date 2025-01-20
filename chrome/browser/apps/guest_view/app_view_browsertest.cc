@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,9 +43,19 @@ using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-class AppViewTest : public extensions::PlatformAppBrowserTest {
+class AppViewTest : public extensions::PlatformAppBrowserTest,
+                    public testing::WithParamInterface<bool> {
  public:
-  AppViewTest() = default;
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "MPArch" : "InnerWebContents";
+  }
+
+  AppViewTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kGuestViewMPArch,
+                                              GetParam());
+  }
+
   AppViewTest(const AppViewTest&) = delete;
   AppViewTest& operator=(const AppViewTest&) = delete;
 
@@ -127,18 +138,29 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         AppViewTest,
+                         testing::Bool(),
+                         AppViewTest::DescribeParams);
+
 // Tests that <appview> is able to navigate to another installed app.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewWithUndefinedDataShouldSucceed", "app_view/shim",
              skeleton_app->id(), NO_TEST_SERVER);
+  // Note that the callback of the appview connect method runs after guest
+  // creation, but not necessarily after attachment. So we now ensure that the
+  // guest successfully attaches and loads.
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewRefusedDataShouldFail) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewRefusedDataShouldFail", "app_view/shim",
@@ -146,40 +168,46 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewGoodDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewGoodDataShouldSucceed) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewGoodDataShouldSucceed", "app_view/shim",
              skeleton_app->id(), NO_TEST_SERVER);
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
 // Tests that <appview> correctly handles multiple successive connects.
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewMultipleConnects) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewMultipleConnects) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewMultipleConnects", "app_view/shim", skeleton_app->id(),
              NO_TEST_SERVER);
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
 // Tests that <appview> correctly handles connects that occur after the
 // completion of a previous connect.
-IN_PROC_BROWSER_TEST_F(AppViewTest,
+IN_PROC_BROWSER_TEST_P(AppViewTest,
                        TestAppViewConnectFollowingPreviousConnect) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewConnectFollowingPreviousConnect", "app_view/shim",
              skeleton_app->id(), NO_TEST_SERVER);
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
+      test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
 // Tests that <appview> does not embed self (the app which owns appview).
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewEmbedSelfShouldFail) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewEmbedSelfShouldFail) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewEmbedSelfShouldFail", "app_view/shim",
              skeleton_app->id(), NO_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestDeny) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestCloseWithPendingEmbedRequestDeny) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testCloseWithPendingEmbedRequest", "app_view/shim",
@@ -188,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestDeny) {
   ContinueEmbedding(skeleton_app, false);
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestAllow) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestCloseWithPendingEmbedRequestAllow) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testCloseWithPendingEmbedRequest", "app_view/shim",
@@ -197,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestAllow) {
   ContinueEmbedding(skeleton_app, true);
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, KillGuestWithInvalidInstanceID) {
   const extensions::Extension* bad_app =
       LoadAndLaunchPlatformApp("app_view/bad_app", "AppViewTest.LAUNCHED");
 
@@ -233,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
 #define MAYBE_KillGuestCommunicatingWithWrongAppView \
   KillGuestCommunicatingWithWrongAppView
 #endif
-IN_PROC_BROWSER_TEST_F(AppViewTest,
+IN_PROC_BROWSER_TEST_P(AppViewTest,
                        MAYBE_KillGuestCommunicatingWithWrongAppView) {
   const extensions::Extension* host_app =
       LoadAndLaunchPlatformApp("app_view/host_app", "AppViewTest.LAUNCHED");
@@ -275,7 +303,12 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
 // calls `focus()` on the AppView. The AppView calls `focus()` on the WebView.
 // This should be enough to focus the content of the WebView without further
 // user input like needing to click on the WebView.
-IN_PROC_BROWSER_TEST_F(AppViewTest, FocusWebViewInAppView) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, FocusWebViewInAppView) {
+  // TODO(crbug.com/40202416): Fix focus under MPArch.
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
+  }
+
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testFocusWebViewInAppView", "app_view/shim", skeleton_app->id(),
@@ -297,14 +330,22 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, FocusWebViewInAppView) {
       content::ExecJs(webview_guest->GetGuestMainFrame(), "waitForInput();"));
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewCannotOpenNewWindow) {
+IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewCannotOpenNewWindow) {
+  // TODO(crbug.com/40202416): Fix new window blocking under MPArch.
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
+  }
+
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
              NO_TEST_SERVER);
 
-  auto* guest_rfh =
-      test_guest_view_manager()->WaitForSingleGuestRenderFrameHostCreated();
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  test_guest_view_manager()->WaitUntilAttached(guest);
+  content::WaitForLoadStop(guest->web_contents());
+  auto* guest_rfh = guest->GetGuestMainFrame();
+
   // Try to open new windows. Since it's inside an appview, nothing should
   // happen.
   EXPECT_TRUE(content::ExecJs(guest_rfh, "window.open('', 'attempt1');"));

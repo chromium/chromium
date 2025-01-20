@@ -251,13 +251,15 @@ void AuctionProcessManager::WorkletProcess::OnBoundToOrigin() {
   DCHECK(is_bound_to_origin_);
 
   // If the TrustedSignalsCache exists (and thus is enabled), pass a pipe to
-  // for KVv2 bidding signals fetches. Seller signals are not yet supported, so
-  // only do this for bidder worklets.
+  // for KVv2 bidding signals fetches.
   auto* trusted_signals_cache =
       auction_process_manager_->trusted_signals_cache_.get();
-  if (trusted_signals_cache && worklet_type_ == WorkletType::kBidder) {
+  if (trusted_signals_cache) {
     service_->SetTrustedSignalsCache(trusted_signals_cache->CreateRemote(
-        TrustedSignalsCacheImpl::SignalsType::kBidding, origin_));
+        worklet_type_ == WorkletType::kBidder
+            ? TrustedSignalsCacheImpl::SignalsType::kBidding
+            : TrustedSignalsCacheImpl::SignalsType::kScoring,
+        origin_));
   }
 }
 

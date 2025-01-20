@@ -6,11 +6,13 @@ package org.chromium.components.browser_ui.desktop_windowing;
 
 import android.graphics.Rect;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Class to hold app header information. */
+@NullMarked
 public class AppHeaderState {
     private final Rect mAppWindowRect;
     private final Rect mWidestUnoccludedRect;
@@ -24,9 +26,7 @@ public class AppHeaderState {
      * @param isInDesktopWindow Whether the app header state is used in desktop windowing mode.
      */
     public AppHeaderState(
-            @NonNull Rect appWindowRect,
-            @NonNull Rect widestUnoccludedRect,
-            boolean isInDesktopWindow) {
+            Rect appWindowRect, Rect widestUnoccludedRect, boolean isInDesktopWindow) {
         mIsInDesktopWindow = isInDesktopWindow;
         mAppWindowRect = new Rect(appWindowRect);
         mWidestUnoccludedRect = new Rect(widestUnoccludedRect);
@@ -81,7 +81,6 @@ public class AppHeaderState {
                 && mIsInDesktopWindow == other.mIsInDesktopWindow;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "appWindowRect: "
@@ -94,9 +93,6 @@ public class AppHeaderState {
 
     /** Return whether the state is valid. */
     boolean isValid() {
-        if (!mIsInDesktopWindow) {
-            return mWidestUnoccludedRect.isEmpty();
-        }
         return (mAppWindowRect.isEmpty() && mWidestUnoccludedRect.isEmpty())
                 || mAppWindowRect.contains(mWidestUnoccludedRect);
     }

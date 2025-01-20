@@ -48,7 +48,7 @@ class TabletModePageBehavior : public display::DisplayObserver,
   // We only override the WebKit preferences of webcontents that belong to
   // tabstrips in browsers. When a webcontents is newly created, its WebKit
   // preferences are refreshed *before* it's added to any tabstrip, hence
-  // `ChromeContentBrowserClientAshPart::OverrideWebkitPrefs()` wouldn't be
+  // `ChromeContentBrowserClientAshPart::OverrideWebPreferences()` wouldn't be
   // able to override the mobile-like behavior prefs we want. Therefore, we need
   // to observe webcontents being added to the tabstrips in order to trigger
   // a refresh of its WebKit prefs.

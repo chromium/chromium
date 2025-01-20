@@ -260,8 +260,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   base::TimeDelta remaining_watched_thread_ticks_;
 
   // The Windows thread hanndle of the watched GPU main thread.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // RAW_PTR_EXCLUSION: This field holds windows handles
   RAW_PTR_EXCLUSION void* watched_thread_handle_ = nullptr;
 
   // After GPU hang detected, how many times has the GPU thread been allowed to
@@ -312,12 +311,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   size_t num_of_timeout_after_foregrounded_ = 0;
   bool foregrounded_event_ = false;
   bool power_resumed_event_ = false;
-
-  // The lock between the GpuMainThread and GpuWatchdogThread for stopping
-  // GpuWatchdog.
-  base::Lock skip_lock_;
-  bool skip_for_pause_ GUARDED_BY(skip_lock_) = false;
-  bool skip_for_backgrounded_ GUARDED_BY(skip_lock_) = false;
 
   // The watched thread name string used for UMA and crash key.
   std::string watched_thread_name_str_uma_;

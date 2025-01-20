@@ -48,13 +48,15 @@ TEST(QuantizerEstimatorTest, EstimatesForTrivialFrames) {
   // quantizer value should be repeatedly generated since there is no difference
   // between frames.
   EXPECT_EQ(4.0, qe.EstimateForKeyFrame(*black_frame));
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     EXPECT_EQ(4.0, qe.EstimateForDeltaFrame(*black_frame));
+  }
 
   const auto checkerboard_frame_data =
       std::make_unique<uint8_t[]>(frame_size.GetArea());
-  for (int i = 0, end = frame_size.GetArea(); i < end; ++i)
+  for (int i = 0, end = frame_size.GetArea(); i < end; ++i) {
     checkerboard_frame_data.get()[i] = (((i % 2) == 0) ? 0 : 255);
+  }
   const scoped_refptr<VideoFrame> checkerboard_frame =
       CreateFrame(checkerboard_frame_data.get(), frame_size);
 

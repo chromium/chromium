@@ -187,6 +187,9 @@ static_library("libwebp_dsp") {
     ":libwebp_utils",
     ":libwebp_webp",
   ]
+  if (use_dsp_neon) {
+    deps += [ ":libwebp_dsp_neon" ]
+  }
   public_deps = [ ":libwebp_dsp_headers" ]
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
@@ -202,6 +205,9 @@ static_library("libwebp_dsp") {
     ":libwebp_dsp_sse41",
     ":libwebp_utils",
   ]
+  if (use_dsp_neon) {
+    allow_circular_includes_from += [ ":libwebp_dsp_neon" ]
+  }
 }
 
 static_library("libwebp_dsp_sse41") {
@@ -288,7 +294,7 @@ if (use_dsp_neon) {
 
     deps = [
       ":libwebp_dec",
-      ":libwebp_dsp",
+      ":libwebp_dsp_headers",
       ":libwebp_enc",
       ":libwebp_utils",
     ]
@@ -542,9 +548,6 @@ group("libwebp") {
   ]
   public_deps = [ ":libwebp_webp" ]
   public_configs = [ ":libwebp_public_config" ]
-  if (use_dsp_neon) {
-    deps += [ ":libwebp_dsp_neon" ]
-  }
 }
 
 ###############################################################################
@@ -712,90 +715,114 @@ if (current_toolchain == host_toolchain) {
 ################################################################################
 # Fuzzers
 
-fuzzer_test("libwebp_simple_api_fuzzer") {
-  sources = [ "src/tests/fuzzer/simple_api_fuzzer.c" ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
+source_set("libwebp_fuzz_utils") {
+  public = [ "src/tests/fuzzer/fuzz_utils.h" ]
+  sources = [ "src/tests/fuzzer/fuzz_utils.cc" ]
+  testonly = true
+  configs += [ ":libwebp_config" ]
   deps = [
-    ":libwebp",
+    ":libwebp_dsp_headers",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
   ]
-  defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_advanced_api_fuzzer") {
-  sources = [ "src/tests/fuzzer/advanced_api_fuzzer.c" ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
+test("libwebp_simple_api_fuzzer") {
+  sources = [ "src/tests/fuzzer/simple_api_fuzzer.cc" ]
   deps = [
     ":libwebp",
+    ":libwebp_fuzz_utils",
+    ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
+  configs += [ ":libwebp_config" ]
+}
+
+test("libwebp_advanced_api_fuzzer") {
+  sources = [ "src/tests/fuzzer/advanced_api_fuzzer.cc" ]
+  deps = [
+    ":libwebp_dec",
+    ":libwebp_dsp",
+    ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_animation_api_fuzzer") {
+test("libwebp_animation_api_fuzzer") {
   sources = [
     "src/src/demux/anim_decode.c",
-    "src/tests/fuzzer/animation_api_fuzzer.c",
+    "src/tests/fuzzer/animation_api_fuzzer.cc",
   ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_mux_demux_api_fuzzer") {
-  sources = [ "src/tests/fuzzer/mux_demux_api_fuzzer.c" ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
+test("libwebp_mux_demux_api_fuzzer") {
+  sources = [ "src/tests/fuzzer/mux_demux_api_fuzzer.cc" ]
   deps = [
     ":libwebp",
+    ":libwebp_fuzz_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_animencoder_fuzzer") {
+test("libwebp_animencoder_fuzzer") {
   sources = [ "src/tests/fuzzer/animencoder_fuzzer.cc" ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_dsp_headers",
+    ":libwebp_fuzz_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_enc_dec_api_fuzzer") {
+test("libwebp_enc_dec_api_fuzzer") {
   sources = [ "src/tests/fuzzer/enc_dec_fuzzer.cc" ]
-  dict = "src/tests/fuzzer/fuzz.dict"
-  seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_dsp_headers",
+    ":libwebp_fuzz_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }
 
-fuzzer_test("libwebp_huffman_fuzzer") {
-  sources = [ "src/tests/fuzzer/huffman_fuzzer.c" ]
+test("libwebp_huffman_fuzzer") {
+  sources = [ "src/tests/fuzzer/huffman_fuzzer.cc" ]
   deps = [
     ":libwebp",
     ":libwebp_dec",
+    ":libwebp_fuzz_utils",
     ":libwebp_utils",
     ":libwebp_webp",
+    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
   ]
-  additional_configs = [ ":libwebp_config" ]
+  configs += [ ":libwebp_config" ]
 }

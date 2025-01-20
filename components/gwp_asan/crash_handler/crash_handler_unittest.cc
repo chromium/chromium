@@ -230,12 +230,27 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(ptr);
   } else if (test_name == "Underflow") {
     void* ptr = gpa->Allocate(kAllocationSize);
-    for (size_t i = 0; i < base::GetPageSize(); i++)
-      ((unsigned char*)ptr)[-i] = 0;
+    for (size_t i = 0; i < base::GetPageSize(); i++) {
+      // Cast to `ptrdiff_t` so that the offset is actually negative, rather
+      // than a very large unsigned value. With a very large unsigned value,
+      // UBSan flags the error without any information about allocation sizes,
+      // which impacts the crash handling.
+      //
+      // The compiler could also, in principle, see that `ptr[-size_t{1}]` is
+      // always UB because no allocation can be that large, and then optimize
+      // this code to assume `base::GetPageSize()` returns one, suppressing the
+      // crash. (Though, as of writing, it does not do this.)
+      //
+      // Avoid these issues by underflowing with an actual negative value. This
+      // is still UB (thus the crash), but requires knowledge of `ptr` to
+      // observe, so a non-ASan compiler does not interfere with it in practice.
+      ((unsigned char*)ptr)[-static_cast<ptrdiff_t>(i)] = 0;
+    }
   } else if (test_name == "Overflow") {
     void* ptr = gpa->Allocate(kAllocationSize);
-    for (size_t i = 0; i <= base::GetPageSize(); i++)
+    for (size_t i = 0; i <= base::GetPageSize(); i++) {
       ((unsigned char*)ptr)[i] = 0;
+    }
   } else if (test_name == "UnrelatedException") {
     __builtin_trap();
   } else if (test_name == "FreeInvalidAddress") {

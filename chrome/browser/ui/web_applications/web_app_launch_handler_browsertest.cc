@@ -75,8 +75,9 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
     webapps::AppId app_id = InstallWebAppFromPage(
         browser(), embedded_test_server()->GetURL(test_file_path));
 
-    if (await_metric)
+    if (await_metric) {
       metrics_waiter.Wait();
+    }
 
     // Installing a web app will pop it out to a new window.
     // Close this to avoid it interfering with test steps.

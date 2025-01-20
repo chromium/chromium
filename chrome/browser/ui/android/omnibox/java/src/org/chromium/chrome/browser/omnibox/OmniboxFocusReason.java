@@ -47,6 +47,7 @@ public @interface OmniboxFocusReason {
     int UNFOCUS = 12;
     int QUERY_TILES_NTP_TAP = 13;
     int FOLD_TRANSITION_RESTORATION = 14;
+    // DRAG_DROP_TO_OMNIBOX has not been used anymore, keep it for record for now.
     int DRAG_DROP_TO_OMNIBOX = 15;
     // Emitted on tap after focus from #8.
     int TAP_AFTER_FOCUS_FROM_KEYBOARD = 16;

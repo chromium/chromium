@@ -103,12 +103,5 @@ def AddAndroidPylibToPath():
   if android_pylib_path not in sys.path:
     sys.path.insert(1, android_pylib_path)
 
-
-def AddCrossBenchToPath():
-  crossbench_path = GetCrossBenchDir()
-  if crossbench_path not in sys.path:
-    sys.path.insert(1, crossbench_path)
-
-
 def GetExpectationsPath():
   return os.path.join(GetPerfDir(), 'expectations.config')

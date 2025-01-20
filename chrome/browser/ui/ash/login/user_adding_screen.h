@@ -15,7 +15,7 @@ class UserAddingScreen {
   struct Observer {
     virtual void OnBeforeUserAddingScreenStarted() {}
     virtual void OnUserAddingFinished() {}
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   UserAddingScreen(const UserAddingScreen&) = delete;

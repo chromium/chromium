@@ -6,7 +6,10 @@ package org.chromium.components.browser_ui.site_settings;
 
 import android.content.SharedPreferences;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used for {@link SingleCategorySettings}. */
+@NullMarked
 public class SingleCategorySettingsConstants {
     /**
      * {@link SharedPreferences} key that indicates whether the desktop site global setting was

@@ -19,13 +19,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/credential_type_flags.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -618,6 +620,39 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_EQ(2U, passwords.size());
   EXPECT_EQ(1U, passwords[form_.signon_realm].size());
   EXPECT_EQ(1U, passwords[psl_form.signon_realm].size());
+}
+
+// Checks that using grouped match credential does not trigger save bubble.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerStoreGroupedMatchDoesNotTriggerBubble) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordFormGroupedAffiliations};
+  PasswordForm grouped_form = affiliated_form1_;
+  grouped_form.skip_zero_click = false;
+  grouped_form.match_type = PasswordForm::MatchType::kGrouped;
+  grouped_form.username_value = form_.username_value;
+  grouped_form.password_value = form_.password_value;
+  store_->AddLogin(grouped_form);
+
+  // Calling 'Store' with a new credential that is a grouped match for an
+  // existing credential with identical username and password should result in a
+  // silent save without prompting the user.
+  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+      cm_service_impl_->GetSynthesizedFormForOrigin(), /*affiliated_realms=*/{},
+      /*grouped_realms=*/{kTestAndroidRealm1});
+  auto info = PasswordFormToCredentialInfo(form_);
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  bool called = false;
+  CallStore(info, base::BindOnce(&RespondCallback, &called));
+  RunAllPendingTasks();
+  EXPECT_TRUE(called);
+
+  // Check that both credentials are present in the password store.
+  TestPasswordStore::PasswordMap passwords = store_->stored_passwords();
+  EXPECT_THAT(passwords, testing::UnorderedElementsAre(
+                             testing::Key(form_.signon_realm),
+                             testing::Key(grouped_form.signon_realm)));
 }
 
 TEST_P(CredentialManagerImplTest,

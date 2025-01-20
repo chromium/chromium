@@ -31,6 +31,21 @@ export class SeaPenIntroductionCloseEvent extends CustomEvent<null> {
   }
 }
 
+export class SeaPenFreeformIntroductionCloseEvent extends CustomEvent<null> {
+  static readonly EVENT_NAME = 'sea-pen-freeform-introduction-dialog-close';
+
+  constructor() {
+    super(
+        SeaPenFreeformIntroductionCloseEvent.EVENT_NAME,
+        {
+          bubbles: true,
+          composed: true,
+          detail: null,
+        },
+    );
+  }
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'sea-pen-introduction-dialog': SeaPenIntroductionDialogElement;
@@ -57,7 +72,11 @@ export class SeaPenIntroductionDialogElement extends I18nMixin
 
   private onClickClose_() {
     this.$.dialog.cancel();
-    this.dispatchEvent(new SeaPenIntroductionCloseEvent());
+    if (isSeaPenTextInputEnabled()) {
+      this.dispatchEvent(new SeaPenFreeformIntroductionCloseEvent())
+    } else {
+      this.dispatchEvent(new SeaPenIntroductionCloseEvent());
+    }
   }
 
   private getIntroDialogContent_() {

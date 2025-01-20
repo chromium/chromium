@@ -115,7 +115,6 @@ class SplashUtilsForS {
      * approximation of the Android S splash screen instead (which is good enough since the user
      * will never see them side by side).
      */
-    @RequiresApi(api = VERSION_CODES.O)
     static View createSplashView(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.splash_screen_view, null);
         if (WebApkUtils.isSplashIconAdaptive(context)) {

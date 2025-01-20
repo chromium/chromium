@@ -40,6 +40,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
     // transfer to the compositor/video frame
     virtual void OnTextureTransferred() = 0;
+    virtual void InitializeLayer(cc::Layer* layer) = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
   };
 
@@ -57,7 +58,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   viz::SharedImageFormat Format() const;
   gfx::Size Size() const;
   cc::Layer* CcLayer();
-  void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
   scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
@@ -97,7 +97,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   // cc::TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
@@ -105,7 +104,23 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // be used with WebGPU will additionally be sent to the display.
   gpu::SharedImageUsageSet GetSharedImageUsagesForDisplay();
 
+  // Returns the SharedImage of the current swapbuffer.
   scoped_refptr<gpu::ClientSharedImage> GetCurrentSharedImage();
+
+  gfx::HDRMetadata GetHDRMetadata() { return hdr_metadata_; }
+
+  // Exports the SharedImage of the current swapbuffer for external usage:
+  // * Ends any ongoing WebGPU access on that SharedImage and populates
+  //   `sync_token` with a token that the external access should wait on before
+  //   accessing the SharedImage.
+  // * Moves the current swapbuffer into `out_release_callback` to ensure that
+  //   WebGPU does not continue to access that SharedImage while that
+  //   SharedImage is being accessed externally.
+  //   `out_release_callback` should be invoked when the SharedImage is
+  //   available for reuse by WebGPU after the external usage finishes.
+  scoped_refptr<gpu::ClientSharedImage> ExportCurrentSharedImage(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
 
   gpu::Mailbox GetCurrentMailboxForTesting() const;
 
@@ -144,8 +159,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
-  cc::PaintFlags::FilterQuality filter_quality_ =
-      cc::PaintFlags::FilterQuality::kLow;
   int max_texture_size_;
 
   // Pool of SwapBuffers which manages creation, release and recycling of

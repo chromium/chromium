@@ -34,6 +34,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -326,7 +327,7 @@ std::string CreateStartSessionRequestData(
   // bytes.
   chrome_os_device_info.Set(
       kDeviceAttestationCertificateKey,
-      base::Base64Encode(base::as_bytes(base::make_span((*certificate)))));
+      base::Base64Encode(base::as_byte_span(*certificate)));
   chrome_os_device_info.Set(
       kClientIdKey,
       google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));
@@ -450,7 +451,7 @@ void RunAuthCodeCallback(
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     const std::string& email,
     const std::string& auth_code,
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   metrics.RecordGaiaAuthenticationRequestEnded(
       QuickStartMetrics::GaiaAuthenticationResult::kSuccess);
   SecondDeviceAuthBroker::AuthCodeSuccessResponse response;
@@ -486,7 +487,7 @@ void ParseAuthCodeAndRunCallback(
 
   std::string* gaia_id_ptr = response->FindString(kObfuscatedGaiaIdKey);
   // Gaia id may be empty. We need to handle this gracefully.
-  std::string gaia_id = gaia_id_ptr ? *gaia_id_ptr : std::string();
+  GaiaId gaia_id = gaia_id_ptr ? GaiaId(*gaia_id_ptr) : GaiaId();
 
   RunAuthCodeCallback(metrics, std::move(auth_code_callback),
                       /*email=*/*response->FindString(kEmailKey), *auth_code,

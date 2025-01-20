@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">タップ操作で入力する認証情報のリストが画面全体に表示されています。</translation>
 <translation id="5591247451101092906">保存したパスワードまたはパスキーを使用しますか？</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" /> に <ph name="USERNAME" /> のパスワードを保存しました</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> のパスキーです。画面ロックを使用してください</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="7286867818472074330">パスキーを選択</translation>

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -38,7 +38,7 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         MagicStackBridge.getForProfile(profile),
                         tabModelSelector,
                         moduleDelegate,
-                        new PrefChangeRegistrar(),
+                        PrefServiceUtil.createFor(profile),
                         modalDialogManagerSupplier,
                         SafetyHubHatsHelper.getForProfile(profile));
     }

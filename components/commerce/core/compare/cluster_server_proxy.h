@@ -23,6 +23,8 @@ class IdentityManager;
 
 namespace commerce {
 
+class AccountChecker;
+
 // Class for getting product clustering information from the server.
 class ClusterServerProxy {
  public:
@@ -31,7 +33,8 @@ class ClusterServerProxy {
 
   ClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory);
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      AccountChecker* account_checker);
   virtual ~ClusterServerProxy();
   ClusterServerProxy(const ClusterServerProxy& other) = delete;
   ClusterServerProxy& operator=(const ClusterServerProxy& other) = delete;
@@ -57,6 +60,7 @@ class ClusterServerProxy {
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  raw_ptr<AccountChecker> account_checker_;
   base::WeakPtrFactory<ClusterServerProxy> weak_ptr_factory_{this};
 };
 

@@ -7,12 +7,14 @@
 
 #import "base/feature_list.h"
 
+struct ContextualPanelItemConfiguration;
+
 // Commands for the Contextual Panel Entrypoint's IPH.
 @protocol ContextualPanelEntrypointIPHCommands
 
 // Tries to show the Contextual Panel entrypoint's IPH, and returns the result.
 - (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
-            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+            (ContextualPanelItemConfiguration*)config
                                             anchorPoint:(CGPoint)anchorPoint
                                         isBottomOmnibox:(BOOL)isBottomOmnibox;
 

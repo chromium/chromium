@@ -54,6 +54,10 @@ void SetExecutionRequest(
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // Do not log requests for these features.
       return;
   }
@@ -95,6 +99,10 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kPermissionsAi:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // Do not log responses for these features.
       return;
   }
@@ -108,18 +116,6 @@ GetGenAILocalFoundationalModelEnterprisePolicySettings(
       local_state->GetInteger(
           model_execution::prefs::localstate::
               kGenAILocalFoundationalModelEnterprisePolicySettings));
-}
-
-OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
-    on_device_model::mojom::LoadModelResult result) {
-  switch (result) {
-    case on_device_model::mojom::LoadModelResult::kSuccess:
-      return OnDeviceModelLoadResult::kSuccess;
-    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
-      return OnDeviceModelLoadResult::kGpuBlocked;
-    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
-      return OnDeviceModelLoadResult::kFailedToLoadLibrary;
-  }
 }
 
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
@@ -142,15 +138,7 @@ bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
   if (!features::internal::GetOptimizationTargetForCapability(feature)) {
     return false;
   }
-  base::Time last_use = local_state.GetTime(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature));
-  auto recent_use_period =
-      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod();
-  auto time_since_use = base::Time::Now() - last_use;
-  // Note: Since we're storing a base::Time, we need to consider the possibility
-  // of clock changes.
-  return time_since_use < recent_use_period &&
-         time_since_use > -recent_use_period;
+  return model_execution::prefs::WasFeatureRecentlyUsed(&local_state, feature);
 }
 
 }  // namespace optimization_guide

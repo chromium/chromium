@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -67,7 +68,8 @@ using testing::UnorderedPointwise;
 
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
-const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
+constexpr char kSessionTerminationHeaderName[] =
+    "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
 constexpr char kTestSessionId[] = "test_session_id";
 constexpr char kDefaultRegistrationPath[] = "/RegisterSession";
@@ -237,8 +239,8 @@ MATCHER_P(IsBoundSessionCookieController, bound_session_params, "") {
                    bound_session_params.site()),
           Property("wrapped_key()",
                    &FakeBoundSessionCookieController::wrapped_key,
-                   ElementsAreArray(base::as_bytes(
-                       base::make_span(bound_session_params.wrapped_key())))),
+                   ElementsAreArray(
+                       base::as_byte_span(bound_session_params.wrapped_key()))),
           Property("bound_cookie_names()",
                    &FakeBoundSessionCookieController::bound_cookie_names,
                    UnorderedPointwise(IsCookieCredential(),
@@ -306,6 +308,11 @@ class MockObserver : public BoundSessionCookieRefreshService::Observer {
                const base::flat_set<std::string>& bound_cookie_names),
               (override));
 };
+
+std::string GetSessionTerminationHeaderValue(std::string_view session_id) {
+  static constexpr char kSessionTerminationHeaderFormat[] = "session_id=%s";
+  return base::StringPrintf(kSessionTerminationHeaderFormat, session_id);
+}
 
 bound_session_credentials::Credential CreateCookieCredential(
     const std::string& cookie_name,
@@ -807,7 +814,32 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {k1PSIDTSCookieName, k3PSIDTSCookieName})))
+      .Times(1);
+  service->MaybeTerminateSession(GURL("https://google.com/SignOut"),
+                                 headers.get());
+  VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       TerminateSessionOnSessionTerminationHeaderExtraAttributesIgnored) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(
+      kSessionTerminationHeaderName,
+      base::StringPrintf(
+          "first_attribute=abc;session_id=%s;third_attribute=edf",
+          kTestSessionId));
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_CALL(
       *mock_observer(),
@@ -827,7 +859,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_CALL(
       *mock_observer(),
@@ -847,7 +880,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, "different_session_id");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue("different_session_id"));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(kTestGoogleURL, headers.get());
@@ -861,7 +895,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     GetSessionTerminationHeaderValue(kTestSessionId));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   // `kTestOtherURL` and the bound session URL are from different sites.
@@ -876,6 +911,37 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
+  VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionWrongHeaderFormatNoKey) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     kTestSessionId);  // no "session_id=" key
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
+
+  VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionWrongHeaderFormatWrongKey) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeaderName,
+                     base::StringPrintf("other_attribute=%s", kTestSessionId));
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(kTestGoogleURL, headers.get());
@@ -921,25 +987,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   auto params = CreateTestBoundSessionParams();
   service->RegisterNewBoundSession(params);
   VerifyBoundSession(params);
-}
-
-// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
-// BoundSessionCookieRefreshServiceImplMultiSessionTest.RegisterBoundSessionSameSessionKey
-// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
-TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMultipleBoundSessionsEnabled);
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
-
-  auto new_params = CreateTestBoundSessionParams();
-  new_params.set_session_id("test_session_id_2");
-
-  service->RegisterNewBoundSession(new_params);
-
-  VerifyBoundSession(new_params);
-  VerifySessionTerminationTriggerRecorded(
-      SessionTerminationTrigger::kSessionOverride);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -1110,39 +1157,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_FALSE(registration_fetcher());
 }
 
-// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
-// BoundSessionCookieRefreshServiceImplMultiSessionTest.CreateRegistrationRequest
-// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
-TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       CreateRegistrationRequestMultipleRequests) {
-  // Turn path restrictions off to test with two different paths.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{switches::kEnableBoundSessionCredentials,
-        {{"exclusive-registration-path", ""}}}},
-      {kMultipleBoundSessionsEnabled});
-
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  const std::string kFirstPath = "/First";
-  const std::string kSecondPath = "/Second";
-
-  service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams(kFirstPath));
-  // The second registration request should be ignored.
-  service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams(kSecondPath));
-  ASSERT_TRUE(registration_fetcher());
-  EXPECT_THAT(registration_fetcher(),
-              IsBoundSessionRegistrationFetcher(kFirstPath, true));
-
-  // Verify that a request can complete normally.
-  bound_session_credentials::BoundSessionParams params =
-      CreateTestBoundSessionParams();
-  registration_fetcher()->SimulateRegistrationFetchCompleted(params);
-  EXPECT_FALSE(registration_fetcher());
-  VerifyBoundSession(params);
-}
-
 // Test suite for tests involving multiple sessions.
 class BoundSessionCookieRefreshServiceImplMultiSessionTest
     : public BoundSessionCookieRefreshServiceImplTestBase {
@@ -1226,9 +1240,6 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
       cookie_controllers_;
   std::vector<base::WeakPtr<FakeBoundSessionRegistrationFetcher>>
       registration_fetchers_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kMultipleBoundSessionsEnabled};
 };
 
 TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, Initialize) {
@@ -1573,8 +1584,9 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
   }
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader,
-                     kGoogleSessionKeyOne.session_id);
+  headers->AddHeader(
+      kSessionTerminationHeaderName,
+      GetSessionTerminationHeaderValue(kGoogleSessionKeyOne.session_id));
 
   EXPECT_CALL(
       *mock_observer(),
@@ -1617,4 +1629,19 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
   histogram_tester().ExpectUniqueSample(
       "Signin.BoundSessionCredentials.SessionTerminationTrigger",
       SessionTerminationTrigger::kCookiesCleared, 2);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, ReportsCountUma) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  base::HistogramTester histogram_tester;
+  GetCookieRefreshServiceImpl();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.SessionCountOnInit", all_params.size(),
+      /*expected_bucket_count=*/1);
 }

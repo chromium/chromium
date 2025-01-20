@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -12,36 +13,41 @@ import {getHtml} from './ink_size_selector.html.js';
 
 export interface SizeOption {
   icon: string;
-  name: string;
+  label: string;
   size: number;
 }
 
-// TODO(crbug.com/341282609): Choose production size values. Add labels.
+// LINT.IfChange(PenAndEraserSizes)
 export const ERASER_SIZES: SizeOption[] = [
-  {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
-  {icon: 'eraser-size-3', name: 'sizeMedium', size: 3},
-  {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
-  {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
-];
-
-export const HIGHLIGHTER_SIZES: SizeOption[] = [
-  {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
-  {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
-  {icon: 'highlighter-size-3', name: 'sizeMedium', size: 8},
-  {icon: 'highlighter-size-4', name: 'sizeThick', size: 12},
-  {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
+  {icon: 'eraser-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
+  {icon: 'eraser-size-2', label: 'ink2BrushSizeThin', size: 2},
+  {icon: 'eraser-size-3', label: 'ink2BrushSizeMedium', size: 3},
+  {icon: 'eraser-size-4', label: 'ink2BrushSizeThick', size: 6},
+  {icon: 'eraser-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
 ];
 
 export const PEN_SIZES: SizeOption[] = [
-  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
-  {icon: 'pen-size-3', name: 'sizeMedium', size: 3},
-  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
-  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
+  {icon: 'pen-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
+  {icon: 'pen-size-2', label: 'ink2BrushSizeThin', size: 2},
+  {icon: 'pen-size-3', label: 'ink2BrushSizeMedium', size: 3},
+  {icon: 'pen-size-4', label: 'ink2BrushSizeThick', size: 6},
+  {icon: 'pen-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
+];
+// LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenAndEraserSizes)
+
+export const HIGHLIGHTER_SIZES: SizeOption[] = [
+  // LINT.IfChange(HighlighterSizes)
+  {icon: 'highlighter-size-1', label: 'ink2BrushSizeExtraThin', size: 4},
+  {icon: 'highlighter-size-2', label: 'ink2BrushSizeThin', size: 6},
+  {icon: 'highlighter-size-3', label: 'ink2BrushSizeMedium', size: 8},
+  {icon: 'highlighter-size-4', label: 'ink2BrushSizeThick', size: 12},
+  {icon: 'highlighter-size-5', label: 'ink2BrushSizeExtraThick', size: 16},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterSizes)
 ];
 
-export class InkSizeSelectorElement extends CrLitElement {
+const InkSizeSelectorElementBase = I18nMixinLit(CrLitElement);
+
+export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
   static get is() {
     return 'ink-size-selector';
   }

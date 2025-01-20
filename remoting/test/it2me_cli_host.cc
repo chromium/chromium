@@ -87,14 +87,13 @@ void It2MeCliHost::Start() {
 }
 
 void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
-  auto message_value = base::JSONReader::Read(message);
-  if (!message_value || !message_value->is_dict()) {
+  auto message_dict = base::JSONReader::ReadDict(message);
+  if (!message_dict) {
     OnProtocolBroken("Message is not a dictionary");
     return;
   }
 
-  base::Value::Dict& message_dict = message_value->GetDict();
-  std::string* type = message_dict.FindString(kMessageType);
+  std::string* type = message_dict->FindString(kMessageType);
   if (!type) {
     OnProtocolBroken("Message without type");
     return;
@@ -108,20 +107,20 @@ void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
     OnDisconnectResponse();
   } else if (*type == kHostStateChangedMessage) {
     // Handle CRD host state changes
-    std::string* state = message_dict.FindString(kState);
+    std::string* state = message_dict->FindString(kState);
     if (!state) {
       OnProtocolBroken("No state in message");
       return;
     }
 
     if (*state == kHostStateReceivedAccessCode) {
-      OnStateReceivedAccessCode(message_dict);
+      OnStateReceivedAccessCode(*message_dict);
     } else if (*state == kHostStateConnected) {
-      OnStateRemoteConnected(message_dict);
+      OnStateRemoteConnected(*message_dict);
     } else if (*state == kHostStateDisconnected) {
       OnStateRemoteDisconnected();
     } else if (*state == kHostStateError || *state == kHostStateDomainError) {
-      OnStateError(*state, message_dict);
+      OnStateError(*state, *message_dict);
     } else if (*state == kHostStateStarting ||
                *state == kHostStateRequestedAccessCode) {
       // Just ignore these states.

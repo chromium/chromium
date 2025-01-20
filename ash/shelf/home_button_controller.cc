@@ -160,10 +160,12 @@ void HomeButtonController::OnAppListShown() {
   if (!Shell::Get()->IsInTabletMode()) {
     button_->SetToggled(true);
   }
+  button_->UpdateTooltipText();
 }
 
 void HomeButtonController::OnAppListDismissed() {
   button_->SetToggled(false);
+  button_->UpdateTooltipText();
 }
 
 void HomeButtonController::InitializeAssistantOverlay() {

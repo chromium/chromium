@@ -7,13 +7,12 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_helper_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/web/public/browser_state.h"
@@ -21,8 +20,8 @@
 // static
 SafeBrowsingClient* SafeBrowsingClientFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SafeBrowsingClient*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<SafeBrowsingClient>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -32,9 +31,8 @@ SafeBrowsingClientFactory* SafeBrowsingClientFactory::GetInstance() {
 }
 
 SafeBrowsingClientFactory::SafeBrowsingClientFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SafeBrowsingClient",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SafeBrowsingClient",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(RealTimeUrlLookupServiceFactory::GetInstance());
   DependsOn(HashRealTimeServiceFactory::GetInstance());
   DependsOn(PrerenderServiceFactory::GetInstance());
@@ -53,10 +51,6 @@ SafeBrowsingClientFactory::BuildServiceInstanceFor(
   PrerenderService* prerender_service =
       PrerenderServiceFactory::GetForProfile(profile);
   return std::make_unique<SafeBrowsingClientImpl>(
-      lookup_service, hash_real_time_service, prerender_service);
-}
-
-web::BrowserState* SafeBrowsingClientFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
+      profile->GetPrefs(), lookup_service, hash_real_time_service,
+      prerender_service);
 }

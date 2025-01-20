@@ -296,22 +296,43 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     }));
   }
 
+  private shouldAllowPropagation_(
+      e: KeyboardEvent, currentElement: HTMLElement): boolean {
+    // Always allow propagation for keys other than Tab.
+    if (e.key !== 'Tab') {
+      return true;
+    }
+
+    // If the shift key is not pressed with the tab, only allow propagation on
+    // the language menu button.
+    if (!e.shiftKey) {
+      return currentElement.classList.contains('language-menu-button');
+    }
+
+    // In the case that shift is pressed, only allow propagation on the first
+    // voice option.
+    const targetIsVoiceOption =
+        currentElement.classList.contains('dropdown-voice-selection-button');
+    return targetIsVoiceOption &&
+        Number.parseInt(currentElement.dataset['groupIndex']!) === 0 &&
+        Number.parseInt(currentElement.dataset['voiceIndex']!) === 0;
+  }
+
   protected onVoiceMenuKeyDown_(e: KeyboardEvent) {
     const currentElement = e.target as HTMLElement;
     assert(currentElement, 'no key target');
-    // Prevent closing the menu unless tabbing on the language menu button.
-    if (e.key === 'Tab' &&
-        !currentElement.classList.contains('language-menu-button')) {
+
+    // Allowing propagation on Tab closes the menu. We want to stop that
+    // propagation unless we're tabbing forward on the last item or tabbing
+    // backward on the first item.
+    if (!this.shouldAllowPropagation_(e, currentElement)) {
       e.stopImmediatePropagation();
       return;
     }
 
     const targetIsVoiceOption =
-        (currentElement.classList.contains('dropdown-voice-selection-button')) ?
-        true :
-        false;
-    const targetIsPreviewButton =
-        (currentElement.id === 'preview-icon') ? true : false;
+        currentElement.classList.contains('dropdown-voice-selection-button');
+    const targetIsPreviewButton = currentElement.id === 'preview-icon';
 
     // For voice options, only handle the right arrow - everything else is
     // default
@@ -358,18 +379,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
         !voiceDropdown.previewActuallyPlaying);
   }
 
-  protected previewAriaLabel_(previewInitiated: boolean, voiceName: string):
-      string {
-    let nameSuffix = '';
-    if (voiceName.length > 0) {
-      nameSuffix = ' ' + voiceName;
-    }
-    if (previewInitiated) {
-      return loadTimeData.getString('stopLabel') + nameSuffix;
-    } else {
-      return loadTimeData.getStringF(
-          'previewVoiceAccessibilityLabel', nameSuffix);
-    }
+  protected voiceLabel_(selected: boolean, voiceName: string) {
+    const selectedPrefix = selected ? loadTimeData.getString('selected') : '';
+    return selectedPrefix + ' ' +
+        loadTimeData.getStringF('readingModeLanguageMenuItemLabel', voiceName);
   }
 
   protected shouldDisableButton_(voiceDropdown: VoiceDropdownItem) {

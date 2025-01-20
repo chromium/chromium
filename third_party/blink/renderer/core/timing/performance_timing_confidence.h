@@ -21,7 +21,7 @@ class CORE_EXPORT PerformanceTimingConfidence final : public ScriptWrappable {
   double randomizedTriggerRate() const { return randomizedTriggerRate_; }
   const V8PerformanceTimingConfidenceValue value() const { return value_; }
 
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
  private:
   double randomizedTriggerRate_;

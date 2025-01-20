@@ -106,7 +106,7 @@ void TrustTokenRequestRedemptionHelper::Begin(
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
     std::move(done).Run(std::nullopt,
-                        mojom::TrustTokenOperationStatus::kResourceLimited);
+                        mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
     return;
   }
 

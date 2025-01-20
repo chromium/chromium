@@ -26,6 +26,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
+namespace libgav1 {
+class BufferPool;
+}
+
 namespace media {
 
 class VideoFrame;
@@ -118,7 +122,13 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       ExecutionContext*) override;
 
  private:
-  struct DecoderSpecificData;
+  struct DecoderSpecificData {
+    // Bitstream converter to annex B for AVC/HEVC.
+    std::unique_ptr<VideoDecoderHelper> decoder_helper;
+
+    // Buffer pool for use with libgav1::ObuParser.
+    std::unique_ptr<libgav1::BufferPool> av1_buffer_pool;
+  };
 
   // DecoderTemplate implementation.
   HardwarePreference GetHardwarePreference(const ConfigType& config) override;
@@ -132,7 +142,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       String* js_error_message,
       bool* needs_converter_out = nullptr);
 
-  std::unique_ptr<DecoderSpecificData> decoder_specific_data_;
+  DecoderSpecificData decoder_specific_data_;
 
   media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
 

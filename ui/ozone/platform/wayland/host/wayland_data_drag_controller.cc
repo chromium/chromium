@@ -181,29 +181,31 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   data_source_->Offer(mime_types);
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 
-  // Create drag icon surface (if any) and store the data to be exchanged.
+  // Create drag icon surface. Even if `data` contains no drag image, one might
+  // get set later on via UpdateDragImage(), so we always create a drag icon
+  // surface and just attach a null buffer if we currently have nothing to draw.
   icon_image_ = data.provider().GetDragImage();
-  if (!icon_image_.isNull()) {
-    icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
-    if (icon_surface_->Initialize()) {
-      // TODO(crbug.com/369219145): Revisit and double-check if latched state
-      // can be used here (as well as in UpdateDragImage) instead. Original
-      // reasoning: latched state is what is currently displayed to the user.
-      icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
-      icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
-      // Icon surface do not need input.
-      const std::vector<gfx::Rect> kEmptyRegionPx{{}};
-      icon_surface_->set_input_region(kEmptyRegionPx);
-      icon_surface_->ApplyPendingState();
+  icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
+  if (icon_surface_->Initialize()) {
+    // TODO(crbug.com/369219145): Revisit and double-check if latched state
+    // can be used here (as well as in UpdateDragImage) instead. Original
+    // reasoning: latched state is what is currently displayed to the user.
+    icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
+    icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
+    // Icon surface do not need input.
+    const std::vector<gfx::Rect> kEmptyRegionPx{{}};
+    icon_surface_->set_input_region(kEmptyRegionPx);
+    icon_surface_->ApplyPendingState();
 
+    if (!icon_image_.isNull()) {
       auto icon_offset = -data.provider().GetDragImageOffset();
       pending_icon_offset_ = {icon_offset.x(), icon_offset.y()};
       current_icon_offset_ = {0, 0};
-    } else {
-      LOG(ERROR) << "Failed to create drag icon surface.";
-      icon_surface_.reset();
-      icon_surface_buffer_scale_ = 1.0f;
     }
+  } else {
+    LOG(ERROR) << "Failed to create drag icon surface.";
+    icon_surface_.reset();
+    icon_surface_buffer_scale_ = 1.0f;
   }
 
   // Starts the wayland drag session setting |this| object as delegate.
@@ -365,7 +367,9 @@ void WaylandDataDragController::DrawIconInternal() {
     return;
   }
 
-  DVLOG(3) << "Drawing drag icon. size_px=" << size_px.ToString();
+  DVLOG(3) << "Drawing drag icon. size_px=" << size_px.ToString()
+           << " current_icon_offset_=" << current_icon_offset_.ToString()
+           << " pending_icon_offset_=" << pending_icon_offset_.ToString();
   wl::DrawBitmap(icon_bitmap, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
   if (wl::get_version_of_object(surface) < WL_SURFACE_OFFSET_SINCE_VERSION) {
@@ -734,6 +738,8 @@ void WaylandDataDragController::Reset() {
   icon_surface_.reset();
   icon_surface_buffer_scale_ = 1.0f;
   icon_image_ = gfx::ImageSkia();
+  pending_icon_offset_.SetPoint(0, 0);
+  current_icon_offset_.SetPoint(0, 0);
   icon_frame_callback_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
@@ -814,7 +820,7 @@ WaylandDataDragController::GetOfferedExchangeDataProvider() const {
 bool WaylandDataDragController::IsWindowDraggingSession(
     const ui::OSExchangeData& data) const {
   auto custom_format =
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag);
+      ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag);
   return data.provider().HasCustomFormat(custom_format);
 }
 

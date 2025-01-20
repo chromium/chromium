@@ -131,6 +131,7 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   // Stringify |value| and append 'px'. Helper for setting variables that are
   // CSS lengths.
+  static String FormatFloatPx(float value);
   static String FormatPx(int value);
 
   virtual const FeatureContext* GetFeatureContext() const;

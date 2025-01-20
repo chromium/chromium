@@ -11,6 +11,11 @@
 
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
+
+  /// Whether the contextual panel entrypoint should be visible. The placeholder
+  /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
+  /// enabled.
+  BOOL _contextualPanelEntrypointShouldBeVisible;
 }
 
 - (instancetype)init {
@@ -59,6 +64,7 @@
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
   _contextualPanelEntrypointView.hidden = hidden;
+  _contextualPanelEntrypointShouldBeVisible = !hidden;
   [self updatePlaceholderVisibility];
 }
 
@@ -129,6 +135,17 @@
   BOOL placeholderHidden = (self.contextualPanelEntrypointView &&
                             !self.contextualPanelEntrypointView.hidden) ||
                            (self.badgeView && !self.badgeView.hidden);
+
+  if (base::FeatureList::IsEnabled(kLensOverlayPriceInsightsCounterfactual)) {
+    // Show the lens overlay entrypoint only when the price insights entrypoint
+    // should have been shown.
+    BOOL placeholderVisible = _contextualPanelEntrypointShouldBeVisible &&
+                              (!self.badgeView || self.badgeView.hidden);
+    placeholderHidden = !placeholderVisible;
+    if (placeholderVisible) {
+      self.contextualPanelEntrypointView.hidden = YES;
+    }
+  }
 
   if (!_placeholderView || placeholderHidden == _placeholderView.hidden) {
     return;

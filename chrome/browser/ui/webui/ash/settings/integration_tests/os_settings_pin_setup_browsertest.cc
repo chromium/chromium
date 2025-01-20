@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
@@ -55,9 +56,9 @@ const char kTooLongPinForAutosubmit[] = "3213213213213";
 // Name and value of the metric that records authentication on the lock screen
 // page.
 const char kPinUnlockUmaHistogramName[] = "Settings.PinUnlockSetup";
-const base::HistogramBase::Sample kChoosePinOrPassword = 2;
-const base::HistogramBase::Sample kEnterPin = 3;
-const base::HistogramBase::Sample kConfirmPin = 4;
+const base::HistogramBase::Sample32 kChoosePinOrPassword = 2;
+const base::HistogramBase::Sample32 kEnterPin = 3;
+const base::HistogramBase::Sample32 kConfirmPin = 4;
 
 }  // namespace
 
@@ -147,6 +148,14 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     return mojom::PinSettingsApiAsyncWaiter(pin_settings_remote_.get());
   }
 
+  mojom::PasswordSettingsApiAsyncWaiter GoToPasswordSettings(
+      mojom::LockScreenSettingsAsyncWaiter& lock_screen_settings) {
+    password_settings_remote_ =
+        mojo::Remote(lock_screen_settings.GoToPasswordSettings());
+    return mojom::PasswordSettingsApiAsyncWaiter(
+        password_settings_remote_.get());
+  }
+
   void SetPinDisabledPolicy(bool disabled) {
     policy::PolicyMap policies;
     base::Value policy_value{disabled ? base::Value::List()
@@ -165,9 +174,12 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     provider_.UpdateChromePolicy(policies);
   }
 
+  bool HasPinOnlySupport() const { return pin_type_ == PinType::kCryptohome; }
+
  private:
   PinType pin_type_;
   mojo::Remote<mojom::PinSettingsApi> pin_settings_remote_;
+  mojo::Remote<mojom::PasswordSettingsApi> password_settings_remote_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
@@ -190,13 +202,16 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AddPin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
   auto pin_settings = GoToPinSettings(lock_screen_settings);
+  auto password_settings = GoToPasswordSettings(lock_screen_settings);
 
   pin_settings.AssertHasPin(false);
+  password_settings.AssertCanRemovePassword(false);
   EXPECT_EQ(false, IsPinConfigured());
 
   pin_settings.SetPin(kFirstPin);
 
   pin_settings.AssertHasPin(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 }
 
@@ -204,6 +219,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AddPin) {
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, ChangePin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
   auto pin_settings = GoToPinSettings(lock_screen_settings);
+  auto password_settings = GoToPasswordSettings(lock_screen_settings);
+
   pin_settings.SetPin(kFirstPin);
   pin_settings.AssertHasPin(true);
   EXPECT_EQ(true, IsPinConfigured());
@@ -211,6 +228,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, ChangePin) {
   pin_settings.SetPin(kSecondPin);
 
   pin_settings.AssertHasPin(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 }
 
@@ -218,14 +236,19 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, ChangePin) {
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, RemovePin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
   auto pin_settings = GoToPinSettings(lock_screen_settings);
+  auto password_settings = GoToPasswordSettings(lock_screen_settings);
+  password_settings.AssertCanRemovePassword(false);
+
   pin_settings.SetPin(kFirstPin);
   pin_settings.AssertHasPin(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 
   pin_settings.RemovePin();
 
   EXPECT_EQ(false, IsPinConfigured());
   pin_settings.AssertHasPin(false);
+  password_settings.AssertCanRemovePassword(false);
 }
 
 // Tests that PIN changes are persistent over relaunching os-settings.

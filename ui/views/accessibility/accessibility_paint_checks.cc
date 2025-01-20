@@ -22,11 +22,13 @@ void RunAccessibilityPaintChecks(View* view) {
   // Note that none of these checks run if DCHECKs are off. Dead-code
   // elimination should remove the following. This is done instead of #ifs to
   // make sure that the code compiles regardless of DCHECK availability.
-  if (!DCHECK_IS_ON())
+  if (!DCHECK_IS_ON()) {
     return;
+  }
 
-  if (view->GetProperty(kSkipAccessibilityPaintChecks))
+  if (view->GetProperty(kSkipAccessibilityPaintChecks)) {
     return;
+  }
 
   // Get accessible node data from ViewAccessibility instead of View, because
   // some additional fields are processed and set there.
@@ -34,8 +36,9 @@ void RunAccessibilityPaintChecks(View* view) {
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
 
   // No checks for unfocusable items yet.
-  if (!node_data.HasState(ax::mojom::State::kFocusable))
+  if (!node_data.HasState(ax::mojom::State::kFocusable)) {
     return;
+  }
 
 // TODO(crbug.com/40185544): Enable these DCHECKs on ash. One of the current
 // failures seem to be SearchResultPageView marking itself as ignored
@@ -74,8 +77,10 @@ void RunAccessibilityPaintChecks(View* view) {
   // AXNodedata.SetNameExplicitlyEmpty().
 
   // It has a name, we're done.
-  if (!node_data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty())
+  if (!node_data.GetStringAttribute(ax::mojom::StringAttribute::kName)
+           .empty()) {
     return;
+  }
 
   // Text fields are allowed to have a placeholder instead.
   if (node_data.role == ax::mojom::Role::kTextField &&

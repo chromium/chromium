@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -160,7 +161,6 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_iterator.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -181,6 +181,7 @@
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
@@ -198,6 +199,7 @@
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scrollend_event.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -716,6 +718,14 @@ ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
   return add_result.stored_value->value.Get();
 }
 
+bool Document::HasExplicitlySetAttrElements(const Element* element) const {
+  auto it = element_explicitly_set_attr_elements_map_.find(element);
+  if (it == element_explicitly_set_attr_elements_map_.end()) {
+    return false;
+  }
+  return !it->value->empty();
+}
+
 void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
     const Element* element,
     Document& new_document) {
@@ -919,6 +929,13 @@ Document::Document(const DocumentInit& initializer,
   lifecycle_.AdvanceTo(DocumentLifecycle::kInactive);
 
   UpdateThemeColorCache();
+
+  if (IsFetchLaterUseDeferredFetchPolicyEnabled() && GetFrame()) {
+    if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(GetFrame()->Owner());
+        owner) {
+      owner->MaybeClearDeferredFetchPolicy();
+    }
+  }
 
   // The parent's parser should be suspended together with all the other
   // objects, else this new Document would have a new ExecutionContext which
@@ -1626,6 +1643,8 @@ void Document::SetContentFromDOMParser(const String& content) {
                                                 parser_behavior, nullptr);
     SetParsingState(kFinishedParsing);
     if (success) {
+      body->ParserFinishedBuildingDocumentFragment(
+          ShouldNotifyInsertedNodes::kNotify);
       // When DCHECK is enabled, use SetContent() and verify fast-path
       // content matches. This effectively means the results of the fast-path
       // parser aren't used with DCHECK enabled, but it provides a way to
@@ -2198,19 +2217,32 @@ static void AssertNodeClean(const Node& node) {
 
 static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
   WTF::Vector<PseudoId> pseudo_ids = {kPseudoIdFirstLetter,
-                                      kPseudoIdCheck,
+                                      kPseudoIdCheckMark,
                                       kPseudoIdBefore,
                                       kPseudoIdAfter,
-                                      kPseudoIdSelectArrow,
+                                      kPseudoIdPickerIcon,
                                       kPseudoIdMarker,
                                       kPseudoIdBackdrop,
                                       kPseudoIdScrollMarkerGroupBefore,
                                       kPseudoIdScrollMarkerGroupAfter,
-                                      kPseudoIdScrollNextButton,
-                                      kPseudoIdScrollPrevButton};
+                                      kPseudoIdScrollButtonBlockStart,
+                                      kPseudoIdScrollButtonInlineStart,
+                                      kPseudoIdScrollButtonInlineEnd,
+                                      kPseudoIdScrollButtonBlockEnd,
+                                      kPseudoIdScrollMarker};
   for (auto pseudo_id : pseudo_ids) {
-    if (auto* pseudo_element = element.GetPseudoElement(pseudo_id))
+    if (const PseudoElement* pseudo_element =
+            element.GetPseudoElement(pseudo_id)) {
       AssertNodeClean(*pseudo_element);
+      AssertLayoutTreeUpdatedForPseudoElements(*pseudo_element);
+    }
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          element.GetColumnPseudoElements()) {
+    for (const ColumnPseudoElement* column : *columns) {
+      AssertNodeClean(*column);
+      AssertLayoutTreeUpdatedForPseudoElements(*column);
+    }
   }
 }
 
@@ -2422,6 +2454,12 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateStyle();
   GetStyleResolver().ClearResizedForViewportUnits();
   InvalidatePendingSVGResources();
+
+  if (GetFrame()->IsMainFrame() &&
+      RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled()) {
+    GetViewportData().SetHasComplexSafaAreaConstraint(
+        style_engine.HasComplexSafaAreaConstraints());
+  }
 
   rendering_had_begun_for_last_style_update_ = RenderingHasBegun();
 
@@ -3079,14 +3117,7 @@ void Document::Shutdown() {
 
   GetFrame()->DocumentDetached();
   GetFrame()->GetEventHandlerRegistry().DocumentDetached(*this);
-
-  // Signal destruction to mutation observers.
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [](SynchronousMutationObserver* observer) {
-        observer->ContextDestroyed();
-        observer->ObserverSetWillBeCleared();
-      });
-  synchronous_mutation_observer_set_.Clear();
+  GetFrame()->Selection().ContextDestroyed();
 
   cookie_jar_ = nullptr;  // Not accessible after navigated away.
   fetcher_->ClearContext();
@@ -4573,9 +4604,9 @@ void Document::UpdateBaseURL() {
       anchor.InvalidateCachedVisitedLinkHash();
   }
 
-  for (Element* element : *scripts()) {
-    auto* script = To<HTMLScriptElement>(element);
-    script->Loader()->DocumentBaseURLChanged();
+  for (HTMLScriptElement& script :
+       Traversal<HTMLScriptElement>::DescendantsOf(*this)) {
+    script.Loader()->DocumentBaseURLChanged();
   }
 
   if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
@@ -5737,10 +5768,6 @@ void Document::DidMoveTreeToNewDocument(const Node& root) {
     for (Range* range : ranges)
       range->UpdateOwnerDocumentIfNeeded();
   }
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidMoveTreeToNewDocument(root);
-      });
 }
 
 void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
@@ -5756,10 +5783,19 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
       ni->NodeWillBeRemoved(n);
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->NodeChildrenWillBeRemoved(container);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeChildrenWillBeRemoved(container);
+    if (container.isConnected()) {
+      frame->GetEventHandler().NodeChildrenWillBeRemoved(container);
+    }
+  }
+
+  if (container.InActiveDocument()) {
+    if (Page* page = GetPage()) {
+      page->GetDragCaret().NodeChildrenWillBeRemoved(container);
+    }
+  }
 
   if (MayContainShadowRoots()) {
     for (Node& n : NodeTraversal::ChildrenOf(container))
@@ -5771,7 +5807,11 @@ void Document::NodeWillBeRemoved(Node& n) {
   for (NodeIterator* ni : node_iterators_)
     ni->NodeWillBeRemoved(n);
 
-  if (!StatePreservingAtomicMoveInProgress()) {
+  // We want to run the normal Range reset code when we're not in the middle of
+  // `moveBefore()`, or when we *are* but when range preservation is disabled
+  // (it is by default).
+  if (!StatePreservingAtomicMoveInProgress() ||
+      !RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
     for (Range* range : ranges_) {
       range->NodeWillBeRemoved(n);
       if (range == sequential_focus_navigation_starting_point_) {
@@ -5780,10 +5820,19 @@ void Document::NodeWillBeRemoved(Node& n) {
     }
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->NodeWillBeRemoved(n);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    // TODO(dbaron): Could this also be inside the IsActiveDocument test?
+    frame->Selection().NodeWillBeRemoved(n);
+    if (n.isConnected()) {
+      frame->GetEventHandler().NodeWillBeRemoved(n);
+    }
+  }
+
+  if (n.InActiveDocument()) {
+    if (Page* page = GetPage()) {
+      page->GetDragCaret().NodeWillBeRemoved(n);
+    }
+  }
 
   if (MayContainShadowRoots())
     n.CheckSlotChangeBeforeRemoved();
@@ -5794,11 +5843,12 @@ void Document::NodeWillBeRemoved(Node& n) {
 
 void Document::NotifyUpdateCharacterData(CharacterData* character_data,
                                          const TextDiffRange& diff) {
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidUpdateCharacterData(character_data, diff.offset,
-                                         diff.old_size, diff.new_size);
-      });
+  Markers().DidUpdateCharacterData(character_data, diff.offset, diff.old_size,
+                                   diff.new_size);
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidUpdateCharacterData(character_data, diff.offset,
+                                              diff.old_size, diff.new_size);
+  }
 }
 
 void Document::NotifyChangeChildren(
@@ -5810,10 +5860,9 @@ void Document::NotifyChangeChildren(
     }
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidChangeChildren(container, change);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidChangeChildren(change);
+  }
 }
 
 void Document::NotifyAttributeChanged(const Element& element,
@@ -5831,16 +5880,24 @@ void Document::NotifyAttributeChanged(const Element& element,
       }
     }
   }
-
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->AttributeChanged(element, name, old_value, new_value);
-      });
 }
 
 void Document::DidInsertText(const CharacterData& text,
                              unsigned offset,
                              unsigned length) {
+  // Note that the current callers of DidInsertText call it *only* for
+  // the cases that are needed for adjusting Range boundary points.  It
+  // is not called by CharacterData::setData or
+  // CharacterData::appendData.  If other code is added here, the calls
+  // to DidInsertText may need to be fixed.
+  //
+  // Document::NotifyUpdateCharacterData gets the complete set of
+  // notifications.
+  //
+  // TODO(dbaron): It may be worth removing DidInsertText/DidRemoveText
+  // in favor of NotifyUpdateCharacterData, but it's also possible the
+  // separation may be faster.
+
   for (Range* range : ranges_)
     range->DidInsertText(text, offset, length);
 }
@@ -5862,11 +5919,10 @@ void Document::DidMergeTextNodes(const Text& merged_node,
       range->DidMergeTextNodes(node_to_be_removed_with_index, old_length);
   }
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidMergeTextNodes(merged_node, node_to_be_removed_with_index,
-                                    old_length);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidMergeTextNodes(
+        merged_node, node_to_be_removed_with_index, old_length);
+  }
 
   // FIXME: This should update markers for spelling and grammar checking.
 }
@@ -5875,10 +5931,9 @@ void Document::DidSplitTextNode(const Text& old_node) {
   for (Range* range : ranges_)
     range->DidSplitTextNode(old_node);
 
-  synchronous_mutation_observer_set_.ForEachObserver(
-      [&](SynchronousMutationObserver* observer) {
-        observer->DidSplitTextNode(old_node);
-      });
+  if (LocalFrame* frame = GetFrame()) {
+    frame->Selection().DidSplitTextNode(old_node);
+  }
 
   // FIXME: This should update markers for spelling and grammar checking.
 }
@@ -5975,13 +6030,11 @@ void Document::EnqueueScrollSnapChangingEvent(Node* target,
 }
 
 void Document::EnqueueMoveEvent() {
-  CHECK(
-      RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled());
+  CHECK(RuntimeEnabledFeatures::WindowOnMoveEventEnabled());
 
   Event* event = Event::Create(event_type_names::kMove);
   event->SetTarget(domWindow());
-
-  // TODO(crbug.com/1515101): When launching AWC, requires spec work.
+  // TODO(crbug.com/379542213): This requires spec work.
   scripted_animation_controller_->EnqueuePerFrameEvent(event);
 }
 
@@ -7572,7 +7625,7 @@ std::optional<Color> Document::ThemeColor() {
   return std::nullopt;
 }
 
-void Document::UpdateAppTitle() {
+void Document::UpdateApplicationTitle() {
   auto* root_element = documentElement();
   if (!root_element) {
     return;
@@ -7580,15 +7633,16 @@ void Document::UpdateAppTitle() {
 
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "app-title")) {
-      GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(
+    if (EqualIgnoringASCIICase(meta_element.GetName(), "application-title")) {
+      GetFrame()->GetLocalFrameHostRemote().UpdateApplicationTitle(
           meta_element.Content().GetString());
       return;
     }
   }
 
-  // Handle case of meta tag being removed by setting app title to empty string.
-  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(String(""));
+  // Handle case of meta tag being removed by setting application title to empty
+  // string.
+  GetFrame()->GetLocalFrameHostRemote().UpdateApplicationTitle(g_empty_string);
 }
 
 void Document::ColorSchemeMetaChanged() {
@@ -8788,7 +8842,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_image_observer_);
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
-  visitor->Trace(synchronous_mutation_observer_set_);
   visitor->Trace(fragment_directive_);
   visitor->Trace(element_explicitly_set_attr_elements_map_);
   visitor->Trace(element_cached_attr_associated_elements_map_);
@@ -8848,8 +8901,10 @@ bool Document::IsFocusAllowed() const {
   CountUse(uma_type);
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
-  return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFocusWithoutUserActivation);
+  return GetFrame()->AllowFocusDuringFocusAdvance() ||
+         GetExecutionContext()->IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::
+                 kFocusWithoutUserActivation);
 }
 
 LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {
@@ -9055,6 +9110,13 @@ bool Document::IsAnimatedPropertyCounted(CSSPropertyID property) const {
 void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
   if (DocumentLoader* loader = Loader())
     loader->GetUseCounter().ClearMeasurementForTesting(feature);
+}
+
+void Document::ClearWebDXFeatureCounterForTesting(
+    mojom::blink::WebDXFeature feature) {
+  if (DocumentLoader* loader = Loader()) {
+    loader->GetUseCounter().ClearMeasurementForTesting(feature);
+  }
 }
 
 void Document::RenderBlockingResourceUnblocked() {

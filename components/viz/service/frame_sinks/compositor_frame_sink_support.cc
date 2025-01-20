@@ -18,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -33,7 +34,6 @@
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_counter.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -129,9 +129,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       frame_sink_id_(frame_sink_id),
       surface_resource_holder_(this),
       is_root_(is_root),
-      allow_copy_output_requests_(is_root),
-      use_blit_request_for_view_transition_(base::FeatureList::IsEnabled(
-          features::kBlitRequestsForViewTransition)) {
+      allow_copy_output_requests_(is_root) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -166,12 +164,6 @@ CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
   // is added as an observer of `frame_sink_manager_`). Therefore we explicitly
   // clear the requests here regardless.
   ClearAllPendingCopyOutputRequests();
-
-  // The display compositor has ownership of shared memory for each
-  // SharedBitmapId that has been reported from the client. Since the client is
-  // gone that memory can be freed. If we don't then it would leak.
-  for (const auto& id : owned_bitmaps_)
-    frame_sink_manager_->shared_bitmap_manager()->ChildDeletedSharedBitmap(id);
 
   // No video capture clients should remain after calling
   // UnregisterCompositorFrameSinkSupport().
@@ -367,6 +359,15 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   }
 
   MaybeEvictSurfaces();
+
+  // Update |device_scale_factor_| if it changes with latest activated surface.
+  float new_device_scale_factor =
+      surface->GetActiveFrameMetadata().device_scale_factor;
+  if (device_scale_factor_ != new_device_scale_factor) {
+    frame_sink_manager_->OnFrameSinkDeviceScaleFactorChanged(
+        surface->surface_id().frame_sink_id(), new_device_scale_factor);
+    device_scale_factor_ = new_device_scale_factor;
+  }
 }
 
 void CompositorFrameSinkSupport::OnSurfaceWillDraw(Surface* surface) {
@@ -711,24 +712,6 @@ void CompositorFrameSinkSupport::SubmitCompositorFrame(
   DCHECK_EQ(result, SubmitResult::ACCEPTED);
 }
 
-bool CompositorFrameSinkSupport::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (!frame_sink_manager_->shared_bitmap_manager()->ChildAllocatedSharedBitmap(
-          region.Map(), id)) {
-    return false;
-  }
-
-  owned_bitmaps_.insert(id);
-  return true;
-}
-
-void CompositorFrameSinkSupport::DidDeleteSharedBitmap(
-    const SharedBitmapId& id) {
-  frame_sink_manager_->shared_bitmap_manager()->ChildDeletedSharedBitmap(id);
-  owned_bitmaps_.erase(id);
-}
-
 void CompositorFrameSinkSupport::SubmitCompositorFrameLocally(
     const SurfaceId& surface_id,
     CompositorFrame frame,
@@ -872,6 +855,11 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
     ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kThrottleFrameRateOnManyDidNotProduceFrame) &&
+      frame_sink_type_ == mojom::CompositorFrameSinkType::kLayerTree) {
+    ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
+  }
 
   Surface* prev_surface =
       surface_manager_->GetSurfaceForId(last_created_surface_id_);
@@ -990,6 +978,9 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   // its correct SurfaceId.
   pending_received_frame_times_[frame.metadata.frame_token]->set_surface_id(
       last_created_surface_id_);
+
+  pending_received_frame_times_[frame.metadata.frame_token]->set_frame_id(
+      frame.metadata.begin_frame_ack.frame_id);
 
   const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
@@ -1118,6 +1109,7 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
   details.draw_start_timestamp = draw_start_timestamp;
   details.swap_timings = swap_timings;
   details.presentation_feedback = feedback;
+  details.frame_id = received_frame_timestamp->second->frame_id();
   AdjustPresentationFeedback(&details.presentation_feedback,
                              swap_timings.swap_start);
   // Override with the throttled interval if one has been set. Otherwise,
@@ -1176,7 +1168,7 @@ void CompositorFrameSinkSupport::UpdateDisplayRootReference(
 }
 
 void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
-  int64_t trace_id = ComputeTraceId();
+  int64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
@@ -1238,8 +1230,23 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         // this OnBeginFrame() call is triggered by an unsolicited frame in the
         // AutoNeedsBeginFrame mode.
         if (!handling_auto_needs_begin_frame_) {
-          client_->OnBeginFrame(adjusted_args, frame_timing_details_, frame_ack,
-                                std::move(surface_returned_resources_));
+          {
+            TRACE_EVENT(
+                "graphics.pipeline", "Graphics.Pipeline",
+                perfetto::Flow::Global(adjusted_args.trace_id),
+                [&](perfetto::EventContext ctx) {
+                  auto* event =
+                      ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                  auto* data = event->set_chrome_graphics_pipeline();
+                  data->set_step(
+                      perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                          StepName::STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE);
+                  data->set_surface_frame_trace_id(adjusted_args.trace_id);
+                });
+            client_->OnBeginFrame(adjusted_args, frame_timing_details_,
+                                  frame_ack,
+                                  std::move(surface_returned_resources_));
+          }
           frame_timing_details_.clear();
         } else {
           if (frame_ack) {
@@ -1255,9 +1262,23 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         }
         surface_returned_resources_.clear();
       } else if (!handling_auto_needs_begin_frame_) {
-        client_->OnBeginFrame(adjusted_args, frame_timing_details_,
-                              /*frame_ack=*/false,
-                              std::vector<ReturnedResource>());
+        {
+          TRACE_EVENT(
+              "graphics.pipeline", "Graphics.Pipeline",
+              perfetto::Flow::Global(adjusted_args.trace_id),
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_chrome_graphics_pipeline();
+                data->set_step(
+                    perfetto::protos::pbzero::ChromeGraphicsPipeline::StepName::
+                        STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE);
+                data->set_surface_frame_trace_id(adjusted_args.trace_id);
+              });
+          client_->OnBeginFrame(adjusted_args, frame_timing_details_,
+                                /*frame_ack=*/false,
+                                std::vector<ReturnedResource>());
+        }
         frame_timing_details_.clear();
       }
     }
@@ -1488,15 +1509,6 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
   NOTREACHED();
 }
 
-int64_t CompositorFrameSinkSupport::ComputeTraceId() {
-  // This is losing some info, but should normally be sufficient to avoid
-  // collisions.
-  ++trace_sequence_;
-  uint64_t client = (frame_sink_id_.client_id() & 0xffff);
-  uint64_t sink = (frame_sink_id_.sink_id() & 0xffff);
-  return (client << 48) | (sink << 32) | trace_sequence_;
-}
-
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
@@ -1645,10 +1657,8 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
 
       view_transition_token_to_animation_manager_[transition_token] =
           SurfaceAnimationManager::CreateWithSave(
-              directive, surface, frame_sink_manager_->shared_bitmap_manager(),
-              use_blit_request_for_view_transition_
-                  ? frame_sink_manager_->GetSharedImageInterface()
-                  : nullptr,
+              directive, surface,
+              frame_sink_manager_->GetSharedImageInterface(),
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
@@ -1845,6 +1855,11 @@ void CompositorFrameSinkSupport::PendingFrameDetails::OnAddedSurfaceReference(
   }
   frame_embed_timestamp_ = base::TimeTicks::Now();
   surface_manager_->RemoveObserver(this);
+}
+
+void CompositorFrameSinkSupport::PendingFrameDetails::set_frame_id(
+    BeginFrameId frame_id) {
+  frame_id_ = frame_id;
 }
 
 }  // namespace viz

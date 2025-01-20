@@ -102,23 +102,15 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault12h) {
   EXPECT_EQ(clock24h_millis, TimeFormatTimeOfDayWithMilliseconds(time));
   EXPECT_EQ(k12HourClock, GetHourClockType());
   // k{Keep,Drop}AmPm should not affect for 24h clock.
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kKeepAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kDropAmPm));
   // k{Keep,Drop}AmPm affects for 12h clock.
-  EXPECT_EQ(clock12h_pm,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock12h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock12h_pm, TimeFormatTimeOfDayWithHourClockType(
+                             time, k12HourClock, kKeepAmPm));
+  EXPECT_EQ(clock12h, TimeFormatTimeOfDayWithHourClockType(time, k12HourClock,
+                                                           kDropAmPm));
 }
 
 TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault24h) {
@@ -140,23 +132,15 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault24h) {
   EXPECT_EQ(clock24h_millis, TimeFormatTimeOfDayWithMilliseconds(time));
   EXPECT_EQ(k24HourClock, GetHourClockType());
   // k{Keep,Drop}AmPm should not affect for 24h clock.
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kKeepAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kDropAmPm));
   // k{Keep,Drop}AmPm affects for 12h clock.
-  EXPECT_EQ(clock12h_pm,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock12h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock12h_pm, TimeFormatTimeOfDayWithHourClockType(
+                             time, k12HourClock, kKeepAmPm));
+  EXPECT_EQ(clock12h, TimeFormatTimeOfDayWithHourClockType(time, k12HourClock,
+                                                           kDropAmPm));
 }
 
 TEST(TimeFormattingTest, TimeFormatTimeOfDayJP) {
@@ -203,23 +187,15 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
   EXPECT_EQ(k24HourClock, GetHourClockType());
   // k{Keep,Drop}AmPm should not affect for 24h clock.
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock24h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k24HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kKeepAmPm));
+  EXPECT_EQ(clock24h, TimeFormatTimeOfDayWithHourClockType(time, k24HourClock,
+                                                           kDropAmPm));
   // k{Keep,Drop}AmPm affects for 12h clock.
-  EXPECT_EQ(clock12h_pm,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kKeepAmPm));
-  EXPECT_EQ(clock12h,
-            TimeFormatTimeOfDayWithHourClockType(time,
-                                                 k12HourClock,
-                                                 kDropAmPm));
+  EXPECT_EQ(clock12h_pm, TimeFormatTimeOfDayWithHourClockType(
+                             time, k12HourClock, kKeepAmPm));
+  EXPECT_EQ(clock12h, TimeFormatTimeOfDayWithHourClockType(time, k12HourClock,
+                                                           kDropAmPm));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

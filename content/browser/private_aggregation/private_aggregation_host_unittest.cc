@@ -216,7 +216,7 @@ TEST_F(PrivateAggregationHostTest,
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/20u,
-              /*filtering_id_max_bytes=*/std::nullopt),
+              PrivateAggregationHost::kDefaultFilteringIdMaxBytes),
           AggregatableReportSharedInfo(
               validated_request->shared_info().scheduled_report_time,
               validated_request->shared_info().report_id,
@@ -569,20 +569,67 @@ TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextId_Fails) {
 }
 
 TEST_F(PrivateAggregationHostTest, TimeoutSetWithoutDeterministicReport_Fails) {
+  constexpr size_t kNonDefaultFilteringIdMaxBytes = 3;
+  static_assert(kNonDefaultFilteringIdMaxBytes !=
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes);
+
+  const struct {
+    std::string description;
+    std::optional<base::TimeDelta> timeout;
+    std::optional<std::string> context_id;
+    size_t filtering_id_max_bytes =
+        PrivateAggregationHost::kDefaultFilteringIdMaxBytes;
+    bool expect_should_send_deterministically = false;
+  } kTestCases[] = {
+      {
+          .description = "Timeout set, but should not send deterministically",
+          .timeout = base::Seconds(1),
+          .expect_should_send_deterministically = false,
+      },
+      {
+          .description = "Timeout not set, but should send deterministically "
+                         "due to contextId",
+          .timeout = std::nullopt,
+          .context_id = "example_context_id",
+          .expect_should_send_deterministically = true,
+      },
+      {
+          .description = "Timeout not set, but should send deterministically "
+                         "due to filteringIdMaxBytes",
+          .timeout = std::nullopt,
+          .filtering_id_max_bytes = kNonDefaultFilteringIdMaxBytes,
+          .expect_should_send_deterministically = true,
+      },
+  };
+
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_FALSE(host_->BindNewReceiver(
-      kExampleOrigin, kMainFrameOrigin,
-      PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/std::nullopt,
-      /*timeout=*/base::Minutes(1),
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
-      remote.BindNewPipeAndPassReceiver()));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+
+    EXPECT_EQ(PrivateAggregationManager::ShouldSendReportDeterministically(
+                  test_case.context_id, test_case.filtering_id_max_bytes),
+              test_case.expect_should_send_deterministically);
+
+    for (const auto api : {PrivateAggregationCallerApi::kProtectedAudience,
+                           PrivateAggregationCallerApi::kSharedStorage}) {
+      SCOPED_TRACE(testing::Message()
+                   << "API = " << PrivateAggregationCallerApiToString(api));
+
+      mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+      EXPECT_FALSE(host_->BindNewReceiver(
+          kExampleOrigin, kMainFrameOrigin,
+          PrivateAggregationCallerApi::kProtectedAudience,
+          /*context_id=*/std::nullopt,
+          /*timeout=*/base::Minutes(1),
+          /*aggregation_coordinator_origin=*/std::nullopt,
+          PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
+          remote.BindNewPipeAndPassReceiver()));
+    }
+  }
 }
 
 TEST_F(PrivateAggregationHostTest, TimeoutSetWithContextId_Succeeds) {
@@ -604,12 +651,6 @@ TEST_F(PrivateAggregationHostTest, TimeoutSetWithContextId_Succeeds) {
 
 TEST_F(PrivateAggregationHostTest,
        TimeoutSetWithNonDefaultFilteringIdMaxBytes_Succeeds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -725,73 +766,11 @@ constexpr struct {
         /*expected_num_contributions=*/100,
     }};
 
-TEST_F(PrivateAggregationHostTest,
-       TooManyContributionsWithMergingDisabled_Truncated) {
+TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
   for (const auto& test_case : kMaxNumContributionsTestCases) {
     SCOPED_TRACE(testing::Message() << test_case.label);
 
     std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features{
-        kPrivateAggregationApiContributionMerging};
-
-    if (test_case.should_enable_per_calling_api_sizing) {
-      enabled_features.push_back(
-          content::kPrivateAggregationApi100ContributionsForProtectedAudience);
-    } else {
-      disabled_features.push_back(
-          content::kPrivateAggregationApi100ContributionsForProtectedAudience);
-    }
-
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
-
-    const url::Origin kExampleOrigin =
-        url::Origin::Create(GURL("https://example.com"));
-    const url::Origin kMainFrameOrigin =
-        url::Origin::Create(GURL("https://main_frame.com"));
-
-    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-    EXPECT_TRUE(host_->BindNewReceiver(
-        kExampleOrigin, kMainFrameOrigin, test_case.caller_api,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-        /*aggregation_coordinator_origin=*/std::nullopt,
-        PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
-        remote.BindNewPipeAndPassReceiver()));
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-        too_many_contributions;
-    for (size_t i = 0; i < test_case.expected_num_contributions + 1; ++i) {
-      too_many_contributions.push_back(
-          blink::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123 + i, /*value=*/1, /*filtering_id=*/std::nullopt));
-    }
-    base::HistogramTester histogram;
-
-    std::optional<AggregatableReportRequest> validated_request;
-    EXPECT_CALL(mock_callback_, Run)
-        .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-
-    remote->ContributeToHistogram(std::move(too_many_contributions));
-    remote.reset();
-    host_->FlushReceiverSetForTesting();
-    histogram.ExpectUniqueSample(
-        kPipeResultHistogram,
-        PrivateAggregationHost::PipeResult::
-            kReportSuccessButTruncatedDueToTooManyContributions,
-        1);
-
-    ASSERT_TRUE(validated_request);
-    EXPECT_EQ(validated_request->payload_contents().contributions.size(),
-              test_case.expected_num_contributions);
-  }
-}
-
-TEST_F(PrivateAggregationHostTest,
-       TooManyContributionsWithMergingEnabled_Truncated) {
-  for (const auto& test_case : kMaxNumContributionsTestCases) {
-    SCOPED_TRACE(testing::Message() << test_case.label);
-
-    std::vector<base::test::FeatureRef> enabled_features{
-        kPrivateAggregationApiContributionMerging};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (test_case.should_enable_per_calling_api_sizing) {
@@ -848,12 +827,6 @@ TEST_F(PrivateAggregationHostTest,
 
 TEST_F(PrivateAggregationHostTest,
        ContributionsMergedIffSameBucketAndFilteringId) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -920,104 +893,12 @@ TEST_F(PrivateAggregationHostTest,
       /*is_reduced_delay=*/false);
 }
 
-TEST_F(PrivateAggregationHostTest, ContributionsNotMergedIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{kPrivateAggregationApiContributionMerging});
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(
-      kExampleOrigin, kMainFrameOrigin,
-      PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-      /*aggregation_coordinator_origin=*/std::nullopt,
-      PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
-      remote.BindNewPipeAndPassReceiver()));
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/1, /*filtering_id=*/std::nullopt));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/0, /*filtering_id=*/std::nullopt));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/1, /*filtering_id=*/0));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/2, /*filtering_id=*/0));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/1, /*filtering_id=*/1));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/124, /*value=*/1, /*filtering_id=*/std::nullopt));
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/125, /*value=*/0, /*filtering_id=*/1));
-
-  base::HistogramTester histogram;
-
-  std::optional<AggregatableReportRequest> validated_request;
-  EXPECT_CALL(mock_callback_, Run)
-      .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-
-  remote->ContributeToHistogram(std::move(contributions));
-  remote.reset();
-  host_->FlushReceiverSetForTesting();
-  histogram.ExpectUniqueSample(
-      kPipeResultHistogram, PrivateAggregationHost::PipeResult::kReportSuccess,
-      1);
-
-  ASSERT_TRUE(validated_request);
-  EXPECT_THAT(
-      validated_request->payload_contents().contributions,
-      testing::UnorderedElementsAre(
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/123, /*value=*/1, /*filtering_id=*/std::nullopt)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/123, /*value=*/0, /*filtering_id=*/std::nullopt)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/123, /*value=*/1, /*filtering_id=*/0)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/123, /*value=*/2, /*filtering_id=*/0)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/123, /*value=*/1, /*filtering_id=*/1)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/124, /*value=*/1, /*filtering_id=*/std::nullopt)),
-          testing::Eq(blink::mojom::AggregatableReportHistogramContribution(
-              /*bucket=*/125, /*value=*/0, /*filtering_id=*/1))));
-
-  constexpr std::string_view kBaseHistogram =
-      "PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe";
-  constexpr std::string_view kSuffixesToTest[] = {
-      "",
-      ".ProtectedAudience",
-      ".SharedStorage",
-      ".SharedStorage.ReducedDelay",
-      ".SharedStorage.FullDelay",
-  };
-
-  for (std::string_view suffix : kSuffixesToTest) {
-    histogram.ExpectTotalCount(base::StrCat({kBaseHistogram, suffix}), 0);
-  }
-}
-
 TEST_F(PrivateAggregationHostTest,
        MergeableContributions_NotTruncatedUnnecessarily) {
   for (const auto& test_case : kMaxNumContributionsTestCases) {
     SCOPED_TRACE(testing::Message() << test_case.label);
 
-    std::vector<base::test::FeatureRef> enabled_features{
-        kPrivateAggregationApiContributionMerging};
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (test_case.should_enable_per_calling_api_sizing) {
@@ -1088,8 +969,7 @@ TEST_F(PrivateAggregationHostTest,
   for (const auto& test_case : kMaxNumContributionsTestCases) {
     SCOPED_TRACE(testing::Message() << test_case.label);
 
-    std::vector<base::test::FeatureRef> enabled_features{
-        kPrivateAggregationApiContributionMerging};
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (test_case.should_enable_per_calling_api_sizing) {
@@ -1158,12 +1038,6 @@ TEST_F(PrivateAggregationHostTest,
 
 TEST_F(PrivateAggregationHostTest,
        NumberOfContributionMergeKeysHistograms_RecordsCorrectSubMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -1352,7 +1226,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOrigin, kMainFrameOrigin,
       PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
-      /*timeout=*/std::nullopt,
+      /*timeout=*/base::Seconds(1),
       /*aggregation_coordinator_origin=*/std::nullopt,
       PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       remote.BindNewPipeAndPassReceiver()));
@@ -1422,7 +1296,7 @@ TEST_F(PrivateAggregationHostTest,
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
-        /*timeout=*/std::nullopt,
+        /*timeout=*/base::Seconds(5),
         /*aggregation_coordinator_origin=*/std::nullopt,
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
         remote.BindNewPipeAndPassReceiver()));
@@ -1480,7 +1354,7 @@ TEST_F(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
         /*context_id=*/std::nullopt,
-        /*timeout=*/std::nullopt,
+        /*timeout=*/base::Seconds(1),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/3u, remote.BindNewPipeAndPassReceiver()));
 
@@ -1638,12 +1512,6 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
 }
 
 TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -1683,7 +1551,11 @@ TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
     bool bind_result = host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/test_case.filtering_id_max_bytes ==
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes
+            ? std::nullopt
+            : std::make_optional(base::Seconds(1)),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
         remote.BindNewPipeAndPassReceiver());
@@ -1693,12 +1565,6 @@ TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
 }
 
 TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -1770,7 +1636,11 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
     bool bind_result = host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
         PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+        /*context_id=*/std::nullopt,
+        /*timeout=*/test_case.filtering_id_max_bytes ==
+                PrivateAggregationHost::kDefaultFilteringIdMaxBytes
+            ? std::nullopt
+            : std::make_optional(base::Seconds(1)),
         /*aggregation_coordinator_origin=*/std::nullopt,
         /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
         remote.BindNewPipeAndPassReceiver());
@@ -1824,160 +1694,6 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
     EXPECT_EQ(
         validated_request->payload_contents().contributions[0].filtering_id,
         test_case.filtering_id);
-  }
-}
-
-TEST_F(PrivateAggregationHostTest,
-       FilteringIdMaxBytesNotValidatedIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  const struct {
-    const char* description;
-    const size_t filtering_id_max_bytes;
-  } kTestCases[] = {
-      {
-          "filtering_id_max_bytes zero",
-          0,
-      },
-      {
-          "filtering_id_max_bytes minimum valid value",
-          1,
-      },
-      {
-          "filtering_id_max_bytes maximum valid value",
-          AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes,
-      },
-      {
-          "filtering_id_max_bytes too large",
-          AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes + 1,
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-
-    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-    bool bind_result = host_->BindNewReceiver(
-        kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-        /*aggregation_coordinator_origin=*/std::nullopt,
-        /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
-        remote.BindNewPipeAndPassReceiver());
-
-    EXPECT_TRUE(bind_result);
-  }
-}
-
-TEST_F(PrivateAggregationHostTest,
-       FilteringIdNotValidatedToFitInMaxBytesIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  const struct {
-    const char* description;
-    const size_t filtering_id_max_bytes;
-    const std::optional<uint64_t> filtering_id;
-  } kTestCases[] = {
-      {
-          "filtering_id null with default max bytes",
-          1,
-          std::nullopt,
-      },
-      {
-          "filtering_id 0",
-          1,
-          0,
-      },
-      {
-          "filtering_id max for one byte",
-          1,
-          255,
-      },
-      {
-          "filtering_id too big",
-          1,
-          256,
-      },
-      {
-          "filtering_id null with custom maxBytes",
-          3,
-          std::nullopt,
-      },
-      {
-          "filtering_id max value for max maxBytes",
-          8,
-          std::numeric_limits<uint64_t>::max(),
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-    for (bool should_enable_debug_mode : {false, true}) {
-      base::HistogramTester histogram;
-
-      mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-      bool bind_result = host_->BindNewReceiver(
-          kExampleOrigin, kMainFrameOrigin,
-          PrivateAggregationCallerApi::kProtectedAudience,
-          /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-          /*aggregation_coordinator_origin=*/std::nullopt,
-          /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
-          remote.BindNewPipeAndPassReceiver());
-
-      ASSERT_TRUE(bind_result);
-
-      // We shouldn't have any validation errors if the feature is disabled.
-      std::optional<AggregatableReportRequest> validated_request;
-      EXPECT_CALL(mock_callback_, Run)
-          .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-      if (should_enable_debug_mode) {
-        remote->EnableDebugMode(/*debug_key=*/nullptr);
-      }
-
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-          contributions;
-      contributions.push_back(
-          blink::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123, /*value=*/456, test_case.filtering_id));
-      remote->ContributeToHistogram(std::move(contributions));
-
-      // The pipe should've been closed in case of a validation error.
-      remote.FlushForTesting();
-      EXPECT_TRUE(remote.is_connected());
-
-      remote.reset();
-      host_->FlushReceiverSetForTesting();
-
-      histogram.ExpectUniqueSample(
-          kPipeResultHistogram,
-          PrivateAggregationHost::PipeResult::kReportSuccess, 1);
-
-      histogram.ExpectTotalCount(kFilteringIdStatusHistogram, 0);
-
-      ASSERT_TRUE(validated_request.has_value());
-      ASSERT_EQ(validated_request->payload_contents().contributions.size(), 1u);
-
-      // The filtering IDs should always be default if the feature is disabled.
-      EXPECT_FALSE(validated_request->payload_contents()
-                       .filtering_id_max_bytes.has_value());
-      EXPECT_FALSE(validated_request->payload_contents()
-                       .contributions[0]
-                       .filtering_id.has_value());
-    }
   }
 }
 
@@ -2702,7 +2418,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 }
 
 TEST_F(PrivateAggregationHostDeveloperModeTest,
-       TimeoutSet_ScheduledReportTimeIsAtTimeout) {
+       TimeoutSet_ScheduledReportTimeIsNotDelayed) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -2712,7 +2428,8 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOrigin, kMainFrameOrigin,
       PrivateAggregationCallerApi::kProtectedAudience,
-      /*context_id=*/"example_context_id", /*timeout=*/base::Seconds(30),
+      /*context_id=*/"example_context_id",
+      /*timeout=*/base::Seconds(30),
       /*aggregation_coordinator_origin=*/std::nullopt,
       PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
       remote.BindNewPipeAndPassReceiver()));
@@ -2736,10 +2453,11 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
 
   ASSERT_TRUE(validated_request);
 
-  // We're using `MOCK_TIME` so we can be sure no time has advanced.
-  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now() + base::Seconds(30) +
-                PrivateAggregationHost::kTimeForLocalProcessing);
+  // We're using `MOCK_TIME` so we can be sure no time has advanced. The
+  // requested timeout is ignored because developer mode is enabled.
+  EXPECT_EQ(
+      validated_request->shared_info().scheduled_report_time,
+      base::Time::Now() + PrivateAggregationHost::kTimeForLocalProcessing);
 }
 
 }  // namespace

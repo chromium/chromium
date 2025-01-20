@@ -2,6 +2,7 @@ Tests that dynamically created module scripts don't have a sourceURL and embedde
 {
     method : Debugger.scriptParsed
     params : {
+        buildId : 
         embedderName : https://devtools.test:8443/inspector-protocol/resources/dynamic-module-script.html
         endColumn : 4
         endLine : 15
@@ -28,6 +29,7 @@ Tests that dynamically created module scripts don't have a sourceURL and embedde
 {
     method : Debugger.scriptParsed
     params : {
+        buildId : 
         embedderName : 
         endColumn : 6
         endLine : 3

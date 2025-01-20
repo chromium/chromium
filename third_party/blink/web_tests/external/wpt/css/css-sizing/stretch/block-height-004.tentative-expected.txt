@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] .inner 1
+  assert_equals: \n<div class="inner" style="border: solid magenta;" data-expected-height="100" data-offset-y="0">\n  </div>\nheight expected 100 but got 80
+[FAIL] .inner 4
+  assert_equals: \n<div class="inner" style="border: solid purple;" data-expected-height="90" data-offset-y="0">\n  </div>\nheight expected 90 but got 80
+[FAIL] .inner 5
+  assert_equals: \n<div class="inner" style="border: solid lime;" data-expected-height="90" data-offset-y="0">\n  </div>\nheight expected 90 but got 80
+Harness: the test ran to completion.
+

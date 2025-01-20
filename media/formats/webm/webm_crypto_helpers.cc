@@ -55,8 +55,7 @@ bool ExtractSubsamples(base::span<const uint8_t> buf,
     if (i < num_partitions) {
       // For each partition, the offset is read from the partition offset data.
       partition_offset = base::U32FromBigEndian(
-          buf.subspan(kWebMEncryptedFramePartitionOffsetSize * i)
-              .first<kWebMEncryptedFramePartitionOffsetSize>());
+          buf.take_first<kWebMEncryptedFramePartitionOffsetSize>());
     } else {
       // On the last iteration, we're past the last partition offset in `buf`,
       // and the offset is the remaining bytes in the frame.

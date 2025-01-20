@@ -196,10 +196,6 @@ class Dictionary(object):
 
     if self.node.GetProperty('nodoc'):
       result['nodoc'] = True
-    elif self.node.GetProperty('inline_doc'):
-      result['inline_doc'] = True
-    elif self.node.GetProperty('noinline_doc'):
-      result['noinline_doc'] = True
     return result
 
 
@@ -420,9 +416,7 @@ class Enum(object):
         'type': 'string',
         'enum': enum
     }
-    for property_name in [
-        'cpp_enum_prefix_override', 'inline_doc', 'noinline_doc', 'nodoc'
-    ]:
+    for property_name in ['cpp_enum_prefix_override', 'nodoc']:
       if self.node.GetProperty(property_name):
         result[property_name] = self.node.GetProperty(property_name)
     if self.node.GetProperty('deprecated'):

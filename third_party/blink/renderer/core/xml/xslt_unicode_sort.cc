@@ -76,7 +76,7 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
 #else
   xsltStylePreCompPtr comp;
 #endif
-  xmlXPathObjectPtr* results_tab[XSLT_MAX_SORT];
+  std::array<xmlXPathObjectPtr*, XSLT_MAX_SORT> results_tab;
   xmlXPathObjectPtr* results = nullptr;
   xmlNodeSetPtr list = nullptr;
   int depth;

@@ -16,7 +16,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 
-
 // AlternateNavInfoBarDelegate -------------------------------------------------
 
 // static
@@ -24,7 +23,6 @@ std::unique_ptr<infobars::InfoBar> AlternateNavInfoBarDelegate::CreateInfoBar(
     std::unique_ptr<AlternateNavInfoBarDelegate> delegate) {
   return std::make_unique<AlternateNavInfoBarView>(std::move(delegate));
 }
-
 
 // AlternateNavInfoBarView -----------------------------------------------------
 
@@ -62,12 +60,14 @@ void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {
       available_width - used_width);
   if (last_label_width < last_label->GetMinimumSize().width()) {
     last_label_width = 0;
-    if (!labels->empty())
+    if (!labels->empty()) {
       labels->back()->SetText(labels->back()->GetText() + gfx::kEllipsisUTF16);
+    }
   }
   last_label->SetSize(gfx::Size(last_label_width, last_label->height()));
-  if (!labels->empty())
+  if (!labels->empty()) {
     ElideLabels(labels, available_width - last_label_width);
+  }
 }
 
 void AlternateNavInfoBarView::Layout(PassKey) {

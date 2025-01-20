@@ -23,13 +23,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -101,11 +97,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLength();
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(buffer->ByteSpan()))));
   }
 
   if (value->IsArrayBufferView()) {
@@ -120,11 +114,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(view->BaseAddress());
-    size_t length = view->byteLength();
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(view->ByteSpan()))));
   }
 
   return IDBKey::CreateInvalid();
@@ -339,7 +331,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       }
       if (element == "lastModifiedDate") {
         ScriptState* script_state = ScriptState::From(isolate, context);
-        v8_value = file->lastModifiedDate(script_state).V8Value();
+        v8_value = file->lastModifiedDate(script_state).V8Object();
         ExecutionContext* execution_context = ToExecutionContext(script_state);
         UseCounter::Count(execution_context,
                           WebFeature::kIndexedDBFileLastModifiedDate);

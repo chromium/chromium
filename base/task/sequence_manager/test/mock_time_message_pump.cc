@@ -11,8 +11,7 @@
 #include "base/notreached.h"
 #include "base/test/simple_test_tick_clock.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 MockTimeMessagePump::MockTimeMessagePump(SimpleTestTickClock* clock)
     : clock_(clock) {}
@@ -22,8 +21,9 @@ MockTimeMessagePump::~MockTimeMessagePump() = default;
 bool MockTimeMessagePump::MaybeAdvanceTime(TimeTicks target_time) {
   auto now = clock_->NowTicks();
 
-  if (target_time <= now)
+  if (target_time <= now) {
     return true;
+  }
 
   TimeTicks next_now;
 
@@ -48,23 +48,28 @@ void MockTimeMessagePump::Run(Delegate* delegate) {
   for (;;) {
     Delegate::NextWorkInfo info = delegate->DoWork();
 
-    if (!keep_running_ || quit_after_do_some_work_)
+    if (!keep_running_ || quit_after_do_some_work_) {
       break;
+    }
 
-    if (info.is_immediate())
+    if (info.is_immediate()) {
       continue;
+    }
 
     delegate->DoIdleWork();
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
-    if (MaybeAdvanceTime(info.delayed_run_time))
+    if (MaybeAdvanceTime(info.delayed_run_time)) {
       continue;
+    }
 
     next_wake_up_time_ = info.delayed_run_time;
 
-    if (stop_when_message_pump_is_idle_)
+    if (stop_when_message_pump_is_idle_) {
       return;
+    }
 
     NOTREACHED() << "Pump would go to sleep. Probably not what you wanted, "
                     "consider rewriting your test.";
@@ -82,5 +87,4 @@ void MockTimeMessagePump::ScheduleDelayedWork(
   next_wake_up_time_ = next_work_info.delayed_run_time;
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

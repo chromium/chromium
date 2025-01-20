@@ -17,7 +17,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
+// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
+// </if>
+// <if expr="is_chromeos">
+import type {Destination} from '../data/destination_cros.js';
+// </if>
 import type {Margins, MarginsSetting} from '../data/margins.js';
 import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';

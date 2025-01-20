@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #include "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 

@@ -7,8 +7,7 @@
 #include <list>
 #include <utility>
 
-#include <string.h>
-
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -17,9 +16,11 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
+#include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/logging.h"
+#include "chrome/test/chromedriver/net/timeout.h"
 
 namespace {
 
@@ -111,7 +112,6 @@ const base::TimeDelta Session::kDefaultBrowserStartupTimeout =
     base::Seconds(60);
 const char Session::kChannelSuffix[] = "/chan";
 const char Session::kNoChannelSuffix[] = "/nochan";
-const char Session::kBlockingChannelSuffix[] = "/blocking";
 
 Session::Session(const std::string& id)
     : id(id),
@@ -137,15 +137,26 @@ Session::Session(const std::string& id, const std::string& host) : Session(id) {
   this->host = host;
 }
 
-Session::~Session() {}
+Session::~Session() = default;
 
 Status Session::GetTargetWindow(WebView** web_view) {
-  if (!chrome)
+  if (!chrome) {
     return Status(kNoSuchWindow, "no chrome started in this session");
+  }
 
-  Status status = chrome->GetWebViewById(window, web_view);
-  if (status.IsError())
-    status = Status(kNoSuchWindow, "target window already closed", status);
+  WebView* tab = nullptr;
+  Status status = chrome->GetWebViewById(window, &tab);
+  if (status.IsError()) {
+    return Status(kNoSuchWindow, "target window already closed", status);
+  }
+
+  Timeout timeout;
+  status = tab->WaitForPendingActivePage(timeout);
+  if (status.IsError()) {
+    return status;
+  }
+
+  status = tab->GetActivePage(web_view);
   return status;
 }
 
@@ -203,16 +214,6 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
   std::string* channel = payload.FindString("channel");
   if (!channel) {
     return Status{kUnknownError, "channel is missing in the BiDi response"};
-  }
-
-  if (base::EndsWith(*channel, kBlockingChannelSuffix)) {
-    if (!awaiting_bidi_response) {
-      return Status{kUnknownError, "unexpected blocking BiDi response"};
-    }
-    awaiting_bidi_response = false;
-    size_t pos = channel->size() - strlen(kBlockingChannelSuffix);
-    // Update the channel value of the payload in-place.
-    channel->erase(std::next(channel->begin(), pos), channel->end());
   }
 
   int connection_id = -1;
@@ -279,6 +280,96 @@ void Session::CloseAllConnections() {
     conn.close_connection.Run();
   }
   bidi_connections_.clear();
+}
+
+void Session::Terminate() {
+  Session* s = session;
+  if (s == nullptr) {
+    return;
+  }
+  s->CloseAllConnections();
+  SetThreadLocalSession(std::unique_ptr<Session>());
+  if (s->terminate_on_cmd) {
+    s->cmd_task_runner->PostTask(FROM_HERE, std::move(s->terminate_on_cmd));
+  }
+  delete s;
+}
+
+Status Session::SendBidiSessionEnd() {
+  WebView* web_view = nullptr;
+  Status status =
+      chrome->GetActivePageByWebViewId(bidi_mapper_web_view_id, &web_view,
+                                       /*wait_for_page=*/false);
+  if (status.IsError()) {
+    return status;
+  }
+  base::Value::Dict bidi_cmd;
+  bidi_cmd.Set("channel", "/before-session-shutdown");
+  bidi_cmd.Set("id", 1);
+  bidi_cmd.Set("method", "session.end");
+  bidi_cmd.Set("params", base::Value::Dict());
+  base::Value::Dict response;
+  Timeout timeout(base::Seconds(20));
+  return web_view->SendBidiCommand(std::move(bidi_cmd), timeout, response);
+}
+
+void Session::HandleMessagesAndTerminateIfNecessary() {
+  if (!session || !session->web_socket_url) {
+    return;
+  }
+
+  Status status = session->chrome->Client()->HandleReceivedEvents();
+  if (status.IsOk() && session->chrome->GetWebViewCount() > 1) {
+    return;
+  }
+
+  // Either is true:
+  // * status.IsError()
+  // * web view count <= 0
+
+  if (status.code() != kDisconnected) {
+    VLOG(0) << "error while processing messages from the browser: "
+            << status.message();
+    if (session->chrome->GetWebViewCount() > 1) {
+      return;
+    }
+  }
+
+  // Either is true:
+  // * the error is kDisconnected
+  // * web view count <= 1
+  // In both cases the session must be terminated.
+
+  if (!status.IsError()) {
+    // The web view count is <= 1
+    status = session->SendBidiSessionEnd();
+    if (status.IsError()) {
+      VLOG(0) << "error while terminating a BiDi session: " << status.message();
+    }
+    status = Status{kInvalidSessionId};
+  }
+
+  base::flat_map<StatusCode, std::string> fatal_errors = {
+      {kDisconnected, "session deleted due to browser connection loss"},
+      {kInvalidSessionId, "session deleted as no more views are available"},
+  };
+
+  DCHECK(fatal_errors.contains(status.code()));
+
+  session->quit = true;
+  std::string message = fatal_errors[status.code()];
+  // Even though the connection was lost that makes the graceful
+  // shutdown impossible the Quit procedure falls back on killing the
+  // process in case if it is still alive.
+  if (!session->detach) {
+    Status quit_status = session->chrome->Quit();
+    if (quit_status.IsError()) {
+      message += ", but failed to kill browser:" + quit_status.message();
+    }
+  }
+  VLOG(0) << message;
+
+  Terminate();
 }
 
 Session* GetThreadLocalSession() {

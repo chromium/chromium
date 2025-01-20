@@ -13,13 +13,13 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
@@ -382,8 +382,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   NavigateTo("/payment_request_no_shipping_test.html");
   // Add expired card.
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  card.set_use_count(5U);
-  card.set_use_date(kJanuary2017);
+  card.usage_history().set_use_count(5U);
+  card.usage_history().set_use_date(kJanuary2017);
   card.SetExpirationMonth(1);
   card.SetExpirationYear(2017);
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -459,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(2017, credit_card->expiration_year());
   // It retains other properties.
   EXPECT_EQ(card.guid(), credit_card->guid());
-  EXPECT_EQ(5U, credit_card->use_count());
-  EXPECT_EQ(kJanuary2017, credit_card->use_date());
+  EXPECT_EQ(5U, credit_card->usage_history().use_count());
+  EXPECT_EQ(kJanuary2017, credit_card->usage_history().use_date());
   EXPECT_EQ(u"4111111111111111", credit_card->number());
   EXPECT_EQ(u"Test User",
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Change the name.
   SetEditorTextfieldValue(u"Bob the second", autofill::CREDIT_CARD_NAME_FULL);
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Billing address combobox must be disabled since there are no saved address.
   views::View* billing_address_combobox = dialog_view()->GetViewByID(
@@ -681,8 +681,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions1);
 
   // Click to open the address editor

@@ -31,15 +31,15 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver_router.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_router.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -51,6 +51,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -282,7 +283,8 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
                               nullptr),
         /*form_control_ax_id=*/0);
   };
-  WeakPtr<AutofillSuggestionController> controller = create_controller(gfx::RectF());
+  WeakPtr<AutofillSuggestionController> controller =
+      create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
   controller->Hide(SuggestionHidingReason::kViewDestroyed);
@@ -305,8 +307,9 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   base::WeakPtr<AutofillSuggestionController> controller3 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller3.get());
-  EXPECT_EQ(bounds, static_cast<AutofillSuggestionController*>(controller3.get())
-                        ->element_bounds());
+  EXPECT_EQ(bounds,
+            static_cast<AutofillSuggestionController*>(controller3.get())
+                ->element_bounds());
   controller3->Hide(SuggestionHidingReason::kViewDestroyed);
 
   client().popup_controller(manager()).DoHide();
@@ -357,21 +360,6 @@ TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   client().popup_controller(manager()).DoHide();
 }
 
-TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
-  client().popup_controller(manager()).PinView();
-  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
-
-  // Hide() will not work for stale data or when focusing native UI.
-  client().popup_controller(manager()).DoHide(
-      SuggestionHidingReason::kStaleData);
-  client().popup_controller(manager()).DoHide(
-      SuggestionHidingReason::kEndEditing);
-
-  // Check the expectations now since TearDown will perform a successful hide.
-  Mock::VerifyAndClearExpectations(&manager().external_delegate());
-  Mock::VerifyAndClearExpectations(client().popup_view());
-}
-
 TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
@@ -400,7 +388,8 @@ TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
 // picture-in-picture window.
 // TODO(crbug.com/40280362): Implement PIP overlap checks on Android.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture) {
+TEST_F(AutofillSuggestionControllerTest,
+       CheckBoundsOverlapWithPictureInPicture) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
@@ -416,7 +405,7 @@ TEST_F(AutofillSuggestionControllerTest,
   ShowSuggestions(manager(), {SuggestionType::kAutocompleteEntry});
   EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
   manager().NotifyObservers(
-      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      &AutofillManager::Observer::OnBeforeTextFieldValueChanged, FormGlobalId(),
       FieldGlobalId());
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }
@@ -467,7 +456,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
 
 // Tests that if the popup is shown, destruction of the WebContents hides the
 // popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideOnWebContentsDestroyed) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideOnWebContentsDestroyed) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -477,7 +467,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic, HideOnWebContentsDestroyed) 
 
 // Tests that if the popup is shown in the *main frame*, destruction of the
 // *main frame* hides the popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideInMainFrameOnDestruction) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -486,7 +477,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnDestruction
 
 // Tests that if the popup is shown in the *sub frame*, destruction of the
 // *sub frame* hides the popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInSubFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideInSubFrameOnDestruction) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
   EXPECT_CALL(client().popup_controller(sub_manager()),
@@ -503,8 +495,16 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   // The navigation generates a PrimaryMainFrameWasResized callback.
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(SuggestionHidingReason::kWidgetChanged));
+  SuggestionHidingReason reason;
+  // On Android, keyboard accessory is not hidden if the Chrome native widget
+  // changes its size. The keyboard accessory is still hidden because the input
+  // field looses.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    reason = SuggestionHidingReason::kNavigation;
+  } else {
+    reason = SuggestionHidingReason::kWidgetChanged;
+  }
+  EXPECT_CALL(client().popup_controller(manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
@@ -540,8 +540,16 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
-  EXPECT_CALL(client().popup_controller(sub_manager()),
-              Hide(SuggestionHidingReason::kWidgetChanged));
+  SuggestionHidingReason reason;
+  // On Android, keyboard accessory is not hidden if the Chrome native widget
+  // changes its size. The keyboard accessory is still hidden because the input
+  // field looses.
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    reason = SuggestionHidingReason::kRendererEvent;
+  } else {
+    reason = SuggestionHidingReason::kWidgetChanged;
+  }
+  EXPECT_CALL(client().popup_controller(sub_manager()), Hide(reason));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
 

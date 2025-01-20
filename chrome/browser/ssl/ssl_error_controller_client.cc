@@ -85,7 +85,7 @@ SSLErrorControllerClient::SSLErrorControllerClient(
       request_url_(request_url),
       cert_error_(cert_error) {}
 
-SSLErrorControllerClient::~SSLErrorControllerClient() {}
+SSLErrorControllerClient::~SSLErrorControllerClient() = default;
 
 void SSLErrorControllerClient::GoBack() {
   SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted();

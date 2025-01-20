@@ -754,7 +754,7 @@ String CounterValueForElement(Element* element) {
           element->PseudoElementLayoutObject(kPseudoIdMarker))
     WriteCounterValuesFromChildren(stream, marker, is_first_counter);
   if (LayoutObject* check =
-          element->PseudoElementLayoutObject(kPseudoIdCheck)) {
+          element->PseudoElementLayoutObject(kPseudoIdCheckMark)) {
     WriteCounterValuesFromChildren(stream, check, is_first_counter);
   }
   if (LayoutObject* before =
@@ -763,9 +763,9 @@ String CounterValueForElement(Element* element) {
   }
   if (LayoutObject* after = element->PseudoElementLayoutObject(kPseudoIdAfter))
     WriteCounterValuesFromChildren(stream, after, is_first_counter);
-  if (LayoutObject* select_arrow =
-          element->PseudoElementLayoutObject(kPseudoIdSelectArrow)) {
-    WriteCounterValuesFromChildren(stream, select_arrow, is_first_counter);
+  if (LayoutObject* picker_icon =
+          element->PseudoElementLayoutObject(kPseudoIdPickerIcon)) {
+    WriteCounterValuesFromChildren(stream, picker_icon, is_first_counter);
   }
   return stream.ReleaseString();
 }

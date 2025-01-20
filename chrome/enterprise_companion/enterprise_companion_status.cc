@@ -78,6 +78,8 @@ constexpr std::string DeviceManagementStatusToString(
       return "Illegal account for packaged EDU license";
     case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
       return "Packaged license device can't enroll KIOSK";
+    case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+      return "Organization unit initial enrollment limit has been exceeded";
   }
 }
 

@@ -51,6 +51,7 @@ class Spake2Authenticator : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
@@ -91,6 +92,7 @@ class Spake2Authenticator : public Authenticator {
   State state_;
   bool started_ = false;
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
+  RejectionDetails rejection_details_;
   std::string local_spake_message_;
   bool spake_message_sent_ = false;
   std::string outgoing_verification_hash_;

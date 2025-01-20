@@ -50,7 +50,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -272,21 +271,6 @@ class SystemWebAppWaiter {
  private:
   base::RunLoop run_loop_;
 };
-
-std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
-    const GURL& url) {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
-  info->scope = url.GetWithoutFilename();
-  info->title = u"Web App";
-  return info;
-}
-
-web_app::WebAppInstallInfoFactory GetAppWebAppInfoFactory() {
-  static auto factory = base::BindRepeating(
-      &GetWebAppInstallInfo, GURL(content::GetWebUIURL("system-app")));
-  return factory;
-}
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1333,91 +1317,6 @@ INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          ::testing::Values(KioskType::kChromeApp,
                                            KioskType::kWebApp,
                                            KioskType::kIwa));
-
-// Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
-// Test only the case when system web apps are enabled in the Kiosk session.
-// If system web apps are disabled in the Kiosk session, the system web app
-// browser cannot be created.
-class KioskBrowserSessionSwaTest : public KioskBrowserSessionBaseTest<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kKioskEnableSystemWebApps);
-    KioskBrowserSessionBaseTest<bool>::SetUp();
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-  void SetUpKioskSession() {
-    if (is_web_kiosk()) {
-      StartWebKioskSession();
-    } else {
-      StartChromeAppKioskSession();
-    }
-  }
-
-  void StartAndWaitForAppsToSynchronize() {
-    system_web_app_manager()->ResetForTesting();
-    SystemWebAppWaiter waiter(system_web_app_manager());
-    system_web_app_manager()->Start();
-    waiter.Wait();
-  }
-
-  std::unique_ptr<FakeBrowser> CreateSwaTestWindow() {
-    auto app_id = system_web_app_manager()->GetAppIdForSystemApp(
-        ash::SystemWebAppType::SETTINGS);
-    CHECK(app_id.has_value());
-
-    auto params = Browser::CreateParams::CreateForApp(
-        web_app::GenerateApplicationNameFromAppId(app_id.value()),
-        /*trusted_source=*/true,
-        /*window_bounds=*/gfx::Rect(), profile(),
-        /*user_gesture=*/true);
-
-    auto test_window = std::make_unique<TestBrowserWindow>();
-    params.window = test_window.get();
-    // Self deleting.
-    new TestBrowserWindowOwner(std::move(test_window));
-
-    return std::make_unique<FakeBrowser>(params);
-  }
-
-  ash::TestSystemWebAppManager* system_web_app_manager() {
-    return ash::TestSystemWebAppManager::Get(profile());
-    ;
-  }
-
- private:
-  bool is_web_kiosk() const { return GetParam(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(KioskBrowserSessionSwaTest, OpenSystemWebApp) {
-  SetUpKioskSession();
-
-  ash::SystemWebAppDelegateMap system_apps;
-  system_apps.emplace(
-      ash::SystemWebAppType::SETTINGS,
-      std::make_unique<ash::UnittestingSystemAppDelegate>(
-          ash::SystemWebAppType::SETTINGS, "OSSettings",
-          GURL(content::GetWebUIURL("system-app")), GetAppWebAppInfoFactory()));
-  CHECK(system_web_app_manager());
-  system_web_app_manager()->SetSystemAppsForTesting(std::move(system_apps));
-  StartAndWaitForAppsToSynchronize();
-
-  EXPECT_FALSE(DidSessionCloseNewWindow(CreateSwaTestWindow()));
-
-  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kOpenedSystemWebApp,
-                                 1);
-  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
-}
-
-// Test only the case when system web apps are enabled in the Kiosk session.
-// If system web apps are disabled in the Kiosk session, the system web app
-// browser cannot be created.
-INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionSwa,
-                         KioskBrowserSessionSwaTest,
-                         ::testing::Bool());
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 

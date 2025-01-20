@@ -41,8 +41,9 @@ Throbber::~Throbber() {
 }
 
 void Throbber::Start() {
-  if (IsRunning())
+  if (IsRunning()) {
     return;
+  }
 
   start_time_ = base::TimeTicks::Now();
   timer_.Start(
@@ -52,8 +53,9 @@ void Throbber::Start() {
 }
 
 void Throbber::Stop() {
-  if (!IsRunning())
+  if (!IsRunning()) {
     return;
+  }
 
   timer_.Stop();
   SchedulePaint();
@@ -64,8 +66,9 @@ bool Throbber::GetChecked() const {
 }
 
 void Throbber::SetChecked(bool checked) {
-  if (checked == checked_)
+  if (checked == checked_) {
     return;
+  }
 
   checked_ = checked;
   OnPropertyChanged(&checked_, kPropertyEffectsPaint);
@@ -128,8 +131,9 @@ void SmoothedThrobber::StartDelayOver() {
 }
 
 void SmoothedThrobber::Stop() {
-  if (!IsRunning())
+  if (!IsRunning()) {
     start_timer_.Stop();
+  }
 
   stop_timer_.Stop();
   stop_timer_.Start(FROM_HERE, stop_delay_, this,
@@ -141,8 +145,9 @@ base::TimeDelta SmoothedThrobber::GetStartDelay() const {
 }
 
 void SmoothedThrobber::SetStartDelay(const base::TimeDelta& start_delay) {
-  if (start_delay == start_delay_)
+  if (start_delay == start_delay_) {
     return;
+  }
   start_delay_ = start_delay;
   OnPropertyChanged(&start_delay_, kPropertyEffectsNone);
 }
@@ -152,8 +157,9 @@ base::TimeDelta SmoothedThrobber::GetStopDelay() const {
 }
 
 void SmoothedThrobber::SetStopDelay(const base::TimeDelta& stop_delay) {
-  if (stop_delay == stop_delay_)
+  if (stop_delay == stop_delay_) {
     return;
+  }
   stop_delay_ = stop_delay;
   OnPropertyChanged(&stop_delay_, kPropertyEffectsNone);
 }

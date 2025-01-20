@@ -131,13 +131,18 @@ public class ShareHelper {
         return IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLEAN_SHARE_SHEET, false);
     }
 
+    /** Return the preferred size used for preview image when sharing text / link. */
+    public static int getTextPreviewImageSizePx(Resources res) {
+        return res.getDimensionPixelSize(R.dimen.share_preview_favicon_size);
+    }
+
     /**
      * Fire the intent to share content with the target app.
      *
      * @param window The current window.
      * @param intent The intent to fire.
-     * @param callback The callback to be triggered when the calling activity has finished.  This
-     *                 allows the target app to identify Chrome as the source.
+     * @param callback The callback to be triggered when the calling activity has finished. This
+     *     allows the target app to identify Chrome as the source.
      */
     protected static void fireIntent(
             WindowAndroid window, Intent intent, @Nullable IntentCallback callback) {

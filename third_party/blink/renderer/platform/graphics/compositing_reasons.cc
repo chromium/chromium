@@ -45,6 +45,8 @@ constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
      "Has an active accelerated backdrop filter animation or transition."},
     {CompositingReason::kAffectedByOuterViewportBoundsDelta,
      "Is fixed position affected by outer viewport bounds delta."},
+    {CompositingReason::kAffectedBySafeAreaBottom,
+     "Is fixed position affected by safe area bottom."},
     {CompositingReason::kFixedPosition,
      "Is fixed position in a scrollable view."},
     {CompositingReason::kUndoOverscroll,

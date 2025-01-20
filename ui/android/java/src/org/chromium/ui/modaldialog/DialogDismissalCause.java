@@ -6,6 +6,8 @@ package org.chromium.ui.modaldialog;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -30,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
     DialogDismissalCause.CLIENT_TIMEOUT
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface DialogDismissalCause {
     // Dismissal causes that are fully controlled by clients (i.e. are not used inside the
     // dialog manager or the dialog presenters) are marked "Controlled by client" on comments.

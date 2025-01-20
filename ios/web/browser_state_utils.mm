@@ -21,4 +21,11 @@ WKWebsiteDataStore* GetDataStoreForBrowserState(BrowserState* browser_state) {
   return data_store;
 }
 
+void RemoveDataStorageForIdentifier(
+    const base::Uuid& uuid,
+    base::OnceCallback<void(NSError*)> callback) {
+  WKWebViewConfigurationProvider::DeleteDataStorageForIdentifier(
+      uuid, std::move(callback));
+}
+
 }  // namespace web

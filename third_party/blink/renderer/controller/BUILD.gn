@@ -103,15 +103,12 @@ component("controller") {
     frameworks = [ "Foundation.framework" ]
   }
 
-  # HighestPmfReporter and MemoryTracer depend on MemoryUsageMonitor and
-  # MemoryUsageMonitor depends on platform specific code. Explicitly specify
-  # supported platforms.
+  # HighestPmfReporter depends on MemoryUsageMonitor and MemoryUsageMonitor
+  # depends on platform specific code. Explicitly specify supported platforms.
   if (is_linux || is_chromeos || is_win || is_android || is_apple) {
     sources += [
       "highest_pmf_reporter.cc",
       "highest_pmf_reporter.h",
-      "memory_tracer.cc",
-      "memory_tracer.h",
     ]
   }
   if (is_android) {
@@ -196,6 +193,8 @@ test("blink_unittests") {
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     ]
   }
+
+  fuzztests = [ "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes" ]
 }
 
 test("blink_perf_tests") {
@@ -305,6 +304,7 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform:unit_tests",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/fuzztest",
     "//third_party/libwebp",
     "//third_party/zlib",
     "//url",

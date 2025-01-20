@@ -46,7 +46,7 @@ class ContactInfoLocalDataBatchUploader
   // that have their guid in `items`. `syncer::LocalDataItemModel::DataId` maps
   // to the guid that is populated in the returned values of
   // `GetLocalDataDescription()`.
-  void TriggerLocalDataMigration(
+  void TriggerLocalDataMigrationForItems(
       std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:

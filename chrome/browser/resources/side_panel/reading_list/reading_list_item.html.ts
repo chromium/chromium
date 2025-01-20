@@ -18,8 +18,7 @@ export function getHtml(this: ReadingListItemElement) {
   <cr-icon-button slot="suffix" id="updateStatusButton" disable-ripple
       aria-label="${this.getUpdateStatusButtonTooltip_(
           '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}')}"
-      iron-icon="${this.getUpdateStatusButtonIcon_('cr:check-circle',
-          'read-later:check-circle-outline')}"
+      iron-icon="${this.getUpdateStatusButtonIcon_()}"
       ?noink="${!this.buttonRipples}" no-ripple-on-focus
       @click="${this.onUpdateStatusClick_}"
       title="${this.getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',

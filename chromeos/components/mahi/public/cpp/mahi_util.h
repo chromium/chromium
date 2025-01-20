@@ -30,7 +30,8 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ButtonType {
   kSettings = 2,
   kQA = 3,
   kElucidation = 4,
-  kMaxValue = kElucidation,
+  kSummaryOfSelection = 5,
+  kMaxValue = kSummaryOfSelection,
 };
 
 // Contains the eligibility status of text for a certain feature, e.g.

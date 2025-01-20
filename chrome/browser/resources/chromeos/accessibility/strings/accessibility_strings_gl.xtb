@@ -241,6 +241,7 @@
 <translation id="2556326187583116255">Toca con 2 dedos para deter a voz que estea soando actualmente</translation>
 <translation id="2573256689920773241">Conceptos básicos de desprazamento</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2577127557293415225">Pechar brevemente os ollos</translation>
 <translation id="2582407057977008361">Aparte</translation>
 <translation id="2592212930811759050">Toca dúas veces para comezar a editar</translation>
 <translation id="2598495320872286378">Erro gramatical</translation>
@@ -519,7 +520,7 @@
 <translation id="4221012616705981690">Non hai ningunha lista anterior</translation>
 <translation id="4225355998815256469">Controis de formulario</translation>
 <translation id="4230834257931120629">Gris lousa claro</translation>
-<translation id="4231102694147661229">Activar opcións para programadores</translation>
+<translation id="4231102694147661229">Activar opcións de programación</translation>
 <translation id="423428485095722850">Preme a tecla de busca e a barra de espazo para activar/desactivar a opción</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grao <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Azul aceiro</translation>
@@ -844,6 +845,7 @@
 <translation id="6385591741672306837">col.</translation>
 <translation id="6387719785439924554">aparte</translation>
 <translation id="6393014464788431702">Desactivar todos os filtros de eventos</translation>
+<translation id="6406989068857078334">Reduciuse a velocidade do rato. <ph name="GESTURE" /> de novo para facer clic</translation>
 <translation id="6411569524720229058">Outono</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dous puntos}other{# dous puntos}}</translation>
@@ -1098,6 +1100,7 @@
 <translation id="8205922869661890178">Abre a páxina de rexistro para programadores</translation>
 <translation id="8212109599554677485">Cambiar estilo da pantalla para mostrar o texto en paralelo</translation>
 <translation id="8215202828671303819">Selección múltiple</translation>
+<translation id="822316432305106615">Iniciar o clic de precisión</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % de opacidade.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="826825447994856889">Introdución</translation>

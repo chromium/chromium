@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
+#import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
@@ -44,8 +45,7 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);
-  source->AddResourcePaths(
-      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
+  source->AddResourcePaths(kFlagsUiResources);
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -165,7 +165,7 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
 
 void FlagsDOMHandler::HandleRestartBrowser(const base::Value::List& args) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
-  CHECK(false);
+  NOTREACHED();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 

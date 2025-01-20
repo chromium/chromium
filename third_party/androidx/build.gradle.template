@@ -12,24 +12,6 @@ repositories {
     mavenCentral()
 }
 
-// We aren't entirely sure how this fixed our problems, but we were seeing
-// gradle errors where it couldn't determine which variants we wanted. The
-// seemingly obvious choice, setting "org.jetbrains.kotlin.platform.type" to
-// "androidJvm" globally did not work (although it did on a per-library basis).
-// It would be ideal to use org.gradle.jvm.environment as android or
-// org.jetbrains.kotlin.platform.type as androidJvm, but currently setting that
-// fails for transitive deps that don't define that attribute. See
-// https://crbug.com/359896493 for latest context, and also
-// crbug.com/41497313 and crbug.com/1511597 for prior issues.
-configurations.androidTestCompile {
-    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
-    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
-}
-configurations.compile {
-    attributes.attribute(Attribute.of("org.gradle.category", String), "library")
-    attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
-}
-
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
@@ -38,6 +20,7 @@ dependencies {
     compile 'androidx.compose.ui:ui:{{androidx_dependency_version}}'
     compile 'androidx.compose.ui:ui-text-google-fonts:{{androidx_dependency_version}}'
     compile 'androidx.activity:activity-compose:{{androidx_dependency_version}}'
+    compile 'androidx.fragment:fragment-compose:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-viewmodel-compose:{{androidx_dependency_version}}'
 
     compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
@@ -60,6 +43,7 @@ dependencies {
     compile 'androidx.appsearch:appsearch-platform-storage:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater-appcompat:{{androidx_dependency_version}}'
+    compile 'androidx.autofill:autofill:{{androidx_dependency_version}}'
     compile 'androidx.biometric:biometric:{{androidx_dependency_version}}'
     compile 'androidx.browser:browser:{{androidx_dependency_version}}'
     compile 'androidx.cardview:cardview:{{androidx_dependency_version}}'
@@ -87,22 +71,22 @@ dependencies {
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-compose:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-runtime:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
+    // Take pdf library 1.0.0-alpha05 until beta release is thoroughly tested.
+    // TODO(https://crbug.com/383610568): Switch to beta version of pdf library once ready.
+    compile 'androidx.pdf:pdf-viewer:1.0.0-alpha05'
+    compile 'androidx.pdf:pdf-viewer-fragment:1.0.0-alpha05'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta11'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     // TODO(https://crbug.com/359896493): Remove the following dep once rolls
     // succeed again. Deps on it will need to be removed first.
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
     compile 'androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}'
+    compile 'androidx.tracing:tracing:{{androidx_dependency_version}}'
     compile 'androidx.tvprovider:tvprovider:{{androidx_dependency_version}}'
     compile 'androidx.vectordrawable:vectordrawable:{{androidx_dependency_version}}'
     compile 'androidx.vectordrawable:vectordrawable-animated:{{androidx_dependency_version}}'
@@ -123,6 +107,7 @@ dependencies {
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
     compile 'androidx.sqlite:sqlite-android:{{androidx_dependency_version}}'
+    compile 'androidx.concurrent:concurrent-futures-ktx:{{androidx_dependency_version}}'
 
     String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"
@@ -146,6 +131,9 @@ dependencies {
     androidTestCompile 'androidx.benchmark:benchmark-macro:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-macro-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-android:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-manifest:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.core:core-animation-testing:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.test:core:1.4.0-rc01'
     androidTestCompile 'androidx.test:monitor:1.4.0-rc01'

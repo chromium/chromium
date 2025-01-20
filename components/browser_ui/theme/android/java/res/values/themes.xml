@@ -77,8 +77,8 @@ found in the LICENSE file.
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splash_screen_bg</item>
 
         <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <!-- Spinner styles -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
@@ -88,7 +88,7 @@ found in the LICENSE file.
         <!-- Set android popup menu attributes for context menu styles because the context menus are
              OS-dependent. -->
         <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
-        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
+        <item name="android:contextPopupMenuStyle">@style/PopupMenuStyle</item>
 
         <!-- Text styles -->
         <item name="android:textAppearanceLargePopupMenu">
@@ -311,5 +311,9 @@ found in the LICENSE file.
     <style name="ThemeOverlay.BrowserUI.DefaultFontFamilyThemeOverlay" parent="">
         <item name="defaultFontFamily">sans-serif</item>
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.OptOutEdgeToEdge" parent="">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
     </style>
 </resources>

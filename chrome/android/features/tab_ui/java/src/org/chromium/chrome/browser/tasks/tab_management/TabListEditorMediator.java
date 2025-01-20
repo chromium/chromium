@@ -399,6 +399,10 @@ class TabListEditorMediator
     public void destroy() {
         removeTabGroupModelFilterObserver(mCurrentTabGroupModelFilterSupplier.get());
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
+        }
     }
 
     private void onTabGroupModelFilterChanged(

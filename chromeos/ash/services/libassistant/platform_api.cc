@@ -76,12 +76,4 @@ assistant_client::SystemProvider& PlatformApi::GetSystemProvider() {
   return *system_provider_;
 }
 
-void PlatformApi::OnAssistantClientCreated(AssistantClient* assistant_client) {
-  audio_output_provider_->BindAudioDecoderFactory();
-}
-
-void PlatformApi::OnAssistantClientDestroyed() {
-  audio_output_provider_->UnBindAudioDecoderFactory();
-}
-
 }  // namespace ash::libassistant

@@ -68,7 +68,7 @@ class Vp9ResolutionMonitor : public ResolutionMonitor {
   std::optional<gfx::Size> GetResolution(
       const media::DecoderBuffer& buffer) override {
     std::vector<uint32_t> frame_sizes;
-    if (buffer.has_side_data()) {
+    if (buffer.side_data()) {
       frame_sizes = buffer.side_data()->spatial_layers;
     }
     parser_.SetStream(buffer.data(), base::checked_cast<off_t>(buffer.size()),

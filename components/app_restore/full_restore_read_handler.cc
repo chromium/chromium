@@ -33,7 +33,6 @@ namespace {
 //  apps.
 constexpr base::TimeDelta kFullRestoreEstimateDuration = base::Seconds(5);
 constexpr base::TimeDelta kFullRestoreARCEstimateDuration = base::Minutes(3);
-constexpr base::TimeDelta kFullRestoreLacrosEstimateDuration = base::Minutes(1);
 
 }  // namespace
 
@@ -293,12 +292,6 @@ int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForSessionId(
   return arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id);
 }
 
-int32_t FullRestoreReadHandler::GetLacrosRestoreWindowId(
-    const std::string& lacros_window_id) const {
-  return full_restore::FullRestoreReadHandler::GetInstance()
-      ->FetchRestoreWindowId(lacros_window_id);
-}
-
 void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
   if (arc_read_handler_)
@@ -315,8 +308,9 @@ bool FullRestoreReadHandler::IsFullRestoreRunning() const {
   if (it == profile_path_to_start_time_data_.end())
     return false;
 
-  if (IsArcRestoreRunning() || IsLacrosRestoreRunning())
+  if (IsArcRestoreRunning()) {
     return true;
+  }
 
   // We estimate that full restore is still running if it has been less than
   // five seconds since it started.
@@ -368,20 +362,6 @@ bool FullRestoreReadHandler::IsArcRestoreRunning() const {
   // been less than five minutes since it started, when there is at least one
   // ARC app, since it might take long time to boot ARC.
   return base::TimeTicks::Now() - it->second < kFullRestoreARCEstimateDuration;
-}
-
-bool FullRestoreReadHandler::IsLacrosRestoreRunning() const {
-  if (active_profile_path_ != primary_profile_path_)
-    return false;
-
-  auto it = profile_path_to_start_time_data_.find(primary_profile_path_);
-  if (it == profile_path_to_start_time_data_.end())
-    return false;
-
-  // We estimate that full restore is still running if it has been less than
-  // one minute since it started, when Lacros is available.
-  return base::TimeTicks::Now() - it->second <
-         kFullRestoreLacrosEstimateDuration;
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(

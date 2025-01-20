@@ -4,7 +4,8 @@
   <span id="color-label" slot="title">$i18n{optionColor}</span>
   <div slot="controls">
     <select class="md-select" aria-labelledby="color-label"
-        disabled$="[[disabled_]]" value="{{selectedValue::change}}">
+        disabled$="[[disabled_]]" value="[[selectedValue]]"
+        on-change="onSelectChange">
       <option value="bw" selected>$i18n{optionBw}</option>
       <option value="color">$i18n{optionColor}</option>
     </select>

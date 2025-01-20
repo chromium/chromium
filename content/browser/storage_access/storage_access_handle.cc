@@ -4,6 +4,7 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
@@ -169,8 +170,9 @@ void StorageAccessHandle::BindBlobStorage(
       ->AddReceiver(blink::StorageKey::CreateFirstParty(
                         render_frame_host().GetStorageKey().origin()),
                     render_frame_host().GetLastCommittedOrigin(),
-                    render_frame_host().GetProcess()->GetID(),
-                    std::move(receiver));
+                    render_frame_host().GetProcess()->GetDeprecatedID(),
+                    std::move(receiver), base::DoNothing(),
+                    /*partitioning_disabled_by_policy=*/false);
 }
 
 void StorageAccessHandle::BindBroadcastChannel(

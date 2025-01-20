@@ -9,12 +9,6 @@
 
 #include "components/signin/public/base/signin_buildflags.h"
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include <optional>
-
-#include "components/signin/public/base/hybrid_encryption_key.h"
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
 namespace signin {
 
 // Class holding a success return value of a multilogin token request for a
@@ -25,8 +19,7 @@ class OAuthMultiloginTokenResponse {
       std::string oauth_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       ,
-      std::string token_binding_assertion = std::string(),
-      std::optional<HybridEncryptionKey> ephemeral_key = std::nullopt
+      std::string token_binding_assertion = std::string()
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   );
 
@@ -49,19 +42,12 @@ class OAuthMultiloginTokenResponse {
   const std::string& token_binding_assertion() const {
     return token_binding_assertion_;
   }
-
-  // If `token_binding_assertion` is not empty and uses the hybrid encryption,
-  // this key can be used to decrypt cookies from the server response.
-  const std::optional<HybridEncryptionKey>& ephemeral_key() const {
-    return ephemeral_key_;
-  }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
   std::string oauth_token_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::string token_binding_assertion_;
-  std::optional<HybridEncryptionKey> ephemeral_key_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 

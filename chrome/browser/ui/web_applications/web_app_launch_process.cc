@@ -46,12 +46,14 @@ namespace {
 std::optional<GURL> GetProtocolHandlingTranslatedUrl(
     OsIntegrationManager& os_integration_manager,
     const apps::AppLaunchParams& params) {
-  if (!params.protocol_handler_launch_url.has_value())
+  if (!params.protocol_handler_launch_url.has_value()) {
     return std::nullopt;
+  }
 
   GURL protocol_url(params.protocol_handler_launch_url.value());
-  if (!protocol_url.is_valid())
+  if (!protocol_url.is_valid()) {
     return std::nullopt;
+  }
 
   std::optional<GURL> translated_url =
       os_integration_manager.TranslateProtocolUrl(params.app_id, protocol_url);
@@ -99,7 +101,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 content::WebContents* WebAppLaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
           Browser::CreationStatus::kOk ||
-      !registrar_->IsInstalled(params_->app_id)) {
+      !registrar_->IsInRegistrar(params_->app_id)) {
     return nullptr;
   }
 
@@ -203,10 +205,6 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
   } else if (!params_->override_url.is_empty()) {
     launch_url = params_->override_url;
     is_file_handling = !params_->launch_files.empty();
-  } else if (params_->url_handler_launch_url.has_value() &&
-             params_->url_handler_launch_url->is_valid()) {
-    // Handle url_handlers launch.
-    launch_url = params_->url_handler_launch_url.value();
   } else if (std::optional<GURL> protocol_handler_translated_url =
                  GetProtocolHandlingTranslatedUrl(*os_integration_manager_,
                                                   *params_)) {
@@ -269,8 +267,9 @@ LaunchHandler WebAppLaunchProcess::GetLaunchHandler() const {
 
 LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   LaunchHandler launch_handler = GetLaunchHandler();
-  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto)
+  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto) {
     return LaunchHandler::ClientMode::kNavigateNew;
+  }
   return launch_handler.client_mode;
 }
 

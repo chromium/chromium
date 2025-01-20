@@ -12,6 +12,7 @@ fuzzer_test("sql_recovery_lpm_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//sql",
+    "//sql:test_support",
     "//third_party/libprotobuf-mutator",
     "//third_party/sqlite:sql_query_proto_to_string",
     "//third_party/sqlite:sqlite3_lpm_fuzzer_input",

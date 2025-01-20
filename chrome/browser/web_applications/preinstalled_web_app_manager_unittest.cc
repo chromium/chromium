@@ -39,6 +39,7 @@
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -50,16 +51,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #endif
 
 namespace web_app {
@@ -82,13 +77,7 @@ constexpr char kAppChildUrl[] = "https://www.google.com/child";
 
 class PreinstalledWebAppManagerTest : public testing::Test {
  public:
-  PreinstalledWebAppManagerTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatures(
-        {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
-#endif
-  }
-
+  PreinstalledWebAppManagerTest() = default;
   PreinstalledWebAppManagerTest(const PreinstalledWebAppManagerTest&) = delete;
   PreinstalledWebAppManagerTest& operator=(
       const PreinstalledWebAppManagerTest&) = delete;
@@ -169,9 +158,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // Helper that creates simple test profile.
   std::unique_ptr<TestingProfile> CreateProfile(bool is_guest = false) {
     TestingProfile::Builder profile_builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     if (is_guest) {
       profile_builder.SetGuestSession();
     }
@@ -191,7 +177,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     std::unique_ptr<TestingProfile> profile = CreateProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile->GetProfileUserName(), "1234567890"));
+        profile->GetProfileUserName(), GaiaId("1234567890")));
     user_manager()->AddUser(account_id);
     user_manager()->LoginUser(account_id);
 #endif
@@ -214,17 +200,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
-#else
-    base::FilePath config_dir = GetConfigDir(test_dir);
-    auto default_paths = crosapi::mojom::DefaultPaths::New();
-    default_paths->documents =
-        base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-    default_paths->downloads =
-        base::PathService::CheckedGet(chrome::DIR_DEFAULT_DOWNLOADS);
-    default_paths->preinstalled_web_app_config = config_dir;
-    default_paths->preinstalled_web_app_extra_config =
-        config_dir.AppendASCII(extra_web_apps_dir);
-    chrome::SetLacrosDefaultPathsFromInitParams(default_paths.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
@@ -277,7 +252,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   raw_ptr<FakeWebAppProvider> provider_ = nullptr;
   std::unique_ptr<Profile> profile_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
 };

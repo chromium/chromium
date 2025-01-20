@@ -27,8 +27,46 @@ chromium-metrics-reviews@google.com.
   <variant name="WebView" summary="WebView"/>
 </variants>
 
+<variants name="TabSwitchingSurface">
+  <variant name="BottomTabStripGroupUI" summary="bottom tab strip group UI"/>
+  <variant name="IncognitoTabSwitcherPane"
+      summary="incognito tab switcher pane"/>
+  <variant name="RegularTabSwitcherPane" summary="regular tab switcher pane"/>
+</variants>
+
+<histogram name="SensitiveContent.SensitiveTabSwitchingAnimations"
+    enum="TabSwitchingAnimation" expires_after="2025-07-06">
+  <owner>theocristea@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records how many times each tab switching animation is marked as sensitive.
+    Emitted every time a tab switching animation occurs and is marked as
+    sensitive. A tab switching animation is marked as sensitive if it offers a
+    preview of a sensitive tab. Each bucket of this histogram represents one
+    type of tab switching animation.
+  </summary>
+</histogram>
+
+<histogram
+    name="SensitiveContent.TabSwitching.{TabSwitchingSurface}.Sensitivity"
+    enum="TabSwitchingSurfaceContentSensitivity" expires_after="2025-07-06">
+  <owner>theocristea@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the {TabSwitchingSurface} is sensitive. The
+    {TabSwitchingSurface} is sensitive if at least one of the tabs is sensitive
+    at the moment when the {TabSwitchingSurface} is opened. Emitted every time
+    the {TabSwitchingSurface} is opened. The {TabSwitchingSurface} has the same
+    content sensitivity from the moment it is opened until the moment it is
+    closed. Only recorded on Chrome for Android.
+  </summary>
+  <token key="TabSwitchingSurface" variants="TabSwitchingSurface"/>
+</histogram>
+
 <histogram name="SensitiveContent.{Embedder}.LatencyUntilSensitive" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-07-06">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -43,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitiveTime" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-07-06">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -58,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SensitiveContent.{Embedder}.SensitivityChanged"
-    enum="ContentSensitivity" expires_after="2025-05-04">
+    enum="ContentSensitivity" expires_after="2025-07-06">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

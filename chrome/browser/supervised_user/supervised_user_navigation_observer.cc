@@ -155,18 +155,18 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   if (navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
     auto* render_frame_host = web_contents()->GetPrimaryMainFrame();
-    int process_id = render_frame_host->GetProcess()->GetID();
+    int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
     int routing_id = render_frame_host->GetRoutingID();
     bool skip_manual_parent_filter =
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
             web_contents());
-    url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
+    url_filter_->GetFilteringBehaviorWithAsyncChecks(
         web_contents()->GetLastCommittedURL(),
         base::BindOnce(
             &SupervisedUserNavigationObserver::URLFilterCheckCallback,
-            weak_ptr_factory_.GetWeakPtr(), navigation_handle->GetURL(),
-            process_id, routing_id),
-        skip_manual_parent_filter);
+            weak_ptr_factory_.GetWeakPtr(), process_id, routing_id),
+        skip_manual_parent_filter,
+        supervised_user::FilteringContext::kNavigationObserver);
   }
 }
 
@@ -190,7 +190,6 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
     UMA_HISTOGRAM_COUNTS_1000("ManagedUsers.BlockedIframeCount", count);
     RecordPageLoadUKM(render_frame_host);
   }
-
 }
 
 void SupervisedUserNavigationObserver::RecordPageLoadUKM(
@@ -235,18 +234,18 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
 
 void SupervisedUserNavigationObserver::OnURLFilterChanged() {
   auto* main_frame = web_contents()->GetPrimaryMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int routing_id = main_frame->GetRoutingID();
   bool skip_manual_parent_filter =
       supervised_user::ShouldContentSkipParentAllowlistFiltering(
           web_contents());
-  url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
+  url_filter_->GetFilteringBehaviorWithAsyncChecks(
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     web_contents()->GetLastCommittedURL(),
-                     main_frame_process_id, routing_id),
-      skip_manual_parent_filter);
+                     weak_ptr_factory_.GetWeakPtr(), main_frame_process_id,
+                     routing_id),
+      skip_manual_parent_filter,
+      supervised_user::FilteringContext::kFamilyLinkSettingsUpdated);
 
   MaybeUpdateRequestedHosts();
 
@@ -315,12 +314,9 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
 }
 
 void SupervisedUserNavigationObserver::URLFilterCheckCallback(
-    const GURL& url,
     int render_frame_process_id,
     int render_frame_routing_id,
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   auto* render_frame_host = content::RenderFrameHost::FromID(
       render_frame_process_id, render_frame_routing_id);
 
@@ -334,8 +330,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   content::FrameTreeNodeId frame_id = render_frame_host->GetFrameTreeNodeId();
   bool is_showing_interstitial =
       base::Contains(supervised_user_interstitials_, frame_id);
-  bool should_show_interstitial =
-      behavior == supervised_user::FilteringBehavior::kBlock;
+  bool should_show_interstitial = result.IsBlocked();
 
   // If an interstitial is being shown where it shouldn't (for e.g. because a
   // parent just approved a request) reloading will clear it. On the other hand,
@@ -391,12 +386,13 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
     return;
 
   const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
-  url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+  url_filter_->GetFilteringBehaviorForSubFrameWithAsyncChecks(
       last_committed_url, web_contents()->GetLastCommittedURL(),
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
-                     weak_ptr_factory_.GetWeakPtr(), last_committed_url,
-                     render_frame_host->GetProcess()->GetID(),
-                     render_frame_host->GetRoutingID()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     render_frame_host->GetProcess()->GetDeprecatedID(),
+                     render_frame_host->GetRoutingID()),
+      supervised_user::FilteringContext::kNavigationObserver);
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
@@ -455,14 +451,11 @@ void SupervisedUserNavigationObserver::RequestCreated(
 }
 
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
-  supervised_user::FilteringBehavior filtering_behavior;
-
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    bool is_manual = url_filter_->GetManualFilteringBehaviorForURL(
-        GURL(*iter), &filtering_behavior);
+    supervised_user::SupervisedUserURLFilter::Result result =
+        url_filter_->GetFilteringBehavior(GURL(*iter));
 
-    if (is_manual &&
-        filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
+    if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;

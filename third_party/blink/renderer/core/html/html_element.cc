@@ -23,11 +23,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "base/containers/enum_set.h"
@@ -60,7 +55,6 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
@@ -300,7 +294,7 @@ unsigned HTMLElement::ParseBorderWidthAttribute(
 
 void HTMLElement::ApplyBorderAttributeToStyle(
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   unsigned width = ParseBorderWidthAttribute(value);
   for (CSSPropertyID property_id :
        {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,
@@ -336,7 +330,7 @@ bool HTMLElement::IsValidDirAttribute(const AtomicString& value) {
 void HTMLElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
     if (EqualIgnoringASCIICase(value, "middle")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
@@ -428,10 +422,10 @@ void HTMLElement::CollectStyleForPresentationAttribute(
 }
 
 // static
-AttributeTriggers* HTMLElement::TriggersForAttributeName(
+const AttributeTriggers* HTMLElement::TriggersForAttributeName(
     const QualifiedName& attr_name) {
   const AtomicString& kNoEvent = g_null_atom;
-  static AttributeTriggers attribute_triggers[] = {
+  static const auto attribute_triggers = std::to_array<AttributeTriggers>({
       {html_names::kDirAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnDirAttrChanged},
       {html_names::kFormAttr, kNoWebFeature, kNoEvent,
@@ -770,13 +764,15 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
 
       {html_names::kAutocapitalizeAttr, WebFeature::kAutocapitalizeAttribute,
        kNoEvent, nullptr},
-  };
+      {html_names::kWritingsuggestionsAttr,
+       WebFeature::kHTMLElementWritingSuggestions, kNoEvent, nullptr},
+  });
 
   using AttributeToTriggerIndexMap = HashMap<QualifiedName, uint32_t>;
   DEFINE_STATIC_LOCAL(AttributeToTriggerIndexMap,
                       attribute_to_trigger_index_map, ());
   if (!attribute_to_trigger_index_map.size()) {
-    for (uint32_t i = 0; i < std::size(attribute_triggers); ++i) {
+    for (uint32_t i = 0; i < attribute_triggers.size(); ++i) {
       DCHECK(attribute_triggers[i].attribute.NamespaceURI().IsNull())
           << "Lookup table does not work for namespaced attributes because "
              "they would not match for different prefixes";
@@ -793,7 +789,7 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
 // static
 const AtomicString& HTMLElement::EventNameForAttributeName(
     const QualifiedName& attr_name) {
-  AttributeTriggers* triggers = TriggersForAttributeName(attr_name);
+  const AttributeTriggers* triggers = TriggersForAttributeName(attr_name);
   if (triggers)
     return triggers->event;
   return g_null_atom;
@@ -853,7 +849,7 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
 }
 
 void HTMLElement::ParseAttribute(const AttributeModificationParams& params) {
-  AttributeTriggers* triggers = TriggersForAttributeName(params.name);
+  const AttributeTriggers* triggers = TriggersForAttributeName(params.name);
   if (!triggers) {
     if (!params.name.NamespaceURI().IsNull()) {
       // AttributeTriggers lookup table does not support namespaced attributes.
@@ -999,9 +995,10 @@ void HTMLElement::setOuterText(const String& text,
     MergeWithNextTextNode(prev_text_node, exception_state);
 }
 
-void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
-                                          const AtomicString& height,
-                                          MutableCSSPropertyValueSet* style) {
+void HTMLElement::ApplyAspectRatioToStyle(
+    const AtomicString& width,
+    const AtomicString& height,
+    HeapVector<CSSPropertyValue, 8>& style) {
   HTMLDimension width_dim;
   if (!ParseDimensionValue(width, width_dim) || !width_dim.IsAbsolute())
     return;
@@ -1014,7 +1011,7 @@ void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
 void HTMLElement::ApplyIntegerAspectRatioToStyle(
     const AtomicString& width,
     const AtomicString& height,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   unsigned width_val = 0;
   if (!ParseHTMLNonNegativeInteger(width, width_val))
     return;
@@ -1024,9 +1021,10 @@ void HTMLElement::ApplyIntegerAspectRatioToStyle(
   ApplyAspectRatioToStyle(width_val, height_val, style);
 }
 
-void HTMLElement::ApplyAspectRatioToStyle(double width,
-                                          double height,
-                                          MutableCSSPropertyValueSet* style) {
+void HTMLElement::ApplyAspectRatioToStyle(
+    double width,
+    double height,
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto* width_val = CSSNumericLiteralValue::Create(
       width, CSSPrimitiveValue::UnitType::kNumber);
   auto* height_val = CSSNumericLiteralValue::Create(
@@ -1038,12 +1036,12 @@ void HTMLElement::ApplyAspectRatioToStyle(double width,
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   list->Append(*ratio_value);
 
-  style->SetProperty(CSSPropertyID::kAspectRatio, *list);
+  style.emplace_back(CSSPropertyName(CSSPropertyID::kAspectRatio), *list);
 }
 
 void HTMLElement::ApplyAlignmentAttributeToStyle(
     const AtomicString& alignment,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   // Vertical alignment with respect to the current baseline of the text
   // right or left means floating images.
   CSSValueID float_value = CSSValueID::kInvalid;
@@ -1462,7 +1460,8 @@ void HTMLElement::showPopover(ShowPopoverOptions* options,
 void HTMLElement::ShowPopoverInternal(Element* invoker,
                                       ExceptionState* exception_state) {
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
-                      /*include_event_handler_text=*/false, /*document=*/nullptr)) {
+                      /*include_event_handler_text=*/false,
+                      /*document=*/nullptr)) {
     CHECK(exception_state)
         << " Callers which aren't supposed to throw exceptions should not call "
            "ShowPopoverInternal when the Popover isn't in a valid state to be "
@@ -1793,7 +1792,8 @@ void HTMLElement::HidePopoverInternal(
     HidePopoverTransitionBehavior transition_behavior,
     ExceptionState* exception_state) {
   if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
-                      /*include_event_handler_text=*/true, /*document=*/nullptr)) {
+                      /*include_event_handler_text=*/true,
+                      /*document=*/nullptr)) {
     return;
   }
   auto& document = GetDocument();
@@ -1961,11 +1961,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
       this, DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
-    if (RuntimeEnabledFeatures::PopoverDialogNewFocusBehaviorEnabled()) {
-      dialog->SetFocusForDialog();
-    } else {
-      HTMLDialogElement::SetFocusForDialogLegacy(dialog);
-    }
+    dialog->SetFocusForDialog();
     return;
   }
 
@@ -2223,15 +2219,11 @@ const HTMLElement* FindTopmostRelatedPopover(
 }  // namespace
 
 // static
-void HTMLElement::HandlePopoverLightDismiss(const Event& event,
+void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
                                             const Node& target_node) {
   CHECK(event.isTrusted());
   auto& document = target_node.GetDocument();
   if (!document.TopmostPopoverOrHint()) {
-    return;
-  }
-
-  if (!IsA<PointerEvent>(event)) {
     return;
   }
 
@@ -2675,9 +2667,7 @@ HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
 }
 
 bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
-  // This can become a CHECK() when the TextInputNotAlwaysDirAuto flag is
-  // removed.
-  DCHECK(HasDirectionAuto());
+  CHECK(HasDirectionAuto());
 
   // Note that HTMLSlotElement overrides this method in order to defer
   // its work in some cases.
@@ -2761,7 +2751,7 @@ void HTMLElement::DidMoveToNewDocument(Document& old_document) {
   Element::DidMoveToNewDocument(old_document);
 }
 
-void HTMLElement::AddHTMLLengthToStyle(MutableCSSPropertyValueSet* style,
+void HTMLElement::AddHTMLLengthToStyle(HeapVector<CSSPropertyValue, 8>& style,
                                        CSSPropertyID property_id,
                                        const String& value,
                                        AllowPercentage allow_percentage,
@@ -2890,18 +2880,20 @@ bool HTMLElement::ParseColorWithLegacyRules(const String& attribute_value,
   return success;
 }
 
-void HTMLElement::AddHTMLColorToStyle(MutableCSSPropertyValueSet* style,
+void HTMLElement::AddHTMLColorToStyle(HeapVector<CSSPropertyValue, 8>& style,
                                       CSSPropertyID property_id,
                                       const String& attribute_value) {
   Color parsed_color;
   if (!ParseColorWithLegacyRules(attribute_value, parsed_color))
     return;
 
-  style->SetProperty(property_id, *cssvalue::CSSColor::Create(parsed_color));
+  DCHECK(!CSSProperty::Get(property_id).IsShorthand());
+  style.emplace_back(CSSPropertyName(property_id),
+                     *cssvalue::CSSColor::Create(parsed_color));
 }
 
 void HTMLElement::AddHTMLBackgroundImageToStyle(
-    MutableCSSPropertyValueSet* style,
+    HeapVector<CSSPropertyValue, 8>& style,
     const String& url_value,
     const AtomicString& initiator_name) {
   String url = StripLeadingAndTrailingHTMLSpaces(url_value);
@@ -2916,7 +2908,7 @@ void HTMLElement::AddHTMLBackgroundImageToStyle(
   if (initiator_name) {
     image_value->SetInitiator(initiator_name);
   }
-  style->SetLonghandProperty(CSSPropertyValue(
+  style.emplace_back(CSSPropertyValue(
       CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
 }
 

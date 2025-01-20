@@ -75,6 +75,13 @@ MultiprocessTestHelper::~MultiprocessTestHelper() {
   CHECK(!test_child_.IsValid());
 }
 
+// static
+void MultiprocessTestHelper::InitForMultiprocessTest() {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  bool is_broker = !command_line.HasSwitch(kRunAsBrokerClient);
+  mojo::core::Init({.is_broker_process = is_broker});
+}
+
 ScopedMessagePipeHandle MultiprocessTestHelper::StartChild(
     const std::string& test_child_name,
     LaunchType launch_type) {

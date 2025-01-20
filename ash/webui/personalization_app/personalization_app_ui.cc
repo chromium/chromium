@@ -37,7 +37,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
@@ -47,9 +46,9 @@
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash::personalization_app {
 
@@ -73,8 +72,7 @@ AmbientBackendController* GetAmbientBackendController() {
 
 void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(
-      kAshPersonalizationAppResources, kAshPersonalizationAppResourcesSize));
+  source->AddResourcePaths(kAshPersonalizationAppResources);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
@@ -570,8 +568,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                          sea_pen_provider_->IsManagedSeaPenEnabled());
   source->AddBoolean("isManagedSeaPenFeedbackEnabled",
                      sea_pen_provider_->IsManagedSeaPenFeedbackEnabled());
-  source->AddBoolean("isLacrosEnabled",
-                     ::crosapi::lacros_startup_state::IsLacrosEnabled());
   source->AddBoolean("isVcResizeThumbnailEnabled", false);
 }
 

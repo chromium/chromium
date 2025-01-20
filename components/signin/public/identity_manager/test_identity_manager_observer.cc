@@ -4,9 +4,9 @@
 
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include <utility>
+
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
 
@@ -116,30 +116,35 @@ TestIdentityManagerObserver::BatchChangeRecords() const {
 void TestIdentityManagerObserver::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event) {
   on_primary_account_changed_event_ = event;
-  if (on_primary_account_changed_callback_)
+  if (on_primary_account_changed_callback_) {
     std::move(on_primary_account_changed_callback_).Run(event);
+  }
 }
 
 void TestIdentityManagerObserver::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  if (!is_inside_batch_)
+  if (!is_inside_batch_) {
     StartBatchOfRefreshTokenStateChanges();
+  }
 
   batch_change_records_.rbegin()->emplace_back(account_info.account_id);
   account_from_refresh_token_updated_callback_ = account_info;
-  if (on_refresh_token_updated_callback_)
+  if (on_refresh_token_updated_callback_) {
     std::move(on_refresh_token_updated_callback_).Run();
+  }
 }
 
 void TestIdentityManagerObserver::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
-  if (!is_inside_batch_)
+  if (!is_inside_batch_) {
     StartBatchOfRefreshTokenStateChanges();
+  }
 
   batch_change_records_.rbegin()->emplace_back(account_id);
   account_from_refresh_token_removed_callback_ = account_id;
-  if (on_refresh_token_removed_callback_)
+  if (on_refresh_token_removed_callback_) {
     std::move(on_refresh_token_removed_callback_).Run();
+  }
 }
 
 void TestIdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
@@ -148,13 +153,15 @@ void TestIdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   account_from_error_state_of_refresh_token_updated_callback_ = account_info;
   error_from_error_state_of_refresh_token_updated_callback_ = error;
-  if (on_error_state_of_refresh_token_updated_callback_)
+  if (on_error_state_of_refresh_token_updated_callback_) {
     std::move(on_error_state_of_refresh_token_updated_callback_).Run();
+  }
 }
 
 void TestIdentityManagerObserver::OnRefreshTokensLoaded() {
-  if (on_refresh_tokens_loaded_callback_)
+  if (on_refresh_tokens_loaded_callback_) {
     std::move(on_refresh_tokens_loaded_callback_).Run();
+  }
 }
 
 void TestIdentityManagerObserver::OnAccountsInCookieUpdated(
@@ -162,8 +169,9 @@ void TestIdentityManagerObserver::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   accounts_info_from_cookie_change_callback_ = accounts_in_cookie_jar_info;
   error_from_cookie_change_callback_ = error;
-  if (on_accounts_in_cookie_updated_callback_)
+  if (on_accounts_in_cookie_updated_callback_) {
     std::move(on_accounts_in_cookie_updated_callback_).Run();
+  }
 }
 
 void TestIdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {

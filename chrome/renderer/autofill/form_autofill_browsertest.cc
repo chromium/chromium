@@ -304,8 +304,13 @@ void ApplyFieldsAction(
                                *base::MakeRefCounted<FieldDataManager>());
 }
 
-constexpr CallTimerState kCallTimerStateDummy = {
+static constexpr CallTimerState kExtractFormDataCallTimerStateDummy = {
     .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+static constexpr CallTimerState kUpdateFormCacheCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kExtractForms,
     .last_autofill_agent_reset = {},
     .last_dom_content_loaded = {},
 };
@@ -313,7 +318,8 @@ constexpr CallTimerState kCallTimerStateDummy = {
 FormData FindForm(const blink::WebFormControlElement& element) {
   if (auto p = FindFormAndFieldForFormControlElement(
           element, *base::MakeRefCounted<FieldDataManager>(),
-          kCallTimerStateDummy, {})) {
+          kExtractFormDataCallTimerStateDummy, /*extract_options=*/{},
+          /*form_cache=*/{})) {
     return p->first;
   }
   return FormData();
@@ -370,9 +376,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
   std::optional<FormData> ExtractFormData(
       WebFormElement form,
       DenseSet<ExtractOption> extract_options = {}) {
-    return form_util::ExtractFormData(GetDocument(), form,
-                                      *base::MakeRefCounted<FieldDataManager>(),
-                                      kCallTimerStateDummy, extract_options);
+    return form_util::ExtractFormData(
+        GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
+        kExtractFormDataCallTimerStateDummy, extract_options);
   }
 
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -381,12 +387,14 @@ class FormAutofillTest : public test::AutofillRendererTest {
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::FindFormAndFieldForFormControlElement(
         control, *base::MakeRefCounted<FieldDataManager>(),
-        kCallTimerStateDummy, extract_options);
+        kExtractFormDataCallTimerStateDummy, extract_options,
+        /*form_cache=*/{});
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
     return form_cache_->UpdateFormCache(
-        *base::MakeRefCounted<FieldDataManager>());
+        *base::MakeRefCounted<FieldDataManager>(),
+        kUpdateFormCacheCallTimerStateDummy);
   }
 
   void ExpectLabels(const char* html,
@@ -3908,21 +3916,13 @@ TEST_F(FormAutofillTest, LabelsInferredWithImageTags) {
 
   id_attributes.push_back(u"");
   name_attributes.push_back(u"dayphone2");
-  labels.push_back(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  labels.push_back(u"");
   names.push_back(name_attributes.back());
   values.emplace_back();
 
   id_attributes.push_back(u"");
   name_attributes.push_back(u"dayphone3");
-  labels.push_back(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  labels.push_back(u"");
   names.push_back(name_attributes.back());
   values.emplace_back();
 
@@ -4202,20 +4202,12 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   expected.set_name(expected.name_attribute());
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
-  expected.set_label(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  expected.set_label(u"");
   expected.set_name_attribute(u"dayphone2");
   expected.set_name(expected.name_attribute());
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
-  expected.set_label(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  expected.set_label(u"");
   expected.set_name_attribute(u"dayphone3");
   expected.set_name(expected.name_attribute());
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
@@ -4264,21 +4256,13 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
 
   expected.set_name_attribute(u"dayphone2");
-  expected.set_label(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  expected.set_label(u"");
   expected.set_name(expected.name_attribute());
   expected.set_max_length(3);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
 
   expected.set_name_attribute(u"dayphone3");
-  expected.set_label(
-      base::FeatureList::IsEnabled(
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
-          ? u"-"
-          : u"");
+  expected.set_label(u"");
   expected.set_name(expected.name_attribute());
   expected.set_max_length(4);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);

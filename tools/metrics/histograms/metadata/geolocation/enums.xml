@@ -86,6 +86,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kCustomOnly"/>
   <int value="3" label="kHybridPlatform"/>
   <int value="4" label="kHybridFallbackNetwork"/>
+  <int value="5" label="kHybridPlatform2"/>
 </enum>
 
 <enum name="LocationProviderManagerSource">

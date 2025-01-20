@@ -72,8 +72,8 @@ source_set("drive_service") {
     "drive_service.mm",
     "drive_service_configuration.h",
   ]
-  deps = [ "//components/keyed_service/core" ]
   public_deps = [ "//base" ]
+  deps = [ "//components/keyed_service/core" ]
 }
 
 source_set("drive_file_downloader") {
@@ -108,11 +108,10 @@ source_set("drive_service_factory") {
   deps = [
     ":drive_service",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",

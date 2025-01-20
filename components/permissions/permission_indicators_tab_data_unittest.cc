@@ -5,6 +5,7 @@
 #include "components/permissions/permission_indicators_tab_data.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -97,27 +98,27 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationUsageRecord) {
       content::WebContents::CapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
-  histogram_tester().ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation", 7);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFourSeconds, 0);
-  histogram_tester().ExpectBucketCount(
+      base::Seconds(5), 1);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenSeconds, 1);
-  histogram_tester().ExpectBucketCount(
+      base::Seconds(11), 1);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneMinute, 1);
-  histogram_tester().ExpectBucketCount(
+      base::Minutes(2), 1);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFiveMinutes, 1);
-  histogram_tester().ExpectBucketCount(
+      base::Minutes(6), 1);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenMinutes, 1);
-  histogram_tester().ExpectBucketCount(
+      base::Minutes(11), 1);
+  // Overflow bucket:
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneHour, 1);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kMoreThanOneHour, 2);
+      base::Hours(2), 2);
 }
 
 // The following tested:
@@ -152,27 +153,11 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationWatchUsageRecord) {
       content::WebContents::CapabilityType::kGeolocation, false);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
-  histogram_tester().ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation", 2);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFourSeconds, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenSeconds, 2);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneMinute, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFiveMinutes, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenMinutes, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneHour, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kMoreThanOneHour, 0);
+      base::Seconds(5), 2);
 }
 
 TEST_F(PermissionIndicatorsTabDataTest, GeolocationUsageRecordAfterNavigation) {
@@ -201,27 +186,135 @@ TEST_F(PermissionIndicatorsTabDataTest, GeolocationUsageRecordAfterNavigation) {
       content::WebContents::CapabilityType::kGeolocation, true);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url2);
-  histogram_tester().ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation", 1);
+  histogram_tester().ExpectTimeBucketCount(
       "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFourSeconds, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenSeconds, 1);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneMinute, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kFiveMinutes, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kTenMinutes, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kOneHour, 0);
-  histogram_tester().ExpectBucketCount(
-      "Permissions.Usage.ElapsedTimeSinceLastUsage.Geolocation",
-      PermissionIndicatorsTabData::Duration::kMoreThanOneHour, 0);
+      base::Seconds(5), 1);
+}
+
+TEST_F(PermissionIndicatorsTabDataTest, MicrophoneUsageRecord) {
+  GURL url1("https://www.google.com");
+  GURL url2("https://www.example.com");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url1);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Seconds(11));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Minutes(2));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Minutes(6));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Minutes(11));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Hours(2));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  task_environment()->AdvanceClock(base::Hours(17));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC, false);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url2);
+  histogram_tester().ExpectTotalCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture", 6);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture",
+      base::Seconds(11), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture",
+      base::Minutes(2), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture",
+      base::Minutes(6), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture",
+      base::Minutes(11), 1);
+  // Overflow bucket:
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.AudioCapture",
+      base::Hours(2), 2);
+}
+
+TEST_F(PermissionIndicatorsTabDataTest, CameraUsageRecord) {
+  GURL url1("https://www.google.com");
+  GURL url2("https://www.example.com");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url1);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Seconds(11));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Minutes(2));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Minutes(6));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Minutes(11));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Hours(2));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  task_environment()->AdvanceClock(base::Hours(17));
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, true);
+  tab_data().OnMediaCaptureChanged(
+      RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA, false);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url2);
+  histogram_tester().ExpectTotalCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture", 6);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture",
+      base::Seconds(11), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture",
+      base::Minutes(2), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture",
+      base::Minutes(6), 1);
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture",
+      base::Minutes(11), 1);
+  // Overflow bucket:
+  histogram_tester().ExpectTimeBucketCount(
+      "Permissions.Usage.ElapsedTimeSinceLastUsage.VideoCapture",
+      base::Hours(2), 2);
 }
 
 }  // namespace permissions

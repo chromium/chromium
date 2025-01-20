@@ -192,7 +192,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
     // affiliated ones in the `login_mixin_.users()` array.
     login_mixin_.AppendRegularUsers(2);
   }
-  ~NSSContextChromeOSBrowserTest() override {}
+  ~NSSContextChromeOSBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();

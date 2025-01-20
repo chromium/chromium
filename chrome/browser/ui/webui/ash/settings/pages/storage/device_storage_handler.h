@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_STORAGE_DEVICE_STORAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_STORAGE_DEVICE_STORAGE_HANDLER_H_
 
+#include <array>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,8 +14,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "third_party/re2/src/re2/re2.h"
 
 class Profile;
 
@@ -98,9 +99,9 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // Updates list of external storages.
   void UpdateExternalStorages();
 
-  // Returns true if the volume from |source_path| can be used as Android
+  // Returns true if the volume from |mount_point| can be used as Android
   // storage.
-  bool IsEligibleForAndroidStorage(std::string source_path);
+  bool IsEligibleForAndroidStorage(const MountPoint& mount_point);
 
   // Update encryption type whenever it is fetched.
   void OnGetVaultProperties(
@@ -121,15 +122,14 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   std::bitset<SizeCalculator::kCalculationTypeCount> calculation_state_;
 
   // Keeps track of the size of each storage item.
-  int64_t storage_items_total_bytes_[SizeCalculator::kCalculationTypeCount] = {
-      0};
+  std::array<int64_t, SizeCalculator::kCalculationTypeCount>
+      storage_items_total_bytes_{0};
 
   const raw_ptr<Profile> profile_;
   const std::string source_name_;
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>
       arc_observation_{this};
-  const re2::RE2 special_volume_path_pattern_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

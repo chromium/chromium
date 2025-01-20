@@ -66,7 +66,7 @@ FastInitiationScanner::FastInitiationScanner(
   DCHECK(adapter_ && adapter_->IsPresent() && adapter_->IsPowered());
 }
 
-FastInitiationScanner::~FastInitiationScanner() {}
+FastInitiationScanner::~FastInitiationScanner() = default;
 
 void FastInitiationScanner::StartScanning(
     base::RepeatingClosure devices_detected_callback,

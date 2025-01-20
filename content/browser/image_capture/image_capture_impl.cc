@@ -172,7 +172,7 @@ bool ImageCaptureImpl::HasPanTiltZoomPermissionGranted() {
 
   return MediaDevicesPermissionChecker::
       HasPanTiltZoomPermissionGrantedOnUIThread(
-          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetProcess()->GetDeprecatedID(),
           render_frame_host().GetRoutingID());
 }
 }  // namespace content

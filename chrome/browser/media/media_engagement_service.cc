@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/media_engagement_contents_observer.h"
+#include "chrome/browser/media/media_engagement_preloaded_list.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -48,28 +49,6 @@ enum class MediaEngagementClearReason {
   kHistoryExpired = 4,
   kCount
 };
-
-bool MediaEngagementFilterAdapter(
-    const url::Origin& predicate,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  return predicate == origin;
-}
-
-bool MediaEngagementTimeFilterAdapter(
-    MediaEngagementService* service,
-    base::Time delete_begin,
-    base::Time delete_end,
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  DCHECK(!origin.opaque());
-  MediaEngagementScore score = service->CreateEngagementScore(origin);
-  base::Time playback_time = score.last_media_playback_time();
-  return playback_time >= delete_begin && playback_time <= delete_end;
-}
 
 }  // namespace
 
@@ -161,10 +140,15 @@ void MediaEngagementService::ClearDataBetweenTime(
     const base::Time& delete_end) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->ClearSettingsForOneTypeWithPredicate(
-          ContentSettingsType::MEDIA_ENGAGEMENT, base::Time(),
-          base::Time::Max(),
-          base::BindRepeating(&MediaEngagementTimeFilterAdapter, this,
-                              delete_begin, delete_end));
+          ContentSettingsType::MEDIA_ENGAGEMENT,
+          [&](const ContentSettingPatternSource& setting) {
+            url::Origin origin =
+                url::Origin::Create(GURL(setting.primary_pattern.ToString()));
+            DCHECK(!origin.opaque());
+            MediaEngagementScore score = CreateEngagementScore(origin);
+            base::Time playback_time = score.last_media_playback_time();
+            return playback_time >= delete_begin && playback_time <= delete_end;
+          });
 }
 
 void MediaEngagementService::Shutdown() {
@@ -243,10 +227,13 @@ void MediaEngagementService::RemoveOriginsWithNoVisits(
 void MediaEngagementService::Clear(const url::Origin& origin) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->ClearSettingsForOneTypeWithPredicate(
-          ContentSettingsType::MEDIA_ENGAGEMENT, base::Time(),
-          base::Time::Max(),
-          base::BindRepeating(&MediaEngagementFilterAdapter,
-                              std::cref(origin)));
+          ContentSettingsType::MEDIA_ENGAGEMENT,
+          [&](const ContentSettingPatternSource& setting) {
+            url::Origin pattern_origin =
+                url::Origin::Create(GURL(setting.primary_pattern.ToString()));
+            DCHECK(!pattern_origin.opaque());
+            return origin == pattern_origin;
+          });
 }
 
 double MediaEngagementService::GetEngagementScore(
@@ -256,7 +243,26 @@ double MediaEngagementService::GetEngagementScore(
 
 bool MediaEngagementService::HasHighEngagement(
     const url::Origin& origin) const {
-  return CreateEngagementScore(origin).high_score();
+  MediaEngagementScore score = CreateEngagementScore(origin);
+  bool has_high_engagement = score.high_score();
+  if (has_high_engagement) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly)) {
+    DCHECK(!has_high_engagement || (origin.scheme() == url::kHttpsScheme));
+  }
+
+  if (!base::FeatureList::IsEnabled(media::kPreloadMediaEngagementData)) {
+    return false;
+  }
+
+  if (score.visits() >= MediaEngagementScore::GetScoreMinVisits()) {
+    return false;
+  }
+
+  return MediaEngagementPreloadedList::GetInstance()->CheckOriginIsPresent(
+      origin);
 }
 
 std::map<url::Origin, double> MediaEngagementService::GetScoreMapForTesting()

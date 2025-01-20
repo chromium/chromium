@@ -115,7 +115,9 @@ class ASH_EXPORT BirchItem {
   virtual BirchAddonType GetAddonType() const;
   virtual std::u16string GetAddonAccessibleName() const;
 
+  void set_title(const std::u16string& title) { title_ = title; }
   const std::u16string& title() const { return title_; }
+
   const std::u16string& subtitle() const { return subtitle_; }
 
   void set_ranking(float ranking) { ranking_ = ranking; }

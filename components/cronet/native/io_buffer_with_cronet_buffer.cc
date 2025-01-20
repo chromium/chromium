@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/cronet/native/io_buffer_with_cronet_buffer.h"
 
 #include "base/no_destructor.h"
@@ -30,8 +35,8 @@ namespace cronet {
 IOBufferWithCronet_Buffer::IOBufferWithCronet_Buffer(
     Cronet_BufferPtr cronet_buffer)
     : net::WrappedIOBuffer(
-          base::make_span(static_cast<const char*>(cronet_buffer->GetData()),
-                          static_cast<size_t>(cronet_buffer->GetSize()))),
+          base::span(static_cast<const char*>(cronet_buffer->GetData()),
+                     static_cast<size_t>(cronet_buffer->GetSize()))),
       cronet_buffer_(cronet_buffer) {}
 
 IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {

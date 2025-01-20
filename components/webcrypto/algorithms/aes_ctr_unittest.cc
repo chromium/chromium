@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -47,7 +49,7 @@ const char k128BitTestKey[] = "7691BE035E5020A8AC6E618529F9A0DC";
 const char k256BitTestKey[] =
     "F6D66D6BD52D59BB0796365879EFF886C66DD51A5B6A99744B50590C87A23884";
 
-const AesCtrKnownAnswer kAesCtrKnownAnswers[] = {
+const auto kAesCtrKnownAnswers = std::to_array<AesCtrKnownAnswer>({
     // RFC 3686 test vector #3:
     {k128BitTestKey,
      "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223",
@@ -94,7 +96,7 @@ const AesCtrKnownAnswer kAesCtrKnownAnswers[] = {
      "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE", 128,
      "D2C49B275BC73814DC90ECE98959041C9A3481F2247E08B0AF5D8DE3F521C9DAF535B0A81"
      "56DF9D2370EE7328103C8AD"},
-};
+});
 
 TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
   for (const auto& test : kAesCtrKnownAnswers) {
@@ -178,8 +180,8 @@ TEST_F(WebCryptoAesCtrTest, OverflowAndRepeatCounter) {
 
   // 16 and 17 AES blocks worth of data respectively (AES blocks are 16 bytes
   // long).
-  auto input_16 = base::make_span(buffer).first(256u);
-  auto input_17 = base::make_span(buffer).first(272u);
+  auto input_16 = base::span(buffer).first<256>();
+  auto input_17 = base::span(buffer).first<272>();
 
   std::vector<uint8_t> output;
 

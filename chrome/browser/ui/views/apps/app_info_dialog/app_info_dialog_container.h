@@ -13,7 +13,7 @@
 namespace views {
 class DialogDelegateView;
 class View;
-}
+}  // namespace views
 
 // Creates a new native dialog of the given |size| containing |view| with a
 // close button and draggable titlebar.

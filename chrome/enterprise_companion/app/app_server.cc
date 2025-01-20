@@ -45,13 +45,13 @@ bool IsSystemProcess() {
   CAccessToken current_process_token;
   if (!current_process_token.GetProcessToken(TOKEN_QUERY,
                                              ::GetCurrentProcess())) {
-    PLOG(ERROR) << "CAccessToken::GetProcessToken failed";
+    VPLOG(1) << "CAccessToken::GetProcessToken failed";
     return false;
   }
 
   CSid logon_sid;
   if (!current_process_token.GetUser(&logon_sid)) {
-    PLOG(ERROR) << "CAccessToken::GetUser failed";
+    VPLOG(1) << "CAccessToken::GetUser failed";
     return false;
   }
 
@@ -80,9 +80,8 @@ class AppServer : public App {
                 << token.error();
             if (token.has_value()) {
               if (!::ImpersonateLoggedOnUser(token->get())) {
-                PLOG(ERROR)
-                    << "Failed to impersonate logged on user. Networking "
-                       "may fail.";
+                VPLOG(1) << "Failed to impersonate logged on user. Networking "
+                            "may fail.";
               }
             }
           }));

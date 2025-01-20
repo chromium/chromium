@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
-#include <map>
-#include <string>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -15,7 +14,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -39,13 +37,6 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/sync/base/features.h"
-#endif
-
 using signin::ConsentLevel;
 
 namespace {
@@ -54,7 +45,7 @@ const int kProfileImageSize = 128;
 // Derives screen mode of sync opt in screen from the
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
 constexpr bool UseMinorModeRestrictions() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS handles minor modes separately.
   return false;
 #else
@@ -65,6 +56,66 @@ constexpr bool UseMinorModeRestrictions() {
 inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
   return GetScreenMode(primary_account_info.capabilities) ==
          SyncConfirmationScreenMode::kPending;
+}
+
+SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
+  if (!value.is_int()) {
+    return SyncConfirmationScreenMode::kUnsupported;
+  }
+  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
+}
+
+// Records the button click in the `mode` context. `equal` denotes button to
+// record in kRestricted `mode`, and `notEqual` denotes button to record in
+// kUnrestricted `mode`.
+void RecordButtonClicked(SyncConfirmationScreenMode mode,
+                         signin_metrics::SyncButtonClicked equal,
+                         signin_metrics::SyncButtonClicked not_equal) {
+  if (mode == SyncConfirmationScreenMode::kUnsupported) {
+    // Do not record metrics from SyncConfirmation screens that don't support
+    // minor modes.
+    return;
+  }
+
+  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+    case SyncConfirmationScreenMode::kDeadlined:
+      button_clicked = equal;
+      break;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      button_clicked = not_equal;
+      break;
+    case SyncConfirmationScreenMode::kPending:
+      // Special case: the only button that can be clicked in this mode is the
+      // settings button.
+      button_clicked =
+          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
+}
+
+// Translates screen `mode` to the corresponding metric describing what type of
+// buttons are presented.
+signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
+    SyncConfirmationScreenMode mode) {
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability;
+    case SyncConfirmationScreenMode::kDeadlined:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      return signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
+
+    // Metric is not emitted for these cases:
+    case SyncConfirmationScreenMode::kUnsupported:
+    case SyncConfirmationScreenMode::kPending:
+      NOTREACHED();
+  }
 }
 }  // namespace
 
@@ -105,8 +156,9 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
 }
 
 void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser_ == browser)
+  if (browser_ == browser) {
     browser_ = nullptr;
+  }
 }
 
 void SyncConfirmationHandler::RegisterMessages() {
@@ -128,17 +180,15 @@ void SyncConfirmationHandler::RegisterMessages() {
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterMessageCallback(
-      "openDeviceSyncSettings",
-      base::BindRepeating(
-          &SyncConfirmationHandler::HandleOpenDeviceSyncSettings,
-          base::Unretained(this)));
-#endif
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
-  CHECK_EQ(2U, args.size()) << "Args must contain consent information.";
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -146,7 +196,12 @@ void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
 
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size()) << "Args must contain consent information.";
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
+
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
@@ -154,7 +209,12 @@ void SyncConfirmationHandler::HandleGoToSettings(
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
-  CHECK(args.empty());
+  CHECK_EQ(1U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[0]),
+      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -171,15 +231,6 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   // yet, the listener will be fired again through `OnAccountUpdated()`.
   DispatchAccountInfoUpdate(primary_account_info);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
-    const base::Value::List& args) {
-  std::string os_sync_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_sync_settings_url.append(chromeos::settings::mojom::kSyncSubpagePath);
-  lacros_url_handling::NavigateInAsh(GURL(os_sync_settings_url));
-}
-#endif
 
 void SyncConfirmationHandler::RecordConsent(
     const base::Value::List& consent_description,
@@ -238,7 +289,30 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();
 
+  // Note on timing: this function is executed exactly once
+  // because it sets `screen_mode_notified_` to `true`. This means that the
+  // latencies are recorded only once, but either immediately from
+  // `HandleInitializedWithSize`, or subsequently as a result of OnDeadline or
+  // OnExtendedAccountInfoUpdated. For the latter case, the timer was started in
+  // `HandleInitializedWithSize` when the capability was requested but not
+  // available.
+
+  if (user_visible_latency_.has_value()) {
+    // Timer was started so it means it is a subsequent attempt.
+    base::TimeDelta elapsed = user_visible_latency_->Elapsed();
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            elapsed);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency", elapsed);
+  } else {
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              true);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            base::Seconds(0));
+  }
+
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown",
+                                GetButtonTypeMetricValue(mode));
 }
 
 void SyncConfirmationHandler::OnDeadline() {
@@ -340,6 +414,17 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
 
   DispatchAccountInfoUpdate(primary_account_info);
 
+  if (UseMinorModeRestrictions() && ScreenModeIsPending(primary_account_info) &&
+      !user_visible_latency_.has_value()) {
+    CHECK(!screen_mode_notified_);
+    // `user_visible_latency_` timer is only ticking when the capabilities
+    // were not immediately available, but is only started at the very first
+    // attempt to access them.
+    user_visible_latency_.emplace();
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              false);
+  }
+
   if (!avatar_notified_ ||
       (!screen_mode_notified_ && UseMinorModeRestrictions())) {
     // IdentityManager emits both avatar and screen mode information.
@@ -353,6 +438,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
                                 this, &SyncConfirmationHandler::OnDeadline);
   }
 
-  if (browser_)
+  if (browser_) {
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
+  }
 }

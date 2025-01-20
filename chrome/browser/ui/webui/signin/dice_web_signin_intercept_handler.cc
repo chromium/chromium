@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -29,6 +30,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -39,6 +41,8 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+using signin::constants::kNoHostedDomainFound;
+
 namespace {
 
 BASE_FEATURE(kSigninInterceptSimpleButtons,
@@ -46,7 +50,7 @@ BASE_FEATURE(kSigninInterceptSimpleButtons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
-constexpr char kSupervisedBadgeSource[] = "cr20:kite";
+constexpr char kSupervisedBadgeSource[] = "cr:kite";
 
 // Returns true if the account is managed (aka Enterprise, or Dasher).
 bool IsManaged(const AccountInfo& info) {
@@ -72,14 +76,18 @@ SkColor GetProfileHighlightColor(Profile* profile) {
 base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
   std::string_view avatar_badge = "";
+  std::string avatar_badge_alt_text = "";
   if (IsManaged(info)) {
     avatar_badge = kEnterprizeBadgeSource;
   } else if (IsSupervisedUser(info.capabilities) &&
              base::FeatureList::IsEnabled(
                  supervised_user::kShowKiteForSupervisedUsers)) {
     avatar_badge = kSupervisedBadgeSource;
+    avatar_badge_alt_text =
+        l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
   }
   account_info_value.Set("avatarBadge", avatar_badge);
+  account_info_value.Set("userBadgeAltText", avatar_badge_alt_text);
   account_info_value.Set("pictureUrl", signin::GetAccountPictureUrl(info));
   return account_info_value;
 }
@@ -136,8 +144,9 @@ void DiceWebSigninInterceptHandler::OnJavascriptDisallowed() {
 
 void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (!info.IsValid())
+  if (!info.IsValid()) {
     return;
+  }
 
   bool should_fire_event = false;
   if (info.account_id == intercepted_account().account_id) {
@@ -192,10 +201,12 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
 
   // If there is no extended info for the primary account, populate with
   // reasonable defaults.
-  if (primary_account().hosted_domain.empty())
+  if (primary_account().hosted_domain.empty()) {
     bubble_parameters_.primary_account.hosted_domain = kNoHostedDomainFound;
-  if (primary_account().given_name.empty())
+  }
+  if (primary_account().given_name.empty()) {
     bubble_parameters_.primary_account.given_name = primary_account().email;
+  }
 
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
@@ -256,13 +267,17 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   parameters.Set("pictureUrl",
                  signin::GetAccountPictureUrl(intercepted_account()));
 
-  std::string_view managed_user_badge = "";
+  std::string managed_user_badge;
+  std::string managed_user_badge_alt_text;
   if (IsSupervisedUser(intercepted_account().capabilities) &&
       base::FeatureList::IsEnabled(
           supervised_user::kShowKiteForSupervisedUsers)) {
     managed_user_badge = kSupervisedBadgeSource;
+    managed_user_badge_alt_text =
+        l10n_util::GetStringUTF8(IDS_MANAGED_BY_PARENT_A11Y);
   }
   parameters.Set("managedUserBadge", managed_user_badge);
+  parameters.Set("userBadgeAltText", managed_user_badge_alt_text);
   return parameters;
 }
 
@@ -290,6 +305,12 @@ DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
 
   parameters.Set("headerTextColor",
                  color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
+                     bubble_parameters_.profile_highlight_color)));
+  parameters.Set("primaryProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
+                     GetProfileHighlightColor(Profile::FromWebUI(web_ui())))));
+  parameters.Set("interceptedProfileBadgeColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundIconColor(
                      bubble_parameters_.profile_highlight_color)));
   return parameters;
 }
@@ -487,8 +508,9 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
   std::string manager_domain = intercepted_account().IsManaged()
                                    ? intercepted_account().hosted_domain
                                    : std::string();
-  if (manager_domain.empty())
-    manager_domain = chrome::GetDeviceManagerIdentity().value_or(std::string());
+  if (manager_domain.empty()) {
+    manager_domain = GetDeviceManagerIdentity().value_or(std::string());
+  }
 
   if (manager_domain.empty()) {
     return l10n_util::GetStringFUTF8(

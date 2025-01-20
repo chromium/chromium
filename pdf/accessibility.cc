@@ -54,6 +54,8 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
     chars[i].unicode_character = page->GetCharUnicode(i);
   }
 
+  // TODO(crbug.com/40707542): Move the entire logic present in the following
+  // while loop to `PDFiumPage` class.
   uint32_t char_index = 0;
   while (char_index < char_count) {
     std::optional<AccessibilityTextRunInfo> text_run_info_result =
@@ -106,6 +108,7 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
     char_index += text_run_info.len;
   }
 
+  page->PopulateTextRunTypeAndImageAltText(text_runs);
   page_info.text_run_count = text_runs.size();
   page_objects.links = page->GetLinkInfo(text_runs);
   page_objects.images = page->GetImageInfo(page_info.text_run_count);

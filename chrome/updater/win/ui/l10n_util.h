@@ -19,9 +19,8 @@ std::wstring GetPreferredLanguage();
 // the language tag. The string is read from the binary's string table, and the
 // localized message id of the string will be calculated based off of the
 // language offsets defined in updater_installer_strings.h.
-std::wstring GetLocalizedString(
-    unsigned int base_message_id,
-    const std::wstring& lang = GetPreferredLanguage());
+std::wstring GetLocalizedString(unsigned int base_message_id,
+                                std::wstring lang = GetPreferredLanguage());
 
 // Returns a formatted version of the localized string in which there is only
 // one replacement.

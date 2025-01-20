@@ -11,21 +11,24 @@
 #include "ash/shell.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
-const char kPrimaryProfileName[] = "primary_profile@example.com";
-const char kSecondaryProfileName[] = "secondary_profile@example.com";
+constexpr char kPrimaryProfileName[] = "primary_profile@example.com";
+constexpr char kSecondaryProfileName[] = "secondary_profile@example.com";
+constexpr char kFakeGaia2[] = "fakegaia2";
 
 }  // namespace
 
 class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kPrimaryProfileName;
+  }
 
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -59,10 +62,7 @@ TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
   EXPECT_TRUE(classroom_client_primary);
   EXPECT_TRUE(tasks_client_primary);
 
-  const auto first_account_id = AccountId::FromUserEmail(kPrimaryProfileName);
-  const auto second_account_id =
-      AccountId::FromUserEmail(kSecondaryProfileName);
-  LogIn(kSecondaryProfileName);
+  LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
   auto* secondary_profile =
       profile_manager()->CreateTestingProfile(kSecondaryProfileName,
                                               /*is_main_profile=*/false);

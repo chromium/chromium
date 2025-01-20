@@ -11,7 +11,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
@@ -204,7 +204,7 @@ function handleBrowserCommand(messageData: BrowserCommand) {
 
 function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
   const {handler} = WhatsNewProxyImpl.getInstance();
-  const now: JSTime = {msec: Date.now()};
+  const now = new Date();
   handler.recordTimeToLoadContent(now);
 
   // Record initial scroll depth as 0%.
@@ -429,14 +429,9 @@ export class WhatsNewAppElement extends CrLitElement {
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    if (loadTimeData.getBoolean('isWhatsNewV2')) {
-      // The browser has auto-opened the page due to an upgrade.
-      // Let the embedded page know to display the "up to date" banner.
-      this.url_ = url.concat(`updated=${latest}`);
-    } else {
-      // The latest version of the page is being shown. Do not redirect.
-      this.url_ = url.concat(`latest=${latest}`);
-    }
+    // The browser has auto-opened the page due to an upgrade.
+    // Let the embedded page know to display the "up to date" banner.
+    this.url_ = url.concat(`updated=${latest}`);
 
     this.eventTracker_.add(
         window, 'message',

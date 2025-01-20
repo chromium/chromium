@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -23,10 +24,6 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     bool cancelable,
     Node* target,
     DOMWindow* source) {
-  // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
-  // DCHECK_LE(start_time, processing_start);
-  DCHECK_LE(reporting_info.processing_start_time,
-            reporting_info.processing_end_time);
   CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, std::move(reporting_info),
@@ -41,7 +38,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
           entry->name(), performance_entry_names::kFirstInput,
           *entry->GetEventTimingReportingInfo(), entry->cancelable(),
           entry->target(), entry->source());
-  first_input->SetDuration(entry->duration());
+  first_input->SetDuration(entry->duration_);
   if (entry->HasKnownInteractionID()) {
     first_input->SetInteractionIdAndOffset(entry->interactionId(),
                                            entry->interactionOffset());
@@ -64,14 +61,6 @@ PerformanceEventTiming::PerformanceEventTiming(
           0.0,
           source),
       entry_type_(entry_type),
-      processing_start_(
-          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
-              ->MonotonicTimeToDOMHighResTimeStamp(
-                  reporting_info.processing_start_time)),
-      processing_end_(
-          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
-              ->MonotonicTimeToDOMHighResTimeStamp(
-                  reporting_info.processing_end_time)),
       cancelable_(cancelable),
       target_(target),
       reporting_info_(reporting_info) {}
@@ -85,10 +74,22 @@ PerformanceEntryType PerformanceEventTiming::EntryTypeEnum() const {
 }
 
 DOMHighResTimeStamp PerformanceEventTiming::processingStart() const {
+  if (!processing_start_) {
+    processing_start_ =
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
+            ->MonotonicTimeToDOMHighResTimeStamp(
+                reporting_info_.processing_start_time);
+  }
   return processing_start_;
 }
 
 DOMHighResTimeStamp PerformanceEventTiming::processingEnd() const {
+  if (!processing_end_) {
+    processing_end_ =
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
+            ->MonotonicTimeToDOMHighResTimeStamp(
+                reporting_info_.processing_end_time);
+  }
   return processing_end_;
 }
 
@@ -96,11 +97,16 @@ Node* PerformanceEventTiming::target() const {
   return Performance::CanExposeNode(target_) ? target_ : nullptr;
 }
 
+void PerformanceEventTiming::SetTarget(Node* target) {
+  target_ = target;
+}
+
 uint32_t PerformanceEventTiming::interactionId() const {
   if (reporting_info_.prevent_counting_as_interaction) {
     return 0u;
   }
-  return interaction_id_.value_or(0);
+  CHECK(interaction_id_.has_value());
+  return interaction_id_.value();
 }
 
 void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
@@ -112,16 +118,27 @@ bool PerformanceEventTiming::HasKnownInteractionID() const {
 }
 
 bool PerformanceEventTiming::HasKnownEndTime() const {
-  return reporting_info_.presentation_time.has_value() ||
-         reporting_info_.fallback_time.has_value();
+  return !reporting_info_.presentation_time.is_null() ||
+         !reporting_info_.fallback_time.is_null();
+}
+
+bool PerformanceEventTiming::IsReadyForReporting() const {
+  return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime();
 }
 
 base::TimeTicks PerformanceEventTiming::GetEndTime() const {
   CHECK(HasKnownEndTime());
-  if (reporting_info_.fallback_time.has_value()) {
-    return reporting_info_.fallback_time.value();
+  if (!reporting_info_.fallback_time.is_null()) {
+    return reporting_info_.fallback_time;
   }
-  return reporting_info_.presentation_time.value();
+  return reporting_info_.presentation_time;
+}
+
+void PerformanceEventTiming::UpdateFallbackTime(base::TimeTicks fallback_time) {
+  if (reporting_info_.fallback_time.is_null() ||
+      fallback_time < reporting_info_.fallback_time) {
+    reporting_info_.fallback_time = fallback_time;
+  }
 }
 
 uint32_t PerformanceEventTiming::interactionOffset() const {
@@ -283,9 +300,9 @@ void PerformanceEventTiming::SetPerfettoData(
   event_timing->set_node_id(target_ ? target_->GetDomNodeId()
                                     : kInvalidDOMNodeId);
   event_timing->set_frame(GetFrameIdForTracing(frame).Ascii());
-  if (reporting_info_.fallback_time.has_value()) {
+  if (!reporting_info_.fallback_time.is_null()) {
     event_timing->set_fallback_time_us(
-        (reporting_info_.fallback_time.value() - time_origin).InMicroseconds());
+        (reporting_info_.fallback_time - time_origin).InMicroseconds());
   }
   if (reporting_info_.key_code.has_value()) {
     event_timing->set_key_code(reporting_info_.key_code.value());
@@ -334,13 +351,24 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
       (reporting_info_.enqueued_to_main_thread_time - origin_time)
           .InMillisecondsF());
 
-  if (reporting_info_.commit_finish_time.has_value()) {
+  if (!reporting_info_.commit_finish_time.is_null()) {
     traced_value->SetDouble(
         "commitFinishTime",
-        (reporting_info_.commit_finish_time.value() - origin_time)
-            .InMillisecondsF());
+        (reporting_info_.commit_finish_time - origin_time).InMillisecondsF());
   }
   return traced_value;
+}
+
+bool PerformanceEventTiming::NeedsNextPaintMeasurement() const {
+  // Skip events that don't need a next paint measure.
+  if (!reporting_info_.fallback_time.is_null()) {
+    return false;
+  }
+  // Skip events that haven't finished processing yet.
+  if (reporting_info_.processing_end_time.is_null()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace blink

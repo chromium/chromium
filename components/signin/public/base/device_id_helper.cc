@@ -7,14 +7,13 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 
 namespace signin {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 std::string GetSigninScopedDeviceId(PrefService* prefs) {
   std::string signin_scoped_device_id =

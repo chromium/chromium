@@ -55,6 +55,20 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
 
+#if BUILDFLAG(IS_ANDROID)
+// This is a workaround to ensure ExtensionSystem is initialized properly for
+// incognito profile in split mode on Android.
+// Since DesktopAndroidExtensionSystem does not use `shared_` instance (keyed
+// service) to share the states and services between regular and incognito
+// profiles, as a workaround, when an extension runs in split incognito
+// mode, we need to call `InitForRegularProfile` to instantiated these objects
+// (eg quota_service, etc) for incognito DesktopAndroidExtensionSystem
+// instance. Otherwise, it will lead to crash when the objects are accessed.
+// TODO(crbug.com/356905053): Remove this workaround when the proper
+// extension runtime is implemented on Android.
+void InitExtensionSystemForIncognitoSplit(content::BrowserContext* context);
+#endif
+
 // Returns true if this extension can inject scripts into pages with file URLs.
 bool AllowFileAccess(const ExtensionId& extension_id,
                      content::BrowserContext* context);

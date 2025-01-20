@@ -24,28 +24,28 @@ std::optional<uid_t> GuessLoggedInUser() {
   base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
       nullptr, CFSTR(PRODUCT_FULLNAME_STRING), nullptr, nullptr));
   if (!store) {
-    LOG(ERROR) << "SCDynamicStoreCreate failed";
+    VLOG(1) << "SCDynamicStoreCreate failed";
     return std::nullopt;
   }
 
   base::apple::ScopedCFTypeRef<CFPropertyListRef> plist(
       SCDynamicStoreCopyValue(store.get(), CFSTR("State:/Users/ConsoleUser")));
   if (!plist) {
-    LOG(ERROR) << "SCDynamicStoreCopyValue failed";
+    VLOG(1) << "SCDynamicStoreCopyValue failed";
     return std::nullopt;
   }
 
   NSDictionary* plist_dict = base::apple::CFToNSPtrCast(
       base::apple::CFCast<CFDictionaryRef>(plist.get()));
   if (!plist_dict) {
-    LOG(ERROR) << "plist not a dictionary.";
+    VLOG(1) << "plist not a dictionary.";
     return std::nullopt;
   }
 
   NSArray<NSDictionary*>* session_info_array =
       base::apple::ObjCCast<NSArray>(plist_dict[@"SessionInfo"]);
   if (!session_info_array) {
-    LOG(ERROR) << "SessionInfo not NSArray";
+    VLOG(1) << "SessionInfo not NSArray";
     return std::nullopt;
   }
 
@@ -53,7 +53,7 @@ std::optional<uid_t> GuessLoggedInUser() {
     NSNumber* is_console_session = base::apple::ObjCCast<NSNumber>(
         session_dict[base::apple::CFToNSPtrCast(kCGSessionOnConsoleKey)]);
     if (!is_console_session) {
-      LOG(ERROR) << "kCGSSessionOnConsoleKey not NSNumber";
+      VLOG(1) << "kCGSSessionOnConsoleKey not NSNumber";
       continue;
     }
 
@@ -61,7 +61,7 @@ std::optional<uid_t> GuessLoggedInUser() {
       NSNumber* uid = base::apple::ObjCCast<NSNumber>(
           session_dict[base::apple::CFToNSPtrCast(kCGSessionUserIDKey)]);
       if (!uid) {
-        LOG(ERROR) << "kCGSSessionUserIDKey not NSNumber";
+        VLOG(1) << "kCGSSessionUserIDKey not NSNumber";
         continue;
       }
       return uid.unsignedIntValue;

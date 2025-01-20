@@ -107,7 +107,6 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
    protected:
     friend WorkerThread;
-    static bool IsDelayFirstWorkerSleepEnabled();
 
     // Called in WaitForWork() to hide the worker's synchronization
     // mechanism. Returns |true| if signaled, and |false| if the call timed out.

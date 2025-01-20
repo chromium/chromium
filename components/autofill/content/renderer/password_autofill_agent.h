@@ -24,6 +24,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -147,8 +148,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                                      FieldRendererId password_element_id,
                                      const std::u16string& username,
                                      const std::u16string& password) override;
-  void InformNoSavedCredentials(
-      bool should_show_popup_without_passwords) override;
+  void InformNoSavedCredentials() override;
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
   void PreviewField(FieldRendererId field_id,
@@ -156,6 +156,13 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillField(FieldRendererId field_id,
                  const std::u16string& value,
                  AutofillSuggestionTriggerSource suggestion_source) override;
+  void SubmitChangePasswordForm(
+      FieldRendererId password_element_id,
+      FieldRendererId new_password_element_id,
+      FieldRendererId confirm_password_element_id,
+      const std::u16string& old_password,
+      const std::u16string& new_password,
+      SubmitChangePasswordFormCallback callback) override;
   void SetLoggingState(bool active) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
@@ -164,19 +171,18 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TriggerFormSubmission() override;
 #endif
 
-  void OnFormSubmitted(const blink::WebFormElement& form);
-
   // WebLocalFrameClient editor related calls forwarded by AutofillAgent.
   // If they return true, it indicates the event was consumed and should not
-  // be used for any other autofill activity.
-  bool TextDidChangeInTextField(const blink::WebInputElement& element);
+  // be used for any other autofill activity. `form_cache` can be used to
+  // optimize form extractions occurring synchronously after this function call.
+  bool TextDidChangeInTextField(const blink::WebInputElement& element,
+                                const SynchronousFormCache& form_cache);
 
   // Called from AutofillAgent::UpdateStateForTextChange() to do
-  // password-manager specific work. `extracted_form`, if not null, is the
-  // updated `FormData` objects where `element` exists as a `FormFieldData`.
-  void UpdatePasswordStateForTextChange(
-      const blink::WebInputElement& element,
-      base::optional_ref<FormData> extracted_form = std::nullopt);
+  // password-manager specific work. `form_cache` can be used to optimize form
+  // extractions occurring synchronously after this function call.
+  void UpdatePasswordStateForTextChange(const blink::WebInputElement& element,
+                                        const SynchronousFormCache& form_cache);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -208,12 +214,16 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // If `generation_popup_showing` is true, this function will return false
   // as both UIs should not be shown at the same time. This function should
   // still be called in this situation so that UMA stats can be logged.
-  // Returns true if any suggestions were shown, false otherwise.
+  // Returns true if any suggestions were shown, false otherwise. `form_cache`
+  // can be used to optimize form extractions occurring synchronously after this
+  // function call.
   bool ShowSuggestions(const blink::WebInputElement& element,
-                       AutofillSuggestionTriggerSource trigger_source);
+                       AutofillSuggestionTriggerSource trigger_source,
+                       const SynchronousFormCache& form_cache);
 
-  // Called when new form controls are inserted.
-  void OnDynamicFormsSeen();
+  // Called when new form controls are inserted. `form_cache` can be used to
+  // optimize form extractions occurring synchronously after this function call.
+  void OnDynamicFormsSeen(const SynchronousFormCache& form_cache);
 
   // Called when the user interacts with the page after a load. This is a
   // signal to make autofilled values of password input elements accessible to
@@ -221,9 +231,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void UserGestureObserved();
 
   std::optional<FormData> GetFormDataFromWebForm(
-      const blink::WebFormElement& web_form);
+      const blink::WebFormElement& web_form,
+      const SynchronousFormCache& form_cache);
 
-  std::optional<FormData> GetFormDataFromUnownedInputElements();
+  std::optional<FormData> GetFormDataFromUnownedInputElements(
+      const SynchronousFormCache& form_cache);
 
   // Notification that form element was cleared by HTMLFormElement::reset()
   // method. This can be used as a signal of a successful submission for change
@@ -237,27 +249,33 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   bool logging_state_active() const { return logging_state_active_; }
 
+  // TODO(crbug.com/40281981): Replace `form_id` with non-optional
+  // `submitted_form`.
   void FireHostSubmitEvent(FormRendererId form_id,
+                           base::optional_ref<const FormData> submitted_form,
                            mojom::SubmissionSource source);
 
   // `form` and `input` are the elements user has just been interacting with
   // before the form save. `form` or `input` can be null but not both at the
   // same time. For example: if the form is unowned, `form` will be null; if the
-  // user has submitted the form, `input` will be null. `extracted_form`, if not
-  // null, is the updated `FormData` objects where `input` exists as a
-  // `FormFieldData`.
-  void InformBrowserAboutUserInput(
-      const blink::WebFormElement& form,
-      const blink::WebInputElement& input,
-      base::optional_ref<FormData> extracted_form = std::nullopt);
+  // user has submitted the form, `input` will be null. `form_cache` can be used
+  // to optimize form extractions occurring synchronously after this function
+  // call.
+  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
+                                   const blink::WebInputElement& input,
+                                   const SynchronousFormCache& form_cache);
 
   // Determine whether the current frame is allowed to access the password
   // manager. For example, frames with about:blank documents or documents with
   // unique origins aren't allowed access.
   virtual bool FrameCanAccessPasswordManager();
 
+  // Called by `AutofillAgent::DidDispatchDOMContentLoadedEvent()`. `form_cache`
+  // can be used to optimize form extractions occurring synchronously after this
+  // function call.
+  void DispatchedDOMContentLoadedEvent(const SynchronousFormCache& form_cache);
+
   // RenderFrameObserver:
-  void DidDispatchDOMContentLoadedEvent() override;
   void DidFinishLoad() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
@@ -405,34 +423,50 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     std::vector<FieldRef> elements_;
   };
 
+  // TODO(crbug.com/40947729): Make `submitted_form` a const reference when
+  // `AutofillOptimizeFormExtraction` is launched.
+  void OnFormSubmitted(FormData submitted_form);
+
   // Annotate `forms` and all fields in the current frame with form and field
   // signatures as HTML attributes. Used by
   // chrome://flags/#enable-show-autofill-signatures only.
   void AnnotateFormsAndFieldsWithSignatures(
-      blink::WebVector<blink::WebFormElement>& forms);
+      blink::WebVector<blink::WebFormElement>& forms,
+      const SynchronousFormCache& form_cache);
 
   // Scans the given frame for password forms and sends them up to the browser.
   // If `only_visible` is true, only forms visible in the layout are sent.
-  void SendPasswordForms(bool only_visible);
+  // `form_cache` can be used to optimize form extractions occurring
+  // synchronously after this function call.
+  void SendPasswordForms(bool only_visible,
+                         const SynchronousFormCache& form_cache);
 
   // Performs necessary feasibility checks and triggers password suggestions
   // for the current domain on the `element`. `trigger_source` is used to
-  // distinguish between the ways of how Autofill was triggered.
+  // distinguish between the ways of how Autofill was triggered. `form_cache`
+  // can be used to optimize form extractions occurring synchronously after this
+  // function call.
   bool ShowSuggestionsForDomain(const blink::WebInputElement& element,
-                                AutofillSuggestionTriggerSource trigger_source);
+                                AutofillSuggestionTriggerSource trigger_source,
+                                const SynchronousFormCache& form_cache);
 
   // Performs necessary feasibility checks and triggers manual fallback
-  // suggestion on the provided `element`.
-  bool ShowManualFallbackSuggestions(const blink::WebInputElement& element);
+  // suggestion on the provided `element`. `form_cache` can be used to optimize
+  // form extractions occurring synchronously after this function call.
+  bool ShowManualFallbackSuggestions(const blink::WebInputElement& element,
+                                     const SynchronousFormCache& form_cache);
 
   // Instructs the browser to show a pop-up suggesting which credentials could
   // be filled. If the username exists, it should be passed as `user_input`. If
   // there is no username, pass the password field in `user_input`. In the
   // latter case, no username value will be shown in the pop-up.
-  // Suggestion will be shown only on editable fields.
+  // Suggestion will be shown only on editable fields. `form_cache` can be used
+  // to optimize form extractions occurring synchronously after this function
+  // call.
   void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
-                           AutofillSuggestionTriggerSource trigger_source);
+                           AutofillSuggestionTriggerSource trigger_source,
+                           const SynchronousFormCache& form_cache);
 
   // Finds the PasswordInfo, username and password fields corresponding to the
   // passed in `element`, which can refer to either a username or a password
@@ -477,11 +511,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
-  // field.
+  // Uses `flags` to set appropriate `FieldPropertiesMask` for a filled field.
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential,
-                   AutofillSuggestionTriggerSource suggestion_source);
+                   FieldPropertiesFlags flags);
 
   // Given `username_element` and `password_element`, previews `username` and
   // `password` respectively into them.
@@ -570,9 +603,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void SetLastUpdatedFormAndField(const blink::WebFormElement& form,
                                   const blink::WebFormControlElement& input);
 
-  bool CanShowPopupWithoutPasswords(
-      const blink::WebInputElement& password_element) const;
-
   // Returns true if the element is of type 'password' and has either user typed
   // input or input autofilled on user trigger.
   bool IsPasswordFieldFilledByUser(
@@ -612,8 +642,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Set of fields that are reliably identified as non-credential fields.
   base::flat_set<FieldRendererId> suggestion_banned_fields_;
-
-  bool should_show_popup_without_passwords_ = false;
 
   PasswordValueGatekeeper gatekeeper_;
 

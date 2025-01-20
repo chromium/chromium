@@ -49,6 +49,14 @@ public class MockitoHelper {
                         });
     }
 
+    /**
+     * Simplified version of {@link #doCallback(int, Callback)} when the same value is always given
+     * to the callback.
+     */
+    public static <T> Stubber runWithValue(int index, T value) {
+        return doCallback(index, (Callback<T> callback) -> callback.onResult(value));
+    }
+
     /** When no argument is needed. */
     public static Stubber doRunnable(Runnable runnable) {
         return Mockito.doAnswer(

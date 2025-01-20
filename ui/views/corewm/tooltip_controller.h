@@ -33,7 +33,7 @@ class Rect;
 namespace wm {
 class ActivationClient;
 class TooltipObserver;
-}
+}  // namespace wm
 
 namespace views::corewm {
 

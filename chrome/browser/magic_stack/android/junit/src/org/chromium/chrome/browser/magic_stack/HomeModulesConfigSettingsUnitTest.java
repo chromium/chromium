@@ -23,7 +23,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,6 +54,7 @@ public class HomeModulesConfigSettingsUnitTest {
 
     @After
     public void tearDown() {
+        mHomeModulesConfigManager.cleanupForTesting();
         mActivityScenario.close();
     }
 
@@ -102,6 +105,46 @@ public class HomeModulesConfigSettingsUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
+    })
+    public void testLaunchHomeModulesConfigSettingsForEducationalTipModules() {
+        registerModuleConfigChecker(10);
+
+        String tabGroupPromoNotExistedPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.TAB_GROUP_PROMO));
+        String defaultBrowserPromoPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.DEFAULT_BROWSER_PROMO));
+
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        HomeModulesConfigSettings fragment =
+                (HomeModulesConfigSettings)
+                        fragmentManager
+                                .getFragmentFactory()
+                                .instantiate(
+                                        HomeModulesConfigSettings.class.getClassLoader(),
+                                        HomeModulesConfigSettings.class.getName());
+        fragment.setProfile(mProfile);
+        fragmentManager.beginTransaction().replace(android.R.id.content, fragment).commit();
+        mActivityScenario.moveToState(State.STARTED);
+
+        ChromeSwitchPreference switchNotExisted =
+                fragment.findPreference(tabGroupPromoNotExistedPreferenceKey);
+        Assert.assertNull(switchNotExisted);
+
+        ChromeSwitchPreference switchExisted =
+                fragment.findPreference(defaultBrowserPromoPreferenceKey);
+        Assert.assertEquals(
+                mActivity.getString(R.string.educational_tip_module_name),
+                switchExisted.getTitle());
+        Assert.assertTrue(switchExisted.isChecked());
+    }
+
+    @Test
+    @SmallTest
     public void testLaunchHomeModulesConfigSettingsWithBlankPage() {
         ModuleConfigChecker moduleConfigChecker = Mockito.mock(ModuleConfigChecker.class);
         when(moduleConfigChecker.isEligible()).thenReturn(false);
@@ -125,6 +168,10 @@ public class HomeModulesConfigSettingsUnitTest {
     private void registerModuleConfigChecker(int size) {
         size = Math.min(size, ModuleType.NUM_ENTRIES);
         for (int i = 0; i < size; i++) {
+            if (i == ModuleType.DEPRECATED_EDUCATIONAL_TIP) {
+                continue;
+            }
+
             ModuleConfigChecker moduleConfigChecker = Mockito.mock(ModuleConfigChecker.class);
             when(moduleConfigChecker.isEligible()).thenReturn(true);
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, moduleConfigChecker);

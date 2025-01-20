@@ -31,22 +31,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Valid AccountId must be used, otherwise DCHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
 
-  // Create and add a new user. Created user is not affiliated with the domain,
-  // that owns the device.
-  const User* AddUser(const AccountId& account_id);
-  const User* AddChildUser(const AccountId& account_id);
-  const User* AddGuestUser(const AccountId& account_id);
-  const User* AddKioskAppUser(const AccountId& account_id);
-
-  // The same as AddUser() but allows to specify user affiliation with the
-  // domain, that owns the device.
-  const User* AddUserWithAffiliation(const AccountId& account_id,
-                                     bool is_affiliated);
-
-  // Create and add a new public account. Created user is not affiliated with
-  // the domain, that owns the device.
-  virtual const user_manager::User* AddPublicAccountUser(
-      const AccountId& account_id);
+  // Creates and adds a new Kiosk user.
+  User* AddKioskAppUser(const AccountId& account_id);
 
   void LogoutAllUsers();
 
@@ -61,77 +47,26 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                                       bool is_ephemeral);
 
   // UserManager overrides.
-  UserList GetUsersAllowedForMultiUserSignIn() const override;
-  void UpdateUserAccountData(const AccountId& account_id,
-                             const UserAccountData& account_data) override;
-
-  // Set the user as logged in.
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& username_hash,
                     bool browser_restart,
                     bool is_child) override;
-
-  const User* GetActiveUser() const override;
-  User* GetActiveUser() override;
   void SwitchActiveUser(const AccountId& account_id) override;
-  void SaveUserDisplayName(const AccountId& account_id,
-                           const std::u16string& display_name) override;
-
-  // Not implemented.
-  void Shutdown() override {}
-  const UserList& GetLRULoggedInUsers() const override;
-  UserList GetUnlockUsers() const override;
-  const AccountId& GetOwnerAccountId() const override;
-  void OnSessionStarted() override {}
-  bool IsKnownUser(const AccountId& account_id) const override;
-  void SaveUserOAuthStatus(const AccountId& account_id,
-                           User::OAuthTokenStatus oauth_token_status) override {
-  }
-  void SaveForceOnlineSignin(const AccountId& account_id,
-                             bool force_online_signin) override {}
-  void SaveUserDisplayEmail(const AccountId& account_id,
-                            const std::string& display_email) override {}
-  std::optional<std::string> GetOwnerEmail() override;
-  bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
-  bool IsUserLoggedIn() const override;
-  bool IsLoggedInAsUserWithGaiaAccount() const override;
-  bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
   bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  bool IsGuestSessionAllowed() const override;
-  bool IsGaiaUserAllowed(const User& user) const override;
-  bool IsUserAllowed(const User& user) const override;
-  bool IsDeprecatedSupervisedAccountId(
-      const AccountId& account_id) const override;
-
-  // UserManagerImpl overrides:
-  bool IsDeviceLocalAccountMarkedForRemoval(
-      const AccountId& account_id) const override;
-  void SetUserAffiliated(const AccountId& account_id,
-                         bool is_affiliated) override {}
 
   // Just make it public for tests.
+  using UserManagerImpl::AddEphemeralUser;
+  using UserManagerImpl::AddGaiaUser;
+  using UserManagerImpl::AddGuestUser;
+  using UserManagerImpl::AddPublicAccountUser;
   using UserManagerImpl::ResetOwnerId;
   using UserManagerImpl::SetEphemeralModeConfig;
   using UserManagerImpl::SetOwnerId;
 
- protected:
-  // If set this is the active user. If empty, the first created user is the
-  // active user.
-  AccountId active_account_id_ = EmptyAccountId();
-
  private:
-  // We use this internal function for const-correctness.
-  User* GetActiveUserInternal() const;
-
-  // stub, always empty.
-  AccountId owner_account_id_ = EmptyAccountId();
-
-  // stub. Always empty.
-  gfx::ImageSkia empty_image_;
-
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.
   std::set<AccountId> accounts_with_ephemeral_non_cryptohome_data_;

@@ -25,7 +25,9 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
   if (command_status.code() == kUnexpectedAlertOpen ||
       command_status.code() == kTimeout ||
       command_status.code() == kAbortedByNavigation ||
-      command_status.code() == kNoSuchExecutionContext) {
+      command_status.code() == kNoSuchExecutionContext ||
+      command_status.code() == kDisconnected ||
+      command_status.code() == kTabCrashed) {
     return command_status;
   }
 
@@ -146,7 +148,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // wait for pending navigations to complete, since we won't see any more
     // events from it until we reconnect.
     *is_pending = false;
-    return Status(kOk);
+    return status;
   }
   if (status.code() == kTargetDetached) {
     // If we receive a kTargetDetached status code from Runtime.evaluate, don't
@@ -216,17 +218,27 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
       return Status(kOk);
     }
 
-    if (*doc_url != "about:blank" && *base_url == "about:blank") {
-      *is_pending = true;
-      *loading_state_ = kLoading;
+    if (*base_url == "about:blank") {
+      // Special case for pages like "about:blank?test"
+      // These are created by the browser therefore the aforementioned heuristic
+      // does not apply to them.
+      if (doc_url->starts_with("about:blank")) {
+        *is_pending = false;
+        *loading_state_ = kNotLoading;
+      } else {
+        *is_pending = true;
+        *loading_state_ = kLoading;
+      }
       return Status(kOk);
     }
 
     status = UpdateCurrentLoadingState();
-    if (status.code() == kNoSuchExecutionContext)
+    if (status.code() == kNoSuchExecutionContext ||
+        status.code() == kAbortedByNavigation) {
       *loading_state_ = kLoading;
-    else if (status.IsError())
+    } else if (status.IsError()) {
       return MakeNavigationCheckFailedStatus(status);
+    }
   }
   *is_pending = GetLoadingState() == kLoading;
   return Status(kOk);

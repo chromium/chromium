@@ -30,9 +30,9 @@ import {OncMojo} from './onc_mojo.js';
 function createDefaultProxySettings(): ManagedProxySettings {
   return {
     type: OncMojo.createManagedString('Direct'),
-    manual: undefined,
-    excludeDomains: undefined,
-    pac: undefined,
+    manual: null,
+    excludeDomains: null,
+    pac: null,
   };
 }
 
@@ -242,8 +242,12 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
         proxy.pac = OncMojo.createManagedString('');
       }
     } else if (type === 'Manual') {
-      proxy.manual =
-          proxy.manual || this.savedManual_ || new ManagedManualProxySettings();
+      proxy.manual = proxy.manual || this.savedManual_ || {
+        httpProxy: null,
+        secureHttpProxy: null,
+        ftpProxy: null,
+        socks: null,
+      };
       assert(proxy.manual);
       if (!proxy.manual.httpProxy) {
         proxy.manual.httpProxy = this.createDefaultProxyLocation_(80);
@@ -258,7 +262,7 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
           proxy.excludeDomains || this.savedExcludeDomains_ || {
             activeValue: [],
             policySource: PolicySource.kNone,
-            policyValue: undefined,
+            policyValue: null,
           };
     }
     return proxy;
@@ -275,7 +279,7 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
     // settings and use the default value.
     if (this.isShared_() && proxySettings &&
         !this.isControlled(proxySettings.type) && !this.useSharedProxies) {
-      proxySettings = undefined;  // Ignore proxy settings.
+      proxySettings = null;  // Ignore proxy settings.
     }
 
     const proxy = proxySettings ? this.validateProxy_(proxySettings) :
@@ -320,9 +324,9 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
   }
 
   private getProxyLocation_(location: ManagedProxyLocation|undefined|
-                            null): ProxyLocation|undefined {
+                            null): ProxyLocation|null {
     if (!location) {
-      return undefined;
+      return null;
     }
     return {
       host: location.host.activeValue,
@@ -339,21 +343,29 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
       return;
     }
 
-    const proxy = new ProxySettings();
-    proxy.type = proxyType;
-    proxy.excludeDomains =
-        OncMojo.getActiveValue(this.proxy_.excludeDomains) as string[] |
-        undefined;
+    const proxy: ProxySettings = {
+      type: proxyType,
+      excludeDomains: OncMojo.getActiveValue(this.proxy_.excludeDomains) as
+              string[] ||
+          null,
+      manual: null,
+      pac: null,
+    };
 
     if (proxyType === 'Manual') {
-      let manual = new ManualProxySettings();
+      let manual: ManualProxySettings = {
+        httpProxy: null,
+        secureHttpProxy: null,
+        ftpProxy: null,
+        socks: null,
+      };
       if (this.proxy_.manual) {
         this.savedManual_ = {...this.proxy_.manual};
         manual = {
           httpProxy: this.getProxyLocation_(this.proxy_.manual.httpProxy),
           secureHttpProxy:
               this.getProxyLocation_(this.proxy_.manual.secureHttpProxy),
-          ftpProxy: undefined,
+          ftpProxy: null,
           socks: this.getProxyLocation_(this.proxy_.manual.socks),
         };
       }
@@ -367,13 +379,13 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
       } else {
         // Remove properties with empty hosts to unset them.
         if (manual.httpProxy && !manual.httpProxy.host) {
-          delete manual.httpProxy;
+          manual.httpProxy = null;
         }
         if (manual.secureHttpProxy && !manual.secureHttpProxy.host) {
-          delete manual.secureHttpProxy;
+          manual.secureHttpProxy = null;
         }
         if (manual.socks && !manual.socks.host) {
-          delete manual.socks;
+          manual.socks = null;
         }
       }
       proxy.manual = manual;

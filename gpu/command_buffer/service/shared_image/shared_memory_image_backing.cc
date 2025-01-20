@@ -216,8 +216,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
   for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
     auto info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
-                                  viz::ToClosestSkColorType(
-                                      /*gpu_compositing=*/true, format, plane),
+                                  viz::ToClosestSkColorType(format, plane),
                                   alpha_type, color_space.ToSkColorSpace());
     pixmaps_.push_back(shared_memory_wrapper_.MakePixmapForPlane(info, plane));
   }

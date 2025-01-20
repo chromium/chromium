@@ -21,13 +21,7 @@ from urllib.parse import urlsplit
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
-from blinkpy.w3c.wpt_results_processor import (
-    RunInfo,
-    TestType,
-    WPTResult,
-    chromium_to_wptrunner_statuses,
-    normalize_statuses,
-)
+from blinkpy.w3c.wpt_manifest import TestType
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.testharness_results import (
     LineType,
@@ -37,6 +31,12 @@ from blinkpy.web_tests.models.testharness_results import (
 )
 from blinkpy.web_tests.models.typ_types import (ExpectationType, ResultType)
 from blinkpy.web_tests.port.base import Port
+from blinkpy.wpt_tests.wpt_results_processor import (
+    RunInfo,
+    WPTResult,
+    chromium_to_wptrunner_statuses,
+    normalize_statuses,
+)
 
 path_finder.bootstrap_wpt_imports()
 from manifest.item import ManifestItem

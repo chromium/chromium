@@ -43,7 +43,7 @@ namespace ash::file_manager {
 // class.
 class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
  public:
-  SqlStorage(base::FilePath db_path, const std::string& uma_tag);
+  SqlStorage(base::FilePath db_path, sql::Database::Tag uma_tag);
   ~SqlStorage() override;
 
   SqlStorage(const SqlStorage&) = delete;
@@ -100,10 +100,6 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
 
   // Resets the database to empty state. Only call after catastrophic error.s
   void Restart();
-
-  // The User Metric Analysis (uma) tag for recording events related to SQL
-  // storage.
-  const std::string uma_tag_;
 
   // The full path to the database (folder and name).
   base::FilePath db_path_;

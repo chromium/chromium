@@ -44,8 +44,7 @@ constexpr uint8_t kUnavailableComponentSha256Hash[] = {
 static void ExpectTrueToJava(bool condition, const std::string& error) {
   if (!condition) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_EmbeddedComponentLoaderTest_fail(
-        env, base::android::ConvertUTF8ToJavaString(env, error));
+    Java_EmbeddedComponentLoaderTest_fail(env, error);
   }
 }
 

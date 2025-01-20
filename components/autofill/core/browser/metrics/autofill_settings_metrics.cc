@@ -22,10 +22,6 @@ AutofillPreferenceSetter GetAutofillPreferenceSetter(
     const PrefService::Preference* pref) {
   if (pref->IsUserControlled()) {
     return AutofillPreferenceSetter::kUserSetting;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (pref->IsStandaloneBrowserControlled()) {
-    return AutofillPreferenceSetter::kStandaloneBrowser;
-#endif
   } else if (pref->IsExtensionControlled()) {
     return AutofillPreferenceSetter::kExtension;
   } else if (pref->IsManagedByCustodian()) {

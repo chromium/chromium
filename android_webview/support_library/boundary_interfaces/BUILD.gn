@@ -12,9 +12,9 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/NoVarySearchDataBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/PrefetchOperationResultBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/PrefetchParamsBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/PrefetchStatusCodeBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchExceptionBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchNetworkExceptionBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchOperationCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProcessGlobalConfigConstants.java",
     "src/org/chromium/support_lib_boundary/ProfileBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProfileStoreBoundaryInterface.java",
@@ -24,6 +24,8 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerWebSettingsBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/SpeculativeLoadingConfigBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/SpeculativeLoadingParametersBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/VisualStateCallbackBoundaryInterface.java",
@@ -35,14 +37,19 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebResourceErrorBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebSettingsBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebStorageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewCookieManagerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewProviderFactoryBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewRendererBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewRendererClientBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewStartUpCallbackBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewStartUpConfigBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewStartUpResultBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebkitToCompatConverterBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java",
+    "src/org/chromium/support_lib_boundary/util/Contract.java",
     "src/org/chromium/support_lib_boundary/util/Features.java",
   ]
 
@@ -52,7 +59,17 @@ android_library("boundary_interface_java") {
   # build when we mirror this into AndroidX. We are only permitted to depend on
   # core Android classes and other AndroidX classes (must be in the androidx.*
   # package name).
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = [
+    "//third_party/android_deps:org_jspecify_jspecify_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+
+  # Prevent automatic dep on build_java.
+  chromium_code = false
+
+  # Do not let chromium_code = false disable Error Prone.
+  enable_errorprone = true
 }
 
 android_apk("boundary_interface_example_apk") {

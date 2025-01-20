@@ -35,7 +35,9 @@
 
 #include <assert.h>
 #include <math.h>
+
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -524,8 +526,8 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
     return;
   }
 
-  const float* sources[kMaxBusChannels];
-  float* destinations[kMaxBusChannels];
+  std::array<const float*, kMaxBusChannels> sources;
+  std::array<float*, kMaxBusChannels> destinations;
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
     sources[i] = source_bus.Channel(i)->Data();

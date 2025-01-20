@@ -78,9 +78,8 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
                  << " instead of CERTIFICATE";
       return std::nullopt;
     }
-    std::string sha256_hex =
-        base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(
-            base::make_span(data, base::checked_cast<size_t>(len)))));
+    std::string sha256_hex = base::ToLowerASCII(base::HexEncode(
+        crypto::SHA256Hash(base::span(data, base::checked_cast<size_t>(len)))));
     certs[sha256_hex] = std::string(data, data + len);
   }
   return std::move(certs);

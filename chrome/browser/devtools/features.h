@@ -53,14 +53,6 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiAssistanceNetworkAgentUserTier;
 
-BASE_DECLARE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood);
-extern const base::FeatureParam<std::string>
-    kDevToolsAiAssistancePerformanceAgentDogfoodModelId;
-extern const base::FeatureParam<double>
-    kDevToolsAiAssistancePerformanceAgentDogfoodTemperature;
-extern const base::FeatureParam<DevToolsFreestylerUserTier>
-    kDevToolsAiAssistancePerformanceAgentDogfoodUserTier;
-
 BASE_DECLARE_FEATURE(kDevToolsAiAssistancePerformanceAgent);
 extern const base::FeatureParam<std::string>
     kDevToolsAiAssistancePerformanceAgentModelId;
@@ -81,6 +73,7 @@ BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
+BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

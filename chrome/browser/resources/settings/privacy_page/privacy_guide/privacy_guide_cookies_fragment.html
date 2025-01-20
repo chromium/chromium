@@ -22,37 +22,43 @@
       <div slot="collapse" class="settings-columned-section">
         <div class="column">
           <h3 class="description-header">
-            $i18n{privacyGuideFeatureDescriptionHeader}
+            $i18n{columnHeadingWhenOn}
           </h3>
-          <div role="list">
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:shoppingcart"
-                label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription1}">
-            </privacy-guide-description-item>
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:broken"
-                label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription2}">
-            </privacy-guide-description-item>
-          </div>
+          <ul class="icon-bulleted-list">
+            <li>
+              <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
+              </cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription1}
+              </div>
+            </li>
+            <li>
+              <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription2}
+              </div>
+            </li>
+          </ul>
         </div>
         <div class="column">
           <h3 class="description-header">
-            $i18n{privacyGuideThingsToConsider}
+            $i18n{columnHeadingConsider}
           </h3>
-          <div role="list">
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:block"
-                label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription1}">
-            </privacy-guide-description-item>
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:incognito-unfilled"
-                label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription2}">
-            </privacy-guide-description-item>
-          </div>
+          <ul class="icon-bulleted-list">
+            <li>
+              <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription1}
+              </div>
+            </li>
+            <li>
+              <cr-icon icon="settings20:incognito-unfilled" aria-hidden="true">
+              </cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription2}
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </settings-collapse-radio-button>
@@ -65,32 +71,36 @@
       <div slot="collapse" class="settings-columned-section">
         <div class="column">
           <h3 class="description-header">
-            $i18n{privacyGuideFeatureDescriptionHeader}
+            $i18n{columnHeadingWhenOn}
           </h3>
-          <div role="list">
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:shoppingcart"
-                label="$i18n{privacyGuideCookiesCardBlockTpcFeatureDescription1}">
-            </privacy-guide-description-item>
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:broken"
-                label="$i18n{privacyGuideCookiesCardBlockTpcFeatureDescription2}">
-            </privacy-guide-description-item>
-          </div>
+          <ul class="icon-bulleted-list">
+            <li>
+              <cr-icon icon="settings20:shoppingcart" aria-hidden="true">
+              </cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription1}
+              </div>
+            </li>
+            <li>
+              <cr-icon icon="settings20:broken" aria-hidden="true"></cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcFeatureDescription2}
+              </div>
+            </li>
+          </ul>
         </div>
         <div class="column">
           <h3 class="description-header">
-            $i18n{privacyGuideThingsToConsider}
+            $i18n{columnHeadingConsider}
           </h3>
-          <div role="list">
-            <privacy-guide-description-item
-                role="listitem"
-                icon="settings20:block"
-                label="$i18n{privacyGuideCookiesCardBlockTpcPrivacyDescription1}">
-            </privacy-guide-description-item>
-          </div>
+          <ul class="icon-bulleted-list">
+            <li>
+              <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
+              <div class="secondary">
+                $i18n{privacyGuideCookiesCardBlockTpcPrivacyDescription1}
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </settings-collapse-radio-button>

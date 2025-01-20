@@ -361,7 +361,7 @@ NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
 
 void FakeSystemIdentityManager::FetchCapabilities(
     id<SystemIdentity> identity,
-    const std::set<std::string>& names,
+    const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaID]);
@@ -397,6 +397,14 @@ bool FakeSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
                                            NSError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;
+}
+
+void FakeSystemIdentityManager::FetchTokenAuthURL(
+    id<SystemIdentity> identity,
+    NSURL* target_url,
+    AuthenticatedURLCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(/*url=*/target_url, /*error=*/nil);
 }
 
 base::WeakPtr<FakeSystemIdentityManager>
@@ -482,7 +490,7 @@ void FakeSystemIdentityManager::GetHostedDomainAsync(
 
 void FakeSystemIdentityManager::FetchCapabilitiesAsync(
     id<SystemIdentity> identity,
-    const std::set<std::string>& names,
+    const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {

@@ -10,12 +10,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
-#include "ash/components/arc/test/fake_policy_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -41,6 +35,12 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "chromeos/ash/experiences/arc/test/fake_policy_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -55,6 +55,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -150,7 +151,7 @@ class MockArcPolicyBridgeObserver : public ArcPolicyBridge::Observer {
 // |true| before destruction.
 class CheckedBoolean {
  public:
-  CheckedBoolean() {}
+  CheckedBoolean() = default;
 
   CheckedBoolean(const CheckedBoolean&) = delete;
   CheckedBoolean& operator=(const CheckedBoolean&) = delete;
@@ -223,7 +224,7 @@ class ArcPolicyBridgeTestBase {
     // Set up user profile for ReportCompliance() tests.
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, "1111111111"));
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("1111111111")));
     fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
     fake_user_manager_->LoginUser(account_id);
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(

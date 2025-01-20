@@ -8,6 +8,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
@@ -16,6 +17,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
 
 /** Bridges content and joystick device event conversion and forwarding. */
+@NullMarked
 public class JoystickHandler implements ImeEventObserver, UserData {
     private final EventForwarder mEventForwarder;
 
@@ -27,8 +29,12 @@ public class JoystickHandler implements ImeEventObserver, UserData {
     }
 
     public static JoystickHandler fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(JoystickHandler.class, UserDataFactoryLazyHolder.INSTANCE);
+        JoystickHandler ret =
+                ((WebContentsImpl) webContents)
+                        .getOrSetUserData(
+                                JoystickHandler.class, UserDataFactoryLazyHolder.INSTANCE);
+        assert ret != null;
+        return ret;
     }
 
     /**

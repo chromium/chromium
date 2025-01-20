@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -17,14 +18,12 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
-#include <list>
 #include <memory>
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include <list>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
@@ -229,8 +228,8 @@ class BASE_EXPORT WaitableEvent {
   // so we have a kernel of the WaitableEvent, which is reference counted.
   // WaitableEventWatchers may then take a reference and thus match the Windows
   // behaviour.
-  struct WaitableEventKernel :
-      public RefCountedThreadSafe<WaitableEventKernel> {
+  struct WaitableEventKernel
+      : public RefCountedThreadSafe<WaitableEventKernel> {
    public:
     WaitableEventKernel(ResetPolicy reset_policy, InitialState initial_state);
 
@@ -239,7 +238,7 @@ class BASE_EXPORT WaitableEvent {
     base::Lock lock_;
     const bool manual_reset_;
     bool signaled_;
-    std::list<raw_ptr<Waiter, CtnExperimental>> waiters_;
+    base::circular_deque<raw_ptr<Waiter, CtnExperimental>> waiters_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;
@@ -254,7 +253,8 @@ class BASE_EXPORT WaitableEvent {
   // second element is the index of the WaitableEvent in the original,
   // unsorted, array.
   static size_t EnqueueMany(WaiterAndIndex* waitables,
-                            size_t count, Waiter* waiter);
+                            size_t count,
+                            Waiter* waiter);
 
   bool SignalAll();
   bool SignalOne();

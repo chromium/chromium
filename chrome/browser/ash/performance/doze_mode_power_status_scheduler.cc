@@ -6,14 +6,17 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/performance/pref_names.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 
 namespace ash {
 
@@ -41,6 +44,8 @@ constexpr base::TimeDelta kMaxSimulatedBatteryStatusDuration =
 constexpr base::TimeDelta kCompensatedRealPowerStatusDuration =
     base::Minutes(10);
 
+constexpr int kFakeBatteryCapacityLimit = 20;
+
 base::TimeDelta GetAndResetPref(PrefService* pref_service,
                                 std::string_view pref_name) {
   const base::TimeDelta unreported_duration =
@@ -55,6 +60,18 @@ void AddToTimeDeltaPref(PrefService* pref_service,
   const base::TimeDelta unreported_duration =
       pref_service->GetTimeDelta(pref_name);
   pref_service->SetTimeDelta(pref_name, unreported_duration + time_delta);
+}
+
+void OnModifyFakePowerConfigResponse(
+    std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
+  if (!reply.has_value()) {
+    LOG(ERROR) << "Failed to modify fake power config: empty reply";
+  } else if (!reply.value().success()) {
+    LOG(ERROR) << "Failed to modify fake power config: request failed; failure "
+                  "reason: "
+               << reply.value().failure_reason();
+  }
+  return;
 }
 
 }  // namespace
@@ -148,6 +165,9 @@ void DozeModePowerStatusScheduler::Start() {
   simulated_battery_timer_.set_remaining_duration(
       kMaxSimulatedBatteryStatusDuration);
   force_real_power_timer_.set_remaining_duration(base::TimeDelta());
+
+  user_id_hash_ = ProfileHelper::GetUserIdHashFromProfile(
+      arc::ArcSessionManager::Get()->profile());
 }
 
 void DozeModePowerStatusScheduler::Stop() {
@@ -173,8 +193,10 @@ void DozeModePowerStatusScheduler::Stop() {
 }
 
 void DozeModePowerStatusScheduler::OnArcStarted() {
-  // When ARC started, initialize this class.
-  Start();
+  if (features::IsDozeModePowerSchedulerEnabled()) {
+    // When ARC started, initialize this class.
+    Start();
+  }
 }
 
 void DozeModePowerStatusScheduler::OnArcSessionStopped(
@@ -219,8 +241,8 @@ void DozeModePowerStatusScheduler::OnLockStateChanged(bool locked) {
 }
 
 void DozeModePowerStatusScheduler::OnVideoStateChanged(
-    ash::VideoDetector::State state) {
-  video_playing_ = (state != ash::VideoDetector::State::NOT_PLAYING);
+    VideoDetector::State state) {
+  video_playing_ = (state != VideoDetector::State::NOT_PLAYING);
 
   MaybeUpdatePowerStatus();
 }
@@ -309,9 +331,29 @@ DozeModePowerStatusScheduler::CalculatePowerStatus() {
 }
 
 void DozeModePowerStatusScheduler::SendPowerStatus(PowerStatus status) {
-  /*
-  TODO(b/351086080): Add logics of sending power status to crosvm here.
-  */
+  auto* client = ConciergeClient::Get();
+  if (!client) {
+    LOG(ERROR) << "Cannot get ConciergeClient";
+    return;
+  }
+
+  vm_tools::concierge::ModifyFakePowerConfigRequest request;
+  request.set_name(arc::kArcVmName);
+  request.set_owner_id(user_id_hash_);
+  switch (status) {
+    case PowerStatus::kRealBattery:
+      [[fallthrough]];
+    case PowerStatus::kRealPower:
+      request.set_action(vm_tools::concierge::FakePowerAction::CANCEL);
+      break;
+    case PowerStatus::kSimulatedBattery:
+      request.set_action(vm_tools::concierge::FakePowerAction::SET);
+      request.set_capacity_limit(kFakeBatteryCapacityLimit);
+      break;
+  }
+
+  client->ModifyFakePowerConfig(
+      request, base::BindOnce(&OnModifyFakePowerConfigResponse));
 
   const base::Time power_status_sent_time = base::Time::Now();
   if (last_power_status_sent_.has_value()) {

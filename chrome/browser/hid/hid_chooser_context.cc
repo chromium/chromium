@@ -530,6 +530,14 @@ bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
   return false;
 }
 
+bool HidChooserContext::IsKnownSecurityKey(
+    const device::mojom::HidDeviceInfo& device) {
+  static constexpr uint16_t kVendorGoogle = 0x18d1;
+  static constexpr uint16_t kProductTitan = 0x5026;
+  return device.vendor_id == kVendorGoogle &&
+         device.product_id == kProductTitan;
+}
+
 void HidChooserContext::AddDeviceObserver(DeviceObserver* observer) {
   EnsureHidManagerConnection();
   device_observer_list_.AddObserver(observer);

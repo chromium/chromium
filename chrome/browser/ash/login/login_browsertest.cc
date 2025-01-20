@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -46,7 +47,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -56,8 +56,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -299,7 +301,12 @@ IN_PROC_BROWSER_TEST_F(LoginCursorTest, CursorHidden) {
   EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   // Cursor should be shown after cursor is moved.
-  EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(gfx::Point()));
+  auto* root = ash::Shell::GetPrimaryRootWindow();
+  LoginDisplayHost* host = LoginDisplayHost::default_host();
+  ASSERT_TRUE(host && host->GetOobeWebContents());
+  auto* window = host->GetOobeWebContents()->GetTopLevelNativeWindow();
+  ui::test::EventGenerator generator(root, window);
+  generator.MoveMouseToCenterOf(window);
   EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   TestSystemTrayIsVisible();

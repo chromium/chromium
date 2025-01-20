@@ -69,8 +69,6 @@ class EncryptedMediaUtils {
       const String& session_type);
   static String ConvertFromSessionType(WebEncryptedMediaSessionType);
 
-  static String ConvertKeyStatusToString(
-      const WebEncryptedMediaKeyInformation::KeyStatus);
   static V8MediaKeyStatus ConvertKeyStatusToEnum(
       const WebEncryptedMediaKeyInformation::KeyStatus);
 

@@ -26,8 +26,9 @@ zx::process FindProcessInJobTree(const zx::job& job, ProcessId pid) {
   zx::process process;
   zx_status_t status = job.get_child(pid, ZX_RIGHT_SAME_RIGHTS, &process);
 
-  if (status == ZX_OK)
+  if (status == ZX_OK) {
     return process;
+  }
 
   if (status == ZX_ERR_NOT_FOUND) {
     std::vector<zx_koid_t> job_koids(32);
@@ -57,11 +58,13 @@ zx::process FindProcessInJobTree(const zx::job& job, ProcessId pid) {
 
     for (zx_koid_t job_koid : job_koids) {
       zx::job child_job;
-      if (job.get_child(job_koid, ZX_RIGHT_SAME_RIGHTS, &child_job) != ZX_OK)
+      if (job.get_child(job_koid, ZX_RIGHT_SAME_RIGHTS, &child_job) != ZX_OK) {
         continue;
+      }
       process = FindProcessInJobTree(child_job, pid);
-      if (process)
+      if (process) {
         return process;
+      }
     }
 
     return zx::process();
@@ -104,8 +107,9 @@ Process Process::Current() {
 
 // static
 Process Process::Open(ProcessId pid) {
-  if (pid == GetCurrentProcId())
+  if (pid == GetCurrentProcId()) {
     return Current();
+  }
 
   return Process(FindProcessInJobTree(*GetDefaultJob(), pid).release());
 }
@@ -138,11 +142,13 @@ ProcessHandle Process::Handle() const {
 }
 
 Process Process::Duplicate() const {
-  if (is_current())
+  if (is_current()) {
     return Current();
+  }
 
-  if (!IsValid())
+  if (!IsValid()) {
     return Process();
+  }
 
   zx::process out;
   zx_status_t result = process_.duplicate(ZX_RIGHT_SAME_RIGHTS, &out);
@@ -176,9 +182,8 @@ ProcessId Process::Pid() const {
 
 Time Process::CreationTime() const {
   zx_info_process_t proc_info;
-  zx_status_t status =
-      zx_object_get_info(Handle(), ZX_INFO_PROCESS, &proc_info,
-                         sizeof(proc_info), nullptr, nullptr);
+  zx_status_t status = zx_object_get_info(Handle(), ZX_INFO_PROCESS, &proc_info,
+                                          sizeof(proc_info), nullptr, nullptr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_process_get_info";
     return Time();
@@ -226,8 +231,9 @@ bool Process::WaitForExit(int* exit_code) const {
 }
 
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
-  if (is_current_process_)
+  if (is_current_process_) {
     return false;
+  }
 
   TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
 
@@ -256,13 +262,15 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
                              nullptr, nullptr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_object_get_info";
-    if (exit_code)
+    if (exit_code) {
       *exit_code = -1;
+    }
     return false;
   }
 
-  if (exit_code)
+  if (exit_code) {
     *exit_code = static_cast<int>(proc_info.return_code);
+  }
 
   return true;
 }

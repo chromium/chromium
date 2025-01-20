@@ -122,8 +122,9 @@ class PortSelector {
     for (int offset = 0; offset + 1 < kMaxAttempts; offset += 2) {
       port_ = kStartPort + offset;
       lock_file_ = base::File(GetLockFilePath(), GetFileFlags());
-      if (lock_file_.IsValid())
+      if (lock_file_.IsValid()) {
         return;
+      }
     }
     NOTREACHED() << "Failed to find an available port.";
   }

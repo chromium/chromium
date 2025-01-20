@@ -20,9 +20,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -80,6 +78,9 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // If |skip_service_worker| is true, service workers are bypassed for
   // request interception.
+  // `service_worker_client->UpdateUrls()` should be called for this
+  // request/redirect leg before constructing
+  // `ServiceWorkerControlleeRequestHandler`.
   ServiceWorkerControlleeRequestHandler(
       base::WeakPtr<ServiceWorkerContextCore> context,
       std::string fetch_event_client_id,
@@ -99,7 +100,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key,
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
@@ -112,11 +112,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
-
-  // Does all initialization of |service_worker_client_| for a request.
-  void InitializeServiceWorkerClient(
-      const network::ResourceRequest& tentative_request,
-      const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
       // True when FindRegistrationForClientUrl() is called for navigation.
@@ -177,8 +172,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   const bool skip_service_worker_;
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
-  GURL stripped_url_;
-  blink::StorageKey storage_key_;
   bool force_update_started_;
   const FrameTreeNodeId frame_tree_node_id_;
 

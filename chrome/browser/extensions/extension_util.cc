@@ -12,13 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
@@ -31,6 +25,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
@@ -48,6 +43,17 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
+#else
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#endif
+
 namespace extensions {
 namespace util {
 
@@ -59,10 +65,18 @@ std::string ReloadExtension(const std::string& extension_id,
   // When we reload the extension the ID may be invalidated if we've passed it
   // by const ref everywhere. Make a copy to be safe. http://crbug.com/103762
   std::string id = extension_id;
+#if BUILDFLAG(IS_ANDROID)
+  DesktopAndroidExtensionSystem* extension_system =
+      static_cast<DesktopAndroidExtensionSystem*>(
+          ExtensionSystem::Get(context));
+  CHECK(extension_system);
+  extension_system->ReloadExtension(id);
+#else
   ExtensionService* service =
       ExtensionSystem::Get(context)->extension_service();
   CHECK(service);
   service->ReloadExtension(id);
+#endif
   return id;
 }
 
@@ -157,9 +171,13 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
 
   if (extension) {
-    if (!util::CanBeIncognitoEnabled(extension))
+    if (!util::CanBeIncognitoEnabled(extension)) {
       return;
+    }
 
+    // TODO(crbug.com/356905053): Enable handling component extensions on
+    // desktop android.
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(treib,kalman): Should this be Manifest::IsComponentLocation(..)?
     // (which also checks for kExternalComponent).
     if (extension->location() == mojom::ManifestLocation::kComponent) {
@@ -179,6 +197,7 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       DCHECK_EQ(enabled, IsIncognitoEnabled(extension_id, context));
       return;
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
@@ -186,8 +205,9 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   // if the value changed and the extension is actually enabled, since there is
   // no UI otherwise.
   bool old_enabled = extension_prefs->IsIncognitoEnabled(extension_id);
-  if (enabled == old_enabled)
+  if (enabled == old_enabled) {
     return;
+  }
 
   extension_prefs->SetIsIncognitoEnabled(extension_id, enabled);
 
@@ -195,12 +215,18 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
 
   // Reloading the extension invalidates the |extension| pointer.
   extension = registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
+  // TODO(crbug.com/356905053): Enable extensions sync on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   if (extension) {
     Profile* profile = Profile::FromBrowserContext(context);
     ExtensionSyncService::Get(profile)->SyncExtensionChangeIfNeeded(*extension);
   }
+#endif
 }
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
@@ -240,6 +266,7 @@ bool IsExtensionIdle(const std::string& extension_id,
   }
 
   ProcessManager* process_manager = ProcessManager::Get(context);
+  ProcessMap* process_map = ProcessMap::Get(context);
   for (std::vector<std::string>::const_iterator i = ids_to_check.begin();
        i != ids_to_check.end();
        i++) {
@@ -248,14 +275,16 @@ bool IsExtensionIdle(const std::string& extension_id,
     if (host)
       return false;
 
-    scoped_refptr<content::SiteInstance> site_instance =
-        process_manager->GetSiteInstanceForURL(
-            Extension::GetBaseURLFromExtensionId(id));
-    if (site_instance && site_instance->HasProcess())
+    if (!process_manager->GetRenderFrameHostsForExtension(id).empty()) {
       return false;
+    }
 
-    if (!process_manager->GetRenderFrameHostsForExtension(id).empty())
+    // TODO(devlin): We can probably remove the checks above (for background
+    // hosts and frame hosts). If an extension has any active frames, it should
+    // have a dedicated process.
+    if (process_map->ExtensionHasProcess(id)) {
       return false;
+    }
   }
   return true;
 }
@@ -345,6 +374,7 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name) {
   return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace util
 }  // namespace extensions

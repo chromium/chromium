@@ -59,7 +59,6 @@ class ASH_EXPORT ScreenCaptureTrayItemView
 
   // views::View:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& point) const override;
 
   // TrayItemView:
   void HandleLocaleChange() override {}

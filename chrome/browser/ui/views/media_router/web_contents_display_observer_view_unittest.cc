@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/media_router/web_contents_display_observer_view.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/views/media_router/web_contents_display_observer_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,8 +46,7 @@ class TestWebContentsDisplayObserverView
 class WebContentsDisplayObserverViewTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  WebContentsDisplayObserverViewTest()
-      : ChromeRenderViewHostTestHarness(), display1_(101), display2_(102) {}
+  WebContentsDisplayObserverViewTest() : display1_(101), display2_(102) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

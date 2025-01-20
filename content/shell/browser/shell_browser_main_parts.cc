@@ -19,7 +19,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
@@ -51,7 +50,7 @@
 #include "net/base/network_change_notifier.h"
 #endif
 
-#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX) && defined(USE_AURA)
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
@@ -60,15 +59,10 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
-#elif BUILDFLAG(IS_LINUX)
-#include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #include "ui/linux/linux_ui.h"          // nogncheck
 #include "ui/linux/linux_ui_factory.h"  // nogncheck
 #endif
@@ -121,13 +115,8 @@ ShellBrowserMainParts::ShellBrowserMainParts() = default;
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
 void ShellBrowserMainParts::PostCreateMainMessageLoop() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::DBusThreadManager::Initialize();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Initialize();
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::DBusThreadManager::Initialize();
   if (floss::features::IsFlossEnabled()) {
     floss::FlossDBusManager::InitializeFake();
   } else {
@@ -139,10 +128,9 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 }
 
 int ShellBrowserMainParts::PreEarlyInitialization() {
-#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX) && defined(USE_AURA)
   ui::InitializeInputMethodForTesting();
-#endif
-#if BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   net::NetworkChangeNotifier::SetFactory(
       new net::NetworkChangeNotifierFactoryAndroid());
 #endif
@@ -232,15 +220,10 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   } else {
     bluez::BluezDBusManager::Shutdown();
   }
+  ash::DBusThreadManager::Shutdown();
 #elif BUILDFLAG(IS_LINUX)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::DBusBluezManagerWrapperLinux::Shutdown();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::DBusThreadManager::Shutdown();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosDBusThreadManager::Shutdown();
 #endif
 }
 

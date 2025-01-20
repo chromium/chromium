@@ -398,7 +398,7 @@ class WprUpdater(object):
   def _GetTargetFromConfiguration(self, configuration):
     """Returns the target that should be used for a Pinpoint job."""
     if configuration == 'android-pixel6-perf':
-      return 'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle'
+      return 'performance_test_suite_android_trichrome_chrome_google_64_32_bundle'
     if configuration in ('linux-perf', 'win-10-perf',
                          'mac-10_12_laptop_low_end-perf'):
       return 'performance_test_suite'

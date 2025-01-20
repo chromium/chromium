@@ -692,10 +692,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(AreAllTracksLive(method2_).value.GetBool());
 }
 
-// TODO(crbug.com/40071631): re-enable once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    DISABLED_UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
+    UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
   EXPECT_CALL(mock_multi_capture_service_,
               IsMultiCaptureAllowed(testing::_, testing::_))

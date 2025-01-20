@@ -33,6 +33,8 @@ static_library("app_mode") {
     "kiosk_troubleshooting_controller.h",
     "kiosk_web_app_install_util.cc",
     "kiosk_web_app_install_util.h",
+    "kiosk_web_app_update_observer.cc",
+    "kiosk_web_app_update_observer.h",
     "startup_app_launcher_update_checker.cc",
     "startup_app_launcher_update_checker.h",
     "web_kiosk_browser_controller_base.cc",

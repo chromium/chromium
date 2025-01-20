@@ -436,7 +436,6 @@ class TestFontResourceClient final
   String DebugName() const override { return "TestFontResourceClient"; }
 
  private:
-  bool error_occurred_ = false;
   base::OnceClosure finish_closure_;
 };
 

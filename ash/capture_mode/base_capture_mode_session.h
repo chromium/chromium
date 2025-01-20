@@ -146,7 +146,7 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
 
   // If there's a user nudge currently showing, it will be dismissed forever,
   // and will no longer be shown to the user.
-  virtual void MaybeDismissUserNudgeForever() = 0;
+  virtual void MaybeDismissSunfishRegionNudgeForever() = 0;
 
   // Handles changing `root_window_`. For example, moving the mouse cursor to
   // another display, a display was removed or the game window of the
@@ -187,15 +187,13 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
       ActionButtonRank rank,
       ActionButtonViewID id) = 0;
 
-  // Adds all Scanner action buttons provided below the selected region for this
-  // session. These will automatically be assigned a rank depending on the order
-  // in which they appear in the vector.
-  virtual void AddScannerActionButtons(
-      std::vector<ScannerActionViewModel> scanner_actions) = 0;
+  // Adds an action button that can be clicked to fetch smart actions.
+  virtual void AddSmartActionsButton() = 0;
 
-  // Called when text has been detected in the selected region during an active
-  // session.
-  virtual void OnTextDetected() = 0;
+  // Called when Scanner actions have been fetched. This will add action buttons
+  // corresponding to `scanner_actions` and stop loading animations if needed.
+  virtual void OnScannerActionsFetched(
+      std::vector<ScannerActionViewModel> scanner_actions) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

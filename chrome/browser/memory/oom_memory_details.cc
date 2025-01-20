@@ -25,8 +25,7 @@ OomMemoryDetails::OomMemoryDetails(const std::string& title)
   start_time_ = base::TimeTicks::Now();
 }
 
-OomMemoryDetails::~OomMemoryDetails() {
-}
+OomMemoryDetails::~OomMemoryDetails() = default;
 
 void OomMemoryDetails::OnDetailsAvailable() {
   base::TimeDelta delta = base::TimeTicks::Now() - start_time_;

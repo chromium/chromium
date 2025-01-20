@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -26,113 +28,63 @@ struct ModifierMaskAndKeyCode {
   ui::KeyboardCode key_code;
 };
 
-const ModifierMaskAndKeyCode kModifiers[] = {
+const auto kModifiers = std::to_array<ModifierMaskAndKeyCode>({
     {kShiftKeyModifierMask, ui::VKEY_SHIFT},
     {kControlKeyModifierMask, ui::VKEY_CONTROL},
     {kAltKeyModifierMask, ui::VKEY_MENU},
-    {kMetaKeyModifierMask, ui::VKEY_COMMAND}};
+    {kMetaKeyModifierMask, ui::VKEY_COMMAND},
+});
 
 // Ordered list of all the key codes corresponding to special WebDriver keys.
 // These keys are "special" in the sense that their code points are defined by
 // the W3C spec (https://w3c.github.io/webdriver/#dfn-normalised-key-value),
 // and are in the Unicode Private Use Area. All other keys have their code
 // points defined by the Unicode standard.
-const ui::KeyboardCode kSpecialWebDriverKeys[] = {
-    ui::VKEY_UNKNOWN,   // \uE000
-    ui::VKEY_CANCEL,  // \uE001
-    ui::VKEY_HELP,
-    ui::VKEY_BACK,
-    ui::VKEY_TAB,
-    ui::VKEY_CLEAR,
-    ui::VKEY_RETURN,
-    ui::VKEY_RETURN,
-    ui::VKEY_SHIFT,
-    ui::VKEY_CONTROL,
-    ui::VKEY_MENU,
-    ui::VKEY_PAUSE,
-    ui::VKEY_ESCAPE,
-    ui::VKEY_SPACE,
-    ui::VKEY_PRIOR,    // page up
-    ui::VKEY_NEXT,     // page down
-    ui::VKEY_END,      // \uE010
-    ui::VKEY_HOME,
-    ui::VKEY_LEFT,
-    ui::VKEY_UP,
-    ui::VKEY_RIGHT,
-    ui::VKEY_DOWN,
-    ui::VKEY_INSERT,
+const auto kSpecialWebDriverKeys = std::to_array<ui::KeyboardCode>({
+    ui::VKEY_UNKNOWN,  // \uE000
+    ui::VKEY_CANCEL,   // \uE001
+    ui::VKEY_HELP,         ui::VKEY_BACK,    ui::VKEY_TAB,
+    ui::VKEY_CLEAR,        ui::VKEY_RETURN,  ui::VKEY_RETURN,
+    ui::VKEY_SHIFT,        ui::VKEY_CONTROL, ui::VKEY_MENU,
+    ui::VKEY_PAUSE,        ui::VKEY_ESCAPE,  ui::VKEY_SPACE,
+    ui::VKEY_PRIOR,  // page up
+    ui::VKEY_NEXT,   // page down
+    ui::VKEY_END,    // \uE010
+    ui::VKEY_HOME,         ui::VKEY_LEFT,    ui::VKEY_UP,
+    ui::VKEY_RIGHT,        ui::VKEY_DOWN,    ui::VKEY_INSERT,
     ui::VKEY_DELETE,
     ui::VKEY_OEM_1,     // semicolon
     ui::VKEY_OEM_PLUS,  // equals
-    ui::VKEY_NUMPAD0,
-    ui::VKEY_NUMPAD1,
-    ui::VKEY_NUMPAD2,
-    ui::VKEY_NUMPAD3,
-    ui::VKEY_NUMPAD4,
-    ui::VKEY_NUMPAD5,
-    ui::VKEY_NUMPAD6,   // \uE020
-    ui::VKEY_NUMPAD7,
-    ui::VKEY_NUMPAD8,
-    ui::VKEY_NUMPAD9,
-    ui::VKEY_MULTIPLY,
-    ui::VKEY_ADD,
-    ui::VKEY_OEM_COMMA,
-    ui::VKEY_SUBTRACT,
-    ui::VKEY_DECIMAL,
-    ui::VKEY_DIVIDE,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,   // \uE030
-    ui::VKEY_F1,
-    ui::VKEY_F2,
-    ui::VKEY_F3,
-    ui::VKEY_F4,
-    ui::VKEY_F5,
-    ui::VKEY_F6,
-    ui::VKEY_F7,
-    ui::VKEY_F8,
-    ui::VKEY_F9,
-    ui::VKEY_F10,
-    ui::VKEY_F11,
-    ui::VKEY_F12,
-    ui::VKEY_LWIN,      // meta
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
+    ui::VKEY_NUMPAD0,      ui::VKEY_NUMPAD1, ui::VKEY_NUMPAD2,
+    ui::VKEY_NUMPAD3,      ui::VKEY_NUMPAD4, ui::VKEY_NUMPAD5,
+    ui::VKEY_NUMPAD6,  // \uE020
+    ui::VKEY_NUMPAD7,      ui::VKEY_NUMPAD8, ui::VKEY_NUMPAD9,
+    ui::VKEY_MULTIPLY,     ui::VKEY_ADD,     ui::VKEY_OEM_COMMA,
+    ui::VKEY_SUBTRACT,     ui::VKEY_DECIMAL, ui::VKEY_DIVIDE,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,  // \uE030
+    ui::VKEY_F1,           ui::VKEY_F2,      ui::VKEY_F3,
+    ui::VKEY_F4,           ui::VKEY_F5,      ui::VKEY_F6,
+    ui::VKEY_F7,           ui::VKEY_F8,      ui::VKEY_F9,
+    ui::VKEY_F10,          ui::VKEY_F11,     ui::VKEY_F12,
+    ui::VKEY_LWIN,  // meta
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN,
     ui::VKEY_DBE_DBCSCHAR,  // \uE040 ZenkakuHankaku
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_UNKNOWN,
-    ui::VKEY_RSHIFT,    // \uE050
-    ui::VKEY_RCONTROL,
-    ui::VKEY_RMENU,
-    ui::VKEY_RWIN,      // meta
-    ui::VKEY_PRIOR,     // page up
-    ui::VKEY_NEXT,      // page down
-    ui::VKEY_END,
-    ui::VKEY_HOME,
-    ui::VKEY_LEFT,
-    ui::VKEY_UP,
-    ui::VKEY_RIGHT,
-    ui::VKEY_DOWN,
-    ui::VKEY_INSERT,
-    ui::VKEY_DELETE,
-};
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_UNKNOWN,      ui::VKEY_UNKNOWN, ui::VKEY_UNKNOWN,
+    ui::VKEY_RSHIFT,  // \uE050
+    ui::VKEY_RCONTROL,     ui::VKEY_RMENU,
+    ui::VKEY_RWIN,   // meta
+    ui::VKEY_PRIOR,  // page up
+    ui::VKEY_NEXT,   // page down
+    ui::VKEY_END,          ui::VKEY_HOME,    ui::VKEY_LEFT,
+    ui::VKEY_UP,           ui::VKEY_RIGHT,   ui::VKEY_DOWN,
+    ui::VKEY_INSERT,       ui::VKEY_DELETE,
+});
 
 const char16_t kWebDriverNullKey = u'\uE000';
 const char16_t kWebDriverShiftKey = u'\uE008';
@@ -220,7 +172,7 @@ bool KeyCodeFromShorthandKey(char16_t key_utf16,
 // The code point starts at \uE000 and must increase by 1 with each row,
 // with placeholders (empty strings) used for unassigned code points.
 const int kNormalisedKeyValueBase = 0xE000;
-const char* const kNormalisedKeyValue[] = {
+const auto kNormalisedKeyValue = std::to_array<const char*>({
     "Unidentified",  // \uE000
     "Cancel",        // \uE001
     "Help",          // \uE002
@@ -270,25 +222,22 @@ const char* const kNormalisedKeyValue[] = {
     "",
     "",
     "",
-    "F1",            // \uE031
-    "F2",            // \uE032
-    "F3",            // \uE033
-    "F4",            // \uE034
-    "F5",            // \uE035
-    "F6",            // \uE036
-    "F7",            // \uE037
-    "F8",            // \uE038
-    "F9",            // \uE039
-    "F10",           // \uE03A
-    "F11",           // \uE03B
-    "F12",           // \uE03C
-    "Meta",          // \uE03D
+    "F1",    // \uE031
+    "F2",    // \uE032
+    "F3",    // \uE033
+    "F4",    // \uE034
+    "F5",    // \uE035
+    "F6",    // \uE036
+    "F7",    // \uE037
+    "F8",    // \uE038
+    "F9",    // \uE039
+    "F10",   // \uE03A
+    "F11",   // \uE03B
+    "F12",   // \uE03C
+    "Meta",  // \uE03D
     "",
     "",
-    "ZenkakuHankaku", // \uE040
-    "",
-    "",
-    "",
+    "ZenkakuHankaku",  // \uE040
     "",
     "",
     "",
@@ -301,21 +250,24 @@ const char* const kNormalisedKeyValue[] = {
     "",
     "",
     "",
-    "Shift",         // \uE050
-    "Control",       // \uE051
-    "Alt",           // \uE052
-    "Meta",          // \uE053
-    "PageUp",        // \uE054
-    "PageDown",      // \uE055
-    "End",           // \uE056
-    "Home",          // \uE057
-    "ArrowLeft",     // \uE058
-    "ArrowUp",       // \uE059
-    "ArrowRight",    // \uE05A
-    "ArrowDown",     // \uE05B
-    "Insert",        // \uE05C
-    "Delete",        // \uE05D
-};
+    "",
+    "",
+    "",
+    "Shift",       // \uE050
+    "Control",     // \uE051
+    "Alt",         // \uE052
+    "Meta",        // \uE053
+    "PageUp",      // \uE054
+    "PageDown",    // \uE055
+    "End",         // \uE056
+    "Home",        // \uE057
+    "ArrowLeft",   // \uE058
+    "ArrowUp",     // \uE059
+    "ArrowRight",  // \uE05A
+    "ArrowDown",   // \uE05B
+    "Insert",      // \uE05C
+    "Delete",      // \uE05D
+});
 
 // The "code for key" table (https://w3c.github.io/webdriver/#dfn-code),
 // with the following modifications:
@@ -586,7 +538,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
 
     // Create the key events.
     constexpr int number_modifiers = std::size(kModifiers);
-    bool necessary_modifiers[number_modifiers];
+    std::array<bool, number_modifiers> necessary_modifiers;
     for (int j = 0; j < number_modifiers; ++j) {
       necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&
                                !(sticky_modifiers & kModifiers[j].mask);

@@ -232,11 +232,8 @@ void NtpCustomBackgroundService::OnNextCollectionImageAvailable() {
   std::string resume_token = background_service_->next_image_resume_token();
   int64_t timestamp = (clock_->Now() + base::Days(1)).ToTimeT();
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeColorExtraction)) {
-    FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
-                                                   image.thumbnail_image_url);
-  }
+  FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
+                                                 image.thumbnail_image_url);
 
   base::Value::Dict background_info = GetBackgroundInfoAsDict(
       image.image_url, attribution1, attribution2, image.attribution_action_url,
@@ -318,9 +315,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
       is_backdrop_collection) {
     background_service_->FetchNextCollectionImage(collection_id, std::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
-    if (base::FeatureList::IsEnabled(
-            ntp_features::kCustomizeChromeColorExtraction) &&
-        thumbnail_url.is_valid()) {
+    if (thumbnail_url.is_valid()) {
       FetchCustomBackgroundAndExtractBackgroundColor(background_url,
                                                      thumbnail_url);
     }
@@ -495,10 +490,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
     const base::Value* attribution_action_url =
         background_info.Find(kNtpCustomBackgroundAttributionActionURL);
     const base::Value* color =
-        base::FeatureList::IsEnabled(
-            ntp_features::kCustomizeChromeColorExtraction)
-            ? background_info.Find(kNtpCustomBackgroundMainColor)
-            : nullptr;
+        background_info.Find(kNtpCustomBackgroundMainColor);
     custom_background->custom_background_url = custom_background_url;
     custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;

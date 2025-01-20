@@ -311,6 +311,13 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
   }
 
+  private inputMethodsEnabledByPolicy_(): boolean {
+    const allowedInputMethodsForceEnabled =
+        this.getPref('settings.language.allowed_input_methods_force_enabled');
+    return !!allowedInputMethodsForceEnabled &&
+        allowedInputMethodsForceEnabled.value;
+  }
+
   /**
    * Handler for click events on an input method on the main page,
    * which sets it as the current input method.
@@ -455,6 +462,10 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   private disableRemoveInputMethod_(
       targetInputMethod: chrome.languageSettingsPrivate.InputMethod): boolean {
+    if (this.inputMethodsEnabledByPolicy_()) {
+      return true;
+    }
+
     // Third-party IMEs can always be removed.
     if (!this.languageHelper.isComponentIme(targetInputMethod)) {
       return false;

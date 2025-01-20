@@ -44,7 +44,6 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
                            const CSSParserContext* context,
                            CSSNestingType nesting_type,
                            StyleRule* parent_rule_for_nesting,
-                           bool is_within_scope,
                            StyleSheetContents* style_sheet);
 
   void Trace(blink::Visitor*) const;
@@ -60,6 +59,12 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // The rule to use for resolving the nesting selector (&) for this scope's
   // inner rules.
   StyleRule* RuleForNesting() const { return from_.Get(); }
+
+  // Returns a copy of StyleScope, with any '&' selectors in the prelude updated
+  // to `new_parent`. If no '&' selectors required an update, returns 'this'.
+  //
+  // See also CSSSelector::Renest.
+  const StyleScope* Renest(StyleRule* new_parent) const;
 
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope
   bool IsImplicit() const { return contents_.Get() != nullptr; }

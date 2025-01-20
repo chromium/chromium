@@ -210,9 +210,7 @@ AudioOutputProviderImpl::AudioOutputProviderImpl(const std::string& device_id)
     : loop_back_input_(media::AudioDeviceDescription::kLoopbackInputDeviceId),
       volume_control_impl_(),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      device_id_(device_id),
-      start_audio_decoder_on_demand_(
-          features::IsStartAssistantAudioDecoderOnDemandEnabled()) {}
+      device_id_(device_id) {}
 
 void AudioOutputProviderImpl::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
@@ -267,27 +265,6 @@ assistant_client::VolumeControl& AudioOutputProviderImpl::GetVolumeControl() {
 void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
     AudioEmittingStateCallback callback) {
   // TODO(muyuanli): implement.
-}
-
-void AudioOutputProviderImpl::BindAudioDecoderFactory() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
-  if (start_audio_decoder_on_demand_)
-    return;
-
-  // Hold a ref counted object of |AudioDecoderFactoryManager| as it won't get
-  // destructed.
-  audio_decoder_factory_manager_ref_counted_ =
-      GetOrCreateAudioDecoderFactoryManager();
-}
-
-void AudioOutputProviderImpl::UnBindAudioDecoderFactory() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
-  if (start_audio_decoder_on_demand_)
-    return;
-
-  audio_decoder_factory_manager_ref_counted_.reset();
 }
 
 scoped_refptr<AudioOutputProviderImpl::AudioDecoderFactoryManager>

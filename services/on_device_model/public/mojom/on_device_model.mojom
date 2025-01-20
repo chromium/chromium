@@ -6,6 +6,7 @@ module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "skia/public/mojom/bitmap.mojom";
 
 // Opened file resources needed to define an adaptation.
 [Stable]
@@ -18,7 +19,6 @@ struct AdaptationAssets {
   // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
-  [MinVersion=1]
   mojo_base.mojom.FilePath? weights_path;
 };
 
@@ -63,11 +63,9 @@ struct ResponseSummary {
   SafetyInfo? safety_info;
 
   // The total number of input tokens from the call to Execute().
-  [MinVersion=1]
   uint32 input_token_count;
 
   // The total number of output tokens for this response.
-  [MinVersion=1]
   uint32 output_token_count;
 };
 
@@ -98,6 +96,16 @@ interface ContextClient {
 struct LoadAdaptationParams {
   // Assets for an adaptation.
   AdaptationAssets assets;
+
+  // The maximum number of input+output tokens the adaptation model can handle.
+  // This is needed when initializing the model. Currently this is only
+  // supported by the APU backend.
+  // When set to 0, the original `max_tokens` set by the base model will be
+  // used.
+  uint32 max_tokens = 0;
+
+  // Whether this model will handle InputPieces containing images.
+  [MinVersion=1] bool enable_image_input = false;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -113,13 +121,23 @@ enum Token {
   [Default] kEnd,
 };
 
-[Stable]
+// Holds the possible input types to the model. Note that if any of these input
+// types include cross-origin data, such as a screenshot, any of the origins may
+// be able to control the model output.
+[Stable, Extensible]
 union InputPiece {
   // A token which may have different internal representations depending on the
   // loaded model.
   Token token;
   // Text to be provided as input.
   string text;
+  // Bitmap provided as input. This is not ImageSkia because there is no desire
+  // to support multiple scale factors. The bitmap is supplied by the
+  // browser process.
+  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+
+  // Used to handle version skew.
+  [Default] bool unknown_type;
 };
 
 [Stable]
@@ -132,16 +150,16 @@ struct Input {
 // Options to control how the model handles input.
 [Stable]
 struct InputOptions {
-  // Deprecated, use input instead.
-  string text;
+  // The input for the model.
+  Input input;
 
-  // The maximum number of tokens that should be processed. If not set, will
+  // The maximum number of tokens that should be processed. If zero, will
   // process all tokens from this input.
-  uint32? max_tokens;
+  uint32 max_tokens = 0;
 
   // After text is tokenized, the offset into that vector to start processing.
-  // If not set, will start at the first token.
-  uint32? token_offset;
+  // If zero, will start at the first token.
+  uint32 token_offset = 0;
 
   // If this is true, indicates this is a one-off call that wants to ignore the
   // context for this input. Note that this is less efficient than running on
@@ -149,12 +167,9 @@ struct InputOptions {
   bool ignore_context;
 
   // The maximum number of tokens that should be output from a call to
-  // Execute(). If not set, will output tokens until an end token or the maximum
+  // Execute(). If zero, will output tokens until an end token or the maximum
   // sequence length.
-  uint32? max_output_tokens;
-
-  // DEPRECATED: No longer does anything.
-  uint32? unused_safety_interval;
+  uint32 max_output_tokens = 0;
 
   // These params control the output sampling. Higher `top_k` means more tokens
   // are considered, higher `temperature` means less likely tokens are more
@@ -165,10 +180,6 @@ struct InputOptions {
   // `temperature` should be a value greater than 0.0. Values above 1.0 may give
   // poor results.
   float? temperature;
-
-  // The input for the model.
-  [MinVersion=1]
-  Input? input;
 };
 
 // A session for a model that allows adding context and then executing an input
@@ -186,10 +197,7 @@ interface Session {
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
-  [MinVersion=2]
   GetSizeInTokens@5(Input input) => (uint32 size);
-
-  GetSizeInTokensDeprecated@2(string text) => (uint32 size);
 
   // Gets the probability score of the first token in `text` on top of the
   // current context.
@@ -197,7 +205,6 @@ interface Session {
 
   // Clones the current session. The cloned session will have the same context
   // as the current session.
-  [MinVersion=1]
   Clone@4(pending_receiver<Session> session);
 };
 

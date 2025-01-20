@@ -18,11 +18,11 @@ import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {FakeInSessionAuth} from '../fake_in_session_auth.js';
+
 import {createFakePageContentData, HOST_DEVICE, TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 suite('<settings-multidevice-page>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let multidevicePage: SettingsMultidevicePageElement;
   let browserProxy: TestMultideviceBrowserProxy;
   let ALL_MODES: MultiDeviceSettingsMode[];
@@ -162,7 +162,9 @@ suite('<settings-multidevice-page>', () => {
     }));
     flush();
 
-    if (authRequired) {
+    // The password prompt dialog should only be triggered when
+    // isAuthPanelEnabled is false.
+    if (authRequired && !loadTimeData.getBoolean('isAuthPanelEnabled')) {
       assertTrue(multidevicePage.get('showPasswordPromptDialog_'));
       const prompt = multidevicePage.shadowRoot!.querySelector(
           '#multidevicePasswordPrompt');
@@ -202,16 +204,6 @@ suite('<settings-multidevice-page>', () => {
     browserProxy.resetResolver('setFeatureEnabledState');
   }
 
-  /**
-   * Sets up Quick Share v2 tests which require the QuickShareV2 flag to be
-   * enabled on page load.
-   */
-  async function setupQuickShareV2() {
-    multidevicePage.remove();
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': true});
-    await init();
-  }
-
   suiteSetup(() => {
     ALL_MODES = Object.values(MultiDeviceSettingsMode)
                     .filter((item) => typeof item === 'number') as
@@ -245,6 +237,9 @@ suite('<settings-multidevice-page>', () => {
     document.body.appendChild(multidevicePage);
     flush();
     await browserProxy.whenCalled('getPageContentData');
+
+    multidevicePage.set(
+        'fakeInSessionAuthForTesting_', new FakeInSessionAuth());
   }
 
   setup(async () => {
@@ -298,13 +293,8 @@ suite('<settings-multidevice-page>', () => {
     return nearbyShareSecondary;
   }
 
-  suite('nearby share description updates with isRevampWayfindingEnabled enabled', () => {
+  suite('nearby share description updates', () => {
     setup(async () => {
-      loadTimeData.overrideValues(
-          {isNearbyShareSupported: true, isRevampWayfindingEnabled: true});
-
-      await init();
-
       setNearbyShareDisallowedByPolicy(false);
       setNearbyShareIsOnboardingComplete(true);
       await flushTasks();
@@ -500,58 +490,32 @@ suite('<settings-multidevice-page>', () => {
         'settings-multidevice-permissions-setup-dialog'));
   });
 
-  if (isRevampWayfindingEnabled) {
-    test('Label always shows "Android phone" for all modes', () => {
-      for (const mode of ALL_MODES) {
-        setHostData(mode);
-        assertEquals('Android phone', getLabel());
-      }
-    });
-  } else {
-    test('Label changes based on mode and host', () => {
-      for (const mode of ALL_MODES) {
-        setHostData(mode);
-        assertEquals(multidevicePage.isHostSet(), getLabel() === HOST_DEVICE);
-      }
-    });
-  }
-
-  if (isRevampWayfindingEnabled) {
-    test('Host device name displayed updates if the device is changed', () => {
-      setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+  test('Label always shows "Android phone" for all modes', () => {
+    for (const mode of ALL_MODES) {
+      setHostData(mode);
       assertEquals('Android phone', getLabel());
-      assertEquals(HOST_DEVICE, getSublabel());
+    }
+  });
 
-      const anotherHost = `Super Duper ${HOST_DEVICE}`;
-      setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
-      assertEquals('Android phone', getLabel());
-      assertEquals(anotherHost, getSublabel());
-    });
+  test('Host device name displayed updates if the device is changed', () => {
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    assertEquals('Android phone', getLabel());
+    assertEquals(HOST_DEVICE, getSublabel());
 
-    test('Labels for no eligible host device', () => {
-      setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
-      assertEquals('Android phone', getLabel());
-      assertEquals(
-          'No available devices. Add your Google Account to your phone to ' +
-              'connect it to this Chrome device. Learn more',
-          getSublabel());
-    });
-  } else {
-    test('changing host device changes label', () => {
-      setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-      assertEquals(HOST_DEVICE, getLabel());
+    const anotherHost = `Super Duper ${HOST_DEVICE}`;
+    setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
+    assertEquals('Android phone', getLabel());
+    assertEquals(anotherHost, getSublabel());
+  });
 
-      const anotherHost = `Super Duper ${HOST_DEVICE}`;
-      setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
-      assertEquals(anotherHost, getLabel());
-    });
-
-    test('Labels for no eligible host device', () => {
-      setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
-      assertEquals('Android phone', getLabel());
-      assertEquals('No eligible devices. Learn more', getSublabel());
-    });
-  }
+  test('Labels for no eligible host device', () => {
+    setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
+    assertEquals('Android phone', getLabel());
+    assertEquals(
+        'No available devices. Add your Google Account to your phone to ' +
+            'connect it to this Chrome device. Learn more',
+        getSublabel());
+  });
 
   test('item is actionable if and only if a host is set', () => {
     for (const mode of ALL_MODES) {
@@ -1014,13 +978,4 @@ suite('<settings-multidevice-page>', () => {
     assertEquals(routes.NEARBY_SHARE, router.currentRoute);
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
-
-  test(
-      'Subpage shows no Quick Share on/off toggle on QuickShareV2 enabled',
-      async () => {
-        setupQuickShareV2();
-        const quickShareToggle = multidevicePage.shadowRoot!.querySelector(
-            '#nearbySharingToggleButton');
-        assertFalse(!!quickShareToggle);
-      });
 });

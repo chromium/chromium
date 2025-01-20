@@ -10,15 +10,10 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/performance_manager/embedder/graph_features.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/scenarios/performance_scenario_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -37,33 +32,10 @@ using blink::performance_scenarios::PerformanceScenarioObserverList;
 using blink::performance_scenarios::ScenarioScope;
 using ::testing::_;
 
-class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
- public:
-  MOCK_METHOD(void,
-              OnGlobalLoadingScenarioChanged,
-              (LoadingScenario, LoadingScenario),
-              (override));
-  MOCK_METHOD(void,
-              OnGlobalInputScenarioChanged,
-              (InputScenario, InputScenario),
-              (override));
-  MOCK_METHOD(void,
-              OnProcessLoadingScenarioChanged,
-              (const ProcessNode*, LoadingScenario, LoadingScenario),
-              (override));
-  MOCK_METHOD(void,
-              OnProcessInputScenarioChanged,
-              (const ProcessNode*, InputScenario, InputScenario),
-              (override));
-};
-
-using StrictMockPerformanceScenarioObserver =
-    ::testing::StrictMock<MockPerformanceScenarioObserver>;
-
 // Since the browser process also maps in a read-only view of the global
 // scenario state for querying outside performance_manager, the blink observer
 // is also notified.
-class MockBlinkPerformanceScenarioObserver
+class MockPerformanceScenarioObserver
     : public blink::performance_scenarios::PerformanceScenarioObserver {
  public:
  public:
@@ -81,48 +53,20 @@ class MockBlinkPerformanceScenarioObserver
               (override));
 };
 
-using StrictMockBlinkPerformanceScenarioObserver =
-    ::testing::StrictMock<MockBlinkPerformanceScenarioObserver>;
+using StrictMockPerformanceScenarioObserver =
+    ::testing::StrictMock<MockPerformanceScenarioObserver>;
 
-class PerformanceScenariosTest : public PerformanceManagerTestHarness,
-                                 public ::testing::WithParamInterface<bool> {
+class PerformanceScenariosTest : public PerformanceManagerTestHarness {
  public:
-  PerformanceScenariosTest() {
-    // Run with and without PM on main thread, since this can affect whether
-    // setting a scenario needs to post a task.
-    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
-                                              GetParam());
-  }
+  PerformanceScenariosTest() = default;
 
   void SetUp() override {
-    // Enable the PerformanceScenarioNotifier.
-    GetGraphFeatures().EnablePerformanceScenarios();
-
     PerformanceManagerTestHarness::SetUp();
 
     // Load a page with FrameNodes and ProcessNodes.
     SetContents(CreateTestWebContents());
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL("https://www.example.com"));
-
-    // Observe global scenario changes and scenarios for two ProcessNodes.
-    // (The browser process is a convenient 2nd process.)
-    base::WeakPtr<ProcessNode> process_node =
-        PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-    base::WeakPtr<ProcessNode> browser_process_node =
-        PerformanceManager::GetProcessNodeForBrowserProcess();
-    RunInGraph([&](Graph* graph) {
-      auto* notifier = PerformanceScenarioNotifier::GetFromGraph(graph);
-      ASSERT_TRUE(notifier);
-      ASSERT_TRUE(process_node);
-      ASSERT_TRUE(browser_process_node);
-      notifier->AddGlobalObserver(&mock_observer_);
-      notifier->AddObserverForProcess(process_node.get(), &mock_observer_);
-
-      // This observer should never fire (verified by StrictMock).
-      notifier->AddObserverForProcess(browser_process_node.get(),
-                                      &mock_observer_);
-    });
   }
 
   // Returns the shared memory region handle for the main frame's process, or an
@@ -133,27 +77,15 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness,
     }
     base::WeakPtr<ProcessNode> process_node =
         PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-    base::ReadOnlySharedMemoryRegion process_region;
-    RunInGraph([&] {
-      ASSERT_TRUE(process_node);
-      // GetPerformanceScenarioRegionForProcess() creates writable shared memory
-      // for that process' state if it doesn't already exist.
-      process_region =
-          GetSharedScenarioRegionForProcessNode(process_node.get());
-    });
-    return process_region;
+    EXPECT_TRUE(process_node);
+
+    // GetPerformanceScenarioRegionForProcess() creates writable shared memory
+    // for that process' state if it doesn't already exist.
+    return GetSharedScenarioRegionForProcessNode(process_node.get());
   }
-
- protected:
-  StrictMockPerformanceScenarioObserver mock_observer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PerformanceScenariosTest, ::testing::Bool());
-
-TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
+TEST_F(PerformanceScenariosTest, SetWithoutSharedMemory) {
   // Can't set up the blink scenario observer without mapped memory.
   EXPECT_FALSE(
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
@@ -167,22 +99,11 @@ TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
             LoadingScenario::kNoPageLoading);
 }
 
-TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
+TEST_F(PerformanceScenariosTest, SetWithSharedMemory) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-  RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    EXPECT_CALL(mock_observer_, OnGlobalLoadingScenarioChanged(
-                                    LoadingScenario::kNoPageLoading,
-                                    LoadingScenario::kFocusedPageLoading));
-    EXPECT_CALL(mock_observer_,
-                OnProcessLoadingScenarioChanged(
-                    process_node.get(), LoadingScenario::kNoPageLoading,
-                    LoadingScenario::kVisiblePageLoading));
-  });
-
-  StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
-  EXPECT_CALL(mock_blink_observer,
+  StrictMockPerformanceScenarioObserver mock_observer;
+  EXPECT_CALL(mock_observer,
               OnLoadingScenarioChanged(ScenarioScope::kGlobal,
                                        LoadingScenario::kNoPageLoading,
                                        LoadingScenario::kFocusedPageLoading))
@@ -192,10 +113,10 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   // view of the memory in as well so changes immediately become visible to the
   // current (browser) process.
   ScopedGlobalScenarioMemory global_shared_memory;
-  auto blink_observer_list =
+  auto observer_list =
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
-  ASSERT_TRUE(blink_observer_list);
-  blink_observer_list->AddObserver(&mock_blink_observer);
+  ASSERT_TRUE(observer_list);
+  observer_list->AddObserver(&mock_observer);
 
   SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
   EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
@@ -205,7 +126,7 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
   // a message to notify. Need to wait for the message.
   task_environment()->RunUntilQuit();
-  ::testing::Mock::VerifyAndClearExpectations(&mock_blink_observer);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Create writable shared memory for a render process state. Since this is
   // called in the browser process and the state is for a different process, it
@@ -213,90 +134,10 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   base::ReadOnlySharedMemoryRegion process_region = main_process_region();
   EXPECT_TRUE(process_region.IsValid());
   SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
-
-  // SetLoadingScenarioForProcess posts to the PM thread. Wait until the message
-  // is received before reading.
-  RunInGraph([] {
-    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                  ->load(std::memory_order_relaxed),
-              LoadingScenario::kNoPageLoading);
-  });
-
-  // Ensure that the ProcessNode observer was notified in the browser process,
-  // even though the child hasn't mapped in the memory yet.
-  ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
-
-  // Map in the read-only view of `process_region`. Normally this would be done
-  // in the renderer process as the "current process" state. The state should
-  // now become visible.
-  blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(ScenarioScope::kCurrentProcess,
-                            std::move(process_region));
-  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                ->load(std::memory_order_relaxed),
-            LoadingScenario::kVisiblePageLoading);
-
-  blink_observer_list->RemoveObserver(&mock_blink_observer);
-}
-
-TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
-  base::WeakPtr<ProcessNode> process_node =
-      PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-  RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    EXPECT_CALL(mock_observer_, OnGlobalLoadingScenarioChanged(
-                                    LoadingScenario::kNoPageLoading,
-                                    LoadingScenario::kFocusedPageLoading));
-    EXPECT_CALL(mock_observer_,
-                OnProcessLoadingScenarioChanged(
-                    process_node.get(), LoadingScenario::kNoPageLoading,
-                    LoadingScenario::kVisiblePageLoading));
-  });
-
-  StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
-  EXPECT_CALL(mock_blink_observer,
-              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
-                                       LoadingScenario::kNoPageLoading,
-                                       LoadingScenario::kFocusedPageLoading))
-      .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
-
-  // Create writable shared memory for the global state. This maps a read-only
-  // view of the memory in as well.
-  ScopedGlobalScenarioMemory global_shared_memory;
-  auto blink_observer_list =
-      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
-  ASSERT_TRUE(blink_observer_list);
-  blink_observer_list->AddObserver(&mock_blink_observer);
-
-  // Create writable shared memory for a render process state. Since this is
-  // called in the browser process and the state is for a different process, it
-  // doesn't map in a read-only view.
-  base::ReadOnlySharedMemoryRegion process_region = main_process_region();
-  EXPECT_TRUE(process_region.IsValid());
-
-  // Set the loading scenario from the PM sequence.
-  RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    SetLoadingScenarioForProcessNode(LoadingScenario::kVisiblePageLoading,
-                                     process_node.get());
-    SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
-  });
 
   EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
-  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
-                ->load(std::memory_order_relaxed),
-            LoadingScenario::kFocusedPageLoading);
-
-  // Ensure that the ProcessNode observer was notified in the browser process,
-  // even though the child hasn't mapped in the memory yet.
-  ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
-
-  // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
-  // a message to notify. Need to wait for the message.
-  task_environment()->RunUntilQuit();
-  ::testing::Mock::VerifyAndClearExpectations(&mock_blink_observer);
 
   // Map in the read-only view of `process_region`. Normally this would be done
   // in the renderer process as the "current process" state. The state should
@@ -308,40 +149,7 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
 
-  blink_observer_list->RemoveObserver(&mock_blink_observer);
-}
-
-TEST_P(PerformanceScenariosTest, SetWithoutObservers) {
-  // Stop observing scenarios. StrictMock will complain if any observer method
-  // is called.
-  base::WeakPtr<ProcessNode> process_node =
-      PerformanceManager::GetProcessNodeForRenderProcessHost(process());
-  RunInGraph([&](Graph* graph) {
-    auto* notifier = PerformanceScenarioNotifier::GetFromGraph(graph);
-    ASSERT_TRUE(notifier);
-    ASSERT_TRUE(process_node);
-    notifier->RemoveGlobalObserver(&mock_observer_);
-    notifier->RemoveObserverForProcess(process_node.get(), &mock_observer_);
-  });
-
-  ScopedGlobalScenarioMemory global_shared_memory;
-  blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(ScenarioScope::kCurrentProcess,
-                            main_process_region());
-
-  SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
-  SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
-
-  // SetLoadingScenarioForProcess posts to the PM thread. Wait until the message
-  // is received before reading.
-  RunInGraph([] {
-    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
-                  ->load(std::memory_order_relaxed),
-              LoadingScenario::kFocusedPageLoading);
-    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                  ->load(std::memory_order_relaxed),
-              LoadingScenario::kVisiblePageLoading);
-  });
+  observer_list->RemoveObserver(&mock_observer);
 }
 
 }  // namespace

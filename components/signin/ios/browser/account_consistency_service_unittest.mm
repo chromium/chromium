@@ -16,7 +16,6 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -75,8 +74,9 @@ bool ContainsCookie(const std::vector<net::CanonicalCookie>& cookies,
                     const std::string& domain) {
   for (const auto& cookie : cookies) {
     if (cookie.Name() == name) {
-      if (domain.empty() || cookie.Domain() == domain)
+      if (domain.empty() || cookie.Domain() == domain) {
         return true;
+      }
     }
   }
   return false;
@@ -134,8 +134,9 @@ class FakeWebState : public web::FakeWebState {
     decider_ = nullptr;
   }
   bool ShouldAllowResponse(NSURLResponse* response, bool for_main_frame) {
-    if (!decider_)
+    if (!decider_) {
       return true;
+    }
 
     __block web::WebStatePolicyDecider::PolicyDecision policyDecision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -148,8 +149,9 @@ class FakeWebState : public web::FakeWebState {
     return policyDecision.ShouldAllowNavigation();
   }
   void WebStateDestroyed() {
-    if (!decider_)
+    if (!decider_) {
       return;
+    }
     decider_->WebStateDestroyed();
   }
 
@@ -167,7 +169,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
 
     signin_client_.reset(
@@ -177,11 +178,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
-    cookie_settings_ = new content_settings::CookieSettings(
-        settings_map_.get(), &prefs_, /*tracking_protection_settings=*/nullptr,
-        false,
-        content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
-        /*tpcd_metadata_manager=*/nullptr, "");
     // Use a NiceMock here to suppress "uninteresting call" warnings.
     account_reconcilor_ =
         std::make_unique<NiceMock<MockAccountReconcilor>>(signin_client_.get());
@@ -221,7 +217,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
     account_consistency_service_ = std::make_unique<AccountConsistencyService>(
         std::move(cookie_manager_callback), account_reconcilor_.get(),
-        cookie_settings_, identity_test_env_->identity_manager());
+        identity_test_env_->identity_manager());
   }
 
   // Identity APIs.
@@ -320,8 +316,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
     // If we have already added the |web_state_| with a previous |delegate|,
     // remove it to enforce a one-to-one mapping between web state handler and
     // web state.
-    if (has_set_web_state_handler_)
+    if (has_set_web_state_handler_) {
       account_consistency_service_->RemoveWebStateHandler(&web_state_);
+    }
 
     account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
     has_set_web_state_handler_ = true;
@@ -374,7 +371,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   // Private properties.
   std::unique_ptr<TestSigninClient> signin_client_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   bool has_set_web_state_handler_ = false;
 };
 

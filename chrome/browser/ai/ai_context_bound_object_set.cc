@@ -9,9 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
-#include "base/types/pass_key.h"
-#include "content/public/browser/document_user_data.h"
-#include "content/public/browser/render_frame_host.h"
 
 namespace {
 

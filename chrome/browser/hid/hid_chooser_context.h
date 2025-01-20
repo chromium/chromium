@@ -95,6 +95,11 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   // Returns true if `origin` is allowed to access FIDO reports.
   bool IsFidoAllowedForOrigin(const url::Origin& origin);
 
+  // Returns true if `device` is a known FIDO U2F security key. Origins allowed
+  // to access FIDO reports are also allowed to access the non-FIDO collections
+  // of known security keys.
+  bool IsKnownSecurityKey(const device::mojom::HidDeviceInfo& device);
+
   // For ScopedObservation, see ScopedObservationTraits below.
   void AddDeviceObserver(DeviceObserver* observer);
   void RemoveDeviceObserver(DeviceObserver* observer);

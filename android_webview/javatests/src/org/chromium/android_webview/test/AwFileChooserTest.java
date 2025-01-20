@@ -351,8 +351,7 @@ public class AwFileChooserTest extends AwParameterizedTest {
     @SmallTest
     @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
     public void testFileSystemAccessDirectory() throws Throwable {
-        fileSystemAccessOk(
-                "showDirectoryPicker()", WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE);
+        fileSystemAccessOk("showDirectoryPicker()", FileChooserParamsImpl.Mode.OPEN_FOLDER);
     }
 
     /** Simulates user clicking Choose File button. */

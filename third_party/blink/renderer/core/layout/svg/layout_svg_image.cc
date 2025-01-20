@@ -27,9 +27,9 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -64,7 +64,9 @@ void LayoutSVGImage::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::UpdateReferenceBoxDependency(*this);
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(StyleRef())
+          : TransformHelper::UpdateReferenceBoxDependency(*this);
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 }
 
@@ -90,11 +92,10 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
 
   const gfx::SizeF kDefaultObjectSize(LayoutReplaced::kDefaultWidth,
                                       LayoutReplaced::kDefaultHeight);
-  IntrinsicSizingInfo sizing_info;
   if (!image_resource_->HasImage() || image_resource_->ErrorOccurred()) {
     return gfx::SizeF(style_size.x(), style_size.y());
   }
-  sizing_info = image_resource_->GetNaturalDimensions(1);
+  NaturalSizingInfo sizing_info = image_resource_->GetNaturalDimensions(1);
 
   const gfx::SizeF concrete_object_size =
       ConcreteObjectSize(sizing_info, kDefaultObjectSize);
@@ -139,24 +140,24 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  const bool bbox_changed = UpdateBoundingBox();
+  bool bounds_changed = UpdateBoundingBox();
+  if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
+    bounds_changed = true;
+  }
 
-  SVGLayoutResult result;
-  if (bbox_changed) {
-    result.bounds_changed = true;
-  }
-  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    result.bounds_changed = true;
-  }
+  const bool has_viewport_dependence =
+      To<SVGImageElement>(GetElement())->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return result;
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
-                                          bool bbox_changed) {
-  if (bbox_changed) {
+                                          bool bounds_changed) {
+  if (bounds_changed) {
     SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
 
     // Invalidate all resources of this client if our reference box changed.
@@ -165,7 +166,7 @@ bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     needs_transform_update_ =
-        CheckForImplicitTransformChange(layout_info, bbox_changed);
+        CheckForImplicitTransformChange(layout_info, bounds_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }

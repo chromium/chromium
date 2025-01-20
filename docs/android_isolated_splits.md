@@ -83,7 +83,7 @@ enforce that no Service subclasses exist outside of the base split.
 
 [b/169196314]: https://issuetracker.google.com/169196314
 [SplitCompatService]: https://source.chromium.org/search?q=symbol:SplitCompatService&ss=chromium
-[compile-time check]: https://source.chromium.org/search?q=symbol:_MaybeCheckServicesAndProvidersPresentInBase&ss=chromium
+[compile-time check]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/create_app_bundle.py;l=446;drc=c4dd266492ad1e242161b415ac5a1d9fccd7a041
 
 ### Corrupted .odex (Android O MR1)
 

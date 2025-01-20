@@ -30,8 +30,9 @@ LanguageAndCodePage* GetTranslate(const void* data) {
   static constexpr wchar_t kTranslation[] = L"\\VarFileInfo\\Translation";
   LPVOID translate = nullptr;
   UINT dummy_size;
-  if (::VerQueryValue(data, kTranslation, &translate, &dummy_size))
+  if (::VerQueryValue(data, kTranslation, &translate, &dummy_size)) {
     return static_cast<LanguageAndCodePage*>(translate);
+  }
   return nullptr;
 }
 
@@ -54,12 +55,14 @@ FileVersionInfo::CreateFileVersionInfoForModule(HMODULE module) {
   size_t version_info_length;
   const bool has_version_resource = base::win::GetResourceFromModule(
       module, VS_VERSION_INFO, RT_VERSION, &data, &version_info_length);
-  if (!has_version_resource)
+  if (!has_version_resource) {
     return nullptr;
+  }
 
   const LanguageAndCodePage* translate = GetTranslate(data);
-  if (!translate)
+  if (!translate) {
     return nullptr;
+  }
 
   return base::WrapUnique(
       new FileVersionInfoWin(data, translate->language, translate->code_page));
@@ -80,17 +83,20 @@ FileVersionInfoWin::CreateFileVersionInfoWin(const base::FilePath& file_path) {
   DWORD dummy;
   const wchar_t* path = file_path.value().c_str();
   const DWORD length = ::GetFileVersionInfoSize(path, &dummy);
-  if (length == 0)
+  if (length == 0) {
     return nullptr;
+  }
 
   std::vector<uint8_t> data(length, 0);
 
-  if (!::GetFileVersionInfo(path, dummy, length, data.data()))
+  if (!::GetFileVersionInfo(path, dummy, length, data.data())) {
     return nullptr;
+  }
 
   const LanguageAndCodePage* translate = GetTranslate(data.data());
-  if (!translate)
+  if (!translate) {
     return nullptr;
+  }
 
   return base::WrapUnique(new FileVersionInfoWin(
       std::move(data), translate->language, translate->code_page));

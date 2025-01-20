@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<div style=white-space:nowrap>foo\\nb[]</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\\"white-space:nowrap\\">foo&nbsp;</div>" not in array ["<div style=\\"white-space:nowrap\\">foo\\n</div>", "<div style=\\"white-space:nowrap\\">foo<br></div>"]
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" compare innerHTML
@@ -30,5 +30,8 @@ Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span style=\\"display:list-item\\">abcdef</span></div>" but got "<span style=\\"display:list-item\\">abcdef</span>"
 [FAIL] [["delete",""]] "<div>{abc</div><div>def</div>}" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><br></div>" but got "<br>"
+[FAIL] [["delete",""]] "<table><tr><td>a<td><b>[b</b><td><b>c</b><td><b>d]</b><td>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>a</td><td><br></td><td><br></td><td><br></td><td>e</td></tr></tbody></table>" but got "<table><tbody><tr><td>a</td><td><br></td><td></td><td></td><td>e</td></tr></tbody></table>"
+[FAIL] [["delete",""]] "<table><tr><th>a<th><b>[b</b><th><b>c</b><th><b>d]</b><th>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th>a</th><th><br></th><th><br></th><th><br></th><th>e</th></tr></tbody></table>" but got "<table><tbody><tr><th>a</th><th><br></th><th></th><th></th><th>e</th></tr></tbody></table>"
 Harness: the test ran to completion.
-

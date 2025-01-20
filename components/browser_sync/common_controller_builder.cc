@@ -650,8 +650,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
-      plus_address_setting_service_.value() && google_groups_manager_.value() &&
-      base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+      plus_address_setting_service_.value() && google_groups_manager_.value()) {
     controllers.push_back(
         std::make_unique<plus_addresses::PlusAddressDataTypeController>(
             syncer::PLUS_ADDRESS_SETTING,
@@ -718,10 +717,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             delegate)));
   }
 
-  if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
-      tab_group_sync_service_.value() &&
+  // TODO(crbug.com/381505059): Check if the collab service status should be
+  // used.
+  bool data_sharing_enabled =
       base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+          data_sharing::features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly);
+  if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
+      tab_group_sync_service_.value() && data_sharing_enabled) {
     syncer::DataTypeControllerDelegate* delegate =
         tab_group_sync_service_.value()
             ->GetSharedTabGroupControllerDelegate()
@@ -862,9 +866,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // `data_sharing_service_` is null on iOS WebView.
-  if (data_sharing_service_.value() &&
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) &&
+  if (data_sharing_service_.value() && data_sharing_enabled &&
       !disabled_types.Has(syncer::COLLABORATION_GROUP)) {
     syncer::DataTypeControllerDelegate* delegate =
         data_sharing_service_.value()

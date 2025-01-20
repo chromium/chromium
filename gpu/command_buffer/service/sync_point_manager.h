@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -37,14 +38,20 @@ class SyncPointClientState;
 class SyncPointManager;
 
 // The cause of fence sync releases.
+//
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with ReleaseCause
+// in tools/metrics/histograms/metadata/gpu/enums.xml
 enum class ReleaseCause {
   // Releases done by clients explicitly during task execution.
-  kExplicitClientRelease,
+  kExplicitClientRelease = 0,
   // Releases done automatically at task completion, according to task info
   // specified by clients.
-  kTaskCompletionRelease,
+  kTaskCompletionRelease = 1,
   // Releases done forcefully to resolve invalid waits.
-  kForceRelease
+  kForceRelease = 2,
+
+  kMaxValue = kForceRelease
 };
 
 class GPU_EXPORT SyncPointOrderData
@@ -388,6 +395,8 @@ class GPU_EXPORT SyncPointManager {
   OrderDataMap order_data_map_ GUARDED_BY(lock_);
 
   SequenceId::Generator sequence_id_generator_ GUARDED_BY(lock_);
+
+  base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock_);
 
   mutable base::Lock lock_;
 

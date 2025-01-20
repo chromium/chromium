@@ -4,8 +4,8 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.services.media_session.MediaImage;
 import org.chromium.services.media_session.MediaMetadata;
@@ -19,8 +19,9 @@ import java.util.Set;
  * session messages from Java {@link MediaSession}, which acts acts as a proxy forwarding messages
  * comming from the native MediaSession.
  */
+@NullMarked
 public abstract class MediaSessionObserver {
-    private MediaSessionImpl mMediaSession;
+    private @Nullable MediaSessionImpl mMediaSession;
 
     /** Construct a MediaSessionObserver and start observing |mediaSession|. */
     protected MediaSessionObserver(MediaSession mediaSession) {
@@ -38,8 +39,7 @@ public abstract class MediaSessionObserver {
     /**
      * @return The observed media session.
      */
-    @Nullable
-    public final MediaSession getMediaSession() {
+    public final @Nullable MediaSession getMediaSession() {
         return mMediaSession;
     }
 

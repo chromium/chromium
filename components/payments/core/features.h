@@ -45,10 +45,6 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
-// If enabled, the payment method manifest fetch for Payment Handler must go via
-// a Link header with rel="payment-method-manifest".
-BASE_DECLARE_FEATURE(kPaymentHandlerRequireLinkHeader);
-
 #if BUILDFLAG(USE_BLINK)
 // Controls how network and issuer icons (when enabled) are presented in SPC UX.
 extern const base::FeatureParam<std::string>

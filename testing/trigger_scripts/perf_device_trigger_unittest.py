@@ -8,6 +8,9 @@ import unittest
 
 import perf_device_trigger
 
+# Disabled instead of fixing to avoid a large amount of churn.
+# pylint: disable=no-self-use
+
 
 class Args(object):  # pylint: disable=useless-object-inheritance
 

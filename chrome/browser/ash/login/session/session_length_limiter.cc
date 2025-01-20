@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -28,6 +29,16 @@ const int kSessionLengthLimitMinMs = 30 * 1000; // 30 seconds.
 
 // The maximum session time limit that can be set.
 const int kSessionLengthLimitMaxMs = 24 * 60 * 60 * 1000; // 24 hours.
+
+bool ShouldSessionLimitWaitForInitialUserActivity(PrefService* local_state) {
+  // `is_demo_mode_and_count_from_session_start` is always false if the device
+  // is not in
+  // demo mode.
+  bool is_demo_mode_and_count_from_session_start =
+      demo_mode::ForceSessionLengthCountFromSessionStarts();
+  return local_state->GetBoolean(prefs::kSessionWaitForInitialUserActivity) &&
+         !is_demo_mode_and_count_from_session_start;
+}
 
 // A default delegate implementation that returns the current time and does end
 // the current user's session when requested. This can be replaced with a mock
@@ -47,11 +58,9 @@ class SessionLengthLimiterDelegateImpl : public SessionLengthLimiter::Delegate {
   void StopSession() override;
 };
 
-SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() {
-}
+SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() = default;
 
-SessionLengthLimiterDelegateImpl::~SessionLengthLimiterDelegateImpl() {
-}
+SessionLengthLimiterDelegateImpl::~SessionLengthLimiterDelegateImpl() = default;
 
 const base::Clock* SessionLengthLimiterDelegateImpl::GetClock() const {
   return base::DefaultClock::GetInstance();
@@ -63,8 +72,7 @@ void SessionLengthLimiterDelegateImpl::StopSession() {
 
 }  // namespace
 
-SessionLengthLimiter::Delegate::~Delegate() {
-}
+SessionLengthLimiter::Delegate::~Delegate() = default;
 
 // static
 void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -165,7 +173,7 @@ void SessionLengthLimiter::UpdateSessionStartTime() {
     return;
 
   PrefService* local_state = g_browser_process->local_state();
-  if (local_state->GetBoolean(prefs::kSessionWaitForInitialUserActivity)) {
+  if (ShouldSessionLimitWaitForInitialUserActivity(local_state)) {
     session_start_time_ = base::Time();
     local_state->ClearPref(prefs::kSessionStartTime);
   } else {

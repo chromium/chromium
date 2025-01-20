@@ -11,6 +11,8 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_utils.h"
 
 using guest_view::GuestViewBase;
@@ -53,6 +55,7 @@ void TestMimeHandlerViewGuest::WaitForGuestAttached() {
 
 void TestMimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     GuestPageCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
@@ -62,7 +65,8 @@ void TestMimeHandlerViewGuest::CreateInnerPage(
         FROM_HERE,
         base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateInnerPage,
                        weak_ptr_factory_.GetWeakPtr(), std::move(owned_this),
-                       create_params.Clone(), std::move(callback)),
+                       std::move(site_instance), create_params.Clone(),
+                       std::move(callback)),
         delta);
 
     // Reset the delay for the next creation.
@@ -70,7 +74,8 @@ void TestMimeHandlerViewGuest::CreateInnerPage(
     return;
   }
 
-  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this), create_params,
+  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this),
+                                        std::move(site_instance), create_params,
                                         std::move(callback));
 }
 
@@ -82,21 +87,32 @@ void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
 
 void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
     GuestViewBase* guest_view) {
-  auto* guest_contents = guest_view->web_contents();
-  // Wait for loading to start.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return guest_contents->IsLoading() ||
-           guest_view->GetController().GetLastCommittedEntry();
-  }));
-  ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    EXPECT_TRUE(base::test::RunUntil([&]() { return guest_view->attached(); }));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return guest_view->GetGuestMainFrame()
+          ->IsDocumentOnLoadCompletedInMainFrame();
+    }));
+  } else {
+    auto* guest_contents = guest_view->web_contents();
+    // Wait for loading to start.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return guest_contents->IsLoading() || !guest_view->GetController()
+                                                 .GetLastCommittedEntry()
+                                                 ->IsInitialEntry();
+    }));
+    ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
+  }
 }
 
 void TestMimeHandlerViewGuest::CallBaseCreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
     base::Value::Dict create_params,
     GuestPageCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this), create_params,
+  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this),
+                                        std::move(site_instance), create_params,
                                         std::move(callback));
 }
 

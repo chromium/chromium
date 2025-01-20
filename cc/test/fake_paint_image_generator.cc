@@ -54,6 +54,10 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
                                         uint32_t lazy_pixel_ref) {
   base::AutoLock lock(lock_);
 
+  if (force_fail_decode_) {
+    return false;
+  }
+
   CHECK(!is_yuv_ || expect_fallback_to_rgb_);
   const SkImageInfo& dst_info = dst_pixmap.info();
   if (image_backing_memory_.empty())
@@ -90,6 +94,10 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
     uint32_t lazy_pixel_ref,
     PaintImage::GeneratorClientId client_id) {
   base::AutoLock lock(lock_);
+
+  if (force_fail_decode_) {
+    return false;
+  }
 
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);

@@ -142,6 +142,10 @@ def parse_deps(build_dir, deps_output):
         next(deps_iter)
       continue
 
+    if num_deps == 0:
+      next(deps_iter)
+      continue
+
     # Read the main file line.
     line = next(deps_iter)
     if not line.startswith('    '):

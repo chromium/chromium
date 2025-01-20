@@ -240,6 +240,7 @@
 <translation id="2556326187583116255">Istalgan joriy nutqni toʻxtatish uchun ekranga 2 ta barmoq bilan tegining</translation>
 <translation id="2573256689920773241">Asosiy navigatsiya</translation>
 <translation id="257674075312929031">Guruh</translation>
+<translation id="2577127557293415225">Ikkala koʻzni yuming</translation>
 <translation id="2582407057977008361">Aside</translation>
 <translation id="2592212930811759050">Tahrirlashni boshlash uchun ikki marta bosing</translation>
 <translation id="2598495320872286378">Grammatik xato</translation>
@@ -843,6 +844,7 @@
 <translation id="6385591741672306837">ustun</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Barcha hodisalar filtrlarini faolsizlashtirish</translation>
+<translation id="6406989068857078334">Sichqoncha tezligi pasaytirildi, bosish qayta bajaring: <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Kuz</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ikki nuqta}other{# ta ikki nuqta}}</translation>
@@ -1097,6 +1099,7 @@
 <translation id="8205922869661890178">Dasturchi jurnalini ochish</translation>
 <translation id="8212109599554677485">Ekranni yonma-yon uslubiga oʻzgartirish</translation>
 <translation id="8215202828671303819">Bir nechta elementni tanlash</translation>
+<translation id="822316432305106615">Klik amalini tasdiqlash</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, shaffofligi: <ph name="OPACITY_PERCENTAGE" />%</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="826825447994856889">Kirish</translation>

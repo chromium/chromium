@@ -9,10 +9,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -45,7 +45,7 @@ class MandatoryReauthManagerTest : public testing::Test {
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
     SetUpAuthentication(/*biometrics_available=*/true,
                         /*screen_lock_available=*/true);
-    autofill_client_->GetPersonalDataManager()->SetPrefService(
+    autofill_client_->GetPersonalDataManager().SetPrefService(
         autofill_client_->GetPrefs());
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -148,7 +148,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -161,7 +161,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 // record mode.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   autofill_client_->set_is_off_the_record(true);
@@ -219,7 +219,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
   mandatory_reauth_manager_->OnUserCancelledOptInPrompt();
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -244,7 +244,7 @@ TEST_F(MandatoryReauthManagerTest,
                       /*screen_lock_available=*/false);
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -269,7 +269,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // 'card_identifier_if_non_interactive_authentication_flow_completed' is not
@@ -295,7 +295,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // Test that if the last filled card is the matching local card, we offer

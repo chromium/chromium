@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -687,8 +686,7 @@ void PageInfo::OnSitePermissionChanged(
   if (is_one_time) {
     constraints.set_session_model(
         content_settings::mojom::SessionModel::ONE_TIME);
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kActiveContentSettingExpiry)) {
+    if (content_settings::ShouldTypeExpireActively(type)) {
       constraints.set_lifetime(permissions::kOneTimePermissionMaximumLifetime);
     }
   }
@@ -975,7 +973,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       (!net::IsCertStatusError(visible_security_state.cert_status))) {
     // HTTPS with no or minor errors.
     if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       site_identity_status_ = SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
 #else
       DCHECK(false) << "Policy certificates exist only on ChromeOS";
@@ -1413,7 +1411,7 @@ void PageInfo::PresentSitePermissions() {
       ContentSetting setting = content_settings->GetContentSetting(
           requester.GetURL(), site_url_, permission_info.type, &info);
 
-      if (IsGrantedByRelatedWebsiteSets(type, info.metadata) &&
+      if (info.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;
@@ -1477,7 +1475,7 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
       if (setting.primary_pattern.Matches(site_url_)) {
         continue;  // Skip first-party settings.
       }
-      if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+      if (setting.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;

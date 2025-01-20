@@ -52,8 +52,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kDeleteTimePeriodBasic,
       static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
-  registry->RegisterIntegerPref(kDeleteTimePeriodV2, -1);
-  registry->RegisterIntegerPref(kDeleteTimePeriodV2Basic, -1);
   registry->RegisterBooleanPref(kDeleteBrowsingHistory, true);
   registry->RegisterBooleanPref(kDeleteBrowsingHistoryBasic, true);
   registry->RegisterBooleanPref(kDeleteCache, true);

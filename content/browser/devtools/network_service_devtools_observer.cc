@@ -182,7 +182,8 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
   DispatchToAgents(host, &protocol::NetworkHandler::RequestSent, id,
                    /* loader_id=*/"", request_headers, *request_info,
                    protocol::Network::Initiator::TypeEnum::Preflight,
-                   initiator_url, initiator_devtools_request_id, timestamp);
+                   initiator_url, initiator_devtools_request_id,
+                   /*frame_token=*/std::nullopt, timestamp);
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
@@ -196,7 +197,7 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
   DispatchToAgents(host, &protocol::NetworkHandler::ResponseReceived, id,
                    /* loader_id=*/"", url,
                    protocol::Network::ResourceTypeEnum::Preflight, *head,
-                   protocol::Maybe<std::string>());
+                   std::nullopt);
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(

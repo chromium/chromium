@@ -32,7 +32,7 @@ bool WasFrameWithScriptLoaded(content::RenderFrameHost* render_frame_host) {
 
 class ExtensionCSPBypassTest : public ExtensionBrowserTest {
  public:
-  ExtensionCSPBypassTest() {}
+  ExtensionCSPBypassTest() = default;
 
   ExtensionCSPBypassTest(const ExtensionCSPBypassTest&) = delete;
   ExtensionCSPBypassTest& operator=(const ExtensionCSPBypassTest&) = delete;

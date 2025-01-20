@@ -5,6 +5,7 @@
 #include "headless/lib/browser/command_line_handler.h"
 
 #include <cstdio>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -13,6 +14,7 @@
 #include "cc/base/switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
+#include "headless/lib/browser/headless_screen_info.h"
 #include "headless/public/switches.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -24,21 +26,31 @@ namespace headless {
 
 namespace {
 
+void AppendSwitchMaybe(base::CommandLine& command_line,
+                       std::string_view switch_constant) {
+  if (!command_line.HasSwitch(switch_constant)) {
+    command_line.AppendSwitch(switch_constant);
+  }
+}
+
 void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
   DCHECK(command_line.HasSwitch(switches::kDeterministicMode));
 
-  command_line.AppendSwitch(switches::kEnableBeginFrameControl);
+  AppendSwitchMaybe(command_line, switches::kEnableBeginFrameControl);
 
   // Compositor flags
-  command_line.AppendSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
-  command_line.AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
+  AppendSwitchMaybe(command_line,
+                    ::switches::kRunAllCompositorStagesBeforeDraw);
+  AppendSwitchMaybe(command_line,
+                    ::switches::kDisableNewContentRenderingTimeout);
   // Ensure that image animations don't resync their animation timestamps when
   // looping back around.
-  command_line.AppendSwitch(blink::switches::kDisableImageAnimationResync);
+  AppendSwitchMaybe(command_line,
+                    blink::switches::kDisableImageAnimationResync);
 
   // Renderer flags
-  command_line.AppendSwitch(::switches::kDisableThreadedAnimation);
-  command_line.AppendSwitch(::switches::kDisableCheckerImaging);
+  AppendSwitchMaybe(command_line, ::switches::kDisableThreadedAnimation);
+  AppendSwitchMaybe(command_line, ::switches::kDisableCheckerImaging);
 }
 
 bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
@@ -94,21 +106,20 @@ bool HandleWindowSize(base::CommandLine& command_line,
   return true;
 }
 
-bool HandleScreenScaleFactor(base::CommandLine& command_line,
-                             HeadlessBrowser::Options& options) {
-  DCHECK(command_line.HasSwitch(switches::kScreenScaleFactor));
+bool HandleScreenInfo(base::CommandLine& command_line,
+                      HeadlessBrowser::Options& options) {
+  DCHECK(command_line.HasSwitch(switches::kScreenInfo));
 
   const std::string switch_value =
-      command_line.GetSwitchValueASCII(switches::kScreenScaleFactor);
+      command_line.GetSwitchValueASCII(switches::kScreenInfo);
 
-  double scale_factor;
-  if (!base::StringToDouble(switch_value, &scale_factor) ||
-      scale_factor < 0.5) {
-    LOG(ERROR) << "Invalid screen scale factor: " << switch_value;
+  auto screen_info = HeadlessScreenInfo::FromString(switch_value);
+  if (!screen_info.has_value()) {
+    LOG(ERROR) << screen_info.error();
     return false;
   }
 
-  options.screen_scale_factor = base::checked_cast<float>(scale_factor);
+  options.screen_info_spec = switch_value;
   return true;
 }
 
@@ -161,10 +172,20 @@ base::FilePath EnsureDirectoryExists(const base::FilePath& file_path) {
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
                                HeadlessBrowser::Options& options) {
   if (command_line.HasSwitch(switches::kDeterministicMode)) {
+    if (command_line.HasSwitch(::switches::kSitePerProcess)) {
+      LOG(ERROR) << "Deterministic mode is not compatible with --"
+                 << ::switches::kSitePerProcess << " switch.";
+      return false;
+    }
     HandleDeterministicModeSwitch(command_line);
   }
 
   if (command_line.HasSwitch(switches::kEnableBeginFrameControl)) {
+    if (command_line.HasSwitch(::switches::kSitePerProcess)) {
+      LOG(ERROR) << "Frame control is not compatible with --"
+                 << ::switches::kSitePerProcess << " switch.";
+      return false;
+    }
     options.enable_begin_frame_control = true;
   }
 
@@ -209,8 +230,8 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     }
   }
 
-  if (command_line.HasSwitch(switches::kScreenScaleFactor)) {
-    if (!HandleScreenScaleFactor(command_line, options)) {
+  if (command_line.HasSwitch(switches::kScreenInfo)) {
+    if (!HandleScreenInfo(command_line, options)) {
       return false;
     }
   }

@@ -97,47 +97,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Test that when Safe Browsing state is managed by policy, the enhanced
-// protection message does not appear on SSL blocking pages.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingStatePolicyManaged) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
-
-  // Set the Safe Browsing state to standard protection.
-  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
-  safe_browsing::SetSafeBrowsingState(
-      prefs, safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-
-  // First, navigate to an SSL error page and make sure the enhanced protection
-  // message appears by default.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
-  EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
-            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
-
-  // Set the enterprise policy to force standard protection.
-  PolicyMap policies;
-  policies.Set(policy::key::kSafeBrowsingProtectionLevel,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD,
-               base::Value(/* standard protection */ 1), nullptr);
-  UpdateProviderPolicy(policies);
-  // Policy should have overwritten the pref, and it should be managed.
-  EXPECT_EQ(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
-            safe_browsing::GetSafeBrowsingState(*prefs));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnabled));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnhanced));
-
-  // Navigate to an SSL error page, the enhanced protection message should not
-  // appear.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
-  EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
-            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
-}
-
 // Test that when safe browsing allowlist domains are set by policy, safe
 // browsing service gets the correct value.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
@@ -182,6 +141,47 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
   safe_browsing::GetSafeBrowsingAllowlistDomainsPref(*prefs,
                                                      &canonicalized_domains);
   EXPECT_TRUE(canonicalized_domains.empty());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Test that when Safe Browsing state is managed by policy, the enhanced
+// protection message does not appear on SSL blocking pages.
+IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingStatePolicyManaged) {
+  net::EmbeddedTestServer https_server_expired(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_expired.Start());
+
+  // Set the Safe Browsing state to standard protection.
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  safe_browsing::SetSafeBrowsingState(
+      prefs, safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  // First, navigate to an SSL error page and make sure the enhanced protection
+  // message appears by default.
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
+            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
+
+  // Set the enterprise policy to force standard protection.
+  PolicyMap policies;
+  policies.Set(policy::key::kSafeBrowsingProtectionLevel,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(/* standard protection */ 1), nullptr);
+  UpdateProviderPolicy(policies);
+  // Policy should have overwritten the pref, and it should be managed.
+  EXPECT_EQ(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+            safe_browsing::GetSafeBrowsingState(*prefs));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnabled));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSafeBrowsingEnhanced));
+
+  // Navigate to an SSL error page, the enhanced protection message should not
+  // appear.
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
+            IsEnhancedProtectionMessageVisibleOnInterstitial(this));
 }
 
 // Test that when password protection login URLs are set by policy, password
@@ -291,7 +291,7 @@ class MockPasswordProtectionService
   MockPasswordProtectionService(safe_browsing::SafeBrowsingService* sb_service,
                                 Profile* profile)
       : safe_browsing::ChromePasswordProtectionService(sb_service, profile) {}
-  ~MockPasswordProtectionService() override {}
+  ~MockPasswordProtectionService() override = default;
 
   MOCK_CONST_METHOD0(IsPrimaryAccountGmail, bool());
 

@@ -206,7 +206,7 @@ class MTPDeviceAsyncDelegate {
 
  protected:
   // Always destruct this object via CancelPendingTasksAndDeleteDelegate().
-  virtual ~MTPDeviceAsyncDelegate() {}
+  virtual ~MTPDeviceAsyncDelegate() = default;
 };
 
 typedef base::OnceCallback<void(MTPDeviceAsyncDelegate*)>

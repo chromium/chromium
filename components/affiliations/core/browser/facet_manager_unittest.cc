@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/affiliations/core/browser/facet_manager.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -581,10 +577,11 @@ TEST_F(FacetManagerTest,
 //     [F-------------------------F-----------------------F------------------>
 //
 TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
       {GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod(), 1},
@@ -592,12 +589,14 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
       {GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 2},
       {GetCacheSoftExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
-      {base::TimeDelta::Max(), 3}};
+      {base::TimeDelta::Max(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -688,11 +687,12 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
 //                                : [F----------------------F------------->
 //
 TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_start;
     base::TimeDelta prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
 
       // Prefetch starts at the exact time the data was incidentally fetched.
@@ -702,39 +702,34 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
       {base::TimeDelta(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 1},
       {base::TimeDelta(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {base::TimeDelta(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
       {base::TimeDelta(), base::TimeDelta::Max(), 2},
 
       // Prefetch starts a short time after the unrelated fetch.
       {GetShortTestPeriod(), 2 * GetShortTestPeriod(), 0},
       {GetShortTestPeriod(), GetCacheSoftExpiryPeriod(), 0},
       {GetShortTestPeriod(), GetCacheHardExpiryPeriod(), 0},
-      {GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
+      {GetShortTestPeriod(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
        1},
       {GetShortTestPeriod(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {GetShortTestPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
       {GetShortTestPeriod(), base::TimeDelta::Max(), 2},
 
       // Prefetch starts at the soft expiry time of the unrelated fetch.
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       0},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 0},
       {GetCacheSoftExpiryPeriod(), GetCacheHardExpiryPeriod(), 0},
-      {GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
+      {GetShortTestPeriod(), GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
        1},
       {GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod(), 1},
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       1},
-      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 2}};
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 1},
+      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 2},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
-      GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod()};
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>(
+      {GetCacheSoftExpiryPeriod(), 2 * GetCacheSoftExpiryPeriod()});
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -772,34 +767,32 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
 
 // Last block of tests from above.
 TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache2) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_start;
     base::TimeDelta prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       // Note: Zero length prefetches are tested later.
 
       // Prefetch starts between the soft and hard expiry time.
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod(),
-       0},
+       GetCacheHardExpiryPeriod(), 0},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
        GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
        1},
       {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       2}};
+       base::TimeDelta::Max(), 2},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
-      GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-      2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod()};
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>(
+      {GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod()});
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
@@ -887,18 +880,20 @@ TEST_F(FacetManagerTest, ExpiredPrefetchDoesNothing) {
 //     :                          :                       : [----):
 //
 TEST_F(FacetManagerTest, NestedPrefetches) {
-  struct {
+  struct FirstPrefetchParams {
     base::TimeDelta prefetch_length;
     size_t expected_num_fetches;
-  } const kFirstPrefetchParams[] = {
+  };
+  const auto kFirstPrefetchParams = std::to_array<FirstPrefetchParams>({
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(), 2},
       {base::TimeDelta::Max(), 3},
-  };
+  });
 
-  struct {
+  struct SecondPrefetchParams {
     base::TimeDelta second_prefetch_start;
     base::TimeDelta second_prefetch_end;
-  } const kSecondPrefetchParams[] = {
+  };
+  const auto kSecondPrefetchParams = std::to_array<SecondPrefetchParams>({
       {base::TimeDelta(), GetShortTestPeriod()},
       {GetShortTestPeriod(), 2 * GetShortTestPeriod()},
       {GetShortTestPeriod(), GetCacheSoftExpiryPeriod()},
@@ -919,12 +914,14 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
       {2 * GetCacheSoftExpiryPeriod(),
        GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()},
       {2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()}};
+       GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod()},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
@@ -972,24 +969,25 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
 //     :                          [F----------------------F----------->
 //
 TEST_F(FacetManagerTest, OverlappingPrefetches) {
-  struct {
+  struct TestCases {
     base::TimeDelta second_prefetch_start;
     base::TimeDelta second_prefetch_end;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {GetShortTestPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       2},
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 2},
       {GetShortTestPeriod(), base::TimeDelta::Max(), 3},
       {GetCacheSoftExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       2},
-      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 3}};
+       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(), 2},
+      {GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
@@ -1044,76 +1042,50 @@ TEST_F(FacetManagerTest, OverlappingPrefetches) {
 //     [NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN...
 //
 TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     base::TimeDelta expected_fetch_time1;
     base::TimeDelta fetch_completion_delay1;
     base::TimeDelta expected_fetch_time2;
     base::TimeDelta fetch_completion_delay2;
-  } const kTestCases[] = {
-      {GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {GetCacheHardExpiryPeriod(), base::TimeDelta(), GetShortTestPeriod(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
-       base::TimeDelta::Max(),
+       base::TimeDelta(), GetCacheSoftExpiryPeriod(), base::TimeDelta::Max(),
        base::TimeDelta::Max()},
-      {GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+      {GetCacheHardExpiryPeriod() + GetShortTestPeriod(), base::TimeDelta(),
+       GetShortTestPeriod(), base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
+       base::TimeDelta(), GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
       {GetCacheHardExpiryPeriod() + GetCacheSoftExpiryPeriod() +
            2 * GetShortTestPeriod(),
-       base::TimeDelta(),
-       GetShortTestPeriod(),
+       base::TimeDelta(), GetShortTestPeriod(),
        GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
        GetCacheSoftExpiryPeriod() + 2 * GetShortTestPeriod()},
-      {GetShortTestPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
-      {GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
+      {GetShortTestPeriod(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+      {GetCacheHardExpiryPeriod(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+      {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta(), GetCacheSoftExpiryPeriod(),
        base::TimeDelta::Max()},
       {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta(),
-       GetCacheSoftExpiryPeriod(),
+       base::TimeDelta(), base::TimeDelta::Max(), base::TimeDelta::Max(),
        base::TimeDelta::Max()},
-      {GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()},
-      {base::TimeDelta::Max(),
-       base::TimeDelta(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max(),
-       base::TimeDelta::Max()}};
+      {base::TimeDelta::Max(), base::TimeDelta(), base::TimeDelta::Max(),
+       base::TimeDelta::Max(), base::TimeDelta::Max()},
+  });
 
   const base::TimeDelta kMaximumTestDuration = GetCacheSoftExpiryPeriod() +
                                                GetCacheHardExpiryPeriod() +
@@ -1171,33 +1143,32 @@ TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
 //     [F-------------------------F-----------------------F--X- - - - ->
 //
 TEST_F(FacetManagerTest, CancelPrefetch) {
-  struct {
+  struct TestCases {
     base::TimeDelta prefetch_length;
     base::TimeDelta cancel_time;
     size_t expected_num_fetches;
-  } const kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {GetCacheHardExpiryPeriod(), GetShortTestPeriod(), 1},
       {GetCacheHardExpiryPeriod(), GetCacheSoftExpiryPeriod(), 1},
       {GetCacheHardExpiryPeriod(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       1},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 1},
       {base::TimeDelta::Max(), GetShortTestPeriod(), 1},
       {base::TimeDelta::Max(), GetCacheSoftExpiryPeriod(), 1},
       {base::TimeDelta::Max(),
-       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       2},
+       GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 2},
       {base::TimeDelta::Max(),
-       GetCacheHardExpiryPeriod() + GetShortTestPeriod(),
-       2},
+       GetCacheHardExpiryPeriod() + GetShortTestPeriod(), 2},
       {base::TimeDelta::Max(), 2 * GetCacheSoftExpiryPeriod(), 2},
       {base::TimeDelta::Max(),
-       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(),
-       3}};
+       2 * GetCacheSoftExpiryPeriod() + GetShortTestPeriod(), 3},
+  });
 
-  const base::TimeDelta kExpectedFetchTimes[] = {
+  const auto kExpectedFetchTimes = std::to_array<base::TimeDelta>({
       base::TimeDelta(),
       GetCacheSoftExpiryPeriod(),
-      2 * GetCacheSoftExpiryPeriod()};
+      2 * GetCacheSoftExpiryPeriod(),
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);

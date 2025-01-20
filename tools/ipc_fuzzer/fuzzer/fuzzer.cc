@@ -536,7 +536,7 @@ struct FuzzTraits<base::Value> {
           size_t bin_length = RandInRange(sizeof(tmp));
           fuzzer->FuzzData(tmp, bin_length);
           random_value =
-              base::Value(base::as_bytes(base::make_span(tmp, bin_length)));
+              base::Value(base::as_bytes(base::span(tmp, bin_length)));
           break;
         }
         case base::Value::Type::STRING: {

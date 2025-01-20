@@ -31,3 +31,18 @@ fun:*views*ViewAccessibilityUtils*IsFocusedChildWidget*
 # https://crbug.com/363225486
 [alignment]
 fun:*base*Pickle*
+
+# null + 0 suppressions. Remove these once
+# https://github.com/llvm/llvm-project/pull/120719 has landed.
+[pointer-overflow]
+fun:*FcSerializeResize*
+fun:*iterate_string_chunks*
+fun:*find_best_partition_order_*
+
+# https://crbug.com/385062729
+[pointer-overflow]
+fun:*angle*PoolAllocator*allocate*
+
+# https://crbug.com/385155394
+[pointer-overflow]
+fun:*VP8BitReaderSetBuffer*

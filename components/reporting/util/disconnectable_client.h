@@ -6,8 +6,10 @@
 #define COMPONENTS_REPORTING_UTIL_DISCONNECTABLE_CLIENT_H_
 
 #include <memory>
+#include <queue>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,7 +46,12 @@ class DisconnectableClient {
   DisconnectableClient& operator=(const DisconnectableClient& other) = delete;
   ~DisconnectableClient();
 
-  // Makes a call. Must be executed on task_runner_.
+  // Access to the feature controlling job limit (intended mostly for tests).
+  static const base::Feature& ReportingDelegateJobsLimitFeature();
+  static const char* MaxDelegatesRunningParamName();
+
+  // Makes a call or delays it, if there are too many ongoing calls already.
+  // Must be executed on task_runner_.
   void MaybeMakeCall(std::unique_ptr<Delegate> delegate);
 
   // Sets availability flag of the service.
@@ -56,12 +63,18 @@ class DisconnectableClient {
  private:
   void CallResponded(uint64_t id);
 
+  void MakeCall(std::unique_ptr<Delegate> delegate);
+
   // Sequenced task runner - must be first member of the class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Availability flag.
   bool is_available_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+
+  // Delayed delegates queue.
+  std::queue<std::unique_ptr<Delegate>> delayed_delegates_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Map of delegates indexed by unique ids (all delegates will fail with error
   // Status if service disconnects). last_id_ is used for generation of these

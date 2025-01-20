@@ -13,17 +13,6 @@ import org.chromium.ui.base.LocalizationUtils;
  * visually order tabs.
  */
 public abstract class StripStacker {
-
-    /**
-     * Computes and sets the draw X, draw Y, visibility and content offset for each view.
-     *
-     * @param indexOrderedViews A list of tabs ordered by index.
-     * @param tabClosing Whether a tab is being closed.
-     * @param cachedTabWidth Whether The ideal tab width.
-     */
-    public abstract void setViewOffsets(
-            StripLayoutView[] indexOrderedViews, boolean tabClosing, float cachedTabWidth);
-
     /**
      * Computes the X offset for the new tab button.
      *
@@ -99,7 +88,13 @@ public abstract class StripStacker {
      * @param indexOrderedViews A list of views ordered by index.
      * @param xOffset The xOffset for the start of the strip.
      * @param visibleWidth The width of the visible space on the tab strip.
+     * @param tabClosing Whether a tab is being closed.
+     * @param cachedTabWidth Whether The ideal tab width.
      */
-    public abstract void performOcclusionPass(
-            StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth);
+    public abstract void pushDrawPropertiesToViews(
+            StripLayoutView[] indexOrderedViews,
+            float xOffset,
+            float visibleWidth,
+            boolean tabClosing,
+            float cachedTabWidth);
 }

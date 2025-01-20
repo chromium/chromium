@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
@@ -233,7 +234,7 @@ class ThrottleManagerTest
     test_support_ = std::make_unique<TestSupport>();
 
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-        web_contents, test_support_->prefs(),
+        web_contents, test_support_->prefs(), test_support_->content_settings(),
         test_support_->tracking_protection_settings(), dealer_handle_.get(),
         /*is_incognito=*/false);
 
@@ -505,6 +506,9 @@ TEST_P(ThrottleManagerEnabledTest,
         entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
         static_cast<int64_t>(
             subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode. With the filter activated in enabled mode, this metric is
+    // not expected to be recorded here.
     EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
@@ -531,8 +535,10 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
                         ukm::builders::FingerprintingProtection::kEntryName)
                     .size());
 }
-
 TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
+  // Set up test ukm recorder.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   CreateAgentForHost(main_rfh());
@@ -549,6 +555,21 @@ TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
       navigation_simulator()->GetFinalRenderFrameHost();
   // But they should still be activated.
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+
+  // Check test ukm recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode, so expect it to be recorded in this case.
+    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -763,50 +784,6 @@ TEST_P(ThrottleManagerEnabledTest, SameSiteNavigationStopsActivation) {
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()).action());
-}
-
-TEST_P(ThrottleManagerEnabledTest, CreateHelperForWebContents) {
-  auto web_contents =
-      content::RenderViewHostTestHarness::CreateTestWebContents();
-  ASSERT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                web_contents.get()),
-            nullptr);
-
-  TestSupport test_support;
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
-      test_support.tracking_protection_settings();
-
-  {
-    base::test::ScopedFeatureList scoped_feature;
-    scoped_feature.InitAndDisableFeature(
-        features::kEnableFingerprintingProtectionFilter);
-
-    // CreateForWebContents() should not do anything if the fingerprinting
-    // protection filter feature is not enabled.
-    FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-        web_contents.get(), test_support.prefs(), tracking_protection_settings,
-        dealer_handle(), /*is_incognito=*/false);
-    EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                  web_contents.get()),
-              nullptr);
-  }
-
-  // If the fingerprinting protection filter feature is enabled,
-  // CreateForWebContents() should create and attach an instance.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle(), /*is_incognito=*/false);
-  auto* helper = FingerprintingProtectionWebContentsHelper::FromWebContents(
-      web_contents.get());
-  EXPECT_NE(helper, nullptr);
-
-  // A second call should not attach a different instance.
-  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle(), /*is_incognito=*/false);
-  EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
-                web_contents.get()),
-            helper);
 }
 
 // Basic test of throttle manager lifetime and getter methods. Ensure a new

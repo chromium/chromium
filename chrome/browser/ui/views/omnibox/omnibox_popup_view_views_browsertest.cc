@@ -586,8 +586,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
-  match.contents_class.push_back(
-      ACMatchClassification(0, ACMatchClassification::URL));
+  match.contents_class.emplace_back(0, ACMatchClassification::URL);
   match.destination_url = GURL(match_url);
   match.description = u"Foobar";
   match.allowed_to_be_default_match = true;
@@ -793,8 +792,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 }
 
 // Flaky on Mac: https://crbug.com/1511356
-// Flaky on Win: https://crbug.com/365250293
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Flaky on Win and Linux: https://crbug.com/365250293
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode
 #else
 #define MAYBE_SpaceEntersKeywordMode SpaceEntersKeywordMode

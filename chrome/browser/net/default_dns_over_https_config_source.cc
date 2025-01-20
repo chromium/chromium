@@ -47,13 +47,8 @@ std::string DefaultDnsOverHttpsConfigSource::GetDnsOverHttpsMode() const {
 }
 
 std::string DefaultDnsOverHttpsConfigSource::GetDnsOverHttpsTemplates() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return pref_change_registrar_.prefs()->GetString(
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
-#else
   return pref_change_registrar_.prefs()->GetString(
       prefs::kDnsOverHttpsTemplates);
-#endif
 }
 
 bool DefaultDnsOverHttpsConfigSource::IsConfigManaged() const {
@@ -66,10 +61,5 @@ void DefaultDnsOverHttpsConfigSource::SetDohChangeCallback(
     base::RepeatingClosure callback) {
   CHECK(pref_change_registrar_.IsEmpty());
   pref_change_registrar_.Add(prefs::kDnsOverHttpsMode, callback);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                             callback);
-#else
   pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, callback);
-#endif
 }

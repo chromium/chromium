@@ -46,9 +46,9 @@ struct BASE_EXPORT StackFrame {
   raw_ptr<const void> value;
 };
 
-bool BASE_EXPORT operator < (const StackFrame& lhs, const StackFrame& rhs);
-bool BASE_EXPORT operator == (const StackFrame& lhs, const StackFrame& rhs);
-bool BASE_EXPORT operator != (const StackFrame& lhs, const StackFrame& rhs);
+bool BASE_EXPORT operator<(const StackFrame& lhs, const StackFrame& rhs);
+bool BASE_EXPORT operator==(const StackFrame& lhs, const StackFrame& rhs);
+bool BASE_EXPORT operator!=(const StackFrame& lhs, const StackFrame& rhs);
 
 struct BASE_EXPORT Backtrace {
   Backtrace();

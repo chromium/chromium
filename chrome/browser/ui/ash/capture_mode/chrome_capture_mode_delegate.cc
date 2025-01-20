@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_file_deleter.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -46,17 +47,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
@@ -66,6 +67,8 @@
 #include "content/public/browser/video_capture_service.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -141,10 +144,19 @@ ChromeCaptureModeDelegate* ChromeCaptureModeDelegate::Get() {
   return g_instance;
 }
 
+bool ChromeCaptureModeDelegate::IsSearchAllowedByPolicy() const {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  return profile && profile->GetPrefs() &&
+         profile->GetPrefs()->GetInteger(lens::prefs::kLensOverlaySettings) ==
+             static_cast<int>(
+                 lens::prefs::LensOverlaySettingsPolicyValue::kEnabled);
+}
+
 void ChromeCaptureModeDelegate::SetIsScreenCaptureLocked(bool locked) {
   is_screen_capture_locked_ = locked;
-  if (is_screen_capture_locked_)
+  if (is_screen_capture_locked_) {
     InterruptVideoRecordingIfAny();
+  }
 }
 
 bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
@@ -193,8 +205,9 @@ void ChromeCaptureModeDelegate::OpenScreenCaptureItem(
 void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
@@ -206,8 +219,9 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // TODO(afakhry): Consider moving |prefs::kUse24HourClock| to ash/public so
   // we can do this entirely in ash.
-  if (profile)
+  if (profile) {
     return profile->GetPrefs()->GetBoolean(prefs::kUse24HourClock);
+  }
   return base::GetHourClockType() == base::k24HourClock;
 }
 
@@ -283,14 +297,16 @@ void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
 
 bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
     base::FilePath* result) const {
-  if (!ash::LoginState::Get()->IsUserLoggedIn())
+  if (!ash::LoginState::Get()->IsUserLoggedIn()) {
     return false;
+  }
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
-  if (!integration_service || !integration_service->IsMounted())
+  if (!integration_service || !integration_service->IsMounted()) {
     return false;
+  }
 
   *result = integration_service->GetMountPointPath();
   return true;
@@ -306,6 +322,15 @@ base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
 }
 
 base::FilePath ChromeCaptureModeDelegate::GetOneDriveMountPointPath() const {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile) {
+    return base::FilePath();
+  }
+  const auto odfs_info = ash::cloud_upload::GetODFSInfo(profile);
+  return odfs_info ? odfs_info->mount_path() : base::FilePath();
+}
+
+base::FilePath ChromeCaptureModeDelegate::GetOneDriveVirtualPath() const {
   return policy::local_user_files::GetODFSVirtualPath();
 }
 
@@ -438,7 +463,7 @@ base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
   if (odfs_temp_dir_.GetPath().empty()) {
     return path;
   }
-  base::FilePath odfs_path = GetOneDriveMountPointPath();
+  base::FilePath odfs_path = GetOneDriveVirtualPath();
   if (!odfs_path.empty() && path.DirName() == odfs_path) {
     return odfs_temp_dir_.GetPath().Append(path.BaseName());
   }
@@ -460,7 +485,7 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
     const SkBitmap& image,
     ash::OnTextDetectionComplete callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(ash::features::IsScannerEnabled());
+  CHECK(ash::features::IsCaptureModeOnDeviceOcrEnabled());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
@@ -506,13 +531,10 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
-  DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
-  if (!gen204_controller_) {
-    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
-  }
+  DCHECK(ash::features::IsSunfishFeatureEnabled());
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
-        std::make_unique<lens::LensOverlayQueryController>(
+        std::make_unique<LensOverlayQueryController>(
             base::BindRepeating(
                 &ChromeCaptureModeDelegate::HandleStartQueryResponse,
                 weak_ptr_factory_.GetWeakPtr()),
@@ -527,20 +549,19 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
                 weak_ptr_factory_.GetWeakPtr()),
             profile->GetVariationsClient(), /*identity_manager=*/nullptr,
             profile, lens::LensOverlayInvocationSource(),
-            /*use_dark_mode=*/false,
-            /*gen204_controller=*/gen204_controller_.get());
+            /*use_dark_mode=*/false);
   }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->StartQueryFlow(
       /*screenshot=*/image,
       /*page_url=*/GURL(),
       /*page_title=*/std::nullopt, /*significant_region_boxes=*/
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      std::vector<lens::CenterRotatedBox>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
-      /*underlying_content_type=*/lens::PageContentMimeType(),
-      /*ui_scale_factor=*/1.f);
+      /*underlying_content_type=*/lens::MimeType(),
+      /*ui_scale_factor=*/1.f, /*invocation_time=*/base::TimeTicks::Now());
   lens_overlay_query_controller_->SendRegionSearch(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       lens::LensOverlaySelectionType::REGION_SEARCH,
@@ -561,7 +582,7 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
   }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->SendMultimodalRequest(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       text,
@@ -571,9 +592,17 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
       /*region_bytes=*/image);
 }
 
+void ChromeCaptureModeDelegate::DeleteRemoteFile(
+    const base::FilePath& path,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(GetOneDriveMountPointPath().IsParent(path));
+  ash::cloud_upload::OdfsFileDeleter::Delete(path, std::move(callback));
+}
+
 void ChromeCaptureModeDelegate::HandleStartQueryResponse(
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
+    std::vector<lens::OverlayObject> objects,
+    lens::Text text,
     bool is_error) {}
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(

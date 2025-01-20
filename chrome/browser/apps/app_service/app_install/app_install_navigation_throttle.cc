@@ -23,17 +23,8 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/url_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/metrics/histogram_functions.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
-// TODO(crbug.com/40251079): Remove circular includes.
-#include "chrome/browser/ui/browser_finder.h"  // nogncheck
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/unguessable_token.h"
 #include "ui/gfx/native_widget_types.h"
-#endif
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -42,11 +33,6 @@ namespace apps {
 namespace {
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kAppInstallParentWindowFound[] =
-    "Apps.AppInstallParentWindowFound";
-#endif
 
 constexpr std::string_view kAppInstallHost = "install-app";
 constexpr std::string_view kAppInstallPath = "//install-app";
@@ -81,44 +67,7 @@ AppInstallSurface SourceParamToAppInstallSurface(std::string_view source) {
 std::optional<AppInstallService::WindowIdentifier> GetAnchorWindow(
     content::WebContents* web_contents,
     AppServiceProxy* proxy) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return web_contents->GetTopLevelNativeWindow();
-#else
-  static_assert(BUILDFLAG(IS_CHROMEOS_LACROS));
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-  if (!browser) {
-    return std::nullopt;
-  }
-
-  CHECK(proxy->BrowserAppInstanceTracker());
-
-  const BrowserWindowInstance* browser_window =
-      proxy->BrowserAppInstanceTracker()->GetBrowserWindowInstance(browser);
-
-  const BrowserAppInstance* browser_app =
-      proxy->BrowserAppInstanceTracker()->GetAppInstance(browser);
-
-  if (browser_window) {
-    base::UmaHistogramBoolean(kAppInstallParentWindowFound, true);
-    return browser_window->id;
-  }
-
-  if (browser_app) {
-    base::UmaHistogramBoolean(kAppInstallParentWindowFound, true);
-    return browser_app->id;
-  }
-
-  // Unexpected to reach here, as the origin of the install dialog must be a
-  // browser or app window. However, BrowserAppInstanceTracker is operating on
-  // async window changes over crosapi, so the anchor window might not be
-  // tracked at this point. In this case the dialog will not be anchored to any
-  // parent.
-  DLOG(WARNING) << "App Install Dialog parent not found.";
-  base::UmaHistogramBoolean(kAppInstallParentWindowFound, false);
-  return std::nullopt;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
@@ -235,8 +184,7 @@ ThrottleCheckResult AppInstallNavigationThrottle::WillRedirectRequest() {
 ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   const GURL& url = navigation_handle()->GetURL();
 
-  if (!url.SchemeIs(chromeos::kAppInstallUriScheme) &&
-      !url.SchemeIs(chromeos::kLegacyAppInstallUriScheme)) {
+  if (!url.SchemeIs(chromeos::kAppInstallUriScheme)) {
     return content::NavigationThrottle::PROCEED;
   }
 

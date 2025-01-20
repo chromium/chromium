@@ -115,7 +115,7 @@ void IdleManager::InitForTesting(
 void IdleManager::OnPermissionRequestComplete(
     ScriptPromiseResolver<V8PermissionState>* resolver,
     mojom::blink::PermissionStatus status) {
-  resolver->Resolve(PermissionStatusToString(status));
+  resolver->Resolve(ToV8PermissionState(status));
 }
 
 }  // namespace blink

@@ -527,7 +527,9 @@ class FakeSpdySessionClientSocket : public MockClientSocket {
   }
 
   // Return kProtoUnknown to use the pool's default protocol.
-  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
+  NextProto GetNegotiatedProtocol() const override {
+    return NextProto::kProtoUnknown;
+  }
 
   // The functions below are not expected to be called.
 

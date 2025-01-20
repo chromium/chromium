@@ -112,8 +112,6 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     storage_control_ =
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
             user_data_directory_.GetPath(),
-            /*database_task_runner=*/
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
             std::move(receiver));
   }
 

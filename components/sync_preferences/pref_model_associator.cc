@@ -22,7 +22,6 @@
 #include "base/observer_list.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
@@ -43,7 +42,7 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
       return pref.GetSpecifics().preference();
     case syncer::PRIORITY_PREFERENCES:
       return pref.GetSpecifics().priority_preference().preference();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case syncer::OS_PREFERENCES:
       return pref.GetSpecifics().os_preference().preference();
     case syncer::OS_PRIORITY_PREFERENCES:
@@ -77,7 +76,7 @@ PrefModelAssociator::PrefModelAssociator(
       user_prefs_(user_prefs),
       dual_layer_user_prefs_(nullptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(type_ == syncer::PREFERENCES ||
          type_ == syncer::PRIORITY_PREFERENCES ||
          type_ == syncer::OS_PREFERENCES ||
@@ -119,7 +118,7 @@ sync_pb::PreferenceSpecifics* PrefModelAssociator::GetMutableSpecifics(
       return specifics->mutable_preference();
     case syncer::PRIORITY_PREFERENCES:
       return specifics->mutable_priority_preference()->mutable_preference();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case syncer::OS_PREFERENCES:
       return specifics->mutable_os_preference()->mutable_preference();
     case syncer::OS_PRIORITY_PREFERENCES:

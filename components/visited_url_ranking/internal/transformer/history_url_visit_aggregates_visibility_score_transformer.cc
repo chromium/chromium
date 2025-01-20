@@ -4,9 +4,11 @@
 
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 

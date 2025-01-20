@@ -46,7 +46,7 @@ class WebGPUTest : public testing::Test {
     SharedMemoryLimits shared_memory_limits =
         SharedMemoryLimits::ForWebGPUContext();
     bool force_fallback_adapter = false;
-    bool compatibility_mode = false;
+    wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
     bool enable_unsafe_webgpu = false;
     bool use_skia_graphite = false;
 

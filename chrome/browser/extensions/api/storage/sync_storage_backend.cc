@@ -64,7 +64,7 @@ SyncStorageBackend::SyncStorageBackend(
          sync_type_ == syncer::APP_SETTINGS);
 }
 
-SyncStorageBackend::~SyncStorageBackend() {}
+SyncStorageBackend::~SyncStorageBackend() = default;
 
 value_store::ValueStore* SyncStorageBackend::GetStorage(
     const ExtensionId& extension_id) {

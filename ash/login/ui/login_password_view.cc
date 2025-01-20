@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -27,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -355,14 +353,12 @@ LoginPasswordView::LoginPasswordView()
   password_row_ = password_row_container->AddChildView(
       std::make_unique<LoginPasswordRow>());
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    password_row_->SetBorder(std::make_unique<views::HighlightBorder>(
-        kJellyPasswordRowCornerRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  password_row_->SetBorder(std::make_unique<views::HighlightBorder>(
+      kJellyPasswordRowCornerRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-    password_row_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
-  }
+  password_row_->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kJellyPasswordRowCornerRadiusDp));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

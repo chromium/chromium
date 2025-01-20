@@ -280,40 +280,22 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
   FastForwardBy(base::Minutes(5));
   tester.ExpectTotalCount(
       "CPU.Experimental.EstimatedFrequencyAsPercentOfMax.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
 
   tester.ExpectTotalCount(
       "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
 
   tester.ExpectTotalCount(
       "CPU.Experimental.CpuEstimationTaskQueuedTime.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
   tester.ExpectTotalCount(
       "CPU.Experimental.CpuEstimationTaskTotalTime.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
   tester.ExpectTotalCount(
       "CPU.Experimental.CpuEstimationTaskThreadTime.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
   tester.ExpectTotalCount(
       "CPU.Experimental.CpuEstimationTaskWallTime.Performance",
-      performance_manager::MetricsProviderDesktop::
-              ShouldCollectCpuFrequencyMetrics()
-          ? 1
-          : 0);
+      SHOULD_COLLECT_CPU_FREQUENCY_METRICS() ? 1 : 0);
 }

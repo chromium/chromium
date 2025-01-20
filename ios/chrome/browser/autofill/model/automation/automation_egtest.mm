@@ -100,7 +100,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   base::Value recipeRoot = RecipeJsonToValue(recipeJSONText);
 
   NSError* error = SetAutofillAutomationProfile(recipeJSONText);
-  GREYAssertNil(error, error.localizedDescription);
+  chrome_test_util::GREYAssertErrorNil(error);
 
   // Extract the starting URL.
   std::string* startURLValue = recipeRoot.GetDict().FindString("startingURL");

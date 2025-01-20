@@ -1,7 +1,5 @@
 caption: Settings for the Lens Overlay feature
 desc: |-
-  This policy is deprecated in M132 in favor of <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME">GenAILensOverlaySettings</ph> which gives finer grained control over the feature. Use <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME">GenAILensOverlaySettings</ph> instead.
-
   Lens Overlay lets users issue Google searches by interacting with a screenshot of the current page laid over the actual web contents.
 
   There is no user setting to control this feature, it is generally made available to all users with Google as their default search engine unless disabled by this policy.
@@ -37,5 +35,4 @@ supported_on:
 tags:
 - google-sharing
 type: int-enum
-deprecated: true
 

@@ -78,6 +78,10 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isMutable(source);
   }
 
+  hasCustomAccelerators(): Promise<{hasCustomAccelerators: boolean}> {
+    return this.remote.hasCustomAccelerators();
+  }
+
   isCustomizationAllowedByPolicy():
       Promise<{isCustomizationAllowedByPolicy: boolean}> {
     return this.remote.isCustomizationAllowedByPolicy();

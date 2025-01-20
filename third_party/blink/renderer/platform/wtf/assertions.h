@@ -29,14 +29,21 @@
 
 #include <stdarg.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-#define DCHECK_AT(assertion, file, line)                            \
-  LAZY_STREAM(logging::LogMessage(file, line, #assertion).stream(), \
-              DCHECK_IS_ON() ? !(assertion) : false)
+#if DCHECK_IS_ON()
+
+#define DCHECK_AT(condition, location) \
+  LOGGING_CHECK_FUNCTION_IMPL(         \
+      ::logging::CheckError::DCheck(#condition, location), condition)
+#else
+
+#define DCHECK_AT(condition, location) EAT_CHECK_STREAM_PARAMS(!(condition))
+
+#endif  // DCHECK_IS_ON()
 
 // Users must test "#if ENABLE_SECURITY_ASSERT", which helps ensure that code
 // testing this macro has included this header.

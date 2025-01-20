@@ -14,6 +14,8 @@ namespace base {
 class TimeDelta;
 }
 
+enum class NotificationType;
+
 // Identifier for the tips notification.
 extern NSString* const kTipsNotificationId;
 
@@ -115,5 +117,9 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
 // notifications in a row, no more Tips notifications will be sent. Zero
 // indicates there should be no limit.
 int TipsNotificationsDismissLimit();
+
+// Returns the matching NotificationType for the TipsNotificationType `type`.
+NotificationType NotificationTypeForTipsNotificationType(
+    TipsNotificationType type);
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

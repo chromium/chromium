@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/openxr_hand_tracker.h"
 
 #include <optional>
@@ -69,8 +64,8 @@ OpenXrHandTracker::OpenXrHandTracker(
           extension_helper_->ExtensionEnumeration()->ExtensionSupported(
               XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME)),
       anonymization_strategy_(GetAnonymizationStrategy()) {
-  locations_.jointCount = std::extent<decltype(joint_locations_buffer_)>::value;
-  locations_.jointLocations = joint_locations_buffer_;
+  locations_.jointCount = joint_locations_buffer_.size();
+  locations_.jointLocations = joint_locations_buffer_.data();
 
   // This is only used if mesh_scale_enabled_ is true, but it doesn't hurt to
   // initialize it anyway.
@@ -167,8 +162,7 @@ mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
   // nullptr. Otherwise, further anonymization is either not needed or
   // succeeded and we can return the data.
   if (NeedsFallbackAnonymization() &&
-      !AnonymizeHand({hand_tracking_data->hand_joint_data.data(),
-                      hand_tracking_data->hand_joint_data.size()})) {
+      !AnonymizeHand(base::span(hand_tracking_data->hand_joint_data))) {
     return nullptr;
   }
 

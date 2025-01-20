@@ -11,11 +11,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/data_sharing/internal/group_data_proto_utils.h"
 #include "components/data_sharing/internal/group_data_store.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace data_sharing {
 
@@ -26,6 +29,16 @@ const size_t kMaxRecordedGroupEvents = 1000;
 VersionToken ComputeVersionToken(
     const sync_pb::CollaborationGroupSpecifics& specifics) {
   return VersionToken(specifics.consistency_token());
+}
+
+bool IsGroupDataStale(const VersionToken& store_version_token,
+                      const base::Time& store_last_updated_timestamp,
+                      const VersionToken& collaboration_group_version_token) {
+  return store_version_token != collaboration_group_version_token ||
+         store_last_updated_timestamp.is_null() ||
+         store_last_updated_timestamp <
+             base::Time::Now() -
+                 features::kDataSharingGroupDataPeriodicPollingInterval.Get();
 }
 
 }  // namespace
@@ -88,7 +101,7 @@ std::set<GroupData> GroupDataModel::GetAllGroups() const {
 std::optional<GroupMemberPartialData>
 GroupDataModel::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
-    const std::string& member_gaia_id) const {
+    const GaiaId& member_gaia_id) const {
   if (!IsModelLoaded()) {
     return std::nullopt;
   }
@@ -140,6 +153,7 @@ void GroupDataModel::OnCollaborationGroupSyncDataLoaded() {
     // deletions first.
     CHECK(!has_ongoing_group_fetch_);
     ProcessGroupChanges(/*is_initial_load=*/true);
+    ScheduleNextPeriodicPolling();
   }
 }
 
@@ -158,6 +172,7 @@ void GroupDataModel::OnGroupDataStoreLoaded(
   if (IsModelLoaded()) {
     CHECK(!has_ongoing_group_fetch_);
     ProcessGroupChanges(/*is_initial_load=*/true);
+    ScheduleNextPeriodicPolling();
   }
 }
 
@@ -177,6 +192,11 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
                                bridge_groups.begin(), bridge_groups.end(),
                                std::back_inserter(deleted_group_ids));
 
+  std::unordered_map<GroupId, std::optional<GroupData>> deleted_groups;
+  for (const auto& group_id : deleted_group_ids) {
+    deleted_groups.emplace(group_id, group_data_store_.GetGroupData(group_id));
+  }
+
   group_data_store_.DeleteGroups(deleted_group_ids);
   if (is_initial_load) {
     // This is the first ProcessGroupChanges() call after startup, so notify
@@ -193,7 +213,8 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
     for (auto& observer : observers_) {
       MaybeRecordGroupEvent(group_id, GroupEvent::EventType::kGroupRemoved,
                             event_time);
-      observer.OnGroupDeleted(group_id, event_time);
+      observer.OnGroupDeleted(group_id, deleted_groups.at(group_id),
+                              event_time);
     }
   }
 
@@ -206,8 +227,10 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
     auto store_version_token_opt =
         group_data_store_.GetGroupVersionToken(group_id);
     if (!store_version_token_opt ||
-        *store_version_token_opt !=
-            ComputeVersionToken(*collaboration_group_specifics_opt)) {
+        IsGroupDataStale(
+            *store_version_token_opt,
+            group_data_store_.GetGroupLastUpdatedTimestamp(group_id),
+            ComputeVersionToken(*collaboration_group_specifics_opt))) {
       // Store either doesn't contain corresponding GroupData or contains stale
       // GroupData.
       added_or_updated_group_ids.push_back(group_id);
@@ -219,6 +242,26 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
   }
 }
 
+void GroupDataModel::DoPeriodicPollingAndScheduleNext() {
+  if (!has_ongoing_group_fetch_) {
+    ProcessGroupChanges(/*is_initial_load=*/false);
+  } else {
+    has_pending_changes_ = true;
+  }
+
+  ScheduleNextPeriodicPolling();
+}
+
+void GroupDataModel::ScheduleNextPeriodicPolling() {
+  // DoPeriodicPollingAndScheduleNext() simply invokes ProcessGroupChanges()
+  // that is no-op if there are no need to refresh any GroupData, thus it is
+  // fine to simply call it once per hour for simplicity.
+  next_periodic_polling_timer_.Start(
+      FROM_HERE, base::Hours(1),
+      base::BindOnce(&GroupDataModel::DoPeriodicPollingAndScheduleNext,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void GroupDataModel::FetchGroupsFromSDK(
     const std::vector<GroupId>& added_or_updated_groups) {
   has_ongoing_group_fetch_ = true;
@@ -226,23 +269,29 @@ void GroupDataModel::FetchGroupsFromSDK(
   std::map<GroupId, VersionToken> group_versions;
   data_sharing_pb::ReadGroupsParams params;
   for (const GroupId& group_id : added_or_updated_groups) {
-    // TODO(crbug.com/301390275): pass `consistency_token`.
-    params.add_group_ids(group_id.value());
-
     auto collaboration_group_specifics_opt =
         collaboration_group_sync_bridge_->GetSpecifics(group_id);
     CHECK(collaboration_group_specifics_opt.has_value());
     group_versions[group_id] =
         ComputeVersionToken(*collaboration_group_specifics_opt);
+
+    params.add_group_ids(group_id.value());
+    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+        params.add_group_params();
+    group_params->set_group_id(group_id.value());
+    group_params->set_consistency_token(
+        collaboration_group_specifics_opt->consistency_token());
   }
 
   sdk_delegate_.ReadGroups(
       params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
-                             weak_ptr_factory_.GetWeakPtr(), group_versions));
+                             weak_ptr_factory_.GetWeakPtr(), group_versions,
+                             base::Time::Now()));
 }
 
 void GroupDataModel::OnGroupsFetchedFromSDK(
     const std::map<GroupId, VersionToken>& requested_groups_and_versions,
+    const base::Time& requested_at_timestamp,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {
@@ -272,13 +321,15 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
 
     const auto old_group_data_opt = group_data_store_.GetGroupData(group_id);
     group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
-                                     group_data);
+                                     requested_at_timestamp, group_data);
     for (auto& observer : observers_) {
       // TODO(crbug.com/377215683): pass the actual event time (at least derived
       // from CollaborationGroupSpecifics).
       if (old_group_data_opt.has_value()) {
         observer.OnGroupUpdated(group_id, base::Time::Now());
       } else {
+        MaybeRecordGroupEvent(group_id, GroupEvent::EventType::kGroupAdded,
+                              base::Time::Now());
         observer.OnGroupAdded(group_id, base::Time::Now());
       }
     }
@@ -297,22 +348,22 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
 void GroupDataModel::NotifyObserversAboutChangedMembers(
     const GroupData& old_group_data,
     const GroupData& new_group_data) {
-  std::vector<std::string> old_members_gaia_ids;
+  std::vector<GaiaId> old_members_gaia_ids;
   for (const auto& member : old_group_data.members) {
     old_members_gaia_ids.push_back(member.gaia_id);
   }
-  std::vector<std::string> new_members_gaia_ids;
+  std::vector<GaiaId> new_members_gaia_ids;
   for (const auto& member : new_group_data.members) {
     new_members_gaia_ids.push_back(member.gaia_id);
   }
 
-  std::vector<std::string> added_members_gaia_ids;
+  std::vector<GaiaId> added_members_gaia_ids;
   base::ranges::set_difference(
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       std::back_inserter(added_members_gaia_ids));
 
-  std::vector<std::string> removed_members_gaia_ids;
+  std::vector<GaiaId> removed_members_gaia_ids;
   base::ranges::set_difference(
       old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
       new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
@@ -343,14 +394,16 @@ void GroupDataModel::MaybeRecordGroupEvent(
     const GroupId& group_id,
     GroupEvent::EventType event_type,
     base::Time event_time,
-    std::optional<std::string> affected_member_gaia_id) {
+    std::optional<GaiaId> affected_member_gaia_id) {
   if (group_events_since_startup_.size() >= kMaxRecordedGroupEvents) {
     // Prevent unbounded growth of the `group_events_since_startup_`. Normally,
     // this should never happen.
     return;
   }
-  // All events except kGroupRemoved should have an affected member.
-  CHECK(event_type == GroupEvent::EventType::kGroupRemoved ||
+  // All events except kGroupAdded and kGroupRemoved should have an affected
+  // member.
+  CHECK(event_type == GroupEvent::EventType::kGroupAdded ||
+        event_type == GroupEvent::EventType::kGroupRemoved ||
         affected_member_gaia_id.has_value());
 
   GroupEvent group_event;

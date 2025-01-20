@@ -11,10 +11,12 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -34,11 +36,14 @@ class TabTitleUtilTest : public PlatformTest {
   }
 
   web::FakeWebState web_state_;
+  web::WebTaskEnvironment task_environment_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
 };
 
 // Tests GetTabTitle when there is a download task in the download manager.
 TEST_F(TabTitleUtilTest, GetTabTitleWithDownloadTest) {
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  web_state_.SetBrowserState(profile.get());
   DownloadManagerTabHelper* tab_helper =
       DownloadManagerTabHelper::FromWebState(&web_state_);
   auto task = std::make_unique<web::FakeDownloadTask>(

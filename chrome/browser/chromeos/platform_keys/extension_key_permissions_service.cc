@@ -153,6 +153,7 @@ ExtensionKeyPermissionsService::GetStateStoreEntry(
 
 void ExtensionKeyPermissionsService::CanUseKey(
     const std::vector<uint8_t>& public_key_spki_der,
+    bool is_sign_operation,
     ExtensionKeyPermissionQueryCallback callback) {
   KeyEntry* matching_entry =
       GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
@@ -167,7 +168,7 @@ void ExtensionKeyPermissionsService::CanUseKey(
   // Note: Semantically, `sign_once` can only be set for asymmetric keys used to
   // sign data. Any other key type should have that corresponding field unset
   // (which defaults to false).
-  if (matching_entry->sign_once) {
+  if (is_sign_operation && matching_entry->sign_once) {
     std::move(callback).Run(/*allowed=*/true);
     return;
   }
@@ -175,12 +176,13 @@ void ExtensionKeyPermissionsService::CanUseKey(
   auto bound_callback =
       base::BindOnce(&ExtensionKeyPermissionsService::CanUseKeyWithFlags,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     matching_entry->sign_unlimited);
+                     is_sign_operation, matching_entry->sign_unlimited);
   keystore_service_->GetKeyTags(public_key_spki_der, std::move(bound_callback));
 }
 
 void ExtensionKeyPermissionsService::CanUseKeyWithFlags(
     ExtensionKeyPermissionQueryCallback callback,
+    bool is_sign_operation,
     bool sign_unlimited_allowed,
     crosapi::mojom::GetKeyTagsResultPtr key_tags) {
   if (key_tags->is_error()) {
@@ -197,12 +199,12 @@ void ExtensionKeyPermissionsService::CanUseKeyWithFlags(
     return;
   }
 
-  // Only permissions for keys that are not designated for corporate usage are
-  // determined by user decisions.
+  // Only signing permissions for keys that are not designated for corporate
+  // usage are determined by user decisions.
   // Note: Similarly to `sign_once`, `sign_unlimited` can only be set for
   // asymmetric keys used to sign data. Any other key type should have that
   // corresponding field unset (which defaults to false).
-  std::move(callback).Run(sign_unlimited_allowed);
+  std::move(callback).Run(is_sign_operation && sign_unlimited_allowed);
 }
 
 void ExtensionKeyPermissionsService::SetKeyUsedForSigning(
@@ -236,18 +238,18 @@ void ExtensionKeyPermissionsService::RegisterOneTimeSigningPermissionForKey(
   WriteToStateStore();
 }
 
-void ExtensionKeyPermissionsService::SetUserGrantedPermission(
+void ExtensionKeyPermissionsService::SetUserGrantedSigningPermission(
     const std::vector<uint8_t>& public_key_spki_der,
     ExtensionKeyPermissionOperationCallback callback) {
   keystore_service_->CanUserGrantPermissionForKey(
       public_key_spki_der,
-      base::BindOnce(
-          &ExtensionKeyPermissionsService::SetUserGrantedPermissionWithFlag,
-          weak_factory_.GetWeakPtr(), public_key_spki_der,
-          std::move(callback)));
+      base::BindOnce(&ExtensionKeyPermissionsService::
+                         SetUserGrantedSigningPermissionWithFlag,
+                     weak_factory_.GetWeakPtr(), public_key_spki_der,
+                     std::move(callback)));
 }
 
-void ExtensionKeyPermissionsService::SetUserGrantedPermissionWithFlag(
+void ExtensionKeyPermissionsService::SetUserGrantedSigningPermissionWithFlag(
     const std::vector<uint8_t>& public_key_spki_der,
     ExtensionKeyPermissionOperationCallback callback,
     bool can_user_grant_permission) {

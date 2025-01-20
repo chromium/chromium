@@ -26,7 +26,7 @@ class BookmarkNode;
 namespace content {
 class BrowserContext;
 class NavigationHandle;
-}
+}  // namespace content
 
 namespace chrome {
 

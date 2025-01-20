@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -45,7 +46,9 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
   std::unique_ptr<CanvasResourceProvider> provider =
       AcquireCachedProvider(info);
   if (!provider) {
-    provider = CanvasResourceProvider::CreateWebGPUImageProvider(info);
+    provider = CanvasResourceProvider::CreateWebGPUImageProvider(
+        gfx::Size(info.width(), info.height()), info.colorType(),
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()));
     if (!provider)
       return nullptr;
   }
@@ -101,6 +104,14 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
   for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {
     CanvasResourceProvider* resource_provider = it->resource_provider_.get();
     if (image_info == resource_provider->GetSkImageInfo()) {
+      break;
+    }
+    // Detect and allow for the case wherein the passed-info implicitly
+    // specifies sRGB via a null SkColorSpace whereas the resource provider is
+    // explicitly storing sRGB.
+    if (!image_info.colorSpace() &&
+        (image_info.makeColorSpace(SkColorSpace::MakeSRGB()) ==
+         resource_provider->GetSkImageInfo())) {
       break;
     }
   }

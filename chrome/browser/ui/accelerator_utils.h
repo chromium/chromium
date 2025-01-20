@@ -10,7 +10,7 @@ class Browser;
 namespace ui {
 class Accelerator;
 class AcceleratorProvider;
-}
+}  // namespace ui
 
 namespace chrome {
 

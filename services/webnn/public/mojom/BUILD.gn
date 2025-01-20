@@ -34,6 +34,10 @@ mojom_component("mojom") {
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.DataType"
+          cpp = "::webnn::OperandDataType"
+        },
+        {
           mojom = "webnn.mojom.DataTypeLimits"
           cpp = "::webnn::DataTypeLimits"
           default_constructible = false
@@ -52,6 +56,14 @@ mojom_component("mojom") {
           cpp = "::webnn::SupportedDataTypes"
         },
         {
+          mojom = "webnn.mojom.SupportedRanks"
+          cpp = "::webnn::SupportedRanks"
+        },
+        {
+          mojom = "webnn.mojom.SupportedTensors"
+          cpp = "::webnn::SupportedTensors"
+        },
+        {
           mojom = "webnn.mojom.TensorUsage"
           cpp = "::webnn::MLTensorUsage"
           copyable_pass_by_value = true
@@ -63,6 +75,7 @@ mojom_component("mojom") {
         "operand_descriptor_mojom_traits.h",
         "range_traits.h",
         "supported_data_types_mojom_traits.h",
+        "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",
       ]
       traits_public_deps = [ ":webnn_mojom_traits" ]
@@ -102,6 +115,7 @@ source_set("tests") {
     ":webnn_mojom_traits",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//services/webnn:tests",
     "//testing/gtest",
   ]
 }

@@ -235,24 +235,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
+        // TODO: Implement scrim delegate if status bar needs to change color with the scrim.
         mScrim =
                 new ScrimCoordinator(
                         this,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // TODO: Implement if status bar needs to change color with the
-                                // scrim.
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // TODO: Implement if navigation bar needs to change color with the
-                                // scrim.
-                            }
-                        },
-                        (ViewGroup) sheetContainer.getParent(),
-                        getColor(R.color.default_scrim_color));
+                        /* systemUiScrimDelegate= */ null,
+                        (ViewGroup) sheetContainer.getParent());
 
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -79,7 +80,7 @@ void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
   purchase_action_callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsApiClientBridge_invokePurchaseAction(
-      env, java_bridge_, ConvertToJavaCoreAccountInfo(env, primary_account),
+      env, java_bridge_, primary_account,
       base::android::ToJavaByteArray(env, action_token));
 }
 

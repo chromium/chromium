@@ -56,9 +56,9 @@ struct WebAppInstallInfo;
 // command.
 class ExternalAppResolutionCommand
     : public WebAppCommand<SharedWebContentsLock,
-                           ExternallyManagedAppManager::InstallResult> {
+                           ExternallyManagedAppManagerInstallResult> {
  public:
-  using InstallResult = ExternallyManagedAppManager::InstallResult;
+  using InstallResult = ExternallyManagedAppManagerInstallResult;
   using InstalledCallback = base::OnceCallback<void(InstallResult)>;
 
   ExternalAppResolutionCommand(Profile& profile,

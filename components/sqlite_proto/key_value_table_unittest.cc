@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/sqlite_proto/test_proto.pb.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +48,7 @@ class KeyValueTableTest : public ::testing::Test {
   ~KeyValueTableTest() override = default;
 
  protected:
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   KeyValueTable<TestProto> table_{"my_table"};
 };
 
@@ -134,7 +135,7 @@ TEST_F(KeyValueTableTest, DeleteAll) {
 TEST_F(KeyValueTableTest, PutGetDefaultValue) {
   TestProto element;
   table_.UpdateData("a", element, &db_);
-  ASSERT_EQ(element.ByteSize(), 0);
+  ASSERT_EQ(element.ByteSizeLong(), 0u);
 
   std::map<std::string, TestProto> my_data;
   table_.GetAllData(&my_data, &db_);

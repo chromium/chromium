@@ -246,14 +246,16 @@ TrustSafetySentimentService::~TrustSafetySentimentService() {
 void TrustSafetySentimentService::OpenedNewTabPage() {
   // Explicit early exit for the common path, where the user has not performed
   // any of the trigger actions.
-  if (pending_triggers_.size() == 0)
+  if (pending_triggers_.size() == 0) {
     return;
+  }
 
   // Reduce the NTPs to open count for all the active triggers.
   for (auto& area_trigger : pending_triggers_) {
     auto& trigger = area_trigger.second;
-    if (trigger.remaining_ntps_to_open > 0)
+    if (trigger.remaining_ntps_to_open > 0) {
       trigger.remaining_ntps_to_open--;
+    }
   }
 
   // Cleanup any triggers which are no longer relevant. This will be every
@@ -269,19 +271,22 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
                 });
 
   // This may have emptied the set of pending triggers.
-  if (pending_triggers_.size() == 0)
+  if (pending_triggers_.size() == 0) {
     return;
+  }
 
   // A primary OTR profile (incognito) existing will prevent any surveys from
   // being shown.
-  if (profile_->HasPrimaryOTRProfile())
+  if (profile_->HasPrimaryOTRProfile()) {
     return;
+  }
 
   // Check if any of the triggers make the user not yet eligible to receive a
   // survey.
   for (const auto& area_trigger : pending_triggers_) {
-    if (ShouldBlockSurvey(area_trigger.second))
+    if (ShouldBlockSurvey(area_trigger.second)) {
       return;
+    }
   }
 
   // Choose a trigger at random to avoid any order biasing.
@@ -316,8 +321,9 @@ void TrustSafetySentimentService::InteractedWithPrivacySettings(
   // simpler. As interactions with settings (visiting password manager and using
   // the privacy card) can occur independently, there is also little risk of
   // starving one interaction.
-  if (settings_watcher_)
+  if (settings_watcher_) {
     return;
+  }
 
   settings_watcher_ = std::make_unique<SettingsWatcher>(
       web_contents,
@@ -379,8 +385,9 @@ void TrustSafetySentimentService::SavedPassword() {
 
 void TrustSafetySentimentService::OpenedPasswordManager(
     content::WebContents* web_contents) {
-  if (settings_watcher_)
+  if (settings_watcher_) {
     return;
+  }
 
   std::map<std::string, bool> product_specific_data = {
       {"Saved password", false}};
@@ -530,8 +537,9 @@ void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
   // Only interested in the primary OTR profile i.e. the one used for incognito
   // browsing. Non-primary OTR profiles are often used as implementation details
   // of other features, and are not inherintly relevant to Trust & Safety.
-  if (off_the_record->GetOTRProfileID() == Profile::OTRProfileID::PrimaryID())
+  if (off_the_record->GetOTRProfileID() == Profile::OTRProfileID::PrimaryID()) {
     observed_profiles_.AddObservation(off_the_record);
+  }
 }
 
 void TrustSafetySentimentService::OnProfileWillBeDestroyed(Profile* profile) {
@@ -601,8 +609,9 @@ void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
       web_contents_->GetVisibility() == content::Visibility::VISIBLE &&
       web_contents_->GetLastCommittedURL().host_piece() ==
           chrome::kChromeUISettingsHost;
-  if (stayed_on_settings)
+  if (stayed_on_settings) {
     std::move(success_callback_).Run();
+  }
 
   std::move(complete_callback_).Run();
 }
@@ -625,8 +634,9 @@ void TrustSafetySentimentService::TriggerOccurred(
   // Log histogram that verifies infrastructure works as intended.
   base::UmaHistogramEnumeration(
       "Feedback.TrustSafetySentiment.CallTriggerOccurred", feature_area);
-  if (!ProbabilityCheck(feature_area))
+  if (!ProbabilityCheck(feature_area)) {
     return;
+  }
 
   base::UmaHistogramEnumeration("Feedback.TrustSafetySentiment.TriggerOccurred",
                                 feature_area);

@@ -76,10 +76,8 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // SSLSocket implementation.
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override;
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;
@@ -284,7 +282,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // True if certificate verification used an ECH name override.
   bool used_ech_name_override_ = false;
 
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Set to true if a CertificateRequest was received.
   bool certificate_requested_ = false;

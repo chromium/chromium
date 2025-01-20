@@ -122,7 +122,7 @@ void ServiceWorkerContainerHostForClient::Register(
     return;
   }
 
-  std::vector<GURL> urls = {url(), options->scope, script_url};
+  std::vector<GURL> urls = {url_for_access_check(), options->scope, script_url};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
     mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageImproperOrigins);
@@ -135,7 +135,8 @@ void ServiceWorkerContainerHostForClient::Register(
   }
 
   if (!service_worker_security_utils::
-          OriginCanRegisterServiceWorkerFromJavascript(url())) {
+          OriginCanRegisterServiceWorkerFromJavascript(
+              url_for_access_check())) {
     mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageImproperOrigins);
     // ReportBadMessage() will terminate the renderer process, but Mojo
     // complains if the callback is not run. Just run it with nonsense
@@ -197,7 +198,7 @@ void ServiceWorkerContainerHostForClient::GetRegistration(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanServeContainerHostMethods(
-          &callback, url(), GURL(),
+          &callback, url_for_access_check(), GURL(),
           ServiceWorkerConsts::kServiceWorkerGetRegistrationErrorPrefix,
           nullptr)) {
     return;
@@ -238,7 +239,7 @@ void ServiceWorkerContainerHostForClient::GetRegistrations(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanServeContainerHostMethods(
-          &callback, url(), GURL(),
+          &callback, url_for_access_check(), GURL(),
           ServiceWorkerConsts::kServiceWorkerGetRegistrationsErrorPrefix,
           std::nullopt)) {
     return;
@@ -396,9 +397,8 @@ void ServiceWorkerContainerHostForClient::OnVersionAttributesChanged(
     ServiceWorkerRegistration* registration,
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!get_ready_callback_ || get_ready_callback_->is_null()) {
+  if (!get_ready_callback_ || get_ready_callback_->is_null())
     return;
-  }
   if (changed_mask->active && registration->active_version()) {
     // Wait until the state change so we don't send the get for ready
     // registration complete message before set version attributes message.
@@ -575,20 +575,6 @@ ServiceWorkerRegistrationObjectManager::CreateInfo(
   if (existing_host != registration_object_hosts_.end()) {
     return existing_host->second->CreateObjectInfo();
   }
-  {  // TODO(crbug.com/372879072): Remove this scope after investigation.
-    std::vector<GURL> urls = {container_host_->url(), registration->scope()};
-    if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
-      static bool has_dumped_without_crashing = false;
-      if (!has_dumped_without_crashing) {
-        has_dumped_without_crashing = true;
-        SCOPED_CRASH_KEY_STRING256("SWRegistration", "container_url",
-                                   container_host_->url().spec());
-        SCOPED_CRASH_KEY_STRING256("SWRegistration", "registration_scope",
-                                   registration->scope().spec());
-        base::debug::DumpWithoutCrashing();
-      }
-    }
-  }
   registration_object_hosts_[registration_id] =
       std::make_unique<ServiceWorkerRegistrationObjectHost>(
           container_host_->context(), &container_host_.get(),
@@ -659,9 +645,8 @@ ServiceWorkerObjectManager::GetOrCreateHost(
 
   const int64_t version_id = version->version_id();
   auto existing_object_host = service_worker_object_hosts_.find(version_id);
-  if (existing_object_host != service_worker_object_hosts_.end()) {
+  if (existing_object_host != service_worker_object_hosts_.end())
     return existing_object_host->second->AsWeakPtr();
-  }
 
   service_worker_object_hosts_[version_id] =
       std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
@@ -786,6 +771,11 @@ const GURL& ServiceWorkerContainerHostForClient::url() const {
   return service_worker_client().url();
 }
 
+const GURL& ServiceWorkerContainerHostForClient::url_for_access_check() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return service_worker_client().GetUrlForScopeMatch();
+}
+
 const base::WeakPtr<ServiceWorkerContextCore>&
 ServiceWorkerContainerHostForServiceWorker::context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -799,6 +789,12 @@ ServiceWorkerContainerHostForServiceWorker::AsWeakPtr() {
 }
 
 const GURL& ServiceWorkerContainerHostForServiceWorker::url() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url_;
+}
+
+const GURL& ServiceWorkerContainerHostForServiceWorker::url_for_access_check()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_;
 }
@@ -823,14 +819,12 @@ ServiceWorkerContainerHostForServiceWorker::top_frame_origin() const {
 
 void ServiceWorkerContainerHostForClient::ReturnRegistrationForReadyIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!get_ready_callback_ || get_ready_callback_->is_null()) {
+  if (!get_ready_callback_ || get_ready_callback_->is_null())
     return;
-  }
   ServiceWorkerRegistration* registration =
       service_worker_client().MatchRegistration();
-  if (!registration || !registration->active_version()) {
+  if (!registration || !registration->active_version())
     return;
-  }
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrationForReady",
       TRACE_ID_LOCAL(this), "Registration ID", registration->id());
@@ -1045,7 +1039,7 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationMessage(
     *out_error = ServiceWorkerConsts::kBadMessageInvalidURL;
     return false;
   }
-  std::vector<GURL> urls = {url(), client_url};
+  std::vector<GURL> urls = {url_for_access_check(), client_url};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
     *out_error = ServiceWorkerConsts::kBadMessageImproperOrigins;
@@ -1062,7 +1056,7 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationsMessage(
     *out_error = ServiceWorkerConsts::kBadMessageFromNonWindow;
     return false;
   }
-  if (!OriginCanAccessServiceWorkers(url())) {
+  if (!OriginCanAccessServiceWorkers(url_for_access_check())) {
     *out_error = ServiceWorkerConsts::kBadMessageImproperOrigins;
     return false;
   }

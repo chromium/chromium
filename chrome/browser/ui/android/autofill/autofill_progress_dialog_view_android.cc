@@ -12,7 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -72,9 +72,6 @@ void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
     controller_->OnDismissed(/*is_canceled_by_user=*/true);
     controller_ = nullptr;
   }
-  // Must delete itself when the view is dismissed to avoid memory leak as this
-  // class is not owned by other autofill components.
-  delete this;
 }
 
 bool AutofillProgressDialogViewAndroid::ShowDialog(
@@ -110,16 +107,16 @@ void AutofillProgressDialogViewAndroid::ShowConfirmation(
   }
 }
 
-base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+std::unique_ptr<AutofillProgressDialogView> CreateAndShowProgressDialog(
     base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents) {
-  AutofillProgressDialogViewAndroid* dialog_view =
-      new AutofillProgressDialogViewAndroid(controller);
+  auto dialog_view =
+      std::make_unique<AutofillProgressDialogViewAndroid>(controller);
   if (dialog_view->ShowDialog(web_contents)) {
-    return dialog_view->GetWeakPtr();
+    return dialog_view;
   }
 
-  delete dialog_view;
+  dialog_view.reset();
   return nullptr;
 }
 

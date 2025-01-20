@@ -23,13 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
+#include <array>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -55,11 +51,14 @@ using mojom::blink::EffectiveConnectionType;
 
 namespace {
 
+constexpr size_t kNumEffectiveConnectionTypes =
+    static_cast<size_t>(WebEffectiveConnectionType::kMaxValue) + 1;
+
 // Typical HTTP RTT value corresponding to a given WebEffectiveConnectionType
 // value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const base::TimeDelta kTypicalHttpRttEffectiveConnectionType
-    [static_cast<size_t>(WebEffectiveConnectionType::kMaxValue) + 1] = {
+constexpr std::array<base::TimeDelta, kNumEffectiveConnectionTypes>
+    kTypicalHttpRttEffectiveConnectionType = {
         base::Milliseconds(0),    base::Milliseconds(0),
         base::Milliseconds(3600), base::Milliseconds(1800),
         base::Milliseconds(450),  base::Milliseconds(175)};
@@ -67,9 +66,9 @@ const base::TimeDelta kTypicalHttpRttEffectiveConnectionType
 // Typical downlink throughput (in Mbps) value corresponding to a given
 // WebEffectiveConnectionType value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const double kTypicalDownlinkMbpsEffectiveConnectionType
-    [static_cast<size_t>(WebEffectiveConnectionType::kMaxValue) + 1] = {
-        0, 0, 0.040, 0.075, 0.400, 1.600};
+constexpr std::array<double, kNumEffectiveConnectionTypes>
+    kTypicalDownlinkMbpsEffectiveConnectionType = {0,     0,     0.040,
+                                                   0.075, 0.400, 1.600};
 
 }  // namespace
 
@@ -233,17 +232,17 @@ void NetworkStateNotifier::SetNetworkConnectionInfoOverride(
       // Threshold values taken from
       // net/nqe/network_quality_estimator_params.cc.
       if (http_rtt >=
-          net::kHttpRttEffectiveConnectionTypeThresholds[static_cast<int>(
+          net::kHttpRttEffectiveConnectionTypeThresholds[static_cast<size_t>(
               EffectiveConnectionType::kEffectiveConnectionSlow2GType)]) {
         effective_type = WebEffectiveConnectionType::kTypeSlow2G;
       } else if (http_rtt >=
                  net::kHttpRttEffectiveConnectionTypeThresholds[static_cast<
-                     int>(
+                     size_t>(
                      EffectiveConnectionType::kEffectiveConnection2GType)]) {
         effective_type = WebEffectiveConnectionType::kType2G;
       } else if (http_rtt >=
                  net::kHttpRttEffectiveConnectionTypeThresholds[static_cast<
-                     int>(
+                     size_t>(
                      EffectiveConnectionType::kEffectiveConnection3GType)]) {
         effective_type = WebEffectiveConnectionType::kType3G;
       } else {
@@ -364,9 +363,8 @@ void NetworkStateNotifier::RemoveObserver(
 // static
 String NetworkStateNotifier::EffectiveConnectionTypeToString(
     WebEffectiveConnectionType type) {
-  DCHECK_GT(network::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(type));
-  return network::kWebEffectiveConnectionTypeMapping[static_cast<int>(type)];
+  return network::kWebEffectiveConnectionTypeMapping.at(
+      static_cast<size_t>(type));
 }
 
 double NetworkStateNotifier::GetRandomMultiplier(const String& host) const {

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_context_snapshot_impl.h"
+
+#include <array>
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -103,8 +100,8 @@ using InstallPropsPerContext =
 using InstallPropsPerIsolate =
     void (*)(v8::Isolate* isolate,
              const DOMWrapperWorld& world,
-             v8::Local<v8::Template> instance_template,
-             v8::Local<v8::Template> prototype_template,
+             v8::Local<v8::ObjectTemplate> instance_template,
+             v8::Local<v8::ObjectTemplate> prototype_template,
              v8::Local<v8::Template> interface_template);
 
 // Construction of |type_info_table| requires non-trivial initialization due
@@ -122,7 +119,7 @@ const struct {
   InstallPropsPerIsolate install_props_per_isolate;
   // Installs context-independent properties to objects in the context.
   InstallPropsPerContext install_props_per_context;
-  bool needs_per_context_install[kNumOfWorlds];
+  std::array<bool, kNumOfWorlds> needs_per_context_install;
 } type_info_table[] = {
     {V8Window::GetWrapperTypeInfo(),
      bindings::v8_context_snapshot::InstallPropsOfV8Window,
@@ -396,8 +393,7 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
 
   for (size_t world_index = 0; world_index < kNumOfWorlds; ++world_index) {
     DOMWrapperWorld* world = IndexToWorld(isolate, world_index);
-    for (size_t i = 0; i < std::size(type_info_table); ++i) {
-      const auto& type_info = type_info_table[i];
+    for (size_t i = 0; const auto& type_info : type_info_table) {
       v8::Local<v8::FunctionTemplate> interface_template =
           isolate
               ->GetDataFromSnapshotOnce<v8::FunctionTemplate>(
@@ -408,6 +404,7 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
       type_info.install_props_per_isolate(
           isolate, *world, interface_template->InstanceTemplate(),
           interface_template->PrototypeTemplate(), interface_template);
+      i++;
     }
   }
 }
@@ -479,9 +476,14 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   intptr_t* unified_table =
       static_cast<intptr_t*>(::WTF::Partitions::FastMalloc(
           size_bytes, "V8ContextSnapshotImpl::GetReferenceTable"));
+  // SAFETY: `::WTF::Partitions::FastMalloc` ensures `unified_table` points to
+  // `size_bytes` bytes.
+  auto unified_table_span =
+      UNSAFE_BUFFERS(base::span(unified_table, size_bytes));
   size_t offset_count = 0;
   for (const auto& table : tables) {
-    std::memcpy(unified_table + offset_count, table.data(), table.size_bytes());
+    unified_table_span.subspan(offset_count, table.size())
+        .copy_from_nonoverlapping(table);
     offset_count += table.size();
   }
   reference_table = unified_table;

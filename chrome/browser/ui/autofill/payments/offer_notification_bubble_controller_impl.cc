@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -36,8 +34,9 @@ OfferNotificationBubbleControllerImpl::
 OfferNotificationBubbleController*
 OfferNotificationBubbleController::GetOrCreate(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents);
   return OfferNotificationBubbleControllerImpl::FromWebContents(web_contents);
@@ -46,8 +45,9 @@ OfferNotificationBubbleController::GetOrCreate(
 // static
 OfferNotificationBubbleController* OfferNotificationBubbleController::Get(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return OfferNotificationBubbleControllerImpl::FromWebContents(web_contents);
 }
@@ -56,14 +56,7 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<OfferNotificationBubbleControllerImpl>(
-          *web_contents),
-      coupon_service_(CouponServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  // TODO(crbug.com/40172797): Explore if there is a way to move CouponService
-  // out of this file.
-  if (coupon_service_)
-    coupon_service_observation_.Observe(coupon_service_);
-}
+          *web_contents) {}
 
 std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   switch (offer_.GetOfferType()) {
@@ -73,7 +66,6 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -100,8 +92,9 @@ OfferNotificationBubbleControllerImpl::GetOfferNotificationBubbleView() const {
 }
 
 const CreditCard* OfferNotificationBubbleControllerImpl::GetLinkedCard() const {
-  if (card_.has_value())
+  if (card_.has_value()) {
     return &(*card_);
+  }
 
   return nullptr;
 }
@@ -179,8 +172,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 
   DCHECK(IsIconVisible());
 
-  if (card)
+  if (card) {
     card_ = *card;
+  }
 
   is_user_gesture_ = false;
 
@@ -193,8 +187,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {
   DCHECK(IsIconVisible());
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_user_gesture_ = true;
 
@@ -203,14 +198,6 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
 
 void OfferNotificationBubbleControllerImpl::DismissNotification() {
   HideBubbleAndClearTimestamp(/*should_show_icon=*/false);
-}
-
-void OfferNotificationBubbleControllerImpl::OnCouponInvalidated(
-    const autofill::AutofillOfferData& offer_data) {
-  if (offer_.GetOfferType() == AutofillOfferData::OfferType::UNKNOWN ||
-      offer_ != offer_data)
-    return;
-  DismissNotification();
 }
 
 void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
@@ -232,8 +219,9 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   bubble_state_ = BubbleState::kShowingIconAndBubble;
   // Don't show bubble yet if web content is not active (bubble will instead be
   // shown when web content become visible and active).
-  if (!IsWebContentsActive())
+  if (!IsWebContentsActive()) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(browser->window()
@@ -250,8 +238,9 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   bubble_state_ = BubbleState::kShowingIcon;
   bubble_shown_timestamp_ = AutofillClock::Now();
 
-  if (observer_for_testing_)
+  if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
+  }
 
   autofill_metrics::LogOfferNotificationBubbleOfferMetric(offer_.GetOfferType(),
                                                           is_user_gesture_);
@@ -259,8 +248,9 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
   Browser* active_browser = chrome::FindBrowserWithActiveWindow();
-  if (!active_browser)
+  if (!active_browser) {
     return false;
+  }
 
   return active_browser->tab_strip_model()->GetActiveWebContents() ==
          web_contents();

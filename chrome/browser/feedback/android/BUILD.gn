@@ -68,6 +68,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/UrlFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/VariationsFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/VariationsStateFeedbackSource.java",
   ]
   deps = [
     ":feedback_collector_java",

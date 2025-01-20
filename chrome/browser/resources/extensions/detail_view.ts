@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './host_permissions_toggle_list.js';
+import './icons.html.js';
 import './runtime_host_permissions.js';
 import '/strings.m.js';
 import './toggle_row.js';
@@ -238,13 +239,18 @@ export class ExtensionsDetailViewElement extends
   protected hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.disableReasons.updateRequired || !!this.data.blocklistText ||
         this.data.disableReasons.publishedInStoreRequired ||
+        this.data.disableReasons.unsupportedDeveloperExtension ||
+        this.data.disableReasons.updateRequired || !!this.data.blocklistText ||
         this.data.runtimeWarnings.length > 0;
   }
 
-  protected computeDevReloadButtonHidden_(): boolean {
-    return !this.canReloadItem();
+  protected showAccountUploadButton_(): boolean {
+    return this.data.canUploadAsAccountExtension;
+  }
+
+  protected showDevReloadButton_(): boolean {
+    return this.canReloadItem();
   }
 
   protected computeEnabledStyle_(): string {
@@ -295,6 +301,10 @@ export class ExtensionsDetailViewElement extends
 
   protected onReloadClick_() {
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
+  }
+
+  protected onUploadClick_() {
+    this.delegate.uploadItemToAccount(this.data.id);
   }
 
   protected onRemoveClick_() {
@@ -577,6 +587,15 @@ export class ExtensionsDetailViewElement extends
     return !this.showSafetyCheck_ && !!this.data.blocklistText;
   }
 
+  /**
+   * Shows only one text if both unsupported developer extension and safety
+   * check texts are present. Safety check text takes precedence.
+   */
+  protected shouldShowUnsupportedDeveloperExtensionText_(): boolean {
+    return !this.showSafetyCheck_ &&
+        this.data.disableReasons.unsupportedDeveloperExtension;
+  }
+
   protected showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }
@@ -663,7 +682,7 @@ export class ExtensionsDetailViewElement extends
   /**
    * Returns the HTML representation of the Manifest V2 deprecation message
    * subtitle string. We need the HTML representation instead of the string
-   * since the string holds a link.
+   * since the string holds substitutions.
    */
   protected getMv2DeprecationMessageSubtitle_(): TrustedHTML {
     switch (this.mv2ExperimentStage_) {
@@ -671,8 +690,11 @@ export class ExtensionsDetailViewElement extends
         return window.trustedTypes!.emptyHTML;
       case Mv2ExperimentStage.WARNING:
         return this.i18nAdvanced('mv2DeprecationMessageWarningSubtitle', {
-          substitutions:
-              ['https://chromewebstore.google.com/category/extensions'],
+          substitutions: [
+            'https://chromewebstore.google.com/category/extensions',
+            this.i18n('opensInNewTab'),
+          ],
+          attrs: ['aria-description'],
         });
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
       case Mv2ExperimentStage.UNSUPPORTED:
@@ -680,7 +702,9 @@ export class ExtensionsDetailViewElement extends
           substitutions: [
             'https://support.google.com/chrome_webstore' +
                 '?p=unsupported_extensions',
+            this.i18n('opensInNewTab'),
           ],
+          attrs: ['aria-description'],
         });
       default:
         assertNotReached();

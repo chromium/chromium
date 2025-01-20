@@ -48,6 +48,18 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <FrameLayout
+        android:id="@+id/before_description_container"
+        android:layout_gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintBottom_toBottomOf="@+id/description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/description" />
+
     <TextView
         android:id="@+id/description"
         android:layout_gravity="center_vertical|start"
@@ -56,10 +68,8 @@ found in the LICENSE file.
         android:maxLines="1"
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/before_description_container"
         app:layout_constraintEnd_toStartOf="@+id/chip" />
 
     <!-- An optional chip view. Used for history. -->

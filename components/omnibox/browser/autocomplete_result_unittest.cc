@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -156,7 +157,7 @@ class AutocompleteResultTest : public testing::Test {
   AutocompleteResultTest() {
     variations::testing::ClearAllVariationParams();
 
-    // Create the list of mock providers. 5 is enough.
+    // Create the list of mock providers. 6 is enough.
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
@@ -167,6 +168,8 @@ class AutocompleteResultTest : public testing::Test {
         AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_FEATURED_SEARCH));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_UNSCOPED_EXTENSION));
 
     for (const auto& provider : mock_provider_list_)
       provider->done_ = false;
@@ -1988,6 +1991,51 @@ TEST_F(AutocompleteResultTest,
       {expected_data, expected_data + AutocompleteResult::GetMaxMatches()});
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteResultTest, GroupSuggestionsByExtension) {
+  const auto group1 = omnibox::GROUP_UNSCOPED_EXTENSION_1;
+  const auto group2 = omnibox::GROUP_UNSCOPED_EXTENSION_2;
+
+  TestData data[] = {
+      {0, 5, 400, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {3, 5, 600, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+      {4, 5, 1000, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {6, 5, 800, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+  };
+
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1].set_section(
+      omnibox::SECTION_UNSCOPED_EXTENSION_1);
+  suggestion_groups_map[group2].set_section(
+      omnibox::SECTION_UNSCOPED_EXTENSION_2);
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResultForTesting result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service());
+
+  TestData expected_data[] = {
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {4, 5, 1000, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {0, 5, 400, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {6, 5, 800, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+      {3, 5, 600, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+  };
+
+  AssertResultMatches(result, expected_data);
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
@@ -2015,6 +2063,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
   ASSERT_EQ(result.size(), 1u);
   EXPECT_EQ(result.match_at(0)->type, AutocompleteMatchType::HISTORY_CLUSTER);
 }
+#endif
 
 TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;
@@ -2318,7 +2367,8 @@ TEST_F(AutocompleteResultTest, CalculateNumMatchesPerUrlCountTest) {
       matches.push_back(m);
     }
     const size_t num_matches = AutocompleteResult::CalculateNumMatches(
-        false, matches, comparison_object);
+        false, AutocompleteInput::FeaturedKeywordMode::kFalse, matches,
+        comparison_object);
     EXPECT_EQ(num_matches, expected_num_matches);
   };
 
@@ -2853,6 +2903,26 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
+TEST_F(AutocompleteResultTest, BadDestinationUrls) {
+  AutocompleteMatch empty_url_match;
+  empty_url_match.destination_url = GURL();
+  AutocompleteMatch invalid_scheme_match;
+  invalid_scheme_match.destination_url = GURL("bad_scheme");
+  AutocompleteMatch invalid_url_match;
+  invalid_url_match.destination_url = GURL("https://?k=v");
+
+  ACMatches invalid_matches;
+  invalid_matches.push_back(empty_url_match);
+  invalid_matches.push_back(invalid_scheme_match);
+  invalid_matches.push_back(invalid_url_match);
+
+  AutocompleteResult result;
+  EXPECT_DCHECK_DEATH(result.AppendMatches(invalid_matches));
+
+  // Result set of matches should remain empty.
+  EXPECT_TRUE(result.empty());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, Android_InspireMe) {
   const auto group1 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
@@ -2933,40 +3003,24 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
 
   struct UndedupTestData {
     std::string test_name;
-    bool promote_entities;
     std::vector<AutocompleteMatch> input;
     std::vector<AutocompleteMatch> expected_result;
   } test_cases[]{
-      {"no op with no matches", true, {}, {}},
-      {"no op with no entities / 1", true, {what_you_typed}, {what_you_typed}},
+      {"no op with no matches", {}, {}},
+      {"no op with no entities / 1", {what_you_typed}, {what_you_typed}},
       {"no op with no entities / 2",
-       true,
        {what_you_typed, search},
        {what_you_typed, search}},
       {"no op with entities with no actions",
-       true,
        {what_you_typed, entity_without_action},
        {what_you_typed, entity_without_action}},
       {"no op with entities with actions at low positions",
-       true,
        {what_you_typed, entity_with_action},
        {what_you_typed, entity_with_action}},
-
-      // Undedup and possibly rotate eligible cases.
-      {"no rotation when promotion is disabled with no actions at top position",
-       false,
-       {entity_without_action},
-       {search, entity_without_action}},
       {"no rotation when promotion is enabled with no actions at top position",
-       true,
        {entity_without_action},
        {search, entity_without_action}},
-      {"no rotation when promotion is disabled with actions at top position",
-       false,
-       {entity_with_action},
-       {search, entity_with_action}},
       {"rotation when promotion is enabled with actions at top position",
-       true,
        {entity_with_action},
        {entity_with_action, search}},
   };
@@ -2978,11 +3032,6 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
   // matches we want to see.
   for (const auto& test_case : test_cases) {
     auto result = test_case.input;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kActionsInSuggest,
-        {{OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name,
-          test_case.promote_entities ? "true" : "false"}});
     AutocompleteResult::UndedupTopSearchEntityMatch(&result);
 
     EXPECT_EQ(result.size(), test_case.expected_result.size());

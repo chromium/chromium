@@ -57,6 +57,12 @@ inline bool IsHorizontalWritingMode(WritingMode writing_mode) {
   return writing_mode == WritingMode::kHorizontalTb;
 }
 
+// Lines have vertical orientation; modes vertical-lr, vertical-rl.
+inline bool IsVerticalWritingMode(WritingMode writing_mode) {
+  return writing_mode == WritingMode::kVerticalLr ||
+         writing_mode == WritingMode::kVerticalLr;
+}
+
 // Bottom of the line occurs earlier in the block; modes vertical-lr.
 inline bool IsFlippedLinesWritingMode(WritingMode writing_mode) {
   return writing_mode == WritingMode::kVerticalLr;

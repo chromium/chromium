@@ -10,13 +10,17 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
+#include "extensions/test/test_content_script_load_waiter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -32,6 +36,9 @@ PlatformTestExtensionLoader::~PlatformTestExtensionLoader() = default;
 
 scoped_refptr<const Extension> PlatformTestExtensionLoader::LoadExtension(
     const base::FilePath& path) {
+  // Clean up the kMetadataFolder if necessary.
+  file_util::MaybeCleanupMetadataFolder(path);
+
   scoped_refptr<const Extension> extension = LoadExtensionFromDirectory(path);
   if (!extension) {
     return nullptr;
@@ -69,6 +76,21 @@ PlatformTestExtensionLoader::LoadExtensionFromDirectory(
   if (!extension) {
     ADD_FAILURE() << "Failed to parse extension: " << load_error;
     return nullptr;
+  }
+
+  // Force file access and/or incognito state and set install param if
+  // requested. This must occur before the call to AddExtension() below,
+  // because ExtensionRegistry observers do things like load content scripts,
+  // and the incognito status must be set.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if (allow_file_access_.has_value()) {
+    prefs->SetAllowFileAccess(extension->id(), *allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    prefs->SetIsIncognitoEnabled(extension->id(), *allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    SetInstallParam(prefs, extension->id(), *install_param_);
   }
 
   extension_registry_->TriggerOnWillBeInstalled(extension.get(),
@@ -135,9 +157,17 @@ bool PlatformTestExtensionLoader::CheckInstallWarnings(
 
 bool PlatformTestExtensionLoader::WaitForExtensionReady(
     const Extension& extension) {
-  // TODO(crbug.com/373434594): Support content scripts.
-  if (!ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    NOTIMPLEMENTED() << "Content scripts not yet supported.";
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->user_script_manager();
+  // Note: `user_script_manager` can be null in tests.
+  if (user_script_manager &&
+      !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
+    ExtensionUserScriptLoader* user_script_loader =
+        user_script_manager->GetUserScriptLoaderForExtension(extension_id_);
+    if (!user_script_loader->HasLoadedScripts()) {
+      ContentScriptLoadWaiter waiter(user_script_loader);
+      waiter.Wait();
+    }
   }
 
   const int num_processes =

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -33,7 +34,6 @@
 #include "base/task/sequence_manager/atomic_flag_set.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/fence.h"
-#include "base/task/sequence_manager/lazily_deallocated_deque.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/tasks.h"
@@ -498,8 +498,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
   // LazilyDeallocatedDeque use TimeTicks to figure out when to resize.  We
   // should use real time here always.
-  using TaskDeque =
-      LazilyDeallocatedDeque<Task, subtle::TimeTicksNowIgnoringOverride>;
+  using TaskDeque = std::deque<Task>;
 
   // Extracts all the tasks from the immediate incoming queue and swaps it with
   // |queue| which must be empty.

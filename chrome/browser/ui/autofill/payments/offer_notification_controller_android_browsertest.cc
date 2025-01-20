@@ -15,14 +15,14 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/payments_data_manager_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/messages_feature.h"
@@ -118,12 +118,14 @@ class OfferNotificationControllerAndroidBrowserTest
   }
 
   void SetShownOffer(int64_t id) {
-    if (!GetOfferManager())
+    if (!GetOfferManager()) {
       return;
+    }
 
     auto* handler = &(GetOfferManager()->notification_handler_);
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     handler->ClearShownNotificationIdForTesting();
     handler->AddShownNotificationIdForTesting(id);

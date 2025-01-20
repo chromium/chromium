@@ -152,15 +152,15 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     }])
 
     source_type = 'offscreen'
-    codec = 'avc1.42001E'
     acc = 'prefer-hardware'
-    args = (source_type, codec, acc)
-    yield ('WebCodecs_PerFrameQpEncoding_%s_%s_%s' % args,
-           'frame-qp-encoding.html', [{
-               'source_type': source_type,
-               'codec': codec,
-               'acceleration': acc
-           }])
+    for codec in ['avc1.42001E', 'hvc1.1.6.L93.B0']:
+      args = (source_type, codec, acc)
+      yield ('WebCodecs_PerFrameQpEncoding_%s_%s_%s' % args,
+             'frame-qp-encoding.html', [{
+                 'source_type': source_type,
+                 'codec': codec,
+                 'acceleration': acc
+             }])
 
     codec = 'av01.0.04M.08'
     acc = 'prefer-software'
@@ -279,6 +279,11 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                    'codec': codec,
                    'acceleration': acc
                }])
+        yield ('WebCodecs_MixedSourceEncoding_%s_%s' % args,
+               'mixed-source-encoding.html', [{
+                   'codec': codec,
+                   'acceleration': acc
+               }])
 
     for codec in video_codecs:
       for source_type in frame_sources:
@@ -317,7 +322,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
         '--enable-blink-features=SharedArrayBuffer',
-        cba.ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT,
+        '--enable-features=VideoFrameAsyncCopyTo',
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ] + cba.ENABLE_WEBGPU_FOR_TESTING
 

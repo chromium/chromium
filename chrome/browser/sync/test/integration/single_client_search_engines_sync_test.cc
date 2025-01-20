@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/sync/test/integration/search_engines_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/sync_data.h"
+#include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,3 +112,257 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
   // But "guid1" should be considered the "best", as it's the most recent.
   EXPECT_EQ(guid1, service->GetTemplateURLForKeyword(u"key1"));
 }
+
+class
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled
+    : public SingleClientSearchEnginesSyncTest {
+ public:
+  SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled()
+      : feature_list_(syncer::kSeparateLocalAndAccountSearchEngines) {}
+
+ protected:
+  auto CreateSyncEntity(const std::u16string& keyword,
+                        const std::string& url,
+                        const std::string& guid,
+                        base::Time last_modified) {
+    return CreateFromTemplateURL(CreateTestTemplateURL(
+        /*keyword=*/keyword, /*url=*/url,
+        /*guid=*/guid, last_modified,
+        /*safe_for_autoreplace=*/false,
+        /*created_by_policy=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+        /*prepopulate_id=*/100));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotUploadLocalSearchEngines) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+  EXPECT_TRUE(
+      search_engines_helper::HasSearchEngine(/*profile_index=*/0, "key1"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldDownloadAccountSearchEngines) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_FALSE(HasSearchEngine(/*profile_index=*/0, "key2"));
+
+  // Create a remote TemplateURL.
+  fake_server_->InjectEntity(CreateSyncEntity(
+      /*keyword=*/u"key2", /*url=*/"http://key2.com",
+      /*guid=*/"guid2", base::Time::FromTimeT(10)));
+
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldReplaceConflictingLocalBuiltInSearchEngine) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_FALSE(HasSearchEngine(/*profile_index=*/0, "key2"));
+
+  // Create a remote TemplateURL with the same prepopulate_id to conflict with
+  // the local search engine.
+  fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
+      /*keyword=*/u"key2", /*url=*/"http://key2.com",
+      /*guid=*/"guid2")));
+
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_FALSE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_FALSE(HasSearchEngine(/*profile_index=*/0, "key2"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldRemoveAccountSearchEnginesUponSignout) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+  // Create a remote TemplateURL with a different prepopulate_id to avoid
+  // conflict.
+  fake_server_->InjectEntity(CreateSyncEntity(
+      /*keyword=*/u"key2", /*url=*/"http://key2.com",
+      /*guid=*/"guid2", base::Time::FromTimeT(10)));
+
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+  EXPECT_FALSE(HasSearchEngine(/*profile_index=*/0, "key2"));
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key2", GetFakeServer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldAddToLocalAndAccountSearchEngines) {
+  ASSERT_TRUE(SetupSync());
+
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(
+      search_engines_helper::FakeServerHasSearchEngineChecker("key1").Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldDualWriteUponEdit) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+
+  // Update the short name and the url.
+  search_engines_helper::EditSearchEngine(
+      /*profile_index=*/0, "key1", u"short_name", "key1", "http://key1.com");
+  EXPECT_TRUE(
+      search_engines_helper::FakeServerHasSearchEngineChecker("key1").Wait());
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+
+  // Ensure that the edits are applied to the local value.
+  const TemplateURL* local =
+      search_engines_helper::GetServiceForBrowserContext(0)
+          ->GetTemplateURLForKeyword(u"key1");
+  ASSERT_TRUE(local);
+  EXPECT_EQ(u"short_name", local->short_name());
+  EXPECT_EQ("http://key1.com", local->url());
+
+  // Ensure that the edits are applied to the account value.
+  const std::optional<sync_pb::SearchEngineSpecifics>& account =
+      search_engines_helper::GetSearchEngineInFakeServerWithKeyword(
+          "key1", GetFakeServer());
+  ASSERT_TRUE(account);
+  EXPECT_EQ("short_name", account->short_name());
+  EXPECT_EQ("http://key1.com", account->url());
+}
+
+// TODO(crbug.com/374903497): Investigate why these tests fail on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    PRE_ShouldPreserveLocalAndAccountSearchEnginesAcrossRestart) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+  fake_server_->InjectEntity(CreateSyncEntity(
+      /*keyword=*/u"key2", /*url=*/"http://key2.com",
+      /*guid=*/"guid2", base::Time::FromTimeT(10)));
+
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldPreserveLocalAndAccountSearchEnginesAcrossRestart) {
+  ASSERT_TRUE(SetupClients());
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key2", GetFakeServer()));
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+  EXPECT_FALSE(HasSearchEngine(/*profile_index=*/0, "key2"));
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key2", GetFakeServer()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    PRE_ShouldNotMarkLocalSearchEngineAsAccount) {
+  ASSERT_TRUE(SetupClients());
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotMarkLocalSearchEngineAsAccount) {
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+
+  EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
+      "key1", GetFakeServer()));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)

@@ -37,7 +37,7 @@ export class TabSearchAppElement extends CrLitElement {
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private documentVisibilityChangedListener_: () => void;
-  protected selectedTabSection_: TabSearchSection = TabSearchSection.kNone;
+  protected selectedTabSection_: TabSearchSection = TabSearchSection.kSearch;
   protected tabNames_: string[] = [
     loadTimeData.getString('tabSearchTabName'),
     loadTimeData.getString('tabOrganizationTabName'),
@@ -152,9 +152,6 @@ export class TabSearchAppElement extends CrLitElement {
       const autoTabGroupsPage =
           this.shadowRoot!.querySelector('auto-tab-groups-page')!;
       autoTabGroupsPage.classList.toggle('changed-state', false);
-    }
-    if (this.selectedTabSection_ !== TabSearchSection.kNone) {
-      this.apiProxy_.setTabSearchSection(this.selectedTabSection_);
     }
   }
 }

@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -48,6 +47,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
@@ -152,7 +152,7 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
       // TODO(anunoy): Determine if this value should be set to the extension's
       // first install time vs last update time.
-      app->install_time = prefs->GetLastUpdateTime(extension->id());
+      app->install_time = GetLastUpdateTime(prefs, extension->id());
     }
   }
 

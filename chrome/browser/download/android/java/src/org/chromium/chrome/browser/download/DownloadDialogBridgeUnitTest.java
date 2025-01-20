@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -83,17 +82,6 @@ public class DownloadDialogBridgeUnitTest {
                 LOCATION_DIALOG_TYPE,
                 SUGGESTED_PATH,
                 mProfile);
-    }
-
-    private void locationDialogWillReturn(String newPath) {
-        doAnswer(
-                        invocation -> {
-                            mBridge.onDownloadLocationDialogComplete(newPath);
-                            return null;
-                        })
-                .when(mLocationDialog)
-                .showDialog(
-                        any(), any(), eq(TOTAL_BYTES), anyInt(), eq(SUGGESTED_PATH), eq(mProfile));
     }
 
     @Test

@@ -6,11 +6,11 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -129,7 +129,7 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
 
   const autofill::CountryComboboxModel::CountryVector& CountriesList() {
     country_model_.SetCountries(
-        *personal_data_manager(),
+        personal_data_manager()->address_data_manager(),
         base::RepeatingCallback<bool(const std::string&)>(),
         GetApplicationContext()->GetApplicationLocale());
     return country_model_.countries();

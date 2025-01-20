@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           callback) override;
   void CancelDiskImageOperation(
       const vm_tools::concierge::CancelDiskImageRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
   void DiskImageStatus(
       const vm_tools::concierge::DiskImageStatusRequest& request,
@@ -89,16 +89,17 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       const vm_tools::concierge::StartVmRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) override;
-  void StopVm(const vm_tools::concierge::StopVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
-                  callback) override;
+  void StopVm(
+      const vm_tools::concierge::StopVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override;
   void SuspendVm(
       const vm_tools::concierge::SuspendVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
   void ResumeVm(
       const vm_tools::concierge::ResumeVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
   void GetVmInfo(
       const vm_tools::concierge::GetVmInfoRequest& request,
@@ -126,7 +127,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           callback) override;
   void DetachUsbDevice(
       const vm_tools::concierge::DetachUsbDeviceRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
   void StartArcVm(
       const vm_tools::concierge::StartArcVmRequest& request,
@@ -147,25 +148,31 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) override;
 
+  void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override;
+
   void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::concierge::GetVmLaunchAllowedResponse> callback) override;
 
-  void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
-                  callback) override;
+  void SwapVm(
+      const vm_tools::concierge::SwapVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override;
 
   void InstallPflash(
       base::ScopedFD fd,
       const vm_tools::concierge::InstallPflashRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override;
 
   void AggressiveBalloon(
       const vm_tools::concierge::AggressiveBalloonRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::AggressiveBalloonResponse> callback) override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override;
 
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
@@ -221,6 +228,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     return reclaim_vm_memory_call_count_;
   }
   int list_vms_call_count() const { return list_vms_call_count_; }
+  int modify_fake_power_config_call_count() const {
+    return modify_fake_power_config_call_count_;
+  }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -260,7 +270,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     export_disk_image_response_ = export_disk_image_response;
   }
   void set_cancel_disk_image_response(
-      std::optional<vm_tools::concierge::CancelDiskImageResponse>
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
           cancel_disk_image_response) {
     cancel_disk_image_response_ = cancel_disk_image_response;
   }
@@ -279,7 +289,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     start_vm_response_ = start_vm_response;
   }
   void set_stop_vm_response(
-      std::optional<vm_tools::concierge::StopVmResponse> stop_vm_response) {
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
+          stop_vm_response) {
     stop_vm_response_ = stop_vm_response;
   }
   void set_get_vm_info_response(
@@ -309,7 +320,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     attach_usb_device_response_ = attach_usb_device_response;
   }
   void set_detach_usb_device_response(
-      std::optional<vm_tools::concierge::DetachUsbDeviceResponse>
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
           detach_usb_device_response) {
     detach_usb_device_response_ = detach_usb_device_response;
   }
@@ -332,22 +343,28 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       std::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
     list_vms_response_ = list_vms_response;
   }
+  void set_modify_fake_power_config_response(
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
+          modify_fake_power_config_response) {
+    modify_fake_power_config_response_ = modify_fake_power_config_response;
+  }
   void set_get_vm_launch_allowed_response(
       std::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
           get_vm_launch_allowed_response) {
     get_vm_launch_allowed_response_ = get_vm_launch_allowed_response;
   }
   void set_swap_vm_response(
-      std::optional<vm_tools::concierge::SwapVmResponse> swap_vm_response) {
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
+          swap_vm_response) {
     swap_vm_response_ = swap_vm_response;
   }
   void set_install_pflash_response(
-      std::optional<vm_tools::concierge::InstallPflashResponse>
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
           install_pflash_response) {
     install_pflash_response_ = install_pflash_response;
   }
   void set_aggressive_balloon_response(
-      std::optional<vm_tools::concierge::AggressiveBalloonResponse>
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
           aggressive_balloon_response) {
     aggressive_balloon_response_ = aggressive_balloon_response;
   }
@@ -417,6 +434,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int set_vm_id_call_count_ = 0;
   int reclaim_vm_memory_call_count_ = 0;
   int list_vms_call_count_ = 0;
+  int modify_fake_power_config_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
@@ -432,16 +450,18 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       import_disk_image_response_;
   std::optional<vm_tools::concierge::ExportDiskImageResponse>
       export_disk_image_response_;
-  std::optional<vm_tools::concierge::CancelDiskImageResponse>
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
       cancel_disk_image_response_;
   std::optional<vm_tools::concierge::DiskImageStatusResponse>
       disk_image_status_response_;
   std::optional<vm_tools::concierge::ListVmDisksResponse>
       list_vm_disks_response_;
   std::optional<vm_tools::concierge::StartVmResponse> start_vm_response_;
-  std::optional<vm_tools::concierge::StopVmResponse> stop_vm_response_;
-  std::optional<vm_tools::concierge::SuspendVmResponse> suspend_vm_response_;
-  std::optional<vm_tools::concierge::ResumeVmResponse> resume_vm_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse> stop_vm_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
+      suspend_vm_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
+      resume_vm_response_;
   std::optional<vm_tools::concierge::GetVmInfoResponse> get_vm_info_response_;
   std::optional<vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
       get_vm_enterprise_reporting_info_response_;
@@ -451,19 +471,21 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       set_vm_cpu_restriction_response_;
   std::optional<vm_tools::concierge::AttachUsbDeviceResponse>
       attach_usb_device_response_;
-  std::optional<vm_tools::concierge::DetachUsbDeviceResponse>
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
       detach_usb_device_response_;
   std::optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
   std::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
   std::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
+      modify_fake_power_config_response_;
   std::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
       get_vm_launch_allowed_response_;
-  std::optional<vm_tools::concierge::SwapVmResponse> swap_vm_response_;
-  std::optional<vm_tools::concierge::InstallPflashResponse>
+  std::optional<vm_tools::concierge::SuccessFailureResponse> swap_vm_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
       install_pflash_response_;
-  std::optional<vm_tools::concierge::AggressiveBalloonResponse>
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
       aggressive_balloon_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;

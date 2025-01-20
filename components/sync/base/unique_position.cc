@@ -61,7 +61,7 @@ UniquePosition::Suffix UniquePosition::RandomSuffix() {
   // Users random data for all but the last byte. The last byte must not be
   // zero. Set it arbitrarily to 0x7f.
   Suffix suffix;
-  base::RandBytes(base::make_span(suffix));
+  base::RandBytes(base::span(suffix));
   suffix.back() = 0x7f;
   return suffix;
 }

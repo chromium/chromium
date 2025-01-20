@@ -6,32 +6,27 @@
 #define IOS_CHROME_BROWSER_UNIT_CONVERSION_UNIT_CONVERSION_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class UnitConversionService;
 
 // Singleton that owns all UnitConversionServices and associates them with
 // ProfileIOS.
-class UnitConversionServiceFactory : public BrowserStateKeyedServiceFactory {
+class UnitConversionServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static UnitConversionService* GetForProfile(ProfileIOS* profile);
   static UnitConversionServiceFactory* GetInstance();
 
-  UnitConversionServiceFactory(const UnitConversionServiceFactory&) = delete;
-  UnitConversionServiceFactory& operator=(const UnitConversionServiceFactory&) =
-      delete;
-
  private:
   friend class base::NoDestructor<UnitConversionServiceFactory>;
+
   UnitConversionServiceFactory();
   ~UnitConversionServiceFactory() override;
+
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* state) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_UNIT_CONVERSION_SERVICE_FACTORY_H_

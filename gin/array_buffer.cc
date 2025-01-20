@@ -83,7 +83,6 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 // static
 void ArrayBufferAllocator::InitializePartition() {
   partition_alloc::PartitionOptions opts;
-  opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
   opts.use_configurable_pool = partition_alloc::PartitionOptions::kAllowed;
 
@@ -191,7 +190,7 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     if (!mapping)
       return std::nullopt;
 
-    return base::make_span(reinterpret_cast<uint8_t*>(mapping), size);
+    return base::span(reinterpret_cast<uint8_t*>(mapping), size);
   }
 
   void Unmap(base::span<uint8_t> mapping) override {

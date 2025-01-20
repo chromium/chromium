@@ -370,7 +370,6 @@ TEST_F(HTMLIFrameElementSimTest, Adauctionheaders_InsecureContext_NotAllowed) {
 
 TEST_F(HTMLIFrameElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
   main_resource.Complete(R"(
@@ -385,7 +384,6 @@ TEST_F(HTMLIFrameElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
 TEST_F(HTMLIFrameElementSimTest,
        Sharedstoragewritable_InsecureContext_NotAllowed) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   SimRequest main_resource("http://example.com", "text/html");
   LoadURL("http://example.com");
   main_resource.Complete(R"(

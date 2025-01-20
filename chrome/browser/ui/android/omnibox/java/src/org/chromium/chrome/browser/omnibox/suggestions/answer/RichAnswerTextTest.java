@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
@@ -126,6 +127,7 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testFinanceAnswer() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -217,6 +219,7 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testFinanceAnswer_withColorReversal() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -294,6 +297,7 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testWeatherAnswer() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -412,6 +416,7 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testNoFragments() {
         FormattedString headline = FormattedString.newBuilder().setText("redmond weather").build();
         FormattedString subhead =

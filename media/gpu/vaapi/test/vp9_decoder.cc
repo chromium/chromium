@@ -11,6 +11,8 @@
 
 #include <va/va.h>
 
+#include <bitset>
+
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"

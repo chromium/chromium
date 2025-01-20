@@ -58,8 +58,9 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
   };
-  if (base::Contains(kNoPinAppIds, app_id))
+  if (base::Contains(kNoPinAppIds, app_id)) {
     return AppListControllerDelegate::NO_PIN;
+  }
 
   const std::optional<std::vector<std::string>> policy_ids =
       apps_util::GetPolicyIdsFromAppId(profile, app_id);
@@ -79,13 +80,15 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
 
   for (const base::Value& policy_dict_entry : policy_apps) {
-    if (!policy_dict_entry.is_dict())
+    if (!policy_dict_entry.is_dict()) {
       return AppListControllerDelegate::PIN_EDITABLE;
+    }
 
     const std::string* policy_entry = policy_dict_entry.GetDict().FindString(
         ChromeShelfPrefs::kPinnedAppsPrefAppIDKey);
-    if (!policy_entry)
+    if (!policy_entry) {
       return AppListControllerDelegate::PIN_EDITABLE;
+    }
 
     if (base::Contains(*policy_ids,
                        apps_util::TransformRawPolicyId(*policy_entry))) {
@@ -153,8 +156,7 @@ bool IsAppPinEditable(apps::AppType app_type,
       }
       return false;
     }
-    case apps::AppType::kPluginVm:
-    case apps::AppType::kBuiltIn: {
+    case apps::AppType::kPluginVm: {
       bool show_in_launcher = false;
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->AppRegistryCache()
@@ -169,18 +171,13 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return true;
-    case apps::AppType::kStandaloneBrowser:
-      // Lacros behaves like the Chrome browser icon and cannot be unpinned.
-      return false;
     case apps::AppType::kUnknown:
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.
       return false;
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       NOTREACHED() << "Type " << (int)app_type
                    << " should not appear in shelf.";
     case apps::AppType::kBruschetta:
@@ -191,14 +188,17 @@ bool IsAppPinEditable(apps::AppType app_type,
 bool IsBrowserRepresentedInBrowserList(Browser* browser,
                                        const ash::ShelfModel* model) {
   // Only Ash desktop browser windows for the active user are represented.
-  if (!browser || !multi_user_util::IsProfileFromActiveUser(browser->profile()))
+  if (!browser ||
+      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     return false;
+  }
 
   if (browser->is_type_app() || browser->is_type_app_popup()) {
     // V1 App popup windows may have their own item.
     ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
-    if (model->ItemByID(id))
+    if (model->ItemByID(id)) {
       return false;
+    }
   }
 
   return true;
@@ -234,33 +234,6 @@ apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
       return apps::LaunchSource::kFromAppListRecommendation;
     case ash::LAUNCH_FROM_SHELF:
       return apps::LaunchSource::kFromShelf;
-  }
-}
-
-bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
-                                              Profile* profile) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-  auto* proxy =
-      apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
-  apps::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
-  switch (app_type) {
-    case apps::AppType::kWeb:
-    case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowser:
-      return true;
-    case apps::AppType::kStandaloneBrowserChromeApp: {
-      // Should handle Standalone browser hosted apps.
-      bool is_platform_app = false;
-      proxy->AppRegistryCache().ForOneApp(
-          app_id, [&is_platform_app](const apps::AppUpdate& update) {
-            is_platform_app = update.IsPlatformApp().value_or(true);
-          });
-      return !is_platform_app;
-    }
-    default:
-      return false;
   }
 }
 

@@ -6,13 +6,13 @@
 
 #include <ostream>
 
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill {
 
-PaymentsMetadata::PaymentsMetadata(const AutofillDataModel& model)
+PaymentsMetadata::PaymentsMetadata(const UsageHistoryInformation& model)
     : use_count(model.use_count()), use_date(model.use_date()) {}
 
 bool PaymentsMetadata::IsDeletable() const {

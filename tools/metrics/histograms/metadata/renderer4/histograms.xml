@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
     units="microseconds" expires_after="2023-09-10">
   <owner>khushalsagar@chromium.org</owner>
-  <owner>chrome-gpu@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2025-05-04">
+    enum="BooleanWasted" expires_after="2025-07-06">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -115,23 +115,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether gpu rasterization is enabled (checked once after the page is painted
     for the first time).
   </summary>
 </histogram>
 
-<histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
-    units="microseconds" expires_after="2025-04-13">
-<!-- Name completed by histogram_suffixes name="DecodedImageType" -->
-
-<!-- Name completed by histogram_suffixes name="OutOfRaster" -->
-
-<!-- Name completed by histogram_suffixes name="RasterTaskType" -->
-
+<histogram base="true"
+    name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
+    units="microseconds" expires_after="2025-06-15">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
@@ -147,6 +142,28 @@ chromium-metrics-reviews@google.com.
     |TimeTicks::IsHighResolution()|). Such reports will cause this metric to
     have an abnormal distribution.
   </summary>
+  <token key="ImageOrTaskType">
+<!-- Most variants below mimic the `cc::ScopedImageTask::ImageType` enum
+     but the empty variant and `OutOfRaster` mimic `cc::ScopedImageDecodeTask::TaskType`
+    -->
+
+    <variant name=""/>
+    <variant name=".Avif"/>
+    <variant name=".Bmp"/>
+    <variant name=".Gif"/>
+    <variant name=".Ico"/>
+    <variant name=".Jpeg"/>
+    <variant name=".Other"/>
+    <variant name=".OutOfRaster"/>
+    <variant name=".Png"/>
+    <variant name=".WebP"/>
+  </token>
+  <token key="DecodeType">
+<!-- Variants below mimic `cc::ScopedImageDecodeTask::DecodeType` -->
+
+    <variant name="Gpu"/>
+    <variant name="Software"/>
+  </token>
 </histogram>
 
 <histogram name="Renderer4.InvalidationRegionApproximateRectCount"
@@ -158,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-05-11">
+    enum="MainThreadScrollingReason2" expires_after="2025-07-13">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -177,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-05-11">
+    enum="MainThreadScrollingReason2" expires_after="2025-07-13">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -222,9 +239,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2025-03-23">
+    units="microseconds" expires_after="2025-05-25">
   <owner>khushalsagar@chromium.org</owner>
-  <owner>chrome-gpu@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -237,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>

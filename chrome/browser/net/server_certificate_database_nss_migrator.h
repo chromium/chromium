@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 #define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "crypto/scoped_nss_types.h"
 #include "net/cert/internal/platform_trust_store.h"
 
-class Profile;
-
 namespace net {
+
+class ServerCertificateDatabaseService;
 
 // Migrates server-related certificates from an NSS user database into
 // ServerCertificateDatabase.
@@ -29,7 +31,16 @@ class ServerCertificateDatabaseNSSMigrator {
   };
   using ResultCallback = base::OnceCallback<void(MigrationResult)>;
 
-  explicit ServerCertificateDatabaseNSSMigrator(Profile* profile);
+  // A callback that is used to get a NSS slot handle. The callback is passed a
+  // result callback which will be called with the slot, possibly
+  // asynchronously and possibly on an arbitrary thread (need not be the same
+  // thread the NssSlotGetter was run on).
+  using NssSlotGetter = base::OnceCallback<void(
+      base::OnceCallback<void(crypto::ScopedPK11Slot)>)>;
+
+  explicit ServerCertificateDatabaseNSSMigrator(
+      ServerCertificateDatabaseService* cert_db_service,
+      NssSlotGetter nss_slot_getter);
   ~ServerCertificateDatabaseNSSMigrator();
 
   // Begins migration process. `callback` will be run on the calling thread when
@@ -45,7 +56,10 @@ class ServerCertificateDatabaseNSSMigrator {
       std::vector<net::PlatformTrustStore::CertWithTrust> certs_to_migrate);
   void FinishedMigration(ResultCallback callback, MigrationResult result);
 
-  const raw_ptr<Profile> profile_;
+  raw_ptr<ServerCertificateDatabaseService> cert_db_service_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  NssSlotGetter nss_slot_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ServerCertificateDatabaseNSSMigrator> weak_ptr_factory_{
       this};
 };

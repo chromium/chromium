@@ -14,4 +14,13 @@ public class TabGroupUtil {
     public static String getNumberOfTabsString(int numberOfTabs) {
         return numberOfTabs != 1 ? String.format("%d tabs", numberOfTabs) : "1 tab";
     }
+
+    /**
+     * Returns the message shown on the snackbar when tabs get grouped, e.g. "3 tabs grouped".
+     *
+     * <p>English-specific, for testing.
+     */
+    public static String getSnackbarMessageString(int numberOfTabs) {
+        return getNumberOfTabsString(numberOfTabs) + " grouped";
+    }
 }

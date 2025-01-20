@@ -31,8 +31,6 @@ class FakeURLFilterDelegate
   }
 };
 
-}  // namespace
-
 class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  public:
   SupervisedUserURLFilterExtensionsTest() {
@@ -81,16 +79,11 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
 
   filter_.SetDefaultFilteringBehavior(
       supervised_user::FilteringBehavior::kBlock);
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(new_webstore_url));
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url1).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url2).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url3).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(webstore_url).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(new_webstore_url).IsAllowed());
 
   // Set explicit host rules to block those website, and make sure the
   // URLs still work.
@@ -102,14 +95,11 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetDefaultFilteringBehavior(
       supervised_user::FilteringBehavior::kAllow);
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(new_webstore_url));
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url1).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url2).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(crx_download_url3).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(webstore_url).IsAllowed());
+  EXPECT_TRUE(filter_.GetFilteringBehavior(new_webstore_url).IsAllowed());
 }
+
+}  // namespace

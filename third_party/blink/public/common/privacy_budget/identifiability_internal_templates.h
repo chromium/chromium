@@ -17,20 +17,6 @@ namespace blink {
 
 namespace internal {
 
-// Kinda conservative implementation of
-// std::has_unique_object_representations<>. Perhaps not as conservative as we'd
-// like.
-//
-// At a minimum, this predicate should require that the data type not contain
-// internal padding since uninitialized padding bytes defeat the uniqueness of
-// the representation. Trailing padding is allowed.
-//
-// Not checking <version> because we don't want to use the feature
-// automatically. We should wait until C++-17 library functionality is
-// explicitly allowed in Chromium.
-template <typename T>
-using has_unique_object_representations = std::is_arithmetic<T>;
-
 // Calculate a digest of an object with a unique representation.
 //
 // In a perfect world, we should also require that this representation be
@@ -53,7 +39,7 @@ template <typename T>
 constexpr int64_t DigestOfObjectRepresentation(T in)
   requires(std::same_as<T, std::remove_cvref_t<T>> &&
            std::is_trivially_copyable_v<T> &&
-           has_unique_object_representations<T>::value &&
+           std::has_unique_object_representations_v<T> &&
            sizeof(T) <= sizeof(int64_t))
 {
   if constexpr (std::is_integral<T>::value &&

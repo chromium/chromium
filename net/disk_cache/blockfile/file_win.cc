@@ -4,6 +4,8 @@
 
 #include "net/disk_cache/blockfile/file.h"
 
+#include <windows.h>
+
 #include <limits.h>
 
 #include <utility>
@@ -29,10 +31,8 @@ class CompletionHandler;
 struct MyOverlapped {
   MyOverlapped(disk_cache::File* file, size_t offset,
                disk_cache::FileIOCallback* callback);
-  ~MyOverlapped() {}
-  OVERLAPPED* overlapped() {
-    return &context_.overlapped;
-  }
+  ~MyOverlapped() = default;
+  OVERLAPPED* overlapped() { return context_.GetOverlapped(); }
 
   base::MessagePumpForIO::IOContext context_;
   scoped_refptr<disk_cache::File> file_;
@@ -90,7 +90,7 @@ void CompletionHandler::OnIOCompleted(
 
 MyOverlapped::MyOverlapped(disk_cache::File* file, size_t offset,
                            disk_cache::FileIOCallback* callback) {
-  context_.overlapped.Offset = static_cast<DWORD>(offset);
+  context_.GetOverlapped()->Offset = static_cast<DWORD>(offset);
   file_ = file;
   callback_ = callback;
   completion_handler_ = CompletionHandler::Get();

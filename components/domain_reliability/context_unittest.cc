@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/context.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -438,8 +434,10 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   const auto kIsolationInfo1 =
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                  kOrigin1, kOrigin1, kSiteForCookies1);
-  const auto kIsolationInfo2 = net::IsolationInfo::CreateTransient();
-  const auto kIsolationInfo3 = net::IsolationInfo::CreateTransient();
+  const auto kIsolationInfo2 =
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  const auto kIsolationInfo3 =
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   InitContext(MakeTestConfig());
 
@@ -569,9 +567,9 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
 // IsolationInfos with different NetworkIsolationKeys.
 TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKeys) {
   const net::IsolationInfo kIsolationInfo1 =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   const net::IsolationInfo kIsolationInfo2 =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   InitContext(MakeTestConfig());
 
@@ -1267,10 +1265,10 @@ TEST_F(DomainReliabilityContextTest,
 
   InitContext(MakeTestConfig());
 
-  net::IsolationInfo isolation_infos[] = {
-      net::IsolationInfo::CreateTransient(),
-      net::IsolationInfo::CreateTransient(),
-  };
+  auto isolation_infos = std::to_array<net::IsolationInfo>({
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+  });
 
   // Add `DomainReliabilityContext::kMaxQueuedBeacons` beacons, using a
   // different IsolationInfo for every other beacon.

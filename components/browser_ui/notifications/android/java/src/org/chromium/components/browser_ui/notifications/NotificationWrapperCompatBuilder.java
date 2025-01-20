@@ -10,7 +10,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
@@ -34,9 +33,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
             String channelId,
             ChannelsInitializer channelsInitializer,
             NotificationMetadata metadata) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelsInitializer.safeInitialize(channelId);
-        }
+        channelsInitializer.safeInitialize(channelId);
         mBuilder = new NotificationCompat.Builder(context, channelId);
         mMetadata = metadata;
         mContext = context;

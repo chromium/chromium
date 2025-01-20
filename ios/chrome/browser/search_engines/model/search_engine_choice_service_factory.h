@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -16,17 +16,11 @@ class SearchEngineChoiceService;
 
 namespace ios {
 
-class SearchEngineChoiceServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static search_engines::SearchEngineChoiceService* GetForProfile(
       ProfileIOS* profile);
   static SearchEngineChoiceServiceFactory* GetInstance();
-
-  SearchEngineChoiceServiceFactory(const SearchEngineChoiceServiceFactory&) =
-      delete;
-  SearchEngineChoiceServiceFactory& operator=(
-      const SearchEngineChoiceServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
@@ -36,8 +30,6 @@ class SearchEngineChoiceServiceFactory
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

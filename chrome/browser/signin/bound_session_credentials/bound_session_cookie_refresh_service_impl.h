@@ -39,8 +39,6 @@ class StoragePartition;
 class GURL;
 class BoundSessionParamsStorage;
 
-BASE_DECLARE_FEATURE(kMultipleBoundSessionsEnabled);
-
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
       public BoundSessionCookieController::Delegate,

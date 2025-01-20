@@ -8,10 +8,6 @@
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -40,6 +36,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -57,6 +57,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -138,7 +139,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
@@ -184,7 +185,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     // TODO(nya): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserName, GaiaId(kFakeGaiaId)));
     fake_user_manager_->RemoveUserFromList(account_id);
     // Since ArcServiceLauncher is (re-)set up with profile() in
     // SetUpOnMainThread() it is necessary to Shutdown() before the profile()
@@ -202,9 +203,6 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
   void EnableArc() {
-    session_manager::SessionManager::Get()
-        ->HandleUserSessionStartUpTaskCompleted();
-
     PrefService* const prefs = profile()->GetPrefs();
     prefs->SetBoolean(prefs::kArcEnabled, true);
     base::RunLoop().RunUntilIdle();

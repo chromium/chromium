@@ -49,9 +49,9 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
  public:
   explicit PullAlgorithm(TeeEngine* engine) : engine_(engine) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int,
-                             v8::Local<v8::Value>[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int,
+                                  v8::Local<v8::Value>[]) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // 13. Let pullAlgorithm be the following steps:
     //   a. If reading is true,
@@ -59,21 +59,19 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       //      i. Set readAgain to true.
       engine_->read_again_ = true;
       //      ii. Return a promise resolved with undefined.
-      return PromiseResolveWithUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
-
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
 
     //   b. Set reading to true.
     engine_->reading_ = true;
     //   c. Let readRequest be a read request with the following items:
     auto* read_request = MakeGarbageCollected<TeeReadRequest>(engine_);
     //   d. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
-    ReadableStreamDefaultReader::Read(script_state, engine_->reader_,
-                                      read_request, exception_state);
+    ReadableStreamDefaultReader::Read(
+        script_state, engine_->reader_, read_request,
+        PassThroughException(script_state->GetIsolate()));
     //   e. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -227,9 +225,9 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -263,7 +261,7 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // iii. Resolve cancelPromise with cancelResult.
       engine_->cancel_promise_->Resolve(cancel_result);
     }
-    return engine_->cancel_promise_->V8Promise();
+    return engine_->cancel_promise_->Promise();
   }
 
   void Trace(Visitor* visitor) const override {

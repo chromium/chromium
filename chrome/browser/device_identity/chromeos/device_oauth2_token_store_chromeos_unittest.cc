@@ -215,6 +215,8 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadV3Token) {
 }
 
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadPrefersV2Token) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(chromeos::kRefreshTokenV3Feature);
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       scoped_testing_local_state_.Get());
 

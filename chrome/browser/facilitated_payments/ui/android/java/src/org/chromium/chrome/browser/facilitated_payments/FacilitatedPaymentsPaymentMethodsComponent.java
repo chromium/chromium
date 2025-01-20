@@ -62,7 +62,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     boolean isInLandscapeMode();
 
     /** Displays a Pix FOP selector in a bottom sheet. */
-    void showSheet(List<BankAccount> bankAccounts);
+    void showSheetForPix(List<BankAccount> bankAccounts);
 
     /** Displays an eWallet FOP selector in a bottom sheet. */
     void showSheetForEwallet(List<Ewallet> eWallets);

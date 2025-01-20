@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -69,8 +65,8 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void ProvideButtonFocusHint(size_t line) override {}
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
-  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
-  std::u16string GetAccessibleButtonTextForResult(size_t line) override {
+  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
+  std::u16string GetAccessibleButtonTextForResult(size_t line) const override {
     return u"";
   }
 };
@@ -138,7 +134,8 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
     const char* expected_url;
 
     const char* url_for_display = "";
-  } input[] = {
+  };
+  auto input = std::to_array<Data>({
       // Test that http:// is inserted if all text is selected.
       {"a.de/b", 0, "", false, "a.de/b", "http://a.de/b", true,
        "http://a.de/b"},
@@ -228,7 +225,7 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
       {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
        "https://wikipedia.org/wiki/目次", "https://wikipedia.org/wiki/目次",
        false, ""},
-  };
+  });
 
   for (size_t i = 0; i < std::size(input); ++i) {
     location_bar_model()->set_formatted_full_url(
@@ -391,7 +388,7 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
 
   AutocompleteMatch alternate_nav_match;
   EXPECT_CALL(*omnibox_client_,
-              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<10>(&alternate_nav_match));
 
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
@@ -402,7 +399,7 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
       AutocompleteInput::HasHTTPScheme(alternate_nav_match.fill_into_edit));
 
   EXPECT_CALL(*omnibox_client_,
-              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<10>(&alternate_nav_match));
 
   model()->SetUserText(u"abcd");
@@ -1436,7 +1433,7 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 
   WindowOpenDisposition disposition;
   EXPECT_CALL(*omnibox_client_,
-              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<2>(&disposition));
 
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
@@ -1446,7 +1443,7 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   EXPECT_EQ(disposition, WindowOpenDisposition::SWITCH_TO_TAB);
 
   EXPECT_CALL(*omnibox_client_,
-              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<2>(&disposition));
 
   // Suggestions not from the Open Tab Provider or not from keyword mode should
@@ -1457,7 +1454,7 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   EXPECT_EQ(disposition, WindowOpenDisposition::CURRENT_TAB);
 
   EXPECT_CALL(*omnibox_client_,
-              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
       .WillOnce(SaveArg<2>(&disposition));
 
   match.provider = controller()->autocomplete_controller()->search_provider();

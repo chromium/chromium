@@ -6,7 +6,8 @@
 
 namespace content {
 
-PreloadPipelineInfo::PreloadPipelineInfo() = default;
+PreloadPipelineInfo::PreloadPipelineInfo()
+    : id_(base::UnguessableToken::Create()) {}
 
 PreloadPipelineInfo::~PreloadPipelineInfo() = default;
 

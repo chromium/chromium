@@ -202,7 +202,7 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
 
   CHECK_EQ(type_, ResolverType::kAny);
-  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Value());
+  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Object());
   ClearResolver();
 }
 

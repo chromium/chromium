@@ -34,6 +34,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -287,8 +288,8 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     LogDeepScanningPrompt(deep_scanning_prompt);
   }
 
-  bool immediate_deep_scan_prompt = ShouldImmediatelyDeepScan(
-      response.request_deep_scan(), /*log_metrics=*/true);
+  bool immediate_deep_scan_prompt =
+      ShouldImmediatelyDeepScan(response.request_deep_scan());
   if (immediate_deep_scan_prompt) {
     *result = DownloadCheckResult::IMMEDIATE_DEEP_SCAN;
     *reason = DownloadCheckResultReason::REASON_IMMEDIATE_DEEP_SCAN;
@@ -300,8 +301,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
 
   // Only record the UMA metric if we're in a population that potentially
   // could prompt for deep scanning.
-  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true,
-                                /*log_metrics=*/false)) {
+  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true)) {
     base::UmaHistogramBoolean(
         "SBClientDownload.ServerRequestsImmediateDeepScan2",
         immediate_deep_scan_prompt);
@@ -465,6 +465,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->url = PPAPIDownloadRequest::GetDownloadRequestUrl();
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->site_for_cookies =
+      net::SiteForCookies::FromUrl(resource_request->url);
 
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
@@ -513,6 +515,11 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     response_code = loader_->ResponseInfo()->headers->response_code();
   DVLOG(2) << "Received a response for URL: " << source_url_
            << ": success=" << success << " response_code=" << response_code;
+  RecordHttpResponseOrErrorCode("SBClientDownload.DownloadRequestNetworkResult",
+                                loader_->NetError(), response_code);
+  // TODO: crbug.com/383994656 - Remove these metrics once
+  // SBClientDownload.DownloadRequestNetworkResult available on Stable. Alert
+  // monitoring should also be modified.
   if (success) {
     base::UmaHistogramSparse("SBClientDownload.DownloadRequestResponseCode",
                              response_code);
@@ -605,31 +612,30 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
       FileTypePolicies::GetInstance()
           ->PolicyForFile(target_file_path_, GURL{}, nullptr)
           .inspection_type();
-  std::string metrics_suffix = "";
+  std::string histogram_name = "SBClientDownload.DownloadRequestDuration";
   base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);
+
+  std::string metrics_suffix = "";
   switch (inspection_type) {
     case DownloadFileType::NONE:
-      metrics_suffix = ".None";
+      base::StrAppend(&histogram_name, {".None"});
       break;
     case DownloadFileType::ZIP:
-      metrics_suffix = ".Zip";
+      base::StrAppend(&histogram_name, {".Zip"});
       break;
     case DownloadFileType::RAR:
-      metrics_suffix = ".Rar";
+      base::StrAppend(&histogram_name, {".Rar"});
       break;
     case DownloadFileType::DMG:
-      metrics_suffix = ".Dmg";
+      base::StrAppend(&histogram_name, {".Dmg"});
       break;
     case DownloadFileType::SEVEN_ZIP:
-      metrics_suffix = ".SevenZip";
+      base::StrAppend(&histogram_name, {".SevenZip"});
       break;
   }
-  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);
-  base::UmaHistogramTimes(
-      "SBClientDownload.DownloadRequestDuration" + metrics_suffix, duration);
-  base::UmaHistogramMediumTimes(
-      "SBClientDownload.DownloadRequestDurationMedium" + metrics_suffix,
-      duration);
+
+  base::UmaHistogramTimes(histogram_name, duration);
   base::UmaHistogramTimes("SBClientDownload.DownloadRequestNetworkDuration",
                           base::TimeTicks::Now() - request_start_time_);
 

@@ -31,7 +31,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /**
  * Dialog triggered by the user clicking on the "manage" button in the Messages 2.0 flavor of quiet
@@ -75,10 +75,10 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
             int start = fullString.length();
             fullString.append(learnMoreText);
             fullString.setSpan(
-                    new NoUnderlineClickableSpan(
+                    new ChromeClickableSpan(
                             mContext,
                             (v) -> {
-                              PermissionBlockedDialogJni.get()
+                                PermissionBlockedDialogJni.get()
                                         .onLearnMoreClicked(mNativeDialogController);
                             }),
                     start,

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 
+#include <array>
 #include <memory>
 
 #include "base/containers/adapters.h"
@@ -25,6 +21,7 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
@@ -4104,12 +4101,17 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   // layer_tree_host_->ActivateCommitState() and the second argument would come
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
-      *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state(),
-      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-          .thread_unsafe_commit_state());
+  auto layer_impl = layer->CreateLayerImpl(host_impl.sync_tree());
+  {
+    cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
+        host_impl.sync_tree());
+    layer->PushPropertiesTo(
+        layer_impl.get(),
+        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+             .pending_commit_state(),
+        const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+            .thread_unsafe_commit_state());
+  }
   Update(artifact2);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -4131,12 +4133,16 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
                        Color::kBlack)
           .Build();
   // Simluate commit to the compositor thread.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
-      *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state(),
-      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-          .thread_unsafe_commit_state());
+  {
+    cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
+        host_impl.sync_tree());
+    layer->PushPropertiesTo(
+        layer_impl.get(),
+        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+             .pending_commit_state(),
+        const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+            .thread_unsafe_commit_state());
+  }
   Update(artifact3);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -4322,7 +4328,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
   Update(artifact.Build());
   ASSERT_EQ(6u, LayerCount());
 
-  int effect_ids[6];
+  std::array<int, 6> effect_ids;
   for (size_t i = 0; i < LayerCount(); i++)
     effect_ids[i] = LayerAt(i)->effect_tree_index();
 
@@ -4409,7 +4415,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   Update(artifact.Build());
   ASSERT_EQ(6u, LayerCount());
 
-  int effect_ids[6];
+  std::array<int, 6> effect_ids;
   for (size_t i = 0; i < LayerCount(); i++)
     effect_ids[i] = LayerAt(i)->effect_tree_index();
 
@@ -5160,7 +5166,7 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   host.CompositeForTest(base::TimeTicks::Now(), true, base::OnceClosure());
   EXPECT_FALSE(host.CommitRequested());
 
-  GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
+  EXPECT_TRUE(GetPaintArtifactCompositor().TryFastPathUpdate(artifact));
   EXPECT_FALSE(host.CommitRequested());
 }
 
@@ -5187,7 +5193,7 @@ TEST_P(PaintArtifactCompositorTest, ClearChangedStateWithIndirectTransform) {
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c2->NodeChanged());
 
-  GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
+  EXPECT_TRUE(GetPaintArtifactCompositor().TryFastPathUpdate(artifact));
   // This test passes if no DCHECK occurs.
 }
 

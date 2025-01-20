@@ -9,7 +9,8 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicato
 import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './google_drive_confirmation_dialog.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';

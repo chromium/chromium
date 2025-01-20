@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
@@ -54,13 +53,15 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
       delete;
 
   ~ImmersiveRevealEndedWaiter() override {
-    if (immersive_controller_)
+    if (immersive_controller_) {
       immersive_controller_->RemoveObserver(this);
+    }
   }
 
   void Wait() {
-    if (!immersive_controller_ || !immersive_controller_->IsRevealed())
+    if (!immersive_controller_ || !immersive_controller_->IsRevealed()) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -69,8 +70,9 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
 
  private:
   void MaybeQuitRunLoop() {
-    if (!quit_closure_.is_null())
+    if (!quit_closure_.is_null()) {
       std::move(quit_closure_).Run();
+    }
   }
 
   // ImmersiveModeController::Observer:
@@ -203,8 +205,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
 
     direction = InvertDirectionIfNeeded(direction);
 
-    if (scrub_type == SKIP_TABS)
+    if (scrub_type == SKIP_TABS) {
       increment *= 2;
+    }
     browser->tab_strip_model()->AddObserver(this);
     ScrollGenerator scroll_generator(event_generator.get());
     int last = GetStartX(browser, active_index, direction);
@@ -254,8 +257,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
 
   void AddTabs(Browser* browser, int num_tabs) {
     TabStrip* tab_strip = GetTabStrip(browser);
-    for (int i = 0; i < num_tabs; ++i)
+    for (int i = 0; i < num_tabs; ++i) {
       AddBlankTabAndShow(browser);
+    }
     ASSERT_EQ(num_tabs + 1, browser->tab_strip_model()->count());
     ASSERT_EQ(num_tabs, browser->tab_strip_model()->active_index());
     tab_strip->StopAnimating(true);
@@ -271,8 +275,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (tab_strip_model->empty() || !selection.active_tab_changed())
+    if (tab_strip_model->empty() || !selection.active_tab_changed()) {
       return;
+    }
 
     ASSERT_TRUE(selection.new_model.active().has_value());
     activation_order_.push_back(selection.new_model.active().value());
@@ -299,8 +304,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                                    gfx::Point(), time_for_next_event_, 0, 0, 0,
                                    0, 0, kScrubbingGestureFingerCount);
       event_generator->Dispatch(&fling_cancel);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending())
+      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      }
     }
 
     ScrollGenerator(const ScrollGenerator&) = delete;
@@ -312,8 +318,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                                   last_x_offset_, 0, last_x_offset_, 0,
                                   kScrubbingGestureFingerCount);
       event_generator_->Dispatch(&fling_start);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending())
+      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      }
     }
 
     void GenerateScroll(int x_offset) {
@@ -323,8 +330,9 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
                              kScrubbingGestureFingerCount);
       last_x_offset_ = x_offset;
       event_generator_->Dispatch(&scroll);
-      if (TabScrubberChromeOS::GetInstance()->IsActivationPending())
+      if (TabScrubberChromeOS::GetInstance()->IsActivationPending()) {
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
+      }
     }
 
     raw_ptr<ui::test::EventGenerator> event_generator_;
@@ -380,8 +388,9 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MultiBrowser) {
 IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, FullScreenBrowser) {
   // Initializes the position of mouse. Makes the mouse away from the tabstrip
   // to prevent any interference on this test.
-  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
-      gfx::Point(0, browser()->window()->GetBounds().height())));
+  auto event_generator = CreateEventGenerator(browser());
+  event_generator->MoveMouseTo(
+      gfx::Point(0, browser()->window()->GetBounds().height()));
   AddTabs(browser(), 6);
   browser()->tab_strip_model()->ActivateTabAt(4);
 

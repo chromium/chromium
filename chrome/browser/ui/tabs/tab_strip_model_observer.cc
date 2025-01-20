@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -15,18 +16,17 @@
 using content::WebContents;
 
 TabStripModelChange::RemovedTab::RemovedTab(
-    content::WebContents* contents,
+    tabs::TabInterface* tab,
     int index,
     RemoveReason remove_reason,
     tabs::TabInterface::DetachReason tab_detach_reason,
-    std::optional<SessionID> session_id,
-    tabs::TabInterface* tab)
-    : contents(contents),
+    std::optional<SessionID> session_id)
+    : tab(tab),
+      contents(tab ? tab->GetContents() : nullptr),
       index(index),
       remove_reason(remove_reason),
       tab_detach_reason(tab_detach_reason),
-      session_id(session_id),
-      tab(tab) {}
+      session_id(session_id) {}
 TabStripModelChange::RemovedTab::~RemovedTab() = default;
 TabStripModelChange::RemovedTab::RemovedTab(RemovedTab&& other) = default;
 
@@ -48,45 +48,40 @@ TabStripModelChange::Remove::~Remove() = default;
 TabStripModelChange::TabStripModelChange() = default;
 
 TabStripModelChange::TabStripModelChange(Insert delta)
-    : TabStripModelChange(Type::kInserted,
-                          std::make_unique<Insert>(std::move(delta))) {}
+    : TabStripModelChange(Type::kInserted, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Remove delta)
-    : TabStripModelChange(Type::kRemoved,
-                          std::make_unique<Remove>(std::move(delta))) {}
+    : TabStripModelChange(Type::kRemoved, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Move delta)
-    : TabStripModelChange(Type::kMoved,
-                          std::make_unique<Move>(std::move(delta))) {}
+    : TabStripModelChange(Type::kMoved, std::move(delta)) {}
 
 TabStripModelChange::TabStripModelChange(Replace delta)
-    : TabStripModelChange(Type::kReplaced,
-                          std::make_unique<Replace>(std::move(delta))) {}
+    : TabStripModelChange(Type::kReplaced, std::move(delta)) {}
 
 TabStripModelChange::~TabStripModelChange() = default;
 
 const TabStripModelChange::Insert* TabStripModelChange::GetInsert() const {
-  DCHECK_EQ(type_, Type::kInserted);
-  return static_cast<const Insert*>(delta_.get());
+  CHECK_EQ(type_, Type::kInserted);
+  return &absl::get<Insert>(delta_);
 }
 
 const TabStripModelChange::Remove* TabStripModelChange::GetRemove() const {
-  DCHECK_EQ(type_, Type::kRemoved);
-  return static_cast<const Remove*>(delta_.get());
+  CHECK_EQ(type_, Type::kRemoved);
+  return &absl::get<Remove>(delta_);
 }
 
 const TabStripModelChange::Move* TabStripModelChange::GetMove() const {
-  DCHECK_EQ(type_, Type::kMoved);
-  return static_cast<const Move*>(delta_.get());
+  CHECK_EQ(type_, Type::kMoved);
+  return &absl::get<Move>(delta_);
 }
 
 const TabStripModelChange::Replace* TabStripModelChange::GetReplace() const {
-  DCHECK_EQ(type_, Type::kReplaced);
-  return static_cast<const Replace*>(delta_.get());
+  CHECK_EQ(type_, Type::kReplaced);
+  return &absl::get<Replace>(delta_);
 }
 
-TabStripModelChange::TabStripModelChange(Type type,
-                                         std::unique_ptr<Delta> delta)
+TabStripModelChange::TabStripModelChange(Type type, Delta delta)
     : type_(type), delta_(std::move(delta)) {}
 
 void TabStripModelChange::RemovedTab::WriteIntoTrace(
@@ -130,7 +125,7 @@ void TabStripModelChange::Replace::WriteIntoTrace(
 void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", type_);
-  dict.Add("delta", delta_);
+  absl::visit([&dict](auto&& delta) { dict.Add("delta", delta); }, delta_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,13 +134,14 @@ void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
 TabStripSelectionChange::TabStripSelectionChange() = default;
 
 TabStripSelectionChange::TabStripSelectionChange(
-    content::WebContents* contents,
+    tabs::TabInterface* tab,
     const ui::ListSelectionModel& selection_model)
-    : old_contents(contents),
-      new_contents(contents),
+    : old_tab(tab),
+      new_tab(tab),
+      old_contents(tab ? tab->GetContents() : nullptr),
+      new_contents(tab ? tab->GetContents() : nullptr),
       old_model(selection_model),
-      new_model(selection_model),
-      reason(0) {}
+      new_model(selection_model) {}
 
 TabStripSelectionChange::~TabStripSelectionChange() = default;
 
@@ -185,7 +181,7 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
 //
-TabStripModelObserver::TabStripModelObserver() {}
+TabStripModelObserver::TabStripModelObserver() = default;
 
 TabStripModelObserver::~TabStripModelObserver() {
   std::set<raw_ptr<TabStripModel, SetExperimental>> models(
@@ -215,26 +211,22 @@ void TabStripModelObserver::OnTabGroupWillBeRemoved(
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
-                                         TabChangeType change_type) {
-}
+                                         TabChangeType change_type) {}
 
 void TabStripModelObserver::TabPinnedStateChanged(
     TabStripModel* tab_strip_model,
     WebContents* contents,
-    int index) {
-}
+    int index) {}
 
 void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
-                                                   int index) {
-}
+                                                   int index) {}
 
 void TabStripModelObserver::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
     tabs::TabInterface* tab,
     int index) {}
 
-void TabStripModelObserver::TabStripEmpty() {
-}
+void TabStripModelObserver::TabStripEmpty() {}
 
 void TabStripModelObserver::TabCloseCancelled(
     const content::WebContents* contents) {}

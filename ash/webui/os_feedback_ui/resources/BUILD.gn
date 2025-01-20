@@ -9,9 +9,9 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 build_webui("build") {
   static_files = [
-    "app_icon_48.png",
     "app_icon_192.png",
     "app_icon_256.png",
+    "app_icon_48.png",
     "index.html",
   ]
 
@@ -30,8 +30,8 @@ build_webui("build") {
 
   non_web_component_files = [
     "fake_data.ts",
-    "fake_help_content_provider.ts",
     "fake_feedback_service_provider.ts",
+    "fake_help_content_provider.ts",
     "feedback_constants.ts",
     "feedback_types.ts",
     "feedback_utils.ts",

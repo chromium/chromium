@@ -20,9 +20,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -34,6 +36,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.common.ContentUrlConstants;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -313,11 +317,31 @@ public abstract class AwContentsClient {
     /** Type adaptation class for {@link android.webkit.FileChooserParams}. */
     public static class FileChooserParamsImpl {
         private int mMode;
+        private boolean mOpenWritable;
         private String mAcceptTypes;
         private String mTitle;
         private String mDefaultFilename;
         private boolean mCapture;
         private static final Map<String, String> sAcceptTypesMapping;
+
+        // TODO(crbug.com/40101963): Use WebChromeClient.FileChooserParams.MODE_* when available.
+        @IntDef({Mode.OPEN, Mode.OPEN_MULTIPLE, Mode.OPEN_FOLDER, Mode.SAVE})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Mode {
+            int OPEN = 0;
+            int OPEN_MULTIPLE = 1;
+            int OPEN_FOLDER = 2;
+            int SAVE = 3;
+        }
+
+        // TODO(crbug.com/40101963): Use WebChromeClient.FileChooserParams.PERMISSION_MODE_* when
+        // available.
+        @IntDef({PermissionMode.READ, PermissionMode.READ_WRITE})
+        @Retention(RetentionPolicy.SOURCE)
+        private @interface PermissionMode {
+            int READ = 0;
+            int READ_WRITE = 1;
+        }
 
         static {
             // It takes less code to loop over an array than to call put() N times.
@@ -499,11 +523,13 @@ public abstract class AwContentsClient {
 
         public FileChooserParamsImpl(
                 int mode,
+                boolean openWritable,
                 String acceptTypes,
                 String title,
                 String defaultFilename,
                 boolean capture) {
             mMode = mode;
+            mOpenWritable = openWritable;
             mAcceptTypes = acceptTypes;
             mTitle = title;
             mDefaultFilename = defaultFilename;
@@ -537,9 +563,30 @@ public abstract class AwContentsClient {
             return mDefaultFilename;
         }
 
+        public @PermissionMode int getPermissionMode() {
+            return mOpenWritable ? PermissionMode.READ_WRITE : PermissionMode.READ;
+        }
+
         public Intent createIntent() {
+            String intentAction = Intent.ACTION_GET_CONTENT;
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS)) {
+                // OPEN_DOCUMENT_TREE must not have any extras or mime type.
+                if (mMode == Mode.OPEN_FOLDER) {
+                    return new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                }
+
+                // Use GET_CONTENT (read-only) by default, or CREATE_DOCUMENT for save, and
+                // OPEN_DOCUMENT when write is required.
+                if (mMode == Mode.SAVE) {
+                    intentAction = Intent.ACTION_CREATE_DOCUMENT;
+                } else if (mOpenWritable) {
+                    intentAction = Intent.ACTION_OPEN_DOCUMENT;
+                }
+            }
+
             String mimeType = "*/*";
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent i = new Intent(intentAction);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             if (getMode() == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
                 i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);

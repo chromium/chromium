@@ -104,12 +104,12 @@ bool RunRequestFunction(
 
 class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  PermissionsAPIUnitTest() {}
+  PermissionsAPIUnitTest() = default;
 
   PermissionsAPIUnitTest(const PermissionsAPIUnitTest&) = delete;
   PermissionsAPIUnitTest& operator=(const PermissionsAPIUnitTest&) = delete;
 
-  ~PermissionsAPIUnitTest() override {}
+  ~PermissionsAPIUnitTest() override = default;
   Browser* browser() { return browser_.get(); }
 
   // Runs chrome.permissions.contains(|json_query|).
@@ -747,24 +747,24 @@ TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
   EXPECT_TRUE(extension->permissions_data()->HasHostPermission(file_url));
 }
 
-class PermissionsAPISiteAccessRequestsUnitTest : public PermissionsAPIUnitTest {
+class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
  public:
-  PermissionsAPISiteAccessRequestsUnitTest() {
+  PermissionsAPIHostAccessRequestsUnitTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kApiPermissionsSiteAccessRequests);
+        extensions_features::kApiPermissionsHostAccessRequests);
   }
-  ~PermissionsAPISiteAccessRequestsUnitTest() override = default;
-  PermissionsAPISiteAccessRequestsUnitTest(
-      const PermissionsAPISiteAccessRequestsUnitTest&) = delete;
-  PermissionsAPISiteAccessRequestsUnitTest& operator=(
-      const PermissionsAPISiteAccessRequestsUnitTest&) = delete;
+  ~PermissionsAPIHostAccessRequestsUnitTest() override = default;
+  PermissionsAPIHostAccessRequestsUnitTest(
+      const PermissionsAPIHostAccessRequestsUnitTest&) = delete;
+  PermissionsAPIHostAccessRequestsUnitTest& operator=(
+      const PermissionsAPIHostAccessRequestsUnitTest&) = delete;
 
   // Navigate to `url` in the current web contents.
   void NavigateTo(const std::string& url) {
     web_contents_tester_->NavigateAndCommit(GURL(url));
   }
 
-  // Returns the function params for permissions.add|removeSiteAccessRequest for
+  // Returns the function params for permissions.add|removeHostAccessRequest for
   // a tab.
   std::string GetFunctionParams(int tab_id,
                                 const std::string& pattern = std::string()) {
@@ -803,10 +803,10 @@ class PermissionsAPISiteAccessRequestsUnitTest : public PermissionsAPIUnitTest {
   raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
-// Test extension can add a site access request for a site it has host
-// permissions for and has withheld site access.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_RequestedSite) {
+// Test extension can add a host access request for a site it has host
+// permissions for and has withheld host access.
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_RequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -820,47 +820,47 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Add site access request when extension has granted site access.
+  // Add host access request when extension has granted host access.
   {
-    // Function should fail since extension already has site access.
+    // Function should fail since extension already has host access.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile());
     EXPECT_EQ(
-        "Extension cannot add a site access request for a site it already has "
+        "Extension cannot add a host access request for a host it already has "
         "access to.",
         error);
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request when extension has withheld site access.
+  // Add host access request when extension has withheld host access.
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
   {
     // Function should succeed since extension can be granted access.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request is active.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request is active.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Test extension can add a site access request with a pattern for a site it has
-// host permissions for and has withheld site access. Request is only valid if
+// Test extension can add a host access request with a pattern for a host it has
+// host permissions for and has withheld host access. Request is only valid if
 // pattern matches the extension's host permissions.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequestWithPattern_RequestedSite) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequestWithPattern_RequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -874,74 +874,74 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Add site access request for a pattern that does not match the extension's
+  // Add host access request for a pattern that does not match the extension's
   // host permissions.
   {
     // Function should fail since pattern doesn't match the extension's host
     // permissions.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
         GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot add a site access request with a pattern that does "
+        "Extension cannot add a host access request with a pattern that does "
         "match any of its host permissions.",
         error);
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request for a pattern that matches the extension's host
-  // permissions and the current site.
+  // Add host access request for a pattern that matches the extension's host
+  // permissions and the current host.
   {
     // Function should succeed since pattern matches the extension's host
     // permissions.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id, "*://www.requested.com/*"),
         profile(), api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was not added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request for a pattern that matches the extension's host
-  // permissions and does not match the current site but will match on a
+  // Add host access request for a pattern that matches the extension's host
+  // permissions and does not match the current host but will match on a
   // cross-origin navigation.
   {
     // Function should succeed since extension can be granted access.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id, "*://*/path"), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was not added. Note that new requests will
+    // Verify host access request was not added. Note that new requests will
     // overridden any existent ones.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Verify site access request was added when navigating to the same-origin
+    // Verify host access request was added when navigating to the same-origin
     // url that matches the pattern.
     NavigateTo("http://www.requested.com/path");
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Test extension can add a site access request for a site it doesn't have host
+// Test extension can add a host access request for a host it doesn't have host
 // permissions for, but request is not active.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_NonRequestedSite) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_NonRequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -956,52 +956,52 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Add site access request.
+  // Add host access request.
   {
     // Function should succeed since we don't want to reveal information
-    // about the current site to the extension, but request is not added.
+    // about the current host to the extension, but request is not added.
     // Even though extension could have access via activeTab, extension can only
-    // add access requests for sites it has previously requested host
+    // add access requests for hosts it has previously requested host
     // permissions for.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request with a pattern that matches the current site but
+  // Add host access request with a pattern that matches the current host but
   // doesn't match the extension's host permissions.
   {
     // Function should fail since pattern doesn't match the extension's host
     // permissions.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
         GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot add a site access request with a pattern that does "
+        "Extension cannot add a host access request with a pattern that does "
         "match any of its host permissions.",
         error);
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Test extension cannot add a site access request when it doesn't have any
+// Test extension cannot add a host access request when it doesn't have any
 // host permissions.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_NoHostPermissions) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_NoHostPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension").AddAPIPermission("activeTab").Build();
   service()->AddExtension(extension.get());
@@ -1013,27 +1013,27 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Add site access request. Function should fail since extension doesn't have
+  // Add host access request. Function should fail since extension doesn't have
   // any host permissions.
   auto function =
-      base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+      base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
   function->set_extension(extension.get());
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), GetFunctionParams(tab_id), profile());
   EXPECT_EQ(
-      "Extension cannot add a site access request when it does not have any "
+      "Extension cannot add a host access request when it does not have any "
       "host permissions.",
       error);
 
-  // Verify site access request was not added.
+  // Verify host access request was not added.
   EXPECT_FALSE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 }
 
-// Test extension can add a site access request for a restricted site, but
+// Test extension can add a host access request for a restricted host, but
 // request is not active.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_TabId_RestrictedSite) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_TabId_RestrictedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -1047,19 +1047,19 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Add site access request.
+  // Add host access request.
   {
     // Function should succeed since we don't want to reveal information
-    // about the current site to the extension, but request is not added.
+    // about the current host to the extension, but request is not added.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
@@ -1067,10 +1067,10 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   // added.
 }
 
-// Tests extension can add a site access request for a site where it has
+// Tests extension can add a host access request for a host where it has
 // optional host permissions.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_OptionalHostPermissions) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_OptionalHostPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("optional_host_permissions",
@@ -1081,31 +1081,31 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   auto* permissions_manager = PermissionsManager::Get(profile());
 
   // Navigate to url requested by the extension via optional host permissions.
-  // Verify there is no site access request.
+  // Verify there is no host access request.
   NavigateTo("http://www.optional.com");
   int tab_id = ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 
-  // Add site access request for tab with optional.com. Function should
+  // Add host access request for tab with optional.com. Function should
   // succeed since extension can be granted access.
   auto function =
-      base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+      base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
   function->set_extension(extension.get());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
                                           GetFunctionParams(tab_id), profile(),
                                           api_test_utils::FunctionMode::kNone));
 
-  // Verify site access request was added.
+  // Verify host access request was added.
   EXPECT_TRUE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 }
 
-// Tests extension can add a site access request for a site where it wants to
+// Tests extension can add a host access request for a host where it wants to
 // inject a content script.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_ContentScriptMatches) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_ContentScriptMatches) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddContentScript("script.js", {"*://*.contentscript.com/*"})
@@ -1115,32 +1115,32 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   auto* permissions_manager = PermissionsManager::Get(profile());
 
   // Navigate to url requested by the extension via the content script. Verify
-  // there is no site access request.
+  // there is no host access request.
   NavigateTo("http://www.contentscript.com");
   int tab_id = ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 
-  // Add site access request for tab with contentscript.com. Function should
+  // Add host access request for tab with contentscript.com. Function should
   // succeed since extension can be granted access.
   auto function =
-      base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+      base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
   function->set_extension(extension.get());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
                                           GetFunctionParams(tab_id), profile(),
                                           api_test_utils::FunctionMode::kNone));
 
-  // Verify site access request was added.
+  // Verify host access request was added.
   EXPECT_TRUE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 }
 
-// Tests extension can add a site access request for a site with access
-// withheld, even if the site was blocked by the user. Having a valid request
+// Tests extension can add a host access request for a host with access
+// withheld, even if the host was blocked by the user. Having a valid request
 // doesn't mean it will be signaled to the user.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_UserBlockedSite) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_UserBlockedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1160,48 +1160,48 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       url::Origin::Create(web_contents->GetLastCommittedURL()),
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
 
-  // Add site access request for tab with requested.com. Request is invalid
-  // because extension has granted site access, even though it can't access the
-  // site since user blocked access for all extensions.
+  // Add host access request for tab with requested.com. Request is invalid
+  // because extension has granted host access, even though it can't access the
+  // host since user blocked access for all extensions.
   {
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot add a site access request for a site it already has "
+        "Extension cannot add a host access request for a host it already has "
         "access to.",
         error);
   }
 
-  // Withheld extension's site access.
+  // Withheld extension's host access.
   ScriptingPermissionsModifier(profile(), extension.get())
       .SetWithholdHostPermissions(true);
 
-  // Add site access request for tab with requested.com. Request is valid
-  // because extension wants site access, and site access was withheld. It
-  // doesn't matter that extensions are blocked on the site, since that is a
+  // Add host access request for tab with requested.com. Request is valid
+  // because extension wants host access, and host access was withheld. It
+  // doesn't matter that extensions are blocked on the host, since that is a
   // user setting.
   {
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
   }
 
-  // Verify site access request was added.
+  // Verify host access request was added.
   EXPECT_TRUE(
-      permissions_manager->HasActiveSiteAccessRequest(tab_id, extension->id()));
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 }
 
 // An extension with granted tab permission (via granting activeTab or running
-// an extension set on click) can't add a site request.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_OneTimeGrantedAccess) {
+// an extension set on click) can't add a host request.
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_OneTimeGrantedAccess) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1215,34 +1215,34 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
-  // Grant one-time site access.
+  // Grant one-time host access.
   TabHelper::FromWebContents(web_contents)
       ->active_tab_permission_granter()
       ->GrantIfRequested(extension.get());
 
-  // Add site access request for requested.com. Request is invalid because
-  // extension already has site access (even if it's just one-time).
+  // Add host access request for requested.com. Request is invalid because
+  // extension already has host access (even if it's just one-time).
   {
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot add a site access request for a site it already has "
+        "Extension cannot add a host access request for a host it already has "
         "access to.",
         error);
   }
 }
 
-// Test extension can add a site access request for a site it has host
-// permissions for and has withheld site access by providing a document id.
+// Test extension can add a host access request for a host it has host
+// permissions for and has withheld host access by providing a document id.
 // Note: Document id is converted to a tab id by the API after parsing. Thus,
 // it's sufficient to test only some bases cases to make sure the documentId is
 // properly parsed. Other scenarios are extensively tested using a tab id.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       AddSiteAccessRequest_DocumentId) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       AddHostAccessRequest_DocumentId) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -1263,45 +1263,45 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     return base::StringPrintf(R"([{"documentId": "%s"}])", document_id.c_str());
   };
 
-  // Add site access request when extension has granted site access.
+  // Add host access request when extension has granted host access.
   {
-    // Function should fail since extension already has site access.
+    // Function should fail since extension already has host access.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), function_params(document_id), profile());
     EXPECT_EQ(
-        "Extension cannot add a site access request for a site it already has "
+        "Extension cannot add a host access request for a host it already has "
         "access to.",
         error);
 
-    // Verify site access request was not added.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request when extension has withheld site access.
+  // Add host access request when extension has withheld host access.
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
   {
     // Function should succeed since extension can be granted access.
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), function_params(document_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request is active.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request is active.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Tests extension cannot remove a site access request that doesn't exist.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       RemoveSiteAccessRequest_TabId_Invalid) {
+// Tests extension cannot remove a host access request that doesn't exist.
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       RemoveHostAccessRequest_TabId_Invalid) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1319,94 +1319,94 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   // Extension cannot remove a request when there is no current request.
   {
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot remove a site access request that doesn't exist.",
+        "Extension cannot remove a host access request that doesn't exist.",
         error);
 
     // Verify there is no request.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Extension cannot remove a site access request with a pattern when it
+  // Extension cannot remove a host access request with a pattern when it
   // doesn't match the active request (that matches all patterns).
   {
-    // Add a site access request without a pattern. Not specifying a pattern
+    // Add a host access request without a pattern. Not specifying a pattern
     // means request will be shown for all patterns.
     auto add_function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Remove a site access request with 'requested.com' pattern. Even though
+    // Remove a host access request with 'requested.com' pattern. Even though
     // existent request matches all patterns, the removal must exactly match
     // request. We do this because we don't support "all urls but <x>".
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(),
         GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
         profile(), api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot remove a site access request that doesn't exist.",
+        "Extension cannot remove a host access request that doesn't exist.",
         error);
 
     // Verify request wasn't removed.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Extension cannot remove a site access request with a pattern when it
+  // Extension cannot remove a host access request with a pattern when it
   // doesn't match the active request (with a different pattern specified).
   {
-    // Add a site access request with 'requested.com' pattern. Adding a new
+    // Add a host access request with 'requested.com' pattern. Adding a new
     // request overrides existent request.
     auto add_function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id, "*://*.requested.com/*"),
         profile(), api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Remove a site access request with a 'other.com' pattern. Function is
+    // Remove a host access request with a 'other.com' pattern. Function is
     // invalid because 'other.com' doesn't match with the current request for
     // 'requested.com'.
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(), GetFunctionParams(tab_id, "*://*.other.com/*"),
         profile(), api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot remove a site access request that doesn't exist.",
+        "Extension cannot remove a host access request that doesn't exist.",
         error);
 
     // Verify request wasn't removed.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Tests extension can remove a site access request that matches an existent
+// Tests extension can remove a host access request that matches an existent
 // request.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       RemoveSiteAccessRequest_TabId_Valid) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       RemoveHostAccessRequest_TabId_Valid) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1421,102 +1421,102 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
-  // Extension can remove a site access request that matches all patterns (by
+  // Extension can remove a host access request that matches all patterns (by
   // not specifying one) when it matches the active request (that matches all
   // patterns).
   {
-    // Add a site access request without a pattern.
+    // Add a host access request without a pattern.
     auto add_function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Remove a site access request without a pattern.
+    // Remove a host access request without a pattern.
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Extension can remove a site access request with a pattern when it matches
+  // Extension can remove a host access request with a pattern when it matches
   // the current request (with the same pattern).
   {
-    // Add a site access request with 'requested.com' pattern.
+    // Add a host access request with 'requested.com' pattern.
     auto add_function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(),
         GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
         profile(), api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Remove a site access request with 'requested.com' pattern.
+    // Remove a host access request with 'requested.com' pattern.
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Extension can remove a site access request without a pattern when it
+  // Extension can remove a host access request without a pattern when it
   // matches the active request (with a pattern).
   {
-    // Add a site access request with 'requested.com' pattern.
+    // Add a host access request with 'requested.com' pattern.
     auto add_function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(),
         GetFunctionParams(tab_id, /*pattern=*/"*://*.requested.com/*"),
         profile(), api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
 
-    // Remove a site access request without specifying pattern (which matches to
+    // Remove a host access request without specifying pattern (which matches to
     // all patterns). Function is valid because it matches the current request
     // ('all patterns' which matches current request on 'requested.com').
     auto remove_function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }
 
-// Tests extension can remove a site access request for a document, if request
+// Tests extension can remove a host access request for a document, if request
 // is existent.
 // Note: Document id is converted to tab id. Thus, here we only need to test the
 // base cases since we have extensive testing for removing requests with tab id.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
-       RemoveSiteAccessRequest_DocumentId) {
+TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+       RemoveHostAccessRequest_DocumentId) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1538,42 +1538,42 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     return base::StringPrintf(R"([{"documentId": "%s"}])", document_id.c_str());
   };
 
-  // Remove site access request for document, when it has no active requests.
+  // Remove host access request for document, when it has no active requests.
   {
     auto function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     function->set_extension(extension.get());
 
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), function_params(document_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
-        "Extension cannot remove a site access request that doesn't exist.",
+        "Extension cannot remove a host access request that doesn't exist.",
         error);
 
     // Verify there is no request.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Add site access request for document.
+  // Add host access request for document.
   {
     auto function =
-        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), function_params(document_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
-    // Verify site access request was added.
-    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+    // Verify host access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 
-  // Remove site access request for document, when it has an active requests.
+  // Remove host access request for document, when it has an active requests.
   {
     auto function =
-        base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
     function->set_extension(extension.get());
 
     EXPECT_TRUE(api_test_utils::RunFunction(
@@ -1581,7 +1581,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
-    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
 }

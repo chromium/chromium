@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "base/check_is_test.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -69,6 +70,12 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
 
   static std::string GetNetworkName(const std::string& service_path);
   static bool IsProxyError(State state, NetworkError::ErrorReason reason);
+
+  // Method to get proxy_config_ for testing.
+  const std::optional<base::Value::Dict>& GetProxyConfigForTesting() const {
+    CHECK_IS_TEST();
+    return proxy_config_;
+  }
 
  private:
   friend class base::RefCounted<NetworkStateInformer>;

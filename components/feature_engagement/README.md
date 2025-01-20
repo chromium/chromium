@@ -74,7 +74,7 @@ In addition, since each feature might have preconditions that must be met within
 the time window configured for the experiment, the frontend needs to inform the
 backend whenever such events happen.
 
-To ensure that it is possible to use whether a feature has been used or not as
+To ensure that it is possible to know whether a feature has been used or not as
 input to the algorithm to decide whether to show IPH and for tracking purposes,
 the frontend needs to inform whenever the feature has been used.
 
@@ -159,7 +159,7 @@ you would have to add it to the following places:
 1.  `//components/feature_engagement/public/feature_constants.h`:
 
     ```c++
-    BASE_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
+    FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
     ```
 
 1.  `//components/feature_engagement/public/feature_list.cc`:
@@ -1007,7 +1007,7 @@ The configuration will look like this:
 In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
-BASE_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
 ```
 
 In `//components/feature_engagement/public/event_constants.h`

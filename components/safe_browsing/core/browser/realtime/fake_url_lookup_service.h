@@ -43,7 +43,8 @@ class FakeRealTimeUrlLookupService
   void SendSampledRequest(
       const GURL& url,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override;
+      SessionID session_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) override;
   bool CanCheckUrl(const GURL& url) override;
 
   GURL GetRealTimeLookupUrl() const override;
@@ -55,7 +56,8 @@ class FakeRealTimeUrlLookupService
       const GURL& url,
       safe_browsing::RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override;
+      SessionID session_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()

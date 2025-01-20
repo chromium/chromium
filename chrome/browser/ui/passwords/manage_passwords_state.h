@@ -99,17 +99,20 @@ class ManagePasswordsState {
   void OnKeychainError();
 
   // Move to PASSKEY_SAVED_CONFIRMATION_STATE. Stores whether GPM pin was
-  // created in the same flow and the passkey's RPID.
+  // created in the same flow and the passkey's RP ID.
   void OnPasskeySaved(bool gpm_pin_created, std::string passkey_rp_id);
 
   // Move to PASSKEY_DELETED_CONFIRMATION_STATE.
   void OnPasskeyDeleted();
 
-  // Move to PASSKEY_UPDATED_CONFIRMATION_STATE. Stores the passkey's RPID.
+  // Move to PASSKEY_UPDATED_CONFIRMATION_STATE. Stores the passkey's RP ID.
   void OnPasskeyUpdated(std::string passkey_rp_id);
 
-  // Move to PASSKEY_NOT_ACCEPTED_STATE. Stores the passkey's RPID.
+  // Move to PASSKEY_NOT_ACCEPTED_STATE. Stores the passkey's RP ID.
   void OnPasskeyNotAccepted(std::string passkey_rp_id);
+
+  // Move to PASSKEY_UPGRADE_STATE. Stores the passkey's RP ID.
+  void OnPasskeyUpgrade(std::string passkey_rp_id);
 
   // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.

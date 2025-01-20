@@ -256,7 +256,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void WarnIfValueIsInvalid(const String&) const;
   void WarnIfValueIsInvalidAndElementIsVisible(const String&) const;
 
-  virtual bool IsKeyboardFocusable(
+  virtual bool IsKeyboardFocusableSlow(
       Element::UpdateBehavior update_behavior =
           Element::UpdateBehavior::kStyleAndLayout) const;
   virtual bool MayTriggerVirtualKeyboard() const;

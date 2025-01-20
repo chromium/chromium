@@ -478,7 +478,7 @@ SkBitmap Canvas::GetBitmap() const {
   return bitmap_.value();
 }
 
-bool Canvas::IntersectsClipRect(const SkRect& rect) {
+bool Canvas::IntersectsClipRect(const SkRect& rect) const {
   SkRect clip;
   return canvas_->getLocalClipBounds(&clip) && clip.intersects(rect);
 }

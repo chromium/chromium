@@ -425,7 +425,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
     return;
   }
 
-  // Copy fields we need from `desk_template` since we're about to move it.
+  // Copy fields we need from `saved_desk` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
   Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());
@@ -450,7 +450,7 @@ void SavedDeskPresenter::MaybeSaveActiveDeskAsSavedDesk(
       base::BindOnce(&SavedDeskPresenter::SaveOrUpdateSavedDesk,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
-      template_type, root_window_to_show);
+      template_type, root_window_to_show, /*coral_app_id_allowlist=*/{});
 }
 
 void SavedDeskPresenter::SaveOrUpdateSavedDesk(

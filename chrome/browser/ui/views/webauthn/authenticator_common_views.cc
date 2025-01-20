@@ -4,18 +4,25 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/layout_provider.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace {

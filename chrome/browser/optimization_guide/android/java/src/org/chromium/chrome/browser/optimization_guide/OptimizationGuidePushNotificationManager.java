@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
@@ -68,13 +67,9 @@ public class OptimizationGuidePushNotificationManager {
     /** A sentinel Set that is set when the pref for a specific OptimizationType overflows. */
     private static final Set<String> OVERFLOW_SENTINEL_SET = Set.of("__overflow");
 
-    /** The default cache size in Java for push notification. */
-    public static final IntCachedFieldTrialParameter MAX_CACHE_SIZE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
-
     /**
      * Called when a new push notification is received.
+     *
      * @param payload the incoming payload.
      */
     public static void onPushNotification(HintNotificationPayload payload) {
@@ -229,7 +224,9 @@ public class OptimizationGuidePushNotificationManager {
         if (checkForOverflow(cache)) return;
 
         // Check if we would overflow the cache by writing the new element.
-        if (cache.size() >= MAX_CACHE_SIZE.getValue() - 1) {
+        if (cache.size()
+                >= ChromeFeatureList.sOptimizationGuidePushNotificationsMaxCacheSize.getValue()
+                        - 1) {
             ChromeSharedPreferences.getInstance()
                     .writeStringSet(cacheKey(payload.getOptimizationType()), OVERFLOW_SENTINEL_SET);
             return;

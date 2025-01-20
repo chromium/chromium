@@ -15,6 +15,7 @@ sync_protocol_sources = [
   "bookmark_specifics.proto",
   "client_commands.proto",
   "client_debug_info.proto",
+  "collaboration_group_metadata.proto",
   "collaboration_group_specifics.proto",
   "contact_info_specifics.proto",
   "cookie_specifics.proto",

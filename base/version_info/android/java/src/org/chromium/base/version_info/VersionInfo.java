@@ -4,10 +4,13 @@
 
 package org.chromium.base.version_info;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A utility class for querying information about the current Chromium build. Intentionally doesn't
  * depend on native so that the data can be accessed before libchrome.so is loaded.
  */
+@NullMarked
 public class VersionInfo {
     /**
      * @return Whether this build is a local build.

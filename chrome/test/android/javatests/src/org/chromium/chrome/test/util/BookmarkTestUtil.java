@@ -25,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
@@ -121,7 +122,11 @@ public class BookmarkTestUtil {
     /** Do not read partner bookmarks in setUp(), so that the lazy reading is covered. */
     public static void readPartnerBookmarks(ChromeTabbedActivityTestRule activityTestRule) {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> PartnerBookmarksShim.kickOffReading(activityTestRule.getActivity()));
+                () ->
+                        PartnerBookmarksShim.kickOffReading(
+                                activityTestRule.getActivity(),
+                                activityTestRule.getProfile(false),
+                                AppHooks.get().getPartnerBookmarkIterator()));
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 

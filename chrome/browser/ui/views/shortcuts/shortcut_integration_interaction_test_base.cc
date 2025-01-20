@@ -24,8 +24,8 @@ ShortcutIntegrationInteractionTestApi::ShortcutIntegrationInteractionTestApi()
   platform_util::internal::DisableShellOperationsForTesting();
 }
 
-ShortcutIntegrationInteractionTestApi
-    ::~ShortcutIntegrationInteractionTestApi() = default;
+ShortcutIntegrationInteractionTestApi ::
+    ~ShortcutIntegrationInteractionTestApi() = default;
 
 ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
@@ -59,9 +59,8 @@ ShortcutIntegrationInteractionTestApi::ShowAndAcceptCreateShortcutDialog() {
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId));
 }
 
-ui::test::InteractiveTestApi::MultiStep
-ShortcutIntegrationInteractionTestApi
-    ::ShowCreateShortcutDialogSetTitleAndAccept(const std::u16string& title) {
+ui::test::InteractiveTestApi::MultiStep ShortcutIntegrationInteractionTestApi ::
+    ShowCreateShortcutDialogSetTitleAndAccept(const std::u16string& title) {
   return Steps(
       ShowCreateShortcutDialog(),
       EnterText(

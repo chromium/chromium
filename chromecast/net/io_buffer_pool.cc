@@ -90,8 +90,7 @@ class IOBufferPool::Internal {
 
 class IOBufferPool::Internal::Buffer : public net::IOBuffer {
  public:
-  Buffer(char* data, size_t size)
-      : net::IOBuffer(base::make_span(data, size)) {}
+  Buffer(char* data, size_t size) : net::IOBuffer(base::span(data, size)) {}
 
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;

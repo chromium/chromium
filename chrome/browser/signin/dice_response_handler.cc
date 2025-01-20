@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -129,7 +130,7 @@ void RecordDiceFetchTokenResult(DiceTokenFetchResult result) {
 ////////////////////////////////////////////////////////////////////////////////
 
 DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     const std::string& authorization_code,
     SigninClient* signin_client,
@@ -165,7 +166,7 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   StartTokenFetch();
 }
 
-DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() {}
+DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() = default;
 
 void DiceResponseHandler::DiceTokenFetcher::OnTimeout() {
   RecordDiceFetchTokenResult(kFetchTimeout);
@@ -285,7 +286,7 @@ DiceResponseHandler::DiceResponseHandler(
   DCHECK(about_signin_internals_);
 }
 
-DiceResponseHandler::~DiceResponseHandler() {}
+DiceResponseHandler::~DiceResponseHandler() = default;
 
 void DiceResponseHandler::ProcessDiceHeader(
     const signin::DiceResponseParams& dice_params,
@@ -341,7 +342,7 @@ void DiceResponseHandler::SetRegistrationTokenHelperFactoryForTesting(
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 void DiceResponseHandler::ProcessDiceSigninHeader(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     const std::string& authorization_code,
     bool no_authorization_code,
@@ -382,16 +383,13 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::switches::kPreconnectAccountCapabilitiesPostSignin)) {
-    // The user is signing in, which means that account fetching will shortly be
-    // triggered.
-    //
-    // Notify identity manager. This will trigger pre-connecting the network
-    // socket to the AccountCapabilities endpoint, in parallel with the LST and
-    // access token requests (instead of waiting for these to complete).
-    identity_manager_->PrepareForAddingNewAccount();
-  }
+  // The user is signing in, which means that account fetching will shortly be
+  // triggered.
+  //
+  // Notify identity manager. This will trigger pre-connecting the network
+  // socket to the AccountCapabilities endpoint, in parallel with the LST and
+  // access token requests (instead of waiting for these to complete).
+  identity_manager_->PrepareForAddingNewAccount();
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::expected<raw_ref<RegistrationTokenHelper>, TokenBindingOutcome>
@@ -410,7 +408,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
 }
 
 void DiceResponseHandler::ProcessEnableSyncHeader(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   VLOG(1) << "Start processing Dice enable sync response";
@@ -516,7 +514,7 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
   const std::string& email = token_fetcher->email();
-  const std::string& gaia_id = token_fetcher->gaia_id();
+  const GaiaId& gaia_id = token_fetcher->gaia_id();
 
   // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
   // have to change this log.
@@ -553,7 +551,7 @@ void DiceResponseHandler::OnTokenExchangeFailure(
     DiceTokenFetcher* token_fetcher,
     const GoogleServiceAuthError& error) {
   const std::string& email = token_fetcher->email();
-  const std::string& gaia_id = token_fetcher->gaia_id();
+  const GaiaId& gaia_id = token_fetcher->gaia_id();
   CoreAccountId account_id =
       identity_manager_->PickAccountIdForAccount(gaia_id, email);
   about_signin_internals_->OnRefreshTokenReceived(

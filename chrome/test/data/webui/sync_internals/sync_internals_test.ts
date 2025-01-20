@@ -53,7 +53,7 @@ const HARD_CODED_ALL_NODES = [{
       'IS_DIR': true,
       'IS_UNAPPLIED_UPDATE': false,
       'IS_UNSYNCED': false,
-      'LOCAL_EXTERNAL_ID': '0',
+      'LOCAL_EXTERNAL_ID': 0,
       'METAHANDLE': 387,
       'MTIME': 'Wednesday, December 31, 1969 4:00:00 PM',
       'NON_UNIQUE_NAME': 'Autofill',
@@ -89,7 +89,7 @@ const HARD_CODED_ALL_NODES = [{
       'IS_DIR': false,
       'IS_UNAPPLIED_UPDATE': false,
       'IS_UNSYNCED': false,
-      'LOCAL_EXTERNAL_ID': '0',
+      'LOCAL_EXTERNAL_ID': 0,
       'METAHANDLE': 2989,
       'MTIME': 'Friday, March 7, 2014 5:12:19 PM',
       'NON_UNIQUE_NAME': 'autofill_entry|Email|rlsynctet2',
@@ -345,10 +345,8 @@ suite('SyncInternals', function() {
     assertTrue(!!leaf);
 
     // Verify that selecting it affects the details view.
-    assertTrue(getRequiredElement('node-details').hasAttribute('hidden'));
     tree.selectedItem = leaf;
     assertTrue(leaf.hasAttribute('selected'));
-    assertFalse(getRequiredElement('node-details').hasAttribute('hidden'));
   });
 
   test('NodeBrowserRefreshOnTabSelect', function() {
@@ -389,5 +387,39 @@ suite('SyncInternals', function() {
 
     assertGE(eventDumpText.indexOf('onProtocolEvent'), 0);
     assertGE(eventDumpText.indexOf('someData'), 0);
+  });
+
+  test('Invalidations', function() {
+    function assertRowContents(row: HTMLElement, type: string, count: number) {
+      const cells = row.querySelectorAll('td');
+      assertEquals(3, cells.length);
+      assertEquals(type, cells[0]!.textContent);
+      assertEquals(count, Number(cells[1]!.textContent));
+    }
+
+    const table = getRequiredElement('invalidation-counters-table');
+    const log = getRequiredElement<HTMLTextAreaElement>('invalidations-log');
+
+    assertEquals(0, table.querySelectorAll('tbody > tr').length);
+    assertEquals('', log.value);
+
+    // Simulate event from the backend.
+    webUIListenerCallback('onInvalidationReceived', ['foo', 'bar']);
+
+    let rows = table.querySelectorAll<HTMLElement>('tbody > tr');
+    assertEquals(2, rows.length);
+    assertRowContents(rows[0]!, 'bar', 1);
+    assertRowContents(rows[1]!, 'foo', 1);
+    assertTrue(log.value.includes('Received invalidation for foo, bar'));
+
+    // Simulate event from the backend.
+    webUIListenerCallback('onInvalidationReceived', ['bar', 'baz']);
+
+    rows = table.querySelectorAll<HTMLElement>('tbody > tr');
+    assertEquals(3, rows.length);
+    assertRowContents(rows[0]!, 'bar', 2);
+    assertRowContents(rows[1]!, 'baz', 1);
+    assertRowContents(rows[2]!, 'foo', 1);
+    assertTrue(log.value.includes('Received invalidation for bar, baz'));
   });
 });

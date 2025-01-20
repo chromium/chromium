@@ -76,15 +76,15 @@ XRSession* XRView::session() const {
   return frame_->session();
 }
 
-DOMFloat32Array* XRView::projectionMatrix() const {
+NotShared<DOMFloat32Array> XRView::projectionMatrix() const {
   if (!projection_matrix_ || !projection_matrix_->Data()) {
     // A page may take the projection matrix value and detach it so
     // projection_matrix_ is a detached array buffer.  This breaks the
     // inspector, so return null instead.
-    return nullptr;
+    return NotShared<DOMFloat32Array>();
   }
 
-  return projection_matrix_.Get();
+  return projection_matrix_;
 }
 
 XRCPUDepthInformation* XRView::GetCpuDepthInformation(

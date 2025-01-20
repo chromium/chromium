@@ -22,6 +22,8 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -284,8 +286,8 @@ void PreviewServerProxy::GetSharedDataPreview(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            base::unexpected(DataSharingService::PeopleGroupActionFailure::
-                                 kPersistentFailure)));
+            base::unexpected(
+                DataSharingService::DataPreviewActionFailure::kOtherFailure)));
     return;
   }
   std::string data_type_str;
@@ -351,8 +353,14 @@ void PreviewServerProxy::HandleServerResponse(
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
     DLOG(ERROR) << "Got bad response (" << response->http_status_code
                 << ") for shared data preview!";
-    std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kTransientFailure));
+    DataSharingService::DataPreviewActionFailure failure =
+        DataSharingService::DataPreviewActionFailure::kOtherFailure;
+    if (response->http_status_code == net::HTTP_CONFLICT) {
+      failure = DataSharingService::DataPreviewActionFailure::kGroupFull;
+    } else if (response->http_status_code == net::HTTP_FORBIDDEN) {
+      failure = DataSharingService::DataPreviewActionFailure::kPermissionDenied;
+    }
+    std::move(callback).Run(base::unexpected(failure));
     return;
   }
 
@@ -369,7 +377,7 @@ void PreviewServerProxy::OnResponseJsonParsed(
   SharedDataPreview preview;
   if (result.has_value() && result->is_dict()) {
     if (auto* response_json = result->GetDict().FindList(kSharedEntitiesKey)) {
-      SharedTabGroupPreview group_preview;
+      std::optional<SharedTabGroupPreview> group_preview;
       std::vector<TabData> tab_data;
       for (const auto& shared_entity_json : *response_json) {
         if (auto specifics = Deserialize(shared_entity_json)) {
@@ -377,7 +385,8 @@ void PreviewServerProxy::OnResponseJsonParsed(
             const sync_pb::SharedTabGroupDataSpecifics& tab_group_data =
                 specifics->shared_tab_group_data();
             if (tab_group_data.has_tab_group()) {
-              group_preview.title = tab_group_data.tab_group().title();
+              group_preview = SharedTabGroupPreview();
+              group_preview->title = tab_group_data.tab_group().title();
             } else if (tab_group_data.has_tab()) {
               tab_data.emplace_back(
                   tab_group_data.tab().url(),
@@ -387,11 +396,11 @@ void PreviewServerProxy::OnResponseJsonParsed(
           }
         }
       }
-      if (!group_preview.title.empty() && !tab_data.empty()) {
+      if (group_preview && !tab_data.empty()) {
         // Sort all the tabs.
         std::sort(tab_data.begin(), tab_data.end());
         for (const auto& data : tab_data) {
-          group_preview.tabs.emplace_back(GURL(data.url));
+          group_preview->tabs.emplace_back(GURL(data.url));
         }
         preview.shared_tab_group_preview = std::move(group_preview);
       }
@@ -399,7 +408,7 @@ void PreviewServerProxy::OnResponseJsonParsed(
   }
   if (!preview.shared_tab_group_preview) {
     std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kPersistentFailure));
+        DataSharingService::DataPreviewActionFailure::kOtherFailure));
   } else {
     std::move(callback).Run(std::move(preview));
   }

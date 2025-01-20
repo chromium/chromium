@@ -54,8 +54,9 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   }
 
   void Wait() {
-    if (!found_value_)
+    if (!found_value_) {
       run_loop_.Run();
+    }
   }
   void WaitForExit() {
     if (!did_exit_) {
@@ -74,14 +75,14 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
 
 class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
  public:
-  FullscreenInteractiveBrowserTest() {}
+  FullscreenInteractiveBrowserTest() = default;
 
   FullscreenInteractiveBrowserTest(const FullscreenInteractiveBrowserTest&) =
       delete;
   FullscreenInteractiveBrowserTest& operator=(
       const FullscreenInteractiveBrowserTest&) = delete;
 
-  ~FullscreenInteractiveBrowserTest() override {}
+  ~FullscreenInteractiveBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");

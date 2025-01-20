@@ -13,6 +13,7 @@ include_rules = [
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",
+  "+components/language_detection/content/common",
   "+components/power_monitor",
   "+components/services/font",
   "+components/services/font_data",
@@ -152,6 +153,9 @@ specific_include_rules = {
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
   ],
+  "cookie_readiness_list_parser_fuzztest\.cc": [
+    "+third_party/fuzztest"
+  ],
   "gpu_data_manager_visual_proxy_ozone_linux\.(cc|h)": [
     "+ui/ozone/public/ozone_platform.h",
     "+ui/ozone/public/platform_gl_egl_utility.h",
@@ -202,6 +206,9 @@ specific_include_rules = {
     "+components/stylus_handwriting/win/features.h"
   ],
   "web_contents_impl.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_callback_sink_win.cc": [
     "+components/stylus_handwriting/win/features.h"
   ],
   "stylus_handwriting_controller_win.cc": [

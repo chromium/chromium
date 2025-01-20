@@ -58,8 +58,9 @@ void ScreenshotCapturedBubbleController::Capture(Browser* browser) {
       callback = base::BindOnce(
           [](base::WeakPtr<content::WebContents> web_contents,
              const image_editor::ScreenshotCaptureResult& image) {
-            if (image.image.IsEmpty() || !web_contents)
+            if (image.image.IsEmpty() || !web_contents) {
               return;
+            }
             sharing_hub::ScreenshotCapturedBubbleController* controller =
                 sharing_hub::ScreenshotCapturedBubbleController::Get(
                     web_contents.get());

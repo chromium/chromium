@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
+
 #include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -18,7 +19,6 @@
 void ConfigureInkDropForRefresh2023(views::View* const view,
                                     const ChromeColorIds hover_color_id,
                                     const ChromeColorIds ripple_color_id) {
-
   views::InkDrop::Get(view)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(view)->SetLayerRegion(views::LayerRegion::kAbove);
 

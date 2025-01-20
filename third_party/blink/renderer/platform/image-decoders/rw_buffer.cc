@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
+
+#include <algorithm>
+#include <atomic>
+#include <new>
 
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-
-#include <algorithm>
-#include <atomic>
-#include <new>
 
 namespace blink {
 
@@ -30,18 +25,21 @@ static const size_t kMinAllocSize = 4096;
 
 struct RWBuffer::BufferBlock {
   raw_ptr<RWBuffer::BufferBlock> next_;  // updated by the writer
-  size_t used_;                  // updated by the writer
+  size_t used_;                          // updated by the writer
   const size_t capacity_;
 
   explicit BufferBlock(size_t capacity)
       : next_(nullptr), used_(0), capacity_(capacity) {}
 
-  const uint8_t* startData() const {
-    return reinterpret_cast<const uint8_t*>(this + 1);
+  base::span<uint8_t> Buffer() {
+    // SAFETY: The Alloc() function (in RWBuffer::BufferBlock or
+    // RWBuffer::BufferHead) allocates an extra `capacity_` bytes at the end of
+    // the object.
+    return UNSAFE_BUFFERS({reinterpret_cast<uint8_t*>(this + 1), capacity_});
   }
-
-  size_t avail() const { return capacity_ - used_; }
-  uint8_t* avail_data() { return const_cast<uint8_t*>(startData()) + used_; }
+  base::span<const uint8_t> Buffer() const {
+    return const_cast<RWBuffer::BufferBlock*>(this)->Buffer();
+  }
 
   static RWBuffer::BufferBlock* Alloc(size_t length) {
     size_t capacity = LengthToCapacity(length);
@@ -54,10 +52,11 @@ struct RWBuffer::BufferBlock {
   // Return number of bytes actually appended. Important that we always
   // completely fill this block before spilling into the next, since the reader
   // uses capacity_ to know how many bytes it can read.
-  size_t Append(const void* src, size_t length) {
+  size_t Append(base::span<const uint8_t> src) {
     Validate();
-    size_t amount = std::min(avail(), length);
-    memcpy(avail_data(), src, amount);
+    auto available_buffer = Buffer().subspan(used_);
+    const size_t amount = std::min(available_buffer.size(), src.size());
+    available_buffer.copy_prefix_from(src.first(amount));
     used_ += amount;
     Validate();
     return amount;
@@ -112,8 +111,7 @@ struct RWBuffer::BufferHead {
       // `buffer_` has a `raw_ptr` that needs to be destroyed to
       // properly lower the refcount.
       block_.~BufferBlock();
-      WTF::Partitions::BufferFree(
-          reinterpret_cast<void*>(const_cast<RWBuffer::BufferHead*>(this)));
+      WTF::Partitions::BufferFree(const_cast<RWBuffer::BufferHead*>(this));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
         block->~BufferBlock();
@@ -144,27 +142,23 @@ struct RWBuffer::BufferHead {
   }
 };
 
-size_t RWBuffer::ROIter::size() const {
-  if (!block_) {
-    return 0;
-  }
-
-  return std::min(block_->capacity_, remaining_);
-}
-
 RWBuffer::ROIter::ROIter(RWBuffer* rw_buffer, size_t available)
     : rw_buffer_(rw_buffer), remaining_(available) {
   DCHECK(rw_buffer_);
   block_ = &rw_buffer_->head_->block_;
 }
 
-const uint8_t* RWBuffer::ROIter::data() const {
-  return remaining_ ? block_->startData() : nullptr;
+base::span<const uint8_t> RWBuffer::ROIter::operator*() const {
+  if (!remaining_) {
+    return {};
+  }
+  DCHECK(block_);
+  return block_->Buffer().first(std::min(block_->capacity_, remaining_));
 }
 
 bool RWBuffer::ROIter::Next() {
   if (remaining_) {
-    size_t current_size = size();
+    const size_t current_size = std::min(block_->capacity_, remaining_);
     DCHECK_LE(current_size, remaining_);
     remaining_ -= current_size;
     if (remaining_ == 0) {
@@ -225,20 +219,18 @@ void ROBuffer::Iter::Reset(const ROBuffer* buffer) {
   }
 }
 
-const uint8_t* ROBuffer::Iter::data() const {
-  return remaining_ ? block_->startData() : nullptr;
-}
-
-size_t ROBuffer::Iter::size() const {
-  if (!block_) {
-    return 0;
+base::span<const uint8_t> ROBuffer::Iter::operator*() const {
+  if (!remaining_) {
+    return {};
   }
-  return std::min(block_->capacity_, remaining_);
+  DCHECK(block_);
+  return block_->Buffer().first(std::min(block_->capacity_, remaining_));
 }
 
 bool ROBuffer::Iter::Next() {
   if (remaining_) {
-    remaining_ -= size();
+    const size_t current_size = std::min(block_->capacity_, remaining_);
+    remaining_ -= current_size;
     if (buffer_->tail_ == block_) {
       // There are more blocks, but buffer_ does not know about them.
       DCHECK_EQ(0u, remaining_);
@@ -266,8 +258,8 @@ RWBuffer::RWBuffer(base::OnceCallback<size_t(base::span<uint8_t>)> writer,
     tail_ = &head_->block_;
   }
 
-  base::span<uint8_t> buffer(tail_->avail_data(), initial_capacity);
-  size_t written = std::move(writer).Run(buffer);
+  size_t written =
+      std::move(writer).Run(tail_->Buffer().first(initial_capacity));
   total_used_ += written;
   tail_->used_ += written;
 
@@ -287,30 +279,29 @@ RWBuffer::~RWBuffer() {
 // against its total available) to know how many bytes to read from a given
 // block.
 //
-void RWBuffer::Append(const void* src, size_t length, size_t reserve) {
+void RWBuffer::Append(base::span<const uint8_t> src, size_t reserve) {
   Validate();
-  if (0 == length) {
+  if (src.empty()) {
     return;
   }
 
-  total_used_ += length;
+  total_used_ += src.size();
 
   if (!head_) {
-    head_ = RWBuffer::BufferHead::Alloc(length + reserve);
+    head_ = RWBuffer::BufferHead::Alloc(src.size() + reserve);
     tail_ = &head_->block_;
   }
 
-  size_t written = tail_->Append(src, length);
-  DCHECK(written <= length);
-  src = static_cast<const char*>(src) + written;
-  length -= written;
+  size_t written = tail_->Append(src);
+  DCHECK_LE(written, src.size());
+  src = src.subspan(written);
 
-  if (length) {
-    auto* block = RWBuffer::BufferBlock::Alloc(length + reserve);
+  if (!src.empty()) {
+    auto* block = RWBuffer::BufferBlock::Alloc(src.size() + reserve);
     tail_->next_ = block;
     tail_ = block;
-    written = tail_->Append(src, length);
-    DCHECK(written == length);
+    written = tail_->Append(src);
+    DCHECK_EQ(written, src.size());
   }
   Validate();
 }

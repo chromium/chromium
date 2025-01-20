@@ -4,7 +4,9 @@
 
 #include "chrome/browser/profiles/profile_destroyer.h"
 
+#include <array>
 #include <vector>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -355,7 +357,7 @@ TEST_P(ProfileDestroyerTest, MultipleOTRPRofile) {
   CreateOTRProfile();
 
   // Create a renderer process associated with every OTR profiles.
-  content::RenderProcessHost* render_process_host[3] = {
+  std::array<content::RenderProcessHost*, 3> render_process_host = {
       CreatedRendererProcessHost(OtrProfile(0)),
       CreatedRendererProcessHost(OtrProfile(1)),
       CreatedRendererProcessHost(OtrProfile(2)),

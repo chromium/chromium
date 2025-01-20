@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
+#include <array>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -189,15 +185,15 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   }
 
   int level = chooser_controller_->GetSignalStrengthLevel(row);
-  if (level == -1)
+  if (level == -1) {
     return ui::ImageModel();
+  }
 
-  constexpr int kSignalStrengthLevelImageIds[5] = {
+  static constexpr std::array kSignalStrengthLevelImageIds{
       IDR_SIGNAL_0_BAR, IDR_SIGNAL_1_BAR, IDR_SIGNAL_2_BAR, IDR_SIGNAL_3_BAR,
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
-  DCHECK_LT(static_cast<size_t>(level),
-            std::size(kSignalStrengthLevelImageIds));
+  DCHECK_LT(static_cast<size_t>(level), kSignalStrengthLevelImageIds.size());
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));
@@ -238,8 +234,9 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
     ShowReScanButton(enabled);
   }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
@@ -262,13 +259,15 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     UpdateTableView();
   }
 
-  if (refreshing)
+  if (refreshing) {
     ShowThrobber();
-  else
+  } else {
     ShowReScanButton(/*enable=*/true);
+  }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 std::u16string DeviceChooserContentView::GetWindowTitle() const {
@@ -413,8 +412,9 @@ void DeviceChooserContentView::SelectAllCheckboxChanged() {
 }
 
 void DeviceChooserContentView::ShowThrobber() {
-  if (re_scan_button_)
+  if (re_scan_button_) {
     re_scan_button_->SetVisible(false);
+  }
 
   throbber_->SetVisible(true);
   throbber_label_->SetVisible(true);

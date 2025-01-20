@@ -35,7 +35,7 @@
 
 class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
  public:
-  BookmarkBubbleSignInDelegateTest() {}
+  BookmarkBubbleSignInDelegateTest() = default;
 
   BookmarkBubbleSignInDelegateTest(const BookmarkBubbleSignInDelegateTest&) =
       delete;

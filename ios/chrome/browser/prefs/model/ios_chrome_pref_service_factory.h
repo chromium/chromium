@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 
 class PrefRegistry;
@@ -30,6 +31,9 @@ class PrefServiceSyncable;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+extern const base::FilePath::CharType kPreferencesFilename[];
+extern const base::FilePath::CharType kAccountPreferencesFilename[];
 
 // Factory methods that create and initialize a new instance of a PrefService
 // for Chrome on iOS with the applicable PrefStores. The `pref_filename` points

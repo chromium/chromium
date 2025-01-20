@@ -610,6 +610,12 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
 
   visual_sample_entry.avc_decoder_configuration = std::move(avc);
 
+  // colr box
+  mp4::writable_boxes::ColorInformation color_information(
+      VideoColorSpace::JPEG());
+
+  visual_sample_entry.color_information = std::move(color_information);
+
   sample_description.video_sample_entry = std::move(visual_sample_entry);
 
   Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
@@ -636,6 +642,17 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   EXPECT_EQ(static_cast<uint16_t>(kHeight), video_sample_entry.height);
   EXPECT_EQ(VideoCodecProfile::H264PROFILE_MAIN,
             video_sample_entry.video_info.profile);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().primaries,
+      reader_sample_description.video_entries[0].video_color_space.primaries);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().transfer,
+      reader_sample_description.video_entries[0].video_color_space.transfer);
+  EXPECT_EQ(
+      VideoColorSpace::JPEG().matrix,
+      reader_sample_description.video_entries[0].video_color_space.matrix);
+  EXPECT_EQ(VideoColorSpace::JPEG().range,
+            reader_sample_description.video_entries[0].video_color_space.range);
 }
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {

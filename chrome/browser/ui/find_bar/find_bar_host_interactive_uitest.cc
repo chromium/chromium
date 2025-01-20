@@ -30,8 +30,7 @@ const char kEndState[] = "/find_in_page/end_state.html";
 
 class FindInPageInteractiveTest : public InProcessBrowserTest {
  public:
-  FindInPageInteractiveTest() {
-  }
+  FindInPageInteractiveTest() = default;
 
   // Platform independent FindInPage that takes |const wchar_t*|
   // as an input.
@@ -80,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
 
   // Search for a text that exists within a link on the page.
   int ordinal = 0;
-  EXPECT_EQ(1, FindInPageASCII(web_contents, "nk",
-                               true, false, &ordinal));
+  EXPECT_EQ(1, FindInPageASCII(web_contents, "nk", true, false, &ordinal));
   EXPECT_EQ(1, ordinal);
 
   // End the find session, which should set focus to the link.
@@ -91,8 +89,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
   EXPECT_EQ("link1", FocusedOnPage(web_contents));
 
   // Search for a text that exists within a link on the page.
-  EXPECT_EQ(1, FindInPageASCII(web_contents, "Google",
-                               true, false, &ordinal));
+  EXPECT_EQ(1, FindInPageASCII(web_contents, "Google", true, false, &ordinal));
   EXPECT_EQ(1, ordinal);
 
   // Move the selection to link 1, after searching.

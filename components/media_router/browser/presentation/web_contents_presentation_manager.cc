@@ -15,8 +15,9 @@ WebContentsPresentationManager* g_test_instance = nullptr;
 // static
 base::WeakPtr<WebContentsPresentationManager>
 WebContentsPresentationManager::Get(content::WebContents* web_contents) {
-  if (g_test_instance)
+  if (g_test_instance) {
     return g_test_instance->GetWeakPtr();
+  }
 
   return ControllerPresentationServiceDelegateImpl::GetOrCreateForWebContents(
              web_contents)

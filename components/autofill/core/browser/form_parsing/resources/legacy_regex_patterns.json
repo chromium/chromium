@@ -1,9 +1,9 @@
 {
   "__comment__": [
-    "This file is identified by PatternSource::kLegacy in the code.",
+    "This file is identified by PatternFile::kLegacy in the code.",
     "See go/autofill-internal-parsing-patterns for instructions on how to update patterns."
   ],
-  "PATTERN_SOURCE_DUMMY": {
+  "PATTERN_FILE_DUMMY": {
     "en": [
       {
         "positive_pattern": "legacy",
@@ -3882,6 +3882,22 @@
     "es": [
       {
         "positive_pattern": "(primer.*apellido)|(apellido1)|(apellido.*paterno)|surname_?1|first(\\s|_)?surname",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL",
+          "NAME"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT"
+        ]
+      }
+    ]
+  },
+  "LAST_NAME_PREFIX": {
+    "nl": [
+      {
+        "positive_pattern": "tussenv",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": [

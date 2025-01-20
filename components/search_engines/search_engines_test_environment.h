@@ -14,6 +14,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+
 namespace search_engines {
 
 // Test helper that makes it easier to create a `TemplateURLService` and a
@@ -68,6 +72,8 @@ class SearchEnginesTestEnvironment {
       owned_pref_service_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
   std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
 };

@@ -37,7 +37,7 @@ void CreateAndAddUkmHTMLSource(BrowserContext* browser_context) {
   WebUIDataSource* source =
       WebUIDataSource::CreateAndAdd(browser_context, kChromeUIUkmHost);
 
-  source->AddResourcePaths(base::make_span(kUkmResources, kUkmResourcesSize));
+  source->AddResourcePaths(kUkmResources);
   source->SetDefaultResource(IDR_UKM_UKM_INTERNALS_HTML);
 }
 

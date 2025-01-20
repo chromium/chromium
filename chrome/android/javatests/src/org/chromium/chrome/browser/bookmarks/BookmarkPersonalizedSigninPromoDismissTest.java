@@ -17,13 +17,14 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.activeInRecyclerView;
 
+import android.os.Build;
+
 import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -64,7 +66,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Before
     public void setUp() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTesting(null);
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(null);
         SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -139,11 +141,8 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40262804")
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
-        Assert.assertEquals(
-                0,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         assertEquals(
                 0,
                 ChromeSharedPreferences.getInstance()
@@ -151,8 +150,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                                 SyncPromoController.getPromoShowCountPreferenceName(
                                         SigninAccessPoint.BOOKMARK_MANAGER)));
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Shown.Count.Bookmarks", 1);
+                HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Bookmarks");
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(matches(isDisplayed()));
@@ -167,10 +165,6 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
                                         SigninAccessPoint.BOOKMARK_MANAGER));
         assertTrue(
                 "Expected at least one, but found " + bookmarkShownCount, bookmarkShownCount >= 1);
-        int totalShownCount =
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        assertTrue("Expected at least one, but found " + totalShownCount, totalShownCount >= 1);
         histogramWatcher.assertExpected();
     }
 

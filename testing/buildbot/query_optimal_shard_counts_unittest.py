@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+# //testing/buildbot imports.
 import query_optimal_shard_counts
 
 # Protected access is allowed for unittests.

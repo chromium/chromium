@@ -565,7 +565,6 @@ aom_dsp_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/blk_sse_sum_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sum_squares_sse2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_sse2.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/jnt_sad_sse2.c",
 ]
 
 aom_dsp_encoder_intrin_sse4_1 = [
@@ -581,7 +580,6 @@ aom_dsp_encoder_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_impl_ssse3.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/variance_ssse3.c",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/jnt_variance_ssse3.c",
 ]
 
 aom_dsp_encoder_intrin_sve = [

@@ -5,10 +5,6 @@
 #ifndef IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_
 #define IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_
 
-// TODO(crbug.com/353683675): remove when profile init stage and app
-// init stage are fully separate.
-#include "ios/chrome/app/application_delegate/app_init_stage.h"
-
 // Profile initialisation stages. The app will go sequentially in-order through
 // each stage each time a new profile is added.
 enum class ProfileInitStage {
@@ -22,6 +18,10 @@ enum class ProfileInitStage {
   // TODO(crbug.com/40945317): remove when migrating legacy session storage
   // is no longer supported (i.e. all users have migrated).
   kMigrateStorage,
+
+  // Delete all data for previously discarded sessions. If no sessions was
+  // recently discarded, this will transition immediately to the next stage.
+  kPurgeDiscardedSessionsData,
 
   // Profile preferences have been loaded and the ProfileIOS object and all
   // KeyedServices can be used. The app will automatically transition to the
@@ -59,10 +59,5 @@ enum class ProfileInitStage {
   // Final stage, no transition until the profile is shut down.
   kFinal,
 };
-
-// Returns the equivalent ProfileInitStage from AppInitStage.
-// TODO(crbug.com/353683675): remove when profile init stage and app
-// init stage are fully separate.
-ProfileInitStage ProfileInitStageFromAppInitStage(AppInitStage app_init_stage);
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_

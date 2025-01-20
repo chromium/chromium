@@ -5,10 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_GOOGLE_MODEL_GOOGLE_LOGO_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_GOOGLE_MODEL_GOOGLE_LOGO_SERVICE_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class GoogleLogoService;
 class KeyedService;
@@ -16,13 +14,10 @@ class ProfileIOS;
 
 // Singleton that owns all GoogleLogoServices and associates them with
 // profiles.
-class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
+class GoogleLogoServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static GoogleLogoService* GetForProfile(ProfileIOS* profile);
   static GoogleLogoServiceFactory* GetInstance();
-
-  GoogleLogoServiceFactory(const GoogleLogoServiceFactory&) = delete;
-  GoogleLogoServiceFactory& operator=(const GoogleLogoServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<GoogleLogoServiceFactory>;
@@ -32,8 +27,6 @@ class GoogleLogoServiceFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

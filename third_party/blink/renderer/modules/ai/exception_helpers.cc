@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -31,12 +32,16 @@ const char kExceptionMessageCancelled[] = "The request was cancelled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
+const char kExceptionRequestTooLarge[] = "The prompt request is too large.";
 
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
     "or neither of them.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
+const char kExceptionMessageInitialPromptTooLarge[] =
+    "The initial prompts / system prompts are too large to fit in the "
+    "context.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
@@ -131,6 +136,10 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       return DOMException::Create(
           kExceptionMessageSessionDestroyed,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
+    case ModelStreamingResponseStatus::kErrorPromptRequestTooLarge:
+      return DOMException::Create(
+          kExceptionRequestTooLarge,
+          DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED();
@@ -149,8 +158,6 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
       return "The service is unable to create new session.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoFeatureNotEnabled:
       return "The feature flag gating model execution was disabled.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoModelNotAvailable:
-      return "There was no model available.";
     case mojom::blink::ModelAvailabilityCheckResult::
         kNoConfigNotAvailableForFeature:
       return "The model was available but there was not an execution config "
@@ -177,6 +184,11 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
       return "Model validation is still pending.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
       return "Model validation failed.";
+    case mojom::blink::ModelAvailabilityCheckResult::kModelNotEligible:
+      return "The device is not eligible for running on-device model.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoInsufficientDiskSpace:
+      return "The device does not have enough space for downloading the "
+             "on-device model";
     case mojom::blink::ModelAvailabilityCheckResult::kReadily:
     case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
     case mojom::blink::ModelAvailabilityCheckResult::

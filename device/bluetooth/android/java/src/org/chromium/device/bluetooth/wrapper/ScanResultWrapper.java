@@ -4,52 +4,36 @@
 
 package org.chromium.device.bluetooth.wrapper;
 
-import android.bluetooth.le.ScanResult;
+
 import android.os.ParcelUuid;
 import android.util.SparseArray;
-import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
 /** Wraps android.bluetooth.le.ScanResult. */
-public class ScanResultWrapper {
-    private final ScanResult mScanResult;
+@NullMarked
+public interface ScanResultWrapper {
+    BluetoothDeviceWrapper getDevice();
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public ScanResultWrapper(ScanResult scanResult) {
-        mScanResult = scanResult;
-    }
+    int getRssi();
 
-    public BluetoothDeviceWrapper getDevice() {
-        return new BluetoothDeviceWrapper(mScanResult.getDevice());
-    }
+    @Nullable
+    List<ParcelUuid> getScanRecord_getServiceUuids();
 
-    public int getRssi() {
-        return mScanResult.getRssi();
-    }
+    @Nullable
+    Map<ParcelUuid, byte[]> getScanRecord_getServiceData();
 
-    public List<ParcelUuid> getScanRecord_getServiceUuids() {
-        return mScanResult.getScanRecord().getServiceUuids();
-    }
+    @Nullable
+    SparseArray<byte[]> getScanRecord_getManufacturerSpecificData();
 
-    public Map<ParcelUuid, byte[]> getScanRecord_getServiceData() {
-        return mScanResult.getScanRecord().getServiceData();
-    }
+    int getScanRecord_getTxPowerLevel();
 
-    public SparseArray<byte[]> getScanRecord_getManufacturerSpecificData() {
-        return mScanResult.getScanRecord().getManufacturerSpecificData();
-    }
+    @Nullable
+    String getScanRecord_getDeviceName();
 
-    public int getScanRecord_getTxPowerLevel() {
-        return mScanResult.getScanRecord().getTxPowerLevel();
-    }
-
-    public String getScanRecord_getDeviceName() {
-        return mScanResult.getScanRecord().getDeviceName();
-    }
-
-    public int getScanRecord_getAdvertiseFlags() {
-        return mScanResult.getScanRecord().getAdvertiseFlags();
-    }
+    int getScanRecord_getAdvertiseFlags();
 }

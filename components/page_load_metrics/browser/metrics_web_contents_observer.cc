@@ -74,11 +74,6 @@ UserInitiatedInfo CreateUserInitiatedInfo(
       !navigation_handle->NavigationInputStart().is_null());
 }
 
-bool ShouldTrackSchemeForNonWebUI(std::string_view scheme) {
-  return scheme == url::kHttpsScheme || scheme == url::kHttpScheme ||
-         scheme == url::kDataScheme || scheme == url::kFileScheme;
-}
-
 }  // namespace
 
 // static
@@ -976,6 +971,7 @@ void MetricsWebContentsObserver::NavigationStopped() {
 }
 
 void MetricsWebContentsObserver::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   // Ignore browser navigation or reload which comes with type Undefined.
   if (event.GetType() == blink::WebInputEvent::Type::kUndefined) {
@@ -1327,6 +1323,13 @@ bool MetricsWebContentsObserver::ShouldTrackScheme(
   }
 
   return ShouldTrackSchemeForNonWebUI(scheme);
+}
+
+bool MetricsWebContentsObserver::ShouldTrackSchemeForNonWebUI(
+    std::string_view scheme) const {
+  return scheme == url::kHttpsScheme || scheme == url::kHttpScheme ||
+         scheme == url::kDataScheme || scheme == url::kFileScheme ||
+         embedder_interface_->ShouldObserveScheme(scheme);
 }
 
 void MetricsWebContentsObserver::OnBrowserFeatureUsage(

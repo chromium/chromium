@@ -36,9 +36,7 @@
 #include "ui/base/base_window.h"
 #endif
 
-namespace autofill {
-
-namespace risk_util {
+namespace autofill::risk_util {
 
 namespace {
 
@@ -56,8 +54,9 @@ void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
 ui::BaseWindow* GetBaseWindowForWebContents(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser)
+  if (browser) {
     return browser->window();
+  }
 
   gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
   extensions::AppWindow* app_window =
@@ -110,6 +109,4 @@ void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
                        base::BindOnce(PassRiskData, std::move(callback)));
 }
 
-}  // namespace risk_util
-
-}  // namespace autofill
+}  // namespace autofill::risk_util

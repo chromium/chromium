@@ -190,7 +190,8 @@ void CustomEventRecorder::OnUserActionSampleCallback(
   constexpr uint64_t kGlobalInstantTrackId = 0;
   TRACE_EVENT_INSTANT(
       kUserActionSamplesCategory, "UserAction",
-      perfetto::Track::Global(kGlobalInstantTrackId),
+      perfetto::NamedTrack("UserAction", 0,
+                           perfetto::Track::Global(kGlobalInstantTrackId)),
       [&](perfetto::EventContext ctx) {
         perfetto::protos::pbzero::ChromeUserEvent* new_sample =
             ctx.event()->set_chrome_user_event();

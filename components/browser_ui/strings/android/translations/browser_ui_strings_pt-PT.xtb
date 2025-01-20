@@ -24,7 +24,9 @@
 <translation id="1371239764779356792">Permita que um site guarde dados no seu dispositivo</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384959399684842514">Transferência interrompida</translation>
+<translation id="1396327438254055134">Permita que o site use o otimizador do V8.</translation>
 <translation id="1415402041810619267">URL truncado</translation>
+<translation id="1415855080660575082">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção nas definições do Chrome.</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Ocultar cartão Descidas de preços nos separadores</translation>
@@ -44,6 +46,7 @@
 <translation id="1779089405699405702">Descodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
 <translation id="1799920918471566157">Sugestões do Chrome</translation>
+<translation id="1816835383954230954">Quando está ativado, o Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto. Quando está desativado, reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">O acesso à localização está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Desligar</translation>
@@ -89,6 +92,7 @@
 <translation id="2438120137003069591">Permitiu temporariamente que este site usasse cookies de terceiros, o que significa uma proteção da navegação inferior, mas é mais provável que as funcionalidades do site funcionem conforme esperado. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">As funcionalidades em alguns sites podem não funcionar no Modo de navegação anónima</translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
+<translation id="2445311670906052406">Agora, o Chrome partilha os seus separadores recentes com o seu dispositivo. Irá vê-los na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="2469312991797799607">Esta ação vai eliminar todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites associados a este</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -114,6 +118,7 @@
 <translation id="2750481671343847896">Os sites podem mostrar pedidos de início de sessão de serviços de identidade.</translation>
 <translation id="2787357173144933081">Iniciar rapidamente caixa geral</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
+<translation id="2814830417943086299">Agora, o Chrome mostra os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="2822354292072154809">Tem a certeza de que quer repor todas as autorizações do site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Peça a vista de dispositivo móvel</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -159,6 +164,7 @@
 <translation id="3448554387819310837">Quando esta opção está ativada, os sites podem pedir para usar a câmara. Quando esta opção está desativada, os sites não podem usar a câmara.</translation>
 <translation id="3521663503435878242">Sites no domínio <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Não permitir que os sites monitorizem as suas mãos</translation>
+<translation id="3532312529397438268">Os sites não podem usar o otimizador do V8</translation>
 <translation id="3536227077203206203">Permitida desta vez</translation>
 <translation id="3538390592868664640">Impeça que os sites criem um mapa 3D do ambiente à sua volta ou monitorizem a posição da câmara</translation>
 <translation id="3544058026430919413">Uma empresa pode definir um grupo de sites que podem usar cookies para partilhar a sua atividade no grupo. Esta opção está desativada na Navegação anónima.</translation>
@@ -240,6 +246,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Ative a Navegação Segura</translation>
 <translation id="4811450222531576619">Saiba mais sobre a respetiva origem e tópico</translation>
+<translation id="481168145262973879">Os sites podem usar o otimizador do V8</translation>
 <translation id="4816495437032298535">Zoom guardado para sites</translation>
 <translation id="4836046166855586901">Perguntar quando um site pretender saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
@@ -317,6 +324,7 @@
 <translation id="5844448279347999754">Quando esta opção está ativada, os sites podem pedir para ver o texto e as imagens guardados na área de transferência. Quando esta opção está desativada, os sites não podem ver o texto nem as imagens guardados na área de transferência.</translation>
 <translation id="5853982612236235577">Quando esta opção está ativada, os sites podem pedir para enviar notificações. Quando esta opção está desativada, os sites não podem enviar notificações.</translation>
 <translation id="5860033963881614850">Desativado</translation>
+<translation id="5860491529813859533">Ativar</translation>
 <translation id="5876056640971328065">Colocar vídeo em pausa</translation>
 <translation id="5877248419911025165">Reduzir todos os pedidos</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
@@ -337,10 +345,8 @@
 <translation id="6071501408666570960">A sua sessão neste site pode ser terminada</translation>
 <translation id="6085954183010297841">Eliminar a autorização de edição de ficheiros? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando a opção está ativada, os sites podem pedir para saber quando está a usar ativamente o dispositivo. Quando esta opção está desativada, os sites não sabem quando está a usar ativamente o dispositivo.</translation>
-<translation id="6140839633433422817">Quer mesmo repor as autorizações e eliminar os cookies e os dados de sites?</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6171020522141473435">Quando esta opção está ativada, os sites podem pedir para usar dispositivos Bluetooth. Quando esta opção está desativada, os sites não podem usar dispositivos Bluetooth.</translation>
-<translation id="6177111841848151710">Bloqueado para o motor de pesquisa atual</translation>
 <translation id="6177128806592000436">A sua ligação a este site não é segura</translation>
 <translation id="6181444274883918285">Adicionar exceção de site</translation>
 <translation id="6192792657125177640">Excepções</translation>
@@ -405,8 +411,8 @@
 <translation id="6980861169612950611">Eliminar dados do site? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6992289844737586249">Perguntar antes de permitir que os sites utilizem o microfone (recomendado)</translation>
+<translation id="6999131147875565462">O Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto</translation>
 <translation id="7000754031042624318">Desativada nas Definições do Android</translation>
-<translation id="7016516562562142042">Permitido para o motor de pesquisa atual</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}other{# selecionados}}</translation>
@@ -425,7 +431,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selecionado(s).</translation>
 <translation id="7260727271532453612">Autorização de <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="7276071417425470385">Quando esta opção está ativada, os sites podem pedir para usar dispositivos de realidade virtual. Quando esta opção está desativada, os sites não podem usar dispositivos de realidade virtual.</translation>
-<translation id="7302486331832100261">Normalmente, bloqueia as notificações. Para permitir, toque em Detalhes.</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados offline são eliminados</translation>
 <translation id="7383715096023715447">Definições do <ph name="DOMAIN" /></translation>
@@ -434,6 +439,7 @@
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
+<translation id="7488573225650545859">Ocultar Ver separadores na lista de apps</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando esta opção está ativada, os sites podem mostrar pedidos de início de sessão. Quando esta opção está desativada, os sites não podem mostrar pedidos de início de sessão.</translation>
 <translation id="7553211568594248088">Sair da pesquisa do hub</translation>
@@ -473,6 +479,7 @@
 <translation id="8087000398470557479">Este conteúdo é proveniente de <ph name="DOMAIN_NAME" />, fornecido pela Google.</translation>
 <translation id="8088603949666785339">Mais opções no <ph name="BANNER_TITLE" /></translation>
 <translation id="8090579562279016251">Reduz o desempenho, mas torna o V8 mais resistente a ataques</translation>
+<translation id="8112925981674547014">Ver separadores na lista de apps</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{O Chrome vai limitar os cookies novamente amanhã}other{# dias até o Chrome limitar os cookies novamente}}</translation>
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8117244575099414087">Quando esta opção está ativada, os sites podem usar os sensores do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>
@@ -542,7 +549,6 @@
 <translation id="8928445016601307354">Impedir os sites de verem e alterarem informações em dispositivos NFC</translation>
 <translation id="8944485226638699751">Conteúdo visível por um grupo limitado de pessoas ou um grupo</translation>
 <translation id="8959122750345127698">A navegação está inacessível: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Esquecer</translation>
 <translation id="8990043154272859344">A sua sessão vai ser terminada em todos os sites</translation>
 <translation id="8993853206419610596">Expandir todos os pedidos</translation>
 <translation id="9002538116239926534">Quando esta opção está ativada, os sites podem guardar dados no seu dispositivo. Quando esta opção está desativada, os sites não podem guardar dados no seu dispositivo.</translation>
@@ -554,9 +560,10 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">O zoom atual é de <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Permita que o Chrome mostre os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
-<translation id="930525582205581608">Quer esquecer este site?</translation>
 <translation id="947156494302904893">Os sites que visita podem validar que é uma pessoa real e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
+<translation id="969975166333045662">Impeça que o site use o otimizador do V8.</translation>
 </translationbundle>

@@ -4,9 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Collection;
 
@@ -15,6 +14,7 @@ import java.util.Collection;
  *
  * @param <T> The type of the property key used for uniquely identifying properties.
  */
+@NullMarked
 public abstract class PropertyObservable<T> {
     /**
      * An observer to be notified of changes to a {@link PropertyObservable}.
@@ -24,10 +24,11 @@ public abstract class PropertyObservable<T> {
     public interface PropertyObserver<T> {
         /**
          * Notifies that the given {@code property} of the observed {@code source} has changed.
+         *
          * @param source The object whose property has changed
          * @param propertyKey The key of the property that has changed.
          */
-        void onPropertyChanged(PropertyObservable<T> source, @Nullable T propertyKey);
+        void onPropertyChanged(PropertyObservable<T> source, T propertyKey);
     }
 
     private final ObserverList<PropertyObserver<T>> mObservers = new ObserverList<>();

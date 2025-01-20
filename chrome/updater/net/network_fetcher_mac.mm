@@ -516,7 +516,6 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
   OutOfProcessNetworkFetcher& operator=(const OutOfProcessNetworkFetcher&) =
       delete;
   OutOfProcessNetworkFetcher(const NetworkFetcher&) = delete;
-  ~OutOfProcessNetworkFetcher() override = default;
 
   // NetworkFetcher overrides.
   void PostRequest(

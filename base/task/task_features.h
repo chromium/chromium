@@ -15,16 +15,11 @@ namespace base {
 // Fixed amount of threads that will be used as a cap for thread pools.
 BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap2);
 
-extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kThreadPoolCapRestrictedCount);
 
 // Under this feature, a utility_thread_group will be created for
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
-
-// This feature controls whether ThreadPool WorkerThreads should hold off waking
-// up to purge PartitionAlloc within the first minute of their lifetime. See
-// base::internal::GetSleepDurationBeforePurge.
-BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
 
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
@@ -34,12 +29,12 @@ constexpr TimeDelta kDefaultLeeway = Milliseconds(16);
 #else
 constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
 #endif  // #if !BUILDFLAG(IS_WIN)
-extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(TimeDelta, kTaskLeewayParam);
 
 // We consider that delayed tasks above |kMaxPreciseDelay| never need
 // DelayPolicy::kPrecise. The default value is slightly above 30Hz timer.
 constexpr TimeDelta kDefaultMaxPreciseDelay = Milliseconds(36);
-extern const BASE_EXPORT base::FeatureParam<TimeDelta> kMaxPreciseDelay;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(TimeDelta, kMaxPreciseDelay);
 
 // Under this feature, wake ups are aligned at a 8ms boundary when allowed per
 // DelayPolicy.

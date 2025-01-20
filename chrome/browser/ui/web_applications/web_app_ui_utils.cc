@@ -25,13 +25,15 @@ namespace {
 std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return std::nullopt;
+  }
 
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return std::nullopt;
+  }
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar_unsafe()
@@ -52,8 +54,9 @@ bool GetLabelIdsForAppManagementLinkInPageInfo(
     int* tooltip_text_id) {
   std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return false;
+  }
 
   *link_text_id = IDS_WEB_APP_SETTINGS_LINK;
   *tooltip_text_id = IDS_WEB_APP_SETTINGS_LINK_TOOLTIP;
@@ -64,8 +67,9 @@ bool HandleAppManagementLinkClickedInPageInfo(
     content::WebContents* web_contents) {
   std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return false;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   chrome::ShowAppManagementPage(

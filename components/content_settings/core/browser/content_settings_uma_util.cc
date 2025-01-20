@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/functional.h"
 #include "base/strings/strcat.h"
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -147,6 +148,10 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::HAND_TRACKING, 128},
     {ContentSettingsType::WEB_APP_INSTALLATION, 129},
     {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, 130},
+    {ContentSettingsType::LEGACY_COOKIE_SCOPE, 131},
+    {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+     132},
+    {ContentSettingsType::CONTROLLED_FRAME, 133},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

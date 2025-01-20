@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -36,6 +38,86 @@
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kDevToolsTimelineCategory[] = "devtools.timeline";
+
+class PaintTimelineReporter {
+  STACK_ALLOCATED();
+
+ public:
+  PaintTimelineReporter(const PaintLayer& layer, bool should_paint_content)
+      : layer_(layer) {
+    if (ShouldReport(should_paint_content)) {
+      reset_current_reporting_.emplace(&current_reporting_, this);
+      TRACE_EVENT_BEGIN1(
+          kDevToolsTimelineCategory, "Paint", "data",
+          [&layer](perfetto::TracedValue context) {
+            const LayoutObject& object = layer.GetLayoutObject();
+            gfx::Rect cull_rect =
+                object.FirstFragment().GetContentsCullRect().Rect();
+            // Convert the cull rect into the local coordinates of layer.
+            cull_rect.Offset(
+                -ToRoundedVector2d(object.FirstFragment().PaintOffset()));
+            inspector_paint_event::Data(std::move(context), object.GetFrame(),
+                                        &object, cull_rect);
+          });
+    }
+  }
+
+  ~PaintTimelineReporter() {
+    if (current_reporting_ == this) {
+      TRACE_EVENT_END0(kDevToolsTimelineCategory, "Paint");
+    }
+  }
+
+ private:
+  bool ShouldReport(bool should_paint_content) const {
+    if (!TRACE_EVENT_CATEGORY_ENABLED(kDevToolsTimelineCategory)) {
+      return false;
+    }
+    // Always report for the top layer to cover the cost of tree walk and
+    // cache copying of non-repainted contents.
+    if (!current_reporting_) {
+      return true;
+    }
+    if (!should_paint_content) {
+      return false;
+    }
+    if (!layer_.SelfNeedsRepaint()) {
+      return false;
+    }
+    if (!current_reporting_->layer_.SelfNeedsRepaint()) {
+      return true;
+    }
+    // The layer should report if it has an expanded cull rect.
+    if (const auto* properties =
+            layer_.GetLayoutObject().FirstFragment().PaintProperties()) {
+      if (const auto* scroll = properties->Scroll()) {
+        if (CullRect::CanExpandForScroll(*scroll)) {
+          return true;
+        }
+      }
+      if (properties->ForNodes<TransformPaintPropertyNode>(
+              [](const TransformPaintPropertyNode& node) {
+                return node.RequiresCullRectExpansion();
+              })) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static PaintTimelineReporter* current_reporting_;
+  const PaintLayer& layer_;
+  std::optional<base::AutoReset<PaintTimelineReporter*>>
+      reset_current_reporting_;
+};
+
+PaintTimelineReporter* PaintTimelineReporter::current_reporting_ = nullptr;
+
+}  // namespace
 
 bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   if (style.HasNonInitialBackdropFilter())
@@ -133,11 +215,12 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  if (auto* node = DynamicTo<Element>(object.GetNode())) {
-    if (node->IsInCanvasSubtree() && !DynamicTo<HTMLCanvasElement>(node)) {
-      // This prevents canvas fallback content from being rendered.
-      return kFullyPainted;
-    }
+  if (((paint_flags & PaintFlag::kPlacedElement) == 0) &&
+      !IsA<HTMLCanvasElement>(object.GetNode()) &&
+      IsA<Element>(object.GetNode()) &&
+      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+    // This prevents canvas fallback content from being rendered.
+    return kFullyPainted;
   }
 
   std::optional<CheckAncestorPositionVisibilityScope>
@@ -241,6 +324,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     DCHECK(paint_layer_.SupportsSubsequenceCaching());
     subsequence_recorder.emplace(context, paint_layer_);
   }
+
+  PaintTimelineReporter timeline_reporter(paint_layer_, should_paint_content);
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef()))

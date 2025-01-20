@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/upload_list/combining_upload_list.h"
+
+#include <array>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -82,7 +79,7 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
   run_loop.Run();
 
   // Expect the reports to be returned newest first.
-  const base::Time kExpectedUploadTimes[] = {
+  const auto kExpectedUploadTimes = std::to_array<base::Time>({
       base::Time::FromSecondsSinceUnixEpoch(
           1614014000),  // 14: Largest time value
       base::Time::FromSecondsSinceUnixEpoch(1614012000),  // 12
@@ -93,9 +90,9 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
       base::Time::FromSecondsSinceUnixEpoch(1614002000),  //  2
       base::Time::FromSecondsSinceUnixEpoch(
           1614000000),  //  0: Smallest time value
-  };
+  });
   // clang-format off
-  const std::string kExpectedUploadIds[] = {
+  const auto kExpectedUploadIds = std::to_array<std::string>({
       "ddee0014",  // Note that the last two digits correspond to the fourth
       "ddee0012",  // and fifth digits of the time, for easy correspondence.
       "ddee0010",
@@ -104,7 +101,7 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
       "ddee0004",
       "ddee0002",
       "ddee0000",
-  };
+  });
   // clang-format on
 
   std::vector<const UploadList::UploadInfo*> actual =
@@ -167,7 +164,7 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
   combined_upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  const base::Time kExpectedUploadTimes[] = {
+  const auto kExpectedUploadTimes = std::to_array<base::Time>({
       base::Time::FromSecondsSinceUnixEpoch(1614009000),
       base::Time(),  // Sorted by capture time 1614008000
       base::Time::FromSecondsSinceUnixEpoch(
@@ -180,9 +177,9 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
       base::Time(),  // Sorted by capture time 1614002000
       base::Time::FromSecondsSinceUnixEpoch(
           1614999959),  // Sorted by capture time 1614001000
-  };
+  });
   // clang-format off
-  const base::Time kExpectedCaptureTimes[] = {
+  const auto kExpectedCaptureTimes = std::to_array<base::Time>({
       base::Time(),                         // Sorted by upload_time 1614009000
       base::Time::FromSecondsSinceUnixEpoch(1614008000),
       base::Time::FromSecondsSinceUnixEpoch(1614007000),
@@ -192,8 +189,8 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
       base::Time(),                         // Sorted by upload_time 1614003000
       base::Time::FromSecondsSinceUnixEpoch(1614002000),
       base::Time::FromSecondsSinceUnixEpoch(1614001000),
-  };
-  const std::string kExpectedUploadIds[] = {
+  });
+  const auto kExpectedUploadIds = std::to_array<std::string>({
       "ddee0009",  // Here, the last digit matches the fourth digit of the time
       "ddee0008",  // we expect to be used as the sort key.
       "ddee0007",
@@ -203,7 +200,7 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
       "ddee0003",
       "ddee0002",
       "ddee0001",
-  };
+  });
   // clang-format on
 
   const std::vector<const UploadList::UploadInfo*> actual =

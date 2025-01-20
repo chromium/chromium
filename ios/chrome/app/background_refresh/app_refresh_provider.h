@@ -35,7 +35,7 @@
 // for this.
 @property(nonatomic, readonly) NSString* identifier;
 
-// Refresh interval for this provider. Default is 15 minutes.
+// Refresh interval for this provider. Default is 30 minutes.
 @property(nonatomic, readonly) base::TimeDelta refreshInterval;
 
 // Last *completed* run time for the provider's operations. Backed by a user

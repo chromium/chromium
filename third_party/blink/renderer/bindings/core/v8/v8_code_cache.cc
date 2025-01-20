@@ -545,13 +545,11 @@ static void ProduceCacheInternal(
       if (cached_data) {
         V8CodeCache::RecordCacheSetStatistics(
             V8CodeCache::SetMetadataType::kCodeCache);
-        const uint8_t* data = cached_data->data;
-        int length = cached_data->length;
         cache_handler->ClearCachedMetadata(
             code_cache_host, CachedMetadataHandler::kClearLocally);
         cache_handler->SetCachedMetadata(
-            code_cache_host, V8CodeCache::TagForCodeCache(cache_handler), data,
-            length);
+            code_cache_host, V8CodeCache::TagForCodeCache(cache_handler),
+            ToSpan(*cached_data));
         base::UmaHistogramMicrosecondsTimes("V8.ProduceCodeCacheMicroseconds",
                                             timer.Elapsed());
       }
@@ -619,9 +617,9 @@ void V8CodeCache::SetCacheTimeStamp(CodeCacheHost* code_cache_host,
   uint64_t now_ms = GetTimestamp();
   cache_handler->ClearCachedMetadata(code_cache_host,
                                      CachedMetadataHandler::kClearLocally);
-  cache_handler->SetCachedMetadata(
-      code_cache_host, TagForTimeStamp(cache_handler),
-      reinterpret_cast<uint8_t*>(&now_ms), sizeof(now_ms));
+  cache_handler->SetCachedMetadata(code_cache_host,
+                                   TagForTimeStamp(cache_handler),
+                                   base::byte_span_from_ref(now_ms));
 }
 
 uint64_t V8CodeCache::GetTimestamp() {
@@ -653,7 +651,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
       0,                                      // column_offset
       opaque_mode == OpaqueMode::kNotOpaque,  // is_shared_cross_origin
       -1,                                     // script_id
-      V8String(isolate, String("")),          // source_map_url
+      V8String(isolate, g_empty_string),      // source_map_url
       opaque_mode == OpaqueMode::kOpaque,     // is_opaque
       false,                                  // is_wasm
       false,                                  // is_module
@@ -686,8 +684,8 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
         v8::ScriptCompiler::CreateCodeCache(unbound_script));
     if (cached_data && cached_data->length) {
       cached_metadata = CachedMetadata::Create(
-          CacheTag(kCacheTagCode, encoding.GetName()), cached_data->data,
-          cached_data->length, static_cast<uint64_t>(DetailFlags::kFull));
+          CacheTag(kCacheTagCode, encoding.GetName()), ToSpan(*cached_data),
+          static_cast<uint64_t>(DetailFlags::kFull));
     }
 
     TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.produceCache", "data",

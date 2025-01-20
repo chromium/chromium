@@ -31,7 +31,7 @@ namespace ash {
 
 class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
  public:
-  ShowFeedbackPageBrowserTest() {}
+  ShowFeedbackPageBrowserTest() = default;
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:

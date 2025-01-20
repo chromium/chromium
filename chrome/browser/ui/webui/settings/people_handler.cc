@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -21,10 +22,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -79,6 +84,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
@@ -129,7 +135,7 @@ struct SyncConfigInfo {
   SyncConfigInfo();
   ~SyncConfigInfo();
 
-  bool sync_everything;
+  bool sync_everything = false;
   syncer::UserSelectableTypeSet selected_types;
 };
 
@@ -137,9 +143,9 @@ bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
+SyncConfigInfo::SyncConfigInfo() = default;
 
-SyncConfigInfo::~SyncConfigInfo() {}
+SyncConfigInfo::~SyncConfigInfo() = default;
 
 bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
   std::optional<base::Value> parsed_value = base::JSONReader::Read(json);
@@ -350,6 +356,11 @@ void PeopleHandler::RegisterMessages() {
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SyncShowSyncPassphraseDialog",
+      base::BindRepeating(&PeopleHandler::HandleShowSyncPassphraseDialog,
+                          base::Unretained(this)));
+
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   web_ui()->RegisterMessageCallback(
@@ -365,6 +376,11 @@ void PeopleHandler::RegisterMessages() {
       "SyncSetupGetStoredAccounts",
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SyncSetupGetProfileAvatar",
+      base::BindRepeating(&PeopleHandler::HandleGetProfileAvatar,
+                          base::Unretained(this)));
+
   web_ui()->RegisterMessageCallback(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
@@ -413,12 +429,17 @@ void PeopleHandler::OnJavascriptAllowed() {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
+  if (g_browser_process->profile_manager()) {
+    profile_attributes_observation_.Observe(
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  }
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
   profile_pref_registrar_.reset();
   identity_manager_observation_.Reset();
   sync_service_observation_.Reset();
+  profile_attributes_observation_.Reset();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -439,8 +460,10 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // When the user has an unrecoverable error, they first have to sign out and
     // then sign in again.
+    // Note: this sets the consent level to `signin::ConsentLevel::kSignin`.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
+    DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 
   // If the identity manager already has a primary account, this is a
@@ -453,10 +476,13 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     DCHECK(error_controller->HasError());
     signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(profile_,
                                                              access_point);
-  } else {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(
-        profile_, CoreAccountInfo(), access_point);
+    return;
   }
+
+  DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
+      << "Primary account already set and change is not allowed";
+  signin_ui_util::EnableSyncFromSingleAccountPromo(profile_, CoreAccountInfo(),
+                                                   access_point);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -513,18 +539,29 @@ void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
 
+void PeopleHandler::HandleGetProfileAvatar(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, GetProfileAvatar());
+}
+
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
+  UpdateSyncStatus();
+  UpdateStoredAccounts();
 #endif
 }
 
@@ -549,12 +586,43 @@ void PeopleHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
+void PeopleHandler::OnProfileAvatarChanged(const base::FilePath& profile_path) {
+  if (!switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    return;
+  }
+
+  if (profile_path != profile_->GetPath()) {
+    return;
+  }
+
+  UpdateProfileAvatar();
+}
+
+base::Value PeopleHandler::GetProfileAvatar() {
+  // Can be null in tests
+  if (!g_browser_process->profile_manager()) {
+    return base::Value();
+  }
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
+
+  if (!entry) {
+    // This may happen if the profile is being deleted.
+    return base::Value();
+  }
+
+  return base::Value(webui::GetBitmapDataUrl(
+      entry->GetAvatarIcon(profiles::kAvatarIconSize).AsBitmap()));
+}
+
 base::Value::List PeopleHandler::GetStoredAccountsList() {
   base::Value::List accounts;
   bool populate_accounts_list = false;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
@@ -728,9 +796,6 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
   syncer::SyncService* service = GetSyncService();
   DCHECK(IsProfileAuthNeededOrHasErrors() ||
          (service && service->HasUnrecoverableError()));
-  DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
-      << "Primary account already set and change is not allowed";
-
   DisplayGaiaLogin(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -865,6 +930,22 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
       browser, syncer::TrustedVaultUserActionTriggerForUMA::kSettings);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void PeopleHandler::HandleShowSyncPassphraseDialog(
+    const base::Value::List& args) {
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  if (!browser) {
+    return;
+  }
+
+  ShowSyncPassphraseDialog(
+      *browser,
+      base::BindRepeating(&SyncPassphraseDialogDecryptData,
+                          base::Unretained(SyncServiceFactory::GetForProfile(
+                              browser->profile()))));
+}
+#endif
+
 void PeopleHandler::HandleGetSyncStatus(const base::Value::List& args) {
   AllowJavascript();
 
@@ -996,6 +1077,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
       UpdateChromeSigninUserChoiceInfo();
       UpdateStoredAccounts();
       UpdateSyncStatus();
+      UpdateProfileAvatar();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -1005,6 +1087,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
 
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   UpdateSyncStatus();
+  UpdateStoredAccounts();
   // TODO(crbug.com/40140566): Re-evaluate marking sync as configuring here,
   // since this gets called whenever SyncService changes state. Inline
   // MaybeMarkSyncConfiguring() then.
@@ -1065,13 +1148,30 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
           !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
+  SyncStatusLabels status_labels;
+
+  // if flag enabled
+  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    const std::optional<AvatarSyncErrorType> error =
+        GetAvatarSyncErrorType(profile_);
+    if (error.has_value()) {
+      status_labels = GetAvatarSyncErrorLabelsForSettings(error.value());
+    } else {
+      status_labels = GetSyncStatusLabelsForSettings(
+          SyncServiceFactory::GetForProfile(profile_));
+    }
+  } else {
+    status_labels = GetSyncStatusLabels(profile_);
+  }
+
   // TODO(crbug.com/40660240): Consider unifying some of the fields below to
   // avoid redundancy.
   sync_status.Set("statusText",
                   GetStringUTF16(status_labels.status_label_string_id));
   sync_status.Set("statusActionText",
                   GetStringUTF16(status_labels.button_string_id));
+  sync_status.Set("secondaryButtonActionText",
+                  GetStringUTF16(status_labels.secondary_button_string_id));
   sync_status.Set(
       "hasError",
       status_labels.message_type == SyncStatusMessageType::kSyncError ||
@@ -1204,6 +1304,10 @@ void PeopleHandler::UpdateSyncStatus() {
 
 void PeopleHandler::UpdateStoredAccounts() {
   FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+}
+
+void PeopleHandler::UpdateProfileAvatar() {
+  FireWebUIListener("profile-avatar-changed", GetProfileAvatar());
 }
 
 void PeopleHandler::MarkFirstSetupComplete() {

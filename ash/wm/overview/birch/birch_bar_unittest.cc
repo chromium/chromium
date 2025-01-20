@@ -5,6 +5,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_constants.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -19,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/style/switch.h"
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/coral/coral_test_util.h"
@@ -70,6 +72,11 @@ bool HasSuggestionTypes(
       return chip->GetItem()->GetType() == type;
     });
   });
+}
+
+void WaitLayerAnimationEnd(ui::Layer* layer) {
+  ASSERT_TRUE(layer->GetAnimator()->is_animating());
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,9 +160,6 @@ class BirchBarTestBase : public AshTestBase {
         ->GetItemRemoverForTest()
         ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
     run_loop.Run();
-
-    // Prepare a file item for test.
-    SetFileItems(/*num=*/1);
   }
 
   void TearDown() override {
@@ -295,7 +299,7 @@ class BirchBarTestBase : public AshTestBase {
   }
 
   // Adds `num` coral items to data source.
-  void SetCoralItems(size_t num) {
+  void SetCoralItems(size_t num, CoralSource source = CoralSource::kUnknown) {
     // The number of coral items cannot exceed 2.
     ASSERT_GE(2u, num);
 
@@ -320,7 +324,31 @@ class BirchBarTestBase : public AshTestBase {
       test_groups.push_back(std::move(test_group));
     }
 
-    OverrideTestResponse(std::move(test_groups));
+    OverrideTestResponse(std::move(test_groups), source);
+  }
+
+  BirchBarMenuModelAdapter* GetBirchBarChipMenuModelAdaper() {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()
+        ->chip_menu_model_adapter_.get();
+  }
+
+  const std::vector<std::unique_ptr<BirchItem>>& GetBirchItemsInController()
+      const {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()->items_;
+  }
+
+  // Remove the item and its related chips from current birch bars at given
+  // `pos`.
+  void RemoveItem(size_t pos) {
+    auto* birch_bar_controller = BirchBarController::Get();
+    ASSERT_LT(pos, birch_bar_controller->items_.size());
+    auto iter = birch_bar_controller->items_.begin() + pos;
+    birch_bar_controller->RemoveItemChips(iter->get());
+    birch_bar_controller->items_.erase(iter);
   }
 
   std::unique_ptr<TestBirchClient> birch_client_;
@@ -338,6 +366,12 @@ class BirchBarTest : public BirchBarTestBase {
   BirchBarTest(const BirchBarTest&) = delete;
   BirchBarTest& operator=(const BirchBarTest&) = delete;
   ~BirchBarTest() override = default;
+
+  void SetUp() override {
+    BirchBarTestBase::SetUp();
+    // Prepare a file item for test.
+    SetFileItems(/*num=*/1);
+  }
 
  private:
   // Ensure base::Time::Now() is a fixed value.
@@ -375,7 +409,6 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                      base::Time::Now() + base::Minutes(30), GURL(), GURL(),
                      std::string(), /*all_day_event=*/false);
   birch_client_->SetCalendarItems(items);
-  SetCoralItems(/*num=*/2);
 
   // Entering overview shows the birch bar.
   EnterOverview();
@@ -385,16 +418,13 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
 
   // Four chips were shown.
-  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 4, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 2, 1);
 
   // One impression was recorded for each chip type.
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kFile, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kCalendar, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
-                               BirchItemType::kCoral, 2);
-  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 2, 1);
 
   // Two rankings were recorded for the current time slot histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);
@@ -403,6 +433,72 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   // The same ranking were recorded for the all-day total histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 1, 1);
   histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 12, 1);
+}
+
+// Tests that we get expected records when showing/hiding/activating the coral
+// chips.
+TEST_F(BirchBarTest, RecordsHistogramForCoralChips) {
+  birch_client_->Reset();
+
+  base::HistogramTester histograms;
+
+  // Add one restore chip.
+  SetCoralItems(1, CoralSource::kPostLogin);
+
+  // Entering overview shows the birch bar.
+  EnterOverview();
+
+  const auto& restore_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(restore_chips.size(), 1u);
+
+  // One cluster count was recorded for the coral chip.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 1, 1);
+
+  // Clicking on the restore chip to restore the group and exit Overview.
+  LeftClickOn(restore_chips[0]);
+
+  // One restore action was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.Action",
+                               BirchCoralItem::ActionType::kRestore, 1);
+
+  // One chip activation was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kCoral,
+                               1);
+
+  ASSERT_FALSE(IsInOverviewSession());
+
+  // Add two in-session chips.
+  SetCoralItems(2, CoralSource::kInSession);
+
+  // Entering overview shows the birch bar.
+  EnterOverview();
+
+  const auto& in_session_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(in_session_chips.size(), 2u);
+
+  // Two cluster count was recorded for the coral chip.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 2, 1);
+
+  // Hide the one chip.
+  BirchBarController::Get()->OnItemHiddenByUser(in_session_chips[0]->GetItem());
+  ASSERT_EQ(in_session_chips.size(), 1u);
+
+  // One cluster hidden was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden", BirchItemType::kCoral,
+                               1);
+
+  // Clicking on the in-session chip to launch the group.
+  LeftClickOn(in_session_chips[0]);
+
+  // One restore action was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.Action",
+                               BirchCoralItem::ActionType::kLaunchToNewDesk, 1);
+
+  // Another chip activation was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kCoral,
+                               2);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split
@@ -544,21 +640,6 @@ class BirchBarMenuTest : public BirchBarTest {
     birch_client_->Reset();
     // Ensure screen is large enough to be able to click on all menu items.
     UpdateDisplay("1600x1200");
-  }
-
- protected:
-  BirchBarMenuModelAdapter* GetBirchBarChipMenuModelAdaper() {
-    auto* overview_session = GetOverviewSession();
-    CHECK(overview_session);
-    return overview_session->birch_bar_controller()
-        ->chip_menu_model_adapter_.get();
-  }
-
-  const std::vector<std::unique_ptr<BirchItem>>& GetBirchItemsInController()
-      const {
-    auto* overview_session = GetOverviewSession();
-    CHECK(overview_session);
-    return overview_session->birch_bar_controller()->items_;
   }
 };
 
@@ -1475,35 +1556,50 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestionsByTappingChipMenu) {
   EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCalendar));
 }
 
+// Tests that the coral chip can be activated from context menu.
+TEST_F(BirchBarMenuTest, ActivateCoralChipWithContextMenu) {
+  SetCoralItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+
+  // The birch bars should be shown.
+  ASSERT_TRUE(grid_test_api.birch_bar_view());
+
+  // There should be one coral chip.
+  ASSERT_EQ(grid_test_api.GetBirchChips().size(), 1u);
+
+  const auto& coral_chip = grid_test_api.GetBirchChips()[0];
+  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
+
+  // Right clicking on a chip to show the chip menu.
+  RightClickOn(coral_chip);
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  ASSERT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* open_chip_item = chip_menu->GetMenuItemAt(0);
+  ASSERT_EQ(
+      open_chip_item->GetCommand(),
+      base::to_underlying(BirchChipContextMenuModel::CommandId::kCoralNewDesk));
+
+  // There should be only one desk before activating the coral chip.
+  EXPECT_EQ(DesksController::Get()->GetNumberOfDesks(), 1);
+
+  // Clicking on the open chip item to create a new desk.
+  LeftClickOn(open_chip_item);
+
+  // There should be a new desk created.
+  EXPECT_EQ(DesksController::Get()->GetNumberOfDesks(), 2);
+}
+
 // The tests run with animations. Since the mock clock will be blocked by the
 // animation waiter, we don't use it in the tests.
-class BirchBarAnimationTest : public BirchBarTestBase {
- public:
-  BirchBarAnimationTest() = default;
-  BirchBarAnimationTest(const BirchBarAnimationTest&) = delete;
-  BirchBarAnimationTest& operator=(const BirchBarAnimationTest&) = delete;
-  ~BirchBarAnimationTest() override = default;
-
- protected:
-  const std::vector<std::unique_ptr<BirchItem>>& GetItems() const {
-    return BirchBarController::Get()->items_;
-  }
-
-  // Remove the item and its related chips from current birch bars at given
-  // `pos`.
-  void RemoveItem(size_t pos) {
-    auto* birch_bar_controller = BirchBarController::Get();
-    ASSERT_LT(pos, birch_bar_controller->items_.size());
-    auto iter = birch_bar_controller->items_.begin() + pos;
-    birch_bar_controller->RemoveItemChips(iter->get());
-    birch_bar_controller->items_.erase(iter);
-  }
-
-  void WaitLayerAnimationEnd(ui::Layer* layer) {
-    ASSERT_TRUE(layer->GetAnimator()->is_animating());
-    ui::LayerAnimationStoppedWaiter().Wait(layer);
-  }
-};
+using BirchBarAnimationTest = BirchBarTestBase;
 
 // Tests that there is no crash when removing a chip.
 TEST_F(BirchBarAnimationTest, NoCrashOnRemovingChip) {
@@ -1556,17 +1652,18 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
   ASSERT_TRUE(grid_test_api.birch_bar_view());
 
   // There should be 6 items in the controller.
-  EXPECT_EQ(6u, GetItems().size());
+  const auto& items = GetBirchItemsInController();
+  EXPECT_EQ(6u, items.size());
 
   // There should be 4 chips on the bar corresponding to the first 4 items.
   EXPECT_EQ(4u, grid_test_api.GetBirchChips().size());
 
   // The 5th and 6th items should not be on the bar.
-  const auto* item_5 = GetItems()[4].get();
+  const auto* item_5 = items[4].get();
   EXPECT_TRUE(std::ranges::none_of(
       grid_test_api.GetBirchChips(),
       [&item_5](const auto& chip) { return chip->GetItem() == item_5; }));
-  const auto* item_6 = GetItems()[5].get();
+  const auto* item_6 = items[5].get();
   EXPECT_TRUE(std::ranges::none_of(
       grid_test_api.GetBirchChips(),
       [&item_6](const auto& chip) { return chip->GetItem() == item_6; }));
@@ -1591,6 +1688,29 @@ TEST_F(BirchBarAnimationTest, RemoveMultipleChips) {
   // The last two chips on the bar correspond to the original 5th and 6th items.
   EXPECT_EQ(grid_test_api.GetBirchChips()[2]->GetItem(), item_5);
   EXPECT_EQ(grid_test_api.GetBirchChips()[3]->GetItem(), item_6);
+}
+
+// Tests that there is no dangling ptr issue if removing the first chip with
+// privacy nudge attached.
+TEST_F(BirchBarAnimationTest, NoCrashOnRemovingFirstChipWithPrivacyNudge) {
+  SetCalendarItems(/*num=*/2);
+
+  // Enter Overview, the privacy nudge should show up.
+  EnterOverview();
+  EXPECT_TRUE(
+      Shell::Get()->anchored_nudge_manager()->IsNudgeShown("BirchPrivacyId"));
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Cache the first chip before removing.
+  auto* first_chip = OverviewGridTestApi(Shell::GetPrimaryRootWindow())
+                         .GetBirchChips()[0]
+                         .get();
+
+  // Remove the first chip. There should be no crash.
+  RemoveItem(0);
+  WaitLayerAnimationEnd(first_chip->layer());
 }
 
 // The parameter structure for birch bar responsive layout tests.

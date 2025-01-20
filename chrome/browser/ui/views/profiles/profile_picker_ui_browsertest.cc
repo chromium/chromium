@@ -15,10 +15,13 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -36,6 +39,9 @@ struct ProfilePickerTestParam {
   bool show_kite_for_supervised_users = false;
   // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
   bool outline_silhouette_icon = false;
+  bool disallow_profile_creation = false;
+  bool use_glic_version = false;
+  bool no_glic_eligible_profiles = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -51,19 +57,32 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "PortraitModeWindow",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize}},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesSmall",
+                          .window_size = PixelTestParam::kSmallWindowSize},
+     .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesPortraitMode",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize},
+     .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesNoProfileCreation"},
+     .use_multiple_profiles = true,
+     .disallow_profile_creation = true},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_OutlineSilhouette"},
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true},
     {.pixel_test_param = {.test_suffix =
                               "DarkRtlSmallMultipleProfiles_OutlineSilhouette",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -76,60 +95,123 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles_Kite",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
      .show_kite_for_supervised_users = true},
 #endif
+    {.pixel_test_param = {.test_suffix = "GlicRegular"},
+     .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicRegularSmall",
+                          .window_size = PixelTestParam::kSmallWindowSize},
+     .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicRegularPortraitMode",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize},
+     .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicNoProfiles"},
+     .use_glic_version = true,
+     .no_glic_eligible_profiles = true},
+    {.pixel_test_param = {.test_suffix = "GlicMultipleProfiles"},
+     .use_multiple_profiles = true,
+     .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicMultipleProfilesSmall",
+                          .window_size = PixelTestParam::kSmallWindowSize},
+     .use_multiple_profiles = true,
+     .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicMultipleProfilesPortraitMode",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize},
+     .use_multiple_profiles = true,
+     .use_glic_version = true},
 };
 
-// Create 4 profiles with different icons and types.
-void AddMultipleProfiles(Profile* profile) {
-  DCHECK(profile);
+enum class ProfileStatus {
+  kSignedOut,
+  kSignedIn,
+  kSignedInManaged,
+  kSignedInSupervised,
+};
 
-  for (size_t i = 0; i < 4; i++) {
+void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
+                                ProfileStatus profile_status,
+                                bool is_glic_version) {
+  CHECK(identity_manager);
+
+  AccountInfo account_info;
+  switch (profile_status) {
+    case ProfileStatus::kSignedOut:
+      break;
+    case ProfileStatus::kSignedIn:
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joe@gmail.com", signin::ConsentLevel::kSignin);
+      break;
+    case ProfileStatus::kSignedInManaged: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joework@example.com",
+          signin::ConsentLevel::kSignin);
+      account_info =
+          FillAccountInfo(account_info, AccountManagementStatus::kManaged,
+                          signin::Tribool::kUnknown);
+      signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+      break;
+    }
+    case ProfileStatus::kSignedInSupervised: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joejunior@gmail.com",
+          signin::ConsentLevel::kSignin);
+      supervised_user::UpdateSupervisionStatusForAccount(
+          account_info, identity_manager, true);
+      break;
+    }
+  }
+
+  // Make non empty account Glic eligible in Glic mode by adapting the
+  // account capabilities of the signed in account and propagating them to the
+  // `ProfileAttributesEntry`.
+  if (!account_info.IsEmpty() && is_glic_version) {
+    CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+
+    // In order to have the propagation of the account capabilities in the
+    // `ProfileAttributesEntry` the account info must be complete/valid.
+    account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+    account_info.full_name = "Joe Testing";
+    account_info.given_name = "Joe";
+    account_info.picture_url = "PICTURE_URL_EMPTY";
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+}
+
+// Create 4 profiles with different icons and types.
+void AddMultipleProfiles(bool is_glic_version) {
+  std::vector<ProfileStatus> profiles_status;
+  if (is_glic_version) {
+    // For the glic version, we need all Profiles to be signed in.
+    profiles_status.insert(
+        profiles_status.end(),
+        {ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged,
+         ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged});
+  } else {
+    profiles_status.insert(
+        profiles_status.end(),
+        {ProfileStatus::kSignedOut, ProfileStatus::kSignedIn,
+         ProfileStatus::kSignedInManaged, ProfileStatus::kSignedInSupervised});
+  }
+
+  size_t icon_index = 0;
+  for (ProfileStatus profile_status : profiles_status) {
     base::RunLoop run_loop;
     ProfileManager::CreateMultiProfileAsync(
-        u"Joe", /*icon_index=*/i, /*is_hidden=*/false,
+        u"Joe", icon_index++, /*is_hidden=*/false,
         /*initialized_callback=*/
-        base::BindLambdaForTesting([&run_loop, &i](Profile* profile) {
-          // Set properties for the profile.
-          signin::IdentityManager* identity_manager =
-              IdentityManagerFactory::GetForProfile(profile);
-          CHECK(identity_manager);
-          AccountInfo account_info;
-
-          switch (i) {
-            case 0:
-              // A signed out profile.
-              break;
-            case 1:
-              // A signed in regular profile.
-              account_info = signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joe@gmail.com",
-                  signin::ConsentLevel::kSignin);
-              break;
-            case 2:
-              // A signed in Enterprise managed profile.
-              account_info = signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joework@example.com",
-                  signin::ConsentLevel::kSignin);
-              account_info = FillAccountInfo(account_info,
-                                             AccountManagementStatus::kManaged,
-                                             signin::Tribool::kUnknown);
-              signin::UpdateAccountInfoForAccount(identity_manager,
-                                                  account_info);
-              break;
-            case 3:
-              // A signed in supervised profile.
-              account_info = signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joejunior@gmail.com",
-                  signin::ConsentLevel::kSignin);
-              supervised_user::UpdateSupervisionStatusForAccount(
-                  account_info, identity_manager, true);
-              break;
-          }
-          run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &profile_status, &is_glic_version](Profile* profile) {
+              SetSigninProfileProperties(
+                  IdentityManagerFactory::GetForProfile(profile),
+                  profile_status, is_glic_version);
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 }
@@ -153,22 +235,57 @@ class ProfilePickerUIPixelTest
 
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
-    if (GetParam().use_multiple_profiles) {
-      AddMultipleProfiles(browser()->profile());
+
+    bool is_glic_version = GetParam().use_glic_version;
+    bool no_glic_eligible_profiles = GetParam().no_glic_eligible_profiles;
+
+    // In Glic mode, sign in the default account as well if we need eligible
+    // profiles.
+    if (is_glic_version && !no_glic_eligible_profiles) {
+      SetSigninProfileProperties(
+          IdentityManagerFactory::GetForProfile(browser()->profile()),
+          ProfileStatus::kSignedIn,
+          /*is_glic_version=*/true);
     }
+
+    if (GetParam().use_multiple_profiles) {
+      // In Glic mode, if `use_multiple_profiles` is set,
+      // `no_glic_eligible_profiles` must be set to false.
+      CHECK(!is_glic_version || !no_glic_eligible_profiles);
+      AddMultipleProfiles(is_glic_version);
+    }
+
+    if (GetParam().disallow_profile_creation) {
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kBrowserAddPersonEnabled, false);
+    }
+
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-    const GURL profile_picker_main_view_url =
-        GURL(chrome::kChromeUIProfilePickerUrl);
+    GURL profile_picker_main_view_url = GURL(chrome::kChromeUIProfilePickerUrl);
+    // Since we override the FlowController, we need to give in the full Url
+    // with the glic query param from the start.
+    if (is_glic_version) {
+      GURL::Replacements replacements;
+      replacements.SetQueryStr(chrome::kChromeUIProfilePickerGlicQuery);
+      profile_picker_main_view_url =
+          profile_picker_main_view_url.ReplaceComponents(replacements);
+    }
+
     content::TestNavigationObserver observer(profile_picker_main_view_url);
     observer.StartWatchingNewWebContents();
 
+    ProfilePicker::Params params =
+        is_glic_version
+            ? ProfilePicker::Params::ForGlicManager(base::DoNothing())
+            // We use `ProfilePicker::Params::ForFirstRun` here because it is
+            // the only constructor that lets us force a profile to use.
+            : ProfilePicker::Params::ForFirstRun(
+                  browser()->profile()->GetPath(), base::DoNothing());
+
     profile_picker_view_ = new ProfileManagementStepTestView(
-        // We use `ProfilePicker::Params::ForFirstRun` here because it is the
-        // only constructor that lets us force a profile to use.
-        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
-                                           base::DoNothing()),
+        std::move(params),
         ProfileManagementFlowController::Step::kProfilePicker,
         /*step_controller_factory=*/
         base::BindLambdaForTesting(
@@ -176,10 +293,7 @@ class ProfilePickerUIPixelTest
               return ProfileManagementStepController::CreateForProfilePickerApp(
                   host, profile_picker_main_view_url);
             }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
     observer.Wait();
   }
 

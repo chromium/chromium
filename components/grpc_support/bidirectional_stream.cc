@@ -116,7 +116,7 @@ bool BidirectionalStream::ReadData(char* buffer, int capacity) {
     return false;
   scoped_refptr<net::WrappedIOBuffer> read_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(capacity)));
+          base::span(buffer, static_cast<size_t>(capacity)));
 
   PostToNetworkThread(
       FROM_HERE, base::BindOnce(&BidirectionalStream::ReadDataOnNetworkThread,
@@ -132,7 +132,7 @@ bool BidirectionalStream::WriteData(const char* buffer,
 
   scoped_refptr<net::WrappedIOBuffer> write_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(count)));
+          base::span(buffer, static_cast<size_t>(count)));
 
   PostToNetworkThread(
       FROM_HERE,
@@ -196,10 +196,10 @@ void BidirectionalStream::OnHeadersReceived(
   }
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
-    case net::kProtoHTTP2:
+    case net::NextProto::kProtoHTTP2:
       protocol = "h2";
       break;
-    case net::kProtoQUIC:
+    case net::NextProto::kProtoQUIC:
       protocol = "quic/1+spdy/3";
       break;
     default:

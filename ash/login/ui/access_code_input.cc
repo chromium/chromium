@@ -7,11 +7,9 @@
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,9 +58,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const ui::ColorId input_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary;
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface);
   code_field_ = AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
   code_field_->set_controller(this);
@@ -242,9 +238,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
   layer()->SetFillsBoundsOpaquely(false);
 
   const ui::ColorId text_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary;
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface);
 
   for (int i = 0; i < length; ++i) {
     auto* field = new AccessibleInputField();
@@ -341,9 +335,7 @@ std::optional<std::string> FixedLengthCodeInput::GetCode() const {
 
 void FixedLengthCodeInput::SetInputColorId(ui::ColorId color_id) {
   const ui::ColorId error_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
-          : kColorAshTextColorAlert;
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysError);
 
   for (ash::AccessibleInputField* field : input_fields_) {
     field->SetTextColorId(color_id);
@@ -526,10 +518,8 @@ void FixedLengthCodeInput::SetInputEnabled(bool input_enabled) {
 }
 
 void FixedLengthCodeInput::SetReadOnly(bool read_only) {
-  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
   const ui::ColorId underline_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshTextColorPrimary;
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface);
   for (ash::AccessibleInputField* field : input_fields_) {
     field->SetReadOnly(read_only);
     field->SetBackground(nullptr);

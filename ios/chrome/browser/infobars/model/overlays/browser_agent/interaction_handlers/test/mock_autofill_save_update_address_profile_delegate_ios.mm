@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
     MockAutofillSaveUpdateAddressProfileDelegateIOS(

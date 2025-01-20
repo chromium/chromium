@@ -124,30 +124,6 @@ const resetReports = url => {
  */
 const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
-/**
- * Polls the given `url` at least once to retrieve reports sent there. Once the
- * reports are received, returns the list of reports. Returns null if the
- * timeout is reached before a report is available.
- */
-async function pollReports(path, wait_for = 1, timeout = 5000 /*ms*/) {
-  const targetUrl = new URL(path, window.location.origin);
-  const endTime = performance.now() + timeout;
-  const outReports = [];
-
-  do {
-    const response = await fetch(targetUrl);
-    assert_true(response.ok, 'pollReports() fetch response should be OK.');
-    const reports = await response.json();
-    outReports.push(...reports);
-    if (outReports.length >= wait_for) {
-      break;
-    }
-    await delay(/*ms=*/ 100);
-  } while (performance.now() < endTime);
-
-  return outReports.length ? outReports : null;
-};
-
 class ReportPoller {
   #reportPath
   #debugReportPath
@@ -171,23 +147,16 @@ class ReportPoller {
    * `expectedNumDebugReports`, respectively. In the worst case, this function
    * takes approximately `fullTimeoutMs` rather than up to `2 * fullTimeoutMs`.
    *
-   * @param {number} expectedNumReports
-   * @param {number} expectedNumDebugReports
+   * @param {number} expectedNumReports A non-negative integer.
+   * @param {number} expectedNumDebugReports A non-negative integer.
    * @returns {Object} The `reports` and `debug_reports` fields contain arrays
    *    of reports, already parsed as JSON.
    */
   async pollReportsAndAssert(expectedNumReports, expectedNumDebugReports) {
-    const pollResults = await Promise.all([
-      pollReports(
-          this.#reportPath, /*wait_for=*/ expectedNumReports || 1,
-          this.#fullTimeoutMs),
-      pollReports(
-          this.#debugReportPath, /*wait_for=*/ expectedNumDebugReports || 1,
-          this.#fullTimeoutMs),
+    const [reports, debugReports] = await Promise.all([
+      this.#poll(this.#reportPath, expectedNumReports || 1),
+      this.#poll(this.#debugReportPath, expectedNumDebugReports || 1),
     ]);
-
-    // Replace any `null` values from `pollReports()` with empty arrays.
-    let [reports, debugReports] = pollResults.map(result => result ?? []);
 
     assert_equals(
         reports.length, expectedNumReports, 'Unexpected number of reports.');
@@ -199,6 +168,33 @@ class ReportPoller {
       reports: reports.map(JSON.parse),
       debug_reports: debugReports.map(JSON.parse)
     };
+  }
+
+  /**
+   * Polls `path` until `targetNumReports` responses have been retrieved or
+   * runtime exceeds `this.#fullTimeoutMs`. Guaranteed to poll at least once.
+   * Returns an array of reports parsed from JSON responses.
+   */
+  async #poll(path, targetNumReports) {
+    assert_greater_than(
+        targetNumReports, 0,
+        '#pollReports(): targetNumReports cannot be negative.');
+
+    const timeoutTime = performance.now() + this.#fullTimeoutMs;
+    const outReports = [];
+
+    do {
+      const response = await fetch(path);
+      assert_true(response.ok, '#pollReports(): fetch response should be OK.');
+      const reports = await response.json();
+      outReports.push(...reports);
+      if (outReports.length >= targetNumReports) {
+        break;
+      }
+      await delay(/*ms=*/ 100);
+    } while (performance.now() < timeoutTime);
+
+    return outReports;
   }
 }
 

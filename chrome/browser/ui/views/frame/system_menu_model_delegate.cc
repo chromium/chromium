@@ -28,11 +28,9 @@
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
     Browser* browser)
-    : provider_(provider),
-      browser_(browser) {
-}
+    : provider_(provider), browser_(browser) {}
 
-SystemMenuModelDelegate::~SystemMenuModelDelegate() {}
+SystemMenuModelDelegate::~SystemMenuModelDelegate() = default;
 
 bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 #if BUILDFLAG(IS_LINUX)

@@ -296,6 +296,11 @@ declare interface ClientApiDelegate {
    */
   viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
   /**
+   * Checks Mantis feature availability, which can be restricted based on
+   * device, user type, and others.
+   */
+  isMantisAvailable(): Promise<boolean>;
+  /**
    * Loads Mantis' assets from DLC and initializes the processor for subsequent
    * queries.
    */
@@ -372,6 +377,15 @@ declare interface ClientApi extends OcrUntrustedPageInterface,
    * Hides the context menu from the PDF surface, if currently shown.
    */
   hidePdfContextMenu(): Promise<void>;
+  /**
+   * Reports Mantis initialization progress, primarily to monitor first-time DLC
+   * download. The associated `initializeMantis()` promise will only be resolved
+   * upon completion (1.0 progress) or if an error occurs. If the
+   * DLC has been previously downloaded, the progress will immediately be
+   * reported as `1.0`.
+   * @param progress the progress between 0.0 and 1.0 (inclusive).
+   */
+  reportMantisProgress(progress: number): void;
 }
 
 /**

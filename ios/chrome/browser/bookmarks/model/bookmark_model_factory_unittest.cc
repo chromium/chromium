@@ -13,7 +13,6 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

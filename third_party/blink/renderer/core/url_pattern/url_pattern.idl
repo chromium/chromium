@@ -10,7 +10,7 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
 
 // https://wicg.github.io/urlpattern/
 [
-  Exposed=(Window,Worker)
+  Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface URLPattern {
   [RaisesException, CallWith=Isolate, Measure]
   constructor(URLPatternInput input, USVString baseURL, optional URLPatternOptions options = {});

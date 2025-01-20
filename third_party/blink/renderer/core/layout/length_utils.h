@@ -182,11 +182,12 @@ inline LayoutUnit ResolveInitialMaxBlockLength(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit override_available_size = kIndefiniteSize) {
   const LayoutUnit result = ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* auto_length */ &Length::Auto(), LengthTypeInternal::kMax,
-      /* override_available_size */ kIndefiniteSize,
+      override_available_size,
       /* override_percentage_resolution_size */ nullptr,
       [](SizeType) { return kIndefiniteSize; });
   return result == kIndefiniteSize ? LayoutUnit::Max() : result;
@@ -242,9 +243,11 @@ inline LayoutUnit ResolveMainBlockLength(
 //
 // The initial variant of this function won't try and resolve
 // "min-block-size: min-content" and similar.
-MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace&,
-                                           const BlockNode&,
-                                           const BoxStrut& border_padding);
+MinMaxSizes ComputeInitialMinMaxBlockSizes(
+    const ConstraintSpace&,
+    const BlockNode&,
+    const BoxStrut& border_padding,
+    LayoutUnit override_available_size = kIndefiniteSize);
 MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const BlockNode&,

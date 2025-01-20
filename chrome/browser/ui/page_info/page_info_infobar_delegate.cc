@@ -24,7 +24,7 @@ void PageInfoInfoBarDelegate::Create(
 
 PageInfoInfoBarDelegate::PageInfoInfoBarDelegate() = default;
 
-PageInfoInfoBarDelegate::~PageInfoInfoBarDelegate() {}
+PageInfoInfoBarDelegate::~PageInfoInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 PageInfoInfoBarDelegate::GetIdentifier() const {

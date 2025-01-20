@@ -64,6 +64,7 @@
 #include "device/fido/json_request.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
@@ -140,12 +141,6 @@ constexpr std::string_view kTestPINPublicKey =
     "\xe9\x6d\xea\xf2\xf0\x7f\xa9\xde\x89\xe2\x9e\x69\x36\xc4\x4c\xf9\x56\xe9"
     "\xa1\x1f\x08\xfe\x55\xca\x1b\x84\xb9\xe5\x1e\xc3\x26\x69\x16\xa0\x6b\x03"
     "\xfa\x42\x08\xa8\xaf\x7d\xd9\x14\xb4\xfc\x1a";
-
-#if BUILDFLAG(IS_MAC)
-base::span<const uint8_t> ToSpan(std::string_view s) {
-  return base::as_bytes(base::make_span(s));
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   auto ret = std::make_unique<sync_pb::WebauthnCredentialSpecifics>();
@@ -478,7 +473,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<network::NetworkService> network_service_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::unique_ptr<FakeSecurityDomainService> security_domain_service_;
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
@@ -515,7 +510,7 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_FALSE(manager_.is_ready());
   EXPECT_TRUE(manager_.local_state_for_testing()
                   .users()
-                  .find(gaia_id_)
+                  .find(gaia_id_.ToString())
                   ->second.identity_key_is_software_backed());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
@@ -601,7 +596,7 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   const std::string gaia =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   // Override the enclave with port=100, which will cause connection failures.
   {
@@ -638,7 +633,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia1 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   {
     BoolFuture register_future;
@@ -653,7 +648,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia2 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
   ASSERT_FALSE(manager_.is_registered());
   {
     BoolFuture register_future;
@@ -676,7 +671,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   const std::string gaia3 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia3));
 }
 
@@ -685,7 +680,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   const std::string gaia1 =
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+          .gaia.ToString();
 
   NoArgFuture loaded_future;
   manager_.Load(loaded_future.GetCallback());
@@ -892,6 +887,71 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin),
               GetAssertionResponseExpectation());
+}
+
+TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
+  security_domain_service_->pretend_there_are_members();
+  const std::string new_pin = "newpin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolFuture add_future;
+  manager_.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  const std::vector<uint8_t> security_domain_secret =
+      std::move(manager_.TakeSecret()->second);
+
+  BoolFuture set_pin_future;
+  manager_.SetPIN(new_pin, "rapt", set_pin_future.GetCallback());
+  EXPECT_TRUE(set_pin_future.Wait());
+  ASSERT_TRUE(set_pin_future.Get());
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  EXPECT_EQ(recovery_key_store_->vaults().size(), 1u);
+  const std::optional<std::vector<uint8_t>> recovered_security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(new_pin, *security_domain_service_,
+                                    *recovery_key_store_);
+  CHECK(recovered_security_domain_secret.has_value());
+  EXPECT_EQ(*recovered_security_domain_secret, security_domain_secret);
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(new_pin, manager_.GetWrappedPIN());
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin),
+              GetAssertionResponseExpectation());
+}
+
+TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
+  security_domain_service_->pretend_there_are_members();
+  const std::string pin = "pin";
+  const std::string new_pin = "newpin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolFuture add_future;
+  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  const std::vector<uint8_t> security_domain_secret =
+      std::move(manager_.TakeSecret()->second);
+
+  BoolFuture set_pin_future;
+  manager_.SetPIN(new_pin, "rapt", set_pin_future.GetCallback());
+  EXPECT_TRUE(set_pin_future.Wait());
+
+  // This should fail because there's already a PIN set.
+  ASSERT_FALSE(set_pin_future.Get());
 }
 
 TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
@@ -1185,9 +1245,10 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   const trusted_vault_pb::SharedMemberKey& shared_member_key =
       icloud_member->memberships().at(0).keys().at(0);
   const std::optional<std::vector<uint8_t>> security_domain_secret =
-      key->private_key().Decrypt(base::span<const uint8_t>(),
-                                 ToSpan("V1 shared_key"),
-                                 ToSpan(shared_member_key.wrapped_key()));
+      key->private_key().Decrypt(
+          base::span<const uint8_t>(),
+          base::byte_span_from_cstring("V1 shared_key"),
+          base::as_byte_span(shared_member_key.wrapped_key()));
   ASSERT_TRUE(security_domain_secret);
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
 
@@ -1200,7 +1261,7 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
        &expected_proof_len);
   ASSERT_EQ(expected_proof_len, expected_proof.size());
   EXPECT_EQ(base::span<const uint8_t>(expected_proof),
-            ToSpan(shared_member_key.member_proof()));
+            base::as_byte_span(shared_member_key.member_proof()));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1742,8 +1803,10 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
 
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  const auto& user_state =
-      manager_.local_state_for_testing().users().find(gaia_id_)->second;
+  const auto& user_state = manager_.local_state_for_testing()
+                               .users()
+                               .find(gaia_id_.ToString())
+                               ->second;
   EXPECT_TRUE(user_state.has_deferred_uv_key_creation() &&
               user_state.deferred_uv_key_creation());
   EXPECT_TRUE(user_state.wrapped_uv_private_key().empty());
@@ -1788,8 +1851,10 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  const auto& user_state =
-      manager_.local_state_for_testing().users().find(gaia_id_)->second;
+  const auto& user_state = manager_.local_state_for_testing()
+                               .users()
+                               .find(gaia_id_.ToString())
+                               ->second;
   EXPECT_TRUE(user_state.deferred_uv_key_creation());
   EXPECT_TRUE(user_state.wrapped_uv_private_key().empty());
 
@@ -1805,7 +1870,8 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ui_request->claimed_pin = nullptr;
   ui_request->save_passkey_callback = base::BindOnce(
       [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
-  ui_request->user_verified = true;
+  ui_request->up_and_uv_bits =
+      device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
   ui_request->uv_key_creation_callback =
       manager_.UserVerifyingKeyCreationCallback();
   ui_request->unregister_callback =
@@ -1897,7 +1963,8 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
   ui_request->claimed_pin = nullptr;
   ui_request->save_passkey_callback = base::BindOnce(
       [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
-  ui_request->user_verified = true;
+  ui_request->up_and_uv_bits =
+      device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
   ui_request->unregister_callback =
       base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),
                      base::BindLambdaForTesting(

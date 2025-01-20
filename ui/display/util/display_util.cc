@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -38,12 +40,13 @@ base::flat_set<int64_t>* internal_display_ids() {
 // A list of bogus sizes in mm that should be ignored.
 // See crbug.com/136533. The first element maintains the minimum
 // size required to be valid size.
-constexpr int kInvalidDisplaySizeList[][2] = {
-    {40, 30},
-    {50, 40},
-    {160, 90},
-    {160, 100},
-};
+constexpr auto kInvalidDisplaySizeList =
+    std::to_array<std::array<int, 2>>({
+        {40, 30},
+        {50, 40},
+        {160, 90},
+        {160, 100},
+    });
 
 // Used in the GetColorSpaceFromEdid function to collect data on whether the
 // color space extracted from an EDID blob passed the sanity checks.
@@ -249,6 +252,14 @@ bool HasInternalDisplay() {
 
 void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
   *internal_display_ids() = std::move(display_ids);
+}
+
+void AddInternalDisplayId(int64_t display_id) {
+  internal_display_ids()->insert(display_id);
+}
+
+void RemoveInternalDisplayId(int64_t display_id) {
+  internal_display_ids()->erase(display_id);
 }
 
 gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {

@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SyncNode, SyncNodeMap} from './chrome_sync.js';
 import {getAllNodes} from './chrome_sync.js';
@@ -55,11 +57,52 @@ function nodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
  * @param node The struct representing the node we want to display.
  */
 function updateNodeDetailView(node: CrTreeItemElement) {
-  const nodeDetailsView = document.querySelector<HTMLElement>('#node-details');
-  assert(nodeDetailsView);
-  nodeDetailsView.hidden = false;
   const detail = node.detail as {payload: SyncNode};
-  jstProcess(new JsEvalContext(detail.payload), nodeDetailsView);
+  render(
+      getNodeDetailsHtml(detail.payload), getRequiredElement('node-details'));
+}
+
+function getNodeDetailsHtml(node: SyncNode) {
+  // clang-format off
+  return html`
+    <table>
+      <tr>
+        <td>Title</td>
+        <td>${node.NON_UNIQUE_NAME}</td>
+      </tr>
+      <tr>
+        <td>ID</td>
+        <td>${node.ID}</td>
+      </tr>
+      <tr>
+        <td>Modification Time</td>
+        <td>${node.MTIME}</td>
+      </tr>
+      <tr>
+        <td>Parent</td>
+        <td>${node.PARENT_ID}</td>
+      </tr>
+      <tr>
+        <td>Is Folder</td>
+        <td>${node.IS_DIR}</td>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td>${node.dataType}</td>
+      </tr>
+      <tr>
+        <td>External ID</td>
+        <td>${node.LOCAL_EXTERNAL_ID}</td>
+      </tr>
+      ${node.positionIndex !== undefined ? html`
+        <tr>
+          <td>Position Index</td>
+          <td>${node.positionIndex}</td>
+        </tr>
+      ` : ''}
+    </table>
+    <pre>${JSON.stringify(node, null, 2)}</pre>`;
+  // clang-format on
 }
 
 /**
@@ -83,10 +126,6 @@ function clear() {
   while (treeContainer.firstChild) {
     treeContainer.removeChild(treeContainer.firstChild);
   }
-
-  const nodeDetailsView = document.querySelector<HTMLElement>('#node-details');
-  assert(nodeDetailsView);
-  nodeDetailsView.hidden = true;
 }
 
 function setNode(treeItem: CrTreeItemElement, node: SyncNode) {

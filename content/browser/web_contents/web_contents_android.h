@@ -219,6 +219,8 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaParamRef<jobject>& jold_offset_tag_bundle,
       const base::android::JavaParamRef<jobject>& joffset_tag_bundle);
 
+  void DisconnectFileSelectListenerIfAny(JNIEnv* env);
+
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 
   class DestructionObserver : public base::CheckedObserver {

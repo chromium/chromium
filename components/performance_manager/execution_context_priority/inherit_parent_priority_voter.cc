@@ -25,7 +25,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // Returns the priority that should be used to cast a vote for `frame_node`,
 // which is basically the parent's priority. Returns std::nullopt when no vote
 // should be cast.
-std::optional<base::TaskPriority> GetVotePriority(const FrameNode* frame_node) {
+std::optional<base::TaskPriority> GetVotePriority(
+    const FrameNode* frame_node,
+    const FrameNode* parent_frame_node) {
   // Main frames have no parents to inherit their priority from.
   if (frame_node->IsMainFrame()) {
     return std::nullopt;
@@ -37,7 +39,7 @@ std::optional<base::TaskPriority> GetVotePriority(const FrameNode* frame_node) {
   }
 
   const base::TaskPriority parent_priority =
-      frame_node->GetParentFrameNode()->GetPriorityAndReason().priority();
+      parent_frame_node->GetPriorityAndReason().priority();
 
   // Don't cast a vote with the default priority as it wouldn't have any effect
   // anyways, and this prevent unnecessary work in the aggregators.
@@ -50,8 +52,10 @@ std::optional<base::TaskPriority> GetVotePriority(const FrameNode* frame_node) {
   return base::TaskPriority::USER_VISIBLE;
 }
 
-std::optional<Vote> GetVote(const FrameNode* frame_node) {
-  std::optional<base::TaskPriority> vote_priority = GetVotePriority(frame_node);
+std::optional<Vote> GetVote(const FrameNode* frame_node,
+                            const FrameNode* parent_frame_node) {
+  std::optional<base::TaskPriority> vote_priority =
+      GetVotePriority(frame_node, parent_frame_node);
   if (!vote_priority) {
     return std::nullopt;
   }
@@ -66,35 +70,44 @@ std::optional<Vote> GetVote(const FrameNode* frame_node) {
 const char InheritParentPriorityVoter::kPriorityInheritedReason[] =
     "Priority inherited from parent.";
 
-InheritParentPriorityVoter::InheritParentPriorityVoter(
-    VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+InheritParentPriorityVoter::InheritParentPriorityVoter() = default;
 
 InheritParentPriorityVoter::~InheritParentPriorityVoter() = default;
 
-void InheritParentPriorityVoter::InitializeOnGraph(Graph* graph) {
-  graph->AddInitializingFrameNodeObserver(this);
+void InheritParentPriorityVoter::InitializeOnGraph(
+    Graph* graph,
+    VotingChannel voting_channel) {
+  voting_channel_ = OptionalVotingChannel(std::move(voting_channel));
+
+  graph->AddFrameNodeObserver(this);
 }
 
 void InheritParentPriorityVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
-void InheritParentPriorityVoter::OnFrameNodeInitializing(
-    const FrameNode* frame_node) {
+void InheritParentPriorityVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   voting_channel_.SubmitVote(GetExecutionContext(frame_node),
-                             GetVote(frame_node));
+                             GetVote(frame_node, pending_parent_frame_node));
 }
 
-void InheritParentPriorityVoter::OnFrameNodeTearingDown(
+void InheritParentPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
 }
 
 void InheritParentPriorityVoter::OnIsAdFrameChanged(
     const FrameNode* frame_node) {
-  voting_channel_.ChangeVote(GetExecutionContext(frame_node),
-                             GetVote(frame_node));
+  voting_channel_.ChangeVote(
+      GetExecutionContext(frame_node),
+      GetVote(frame_node, frame_node->GetParentFrameNode()));
 }
 
 void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
@@ -109,7 +122,7 @@ void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
   // Maybe change the vote for every children.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
     voting_channel_.ChangeVote(GetExecutionContext(child_frame_node),
-                               GetVote(child_frame_node));
+                               GetVote(child_frame_node, frame_node));
   }
 }
 

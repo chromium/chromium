@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.EmbedderType" enum="NaClEmbedderTypeEnum"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClCache.IsHit" enum="PNaClTranslationCacheEnum"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>

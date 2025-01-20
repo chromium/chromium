@@ -14,7 +14,6 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -166,7 +165,7 @@ class DownloadItemModelTest : public testing::Test {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
-  ~DownloadItemModelTest() override {}
+  ~DownloadItemModelTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
@@ -267,99 +266,89 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     download::DownloadInterruptReason reason;
 
     // Expected status string. This will include the progress as well.
-    const char* expected_status_msg;
+    std::u16string expected_status_msg;
 
     // Expected bubble status string. This will include the progress as well.
-    // If empty, use the expected_status_msg.
-    std::string expected_bubble_status_msg;
+    std::u16string expected_bubble_status_msg;
 
     // Most types of interrupted downloads have combination of icon and color
     // that is not the same as "dangerous" or "suspicious" downloads.
     DownloadUIModel::DangerUiPattern expected_danger_pattern =
         DownloadUIModel::DangerUiPattern::kOther;
   } kTestCases[] = {
-      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B", "1/2 B • Resuming…",
+      {download::DOWNLOAD_INTERRUPT_REASON_NONE, u"1/2 B", u"1/2 B • Resuming…",
        DownloadUIModel::DangerUiPattern::kNormal},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, "%s - Download error",
-       "Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+       u"Failed - Download error", u"Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
-       "%s - Insufficient permissions", "Needs permission to download"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, "%s - Disk full",
-       "Out of storage space"},
+       u"Failed - Insufficient permissions", u"Needs permission to download"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, u"Failed - Disk full",
+       u"Out of storage space"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG,
-       "%s - Path too long", "File name or location is too long"},
+       u"Failed - Path too long", u"File name or location is too long"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
-       "%s - File too large", "File is too big for this device"},
+       u"Failed - File too large", u"File is too big for this device"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
-       "%s - Virus detected", "Virus detected"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, "%s - Blocked",
-       "Blocked by your organization"},
+       u"Failed - Virus detected", u"Virus detected"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, u"Failed - Blocked",
+       u"Blocked by your organization"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
-       "%s - Virus scan failed", "Virus scan failed"},
+       u"Failed - Virus scan failed", u"Virus scan failed"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
-       "%s - File truncated", "Something went wrong"},
+       u"Failed - File truncated", u"Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
-       "%s - Already downloaded", "Already downloaded"},
+       u"Failed - Already downloaded", u"Already downloaded"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-       "%s - System busy", "Couldn’t finish download"},
+       u"Failed - System busy", u"Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, "%s - Network error",
-       "Check internet connection"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+       u"Failed - Network error", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-       "%s - Network timeout", "Check internet connection"},
+       u"Failed - Network timeout", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
-       "%s - Network disconnected", "Check internet connection"},
+       u"Failed - Network disconnected", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-       "%s - Server unavailable", "Site wasn’t available"},
+       u"Failed - Server unavailable", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
-       "%s - Network error", "Check internet connection"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, "%s - Server problem",
-       "Site wasn’t available"},
+       u"Failed - Network error", u"Check internet connection"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+       u"Failed - Server problem", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, "%s - No file",
-       "File wasn’t available on site"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT,
+       u"Failed - No file", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED,
-       "%s - Needs authorization", "File wasn’t available on site"},
+       u"Failed - Needs authorization", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-       "%s - Bad certificate", "Site wasn’t available"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN, "%s - Forbidden",
-       "File wasn’t available on site"},
+       u"Failed - Bad certificate", u"Site wasn’t available"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
+       u"Failed - Forbidden", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-       "%s - Server unreachable", "Site wasn’t available"},
+       u"Failed - Server unreachable", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-       "%s - File incomplete", "Couldn’t finish download"},
+       u"Failed - File incomplete", u"Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, "Canceled"},
-      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown",
-       "Couldn’t finish download"},
-      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash",
-       "Couldn’t finish download"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, u"Canceled",
+       u"Canceled"},
+      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, u"Failed - Shutdown",
+       u"Couldn’t finish download"},
+      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, u"Failed - Crash",
+       u"Couldn’t finish download"},
   };
   static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");
 
   SetupDownloadItemDefaults();
 
-  const char default_failed_msg[] = "Failed";
   for (const auto& test_case : kTestCases) {
     SetupInterruptedDownloadItem(test_case.reason);
-    std::string expected_status_msg = base::StringPrintfNonConstexpr(
-        test_case.expected_status_msg, default_failed_msg);
-    std::u16string expected_bubble_status_msg =
-        base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
-    if (expected_bubble_status_msg.empty()) {
-      expected_bubble_status_msg = base::UTF8ToUTF16(expected_status_msg);
-      base::ReplaceFirstSubstringAfterOffset(&expected_bubble_status_msg, 0,
-                                             u"-", u"•");
-    }
     SetStatusTextBuilder(/*for_bubble=*/false);
-    EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
+    EXPECT_EQ(test_case.expected_status_msg, model().GetStatusText());
 
     SetStatusTextBuilder(/*for_bubble=*/true);
-    EXPECT_EQ(expected_bubble_status_msg, model().GetStatusText());
+    EXPECT_EQ(test_case.expected_bubble_status_msg, model().GetStatusText());
 
 #if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(model().GetDangerUiPattern(), test_case.expected_danger_pattern);

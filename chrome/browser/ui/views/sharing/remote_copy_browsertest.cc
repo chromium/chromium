@@ -174,8 +174,9 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   size_t expected_size = 1u;
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
-  if (expected_size == 2u)
+  if (expected_size == 2u) {
     ASSERT_EQ(ui::kMimeTypeTextUtf8, base::UTF16ToASCII(types[1]));
+  }
   ASSERT_EQ(kText, ReadClipboardText());
   message_center::Notification notification = GetNotification();
   ASSERT_EQ(l10n_util::GetStringFUTF16(
@@ -220,8 +221,9 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   size_t expected_size = 1u;
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
-  if (expected_size == 2u)
+  if (expected_size == 2u) {
     ASSERT_EQ(ui::kMimeTypeTextUtf8, base::UTF16ToASCII(types[1]));
+  }
   ASSERT_EQ(kText, ReadClipboardText());
 
   // Send a message with an image url.

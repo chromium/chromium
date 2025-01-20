@@ -133,6 +133,10 @@ component("google_apis") {
     "gaia/gaia_config.h",
     "gaia/gaia_constants.cc",
     "gaia/gaia_constants.h",
+    "gaia/gaia_features.cc",
+    "gaia/gaia_features.h",
+    "gaia/gaia_id.cc",
+    "gaia/gaia_id.h",
     "gaia/gaia_oauth_client.cc",
     "gaia/gaia_oauth_client.h",
     "gaia/gaia_switches.cc",
@@ -161,8 +165,7 @@ component("google_apis") {
     "gaia/oauth2_mint_token_flow.h",
     "gaia/oauth_multilogin_result.cc",
     "gaia/oauth_multilogin_result.h",
-    "gaia/oauth_request_signer.cc",
-    "gaia/oauth_request_signer.h",
+    "gaia/token_binding_response_encryption_error.h",
     "google_api_keys.cc",
     "google_api_keys.h",
   ]
@@ -200,6 +203,10 @@ component("google_apis") {
       "google_api_keys_mac.mm",
     ]
 
+    if (is_ios) {
+      sources += [ "gaia/gaia_id_ios.mm" ]
+    }
+
     frameworks = [ "Foundation.framework" ]
   }
 
@@ -209,6 +216,7 @@ component("google_apis") {
 proto_library("proto") {
   sources = [
     "gaia/bound_oauth_token.proto",
+    "gaia/list_accounts_response.proto",
     "gaia/oauth2_mint_token_consent_result.proto",
   ]
 }
@@ -265,7 +273,6 @@ test("google_apis_unittests") {
     "gaia/oauth2_mint_access_token_fetcher_adapter_unittest.cc",
     "gaia/oauth2_mint_token_flow_unittest.cc",
     "gaia/oauth_multilogin_result_unittest.cc",
-    "gaia/oauth_request_signer_unittest.cc",
     "google_api_keys_unittest.cc",
     "google_api_keys_unittest.h",
   ]
@@ -286,6 +293,7 @@ test("google_apis_unittests") {
     "//google_apis/common:common_unittests",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   if (is_ios) {

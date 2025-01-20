@@ -101,7 +101,20 @@ public class SurveyThrottler {
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {
-        getMetadata().setPromptDisplayed();
+        getMetadata().setPromptDisplayed(mSurveyConfig.mCooldownPeriodOverride.isPresent());
+    }
+
+    private boolean doesCooldownApply() {
+        int today = getMetadata().getCurrentDate();
+        if (mSurveyConfig.mCooldownPeriodOverride.isPresent()) {
+            return today
+                            - SurveyMetadata
+                                    .getLastPromptDisplayedDateForAnySurveyWithCooldownOverride()
+                    < mSurveyConfig.mCooldownPeriodOverride.get();
+        } else {
+            return today - SurveyMetadata.getLastPromptDisplayedDateForAnySurvey()
+                    < MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED;
+        }
     }
 
     /**
@@ -131,8 +144,7 @@ public class SurveyThrottler {
             return false;
         }
 
-        if (today - SurveyMetadata.getLastPromptDisplayedDateForAnySurvey()
-                < MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED) {
+        if (doesCooldownApply()) {
             recordSurveyFilteringResult(FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY);
             return false;
         }

@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "+components/signin/public/base",
+  "+components/signin/public/identity_manager/signin_constants.h",
   "+components/signin/public/identity_manager",
   "+components/signin/public/webdata",
   "+components/signin/public/android/jni_headers",

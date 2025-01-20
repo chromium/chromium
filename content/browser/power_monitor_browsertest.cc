@@ -115,7 +115,7 @@ class PowerMonitorTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
-  void BindForRenderer(int render_process_id,
+  void BindForRenderer(ChildProcessId render_process_id,
                        mojo::GenericPendingReceiver* receiver) {
     auto r = receiver->As<device::mojom::PowerMonitor>();
     if (!r)
@@ -124,7 +124,8 @@ class PowerMonitorTest : public ContentBrowserTest {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&PowerMonitorTest::BindForRendererOnMainThread,
-                       base::Unretained(this), std::move(r)));
+                       base::Unretained(this), std::move(r),
+                       render_process_id));
   }
 
   void BindForNonRenderer(BrowserChildProcessHost* process_host,
@@ -174,16 +175,19 @@ class PowerMonitorTest : public ContentBrowserTest {
 
  private:
   void BindForRendererOnMainThread(
-      mojo::PendingReceiver<device::mojom::PowerMonitor> receiver) {
-    // We can receiver binding requests for the spare RenderProcessHost -- this
+      mojo::PendingReceiver<device::mojom::PowerMonitor> receiver,
+      ChildProcessId render_process_id) {
+    // We can receive binding requests for the spare RenderProcessHost -- this
     // might happen before the test has provided the |renderer_bound_closure_|.
-    if (renderer_bound_closure_) {
-      ++request_count_from_renderer_;
-      std::move(renderer_bound_closure_).Run();
-    } else {
-      DCHECK_EQ(SpareRenderProcessHostManagerImpl::Get().GetSpares().size(),
-                1u);
+    auto* render_process_host =
+        content::RenderProcessHost::FromID(render_process_id);
+    if (!render_process_host || render_process_host->IsSpare()) {
+      return;
     }
+
+    ASSERT_TRUE(renderer_bound_closure_);
+    ++request_count_from_renderer_;
+    std::move(renderer_bound_closure_).Run();
 
     power_monitor_message_broadcaster_.Bind(std::move(receiver));
   }

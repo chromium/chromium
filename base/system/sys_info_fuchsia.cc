@@ -76,15 +76,18 @@ int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
   for (const auto& path_and_size : total_disk_space.space_map) {
     if (path_and_size.first == path || path_and_size.first.IsParent(path)) {
       // If a deeper path was already matched then ignore this entry.
-      if (!matched_path.empty() && !matched_path.IsParent(path_and_size.first))
+      if (!matched_path.empty() &&
+          !matched_path.IsParent(path_and_size.first)) {
         continue;
+      }
       matched_path = path_and_size.first;
       result = path_and_size.second;
     }
   }
 
-  if (volume_path)
+  if (volume_path) {
     *volume_path = matched_path;
+  }
   return result;
 }
 
@@ -135,8 +138,9 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
 
   // Report the actual amount of free space in |path|'s filesystem.
   int64_t available;
-  if (GetDiskSpaceInfo(path, &available, nullptr))
+  if (GetDiskSpaceInfo(path, &available, nullptr)) {
     return available;
+  }
 
   return -1;
 }
@@ -145,17 +149,20 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
 int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (path.empty())
+  if (path.empty()) {
     return -1;
+  }
 
   // Return the soft-quota that applies to |path|, if one is configured.
   int64_t total_space = GetAmountOfTotalDiskSpaceAndVolumePath(path, nullptr);
-  if (total_space >= 0)
+  if (total_space >= 0) {
     return total_space;
+  }
 
   // Report the actual space in |path|'s filesystem.
-  if (GetDiskSpaceInfo(path, nullptr, &total_space))
+  if (GetDiskSpaceInfo(path, nullptr, &total_space)) {
     return total_space;
+  }
 
   return -1;
 }
@@ -165,10 +172,11 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
   DCHECK(path.IsAbsolute());
   TotalDiskSpace& total_disk_space = GetTotalDiskSpace();
   AutoLock l(total_disk_space.lock);
-  if (bytes >= 0)
+  if (bytes >= 0) {
     total_disk_space.space_map[path] = bytes;
-  else
+  } else {
     total_disk_space.space_map.erase(path);
+  }
 }
 
 // static

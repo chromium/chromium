@@ -205,7 +205,7 @@ class RemoteTest:
           logging.error('Test did not exit in time. Sending SIGKILL.')
           test_proc.kill()
           test_proc.wait()
-      logging.info('Test exitted with %d.', test_proc.returncode)
+      logging.info('Test exited with %d.', test_proc.returncode)
       if test_proc.returncode == 0:
         break
 

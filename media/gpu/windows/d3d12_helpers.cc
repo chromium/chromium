@@ -64,8 +64,8 @@ bool ScopedD3D12ResourceMap::Map(ID3D12Resource* resource,
   // address, and for D3D12_RESOURCE_DIMENSION_BUFFER resource, the length is
   // its |Width|. We will also reset the |data_| before we |Unmap()|.
   data_ = UNSAFE_BUFFERS(
-      base::make_span(static_cast<uint8_t*>(data),
-                      static_cast<size_t>(resource_->GetDesc().Width)));
+      base::span(static_cast<uint8_t*>(data),
+                 static_cast<size_t>(resource_->GetDesc().Width)));
   return true;
 }
 

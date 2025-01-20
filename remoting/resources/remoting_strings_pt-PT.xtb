@@ -28,6 +28,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível contactar o anfitrião. Provavelmente, isso deve-se à configuração da rede que está a utilizar.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2504109125669302160">Conceda a autorização "Acessibilidade" ao <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ligado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Quer partilhar este computador e permitir que outro utilizador o veja e controle?</translation>
@@ -133,6 +134,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7067321367069083429">O ecrã funciona como um ecrã tátil</translation>
 <translation id="7116737094673640201">Bem-vindo ao Ambiente de Trabalho Remoto do Chrome</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="7312846573060934304">O anfitrião está offline.</translation>
 <translation id="7319983568955948908">Terminar Partilha</translation>
 <translation id="7359298090707901886">Não é possível utilizar o navegador escolhido para abrir URLs na máquina local.</translation>
@@ -149,7 +151,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7693372326588366043">Atualizar a lista de anfitriões</translation>
 <translation id="7714222945760997814">Denunciar isto</translation>
 <translation id="7868137160098754906">Introduza o PIN para o computador remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="7895403300744144251">As políticas de segurança do computador remoto não permitem ligações a partir da sua conta.</translation>
 <translation id="7936528439960309876">Colocar à direita</translation>
 <translation id="7970576581263377361">Falha na autenticação. Inicie sessão novamente no Chromium.</translation>
@@ -181,7 +182,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="8747048596626351634">Falha da sessão ou falha ao iniciar a sessão. Se ~/.chrome-remote-desktop-session existir no computador remoto, certifique-se de que inicia um processo em primeiro plano de longa execução, como um gestor de janelas ou um ambiente de trabalho.</translation>
 <translation id="8804164990146287819">Política de Privacidade</translation>
 <translation id="8906511416443321782">O acesso ao microfone é necessário para capturar áudio e fazer stream do mesmo para o cliente do Ambiente de Trabalho Remoto do Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Todos os direitos reservados.</translation>
 <translation id="9111855907838866522">Está ligado ao seu dispositivo remoto. Para abrir o menu, toque no ecrã com quatro dedos.</translation>
 <translation id="9126115402994542723">Não voltar a pedir um PIN ao ligar a este anfitrião a partir deste dispositivo.</translation>
 <translation id="916856682307586697">Inicie a XSession predefinida.</translation>

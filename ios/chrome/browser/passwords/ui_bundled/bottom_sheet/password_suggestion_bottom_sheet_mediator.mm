@@ -30,12 +30,12 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/settings/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
@@ -67,7 +67,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 }
 
 // Makes a query to retrieve suggestions from a FormSuggestionProvider from the
-// provided `params`.
+// provided `params`. Only ask for suggestions with passwords.
 FormSuggestionProviderQuery* MakeQueryFromParameters(
     const autofill::FormActivityParams& params) {
   return [[FormSuggestionProviderQuery alloc]
@@ -78,7 +78,8 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
             typedValue:base::SysUTF8ToNSString(params.value)
-               frameID:base::SysUTF8ToNSString(params.frame_id)];
+               frameID:base::SysUTF8ToNSString(params.frame_id)
+          onlyPassword:YES];
 }
 
 }  // namespace

@@ -128,7 +128,7 @@ declare_args() {
   # Determines if a GpuChannel is needed between media capture utility process
   # and gpu process for a given platform.
   enable_gpu_channel_media_capture = is_linux || is_win || is_chromeos_ash ||
-                                     is_mac || is_android || is_fuchsia
+                                     is_apple || is_android || is_fuchsia
 }
 
 # Use another declare_args() to allow dependence on args defined above.

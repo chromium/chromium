@@ -35,6 +35,10 @@ bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
   return true;
 }
 
+bool IsReservedLockName(const String& lock_name) {
+  return lock_name.StartsWith('-');
+}
+
 bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state) {
   if (!script_state.ContextIsValid()) {
@@ -53,9 +57,8 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
   return true;
 }
 
-bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
-                                         ExecutionContext& execution_context,
-                                         ScriptPromiseResolverBase& resolver) {
+bool CheckSharedStoragePermissionsPolicy(ExecutionContext& execution_context,
+                                         ExceptionState& exception_state) {
   // The worklet scope has to be created from the Window scope, thus the
   // shared-storage permissions policy feature must have been enabled. Besides,
   // the `SharedStorageWorkletGlobalScope` is currently given a null
@@ -70,11 +73,10 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 
   if (!execution_context.IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kSharedStorage)) {
-    resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state.GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
         "The \"shared-storage\" Permissions Policy denied the method on "
-        "window.sharedStorage."));
-
+        "window.sharedStorage.");
     return false;
   }
 
@@ -143,9 +145,7 @@ bool CheckPrivateAggregationConfig(
     out_aggregation_coordinator_origin = parsed_coordinator;
   }
 
-  if (options.privateAggregationConfig()->hasFilteringIdMaxBytes() &&
-      base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
+  if (options.privateAggregationConfig()->hasFilteringIdMaxBytes()) {
     if (options.privateAggregationConfig()->filteringIdMaxBytes() < 1) {
       resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state.GetIsolate(), DOMExceptionCode::kDataError,

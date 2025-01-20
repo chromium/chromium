@@ -50,7 +50,7 @@ interface Automation {
   // Currently supported by ARC++ in response to
   // ax::mojom::Action::kGetTextLocation. Rect may not be present if the
   // accessibility node no longer exists.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   DispatchGetTextLocationResult(
     ax.mojom.AXActionData data,
     gfx.mojom.Rect? rect);

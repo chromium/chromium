@@ -18,9 +18,6 @@
 
 namespace blink {
 
-constexpr size_t WebSocketMessageChunkAccumulator::kSegmentSize;
-constexpr base::TimeDelta WebSocketMessageChunkAccumulator::kFreeDelay;
-
 WebSocketMessageChunkAccumulator::WebSocketMessageChunkAccumulator(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : timer_(std::move(task_runner),
@@ -69,9 +66,9 @@ Vector<base::span<const char>> WebSocketMessageChunkAccumulator::GetView()
 
   view.reserve(segments_.size());
   for (wtf_size_t i = 0; i < segments_.size() - 1; ++i) {
-    view.push_back(base::make_span(segments_[i].get(), kSegmentSize));
+    view.push_back(base::span(segments_[i].get(), kSegmentSize));
   }
-  view.push_back(base::make_span(segments_.back().get(), GetLastSegmentSize()));
+  view.push_back(base::span(segments_.back().get(), GetLastSegmentSize()));
   return view;
 }
 

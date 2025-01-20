@@ -29,6 +29,7 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -47,6 +48,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -855,8 +857,24 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToApps) {
   EXPECT_FALSE(app_item->HasFocus());
 }
 
-// Exercises AssistantButtonFocusSkipper.
-TEST_F(AppListBubbleViewTest, DownAndUpArrowSkipsAssistantButton) {
+class AppListBubbleViewSunfishDisabledTest : public AppListBubbleViewTest {
+ public:
+  AppListBubbleViewSunfishDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{}, /*disabled_features=*/{
+            features::kSunfishFeature,
+            features::kScannerUpdate,
+            features::kScannerDogfood,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Exercises ButtonFocusSkipper with only the Assistant button.
+TEST_F(AppListBubbleViewSunfishDisabledTest,
+       DownAndUpArrowSkipsAssistantButton) {
   SimulateAssistantEnabled();
   // Add an app, but no "Continue" suggestions.
   AddAppItems(1);
@@ -866,6 +884,8 @@ TEST_F(AppListBubbleViewTest, DownAndUpArrowSkipsAssistantButton) {
   AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
   SearchBoxView* search_box_view = GetSearchBoxView();
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view->assistant_button());
+  ASSERT_TRUE(search_box_view->assistant_button()->GetVisible());
 
   // Pressing down arrow moves focus into apps.
   PressAndReleaseKey(ui::VKEY_DOWN);
@@ -887,6 +907,115 @@ TEST_F(AppListBubbleViewTest, DownAndUpArrowSkipsAssistantButton) {
   // Shift-tab moves focus back to search box.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+}
+
+class AppListBubbleViewSunfishEnabledTest : public AppListBubbleViewTest {
+ public:
+  AppListBubbleViewSunfishEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kSunfishFeature,
+            features::kScannerUpdate,
+            features::kScannerDogfood,
+        },
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Exercises ButtonFocusSkipper with only the Sunfish button.
+TEST_F(AppListBubbleViewSunfishEnabledTest, DownAndUpArrowSkipsSunfishButton) {
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
+  ShowAppList();
+
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view->sunfish_button());
+  ASSERT_TRUE(search_box_view->sunfish_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(app_item->HasFocus());
+
+  // Tab key moves focus to Sunfish button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->sunfish_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+}
+
+// Exercises ButtonFocusSkipper with both Sunfish and Assistant buttons.
+TEST_F(AppListBubbleViewSunfishEnabledTest,
+       DownAndUpArrowSkipsSunfishAndAssistantButton) {
+  SimulateAssistantEnabled();
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
+  ShowAppList();
+
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view->sunfish_button());
+  ASSERT_TRUE(search_box_view->sunfish_button()->GetVisible());
+  ASSERT_TRUE(search_box_view->assistant_button());
+  ASSERT_TRUE(search_box_view->assistant_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+  EXPECT_FALSE(app_item->HasFocus());
+
+  // Tab key moves focus to Sunfish button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+
+  // Tab key moves focus to assistant button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_TRUE(search_box_view->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to Sunfish button.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
   EXPECT_FALSE(search_box_view->assistant_button()->HasFocus());
 }
 

@@ -27,8 +27,7 @@
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
 namespace {
 
@@ -247,13 +246,15 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
       // character again.
       cursor = char_begin + 1;
     } else if (!is_illegal_at_ends) {
-      if (unreplaced_legal_range_begin == -1)
+      if (unreplaced_legal_range_begin == -1) {
         unreplaced_legal_range_begin = char_begin;
+      }
       unreplaced_legal_range_end = cursor;
     }
 
-    if (code_point == kExtensionSeparator)
+    if (code_point == kExtensionSeparator) {
       last_extension_separator = char_begin;
+    }
   }
 
   // If |replace_char| is not a legal starting/ending character, ensure that
@@ -321,5 +322,4 @@ void NormalizeFileNameEncoding(FilePath* file_name) {
 #endif
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

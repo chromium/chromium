@@ -13,7 +13,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
@@ -62,6 +61,7 @@ inline constexpr FieldType kFieldTypeChildren_MX_ADDRESS_HOME_OVERFLOW[] = {ADDR
 inline constexpr FieldType kFieldTypeChildren_MX_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_OVERFLOW};
 inline constexpr FieldType kFieldTypeChildren_MX_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country NL.
+inline constexpr FieldType kFieldTypeChildren_NL_ADDRESS_HOME_APT[] = {ADDRESS_HOME_APT_TYPE, ADDRESS_HOME_APT_NUM};
 inline constexpr FieldType kFieldTypeChildren_NL_ADDRESS_HOME_HOUSE_NUMBER_AND_APT[] = {ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT};
 inline constexpr FieldType kFieldTypeChildren_NL_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER_AND_APT};
 inline constexpr FieldType kFieldTypeChildren_NL_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION};
@@ -84,8 +84,7 @@ inline constexpr FieldType kFieldTypeChildren_XX_ADDRESS_HOME_ADDRESS[] = {ADDRE
 // type and the list of children.
 struct FieldTypeDescription {
   FieldType field_type;
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const FieldType> children;
+  base::raw_span<const FieldType> children;
 };
 
 // Collection of arrays of node properties for each country.
@@ -142,6 +141,7 @@ inline constexpr FieldTypeDescription kModel_MX[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_MX_ADDRESS_HOME_ADDRESS}};
 // Node properties for country NL.
 inline constexpr FieldTypeDescription kModel_NL[] = {
+    FieldTypeDescription{.field_type = ADDRESS_HOME_APT, .children = kFieldTypeChildren_NL_ADDRESS_HOME_APT},
     FieldTypeDescription{.field_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT, .children = kFieldTypeChildren_NL_ADDRESS_HOME_HOUSE_NUMBER_AND_APT},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_NL_ADDRESS_HOME_STREET_LOCATION},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_NL_ADDRESS_HOME_STREET_ADDRESS},

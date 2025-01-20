@@ -59,8 +59,8 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value& value) {
 
   switch (value.type()) {
     case base::Value::Type::NONE:
-      descriptor = [NSAppleEventDescriptor
-          descriptorWithTypeCode:cMissingValue];
+      descriptor =
+          [NSAppleEventDescriptor descriptorWithTypeCode:cMissingValue];
       break;
 
     case base::Value::Type::BOOLEAN: {

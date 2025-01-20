@@ -85,6 +85,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.credentials_mode = mojom::CredentialsMode::kInclude;
   original.redirect_mode = mojom::RedirectMode::kFollow;
   original.fetch_integrity = "dummy_fetch_integrity";
+  original.expected_signatures = {};
   original.keepalive = true;
   original.browsing_topics = true;
   original.ad_auction_headers = true;

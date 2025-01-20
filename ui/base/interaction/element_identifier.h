@@ -175,7 +175,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   // The value of the identifier. Because all non-null values point to static
   // ElementIdentifierImpl objects this can be treated as a value from a set of
   // unique, opaque handles.
-  // RAW_PTR_EXCLUSION: #union, #global-scope
+  // RAW_PTR_EXCLUSION: Since all ElementIdentifierImpl instances are
+  // statically-allocated, this pointer can never dangle.
   RAW_PTR_EXCLUSION const internal::ElementIdentifierImpl* handle_ = nullptr;
 };
 

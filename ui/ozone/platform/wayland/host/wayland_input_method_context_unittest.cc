@@ -306,7 +306,8 @@ class TestKeyboardDelegate : public WaylandKeyboard::Delegate {
     last_event_timestamp_ = timestamp;
     return 0;
   }
-  void OnSynthesizedKeyPressEvent(DomCode dom_code,
+  void OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                  DomCode dom_code,
                                   base::TimeTicks timestamp) override {}
 
   base::TimeTicks last_event_timestamp() const { return last_event_timestamp_; }
@@ -1174,6 +1175,34 @@ TEST_P(WaylandInputMethodContextTest, SetInputTypeAfterFocus) {
   });
 }
 
+TEST_P(WaylandInputMethodContextTest, OnPreeditChangedDefaultCompositionStyle) {
+  constexpr std::string_view kPreeditString("PreeditString");
+  constexpr gfx::Range kSelection{7, 13};
+  input_method_context_->OnPreeditString(
+      kPreeditString,
+      // No composition style provided.
+      {{1,
+        3,
+        {{ImeTextSpan::Type::kMisspellingSuggestion,
+          ImeTextSpan::Thickness::kNone}}}},
+      kSelection);
+  EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
+  EXPECT_EQ(input_method_context_delegate_->last_preedit()->ime_text_spans,
+            (ImeTextSpans{ImeTextSpan(ImeTextSpan::Type::kMisspellingSuggestion,
+                                      1, 4, ImeTextSpan::Thickness::kNone),
+                          // Default composition should be applied.
+                          ImeTextSpan(ImeTextSpan::Type::kComposition, 0,
+                                      kPreeditString.size(),
+                                      ImeTextSpan::Thickness::kThin)}));
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"PreeditString");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0, kPreeditString.size()));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            kSelection);
+}
+
 TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kSelection{7, 13};
@@ -1181,13 +1210,19 @@ TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
       kPreeditString,
       {{0,
         static_cast<uint32_t>(kPreeditString.size()),
-        {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThin}}}},
+        {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThick}}},
+       {1,
+        3,
+        {{ImeTextSpan::Type::kMisspellingSuggestion,
+          ImeTextSpan::Thickness::kNone}}}},
       kSelection);
   EXPECT_TRUE(input_method_context_delegate_->was_on_preedit_changed_called());
   EXPECT_EQ(input_method_context_delegate_->last_preedit()->ime_text_spans,
-            ImeTextSpans{ImeTextSpan(ImeTextSpan::Type::kComposition, 0,
-                                     kPreeditString.size(),
-                                     ImeTextSpan::Thickness::kThin)});
+            (ImeTextSpans{ImeTextSpan(ImeTextSpan::Type::kComposition, 0,
+                                      kPreeditString.size(),
+                                      ImeTextSpan::Thickness::kThick),
+                          ImeTextSpan(ImeTextSpan::Type::kMisspellingSuggestion,
+                                      1, 4, ImeTextSpan::Thickness::kNone)}));
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       u"PreeditString");
@@ -1266,8 +1301,10 @@ TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
             gfx::Range(0));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(WaylandInputMethodContextTest, DISABLED_OnConfirmCompositionText) {
   constexpr char16_t text[] = u"ab😀cあdef";
   constexpr gfx::Range range(5, 6);  // あ is selected.
 
@@ -1308,8 +1345,11 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
             gfx::Range(0));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
@@ -1328,8 +1368,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0, 4));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedKeepSelectionComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
@@ -1349,8 +1392,12 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(3));
 }
 
-TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(
+    WaylandInputMethodContextTest,
+    DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
@@ -1371,8 +1418,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
@@ -1394,7 +1444,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0));
 }
 
-TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(WaylandInputMethodContextTest,
+       DISABLED_OnConfirmCompositionTextForLongRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(4000, 4500);
 
@@ -1454,7 +1508,6 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
             gfx::Range(0));
 }
-#endif
 
 TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   constexpr char16_t text[] = u"abcあdef";

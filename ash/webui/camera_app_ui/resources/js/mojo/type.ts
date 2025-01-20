@@ -16,6 +16,7 @@ export {
   CameraIntentAction,
 } from '../../mojom/ash/components/arc/mojom/camera_intent.mojom-webui.js';
 export {
+  AspectRatio,
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,

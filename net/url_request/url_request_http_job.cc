@@ -25,7 +25,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -343,8 +342,10 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   SSLUpgradeDecision upgrade_decision = SSLUpgradeDecision::kNoUpgrade;
   if (TransportSecurityState* hsts =
           request->context()->transport_security_state()) {
-    upgrade_decision =
-        hsts->GetSSLUpgradeDecision(url.host(), request->net_log());
+    upgrade_decision = hsts->GetSSLUpgradeDecision(
+        url.host(),
+        /*is_top_level_nav=*/request->isolation_info().IsMainFrameRequest(),
+        request->net_log());
   }
 
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to
@@ -1153,7 +1154,7 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
   for (auto& param : params) {
     service->RegisterBoundSession(
         request_->device_bound_session_access_callback(), std::move(param),
-        request_->isolation_info());
+        request_->isolation_info(), request_->net_log());
   }
 
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =

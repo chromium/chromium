@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
@@ -23,6 +18,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -634,7 +630,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   SkColorType color_type =
       format.PrefersExternalSampler()
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
-          : ToClosestSkColorType(/*gpu_compositing=*/true, format);
+          : ToClosestSkColorType(format);
 
   if (force_rgbx) {
     if (color_type == SkColorType::kBGRA_8888_SkColorType ||
@@ -708,7 +704,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
 
     auto fulfill_array =
         base::HeapArray<FulfillForPlane>::WithSize(SkYUVAInfo::kMaxPlanes);
-    void* fulfill_ptrs[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfill_ptrs = {};
     std::vector<skgpu::graphite::TextureInfo> texture_infos;
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
@@ -725,13 +721,13 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     auto image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
         graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
-        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs);
+        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(texture_infos));
   } else {
     CHECK(gr_context_thread_safe_);
     std::vector<GrBackendFormat> formats;
-    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfills = {};
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          ++plane_index) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
@@ -748,7 +744,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
                                                kTopLeft_GrSurfaceOrigin);
     auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
-        image_context->color_space(), FulfillGanesh, CleanUp, fulfills);
+        image_context->color_space(), FulfillGanesh, CleanUp, fulfills.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(formats));
   }
@@ -852,8 +848,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   CHECK(!current_paint_);
   CHECK(resource_sync_tokens_.empty());
 
-  SkColorType color_type =
-      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+  SkColorType color_type = ToClosestSkColorType(format);
   if (graphite_recorder_) {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,

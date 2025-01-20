@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -97,6 +98,7 @@ public class PlusAddressesHelper {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getPlusAddressManagementUrl();
     }
 }

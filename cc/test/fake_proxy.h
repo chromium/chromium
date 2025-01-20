@@ -31,7 +31,7 @@ class FakeProxy : public Proxy {
   void ReleaseLayerTreeFrameSink() override {}
   void SetShouldWarmUp() override {}
   void SetVisible(bool visible) override {}
-  void SetNeedsAnimate() override {}
+  void SetNeedsAnimate(bool urgent) override {}
   void SetNeedsUpdateLayers() override {}
   void SetNeedsCommit() override {}
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override {}
@@ -47,7 +47,7 @@ class FakeProxy : public Proxy {
   bool CommitRequested() const override;
   void Start() override {}
   void Stop() override {}
-  void QueueImageDecode(int request_id, const PaintImage& image) override;
+  void QueueImageDecode(int request_id, const DrawImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;

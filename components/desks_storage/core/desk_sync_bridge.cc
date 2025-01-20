@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -45,10 +44,6 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace desks_storage {
 

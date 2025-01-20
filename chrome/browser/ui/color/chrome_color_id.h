@@ -103,6 +103,8 @@
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
+  /* Desktop to iOS promo bubble. */ \
+  E_CPONLY(kColorDesktopToIOSPromoFooterSubtitleLabel) \
   /* Common Download colors. */ \
   E_CPONLY(kColorDownloadItemIconDangerous) \
   E_CPONLY(kColorDownloadItemTextDangerous) \
@@ -215,6 +217,7 @@
   E_CPONLY(kColorNewTabButtonFocusRing) \
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
+  E_CPONLY(kColorTabStripComboButtonSeparator) \
   E_CPONLY(kColorTabStripControlButtonInkDrop) \
   E_CPONLY(kColorTabStripControlButtonInkDropRipple) \
   /* New tab button colors for ChromeRefresh.*/ \
@@ -313,7 +316,6 @@
   E_CPONLY(kColorOmniboxAnswerIconGM3Background) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
-  E_CPONLY(kColorOmniboxBubbleOutlineExperimentalKeywordMode) \
   E_CPONLY(kColorOmniboxChipInUseActivityIndicatorBackground) \
   E_CPONLY(kColorOmniboxChipInUseActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxChipBackground) \
@@ -411,11 +413,20 @@
   E_CPONLY(kColorPipWindowForeground) \
   E_CPONLY(kColorPipWindowForegroundInactive) \
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
+  E_CPONLY(kColorPipWindowScrimFull) \
+  E_CPONLY(kColorPipWindowScrimTopGradientStart) \
+  E_CPONLY(kColorPipWindowScrimTopGradientEnd) \
+  E_CPONLY(kColorPipWindowScrimBottomGradientStart) \
+  E_CPONLY(kColorPipWindowScrimBottomGradientEnd) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsCitationBackground) \
+  E_CPONLY(kColorProductSpecificationsCitationPopupBackground) \
+  E_CPONLY(kColorProductSpecificationsCitationPopupText) \
+  E_CPONLY(kColorProductSpecificationsCitationPopupTitle) \
+  E_CPONLY(kColorProductSpecificationsComparisonTableListBackground) \
   E_CPONLY(kColorProductSpecificationsDetailChipBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
@@ -579,9 +590,8 @@
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
-  /* Experimentation */ \
-  E_CPONLY(kColorShoppingPageActionIconBackgroundVariant) \
-  E_CPONLY(kColorShoppingPageActionIconForegroundVariant) \
+  /* The color used in the Tab Group Sharing Recent Activity dialog */ \
+  E_CPONLY(kColorSharingRecentActivityDialogFaviconContainer) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
@@ -645,6 +655,9 @@
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonBackground) \
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonText) \
   E_CPONLY(kColorSidePanelWallpaperSearchInspirationDescriptors) \
+  /* Star rating view colors. */ \
+  E_CPONLY(kColorStarRatingFullIcon) \
+  E_CPONLY(kColorStarRatingEmptyIcon) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \
@@ -769,12 +782,17 @@
   E_CPONLY(kColorTabSearchImageWindowFrame) \
   E_CPONLY(kColorTabSearchMediaIcon) \
   E_CPONLY(kColorTabSearchMediaRecordingIcon) \
+  E_CPONLY(kColorTabSearchMediaGlicActiveIcon) \
   E_CPONLY(kColorTabSearchPrimaryForeground) \
   E_CPONLY(kColorTabSearchSecondaryForeground) \
   E_CPONLY(kColorTabSearchSelected) \
   E_CPONLY(kColorTabSearchScrollbarThumb) \
   /* Task Manager colors. */ \
   E_CPONLY(kColorTaskManagerBackground) \
+  E_CPONLY(kColorTaskManagerSearchBarBackground) \
+  E_CPONLY(kColorTaskManagerSearchBarHoverOn) \
+  E_CPONLY(kColorTaskManagerSearchBarTransparent) \
+  E_CPONLY(kColorTaskManagerSearchBarPlaceholderText) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \

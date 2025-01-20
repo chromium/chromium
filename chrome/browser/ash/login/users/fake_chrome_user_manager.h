@@ -160,9 +160,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   AccountId active_account_id_ = EmptyAccountId();
 
   AccountId last_session_active_account_id_ = EmptyAccountId();
-
-  // Whether the device is enterprise managed.
-  bool is_enterprise_managed_ = false;
 };
 
 }  // namespace ash

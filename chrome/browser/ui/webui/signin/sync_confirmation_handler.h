@@ -36,7 +36,7 @@ enum class SyncConfirmationScreenMode : int {
 
 SyncConfirmationScreenMode GetScreenMode(
     const AccountCapabilities& capabilities);
-// LINT.ThenChange(//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_app.ts:screen_mode)
+// LINT.ThenChange(//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_browser_proxy.ts:screen_mode)
 
 // WebUI message handler for the sync confirmation dialog. IdentityManager calls
 // in this class use signin::ConsentLevel::kSignin because the user hasn't
@@ -95,13 +95,6 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // `OnAvatarChanged` with the signed-in user's picture url.
   virtual void HandleAccountInfoRequest(const base::Value::List& args);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Handles the "openDeviceSyncSettings" message from the page. No arguments.
-  // This message is sent when the user clicks on the device settings link
-  // in the sync confirmation dialog, which keep the dialogue open and open
-  // new window in ash for device sync settings .
-  virtual void HandleOpenDeviceSyncSettings(const base::Value::List& args);
-#endif
   // Records the user's consent to sync. Called from `HandleConfirm` and
   // `HandleGoToSettings`, and expects two parameters to be passed through
   // these methods from the WebUI:
@@ -161,6 +154,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // Flipped when the UI is first notified, prevents multiple updates.
   bool avatar_notified_ = false;
   bool screen_mode_notified_ = false;
+
+  // Tracks time that passes between the UI is fully initialized, but the
+  // confirm / not now buttons are not ready yet.
+  std::optional<base::ElapsedTimer> user_visible_latency_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

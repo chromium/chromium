@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +14,9 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -35,8 +39,11 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -66,42 +73,20 @@ std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 }
 
-class SimpleInstallDialogBubbleViewBrowserTest
-    : public WebAppBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+constexpr char kInstallDialogName[] = "WebAppSimpleInstallDialog";
+
+class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
  public:
   SimpleInstallDialogBubbleViewBrowserTest()
       : prevent_close_on_deactivate_(
-            web_app::SetDontCloseOnDeactivateForTesting()) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(
-        feature_engagement::kIPHDesktopPwaInstallFeature);
-    if (UniversalInstallEnabled()) {
-      enabled_features.push_back(features::kWebAppUniversalInstall);
-    } else {
-      disabled_features.push_back(features::kWebAppUniversalInstall);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+            web_app::SetDontCloseOnDeactivateForTesting()) {}
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
 
- protected:
-  bool UniversalInstallEnabled() { return GetParam(); }
-  std::string GetBubbleName() {
-    if (UniversalInstallEnabled()) {
-      return "WebAppSimpleInstallDialog";
-    } else {
-      return "PWAConfirmationBubbleView";
-    }
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<bool> prevent_close_on_deactivate_;
 };
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
   Profile* profile = browser()->profile();
   webapps::AppId app_id = test::InstallDummyWebApp(profile, "Test app",
@@ -117,14 +102,14 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       std::move(install_tracker), base::DoNothing());
 }
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsMetrics) {
   auto app_info = GetAppInfo();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, GetBubbleName());
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
@@ -148,14 +133,14 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       views::Widget::ClosedReason::kCancelButtonClicked, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        AcceptDialogReportsMetrics) {
   auto app_info = GetAppInfo();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, GetBubbleName());
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
@@ -178,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       views::Widget::ClosedReason::kAcceptButtonClicked, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsIphIgnored) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url();
@@ -188,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, GetBubbleName());
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
       web_contents, std::move(app_info), std::move(install_tracker),
@@ -210,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                                       ->GetBrowserContext())
           ->GetPrefs();
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 
   EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
                              kIphPrefNames.not_accepted_count_name)
@@ -228,12 +213,12 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        AcceptDialogResetIphCounters) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url();
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
                                       ->tab_strip_model()
@@ -244,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       .RecordIgnore(app_id, base::Time::Now());
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, GetBubbleName());
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
@@ -274,13 +259,13 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelFromNavigation) {
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
 
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, GetBubbleName());
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
@@ -299,33 +284,86 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   ASSERT_TRUE(test_future.Wait());
   EXPECT_FALSE(test_future.Get<bool>());
 
-  if (UniversalInstallEnabled()) {
-    histograms.ExpectUniqueSample(
-        "WebApp.InstallConfirmation.CloseReason",
-        views::Widget::ClosedReason::kCloseButtonClicked, 1);
-  } else {
-    histograms.ExpectUniqueSample("WebApp.InstallConfirmation.CloseReason",
-                                  views::Widget::ClosedReason::kUnspecified, 1);
-  }
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SimpleInstallDialogBubbleViewBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "WebAppSimpleInstallDialog"
-                                             : "PWAConfirmationBubbleView";
-                         });
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       WindowSizeLoweringClosesDialog) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"),
+                      /*width=*/500, /*height=*/500);
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(popup_browser);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  ShowSimpleInstallDialogForWebApps(
+      popup_browser->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      std::move(install_tracker), test_future.GetCallback());
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_FALSE(test_future.IsReady());
+
+  base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  // Make the size of the popup window to be too small for the dialog.
+  ui_test_utils::SetAndWaitForBounds(*popup_browser, gfx::Rect(100, 100));
+  destroy_waiter.Wait();
+
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       SmallPopupClosesWindowAutomatically) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"));
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(popup_browser);
+
+  base::HistogramTester histograms;
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+
+  base::RunLoop run_loop;
+  widget_observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == kInstallDialogName) {
+          run_loop.Quit();
+        }
+      }));
+  ShowSimpleInstallDialogForWebApps(popup_contents, GetAppInfo(),
+                                    std::move(install_tracker),
+                                    base::DoNothing());
+  run_loop.Run();
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
 
 class PictureInPictureSimpleInstallDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
  protected:
   DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kWebAppUniversalInstall};
 };
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureSimpleInstallDialogOcclusionTest,
@@ -339,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureSimpleInstallDialogOcclusionTest,
 
   // Show dialog.
   views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),

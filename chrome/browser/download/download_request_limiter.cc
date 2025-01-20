@@ -448,7 +448,7 @@ bool DownloadRequestLimiter::TabDownloadState::shouldClearDownloadState(
 
 // DownloadRequestLimiter ------------------------------------------------------
 
-DownloadRequestLimiter::DownloadRequestLimiter() {}
+DownloadRequestLimiter::DownloadRequestLimiter() = default;
 
 DownloadRequestLimiter::~DownloadRequestLimiter() {
   // All the tabs should have closed before us, which sends notification and

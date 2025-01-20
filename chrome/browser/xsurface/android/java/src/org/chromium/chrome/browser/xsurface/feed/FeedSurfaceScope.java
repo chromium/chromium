@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface.feed;
 
+import org.jspecify.annotations.NullMarked;
+
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 
 // TODO(b/269234249): Don't use this in Chromium yet, it's not implemented.
@@ -15,6 +17,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceScope;
  * "Scope") but each call to provideFoo will return a new renderer, so that a
  * single surface can support multiple rendered views.
  */
+@NullMarked
 public interface FeedSurfaceScope extends SurfaceScope {
     /**
      * Return the FeedLaunchReliabilityLogger associated with the surface, creating it if it

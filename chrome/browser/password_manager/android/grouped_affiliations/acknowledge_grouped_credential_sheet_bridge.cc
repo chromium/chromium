@@ -8,10 +8,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -35,11 +37,11 @@ class JniDelegateImpl : public JniDelegate {
         reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
   }
 
-  void Show(std::string current_origin,
-            std::string credential_origin) override {
+  void Show(const std::string& current_hostname,
+            const std::string& credential_hostname) override {
     Java_AcknowledgeGroupedCredentialSheetBridge_show(
-        base::android::AttachCurrentThread(), java_bridge_, current_origin,
-        credential_origin);
+        base::android::AttachCurrentThread(), java_bridge_, current_hostname,
+        credential_hostname);
   }
 
   void Dismiss() override {
@@ -83,19 +85,25 @@ AcknowledgeGroupedCredentialSheetBridge::
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::Show(
-    std::string current_origin,
-    std::string credential_origin,
+    const std::string& current_hostname,
+    const std::string& credential_hostname,
     gfx::NativeWindow window,
-    base::OnceCallback<void(bool)> closure_callback) {
+    base::OnceCallback<void(DismissReason)> closure_callback) {
   if (!window) {
     return;
   }
   closure_callback_ = std::move(closure_callback);
   jni_delegate_->Create(window, this);
-  jni_delegate_->Show(std::move(current_origin), std::move(credential_origin));
+  jni_delegate_->Show(current_hostname, credential_hostname);
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
-                                                          bool accepted) {
-  std::move(closure_callback_).Run(accepted);
+                                                          int dismiss_reason) {
+  DismissReason dismiss_reason_enum =
+      static_cast<DismissReason>(dismiss_reason);
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AcknowledgeGroupedAffiliationsWarning."
+      "ConfirmationResult",
+      dismiss_reason_enum);
+  std::move(closure_callback_).Run(dismiss_reason_enum);
 }

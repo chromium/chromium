@@ -41,6 +41,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
@@ -53,7 +54,7 @@ namespace attestation {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@google.com";
-constexpr char kTestUserGaiaId[] = "test_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
 constexpr char kFakeCertificate[] = "fake_cert";

@@ -52,8 +52,9 @@ class WebUIMetricsReporterTest : public BrowserWithTestWindowTest {
         [](std::optional<base::TimeTicks> expected_time,
            std::optional<base::TimeDelta> time) {
           EXPECT_EQ(expected_time.has_value(), time.has_value());
-          if (time.has_value())
+          if (time.has_value()) {
             EXPECT_EQ(time, expected_time->since_origin());
+          }
         },
         expected_time);
   }

@@ -25,7 +25,7 @@ struct ElementId;
 namespace gfx {
 class PointF;
 class RoundedCornersF;
-}
+}  // namespace gfx
 
 namespace views {
 namespace test {

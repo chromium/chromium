@@ -53,7 +53,6 @@ public class HubLayoutScrimController implements ScrimController {
         PropertyModel.Builder scrimPropertiesBuilder =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, anchorView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.BACKGROUND_COLOR, calculateScrimColor());
 
@@ -77,7 +76,9 @@ public class HubLayoutScrimController implements ScrimController {
     }
 
     private void onIncognitoChange(Boolean ignored) {
-        mPropertyModel.set(ScrimProperties.BACKGROUND_COLOR, calculateScrimColor());
+        if (mPropertyModel == null) return;
+
+        mScrimCoordinator.setScrimColor(calculateScrimColor(), mPropertyModel);
     }
 
     private @ColorInt int calculateScrimColor() {

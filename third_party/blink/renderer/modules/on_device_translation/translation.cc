@@ -9,22 +9,26 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
-#include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
 
 using mojom::blink::CreateTranslatorError;
+using mojom::blink::TranslatorLanguageCode;
 
 const char kExceptionMessageUnableToCreateTranslator[] =
     "Unable to create translator for the given source and target language.";
@@ -60,6 +64,8 @@ String ConvertCreateTranslatorErrorToDebugString(
       return "The translation service count exceeded the limitation.";
     case CreateTranslatorError::kExceedsPendingTaskCountLimitation:
       return "Too many Translator API requests are queued.";
+    case CreateTranslatorError::kInvalidVersion:
+      return "The translation library version is invalid.";
   }
 }
 class CreateTranslatorClient
@@ -124,9 +130,7 @@ class CreateTranslatorClient
     Cleanup();
   }
 
-  void ResetReceiver() override {
-    receiver_.reset();
-  }
+  void ResetReceiver() override { receiver_.reset(); }
 
  private:
   Member<Translation> translation_;
@@ -186,7 +190,8 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
         V8TranslationAvailability(V8TranslationAvailability::Enum::kNo));
   } else {
     GetTranslationManagerRemote()->CanCreateTranslator(
-        options->sourceLanguage(), options->targetLanguage(),
+        TranslatorLanguageCode::New(options->sourceLanguage()),
+        TranslatorLanguageCode::New(options->targetLanguage()),
         WTF::BindOnce(
             [](ScriptPromiseResolver<V8TranslationAvailability>* resolver,
                CanCreateTranslatorResult result) {
@@ -247,48 +252,10 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
       options->targetLanguage(), client.InitWithNewPipeAndPassReceiver());
   GetTranslationManagerRemote()->CreateTranslator(
       std::move(client),
-      mojom::blink::TranslatorCreateOptions::New(options->sourceLanguage(),
-                                                 options->targetLanguage()));
+      mojom::blink::TranslatorCreateOptions::New(
+          TranslatorLanguageCode::New(options->sourceLanguage()),
+          TranslatorLanguageCode::New(options->targetLanguage())));
   return promise;
 }
 
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorCapabilities::languageAvailable(). Delete this old version.
-ScriptPromise<V8TranslationAvailability> Translation::canDetect(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<V8TranslationAvailability>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8TranslationAvailability>>(
-          script_state);
-  auto promise = resolver->Promise();
-
-  resolver->Resolve(
-      V8TranslationAvailability(V8TranslationAvailability::Enum::kReadily));
-
-  return promise;
-}
-
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorFactory::create(). Delete this old version.
-ScriptPromise<LanguageDetector> Translation::createDetector(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<LanguageDetector>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
-          script_state);
-  resolver->Resolve(MakeGarbageCollected<LanguageDetector>());
-  return resolver->Promise();
-}
 }  // namespace blink

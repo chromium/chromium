@@ -69,7 +69,7 @@ AppPermissionHandler::AppPermissionHandler(
   app_registry_cache_observer_.Observe(&app_service_proxy_->AppRegistryCache());
 }
 
-AppPermissionHandler::~AppPermissionHandler() {}
+AppPermissionHandler::~AppPermissionHandler() = default;
 
 void AppPermissionHandler::AddObserver(
     mojo::PendingRemote<app_permission::mojom::AppPermissionsObserver>

@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -72,10 +71,6 @@ TrustedVaultDegradedRecoverabilityHandler::
     }
   }
 
-  long_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
-  short_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
   UpdateCurrentRefreshPeriod();
 }
 
@@ -108,10 +103,10 @@ void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
 void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
   if (degraded_recoverability_value_ ==
       trusted_vault_pb::DegradedRecoverabilityValue::kDegraded) {
-    current_refresh_period_ = short_degraded_recoverability_refresh_period_;
+    current_refresh_period_ = kShortDegradedRecoverabilityRefreshPeriod;
     return;
   }
-  current_refresh_period_ = long_degraded_recoverability_refresh_period_;
+  current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {

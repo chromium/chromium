@@ -28,7 +28,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ChromeImageView;
@@ -527,12 +527,13 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         return fullString;
     }
 
-    private NoUnderlineClickableSpan createClickableSpan() {
-        return new NoUnderlineClickableSpan(getContext(), (view) -> mInfoBar.onLinkClicked());
+    private ChromeClickableSpan createClickableSpan() {
+        return new ChromeClickableSpan(getContext(), (view) -> mInfoBar.onLinkClicked());
     }
 
     /**
      * Creates a View that holds an icon representing an infobar.
+     *
      * @param context Context to grab resources from.
      * @param iconResourceId ID of the icon to use for the infobar.
      * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.

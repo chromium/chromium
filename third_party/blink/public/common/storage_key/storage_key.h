@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
@@ -297,12 +298,18 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // (7B) Operators.
   // Note that not all must be friends, but all are to consolidate the header.
-  BLINK_COMMON_EXPORT
-  friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
-  BLINK_COMMON_EXPORT
-  friend bool operator!=(const StorageKey& lhs, const StorageKey& rhs);
-  BLINK_COMMON_EXPORT
-  friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
+  friend bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
+    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                    lhs.ancestor_chain_bit_) ==
+           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                    rhs.ancestor_chain_bit_);
+  }
+  friend auto operator<=>(const StorageKey& lhs, const StorageKey& rhs) {
+    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_,
+                    lhs.ancestor_chain_bit_) <=>
+           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_,
+                    rhs.ancestor_chain_bit_);
+  }
   BLINK_COMMON_EXPORT
   friend std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk);
 

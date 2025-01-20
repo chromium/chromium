@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -169,7 +170,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<input_method::MockInputMethodEngine> mock_ime_engine_handler_;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
 
  private:
   std::unique_ptr<TestingProfile> profile_;

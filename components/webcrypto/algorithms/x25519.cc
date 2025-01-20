@@ -123,9 +123,9 @@ Status X25519Implementation::GenerateKey(
   }
 
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoX25519PrivateKey(base::make_span(privkey),
-                                           key_algorithm, extractable,
-                                           private_usages, &private_key);
+  status = CreateWebCryptoX25519PrivateKey(base::span(privkey), key_algorithm,
+                                           extractable, private_usages,
+                                           &private_key);
   if (status.IsError()) {
     return status;
   }

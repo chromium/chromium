@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import type {ReadingListAppElement} from './reading_list_app.js';
 
 export function getHtml(this: ReadingListAppElement) {
@@ -16,35 +17,35 @@ export function getHtml(this: ReadingListAppElement) {
       heading="$i18n{emptyStateHeader}"
       body="${this.getEmptyStateSubheaderText_()}">
   </sp-empty-state>
-  <div id="readingListList" class="sp-scroller sp-scroller-top-of-page"
-      @keydown="${this.onItemKeyDown_}"
-      ?hidden="${!this.shouldShowList_()}">
-    <div class="sp-card" ?hidden="${!this.unreadItems_.length}">
+
+  <div class="sp-card" ?hidden="${!this.getAllItems_().length}">
+    <cr-lazy-list id="readingListList" .items="${this.getAllItems_()}"
+        .itemSize="${this.itemSize_}"
+        .scrollTarget="${this.scrollTarget_}"
+        ?hidden="${!this.shouldShowList_()}"
+        @keydown="${this.onItemKeyDown_}"
+        @viewport-filled="${this.updateFocusedItem_}"
+        .restoreFocusElement="${this.focusedItem_}"
+        .template="${
+      (item: ReadLaterEntry, index: number) => !item.url.url ? html`
       <sp-heading compact hide-back-button>
-        <h2 slot="heading">$i18n{unreadHeader}</h2>
+        <h2 slot="heading">${item.title}</h2>
+        <cr-icon-button slot="buttons"
+            data-title="${item.title}"
+            iron-icon="${this.getExpandButtonIcon_(item.title)}"
+            @click="${this.onExpandButtonClick_}">
+        </cr-icon-button>
       </sp-heading>
-      ${this.unreadItems_.map((item, index) => html`
-        <reading-list-item data-url="${item.url.url}" data-index="${index}"
-            @focus="${this.onItemFocus_}"
-            aria-label="${this.ariaLabel_(item)}" class="unread-item"
-            .data="${item}" ?button-ripples="${this.buttonRipples}">
-        </reading-list-item>
-      `)}
-    </div>
-    <div class="sp-cards-separator" ?hidden="${!this.shouldShowHr_()}"></div>
-    <div class="sp-card" ?hidden="${!this.readItems_.length}">
-      <sp-heading compact hide-back-button>
-        <h2 slot="heading">$i18n{readHeader}</h2>
-      </sp-heading>
-      ${this.readItems_.map((item, index) => html`
-        <reading-list-item data-url="${item.url.url}" data-index="${index}"
-            @focus="${this.onItemFocus_}"
-            aria-label="${this.ariaLabel_(item)}"
-            .data="${item}" ?button-ripples="${this.buttonRipples}">
-        </reading-list-item>
-      `)}
-    </div>
+    ` :
+                                                               html`
+      <reading-list-item data-url="${item.url.url}" data-index="${index}"
+          @focus="${this.onItemFocus_}"
+          aria-label="${this.ariaLabel_(item)}" class="unread-item"
+          .data="${item}" ?button-ripples="${this.buttonRipples}">
+      </reading-list-item>`}">
+    </cr-lazy-list>
   </div>
+
   <sp-footer ?pinned="${!this.isReadingListEmpty_()}">
     <cr-button id="currentPageActionButton" class="floating-button"
         aria-label="${this.getCurrentPageActionButtonText_()}"

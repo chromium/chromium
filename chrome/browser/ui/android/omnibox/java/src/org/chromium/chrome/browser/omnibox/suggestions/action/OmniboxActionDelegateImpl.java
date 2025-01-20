@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
@@ -49,10 +48,10 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void handleClearBrowsingData() {
-        if (QuickDeleteController.isQuickDeleteEnabled() && mOpenQuickDeleteCb != null) {
+        if (mOpenQuickDeleteCb != null) {
             mOpenQuickDeleteCb.run();
         } else {
-            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
         }
     }
 
@@ -90,7 +89,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     @Override
     public boolean startActivity(@NonNull Intent intent) {
         try {
-            if (IntentUtils.intentTargetsSelf(mContext, intent)) {
+            if (IntentUtils.intentTargetsSelf(intent)) {
                 IntentUtils.addTrustedIntentExtras(intent);
             }
             mContext.startActivity(intent);

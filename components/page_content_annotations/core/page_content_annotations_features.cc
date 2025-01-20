@@ -103,6 +103,22 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
       });
 }
 
+const base::FeatureParam<base::TimeDelta> kAnnotatedPageContentCaptureDelay{
+    &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(1)};
+
+const base::FeatureParam<bool> kAnnotatedPageContentIncludeGeometry{
+    &kAnnotatedPageContentExtraction, "include_geometry", false};
+
+const base::FeatureParam<bool> kAnnotatedPageContentStudyIncludeInnerText{
+    &kAnnotatedPageContentExtraction, "include_inner_text", false};
+
+const base::FeatureParam<bool> kAnnotatedPageContentOnCriticalPath{
+    &kAnnotatedPageContentExtraction, "on_critical_path", false};
+
+const base::FeatureParam<bool> kIncludeHiddenButSearchableContent{
+    &kAnnotatedPageContentExtraction, "include_hidden_but_searchable_content",
+    false};
+
 }  // namespace
 
 // Enables page content to be annotated.
@@ -113,10 +129,6 @@ BASE_FEATURE(kPageContentAnnotations,
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageVisibilityBatchAnnotations,
-             "PageVisibilityBatchAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageContentAnnotationsValidation,
@@ -139,6 +151,10 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",
              enabled_by_default_desktop_only);
+
+BASE_FEATURE(kAnnotatedPageContentExtraction,
+             "AnnotatedPageContentExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
@@ -206,10 +222,6 @@ double NoiseProbabilityForRAPPORMetrics() {
                                          "noise_prob_for_rappor_metrics", .5)));
 }
 
-bool PageVisibilityBatchAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
-}
-
 size_t AnnotateVisitBatchSize() {
   // When new visits are synced, the service gets visit notifications in a loop.
   // The service drops new visits during processing a batch. Often only the
@@ -261,6 +273,26 @@ size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,
       "max_related_searches_cache_size", 10);
+}
+
+bool IsAnnotatedPageContentOnCriticalPath() {
+  return kAnnotatedPageContentOnCriticalPath.Get();
+}
+
+base::TimeDelta GetAnnotatedPageContentCaptureDelay() {
+  return kAnnotatedPageContentCaptureDelay.Get();
+}
+
+bool ShouldAnnotatedPageContentIncludeGeometry() {
+  return kAnnotatedPageContentIncludeGeometry.Get();
+}
+
+bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
+  return kAnnotatedPageContentStudyIncludeInnerText.Get();
+}
+
+bool ShouldIncludeHiddenButSearchableContent() {
+  return kIncludeHiddenButSearchableContent.Get();
 }
 
 }  // namespace page_content_annotations::features

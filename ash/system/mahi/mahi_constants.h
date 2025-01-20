@@ -52,6 +52,7 @@ enum ViewId {
   kQuestionAnswerErrorLabel,
   kInfoSparkIcon,
   kSummaryElucidationIndicator,
+  kDragHandleIcon,
 };
 
 // The size of the icon that appears in the panel's source row.
@@ -154,6 +155,10 @@ inline constexpr char kQuestionCountPerMahiSessionHistogramName[] =
     "Ash.Mahi.QuestionCountPerMahiSession";
 inline constexpr char kTimesMahiPanelOpenedPerSessionHistogramName[] =
     "Ash.Mahi.TimesPanelOpenedPerSession";
+inline constexpr char kMahiPanelResizingHistogram[] =
+    "Ash.Mahi.PresentationTime.Resize";
+inline constexpr char kMahiPanelResizingMaxLatencyHistogram[] =
+    "Ash.Mahi.PresentationTime.MaxLatency.Resize";
 
 }  // namespace ash::mahi_constants
 

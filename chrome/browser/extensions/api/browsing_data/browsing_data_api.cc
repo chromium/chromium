@@ -96,13 +96,7 @@ bool IsSyncRunning(Profile* profile) {
   if (profile->IsOffTheRecord()) {
     return false;
   }
-  // TODO(crbug.com/371426261): Refactor sync utils so this function can be
-  // called on android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
-#else
-  return false;
-#endif
 }
 }  // namespace
 

@@ -160,12 +160,15 @@ bool ResponseBlockedByCrossOriginResourcePolicy(
   if (corp_header != response->headers.end())
     corp_header_value = corp_header->second;
 
+  // TODO(crbug.com/333029815): Pass a DocumentIsolationPolicyReporter to this
+  // call instead of nullptr.
   return CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              response->url_list.back(), response->url_list.front(),
              document_origin, corp_header_value, RequestMode::kNoCors,
              network::mojom::RequestDestination::kEmpty,
              response->request_include_credentials, document_coep,
-             coep_reporter ? coep_reporter.get() : nullptr, document_dip)
+             coep_reporter ? coep_reporter.get() : nullptr, document_dip,
+             nullptr)
       .has_value();
 }
 

@@ -157,6 +157,16 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Useful when our anchor element is not the anchor view.
   std::unique_ptr<AnchorViewObserver> anchor_observer_;
 
+// TODO(https://crbug.com/382611284): On some platforms the help bubble is not
+// minimized with the window, leading to visual artifacts and errors. For now,
+// work around this problem by closing the bubble if the widget is minimized.
+// When the underlying issue is fixed at the framework level, this can be
+// removed.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  class PrimaryWidgetObserver;
+  std::unique_ptr<PrimaryWidgetObserver> primary_widget_observer_;
+#endif
+
   // Auto close timeout. If the value is 0 (default), the bubble never times
   // out.
   base::TimeDelta timeout_;

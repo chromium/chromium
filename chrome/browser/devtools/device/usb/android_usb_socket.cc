@@ -214,7 +214,7 @@ bool AndroidUsbSocket::WasEverUsed() const {
 
 net::NextProto AndroidUsbSocket::GetNegotiatedProtocol() const {
   NOTIMPLEMENTED();
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool AndroidUsbSocket::GetSSLInfo(net::SSLInfo* ssl_info) {

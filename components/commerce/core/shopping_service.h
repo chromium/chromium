@@ -29,6 +29,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_cache.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -219,6 +220,7 @@ class ShoppingService : public KeyedService,
       ProductSpecificationsService* product_specifications_service,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
           discounts_proto_db,
+      SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
@@ -366,18 +368,6 @@ class ShoppingService : public KeyedService,
   // if the user has the feature flag enabled or (if applicable) is in an
   // enabled country and locale.
   virtual bool IsMerchantViewerEnabled();
-
-  // This is a feature check for the "price tracking", which will return true
-  // if the user has the feature flag enabled or (if applicable) is in an
-  // enabled country and locale.
-  virtual bool IsCommercePriceTrackingEnabled();
-
-  // This is a feature check for the "price insights", which will return true
-  // if the user has the feature flag enabled, has MSBB enabled, and (if
-  // applicable) is in an eligible country and locale. The value returned by
-  // this method can change at runtime, so it should not be used when deciding
-  // whether to create critical, feature-related infrastructure.
-  virtual bool IsPriceInsightsEligible();
 
   // This is a feature check for "show discounts on navigation", which will
   // return true if the user has the feature flag enabled, is signed-in and
@@ -586,10 +576,6 @@ class ShoppingService : public KeyedService,
 
   // Get the data stored in the cache or nullptr if none exists.
   const ProductInfo* GetFromProductInfoCache(const GURL& url);
-
-  // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
-  // be used.
-  bool IsPriceInsightsInfoApiEnabled();
 
   // Whether APIs like |IsShoppingPage| are enabled and allowed to be used.
   bool IsShoppingPageTypesApiEnabled();

@@ -21,8 +21,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,6 +34,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -46,7 +45,6 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
     @Mock private SyncService mSyncService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private Profile mProfile;
-    private FeatureList.TestValues mFeatureListValues;
 
     @Before
     public void setUp() {
@@ -65,15 +63,13 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
     }
 
@@ -85,15 +81,13 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SIGNED_IN, getNotShownReason().intValue());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.NOT_SIGNED_IN, getNotShownReason().intValue());
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SYNC, getNotShownReason().intValue());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertNull(getNotShownReason());
     }
 
@@ -104,20 +98,18 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
         ChromeFeatureList.VISITED_URL_RANKING_SERVICE
     })
     public void testEnablementWithVisitedUrlRankingFeature() {
-        TabResumptionModuleUtils.TAB_RESUMPTION_V2.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidEnableV2.setForTesting(true);
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertNull(getNotShownReason());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertNull(getNotShownReason());
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertNull(getNotShownReason());
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.TABS));
         Assert.assertNull(getNotShownReason());
     }
 

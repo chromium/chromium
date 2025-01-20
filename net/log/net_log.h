@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <string>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -364,7 +364,7 @@ class NET_EXPORT NetLog {
 
   // Returns the set of all capture modes being observed.
   NetLogCaptureModeSet GetObserverCaptureModes() const {
-    return base::subtle::NoBarrier_Load(&observer_capture_modes_);
+    return observer_capture_modes_.load(std::memory_order_relaxed);
   }
 
   // Adds an entry using already materialized parameters, when it is already
@@ -400,13 +400,13 @@ class NET_EXPORT NetLog {
   base::Lock lock_;
 
   // Last assigned source ID.  Incremented to get the next one.
-  base::subtle::Atomic32 last_id_ = 0;
+  std::atomic<int32_t> last_id_ = {};
 
   // Holds the set of all capture modes that observers are watching the log at.
   //
   // Is 0 when there are no observers. Stored as an Atomic32 so it can be
   // accessed and updated more efficiently.
-  base::subtle::Atomic32 observer_capture_modes_ = 0;
+  std::atomic<NetLogCaptureModeSet> observer_capture_modes_ = {};
 
   // |observers_| is a list of observers, ordered by when they were added.
   // Pointers contained in |observers_| are non-owned, and must

@@ -130,7 +130,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
-                profileProviderSupplier,
                 factory,
                 /* isIncognito= */ false,
                 onToolbarAlphaChange,
@@ -152,7 +151,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                                 R.string.button_new_tab,
                                 R.drawable.new_tab_icon),
                         () -> {
-                            notifyNewTabButtonClick();
                             newTabButtonClickListener.onClick(null);
                         }));
 
@@ -192,8 +190,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     @Override
-    public int getCurrentTabId() {
-        return TabModelUtils.getCurrentTabId(mTabGroupModelFilterSupplier.get().getTabModel());
+    public @Nullable Tab getCurrentTab() {
+        return TabModelUtils.getCurrentTab(mTabGroupModelFilterSupplier.get().getTabModel());
     }
 
     @Override
@@ -235,7 +233,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        filter.getTabModel(), coordinator::setTabSwitcherContentSensitivity);
+                        filter.getTabModel(),
+                        coordinator::setTabSwitcherContentSensitivity,
+                        "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity");
             }
 
             finishWaitForTabStateInitializedTimer();
@@ -280,7 +280,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         Profile profile = profileProvider.getOriginalProfile();
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
 
-        if (!PriceTrackingFeatures.isPriceTrackingEnabled(profileProvider.getOriginalProfile())
+        if (!PriceTrackingFeatures.isPriceAnnotationsEnabled(profileProvider.getOriginalProfile())
                 && getTabListMode() == TabListMode.GRID) {
             return;
         }
@@ -372,8 +372,18 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @Nullable
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
-            if (savedTabGroup == null) return;
-            if (!mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)) return;
+            // Don't try to show the IPH if the group is:
+            // 1) Not in TabGroupSyncService for some reason.
+            // 2) A shared tab group.
+            // 3) Created locally.
+            // 4) The tab grid dialog is visible.
+            if (savedTabGroup == null
+                    || TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)
+                    || !mTabGroupSyncService.isRemoteDevice(savedTabGroup.creatorCacheGuid)
+                    || Boolean.TRUE.equals(
+                            coordinator.getTabGridDialogVisibilitySupplier().get())) {
+                return;
+            }
 
             @Nullable View anchorView = coordinator.getViewByIndex(viewIndex);
             if (anchorView == null) continue;

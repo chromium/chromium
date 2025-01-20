@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
   void SetVersion(VersionType version);
 
  private:
-  const std::optional<base::AtomicSharedMemory<VersionType>> mapped_region_;
+  std::optional<base::AtomicSharedMemory<VersionType>> mapped_region_;
 };
 
 // Used to keep track of a remote version number and compare it to a

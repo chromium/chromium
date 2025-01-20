@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +24,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -181,7 +183,9 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, main_frame_url, _))
       .WillOnce(SaveArg<1>(&ukm_source_id));
   navigation->Start();
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test2.org"));
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test3.org"));
   GURL expected_main_frame_url("http://test3.org");
   EXPECT_CALL(*mock_collector_,
@@ -499,7 +503,9 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           })))
       .WillRepeatedly(Return());
   navigation->Start();
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test2.org"));
+  base::RunLoop().RunUntilIdle();
   navigation->Redirect(GURL("http://test3.org"));
 
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
@@ -737,14 +743,11 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       {{url::Origin::Create(GURL("http://preconnectonly.com/")), 1,
         network_anonymization_key}});
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://test.org/resource1"), network_anonymization_key,
-      destination);
+      GURL("http://test.org/resource1"), destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource1"), network_anonymization_key,
-      destination);
+      GURL("http://other.org/resource1"), destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource2"), network_anonymization_key,
-      destination);
+      GURL("http://other.org/resource2"), destination);
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),

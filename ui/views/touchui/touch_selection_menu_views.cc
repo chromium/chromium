@@ -49,12 +49,6 @@ MenuCommand kMenuSelectCommands[] = {
     {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
 };
 
-// Constants to apply when touch text editing redesign is disabled.
-constexpr gfx::Insets kMenuMargins = gfx::Insets(1);
-constexpr gfx::Size kMenuButtonMinSize = gfx::Size(63, 38);
-
-// Constants to apply when touch text editing redesign is enabled.
-constexpr gfx::Insets kEmptyMenuMargins = gfx::Insets(0);
 constexpr int kMenuCornerRadius = 8;
 // Padding to add space between the menu and the selection bounds and handles.
 constexpr int kMenuAnchorRectPadding = 8;
@@ -77,12 +71,8 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_shadow(BubbleBorder::STANDARD_SHADOW);
   set_parent_window(context);
-  if (::features::IsTouchTextEditingRedesignEnabled()) {
-    set_margins(kEmptyMenuMargins);
-    set_corner_radius(kMenuCornerRadius);
-  } else {
-    set_margins(kMenuMargins);
-  }
+  set_margins(gfx::Insets());
+  set_corner_radius(kMenuCornerRadius);
   SetCanActivate(false);
   set_adjust_if_offscreen(true);
   SetFlipCanvasOnPaintForRTLUI(true);
@@ -104,12 +94,11 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // passing down the cumulative width occupied by the handles within
   // |anchor_rect| plus the handle image height instead of |handle_image_size|.
   // Perhaps we should also allow for some minimum padding.
-  if (menu_width > anchor_rect.width() - handle_image_size.width())
+  if (menu_width > anchor_rect.width() - handle_image_size.width()) {
     adjusted_anchor_rect.Inset(
         gfx::Insets::TLBR(0, 0, -handle_image_size.height(), 0));
-  if (::features::IsTouchTextEditingRedesignEnabled()) {
-    adjusted_anchor_rect.Outset(kMenuAnchorRectPadding);
   }
+  adjusted_anchor_rect.Outset(kMenuAnchorRectPadding);
   SetAnchorRect(adjusted_anchor_rect);
 
   BubbleDialogDelegateView::CreateBubble(this);
@@ -141,12 +130,14 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
-  if (owner_)
+  if (owner_) {
     DisconnectOwner();
+  }
   // Closing the widget will self-destroy this object.
   Widget* widget = GetWidget();
-  if (widget && !widget->IsClosed())
+  if (widget && !widget->IsClosed()) {
     widget->Close();
+  }
 }
 
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
@@ -191,13 +182,9 @@ LabelButton* TouchSelectionMenuViews::CreateButton(
   std::u16string label = gfx::RemoveAccelerator(title);
   auto* button = AddChildView(std::make_unique<LabelButton>(
       std::move(callback), label, style::CONTEXT_TOUCH_MENU));
-  if (::features::IsTouchTextEditingRedesignEnabled()) {
-    button->SetBorder(
-        CreateEmptyBorder(gfx::Insets::VH(0, kButtonHorizontalPadding)));
-    button->SetMinSize(gfx::Size(0, kButtonMinHeight));
-  } else {
-    button->SetMinSize(kMenuButtonMinSize);
-  }
+  button->SetBorder(
+      CreateEmptyBorder(gfx::Insets::VH(0, kButtonHorizontalPadding)));
+  button->SetMinSize(gfx::Size(0, kButtonMinHeight));
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   return button;
 }
@@ -215,8 +202,9 @@ void TouchSelectionMenuViews::DisconnectOwner() {
 void TouchSelectionMenuViews::WindowClosing() {
   DCHECK(!owner_ || owner_->menu_ == this);
   BubbleDialogDelegateView::WindowClosing();
-  if (owner_)
+  if (owner_) {
     DisconnectOwner();
+  }
 }
 
 void TouchSelectionMenuViews::ButtonPressed(int command,

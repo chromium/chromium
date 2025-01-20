@@ -71,7 +71,7 @@ installer::TranslationDelegate* g_translation_delegate = nullptr;
 
 namespace installer {
 
-TranslationDelegate::~TranslationDelegate() {}
+TranslationDelegate::~TranslationDelegate() = default;
 
 void SetTranslationDelegate(TranslationDelegate* delegate) {
   g_translation_delegate = delegate;

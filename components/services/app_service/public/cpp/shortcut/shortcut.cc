@@ -14,7 +14,22 @@
 
 namespace apps {
 
-APP_ENUM_TO_STRING(ShortcutSource, kUnknown, kUser, kPolicy, kDefault)
+std::ostream& operator<<(std::ostream& os, ShortcutSource v) {
+  switch (v) {
+    case ShortcutSource::kUnknown:
+      return os << "ShortcutSource::kUnknown";
+    case ShortcutSource::kUser:
+      return os << "ShortcutSource::kUser";
+    case ShortcutSource::kPolicy:
+      return os << "ShortcutSource::kPolicy";
+    case ShortcutSource::kDefault:
+      return os << "ShortcutSource::kDefault";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
 
 Shortcut::Shortcut(const std::string& host_app_id, const std::string& local_id)
     : host_app_id(host_app_id),
@@ -50,7 +65,7 @@ std::string Shortcut::ToString() const {
   if (name.has_value()) {
     out << "- name: " << name.value() << std::endl;
   }
-  out << "- shortcut_source: " << EnumToString(shortcut_source) << std::endl;
+  out << "- shortcut_source: " << shortcut_source << std::endl;
   out << "- host_app_id: " << host_app_id << std::endl;
   out << "- local_id: " << local_id << std::endl;
   if (allow_removal.has_value()) {

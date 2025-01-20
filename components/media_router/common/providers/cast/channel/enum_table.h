@@ -319,8 +319,9 @@ class EnumTable {
       const std::size_t index = static_cast<std::size_t>(value);
       if (ANALYZER_ASSUME_TRUE(index < data_.size())) {
         const auto& entry = data_.begin()[index];
-        if (ANALYZER_ASSUME_TRUE(entry.has_str()))
+        if (ANALYZER_ASSUME_TRUE(entry.has_str())) {
           return entry.str();
+        }
       }
       return std::nullopt;
     }
@@ -340,8 +341,9 @@ class EnumTable {
   template <E Value>
   constexpr std::string_view GetString() const {
     for (const auto& entry : data_) {
-      if (entry.value == static_cast<int32_t>(Value) && entry.has_str())
+      if (entry.value == static_cast<int32_t>(Value) && entry.has_str()) {
         return entry.str();
+      }
     }
 
     NOTREACHED() << "No string for enum value: " << static_cast<int32_t>(Value);

@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 
 #include "base/numerics/safe_conversions.h"
@@ -84,17 +79,19 @@ static_assert(kEndOfWebCryptoKeyUsage == (1 << 7) + 1,
               "keyUsageMappings needs to be updated");
 
 const char* KeyUsageToString(WebCryptoKeyUsage usage) {
-  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
-    if (kKeyUsageMappings[i].value == usage)
-      return kKeyUsageMappings[i].name;
+  for (const auto& mapping : kKeyUsageMappings) {
+    if (mapping.value == usage) {
+      return mapping.name;
+    }
   }
   NOTREACHED();
 }
 
 WebCryptoKeyUsageMask KeyUsageStringToMask(const String& usage_string) {
-  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
-    if (kKeyUsageMappings[i].name == usage_string)
-      return kKeyUsageMappings[i].value;
+  for (const auto& mapping : kKeyUsageMappings) {
+    if (mapping.name == usage_string) {
+      return mapping.value;
+    }
   }
   return 0;
 }
@@ -146,26 +143,26 @@ bool CryptoKey::extractable() const {
   return key_.Extractable();
 }
 
-ScriptValue CryptoKey::algorithm(ScriptState* script_state) {
+ScriptObject CryptoKey::algorithm(ScriptState* script_state) {
   V8ObjectBuilder object_builder(script_state);
   DictionaryBuilder dictionary_builder(object_builder);
   key_.Algorithm().WriteToDictionary(&dictionary_builder);
-  return object_builder.GetScriptValue();
+  return object_builder.ToScriptObject();
 }
 
 // FIXME: This creates a new javascript array each time. What should happen
 //        instead is return the same (immutable) array. (Javascript callers can
 //        distinguish this by doing an == test on the arrays and seeing they are
 //        different).
-ScriptValue CryptoKey::usages(ScriptState* script_state) {
+ScriptObject CryptoKey::usages(ScriptState* script_state) {
   Vector<String> result;
-  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
-    WebCryptoKeyUsage usage = kKeyUsageMappings[i].value;
+  for (const auto& mapping : kKeyUsageMappings) {
+    WebCryptoKeyUsage usage = mapping.value;
     if (key_.Usages() & usage)
       result.push_back(KeyUsageToString(usage));
   }
 
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, result));
 }

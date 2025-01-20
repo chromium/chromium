@@ -347,7 +347,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     storage_ = storage.get();
     ON_CALL(*storage, StoreData)
         .WillByDefault(testing::SaveArg<0>(&nigori_local_data_));
-    if (nigori_local_data_.ByteSize() != 0) {
+    if (nigori_local_data_.ByteSizeLong() != 0U) {
       // Return local data only if it's populated and non-empty. Otherwise,
       // return default nullopt.
       ON_CALL(*storage, RestoreData).WillByDefault(Return(nigori_local_data_));
@@ -1074,20 +1074,20 @@ TEST_F(NigoriSyncBridgeImplTest,
   // Encryption should succeed since a default key exists.
   CrossUserSharingPublicPrivateKeyPair peer_key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
-  ASSERT_TRUE(cryptographer()
-                  ->AuthEncryptForCrossUserSharing(
-                      base::as_bytes(base::make_span("hello world")),
-                      peer_key_pair.GetRawPublicKey())
-                  .has_value());
+  ASSERT_TRUE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 
   EXPECT_CALL(*storage(), ClearData);
   bridge()->ApplyDisableSyncChanges();
   EXPECT_FALSE(cryptographer()->CanEncrypt());
-  EXPECT_FALSE(cryptographer()
-                   ->AuthEncryptForCrossUserSharing(
-                       base::as_bytes(base::make_span("hello world")),
-                       peer_key_pair.GetRawPublicKey())
-                   .has_value());
+  EXPECT_FALSE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 }
 
 // Tests decryption logic for explicit passphrase. In order to check that we're
@@ -1126,6 +1126,46 @@ TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
   EXPECT_THAT(*cryptographer(), CanDecryptWith(passphrase_key_params));
   EXPECT_THAT(*cryptographer(),
               HasDefaultKeyDerivedFrom(passphrase_key_params));
+}
+
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreNotDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_THAT(bridge()->GetPassphraseType(),
+              Eq(PassphraseType::kCustomPassphrase));
+  EXPECT_FALSE(cryptographer()->CanEncrypt());
+
+  EXPECT_CALL(*observer(), OnPassphraseAccepted());
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
+}
+
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
 }
 
 INSTANTIATE_TEST_SUITE_P(Scrypt,

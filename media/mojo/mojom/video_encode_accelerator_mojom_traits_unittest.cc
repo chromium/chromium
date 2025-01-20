@@ -54,10 +54,10 @@ TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   for (size_t i = 0; i < ::media::VideoEncoderInfo::kMaxSpatialLayers; ++i)
     input.fps_allocation[i] = {5, 5, 10};
   // Resolution bitrate limits.
-  input.resolution_bitrate_limits.push_back(::media::ResolutionBitrateLimit(
-      gfx::Size(123, 456), 123456, 123456, 789012));
-  input.resolution_bitrate_limits.push_back(::media::ResolutionBitrateLimit(
-      gfx::Size(789, 1234), 1234567, 1234567, 7890123));
+  input.resolution_rate_limits.push_back(::media::ResolutionRateLimit(
+      gfx::Size(123, 456), 123456, 123456, 789012, 30, 1));
+  input.resolution_rate_limits.push_back(::media::ResolutionRateLimit(
+      gfx::Size(789, 1234), 1234567, 1234567, 7890123, 30, 1));
   // Other bool values.
   input.supports_native_handle = true;
   input.has_trusted_rate_controller = true;

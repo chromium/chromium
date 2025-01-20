@@ -13,6 +13,7 @@
 @class BubblePresenter;
 @protocol BrowserCoordinatorCommands;
 @protocol EditViewAnimatee;
+@protocol FakeboxButtonsSnapshotProvider;
 @protocol LocationBarAnimatee;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
@@ -62,6 +63,11 @@
 
 // Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
+
+// Sets an object to provide a snapshot of the fakebox buttons to be used during
+// focus and defocus transitions.
+- (void)setFakeboxButtonsSnapshotProvider:
+    (id<FakeboxButtonsSnapshotProvider>)provider;
 
 @end
 

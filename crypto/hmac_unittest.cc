@@ -349,12 +349,12 @@ TEST(HMACTest, Bytes) {
 
   EXPECT_TRUE(hmac.Verify(data, calculated_hmac));
   EXPECT_TRUE(hmac.VerifyTruncated(
-      data, base::make_span(calculated_hmac, kSHA256DigestSize / 2)));
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
 
   data[0]++;
   EXPECT_FALSE(hmac.Verify(data, calculated_hmac));
   EXPECT_FALSE(hmac.VerifyTruncated(
-      data, base::make_span(calculated_hmac, kSHA256DigestSize / 2)));
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
 }
 
 TEST(HMACTest, OneShotSha1) {

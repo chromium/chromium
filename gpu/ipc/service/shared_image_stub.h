@@ -70,15 +70,17 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);
 
-  bool CreateSharedImage(const Mailbox& mailbox,
-                         gfx::GpuMemoryBufferHandle handle,
-                         viz::SharedImageFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         SharedImageUsageSet usage,
-                         std::string debug_label);
+  bool CreateSharedImage(
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      SharedImageUsageSet usage,
+      std::string debug_label,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
@@ -127,6 +129,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   void OnUnregisterDxgiFence(const Mailbox& mailbox,
                              gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
+
+  void OnCreateSharedImagePool(mojom::CreateSharedImagePoolParamsPtr params);
+  void OnDestroySharedImagePool(mojom::DestroySharedImagePoolParamsPtr params);
 
   ContextResult Initialize();
   void OnError();

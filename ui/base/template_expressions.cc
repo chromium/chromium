@@ -17,6 +17,7 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/values.h"
 
@@ -195,7 +196,7 @@ bool ReplaceTemplateExpressionsInternal(
       // Escape quotes and backslash for '$i18nPolymer{}' use (i.e. quoted).
       replacement = PolymerParameterEscape(replacement, is_javascript);
     } else {
-      CHECK(false) << "Unknown context " << context;
+      NOTREACHED() << "Unknown context " << context;
     }
 
 #if DCHECK_IS_ON()

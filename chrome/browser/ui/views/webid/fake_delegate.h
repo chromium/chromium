@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace webid {
+
 class FakeDelegate : public AccountSelectionView::Delegate {
  public:
   explicit FakeDelegate(content::WebContents* web_contents);
@@ -39,5 +41,7 @@ class FakeDelegate : public AccountSelectionView::Delegate {
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   AccountSelectedCallback account_selected_cb_;
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_

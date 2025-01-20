@@ -123,8 +123,16 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
  protected:
   SVGImage* EmbeddedSVGImage() const;
-  bool CanApplyObjectViewBox() const override;
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
+
+  PhysicalSize NaturalSize() const {
+    NOT_DESTROYED();
+    return natural_size_;
+  }
+  void SetNaturalSize(const PhysicalSize& natural_size) {
+    NOT_DESTROYED();
+    natural_size_ = natural_size;
+  }
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
@@ -169,8 +177,12 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    HitTestPhase) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
-  void UpdateIntrinsicSizeIfNeeded(const PhysicalSize&);
-  bool NeedsLayoutOnIntrinsicSizeChange() const;
+  void UpdateNaturalSizeIfNeeded(const PhysicalSize&);
+  bool NeedsLayoutOnNaturalSizeChange() const;
+
+  // The natural size for the image.
+  // TODO: Store the full natural dimensions.
+  PhysicalSize natural_size_;
 
   // This member wraps the associated decoded image.
   //

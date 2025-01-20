@@ -61,7 +61,7 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestAddBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_SwitchToExistingTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url_1 = GURL(kExampleUrl);
   NavigateToURL(url_1);
   const auto* web_contents_1 = web_contents();
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_OpenNewTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
   const GURL url_2 = GURL("https://www.google.com");
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_InvalidUrls) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL invalid_url_1 = GURL("chrome://newtab");
   NavigateToURL(invalid_url_1);
   const GURL invalid_url_2 = GURL("file://foo");
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   delegate->ShowFeedbackForProductSpecifications(log_id);
 
   // Feedback dialog should be non-null with correct meta data.

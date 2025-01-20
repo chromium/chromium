@@ -52,8 +52,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -269,7 +267,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   }
 }
 
-DownloadPrefs::~DownloadPrefs() {}
+DownloadPrefs::~DownloadPrefs() = default;
 
 // static
 void DownloadPrefs::RegisterProfilePrefs(
@@ -543,77 +541,7 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   if (skip_sanitize_download_target_path_for_testing_)
     return path;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40731523): Sort out path sanitization for Lacros.
-  // This will require refactoring the ash-only code below so it can be shared.
-  base::FilePath migrated_drive_path;
-  if (download_dir_util::ExpandDrivePolicyVariable(profile_, path,
-                                                   &migrated_drive_path)) {
-    return SanitizeDownloadTargetPath(migrated_drive_path);
-  }
-
-  base::FilePath onedrive_path;
-  if (download_dir_util::ExpandOneDrivePolicyVariable(profile_, path,
-                                                      &onedrive_path)) {
-    return SanitizeDownloadTargetPath(onedrive_path);
-  }
-
-  const base::FilePath default_downloads_path =
-      GetDefaultDownloadDirectoryForProfile();
-  // Relative paths might be unsafe, so use the default path.
-  if (!path.IsAbsolute() || path.ReferencesParent())
-    return default_downloads_path;
-
-  // Allow downloads directory and subdirectories. Subdirectories may not seem
-  // useful, but many tests assume they can download files into a subdirectory,
-  // and allowing subdirectories doesn't hurt.
-  if (default_downloads_path == path || default_downloads_path.IsParent(path))
-    return path;
-
-  // Allow documents directory ("MyFiles") and subdirectories.
-  base::FilePath documents_path =
-      base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-  if (documents_path == path || documents_path.IsParent(path))
-    return path;
-
-  // Allow paths under the drive mount point.
-  base::FilePath drivefs;
-  bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&drivefs);
-  if (drivefs_mounted && drivefs.IsParent(path))
-    return path;
-
-  // Allow paths under OneDrive mount point if the feature flag is enabled.
-  base::FilePath odfs_path;
-  bool odfs_mounted = chrome::GetOneDriveMountPointPath(&odfs_path);
-  if (base::FeatureList::IsEnabled(features::kSkyVault) && odfs_mounted &&
-      ((odfs_path == path) || odfs_path.IsParent(path))) {
-    return path;
-  }
-
-  // Allow paths for removable media devices.
-  base::FilePath removable_media_path;
-  if (chrome::GetRemovableMediaPath(&removable_media_path) &&
-      removable_media_path.IsParent(path)) {
-    return path;
-  }
-
-  // Allow paths under the Android files mount point.
-  base::FilePath android_files_path;
-  if (chrome::GetAndroidFilesPath(&android_files_path) &&
-      android_files_path.IsParent(path)) {
-    return path;
-  }
-
-  // Allow Linux files mount point and subdirs.
-  base::FilePath linux_files_path;
-  if (chrome::GetLinuxFilesPath(&linux_files_path) &&
-      (linux_files_path == path || linux_files_path.IsParent(path))) {
-    return path;
-  }
-
-  // Otherwise, return the safe default.
-  return default_downloads_path;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath migrated_drive_path;
   // Managed prefs may force a legacy Drive path as the download path. Ensure
   // the path is valid when DriveFS is enabled.

@@ -8,7 +8,7 @@
 #import <tuple>
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -148,8 +148,8 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   [AutofillAppInterface saveExampleProfile];
 
   // Set up histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
@@ -165,8 +165,8 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -177,9 +177,14 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   }
-  if ([self isRunningTest:@selector(testFillXframeCreditCardForm)]) {
+  if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
+      [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
+  }
+  if ([self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAcrossIframesIosThrottling);
   }
   return config;
 }
@@ -206,6 +211,19 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/xframe_credit_card.html")];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Autofill Test - Xframe Credit Card"];
+
+  // Allow filling credit card data on the non-https localhost.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+}
+
+// Loads a page with a xframe credit card that busts the limit of frames.
+- (void)loadThrottledXframePaymentPage {
+  // Loads page with xframe credit card from.
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/xframe_credit_card_throttled.html")];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          "Autofill Test - Xframe Credit Card - Frame Limit Exceeded"];
 
   // Allow filling credit card data on the non-https localhost.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
@@ -531,6 +549,69 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
     [self verifyFieldWithIdHasBeenFilled:field_id_attr
                                 iframeId:frame_id_attr
                                    value:value];
+  }
+
+  // Cleanup.
+  [AutofillAppInterface clearMockReauthenticationModule];
+}
+
+// Tests that child frame throttling can be enforced for xframe credit card
+// form.
+- (void)testFillXframeCreditCardFormThrottled {
+  // Mock reauth so it allows filling sensitive information without the need for
+  // real authentication.
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+
+  // Load the xframe payment page.
+  [self loadThrottledXframePaymentPage];
+
+  // Tap a credit card field to open the KA. The bottom sheet isn't triggered
+  // where there is only a name field in the credit card form.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+
+  // Tap on the credit card chip.
+  id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(
+      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
+  [[EarlGrey selectElementWithMatcher:cc_chip] performAction:grey_tap()];
+
+  // Verify that the credit card fields were filled correctly across frames,
+  // where the name field should be filled but the other fields should remain
+  // unfilled because the limit of child frames was busted which results in not
+  // building the frame tree for the form.
+
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  // Verify that the cardholder name field on the main frame was filled which
+  // doesn't require the frame tree.
+  [self verifyFieldWithIdHasBeenFilled:kFormCardName
+                              iframeId:""
+                                 value:base::SysUTF16ToNSString(card.GetInfo(
+                                           autofill::CREDIT_CARD_NAME_FULL,
+                                           locale))];
+
+  // Verify that the fields on other frames weren't filled as they require the
+  // frame tree which wasn't constructed because the limit of frames was busted.
+  std::vector<std::tuple<autofill::FieldType, std::string, std::string>>
+      empty_fields_to_verify = {
+          std::make_tuple(autofill::CREDIT_CARD_NUMBER, "cc-number-frame",
+                          kFormCardNumber),
+          std::make_tuple(autofill::CREDIT_CARD_EXP_MONTH, "cc-exp-frame",
+                          kFormCardExpirationMonth),
+          std::make_tuple(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                          "cc-exp-frame", kFormCardExpirationYear),
+  };
+  for (const auto& [field_type, frame_id_attr, field_id_attr] :
+       empty_fields_to_verify) {
+    [self verifyFieldWithIdHasBeenFilled:field_id_attr
+                                iframeId:frame_id_attr
+                                   value:@""];
   }
 
   // Cleanup.

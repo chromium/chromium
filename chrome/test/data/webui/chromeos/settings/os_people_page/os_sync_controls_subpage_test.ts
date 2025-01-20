@@ -163,7 +163,7 @@ suite('OsSyncControlsNavigationTest', () => {
     const browserProxy = new TestOsSyncBrowserProxy();
     OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    Router.getInstance().navigateTo(routes.OS_SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_CONTROLS);
     await browserProxy.methodCalled('didNavigateToOsSyncPage');
 
     Router.getInstance().navigateTo(routes.OS_PEOPLE);

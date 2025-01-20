@@ -65,11 +65,12 @@ class OmniboxPopupView {
   virtual void OnDragCanceled() = 0;
 
   // Popup equivalent of GetAccessibleNodeData, used only by a unit test.
-  virtual void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) = 0;
+  virtual void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const = 0;
 
   // Returns result view button text. This is currently only needed by a single
   // unit test and it would be better to eliminate it than to increase usage.
-  virtual std::u16string GetAccessibleButtonTextForResult(size_t line) = 0;
+  virtual std::u16string GetAccessibleButtonTextForResult(
+      size_t line) const = 0;
 
   // Updates the result and header views based on the visibility of their group.
   virtual void SetSuggestionGroupVisibility(size_t match_index,

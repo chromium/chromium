@@ -17,7 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -27,6 +29,7 @@ import java.util.List;
 
 /** Tests UsbNotificationManager behaviour and its delegate. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 public class UsbNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;

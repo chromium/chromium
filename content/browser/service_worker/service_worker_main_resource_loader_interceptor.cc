@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -44,11 +43,11 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
                                                             url.scheme()))
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return url.SchemeIs(kExternalFileScheme);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
@@ -63,6 +62,34 @@ bool ShouldCreateForWorker(
   // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url);
+}
+
+// See the comment at
+// `ServiceWorkerMainResourceLoaderInterceptor::isolation_info_` for
+// `isolation_info_from_interceptor`.
+void InitializeServiceWorkerClient(
+    ServiceWorkerClient& service_worker_client,
+    const network::ResourceRequest& tentative_resource_request,
+    const net::IsolationInfo& isolation_info_from_interceptor) {
+  // Update the container host with this request, clearing old controller state
+  // if this is a redirect.
+  service_worker_client.SetControllerRegistration(
+      nullptr,
+      /*notify_controllerchange=*/false);
+  const GURL stripped_url =
+      net::SimplifyUrlForRequest(tentative_resource_request.url);
+
+  service_worker_client.UpdateUrls(
+      stripped_url,
+      // The storage key only has a top_level_site, not
+      // an origin, so we must extract the origin from
+      // trusted_params.
+      tentative_resource_request.trusted_params
+          ? tentative_resource_request.trusted_params->isolation_info
+                .top_frame_origin()
+          : std::nullopt,
+      service_worker_client.CalculateStorageKeyForUpdateUrls(
+          stripped_url, isolation_info_from_interceptor));
 }
 
 }  // namespace
@@ -135,6 +162,13 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
       network::mojom::RequestDestination::kSharedWorker) {
     base::UmaHistogramBoolean("ServiceWorker.SharedWorkerScript.IsBlob",
                               resource_request.url.SchemeIsBlob());
+    if (resource_request.url.SchemeIsBlob() &&
+        navigation_handle->service_worker_client() &&
+        navigation_handle->service_worker_client()->controller()) {
+      navigation_handle->service_worker_client()->controller()->CountFeature(
+          blink::mojom::WebFeature::
+              kSharedWorkerScriptUnderServiceWorkerControlIsBlob);
+    }
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
@@ -203,11 +237,12 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       isolation_info_.top_frame_origin().value(), new_origin,
       new_site_for_cookies, isolation_info_.nonce());
 
-  // TODO(crbug.com/368025734): Move this `CalculateStorageKeyForUpdateUrls()`
-  // to the subsequent call site of `UpdateUrls()`.
-  blink::StorageKey storage_key =
-      handle_->service_worker_client()->CalculateStorageKeyForUpdateUrls(
-          tentative_resource_request.url, isolation_info_);
+  // Update the service worker client. This is important to do this on every
+  // requests/redirects before falling back to network below, so service worker
+  // APIs still work even if the service worker is bypassed for request
+  // interception.
+  InitializeServiceWorkerClient(*handle_->service_worker_client(),
+                                tentative_resource_request, isolation_info_);
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
@@ -215,7 +250,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       skip_service_worker_ ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
       !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
-          storage_key);
+          handle_->service_worker_client()->key());
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
@@ -225,8 +260,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       frame_tree_node_id_, handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
-      tentative_resource_request, storage_key, browser_context,
-      std::move(loader_callback), std::move(fallback_callback));
+      tentative_resource_request, browser_context, std::move(loader_callback),
+      std::move(fallback_callback));
 }
 
 void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(

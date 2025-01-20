@@ -948,7 +948,13 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-            android:hardwareAccelerated="false" />
+            android:hardwareAccelerated="false">
+            <intent-filter>
+                <action android:name="android.intent.action.WEB_SEARCH" />
+                <!-- Permits Chrome to act as a default handler for WEB_SEARCH intents. -->
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+      </activity>
 
         <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
         <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
@@ -1088,9 +1094,10 @@ by a child template that "extends" this file.
 
         <!-- Activities for task manager. -->
         <activity
-            android:name="org.chromium.chrome.browser.task_manager.TaskManagerActivity"
+            android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
             android:exported="false"
-            android:theme="@style/Theme.Chromium.Activity">
+            android:theme="@style/Theme.Chromium.Activity"
+            android:launchMode="singleInstance">
         </activity>
 
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
@@ -1218,7 +1225,7 @@ by a child template that "extends" this file.
           {% endif %} />
       {% endfor %}
 
-      {% set num_privileged_services = 5 %}
+      {% set num_privileged_services = 10 %}
       <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
           android:value="{{ num_privileged_services }}"/>
 
@@ -1333,6 +1340,20 @@ by a child template that "extends" this file.
           android:exported="true">
           <path-permission android:path="/bookmarks/search_suggest_query"
                   android:readPermission="android.permission.GLOBAL_SEARCH" />
+      </provider>
+
+      <provider
+            android:name="org.chromium.chrome.browser.provider.PageContentProvider"
+            android:authorities="{{ manifest_package }}.PageContentProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+      </provider>
+
+      <!-- Provider for querying the Autofill third party mode state. -->
+      <provider android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
+          android:authorities="{{ manifest_package }}.AutofillThirdPartyModeContentProvider"
+          android:exported="true"
+          tools:ignore="ExportedContentProvider">
       </provider>
 
       {% block base_application_definitions %}

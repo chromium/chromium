@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
@@ -522,6 +523,7 @@ public class ProcessInitializationHandler {
                 .addObserver(
                         new ContentCaptureHistoryDeletionObserver(
                                 () -> PlatformContentCaptureController.getInstance()));
+        PageZoomUtils.recordFeatureUsage(profile);
     }
 
     /**
@@ -715,7 +717,7 @@ public class ProcessInitializationHandler {
                         optimizationGuideBridge.onDeferredStartup();
                     }
                     // TODO(crbug.com/40236066) Move to PersistedTabData.onDeferredStartup
-                    if (PriceTrackingFeatures.isPriceTrackingEligible(profile)) {
+                    if (PriceTrackingFeatures.isPriceAnnotationsEligible(profile)) {
                         ShoppingPersistedTabData.onDeferredStartup();
                     }
                 });

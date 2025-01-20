@@ -12,9 +12,13 @@ import re
 import subprocess
 from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
+# vpython-provided modules.
 import six
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
+
+# //testing imports.
 from unexpected_passes_common import data_types
 
 FINDER_DISABLE_COMMENT_BASE = 'finder:disable'
@@ -155,6 +159,8 @@ class Expectations(object):
   def __init__(self):
     self._cached_tag_groups = {}
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def CreateTestExpectationMap(
       self, expectation_files: Optional[Union[str, List[str]]],
       tests: Optional[Iterable[str]],
@@ -182,16 +188,17 @@ class Expectations(object):
           expectation_file_name, data_types.ExpectationBuilderMap())
       logging.debug('Parsed %d expectations', len(list_parser.expectations))
       for e in list_parser.expectations:
-        if 'Skip' in e.raw_results:
+        if _RawResultsContainUnhandledValue(e):
           continue
-        # Expectations that only have a Pass expectation (usually used to
-        # override a broader, failing expectation) are not handled by the
-        # unexpected pass finder, so ignore those.
-        if e.raw_results == ['Pass']:
-          continue
+
         expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
                                              e.reason)
-        assert expectation not in expectations_for_file
+        if expectation in expectations_for_file:
+          # In practice this should never be hit unless the file was somehow
+          # modified, as _RemoveDuplicateExpectations() should have removed all
+          # duplicates already.
+          raise RuntimeError(
+              f'Duplicate expectation {expectation.AsExpectationFileString()}')
         expectations_for_file[expectation] = data_types.BuilderStepMap()
 
     logging.info('Creating test expectation map')
@@ -204,10 +211,13 @@ class Expectations(object):
       if not isinstance(expectation_files, list):
         expectation_files = [expectation_files]
       for ef in expectation_files:
+        # Remove any duplicate expectations now so that we know for sure which
+        # expectations to modify/remove later.
+        self._RemoveDuplicateExpectations(ef)
         # Normalize to '/' as the path separator.
         expectation_file_name = os.path.normpath(ef).replace(os.path.sep, '/')
-        content = self._GetNonRecentExpectationContent(expectation_file_name,
-                                                       grace_period)
+        content = _GetNonRecentExpectationContent(expectation_file_name,
+                                                  grace_period)
         AddContentToMap(content, expectation_map, expectation_file_name)
     else:
       expectation_file_name = ''
@@ -217,60 +227,7 @@ class Expectations(object):
       AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
-
-  def _GetNonRecentExpectationContent(self, expectation_file_path: str,
-                                      num_days: datetime.timedelta) -> str:
-    """Gets content from |expectation_file_path| older than |num_days| days.
-
-    Args:
-      expectation_file_path: A string containing a filepath pointing to an
-          expectation file.
-      num_days: A datetime.timedelta containing how old an expectation in the
-          given expectation file must be to be included.
-
-    Returns:
-      The contents of the expectation file located at |expectation_file_path|
-      as a string with any recent expectations removed.
-    """
-    content = ''
-    # `git blame` output is normally in the format:
-    # revision optional_filename (author date time timezone lineno) line_content
-    # The --porcelain option is meant to be more machine readable, but is much
-    # more difficult to parse for what we need to do here. In order to
-    # guarantee that the filename won't be included in the output (by default,
-    # it will be shown if there is content from a renamed file), pass -c to
-    # use the same format as `git annotate`, which is:
-    # revision (author date time timezone lineno)line_content
-    # (Note the lack of space between the ) and the content).
-    cmd = ['git', 'blame', '-c', expectation_file_path]
-    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
-      blame_output = subprocess.check_output(cmd,
-                                             stderr=devnull).decode('utf-8')
-    for line in blame_output.splitlines(True):
-      match = GIT_BLAME_REGEX.match(line)
-      assert match
-      date = match.groupdict()['date']
-      line_content = match.groupdict()['content']
-      stripped_line_content = line_content.strip()
-      # Auto-add comments and blank space, otherwise only add if the grace
-      # period has expired.
-      if not stripped_line_content or stripped_line_content.startswith('#'):
-        content += line_content
-      else:
-        if six.PY2:
-          date_parts = date.split('-')
-          date = datetime.date(year=int(date_parts[0]),
-                               month=int(date_parts[1]),
-                               day=int(date_parts[2]))
-        else:
-          date = datetime.date.fromisoformat(date)
-        date_diff = datetime.date.today() - date
-        if date_diff > num_days:
-          content += line_content
-        else:
-          logging.debug('Omitting expectation %s because it is too new',
-                        line_content.rstrip())
-    return content
+  # pylint: enable=no-self-use
 
   def RemoveExpectationsFromFile(self,
                                  expectations: List[data_types.Expectation],
@@ -366,6 +323,61 @@ class Expectations(object):
       f.write(output_contents)
 
     return removed_urls
+
+  def _RemoveDuplicateExpectations(self, expectation_file_path: str) -> None:
+    """Removes cases of fully duplicate expectations from a file.
+
+    Note that this ignores annotations such as finder:disable since handling
+    those properly here would increase complexity and the likelihood of
+    getting a duplicate expectation affected by an annotation is very low.
+
+    Args:
+      expectation_file_path: A string containing a filepath pointing to an
+          expectation file.
+    """
+    with open(expectation_file_path, encoding='utf-8') as infile:
+      content = infile.read()
+    list_parser = expectations_parser.TaggedTestListParser(content)
+
+    seen_expectations = set()
+    lines_to_remove = set()
+    for e in list_parser.expectations:
+      if _RawResultsContainUnhandledValue(e):
+        continue
+      expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
+                                           e.reason)
+      if expectation in seen_expectations:
+        lines_to_remove.add(e.lineno)
+      else:
+        seen_expectations.add(expectation)
+
+    if not lines_to_remove:
+      return
+
+    trimmed_lines = []
+    for i, line_content in enumerate(content.splitlines(keepends=True)):
+      if i + 1 in lines_to_remove:
+        continue
+      trimmed_lines.append(line_content)
+
+    # Calculate which lines in the new content correspond to where content was
+    # removed. The additional -1 is due to the difference between the 0-based
+    # line numbers used here and the 1-based line numbers provided by the
+    # expectation parser.
+    removed_lines = set()
+    for offset, rl in enumerate(sorted(lines_to_remove)):
+      removed_lines.add(rl - offset - 1)
+
+    # While it's unlikely that an entire block consisted of duplicate
+    # expectations, remove any stale comments now just in case.
+    header_length = len(
+        self._GetExpectationFileTagHeader(expectation_file_path).splitlines(
+            True))
+    output_contents = _RemoveStaleComments(''.join(trimmed_lines),
+                                           removed_lines, header_length)
+
+    with open(expectation_file_path, 'w', encoding='utf-8') as outfile:
+      outfile.write(output_contents)
 
   def _GetDisableAnnotatedExpectationsFromFile(
       self, expectation_file: str,
@@ -509,14 +521,6 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
-  def ParseTaggedTestListContent(self, content: str
-                                 ) -> expectations_parser.TaggedTestListParser:
-    """Helper to parse typ expectation files.
-
-    This allows subclasses to avoid adding typ to PYTHONPATH.
-    """
-    return expectations_parser.TaggedTestListParser(content)
-
   def FilterToKnownTags(self, tags: Iterable[str]) -> Set[str]:
     """Filters |tags| to only include tags known to expectation files.
 
@@ -594,14 +598,17 @@ class Expectations(object):
         filtered_tags.add(tag_group[best_index])
     return frozenset(filtered_tags)
 
-  def _ConsolidateKnownOverlappingTags(self, typ_tags: FrozenSet[str]
-                                       ) -> FrozenSet[str]:
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
+  def _ConsolidateKnownOverlappingTags(
+      self, typ_tags: FrozenSet[str]) -> FrozenSet[str]:
     """Consolidates tags that are known to overlap/cause issues.
 
     One known example of this would be dual GPU machines that report tags for
     both GPUs.
     """
     return typ_tags
+  # pylint: enable=no-self-use
 
   def NarrowSemiStaleExpectationScope(
       self, stale_expectation_map: data_types.TestExpectationMap) -> Set[str]:
@@ -823,6 +830,15 @@ class Expectations(object):
     raise NotImplementedError()
 
 
+def ParseTaggedTestListContent(
+    content: str) -> expectations_parser.TaggedTestListParser:
+  """Helper to parse typ expectation files.
+
+  This allows subclasses to avoid adding typ to PYTHONPATH.
+  """
+  return expectations_parser.TaggedTestListParser(content)
+
+
 def _LineContainsGroupStartComment(line: str) -> bool:
   return FINDER_GROUP_COMMENT_START in line
 
@@ -945,6 +961,77 @@ def _ExpectationPartOfNonRemovableGroup(
   all_expectations_in_group = group_to_expectations[group_name]
   group_removable = all_expectations_in_group <= removable_expectations
   return not group_removable
+
+
+def _RawResultsContainUnhandledValue(
+    expectation: expectations_parser.Expectation) -> bool:
+  """Determines if a typ expectation contains an unhandled raw result."""
+  # Skip expectations are unhandled since there is no historical data for
+  # skipped tests.
+  if 'Skip' in expectation.raw_results:
+    return True
+
+  # Expectations that only have a Pass expectation (usually used to
+  # override a broader, failing expectation) are not handled by the
+  # unexpected pass finder, so ignore those.
+  if expectation.raw_results == ['Pass']:
+    return True
+
+  return False
+
+
+def _GetNonRecentExpectationContent(expectation_file_path: str,
+                                    num_days: datetime.timedelta) -> str:
+  """Gets content from |expectation_file_path| older than |num_days| days.
+
+  Args:
+    expectation_file_path: A string containing a filepath pointing to an
+        expectation file.
+    num_days: A datetime.timedelta containing how old an expectation in the
+        given expectation file must be to be included.
+
+  Returns:
+    The contents of the expectation file located at |expectation_file_path|
+    as a string with any recent expectations removed.
+  """
+  content = ''
+  # `git blame` output is normally in the format:
+  # revision optional_filename (author date time timezone lineno) line_content
+  # The --porcelain option is meant to be more machine readable, but is much
+  # more difficult to parse for what we need to do here. In order to
+  # guarantee that the filename won't be included in the output (by default,
+  # it will be shown if there is content from a renamed file), pass -c to
+  # use the same format as `git annotate`, which is:
+  # revision (author date time timezone lineno)line_content
+  # (Note the lack of space between the ) and the content).
+  cmd = ['git', 'blame', '-c', expectation_file_path]
+  with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
+    blame_output = subprocess.check_output(cmd, stderr=devnull).decode('utf-8')
+  for line in blame_output.splitlines(True):
+    match = GIT_BLAME_REGEX.match(line)
+    assert match
+    date = match.groupdict()['date']
+    line_content = match.groupdict()['content']
+    stripped_line_content = line_content.strip()
+    # Auto-add comments and blank space, otherwise only add if the grace
+    # period has expired.
+    if not stripped_line_content or stripped_line_content.startswith('#'):
+      content += line_content
+    else:
+      if six.PY2:
+        date_parts = date.split('-')
+        date = datetime.date(year=int(date_parts[0]),
+                             month=int(date_parts[1]),
+                             day=int(date_parts[2]))
+      else:
+        date = datetime.date.fromisoformat(date)
+      date_diff = datetime.date.today() - date
+      if date_diff > num_days:
+        content += line_content
+      else:
+        logging.debug('Omitting expectation %s because it is too new',
+                      line_content.rstrip())
+  return content
 
 
 def _RemoveStaleComments(content: str, removed_lines: Set[int],

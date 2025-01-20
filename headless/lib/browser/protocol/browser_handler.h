@@ -29,7 +29,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
 
   // Browser::Backend implementation
   Response GetWindowForTarget(
-      Maybe<std::string> target_id,
+      std::optional<std::string> target_id,
       int* out_window_id,
       std::unique_ptr<Browser::Bounds>* out_bounds) override;
   Response GetWindowBounds(
@@ -39,7 +39,8 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
   Response SetWindowBounds(
       int window_id,
       std::unique_ptr<Browser::Bounds> out_bounds) override;
-  Response SetDockTile(Maybe<std::string> label, Maybe<Binary> image) override;
+  Response SetDockTile(std::optional<std::string> label,
+                       std::optional<Binary> image) override;
 
  private:
   raw_ptr<HeadlessBrowserImpl> browser_;

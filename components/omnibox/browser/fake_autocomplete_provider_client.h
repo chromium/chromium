@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/history_embeddings/history_embeddings_service.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -24,10 +25,6 @@
 #include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-#if !BUILDFLAG(IS_IOS)
-#include "components/history_embeddings/history_embeddings_service.h"  // nogncheck
-#endif  // IS_IOS
 
 namespace bookmarks {
 class BookmarkModel;
@@ -70,16 +67,17 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-#if !BUILDFLAG(IS_IOS)
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService()
       override;
-#endif
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
+  DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
+  std::string ProfileUserName() const override;
+
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
@@ -101,12 +99,10 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     history_clusters_service_ = service;
   }
 
-#if !BUILDFLAG(IS_IOS)
   void set_history_embeddings_service(
       std::unique_ptr<history_embeddings::HistoryEmbeddingsService> service) {
     history_embeddings_service_ = std::move(service);
   }
-#endif
 
   // There should be no reason to set this unless the tested provider actually
   // uses the AutocompleteProviderClient's InMemoryURLIndex, like the
@@ -125,6 +121,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
  private:
   search_engines::SearchEnginesTestEnvironment search_engines_test_enviroment_;
+  std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   TestSchemeClassifier scheme_classifier_;
@@ -132,10 +129,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<history::HistoryService> history_service_;
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_ =
       nullptr;
-#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<history_embeddings::HistoryEmbeddingsService>
       history_embeddings_service_;
-#endif
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_;

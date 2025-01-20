@@ -11,7 +11,6 @@
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
-#import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 #import "ios/web/webui/web_ui_messaging_java_script_feature.h"
 
 namespace web {
@@ -26,7 +25,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeaturesForContent(
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
-      TextFragmentsJavaScriptFeature::GetInstance(),
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance()};
   return features;

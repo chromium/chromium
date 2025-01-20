@@ -14,6 +14,8 @@
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/functional/callback.h"
 
+class AccountId;
+
 namespace ash {
 
 class ASH_PUBLIC_EXPORT LobsterClient {
@@ -31,14 +33,16 @@ class ASH_PUBLIC_EXPORT LobsterClient {
                                 InflateCandidateCallback) = 0;
   virtual void QueueInsertion(const std::string& image_bytes,
                               StatusCallback insert_status_callback) = 0;
-  virtual bool SubmitFeedback(const std::string& query,
-                              const std::string& model_version,
-                              const std::string& description,
-                              const std::string& image_bytes) = 0;
-  virtual void LoadUI(std::optional<std::string> query, LobsterMode mode) = 0;
+  virtual void LoadUI(std::optional<std::string> query,
+                      LobsterMode mode,
+                      const gfx::Rect& caret_bounds) = 0;
   virtual void ShowUI() = 0;
   virtual void CloseUI() = 0;
-  virtual bool UserHasAccess() = 0;
+  // Returns the account ID associated with this client.
+  // As the class is created by getting the active user profile, this is
+  // equivalent to getting the active user's account ID when this class was
+  // created.
+  virtual const AccountId& GetAccountId() = 0;
 };
 
 }  // namespace ash

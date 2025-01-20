@@ -25,6 +25,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
 <translation id="1084365883616172403">Ֆեյսբուքում փակցնումն ավարտվեց:</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ֆայլը չհաջողվեց բացել</translation>
+<translation id="1086468407802688066"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին կարող են տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1096992026380844478">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ <ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
@@ -55,6 +56,7 @@
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="1253032109800629289">Թաքցնել «Ստանալ ծանուցումներ գների հետագծման մասին» քարտը</translation>
 <translation id="1258491128795710625">Նորություններ</translation>
+<translation id="1259210743048744967">Այցելությունների գոյություն ունեցող պատմությունը հասանելի կլինի <ph name="USER_EMAIL" /> հաշվից դուրս գալուց հետո։ Այն չի պահվի այս հաշվում։</translation>
 <translation id="1262724000444746916">Թաքցնել «Ավելացնել էջանիշներում» գործողությունը</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1263433075299269530">Ձեր վերջին բաց ներդիրը</translation>
@@ -82,6 +84,7 @@
 <translation id="1335767868357998043">Ընտրեք հասցեագոտու դիրքը</translation>
 <translation id="1347468774581902829">Կառավարել պատմությունը</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358106883354237005">Կառավարվող հաշիվ</translation>
 <translation id="1358214951266274152">Անցեք ձեր պատճենաց հասցեով</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
 <translation id="1363028406613469049">Կատարում</translation>
@@ -100,16 +103,20 @@
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1408847409015257906">Հպեք «Գաղտնիություն և անվտանգություն»։</translation>
 <translation id="1411386976162024013">Վիզուալ որոնում Տեսապակու միջոցով</translation>
+<translation id="1417474386970818917">Դուրս գալ և ջնջել տվյալները</translation>
+<translation id="1426410128494586442">Այո</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1436671784520050284">Շարունակել կարգավորումը</translation>
 <translation id="143681031165817424">Հասցեն պահված է միայն այս սարքում</translation>
 <translation id="1445276840641906250">Ձեր բոլոր ներդիրները՝ մեկ դիտարկիչում</translation>
 <translation id="1450170672351507823">Սովորական պաշտպանությունը միացված է։ Ավելի շատ ապահովության համար օգտագործեք լրացուցիչ պաշտպանությունը։</translation>
+<translation id="1454615514353469963">Գաղտնաբառերը, մուտքի բանալիները և այլ տվյալներ ընդմիշտ կջնջվեն Google գաղտնաբառերի կառավարչից</translation>
 <translation id="1455660774629812862">Չթաքցնել</translation>
 <translation id="1460751212339734034">Տնտեսեք ժամանակը, մուտքագրեք ավելի քիչ</translation>
 <translation id="1466035273550360103">Բաց ներդիրներ չկան</translation>
 <translation id="1469381646033328562">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1480152980057770392">Ցույց տալ ընթերցանության ցանկը</translation>
 <translation id="1484758781961275277">Առավելագույնս օգտվեք ձեր սիրելի և լավ ծանոթ համակարգչային դիտարկիչի հնարավորություններից iPad-ում։</translation>
 <translation id="1485907716209290998">Հետևեք ձեր առաքանուն</translation>
@@ -157,7 +164,6 @@
 <translation id="1652051421944182562">Միացնել անվտանգության ստուգման ծանուցումները…</translation>
 <translation id="1652333207707886577">Հարմարեցրեք ընտրացանկը</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Մնացել է {TIME} վայրկյան}=1{Մնացել է {TIME} վայրկյան}one{Մնացել է {TIME} վայրկյան}other{Մնացել է {TIME} վայրկյան}}</translation>
-<translation id="1653432787084483144">{count,plural, =1{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}one{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}other{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="1654232554734641711">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="16554782717487656">Հայտնաբերել չափման միավորները</translation>
 <translation id="1657011748321897393">Չհաջողվեց համօգտագործել, քանի որ դուք միացած չեք ցանցին:</translation>
@@ -167,6 +173,7 @@
 <translation id="169048873465870056">Հեռացնե՞լ ներդիրը և ջնջել խումբը</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
 <translation id="1709916727352927457">Մուտքի բանալու ջնջում</translation>
+<translation id="1712341189152602203">Այցելությունների գոյություն ունեցող պատմության տվյալները կկապվեն <ph name="USER_EMAIL" /> հաշվի հետ։ Այս տվյալները հնարավոր է, որ տեսանելի լինեն ձեր կազմակերպությանը։</translation>
 <translation id="1713777106376424209">Առաքման ծառայությունը՝</translation>
 <translation id="1715515772563243997">Եթե վստահում եք <ph name="SITE" /> կայքին, մուտք գործելու համար կարող եք օգտագործել պահված գաղտնաբառ։</translation>
 <translation id="1728549374069268714">Տեղադրել և անցնել</translation>
@@ -174,6 +181,7 @@
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
 <translation id="1740650426894359238">Անցնել այլ պրոֆիլ</translation>
 <translation id="1743244221910283364">Չպահպանել փոփոխությունները</translation>
+<translation id="174998178145075354">{count,plural, =1{Հասցեի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}one{Հասցեի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}other{Հասցեի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="1750238553597293878">Շարունակեք օգտագործել գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="17513872634828108">Բաց ներդիրներ</translation>
 <translation id="1752547299766512813">Պահել գաղտնաբառերը</translation>
@@ -201,6 +209,7 @@
 <translation id="1864266050569350424">Կայքում, որտեղ դուք գաղտնաբառ եք պահել, մուտքի պատուհանում հպեք գաղտնաբառի դաշտին։</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />։</translation>
+<translation id="1879793121657209834">Ընտրեք, թե ինչ անել այս սարքի այցելությունների գոյություն ունեցող պատմության հետ, որը ներառում է այնպիսի տվյալներ, ինչպիսիք են գաղտնաբառերը, գործողությունները և այլն։</translation>
 <translation id="1881621406744213161">Հրավիրեք ընտանիքի անդամների</translation>
 <translation id="188237709236611317">Խելացի դասավորման ընտրացանկի գոտի</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
@@ -246,7 +255,6 @@
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="20485545164632846">նոր տարր</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> հաշվում նույն գաղտնաբառն է օգտագործվում</translation>
-<translation id="2050196510205866090">{count,plural, =1{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}one{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}other{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="20638360198452347">Միավորի տեսակի ընտրիչ</translation>
 <translation id="2067852168641682340">Ամեն անգամ պահել այս հաշվում</translation>
@@ -257,10 +265,12 @@
 <translation id="2082906935540894275">Ամենակարևոր գործառույթների արագ հասանելիություն։</translation>
 <translation id="2085876078937250610">Պահել…</translation>
 <translation id="2096239473850415494">Չհաջողվեց ներբեռնել</translation>
+<translation id="2096716221239095980">Ջնջել բոլոր տվյալները</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="2104436223719117661">Թրենդային որոնումներ</translation>
 <translation id="21133533946938348">Ամրացնել ներդիրը</translation>
 <translation id="2119636449201577317">Բացել հավելվածում…</translation>
+<translation id="2120553909046681540">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը։</translation>
 <translation id="2122754583996902531">Այս դիտարկիչը կառավարվում է ադմինիստրատորի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
 <translation id="2147127444698817042">Հասանելի է միայն iPhone-ում</translation>
@@ -271,6 +281,7 @@
 <translation id="2161446265348023004">Անցնել բացված պատուհան</translation>
 <translation id="2164946989711475905">Մուտք գործել…</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
+<translation id="2186206192313702726">Google Տեսապակի</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2196428379625389579">Որոնեք համացանցում</translation>
 <translation id="2199562093267256223">Խումբը կջնջվի բոլոր սարքերում, որոնցում մուտք եք գործել <ph name="USER_EMAIL" />։</translation>
@@ -278,6 +289,7 @@
 <translation id="2214453882118345682">Գտեք ապրանքներ, թարգմանեք տեքստեր և ստացեք տեղեկություններ ձեզ շրջապատող օբյեկտների մասին՝ օգտագործելով տեսախցիկը։</translation>
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
+<translation id="2229345671837147090">Հեռակա ներդիրի ցանց</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2240256190924001613">Կազմաձևման պրոֆիլ է հասանելի</translation>
@@ -327,9 +339,9 @@
 <translation id="2384692388811649784">Թաքցնել ինկոգնիտո ներդիրները</translation>
 <translation id="2386793615875593361">Ընտրվել է 1 էջանիշ</translation>
 <translation id="2390457533592708044">Թաքցնել «<ph name="MODULE_NAME" />» մոդուլը</translation>
+<translation id="2394659309569789395">Միևնույն է բացել կայքը</translation>
 <translation id="2403129868389095715">Ձեր փաթեթը հնարավոր չէ ուղարկել</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
-<translation id="2411749908844615428">{count,plural, =1{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}one{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}other{{count} պահված հասցե ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="2424805048070062787">Շարունակել այս ներդիրի դիտումը</translation>
 <translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
 <translation id="243275146591958220">Չեղարկել ներբեռնումը</translation>
@@ -377,6 +389,7 @@
 <translation id="2640733327287333451">Օգտանուն չկա ••••••</translation>
 <translation id="264215785133931186">Ստուգվել է հենց նոր</translation>
 <translation id="2647434099613338025">Ավելացնել լեզու</translation>
+<translation id="2649592894792404568">Դուք պատրաստվում եք ջնջել Google գաղտնաբառերի կառավարչի ձեր տվյալները</translation>
 <translation id="2652129567809778422">Ընտրել գաղտնաբառ</translation>
 <translation id="2658056020748144467">Հնարավոր չէ բացել ֆայլը</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, միայն այս սարքում, <ph name="URL" /></translation>
@@ -402,6 +415,7 @@
 <translation id="2721190673959776287">Ապրանքի հետ կապված մանրամասն օգնության նմուշ Համատեքստային վահանակի համար, որը պետք է հայտնվի օրական մի քանի անգամ։</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2749231692441336879">Դուք բաժանորդագրվեցիք «<ph name="CHANNEL_NAME" />» ալիքին</translation>
+<translation id="2755485474385016903">Կատարված փոփոխությունները տեսանելի են խմբի բոլոր անդամներին</translation>
 <translation id="2755595981383829244">Այժմ դուք կստանաք բովանդակության վերաբերյալ ծանուցումներ</translation>
 <translation id="2761788987260570878">Լուսանկարեք այն, ինչ որոնում եք</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
@@ -413,9 +427,11 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}one{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}other{Գաղտնաբառերը պահվեցին ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Ավելացնել գաղտնաբառ…</translation>
 <translation id="2797302972324086597">Երկրի կոդը</translation>
+<translation id="2802403747691280910"><ph name="NUMBER_OF_TABS_REMOVED" />-ը փակված է</translation>
 <translation id="2816489851009559785">Ընտրացանկ → Կարգավորումներ → Կանխադրված դիտարկիչ</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
 <translation id="2819667972867209401">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում և կջնջվեն, երբ դուրս գաք հաշվից։</translation>
+<translation id="2827760117436553203">Պահե՞լ տվյալներն առանձին</translation>
 <translation id="2829172210806130158">Որոնեք այն, ինչ էկրանին է</translation>
 <translation id="2834399722155632105">3. Հպեք Գաղտնաբառերի կարգավորումներին</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -431,6 +447,7 @@
 <translation id="288902476966286676">Վերադարձվում է ուղարկողին</translation>
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
+<translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2905479111267140204">Դուք ունեք <ph name="NUMBER_OF_PASSWORDS" /> կրկնվող գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
 <translation id="291754862089661335">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="2918688092312652908">Նշել որպես չկարդացված</translation>
@@ -493,7 +510,6 @@
 <translation id="3224641773458703735">Գաղտնաբառերն արտահանելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3235063766008841141">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
-<translation id="3235083185359739322">«Ոչ ակտիվ ներդիրներ» բաժինը օգնում է կենտրոնանալ կարևորի վրա</translation>
 <translation id="3235242129752692527">Փոփոխեք միջոցառման մանրամասները և հպեք «Պահել»։</translation>
 <translation id="3240426699337459095">Հղումը պատճենվեց</translation>
 <translation id="3244271242291266297">ամիս</translation>
@@ -508,6 +524,7 @@
 <translation id="3324193307694657476">Հասցե 2</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
 <translation id="333229797575847124">Ինչպես միացնել այս գործառույթը</translation>
+<translation id="3333566504534692948">Ոչ, այն տեղափոխել ձեր աշխատանքային տարածք</translation>
 <translation id="3344485292736684439">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="334690320928261823">Վերջին ներդիրները</translation>
 <translation id="3348387552617855658">Այս քարտն օգնում է հետևել փաթեթներին և տրամադրում է առաքման հետ կապված կարևոր տեղեկություններ։</translation>
@@ -553,6 +570,7 @@
 <translation id="3549391962818677448">Առաքման փորձ է արվել։ Փորձը կկրկնվի</translation>
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
 <translation id="355765753469272474">Հետարկել</translation>
+<translation id="3562379378751492229">Ընտրեք ամենահարմար դիրքը։</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
 <translation id="3570693105179140209">Կրկնակի հպեք՝ ավելի շատ գաղտնաբառեր տեսնելու համար։</translation>
 <translation id="3572607909481582402">Ձեր Google հաշվում</translation>
@@ -622,6 +640,7 @@
 <translation id="3909222758573607742">Պահել գաղտնաբառեր և այլ տարրեր հաշվում</translation>
 <translation id="3914640181019354363">Հայտնաբերել հասցեները</translation>
 <translation id="3922185497376658606">Վեբ էջերի նախաբեռնում</translation>
+<translation id="3922395466317605522">Ընտրացանկի անհատականացում</translation>
 <translation id="3929457972718048006">Հասցեներ</translation>
 <translation id="3931215329146376310">{count,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
 <translation id="3940195383040445971">Հետագծել գները ներդիրներում</translation>
@@ -640,6 +659,7 @@
 <translation id="3992684624889376114">Այս էջի մասին</translation>
 <translation id="3994422733891749358">Ընտրեք, թե ինչ ծանուցումներ եք ուզում ստանալ</translation>
 <translation id="3994522032746736727">Մուտք գործել որպես <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">ՊԱՐԶ Է</translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
 <translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
@@ -684,6 +704,7 @@
 <translation id="4183350924949589798">Ուզո՞ւմ եք ուժեղացնել հաշվի պաշտպանությունը</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} թույլ գաղտնաբառ}one{{count} թույլ գաղտնաբառ}other{{count} թույլ գաղտնաբառ}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} տարր պահվում է միայն այս սարքում։ Տարրը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում ({email})։}one{{count} տարր պահվում է միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}other{{count} տարր պահվում է միայն այս սարքում։ Այդ գաղտնաբառն ու տարրերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում ({email})։}}</translation>
+<translation id="4207873326995387292">Տեղեկություններ դիտարկիչի մասին</translation>
 <translation id="421070604241073551">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
 <translation id="4224534474590365556">Փակե՞լ 99+ ոչ ակտիվ ներդիրները</translation>
 <translation id="422474357428465195">Դուք ունեք մի քանի ոչ հուսալի գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
@@ -692,11 +713,13 @@
 <translation id="4237377247299956313">Հպեք <ph name="BEGIN_BOLD" />Դիտարկիչի կանխադրված հավելված<ph name="END_BOLD" />։</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4250432749243022864">{count,plural, =0{Բացել {count} ներդիր}=1{Բացել {count} ներդիր}one{Բացել {count} ներդիր}other{Բացել {count} ներդիր}}</translation>
+<translation id="4250680216510889253">Ոչ</translation>
 <translation id="4251531167342733205">Օգտագործեք ձեր սիրած դիտարկչի լավագույն հնարավորությունները։</translation>
 <translation id="4253168017788158739">Նշում</translation>
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4263576668337963058">Ցուցադրել հասանելի գործողությունները էջերի համար</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Դուք փակել եք {COUNT} նախազգուշացում}one{Դուք փակել եք {COUNT} նախազգուշացում}other{Դուք փակել եք {COUNT} նախազգուշացում}}</translation>
+<translation id="4271575273430679392">Պատմությունը բացելու համար կրկնակի հպեք և պահեք</translation>
 <translation id="4272631900155121838">QR կոդն օգտագործելու համար կարգավորումներում միացրեք ֆոտոխցիկը</translation>
 <translation id="4277990410970811858">Անվտանգ դիտարկում</translation>
 <translation id="4279431713294750185">Առաջ գնալու համար մատը սահեցրեք էկրանի եզրով։</translation>
@@ -749,12 +772,12 @@
 <translation id="4495516234578759322">Գտնել հաջորդը</translation>
 <translation id="4502423230170890588">Հեռացնել սարքից</translation>
 <translation id="4508750114462689118">Փակել մուտք գործելու առաջարկը</translation>
+<translation id="4517684186578051919">Տեղեկություններ սարքի մասին</translation>
 <translation id="4520798012560649652">Իմանալ ավելին ինկոգնիտո ռեժիմի մասին</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} էջանիշ}one{{count} էջանիշ}other{{count} էջանիշ}}</translation>
 <translation id="4525629404718770519">Նախադիտել հղումները</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
-<translation id="4539187448429948815">{count,plural, =1{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}one{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}other{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="4547181496285029457">Վերադառնալ «Վերջինները» ներդիր</translation>
 <translation id="4552042254369397518">Պատճենում…</translation>
 <translation id="4564893319561643483">Թաքցնել «<ph name="TITLE" />» մոդուլը</translation>
@@ -767,6 +790,7 @@
 <translation id="4597892826846980979">Ստացեք ներդիրների մասին ծանուցումներ</translation>
 <translation id="4601095002996233687">Կասկածելի ներբեռնումների մանրակրկիտ սկանավորում։</translation>
 <translation id="4606247758155004938">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից։</translation>
+<translation id="4607887340472970274">Գների հետագծում</translation>
 <translation id="4611811151908969241">Թաքցնել «Չեղարկել <ph name="DOMAIN_NAME" /> կայքին բաժանորդագրությունը» գործողությունը</translation>
 <translation id="461440297010471931">Որոնեք Google-ով</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
@@ -785,6 +809,7 @@
 <translation id="4651927776207937667">{count,plural, =1{Թաքցնել 1 րոպեից}one{Թաքցնել {count} րոպեից}other{Թաքցնել {count} րոպեից}}</translation>
 <translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Պահել</translation>
+<translation id="466307903888586355">Ձեր կազմակերպությունը թույլ չի տալիս ֆայլեր պահել</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրների խմբերը չեն համաժամացվում։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -806,7 +831,6 @@
 <translation id="4766112107778026136">Discover և բաժանորդագրություններ</translation>
 <translation id="4769198578611055647">Սրա օգնությամբ կարող եք օգտագործել պահված մուտքի բանալիները ցանկացած սարքում</translation>
 <translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
-<translation id="4787190926964898499">{COUNT,plural, =1{Բացված ներդիրները, որոնք մեկ կամ ավելի օր չեն օգտագործվել, տեղափոխվում են «Ոչ ակտիվ ներդիրներ» բաժին, որպեսզի դուք կարողանաք հեշտությամբ կենտրոնանալ առավել հաճախ օգտագործվող ներդիրների վրա։ Այս պարամետրը ցանկացած ժամանակ կարող եք փոխել կարգավորումներում։}one{Բացված ներդիրները, որոնք {COUNT} կամ ավելի օր չեն օգտագործվել, տեղափոխվում են «Ոչ ակտիվ ներդիրներ» բաժին, որպեսզի դուք կարողանաք հեշտությամբ կենտրոնանալ առավել հաճախ օգտագործվող ներդիրների վրա։ Այս պարամետրը ցանկացած ժամանակ կարող եք փոխել կարգավորումներում։}other{Բացված ներդիրները, որոնք {COUNT} կամ ավելի օր չեն օգտագործվել, տեղափոխվում են «Ոչ ակտիվ ներդիրներ» բաժին, որպեսզի դուք կարողանաք հեշտությամբ կենտրոնանալ առավել հաճախ օգտագործվող ներդիրների վրա։ Այս պարամետրը ցանկացած ժամանակ կարող եք փոխել կարգավորումներում։}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Բացե՞լ ինկոգնիտո ռեժիմում</translation>
 <translation id="4792385443586519711">Ընկերության անվանումը</translation>
@@ -829,6 +853,7 @@
 <translation id="484280513275854557">Դուք դուրս եկաք հաշվից, այցելությունների պատմությունը ջնջվեց</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4860895144060829044">Զանգել</translation>
+<translation id="4861953997778766866">Ցանկացած օգտատեր կարող է փոփոխություններ կատարել ներդիրների ընդհանուր խմբերում</translation>
 <translation id="4869146460927742717">Հասցեագոտու դիրքը</translation>
 <translation id="4870911314065352661">Փակե՞լ բոլոր ներդիրները</translation>
 <translation id="4872664437015695612">Բացել «Ներբեռնումներ» պանակում</translation>
@@ -880,6 +905,7 @@
 <translation id="5079950360618752063">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
 <translation id="5085558938118581974">Ներդիրների որոնում համաժամացված սարքերում</translation>
+<translation id="5087098519049306025">Գների հետագծում</translation>
 <translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
 <translation id="5118462200606189584">Ավելացնել հաշիվ…</translation>
 <translation id="5118713593561876160">Հետաքրքրություններ</translation>
@@ -922,6 +948,7 @@
 <translation id="5248640482715684545">Այս կայքը փորձում է այլ հավելված բացել։</translation>
 <translation id="5271265092610673171">{count,plural, =1{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}one{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}other{Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։}}</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>
+<translation id="5279214046729249716">Այո, առանձին պահել</translation>
 <translation id="5279600392753459966">Արգելափակել բոլորը</translation>
 <translation id="5282340693022193851">Գների հետագծման ծանուցումներ ստանալու համար միացրեք ծանուցումները ձեր iOS-ի կարգավորումներում։</translation>
 <translation id="5294624619177114121">Բջջային ծանուցումներ</translation>
@@ -938,7 +965,6 @@
 <translation id="5343472494710226394">Նորություններ, սպորտային թարմացումներ և բովանդակություն՝ ձեր հետաքրքրությունների հիման վրա</translation>
 <translation id="5352128922772839949">Պահել ֆայլը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
-<translation id="5356332698539508708">Ջնջել և փոխել</translation>
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
 <translation id="5395707839134961196">Թաքցնել որոնողական համակարգի մանրամասները</translation>
 <translation id="541276233349960923">Օգտագործեք գաղտնաբառերը ձեր բոլոր սարքերում</translation>
@@ -955,6 +981,7 @@
 <translation id="5444892875087332195">Էջանիշեր</translation>
 <translation id="5452354193031718372">Օգտագործեք հուսալի գաղտնաբառ՝</translation>
 <translation id="5454211924362324495">Որպեսզի թույլ չտաք որևէ մեկին օգտագործել ձեր գաղտնաբառը, <ph name="BEGIN_LINK" />փոխեք այն <ph name="WEBSITE" /> կայքում<ph name="END_LINK" /></translation>
+<translation id="5454723301413569630"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին կարող են տեսանելի լինել որոշ տեղեկություններ, այդ թվում՝</translation>
 <translation id="5457082343331641453">Ավելացրեք մանրամասներ</translation>
 <translation id="5457226814769348910">Բացել օֆլայն տարբերակը</translation>
 <translation id="5478327362747197944">Ստեղծեք Օրացույցի միջոցառումներ՝ անմիջապես սեղմելով ամսաթվի վրա վեբ էջում։</translation>
@@ -967,6 +994,8 @@
 <translation id="5506763544823940561">Պահել պատկերը…</translation>
 <translation id="5511959326926949696">Դիտարկիչի ուժեղացված պաշտպանություն (պարտադիր չէ)։ Օգտագործեք այս գործառույթը, միայն եթե կարծում եք, որ կարող եք ենթարկվել լուրջ կիբեռհարձակման։</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ժ առաջ</translation>
+<translation id="5520668942302483373">Լքել խումբը</translation>
+<translation id="5524590039848017563">Ծալված հիմնական գործիքագոտու կոճակ</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} թույլ գաղտնաբառ}one{{COUNT} թույլ գաղտնաբառ}other{{COUNT} թույլ գաղտնաբառ}}</translation>
 <translation id="5532545557415295622">Անգործուն ռեժիմ անցնելու մասին երկխոսության պատուհան</translation>
 <translation id="5548760955356983418">Handoff-ը թույլ է տալիս ձեզ սկսել որևէ կայքի դիտարկումը այս սարքում, ապա հեշտությամբ շարունակել այն ձեր Mac սարքում: Ներկայումս բաց կայքը կհայտնվի Mac սարքի Միակցիչում:
@@ -991,6 +1020,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5611398002774823980">Պահել հաշվում</translation>
 <translation id="5613297089029360427">Տեսակավորել ըստ թարմության</translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
+<translation id="5614805397884895755">Ավելի արագ բացեք ձեր հիմնական էկրանից։</translation>
 <translation id="5619871095170816857">Այս քարտում ցուցադրված է ներդիրը, որը դուք վերջին անգամ բացել եք ձեր բոլոր համաժամացված սարքերում վերջին 24 ժամվա ընթացքում։</translation>
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
 <translation id="5624637933505983014">Չմիացնել համաժամացումը</translation>
@@ -999,10 +1029,12 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5628388627414062173">{count,plural, =1{{count} էջ ձեր ընթերցանության ցանկում}one{{count} էջ ձեր ընթերցանության ցանկում}other{{count} էջ ձեր ընթերցանության ցանկում}}</translation>
 <translation id="5632485077360054581">Ցույց տալ, թե ինչպես</translation>
 <translation id="5633237939819267663">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում}one{{count} էջանիշ պահվեց «{title}» պանակում}other{{count} էջանիշ պահվեց «{title}» պանակում}}</translation>
+<translation id="564170563478022912">Դո՞ւրս գալ։ Հաշվի չպահված տվյալները կջնջվեն։</translation>
 <translation id="5642707040609478753">Նշել որպես չկարդացված</translation>
 <translation id="5646284034397250191">Պիտակը ստեղծվել է։ Ամսաթիվն առկախ է</translation>
 <translation id="5647096944343801045">Մուտքի հիմնական կետ</translation>
 <translation id="5647193778876139879">Հպեք հասցեի և պահեք։</translation>
+<translation id="5647702255748985085">Լքե՞լ խումբը</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5652623411397330904">Ապրանքները, որոնց գներին հետևում եք, կցուցադրվեն այստեղ։</translation>
 <translation id="5657156137487675418">Թույլատրել բոլոր քուքիները</translation>
@@ -1011,6 +1043,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5669335982068190158">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել հաշվից։ Հաշիվ մտնելու համար ներքևում հպեք «Շարունակել»։</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Տարբերակ <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Փոխե՞լ հաշիվը։ Հաշվի չպահված տվյալները կջնջվեն։</translation>
 <translation id="5683499062697987550">Ձեր Google հաշվում գաղտնաբառեր օգտագործելու և պահելու համար հաստատեք ձեր ինքնությունը։</translation>
 <translation id="5684761169742812828">Համացանցում տվյալների արտահոսքի արդյունքում այս գաղտնաբառը բացահայտվել է։ Եթե չեք կարող փոխել այն հենց հիմա, Google-ը խորհուրդ է տալիս պահպանել այս նախազգուշացումը, որպեսզի չմոռանաք դա անել ավելի ուշ։</translation>
 <translation id="5694848685995373177">Պահվել է Drive-ում <ph name="USER_EMAIL" /> օգտատիրոջ համար։</translation>
@@ -1087,6 +1120,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6027619584715411062">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար։</translation>
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
 <translation id="6032845897905314562">նոր գործառույթ</translation>
+<translation id="6038823991892265570">Կառավարել Google պահեստային տարածքը</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6042308850641462728">Ավելին</translation>
@@ -1122,6 +1156,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6160780110287872296">Ներբեռնե՞լ ֆայլը</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6168647875670665004">Հոդվածների առաջարկներ</translation>
+<translation id="6169031022444660352">Մուտքի բոլոր պահված տվյալները ջնջելու համար նախ պետք է անցակոդ կարգավորեք այս սարքի համար։</translation>
 <translation id="6173499589275053515">Գաղտնաբառը պահվեց ձեր Google հաշվում (<ph name="EMAIL" />)</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Ստեղծվել է՝ <ph name="DATE" /></translation>
@@ -1165,6 +1200,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6340285871011301182">Մասնակի թարգմանությունը հասանելի չէ։</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="6342069812937806050">Հենց նոր</translation>
+<translation id="6344533709188026708">Առանձին աշխատանքային միջավայր</translation>
 <translation id="6347953390226388422">{count,plural, =1{Այս հասցեն կջնջվի ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}one{Այս հասցեն կջնջվի ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}other{Այս հասցեները կջնջվեն ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}}</translation>
 <translation id="634878792104344809">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունը և մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="6351147166808964033">Բացել ներդիրների փոխանջատիչը</translation>
@@ -1172,6 +1208,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6355820205320395730">Թույլ գաղտնաբառերը հեշտ է կռահել։ Համոզվեք, որ հուսալի գաղտնաբառեր եք ստեղծում։ <ph name="BEGIN_LINK" />Դիտել հաշվի պաշտպանության այլ խորհուրդներ<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Հետևել <ph name="DOMAIN_NAME" /> կայքին</translation>
 <translation id="6368038301482806847">Որոնողական համակարգ ընտրեք ցանկի համար։</translation>
+<translation id="6368102751067608420">Գաղտնաբառերի կառավարչի բոլոր տվյալների ջնջում</translation>
 <translation id="6374469231428023295">Փորձել կրկին</translation>
 <translation id="6387994324662817823">Գաղտնաբառերը պահվում են միայն այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
 <translation id="6404422529625928907">Բացել Google Drive-ում</translation>
@@ -1184,6 +1221,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6418346271604475326">PDF-ի պատրաստում</translation>
 <translation id="6429213933892582367">Բացեք Գաղտնաբառերի կարգավորումները</translation>
 <translation id="6434591244308415567">Սխալ առաջացավ։ Փորձեք ավելի ուշ։</translation>
+<translation id="6435307030888827407">Չմտնել հաշիվ</translation>
 <translation id="6436318499800111867">Ինձ հասանելի է դարձել <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Ապամրացնել ներդիրը</translation>
 <translation id="6443118737398455446">Ժամկետի սպառման անվավեր ամսաթիվ</translation>
@@ -1192,6 +1230,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6445981559479772097">Հաղորդագրությունն ուղարկվեց:</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6449554712554071184">Խումբն ընդմիշտ կջնջվի ձեր սարքից։</translation>
+<translation id="6452534462676960500">Նոր գործողություն</translation>
 <translation id="6459307836338400162">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Համաժամացում<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժիններում։</translation>
 <translation id="6459411599807878608">Մանրամասները թաքցվեցին</translation>
 <translation id="646394917185284261">Ֆայլեր</translation>
@@ -1203,6 +1242,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6476800141292307438">Էջը թարգմանվում է <ph name="LANGUAGE" />: Կարգավորումները էկրանի ներքևի հատվածում են:</translation>
 <translation id="647867789226964031">Փոխեք ձեր գաղտնաբառերը</translation>
 <translation id="6494931198667773526">Ավարտը՝</translation>
+<translation id="6495521251906266731">Ընտրեք, թե ինչ անել այս սարքի այցելությունների գոյություն ունեցող պատմության հետ, որը ներառում է այնպիսի տվյալներ, ինչպիսիք են գաղտնաբառերը, գործողությունները և այլն։</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Դադարեցնել այս առաքանու հետագծումը}one{Դադարեցնել բոլոր առաքանիների հետագծումը}other{Դադարեցնել բոլոր առաքանիների հետագծումը}}</translation>
 <translation id="6503077044568424649">Հաճախակի այցելած</translation>
 <translation id="6503763061813913607">Անվտանգության ստուգման ծանուցումներ</translation>
@@ -1210,8 +1250,10 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6506996418997555004">Ներդիրների «<ph name="GROUP_NAME" />» խմբի ընդհանուր հասանելիություն</translation>
 <translation id="6507973708545996744">Մուտք գործեք՝ ձեր ընթերցանության ցանկը բոլոր սարքերում տեսնելու համար</translation>
 <translation id="6518133107902771759">Ստուգել</translation>
+<translation id="6518861084553706202">Ներդիրները կփակվեն, իսկ ջնջվող տվյալները կարող են ներառել գաղտնաբառեր, այցելությունների պատմությունը, քուքիներ և այլ տվյալներ։</translation>
 <translation id="6523575793810663688">Ցուցադրել, թե ինչպես</translation>
 <translation id="6524082013156754186">Պահել հաշվում</translation>
+<translation id="6524918542306337007">Ինկոգնիտո ռեժիմը հասանելի չէ</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6532106788206463496">Պահել փոփոխությունները</translation>
 <translation id="6536759809440150308">Բացել <ph name="GROUP_TITLE" /> խումբը, պարունակում է <ph name="NUMBER_OF_TABS" /> ներդիր, <ph name="CREATION_TEXT" /></translation>
@@ -1241,12 +1283,14 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6624219055418309072">Արգելափակել ինկոգնիտո ռեժիմում</translation>
 <translation id="6625830436658400045">Համաժամացման ձեր կարգավորումները կվերականգնվեն վերջին պահուստավորված տվյալների հիման վրա։ Դուք ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել։</translation>
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
+<translation id="6629759408545977279">Աղբյուրը՝ <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը</translation>
 <translation id="6638511529934826365">Մեծացնել տեքստը…</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
 <translation id="6641465290890659327">Տրամադրեք ձեր գաղտնաբառի պատճենը</translation>
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>
 <translation id="6644512095122093795">Առաջարկել պահել գաղտնաբառերը</translation>
+<translation id="664573288952458293">Սովորական ներդիրի ցանց</translation>
 <translation id="6645899968535965230">QR կոդ՝ <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -1262,13 +1306,13 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="667999046851023355">Փաստաթուղթ</translation>
 <translation id="6680416467695217368">Անհատականացնել ընտրացանկը</translation>
 <translation id="6681586159478273915">Ձայնային որոնում</translation>
+<translation id="6681791404926413601">{count,plural, =1{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}one{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}other{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="6685259053455152195">Դյուրանցումներ՝ կարգավորումներն արագ փոփոխելու և գործառույթները հասցեագոտուց օգտագործելու համար։</translation>
 <translation id="6689685206615181381">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
 <translation id="6709964700841491574">Արգելափակման ռեժիմ</translation>
 <translation id="6710079714193676716">Կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են հասանելի չլինել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Անցնել ֆիդ</translation>
 <translation id="6713676799463473249">Փոփոխվել է <ph name="LAST_MODIFICATION_DATE" /></translation>
-<translation id="6717862474255265991">Հետևել գներին</translation>
 <translation id="6722623263381062480">Ստացված ներդիրներ</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
 <translation id="672735642903863329">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում։</translation>
@@ -1347,6 +1391,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7102005569666697658">Ներբեռնում… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Ընտրացանկ → Կարգավորումներ → Վճարման եղանակներ</translation>
 <translation id="7108338896283013870">Թաքցնել</translation>
+<translation id="7128693485119315539">Ձեր կազմակերպությանը կարող է անհրաժեշտ լինել տեսնել և կառավարել կայքերի այցելությունների մասին տվյալները, որոնք կապված են ձեր կառավարվող հաշվի հետ, օրինակ՝ ձեր այցելությունների պատմությունը և գաղտնաբառերը։</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
 <translation id="7141960840225504692">Ներդիրները կփակվեն, իսկ այցելությունների պատմությունը կջնջվի</translation>
@@ -1373,6 +1418,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Որոնումների պատմությունը<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում։</translation>
 <translation id="7253951228444156601">Գաղտնաբառերը ստուգվում են…</translation>
 <translation id="7261217796641151584">Կիսվել խմբով</translation>
+<translation id="7266578100016339897">Այս պարամետրը կօգնի ձեզ ամեն ինչ կազմակերպված պահել։ Այն ցանկացած ժամանակ կարող եք փոխել կարգավորումներում։</translation>
 <translation id="7271220006028561438">Թույլատրել մուտքի բանալիների ավտոմատ նորացումը</translation>
 <translation id="7272437679830969316">Չհաջողվեց հաստատել ձեր ինքնությունը: Գաղտնաբառը չի պատճենվել:</translation>
 <translation id="7293429513719260019">Ընտրել լեզուն</translation>
@@ -1416,6 +1462,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7468373585447318060">Հետևեք գնիջեցումներին բոլոր ապրանքների համար, որոնք հետագծում եք։</translation>
 <translation id="746872191028309255">Ձեր տեսախցիկի կամ պատկերասրահի օգնությամբ գնեք այն, ինչ տեսնում եք։</translation>
 <translation id="7471557245617580330">Ստեղծել նոր ներդիր</translation>
+<translation id="7473891865547856676">Ոչ, պետք չէ</translation>
 <translation id="747956641630879526">Եթե թաքցնեք այս քարտը, առաքանու հետագծումը կանջատվի, և ձեր բոլոր տվյալները կջնջվեն</translation>
 <translation id="7484645889979462775">Երբեք չպահել այս կայքի համար</translation>
 <translation id="7486006552035434095">Համաժամացրեք ձեր սարքերը</translation>
@@ -1434,7 +1481,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="75362970626182391">Ներդիրների նոր խումբ</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="754655535278952384">Ստուգվել է <ph name="TIME" /></translation>
-<translation id="755255281989213264">Ընտրացանկի անհատականացում</translation>
 <translation id="7553234618121028547">Անջատելու համար բացեք <ph name="BEGIN_LINK" />Կարգավորումները<ph name="END_LINK" /> և անցեք «Գաղտնաբառերի կարգավորումներ»։</translation>
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="7561196759112975576">Միշտ</translation>
@@ -1452,6 +1498,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7605594153474022051">Համաժամացումը չի աշխատում</translation>
 <translation id="760667371114328991">Անջատեք անվտանգության ստուգման ծանուցումները</translation>
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
+<translation id="7620522820075868385">Չեղարկել</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Կոտրված գաղտնաբառեր}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="7640669552036055091">Android-ում վերջերս օգտագործած ներդիրներ</translation>
@@ -1495,10 +1542,12 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7812377703891978671">Դուք կարող եք դիտել ձեր այցելությունների ամբողջ պատմությունը՝ ընտրելով <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />։</translation>
 <translation id="78146569776629510">Ներբեռնումներ</translation>
 <translation id="7815852444315004084">Առայժմ թաքցնել</translation>
+<translation id="7831876841288640403">Ընտրեք հասցեագոտու ամենահարմար դիրքը։</translation>
 <translation id="7839994177130598711">Այժմ ձեր ընտանիքի անդամները կարող են օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք են գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։</translation>
 <translation id="7840771868269352570">Ընտրված տարրերը կջնջվեն:</translation>
 <translation id="7841180087127694526">Որոնել պատճենված տեքստը</translation>
 <translation id="7841418003178675048">Ընտրեք, թե որ քարտերն եք տեսնում ձեր նոր ներդիրի էջում։</translation>
+<translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="7846296061357476882">Google-ի ծառայություններ</translation>
 <translation id="784934925303690534">Ժամանակի սանդղակ</translation>
 <translation id="7851858861565204677">Այլ սարքեր</translation>
@@ -1512,6 +1561,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7883882164760409935">Դուք ունեք կրկնվող գաղտնաբառեր։</translation>
 <translation id="7887174313503389866">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը։ Լրացուցիչ պարամետրերի համար բացեք առանձին կարգավորումները։</translation>
 <translation id="7887198238286927132">Ձեր գաղտնիությունը պաշտպանելու նպատակով Chrome-ն ավտոմատ չի լրացնի այս դաշտը:</translation>
+<translation id="7887552845761062935">Լրացուցիչ տարբերակներ բացելու համար կրկնակի հպեք և պահեք</translation>
 <translation id="7889910613639381518">Հեշտ և ապահով մուտք «Google գաղտնաբառերի կառավարիչ» վիջեթի միջոցով։</translation>
 <translation id="7899199123054742721">Բոլորը նշել որպես չկարդացված</translation>
 <translation id="7911190106180361398">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ համաժամացնել բոլոր տվյալները։</translation>
@@ -1534,6 +1584,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7975036700432177008">Փորձել</translation>
 <translation id="797588153137233716">Ընտրացանկ → Պատմություն → Ջնջել այցելությունների պատմությունը</translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>
+<translation id="7977482887663636093"><ph name="NUMBER_OF_TABS_ADDED" /> նոր ներդիր, <ph name="NUMBER_OF_TABS_REMOVED" />-ը փակված է</translation>
 <translation id="797824194429476746">Այս սարքում ներդիրները կմնան բացված, սակայն խումբն ընդմիշտ կջնջվի։</translation>
 <translation id="7982789257301363584">Ցանց</translation>
 <translation id="7987685713885608670">Անվտանգության մակարդակը բարձրացնելու համար գաղտնաբառերը գաղտնագրեք ձեր սարքում՝ նախքան Google Գաղտնաբառերի կառավարիչում պահելը։</translation>
@@ -1564,6 +1615,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>
 <translation id="8084285576995584326">Կառավարեք ձեր Google հաշվի տվյալները</translation>
 <translation id="809543534949702122">Որոնում պատմության մեջ</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}one{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}other{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}}</translation>
 <translation id="8101409298456377967">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Ն</translation>
 <translation id="8114753159095730575">Ֆայլը հասանելի է ներբեռնման համար: Ընտրանքները հասանելի են էկրանի ներքևի հատվածում:</translation>
@@ -1594,7 +1646,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8219424187226230983">Դիտել անցանց տարբերակը նոր ներդիրում</translation>
 <translation id="8230355548492839438">Գտնել նախորդը</translation>
 <translation id="8232956427053453090">Պահպանել տվյալները</translation>
-<translation id="8242644458318193141">Ձեր կազմակերպության անվտանգությունն ապահովելու նպատակով ներդիրները կփակվեն, և հաշվի չպահված տվյալները կջնջվեն այս սարքից։ Այդ տվյալները կարող են ներառել գաղտնաբառեր, պատմություն և ավելին։</translation>
+<translation id="8258999165172757081">Ավելացվեց</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="82619448491672958">Տեսնել մյուս ներդիրները</translation>
 <translation id="8263228331881858381">Մուտքի բանալին պահված է</translation>
@@ -1631,6 +1683,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8407669440184693619">Այս կայքի համար գաղտնաբառեր չեն գտնվել</translation>
 <translation id="8407831512155324054">Ձեր գաղտնաբառերը հուսալի են</translation>
 <translation id="842523302461531262">Կարգավորումներում ընտրել որպես կանխադրված…</translation>
+<translation id="8425826545759040372">Ինկոգնիտո ներդիրի ցանց</translation>
 <translation id="8428045167754449968">Քաղաք</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428634594422941299">Պարզ է</translation>
@@ -1640,7 +1693,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8449869326050867919">Գաղտնաբառը փոխանցվեց</translation>
 <translation id="8453847087068411809">Երբեք ավտոմատ չճանաչել առաքանիները</translation>
 <translation id="846158969830690371">Իմացեք, թե արդյոք օգտագործում եք ամենաապահով կարգավորումները, կամ թե արդյոք որևէ բան ստուգելու կարիք կա։</translation>
-<translation id="8466300942149667917">Հաշվի չպահված տվյալները կջնջվեն</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8474378002946546633">Թույլատրել ծանուցումները</translation>
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>
@@ -1664,7 +1716,9 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8545276357312221485">Ստուգեք ձեր կանխադրված դիտարկիչի կարգավորումները</translation>
 <translation id="854938212724803178">Դուք ունեք 1 կոտրված գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
 <translation id="8556590991644167667">{count,plural, =1{Դուք փակել եք {count} նախազգուշացում}one{Դուք փակել եք {count} նախազգուշացում}other{Դուք փակել եք {count} նախազգուշացում}}</translation>
+<translation id="8558046478684552694">Փակել խումբը։</translation>
 <translation id="8560253818350321773">Սկզբում ցուցադրել հաճախակի օգտագործվող տարրերը</translation>
+<translation id="8561999115126307258">{count,plural, =1{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}one{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}other{Գաղտնաբառի {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="8564894539416715395">Նոր ներդիրի էջ</translation>
 <translation id="8569721750632860947">Ի՞նչ URL եք ուզում ավելացնել ձեր ընթերցանության ցանկում</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
@@ -1714,6 +1768,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8728922029615312208">Փակել բոլորը</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="87371078663613140">Ծանոթացեք ընտրացանկի գոտու ընտրանքներին</translation>
+<translation id="8739706427581741437"><ph name="NUMBER_OF_TABS_ADDED" /> նոր ներդիր</translation>
 <translation id="8741627442233023406">{count,plural, =1{Դիտել ներդիրը…}one{Դիտել բոլոր ներդիրները…}other{Դիտել բոլոր ներդիրները…}}</translation>
 <translation id="8741995161408053644">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="874599634440689554">Ստեղծել հղում</translation>
@@ -1731,7 +1786,9 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8806823403540278281">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրները չեն պահպանվում։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Հիշեցնել ավելի ուշ</translation>
+<translation id="8814719628147284151">Շարունակել</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
+<translation id="8822421075653507124">Անվտանգության նկատառումներից ելնելով՝ ձեր կազմակերպությունը կարող է տեսնել տեղեկություններ սարքի օպերացիոն համակարգի, դիտարկիչի և կարգավորումների մասին, ինչպես նաև՝ տվյալներ սարքում տեղադրված ծրագրերի մասին։</translation>
 <translation id="8825562130641217944">Ստացեք հասանելիություն ձեր էջանիշներին, գաղտնաբառերին և այլ տեղեկություններին</translation>
 <translation id="8827154289515190290">Ձեր սիրելի դիտարկիչը՝ այժմ iOS-ում</translation>
 <translation id="8831208860914609320">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>
@@ -1768,6 +1825,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8943780400130412484">Նոր ներբեռնում սկսե՞լ</translation>
 <translation id="8944844131570002190">Բացել հասցեն…</translation>
 <translation id="8953046091948372197">Ձեր գաղտնաբառերը կգտնեք այստեղ</translation>
+<translation id="8953602327115378731">{count,plural, =1{Ինքնալրացման {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}one{Ինքնալրացման {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}other{Ինքնալրացման {count} տարբերակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="895541991026785598">Հաղորդել խնդրի մասին</translation>
 <translation id="8960979149015305">Փակել ներբեռնումների գոտին</translation>
 <translation id="8961092256396236619">Բարելավված պաշտպանությունն անջատված է</translation>
@@ -1829,6 +1887,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9205189991633470489">Ինկոգնիտո ներդիրների կողպում</translation>
 <translation id="9206887540681440657">Արագություն</translation>
 <translation id="9223358826628549784">Խափանման հաշվետվությունն ուղարկվեց:</translation>
+<translation id="926455622548529175">Փոխել հաշիվը և ջնջել տվյալները</translation>
 <translation id="929748059769569925">Ընդգծված տեքստ</translation>
 <translation id="932305336591073205">{count,plural, =1{Փակել ներդիրը}one{Փակել ներդիրը}other{Փակել ներդիրները}}</translation>
 <translation id="939472100615258482">Ընթացիկ կայքը</translation>
@@ -1836,6 +1895,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
+<translation id="94870150074703282">Ջնջե՞լ խումբը</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="954667170699278022">Ընթերցանության ցանկ</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>

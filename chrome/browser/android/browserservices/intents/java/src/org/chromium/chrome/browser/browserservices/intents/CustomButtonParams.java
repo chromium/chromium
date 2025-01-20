@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
@@ -63,6 +64,12 @@ public interface CustomButtonParams {
     Drawable getIcon(Context context);
 
     /**
+     * @param tint tint to be applied to icon, if icon should be tinted.
+     * @return The drawable for the customized button.
+     */
+    Drawable getIcon(Context context, ColorStateList tint);
+
+    /**
      * @return The content description for the customized button.
      */
     String getDescription();
@@ -84,9 +91,14 @@ public interface CustomButtonParams {
      *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
+     * @param buttonIconTint tint to be applied to button icon, if icon should be tinted.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
      */
-    ImageButton buildBottomBarButton(Context context, ViewGroup parent, OnClickListener listener);
+    ImageButton buildBottomBarButton(
+            Context context,
+            ViewGroup parent,
+            OnClickListener listener,
+            ColorStateList buttonIconTint);
 
     /**
      * @return Whether the given icon's size is suitable to put on toolbar.

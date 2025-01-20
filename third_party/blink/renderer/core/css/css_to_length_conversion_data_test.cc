@@ -6,12 +6,12 @@
 
 #include <optional>
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -61,6 +61,8 @@ class CSSToLengthConversionDataTest : public PageTestBase {
   }
 
   struct DataOptions {
+    STACK_ALLOCATED();
+   public:
     // The zoom to apply to :root.
     std::optional<float> css_zoom;
     // The zoom to pass to the CSSToLengthConversionData constructor.
@@ -102,7 +104,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
             /* position_anchor */ nullptr,
             /* position_area_offsets */ std::nullopt),
         options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
-        options.flags ? *options.flags : ignored_flags_);
+        options.flags ? *options.flags : ignored_flags_, /*element=*/nullptr);
   }
 
   CSSToLengthConversionData ConversionData() {
@@ -249,7 +251,7 @@ TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
 
 TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
   // No ComputedStyle associated.
-  CSSToLengthConversionData data;
+  CSSToLengthConversionData data(/*element=*/nullptr);
 
   // Don't crash:
   ConvertPx(data, "1cqw");
@@ -281,7 +283,8 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   Flags rcap = glyph | rem | static_cast<Flags>(Flag::kRcapRelative);
   Flags lh = glyph | static_cast<Flags>(Flag::kLhRelative);
   Flags rlh = glyph | rem | static_cast<Flags>(Flag::kRlhRelative);
-  Flags sv = static_cast<Flags>(Flag::kStaticViewport);
+  Flags v = static_cast<Flags>(Flag::kViewport);
+  Flags slv = static_cast<Flags>(Flag::kSmallLargeViewport);
   Flags dv = static_cast<Flags>(Flag::kDynamicViewport);
   Flags cq = static_cast<Flags>(Flag::kContainerRelative);
   Flags ldr = static_cast<Flags>(Flag::kLogicalDirectionRelative);
@@ -304,26 +307,26 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   EXPECT_EQ(lh, ConversionFlags("1lh"));
   EXPECT_EQ(rlh, ConversionFlags("1rlh"));
 
-  EXPECT_EQ(sv, ConversionFlags("1svw"));
-  EXPECT_EQ(sv, ConversionFlags("1svh"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1svi"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1svb"));
-  EXPECT_EQ(sv, ConversionFlags("1svmin"));
-  EXPECT_EQ(sv, ConversionFlags("1svmax"));
+  EXPECT_EQ(slv, ConversionFlags("1svw"));
+  EXPECT_EQ(slv, ConversionFlags("1svh"));
+  EXPECT_EQ(slv | ldr, ConversionFlags("1svi"));
+  EXPECT_EQ(slv | ldr, ConversionFlags("1svb"));
+  EXPECT_EQ(slv, ConversionFlags("1svmin"));
+  EXPECT_EQ(slv, ConversionFlags("1svmax"));
 
-  EXPECT_EQ(sv, ConversionFlags("1lvw"));
-  EXPECT_EQ(sv, ConversionFlags("1lvh"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1lvi"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1lvb"));
-  EXPECT_EQ(sv, ConversionFlags("1lvmin"));
-  EXPECT_EQ(sv, ConversionFlags("1lvmax"));
+  EXPECT_EQ(slv, ConversionFlags("1lvw"));
+  EXPECT_EQ(slv, ConversionFlags("1lvh"));
+  EXPECT_EQ(slv | ldr, ConversionFlags("1lvi"));
+  EXPECT_EQ(slv | ldr, ConversionFlags("1lvb"));
+  EXPECT_EQ(slv, ConversionFlags("1lvmin"));
+  EXPECT_EQ(slv, ConversionFlags("1lvmax"));
 
-  EXPECT_EQ(sv, ConversionFlags("1vw"));
-  EXPECT_EQ(sv, ConversionFlags("1vh"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1vi"));
-  EXPECT_EQ(sv | ldr, ConversionFlags("1vb"));
-  EXPECT_EQ(sv, ConversionFlags("1vmin"));
-  EXPECT_EQ(sv, ConversionFlags("1vmax"));
+  EXPECT_EQ(v, ConversionFlags("1vw"));
+  EXPECT_EQ(v, ConversionFlags("1vh"));
+  EXPECT_EQ(v | ldr, ConversionFlags("1vi"));
+  EXPECT_EQ(v | ldr, ConversionFlags("1vb"));
+  EXPECT_EQ(v, ConversionFlags("1vmin"));
+  EXPECT_EQ(v, ConversionFlags("1vmax"));
 
   EXPECT_EQ(dv, ConversionFlags("1dvw"));
   EXPECT_EQ(dv, ConversionFlags("1dvh"));
@@ -333,12 +336,12 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   EXPECT_EQ(dv, ConversionFlags("1dvmax"));
 
   // Since there is no container, these units fall back to the small viewport.
-  EXPECT_EQ(cq | sv, ConversionFlags("1cqh"));
-  EXPECT_EQ(cq | sv, ConversionFlags("1cqw"));
-  EXPECT_EQ(cq | sv | ldr, ConversionFlags("1cqi"));
-  EXPECT_EQ(cq | sv | ldr, ConversionFlags("1cqb"));
-  EXPECT_EQ(cq | sv, ConversionFlags("1cqmin"));
-  EXPECT_EQ(cq | sv, ConversionFlags("1cqmax"));
+  EXPECT_EQ(cq | slv, ConversionFlags("1cqh"));
+  EXPECT_EQ(cq | slv, ConversionFlags("1cqw"));
+  EXPECT_EQ(cq | slv | ldr, ConversionFlags("1cqi"));
+  EXPECT_EQ(cq | slv | ldr, ConversionFlags("1cqb"));
+  EXPECT_EQ(cq | slv, ConversionFlags("1cqmin"));
+  EXPECT_EQ(cq | slv, ConversionFlags("1cqmax"));
 
   EXPECT_EQ(em | glyph, ConversionFlags("calc(1em + 1ex)"));
 }
@@ -350,7 +353,7 @@ TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
 
   ASSERT_FALSE(font.PrimaryFont());
 
-  CSSToLengthConversionData data;
+  CSSToLengthConversionData data(/*element=*/nullptr);
   CSSToLengthConversionData::FontSizes font_sizes(
       /* em */ 16.0f, /* rem */ 16.0f, &font, /* font_zoom */ 1.0f);
   CSSToLengthConversionData::LineHeightSize line_height_size(
@@ -538,7 +541,7 @@ TEST_F(CSSToLengthConversionDataTest, ContainerUnitsWithContainerName) {
           nullptr,
           /* position_anchor */ nullptr,
           /* position_area_offsets */ std::nullopt),
-      child->GetComputedStyle()->EffectiveZoom(), flags);
+      child->GetComputedStyle()->EffectiveZoom(), flags, /*element=*/nullptr);
 
   ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
       AtomicString("root_container"), nullptr);

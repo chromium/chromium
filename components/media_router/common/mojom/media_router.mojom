@@ -286,11 +286,6 @@ interface MediaRouteProvider {
   // navigation).
   DetachRoute(string route_id);
 
-  // Enables mDNS discovery. No-op if mDNS discovery is already enabled.
-  // Calling this will trigger a firewall prompt on Windows if there is not
-  // already a firewall rule for mDNS.
-  EnableMdnsDiscovery();
-
   // Requests the MediaRouteProvider to update its list of media sinks.
   // This is called when a user gesture occurs, and the MRP is expected to
   // initiate discovery of media sinks in response.

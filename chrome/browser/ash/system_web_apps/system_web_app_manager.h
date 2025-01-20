@@ -65,12 +65,14 @@ class SystemWebAppManager : public KeyedService,
   static constexpr char kSystemWebAppSessionHasBrokenIconsPrefName[] =
       "web_apps.system_web_app_has_broken_icons_in_session";
 
-  static constexpr char kInstallResultHistogramName[] =
-      "Webapp.InstallResult.System";
-  static constexpr char kInstallDurationHistogramName[] =
+  static constexpr char kFreshInstallDurationHistogramName[] =
       "Webapp.SystemApps.FreshInstallDuration";
   static constexpr char kIconsFixedOnReinstallHistogramName[] =
       "Webapp.SystemApps.IconsFixedOnReinstall";
+  static constexpr char kIconsAreHealthyInSessionHistorgramName[] =
+      "Webapp.SystemApps.IconsAreHealthyInSession";
+  static constexpr char kInstallResultHistogramName[] =
+      "Webapp.InstallResult.System";
 
   // Returns whether the given app type is enabled.
   bool IsAppEnabled(SystemWebAppType type) const;

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -34,9 +33,9 @@ if (optimize_webui) {
       "//ash/webui/common/resources:css_wrapper_files",
       "//ash/webui/common/resources:html_wrapper_files",
       "//ash/webui/common/resources:preprocess",
+      "//ash/webui/common/resources/cr_elements:build_ts",
       "//third_party/cros-components:cros_components_ts",
       "//third_party/material_web_components:library",
-      "//ash/webui/common/resources/cr_elements:build_ts",
     ]
   }
 }
@@ -76,38 +75,6 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [ "multidevice_setup_post_oobe.js" ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [
-    ":multidevice_setup_post_oobe",
-    ":post_oobe_delegate",
-  ]
-}
-
-js_library("multidevice_setup_post_oobe") {
-  extra_deps = [
-    "//third_party/cros-components:cros_components_ts",
-    "//third_party/material_web_components:library",
-  ]
-  deps = [
-    ":post_oobe_delegate",
-    "//ash/webui/common/resources/multidevice_setup:multidevice_setup",
-    "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
-  ]
-}
-
-js_library("post_oobe_delegate") {
-  deps = [
-    "//ash/webui/common/resources/multidevice_setup:mojo_api",
-    "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",
-  ]
 }
 
 html_to_js("web_components") {

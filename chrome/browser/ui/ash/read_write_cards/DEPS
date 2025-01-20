@@ -1,8 +1,8 @@
 include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/ui/ash/quick_answers",
-  "+chrome/browser/ui/chromeos/magic_boost",
   "+chrome/browser/ui/ash/editor_menu",
+  "+chrome/browser/ui/ash/magic_boost",
   "+chrome/browser/ui/views/mahi",
 ]
 

@@ -18,6 +18,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/pref_names.h"
@@ -78,7 +79,14 @@ class MockDelegate : public ProductSpecificationsHandler::Delegate {
               ShowProductSpecificationsSetForUuid,
               (const base::Uuid& uuid, bool in_new_tab),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowProductSpecificationsSetsForUuids,
+      (const std::vector<base::Uuid>& uuids,
+       const product_specifications::mojom::ShowSetDisposition disposition),
+      (override));
   MOCK_METHOD(void, ShowSyncSetupFlow, (), (override));
+  MOCK_METHOD(void, ShowComparePage, (bool in_new_tab), (override));
 };
 
 class MockHistoryService : public history::HistoryService {
@@ -102,7 +110,7 @@ class ProductSpecificationsHandlerTest : public testing::Test {
     history_service_ = std::make_unique<MockHistoryService>();
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterCommercePrefs(pref_service_->registry());
+    MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
     SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
@@ -266,6 +274,41 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_NotFound) {
                        }).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsHandlerTest, TestGetComparisonTableUrlForUuid) {
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+
+  base::RunLoop run_loop;
+  handler_->GetComparisonTableUrlForUuid(
+      uuid, base::BindOnce(
+                [](const base::Uuid& uuid, const GURL& url) {
+                  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid), url);
+                },
+                uuid)
+                .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsHandlerTest, TestShowComparePage) {
+  EXPECT_CALL(*delegate_, ShowComparePage(true)).Times(1);
+  handler_->ShowComparePage(true);
+}
+
+TEST_F(ProductSpecificationsHandlerTest,
+       TestShowProductSpecificationsSetsForUuids) {
+  base::Uuid uuid_one = base::Uuid::GenerateRandomV4();
+  base::Uuid uuid_two = base::Uuid::GenerateRandomV4();
+  const auto disposition =
+      product_specifications::mojom::ShowSetDisposition::kInNewTabs;
+
+  EXPECT_CALL(*delegate_,
+              ShowProductSpecificationsSetsForUuids(
+                  testing::ElementsAre(uuid_one, uuid_two), disposition))
+      .Times(1);
+  handler_->ShowProductSpecificationsSetsForUuids({uuid_one, uuid_two},
+                                                  disposition);
 }
 
 }  // namespace commerce

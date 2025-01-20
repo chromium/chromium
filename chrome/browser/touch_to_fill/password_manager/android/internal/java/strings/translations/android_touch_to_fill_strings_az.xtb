@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Tam hündürlükdə açılan toxunuşla doldurulacaq kredensialların siyahısı.</translation>
 <translation id="5591247451101092906">Saxlanmış parol və ya giriş açarından istifadə edilsin?</translation>
 <translation id="5624120631404540903">Parolları idarə edin</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> adlı istifadəçinin <ph name="WEBSITE" /> şifrəsi yadda saxlanıldı</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> üçün giriş açarı. Ekran kilidindən istifadə edin</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu sayt üçün yeni parol}other{Bu sayt üçün yeni parollar}}</translation>
 <translation id="7286867818472074330">Giriş açarı seçin</translation>

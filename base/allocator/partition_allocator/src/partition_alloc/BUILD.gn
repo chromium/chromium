@@ -442,6 +442,7 @@ if (is_clang_or_gcc) {
       "partition_page_constants.h",
       "partition_root.cc",
       "partition_root.h",
+      "partition_shared_mutex.h",
       "partition_stats.cc",
       "partition_stats.h",
       "partition_superpage_extent_entry.h",
@@ -599,6 +600,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/debug/stack_trace.cc",
       "partition_alloc_base/debug/stack_trace.h",
       "partition_alloc_base/export_template.h",
+      "partition_alloc_base/files/platform_file.h",
       "partition_alloc_base/immediate_crash.h",
       "partition_alloc_base/log_message.cc",
       "partition_alloc_base/log_message.h",
@@ -644,6 +646,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/time/time.h",
       "partition_alloc_base/time/time_override.cc",
       "partition_alloc_base/time/time_override.h",
+      "partition_alloc_base/types/same_as_any.h",
       "partition_alloc_base/types/strong_alias.h",
       "partition_alloc_base/win/win_handle_types.h",
       "partition_alloc_base/win/win_handle_types_list.inc",
@@ -787,8 +790,6 @@ if (is_clang_or_gcc) {
   }
 
   component("allocator_shim") {
-    visibility = [ ":*" ]
-
     sources = []
     deps = []
     all_dependent_configs = []

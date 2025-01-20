@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
@@ -140,8 +140,7 @@ class LocalCardMigrationDialogControllerImpl
 
   // Contains observer listening to user's interactions with the dialog. The
   // observer is responsible for setting flow step upon these interactions.
-  base::ObserverList<LocalCardMigrationControllerObserver>
-      observer_list_;
+  base::ObserverList<LocalCardMigrationControllerObserver> observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

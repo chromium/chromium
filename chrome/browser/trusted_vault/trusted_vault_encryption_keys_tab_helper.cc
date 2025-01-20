@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/features.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/origin.h"
 
@@ -82,7 +83,8 @@ class EncryptionKeyApi
         DLOG(ERROR) << "Unknown vault type " << vault_name;
         continue;
       }
-      AddEncryptionKeysForSecurityDomain(gaia_id, *security_domain, keys);
+      AddEncryptionKeysForSecurityDomain(GaiaId(gaia_id), *security_domain,
+                                         keys);
     }
 
     std::move(callback).Run();
@@ -112,8 +114,8 @@ class EncryptionKeyApi
 
     trusted_vault_service_
         ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
-        ->AddTrustedRecoveryMethod(gaia_id, public_key, method_type_hint,
-                                   std::move(callback));
+        ->AddTrustedRecoveryMethod(GaiaId(gaia_id), public_key,
+                                   method_type_hint, std::move(callback));
   }
 
  private:
@@ -133,7 +135,7 @@ class EncryptionKeyApi
 
 #if !BUILDFLAG(IS_ANDROID)
   void AddEncryptionKeysForSecurityDomain(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       trusted_vault::SecurityDomainId security_domain,
       const std::vector<chrome::mojom::TrustedVaultKeyPtr>& keys) {
     CHECK(!keys.empty());

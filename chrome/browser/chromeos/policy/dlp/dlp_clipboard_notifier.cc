@@ -337,14 +337,12 @@ void DlpClipboardNotifier::ResetUserWarnSelection() {
 void DlpClipboardNotifier::ShowToast(const std::string& id,
                                      ash::ToastCatalogName catalog_name,
                                      const std::u16string& text) const {
-  ash::ToastData toast(
-      id, catalog_name, text, ash::ToastData::kDefaultToastDuration,
-      /*visible_on_lock_screen=*/false,
-      /*has_dismiss_button=*/true,
-      /*custom_dismiss_text=*/
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON),
-      /*dismiss_callback=*/base::BindRepeating(&OnToastClicked),
-      /*leading_icon=*/ash::kSystemMenuBusinessIcon);
+  ash::ToastData toast(id, catalog_name, text);
+  toast.button_type = ash::ToastData::ButtonType::kTextButton;
+  toast.button_text =
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON);
+  toast.button_callback = base::BindRepeating(&OnToastClicked);
+  toast.leading_icon = &ash::kSystemMenuBusinessIcon;
   ash::ToastManager::Get()->Show(std::move(toast));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

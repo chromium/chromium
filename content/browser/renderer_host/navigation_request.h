@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_status.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -48,6 +49,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -112,7 +114,8 @@ class CONTENT_EXPORT NavigationRequest
       private RenderProcessHostObserver,
       private network::mojom::CookieAccessObserver,
       private network::mojom::TrustTokenAccessObserver,
-      private network::mojom::SharedDictionaryAccessObserver {
+      private network::mojom::SharedDictionaryAccessObserver,
+      public network::mojom::DeviceBoundSessionAccessObserver {
  public:
   // Keeps track of the various stages of a NavigationRequest.
   // To see what state transitions are allowed, see |SetState|.
@@ -304,6 +307,7 @@ class CONTENT_EXPORT NavigationRequest
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+      std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
       int http_response_code);
 
   static NavigationRequest* From(NavigationHandle* handle);
@@ -422,7 +426,7 @@ class CONTENT_EXPORT NavigationRequest
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
   GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;
-  int GetExpectedRenderProcessHostId() override;
+  ChildProcessId GetExpectedRenderProcessHostId() override;
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
@@ -480,10 +484,30 @@ class CONTENT_EXPORT NavigationRequest
     return *commit_params_;
   }
 
-  // Updates the navigation start time.
-  void set_navigation_start_time(const base::TimeTicks& time) {
-    common_params_->navigation_start = time;
-  }
+  // This describes the cases where the navigation start time is adjusted to be
+  // later in time, after BeforeUnloadCompleted. This enum is used in UMA
+  // histograms, so existing values should be neither reordered nor removed.
+  enum class NavigationStartAdjustmentType {
+    // No adjustment to the navigation start time was made.
+    kNone = 0,
+    // The start time was adjusted so that the navigation could proceed via a
+    // posted task, even though there were no beforeunload handlers registered.
+    kLegacyPostTask = 1,
+    // The start time was adjusted because beforeunload handlers ran, but no
+    // dialog was displayed to the user.
+    kBeforeUnloadHandlers = 2,
+    // The start time was adjusted because a beforeunload dialog was shown.
+    kBeforeUnloadDialog = 3,
+    kMaxValue = kBeforeUnloadDialog,
+  };
+
+  // Updates the navigation start time, after beforeunload has completed.
+  // `for_legacy` indicates that the navigation proceeded in a separate task for
+  // legacy reasons, without running beforeunload handlers. `showed_dialog`
+  // indicates whether the beforeunload handlers actually displayed a dialog.
+  void UpdateNavigationStartTime(const base::TimeTicks& time,
+                                 bool for_legacy,
+                                 bool showed_dialog);
 
   void set_is_cross_site_cross_browsing_context_group(
       bool is_cross_site_cross_browsing_context_group) {
@@ -762,7 +786,7 @@ class CONTENT_EXPORT NavigationRequest
   // CreateForCommit().
   bool IsNavigationStarted() const;
 
-  std::unique_ptr<input::PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
+  std::unique_ptr<viz::PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
 
   std::unique_ptr<NavigationEarlyHintsManager> TakeEarlyHintsManager();
 
@@ -842,7 +866,12 @@ class CONTENT_EXPORT NavigationRequest
     return coep_reporter_.get();
   }
 
+  DocumentIsolationPolicyReporter* dip_reporter() {
+    return dip_reporter_.get();
+  }
+
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> TakeCoepReporter();
+  std::unique_ptr<DocumentIsolationPolicyReporter> TakeDipReporter();
 
   // Returns UKM SourceId for the page we are navigating away from.
   // Equal to GetRenderFrameHost()->GetPageUkmSourceId() for subframe
@@ -876,6 +905,10 @@ class CONTENT_EXPORT NavigationRequest
   [[nodiscard]] std::vector<
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>>
   TakeSharedDictionaryAccessObservers();
+
+  [[nodiscard]] std::vector<
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>>
+  TakeDeviceBoundSessionAccessObservers();
 
   // Returns the coop status information relevant to the current navigation.
   CrossOriginOpenerPolicyStatus& coop_status() { return coop_status_; }
@@ -1830,6 +1863,7 @@ class CONTENT_EXPORT NavigationRequest
   void ForceEnableOriginTrials(const std::vector<std::string>& trials) override;
 
   void CreateCoepReporter(StoragePartition* storage_partition);
+  void CreateDipReporter(StoragePartition* storage_partition);
 
   // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
   //
@@ -1891,6 +1925,16 @@ class CONTENT_EXPORT NavigationRequest
       network::mojom::SharedDictionaryAccessDetailsPtr details) override;
   void Clone(
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
+          observer) override;
+
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+  CreateDeviceBoundSessionObserver();
+
+  // network::mojom::DeviceBoundSessionAccessObserver:
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionKey& session) override;
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
           observer) override;
 
   // Convenience function to return the NavigationControllerImpl this
@@ -2081,6 +2125,11 @@ class CONTENT_EXPORT NavigationRequest
 
   void MaybeRecordTraceEventsAndHistograms();
 
+  // Records how much the navigation start time was adjusted for beforeunload
+  // handlers, for various scenarios (legacy, beforeunload handlers only, and
+  // beforeunload dialogs). See https://crbug.com/385170155.
+  void MaybeRecordNavigationStartAdjustments();
+
   void ResetViewTransitionState();
 
   // This check is to prevent a race condition where a parent fenced frame
@@ -2098,6 +2147,13 @@ class CONTENT_EXPORT NavigationRequest
   // Sets the Document-Isolation-Policy header to a default value in unsecure
   // contexts or if DocumentIsolationPolicy is not supported.
   void SanitizeDocumentIsolationPolicyHeader();
+
+  // Sets up service worker client info to inherit controller from the parent
+  // frame if it is a same origin srcdoc iframe.
+  // This method creates a ServiceWorkerClient associated with the navigating
+  // frame. It should not be called when NavigationURLLoader is used as that
+  // would also create ServiceWorkerClient and cause conflict.
+  void InheritServiceWorkerControllerFromParentIfNeeded();
 
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
@@ -2248,7 +2304,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Identifies in which RenderProcessHost this navigation is expected to
   // commit.
-  int expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
+  ChildProcessId expected_render_process_host_id_;
 
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().
@@ -2355,6 +2411,18 @@ class CONTENT_EXPORT NavigationRequest
 
   // Timing information of loading for the navigation. Used for recording UMAs.
   NavigationHandleTiming navigation_handle_timing_;
+
+  // The original value of navigation start for a given navigation, before any
+  // adjustment is made to avoid counting beforeunload dialogs. This is null
+  // (i.e., `TimeTicks()`) unless an adjustment was made.
+  base::TimeTicks original_navigation_start_;
+
+  // Tracks whether an adjustment to the navigation start time was done for
+  // legacy PostTask reasons rather than for running a beforeunload handler.
+  bool navigation_start_adjustment_for_legacy_ = false;
+
+  // Tracks whether a beforeunload dialog was shown as part of this navigation.
+  bool beforeunload_dialog_shown_ = false;
 
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;
@@ -2513,7 +2581,9 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
-  std::unique_ptr<input::PeakGpuMemoryTracker> loading_mem_tracker_;
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
+
+  std::unique_ptr<viz::PeakGpuMemoryTracker> loading_mem_tracker_;
 
   // Structure tracking the effects of the CrossOriginOpenerPolicy on this
   // navigation.
@@ -2571,6 +2641,9 @@ class CONTENT_EXPORT NavigationRequest
   // network requests made by this navigation.
   mojo::ReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observers_;
+
+  mojo::ReceiverSet<network::mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observers_;
 
   OriginAgentClusterEndResult origin_agent_cluster_end_result_ =
       OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;

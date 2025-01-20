@@ -189,6 +189,7 @@ DevToolsAgent::DevToolsAgent(
 DevToolsAgent::~DevToolsAgent() = default;
 
 void DevToolsAgent::Trace(Visitor* visitor) const {
+  visitor->Trace(client_);
   visitor->Trace(associated_receiver_);
   visitor->Trace(host_remote_);
   visitor->Trace(associated_host_remote_);

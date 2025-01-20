@@ -68,7 +68,6 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void MaybeTriggerUrlFilteringInterstitialEvent(
     content::WebContents* web_contents,
     const GURL& page_url,
@@ -84,4 +83,3 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
                                            rt_lookup_response);
 #endif
 }
-#endif

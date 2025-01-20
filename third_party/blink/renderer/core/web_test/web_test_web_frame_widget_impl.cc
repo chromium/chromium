@@ -345,7 +345,7 @@ void WebTestWebFrameWidgetImpl::AnimateNow() {
 }
 
 void WebTestWebFrameWidgetImpl::RequestDecode(
-    const PaintImage& image,
+    const cc::DrawImage& image,
     base::OnceCallback<void(bool)> callback) {
   WebFrameWidgetImpl::RequestDecode(image, std::move(callback));
 

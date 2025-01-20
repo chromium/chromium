@@ -1,7 +1,12 @@
-Tinos Bold and Tinos Bold Subset
-License: Apache 2.0
+Name: Tinos Bold and Tinos Bold Subset
+Short Name: Tinos
+URL: https://github.com/google/fonts/tree/main/apache/tinos
+Version: 1.230
+License: Apache-2.0
 License File: LICENSE.txt
+Security Critical: no
 Shipped: no
+Package Excluded: yes
 
 1. Source Origin
 Google Fonts Github Repository

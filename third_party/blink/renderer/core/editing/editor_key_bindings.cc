@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_filter.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -56,7 +55,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   }
   if (node) {
     if (const ComputedStyle* style =
-            node->GetComputedStyleForElementOrLayoutObject()) {
+            GetComputedStyleForElementOrLayoutObject(*node)) {
       writing_mode = style->GetWritingMode();
     }
   }

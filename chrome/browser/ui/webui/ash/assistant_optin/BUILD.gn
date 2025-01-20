@@ -40,7 +40,6 @@ static_library("assistant_optin") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/assistant_optin:resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/services/assistant/public/cpp",
@@ -56,6 +55,7 @@ static_library("assistant_optin") {
     "//ui/display",
     "//ui/gfx/geometry",
     "//ui/views",
+    "//ui/webui",
     "//ui/wm",
   ]
 

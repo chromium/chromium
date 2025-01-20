@@ -145,6 +145,16 @@ class DragAndDropSimulator {
     return SimulateDragEnter(location, *os_exchange_data_);
   }
 
+  // Simulates notification that multiple files were dragged from outside of the
+  // browser, into the specified `location` inside `web_contents`. `location` is
+  // relative to `web_contents`. Returns true upon success.
+  bool SimulateDragEnter(const gfx::Point& location,
+                         const std::vector<ui::FileInfo>& file_infos) {
+    os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
+    os_exchange_data_->SetFilenames(file_infos);
+    return SimulateDragEnter(location, *os_exchange_data_);
+  }
+
   // Simulates notification that |url| was dragged from outside of the browser,
   // into the specified |location| inside |omnibox|.
   // |location| is relative to |omnibox|.
@@ -318,9 +328,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // Starts monitoring |web_contents| for a start of a drag-and-drop.
   explicit DragStartWaiter(content::WebContents* web_contents)
       : web_contents_(web_contents),
-        message_loop_runner_(new content::MessageLoopRunner),
-        suppress_passing_of_start_drag_further_(false),
-        drag_started_(false) {
+        message_loop_runner_(new content::MessageLoopRunner) {
     DCHECK(web_contents_);
 
     // Intercept calls to the old DragDropClient.
@@ -466,10 +474,10 @@ class DragStartWaiter : public aura::client::DragDropClient {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   raw_ptr<aura::client::DragDropClient> old_client_;
   base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
-  bool suppress_passing_of_start_drag_further_;
+  bool suppress_passing_of_start_drag_further_ = false;
 
   // Data captured during the first intercepted StartDragAndDrop call.
-  bool drag_started_;
+  bool drag_started_ = false;
   std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
@@ -799,13 +807,13 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
                          const std::string& filename) {
     AssertTestPageIsLoaded();
     base::StringPairs replacement_text;
-    replacement_text.push_back(
-        std::make_pair("REPLACE_WITH_HOST_AND_PORT",
-                       base::StringPrintf("%s:%d", image_origin.c_str(),
-                                          https_test_server()->port())));
-    replacement_text.push_back(std::make_pair(
+    replacement_text.emplace_back(
+        "REPLACE_WITH_HOST_AND_PORT",
+        base::StringPrintf("%s:%d", image_origin.c_str(),
+                           https_test_server()->port()));
+    replacement_text.emplace_back(
         "REPLACE_WITH_CROSSORIGIN",
-        std::string(image_crossorigin_attr ? "crossorigin" : "")));
+        std::string(image_crossorigin_attr ? "crossorigin" : ""));
     std::string path = net::test_server::GetFilePathWithReplacements(
         filename, replacement_text);
     return NavigateNamedFrame("left", frame_origin, path);
@@ -937,6 +945,12 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   bool SimulateDragEnterToRightFrame(const base::FilePath& file) {
     AssertTestPageIsLoaded();
     return drag_simulator_->SimulateDragEnter(kMiddleOfRightFrame, file);
+  }
+
+  bool SimulateDragEnterToRightFrame(
+      const std::vector<ui::FileInfo>& file_infos) {
+    AssertTestPageIsLoaded();
+    return drag_simulator_->SimulateDragEnter(kMiddleOfRightFrame, file_infos);
   }
 
   bool SimulateDropInRightFrame() {
@@ -1237,6 +1251,43 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   // Verify that the focus moved from the omnibox to the tab contents.
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
+// This test verifies that dropping multiple files from outside the browser
+// opens all files in new tab.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
+  ASSERT_TRUE(NavigateToTestPage("a.test"));
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Drag files from outside the browser into/over the right frame.
+  std::vector<ui::FileInfo> file_infos;
+  base::FilePath dragged_file_1 = ui_test_utils::GetTestFilePath(
+      base::FilePath(), base::FilePath().AppendASCII("title1.html"));
+  base::FilePath dragged_file_2 = ui_test_utils::GetTestFilePath(
+      base::FilePath(), base::FilePath().AppendASCII("title2.html"));
+  file_infos.emplace_back(dragged_file_1, dragged_file_1.BaseName());
+  file_infos.emplace_back(dragged_file_2, dragged_file_2.BaseName());
+  ASSERT_TRUE(SimulateDragEnterToRightFrame(file_infos));
+
+  const int expected_new_tab_count = 2;
+  // Create a TestNavigationObserver for each expected tab.
+  std::vector<std::unique_ptr<content::TestNavigationObserver>> observers;
+  for (int i = 0; i < expected_new_tab_count; ++i) {
+    observers.push_back(
+        std::make_unique<content::TestNavigationObserver>(nullptr));
+    observers.back()->StartWatchingNewWebContents();
+  }
+  // Drop into the right frame.
+  ASSERT_TRUE(SimulateDropInRightFrame());
+  for (auto& observer : observers) {
+    observer->Wait();
+  }
+
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  // First file tab should be focused after drop.
+  EXPECT_EQ(
+      net::FilePathToFileURL(dragged_file_1),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
 // Scenario: drag URL from outside the browser and drop to the right frame.

@@ -11,8 +11,10 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <numeric>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -53,8 +55,9 @@ template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> ToLowerASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
-  for (size_t i = 0; i < str.size(); i++)
+  for (size_t i = 0; i < str.size(); i++) {
     ret.push_back(ToLowerASCII(str[i]));
+  }
   return ret;
 }
 
@@ -62,8 +65,9 @@ template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> ToUpperASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
-  for (size_t i = 0; i < str.size(); i++)
+  for (size_t i = 0; i < str.size(); i++) {
     ret.push_back(ToUpperASCII(str[i]));
+  }
   return ret;
 }
 
@@ -165,18 +169,21 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
       0, MachineWord(0xFFFFFF80FFFFFF80ULL),
   };
 
-  if (!length)
+  if (!length) {
     return true;
+  }
   constexpr MachineWord non_ascii_bit_mask = NonASCIIMasks[sizeof(Char)];
   static_assert(non_ascii_bit_mask, "Error: Invalid Mask");
   MachineWord all_char_bits = 0;
   const Char* end = characters + length;
 
   // Prologue: align the input.
-  while (!IsMachineWordAligned(characters) && characters < end)
+  while (!IsMachineWordAligned(characters) && characters < end) {
     all_char_bits |= static_cast<MachineWord>(*characters++);
-  if (all_char_bits & non_ascii_bit_mask)
+  }
+  if (all_char_bits & non_ascii_bit_mask) {
     return false;
+  }
 
   // Compare the values of CPU word size.
   constexpr size_t chars_per_word = sizeof(MachineWord) / sizeof(Char);
@@ -187,8 +194,9 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
       all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
       characters += chars_per_word;
     }
-    if (all_char_bits & non_ascii_bit_mask)
+    if (all_char_bits & non_ascii_bit_mask) {
       return false;
+    }
   }
 
   // Process the remaining words.
@@ -199,8 +207,9 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
   }
 
   // Process the remaining bytes.
-  while (characters < end)
+  while (characters < end) {
     all_char_bits |= static_cast<MachineWord>(*characters++);
+  }
 
   return !(all_char_bits & non_ascii_bit_mask);
 }
@@ -214,45 +223,40 @@ inline bool DoIsStringUTF8(std::string_view str) {
   while (char_index < src_len) {
     base_icu::UChar32 code_point;
     CBU8_NEXT(src, char_index, src_len, code_point);
-    if (!Validator(code_point))
+    if (!Validator(code_point)) {
       return false;
+    }
   }
   return true;
 }
 
+// Lookup table for fast ASCII case-insensitive comparison.
+inline constexpr std::array<unsigned char, 256> kToLower = []() {
+  std::array<unsigned char, 256> table;
+  std::iota(table.begin(), table.end(), 0);
+  std::iota(table.begin() + size_t{'A'}, table.begin() + size_t{'Z'} + 1, 'a');
+  return table;
+}();
+
+inline constexpr auto lower = [](auto c) constexpr {
+  return kToLower[static_cast<unsigned char>(c)];
+};
+
 template <typename T, typename CharT = typename T::value_type>
-bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
-  if (search_for.size() > str.size())
-    return false;
-
-  std::basic_string_view<CharT> source = str.substr(0, search_for.size());
-
-  switch (case_sensitivity) {
-    case CompareCase::SENSITIVE:
-      return source == search_for;
-
-    case CompareCase::INSENSITIVE_ASCII:
-      return std::equal(search_for.begin(), search_for.end(), source.begin(),
-                        CaseInsensitiveCompareASCII<CharT>());
-  }
+constexpr bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
+  return case_sensitivity == CompareCase::SENSITIVE
+             ? str.starts_with(search_for)
+             : std::ranges::equal(str.substr(0, search_for.size()), search_for,
+                                  {}, lower, lower);
 }
 
 template <typename T, typename CharT = typename T::value_type>
-bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
-  if (search_for.size() > str.size())
-    return false;
-
-  std::basic_string_view<CharT> source =
-      str.substr(str.size() - search_for.size(), search_for.size());
-
-  switch (case_sensitivity) {
-    case CompareCase::SENSITIVE:
-      return source == search_for;
-
-    case CompareCase::INSENSITIVE_ASCII:
-      return std::equal(source.begin(), source.end(), search_for.begin(),
-                        CaseInsensitiveCompareASCII<CharT>());
-  }
+constexpr bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
+  return case_sensitivity == CompareCase::SENSITIVE
+             ? str.ends_with(search_for)
+             : (search_for.size() <= str.size() &&
+                std::ranges::equal(str.substr(str.size() - search_for.size()),
+                                   search_for, {}, lower, lower));
 }
 
 // A Matcher for DoReplaceMatchesAfterOffset() that matches substrings.
@@ -306,13 +310,15 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
   using CharTraits = std::char_traits<CharT>;
 
   const size_t find_length = matcher.MatchSize();
-  if (!find_length)
+  if (!find_length) {
     return false;
+  }
 
   // If the find string doesn't appear, there's nothing to do.
   size_t first_match = matcher.Find(*str, initial_offset);
-  if (first_match == std::basic_string<CharT>::npos)
+  if (first_match == std::basic_string<CharT>::npos) {
     return false;
+  }
 
   // If we're only replacing one instance, there's no need to do anything
   // complicated.
@@ -378,8 +384,9 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
 
         // A mid-loop test/break enables skipping the final Find() call; the
         // number of matches is known, so don't search past the last one.
-        if (!--num_matches)
+        if (!--num_matches) {
           break;
+        }
       }
 
       // Handle substring after the final match.
@@ -395,8 +402,9 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
 
     // Big |expansion| factors (relative to |str_length|) require padding up to
     // |shift_dst|.
-    if (shift_dst > str_length)
+    if (shift_dst > str_length) {
       str->resize(shift_dst);
+    }
 
     str->replace(shift_dst, str_length - shift_src, *str, shift_src,
                  str_length - shift_src);
@@ -448,8 +456,9 @@ bool ReplaceCharsT(T input,
                    std::basic_string<CharT>* output) {
   // Commonly, this is called with output and input being the same string; in
   // that case, skip the copy.
-  if (input.data() != output->data() || input.size() != output->size())
+  if (input.data() != output->data() || input.size() != output->size()) {
     output->assign(input.data(), input.size());
+  }
 
   return DoReplaceMatchesAfterOffset(output, 0,
                                      MakeCharacterMatcher(find_any_of_these),
@@ -473,14 +482,16 @@ template <typename list_type,
           typename T,
           typename CharT = typename T::value_type>
 static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
-  if (std::empty(parts))
+  if (std::empty(parts)) {
     return std::basic_string<CharT>();
+  }
 
   // Pre-allocate the eventual size of the string. Start with the size of all of
   // the separators (note that this *assumes* parts.size() > 0).
   size_t total_size = (parts.size() - 1) * sep.size();
-  for (const auto& part : parts)
+  for (const auto& part : parts) {
     total_size += part.size();
+  }
   std::basic_string<CharT> result;
   result.reserve(total_size);
 
@@ -500,6 +511,14 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
   return result;
 }
 
+// StringViewLike will match both std::basic_string_view<Char> and
+// std::basic_string<Char>. It ensures that the type satisfies the requirements
+// to be passed to std::basic_string::append().
+template <typename T, typename CharT, typename TBaseT = std::remove_cvref_t<T>>
+concept StringOrStringView =
+    std::same_as<TBaseT, std::basic_string<CharT>> ||
+    std::same_as<TBaseT, std::basic_string_view<CharT>>;
+
 // Replaces placeholders in `format_string` with values from `subst`.
 // * `placeholder_prefix`: Allows using a specific character as the placeholder
 // prefix. `base::ReplaceStringPlaceholders` uses '$'.
@@ -515,26 +534,34 @@ static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
 //   returns `std::nullopt` if:
 //     * a placeholder %N is encountered where N > substitutions.size().
 //     * a literal `%` is not escaped with a `%`.
-template <typename T, typename CharT = typename T::value_type>
+template <typename T, typename Range, typename CharT = typename T::value_type>
+  requires(std::ranges::random_access_range<Range> &&
+           std::ranges::sized_range<Range> &&
+           requires(Range&& range, size_t index) {
+             { range.at(index) } -> StringOrStringView<CharT>;
+           })
 std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
     T format_string,
-    const std::vector<std::basic_string<CharT>>& subst,
+    Range&& subst,
     const CharT placeholder_prefix,
     const bool should_escape_multiple_placeholder_prefixes,
     const bool is_strict_mode,
     std::vector<size_t>* offsets) {
-  size_t substitutions = subst.size();
+  const size_t substitutions = subst.size();
   DCHECK_LT(substitutions, 10U);
 
   size_t sub_length = 0;
   for (const auto& cur : subst) {
-    sub_length += cur.length();
+    sub_length += cur.size();
   }
 
   std::basic_string<CharT> formatted;
   formatted.reserve(format_string.length() + sub_length);
 
   std::vector<ReplacementOffset> r_offsets;
+  if (offsets) {
+    r_offsets.reserve(substitutions);
+  }
   for (auto i = format_string.begin(); i != format_string.end(); ++i) {
     if (placeholder_prefix == *i) {
       if (i + 1 != format_string.end()) {

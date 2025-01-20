@@ -20,17 +20,8 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "components/viz/test/test_shared_image_interface_provider.h"
-#include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-
-namespace gpu {
-class Scheduler;
-}  // namespace gpu
 
 namespace viz {
 class CompositorFrameSinkSupport;
@@ -73,6 +64,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   TestLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
       const viz::DebugRendererSettings* debug_settings,
@@ -102,13 +94,12 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
   void DetachFromClient() override;
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override;
+  std::unique_ptr<LayerContext> CreateLayerContext(
+      LayerTreeHostImpl& host_impl) override;
   void SubmitCompositorFrame(viz::CompositorFrame frame,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion buffer,
-                               const viz::SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
 
   // mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
@@ -140,7 +131,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       viz::mojom::CompositorFrameSinkType* type) override;
 
   gpu::SharedImageInterface* GetSharedImageInterface() {
-    return shared_image_interface_provider_.GetSharedImageInterface();
+    return shared_image_interface_provider_->GetSharedImageInterface();
   }
 
  private:
@@ -156,12 +147,6 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   const double refresh_rate_;
 
   viz::FrameSinkId frame_sink_id_;
-  // TODO(danakj): These don't need to be stored in unique_ptrs when
-  // LayerTreeFrameSink is owned/destroyed on the compositor thread.
-  std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
-  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
-  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-  std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;
@@ -179,7 +164,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       nullptr;  // Not owned.
   viz::ExternalBeginFrameSource external_begin_frame_source_;
 
-  // Uses surface_manager_, begin_frame_source_, shared_bitmap_manager_.
+  // Uses surface_manager_, begin_frame_source_.
   std::unique_ptr<viz::Display> display_;
 
   raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
@@ -187,12 +172,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
 
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
-  // The set of SharedBitmapIds that have been reported as allocated to this
-  // interface. On closing this interface, the display compositor should drop
-  // ownership of the bitmaps with these ids to avoid leaking them.
-  std::set<viz::SharedBitmapId> owned_bitmaps_;
-
-  viz::TestSharedImageInterfaceProvider shared_image_interface_provider_;
+  std::unique_ptr<viz::TestSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
   base::WeakPtrFactory<TestLayerTreeFrameSink> weak_ptr_factory_{this};
 };

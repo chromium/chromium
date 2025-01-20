@@ -1102,6 +1102,12 @@ TEST_F(IdleHelperTest, OnPendingTasksChanged_TwoTasksAtTheSameTime) {
 
 class MultiThreadedIdleHelperTest : public IdleHelperTest {
  public:
+#if DCHECK_IS_ON()
+  ~MultiThreadedIdleHelperTest() override {
+    WTF::SetIsBeforeThreadCreatedForTest();
+  }
+#endif
+
   void PostIdleTaskFromNewThread(int* run_count) {
     PostDelayedIdleTaskFromNewThread(base::TimeDelta(), run_count);
   }

@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#ws-default-controller-class-definition
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ]
 interface WritableStreamDefaultController {
     readonly attribute AbortSignal signal;

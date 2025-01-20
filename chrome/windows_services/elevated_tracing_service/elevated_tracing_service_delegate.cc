@@ -13,11 +13,13 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/windows_services/elevated_tracing_service/session_registry.h"
 #include "chrome/windows_services/elevated_tracing_service/system_tracing_session.h"
+#include "mojo/core/embedder/embedder.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -96,10 +98,10 @@ Delegate::CreateClassFactories() {
   if (SUCCEEDED(hr)) {
     hr = unknown.As(&result[0].factory);
     // CreateClassFactory doesn't support passing arguments while constructing
-    // the factory, so pass the main thread's task runner to the factory ex post
-    // facto.
+    // the factory, so pass a task runner to be the "main" runner to the factory
+    // ex post facto.
     static_cast<SystemTracingSessionClassFactory*>(result[0].factory.Get())
-        ->set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
+        ->set_task_runner(base::ThreadPool::CreateSequencedTaskRunner({}));
   }
   if (FAILED(hr)) {
     return base::unexpected(hr);
@@ -113,6 +115,13 @@ Delegate::CreateClassFactories() {
 }
 
 bool Delegate::PreRun() {
+  // Initialize mojo and run an IPC thread.
+  mojo::core::Init();
+  ipc_thread_.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0));
+  ipc_support_.emplace(ipc_thread_.task_runner(),
+                       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
+
   // Run a ThreadPool.
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "elevated_tracing_service");

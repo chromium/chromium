@@ -9,11 +9,11 @@ found in the LICENSE file.
     <!-- The windowLightStatusBar attribute was added in API 23, but we avoid using it via XML prior
          to 28 due to: https://crbug.com/884144 and https://crbug.com/1014844 -->
     <style name="Theme.Chromium.Settings" parent="Base.V27.Theme.Chromium.Settings">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
     <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.V27.Theme.Chromium.Activity.Fullscreen">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
 </resources>

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -1196,7 +1195,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
 
   PhysicalRect dummy_column_rect;
   PseudoElement* first_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(0u, dummy_column_rect);
+      element->GetOrCreateColumnPseudoElementIfNeeded(0u, dummy_column_rect);
   ASSERT_TRUE(first_column_pseudo_element);
   EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1207,7 +1206,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
             0.3f);
 
   PseudoElement* second_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(1u, dummy_column_rect);
+      element->GetOrCreateColumnPseudoElementIfNeeded(1u, dummy_column_rect);
   ASSERT_TRUE(second_column_pseudo_element);
   EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1219,7 +1218,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
       0.3f);
 
   PseudoElement* third_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(2u, dummy_column_rect);
+      element->GetOrCreateColumnPseudoElementIfNeeded(2u, dummy_column_rect);
   ASSERT_TRUE(third_column_pseudo_element);
   EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1239,21 +1238,37 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
-TEST_F(ElementTest, TheCheckPseudoElement) {
+TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::check {
+      .checked::checkmark {
         content: "*";
       }
 
-      #target::check {
-        content: "*";
+      .base-button {
+        appearance: base-select;
+      }
+
+      .base-picker::picker(select) {
+        appearance: base-select;
       }
     </style>
 
-    <div id="a-div"></div>
+    <div class="checked" id="a-div"></div>
 
-    <select id="target">
+    <select class="checked">
+      <option id="not-base-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-button">
+      <option id="base-button-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker">
+      <option id="base-picker-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker base-button" id="target">
       <option id="target-option" value="the only option"></option>
     </select>
     )HTML");
@@ -1261,25 +1276,29 @@ TEST_F(ElementTest, TheCheckPseudoElement) {
   // GetPseudoElement() relies on style recalc.
   GetDocument().UpdateStyleAndLayoutTree();
 
-  Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheck));
+  auto checkmark_pseudo_for = [this](const char* id) -> PseudoElement* {
+    Element* e = GetElementById(id);
+    return e->GetPseudoElement(kPseudoIdCheckMark);
+  };
 
-  Element* target = GetElementById("target");
-  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheck));
-
-  // The `::check` pseudo element should only be created for option elements.
-  Element* target_option = GetElementById("target-option");
-  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+  // The `::checkmark` pseudo element should only be created for option
+  // elements in an appearance:base-select.
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
+  EXPECT_NE(nullptr, checkmark_pseudo_for("base-button-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-picker-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
+  EXPECT_NE(nullptr, checkmark_pseudo_for("target-option"));
 }
 
-TEST_F(ElementTest, TheSelectArrowPseudoElement) {
+TEST_F(ElementTest, ThePickerIconPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::select-arrow {
+      #a-div::picker-icon {
         content: "*";
       }
 
-      #target::select-arrow {
+      #target::picker-icon {
         content: "*";
       }
     </style>
@@ -1295,15 +1314,40 @@ TEST_F(ElementTest, TheSelectArrowPseudoElement) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdPickerIcon));
 
-  // The `::select-arrow` pseudo element should only be created for select
+  // The `::picker-icon` pseudo element should only be created for select
   // elements.
   Element* target = GetElementById("target");
-  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdPickerIcon));
 
   Element* target_option = GetElementById("target-option");
-  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
+  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdPickerIcon));
+}
+
+TEST_F(ElementTest, GenerateScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id="test-style">
+      #scroller {
+        scroll-marker-group: before;
+        overflow: scroll;
+      }
+      #non-scroller {
+        scroll-marker-group: before;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="non-scroller"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  Element* non_scroller = GetElementById("non-scroller");
+
+  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(
+      non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
 }
 
 }  // namespace blink

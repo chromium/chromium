@@ -44,7 +44,7 @@ bool DisableDefaultSearchEngineChoice() {
 bool DisableGeolocation() {
   return false;
 }
-bool DisablePromoManagerFullScreenPromos() {
+bool DisablePromoManagerDisplayingPromo() {
   // Always disable full-screen promos for perf tests.
   return true;
 }
@@ -77,7 +77,12 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile) {
   return nullptr;
 }
-std::unique_ptr<ShareKitService> CreateShareKitService() {
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service) {}
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
+    collaboration::CollaborationService* collaboration_service,
+    tab_groups::TabGroupSyncService* sync_service) {
   return nullptr;
 }
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>

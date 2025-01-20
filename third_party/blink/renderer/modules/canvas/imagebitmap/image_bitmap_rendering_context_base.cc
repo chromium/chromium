@@ -23,7 +23,9 @@ ImageBitmapRenderingContextBase::ImageBitmapRenderingContextBase(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kBitmaprenderer),
       image_layer_bridge_(MakeGarbageCollected<ImageLayerBridge>(
-          attrs.alpha ? kNonOpaque : kOpaque)) {}
+          attrs.alpha ? kNonOpaque : kOpaque)) {
+  host->InitializeLayerWithCSSProperties(image_layer_bridge_->CcLayer());
+}
 
 ImageBitmapRenderingContextBase::~ImageBitmapRenderingContextBase() = default;
 
@@ -104,11 +106,6 @@ void ImageBitmapRenderingContextBase::SetUV(const gfx::PointF& left_top,
   image_layer_bridge_->SetUV(left_top, right_bottom);
 }
 
-void ImageBitmapRenderingContextBase::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  image_layer_bridge_->SetFilterQuality(filter_quality);
-}
-
 cc::Layer* ImageBitmapRenderingContextBase::CcLayer() const {
   return image_layer_bridge_->CcLayer();
 }
@@ -152,12 +149,6 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
       SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),
                       image_layer_bridge_->GetImage()->Size().height()));
   return true;
-}
-
-bool ImageBitmapRenderingContextBase::IsOriginTopLeft() const {
-  if (Host()->IsOffscreenCanvas())
-    return false;
-  return Host()->IsAccelerated();
 }
 
 }  // namespace blink

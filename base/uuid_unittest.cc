@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <set>
 #include <string_view>
@@ -189,8 +190,8 @@ TEST(UuidTest, Compare) {
 }
 
 TEST(UuidTest, FormatRandomDataAsV4) {
-  static constexpr uint64_t bytes1a[] = {0x0123456789abcdefull,
-                                         0x5a5a5a5aa5a5a5a5ull};
+  constexpr static const auto bytes1a =
+      std::to_array<uint64_t>({0x0123456789abcdefull, 0x5a5a5a5aa5a5a5a5ull});
   static constexpr uint64_t bytes1b[] = {bytes1a[0], bytes1a[1]};
   static constexpr uint64_t bytes2[] = {0xfffffffffffffffdull,
                                         0xfffffffffffffffeull};
@@ -198,13 +199,11 @@ TEST(UuidTest, FormatRandomDataAsV4) {
                                         0xfffffffffffffffcull};
 
   const Uuid guid1a =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1a)));
+      Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes1a));
   const Uuid guid1b =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1b)));
-  const Uuid guid2 =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes2)));
-  const Uuid guid3 =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes3)));
+      Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes1b));
+  const Uuid guid2 = Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes2));
+  const Uuid guid3 = Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes3));
 
   EXPECT_TRUE(guid1a.is_valid());
   EXPECT_TRUE(guid1b.is_valid());

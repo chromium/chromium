@@ -65,7 +65,7 @@ namespace {
 
 class MockWorkItemList : public WorkItemList {
  public:
-  MockWorkItemList() {}
+  MockWorkItemList() = default;
 
   MOCK_METHOD5(AddCopyTreeWorkItem,
                WorkItem*(const base::FilePath&,

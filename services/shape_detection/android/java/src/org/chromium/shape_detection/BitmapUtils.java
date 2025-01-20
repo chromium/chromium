@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.Bitmap;
 
@@ -11,10 +12,12 @@ import com.google.android.gms.vision.Frame;
 import org.chromium.mojo_base.BigBufferUtil;
 
 import java.nio.ByteBuffer;
+import org.chromium.build.annotations.Nullable;
 
 /** Utility class to convert a Bitmap to a GMS core YUV Frame. */
+@NullMarked
 public class BitmapUtils {
-    public static Bitmap convertToBitmap(org.chromium.skia.mojom.BitmapN32 bitmapData) {
+    public static @Nullable Bitmap convertToBitmap(org.chromium.skia.mojom.BitmapN32 bitmapData) {
         // A null BitmapN32 has null pixelData. Otherwise, BitmapN32 always has
         // a valid N32 (aka RGBA_8888 or BGRA_8888 depending on the build
         // config) colorType.
@@ -42,7 +45,7 @@ public class BitmapUtils {
         }
     }
 
-    public static Frame convertToFrame(org.chromium.skia.mojom.BitmapN32 bitmapData) {
+    public static @Nullable Frame convertToFrame(org.chromium.skia.mojom.BitmapN32 bitmapData) {
         Bitmap bitmap = convertToBitmap(bitmapData);
         if (bitmap == null) {
             return null;

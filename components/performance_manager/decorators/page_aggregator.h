@@ -20,7 +20,7 @@ class PageNode;
 //   - The usage of IndexedDB locks in one of the page's frames.
 //   - The form interaction bit: This indicates if a form contained in one of
 //     the page's frames has been interacted with.
-class PageAggregator : public FrameNode::ObserverDefaultImpl,
+class PageAggregator : public FrameNodeObserver,
                        public GraphOwnedDefaultImpl,
                        public NodeDataDescriberDefaultImpl {
  public:
@@ -34,23 +34,25 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
  private:
   using Data = PageAggregatorData;
 
-  // FrameNodeObserver implementation:
+  // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
                              const FrameNode* current_frame_node) override;
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
-  void OnFrameIsHoldingIndexedDBLockChanged(
+  void OnFrameIsHoldingBlockingIndexedDBLockChanged(
       const FrameNode* frame_node) override;
   void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
+  void OnFrameHasFreezingOriginTrialOptOutChanged(
+      const FrameNode* frame_node) override;
 
-  // GraphOwned implementation:
+  // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // NodeDataDescriber implementation:
+  // NodeDataDescriber:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 };
 

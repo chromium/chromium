@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -32,7 +33,7 @@ struct TestData {
 
 class LevelDBWrapperTest : public testing::Test {
  public:
-  ~LevelDBWrapperTest() override {}
+  ~LevelDBWrapperTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());
@@ -50,7 +51,7 @@ class LevelDBWrapperTest : public testing::Test {
 
     // Expected contents are
     // {"a": "1", "ab": "0", "bb": "3", "d": "4"}
-    const char* keys[] = {"ab", "a", "d", "bb", "d"};
+    auto keys = std::to_array<const char*>({"ab", "a", "d", "bb", "d"});
     for (size_t i = 0; i < std::size(keys); ++i) {
       leveldb::Status status =
           db->Put(leveldb::WriteOptions(), keys[i], base::NumberToString(i));

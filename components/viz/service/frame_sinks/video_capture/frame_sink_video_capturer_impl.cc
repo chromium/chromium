@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 
 #include <algorithm>
@@ -1264,16 +1259,26 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     CHECK_EQ(content_rect.height() % 2, 0);
     // Populate the VideoFrame from the CopyOutputResult.
     const int y_stride = frame->stride(VideoFrame::Plane::kY);
-    uint8_t* const y = frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
-                       content_rect.y() * y_stride + content_rect.x();
+    const size_t y_subrect_offset =
+        content_rect.y() * y_stride + content_rect.x();
+    const base::span<uint8_t> y =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kY)
+            .subspan(y_subrect_offset);
+
     const int u_stride = frame->stride(VideoFrame::Plane::kU);
-    uint8_t* const u = frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
-                       (content_rect.y() / 2) * u_stride +
-                       (content_rect.x() / 2);
+    const size_t u_subrect_offset =
+        (content_rect.y() / 2) * u_stride + (content_rect.x() / 2);
+    const base::span<uint8_t> u =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kU)
+            .subspan(u_subrect_offset);
+
     const int v_stride = frame->stride(VideoFrame::Plane::kV);
-    uint8_t* const v = frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
-                       (content_rect.y() / 2) * v_stride +
-                       (content_rect.x() / 2);
+    const size_t v_subrect_offset =
+        (content_rect.y() / 2) * v_stride + (content_rect.x() / 2);
+    const base::span<uint8_t> v =
+        frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kV)
+            .subspan(v_subrect_offset);
+
     bool success =
         result->ReadI420Planes(y, y_stride, u, u_stride, v, v_stride);
     if (success) {
@@ -1292,9 +1297,11 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       int stride = frame->stride(VideoFrame::Plane::kARGB);
       // Note: ResultFormat::RGBA CopyOutputResult's format currently is
       // kN32_SkColorType, which can be RGBA or BGRA depending on the platform.
-      uint8_t* const pixels =
-          frame->GetWritableVisibleData(VideoFrame::Plane::kARGB) +
+      const size_t subrect_offset =
           content_rect.y() * stride + content_rect.x() * 4;
+      const base::span<uint8_t> pixels =
+          frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kARGB)
+              .subspan(subrect_offset);
       bool success = result->ReadRGBAPlane(pixels, stride);
       if (success) {
         frame->set_color_space(result->GetRGBAColorSpace());

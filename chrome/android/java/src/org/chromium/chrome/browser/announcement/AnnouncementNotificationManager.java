@@ -12,6 +12,7 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -120,7 +121,7 @@ public class AnnouncementNotificationManager {
     }
 
     @CalledByNative
-    private static void showNotification(String url) {
+    private static void showNotification(@JniType("std::string") String url) {
         Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(

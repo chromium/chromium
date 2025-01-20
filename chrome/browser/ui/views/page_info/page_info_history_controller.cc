@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/page_info/core/page_info_history_data_source.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -41,8 +42,9 @@ void PageInfoHistoryController::InitRow(views::View* container) {
 
 void PageInfoHistoryController::UpdateRow(
     std::optional<base::Time> last_visit) {
-  if (!container_tracker_.view())
+  if (!container_tracker_.view()) {
     return;
+  }
 
   auto* container_view =
       static_cast<PageInfoMainView::ContainerView*>(container_tracker_.view());
@@ -61,10 +63,8 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
   auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
-      PageInfoViewFactory::GetHistoryIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kHistoryIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY), last_visit,
-
-      /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());
   button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON);
   return button;

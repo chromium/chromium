@@ -7,7 +7,7 @@ import sys
 import tempfile
 import pathlib
 import argparse
-from typing import List, Set
+from typing import Set
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -16,14 +16,12 @@ sys.path.insert(0, REPOSITORY_ROOT)
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
 
-_ARCHS = ["x86", "x64", "arm", "arm64", "riscv64"]
 _GN2BP_SCRIPT_PATH = os.path.join(REPOSITORY_ROOT,
                                   "components/cronet/gn2bp/gen_android_bp.py")
 _GENERATE_BUILD_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT,
     "components/cronet/gn2bp/generate_build_scripts_output.py")
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, "out")
-_EXTRA_GN_ARGS = ("is_cronet_for_aosp_build=true"),
 _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 
@@ -61,12 +59,6 @@ def _run_generate_build_scripts(output_path: str) -> int:
   ])
 
 
-def _get_args_for_aosp(arch: str) -> List[str]:
-  default_args = cronet_utils.get_android_gn_args(True, arch)
-  default_args += _EXTRA_GN_ARGS
-  return ' '.join(cronet_utils.filter_gn_args(default_args, ["use_remoteexec"]))
-
-
 def _write_desc_json(gn_out_dir: str,
                      temp_file: tempfile.NamedTemporaryFile) -> int:
   return cronet_utils.run([
@@ -92,7 +84,7 @@ def _main():
     # Create empty temp file for each architecture.
     arch_to_temp_desc_file = {
         arch: tempfile.NamedTemporaryFile(mode="w+", encoding='utf-8')
-        for arch in _ARCHS
+        for arch in cronet_utils.ARCHS
     }
 
     for (arch, temp_file) in arch_to_temp_desc_file.items():
@@ -106,7 +98,7 @@ def _main():
       # beneath the repository root until gn2bp is tweaked to
       # deal with this small differences.
       with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, _get_args_for_aosp(arch))
+        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
           # Close the files and exit if we failed to generate any
           # of the desc.json files.

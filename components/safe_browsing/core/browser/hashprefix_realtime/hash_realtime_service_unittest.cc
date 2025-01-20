@@ -409,18 +409,6 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*name=*/"SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
           /*expected_count=*/0);
     }
-    histogram_tester_->ExpectTotalCount(
-        /*name=*/
-        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
-        /*expected_count=*/expected_network_result ==
-                net::ERR_INTERNET_DISCONNECTED
-            ? 1
-            : 0);
-    histogram_tester_->ExpectTotalCount(
-        /*name=*/"SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
-        /*expected_count=*/expected_network_result == net::ERR_NETWORK_CHANGED
-            ? 1
-            : 0);
   }
   void CheckNoNetworkRequestMetric() {
     histogram_tester_->ExpectTotalCount(

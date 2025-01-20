@@ -44,6 +44,7 @@ public class ManagedBrowserUtils {
 
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
 
+        @JniType("std::u16string")
         String getTitle(@JniType("Profile*") Profile profile);
 
         boolean isBrowserReportingEnabled();

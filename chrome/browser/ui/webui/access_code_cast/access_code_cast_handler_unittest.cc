@@ -34,7 +34,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/route_request_result.h"
-#include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -86,6 +85,9 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   AccessCodeCastHandlerTest()
       : mock_time_task_runner_(new base::TestMockTimeTaskRunner()),
+        dial_media_sink_service_(
+            base::DoNothing(),
+            base::SequencedTaskRunner::GetCurrentDefault()),
         mock_cast_socket_service_(
             new cast_channel::MockCastSocketService(mock_time_task_runner_)),
         message_handler_(mock_cast_socket_service_.get()),
@@ -93,7 +95,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
             new MockCastMediaSinkServiceImpl(mock_sink_discovered_cb_.Get(),
                                              mock_cast_socket_service_.get(),
                                              discovery_network_monitor_.get(),
-                                             &dual_media_sink_service_)) {
+                                             &dial_media_sink_service_)) {
     mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
     // `identity_test_environment_` starts signed-out while `sync_service_`
     // starts signed-in, make them consistent.
@@ -345,7 +347,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
 
-  TestMediaSinkService dual_media_sink_service_;
+  DialMediaSinkServiceImpl dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
 

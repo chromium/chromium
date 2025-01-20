@@ -58,10 +58,14 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
       std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
           credentials);
 
+  void OnRetrievedBrowserBoundKeyId(
+      std::unique_ptr<Request> request,
+      std::optional<std::vector<uint8_t>> maybe_browser_bound_key_id);
+
   // Called once all icons are downloaded and their respective SkBitmaps have
   // been set into the Request.
   void DidDownloadAllIcons(
-      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
+      std::optional<std::vector<uint8_t>> browser_bound_key_id,
       std::unique_ptr<Request> request);
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;

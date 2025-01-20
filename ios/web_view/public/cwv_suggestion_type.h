@@ -22,10 +22,10 @@ typedef NS_ENUM(NSInteger, CWVSuggestionType) {
   // Fill the whole for the current address. On Desktop, it is triggered from
   // the main (i.e. root popup) suggestion.
   CWVSuggestionTypeAddressEntry = 1,
-  // Fills all address related fields, e.g ADDRESS_HOME_LINE1,
+  // Fills all address related fields, e.g. ADDRESS_HOME_LINE1,
   // ADDRESS_HOME_HOUSE_NUMBER etc.
   CWVSuggestionTypeFillFullAddress = 2,
-  // Fills all name related fields, e.g NAME_FIRST, NAME_MIDDLE, NAME_LAST
+  // Fills all name related fields, e.g. NAME_FIRST, NAME_MIDDLE, NAME_LAST
   // etc.
   CWVSuggestionTypeFillFullName = 3,
   // Same as above, however it is triggered from the subpopup. This option

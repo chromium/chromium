@@ -41,22 +41,6 @@ class PasswordFeatureManager {
   // local/profile storage).
   virtual bool IsOptedInForAccountStorage() const = 0;
 
-  // Whether it makes sense to ask the user to opt-in for account-based
-  // password storage. This is true if the opt-in doesn't exist yet, but all
-  // other requirements are met (there is a signed-in user, Sync-the-feature
-  // is not enabled, etc).
-  virtual bool ShouldShowAccountStorageOptIn() const = 0;
-
-  // Whether it makes sense to ask the user to signin again to access the
-  // account-based password storage. This is true if a user on this device
-  // previously opted into using the account store but is signed-out now.
-  // |current_page_url| is the current URL, used to suppress the promo on the
-  // Google signin page (no point in asking the user to sign in while they're
-  // already doing that). For non-web contexts (e.g. native UIs), it is valid to
-  // pass an empty GURL.
-  virtual bool ShouldShowAccountStorageReSignin(
-      const GURL& current_page_url) const = 0;
-
   // Returns the default storage location for signed-in but non-syncing users
   // (i.e. will new passwords be saved to locally or to the account by default).
   // Always returns an actual value, never kNotSet.
@@ -83,17 +67,6 @@ class PasswordFeatureManager {
   // the default password store to kProfileStore.
   virtual void OptOutOfAccountStorage() = 0;
 
-  // Clears the opt-in to using account storage for passwords for the
-  // current signed-in user (unconsented primary account), as well as all other
-  // associated settings (e.g. default store choice).
-  virtual void OptOutOfAccountStorageAndClearSettings() = 0;
-
-  // Whether the user should be asked if they want to use the account store
-  // after saving a password locally. This is true for eligible users that
-  // haven't made this choice before.
-  virtual bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()
-      const = 0;
-
   // Sets the default password store selected by user in prefs. This store is
   // used for saving new credentials and adding blacking listing entries.
   virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
@@ -108,7 +81,7 @@ class PasswordFeatureManager {
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether it is required to update the GMSCore based on the
   // GMSCore version.
-  virtual bool ShouldUpdateGmsCore();
+  virtual bool ShouldUpdateGmsCore() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

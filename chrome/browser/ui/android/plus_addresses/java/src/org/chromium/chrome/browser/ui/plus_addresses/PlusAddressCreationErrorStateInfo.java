@@ -10,6 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
+
 /** Contains necessary information to show a meaningful error message to the user. */
 @JNINamespace("plus_addresses")
 class PlusAddressCreationErrorStateInfo {

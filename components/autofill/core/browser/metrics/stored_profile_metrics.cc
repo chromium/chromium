@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -56,7 +57,8 @@ void LogStoredProfileMetrics(
       if (category != GetCategoryOfProfile(*profile)) {
         continue;
       }
-      const base::TimeDelta time_since_last_use = now - profile->use_date();
+      const base::TimeDelta time_since_last_use =
+          now - profile->usage_history().use_date();
       LogStoredProfileDaysSinceLastUse(category, time_since_last_use.InDays());
       counts.total++;
       counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;
@@ -75,15 +77,14 @@ void LogLocalProfileSupersetMetrics(
     std::vector<const AutofillProfile*> profiles,
     std::string_view app_locale) {
   // Place all local profiles before all account profiles.
-  std::vector<const AutofillProfile*>::iterator begin_account_profiles =
-      base::ranges::partition(profiles,
-                              std::not_fn(&AutofillProfile::IsAccountProfile));
+  auto account_profiles = std::ranges::partition(
+      profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
   // Determines if a given `profile` is a strict superset of any account
   // profile.
   auto is_account_superset = [&, comparator =
                                      AutofillProfileComparator(app_locale)](
                                  const AutofillProfile* profile) {
-    return std::ranges::any_of(begin_account_profiles, profiles.end(),
+    return std::ranges::any_of(account_profiles,
                                [&](const AutofillProfile* account_profile) {
                                  return profile->IsStrictSupersetOf(
                                      comparator, *account_profile);
@@ -93,10 +94,22 @@ void LogLocalProfileSupersetMetrics(
   // profile.
   base::UmaHistogramCounts100(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup",
-      base::ranges::count_if(profiles.begin(), begin_account_profiles,
+      base::ranges::count_if(profiles.begin(), account_profiles.begin(),
                              [&](const AutofillProfile* local_profile) {
                                return is_account_superset(local_profile);
                              }));
+}
+
+void LogStoredProfileCountWithAlternativeName(
+    base::span<const AutofillProfile* const> profiles) {
+  size_t count =
+      std::ranges::count_if(profiles, [](const AutofillProfile* profile) {
+        return profile->GetAddressCountryCode() == AddressCountryCode("JP") &&
+               profile->HasInfo(ALTERNATIVE_FULL_NAME);
+      });
+
+  base::UmaHistogramCounts100("Autofill.StoredProfileCount.WithAlternativeName",
+                              count);
 }
 
 }  // namespace autofill::autofill_metrics

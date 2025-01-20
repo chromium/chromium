@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "media_router_internals"
 
   static_files = [
-    "media_router_internals.html",
     "media_router_internals.css",
+    "media_router_internals.html",
   ]
   non_web_component_files = [ "media_router_internals.ts" ]
 

@@ -77,6 +77,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate, public AXTreeObserver {
   const AXNodeData& GetData() const override;
   const AXTreeData& GetTreeData() const override;
   const AXSelection GetUnignoredSelection() const override;
+  const AXSelection GetHypertextSelection() const override;
   AXNodePosition::AXPositionInstance CreatePositionAt(
       int offset,
       ax::mojom::TextAffinity affinity =

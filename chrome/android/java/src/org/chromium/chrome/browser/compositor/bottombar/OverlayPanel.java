@@ -229,7 +229,12 @@ public class OverlayPanel extends OverlayPanelAnimation
             float toolbarHeightDp,
             @NonNull Supplier<Tab> currentTabSupplier,
             DesktopWindowStateManager desktopWindowStateManager) {
-        super(context, layoutManager, toolbarHeightDp, desktopWindowStateManager);
+        super(
+                context,
+                layoutManager,
+                toolbarHeightDp,
+                desktopWindowStateManager,
+                browserControlsStateProvider);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -968,6 +973,9 @@ public class OverlayPanel extends OverlayPanelAnimation
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         return null;
     }
+
+    @Override
+    public void removeFromParent() {}
 
     @Override
     public boolean isSceneOverlayTreeShowing() {

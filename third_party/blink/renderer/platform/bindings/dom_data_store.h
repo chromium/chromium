@@ -70,10 +70,10 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return DOMWrapperWorld::Current(isolate).DomDataStore();
   }
 
-  // Sets the `return_value` from `value`. Can be used from any world. Will only
-  // consider the current world.
+  // Sets the `return_value` from `value` in the given `context`.
   static inline bool SetReturnValue(v8::ReturnValue<v8::Value> return_value,
-                                    ScriptWrappable* value);
+                                    ScriptWrappable* value,
+                                    v8::Local<v8::Context> context);
 
   // Sets the `return_value` from `value` in a world that can use inline
   // storage.
@@ -264,12 +264,13 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
 
 // static
 bool DOMDataStore::SetReturnValue(v8::ReturnValue<v8::Value> return_value,
-                                  ScriptWrappable* value) {
+                                  ScriptWrappable* value,
+                                  v8::Local<v8::Context> context) {
   if (CanUseInlineStorageForWrapper()) {
     return SetReturnValueFromInlineStorage(return_value, value);
   }
-  return Current(return_value.GetIsolate())
-      .SetReturnValueFrom(return_value, value);
+  auto& world = DOMWrapperWorld::World(return_value.GetIsolate(), context);
+  return world.DomDataStore().SetReturnValueFrom(return_value, value);
 }
 
 // static

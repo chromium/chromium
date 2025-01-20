@@ -79,9 +79,9 @@ void SharedWorkerServiceImpl::RemoveObserver(Observer* observer) {
 
 void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
   for (const auto& host : worker_hosts_) {
-    observer->OnWorkerCreated(host->token(), host->GetProcessHost()->GetID(),
-                              host->instance().storage_key().origin(),
-                              host->GetDevToolsToken());
+    observer->OnWorkerCreated(
+        host->token(), host->GetProcessHost()->GetDeprecatedID(),
+        host->instance().storage_key().origin(), host->GetDevToolsToken());
     if (host->started()) {
       observer->OnFinalResponseURLDetermined(host->token(),
                                              host->final_response_url());
@@ -409,8 +409,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       << worker_origin << " and " << host->instance().storage_key().origin()
       << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
-      worker_process_host->GetID(), host->token(), host->instance().url(),
-      creator, &creator,
+      worker_process_host->GetDeprecatedID(), host->token(),
+      host->instance().url(), creator, &creator,
       host->instance().DoesRequireCrossSiteRequestForCookies()
           ? net::SiteForCookies()
           : host->instance().storage_key().ToNetSiteForCookies(),

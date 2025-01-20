@@ -77,8 +77,9 @@ void FocusableBorder::SetCornerRadius(float radius) {
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
   ui::ColorId color_id = ui::kColorFocusableBorderUnfocused;
-  if (override_color_id_)
+  if (override_color_id_) {
     color_id = *override_color_id_;
+  }
 
   SkColor color = view.GetColorProvider()->GetColor(color_id);
   return view.GetEnabled() ? color

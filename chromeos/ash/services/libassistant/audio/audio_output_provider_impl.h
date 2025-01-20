@@ -78,8 +78,6 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   void RegisterAudioEmittingStateCallback(
       AudioEmittingStateCallback callback) override;
 
-  void BindAudioDecoderFactory();
-  void UnBindAudioDecoderFactory();
   scoped_refptr<AudioDecoderFactoryManager>
   GetOrCreateAudioDecoderFactoryManager();
 
@@ -106,14 +104,6 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   // |AudioDecoderFactoryManager|.
   base::WeakPtr<AudioDecoderFactoryManager> audio_decoder_factory_manager_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
-
-  const bool start_audio_decoder_on_demand_;
-  // This is used to implement |start_audio_decoder_on_demand_| flag off
-  // behavior. |AudioOutputProviderImpl| will hold a ref counted object of
-  // |AudioDecoderFactoryManager| as it won't destructed.
-  scoped_refptr<AudioDecoderFactoryManager>
-      audio_decoder_factory_manager_ref_counted_
-          GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
 

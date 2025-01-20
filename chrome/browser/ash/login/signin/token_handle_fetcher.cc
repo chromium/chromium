@@ -63,7 +63,7 @@ class TokenHandleFetcherShutdownNotifierFactory
             "TokenHandleFetcher") {
     DependsOn(IdentityManagerFactory::GetInstance());
   }
-  ~TokenHandleFetcherShutdownNotifierFactory() override {}
+  ~TokenHandleFetcherShutdownNotifierFactory() override = default;
 };
 
 account_manager::AccountManager* GetAccountManager(Profile* profile) {
@@ -82,7 +82,7 @@ TokenHandleFetcher::TokenHandleFetcher(Profile* profile,
   CHECK(token_handle_util_.get());
 }
 
-TokenHandleFetcher::~TokenHandleFetcher() {}
+TokenHandleFetcher::~TokenHandleFetcher() = default;
 
 void TokenHandleFetcher::BackfillToken(TokenFetchingCallback callback) {
   callback_ = std::move(callback);
@@ -136,8 +136,7 @@ void TokenHandleFetcher::OnAccessTokenFetchComplete(
   }
 
   GetAccountManager(profile_)->GetTokenHash(
-      account_manager::AccountKey(account_id_.GetGaiaId(),
-                                  account_manager::AccountType::kGaia),
+      account_manager::AccountKey::FromGaiaId(account_id_.GetGaiaId()),
       base::BindOnce(&TokenHandleFetcher::FillForAccessToken,
                      weak_factory_.GetWeakPtr(),
                      /*access_token=*/token_info.token));
@@ -203,8 +202,7 @@ void TokenHandleFetcher::StoreTokenHandleMapping(
 void TokenHandleFetcher::DiagnoseTokenHandleMapping(const AccountId& account_id,
                                                     const std::string& token) {
   GetAccountManager(profile_)->GetTokenHash(
-      account_manager::AccountKey(account_id.GetGaiaId(),
-                                  account_manager::AccountType::kGaia),
+      account_manager::AccountKey::FromGaiaId(account_id.GetGaiaId()),
       base::BindOnce(&TokenHandleFetcher::OnGetTokenHash,
                      weak_factory_.GetWeakPtr(), token));
 }

@@ -33,8 +33,8 @@ class BoxLayoutView;
 class ScrollView;
 }  // namespace views
 
-namespace autofill_prediction_improvements {
-class PredictionImprovementsLoadingStateView;
+namespace autofill_ai {
+class AutofillAiLoadingStateView;
 }
 
 namespace autofill {
@@ -73,8 +73,7 @@ class PopupViewViews : public PopupBaseView,
                                    PopupSeparatorView*,
                                    PopupTitleView*,
                                    PopupWarningView*,
-                                   autofill_prediction_improvements::
-                                       PredictionImprovementsLoadingStateView*>;
+                                   autofill_ai::AutofillAiLoadingStateView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
@@ -252,7 +251,7 @@ class PopupViewViews : public PopupBaseView,
   // suggestion with a special type in this case. This method makes sure
   // the suggestion's message is being announced to the user by focusing the row
   // view (which must be selectable). Currently, `PopupWarningView` and
-  // `PredictionImprovementsLoadingStateView` are supported.
+  // `AutofillAiLoadingStateView` are supported.
   void MaybeA11yFocusInformationalSuggestion();
 
   // Controller for this view.

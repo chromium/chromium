@@ -45,6 +45,11 @@ class ProfileOAuth2TokenServiceObserver : public base::CheckedObserver {
       const CoreAccountId& account_id,
       const GoogleServiceAuthError& auth_error,
       signin_metrics::SourceForRefreshTokenOperation source) {}
+
+#if BUILDFLAG(IS_IOS)
+  // Called after the list of accounts on the device changes.
+  virtual void OnAccountsOnDeviceChanged() {}
+#endif
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_OBSERVER_H_

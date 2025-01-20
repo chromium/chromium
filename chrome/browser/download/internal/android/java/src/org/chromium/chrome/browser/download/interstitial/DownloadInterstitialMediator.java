@@ -26,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -57,6 +56,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Mediator for download interstitials. Handles internal state, event callbacks and interacts with
@@ -253,7 +253,7 @@ class DownloadInterstitialMediator {
     }
 
     private void onShareItem(OfflineItem item) {
-        shareItemsInternal(CollectionUtil.newHashSet(item));
+        shareItemsInternal(Set.of(item));
     }
 
     private void onRenameItem(OfflineItem item) {

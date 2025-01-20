@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -70,7 +71,8 @@
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model {
+            (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+                              originWebState:(web::WebState*)originWebState {
   _virtualCardEnrollUiModel = std::move(model);
 }
 
@@ -99,16 +101,17 @@ namespace {
 
 using ::testing::_;
 
-class TestChromeAutofillClient : public ChromeAutofillClientIOS {
+class TestChromeAutofillClient
+    : public WithFakedFromWebState<ChromeAutofillClientIOS> {
  public:
   explicit TestChromeAutofillClient(ProfileIOS* profile,
                                     web::WebState* web_state,
                                     infobars::InfoBarManager* infobar_manager,
                                     AutofillAgent* autofill_agent)
-      : ChromeAutofillClientIOS(profile,
-                                web_state,
-                                infobar_manager,
-                                autofill_agent) {
+      : WithFakedFromWebState<ChromeAutofillClientIOS>(profile,
+                                                       web_state,
+                                                       infobar_manager,
+                                                       autofill_agent) {
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         "https://www.example.test/");

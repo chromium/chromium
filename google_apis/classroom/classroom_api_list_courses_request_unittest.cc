@@ -118,7 +118,8 @@ TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequest) {
           Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
-                   "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "?fields=courses(id%2Cname%2Csection%2CcourseState)"
+                   "%2CnextPageToken"
                    "&studentId=test1%40test.com"
                    "&courseStates=ACTIVE")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
@@ -144,7 +145,8 @@ TEST_F(ClassroomApiListCoursesRequestsTest,
           Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
-                   "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "?fields=courses(id%2Cname%2Csection%2CcourseState)"
+                   "%2CnextPageToken"
                    "&studentId=test1%40test.com"
                    "&courseStates=ACTIVE"
                    "&pageToken=qwerty")))))
@@ -170,7 +172,8 @@ TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequestHandlesError) {
           Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
-                   "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "?fields=courses(id%2Cname%2Csection%2CcourseState)"
+                   "%2CnextPageToken"
                    "&studentId=test1%40test.com"
                    "&courseStates=ACTIVE")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
@@ -194,7 +197,8 @@ TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequestTeacherId) {
           Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
-                   "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "?fields=courses(id%2Cname%2Csection%2CcourseState)"
+                   "%2CnextPageToken"
                    "&teacherId=teacher1%40test.com"
                    "&courseStates=ACTIVE")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));

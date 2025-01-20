@@ -14,13 +14,11 @@ import '../settings_shared.css.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './language_settings_card.html.js';
-import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
 import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 const LanguageSettingsCardElementBase =
@@ -46,22 +44,6 @@ export class LanguageSettingsCardElement extends
       languages: Object,
 
       languageHelper: Object,
-
-      isRevampWayfindingEnabled_: Boolean,
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              languages: 'os-settings:language-revamp',
-            };
-          }
-          return {
-            languages: '',
-          };
-        },
-      },
     };
   }
 
@@ -73,36 +55,18 @@ export class LanguageSettingsCardElement extends
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper|undefined;
 
-  // Internal state.
-  private isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
-  private rowIcons_: Record<string, string>;
-
   // Internal properties for mixins.
-  // From RouteOriginMixin. This needs to be defined after
-  // `isRevampWayfindingEnabled_`.
-  override route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                     routes.OS_LANGUAGES;
+  // From RouteOriginMixin.
+  override route = routes.SYSTEM_PREFERENCES;
 
   override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.OS_LANGUAGES_LANGUAGES, '#languagesRow');
-    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
-  }
-
-  private getHeaderText_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('languagesPageTitle');
-    }
-    return this.i18n('osLanguagesPageTitle');
   }
 
   private onLanguagesV2Click_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
-  }
-
-  private onInputClick_(): void {
-    Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   }
 
   /**
@@ -118,20 +82,6 @@ export class LanguageSettingsCardElement extends
       return '';
     }
     return language.displayName;
-  }
-
-  /**
-   * @param id The input method ID.
-   * @return The display name of the input method.
-   */
-  private getInputMethodDisplayName_(id: string|undefined): string {
-    if (!id || !this.languageHelper) {
-      return '';
-    }
-    if (id === ACCESSIBILITY_COMMON_IME_ID) {
-      return '';
-    }
-    return this.languageHelper.getInputMethodDisplayName(id);
   }
 }
 

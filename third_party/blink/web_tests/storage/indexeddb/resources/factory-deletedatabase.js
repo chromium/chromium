@@ -21,7 +21,7 @@ function prepareDatabase()
 
 function getValue()
 {
-    transaction = evalAndLog("db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
+    transaction = evalAndLog("db.transaction('storeName', 'readwrite')");
     transaction.onabort = unexpectedErrorCallback;
     var store = evalAndLog("store = transaction.objectStore('storeName')");
 

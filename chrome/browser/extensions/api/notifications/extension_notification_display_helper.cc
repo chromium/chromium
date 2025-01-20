@@ -18,7 +18,8 @@ ExtensionNotificationDisplayHelper::ExtensionNotificationDisplayHelper(
     Profile* profile)
     : profile_(profile) {}
 
-ExtensionNotificationDisplayHelper::~ExtensionNotificationDisplayHelper() {}
+ExtensionNotificationDisplayHelper::~ExtensionNotificationDisplayHelper() =
+    default;
 
 void ExtensionNotificationDisplayHelper::Display(
     const message_center::Notification& notification) {

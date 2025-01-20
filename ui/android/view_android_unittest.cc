@@ -7,6 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
+#include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
@@ -213,7 +214,7 @@ TEST_F(ViewAndroidBoundsTest, OnSizeChanged) {
 
   Reset();
 
-  // Match-parent view should not receivee size events in the first place.
+  // Match-parent view should not receive size events in the first place.
   EXPECT_DCHECK_DEATH(viewm_.OnSizeChanged(100, 200));
   EXPECT_FALSE(handlerm_.OnSizeCalled());
   EXPECT_FALSE(handler3_.OnSizeCalled());
@@ -278,7 +279,7 @@ TEST(ViewAndroidTest, ChecksMultipleEventForwarders) {
 
 class Observer : public ViewAndroidObserver {
  public:
-  Observer() : attached_(false), destroyed_(false) {}
+  Observer() = default;
 
   void OnAttachedToWindow() override { attached_ = true; }
 
@@ -286,8 +287,11 @@ class Observer : public ViewAndroidObserver {
 
   void OnViewAndroidDestroyed() override { destroyed_ = true; }
 
-  bool attached_;
-  bool destroyed_;
+  void OnDelegateSet() override { delegate_set_ = true; }
+
+  bool attached_ = false;
+  bool destroyed_ = false;
+  bool delegate_set_ = false;
 };
 
 TEST(ViewAndroidTest, Observer) {
@@ -331,6 +335,12 @@ TEST(ViewAndroidTest, Observer) {
     // View, upon addition to a tree in the attached state, should be notified.
     top.AddChild(&bottom);
     EXPECT_TRUE(bottom_observer.attached_);
+
+    // Observer is notified about the new delegate.
+    TestViewAndroidDelegate view_android_delegate;
+    EXPECT_FALSE(top_observer.delegate_set_);
+    view_android_delegate.SetupTestDelegate(&top);
+    EXPECT_TRUE(top_observer.delegate_set_);
 
     // Views in a tree all get notified of 'detached' event.
     top.RemoveFromParent();

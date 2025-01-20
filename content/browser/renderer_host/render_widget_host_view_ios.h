@@ -211,6 +211,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool CanBecomeFirstResponderForTesting() const;
   bool CanResignFirstResponderForTesting() const;
   void ContentInsetChanged();
+  void DeleteSurroundingText(int before, int after);
 
  private:
   friend class MockPointerLockRenderWidgetHostView;

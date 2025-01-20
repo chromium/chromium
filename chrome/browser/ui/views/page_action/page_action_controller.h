@@ -1,0 +1,88 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_CONTROLLER_H_
+
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/actions/action_id.h"
+
+class PinnedToolbarActionsModel;
+
+namespace actions {
+class ActionItem;
+}
+
+namespace base {
+class CallbackListSubscription;
+}
+
+namespace page_actions {
+
+class PageActionModel;
+class PageActionModelInterface;
+class PageActionModelObserver;
+
+// `PageActionController` controls the state of all page actions, scoped to a
+// single tab. Each page action has a corresponding `PageActionModel` that will
+// receive updates from this controller.
+class PageActionController {
+ public:
+  explicit PageActionController(
+      const PinnedToolbarActionsModel* pinned_actions_model);
+  PageActionController(const PageActionController&) = delete;
+  PageActionController& operator=(const PageActionController&) = delete;
+  ~PageActionController();
+
+  void Initialize(const std::vector<actions::ActionId>& action_ids);
+  void Register(actions::ActionId action_id);
+
+  void Hide(actions::ActionId action_id);
+  void Show(actions::ActionId action_id);
+  // Only attempts to show the page action if it's not already pinned.
+  // Returns true if the page action will be shown and false otherwise.
+  bool ShowIfNotPinned(actions::ActionId action_id);
+
+  // By default, in suggestion chip mode, the ActionItem text will be used as
+  // the control label. However, features can provide a custom text to use
+  // as the label. In that case, the custom text will take precedence over
+  // the ActionItem text.
+  void OverrideText(actions::ActionId action_id,
+                    const std::u16string& override_text);
+  void ClearOverrideText(actions::ActionId action_id);
+
+  // Manages observers for the page action's underlying `PageActionModel`.
+  void AddObserver(
+      actions::ActionId action_id,
+      base::ScopedObservation<PageActionModelInterface,
+                              PageActionModelObserver>& observation);
+
+  // Subscribes this controller to updates in the supplied ActionItem, and
+  // returns the created subscription. This allows the subscription to be
+  // managed by something other than the controller (eg. a view).
+  base::CallbackListSubscription CreateActionItemSubscription(
+      actions::ActionItem* action_item);
+
+ private:
+  using PageActionModelsMap =
+      std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
+
+  PageActionModel& FindPageActionModel(actions::ActionId action_id) const;
+
+  void ActionItemChanged(const actions::ActionItem* action_item);
+
+  PageActionModelsMap page_actions_;
+
+  const raw_ptr<const PinnedToolbarActionsModel> pinned_actions_model_;
+};
+
+}  // namespace page_actions
+
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_CONTROLLER_H_

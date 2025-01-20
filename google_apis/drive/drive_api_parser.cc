@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -208,10 +209,10 @@ struct ChangeTypeMap {
   const char* type_name;
 };
 
-constexpr ChangeTypeMap kChangeTypeMap[] = {
+constexpr auto kChangeTypeMap = std::to_array<ChangeTypeMap>({
     {ChangeResource::FILE, "file"},
     {ChangeResource::TEAM_DRIVE, "teamDrive"},
-};
+});
 
 }  // namespace
 

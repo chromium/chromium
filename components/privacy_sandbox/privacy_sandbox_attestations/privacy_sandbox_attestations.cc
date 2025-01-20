@@ -91,8 +91,7 @@ void RecordParsingStatusHistogram(ParsingStatus status) {
 // be invoked with `kEnforcePrivacySandboxAttestations` enabled.
 // `installed_file_path` is the path to the attestations list file.
 base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
-LoadAttestationsInternal(base::FilePath installed_file_path,
-                         base::Version version) {
+LoadAttestationsInternal(base::FilePath installed_file_path) {
   // This function should only be called when the feature is enabled.
   CHECK(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
@@ -312,8 +311,7 @@ void PrivacySandboxAttestations::LoadAttestations(
   // destroyed.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&LoadAttestationsInternal, std::move(installed_file_path),
-                     version),
+      base::BindOnce(&LoadAttestationsInternal, std::move(installed_file_path)),
       base::BindOnce(&PrivacySandboxAttestations::OnAttestationsParsed,
                      base::Unretained(this), version, is_pre_installed));
 }

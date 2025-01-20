@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/inspector_protocol/crdtp/maybe.h"
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
 #include "v8/include/v8-inspector.h"
@@ -93,6 +92,10 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 
   const uint8_t* data() const { return impl_ ? impl_->data() : nullptr; }
   size_t size() const { return impl_ ? impl_->size() : 0; }
+  base::span<const uint8_t> Span() const {
+    // SAFETY: Safety relies on data() and size() of Impl class.
+    return UNSAFE_BUFFERS(base::span(data(), size()));
+  }
 
   String toBase64() const;
   static Binary fromBase64(const String& base64, bool* success);
@@ -130,19 +133,6 @@ struct ProtocolTypeTraits<blink::protocol::Binary> {
   static void Serialize(const blink::protocol::Binary& value,
                         std::vector<uint8_t>* bytes);
 };
-
-namespace detail {
-template <>
-struct MaybeTypedef<WTF::String> {
-  using type = std::optional<WTF::String>;
-};
-
-template <>
-struct MaybeTypedef<blink::protocol::Binary> {
-  using type = std::optional<blink::protocol::Binary>;
-};
-
-}  // namespace detail
 
 }  // namespace crdtp
 

@@ -40,13 +40,14 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 class RecoveryEligibilityScreenTest : public OobeBaseTest {
  public:
-  RecoveryEligibilityScreenTest() {}
+  RecoveryEligibilityScreenTest() = default;
 
   ~RecoveryEligibilityScreenTest() override = default;
 
@@ -120,7 +121,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 class RecoveryEligibilityScreenConsumerTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenConsumerTest() {}
+  RecoveryEligibilityScreenConsumerTest() = default;
   ~RecoveryEligibilityScreenConsumerTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {
@@ -136,14 +137,14 @@ class RecoveryEligibilityScreenConsumerTest
 
  protected:
   UserPolicyMixin user_policy_mixin_{
-      &mixin_host_,
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+      &mixin_host_, AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                                   GaiaId(test::kTestGaiaId))};
 };
 
 class RecoveryEligibilityScreenEnterpriseTest
     : public RecoveryEligibilityScreenTest {
  public:
-  RecoveryEligibilityScreenEnterpriseTest() {}
+  RecoveryEligibilityScreenEnterpriseTest() = default;
   ~RecoveryEligibilityScreenEnterpriseTest() override = default;
 
   void LoginAsUserImpl(bool is_child) override {
@@ -156,8 +157,9 @@ class RecoveryEligibilityScreenEnterpriseTest
   EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)),
       &policy_server_};
 };
 

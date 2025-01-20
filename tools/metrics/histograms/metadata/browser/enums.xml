@@ -336,6 +336,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kMemoryPressure"/>
   <int value="6" label="kProcessExited"/>
   <int value="7" label="kProcessHostDestroyed"/>
+  <int value="8" label="kNotYetCreatedFirstLaunch"/>
+  <int value="9" label="kNotYetCreatedAfterWarmup"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
@@ -412,6 +414,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ExtensionProcess"/>
   <int value="5" label="JitDisabled"/>
   <int value="6" label="V8OptDisabled"/>
+  <int value="7" label="DisallowV8FeatureFlagOverrides"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->
@@ -426,6 +429,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kDestroyedProcessLimit"/>
   <int value="5" label="kProcessExited"/>
   <int value="6" label="kProcessHostDestroyed"/>
+  <int value="7" label="kMemoryPressure"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:SpareRendererDispatchResult) -->

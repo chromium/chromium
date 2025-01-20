@@ -105,7 +105,7 @@ QuickInsertPreviewBubbleView::QuickInsertPreviewBubbleView(
                        .SetVisible(false)
                        .CopyAddressTo(&box_layout_view_)
                        .AddChildren(views::Builder<views::Label>(
-                                        ash::bubble_utils::CreateLabel(
+                                        bubble_utils::CreateLabel(
                                             TypographyToken::kCrosBody2, u"",
                                             cros_tokens::kCrosSysOnSurface))
                                         .CopyAddressTo(&main_label_)))

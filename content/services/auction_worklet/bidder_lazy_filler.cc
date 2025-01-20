@@ -8,12 +8,14 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "v8/include/v8-exception.h"
@@ -114,7 +116,10 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
 
 InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
-    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
+    : PersistedLazyFiller(v8_helper),
+      creative_scanning_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)),
+      v8_logger_(v8_logger) {}
 
 void InterestGroupLazyFiller::ReInitialize(
     const GURL* bidding_logic_url,
@@ -274,6 +279,11 @@ bool InterestGroupLazyFiller::CreateAdVector(
                        valid_selectable_buyer_and_seller_reporting_ids)) {
         return false;
       }
+    }
+    if (creative_scanning_enabled_ && ad.creative_scanning_metadata &&
+        !ad_dict.Set("creativeScanningMetadata",
+                     *ad.creative_scanning_metadata)) {
+      return false;
     }
     ads_vector.emplace_back(std::move(ad_object));
   }

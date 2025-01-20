@@ -103,15 +103,11 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (base::FeatureList::IsEnabled(
-          features::kClearLoginDatabaseForAllMigratedUPMUsers)) {
-    // This backend shouldn't be created for the users migrated to UPM with
-    // split stores.
-    CHECK_NE(
-        prefs->GetInteger(
-            password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-  }
+  // This backend shouldn't be created for the users migrated to UPM with
+  // split stores.
+  CHECK_NE(prefs->GetInteger(
+               password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores),
+           static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -169,6 +165,12 @@ bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
   return is_database_initialized_successfully_;
 #else
   CHECK(pref_service_);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // The login database is being deprecated on Android.
+    // The built-in backend should no longer allow saving passwords to it.
+    return false;
+  }
   // Database was not initialized siccessfully, disable saving.
   if (!is_database_initialized_successfully_) {
     return false;
@@ -268,12 +270,6 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
           .Then(std::move(callback)));
 }
 
-void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -367,27 +363,6 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
           location, delete_begin, delete_end, std::move(sync_completion)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
           MethodName("RemoveLoginsCreatedBetweenAsync"))
-          .Then(std::move(callback)));
-}
-
-void PasswordStoreBuiltInBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(helper_);
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime,
-          base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          location, url_filter, delete_begin, delete_end,
-          std::move(sync_completion)),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
-          MethodName("RemoveLoginsByURLAndTimeAsync"))
           .Then(std::move(callback)));
 }
 

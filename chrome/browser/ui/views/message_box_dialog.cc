@@ -71,8 +71,9 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
   static bool g_message_box_is_showing_sync = false;
   // To avoid showing another MessageBoxDialog when one is already pending.
   // Otherwise, this might lead to a stack overflow due to infinite runloops.
-  if (g_message_box_is_showing_sync)
+  if (g_message_box_is_showing_sync) {
     return chrome::MESSAGE_BOX_RESULT_NO;
+  }
 
   base::AutoReset<bool> is_showing(&g_message_box_is_showing_sync, true);
   chrome::MessageBoxResult result = chrome::MESSAGE_BOX_RESULT_NO;
@@ -244,8 +245,9 @@ void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
   }
 #endif
 
-  if (!active)
+  if (!active) {
     GetWidget()->Close();
+  }
 }
 
 void MessageBoxDialog::OnWidgetDestroying(views::Widget* widget) {
@@ -296,13 +298,15 @@ MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
   // Only MESSAGE_BOX_TYPE_QUESTION has a Cancel button.
   if (type_ == chrome::MESSAGE_BOX_TYPE_QUESTION) {
     std::u16string cancel_text(no_text);
-    if (cancel_text.empty())
+    if (cancel_text.empty()) {
       cancel_text = l10n_util::GetStringUTF16(IDS_CANCEL);
+    }
     SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_text);
   }
 
-  if (!checkbox_text.empty())
+  if (!checkbox_text.empty()) {
     message_box_view_->SetCheckBoxLabel(std::u16string(checkbox_text));
+  }
 }
 
 MessageBoxDialog::~MessageBoxDialog() {

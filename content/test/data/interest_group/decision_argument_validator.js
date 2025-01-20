@@ -41,7 +41,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 16) {
+  if (Object.keys(auctionConfig).length !== 17) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -141,6 +141,11 @@ function validateAuctionConfig(auctionConfig) {
          '{"BaR":-2}') {
     throw 'Wrong perBuyerPrioritySignals ' +
         JSON.stringify(perBuyerPrioritySignals);
+  }
+
+  if (auctionConfig.sendCreativeScanningMetadata !== true) {
+    throw 'Wrong sendCreativeScanningMetadata ' +
+        JSON.stringify(auctionConfig.sendCreativeScanningMetadata);
   }
 
   if ('componentAuctions' in auctionConfig) {

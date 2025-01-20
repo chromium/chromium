@@ -23,6 +23,7 @@ namespace {
 constexpr char kBlockDecisionHistogram[] =
     "interstitial.managed_profile_required.decision";
 constexpr char kTestUrl[] = "http://example.com";
+constexpr char16_t kEmail[] = u"user@email.com";
 
 class ManagedProfileRequiredPageTest : public testing::Test {
  public:
@@ -55,7 +56,7 @@ TEST_F(ManagedProfileRequiredPageTest, ShownAndMetricsRecorded) {
   histograms.ExpectTotalCount(kBlockDecisionHistogram, 0);
 
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl),
+      web_contents(), GURL(kTestUrl), kEmail,
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
@@ -70,7 +71,7 @@ TEST_F(ManagedProfileRequiredPageTest, ShownAndMetricsRecorded) {
 
 TEST_F(ManagedProfileRequiredPageTest, UnknownManager) {
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl),
+      web_contents(), GURL(kTestUrl), kEmail,
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
@@ -80,13 +81,13 @@ TEST_F(ManagedProfileRequiredPageTest, UnknownManager) {
       l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
 
   EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
-            l10n_util::GetStringUTF16(
-                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH));
+            l10n_util::GetStringFUTF16(
+                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH, kEmail));
 }
 
 TEST_F(ManagedProfileRequiredPageTest, KnownManager) {
   ManagedProfileRequiredPage test_page = ManagedProfileRequiredPage(
-      web_contents(), GURL(kTestUrl),
+      web_contents(), GURL(kTestUrl), kEmail,
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
@@ -96,8 +97,8 @@ TEST_F(ManagedProfileRequiredPageTest, KnownManager) {
       l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
 
   EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
-            l10n_util::GetStringUTF16(
-                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH));
+            l10n_util::GetStringFUTF16(
+                IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH, kEmail));
 }
 
 }  // namespace

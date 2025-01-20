@@ -574,6 +574,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
         pcmi |= (int32_t{c} << 24) & 0xff000000;
         destination = destination.subspan(3u);
         CHECK(channel_data.Write(base::byte_span_from_ref(
+            base::allow_nonunique_obj,
             SignedInt32SampleTypeTraits::ToFloat(pcmi))));
       }
     }

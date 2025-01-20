@@ -9,9 +9,12 @@ import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bo
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
-import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
+import type {PageRemote} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
+import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -24,13 +27,13 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserProxy} from './commerce/test_shopping_service_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelPowerBookmarksListTest', () => {
   let powerBookmarksList: PowerBookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
-  let shoppingServiceApi: TestBrowserProxy;
+  const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
+  let callbackRouterRemote: PageRemote;
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
       PageImageServiceHandlerRemote;
   let metrics: MetricsTracker;
@@ -95,6 +98,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
     return ironList.items!;
   }
 
+  function getAddTabButton(): CrButtonElement {
+    return powerBookmarksList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addCurrentTabButton')!;
+  }
+
   function getBookmarkWithId(id: string): chrome.bookmarks.BookmarkTreeNode|
       undefined {
     return getBookmarks().find((bookmark) => bookmark.id === id);
@@ -113,7 +121,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     if (!powerBookmarkRowElement) {
       return undefined;
     }
-    return powerBookmarkRowElement.$.crUrlListItem;
+    return powerBookmarkRowElement.currentUrlListItem_;
   }
 
   function isHidden(element: HTMLElement): boolean {
@@ -180,8 +188,20 @@ suite('SidePanelPowerBookmarksListTest', () => {
     bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
-    shoppingServiceApi = new TestBrowserProxy();
-    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+    priceTrackingProxy.reset();
+    const callbackRouter = new PageCallbackRouter();
+    priceTrackingProxy.setResultFor('getCallbackRouter', callbackRouter);
+    priceTrackingProxy.setResultFor(
+        'getAllPriceTrackedBookmarkProductInfo',
+        Promise.resolve({productInfos: []}));
+    priceTrackingProxy.setResultFor(
+        'getAllShoppingBookmarkProductInfo',
+        Promise.resolve({productInfos: []}));
+    priceTrackingProxy.setResultFor(
+        'getShoppingCollectionBookmarkFolderId',
+        Promise.resolve({collectionId: BigInt(-1)}));
+    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
+    PriceTrackingBrowserProxyImpl.setInstance(priceTrackingProxy);
 
     imageServiceHandler = TestMock.fromClass(PageImageServiceHandlerRemote);
     PageImageServiceBrowserProxy.setInstance(
@@ -208,6 +228,100 @@ suite('SidePanelPowerBookmarksListTest', () => {
   test('GetsAndShowsTopLevelBookmarks', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
     assertEquals(folders[1]!.children!.length + 1, getBookmarks().length);
+  });
+
+  test('RebuildsKeyboardNavigationOnCreated', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+      id: '999',
+      title: 'New bookmark of current url',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: powerBookmarksList.getCurrentUrlForTesting(),
+    });
+
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-1',
+          'bookmark-5',
+          'bookmark-999',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
+  });
+
+  test('RebuildsKeyboardNavigationOnRemoved', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
+
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(['bookmark-1', 'bookmark-5', 'bookmark-3']));
+  });
+
+  test('RebuildsKeyboardNavigationMoved', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    const movedBookmark = folders[1]!.children![2]!.children![0]!;
+    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
+      index: 0,
+      parentId: folders[1]!.id,                   // Moving to other bookmarks.
+      oldParentId: folders[1]!.children![2]!.id,  // Moving from child folder.
+      oldIndex: 0,
+    });
+
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-1',
+          'bookmark-5',
+          'bookmark-6',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
   });
 
   test('DefaultsToSortByNewest', () => {
@@ -298,6 +412,32 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     // Bookmark no longer matches search term and should not display.
     assertEquals(0, getBookmarks().length);
+  });
+
+  test('DefaultsAddTabButtonEnabled', () => {
+    const btn = getAddTabButton();
+    // The AddTabButton is enabled because the current url is not bookmarked.
+    assertFalse(btn.disabled);
+  });
+
+  test('UpdatesAddTabButton', () => {
+    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+      id: '999',
+      title: 'New bookmark of current url',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: powerBookmarksList.getCurrentUrlForTesting(),
+    });
+    flush();
+
+    let btn = getAddTabButton();
+    assertTrue(btn.disabled);
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('999');
+    flush();
+
+    btn = getAddTabButton();
+    assertFalse(btn.disabled);
   });
 
   test('AddsCreatedBookmark', async () => {
@@ -700,8 +840,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
         priceSummary: '',
       },
     };
-    shoppingServiceApi.getCallbackRouterRemote().priceTrackedForBookmark(
-        newProduct);
+
+    callbackRouterRemote.priceTrackedForBookmark(newProduct);
     await flushTasks();
     assertFalse(isHidden(labels));
   });

@@ -195,7 +195,7 @@ class MediaSourcePipelineIntegrationFuzzerTest
 
     auto external_memory =
         std::make_unique<media::ExternalMemoryAdapterForTesting>(
-            base::make_span(data, size));
+            base::span(data, size));
     scoped_refptr<media::DecoderBuffer> buffer =
         media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
 

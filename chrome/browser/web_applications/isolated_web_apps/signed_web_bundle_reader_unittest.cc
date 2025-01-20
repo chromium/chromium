@@ -332,8 +332,8 @@ class SignedWebBundleReaderTest : public testing::Test {
         web_package::mojom::SignatureInfoEd25519::New();
     signature_info_ed25519->public_key =
         test::GetDefaultEd25519KeyPair().public_key;
-    signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
-        base::make_span(kEd25519Signature));
+    signature_info_ed25519->signature =
+        web_package::Ed25519Signature::Create(base::span(kEd25519Signature));
 
     auto signed_web_bundle_id =
         web_package::SignedWebBundleId::CreateForPublicKey(

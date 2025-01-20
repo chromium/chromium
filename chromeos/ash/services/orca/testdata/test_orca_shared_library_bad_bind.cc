@@ -9,10 +9,9 @@
 extern "C" {
 
 OrcaBindServiceStatus __attribute__((visibility("default")))
-OrcaBindService(const MojoSystemThunks2* /*mojo_thunks*/,
-                const MojoSystemThunks* /*mojo_thunks_legacy*/,
-                uint32_t /*receiver_handle*/,
-                OrcaLogger* /*logger*/) {
+OrcaBindServiceV2(const MojoSystemThunks2* /*mojo_thunks*/,
+                  uintptr_t /*receiver_handle*/,
+                  OrcaLogger* /*logger*/) {
   return OrcaBindServiceStatus::ORCA_BIND_SERVICE_STATUS_UNKNOWN_ERROR;
 }
 }

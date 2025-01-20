@@ -1,6 +1,4 @@
 include_rules = [
-  "+chromeos/lacros",
-  "+chromeos/crosapi/mojom",
   "+components/country_codes",
   "+components/database_utils",
   "+components/google/core",
@@ -8,8 +6,10 @@ include_rules = [
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/lens",
+  "+components/regional_capabilities",
   "+components/metrics",
   "+components/omnibox/common",
+  "+components/os_crypt/async",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",
@@ -22,6 +22,7 @@ include_rules = [
   "+components/variations",
   "+components/version_info/version_info.h",
   "+components/webdata",
+  "+crypto",
   "+google_apis",
   "+net",
   "+services/data_decoder/public",
@@ -33,6 +34,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
   "+third_party/lens_server_proto",
+  "+third_party/search_engines_data",
   "+ui/base",
   "+ui/gfx",
 

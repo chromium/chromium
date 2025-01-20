@@ -14,13 +14,20 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsCompat.Type;
 
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.R;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 
-/** Coordinator used to adjust the padding and paint color for {@link EdgeToEdgeBaseLayout}. */
+/**
+ * Coordinator used to adjust the padding and paint color for {@link EdgeToEdgeBaseLayout}. This is
+ * a house-made version of a base edge to edge component, different than the AndroidX Coordinator
+ * layout that applies some Chrome specific insets coordination.
+ *
+ * <p>Currently the layout supports systemBars / displayCutout / IME
+ */
 public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         implements WindowInsetsConsumer {
     private final Activity mActivity;
@@ -91,20 +98,31 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
-        Insets statusBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+        Insets statusBarInsets = windowInsets.getInsets(Type.statusBars());
         mView.setStatusBarInsets(statusBarInsets);
 
-        Insets navBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
         mView.setNavigationBarInsets(navBarInsets);
 
-        Insets overallInsets = Insets.add(statusBarInsets, navBarInsets);
+        Insets cutout = windowInsets.getInsets(Type.displayCutout());
+        mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
+        mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
+
+        // Currently the EdgeToEdgeLayout does not color the caption bar, but it should add padding
+        // if necessary to account for the captionBar insets (e.g. on some OEMs).
+        // See https://crbug.com/377620837
+        Insets overallInsets =
+                windowInsets.getInsets(Type.systemBars() + Type.displayCutout() + Type.ime());
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
         // Consume the insets since the root view already adjusted their paddings.
         return new WindowInsetsCompat.Builder(windowInsets)
-                .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
+                .setInsets(Type.statusBars(), Insets.NONE)
+                .setInsets(Type.navigationBars(), Insets.NONE)
+                .setInsets(Type.captionBar(), Insets.NONE)
+                .setInsets(Type.displayCutout(), Insets.NONE)
+                .setInsets(Type.ime(), Insets.NONE)
                 .build();
     }
 

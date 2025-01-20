@@ -445,8 +445,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "PasswordManager::DidNavigateMainFrame";
     case STRING_NAVIGATION_NTP:
       return "Navigation to New Tab page";
-    case STRING_SERVER_PREDICTIONS:
-      return "Server predictions";
     case STRING_USERNAME_FIRST_FLOW_VOTE:
       return "Username first flow vote";
     case STRING_POSSIBLE_USERNAME_USED:

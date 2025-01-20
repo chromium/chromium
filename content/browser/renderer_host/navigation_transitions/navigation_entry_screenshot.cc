@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
+#include "base/feature_list.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
@@ -32,8 +33,17 @@ void CompressNavigationScreenshotOnWorkerThread(
     CompressionDoneCallback done_callback) {
   TRACE_EVENT0("navigation", "CompressNavigationScreenshotOnWorkerThread");
 
-  if (auto compressed_bitmap = ui::UIResourceProvider::CompressBitmap(
-          bitmap, supports_etc_non_power_of_two)) {
+  sk_sp<SkPixelRef> compressed_bitmap = nullptr;
+  if (base::FeatureList::IsEnabled(ui::kCompressBitmapAtBackgroundPriority)) {
+    compressed_bitmap =
+        ui::UIResourceProvider::CompressBitmapAtBackgroundPriority(
+            bitmap, supports_etc_non_power_of_two);
+  } else {
+    compressed_bitmap = ui::UIResourceProvider::CompressBitmap(
+        bitmap, supports_etc_non_power_of_two);
+  }
+
+  if (compressed_bitmap) {
     std::move(done_callback).Run(std::move(compressed_bitmap));
   }
 }

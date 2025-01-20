@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -66,7 +67,6 @@ class IdentityManager;
 
 namespace signin_metrics {
 enum class AccessPoint;
-enum class ReauthAccessPoint;
 }  // namespace signin_metrics
 
 namespace url {
@@ -325,18 +325,6 @@ class PasswordManagerClient {
   // Informs the embedder that user credentials were leaked.
   virtual void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
 
-  // Requests a reauth for the primary account with |access_point| representing
-  // where the reauth was triggered.
-  // Triggers the |reauth_callback| with ReauthSucceeded(true) if
-  // reauthentication succeeded.
-  virtual void TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(ReauthSucceeded)> reauth_callback);
-
-  // Redirects the user to a sign-in in a new tab. |access_point| is used for
-  // metrics recording and represents where the sign-in was triggered.
-  virtual void TriggerSignIn(signin_metrics::AccessPoint access_point);
-
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
 
@@ -410,8 +398,14 @@ class PasswordManagerClient {
   // Use this to filter credentials before handling them in password manager.
   virtual const CredentialsFilter* GetStoreResultFilter() const = 0;
 
-  // Returns a LogManager instance.
-  virtual autofill::LogManager* GetLogManager();
+  // Returns a LogManager instance (for chrome://password-manager-internals).
+  // Note that the return value may change over the lifetime of a
+  // PasswordManagerClient from null to non-null, so callers should not store
+  // the result of this function, but call GetCurrentLogManager() again instead.
+  // - May return null if logging is disabled (but a non null return value does
+  // not guarantee that logging is enabled).
+  // - May return null for platforms that don't support this.
+  virtual autofill::LogManager* GetCurrentLogManager();
 
   // Record that we saw a password field on this page.
   virtual void AnnotateNavigationEntry(bool has_password_field);
@@ -553,20 +547,22 @@ class PasswordManagerClient {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
-
   // Shows the bubble with the details of the `form`.
   virtual void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) = 0;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS)
   // Creates and show the cross domain confirmation popup.
   virtual std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(const gfx::RectF& element_bounds,
                                    base::i18n::TextDirection text_direction,
                                    const GURL& domain,
-                                   const std::u16string& password_origin,
+                                   const std::u16string& password_hostname,
+                                   bool show_warning_text,
                                    base::OnceClosure confirmation_callback) = 0;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_IOS)
 };
 
 }  // namespace password_manager

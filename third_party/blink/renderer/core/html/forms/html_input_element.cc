@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -303,9 +302,9 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
   return input_type_view_->HasCustomFocusLogic();
 }
 
-bool HTMLInputElement::IsKeyboardFocusable(
+bool HTMLInputElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  return input_type_->IsKeyboardFocusable(update_behavior);
+  return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
@@ -380,9 +379,6 @@ void HTMLInputElement::HandleBlurEvent() {
 }
 
 void HTMLInputElement::setType(const AtomicString& type) {
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EnsureShadowSubtree();
-  }
   setAttribute(html_names::kTypeAttr, type);
 }
 
@@ -405,8 +401,7 @@ void HTMLInputElement::InitializeTypeInParsing() {
   if (!default_value.IsNull())
     input_type_->WarnIfValueIsInvalid(default_value);
 
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-      input_type_view_->HasCreatedShadowSubtree()) {
+  if (input_type_view_->HasCreatedShadowSubtree()) {
     input_type_view_->UpdateView();
   } else {
     input_type_view_->set_needs_update_view_in_create_shadow_subtree(true);
@@ -493,9 +488,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   // No need for CreateShadowSubtreeIfNeeded() to call UpdateView() as we'll
   // do that later on in this function (and calling UpdateView() here is
   // problematic as state hasn't fully been updated).
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    input_type_view_->set_needs_update_view_in_create_shadow_subtree(false);
-  }
+  input_type_view_->set_needs_update_view_in_create_shadow_subtree(false);
   input_type_view_->CreateShadowSubtreeIfNeeded(true);
 
   UpdateWillValidateCache();
@@ -624,8 +617,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 void HTMLInputElement::SubtreeHasChanged() {
   input_type_view_->SubtreeHasChanged();
 
-  if (HasDirectionAuto() ||
-      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+  if (HasDirectionAuto()) {
     // When typing in an input field, childrenChanged is not called, so we
     // need to force the directionality check.
     CalculateAndAdjustAutoDirectionality();
@@ -788,7 +780,7 @@ bool HTMLInputElement::IsPresentationAttribute(
 void HTMLInputElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kVspaceAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
@@ -869,7 +861,6 @@ void HTMLInputElement::ParseAttribute(
     input_type_->WarnIfValueIsInvalidAndElementIsVisible(value);
     input_type_->InRangeChanged();
     if (input_type_view_->HasCreatedShadowSubtree() ||
-        !RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
         !input_type_view_->NeedsShadowSubtree()) {
       input_type_view_->ValueAttributeChanged();
     } else {
@@ -985,6 +976,9 @@ bool HTMLInputElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 }
 
 LayoutObject* HTMLInputElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   return input_type_view_->CreateLayoutObject(style);
 }
 
@@ -1353,27 +1347,23 @@ void HTMLInputElement::UpdateView() {
   input_type_view_->UpdateView();
 }
 
-ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
+ScriptObject HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateGetter);
   // TODO(crbug.com/988343): InputType::ValueAsDate() should return
   // std::optional<base::Time>.
   double date = input_type_->ValueAsDate();
-  v8::Isolate* isolate = script_state->GetIsolate();
-  if (!std::isfinite(date))
-    return ScriptValue::CreateNull(isolate);
-  return ScriptValue(
-      isolate,
-      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date)));
+  if (!std::isfinite(date)) {
+    return ScriptObject::CreateNull(script_state->GetIsolate());
+  }
+  return ToV8FromDate(script_state,
+                      base::Time::FromMillisecondsSinceUnixEpoch(date));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,
-                                      const ScriptValue& value,
+                                      const ScriptObject& value,
                                       ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateSetter);
-  std::optional<base::Time> date =
-      NativeValueTraits<IDLNullable<IDLDate>>::NativeValue(
-          script_state->GetIsolate(), value.V8Value(), exception_state);
+  std::optional<base::Time> date = ToCoreNullableDate(value, exception_state);
   if (exception_state.HadException())
     return;
   input_type_->SetValueAsDate(date, exception_state);
@@ -1734,7 +1724,7 @@ bool HTMLInputElement::MatchesReadWritePseudoClass() const {
   return input_type_->SupportsReadOnly() && !IsDisabledOrReadOnly();
 }
 
-ControlPart HTMLInputElement::AutoAppearance() const {
+AppearanceValue HTMLInputElement::AutoAppearance() const {
   return input_type_view_->AutoAppearance();
 }
 
@@ -1769,8 +1759,7 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
     if (!Form()) {
       AddToRadioButtonGroup();
     }
-    if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-        !input_type_view_->HasCreatedShadowSubtree() &&
+    if (!input_type_view_->HasCreatedShadowSubtree() &&
         input_type_view_->NeedsShadowSubtree()) {
       scheduled_create_shadow_tree_ = true;
       GetDocument().ScheduleShadowTreeCreation(*this);
@@ -1779,10 +1768,6 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
   ResetListAttributeTargetObserver();
   LogAddElementIfIsolatedWorldAndInDocument("input", html_names::kTypeAttr,
                                             html_names::kFormactionAttr);
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-    input_type_view_->CreateShadowSubtreeIfNeeded();
-  }
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 
@@ -2228,7 +2213,7 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
         continue;
       suggestion->localized_value = LocalizeValue(option->value());
       suggestion->label =
-          option->value() == option->label() ? String("") : option->label();
+          option->value() == option->label() ? g_empty_string : option->label();
       parameters.suggestions.push_back(std::move(suggestion));
     }
   }
@@ -2259,7 +2244,6 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool HTMLInputElement::IsLastInputElementInForm() {
   DCHECK(GetDocument().GetPage());
   return !GetDocument()
@@ -2276,7 +2260,6 @@ void HTMLInputElement::DispatchSimulatedEnter() {
 
   EventDispatcher::DispatchSimulatedEnterEvent(*this);
 }
-#endif
 
 bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();
@@ -2287,7 +2270,7 @@ void HTMLInputElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
-  ListAttributeTargetChanged();
+  input_type_view_->ListAttributeTargetChanged();
 }
 
 AXObject* HTMLInputElement::PopupRootAXObject() {
@@ -2373,6 +2356,10 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   LocalFrame::ConsumeTransientUserActivation(frame);
 
   input_type_view_->OpenPopupView();
+}
+
+bool HTMLInputElement::IsPickerVisible() const {
+  return input_type_view_->IsPickerVisible();
 }
 
 bool HTMLInputElement::IsValidBuiltinCommand(HTMLElement& invoker,

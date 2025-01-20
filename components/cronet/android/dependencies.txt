@@ -8,6 +8,7 @@
 //base/third_party/double_conversion
 //base/third_party/icu
 //base/third_party/superfasthash
+//base/version_info/android
 //build
 //build/android
 //build/config
@@ -62,6 +63,7 @@
 //third_party/modp_b64
 //third_party/protobuf
 //third_party/rust
+//third_party/simdutf
 //third_party/zlib
 //third_party/zstd
 //tools/android/errorprone_plugin

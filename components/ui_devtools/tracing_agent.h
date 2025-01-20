@@ -46,9 +46,9 @@ class UI_DEVTOOLS_EXPORT TracingAgent
   void OnTraceComplete();
 
   // Tracing::Backend:
-  void start(protocol::Maybe<std::string> categories,
-             protocol::Maybe<std::string> options,
-             protocol::Maybe<double> buffer_usage_reporting_interval,
+  void start(std::optional<std::string> categories,
+             std::optional<std::string> options,
+             std::optional<double> buffer_usage_reporting_interval,
              std::unique_ptr<StartCallback> callback) override;
   protocol::Response end() override;
 

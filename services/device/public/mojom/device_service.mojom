@@ -27,7 +27,7 @@ import "services/device/public/mojom/hid.mojom";
 [EnableIf=enable_input_device_manager]
 import "services/device/public/mojom/input_service.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=is_android]
@@ -78,7 +78,7 @@ interface DeviceService {
   BindHidManager(pending_receiver<HidManager> receiver);
 
   // Binds a MtpManager endpoint.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   BindMtpManager(pending_receiver<MtpManager> receiver);
 
   // Binds a PowerMonitor endpoint.

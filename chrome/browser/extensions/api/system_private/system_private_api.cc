@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/system_private/system_private_api.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -33,11 +29,11 @@ namespace {
 
 // Maps policy::policy_prefs::kIncognitoModeAvailability values (0 = enabled,
 // ...) to strings exposed to extensions.
-const char* const kIncognitoModeAvailabilityStrings[] = {
-  "enabled",
-  "disabled",
-  "forced"
-};
+const auto kIncognitoModeAvailabilityStrings = std::to_array<const char*>({
+    "enabled",
+    "disabled",
+    "forced",
+});
 
 // Property keys.
 const char kDownloadProgressKey[] = "downloadProgress";

@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex">
+    <style include="cr-shared-style settings-page-styles cr-hidden-style">
       :host([is-subpage-animating]) {
         /* Prevent an unwanted horizontal scrollbar when transitioning back from
          * a sub-page. */
@@ -61,21 +61,10 @@
               prefs="{{prefs}}">
           </settings-privacy-guide-promo>
         </settings-section>
-        <!-- TODO(crbug.com/40277421): Remove after SafetyHub launched. -->
-        <template is="dom-if"
-              if="[[showSafetyCheckPage_(pageVisibility.safetyCheck)]]" restamp>
-          <settings-section page-title="$i18n{safetyCheckSectionTitle}"
-              section="safetyCheck" nest-under-section="privacy"
-              id="safetyCheckSettingsSection">
-            <settings-safety-check-page prefs="{{prefs}}">
-            </settings-safety-check-page>
-          </settings-section>
-        </template>
         <!--  TODO(crbug.com/40267370): Add a test to basic_page_test.ts
         to check that settings-safety-hub-entry-point is not visible
         in the guest mode. -->
-        <template is="dom-if"
-            if="[[showSafetyHubEntryPointPage_(pageVisibility.safetyHub)]]"
+        <template is="dom-if" if="[[showPage_(pageVisibility.safetyHub)]]"
             restamp>
           <settings-section page-title="$i18n{safetyHub}"
               section="safetyHubEntryPoint" nest-under-section="privacy"
@@ -92,6 +81,20 @@
             </settings-privacy-page>
           </settings-section>
         </template>
+<if expr="enable_glic">
+        <template is="dom-if" if="[[showGlicPage_(pageVisibility.glic)]]"
+            restamp>
+          <settings-section page-title="$i18n{glicPreferencesSection}"
+              section="glic">
+            <settings-glic-page prefs="{{prefs}}"></settings-glic-page>
+          </settings-section>
+          <settings-section page-title="$i18n{glicDataSection}"
+              section="glicData" nest-under-section="glic">
+            <settings-glic-data-page prefs="{{prefs}}">
+            </settings-glic-data-page>
+          </settings-section>
+        </template>
+</if>
         <template is="dom-if"
             if="[[showPage_(pageVisibility.performance)]]"
             restamp>

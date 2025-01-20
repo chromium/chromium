@@ -71,14 +71,12 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  const auto [adjusted_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
-  input_ = adjusted_input;
-  starter_pack_engine_ = starter_pack_engine;
+  input_ = input;
+  starter_pack_engine_ = AutocompleteInput::AdjustInputForStarterPackEngines(
+      client()->GetTemplateURLService(), &input_);
 
   int num_terms =
-      history_embeddings::CountWords(base::UTF16ToUTF8(adjusted_input.text()));
+      history_embeddings::CountWords(base::UTF16ToUTF8(input_.text()));
   if (num_terms < history_embeddings::GetFeatureParameters()
                       .search_query_minimum_word_count) {
     return;
@@ -91,8 +89,8 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
   service->Search(
-      nullptr, base::UTF16ToUTF8(adjusted_input.text()), {},
-      provider_max_matches_,
+      nullptr, base::UTF16ToUTF8(input_.text()), {}, provider_max_matches_,
+      /*skip_answering=*/false,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
                           weak_factory_.GetWeakPtr()));
 }
@@ -201,6 +199,7 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
     case history_embeddings::ComputeAnswerStatus::kUnanswerable:
     case history_embeddings::ComputeAnswerStatus::kFiltered:
     case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
       return std::nullopt;
 
     case history_embeddings::ComputeAnswerStatus::kLoading: {
@@ -232,13 +231,6 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
       answer_match.contents_class = {{0, ACMatchClassification::DIM}};
       return answer_match;
     }
-
-    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
-      return CreateAnswerMatchHelper(
-          score,
-          l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
-          l10n_util::GetStringUTF16(
-              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE));
 
     case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
       return CreateAnswerMatchHelper(

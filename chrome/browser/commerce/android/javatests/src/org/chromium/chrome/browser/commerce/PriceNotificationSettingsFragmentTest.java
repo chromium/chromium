@@ -31,6 +31,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
@@ -61,7 +62,9 @@ public class PriceNotificationSettingsFragmentTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         when(mIdentityManager.getPrimaryAccountInfo(anyInt()))
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("user@example.com", "12345"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                "user@example.com", new GaiaId("12345")));
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);

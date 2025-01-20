@@ -69,8 +69,7 @@ INSTANTIATE_TEST_SUITE_P(
         case WallpaperType::kCustomized:
           return "Customized";
         default:
-          CHECK(false);
-          return "Unknown";
+          NOTREACHED();
       }
     });
 

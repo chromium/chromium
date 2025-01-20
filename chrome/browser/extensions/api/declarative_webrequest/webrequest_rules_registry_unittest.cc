@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -89,7 +85,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   }
 
  protected:
-  ~TestWebRequestRulesRegistry() override {}
+  ~TestWebRequestRulesRegistry() override = default;
 
   void ClearCacheOnNavigation() override { ++num_clear_cache_calls_; }
 
@@ -638,12 +634,12 @@ TEST_F(WebRequestRulesRegistryTest, GetMatchesDifferentUrls) {
 
   std::set<const WebRequestRule*> matches;
 
-  const GURL urls[] = {
-    GURL("http://url.example.com"),  // matching
-    GURL("http://www.example.com")   // non-matching
-  };
+  const auto urls = std::to_array<GURL>({
+      GURL("http://url.example.com"),  // matching
+      GURL("http://www.example.com")   // non-matching
+  });
   // Which rules should match in subsequent test iterations.
-  const char* const matchingRuleIds[] = { kRuleId1, kRuleId2 };
+  const auto matchingRuleIds = std::to_array<const char*>({kRuleId1, kRuleId2});
   static_assert(std::size(urls) == std::size(matchingRuleIds),
                 "urls and matchingRuleIds must have the same number "
                 "of elements");

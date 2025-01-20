@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_BROWSER_WITH_TEST_WINDOW_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -47,6 +48,7 @@
 #endif
 
 class GURL;
+class GaiaId;
 
 namespace chromeos {
 class ScopedLacrosServiceTestHelper;
@@ -206,9 +208,9 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void FocusMainFrameOfActiveWebContents();
 
   // Returns the profile name used for the profile created in SetUp() by
-  // default.
-  // Subclasses can override to change the profile name.
-  virtual std::string GetDefaultProfileName();
+  // default.  Subclasses can override to change the profile name. If it returns
+  // std::nullopt, this will skip creating profile and browser window.
+  virtual std::optional<std::string> GetDefaultProfileName();
 
   // Creates the profile used by this test. The caller doesn't own the return
   // value.
@@ -250,7 +252,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Logs in an User as `email`.
-  virtual void LogIn(const std::string& email);
+  virtual void LogIn(std::string_view email, const GaiaId& gaia_id);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

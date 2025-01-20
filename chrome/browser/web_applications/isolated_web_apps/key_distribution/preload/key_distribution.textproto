@@ -1,0 +1,11 @@
+# proto-file: chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.proto
+# proto-message: IwaKeyDistribution
+
+key_rotation_data {
+  # Test entry: maps an arbitrary Web Bundle ID to a null key.
+  key_rotations {
+    key: "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac"
+    value {
+    }
+  }
+}

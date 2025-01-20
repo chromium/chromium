@@ -78,8 +78,6 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  static void ClearDeprecatedPrefs(PrefService* prefs);
-
   virtual void Init();
 
   // Triggers subscription and/or unsubscription requests so that the set of

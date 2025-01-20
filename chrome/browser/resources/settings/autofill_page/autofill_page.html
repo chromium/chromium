@@ -24,11 +24,11 @@
             sub-label="[[addressesSublabel_()]]"
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <template is="dom-if" if="[[autofillPredictionImprovementsAvailable_]]">
-          <cr-link-row id="autofillPredictionImprovementsManagerButton"
+        <template is="dom-if" if="[[autofillAiAvailable_]]">
+          <cr-link-row id="autofillAiManagerButton"
               start-icon="settings20:text-analysis"
-              label="$i18n{autofillPredictionImprovementsPageTitle}"
-              on-click="onAutofillPredictionImprovementsClick_"></cr-link-row>
+              label="$i18n{autofillAiPageTitle}"
+              on-click="onAutofillAiClick_"></cr-link-row>
         </template>
       </div>
       <if expr="is_win or is_macosx">
@@ -61,17 +61,15 @@
           </settings-autofill-section>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[autofillPredictionImprovementsAvailable_]]">
-        <template is="dom-if" route-path="/autofillPredictionImprovements">
-          <settings-subpage
-              associated-control=
-                  "[[$$('#autofillPredictionImprovementsManagerButton')]]"
-              page-title="$i18n{autofillPredictionImprovementsPageTitle}">
-            <settings-autofill-prediction-improvements-section
-                id="autofillPredictionImprovementsSection" prefs="{{prefs}}"
-                disabled$="[[!userEligibleForAutofillPredictionImprovements_]]">
-            </settings-autofill-prediction-improvements-section>
-          </settings-subpage>
-        </template>
+        <template is="dom-if" route-path="/autofillAi"
+            no-search="[[!autofillAiAvailable_]]">
+        <settings-subpage
+            associated-control="[[$$('#autofillAiManagerButton')]]"
+            page-title="$i18n{autofillAiPageTitle}">
+          <settings-autofill-ai-section
+              id="autofillAiSection" prefs="{{prefs}}"
+              disabled$="[[!userEligibleForAutofillAi_]]">
+          </settings-autofill-ai-section>
+        </settings-subpage>
       </template>
     </settings-animated-pages>

@@ -2,18 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("contextual_cueing") {
-  defines = [ "IS_CONTEXTUAL_CUEING_IMPL" ]
+import("//chrome/common/features.gni")
 
+source_set("contextual_cueing") {
   sources = [
-    "contextual_cueing_features.cc",
     "contextual_cueing_features.h",
-    "contextual_cueing_helper.cc",
     "contextual_cueing_helper.h",
   ]
   public_deps = [
     "//base",
     "//content/public/browser",
   ]
-  deps = [ "//url" ]
+}
+
+source_set("impl") {
+  sources = [
+    "contextual_cueing_features.cc",
+    "contextual_cueing_helper.cc",
+  ]
+  deps = [
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
+  ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic:enabling" ]
+  }
 }

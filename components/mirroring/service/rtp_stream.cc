@@ -13,9 +13,6 @@
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
 
-using media::cast::FrameSenderConfig;
-using media::cast::RtpPayloadType;
-
 namespace mirroring {
 
 VideoRtpStream::VideoRtpStream(

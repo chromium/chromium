@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.components.signin.AccountEmailDisplayHook;
+import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
 
 import java.util.HashMap;
@@ -27,10 +28,11 @@ public class AccountInfo extends CoreAccountInfo {
         private CoreAccountInfo mCoreAccountInfo;
         private String mFullName = "";
         private String mGivenName = "";
+        private @Nullable String mHostedDomain;
         private @Nullable Bitmap mAccountImage;
         private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
-        public Builder(String email, String gaiaId) {
+        public Builder(String email, GaiaId gaiaId) {
             mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
         }
 
@@ -43,6 +45,7 @@ public class AccountInfo extends CoreAccountInfo {
             this(accountInfo.getEmail(), accountInfo.getGaiaId());
             mFullName = accountInfo.getFullName();
             mGivenName = accountInfo.getGivenName();
+            mHostedDomain = accountInfo.mHostedDomain;
             mAccountImage = accountInfo.getAccountImage();
             mAccountCapabilities = accountInfo.getAccountCapabilities();
         }
@@ -54,6 +57,11 @@ public class AccountInfo extends CoreAccountInfo {
 
         public Builder givenName(String givenName) {
             mGivenName = givenName;
+            return this;
+        }
+
+        public Builder hostedDomain(String hostedDomain) {
+            mHostedDomain = hostedDomain;
             return this;
         }
 
@@ -74,6 +82,7 @@ public class AccountInfo extends CoreAccountInfo {
                     mCoreAccountInfo.getGaiaId(),
                     mFullName,
                     mGivenName,
+                    mHostedDomain,
                     mAccountImage,
                     mAccountCapabilities);
         }
@@ -81,6 +90,13 @@ public class AccountInfo extends CoreAccountInfo {
 
     private final String mFullName;
     private final String mGivenName;
+
+    /**
+     * `null` if the hosted domain isn't know yet. Contains {@link
+     * SigninConstants.NO_HOSTED_DOMAIN_FOUND} if the account is not managed.
+     */
+    private final @Nullable String mHostedDomain;
+
     private final @Nullable Bitmap mAccountImage;
     private AccountCapabilities mAccountCapabilities;
 
@@ -89,67 +105,91 @@ public class AccountInfo extends CoreAccountInfo {
     private AccountInfo(
             CoreAccountId id,
             String email,
-            String gaiaId,
+            GaiaId gaiaId,
             String fullName,
             String givenName,
+            @Nullable String hostedDomain,
             @Nullable Bitmap accountImage,
             AccountCapabilities accountCapabilities) {
         super(id, email, gaiaId);
         mFullName = fullName;
         mGivenName = givenName;
+
+        mHostedDomain = hostedDomain;
+        assert mHostedDomain == null || !mHostedDomain.isEmpty()
+                : "Empty string is not permitted for hostedDomain";
+
         mAccountImage = accountImage;
         mAccountCapabilities = accountCapabilities;
     }
 
     /**
-     * @return Whether the account email can be used in display fields.
-     * If `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available
-     * (Tribool.UNKNOWN), uses fallback.
+     * Returns whether the account email can be used in display fields. If
+     * `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available (Tribool.UNKNOWN), uses
+     * fallback.
      */
     public boolean canHaveEmailAddressDisplayed() {
-        switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
-            case Tribool.FALSE:
-                {
-                    return false;
-                }
-            case Tribool.TRUE:
-                {
-                    return true;
-                }
-        }
-        return AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
+        return switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
+            case Tribool.FALSE -> false;
+            case Tribool.TRUE -> true;
+            default -> AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
+        };
     }
 
-    /** @return Full name of the account. */
+    /** Returns the full name of the account. */
+    @CalledByNative
     public String getFullName() {
         return mFullName;
     }
 
-    /** @return Given name of the account. */
+    /** Returns the given name of the account. */
+    @CalledByNative
     public String getGivenName() {
         return mGivenName;
     }
 
+    /** Whether the account is managed. */
+    public @Tribool int isManaged() {
+        if (mHostedDomain == null) {
+            return Tribool.UNKNOWN;
+        }
+        return mHostedDomain.equals(SigninConstants.NO_HOSTED_DOMAIN_FOUND)
+                ? Tribool.FALSE
+                : Tribool.TRUE;
+    }
+
     /**
-     * Gets the account's image.
-     * It can be the image user uploaded, monogram or null.
+     * Management domain for the account. Can only be called if `isManaged` returns `Tribool.TRUE`.
      */
+    public String getManagementDomain() {
+        if (isManaged() != Tribool.TRUE) {
+            throw new IllegalStateException("The account isn't managed (or the status is unknown)");
+        }
+        return mHostedDomain;
+    }
+
+    /** Gets the account's image. It can be the image user uploaded, monogram or null. */
     public @Nullable Bitmap getAccountImage() {
         return mAccountImage;
     }
 
-    /** @return the capability values associated with the account. */
+    /** Returns the capability values associated with the account. */
     public AccountCapabilities getAccountCapabilities() {
         return mAccountCapabilities;
     }
 
     /**
-     * @return Whether the {@link AccountInfo} has any valid displayable information.
-     * The displayable information are full name, given name and avatar.
+     * Returns whether the {@link AccountInfo} has any valid displayable information. The
+     * displayable information are full name, given name and avatar.
      */
     public boolean hasDisplayableInfo() {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    @CalledByNative
+    private String getRawHostedDomain() {
+        return mHostedDomain;
     }
 }

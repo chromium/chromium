@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,9 +15,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,8 +33,9 @@
 namespace {
 
 content::WebContents* GetPickerWebContents() {
-  if (!ProfilePicker::GetWebViewForTesting())
+  if (!ProfilePicker::GetWebViewForTesting()) {
     return nullptr;
+  }
   return ProfilePicker::GetWebViewForTesting()->GetWebContents();
 }
 
@@ -53,23 +55,17 @@ class TestProfileManagementFlowController
         initial_step_load_finished_closure_(
             std::move(initial_step_load_finished_closure)) {}
 
-  void Init(StepSwitchFinishedCallback step_switch_finished_callback) override {
+  void Init() override {
     RegisterStep(step_, step_controller_factory_.Run(host()));
     SwitchToStep(
         step_, /*reset_state=*/true,
         /*step_switch_finished_callback=*/
         base::BindOnce(
             &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
-            weak_ptr_factory_.GetWeakPtr(),
-            std::move(step_switch_finished_callback)));
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnInitialStepSwitchFinished(StepSwitchFinishedCallback original_callback,
-                                   bool success) {
-    if (original_callback) {
-      std::move(original_callback).Run(success);
-    }
-
+  void OnInitialStepSwitchFinished(bool success) {
     if (host()->GetPickerContents()->IsLoading()) {
       Observe(host()->GetPickerContents());
     } else {
@@ -78,13 +74,18 @@ class TestProfileManagementFlowController
     }
   }
 
-  void DidFirstVisuallyNonEmptyPaint() override {
+  void DidStopLoading() override {
     Observe(nullptr);
     DCHECK(initial_step_load_finished_closure_);
     std::move(initial_step_load_finished_closure_).Run();
   }
 
   void CancelPostSignInFlow() override { NOTREACHED(); }
+
+  void PickProfile(const base::FilePath& profile_path,
+                   ProfilePicker::ProfilePickingArgs args) override {
+    NOTREACHED();
+  }
 
   Step step_;
   ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;
@@ -101,15 +102,17 @@ ViewAddedWaiter::ViewAddedWaiter(views::View* view) : view_(view) {}
 ViewAddedWaiter::~ViewAddedWaiter() = default;
 
 void ViewAddedWaiter::Wait() {
-  if (view_->GetWidget())
+  if (view_->GetWidget()) {
     return;
+  }
   observation_.Observe(view_.get());
   run_loop_.Run();
 }
 
 void ViewAddedWaiter::OnViewAddedToWidget(views::View* observed_view) {
-  if (observed_view == view_)
+  if (observed_view == view_) {
     run_loop_.Quit();
+  }
 }
 
 // -- ViewDeletedWaiter --------------------------------------------------------
@@ -232,8 +235,9 @@ void ProfileManagementStepTestView::ShowAndWait(
   // UI elements to know when to stop waiting.
   run_loop_.Run();
 
-  if (view_size.has_value())
+  if (view_size.has_value()) {
     GetWidget()->SetSize(view_size.value());
+  }
 }
 
 std::unique_ptr<ProfileManagementFlowController>
@@ -244,6 +248,9 @@ ProfileManagementStepTestView::CreateFlowController(
       this, std::move(clear_host_callback), step_, step_controller_factory_,
       run_loop_.QuitClosure());
 }
+
+MockProfilePickerWebContentsHost::MockProfilePickerWebContentsHost() = default;
+MockProfilePickerWebContentsHost::~MockProfilePickerWebContentsHost() = default;
 
 // -- Other utils --------------------------------------------------------------
 namespace profiles::testing {

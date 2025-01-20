@@ -7,6 +7,7 @@ Test that Page.setPrerenderingAllowed disables prerendering
             loaderId : <string>
             url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
         }
+        pipelineId : <string>
         prerenderStatus : PrerenderingDisabledByDevTools
         status : Failure
     }

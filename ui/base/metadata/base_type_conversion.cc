@@ -9,35 +9,28 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time_delta_from_string.h"
+#include "components/url_formatter/url_fixer.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 namespace metadata {
-
-const char kNoPrefix[] = "";
-const char kSkColorPrefix[] = "--";
-
-std::u16string PointerToString(const void* pointer_val) {
-  return pointer_val ? u"(assigned)" : u"(not assigned)";
-}
-
-const std::u16string& GetNullOptStr() {
-  static const base::NoDestructor<std::u16string> kNullOptStr(u"<Empty>");
-  return *kNullOptStr;
-}
 
 /***** String Conversions *****/
 
@@ -61,22 +54,22 @@ std::u16string TypeConverter<bool>::ToString(bool source_value) {
   return source_value ? u"true" : u"false";
 }
 
-ValidStrings TypeConverter<bool>::GetValidStrings() {
-  return {u"false", u"true"};
-}
-
 std::u16string TypeConverter<const char*>::ToString(const char* source_value) {
   return base::UTF8ToUTF16(source_value);
+}
+
+std::u16string TypeConverter<std::string_view>::ToString(
+    std::string_view source_value) {
+  return base::UTF8ToUTF16(source_value);
+}
+
+std::u16string TypeConverter<GURL>::ToString(const GURL& source_value) {
+  return base::ASCIIToUTF16(source_value.possibly_invalid_spec());
 }
 
 std::u16string TypeConverter<base::FilePath>::ToString(
     const base::FilePath& source_value) {
   return source_value.AsUTF16Unsafe();
-}
-
-std::u16string TypeConverter<std::u16string>::ToString(
-    const std::u16string& source_value) {
-  return source_value;
 }
 
 std::u16string TypeConverter<base::TimeDelta>::ToString(
@@ -119,14 +112,12 @@ std::u16string TypeConverter<gfx::RectF>::ToString(
 
 std::u16string TypeConverter<gfx::ShadowValues>::ToString(
     const gfx::ShadowValues& source_value) {
-  std::u16string ret = u"[";
-  for (auto shadow_value : source_value) {
-    ret += u" " + base::ASCIIToUTF16(shadow_value.ToString()) + u";";
-  }
-
-  ret[ret.length() - 1] = ' ';
-  ret += u"]";
-  return ret;
+  std::vector<std::string> shadow_strings;
+  shadow_strings.reserve(source_value.size());
+  base::ranges::transform(source_value, std::back_inserter(shadow_strings),
+                          &gfx::ShadowValue::ToString);
+  return base::ASCIIToUTF16(
+      base::StrCat({"[", base::JoinString(shadow_strings, "; "), "]"}));
 }
 
 std::u16string TypeConverter<gfx::Size>::ToString(
@@ -144,10 +135,23 @@ std::u16string TypeConverter<std::string>::ToString(
   return base::UTF8ToUTF16(source_value);
 }
 
+std::u16string TypeConverter<std::u16string>::ToString(
+    const std::u16string& source_value) {
+  return source_value;
+}
+
 std::u16string TypeConverter<url::Component>::ToString(
     const url::Component& source_value) {
   return base::ASCIIToUTF16(
       base::StringPrintf("{%d,%d}", source_value.begin, source_value.len));
+}
+
+std::optional<bool> TypeConverter<bool>::FromString(
+    const std::u16string& source_value) {
+  if (source_value == u"true") {
+    return true;
+  }
+  return (source_value == u"false") ? std::make_optional(false) : std::nullopt;
 }
 
 std::optional<int8_t> TypeConverter<int8_t>::FromString(
@@ -235,12 +239,11 @@ std::optional<double> TypeConverter<double>::FromString(
              : std::nullopt;
 }
 
-std::optional<bool> TypeConverter<bool>::FromString(
+std::optional<GURL> ui::metadata::TypeConverter<GURL>::FromString(
     const std::u16string& source_value) {
-  const bool is_true = source_value == u"true";
-  if (is_true || source_value == u"false")
-    return is_true;
-  return std::nullopt;
+  const GURL url =
+      url_formatter::FixupURL(base::UTF16ToUTF8(source_value), std::string());
+  return url.is_valid() ? std::make_optional(url) : std::nullopt;
 }
 
 std::optional<std::u16string> TypeConverter<std::u16string>::FromString(
@@ -412,6 +415,10 @@ std::optional<url::Component> TypeConverter<url::Component>::FromString(
   return std::nullopt;
 }
 
+ValidStrings TypeConverter<bool>::GetValidStrings() {
+  return {u"false", u"true"};
+}
+
 std::u16string TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ToString(
     SkColor source_value) {
   return base::UTF8ToUTF16(color_utils::SkColorToRgbaString(source_value));
@@ -573,6 +580,15 @@ std::optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ParseRgbString(
 }  // namespace metadata
 }  // namespace ui
 
+DEFINE_ENUM_CONVERTERS(gfx::ElideBehavior,
+                       {gfx::ElideBehavior::NO_ELIDE, u"NO_ELIDE"},
+                       {gfx::ElideBehavior::TRUNCATE, u"TRUNCATE"},
+                       {gfx::ElideBehavior::ELIDE_HEAD, u"ELIDE_HEAD"},
+                       {gfx::ElideBehavior::ELIDE_MIDDLE, u"ELIDE_MIDDLE"},
+                       {gfx::ElideBehavior::ELIDE_TAIL, u"ELIDE_TAIL"},
+                       {gfx::ElideBehavior::ELIDE_EMAIL, u"ELIDE_EMAIL"},
+                       {gfx::ElideBehavior::FADE_TAIL, u"FADE_TAIL"})
+
 DEFINE_ENUM_CONVERTERS(gfx::HorizontalAlignment,
                        {gfx::HorizontalAlignment::ALIGN_LEFT, u"ALIGN_LEFT"},
                        {gfx::HorizontalAlignment::ALIGN_CENTER,
@@ -586,14 +602,11 @@ DEFINE_ENUM_CONVERTERS(gfx::VerticalAlignment,
                        {gfx::VerticalAlignment::ALIGN_MIDDLE, u"ALIGN_MIDDLE"},
                        {gfx::VerticalAlignment::ALIGN_BOTTOM, u"ALIGN_BOTTOM"})
 
-DEFINE_ENUM_CONVERTERS(gfx::ElideBehavior,
-                       {gfx::ElideBehavior::NO_ELIDE, u"NO_ELIDE"},
-                       {gfx::ElideBehavior::TRUNCATE, u"TRUNCATE"},
-                       {gfx::ElideBehavior::ELIDE_HEAD, u"ELIDE_HEAD"},
-                       {gfx::ElideBehavior::ELIDE_MIDDLE, u"ELIDE_MIDDLE"},
-                       {gfx::ElideBehavior::ELIDE_TAIL, u"ELIDE_TAIL"},
-                       {gfx::ElideBehavior::ELIDE_EMAIL, u"ELIDE_EMAIL"},
-                       {gfx::ElideBehavior::FADE_TAIL, u"FADE_TAIL"})
+DEFINE_ENUM_CONVERTERS(ui::ButtonStyle,
+                       {ui::ButtonStyle::kDefault, u"kDefault"},
+                       {ui::ButtonStyle::kProminent, u"kProminent"},
+                       {ui::ButtonStyle::kTonal, u"kTonal"},
+                       {ui::ButtonStyle::kText, u"kText"})
 
 DEFINE_ENUM_CONVERTERS(
     ui::MenuSeparatorType,
@@ -605,8 +618,29 @@ DEFINE_ENUM_CONVERTERS(
     {ui::MenuSeparatorType::VERTICAL_SEPARATOR, u"VERTICAL_SEPARATOR"},
     {ui::MenuSeparatorType::PADDED_SEPARATOR, u"PADDED_SEPARATOR"})
 
-DEFINE_ENUM_CONVERTERS(ui::ButtonStyle,
-                       {ui::ButtonStyle::kDefault, u"kDefault"},
-                       {ui::ButtonStyle::kProminent, u"kProminent"},
-                       {ui::ButtonStyle::kTonal, u"kTonal"},
-                       {ui::ButtonStyle::kText, u"kText"})
+DEFINE_ENUM_CONVERTERS(
+    ui::TextInputType,
+    {ui::TextInputType::TEXT_INPUT_TYPE_NONE, u"TEXT_INPUT_TYPE_NONE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TEXT, u"TEXT_INPUT_TYPE_TEXT"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD, u"TEXT_INPUT_TYPE_PASSWORD"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_SEARCH, u"TEXT_INPUT_TYPE_SEARCH"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_EMAIL, u"EXT_INPUT_TYPE_EMAIL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_NUMBER, u"TEXT_INPUT_TYPE_NUMBER"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TELEPHONE,
+     u"TEXT_INPUT_TYPE_TELEPHONE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_URL, u"TEXT_INPUT_TYPE_URL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE, u"TEXT_INPUT_TYPE_DATE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME,
+     u"TEXT_INPUT_TYPE_DATE_TIME"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL,
+     u"TEXT_INPUT_TYPE_DATE_TIME_LOCAL"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_MONTH, u"TEXT_INPUT_TYPE_MONTH"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TIME, u"TEXT_INPUT_TYPE_TIME"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_WEEK, u"TEXT_INPUT_TYPE_WEEK"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_TEXT_AREA,
+     u"TEXT_INPUT_TYPE_TEXT_AREA"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_CONTENT_EDITABLE,
+     u"TEXT_INPUT_TYPE_CONTENT_EDITABLE"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_FIELD,
+     u"TEXT_INPUT_TYPE_DATE_TIME_FIELD"},
+    {ui::TextInputType::TEXT_INPUT_TYPE_NULL, u"TEXT_INPUT_TYPE_NULL"})

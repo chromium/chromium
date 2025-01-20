@@ -5,9 +5,6 @@
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -20,9 +17,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -52,7 +53,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
 
     const auto account_id = AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), kTestGaiaId);
+        profile_->GetProfileUserName(), GaiaId(kTestGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

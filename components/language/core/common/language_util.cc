@@ -86,7 +86,8 @@ OverrideLanguageModel GetOverrideLanguageModel() {
 
 void ToTranslateLanguageSynonym(std::string* language) {
   // Get the base language (e.g. "es" for "es-MX")
-  std::string_view main_part = language::SplitIntoMainAndTail(*language).first;
+  auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
+
   if (main_part.empty()) {
     return;
   }
@@ -109,6 +110,24 @@ void ToTranslateLanguageSynonym(std::string* language) {
     }
     // Note that "zh" does not have any mapping and as such we leave it as is.
     // See https://crbug/798512 for more info.
+    return;
+  }
+
+  if (main_part == "cmn") {
+    // The Speech On-Device API (SODA) uses the Mandarin Chinese (cmn) language
+    // codes.
+    if (tail_part.rfind("-hant", 0) == 0) {
+      *language = "zh-TW";
+      return;
+    }
+
+    if (tail_part.rfind("-hans", 0) == 0) {
+      *language = "zh-CN";
+      return;
+    }
+
+    // If there is no matching script tag for cmn return zh.
+    *language = "zh";
     return;
   }
 

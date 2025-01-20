@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "url/origin.h"
 
-StubNotificationUIManager::StubNotificationUIManager() {}
+StubNotificationUIManager::StubNotificationUIManager() = default;
 
 StubNotificationUIManager::~StubNotificationUIManager() = default;
 

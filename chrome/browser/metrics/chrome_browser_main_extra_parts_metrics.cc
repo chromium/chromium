@@ -104,6 +104,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/win/hardware_check.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -818,6 +819,22 @@ void RecordAppCompatMetrics() {
   base::UmaHistogramBoolean("Windows.AcLayersLoaded", !!mod);
 }
 
+void RecordWin11UpgradeEligibilityMetrics(
+    const base::win::HardwareEvaluationResult& result) {
+  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+                            result.IsEligible());
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
+                            result.cpu);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
+                            result.memory);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
+                            result.disk);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
+                            result.firmware);
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
+                            result.tpm);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -860,6 +877,12 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
                             IsParallelDllLoadingEnabled());
   RecordAppCompatMetrics();
+
+  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
+    base::win::HardwareEvaluationResult result =
+        base::win::EvaluateWin11UpgradeEligibility();
+    RecordWin11UpgradeEligibilityMetrics(result);
+  }
   key_credential_manager_support::ReportKeyCredentialManagerSupport();
 #endif  // BUILDFLAG(IS_WIN)
 

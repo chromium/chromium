@@ -1,0 +1,160 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://settings/settings.js';
+
+import type {SettingsGlicDataPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, SettingsGlicDataPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+suite('GlicDataPage', function() {
+  let page: SettingsGlicDataPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-glic-data-page');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('GeolocationToggleEnabled', () => {
+    page.setPrefValue(PrefName.GEOLOCATION_ENABLED, true);
+
+    assertTrue(page.$.geolocationToggle.checked);
+  });
+
+  test('GeolocationToggleDisabled', () => {
+    page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+
+    assertFalse(page.$.geolocationToggle.checked);
+  });
+
+  test('GeolocationToggleChange', () => {
+    page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+
+    const geolocationToggle = page.$.geolocationToggle;
+    assertTrue(!!geolocationToggle);
+
+    geolocationToggle.click();
+    assertTrue(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+    assertTrue(geolocationToggle.checked);
+
+    geolocationToggle.click();
+    assertFalse(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+    assertFalse(geolocationToggle.checked);
+  });
+
+  test('MicrophoneToggleEnabled', () => {
+    page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
+
+    assertTrue(page.$.microphoneToggle.checked);
+  });
+
+  test('MicrophoneToggleDisabled', () => {
+    page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+
+    assertFalse(page.$.microphoneToggle.checked);
+  });
+
+  test('MicrophoneToggleChange', () => {
+    page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+
+    const microphoneToggle = page.$.microphoneToggle;
+    assertTrue(!!microphoneToggle);
+
+    microphoneToggle.click();
+    assertTrue(page.getPref(PrefName.MICROPHONE_ENABLED).value);
+    assertTrue(microphoneToggle.checked);
+
+    microphoneToggle.click();
+    assertFalse(page.getPref(PrefName.MICROPHONE_ENABLED).value);
+    assertFalse(microphoneToggle.checked);
+  });
+
+  test('TabContextToggleEnabled', () => {
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
+
+    assertTrue(page.$.tabAccessToggle.checked);
+  });
+
+  test('TabContextToggleDisabled', () => {
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+
+    assertFalse(page.$.tabAccessToggle.checked);
+  });
+
+  test('TabContextToggleChange', () => {
+    page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+
+    const tabAccessToggle = page.$.tabAccessToggle;
+    assertTrue(!!tabAccessToggle);
+
+    tabAccessToggle.click();
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(tabAccessToggle.checked);
+
+    tabAccessToggle.click();
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(tabAccessToggle.checked);
+  });
+
+  test('TabContextExpand', async () => {
+    assertFalse(page.$.tabAccessInfoCollapse.opened);
+
+    const tabAccessToggle = page.$.tabAccessToggle;
+    const expandButton = page.$.tabAccessExpandButton;
+    const infoCard = page.$.tabAccessInfoCollapse;
+
+    // Clicking the expand button opens the info card.
+    expandButton.click();
+    await flushTasks();
+    assertTrue(infoCard.opened);
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+
+    // Clicking the expand button again collapses the info card.
+    expandButton.click();
+    await flushTasks();
+    assertFalse(infoCard.opened);
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+
+    // Toggling the setting to on opens the info card.
+    tabAccessToggle.click();
+    await flushTasks();
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(infoCard.opened);
+
+    // Toggling the setting off closes the info card.
+    tabAccessToggle.click();
+    await flushTasks();
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(infoCard.opened);
+
+    // Toggling the setting to on while the info card is open leaves it open.
+    expandButton.click();
+    await flushTasks();
+    assertTrue(infoCard.opened);
+    tabAccessToggle.click();
+    await flushTasks();
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(infoCard.opened);
+
+    // Toggling the setting to off while the info card is closed leaves it
+    // closed.
+    expandButton.click();
+    await flushTasks();
+    assertFalse(infoCard.opened);
+    tabAccessToggle.click();
+    await flushTasks();
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(infoCard.opened);
+  });
+});

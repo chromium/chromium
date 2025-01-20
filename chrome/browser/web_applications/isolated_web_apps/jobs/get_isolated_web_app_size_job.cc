@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -104,7 +104,7 @@ class StoragePartitionSizeEstimator : private ProfileObserver {
     complete_callback_.Reset();
   }
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile> profile_;
   base::OnceCallback<void(int64_t)> complete_callback_;
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;
   base::WeakPtrFactory<StoragePartitionSizeEstimator> weak_ptr_factory_{this};
@@ -121,6 +121,7 @@ GetIsolatedWebAppSizeJob::GetIsolatedWebAppSizeJob(
       profile_(profile),
       debug_value_(debug_value),
       result_callback_(std::move(result_callback)) {
+  CHECK(profile_);
   debug_value_->Set("profile", profile->GetDebugName());
 }
 
@@ -203,10 +204,9 @@ void GetIsolatedWebAppSizeJob::OnBundleSizeComputed(
     return;
   }
   std::move(result_callback_)
-      .Run(GetIsolatedWebAppSizeJobResult{
-          .iwa_origin = iwa_origin_,
-          .size = {.app_size_in_bytes = static_cast<uint64_t>(*bundle_size),
-                   .data_size_in_bytes = browsing_data_size_}});
+      .Run(web_app::ComputedAppSizeWithOrigin(
+          static_cast<uint64_t>(*bundle_size), browsing_data_size_,
+          iwa_origin_));
 }
 
 void GetIsolatedWebAppSizeJob::CompleteJobWithError() {

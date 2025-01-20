@@ -30,7 +30,7 @@ class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
       const ChromeNetworkDelegateBrowserTest&) = delete;
 
  protected:
-  ChromeNetworkDelegateBrowserTest() {}
+  ChromeNetworkDelegateBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     // Access to all files via file: scheme is allowed on browser

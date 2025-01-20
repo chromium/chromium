@@ -6,9 +6,9 @@ import("//third_party/mediapipe/features.gni")
 
 source_set("service") {
   public = [
+    "gpu_channel_host_provider.h",
     "video_effects_processor_impl.h",
     "video_effects_service_impl.h",
-    "viz_gpu_channel_host_provider.h",
   ]
 
   sources = [
@@ -17,6 +17,7 @@ source_set("service") {
     "video_effects_processor_webgpu.h",
     "video_effects_service_impl.cc",
     "viz_gpu_channel_host_provider.cc",
+    "viz_gpu_channel_host_provider.h",
     "webgpu_device.cc",
     "webgpu_device.h",
   ]
@@ -41,8 +42,11 @@ source_set("service") {
     "//third_party/dawn/src/dawn/wire",
   ]
 
-  if (build_with_mediapipe_lib) {
-    deps += [ "//third_party/mediapipe" ]
+  if (mediapipe_build_with_gpu_support) {
+    deps += [
+      "//services/video_effects/calculators:graph",
+      "//third_party/mediapipe",
+    ]
   }
 }
 
@@ -53,7 +57,7 @@ if (is_linux) {
     deps = [
       "//sandbox/linux:sandbox",
       "//sandbox/policy",
-      "//services/on_device_model/ml:ml_no_internal",
+      "//services/on_device_model/ml:ml_holder_no_internal",
     ]
   }
 }

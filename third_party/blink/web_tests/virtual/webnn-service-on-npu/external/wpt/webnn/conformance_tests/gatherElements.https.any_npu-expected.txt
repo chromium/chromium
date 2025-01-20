@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] gatherElements float32 2D input and uint32 indices options.axis=1
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, constant 'indices' data type uint32 must be one of [float32,float16,int32,int8,uint8]."
 [FAIL] gatherElements float32 3D input and int32 negative indices
   assert_true: assert_array_approx_equals_ulp: test gatherElements float32 actual -66.05901336669922 should be close enough to expected 89.0337142944336 by the acceptable 0 ULP distance, but they have 2150494988 ULP distance expected true got false
 [FAIL] gatherElements float32 1D input and int32 out-of-bounds indices

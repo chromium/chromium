@@ -118,6 +118,19 @@ enum class CookieAccessSemantics {
   LEGACY,
 };
 
+// When the scope is LEGACY, Origin-Bound Cookies behavior is disabled.
+// LINT.IfChange(CookieScopeSemantics)
+enum class CookieScopeSemantics {
+  // Has not been checked yet or there is no way to check.
+  UNKNOWN = -1,
+  // Has been checked and the cookie should *not* be subject to legacy scope
+  // rules
+  NONLEGACY = 0,
+  // Has been checked and the cookie should be subject to legacy scope rules
+  LEGACY = 1,
+};
+// LINT.ThenChange(/services/network/public/mojom/cookie_manager.mojom:CookieScopeSemanticsMojom)
+
 // What scheme was used in the setting of a cookie.
 // Do not renumber.
 enum class CookieSourceScheme {

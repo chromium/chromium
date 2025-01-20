@@ -18,7 +18,7 @@ using content::BrowserThread;
 using content::ChildProcessData;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_map.h"
+#include "extensions/browser/process_map.h"  // nogncheck
 #endif
 
 namespace task_manager {
@@ -45,7 +45,7 @@ void RenderProcessHostTaskProvider::StartUpdating() {
     RenderProcessHost* host = it.GetCurrentValue();
     host_observation_.AddObservation(host);
     if (host->GetProcess().IsValid()) {
-      CreateTask(host->GetID());
+      CreateTask(host->GetDeprecatedID());
     } else {
       // If the host isn't ready, do nothing and wait for the
       // OnRenderProcessHostCreated() notification.
@@ -77,9 +77,9 @@ void RenderProcessHostTaskProvider::CreateTask(
 
   // TODO(cburn): plumb out something from RPH so the title can be set here.
   // Create the task and notify the observer.
-  ChildProcessData data(content::PROCESS_TYPE_RENDERER);
+  ChildProcessData data(content::PROCESS_TYPE_RENDERER, host->GetID());
   data.SetProcess(host->GetProcess().Duplicate());
-  data.id = host->GetID();
+
   task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kUnknownRenderProcess);
   NotifyObserverTaskAdded(task.get());
@@ -102,7 +102,7 @@ void RenderProcessHostTaskProvider::DeleteTask(
 void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (is_updating_) {
-    CreateTask(host->GetID());
+    CreateTask(host->GetDeprecatedID());
     // If the host is reused after the process exited, it is possible to get a
     // second created notification for the same host.
     if (!host_observation_.IsObservingSource(host)) {
@@ -114,13 +114,13 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DeleteTask(host->GetID());
+  DeleteTask(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  DeleteTask(host->GetID());
+  DeleteTask(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
 }
 

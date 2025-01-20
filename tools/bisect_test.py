@@ -429,6 +429,7 @@ class ArchiveBuildTest(BisectTestCase):
         stdout=ANY,
         stderr=ANY)
 
+  @unittest.skipIf(sys.platform.startswith('win'), 'This test is not for win')
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_run_command_for_mac(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
@@ -450,6 +451,8 @@ class ArchiveBuildTest(BisectTestCase):
         stdout=ANY,
         stderr=ANY)
 
+  @unittest.skipUnless(sys.platform.startswith('win'),
+                       'This test is for win only')
   @patch('subprocess.Popen', spec=subprocess.Popen)
   def test_launch_revision_should_run_command_for_win(self, mock_Popen):
     mock_Popen.return_value.communicate.return_value = ('', '')
@@ -460,7 +463,7 @@ class ArchiveBuildTest(BisectTestCase):
             'chrome': 'C:\\temp-dir\\full-build-win\\chrome.exe'
         }, [])
     mock_Popen.assert_called_once_with(
-        "'C:\\temp-dir\\full-build-win\\chrome.exe' "
+        "C:\\temp-dir\\full-build-win\\chrome.exe "
         '--user-data-dir=C:\\temp-dir/profile',
         cwd=None,
         shell=True,
@@ -479,15 +482,26 @@ class ArchiveBuildTest(BisectTestCase):
         'chrome': '/tmp/chrome',
         'chromedriver': '/tmp/chromedriver'
     }, ['--args', '--args2="word 1"', 'word 2'])
-    mock_Popen.assert_called_once_with(
-        'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
-        'pytest --user-data-dir=/tmp/profile --args \'--args2="word 1"\' '
-        '\'word 2\'',
-        cwd=None,
-        shell=True,
-        bufsize=-1,
-        stdout=ANY,
-        stderr=ANY)
+    if sys.platform.startswith('win'):
+      mock_Popen.assert_called_once_with(
+          'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
+          'pytest --user-data-dir=/tmp/profile --args "--args2=\\"word 1\\"" '
+          '"word 2"',
+          cwd=None,
+          shell=True,
+          bufsize=-1,
+          stdout=ANY,
+          stderr=ANY)
+    else:
+      mock_Popen.assert_called_once_with(
+          'CHROMEDRIVER=/tmp/chromedriver BROWSER_EXECUTABLE_PATH=/tmp/chrome '
+          'pytest --user-data-dir=/tmp/profile --args \'--args2="word 1"\' '
+          '\'word 2\'',
+          cwd=None,
+          shell=True,
+          bufsize=-1,
+          stdout=ANY,
+          stderr=ANY)
 
 
 class ReleaseBuildTest(BisectTestCase):
@@ -813,6 +827,130 @@ class SnapshotBuildTest(BisectTestCase):
     self.assertEqual(build.bad_revision, 1313185)
 
 
+class ChromeForTestingBuild(BisectTestCase):
+
+  def test_should_lookup_path_context(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '0', '-b', '10'])
+    self.assertEqual(options.archive, 'linux64')
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    self.assertEqual(build.binary_name, 'chrome')
+    self.assertEqual(build.listing_platform_dir, 'linux64/')
+    self.assertEqual(build.archive_name, 'chrome-linux64.zip')
+    self.assertEqual(build.chromedriver_binary_name, 'chromedriver')
+    self.assertEqual(build.chromedriver_archive_name,
+                     'chromedriver-linux64.zip')
+
+  CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>
+  <ListBucketResult xmlns="http://doc.s3.amazonaws.com/2006-03-01">
+    <Name>chrome-for-testing-per-commit-public</Name>
+    <Prefix>linux64/</Prefix>
+    <Marker/>
+    <Delimiter>/</Delimiter>
+    <IsTruncated>false</IsTruncated>
+    <Contents>
+      <Key>linux64/LAST_CHANGE</Key>
+      <Generation>1733959087133532</Generation>
+      <MetaGeneration>1</MetaGeneration>
+      <LastModified>2024-12-11T23:18:07.235Z</LastModified>
+      <ETag>"dd60cb93e225ab33d7254beca56b507a"</ETag>
+      <Size>7</Size>
+    </Contents>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390729/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390746/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390757/</Prefix>
+    </CommonPrefixes>
+  </ListBucketResult>
+  '''
+
+  @maybe_patch('urllib.request.urlopen',
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
+  @patch('bisect-builds.GetChromiumRevision', return_value=1390757)
+  def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
+    options = bisect_builds.ParseCommandLine([
+        '-cft', '-a', 'linux64', '-g', '1390729', '-b', '1390757',
+        '--no-local-cache'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    rev_list = build.get_rev_list()
+    mock_urlopen.assert_any_call(
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public/'
+        '?delimiter=/&prefix=linux64/&marker=linux64/r1390729')
+    self.assertEqual(mock_urlopen.call_count, 1)
+    self.assertEqual(rev_list, [1390729, 1390746, 1390757])
+
+  def test_get_marker(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '1', '-b', '3'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    self.assertEqual('linux64/r1390729',
+                     build._get_marker_for_revision(1390729))
+
+  def test_get_download_url(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3', '-b', '11'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    download_urls = build.get_download_url(123)
+    self.assertEqual(
+        download_urls,
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+        '/linux64/r123/chrome-linux64.zip',
+    )
+
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3', '-b', '11', '--chromedriver'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    download_urls = build.get_download_url(123)
+    download_urls = build.get_download_url(123)
+    self.assertEqual(
+        download_urls, {
+            'chrome':
+            'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+            '/linux64/r123/chrome-linux64.zip',
+            'chromedriver':
+            'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+            '/linux64/r123/chromedriver-linux64.zip',
+        })
+
+  @patch('bisect-builds.GetChromiumRevision', return_value=1390757)
+  def test_get_bad_revision(self, mock_GetChromiumRevision):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    mock_GetChromiumRevision.assert_called_once_with(
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+        '/linux64/LAST_CHANGE')
+    self.assertEqual(build.bad_revision, 1390757)
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision_with_real_zipfile(self, mock_run):
+    options = bisect_builds.ParseCommandLine([
+        '--cft', '-a', 'linux64', '-g', '1', '--chromedriver', '-c',
+        'driver=%d prog=%p'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    download_job = build.get_download_job(build.bad_revision)
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    self.assertRegex(mock_run.call_args.args[0],
+                     r'driver=.+/chromedriver prog=.+/chrome')
+
+
 class ASANBuildTest(BisectTestCase):
 
   CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>
@@ -960,10 +1098,10 @@ class AndroidSnapshotBuildTest(AndroidBuildTest):
     super().setUp()
     self.set_sdk_level(bisect_builds.version_codes.PIE)
 
+  @patch('bisect-builds.UnzipFilenameToDir')
   @patch('bisect-builds.InstallOnAndroid')
-  @patch('bisect-builds.ArchiveBuild._install_revision',
-         return_value={'chrome': 'chrome.apk'})
-  def test_install_revision(self, mock_install_revision, mock_InstallOnAndroid):
+  @patch('glob.glob', return_value=['Monochrome.apk'])
+  def test_install_revision(self, mock_glob, mock_InstallOnAndroid, mock_unzip):
     options = bisect_builds.ParseCommandLine([
         '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
         'chrome'
@@ -971,9 +1109,48 @@ class AndroidSnapshotBuildTest(AndroidBuildTest):
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
     build._install_revision('chrome.zip', 'temp-dir')
-    mock_install_revision.assert_called_once_with('chrome.zip', 'temp-dir')
-    mock_InstallOnAndroid.assert_called_once_with(self.device, 'chrome.apk')
+    mock_glob.assert_called_once_with('temp-dir/*/apks/Monochrome.apk')
+    mock_InstallOnAndroid.assert_called_once_with(self.device, 'Monochrome.apk')
 
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[],
+                      [
+                          "temp-dir/full-build-linux/apks/MonochromeBeta.apk",
+                          "temp-dir/full-build-linux/apks/ChromePublic.apk"
+                      ]])
+  def test_install_revision_with_show_available_apks(self, mock_glob,
+                                                     mock_stdout, mock_unzip):
+    options = bisect_builds.ParseCommandLine([
+        '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
+        'chrome'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('chrome.zip', 'temp-dir')
+    self.assertIn("The list of available --apk:", mock_stdout.getvalue())
+    self.assertIn("chrome_beta", mock_stdout.getvalue())
+    self.assertIn("chromium", mock_stdout.getvalue())
+
+  @patch('bisect-builds.UnzipFilenameToDir')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[], ["temp-dir/full-build-linux/apks/unknown.apks"]])
+  def test_install_revision_with_show_unknown_apks(self, mock_glob, mock_stdout,
+                                                   mock_unzip):
+    options = bisect_builds.ParseCommandLine([
+        '-a', 'android-arm64', '-g', '1313161', '-b', '1313210', '--apk',
+        'chrome'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidSnapshotBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('chrome.zip', 'temp-dir')
+    self.assertIn("No supported apk found. But found following",
+                  mock_stdout.getvalue())
+    self.assertIn("unknown.apks", mock_stdout.getvalue())
 
 class AndroidTrichromeReleaseBuildTest(AndroidBuildTest):
 
@@ -1112,6 +1289,26 @@ class AndroidTrichromeOfficialBuildTest(AndroidBuildTest):
     mock_InstallOnAndroid.assert_any_call(
         self.device,
         'temp-dir/full-build-linux/apks/TrichromeChromeGoogle6432.apks')
+
+  @patch('sys.stdout', new_callable=io.StringIO)
+  @patch('glob.glob',
+         side_effect=[[],
+                      ['temp-dir/TrichromeChromeGoogle6432Canary.minimal.apks']
+                      ])
+  @patch('bisect-builds.UnzipFilenameToDir')
+  def test_install_revision_with_show_available_apks(self,
+                                                     mock_UnzipFilenameToDir,
+                                                     mock_glob, mock_stdout):
+    options = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'android-arm64-high', '--apk', 'chrome', '-g', '1334338',
+        '-b', '1334380'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidTrichromeOfficialBuild)
+    with self.assertRaises(bisect_builds.BisectException):
+      build._install_revision('download.zip', 'tmp-dir')
+    self.assertIn("The list of available --apk:", mock_stdout.getvalue())
+    self.assertIn("chrome_canary", mock_stdout.getvalue())
 
   @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
                        'The test only valid when NO_MOCK_SERVER')
@@ -1380,8 +1577,8 @@ class MaybeSwitchBuildTypeTest(BisectTestCase):
     options = bisect_builds.ParseCommandLine(command_line)
     with patch('sys.argv', ['bisect-builds.py', *command_line]):
       new_cmd = bisect_builds.MaybeSwitchBuildType(
-          options, bisect_builds.LooseVersion('127.0.6533.74'),
-          bisect_builds.LooseVersion('127.0.6533.88'))
+          options, bisect_builds.ChromiumVersion('127.0.6533.74'),
+          bisect_builds.ChromiumVersion('127.0.6533.88'))
       self.assertEqual(new_cmd[1:], [
           '-o', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88',
           '--verify-range', '--no-local-cache'
@@ -1459,6 +1656,48 @@ class MethodTest(BisectTestCase):
     opts = bisect_builds.ParseCommandLine(['-o', '-g', '1'])
     self.assertEqual(opts.archive, 'linux64')
 
+  def test_ParseCommandLine_default_apk(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-o', '-a', 'android-arm', '-g', '1'])
+    self.assertEqual(opts.apk, 'chrome')
+
+    opts = bisect_builds.ParseCommandLine(['-a', 'android-arm64', '-g', '1'])
+    self.assertEqual(opts.apk, 'chromium')
+
+  def test_ParseCommandLine_default_ipa(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-r', '-a', 'ios', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
+    self.assertEqual(opts.ipa, 'canary')
+
+  def test_ParseCommandLine_DetectArchive_with_apk(self):
+    opts = bisect_builds.ParseCommandLine(['-o', '--apk', 'chrome', '-g', '1'])
+    self.assertEqual(opts.archive, 'android-arm64')
+
+  def test_ParseCommandLine_DetectArchive_with_ipa(self):
+    opts = bisect_builds.ParseCommandLine(
+        ['-r', '--ipa', 'stable', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
+    self.assertEqual(opts.archive, 'ios-simulator')
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_apk_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(
+          ['-a', 'linux64', '--apk', 'chrome', '-g', '1'])
+    self.assertIn('--apk is only supported', mock_stderr.getvalue())
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_ipa_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(
+          ['-a', 'linux64', '--ipa', 'stable', '-g', '1'])
+    self.assertIn('--ipa is only supported', mock_stderr.getvalue())
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_signed_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['-a', 'linux64', '--signed', '-g', '1'])
+    self.assertIn('--signed is only supported', mock_stderr.getvalue())
+
   @patch('urllib.request.urlopen')
   @patch('builtins.open')
   @patch('sys.stdout', new_callable=io.StringIO)
@@ -1511,6 +1750,33 @@ class MethodTest(BisectTestCase):
              '+/refs/tags/91.0.4472.38^?format=JSON'),
     ])
 
+  def test_join_args(self):
+    test_data = ['a', 'b c', 'C:\\a b\\c', '/a b/c', '"a"', "'a'"]
+    quoted_command = bisect_builds.join_args(
+        [sys.executable, '-c', 'import sys, json; print(json.dumps(sys.argv))']
+        + test_data)
+
+    subproc = subprocess.Popen(
+        quoted_command, shell=True, stdout=subprocess.PIPE)
+    stdout, _ = subproc.communicate()
+    dumped_argv = json.loads(stdout.decode('utf-8'))
+
+    self.assertListEqual(dumped_argv, ['-c'] + test_data)
+
+
+class ChromiumVersionTest(BisectTestCase):
+  def test_cmpare_version_numbers(self):
+    v127_0_6533_74 = bisect_builds.ChromiumVersion('127.0.6533.74')
+    v127_0_6533_75 = bisect_builds.ChromiumVersion('127.0.6533.75')
+    v127_0_6533_75_with_space = bisect_builds.ChromiumVersion('127.0.6533.75 ')
+    v127 = bisect_builds.ChromiumVersion('127')
+
+    self.assertLess(v127_0_6533_74, v127_0_6533_75)
+    self.assertLessEqual(v127_0_6533_74, v127_0_6533_75)
+    self.assertGreater(v127_0_6533_75, v127_0_6533_74)
+    self.assertGreaterEqual(v127_0_6533_75, v127_0_6533_74)
+    self.assertEqual(v127_0_6533_75, v127_0_6533_75_with_space)
+    self.assertLess(v127, v127_0_6533_74)
 
 if __name__ == '__main__':
   unittest.main()

@@ -25,8 +25,9 @@ class TestDelegate : public DelayedTaskHandle::Delegate {
   void CancelTask() override {
     is_valid_ = false;
 
-    if (was_cancel_task_called_)
+    if (was_cancel_task_called_) {
       *was_cancel_task_called_ = true;
+    }
   }
 
  private:

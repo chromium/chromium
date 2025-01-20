@@ -24,15 +24,27 @@ std::string DeviceInfoToStableId(
 }
 
 std::string DeviceInfoToStableId(const blink::WebMediaDeviceInfo& device_info) {
+  if (device_info.device_id ==
+      media::AudioDeviceDescription::kDefaultDeviceId) {
+    return device_info.device_id;
+  }
   return device_info.label;
 }
 
 std::string DeviceInfoToStableId(const blink::MediaStreamDevice& device_info) {
+  if (device_info.id == media::AudioDeviceDescription::kDefaultDeviceId) {
+    return device_info.id;
+  }
   return device_info.name;
 }
 
 std::string DeviceInfoToStableId(
     const media::AudioDeviceDescription& device_info) {
+  if (device_info.unique_id ==
+      media::AudioDeviceDescription::kDefaultDeviceId) {
+    return device_info.unique_id;
+  }
+
   return device_info.device_name;
 }
 

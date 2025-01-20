@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">مرور خط‌مشی سرپرست</translation>
 <translation id="158849752021629804">شبکه خانگی مورد نیاز است</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> پتابایت</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="162175252992296058">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی</translation>
 <translation id="1629521517399325891">گواهینامه کاربر برای اصالت‌سنجی شبکه دردسترس نیست.</translation>
@@ -341,7 +342,7 @@
 <translation id="3702842351052426940">ممکن است سیم‌کارت یا نمایه سیم‌کارت داخلی‌تان غیرفعال شده باشد. سیم‌کارت را عوض کنید یا نمایه سیم‌کارت داخلی را تغییر دهید.</translation>
 <translation id="3722341589402358578">خطایی رخ داد. ممکن است برخی‌از موارد به «حذف‌شده‌ها» منتقل نشده باشد.</translation>
 <translation id="3726463242007121105">این دستگاه باز نمی‌شود زیرا سیستم فایل آن پشتیبانی نمی‌شود.</translation>
-<translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
+<translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های هم‌رسانی‌شده را تحت تأثیر قرار می‌دهد</translation>
 <translation id="3737576078404241332">حذف از نوار کناری</translation>
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">این مورد در «حذف‌شده‌های» شما است</translation>
 <translation id="4186579485882418952">فعال کردن حالت آفلاین</translation>
 <translation id="4193154014135846272">‏سند Google </translation>
-<translation id="4197674956721858839">انتخاب فایل‌های فشرده</translation>
 <translation id="4202378258276439759">اسپانیایی (آمریکای لاتین)</translation>
 <translation id="4202977638116331303">گرجستانی</translation>
 <translation id="421017592316736757">باید آنلاین باشید تا به این فایل دسترسی داشته باشید.</translation>
@@ -422,6 +422,7 @@
 <translation id="4387004326333427325">گواهینامه راستی‌آزمایی، ازراه‌دور، رد شد</translation>
 <translation id="4394214039309501350">پیوند خارجی</translation>
 <translation id="4394980935660306080">اوایل این هفته</translation>
+<translation id="4397435965699247285">‏‫OneDrive در حالت آفلاین دردسترس نیست</translation>
 <translation id="4398096759193130964">موارد را بازیابی کنید یا آن‌ها را به پوشه جدیدی خارج از «حذف‌شده‌ها» بکشید</translation>
 <translation id="4401287888955153199">استخراج همه</translation>
 <translation id="4410695710508688828">عملیات استخراج انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
@@ -663,7 +664,7 @@
 <translation id="6096979789310008754">نوشتار جستجو پاک شد، همه فایل‌ها و پوشه‌ها نشان داده می‌شود.</translation>
 <translation id="610101264611565198">درحال انتقال <ph name="FILE_NAME" /> به <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">‏نوشتار CSV</translation>
-<translation id="6129953537138746214">فاصله</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">در حال انتقال <ph name="FILE_NAME" /></translation>
 <translation id="6133877453787250710">سرپرست بر موارد زیر نظارت دارد:</translation>
 <translation id="613750717151263950">ژاپنی با صفحه‌کلید انگلیسی آمریکایی</translation>

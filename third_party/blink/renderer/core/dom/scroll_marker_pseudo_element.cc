@@ -10,22 +10,12 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
-
-FocusableState ScrollMarkerPseudoElement::SupportsFocus(
-    UpdateBehavior behavior) const {
-  if (parentNode()->IsColumnPseudoElement()) {
-    // TODO(crbug.com/365680822): This is a ::column::scroll-marker, which
-    // doesn't support :focus. Attempting to focus it would mark for style
-    // recalc, but nobody comes around and recalcs it...
-    return FocusableState::kNotFocusable;
-  }
-  return PseudoElement::SupportsFocus(behavior);
-}
 
 void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   bool is_click =
@@ -48,19 +38,13 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   if (should_intercept) {
     if (scroll_marker_group_) {
       if (is_right_or_down_arrow_key) {
-        scroll_marker_group_->ActivateNextScrollMarker(/*focus=*/true);
+        scroll_marker_group_->ActivateNextScrollMarker();
       } else if (is_left_or_up_arrow_key) {
-        scroll_marker_group_->ActivatePrevScrollMarker(/*focus=*/true);
+        scroll_marker_group_->ActivatePrevScrollMarker();
       } else if (is_click || is_enter_or_space) {
-        ScrollMarkerPseudoElement* scroll_marker = this;
-        scroll_marker_group_->SetSelected(*scroll_marker);
         // parentElement is ::column for column scroll marker and
         // ultimate originating element for regular scroll marker.
-        mojom::blink::ScrollIntoViewParamsPtr params =
-            scroll_into_view_util::CreateScrollIntoViewParams(
-                *scroll_marker->parentElement()->GetComputedStyle());
-        scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
-        scroll_marker_group_->SetSelected(*this);
+        scroll_marker_group_->ActivateScrollMarker(this);
       }
     }
     event.SetDefaultHandled();
@@ -74,6 +58,9 @@ void ScrollMarkerPseudoElement::SetScrollMarkerGroup(
     scroll_marker_group_->RemoveFromFocusGroup(*this);
   }
   scroll_marker_group_ = scroll_marker_group;
+  if (scroll_marker_group) {
+    scroll_marker_group->AddToFocusGroup(*this);
+  }
 }
 
 void ScrollMarkerPseudoElement::SetSelected(bool value) {
@@ -81,14 +68,39 @@ void ScrollMarkerPseudoElement::SetSelected(bool value) {
     return;
   }
   is_selected_ = value;
-  PseudoStateChanged(CSSSelector::kPseudoChecked);
+  PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
+}
+
+void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
+  CHECK(context.parent);
+  CHECK(context.parent->GetNode());
+
+  if (auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+          context.parent->GetNode())) {
+    SetScrollMarkerGroup(group);
+    PseudoElement::AttachLayoutTree(context);
+    return;
+  }
+
+  // The layout box for these pseudo elements are attached to the
+  // ::scroll-marker-group box during layout above. Make sure we walk any
+  // ::scroll-marker child and clear dirty bits for the RebuildLayoutTree()
+  // pass.
+  ContainerNode::AttachLayoutTree(context);
+
+  if (scroll_marker_group_) {
+    if (LayoutObject* scroller_box = scroll_marker_group_->GetLayoutObject()
+                                         ->ScrollerFromScrollMarkerGroup()) {
+      // Mark the scroller for layout to make sure we repopulate the
+      // ::scroll-marker-group box with ::scroll-marker boxes.
+      scroller_box->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kScrollMarkersChanged);
+    }
+  }
 }
 
 void ScrollMarkerPseudoElement::Dispose() {
-  if (scroll_marker_group_) {
-    scroll_marker_group_->RemoveFromFocusGroup(*this);
-    scroll_marker_group_ = nullptr;
-  }
+  SetScrollMarkerGroup(nullptr);
   PseudoElement::Dispose();
 }
 

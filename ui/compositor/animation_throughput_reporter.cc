@@ -17,11 +17,11 @@
 #include "cc/animation/animation.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/throughput_tracker.h"
 
 namespace ui {
 
@@ -66,8 +66,9 @@ class AnimationThroughputReporter::AnimationTracker
   void OnAnimatorDetachedFromTimeline() override {
     // Gives up tracking when detached from the timeline.
     first_animation_group_id_.reset();
-    if (throughput_tracker_)
-      throughput_tracker_.reset();
+    if (metrics_tracker_) {
+      metrics_tracker_.reset();
+    }
 
     // OnAnimationEnded would not happen after detached from the timeline.
     // So do the clean up here.
@@ -117,24 +118,24 @@ class AnimationThroughputReporter::AnimationTracker
 
     ui::Compositor* compositor =
         AnimationThroughputReporter::GetCompositor(animator_);
-    throughput_tracker_ = compositor->RequestNewThroughputTracker();
-    throughput_tracker_->Start(report_callback_);
+    metrics_tracker_ = compositor->RequestNewCompositorMetricsTracker();
+    metrics_tracker_->Start(report_callback_);
   }
 
   // Invoked when all animation sequences finish.
   bool OnAnimationEnded(const CallbackLayerAnimationObserver& self) {
-    // |throughput_tracker| could reset when detached from animation timeline.
-    if (throughput_tracker_) {
+    // `metrics_tracker_` could reset when detached from animation timeline.
+    if (metrics_tracker_) {
       if (started_animations_aborted_)
-        throughput_tracker_->Cancel();
+        metrics_tracker_->Cancel();
       else
-        throughput_tracker_->Stop();
+        metrics_tracker_->Stop();
 
       // `OnAnimationEnded` could be called multiple times when scheduling
       // animations. Destroy the tracker so that it is not stopped/canceled
       // more than once. New tracker will be created when new animation sequence
       // is started.
-      throughput_tracker_.reset();
+      metrics_tracker_.reset();
     }
 
     first_animation_group_id_.reset();
@@ -147,7 +148,7 @@ class AnimationThroughputReporter::AnimationTracker
 
   const raw_ptr<LayerAnimator, DanglingUntriaged> animator_;
 
-  std::optional<ThroughputTracker> throughput_tracker_;
+  std::optional<CompositorMetricsTracker> metrics_tracker_;
 
   std::optional<int> first_animation_group_id_;
   bool started_animations_aborted_ = false;

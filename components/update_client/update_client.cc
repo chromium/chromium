@@ -93,7 +93,9 @@ base::RepeatingClosure UpdateClientImpl::Install(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsUpdating(id)) {
-    std::move(callback).Run(Error::UPDATE_IN_PROGRESS);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), Error::UPDATE_IN_PROGRESS));
     return base::DoNothing();
   }
 

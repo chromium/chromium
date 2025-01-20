@@ -18,12 +18,10 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -39,10 +37,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /** Maintains the toolbar color for {@link CustomTabActivity}. */
-@ActivityScope
 public class CustomTabToolbarColorController {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -74,13 +69,17 @@ public class CustomTabToolbarColorController {
     private ToolbarManager mToolbarManager;
     private boolean mUseTabThemeColor;
 
-    @Inject
-    public CustomTabToolbarColorController(BaseCustomTabActivity activity) {
-        mIntentDataProvider = activity.getIntentDataProvider();
+    public CustomTabToolbarColorController(
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider tabProvider,
+            TabObserverRegistrar tabObserverRegistrar,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
+        mIntentDataProvider = intentDataProvider;
         mActivity = activity;
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mTabObserverRegistrar = activity.getTabObserverRegistrar();
-        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
+        mTabProvider = tabProvider;
+        mTabObserverRegistrar = tabObserverRegistrar;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
     }
 
     /**

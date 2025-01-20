@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -24,10 +25,10 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
  public:
   static std::unique_ptr<AtomicViewAXTreeManager> Create(
       ViewAXPlatformNodeDelegate* delegate,
-      ui::AXNodeData node_data);
+      const ui::AXNodeData& node_data);
   friend std::unique_ptr<AtomicViewAXTreeManager> Create(
       ViewAXPlatformNodeDelegate* delegate,
-      ui::AXNodeData node_data);
+      const ui::AXNodeData& node_data);
 
   ~AtomicViewAXTreeManager() override;
 
@@ -48,7 +49,7 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
 
  private:
   explicit AtomicViewAXTreeManager(ViewAXPlatformNodeDelegate* delegate,
-                                   ui::AXNodeData node_data);
+                                   const ui::AXNodeData& node_data);
 
   raw_ptr<ViewAXPlatformNodeDelegate> delegate_;
 };

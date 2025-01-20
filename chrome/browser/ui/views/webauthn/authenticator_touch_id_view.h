@@ -7,12 +7,15 @@
 
 #include <os/availability.h>
 
+#include <memory>
 #include <optional>
+#include <utility>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 // Displays a sheet prompting the user to tap their Touch ID sensor to complete
 // a passkey flow.

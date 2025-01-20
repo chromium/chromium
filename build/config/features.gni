@@ -39,6 +39,10 @@ declare_args() {
   use_gio = is_linux && !is_castos
 
   use_blink = !is_ios
+
+  # Enables inclusion of glic in the build. Defined here for visibility from
+  # //tools/grit/grit_args.gni
+  enable_glic = is_mac || is_win || is_linux
 }
 #
 # =============================================

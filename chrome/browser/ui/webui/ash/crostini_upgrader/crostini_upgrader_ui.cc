@@ -15,11 +15,11 @@
 #include "chrome/browser/ash/crostini/crostini_upgrader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/crostini_upgrader_resources.h"
+#include "chrome/grit/crostini_upgrader_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -28,10 +28,10 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -91,9 +91,10 @@ CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUICrostiniUpgraderHost);
-  webui::EnableTrustedTypesCSP(source);
-  webui::SetJSModuleDefaults(source);
   AddStringResources(source);
+
+  webui::SetupWebUIDataSource(source, kCrostiniUpgraderResources,
+                              IDR_CROSTINI_UPGRADER_INDEX_HTML);
 
   source->AddResourcePath("images/linux_illustration.png",
                           IDR_LINUX_ILLUSTRATION);
@@ -101,14 +102,7 @@ CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
                           IDR_LINUX_SUCCESS_ILLUSTRATION);
   source->AddResourcePath("images/error_illustration.png",
                           IDR_PLUGIN_VM_INSTALLER_ERROR);
-  source->AddResourcePath("app.js", IDR_CROSTINI_UPGRADER_APP_JS);
-  source->AddResourcePath("app.html.js", IDR_CROSTINI_UPGRADER_APP_HTML_JS);
-  source->AddResourcePath("browser_proxy.js",
-                          IDR_CROSTINI_UPGRADER_BROWSER_PROXY_JS);
-  source->AddResourcePath("crostini_upgrader.mojom-lite.js",
-                          IDR_CROSTINI_UPGRADER_MOJO_LITE_JS);
   source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
-  source->SetDefaultResource(IDR_CROSTINI_UPGRADER_INDEX_HTML);
 }
 
 CrostiniUpgraderUI::~CrostiniUpgraderUI() = default;

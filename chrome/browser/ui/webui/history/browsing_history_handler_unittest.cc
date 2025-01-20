@@ -40,7 +40,8 @@ namespace history {
 
 class MockBrowsingHistoryService : public BrowsingHistoryService {
  public:
-  MOCK_METHOD(void, QueryHistory,
+  MOCK_METHOD(void,
+              QueryHistory,
               (const std::u16string& search_text, const QueryOptions& options),
               (override));
 };
@@ -81,7 +82,8 @@ class BrowsingHistoryHandlerWithWebUIForTesting
   BrowsingHistoryHandlerWithWebUIForTesting& operator=(
       const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
 
-  void SendHistoryQuery(int count, const std::u16string& query,
+  void SendHistoryQuery(int count,
+                        const std::u16string& query,
                         std::optional<double> begin_timestamp) override {
     if (postpone_query_results_) {
       return;

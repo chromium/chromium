@@ -24,7 +24,6 @@ import org.chromium.mojo.bindings.test.mojom.sample.Foo;
 import org.chromium.mojo.bindings.test.mojom.sample.InterfaceConstants;
 import org.chromium.mojo.bindings.test.mojom.sample.SampleServiceConstants;
 import org.chromium.mojo.bindings.test.mojom.test_structs.EmptyStruct;
-import org.chromium.mojo.bindings.test.mojom.test_structs.Rect;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 import org.chromium.mojo.system.MessagePipeHandle;
@@ -76,15 +75,6 @@ public class BindingsTest {
         foo.outputStreams = outputStreams;
         foo.source = new HandleMock();
         return foo;
-    }
-
-    private static Rect createRect(int x, int y, int width, int height) {
-        Rect rect = new Rect();
-        rect.x = x;
-        rect.y = y;
-        rect.width = width;
-        rect.height = height;
-        return rect;
     }
 
     private static <T> void checkConstantField(Field field, Class<T> expectedClass, T value)

@@ -878,8 +878,13 @@ void PasswordAccessoryControllerImpl::FillSelection(
   if (selection.suggestion_type() ==
           autofill::AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
-    plus_address_service_->DidFillPlusAddress(
-        /*did_shown_email_suggestion=*/false, /*is_manual_fallback=*/true);
+    plus_address_service_->DidFillPlusAddress();
+    if (autofill::ContentAutofillClient* autofill_client =
+            autofill::ContentAutofillClient::FromWebContents(
+                &GetWebContents())) {
+      autofill_client->TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
+    }
   }
   if (base::FeatureList::IsEnabled(
           password_manager::features::
@@ -1005,8 +1010,10 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
       GetUiCredentialForSelection(matching_creds, selection);
   if (selection.is_obfuscated() && cred != matching_creds.end() &&
       cred->match_type() == GetLoginMatchType::kGrouped) {
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
-        GetDisplayOrigin(origin), GetDisplayOrigin(cred->origin()),
+        GetDisplayOrigin(origin), cred->display_name(),
         web_contents()->GetTopLevelNativeWindow(),
         base::BindOnce(&PasswordAccessoryControllerImpl::
                            OnAcknowledgementBeforeFillingReceived,
@@ -1019,8 +1026,9 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
 void PasswordAccessoryControllerImpl::OnAcknowledgementBeforeFillingReceived(
     const autofill::AccessorySheetField& selection,
     const url::Origin& origin_to_fill_on,
-    bool accepted) {
-  if (!accepted) {
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  if (dismiss_reason !=
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept) {
     return;
   }
 

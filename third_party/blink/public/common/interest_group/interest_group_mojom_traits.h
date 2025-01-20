@@ -64,6 +64,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.allowed_reporting_origins;
   }
 
+  static const std::optional<std::string>& creative_scanning_metadata(
+      const blink::InterestGroup::Ad& ad) {
+    return ad.creative_scanning_metadata;
+  }
+
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
 };

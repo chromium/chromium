@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">ক্লায়েণ্টৰ ডিভাইচটোত <ph name="URL" /> খুলিব পৰা নগ’ল।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2366718077645204424">হ‘ষ্টৰ সৈতে সংযোগ কৰিব পৰা নগ‘ল। এইটো সম্ভৱতঃ আপুনি ব্যৱহাৰ কৰি থকা নেটৱৰ্কটোৰ কনফিগাৰেশ্বনৰ কাৰণে হৈছে।</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />ক সাধ্য সুবিধাসমূহৰ অনুমতি দিয়ক</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />ৰ সৈতে সংযোজিত</translation>
 <translation id="2540992418118313681">আপুনি এই কম্পিউটাৰটো আন ব্যৱহাৰকাৰীয়ে ব্যৱহাৰ কৰিবলৈ বা চাবলৈ শ্বেয়াৰ কৰিবনে?</translation>
@@ -133,6 +134,7 @@
 <translation id="7067321367069083429">স্ক্ৰীণখনে টাচ্চ স্ক্ৰীনৰ দৰে আচৰণ কৰে</translation>
 <translation id="7116737094673640201">Chrome ৰিম’ট ডেস্কটপলৈ স্বাগতম</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
+<translation id="7298392173540380852">Copyright 2021 The Chromium Authors. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="7312846573060934304">হ’ষ্ট অফলাইন আছে।</translation>
 <translation id="7319983568955948908">শ্বেয়াৰ কৰা বন্ধ কৰক</translation>
 <translation id="7359298090707901886">স্থানীয় মেচিনটোত URL খুলিবলৈ বাছনি কৰা ব্ৰাউজাৰটো ব্যৱহাৰ কৰিব নোৱাৰি।</translation>
@@ -149,7 +151,6 @@
 <translation id="7693372326588366043">হ’ষ্টৰ তালিকাখন ৰিফ্রেশ্ব কৰক</translation>
 <translation id="7714222945760997814">ইয়াৰ অভিযোগ দিয়ক</translation>
 <translation id="7868137160098754906">ৰিম’ট কম্পিউটাৰৰ বাবে আপোনাৰ পিনটো দিয়ক।</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. সৰ্বস্বত্ত সংৰক্ষিত।</translation>
 <translation id="7895403300744144251">দূৰৱৰ্তী কম্পিউটাৰৰ নিৰাপত্তা নীতিয়ে আপোনাৰ একাউণ্টৰ পৰা সংযোগ কৰাৰ অনুমতি নিদিয়ে৷</translation>
 <translation id="7936528439960309876">সোঁফাললৈ ড’ক কৰক</translation>
 <translation id="7970576581263377361">বিশ্বাসযোগ্যতাৰ প্ৰমাণ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি Chromiumত পুনৰ ছাইন ইন কৰক।</translation>
@@ -181,7 +182,6 @@
 <translation id="8747048596626351634">ছেশ্বন ক্ৰেশ্ব হ’ল বা আৰম্ভ কৰিব পৰা নগ’ল৷ যদি দূৰৱৰ্তী কম্পিউটাৰত ~/.chrome-remote-desktop-session থাকে, তেন্তে ই ডেস্কট’পৰ পৰিৱেশ বা ৱিণ্ড’ পৰিচালকৰ দৰে দীৰ্ঘ সময় ধৰি চলা অগ্ৰভূমিৰ প্ৰক্ৰিয়া আৰম্ভ কৰাটো সুনিশ্চিত কৰক৷</translation>
 <translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
 <translation id="8906511416443321782">অডিঅ' কেপচাৰ কৰি সেয়া Chrome ৰিম’ট ডেস্কটপ ক্লায়েণ্টটোত ষ্ট্ৰীম কৰিবলৈ মাইক্ৰ’ফ’নৰ এক্সেছৰ আৱশ্যক।</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. সৰ্বস্বত্ত সংৰক্ষিত।</translation>
 <translation id="9111855907838866522">আপুনি নিজৰ ৰিম’ট ডিভাইচৰ সৈতে সংযোজিত হৈ আছে। মেনু খুলিবলৈ স্ক্ৰীনত চাৰিটা আঙুলিৰে টিপক।</translation>
 <translation id="9126115402994542723">এই ডিভাইচটোৰ পৰা এই হ'ষ্টটোৰ সৈতে সংযোগ কৰোঁতে পুনৰ পিন নিবিচাৰিব।</translation>
 <translation id="916856682307586697">ডিফ’ল্ট XSessionটো লঞ্চ কৰক</translation>

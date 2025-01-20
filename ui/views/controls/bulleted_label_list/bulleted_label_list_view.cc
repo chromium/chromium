@@ -24,7 +24,7 @@ namespace views {
 namespace {
 
 class BulletView : public View {
- METADATA_HEADER(BulletView, View)
+  METADATA_HEADER(BulletView, View)
 
  public:
   explicit BulletView(size_t line_height);
@@ -99,4 +99,3 @@ BEGIN_METADATA(BulletedLabelListView)
 END_METADATA
 
 }  // namespace views
-

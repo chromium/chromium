@@ -17,8 +17,6 @@
 enum class OmniboxFocusTrigger {
   kOther,
   kPinnedFakebox,
-  kPinnedLargeFakebox,
-  kUnpinnedLargeFakebox,
   kUnpinnedFakebox,
 };
 

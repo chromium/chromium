@@ -86,6 +86,35 @@ public @interface ClassName {
                                               ('VALUE_ONE', 1)]),
                      definition.entries)
 
+  def testOutputFlag(self):
+    for [attr, want_flag] in [
+        ['0', False],
+        ['1', True],
+        ['false', False],
+        ['true', True],
+    ]:
+      test_data = ("""
+        // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
+        // GENERATED_JAVA_IS_FLAG: %s
+        enum EnumName {
+          ZERO = 1 << 0,
+          ONE = 1 << 1,
+        };
+      """ % attr).split('\n')
+      definitions = HeaderParser(test_data).ParseDefinitions()
+      output = GenerateOutput('/path/to/file', definitions[0])
+      int_def = output[output.index("@IntDef"):]
+      expected = """@IntDef(%s{
+    EnumName.ZERO, EnumName.ONE
+})
+@Retention(RetentionPolicy.SOURCE)
+public @interface EnumName {
+  int ZERO = 1 << 0;
+  int ONE = 1 << 1;
+}
+""" % ('flag = true, value = ' if want_flag else '')
+      self.assertEqual(int_def, expected)
+
   def testParseBitShifts(self):
     test_data = """
       // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
@@ -615,6 +644,51 @@ enum TerminationStatus {
     self.assertEqual('int', definition.fixed_type)
     self.assertEqual(collections.OrderedDict([('A', 0)]),
                      definition.entries)
+
+  def testParseFixedTypeEnum(self):
+    test_data = """
+      // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
+      // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
+      enum class AccessPoint : int {
+        ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 0,
+        ACCESS_POINT_COLLABORATION_TAB_GROUP = 1,
+        ACCESS_POINT_MAX,
+      };
+    """.split('\n')
+    definitions = HeaderParser(test_data).ParseDefinitions()
+    self.assertEqual(1, len(definitions))
+    definition = definitions[0]
+    self.assertEqual('SigninAccessPoint', definition.class_name)
+    self.assertEqual('org.chromium.components.signin.metrics',
+                     definition.enum_package)
+    self.assertEqual('int', definition.fixed_type)
+    self.assertEqual(
+        collections.OrderedDict([('DRIVE_FILE_PICKER_IOS', 0),
+                                 ('COLLABORATION_TAB_GROUP', 1), ('MAX', 2)]),
+        definition.entries)
+
+  def testParseFixedTypeEnumWithMaxValue(self):
+    test_data = """
+      // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
+      // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
+      enum class AccessPoint : int {
+        ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 0,
+        ACCESS_POINT_COLLABORATION_TAB_GROUP = 1,
+        kMaxValue = ACCESS_POINT_COLLABORATION_TAB_GROUP,
+      };
+    """.split('\n')
+    definitions = HeaderParser(test_data).ParseDefinitions()
+    self.assertEqual(1, len(definitions))
+    definition = definitions[0]
+    self.assertEqual('SigninAccessPoint', definition.class_name)
+    self.assertEqual('org.chromium.components.signin.metrics',
+                     definition.enum_package)
+    self.assertEqual('int', definition.fixed_type)
+    self.assertEqual(
+        collections.OrderedDict([('DRIVE_FILE_PICKER_IOS', '0'),
+                                 ('COLLABORATION_TAB_GROUP', '1'),
+                                 ('MAX_VALUE', 'COLLABORATION_TAB_GROUP')]),
+        definition.entries)
 
   def testParseFixedTypeEnumClass(self):
     test_data = """

@@ -37,8 +37,7 @@ SharedModuleService::SharedModuleService(content::BrowserContext* context)
       ExtensionRegistry::Get(browser_context_));
 }
 
-SharedModuleService::~SharedModuleService() {
-}
+SharedModuleService::~SharedModuleService() = default;
 
 SharedModuleService::ImportStatus SharedModuleService::CheckImports(
     const Extension* extension,

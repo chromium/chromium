@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
 
 #include <string_view>
@@ -59,7 +54,7 @@ RawDataPresenter::RawDataPresenter() = default;
 RawDataPresenter::~RawDataPresenter() = default;
 
 void RawDataPresenter::FeedBytes(std::string_view bytes) {
-  FeedNextBytes(bytes.data(), bytes.size());
+  FeedNextBytes(base::as_byte_span(bytes));
 }
 
 void RawDataPresenter::FeedFile(const base::FilePath& path) {
@@ -74,10 +69,9 @@ std::optional<base::Value> RawDataPresenter::TakeResult() {
   return base::Value(std::move(list_));
 }
 
-void RawDataPresenter::FeedNextBytes(const char* bytes, size_t size) {
-  subtle::AppendKeyValuePair(
-      keys::kRequestBodyRawBytesKey,
-      base::Value(base::as_bytes(base::make_span(bytes, size))), list_);
+void RawDataPresenter::FeedNextBytes(base::span<const uint8_t> bytes) {
+  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey, base::Value(bytes),
+                             list_);
 }
 
 void RawDataPresenter::FeedNextFile(const std::string& filename) {

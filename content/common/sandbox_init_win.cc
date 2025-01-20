@@ -27,7 +27,8 @@ sandbox::ResultCode StartSandboxedProcess(
     sandbox::StartSandboxedProcessCallback result_callback) {
   std::string type_str =
       target_command_line.GetSwitchValueASCII(switches::kProcessType);
-  TRACE_EVENT1("startup", "StartProcessWithAccess", "type", type_str);
+  TRACE_EVENT2("startup", "StartProcessWithAccess", "type", type_str, "tag",
+               delegate->GetSandboxTag());
 
   // Updates the command line arguments with debug-related flags. If debug
   // flags have been used with this process, they will be filtered and added

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -200,7 +201,7 @@ class
     tpcd_experiment_feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{tpcd::experiment::kDisable3PCookiesName,
-          test_case_.is_experiment_cookies_disabled ? "true" : "false"}});
+          base::ToString(test_case_.is_experiment_cookies_disabled)}});
 
     // When features are disabled, IsForceThirdPartyCookieBlockingEnabled will
     // return false, cookies are allowed.

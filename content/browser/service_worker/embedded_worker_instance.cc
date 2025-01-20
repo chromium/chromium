@@ -855,7 +855,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin, isolation_info, std::move(coep_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-              ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
+              ->CreateAuthCertObserverForServiceWorker(rph->GetDeprecatedID()),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           std::move(client_security_state),
           "EmbeddedWorkerInstance::CreateFactoryBundle",
@@ -876,9 +876,9 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
           url_loader_factory::HeaderClientOption::kAllow,
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
-          rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
-          origin, isolation_info, ukm::kInvalidSourceIdObj,
-          &bypass_redirect_checks),
+          rph->GetBrowserContext(), nullptr /* frame_host */,
+          rph->GetDeprecatedID(), origin, isolation_info,
+          ukm::kInvalidSourceIdObj, &bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::
           ForServiceWorker(*rph, routing_id));
 
@@ -908,7 +908,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(
-          rph->GetID(), MSG_ROUTING_NONE, origin, &non_network_factories);
+          rph->GetDeprecatedID(), MSG_ROUTING_NONE, origin,
+          &non_network_factories);
 
   for (auto& pair : non_network_factories) {
     const std::string& scheme = pair.first;

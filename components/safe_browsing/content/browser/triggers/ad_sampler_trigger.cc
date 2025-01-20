@@ -14,14 +14,15 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_util.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -131,8 +132,8 @@ void AdSamplerTrigger::DidFinishLoad(
 }
 
 void AdSamplerTrigger::CreateAdSampleReport() {
-  SBErrorOptions error_options =
-      TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*prefs_, web_contents());
 
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
@@ -140,12 +141,14 @@ void AdSamplerTrigger::CreateAdSampleReport() {
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();
-  resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  resource.rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          primary_main_frame_id.child_id,
+          primary_main_frame->GetFrameToken().value());
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,
-          history_service_, referrer_chain_provider_, error_options)) {
+          history_service_, referrer_chain_provider_, permissions)) {
     UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName,
                               NO_SAMPLE_COULD_NOT_START_REPORT, MAX_ACTIONS);
     return;
@@ -161,7 +164,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
           IgnoreResult(&TriggerManager::FinishCollectingThreatDetails),
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
           GetWebContentsKey(web_contents()), base::TimeDelta(),
-          /*did_proceed=*/false, /*num_visits=*/0, error_options,
+          /*did_proceed=*/false, /*num_visits=*/0, permissions,
           /*warning_shown_ts=*/std::nullopt,
           /*is_hats_candidate=*/false),
       base::Milliseconds(finish_report_delay_ms_));

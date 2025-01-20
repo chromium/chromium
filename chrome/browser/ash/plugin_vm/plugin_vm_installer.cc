@@ -906,7 +906,7 @@ void PluginVmInstaller::CancelImport() {
 }
 
 void PluginVmInstaller::OnImportDiskImageCancelled(
-    std::optional<vm_tools::concierge::CancelDiskImageResponse> reply) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
   DCHECK_EQ(state_, State::kCancelling);
   DCHECK_EQ(installing_state_, InstallingState::kImporting);
 
@@ -919,7 +919,7 @@ void PluginVmInstaller::OnImportDiskImageCancelled(
     return;
   }
 
-  vm_tools::concierge::CancelDiskImageResponse response = reply.value();
+  vm_tools::concierge::SuccessFailureResponse response = reply.value();
   if (response.success()) {
     VLOG(1) << "Import disk image request has been cancelled successfully";
   } else {

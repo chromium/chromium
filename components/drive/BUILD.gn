@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-static_library("drive") {
+component("drive") {
+  defines = [ "COMPONENTS_DRIVE_IMPLEMENTATION" ]
+
   sources = [
     "drive_api_util.cc",
     "drive_api_util.h",
@@ -30,22 +31,43 @@ static_library("drive") {
     "service/drive_service_interface.cc",
     "service/drive_service_interface.h",
   ]
+
   deps = [
-    "//base",
     "//components/invalidation/public",
     "//components/keyed_service/core",
-    "//google_apis/common",
-    "//google_apis/drive",
     "//services/device/public/mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/leveldatabase",
     "//third_party/re2",
   ]
-  public_deps = [ ":proto" ]
+
+  public_deps = [
+    ":drive_export_header",
+    ":proto",
+    "//base",
+    "//google_apis/common",
+    "//google_apis/drive",
+    "//net/traffic_annotation",
+  ]
+}
+
+source_set("drive_export_header") {
+  sources = [ "drive_export.h" ]
 }
 
 proto_library("proto") {
+  visibility = [ ":drive" ]
+
   sources = [ "drive.proto" ]
+
+  cc_generator_options = "dllexport_decl=COMPONENTS_DRIVE_EXPORT_PRIVATE:"
+  cc_include = "components/drive/drive_export.h"
+  component_build_force_source_set = true
+  defines = [ "COMPONENTS_DRIVE_IMPLEMENTATION" ]
+
+  link_deps = [ ":drive_export_header" ]
+
+  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -92,14 +114,14 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "search_metadata_unittest.cc" ]
 
     deps += [ ":drive_chromeos" ]
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("drive_chromeos") {
     sources = [
       "chromeos/search_metadata.cc",

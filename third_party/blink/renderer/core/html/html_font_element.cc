@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/html_font_element.h"
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -37,6 +32,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -47,26 +43,23 @@ HTMLFontElement::HTMLFontElement(Document& document)
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html#fonts-and-colors
 template <typename CharacterType>
-static bool ParseFontSize(const CharacterType* characters,
-                          unsigned length,
-                          int& size) {
+static std::optional<int> ParseFontSize(
+    base::span<const CharacterType> characters) {
   // Step 1
   // Step 2
-  const CharacterType* position = characters;
-  const CharacterType* end = characters + length;
-
   // Step 3
-  SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+  size_t position = SkipWhile<CharacterType, IsHTMLSpace>(characters, 0);
 
   // Step 4
-  if (position == end)
-    return false;
-  DCHECK_LT(position, end);
+  if (position == characters.size()) {
+    return std::nullopt;
+  }
+  DCHECK_LT(position, characters.size());
 
   // Step 5
   enum { kRelativePlus, kRelativeMinus, kAbsolute } mode;
 
-  switch (*position) {
+  switch (characters[position]) {
     case '+':
       mode = kRelativePlus;
       ++position;
@@ -81,17 +74,17 @@ static bool ParseFontSize(const CharacterType* characters,
   }
 
   // Step 6
-  const CharacterType* digits_start = position;
-  SkipWhile<CharacterType, IsASCIIDigit>(position, end);
+  const size_t digits_start = position;
+  position = SkipWhile<CharacterType, IsASCIIDigit>(characters, position);
 
   // Step 7
   if (digits_start == position)
-    return false;
+    return std::nullopt;
 
   // Step 8
   int value = CharactersToInt(
-      base::span<const CharacterType>(
-          digits_start, static_cast<size_t>(position - digits_start)),
+      characters.subspan(digits_start,
+                         static_cast<size_t>(position - digits_start)),
       WTF::NumberParsingOptions(), nullptr);
 
   // Step 9
@@ -109,18 +102,15 @@ static bool ParseFontSize(const CharacterType* characters,
   if (value < 1)
     value = 1;
 
-  size = value;
-  return true;
+  return value;
 }
 
-static bool ParseFontSize(const String& input, int& size) {
-  if (input.empty())
-    return false;
-
-  if (input.Is8Bit())
-    return ParseFontSize(input.Characters8(), input.length(), size);
-
-  return ParseFontSize(input.Characters16(), input.length(), size);
+static std::optional<int> ParseFontSize(const String& input) {
+  if (input.empty()) {
+    return std::nullopt;
+  }
+  return WTF::VisitCharacters(input,
+                              [](auto chars) { return ParseFontSize(chars); });
 }
 
 static const CSSValueList* CreateFontFaceValueWithPool(
@@ -138,40 +128,32 @@ static const CSSValueList* CreateFontFaceValueWithPool(
   return entry.stored_value->value.Get();
 }
 
-bool HTMLFontElement::CssValueFromFontSizeNumber(const String& s,
-                                                 CSSValueID& size) {
-  int num = 0;
-  if (!ParseFontSize(s, num))
-    return false;
-
-  switch (num) {
+std::optional<CSSValueID> HTMLFontElement::CssValueFromFontSizeNumber(
+    const String& s) {
+  std::optional<int> num = ParseFontSize(s);
+  if (!num) {
+    return std::nullopt;
+  }
+  switch (*num) {
     case 1:
       // FIXME: The spec says that we're supposed to use CSSValueID::kXxSmall
       // here.
-      size = CSSValueID::kXSmall;
-      break;
+      return CSSValueID::kXSmall;
     case 2:
-      size = CSSValueID::kSmall;
-      break;
+      return CSSValueID::kSmall;
     case 3:
-      size = CSSValueID::kMedium;
-      break;
+      return CSSValueID::kMedium;
     case 4:
-      size = CSSValueID::kLarge;
-      break;
+      return CSSValueID::kLarge;
     case 5:
-      size = CSSValueID::kXLarge;
-      break;
+      return CSSValueID::kXLarge;
     case 6:
-      size = CSSValueID::kXxLarge;
-      break;
+      return CSSValueID::kXxLarge;
     case 7:
-      size = CSSValueID::kXxxLarge;
-      break;
+      return CSSValueID::kXxxLarge;
     default:
       NOTREACHED();
   }
-  return true;
 }
 
 bool HTMLFontElement::IsPresentationAttribute(const QualifiedName& name) const {
@@ -184,20 +166,20 @@ bool HTMLFontElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLFontElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kSizeAttr) {
-    CSSValueID size = CSSValueID::kInvalid;
-    if (CssValueFromFontSizeNumber(value, size)) {
+    if (std::optional<CSSValueID> size_keyword =
+            CssValueFromFontSizeNumber(value)) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kFontSize,
-                                              size);
+                                              *size_keyword);
     }
   } else if (name == html_names::kColorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kColor, value);
   } else if (name == html_names::kFaceAttr && !value.empty()) {
     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
             value, GetExecutionContext()->GetSecureContextMode())) {
-      style->SetLonghandProperty(CSSPropertyValue(
-          CSSPropertyName(CSSPropertyID::kFontFamily), *font_face_value));
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kFontFamily),
+                         *font_face_value);
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

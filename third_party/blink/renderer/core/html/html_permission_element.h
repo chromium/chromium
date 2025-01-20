@@ -309,6 +309,7 @@ class CORE_EXPORT HTMLPermissionElement final
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void AdjustStyle(ComputedStyleBuilder& builder) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
+  void LangAttributeChanged() override;
 
   // blink::Node override.
   void DefaultEventHandler(Event&) override;

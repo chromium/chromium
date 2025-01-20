@@ -11,12 +11,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/mock_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -332,7 +332,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       compose::kComposeContextMenuCtr,
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
 
-  EXPECT_TRUE(selected_form_field.SameFieldAs(last_form_field_to_client()));
+  EXPECT_TRUE(autofill::FormFieldData::DeepEqual(selected_form_field,
+                                                 last_form_field_to_client()));
   EXPECT_EQ(last_form_field_to_client().selected_text(), u"value1");
 }
 

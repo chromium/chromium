@@ -84,8 +84,12 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 void RecordCampaignsManagerError(CampaignsManagerError error_code);
 
+// Records how many times a campaign will be fetched for the given `slot`.
+void RecordGetCampaignBySlotAttempt(Slot slot);
+
 // Records how many times a campaign is fetched for the given `slot`.
-void RecordGetCampaignBySlot(Slot slot);
+// Also records the fetched campaign's id.
+void RecordGetCampaignBySlot(Slot slot, int campaign_id);
 
 void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration,
                                               bool in_oobe);

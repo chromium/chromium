@@ -7,12 +7,17 @@
 
 #include <memory>
 
-#include "net/extras/sqlite/cookie_crypto_delegate.h"
+#include "base/component_export.h"
+
+namespace net {
+class CookieCryptoDelegate;
+}  // namespace net
 
 namespace cookie_config {
 
 // Factory method for returning a CookieCryptoDelegate if one is appropriate for
 // this platform.
+COMPONENT_EXPORT(COMPONENTS_COOKIE_CONFIG)
 std::unique_ptr<net::CookieCryptoDelegate> GetCookieCryptoDelegate();
 
 }  // namespace cookie_config

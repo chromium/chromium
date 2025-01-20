@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/io_buffer.h"
 
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_math.h"
 
@@ -88,7 +84,7 @@ void DrainableIOBuffer::SetOffset(int bytes) {
   CHECK_GE(bytes, 0);
   CHECK_LE(bytes, size_);
   used_ = bytes;
-  data_ = base_->data() + used_;
+  data_ = UNSAFE_TODO(base_->data() + used_);
 }
 
 DrainableIOBuffer::~DrainableIOBuffer() {
@@ -119,7 +115,7 @@ void GrowableIOBuffer::set_offset(int offset) {
   CHECK_GE(offset, 0);
   CHECK_LE(offset, capacity_);
   offset_ = offset;
-  data_ = real_data_.get() + offset;
+  data_ = UNSAFE_TODO(real_data_.get() + offset);
   size_ = capacity_ - offset;
 }
 
@@ -166,7 +162,9 @@ PickledIOBuffer::~PickledIOBuffer() {
 }
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const char> data)
-    : IOBuffer(base::make_span(const_cast<char*>(data.data()), data.size())) {}
+    // SAFETY: const cast does not affect size.
+    : IOBuffer(UNSAFE_BUFFERS(
+          base::span(const_cast<char*>(data.data()), data.size()))) {}
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const uint8_t> data)
     : WrappedIOBuffer(base::as_chars(data)) {}

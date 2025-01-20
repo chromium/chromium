@@ -5,7 +5,6 @@
 #include "base/win/security_util.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <optional>

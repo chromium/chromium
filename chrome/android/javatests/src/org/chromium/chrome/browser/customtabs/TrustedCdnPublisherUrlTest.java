@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -58,6 +57,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -171,7 +171,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://www.example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
         mScreenShooter.shoot("trustedPublisherUrlHttps");
     }
 
@@ -244,7 +244,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
         TestTouchUtils.performClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(),
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button));
@@ -263,7 +263,7 @@ public class TrustedCdnPublisherUrlTest {
                 "https://example.com/test",
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         String otherTestUrl = mWebServer.setResponse("/other.html", PAGE_WITH_TITLE, null);
         mCustomTabActivityTestRule.loadUrl(otherTestUrl);
@@ -285,7 +285,7 @@ public class TrustedCdnPublisherUrlTest {
                 publisherUrl.getSpec(),
                 "com.example.test",
                 "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         final Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation()
@@ -298,8 +298,7 @@ public class TrustedCdnPublisherUrlTest {
                 () -> {
                     Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
                     customTabActivity
-                            .getComponent()
-                            .resolveNavigationController()
+                            .getCustomTabActivityNavigationController()
                             .openCurrentUrlInBrowser();
                     Assert.assertNull(customTabActivity.getActivityTab());
                 });
@@ -338,7 +337,7 @@ public class TrustedCdnPublisherUrlTest {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
                 publisherUrl, "com.example.test", "example.com",
-                R.drawable.omnibox_https_valid_refresh);
+                R.drawable.omnibox_https_valid_page_info);
 
         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =
@@ -420,10 +419,10 @@ public class TrustedCdnPublisherUrlTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(token, clientPackage);
+        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(sessionHolder, clientPackage);
         connection.setTrustedPublisherUrlPackageForTest("com.example.test");
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

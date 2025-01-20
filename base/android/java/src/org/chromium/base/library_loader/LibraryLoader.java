@@ -34,6 +34,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -52,6 +54,7 @@ import javax.annotation.concurrent.GuardedBy;
  * <p>See also base/android/library_loader/library_loader_hooks.cc, which contains the native
  * counterpart to this class.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class LibraryLoader {
     private static final String TAG = "LibraryLoader";
@@ -119,10 +122,10 @@ public class LibraryLoader {
     // Always accessed via getLinker() because the choice of the class can be influenced by
     // public setLinkerImplementation() below.
     @GuardedBy("mLock")
-    private Linker mLinker;
+    private @Nullable Linker mLinker;
 
     @GuardedBy("mLock")
-    private NativeLibraryPreloader mLibraryPreloader;
+    private @Nullable NativeLibraryPreloader mLibraryPreloader;
 
     @GuardedBy("mLock")
     private boolean mLibraryPreloaderCalled;
@@ -152,7 +155,7 @@ public class LibraryLoader {
     @VisibleForTesting public static boolean sOverrideNativeLibraryCannotBeLoadedForTesting;
 
     // Allow embedders to register a callback to handle native library load failures.
-    public static Callback<UnsatisfiedLinkError> sLoadFailedCallback;
+    public static @Nullable Callback<UnsatisfiedLinkError> sLoadFailedCallback;
 
     // Returns true when sharing RELRO between the browser process and the app zygote should *not*
     // be attempted.

@@ -58,8 +58,7 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTpcdTrialSettings, {}},
+        {{net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
@@ -241,8 +240,7 @@ class ValidityService3pTrialBrowserTest
     : public ValidityServiceBrowserTestBase {
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTpcdTrialSettings, {}},
+        {{net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
@@ -633,8 +631,7 @@ class ValidityService1pTrialBrowserTest
     : public ValidityServiceBrowserTestBase {
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTopLevelTpcdTrialSettings, {}},
+        {{net::features::kTopLevelTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 

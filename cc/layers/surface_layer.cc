@@ -136,6 +136,10 @@ void SurfaceLayer::SetIsReflection(bool is_reflection) {
   is_reflection_.Write(*this) = true;
 }
 
+void SurfaceLayer::SetOverrideChildPaintFlags(bool override_child_paint_flags) {
+  override_child_paint_flags_.Write(*this) = true;
+}
+
 void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
   may_contain_video_.Write(*this) = may_contain_video;
   SetNeedsCommit();
@@ -146,6 +150,12 @@ std::unique_ptr<LayerImpl> SurfaceLayer::CreateLayerImpl(
   auto layer_impl = SurfaceLayerImpl::Create(
       tree_impl, id(), update_submission_state_callback_.Read(*this));
   return layer_impl;
+}
+
+bool SurfaceLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  // TODO(crbug.com/40065199): Only return true if the contents of the
+  // surface (the canvas, video, or ImageBitmap) are HDR.
+  return override_child_paint_flags_.Read(*this);
 }
 
 bool SurfaceLayer::HasDrawableContent() const {
@@ -177,33 +187,38 @@ void SurfaceLayer::SetLayerTreeHost(LayerTreeHost* host) {
     layer_tree_host()->AddSurfaceRange(surface_range_.Read(*this));
 }
 
-void SurfaceLayer::PushPropertiesTo(
+void SurfaceLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "SurfaceLayer::PushPropertiesTo");
-  SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
-  layer_impl->SetRange(surface_range_.Read(*this),
-                       std::move(deadline_in_frames_.Write(*this)));
-  // Unless the client explicitly calls SetSurfaceId again after this
-  // commit, don't block on |surface_range_| again.
-  deadline_in_frames_.Write(*this) = 0u;
-  layer_impl->SetIsReflection(is_reflection_.Read(*this));
-  layer_impl->SetStretchContentToFillBounds(
-      stretch_content_to_fill_bounds_.Read(*this));
-  layer_impl->SetSurfaceHitTestable(surface_hit_testable_.Read(*this));
-  layer_impl->SetHasPointerEventsNone(has_pointer_events_none_.Read(*this));
-  layer_impl->set_may_contain_video(may_contain_video_.Read(*this));
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  if (callback_layer_tree_host_changed_.Read(*this)) {
-    // Anytime SetLayerTreeHost is called and
-    // `update_submission_state_callback_` is defined, the callback will be used
-    // to reset the visibility state. We must share this information with the
-    // SurfaceLayerImpl since it also tracks visibility state so it can avoid
-    // unnecessary invocations of the callback.
-    layer_impl->ResetStateForUpdateSubmissionStateCallback();
-    callback_layer_tree_host_changed_.Write(*this) = false;
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "SurfaceLayer::PushPropertiesTo");
+    SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
+    layer_impl->SetRange(surface_range_.Read(*this),
+                         std::move(deadline_in_frames_.Write(*this)));
+    // Unless the client explicitly calls SetSurfaceId again after this
+    // commit, don't block on |surface_range_| again.
+    deadline_in_frames_.Write(*this) = 0u;
+    layer_impl->SetIsReflection(is_reflection_.Read(*this));
+    layer_impl->SetOverrideChildPaintFlags(
+        override_child_paint_flags_.Read(*this));
+    layer_impl->SetStretchContentToFillBounds(
+        stretch_content_to_fill_bounds_.Read(*this));
+    layer_impl->SetSurfaceHitTestable(surface_hit_testable_.Read(*this));
+    layer_impl->SetHasPointerEventsNone(has_pointer_events_none_.Read(*this));
+
+    if (callback_layer_tree_host_changed_.Read(*this)) {
+      // Anytime SetLayerTreeHost is called and
+      // `update_submission_state_callback_` is defined, the callback will be
+      // used to reset the visibility state. We must share this information with
+      // the SurfaceLayerImpl since it also tracks visibility state so it can
+      // avoid unnecessary invocations of the callback.
+      layer_impl->ResetStateForUpdateSubmissionStateCallback();
+      callback_layer_tree_host_changed_.Write(*this) = false;
+    }
   }
 }
 

@@ -56,8 +56,9 @@ ChromeContentBrowserClientWebUiPart::ChromeContentBrowserClientWebUiPart() =
 ChromeContentBrowserClientWebUiPart::~ChromeContentBrowserClientWebUiPart() =
     default;
 
-void ChromeContentBrowserClientWebUiPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientWebUiPart::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // This logic is invoked at startup, and anytime the default prefs change.
   GURL url = GetVisibleURL(web_contents);
@@ -83,6 +84,7 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebkitPrefs(
 
 bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // This logic is invoked once on each navigation.
 
@@ -92,8 +94,7 @@ bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
   }
 
   // Extensions are handled by ChromeContentBrowserClientExtensionsPart.
-  const GURL& site_url =
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
+  const GURL& site_url = main_frame_site.GetSiteURL();
   if (site_url.SchemeIs(extensions::kExtensionScheme)) {
     return false;
   }

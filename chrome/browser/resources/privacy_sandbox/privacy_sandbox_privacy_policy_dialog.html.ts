@@ -18,7 +18,8 @@ export function getHtml(this: PrivacySandboxPrivacyPolicyDialogElement) {
     <iframe id="privacyPolicy"
         tabindex="${this.shouldShow ? 0 : -1}"
         src='chrome-untrusted://privacy-sandbox-dialog/privacy-policy'
-        frameBorder="0">
+        frameBorder="0"
+        aria-hidden="${!this.shouldShow}">
     </iframe>
   `;
 }

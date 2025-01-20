@@ -12,9 +12,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -216,6 +216,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -227,6 +229,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -239,7 +243,9 @@ TEST_F(FieldClassificationModelEncoderTest,
                               // FEATURE_FORM_NAME
                               kNumber, kUnknown, kEmpty, kEmpty, kEmpty,
                               // FEATURE_FRAME_URL_PATH
-                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty)));
+                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty,
+                              // PADDING
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty)));
 }
 
 struct StandardizeStringTestCase {

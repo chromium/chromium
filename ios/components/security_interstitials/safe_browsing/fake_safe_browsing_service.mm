@@ -111,7 +111,8 @@ class FakeSafeBrowsingUrlCheckerImpl
             safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
             /*is_async_check=*/false,
             /*check_allowlist_before_hash_database=*/false,
-            SessionID::InvalidValue()) {}
+            SessionID::InvalidValue(),
+            /*referring_app_info=*/std::nullopt) {}
 
   FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,
@@ -198,11 +199,17 @@ FakeSafeBrowsingService::FakeSafeBrowsingService() = default;
 
 FakeSafeBrowsingService::~FakeSafeBrowsingService() = default;
 
-void FakeSafeBrowsingService::Initialize(
+void FakeSafeBrowsingService::Initialize(const base::FilePath& user_data_path) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+}
+
+void FakeSafeBrowsingService::OnBrowserStateCreated(
     PrefService* prefs,
-    const base::FilePath& user_data_path,
-    safe_browsing::SafeBrowsingMetricsCollector*
-        safe_browsing_metrics_collector) {
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+}
+
+void FakeSafeBrowsingService::OnBrowserStateDestroyed(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 

@@ -52,7 +52,7 @@ EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(
   observed_login_display_host_.Observe(LoginDisplayHost::default_host());
 }
 
-EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() {}
+EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() = default;
 
 bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests ||

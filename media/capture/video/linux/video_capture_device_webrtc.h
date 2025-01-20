@@ -30,6 +30,7 @@ class VideoCaptureDeviceWebRtc : public VideoCaptureDevice,
       const VideoCaptureDeviceDescriptor& device_descriptor);
 
   explicit VideoCaptureDeviceWebRtc(
+      webrtc::VideoCaptureOptions* options,
       rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module);
 
   VideoCaptureDeviceWebRtc(const VideoCaptureDeviceWebRtc&) = delete;
@@ -56,6 +57,7 @@ class VideoCaptureDeviceWebRtc : public VideoCaptureDevice,
 
  private:
   rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module_;
+  raw_ptr<webrtc::VideoCaptureOptions> options_;
   VideoCaptureFormat capture_format_;
   std::optional<base::TimeDelta> base_time_;
 

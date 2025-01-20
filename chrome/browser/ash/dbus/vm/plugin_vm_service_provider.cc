@@ -34,7 +34,7 @@ constexpr char kShowSettingsPageSharedPaths[] = "pluginVm/sharedPaths";
 
 namespace ash {
 
-PluginVmServiceProvider::PluginVmServiceProvider() {}
+PluginVmServiceProvider::PluginVmServiceProvider() = default;
 
 PluginVmServiceProvider::~PluginVmServiceProvider() = default;
 

@@ -117,8 +117,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                          std::string(version_info::GetSanitizerList()));
 
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(
-      base::make_span(kVersionUiResources, kVersionUiResourcesSize));
+  html_source->AddResourcePaths(kVersionUiResources);
   html_source->AddResourcePath("images/product_logo.png", IDR_PRODUCT_LOGO);
   html_source->AddResourcePath("images/product_logo_white.png",
                                IDR_PRODUCT_LOGO_WHITE);

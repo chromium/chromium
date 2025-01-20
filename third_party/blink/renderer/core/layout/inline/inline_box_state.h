@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
@@ -43,10 +44,12 @@ struct InlineBoxState {
 
  public:
   unsigned fragment_start = 0;
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const InlineItem* item = nullptr;
   Member<const ComputedStyle> style;
 
   // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const Font* font = nullptr;
 
   // A storage of SVG scaled font. Do not touch this outside of
@@ -141,7 +144,7 @@ struct InlineBoxState {
   bool CanAddTextOfStyle(const ComputedStyle&) const;
 
   // Adjust `metrics` for `text-box-trim` and `text-box-edge` properties.
-  static void AdjustEdges(TextBoxEdge text_box_edge,
+  static void AdjustEdges(const ComputedStyle& style,
                           const Font& font,
                           FontBaseline baseline_type,
                           bool should_apply_over,
@@ -324,6 +327,7 @@ class CORE_EXPORT InlineLayoutStateStack {
     // Ruby columns in the above range.
     Member<HeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
     const InlineItem* item;
     LogicalRect rect;
 

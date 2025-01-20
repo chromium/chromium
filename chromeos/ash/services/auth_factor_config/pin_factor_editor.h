@@ -34,41 +34,78 @@ class PinFactorEditor : public mojom::PinFactorEditor {
   void RemovePin(
       const std::string& auth_token,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
+  void GetConfiguredPinFactor(
+      const std::string& auth_token,
+      base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback)
+      override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::PinFactorEditor> receiver);
 
  private:
+  using AuthFactorSet = base::EnumSet<mojom::AuthFactor,
+                                      mojom::AuthFactor::kMinValue,
+                                      mojom::AuthFactor::kMaxValue>;
+
   void ObtainContext(
       const std::string& auth_token,
       base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
-  void RemovePinWithContext(
+
+  void OnRemovePinConfigured(
       const std::string& auth_token,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      AuthFactorSet factors);
+  void OnRemovePinConfiguredWithContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      mojom::AuthFactor factor,
       std::unique_ptr<UserContext> context);
-  void OnPinConfigured(
+
+  void OnPinRemove(const std::string& auth_token,
+                   mojom::AuthFactor factor,
+                   base::OnceCallback<void(mojom::ConfigureResult)> callback,
+                   bool success);
+
+  void OnPinRemoveWithContext(
       const std::string& auth_token,
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      bool success);
-  void OnPinConfiguredWithContext(
-      const std::string& auth_token,
+      mojom::AuthFactor factor,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool success,
       std::unique_ptr<UserContext> context);
+
   void SetPinWithContext(
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context);
+  void OnPinSet(const std::string& auth_token,
+                base::OnceCallback<void(mojom::ConfigureResult)> callback,
+                bool success);
+  void OnPinSetWithContext(
+      const std::string& auth_token,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      bool success,
+      std::unique_ptr<UserContext> context);
+
   void UpdatePinWithContext(
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context);
-  void OnIsPinConfiguredForRemove(
-      const AccountId account_id,
+  void OnUpdatePinConfigured(
       const std::string& auth_token,
+      mojom::AuthFactor old_pin_factor_type,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      bool is_pin_configured);
+      bool success);
+  void OnUpdatePinConfiguredWithContext(
+      const std::string& auth_token,
+      mojom::AuthFactor old_pin_factor_type,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      bool success,
+      std::unique_ptr<UserContext> context);
+
+  void GetConfiguredPinFactorResponse(
+      base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback,
+      AuthFactorSet factors);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;

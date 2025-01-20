@@ -13,51 +13,33 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/origin.h"
 
 namespace network {
 
-namespace {
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::HeaderResult(
+    const url::Origin& request_origin,
+    std::vector<SharedStorageMethodWrapper> methods,
+    const std::optional<std::string>& with_lock)
+    : request_origin(request_origin),
+      methods(std::move(methods)),
+      with_lock(with_lock) {}
 
-std::optional<bool> MojomToAbslOptionalBool(
-    network::mojom::OptionalBool opt_bool) {
-  std::optional<bool> converted;
-  if (opt_bool == network::mojom::OptionalBool::kTrue) {
-    converted = true;
-  } else if (opt_bool == network::mojom::OptionalBool::kFalse) {
-    converted = false;
-  }
-  return converted;
-}
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::HeaderResult(
+    HeaderResult&& other) = default;
 
-std::vector<std::tuple<mojom::SharedStorageOperationType,
-                       std::optional<std::string>,
-                       std::optional<std::string>,
-                       std::optional<bool>>>
-MakeOperationTuples(std::vector<mojom::SharedStorageOperationPtr> operations) {
-  std::deque<mojom::SharedStorageOperationPtr> to_process;
-  to_process.insert(to_process.end(),
-                    std::make_move_iterator(operations.begin()),
-                    std::make_move_iterator(operations.end()));
-  std::vector<
-      std::tuple<mojom::SharedStorageOperationType, std::optional<std::string>,
-                 std::optional<std::string>, std::optional<bool>>>
-      operation_tuples;
-  while (!to_process.empty()) {
-    mojom::SharedStorageOperationPtr operation = std::move(to_process.front());
-    to_process.pop_front();
-    operation_tuples.emplace_back(
-        operation->type, std::move(operation->key), std::move(operation->value),
-        MojomToAbslOptionalBool(operation->ignore_if_present));
-  }
-  return operation_tuples;
-}
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult&
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::operator=(
+    HeaderResult&& other) = default;
 
-}  // namespace
+SharedStorageTestURLLoaderNetworkObserver::HeaderResult::~HeaderResult() =
+    default;
 
 SharedStorageTestURLLoaderNetworkObserver::
     SharedStorageTestURLLoaderNetworkObserver() = default;
@@ -66,10 +48,17 @@ SharedStorageTestURLLoaderNetworkObserver::
 
 void SharedStorageTestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
-    std::vector<mojom::SharedStorageOperationPtr> operations,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    const std::optional<std::string>& with_lock,
     OnSharedStorageHeaderReceivedCallback callback) {
-  auto operation_tuples = MakeOperationTuples(std::move(operations));
-  headers_received_.emplace_back(request_origin, std::move(operation_tuples));
+  std::vector<SharedStorageMethodWrapper> transformed =
+      base::ToVector(methods_with_options, [](auto& methods_with_options) {
+        return SharedStorageMethodWrapper(std::move(methods_with_options));
+      });
+
+  headers_received_.emplace_back(request_origin, std::move(transformed),
+                                 with_lock);
   if (loop_ && loop_->running() &&
       headers_received_.size() >= expected_total_) {
     loop_->Quit();

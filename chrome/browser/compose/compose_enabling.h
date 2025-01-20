@@ -49,9 +49,15 @@ class ComposeEnabling {
   ComposeEnabling& operator=(const ComposeEnabling&) = delete;
 
   // Static method that verifies that the feature can be enabled on the given
-  // profile. Doesn't take advantage of for test opt_guide or identity_manager,
+  // profile. Doesn't take advantage of test opt_guide or identity_manager,
   // use member function version if you need to mock them out.
   static bool IsEnabledForProfile(Profile* profile);
+
+  // Static method that verifies that the feature can be visible in settings for
+  // the given profile even if the feature is disabled by policy. Doesn't take
+  // advantage of test opt_guide or identity_manager, use member function
+  // version if you need to mock them out.
+  static bool IsSettingVisible(Profile* profile);
 
   // Instance method that verifies that the feature can be enabled for the
   // profile associated with this instance upon construction.

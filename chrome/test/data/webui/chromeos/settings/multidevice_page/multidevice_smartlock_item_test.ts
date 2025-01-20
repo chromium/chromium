@@ -56,10 +56,7 @@ suite('<settings-multidevice-smartlock-item>', () => {
    */
   async function simulateFeatureStateChangeRequest(enabled: boolean) {
     const token = 'token1';
-    smartLockItem.authToken = {
-      lifetimeSeconds: 300,
-      token: token,
-    };
+    smartLockItem.authToken = token;
 
     // When the user requets a feature state change, an event with the relevant
     // details is handled.

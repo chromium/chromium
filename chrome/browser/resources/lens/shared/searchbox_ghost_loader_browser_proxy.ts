@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LensGhostLoaderPageCallbackRouter, LensGhostLoaderPageHandlerFactory} from './lens.mojom-webui.js';
+import {LensGhostLoaderPageCallbackRouter, LensGhostLoaderPageHandlerFactory} from './lens_ghost_loader.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 

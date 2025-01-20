@@ -20,10 +20,6 @@ class SequenceManager;
 }
 }  // namespace base
 
-namespace ukm {
-class UkmRecorder;
-}
-
 namespace blink {
 namespace scheduler {
 
@@ -117,9 +113,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
 
   HashSet<WorkerSchedulerImpl*>& GetWorkerSchedulersForTesting();
 
-  void SetUkmTaskSamplingRateForTest(double rate);
-  void SetUkmRecorderForTest(std::unique_ptr<ukm::UkmRecorder> ukm_recorder);
-
   virtual void PerformMicrotaskCheckpoint();
 
  private:
@@ -130,11 +123,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   void OnVirtualTimeResumed() override;
 
   void MaybeStartLongIdlePeriod();
-
-  void RecordTaskUkm(
-      NonMainThreadTaskQueue* worker_task_queue,
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   const ThreadType thread_type_;
   scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
@@ -153,12 +141,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
 
   std::unique_ptr<WakeUpBudgetPool> wake_up_budget_pool_;
   std::unique_ptr<CPUTimeBudgetPool> cpu_time_budget_pool_;
-
-  // The status of the parent frame when the worker was created.
-  const FrameStatus initial_frame_status_;
-
-  const ukm::SourceId ukm_source_id_;
-  std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
 };
 
 }  // namespace scheduler

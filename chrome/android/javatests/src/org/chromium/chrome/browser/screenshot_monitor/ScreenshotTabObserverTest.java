@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -52,6 +53,16 @@ public class ScreenshotTabObserverTest {
                 (Runnable) () -> mObserver = ScreenshotTabObserver.from(mTab));
     }
 
+    private void closeCurrentTab() {
+        sActivityTestRule
+                .getActivity()
+                .getCurrentTabModel()
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
+    }
+
     @Test
     @MediumTest
     public void testScreenshotUserCounts() {
@@ -75,10 +86,7 @@ public class ScreenshotTabObserverTest {
         int count = callbackHelper.getCallCount();
 
         mObserver.onScreenshotTaken();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
-                });
+        ThreadUtils.runOnUiThreadBlocking(this::closeCurrentTab);
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with one snapshot reported.");
@@ -95,10 +103,7 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onScreenshotTaken();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
-                });
+        ThreadUtils.runOnUiThreadBlocking(this::closeCurrentTab);
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with two snapshots reported.");
@@ -114,10 +119,7 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onActionPerformedAfterScreenshot(ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
-                });
+        ThreadUtils.runOnUiThreadBlocking(this::closeCurrentTab);
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected(

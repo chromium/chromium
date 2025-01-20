@@ -791,13 +791,23 @@ TEST_F(TabGroupLocalUpdateObserverTest, UpdateActiveTab) {
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
 
+  // Focus a tab in a group.
   const TabGroup* group = builder.GetTabGroupForIdentifier('0');
   web::WebState* web_state_a = builder.GetWebStateForIdentifier('a');
+  web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
 
-  EXPECT_CALL(*mock_service_,
-              OnTabSelected(group->tab_group_id(),
-                            web_state_a->GetUniqueIdentifier().identifier()));
+  EXPECT_CALL(
+      *mock_service_,
+      OnTabSelected(Eq(group->tab_group_id()),
+                    Eq(web_state_a->GetUniqueIdentifier().identifier())));
   web_state_list->ActivateWebStateAt(0);
+
+  // Focus a tab not in any group.
+  EXPECT_CALL(
+      *mock_service_,
+      OnTabSelected(Eq(std::nullopt),
+                    Eq(web_state_e->GetUniqueIdentifier().identifier())));
+  web_state_list->ActivateWebStateAt(4);
 }
 
 }  // namespace tab_groups

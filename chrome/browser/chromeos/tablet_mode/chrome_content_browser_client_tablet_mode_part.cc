@@ -56,7 +56,7 @@ bool IsInternalPage(content::WebContents* contents) {
   return url.SchemeIs(content::kChromeUIScheme);
 }
 
-void OverrideWebkitPrefsForTabletMode(
+void OverrideWebPreferencesForTabletMode(
     content::WebContents* contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
@@ -126,15 +126,16 @@ ChromeContentBrowserClientTabletModePart::
 ChromeContentBrowserClientTabletModePart::
     ~ChromeContentBrowserClientTabletModePart() = default;
 
-void ChromeContentBrowserClientTabletModePart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientTabletModePart::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   // A webcontents may not be the delegate of the render view host such as in
   // the case of interstitial pages.
   if (!web_contents)
     return;
 
-  OverrideWebkitPrefsForTabletMode(web_contents, web_prefs);
+  OverrideWebPreferencesForTabletMode(web_contents, web_prefs);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   OverrideFontSize(web_contents, web_prefs);
 #endif

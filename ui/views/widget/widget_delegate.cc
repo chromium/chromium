@@ -32,6 +32,11 @@ std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
       widget, delegate->TransferOwnershipOfContentsView());
 }
 
+std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
+    Widget* widget) {
+  return nullptr;
+}
+
 std::unique_ptr<View> CreateDefaultOverlayView() {
   return nullptr;
 }
@@ -48,6 +53,8 @@ WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
+      non_client_frame_view_factory_(
+          base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
@@ -210,8 +217,9 @@ bool WidgetDelegate::ShouldShowCloseButton() const {
 
 ui::ImageModel WidgetDelegate::GetWindowAppIcon() {
   // Prefer app icon if available.
-  if (!params_.app_icon.IsEmpty())
+  if (!params_.app_icon.IsEmpty()) {
     return params_.app_icon;
+  }
   // Fall back to the window icon.
   return GetWindowIcon();
 }
@@ -254,8 +262,9 @@ bool WidgetDelegate::GetSavedWindowPlacement(
   std::string window_name = GetWindowName();
   if (window_name.empty() ||
       !ViewsDelegate::GetInstance()->GetSavedWindowPlacement(
-          widget, window_name, bounds, show_state))
+          widget, window_name, bounds, show_state)) {
     return false;
+  }
   // Try to find a display intersecting the saved bounds.
   const auto& display =
       display::Screen::GetScreen()->GetDisplayMatching(*bounds);
@@ -273,8 +282,9 @@ base::WeakPtr<WidgetDelegate> WidgetDelegate::AttachWidgetAndGetHandle(
 }
 
 void WidgetDelegate::WidgetInitialized() {
-  for (auto&& callback : *widget_initialized_callbacks_)
+  for (auto&& callback : *widget_initialized_callbacks_) {
     std::move(callback).Run();
+  }
   widget_initialized_callbacks_.reset();
   OnWidgetInitialized();
 }
@@ -287,13 +297,15 @@ void WidgetDelegate::WindowWillClose() {
   // TODO(ellyjones): For this and the other callback methods, establish whether
   // any other code calls these methods. If not, DCHECK here and below that
   // these methods are only called once.
-  for (auto&& callback : window_will_close_callbacks_)
+  for (auto&& callback : window_will_close_callbacks_) {
     std::move(callback).Run();
+  }
 }
 
 void WidgetDelegate::WindowClosing() {
-  for (auto&& callback : window_closing_callbacks_)
+  for (auto&& callback : window_closing_callbacks_) {
     std::move(callback).Run();
+  }
 }
 
 void WidgetDelegate::DeleteDelegate() {
@@ -339,18 +351,21 @@ const Widget* WidgetDelegate::GetWidget() const {
 }
 
 View* WidgetDelegate::GetContentsView() {
-  if (unowned_contents_view_)
+  if (unowned_contents_view_) {
     return unowned_contents_view_;
-  if (!default_contents_view_)
+  }
+  if (!default_contents_view_) {
     default_contents_view_ = new View;
+  }
   return default_contents_view_;
 }
 
 View* WidgetDelegate::TransferOwnershipOfContentsView() {
   DCHECK(!contents_view_taken_);
   contents_view_taken_ = true;
-  if (owned_contents_view_)
+  if (owned_contents_view_) {
     owned_contents_view_.release();
+  }
   return GetContentsView();
 }
 
@@ -361,7 +376,8 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
-  return nullptr;
+  CHECK(non_client_frame_view_factory_);
+  return non_client_frame_view_factory_.Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -405,20 +421,23 @@ void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
 
 void WidgetDelegate::SetCanMaximize(bool can_maximize) {
   bool old_can_maximize = std::exchange(params_.can_maximize, can_maximize);
-  if (GetWidget() && params_.can_maximize != old_can_maximize)
+  if (GetWidget() && params_.can_maximize != old_can_maximize) {
     GetWidget()->OnSizeConstraintsChanged();
+  }
 }
 
 void WidgetDelegate::SetCanMinimize(bool can_minimize) {
   bool old_can_minimize = std::exchange(params_.can_minimize, can_minimize);
-  if (GetWidget() && params_.can_minimize != old_can_minimize)
+  if (GetWidget() && params_.can_minimize != old_can_minimize) {
     GetWidget()->OnSizeConstraintsChanged();
+  }
 }
 
 void WidgetDelegate::SetCanResize(bool can_resize) {
   bool old_can_resize = std::exchange(params_.can_resize, can_resize);
-  if (GetWidget() && params_.can_resize != old_can_resize)
+  if (GetWidget() && params_.can_resize != old_can_resize) {
     GetWidget()->OnSizeConstraintsChanged();
+  }
 }
 
 // TODO (kylixrd): This will be removed once Widget no longer "owns" the
@@ -438,14 +457,16 @@ void WidgetDelegate::SetEnableArrowKeyTraversal(
 
 void WidgetDelegate::SetIcon(ui::ImageModel icon) {
   params_.icon = std::move(icon);
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->UpdateWindowIcon();
+  }
 }
 
 void WidgetDelegate::SetAppIcon(ui::ImageModel icon) {
   params_.app_icon = std::move(icon);
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->UpdateWindowIcon();
+  }
 }
 
 void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
@@ -464,8 +485,9 @@ void WidgetDelegate::SetShowCloseButton(bool show_close_button) {
 
 void WidgetDelegate::SetShowIcon(bool show_icon) {
   params_.show_icon = show_icon;
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->UpdateWindowIcon();
+  }
 }
 
 void WidgetDelegate::SetShowTitle(bool show_title) {
@@ -473,11 +495,13 @@ void WidgetDelegate::SetShowTitle(bool show_title) {
 }
 
 void WidgetDelegate::SetTitle(const std::u16string& title) {
-  if (params_.title == title)
+  if (params_.title == title) {
     return;
+  }
   params_.title = title;
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->UpdateWindowTitle();
+  }
 
   if (title_changed_callback_) {
     title_changed_callback_.Run();
@@ -524,6 +548,12 @@ void WidgetDelegate::RegisterDeleteDelegateCallback(
 void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
   DCHECK(!GetWidget());
   client_view_factory_ = std::move(factory);
+}
+
+void WidgetDelegate::SetNonClientFrameViewFactory(
+    NonClientFrameViewFactory factory) {
+  DCHECK(!GetWidget());
+  non_client_frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {

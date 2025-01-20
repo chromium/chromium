@@ -225,8 +225,9 @@ TEST_F(DataOfferTest, SetPickleDropData) {
   pickle.WriteString("filesystem:chrome-extension://path/to/file1");
   pickle.WriteInt64(1000);   // file size
   pickle.WriteString("id");  // filesystem id
-  data.SetPickledData(
-      ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
+  data.SetPickledData(ui::ClipboardFormatType::CustomPlatformType(
+                          "chromium/x-file-system-files"),
+                      pickle);
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
@@ -340,8 +341,9 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   pickle.WriteString("filesystem:chrome-extension://path/to/file1");
   pickle.WriteInt64(1000);   // file size
   pickle.WriteString("id");  // filesystem id
-  data.SetPickledData(
-      ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
+  data.SetPickledData(ui::ClipboardFormatType::CustomPlatformType(
+                          "chromium/x-file-system-files"),
+                      pickle);
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe1;
@@ -384,8 +386,9 @@ TEST_F(DataOfferTest,
   pickle.WriteString("filesystem:chrome-extension://path/to/file1");
   pickle.WriteInt64(1000);   // file size
   pickle.WriteString("id");  // filesystem id
-  data.SetPickledData(
-      ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
+  data.SetPickledData(ui::ClipboardFormatType::CustomPlatformType(
+                          "chromium/x-file-system-files"),
+                      pickle);
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe;

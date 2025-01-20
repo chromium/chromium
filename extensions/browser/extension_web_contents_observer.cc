@@ -144,16 +144,15 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
   // to request pages from the extension's origin.
   content::ChildProcessSecurityPolicy* security_policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   security_policy->GrantRequestOrigin(process_id, frame_extension->origin());
 
   // Notify the render frame of the view type.
   GetLocalFrameChecked(render_frame_host)
-      .NotifyRenderViewType(GetViewType(web_contents()));
+      .NotifyRenderViewType(GetViewType(render_frame_host));
 
   ProcessManager::Get(browser_context_)
-      ->RegisterRenderFrameHost(web_contents(), render_frame_host,
-                                frame_extension);
+      ->RegisterRenderFrameHost(render_frame_host, frame_extension);
 }
 
 void ExtensionWebContentsObserver::SetUpRenderFrameHost(
@@ -180,7 +179,7 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
   if (type == Manifest::TYPE_EXTENSION ||
       type == Manifest::TYPE_LEGACY_PACKAGED_APP) {
     util::InitializeFileSchemeAccessForExtension(
-        render_frame_host->GetProcess()->GetID(), extension->id(),
+        render_frame_host->GetProcess()->GetDeprecatedID(), extension->id(),
         browser_context_);
   }
 
@@ -199,7 +198,9 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
 void ExtensionWebContentsObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   if (base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+          extensions_features::kRemoveCoreSiteInstance)) {
+    // If the primordial SiteInstance in ProcessManager is not used, we need
+    // to wait until `ReadyToCommitNavigation()` to set up the render frame.
     return;
   }
   SetUpRenderFrameHost(render_frame_host);
@@ -216,7 +217,7 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+          extensions_features::kRemoveCoreSiteInstance)) {
     SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
   }
 
@@ -282,8 +283,7 @@ void ExtensionWebContentsObserver::DidFinishNavigation(
     if (!frame_extension)
       pm->UnregisterRenderFrameHost(render_frame_host);
   } else if (frame_extension && render_frame_host->IsRenderFrameLive()) {
-    pm->RegisterRenderFrameHost(web_contents(), render_frame_host,
-                                frame_extension);
+    pm->RegisterRenderFrameHost(render_frame_host, frame_extension);
   }
 
   ScriptInjectionTracker::DidFinishNavigation(PassKey(), navigation_handle);

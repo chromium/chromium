@@ -9,8 +9,6 @@ import android.content.Context;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 
-import org.chromium.base.BundleUtils;
-
 /**
  * GcmTaskService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
@@ -24,11 +22,13 @@ public class SplitCompatGcmTaskService extends GcmTaskService {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(baseContext);
     }
 
     @Override

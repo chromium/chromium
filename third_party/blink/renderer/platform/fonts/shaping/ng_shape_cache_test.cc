@@ -22,8 +22,7 @@ TEST_F(NGShapeCacheTest, AddEntriesAndCacheHits) {
   auto ShapeResultFunc = []() -> const ShapeResult* {
     // For the purposes of this test the actual internals of the shape result
     // doesn't matter.
-    Font font;
-    return MakeGarbageCollected<ShapeResult>(&font, 0, 0, TextDirection::kLtr);
+    return MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr);
   };
 
   // Adding an entry is successful.

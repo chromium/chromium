@@ -41,6 +41,9 @@ cargo_crate("lib") {
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/unicode_width/v0_1:lib",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
@@ -32,6 +33,7 @@
 #include "components/prefs/writeable_pref_store.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +52,19 @@ const char* kSkippedUrls[] = {
 
 content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
   return web_contents->GetPrimaryMainFrame()->GetPage();
+}
+
+chrome::cros::reporting::proto::TriggeredRuleInfo MakeTriggeredRuleInfo(
+    bool has_watermark) {
+  chrome::cros::reporting::proto::TriggeredRuleInfo info;
+  info.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
+  info.set_rule_id(123);
+  info.set_rule_name("watermark rule");
+  if (has_watermark) {
+    info.set_has_watermarking(true);
+  }
+  return info;
 }
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
@@ -87,14 +102,6 @@ safe_browsing::RTLookupResponse CreateRTLookupResponse(
   return response;
 }
 
-safe_browsing::RTLookupResponse CreateAuditRuleResponse() {
-  safe_browsing::RTLookupResponse response;
-  safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
-      response.add_threat_info();
-  *new_threat_info = GetTestThreatInfo(std::nullopt, 1709181364, true);
-  return response;
-}
-
 class FakeRealTimeUrlLookupService
     : public safe_browsing::testing::FakeRealTimeUrlLookupService {
  public:
@@ -105,7 +112,9 @@ class FakeRealTimeUrlLookupService
       const GURL& url,
       safe_browsing::RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override {
+      SessionID session_id,
+      std::optional<safe_browsing::internal::ReferringAppInfo>
+          referring_app_info) override {
     // Create custom threat info instance. The DataProtectionNavigationObserver
     // does not care whether the verdict came from the verdict cache or from an
     // actual lookup request, as long as it gets a verdict back.
@@ -241,13 +250,17 @@ class DataProtectionNavigationObserverTest
 }  // namespace
 
 TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+  expected_event.set_url("https://test/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  *expected_event.add_triggered_rule_info() =
+      MakeTriggeredRuleInfo(/*has_watermark=*/true);
+
   enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(
-      /*url*/ "https://test/",
-      /*event_result*/ "EVENT_RESULT_ALLOWED",
-      /*profile_user_name*/ "test-user@chromium.org",
-      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateRTLookupResponse("custom_message", true));
+  validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
@@ -297,13 +310,17 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+  expected_event.set_url("https://example.com/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  *expected_event.add_triggered_rule_info() =
+      MakeTriggeredRuleInfo(/*has_watermark=*/false);
+
   enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(
-      /*url*/ "https://example.com/",
-      /*event_result*/ "EVENT_RESULT_ALLOWED",
-      /*profile_user_name*/ "test-user@chromium.org",
-      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateAuditRuleResponse());
+  validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   lookup_service_.SetShouldHaveMatchedRule(true);
   lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
@@ -550,13 +567,13 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_GetDataProtectionSettings) {
+       SkipSpecialURLs_ApplyDataProtectionSettings) {
   SetContents(CreateTestWebContents());
 
   for (const auto* url : kSkippedUrls) {
     NavigateAndCommit(GURL(url));
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     ASSERT_EQ(future.Get(), UrlSettings());
@@ -586,7 +603,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
   {
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -604,7 +621,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   simulator->Commit();
   {
     base::test::TestFuture<const UrlSettings&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
     EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -612,7 +629,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   }
 }
 
-TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
+TEST_F(DataProtectionNavigationObserverTest, ApplyDataProtectionSettings) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -622,7 +639,7 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -637,7 +654,7 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_NoUrlCheck) {
+       ApplyDataProtectionSettings_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -651,7 +668,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_TRUE(future.Get().watermark_text.empty());
@@ -667,7 +684,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -685,7 +702,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_NE(future.Get().watermark_text.find("custom_message"),
@@ -700,7 +717,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -720,7 +737,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   NavigateAndCommit(GURL("https://example.com"));
 
   base::test::TestFuture<const UrlSettings&> future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       future.GetCallback());
   EXPECT_TRUE(future.Get().watermark_text.empty());
@@ -734,7 +751,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_Redirect) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_Redirect) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
@@ -790,7 +807,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   // The result of the above should be that
   // screenshots are not allowed.
   base::test::TestFuture<const UrlSettings&> get_settings_future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       get_settings_future.GetCallback());
   EXPECT_FALSE(get_settings_future.Get().allow_screenshots);
@@ -803,7 +820,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       GetDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
+       ApplyDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
   profile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
@@ -843,7 +860,7 @@ TEST_F(DataProtectionNavigationObserverTest,
   // The result of the above should be that
   // screenshots are not allowed.
   base::test::TestFuture<const UrlSettings&> get_settings_future;
-  DataProtectionNavigationObserver::GetDataProtectionSettings(
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
       get_settings_future.GetCallback());
   EXPECT_FALSE(get_settings_future.Get().allow_screenshots);

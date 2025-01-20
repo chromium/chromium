@@ -159,9 +159,9 @@ class LocationBarModelTest : public BrowserWithTestWindowTest {
   void NavigateAndCheckElided(const GURL& https_url);
 };
 
-LocationBarModelTest::LocationBarModelTest() {}
+LocationBarModelTest::LocationBarModelTest() = default;
 
-LocationBarModelTest::~LocationBarModelTest() {}
+LocationBarModelTest::~LocationBarModelTest() = default;
 
 void LocationBarModelTest::SetUp() {
   BrowserWithTestWindowTest::SetUp();

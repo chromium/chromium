@@ -17,7 +17,7 @@ OfflinePageBookmarkObserver::OfflinePageBookmarkObserver(
     content::BrowserContext* context)
     : context_(context), offline_page_model_(nullptr) {}
 
-OfflinePageBookmarkObserver::~OfflinePageBookmarkObserver() {}
+OfflinePageBookmarkObserver::~OfflinePageBookmarkObserver() = default;
 
 void OfflinePageBookmarkObserver::BookmarkModelChanged() {}
 

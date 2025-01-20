@@ -37,12 +37,6 @@ tab-search-item {
   gap: 6px;
 }
 
-#headerText {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 #scrollable {
   --external-margin: 20px;
   --scrollbar-width: 4px;
@@ -73,6 +67,11 @@ tab-search-item {
   align-self: flex-end;
 }
 
+:host([dedupe-enabled]) .card {
+  background-color: var(--color-tab-search-card-background);
+  border-radius: 8px;
+}
+
 .empty-content {
   display: flex;
   flex-direction: column;
@@ -93,6 +92,17 @@ tab-search-item {
   line-height: 20px;
 }
 
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:host([dedupe-enabled]) .header-text {
+  padding: 12px 16px 0 16px;
+  gap: 0;
+}
+
 .mwb-list-item:focus {
   background-color: var(--mwb-list-item-selected-background-color);
 }
@@ -102,6 +112,10 @@ tab-search-item {
   background-color: transparent;
 }
 
+:host([dedupe-enabled]) .mwb-list-item {
+  --mwb-item-height: 32px;
+}
+
 .subheading {
   color: var(--cr-secondary-text-color);
   font-size: 12px;
@@ -109,7 +123,7 @@ tab-search-item {
   line-height: 16px;
 }
 
-.tabList {
+.tab-list {
   background-color: var(--color-tab-search-card-background);
   border-radius: 8px;
   display: flex;

@@ -488,8 +488,9 @@ class AssistantOptInFlowBaseTest : public OobeBaseTest {
 class AssistantOptInFlowTest : public AssistantOptInFlowBaseTest {
  public:
   AssistantOptInFlowTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kOobeSkipAssistant);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {ash::features::kOobeSkipAssistant,
+             ash::assistant::features::kEnableNewEntryPoint});
   }
   ~AssistantOptInFlowTest() override = default;
 };

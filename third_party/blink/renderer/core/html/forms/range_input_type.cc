@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -103,7 +102,7 @@ void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
   if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
     if (RuntimeEnabledFeatures::
             NonStandardAppearanceValueSliderVerticalEnabled() &&
-        style->EffectiveAppearance() == kSliderVerticalPart) {
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
       UseCounter::Count(GetElement().GetDocument(),
                         WebFeature::kInputTypeRangeVerticalAppearance);
     } else {
@@ -226,7 +225,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
     if (RuntimeEnabledFeatures::
             NonStandardAppearanceValueSliderVerticalEnabled() &&
         writing_direction.IsHorizontal() &&
-        style->EffectiveAppearance() == kSliderVerticalPart) {
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
       writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
     }
   }
@@ -333,8 +332,8 @@ void RangeInputType::DidSetValue(const String&, bool value_changed) {
     GetElement().UpdateView();
 }
 
-ControlPart RangeInputType::AutoAppearance() const {
-  return kSliderHorizontalPart;
+AppearanceValue RangeInputType::AutoAppearance() const {
+  return AppearanceValue::kSliderHorizontal;
 }
 
 void RangeInputType::UpdateView() {
@@ -355,6 +354,11 @@ void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
     return;
   AddWarningToConsole(
       "The specified value %s cannot be parsed, or is out of range.", value);
+}
+
+String RangeInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL,
+                                 LocalizeValue(Serialize(value)));
 }
 
 String RangeInputType::RangeOverflowText(const Decimal& maximum) const {

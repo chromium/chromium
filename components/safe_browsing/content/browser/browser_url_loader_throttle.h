@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,7 +79,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
-      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -117,7 +119,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
-      base::WeakPtr<AsyncCheckTracker> async_check_tracker);
+      base::WeakPtr<AsyncCheckTracker> async_check_tracker,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   void OnSkipCheckCompleteOnOriginalUrl(
       const net::HttpRequestHeaders& headers,
@@ -220,6 +223,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // check. These checkers are null until |WillStartRequest| is called.
   std::unique_ptr<UrlCheckerHolder> sync_sb_checker_;
   std::unique_ptr<UrlCheckerHolder> async_sb_checker_;
+
+  // The Android app that launched Chrome.
+  std::optional<internal::ReferringAppInfo> referring_app_info_;
 
   base::OnceClosure on_sync_sb_checker_created_callback_for_testing_;
   base::OnceClosure on_async_sb_checker_created_callback_for_testing_;

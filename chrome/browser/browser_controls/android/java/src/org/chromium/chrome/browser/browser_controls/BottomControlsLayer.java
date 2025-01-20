@@ -46,6 +46,9 @@ public interface BottomControlsLayer {
         return 0;
     }
 
+    /** Remove the OffsetTag so that viz will not apply the renderer's offset to this layer. */
+    default void clearOffsetTag() {}
+
     /**
      * Interface method to receive browser controls update. The goal is each layer will know exactly
      * where it is positioned in the browser controls system by using the given |layerYOffset|.
@@ -112,5 +115,5 @@ public interface BottomControlsLayer {
      * @param layerYOffset The yOffset for the layer's position in the bottom controls
      * @see BrowserControlsStateProvider.Observer#onControlsOffsetChanged
      */
-    default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
+    default void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {}
 }

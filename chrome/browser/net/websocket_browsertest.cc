@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -81,19 +82,11 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     // Set SSL configuration for the secure WebSocket server.
     wss_server_.SetSSLConfig(cert);
 
-    // Set up the file path for serving test files.
-    base::FilePath src_dir;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
-
-    // Serve WebSocket test data directory for both HTTP and HTTPS servers.
-    const base::FilePath websocket_data =
-        src_dir.AppendASCII("net").AppendASCII("data").AppendASCII("websocket");
-    ws_server_.ServeFilesFromDirectory(websocket_data);
-    wss_server_.ServeFilesFromDirectory(websocket_data);
-
     // Install default WebSocket handlers for both HTTP and HTTPS servers.
-    net::test_server::InstallDefaultWebSocketHandlers(ws_server_);
-    net::test_server::InstallDefaultWebSocketHandlers(wss_server_);
+    net::test_server::InstallDefaultWebSocketHandlers(
+        &ws_server_, /*serve_websocket_test_data=*/true);
+    net::test_server::InstallDefaultWebSocketHandlers(
+        &wss_server_, /*serve_websocket_test_data=*/true);
   }
 
   WebSocketBrowserTest(const WebSocketBrowserTest&) = delete;
@@ -165,12 +158,12 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies,
         net::StorageAccessApiStatus::kNone, isolation_info,
-        std::move(additional_headers), process->GetID(), origin,
+        std::move(additional_headers), process->GetDeprecatedID(), origin,
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(handshake_client),
         process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
-            process->GetID(), frame->GetRoutingID()),
+            process->GetDeprecatedID(), frame->GetRoutingID()),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
         /*throttling_profile_id=*/std::nullopt);
@@ -239,6 +232,19 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
   }
 
   virtual net::EmbeddedTestServer& server() = 0;
+};
+
+// Websocket upgrades can't happen when only top-level navigations are
+// upgraded, so disable the feature for these tests.
+class WebSocketBrowserTestWebSocketHSTS : public WebSocketBrowserTest {
+ public:
+  WebSocketBrowserTestWebSocketHSTS() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kHstsTopLevelNavigationsOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Concrete impl for tests that use connect_to.html over HTTP.
@@ -430,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWebSocketHSTS,
+                       WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -443,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
   wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   wss_server.ServeFilesFromSourceDirectory(
       net::GetWebSocketTestDataDirectory());
-  net::test_server::InstallDefaultWebSocketHandlers(wss_server);
+  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
 
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(http_server.Start());

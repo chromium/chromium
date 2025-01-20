@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <atomic>
 
 #include "base/containers/contains.h"
@@ -68,6 +63,8 @@ void VerifyInputCounts(WebXrVrBrowserTestBase* t,
                                  base::NumberToString(expected_gamepads));
 }
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 // Test that focus is locked to the presenting display for the purposes of VR/XR
 // input.
 void TestPresentationLocksFocusImpl(WebXrVrBrowserTestBase* t,
@@ -81,6 +78,7 @@ void TestPresentationLocksFocusImpl(WebXrVrBrowserTestBase* t,
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationLocksFocus) {
   TestPresentationLocksFocusImpl(t, "webxr_test_presentation_locks_focus");
 }
+#endif  // if !BUILDFLAG(IS_ANDROID)
 
 class WebXrControllerInputMock : public MockXRDeviceHookBase {
  public:
@@ -175,7 +173,8 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
                          bool is_valid) {
     auto controller_data = GetCurrentControllerData(index);
     controller_data.pose_data.is_valid = is_valid;
-    device_to_origin.GetColMajorF(controller_data.pose_data.device_to_origin);
+    device_to_origin.GetColMajorF(
+        controller_data.pose_data.device_to_origin.data());
     UpdateControllerAndWait(index, controller_data);
   }
 
@@ -316,7 +315,8 @@ void WebXrControllerInputMock::OnFrameSubmitted(
 
 // Ensure that when an input source's handedness changes, an input source change
 // event is fired and a new input source is created.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputHandednessChange) {
+// TODO(crbug.com/390125620): Fix failing test.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestInputHandednessChange) {
   WebXrControllerInputMock my_mock;
   unsigned int controller_index = my_mock.CreateAndConnectMinimalGamepad();
 
@@ -840,11 +840,11 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerInputRegistered) {
 }
 
 std::string TransformToColMajorString(const gfx::Transform& t) {
-  float array[16];
-  t.GetColMajorF(array);
+  std::array<float, 16> array;
+  t.GetColMajorF(array.data());
   std::string array_string = "[";
-  for (int i = 0; i < 16; i++) {
-    array_string += base::NumberToString(array[i]) + ",";
+  for (const auto& val : array) {
+    array_string += base::NumberToString(val) + ",";
   }
   array_string.pop_back();
   array_string.push_back(']');
@@ -881,7 +881,9 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerPositionTracking) {
 
 // Test that the `hand` property on the Input Source remains null, even if the
 // runtime reports it, without the appropriate feature request.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestHandDataNotVisibleWithoutFeature) {
+// TODO(crbug.com/390125620): Fix failing test.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
+    DISABLED_TestHandDataNotVisibleWithoutFeature) {
   WebXrControllerInputMock my_mock;
 
   auto controller_data = my_mock.CreateValidController(

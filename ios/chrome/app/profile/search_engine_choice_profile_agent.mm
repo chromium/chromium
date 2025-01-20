@@ -8,10 +8,12 @@
 
 #import "base/check.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -19,8 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 namespace {
 
@@ -47,6 +48,8 @@ enum class SkipScreenDecision {
   NSString* _searchEngineChoiceSceneStateID;
   // Store whether the Search Engine Choice Screen should be skipped or not.
   SkipScreenDecision _skipScreenDecision;
+  // Used to force the device orientation in portrait mode on iPhone.
+  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
 
 #pragma mark - SceneObservingProfileAgent
@@ -77,6 +80,18 @@ enum class SkipScreenDecision {
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
+    willTransitionToInitStage:(ProfileInitStage)nextInitStage
+                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage != ProfileInitStage::kChoiceScreen) {
+    return;
+  }
+  if ([self shouldShowChoiceScreen]) {
+    AppState* appState = profileState.appState;
+    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+  }
+}
+
+- (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   if (nextInitStage == ProfileInitStage::kChoiceScreen) {
@@ -88,6 +103,7 @@ enum class SkipScreenDecision {
   }
 
   if (fromInitStage == ProfileInitStage::kChoiceScreen) {
+    _scopedForceOrientation.reset();
     [profileState removeAgent:self];
   }
 }
@@ -119,6 +135,25 @@ enum class SkipScreenDecision {
   return NO;
 }
 
+// Returns whether the choice screen should be presented or not. The return
+// value is cached to ensure stability.
+- (BOOL)shouldShowChoiceScreen {
+  DCHECK(self.profileState.profile);
+  ProfileIOS* profile = self.profileState.profile;
+
+  if (_skipScreenDecision == SkipScreenDecision::kUnknown) {
+    if (ShouldDisplaySearchEngineChoiceScreen(
+            *profile, /*is_first_run_entrypoint=*/false,
+            [self startupHadExternalIntent])) {
+      _skipScreenDecision = SkipScreenDecision::kPresent;
+    } else {
+      _skipScreenDecision = SkipScreenDecision::kSkip;
+    }
+  }
+
+  return _skipScreenDecision == SkipScreenDecision::kPresent;
+}
+
 // Tries to present the choice screen on `sceneState`. If the screen is not
 // presented for any reason, then advance the application init state.
 - (void)maybeShowChoiceScreen:(SceneState*)sceneState {
@@ -136,40 +171,21 @@ enum class SkipScreenDecision {
   DCHECK(!_searchEngineChoiceUIBlocker);
   DCHECK(!_searchEngineChoiceSceneStateID);
 
-  id<BrowserProvider> browserProvider =
-      sceneState.browserProviderInterface.currentBrowserProvider;
-
-  // If the decision to skip the Search Engine Choice Screen has not been
-  // made yet, evaluate the conditions, and then store the decision result.
-  if (_skipScreenDecision == SkipScreenDecision::kUnknown) {
-    DCHECK(browserProvider.browser);
-    DCHECK(browserProvider.browser->GetProfile());
-
+  if (![self shouldShowChoiceScreen]) {
     // If there is no need to present the screen, then transition to the next
     // application stage (otherwise the transition will happen once the user
     // has selected a default search engine and completed the workflow). In
     // that case, the method won't be called again.
-    if (!ShouldDisplaySearchEngineChoiceScreen(
-            *browserProvider.browser->GetProfile(),
-            /*is_first_run_entrypoint=*/false,
-            [self startupHadExternalIntent])) {
-      _skipScreenDecision = SkipScreenDecision::kSkip;
-      [self.profileState queueTransitionToNextInitStage];
-      return;
-    }
-
-    _skipScreenDecision = SkipScreenDecision::kPresent;
+    [self.profileState queueTransitionToNextInitStage];
+    return;
   }
-
-  // This point can be reached multiple time if the decision has been taken to
-  // present the screen, then the SceneState used for presentation is closed. In
-  // that case, the previous decision must have been to present (otherwise the
-  // app would have moved to the next ProfileInitStage). Assert it is the case.
-  DCHECK_EQ(_skipScreenDecision, SkipScreenDecision::kPresent);
 
   // Present the screen.
   _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
   _searchEngineChoiceUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+
+  id<BrowserProvider> browserProvider =
+      sceneState.browserProviderInterface.currentBrowserProvider;
 
   _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
       initWithBaseViewController:browserProvider.viewController

@@ -53,8 +53,8 @@ import java.util.Comparator;
     }
 
     /**
-     * The ranking score is calculated according to use count and last use date. The formula is
-     * the same as the one used in GetRankingScore in autofill_data_model.cc.
+     * The ranking score is calculated according to use count and last use date. The formula is the
+     * same as the one used in GetRankingScore in usage_history_information.cc.
      */
     private static double getRankingScore(int count, long date) {
         long currentTime = System.currentTimeMillis();

@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Log;
-import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 
@@ -796,16 +794,6 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         } else {
             return -1;
         }
-    }
-
-    /** Wraps {@link Calendar#getInstance()} in an {@link AsyncTask} to avoid Strict mode violation. */
-    private static AsyncTask<Calendar> createCalendar() {
-        return new BackgroundOnlyAsyncTask<Calendar>() {
-            @Override
-            protected Calendar doInBackground() {
-                return Calendar.getInstance();
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /** Calculates the {@link Date} for midnight of the date represented by the |timestamp|. */

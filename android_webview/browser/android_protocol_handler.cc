@@ -57,42 +57,40 @@ bool GetInputStreamMimeType(JNIEnv* env,
                             std::string* mime_type) {
   // Query the mime type from the Java side. It is possible for the query to
   // fail, as the mime type cannot be determined for all supported schemes.
-  ScopedJavaLocalRef<jstring> returned_type =
+  std::string returned_type =
       android_webview::Java_AndroidProtocolHandler_getMimeType(
           env, stream->jobj(), url::GURLAndroid::FromNativeGURL(env, url));
-  if (!returned_type)
+  if (returned_type.empty()) {
     return false;
+  }
 
-  *mime_type = base::android::ConvertJavaStringToUTF8(returned_type);
+  *mime_type = returned_type;
   return true;
 }
 
-static ScopedJavaLocalRef<jstring>
-JNI_AndroidProtocolHandler_GetAndroidAssetPath(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, android_webview::kAndroidAssetPath);
+static std::string JNI_AndroidProtocolHandler_GetAndroidAssetPath(JNIEnv* env) {
+  return android_webview::kAndroidAssetPath;
 }
 
-static ScopedJavaLocalRef<jstring>
-JNI_AndroidProtocolHandler_GetAndroidResourcePath(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, android_webview::kAndroidResourcePath);
+static std::string JNI_AndroidProtocolHandler_GetAndroidResourcePath(
+    JNIEnv* env) {
+  return android_webview::kAndroidResourcePath;
 }
 
-// returns the mime type, or returns null if a mime type was not found.
-static ScopedJavaLocalRef<jstring>
-JNI_AndroidProtocolHandler_GetWellKnownMimeType(
+// Returns the mime type, or returns empty string if a mime type was not found.
+static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_path) {
+    std::string& path) {
   std::string mime_type;
 
-  std::string path = base::android::ConvertJavaStringToUTF8(j_path);
   std::string ext = base::FilePath(path).Extension();
 
   if (!ext.empty() &&
       net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
-    return ConvertUTF8ToJavaString(env, mime_type);
+    return mime_type;
   }
 
-  return nullptr;
+  return "";
 }
 
 }  // namespace android_webview

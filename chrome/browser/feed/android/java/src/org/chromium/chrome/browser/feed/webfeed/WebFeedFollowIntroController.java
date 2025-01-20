@@ -18,9 +18,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.FeedServiceBridge;
-import org.chromium.chrome.browser.feed.StreamKind;
-import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,14 +29,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -92,7 +87,6 @@ public class WebFeedFollowIntroController {
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private final Tracker mFeatureEngagementTracker;
-    private final WebFeedSnackbarController mWebFeedSnackbarController;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final WebFeedRecommendationFollowAcceleratorController
@@ -106,7 +100,6 @@ public class WebFeedFollowIntroController {
     private static class RecommendedWebFeedInfo {
         public byte[] webFeedId;
         public GURL url;
-        public String title;
     }
 
     /**
@@ -147,9 +140,6 @@ public class WebFeedFollowIntroController {
         mProfile = profile;
         mTabSupplier = tabSupplier;
         mFeatureEngagementTracker = TrackerFactory.getTrackerForProfile(profile);
-        mWebFeedSnackbarController =
-                new WebFeedSnackbarController(
-                        activity, feedLauncher, dialogManager, snackbarManager);
         mWebFeedFollowIntroView =
                 new WebFeedFollowIntroView(
                         mActivity,
@@ -266,48 +256,6 @@ public class WebFeedFollowIntroController {
         UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, new Handler());
         mWebFeedFollowIntroView.showIph(
                 helper, () -> introWasShown(recommendedInfo), this::introWasNotShown);
-    }
-
-    private void performFollowWithAccelerator(RecommendedWebFeedInfo recommendedInfo) {
-        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            mFeatureEngagementTracker.notifyEvent(EventConstants.WEB_FEED_FOLLOW_INTRO_CLICKED);
-        }
-
-        mWebFeedFollowIntroView.showLoadingUi();
-        Tab currentTab = mTabSupplier.get();
-        FeedServiceBridge.reportOtherUserAction(
-                StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
-        GURL url = currentTab.getUrl();
-        WebFeedBridge.followFromUrl(
-                currentTab,
-                url,
-                WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR,
-                results ->
-                        mWebFeedFollowIntroView.hideLoadingUi(
-                                new LoadingView.Observer() {
-                                    @Override
-                                    public void onShowLoadingUiComplete() {}
-
-                                    @Override
-                                    public void onHideLoadingUiComplete() {
-                                        mWebFeedFollowIntroView.dismissBubble();
-                                        if (results.requestStatus
-                                                == WebFeedSubscriptionRequestStatus.SUCCESS) {
-                                            mWebFeedFollowIntroView.showFollowingBubble();
-                                        }
-                                        byte[] followId =
-                                                results.metadata != null
-                                                        ? results.metadata.id
-                                                        : null;
-                                        mWebFeedSnackbarController.showPostFollowHelp(
-                                                currentTab,
-                                                results,
-                                                followId,
-                                                url,
-                                                recommendedInfo.title,
-                                                WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR);
-                                    }
-                                }));
     }
 
     /**
@@ -479,7 +427,6 @@ public class WebFeedFollowIntroController {
                                         == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
                             RecommendedWebFeedInfo recommendedInfo = new RecommendedWebFeedInfo();
                             recommendedInfo.webFeedId = result.id;
-                            recommendedInfo.title = result.title;
                             recommendedInfo.url = request.url;
 
                             sendResult(request, recommendedInfo);

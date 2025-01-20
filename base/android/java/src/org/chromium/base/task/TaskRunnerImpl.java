@@ -4,15 +4,17 @@
 
 package org.chromium.base.task;
 
-import android.util.Pair;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.util.Pair;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -29,6 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
  * Implementation of the abstract class {@link TaskRunnerImpl}. Uses AsyncTasks until native APIs
  * are available.
  */
+@NullMarked
 @JNINamespace("base")
 public class TaskRunnerImpl implements TaskRunner {
 
@@ -56,21 +59,20 @@ public class TaskRunnerImpl implements TaskRunner {
     @GuardedBy("mPreNativeTaskLock")
     private boolean mDidOneTimeInitialization;
 
-    @Nullable
     @GuardedBy("mPreNativeTaskLock")
-    private Queue<Runnable> mPreNativeTasks;
+    private @Nullable Queue<Runnable> mPreNativeTasks;
 
-    @Nullable
     @GuardedBy("mPreNativeTaskLock")
-    private List<Pair<Runnable, Long>> mPreNativeDelayedTasks;
+    private @Nullable List<Pair<Runnable, Long>> mPreNativeDelayedTasks;
 
     int clearTaskQueueForTesting() {
         int taskCount = 0;
         synchronized (mPreNativeTaskLock) {
             if (mPreNativeTasks != null) {
-                taskCount = mPreNativeTasks.size() + mPreNativeDelayedTasks.size();
+                var preNativeDelayedTasks = assumeNonNull(mPreNativeDelayedTasks);
+                taskCount = mPreNativeTasks.size() + preNativeDelayedTasks.size();
                 mPreNativeTasks.clear();
-                mPreNativeDelayedTasks.clear();
+                preNativeDelayedTasks.clear();
             }
         }
         return taskCount;
@@ -171,11 +173,11 @@ public class TaskRunnerImpl implements TaskRunner {
             // pre-native task runner. Tasks scheduled to run with a delay will
             // wait until the native task runner is initialised.
             if (delay == 0) {
-                mPreNativeTasks.add(task);
+                assumeNonNull(mPreNativeTasks).add(task);
                 schedulePreNativeTask();
             } else if (!schedulePreNativeDelayedTask(task, delay)) {
                 Pair<Runnable, Long> preNativeDelayedTask = new Pair<>(task, delay);
-                mPreNativeDelayedTasks.add(preNativeDelayedTask);
+                assumeNonNull(mPreNativeDelayedTasks).add(preNativeDelayedTask);
             }
         }
     }

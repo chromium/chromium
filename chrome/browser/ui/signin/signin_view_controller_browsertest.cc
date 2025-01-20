@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
@@ -30,6 +31,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -56,7 +58,9 @@ constexpr char kConfirmationUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
 constexpr char kConfirmationUnsyncedReauthHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
-constexpr std::string_view kTestExtensionName = "Test extension";
+constexpr char kConfirmationSupervisedProfileHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.SupervisedProfile";
+constexpr char16_t kTestExtensionName[] = u"Test extension";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
@@ -75,6 +79,9 @@ void VerifySignoutPromptHistogram(
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
       histogram_name = kConfirmationUnsyncedReauthHistogramName;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+      histogram_name = kConfirmationSupervisedProfileHistogramName;
       break;
   }
 
@@ -117,7 +124,9 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     return confirmation_prompt->widget_delegate()->AsDialogDelegate();
   }
 
-  bool IsSigninTab(content::WebContents* tab) const {
+  bool IsSigninTab(
+      content::WebContents* tab,
+      signin_metrics::AccessPoint access_point = kTestAccessPoint) const {
     DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(tab);
     if (!dice_tab_helper) {
       return false;
@@ -127,7 +136,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
       ADD_FAILURE();
       return false;
     }
-    if (dice_tab_helper->signin_access_point() != kTestAccessPoint) {
+    if (dice_tab_helper->signin_access_point() != access_point) {
       ADD_FAILURE();
       return false;
     }
@@ -382,6 +391,40 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
+  // Setup a primary account for a supervised user.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Trigger the Chrome signout action.
+  views::DialogDelegate* dialog_delegate =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(dialog_delegate);
+
+  // Click "Sign Out Anyway".
+  base::HistogramTester histogram_tester;
+  dialog_delegate->AcceptDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester,
+      ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls,
+      ChromeSignoutConfirmationChoice::kSignout);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        ShowChromeSigninDialogForExtensionsPromptReuseOpenTab) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   ASSERT_TRUE(SigninViewController::IsNTPTab(
@@ -519,6 +562,29 @@ IN_PROC_BROWSER_TEST_F(
   browser()->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
       kTestExtensionName, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       UpdateAccessPointOfSignInTab) {
+  // Request a sign in tab, which will open a new tab.
+  browser()->signin_view_controller()->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, std::string());
+  EXPECT_TRUE(
+      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                  signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
+
+  // Request a sign in tab with a different access point, which will update the
+  // existing sign in tab's access point.
+  browser()->signin_view_controller()->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, std::string());
+  EXPECT_TRUE(
+      IsSigninTab(browser()->tab_strip_model()->GetActiveWebContents(),
+                  signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+
+  EXPECT_TRUE(signin_ui_util::GetSignInTabWithAccessPoint(
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE));
+  EXPECT_FALSE(signin_ui_util::GetSignInTabWithAccessPoint(
+      browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,

@@ -16,8 +16,7 @@ struct DataSet
 
 HANDLE PASCAL RAROpenArchive(struct RAROpenArchiveData *r)
 {
-  RAROpenArchiveDataEx rx;
-  memset(&rx,0,sizeof(rx));
+  RAROpenArchiveDataEx rx{};
   rx.ArcName=r->ArcName;
   rx.OpenMode=r->OpenMode;
   rx.CmtBuf=r->CmtBuf;
@@ -32,7 +31,7 @@ HANDLE PASCAL RAROpenArchive(struct RAROpenArchiveData *r)
 
 HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
 {
-  DataSet *Data=NULL;
+  DataSet *Data=nullptr;
   try
   {
     ErrHandler.Clean();
@@ -74,7 +73,7 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     {
       r->OpenResult=ERAR_EOPEN;
       delete Data;
-      return NULL;
+      return nullptr;
     }
     if (!Data->Arc.IsArchive(true))
     {
@@ -89,7 +88,7 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
           r->OpenResult=ERAR_BAD_ARCHIVE;
       }
       delete Data;
-      return NULL;
+      return nullptr;
     }
     r->Flags=0;
     
@@ -115,7 +114,7 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     std::wstring CmtDataW;
     if (r->CmtBufSize!=0 && Data->Arc.GetComment(CmtDataW))
     {
-      if (r->CmtBufW!=NULL)
+      if (r->CmtBufW!=nullptr)
       {
 //        CmtDataW.push_back(0);
         size_t Size=wcslen(CmtDataW.data())+1;
@@ -140,6 +139,18 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     }
     else
       r->CmtState=r->CmtSize=0;
+
+#ifdef PROPAGATE_MOTW
+    if (r->MarkOfTheWeb!=nullptr)
+    {
+      Data->Cmd.MotwAllFields=r->MarkOfTheWeb[0]=='1';
+      const wchar *Sep=wcschr(r->MarkOfTheWeb,'=');
+      if (r->MarkOfTheWeb[0]=='-')
+        Data->Cmd.MotwList.Reset();
+      else
+        Data->Cmd.GetBriefMaskList(Sep==nullptr ? L"*":Sep+1,Data->Cmd.MotwList);
+    }
+#endif
 
     Data->Extract.ExtractArchiveInit(Data->Arc);
     return (HANDLE)Data;
@@ -494,6 +505,8 @@ static int RarErrorToDll(RAR_EXIT ErrCode)
       return ERAR_BAD_PASSWORD;
     case RARX_SUCCESS:
       return ERAR_SUCCESS; // 0.
+    case RARX_BADARC:
+      return ERAR_BAD_ARCHIVE;
     default:
       return ERAR_UNKNOWN;
   }

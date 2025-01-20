@@ -27,14 +27,6 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback) {
-        Callback.runNullSafe(
-                callback,
-                new DataSharingService.GroupsDataSetOrFailureOutcome(
-                        null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
-    }
-
-    @Override
     public void readGroup(String groupId, Callback<GroupDataOrFailureOutcome> callback) {
         Callback.runNullSafe(
                 callback,
@@ -48,6 +40,11 @@ public class TestDataSharingService implements DataSharingService {
                 callback,
                 new DataSharingService.GroupDataOrFailureOutcome(
                         null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
+    }
+
+    @Override
+    public void leaveGroup(String groupId, Callback<Integer> callback) {
+        Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
     }
 
     @Override

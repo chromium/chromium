@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AudioAndCaptionsPageBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, DevicePageBrowserProxyImpl, Router, routes, SettingsAudioElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AudioAndCaptionsPageBrowserProxyImpl, SettingsAudioElement} from 'chrome://os-settings/lazy_load.js';
+import {CrToggleElement, DevicePageBrowserProxyImpl, Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

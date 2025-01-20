@@ -4,6 +4,7 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
@@ -12,6 +13,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +29,7 @@ constexpr char kDummyReader2[] = "dummy reader 2";
 
 class FakeOneTimePermissionsTracker : public OneTimePermissionsTracker {
  public:
+  using OneTimePermissionsTracker::NotifyBackgroundTimerExpired;
   using OneTimePermissionsTracker::NotifyLastPageFromOriginClosed;
 };
 
@@ -111,6 +115,13 @@ class SmartCardPermissionContextTest : public testing::Test {
                                        base::Unretained(this)));
   }
 
+  void TearDown() override {
+    profile_.GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedSmartCardConnectAllowedForUrls, base::Value::List());
+    profile_.GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedSmartCardConnectBlockedForUrls, base::Value::List());
+  }
+
   bool HasReaderPermission(SmartCardPermissionContext& context,
                            const url::Origin& origin,
                            const std::string& reader_name) {
@@ -127,6 +138,18 @@ class SmartCardPermissionContextTest : public testing::Test {
                                        const url::Origin& origin,
                                        const std::string& reader_name) {
     return context.GrantPersistentReaderPermission(origin, reader_name);
+  }
+
+  void SetAllowlistedByPolicy(const url::Origin& origin) {
+    profile_.GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedSmartCardConnectAllowedForUrls,
+        base::Value::List().Append(origin.Serialize()));
+  }
+
+  void SetBlocklistedByPolicy(const url::Origin& origin) {
+    profile_.GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedSmartCardConnectBlockedForUrls,
+        base::Value::List().Append(origin.Serialize()));
   }
 
   std::unique_ptr<KeyedService> CreateFakeSmartCardReaderTracker(
@@ -153,18 +176,18 @@ TEST_F(SmartCardPermissionContextTest, GrantEphemeralReaderPermission) {
 
   reader_tracker.AddReaderWithCard(kDummyReader);
 
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_FALSE(reader_tracker.HasObservers());
 
-  GrantEphemeralReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_TRUE(reader_tracker.HasObservers());
 }
 
@@ -174,21 +197,21 @@ TEST_F(SmartCardPermissionContextTest,
       SmartCardReaderTrackerFactory::GetForProfile(profile_));
   reader_tracker.AddReaderWithCard(kDummyReader);
 
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantEphemeralReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
-  ASSERT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   ASSERT_TRUE(reader_tracker.HasObservers());
 
   reader_tracker.RemoveCard(kDummyReader);
 
   // The ephemeral permission should have been revoked.
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_FALSE(reader_tracker.HasObservers());
 }
 
@@ -198,21 +221,21 @@ TEST_F(SmartCardPermissionContextTest,
       SmartCardReaderTrackerFactory::GetForProfile(profile_));
   reader_tracker.AddReaderWithCard(kDummyReader);
 
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantEphemeralReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
-  ASSERT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   ASSERT_TRUE(reader_tracker.HasObservers());
 
   reader_tracker.RemoveReader(kDummyReader);
 
   // The ephemeral permission should have been revoked.
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_FALSE(reader_tracker.HasObservers());
 }
 
@@ -220,152 +243,204 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissionWhenAppClosed) {
   auto* one_time_tracker = static_cast<FakeOneTimePermissionsTracker*>(
       OneTimePermissionsTrackerFactory::GetForBrowserContext(&profile_));
 
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantEphemeralReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
-  ASSERT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
-  one_time_tracker->NotifyLastPageFromOriginClosed(foo_origin);
+  one_time_tracker->NotifyLastPageFromOriginClosed(origin_1);
 
   // The ephemeral permission should have been revoked.
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+}
+
+TEST_F(SmartCardPermissionContextTest,
+       RevokeEphemeralPermissionWhenTooLongInTheBackground) {
+  auto* one_time_tracker = static_cast<FakeOneTimePermissionsTracker*>(
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(&profile_));
+
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  one_time_tracker->NotifyBackgroundTimerExpired(
+      origin_1,
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
+
+  // The ephemeral permission should have been revoked.
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 }
 
 // Covers callers of this method such as the PowerSuspendObserver.
 TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissions) {
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantEphemeralReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
 
-  ASSERT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   permission_context.RevokeEphemeralPermissions();
 
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 }
 
 TEST_F(SmartCardPermissionContextTest, Blocked) {
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
 
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(&profile_);
   settings_map->SetContentSettingDefaultScope(
-      foo_origin.GetURL(), GURL(), ContentSettingsType::SMART_CARD_GUARD,
+      origin_1.GetURL(), GURL(), ContentSettingsType::SMART_CARD_GUARD,
       ContentSetting::CONTENT_SETTING_BLOCK);
 
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   settings_map->SetContentSettingDefaultScope(
-      foo_origin.GetURL(), GURL(), ContentSettingsType::SMART_CARD_GUARD,
+      origin_1.GetURL(), GURL(), ContentSettingsType::SMART_CARD_GUARD,
       ContentSetting::CONTENT_SETTING_DEFAULT);
 
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
-  permission_context.RevokeObjectPermissions(foo_origin);
+  permission_context.RevokeObjectPermissions(origin_1);
 }
 
-TEST_F(SmartCardPermissionContextTest, RevokeAllPermissions) {
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
-  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
-  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+TEST_F(SmartCardPermissionContextTest, AllowedByPolicy) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
-  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
-  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
-                                  kDummyReader2);
+  ASSERT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, bar_origin, kDummyReader));
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+  SetAllowlistedByPolicy(origin_1);
+
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+}
+
+TEST_F(SmartCardPermissionContextTest, BlockedByPolicy) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
+
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  SetBlocklistedByPolicy(origin_1);
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  permission_context.RevokeObjectPermissions(origin_1);
+}
+
+TEST_F(SmartCardPermissionContextTest, RevokeAllPermissions) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"));
+  auto origin_3 = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, origin_3, kDummyReader2);
+
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_3, kDummyReader2));
 
   permission_context.RevokeAllPermissions();
 
   // should reset permissions of all types
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_2, kDummyReader));
   EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, bar_origin, kDummyReader));
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+      HasReaderPermission(permission_context, origin_3, kDummyReader2));
 }
 
 TEST_F(SmartCardPermissionContextTest, RevokePersistentPermission) {
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
-  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
-  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"));
+  auto origin_3 = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
-  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
-  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
-                                  kDummyReader2);
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, origin_3, kDummyReader2);
 
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, bar_origin, kDummyReader));
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_3, kDummyReader2));
 
-  permission_context.RevokePersistentPermission(kDummyReader, foo_origin);
-  permission_context.RevokePersistentPermission(kDummyReader, bar_origin);
-  permission_context.RevokePersistentPermission(kDummyReader2, cthulhu_origin);
+  permission_context.RevokePersistentPermission(kDummyReader, origin_1);
+  permission_context.RevokePersistentPermission(kDummyReader, origin_2);
+  permission_context.RevokePersistentPermission(kDummyReader2, origin_3);
 
   // should reset permissions only of the persistent type
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
   EXPECT_FALSE(
-      HasReaderPermission(permission_context, foo_origin, kDummyReader));
-  EXPECT_TRUE(
-      HasReaderPermission(permission_context, bar_origin, kDummyReader));
-  EXPECT_FALSE(
-      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+      HasReaderPermission(permission_context, origin_3, kDummyReader2));
 
   permission_context.RevokeAllPermissions();
 }
 
 TEST_F(SmartCardPermissionContextTest, GetPersistentReaderGrants) {
-  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
-  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
-  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"));
+  auto origin_3 = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
 
   SmartCardPermissionContext permission_context(&profile_);
 
-  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
-  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
-  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
-                                  kDummyReader2);
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, origin_3, kDummyReader2);
 
   std::vector<SmartCardPermissionContext::ReaderGrants> grants =
       permission_context.GetPersistentReaderGrants();
 
   // should return only persistent grants
-  ASSERT_THAT(grants,
-              testing::ElementsAre(SmartCardPermissionContext::ReaderGrants(
-                                       kDummyReader, {foo_origin}),
-                                   SmartCardPermissionContext::ReaderGrants(
-                                       kDummyReader2, {cthulhu_origin})));
+  ASSERT_THAT(
+      grants,
+      testing::ElementsAre(
+          SmartCardPermissionContext::ReaderGrants(kDummyReader, {origin_1}),
+          SmartCardPermissionContext::ReaderGrants(kDummyReader2, {origin_3})));
 
   permission_context.RevokeAllPermissions();
 }

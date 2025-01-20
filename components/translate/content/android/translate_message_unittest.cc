@@ -15,6 +15,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/messages/android/message_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -897,8 +898,10 @@ TEST_F(TranslateMessageTest,
        ++i) {
     std::string language_code =
         ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
-    if (language_code == "en" || language_code == kUnknownLanguageCode)
+    if (language_code == "en" ||
+        language_code == language_detection::kUnknownLanguageCode) {
       continue;
+    }
     menu_items.emplace_back(SecondaryMenuItem{
         TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
         std::move(language_code)});
@@ -990,8 +993,10 @@ TEST_F(TranslateMessageTest,
        ++i) {
     std::string language_code =
         ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
-    if (language_code == "en" || language_code == kUnknownLanguageCode)
+    if (language_code == "en" ||
+        language_code == language_detection::kUnknownLanguageCode) {
       continue;
+    }
     menu_items.emplace_back(SecondaryMenuItem{
         TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
         std::move(language_code)});
@@ -1080,7 +1085,8 @@ TEST_F(TranslateMessageTest, OverflowMenuUnknownSourceLanguage) {
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
-  ShowBeforeTranslationMessage(env, kUnknownLanguageCode, "en");
+  ShowBeforeTranslationMessage(env, language_detection::kUnknownLanguageCode,
+                               "en");
 
   // Doesn't include the kToggleAlwaysTranslateLanguage option or the
   // kToggleNeverTranslateLanguage option.

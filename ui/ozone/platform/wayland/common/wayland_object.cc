@@ -8,7 +8,6 @@
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
-#include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
@@ -27,12 +26,9 @@
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
 #include <single-pixel-buffer-v1-client-protocol.h>
-#include <stylus-unstable-v2-client-protocol.h>
-#include <surface-augmenter-client-protocol.h>
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v3-client-protocol.h>
-#include <touchpad-haptics-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-cursor.h>
@@ -157,8 +153,6 @@ void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
   IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(TYPE, TYPE##_destroy)
 
 // For convenience, keep aphabetical order in this list.
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(augmented_surface)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(augmented_sub_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
@@ -169,7 +163,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle_timeout)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritizer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(overlay_prioritized_surface)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(surface_augmenter)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_buffer)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_callback)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_compositor)
@@ -215,7 +208,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_surface_v1)
@@ -227,11 +219,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_source_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_offer_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_text_input_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_pointer_stylus_v2)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_touch_stylus_v2)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_stylus_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_text_input_extension_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_touchpad_haptics_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)

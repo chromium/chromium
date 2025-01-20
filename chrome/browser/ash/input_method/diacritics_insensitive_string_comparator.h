@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "third_party/icu/source/i18n/unicode/translit.h"
+#include "base/i18n/transliterator.h"
 
 namespace ash {
 namespace input_method {
@@ -25,7 +25,7 @@ class DiacriticsInsensitiveStringComparator {
   bool Equal(const std::u16string& a, const std::u16string& b) const;
 
  private:
-  std::unique_ptr<icu::Transliterator> diacritics_stripper_;
+  std::unique_ptr<base::i18n::Transliterator> diacritics_stripper_;
 };
 
 }  // namespace input_method

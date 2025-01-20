@@ -39,8 +39,9 @@ void InitializeLogging(const base::CommandLine& command_line) {
   base::win::ScopedHandle log_file_handle;
   if (uint32_t file_handle_value;
       source_process.IsValid() &&
-      base::StringToUint(command_line.GetSwitchValueASCII(switches::kLogFile),
-                         &file_handle_value) &&
+      base::StringToUint(
+          command_line.GetSwitchValueASCII(switches::kLogFileHandle),
+          &file_handle_value) &&
       file_handle_value) {
     HANDLE file_handle = base::win::Uint32ToHandle(file_handle_value);
     if (file_handle != INVALID_HANDLE_VALUE) {

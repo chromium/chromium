@@ -62,12 +62,6 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   SetCategory(Category::kApps);
 
   switch (app_type_) {
-    case apps::AppType::kBuiltIn:
-      set_id(app_id);
-      // TODO(crbug.com/40569217): Is this SetResultType call necessary?? Does
-      // anyone care about the kInternalApp vs kInstalledApp distinction?
-      SetResultType(ResultType::kInternalApp);
-      break;
     case apps::AppType::kChromeApp:
       // TODO(crbug.com/40569217): why do we pass the URL and not the app_id??
       // Can we replace this by the simpler "set_id(app_id)", and therefore
@@ -92,8 +86,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
   switch (app_type_) {
     case apps::AppType::kArc:
       return ash::PLAY_STORE_APP;
-    case apps::AppType::kBuiltIn:
-      return ash::INTERNAL_APP;
     case apps::AppType::kPluginVm:
       return ash::PLUGIN_VM_APP;
     case apps::AppType::kCrostini:
@@ -101,10 +93,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kChromeApp:
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return ash::EXTENSION_APP;
-    case apps::AppType::kStandaloneBrowser:
-      return ash::LACROS;
     case apps::AppType::kRemote:
       return ash::REMOTE_APP;
     case apps::AppType::kBorealis:
@@ -112,7 +101,6 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kBruschetta:
       return ash::BRUSCHETTA_APP;
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kUnknown:
       NOTREACHED();
   }
@@ -141,8 +129,6 @@ void AppServiceAppResult::Launch(int event_flags,
         if (update.AppType() == apps::AppType::kCrostini ||
             update.AppType() == apps::AppType::kWeb ||
             update.AppType() == apps::AppType::kSystemWeb ||
-            (update.AppType() == apps::AppType::kStandaloneBrowserChromeApp &&
-             !update.IsPlatformApp().value_or(true)) ||
             (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;

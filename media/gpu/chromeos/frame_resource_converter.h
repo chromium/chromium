@@ -5,9 +5,10 @@
 #ifndef MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_CONVERTER_H_
 #define MEDIA_GPU_CHROMEOS_FRAME_RESOURCE_CONVERTER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/generic_shared_memory_id.h"
 
 namespace base {
 class Location;
@@ -39,7 +40,7 @@ class FrameResourceConverter {
  public:
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
   using GetOriginalFrameCB = base::RepeatingCallback<FrameResource*(
-      gfx::GenericSharedMemoryId frame_id)>;
+      const base::UnguessableToken& tracking_token)>;
 
   FrameResourceConverter();
   // A |FrameResourceConverter| is not copyable or moveable.

@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
@@ -80,7 +81,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       const GURL& url,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override;
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) override;
 
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
@@ -89,6 +91,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
       SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info,
       const std::string& access_token);
 
   std::optional<std::string> GetDMTokenString() const override;

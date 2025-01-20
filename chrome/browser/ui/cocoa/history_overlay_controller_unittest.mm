@@ -18,9 +18,7 @@ class HistoryOverlayControllerTest : public CocoaTest {
     [[test_window() contentView] addSubview:test_view_];
   }
 
-  NSView* test_view() {
-    return test_view_;
-  }
+  NSView* test_view() { return test_view_; }
 
  private:
   NSView* __strong test_view_;

@@ -40,6 +40,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
 #include "net/base/network_handle.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
@@ -73,6 +74,7 @@ namespace web_pref {
 struct WebPreferences;
 }
 class WebInputEvent;
+struct Impression;
 struct UserAgentOverride;
 struct RendererPreferences;
 }  // namespace blink
@@ -691,11 +693,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void UpdateTitleForEntry(NavigationEntry* entry,
                                    const std::u16string& title) = 0;
 
-  // Returns app title of the current navigation entry. The apptitle is
-  // an alternative title text that can be used by app windows.
-  // See
+  // Returns application title of the current navigation entry. The application
+  // title is an alternative title text that can be used by app windows. See
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
-  virtual const std::optional<std::u16string>& GetAppTitle() = 0;
+  virtual const std::optional<std::u16string>& GetApplicationTitle() = 0;
 
   // Returns the SiteInstance associated with the current page.
   virtual SiteInstance* GetSiteInstance() = 0;
@@ -1032,7 +1033,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual void ReplaceMisspelling(const std::u16string& word) = 0;
 
   // Let the renderer know that the menu has been closed.
-  virtual void NotifyContextMenuClosed(const GURL& link_followed) = 0;
+  virtual void NotifyContextMenuClosed(
+      const GURL& link_followed,
+      const std::optional<blink::Impression>&) = 0;
 
   // Executes custom context menu action that was provided from Blink.
   virtual void ExecuteCustomContextMenuCommand(int action,
@@ -1323,7 +1326,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // This means if there's any value previously set through SetWebPreferences
   // which does not have special recomputation logic in either
   // WebContentsImpl::ComputeWebPreferences or
-  // ContentBrowserClient::OverrideWebkitPrefs, it will return back to its
+  // ContentBrowserClient::OverrideWebPreferences, it will return back to its
   // default value whenever this function is called.
   virtual void NotifyPreferencesChanged() = 0;
 
@@ -1336,7 +1339,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // be overridden. if there's any value previously set through
   // SetWebPreferences which does not have special recomputation logic in either
   // WebContentsImpl::ComputeWebPreferences or
-  // ContentBrowserClient::OverrideWebkitPrefs, it will return back to its
+  // ContentBrowserClient::OverrideWebPreferences, it will return back to its
   // default value, which might be different from the value we set it to here.
   // If you want to use this function outside of tests, consider adding
   // recomputation logic in either of those functions.
@@ -1580,7 +1583,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      net::HttpRequestHeaders additional_headers,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
@@ -1638,6 +1642,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // `kInvalidNetworkHandle` indicates that the current default network will
   // be bound.
   virtual net::handles::NetworkHandle GetTargetNetwork() = 0;
+
+  // Disconnect any outstanding `FileSelectListener` so that any calls will be
+  // no-op.
+  virtual void DisconnectFileSelectListenerIfAny() = 0;
 
  private:
   // This interface should only be implemented inside content.

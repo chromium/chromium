@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/codec_utils.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -42,8 +43,6 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -65,15 +64,13 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Got an invalid bitmap";
     return std::string();
   }
-  SkDynamicMemoryWStream stream;
-  if (!SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}) ||
-      !stream.bytesWritten()) {
+  sk_sp<SkData> png_data = skia::EncodePngAsSkData(bitmap.pixmap());
+  if (!png_data) {
     DLOG(WARNING) << "Thumbnail encoding error";
     return std::string();
   }
-  sk_sp<SkData> png_data = stream.detachAsData();
   return MakeThumbnailDataUrlOnThreadPool(
-      kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
+      kMimeTypeImagePng, base::span(png_data->bytes(), png_data->size()));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.

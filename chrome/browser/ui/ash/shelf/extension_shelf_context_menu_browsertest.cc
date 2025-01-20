@@ -23,12 +23,13 @@ class ExtensionShelfContextMenuBrowserTest
   ~ExtensionShelfContextMenuBrowserTest() override = default;
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
-    if (command_id == ash::USE_LAUNCH_TYPE_REGULAR)
+    if (command_id == ash::USE_LAUNCH_TYPE_REGULAR) {
       return views::kNewTabIcon;
-    else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW)
+    } else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
       return views::kNewWindowIcon;
-    else
+    } else {
       return views::kOpenIcon;
+    }
   }
 };
 

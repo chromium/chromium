@@ -288,6 +288,11 @@ enum PermissionsPolicyFeature {
   // https://github.com/WICG/pending-beacon/blob/main/docs/fetch-later-api.md
   kDeferredFetchMinimal = 128,
 
+  // Allows top-level sites to restrict collection of high-entropy UA client
+  // hints (from 3Ps, or itself) via the getHighEntropyValues API.
+  // See https://wicg.github.io/ua-client-hints/#ch-ua-high-entropy-values.
+  kClientHintUAHighEntropyValues = 129,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

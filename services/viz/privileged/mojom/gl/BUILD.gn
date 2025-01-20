@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -29,7 +28,7 @@ mojom("gl") {
     "//ui/gl/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [
       "//ash/components/arc/mojom:media",
       "//components/chromeos_camera/common",
@@ -46,7 +45,7 @@ mojom("gl") {
     enabled_features += [ "use_clang_profiling_inside_sandbox" ]
   }
 
-  if (is_chromeos_ash && (use_vaapi || use_v4l2_codec)) {
+  if (is_chromeos && (use_vaapi || use_v4l2_codec)) {
     enabled_features += [ "enable_arc_media" ]
   }
 

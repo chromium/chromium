@@ -37,7 +37,6 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -102,14 +101,13 @@ bool ExternalPopupMenu::ShowInternal() {
   // recreate the actual external popup every time.
   Reset();
 
-  int32_t item_height;
   double font_size;
   int32_t selected_item;
   Vector<mojom::blink::MenuItemPtr> menu_items;
   bool right_aligned;
   bool allow_multiple_selection;
-  GetPopupMenuInfo(*owner_element_, &item_height, &font_size, &selected_item,
-                   &menu_items, &right_aligned, &allow_multiple_selection);
+  GetPopupMenuInfo(*owner_element_, &font_size, &selected_item, &menu_items,
+                   &right_aligned, &allow_multiple_selection);
   if (menu_items.empty())
     return false;
 
@@ -139,8 +137,8 @@ bool ExternalPopupMenu::ShowInternal() {
     local_frame_->GetLocalFrameHostRemote().ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(execution_context->GetTaskRunner(
             TaskType::kInternalUserInteraction)),
-        bounds, item_height, font_size, selected_item, std::move(menu_items),
-        right_aligned, allow_multiple_selection);
+        bounds, font_size, selected_item, std::move(menu_items), right_aligned,
+        allow_multiple_selection);
     return true;
   }
 
@@ -265,7 +263,6 @@ void ExternalPopupMenu::DidCancel() {
 
 void ExternalPopupMenu::GetPopupMenuInfo(
     HTMLSelectElement& owner_element,
-    int32_t* item_height,
     double* font_size,
     int32_t* selected_item,
     Vector<mojom::blink::MenuItemPtr>* menu_items,
@@ -275,8 +272,10 @@ void ExternalPopupMenu::GetPopupMenuInfo(
       owner_element.GetListItems();
   wtf_size_t item_count = list_items.size();
   for (wtf_size_t i = 0; i < item_count; ++i) {
-    if (owner_element.ItemIsDisplayNone(*list_items[i]))
+    if (owner_element.ItemIsDisplayNone(*list_items[i],
+                                        /*ensure_style=*/true)) {
       continue;
+    }
 
     Element& item_element = *list_items[i];
 #if BUILDFLAG(IS_ANDROID)
@@ -298,23 +297,42 @@ void ExternalPopupMenu::GetPopupMenuInfo(
       popup_item->checked = To<HTMLOptionElement>(item_element).Selected();
     }
     popup_item->enabled = !item_element.IsDisabledFormControl();
-    const ComputedStyle& style = *owner_element.ItemComputedStyle(item_element);
-    popup_item->text_direction = ToBaseTextDirection(style.Direction());
+    const ComputedStyle* style = owner_element.ItemComputedStyle(item_element);
+    CHECK(style) << "The ItemIsDisplayNone() further up should guard this";
+    popup_item->text_direction = ToBaseTextDirection(style->Direction());
     popup_item->has_text_direction_override =
-        IsOverride(style.GetUnicodeBidi());
+        IsOverride(style->GetUnicodeBidi());
     menu_items->push_back(std::move(popup_item));
   }
 
   const ComputedStyle& menu_style = owner_element.GetComputedStyle()
                                         ? *owner_element.GetComputedStyle()
                                         : *owner_element.EnsureComputedStyle();
-  const SimpleFontData* font_data = menu_style.GetFont().PrimaryFont();
-  DCHECK(font_data);
-  // These coordinates need to be in CSS pixels.
-  float dpr = GetDprForSizeAdjustment(owner_element);
-  *item_height = font_data ? font_data->GetFontMetrics().Height() / dpr : 0;
+  // There are two completely different scaling factors that need to be
+  // considered.
+  //
+  // The first scaling factor is the "page scale factor" which is what you get
+  // when you pinch-zoom on a trackpad or you double-finger-double-tap on a
+  // trackpad. That is available as `Page::PageScaleFactor()`. It does not
+  // include DPR.
+  //
+  // The second scaling factor is "page zoom factor" which is what you get when
+  // you press ⌘+/⌘-. The "page zoom factor" also includes the DPR (historical
+  // note: this is true as of the enabling of the "zoom-for-dsf" feature). The
+  // "page zoom factor" is baked into the font metrics.
+  //
+  // Because the `font_size` is sent by the browser process to the OS APIs to
+  // create a font that matches the text size of the <select> element, it must
+  // be in device-independent points and thus the DPR must be removed.
+  //
+  // Account for both scaling factors: put the page scale factor in the
+  // numerator, to multiply by it, and the DPR in the denominator so as to
+  // cancel it out.
+  float scale =
+      owner_element.GetDocument().GetFrame()->GetPage()->PageScaleFactor() /
+      GetDprForSizeAdjustment(owner_element);
   *font_size = static_cast<int>(
-      menu_style.GetFont().GetFontDescription().ComputedSize() / dpr);
+      menu_style.GetFont().GetFontDescription().ComputedSize() * scale);
   *selected_item = ToExternalPopupMenuItemIndex(
       owner_element.SelectedListIndex(), owner_element);
 
@@ -331,7 +349,7 @@ int ExternalPopupMenu::ToPopupMenuItemIndex(int external_popup_menu_item_index,
   int index_tracker = 0;
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (owner_element.ItemIsDisplayNone(*items[i]))
+    if (owner_element.ItemIsDisplayNone(*items[i], /*ensure_style=*/true))
       continue;
 #if BUILDFLAG(IS_ANDROID)
     // <hr> elements are not sent to the browser on android
@@ -354,7 +372,7 @@ int ExternalPopupMenu::ToExternalPopupMenuItemIndex(
   int index_tracker = 0;
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (owner_element.ItemIsDisplayNone(*items[i]))
+    if (owner_element.ItemIsDisplayNone(*items[i], /*ensure_style=*/true))
       continue;
 #if BUILDFLAG(IS_ANDROID)
     // <hr> elements are not sent to the browser on android

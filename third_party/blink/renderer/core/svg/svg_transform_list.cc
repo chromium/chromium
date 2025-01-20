@@ -28,6 +28,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -47,8 +49,10 @@ namespace blink {
 namespace {
 
 // These should be kept in sync with enum SVGTransformType
-const unsigned kRequiredValuesForType[] = {0, 6, 1, 1, 1, 1, 1};
-const unsigned kOptionalValuesForType[] = {0, 0, 1, 1, 2, 0, 0};
+const auto kRequiredValuesForType =
+    std::to_array<unsigned int>({0, 6, 1, 1, 1, 1, 1});
+const auto kOptionalValuesForType =
+    std::to_array<unsigned int>({0, 0, 1, 1, 2, 0, 0});
 static_assert(static_cast<int>(SVGTransformType::kUnknown) == 0,
               "index of SVGTransformType::kUnknown has changed");
 static_assert(static_cast<int>(SVGTransformType::kMatrix) == 1,

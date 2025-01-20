@@ -182,8 +182,6 @@ void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
   tuck_handle->SetBounds(delegate_->GetTuckHandleBounds(left_, final_bounds));
 
   views::AnimationBuilder()
-      // TODO(sammiequon|sophiewen): Should we handle the case where the
-      // animation gets aborted?
       .OnEnded(std::move(callback))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)

@@ -680,6 +680,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   EXPECT_EQ(current_state->title(), kPage1Title);
   ASSERT_TRUE(current_state->has_page_type());
   EXPECT_EQ(current_state->page_type(), fuchsia::web::PageType::ERROR);
+  EXPECT_EQ(current_state->error_detail(), fuchsia::web::ErrorDetail::CRASH);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {

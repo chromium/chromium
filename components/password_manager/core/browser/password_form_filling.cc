@@ -70,7 +70,7 @@ void Autofill(PasswordManagerClient* client,
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client->GetLogManager());
+        client->GetCurrentLogManager());
     logger->LogMessage(Logger::STRING_PASSWORDMANAGER_AUTOFILL);
   }
 
@@ -135,13 +135,7 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty() && !webauthn_suggestions_available) {
-    bool should_show_popup_without_passwords =
-        client->IsSavingAndFillingEnabled(observed_form.url) &&
-        (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
-         client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
-             client->GetLastCommittedURL()));
-
-    driver->InformNoSavedCredentials(should_show_popup_without_passwords);
+    driver->InformNoSavedCredentials();
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);
     return LikelyFormFilling::kNoFilling;
@@ -214,6 +208,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (observed_form.accepts_webauthn_credentials) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
+  } else if (observed_form.IsSingleUsername()) {
+    wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant

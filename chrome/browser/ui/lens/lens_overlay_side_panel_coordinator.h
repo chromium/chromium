@@ -74,6 +74,12 @@ class LensOverlaySidePanelCoordinator
     return lens_overlay_controller_.get();
   }
 
+  // Handles rendering text highlights on the main browser window based on
+  // navigations from the side panel. Returns true if handled, false otherwise.
+  // `nav_url` refers to the URL that the side panel was set to navigate to. It
+  // is compared to the URL of the current open tab.
+  bool MaybeHandleTextDirectives(const GURL& nav_url);
+
   // Whether the lens overlay entry is currently the active entry in the side
   // panel UI.
   bool IsEntryShowing();
@@ -104,6 +110,25 @@ class LensOverlaySidePanelCoordinator
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
+
+  // Whether the side panel should handle the URL differently since it has a
+  // text directive and a URL that matches the current page. `nav_url` refers to
+  // the URL that the side panel was set to navigate to. It is compared to the
+  // URL of the current open tab.
+  bool ShouldHandleTextDirectives(const GURL& nav_url);
+
+  // Whether the side panel should send an extension event to update the
+  // viewport since the URL being navigated to corresponds to the URL on the
+  // current page and may contain viewport parameters to be parsed.
+  bool ShouldHandlePDFViewportChange(const GURL& nav_url);
+
+  // Callback for when the `text_finder` identifies the provided text directives
+  // on the page. If all the directives were found, then this function will
+  // create highlights on the page for each. Otherwise, it will open the
+  // `nav_url` in a new tab.
+  void OnTextFinderLookupComplete(
+      const GURL& nav_url,
+      const std::vector<std::pair<std::string, bool>>& lookup_results);
 
   // Opens the provided url params in the main browser as a new tab.
   void OpenURLInBrowser(const content::OpenURLParams& params);

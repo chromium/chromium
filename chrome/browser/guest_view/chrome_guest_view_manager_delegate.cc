@@ -7,12 +7,17 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/common/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/guest_util.h"
+#endif
 
 namespace extensions {
 
@@ -32,6 +37,11 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notifies Kiosk controller about the added guest.
   ash::KioskController::Get().OnGuestAdded(guest_web_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Check if guest belongs to glic and apply transparent background if so.
+  glic::OnGuestAdded(guest_web_contents);
 #endif
 }
 

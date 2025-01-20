@@ -176,8 +176,6 @@ public class WebApkUpdateIntegrationTest {
                 });
     }
 
-    private void waitForHistogram() {}
-
     private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
         FileInputStream requestFile = new FileInputStream(path);
         return WebApkProto.WebApk.parseFrom(requestFile);

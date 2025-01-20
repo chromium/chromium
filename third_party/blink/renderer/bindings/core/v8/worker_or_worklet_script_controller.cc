@@ -34,6 +34,7 @@
 #include <tuple>
 
 #include "base/debug/crash_logging.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -179,7 +180,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
     }
     SCOPED_CRASH_KEY_STRING256("shared-storage", "context-empty",
                                ot_feature_string.ReleaseString().Utf8());
-    CHECK(false) << "V8 context is empty";
+    NOTREACHED() << "V8 context is empty";
   }
   CHECK(!context.IsEmpty());
 

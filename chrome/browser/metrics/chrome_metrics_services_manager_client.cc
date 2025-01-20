@@ -172,7 +172,7 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
   ChromeEnabledStateProvider& operator=(const ChromeEnabledStateProvider&) =
       delete;
 
-  ~ChromeEnabledStateProvider() override {}
+  ~ChromeEnabledStateProvider() override = default;
 
   bool IsConsentGiven() const override {
     return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
@@ -196,7 +196,8 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
   DCHECK(local_state);
 }
 
-ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() {}
+ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() =
+    default;
 
 metrics::MetricsStateManager*
 ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
@@ -324,7 +325,6 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     startup_visibility = metrics::StartupVisibility::kForeground;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::string client_id;
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
@@ -336,8 +336,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
                     switches::kEnableGpuBenchmarking),
         },
         base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
-        client_id);
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }

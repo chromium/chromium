@@ -67,6 +67,8 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
 EXCLUDED_TESTS = [
 ]
 EXCLUDED_TESTS_WINDOWS = [
+    # Temporarily disabled due to https://crbug.com/379308086
+    os.path.join('tests', 'ui', 'asan-odr-win', 'asan_odr_windows.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]

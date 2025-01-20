@@ -152,20 +152,4 @@ public class MainFragment extends Fragment {
                     .post(() -> mResultText.setText(String.format("%s", text)));
         }
     }
-
-    // Starts writing NetLog to disk. startNetLog() should be called afterwards.
-    private void startNetLog() {
-        getCronetEngine()
-                .startNetLogToFile(
-                        requireActivity().getCacheDir().getPath() + "/netlog.json", false);
-    }
-
-    // Stops writing NetLog to disk. Should be called after calling startNetLog().
-    // NetLog can be downloaded afterwards via:
-    //   adb root
-    //   adb pull /data/data/org.chromium.cronet_sample_apk/cache/netlog.json
-    // netlog.json can then be viewed in a Chrome tab navigated to chrome://net-internals/#import
-    private void stopNetLog() {
-        getCronetEngine().stopNetLog();
-    }
 }

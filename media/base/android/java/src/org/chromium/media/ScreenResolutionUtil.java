@@ -8,10 +8,13 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.util.Size;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
- * This class is used as a means to guess the actual screen resolution that the
- * device is capable of playing.
+ * This class is used as a means to guess the actual screen resolution that the device is capable of
+ * playing.
  */
+@NullMarked
 public class ScreenResolutionUtil {
     public static boolean isResolutionSupportedForType(String mimeType, Size targetResolution) {
         MediaCodecInfo[] codecInfos = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();

@@ -17,13 +17,14 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/live_caption/caption_util.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/soda/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -34,14 +35,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#endif
+#include "ui/webui/webui_util.h"
 
 namespace settings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,16 +123,8 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   AddLiveCaptionSectionStrings(html_source);
 }
 
-// Live Caption subtitle depends on whether multi-language is supported, and on
-// Ash also depends on whether system-wide live caption is enabled.
+// Live Caption subtitle depends on whether multi-language is supported.
 int GetLiveCaptionSubtitle(const bool multi_language) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::features::IsSystemLiveCaptionEnabled()) {
-    return multi_language
-               ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY
-               : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY_ENGLISH_ONLY;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return multi_language
              ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
              : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY;
@@ -191,39 +177,41 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
 
 void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"syncDisabledByAdministrator", IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
-    {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
-    {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
-    {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
-    {"encryptWithGoogleCredentialsLabel",
-     IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
-    {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
-    {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
-    {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
-    {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
-    {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
-    {"passphraseConfirmationPlaceholder",
-     IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
-    {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
-    {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
-    {"sync", IDS_SETTINGS_SYNC},
-    {"manageSyncedDataTitle",
-     IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
+      {"syncDisabledByAdministrator",
+       IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
+      {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
+      {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
+      {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
+      {"encryptWithGoogleCredentialsLabel",
+       IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
+      {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
+      {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
+      {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
+      {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
+      {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
+      {"passphraseConfirmationPlaceholder",
+       IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
+      {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
+      {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
+      {"sync", IDS_SETTINGS_SYNC},
+      {"manageSyncedDataTitle",
+       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"manageSyncedDataSubtitle",
-     IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT},
+      {"manageSyncedDataSubtitle",
+       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT},
 #endif
-    {"manageBrowserSyncedDataTitle",
-     IDS_SETTINGS_NEW_MANAGE_BROWSER_SYNCED_DATA_TITLE},
-    {"syncAdvancedDevicePageTitle",
-     IDS_SETTINGS_NEW_SYNC_ADVANCED_DEVICE_PAGE_TITLE},
-    {"syncAdvancedBrowserPageTitle",
-     IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE},
-    {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
-    {"enterPassphraseLabelWithDate", IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
-    {"existingPassphraseLabelWithDate",
-     IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
-    {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
+      {"manageBrowserSyncedDataTitle",
+       IDS_SETTINGS_NEW_MANAGE_BROWSER_SYNCED_DATA_TITLE},
+      {"syncAdvancedDevicePageTitle",
+       IDS_SETTINGS_NEW_SYNC_ADVANCED_DEVICE_PAGE_TITLE},
+      {"syncAdvancedBrowserPageTitle",
+       IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE},
+      {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
+      {"enterPassphraseLabelWithDate",
+       IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
+      {"existingPassphraseLabelWithDate",
+       IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
+      {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -249,11 +237,14 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "encryptWithSyncPassphraseLabel",
       l10n_util::GetStringFUTF8(
-          IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL,
+          base::FeatureList::IsEnabled(
+              plus_addresses::features::kPlusAddressesEnabled)
+              ? IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_INCLUDING_PLUS_ADDRESS_LABEL
+              : IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else
-                              chrome::kSyncEncryptionHelpURL));
+          chrome::kSyncEncryptionHelpURL));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
@@ -289,37 +280,8 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
       {"secureDnsCustomConnectionError",
        IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
-      {"secureDnsWithIdentifiersDescription",
-       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
-      {"secureDnsWithIdentifiersAndDomainConfigDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
-      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-      {"secureDnsDialogCancel",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-      {"secureDnsDialogTurnOff",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
-      {"secureDnsAutomaticModeDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
-      {"secureDnsSecureDropdownModeNetworkDefaultDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
-#endif
   };
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::u16string product_os_name =
-      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
-  html_source->AddString(
-      "secureDnsOsSettingsDescription",
-      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
-                                 product_os_name));
-  html_source->AddString(
-      "secureDnsWithDomainConfigDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION,
-          product_os_name));
-#endif
+
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 

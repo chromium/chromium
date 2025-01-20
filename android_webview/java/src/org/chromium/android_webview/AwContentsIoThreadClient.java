@@ -10,11 +10,12 @@ import org.jni_zero.JNINamespace;
 /**
  * Delegate for handling callbacks. All methods are called on the IO thread.
  *
- * You should create a separate instance for every WebContents that requires the
- * provided functionality.
+ * <p>You should create a separate instance for every WebContents that requires the provided
+ * functionality.
  */
 @JNINamespace("android_webview")
 public abstract class AwContentsIoThreadClient {
+    // TODO(crbug.com/389047726): Rename this to IoThreadClient.
     @CalledByNative
     public abstract int getCacheMode();
 

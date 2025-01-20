@@ -14,6 +14,6 @@
     [RaisesException] void configure(GPUCanvasConfiguration descriptor);
     void unconfigure();
 
-    [RuntimeEnabled=WebGPUCanvasContextGetConfiguration] GPUCanvasConfiguration? getConfiguration();
+    GPUCanvasConfiguration? getConfiguration();
     [CallWith=ScriptState, RaisesException] GPUTexture getCurrentTexture();
 };

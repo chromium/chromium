@@ -8,6 +8,7 @@
 #include <iosfwd>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -78,7 +79,7 @@ class SelectionTemplate final {
   // Resets selection at end of life time of the object when anchor and focus
   // are disconnected or moved to another document.
   class InvalidSelectionResetter final {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
    public:
     explicit InvalidSelectionResetter(const SelectionTemplate&);
@@ -87,10 +88,8 @@ class SelectionTemplate final {
         delete;
     ~InvalidSelectionResetter();
 
-    void Trace(Visitor*) const;
-
    private:
-    const Member<const Document> document_;
+    const Document* const document_;
     SelectionTemplate& selection_;
   };
 

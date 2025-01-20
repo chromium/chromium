@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-TestIconImageObserver::TestIconImageObserver() {}
+TestIconImageObserver::TestIconImageObserver() = default;
 TestIconImageObserver::~TestIconImageObserver() = default;
 
 void TestIconImageObserver::Wait(IconImage* icon) {

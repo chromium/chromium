@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -60,6 +59,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -69,6 +69,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -604,7 +605,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
     constexpr char kSecondaryProfileName[] = "secondary_profile";
-    LogIn(kSecondaryProfileName);
+    constexpr char kFakeGaia2[] = "fakegaia2";
+    LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
     auto* profile = profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
         /*avatar_id=*/0, GetTestingFactories());
@@ -762,22 +764,25 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
   }
 
   void TearDown() override {
+    // Drop user pref service reference before `profile_` is released. This is
+    // needed because `profile_` is owned by the test not `TestProfileManager`.
+    ash_test_helper()->prefs_provider()->ClearUnownedUserPrefs(
+        AccountId::FromUserEmail(profile_->GetProfileUserName()));
     profile_.reset();
     HoldingSpaceKeyedServiceWithExperimentalFeatureTest::TearDown();
   }
 
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return user_manager::kGuestUserName;
   }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     CHECK_EQ(email, user_manager::kGuestUserName);
-    auto account_id = user_manager::GuestAccountId();
-
-    user_manager()->AddGuestUser(account_id);
+    auto* user = user_manager()->AddGuestUser();
     user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        user->GetAccountId(),
+        user_manager::FakeUserManager::GetFakeUsernameHash(
+            user->GetAccountId()),
         /*browser_restart=*/false,
         /*is_child=*/false);
   }
@@ -1612,10 +1617,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   for (size_t i = 0; i < secondary_holding_space_model->items().size(); ++i) {
     const auto& item = secondary_holding_space_model->items()[i];
     const auto& restored_item = restored_holding_space_items[i];
-    EXPECT_EQ(*item, *restored_item)
-        << "Expected equality of values at index " << i << ":"
-        << "\n\tActual: " << item->id()
-        << "\n\rRestored: " << restored_item->id();
+    EXPECT_EQ(*item, *restored_item) << "Expected equality of values at index "
+                                     << i << ":" << "\n\tActual: " << item->id()
+                                     << "\n\rRestored: " << restored_item->id();
   }
 
   // Verify persisted holding space items.
@@ -2236,10 +2240,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   for (size_t i = 0; i < secondary_holding_space_model->items().size(); ++i) {
     const auto& item = secondary_holding_space_model->items()[i];
     const auto& restored_item = restored_holding_space_items[i];
-    EXPECT_EQ(*item, *restored_item)
-        << "Expected equality of values at index " << i << ":"
-        << "\n\tActual: " << item->id()
-        << "\n\rRestored: " << restored_item->id();
+    EXPECT_EQ(*item, *restored_item) << "Expected equality of values at index "
+                                     << i << ":" << "\n\tActual: " << item->id()
+                                     << "\n\rRestored: " << restored_item->id();
   }
 
   // Verify persisted holding space items.
@@ -2603,8 +2606,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, RemoveAll) {
       {file_manager::util::GetFileManagerFileSystemContext(profile)
            ->CrackURLInFirstPartyContext(
                holding_space_util::ResolveFileSystemUrl(profile,
-                                                        pinned_file_path))},
-      holding_space_metrics::EventSource::kTest);
+                                                        pinned_file_path))});
 
   ASSERT_EQ(2u, model->items().size());
   service->RemoveAll();
@@ -2805,7 +2807,6 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDownload:
-      case HoldingSpaceItem::Type::kLacrosDownload:
         EXPECT_EQ(
             holding_space_model->ContainsItem(type, file_path),
             holding_space_service->AddItemOfType(type, file_path).empty());
@@ -2824,8 +2825,7 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
             {file_manager::util::GetFileManagerFileSystemContext(profile)
                  ->CrackURLInFirstPartyContext(
                      holding_space_util::ResolveFileSystemUrl(profile,
-                                                              file_path))},
-            holding_space_metrics::EventSource::kTest);
+                                                              file_path))});
         break;
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
         EXPECT_EQ(
@@ -2999,16 +2999,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {
   EXPECT_TRUE(model->items().empty());
 }
 
-class HoldingSpaceKeyedServiceNearbySharingTest
-    : public HoldingSpaceKeyedServiceTest {
- public:
-  HoldingSpaceKeyedServiceNearbySharingTest() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using HoldingSpaceKeyedServiceNearbySharingTest = HoldingSpaceKeyedServiceTest;
 
 TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   // Create a test downloads mount point.

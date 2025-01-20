@@ -12,6 +12,7 @@ enum TabAlertState {
   kAudioPlaying,
   kBluetoothConnected,
   kDesktopCapturing,
+  kGlicAccessing,
   kHidConnected,
   kMediaRecording,
   kPipPlaying,

@@ -25,8 +25,7 @@ namespace ash {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-SlowTraceSource::SlowTraceSource() {
-}
+SlowTraceSource::SlowTraceSource() = default;
 
 std::string SlowTraceSource::GetSource() {
   return chrome::kChromeUISlowTraceHost;
@@ -42,8 +41,7 @@ void SlowTraceSource::StartDataRequest(
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   size_t pos = path.find('#');
   ContentTracingManager* manager = ContentTracingManager::Get();
-  if (!manager ||
-      pos == std::string::npos ||
+  if (!manager || pos == std::string::npos ||
       !base::StringToInt(path.substr(pos + 1), &trace_id)) {
     std::move(callback).Run(nullptr);
     return;
@@ -57,7 +55,7 @@ std::string SlowTraceSource::GetMimeType(const GURL& url) {
   return "application/zip";
 }
 
-SlowTraceSource::~SlowTraceSource() {}
+SlowTraceSource::~SlowTraceSource() = default;
 
 void SlowTraceSource::OnGetTraceData(
     content::URLDataSource::GotDataCallback callback,
@@ -79,7 +77,6 @@ bool SlowTraceSource::AllowCaching() {
 
 SlowTraceController::SlowTraceController(content::WebUI* web_ui)
     : WebUIController(web_ui) {
-
   // Set up the chrome://slow_trace/ source.
   content::URLDataSource::Add(Profile::FromWebUI(web_ui),
                               std::make_unique<SlowTraceSource>());

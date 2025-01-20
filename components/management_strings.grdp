@@ -464,6 +464,6 @@
     Profile management
   </message>
   <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING" desc="The heading of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
-    Sign-in is required
+    Sign-in is required by your organization
   </message>
 </grit-part>

@@ -50,6 +50,9 @@ class TestPageLoadMetricsEmbedder
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
   bool IsNonTabWebUI(const GURL& url) override { return false; }
+  bool IsIncognito(content::WebContents* web_contents) override {
+    return false;
+  }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -169,7 +172,7 @@ class PageLoadMetricsMemoryTrackerTest
 
     content::GlobalRenderFrameHostId global_routing_id =
         render_frame_host->GetGlobalId();
-    int process_id = render_frame_host->GetProcess()->GetID();
+    int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
 
     performance_manager::RenderProcessHostId pm_process_id =
         static_cast<performance_manager::RenderProcessHostId>(process_id);

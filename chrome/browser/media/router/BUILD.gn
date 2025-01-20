@@ -192,8 +192,8 @@ static_library("router") {
 
     if (enable_openscreen_protocol) {
       sources += [
-        "providers/openscreen/discovery/open_screen_listener.cc",
-        "providers/openscreen/discovery/open_screen_listener.h",
+        "providers/openscreen/discovery/open_screen_listener_delegate.cc",
+        "providers/openscreen/discovery/open_screen_listener_delegate.h",
         "providers/openscreen/network_service_async_packet_sender.cc",
         "providers/openscreen/network_service_async_packet_sender.h",
         "providers/openscreen/network_service_quic_packet_writer.cc",
@@ -227,6 +227,7 @@ if (!is_android) {
       ":media_router_feature",
       ":router",
       "//chrome/browser:browser_process",
+      "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/webrtc",
       "//components/media_router/common/providers/cast/channel",
@@ -401,7 +402,7 @@ source_set("unittests") {
   if (enable_openscreen_protocol) {
     include_dirs = [ "//third_party/openscreen/src" ]
     sources += [
-      "providers/openscreen/discovery/open_screen_listener_unittest.cc",
+      "providers/openscreen/discovery/open_screen_listener_delegate_unittest.cc",
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
     ]
   }

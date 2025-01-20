@@ -18,6 +18,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "target_cpu": "arm64",
       "use_remoteexec": true
     }
   },
@@ -29,6 +30,18 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
+  "model_validation-win-arm64": {
+    "gn_args": {
+      "build_with_internal_optimization_guide": true,
+      "dcheck_always_on": false,
+      "enable_ml_internal": true,
+      "is_chrome_branded": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
       "use_remoteexec": true
     }
   },

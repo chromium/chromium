@@ -12,7 +12,7 @@ NewWindowProxy::NewWindowProxy(
     mojo::PendingReceiver<new_window_proxy::mojom::NewWindowProxy> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-NewWindowProxy::~NewWindowProxy() {}
+NewWindowProxy::~NewWindowProxy() = default;
 
 void NewWindowProxy::OpenUrl(const GURL& url) {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(

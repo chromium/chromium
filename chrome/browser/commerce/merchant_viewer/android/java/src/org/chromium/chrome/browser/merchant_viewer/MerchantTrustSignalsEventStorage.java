@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -119,19 +120,26 @@ public class MerchantTrustSignalsEventStorage {
     interface Natives {
         void init(MerchantTrustSignalsEventStorage caller, BrowserContextHandle handle);
 
-        void save(long nativeMerchantSignalDB, String key, long timestamp, Runnable onComplete);
+        void save(
+                long nativeMerchantSignalDB,
+                @JniType("std::string") String key,
+                long timestamp,
+                Runnable onComplete);
 
         void load(
                 long nativeMerchantSignalDB,
-                String key,
+                @JniType("std::string") String key,
                 Callback<MerchantTrustSignalsEvent> callback);
 
         void loadWithPrefix(
                 long nativeMerchantSignalDB,
-                String prefix,
+                @JniType("std::string") String prefix,
                 Callback<List<MerchantTrustSignalsEvent>> callback);
 
-        void delete(long nativeMerchantSignalDB, String key, Runnable onComplete);
+        void delete(
+                long nativeMerchantSignalDB,
+                @JniType("std::string") String key,
+                Runnable onComplete);
 
         void deleteAll(long nativeMerchantSignalDB, Runnable onComplete);
     }

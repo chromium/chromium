@@ -7,6 +7,9 @@
 
 #include "components/commerce/core/webui/product_specifications_handler.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/window_open_disposition.h"
+
+class Browser;
 
 namespace commerce {
 
@@ -29,7 +32,19 @@ class ProductSpecificationsUIHandlerDelegate
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                            bool in_new_tab) override;
 
+  void ShowProductSpecificationsSetsForUuids(
+      const std::vector<base::Uuid>& uuids,
+      const product_specifications::mojom::ShowSetDisposition disposition)
+      override;
+
+  void ShowComparePage(bool in_new_tab) override;
+
  private:
+  content::WebContents* OpenProductSpecificationsSetForUuidInBrowser(
+      const base::Uuid& uuid,
+      Browser& browser,
+      const WindowOpenDisposition& disposition);
+
   raw_ptr<content::WebUI> web_ui_;
 };
 

@@ -4,7 +4,7 @@
 
 #include "components/contextual_search/core/browser/contextual_search_context.h"
 
-#include "components/translate/core/common/translate_constants.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 ContextualSearchContext::ContextualSearchContext() = default;
@@ -64,8 +64,10 @@ std::string ContextualSearchContext::GetReliableLanguage(
       /*html_lang=*/std::string(), contents, &model_detected_language,
       &is_model_reliable, model_reliability_score);
   // Make sure we return an empty string when unreliable or an unknown result.
-  if (!is_model_reliable || language == translate::kUnknownLanguageCode)
+  if (!is_model_reliable ||
+      language == language_detection::kUnknownLanguageCode) {
     language = "";
+  }
   return language;
 }
 

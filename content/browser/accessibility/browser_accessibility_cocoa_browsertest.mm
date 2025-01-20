@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_NSEQ(@"Population per country", table_obj.accessibilityLabel);
   BrowserAccessibilityCocoa* table_header = table_obj.header;
 
-  NSArray* children = table_header.children;
+  NSArray* children = table_header.accessibilityChildren;
   EXPECT_EQ(2U, children.count);
 
   EXPECT_NSEQ(@"AXCell", [children[0] role]);
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ui::BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
   BrowserAccessibilityCocoa* cocoa_tree = tree->GetNativeViewAccessible();
 
-  NSArray* tree_children = cocoa_tree.children;
+  NSArray* tree_children = cocoa_tree.accessibilityChildren;
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   for (auto& test : tests) {
     BrowserAccessibilityCocoa* parent =
         FindNode(test.first)->GetNativeViewAccessible();
-    BrowserAccessibilityCocoa* child = parent.children[1];
+    BrowserAccessibilityCocoa* child = parent.accessibilityChildren[1];
 
     EXPECT_NE(nullptr, parent);
     EXPECT_EQ([child owner], [child actionTarget]);
@@ -1060,8 +1060,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   for (auto& test : tests) {
     BrowserAccessibilityCocoa* parent =
         FindNode(test.first)->GetNativeViewAccessible();
-    BrowserAccessibilityCocoa* first_child = parent.children[0];
-    BrowserAccessibilityCocoa* second_child = parent.children[1];
+    BrowserAccessibilityCocoa* first_child = parent.accessibilityChildren[0];
+    BrowserAccessibilityCocoa* second_child = parent.accessibilityChildren[1];
 
     EXPECT_NE(nullptr, parent);
     EXPECT_EQ([second_child owner], [second_child actionTarget]);
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
           ->GetBrowserAccessibilityRoot()
           ->PlatformGetChild(0)
           ->GetNativeViewAccessible();
-  EXPECT_EQ(content_editable.children.count, 5ul);
+  EXPECT_EQ(content_editable.accessibilityChildren.count, 5ul);
 
   WebContents* web_contents = shell()->web_contents();
   auto run_script_and_wait_for_selection_change =

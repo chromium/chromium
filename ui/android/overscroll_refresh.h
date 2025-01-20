@@ -12,11 +12,11 @@
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui
-enum OverscrollAction {
-  NONE = 0,
-  PULL_TO_REFRESH = 1,
-  HISTORY_NAVIGATION = 2,
-  PULL_FROM_BOTTOM_EDGE = 3
+enum class OverscrollAction {
+  kNone = 0,
+  kPullToRefresh = 1,
+  kHistoryNavigation = 2,
+  kPullFromBottomEdge = 3
 };
 
 namespace cc {
@@ -109,10 +109,10 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   bool bottom_at_scroll_start_;
   bool overflow_y_hidden_;
 
-  enum ScrollConsumptionState {
-    DISABLED,
-    AWAITING_SCROLL_UPDATE_ACK,
-    ENABLED,
+  enum class ScrollConsumptionState {
+    kDisabled,
+    kAwaitingScrollUpdateAck,
+    kEnabled,
   } scroll_consumption_state_;
 
   float viewport_width_;

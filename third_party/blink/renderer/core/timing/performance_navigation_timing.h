@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_timing_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -18,9 +20,9 @@
 
 namespace blink {
 
-class DocumentTiming;
+struct DocumentTimingValues;
+struct DocumentLoadTimingValues;
 class DocumentLoader;
-class DocumentLoadTiming;
 class LocalDOMWindow;
 class ExecutionContext;
 class V8NavigationEntropy;
@@ -78,16 +80,17 @@ class CORE_EXPORT PerformanceNavigationTiming final
   static V8NavigationTimingType::Enum GetNavigationTimingType(
       WebNavigationType);
 
-  const DocumentTiming* GetDocumentTiming() const;
-
+  V8NavigationEntropy::Enum GetSystemEntropy() const;
   DocumentLoader* GetDocumentLoader() const;
-
-  DocumentLoadTiming* GetDocumentLoadTiming() const;
-
-  bool AllowRedirectDetails() const;
 
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+
+  const network::mojom::NavigationDeliveryType navigation_delivery_type_;
+  const WebNavigationType navigation_type_;
+
+  Member<DocumentTimingValues> document_timing_values_;
+  Member<DocumentLoadTimingValues> document_load_timing_values_;
 };
 }  // namespace blink
 

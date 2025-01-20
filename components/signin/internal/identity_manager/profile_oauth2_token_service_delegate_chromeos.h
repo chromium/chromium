@@ -37,11 +37,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
       account_manager::AccountManagerFacade* account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // |delete_signin_cookies_on_exit|  is used on startup, in case the
-      // cookies were not properly cleared on last exit.
-      bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       bool is_regular_profile);
 
   ProfileOAuth2TokenServiceDelegateChromeOS(
@@ -115,10 +110,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
 
   // A cache of AccountKeys.
   std::set<account_manager::AccountKey> account_keys_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool delete_signin_cookies_on_exit_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Is |this| attached to a regular (non-Signin && non-LockScreen) Profile.
   const bool is_regular_profile_;

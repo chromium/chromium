@@ -41,7 +41,7 @@ WebUsbAllowDevicesForUrlsPolicyHandler::WebUsbAllowDevicesForUrlsPolicyHandler(
           SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN) {}
 
 WebUsbAllowDevicesForUrlsPolicyHandler::
-    ~WebUsbAllowDevicesForUrlsPolicyHandler() {}
+    ~WebUsbAllowDevicesForUrlsPolicyHandler() = default;
 
 bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,

@@ -19,6 +19,7 @@ import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
@@ -30,8 +31,10 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -45,11 +48,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
-            viewSpec(
-                    isDescendantOfA(withId(R.id.hub_toolbar)),
-                    withId(org.chromium.chrome.R.id.menu_button));
+            HUB_TOOLBAR.descendant(withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec HUB_PANE_SWITCHER =
-            viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
+            HUB_TOOLBAR.descendant(withId(R.id.pane_switcher));
 
     // The non-regular toggle tab button contentDescription is a substring found in the string:
     // R.string.accessibility_tab_switcher_standard_stack.
@@ -60,6 +61,8 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
             viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
 
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected @Nullable ViewElement mRegularTabsButton;
+    protected @Nullable ViewElement mIncognitoTabsButton;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
@@ -82,9 +85,17 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);
 
-        if (mIncognitoTabsExist) {
-            elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
-            elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+        // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
+        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+            mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+            if (mIncognitoTabsExist) {
+                mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+            }
+        } else {
+            if (mIncognitoTabsExist) {
+                mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+                mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+            }
         }
 
         elements.declareLogicalElement(

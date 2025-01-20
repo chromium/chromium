@@ -355,7 +355,7 @@ class AshNotificationViewTestBase : public AshTestBase,
 
     // Force frames and wait for all throughput trackers to be gone to allow
     // animation throughput data to be passed from cc to ui.
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -1663,9 +1663,6 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
   // AshNotificationViewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kNotificationImageDrag, true}});
-
     AshNotificationViewTestBase::SetUp();
     notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
 

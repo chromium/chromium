@@ -106,8 +106,9 @@ ScopedHandleVerifier::ScopedHandleVerifier(bool enabled)
 
 // static
 ScopedHandleVerifier* ScopedHandleVerifier::Get() {
-  if (!g_active_verifier)
+  if (!g_active_verifier) {
     ScopedHandleVerifier::InstallVerifier();
+  }
 
   return g_active_verifier;
 }
@@ -126,8 +127,9 @@ void ScopedHandleVerifier::ThreadSafeAssignOrCreateScopedHandleVerifier(
   AutoNativeLock lock(*GetLock());
   // Another thread in this module might be trying to assign the global
   // verifier, so check that within the lock here.
-  if (g_active_verifier)
+  if (g_active_verifier) {
     return;
+  }
   g_active_verifier =
       existing_verifier ? existing_verifier : new ScopedHandleVerifier(enabled);
 }
@@ -172,8 +174,9 @@ void ScopedHandleVerifier::InstallVerifier() {
 }
 
 bool ScopedHandleVerifier::CloseHandle(HANDLE handle) {
-  if (!enabled_)
+  if (!enabled_) {
     return CloseHandleWrapper(handle);
+  }
 
   const AutoReset<bool> resetter(&closing, true);
   CloseHandleWrapper(handle);
@@ -191,16 +194,18 @@ void ScopedHandleVerifier::StartTracking(HANDLE handle,
                                          const void* owner,
                                          const void* pc1,
                                          const void* pc2) {
-  if (enabled_)
+  if (enabled_) {
     StartTrackingImpl(handle, owner, pc1, pc2);
+  }
 }
 
 void ScopedHandleVerifier::StopTracking(HANDLE handle,
                                         const void* owner,
                                         const void* pc1,
                                         const void* pc2) {
-  if (enabled_)
+  if (enabled_) {
     StopTrackingImpl(handle, owner, pc1, pc2);
+  }
 }
 
 void ScopedHandleVerifier::Disable() {
@@ -209,8 +214,9 @@ void ScopedHandleVerifier::Disable() {
 
 void ScopedHandleVerifier::OnHandleBeingClosed(HANDLE handle,
                                                HandleOperation operation) {
-  if (enabled_)
+  if (enabled_) {
     OnHandleBeingClosedImpl(handle, operation);
+  }
 }
 
 HMODULE ScopedHandleVerifier::GetModule() const {

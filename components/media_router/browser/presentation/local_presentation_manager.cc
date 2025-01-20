@@ -56,8 +56,9 @@ void LocalPresentationManager::UnregisterLocalPresentationController(
     const content::GlobalRenderFrameHostId& render_frame_host_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = local_presentations_.find(presentation_id);
-  if (it == local_presentations_.end())
+  if (it == local_presentations_.end()) {
     return;
+  }
 
   // Remove presentation if no controller and receiver.
   it->second->UnregisterController(render_frame_host_id);
@@ -89,8 +90,9 @@ bool LocalPresentationManager::IsLocalPresentation(
 bool LocalPresentationManager::IsLocalPresentation(
     content::WebContents* web_contents) {
   for (auto& local_presentation : local_presentations_) {
-    if (local_presentation.second->receiver_web_contents_ == web_contents)
+    if (local_presentation.second->receiver_web_contents_ == web_contents) {
       return true;
+    }
   }
   return false;
 }

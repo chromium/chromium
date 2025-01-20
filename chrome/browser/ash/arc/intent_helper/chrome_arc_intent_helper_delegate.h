@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INTENT_HELPER_CHROME_ARC_INTENT_HELPER_DELEGATE_H_
 #define CHROME_BROWSER_ASH_ARC_INTENT_HELPER_CHROME_ARC_INTENT_HELPER_DELEGATE_H_
 
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 
 class Profile;
 

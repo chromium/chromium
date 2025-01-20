@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import androidx.test.filters.SmallTest;
 
 import dalvik.system.DexClassLoader;
@@ -21,6 +23,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 
 import java.io.File;
+import java.nio.file.Files;
 
 /**
  * Part of the test suite for the Java Bridge. This class tests that we correctly convert JavaScript
@@ -33,6 +36,7 @@ import java.io.File;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
+@SuppressWarnings("UnusedMethod")
 public class JavaBridgeCoercionTest {
     private static final double ASSERTION_DELTA = 0;
 
@@ -725,32 +729,48 @@ public class JavaBridgeCoercionTest {
         //   }
         // }
         final String dexFileName = "content/test/data/android/SelfConsumingObject.dex";
-        assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(dexFileName));
+        final String externalDexPath = UrlUtils.getIsolatedTestFilePath(dexFileName);
+        assertFileIsReadable(externalDexPath);
         final File optimizedDir = File.createTempFile("optimized", "");
         Assert.assertTrue(optimizedDir.delete());
         Assert.assertTrue(optimizedDir.mkdirs());
-        DexClassLoader loader =
-                new DexClassLoader(
-                        UrlUtils.getIsolatedTestFilePath(dexFileName),
-                        optimizedDir.getAbsolutePath(),
-                        null,
-                        ClassLoader.getSystemClassLoader());
-        final Object selfConsuming =
-                loader.loadClass("org.example.SelfConsumingObject").newInstance();
-        mActivityTestRule.runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mActivityTestRule
-                                .getJavascriptInjector()
-                                .addPossiblyUnsafeInterface(selfConsuming, "selfConsuming", null);
-                    }
-                });
-        mActivityTestRule.synchronousPageReload();
-        mActivityTestRule.executeJavaScript(
-                "testObject.setBooleanValue("
-                        + "selfConsuming.verifySelf(selfConsuming.getSelf()));");
-        Assert.assertTrue(mTestObject.waitForBooleanValue());
+
+        // Since DCL enforcement has become stricter on newer versions of Android, we can no longer
+        // load Dex files which are writable. We can't set readonly on external files so copy the
+        // Dex to internal storage before setting readonly to avoid a security exception.
+        File externalDex = new File(externalDexPath);
+        final File dexCopy = File.createTempFile("SelfConsumingObject", ".dex");
+        try {
+            Files.copy(externalDex.toPath(), dexCopy.toPath(), REPLACE_EXISTING);
+            dexCopy.setReadOnly();
+            Assert.assertFalse(dexCopy.canWrite());
+
+            DexClassLoader loader =
+                    new DexClassLoader(
+                            dexCopy.getAbsolutePath(),
+                            optimizedDir.getAbsolutePath(),
+                            null,
+                            ClassLoader.getSystemClassLoader());
+            final Object selfConsuming =
+                    loader.loadClass("org.example.SelfConsumingObject").newInstance();
+            mActivityTestRule.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mActivityTestRule
+                                    .getJavascriptInjector()
+                                    .addPossiblyUnsafeInterface(
+                                            selfConsuming, "selfConsuming", null);
+                        }
+                    });
+            mActivityTestRule.synchronousPageReload();
+            mActivityTestRule.executeJavaScript(
+                    "testObject.setBooleanValue("
+                            + "selfConsuming.verifySelf(selfConsuming.getSelf()));");
+            Assert.assertTrue(mTestObject.waitForBooleanValue());
+        } finally {
+            Assert.assertTrue(dexCopy.delete());
+        }
     }
 
     // Test passing JavaScript null to a method of an injected object.

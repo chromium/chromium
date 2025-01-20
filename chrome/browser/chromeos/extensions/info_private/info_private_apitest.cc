@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
@@ -38,8 +38,8 @@ const char kTestAppId[] = "ljoammodoonkhnehlncldjelhidljdpi";
 
 class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
  public:
-  ChromeOSInfoPrivateTest() {}
-  ~ChromeOSInfoPrivateTest() override {}
+  ChromeOSInfoPrivateTest() = default;
+  ~ChromeOSInfoPrivateTest() override = default;
 
  protected:
   void EnableKioskSession() {
@@ -65,7 +65,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   ASSERT_FALSE(
       prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
-  ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
   ASSERT_FALSE(
       profile()->GetPrefs()->GetBoolean(ash::prefs::kSendFunctionKeys));
@@ -81,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
       prefs->GetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
-  ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kSendFunctionKeys));
 }

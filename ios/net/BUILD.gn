@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/cronet/config.gni")
 import("//ios/build/config.gni")
 import("//testing/test.gni")
 import("//url/features.gni")
 
 buildflag_header("ios_net_buildflags") {
   header = "ios_net_buildflags.h"
-  flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
 group("all_tests") {
@@ -60,35 +58,6 @@ source_set("net") {
   }
 }
 
-source_set("network_protocol") {
-  deps = [
-    ":ios_net_buildflags",
-    ":net",
-    "//base",
-    "//net",
-    "//url:buildflags",
-  ]
-
-  sources = [
-    "chunked_data_stream_uploader.cc",
-    "chunked_data_stream_uploader.h",
-    "clients/crn_network_client_protocol.h",
-    "crn_http_protocol_handler.h",
-    "crn_http_protocol_handler.mm",
-    "crn_http_protocol_handler_proxy.h",
-    "crn_http_protocol_handler_proxy_with_client_thread.h",
-    "crn_http_protocol_handler_proxy_with_client_thread.mm",
-    "http_protocol_logging.h",
-    "http_protocol_logging.mm",
-    "nsurlrequest_util.h",
-    "nsurlrequest_util.mm",
-  ]
-
-  if (!use_platform_icu_alternatives) {
-    deps += [ "//base:i18n" ]
-  }
-}
-
 source_set("test_support") {
   testonly = true
 
@@ -110,7 +79,6 @@ source_set("test_support") {
 test("ios_net_unittests") {
   deps = [
     ":net",
-    ":network_protocol",
     ":test_support",
     "//base",
     "//base/test:run_all_unittests",
@@ -121,13 +89,11 @@ test("ios_net_unittests") {
   ]
 
   sources = [
-    "chunked_data_stream_uploader_unittest.cc",
     "cookies/cookie_cache_unittest.cc",
     "cookies/cookie_creation_time_manager_unittest.mm",
     "cookies/cookie_store_ios_unittest.mm",
     "cookies/ns_http_system_cookie_store_unittest.mm",
     "cookies/system_cookie_util_unittest.mm",
-    "nsurlrequest_util_unittest.mm",
     "protocol_handler_util_unittest.mm",
     "url_scheme_util_unittest.mm",
   ]

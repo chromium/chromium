@@ -19,21 +19,21 @@ TEST(WebThreadSafeDataTest, Construction) {
 
   {
     // Construction from a data block.
-    WebThreadSafeData d("abc", 4);
+    WebThreadSafeData d(base::span_with_nul_from_cstring("abc"));
     EXPECT_EQ(d.size(), 4u);
     EXPECT_STREQ(d.data(), "abc");
   }
 
   {
     // Construction explicitly from a null pointer.
-    WebThreadSafeData d(nullptr, 0);
+    WebThreadSafeData d(base::span<const char>{});
     EXPECT_EQ(d.size(), 0u);
     EXPECT_EQ(d.data(), nullptr);
   }
 
   {
     // Copy construction.
-    WebThreadSafeData d1("abc", 4);
+    WebThreadSafeData d1(base::span_with_nul_from_cstring("abc"));
     WebThreadSafeData d2(d1);
     EXPECT_EQ(d2.size(), 4u);
     EXPECT_STREQ(d2.data(), "abc");
@@ -41,7 +41,7 @@ TEST(WebThreadSafeDataTest, Construction) {
 }
 
 TEST(WebThreadSafeDataTest, Modification) {
-  WebThreadSafeData d1("abc", 4);
+  WebThreadSafeData d1(base::span_with_nul_from_cstring("abc"));
   WebThreadSafeData d2;
 
   // Copy d1 to d2.
@@ -82,7 +82,7 @@ TEST(WebThreadSafeDataTest, Modification) {
 
 TEST(WebThreadSafeDataTest, Access) {
   // Explicit, via begin()/end().
-  WebThreadSafeData d1("abc", 3);
+  WebThreadSafeData d1(base::span_from_cstring("abc"));
   EXPECT_FALSE(d1.IsEmpty());
   for (auto it = d1.begin(); it != d1.end(); ++it) {
     EXPECT_EQ(*it, base::span_from_cstring(

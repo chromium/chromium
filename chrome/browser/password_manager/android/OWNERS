@@ -1,6 +1,8 @@
 friedrichh@chromium.org
 ioanap@chromium.org
 
+per-file *.java=atsvirchkova@google.com
+
 per-file password_manager_android_util*=vsemeniuk@google.com
 per-file password_store_android_account_backend*=vsemeniuk@google.com
 # For this one use a '.', there are other files matching the prefix.

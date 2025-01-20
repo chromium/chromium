@@ -20,7 +20,7 @@ namespace {
 
 class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
  public:
-  ScrollbarThemeAuraButtonOverride() : has_scrollbar_buttons_(true) {}
+  ScrollbarThemeAuraButtonOverride() = default;
 
   void SetHasScrollbarButtons(bool value) { has_scrollbar_buttons_ = value; }
 
@@ -61,7 +61,7 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
   using ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource;
 
  private:
-  bool has_scrollbar_buttons_;
+  bool has_scrollbar_buttons_ = true;
 };
 
 }  // namespace
@@ -421,6 +421,54 @@ TEST_P(ScrollbarThemeAuraTest, TestPaintInvalidationsWhenNinePatchScaled) {
   TestSetFrameRect(*scrollbar, scrollbar->FrameRect(),
                    /*thumb_expectation=*/false,
                    /*track_and_buttons_expectation=*/false);
+}
+
+TEST_P(ScrollbarThemeAuraTest, VerticalNinePatchScalesCorrectly) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
+  ScrollbarThemeAuraButtonOverride theme;
+  ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
+  MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area, kVerticalScrollbar, &theme);
+  gfx::Rect frame_rect(12, 34, 15, 100);
+  scrollbar->SetFrameRect(frame_rect);
+  const float scale = GetParam();
+  const gfx::Size expected_canvas_size(
+      frame_rect.width() * scale,
+      base::ClampCeil(frame_rect.width() * scale * 2 + scale));
+  EXPECT_EQ(expected_canvas_size,
+            theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar, scale));
+  const int offset = 1 - expected_canvas_size.height() % 2;
+  EXPECT_EQ(gfx::Rect(0, expected_canvas_size.height() / 2 - offset,
+                      expected_canvas_size.width(), 1 + offset),
+            theme.NinePatchTrackAndButtonsAperture(*scrollbar, scale));
+}
+
+TEST_P(ScrollbarThemeAuraTest, HorizontalNinePatchScalesCorrectly) {
+  if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
+    GTEST_SKIP();
+  }
+
+  ScrollbarThemeAuraButtonOverride theme;
+  ASSERT_TRUE(theme.UsesNinePatchTrackAndButtonsResource());
+  MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area, kHorizontalScrollbar, &theme);
+  gfx::Rect frame_rect(12, 34, 100, 15);
+  scrollbar->SetFrameRect(frame_rect);
+  const float scale = GetParam();
+  const gfx::Size expected_canvas_size(
+      base::ClampCeil(frame_rect.height() * scale * 2 + scale),
+      frame_rect.height() * scale);
+  EXPECT_EQ(expected_canvas_size,
+            theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar, scale));
+  const int offset = 1 - expected_canvas_size.width() % 2;
+  EXPECT_EQ(gfx::Rect(expected_canvas_size.width() / 2 - offset, 0, 1 + offset,
+                      expected_canvas_size.height()),
+            theme.NinePatchTrackAndButtonsAperture(*scrollbar, scale));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

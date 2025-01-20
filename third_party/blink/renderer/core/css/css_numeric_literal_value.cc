@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -139,13 +140,17 @@ int CSSNumericLiteralValue::ComputeInteger() const {
 }
 
 double CSSNumericLiteralValue::ComputeNumber() const {
-  DCHECK(IsNumber());
-  return ClampTo<double>(num_);
+  DCHECK(IsNumber() || IsPercentage());
+  if (IsPercentage()) {
+    return ClampTo<double>(num_ / 100.0);
+  } else {
+    return ClampTo<double>(num_);
+  }
 }
 
 double CSSNumericLiteralValue::ComputePercentage() const {
   DCHECK(IsPercentage());
-  return ClampTo<double>(num_);
+  return CSSValueClampingUtils::ClampDouble(num_);
 }
 
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,

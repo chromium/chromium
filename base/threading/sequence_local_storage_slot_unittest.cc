@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/sequence_local_storage_slot.h"
 
+#include <array>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -162,7 +158,7 @@ TYPED_TEST(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructsPOD) {
 // Verify that the value of a slot is specific to a SequenceLocalStorageMap
 TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
   SequenceLocalStorageSlot<unsigned int> slot;
-  internal::SequenceLocalStorageMap sequence_local_storage_maps[5];
+  std::array<internal::SequenceLocalStorageMap, 5> sequence_local_storage_maps;
 
   // Set the value of the slot to be the index of the current
   // SequenceLocalStorageMaps in the vector
@@ -196,10 +192,9 @@ TEST(SequenceLocalStorageComPtrTest,
   class TestNoAddressOfOperator {
    public:
     TestNoAddressOfOperator() = default;
-    ~TestNoAddressOfOperator() {
-      // Define a non-trivial destructor so that SequenceLocalStorageSlot
-      // will use the external value path.
-    }
+    // Define a non-trivial destructor so that SequenceLocalStorageSlot will use
+    // the external value path.
+    ~TestNoAddressOfOperator() {}  // NOLINT(modernize-use-equals-default)
     // See note above class definition for the reason this operator is deleted.
     TestNoAddressOfOperator* operator&() = delete;
   };

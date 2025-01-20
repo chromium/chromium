@@ -64,8 +64,8 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
@@ -147,7 +147,7 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
       tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) &&
       !base::FeatureList::IsEnabled(
           tab_groups::kTabGroupSyncDisableNetworkLayer);
-  tab_groups::TabGroupTrial::OnTabgroupSyncEnabled(enable_tab_group_sync);
+  tab_groups::TabGroupTrial::OnTabGroupSyncEnabled(enable_tab_group_sync);
   if (!enable_tab_group_sync) {
     return nullptr;
   }

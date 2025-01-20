@@ -10,7 +10,7 @@
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace arc {

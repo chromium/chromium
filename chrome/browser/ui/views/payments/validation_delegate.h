@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace views {
 class Textfield;
 }  // namespace views

@@ -48,8 +48,8 @@ void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
 
 }  // namespace
 
-ExtensionManagementPrefUpdaterBase::ExtensionManagementPrefUpdaterBase() {
-}
+ExtensionManagementPrefUpdaterBase::ExtensionManagementPrefUpdaterBase() =
+    default;
 
 ExtensionManagementPrefUpdaterBase::~ExtensionManagementPrefUpdaterBase() {
   // Make asynchronous calls finished to deliver all preference changes to the

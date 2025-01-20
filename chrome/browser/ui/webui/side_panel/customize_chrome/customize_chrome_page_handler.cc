@@ -16,7 +16,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -34,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -84,7 +84,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     NtpCustomBackgroundService* ntp_custom_background_service,
     content::WebContents* web_contents,
-    const std::vector<std::pair<const std::string, int>> module_id_names,
+    const std::vector<ntp::ModuleIdDetail> module_id_details,
     std::optional<base::RepeatingCallback<void(const GURL&)>> open_url_callback)
     : ntp_custom_background_service_(ntp_custom_background_service),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
@@ -93,7 +93,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
       template_url_service_(TemplateURLServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
-      module_id_names_(module_id_names),
+      module_id_details_(module_id_details),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)),
       open_url_callback_(open_url_callback.has_value()
@@ -480,10 +480,16 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
   }
 
   std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
-  for (const auto& id_name_pair : module_id_names_) {
+  for (const auto& module_id_detail : module_id_details_) {
     auto module_settings = side_panel::mojom::ModuleSettings::New();
-    module_settings->id = id_name_pair.first;
-    module_settings->name = l10n_util::GetStringUTF8(id_name_pair.second);
+    module_settings->id = module_id_detail.id_;
+    module_settings->name =
+        l10n_util::GetStringUTF8(module_id_detail.name_message_id_);
+    auto description_message_id = module_id_detail.description_message_id_;
+    if (description_message_id.has_value()) {
+      module_settings->description =
+          l10n_util::GetStringUTF8(description_message_id.value());
+    }
     module_settings->enabled =
         !base::Contains(disabled_module_ids, module_settings->id);
     modules_settings.push_back(std::move(module_settings));
@@ -661,7 +667,15 @@ void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
-    theme_service_->UseDefaultTheme();
+    // Use the default theme color if wallpaper search is disabled.
+    // If wallpaper search is enabled, |ntp_custom_background_service_|
+    // will handle setting the theme color.
+    if (!base::FeatureList::IsEnabled(
+            ntp_features::kCustomizeChromeWallpaperSearch) ||
+        !base::FeatureList::IsEnabled(
+            optimization_guide::features::kOptimizationGuideModelExecution)) {
+      theme_service_->UseDefaultTheme();
+    }
 
     profile_->set_last_selected_directory(file.path().DirName());
     ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());

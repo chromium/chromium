@@ -7,6 +7,7 @@ import '../components/cra/cra-icon-button.js';
 import '../components/cra/cra-icon-dropdown.js';
 import '../components/cra/cra-icon.js';
 import '../components/delete-recording-dialog.js';
+import '../components/educational-nudge.js';
 import '../components/mic-selection-button.js';
 import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
@@ -57,10 +58,12 @@ import {setInitialAudio} from './playback-page.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --actions-padding-horizontal: 44px;
       --actions-padding-vertical: 24px;
       --record-button-height: 96px;
 
       @container style(--small-viewport: 1) {
+        --actions-padding-horizontal: 36px;
         --record-button-height: 80px;
       }
 
@@ -80,6 +83,10 @@ export class MainPage extends ReactiveLitElement {
       position: absolute;
     }
 
+    mic-selection-button {
+      anchor-name: --mic-selection-button;
+    }
+
     #root {
       background-color: var(--cros-sys-header);
       height: 100%;
@@ -93,11 +100,13 @@ export class MainPage extends ReactiveLitElement {
       border-radius: var(--border-radius-rounded-with-short-side);
       display: flex;
       flex-flow: row;
-      gap: 24px;
+      gap: 28px;
       height: fit-content;
       inset: 0;
       margin: auto auto 32px;
-      padding: var(--actions-padding-vertical) 44px;
+      padding:
+        var(--actions-padding-vertical)
+        var(--actions-padding-horizontal);
       position: absolute;
       width: fit-content;
     }
@@ -117,30 +126,23 @@ export class MainPage extends ReactiveLitElement {
       margin: 0;
     }
 
+    #choose-mic-nudge {
+      flex-flow: row;
+      position: fixed;
+      position-anchor: --mic-selection-button;
+      position-area: left;
+
+      @container style(--small-viewport: 1) {
+        flex-flow: column-reverse;
+        position-area: bottom;
+      }
+    }
+
     #start-record-nudge {
-      align-items: center;
-      display: flex;
       flex-flow: column;
       position: absolute;
       position-anchor: --record-button;
       position-area: top span-all;
-
-      & > div {
-        background: var(--cros-sys-primary);
-        border-radius: var(--border-radius-rounded-with-short-side);
-        color: var(--cros-sys-on_primary);
-        font: var(--cros-body-1-font);
-      }
-
-      & > .dot {
-        height: 8px;
-        margin: 4px;
-        width: 8px;
-      }
-
-      & > .text {
-        padding: 8px 16px;
-      }
     }
   `;
 
@@ -163,6 +165,10 @@ export class MainPage extends ReactiveLitElement {
   private readonly recordingFileList = createRef<RecordingFileList>();
 
   private readonly currentPlayingId = signal<string|null>(null);
+
+  private readonly hasOpenedMicMenu = computed(
+    () => settings.value.hasOpenedMicMenu,
+  );
 
   private readonly actionsContainerRef = createRef<HTMLElement>();
 
@@ -299,11 +305,37 @@ export class MainPage extends ReactiveLitElement {
       return nothing;
     }
     return html`
-      <div id="start-record-nudge">
-        <div class="text">${i18n.mainStartRecordNudge}</div>
-        <div class="dot"></div>
-      </div>
+      <educational-nudge id="start-record-nudge">
+        ${i18n.mainStartRecordNudge}
+      </educational-nudge>
     `;
+  }
+
+  private renderChooseMicNudge() {
+    if (this.hasOpenedMicMenu.value) {
+      return nothing;
+    }
+    return html`
+      <educational-nudge id="choose-mic-nudge">
+        ${i18n.mainChooseMicNudge}
+      </educational-nudge>
+    `;
+  }
+
+  private renderMicSelectionButton() {
+    function onClick() {
+      settings.mutate((s) => {
+        s.hasOpenedMicMenu = true;
+      });
+    }
+
+    return [
+      this.renderChooseMicNudge(),
+      html`<mic-selection-button
+        @click=${onClick}
+        @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
+      ></mic-selection-button>`,
+    ];
   }
 
   private renderRecordButton() {
@@ -400,9 +432,7 @@ export class MainPage extends ReactiveLitElement {
           part="actions"
           ${ref(this.actionsContainerRef)}
         >
-          <mic-selection-button
-            @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
-          ></mic-selection-button>
+          ${this.renderMicSelectionButton()}
           ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
         <settings-menu></settings-menu>

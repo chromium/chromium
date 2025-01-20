@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/views/widget/any_widget_observer_singleton.h"
-#include "ui/views/widget/any_widget_observer.h"
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace views::internal {
 

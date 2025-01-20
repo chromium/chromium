@@ -23,11 +23,11 @@ const TEST_APN: ApnProperties = {
   ipType: ApnIpType.kAutomatic,
   apnTypes: [ApnType.kDefault],
   state: ApnState.kEnabled,
-  id: undefined,
-  language: undefined,
-  localizedName: undefined,
-  name: undefined,
-  attach: undefined,
+  id: null,
+  language: null,
+  localizedName: null,
+  name: null,
+  attach: null,
   source: ApnSource.kUi,
 };
 

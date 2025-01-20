@@ -48,8 +48,6 @@ source_set("cronet_common") {
     "cronet_url_request.h",
     "host_cache_persistence_manager.cc",
     "host_cache_persistence_manager.h",
-    "stale_host_resolver.cc",
-    "stale_host_resolver.h",
     "url_request_context_config.cc",
     "url_request_context_config.h",
   ]
@@ -85,9 +83,9 @@ source_set("cronet_common_unittests") {
   ]
 
   sources = [
+    "cronet_stale_host_resolver_unittest.cc",
     "host_cache_persistence_manager_unittest.cc",
     "network_tasks_unittest.cc",
-    "stale_host_resolver_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
 }

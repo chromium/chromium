@@ -59,7 +59,7 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
             content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       content::RenderProcessHost* host = i.GetCurrentValue();
-      if (suspended_processes_.insert(host->GetID()).second) {
+      if (suspended_processes_.insert(host->GetDeprecatedID()).second) {
         host->AddObserver(this);
         host->GetRendererInterface()->SetWebKitSharedTimersSuspended(true);
       }
@@ -79,7 +79,7 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
 
  private:
   void StopWatching(content::RenderProcessHost* host) {
-    auto pos = suspended_processes_.find(host->GetID());
+    auto pos = suspended_processes_.find(host->GetDeprecatedID());
     CHECK(pos != suspended_processes_.end(), base::NotFatalUntil::M130);
     host->RemoveObserver(this);
     suspended_processes_.erase(pos);

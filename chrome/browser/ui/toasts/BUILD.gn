@@ -9,6 +9,7 @@ import("//build/config/ui.gni")
 source_set("toasts") {
   sources = [
     "toast_controller.h",
+    "toast_dismiss_menu_model.h",
     "toast_features.h",
     "toast_metrics.h",
     "toast_service.h",
@@ -34,6 +35,7 @@ source_set("toasts") {
 source_set("impl") {
   sources = [
     "toast_controller.cc",
+    "toast_dismiss_menu_model.cc",
     "toast_features.cc",
     "toast_metrics.cc",
     "toast_service.cc",
@@ -45,6 +47,8 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/side_panel",
@@ -89,6 +93,10 @@ source_set("interactive_ui_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("browser_tests") {

@@ -37,9 +37,12 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one browsing
@@ -53,6 +56,10 @@ import java.util.concurrent.Executor;
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
+
+    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final String BAD_HEADER_MSG =
+            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * Cache storing already-initialized Play providers for the Media Integrity Blink renderer
@@ -284,6 +291,39 @@ public class AwBrowserContext implements BrowserContextHandle {
         }
     }
 
+    /**
+     * Check if additional HTTP headers sent along with loadUrl, prefetchUrl, or prerenderUrl
+     * contains invalid characters.
+     *
+     * @param headers The additional HTTP headers to be sent along with loadUrl, prefetchUrl, or
+     *     prerenderUrl.
+     * @return An exception if validation fails. Otherwise, an empty Optional.
+     */
+    public static Optional<IllegalArgumentException> validateAdditionalHeaders(
+            Map<String, String> headers) {
+        if (headers == null) return Optional.empty();
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG + "Invalid header name '" + headerName + "'."));
+            }
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                return Optional.of(
+                        new IllegalArgumentException(
+                                BAD_HEADER_MSG
+                                        + "Header '"
+                                        + headerName
+                                        + "' has invalid value '"
+                                        + headerValue
+                                        + "'"));
+            }
+        }
+        return Optional.empty();
+    }
+
     @UiThread
     public void startPrefetchRequest(
             @NonNull String url,
@@ -291,24 +331,32 @@ public class AwBrowserContext implements BrowserContextHandle {
             @NonNull AwPrefetchCallback callback,
             @NonNull Executor callbackExecutor) {
         assert ThreadUtils.runningOnUiThread();
-        if (!UrlUtilities.isHttps(url)) {
-            callbackExecutor.execute(
-                    () ->
-                            callback.onError(
-                                    new IllegalArgumentException(
-                                            "URL must have HTTPS scheme for prefetch.")));
-        }
-
-        if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-            callbackExecutor.execute(
-                    () ->
-                            callback.onError(
-                                    new IllegalStateException(
-                                            "WebView initiated prefetching feature is not"
-                                                    + " enabled.")));
-        }
-
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
+            if (!UrlUtilities.isHttps(url)) {
+                callbackExecutor.execute(
+                        () ->
+                                callback.onError(
+                                        new IllegalArgumentException(
+                                                "URL must have HTTPS scheme for prefetch.")));
+            }
+
+            if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
+                callbackExecutor.execute(
+                        () ->
+                                callback.onError(
+                                        new IllegalStateException(
+                                                "WebView initiated prefetching feature is not"
+                                                        + " enabled.")));
+            }
+
+            if (prefetchParameters != null) {
+                Optional<IllegalArgumentException> exception =
+                        validateAdditionalHeaders(prefetchParameters.getAdditionalHeaders());
+                if (exception.isPresent()) {
+                    callbackExecutor.execute(() -> callback.onError(exception.get()));
+                }
+            }
+
             AwBrowserContextJni.get()
                     .startPrefetchRequest(
                             mNativeAwBrowserContext,
@@ -401,14 +449,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .clearPersistentOriginTrialStorageForTesting(mNativeAwBrowserContext);
     }
 
-    public boolean hasFormData() {
-        return AwBrowserContextJni.get().hasFormData(mNativeAwBrowserContext);
-    }
-
-    public void clearFormData() {
-        AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
-    }
-
     public void setServiceWorkerIoThreadClient(AwContentsIoThreadClient ioThreadClient) {
         AwBrowserContextJni.get()
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
@@ -422,8 +462,8 @@ public class AwBrowserContext implements BrowserContextHandle {
     @CalledByNative
     public static AwBrowserContext create(
             long nativeAwBrowserContext,
-            String name,
-            String relativePath,
+            @JniType("std::string") String name,
+            @JniType("std::string") String relativePath,
             AwCookieManager cookieManager,
             boolean isDefault) {
         return new AwBrowserContext(
@@ -431,7 +471,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    public static void deleteSharedPreferences(String relativePath) {
+    public static void deleteSharedPreferences(@JniType("std::string") String relativePath) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             final String sharedPrefsFilename = getSharedPrefsFilename(relativePath);
             SharedPreferences.Editor prefsEditor = createSharedPrefs(sharedPrefsFilename).edit();
@@ -440,7 +480,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    private int getGeolocationPermission(String origin) {
+    private int getGeolocationPermission(@JniType("std::string") String origin) {
         AwGeolocationPermissions permissions = getGeolocationPermissions();
         if (!permissions.hasOrigin(origin)) {
             return PermissionStatus.ASK;
@@ -454,8 +494,10 @@ public class AwBrowserContext implements BrowserContextHandle {
     interface Natives {
         AwBrowserContext getDefaultJava();
 
+        @JniType("std::string")
         String getDefaultContextName();
 
+        @JniType("std::string")
         String getDefaultContextRelativePath();
 
         long getQuotaManagerBridge(long nativeAwBrowserContext);
@@ -464,10 +506,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                 long nativeAwBrowserContext, String[] rules);
 
         void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
-
-        boolean hasFormData(long nativeAwBrowserContext);
-
-        void clearFormData(long nativeAwBrowserContext);
 
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);

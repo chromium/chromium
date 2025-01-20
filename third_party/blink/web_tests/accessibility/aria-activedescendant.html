@@ -54,9 +54,20 @@
     <li id="list5-option3" role="option">Option 3</li>
 </ul>
 
+<!-- Test illegal spaces in id attribute, to make sure it doesn't crash/assert -->
+<input id="input-combobox-spaces" role="combobox" type="text" aria-expanded="true"
+    aria-haspopup="menu" aria-autocomplete="list"
+    aria-activedescendant="list6 option1" aria-owns="list6">
+
+<ul id="list6" role="listbox">
+    <li id="list6 option1" role="option">Option 1</li>
+    <li id="list6 option2" role="option">Option 2</li>
+    <li id="list6 option3" role="option">Option 3</li>
+</ul>
+
+
 <script>
-function testExpectations(t, widgetId, textboxId, listboxId) {
-    console.log('testExpectations ' + widgetId);
+function testExpectations(t, widgetId, textboxId, listboxId, separator) {
     var listbox = document.getElementById(listboxId);
     var textbox = document.getElementById(textboxId);
     textbox.focus();
@@ -66,55 +77,56 @@ function testExpectations(t, widgetId, textboxId, listboxId) {
     var axWidget = accessibilityController.accessibleElementById(widgetId);
     var axTextbox = accessibilityController.accessibleElementById(textboxId);
     var axListbox = accessibilityController.accessibleElementById(listboxId);
-    var option1 = accessibilityController.accessibleElementById(listboxId + "-option1");
-    assert_not_equals(option1, undefined, listboxId + "-option1");
-    var option2 = accessibilityController.accessibleElementById(listboxId + "-option2");
-    assert_not_equals(option2, undefined, listboxId + "-option2");
-    var option3 = accessibilityController.accessibleElementById(listboxId + "-option3");
-    assert_not_equals(option3, undefined, listboxId + "-option3");
+    var option1 = accessibilityController.accessibleElementById(listboxId + separator + "option1");
+    assert_not_equals(option1, undefined, listboxId + separator + "option1");
+    var option2 = accessibilityController.accessibleElementById(listboxId + separator + "option2");
+    assert_not_equals(option2, undefined, listboxId + separator + "option2");
+    var option3 = accessibilityController.accessibleElementById(listboxId + separator + "option3");
+    assert_not_equals(option3, undefined, listboxId + separator + "option3");
 
     assert_false(option1 == null);
     assert_true(axWidget.isExpanded, widgetId + ".isExpanded");
     assert_equals(axWidget.hasPopup, "menu");
 
-    assert_true(option1.isSelectable, listboxId + "-option1.isSelectable");
-    assert_true(option2.isSelectable, listboxId + "-option2.isSelectable");
-    assert_true(option3.isSelectable, listboxId + "-option3.isSelectable");
+    assert_true(option1.isSelectable, listboxId + separator + "option1.isSelectable");
+    assert_true(option2.isSelectable, listboxId + separator + "option2.isSelectable");
+    assert_true(option3.isSelectable, listboxId + separator + "option3.isSelectable");
 
     assert_true(axTextbox.isFocused, widgetId + ".isFocused");
-    assert_true(option1.isSelected, listboxId + "-option1.isSelected");
+    assert_true(option1.isSelected, listboxId + separator + "option1.isSelected");
 
-    textbox.setAttribute("aria-activedescendant", listboxId + "-option2");
+    textbox.setAttribute("aria-activedescendant", listboxId + separator + "option2");
 
-    assert_false(option1.isSelected, listboxId + "-option1.isSelected");
+    assert_false(option1.isSelected, listboxId + separator + "option1.isSelected");
     assert_true(axTextbox.isFocused, widgetId + ".isFocused");
-    assert_true(option2.isSelected, listboxId + "-option2.isSelected");
+    assert_true(option2.isSelected, listboxId + separator + "option2.isSelected");
 
-    textbox.setAttribute("aria-activedescendant", listboxId + "-option3");
+    textbox.setAttribute("aria-activedescendant", listboxId + separator + "option3");
 
-    assert_false(option2.isSelected, listboxId + "-option2.isSelected");
+    assert_false(option2.isSelected, listboxId + separator + "option2.isSelected");
     assert_true(axTextbox.isFocused, widgetId + ".isFocused");
-    assert_true(option3.isSelected, listboxId + "-option3.isSelected");
+    assert_true(option3.isSelected, listboxId + separator + "option3.isSelected");
 
     textbox.removeAttribute("aria-activedescendant");
 
     assert_true(axTextbox.isFocused, widgetId + ".isFocused");
-    assert_false(option3.isSelected, listboxId + "-option3.isSelected");
+    assert_false(option3.isSelected, listboxId + separator + "option3.isSelected");
     testNext(t);
 }
 
 var idsToTest = [
-    [ 'contenteditable-combobox', 'contenteditable-combobox', 'list1' ],
-    [ 'input-combobox', 'input-combobox', 'list2' ],
-    [ 'input-searchbox', 'input-searchbox', 'list3' ],
-    [ 'textarea-combobox', 'textarea-combobox', 'list4' ],
-    [ 'combobox-composite-widget', 'input-type-text', 'list5' ] ];
+    [ 'contenteditable-combobox', 'contenteditable-combobox', 'list1', '-'],
+    [ 'input-combobox', 'input-combobox', 'list2', '-'],
+    [ 'input-searchbox', 'input-searchbox', 'list3', '-'],
+    [ 'textarea-combobox', 'textarea-combobox', 'list4', '-'],
+    [ 'combobox-composite-widget', 'input-type-text', 'list5', '-'],
+    [ 'input-combobox-spaces', 'input-combobox-spaces', 'list6', ' ' ]];
 
 function testNext(t) {
     if (idsToTest.length == 0)
         t.done();
     let nextIds = idsToTest.shift();
-    t.step(() => { testExpectations(t, nextIds[0], nextIds[1], nextIds[2]) });
+    t.step(() => { testExpectations(t, nextIds[0], nextIds[1], nextIds[2], nextIds[3]) });
 }
 
 async_test((t) => {

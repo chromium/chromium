@@ -44,22 +44,10 @@ class CookiesFetcherRestoreUtilBrowserTest : public AndroidBrowserTest {
         Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext())
             ->GetPrimaryOTRProfile(/*create_if_needed=*/false);
     CookiesFetcherRestoreCookiesImpl(
-        env, profile,
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "test").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "test").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env,
-            base::android::ConvertUTF8ToJavaString(env, "google.com").obj()),
-        jni_zero::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF8ToJavaString(env, "/").obj()),
+        env, profile, "test", "test", "google.com", "/",
         /*creation=*/0, /*expiration=*/0, /*last_access=*/0,
         /*last_update=*/0, /*secure=*/true, /*httponly=*/false,
-        /*same_site=*/0, /*priority=*/0,
-        jni_zero::JavaParamRef<jstring>(
-            env,
-            base::android::ConvertUTF8ToJavaString(env, partition_key).obj()),
+        /*same_site=*/0, /*priority=*/0, partition_key,
         /*source_scheme=*/2, /*source_port=*/-1, /*source_type=*/0);
   }
 

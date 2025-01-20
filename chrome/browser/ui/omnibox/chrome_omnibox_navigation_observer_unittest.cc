@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 
+#include <array>
 #include <unordered_map>
 #include <vector>
 
@@ -46,8 +42,8 @@ class ChromeOmniboxNavigationObserverTest
       const ChromeOmniboxNavigationObserverTest&) = delete;
 
  protected:
-  ChromeOmniboxNavigationObserverTest() {}
-  ~ChromeOmniboxNavigationObserverTest() override {}
+  ChromeOmniboxNavigationObserverTest() = default;
+  ~ChromeOmniboxNavigationObserverTest() override = default;
 
   content::NavigationController* navigation_controller() {
     return &(web_contents()->GetController());
@@ -112,8 +108,8 @@ void ChromeOmniboxNavigationObserverTest::SetUp() {
 
   TemplateURLData policy_turl;
   policy_turl.SetKeyword(policy_search_keyword());
-  policy_turl.created_by_policy =
-      TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+  policy_turl.policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
   factory_util.model()->Add(std::make_unique<TemplateURL>(policy_turl));
 
   TemplateURLData starter_pack_turl;
@@ -218,7 +214,8 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
   struct Case {
     const Response response;
     const bool expected_alternate_nav_bar_shown;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Case>({
       // The only response provided is a net error.
       {{{"http://example/"}, kNetError}, false},
       // The response connected to a valid page.
@@ -258,7 +255,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       {{{"http://example/", "https://example/", "https://example/root"},
         kNoResponse},
        true},
-  };
+  });
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE("case #" + base::NumberToString(i));
     const Case& test_case = cases[i];
@@ -275,7 +272,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       redir_info.status_code = net::HTTP_MOVED_PERMANENTLY;
       auto redir_head =
           network::CreateURLResponseHead(net::HTTP_MOVED_PERMANENTLY);
-      redirects.push_back({redir_info, std::move(redir_head)});
+      redirects.emplace_back(redir_info, std::move(redir_head));
     }
 
     // Fill in final response.

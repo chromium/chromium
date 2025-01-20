@@ -26,9 +26,9 @@ const char kDesktopNotificationPrefix[] = "desktop_notification_balloon.";
 
 int DesktopNotificationBalloon::id_count_ = 1;
 
-DesktopNotificationBalloon::DesktopNotificationBalloon() {}
+DesktopNotificationBalloon::DesktopNotificationBalloon() = default;
 
-DesktopNotificationBalloon::~DesktopNotificationBalloon() {}
+DesktopNotificationBalloon::~DesktopNotificationBalloon() = default;
 
 void DesktopNotificationBalloon::DisplayBalloon(
     const ui::ImageModel& icon,

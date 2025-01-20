@@ -7,7 +7,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 
 namespace autofill {
 
@@ -46,11 +47,10 @@ std::unique_ptr<KeyedService>
 MerchantPromoCodeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<MerchantPromoCodeManager> service =
-      std::make_unique<MerchantPromoCodeManager>();
-  service->Init(PersonalDataManagerFactory::GetForBrowserContext(context),
-                profile->IsOffTheRecord());
-  return service;
+  PersonalDataManager* pdm =
+      PersonalDataManagerFactory::GetForBrowserContext(context);
+  return std::make_unique<MerchantPromoCodeManager>(
+      pdm ? &pdm->payments_data_manager() : nullptr, profile->IsOffTheRecord());
 }
 
 }  // namespace autofill

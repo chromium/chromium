@@ -37,8 +37,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/latin1_string_conversions.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -132,9 +132,7 @@ class BLINK_PLATFORM_EXPORT WebString {
 
   static WebString FromUTF8(std::string_view s);
 
-  std::u16string Utf16() const {
-    return base::Latin1OrUTF16ToUTF16(length(), Data8(), Data16());
-  }
+  std::u16string Utf16() const;
 
   static WebString FromUTF16(std::optional<std::u16string_view>);
 
@@ -183,11 +181,16 @@ class BLINK_PLATFORM_EXPORT WebString {
 
  private:
   bool Is8Bit() const;
-  const WebLChar* Data8() const;
-  const WebUChar* Data16() const;
 
   scoped_refptr<WTF::StringImpl> impl_;
 };
+
+#if INSIDE_BLINK
+// This can be used as a projection, e.g. when calling base::ToVector().
+inline WebString ToWebString(const WTF::String& s) {
+  return WebString(s);
+}
+#endif
 
 inline bool operator==(const WebString& a, const char* b) {
   return a.Equals(b);

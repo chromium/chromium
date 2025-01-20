@@ -524,7 +524,7 @@ TEST_F(BlobRegistryImplTest, Register_BlobReferencingPendingBlob) {
   base::RunLoop().RunUntilIdle();
 
   // Populate the data for the first blob.
-  future_data.Populate(base::as_bytes(base::make_span(kBlob1Data)));
+  future_data.Populate(base::as_byte_span(kBlob1Data));
   context_->NotifyTransportComplete(kId1);
 
   // Wait for kId2 to also complete.

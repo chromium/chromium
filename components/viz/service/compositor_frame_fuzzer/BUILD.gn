@@ -69,7 +69,9 @@ fuzzer_test("compositor_frame_fuzzer") {
     ":generate_seed_corpus",
     "//components/viz/service",
     "//components/viz/test:test_support",
+    "//gpu:test_support",
     "//mojo/core/embedder",
+    "//testing/gmock",
     "//third_party/libprotobuf-mutator",
   ]
 

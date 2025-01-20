@@ -15,11 +15,8 @@ namespace ui {
 namespace {
 
 // Returns the container of assigned IDs.
-std::unordered_set<AXPlatformNodeId, typename AXPlatformNodeId::Hasher>&
-GetAssignedIds() {
-  static base::NoDestructor<
-      std::unordered_set<AXPlatformNodeId, typename AXPlatformNodeId::Hasher>>
-      assigned_ids;
+std::unordered_set<AXPlatformNodeId>& GetAssignedIds() {
+  static base::NoDestructor<std::unordered_set<AXPlatformNodeId>> assigned_ids;
   return *assigned_ids;
 }
 

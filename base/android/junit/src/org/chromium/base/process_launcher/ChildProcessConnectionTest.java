@@ -207,7 +207,9 @@ public class ChildProcessConnectionTest {
                 bindAsExternalService,
                 serviceBundle,
                 mServiceConnectionFactory,
-                /* instanceName= */ null);
+                /* instanceName= */ null,
+                /* independentFallback= */ false,
+                /* isSandboxedForHistograms= */ false);
     }
 
     private void sendPid(int pid) throws RemoteException {

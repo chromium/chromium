@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1808803439260407870">ક્લાસિક આર્ટ</translation>
+<translation id="181434555916624618">હમણાં માટે, લોકો સાથેના પરિણામો બતાવવામાં આવશે નહીં. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="1815850098929213707">પસંદ કરેલી કી <ph name="KEYS" /> છે. કન્ટ્રોલમાં ફેરફાર કરવા માટે બટન પર ટૅપ કરો</translation>
 <translation id="1823120442877418684">અક્ષરો</translation>
 <translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3347558044552027859">મૉર્ડન</translation>
+<translation id="3353477144743332882">સારાંશ અને નામની રચનાનું મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="3359218928534347896">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">સુશી</translation>
@@ -574,7 +576,6 @@
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="382043424867370667">સનસેટ વૉલપેપર</translation>
 <translation id="3824259034819781947">ફાઇલ જોડો</translation>
-<translation id="383586991013681190">સેટિંગમાં જઈને ટ્રાન્સક્રિપ્શનની ભાષા પસંદ કરો અને તેને ડાઉનલોડ કરો</translation>
 <translation id="3836587210832263413">તમે વિશ્વાસ કરતા હો ફક્ત તેવા જ એક્સ્ટેન્શન ચાલુ કરો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3845880861638660475">સંવાદ બંધ કરવા માટે <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> દબાવો.</translation>
@@ -689,6 +690,7 @@
 <translation id="4354430579665871434">કી</translation>
 <translation id="4356100841225547054">વૉલ્યૂમ બંધ કરો</translation>
 <translation id="4361257691546579041">APNનો પ્રકાર ડિફૉલ્ટ છે.</translation>
+<translation id="4368101969572512692">સૂચનોને શફલ કરો</translation>
 <translation id="437294888293595148">બધા શૉર્ટકટ રીસેટ કરો</translation>
 <translation id="437477383107495720">સસલાં</translation>
 <translation id="4376423484621194274">તમારા ઍડમિનિસ્ટ્રેટર <ph name="APP_NAME" />ને બંધ કરવાની મંજૂરી આપતા નથી</translation>
@@ -706,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> બંધ છે</translation>
 <translation id="4428840632568803690">સ્પીકર <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">ટૂંક સમયમાં Kerberos ટિકિટની સમયસીમા સમાપ્ત થશે</translation>
+<translation id="4430019312045809116">વૉલ્યૂમ</translation>
 <translation id="4431821876790500265">રિપોર્ટ જુઓ</translation>
 <translation id="4443192710976771874">લાલ</translation>
 <translation id="4447592701292766824">આ કન્ટેન્ટ માટે સારાંશ બનાવી શકાતો નથી</translation>
@@ -727,7 +730,6 @@
 <translation id="4507392511610824664">બ્રાઇટનેસ વધારો</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
-<translation id="4516323842122524821">વૉલ્યૂમ</translation>
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4536864596629708641">IP કન્ફિગ્યુરેશન</translation>
@@ -768,6 +770,7 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
+<translation id="4750394297954878236">સૂચનો</translation>
 <translation id="4771607256327216405">કીબોર્ડને વધુ બ્રાઇટ કરો</translation>
 <translation id="4771923071974529837">આવતી કાલે</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
@@ -853,6 +856,7 @@
 <translation id="5121677070210013200">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરી શકાતું નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
 <translation id="5137451382116112100">સંપૂર્ણ</translation>
+<translation id="5139813694804168398">ખલેલ પાડશો નહીં</translation>
 <translation id="5140788690559353412">જ્યારે તમે તમારા સ્કૂલના એકાઉન્ટનો ઍક્સેસ ગુમાવો, ત્યારે તમારી પાસે તેની સાથે સંકળાયેલા ઇમેઇલ અને Google Driveની ફાઇલો, જેમ કે Gmail, Docs, Slides અને બીજા બધાનો ઍક્સેસ રહેશે નહીં.</translation>
 <translation id="5142961317498132443">પ્રમાણીકરણ</translation>
 <translation id="5144311987923128508">કન્ફર્મ બટન હવે બંધ છે</translation>
@@ -897,6 +901,7 @@
 <translation id="5302048478445481009">ભાષા</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ વૉલપેપર</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" />ને વર્ઝન <ph name="VERSION" /> પર અપડેટ કરો</translation>
 <translation id="5315873049536339193">ઓળખ</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318310531701770497">નામ બનાવી શકાતા નથી. કોઈ વધુ લાંબી ટ્રાન્સક્રિપ્ટ અજમાવી જુઓ.</translation>
@@ -973,7 +978,6 @@
 <translation id="5703716265115423771">વૉલ્યૂમ ઘટાડો</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> માટે ફેરફાર કરવાનું બટન.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> અપડેટ કરો</translation>
 <translation id="5736820754189340309">ડેટા વપરાશ રીસેટ કરવામાં આવ્યો છે</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />"નો અનુવાદ કરો</translation>
@@ -998,6 +1002,7 @@
 <translation id="5859969039821714932">શૉર્ટકટ ઉપલબ્ધ નથી. <ph name="KEY" /> વિના કોઈ નવો શૉર્ટકટ દબાવો.</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
+<translation id="5875913454160982848">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરો</translation>
 <translation id="5876385649737594562">વિકલ્પો પસંદ કરવાનું ચાલુ કરો</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> થોભાવો</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
@@ -1037,13 +1042,13 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6040852767465482106">અજાણ ઓળખાણ</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
-<translation id="6042308850641462728">વધુ</translation>
 <translation id="6048107060512778456">નિષ્ફળ થયું - કાગળ ભરાઈ ગયું છે</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6054711098834486579">અભિવ્યક્તિવાદી</translation>
 <translation id="6058625436358447366">સમાપ્ત કરવા માટે, તમારા જૂના અને નવા પાસવર્ડ દાખલ કરો</translation>
 <translation id="6061772781719867950">HTTPSની નિષ્ફળ વિનંતીઓ</translation>
 <translation id="6073292342939316679">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
+<translation id="6074752328838739425">સારાંશ છુપાવો</translation>
 <translation id="6075872808778243331">(Android) HTTPની વિલંબતા</translation>
 <translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6091080061796993741">પીળો</translation>
@@ -1233,6 +1238,7 @@
 <translation id="6866732840889595464">ગુલબહાર</translation>
 <translation id="6871256179359663621">આછો જાંબલી</translation>
 <translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
+<translation id="6899460405678814458">સારાંશ બતાવો</translation>
 <translation id="6900701049656042631">આ આલ્બમમાં કોઈ ફોટા નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
 <translation id="6902359863093437070">AI વડે બૅકગ્રાઉન્ડ બનાવો</translation>
 <translation id="6905163627763043954">અજમાવી જુઓ</translation>
@@ -1291,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
 <translation id="7135814714616751706">શૉર્ટકટ શોધો</translation>
 <translation id="7138614237884624401">સરળ કરેલી ટેક્સ્ટ</translation>
+<translation id="7138668887584231801">સારાંશ આપવા માટે પર્યાપ્ત શબ્દો નથી</translation>
 <translation id="7141470099673912333">કન્ટેન્ટ ટ્રાન્સફર</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
@@ -1309,6 +1316,7 @@
 <translation id="7182063559013288142">ઝટપટ હૉટસ્પૉટ</translation>
 <translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7187669805838282391">બુધવારે</translation>
+<translation id="7205318498545665455">તમારું માઇક પસંદ કરો</translation>
 <translation id="7206979415662233817">સેવાની શરતો</translation>
 <translation id="7210635925306941239">સ્યાન</translation>
 <translation id="7212547870105584639">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1363,6 +1371,7 @@
 <translation id="7425037327577270384">લખવામાં મારી સહાય કરો</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">આ APNને બંધ કરી કે કાઢી શકતા નથી. ચાલુ કરેલા <ph name="ATTACH" /> APNને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા હોય તેની ખાતરી કરો.</translation>
+<translation id="7453118953486228603">પસંદ કરેલી ટેક્સ્ટનો સારાંશ આપવા માટે ક્લિક કરો</translation>
 <translation id="7458970041932198923">અવતાર જોવા તેમજ તેમને સેટ કરવા માટે, કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને પેજને ફરીથી લોડ કરો.</translation>
 <translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
@@ -1585,6 +1594,7 @@
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
 <translation id="8505011850330200833">Gemini મૉડલને ટ્રાન્સક્રિપ્ટ ઉપર પ્રક્રિયા કરવા અને સારાંશ બનાવવા માટે 2GB સ્ટોરેજની જરૂર પડે છે</translation>
 <translation id="8508640263392900755">APNની વિગતો</translation>
+<translation id="8509574872955173831">સારાંશ અને નામની રચના વિશે વધુ જાણો</translation>
 <translation id="8522687886059337719">તમે હવે નવા <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />વૉલપેપર<ph name="END_LINK_WALLPAPER_SUBPAGE" /> અને <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />સ્ક્રીન સેવર<ph name="END_LINK_SCREENSAVER_SUBPAGE" />નો ઍક્સેસ ધરાવો છો</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ટી હાઉસ</translation>

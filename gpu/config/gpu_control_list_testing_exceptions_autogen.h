@@ -262,4 +262,76 @@ static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {
         },
     }};
 
+static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry83 = {
+    {
+        {
+            GpuControlList::kOsAndroid,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                                   // os_version
+            0x00,                                        // vendor_id
+            base::span<const GpuControlList::Device>(),  // Devices
+            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
+            nullptr,                                     // driver info
+            nullptr,                                     // GL strings
+            nullptr,                                     // machine model info
+            nullptr,                                     // Intel conditions
+            &kMoreForEntry83_1440601243Exception0,       // more data
+        },
+    }};
+
+static const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry84 = {
+    {
+        {
+            GpuControlList::kOsAndroid,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                                   // os_version
+            0x00,                                        // vendor_id
+            base::span<const GpuControlList::Device>(),  // Devices
+            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
+            nullptr,                                     // driver info
+            &kGLStringsForGpuControlTestingEntry84Exception0,  // GL strings
+            nullptr,  // machine model info
+            nullptr,  // Intel conditions
+            nullptr,  // more conditions
+        },
+    }};
+
+static const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry85 = {
+    {
+        {
+            GpuControlList::kOsAndroid,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                                   // os_version
+            0x00,                                        // vendor_id
+            base::span<const GpuControlList::Device>(),  // Devices
+            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
+            nullptr,                                     // driver info
+            nullptr,                                     // GL strings
+            nullptr,                                     // machine model info
+            nullptr,                                     // Intel conditions
+            &kMoreForEntry85_1440601243Exception0,       // more data
+        },
+        {
+            GpuControlList::kOsAndroid,  // os_type
+            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+             GpuControlList::kVersionSchemaCommon, nullptr,
+             nullptr},                                   // os_version
+            0x00,                                        // vendor_id
+            base::span<const GpuControlList::Device>(),  // Devices
+            GpuControlList::kMultiGpuCategoryNone,       // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
+            nullptr,                                     // driver info
+            nullptr,                                     // GL strings
+            nullptr,                                     // machine model info
+            nullptr,                                     // Intel conditions
+            &kMoreForEntry85_1440601243Exception1,       // more data
+        },
+    }};
+
 #endif  // GPU_CONFIG_GPU_CONTROL_LIST_TESTING_EXCEPTIONS_AUTOGEN_H_

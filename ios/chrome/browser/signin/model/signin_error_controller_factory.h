@@ -5,10 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_ERROR_CONTROLLER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_ERROR_CONTROLLER_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class SigninErrorController;
@@ -16,14 +14,10 @@ class SigninErrorController;
 namespace ios {
 // Singleton that owns all SigninErrorControllers and associates them with
 // ProfileIOS.
-class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
+class SigninErrorControllerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static SigninErrorController* GetForProfile(ProfileIOS* profile);
   static SigninErrorControllerFactory* GetInstance();
-
-  SigninErrorControllerFactory(const SigninErrorControllerFactory&) = delete;
-  SigninErrorControllerFactory& operator=(const SigninErrorControllerFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<SigninErrorControllerFactory>;

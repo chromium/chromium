@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // |callback| is called after the method call finishes.
   virtual void CancelDiskImageOperation(
       const vm_tools::concierge::CancelDiskImageRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Retrieves the status of a disk image operation
@@ -181,21 +181,21 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // |callback| is called after the method call finishes.
   virtual void StopVm(
       const vm_tools::concierge::StopVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Suspends the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void SuspendVm(
       const vm_tools::concierge::SuspendVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Resumes the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void ResumeVm(
       const vm_tools::concierge::ResumeVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Get VM Info.
@@ -247,7 +247,7 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // |callback| is called once the method call has finished.
   virtual void DetachUsbDevice(
       const vm_tools::concierge::DetachUsbDeviceRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Starts ARCVM if there is not already one running.
@@ -279,6 +279,13 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) = 0;
 
+  // Modifies VM fake power configurations.
+  // |callback| is called after the method call finishes.
+  virtual void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) = 0;
+
   virtual void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<
@@ -288,21 +295,21 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // |callback| is called after the method call finishes.
   virtual void SwapVm(
       const vm_tools::concierge::SwapVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   virtual void InstallPflash(
       base::ScopedFD fd,
       const vm_tools::concierge::InstallPflashRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) = 0;
 
   // Enables or disables aggressive balloon.
   // |callback| is called after the method call finishes.
   virtual void AggressiveBalloon(
       const vm_tools::concierge::AggressiveBalloonRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::AggressiveBalloonResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) = 0;
 
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);

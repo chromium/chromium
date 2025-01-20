@@ -5,7 +5,6 @@
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -16,7 +15,7 @@
 namespace enterprise_connectors {
 
 namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kPolicyClientDescription[] = "any";
 #else
 const char kChromeBrowserCloudManagementClientDescription[] =
@@ -74,7 +73,7 @@ void RealtimeReportingClientBase::InitRealtimeReportingClient(
 
   policy::CloudPolicyClient* client = nullptr;
   std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
       InitBrowserReportingClient(settings.dm_token);
 #else
@@ -95,7 +94,7 @@ std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClientBase::InitBrowserReportingClient(
     const std::string& dm_token) {
   std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy_client_desc = kPolicyClientDescription;
 #else
   policy_client_desc = kChromeBrowserCloudManagementClientDescription;

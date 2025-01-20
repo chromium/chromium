@@ -14,8 +14,6 @@ static_library("web_app") {
     "web_kiosk_app_manager.h",
     "web_kiosk_app_service_launcher.cc",
     "web_kiosk_app_service_launcher.h",
-    "web_kiosk_app_update_observer.cc",
-    "web_kiosk_app_update_observer.h",
     "web_kiosk_browser_controller_ash.cc",
     "web_kiosk_browser_controller_ash.h",
   ]

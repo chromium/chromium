@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
@@ -50,12 +51,13 @@ ExtractCompressedBiddingAndAuctionResponse(
   }
   size_t response_length = (decrypted_data[1] << 24) |
                            (decrypted_data[2] << 16) |
-                           (decrypted_data[3] << 8) | (decrypted_data[4] << 0);
-  if (decrypted_data.size() < kFramingHeaderSize + response_length) {
+                           (decrypted_data[3] << 8) | decrypted_data[4];
+  decrypted_data = decrypted_data.subspan<kFramingHeaderSize>();
+  if (decrypted_data.size() < response_length) {
     // Incomplete Data.
     return std::nullopt;
   }
-  return decrypted_data.subspan(kFramingHeaderSize, response_length);
+  return decrypted_data.first(response_length);
 }
 
 BiddingAndAuctionResponse::KAnonJoinCandidate::KAnonJoinCandidate() = default;
@@ -102,6 +104,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   base::Value::Dict* input_dict = input.GetIfDict();
   if (!input_dict) {
     return std::nullopt;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeBiddingAndAuctionNonceSupport)) {
+    const std::string* nonce = input_dict->FindString("nonce");
+    if (nonce) {
+      base::Uuid nonce_uuid = base::Uuid::ParseCaseInsensitive(*nonce);
+      if (nonce_uuid.is_valid()) {
+        output.nonce = nonce_uuid.AsLowercaseString();
+      }
+    }
   }
 
   base::Value::Dict* error_struct = input_dict->FindDict("error");
@@ -446,6 +459,37 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   result.interest_group =
       blink::InterestGroupKey(owner, names[*maybe_group_idx]);
 
+  base::Value* ghost_winner_private_aggregation_signals_value =
+      k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
+  if (ghost_winner_private_aggregation_signals_value) {
+    base::Value::Dict* ghost_winner_private_aggregation_signals =
+        ghost_winner_private_aggregation_signals_value->GetIfDict();
+    if (!ghost_winner_private_aggregation_signals) {
+      return std::nullopt;
+    }
+    // `ghostWinnerPrivateAggregationSignals` will only have reject reason
+    // contributions, which the server will guarantee.
+    const std::vector<uint8_t>* bucket =
+        ghost_winner_private_aggregation_signals->FindBlob("bucket");
+    std::optional<int> value =
+        ghost_winner_private_aggregation_signals->FindInt("value");
+    if (!bucket || bucket->size() > 16 || !value.has_value()) {
+      return std::nullopt;
+    }
+    // Server already filtered out not needed contributions based on final
+    // auction result.
+    result.non_kanon_private_aggregation_request =
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            auction_worklet::mojom::AggregatableReportContribution::
+                NewHistogramContribution(
+                    blink::mojom::AggregatableReportHistogramContribution::New(
+                        /*bucket=*/U128FromBigEndian(*bucket),
+                        /*value=*/*value,
+                        /*filtering_id=*/std::nullopt)),
+            blink::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::DebugModeDetails::New());
+  }
+
   base::Value* ghost_winner_for_top_level_auction_value =
       k_anon_ghost_winner->Find("ghostWinnerForTopLevelAuction");
   if (ghost_winner_for_top_level_auction_value) {
@@ -718,11 +762,8 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     }
     const std::vector<uint8_t>* bucket = contribution_dict->FindBlob("bucket");
     std::optional<int> value = contribution_dict->FindInt("value");
-    std::optional<uint64_t> filtering_id;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      filtering_id = contribution_dict->FindInt("filteringId");
-    }
+    std::optional<uint64_t> filtering_id =
+        contribution_dict->FindInt("filteringId");
     if (!bucket || bucket->size() > 16 || !value.has_value() ||
         (filtering_id.has_value() && !IsValidFilteringId(filtering_id))) {
       continue;

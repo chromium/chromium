@@ -82,6 +82,16 @@ message MatchedDetector {
 
   // The type of this detector.
   DetectorType detector_type = 3;
+
+  enum MaskType {
+    MASK_TYPE_UNSPECIFIED = 0;
+    LIGHT_OBFUSCATION = 1;
+    HARD_OBFUSCATION = 2;
+    REDACT = 3;
+  }
+
+  // The mask type of this detector, if it is used for data masking.
+  MaskType mask_type = 4;
 }
 
 // Information about notification configuration for a triggered rule.
@@ -419,6 +429,11 @@ enum DataTransferEventTrigger {
 
   // Trigger for file transfers on ChromeOS.
   FILE_TRANSFER = 5;
+
+  // Trigger for data masking events.
+  PAGE_LOAD = 8;
+  MUTATION = 9;
+  MOUSE_ACTION = 10;
 }
 
 // Next ID: 20.

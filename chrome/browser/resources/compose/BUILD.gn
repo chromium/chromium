@@ -9,8 +9,8 @@ build_webui("build") {
   static_files = [ "compose.html" ]
   web_component_files = [
     "app.ts",
-    "textarea.ts",
     "result_text.ts",
+    "textarea.ts",
   ]
   non_web_component_files = [
     "animations/animator.ts",

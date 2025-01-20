@@ -11,13 +11,13 @@ namespace extensions {
 
 class ChromeMetricsPrivateDelegate : public MetricsPrivateDelegate {
  public:
-  ChromeMetricsPrivateDelegate() {}
+  ChromeMetricsPrivateDelegate() = default;
 
   ChromeMetricsPrivateDelegate(const ChromeMetricsPrivateDelegate&) = delete;
   ChromeMetricsPrivateDelegate& operator=(const ChromeMetricsPrivateDelegate&) =
       delete;
 
-  ~ChromeMetricsPrivateDelegate() override {}
+  ~ChromeMetricsPrivateDelegate() override = default;
 
   // MetricsPrivateDelegate:
   bool IsCrashReportingEnabled() override;

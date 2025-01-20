@@ -13,12 +13,14 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -871,6 +873,55 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     EXPECT_TRUE(source->is_host_wildcard);
     EXPECT_FALSE(source->is_port_wildcard);
   }
+}
+
+//
+// As with CSP above, SRI Message Signatures are tested and fuzzed in
+// //services/network/public/cpp. Here we're only testing the basics of
+// conversion to Blink.
+//
+TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
+  const char* cases[] = {
+      // No headers.
+      "HTTP/1.1 200 OK\r\n",
+      // No `Signature-Input` header.
+      ("HTTP/1.1 200 OK\r\nSignature: "
+       "signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAax"
+       "xNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:"),
+      // No `Signature` header.
+      ("HTTP/1.1 200 OK\r\nSignature-Input: signature=(\"identity-digest\";sf);"
+       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+       "tag=\"sri\"")};
+  for (const char* test : cases) {
+    SCOPED_TRACE(test);
+    auto result = ParseSRIMessageSignaturesFromHeaders(test);
+    EXPECT_TRUE(result->signatures.empty());
+  }
+}
+
+TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
+  const char* raw_header =
+      "HTTP/1.1 200 OK\r\n"
+      "Signature: signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52"
+      "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
+      "Signature-Input: signature=(\"identity-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+      "tag=\"sri\"\r\n\r\n";
+
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(raw_header);
+  EXPECT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ("signature", parsed->signatures[0]->label);
+  EXPECT_FALSE(parsed->signatures[0]->created.has_value());
+  EXPECT_FALSE(parsed->signatures[0]->expires.has_value());
+  EXPECT_EQ("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=",
+            parsed->signatures[0]->keyid);
+  EXPECT_TRUE(parsed->signatures[0]->nonce.IsNull());
+  EXPECT_EQ("sri", parsed->signatures[0]->tag);
+
+  EXPECT_EQ(
+      "amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6Kj"
+      "jZuGkdrOUwxhBQ==",
+      WTF::Base64Encode(parsed->signatures[0]->signature));
 }
 
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {

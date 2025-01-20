@@ -54,7 +54,7 @@ public class IncognitoNewTabPageStation extends PageStation {
             FakeOmniboxSuggestions fakeSuggestions) {
         OmniboxFacility omniboxFacility =
                 new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility(mActivityElement);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), URL_BAR::click);
         return Pair.create(omniboxFacility, softKeyboard);
     }

@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.mockito.Mockito;
 
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -59,8 +60,9 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
         mCustomSessionInitiatedForIntent = true;
     }
 
-    public void buildSessionWithHiddenTab(CustomTabsSessionToken token) {
-        Assert.assertTrue(CustomTabsConnection.getInstance().newSession(token));
+    public void buildSessionWithHiddenTab(SessionHolder<?> token) {
+        Assert.assertTrue(
+                CustomTabsConnection.getInstance().newSession(token.getSessionAsCustomTab()));
         // Need to set params to reach |CustomTabsConnection#doMayLaunchUrlOnUiThread|.
         CustomTabsConnection.getInstance().mClientManager.setHideDomainForSession(token, true);
         CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, true);

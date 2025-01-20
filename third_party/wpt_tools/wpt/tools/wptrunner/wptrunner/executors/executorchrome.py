@@ -6,62 +6,26 @@ import os
 import re
 import time
 import uuid
-from typing import Mapping, MutableMapping, Type
+from typing import Mapping, MutableMapping
 
 from webdriver import error
 
-from .base import (
-    CrashtestExecutor,
-    TestharnessExecutor,
-)
+from .base import strip_server
 from .executorwebdriver import (
     WebDriverBaseProtocolPart,
     WebDriverCrashtestExecutor,
     WebDriverFedCMProtocolPart,
     WebDriverPrintRefTestExecutor,
     WebDriverProtocol,
+    WebDriverBidiProtocol,
     WebDriverRefTestExecutor,
+    WebDriverTestDriverProtocolPart,
     WebDriverTestharnessExecutor,
     WebDriverTestharnessProtocolPart,
 )
 from .protocol import LeakProtocolPart, ProtocolPart
 
 here = os.path.dirname(__file__)
-
-
-def make_sanitizer_mixin(crashtest_executor_cls: Type[CrashtestExecutor]):  # type: ignore[no-untyped-def]
-    class SanitizerMixin:
-        def __new__(cls, logger, browser, **kwargs):
-            # Overriding `__new__` is the least worst way we can force tests to run
-            # as crashtests at runtime while still supporting:
-            #   * Class attributes (e.g., `extra_timeout`)
-            #   * Pickleability for `multiprocessing` transport
-            #   * The `__wptrunner__` product interface
-            #
-            # These requirements rule out approaches with `functools.partial(...)`
-            # or global variables.
-            if kwargs.get("sanitizer_enabled"):
-                executor = crashtest_executor_cls(logger, browser, **kwargs)
-
-                def convert_from_crashtest_result(test, result):
-                    if issubclass(cls, TestharnessExecutor):
-                        status = result["status"]
-                        if status == "PASS":
-                            status = "OK"
-                        harness_result = test.make_result(status, result["message"])
-                        # Don't report subtests.
-                        return harness_result, []
-                    # `crashtest` statuses are a subset of `(print-)reftest`
-                    # ones, so no extra conversion necessary.
-                    return cls.convert_result(executor, test, result)
-
-                executor.convert_result = convert_from_crashtest_result
-                return executor
-            return super().__new__(cls)
-    return SanitizerMixin
-
-
-_SanitizerMixin = make_sanitizer_mixin(WebDriverCrashtestExecutor)
 
 
 class ChromeDriverBaseProtocolPart(WebDriverBaseProtocolPart):
@@ -133,6 +97,37 @@ class ChromeDriverLeakProtocolPart(LeakProtocolPart):
         return counters
 
 
+class ChromeDriverTestDriverProtocolPart(WebDriverTestDriverProtocolPart):
+    """An interface to the browser-side testdriver infrastructure that lazily settles calls."""
+
+    def setup(self):
+        super().setup()
+        self._pending_message = ""
+
+    def send_message(self, cmd_id, message_type, status, message=None):
+        message_script = self._format_send_message_script(cmd_id, message_type, status, message)
+        if message_type == "complete":
+            assert not self._pending_message, self._pending_message
+            self._pending_message = message_script
+        else:
+            self.webdriver.execute_script(message_script)
+
+    def _get_next_message_classic(self, url, script_resume):
+        try:
+            message_script, self._pending_message = self._pending_message, ""
+            return self.parent.base.execute_script(message_script + script_resume,
+                                                   asynchronous=True,
+                                                   args=[strip_server(url)])
+        except error.JavascriptErrorException as js_error:
+            # TODO(crbug.com/340662810): Cycle testdriver event loop to work
+            # around `testharnessreport.js` flakily not loaded.
+            if re.search(r'window\.__wptrunner_process_next_event is not a function',
+                         js_error.message):
+                time.sleep(0.05)
+                return None
+            raise
+
+
 class ChromeDriverTestharnessProtocolPart(WebDriverTestharnessProtocolPart):
     """Implementation of `testharness.js` tests controlled by ChromeDriver.
 
@@ -195,6 +190,7 @@ class ChromeDriverProtocol(WebDriverProtocol):
         ChromeDriverBaseProtocolPart,
         ChromeDriverDevToolsProtocolPart,
         ChromeDriverFedCMProtocolPart,
+        ChromeDriverTestDriverProtocolPart,
         ChromeDriverTestharnessProtocolPart,
     ]
     for base_part in WebDriverProtocol.implements:
@@ -211,7 +207,28 @@ class ChromeDriverProtocol(WebDriverProtocol):
         super().__init__(executor, browser, capabilities, **kwargs)
 
 
-def _evaluate_leaks(executor_cls):
+class ChromeDriverBidiProtocol(WebDriverBidiProtocol):
+    implements = [
+        ChromeDriverBaseProtocolPart,
+        ChromeDriverDevToolsProtocolPart,
+        ChromeDriverFedCMProtocolPart,
+        ChromeDriverTestharnessProtocolPart,
+    ]
+    for base_part in WebDriverBidiProtocol.implements:
+        if base_part.name not in {part.name for part in implements}:
+            implements.append(base_part)
+
+    # Prefix to apply to vendor-specific WebDriver extension commands.
+    vendor_prefix = "goog"
+
+    def __init__(self, executor, browser, capabilities, **kwargs):
+        self.implements = list(ChromeDriverBidiProtocol.implements)
+        if getattr(browser, "leak_check", False):
+            self.implements.append(ChromeDriverLeakProtocolPart)
+        super().__init__(executor, browser, capabilities, **kwargs)
+
+
+def _evaluate_sanitized_result(executor_cls):
     if hasattr(executor_cls, "base_convert_result"):
         # Don't wrap more than once, which can cause unbounded recursion.
         return executor_cls
@@ -226,28 +243,48 @@ def _evaluate_leaks(executor_cls):
                                            test_result.extra,
                                            test_result.stack,
                                            test_result.known_intermittent)
+        if self.sanitizer_enabled:
+            # Coerce functional failures to OK/PASS, and discard any subtest results.
+            if test_result.status in {"ERROR", "FAIL", "INTERNAL-ERROR", "PRECONDITION_FAILED"}:
+                test_result.status = test_result.default_expected
+            return test_result, []
         return test_result, subtest_results
 
     executor_cls.convert_result = convert_result
     return executor_cls
 
 
-@_evaluate_leaks
+@_evaluate_sanitized_result
 class ChromeDriverCrashTestExecutor(WebDriverCrashtestExecutor):
     protocol_cls = ChromeDriverProtocol
 
-
-@_evaluate_leaks
-class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
-    protocol_cls = ChromeDriverProtocol
-
-
-@_evaluate_leaks
-class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
-    protocol_cls = ChromeDriverProtocol
-
-    def __init__(self, *args, reuse_window=False, **kwargs):
+    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.sanitizer_enabled = sanitizer_enabled
+
+
+@_evaluate_sanitized_result
+class ChromeDriverRefTestExecutor(WebDriverRefTestExecutor):
+    protocol_cls = ChromeDriverProtocol
+
+    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sanitizer_enabled = sanitizer_enabled
+
+
+@_evaluate_sanitized_result
+class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor):
+
+    def __init__(self, *args, sanitizer_enabled=False, reuse_window=False, **kwargs):
+        require_webdriver_bidi = kwargs.get("browser_settings", {}).get(
+            "require_webdriver_bidi", None)
+        if require_webdriver_bidi:
+            self.protocol_cls = ChromeDriverBidiProtocol
+        else:
+            self.protocol_cls = ChromeDriverProtocol
+
+        super().__init__(*args, **kwargs)
+        self.sanitizer_enabled = sanitizer_enabled
         self.reuse_window = reuse_window
 
     def get_or_create_test_window(self, protocol):
@@ -271,20 +308,11 @@ class ChromeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMi
             self.protocol.testharness.persistent_test_window = test_window
         return test_window
 
-    def _get_next_message_classic(self, protocol, url, test_window):
-        try:
-            return super()._get_next_message_classic(protocol, url, test_window)
-        except error.JavascriptErrorException as js_error:
-            # TODO(crbug.com/340662810): Cycle testdriver event loop to work
-            # around `testharnessreport.js` flakily not loaded.
-            if re.search(r'window\.__wptrunner_process_next_event is not a function',
-                         js_error.message):
-                time.sleep(0.05)
-                return None
-            raise
 
-
-@_evaluate_leaks
-class ChromeDriverPrintRefTestExecutor(WebDriverPrintRefTestExecutor,
-                                       _SanitizerMixin):  # type: ignore
+@_evaluate_sanitized_result
+class ChromeDriverPrintRefTestExecutor(WebDriverPrintRefTestExecutor):
     protocol_cls = ChromeDriverProtocol
+
+    def __init__(self, *args, sanitizer_enabled=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sanitizer_enabled = sanitizer_enabled

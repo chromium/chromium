@@ -57,9 +57,6 @@ namespace {
 
 const char kTestOrigin[] = "https://example.com";
 const char kTestServiceWorkerUrl[] = "https://example.com/sw.js";
-const char kBadMessageImproperNotificationImage[] =
-    "Received an unexpected message with image while notification images are "
-    "disabled.";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
 
@@ -546,23 +543,6 @@ TEST_F(BlinkNotificationServiceImplTest,
 }
 
 TEST_F(BlinkNotificationServiceImplTest,
-       DisplayNonPersistentNotificationWithContentImageSwitchOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kNotificationContentImage);
-  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
-
-  ASSERT_TRUE(bad_messages_.empty());
-  blink::NotificationResources resources;
-  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
-  DisplayNonPersistentNotification(
-      "token", blink::PlatformNotificationData(), resources,
-      non_persistent_notification_listener_.GetRemote());
-  EXPECT_EQ(1u, bad_messages_.size());
-  EXPECT_EQ(kBadMessageImproperNotificationImage, bad_messages_[0]);
-}
-
-TEST_F(BlinkNotificationServiceImplTest,
        DisplayPersistentNotificationWithContentImageSwitchOn) {
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
@@ -581,25 +561,6 @@ TEST_F(BlinkNotificationServiceImplTest,
   RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
-}
-
-TEST_F(BlinkNotificationServiceImplTest,
-       DisplayPersistentNotificationWithContentImageSwitchOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kNotificationContentImage);
-  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
-
-  scoped_refptr<ServiceWorkerRegistration> registration;
-  RegisterServiceWorker(&registration);
-
-  ASSERT_TRUE(bad_messages_.empty());
-  blink::NotificationResources resources;
-  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
-  DisplayPersistentNotificationSync(
-      registration->id(), blink::PlatformNotificationData(), resources);
-  EXPECT_EQ(1u, bad_messages_.size());
-  EXPECT_EQ(kBadMessageImproperNotificationImage, bad_messages_[0]);
 }
 
 TEST_F(BlinkNotificationServiceImplTest,
@@ -794,9 +755,6 @@ TEST_F(BlinkNotificationServiceImplTest, GetNotificationsWithFilter) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, GetTriggeredNotificationsWithFilter) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -834,9 +792,6 @@ TEST_F(BlinkNotificationServiceImplTest, GetTriggeredNotificationsWithFilter) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -886,9 +841,6 @@ TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, NotCallingDisplayForTriggered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   scoped_refptr<ServiceWorkerRegistration> registration;
@@ -909,9 +861,6 @@ TEST_F(BlinkNotificationServiceImplTest, NotCallingDisplayForTriggered) {
 }
 
 TEST_F(BlinkNotificationServiceImplTest, RejectsTriggerTimestampOverAYear) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNotificationTriggers);
-
   ASSERT_TRUE(bad_messages_.empty());
 
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);

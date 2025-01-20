@@ -194,7 +194,7 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
   base::Value::Dict create_params;
   create_params.Set(mime_handler_view::kStreamId, stream_id_);
   manager->CreateGuestAndTransferOwnership(
-      MimeHandlerViewGuest::Type, render_frame_host_, create_params,
+      MimeHandlerViewGuest::Type, render_frame_host_, nullptr, create_params,
       base::BindOnce(&MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest,
                      weak_factory_.GetWeakPtr(),
                      std::move(before_unload_control_remote)));
@@ -219,7 +219,7 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
             render_frame_host_);
 
   const int embedder_frame_process_id =
-      render_frame_host_->GetProcess()->GetID();
+      render_frame_host_->GetProcess()->GetDeprecatedID();
   const int element_instance_id =
       placeholder_render_frame_host_for_inner_contents_->GetRoutingID();
   const int guest_instance_id = guest_view->guest_instance_id();

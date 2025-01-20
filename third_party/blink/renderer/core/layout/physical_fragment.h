@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_H_
 
@@ -118,18 +113,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     PropagatedData(
         const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const HeapVector<Member<Element>>* snap_areas,
-        const Member<const LayoutObject> scroll_start_target)
+        const Member<const LayoutObject> scroll_initial_target)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
-          scroll_start_target(scroll_start_target) {}
+          scroll_initial_target(scroll_initial_target) {}
     void Trace(Visitor* visitor) const {
       visitor->Trace(sticky_descendants);
       visitor->Trace(snap_areas);
-      visitor->Trace(scroll_start_target);
+      visitor->Trace(scroll_initial_target);
     }
     Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
     Member<const HeapVector<Member<Element>>> snap_areas;
-    Member<const LayoutObject> scroll_start_target;
+    Member<const LayoutObject> scroll_initial_target;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -454,6 +449,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // Should only be called during layout as it inspects DOM.
   bool IsImplicitAnchor() const;
 
+  bool IsExplicitAnchor() const { return IsCSSBox() && Style().AnchorName(); }
+
+  bool IsAnchor() const { return IsExplicitAnchor() || IsImplicitAnchor(); }
+
   // GetLayoutObject should only be used when necessary for compatibility
   // with LegacyLayout.
   //
@@ -563,7 +562,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       ConstIterator() = default;
 
       ConstIterator(const PhysicalFragmentLink* current, wtf_size_t size)
-          : current_(current), end_(current + size) {
+          // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+          : current_(current), end_(UNSAFE_TODO(current + size)) {
         SkipInvalidAndSetPostLayout();
       }
 
@@ -571,7 +571,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       const PhysicalFragmentLink* operator->() const { return &post_layout_; }
 
       ConstIterator& operator++() {
-        ++current_;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++current_);
         SkipInvalidAndSetPostLayout();
         return *this;
       }
@@ -589,7 +590,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
      private:
       void SkipInvalidAndSetPostLayout() {
-        for (; current_ != end_; ++current_) {
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        for (; current_ != end_; UNSAFE_TODO(++current_)) {
           const PhysicalFragment* fragment = current_->fragment.Get();
           if (fragment->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
             continue;
@@ -609,7 +611,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     using const_iterator = ConstIterator;
 
     const_iterator begin() const { return const_iterator(buffer_, count_); }
-    const_iterator end() const { return const_iterator(buffer_ + count_, 0); }
+    const_iterator end() const {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      return const_iterator(UNSAFE_TODO(buffer_ + count_), 0);
+    }
 
     wtf_size_t size() const { return count_; }
     bool empty() const { return count_ == 0; }
@@ -655,11 +660,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return IsScrollContainer() ? nullptr : StickyDescendants();
   }
 
-  const Member<const LayoutObject> ScrollStartTarget() const {
-    return propagated_data_ ? propagated_data_->scroll_start_target : nullptr;
+  const Member<const LayoutObject> ScrollInitialTarget() const {
+    return propagated_data_ ? propagated_data_->scroll_initial_target : nullptr;
   }
-  const Member<const LayoutObject> PropagatedScrollStartTarget() const {
-    return IsScrollContainer() ? nullptr : ScrollStartTarget();
+  const Member<const LayoutObject> PropagatedScrollInitialTarget() const {
+    return IsScrollContainer() ? nullptr : ScrollInitialTarget();
   }
 
   const HeapVector<Member<Element>>* SnapAreas() const {
@@ -670,24 +675,24 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool HasPropagatedLayoutObjects() const {
-    return PropagatedStickyDescendants() || PropagatedScrollStartTarget() ||
+    return PropagatedStickyDescendants() || PropagatedScrollInitialTarget() ||
            PropagatedSnapAreas();
   }
 
-  class OofData : public GarbageCollected<OofData>,
-                  private PhysicalAnchorQuery {
+  class OofData : public GarbageCollected<OofData> {
    public:
     virtual ~OofData() = default;
-    void Trace(Visitor* visitor) const override;
+    virtual void Trace(Visitor* visitor) const;
     HeapVector<PhysicalOofPositionedNode>& OofPositionedDescendants() {
       return oof_positioned_descendants_;
     }
-    PhysicalAnchorQuery& AnchorQuery() {
-      return *static_cast<PhysicalAnchorQuery*>(this);
-    }
+    void SetAnchorQuery(PhysicalAnchorQuery* query) { anchor_query_ = query; }
+    const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+    PhysicalAnchorQuery& EnsureAnchorQuery();
 
    private:
     HeapVector<PhysicalOofPositionedNode> oof_positioned_descendants_;
+    Member<PhysicalAnchorQuery> anchor_query_;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -711,15 +716,16 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   base::span<PhysicalOofPositionedNode> OutOfFlowPositionedDescendants() const;
 
   bool HasAnchorQuery() const {
-    return oof_data_ && !oof_data_->AnchorQuery().IsEmpty();
+    return oof_data_ && oof_data_->AnchorQuery() &&
+           !oof_data_->AnchorQuery()->IsEmpty();
   }
   bool HasAnchorQueryToPropagate() const {
-    return HasAnchorQuery() || Style().AnchorName() || IsImplicitAnchor();
+    return HasAnchorQuery() || IsAnchor();
   }
   const PhysicalAnchorQuery* AnchorQuery() const {
     if (!HasAnchorQuery())
       return nullptr;
-    return &oof_data_->AnchorQuery();
+    return oof_data_->AnchorQuery();
   }
 
   const FragmentedOofData* GetFragmentedOofData() const;

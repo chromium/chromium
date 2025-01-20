@@ -524,6 +524,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacTextMarker>("ax-text-marker-range-for-ui-element.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityColumns) {
+  RunTypedTest<kMacMethods>("accessibility-columns.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityColumnHeaderUIElements) {
   RunTypedTest<kMacMethods>("accessibility-column-header-ui-elements.html");
@@ -534,12 +538,51 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacMethods>("accessibility-custom-content.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityHeader) {
+  RunTypedTest<kMacMethods>("accessibility-header.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIsIgnored) {
   RunTypedTest<kMacMethods>("accessibility-is-ignored.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityLabel) {
   RunTypedTest<kMacMethods>("accessibility-label.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityLinkedUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-linked-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityNumberOfCharacters) {
+  RunTypedTest<kMacMethods>("accessibility-number-of-characters.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilitySelectedTextAndRange) {
+  RunTypedTest<kMacMethods>("accessibility-selected-text-and-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityVisibleCharacterRange) {
+  RunTypedTest<kMacMethods>("accessibility-visible-character-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityInsertionPointLineNumber) {
+  RunTypedTest<kMacMethods>("accessibility-insertion-point-line-number.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPerformIncrement) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-perform-increment.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPerformDecrement) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-perform-decrement.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
@@ -556,12 +599,21 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRows) {
   RunTypedTest<kMacMethods>("accessibility-rows.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityRowHeaderUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-row-header-ui-elements.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelected) {
   RunTypedTest<kMacMethods>("accessibility-selected.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilitySelectedRows) {
   RunTypedTest<kMacMethods>("accessibility-selected-rows.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTabs) {
+  RunTypedTest<kMacMethods>("accessibility-tabs.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
@@ -612,6 +664,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityColumnCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-column-count.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRowCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-row-count.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityColumnIndexRange) {
   Migration_RunTypedTest<kMacMethods>("accessibility-column-index-range.html");
@@ -625,6 +685,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilitySortDirection) {
   Migration_RunTypedTest<kMacMethods>("accessibility-sort-direction.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityVisibleColumns) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-columns.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityVisibleCells) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-cells.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityVisibleRows) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-visible-rows.html");
 }
 
 // Parameterized attributes
@@ -693,6 +766,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        IAccessibleTextSelectionContainerSetSelections) {
   RunTypedTest<kIAccessibleTextSelectionContainer>(
       L"iaccessibletextselectioncontainer-set-selections.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       IAccessibleTextSelectionContainerClearSelections) {
+  RunTypedTest<kIAccessibleTextSelectionContainer>(
+      L"iaccessibletextselectioncontainer-clear-selections.html");
 }
 
 #endif

@@ -86,8 +86,9 @@ namespace {
 
 bool NSWindowIsMaximized(NSWindow* window) {
   // -[NSWindow isZoomed] only works if the zoom button is enabled.
-  if ([[window standardWindowButton:NSWindowZoomButton] isEnabled])
+  if ([[window standardWindowButton:NSWindowZoomButton] isEnabled]) {
     return [window isZoomed];
+  }
 
   // We don't attempt to distinguish between a window that has been explicitly
   // maximized versus one that has just been dragged by the user to fill the
@@ -97,7 +98,7 @@ bool NSWindowIsMaximized(NSWindow* window) {
 
 }  // namespace
 
-ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() {}
+ChromeNativeAppWindowViewsMac::ChromeNativeAppWindowViewsMac() = default;
 
 ChromeNativeAppWindowViewsMac::~ChromeNativeAppWindowViewsMac() {
   [nswindow_observer_ stopObserving];
@@ -145,28 +146,33 @@ bool ChromeNativeAppWindowViewsMac::IsMaximized() const {
 }
 
 gfx::Rect ChromeNativeAppWindowViewsMac::GetRestoredBounds() const {
-  if (NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow()))
+  if (NSWindowIsMaximized(GetNativeWindow().GetNativeNSWindow())) {
     return gfx::ScreenRectFromNSRect(bounds_before_maximize_);
+  }
 
   return ChromeNativeAppWindowViews::GetRestoredBounds();
 }
 
 void ChromeNativeAppWindowViewsMac::Maximize() {
-  if (IsFullscreen())
+  if (IsFullscreen()) {
     return;
+  }
 
   NSWindow* window = GetNativeWindow().GetNativeNSWindow();
-  if (!NSWindowIsMaximized(window))
+  if (!NSWindowIsMaximized(window)) {
     [window setFrame:[[window screen] visibleFrame] display:YES animate:YES];
+  }
 
-  if (IsMinimized())
+  if (IsMinimized()) {
     [window deminiaturize:nil];
+  }
 }
 
 void ChromeNativeAppWindowViewsMac::Restore() {
   NSWindow* window = GetNativeWindow().GetNativeNSWindow();
-  if (NSWindowIsMaximized(window))
+  if (NSWindowIsMaximized(window)) {
     [window setFrame:bounds_before_maximize_ display:YES animate:YES];
+  }
 
   ChromeNativeAppWindowViews::Restore();
 }
@@ -176,8 +182,9 @@ void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
       Profile::FromBrowserContext(app_window()->browser_context());
   AppShimHost* shim_host = apps::AppShimManager::Get()->FindHost(
       profile, app_window()->extension_id());
-  if (!shim_host)
+  if (!shim_host) {
     return;
+  }
   shim_host->GetAppShim()->SetUserAttention(
       flash ? chrome::mojom::AppShimAttentionType::kCritical
             : chrome::mojom::AppShimAttentionType::kCancel);

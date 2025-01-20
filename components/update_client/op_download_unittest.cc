@@ -89,7 +89,6 @@ class FakeFactory : public CrxDownloaderFactory {
 class OpDownloadTest : public testing::Test {
  public:
   OpDownloadTest() { RegisterPersistedDataPrefs(pref_->registry()); }
-  ~OpDownloadTest() override = default;
 
   // Overrides from testing::Test.
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }

@@ -164,8 +164,8 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
     uint8_t* plane_ptr = reinterpret_cast<uint8_t*>(
         CVPixelBufferGetBaseAddressOfPlane(pb.get(), i));
     EXPECT_EQ(frame->visible_data(i), plane_ptr);
-    const int stride =
-        static_cast<int>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
+    const size_t stride =
+        static_cast<size_t>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
     EXPECT_EQ(frame->stride(i), stride);
     const int offset = kVisibleRectOffset / ((i == 0) ? 1 : 2);
     for (int h = 0; h < plane_size.height(); ++h) {

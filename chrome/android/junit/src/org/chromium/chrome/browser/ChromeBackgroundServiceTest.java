@@ -99,12 +99,6 @@ public class ChromeBackgroundServiceTest {
         mTaskService.setUpMocks();
     }
 
-    private void startOnRunTaskAndVerify(
-            String taskTag, boolean shouldStart, boolean shouldCallOnPersistentSchedulerWakeUp) {
-        mTaskService.onRunTask(new TaskParams(taskTag));
-        mTaskService.checkExpectations(shouldStart, shouldCallOnPersistentSchedulerWakeUp, false);
-    }
-
     @Test
     @SmallTest
     @Feature({"BackgroundSync"})
@@ -112,11 +106,5 @@ public class ChromeBackgroundServiceTest {
         mTaskService.onRunTask(new TaskParams(BackgroundSyncBackgroundTaskScheduler.TASK_TAG));
         mTaskService.checkBackgroundTaskSchedulerInvocation(
                 TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID);
-    }
-
-    private void startOnInitializeTasksAndVerify(
-            boolean shouldStart, boolean shouldCallOnBrowserUpgraded) {
-        mTaskService.onInitializeTasks();
-        mTaskService.checkExpectations(shouldStart, false, shouldCallOnBrowserUpgraded);
     }
 }

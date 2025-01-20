@@ -8,7 +8,6 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/signin/public/base/signin_client.h"
 #import "net/cookies/cookie_change_dispatcher.h"
@@ -25,7 +24,6 @@ class IOSChromeSigninClient : public SigninClient {
  public:
   IOSChromeSigninClient(
       ProfileIOS* profile,
-      scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<HostContentSettingsMap> host_content_settings_map);
 
   IOSChromeSigninClient(const IOSChromeSigninClient&) = delete;
@@ -62,8 +60,6 @@ class IOSChromeSigninClient : public SigninClient {
   std::unique_ptr<WaitForNetworkCallbackHelperIOS> network_callback_helper_;
   // The profile associated with this service.
   raw_ptr<ProfileIOS> profile_;
-  // Used to check if sign in cookies are allowed.
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Used to add and remove content settings observers.
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 };

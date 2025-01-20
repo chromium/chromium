@@ -350,46 +350,6 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
-       RemoveLoginsByURLAndTimeAsync) {
-  base::RepeatingCallback<bool(const GURL&)> url_filter =
-      base::BindRepeating([](const GURL& url) { return true; });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-
-  EXPECT_CALL(built_in_backend(),
-              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
-                                            delete_end, _, _));
-  EXPECT_CALL(android_backend(), RemoveLoginsByURLAndTimeAsync).Times(0);
-
-  backend_migration_decorator()->RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, url_filter, delete_begin, delete_end,
-      base::OnceCallback<void(bool)>(), base::DoNothing());
-}
-
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
-       RemoveLoginsByURLAndTimeAsyncAfterMigration) {
-  // Indicate completeness of local password migration.
-  prefs().SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-
-  base::RepeatingCallback<bool(const GURL&)> url_filter =
-      base::BindRepeating([](const GURL& url) { return true; });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-  EXPECT_CALL(built_in_backend(),
-              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
-                                            delete_end, _, _));
-  EXPECT_CALL(android_backend(),
-              RemoveLoginsByURLAndTimeAsync(_, url_filter, delete_begin,
-                                            delete_end, _, _));
-
-  backend_migration_decorator()->RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, url_filter, delete_begin, delete_end,
-      base::OnceCallback<void(bool)>(), base::DoNothing());
-}
-
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        RemoveLoginsCreatedBetweenAsync) {
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);

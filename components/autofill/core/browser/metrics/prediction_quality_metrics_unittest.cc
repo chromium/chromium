@@ -6,27 +6,31 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 
 // This is defined in the prediction_quality_metrics.cc implementation file.
-int GetFieldTypeGroupPredictionQualityMetric(
-    FieldType field_type,
-    autofill_metrics::FieldTypeQualityMetric metric);
+int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
+                                             FieldTypeQualityMetric metric);
 
 namespace {
 
 using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::testing::WithParamInterface;
 
 class PredictionQualityMetricsTest : public AutofillMetricsBaseTest,
                                      public testing::Test {
@@ -195,6 +199,149 @@ TEST_F(PredictionQualityMetricsTest,
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
     histogram_tester.ExpectTotalCount(kMetricName, 0);
   }
+}
+
+TEST_F(PredictionQualityMetricsTest, LogLocalHeuristicMatchedAttribute) {
+  base::HistogramTester histogram_tester;
+  LogLocalHeuristicMatchedAttribute({});  // None
+  LogLocalHeuristicMatchedAttribute(
+      {MatchAttribute::kLabel, MatchAttribute::kName});  // Ambiguous
+  LogLocalHeuristicMatchedAttribute({MatchAttribute::kLabel});
+  LogLocalHeuristicMatchedAttribute({MatchAttribute::kName});
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalHeuristics.MatchedAttribute"),
+              BucketsAre(Bucket(0 /* None */, 1), Bucket(1 /* Ambiguous */, 1),
+                         Bucket(2 /* Label */, 1), Bucket(3 /* Name */, 1)));
+}
+
+struct PredictionOverlapMetricTestInput {
+  FieldType server_predictions;
+  FieldType heuristics_predictions;
+  HtmlFieldType autocomplete_predictions;
+  FieldPredictionOverlapSourcesSuperset expected_overlap;
+};
+
+class PredictionOverlapMetricTest
+    : public PredictionQualityMetricsTest,
+      public WithParamInterface<PredictionOverlapMetricTestInput> {};
+
+TEST_P(PredictionOverlapMetricTest, LogFieldPredictionOverlapMetrics) {
+  PredictionOverlapMetricTestInput input = GetParam();
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions(
+      {test::CreateFieldPrediction(input.server_predictions)});
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           input.heuristics_predictions);
+  field.SetHtmlType(input.autocomplete_predictions, HtmlFieldMode::kNone);
+
+  base::HistogramTester histogram_tester;
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributePresent.Overall."
+      "AllTypes",
+      input.expected_overlap, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributePresent.Overall."
+      "NAME_FIRST",
+      input.expected_overlap, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAggregate.Overall."
+      "AllTypes",
+      input.expected_overlap, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAggregate.Overall."
+      "NAME_FIRST",
+      input.expected_overlap, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    OverlapBucketsTest,
+    PredictionOverlapMetricTest,
+    testing::Values(
+        PredictionOverlapMetricTestInput{
+            NAME_FIRST, NAME_FIRST, HtmlFieldType::kGivenName,
+            FieldPredictionOverlapSourcesSuperset::
+                kServerHeuristicsAutocompleteCorrect},
+        PredictionOverlapMetricTestInput{
+            NAME_FIRST, NAME_FIRST, HtmlFieldType::kCountryName,
+            FieldPredictionOverlapSourcesSuperset::kServerHeuristicsCorrect},
+        PredictionOverlapMetricTestInput{
+            NAME_FIRST, ADDRESS_HOME_STATE, HtmlFieldType::kGivenName,
+            FieldPredictionOverlapSourcesSuperset::kServerAutocompleteCorrect},
+        PredictionOverlapMetricTestInput{ADDRESS_HOME_STATE, NAME_FIRST,
+                                         HtmlFieldType::kGivenName,
+                                         FieldPredictionOverlapSourcesSuperset::
+                                             kHeuristicsAutocompleteCorrect},
+        PredictionOverlapMetricTestInput{
+            ADDRESS_HOME_STATE, ADDRESS_HOME_STATE, HtmlFieldType::kGivenName,
+            FieldPredictionOverlapSourcesSuperset::kAutocompleteCorrect},
+        PredictionOverlapMetricTestInput{
+            ADDRESS_HOME_STATE, NAME_FIRST, HtmlFieldType::kCountryName,
+            FieldPredictionOverlapSourcesSuperset::kHeuristicsCorrect},
+        PredictionOverlapMetricTestInput{
+            NAME_FIRST, ADDRESS_HOME_STATE, HtmlFieldType::kCountryName,
+            FieldPredictionOverlapSourcesSuperset::kServerCorrect},
+        PredictionOverlapMetricTestInput{
+            ADDRESS_HOME_STATE, ADDRESS_HOME_STATE, HtmlFieldType::kCountryName,
+            FieldPredictionOverlapSourcesSuperset::kNoneCorrect}));
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_IllegalValuesIgnored) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field_1;
+  field_1.set_possible_types({NAME_FIRST, ADDRESS_HOME_STATE});
+  field_1.set_server_predictions(
+      {test::CreateFieldPrediction(ADDRESS_HOME_STATE)});
+  field_1.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
+  LogFieldPredictionOverlapMetrics(field_1);
+
+  AutofillField field_2;
+  field_2.set_possible_types({EMPTY_TYPE});
+  field_2.set_server_predictions(
+      {test::CreateFieldPrediction(ADDRESS_HOME_STATE)});
+  field_2.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
+  LogFieldPredictionOverlapMetrics(field_2);
+
+  AutofillField field_3;
+  field_3.set_possible_types({UNKNOWN_TYPE});
+  field_3.set_server_predictions(
+      {test::CreateFieldPrediction(ADDRESS_HOME_STATE)});
+  field_3.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
+  LogFieldPredictionOverlapMetrics(field_3);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAggregate.Overall."
+      "AllTypes",
+      0);
+}
+
+TEST_F(PredictionQualityMetricsTest,
+       LogFieldPredictionOverlapMetrics_AutocompleteAttributeAbsent) {
+  base::HistogramTester histogram_tester;
+
+  AutofillField field;
+  field.set_possible_types({NAME_FIRST});
+  field.set_server_predictions(
+      {test::CreateFieldPrediction(ADDRESS_HOME_STATE)});
+  field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
+  LogFieldPredictionOverlapMetrics(field);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributePresent.Overall."
+      "AllTypes",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAggregate.Overall."
+      "AllTypes",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.FieldPredictionOverlap.AutocompleteAttributeAbsent.Overall."
+      "AllTypes",
+      1);
 }
 
 }  // namespace

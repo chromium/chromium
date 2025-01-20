@@ -12,6 +12,12 @@
   .banner {
     height: 140px;
   }
+
+  .learn-more-title {
+    color: initial;
+    font-size: inherit;
+    font-weight: 500;
+  }
 </style>
 
 <div id="notice" hidden$="[[hideNoticePage_]]">
@@ -21,7 +27,7 @@
         <img class="logo" alt="">
         <h1>$i18n{m1NoticeEeaTitle}</h1>
       </div>
-      <template is="dom-if" if="[[!shouldShowV2_]]">
+      <template is="dom-if" if="[[!shouldShowV2()]]">
         <div id="noticeContent">
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEeaDescription1}
@@ -52,7 +58,7 @@
           </div>
         </div>
       </template>
-      <template is="dom-if" if="[[shouldShowV2_]]">
+      <template is="dom-if" if="[[shouldShowV2()]]">
         <div id="noticeContentV2">
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEADescription1V2}
@@ -60,13 +66,14 @@
           <div class="banner">
             <img class="fledge-banner" alt="">
           </div>
-          <div class="section cr-secondary-text">
+          <h2 class="section learn-more-title">
             $i18n{m1NoticeEEASiteSuggestedAdsTitle}
-          </div>
+          </h2>
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEASiteSuggestedAdsDescription}
           </div>
           <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              id="siteSuggestedAdsLearnMore"
               expanded="{{siteSuggestedAdsLearnMoreExpanded_}}"
               title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
             <ul class="cr-secondary-text">
@@ -84,13 +91,14 @@
               <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
             </ul>
           </privacy-sandbox-dialog-learn-more>
-          <div class="section cr-secondary-text">
+          <h2 class="section learn-more-title">
             $i18n{m1NoticeEEAAdMeasurementTitle}
-          </div>
+          </h2>
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEAAdMeasurementDescription}
           </div>
           <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              id="adsMeasurementLearnMore"
               expanded="{{adMeasurementLearnMoreExpanded_}}"
               title="$i18n{m1NoticeEEAAdMeasurementLearnMoreLabel}">
             <ul class="cr-secondary-text">
@@ -104,10 +112,12 @@
       </template>
     </div>
     <div class="buttons-container">
-      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      <cr-button id="settingsButton"
+          class$="[[getSettingsButtonsClass_()]]"
+          on-click="onNoticeOpenSettings">
         $i18n{m1NoticeEeaSettingsButton}
       </cr-button>
-      <cr-button id="ackButton" class="action-button"
+      <cr-button id="ackButton" class$="[[getAckButtonsClass_()]]"
           on-click="onNoticeAcknowledge">
         $i18n{m1NoticeEeaAckButton}
       </cr-button>
@@ -116,7 +126,7 @@
 </div>
 <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
   <cr-button id="moreButton" on-click="onNoticeMoreClicked"
-      class="action-button" aria-hidden="true" tabindex="-1">
+      class="action-button">
     $i18n{m1DialogMoreButton}
     <cr-icon icon="cr:expand-more"></cr-icon>
   </cr-button>

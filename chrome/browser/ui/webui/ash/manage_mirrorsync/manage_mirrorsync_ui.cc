@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/manage_mirrorsync_resources.h"
 #include "chrome/grit/manage_mirrorsync_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -29,9 +24,7 @@ ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIManageMirrorSyncHost);
-  webui::SetupWebUIDataSource(source,
-                              base::make_span(kManageMirrorsyncResources,
-                                              kManageMirrorsyncResourcesSize),
+  webui::SetupWebUIDataSource(source, kManageMirrorsyncResources,
                               IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
 }
 

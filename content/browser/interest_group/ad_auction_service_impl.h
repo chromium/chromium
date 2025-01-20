@@ -87,8 +87,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           replacements,
       DeprecatedReplaceInURNCallback callback) override;
   void GetInterestGroupAdAuctionData(
-      const url::Origin& seller,
-      const std::optional<url::Origin>& coordinator,
+      const base::flat_map<url::Origin, std::optional<url::Origin>>& sellers,
       blink::mojom::AuctionDataConfigPtr config,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
@@ -129,13 +128,14 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     ~BiddingAndAuctionDataConstructionState();
 
     base::TimeTicks start_time;  // time used for metrics
-    std::unique_ptr<BiddingAndAuctionServerKey> key;
+    std::map<url::Origin, BiddingAndAuctionServerKey> keys;
     std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
-    url::Origin seller;
-    std::optional<url::Origin> coordinator;
+    base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
     base::Time timestamp;  // timestamp to include in the request.
     blink::mojom::AuctionDataConfigPtr config;
+    std::vector<blink::mojom::AdAuctionPerSellerRequestPtr> requests;
+    bool has_valid_request = false;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 
@@ -192,16 +192,22 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
 
-  // On failing to fetch ad auction data, call the first callback in
-  // ba_data_callbacks_ & start loading the next following request in
-  // ba_data_callbacks_.
-  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string& msg);
+  // On failing to fetch ad auction data, set `seller`'s request to an empty
+  // request with error `msg`.
+  void AddEmptyGetInterestGroupAdAuctionDataRequest(const url::Origin& seller,
+                                                    const std::string& msg);
+  // Call the first callback in ba_data_callbacks_ & start loading the next
+  // following request in ba_data_callbacks_.
+  void RunGetInterestGroupAdAuctionDataCallback(base::Uuid request_id);
   void LoadAuctionDataAndKeyForNextQueuedRequest();
   void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
-  void OnGotBiddingAndAuctionServerKey(
+  void OnGotOneBiddingAndAuctionServerKey(
       base::Uuid request_id,
+      const url::Origin& seller,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
-  void OnGotAuctionDataAndKey(base::Uuid request_id);
+  void OnGotAuctionDataAndKey(base::Uuid request_id,
+                              const url::Origin& seller,
+                              const BiddingAndAuctionServerKey& ba_key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
 

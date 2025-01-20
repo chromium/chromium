@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 
 #include "ash/constants/ash_features.h"
@@ -25,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -40,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash::multidevice_setup {
@@ -92,8 +87,9 @@ MultiDeviceSetupDialog::MultiDeviceSetupDialog()
                               std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
-  for (auto& callback : on_close_callbacks_)
+  for (auto& callback : on_close_callbacks_) {
     std::move(callback).Run();
+  }
 }
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
@@ -127,9 +123,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   source->UseStringsJs();
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kMultideviceSetupResources,
-                      kMultideviceSetupResourcesSize),
+      source, kMultideviceSetupResources,
       IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct
@@ -147,8 +141,9 @@ void MultiDeviceSetupDialogUI::BindInterface(
   MultiDeviceSetupService* service =
       MultiDeviceSetupServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
-  if (service)
+  if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
+  }
 }
 
 void MultiDeviceSetupDialogUI::BindInterface(

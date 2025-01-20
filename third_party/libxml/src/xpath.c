@@ -10081,8 +10081,9 @@ xmlXPathCompLocationPath(xmlXPathParserContextPtr ctxt) {
 	    } else if (CUR == '/') {
 		NEXT;
 		SKIP_BLANKS;
-		if ((CUR != 0 ) &&
-		    ((IS_ASCII_LETTER(CUR)) || (CUR == '_') || (CUR == '.') ||
+		if ((CUR != 0) &&
+		    ((IS_ASCII_LETTER(CUR)) || (CUR >= 0x80) ||
+                     (CUR == '_') || (CUR == '.') ||
 		     (CUR == '@') || (CUR == '*')))
 		    xmlXPathCompRelativeLocationPath(ctxt);
 	    }

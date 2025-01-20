@@ -20,7 +20,9 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-ChromeQuickAnswersTestBase::ChromeQuickAnswersTestBase() = default;
+ChromeQuickAnswersTestBase::ChromeQuickAnswersTestBase() {
+  set_start_session(false);
+}
 
 ChromeQuickAnswersTestBase::~ChromeQuickAnswersTestBase() = default;
 
@@ -38,11 +40,11 @@ void ChromeQuickAnswersTestBase::SetUp() {
   GetFakeUserManager()->AddUser(account_id);
   GetFakeUserManager()->LoginUser(account_id);
 
+  SimulateUserLogin(account_id);
+
   SetUpInitialPrefValues();
   quick_answers_controller_ =
       CreateQuickAnswersControllerImpl(read_write_cards_ui_controller_);
-
-  CreateUserSessions(/*session_count=*/1);
 }
 
 void ChromeQuickAnswersTestBase::TearDown() {

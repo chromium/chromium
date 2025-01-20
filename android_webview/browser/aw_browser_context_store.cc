@@ -205,30 +205,25 @@ AwBrowserContext* AwBrowserContextStore::GetDefault() const {
   return default_context_;
 }
 
-jboolean JNI_AwBrowserContextStore_CheckNamedContextExists(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
+jboolean JNI_AwBrowserContextStore_CheckNamedContextExists(JNIEnv* const env,
+                                                           std::string& jname) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return AwBrowserContextStore::GetInstance()->Exists(
-      base::android::ConvertJavaStringToUTF8(env, jname));
+  return AwBrowserContextStore::GetInstance()->Exists(jname);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-JNI_AwBrowserContextStore_GetNamedContextJava(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname,
-    jboolean create_if_needed) {
+JNI_AwBrowserContextStore_GetNamedContextJava(JNIEnv* const env,
+                                              std::string& jname,
+                                              jboolean create_if_needed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AwBrowserContext* context = AwBrowserContextStore::GetInstance()->Get(
-      base::android::ConvertJavaStringToUTF8(env, jname), create_if_needed);
+  AwBrowserContext* context =
+      AwBrowserContextStore::GetInstance()->Get(jname, create_if_needed);
   return context ? context->GetJavaBrowserContext() : nullptr;
 }
 
-jboolean JNI_AwBrowserContextStore_DeleteNamedContext(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
+jboolean JNI_AwBrowserContextStore_DeleteNamedContext(JNIEnv* const env,
+                                                      std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
   AwBrowserContextStore::DeletionResult result =
       AwBrowserContextStore::GetInstance()->Delete(name);
   switch (result) {
@@ -245,18 +240,16 @@ jboolean JNI_AwBrowserContextStore_DeleteNamedContext(
   }
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContextStore_GetNamedContextPathForTesting(
+std::string JNI_AwBrowserContextStore_GetNamedContextPathForTesting(
     JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
+    std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
   AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
   if (!store->Exists(name)) {
     return nullptr;
   }
   base::FilePath path = store->GetRelativePathForTesting(name);
-  return base::android::ConvertUTF8ToJavaString(env, path.value());
+  return path.value();
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

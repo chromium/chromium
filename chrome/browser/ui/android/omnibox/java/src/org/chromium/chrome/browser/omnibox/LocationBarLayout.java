@@ -554,6 +554,11 @@ public class LocationBarLayout extends FrameLayout {
         return LensEntryPoint.OMNIBOX;
     }
 
+    /** Returns whether the Omnibox text should be cleared on focus. */
+    public boolean shouldClearTextOnFocus() {
+        return true;
+    }
+
     /**
      * Updates the value for the end margin of the url action container in the search box.
      *

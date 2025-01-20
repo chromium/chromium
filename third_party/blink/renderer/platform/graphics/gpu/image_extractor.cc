@@ -48,6 +48,13 @@ ImageExtractor::ImageExtractor(Image* image,
     // can re-use that image. If we can't, then we need to re-decode the image
     // here.
     bool needs_redecode = false;
+
+    // A BitmapImage indicates that this is a coded backed image but non-decoded
+    // yet. Decode the image here.
+    if (image->IsBitmapImage()) {
+      needs_redecode = true;
+    }
+
     if (skia_image) {
       // The `target_color_space` is set to nullptr iff
       // UNPACK_COLORSPACE_CONVERSION is NONE, which means that the color

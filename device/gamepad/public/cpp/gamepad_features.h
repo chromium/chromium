@@ -10,6 +10,8 @@
 
 namespace features {
 
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kEnableWindowsGamingInputDataFetcher);
 GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEnableGamepadMultitouch);
 
 GAMEPAD_FEATURES_EXPORT bool IsGamepadMultitouchEnabled();

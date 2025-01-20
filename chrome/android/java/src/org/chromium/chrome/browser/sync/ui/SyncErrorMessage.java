@@ -20,13 +20,11 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
@@ -39,7 +37,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -369,19 +366,12 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private void openSettings() {
-        if (mSyncService.hasSyncConsent()
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            SettingsNavigation settingsNavigation =
-                    SettingsNavigationFactory.createSettingsNavigation();
-            settingsNavigation.startSettings(
-                    getApplicationContext(),
-                    ManageSyncSettings.class,
-                    ManageSyncSettings.createArguments(false));
-        } else {
-            AccountManagementFragment.openAccountManagementScreen(
-                    getApplicationContext(), GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        }
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
+                getApplicationContext(),
+                ManageSyncSettings.class,
+                ManageSyncSettings.createArguments(false));
     }
 
     private void startUpdateCredentialsFlow(Activity activity) {

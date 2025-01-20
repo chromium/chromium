@@ -115,11 +115,13 @@ class TestHooks : public AnimationDelegate {
   virtual void DidInitializeLayerTreeFrameSink() {}
   virtual void DidFailToInitializeLayerTreeFrameSink() {}
   virtual void DidAddAnimation() {}
+  virtual void OnCommitRequested() {}
   virtual void WillCommit(const CommitState&) {}
   virtual void DidCommit() {}
   virtual void DidCommitAndDrawFrame() {}
   virtual void DidActivateSyncTree() {}
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) {}
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics();
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,

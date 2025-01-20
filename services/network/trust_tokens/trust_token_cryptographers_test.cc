@@ -39,7 +39,7 @@ std::string_view as_string(base::span<const uint8_t> bytes) {
 }
 
 std::string_view as_string(const std::vector<uint8_t>& bytes) {
-  return as_string(base::make_span(bytes));
+  return as_string(base::span(bytes));
 }
 
 // If RequestManyTokensAndRetainOneArbitrarily doesn't throw a fatal failure,

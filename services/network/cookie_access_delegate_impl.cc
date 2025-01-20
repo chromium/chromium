@@ -51,6 +51,14 @@ net::CookieAccessSemantics CookieAccessDelegateImpl::GetAccessSemantics(
   }
 }
 
+net::CookieScopeSemantics CookieAccessDelegateImpl::GetScopeSemantics(
+    const net::CanonicalCookie& cookie) const {
+  if (!cookie_settings_) {
+    return net::CookieScopeSemantics::UNKNOWN;
+  }
+  return cookie_settings_->GetCookieScopeSemanticsForDomain(cookie.Domain());
+}
+
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) const {

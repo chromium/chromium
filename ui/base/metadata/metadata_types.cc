@@ -4,6 +4,7 @@
 
 #include "ui/base/metadata/metadata_types.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -183,8 +184,8 @@ void MemberMetaDataBase::SetValueAsString(void* obj,
   NOTREACHED();
 }
 
-const char* MemberMetaDataBase::GetMemberNamePrefix() const {
-  return "";
+std::string_view MemberMetaDataBase::GetMemberNamePrefix() const {
+  return {};
 }
 
 MemberMetaDataBase::ValueStrings MemberMetaDataBase::GetValidValues() const {

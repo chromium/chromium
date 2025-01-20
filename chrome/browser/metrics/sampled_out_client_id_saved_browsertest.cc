@@ -34,8 +34,10 @@ bool ChangeMetricsReporting(bool enabled) {
   bool value_after_change;
   base::RunLoop run_loop;
   ChangeMetricsReportingStateWithReply(
-      enabled, base::BindOnce(OnMetricsReportingStateChanged,
-                              &value_after_change, run_loop.QuitClosure()));
+      enabled,
+      base::BindOnce(OnMetricsReportingStateChanged, &value_after_change,
+                     run_loop.QuitClosure()),
+      ChangeMetricsReportingStateCalledFrom::kUiSettings);
   run_loop.Run();
   return value_after_change;
 }

@@ -764,7 +764,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
           break;
         }
         case StorageFormat::Latin1:
-          result = String(base::span(input).subspan(1));
+          result = String(base::span(input).subspan<1>());
           break;
         default:
           corrupt = true;
@@ -822,8 +822,8 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
 
       // TODO(dmurph): Figure out how to avoid a copy here.
       // TODO(dmurph): Handle invalid UTF16 better. https://crbug.com/873280.
-      StringUTF8Adaptor utf8(
-          input, WTF::kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD);
+      StringUTF8Adaptor utf8(input,
+                             WTF::Utf8ConversionMode::kStrictReplacingErrors);
       Vector<uint8_t> result(utf8.size());
       std::memcpy(result.data(), utf8.data(), utf8.size());
       return result;

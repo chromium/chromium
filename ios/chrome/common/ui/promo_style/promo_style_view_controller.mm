@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
@@ -133,6 +134,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   // Whether the buttons have been updated from "More" to the action buttons.
   BOOL _buttonUpdated;
+
+  // Task runner to resize banner image off the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 }
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
@@ -141,9 +145,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - Public
 
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil {
-  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+- (instancetype)initWithTaskRunner:
+    (scoped_refptr<base::SequencedTaskRunner>)taskRunner {
+  self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
     _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
@@ -152,9 +156,18 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _noBackgroundHeaderImageTopMarginPercentage =
         kNoBackgroundHeaderImageTopMarginPercentage;
     _primaryButtonEnabled = YES;
+    _taskRunner = taskRunner;
   }
 
   return self;
+}
+
+- (instancetype)init {
+  scoped_refptr<base::SequencedTaskRunner> taskRunner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  return [self initWithTaskRunner:taskRunner];
 }
 
 - (UIFontTextStyle)titleLabelFontTextStyle {
@@ -546,9 +559,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Rescale image here as on iPad the view height isn't correctly set before
   // subviews are laid out.
   _calculatingImageSize = YES;
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
   _calculatingImageSize = NO;
   if (_shouldScrollToBottom) {
     _shouldScrollToBottom = NO;
@@ -704,17 +716,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (void)setShouldBannerFillTopSpace:(BOOL)shouldBannerFillTopSpace {
   _shouldBannerFillTopSpace = shouldBannerFillTopSpace;
   [self setupBannerConstraints];
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
 }
 
 - (void)setShouldHideBanner:(BOOL)shouldHideBanner {
   _shouldHideBanner = shouldHideBanner;
   [self setupBannerConstraints];
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
 }
 
 - (void)setPrimaryActionString:(NSString*)text {
@@ -734,10 +744,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (UIImageView*)bannerImageView {
   if (!_bannerImageView) {
-    _bannerImageView = [[UIImageView alloc]
-        initWithImage:
-            [self scaleBannerWithCurrentImage:nil
-                                       toSize:[self computeBannerImageSize]]];
+    _bannerImageView = [[UIImageView alloc] init];
+    [self scaleBannerWithCurrentImage:nil toSize:[self computeBannerImageSize]];
     _bannerImageView.clipsToBounds = YES;
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
@@ -1013,19 +1021,45 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
-// Returns a new UIImage which is `sourceImage` resized to `newSize`. Returns
-// `currentImage` if it is already at the correct size.
-- (UIImage*)scaleBannerWithCurrentImage:(UIImage*)currentImage
-                                 toSize:(CGSize)newSize {
+// Asynchronously updates `self.bannerImageView.image` to `[self bannerImage]`
+// resized to `newSize`. If `currentImage` is already the correct size then
+// `self.bannerImageView.image` is instead set to `currentImage` synchronously.
+// If there is no task runner, then `self.bannerImageView.image` is updated
+// synchronously.
+- (void)scaleBannerWithCurrentImage:(UIImage*)currentImage
+                             toSize:(CGSize)newSize {
   UIUserInterfaceStyle currentStyle =
       UITraitCollection.currentTraitCollection.userInterfaceStyle;
   if (CGSizeEqualToSize(newSize, currentImage.size) &&
       _bannerStyle == currentStyle) {
-    return currentImage;
+    self.bannerImageView.image = currentImage;
+    return;
   }
 
   _bannerStyle = currentStyle;
-  return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+
+  // Resize on the UI thread if there is no TaskRunner (this can happen in
+  // application extensions).
+  if (!_taskRunner) {
+    self.bannerImageView.image =
+        ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+    return;
+  }
+
+  // Otherwise, resize image off the UI thread.
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](UIImage* bannerImage, CGSize newSize) {
+            return ResizeImage(bannerImage, newSize,
+                               ProjectionMode::kAspectFit);
+          },
+          [self bannerImage], newSize),
+      base::BindOnce(
+          [](UIImageView* bannerImageView, UIImage* resizedBannerImage) {
+            bannerImageView.image = resizedBannerImage;
+          },
+          self.bannerImageView));
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {
@@ -1351,6 +1385,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.accessibilityIdentifier =
       kPromoStyleScrollViewAccessibilityIdentifier;
+  scrollView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
   return scrollView;
 }
 
@@ -1508,6 +1544,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -1517,6 +1554,22 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [self.delegate didTapURLInDisclaimer:URL];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (!(textView == self.disclaimerView &&
+        [self.delegate respondsToSelector:@selector(didTapURLInDisclaimer:)])) {
+    return defaultAction;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSURL* URL = textItem.link;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate didTapURLInDisclaimer:URL];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {

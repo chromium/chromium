@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -227,11 +228,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       const cc::OverscrollBehavior& overscroll_behavior) final;
   void RequestAnimationAfterDelay(const base::TimeDelta&) final;
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
-  void RequestDecode(const cc::PaintImage&,
+  void RequestDecode(const cc::DrawImage&,
                      base::OnceCallback<void(bool)>) override;
-  void NotifyPresentationTimeInBlink(
-      base::OnceCallback<void(const viz::FrameTimingDetails&)>
-          presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings* GetLayerTreeSettings() final;
@@ -305,7 +303,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) override;
   gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) override;
   gfx::Size BlinkSpaceToFlooredDIPs(const gfx::Size& size) override;
-  gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) override;
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
   gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;
   float DIPsToBlinkSpace(float scalar) override;
@@ -336,12 +333,13 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool GetMayThrottleIfUndrawnFramesForTesting();
 
   // AnimationFrameTimingMonitor::Client overrides
-  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
   bool ShouldReportLongAnimationFrameTiming() const override;
   void ReportLongTaskTiming(base::TimeTicks start_time,
                             base::TimeTicks end,
                             ExecutionContext* task_context) override;
   bool RequestedMainFramePending() override;
+  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      base::TimeTicks) override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;
 
@@ -453,7 +451,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;
-  void BeginMainFrame(base::TimeTicks last_frame_time) override;
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
@@ -472,7 +470,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                          base::OnceClosure callback) override;
   void OnStartStylusWriting(
 #if BUILDFLAG(IS_WIN)
-      const gfx::Rect& focus_rect_in_widget,
+      const gfx::Rect& focus_widget_rect_in_dips,
 #endif  // BUILDFLAG(IS_WIN)
       OnStartStylusWritingCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -584,6 +582,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // content (only clip it).
   void SetBrowserControlsParams(cc::BrowserControlsParams params);
 
+  void SetMaxSafeAreaInsets(const gfx::InsetsF& max_safe_area_insets);
+
   // This function provides zooming for find in page results when browsing with
   // page autosize.
   void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame);
@@ -666,8 +666,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool enabled,
       const blink::DeviceEmulationParams& params);
   void SetScreenInfoAndSize(const display::ScreenInfos& screen_infos,
-                            const gfx::Size& widget_size,
-                            const gfx::Size& visible_viewport_size);
+                            const gfx::Size& widget_size_in_dips,
+                            const gfx::Size& visible_viewport_size_in_dips);
 
   // Update the surface allocation information, compositor viewport rect and
   // screen info on the widget.
@@ -718,9 +718,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Ask compositor to create the shared memory for smoothness ukm region.
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
 
+#if BUILDFLAG(IS_ANDROID)
   // Calculate and cache the most up to date line bounding boxes in the document
   // coordinate space.
   Vector<gfx::Rect> CalculateVisibleLineBoundsOnScreen();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if this widget corresponds to a frame which is being replaced.
   // The compositor for the widget has been detached and passed to the new
@@ -737,6 +739,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Request a new `viz::LocalSurfaceId` on the compositor thread.
   void RequestNewLocalSurfaceId();
+
+  void OnDevToolsSessionConnectionChanged(bool attached);
 
  protected:
   // WidgetBaseClient overrides:
@@ -1038,8 +1042,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
 
-  // Update scroll-markers for any scroller scrolled by the impl thread.
-  void HandleScrollMarkerUpdates(const cc::CompositorCommitData& commit_data);
+  // Let latched scroller know to unpin its selected scroll-marker.
+  void NotifyLatchedScrollMarkerGroup(
+      const cc::CompositorCommitData& commit_data);
 
 #if BUILDFLAG(IS_WIN)
   // Computes a contiguous range of character bounds within proximity of
@@ -1132,8 +1137,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebFrameWidgetImpl is not tied to ExecutionContext
   HeapMojoAssociatedReceiver<mojom::blink::FrameWidget, WebFrameWidgetImpl>
       receiver_{this, nullptr};
-  HeapMojoReceiver<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
-      input_target_receiver_{this, nullptr};
+  HeapMojoReceiverSet<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
+      input_target_receivers_;
 
 #if BUILDFLAG(IS_ANDROID)
   // WebFrameWidgetImpl is not tied to ExecutionContext
@@ -1206,6 +1211,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // It is always valid to read this variable but it can only be set for main
   // frame widgets.
   float device_scale_factor_for_testing_ = 0;
+
+  // When device_scale_factor_for_testing_ is set (i.e. nonzero), this
+  // stores the device scale factor before the testing override was set.
+  // Otherwise it is set to zero.
+  float non_testing_device_scale_factor_ = 0;
 
   // This struct contains data that is only valid for main frame widgets.
   // You should use `main_data()` to access it.

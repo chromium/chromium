@@ -70,7 +70,7 @@ public class TabPrinter implements Printable {
     @Override
     public boolean canPrint() {
         Tab tab = mTab.get();
-        if (tab == null || !tab.isInitialized()) {
+        if (tab == null || !tab.isInitialized() || tab.isHidden()) {
             // Tab.isInitialized() will be false if tab is in destroy process.
             Log.d(TAG, "Tab is not avaliable for printing.");
             return false;

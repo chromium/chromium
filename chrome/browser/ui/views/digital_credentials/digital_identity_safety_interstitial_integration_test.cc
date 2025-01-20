@@ -52,10 +52,10 @@ class TestDigitalIdentityProvider final
       : credential_request_observer_(std::move(credential_request_observer)) {}
   ~TestDigitalIdentityProvider() override = default;
 
-  void Request(content::WebContents* web_contents,
-               const url::Origin& origin,
-               base::Value request,
-               DigitalIdentityCallback callback) override {
+  void Get(content::WebContents* web_contents,
+           const url::Origin& origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override {
     did_request_credential_ = true;
 
     base::OnceClosure observer = std::move(credential_request_observer_);

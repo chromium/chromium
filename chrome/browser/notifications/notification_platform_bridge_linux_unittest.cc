@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
@@ -392,6 +393,11 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     if (test_params.connect_signals) {
       EXPECT_CALL(*mock_notification_proxy_.get(),
                   DoConnectToSignal(kFreedesktopNotificationsName,
+                                    "ActivationToken", _, _))
+          .WillOnce(RegisterSignalCallback(&activation_token_callback_));
+
+      EXPECT_CALL(*mock_notification_proxy_.get(),
+                  DoConnectToSignal(kFreedesktopNotificationsName,
                                     "ActionInvoked", _, _))
           .WillOnce(RegisterSignalCallback(&action_invoked_callback_));
 
@@ -421,6 +427,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     content::RunAllTasksUntilIdle();
   }
 
+  void SendActivationToken(uint32_t dbus_id, const std::string& token) {
+    dbus_thread_linux::GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &NotificationPlatformBridgeLinuxTest::DoSendActivationToken,
+            base::Unretained(this), dbus_id, token));
+  }
+
   void InvokeAction(uint32_t dbus_id, const std::string& action) {
     dbus_thread_linux::GetTaskRunner()->PostTask(
         FROM_HERE,
@@ -442,6 +456,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   scoped_refptr<dbus::MockObjectProxy> mock_dbus_proxy_;
   scoped_refptr<dbus::MockObjectProxy> mock_notification_proxy_;
 
+  base::OnceCallback<void(dbus::Signal*)> activation_token_callback_;
   base::OnceCallback<void(dbus::Signal*)> action_invoked_callback_;
   base::OnceCallback<void(dbus::Signal*)> notification_closed_callback_;
   base::OnceCallback<void(dbus::Signal*)> notification_replied_callback_;
@@ -454,6 +469,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::optional<std::u16string> last_reply_;
 
  private:
+  void DoSendActivationToken(uint32_t dbus_id, const std::string& token) {
+    dbus::Signal signal(kFreedesktopNotificationsName, "ActivationToken");
+    dbus::MessageWriter writer(&signal);
+    writer.AppendUint32(dbus_id);
+    writer.AppendString(token);
+    std::move(activation_token_callback_).Run(&signal);
+  }
+
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {
     dbus::Signal signal(kFreedesktopNotificationsName, "ActionInvoked");
     dbus::MessageWriter writer(&signal);
@@ -845,6 +868,14 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NoSettingsButton) {
           .SetSettingsButtonHandler(SettingsButtonHandler::NONE)
           .GetResult(),
       nullptr);
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, ActivationToken) {
+  static constexpr std::string kToken = "test-token";
+  CreateNotificationBridgeLinux(TestParams());
+  SendActivationToken(1, kToken);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(base::nix::TakeXdgActivationToken(), kToken);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, DefaultButtonForwards) {

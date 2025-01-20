@@ -18,7 +18,7 @@
 
 namespace chrome_browser_net {
 
-ProbeMessage::ProbeMessage() {}
+ProbeMessage::ProbeMessage() = default;
 
 bool ProbeMessage::ParseInput(const std::string& input,
                               ProbePacket* probe_packet) const {
@@ -85,12 +85,12 @@ void ProbeMessage::GenerateProbeRequest(const ProbePacket_Token& token,
 
   // Add padding to mitigate amplification attack.
   std::string* padding = probe_packet->mutable_padding();
-  int padding_size = probe_size - probe_packet->ByteSize();
+  int padding_size = probe_size - probe_packet->ByteSizeLong();
   padding->append(std::string(std::max(0, padding_size), 0));
   probe_packet->mutable_header()->set_checksum(Checksum(*padding));
-  DVLOG(3) << "Request size " << probe_packet->ByteSize() << " probe size "
+  DVLOG(3) << "Request size " << probe_packet->ByteSizeLong() << " probe size "
            << probe_size;
-  DCHECK_LE(probe_size, static_cast<uint32_t>(probe_packet->ByteSize()));
+  DCHECK_LE(probe_size, probe_packet->ByteSizeLong());
 }
 
 void ProbeMessage::SetPacketHeader(ProbePacket_Type packet_type,

@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -163,6 +165,7 @@ ModelExecutionManager::ModelExecutionManager(
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
+      on_device_component_state_manager_(on_device_component_state_manager),
       optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
           GetModelExecutionServiceURL(),
@@ -172,7 +175,7 @@ ModelExecutionManager::ModelExecutionManager(
       identity_manager_(identity_manager),
       model_adaptation_loaders_(GetRequiredModelAdaptationLoaders(
           model_provider,
-          on_device_component_state_manager,
+          on_device_component_state_manager_,
           local_state,
           on_device_model_service_controller
               ? on_device_model_service_controller->GetWeakPtr()
@@ -192,13 +195,18 @@ ModelExecutionManager::ModelExecutionManager(
     return;
   }
 
-  if (on_device_component_state_manager &&
-      on_device_component_state_manager->IsInstallerRegistered()) {
-    RegisterTextSafetyAndLanguageModels();
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->AddObserver(this);
+    if (on_device_component_state_manager_->IsInstallerRegistered()) {
+      RegisterTextSafetyAndLanguageModels();
+    }
   }
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->RemoveObserver(this);
+  }
   if (did_register_for_supplementary_on_device_models_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
@@ -286,25 +294,6 @@ void ModelExecutionManager::ExecuteModel(
                      std::move(log_ai_data_request), std::move(callback)));
 }
 
-bool ModelExecutionManager::CanCreateOnDeviceSession(
-    ModelBasedCapabilityKey feature,
-    OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
-  if (!on_device_model_service_controller_) {
-    if (on_device_model_eligibility_reason) {
-      *on_device_model_eligibility_reason =
-          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
-    }
-    return false;
-  }
-
-  OnDeviceModelEligibilityReason reason =
-      on_device_model_service_controller_->CanCreateSession(feature);
-  if (on_device_model_eligibility_reason) {
-    *on_device_model_eligibility_reason = reason;
-  }
-  return reason == OnDeviceModelEligibilityReason::kSuccess;
-}
-
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(
     ModelBasedCapabilityKey feature,
@@ -333,10 +322,13 @@ ModelExecutionManager::StartSession(
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(
-      feature, std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_->GetWeakPtr(), model_quality_uploader_service_,
-      config_params);
+  return std::make_unique<SessionImpl>(feature, std::nullopt,
+                                       std::move(execute_fn), config_params);
+}
+
+// Whether the supplementary on-device models are registered.
+bool ModelExecutionManager::IsSupplementaryModelRegistered() {
+  return did_register_for_supplementary_on_device_models_;
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(
@@ -513,6 +505,32 @@ void ModelExecutionManager::StateChanged(
   if (state) {
     RegisterTextSafetyAndLanguageModels();
   }
+}
+
+optimization_guide::OnDeviceModelEligibilityReason
+ModelExecutionManager::GetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!on_device_model_service_controller_) {
+    return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+  }
+
+  return on_device_model_service_controller_->CanCreateSession(feature);
+}
+
+std::optional<optimization_guide::SamplingParamsConfig>
+ModelExecutionManager::GetSamplingParamsConfig(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!on_device_model_service_controller_) {
+    return std::nullopt;
+  }
+
+  OnDeviceModelAdaptationMetadata* adaptation_metadata =
+      on_device_model_service_controller_->GetFeatureMetadata(feature);
+  if (!adaptation_metadata) {
+    return std::nullopt;
+  }
+
+  return adaptation_metadata->adapter()->MaybeSamplingParamsConfig();
 }
 
 }  // namespace optimization_guide

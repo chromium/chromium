@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 #include <tuple>
@@ -44,6 +39,7 @@
 #include "components/version_info/version_info.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +62,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/browser/signals_aggregator.h"  // nogncheck
@@ -74,7 +69,6 @@
 #include "components/device_signals/core/browser/user_context.h"   // nogncheck
 #include "components/device_signals/core/common/common_types.h"    // nogncheck
 #include "components/device_signals/core/common/signals_constants.h"  // nogncheck
-#include "components/device_signals/core/common/signals_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -917,15 +911,15 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     const NET_FW_PROFILE_TYPE2 kProfileTypes[] = {NET_FW_PROFILE2_PUBLIC,
                                                   NET_FW_PROFILE2_PRIVATE,
                                                   NET_FW_PROFILE2_DOMAIN};
-    for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
-      if ((profile_types & kProfileTypes[i]) != 0) {
-        hr = firewall_policy_->get_FirewallEnabled(kProfileTypes[i], &enabled_);
+    for (auto profile_type : kProfileTypes) {
+      if (profile_types & profile_type) {
+        hr = firewall_policy_->get_FirewallEnabled(profile_type, &enabled_);
         EXPECT_GE(hr, 0);
-        active_profile_ = kProfileTypes[i];
+        active_profile_ = profile_type;
         hr = firewall_policy_->put_FirewallEnabled(
-            kProfileTypes[i], firewall_value_ == SettingValue::ENABLED
-                                  ? VARIANT_TRUE
-                                  : VARIANT_FALSE);
+            profile_type, firewall_value_ == SettingValue::ENABLED
+                              ? VARIANT_TRUE
+                              : VARIANT_FALSE);
         EXPECT_GE(hr, 0);
         break;
       }
@@ -1318,20 +1312,15 @@ class UserContextGatedTest : public ExtensionApiUnittest {
                        const device_signals::SignalsAggregationRequest& request,
                        device_signals::SignalsAggregator::GetSignalsCallback
                            callback) {
-              EXPECT_EQ(user_context.user_id, kFakeUserId);
+              EXPECT_EQ(user_context.user_id, GaiaId(kFakeUserId));
               EXPECT_EQ(request.signal_names.size(), 1U);
               std::move(callback).Run(response);
             }));
   }
 
-  virtual void SetFeatureFlag() {
-    scoped_features_.InitAndEnableFeature(
-        enterprise_signals::features::kNewEvSignalsEnabled);
-  }
 
   raw_ptr<device_signals::MockSignalsAggregator, DanglingUntriaged>
       mock_aggregator_;
-  base::test::ScopedFeatureList scoped_features_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -1341,8 +1330,6 @@ class EnterpriseReportingPrivateGetFileSystemInfoTest
  protected:
   void SetUp() override {
     UserContextGatedTest::SetUp();
-
-    SetFeatureFlag();
 
     function_ = base::MakeRefCounted<
         EnterpriseReportingPrivateGetFileSystemInfoFunction>();
@@ -1501,27 +1488,6 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, CollectionError) {
       "Enterprise.DeviceSignals.Collection.FileSystemInfo.Delta", 0);
 }
 
-class EnterpriseReportingPrivateGetFileSystemInfoDisabledTest
-    : public EnterpriseReportingPrivateGetFileSystemInfoTest {
- protected:
-  // Overwrite this function to disable the feature flag for tests using this
-  // specific fixture.
-  void SetFeatureFlag() override {
-    scoped_features_.InitAndEnableFeatureWithParameters(
-        enterprise_signals::features::kNewEvSignalsEnabled,
-        {{"DisableFileSystemInfo", "true"}});
-  }
-};
-
-TEST_F(EnterpriseReportingPrivateGetFileSystemInfoDisabledTest,
-       FlagDisabled_Test) {
-  auto error = api_test_utils::RunFunctionAndReturnError(
-      function_.get(), GetFakeRequest(), profile());
-  EXPECT_EQ(error, function_->GetError());
-  EXPECT_EQ(error, device_signals::ErrorToString(
-                       device_signals::SignalCollectionError::kUnsupported));
-}
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1531,8 +1497,6 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
  protected:
   void SetUp() override {
     UserContextGatedTest::SetUp();
-
-    SetFeatureFlag();
 
     function_ =
         base::MakeRefCounted<EnterpriseReportingPrivateGetSettingsFunction>();
@@ -1704,26 +1668,6 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, CollectionError) {
       "Enterprise.DeviceSignals.Collection.SystemSettings.Delta", 0);
 }
 
-class EnterpriseReportingPrivateGetSettingsDisabledTest
-    : public EnterpriseReportingPrivateGetSettingsTest {
- protected:
-  // Overwrite this function to disable the feature flag for tests using this
-  // specific fixture.
-  void SetFeatureFlag() override {
-    scoped_features_.InitAndEnableFeatureWithParameters(
-        enterprise_signals::features::kNewEvSignalsEnabled,
-        {{"DisableSettings", "true"}});
-  }
-};
-
-TEST_F(EnterpriseReportingPrivateGetSettingsDisabledTest, FlagDisabled_Test) {
-  auto error = api_test_utils::RunFunctionAndReturnError(
-      function_.get(), GetFakeRequest(), profile());
-  EXPECT_EQ(error, function_->GetError());
-  EXPECT_EQ(error, device_signals::ErrorToString(
-                       device_signals::SignalCollectionError::kUnsupported));
-}
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -1742,8 +1686,6 @@ class EnterpriseReportingPrivateGetAvInfoTest : public UserContextGatedTest {
  protected:
   void SetUp() override {
     UserContextGatedTest::SetUp();
-
-    SetFeatureFlag();
 
     function_ =
         base::MakeRefCounted<EnterpriseReportingPrivateGetAvInfoFunction>();
@@ -1869,33 +1811,12 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
       "Enterprise.DeviceSignals.Collection.Success.AntiVirus.Latency", 0);
 }
 
-class EnterpriseReportingPrivateGetAvInfoDisabledTest
-    : public EnterpriseReportingPrivateGetAvInfoTest {
- protected:
-  // Overwrite this function to disable the feature flag for tests using this
-  // specific fixture.
-  void SetFeatureFlag() override {
-    scoped_features_.InitAndEnableFeatureWithParameters(
-        enterprise_signals::features::kNewEvSignalsEnabled,
-        {{"DisableAntiVirus", "true"}});
-  }
-};
-
-TEST_F(EnterpriseReportingPrivateGetAvInfoDisabledTest, FlagDisabled_Test) {
-  auto error = api_test_utils::RunFunctionAndReturnError(
-      function_.get(), GetFakeUserContextJsonParams(), profile());
-  EXPECT_EQ(error, function_->GetError());
-  EXPECT_EQ(error, device_signals::ErrorToString(
-                       device_signals::SignalCollectionError::kUnsupported));
-}
 
 // Tests for API enterprise.reportingPrivate.getHotfixes
 class EnterpriseReportingPrivateGetHotfixesTest : public UserContextGatedTest {
  protected:
   void SetUp() override {
     UserContextGatedTest::SetUp();
-
-    SetFeatureFlag();
 
     function_ =
         base::MakeRefCounted<EnterpriseReportingPrivateGetHotfixesFunction>();
@@ -2011,27 +1932,6 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
       "Enterprise.DeviceSignals.Collection.Success", 0);
   histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success.Hotfixes.Latency", 0);
-}
-
-class EnterpriseReportingPrivateGetHotfixesInfoDisabledTest
-    : public EnterpriseReportingPrivateGetHotfixesTest {
- protected:
-  // Overwrite this function to disable the feature flag for tests using this
-  // specific fixture.
-  void SetFeatureFlag() override {
-    scoped_features_.InitAndEnableFeatureWithParameters(
-        enterprise_signals::features::kNewEvSignalsEnabled,
-        {{"DisableHotfix", "true"}});
-  }
-};
-
-TEST_F(EnterpriseReportingPrivateGetHotfixesInfoDisabledTest,
-       FlagDisabled_Test) {
-  auto error = api_test_utils::RunFunctionAndReturnError(
-      function_.get(), GetFakeUserContextJsonParams(), profile());
-  EXPECT_EQ(error, function_->GetError());
-  EXPECT_EQ(error, device_signals::ErrorToString(
-                       device_signals::SignalCollectionError::kUnsupported));
 }
 
 #endif  // BUILDFLAG(IS_WIN)

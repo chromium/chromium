@@ -21,7 +21,6 @@
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/output_surface_provider_impl.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider_impl.h"
 #include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
@@ -159,11 +158,6 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   DCHECK(!frame_sink_manager_);
   gpu::SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread();
 
-  server_shared_bitmap_manager_ = std::make_unique<ServerSharedBitmapManager>();
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      server_shared_bitmap_manager_.get(), "ServerSharedBitmapManager",
-      task_runner_);
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool headless = command_line->HasSwitch(switches::kHeadless);
   const bool run_all_compositor_stages_before_draw =
@@ -192,7 +186,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
 
   // Create FrameSinkManagerImpl.
   FrameSinkManagerImpl::InitParams init_params;
-  init_params.shared_bitmap_manager = server_shared_bitmap_manager_.get();
+
   // Set default activation deadline to infinite if client doesn't provide one.
   init_params.activation_deadline_in_frames = std::nullopt;
   if (params->use_activation_deadline) {
@@ -241,17 +235,11 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
 
   weak_factory_.InvalidateWeakPtrs();
 
-  if (server_shared_bitmap_manager_) {
-    base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-        server_shared_bitmap_manager_.get());
-  }
-
   frame_sink_manager_.reset();
   hint_session_factory_.reset();
   output_surface_provider_.reset();
   gmb_video_frame_pool_context_provider_.reset();
   gpu_memory_buffer_manager_.reset();
-  server_shared_bitmap_manager_.reset();
 }
 
 }  // namespace viz

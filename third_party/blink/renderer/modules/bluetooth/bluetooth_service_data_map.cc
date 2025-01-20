@@ -59,10 +59,7 @@ bool BluetoothServiceDataMap::GetMapEntry(ScriptState*,
   if (it == parameter_map_.end())
     return false;
 
-  DOMDataView* dom_data_view =
-      BluetoothRemoteGATTUtils::ConvertSpanToDataView(it->value);
-
-  value = NotShared<DOMDataView>(dom_data_view);
+  value = BluetoothRemoteGATTUtils::ConvertSpanToDataView(it->value);
   return true;
 }
 

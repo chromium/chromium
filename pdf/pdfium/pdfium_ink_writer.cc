@@ -17,7 +17,7 @@
 #include "third_party/ink/src/ink/brush/brush_coat.h"
 #include "third_party/ink/src/ink/brush/brush_tip.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -29,7 +29,7 @@ namespace chrome_pdf {
 
 namespace {
 
-// Wrapper around an `ink::ModeledShape` to iterate through all the outlines
+// Wrapper around an `ink::PartitionedMesh` to iterate through all the outlines
 // that make up the shape.
 class ModeledShapeOutlinesIterator {
  public:
@@ -37,11 +37,11 @@ class ModeledShapeOutlinesIterator {
     uint32_t group_index;
     // Guaranteeded to be non-empty.
     // TODO(367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const ink::ModeledShape::VertexIndexPair>
+    RAW_PTR_EXCLUSION base::span<const ink::PartitionedMesh::VertexIndexPair>
         outline;
   };
 
-  explicit ModeledShapeOutlinesIterator(const ink::ModeledShape& shape)
+  explicit ModeledShapeOutlinesIterator(const ink::PartitionedMesh& shape)
       : shape_(shape) {}
 
   std::optional<OutlineData> GetAndAdvance() {
@@ -62,14 +62,14 @@ class ModeledShapeOutlinesIterator {
   }
 
  private:
-  const raw_ref<const ink::ModeledShape> shape_;
+  const raw_ref<const ink::PartitionedMesh> shape_;
   uint32_t group_index_ = 0;
   uint32_t outline_index_ = 0;
 };
 
 gfx::PointF GetVertexPosition(
     base::span<const ink::Mesh> meshes,
-    const ink::ModeledShape::VertexIndexPair& vertex_index_pair) {
+    const ink::PartitionedMesh::VertexIndexPair& vertex_index_pair) {
   ink::Point vertex_position =
       meshes[vertex_index_pair.mesh_index].VertexPosition(
           vertex_index_pair.vertex_index);
@@ -83,7 +83,7 @@ gfx::PointF GetVertexPosition(
 // The returned page object is always a `FPDF_PAGEOBJ_PATH` and never null.
 ScopedFPDFPageObject CreatePathFromOutlineData(
     FPDF_PAGE page,
-    const ink::ModeledShape& shape,
+    const ink::PartitionedMesh& shape,
     const ModeledShapeOutlinesIterator::OutlineData& outline_data,
     const gfx::AxisTransform2d& transform) {
   CHECK(page);
@@ -119,7 +119,7 @@ ScopedFPDFPageObject CreatePathFromOutlineData(
 }
 
 std::vector<ScopedFPDFPageObject> WriteShapeToNewPathsOnPage(
-    const ink::ModeledShape& shape,
+    const ink::PartitionedMesh& shape,
     FPDF_PAGE page) {
   CHECK(page);
 

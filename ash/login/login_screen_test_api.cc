@@ -37,7 +37,6 @@
 #include "base/run_loop.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -582,28 +581,9 @@ bool LoginScreenTestApi::ClickOsInstallButton() {
 
 // static
 bool LoginScreenTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
-  // TODO(https://crbug.com/1321609): Migrate to SendAcceleratorNatively.
+  // TODO(https://crbug.com/262257946): Migrate to EventGenerator.
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   return lock_screen_test.contents_view()->AcceleratorPressed(accelerator);
-}
-
-// static
-bool LoginScreenTestApi::SendAcceleratorNatively(
-    const ui::Accelerator& accelerator) {
-  gfx::NativeWindow login_window = gfx::NativeWindow();
-  if (LockScreen::HasInstance()) {
-    login_window = LockScreen::Get()->widget()->GetNativeWindow();
-  } else {
-    login_window =
-        LoginScreen::Get()->GetLoginWindowWidget()->GetNativeWindow();
-  }
-  if (!login_window) {
-    return false;
-  }
-  return ui_controls::SendKeyPress(
-      login_window, accelerator.key_code(), accelerator.IsCtrlDown(),
-      accelerator.IsShiftDown(), accelerator.IsAltDown(),
-      accelerator.IsCmdDown());
 }
 
 // static

@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/account_id/account_id.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -92,7 +91,7 @@ OwnerFlagsStorage::OwnerFlagsStorage(
     : flags_ui::PrefServiceFlagsStorage(prefs),
       owner_settings_service_(owner_settings_service) {}
 
-OwnerFlagsStorage::~OwnerFlagsStorage() {}
+OwnerFlagsStorage::~OwnerFlagsStorage() = default;
 
 bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   // Write the flags configuration to profile preferences, which are used to
@@ -205,43 +204,10 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
   if (!primary_user || primary_user != user_manager->GetActiveUser())
     return;
 
-  std::set<std::string> flags = flags_;
-
-  // If LacrosAvailability policy is set, inject it into the feature flag,
-  // so that the value is preserved on restarting the Chrome.
-  // This is a kind of pseudo feature flag, so do not apply it in
-  // ApplyUserPolicyToFlags to store in |flags_|, otherwise the value will
-  // be used to decide whether or not to reboot to apply feature flags.
-  const PrefService::Preference* lacros_launch_switch_pref =
-      g_browser_process->local_state()->FindPreference(
-          ::prefs::kLacrosLaunchSwitch);
-  if (lacros_launch_switch_pref->IsManaged()) {
-    // If there's the value, convert it into the feature name.
-    std::string_view value =
-        ash::standalone_browser::GetLacrosAvailabilityPolicyName(
-            static_cast<ash::standalone_browser::LacrosAvailability>(
-                lacros_launch_switch_pref->GetValue()->GetInt()));
-    DCHECK(!value.empty())
-        << "The unexpect value is set to LacrosAvailability: "
-        << lacros_launch_switch_pref->GetValue()->GetInt();
-    auto* entry = ::about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
-        ash::standalone_browser::kLacrosAvailabilityPolicyInternalName);
-    DCHECK(entry);
-    int index;
-    for (index = 0; index < entry->NumOptions(); ++index) {
-      if (value == entry->ChoiceForOption(index).command_line_value)
-        break;
-    }
-    if (static_cast<size_t>(index) != entry->choices.size()) {
-      LOG(ERROR) << "Updating the lacros_availability: " << index;
-      flags.insert(entry->NameForOption(index));
-    }
-  }
-
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
       primary_user->GetAccountId());
   SessionManagerClient::Get()->SetFeatureFlagsForUser(
-      account_id, {flags.begin(), flags.end()}, origin_list_flags_);
+      account_id, {flags_.begin(), flags_.end()}, origin_list_flags_);
 }
 
 // static

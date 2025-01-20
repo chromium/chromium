@@ -235,9 +235,9 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     const String text_with_override =
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
-    TextRun run_with_override = run_info.run;
-    run_with_override.SetText(text_with_override);
-    run_with_override.SetDirectionalOverride(false);
+    TextRun run_with_override(text_with_override, run.Direction(),
+                              /* directional_override */ false,
+                              run.NormalizeSpace());
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
                         custom_font_not_ready_action, flags, draw_type);
   }
@@ -260,9 +260,8 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
       continue;
     }
 
-    TextRun subrun = run.SubRun(bidi_run.start, bidi_run.Length());
-    subrun.SetDirection(bidi_run.Direction());
-
+    TextRun subrun =
+        run.SubRun(bidi_run.start, bidi_run.Length(), bidi_run.Direction());
     TextRunPaintInfo subrun_info(subrun);
     CharacterRange range(0, 0, 0, 0);
     if (is_sub_run) [[unlikely]] {
@@ -397,8 +396,8 @@ float Font::SubRunWidth(const TextRun& run,
     // Measure the subrun.
     TextRun text_run(
         StringView(run.ToStringView(), visual_run.start, visual_run.Length()),
-        visual_run.Direction(), /* directional_override */ false);
-    text_run.SetNormalizeSpace(true);
+        visual_run.Direction(), /* directional_override */ false,
+        /* normalize_space */ true);
     CharacterRange character_range =
         shaper.GetCharacterRange(text_run, run_from, run_to);
 

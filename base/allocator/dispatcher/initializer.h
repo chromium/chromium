@@ -5,12 +5,12 @@
 #ifndef BASE_ALLOCATOR_DISPATCHER_INITIALIZER_H_
 #define BASE_ALLOCATOR_DISPATCHER_INITIALIZER_H_
 
+#include <tuple>
+#include <utility>
+
 #include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/internal/tools.h"
-
-#include <tuple>
-#include <utility>
 
 namespace base::allocator::dispatcher {
 namespace internal {

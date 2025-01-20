@@ -8,8 +8,10 @@
 
 #include <utility>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -48,8 +50,6 @@ void FrameIntervalDecider::UpdateSettings(
                   [](const absl::monostate& monostate) {},
                   [](const FixedIntervalSettings& fixed_interval_settings) {
                     CHECK(!fixed_interval_settings.supported_intervals.empty());
-                    CHECK(fixed_interval_settings.supported_intervals.contains(
-                        fixed_interval_settings.default_interval));
                   },
                   [](const ContinuousRangeSettings& continuous_range_settings) {
                     CHECK_LE(continuous_range_settings.min_interval,
@@ -89,6 +89,18 @@ void FrameIntervalDecider::Decide(
     }
   }
 
+  if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+    base::UmaHistogramEnumeration("Viz.FrameIntervalDecider.ResultMatcherType",
+                                  matcher_type);
+    if (match_result &&
+        absl::holds_alternative<base::TimeDelta>(match_result.value())) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ResultTimeDelta",
+          absl::get<base::TimeDelta>(match_result.value()),
+          base::Milliseconds(0), base::Milliseconds(500), 50);
+    }
+  }
+
   // If nothing matched, use the default.
   if (!match_result) {
     match_result = absl::visit(
@@ -100,7 +112,9 @@ void FrameIntervalDecider::Decide(
               return fixed_interval_settings.default_interval;
             },
             [](const ContinuousRangeSettings& continuous_range_settings)
-                -> Result { return continuous_range_settings.min_interval; }),
+                -> Result {
+              return continuous_range_settings.default_interval;
+            }),
         settings_.interval_settings);
   }
 

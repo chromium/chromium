@@ -23,6 +23,7 @@
 #ifndef NDEBUG
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #endif  // NDEBUG
 
 namespace {
@@ -272,7 +273,16 @@ void DependencyManager::DumpDependenciesAsGraphviz(
   DCHECK(!dot_file.empty());
   std::string contents = dependency_graph_.DumpAsGraphviz(
       top_level_name, base::BindRepeating(&KeyedServiceBaseFactoryGetNodeName));
-  base::WriteFile(dot_file, contents);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(
+          [](const base::FilePath& dot_file, const std::string& contents) {
+            base::WriteFile(dot_file, contents);
+          },
+          dot_file, contents));
 }
 #endif  // NDEBUG
 

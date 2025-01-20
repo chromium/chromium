@@ -100,7 +100,7 @@ void NullCaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
 
 void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
-void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
+void NullCaptureModeSession::MaybeDismissSunfishRegionNudgeForever() {}
 
 void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
                                              bool root_window_will_shutdown) {
@@ -133,10 +133,10 @@ ActionButtonView* NullCaptureModeSession::AddActionButton(
   return nullptr;
 }
 
-void NullCaptureModeSession::AddScannerActionButtons(
-    std::vector<ScannerActionViewModel> scanner_actions) {}
+void NullCaptureModeSession::AddSmartActionsButton() {}
 
-void NullCaptureModeSession::OnTextDetected() {}
+void NullCaptureModeSession::OnScannerActionsFetched(
+    std::vector<ScannerActionViewModel> scanner_actions) {}
 
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");

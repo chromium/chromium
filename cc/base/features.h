@@ -15,19 +15,11 @@
 namespace features {
 
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAlignSurfaceLayerImplToPixelGrid);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAnimatedImageResume);
-CC_BASE_EXPORT extern bool IsImpulseScrollAnimationEnabled();
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 
 // Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
-
-
-// Whether RenderSurface::common_ancestor_clip_id() is used to clip to the
-// common ancestor clip when any contributing layer escapes the clip of the
-// render surface's owning effect.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
 
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing
@@ -38,12 +30,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
-
-#if BUILDFLAG(IS_ANDROID)
-// Use DMSAA instead of MSAA for rastering tiles on Android GL backend. Note
-// that the above flag kUseDMSAAForTiles is used for Android Vulkan backend.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
-#endif
 
 // Enables shared image cache for gpu used by CC instances instantiated for UI.
 // TODO(https://crbug.com/c/1378251): this shall also be possible to use by
@@ -98,10 +84,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 
-// When enabled we will restore older FrameSequenceTracker sequence order
-// enforcing that can miss backfilled frames.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);
-
 // When enabled we will submit the 'CopySharedImage' in one call and not batch
 // it up into 4MiB increments.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
@@ -140,10 +122,18 @@ CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 // Modes for `kWaitForLateScrollEvents` changing event dispatch. Where the
 // default is to just always enqueue scroll events.
 //
-// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` will wait for
-// `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for input.
-// During this time scroll events will be dispatched immediately. At the
-// deadline we will resume frame production and enqueuing input.
+// The ideal goal for both
+// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` and
+// `kScrollEventDispatchModeDispatchScrollEventsUntilDeadline` is that they will
+// wait for `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for
+// input. During this time the first scroll event will be dispatched
+// immediately. Subsequent scroll events will be enqueued. At the deadline we
+// will resume frame production and enqueuing input.
+//
+// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` relies on
+// `cc::Scheduler` to control the deadline. However this is overridden if we are
+// waiting for Main-thread content. There are also fragile bugs which currently
+// prevent enforcing the deadline if frame production is no longer required.
 //
 // `kScrollEventDispatchModeNameUseScrollPredictorForEmptyQueue` checks when
 // we begin frame production, if the event queue is empty, we will generate a
@@ -155,6 +145,11 @@ CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 // production, we will first attempt to generate a new prediction to dispatch.
 // As in `kScrollEventDispatchModeUseScrollPredictorForEmptyQueue`. After
 // which we will resume frame production and enqueuing input.
+//
+// `kScrollEventDispatchModeDispatchScrollEventsUntilDeadline` relies on
+// `blink::InputHandlerProxy` to directly enforce the deadline. This isolates us
+// from cc scheduling bugs. Allowing us to no longer dispatch events, even if
+// frame production has yet to complete.
 CC_BASE_EXPORT extern const base::FeatureParam<std::string>
     kScrollEventDispatchMode;
 CC_BASE_EXPORT extern const char
@@ -163,9 +158,14 @@ CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[];
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForDeadline[];
+CC_BASE_EXPORT extern const char
+    kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[];
 
-// Enables GPU-side layer trees for content rendering.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);
+// Enables Viz service-side layer trees for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreesInViz);
+
+// Enables Viz service-side layer tree animations for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreeAnimationsInViz);
 
 // When enabled HTMLImageElement::decode() will initiate the decode task right
 // away rather than piggy-backing on the next BeginMainFrame.
@@ -188,6 +188,19 @@ CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
+
+// When enabled, fix bug where an image decode cache entry last use timestamp is
+// initialized to 0 instead of now.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
+
+// The position affected by the safe area inset bottom will be handled by CC in
+// the Render Compositor Thread. The transform metrix y is adjusted for all
+// affected nodes.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
+
+// On devices with a high refresh rate, whether to throttle main (not impl)
+// frame production to 60Hz.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
 }  // namespace features
 

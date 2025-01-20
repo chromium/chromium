@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog;
@@ -37,6 +38,7 @@ public class DangerousDownloadDialogBridge {
 
     /**
      * Called to show a warning dialog for dangerous download.
+     *
      * @param windowAndroid Window to show the dialog.
      * @param guid GUID of the download.
      * @param fileName Name of the download file.
@@ -46,8 +48,8 @@ public class DangerousDownloadDialogBridge {
     @CalledByNative
     public void showDialog(
             WindowAndroid windowAndroid,
-            String guid,
-            String fileName,
+            @JniType("std::string") String guid,
+            @JniType("std::u16string") String fileName,
             long totalBytes,
             int iconId) {
         Activity activity = windowAndroid.getActivity().get();
@@ -89,8 +91,10 @@ public class DangerousDownloadDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void accepted(long nativeDangerousDownloadDialogBridge, String guid);
+        void accepted(
+                long nativeDangerousDownloadDialogBridge, @JniType("std::string") String guid);
 
-        void cancelled(long nativeDangerousDownloadDialogBridge, String guid);
+        void cancelled(
+                long nativeDangerousDownloadDialogBridge, @JniType("std::string") String guid);
     }
 }

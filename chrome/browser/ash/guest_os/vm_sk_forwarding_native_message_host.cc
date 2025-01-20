@@ -36,23 +36,10 @@ namespace ash {
 namespace guest_os {
 
 // static
-const char* const VmSKForwardingNativeMessageHost::kHostName =
-    "com.google.vm_sk_forwarding";
-
-// static
-const char* const VmSKForwardingNativeMessageHost::kOrigins[] = {
-    "chrome-extension://lehkgnicackihfeppclgiffgbgbhmbdp/",
-    "chrome-extension://lcooaekmckohjjnpaaokodoepajbnill/"};
-
-// static
 const char* const
     VmSKForwardingNativeMessageHost::kHostCreatedByExtensionNotSupportedError =
         "{\"error\":\"Communication initiated by extension is not "
         "supported.\"}";
-
-// static
-const size_t VmSKForwardingNativeMessageHost::kOriginCount =
-    std::size(kOrigins);
 
 // static
 std::unique_ptr<extensions::NativeMessageHost>

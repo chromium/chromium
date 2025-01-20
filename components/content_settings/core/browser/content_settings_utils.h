@@ -112,6 +112,11 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants();
 // in the provider have their own custom grant expiry logic.
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
 
+// Returns the list of ContentSettingsTypes which should be actively expired
+// upon their expiration. All other expired content settings will only be
+// expired upon the first reload after the expiration date.
+bool ShouldTypeExpireActively(ContentSettingsType type);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UTILS_H_

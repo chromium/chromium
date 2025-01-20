@@ -41,6 +41,8 @@ struct Course {
   string id;
   // Course name.
   string name;
+  // Course section.
+  string section;
 };
 
 // Represents a browser window.
@@ -131,6 +133,8 @@ struct StudentActivity {
   // TODO(b/365191878): Remove this after refactoring existing schema to support
   // multi-group.
   JoinMethod join_method;
+  // A string-format code to connect to student's device.
+  string? view_screen_session_code;
 };
 
 struct IdentifiedActivity{
@@ -165,8 +169,15 @@ enum SubmitAccessCodeError {
   kInvalid,
 };
 
+enum ViewStudentScreenError {
+  kInvalid,
+  kHTTPError,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
+  // Performs authentication and sets the credential in the webview.
+  AuthenticateWebview() => (bool success);
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
   // non-increasing order for most recent tab's last access timestamp.
   GetWindowsTabsList() => (array<Window> window_list);
@@ -194,6 +205,8 @@ interface PageHandler {
   SetFloatMode(bool isFloatMode)=> (bool success);
   // Submit access code to join a current class session.
   SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
+  // Requests to view screen of a given student.
+  ViewStudentScreen(string id) => (ViewStudentScreenError? error);
 };
 
 // Implemented by renderer process

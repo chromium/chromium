@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <list>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"

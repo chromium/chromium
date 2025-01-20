@@ -263,6 +263,7 @@ DeviceType TabGroupSyncMetricsLoggerImpl::GetDeviceTypeFromDeviceInfo(
 void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
     const std::vector<SavedTabGroup>& saved_tab_groups,
     const std::vector<bool>& is_remote) {
+  // Synced tab group metrics.
   int total_group_count = saved_tab_groups.size();
   int open_group_count = 0;
   int closed_group_count = 0;
@@ -274,11 +275,13 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
   int remote_active_group_count_7_day = 0;
   int remote_active_group_count_28_day = 0;
 
+  // Shared tab group metrics.
+  int total_shared_group_count = 0;
+
   const base::Time current_time = base::Time::Now();
   for (size_t i = 0; i < saved_tab_groups.size(); ++i) {
     const auto& group = saved_tab_groups[i];
     bool is_remote_group = is_remote[i];
-
     const base::TimeDelta tab_group_age =
         current_time - group.creation_time_windows_epoch_micros();
     const base::TimeDelta duration_since_last_user_interaction =
@@ -329,6 +332,14 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
     base::UmaHistogramCounts10000("TabGroups.Sync.SavedTabGroupTabCount",
                                   group.saved_tabs().size());
 
+    if (group.is_shared_tab_group()) {
+      base::UmaHistogramCounts1M("TabGroups.Shared.SharedTabGroupAge",
+                                 tab_group_age.InMinutes());
+      base::UmaHistogramCounts10000("TabGroups.Shared.SharedTabGroupTabCount",
+                                    group.saved_tabs().size());
+      total_shared_group_count++;
+    }
+
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
       const base::TimeDelta duration_since_tab_modification =
           current_time - tab.update_time_windows_epoch_micros();
@@ -342,6 +353,7 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
     }
   }
 
+  // Synced tab group metrics.
   base::UmaHistogramCounts10000("TabGroups.Sync.TotalTabGroupCount",
                                 total_group_count);
   base::UmaHistogramCounts10000("TabGroups.Sync.OpenTabGroupCount",
@@ -366,6 +378,10 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
   base::UmaHistogramCounts10000(
       "TabGroups.Sync.RemoteActiveTabGroupCount.28Day",
       remote_active_group_count_28_day);
+
+  // Shared tab group metrics.
+  base::UmaHistogramCounts10000("TabGroups.Shared.TotalTabGroupCount",
+                                total_shared_group_count);
 }
 
 void TabGroupSyncMetricsLoggerImpl::RecordTabGroupDeletionsOnStartup(

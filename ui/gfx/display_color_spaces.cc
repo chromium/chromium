@@ -9,7 +9,10 @@
 
 #include "ui/gfx/display_color_spaces.h"
 
+#include <array>
+
 #include "build/build_config.h"
+#include "skia/ext/skcolorspace_primaries.h"
 
 namespace gfx {
 
@@ -138,18 +141,23 @@ void DisplayColorSpaces::ToStrings(
     std::vector<gfx::ColorSpace>* out_color_spaces,
     std::vector<gfx::BufferFormat>* out_buffer_formats) const {
   // The names of the configurations.
-  const char* config_names[kConfigCount] = {
+  std::array<const char*, kConfigCount> config_names = {
       "sRGB/no-alpha", "sRGB/alpha",   "WCG/no-alpha",
       "WCG/alpha",     "HDR/no-alpha", "HDR/alpha",
   };
   // Names for special configuration subsets (e.g, all sRGB, all WCG, etc).
   constexpr size_t kSpecialConfigCount = 5;
-  const char* special_config_names[kSpecialConfigCount] = {
+  std::array<const char*, kSpecialConfigCount> special_config_names = {
       "sRGB", "WCG", "SDR", "HDR", "all",
   };
-  const size_t special_config_indices[kSpecialConfigCount][2] = {
-      {0, 2}, {2, 4}, {0, 4}, {4, 6}, {0, 6},
-  };
+  const std::array<std::array<const size_t, 2>, kSpecialConfigCount>
+      special_config_indices = {{
+          {0, 2},
+          {2, 4},
+          {0, 4},
+          {4, 6},
+          {0, 6},
+      }};
 
   // We don't want to take up 6 lines (one for each config) if we don't need to.
   // To avoid this, build up half-open intervals [i, j) which have the same

@@ -23,6 +23,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GaiaId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,7 +144,8 @@ public class AccountRenameCheckerTest {
             String oldAccountEmail, List<String> accountEmails) {
         final List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
         for (String email : accountEmails) {
-            coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId"));
+            coreAccountInfos.add(
+                    CoreAccountInfo.createFromEmailAndGaiaId(email, new GaiaId("notUsedGaiaId")));
         }
         final AtomicReference<String> newAccountName = new AtomicReference<>();
         mChecker.getNewEmailOfRenamedAccountAsync(oldAccountEmail, coreAccountInfos)

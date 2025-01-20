@@ -4,10 +4,13 @@
 
 #include "components/lens/lens_overlay_metrics.h"
 
+#include <cstddef>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace lens {
@@ -46,15 +49,16 @@ std::string FirstInteractionTypeToString(
   }
 }
 
-std::string DocumentTypeToString(lens::PageContentMimeType page_content_type) {
-  switch (page_content_type) {
-    case lens::PageContentMimeType::kPdf:
+std::string MimeTypeToMetricString(lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
       return "Pdf";
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
-      return "Web";
+    case lens::MimeType::kHtml:
+      return "Html";
+    case lens::MimeType::kPlainText:
+      return "PlainText";
     default:
-      return "Unspecified";
+      return "Unknown";
   }
 }
 
@@ -79,13 +83,13 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
 }
 
 void RecordInvocation(LensOverlayInvocationSource invocation_source,
-                      lens::PageContentMimeType page_content_type) {
+                      lens::MimeType document_content_type) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 
   // UMA Invocation sliced by document type.
   const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ByDocumentType." + DocumentTypeToString(page_content_type) +
-      ".Invoked";
+      "Lens.Overlay.ByDocumentType." +
+      MimeTypeToMetricString(document_content_type) + ".Invoked";
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, true);
 }
 
@@ -126,16 +130,115 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordContextualSearchboxFocusedInSession(
+void RecordContextualSearchboxSessionEndMetrics(
+    ukm::SourceId source_id,
+    bool contextual_searchbox_shown_in_session,
     bool contextual_searchbox_focused_in_session,
-    lens::PageContentMimeType page_content_type) {
-  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchbox.FocusedInSession",
+    bool contextual_zps_shown_in_session,
+    bool contextual_zps_used_in_session,
+    bool contextual_query_issued_in_session,
+    lens::MimeType page_content_type) {
+  // Only record if the contextual search box feature is enabled.
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return;
+  }
+
+  // UMA contextual searchbox shown in session.
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.ShownInSession",
+                            contextual_searchbox_shown_in_session);
+
+  // UMA contextual searchbox shown in session sliced by document type.
+  const auto sliced_invoked_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".ShownInSession";
+  base::UmaHistogramBoolean(sliced_invoked_histogram_name,
+                            contextual_searchbox_shown_in_session);
+
+  // Record UKM for contextual search box shown in session.
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession event(
+        source_id);
+    event.SetWasShown(contextual_searchbox_shown_in_session)
+        .SetPageContentType(static_cast<int64_t>(page_content_type))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  // Don't record the rest of the contextual searchbox metrics if it was not
+  // shown in the session.
+  if (!contextual_searchbox_shown_in_session) {
+    return;
+  }
+
+  // UMA contextual searchbox focused in session.
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.FocusedInSession",
                             contextual_searchbox_focused_in_session);
-  const auto histogram_name =
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".FocusedInSession";
-  base::UmaHistogramBoolean(histogram_name,
+  // UMA contextual searchbox focused in session sliced by document type.
+  const auto sliced_focused_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".FocusedInSession";
+  base::UmaHistogramBoolean(sliced_focused_histogram_name,
                             contextual_searchbox_focused_in_session);
+
+  // UMA contextual zps shown in session.
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
+                            contextual_zps_shown_in_session);
+  // UMA contextual zps shown in session sliced by document type.
+  const auto sliced_contextual_zps_histogram_name =
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".ShownInSession";
+  base::UmaHistogramBoolean(sliced_contextual_zps_histogram_name,
+                            contextual_zps_shown_in_session);
+
+  // UMA contextual zps used in session.
+  base::UmaHistogramBoolean(
+      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession",
+      contextual_zps_used_in_session);
+  // UMA contextual zps used in session sliced by document type.
+  const auto sliced_contextual_zps_used_histogram_name =
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".SuggestionUsedInSession";
+  base::UmaHistogramBoolean(sliced_contextual_zps_used_histogram_name,
+                            contextual_zps_used_in_session);
+
+  // UMA contextual query issued in session.
+  base::UmaHistogramBoolean(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
+      contextual_query_issued_in_session);
+  // UMA contextual query issued in session sliced by document type.
+  const auto sliced_contextual_query_issued_histogram_name =
+      "Lens.Overlay.ContextualSuggest.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".QueryIssuedInSession";
+  base::UmaHistogramBoolean(sliced_contextual_query_issued_histogram_name,
+                            contextual_query_issued_in_session);
+
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  // UKM contextual searchbox focused in session.
+  ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession(source_id)
+      .SetFocusedInSession(contextual_searchbox_focused_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
+      .Record(ukm::UkmRecorder::Get());
+
+  // UKM contextual zps shown in session.
+  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession(source_id)
+      .SetShownInSession(contextual_zps_shown_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
+      .Record(ukm::UkmRecorder::Get());
+
+  // UKM contextual zps used in session.
+  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession(
+      source_id)
+      .SetSuggestionUsedInSession(contextual_zps_used_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
+      .Record(ukm::UkmRecorder::Get());
+
+  // UKM contextual query issued in session.
+  ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession(source_id)
+      .SetQueryIssuedInSession(contextual_query_issued_in_session)
+      .SetPageContentType(static_cast<int64_t>(page_content_type))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordSessionForegroundDuration(
@@ -239,6 +342,7 @@ void RecordUKMSessionEndMetrics(
     LensOverlayInvocationSource invocation_source,
     bool search_performed_in_session,
     base::TimeDelta session_duration,
+    lens::MimeType document_content_type,
     std::optional<base::TimeDelta> session_foreground_duration,
     std::optional<int> generated_tab_count) {
   if (source_id == ukm::kInvalidSourceId) {
@@ -257,6 +361,7 @@ void RecordUKMSessionEndMetrics(
   event.SetInvocationSource(static_cast<int64_t>(invocation_source))
       .SetInvocationResultedInSearch(search_performed_in_session)
       .SetSessionDuration(session_duration.InMilliseconds())
+      .SetInvocationDocumentType(static_cast<int64_t>(document_content_type))
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -264,20 +369,35 @@ void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
 }
 
-void MaybeRecordContextualSearchBoxShown(
-    bool shown,
-    lens::PageContentMimeType page_content_type) {
-  // Only record if the contextual search box feature is enabled.
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    return;
-  }
-  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.Shown", shown);
+void RecordContextualSearchboxTimeToInteractionAfterNavigation(
+    base::TimeDelta time_to_interaction,
+    lens::MimeType page_content_type) {
+  const auto sliced_time_to_interaction_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) +
+      ".TimeFromNavigationToFirstInteraction";
+  base::UmaHistogramCustomTimes(sliced_time_to_interaction_histogram_name,
+                                time_to_interaction,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+}
 
-  // UMA Invocation sliced by document type.
+void RecordDocumentSizeBytes(lens::MimeType page_content_type,
+                             size_t document_size_bytes) {
   const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".Shown";
-  base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
+      "Lens.Overlay.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".DocumentSize";
+  base::UmaHistogramMemoryKB(sliced_invoked_histogram_name,
+                             document_size_bytes / 1000);
+}
+
+void RecordPdfPageCount(uint32_t page_count) {
+  base::UmaHistogramCounts1000("Lens.Overlay.ByPageContentType.Pdf.PageCount",
+                               page_count);
+}
+
+void RecordSidePanelResultStatus(SidePanelResultStatus status) {
+  base::UmaHistogramEnumeration("Lens.Overlay.SidePanelResultStatus", status);
 }
 
 }  // namespace lens

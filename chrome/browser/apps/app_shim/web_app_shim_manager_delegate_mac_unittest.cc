@@ -28,7 +28,7 @@ namespace {
 
 class MockDelegate : public apps::AppShimManager::Delegate {
  public:
-  MockDelegate() {}
+  MockDelegate() = default;
   MockDelegate(const MockDelegate&) = delete;
   MockDelegate& operator=(const MockDelegate&) = delete;
   ~MockDelegate() override = default;
@@ -83,7 +83,7 @@ class MockDelegate : public apps::AppShimManager::Delegate {
 
 class WebAppShimManagerDelegateTest : public WebAppTest {
  public:
-  WebAppShimManagerDelegateTest() {}
+  WebAppShimManagerDelegateTest() = default;
   WebAppShimManagerDelegateTest(const WebAppShimManagerDelegateTest&) = delete;
   WebAppShimManagerDelegateTest& operator=(
       const WebAppShimManagerDelegateTest&) = delete;

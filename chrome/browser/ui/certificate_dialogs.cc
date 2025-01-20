@@ -159,8 +159,9 @@ Exporter::Exporter(content::WebContents* web_contents,
 Exporter::~Exporter() {
   // There may be pending file dialogs, we need to tell them that we've gone
   // away so they don't try and call back to us.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
@@ -174,8 +175,9 @@ void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
 
   switch (index - 1) {
     case kBase64Chain:
-      for (const auto& cert : cert_chain_list_)
+      for (const auto& cert : cert_chain_list_) {
         data += GetBase64String(cert.get());
+      }
       break;
     case kDer:
       data = std::string(
@@ -210,8 +212,9 @@ std::string Exporter::GetCMSString(size_t start, size_t end) const {
   size_t size_hint = 64;
   bssl::UniquePtr<STACK_OF(CRYPTO_BUFFER)> stack(sk_CRYPTO_BUFFER_new_null());
   for (size_t i = start; i < end; ++i) {
-    if (!bssl::PushToStack(stack.get(), bssl::UpRef(cert_chain_list_[i])))
+    if (!bssl::PushToStack(stack.get(), bssl::UpRef(cert_chain_list_[i]))) {
       return std::string();
+    }
     size_hint += CRYPTO_BUFFER_len(cert_chain_list_[i].get());
   }
   bssl::ScopedCBB cbb;

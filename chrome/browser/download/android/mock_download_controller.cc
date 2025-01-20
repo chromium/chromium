@@ -15,7 +15,7 @@ namespace android {
 MockDownloadController::MockDownloadController()
     : approve_file_access_request_(true) {}
 
-MockDownloadController::~MockDownloadController() {}
+MockDownloadController::~MockDownloadController() = default;
 
 void MockDownloadController::OnDownloadStarted(
     download::DownloadItem* download_item) {}

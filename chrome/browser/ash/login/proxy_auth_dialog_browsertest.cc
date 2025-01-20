@@ -36,7 +36,7 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
   ProxyAuthOnUserBoardScreenTest& operator=(
       const ProxyAuthOnUserBoardScreenTest&) = delete;
 
-  ~ProxyAuthOnUserBoardScreenTest() override {}
+  ~ProxyAuthOnUserBoardScreenTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(proxy_server_.Start());

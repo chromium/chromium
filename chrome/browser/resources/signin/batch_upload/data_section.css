@@ -72,6 +72,14 @@
 .item-checkbox {
   padding-inline-end: 12px;
   width: 16px;
+  flex-grow: 0;
+}
+
+/* Visually hide the label but still allow the screen reader to pick it up. */
+cr-checkbox::part(label-container) {
+  clip: rect(0,0,0,0);
+  display: block;
+  position: fixed;
 }
 
 .item-icon-container {

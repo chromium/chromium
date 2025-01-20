@@ -25,13 +25,17 @@ source_set("bluetooth") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//build:chromeos_buildflags",
-    "//components/device_event_log",
-    "//content/public/browser",
+    "//device/bluetooth",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//components/device_event_log",
+    "//content/public/browser",
+  ]
 }

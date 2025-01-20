@@ -369,8 +369,6 @@ TestSingleWebFeedSurface::TestSingleWebFeedSurface(
           StreamType(StreamKind::kSingleWebFeed, web_feed_id, entry_point),
           stream,
           entry_point) {}
-TestSupervisedFeedSurface::TestSupervisedFeedSurface(FeedStream* stream)
-    : TestSurfaceBase(StreamType(StreamKind::kSupervisedUser), stream) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;
@@ -839,7 +837,8 @@ TestWireResponseTranslator::TranslateStreamSource(
         result.model_update_request->stream_data.clear_email();
       } else {
         result.model_update_request->stream_data.set_signed_in(true);
-        result.model_update_request->stream_data.set_gaia(account_info.gaia);
+        result.model_update_request->stream_data.set_gaia(
+            account_info.gaia.ToString());
         result.model_update_request->stream_data.set_email(account_info.email);
       }
     }
@@ -1002,9 +1001,6 @@ AccountInfo FeedApiTest::GetAccountInfo() {
 }
 bool FeedApiTest::IsSigninAllowed() {
   return is_signin_allowed_;
-}
-bool FeedApiTest::IsSupervisedAccount() {
-  return is_supervised_account_;
 }
 void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
     size_t follow_count) {

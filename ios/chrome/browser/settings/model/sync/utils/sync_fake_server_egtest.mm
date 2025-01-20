@@ -10,19 +10,19 @@
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -148,10 +148,16 @@ void ClearRelevantData() {
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataForSignedInPeriod)]) {
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
+    // When kSeparateProfilesForManagedAccounts is enabled, there will be no
+    // need to show the data-delete dialog.
+    config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataAndTabsForSignedInPeriod)]) {
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
+    // When kSeparateProfilesForManagedAccounts is enabled, there will be no
+    // need to show the data-delete dialog.
+    config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 
   return config;
@@ -1049,7 +1055,7 @@ void ClearRelevantData() {
 
   // Still before signing in, open a second tab.
   [ChromeEarlGrey openNewTab];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tabs left behind from previous test?!");
 
   // Sign in a managed (aka enterprise) account.
@@ -1081,9 +1087,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for
@@ -1113,7 +1119,7 @@ void ClearRelevantData() {
                   @"History did not contain the expected entries");
 
   // Both tabs should still be there.
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tab was unexpectedly closed");
 }
 
@@ -1144,7 +1150,7 @@ void ClearRelevantData() {
 
   // Still before signing in, open a second tab.
   [ChromeEarlGrey openNewTab];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tabs left behind from previous test?!");
 
   // Sign in a managed (aka enterprise) account.
@@ -1181,9 +1187,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for
@@ -1211,7 +1217,7 @@ void ClearRelevantData() {
 
   // The original tab (not used since signing in) should still be there. The
   // second tab, where we navigated while signed in, should have been closed.
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL,
                   @"Tab wasn't closed as expected");
 }
 

@@ -21,7 +21,7 @@ SigninManagerAndroidFactory::SigninManagerAndroidFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-SigninManagerAndroidFactory::~SigninManagerAndroidFactory() {}
+SigninManagerAndroidFactory::~SigninManagerAndroidFactory() = default;
 
 // static
 SigninManagerAndroid* SigninManagerAndroidFactory::GetForProfile(

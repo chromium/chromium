@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/one_drive_integration_service.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,8 +87,8 @@ class OneDriveIntegrationServiceAshTest : public testing::Test {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kProfileName);
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), kGaiaId);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        profile_->GetProfileUserName(), GaiaId(kGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(profile_));

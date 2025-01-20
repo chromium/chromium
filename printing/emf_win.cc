@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/emf_win.h"
 
 #include <stdint.h>
@@ -43,6 +38,18 @@ bool DIBFormatNativelySupported(HDC dc,
               sizeof(supported), reinterpret_cast<LPSTR>(&supported));
   }
   return !!supported;
+}
+
+const BITMAPINFOHEADER* GetBitmapInfoHeader(
+    const EMRSTRETCHDIBITS* sdib_record) {
+  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
+  return reinterpret_cast<const BITMAPINFOHEADER*>(
+      UNSAFE_TODO(record_start + sdib_record->offBmiSrc));
+}
+
+const BYTE* GetBitmapBits(const EMRSTRETCHDIBITS* sdib_record) {
+  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
+  return UNSAFE_TODO(record_start + sdib_record->offBitsSrc);
 }
 
 }  // namespace
@@ -275,12 +282,10 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
   const XFORM* base_matrix = context->base_matrix;
   switch (record()->iType) {
     case EMR_STRETCHDIBITS: {
-      const EMRSTRETCHDIBITS* sdib_record =
+      const auto* sdib_record =
           reinterpret_cast<const EMRSTRETCHDIBITS*>(record());
-      const BYTE* record_start = reinterpret_cast<const BYTE*>(record());
-      const BITMAPINFOHEADER* bmih = reinterpret_cast<const BITMAPINFOHEADER*>(
-          record_start + sdib_record->offBmiSrc);
-      const BYTE* bits = record_start + sdib_record->offBitsSrc;
+      const BITMAPINFOHEADER* bmih = GetBitmapInfoHeader(sdib_record);
+      const BYTE* bits = GetBitmapBits(sdib_record);
       bool play_normally = true;
       res = false;
       HDC hdc = context->hdc;
@@ -340,32 +345,34 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       DCHECK_EQ(record()->nSize,
                 sizeof(DWORD) * 2 + sizeof(XFORM) + sizeof(DWORD));
       const XFORM* xform = reinterpret_cast<const XFORM*>(record()->dParm);
-      const DWORD* option = reinterpret_cast<const DWORD*>(xform + 1);
-      HDC hdc = context->hdc;
-      switch (*option) {
-        case MWT_IDENTITY:
-          if (base_matrix) {
-            res = 0 != SetWorldTransform(hdc, base_matrix);
-          } else {
-            res = 0 != ModifyWorldTransform(hdc, xform, MWT_IDENTITY);
-          }
-          break;
-        case MWT_LEFTMULTIPLY:
-        case MWT_RIGHTMULTIPLY:
-          res = 0 != ModifyWorldTransform(hdc, xform, *option);
-          break;
-        case 4:  // MWT_SET
-          if (base_matrix) {
-            res = 0 != SetWorldTransform(hdc, base_matrix) &&
-                  ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
-          } else {
-            res = 0 != SetWorldTransform(hdc, xform);
-          }
-          break;
-        default:
-          res = false;
-          break;
-      }
+      UNSAFE_TODO({
+        const DWORD* option = reinterpret_cast<const DWORD*>(xform + 1);
+        HDC hdc = context->hdc;
+        switch (*option) {
+          case MWT_IDENTITY:
+            if (base_matrix) {
+              res = 0 != SetWorldTransform(hdc, base_matrix);
+            } else {
+              res = 0 != ModifyWorldTransform(hdc, xform, MWT_IDENTITY);
+            }
+            break;
+          case MWT_LEFTMULTIPLY:
+          case MWT_RIGHTMULTIPLY:
+            res = 0 != ModifyWorldTransform(hdc, xform, *option);
+            break;
+          case 4:  // MWT_SET
+            if (base_matrix) {
+              res = 0 != SetWorldTransform(hdc, base_matrix) &&
+                    ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
+            } else {
+              res = 0 != SetWorldTransform(hdc, xform);
+            }
+            break;
+          default:
+            res = false;
+            break;
+        }
+      });
       break;
     }
     case EMR_SETLAYOUT:

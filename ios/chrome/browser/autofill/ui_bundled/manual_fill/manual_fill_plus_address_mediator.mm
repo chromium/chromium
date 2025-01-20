@@ -21,9 +21,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -46,6 +46,10 @@
   // If `YES`, create plus address action is shown.
   BOOL _isPlusAddressCreationFallbackEnabled;
 
+  // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
+  // was triggered for passwords.
+  BOOL _isAddressManualFallbackUI;
+
   // A cache of all the plus addresses that are shown in the select plus
   // address. Used for filtering out addresses based on the search string.
   NSArray<ManualFillPlusAddress*>* _allPlusAddresses;
@@ -55,7 +59,8 @@
                    plusAddressService:
                        (plus_addresses::PlusAddressService*)plusAddressService
                                   URL:(const GURL&)URL
-                       isOffTheRecord:(BOOL)isOffTheRecord {
+                       isOffTheRecord:(BOOL)isOffTheRecord
+              isAddressManualFallback:(BOOL)isAddressManualFallback {
   self = [super init];
   if (self) {
     _faviconLoader = faviconLoader;
@@ -64,6 +69,7 @@
     _isPlusAddressCreationFallbackEnabled =
         _plusAddressService->IsPlusAddressCreationEnabled(_mainFrameOrigin,
                                                           isOffTheRecord);
+    _isAddressManualFallbackUI = isAddressManualFallback;
   }
 
   return self;
@@ -218,7 +224,8 @@
                 initWithPlusAddress:plusAddresses[i]
                     contentInjector:self
                         menuActions:menuActions
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:_isAddressManualFallbackUI];
     [items addObject:item];
   }
 
@@ -263,6 +270,20 @@
                       URL:URL];
 }
 
+// Records the select option user action and opens the list of plus addresses.
+- (void)openAllPlusAddressList {
+  if (_isAddressManualFallbackUI) {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnAddres"
+                                               "sManualFallbackSelected"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnPasswo"
+                                               "rdManualFallbackSelected"));
+  }
+  [self.navigator openAllPlusAddressList:_isAddressManualFallbackUI];
+}
+
 // Sends actions to the consumer.
 - (void)postActionsToConsumer:(BOOL)hasPlusAddresses {
   if (!self.consumer) {
@@ -281,8 +302,20 @@
     ManualFillActionItem* managePlusAddressItem = [[ManualFillActionItem alloc]
         initWithTitle:managePlusAddressesTitle
                action:^{
-                 base::RecordAction(base::UserMetricsAction(
-                     "ManualFallback_PlusAddress_OpenManagePlusAddress"));
+                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 if (strongSelf->_isAddressManualFallbackUI) {
+                   base::RecordAction(base::UserMetricsAction(
+                       "PlusAddresses."
+                       "ManageOptionOnAddressManualFallbackSelected"));
+                 } else {
+                   base::RecordAction(base::UserMetricsAction(
+                       "PlusAddresses."
+                       "ManageOptionOnPasswordManualFallbackSelected"));
+                 }
+
                  [weakSelf.navigator openManagePlusAddress];
                }];
     managePlusAddressItem.accessibilityIdentifier =
@@ -299,8 +332,18 @@
     ManualFillActionItem* createPlusAddressItem = [[ManualFillActionItem alloc]
         initWithTitle:createPlusAddressesTitle
                action:^{
-                 base::RecordAction(base::UserMetricsAction(
-                     "ManualFallback_PlusAddress_OpenCreatePlusAddress"));
+                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 if (strongSelf->_isAddressManualFallbackUI) {
+                   base::RecordAction(base::UserMetricsAction(
+                       "PlusAddresses."
+                       "CreateSuggestionOnAddressManualFallbackSelected"));
+                 } else {
+                   base::RecordAction(base::UserMetricsAction(
+                       "CreateSuggestionOnPasswordManualFallbackSelected"));
+                 }
                  [weakSelf.navigator openCreatePlusAddressSheet];
                }];
     createPlusAddressItem.accessibilityIdentifier =
@@ -318,9 +361,7 @@
     ManualFillActionItem* selectPlusAddressItem = [[ManualFillActionItem alloc]
         initWithTitle:selectPlusAddressesTitle
                action:^{
-                 base::RecordAction(base::UserMetricsAction(
-                     "ManualFallback_PlusAddress_OpenSelectPlusAddress"));
-                 [weakSelf.navigator openAllPlusAddressList];
+                 [weakSelf openAllPlusAddressList];
                }];
     selectPlusAddressItem.accessibilityIdentifier =
         manual_fill::kSelectPlusAddressAccessibilityIdentifier;

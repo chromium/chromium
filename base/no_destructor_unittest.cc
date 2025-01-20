@@ -4,12 +4,12 @@
 
 #include "base/no_destructor.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -115,10 +115,11 @@ class BlockingConstructor {
  public:
   BlockingConstructor() {
     EXPECT_FALSE(WasConstructorCalled());
-    subtle::NoBarrier_Store(&constructor_called_, 1);
+    constructor_called_.store(true, std::memory_order_relaxed);
     EXPECT_TRUE(WasConstructorCalled());
-    while (!subtle::NoBarrier_Load(&complete_construction_))
+    while (!complete_construction_.load(std::memory_order_relaxed)) {
       PlatformThread::YieldCurrentThread();
+    }
     done_construction_ = true;
   }
   BlockingConstructor(const BlockingConstructor&) = delete;
@@ -127,28 +128,27 @@ class BlockingConstructor {
 
   // Returns true if BlockingConstructor() was entered.
   static bool WasConstructorCalled() {
-    return subtle::NoBarrier_Load(&constructor_called_);
+    return constructor_called_.load(std::memory_order_relaxed);
   }
 
   // Instructs BlockingConstructor() that it may now unblock its construction.
   static void CompleteConstructionNow() {
-    subtle::NoBarrier_Store(&complete_construction_, 1);
+    complete_construction_.store(true, std::memory_order_relaxed);
   }
 
   bool done_construction() const { return done_construction_; }
 
  private:
-  // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
-  static subtle::Atomic32 constructor_called_;
-  static subtle::Atomic32 complete_construction_;
+  static std::atomic<bool> constructor_called_;
+  static std::atomic<bool> complete_construction_;
 
   bool done_construction_ = false;
 };
 
 // static
-subtle::Atomic32 BlockingConstructor::constructor_called_ = 0;
+std::atomic<bool> BlockingConstructor::constructor_called_ = false;
 // static
-subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
+std::atomic<bool> BlockingConstructor::complete_construction_ = false;
 
 // A SimpleThread running at |thread_type| which invokes |before_get| (optional)
 // and then invokes thread-safe scoped-static-initializationconstruction on its
@@ -163,8 +163,9 @@ class BlockingConstructorThread : public SimpleThread {
       delete;
 
   void Run() override {
-    if (before_get_)
+    if (before_get_) {
       std::move(before_get_).Run();
+    }
 
     static NoDestructor<BlockingConstructor> instance;
     EXPECT_TRUE(instance->done_construction());
@@ -194,8 +195,9 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
                                               OnceClosure());
   background_getter.Start();
 
-  while (!BlockingConstructor::WasConstructorCalled())
+  while (!BlockingConstructor::WasConstructorCalled()) {
     PlatformThread::Sleep(Milliseconds(1));
+  }
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction NoDestructor. When they are all running and poking at it :
@@ -216,8 +218,9 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   // This test will hang if the foreground threads become stuck in
   // NoDestructor's construction per the background thread never being scheduled
   // to complete construction.
-  for (auto& foreground_thread : foreground_threads)
+  for (auto& foreground_thread : foreground_threads) {
     foreground_thread->Join();
+  }
   background_getter.Join();
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a

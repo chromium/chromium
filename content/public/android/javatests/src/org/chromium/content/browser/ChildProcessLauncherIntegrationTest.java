@@ -57,14 +57,18 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
             TestChildProcessConnection connection =
                     new TestChildProcessConnection(
                             context,
                             serviceName,
                             bindToCaller,
                             bindAsExternalService,
-                            serviceBundle);
+                            serviceBundle,
+                            independentFallback,
+                            isSandboxedForHistograms);
             mConnections.add(connection);
             return connection;
         }
@@ -82,7 +86,9 @@ public class ChildProcessLauncherIntegrationTest {
                 ComponentName serviceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
-                Bundle childProcessCommonParameters) {
+                Bundle childProcessCommonParameters,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
             super(
                     context,
                     serviceName,
@@ -90,7 +96,9 @@ public class ChildProcessLauncherIntegrationTest {
                     bindToCaller,
                     bindAsExternalService,
                     childProcessCommonParameters,
-                    /* instanceName= */ null);
+                    /* instanceName= */ null,
+                    independentFallback,
+                    isSandboxedForHistograms);
         }
 
         @Override
@@ -262,13 +270,17 @@ public class ChildProcessLauncherIntegrationTest {
                 ComponentName serviceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
-                Bundle childProcessCommonParameters) {
+                Bundle childProcessCommonParameters,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
             super(
                     context,
                     serviceName,
                     bindToCaller,
                     bindAsExternalService,
-                    childProcessCommonParameters);
+                    childProcessCommonParameters,
+                    independentFallback,
+                    isSandboxedForHistograms);
         }
 
         @Override
@@ -334,7 +346,9 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
             if (mCrashConnection == null) {
                 mCrashConnection =
                         new CrashOnLaunchChildProcessConnection(
@@ -342,7 +356,9 @@ public class ChildProcessLauncherIntegrationTest {
                                 serviceName,
                                 bindToCaller,
                                 bindAsExternalService,
-                                serviceBundle);
+                                serviceBundle,
+                                independentFallback,
+                                isSandboxedForHistograms);
                 return mCrashConnection;
             }
             return super.createConnection(
@@ -352,7 +368,9 @@ public class ChildProcessLauncherIntegrationTest {
                     bindToCaller,
                     bindAsExternalService,
                     serviceBundle,
-                    instanceName);
+                    instanceName,
+                    independentFallback,
+                    isSandboxedForHistograms);
         }
 
         public CrashOnLaunchChildProcessConnection getCrashConnection() {

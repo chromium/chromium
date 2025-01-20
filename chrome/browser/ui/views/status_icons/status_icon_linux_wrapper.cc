@@ -72,20 +72,30 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
 }
 
 StatusIconLinuxWrapper::~StatusIconLinuxWrapper() {
-  if (menu_model_)
+  if (menu_model_) {
     menu_model_->RemoveObserver(this);
+  }
 }
 
 void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
   image_ = GetBestImageRep(image);
-  if (auto* status_icon = GetStatusIcon())
-    status_icon->SetIcon(image_);
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->SetImage(image_);
+  }
+}
+
+void StatusIconLinuxWrapper::SetIcon(const gfx::VectorIcon& icon) {
+  icon_ = &icon;
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->SetIcon(*icon_);
+  }
 }
 
 void StatusIconLinuxWrapper::SetToolTip(const std::u16string& tool_tip) {
   tool_tip_ = tool_tip;
-  if (auto* status_icon = GetStatusIcon())
+  if (auto* status_icon = GetStatusIcon()) {
     status_icon->SetToolTip(tool_tip);
+  }
 }
 
 void StatusIconLinuxWrapper::DisplayBalloon(
@@ -109,6 +119,10 @@ const gfx::ImageSkia& StatusIconLinuxWrapper::GetImage() const {
   return image_;
 }
 
+const gfx::VectorIcon* StatusIconLinuxWrapper::GetIcon() const {
+  return icon_;
+}
+
 const std::u16string& StatusIconLinuxWrapper::GetToolTip() const {
   return tool_tip_;
 }
@@ -130,8 +144,9 @@ void StatusIconLinuxWrapper::OnImplInitializationFailed() {
     case kTypeWindowed:
       status_icon_linux_.reset();
       status_icon_type_ = kTypeNone;
-      if (menu_model_)
+      if (menu_model_) {
         menu_model_->RemoveObserver(this);
+      }
       menu_model_ = nullptr;
       return;
     case kTypeNone:
@@ -140,8 +155,9 @@ void StatusIconLinuxWrapper::OnImplInitializationFailed() {
 }
 
 void StatusIconLinuxWrapper::OnMenuStateChanged() {
-  if (auto* status_icon = GetStatusIcon())
+  if (auto* status_icon = GetStatusIcon()) {
     status_icon->RefreshPlatformContextMenu();
+  }
 }
 
 std::unique_ptr<StatusIconLinuxWrapper>
@@ -160,18 +176,21 @@ StatusIconLinuxWrapper::CreateWrappedStatusIcon(
 
 void StatusIconLinuxWrapper::UpdatePlatformContextMenu(
     StatusIconMenuModel* model) {
-  if (!GetStatusIcon())
+  if (!GetStatusIcon()) {
     return;
+  }
 
   // If a menu already exists, remove ourself from its observer list.
-  if (menu_model_)
+  if (menu_model_) {
     menu_model_->RemoveObserver(this);
+  }
 
   GetStatusIcon()->UpdatePlatformContextMenu(model);
   menu_model_ = model;
 
-  if (model)
+  if (model) {
     model->AddObserver(this);
+  }
 }
 
 ui::StatusIconLinux* StatusIconLinuxWrapper::GetStatusIcon() {

@@ -25,8 +25,9 @@ namespace base {
 TEST(DirReaderPosixUnittest, Read) {
   static const unsigned kNumFiles = 100;
 
-  if (DirReaderPosix::IsFallback())
+  if (DirReaderPosix::IsFallback()) {
     return;
+  }
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -51,12 +52,13 @@ TEST(DirReaderPosixUnittest, Read) {
   DirReaderPosix reader(dir);
   EXPECT_TRUE(reader.IsValid());
 
-  if (!reader.IsValid())
+  if (!reader.IsValid()) {
     return;
+  }
 
   bool seen_dot = false, seen_dotdot = false;
 
-  for (; reader.Next(); ) {
+  for (; reader.Next();) {
     if (strcmp(reader.name(), ".") == 0) {
       seen_dot = true;
       continue;
@@ -68,7 +70,7 @@ TEST(DirReaderPosixUnittest, Read) {
 
     SCOPED_TRACE(testing::Message() << "reader.name(): " << reader.name());
 
-    char *endptr;
+    char* endptr;
     const unsigned long value = strtoul(reader.name(), &endptr, 10);
 
     EXPECT_FALSE(*endptr);

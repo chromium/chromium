@@ -67,9 +67,6 @@ class TestAuthenticationRequester
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
-  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::UnmaskResponseDetails& response_details) override;
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
@@ -78,10 +75,6 @@ class TestAuthenticationRequester
   std::optional<bool> did_succeed() { return did_succeed_; }
 
   std::u16string number() { return number_; }
-
-  payments::UnmaskResponseDetails response_details() const {
-    return response_details_;
-  }
 
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
   risk_based_authentication_response() {
@@ -106,9 +99,6 @@ class TestAuthenticationRequester
 
   // The card number returned from On*AuthenticationComplete().
   std::u16string number_;
-
-  // Unmask response returned from UnmaskCard request.
-  payments::UnmaskResponseDetails response_details_;
 
   // Authentication response returned from CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse

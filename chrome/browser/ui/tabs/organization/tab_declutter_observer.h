@@ -17,15 +17,13 @@ class TabInterface;
 
 class TabDeclutterObserver : public base::CheckedObserver {
  public:
-  // Called when all checks pass to be able to show or hide the tab declutter
+  // Called when all checks pass to be able to show the tab declutter
   // nudge to action UI.
-  virtual void OnTriggerDeclutterUIVisibility(bool should_show) {}
+  virtual void OnTriggerDeclutterUIVisibility() {}
 
-  // Called whenevener the service processes the tabstrip for stale tabs.
-  virtual void OnStaleTabsProcessed(std::vector<tabs::TabInterface*> tabs) {}
-
-  // Called whenevener the service processes the tabstrip for duplicate tabs.
-  virtual void OnDuplicateTabsProcessed(
+  // Called whenevener the service processes the tabstrip for unused tabs.
+  virtual void OnUnusedTabsProcessed(
+      std::vector<tabs::TabInterface*> stale_tabs,
       std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {}
 };
 

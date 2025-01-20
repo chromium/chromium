@@ -88,15 +88,11 @@ TEST(PaymentResponseTest, DataCopiedOver) {
   EXPECT_EQ("0123", output->payerPhone());
   EXPECT_EQ("id", output->requestId());
 
-  ScriptValue details = output->details(scope.GetScriptState());
-
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
-  ASSERT_TRUE(details.V8Value()->IsObject());
+  ScriptObject details = output->details();
 
   ScriptValue transaction_id(
       scope.GetIsolate(),
-      details.V8Value()
-          .As<v8::Object>()
+      details.V8Object()
           ->Get(scope.GetContext(),
                 V8String(scope.GetIsolate(), "transactionId"))
           .ToLocalChecked());
@@ -167,8 +163,7 @@ TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
       scope.GetScriptState(), std::move(input), /*shipping_address=*/nullptr,
       complete_callback, "request_id");
 
-  v8::Local<v8::Object> details =
-      output->details(scope.GetScriptState()).V8Value().As<v8::Object>();
+  v8::Local<v8::Object> details = output->details().V8Object();
   v8::Local<v8::Object> prf =
       GetClientExtensionResults(scope, details)
           ->Get(scope.GetContext(), V8String(scope.GetIsolate(), "prf"))
@@ -197,13 +192,11 @@ TEST(PaymentResponseTest,
       scope.GetScriptState(), std::move(input), nullptr, complete_callback,
       "id");
 
-  ScriptValue details = output->details(scope.GetScriptState());
-  ASSERT_TRUE(details.V8Value()->IsObject());
+  ScriptObject details = output->details();
 
   String stringified_details = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          details.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), details.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -222,8 +215,7 @@ TEST(PaymentResponseTest, PaymentResponseDetailsRetrunsTheSameObject) {
   PaymentResponse* output = MakeGarbageCollected<PaymentResponse>(
       scope.GetScriptState(), std::move(input), nullptr, complete_callback,
       "id");
-  EXPECT_EQ(output->details(scope.GetScriptState()),
-            output->details(scope.GetScriptState()));
+  EXPECT_EQ(output->details(), output->details());
 }
 
 TEST(PaymentResponseTest, CompleteCalledWithSuccess) {

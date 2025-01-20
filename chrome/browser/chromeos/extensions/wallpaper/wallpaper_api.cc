@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/user_manager/user.h"
@@ -35,15 +36,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#else
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
-#endif
-
 using base::Value;
 using content::BrowserThread;
 
@@ -54,35 +46,23 @@ namespace set_wallpaper = extensions::api::wallpaper::SetWallpaper;
 
 namespace {
 
-crosapi::mojom::WallpaperLayout GetMojoLayoutEnum(
+ash::mojom::WallpaperLayout GetMojoLayoutEnum(
     extensions::api::wallpaper::WallpaperLayout layout) {
   switch (layout) {
     case extensions::api::wallpaper::WallpaperLayout::kStretch:
-      return crosapi::mojom::WallpaperLayout::kStretch;
+      return ash::mojom::WallpaperLayout::kStretch;
     case extensions::api::wallpaper::WallpaperLayout::kCenter:
-      return crosapi::mojom::WallpaperLayout::kCenter;
+      return ash::mojom::WallpaperLayout::kCenter;
     case extensions::api::wallpaper::WallpaperLayout::kCenterCropped:
-      return crosapi::mojom::WallpaperLayout::kCenterCropped;
+      return ash::mojom::WallpaperLayout::kCenterCropped;
     default:
-      return crosapi::mojom::WallpaperLayout::kCenter;
+      return ash::mojom::WallpaperLayout::kCenter;
   }
-}
-
-crosapi::mojom::Wallpaper* GetWallpaperApi() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsAvailable<crosapi::mojom::Wallpaper>()) {
-    return nullptr;
-  }
-  return lacros_service->GetRemote<crosapi::mojom::Wallpaper>().get();
-#else
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->wallpaper_ash();
-#endif
 }
 
 class WallpaperFetcher {
  public:
-  WallpaperFetcher() {}
+  WallpaperFetcher() = default;
 
   static const char kCancelWallpaperMessage[];
 
@@ -166,9 +146,9 @@ base::LazyInstance<WallpaperFetcher>::DestructorAtExit g_wallpaper_fetcher =
 
 }  // namespace
 
-WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() {}
+WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() = default;
 
-WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {}
+WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() = default;
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -208,7 +188,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
 }
 
 void WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh(
-    const crosapi::mojom::SetWallpaperResultPtr result) {
+    const ash::mojom::SetWallpaperResultPtr result) {
   if (result->is_thumbnail_data()) {
     Respond(params_->details.thumbnail
                 ? WithArguments(Value(std::move(result->get_thumbnail_data())))
@@ -227,36 +207,16 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
     extension_name = ext->name();
   }
 
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = *params_->details.data;
   settings->layout = GetMojoLayoutEnum(params_->details.layout);
   settings->filename = params_->details.filename;
 
-  auto* wallpaper_api = GetWallpaperApi();
-  if (!wallpaper_api) {
-    Respond(Error("Unsupported ChromeOS version."));
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto ash_version = chromeos::LacrosService::Get()
-                         ->GetInterfaceVersion<crosapi::mojom::Wallpaper>();
-  if (ash_version <
-      static_cast<int>(crosapi::mojom::Wallpaper::kSetWallpaperMinVersion)) {
-    Respond(Error("Unsupported ChromeOS version."));
-    return;
-  }
-  wallpaper_api->SetWallpaper(
+  auto* wallpaper_ash = WallpaperAsh::Get();
+  CHECK(wallpaper_ash);
+  wallpaper_ash->SetWallpaper(
       std::move(settings), extension_id, extension_name,
       base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
                      this));
-#else
-  // Without lacros, there is never a version mismatch between this file and
-  // wallpaper_ash.
-  wallpaper_api->SetWallpaper(
-      std::move(settings), extension_id, extension_name,
-      base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
-                     this));
-#endif
 }

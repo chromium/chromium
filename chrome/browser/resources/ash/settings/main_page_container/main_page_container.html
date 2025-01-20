@@ -1,28 +1,25 @@
 <style include="cr-hidden-style settings-shared">
   :host {
-    box-sizing: border-box;
-    display: block;
-    position: relative;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host {
     --page-backdrop-bg-color: var(--cros-sys-surface1);
 
     background-color: var(--page-backdrop-bg-color);
     border-radius: 20px;
+    box-sizing: border-box;
+    display: block;
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: 16px;
+    position: relative;
   }
 
   @media (prefers-color-scheme: dark) {
-    :host-context(body.revamp-wayfinding-enabled):host {
+    :host {
       --page-backdrop-bg-color: var(--cros-sys-app_base);
     }
   }
 
   /* L1 page-specific style */
-  :host-context(body.revamp-wayfinding-enabled):host(:not(.showing-subpage)) {
+  :host(:not(.showing-subpage)) {
     padding-top: 8px;
   }
 
@@ -64,25 +61,6 @@
   .eol-warning-icon iron-icon {
     --iron-icon-fill-color: var(--cros-icon-color-warning);
     margin: 0;
-  }
-
-  #advancedToggle {
-    --ink-color: currentColor;
-    align-items: center;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: currentColor;
-    display: flex;
-    font-weight: 400;
-    margin-bottom: 3px;
-    margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-    min-height: 32px;
-    padding: 0 12px;
-  }
-
-  :host-context(.focus-outline-visible) #advancedToggle:focus {
-    outline: 2px solid var(--cros-focus-ring-color);
   }
 
   #openInNewBrowserSettingsIcon {
@@ -139,214 +117,137 @@
     language-helper="{{languageHelper_}}">
 </settings-languages>
 
-<div id="basicPageContainer"
-    hidden$="[[!shouldShowBasicPageContainer_]]">
-    <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
-        isShowingSubpage_, showUpdateRequiredEolBanner_,
-        showEOLIncentive_)]]">
-      <div id="updateRequiredEolBanner"
-          class="settings-box two-line banner">
-        <div class="eol-warning-icon">
-          <iron-icon icon="cr20:banner-warning"></iron-icon>
-        </div>
-        <localized-link id="bannerText" class="start"
-            localized-string="$i18n{updateRequiredEolBannerText}">
-        </localized-link>
-        <cr-icon-button title="$i18n{close}" id="closeUpdateRequiredEol"
-            class="icon-clear" on-click="onCloseEolBannerClicked_"
-            aria-describedby="bannerText">
-        </cr-icon-button>
+<div id="mainPageContainer">
+  <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
+      isShowingSubpage_, showUpdateRequiredEolBanner_,
+      showEOLIncentive_)]]">
+    <div id="updateRequiredEolBanner"
+        class="settings-box two-line banner">
+      <div class="eol-warning-icon">
+        <iron-icon icon="cr20:banner-warning"></iron-icon>
       </div>
-    </template>
-    <template is="dom-if" if="[[computeShowEolIncentive_(isShowingSubpage_,
-        showEolIncentive_)]]">
-      <eol-offer-section should-show-offer-text="[[shouldShowOfferText_]]">
-      </eol-offer-section>
-    </template>
-    <div id="secondaryUserBanner" class="settings-box two-line banner"
-        hidden="[[!showSecondaryUserBanner_]]">
-      <div id="secondaryUserIcon">
-        <iron-icon icon="os-settings:social-group"></iron-icon>
-      </div>
-      <div class="flex">$i18n{secondaryUserBannerText}</div>
-    </div>
-
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kNetwork)]]"
-        restamp>
-      <page-displayer section="[[Section.kNetwork]]">
-        <settings-internet-page prefs="{{prefs}}">
-        </settings-internet-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kBluetooth)]]"
-        restamp>
-      <page-displayer section="[[Section.kBluetooth]]">
-        <os-settings-bluetooth-page prefs="{{prefs}}">
-        </os-settings-bluetooth-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kMultiDevice)]]"
-        restamp>
-      <page-displayer section="[[Section.kMultiDevice]]">
-        <settings-multidevice-page prefs="{{prefs}}">
-        </settings-multidevice-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kPeople)]]"
-        restamp>
-      <page-displayer section="[[Section.kPeople]]">
-        <os-settings-people-page prefs="{{prefs}}">
-        </os-settings-people-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kKerberos)]]"
-        restamp>
-      <page-displayer section="[[Section.kKerberos]]">
-        <settings-kerberos-page></settings-kerberos-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kDevice)]]"
-        restamp>
-      <page-displayer section="[[Section.kDevice]]">
-        <settings-device-page prefs="{{prefs}}"
-            languages="[[languages_]]"
-            language-helper="[[languageHelper_]]">
-        </settings-device-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kPersonalization)]]"
-        restamp>
-      <page-displayer section="[[Section.kPersonalization]]">
-        <settings-personalization-page prefs="{{prefs}}">
-        </settings-personalization-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kSearchAndAssistant)]]"
-        restamp>
-      <page-displayer section="[[Section.kSearchAndAssistant]]">
-        <os-settings-search-page prefs="{{prefs}}">
-        </os-settings-search-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kPrivacyAndSecurity)]]"
-        restamp>
-      <page-displayer section="[[Section.kPrivacyAndSecurity]]">
-        <os-settings-privacy-page prefs="{{prefs}}">
-        </os-settings-privacy-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kApps)]]"
-        restamp>
-      <page-displayer section="[[Section.kApps]]">
-        <os-settings-apps-page
-            prefs="{{prefs}}"
-            android-apps-info="[[androidAppsInfo]]">
-        </os-settings-apps-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kAccessibility)]]"
-        restamp>
-      <page-displayer section="[[Section.kAccessibility]]">
-        <os-settings-a11y-page prefs="{{prefs}}"
-            languages="[[languages_]]"
-            language-helper="[[languageHelper_]]">
-        </os-settings-a11y-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
-        restamp>
-      <page-displayer section="[[Section.kSystemPreferences]]">
-        <settings-system-preferences-page prefs="{{prefs}}"
-            languages="[[languages_]]"
-            language-helper="[[languageHelper_]]">
-        </settings-system-preferences-page>
-      </page-displayer>
-    </template>
-</div>
-
-<template is="dom-if" if="[[shouldShowAdvancedToggle_]]">
-  <div id="toggleSpacer"></div>
-  <h2 id="toggleContainer">
-    <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-        aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
-      <span>$i18n{advancedPageTitle}</span>
-      <iron-icon
-        icon="[[getArrowIcon_(advancedToggleExpanded)]]"
-        slot="suffix-icon">
-      </iron-icon>
-    </cr-button>
-  </h2>
-</template>
-
-<settings-idle-load id="advancedPageTemplate">
-  <template>
-    <div id="advancedPageContainer"
-        hidden$="[[!shouldShowAdvancedPageContainer_]]">
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability,
-              Section.kLanguagesAndInput)]]"
-          restamp>
-        <page-displayer section="[[Section.kLanguagesAndInput]]">
-          <os-settings-languages-section prefs="{{prefs}}"
-              languages="[[languages_]]"
-              language-helper="[[languageHelper_]]">
-          </os-settings-languages-section>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kFiles)]]"
-          restamp>
-        <page-displayer section="[[Section.kFiles]]">
-          <os-settings-files-page prefs="{{prefs}}">
-          </os-settings-files-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kPrinting)]]"
-          restamp>
-        <page-displayer section="[[Section.kPrinting]]">
-          <os-settings-printing-page prefs="{{prefs}}">
-          </os-settings-printing-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kCrostini)]]"
-          restamp>
-        <page-displayer section="[[Section.kCrostini]]">
-          <settings-crostini-page prefs="{{prefs}}">
-          </settings-crostini-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kReset)]]"
-          restamp>
-        <page-displayer section="[[Section.kReset]]">
-          <os-settings-reset-page></os-settings-reset-page>
-        </page-displayer>
-      </template>
-    </div>
-
-    <div id="aboutPageContainer"
-        hidden$="[[!shouldShowAboutPageContainer_]]">
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kAboutChromeOs)]]"
-          restamp>
-        <page-displayer section="[[Section.kAboutChromeOs]]">
-          <os-about-page prefs="{{prefs}}"></os-about-page>
-        </page-displayer>
-      </template>
+      <localized-link id="bannerText" class="start"
+          localized-string="$i18n{updateRequiredEolBannerText}">
+      </localized-link>
+      <cr-icon-button title="$i18n{close}" id="closeUpdateRequiredEol"
+          class="icon-clear" on-click="onCloseEolBannerClicked_"
+          aria-describedby="bannerText">
+      </cr-icon-button>
     </div>
   </template>
-</settings-idle-load>
+  <template is="dom-if" if="[[computeShowEolIncentive_(isShowingSubpage_,
+      showEolIncentive_)]]">
+    <eol-offer-section should-show-offer-text="[[shouldShowOfferText_]]">
+    </eol-offer-section>
+  </template>
+  <div id="secondaryUserBanner" class="settings-box two-line banner"
+      hidden="[[!showSecondaryUserBanner_]]">
+    <div id="secondaryUserIcon">
+      <iron-icon icon="os-settings:social-group"></iron-icon>
+    </div>
+    <div class="flex">$i18n{secondaryUserBannerText}</div>
+  </div>
+
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kNetwork)]]"
+      restamp>
+    <page-displayer section="[[Section.kNetwork]]">
+      <settings-internet-page prefs="{{prefs}}">
+      </settings-internet-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kBluetooth)]]"
+      restamp>
+    <page-displayer section="[[Section.kBluetooth]]">
+      <os-settings-bluetooth-page prefs="{{prefs}}">
+      </os-settings-bluetooth-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kMultiDevice)]]"
+      restamp>
+    <page-displayer section="[[Section.kMultiDevice]]">
+      <settings-multidevice-page prefs="{{prefs}}">
+      </settings-multidevice-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kPeople)]]"
+      restamp>
+    <page-displayer section="[[Section.kPeople]]">
+      <os-settings-people-page prefs="{{prefs}}">
+      </os-settings-people-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kKerberos)]]"
+      restamp>
+    <page-displayer section="[[Section.kKerberos]]">
+      <settings-kerberos-page></settings-kerberos-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kDevice)]]"
+      restamp>
+    <page-displayer section="[[Section.kDevice]]">
+      <settings-device-page prefs="{{prefs}}"
+          languages="[[languages_]]"
+          language-helper="[[languageHelper_]]">
+      </settings-device-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kPersonalization)]]"
+      restamp>
+    <page-displayer section="[[Section.kPersonalization]]">
+      <settings-personalization-page prefs="{{prefs}}">
+      </settings-personalization-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kPrivacyAndSecurity)]]"
+      restamp>
+    <page-displayer section="[[Section.kPrivacyAndSecurity]]">
+      <os-settings-privacy-page prefs="{{prefs}}">
+      </os-settings-privacy-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kApps)]]"
+      restamp>
+    <page-displayer section="[[Section.kApps]]">
+      <os-settings-apps-page
+          prefs="{{prefs}}"
+          android-apps-info="[[androidAppsInfo]]">
+      </os-settings-apps-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kAccessibility)]]"
+      restamp>
+    <page-displayer section="[[Section.kAccessibility]]">
+      <os-settings-a11y-page prefs="{{prefs}}"
+          languages="[[languages_]]"
+          language-helper="[[languageHelper_]]">
+      </os-settings-a11y-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
+      restamp>
+    <page-displayer section="[[Section.kSystemPreferences]]">
+      <settings-system-preferences-page prefs="{{prefs}}"
+          languages="[[languages_]]"
+          language-helper="[[languageHelper_]]">
+      </settings-system-preferences-page>
+    </page-displayer>
+  </template>
+  <template is="dom-if"
+      if="[[shouldStampPage_(pageAvailability, Section.kAboutChromeOs)]]"
+      restamp>
+    <page-displayer section="[[Section.kAboutChromeOs]]">
+      <os-about-page prefs="{{prefs}}"></os-about-page>
+    </page-displayer>
+  </template>
+</div>

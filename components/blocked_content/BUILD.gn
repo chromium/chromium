@@ -24,7 +24,6 @@ source_set("blocked_content") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",

@@ -41,6 +41,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     kSweepGradient,
     kImage,
     kPaintRecord,
+    kSkSLCommand,
     kShaderCount
   };
 
@@ -122,6 +123,30 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       SkTileMode ty,
       const SkMatrix* local_matrix,
       ScalingBehavior scaling_behavior = ScalingBehavior::kRasterAtScale);
+
+  // Returns null if the `sksl` command is invalid.
+  //
+  // NOTE:
+  // - This is only intended for trusted shader (e.g., shaders that are part of
+  //   the Chromium binary).
+  // - Not using flat_map because SkString does not have built-in comparator.
+  template <typename ValueType>
+  struct Uniform {
+    SkString name;
+    ValueType value;
+
+    bool operator==(const Uniform& other) const {
+      return name == other.name && value == other.value;
+    }
+  };
+  using FloatUniform = Uniform<SkScalar>;
+  using Float2Uniform = Uniform<SkV2>;
+  using Float4Uniform = Uniform<SkV4>;
+  static sk_sp<PaintShader> MakeSkSLCommand(
+      std::string_view sksl,
+      std::vector<FloatUniform> float_uniforms,
+      std::vector<Float2Uniform> float2_uniforms,
+      std::vector<Float4Uniform> float4_uniforms);
 
   static size_t GetSerializedSize(const PaintShader* shader);
 
@@ -288,6 +313,19 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   sk_sp<SkImage> sk_cached_image_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
+
+  // The command to be (de)serialized for `Type::kSkSLCommand`. Remains empty
+  // for other shader types.
+  //
+  // TODO(https://crbug.com/384532231): Consider cashing the Skia shader for
+  // performance.
+  SkString sksl_command_;
+
+  // Uniforms for `sksl_command_`. The keys of the map are the variable name of
+  // the uniform.
+  std::vector<FloatUniform> scalar_uniforms_;
+  std::vector<Float2Uniform> float2_uniforms_;
+  std::vector<Float4Uniform> float4_uniforms_;
 };
 
 }  // namespace cc

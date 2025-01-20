@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -38,6 +39,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/url_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -322,7 +324,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
   url = net::AppendOrReplaceQueryParameter(
       url, "globalemojipreferences",
-      is_global_emoji_preferences_enabled ? "true" : "false");
+      base::ToString(is_global_emoji_preferences_enabled));
   // Information is managed on VK extension side so just use a default value
   // here.
   url = net::AppendOrReplaceRef(url, "id=default");
@@ -416,6 +418,13 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     std::vector<ComponentExtensionIME>* out_imes) {
   DCHECK(out_imes);
   for (auto& extension : allowlisted_component_extensions) {
+    // TODO(crbug.com/384675323): Remove this check and update
+    // `allowlisted_component_extensions` when flag is removed.
+    if (extension.manifest_resource_id == IDR_BRAILLE_MANIFEST &&
+        ::features::IsAccessibilityManifestV3EnabledForBrailleIme()) {
+      extension.manifest_resource_id = IDR_BRAILLE_MANIFEST_MV3;
+    }
+
     ComponentExtensionIME component_ime;
     component_ime.manifest =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

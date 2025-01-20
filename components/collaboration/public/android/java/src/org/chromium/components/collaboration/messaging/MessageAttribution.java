@@ -18,5 +18,7 @@ public class MessageAttribution {
     @Nullable public TabGroupMessageMetadata tabGroupMetadata;
     @Nullable public TabMessageMetadata tabMetadata;
     @Nullable public GroupMember affectedUser;
+    public boolean affectedUserIsSelf;
     @Nullable public GroupMember triggeringUser;
+    public boolean triggeringUserIsSelf;
 }

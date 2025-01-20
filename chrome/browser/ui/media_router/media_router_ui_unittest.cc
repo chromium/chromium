@@ -71,8 +71,9 @@ class MockControllerObserver : public CastDialogController::Observer {
   }
 
   ~MockControllerObserver() override {
-    if (controller_)
+    if (controller_) {
       controller_->RemoveObserver(this);
+    }
   }
 
   MOCK_METHOD(void, OnModelUpdated, (const CastDialogModel& model), (override));
@@ -89,7 +90,7 @@ class MockControllerObserver : public CastDialogController::Observer {
 
 class PresentationRequestCallbacks {
  public:
-  PresentationRequestCallbacks() {}
+  PresentationRequestCallbacks() = default;
 
   explicit PresentationRequestCallbacks(
       const blink::mojom::PresentationError& expected_error)
@@ -112,7 +113,7 @@ class TestWebContentsDisplayObserver : public WebContentsDisplayObserver {
  public:
   explicit TestWebContentsDisplayObserver(const display::Display& display)
       : display_(display) {}
-  ~TestWebContentsDisplayObserver() override {}
+  ~TestWebContentsDisplayObserver() override = default;
 
   const display::Display& GetCurrentDisplay() const override {
     return display_;
@@ -191,8 +192,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
                                     web_contents(), _, base::Seconds(60)))
         .WillOnce(SaveArgWithMove<4>(&callback));
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+    }
     ui_->StartCasting(kSinkId, MediaCastMode::TAB_MIRROR);
     Mock::VerifyAndClearExpectations(mock_router_);
 
@@ -220,8 +222,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         *mock_router_,
         CreateRouteInternal(_, _, _, _, _, base::Seconds(timeout_seconds)))
         .WillOnce(SaveArgWithMove<4>(&callback));
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
       sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+    }
     ui_->StartCasting(kSinkId, cast_mode);
     Mock::VerifyAndClearExpectations(mock_router_);
 
@@ -402,8 +405,9 @@ TEST_F(MediaRouterViewsUITest, ConnectingState) {
   NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink{CreateDialSink(kSinkId, kSinkName)};
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
 
   // When a request to Cast to a sink is made, its state should become
   // CONNECTING.
@@ -429,8 +433,9 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
 
   MediaSink sink{CreateDialSink(kSinkId, kSinkName)};
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true);
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
   NotifyUiOnRoutesUpdated({route});
 
   // When a request to stop casting to a sink is made, its state should become
@@ -548,8 +553,9 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   ui_->OnSinksUpdated({{sink, {MediaCastMode::DESKTOP_MIRROR}}});
-  for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
+  for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
+  }
 
   EXPECT_CALL(observer, OnModelUpdated(_))
       .WillOnce(WithArg<0>([&](const CastDialogModel& model) {
@@ -575,6 +581,35 @@ TEST_F(MediaRouterViewsUITest, PermissionRejectedIssue) {
         EXPECT_TRUE(model.media_sinks().empty());
       })));
   mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
+}
+
+TEST_F(MediaRouterViewsUITest, SinksUpdatedAfterPermissionRejectedIssue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  MockControllerObserver observer(ui_.get());
+  // Receives a permission rejected issue.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.is_permission_rejected());
+        EXPECT_TRUE(model.media_sinks().empty());
+      })));
+
+  mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // After getting sink updates, MediaRouterUI clears the issue and sends sink
+  // updates.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .Times(2)
+      .WillRepeatedly(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_FALSE(model.is_permission_rejected());
+        EXPECT_EQ(2u, model.media_sinks().size());
+      })));
+
+  NotifyUiOnSinksUpdated({{CreateCastSink("sink1", "B sink"), {}},
+                          {CreateCastSink("sink2", "A sink"), {}}});
 }
 
 TEST_F(MediaRouterViewsUITest, SortedSinks) {

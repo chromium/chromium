@@ -4,13 +4,14 @@
 
 #include <memory>
 #include <optional>
-#include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -128,7 +129,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         Steps(Do([this]() { last_show_time_.first = base::Time::Now(); }),
               MaybeShowPromo(feature),
               Do([this]() { last_show_time_.second = base::Time::Now(); }));
-    AddDescription(steps, "ShowPromoRecordingTime() - %s");
+    AddDescriptionPrefix(steps, "ShowPromoRecordingTime()");
     return steps;
   }
 
@@ -162,8 +163,8 @@ class FeaturePromoLifecycleUiTest : public TestBase {
 
               return !testing::Test::HasNonfatalFailure();
             }))
-            .SetDescription(base::StringPrintf("CheckSnoozePrefs(%s, %d, %d)",
-                                               is_dismissed ? "true" : "false",
+            .SetDescription(base::StringPrintf("CheckSnoozePrefs( %s, %d, %d )",
+                                               base::ToString(is_dismissed),
                                                show_count, snooze_count)));
   }
 
@@ -182,7 +183,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
         WaitForHide(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
         Do([this]() { last_snooze_time_.second = base::Time::Now(); }));
-    AddDescription(steps, "SnoozeIPH(%s)");
+    AddDescriptionPrefix(steps, "SnoozeIPH()");
     return steps;
   }
 
@@ -195,7 +196,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           auto* const promo = GetPromoController(browser)->current_promo_.get();
           return !promo || (!promo->is_promo_active() && !promo->help_bubble());
         })));
-    AddDescription(steps, "DismissIPH(%s)");
+    AddDescriptionPrefix(steps, "DismissIPH()");
     return steps;
   }
 
@@ -209,17 +210,14 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           return GetPromoController(browser)->HasPromoBeenDismissed(
                      {*feature, key}) == dismissed;
         }))
-            .SetDescription(base::StringPrintf("CheckDismissed(%s, %s)",
-                                               dismissed ? "true" : "false",
-                                               feature->name)));
+            .SetDescription(
+                base::StrCat({"CheckDismissed( ", base::ToString(dismissed),
+                              ", ", feature->name, " )"})));
   }
 
   auto CheckDismissedWithReason(
       user_education::FeaturePromoClosedReason close_reason,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
-    std::ostringstream desc;
-    desc << "CheckDismissedWithReason(" << close_reason << ", " << feature->name
-         << ")";
     return std::move(
         CheckBrowser(base::BindLambdaForTesting([close_reason,
                                                  feature](Browser* browser) {
@@ -227,7 +225,10 @@ class FeaturePromoLifecycleUiTest : public TestBase {
           return GetPromoController(browser)->HasPromoBeenDismissed(
                      *feature, &actual_reason) &&
                  actual_reason == close_reason;
-        })).SetDescription(desc.str()));
+        }))
+            .SetDescription(base::StrCat({"CheckDismissedWithReason( ",
+                                          base::ToString(close_reason), ", ",
+                                          feature->name, " )"})));
   }
 
   auto CheckMessageActionHistogram(const base::Feature& feature,
@@ -240,7 +241,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
                                                            expected_count);
                      })
                          .SetDescription(base::StringPrintf(
-                             "CheckHistogram(%s)", name.c_str())));
+                             "CheckHistogram( %s )", name.c_str())));
   }
 
   static user_education::FeaturePromoControllerCommon* GetPromoController(

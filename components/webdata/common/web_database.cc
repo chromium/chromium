@@ -80,7 +80,8 @@ WebDatabase::WebDatabase()
            .page_size = 2048,
            // We shouldn't have much data and what access we currently have is
            // quite infrequent. So we go with a small cache size.
-           .cache_size = 32}) {}
+           .cache_size = 32},
+          /*tag=*/"Web") {}
 
 WebDatabase::~WebDatabase() {
   for (auto& [key, table] : tables_) {
@@ -93,7 +94,9 @@ void WebDatabase::AddTable(WebDatabaseTable* table) {
 }
 
 WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
-  return tables_[key];
+  WebDatabaseTable* table = tables_[key];
+  CHECK(table);
+  return table;
 }
 
 void WebDatabase::BeginTransaction() {
@@ -120,7 +123,6 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
   if (!encryptor) {
     CHECK_IS_TEST();
   }
-  db_.set_histogram_tag("Web");
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
                                          : !db_.Open(db_name)) {

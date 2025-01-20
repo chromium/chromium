@@ -314,14 +314,14 @@ void AppendTouchEvent(const WebInputEvent& event,
   }
 
   SetPPTouchPoints(
-      base::make_span(touch_event.touches).first(touch_event.touches_length),
-      ACTIVE, &result.touches);
+      base::span(touch_event.touches).first(touch_event.touches_length), ACTIVE,
+      &result.touches);
   SetPPTouchPoints(
-      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      base::span(touch_event.touches).first(touch_event.touches_length),
       CHANGED, &result.changed_touches);
   SetPPTouchPoints(
-      base::make_span(touch_event.touches).first(touch_event.touches_length),
-      ALL, &result.target_touches);
+      base::span(touch_event.touches).first(touch_event.touches_length), ALL,
+      &result.target_touches);
 
   result_events->push_back(result);
 }

@@ -20,6 +20,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -214,16 +215,36 @@ SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
 }
 
 SavedTabGroup& SavedTabGroup::SetCollaborationId(
-    std::optional<std::string> collaboration_id) {
+    std::optional<CollaborationId> collaboration_id) {
   collaboration_id_ = std::move(collaboration_id);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::SetOriginatingSavedTabGroupGuid(
-    std::optional<base::Uuid> originating_saved_tab_group_guid) {
-  originating_saved_tab_group_guid_ =
-      std::move(originating_saved_tab_group_guid);
+SavedTabGroup& SavedTabGroup::SetOriginatingTabGroupGuid(
+    std::optional<base::Uuid> originating_tab_group_guid) {
+  originating_tab_group_guid_ = std::move(originating_tab_group_guid);
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetIsTransitioningToSaved(
+    bool is_transitioning_to_saved) {
+  DCHECK(is_shared_tab_group() || !is_transitioning_to_saved);
+  is_transitioning_to_saved_ = is_transitioning_to_saved;
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetUpdatedByAttribution(GaiaId updated_by) {
+  if (shared_attribution_.created_by.empty()) {
+    shared_attribution_.created_by = updated_by;
+  }
+  shared_attribution_.updated_by = std::move(updated_by);
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetCreatedByAttribution(GaiaId created_by) {
+  CHECK(shared_attribution_.created_by.empty());
+  shared_attribution_.created_by = std::move(created_by);
   return *this;
 }
 
@@ -259,7 +280,7 @@ SavedTabGroup& SavedTabGroup::RemoveTabLocally(
 SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
     const base::Uuid& saved_tab_guid,
     bool ignore_empty_groups_for_testing) {
-  RemoveTabImpl(saved_tab_guid, ignore_empty_groups_for_testing);
+  RemoveTabImpl(saved_tab_guid, /*allow_empty_groups=*/true);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -371,7 +392,7 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
   SetColor(color);
   if (position.has_value()) {
     SetPosition(position.value());
-  } else if (IsTabGroupsSaveUIUpdateEnabled()) {
+  } else {
     SetPinned(false);
   }
 
@@ -387,22 +408,18 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 }
 
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
-    std::string collaboration_id) const {
-  SavedTabGroup shared_group(title(), color(), /*urls=*/{});
+    CollaborationId collaboration_id) const {
+  SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
   shared_group.SetCollaborationId(std::move(collaboration_id));
-  shared_group.SetOriginatingSavedTabGroupGuid(saved_guid());
-
-  for (size_t i = 0; i < saved_tabs().size(); ++i) {
-    const SavedTabGroupTab& tab = saved_tabs()[i];
-
-    // Use tab's index as a position for shared tabs because shared tab groups
-    // use unique positions for syncing tabs.
-    SavedTabGroupTab shared_tab(tab.url(), tab.title(),
-                                shared_group.saved_guid(), /*position=*/i);
-    shared_tab.SetFavicon(tab.favicon());
-    shared_group.AddTabLocally(std::move(shared_tab));
-  }
+  shared_group.SetOriginatingTabGroupGuid(saved_guid());
   return shared_group;
+}
+
+SavedTabGroup SavedTabGroup::CloneAsSavedTabGroup() const {
+  DCHECK(is_shared_tab_group());
+  SavedTabGroup saved_group = CopyBaseFieldsWithTabs();
+  saved_group.SetOriginatingTabGroupGuid(saved_guid());
+  return saved_group;
 }
 
 bool SavedTabGroup::IsPendingSanitization() const {
@@ -415,7 +432,7 @@ bool SavedTabGroup::IsPendingSanitization() const {
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
-                                  bool ignore_empty_groups_for_testing) {
+                                  bool allow_empty_groups) {
   std::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
@@ -425,8 +442,23 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
   base::UmaHistogramBoolean(
       "TabGroups.SavedTabGroups.TabRemovedFromGroupWasLastTab",
       saved_tabs_.empty());
-  CHECK(ignore_empty_groups_for_testing || !saved_tabs_.empty(),
-        base::NotFatalUntil::M135);
+  CHECK(allow_empty_groups || !saved_tabs_.empty(), base::NotFatalUntil::M135);
+}
+
+SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {
+  SavedTabGroup cloned_group(title(), color(), /*urls=*/{});
+
+  for (size_t i = 0; i < saved_tabs().size(); ++i) {
+    const SavedTabGroupTab& tab = saved_tabs()[i];
+
+    // Use tab's index as position for the copied tab as tabs are
+    // displayed in the same order.
+    SavedTabGroupTab cloned_tab(tab.url(), tab.title(),
+                                cloned_group.saved_guid(), /*position=*/i);
+    cloned_tab.SetFavicon(tab.favicon());
+    cloned_group.AddTabLocally(std::move(cloned_tab));
+  }
+  return cloned_group;
 }
 
 }  // namespace tab_groups

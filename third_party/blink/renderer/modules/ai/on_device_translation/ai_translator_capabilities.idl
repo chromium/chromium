@@ -1,0 +1,12 @@
+[
+    RuntimeEnabled=TranslationAPI,
+    Exposed=(Window,Worker),
+    SecureContext
+]
+interface AITranslatorCapabilities {
+  readonly attribute AICapabilityAvailability available;
+
+  AICapabilityAvailability languagePairAvailable(
+    DOMString sourceLanguage,
+    DOMString targetLanguage);
+};

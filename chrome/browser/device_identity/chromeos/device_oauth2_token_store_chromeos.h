@@ -75,6 +75,10 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
   // Invoked on enrollment when the refresh_token is obtained from the server.
   void StoreRefreshTokenV3();
 
+  // Invoked when the store of the refresh token is done, with |success|
+  // representing the result of store operation.
+  void OnStoreTokenV3Done(bool success);
+
   // Invoked after the refresh_token load attempt was done.
   void OnRefreshTokenLoadedV3(InitCallback callback,
                               const std::string& refresh_token);

@@ -28,9 +28,14 @@ void NetworkAnnotationMonitor::Report(int32_t hash_code) {
 
   // Get blocklist prefs from the current active profile, which on ChromeOS
   // should be the only profile based on the above check.
+  const Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    // This case should be rare, but is possible. We have observed empty
+    // profiles in browser tests, for example.
+    return;
+  }
   const base::Value::Dict& blocklist =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetDict(
-          prefs::kNetworkAnnotationBlocklist);
+      profile->GetPrefs()->GetDict(prefs::kNetworkAnnotationBlocklist);
 
   // Ignore any network calls not in the blocklist.
   if (!blocklist.contains(base::NumberToString(hash_code))) {

@@ -269,6 +269,22 @@
     padding-block-start: 3px;
   }
 
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    #cursor {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background: ButtonFace;
+      /* Add a border since the shadow is not visible in hcm. */
+      border: 1px solid ButtonBorder;
+    }
+
+    #cursorImg,
+    .menu-item-icon {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: ButtonText;
+    }
+  }
+
   @keyframes initial-inset-animation {
     50% {
       animation-timing-function: cubic-bezier(0.2, 0.0, 0, 1.0);

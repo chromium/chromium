@@ -13,7 +13,14 @@ source_set("signin") {
     ":signin_ui",
     "//components/metrics",
     "//components/prefs",
+    "//components/signin/public/identity_manager/objc",
     "//components/web_resource",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/identity_chooser",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
@@ -24,16 +31,12 @@ source_set("signin") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/authentication/identity_chooser",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/ui/authentication/signin/logging",
   ]
 }
 
@@ -46,14 +49,15 @@ source_set("signin_ui") {
   deps = [
     "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
@@ -61,5 +65,5 @@ source_set("signin_ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator" ]
+  public_deps = [ "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator" ]
 }

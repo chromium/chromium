@@ -7,13 +7,22 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_id.h"
 
 FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() = default;
 
 FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() = default;
 
+void FakeDeviceAccountsProvider::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeDeviceAccountsProvider::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void FakeDeviceAccountsProvider::GetAccessToken(
-    const std::string& account_id,
+    const GaiaId& account_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
@@ -33,23 +42,25 @@ FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
 }
 
 DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& email) {
   DeviceAccountsProvider::AccountInfo account;
   account.gaia = gaia;
   account.email = email;
   accounts_.push_back(account);
+  FireOnAccountsOnDeviceChanged();
   return account;
 }
 
 void FakeDeviceAccountsProvider::ClearAccounts() {
   accounts_.clear();
+  FireOnAccountsOnDeviceChanged();
 }
 
 void FakeDeviceAccountsProvider::IssueAccessTokenForAllRequests() {
   for (auto& pair : requests_) {
     AccessTokenInfo info{base::StringPrintf("fake_access_token [account=%s]",
-                                            pair.first.c_str()),
+                                            pair.first.ToString().c_str()),
                          base::Time::Now() + base::Hours(1)};
     std::move(pair.second).Run(base::ok(std::move(info)));
   }
@@ -62,4 +73,10 @@ void FakeDeviceAccountsProvider::IssueAccessTokenErrorForAllRequests() {
         .Run(base::unexpected(kAuthenticationErrorCategoryAuthorizationErrors));
   }
   requests_.clear();
+}
+
+void FakeDeviceAccountsProvider::FireOnAccountsOnDeviceChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnAccountsOnDeviceChanged();
+  }
 }

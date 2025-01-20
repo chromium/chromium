@@ -30,6 +30,9 @@ enum class AutofillSnackbarType {
   // Used when a plus address created for the domain was filled instead of the
   // email value saved in the autofill profile.
   kPlusAddressEmailOverride = 6,
+
+  // Used when masked server card enrolled in card info retrieval is retrieved.
+  kCardInfoRetrieval = 7,
 };
 
 }  // namespace autofill

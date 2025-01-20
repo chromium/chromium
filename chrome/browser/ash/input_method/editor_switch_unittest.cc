@@ -19,7 +19,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -37,6 +37,7 @@
 namespace ash::input_method {
 namespace {
 
+using ::chromeos::editor_menu::EditorMode;
 using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
@@ -90,7 +91,7 @@ class FakeSystem : public EditorContext::System {
 class FakeEditorSwitchObserver : public EditorSwitch::Observer {
  public:
   // EditorSwitch::Observer overrides
-  void OnEditorModeChanged(const EditorMode& mode) override {}
+  void OnEditorModeChanged(EditorMode mode) override {}
 };
 
 struct EditorSwitchAvailabilityWithoutPolicyTestCase {

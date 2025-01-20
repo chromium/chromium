@@ -59,6 +59,7 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
+      "//services/webnn/public/cpp:tests",
       "//services/webnn/public/mojom:tests",
     ]
     if (is_ios) {
@@ -71,7 +72,7 @@ test("services_unittests") {
     deps += [ "//base:base_profiler_test_support_library" ]
   }
 
-  if (is_chromeos_ash || is_linux || is_fuchsia) {
+  if (is_chromeos || is_linux || is_fuchsia) {
     deps += [ "//services/accessibility:tests" ]
   }
 

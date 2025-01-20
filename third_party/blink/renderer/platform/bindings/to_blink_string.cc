@@ -18,7 +18,9 @@ struct StringTraits {
   static const StringClass& FromStringResource(v8::Isolate* isolate,
                                                StringResourceBase*);
   template <typename V8StringTrait>
-  static StringClass FromV8String(v8::Isolate*, v8::Local<v8::String>, int);
+  static StringClass FromV8String(v8::Isolate*,
+                                  v8::Local<v8::String>,
+                                  uint32_t);
 };
 
 template <>
@@ -28,7 +30,7 @@ struct StringTraits<String> {
     return resource->GetWTFString();
   }
   template <typename V8StringTrait>
-  static String FromV8String(v8::Isolate*, v8::Local<v8::String>, int);
+  static String FromV8String(v8::Isolate*, v8::Local<v8::String>, uint32_t);
 };
 
 template <>
@@ -38,7 +40,9 @@ struct StringTraits<AtomicString> {
     return resource->GetAtomicString(isolate);
   }
   template <typename V8StringTrait>
-  static AtomicString FromV8String(v8::Isolate*, v8::Local<v8::String>, int);
+  static AtomicString FromV8String(v8::Isolate*,
+                                   v8::Local<v8::String>,
+                                   uint32_t);
 };
 
 struct V8StringTwoBytesTrait {
@@ -46,8 +50,9 @@ struct V8StringTwoBytesTrait {
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
                                   base::span<CharType> buffer) {
-    v8_string->Write(isolate, reinterpret_cast<uint16_t*>(buffer.data()), 0,
-                     static_cast<int>(buffer.size()));
+    DCHECK_LE(buffer.size(), static_cast<uint32_t>(v8_string->Length()));
+    v8_string->WriteV2(isolate, 0, buffer.size(),
+                       reinterpret_cast<uint16_t*>(buffer.data()));
   }
 };
 
@@ -56,16 +61,16 @@ struct V8StringOneByteTrait {
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
                                   base::span<CharType> buffer) {
-    v8_string->WriteOneByte(isolate, buffer.data(), 0,
-                            static_cast<int>(buffer.size()));
+    DCHECK_LE(buffer.size(), static_cast<uint32_t>(v8_string->Length()));
+    v8_string->WriteOneByteV2(isolate, 0, buffer.size(), buffer.data());
   }
 };
 
 template <typename V8StringTrait>
 String StringTraits<String>::FromV8String(v8::Isolate* isolate,
                                           v8::Local<v8::String> v8_string,
-                                          int length) {
-  DCHECK(v8_string->Length() == length);
+                                          uint32_t length) {
+  DCHECK_EQ(static_cast<uint32_t>(v8_string->Length()), length);
   base::span<typename V8StringTrait::CharType> buffer;
   String result = String::CreateUninitialized(length, buffer);
   V8StringTrait::Write(isolate, v8_string, buffer);
@@ -76,15 +81,15 @@ template <typename V8StringTrait>
 AtomicString StringTraits<AtomicString>::FromV8String(
     v8::Isolate* isolate,
     v8::Local<v8::String> v8_string,
-    int length) {
-  DCHECK(v8_string->Length() == length);
+    uint32_t length) {
+  DCHECK_EQ(static_cast<uint32_t>(v8_string->Length()), length);
   static const int kInlineBufferSize =
       32 / sizeof(typename V8StringTrait::CharType);
   if (length <= kInlineBufferSize) {
     typename V8StringTrait::CharType inline_buffer[kInlineBufferSize];
     base::span<typename V8StringTrait::CharType> buffer_span(inline_buffer);
-    V8StringTrait::Write(isolate, v8_string, buffer_span);
-    return AtomicString(buffer_span.first(static_cast<size_t>(length)));
+    V8StringTrait::Write(isolate, v8_string, buffer_span.first(length));
+    return AtomicString(buffer_span.first(length));
   }
   base::span<typename V8StringTrait::CharType> buffer;
   String string = String::CreateUninitialized(length, buffer);
@@ -153,7 +158,7 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
                             bool can_externalize,
                             bool is_one_byte,
                             bool* was_externalized) {
-  int length = v8_string->Length();
+  uint32_t length = v8_string->Length();
   StringType result =
       is_one_byte ? StringTraits<StringType>::template FromV8String<
                         V8StringOneByteTrait>(isolate, v8_string, length)
@@ -206,7 +211,7 @@ StringType ToBlinkString(v8::Isolate* isolate,
                                                         string_resource);
   }
 
-  int length = v8_string->Length();
+  uint32_t length = v8_string->Length();
   if (!length) [[unlikely]] {
     return StringType(g_empty_atom);
   }
@@ -247,7 +252,7 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
         .Impl();
   }
 
-  int length = v8_string->Length();
+  uint32_t length = v8_string->Length();
   if (!length) [[unlikely]] {
     return StringView(g_empty_atom);
   }
@@ -323,18 +328,17 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // sense. It's odd that pointer compression changes externalization
   // behavior.
   if (is_one_byte) {
-    LChar* lchar = backing_store.Realloc<LChar>(length);
-    v8_string->WriteOneByte(isolate, lchar, 0, length);
-    return StringView(lchar, length);
+    base::span<LChar> lchar = backing_store.Realloc<LChar>(length);
+    v8_string->WriteOneByteV2(isolate, 0, length, lchar.data());
+    return StringView(lchar);
   }
 
-  UChar* uchar = backing_store.Realloc<UChar>(length);
+  base::span<UChar> uchar = backing_store.Realloc<UChar>(length);
   static_assert(sizeof(UChar) == sizeof(uint16_t),
                 "UChar isn't the same as uint16_t");
-  // reinterpret_cast is needed on windows as UChar is a wchar_t and not
-  // an int64_t.
-  v8_string->Write(isolate, reinterpret_cast<uint16_t*>(uchar), 0, length);
-  return StringView(uchar, length);
+  v8_string->WriteV2(isolate, 0, length,
+                     reinterpret_cast<uint16_t*>(uchar.data()));
+  return StringView(uchar);
 }
 
 // Fast but non thread-safe version.

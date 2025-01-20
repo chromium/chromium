@@ -52,8 +52,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -64,7 +62,6 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace sandbox {
 namespace policy {
@@ -94,11 +91,6 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
 };
-
-// This is for finch. See also crbug.com/464430 for details.
-BASE_FEATURE(kEnableCsrssLockdownFeature,
-             "EnableCsrssLockdown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
@@ -341,9 +333,6 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kXrCompositing:
       sandbox_base_name = std::string("cr.sb.xr");
       break;
-    case Sandbox::kGpu:
-      sandbox_base_name = std::string("cr.sb.gpu");
-      break;
     case Sandbox::kMediaFoundationCdm:
       sandbox_base_name = std::string("cr.sb.cdm");
       break;
@@ -353,11 +342,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kOnDeviceModelExecution:
       sandbox_base_name = std::string("cr.sb.odm");
       break;
-#if BUILDFLAG(ENABLE_PRINTING)
     case Sandbox::kPrintCompositor:
       sandbox_base_name = std::string("cr.sb.prnc");
       break;
-#endif
     case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
@@ -387,32 +374,19 @@ void AddCapabilitiesFromString(AppContainer* container,
 ResultCode SetupAppContainerProfile(AppContainer* container,
                                     const base::CommandLine& command_line,
                                     Sandbox sandbox_type) {
-  if (sandbox_type != Sandbox::kGpu &&
-      sandbox_type != Sandbox::kXrCompositing &&
+  if (sandbox_type != Sandbox::kXrCompositing &&
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
       sandbox_type != Sandbox::kOnDeviceModelExecution &&
-#if BUILDFLAG(ENABLE_PRINTING)
       !(sandbox_type == Sandbox::kPrintCompositor &&
         base::FeatureList::IsEnabled(
             sandbox::policy::features::kPrintCompositorLPAC)) &&
-#endif
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
 
   container->AddCapability(kLpacChromeInstallFiles);
   container->AddCapability(kRegistryRead);
-
-  if (sandbox_type == Sandbox::kGpu) {
-    container->AddImpersonationCapability(kChromeInstallFiles);
-    container->AddCapability(kLpacPnpNotifications);
-    AddCapabilitiesFromString(
-        container,
-        command_line.GetSwitchValueNative(switches::kAddGpuAppContainerCaps));
-    container->SetEnableLowPrivilegeAppContainer(
-        base::FeatureList::IsEnabled(features::kGpuLPAC));
-  }
 
   if (sandbox_type == Sandbox::kXrCompositing) {
     container->AddCapability(kChromeInstallFiles);
@@ -461,13 +435,11 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-#if BUILDFLAG(ENABLE_PRINTING)
   if (sandbox_type == Sandbox::kPrintCompositor) {
     container->AddCapability(kLpacCom);
     container->AddCapability(L"lpacPrinting");
     container->SetEnableLowPrivilegeAppContainer(true);
   }
-#endif
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
@@ -513,9 +485,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       sandbox_type != Sandbox::kScreenAI &&
-#endif
       sandbox_type != Sandbox::kSpeechRecognition &&
       sandbox_type != Sandbox::kMediaFoundationCdm) {
     mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
@@ -624,6 +594,7 @@ ResultCode LaunchWithoutSandbox(
     base::Process* process) {
   base::LaunchOptions options;
   options.handles_to_inherit = handles_to_inherit;
+  options.feedback_cursor_off = true;
   // Network process runs in a job even when unsandboxed. This is to ensure it
   // does not outlive the browser, which could happen if there is a lot of I/O
   // on process shutdown, in which case TerminateProcess can fail. See
@@ -715,7 +686,7 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
 void SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
-  if (base::FeatureList::IsEnabled(kEnableCsrssLockdownFeature)) {
+  if (base::FeatureList::IsEnabled(features::kEnableCsrssLockdown)) {
     // Close all ALPC ports.
     config->SetDisconnectCsrss();
   }
@@ -806,9 +777,6 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == Sandbox::kMediaFoundationCdm)
     return true;
 
-  if (sandbox_type == Sandbox::kGpu)
-    return base::FeatureList::IsEnabled(features::kGpuAppContainer);
-
   if (sandbox_type == Sandbox::kNetwork) {
     return true;
   }
@@ -817,12 +785,10 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
     return true;
   }
 
-#if BUILDFLAG(ENABLE_PRINTING)
   if (sandbox_type == Sandbox::kPrintCompositor) {
     return base::FeatureList::IsEnabled(
         sandbox::policy::features::kPrintCompositorLPAC);
   }
-#endif
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
     return true;
@@ -862,6 +828,16 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
     creation_threads_in_use_--;
     TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
                                     trace_id, "pid", process_id);
+  }
+
+  void OnCreateThreadActionCreateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE(
+        "Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode", last_error);
+  }
+
+  void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE("Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode",
+                         last_error);
   }
 
  private:
@@ -1079,16 +1055,12 @@ std::string SandboxWin::GetSandboxTypeInEnglish(
       return "CDM";
     case Sandbox::kPrintCompositor:
       return "Print Compositor";
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case Sandbox::kPrintBackend:
       return "Print Backend";
-#endif
     case Sandbox::kAudio:
       return "Audio";
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case Sandbox::kScreenAI:
       return "Screen AI";
-#endif
     case Sandbox::kSpeechRecognition:
       return "Speech Recognition";
     case Sandbox::kPdfConversion:
@@ -1119,16 +1091,15 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 // static
 std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
+  constexpr uint64_t GB = 1024 * 1024 * 1024;
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
-  if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer ||
+  if (sandbox_type == Sandbox::kGpu ||
       sandbox_type == Sandbox::kOnDeviceModelExecution) {
-    constexpr uint64_t GB = 1024 * 1024 * 1024;
-    // Allow the GPU/RENDERER process's sandbox to access more physical memory
-    // if it's available on the system.
+    // Allow the GPU process's sandbox to access more physical memory if it's
+    // available on the system.
     //
-    // Renderer processes are allowed to access 16 GB; the GPU process, up
-    // to 64 GB.
+    // GPU processes are allowed to access up to 64 GB.
     uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
     if (sandbox_type == Sandbox::kGpu && physical_memory > 64 * GB) {
       memory_limit = 64 * GB;
@@ -1139,12 +1110,13 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
     } else {
       memory_limit = 8 * GB;
     }
-
-    if (sandbox_type == Sandbox::kRenderer) {
-      // Set limit to 1Tb.
-      memory_limit = 1024 * GB;
-    }
   }
+
+  if (sandbox_type == Sandbox::kRenderer) {
+    // Allow up to 1 TB for the renderer.
+    memory_limit = 1024 * GB;
+  }
+
   return memory_limit;
 #else
   return std::nullopt;

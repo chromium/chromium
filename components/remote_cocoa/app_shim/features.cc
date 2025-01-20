@@ -22,9 +22,10 @@ BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
              "ImmersiveFullscreenOverlayWindowDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The close, minimize and maximize (traffic lights) buttons are always visible.
-// kImmersiveFullscreenTabs must be enabled for this feature to have an effect.
-BASE_FEATURE(kFullscreenAlwaysShowTrafficLights,
-             "FullscreenAlwaysShowTrafficLights",
+// Keeps the "thin" titlebar accessory view controller permanently in
+// browser windows, instead of inserting it on immersive fullscreen enablement.
+// Addresses a race condition in PWAs (see https://crbug.com/373722654)
+BASE_FEATURE(kFullscreenPermanentThinController,
+             "FullscreenPermanentThinController",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

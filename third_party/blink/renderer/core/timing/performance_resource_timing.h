@@ -73,6 +73,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString nextHopProtocol() const;
   virtual V8RenderBlockingStatusType renderBlockingStatus() const;
   virtual AtomicString contentType() const;
+  virtual AtomicString contentEncoding() const;
   DOMHighResTimeStamp workerStart() const;
   DOMHighResTimeStamp workerRouterEvaluationStart() const;
   DOMHighResTimeStamp workerCacheLookupStart() const;

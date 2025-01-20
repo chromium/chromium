@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/hid/hid_chooser_controller.h"
+
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -18,7 +21,6 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
-#include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,7 +45,7 @@ namespace {
 
 constexpr char kDefaultTestUrl[] = "https://www.google.com/";
 
-const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3"};
+const auto kTestPhysicalDeviceIds = std::to_array<const char*>({"1", "2", "3"});
 
 constexpr uint16_t kVendorYubico = 0x1050;
 constexpr uint16_t kProductYubicoGnubby = 0x0200;

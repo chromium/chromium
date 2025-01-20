@@ -16,6 +16,10 @@
 @class CRWWebUISchemeHandler;
 @class WKWebViewConfiguration;
 
+namespace base {
+class Uuid;
+}
+
 namespace web {
 
 class BrowserState;
@@ -36,6 +40,12 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // does not exist. `browser_state` can not be null.
   static web::WKWebViewConfigurationProvider& FromBrowserState(
       web::BrowserState* browser_state);
+
+  // Delete the storage associated with uuid. This must only be called if no
+  // storage is created for that identifier.
+  static void DeleteDataStorageForIdentifier(
+      const base::Uuid& uuid,
+      base::OnceCallback<void(NSError*)> callback);
 
   // Returns a WeakPtr to the current instance.
   base::WeakPtr<WKWebViewConfigurationProvider> AsWeakPtr();

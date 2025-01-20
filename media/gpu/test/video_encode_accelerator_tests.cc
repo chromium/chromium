@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
@@ -336,29 +337,14 @@ class VideoEncoderTest : public ::testing::Test {
 };
 }  // namespace
 
-// Encode video from start to end. Wait for the kFlushDone event at the end of
-// the stream, that notifies us all frames have been encoded.
-TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
-  if (g_env->SpatialLayers().size() > 1)
-    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-
-  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
-
-  encoder->Encode();
-  EXPECT_TRUE(encoder->WaitForFlushDone());
-
-  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
-  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
-}
-
 // Test initializing the video encoder. The test will be successful if the video
 // encoder is capable of setting up the encoder for the specified codec and
 // resolution. The test only verifies initialization and doesn't do any
 // encoding.
 TEST_F(VideoEncoderTest, Initialize) {
-  if (g_env->SpatialLayers().size() > 1)
+  if (g_env->SpatialLayers().size() > 1) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
 
   auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
@@ -376,6 +362,23 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
   auto video_encoder = VideoEncoder::Create(GetDefaultConfig());
 
   EXPECT_NE(video_encoder, nullptr);
+}
+
+// Encode video from start to end. Wait for the kFlushDone event at the end of
+// the stream, that notifies us all frames have been encoded.
+TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
+
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
 // Test forcing key frames while encoding a video.
@@ -468,6 +471,36 @@ TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+}
+
+// Execute Flush() in the middle of encoding. Supporting this is required for
+// Flush() and ChabgeOptions() in media::VideoEncoder API.
+// See media/base/video_encoder.h for detail.
+TEST_F(VideoEncoderTest, FlushIntheMiddle) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+
+  auto config = GetDefaultConfig();
+
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
+  const size_t middle_frame = config.num_frames_to_encode / 2;
+
+  // Encode until the middle of stream and request force_keyframe.
+  encoder->EncodeUntil(VideoEncoder::kFrameReleased, middle_frame);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+
+  // Flush in the middle.
+  encoder->Flush();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+
+  // Encode until the end of stream.
+  encoder->Encode();
+
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 2u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }

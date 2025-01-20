@@ -28,6 +28,7 @@
 #include "device/fido/features.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -209,7 +210,8 @@ TrustedVaultEncryptionKeysExtension::TrustedVaultEncryptionKeysExtension(
     content::RenderFrame* frame)
     : content::RenderFrameObserver(frame) {}
 
-TrustedVaultEncryptionKeysExtension::~TrustedVaultEncryptionKeysExtension() {}
+TrustedVaultEncryptionKeysExtension::~TrustedVaultEncryptionKeysExtension() =
+    default;
 
 void TrustedVaultEncryptionKeysExtension::OnDestruct() {
   delete this;
@@ -364,7 +366,7 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
       trusted_vault::kSyncSecurityDomainName,
       SyncEncryptionKeysToTrustedVaultKeys(encryption_keys, last_key_version));
   remote_->SetEncryptionKeys(
-      gaia_id, std::move(trusted_vault_keys),
+      std::move(gaia_id), std::move(trusted_vault_keys),
       base::BindOnce(
           &TrustedVaultEncryptionKeysExtension::RunCompletionCallback,
           weak_ptr_factory_.GetWeakPtr(), std::move(global_callback)));
@@ -421,13 +423,13 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeys(
       base::BindOnce(
           &TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeysContinue,
           weak_ptr_factory_.GetWeakPtr(), args, std::move(callback),
-          std::move(gaia_id)));
+          GaiaId(std::move(gaia_id))));
 }
 
 void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeysContinue(
     gin::Arguments* args,
     v8::Local<v8::Function> callback,
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::optional<
         base::flat_map<std::string,
                        std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
@@ -451,7 +453,7 @@ void TrustedVaultEncryptionKeysExtension::SetClientEncryptionKeysContinue(
   }
 
   remote_->SetEncryptionKeys(
-      gaia_id, std::move(*trusted_vault_keys),
+      gaia_id.ToString(), std::move(*trusted_vault_keys),
       base::BindOnce(
           &TrustedVaultEncryptionKeysExtension::RunCompletionCallback,
           weak_ptr_factory_.GetWeakPtr(),

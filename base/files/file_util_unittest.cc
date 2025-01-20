@@ -3049,7 +3049,7 @@ TEST_F(FileUtilTest, FileToFILE) {
 
   stream = FileToFILE(std::move(file), "w");
   EXPECT_TRUE(stream);
-  EXPECT_FALSE(file.IsValid());
+  EXPECT_FALSE(file.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(CloseFile(stream));
 }
 

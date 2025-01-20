@@ -24,7 +24,7 @@ class DownloadOpenPrompt {
   // Creates the open confirmation dialog and returns this object.
   static DownloadOpenPrompt* CreateDownloadOpenConfirmationDialog(
       content::WebContents* web_contents,
-      const std::string& extension_name,
+      const std::u16string& extension_name,
       const base::FilePath& file_path,
       OpenCallback open_callback);
 

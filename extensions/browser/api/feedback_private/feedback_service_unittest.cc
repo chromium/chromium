@@ -153,10 +153,10 @@ void VerifyAttachment(std::string_view name,
 class FeedbackServiceTest : public ApiUnitTest {
  protected:
   FeedbackServiceTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     test_url_loader_factory_.AddResponse(
         kVariationsFetchHpkeKey, kTestPublicKeyResponseBody, net::HTTP_OK);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -469,8 +469,8 @@ TEST_F(FeedbackServiceTest, TestSendFeedbackWithVariationsBinary) {
                                            /*info_len=*/0));
 
   // Decryption.
-  base::span<const uint8_t> ciphertext =
-      base::make_span(encrypted_data).subspan(X25519_PUBLIC_VALUE_LEN);
+  auto ciphertext =
+      base::span(encrypted_data).subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
   ASSERT_TRUE(EVP_HPKE_CTX_open(/*ctx=*/recipient_ctx.get(),

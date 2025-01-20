@@ -23,6 +23,7 @@ source_set("base_numerics") {
     "byte_conversions.h",
     "checked_math.h",
     "clamped_math.h",
+    "integral_constant_like.h",
     "math_constants.h",
     "ostream_operators.h",
     "ranges.h",

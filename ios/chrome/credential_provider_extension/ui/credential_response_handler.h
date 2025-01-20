@@ -9,6 +9,7 @@
 
 #import <vector>
 
+@class PasskeyRequestDetails;
 @protocol Credential;
 
 typedef void (^FetchSecurityDomainSecretCompletionBlock)(
@@ -25,9 +26,7 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
     API_AVAILABLE(ios(17.0));
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
-              clientDataHash:(NSData*)clientDataHash
-          allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-    userVerificationRequired:(BOOL)userVerificationRequired;
+      passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 

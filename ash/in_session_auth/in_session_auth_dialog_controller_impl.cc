@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
@@ -131,25 +130,14 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   DCHECK(account_id.is_valid());
   DCHECK_NE(auth_token_provider_, nullptr);
 
-  if (reason == Reason::kAccessPasswordManager &&
-      features::IsUseAuthPanelInSessionEnabled()) {
+  if (reason == Reason::kAccessPasswordManager) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
         std::make_unique<PasswordManagerAuthRequest>(
             base::UTF8ToUTF16(prompt.value_or("")),
             std::move(on_auth_complete)));
-  } else if (reason == Reason::kAccessAuthenticationSettings &&
-             features::IsUseAuthPanelInSessionEnabled()) {
+  } else if (reason == Reason::kAccessAuthenticationSettings) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
         std::make_unique<SettingsAuthRequest>(std::move(on_auth_complete)));
-  } else {
-    // We don't manage the lifetime of `AuthenticationDialog` here.
-    // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,
-    // which would properly delete it when the widget is closed.
-    (new AuthenticationDialog(
-         std::move(on_auth_complete), auth_token_provider_,
-         std::make_unique<AuthPerformer>(UserDataAuthClient::Get()),
-         account_id))
-        ->Show();
   }
 }
 

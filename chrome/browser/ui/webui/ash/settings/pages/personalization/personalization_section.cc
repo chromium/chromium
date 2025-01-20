@@ -7,14 +7,13 @@
 #include <array>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_hub_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -47,58 +46,39 @@ PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
-    : OsSettingsSection(profile, search_tag_registry),
-      isRevampEnabled_(ash::features::IsOsSettingsRevampWayfindingEnabled()),
-      multitasking_subsection_(
-          !isRevampEnabled_
-              ? std::make_optional<MultitaskingSection>(profile,
-                                                        search_tag_registry)
-              : std::nullopt) {
-  if (isRevampEnabled_) {
-    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-    updater.AddSearchTags(GetPersonalizationSearchConcepts());
-  }
+    : OsSettingsSection(profile, search_tag_registry) {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.AddSearchTags(GetPersonalizationSearchConcepts());
 }
 
 PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  const bool kIsGuest = IsGuestModeActive();
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  const bool kIsGuest = IsGuestModeActive(user);
 
   webui::LocalizedString kWallpaperLocalizedStrings[] = {
-      {"personalizationPageTitle", isRevampEnabled_
-                                       ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
-                                       : IDS_OS_SETTINGS_PERSONALIZATION},
+      {"personalizationPageTitle", IDS_OS_SETTINGS_PERSONALIZATION},
       {"personalizationMenuItemDescription",
        kIsGuest
            ? IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION_GUEST_MODE
            : IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION},
       {"personalizationHubTitle", IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
       {"personalizationHubSubtitle",
-       isRevampEnabled_
-           ? (kIsGuest
-                  ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE
-                  : IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE)
-           : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
+       kIsGuest ? IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE
+                : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
   };
 
   html_source->AddLocalizedStrings(kWallpaperLocalizedStrings);
-  if (multitasking_subsection_) {
-    multitasking_subsection_->AddLoadTimeData(html_source);
-  }
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PersonalizationHubHandler>());
-  if (multitasking_subsection_) {
-    multitasking_subsection_->AddHandlers(web_ui);
-  }
 }
 
 int PersonalizationSection::GetSectionNameMessageId() const {
-  return isRevampEnabled_ ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
-                          : IDS_OS_SETTINGS_PERSONALIZATION;
+  return IDS_OS_SETTINGS_PERSONALIZATION;
 }
 
 mojom::Section PersonalizationSection::GetSection() const {
@@ -122,9 +102,6 @@ bool PersonalizationSection::LogMetric(mojom::Setting setting,
 void PersonalizationSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kOpenWallpaper);
-  if (multitasking_subsection_) {
-    multitasking_subsection_->RegisterHierarchy(generator);
-  }
 }
 
 }  // namespace ash::settings

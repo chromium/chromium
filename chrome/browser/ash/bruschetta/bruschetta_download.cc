@@ -85,7 +85,7 @@ std::string Sha256File(const base::FilePath& path) {
     if (read.value_or(0) == 0) {
       break;
     }
-    ctx->Update(base::span(buffer).subspan(0, *read));
+    ctx->Update(base::span(buffer).first(*read));
   }
 
   std::array<uint8_t, crypto::kSHA256Length> digest_bytes;
@@ -133,6 +133,7 @@ void SimpleURLLoaderDownload::Download(
   auto path = scoped_temp_dir_->GetPath().Append("download");
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = url_;
+  req->site_for_cookies = net::SiteForCookies::FromUrl(url_);
   loader_ = network::SimpleURLLoader::Create(std::move(req),
                                              kBruschettaTrafficAnnotation);
   network_context_ = std::make_unique<BruschettaNetworkContext>(profile);

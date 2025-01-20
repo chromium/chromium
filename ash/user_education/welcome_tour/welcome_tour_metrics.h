@@ -52,8 +52,9 @@ enum class ExperimentalArm {
   kMinValue = 0,
   kHoldback = kMinValue,
   kV1 = 1,
-  kV2 = 2,
-  kMaxValue = kV2,
+  // kV2 = 2, Deprecated.
+  kV3 = 3,
+  kMaxValue = kV3,
 };
 
 static constexpr auto kAllExperimentalArmsSet =
@@ -62,7 +63,7 @@ static constexpr auto kAllExperimentalArmsSet =
                   ExperimentalArm::kMaxValue>({
         ExperimentalArm::kHoldback,
         ExperimentalArm::kV1,
-        ExperimentalArm::kV2,
+        ExperimentalArm::kV3,
     });
 
 // Enumeration of interactions users may engage in after the Welcome Tour. These

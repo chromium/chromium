@@ -155,7 +155,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     DCHECK(web_transport_->transport_remote_.is_bound());
     for (const auto& datagram : pending_datagrams_) {
       web_transport_->transport_remote_->SendDatagram(
-          base::make_span(datagram),
+          base::span(datagram),
           WTF::BindOnce(&DatagramUnderlyingSink::OnDatagramProcessed,
                         WrapWeakPersistent(this)));
     }

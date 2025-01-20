@@ -39,7 +39,7 @@ class AudioHashTest : public testing::Test {
     // Since FakeAudioRenderCallback generates only a single channel of unique
     // audio data, we need to fill each channel manually.
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      wrapped_bus->SetChannelData(0, audio_bus->channel(ch));
+      wrapped_bus->SetChannelData(0, audio_bus->channel_span(ch));
       fake_callback_.Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                             wrapped_bus.get());
     }
@@ -73,7 +73,7 @@ TEST_F(AudioHashTest, SampleOrder) {
   original_hash.Update(bus_one_.get(), bus_one_->frames());
 
   // Swap a sample in the bus.
-  std::swap(bus_one_->channel(0)[0], bus_one_->channel(0)[1]);
+  std::swap(bus_one_->channel_span(0)[0], bus_one_->channel_span(0)[1]);
 
   AudioHash swapped_hash;
   swapped_hash.Update(bus_one_.get(), bus_one_->frames());
@@ -91,7 +91,8 @@ TEST_F(AudioHashTest, ChannelOrder) {
   std::unique_ptr<AudioBus> swapped_ch_bus = AudioBus::CreateWrapper(channels);
   swapped_ch_bus->set_frames(bus_one_->frames());
   for (int i = channels - 1; i >= 0; --i)
-    swapped_ch_bus->SetChannelData(channels - (i + 1), bus_one_->channel(i));
+    swapped_ch_bus->SetChannelData(channels - (i + 1),
+                                   bus_one_->channel_span(i));
 
   AudioHash swapped_hash;
   swapped_hash.Update(swapped_ch_bus.get(), swapped_ch_bus->frames());
@@ -141,8 +142,8 @@ TEST_F(AudioHashTest, HashIgnoresUpdateOrder) {
   const int channels = bus_one_->channels();
   std::unique_ptr<AudioBus> half_bus = AudioBus::CreateWrapper(channels);
   half_bus->set_frames(half_frames);
-  for (int i = 0; i < channels; ++i)
-    half_bus->SetChannelData(i, bus_one_->channel(i) + half_frames);
+  half_bus->SetAllChannels(
+      bus_one_->AllChannelsSubspan(half_frames, half_frames));
 
   half_hash.Update(half_bus.get(), half_bus->frames());
   EXPECT_EQ(full_hash.ToString(), half_hash.ToString());
@@ -154,7 +155,7 @@ TEST_F(AudioHashTest, VerifySimilarHash) {
   hash_one.Update(bus_one_.get(), bus_one_->frames());
 
   // Twiddle the values inside the first bus.
-  float* channel = bus_one_->channel(0);
+  auto channel = bus_one_->channel_span(0);
   for (int i = 0; i < bus_one_->frames(); i += bus_one_->frames() / 64)
     channel[i] += 0.0001f;
 

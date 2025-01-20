@@ -30,6 +30,10 @@
 #include "media/capture/video/video_capture_effects_processor.h"
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace media {
 class VideoCaptureBufferPool;
 class VideoFrameReceiver;
@@ -117,8 +121,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       std::optional<base::TimeTicks> capture_begin_timestamp,
       const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id) override;
-  void OnIncomingCapturedGfxBuffer(
-      gfx::GpuMemoryBuffer* buffer,
+  void OnIncomingCapturedImage(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const VideoCaptureFormat& frame_format,
       int clockwise_rotation,
       base::TimeTicks reference_time,
@@ -185,6 +189,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       int frame_feedback_id);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  std::optional<VideoCaptureDevice::Client::Buffer> ReserveEffectsOutputBuffer(
+      const VideoCaptureFormat& format,
+      const int frame_feedback_id);
+
   void OnPostProcessDone(base::expected<PostProcessDoneInfo,
                                         video_effects::mojom::PostProcessError>
                              post_process_info_or_error);

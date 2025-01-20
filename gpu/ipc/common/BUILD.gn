@@ -125,6 +125,7 @@ source_set("ipc_common_sources") {
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
     ":memory_stats_sources",
+    ":shared_image_pool_client_interface",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
     "//ipc",
@@ -210,6 +211,7 @@ mojom("gpu_channel_mojom") {
   sources = [ "gpu_channel.mojom" ]
 
   public_deps = [
+    ":shared_image_pool_client_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom:shared_image_format",
@@ -306,6 +308,19 @@ mojom("gmb_interface") {
   ]
 }
 
+mojom("shared_image_pool_client_interface") {
+  generate_java = true
+  visibility = [
+    "//gpu/*",
+    "//services/*",
+  ]
+  sources = [ "shared_image_pool_client_interface.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
+}
+
 mojom("surface_handle") {
   generate_java = true
   sources = [ "surface_handle.mojom" ]
@@ -340,6 +355,7 @@ mojom("interfaces") {
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
     "shared_image_metadata.mojom",
+    "shared_image_pool_id.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -536,6 +552,17 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImagePoolId"
+          cpp = "::gpu::SharedImagePoolId"
+        },
+      ]
+      traits_sources = [ "shared_image_pool_id_mojom_traits.cc" ]
+      traits_headers = [ "shared_image_pool_id_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
     },
     {
@@ -793,7 +820,7 @@ mojom("vulkan_interface") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
 
   public_deps = [
     ":gpu_preferences_interface",

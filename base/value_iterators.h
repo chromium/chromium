@@ -24,14 +24,13 @@ using DictStorage = base::flat_map<std::string, std::unique_ptr<Value>>;
 
 // This iterator closely resembles DictStorage::iterator, with one
 // important exception. It abstracts the underlying unique_ptr away, meaning its
-// value_type is std::pair<const std::string, Value>. It's reference type is a
-// std::pair<const std::string&, Value&>, so that callers have read-write
-// access without incurring a copy.
+// reference type is a std::pair<const std::string&, Value&>, so that callers
+// have read-write access without incurring a copy.
 class BASE_EXPORT dict_iterator {
  public:
   using difference_type = DictStorage::iterator::difference_type;
-  using value_type = std::pair<const std::string, Value>;
-  using reference = std::pair<const std::string&, Value&>;
+  using value_type = std::pair<const std::string&, Value&>;
+  using reference = value_type;
   using iterator_category = std::bidirectional_iterator_tag;
 
   class pointer {
@@ -52,8 +51,8 @@ class BASE_EXPORT dict_iterator {
   dict_iterator& operator=(const dict_iterator& dict_iter);
   ~dict_iterator();
 
-  reference operator*();
-  pointer operator->();
+  reference operator*() const;
+  pointer operator->() const;
 
   dict_iterator& operator++();
   dict_iterator operator++(int);
@@ -80,14 +79,13 @@ class BASE_EXPORT dict_iterator {
 
 // This iterator closely resembles DictStorage::const_iterator, with one
 // important exception. It abstracts the underlying unique_ptr away, meaning its
-// value_type is std::pair<const std::string, Value>. It's reference type is a
-// std::pair<const std::string&, const Value&>, so that callers have read-only
-// access without incurring a copy.
+// reference type is a std::pair<const std::string&, const Value&>, so that
+// callers have read-only access without incurring a copy.
 class BASE_EXPORT const_dict_iterator {
  public:
   using difference_type = DictStorage::const_iterator::difference_type;
-  using value_type = std::pair<const std::string, Value>;
-  using reference = std::pair<const std::string&, const Value&>;
+  using value_type = std::pair<const std::string&, const Value&>;
+  using reference = value_type;
   using iterator_category = std::bidirectional_iterator_tag;
 
   class pointer {

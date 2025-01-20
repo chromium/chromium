@@ -103,7 +103,7 @@ SBOX_TESTS_COMMAND int Process_Crash(int argc, wchar_t** argv) {
 }
 // Generate a event name, used to test thread creation.
 std::wstring GenerateEventName(DWORD pid) {
-  wchar_t buff[30] = {0};
+  wchar_t buff[30] = {};
   int res = swprintf_s(buff, sizeof(buff) / sizeof(buff[0]),
                        L"ProcessPolicyTest_%08x", pid);
   if (-1 != res) {

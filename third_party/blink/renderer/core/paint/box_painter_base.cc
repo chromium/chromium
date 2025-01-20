@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
@@ -110,23 +109,47 @@ void SetHasNativeBackgroundPainter(Node* node, bool state) {
   }
 }
 
-bool CanCompositeBackgroundColorAnimation(Node* node) {
+Animation* GetCompositableBackgroundColorAnimation(Node* node) {
   Element* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
+  if (!element) {
+    return nullptr;
+  }
 
   BackgroundColorPaintImageGenerator* generator =
       GetBackgroundColorPaintImageGenerator(node->GetDocument());
   // The generator can be null in testing environment.
-  if (!generator)
-    return false;
+  if (!generator) {
+    return nullptr;
+  }
 
   Animation* animation = generator->GetAnimationIfCompositable(element);
-  if (!animation)
-    return false;
+  if (!animation) {
+    return nullptr;
+  }
 
-  return animation->CheckCanStartAnimationOnCompositor(nullptr) ==
-         CompositorAnimations::kNoFailure;
+  if (animation->CheckCanStartAnimationOnCompositor(nullptr) !=
+      CompositorAnimations::kNoFailure) {
+    return nullptr;
+  }
+
+  return animation;
+}
+
+void DowngradeBackgroundColorAnimation(Node* node) {
+  Element* element = To<Element>(node);
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  for (auto& entry : element_animations->Animations()) {
+    Animation& animation = *entry.key;
+    if (animation.GetNativePaintWorkletReasons() &
+        static_cast<Animation::NativePaintWorkletReasons>(
+            Animation::NativePaintWorkletProperties::
+                kBackgroundColorPaintWorklet)) {
+      if (animation.HasActiveAnimationsOnCompositor()) {
+        animation.SetCompositorPending(
+            Animation::CompositorPendingReason::kPendingDowngrade);
+      }
+    }
+  }
 }
 
 CompositedPaintStatus CompositedBackgroundColorStatus(Node* node) {
@@ -461,7 +484,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     BackgroundBleedAvoidance bleed_avoidance,
     PhysicalBoxSides sides_to_include,
     bool is_inline,
-    bool is_painting_background_in_contents_space)
+    bool is_painting_background_in_contents_space,
+    PaintFlags paint_flags)
     : image(layer.GetImage()),
       color(bg_color),
       respect_image_orientation(style.ImageOrientation()),
@@ -521,7 +545,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   bool composite_bgcolor_animation =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation() &&
-      layer.GetType() == EFillLayerType::kBackground;
+      layer.GetType() == EFillLayerType::kBackground &&
+      !(PaintFlag::kPlacedElement & paint_flags);
   // When background color animation is running on the compositor thread, we
   // need to trigger repaint even if the background is transparent to collect
   // artifacts in order to run the animation on the compositor.
@@ -739,7 +764,7 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
     return false;
 
   CompositedPaintStatus status = CompositedBackgroundColorStatus(node);
-
+  Animation* animation = nullptr;
   switch (status) {
     case CompositedPaintStatus::kNoAnimation:
     case CompositedPaintStatus::kNotComposited:
@@ -749,18 +774,32 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
 
     case CompositedPaintStatus::kNeedsRepaint:
     case CompositedPaintStatus::kComposited:
-      if (CanCompositeBackgroundColorAnimation(node)) {
+      animation = GetCompositableBackgroundColorAnimation(node);
+      if (animation) {
         SetHasNativeBackgroundPainter(node, true);
       } else {
         SetHasNativeBackgroundPainter(node, false);
+        // Typically, this branch is only reached for the kNeedsRepaint case;
+        // however, it can occur if a blur filter is introduced to an ancestor
+        // of the element being animated, which breaks eligibility for
+        // compositing.
+        if (status == CompositedPaintStatus::kComposited) {
+          // TODO(kevers): Investigate if fallback to main in this degenerate
+          // case can occur too late to prevent a rendering glitch.
+          DowngradeBackgroundColorAnimation(node);
+        }
         return false;
       }
+      break;
   }
 
   scoped_refptr<Image> paint_worklet_image =
       GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().size());
-  if (!paint_worklet_image)
-    return false;
+  // We can fail to create a paint worklet image if missing a generator, which
+  // is possible in a testing environment; however, in this case we won't have
+  // a compositable animation and would have bailed earlier. At this stage,
+  // image creation must succeed.
+  CHECK(paint_worklet_image) << "Failed to create paint worklet image";
   gfx::RectF src_rect(dest_rect.Rect().size());
   context.DrawImageRRect(
       *paint_worklet_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
@@ -768,6 +807,7 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
           /* image_may_be_lcp_candidate */ false,
           /* report_paint_timing */ false),
       dest_rect, src_rect, SkBlendMode::kSrcOver, kRespectImageOrientation);
+  animation->OnPaintWorkletImageCreated();
   return true;
 }
 
@@ -1159,7 +1199,8 @@ void BoxPainterBase::PaintFillLayer(
 
   const FillLayerInfo fill_layer_info =
       GetFillLayerInfo(color, bg_layer, bleed_avoidance,
-                       paint_info.IsPaintingBackgroundInContentsSpace());
+                       paint_info.IsPaintingBackgroundInContentsSpace(),
+                       paint_info.GetPaintFlags());
   // If we're not actually going to paint anything, abort early.
   if (!fill_layer_info.should_paint_image &&
       !fill_layer_info.should_paint_color)
@@ -1410,8 +1451,9 @@ bool BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(
 
   // We always paint a MediaSliderPart using the latest data (buffered ranges,
   // current time and duration) which may be different from the cached data.
-  if (box.StyleRef().EffectiveAppearance() == kMediaSliderPart)
+  if (box.StyleRef().EffectiveAppearance() == AppearanceValue::kMediaSlider) {
     return true;
+  }
 
   // We paint an indeterminate progress based on the position calculated from
   // the animation progress. Harmless under-invalidatoin may happen during a

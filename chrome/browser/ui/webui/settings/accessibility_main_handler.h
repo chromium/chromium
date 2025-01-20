@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-
 namespace settings {
 
 // Settings handler for the main accessibility settings page,

@@ -83,6 +83,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private int mRendererTopContentOffset;
     private int mRendererTopControlsMinHeightOffset;
     private int mRendererBottomControlsMinHeightOffset;
+    private boolean mRendererTopControlsMinHeightChanged;
+    private boolean mRendererBottomControlsMinHeightChanged;
+
     private float mControlOffsetRatio;
     private ActivityTabTabObserver mActiveTabObserver;
 
@@ -102,6 +105,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private boolean mContentViewScrolling;
 
+    private boolean mForceRelayoutOnVisibilityChange;
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
                 @Override
@@ -127,7 +131,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
                             obs.onAndroidControlsVisibilityChanged(visibility);
                         }
-                        if (!ToolbarFeatures.shouldSuppressCaptures()) {
+                        if (!ToolbarFeatures.shouldSuppressCaptures()
+                                || (mForceRelayoutOnVisibilityChange
+                                        && shouldShowAndroidControls())) {
                             // requestLayout is required to trigger a new gatherTransparentRegion(),
                             // which only occurs together with a layout and let's SurfaceFlinger
                             // trim overlays.
@@ -139,6 +145,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             ViewUtils.requestLayout(
                                     mControlContainer.getView(),
                                     "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
+                            mForceRelayoutOnVisibilityChange = false;
                         }
                     }
                 }
@@ -277,10 +284,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         offsetTagsInfo.mTopControlsHairlineHeight =
                                 mControlContainer.getToolbarHairlineHeight();
 
+                        // Notify observers of changes before passing tags to native. This allows
+                        // observers to set fields used later for creating OffsetTagConstraints.
+                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
                         webContents.notifyControlsConstraintsChanged(
                                 oldOffsetTagsInfo, offsetTagsInfo);
-
-                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
                     }
 
                     @Override
@@ -461,6 +469,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     @Override
+    public int getTopControlsCurrentHeight() {
+        return mTopControlsHeight - mTopControlsMinHeight + mRendererTopControlsMinHeightOffset;
+    }
+
+    @Override
     public int getBottomControlsHeight() {
         return mBottomControlsHeight;
     }
@@ -473,6 +486,30 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     @Override
     public boolean shouldAnimateBrowserControlsHeightChanges() {
         return mAnimateBrowserControlsHeightChanges;
+    }
+
+    @Override
+    public boolean shouldUpdateOffsetsWhenConstraintsChange() {
+        // With BCIV enabled, scrolls will not update the offsets in the browser's property models
+        // anymore. The browser compositor frame will always show the controls in their fully
+        // visible state. When the controls become locked, their offset tags will be removed, which
+        // means the offset tag values won't be applied anymore, which means the controls will be
+        // drawn at their fully visible positions. If the controls were not at their fully visible
+        // positions before their offset tags were removed, then we need to update the property
+        // models with the correct offsets to avoid visible jumps.
+        // More specifically, there are two cases where this happens when the controls become locked
+        // after being scrolled off screen:
+        // - If we transition to a HIDDEN state, then the renderer sees the controls are already not
+        // visible, so it will not notify the browser to hide them. So the browser needs to update
+        // the offsets to hide the controls.
+        // - If we transition to a SHOWN state, the browser also needs to update the offsets,
+        // otherwise the animation to show the controls will start with a frame where the controls
+        // are fully visible.
+        @BrowserControlsState
+        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
+        return (constraints == BrowserControlsState.HIDDEN
+                        || constraints == BrowserControlsState.SHOWN)
+                && getContentOffset() == getTopControlsMinHeight();
     }
 
     @Override
@@ -547,19 +584,49 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             @ControlsPosition int controlsPosition,
             int newTopControlsHeight,
             int newTopControlsMinHeight,
+            int newRendererTopControlsOffset,
             int newBottomControlsHeight,
-            int newBottomControlsMinHeight) {
+            int newBottomControlsMinHeight,
+            int newRendererBottomControlsOffset) {
         assert controlsPosition == ControlsPosition.TOP
                         || controlsPosition == ControlsPosition.BOTTOM
                 : "Cannot change to ControlPosition.NONE after initialization";
         if (mControlsPosition == controlsPosition) return;
-        mControlsPosition = controlsPosition;
-        setTopControlsHeight(newTopControlsHeight, newTopControlsMinHeight);
-        setBottomControlsHeight(newBottomControlsHeight, newBottomControlsMinHeight);
+        try (TraceEvent e = TraceEvent.scoped("BrowserControlsManager.setControlsPosition")) {
+            // Only one pending update to browser controls params can be in-flight at once, so we
+            // need to fully update all params before notifying that the params have changed via
+            // observer methods. If we don't, a partial update will get pushed that delays the final
+            // state from being recognized and prevents animations from running correctly.
+            mControlsPosition = controlsPosition;
+            mTopControlsHeight = newTopControlsHeight;
+            mTopControlsMinHeight = newTopControlsMinHeight;
+            mRendererTopContentOffset = newRendererTopControlsOffset + newTopControlsHeight;
+            mBottomControlsHeight = newBottomControlsHeight;
+            mBottomControlsMinHeight = newBottomControlsMinHeight;
+            // If the controls position changes concurrently with a change to renderer offset(s),
+            // the control container will be invisible during the subsequent layout pass. This
+            // causes it to fail to draw when it returns to visible, so we force a relayout upon
+            // returning to visibility via this flag.
+            mForceRelayoutOnVisibilityChange =
+                    newRendererTopControlsOffset != 0 || newRendererBottomControlsOffset != 0;
+            if (canAnimateNativeBrowserControls()) {
+                mRendererTopControlOffset = newRendererTopControlsOffset;
+                mRendererBottomControlOffset = newRendererBottomControlsOffset;
+            } else {
+                mRendererTopControlOffset = 0;
+                mRendererBottomControlOffset = 0;
+            }
 
-        updateControlOffset();
-        notifyControlOffsetChanged();
-        notifyControlsPositionChanged();
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onTopControlsHeightChanged(newTopControlsHeight, newTopControlsMinHeight);
+                obs.onBottomControlsHeightChanged(
+                        newBottomControlsHeight, newBottomControlsMinHeight);
+            }
+
+            updateControlOffset();
+            notifyControlOffsetChanged();
+            notifyControlsPositionChanged();
+        }
     }
 
     @Override
@@ -686,6 +753,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             return;
         }
 
+        mRendererTopControlsMinHeightChanged =
+                mRendererTopControlsMinHeightOffset != topControlsMinHeightOffset;
+        mRendererBottomControlsMinHeightChanged =
+                mRendererBottomControlsMinHeightOffset != bottomControlsMinHeightOffset;
         mRendererTopControlOffset = rendererTopControlOffset;
         mRendererBottomControlOffset = rendererBottomControlOffset;
         mRendererTopControlsMinHeightOffset = topControlsMinHeightOffset;
@@ -707,10 +778,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 mControlContainer.getView().setTranslationY(getTopControlOffset());
             }
 
-            // Whether we need the compositor to draw again to update our animation.
-            // Should be |false| when the browser controls are only moved through the page
-            // scrolling.
-            boolean needsAnimate = shouldShowAndroidControls();
+            // Explicitly tell the compositor to draw again. Should be |true| only when the android
+            // views for the browser controls are visible, or when the android browser controls are
+            // being moved by a browser driven animation. Browser driven animations refer to
+            // situations where composited views do not exist. Note: requestNewFrame can be false,
+            // and a new browser compositor frame could still be produced if other observers make
+            // changes to the layer tree.
+            boolean requestNewFrame = shouldShowAndroidControls();
 
             // With BCIV enabled, renderer scrolling will not update the control offsets of the
             // browser's compositor frame, but we still want this update to happen if the browser
@@ -724,9 +798,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 obs.onControlsOffsetChanged(
                         getTopControlOffset(),
                         getTopControlsMinHeightOffset(),
+                        mRendererTopControlsMinHeightChanged,
                         getBottomControlOffset(),
                         getBottomControlsMinHeightOffset(),
-                        needsAnimate,
+                        mRendererBottomControlsMinHeightChanged,
+                        requestNewFrame,
                         isVisibilityForced);
             }
         }

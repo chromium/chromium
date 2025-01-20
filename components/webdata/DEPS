@@ -10,6 +10,7 @@ specific_include_rules = {
     "+components/password_manager/core/browser/webdata",
     "+components/plus_addresses/webdata",
     "+components/search_engines/keyword_table.h",
+    "+components/search_engines/template_url_data.h",
     "+components/signin/public/webdata",
   ],
 }

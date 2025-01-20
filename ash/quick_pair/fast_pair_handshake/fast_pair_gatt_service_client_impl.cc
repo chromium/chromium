@@ -194,7 +194,7 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       } else {
         CHECK(data_id_or_size.value() == 0);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case kActionRequestAdditionalDataFlags:
       CHECK(data_id_or_size.has_value());
 

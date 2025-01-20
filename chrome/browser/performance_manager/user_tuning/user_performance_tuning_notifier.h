@@ -18,8 +18,8 @@ namespace performance_manager::user_tuning {
 // the graph and notify the UserPerformanceTuningManager when certain thresholds
 // are met.
 class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
-                                      public PageNode::ObserverDefaultImpl,
-                                      public SystemNode::ObserverDefaultImpl {
+                                      public PageNodeObserver,
+                                      public SystemNodeObserver {
  public:
   // The tab count and memory % that, when reached, trigger an opt-in bubble for
   // memory saver.
@@ -51,13 +51,13 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
 
-  // SystemNode::ObserverDefaultImpl:
+  // SystemNodeObserver:
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override;
 
  private:

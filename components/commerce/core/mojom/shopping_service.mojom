@@ -10,56 +10,6 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "components/commerce/core/mojom/shared.mojom";
 
-// This is a specialized version of shopping_specifics proto. The
-// struct here has most of the same information with the proto but
-// focuses more on UI needs.
-struct ProductInfo {
-  // The title of the product.
-  string title;
-
-  // The title of the product cluster.
-  string cluster_title;
-
-  // The eTLD+1 domain of the merchant website where the
-  // product was originally tracked on. This should only be used
-  // for showing this information directly on the UI.
-  string domain;
-
-  // Direct link to the product image.
-  url.mojom.Url image_url;
-
-  // Direct link to the product page.
-  url.mojom.Url product_url;
-
-  // Price as shown in the page. This should include
-  // both the amount and the currency symbol.
-  string current_price;
-
-  // Previous price if there has been a price drop.
-  // This should include both the amount and the currency
-  // symbol.
-  string previous_price;
-
-  // The product cluster id.
-  uint64 cluster_id;
-
-  // The category labels of the product.
-  array<string> category_labels;
-
-  // A formatted string showing the summary of the product's price. This may be
-  // a range or a singular value and may not match the |current_price| above (as
-  // it represents a single offer).
-  string price_summary;
-};
-
-struct BookmarkProductInfo {
-  // The ID of the bookmark that owns this product info.
-  int64 bookmark_id;
-
-  // The product information associated with 'bookmark_id'.
-  ProductInfo info;
-};
-
 struct PricePoint {
   string date;
   float price;
@@ -78,6 +28,10 @@ struct UrlInfo {
 
   // Thumbnail URL if it exists, otherwise an empty URL.
   url.mojom.Url thumbnail_url;
+
+  // A section of text from the URL if available. This string will be rendered
+  // as text only, no HTML tags will be processed if they exist.
+  string previewText;
 };
 
 struct PriceInsightsInfo {
@@ -200,38 +154,23 @@ enum UserFeedback {
 };
 
 // Used by surfaces like the price tracking section in side panel, product
-// specifications, chrome://history etc, to bootstrap bidirectional
-// communication.
+// specifications, chrome://history etc, to communicate with C++-side handler.
 interface ShoppingServiceHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateShoppingServiceHandler(
-      pending_remote<Page> page,
       pending_receiver<ShoppingServiceHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI page.
 // TODO(b/359684506): Move feature-specific functions to separate handlers.
 interface ShoppingServiceHandler {
-  // Returns all the tracked product info from bookmarks.
-  GetAllPriceTrackedBookmarkProductInfo()
-      => (array<BookmarkProductInfo> productInfos);
-
-  // Returns all the product info for shopping/product bookmarks.
-  GetAllShoppingBookmarkProductInfo()
-      => (array<BookmarkProductInfo> productInfos);
-
-  // Track price for bookmark with 'bookmark_id'.
-  TrackPriceForBookmark(int64 bookmark_id);
-
-  // Untrack price for bookmark with 'bookmark_id'.
-  UntrackPriceForBookmark(int64 bookmark_id);
-
   // Returns the product info for current url.
-  GetProductInfoForCurrentUrl() => (ProductInfo productInfo);
+  GetProductInfoForCurrentUrl()
+      => (commerce.shared.mojom.ProductInfo productInfo);
 
   // Returns the product info for the provided URL.
   GetProductInfoForUrl(url.mojom.Url url)
-      => (url.mojom.Url url, ProductInfo productInfo);
+      => (url.mojom.Url url, commerce.shared.mojom.ProductInfo productInfo);
 
   // Returns the price insights info for current url.
   GetPriceInsightsInfoForCurrentUrl()
@@ -253,38 +192,17 @@ interface ShoppingServiceHandler {
   // not necessarily represent an open tab.
   GetUrlInfosForRecentlyViewedTabs() => (array<UrlInfo> url_infos);
 
-  // Notify the backend that the UI is ready to be shown.
-  ShowInsightsSidePanelUI();
-
   // Returns if the user is eligible for price tracking.
   IsShoppingListEligible() => (bool eligible);
 
-  // Returns the ID of the shopping collection bookmark folder (not the UUID).
-  GetShoppingCollectionBookmarkFolderId() => (int64 collectionId);
-
   // Returns the price tracking status of the current URL.
   GetPriceTrackingStatusForCurrentUrl() => (bool tracked);
-
-  // Sets the price tracking status of the current URL.
-  SetPriceTrackingStatusForCurrentUrl(bool track);
 
   // Opens url in a new tab.
   OpenUrlInNewTab(url.mojom.Url url);
 
   // Opens |url| in an existing or new tab.
   SwitchToOrOpenTab(url.mojom.Url url);
-
-  // Returns the name of the parent bookmark folder of the current URL. This
-  // will only be called when the current page is bookmarked.
-  GetParentBookmarkFolderNameForCurrentUrl()
-      => (mojo_base.mojom.String16 name);
-
-  // Show the bookmark editor dialog for the current URL. This will only be
-  // called when the current page is bookmarked.
-  ShowBookmarkEditorForCurrentUrl();
-
-  // Show feedback form for price insights.
-  ShowFeedbackForPriceInsights();
 
   // Get all of a user's product specifications sets.
   GetAllProductSpecificationsSets() => (
@@ -317,27 +235,4 @@ interface ShoppingServiceHandler {
   // Get access state for compare feature.
   GetProductSpecificationsFeatureState()
       => (ProductSpecificationsFeatureState state);
-};
-
-// WebUI-side handler for requests from the browser.
-interface Page {
-  // Callback when a bookmark is observed to start being price tracked and
-  // pass along the `BookmarkProductInfo` constructed from it.
-  PriceTrackedForBookmark(BookmarkProductInfo bookmark_product);
-
-  // Callback when a bookmark is observed to stop being price tracked and
-  // pass along the `BookmarkProductInfo` constructed from it.
-  PriceUntrackedForBookmark(BookmarkProductInfo bookmark_product);
-
-  // Callback to notify the WebUI to show error UI when a track/untrack
-  // attempt is failed and pass along the `BookmarkProductInfo`
-  // constructed from it. `attempted_track` is true when the failed
-  // operation is to track price, false when the failed operation is to
-  // untrack price.
-  OperationFailedForBookmark(
-      BookmarkProductInfo bookmark_product, bool attempted_track);
-
-  // Callback when a product bookmark is observed to be moved and
-  // pass along the BookmarkProductInfo of the product.
-  OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
 };

@@ -100,7 +100,7 @@ DeviceCommandWipeUsersJobTest::DeviceCommandWipeUsersJobTest()
       client_(std::make_unique<MockCloudPolicyClient>()),
       service_(std::make_unique<TestingRemoteCommandsService>(client_.get())) {}
 
-DeviceCommandWipeUsersJobTest::~DeviceCommandWipeUsersJobTest() {}
+DeviceCommandWipeUsersJobTest::~DeviceCommandWipeUsersJobTest() = default;
 
 // Make sure that the command is still valid 175 days after being issued.
 TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {

@@ -33,7 +33,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/url_formatter/url_formatter.h"
@@ -268,10 +268,11 @@ QuickInsertSectionView::CreateItemFromResult(
             auto gif_view = std::make_unique<QuickInsertGifView>(
                 base::BindRepeating(&QuickInsertAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher),
-                                    data.preview_url),
+                                    data.preview_url, data.rank),
                 base::BindRepeating(
                     &QuickInsertAssetFetcher::FetchGifPreviewImageFromUrl,
-                    base::Unretained(asset_fetcher), data.preview_image_url),
+                    base::Unretained(asset_fetcher), data.preview_image_url,
+                    data.rank),
                 data.preview_dimensions);
             return std::make_unique<QuickInsertImageItemView>(
                 std::move(gif_view), data.content_description,
@@ -442,8 +443,8 @@ void QuickInsertSectionView::AddTitleTrailingLink(
       views::Builder<views::Link>()
           .SetText(link_text)
           .SetCallback(link_callback)
-          .SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-              ash::TypographyToken::kCrosAnnotation2))
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation2))
           .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
@@ -612,8 +613,10 @@ QuickInsertSectionView::GetOrCreateListItemContainer() {
 QuickInsertImageItemGridView*
 QuickInsertSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
-    image_item_grid_ = AddChildView(
-        std::make_unique<QuickInsertImageItemGridView>(section_width_));
+    image_item_grid_ =
+        AddChildView(std::make_unique<QuickInsertImageItemGridView>(
+            section_width_,
+            /*has_top_margin=*/title_container_->children().empty()));
     item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/cups_proxy/socket_manager.h"
 
 #include <errno.h>
@@ -146,7 +151,7 @@ ThreadSafeHelper::ThreadSafeHelper(
     CupsProxyServiceDelegate* const delegate,
     scoped_refptr<base::SequencedTaskRunner> runner)
     : main_runner_(runner), socket_(std::move(socket)) {}
-ThreadSafeHelper::~ThreadSafeHelper() {}
+ThreadSafeHelper::~ThreadSafeHelper() = default;
 
 void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
                                    SocketManagerCallback cb) {

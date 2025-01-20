@@ -78,12 +78,6 @@ public class OmniboxFeaturesTest {
 
         @Test
         @SmallTest
-        public void testShouldRetainOmniboxOnFocus_withFeatureInDefaultState() {
-            testShouldRetainOmniboxOnFocus(/* expectFeatureEnabled= */ false);
-        }
-
-        @Test
-        @SmallTest
         @DisableFeatures(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS)
         public void testShouldRetainOmniboxOnFocus_withFeatureExplicitlyDisabled() {
             testShouldRetainOmniboxOnFocus(/* expectFeatureEnabled= */ false);

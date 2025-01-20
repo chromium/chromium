@@ -6,6 +6,7 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="pl">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Obsługiwane przez GPT-4 ChatGPT</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Blokowanie reklam i elementów śledzących podczas przeglądania sieci.</translation>
   <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Prywatna. Szybka. Mniej reklam. DuckDuckGo nigdy Cię nie śledzi.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Wyszukuj i sadź przy tym drzewa, za darmo. Już 200 milionów zasadzonych drzew.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Znajdź to, czego potrzebujesz z Google</translation>

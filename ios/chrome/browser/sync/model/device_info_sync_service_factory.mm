@@ -13,8 +13,6 @@
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/default_clock.h"
-#import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -25,6 +23,7 @@
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -64,7 +63,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
-    std::string gaia_id =
+    GaiaId gaia_id =
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia;
     bool send_tab_notifications_enabled = push_notification_settings::
@@ -88,14 +87,13 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
             send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
       return std::nullopt;
     }
-    std::string gaia_id =
+    GaiaId gaia_id =
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia;
     std::string representative_target_id =
         GetApplicationContext()
             ->GetPushNotificationService()
-            ->GetRepresentativeTargetIdForGaiaId(
-                base::SysUTF8ToNSString(gaia_id));
+            ->GetRepresentativeTargetIdForGaiaId(gaia_id.ToNSString());
     // Sharing info is not implemented on iOS, so empty structs are passed in.
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(
@@ -147,13 +145,21 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<syncer::DeviceInfoSyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<syncer::DeviceInfoSyncService>(
+      profile, /*create=*/true);
+}
+
+// static
+syncer::DeviceInfoSyncService*
+DeviceInfoSyncServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<syncer::DeviceInfoSyncService>(
+      profile, /*create=*/false);
 }
 
 // static
 DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
-  return base::Singleton<DeviceInfoSyncServiceFactory>::get();
+  static base::NoDestructor<DeviceInfoSyncServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -162,12 +168,10 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
   DCHECK(trackers);
   for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    syncer::DeviceInfoSyncService* service =
-        DeviceInfoSyncServiceFactory::GetForProfile(profile);
-    if (service != nullptr) {
-      const syncer::DeviceInfoTracker* tracker =
-          service->GetDeviceInfoTracker();
-      if (tracker != nullptr) {
+    if (syncer::DeviceInfoSyncService* service =
+            DeviceInfoSyncServiceFactory::GetForProfileIfExists(profile)) {
+      if (const syncer::DeviceInfoTracker* tracker =
+              service->GetDeviceInfoTracker()) {
         trackers->push_back(tracker);
       }
     }
@@ -175,9 +179,7 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
 }
 
 DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "DeviceInfoSyncService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("DeviceInfoSyncService") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());

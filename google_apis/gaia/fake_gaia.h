@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -31,7 +32,7 @@ class HttpResponse;
 // be registered as an additional request handler.
 class FakeGaia {
  public:
-  static constexpr std::string_view kDefaultGaiaId = "12345";
+  static GaiaId GetDefaultGaiaId() { return GaiaId("12345"); }
 
   using ScopeSet = std::set<std::string>;
   using RefreshTokenToDeviceIdMap = std::map<std::string, std::string>;
@@ -45,7 +46,7 @@ class FakeGaia {
     std::string token;
     std::string issued_to;
     std::string audience;
-    std::string user_id;
+    GaiaId user_id;
     ScopeSet scopes;
     int expires_in = 3600;
     std::string email;
@@ -84,7 +85,7 @@ class FakeGaia {
     std::string email;
 
     // List of signed out gaia IDs returned by /ListAccounts.
-    std::vector<std::string> signed_out_gaia_ids;
+    std::vector<GaiaId> signed_out_gaia_ids;
   };
 
   struct SyncTrustedVaultKeys {
@@ -116,7 +117,7 @@ class FakeGaia {
   // Sets the specified |gaia_id| as corresponding to the given |email|
   // address when setting GAIA response headers.  If no mapping is given for
   // an email address, a default GAIA Id is used.
-  void MapEmailToGaiaId(const std::string& email, const std::string& gaia_id);
+  void MapEmailToGaiaId(const std::string& email, const GaiaId& gaia_id);
 
   // Adds sync trusted vault keys for |email|.
   void SetSyncTrustedVaultKeys(
@@ -220,7 +221,7 @@ class FakeGaia {
 
   // Returns the fake server's URL that browser tests can visit to trigger a
   // RemoveLocalAccount event.
-  GURL GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const;
+  GURL GetFakeRemoveLocalAccountURL(const GaiaId& gaia_id) const;
 
   void SetFakeSamlContinueResponse(
       const std::string& fake_saml_continue_response) {
@@ -229,15 +230,15 @@ class FakeGaia {
 
  private:
   using AccessTokenInfoMap = std::multimap<std::string, AccessTokenInfo>;
-  using EmailToGaiaIdMap = std::map<std::string, std::string>;
+  using EmailToGaiaIdMap = std::map<std::string, GaiaId>;
   using SamlAccountIdpMap = std::map<std::string, GURL>;
   using SamlSsoProfileRedirectUrlMap = std::map<std::string, GURL>;
   using SamlDomainRedirectUrlMap = std::map<std::string, GURL>;
   using EmailToSyncTrustedVaultKeysMap =
       std::map<std::string, SyncTrustedVaultKeys>;
 
-  std::string GetGaiaIdOfEmail(const std::string& email) const;
-  std::string GetEmailOfGaiaId(const std::string& email) const;
+  GaiaId GetGaiaIdOfEmail(const std::string& email) const;
+  std::string GetEmailOfGaiaId(const GaiaId& gaia_id) const;
 
   void AddGoogleAccountsSigninHeader(
       net::test_server::BasicHttpResponse* http_response,

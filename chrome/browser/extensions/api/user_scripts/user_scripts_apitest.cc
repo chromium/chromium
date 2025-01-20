@@ -6,13 +6,16 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
+#include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -38,10 +41,34 @@ class UserScriptsAPITest : public ExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
+  void OpenInCurrentTab(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+
+    content::TestNavigationObserver nav_observer(web_contents);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    nav_observer.Wait();
+
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(url, web_contents->GetLastCommittedURL());
+  }
+
   content::RenderFrameHost* OpenInNewTab(const GURL& url) {
-    return ui_test_utils::NavigateToURLWithDisposition(
+    content::TestNavigationObserver nav_observer(url);
+    nav_observer.StartWatchingNewWebContents();
+    content::RenderFrameHost* tab = ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    nav_observer.Wait();
+
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(url, browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetLastCommittedURL());
+
+    return tab;
   }
 
   content::EvalJsResult GetInjectedElements(content::RenderFrameHost* host) {
@@ -56,14 +83,15 @@ class UserScriptsAPITest : public ExtensionApiTest {
   // for most tests because the `userScripts` API is restricted to dev mode.
   virtual bool ShouldEnableDevMode() { return true; }
 
-  // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
+  // Some userScripts API methods are currently behind a feature restriction.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 UserScriptsAPITest::UserScriptsAPITest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kApiUserScriptsMultipleWorlds);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{extensions_features::kApiUserScriptsMultipleWorlds,
+                            extensions_features::kApiUserScriptsExecute},
+      /*disabled_features=*/{});
 }
 
 // TODO(crbug.com/40935741, crbug.com/335421977): Flaky on Linux debug and on
@@ -88,6 +116,28 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UnregisterUserScripts) {
 
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UpdateUserScripts) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/update")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/execute")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts_Subframes) {
+  // Open up two tabs, each with cross-site iframes, one at a.com and one at
+  // d.com. In both cases, the cross-site iframes point to b.com and c.com.
+  OpenInCurrentTab(
+      embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
+  OpenInNewTab(
+      embedded_test_server()->GetURL("d.com", "/iframe_cross_site.html"));
+
+  ASSERT_TRUE(RunExtensionTest("user_scripts/execute_with_subframes"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts_SizeLimit) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
+  ASSERT_TRUE(RunExtensionTest("user_scripts/execute_size_limit")) << message_;
 }
 
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".

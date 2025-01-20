@@ -145,8 +145,7 @@ ExternalInstallMenuAlert::ExternalInstallMenuAlert(ExternalInstallError* error)
     : error_(error) {
 }
 
-ExternalInstallMenuAlert::~ExternalInstallMenuAlert() {
-}
+ExternalInstallMenuAlert::~ExternalInstallMenuAlert() = default;
 
 GlobalError::Severity ExternalInstallMenuAlert::GetSeverity() {
   return SEVERITY_LOW;
@@ -195,8 +194,7 @@ ExternalInstallBubbleAlert::ExternalInstallBubbleAlert(
   DCHECK(prompt_);
 }
 
-ExternalInstallBubbleAlert::~ExternalInstallBubbleAlert() {
-}
+ExternalInstallBubbleAlert::~ExternalInstallBubbleAlert() = default;
 
 GlobalError::Severity ExternalInstallBubbleAlert::GetSeverity() {
   return SEVERITY_LOW;

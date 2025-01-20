@@ -13,6 +13,15 @@ source_set("utils") {
   deps = [ "//base" ]
 }
 
+source_set("url_loader_factory_params") {
+  sources = [
+    "url_loader_factory_params.cc",
+    "url_loader_factory_params.h",
+  ]
+
+  deps = [ "//services/network/public/mojom" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "backoff_operator_unittest.cc" ]

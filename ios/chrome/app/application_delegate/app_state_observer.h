@@ -16,10 +16,6 @@
 // Called when a scene is connected.
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
-// Called when the first scene initializes its UI.
-- (void)appState:(AppState*)appState
-    firstSceneHasInitializedUI:(SceneState*)sceneState;
-
 // Called when the app is about to transition to `nextInitStage`. The init stage
 // of the app at that moment is still `nextInitStage` - 1.
 - (void)appState:(AppState*)appState

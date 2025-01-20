@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -14,13 +13,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-// This feature flag enables a new behavior that waits
-// processing events until the top-level script is evaluated.
-// See: https://crbug.com/1462568
-BASE_FEATURE(kServiceWorkerEventQueueWaitForScriptEvaluation,
-             "ServiceWorkerEventQueueWaitForScriptEvaluation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 constexpr base::TimeDelta ServiceWorkerEventQueue::kEventTimeout;
@@ -63,12 +55,7 @@ ServiceWorkerEventQueue::ServiceWorkerEventQueue(
     : task_runner_(std::move(task_runner)),
       before_start_event_callback_(std::move(before_start_event_callback)),
       idle_callback_(std::move(idle_callback)),
-      tick_clock_(tick_clock) {
-  if (!base::FeatureList::IsEnabled(
-          kServiceWorkerEventQueueWaitForScriptEvaluation)) {
-    is_ready_for_processing_events_ = true;
-  }
-}
+      tick_clock_(tick_clock) {}
 
 ServiceWorkerEventQueue::~ServiceWorkerEventQueue() {
   // Abort all callbacks.
@@ -83,15 +70,9 @@ void ServiceWorkerEventQueue::Start() {
   timer_.Start(FROM_HERE, kUpdateInterval,
                WTF::BindRepeating(&ServiceWorkerEventQueue::UpdateStatus,
                                   WTF::Unretained(this)));
-  if (base::FeatureList::IsEnabled(
-          kServiceWorkerEventQueueWaitForScriptEvaluation)) {
-    is_ready_for_processing_events_ = true;
-    ResetIdleTimeout();
-    ProcessEvents();
-  } else if (!HasInflightEvent() && !HasScheduledIdleCallback()) {
-    // If no event happens until Start(), the idle callback should be scheduled.
-    OnNoInflightEvent();
-  }
+  is_ready_for_processing_events_ = true;
+  ResetIdleTimeout();
+  ProcessEvents();
 }
 
 void ServiceWorkerEventQueue::EnqueueNormal(

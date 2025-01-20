@@ -9,14 +9,18 @@ from typing import Iterable, Set
 import unittest
 from unittest import mock
 
+# vpython-provided modules.
+# pylint: disable=import-error
 import six
-
 from pyfakefs import fake_filesystem_unittest
+# pylint: enable=import-error
 
+# //testing imports.
 from unexpected_passes_common import data_types
 from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
 
+# //third_party/blink/tools imports.
 from blinkpy.w3c import buganizer
 
 # Protected access is allowed for unittests.

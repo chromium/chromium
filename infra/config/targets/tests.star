@@ -333,7 +333,7 @@ targets.tests.isolated_script_test(
         "--flag-specific=background-resource-fetch",
         "--skipped=always",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -605,7 +605,7 @@ targets.tests.isolated_script_test(
         "crashtest",
         "print-reftest",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -619,6 +619,10 @@ targets.tests.isolated_script_test(
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
     ],
     binary = "headless_shell_wpt",
+)
+
+targets.tests.gtest_test(
+    name = "highway_tests",
 )
 
 targets.tests.gtest_test(
@@ -780,6 +784,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "context_lost_passthrough_ganesh_tests",
+    telemetry_test_name = "context_lost",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "context_lost_passthrough_graphite_tests",
     telemetry_test_name = "context_lost",
     mixins = [
@@ -929,6 +941,15 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "expected_color_pixel_metal_passthrough_graphite_test",
+    telemetry_test_name = "expected_color",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "expected_color_pixel_passthrough_ganesh_test",
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
@@ -1322,7 +1343,7 @@ targets.tests.isolated_script_test(
         # TODO(crbug.com/41490824): Remove this once we resolve the timeouts.
         "--timeout-multiplier=2",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1395,7 +1416,7 @@ targets.tests.isolated_script_test(
         "--flag-specific=highdpi",
         "--skipped=always",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1751,7 +1772,7 @@ targets.tests.isolated_script_test(
     args = [
         "--flag-specific=disable-site-isolation-trials",
         "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-        "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "headless_shell_wpt",
 )
@@ -1766,6 +1787,10 @@ targets.tests.isolated_script_test(
 
 targets.tests.isolated_script_test(
     name = "ondevice_stability_tests_light",
+)
+
+targets.tests.isolated_script_test(
+    name = "opt_target_coverage_test",
 )
 
 targets.tests.isolated_script_test(
@@ -1786,14 +1811,6 @@ targets.tests.gtest_test(
         "--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*",
     ],
     binary = "browser_tests",
-)
-
-targets.tests.gtest_test(
-    name = "optimization_guide_components_unittests",
-    args = [
-        "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
-    ],
-    binary = "components_unittests",
 )
 
 targets.tests.gtest_test(
@@ -1905,6 +1922,15 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "pixel_skia_gold_metal_passthrough_graphite_test",
+    telemetry_test_name = "pixel",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "pixel_skia_gold_passthrough_ganesh_test",
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",
@@ -2039,6 +2065,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "screenshot_sync_passthrough_ganesh_tests",
+    telemetry_test_name = "screenshot_sync",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "screenshot_sync_passthrough_graphite_tests",
     telemetry_test_name = "screenshot_sync",
     mixins = [
@@ -2144,6 +2178,14 @@ targets.tests.gtest_test(
         "--test-launcher-filter-file=../../testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
     ],
     binary = "content_browsertests",
+)
+
+targets.tests.gtest_test(
+    name = "trees_in_viz_cc_unittests",
+    args = [
+        "--enable-features=TreesInViz",
+    ],
+    binary = "cc_unittests",
 )
 
 targets.tests.gtest_test(
@@ -2685,6 +2727,14 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "webgl_conformance_gles_passthrough_tests",
+    telemetry_test_name = "webgl1_conformance",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webgl_conformance_gles_passthrough_ganesh_tests",
     telemetry_test_name = "webgl1_conformance",
     mixins = [
         "has_native_resultdb_integration",

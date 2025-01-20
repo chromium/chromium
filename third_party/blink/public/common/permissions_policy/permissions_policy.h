@@ -20,6 +20,8 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
 
+class GURL;
+
 namespace network {
 struct ResourceRequest;
 }  // namespace network
@@ -173,7 +175,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const PermissionsPolicy* parent_policy,
       const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
-      const url::Origin& origin);
+      const url::Origin& origin,
+      bool headerless = false);
 
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
@@ -203,6 +206,19 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const ParsedPermissionsPolicy& parsed_policy,
       const std::optional<ParsedPermissionsPolicy>& base_policy,
       const url::Origin& origin);
+
+  // Returns the inherited policy of the given feature.
+  static bool InheritedValueForFeature(
+      const url::Origin& origin,
+      const PermissionsPolicy* parent_policy,
+      std::pair<mojom::PermissionsPolicyFeature,
+                PermissionsPolicyFeatureDefault> feature,
+      const ParsedPermissionsPolicy& container_policy);
+
+  // Various URLs that cannot supply Permissions-Policy headers are treated
+  // specially. See
+  // https://github.com/fergald/docs/blob/master/explainers/permissions-policy-deprecate-unload.md
+  static bool IsHeaderlessUrl(const GURL& url);
 
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
@@ -288,13 +304,15 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       url::Origin origin,
       AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
       PermissionsPolicyFeatureState inherited_policies,
-      const PermissionsPolicyFeatureList& feature_list);
+      const PermissionsPolicyFeatureList& feature_list,
+      bool headerless = false);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
       const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
-      const PermissionsPolicyFeatureList& features);
+      const PermissionsPolicyFeatureList& features,
+      bool headerless = false);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
@@ -332,14 +350,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin) const;
 
-  // Returns the inherited policy of the given feature.
-  static bool InheritedValueForFeature(
-      const url::Origin& origin,
-      const PermissionsPolicy* parent_policy,
-      std::pair<mojom::PermissionsPolicyFeature,
-                PermissionsPolicyFeatureDefault> feature,
-      const ParsedPermissionsPolicy& container_policy);
-
   // If the feature is in the declared policy, returns whether the given origin
   // exists in its declared allowlist; otherwise, returns the value from
   // inherited policy.
@@ -348,6 +358,11 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // The origin of the document with which this policy is associated.
   const url::Origin origin_;
+
+  // If `true` this is a document that cannot have a Permissions-Policy header,
+  // e.g. a srcdoc. Docs like this need special treatment for default-off
+  // features.
+  bool headerless_;
 
   // Map of feature names to declared allowlists. Any feature which is missing
   // from this map should use the inherited policy.

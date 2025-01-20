@@ -364,6 +364,7 @@ blink_core_tests_svg = [
   "svg_path_parser_test.cc",
   "svg_path_query_test.cc",
   "svg_resource_document_content_test.cc",
+  "svg_svg_element_test.cc",
   "svg_text_content_element_test.cc",
   "svg_use_element_test.cc",
   "unsafe_svg_attribute_sanitization_test.cc",

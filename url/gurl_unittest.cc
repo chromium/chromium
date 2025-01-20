@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/gurl.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -234,7 +231,7 @@ TEST(GURLTest, CopyFileSystem) {
 }
 
 TEST(GURLTest, IsValid) {
-  const char* valid_cases[] = {
+  auto valid_cases = std::to_array<const char*>({
       "http://google.com",
       "unknown://google.com",
       "http://user:pass@google.com",
@@ -246,13 +243,13 @@ TEST(GURLTest, IsValid) {
       "http://user:pass@google.com:12345/path?k=v#fragment",
       "http:/path",
       "http:path",
-  };
+  });
   for (size_t i = 0; i < std::size(valid_cases); i++) {
     EXPECT_TRUE(GURL(valid_cases[i]).is_valid())
         << "Case: " << valid_cases[i];
   }
 
-  const char* invalid_cases[] = {
+  auto invalid_cases = std::to_array<const char*>({
       "http://?k=v",
       "http:://google.com",
       "http//google.com",
@@ -261,7 +258,7 @@ TEST(GURLTest, IsValid) {
       "file://server:0",
       "://google.com",
       "path",
-  };
+  });
   for (size_t i = 0; i < std::size(invalid_cases); i++) {
     EXPECT_FALSE(GURL(invalid_cases[i]).is_valid())
         << "Case: " << invalid_cases[i];
@@ -331,7 +328,8 @@ TEST(GURLTest, Resolve) {
     const char* relative;
     bool expected_valid;
     const char* expected;
-  } resolve_cases[] = {
+  };
+  auto resolve_cases = std::to_array<ResolveCase>({
       {"http://www.google.com/", "foo.html", true,
        "http://www.google.com/foo.html"},
       {"http://www.google.com/foo/", "bar", true,
@@ -375,7 +373,7 @@ TEST(GURLTest, Resolve) {
       {"file:///some/dir/", "x-://host", true, "x-://host"},
       {"file:///some/dir/", "x!://host", true, "file:///some/dir/x!://host"},
       {"file:///some/dir/", "://host", true, "file:///some/dir/://host"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(resolve_cases); i++) {
     // 8-bit code path.
@@ -571,7 +569,8 @@ TEST(GURLTest, GetOrigin) {
   struct TestCase {
     const char* input;
     const char* expected;
-  } cases[] = {
+  };
+  auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "http://www.google.com/"},
       {"javascript:window.alert(\"hello,world\");", ""},
       {"http://user:pass@www.google.com:21/blah#baz",
@@ -585,7 +584,7 @@ TEST(GURLTest, GetOrigin) {
        "http://google.com:21/"},
       {"blob:null/guid-goes-here", ""},
       {"blob:http://origin/guid-goes-here", "" /* should be http://origin/ */},
-  };
+  });
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL origin = url.DeprecatedGetOriginAsURL();
@@ -597,18 +596,21 @@ TEST(GURLTest, GetAsReferrer) {
   struct TestCase {
     const char* input;
     const char* expected;
-  } cases[] = {
-    {"http://www.google.com", "http://www.google.com/"},
-    {"http://user:pass@www.google.com:21/blah#baz", "http://www.google.com:21/blah"},
-    {"http://user@www.google.com", "http://www.google.com/"},
-    {"http://:pass@www.google.com", "http://www.google.com/"},
-    {"http://:@www.google.com", "http://www.google.com/"},
-    {"http://www.google.com/temp/foo?q#b", "http://www.google.com/temp/foo?q"},
-    {"not a url", ""},
-    {"unknown-scheme://foo.html", ""},
-    {"file:///tmp/test.html", ""},
-    {"https://www.google.com", "https://www.google.com/"},
   };
+  auto cases = std::to_array<TestCase>({
+      {"http://www.google.com", "http://www.google.com/"},
+      {"http://user:pass@www.google.com:21/blah#baz",
+       "http://www.google.com:21/blah"},
+      {"http://user@www.google.com", "http://www.google.com/"},
+      {"http://:pass@www.google.com", "http://www.google.com/"},
+      {"http://:@www.google.com", "http://www.google.com/"},
+      {"http://www.google.com/temp/foo?q#b",
+       "http://www.google.com/temp/foo?q"},
+      {"not a url", ""},
+      {"unknown-scheme://foo.html", ""},
+      {"file:///tmp/test.html", ""},
+      {"https://www.google.com", "https://www.google.com/"},
+  });
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     GURL origin = url.GetAsReferrer();
@@ -620,13 +622,16 @@ TEST(GURLTest, GetWithEmptyPath) {
   struct TestCase {
     const char* input;
     const char* expected;
-  } cases[] = {
-    {"http://www.google.com", "http://www.google.com/"},
-    {"javascript:window.alert(\"hello, world\");", ""},
-    {"http://www.google.com/foo/bar.html?baz=22", "http://www.google.com/"},
-    {"filesystem:http://www.google.com/temporary/bar.html?baz=22", "filesystem:http://www.google.com/temporary/"},
-    {"filesystem:file:///temporary/bar.html?baz=22", "filesystem:file:///temporary/"},
   };
+  auto cases = std::to_array<TestCase>({
+      {"http://www.google.com", "http://www.google.com/"},
+      {"javascript:window.alert(\"hello, world\");", ""},
+      {"http://www.google.com/foo/bar.html?baz=22", "http://www.google.com/"},
+      {"filesystem:http://www.google.com/temporary/bar.html?baz=22",
+       "filesystem:http://www.google.com/temporary/"},
+      {"filesystem:file:///temporary/bar.html?baz=22",
+       "filesystem:file:///temporary/"},
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
@@ -639,40 +644,50 @@ TEST(GURLTest, GetWithoutFilename) {
   struct TestCase {
     const char* input;
     const char* expected;
-  } cases[] = {
-    // Common Standard URLs.
-    {"https://www.google.com",                    "https://www.google.com/"},
-    {"https://www.google.com/",                   "https://www.google.com/"},
-    {"https://www.google.com/maps.htm",           "https://www.google.com/"},
-    {"https://www.google.com/maps/",              "https://www.google.com/maps/"},
-    {"https://www.google.com/index.html",         "https://www.google.com/"},
-    {"https://www.google.com/index.html?q=maps",  "https://www.google.com/"},
-    {"https://www.google.com/index.html#maps/",   "https://www.google.com/"},
-    {"https://foo:bar@www.google.com/maps.htm",   "https://foo:bar@www.google.com/"},
-    {"https://www.google.com/maps/au/index.html", "https://www.google.com/maps/au/"},
-    {"https://www.google.com/maps/au/north",      "https://www.google.com/maps/au/"},
-    {"https://www.google.com/maps/au/north/",     "https://www.google.com/maps/au/north/"},
-    {"https://www.google.com/maps/au/index.html?q=maps#fragment/",     "https://www.google.com/maps/au/"},
-    {"http://www.google.com:8000/maps/au/index.html?q=maps#fragment/", "http://www.google.com:8000/maps/au/"},
-    {"https://www.google.com/maps/au/north/?q=maps#fragment",          "https://www.google.com/maps/au/north/"},
-    {"https://www.google.com/maps/au/north?q=maps#fragment",           "https://www.google.com/maps/au/"},
-    // Less common standard URLs.
-    {"filesystem:http://www.google.com/temporary/bar.html?baz=22", "filesystem:http://www.google.com/temporary/"},
-    {"file:///temporary/bar.html?baz=22","file:///temporary/"},
-    {"ftp://foo/test/index.html",        "ftp://foo/test/"},
-    {"gopher://foo/test/index.html",     "gopher://foo/test/"},
-    {"ws://foo/test/index.html",         "ws://foo/test/"},
-    // Non-standard, hierarchical URLs.
-    {"chrome://foo/bar.html", "chrome://foo/"},
-    {"httpa://foo/test/index.html", "httpa://foo/test/"},
-    // Non-standard, non-hierarchical URLs.
-    {"blob:https://foo.bar/test/index.html", ""},
-    {"about:blank", ""},
-    {"data:foobar", ""},
-    {"scheme:opaque_data", ""},
-    // Invalid URLs.
-    {"foobar", ""},
   };
+  auto cases = std::to_array<TestCase>({
+      // Common Standard URLs.
+      {"https://www.google.com", "https://www.google.com/"},
+      {"https://www.google.com/", "https://www.google.com/"},
+      {"https://www.google.com/maps.htm", "https://www.google.com/"},
+      {"https://www.google.com/maps/", "https://www.google.com/maps/"},
+      {"https://www.google.com/index.html", "https://www.google.com/"},
+      {"https://www.google.com/index.html?q=maps", "https://www.google.com/"},
+      {"https://www.google.com/index.html#maps/", "https://www.google.com/"},
+      {"https://foo:bar@www.google.com/maps.htm",
+       "https://foo:bar@www.google.com/"},
+      {"https://www.google.com/maps/au/index.html",
+       "https://www.google.com/maps/au/"},
+      {"https://www.google.com/maps/au/north",
+       "https://www.google.com/maps/au/"},
+      {"https://www.google.com/maps/au/north/",
+       "https://www.google.com/maps/au/north/"},
+      {"https://www.google.com/maps/au/index.html?q=maps#fragment/",
+       "https://www.google.com/maps/au/"},
+      {"http://www.google.com:8000/maps/au/index.html?q=maps#fragment/",
+       "http://www.google.com:8000/maps/au/"},
+      {"https://www.google.com/maps/au/north/?q=maps#fragment",
+       "https://www.google.com/maps/au/north/"},
+      {"https://www.google.com/maps/au/north?q=maps#fragment",
+       "https://www.google.com/maps/au/"},
+      // Less common standard URLs.
+      {"filesystem:http://www.google.com/temporary/bar.html?baz=22",
+       "filesystem:http://www.google.com/temporary/"},
+      {"file:///temporary/bar.html?baz=22", "file:///temporary/"},
+      {"ftp://foo/test/index.html", "ftp://foo/test/"},
+      {"gopher://foo/test/index.html", "gopher://foo/test/"},
+      {"ws://foo/test/index.html", "ws://foo/test/"},
+      // Non-standard, hierarchical URLs.
+      {"chrome://foo/bar.html", "chrome://foo/"},
+      {"httpa://foo/test/index.html", "httpa://foo/test/"},
+      // Non-standard, non-hierarchical URLs.
+      {"blob:https://foo.bar/test/index.html", ""},
+      {"about:blank", ""},
+      {"data:foobar", ""},
+      {"scheme:opaque_data", ""},
+      // Invalid URLs.
+      {"foobar", ""},
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
@@ -685,7 +700,8 @@ TEST(GURLTest, GetWithoutRef) {
   struct TestCase {
     const char* input;
     const char* expected;
-  } cases[] = {
+  };
+  auto cases = std::to_array<TestCase>({
       // Common Standard URLs.
       {"https://www.google.com/index.html",
        "https://www.google.com/index.html"},
@@ -747,7 +763,7 @@ TEST(GURLTest, GetWithoutRef) {
       {"scheme:opaque_data", "scheme:opaque_data"},
       // Invalid URLs.
       {"foobar", ""},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
@@ -997,7 +1013,8 @@ TEST(GURLTest, PathForRequest) {
     const char* input;
     const char* expected;
     const char* inner_expected;
-  } cases[] = {
+  };
+  auto cases = std::to_array<TestCase>({
       {"http://www.google.com", "/", nullptr},
       {"http://www.google.com/", "/", nullptr},
       {"http://www.google.com/foo/bar.html?baz=22", "/foo/bar.html?baz=22",
@@ -1009,7 +1026,7 @@ TEST(GURLTest, PathForRequest) {
        "/foo/bar.html?query", "/temporary"},
       {"filesystem:http://www.google.com/temporary/foo/bar.html?query",
        "/foo/bar.html?query", "/temporary"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
@@ -1028,34 +1045,35 @@ TEST(GURLTest, EffectiveIntPort) {
   struct PortTest {
     const char* spec;
     int expected_int_port;
-  } port_tests[] = {
-    // http
-    {"http://www.google.com/", 80},
-    {"http://www.google.com:80/", 80},
-    {"http://www.google.com:443/", 443},
-
-    // https
-    {"https://www.google.com/", 443},
-    {"https://www.google.com:443/", 443},
-    {"https://www.google.com:80/", 80},
-
-    // ftp
-    {"ftp://www.google.com/", 21},
-    {"ftp://www.google.com:21/", 21},
-    {"ftp://www.google.com:80/", 80},
-
-    // file - no port
-    {"file://www.google.com/", PORT_UNSPECIFIED},
-    {"file://www.google.com:443/", PORT_UNSPECIFIED},
-
-    // data - no port
-    {"data:www.google.com:90", PORT_UNSPECIFIED},
-    {"data:www.google.com", PORT_UNSPECIFIED},
-
-    // filesystem - no port
-    {"filesystem:http://www.google.com:90/t/foo", PORT_UNSPECIFIED},
-    {"filesystem:file:///t/foo", PORT_UNSPECIFIED},
   };
+  auto port_tests = std::to_array<PortTest>({
+      // http
+      {"http://www.google.com/", 80},
+      {"http://www.google.com:80/", 80},
+      {"http://www.google.com:443/", 443},
+
+      // https
+      {"https://www.google.com/", 443},
+      {"https://www.google.com:443/", 443},
+      {"https://www.google.com:80/", 80},
+
+      // ftp
+      {"ftp://www.google.com/", 21},
+      {"ftp://www.google.com:21/", 21},
+      {"ftp://www.google.com:80/", 80},
+
+      // file - no port
+      {"file://www.google.com/", PORT_UNSPECIFIED},
+      {"file://www.google.com:443/", PORT_UNSPECIFIED},
+
+      // data - no port
+      {"data:www.google.com:90", PORT_UNSPECIFIED},
+      {"data:www.google.com", PORT_UNSPECIFIED},
+
+      // filesystem - no port
+      {"filesystem:http://www.google.com:90/t/foo", PORT_UNSPECIFIED},
+      {"filesystem:file:///t/foo", PORT_UNSPECIFIED},
+  });
 
   for (size_t i = 0; i < std::size(port_tests); i++) {
     GURL url(port_tests[i].spec);
@@ -1067,16 +1085,17 @@ TEST(GURLTest, IPAddress) {
   struct IPTest {
     const char* spec;
     bool expected_ip;
-  } ip_tests[] = {
-    {"http://www.google.com/", false},
-    {"http://192.168.9.1/", true},
-    {"http://192.168.9.1.2/", false},
-    {"http://192.168.m.1/", false},
-    {"http://2001:db8::1/", false},
-    {"http://[2001:db8::1]/", true},
-    {"", false},
-    {"some random input!", false},
   };
+  auto ip_tests = std::to_array<IPTest>({
+      {"http://www.google.com/", false},
+      {"http://192.168.9.1/", true},
+      {"http://192.168.9.1.2/", false},
+      {"http://192.168.m.1/", false},
+      {"http://2001:db8::1/", false},
+      {"http://[2001:db8::1]/", true},
+      {"", false},
+      {"some random input!", false},
+  });
 
   for (size_t i = 0; i < std::size(ip_tests); i++) {
     GURL url(ip_tests[i].spec);
@@ -1089,20 +1108,21 @@ TEST(GURLTest, HostNoBrackets) {
     const char* input;
     const char* expected_host;
     const char* expected_plainhost;
-  } cases[] = {
-    {"http://www.google.com", "www.google.com", "www.google.com"},
-    {"http://[2001:db8::1]/", "[2001:db8::1]", "2001:db8::1"},
-    {"http://[::]/", "[::]", "::"},
-
-    // Don't require a valid URL, but don't crash either.
-    {"http://[]/", "[]", ""},
-    {"http://[x]/", "[x]", "x"},
-    {"http://[x/", "[x", "[x"},
-    {"http://x]/", "x]", "x]"},
-    {"http://[/", "[", "["},
-    {"http://]/", "]", "]"},
-    {"", "", ""},
   };
+  auto cases = std::to_array<TestCase>({
+      {"http://www.google.com", "www.google.com", "www.google.com"},
+      {"http://[2001:db8::1]/", "[2001:db8::1]", "2001:db8::1"},
+      {"http://[::]/", "[::]", "::"},
+
+      // Don't require a valid URL, but don't crash either.
+      {"http://[]/", "[]", ""},
+      {"http://[x]/", "[x]", "x"},
+      {"http://[x/", "[x", "[x"},
+      {"http://x]/", "x]", "x]"},
+      {"http://[/", "[", "["},
+      {"http://]/", "]", "]"},
+      {"", "", ""},
+  });
   for (size_t i = 0; i < std::size(cases); i++) {
     GURL url(cases[i].input);
     EXPECT_EQ(cases[i].expected_host, url.host());

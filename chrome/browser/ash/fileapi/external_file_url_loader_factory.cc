@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/377326291): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
 
 #include <algorithm>
@@ -48,7 +53,7 @@ constexpr size_t kDefaultPipeSize = 65536;
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
   MojoPipeIOBuffer(void* data, size_t size)
-      : net::IOBuffer(base::make_span(static_cast<char*>(data), size)) {}
+      : net::IOBuffer(base::span(static_cast<char*>(data), size)) {}
 
   MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;

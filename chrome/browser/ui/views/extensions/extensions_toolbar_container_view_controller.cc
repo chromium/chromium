@@ -202,13 +202,13 @@ void ExtensionsToolbarContainerViewController::
 }
 
 void ExtensionsToolbarContainerViewController::
-    OnSiteAccessRequestDismissedByUser(
+    OnHostAccessRequestDismissedByUser(
         const extensions::ExtensionId& extension_id,
         const url::Origin& origin) {
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -220,13 +220,13 @@ void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestUpdated(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -238,7 +238,7 @@ void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared(
+void ExtensionsToolbarContainerViewController::OnHostAccessRequestsCleared(
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
       extensions_container_->GetCurrentWebContents());

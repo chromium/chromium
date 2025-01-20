@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -275,7 +278,11 @@ CreateAndShowCardUnmaskAuthenticationSelectionDialog(
     CardUnmaskAuthenticationSelectionDialogController* controller) {
   CardUnmaskAuthenticationSelectionDialogView* dialog_view =
       new CardUnmaskAuthenticationSelectionDialogView(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateShowDialogAndBlockTabInteraction(dialog_view)
+      .release();
   return dialog_view;
 }
 

@@ -21,12 +21,8 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -105,10 +101,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chrome/browser/ash/crosapi/automation_ash.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -147,7 +139,6 @@
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/default_pinned_apps/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -173,14 +164,18 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/default_pinned_apps/default_pinned_apps.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/ui/base/app_types.h"
@@ -245,10 +240,10 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/throughput_tracker.h"
-#include "ui/compositor/throughput_tracker_host.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -406,8 +401,6 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
   switch (type) {
     case apps::AppType::kArc:
       return api::autotest_private::AppType::kArc;
-    case apps::AppType::kBuiltIn:
-      return api::autotest_private::AppType::kBuiltIn;
     case apps::AppType::kCrostini:
       return api::autotest_private::AppType::kCrostini;
     case apps::AppType::kChromeApp:
@@ -420,18 +413,12 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
       return api::autotest_private::AppType::kWeb;
     case apps::AppType::kUnknown:
       return api::autotest_private::AppType::kNone;
-    case apps::AppType::kStandaloneBrowser:
-      return api::autotest_private::AppType::kStandaloneBrowser;
     case apps::AppType::kRemote:
       return api::autotest_private::AppType::kRemote;
     case apps::AppType::kBorealis:
       return api::autotest_private::AppType::kBorealis;
     case apps::AppType::kBruschetta:
       return api::autotest_private::AppType::kBruschetta;
-    case apps::AppType::kStandaloneBrowserExtension:
-      return api::autotest_private::AppType::kNone;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return api::autotest_private::AppType::kExtension;
   }
   NOTREACHED();
 }
@@ -955,7 +942,7 @@ class DisplaySmoothnessTracker {
   // Return true if tracking is started successfully.
   bool Start(int64_t display_id,
              base::TimeDelta throughput_interval,
-             ui::ThroughputTrackerHost::ReportCallback callback) {
+             ui::CompositorMetricsTrackerHost::ReportCallback callback) {
     auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
     if (!root_window) {
       return false;
@@ -966,19 +953,20 @@ class DisplaySmoothnessTracker {
     DCHECK(root_window_tracker_.windows().empty());
     root_window_tracker_.Add(root_window);
 
-    tracker_ =
-        root_window->layer()->GetCompositor()->RequestNewThroughputTracker();
+    tracker_ = root_window->layer()
+                   ->GetCompositor()
+                   ->RequestNewCompositorMetricsTracker();
     tracker_->Start(std::move(callback));
 
-    throughtput_timer_.Start(FROM_HERE, throughput_interval, this,
-                             &DisplaySmoothnessTracker::OnThroughputTimerFired);
+    throughput_timer_.Start(FROM_HERE, throughput_interval, this,
+                            &DisplaySmoothnessTracker::OnThroughputTimerFired);
 
     return true;
   }
 
   bool Stop(ReportCallback callback) {
     stopping_ = true;
-    throughtput_timer_.Stop();
+    throughput_timer_.Stop();
     callback_ = std::move(callback);
     return tracker_->Stop();
   }
@@ -1002,7 +990,7 @@ class DisplaySmoothnessTracker {
       LOG(ERROR) << "Unable to collect throughput because underlying "
                     "RootWindow is gone.";
       has_error_ = true;
-      throughtput_timer_.Stop();
+      throughput_timer_.Stop();
       return;
     }
 
@@ -1019,7 +1007,7 @@ class DisplaySmoothnessTracker {
   bool has_error_ = false;
   base::TimeTicks start_time_;
 
-  base::RepeatingTimer throughtput_timer_;
+  base::RepeatingTimer throughput_timer_;
   std::vector<int> throughput_;
 };
 
@@ -2050,51 +2038,6 @@ AutotestPrivateIsArcProvisionedFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsArcProvisionedFunction";
   return RespondNow(WithArguments(
       arc::IsArcProvisioned(Profile::FromBrowserContext(browser_context()))));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateGetLacrosInfoFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateGetLacrosInfoFunction::~AutotestPrivateGetLacrosInfoFunction() =
-    default;
-
-// static
-api::autotest_private::LacrosState
-AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
-    crosapi::BrowserManager::State state) {
-  switch (state) {
-    case crosapi::BrowserManager::State::NOT_INITIALIZED:
-      return api::autotest_private::LacrosState::kNotInitialized;
-    case crosapi::BrowserManager::State::UNAVAILABLE:
-      return api::autotest_private::LacrosState::kUnavailable;
-  }
-}
-
-// static
-api::autotest_private::LacrosMode
-AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(bool is_enabled) {
-  return is_enabled ? api::autotest_private::LacrosMode::kOnly
-                    : api::autotest_private::LacrosMode::kDisabled;
-}
-
-ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
-  DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
-  auto* browser_manager = crosapi::BrowserManager::Get();
-  return RespondNow(WithArguments(
-      base::Value::Dict()
-          .Set("state", api::autotest_private::ToString(
-                            ToLacrosState(browser_manager->state_)))
-          .Set("isKeepAlive", browser_manager->IsKeepAliveEnabled())
-          // TODO(neis): Rename lacrosPath to avoid confusion, or make it be the
-          // binary path. Either requires changes in tast-tests.
-          .Set("lacrosPath",
-               browser_manager->lacros_path().empty()
-                   ? ""
-                   : browser_manager->lacros_path().DirName().MaybeAsASCII())
-          .Set("mode", api::autotest_private::ToString(ToLacrosMode(
-                           crosapi::browser_util::IsLacrosEnabled())))
-          .Set("isEnabled", crosapi::browser_util::IsLacrosEnabled())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6034,12 +5977,6 @@ AutotestPrivateDisableAutomationFunction::Run() {
       ->UnregisterAllListenersWithDesktopPermission();
   AutomationEventRouter::GetInstance()->NotifyAllAutomationExtensionsGone();
 
-  // Finally, this disables accessibility in Lacros.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->automation_ash()
-      ->AllAutomationExtensionsGone();
-
   return RespondNow(NoArguments());
 }
 
@@ -6640,7 +6577,7 @@ AutotestPrivateStartOverdrawTrackingFunction::Run() {
         Error(base::StrCat({"Invalid displayId: ", *params->display_id})));
   }
 
-  DVLOG(1) << "AutotestPrivateStopOverdrawTrackingFunction displayId:"
+  DVLOG(1) << "AutotestPrivateStartOverdrawTrackingFunction displayId:"
            << target_display_id;
 
   // Validate display id.
@@ -6879,7 +6816,6 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
       // clang-format off
       &ash::features::kFeatureManagementVideoConference,
       &ash::features::kSavedDeskUiRevamp,
-      &chromeos::features::kJelly,
       &kDisabledFeatureForTest,
       &kEnabledFeatureForTest,
       // clang-format on
@@ -7098,14 +7034,6 @@ static base::LazyInstance<BrowserContextKeyedAPIFactory<AutotestPrivateAPI>>::
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>*
 AutotestPrivateAPI::GetFactoryInstance() {
   return g_autotest_private_api_factory.Pointer();
-}
-
-template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  // Stub to ensure the default implementation is not generated by the template.
-  NOTREACHED();
 }
 
 template <>

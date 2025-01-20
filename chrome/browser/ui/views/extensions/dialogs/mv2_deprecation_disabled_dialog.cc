@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
@@ -19,6 +21,10 @@
 #include "ui/base/models/image_model.h"
 
 namespace extensions {
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogManageButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogRemoveButtonElementId);
 
 void ShowMv2DeprecationDisabledDialog(
     Browser* browser,
@@ -36,20 +42,20 @@ void ShowMv2DeprecationDisabledDialog(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
               extensions_size)),
           /*header=*/std::u16string(),
-          /*id=*/kExtensionsMv2DisabledDialogParagraphElementId)
+          /*id=*/kMv2DisabledDialogParagraphElementId)
       .AddOkButton(
           std::move(remove_callback),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_OK_BUTTON))
-              .SetId(kExtensionsMv2DisabledDialogRemoveButtonElementId))
+              .SetId(kMv2DisabledDialogRemoveButtonElementId))
       .AddCancelButton(
           std::move(manage_callback),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetPluralStringFUTF16(
                   IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_CANCEL_BUTTON,
                   extensions_size))
-              .SetId(kExtensionsMv2DisabledDialogManageButtonElementId))
+              .SetId(kMv2DisabledDialogManageButtonElementId))
       .DisableCloseOnDeactivate()
       .SetCloseActionCallback(std::move(close_callback));
 
@@ -57,7 +63,7 @@ void ShowMv2DeprecationDisabledDialog(
     dialog_builder
         .SetTitle(l10n_util::GetStringFUTF16(
             IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_TITLE,
-            base::UTF8ToUTF16(extensions_info[0].name)))
+            util::GetFixupExtensionNameForUIDisplay(extensions_info[0].name)))
         .SetIcon(ui::ImageModel::FromImage(extensions_info[0].icon));
 
   } else {
@@ -67,7 +73,8 @@ void ShowMv2DeprecationDisabledDialog(
     for (const auto& extension_info : extensions_info) {
       dialog_builder.AddMenuItem(
           ui::ImageModel::FromImage(extension_info.icon),
-          base::UTF8ToUTF16(extension_info.name), base::DoNothing(),
+          util::GetFixupExtensionNameForUIDisplay(extension_info.name),
+          base::DoNothing(),
           ui::DialogModelMenuItem::Params().SetIsEnabled(false));
     }
   }

@@ -1,9 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/memory",
-  "+chromeos/ash/components/mojo_service_manager",
-  "+chromeos/system",
-  '+mojo/core/embedder/embedder.h',
-  "+mojo/core/embedder/scoped_ipc_support.h",
-  '+mojo/proxy/switches.h',
-  "+services/accessibility/android/public/mojom",
-]

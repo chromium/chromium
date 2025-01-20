@@ -24,7 +24,7 @@ class BookmarksExportObserver {
   virtual void OnExportFinished(Result result) = 0;
 
  protected:
-  virtual ~BookmarksExportObserver() {}
+  virtual ~BookmarksExportObserver() = default;
 };
 
 namespace bookmark_html_writer {

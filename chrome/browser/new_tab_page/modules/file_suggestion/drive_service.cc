@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -225,6 +226,9 @@ constexpr char kFakeDataWithSixFiles[] = R"({
     }
   ]
 })";
+
+const char kBaseFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/";
 }  // namespace
 
 // static
@@ -399,7 +403,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                      token_info.token),
       kMaxResponseSize);
   base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("drive"));
+                           base::PersistentHash(ntp_modules::kDriveModuleId));
 }
 
 void DriveService::OnJsonReceived(const std::string& token,
@@ -488,7 +492,7 @@ void DriveService::OnJsonParsed(
     }
     auto mojo_drive_doc = file_suggestion::mojom::File::New();
     mojo_drive_doc->title = *title;
-    mojo_drive_doc->mime_type = *mime_type;
+    mojo_drive_doc->icon_url = GURL(kBaseFileIconUrl + *mime_type);
     mojo_drive_doc->justification_text = justification_text;
     mojo_drive_doc->id = *id;
     mojo_drive_doc->item_url = GURL(*item_url);

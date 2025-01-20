@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "content/browser/android/render_widget_host_connector.h"
@@ -84,13 +85,16 @@ class CONTENT_EXPORT GestureListenerManager
       RenderWidgetHostViewAndroid* new_rhwva) override;
 
   // Start WebContentsObserver overrides
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
   // End WebContentsObserver overrides
 
   // Start RenderWidgetHost::InputEventObserver overrides
-  void OnInputEvent(const blink::WebInputEvent&) override;
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override;
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
   // End RenderWidgetHost::InputEventObserver overrides
@@ -104,6 +108,7 @@ class CONTENT_EXPORT GestureListenerManager
   class ResetScrollObserver;
 
   void ResetPopupsAndInput(bool render_process_gone);
+  void UnobserveRenderFrames();
 
   std::unique_ptr<ResetScrollObserver> reset_scroll_observer_;
   raw_ptr<WebContentsImpl> web_contents_;
@@ -117,6 +122,8 @@ class CONTENT_EXPORT GestureListenerManager
   // Highest update frequency requested by any of the listeners.
   std::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
       root_scroll_offset_update_frequency_;
+
+  base::flat_set<GlobalRenderFrameHostId> observed_render_frames_;
 };
 
 }  // namespace content

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/safe_search_api/url_checker.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -38,13 +34,17 @@ namespace {
 
 constexpr size_t kCacheSize = 2;
 
-const char* kURLs[] = {
-    "http://www.randomsite1.com", "http://www.randomsite2.com",
-    "http://www.randomsite3.com", "http://www.randomsite4.com",
-    "http://www.randomsite5.com", "http://www.randomsite6.com",
-    "http://www.randomsite7.com", "http://www.randomsite8.com",
+auto kURLs = std::to_array<const char*>({
+    "http://www.randomsite1.com",
+    "http://www.randomsite2.com",
+    "http://www.randomsite3.com",
+    "http://www.randomsite4.com",
+    "http://www.randomsite5.com",
+    "http://www.randomsite6.com",
+    "http://www.randomsite7.com",
+    "http://www.randomsite8.com",
     "http://www.randomsite9.com",
-};
+});
 
 ClientClassification ToAPIClassification(Classification classification,
                                          bool uncertain) {

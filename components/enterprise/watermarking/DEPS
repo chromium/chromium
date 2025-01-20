@@ -1,6 +1,7 @@
 include_rules = [
-  "+cc/paint/skia_paint_canvas.h",
+  "+cc/paint",
   "+cc/test",
+  "+skia/ext",
   "+third_party/skia",
   "+ui/gfx"
 ]

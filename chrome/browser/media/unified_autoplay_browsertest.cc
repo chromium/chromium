@@ -41,10 +41,12 @@ class ChromeContentBrowserClientOverrideWebAppScope
   ChromeContentBrowserClientOverrideWebAppScope() = default;
   ~ChromeContentBrowserClientOverrideWebAppScope() override = default;
 
-  void OverrideWebkitPrefs(
+  void OverrideWebPreferences(
       content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* web_prefs) override {
-    ChromeContentBrowserClient::OverrideWebkitPrefs(web_contents, web_prefs);
+    ChromeContentBrowserClient::OverrideWebPreferences(
+        web_contents, main_frame_site, web_prefs);
 
     web_prefs->web_app_scope = web_app_scope_;
   }
@@ -145,7 +147,7 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
     open_url_params.initiator_origin =
         active_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     open_url_params.source_render_process_id =
-        active_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+        active_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
     open_url_params.source_render_frame_id =
         active_contents->GetPrimaryMainFrame()->GetRoutingID();
     open_url_params.user_gesture = user_gesture;

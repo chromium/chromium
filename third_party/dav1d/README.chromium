@@ -2,7 +2,7 @@ Name: dav1d is an AV1 decoder :)
 Short Name: dav1d
 URL: https://code.videolan.org/videolan/dav1d
 Version: master
-License: 2-Clause BSD
+License: BSD-2-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

@@ -516,14 +516,23 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             final long requestStartTime = System.currentTimeMillis();
             GeolocationPermissions.Callback callbackWrapper =
                     (callbackOrigin, allow, retain) -> {
+                        long durationMs = System.currentTimeMillis() - requestStartTime;
                         RecordHistogram.recordTimesHistogram(
                                 "Android.WebView.OnGeolocationPermissionsShowPrompt.ResponseTime",
-                                System.currentTimeMillis() - requestStartTime);
+                                durationMs);
                         RecordHistogram.recordBooleanHistogram(
-                                "Android.WebView.OnGeolocationPermissionsShowPrompt.Allow", allow);
+                                "Android.WebView.OnGeolocationPermissionsShowPrompt.Granted",
+                                allow);
                         RecordHistogram.recordBooleanHistogram(
                                 "Android.WebView.OnGeolocationPermissionsShowPrompt.Retain",
                                 retain);
+
+                        if (retain) {
+                            RecordHistogram.recordTimesHistogram(
+                                    "Android.WebView.GeolocationRetained.ResponseTime", durationMs);
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Android.WebView.GeolocationRetained.Granted", allow);
+                        }
                         callback.invoke(callbackOrigin, allow, retain);
                     };
             mWebChromeClient.onGeolocationPermissionsShowPrompt(
@@ -1251,6 +1260,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             @Override
             public String getFilenameHint() {
                 return value.getFilenameHint();
+            }
+
+            // TODO(crbug.com/40101963): Add @Override and @PermissionMode when SDK is updated.
+            @SuppressWarnings("all")
+            public int getPermissionMode() {
+                return value.getPermissionMode();
             }
 
             @Override

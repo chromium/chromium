@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -356,6 +358,51 @@ public class BottomSheetTest {
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
 
         assertEquals(endingHeight, mSheetController.getCurrentOffset());
+    }
+
+    @Test
+    @MediumTest
+    public void testAdditionalBottomOffset() {
+        final int height = 300;
+        final int margin = 100;
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set up content view.
+                    final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+                    View child = new View(mTestRule.getActivity());
+                    child.setLayoutParams(
+                            new ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, height));
+                    contentView.addView(child);
+
+                    // Set up bottom sheet.
+                    TestBottomSheetContent testBottomSheetContent =
+                            new TestBottomSheetContent(
+                                    mTestRule.getActivity(),
+                                    ContentPriority.HIGH,
+                                    false,
+                                    contentView);
+                    testBottomSheetContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+                    testBottomSheetContent.setHalfHeightRatio(HeightMode.DISABLED);
+                    testBottomSheetContent.setPeekHeight(HeightMode.DISABLED);
+
+                    // Show content view in bottom sheet.
+                    mSheetController.requestShowContent(testBottomSheetContent, false);
+                });
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(height, mSheetController.getCurrentOffset());
+
+        // Change bottom margin; the margin and height should change.
+        runOnUiThreadBlocking(() -> mTestSupport.setBottomMargin(margin));
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ((MarginLayoutParams) mTestSupport.getSheetContainer().getLayoutParams())
+                                                .bottomMargin
+                                        == margin
+                                && !mTestSupport.getSheetContainer().isLayoutRequested());
     }
 
     private void hideSheet() {

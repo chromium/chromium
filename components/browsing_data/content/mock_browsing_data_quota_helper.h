@@ -21,8 +21,6 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
       delete;
 
   void StartFetching(FetchResultCallback callback) override;
-  void DeleteHostData(const std::string& host,
-                      blink::mojom::StorageType type) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             base::OnceClosure completed) override;

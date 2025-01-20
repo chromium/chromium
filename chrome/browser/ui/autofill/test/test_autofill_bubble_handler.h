@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 namespace autofill {
 
@@ -46,9 +47,9 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowSaveAutofillPredictionImprovementsBubble(
+  AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveAutofillPredictionImprovementsController* controller) override;
+      autofill_ai::SaveAutofillAiDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
@@ -57,10 +58,11 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       std::unique_ptr<UpdateAddressBubbleController> controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowAddNewAddressProfileBubble(
-      content::WebContents* contents,
-      std::unique_ptr<AddNewAddressBubbleController> controller,
-      bool is_user_gesture) override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  AutofillBubbleBase* ShowAddressSignInPromo(
+      content::WebContents* web_contents,
+      const AutofillProfile& autofill_profile) override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,
       FilledCardInformationBubbleController* controller,
@@ -91,9 +93,8 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> iban_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
-  std::unique_ptr<TestAutofillBubble>
-      save_autofill_prediction_improvements_bubble_view_;
-  std::unique_ptr<TestAutofillBubble> add_new_address_profile_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> address_sign_in_promo_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> save_autofill_ai_data_bubble_view_;
   std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> filled_card_information_bubble_view_;
   std::unique_ptr<TestAutofillBubble> virtual_card_enroll_bubble_view_;
@@ -102,8 +103,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> mandatory_reauth_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_card_confirmation_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_iban_confirmation_bubble_view_;
-
-  int save_card_confirmation_bubble_shown_count_ = 0;
 };
 
 }  // namespace autofill

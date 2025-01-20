@@ -7,13 +7,11 @@
 #include <memory>
 #include <optional>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -52,10 +50,10 @@ void RecordTelemetry(
 
 IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
     IpProtectionCore* core,
-    IpProtectionConfigGetter& config_getter,
+    std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher,
     bool disable_proxy_refreshing_for_testing)
     : ip_protection_core_(core),
-      config_getter_(config_getter),
+      fetcher_(std::move(fetcher)),
       proxy_list_min_age_(
           net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
       proxy_list_refresh_interval_(
@@ -115,7 +113,7 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
   last_successful_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
-  config_getter_->GetProxyConfig(base::BindOnce(
+  fetcher_->GetProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigManagerImpl::OnGotProxyList,
       weak_ptr_factory_.GetWeakPtr(), refresh_start_time_for_metrics));
 }
@@ -180,6 +178,14 @@ base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
 bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
   return base::Time::Now() - last_successful_proxy_list_refresh_ >=
          proxy_list_min_age_;
+}
+
+void IpProtectionProxyConfigManagerImpl::SetProxyListForTesting(
+    std::vector<net::ProxyChain> proxy_list,
+    std::optional<GeoHint> geo_hint) {
+  current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
+  proxy_list_ = std::move(proxy_list);
+  have_fetched_proxy_list_ = true;
 }
 
 void IpProtectionProxyConfigManagerImpl::

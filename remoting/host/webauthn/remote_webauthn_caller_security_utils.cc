@@ -44,6 +44,7 @@ constexpr auto kAllowedCallerPrograms =
     base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
         "/opt/google/chrome/chrome",
         "/opt/google/chrome-beta/chrome",
+        "/opt/google/chrome-canary/chrome",
         "/opt/google/chrome-unstable/chrome",
     });
 

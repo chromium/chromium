@@ -29,36 +29,6 @@
 namespace {
 
 constexpr char kExcludedKey[] = "exempted";
-constexpr char kDisplayedKey[] = "display_count";
-// The daily average is calculated over the past this many days.
-constexpr int kDays = 7;
-
-int ExtractNotificationCount(ContentSettingPatternSource item,
-                             std::string date) {
-  if (!item.setting_value.is_dict()) {
-    return 0;
-  }
-
-  base::Value::Dict* bucket = item.setting_value.GetDict().FindDict(date);
-  if (!bucket) {
-    return 0;
-  }
-  return bucket->FindInt(kDisplayedKey).value_or(0);
-}
-
-int GetDailyAverageNotificationCount(ContentSettingPatternSource item) {
-  // Calculate daily average count for the past week.
-  base::Time date = base::Time::Now();
-  int notification_count_total = 0;
-
-  for (int day = 0; day < kDays; ++day) {
-    notification_count_total += ExtractNotificationCount(
-        item, permissions::NotificationsEngagementService::GetBucketLabel(
-                  date - base::Days(day)));
-  }
-
-  return std::ceil(notification_count_total / kDays);
-}
 
 std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
 GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
@@ -87,7 +57,8 @@ GetNotificationCountMapPerPatternPair(
   for (auto& item : hcsm->GetSettingsForOneType(
            ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
     result[std::pair{item.primary_pattern, item.secondary_pattern}] =
-        GetDailyAverageNotificationCount(item);
+        permissions::NotificationsEngagementService::
+            GetDailyAverageNotificationCount(item);
   }
 
   return result;
@@ -228,11 +199,13 @@ NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     : engagement_service_(engagement_service), hcsm_(hcsm) {
   content_settings_observation_.Observe(hcsm);
 
+#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/40267370): Because there is only an UI thread for this
+  // TODO(crbug.com/40267370): Because there is only a UI thread for this
   // service, calling both |StartRepeatedUpdates()| and
   // |InitializeLatestResult()| will result in the result being calculated twice
   // when the service starts. When redesigning SafetyHubService, that should be

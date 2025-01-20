@@ -21,8 +21,8 @@
 namespace content {
 
 using OperationResult = storage::SharedStorageManager::OperationResult;
-using OperationType = network::mojom::SharedStorageOperationType;
-using OperationPtr = network::mojom::SharedStorageOperationPtr;
+using MethodWithOptionsPtr =
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 
 class StoragePartition;
 
@@ -36,8 +36,7 @@ class TestSharedStorageHeaderObserver : public SharedStorageHeaderObserver {
     return operations_;
   }
 
-  const std::vector<std::pair<url::Origin, std::vector<bool>>>& header_results()
-      const {
+  const std::vector<url::Origin>& header_results() const {
     return header_results_;
   }
 
@@ -49,16 +48,17 @@ class TestSharedStorageHeaderObserver : public SharedStorageHeaderObserver {
 
  private:
   // SharedStorageHeaderObserver:
-  void OnHeaderProcessed(const url::Origin& request_origin,
-                         const std::vector<bool>& header_results) override;
-  void OnOperationFinished(const url::Origin& request_origin,
-                           OperationPtr operation,
-                           OperationResult result) override;
+  void OnHeaderProcessed(const url::Origin& request_origin) override;
+  void OnBatchUpdateFinished(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::optional<std::string>& with_lock,
+      const std::string& error_message) override;
 
   std::unique_ptr<base::RunLoop> loop_;
   size_t expected_total_;
   std::vector<SharedStorageWriteOperationAndResult> operations_;
-  std::vector<std::pair<url::Origin, std::vector<bool>>> header_results_;
+  std::vector<url::Origin> header_results_;
   base::WeakPtrFactory<TestSharedStorageHeaderObserver> weak_ptr_factory_{this};
 };
 

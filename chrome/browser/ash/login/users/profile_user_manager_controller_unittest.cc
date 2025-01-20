@@ -17,6 +17,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -54,10 +55,10 @@ class ProfileUserManagerControllerTest : public testing::Test {
 
 TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
   const AccountId kOwnerAccountId =
-      AccountId::FromUserEmailGaiaId("owner@example.com", "1234567890");
+      AccountId::FromUserEmailGaiaId("owner@example.com", GaiaId("1234567890"));
 
   // Log in the user and create the profile.
-  user_manager().AddUser(kOwnerAccountId);
+  user_manager().AddGaiaUser(kOwnerAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
       kOwnerAccountId,
       user_manager::FakeUserManager::GetFakeUsernameHash(kOwnerAccountId),
@@ -79,11 +80,11 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
 }
 
 TEST_F(ProfileUserManagerControllerTest, AnnotateAccountId) {
-  const AccountId kAccountId =
-      AccountId::FromUserEmailGaiaId("account@example.com", "1234567890");
+  const AccountId kAccountId = AccountId::FromUserEmailGaiaId(
+      "account@example.com", GaiaId("1234567890"));
 
   // Log in the user and create the profile.
-  user_manager().AddUser(kAccountId);
+  user_manager().AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
       kAccountId,
       user_manager::FakeUserManager::GetFakeUsernameHash(kAccountId),

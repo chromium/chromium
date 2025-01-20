@@ -12,7 +12,7 @@ namespace internal {
 
 AbortHelper::AbortHelper(CallbackTracker* tracker) : tracker_(tracker) {}
 
-AbortHelper::~AbortHelper() {}
+AbortHelper::~AbortHelper() = default;
 
 base::WeakPtr<AbortHelper> AbortHelper::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

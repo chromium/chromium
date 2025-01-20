@@ -176,10 +176,7 @@ void ActionView::OnDraggingCallback() {
 }
 
 void ActionView::OnMouseDragEndCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // The position change is applied immediately after change.
-  action_->BindPending();
-
+  action_->BindPosition(GetTouchCenterInWindow());
   display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
       /*is_visible=*/true);
 
@@ -190,10 +187,7 @@ void ActionView::OnMouseDragEndCallback() {
 }
 
 void ActionView::OnGestureDragEndCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // The position change is applied immediately after change.
-  action_->BindPending();
-
+  action_->BindPosition(GetTouchCenterInWindow());
   display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
       /*is_visible=*/true);
 
@@ -208,10 +202,7 @@ void ActionView::OnKeyPressedCallback() {
 }
 
 void ActionView::OnKeyReleasedCallback() {
-  action_->PrepareToBindPosition(GetTouchCenterInWindow());
-  // The position change is applied immediately after change.
-  action_->BindPending();
-
+  action_->BindPosition(GetTouchCenterInWindow());
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,

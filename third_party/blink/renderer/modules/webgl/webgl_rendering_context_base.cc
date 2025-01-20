@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bit_cast.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -125,6 +126,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -821,19 +823,16 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer). We tag the SharedImage with display usage
   // since there are uncommon paths which may use this snapshot for compositing.
-  const auto image_info =
-      SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
-                        CanvasRenderingContextSkColorInfo());
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          image_info, GetDrawingBuffer()->FilterQuality(), kShouldInitialize,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+          size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
+          kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+          RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        image_info, GetDrawingBuffer()->FilterQuality(),
+        size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -1322,7 +1321,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       std::move(context_provider), graphics_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
-      preserve, web_gl_version, chromium_image_usage, Host()->FilterQuality(),
+      preserve, web_gl_version, chromium_image_usage,
       drawing_buffer_color_space_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
@@ -1424,13 +1423,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   GetDrawingBuffer()->ContextProvider()->SetErrorMessageCallback(
       WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
                          WrapWeakPersistent(this)));
-
-  // If the context has the flip_y extension, it will behave as having the
-  // origin of coordinates on the top left.
-  is_origin_top_left_ = GetDrawingBuffer()
-                            ->ContextProvider()
-                            ->GetCapabilities()
-                            .mesa_framebuffer_flip_y;
 
   // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
   // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
@@ -1804,12 +1796,6 @@ bool WebGLRenderingContextBase::UsingSwapChain() const {
   return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
 }
 
-bool WebGLRenderingContextBase::IsOriginTopLeft() const {
-  if (isContextLost())
-    return false;
-  return is_origin_top_left_;
-}
-
 void WebGLRenderingContextBase::PageVisibilityChanged() {
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
@@ -1902,10 +1888,11 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+    if (!shared_context_wrapper) {
       return false;
+    }
     gpu::raster::RasterInterface* raster_interface =
-        shared_context_wrapper->ContextProvider()->RasterInterface();
+        shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si =
         resource_provider->GetBackingClientSharedImageForOverwrite();
     if (!client_si) {
@@ -1923,9 +1910,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
-  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
   scoped_refptr<StaticBitmapImage> image =
-      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
+      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage();
 
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
@@ -3204,15 +3190,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveAttrib(
                       "no active attributes exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveAttrib(program_id, index, max_name_length, &length,
                                &size, &type,
-                               reinterpret_cast<GLchar*>(name_ptr));
+                               reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -3235,15 +3221,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveUniform(
                       "no active uniforms exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveUniform(program_id, index, max_name_length, &length,
                                 &size, &type,
-                                reinterpret_cast<GLchar*>(name_ptr));
+                                reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -3414,15 +3400,15 @@ bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
               .IsWorkaroundEnabled(gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS));
 }
 
-ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
-                                                    const String& name) {
+ScriptObject WebGLRenderingContextBase::getExtension(ScriptState* script_state,
+                                                     const String& name) {
   if (name == WebGLDebugRendererInfo::ExtensionName()) {
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kWebGLDebugRendererInfo);
   }
 
   WebGLExtension* extension = EnableExtensionIfSupported(name);
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLNullable<WebGLExtension>>::ToV8(script_state, extension));
 }
@@ -4262,24 +4248,24 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   GLint active_uniforms = 0;
   ContextGL()->GetProgramiv(program_id, GL_ACTIVE_UNIFORMS, &active_uniforms);
   for (GLint i = 0; i < active_uniforms; i++) {
-    LChar* name_ptr;
+    base::span<LChar> name_buffer;
     scoped_refptr<StringImpl> name_impl =
-        StringImpl::CreateUninitialized(max_name_length, name_ptr);
+        StringImpl::CreateUninitialized(max_name_length, name_buffer);
     GLsizei name_length = 0;
     GLint size = -1;
     GLenum type = 0;
-    ContextGL()->GetActiveUniform(program_id, i, max_name_length, &name_length,
-                                  &size, &type,
-                                  reinterpret_cast<GLchar*>(name_ptr));
+    ContextGL()->GetActiveUniform(
+        program_id, i, max_name_length, &name_length, &size, &type,
+        reinterpret_cast<GLchar*>(name_buffer.data()));
     if (size < 0)
       return ScriptValue::CreateNull(script_state->GetIsolate());
     String name(name_impl->Substring(0, name_length));
-    StringBuilder name_builder;
     // Strip "[0]" from the name if it's an array.
     if (size > 1 && name.EndsWith("[0]"))
       name = name.Left(name.length() - 3);
     // If it's an array, we need to iterate through each element, appending
     // "[index]" to the name.
+    StringBuilder name_builder;
     for (GLint index = 0; index < size; ++index) {
       name_builder.Clear();
       name_builder.Append(name);
@@ -4436,7 +4422,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
         }
         switch (base_type) {
           case GL_FLOAT: {
-            GLfloat value[16] = {0};
+            GLfloat value[16] = {};
             ContextGL()->GetUniformfv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4444,7 +4430,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_INT: {
-            GLint value[4] = {0};
+            GLint value[4] = {};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4452,7 +4438,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_UNSIGNED_INT: {
-            GLuint value[4] = {0};
+            GLuint value[4] = {};
             ContextGL()->GetUniformuiv(ObjectOrZero(program), location, value);
             if (length == 1)
               return WebGLAny(script_state, value[0]);
@@ -4468,7 +4454,8 @@ ScriptValue WebGLRenderingContextBase::getUniform(
               std::array<bool, 4> bool_value = {};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
-              return WebGLAny(script_state, bool_value.data(), length);
+              return WebGLAny(script_state,
+                              base::span(bool_value).first(length));
             }
 
             return WebGLAny(script_state, static_cast<bool>(value[0]));
@@ -5630,20 +5617,26 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
   return GetTextureSourceSize(image);
 }
 
-SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
-    const {
+SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   // This selection of alpha type disregards whether or not the drawing buffer
   // is premultiplied. This is to match historical behavior that may or may not
   // have been intentional.
-  const SkAlphaType alpha_type =
-      CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
-  SkColorType color_type = kN32_SkColorType;
+  return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+}
+
+SkColorType WebGLRenderingContextBase::GetSkColorType() const {
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
-    color_type = kRGBA_F16_SkColorType;
+    return kRGBA_F16_SkColorType;
   }
-  return SkColorInfo(
-      color_type, alpha_type,
-      PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
+  return kN32_SkColorType;
+}
+
+gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {
+  return PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_);
+}
+
+sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
+  return GetColorSpace().ToSkColorSpace();
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
@@ -5898,7 +5891,8 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       return;
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
-    is_source_origin_top_left = source_canvas_webgl_context->IsOriginTopLeft();
+    is_source_origin_top_left =
+        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft();
   }
   if (!params.width)
     params.width = source_size.width();
@@ -6075,7 +6069,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       DynamicTo<StaticBitmapImage>(image.get());
   DCHECK(static_bitmap_image);
 
-  const bool source_has_flip_y = is_origin_top_left_ && context_host->IsWebGL();
+  const bool source_has_flip_y =
+      GetDrawingBuffer()->IsOriginTopLeft() && context_host->IsWebGL();
   const bool allow_copy_via_gpu = true;
   TexImageStaticBitmapImage(params, static_bitmap_image, source_has_flip_y,
                             allow_copy_via_gpu);
@@ -6240,8 +6235,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
     }
 
     // Go through the fast path doing a GPU-GPU textures copy without a readback
@@ -7212,13 +7207,6 @@ void WebGLRenderingContextBase::SetHdrMetadata(
   }
 }
 
-void WebGLRenderingContextBase::SetFilterQuality(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (!isContextLost() && GetDrawingBuffer()) {
-    GetDrawingBuffer()->SetFilterQuality(filter_quality);
-  }
-}
-
 Extensions3DUtil* WebGLRenderingContextBase::ExtensionsUtil() {
   if (!extensions_util_) {
     gpu::gles2::GLES2Interface* gl = ContextGL();
@@ -7366,6 +7354,11 @@ void WebGLRenderingContextBase::
   }
 }
 
+void WebGLRenderingContextBase::DrawingBufferClientInitializeLayer(
+    cc::Layer* layer) {
+  Host()->InitializeLayerWithCSSProperties(layer);
+}
+
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(
     ScriptState* script_state,
     GLenum pname) {
@@ -7380,7 +7373,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
     GLenum pname) {
   if (pname != GL_COLOR_WRITEMASK) {
     NOTIMPLEMENTED();
-    return WebGLAny(script_state, nullptr, 0);
+    return WebGLAny(script_state, base::span<const bool>());
   }
   std::array<GLboolean, 4> value = {0};
   if (!isContextLost()) {
@@ -7389,7 +7382,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
   std::array<bool, 4> bool_value = {};
   for (int ii = 0; ii < 4; ++ii)
     bool_value[ii] = static_cast<bool>(value[ii]);
-  return WebGLAny(script_state, bool_value.data(), 4);
+  return WebGLAny(script_state, bool_value);
 }
 
 ScriptValue WebGLRenderingContextBase::GetFloatParameter(
@@ -7470,9 +7463,14 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
       NOTIMPLEMENTED();
   }
   if (ShouldMeasureGLParam(pname)) {
+    // `IdentifiableTokenBuilder::AddValue()` requires
+    // `std::has_unique_object_representations_v<>`, which doesn't hold for
+    // floating-point values. Work around by reinterpreting as an integral type
+    // of the same size, without changing the underlying bit pattern.
+    static_assert(sizeof(decltype(value)::value_type) == sizeof(int32_t));
     blink::IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < length; i++) {
-      builder.AddValue(value[i]);
+      builder.AddValue(base::bit_cast<int32_t>(value[i]));
     }
     RecordIdentifiableGLParameterDigest(pname, builder.GetToken());
   }
@@ -8602,8 +8600,18 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
-    if (resource_provider->GetSkImageInfo() != info)
-      continue;
+    if (resource_provider->GetSkImageInfo() != info) {
+      // Detect and allow for the case wherein the passed-info implicitly
+      // specifies sRGB via a null SkColorSpace whereas the resource provider is
+      // explicitly storing sRGB.
+      if (info.colorSpace()) {
+        continue;
+      }
+      if (resource_provider->GetSkImageInfo() !=
+          info.makeColorSpace(SkColorSpace::MakeSRGB())) {
+        continue;
+      }
+    }
     BubbleToFront(i);
     return resource_provider;
   }
@@ -8612,14 +8620,15 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   if (type_ == CacheType::kVideo) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
     }
     temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        info, cc::PaintFlags::FilterQuality::kLow,
+        gfx::Size(info.width(), info.height()), info.colorType(),
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

@@ -591,7 +591,7 @@ public class CustomTabToolbarUnitTest {
     })
     public void testSecurityIconHidden() {
         when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
-                .thenReturn(R.drawable.omnibox_https_valid_refresh);
+                .thenReturn(R.drawable.omnibox_https_valid_page_info);
         when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.SECURE);
 
         mLocationBar.onSecurityStateChanged();
@@ -606,12 +606,12 @@ public class CustomTabToolbarUnitTest {
     })
     public void testSecurityIconShown() {
         when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
-                .thenReturn(R.drawable.omnibox_info);
-        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.NONE);
+                .thenReturn(R.drawable.omnibox_not_secure_warning);
+        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.WARNING);
 
         mLocationBar.onSecurityStateChanged();
 
-        verify(mAnimationDelegate).updateSecurityButton(R.drawable.omnibox_info);
+        verify(mAnimationDelegate).updateSecurityButton(R.drawable.omnibox_not_secure_warning);
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

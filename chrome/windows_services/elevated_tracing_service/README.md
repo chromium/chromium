@@ -23,6 +23,13 @@ persists across Chrome browser updates, so this command need only be run once on
 a given computer. The service can be uninstalled by running the same command,
 but with `--disable-system-tracing` in place of `--enable-system-tracing`.
 
+When the service is registered and the `WindowsSystemTracing` feature is enabled
+(e.g., via `--enable-features=WindowsSystemTracing` on the command line), Chrome
+will start the elevated tracing service alongside the browser's tracing service
+utility process (e.g., the first time a trace is recorded via
+https://ui.perfetto.dev). The service will remain running until either the
+browser process or the browser's tracing service utility process terminates.
+
 ### For developers
 
 Developers can enable the tracing service for a local build by running the

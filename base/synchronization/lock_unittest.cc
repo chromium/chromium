@@ -4,15 +4,22 @@
 
 #include "base/synchronization/lock.h"
 
-#include <stdlib.h>
+#include <stdint.h>
 
-#include <cstdint>
+#include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/test/gtest_util.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +33,7 @@ namespace base {
 
 class BasicLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit BasicLockTestThread(Lock* lock) : lock_(lock), acquired_(0) {}
+  explicit BasicLockTestThread(Lock* lock) : lock_(lock) {}
 
   BasicLockTestThread(const BasicLockTestThread&) = delete;
   BasicLockTestThread& operator=(const BasicLockTestThread&) = delete;
@@ -40,13 +47,13 @@ class BasicLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 10; i++) {
       lock_->Acquire();
       acquired_++;
-      PlatformThread::Sleep(Milliseconds(rand() % 20));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
       lock_->Release();
     }
     for (int i = 0; i < 10; i++) {
       if (lock_->Try()) {
         acquired_++;
-        PlatformThread::Sleep(Milliseconds(rand() % 20));
+        PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
         lock_->Release();
       }
     }
@@ -56,7 +63,7 @@ class BasicLockTestThread : public PlatformThread::Delegate {
 
  private:
   raw_ptr<Lock> lock_;
-  int acquired_;
+  int acquired_ = 0;
 };
 
 TEST(LockTest, Basic) {
@@ -75,20 +82,20 @@ TEST(LockTest, Basic) {
   for (int i = 0; i < 10; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(rand() % 20));
+    PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
     lock.Release();
   }
   for (int i = 0; i < 10; i++) {
     if (lock.Try()) {
       acquired++;
-      PlatformThread::Sleep(Milliseconds(rand() % 20));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
       lock.Release();
     }
   }
   for (int i = 0; i < 5; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(rand() % 20));
+    PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(20)));
     lock.Release();
   }
 
@@ -102,7 +109,7 @@ TEST(LockTest, Basic) {
 
 class TryLockTestThread : public PlatformThread::Delegate {
  public:
-  explicit TryLockTestThread(Lock* lock) : lock_(lock), got_lock_(false) {}
+  explicit TryLockTestThread(Lock* lock) : lock_(lock) {}
 
   TryLockTestThread(const TryLockTestThread&) = delete;
   TryLockTestThread& operator=(const TryLockTestThread&) = delete;
@@ -112,15 +119,16 @@ class TryLockTestThread : public PlatformThread::Delegate {
     // lock is properly released.
     bool got_lock = lock_->Try();
     got_lock_ = got_lock;
-    if (got_lock)
+    if (got_lock) {
       lock_->Release();
+    }
   }
 
   bool got_lock() const { return got_lock_; }
 
  private:
   raw_ptr<Lock> lock_;
-  bool got_lock_;
+  bool got_lock_ = false;
 };
 
 TEST(LockTest, TryLock) {
@@ -175,7 +183,7 @@ class MutexLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 40; i++) {
       lock->Acquire();
       int v = *value;
-      PlatformThread::Sleep(Milliseconds(rand() % 10));
+      PlatformThread::Sleep(RandTimeDeltaUpTo(Milliseconds(10)));
       *value = v + 1;
       lock->Release();
     }
@@ -227,6 +235,49 @@ TEST(LockTest, MutexFourThreads) {
 
   EXPECT_EQ(4 * 40, value);
 }
+
+// Test invariant checking -----------------------------------------------------
+
+TEST(LockTest, InvariantIsCalled) {
+  // This test should compile and execute safely regardless of invariant
+  // checking, but if `kInvariantsActive` is false, we don't expect the
+  // invariant to be checked when the lock state changes.
+  constexpr bool kInvariantsActive = DCHECK_IS_ON();
+
+  class InvariantChecker {
+   public:
+    explicit InvariantChecker(const Lock& lock LIFETIME_BOUND) : lock(lock) {}
+    void Check() ASSERT_EXCLUSIVE_LOCK(lock) {
+      lock->AssertAcquired();
+      invariant_called = true;
+    }
+    bool TestAndReset() { return std::exchange(invariant_called, false); }
+
+   private:
+    const raw_ref<const Lock> lock;
+    bool invariant_called = false;
+  };
+
+  // Awkward construction order here allows `checker` to refer to `lock`, which
+  // refers to `check_ref`, which refers to `check`, which refers to `checker`.
+  std::unique_ptr<InvariantChecker> checker;
+  auto check = [&] { checker->Check(); };
+  auto check_ref = base::FunctionRef<void()>(check);
+  Lock lock([&] {
+    checker = std::make_unique<InvariantChecker>(lock);
+    return check_ref;
+  }());
+
+  EXPECT_FALSE(checker->TestAndReset());
+
+  lock.Acquire();
+  EXPECT_EQ(kInvariantsActive, checker->TestAndReset());
+
+  lock.Release();
+  EXPECT_EQ(kInvariantsActive, checker->TestAndReset());
+}
+
+// AutoLock tests --------------------------------------------------------------
 
 TEST(LockTest, AutoLockMaybe) {
   Lock lock;

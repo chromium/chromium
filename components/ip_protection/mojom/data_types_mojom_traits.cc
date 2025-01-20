@@ -5,9 +5,42 @@
 #include "components/ip_protection/mojom/data_types_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
+
+// static
+ip_protection::mojom::ProxyLayer EnumTraits<
+    ip_protection::mojom::ProxyLayer,
+    ip_protection::ProxyLayer>::ToMojom(ip_protection::ProxyLayer input) {
+  switch (input) {
+    case ip_protection::ProxyLayer::kProxyA:
+      return ip_protection::mojom::ProxyLayer::kProxyA;
+    case ip_protection::ProxyLayer::kProxyB:
+      return ip_protection::mojom::ProxyLayer::kProxyB;
+  }
+
+  // Failure to convert should never occur.
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<ip_protection::mojom::ProxyLayer, ip_protection::ProxyLayer>::
+    FromMojom(ip_protection::mojom::ProxyLayer input,
+              ip_protection::ProxyLayer* output) {
+  switch (input) {
+    case ip_protection::mojom::ProxyLayer::kProxyA:
+      *output = ip_protection::ProxyLayer::kProxyA;
+      return true;
+    case ip_protection::mojom::ProxyLayer::kProxyB:
+      *output = ip_protection::ProxyLayer::kProxyB;
+      return true;
+  }
+
+  // Return `false` to indicate the conversion was not successful.
+  return false;
+}
 
 bool StructTraits<
     ip_protection::mojom::GeoHintDataView,

@@ -57,7 +57,7 @@ CrosSpeechRecognitionService::CrosSpeechRecognitionService(
     content::BrowserContext* context)
     : ChromeSpeechRecognitionService(context) {}
 
-CrosSpeechRecognitionService::~CrosSpeechRecognitionService() {}
+CrosSpeechRecognitionService::~CrosSpeechRecognitionService() = default;
 
 void CrosSpeechRecognitionService::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {

@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -19,11 +20,22 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
+namespace content {
+
+using blink::performance_scenarios::LoadingScenario;
+using blink::performance_scenarios::PerformanceScenarioObserverList;
+using blink::performance_scenarios::ScenarioScope;
 using SpareProcessMaybeTakeAction =
     content::RenderProcessHostImpl::SpareProcessMaybeTakeAction;
 
 namespace {
+
+// Enables killing spare renders when memory pressure signal is received.
+BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
+             "KillSpareRenderOnMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kSpareRendererDispatchResultUmaName[] =
     "BrowserRenderProcessHost.SpareRendererDispatchResult";
@@ -36,7 +48,7 @@ content::NoSpareRendererReason MapToNoSpareRendererReason(
     case content::SpareRendererDispatchResult::kTimeout:
       return content::NoSpareRendererReason::kTimeout;
     case content::SpareRendererDispatchResult::kOverridden:
-      return content::NoSpareRendererReason::kNotYetCreated;
+      return content::NoSpareRendererReason::kNotYetCreatedAfterWarmup;
     case content::SpareRendererDispatchResult::kDestroyedNotEnabled:
       return content::NoSpareRendererReason::kNotEnabled;
     case content::SpareRendererDispatchResult::kDestroyedProcessLimit:
@@ -45,6 +57,8 @@ content::NoSpareRendererReason MapToNoSpareRendererReason(
       return content::NoSpareRendererReason::kProcessExited;
     case content::SpareRendererDispatchResult::kProcessHostDestroyed:
       return content::NoSpareRendererReason::kProcessHostDestroyed;
+    case content::SpareRendererDispatchResult::kMemoryPressure:
+      return content::NoSpareRendererReason::kMemoryPressure;
   }
 }
 
@@ -78,12 +92,69 @@ std::string GetCategorizedSpareProcessMaybeTakeTimeUMAName(
       {"BrowserRenderProcessHost.SpareProcessMaybeTakeTime.", action_name});
 }
 
+bool IsCurrentlyUnderMemoryPressure() {
+  base::MemoryPressureMonitor* memory_pressure_monitor =
+      base::MemoryPressureMonitor::Get();
+  if (!memory_pressure_monitor) {
+    return false;
+  }
+
+  return memory_pressure_monitor->GetCurrentPressureLevel() !=
+         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+}
+
+// Returns the number of spare hosts that should be created. Ensures the field
+// trial is not activated on excluded machines.
+size_t GetSpareRPHCount() {
+  static int64_t available_ram = base::SysInfo::AmountOfPhysicalMemoryMB();
+  // Exclude machines with less than 4gigs of ram.
+  if (available_ram < 4 * 1024) {
+    return 1u;
+  }
+  return features::kMultipleSpareRPHsCount.Get();
+}
+
 }  // namespace
 
-namespace content {
+SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
+    : memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(
+              &SpareRenderProcessHostManagerImpl::OnMemoryPressure,
+              base::Unretained(this))),
+      check_memory_pressure_timer_(
+          FROM_HERE,
+          base::Minutes(5),
+          base::BindRepeating(
+              &SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded,
+              base::Unretained(this))),
+      metrics_heartbeat_timer_(
+          FROM_HERE,
+          base::Minutes(2),
+          base::BindRepeating(
+              &SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired,
+              base::Unretained(this))) {
+  // Immediately start the timer if the system is already under memory pressure.
+  if (IsCurrentlyUnderMemoryPressure()) {
+    check_memory_pressure_timer_.Reset();
+  }
 
-SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl() =
-    default;
+  // Need to register first before checking the state to make sure we don't miss
+  // a notification.
+  if (auto performance_scenario_observer_list =
+          PerformanceScenarioObserverList::GetForScope(
+              ScenarioScope::kGlobal)) {
+    // Note: SpareRenderProcessHostManagerImpl is a global singleton using
+    // base::NoDestructor, so no need to call RemoveObserver() later.
+    performance_scenario_observer_list->AddObserver(this);
+
+    is_browser_idle_ =
+        blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+            ->load(std::memory_order_relaxed) ==
+        LoadingScenario::kNoPageLoading;
+  }
+}
+
 SpareRenderProcessHostManagerImpl::~SpareRenderProcessHostManagerImpl() =
     default;
 
@@ -134,8 +205,8 @@ SpareRenderProcessHostManagerImpl::GetSpares() {
   return spare_rphs_;
 }
 
-std::vector<int> SpareRenderProcessHostManagerImpl::GetSpareIds() {
-  std::vector<int> spare_ids;
+std::vector<ChildProcessId> SpareRenderProcessHostManagerImpl::GetSpareIds() {
+  std::vector<ChildProcessId> spare_ids;
   spare_ids.reserve(spare_rphs_.size());
   for (RenderProcessHost* spare_rph : spare_rphs_) {
     spare_ids.push_back(spare_rph->GetID());
@@ -164,7 +235,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
   // Check if there's already an existing, matching, spare.
   RenderProcessHost* spare_rph =
-      !spare_rphs_.empty() ? spare_rphs_[0] : nullptr;
+      !spare_rphs_.empty() ? spare_rphs_.at(0) : nullptr;
   if (spare_rph && spare_rph->GetBrowserContext() == browser_context) {
     DCHECK_EQ(browser_context->GetDefaultStoragePartition(),
               spare_rph->GetStoragePartition());
@@ -180,6 +251,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
   bool had_spare_renderer = !!spare_rph;
   CleanupSpares(SpareRendererDispatchResult::kOverridden);
+  CHECK(no_spare_renderer_reason_ ==
+        NoSpareRendererReason::kNotYetCreatedAfterWarmup);
   UMA_HISTOGRAM_BOOLEAN(
       "BrowserRenderProcessHost.SpareProcessEvictedOtherSpare",
       had_spare_renderer);
@@ -204,11 +277,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   }
 
   // Don't create a spare renderer if we're using --single-process or if we've
-  // got too many processes. See also ShouldTryToUseExistingProcessHost in
-  // this file.
-  if (RenderProcessHost::run_renderer_in_process() ||
-      RenderProcessHostImpl::GetProcessCountForLimit() >=
-          RenderProcessHostImpl::GetMaxRendererProcessCount()) {
+  // got too many processes.
+  if (RenderProcessHost::IsProcessLimitReached()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kProcessLimit;
     return;
   }
@@ -227,7 +297,10 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
 
   // Start the timer to track how long it takes for a spare renderer to be used.
-  spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
+  // Note: This timer only makes sense when there is a single spare.
+  if (GetSpareRPHCount() == 1u) {
+    spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
+  }
   RenderProcessHost* new_spare_rph =
       RenderProcessHostImpl::CreateRenderProcessHost(
           browser_context, nullptr /* site_instance */);
@@ -312,20 +385,30 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
         V8OptimizationsDisabled;
   }
 
+  // V8 feature flags are globally initialized during renderer process startup,
+  // and spare renderers allow V8 feature flag overrides by default. As such
+  // spare renderers should not be used when v8 flag overrides are disabled.
+  if (GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
+          site_instance->GetSiteInfo().process_lock_url())) {
+    embedder_allows_spare_usage = false;
+    refuse_reason = ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
+        DisallowV8FeatureFlagOverrides;
+  }
+
   if (refuse_reason.has_value()) {
     base::UmaHistogramEnumeration(
         "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason",
         refuse_reason.value());
   }
 
-  // Do not use spare renderer if running an experiment to run SkiaFontManager.
-  // SkiaFontManager needs to be initialized during renderer creation.
+  // Do not use spare renderer if running an experiment to run FontDataManager.
+  // FontDataManager needs to be initialized during renderer creation.
   // This is temporary and will be removed after the experiment has concluded;
   // see crbug.com/335680565.
-  bool use_skia_font_manager = false;
+  bool use_font_data_manager = false;
 #if BUILDFLAG(IS_WIN)
-  use_skia_font_manager =
-      GetContentClient()->browser()->ShouldUseSkiaFontManager(
+  use_font_data_manager =
+      GetContentClient()->browser()->ShouldUseFontDataManager(
           site_instance->GetSiteURL());
 #endif
 
@@ -352,7 +435,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       SpareProcessMaybeTakeAction::kNoSparePresent;
 
   RenderProcessHost* next_spare_rph =
-      !spare_rphs_.empty() ? spare_rphs_[0] : nullptr;
+      !spare_rphs_.empty() ? spare_rphs_.at(0) : nullptr;
 
   if (!next_spare_rph) {
     action = SpareProcessMaybeTakeAction::kNoSparePresent;
@@ -373,7 +456,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
   if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
     base::UmaHistogramEnumeration(
-        "BrowserRenderProcessHost.NoSparePresentReason",
+        "BrowserRenderProcessHost.NoSparePresentReason2",
         no_spare_renderer_reason_);
   }
   if (spare_renderer_maybe_take_timer_) {
@@ -392,7 +475,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       next_spare_rph->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
       site_instance_allows_spare_usage && !hosts_pdf_content &&
-      !use_skia_font_manager) {
+      !use_font_data_manager) {
     CHECK(next_spare_rph->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should
@@ -406,13 +489,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     // If the spare shouldn't be kept around, then discard it as soon as we
     // find that the current spare was mismatched.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
-  } else if (RenderProcessHostImpl::GetProcessCountForLimit() >=
-             RenderProcessHostImpl::GetMaxRendererProcessCount()) {
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kNotEnabled);
+  } else if (RenderProcessHost::IsProcessLimitReached()) {
     // Drop all spares if we are at a process limit and the spare wasn't taken.
     // This helps avoid process reuse.
     // TODO(pmonette): Only cleanup n spares, where n is the count of processes
     // that is over the limit.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedProcessLimit);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kProcessLimit);
   }
 
   return returned_process;
@@ -448,6 +532,7 @@ void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
     // Discard the ignored (probably non-matching) spares so as not to waste
     // resources.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
+    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kNotEnabled);
   }
 }
 
@@ -495,6 +580,12 @@ void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
   deferred_destroy_timer_.SetTaskRunner(task_runner);
 }
 
+void SpareRenderProcessHostManagerImpl::SetIsBrowserIdleForTesting(
+    bool is_browser_idle) {
+  DCHECK(!PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
+  SetIsBrowserIdle(is_browser_idle);
+}
+
 void SpareRenderProcessHostManagerImpl::ReleaseSpare(
     RenderProcessHost* host,
     SpareRendererDispatchResult dispatch_result) {
@@ -507,9 +598,13 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare(
   for (auto& observer : observer_list_) {
     observer.OnSpareRenderProcessHostRemoved(host);
   }
+
   if (spare_rphs_.empty()) {
     no_spare_renderer_reason_ = MapToNoSpareRendererReason(dispatch_result);
   }
+
+  // Since that a spare was just released, check if we need to start another.
+  MaybeCreateExtraSpare();
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
@@ -524,6 +619,10 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
   for (auto& observer : observer_list_) {
     observer.OnSpareRenderProcessHostReady(host);
   }
+
+  // Now that a spare was just fully initialized, check if we need to start
+  // another.
+  MaybeCreateExtraSpare();
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessExited(
@@ -544,6 +643,119 @@ void SpareRenderProcessHostManagerImpl::RenderProcessExited(
 void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   ReleaseSpare(host, SpareRendererDispatchResult::kProcessHostDestroyed);
+}
+
+void SpareRenderProcessHostManagerImpl::OnLoadingScenarioChanged(
+    ScenarioScope scope,
+    LoadingScenario old_scenario,
+    LoadingScenario new_scenario) {
+  SetIsBrowserIdle(new_scenario == LoadingScenario::kNoPageLoading);
+}
+
+void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
+  if (is_browser_idle_ == is_browser_idle) {
+    return;
+  }
+
+  is_browser_idle_ = is_browser_idle;
+
+  // Now that the browser is idle, check if we need to start another spare.
+  MaybeCreateExtraSpare();
+}
+
+void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  CHECK_NE(memory_pressure_level,
+           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  if (check_memory_pressure_timer_.IsRunning() ||
+      !base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+    return;
+  }
+
+  CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+  CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
+  // `reset()` will start the timer.
+  check_memory_pressure_timer_.Reset();
+}
+
+void SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded() {
+  if (IsCurrentlyUnderMemoryPressure()) {
+    return;
+  }
+
+  check_memory_pressure_timer_.Stop();
+
+  // Now that the system is no longer under memory pressure, check if we need
+  // to start another spare.
+  MaybeCreateExtraSpare();
+}
+
+bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
+  // Check target spare count. This function has the side-effect of
+  // activating the field trial.
+  if (spare_rphs_.size() >= GetSpareRPHCount()) {
+    return false;
+  }
+
+  // Avoid doing work on shutdown.
+  if (BrowserMainRunner::ExitedMainMessageLoop()) {
+    return false;
+  }
+
+  // Only create extra spares when the browser is idle.
+  if (!is_browser_idle_) {
+    return false;
+  }
+
+  // The first spare is created using either WarmupSpare() or
+  // PrepareForFutureRequests().
+  if (spare_rphs_.empty()) {
+    return false;
+  }
+
+  // Avoid doing work on shutdown again.
+  if (spare_rphs_.back()->GetBrowserContext()->ShutdownStarted()) {
+    return false;
+  }
+
+  // Don't create spares beyond the renderer count limit.
+  if (RenderProcessHost::IsProcessLimitReached()) {
+    return false;
+  }
+
+  // Don't create spares when under memory pressure.
+  if (check_memory_pressure_timer_.IsRunning()) {
+    return false;
+  }
+
+  // A spare is already being initialized right now.
+  if (!spare_rphs_.back()->IsReady()) {
+    return false;
+  }
+
+  return true;
+}
+
+void SpareRenderProcessHostManagerImpl::MaybeCreateExtraSpare() {
+  if (!ShouldCreateExtraSpare()) {
+    return;
+  }
+
+  // Use the same browser context of an existing spare.
+  BrowserContext* browser_context = spare_rphs_.at(0)->GetBrowserContext();
+
+  process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
+  RenderProcessHost* new_spare_rph =
+      RenderProcessHostImpl::CreateRenderProcessHost(
+          browser_context, nullptr /* site_instance */);
+  new_spare_rph->AddObserver(this);
+  new_spare_rph->Init();
+  spare_rphs_.push_back(new_spare_rph);
+}
+
+void SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired() {
+  base::UmaHistogramCounts100("BrowserRenderProcessHost.SpareCount",
+                              spare_rphs_.size());
 }
 
 }  // namespace content

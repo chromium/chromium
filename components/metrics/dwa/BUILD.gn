@@ -2,7 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("dwa") {
+component("dwa_recorder") {
+  sources = [
+    "dwa_recorder.cc",
+    "dwa_recorder.h",
+  ]
+  defines = [ "IS_DWA_RECORDER_IMPL" ]
+  public_deps = [
+    "//components/metrics/dwa/mojom",
+    "//third_party/metrics_proto",
+  ]
+  deps = [ "//base" ]
+}
+
+static_library("dwa") {
   sources = [
     "dwa_entry_builder.cc",
     "dwa_entry_builder.h",
@@ -10,8 +23,6 @@ component("dwa") {
     "dwa_entry_builder_base.h",
     "dwa_pref_names.cc",
     "dwa_pref_names.h",
-    "dwa_recorder.cc",
-    "dwa_recorder.h",
     "dwa_recorder_factory_impl.cc",
     "dwa_recorder_factory_impl.h",
     "dwa_recorder_interface.cc",
@@ -22,6 +33,7 @@ component("dwa") {
     "dwa_service.h",
   ]
   public_deps = [
+    ":dwa_recorder",
     "//components/metrics/dwa/mojom",
     "//third_party/metrics_proto",
   ]
@@ -34,6 +46,7 @@ component("dwa") {
     "//components/prefs:prefs",
     "//components/version_info:version_info",
     "//mojo/public/cpp/bindings",
+    "//net:net",
   ]
 }
 

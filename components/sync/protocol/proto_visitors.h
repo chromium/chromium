@@ -701,6 +701,13 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::EntityMetadata::CollaborationMetadata& proto) {
   VISIT(collaboration_id);
+  VISIT(creation_attribution);
+  VISIT(last_update_attribution);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::EntityMetadata::CollaborationMetadata::Attribution& proto) {
+  VISIT(obfuscated_gaia_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
@@ -1430,25 +1437,13 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {
   VISIT(collaboration_id);
-  VISIT(attribution_metadata);
+  VISIT(creation_attribution);
+  VISIT(last_update_attribution);
 }
 
 VISIT_PROTO_FIELDS(
-    const sync_pb::SyncEntity::CollaborationMetadata::AttributionMetadata&
-        proto) {
-  VISIT(created);
-  VISIT(updated);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata::
-                       AttributionMetadata::Attribution& proto) {
-  VISIT(user_info);
-}
-
-VISIT_PROTO_FIELDS(
-    const sync_pb::SyncEntity::CollaborationMetadata::AttributionMetadata::
-        Attribution::AttributionUserInfo& proto) {
-  VISIT(gaia_id);
+    const sync_pb::SyncEntity::CollaborationMetadata::Attribution& proto) {
+  VISIT(obfuscated_gaia_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {
@@ -1717,6 +1712,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrumentCreationOption& proto) {
+  VISIT(id);
   VISIT(buy_now_pay_later_option);
 }
 

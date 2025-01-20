@@ -72,6 +72,8 @@ std::u16string GetAccessibleNameForSeeMoreButton(
     case QuickInsertSectionType::kClipboard:
     case QuickInsertSectionType::kExamples:
     case QuickInsertSectionType::kContentEditor:
+    case QuickInsertSectionType::kFeaturedGifs:
+    case QuickInsertSectionType::kSearchedGifs:
       return u"";
   }
 }

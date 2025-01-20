@@ -17,7 +17,7 @@ SpeculationRule::SpeculationRule(
     std::optional<mojom::blink::SpeculationTargetHint> target_hint,
     std::optional<network::mojom::ReferrerPolicy> referrer_policy,
     mojom::blink::SpeculationEagerness eagerness,
-    network::mojom::blink::NoVarySearchPtr no_vary_search_expected,
+    network::mojom::blink::NoVarySearchPtr no_vary_search_hint,
     mojom::blink::SpeculationInjectionType injection_type)
     : urls_(std::move(urls)),
       predicate_(predicate),
@@ -25,7 +25,7 @@ SpeculationRule::SpeculationRule(
       target_browsing_context_name_hint_(target_hint),
       referrer_policy_(referrer_policy),
       eagerness_(eagerness),
-      no_vary_search_expected_(std::move(no_vary_search_expected)),
+      no_vary_search_hint_(std::move(no_vary_search_hint)),
       injection_type_(injection_type) {}
 
 SpeculationRule::~SpeculationRule() = default;

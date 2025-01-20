@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,6 +62,6 @@ public class HistoryTabHelper extends TabWebContentsUserData {
 
     @NativeMethods
     interface Natives {
-        void setAppIdNative(String appId, WebContents webContents);
+        void setAppIdNative(@JniType("std::string") String appId, WebContents webContents);
     }
 }

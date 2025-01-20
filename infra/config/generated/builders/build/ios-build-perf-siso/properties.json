@@ -55,8 +55,7 @@
   },
   "$build/siso": {
     "configs": [
-      "builder",
-      "remote-link"
+      "builder"
     ],
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
@@ -75,5 +74,5 @@
   },
   "builder_group": "chromium.build",
   "recipe": "chrome_build/build_perf_siso",
-  "xcode_build_version": "16b40"
+  "xcode_build_version": "16c5032a"
 }

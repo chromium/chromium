@@ -82,15 +82,17 @@ ThreadPoolInstance::ScopedRestrictedTasks::~ScopedRestrictedTasks() {
 ThreadPoolInstance::ScopedFizzleBlockShutdownTasks::
     ScopedFizzleBlockShutdownTasks() {
   // It's possible for this to be called without a ThreadPool present in tests.
-  if (g_thread_pool)
+  if (g_thread_pool) {
     g_thread_pool->BeginFizzlingBlockShutdownTasks();
+  }
 }
 
 ThreadPoolInstance::ScopedFizzleBlockShutdownTasks::
     ~ScopedFizzleBlockShutdownTasks() {
   // It's possible for this to be called without a ThreadPool present in tests.
-  if (g_thread_pool)
+  if (g_thread_pool) {
     g_thread_pool->EndFizzlingBlockShutdownTasks();
+  }
 }
 
 #if !BUILDFLAG(IS_NACL)

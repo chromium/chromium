@@ -132,7 +132,7 @@ class CONTENT_EXPORT PhysicsModel {
   // Interpolates the velocity based off `touch_points_history_`. Used to set
   // the initial velocity of the spring model when the physics model switches
   // from drag cruve to any of the spring models.
-  float CalculateVelocity();
+  float CalculateVelocity(base::TimeTicks time);
 
   // Record `commit_pending_acceleration_start_`, if needed.
   void RecordCommitPendingAccelerationStartIfNeeded(

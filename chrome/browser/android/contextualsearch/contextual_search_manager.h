@@ -55,11 +55,10 @@ class ContextualSearchManager {
 
   // Removes a search URL from history. |search_start_time_ms| represents the
   // time at which |search_url| was committed.
-  void RemoveLastHistoryEntry(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& search_url,
-      jlong search_start_time_ms);
+  void RemoveLastHistoryEntry(JNIEnv* env,
+                              const base::android::JavaParamRef<jobject>& obj,
+                              std::string& search_url,
+                              jlong search_start_time_ms);
 
  private:
   void OnSearchTermResolutionResponse(

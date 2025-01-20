@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/search/search.h"
@@ -12,10 +13,42 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "content/public/browser/navigation_entry.h"
+
+namespace {
+
+// TODO(crbug.com/382494946): Similar bespoke checks are used throughout the
+// codebase. This should be factored out as a common util and other callsites
+// converted to use this.
+bool IsNewTabPage(content::WebContents* const web_contents) {
+  // Use the committed entry (or the visible entry, if the committed entry is
+  // the initial NavigationEntry).
+  CHECK(web_contents);
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (entry->IsInitialEntry()) {
+    entry = web_contents->GetController().GetVisibleEntry();
+  }
+  const GURL& url = entry->GetURL();
+  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
+         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
+         search::NavEntryIsInstantNTP(web_contents, entry);
+}
+
+}  // namespace
 
 namespace lens {
 
@@ -23,8 +56,22 @@ LensOverlayEntryPointController::LensOverlayEntryPointController() = default;
 
 void LensOverlayEntryPointController::Initialize(
     BrowserWindowInterface* browser_window_interface,
-    CommandUpdater* command_updater) {
+    CommandUpdater* command_updater,
+    views::View* location_bar) {
   browser_window_interface_ = browser_window_interface;
+  location_bar_ = location_bar;
+  if (location_bar_) {
+    location_bar_->GetFocusManager()->AddFocusChangeListener(this);
+    location_bar_->AddObserver(this);
+  }
+
+  pref_change_registrar_.Init(
+      browser_window_interface_->GetProfile()->GetPrefs());
+  pref_change_registrar_.Add(
+      omnibox::kShowGoogleLensShortcut,
+      base::BindRepeating(
+          &LensOverlayEntryPointController::UpdatePageActionState,
+          base::Unretained(this)));
   command_updater_ = command_updater;
 
   // Observe changes to fullscreen state.
@@ -43,7 +90,12 @@ void LensOverlayEntryPointController::Initialize(
   UpdateEntryPointsState(/*hide_if_needed=*/true);
 }
 
-LensOverlayEntryPointController::~LensOverlayEntryPointController() = default;
+LensOverlayEntryPointController::~LensOverlayEntryPointController() {
+  // Initialize may not have been called (e.g. for non-normal browser windows).
+  if (location_bar_) {
+    location_bar_->RemoveObserver(this);
+  }
+}
 
 bool LensOverlayEntryPointController::IsEnabled() {
   // This class is initialized if and only if it is observing.
@@ -67,9 +119,7 @@ bool LensOverlayEntryPointController::IsEnabled() {
 
   const PrefService* pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
-  // Lens Overlay is disabled via the deprecated enterprise policy. Even though
-  // the policy is deprecated, the feature should still be disabled for
-  // enterprise user who have disabled it via the old policy.
+  // Lens Overlay is disabled via the legacy enterprise policy.
   lens::prefs::LensOverlaySettingsPolicyValue old_policy_value =
       static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
           pref_service->GetInteger(lens::prefs::kLensOverlaySettings));
@@ -78,6 +128,7 @@ bool LensOverlayEntryPointController::IsEnabled() {
     return false;
   }
 
+  // Lens Overlay is disabled via the GenAI enterprise policy.
   lens::prefs::GenAiLensOverlaySettingsPolicyValue policy_value =
       static_cast<lens::prefs::GenAiLensOverlaySettingsPolicyValue>(
           pref_service->GetInteger(lens::prefs::kGenAiLensOverlaySettings));
@@ -97,6 +148,41 @@ bool LensOverlayEntryPointController::IsEnabled() {
   // Finally, only enable the overlay if user meets our minimum RAM requirement.
   static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
+}
+
+// static
+void LensOverlayEntryPointController::InvokeAction(
+    tabs::TabInterface* active_tab,
+    const actions::ActionInvocationContext& context) {
+  LensOverlayController* controller =
+      active_tab->GetTabFeatures()->lens_overlay_controller();
+
+  // Toggle the Lens overlay. There's no need to show or hide the side
+  // panel as the overlay controller will handle that.
+  if (controller->IsOverlayActive()) {
+    controller->CloseUIAsync(lens::LensOverlayDismissalSource::kToolbar);
+  } else {
+    controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
+  }
+}
+
+void LensOverlayEntryPointController::OnViewAddedToWidget(views::View* view) {
+  CHECK(location_bar_);
+  location_bar_->GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void LensOverlayEntryPointController::OnViewRemovedFromWidget(
+    views::View* view) {
+  CHECK(location_bar_);
+  location_bar_->GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void LensOverlayEntryPointController::OnWillChangeFocus(views::View* before,
+                                                        views::View* now) {}
+
+void LensOverlayEntryPointController::OnDidChangeFocus(views::View* before,
+                                                       views::View* now) {
+  UpdatePageActionState();
 }
 
 void LensOverlayEntryPointController::OnFullscreenStateChanged() {
@@ -138,5 +224,71 @@ actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLensOverlayResults,
       /*scope=*/browser_window_interface_->GetActions()->root_action_item());
+}
+
+void LensOverlayEntryPointController::UpdatePageActionState() {
+  if (!base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+    return;
+  }
+  // This may not have been initialized (e.g. for non-normal browser types).
+  if (!location_bar_) {
+    return;
+  }
+  CHECK(browser_window_interface_);
+
+  tabs::TabInterface* active_tab =
+      browser_window_interface_->GetActiveTabInterface();
+  // Possible during browser window initialization or teardown.
+  if (!active_tab) {
+    return;
+  }
+  CHECK(active_tab->GetTabFeatures());
+
+  page_actions::PageActionController* page_action_controller =
+      active_tab->GetTabFeatures()->page_action_controller();
+  CHECK(page_action_controller);
+
+  const actions::ActionId page_action_id =
+      kActionSidePanelShowLensOverlayResults;
+
+  if (!IsEnabled()) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
+  if (!browser_window_interface_->GetProfile()->GetPrefs()->GetBoolean(
+          omnibox::kShowGoogleLensShortcut)) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
+  if (!features::IsOmniboxEntryPointEnabled()) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
+  if (!features::IsOmniboxEntrypointAlwaysVisible() &&
+      !location_bar_->Contains(
+          location_bar_->GetFocusManager()->GetFocusedView())) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
+  // The overlay is unavailable on the NTP as it is unlikely to be useful to
+  // users on the page. It would also appear immediately when a new tab or
+  // window is created due to focus immediatey jumping into the location bar.
+  if (active_tab && IsNewTabPage(active_tab->GetContents())) {
+    page_action_controller->Hide(page_action_id);
+    return;
+  }
+
+  // No-ops if the overriding string is the same.
+  page_action_controller->OverrideText(
+      page_action_id,
+      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
+
+  // TODO(crbug.com/376283383): We should always use the chip state once that's
+  // implemented.
+  page_action_controller->Show(page_action_id);
 }
 }  // namespace lens

@@ -1,6 +1,6 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
-CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
-CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
+CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
 ../resources/tests1.dat:
 30
 100
@@ -15,9 +15,8 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|       <select>
-|         <option>
-|       "X"
+|       <option>
+|     "X"
 Expected:
 | <html>
 |   <head>
@@ -37,8 +36,7 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|       <select>
-|         <option>
+|       <option>
 Expected:
 | <html>
 |   <head>

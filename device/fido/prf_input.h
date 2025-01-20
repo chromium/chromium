@@ -29,6 +29,18 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PRFInput {
 
   cbor::Value::MapValue ToCBOR() const;
 
+  // Hashes the inputs into the corresponding salts.
+  void HashInputsIntoSalts();
+
+  // Evaluates the HMAC using the provided salts.
+  static std::vector<uint8_t> EvaluateHMAC(
+      base::span<const uint8_t> hmac_key,
+      const std::array<uint8_t, 32>& hmac_salt1,
+      const std::optional<std::array<uint8_t, 32>>& hmac_salt2);
+
+  // Evaluates the HMAC using this input's salts.
+  std::vector<uint8_t> EvaluateHMAC(base::span<const uint8_t> hmac_key) const;
+
   std::optional<std::vector<uint8_t>> credential_id;
   // Input values are provided both unhashed (as `input1` and `input2`) and
   // hashed (as `salt1` and `salt2`). Security keys use the hashed values but,

@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -27,11 +28,15 @@
 
 namespace {
 
-const char* const kAllWdLevels[] = {
-  "ALL", "DEBUG", "INFO", "WARNING", "SEVERE", "OFF"
-};
-
-}
+const auto kAllWdLevels = std::to_array<const char*>({
+    "ALL",
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "SEVERE",
+    "OFF",
+});
+}  // namespace
 
 TEST(Logging, NameLevelConversionHappy) {
   // All names map to a valid enum value.

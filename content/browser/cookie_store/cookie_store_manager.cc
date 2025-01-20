@@ -240,7 +240,7 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   ActivateSubscriptions(
-      base::make_span(subscriptions).subspan(old_subscriptions_size));
+      base::span(subscriptions).subspan(old_subscriptions_size));
   StoreSubscriptions(service_worker_registration_id, storage_key, subscriptions,
                      std::move(callback));
 }

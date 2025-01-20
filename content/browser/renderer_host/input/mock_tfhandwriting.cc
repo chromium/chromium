@@ -9,4 +9,12 @@ namespace content {
 MockTfImpl::MockTfImpl() = default;
 MockTfImpl::~MockTfImpl() = default;
 
+MockTfHandwritingRequest::MockTfHandwritingRequest() = default;
+MockTfHandwritingRequest::~MockTfHandwritingRequest() = default;
+
+MockTfFocusHandwritingTargetArgsImpl::MockTfFocusHandwritingTargetArgsImpl() =
+    default;
+MockTfFocusHandwritingTargetArgsImpl::~MockTfFocusHandwritingTargetArgsImpl() =
+    default;
+
 }  // namespace content

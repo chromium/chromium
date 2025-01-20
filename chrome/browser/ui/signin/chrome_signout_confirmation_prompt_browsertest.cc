@@ -41,6 +41,8 @@ class ChromeSignoutConfirmationPromptPixelTest
       case ChromeSignoutConfirmationPromptVariant::
           kUnsyncedDataWithReauthButton:
         return "UnsyncedDataWithReauthButton";
+      case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+        return "SupervisedProfile";
     }
   }
 
@@ -62,5 +64,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
         ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
-        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton),
+        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
+        ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls),
     &ChromeSignoutConfirmationPromptPixelTest::GetTestSuffix);

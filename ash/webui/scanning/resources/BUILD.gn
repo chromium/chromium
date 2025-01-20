@@ -39,11 +39,11 @@ build_webui("build") {
     "page_size_select.ts",
     "resolution_select.ts",
     "scan_done_section.ts",
-    "scanner_select.ts",
-    "scanning_app.ts",
     "scan_preview.ts",
     "scan_settings_section.ts",
     "scan_to_select.ts",
+    "scanner_select.ts",
+    "scanning_app.ts",
     "source_select.ts",
   ]
 

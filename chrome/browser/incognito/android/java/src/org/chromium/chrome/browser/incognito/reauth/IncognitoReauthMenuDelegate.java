@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,9 +78,9 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     /**
-     * @return {@link ListMenuButtonDelegate} which returns the underlying menu delegate.
+     * @return {@link ListMenuDelegate} which returns the underlying menu delegate.
      */
-    ListMenuButtonDelegate getListMenuButtonDelegate() {
+    ListMenuDelegate getListMenuDelegate() {
         return () -> mIncognitoReauthMenu;
     }
 

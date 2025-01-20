@@ -5,16 +5,19 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 PageInfoSecurityContentView::PageInfoSecurityContentView(
     PageInfo* presenter,
@@ -28,8 +31,15 @@ PageInfoSecurityContentView::PageInfoSecurityContentView(
           ->GetInsetsMetric(views::INSETS_DIALOG)
           .left()));
 
-  if (is_standalone_page)
+  if (is_standalone_page) {
+    const int bottom_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+    // The last view in the subpage is a RichHoverButton, which overrides the
+    // bottom dialog inset in favor of its own.
+    SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
+
     presenter_->InitializeUiState(this, base::DoNothing());
+  }
 }
 
 PageInfoSecurityContentView::~PageInfoSecurityContentView() = default;
@@ -40,6 +50,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       GetSecurityDescription(identity_info);
   security_description_type_ = security_description->type;
 
+  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
   if (security_description->summary_style == SecuritySummaryColor::RED) {
     if (identity_info.safe_browsing_status ==
             PageInfo::SAFE_BROWSING_STATUS_MALWARE ||
@@ -47,11 +58,13 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING ||
         identity_info.safe_browsing_status ==
             PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE) {
-      security_view_->SetIcon(
-          PageInfoViewFactory::GetConnectionDangerousIcon());
+      security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
+          vector_icons::kDangerousIcon, ui::kColorAlertHighSeverity,
+          icon_size));
     } else {
-      security_view_->SetIcon(
-          PageInfoViewFactory::GetConnectionNotSecureIcon());
+      security_view_->SetIcon(ui::ImageModel::FromVectorIcon(
+          vector_icons::kNotSecureWarningIcon, ui::kColorAlertHighSeverity,
+          icon_size));
     }
     security_view_->SetSummary(security_description->summary, STYLE_RED);
   } else if (security_description->summary_style ==
@@ -60,7 +73,8 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                   PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN ||
               identity_info.safe_browsing_status ==
                   PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK)) {
-    security_view_->SetIcon(PageInfoViewFactory::GetBusinessIcon());
+    security_view_->SetIcon(
+        PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon));
     security_view_->SetSummary(security_description->summary,
                                views::style::STYLE_BODY_3_MEDIUM);
   } else {
@@ -102,8 +116,10 @@ void PageInfoSecurityContentView::SetIdentityInfo(
 
     // Add the Certificate Section.
     const ui::ImageModel icon =
-        valid_identity ? PageInfoViewFactory::GetValidCertificateIcon()
-                       : PageInfoViewFactory::GetInvalidCertificateIcon();
+        valid_identity
+            ? PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon)
+            : PageInfoViewFactory::GetImageModel(
+                  vector_icons::kCertificateOffIcon);
     const int title_id = valid_identity ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
                                         : IDS_PAGE_INFO_CERTIFICATE_DETAILS;
 
@@ -131,29 +147,25 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     if (certificate_button_) {
       RemoveChildViewT(certificate_button_.get());
     }
-    certificate_button_ = AddChildView(
-        std::make_unique<RichHoverButton>(
-            base::BindRepeating(
-                [](PageInfoSecurityContentView* view) {
-                  view->presenter_->OpenCertificateDialog(
-                      view->certificate_.get());
-                },
-                this),
-            icon, l10n_util::GetStringUTF16(title_id), std::u16string(),
-
-            tooltip, subtitle_text, PageInfoViewFactory::GetLaunchIcon())
-            .release());
+    certificate_button_ =
+        AddChildView(std::make_unique<RichHoverButton>(
+                         base::BindRepeating(
+                             [](PageInfoSecurityContentView* view) {
+                               view->presenter_->OpenCertificateDialog(
+                                   view->certificate_.get());
+                             },
+                             this),
+                         icon, l10n_util::GetStringUTF16(title_id),
+                         subtitle_text, PageInfoViewFactory::GetLaunchIcon())
+                         .release());
     certificate_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
-    certificate_button_->title()->SetTextStyle(
-        views::style::STYLE_BODY_3_MEDIUM);
-    certificate_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
-    if (certificate_button_->subtitle()) {
-      certificate_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
-      certificate_button_->subtitle()->SetEnabledColorId(
-          kColorPageInfoSubtitleForeground);
-    }
+    certificate_button_->SetTooltipText(tooltip);
+    certificate_button_->SetTitleTextStyleAndColor(
+        views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+    certificate_button_->SetSubtitleTextStyleAndColor(
+        views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
   }
 
   if (identity_info.show_change_password_buttons) {

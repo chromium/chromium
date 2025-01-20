@@ -47,7 +47,7 @@ struct TestCase {
     }
   }
 
-  ~TestCase() {}
+  ~TestCase() = default;
 
   std::string accept_languages;
   std::vector<std::string> spellcheck_dictionaries;

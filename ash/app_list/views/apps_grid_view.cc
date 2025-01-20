@@ -1398,7 +1398,7 @@ void AppsGridView::CalculateIdealBounds() {
 void AppsGridView::AnimateToIdealBounds(bool is_animating_top_to_bottom) {
   if (layer()->GetCompositor()) {
     item_reorder_animation_tracker_ =
-        layer()->GetCompositor()->RequestNewThroughputTracker();
+        layer()->GetCompositor()->RequestNewCompositorMetricsTracker();
     item_reorder_animation_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             &ReportItemDragReorderAnimationSmoothness, IsTabletMode())));
@@ -2194,7 +2194,7 @@ views::AnimationBuilder AppsGridView::FadeOutVisibleItemsForReorder(
 
   grid_animation_status_ = AppListGridAnimationStatus::kReorderFadeOut;
   reorder_animation_tracker_.emplace(
-      layer()->GetCompositor()->RequestNewThroughputTracker());
+      layer()->GetCompositor()->RequestNewCompositorMetricsTracker());
   reorder_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportReorderAnimationSmoothness, IsTabletMode())));
 

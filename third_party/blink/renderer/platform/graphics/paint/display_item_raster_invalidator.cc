@@ -134,9 +134,6 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
     PaintInvalidationReason reason,
     RasterInvalidator::ClientIsOldOrNew old_or_new) {
   gfx::Rect r = invalidator_.ClipByLayerBounds(mapper_.MapVisualRect(rect));
-  if (r.IsEmpty())
-    return;
-
   invalidator_.AddRasterInvalidation(r, client_id, reason, old_or_new);
 }
 

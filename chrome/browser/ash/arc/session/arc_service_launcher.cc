@@ -7,36 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
-#include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/audio/arc_audio_bridge.h"
-#include "ash/components/arc/camera/arc_camera_bridge.h"
-#include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
-#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
-#include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
-#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
-#include "ash/components/arc/ime/arc_ime_service.h"
-#include "ash/components/arc/media_session/arc_media_session_bridge.h"
-#include "ash/components/arc/memory/arc_memory_bridge.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/midis/arc_midis_bridge.h"
-#include "ash/components/arc/net/arc_net_host_impl.h"
-#include "ash/components/arc/net/arc_wifi_host_impl.h"
-#include "ash/components/arc/obb_mounter/arc_obb_mounter_bridge.h"
-#include "ash/components/arc/pay/arc_digital_goods_bridge.h"
-#include "ash/components/arc/pay/arc_payment_app_bridge.h"
-#include "ash/components/arc/power/arc_power_bridge.h"
-#include "ash/components/arc/sensor/arc_iio_sensor_bridge.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
-#include "ash/components/arc/timer/arc_timer_bridge.h"
-#include "ash/components/arc/usb/usb_host_bridge.h"
-#include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
-#include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -78,7 +50,6 @@
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
 #include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
-#include "chrome/browser/ash/arc/oemcrypto/arc_oemcrypto_bridge.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
@@ -95,7 +66,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/browser/ash/arc/tts/arc_tts_service.h"
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
-#include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
@@ -105,8 +75,38 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
+#include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
+#include "chromeos/ash/experiences/arc/audio/arc_audio_bridge.h"
+#include "chromeos/ash/experiences/arc/camera/arc_camera_bridge.h"
+#include "chromeos/ash/experiences/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
+#include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
+#include "chromeos/ash/experiences/arc/crash_collector/arc_crash_collector_bridge.h"
+#include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/ime/arc_ime_service.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_icon_cache_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/media_session/arc_media_session_bridge.h"
+#include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/midis/arc_midis_bridge.h"
+#include "chromeos/ash/experiences/arc/net/arc_net_host_impl.h"
+#include "chromeos/ash/experiences/arc/net/arc_wifi_host_impl.h"
+#include "chromeos/ash/experiences/arc/obb_mounter/arc_obb_mounter_bridge.h"
+#include "chromeos/ash/experiences/arc/oemcrypto/arc_oemcrypto_bridge.h"
+#include "chromeos/ash/experiences/arc/pay/arc_digital_goods_bridge.h"
+#include "chromeos/ash/experiences/arc/pay/arc_payment_app_bridge.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
+#include "chromeos/ash/experiences/arc/sensor/arc_iio_sensor_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
+#include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
+#include "chromeos/ash/experiences/arc/timer/arc_timer_bridge.h"
+#include "chromeos/ash/experiences/arc/usb/usb_host_bridge.h"
+#include "chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.h"
+#include "chromeos/ash/experiences/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -115,15 +115,21 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#else
+#include "ash/constants/ash_switches.h"
+#include "base/files/file_path.h"
+#endif
 
+namespace arc {
+namespace {
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 // Delay for repeatedly checking if the TPM is owned or not.
 constexpr base::TimeDelta kTpmOwnershipCheckDelay = base::Seconds(5);
 // Timeout for waiting for the daemon to become available after we have owned
 // the TPM.
 constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-namespace arc {
-namespace {
 
 // `ChromeBrowserMainPartsAsh` owns.
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
@@ -139,6 +145,20 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
   return std::make_unique<ArcSessionManager>(std::move(runner),
                                              std::move(delegate));
 }
+
+#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+void CheckArcvmDlcImageStatus() {
+  base::FilePath arc_vm_dlc_image_path(
+      "/opt/google/vms/android/system.raw.img");
+  // Check if the ARCVM DLC image exists before calling
+  // GetArcStatusForProfile(). This blocks the main thread but is necessary to
+  // ensure arc availability is consistent, especially during Ash Chrome
+  // restarts. The check only occurs when the arcvm_dlc USE flag is enabled,
+  // which is currently specific to the Reven board.
+  bool is_arcvm_dlc_image_available = base::PathExists(arc_vm_dlc_image_path);
+  arc::SetArcvmDlcImageStatus(is_arcvm_dlc_image_available);
+}
+#endif  //! BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
 }  // namespace
 
@@ -184,6 +204,12 @@ void ArcServiceLauncher::Initialize() {
                      weak_factory_.GetWeakPtr()),
       kTpmOwnershipCheckDelay);
 #else
+  if (arc::IsArcVmDlcEnabled() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLoginUser)) {
+    CheckArcvmDlcImageStatus();
+  }
+
   arc_session_manager_->ExpandPropertyFilesAndReadSalt();
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 }
@@ -338,6 +364,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     }
     if (base::FeatureList::IsEnabled(kEnableArcIdleManager))
       ArcIdleManager::GetForBrowserContext(profile);
+    if (ShouldUseArcKeyMint()) {
+      auto serial_number = arc_session_manager_->GetSerialNumberForKeyMint();
+      ArcKeyMintBridge::GetForBrowserContext(profile)->SetSerialNumberInKeyMint(
+          serial_number);
+    }
   } else {
     // ARC Container-only services.
     ArcTimerBridge::GetForBrowserContext(profile);

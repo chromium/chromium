@@ -27,10 +27,14 @@ const BASE_PARAMETERS: InterceptionParameters = {
   headerTextColor: 'rgba(255, 255, 255, 1)',
   interceptedProfileColor: 'rgba(255, 0, 0, 1)',
   primaryProfileColor: 'rgba(255, 255, 255, 1)',
-  interceptedAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
-  primaryAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
+  interceptedAccount:
+      {pictureUrl: AVATAR_URL_1, avatarBadge: '', userBadgeAltText: ''},
+  primaryAccount:
+      {pictureUrl: AVATAR_URL_2, avatarBadge: '', userBadgeAltText: ''},
   useV2Design: false,
   showManagedDisclaimer: false,
+  interceptedProfileBadgeColor: 'rgba(255, 255, 1, 1)',
+  primaryProfileBadgeColor: 'rgba(255, 1, 255, 1)',
 };
 
 function fireParametersChanged(parameters: InterceptionParameters) {
@@ -134,8 +138,10 @@ suite('DiceWebSigninInterceptTest', function() {
 
     let parameters = {
       ...PARAMETERS,
-      interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
-      primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
+      interceptedAccount:
+          {pictureUrl: AVATAR_URL_2, avatarBadge: '', userBadgeAltText: ''},
+      primaryAccount:
+          {pictureUrl: AVATAR_URL_1, avatarBadge: '', userBadgeAltText: ''},
       useV2Design: false,
     };
 
@@ -167,8 +173,11 @@ suite('DiceWebSigninInterceptTest', function() {
     // without Sync Promo.
     let parameters = {
       ...PARAMETERS,
-      interceptedAccount:
-          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
+      interceptedAccount: {
+        avatarBadge: AVATAR_BADGE_SOURCE,
+        pictureUrl: AVATAR_URL_1,
+        userBadgeAltText: '',
+      },
     };
     fireParametersChanged(parameters);
     await microtasksFinished();
@@ -178,8 +187,11 @@ suite('DiceWebSigninInterceptTest', function() {
     // Equivalent to Sign-in Intercept Bubble V1 with Sync Promo.
     parameters = {
       ...PARAMETERS,
-      interceptedAccount:
-          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
+      interceptedAccount: {
+        avatarBadge: AVATAR_BADGE_SOURCE,
+        pictureUrl: AVATAR_URL_1,
+        userBadgeAltText: '',
+      },
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);
@@ -235,8 +247,10 @@ suite('DiceWebSigninInterceptTestV2', function() {
     // Update urls.
     let parameters = {
       ...PARAMETERS,
-      interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
-      primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
+      interceptedAccount:
+          {pictureUrl: AVATAR_URL_2, avatarBadge: '', userBadgeAltText: ''},
+      primaryAccount:
+          {pictureUrl: AVATAR_URL_1, avatarBadge: '', userBadgeAltText: ''},
     };
     fireParametersChanged(parameters);
     await microtasksFinished();
@@ -279,8 +293,11 @@ suite('DiceWebSigninInterceptTestV2', function() {
     // Update showManagedDisclaimer and check that the disclaimer is shown.
     const parameters = {
       ...PARAMETERS,
-      interceptedAccount:
-          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
+      interceptedAccount: {
+        avatarBadge: AVATAR_BADGE_SOURCE,
+        pictureUrl: AVATAR_URL_1,
+        userBadgeAltText: '',
+      },
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);

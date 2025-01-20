@@ -47,7 +47,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -67,7 +67,7 @@ public class ImprovedBookmarkRowTest {
 
     @Mock View mView;
     @Mock ViewGroup mViewGroup;
-    @Mock ListMenuButtonDelegate mListMenuButtonDelegate;
+    @Mock ListMenuDelegate mListMenuDelegate;
     @Mock Runnable mPopupListener;
     @Mock Runnable mOpenBookmarkCallback;
     @Mock LazyOneshotSupplier<Drawable> mMockDrawableSupplier;
@@ -112,7 +112,7 @@ public class ImprovedBookmarkRowTest {
                         .with(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, true)
                         .with(
                                 ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
-                                mListMenuButtonDelegate)
+                                mListMenuDelegate)
                         .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)
                         .with(
                                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
@@ -222,7 +222,7 @@ public class ImprovedBookmarkRowTest {
     }
 
     @Test
-    public void testListMenuButtonDelegateDoesNotChangeVisibility() {
+    public void testListMenuDelegateDoesNotChangeVisibility() {
         int visibility = mImprovedBookmarkRow.findViewById(R.id.more).getVisibility();
         mModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE, null);
         // Setting the delegate shouldn't affect visibility.

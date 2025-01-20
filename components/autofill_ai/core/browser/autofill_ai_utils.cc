@@ -26,7 +26,7 @@ bool FieldHasExclusiveAutofillType(const AutofillField& field) {
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       return false;
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kPasswordField:
@@ -47,8 +47,7 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
   }
 
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (field.heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes) ==
+  if (field.heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes) ==
       autofill::IMPROVED_PREDICTION) {
     return true;
   }
@@ -72,7 +71,7 @@ bool IsFieldEligibleForFilling(const AutofillField& form_field) {
 
 void SetFieldFillingEligibility(autofill::FormStructure& form) {
   for (auto& form_field : form) {
-    form_field->set_field_is_eligible_for_prediction_improvements(
+    form_field->set_field_is_eligible_for_autofill_ai(
         IsFieldEligibleForFilling(*form_field));
   }
 }

@@ -98,8 +98,7 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
-        http_body.AppendData(
-            WebData(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+        http_body.AppendData(WebData(bytes));
         break;
       }
       case network::DataElement::Tag::kFile: {

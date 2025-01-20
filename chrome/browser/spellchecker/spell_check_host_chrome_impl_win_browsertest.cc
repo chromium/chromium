@@ -44,7 +44,8 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
     renderer_ = std::make_unique<content::MockRenderProcessHost>(context);
 
     SpellCheckHostChromeImpl::Create(
-        renderer_->GetID(), spell_check_host_.BindNewPipeAndPassReceiver());
+        renderer_->GetDeprecatedID(),
+        spell_check_host_.BindNewPipeAndPassReceiver());
 
     InitializeSpellcheckService();
 

@@ -281,7 +281,10 @@ public class BrowsingDataBridgeTest {
                     sActivityTestRule
                             .getActivity()
                             .getCurrentTabModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                     frozen[0] =
                             sActivityTestRule
                                     .getActivity()

@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -100,6 +101,12 @@ bool ProcessMap::Contains(int process_id) const {
   return base::Contains(items_, process_id);
 }
 
+bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
+  return base::ranges::find_if(items_, [extension_id](const auto& entry) {
+           return entry.second == extension_id;
+         }) != items_.end();
+}
+
 const Extension* ProcessMap::GetEnabledExtensionByProcessID(
     int process_id) const {
   auto* extension_id = base::FindOrNull(items_, process_id);
@@ -129,7 +136,7 @@ bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
     mojom::ContextType context_type) {
-  const int process_id = process.GetID();
+  const int process_id = process.GetDeprecatedID();
   switch (context_type) {
     case mojom::ContextType::kUnspecified:
       // We never consider unspecified contexts valid. Even though they would be

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+  selection_test(
+    "<span contenteditable>foo |bar</span><span contenteditable>baz qux</span>",
+    (selection) => selection.modify("move", "right", "word"),
+    "<span contenteditable>foo bar|</span><span contenteditable>baz qux</span>",
+    "move right by word"
+  );
+
+  selection_test(
+    "<span contenteditable>foo b|ar</span><span contenteditable>baz qux</span>",
+    (selection) => selection.modify("move", "right", "word"),
+    "<span contenteditable>foo bar|</span><span contenteditable>baz qux</span>",
+    "move to the end of first node"
+  );
+
+  selection_test(
+    "<span contenteditable>foo bar|</span><span contenteditable>baz qux</span>",
+    (selection) => selection.modify("move", "right", "word"),
+    "<span contenteditable>foo bar|</span><span contenteditable>baz qux</span>",
+    "stay within span boundary"
+  );
+
+  selection_test(
+    "<div><span contenteditable> foo |bar</span> baz </div>",
+    (selection) => selection.modify("move", "right", "word"),
+    "<div><span contenteditable> foo bar|</span> baz </div>",
+    "move right by word and stay within boundary"
+  );
+</script>

@@ -138,7 +138,8 @@ void KeywordExtensionsDelegateImpl::OnOmniboxInputEntered() {
 }
 
 void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
-    omnibox_api::SendSuggestions::Params* suggestions) {
+    omnibox_api::SendSuggestions::Params* suggestions,
+    const std::string& extension_id) {
   DCHECK(suggestions);
 
   if (suggestions->request_id != current_input_id_)
@@ -149,15 +150,17 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
 
   const AutocompleteInput& input = extension_suggest_last_input_;
 
-  // ExtractKeywordFromInput() can fail if e.g. this code is triggered by
-  // direct calls from the development console, outside the normal flow of
-  // user input.
+  // AutocompleteInput::ExtractKeywordFromInput() can fail if e.g. this code is
+  // triggered by direct calls from the development console, outside the normal
+  // flow of user input.
   std::u16string keyword, remaining_input;
-  if (!KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
-                                                &remaining_input))
+  if (!AutocompleteInput::ExtractKeywordFromInput(input, model, &keyword,
+                                                  &remaining_input)) {
     return;
+  }
 
   const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
+  DCHECK_EQ(extension_id, template_url->GetExtensionId());
 
   for (size_t i = 0; i < suggestions->suggest_results.size(); ++i) {
     const omnibox_api::SuggestResult& suggestion =
@@ -201,9 +204,10 @@ void KeywordExtensionsDelegateImpl::OnOmniboxDefaultSuggestionChanged() {
   // session.
   std::u16string keyword, remaining_input;
   if (matches()->empty() || current_keyword_extension_id_.empty() ||
-      !KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
-                                                &remaining_input))
+      !AutocompleteInput::ExtractKeywordFromInput(input, model, &keyword,
+                                                  &remaining_input)) {
     return;
+  }
 
   const TemplateURL* template_url(model->GetTemplateURLForKeyword(keyword));
   extensions::ApplyDefaultSuggestionForExtensionKeyword(

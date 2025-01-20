@@ -12,14 +12,10 @@ js_type_check("closure_compile_module") {
 
   deps = [
     ":button_bar",
-    ":fake_mojo_service",
-    ":mojo_api",
-    ":multidevice_setup",
     ":multidevice_setup_browser_proxy",
     ":multidevice_setup_delegate",
     ":password_page",
     ":setup_succeeded_page",
-    ":start_setup_page",
     ":ui_page",
     ":ui_page_container_behavior",
   ]
@@ -28,38 +24,6 @@ js_type_check("closure_compile_module") {
 js_library("button_bar") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("fake_mojo_service") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-  ]
-}
-
-js_library("mojo_api") {
-  deps = [
-    "//ash/webui/common/resources:cr_deprecated",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-  ]
-}
-
-js_library("multidevice_setup") {
-  extra_deps =
-      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
-  deps = [
-    ":button_bar",
-    ":fake_mojo_service",
-    ":mojo_api",
-    ":multidevice_setup_delegate",
-    ":password_page",
-    ":setup_succeeded_page",
-    ":start_setup_page",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
   ]
 }
 
@@ -73,7 +37,10 @@ js_library("multidevice_setup_delegate") {
 }
 
 js_library("password_page") {
-  deps = [ ":multidevice_setup_browser_proxy" ]
+  deps = [
+    ":multidevice_setup_browser_proxy",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
+  ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/quick_unlock_private.js" ]
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
@@ -85,25 +52,6 @@ js_library("setup_succeeded_page") {
   deps = [
     ":multidevice_setup_browser_proxy",
     ":ui_page_container_behavior",
-  ]
-}
-
-js_library("start_setup_page") {
-  extra_deps = [
-    "//third_party/cros-components:cros_components_ts",
-    "//third_party/material_web_components:library",
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-  ]
-  deps = [
-    ":mojo_api",
-    ":multidevice_setup_delegate",
-    ":ui_page_container_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chromeos/ash/services/device_sync/public/mojom:mojom_webui_js",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-  ]
-  externs_list = [
-    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
   ]
 }
 

@@ -8,15 +8,6 @@
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/connection_holder.h"
-#include "ash/components/arc/test/arc_task_window_builder.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_arc_session.h"
-#include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -49,6 +40,15 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
+#include "chromeos/ash/experiences/arc/test/arc_task_window_builder.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "chromeos/ash/experiences/arc/test/fake_process_instance.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/pref_names.h"
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, PrimarySnapped) {
 
 class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
  public:
-  AutotestPrivateWithPolicyApiTest() {}
+  AutotestPrivateWithPolicyApiTest() = default;
 
   AutotestPrivateWithPolicyApiTest(const AutotestPrivateWithPolicyApiTest&) =
       delete;

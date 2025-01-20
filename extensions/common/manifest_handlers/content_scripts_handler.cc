@@ -19,9 +19,9 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -76,12 +76,12 @@ std::unique_ptr<UserScript> CreateUserScript(
   // Manifest content scripts support `match_about_blank` (unlike
   // `SerializedUserScript`). If `match_about_blank` is specified, we'll
   // override the `match_origin_as_fallback` behavior on the user script later.
-  std::optional<MatchOriginAsFallbackBehavior>
+  std::optional<mojom::MatchOriginAsFallbackBehavior>
       match_origin_as_fallback_override;
   if (!serialized_script.match_origin_as_fallback.has_value() &&
       content_script.match_about_blank && *content_script.match_about_blank) {
     match_origin_as_fallback_override =
-        MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
+        mojom::MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree;
   }
 
   serialized_script.include_globs = std::move(content_script.include_globs);

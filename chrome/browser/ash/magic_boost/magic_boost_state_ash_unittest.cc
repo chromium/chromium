@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom-shared.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +107,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be disabled when `kMagicBoostEnabled` is false.
   EXPECT_FALSE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
@@ -119,6 +119,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be enabled when `kMagicBoostEnabled` is true.
   EXPECT_TRUE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
@@ -227,7 +228,7 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
 
 TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
   // `ShouldIncludeOrcaInOptIn` should fetch panel context from
-  // `EditorPanelManager` to see if opt-in is needed for Orca.
+  // `EditorPanelManagerImpl` to see if opt-in is needed for Orca.
   EXPECT_CALL(mock_editor_manager(), GetEditorPanelContext);
   magic_boost_state()->ShouldIncludeOrcaInOptIn(
       base::BindOnce([](bool result) {}));
@@ -237,12 +238,12 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
 TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
       .WillByDefault(
-          [](base::OnceCallback<void(crosapi::mojom::EditorPanelContextPtr)>
-                 callback) {
-            auto context = crosapi::mojom::EditorPanelContext::New();
-            context->editor_panel_mode =
-                crosapi::mojom::EditorPanelMode::kHardBlocked;
-            std::move(callback).Run(std::move(context));
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kHardBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/false, {}));
           });
 
   magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
@@ -255,13 +256,14 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
 
 TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
-      .WillByDefault([](base::OnceCallback<void(
-                            crosapi::mojom::EditorPanelContextPtr)> callback) {
-        auto context = crosapi::mojom::EditorPanelContext::New();
-        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kWrite;
-        context->consent_status_settled = true;
-        std::move(callback).Run(std::move(context));
-      });
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/true, {}));
+          });
 
   magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
     // If `consent_status_settled`, Orca should not be included in opt-in flow.
@@ -273,13 +275,14 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
 TEST_F(MagicBoostStateAshTest,
        ShouldIncludeOrcaInOptInConsentStatusNotSettled) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
-      .WillByDefault([](base::OnceCallback<void(
-                            crosapi::mojom::EditorPanelContextPtr)> callback) {
-        auto context = crosapi::mojom::EditorPanelContext::New();
-        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kWrite;
-        context->consent_status_settled = false;
-        std::move(callback).Run(std::move(context));
-      });
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/false, {}));
+          });
 
   magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
     // If `consent_status_settled` is false, Orca should be included in opt-in
@@ -291,9 +294,8 @@ TEST_F(MagicBoostStateAshTest,
 
 TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
   // `DisableOrcaFeature` should trigger the correct functions from
-  // `EditorPanelManager`.
-  EXPECT_CALL(mock_editor_manager(), OnConsentRejected);
-  EXPECT_CALL(mock_editor_manager(), OnPromoCardDeclined);
+  // `EditorPanelManagerImpl`.
+  EXPECT_CALL(mock_editor_manager(), OnMagicBoostPromoCardDeclined);
 
   magic_boost_state()->DisableOrcaFeature();
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
@@ -301,7 +303,7 @@ TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
 
 TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
   // `EnableOrcaFeature` should trigger the correct functions from
-  // `EditorPanelManager`.
+  // `EditorPanelManagerImpl`.
   EXPECT_CALL(mock_editor_manager(), OnConsentApproved);
 
   magic_boost_state()->EnableOrcaFeature();

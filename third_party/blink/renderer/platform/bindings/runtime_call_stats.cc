@@ -12,6 +12,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
@@ -62,7 +63,7 @@ RuntimeCallTimer* RuntimeCallTimer::Stop() {
 
 RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
     : clock_(clock) {
-  static const char* const names[] = {
+  static const auto names = std::to_array<const char*>({
 #define BINDINGS_COUNTER_NAME(name) "Blink_Bindings_" #name,
       BINDINGS_COUNTERS(BINDINGS_COUNTER_NAME)  //
 #undef BINDINGS_COUNTER_NAME
@@ -82,7 +83,7 @@ RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
       CALLBACK_COUNTERS(COUNTER_NAME)  //
       EXTRA_COUNTERS(COUNTER_NAME)
 #undef COUNTER_NAME
-  };
+  });
 
   for (int i = 0; i < number_of_counters_; i++) {
     counters_[i] = RuntimeCallCounter(names[i]);

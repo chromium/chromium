@@ -38,6 +38,7 @@ extern const char kOAuthTokenHeaderPrefix[];
 extern const char kOidcAuthHeaderPrefix[];
 extern const char kOidcAuthTokenHeaderPrefix[];
 extern const char kOidcIdTokenHeaderPrefix[];
+extern const char kOidcEncryptedUserInfoPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 extern const char kValueAppType[];
@@ -172,7 +173,9 @@ enum DeviceManagementStatus {
   // Service error: Illegal account for packaged EDU license.
   DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE = 908,
   // Service error: Packaged license device can't enroll KIOSK.
-  DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK = 909
+  DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK = 909,
+  // Service error: Org Unit enrollment limit has been exceeded.
+  DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED = 910
 };
 
 // List of modes that the device can be locked into. Some IDs are skipped

@@ -20,8 +20,9 @@ ShowTranslateBubbleResult ShowDefault(BrowserWindow* window,
                                       translate::TranslateErrors error_type,
                                       bool is_user_gesture) {
   // |window| might be null when testing.
-  if (!window)
+  if (!window) {
     return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID;
+  }
   return window->ShowTranslateBubble(web_contents, step, source_language,
                                      target_language, error_type,
                                      is_user_gesture);
@@ -29,8 +30,7 @@ ShowTranslateBubbleResult ShowDefault(BrowserWindow* window,
 
 }  // namespace
 
-TranslateBubbleFactory::~TranslateBubbleFactory() {
-}
+TranslateBubbleFactory::~TranslateBubbleFactory() = default;
 
 // static
 ShowTranslateBubbleResult TranslateBubbleFactory::Show(

@@ -159,7 +159,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   };
 
   // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
-  // be placed in |out_candidates| in front-to-back order. Returns true if all
+  // be placed in |out_candidates| in back-to-front order. Returns true if all
   // quads were successfully promoted.
   base::expected<DelegatedCompositingResult, DelegationStatus>
   TryDelegatedCompositing(
@@ -185,7 +185,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   // Insert overlay candidates from |surface_content_render_passes| into
   // |candidates|, assigning correct plane z-order in the process. |candidates|
-  // is assumed to be in front-to-back. The resulting candidates list is not
+  // is assumed to be in back-to-front. The resulting candidates list is not
   // sorted. Returns the union rect of overlays in
   // |surface_content_render_passes|.
   // TODO(crbug.com/324460866): Used for partially delegated compositing.

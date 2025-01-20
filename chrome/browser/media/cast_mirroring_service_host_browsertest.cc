@@ -73,7 +73,7 @@ content::DesktopMediaID BuildMediaIdForTabMirroring(
   content::DesktopMediaID media_id;
   content::RenderFrameHost* const main_frame =
       target_web_contents->GetPrimaryMainFrame();
-  const int process_id = main_frame->GetProcess()->GetID();
+  const int process_id = main_frame->GetProcess()->GetDeprecatedID();
   const int frame_id = main_frame->GetRoutingID();
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
@@ -370,7 +370,7 @@ class CastMirroringServiceHostBrowserTest
       mojo::PendingRemote<media::mojom::AudioInputStream> stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
           client_receiver,
-      media::mojom::ReadOnlyAudioDataPipePtr data_pipe) override {
+      media::mojom::ReadWriteAudioDataPipePtr data_pipe) override {
     EXPECT_TRUE(stream);
     EXPECT_TRUE(client_receiver);
     EXPECT_TRUE(data_pipe);

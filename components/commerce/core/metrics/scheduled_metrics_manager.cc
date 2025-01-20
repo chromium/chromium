@@ -58,8 +58,8 @@ void ScheduledMetricsManager::RunDailyTask() {
   // These metrics should only ever be recorded if the user is eligible for the
   // feature.
   if (commerce::IsShoppingListEligible(
-          shopping_service_->GetAccountChecker())) {
-    CHECK(IsSubscriptionsApiEnabled(shopping_service_->GetAccountChecker()));
+          shopping_service_->GetAccountChecker()) &&
+      IsSubscriptionsApiEnabled(shopping_service_->GetAccountChecker())) {
     shopping_service_->GetAllSubscriptions(
         SubscriptionType::kPriceTrack,
         base::BindOnce(

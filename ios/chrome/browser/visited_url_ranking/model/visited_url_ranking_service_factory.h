@@ -8,7 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
@@ -18,16 +18,11 @@ class VisitedURLRankingService;
 
 // Factory for the components VisitedURLRankingService service which fetches and
 // ranks visited URL.
-class VisitedURLRankingServiceFactory : public BrowserStateKeyedServiceFactory {
+class VisitedURLRankingServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static visited_url_ranking::VisitedURLRankingService* GetForProfile(
       ProfileIOS* profile);
   static VisitedURLRankingServiceFactory* GetInstance();
-
-  VisitedURLRankingServiceFactory(const VisitedURLRankingServiceFactory&) =
-      delete;
-  VisitedURLRankingServiceFactory& operator=(
-      const VisitedURLRankingServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<VisitedURLRankingServiceFactory>;

@@ -10,7 +10,7 @@
 // An interface for updating the passwords icon in the location bar.
 class ManagePasswordsIconView {
  public:
-  ManagePasswordsIconView() {}
+  ManagePasswordsIconView() = default;
 
   ManagePasswordsIconView(const ManagePasswordsIconView&) = delete;
   ManagePasswordsIconView& operator=(const ManagePasswordsIconView&) = delete;

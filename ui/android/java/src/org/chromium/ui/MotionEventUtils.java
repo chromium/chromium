@@ -7,9 +7,9 @@ package org.chromium.ui;
 import android.os.Build;
 import android.view.MotionEvent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,9 +19,10 @@ import java.lang.reflect.Method;
  *
  * <p>Not thread safe.
  */
+@NullMarked
 public class MotionEventUtils {
 
-    @Nullable private static Method sGetTimeNanoMethod;
+    private static @Nullable Method sGetTimeNanoMethod;
     private static boolean sFailedReflection;
 
     /**
@@ -61,7 +62,7 @@ public class MotionEventUtils {
     }
 
     private static boolean sFailedDoubleReflection;
-    private static Method sGetHistoricalEventTimeNanoMethod;
+    private static @Nullable Method sGetHistoricalEventTimeNanoMethod;
 
     /**
      * Returns the time in nanoseconds, but with precision to milliseconds, of the given

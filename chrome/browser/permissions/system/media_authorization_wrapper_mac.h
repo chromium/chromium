@@ -14,7 +14,7 @@ namespace system_permission_settings {
 
 class MediaAuthorizationWrapper {
  public:
-  virtual ~MediaAuthorizationWrapper() {}
+  virtual ~MediaAuthorizationWrapper() = default;
 
   virtual AVAuthorizationStatus AuthorizationStatusForMediaType(
       NSString* media_type) = 0;

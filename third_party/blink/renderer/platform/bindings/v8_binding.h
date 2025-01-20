@@ -54,8 +54,6 @@
 
 namespace blink {
 
-class ExceptionState;
-
 // This file contains bindings helper functions that do not have dependencies
 // to core/ or bindings/core. For core-specific helper functions, see
 // bindings/core/v8/V8BindingForCore.h.
@@ -309,8 +307,7 @@ struct V8PropertyDescriptorBag {
 PLATFORM_EXPORT void V8ObjectToPropertyDescriptor(
     v8::Isolate* isolate,
     v8::Local<v8::Value> descriptor_object,
-    V8PropertyDescriptorBag& descriptor_bag,
-    ExceptionState& exception_state);
+    V8PropertyDescriptorBag& descriptor_bag);
 
 }  // namespace bindings
 

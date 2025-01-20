@@ -22,6 +22,9 @@ class PasswordGenerationPopupController
   // Called by the view when the password was accepted.
   virtual void PasswordAccepted() = 0;
 
+  // Called by the view when the password was rejected.
+  virtual void PasswordRejected() = 0;
+
   // Called by the view when the password was selected.
   virtual void SetSelected() = 0;
 

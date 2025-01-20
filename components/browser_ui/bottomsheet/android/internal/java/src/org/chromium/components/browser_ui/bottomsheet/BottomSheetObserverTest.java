@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -123,26 +122,14 @@ public class BottomSheetObserverTest {
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
-        mScrimCoordinator =
-                new ScrimCoordinator(
-                        sTestRule.getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-                        },
-                        rootView,
-                        Color.WHITE);
-
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            mScrimCoordinator =
+                                    new ScrimCoordinator(
+                                            sTestRule.getActivity(),
+                                            /* systemUiScrimDelegate= */ null,
+                                            rootView);
                             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(

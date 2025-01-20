@@ -35,13 +35,13 @@ BufferReader::BufferReader(const BufferReader& other) = default;
 
 bool BufferReader::Read1(uint8_t* v) {
   RCHECK(HasBytes(1));
-  *v = base::U8FromBigEndian(buf_.subspan(pos_).first<1u>());
+  *v = base::U8FromBigEndian(buf_.subspan(pos_).first<1>());
   pos_ += 1u;
   return true;
 }
 bool BufferReader::Read2(uint16_t* v) {
   RCHECK(HasBytes(2));
-  *v = base::U16FromBigEndian(buf_.subspan(pos_).first<2u>());
+  *v = base::U16FromBigEndian(buf_.subspan(pos_).first<2>());
   pos_ += 2u;
   return true;
 }
@@ -53,7 +53,7 @@ bool BufferReader::Read2s(int16_t* v) {
 }
 bool BufferReader::Read4(uint32_t* v) {
   RCHECK(HasBytes(4));
-  *v = base::U32FromBigEndian(buf_.subspan(pos_).first<4u>());
+  *v = base::U32FromBigEndian(buf_.subspan(pos_).first<4>());
   pos_ += 4u;
   return true;
 }
@@ -65,7 +65,7 @@ bool BufferReader::Read4s(int32_t* v) {
 }
 bool BufferReader::Read8(uint64_t* v) {
   RCHECK(HasBytes(8));
-  *v = base::U64FromBigEndian(buf_.subspan(pos_).first<8u>());
+  *v = base::U64FromBigEndian(buf_.subspan(pos_).first<8>());
   pos_ += 8u;
   return true;
 }
@@ -83,7 +83,7 @@ bool BufferReader::ReadFourCC(FourCC* v) {
   return true;
 }
 
-bool BufferReader::ReadVec(std::vector<uint8_t>* vec, uint64_t count) {
+bool BufferReader::ReadVec(std::vector<uint8_t>* vec, size_t count) {
   RCHECK(HasBytes(count));
   vec->clear();
   auto range = buf_.subspan(pos_, count);

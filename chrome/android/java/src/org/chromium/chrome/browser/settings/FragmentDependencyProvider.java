@@ -15,13 +15,11 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.autofill.settings.AutofillLocalIbanEditor;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
@@ -40,7 +38,6 @@ import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDeleg
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragmentBase;
 import org.chromium.chrome.browser.safety_check.SafetyCheckBridge;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -50,15 +47,16 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment;
@@ -107,6 +105,10 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             fragmentSettingsNavigation.setSettingsNavigation(
                     SettingsNavigationFactory.createSettingsNavigation());
         }
+        if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
+            ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)
+                    .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
+        }
 
         // Settings screen specific attachments.
         if (fragment instanceof MainSettings) {
@@ -119,8 +121,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new ChromeSiteSettingsDelegate(mContext, mProfile);
             delegate.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
             baseSiteSettingsFragment.setSiteSettingsDelegate(delegate);
-            baseSiteSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create(
@@ -129,7 +129,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                    SyncConsentActivityLauncherImpl.get(),
                     mModalDialogManagerSupplier,
                     SyncServiceFactory.getForProfile(mProfile),
                     UserPrefs.get(mProfile),
@@ -170,19 +169,11 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             PrivacySandboxSettingsBaseFragment sandboxFragment =
                     (PrivacySandboxSettingsBaseFragment) fragment;
             sandboxFragment.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-            sandboxFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
             sandboxFragment.setCookieSettingsIntentHelper(
                     (Context context) -> {
                         SiteSettingsHelper.showCategorySettings(
                                 context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
                     });
-        }
-        if (fragment instanceof SafeBrowsingSettingsFragmentBase) {
-            SafeBrowsingSettingsFragmentBase safeBrowsingFragment =
-                    (SafeBrowsingSettingsFragmentBase) fragment;
-            safeBrowsingFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof LanguageSettings) {
             ((LanguageSettings) fragment)
@@ -191,16 +182,9 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                                 ApplicationLifetime.terminate(true);
                             });
         }
-        if (fragment instanceof ClearBrowsingDataFragmentBasic) {
-            ((ClearBrowsingDataFragmentBasic) fragment)
-                    .setCustomTabIntentHelper(
-                            LaunchIntentDispatcher::createCustomTabActivityIntent);
-        }
         if (fragment instanceof PrivacyGuideFragment) {
             PrivacyGuideFragment pgFragment = (PrivacyGuideFragment) fragment;
             pgFragment.setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-            pgFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
@@ -220,8 +204,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
             tpFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            tpFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)
@@ -236,15 +218,11 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     ((IpProtectionSettingsFragment) fragment);
             ipProtectionSettingsFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            ipProtectionSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment
                 instanceof FingerprintingProtectionSettingsFragment fpProtectionSettingsFragment) {
             fpProtectionSettingsFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            fpProtectionSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AutofillLocalIbanEditor) {
             ((AutofillLocalIbanEditor) fragment)
@@ -256,10 +234,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                             mProfile,
                             mModalDialogManagerSupplier,
                             SigninAndHistorySyncActivityLauncherImpl.get()));
-            // TODO(crbug.com/40751023): Create a shared interface for fragments that need access to
-            // LaunchIntentDispatcher::createCustomTabActivityIntent.
-            safetyHubFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AccountManagementFragment) {
             ((AccountManagementFragment) fragment)

@@ -77,7 +77,6 @@ static_library("emoji") {
     "//chrome/app:generated_resources",
     "//chrome/browser/resources/chromeos/emoji_picker:resources",
     "//chrome/browser/resources/chromeos/seal:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chromeos/ash/components/emoji:resources",
     "//components/prefs",
     "//net",
@@ -90,7 +89,6 @@ static_library("emoji") {
     "//ui/base/metadata",
     "//ui/display",
     "//ui/gfx/geometry",
-    "//ui/resources:webui_resources_grd",
     "//ui/webui",
   ]
 }

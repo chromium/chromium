@@ -148,8 +148,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     prediction_entry_builder_ =
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
             chrome_preloading_predictor::kDefaultSearchEngine);
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
 
     // Reset pointer position to avoid the pointer hover on the back button
     // that unintentionally triggers `kBackButtonHover` preloading, which may
@@ -441,6 +439,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
   constexpr static char kSearchDomain[] = "a.test";
   constexpr static char16_t kSearchDomain16[] = u"a.test";
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
   raw_ptr<PrerenderManager, AcrossTasksDanglingUntriaged> prerender_manager_ =
       nullptr;
   raw_ptr<SearchPrefetchService, AcrossTasksDanglingUntriaged>
@@ -456,7 +455,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 // Tests that the SearchSuggestionService can trigger prerendering after the

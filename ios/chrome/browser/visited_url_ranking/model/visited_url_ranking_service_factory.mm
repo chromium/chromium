@@ -6,7 +6,6 @@
 
 #import "components/history_clusters/core/config.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #import "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
@@ -21,7 +20,6 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
@@ -30,14 +28,13 @@
 // static
 visited_url_ranking::VisitedURLRankingService*
 VisitedURLRankingServiceFactory::GetForProfile(ProfileIOS* state) {
-  return static_cast<visited_url_ranking::VisitedURLRankingService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<visited_url_ranking::VisitedURLRankingService>(
+          state, /*create=*/true);
 }
 
 VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "VisitedURLRanking",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("VisitedURLRanking") {
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());

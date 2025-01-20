@@ -149,7 +149,7 @@ void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
     return;
   }
   render_process_host->RemoveObserver(this);
-  GetProcessIdToHelperMap()->erase(render_process_host_->GetID());
+  GetProcessIdToHelperMap()->erase(render_process_host_->GetDeprecatedID());
 }
 
 void MimeHandlerViewAttachHelper::AttachToOuterWebContents(

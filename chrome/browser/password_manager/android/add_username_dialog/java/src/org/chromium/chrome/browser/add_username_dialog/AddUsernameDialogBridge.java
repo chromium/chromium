@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.ui.base.WindowAndroid;
@@ -26,7 +27,7 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
     }
 
     @CalledByNative
-    public void showAddUsernameDialog(String password) {
+    public void showAddUsernameDialog(@JniType("std::u16string") String password) {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return;
 
@@ -58,7 +59,8 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
 
     @NativeMethods
     interface Natives {
-        void onDialogAccepted(long nativeAddUsernameDialogBridge, String username);
+        void onDialogAccepted(
+                long nativeAddUsernameDialogBridge, @JniType("std::u16string") String username);
 
         void onDialogDismissed(long nativeAddUsernameDialogBridge);
     }

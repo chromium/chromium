@@ -30,7 +30,8 @@ import "ui/base/mojom/attributed_string.mojom";
 [EnableIf=is_win]
 struct ProximateCharacterRangeBounds {
   gfx.mojom.Range range;
-  array<gfx.mojom.Rect> bounds;
+  // Character bounds are returned in DIP widget space.
+  array<gfx.mojom.Rect> widget_bounds_in_dips;
 };
 
 // This structure contains blink focus related data for stylus writing in
@@ -116,7 +117,7 @@ interface FrameWidget {
   // another message that writing has ended. This message responds with the
   // focused edit bounds and caret bounds after stylus writable element is
   // focused, and null if that element could not be focused.
-  OnStartStylusWriting([EnableIf=is_win] gfx.mojom.Rect focus_rect_in_widget)
+  OnStartStylusWriting([EnableIf=is_win] gfx.mojom.Rect focus_widget_rect_in_dips)
       => (StylusWritingFocusResult? focus_result);
 
   // Exposes an interface to the renderer to provide positional and styling

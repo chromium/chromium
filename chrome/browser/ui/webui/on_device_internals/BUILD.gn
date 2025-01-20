@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "on_device_internals_page.mojom" ]
   public_deps = [
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//mojo/public/mojom/base",
     "//services/on_device_model/public/mojom",
   ]

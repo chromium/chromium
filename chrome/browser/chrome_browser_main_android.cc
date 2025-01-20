@@ -17,6 +17,7 @@
 #include "chrome/browser/android/seccomp_support_detector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_saver/data_saver.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
@@ -38,8 +39,7 @@ ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
     StartupData* startup_data)
     : ChromeBrowserMainParts(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
-}
+ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() = default;
 
 int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
   TRACE_EVENT0("startup", "ChromeBrowserMainPartsAndroid::PreCreateThreads");
@@ -76,7 +76,7 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
   // Android backup, so that we create a new backup if they change.
   base::android::ScopedJavaGlobalRef<jobject> watcher;
   watcher.Reset(android::Java_ChromeBackupWatcher_Constructor(
-      base::android::AttachCurrentThread()));
+      base::android::AttachCurrentThread(), profile));
   backup_watcher_runner_.ReplaceClosure(
       base::BindOnce(&android::Java_ChromeBackupWatcher_destroy,
                      base::android::AttachCurrentThread(), watcher));

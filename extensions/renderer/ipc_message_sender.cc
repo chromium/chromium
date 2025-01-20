@@ -551,11 +551,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     return *extension_id_;
   }
 
-  PortContext PortContextForCurrentWorker() {
-    return PortContext::ForWorker(content::WorkerThread::GetCurrentId(),
-                                  service_worker_version_id_, GetExtensionId());
-  }
-
   mojom::RendererHost* GetRendererHost() {
     return WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
   }

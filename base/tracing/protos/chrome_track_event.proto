@@ -383,6 +383,29 @@ message SiteInstanceGroup {
   repeated DebugAnnotation debug_annotations = 99;
 }
 
+// Describes the CrossOriginIsolated state of a page. See the definition of
+// WebExposedIsolationInfo for more information.
+message WebExposedIsolationInfo {
+  optional bool is_isolated = 1;
+  optional string origin = 2;
+  optional bool is_isolated_application = 3;
+}
+
+// Contains the URL and some additional information necessary to pick a
+// SiteInstance and process during a navigation. See the definition of UrlInfo
+// for more information about individual fields.
+message UrlInfo {
+  optional string url = 1;
+  optional string origin = 2;
+  optional bool is_sandboxed = 3;
+  optional bool is_pdf = 4;
+  optional bool is_coop_isolation_requested = 5;
+  optional int32 origin_isolation_request = 6;
+  optional bool is_prefetch_with_cross_site_contamination = 7;
+  optional WebExposedIsolationInfo web_exposed_isolation_info = 8;
+  optional string storage_partition_config = 9;
+}
+
 // Next ID: 7
 message RenderViewHost {
   // The RenderViewHostMapId for the RenderViewHost.
@@ -1390,6 +1413,7 @@ message LocalSurfaceId {
 }
 
 message ChromeGraphicsPipeline {
+  // Next id: 26
   enum StepName {
     STEP_UNKNOWN = 0;
     STEP_DID_NOT_PRODUCE_FRAME = 1;
@@ -1442,6 +1466,18 @@ message ChromeGraphicsPipeline {
     STEP_BACKEND_SEND_BUFFER_SWAP = 18;
     STEP_BACKEND_SEND_BUFFER_POST_SUBMIT = 19;
     STEP_BACKEND_FINISH_BUFFER_SWAP = 20;
+
+    // Send viz.mojom.CompositorFrameSinkClient::OnBeginFrame Mojo message from
+    // Viz to a renderer's compositor.
+    STEP_SEND_ON_BEGIN_FRAME_MOJO_MESSAGE = 23;
+
+    // Send viz.mojom.BeginFrameObserver::OnStandaloneBeginFrame Mojo message
+    // from Viz to the browser main thread (for flings).
+    STEP_SEND_ON_STANDALONE_BEGIN_FRAME_MOJO_MESSAGE = 24;
+
+    // Send viz.mojom.CompositorFrameSink::SubmitCompositorFrame Mojo message
+    // from a renderer's compositor to Viz.
+    STEP_SEND_SUBMIT_COMPOSITOR_FRAME_MOJO_MESSAGE = 25;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
@@ -1592,7 +1628,7 @@ message WebContentInteraction {
     INTERACTION_UNSPECIFIED = 0;
     INTERACTION_KEYBOARD = 1;
     INTERACTION_CLICK_TAP = 2;
-    INTERACTION_DRAG = 3;
+    INTERACTION_DRAG = 3 [deprecated = true];
   }
 
   optional Type type = 1;
@@ -1914,6 +1950,7 @@ message WebViewStartup {
     GET_DEFAULT_WEB_STORAGE = 7;
     GET_DEFAULT_WEBVIEW_DATABASE = 8;
     GET_TRACING_CONTROLLER = 9;
+    ASYNC_WEBVIEW_STARTUP = 10;
   }
   optional CallSite call_site = 2;
 }
@@ -1922,6 +1959,8 @@ message AnimationFrameTimingInfo {
   optional int64 blocking_duration_ms = 1;
   optional int64 duration_ms = 2;
   optional int64 num_scripts = 3;
+  // Id for the BeginFrame, which triggered this animation frame.
+  optional BeginFrameId begin_frame_id = 4;
 }
 
 message AnimationFrameScriptTimingInfo {
@@ -2034,7 +2073,7 @@ message CurrentTask {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 15
+  // NEXT ID: 16
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -2042,6 +2081,10 @@ message ChromeLatencyInfo2 {
     STEP_UNSPECIFIED = 0;
     // Emitted on the browser main thread.
     STEP_SEND_INPUT_EVENT_UI = 3;
+    // The browser main thread sends a
+    // blink.mojom.WidgetInputHandler::DispatchEvent Mojo message to the
+    // renderer's compositor.
+    STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE = 15;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
     STEP_RESAMPLE_SCROLL_EVENTS = 14;
@@ -2279,7 +2322,7 @@ message AndroidChoreographerFrameCallbackData {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1072
+  // Next ID: 1075
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2432,5 +2475,11 @@ message ChromeTrackEvent {
         android_choreographer_frame_callback_data = 1070;
 
     optional CurrentTask current_task = 1071;
+
+    optional WebExposedIsolationInfo web_exposed_isolation_info = 1072;
+
+    optional UrlInfo url_info = 1073;
+
+    optional BeginFrameId begin_frame_id = 1074;
   }
 }

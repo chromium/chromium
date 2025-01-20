@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">查看管理員政策</translation>
 <translation id="158849752021629804">需要家用網路</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="162175252992296058">葡萄牙文搭配美式國際鍵盤</translation>
 <translation id="1629521517399325891">使用者憑證不適用於網路驗證。</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">這個項目在你的垃圾桶中</translation>
 <translation id="4186579485882418952">啟用文件離線版</translation>
 <translation id="4193154014135846272">Google 文件</translation>
-<translation id="4197674956721858839">壓縮選取的項目</translation>
 <translation id="4202378258276439759">西班牙文 (拉丁美洲)</translation>
 <translation id="4202977638116331303">喬治亞文</translation>
 <translation id="421017592316736757">你必須連上網路才能存取這個檔案。</translation>
@@ -664,7 +664,7 @@
 <translation id="6096979789310008754">已清除搜尋文字，畫面顯示所有檔案和資料夾。</translation>
 <translation id="610101264611565198">正在將 <ph name="FILE_NAME" /> 移至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="61118516107968648">CSV 文字</translation>
-<translation id="6129953537138746214">空格</translation>
+<translation id="6129953537138746214">空格鍵</translation>
 <translation id="6133173853026656527">正在移動 <ph name="FILE_NAME" />...</translation>
 <translation id="6133877453787250710">管理員會監控：</translation>
 <translation id="613750717151263950">日文搭配美式鍵盤</translation>
@@ -1005,7 +1005,7 @@
 <translation id="854655314928502177">網路 Proxy 自動探索網址：</translation>
 <translation id="8549186985808798022">義大利文</translation>
 <translation id="8551494947769799688">拉脫維亞文</translation>
-<translation id="8560515948038859357">粵文</translation>
+<translation id="8560515948038859357">粵語</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8566466896628108558">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
 <translation id="8568374623837201676">要永久刪除這個檔案嗎？</translation>

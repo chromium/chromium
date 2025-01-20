@@ -625,25 +625,6 @@ class ExtensionPrefs : public KeyedService {
   // Returns the creation flags mask for a delayed install extension.
   int GetDelayedInstallCreationFlags(const ExtensionId& extension_id) const;
 
-  // Returns true if the extension was installed from the Chrome Web Store.
-  bool IsFromWebStore(const ExtensionId& extension_id) const;
-
-  // Returns true if the extension was installed as a default app.
-  bool WasInstalledByDefault(const ExtensionId& extension_id) const;
-
-  // Returns true if the extension was installed as an oem app.
-  bool WasInstalledByOem(const ExtensionId& extension_id) const;
-
-  // Helper method to acquire the original installation time of an extension.
-  // Returns base::Time() if the installation time could not be parsed or
-  // found.
-  base::Time GetFirstInstallTime(const ExtensionId& extension_id) const;
-
-  // Helper method to acquire the installation/last update time of an extension.
-  // Returns base::Time() if the installation time could not be parsed or
-  // found.
-  base::Time GetLastUpdateTime(const ExtensionId& extension_id) const;
-
   // Returns true if the extension should not be synced.
   bool DoNotSync(const ExtensionId& extension_id) const;
 
@@ -699,6 +680,11 @@ class ExtensionPrefs : public KeyedService {
   // TODO(archanasimha): Remove this around M89.
   void MigrateDeprecatedDisableReasons();
 
+  // Performs a one-time migration of the legacy disable reasons bitflag to a
+  // list of disable reasons.
+  // TODO(crbug.com/372186532): Remove this around M140.
+  void MaybeMigrateDisableReasonsBitflagToList();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the
@@ -745,6 +731,8 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsBlocklistedExtensions;  // Unit test.
   friend class ExtensionPrefsComponentExtension;     // Unit test.
   friend class ExtensionPrefsUninstallExtension;     // Unit test.
+  friend class ExtensionPrefsDisableReasonsBitflagToListMigration;  // Unit
+                                                                    // test.
   friend class ExtensionPrefsMigratesToLastUpdateTime;  // Unit test.
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
@@ -803,13 +791,16 @@ class ExtensionPrefs : public KeyedService {
   const base::Value* GetPrefAsValue(const ExtensionId& extension_id,
                                     std::string_view pref_key) const;
 
-  // Modifies the extensions disable reasons to add a new reason, remove an
-  // existing reason, or clear all reasons. Notifies observers if the set of
-  // DisableReasons has changed.
-  // If `operation` is BitMapPrefOperation::kClear, then `reasons` are ignored.
-  void ModifyDisableReasons(const ExtensionId& extension_id,
-                            int reasons,
-                            BitMapPrefOperation operation);
+  // Helper function to notify observers that the disable reasons for an
+  // extension have changed.
+  void NotifyDisableReasonsChanged(const ExtensionId& extension_id);
+
+  // Helper methods to read and write disable reasons to prefs.
+  base::flat_set<int> ReadDisableReasonsFromPrefs(
+      const ExtensionId& extension_id) const;
+
+  void WriteDisableReasonsToPrefs(const ExtensionId& extension_id,
+                                  const base::flat_set<int>& disable_reasons);
 
   // Installs the persistent extension preferences into |prefs_|'s extension
   // pref store. Does nothing if extensions_disabled_ is true.

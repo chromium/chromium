@@ -67,6 +67,7 @@ class CONTENT_EXPORT AttributionHost
 
   struct PrimaryMainFrameData {
     int num_data_hosts_registered = 0;
+    bool has_user_activation = false;
     bool has_user_interaction = false;
   };
 
@@ -87,8 +88,11 @@ class CONTENT_EXPORT AttributionHost
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle);
+
+  void MaybeLogClientBounce(NavigationHandle* navigation_handle) const;
 
   // Keeps track of navigations for which we can register sources (i.e. All
   // conditions were met in `DidStartNavigation` and

@@ -62,6 +62,7 @@ extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kPasswordManagerSymbol;
+extern NSString* const kEnterpriseSigninBannerSymbol;
 extern NSString* const kEnterpriseSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
 extern NSString* const kPhotoSymbol;
@@ -265,6 +266,7 @@ extern NSString* const kPlayButton;
 extern NSString* const kFolderSymbol;
 extern NSString* const kCartSymbol;
 extern NSString* const kArrowUTurnForwardSymbol;
+extern NSString* const kArrowUTurnForwardCircleFillSymbol;
 extern NSString* const kIPhoneAndArrowForwardSymbol;
 extern NSString* const kPersonPlusSymbol;
 

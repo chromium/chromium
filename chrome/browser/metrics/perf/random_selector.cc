@@ -15,7 +15,7 @@
 
 RandomSelector::RandomSelector() : sum_of_weights_(0) {}
 
-RandomSelector::~RandomSelector() {}
+RandomSelector::~RandomSelector() = default;
 
 // static
 double RandomSelector::SumWeights(const std::vector<WeightAndValue>& odds) {

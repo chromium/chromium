@@ -29,7 +29,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -43,82 +42,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // TODO(crbug.com/372670018) Move remaining test accounts to {@link
-    // org.chromium.components.signin.test.util.TestAccounts}.
-
-    public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =
-            new AccountInfo.Builder(
-                            "test@nongmail.com",
-                            FakeAccountManagerFacade.toGaiaId("test@nongmail.com"))
-                    .fullName("Test Non Gmail Full")
-                    .givenName("Test Non Gmail Given")
-                    .accountImage(createAvatar())
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_NO_NAME =
-            new AccountInfo.Builder(
-                            "test.noname@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
-            new AccountInfo.Builder(
-                            generateChildEmail("test@gmail.com"),
-                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setCanHaveEmailAddressDisplayed(false)
-                                    .setIsSubjectToParentalControls(true)
-                                    .build())
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
-            new AccountInfo.Builder(
-                            generateChildEmail("test@gmail.com"),
-                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setCanHaveEmailAddressDisplayed(false)
-                                    .setIsSubjectToParentalControls(true)
-                                    .build())
-                    .build();
-
-    private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
-            new AccountCapabilitiesBuilder()
-                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                    .build();
-
-    private static final AccountCapabilities MINOR_MODE_REQUIRED =
-            new AccountCapabilitiesBuilder()
-                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                    .build();
-
-    public static final AccountInfo AADC_MINOR_ACCOUNT =
-            new AccountInfo.Builder(
-                            "aadc.minor.account@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("aadc.minor.account@gmail.com"))
-                    .fullName("AADC Minor")
-                    .givenName("AADC Minor Account")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(MINOR_MODE_REQUIRED)
-                    .build();
-
-    public static final AccountInfo AADC_ADULT_ACCOUNT =
-            new AccountInfo.Builder(
-                            "aadc.adult.account@gmail.com",
-                            FakeAccountManagerFacade.toGaiaId("aadc.adult.account@gmail.com"))
-                    .fullName("AADC Adult")
-                    .givenName("AADC Adult Account")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
-                    .build();
-
-    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TestAccounts.ACCOUNT1;
-
     // The matcher for the add account button in the fake add account activity.
     public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =
             withId(FakeAccountManagerFacade.AddAccountActivityStub.OK_BUTTON_ID);
@@ -233,37 +156,27 @@ public class AccountManagerTestRule implements TestRule {
         if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
     }
 
+    /** Updates an account in the fake AccountManagerFacade and {@link FakeAccountInfoService}. */
+    public void updateAccount(AccountInfo accountInfo) {
+        mFakeAccountManagerFacade.updateAccount(accountInfo);
+    }
+
     /**
      * Initializes the next add account flow with a given account to add.
      *
-     * @param newAccountName The account name to return when the add account flow finishes.
+     * @param newAccount The account that should be added by the add account flow.
      */
-    public void setAddAccountFlowResult(@Nullable String newAccountName) {
-        setAddAccountFlowResult(newAccountName, false);
-    }
-
-    /**
-     * Initializes the next add account flow with a given account to add. Should be called before
-     * the add account flow starts.
-     *
-     * @param newAccountName The account name to return when the add account flow finishes.
-     * @param isMinorModeEnabled The account be subject to minor mode restrictions
-     */
-    public void setAddAccountFlowResult(
-            @Nullable String newAccountName, boolean isMinorModeEnabled) {
-        // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
-        // AccountInfo}
-        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccountName, isMinorModeEnabled);
-    }
-
-    /** Makes the add account intent creation fail. */
-    public void forceAddAccountIntentCreationFailure() {
-        mFakeAccountManagerFacade.forceAddAccountIntentCreationFailure();
+    public void setAddAccountFlowResult(@Nullable AccountInfo newAccount) {
+        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccount);
     }
 
     /** Removes an account with the given {@link CoreAccountId}. */
     public void removeAccount(CoreAccountId accountId) {
         mFakeAccountManagerFacade.removeAccount(accountId);
+    }
+
+    public void setAccountFetchFailed() {
+        mFakeAccountManagerFacade.setAccountFetchFailed();
     }
 
     /** See {@link FakeAccountManagerFacade#blockGetCoreAccountInfos(boolean)}. */
@@ -273,18 +186,10 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
-     * appended to the base name so that the created account will be considered as {@link
-     * ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
-     */
-    public static String generateChildEmail(String baseName) {
-        return FakeAccountManagerFacade.generateChildEmail(baseName);
-    }
-
-    /**
      * Returns an avatar image created from test resource.
      *
-     * <p>TODO(crbug.com/372670018): Remove this after migrating the rest of test accounts.
+     * <p>TODO(crbug.com/40890215): Remove this after deleting the deprecated `addAccount` overload
+     * which calls it.
      */
     private static Bitmap createAvatar() {
         Drawable drawable =
@@ -307,16 +212,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void resolveMinorModeToRestricted(CoreAccountId accountId) {
         // TODO(b/343384614): append instead of overriding
-        overrideCapabilities(accountId, MINOR_MODE_REQUIRED);
-    }
-
-    /**
-     * Resolves the minor mode of {@param accountInfo} to unrestricted, so that the UI will not have
-     * any minor restrictions.
-     */
-    public void resolveMinorModeToUnrestricted(CoreAccountId accountId) {
-        // TODO(b/343384614): append instead of overriding
-        overrideCapabilities(accountId, MINOR_MODE_NOT_REQUIRED);
+        overrideCapabilities(accountId, TestAccounts.MINOR_MODE_REQUIRED);
     }
 
     private void overrideCapabilities(CoreAccountId accountId, AccountCapabilities capabilities) {

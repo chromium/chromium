@@ -8,18 +8,18 @@ import type {NewColumnSelectorElement} from 'chrome://compare/new_column_selecto
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('NewColumnSelectorTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const SHOWING_MENU_CLASS = 'showing-menu';
 
   async function createSelector(): Promise<NewColumnSelectorElement> {
     const selector = document.createElement('new-column-selector');
     document.body.appendChild(selector);
-    await flushTasks();
+    await microtasksFinished();
     return selector;
   }
 
@@ -48,35 +48,33 @@ suite('NewColumnSelectorTest', () => {
   test('menu shown on enter', async () => {
     initUrlInfos();
     const selector = await createSelector();
-    const showingMenuClass = 'showing-menu';
     const menu = selector.$.productSelectionMenu;
 
     assertEquals(menu.$.menu.getIfExists(), null);
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.button.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
+    await microtasksFinished();
 
     assertNotEquals(menu.$.menu.getIfExists(), null);
-    assertTrue(selector.$.button.classList.contains(showingMenuClass));
+    assertTrue(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
   });
 
   test('updates showing menu class', async () => {
     initUrlInfos();
     const selector = await createSelector();
-    const showingMenuClass = 'showing-menu';
 
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.button.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    assertTrue(selector.$.button.classList.contains(showingMenuClass));
+    assertTrue(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
 
     selector.$.productSelectionMenu.close();
     await eventToPromise('close', selector.$.productSelectionMenu);
 
-    assertFalse(selector.$.button.classList.contains(showingMenuClass));
+    assertFalse(selector.$.button.classList.contains(SHOWING_MENU_CLASS));
   });
 });

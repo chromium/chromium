@@ -5,12 +5,15 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.view.View;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Implemented internally.
  *
  * <p>Interface providing helper methods to layout list items in an external surface-controlled
  * RecyclerView.
  */
+@NullMarked
 public interface ListLayoutHelper {
     /**
      * Helper method to retrieve first visible item position from

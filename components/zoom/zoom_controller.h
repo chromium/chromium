@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -44,8 +45,7 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
 
 // Per-tab class to manage zoom changes and the Omnibox zoom icon. Lives on the
 // UI thread.
-class ZoomController : public content::WebContentsObserver,
-                       public content::WebContentsUserData<ZoomController> {
+class ZoomController : public content::WebContentsObserver {
  public:
   // Defines how zoom changes are handled.
   enum ZoomMode {
@@ -95,6 +95,24 @@ class ZoomController : public content::WebContentsObserver,
   // a simple, safe and reliable method to find the current zoom level for a
   // given WebContents*.
   static double GetZoomLevelForWebContents(content::WebContents* web_contents);
+
+  // Used to create a ZoomController for the primary mainframe of
+  // `web_contents`.
+  static ZoomController* CreateForWebContents(
+      content::WebContents* web_contents);
+
+  // Use to create a ZoomController for a subframe in `web_contents`. The
+  // specified `rfh_id` must be for a local-root RenderFrameHost.
+  // TODO(https://crbug.com/376084060); Implement this for the case where
+  // `rfh_id` isn't for the primary mainframe.
+  static ZoomController* CreateForWebContentsAndRenderFrameHost(
+      content::WebContents* web_contents,
+      const content::GlobalRenderFrameHostId rfh_id);
+
+  // Retrieves the ZoomController for `web_contents` primary mainframe if it
+  // exists, otherwise returns nullptr.
+  static ZoomController* FromWebContents(
+      const content::WebContents* web_contents);
 
   ZoomController(const ZoomController&) = delete;
   ZoomController& operator=(const ZoomController&) = delete;
@@ -161,15 +179,48 @@ class ZoomController : public content::WebContentsObserver,
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
   void OnPageScaleFactorChanged(float page_scale_factor) override;
+  void FrameDeleted(content::FrameTreeNodeId ftn_id) override;
 
  protected:
   // Protected for testing.
-  explicit ZoomController(content::WebContents* web_contents);
+  explicit ZoomController(content::WebContents* web_contents,
+                          content::RenderFrameHost* rfh);
 
  private:
-  friend class content::WebContentsUserData<ZoomController>;
   friend class ::ZoomControllerTest;
 
+  // A class to (i) be owned by WebContents as UserData, and (ii) own and manage
+  // all the ZoomControllers in that WebContents.
+  class Manager : public content::WebContentsUserData<Manager> {
+   public:
+    explicit Manager(content::WebContents* web_contents);
+    ~Manager() override;
+
+    ZoomController* GetZoomController(
+        const content::GlobalRenderFrameHostId& rfh_id) const;
+
+    // Called from ZoomController to notify that one of the ZoomControllers has
+    // had its frame deleted, meaning the ZoomCOntroller itself should be
+    // deleted.
+    void FrameDeleted(content::FrameTreeNodeId ftn_id);
+
+   private:
+    friend class content::WebContentsUserData<Manager>;
+
+    // The map is keyed on FrameTreeNodeId, but this class will
+    // have to update the map to account for frames being deleted. The
+    // ZoomController object will call out to the manager to provide the
+    // details.
+    base::flat_map<content::FrameTreeNodeId, std::unique_ptr<ZoomController>>
+        zoom_controller_map_;
+
+    WEB_CONTENTS_USER_DATA_KEY_DECL();
+  };
+
+  // Note: this function uses WebContents::UnsafeFindFrameByFrameTreeNodeId,
+  // so the RenderFrameHost* returned should be used immediately, and not
+  // stored.
+  content::RenderFrameHost* GetRenderFrameHost() const;
   void ResetZoomModeOnNavigationIfNeeded(const GURL& url);
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
@@ -178,6 +229,10 @@ class ZoomController : public content::WebContentsObserver,
   // meaning the change should apply to ~all sites. If it is not empty, the
   // change only affects sites with the given host.
   void UpdateState(const std::string& host);
+
+  // Stores the FrameTreeNodeId of the RenderFrameHost this ZoomController was
+  // created with.
+  const content::FrameTreeNodeId frame_tree_node_id_;
 
   // True if changes to zoom level can trigger the zoom notification bubble.
   bool can_show_bubble_ = true;
@@ -209,8 +264,6 @@ class ZoomController : public content::WebContentsObserver,
 
   // If set, this value is returned in PageScaleFactorIsOne.
   std::optional<bool> page_scale_factor_is_one_for_testing_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace zoom

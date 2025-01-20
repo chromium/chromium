@@ -18,7 +18,7 @@
 
 class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
  public:
-  FileIFrameAPITest() {}
+  FileIFrameAPITest() = default;
 
   FileIFrameAPITest(const FileIFrameAPITest&) = delete;
   FileIFrameAPITest& operator=(const FileIFrameAPITest&) = delete;

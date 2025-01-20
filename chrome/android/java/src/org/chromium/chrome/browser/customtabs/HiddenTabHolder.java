@@ -19,6 +19,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,12 +49,12 @@ public class HiddenTabHolder {
     /** Holds the parameters for the current hidden tab speculation. */
     @VisibleForTesting
     static final class SpeculationParams {
-        public final CustomTabsSessionToken session;
+        public final SessionHolder<?> session;
         public final HiddenTab hiddenTab;
         public final String referrer;
 
         private SpeculationParams(
-                CustomTabsSessionToken session,
+                SessionHolder<?> session,
                 String url,
                 Tab tab,
                 String referrer,
@@ -124,7 +125,7 @@ public class HiddenTabHolder {
      */
     void launchUrlInHiddenTab(
             Callback<Tab> tabCreatedCallback,
-            CustomTabsSessionToken session,
+            SessionHolder<?> session,
             Profile profile,
             ClientManager clientManager,
             String url,
@@ -153,7 +154,7 @@ public class HiddenTabHolder {
         if (!warmupManager.hasSpareTab(profile, /* targetsNetwork= */ false)) return;
         Tab tab =
                 warmupManager.takeSpareTab(
-                        profile, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);
+                        profile, true, TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION);
 
         tabCreatedCallback.onResult(tab);
 
@@ -210,7 +211,7 @@ public class HiddenTabHolder {
      */
     @Nullable
     HiddenTab takeHiddenTab(
-            @Nullable CustomTabsSessionToken session,
+            @Nullable SessionHolder<?> session,
             boolean ignoreFragments,
             String url,
             @Nullable String referrer) {
@@ -241,7 +242,7 @@ public class HiddenTabHolder {
     }
 
     /** Cancels the speculation for a given session, or any session if null. */
-    void destroyHiddenTab(@Nullable CustomTabsSessionToken session) {
+    void destroyHiddenTab(@Nullable SessionHolder<?> session) {
         if (mSpeculation == null) return;
         if (session != null && !session.equals(mSpeculation.session)) return;
 
@@ -272,7 +273,8 @@ public class HiddenTabHolder {
                         intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
 
         Tab tab =
-                WarmupManager.getInstance().takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
+                WarmupManager.getInstance()
+                        .takeSpareTab(profile, false, TabLaunchType.FROM_EXTERNAL_APP);
 
         String url = IntentHandler.getUrlFromIntent(intent);
         LoadUrlParams params = new LoadUrlParams(url);
@@ -288,7 +290,7 @@ public class HiddenTabHolder {
         if (referrer == null) referrer = "";
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        SessionHolder<?> token = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabObserver customTabObserver =
                 new CustomTabObserver(/* openedByChrome= */ false, token);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =

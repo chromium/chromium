@@ -59,6 +59,11 @@ source_set("model") {
     "//ios/net",
     "//ios/web/public/thread",
     "//net",
+
+    # TODO(crbug.com/369296278): Remove when MaybeMigrateSyncingUserToSignedIn()
+    # is no longer used (i.e. ~one year after kForceMigrateSyncingUserToSignedIn
+    # is fully launched).
+    "//components/browser_sync",
   ]
 }
 
@@ -73,7 +78,6 @@ source_set("profile_ios_io_data") {
     ":ios_thread",
     "//base",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/metrics:metrics_pref_names",
     "//components/net_log",
@@ -113,13 +117,13 @@ source_set("ios_thread") {
     "//components/variations/net",
     "//ios/chrome/browser/net/model:network_delegate",
     "//ios/chrome/common",
-    "//ios/components/io_thread",
     "//ios/web/public/init",
     "//ios/web/public/thread",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+  public_deps = [ "//ios/components/io_thread" ]
 }
 
 source_set("keyed_service_factories") {
@@ -230,14 +234,19 @@ source_set("keyed_service_factories") {
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
+
+  if (ios_enable_screen_time) {
+    deps += [ "//ios/chrome/browser/screen_time/model" ]
+  }
 }
 
-source_set("unit_tests") {
+source_set("test_support") {
   testonly = true
-  sources = [ "profile_manager_ios_impl_unittest.mm" ]
+  sources = [
+    "test_with_profile.h",
+    "test_with_profile.mm",
+  ]
   deps = [
-    ":constants",
-    ":ios_thread",
     ":model",
     "//base",
     "//base/test:test_support",
@@ -245,13 +254,27 @@ source_set("unit_tests") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
-    "//ios/web/public/thread",
-    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+  public_deps = [ ":ios_thread" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "profile_ios_impl_unittest.mm",
+    "profile_manager_ios_impl_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":test_support",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//testing/gtest",
   ]
 }

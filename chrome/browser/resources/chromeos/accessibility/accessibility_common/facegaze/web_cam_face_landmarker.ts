@@ -6,19 +6,48 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
+import {PrefNames} from './constants.js';
+
 export interface FaceLandmarkerResultWithLatency {
   result: FaceLandmarkerResult;
   latency: number;
 }
 
+/**
+ * The interval, in milliseconds, for which we request results from the
+ * FaceLandmarker API. This should be frequent enough to give a real-time
+ * feeling.
+ */
+const DETECT_FACE_LANDMARKS_INTERVAL_MS = 60;
+
+/**
+ * The dimensions used for the camera stream. 192 x 192 are the dimensions
+ * used by the FaceLandmarker, so frames that are larger than this must go
+ * through a downsampling process, which takes extra work.
+ */
+const VIDEO_FRAME_DIMENSIONS = 192;
+
+/** The wasm loader JS is checked in under this path. */
+const WASM_LOADER_PATH =
+    'accessibility_common/third_party/mediapipe_task_vision/' +
+    'vision_wasm_internal.js';
+
 /** Handles interaction with the webcam and FaceLandmarker. */
 export class WebCamFaceLandmarker {
+  // Core objects that power face landmark recognition.
   private faceLandmarker_: FaceLandmarker|null = null;
-  declare private intervalID_: number|null;
   private imageCapture_: ImageCapture|undefined;
+
+  // Callbacks.
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
   private onTrackEndedHandler_: () => void;
+
+  // State-related members.
+  private stopped_ = true;
+  declare private intervalID_: number|null;
+
+  // Testing-related members.
   declare private readyForTesting_: Promise<void>;
   private setReadyForTesting_?: () => void;
 
@@ -39,6 +68,7 @@ export class WebCamFaceLandmarker {
    * detecting face landmarks.
    */
   async init(): Promise<void> {
+    this.stopped_ = false;
     await this.createFaceLandmarker_();
     await this.connectToWebCam_();
     this.startDetectingFaceLandmarks_();
@@ -59,7 +89,9 @@ export class WebCamFaceLandmarker {
               installed.`);
 
         chrome.settingsPrivate.setPref(
-            'settings.a11y.face_gaze.enabled', false);
+            PrefNames.FACE_GAZE_ENABLED_SENTINEL_SHOW_DIALOG, false, undefined,
+            () => chrome.settingsPrivate.setPref(
+                PrefNames.FACE_GAZE_ENABLED_SENTINEL, false));
         return;
       }
 
@@ -67,9 +99,7 @@ export class WebCamFaceLandmarker {
       const blob = new Blob([assets.wasm]);
       const customFileset = {
         // The wasm loader JS is checked in, so specify the path.
-        wasmLoaderPath: chrome.runtime.getURL(
-            'accessibility_common/third_party/mediapipe_task_vision/' +
-            'vision_wasm_internal.js'),
+        wasmLoaderPath: chrome.runtime.getURL(WASM_LOADER_PATH),
         // The wasm is stored in a blob, so pass a URL to the blob.
         wasmBinaryPath: URL.createObjectURL(blob),
       };
@@ -98,13 +128,22 @@ export class WebCamFaceLandmarker {
   private async connectToWebCam_(): Promise<void> {
     const constraints = {
       video: {
-        height: WebCamFaceLandmarker.VIDEO_FRAME_DIMENSIONS,
-        width: WebCamFaceLandmarker.VIDEO_FRAME_DIMENSIONS,
+        height: VIDEO_FRAME_DIMENSIONS,
+        width: VIDEO_FRAME_DIMENSIONS,
         facingMode: 'user',
       },
     };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const tracks = stream.getVideoTracks();
+
+    // It is possible for FaceGaze to be turned off before getUserMedia()
+    // completes. If FaceGaze has stopped when we finish this promise, then
+    // clean up the webcam resources so the webcam does not stay on.
+    if (this.stopped_) {
+      tracks[0].stop();
+      return;
+    }
+
     this.imageCapture_ = new ImageCapture(tracks[0]);
     this.imageCapture_.track.addEventListener(
         'ended', this.onTrackEndedHandler_);
@@ -121,8 +160,7 @@ export class WebCamFaceLandmarker {
 
   private startDetectingFaceLandmarks_(): void {
     this.intervalID_ = setInterval(
-        () => this.detectFaceLandmarks_(),
-        WebCamFaceLandmarker.DETECT_FACE_LANDMARKS_INTERVAL_MS);
+        () => this.detectFaceLandmarks_(), DETECT_FACE_LANDMARKS_INTERVAL_MS);
   }
 
   private async detectFaceLandmarks_(): Promise<void> {
@@ -148,6 +186,7 @@ export class WebCamFaceLandmarker {
   }
 
   stop(): void {
+    this.stopped_ = true;
     if (this.imageCapture_) {
       this.imageCapture_.track.removeEventListener(
           'ended', this.onTrackEndedHandler_);
@@ -160,22 +199,6 @@ export class WebCamFaceLandmarker {
       this.intervalID_ = null;
     }
   }
-}
-
-export namespace WebCamFaceLandmarker {
-  /**
-   * The interval, in milliseconds, for which we request results from the
-   * FaceLandmarker API. This should be frequent enough to give a real-time
-   * feeling.
-   */
-  export const DETECT_FACE_LANDMARKS_INTERVAL_MS = 60;
-
-  /**
-   * The dimensions used for the camera stream. 192 x 192 are the dimensions
-   * used by the FaceLandmarker, so frames that are larger than this must go
-   * through a downsampling process, which takes extra work.
-   */
-  export const VIDEO_FRAME_DIMENSIONS = 192;
 }
 
 TestImportManager.exportForTesting(WebCamFaceLandmarker);

@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.mockito.Mockito;
 
 import org.chromium.base.Promise;
@@ -49,7 +50,7 @@ final class AccountCapabilitiesFetcherTestUtil {
      * with {@code accountInfo}.
      */
     @CalledByNative
-    public void expectAccount(CoreAccountInfo accountInfo) {
+    public void expectAccount(@JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
         // Only one account at a time is supported.
         assert mCapabilitiesPromise == null;
         assert mExpectedAccount == null;
@@ -64,7 +65,9 @@ final class AccountCapabilitiesFetcherTestUtil {
      * #expectAccount} has been called with the same {@code accountInfo} parameter.
      */
     @CalledByNative
-    public void returnCapabilities(CoreAccountInfo accountInfo, AccountCapabilities capabilities) {
+    public void returnCapabilities(
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo,
+            AccountCapabilities capabilities) {
         assert mCapabilitiesPromise != null;
         assert mExpectedAccount != null;
         assert mExpectedAccount.equals(accountInfo);

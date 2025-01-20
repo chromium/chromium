@@ -30,7 +30,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             drive::DriveIntegrationService::Observer,
                             session_manager::SessionManagerObserver {
  public:
-
   explicit ProjectorClientImpl(ash::ProjectorController* controller);
 
   ProjectorClientImpl();

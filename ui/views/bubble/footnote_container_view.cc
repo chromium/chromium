@@ -71,8 +71,9 @@ FootnoteContainerView::~FootnoteContainerView() = default;
 
 void FootnoteContainerView::SetCornerRadius(float corner_radius) {
   corner_radius_ = corner_radius;
-  if (GetWidget())
+  if (GetWidget()) {
     ResetBackground();
+  }
 }
 
 void FootnoteContainerView::OnThemeChanged() {
@@ -87,8 +88,9 @@ void FootnoteContainerView::ChildVisibilityChanged(View* child) {
 }
 
 void FootnoteContainerView::ResetBackground() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
   SkColor background_color =
       GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
   SetBackground(std::make_unique<HalfRoundedRectBackground>(background_color,
@@ -96,8 +98,9 @@ void FootnoteContainerView::ResetBackground() {
 }
 
 void FootnoteContainerView::ResetBorder() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
   SetBorder(CreateSolidSidedBorder(
       gfx::Insets::TLBR(1, 0, 0, 0),
       GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));

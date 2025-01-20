@@ -3828,7 +3828,12 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     {
       blink::ServiceWorkerRouterSource source;
       source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      {
+        blink::ServiceWorkerRouterRaceSource race_source;
+        race_source.target = blink::ServiceWorkerRouterRaceSource::TargetEnum::
+            kNetworkAndFetchHandler;
+        source.race_source = race_source;
+      }
       rule.sources.push_back(source);
     }
     {
@@ -3950,6 +3955,59 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesLegacyPathname) {
         std::get<std::optional<blink::SafeUrlPattern>&>(
             registration->router_rules->rules[0].condition.get());
     EXPECT_EQ(url_pattern, registered_url_pattern);
+  }
+}
+
+TEST(ServiceWorkerDatabaseTest, EnsureNetworkAndFetchHandlerSet) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+
+  ServiceWorkerRegistrationData data;
+  data.set_registration_id(1);
+  data.set_scope_url("https://example.com");
+  data.set_script_url("https://example.com/sw");
+  data.set_version_id(1);
+  data.set_is_active(true);
+  data.set_has_fetch_handler(true);
+  data.set_last_update_check_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  database->next_avail_registration_id_ = 2;
+  database->next_avail_version_id_ = 2;
+
+  blink::StorageKey key =
+      blink::StorageKey::CreateFromStringForTesting(data.scope_url());
+
+  {
+    {
+      auto* rules = data.mutable_router_rules();
+      // service_worker_internals::kRouterRuleVersion
+      // in service_worker_database.cc
+      rules->set_version(1);
+      auto* v1 = rules->add_v1();
+      auto* condition = v1->add_condition();
+      auto* request = condition->mutable_request();
+      request->set_method("GET");
+      auto* source = v1->add_source();
+      source->mutable_race_source();
+    }
+
+    // Write the serialization.
+    std::string value;
+    ASSERT_TRUE(data.SerializeToString(&value));
+
+    // Parse the serialized data.
+    RegistrationDataPtr registration;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->ParseRegistrationData(value, key, &registration));
+    EXPECT_FALSE(registration->router_rules->rules.empty());
+
+    // RaceSource should have kNetworkAndFetchHandler target if nothing
+    // defined.
+    blink::ServiceWorkerRouterRaceSource race_source;
+    race_source.target = blink::ServiceWorkerRouterRaceSource::TargetEnum::
+        kNetworkAndFetchHandler;
+    EXPECT_EQ(race_source,
+              registration->router_rules->rules[0].sources[0].race_source);
   }
 }
 

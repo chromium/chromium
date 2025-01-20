@@ -6,11 +6,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -270,8 +270,8 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_QuasiDuplicateAdoption) {
   AutofillProfile b = test::GetFullProfile();
   b.SetRawInfo(COMPANY_NAME, u"B Company");
 
-  a.set_use_count(50);
-  b.set_use_count(100);
+  a.usage_history().set_use_count(50);
+  b.usage_history().set_use_count(100);
 
   std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);

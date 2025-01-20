@@ -21,7 +21,8 @@ class USBIsochronousInTransferResult final : public ScriptWrappable {
   static USBIsochronousInTransferResult* Create(
       DOMArrayBuffer* data,
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets) {
-    DOMDataView* data_view = DOMDataView::Create(data, 0, data->ByteLength());
+    auto data_view =
+        NotShared(DOMDataView::Create(data, 0, data->ByteLength()));
     return MakeGarbageCollected<USBIsochronousInTransferResult>(data_view,
                                                                 packets);
   }
@@ -29,24 +30,23 @@ class USBIsochronousInTransferResult final : public ScriptWrappable {
   static USBIsochronousInTransferResult* Create(
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets,
       NotShared<DOMDataView> data) {
-    return MakeGarbageCollected<USBIsochronousInTransferResult>(data.Get(),
-                                                                packets);
+    return MakeGarbageCollected<USBIsochronousInTransferResult>(data, packets);
   }
 
   static USBIsochronousInTransferResult* Create(
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets) {
-    return MakeGarbageCollected<USBIsochronousInTransferResult>(nullptr,
-                                                                packets);
+    return MakeGarbageCollected<USBIsochronousInTransferResult>(
+        NotShared<DOMDataView>(), packets);
   }
 
   USBIsochronousInTransferResult(
-      DOMDataView* data,
+      NotShared<DOMDataView> data,
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets)
       : data_(data), packets_(packets) {}
 
   ~USBIsochronousInTransferResult() override = default;
 
-  DOMDataView* data() const { return data_.Get(); }
+  NotShared<DOMDataView> data() const { return data_; }
   const HeapVector<Member<USBIsochronousInTransferPacket>>& packets() const {
     return packets_;
   }
@@ -58,7 +58,7 @@ class USBIsochronousInTransferResult final : public ScriptWrappable {
   }
 
  private:
-  Member<DOMDataView> data_;
+  NotShared<DOMDataView> data_;
   const HeapVector<Member<USBIsochronousInTransferPacket>> packets_;
 };
 

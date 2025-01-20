@@ -100,12 +100,12 @@ void BindDocumentCoordinationUnit(
 void Binders::ExposeInterfacesToRendererProcess(
     service_manager::BinderRegistry* registry,
     content::RenderProcessHost* host) {
-  registry->AddInterface(
-      base::BindRepeating(&BindRenderProcessCoordinationUnit, host->GetID()),
-      base::SequencedTaskRunner::GetCurrentDefault());
+  registry->AddInterface(base::BindRepeating(&BindRenderProcessCoordinationUnit,
+                                             host->GetDeprecatedID()),
+                         base::SequencedTaskRunner::GetCurrentDefault());
   registry->AddInterface(
       base::BindRepeating(&BindChildProcessCoordinationUnitForRenderProcessHost,
-                          host->GetID()),
+                          host->GetDeprecatedID()),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 

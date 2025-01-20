@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 
 #include <gtest/gtest.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -43,13 +44,13 @@ const char kTestUserName[] = "test-user@example.com";
 
 class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
  public:
-  NetworkConnectTestDelegate() {}
+  NetworkConnectTestDelegate() = default;
 
   NetworkConnectTestDelegate(const NetworkConnectTestDelegate&) = delete;
   NetworkConnectTestDelegate& operator=(const NetworkConnectTestDelegate&) =
       delete;
 
-  ~NetworkConnectTestDelegate() override {}
+  ~NetworkConnectTestDelegate() override = default;
 
   void ShowNetworkConfigure(const std::string& network_id) override {}
   void ShowNetworkSettings(const std::string& network_id) override {}
@@ -68,13 +69,13 @@ class NetworkConnectTestDelegate : public ash::NetworkConnect::Delegate {
 
 class MobileDataNotificationsTest : public testing::Test {
  public:
-  MobileDataNotificationsTest() {}
+  MobileDataNotificationsTest() = default;
 
   MobileDataNotificationsTest(const MobileDataNotificationsTest&) = delete;
   MobileDataNotificationsTest& operator=(const MobileDataNotificationsTest&) =
       delete;
 
-  ~MobileDataNotificationsTest() override {}
+  ~MobileDataNotificationsTest() override = default;
 
   void SetUp() override {
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);

@@ -239,12 +239,12 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
         application_settings_ = {};
         break;
       case ConnectJobFactory::AlpnMode::kHttp11Only:
-        alpn_protos_ = {kProtoHTTP11};
+        alpn_protos_ = {NextProto::kProtoHTTP11};
         application_settings_ = {};
         break;
       case ConnectJobFactory::AlpnMode::kHttpAll:
-        alpn_protos_ = {kProtoHTTP2, kProtoHTTP11};
-        application_settings_ = {{kProtoHTTP2, {}}};
+        alpn_protos_ = {NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+        application_settings_ = {{NextProto::kProtoHTTP2, {}}};
         break;
     }
   }
@@ -279,16 +279,20 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
         endpoint_ssl_config.renego_allowed_for_protos = {};
         break;
       case ConnectJobFactory::AlpnMode::kHttp11Only:
-        endpoint_ssl_config.alpn_protos = {kProtoHTTP11};
+        endpoint_ssl_config.alpn_protos = {NextProto::kProtoHTTP11};
         endpoint_ssl_config.application_settings = {};
         endpoint_ssl_config.renego_allowed_default = true;
-        endpoint_ssl_config.renego_allowed_for_protos = {kProtoHTTP11};
+        endpoint_ssl_config.renego_allowed_for_protos = {
+            NextProto::kProtoHTTP11};
         break;
       case ConnectJobFactory::AlpnMode::kHttpAll:
-        endpoint_ssl_config.alpn_protos = {kProtoHTTP2, kProtoHTTP11};
-        endpoint_ssl_config.application_settings = {{kProtoHTTP2, {}}};
+        endpoint_ssl_config.alpn_protos = {NextProto::kProtoHTTP2,
+                                           NextProto::kProtoHTTP11};
+        endpoint_ssl_config.application_settings = {
+            {NextProto::kProtoHTTP2, {}}};
         endpoint_ssl_config.renego_allowed_default = true;
-        endpoint_ssl_config.renego_allowed_for_protos = {kProtoHTTP11};
+        endpoint_ssl_config.renego_allowed_for_protos = {
+            NextProto::kProtoHTTP11};
         break;
     }
     return endpoint_ssl_config;
@@ -308,12 +312,13 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
         proxy_ssl_config.application_settings = {};
         break;
       case ConnectJobFactory::AlpnMode::kHttp11Only:
-        proxy_ssl_config.alpn_protos = {kProtoHTTP11};
+        proxy_ssl_config.alpn_protos = {NextProto::kProtoHTTP11};
         proxy_ssl_config.application_settings = {};
         break;
       case ConnectJobFactory::AlpnMode::kHttpAll:
-        proxy_ssl_config.alpn_protos = {kProtoHTTP2, kProtoHTTP11};
-        proxy_ssl_config.application_settings = {{kProtoHTTP2, {}}};
+        proxy_ssl_config.alpn_protos = {NextProto::kProtoHTTP2,
+                                        NextProto::kProtoHTTP11};
+        proxy_ssl_config.application_settings = {{NextProto::kProtoHTTP2, {}}};
         break;
     }
     return proxy_ssl_config;

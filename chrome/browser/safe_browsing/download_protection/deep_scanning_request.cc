@@ -22,9 +22,6 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -53,6 +50,12 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
 
@@ -334,10 +337,8 @@ bool HasDecryptionFailedResult(
 bool EnterpriseResultIsFailure(BinaryUploadService::Result result,
                                bool block_large_files,
                                bool block_password_protected_files) {
-  return enterprise_connectors::IsResumableUploadEnabled()
-             ? enterprise_connectors::CloudResumableResultIsFailure(
-                   result, block_large_files, block_password_protected_files)
-             : enterprise_connectors::CloudMultipartResultIsFailure(result);
+  return enterprise_connectors::CloudResumableResultIsFailure(
+      result, block_large_files, block_password_protected_files);
 }
 
 void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
@@ -358,6 +359,7 @@ void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
 /* static */
 std::optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Files already on the disk shouldn't be uploaded for scanning.
   if (item->GetURL().SchemeIsFile()) {
     return std::nullopt;
@@ -380,6 +382,9 @@ DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
   return service->GetAnalysisSettings(
       item->GetURL(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 DeepScanningRequest::DeepScanningRequest(
@@ -430,7 +435,9 @@ DeepScanningRequest::DeepScanningRequest(
 }
 
 DeepScanningRequest::~DeepScanningRequest() {
-  item_->RemoveObserver(this);
+  if (item_) {
+    item_->RemoveObserver(this);
+  }
 }
 
 void DeepScanningRequest::AddObserver(Observer* observer) {
@@ -711,9 +718,6 @@ void DeepScanningRequest::OnConsumerScanComplete(
     PromptForPassword(item_);
     download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
     LogDeepScanEvent(item_, DeepScanEvent::kIncorrectPassword);
-    base::UmaHistogramBoolean(
-        "SBClientDownload.DeepScan.IncorrectPasswordVerdictIsLocal",
-        result == BinaryUploadService::Result::FILE_ENCRYPTED);
   } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
@@ -906,6 +910,7 @@ void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
   item_->RemoveObserver(this);
+  item_ = nullptr;
   download_service_->RequestFinished(this);
 }
 

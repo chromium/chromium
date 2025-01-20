@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
@@ -203,6 +202,31 @@ bool PermissionsClient::HasDevicePermission(ContentSettingsType type) const {
 }
 
 bool PermissionsClient::CanRequestDevicePermission(
+    ContentSettingsType type) const {
+  return false;
+}
+
+bool PermissionsClient::IsPermissionAllowedByDevicePolicy(
+    content::WebContents* web_contents,
+    ContentSetting setting,
+    const content_settings::SettingInfo& info,
+    ContentSettingsType type) const {
+  return false;
+}
+
+bool PermissionsClient::IsPermissionBlockedByDevicePolicy(
+    content::WebContents* web_contents,
+    ContentSetting setting,
+    const content_settings::SettingInfo& info,
+    ContentSettingsType type) const {
+  return false;
+}
+
+bool PermissionsClient::IsSystemDenied(ContentSettingsType type) const {
+  return false;
+}
+
+bool PermissionsClient::CanPromptSystemPermission(
     ContentSettingsType type) const {
   return false;
 }

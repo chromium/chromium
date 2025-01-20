@@ -2,7 +2,7 @@ Name: R8
 URL: https://r8.googlesource.com/r8
 Version: N/A
 Revision: DEPS
-License: BSD 3-Clause
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no
 Shipped: no

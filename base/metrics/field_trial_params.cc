@@ -35,6 +35,37 @@ bool IsFeatureParamWithCacheEnabled() {
 
 }  // namespace internal
 
+template <>
+bool FeatureParam<bool>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
+}
+
+template <>
+int FeatureParam<int>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
+}
+
+template <>
+size_t FeatureParam<size_t>::GetWithoutCache() const {
+  return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
+      *feature, name, checked_cast<int>(default_value)));
+}
+
+template <>
+double FeatureParam<double>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
+}
+
+template <>
+std::string FeatureParam<std::string>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
+}
+
+template <>
+base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
+}
+
 void LogInvalidValue(const Feature& feature,
                      const char* type,
                      const std::string& param_name,
@@ -64,6 +95,14 @@ std::string UnescapeValue(const std::string& value) {
   return UnescapeURLComponent(
       value, UnescapeRule::PATH_SEPARATORS |
                  UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+}
+
+void LogInvalidEnumValue(const Feature& feature,
+                         const std::string& param_name,
+                         const std::string& value_as_string,
+                         int default_value_as_int) {
+  LogInvalidValue(feature, "an enum", param_name, value_as_string,
+                  base::NumberToString(default_value_as_int));
 }
 
 bool AssociateFieldTrialParams(const std::string& trial_name,
@@ -253,45 +292,6 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   }
 
   return ret.value();
-}
-
-template <>
-bool FeatureParam<bool>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
-}
-
-template <>
-int FeatureParam<int>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
-}
-
-template <>
-size_t FeatureParam<size_t>::GetWithoutCache() const {
-  return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
-      *feature, name, checked_cast<int>(default_value)));
-}
-
-template <>
-double FeatureParam<double>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
-}
-
-template <>
-std::string FeatureParam<std::string>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
-}
-
-template <>
-base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
-}
-
-void LogInvalidEnumValue(const Feature& feature,
-                         const std::string& param_name,
-                         const std::string& value_as_string,
-                         int default_value_as_int) {
-  LogInvalidValue(feature, "an enum", param_name, value_as_string,
-                  base::NumberToString(default_value_as_int));
 }
 
 }  // namespace base

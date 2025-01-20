@@ -702,7 +702,8 @@ bool ComputeOofInlineDimensions(
     const Length& auto_length = ([&]() {
       // Tables always shrink-to-fit unless explicitly asked to stretch.
       if (node.IsTable()) {
-        return is_explicit_stretch ? Length::Stretch() : Length::FitContent();
+        return is_explicit_stretch ? Length::FillAvailable()
+                                   : Length::FitContent();
       }
       // We'd like to apply the aspect-ratio.
       // The aspect-ratio applies from the block-axis if we can compute our
@@ -720,7 +721,7 @@ bool ComputeOofInlineDimensions(
         }
         return Length::FitContent();
       }
-      return is_stretch ? Length::Stretch() : Length::FitContent();
+      return is_stretch ? Length::FillAvailable() : Length::FitContent();
     })();
 
     const LayoutUnit main_inline_size = ResolveMainInlineLength(
@@ -804,10 +805,10 @@ const LayoutResult* ComputeOofBlockDimensions(
     // Nothing depends on our intrinsic-size, so we can safely use the initial
     // variant of these functions.
     const LayoutUnit main_block_size = ResolveMainBlockLength(
-        space, style, border_padding, style.LogicalHeight(), &Length::Stretch(),
-        kIndefiniteSize, imcb.BlockSize());
-    const MinMaxSizes min_max_block_sizes =
-        ComputeInitialMinMaxBlockSizes(space, node, border_padding);
+        space, style, border_padding, style.LogicalHeight(),
+        &Length::FillAvailable(), kIndefiniteSize, imcb.BlockSize());
+    const MinMaxSizes min_max_block_sizes = ComputeInitialMinMaxBlockSizes(
+        space, node, border_padding, imcb.BlockSize());
     block_size = min_max_block_sizes.ClampSizeToMinAndMax(main_block_size);
   } else {
     DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);

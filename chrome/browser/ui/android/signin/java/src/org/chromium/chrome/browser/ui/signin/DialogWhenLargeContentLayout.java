@@ -66,7 +66,7 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
 
     private DialogWhenLargeContentLayout(Context context) {
         super(context);
-        fetchConstraints();
+        updateConstraints();
     }
 
     /**
@@ -82,7 +82,7 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
         }
     }
 
-    private void fetchConstraints() {
+    private void updateConstraints() {
         // Fetch size constraints. These are copies of corresponding abc_* AppCompat values,
         // because abc_* values are private, and even though corresponding theme attributes
         // are public in AppCompat (e.g. windowFixedWidthMinor), there is no guarantee that
@@ -149,5 +149,12 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateConstraints();
+        setClipToOutline(shouldShowAsDialog(getContext()));
     }
 }

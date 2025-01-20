@@ -15,6 +15,9 @@ enum MantisError {
   [MinVersion=1] kInputError,
   [MinVersion=1] kProcessFailed,
   [MinVersion=2] kMissingSegmenter,
+  [MinVersion=3] kInputSafetyError,
+  [MinVersion=3] kOutputSafetyError,
+  [MinVersion=3] kPromptSafetyError,
 };
 
 // The result of image after processed by Mantis, or an error if any.
@@ -29,6 +32,8 @@ union MantisResult {
 enum SafetyClassifierVerdict {
   kPass,
   [Default] kFail,
+  [MinVersion=3] kFailedText,
+  [MinVersion=3] kFailedImage,
 };
 
 // Interface for processing images. The processor should already be initialized

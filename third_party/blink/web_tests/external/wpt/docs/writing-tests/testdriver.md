@@ -13,8 +13,12 @@ written purely using web platform APIs. Outside of automation
 contexts, it allows human operators to provide expected input
 manually (for operations which may be described in simple terms).
 
-It is currently supported only for [testharness.js](testharness)
-tests.
+testdriver.js supports the following test types:
+* [testharness.js](testharness) tests
+* [reftests](reftests) and [print-reftests](print-reftests) that use the
+  `class=reftest-wait` attribute on the root element to control completion
+* [crashtests](crashtest) that use the `class=test-wait` attribute to control
+  completion
 
 ## Markup ##
 
@@ -26,6 +30,49 @@ document when using testdriver from a different context):
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 ```
+
+## WebDriver BiDi ##
+
+The api in `test_driver.bidi` provides access to the
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi) protocol.
+
+### Markup ###
+
+To use WebDriver BiDi, enable the `bidi` feature in `testdriver.js` by adding the
+`feature=bidi` query string parameter. Details are in [RFC 214: Add testdriver features](https://github.com/web-platform-tests/rfcs/blob/master/rfcs/testdriver-features.md).
+```html
+<script src="/resources/testdriver.js?feature=bidi"></script>
+```
+
+```javascript
+// META: script=/resources/testdriver.js?feature=bidi
+```
+
+[Example](https://github.com/web-platform-tests/wpt/blob/aae46926b1fdccd460e1c6eaaf01ca20b941fbce/infrastructure/webdriver/bidi/subscription.html#L6).
+
+### Context ###
+
+A WebDriver BiDi "browsing context" is equivalent to an
+[HTML navigable](https://html.spec.whatwg.org/multipage/document-sequences.html#navigable).
+In WebDriver BiDi, you can interact with any browsing context, regardless of whether
+it's currently active. You can target a specific browsing context using either its
+unique string ID or its `WindowProxy` object.
+
+```eval_rst
+:Context: (*String|WindowProxy*)  A browsing context. Can be specified by its ID
+          (a string) or using a `WindowProxy` object.
+```
+
+### Events ###
+
+To receive WebDriver BiDi [events](https://w3c.github.io/webdriver-bidi/#events), you
+need to subscribe to them. Events are only emitted for browsing contexts with an
+active subscription. You can also create a global subscription to receive events from
+all the contexts.
+
+If there are
+[buffered events](https://w3c.github.io/webdriver-bidi/#log-event-buffer), they will
+be emitted before the `subcsribe` command's promise is resolved.
 
 ## API ##
 
@@ -57,6 +104,7 @@ the global scope.
 ### Permissions ###
 ```eval_rst
 .. js:autofunction:: test_driver.set_permission
+.. js:autofunction:: test_driver.bidi.permissions.set_permission
 ```
 
 ### Authentication ###
@@ -222,3 +270,37 @@ Note that if an action uses an element reference, the context will be
 derived from that element, and must match any explicitly set
 context. Using elements in multiple contexts in a single action chain
 is not supported.
+
+### Log
+
+This module corresponds to the WebDriver BiDi
+[Log](https://w3c.github.io/webdriver-bidi/#module-log) module and provides access to
+browser logs.
+
+#### Entry added
+
+This provides methods to subscribe to and listen for the
+[`log.entryAdded`](https://w3c.github.io/webdriver-bidi/#event-log-entryAdded) event.
+
+**Example:**
+
+```javascript
+await test_driver.bidi.log.entry_added.subscribe();
+const log_entry_promise = test_driver.bidi.log.entry_added.once();
+console.log("some message");
+const event = await log_entry_promise;
+```
+
+```eval_rst
+.. js:autofunction:: test_driver.bidi.log.entry_added.subscribe
+.. js:autofunction:: test_driver.bidi.log.entry_added.on
+.. js:autofunction:: test_driver.bidi.log.entry_added.once
+```
+
+### Bluetooth ###
+
+The module provides access to [Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth).
+
+```eval_rst
+.. js:autofunction:: test_driver.bidi.bluetooth.simulate_adapter
+```

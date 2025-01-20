@@ -6,7 +6,6 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -25,8 +24,8 @@
 // static
 CredentialProviderService* CredentialProviderServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<CredentialProviderService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<CredentialProviderService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -37,9 +36,7 @@ CredentialProviderServiceFactory::GetInstance() {
 }
 
 CredentialProviderServiceFactory::CredentialProviderServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "CredentialProviderService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("CredentialProviderService") {
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());

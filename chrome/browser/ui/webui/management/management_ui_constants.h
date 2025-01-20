@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_CONSTANTS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Constants defining the IDs for the localized strings sent to the page as

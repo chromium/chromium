@@ -339,7 +339,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return new CookieControlsBridge(
                 observer,
                 mWebContents,
-                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null);
+                mProfile.isOffTheRecord() ? mProfile.getOriginalProfile() : null,
+                mProfile.isIncognitoBranded());
     }
 
     /** {@inheritDoc} */
@@ -358,22 +359,23 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
-        new FaviconHelper()
-                .getLocalFaviconImageForURL(
-                        mProfile,
-                        url,
-                        size,
-                        (image, iconUrl) -> {
-                            if (image != null) {
-                                callback.onResult(new BitmapDrawable(resources, image));
-                            } else if (UrlUtilities.isInternalScheme(url)) {
-                                callback.onResult(
-                                        TintedDrawable.constructTintedDrawable(
-                                                mContext, R.drawable.chromelogo16));
-                            } else {
-                                callback.onResult(null);
-                            }
-                        });
+        FaviconHelper faviconHelper = new FaviconHelper();
+        faviconHelper.getLocalFaviconImageForURL(
+                mProfile,
+                url,
+                size,
+                (image, iconUrl) -> {
+                    if (image != null) {
+                        callback.onResult(new BitmapDrawable(resources, image));
+                    } else if (UrlUtilities.isInternalScheme(url)) {
+                        callback.onResult(
+                                TintedDrawable.constructTintedDrawable(
+                                        mContext, R.drawable.chromelogo16));
+                    } else {
+                        callback.onResult(null);
+                    }
+                    faviconHelper.destroy();
+                });
     }
 
     @Override
@@ -397,11 +399,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public boolean showTrackingProtectionUi() {
         return getSiteSettingsDelegate().shouldShowTrackingProtectionUi();
-    }
-
-    @Override
-    public boolean shouldShowTrackingProtectionBrandedUi() {
-        return getSiteSettingsDelegate().shouldShowTrackingProtectionBrandedUi();
     }
 
     @Override

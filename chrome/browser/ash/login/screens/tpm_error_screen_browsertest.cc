@@ -27,7 +27,7 @@ const test::UIPath kRestartButtonPath = {kTpmErrorId, "restartButton"};
 
 class TpmErrorScreenTest : public OobeBaseTest {
  public:
-  TpmErrorScreenTest() {}
+  TpmErrorScreenTest() = default;
 
   void ShowTpmErrorScreen() {
     WizardController::default_controller()->AdvanceToScreen(

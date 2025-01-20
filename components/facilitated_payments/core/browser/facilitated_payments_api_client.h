@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 struct CoreAccountInfo;
 
@@ -35,19 +36,6 @@ namespace payments::facilitated {
 //                                        weak_ptr_factory_.GetWeakPtr()));
 class FacilitatedPaymentsApiClient {
  public:
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.facilitated_payments
-  // The result of invoking the purchase manager with an action token.
-  enum class PurchaseActionResult : int {
-    // Could not invoke the purchase manager.
-    kCouldNotInvoke,
-
-    // The purchase manager was invoked successfully.
-    kResultOk,
-
-    // The user cancelled out of the purchase manager flow.
-    kResultCanceled,
-  };
-
   virtual ~FacilitatedPaymentsApiClient() = default;
 
   // Checks whether the facilitated payment API is available and invokes the

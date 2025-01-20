@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] Ensure XRSession throws appropriate errors when updating render state without layers feature enabled - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensure XRSession throws appropriate errors when updating render state without layers feature enabled - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensure XRSession throws appropriate errors when updating render state with layers feature enabled - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensure XRSession throws appropriate errors when updating render state with layers feature enabled - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

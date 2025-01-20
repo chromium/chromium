@@ -90,8 +90,9 @@ void ManageMigrationUiController::UpdateCreditCardIcon(
       break;
     }
   }
-  if (has_server_error)
+  if (has_server_error) {
     flow_step_ = LocalCardMigrationFlowStep::MIGRATION_FAILED;
+  }
 
   // Show error dialog when |has_server_error| is true, which indicates
   // Payments Rpc failure.

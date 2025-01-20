@@ -20,7 +20,7 @@ class WebContents;
 namespace webapps {
 enum class WebappInstallSource;
 enum class InstallResultCode;
-}
+}  // namespace webapps
 
 namespace web_app {
 

@@ -5,6 +5,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 // <if expr="_google_chrome">
 import '/nearby/nearby-share-internal-icons.m.js';
@@ -16,11 +17,9 @@ import '../nearby_share_page/nearby_share_subpage.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './multidevice_feature_toggle.js';
 import './multidevice_notification_access_setup_dialog.js';
 import './multidevice_permissions_setup_dialog.js';
-import './multidevice_subpage.js';
 import './multidevice_forget_device_dialog.js';
 
 import {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
@@ -29,11 +28,12 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import type {InSessionAuthInterface, RequestTokenReply} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
+import {InSessionAuth, Reason} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive, assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -100,8 +100,18 @@ export class SettingsMultidevicePageElement extends
 
       /**
        * Authentication token provided by password-prompt-dialog.
+       * This is only used if `isAuthPanelInSessionEnabled_` is set to false.
        */
       authToken_: {
+        type: Object,
+      },
+
+      /**
+       * The variable that stores the authentication token we receive
+       * from AuthPanel or ActiveSessionAuth.
+       * This is only used if `isAuthPanelInSessionEnabled_` is set to true.
+       */
+      authTokenReply_: {
         type: Object,
       },
 
@@ -117,6 +127,10 @@ export class SettingsMultidevicePageElement extends
         value: null,
       },
 
+      /**
+       * Triggers dialog UI that is only used if `isAuthPanelInSessionEnabled_`
+       * is set to false.
+       */
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
@@ -193,13 +207,6 @@ export class SettingsMultidevicePageElement extends
         },
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       isNameEnabled_: {
         type: Boolean,
         value: () => {
@@ -212,15 +219,28 @@ export class SettingsMultidevicePageElement extends
         value: false,
       },
 
-      isQuickShareV2Enabled_: {
+      /**
+       * True if auth panel will be used for authentication instead of
+       * password prompt dialog.
+       */
+      isAuthPanelInSessionEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+        value() {
+          return loadTimeData.getBoolean('isAuthPanelEnabled');
+        },
+        readOnly: true,
+      },
+
+      fakeInSessionAuthForTesting_: {
+        type: Object,
+        value: null,
       },
     };
   }
 
   isSettingsRetreived: boolean;
   private authToken_: TokenInfo|undefined;
+  private authTokenReply_: RequestTokenReply|undefined|null;
   private browserProxy_: MultiDeviceBrowserProxy;
   private featureToBeEnabledOnceAuthenticated_: MultiDeviceFeature|null;
   private isChromeosScreenLockEnabled_: boolean;
@@ -228,13 +248,14 @@ export class SettingsMultidevicePageElement extends
   private isPasswordDialogShowing_: boolean;
   private isPhoneScreenLockEnabled_: boolean;
   private isPinNumberDialogShowing_: boolean;
-  private isQuickShareV2Enabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private section_: Section;
   private shouldEnableNearbyShareBackgroundScanningRevamp_: boolean;
   private showPasswordPromptDialog_: boolean;
   private shouldShowForgetDeviceDialog_: boolean;
   private showPhonePermissionSetupDialog_: boolean;
+  private isAuthPanelInSessionEnabled_: boolean;
+  private fakeInSessionAuthForTesting_: InSessionAuthInterface;
+
 
   constructor() {
     super();
@@ -297,15 +318,6 @@ export class SettingsMultidevicePageElement extends
     this.attemptDeepLink();
   }
 
-  private getLabelText_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('multideviceSetupItemHeading');
-    }
-
-    return this.pageContentData.hostDeviceName ||
-        this.i18n('multideviceSetupItemHeading');
-  }
-
   private getSubLabelInnerHtml_(): TrustedHTML|string {
     if (!this.isSuiteAllowedByPolicy()) {
       return this.i18nAdvanced('multideviceSetupSummary');
@@ -321,12 +333,8 @@ export class SettingsMultidevicePageElement extends
       case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
         return this.i18nAdvanced('multideviceVerificationText');
       case MultiDeviceSettingsMode.HOST_SET_VERIFIED:
-        if (this.isRevampWayfindingEnabled_) {
-          assertExists(this.pageContentData.hostDeviceName);
-          return this.pageContentData.hostDeviceName;
-        }
-        return this.isSuiteOn() ? this.i18n('multideviceEnabled') :
-                                  this.i18n('multideviceDisabled');
+        assertExists(this.pageContentData.hostDeviceName);
+        return this.pageContentData.hostDeviceName;
       default:
         assertNotReached();
     }
@@ -423,8 +431,32 @@ export class SettingsMultidevicePageElement extends
     }
   }
 
-  private openPasswordPromptDialog_(): void {
-    this.showPasswordPromptDialog_ = true;
+  /**
+   * Triggers the flow for getting a fresh auth token required to enable
+   * security-sensitive features. The password prompt dialog is opened when
+   * isAuthPanelInSessionEnabled is false. If isAuthPanelInSessionEnabled is
+   * true, the standardized InSessionAuth web UI is evoked.
+   */
+  private async requestUserAuth_(): Promise<void> {
+    if (!this.isAuthPanelInSessionEnabled_) {
+      this.showPasswordPromptDialog_ = true;
+      return;
+    }
+
+    const inSessionAuth =
+        this.fakeInSessionAuthForTesting_ ?? InSessionAuth.getRemote();
+    const tokenInfo: {reply: RequestTokenReply|null} =
+        await inSessionAuth.requestToken(
+            Reason.kAccessAuthenticationSettings,
+            loadTimeData.getString('authPrompt'));
+
+    if (!tokenInfo.reply) {
+      Router.getInstance().navigateToPreviousRoute();
+      return;
+    }
+
+    this.authTokenReply_ = tokenInfo.reply;
+    this.enableFeatureOnceAuthenticated(this.authTokenReply_?.token);
   }
 
   private onDialogClose_(event: Event): void {
@@ -432,28 +464,28 @@ export class SettingsMultidevicePageElement extends
     if (event.composedPath().some(
             element =>
                 (element as HTMLElement).id === 'multidevicePasswordPrompt')) {
-      this.onPasswordPromptDialogClose_();
+      this.enableFeatureOnceAuthenticated(this.authToken_?.token);
     }
   }
 
-  private onPasswordPromptDialogClose_(): void {
+  private enableFeatureOnceAuthenticated(token: string|undefined): void {
     // The password prompt should only be shown when there is a feature waiting
     // to be enabled.
     assert(this.featureToBeEnabledOnceAuthenticated_ !== null);
 
-    // If |this.authToken_| is set when the dialog has been closed, this means
+    // If token is set, this means
     // that the user entered the correct password into the dialog. Thus, send
     // all pending features to be enabled.
-    if (this.authToken_) {
+    if (token) {
       this.browserProxy_.setFeatureEnabledState(
-          this.featureToBeEnabledOnceAuthenticated_, true /* enabled */,
-          this.authToken_.token);
+          this.featureToBeEnabledOnceAuthenticated_, true /* enabled */, token);
       recordSettingChange(Setting.kMultiDeviceOnOff);
 
-      // Reset |this.authToken_| now that it has been used. This ensures that
-      // users cannot keep an old auth token and reuse it on an subsequent
-      // request.
+      // Reset |this.authToken_| and |this.authTokenReply_| now that it has been
+      // used. This ensures that users cannot keep an old auth token and reuse
+      // it on a subsequent request.
       this.authToken_ = undefined;
+      this.authTokenReply_ = undefined;
     }
 
     // Either the feature was enabled above or the user canceled the request by
@@ -476,12 +508,12 @@ export class SettingsMultidevicePageElement extends
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 
-    // If the feature required authentication to be enabled, open the password
-    // prompt dialog. This is required every time the user enables a security-
+    // If the feature required authentication to be enabled, request user
+    // authentication. This is required every time the user enables a security-
     // sensitive feature (i.e., use of stale auth tokens is not acceptable).
     if (enabled && this.isAuthenticationRequiredToEnable_(feature)) {
       this.featureToBeEnabledOnceAuthenticated_ = feature;
-      this.openPasswordPromptDialog_();
+      this.requestUserAuth_();
       return;
     }
 
@@ -628,8 +660,7 @@ export class SettingsMultidevicePageElement extends
   }
 
   private showNearbyShareToggle_(isOnboardingComplete: boolean): boolean {
-    return !this.isQuickShareV2Enabled_ &&
-        (isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_());
+    return isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_();
   }
 
   private showNearbyShareSetupButton_(isOnboardingComplete: boolean): boolean {
@@ -637,8 +668,7 @@ export class SettingsMultidevicePageElement extends
   }
 
   private showNearbyShareOnOffString_(isOnboardingComplete: boolean): boolean {
-    return !this.isQuickShareV2Enabled_ &&
-        (isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_());
+    return isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_();
   }
 
   private showNearbyShareSetUpDescription_(isOnboardingComplete: boolean):
@@ -774,12 +804,8 @@ export class SettingsMultidevicePageElement extends
   }
 
   private getMultideviceSubpageTitle_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      const deviceName = this.pageContentData.hostDeviceName || '';
-      return this.i18n('multideviceSubpageTitle', deviceName);
-    }
-    return this.pageContentData.hostDeviceName ||
-        this.i18n('multideviceSetupItemHeading');
+    const deviceName = this.pageContentData.hostDeviceName || '';
+    return this.i18n('multideviceSubpageTitle', deviceName);
   }
 
   private showForgetDeviceDialog_(): void {

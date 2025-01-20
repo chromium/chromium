@@ -40,8 +40,8 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNoMethod) {
   ASSERT_TRUE(algo);
   auto promise = algo->Run(scope.GetScriptState(), 0, nullptr);
   ASSERT_FALSE(promise.IsEmpty());
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(promise->Result()->IsUndefined());
+  ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
@@ -58,8 +58,8 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
   ASSERT_TRUE(algo);
   auto promise = algo->Run(scope.GetScriptState(), 0, nullptr);
   ASSERT_FALSE(promise.IsEmpty());
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(promise->Result()->IsUndefined());
+  ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_TRUE(promise.V8Promise()->Result()->IsUndefined());
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
@@ -70,8 +70,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "pull"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -86,8 +85,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmThrowingGetter) {
       &scope, "({ get pull() { throw new TypeError(); } })");
   ASSERT_TRUE(underlying_value.IsObject());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -109,8 +107,8 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
       scope->GetScriptState(), underlying_object, "start",
       "underlyingSource.start", extra_arg, ASSERT_NO_EXCEPTION);
   auto promise = algo->Run(scope->GetScriptState(), argc, argv);
-  EXPECT_EQ(promise->State(), v8::Promise::kFulfilled);
-  return promise->Result();
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+  return promise.V8Promise()->Result();
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmReturnsInteger) {
@@ -279,8 +277,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1NullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "transform"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   auto maybe_result =
       CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
                   "transformer.transform", arg0, exception_state);
@@ -330,11 +327,11 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1ThrowingMethod) {
   EXPECT_TRUE(try_catch.Exception()->IsBoolean());
 }
 
-v8::Local<v8::Promise> PromiseCallFromText(V8TestingScope* scope,
-                                           const char* function_definition,
-                                           const char* object_definition,
-                                           int argc,
-                                           v8::Local<v8::Value> argv[]) {
+ScriptPromise<IDLUndefined> PromiseCallFromText(V8TestingScope* scope,
+                                                const char* function_definition,
+                                                const char* object_definition,
+                                                int argc,
+                                                v8::Local<v8::Value> argv[]) {
   ScriptValue function_value =
       EvalWithPrintingError(scope, function_definition);
   EXPECT_TRUE(function_value.IsFunction());
@@ -348,31 +345,31 @@ v8::Local<v8::Promise> PromiseCallFromText(V8TestingScope* scope,
 TEST(MiscellaneousOperationsTest, PromiseCalledWithObject) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  v8::Local<v8::Promise> promise =
+  ScriptPromise<IDLUndefined> promise =
       PromiseCallFromText(&scope, "(function() { return this.value === 15; })",
                           "({ value: 15 })", 0, nullptr);
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  ASSERT_TRUE(promise->Result()->IsBoolean());
-  EXPECT_TRUE(promise->Result().As<v8::Boolean>()->Value());
+  ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+  ASSERT_TRUE(promise.V8Promise()->Result()->IsBoolean());
+  EXPECT_TRUE(promise.V8Promise()->Result().As<v8::Boolean>()->Value());
 }
 
 TEST(MiscellaneousOperationsTest, PromiseCallThrowing) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  v8::Local<v8::Promise> promise = PromiseCallFromText(
+  ScriptPromise<IDLUndefined> promise = PromiseCallFromText(
       &scope, "(function() { throw new TypeError(); })", "({})", 0, nullptr);
-  ASSERT_EQ(promise->State(), v8::Promise::kRejected);
-  EXPECT_TRUE(promise->Result()->IsNativeError());
+  ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+  EXPECT_TRUE(promise.V8Promise()->Result()->IsNativeError());
 }
 
 TEST(MiscellaneousOperationsTest, PromiseCallRejecting) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  v8::Local<v8::Promise> promise = PromiseCallFromText(
+  ScriptPromise<IDLUndefined> promise = PromiseCallFromText(
       &scope, "(function() { return Promise.reject(16) })", "({})", 0, nullptr);
-  ASSERT_EQ(promise->State(), v8::Promise::kRejected);
-  ASSERT_TRUE(promise->Result()->IsNumber());
-  EXPECT_EQ(promise->Result().As<v8::Number>()->Value(), 16);
+  ASSERT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+  ASSERT_TRUE(promise.V8Promise()->Result()->IsNumber());
+  EXPECT_EQ(promise.V8Promise()->Result().As<v8::Number>()->Value(), 16);
 }
 
 TEST(MiscellaneousOperationsTest, ValidatePositiveHighWaterMark) {
@@ -391,8 +388,7 @@ TEST(MiscellaneousOperationsTest, ValidateInfiniteHighWaterMark) {
 TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   ValidateAndNormalizeHighWaterMark(-1, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 }
@@ -400,8 +396,7 @@ TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
 TEST(MiscellaneousOperationsTest, NaNHighWaterMarkInvalid) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   ValidateAndNormalizeHighWaterMark(std::numeric_limits<double>::quiet_NaN(),
                                     exception_state);
   EXPECT_TRUE(exception_state.HadException());
@@ -423,8 +418,7 @@ TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
 TEST(MiscellaneousOperationsTest, NullSizeFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  DummyExceptionStateForTesting exception_state;
   EXPECT_EQ(MakeSizeAlgorithmFromSizeFunction(scope.GetScriptState(),
                                               v8::Null(scope.GetIsolate()),
 
@@ -492,45 +486,6 @@ TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
       algo->Run(scope.GetScriptState(), unconvertible_value.V8Value());
 
   ASSERT_FALSE(optional.has_value());
-}
-
-TEST(MiscellaneousOperationsTest, PromiseResolve) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseResolve(scope.GetScriptState(),
-                                v8::Number::New(scope.GetIsolate(), 19));
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  ASSERT_TRUE(promise->Result()->IsNumber());
-  EXPECT_EQ(promise->Result().As<v8::Number>()->Value(), 19);
-}
-
-TEST(MiscellaneousOperationsTest, PromiseResolveWithPromise) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto original_promise = v8::Promise::Resolver::New(scope.GetContext())
-                              .ToLocalChecked()
-                              ->GetPromise();
-  auto resolved_promise =
-      PromiseResolve(scope.GetScriptState(), original_promise);
-  EXPECT_EQ(original_promise, resolved_promise);
-}
-
-TEST(MiscellaneousOperationsTest, PromiseResolveWithUndefined) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseResolveWithUndefined(scope.GetScriptState());
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(promise->Result()->IsUndefined());
-}
-
-TEST(MiscellaneousOperationsTest, PromiseReject) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseReject(scope.GetScriptState(),
-                               v8::Number::New(scope.GetIsolate(), 43));
-  ASSERT_EQ(promise->State(), v8::Promise::kRejected);
-  ASSERT_TRUE(promise->Result()->IsNumber());
-  EXPECT_EQ(promise->Result().As<v8::Number>()->Value(), 43);
 }
 
 }  // namespace

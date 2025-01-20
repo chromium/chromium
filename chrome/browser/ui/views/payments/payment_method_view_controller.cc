@@ -66,7 +66,7 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
   PaymentMethodListItem(const PaymentMethodListItem&) = delete;
   PaymentMethodListItem& operator=(const PaymentMethodListItem&) = delete;
 
-  ~PaymentMethodListItem() override {}
+  ~PaymentMethodListItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -84,8 +84,9 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
       std::u16string* accessible_content) override {
     DCHECK(accessible_content);
     auto card_info_container = std::make_unique<views::View>();
-    if (!app_)
+    if (!app_) {
       return card_info_container;
+    }
 
     card_info_container->SetCanProcessEventsWithinSubtree(false);
 
@@ -97,11 +98,13 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
     card_info_container->SetLayoutManager(std::move(box_layout));
 
     std::u16string label_str = app_->GetLabel();
-    if (!label_str.empty())
+    if (!label_str.empty()) {
       card_info_container->AddChildView(new views::Label(label_str));
+    }
     std::u16string sublabel = app_->GetSublabel();
-    if (!sublabel.empty())
+    if (!sublabel.empty()) {
       card_info_container->AddChildView(new views::Label(sublabel));
+    }
     std::u16string missing_info;
     if (!app_->IsCompleteForPayment()) {
       missing_info = app_->GetMissingInfoLabel();
@@ -165,7 +168,7 @@ PaymentMethodViewController::PaymentMethodViewController(
   }
 }
 
-PaymentMethodViewController::~PaymentMethodViewController() {}
+PaymentMethodViewController::~PaymentMethodViewController() = default;
 
 std::u16string PaymentMethodViewController::GetSheetTitle() {
   return l10n_util::GetStringUTF16(

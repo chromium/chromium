@@ -24,8 +24,7 @@ class FederatedClientManagerTest : public NoSessionAshTestBase {
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFederatedService,
-                              features::kFederatedStringsService},
+        /*enabled_features=*/{features::kFederatedStringsService},
         /*disabled_features=*/{});
   }
 
@@ -77,8 +76,7 @@ class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
   FederatedClientManagerFakeAshInteractionTest()
       : scoped_fake_for_test_(&fake_service_connection_) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFederatedService,
-                              features::kFederatedStringsService},
+        /*enabled_features=*/{features::kFederatedStringsService},
         /*disabled_features=*/{});
   }
   FederatedClientManagerFakeAshInteractionTest(

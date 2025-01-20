@@ -29,8 +29,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/union_unittest.test-mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/test_unions.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_unions.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

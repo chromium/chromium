@@ -135,31 +135,6 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   format_context_->format_whitelist = av_strdup(GetAllowedDemuxers());
 }
 
-// static
-const char* FFmpegGlue::GetAllowedAudioDecoders() {
-  static const base::NoDestructor<std::string> kAllowedAudioCodecs([]() {
-    // This should match the configured lists in //third_party/ffmpeg.
-    std::string allowed_decoders(
-        "vorbis,libopus,flac,pcm_u8,pcm_s16le,pcm_s24le,pcm_s32le,pcm_f32le,"
-        "mp3,pcm_s16be,pcm_s24be,pcm_mulaw,pcm_alaw");
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    allowed_decoders += ",aac";
-#endif
-    return allowed_decoders;
-  }());
-  return kAllowedAudioCodecs->c_str();
-}
-
-// static
-const char* FFmpegGlue::GetAllowedVideoDecoders() {
-  // This should match the configured lists in //third_party/ffmpeg.
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  return "h264";
-#else
-  return "";
-#endif
-}
-
 bool FFmpegGlue::OpenContext(bool is_local_file) {
   DCHECK(!open_called_) << "OpenContext() shouldn't be called twice.";
 
@@ -176,8 +151,8 @@ bool FFmpegGlue::OpenContext(bool is_local_file) {
 
   // By passing nullptr for the filename (second parameter) we are telling
   // FFmpeg to use the AVIO context we setup from the AVFormatContext structure.
-  const int ret =
-      avformat_open_input(&format_context_, nullptr, nullptr, &options);
+  const int ret = avformat_open_input(&format_context_.AsEphemeralRawAddr(),
+                                      nullptr, nullptr, &options);
 
   if (options) {
     av_dict_free(&options);
@@ -252,7 +227,7 @@ FFmpegGlue::~FFmpegGlue() {
     return;
   }
 
-  avformat_close_input(&format_context_);
+  avformat_close_input(&format_context_.AsEphemeralRawAddr());
   av_free(avio_context_->buffer);
 }
 

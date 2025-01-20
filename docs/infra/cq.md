@@ -136,6 +136,17 @@ The Chromium CQ supports a variety of options that can change what it checks.
   This will disable the `test new tests for flakiness.*` steps in CQ builds that
   check new tests for flakiness.
 
+* `Skip-Clang-Tidy-Checks: <check_1>,<check_2>,...`
+
+  This will skip the specified clang-tidy checks. The checks can be specified
+  as check name (e.g. `modernize-use-equals-default`) or glob to skip a set of
+  checks (e.g. `modernize-*` to skip checks that advocate usage of modern
+  language constructs). This option can span across multiple lines, for example:
+  ```
+  Skip-Clang-Tidy-Checks: google-explicit-constructor
+  Skip-Clang-Tidy-Checks: modernize-*,readability-*
+  ```
+
 ## FAQ
 
 ### What exactly does the CQ run?

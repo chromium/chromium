@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_PARAMS_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "net/base/net_export.h"
@@ -30,10 +31,11 @@ struct NET_EXPORT SessionParams final {
     // Defaults to false if not in the params
     bool include_site = false;
     std::vector<Specification> specifications;
+    std::string origin;
 
     Scope();
-    Scope(Scope&& other);
-    Scope& operator=(Scope&& other);
+    Scope(Scope&& other) noexcept;
+    Scope& operator=(Scope&& other) noexcept;
     ~Scope();
   };
 
@@ -48,8 +50,8 @@ struct NET_EXPORT SessionParams final {
                 std::string refresh_url,
                 Scope scope,
                 std::vector<Credential> creds);
-  SessionParams(SessionParams&& other);
-  SessionParams& operator=(SessionParams&& other);
+  SessionParams(SessionParams&& other) noexcept;
+  SessionParams& operator=(SessionParams&& other) noexcept;
 
   ~SessionParams();
 
@@ -58,6 +60,13 @@ struct NET_EXPORT SessionParams final {
   Scope scope;
   std::vector<Credential> credentials;
 };
+
+struct SessionTerminationParams {
+  std::string session_id;
+};
+
+using ParsedSessionParams =
+    std::variant<SessionParams, SessionTerminationParams>;
 
 }  // namespace net::device_bound_sessions
 

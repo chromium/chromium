@@ -2,7 +2,7 @@
 
 <!-- android_readaloud_strings.grd contains UI strings for Read Aloud in Chrome Android. -->
 
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_readaloud_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_readaloud_strings.xml" lang="am" type="android" />

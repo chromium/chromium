@@ -16,7 +16,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "extensions/browser/extensions_browser_client.h"
 #endif
 
 namespace OnDisplayStateChanged =
@@ -48,8 +48,7 @@ BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(
     : profile_(Profile::FromBrowserContext(context)),
       event_delegate_(new DefaultEventDelegate(this, profile_)) {}
 
-BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() {
-}
+BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() = default;
 
 void BrailleDisplayPrivateAPI::Shutdown() {
   event_delegate_.reset();
@@ -87,10 +86,7 @@ void BrailleDisplayPrivateAPI::OnBrailleKeyEvent(const KeyEvent& key_event) {
 
 bool BrailleDisplayPrivateAPI::IsProfileActive() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // Since we are creating one instance per profile / user, we should be fine
-  // comparing against the active user. That said - if we ever change that,
-  // this code will need to be changed.
-  return profile_->IsSameOrParent(ProfileManager::GetActiveUserProfile());
+  return extensions::ExtensionsBrowserClient::Get()->IsActiveContext(profile_);
 #else  // !BUILDFLAG(IS_CHROMEOS)
   return true;
 #endif

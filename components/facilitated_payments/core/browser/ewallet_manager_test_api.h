@@ -9,9 +9,11 @@
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
@@ -30,12 +32,25 @@ class EwalletManagerTestApi {
         std::move(initiate_payment_request_details);
   }
 
+  void set_scheme(PaymentLinkValidator::Scheme scheme) {
+    ewallet_manager_->scheme_ = scheme;
+  }
+
+  void set_is_device_bound(bool is_device_bound) {
+    ewallet_manager_->is_device_bound_for_logging_ = is_device_bound;
+  }
+
+  bool is_device_bound() {
+    return ewallet_manager_->is_device_bound_for_logging_;
+  }
+
   FacilitatedPaymentsApiClient* GetApiClient() {
     return ewallet_manager_->GetApiClient();
   }
 
-  void OnApiAvailabilityReceived(bool is_api_available) {
-    ewallet_manager_->OnApiAvailabilityReceived(is_api_available);
+  void OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                 bool is_api_available) {
+    ewallet_manager_->OnApiAvailabilityReceived(start_time, is_api_available);
   }
 
   void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
@@ -44,12 +59,14 @@ class EwalletManagerTestApi {
                                                    selected_instrument_id);
   }
 
-  void OnRiskDataLoaded(const std::string& risk_data) {
-    ewallet_manager_->OnRiskDataLoaded(risk_data);
+  void OnRiskDataLoaded(base::TimeTicks start_time,
+                        const std::string& risk_data) {
+    ewallet_manager_->OnRiskDataLoaded(start_time, risk_data);
   }
 
-  void OnGetClientToken(std::vector<uint8_t> client_token) {
-    ewallet_manager_->OnGetClientToken(client_token);
+  void OnGetClientToken(base::TimeTicks start_time,
+                        std::vector<uint8_t> client_token) {
+    ewallet_manager_->OnGetClientToken(start_time, client_token);
   }
 
   FacilitatedPaymentsInitiatePaymentRequestDetails*
@@ -62,11 +79,34 @@ class EwalletManagerTestApi {
   }
 
   void OnInitiatePaymentResponseReceived(
+      base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details) {
     ewallet_manager_->OnInitiatePaymentResponseReceived(
-        result, std::move(response_details));
+        start_time, result, std::move(response_details));
+  }
+
+  UiState ui_state() { return ewallet_manager_->ui_state_; }
+
+  void OnUiEvent(UiEvent ui_event_type) {
+    ewallet_manager_->OnUiEvent(ui_event_type);
+  }
+
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+    ewallet_manager_->ShowEwalletPaymentPrompt(
+        ewallet_suggestions, std::move(on_user_decision_callback));
+  }
+
+  void ShowProgressScreen() { ewallet_manager_->ShowProgressScreen(); }
+
+  void ShowErrorScreen() { ewallet_manager_->ShowErrorScreen(); }
+
+  void OnTransactionResult(base::TimeTicks start_time,
+                           PurchaseActionResult result) {
+    ewallet_manager_->OnTransactionResult(start_time, result);
   }
 
  private:

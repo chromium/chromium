@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 
 #include "build/build_config.h"
@@ -103,8 +98,8 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         "visible_iframe.html",
         "zero_sized_iframe.html",
     };
-    for (size_t i = 0; i < std::size(iframe_support_files); ++i) {
-      RegisterMockedUrl(url_root, iframe_support_files[i]);
+    for (const auto*& iframe_support_file : iframe_support_files) {
+      RegisterMockedUrl(url_root, iframe_support_file);
     }
 
     frame_test_helpers::LoadFrame(MainFrame(), url.GetString().Utf8().c_str());

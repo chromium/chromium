@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -55,17 +56,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
-#endif
 
 namespace {
 
@@ -97,7 +87,7 @@ class TurnSyncOnHelperShutdownNotifierFactory
     DependsOn(UnifiedConsentServiceFactory::GetInstance());
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
-  ~TurnSyncOnHelperShutdownNotifierFactory() override {}
+  ~TurnSyncOnHelperShutdownNotifierFactory() override = default;
 };
 
 // User input handler for the signin confirmation dialog.
@@ -331,8 +321,7 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
       // should fully sign the user out (even from the Web area) in order for
       // the make sure not to bypass the policies in anyway.
       if (delegate_->IsProfileCreationRequiredByPolicy() &&
-          (!enterprise_util::UserAcceptedAccountManagement(profile_) ||
-           !base::FeatureList::IsEnabled(kDisallowManagedProfileSignout))) {
+          !enterprise_util::UserAcceptedAccountManagement(profile_)) {
         signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
       }
       base::RecordAction(
@@ -416,7 +405,6 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
       &TurnSyncOnHelper::OnNewSignedInProfileCreated, base::Unretained(this),
       std::move(search_engine_choice_data));
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(!dice_signed_in_profile_creator_);
   // Unretained is fine because the profile creator is owned by this.
   dice_signed_in_profile_creator_ =
@@ -424,14 +412,6 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
           profile_, account_info_.account_id,
           /*local_profile_name=*/std::u16string(),
           /*icon_index=*/std::nullopt, std::move(profile_created_callback));
-#else
-  DCHECK(!profile_->IsMainProfile());
-  lacros_sign_in_provider_ =
-      std::make_unique<ProfilePickerLacrosSignInProvider>(
-          /*hidden_profile=*/false);
-  lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
-      account_info_.gaia, std::move(profile_created_callback));
-#endif
 }
 
 syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
@@ -443,24 +423,8 @@ syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
 void TurnSyncOnHelper::OnNewSignedInProfileCreated(
     search_engines::ChoiceData search_engine_choice_data,
     Profile* new_profile) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
-#else
-  DCHECK(lacros_sign_in_provider_);
-  DCHECK(!profile_->IsMainProfile());
-  lacros_sign_in_provider_.reset();
-  if (new_profile) {
-    // The `dice_signed_in_profile_creator_` removes the account from the source
-    // profile as part of its run, but `lacros_sign_in_provider_` does not.
-    // Remove the account now.
-    g_browser_process->profile_manager()
-        ->GetAccountProfileMapper()
-        ->RemoveAccount(
-            profile_->GetPath(),
-            {account_info_.gaia, account_manager::AccountType::kGaia});
-  }
-#endif
 
   ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_USER_SYNC_FLOW);
   if (!new_profile) {
@@ -621,8 +585,7 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
 
   // The sync disabled dialog has an explicit "sign-out" label for the
   // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
-  if (!enterprise_util::UserAcceptedAccountManagement(profile_) ||
-      !base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
+  if (!enterprise_util::UserAcceptedAccountManagement(profile_)) {
     signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
   }
   // Use the email-based heuristic if `account_info_` isn't fully initialized.

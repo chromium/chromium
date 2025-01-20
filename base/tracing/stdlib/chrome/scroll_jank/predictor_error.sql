@@ -105,15 +105,15 @@ WHERE delta_y IS NOT NULL
 CREATE PERFETTO TABLE chrome_predictor_error(
   -- An ID that ties all EventLatencies in a particular scroll. (implementation
   -- note: This is the EventLatency TraceId of the GestureScrollbegin).
-  scroll_id INT,
+  scroll_id LONG,
   -- An ID for this particular EventLatency regardless of it being presented or
   -- not.
-  event_latency_slice_id INT,
+  event_latency_slice_id LONG,
   -- An ID that ties this |event_latency_id| with the Trace Id (another
   -- event_latency_id) that it was presented with.
-  scroll_update_id INT,
+  scroll_update_id LONG,
   -- Presentation timestamp.
-  present_ts INT,
+  present_ts TIMESTAMP,
   -- The delta in raw coordinates between this presented EventLatency and the
   -- previous presented frame.
   delta_y DOUBLE,

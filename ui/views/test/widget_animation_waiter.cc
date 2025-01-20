@@ -46,9 +46,10 @@ void WidgetAnimationWaiter::OnLayerAnimationAborted(
 void WidgetAnimationWaiter::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
   animation_scheduled_ = true;
-  if (!target_bounds_.IsEmpty())
+  if (!target_bounds_.IsEmpty()) {
     EXPECT_NE(widget_observation_.GetSource()->GetLayer()->transform(),
               gfx::Transform());
+  }
 }
 
 void WidgetAnimationWaiter::WaitForAnimation() {

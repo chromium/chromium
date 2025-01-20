@@ -31,8 +31,7 @@ StatusIconMenuModel::StatusIconMenuModel(Delegate* delegate)
     : ui::SimpleMenuModel(this), delegate_(delegate) {
 }
 
-StatusIconMenuModel::~StatusIconMenuModel() {
-}
+StatusIconMenuModel::~StatusIconMenuModel() = default;
 
 void StatusIconMenuModel::SetCommandIdChecked(int command_id, bool checked) {
   item_states_[command_id].checked = checked;

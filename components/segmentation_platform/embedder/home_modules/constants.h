@@ -38,15 +38,19 @@ inline constexpr char kSendTabInfobarReceivedInLastSession[] =
     "send_tab_infobar_received_in_last_session";
 
 // Input Context keys for emphemeral android modules.
-const char kIsDefaultBrowserChrome[] = "is_default_browser_chrome";
-const char kHasDefaultBrowserPromoReachedLimitInRoleManager[] =
-    "has_default_browser_promo_reached_limit_in_role_manager";
-const char kHaveTabGroups[] = "have_tab_groups";
+const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
+    "should_show_non_role_manager_default_browser_promo";
+const char kHasDefaultBrowserPromoShownInOtherSurface[] =
+    "has_default_browser_promo_shown_in_other_surface";
+const char kTabGroupExists[] = "tab_group_exists";
 const char kNumberOfTabs[] = "number_of_tabs";
-const char kHaveSyncedTabGroups[] = "have_synced_tab_groups";
-const char kHaveClearedBrowsingDataInThirtyDays[] =
-    "have_cleared_browsing_data_in_thirty_days";
-const char kHaveUsedIncognito[] = "have_used_incognito";
+const char kTabGroupPromoShownCount[] = "tab_group_shown_count";
+const char kSyncedTabGroupExists[] = "synced_tab_group_exists";
+const char kTabGroupSyncPromoShownCount[] = "tab_group_sync_shown_count";
+const char kCountOfClearingBrowsingData[] = "count_of_clearing_browsing_data";
+const char kCountOfClearingBrowsingDataThroughQuickDelete[] =
+    "count_of_clearing_browsing_data_through_quick_delete";
+const char kQuickDeletePromoShownCount[] = "quick_delete_shown_count";
 
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
@@ -81,7 +85,10 @@ inline constexpr auto kLensEphemeralModuleVariationLabels =
     });
 
 // Labels for emphemeral android modules.
-const char kDefaultBrowserPromo[] = "default_browser_promo";
+const char kDefaultBrowserPromo[] = "DefaultBrowserPromo";
+const char kTabGroupPromo[] = "TabGroupPromo";
+const char kTabGroupSyncPromo[] = "TabGroupSyncPromo";
+const char kQuickDeletePromo[] = "QuickDeletePromo";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.

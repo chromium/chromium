@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 component("manta") {
@@ -30,7 +29,6 @@ component("manta") {
   deps = [
     "proto",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
@@ -38,7 +36,7 @@ component("manta") {
     "//net",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mahi_provider.cc",
       "mahi_provider.h",
@@ -48,16 +46,6 @@ component("manta") {
       "scanner_provider.h",
       "snapper_provider.cc",
       "snapper_provider.h",
-      "sparky/sparky_context.cc",
-      "sparky/sparky_context.h",
-      "sparky/sparky_delegate.cc",
-      "sparky/sparky_delegate.h",
-      "sparky/sparky_provider.cc",
-      "sparky/sparky_provider.h",
-      "sparky/sparky_util.cc",
-      "sparky/sparky_util.h",
-      "sparky/system_info_delegate.cc",
-      "sparky/system_info_delegate.h",
       "walrus_provider.cc",
       "walrus_provider.h",
     ]
@@ -73,13 +61,11 @@ source_set("unit_tests") {
     "base_provider_test_helper.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "orca_provider_unittest.cc",
       "scanner_provider_unittest.cc",
       "snapper_provider_unittest.cc",
-      "sparky/sparky_provider_unittest.cc",
-      "sparky/sparky_util_unittest.cc",
       "walrus_provider_unittest.cc",
     ]
   }

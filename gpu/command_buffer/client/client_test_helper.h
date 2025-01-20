@@ -167,7 +167,6 @@ class FakeDecoderClient : public DecoderClient {
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void ScheduleGrContextCleanup() override;
   void SetActiveURL(GURL url) override;
   void HandleReturnData(base::span<const uint8_t> data) override;

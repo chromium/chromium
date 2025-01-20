@@ -15,6 +15,7 @@ import run
 import result_sink_util
 from test_runner import SimulatorNotFoundError, TestRunner
 from xcodebuild_runner import SimulatorParallelTestRunner
+import xcode_util
 import test_runner_errors
 import test_runner_test
 
@@ -470,6 +471,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.runner = run.Runner()
 
     self.mock(self.runner, 'parse_args', lambda _: None)
+    self.mock(xcode_util, 'is_local_run', lambda: False)
     self.runner.args = mock.MagicMock()
     # Make run() choose xcodebuild_runner.SimulatorParallelTestRunner as tr.
     self.runner.args.xcode_parallelization = True

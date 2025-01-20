@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/base/hybrid_encryption_key.h"
+
 #include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/tink_key.pb.h"
 
 namespace {
-const size_t kEncapsulatedKeySize = 32;
+constexpr size_t kEncapsulatedKeySize = 32;
 
 const EVP_HPKE_KEM* GetKem() {
   return EVP_hpke_x25519_hkdf_sha256();
@@ -63,8 +64,7 @@ std::optional<std::vector<uint8_t>> HybridEncryptionKey::Decrypt(
   if (encrypted_data.size() < kEncapsulatedKeySize) {
     return std::nullopt;
   }
-  base::span<const uint8_t> encapsulated_key =
-      encrypted_data.subspan(0, kEncapsulatedKeySize);
+  auto encapsulated_key = encrypted_data.first<kEncapsulatedKeySize>();
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
@@ -132,7 +132,7 @@ std::vector<uint8_t> HybridEncryptionKey::EncryptForTesting(
                         EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
   base::span<uint8_t> ciphertext =
-      base::make_span(encrypted_data).subspan(kEncapsulatedKeySize);
+      base::span(encrypted_data).subspan<kEncapsulatedKeySize>();
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(sender_context.get(), ciphertext.data(),

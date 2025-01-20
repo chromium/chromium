@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/browsing_data/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/web/model",
@@ -21,5 +22,9 @@ specific_include_rules = {
   # TODO(crbug.com/331781927): remove when kIdentityDiscAccountMenu launches.
   "^authentication_service_delegate_impl.cc": [
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  ],
+  "^authentication_service.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
+    "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
 }

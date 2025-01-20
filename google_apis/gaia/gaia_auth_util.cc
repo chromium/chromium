@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,9 @@
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/list_accounts_response.pb.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -62,7 +65,7 @@ ListedAccount& ListedAccount::operator=(const ListedAccount&) = default;
 ListedAccount::~ListedAccount() = default;
 
 MultiloginAccountAuthCredentials::MultiloginAccountAuthCredentials(
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::string token,
     std::string token_binding_assertion)
     : gaia_id(std::move(gaia_id)),
@@ -180,10 +183,10 @@ bool ParseListAccountsData(std::string_view data,
         if (15u < account.size() && account[15].is_int())
           verified = account[15].GetInt();
 
-        std::string gaia_id;
+        GaiaId gaia_id;
         // ListAccounts must also return the Gaia Id.
         if (10u < account.size() && account[10].is_string() &&
-            !(gaia_id = account[10].GetString()).empty()) {
+            !(gaia_id = GaiaId(account[10].GetString())).empty()) {
           ListedAccount listed_account;
           listed_account.email = CanonicalizeEmail(email);
           listed_account.gaia_id = gaia_id;
@@ -202,9 +205,57 @@ bool ParseListAccountsData(std::string_view data,
   return true;
 }
 
+bool ParseBinaryListAccountsData(const std::string& data,
+                                 std::vector<ListedAccount>* accounts) {
+  // Clear and rebuild our accounts list if one is given.
+  if (accounts) {
+    accounts->clear();
+  }
+
+  // The input is expected to be base64-encoded.
+  std::string decoded_data;
+  if (!base::Base64Decode(data, &decoded_data,
+                          base::Base64DecodePolicy::kForgiving)) {
+    VLOG(1) << "Failed to decode ListAccounts data as a Base64 String";
+    return false;
+  }
+
+  // Parse our binary proto response.
+  ListAccountsResponse parsed_result;
+  if (!parsed_result.ParseFromString(decoded_data)) {
+    VLOG(1) << "malformed ListAccountsResponse";
+    return false;
+  }
+
+  // Build a vector of accounts from the cookie. Order is important: the first
+  // account in the list is the primary account.
+  for (const auto& account : parsed_result.account()) {
+    if (account.display_email().empty() || account.obfuscated_id().empty()) {
+      continue;
+    }
+
+    ListedAccount listed_account;
+    listed_account.email = CanonicalizeEmail(account.display_email());
+    listed_account.gaia_id = GaiaId(account.obfuscated_id());
+    listed_account.valid = (
+        // Assume the account is valid if unspecified for backcompat.
+        account.has_valid_session() ? account.valid_session() : true);
+    listed_account.signed_out =
+        (account.has_signed_out() ? account.signed_out() : false);
+    listed_account.verified =
+        (account.has_is_verified() ? account.is_verified() : true);
+    listed_account.raw_email = account.display_email();
+    if (accounts) {
+      accounts->push_back(std::move(listed_account));
+    }
+  }
+
+  return true;
+}
+
 bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
-                                       std::string* gaia_id) {
+                                       GaiaId* gaia_id) {
   DCHECK(approved);
   DCHECK(gaia_id);
 
@@ -223,15 +274,15 @@ bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
   }
 
   *approved = parsed_result.approved();
-  *gaia_id = parsed_result.obfuscated_id();
+  *gaia_id = GaiaId(parsed_result.obfuscated_id());
   return true;
 }
 
-std::string CreateBoundOAuthToken(const std::string& gaia_id,
+std::string CreateBoundOAuthToken(const GaiaId& gaia_id,
                                   const std::string& refresh_token,
                                   const std::string& binding_key_assertion) {
   BoundOAuthToken bound_oauth_token;
-  bound_oauth_token.set_gaia_id(gaia_id);
+  bound_oauth_token.set_gaia_id(gaia_id.ToString());
   bound_oauth_token.set_token(refresh_token);
   bound_oauth_token.set_token_binding_assertion(binding_key_assertion);
 
@@ -252,7 +303,7 @@ std::string CreateMultiOAuthHeader(
   gaia::MultiOAuthHeader header;
   for (const MultiloginAccountAuthCredentials& account : accounts) {
     gaia::MultiOAuthHeader::AccountRequest request;
-    request.set_gaia_id(account.gaia_id);
+    request.set_gaia_id(account.gaia_id.ToString());
     request.set_token(account.token);
     if (!account.token_binding_assertion.empty()) {
       request.set_token_binding_assertion(account.token_binding_assertion);

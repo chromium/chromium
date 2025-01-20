@@ -25,8 +25,13 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOverviewUiKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kStayInOverviewOnActivationKey, false)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowState, kWindowStateKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWindowResizeHistogramName)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string,
+                                   kWindowResizeMaxLatencyHistogramName)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowState, kWindowStateKey)
 
 }  // namespace ash

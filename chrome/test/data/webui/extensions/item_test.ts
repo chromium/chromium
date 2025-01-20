@@ -391,6 +391,18 @@ suite('ExtensionItemTest', function() {
     assertWarnings(kMv2Deprecation);
   });
 
+  test('UnsupportedDeveloperExtensionWarning', async () => {
+    assertFalse(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+
+    const data = createExtensionInfo(item.data);
+    data.disableReasons.unsupportedDeveloperExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    assertTrue(
+        isChildVisible(item, '#unsupported-developer-extension-warning'));
+  });
+
   test('SourceIndicator', async () => {
     assertFalse(isChildVisible(item, '#source-indicator'));
     let data = createExtensionInfo(item.data);
@@ -532,6 +544,17 @@ suite('ExtensionItemTest', function() {
     assertTrue(item.$.enableToggle.disabled);
   });
 
+  test('EnableToggleDisabledForUnsupportedDeveloperExtension', async () => {
+    assertFalse(item.$.enableToggle.disabled);
+
+    const data = createExtensionInfo(item.data);
+    data.disableReasons.unsupportedDeveloperExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    testVisible(item, '#enableToggle', true);
+    assertTrue(item.$.enableToggle.disabled);
+  });
+
   test('RemoveButton', async () => {
     assertFalse(item.$.removeButton.hidden);
     const data = createExtensionInfo(item.data);
@@ -658,5 +681,19 @@ suite('ExtensionItemTest', function() {
     assertEquals(
         loadTimeData.getString('enableToggleTooltipDisabled'),
         crTooltip.textContent!.trim());
+  });
+
+  test('CanUploadAsAccountExtension', async () => {
+    testVisible(item, '#account-upload-button', false);
+
+    const data = createExtensionInfo(item.data);
+    data.canUploadAsAccountExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    testVisible(item, '#account-upload-button', true);
+
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
+        'uploadItemToAccount', [item.data.id]);
   });
 });

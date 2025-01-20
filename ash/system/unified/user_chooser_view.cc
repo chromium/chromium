@@ -262,7 +262,13 @@ UserItemButton::UserItemButton(PressedCallback callback,
   GetViewAccessibility().SetRole(user_index_ == 0 ? ax::mojom::Role::kLabelText
                                                   : ax::mojom::Role::kButton);
   GetViewAccessibility().SetName(GetUserItemAccessibleString(user_index_));
+  UpdateTooltipText();
+
+  name_observation_.Observe(name_);
+  email_observation_.Observe(email_);
 }
+
+UserItemButton::~UserItemButton() = default;
 
 void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
   capture_icon_->SetVisible(capture_state != MediaCaptureState::kNone);
@@ -287,15 +293,36 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
   }
 }
 
-std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string UserItemButton::GetAlternativeAccessibleName() const {
+  if (!suppressed_tooltip_text_.empty()) {
+    return suppressed_tooltip_text_;
+  }
+
+  return Button::GetAlternativeAccessibleName();
+}
+
+void UserItemButton::OnViewPreferredSizeChanged(View* observed_view) {
+  UpdateTooltipText();
+}
+
+void UserItemButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  UpdateTooltipText();
+}
+
+void UserItemButton::UpdateTooltipText() {
   // If both of them are full shown, hide the tooltip.
   if (name_->GetPreferredSize(views::SizeBounds(name_->width(), {})).width() <=
           name_->width() &&
       email_->GetPreferredSize(views::SizeBounds(email_->width(), {}))
               .width() <= email_->width()) {
-    return std::u16string();
+    suppressed_tooltip_text_ = GetCachedTooltipText();
+    SetCachedTooltipText(std::u16string());
+  } else {
+    if (GetCachedTooltipText().empty()) {
+      SetCachedTooltipText(suppressed_tooltip_text_);
+    }
+    suppressed_tooltip_text_ = std::u16string();
   }
-  return views::Button::GetTooltipText(p);
 }
 
 BEGIN_METADATA(UserItemButton)
@@ -370,6 +397,11 @@ void UserChooserView::OnMediaCaptureChanged(
       user_item_buttons_[i]->SetCaptureState(matched->second);
     }
   }
+}
+
+std::u16string UserChooserView::GetUserItemAccessibleStringForTesting(
+    int user_index) {
+  return GetUserItemAccessibleString(user_index);
 }
 
 BEGIN_METADATA(UserChooserView)

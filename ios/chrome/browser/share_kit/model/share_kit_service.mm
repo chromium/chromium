@@ -7,19 +7,3 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
-
-void ShareKitService::PrimaryAccountChanged() {}
-
-void ShareKitService::ReadGroups(ShareKitReadConfiguration* config) {}
-
-id<ShareKitAvatarPrimitive> ShareKitService::AvatarImage(
-    ShareKitAvatarConfiguration* config) {
-  return nil;
-}
-
-void ShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {}
-
-void ShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {}
-
-void ShareKitService::LookupGaiaIdByEmail(
-    ShareKitLookupGaiaIDConfiguration* config) {}

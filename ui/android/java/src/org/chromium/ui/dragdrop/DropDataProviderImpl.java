@@ -4,6 +4,8 @@
 
 package org.chromium.ui.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
@@ -18,11 +20,10 @@ import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
 import java.io.FileNotFoundException;
@@ -38,6 +39,7 @@ import java.io.OutputStream;
  *     provider to this java doc.
  */
 @UsedByReflection("Webview Support Lib")
+@NullMarked
 public class DropDataProviderImpl {
     public static final String CACHE_METHOD_NAME = "cache";
     public static final String SET_INTERVAL_METHOD_NAME = "setClearCachedDataIntervalMs";
@@ -70,8 +72,8 @@ public class DropDataProviderImpl {
                 ParcelFileDescriptor output,
                 Uri uri,
                 String mimeType,
-                Bundle opts,
-                byte[] imageBytes) {
+                @Nullable Bundle opts,
+                byte @Nullable [] imageBytes) {
             try (OutputStream out = new FileOutputStream(output.getFileDescriptor())) {
                 if (imageBytes != null) {
                     out.write(imageBytes);
@@ -91,27 +93,23 @@ public class DropDataProviderImpl {
     private static final Object LOCK = new Object();
 
     private int mClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
-    private byte[] mImageBytes;
-    private String mImageFilename;
-    private String mMimeType;
+
+    private byte @Nullable [] mImageBytes;
+
+    private @Nullable String mImageFilename;
+    private @Nullable String mMimeType;
 
     /** The URI handled by this content provider. */
-    private Uri mContentProviderUri;
+    private @Nullable Uri mContentProviderUri;
 
-    private Handler mHandler;
+    private @Nullable Handler mHandler;
     private long mDragEndTime;
     private long mOpenFileLastAccessTime;
-    private Uri mLastUri;
+    private @Nullable Uri mLastUri;
     private long mLastUriClearedTimestamp;
     private long mLastUriCreatedTimestamp;
     private boolean mLastUriRecorded;
-
-    private DropPipeDataWriter mDropPipeDataWriter;
-
-    /** This constructor is being used to initialize the pipeWriter. */
-    public DropDataProviderImpl() {
-        initPipeWriter();
-    }
+    private DropPipeDataWriter mDropPipeDataWriter = new DropPipeDataWriter();
 
     /** Update the delayed time before clearing the image cache. */
     public void setClearCachedDataIntervalMs(int milliseconds) {
@@ -231,16 +229,9 @@ public class DropDataProviderImpl {
     }
 
     /**
-     * @see android.content.ContentProvider.PipeDataWriter
-     */
-    public void initPipeWriter() {
-        mDropPipeDataWriter = new DropPipeDataWriter();
-    }
-
-    /**
      * @see ContentProvider#getType(Uri)
      */
-    public String getType(Uri uri) {
+    public @Nullable String getType(@Nullable Uri uri) {
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
                 return null;
@@ -252,7 +243,7 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#getStreamTypes(Uri, String)
      */
-    public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
+    public String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter) {
         String mimeType;
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
@@ -263,7 +254,7 @@ public class DropDataProviderImpl {
         return matchMimeType(mimeType, mimeTypeFilter) ? new String[] {mimeType} : null;
     }
 
-    private boolean matchMimeType(String mimeType, String mimeTypeFilter) {
+    private boolean matchMimeType(@Nullable String mimeType, String mimeTypeFilter) {
         if (mimeType == null || mimeTypeFilter == null) {
             return false;
         }
@@ -283,7 +274,8 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#openAssetFile(Uri, String)
      */
-    public AssetFileDescriptor openAssetFile(ContentProvider providerWrapper, Uri uri, String mode)
+    public @Nullable AssetFileDescriptor openAssetFile(
+            ContentProvider providerWrapper, Uri uri, String mode)
             throws FileNotFoundException, SecurityException {
         if (uri == null) {
             return null;
@@ -292,15 +284,11 @@ public class DropDataProviderImpl {
         long elapsedRealtime = SystemClock.elapsedRealtime();
         synchronized (LOCK) {
             if (!uri.equals(mContentProviderUri)) {
-                if (uri.equals(mLastUri)) {
+                if (uri.equals(mLastUri) && !mLastUriRecorded) {
                     long duration = elapsedRealtime - mLastUriClearedTimestamp;
                     RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
-                    if (!mLastUriRecorded) {
-                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
-                        mLastUriRecorded = true;
-                    }
+                            "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
+                    mLastUriRecorded = true;
                 }
                 return null;
             }
@@ -311,18 +299,19 @@ public class DropDataProviderImpl {
                         "Android.DragDrop.Image.OpenFileTime.FirstAttempt", duration);
             }
             mOpenFileLastAccessTime = elapsedRealtime;
-            imageBytes = this.mImageBytes;
+            imageBytes = assumeNonNull(this.mImageBytes);
         }
+        String type = getType(uri);
+        assert type != null;
         ParcelFileDescriptor fd =
-                providerWrapper.openPipeHelper(
-                        uri, getType(uri), null, imageBytes, mDropPipeDataWriter);
+                providerWrapper.openPipeHelper(uri, type, null, imageBytes, mDropPipeDataWriter);
         return new AssetFileDescriptor(fd, 0, imageBytes.length);
     }
 
     /**
      * @see ContentProvider#openFile(Uri, String)
      */
-    public ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
+    public @Nullable ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
             throws FileNotFoundException {
         AssetFileDescriptor afd = openAssetFile(providerWrapper, uri, "r");
         return afd != null ? afd.getParcelFileDescriptor() : null;
@@ -331,15 +320,15 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#query(Uri, String[], String, String[], String)
      */
-    public Cursor query(Uri uri, String[] projection) {
+    public Cursor query(Uri uri, String @Nullable [] projection) {
         byte[] imageBytes;
         String imageFilename;
         synchronized (LOCK) {
             if (uri == null || !uri.equals(mContentProviderUri)) {
                 return new MatrixCursor(COLUMNS, 0);
             }
-            imageBytes = this.mImageBytes;
-            imageFilename = mImageFilename;
+            imageBytes = assumeNonNull(mImageBytes);
+            imageFilename = assumeNonNull(mImageFilename);
         }
         if (projection == null) {
             projection = COLUMNS;
@@ -378,25 +367,29 @@ public class DropDataProviderImpl {
     /**
      * @see ContentProvider#call(String, String, Bundle)
      */
-    @Nullable
-    public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
+    public @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras) {
         switch (method) {
             case CACHE_METHOD_NAME:
+                assumeNonNull(extras);
+                byte[] imageBytes = (byte[]) extras.getSerializable(BYTES_PARAM);
+                String encodingFormat = extras.getString(IMAGE_CONTENT_EXTENSION_PARAM);
+                String filename = extras.getString(IMAGE_FILE_PARAM);
+                assert imageBytes != null;
+                assert encodingFormat != null;
+                assert filename != null;
+                Uri uri = cache(imageBytes, encodingFormat, filename);
                 Bundle bundleToReturn = new Bundle();
-                Uri uri =
-                        cache(
-                                (byte[]) extras.getSerializable(BYTES_PARAM),
-                                extras.getString(IMAGE_CONTENT_EXTENSION_PARAM),
-                                extras.getString(IMAGE_FILE_PARAM));
                 bundleToReturn.putParcelable("uri", uri);
                 return bundleToReturn;
             case SET_INTERVAL_METHOD_NAME:
+                assumeNonNull(extras);
                 setClearCachedDataIntervalMs(
                         extras.getInt(
                                 CLEAR_CACHE_PARAM,
                                 DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS));
                 break;
             case ON_DRAG_END_METHOD_NAME:
+                assumeNonNull(extras);
                 onDragEnd(extras.getBoolean(IMAGE_USAGE_PARAM));
                 break;
         }
@@ -404,12 +397,13 @@ public class DropDataProviderImpl {
         return null;
     }
 
-    byte[] getImageBytesForTesting() {
+    byte @Nullable [] getImageBytesForTesting() {
         synchronized (LOCK) {
             return mImageBytes;
         }
     }
 
+    @Nullable
     Handler getHandlerForTesting() {
         synchronized (LOCK) {
             return mHandler;

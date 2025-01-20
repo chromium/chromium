@@ -27,6 +27,8 @@ component("ozone") {
     "gamepad/gamepad_provider_ozone.h",
     "keyboard/event_auto_repeat_handler.cc",
     "keyboard/event_auto_repeat_handler.h",
+    "keyboard/slow_keys_handler.cc",
+    "keyboard/slow_keys_handler.h",
   ]
 
   deps = [
@@ -63,6 +65,7 @@ source_set("unittests") {
   deps = [
     ":ozone",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//ui/events",
     "//ui/events/ozone/layout:unittests",
@@ -71,7 +74,10 @@ source_set("unittests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "chromeos/cursor_controller_unittest.cc" ]
+    sources += [
+      "chromeos/cursor_controller_unittest.cc",
+      "keyboard/slow_keys_handler_unittest.cc",
+    ]
   }
 
   if (is_linux || is_chromeos) {

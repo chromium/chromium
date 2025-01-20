@@ -31,7 +31,7 @@ DownloadPermissionRequest::DownloadPermissionRequest(
       host_(host),
       requesting_origin_(requesting_origin) {}
 
-DownloadPermissionRequest::~DownloadPermissionRequest() {}
+DownloadPermissionRequest::~DownloadPermissionRequest() = default;
 
 void DownloadPermissionRequest::PermissionDecided(ContentSetting result,
                                                   bool is_one_time,

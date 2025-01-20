@@ -57,7 +57,6 @@ static_library("child_accounts") {
 
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/app_list/arc",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/dbus/power",
@@ -85,9 +84,7 @@ static_library("child_accounts") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
-    "//chrome/browser/ui:browser_list",
-    "//chrome/common",
-    "//chrome/common:constants",
+    "//chrome/common:constants",  # included for chrome/common/pref_names.h
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/settings",
@@ -103,9 +100,6 @@ static_library("child_accounts") {
     "//ui/chromeos",
     "//ui/message_center",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/child_accounts/time_limits" ]
 }
 
 static_library("test_support") {

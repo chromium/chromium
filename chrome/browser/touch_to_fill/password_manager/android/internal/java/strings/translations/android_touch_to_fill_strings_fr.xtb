@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">La liste des identifiants à renseigner de façon tactile est ouverte à pleine hauteur.</translation>
 <translation id="5591247451101092906">Utiliser un mot de passe ou une clé d'accès enregistrés ?</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
+<translation id="592182999816790476">Mot de passe pour <ph name="USERNAME" /> enregistré pour <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Clé d'accès de <ph name="USERNAME" />, utilisez le verrouillage de l'écran</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
 <translation id="7286867818472074330">Sélectionner une clé d'accès</translation>

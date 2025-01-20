@@ -130,6 +130,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
       embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
   OpenURLInNewTab(
       embedded_test_server()->GetURL("d.com", "/iframe_cross_site.html"));
+  OpenURLInNewTab(
+      embedded_test_server()->GetURL("e.com", "/iframe_sandboxed_srcdoc.html"));
 
   // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTest("scripting/sub_frames")) << message_;
@@ -182,6 +184,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSInjection) {
       embedded_test_server()->GetURL("chromium.org", "/title2.html"));
   OpenURLInNewTab(embedded_test_server()->GetURL("subframes.example",
                                                  "/iframe_cross_site.html"));
+  OpenURLInNewTab(embedded_test_server()->GetURL(
+      "subframes-sandboxed.example", "/iframe_sandboxed_srcdoc.html"));
 
   ASSERT_TRUE(RunExtensionTest("scripting/css_injection")) << message_;
 }

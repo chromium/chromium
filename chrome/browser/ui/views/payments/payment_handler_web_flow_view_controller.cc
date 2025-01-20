@@ -68,8 +68,9 @@ namespace {
 
 std::u16string GetPaymentHandlerDialogTitle(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return std::u16string();
+  }
 
   // If a page has no explicit <title> set or if it is still loading, the title
   // may be the URL of the page. We don't wish to show that to a user as the
@@ -148,8 +149,9 @@ PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   if (web_contents()) {
     auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
         web_contents());
-    if (manager)
+    if (manager) {
       manager->SetDelegate(nullptr);
+    }
   }
   state()->OnPaymentAppWindowClosed();
 }
@@ -450,14 +452,16 @@ bool PaymentHandlerWebFlowViewController::HandleKeyboardEvent(
 
 void PaymentHandlerWebFlowViewController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!is_active())
+  if (!is_active()) {
     return;
+  }
 
   // Ignore non-primary main frame or same page navigations which aren't
   // relevant to below.
   if (navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame())
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // Checking uncommitted navigations (e.g., Network errors) is unnecessary
   // because the new pages have no chance to be loaded, rendered nor execute js.
@@ -473,7 +477,11 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
-        .Run(true, web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        .Run(true,
+             web_contents()
+                 ->GetPrimaryMainFrame()
+                 ->GetProcess()
+                 ->GetDeprecatedID(),
              web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
@@ -496,13 +504,15 @@ void PaymentHandlerWebFlowViewController::TitleWasSet(
   UpdateHeaderView();
 
   std::u16string title = GetPaymentHandlerDialogTitle(web_contents());
-  if (!title.empty())
+  if (!title.empty()) {
     dialog()->OnPaymentHandlerTitleSet();
+  }
 }
 
 void PaymentHandlerWebFlowViewController::AbortPayment() {
-  if (web_contents())
+  if (web_contents()) {
     web_contents()->Close();
+  }
 
   state()->OnPaymentResponseError(errors::kPaymentHandlerInsecureNavigation);
 }

@@ -32,7 +32,6 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
@@ -43,6 +42,8 @@
 
 namespace blink {
 
+class CharacterData;
+class Document;
 class EffectPaintPropertyNode;
 class Element;
 class FrameCaret;
@@ -54,9 +55,11 @@ class LayoutBlock;
 class LayoutSelection;
 class LayoutText;
 class LocalFrame;
+class NodeWithIndex;
 class PhysicalBoxFragment;
 class Range;
 class SelectionEditor;
+class Text;
 class TextIteratorBehavior;
 enum class SelectionModifyAlteration;
 enum class SelectionModifyDirection;
@@ -128,8 +131,7 @@ struct LayoutTextSelectionStatus {
 };
 
 class CORE_EXPORT FrameSelection final
-    : public GarbageCollected<FrameSelection>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<FrameSelection> {
  public:
   explicit FrameSelection(LocalFrame&);
   FrameSelection(const FrameSelection&) = delete;
@@ -318,7 +320,21 @@ class CORE_EXPORT FrameSelection final
   SelectionState ComputePaintingSelectionStateForCursor(
       const InlineCursorPosition& position) const;
 
-  void Trace(Visitor*) const override;
+  // Notifications from the Document.
+  void ContextDestroyed();
+  void DidChangeChildren(const ContainerNode::ChildrenChange& change);
+  void DidMergeTextNodes(const Text& merged_node,
+                         const NodeWithIndex& node_to_be_removed_with_index,
+                         unsigned old_length);
+  void DidSplitTextNode(const Text&);
+  void DidUpdateCharacterData(CharacterData*,
+                              unsigned offset,
+                              unsigned old_length,
+                              unsigned new_length);
+  void NodeChildrenWillBeRemoved(ContainerNode&);
+  void NodeWillBeRemoved(Node&);
+
+  void Trace(Visitor*) const;
 
  private:
   friend class CaretDisplayItemClientTest;
@@ -340,11 +356,6 @@ class CORE_EXPORT FrameSelection final
 
   void MoveRangeSelectionInternal(const SelectionInDOMTree&, TextGranularity);
 
-  // Implementation of |SynchronousMutationObserver| member functions.
-  void ContextDestroyed() final;
-  void NodeChildrenWillBeRemoved(ContainerNode&) final;
-  void NodeWillBeRemoved(Node&) final;
-
   // Returns the range corresponding to a |text_granularity| selection around
   // the caret. Returns a null range if the selection failed, either because
   // the current selection was not a caret or if a |text_granularity| selection
@@ -357,6 +368,7 @@ class CORE_EXPORT FrameSelection final
       WordSide word_side) const;
 
   Member<LocalFrame> frame_;
+  WeakMember<Document> document_;
   const Member<LayoutSelection> layout_selection_;
   const Member<SelectionEditor> selection_editor_;
 

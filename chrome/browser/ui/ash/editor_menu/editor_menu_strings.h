@@ -11,6 +11,8 @@ namespace chromeos::editor_menu {
 
 std::u16string GetEditorMenuLobsterTitle();
 
+std::u16string GetEditorMenuLobsterChipLabel();
+
 std::u16string GetEditorMenuPromoCardTitle();
 
 std::u16string GetEditorMenuPromoCardDescription();
@@ -23,7 +25,9 @@ std::u16string GetEditorMenuWriteCardTitle();
 
 std::u16string GetEditorMenuRewriteCardTitle();
 
-std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholder();
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite();
+
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster();
 
 std::u16string GetEditorMenuSettingsTooltip();
 

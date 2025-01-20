@@ -34,7 +34,7 @@ QuickUnlockStorage::QuickUnlockStorage(Profile* profile)
   pin_storage_prefs_ = std::make_unique<PinStoragePrefs>(profile->GetPrefs());
 }
 
-QuickUnlockStorage::~QuickUnlockStorage() {}
+QuickUnlockStorage::~QuickUnlockStorage() = default;
 
 void QuickUnlockStorage::SetClockForTesting(base::Clock* test_clock) {
   clock_ = test_clock;

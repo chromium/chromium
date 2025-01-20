@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, CrInputElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {AutoTabGroupsPageElement, AutoTabGroupsResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -50,7 +50,6 @@ suite('AutoTabGroupsPageTest', () => {
     TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
 
     autoTabGroupsResults = document.createElement('auto-tab-groups-results');
-    autoTabGroupsResults.multiTabOrganization = false;
     autoTabGroupsResults.session = session;
 
     document.body.appendChild(autoTabGroupsResults);
@@ -109,32 +108,14 @@ suite('AutoTabGroupsPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('requestTabOrganization'));
   });
 
-  test('Single organization input blurs on enter', async () => {
+  test('Input toggles on enter/edit', async () => {
     await autoTabGroupsResultsSetup();
-    const group =
-        autoTabGroupsResults.shadowRoot!.querySelector('auto-tab-groups-group');
-    assertTrue(!!group);
-    const input = group.shadowRoot!.querySelector<CrInputElement>(
-        '#singleOrganizationInput');
-    assertTrue(!!input);
-    assertTrue(input.hasAttribute('focused_'));
-
-    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await input.updateComplete;
-    assertFalse(input.hasAttribute('focused_'));
-  });
-
-  test('Multi organization input toggles on enter/edit', async () => {
-    await autoTabGroupsResultsSetup();
-    autoTabGroupsResults.multiTabOrganization = true;
-    await microtasksFinished();
 
     function queryInput() {
       const group = autoTabGroupsResults.shadowRoot!.querySelector(
           'auto-tab-groups-group');
       assertTrue(!!group);
-      return group.shadowRoot!.querySelector<HTMLElement>(
-          '#multiOrganizationInput');
+      return group.shadowRoot!.querySelector('#input');
     }
 
     function queryEditButton() {
@@ -144,15 +125,7 @@ suite('AutoTabGroupsPageTest', () => {
       return group.shadowRoot!.querySelector<HTMLElement>('.icon-edit');
     }
 
-    let input = queryInput();
-    assertTrue(!!input);
-    assertTrue(isVisible(input));
-
-    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
-    await microtasksFinished();
-
     assertFalse(!!queryInput());
-
     const editButton = queryEditButton();
     assertTrue(!!editButton);
     assertTrue(isVisible(editButton));
@@ -160,7 +133,7 @@ suite('AutoTabGroupsPageTest', () => {
     editButton.click();
     await microtasksFinished();
 
-    input = queryInput();
+    const input = queryInput();
     assertTrue(!!input);
     assertTrue(isVisible(input));
     assertFalse(!!queryEditButton());
@@ -280,41 +253,8 @@ suite('AutoTabGroupsPageTest', () => {
     assertFalse(focusableElement2.matches(':focus'));
   });
 
-  test('Single organization create group accepts organization', async () => {
-    loadTimeData.overrideValues({
-      multiTabOrganizationEnabled: false,
-    });
-
-    await autoTabGroupsPageSetup();
-
-    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createTabOrganizationSession({state: TabOrganizationState.kSuccess}));
-
-    assertEquals(0, testApiProxy.getCallCount('acceptTabOrganization'));
-
-    const results =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
-    assertTrue(!!results);
-    const group = results.shadowRoot!.querySelector('auto-tab-groups-group');
-    assertTrue(!!group);
-    const actions =
-        group.shadowRoot!.querySelector('auto-tab-groups-results-actions');
-    assertTrue(!!actions);
-    const createGroupButton = actions.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!createGroupButton);
-    createGroupButton.click();
-    await microtasksFinished();
-
-    assertEquals(1, testApiProxy.getCallCount('acceptTabOrganization'));
-  });
-
   test(
-      'Multi organization create groups accepts all organizations',
-      async () => {
-        loadTimeData.overrideValues({
-          multiTabOrganizationEnabled: true,
-        });
-
+      'Create groups accepts all organizations', async () => {
         await autoTabGroupsPageSetup();
 
         const organizationCount = 3;
@@ -342,10 +282,6 @@ suite('AutoTabGroupsPageTest', () => {
       });
 
   test('Group cancel button rejects organization', async () => {
-    loadTimeData.overrideValues({
-      multiTabOrganizationEnabled: true,
-    });
-
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
@@ -370,10 +306,6 @@ suite('AutoTabGroupsPageTest', () => {
   });
 
   test('Clear rejects session', async () => {
-    loadTimeData.overrideValues({
-      multiTabOrganizationEnabled: true,
-    });
-
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
@@ -423,6 +355,28 @@ suite('AutoTabGroupsPageTest', () => {
     await microtasksFinished();
 
     assertEquals(1, testApiProxy.getCallCount('startTabGroupTutorial'));
+  });
+
+  test('Learn more action activates on Enter', async () => {
+    loadTimeData.overrideValues({
+      showTabOrganizationFRE: true,
+    });
+
+    await autoTabGroupsPageSetup();
+
+    assertEquals(0, testApiProxy.getCallCount('openHelpPage'));
+
+    const notStarted = autoTabGroupsPage.shadowRoot!.querySelector(
+        'auto-tab-groups-not-started');
+    assertTrue(!!notStarted);
+    const links = notStarted.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.auto-tab-groups-link');
+    assertEquals(1, links.length);
+    const learnMore = links[0]!;
+    learnMore.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await microtasksFinished();
+
+    assertEquals(1, testApiProxy.getCallCount('openHelpPage'));
   });
 
   test('Active tab missing from organization shows error', async () => {

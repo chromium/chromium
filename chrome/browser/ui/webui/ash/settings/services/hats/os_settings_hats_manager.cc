@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
-#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash::settings {

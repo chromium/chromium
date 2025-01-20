@@ -22,7 +22,19 @@ class PermissionDialog : public PermissionPromptAndroid {
 
   ~PermissionDialog() override;
 
+  // PermissionPrompt:
   PermissionPromptDisposition GetPromptDisposition() const override;
+
+  // PermissionPromptAndroid:
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
+  base::android::ScopedJavaLocalRef<jstring> GetNegativeButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveEphemeralButtonText(
+      JNIEnv* env,
+      bool is_one_time) const override;
 };
 
 }  // namespace permissions

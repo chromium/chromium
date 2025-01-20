@@ -15,6 +15,8 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
@@ -49,13 +51,6 @@ import java.util.function.Function;
                             model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)));
             view.mVirtualCardDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
-        } else if (AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION
-                == propertyKey) {
-            view.mCardContainer.setContentDescription(
-                    model.get(
-                            AutofillVcnEnrollBottomSheetProperties
-                                    .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
-
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey
                 || AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK
                         == propertyKey) {
@@ -74,10 +69,9 @@ import java.util.function.Function;
 
         } else if (AutofillVcnEnrollBottomSheetProperties.CARD_LABEL == propertyKey) {
             view.mCardLabel.setText(model.get(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL));
-
-        } else if (AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION == propertyKey) {
-            view.mCardDescription.setText(
-                    model.get(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION));
+            view.mCardContainer.setContentDescription(
+                    getCardLabelAccessibilityText(
+                            model.get(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL)));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES == propertyKey) {
             setLegalMessageOrHideIfEmpty(
@@ -110,9 +104,6 @@ import java.util.function.Function;
                 view.mAcceptButton.setVisibility(View.VISIBLE);
                 view.mCancelButton.setVisibility(View.VISIBLE);
             }
-        } else if (AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION == propertyKey) {
-            view.mLoadingViewContainer.setContentDescription(
-                    model.get(AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION));
         }
     }
 
@@ -192,5 +183,13 @@ import java.util.function.Function;
         } else {
             textView.setVisibility(View.GONE);
         }
+    }
+
+    // Returns the card label accessibility text formatted with the card label.
+    private static String getCardLabelAccessibilityText(String cardLabel) {
+        return ContextUtils.getApplicationContext()
+                .getString(
+                        R.string.autofill_virtual_card_container_accessibility_description,
+                        cardLabel);
     }
 }

@@ -4,9 +4,15 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/navigator_login.h"
 
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_account.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_status.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_login_status_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
@@ -33,8 +39,6 @@ NavigatorLogin::NavigatorLogin(Navigator& navigator)
 ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
     ScriptState* script_state,
     const V8LoginStatus& v8_status) {
-  // TODO(https://crbug.com/1382193): Determine if we should add an origin
-  // parameter.
   auto* context = ExecutionContext::From(script_state);
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
@@ -50,6 +54,56 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
   }
   request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
   return EmptyPromise();
+}
+
+ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
+    ScriptState* script_state,
+    const V8LoginStatus& v8_status,
+    const LoginStatusOptions* options) {
+  auto* context = ExecutionContext::From(script_state);
+  auto* request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+
+  ScriptPromise<IDLUndefined> promise = resolver->Promise();
+
+  mojom::blink::IdpSigninStatus status;
+  switch (v8_status.AsEnum()) {
+    case V8LoginStatus::Enum::kLoggedIn:
+      status = mojom::blink::IdpSigninStatus::kSignedIn;
+      break;
+    case V8LoginStatus::Enum::kLoggedOut:
+      status = mojom::blink::IdpSigninStatus::kSignedOut;
+      break;
+  }
+  if (options->hasAccounts()) {
+    for (const auto& account : options->accounts()) {
+      if (!account.Get()->hasPicture()) {
+        continue;
+      }
+
+      KURL picture_url = context->CompleteURL(account.Get()->picture());
+      if (!picture_url.IsValid()) {
+        resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                         "Picture URL is invalid");
+        return promise;
+      }
+
+      if (!network::IsUrlPotentiallyTrustworthy(GURL(picture_url))) {
+        resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                         "Picture URL must be a secure URL");
+        return promise;
+      }
+
+      account.Get()->setPicture(picture_url.GetString());
+    }
+  }
+
+  request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
+  resolver->Resolve();
+  return promise;
 }
 
 void NavigatorLogin::Trace(Visitor* visitor) const {

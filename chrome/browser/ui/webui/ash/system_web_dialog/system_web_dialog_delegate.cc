@@ -107,8 +107,9 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   // TODO(crbug.com/40112040): It could be possible that a Chromebox is
   // hooked up to a low-resolution monitor. It might be a good idea to check
   // that display's resolution as well.
-  if (!display::HasInternalDisplay())
+  if (!display::HasInternalDisplay()) {
     return preferred_size;
+  }
 
   display::Display internal_display;
   if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(

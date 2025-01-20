@@ -12,11 +12,16 @@ import static org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetC
 import static org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetContentProperties.EXPIRY_TIME;
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_SHOPPING;
 
+import android.app.Activity;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,23 +30,34 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
 /** Render Tests for the discounts bottom sheet content. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Batch(Batch.UNIT_TESTS)
-public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTestCase {
+public class DiscountsBottomSheetContentRenderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
@@ -58,25 +74,28 @@ public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTe
     private RecyclerView mRecyclerView;
     private DiscountsBottomSheetContentCoordinator mCoordinator;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
-                            new DiscountsBottomSheetContentCoordinator(
-                                    getActivity(), () -> mMockTab);
+                            new DiscountsBottomSheetContentCoordinator(sActivity, () -> mMockTab);
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();
-                    getActivity().setContentView(mContentView);
+                    sActivity.setContentView(mContentView);
                 });
     }
 
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P, message = "crbug.com/382335140")
     public void testSingleDiscountContent() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -95,6 +114,7 @@ public class DiscountsBottomSheetContentRenderTest extends BlankUiTestActivityTe
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P, message = "crbug.com/382335140")
     public void testMultipleDiscountsContents() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

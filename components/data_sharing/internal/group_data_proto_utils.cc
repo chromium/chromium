@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/group_data.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace data_sharing {
 
@@ -43,7 +44,7 @@ MemberRole MemberRoleFromProto(const data_sharing_pb::MemberRole& member_role) {
 data_sharing_pb::GroupMember GroupMemberToProto(
     const GroupMember& group_member) {
   data_sharing_pb::GroupMember result;
-  result.set_gaia_id(group_member.gaia_id);
+  result.set_gaia_id(group_member.gaia_id.ToString());
   result.set_display_name(group_member.display_name);
   result.set_email(group_member.email);
   result.set_role(MemberRoleToProto(group_member.role));
@@ -55,7 +56,7 @@ data_sharing_pb::GroupMember GroupMemberToProto(
 GroupMember GroupMemberFromProto(
     const data_sharing_pb::GroupMember& group_member_proto) {
   GroupMember result;
-  result.gaia_id = group_member_proto.gaia_id();
+  result.gaia_id = GaiaId(group_member_proto.gaia_id());
   result.display_name = group_member_proto.display_name();
   result.email = group_member_proto.email();
   result.role = MemberRoleFromProto(group_member_proto.role());

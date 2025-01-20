@@ -27,13 +27,15 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   ~DataSharingServiceAndroid() override;
 
   // DataSharingService Java API methods, implemented by native service:
-  void ReadAllGroups(JNIEnv* env, const JavaParamRef<jobject>& j_callback);
   void ReadGroup(JNIEnv* env,
                  const JavaParamRef<jstring>& group_id,
                  const JavaParamRef<jobject>& j_callback);
   void CreateGroup(JNIEnv* env,
                    const JavaParamRef<jstring>& group_name,
                    const JavaParamRef<jobject>& j_callback);
+  void LeaveGroup(JNIEnv* env,
+                  const JavaParamRef<jstring>& group_id,
+                  const JavaParamRef<jobject>& j_callback);
   void DeleteGroup(JNIEnv* env,
                    const JavaParamRef<jstring>& group_id,
                    const JavaParamRef<jobject>& j_callback);

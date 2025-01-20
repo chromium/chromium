@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(original_main_frame->GetSiteInstance(),
               original_child_frame->GetSiteInstance());
-    EXPECT_NE(original_main_frame->GetProcess()->GetID(),
-              original_child_frame->GetProcess()->GetID());
+    EXPECT_NE(original_main_frame->GetProcess()->GetDeprecatedID(),
+              original_child_frame->GetProcess()->GetDeprecatedID());
   }
 
   // Open view-source mode tab for the subframe.  This tries to mimic the

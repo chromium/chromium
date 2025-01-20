@@ -222,8 +222,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
 
   source->AddBoolean("hideExportButton", true);
 
-  source->AddResourcePaths(
-      base::make_span(kPolicyResources, kPolicyResourcesSize));
+  source->AddResourcePaths(kPolicyResources);
 
   std::string variations_json_value;
   base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);

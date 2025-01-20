@@ -51,7 +51,8 @@ public class BookmarkActivity extends SnackbarActivity {
                         true,
                         getSnackbarManager(),
                         profile,
-                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
+                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        /* bookmarkOpenedCallback= */ null);
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);

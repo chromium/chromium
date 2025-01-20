@@ -102,7 +102,7 @@ public class WebauthnModeProvider {
 
     @NativeMethods
     interface Natives {
-        long setWebauthnModeForWebContents(WebContents webContents, @WebauthnMode int mode);
+        void setWebauthnModeForWebContents(WebContents webContents, @WebauthnMode int mode);
 
         @WebauthnMode
         int getWebauthnModeForWebContents(WebContents webContents);

@@ -5,21 +5,22 @@
 package org.chromium.components.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.content.Context;
 
-import androidx.preference.Preference;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
@@ -29,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.library_loader.LibraryLoader;
@@ -36,6 +38,7 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -56,6 +59,8 @@ public class TrackingProtectionSettingsTest {
     @Mock private TrackingProtectionDelegate mDelegate;
 
     @Mock private SiteSettingsDelegate mSiteSettingsDelegate;
+
+    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
     private TrackingProtectionSettings mFragment;
 
@@ -82,61 +87,94 @@ public class TrackingProtectionSettingsTest {
                 (fragment) -> {
                     ((TrackingProtectionSettings) fragment)
                             .setTrackingProtectionDelegate(mDelegate);
+                    ((TrackingProtectionSettings) fragment)
+                            .setCustomTabLauncher(mCustomTabLauncher);
                 });
         mFragment = (TrackingProtectionSettings) mSettingsRule.getPreferenceFragment();
     }
 
     @Test
     @SmallTest
-    public void testShowTrackingProtectionBrandedUi() {
+    public void launchTrackingProtectionPage() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
         when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
-        when(mDelegate.shouldShowTrackingProtectionBrandedUi()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 
         onView(withText(R.string.privacy_sandbox_tracking_protection_description))
                 .check(matches(isDisplayed()));
-
-        Preference dntPreference =
-                mFragment.findPreference(TrackingProtectionSettings.PREF_DNT_TOGGLE);
-        assertTrue(dntPreference.isVisible());
     }
 
     @Test
     @SmallTest
-    public void testShowTrackingProtectionRewindUi() {
-        when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
-        when(mDelegate.shouldShowTrackingProtectionBrandedUi()).thenReturn(false);
-
-        launchTrackingProtectionSettings();
-
-        onView(withText(R.string.privacy_sandbox_tracking_protection_description))
-                .check(matches(isDisplayed()));
-
-        Preference dntPreference =
-                mFragment.findPreference(TrackingProtectionSettings.PREF_DNT_TOGGLE);
-        assertFalse(dntPreference.isVisible());
-    }
-
-    @Test
-    @SmallTest
-    public void testIpFpProtectionsDisplayedInLaunchUi() {
+    public void launchWithIpAndFpProtection_extraContentDisplayed() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
         when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
         when(mDelegate.shouldDisplayIpProtection()).thenReturn(true);
         when(mDelegate.shouldDisplayFingerprintingProtection()).thenReturn(true);
-        when(mDelegate.shouldShowTrackingProtectionBrandedUi()).thenReturn(true);
 
         launchTrackingProtectionSettings();
+
+        Context context = ApplicationProvider.getApplicationContext();
+        String fp_protection =
+                context.getString(R.string.tracking_protection_fingerprinting_protection_learn_more)
+                        .replaceAll("<link>|</link>", "");
+        String ip_protection =
+                context.getString(R.string.tracking_protection_ip_protection_learn_more)
+                        .replaceAll("<link>|</link>", "");
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(fp_protection))));
+        onView(withText(ip_protection)).check(matches(isDisplayed()));
+        onView(withText(fp_protection)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void changeToggleValues_propagatedToBackend() {
+        when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
+        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
+        when(mDelegate.shouldDisplayIpProtection()).thenReturn(true);
+        when(mDelegate.shouldDisplayFingerprintingProtection()).thenReturn(true);
+        when(mDelegate.isIpProtectionEnabled()).thenReturn(false);
+        when(mDelegate.isFingerprintingProtectionEnabled()).thenReturn(false);
+
+        launchTrackingProtectionSettings();
+
+        onView(withText(R.string.tracking_protection_block_cookies_toggle_title)).perform(click());
+        verify(mDelegate).setBlockAll3pc(/* enabled= */ Mockito.eq(false));
 
         onView(withId(R.id.recycler_view))
                 .perform(
                         RecyclerViewActions.scrollTo(
-                                hasDescendant(withText(containsString("Learn how limiting")))));
-        onView(withText(containsString("Learn how IP protection"))).check(matches(isDisplayed()));
-        onView(withText(containsString("Learn how limiting digital")))
-                .check(matches(isDisplayed()));
+                                hasDescendant(
+                                        withText(
+                                                R.string
+                                                        .tracking_protection_fingerprinting_protection_title))));
+
+        onView(withText(R.string.tracking_protection_ip_protection_toggle_title)).perform(click());
+        verify(mDelegate).setIpProtection(/* enabled= */ Mockito.eq(true));
+        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
+                .perform(click());
+        verify(mDelegate).setFingerprintingProtection(/* enabled= */ Mockito.eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void clickOnLearnMore_cctIsOpened() {
+        when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
+        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
+
+        launchTrackingProtectionSettings();
+
+        Context context = ApplicationProvider.getApplicationContext();
+        String tp_learn_more =
+                context.getString(
+                                R.string.privacy_sandbox_tracking_protection_bullet_two_description)
+                        .replaceAll("<link>|</link>", "");
+        onView(withText(tp_learn_more)).perform(clickOnClickableSpan(/* spanIndex= */ 0));
+        verify(mCustomTabLauncher)
+                .openUrlInCct(
+                        /* context= */ Mockito.any(),
+                        /* url= */ Mockito.eq(TrackingProtectionSettings.LEARN_MORE_URL));
     }
 }

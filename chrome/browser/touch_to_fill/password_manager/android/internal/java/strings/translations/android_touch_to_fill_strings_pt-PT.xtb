@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Lista de credenciais a preencher com o toque aberta em ecrã cheio.</translation>
 <translation id="5591247451101092906">Usar a palavra-passe ou o token de acesso guardada?</translation>
 <translation id="5624120631404540903">Gerir palavras-passe</translation>
+<translation id="592182999816790476">Palavra-passe de <ph name="USERNAME" /> guardada para <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Chave de acesso para <ph name="USERNAME" />, use o bloqueio de ecrã</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova palavra-passe para este site}other{Novas palavras-passe para este site}}</translation>
 <translation id="7286867818472074330">Selecionar chave de acesso</translation>

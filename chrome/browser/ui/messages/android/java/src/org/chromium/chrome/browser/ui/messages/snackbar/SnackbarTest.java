@@ -27,6 +27,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -352,7 +354,55 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testOverrideParent_BeforeShowing_FloatingSnackbar() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.overrideParent(sAlternateParent1);
+                    mManager.showSnackbar(snackbar);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should not have been overridden, but was.",
+                () ->
+                        mManager.isShowing()
+                                && mManager.getCurrentSnackbarViewForTesting().mParent
+                                        == sMainParent);
+    }
+
+    @Test
+    @SmallTest
     public void testOverrideParent_WhileShowing() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    mManager.overrideParent(sAlternateParent1);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should have been overridden, but wasn't.",
+                () ->
+                        mManager.isShowing()
+                                && mManager.getCurrentSnackbarViewForTesting().mParent
+                                        == sAlternateParent1);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testOverrideParent_WhileShowing_FloatingSnackbar() {
         final Snackbar snackbar =
                 Snackbar.make(
                         "stack",

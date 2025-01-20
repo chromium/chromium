@@ -43,15 +43,16 @@ OobeDisplayChooser::OobeDisplayChooser() {
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
-OobeDisplayChooser::~OobeDisplayChooser() {}
+OobeDisplayChooser::~OobeDisplayChooser() = default;
 
 void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Don't (potentially) queue a second task to run MoveToTouchDisplay if one
   // already is queued.
-  if (weak_ptr_factory_.HasWeakPtrs())
+  if (weak_ptr_factory_.HasWeakPtrs()) {
     return;
+  }
 
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();

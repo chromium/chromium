@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_value_map.h"
@@ -17,24 +18,13 @@
 
 namespace {
 
-// Adds the search providers read from `pref` to `search_engines`. Returns true
-// if `pref` exists and is managed.
-bool LoadSiteSearchEnginesFromPrefs(
-    const PrefService::Preference* pref,
-    EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines) {
-  // Only accept site search engine created by policy.
-  if (!pref || !pref->IsManaged()) {
-    return false;
-  }
-
-  for (const base::Value& engine : pref->GetValue()->GetList()) {
-    const base::Value::Dict& url_dict = engine.GetDict();
-    std::unique_ptr<TemplateURLData> turl_data =
-        TemplateURLDataFromDictionary(url_dict);
-    CHECK(turl_data);
-    search_engines->push_back(std::move(turl_data));
-  }
-  return true;
+std::unique_ptr<TemplateURLData> DictToTemplateURLData(
+    const base::Value& engine) {
+  const base::Value::Dict& url_dict = engine.GetDict();
+  std::unique_ptr<TemplateURLData> turl_data =
+      TemplateURLDataFromDictionary(url_dict);
+  CHECK(turl_data);
+  return turl_data;
 }
 
 }  // namespace
@@ -85,14 +75,62 @@ void EnterpriseSearchManager::OnPrefChanged() {
   }
 
   EnterpriseSearchManager::OwnedTemplateURLDataVector search_engines;
-  bool valid_site_search = LoadSiteSearchEnginesFromPrefs(
+  LoadingResult site_search_loading_result = LoadSearchEnginesFromPrefs(
       pref_service_->FindPreference(kSiteSearchSettingsPrefName),
       &search_engines);
-  bool valid_aggregator = LoadSiteSearchEnginesFromPrefs(
-      pref_service_->FindPreference(
-          kEnterpriseSearchAggregatorSettingsPrefName),
-      &search_engines);
-  if (valid_site_search || valid_aggregator) {
+  LoadingResult search_aggregator_loading_result =
+      LoadSearchAggregator(&search_engines);
+  if (site_search_loading_result != LoadingResult::kUnavailable ||
+      search_aggregator_loading_result != LoadingResult::kUnavailable) {
     change_observer_.Run(std::move(search_engines));
   }
+}
+
+// Adds the search providers read from `pref` to `search_engines`. Returns true
+// if `pref` exists and is managed.
+EnterpriseSearchManager::LoadingResult
+EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
+    const PrefService::Preference* pref,
+    EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines) {
+  // Only accept site search engine created by policy.
+  if (!pref || !pref->IsManaged()) {
+    return LoadingResult::kUnavailable;
+  }
+
+  LoadingResult result = LoadingResult::kAvailableEmpty;
+  for (const base::Value& engine : pref->GetValue()->GetList()) {
+    search_engines->emplace_back(DictToTemplateURLData(engine));
+    result = LoadingResult::kAvailableNonEmpty;
+  }
+  return result;
+}
+
+EnterpriseSearchManager::LoadingResult
+EnterpriseSearchManager::LoadSearchAggregator(
+    EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines) {
+  // Use the search engines created by policy if the policy is available (e.g.
+  // controlling feature is enabled) and the policy value is set as a valid
+  // search engine.
+  LoadingResult pref_loading_result = LoadSearchEnginesFromPrefs(
+      pref_service_->FindPreference(
+          kEnterpriseSearchAggregatorSettingsPrefName),
+      search_engines);
+  if (pref_loading_result == LoadingResult::kAvailableNonEmpty) {
+    return LoadingResult::kAvailableNonEmpty;
+  }
+
+  // Use pref loading result (either empty or non-empty) if there are no mock
+  // search engines available.
+  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
+           .AreMockEnginesValid()) {
+    return pref_loading_result;
+  }
+
+  auto mock_engines = omnibox_feature_configs::SearchAggregatorProvider::Get()
+                          .CreateMockSearchEngines();
+  CHECK(!mock_engines.empty());
+  for (const base::Value& mock_engine : mock_engines) {
+    search_engines->emplace_back(DictToTemplateURLData(mock_engine));
+  }
+  return LoadingResult::kAvailableNonEmpty;
 }

@@ -620,8 +620,17 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
                                       std::move(touch_action));
             },
             std::move(callback), weak_this_);
-    client_->GetWidgetInputHandler()->DispatchEvent(
-        std::move(event), std::move(renderer_callback));
+    {
+      TRACE_EVENT(
+          "latencyInfo", "LatencyInfo.Flow", [&](perfetto::EventContext ctx) {
+            ui::LatencyInfo::FillTraceEvent(
+                ctx, latency_info.trace_id(),
+                ChromeLatencyInfo2::Step::STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE,
+                InputEventTypeToProto(input_event.GetType()));
+          });
+      client_->GetWidgetInputHandler()->DispatchEvent(
+          std::move(event), std::move(renderer_callback));
+    }
   } else {
     TRACE_EVENT_INSTANT0("input", "InputEventSentNonBlocking",
                          TRACE_EVENT_SCOPE_THREAD);

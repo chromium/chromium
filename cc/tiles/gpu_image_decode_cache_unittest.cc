@@ -193,7 +193,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override {
     transfer_cache_helper_->CreateEntryDirect(
         MakeEntryKey(type, id),
-        base::make_span(mapped_entry_.get(), mapped_entry_size_));
+        base::span(mapped_entry_.get(), mapped_entry_size_));
     mapped_entry_ = nullptr;
     mapped_entry_size_ = 0;
   }
@@ -653,14 +653,19 @@ class GpuImageDecodeCacheTest
     return std::move(draw_image);
   }
 
-  sk_sp<SkImage> GetLastTransferredImage() {
+  ServiceImageTransferCacheEntry* GetLastTransferredCacheEntry() {
     auto& key = transfer_cache_helper_.GetLastAddedEntry();
     ServiceTransferCacheEntry* entry =
         transfer_cache_helper_.GetEntryInternal(key.first, key.second);
     if (!entry)
       return nullptr;
     CHECK_EQ(TransferCacheEntryType::kImage, entry->Type());
-    return static_cast<ServiceImageTransferCacheEntry*>(entry)->image();
+    return static_cast<ServiceImageTransferCacheEntry*>(entry);
+  }
+
+  sk_sp<SkImage> GetLastTransferredImage() {
+    auto* entry = GetLastTransferredCacheEntry();
+    return entry ? entry->image() : nullptr;
   }
 
   void CompareAllPlanesToMippedVersions(
@@ -5132,6 +5137,148 @@ INSTANTIATE_TEST_SUITE_P(
 
 #undef EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE
 #undef EXPECT_FALSE_IF_NOT_USING_TRANSFER_CACHE
+
+TEST_P(GpuImageDecodeCacheTest, GainmapImage) {
+  auto cache = CreateCache();
+  const uint32_t client_id = cache->GenerateClientId();
+
+  SkImageInfo base_info = SkImageInfo::Make(
+      16, 32, kN32_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  SkImageInfo gain_info = SkImageInfo::Make(
+      8, 16, kN32_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  SkGainmapInfo gainmap_info;
+
+  PaintImage paint_image;
+  {
+    const bool allocate_encoded_memory = true;
+    auto base_generator = sk_make_sp<FakePaintImageGenerator>(
+        base_info, std::vector<FrameMetadata>{FrameMetadata()},
+        allocate_encoded_memory);
+    auto gain_generator = sk_make_sp<FakePaintImageGenerator>(
+        gain_info, std::vector<FrameMetadata>{FrameMetadata()},
+        allocate_encoded_memory);
+    paint_image =
+        PaintImageBuilder::WithDefault()
+            .set_id(PaintImage::GetNextId())
+            .set_paint_image_generator(base_generator)
+            .set_gainmap_paint_image_generator(gain_generator, gainmap_info)
+            .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+            .TakePaintImage();
+  }
+
+  DrawImage draw_image = CreateDrawImageInternal(paint_image);
+  ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
+      client_id, draw_image, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(result.need_unref);
+  EXPECT_TRUE(result.task);
+
+  TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(result.task.get());
+
+  viz::RasterContextProvider::ScopedRasterContextLock context_lock(
+      context_provider());
+  DecodedDrawImage decoded_draw_image =
+      cache->GetDecodedImageForDraw(draw_image);
+
+  if (use_transfer_cache_) {
+    auto* entry = GetLastTransferredCacheEntry();
+    auto service_base_image = entry->image();
+    auto service_gain_image = entry->gainmap_image();
+
+    // If using the transfer cache, the color conversion should be applied
+    // there during upload.
+    sk_sp<SkImage> service_image = GetLastTransferredImage();
+    ASSERT_TRUE(service_base_image);
+    ASSERT_TRUE(service_gain_image);
+    EXPECT_TRUE(service_base_image->isTextureBacked());
+    EXPECT_TRUE(service_gain_image->isTextureBacked());
+    EXPECT_EQ(base_info.width(), service_base_image->width());
+    EXPECT_EQ(base_info.height(), service_base_image->height());
+    EXPECT_EQ(gain_info.width(), service_gain_image->width());
+    EXPECT_EQ(gain_info.height(), service_gain_image->height());
+  } else {
+    // Gainmap images are only supported via the transfer cache.
+  }
+
+  cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+  cache->UnrefImage(draw_image);
+}
+
+TEST_P(GpuImageDecodeCacheTest, GainmapImageFailsDecode) {
+  auto cache = CreateCache();
+  const uint32_t client_id = cache->GenerateClientId();
+
+  // Create two transfer cache entries. The first one will succeed in its
+  // gainmap decode, and the second will fail.
+  for (int i = 0; i < 2; ++i) {
+    SkImageInfo base_info =
+        SkImageInfo::Make(16, 32, kN32_SkColorType, kPremul_SkAlphaType,
+                          SkColorSpace::MakeSRGB());
+    SkImageInfo gain_info = SkImageInfo::Make(
+        8, 16, kN32_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+    SkGainmapInfo gainmap_info;
+
+    PaintImage paint_image;
+    {
+      const bool allocate_encoded_memory = true;
+      auto base_generator = sk_make_sp<FakePaintImageGenerator>(
+          base_info, std::vector<FrameMetadata>{FrameMetadata()},
+          allocate_encoded_memory);
+      auto gain_generator = sk_make_sp<FakePaintImageGenerator>(
+          gain_info, std::vector<FrameMetadata>{FrameMetadata()},
+          allocate_encoded_memory);
+      // Fail just the gainmap decode.
+      if (i == 1) {
+        gain_generator->SetForceFailDecode();
+      }
+      paint_image =
+          PaintImageBuilder::WithDefault()
+              .set_id(PaintImage::GetNextId())
+              .set_paint_image_generator(base_generator)
+              .set_gainmap_paint_image_generator(gain_generator, gainmap_info)
+              .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+              .TakePaintImage();
+    }
+
+    DrawImage draw_image = CreateDrawImageInternal(paint_image);
+    ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
+        client_id, draw_image, ImageDecodeCache::TracingInfo());
+    EXPECT_TRUE(result.need_unref);
+    EXPECT_TRUE(result.task);
+
+    TestTileTaskRunner::ProcessTask(result.task->dependencies()[0].get());
+    TestTileTaskRunner::ProcessTask(result.task.get());
+
+    viz::RasterContextProvider::ScopedRasterContextLock context_lock(
+        context_provider());
+    DecodedDrawImage decoded_draw_image =
+        cache->GetDecodedImageForDraw(draw_image);
+
+    if (use_transfer_cache_) {
+      auto* entry = GetLastTransferredCacheEntry();
+      auto service_base_image = entry->image();
+      auto service_gain_image = entry->gainmap_image();
+
+      ASSERT_TRUE(service_base_image);
+      EXPECT_TRUE(service_base_image->isTextureBacked());
+      EXPECT_EQ(base_info.width(), service_base_image->width());
+      EXPECT_EQ(base_info.height(), service_base_image->height());
+      if (i == 0) {
+        ASSERT_TRUE(service_gain_image);
+        EXPECT_TRUE(service_gain_image->isTextureBacked());
+        EXPECT_EQ(gain_info.width(), service_gain_image->width());
+        EXPECT_EQ(gain_info.height(), service_gain_image->height());
+      } else {
+        EXPECT_FALSE(service_gain_image);
+      }
+    } else {
+      // Gainmap images are only supported via the transfer cache.
+    }
+
+    cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+    cache->UnrefImage(draw_image);
+  }
+}
 
 }  // namespace
 }  // namespace cc

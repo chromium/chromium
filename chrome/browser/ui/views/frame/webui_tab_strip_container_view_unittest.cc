@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"

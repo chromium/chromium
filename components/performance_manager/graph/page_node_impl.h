@@ -23,6 +23,7 @@
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
 #include "url/gurl.h"
 
@@ -50,15 +51,17 @@ using PagePropertyFlags = base::
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
-      public SupportsNodeInlineData<PageLoadTrackerDecoratorData,
-                                    PageAggregatorData,
+      public SupportsNodeInlineData<
+          PageLoadTrackerDecoratorData,
+          PageAggregatorData,
 #if !BUILDFLAG(IS_ANDROID)
-                                    SiteDataNodeData,
+          SiteDataNodeData,
 #endif
-                                    FrozenData,
-                                    LoadingScenarioPageFrameCounts,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+          FrozenData,
+          LoadingScenarioPageFrameCounts,
+          resource_attribution::SharedCPUTimeResultData,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
 
@@ -92,12 +95,13 @@ class PageNodeImpl
   bool IsAudible() const override;
   std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
   bool HasPictureInPicture() const override;
+  bool HasFreezingOriginTrialOptOut() const override;
   bool IsOffTheRecord() const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
   bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
+  bool IsHoldingBlockingIndexedDBLock() const override;
   bool UsesWebRTC() const override;
   int64_t GetNavigationID() const override;
   const std::string& GetContentsMimeType() const override;
@@ -167,12 +171,18 @@ class PageNodeImpl
     SetLifecycleState(lifecycle_state);
   }
 
+  void SetHasFreezingOriginTrialOptOutForTesting(
+      bool has_freezing_origin_trial_opt_out) {
+    SetHasFreezingOriginTrialOptOut(has_freezing_origin_trial_opt_out);
+  }
+
   void SetIsHoldingWebLockForTesting(bool is_holding_weblock) {
     SetIsHoldingWebLock(is_holding_weblock);
   }
 
-  void SetIsHoldingIndexedDBLockForTesting(bool is_holding_weblock) {
-    SetIsHoldingIndexedDBLock(is_holding_weblock);
+  void SetIsHoldingBlockingIndexedDBLockForTesting(
+      bool is_holding_blocking_indexeddb_lock) {
+    SetIsHoldingBlockingIndexedDBLock(is_holding_blocking_indexeddb_lock);
   }
 
   void SetUsesWebRTCForTesting(bool uses_webrtc) { SetUsesWebRTC(uses_webrtc); }
@@ -203,9 +213,10 @@ class PageNodeImpl
                            bool is_holding_weblock) {
     SetIsHoldingWebLock(is_holding_weblock);
   }
-  void SetIsHoldingIndexedDBLock(base::PassKey<PageAggregatorData>,
-                                 bool is_holding_indexeddb_lock) {
-    SetIsHoldingIndexedDBLock(is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      base::PassKey<PageAggregatorData>,
+      bool is_holding_blocking_indexeddb_lock) {
+    SetIsHoldingBlockingIndexedDBLock(is_holding_blocking_indexeddb_lock);
   }
   void SetUsesWebRTC(base::PassKey<PageAggregatorData>, bool uses_web_rtc) {
     SetUsesWebRTC(uses_web_rtc);
@@ -219,6 +230,11 @@ class PageNodeImpl
     SetHadUserEdits(had_user_edits);
   }
 
+  void SetHasFreezingOriginTrialOptOut(base::PassKey<PageAggregatorData>,
+                                       bool has_freezing_origin_trial_opt_out) {
+    SetHasFreezingOriginTrialOptOut(has_freezing_origin_trial_opt_out);
+  }
+
  private:
   friend class PageNodeImplDescriber;
 
@@ -229,16 +245,18 @@ class PageNodeImpl
   NodeSetView<const FrameNode*> GetMainFrameNodes() const override;
 
   // NodeBase:
-  void OnJoiningGraph() override;
+  void OnInitializingProperties() override;
   void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  void CleanUpNodeState() override;
 
   void SetLifecycleState(LifecycleState lifecycle_state);
   void SetIsHoldingWebLock(bool is_holding_weblock);
-  void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      bool is_holding_blocking_indexeddb_lock);
   void SetUsesWebRTC(bool uses_web_rtc);
   void SetHadFormInteraction(bool had_form_interaction);
   void SetHadUserEdits(bool had_user_edits);
+  void SetHasFreezingOriginTrialOptOut(bool has_freezing_origin_trial_opt_out);
 
   // The WebContents associated with this page.
   const base::WeakPtr<content::WebContents> web_contents_;
@@ -290,8 +308,11 @@ class PageNodeImpl
 
   // The notification permission status for the last committed main frame
   // navigation.
-  std::optional<blink::mojom::PermissionStatus> notification_permission_status_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      std::optional<blink::mojom::PermissionStatus>,
+      std::optional<blink::mojom::PermissionStatus>,
+      &PageNodeObserver::OnPageNotificationPermissionStatusChange>
+      notification_permission_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The unique ID of the browser context that this page belongs to.
   const std::string browser_context_id_;
@@ -335,6 +356,13 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnHasPictureInPictureChanged>
       has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Whether the page is opted-out from freezing via origin trial, i.e. if any
+  // of its current frames sets the origin trial.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnPageHasFreezingOriginTrialOptOutChanged>
+      has_freezing_origin_trial_opt_out_ GUARDED_BY_CONTEXT(sequence_checker_){
+          false};
 
   const bool is_off_the_record_;
 
@@ -365,11 +393,12 @@ class PageNodeImpl
       &PageNodeObserver::OnPageIsHoldingWebLockChanged>
       is_holding_weblock_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Indicates if at least one frame of the page is currently holding an
-  // IndexedDB lock.
+  // IndexedDB lock that is blocking another client.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &PageNodeObserver::OnPageIsHoldingIndexedDBLockChanged>
-      is_holding_indexeddb_lock_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+      &PageNodeObserver::OnPageIsHoldingBlockingIndexedDBLockChanged>
+      is_holding_blocking_indexeddb_lock_ GUARDED_BY_CONTEXT(sequence_checker_){
+          false};
   // Indicates if at least one frame of the page currently uses WebRTC.
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnPageUsesWebRTCChanged>

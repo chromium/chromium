@@ -10,7 +10,12 @@ struct AccountInfo;
 // Delegate for the bubble sign in promo view.
 class BubbleSignInPromoDelegate {
  public:
-  virtual ~BubbleSignInPromoDelegate() {}
+  BubbleSignInPromoDelegate() = default;
+  virtual ~BubbleSignInPromoDelegate() = default;
+
+  BubbleSignInPromoDelegate(BubbleSignInPromoDelegate&) = delete;
+  BubbleSignInPromoDelegate& operator=(const BubbleSignInPromoDelegate&) =
+      delete;
 
   // Informs the delegate to sign in |account| or to present
   // the browser sign-in page if |account| is empty.

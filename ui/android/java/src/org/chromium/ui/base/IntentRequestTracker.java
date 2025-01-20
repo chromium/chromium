@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
@@ -17,6 +19,7 @@ import java.lang.ref.WeakReference;
  * The interface for a helper class that keeps track of the intent requests for an Activity. Its
  * implementation should be hidden in ui/base. No implementation should be made outside of ui/base.
  */
+@NullMarked
 public interface IntentRequestTracker {
     /** A delegate of this class's intent sending. */
     interface Delegate {
@@ -24,7 +27,7 @@ public interface IntentRequestTracker {
          * Starts an activity for the provided intent.
          * @see Activity#startActivityForResult
          */
-        boolean startActivityForResult(Intent intent, int requestCode);
+        boolean startActivityForResult(@Nullable Intent intent, int requestCode);
 
         /**
          * Uses the provided intent sender to start the intent.
@@ -112,5 +115,5 @@ public interface IntentRequestTracker {
      * @param errorId The error ID used if the intent encounters an error.
      * @return int The request code for the intent.
      */
-    int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId);
+    int showCancelableIntent(Intent intent, IntentCallback callback, @Nullable Integer errorId);
 }

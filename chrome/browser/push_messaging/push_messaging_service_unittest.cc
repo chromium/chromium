@@ -481,7 +481,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionsPushMessagingServiceTest
     : public ExtensionServiceTestWithInstall,

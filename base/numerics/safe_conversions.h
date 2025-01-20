@@ -41,7 +41,7 @@ struct SaturateFastAsmOp {
 template <typename Dst, typename Src>
 struct IsValueInRangeFastOp {
   static constexpr bool is_supported = false;
-  static constexpr bool Do(Src value) {
+  static constexpr bool Do(Src) {
     // Force a compile failure if instantiated.
     return CheckOnFailure::template HandleFailure<bool>();
   }
@@ -78,10 +78,10 @@ struct IsValueInRangeFastOp<Dst, Src> {
 // Convenience function that returns true if the supplied value is in range
 // for the destination type.
 template <typename Dst, typename Src>
-  requires(UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+  requires(IsNumeric<Src> && std::is_arithmetic_v<Dst> &&
            std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
 constexpr bool IsValueInRangeForNumericType(Src value) {
-  using SrcType = typename internal::UnderlyingType<Src>::type;
+  using SrcType = UnderlyingType<Src>;
   const auto underlying_value = static_cast<SrcType>(value);
   return internal::IsValueInRangeFastOp<Dst, SrcType>::is_supported
              ? internal::IsValueInRangeFastOp<Dst, SrcType>::Do(
@@ -96,14 +96,13 @@ constexpr bool IsValueInRangeForNumericType(Src value) {
 template <typename Dst,
           class CheckHandler = internal::CheckOnFailure,
           typename Src>
-  requires(UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+  requires(IsNumeric<Src> && std::is_arithmetic_v<Dst> &&
            std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
 constexpr Dst checked_cast(Src value) {
   // This throws a compile-time error on evaluating the constexpr if it can be
   // determined at compile-time as failing, otherwise it will CHECK at runtime.
-  using SrcType = typename internal::UnderlyingType<Src>::type;
   if (IsValueInRangeForNumericType<Dst>(value)) [[likely]] {
-    return static_cast<Dst>(static_cast<SrcType>(value));
+    return static_cast<Dst>(static_cast<UnderlyingType<Src>>(value));
   }
   return CheckHandler::template HandleFailure<Dst>();
 }
@@ -157,7 +156,7 @@ constexpr Dst saturated_cast_impl(Src value, RangeCheck constraint) {
 template <typename Dst, typename Src>
 struct SaturateFastOp {
   static constexpr bool is_supported = false;
-  static constexpr Dst Do(Src value) {
+  static constexpr Dst Do(Src) {
     // Force a compile failure if instantiated.
     return CheckOnFailure::template HandleFailure<Dst>();
   }
@@ -200,7 +199,7 @@ template <typename Dst,
           template <typename> class SaturationHandler = SaturationDefaultLimits,
           typename Src>
 constexpr Dst saturated_cast(Src value) {
-  using SrcType = typename UnderlyingType<Src>::type;
+  using SrcType = UnderlyingType<Src>;
   const auto underlying_value = static_cast<SrcType>(value);
   return !std::is_constant_evaluated() &&
                  SaturateFastOp<Dst, SrcType>::is_supported &&
@@ -216,11 +215,9 @@ constexpr Dst saturated_cast(Src value) {
 // strict_cast<> is analogous to static_cast<> for numeric types, except that
 // it will cause a compile failure if the destination type is not large enough
 // to contain any value in the source type. It performs no runtime checking.
-template <typename Dst,
-          typename Src,
-          typename SrcType = typename UnderlyingType<Src>::type>
+template <typename Dst, typename Src, typename SrcType = UnderlyingType<Src>>
   requires(
-      UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+      IsNumeric<Src> && std::is_arithmetic_v<Dst> &&
       // If you got here from a compiler error, it's because you tried to assign
       // from a source type to a destination type that has insufficient range.
       // The solution may be to change the destination type you're assigning to,
@@ -305,17 +302,15 @@ StrictNumeric(T) -> StrictNumeric<T>;
 // Convenience wrapper returns a StrictNumeric from the provided arithmetic
 // type.
 template <typename T>
-constexpr StrictNumeric<typename UnderlyingType<T>::type> MakeStrictNum(
-    const T value) {
+constexpr StrictNumeric<UnderlyingType<T>> MakeStrictNum(const T value) {
   return value;
 }
 
-#define BASE_NUMERIC_COMPARISON_OPERATORS(CLASS, NAME, OP)          \
-  template <typename L, typename R>                                 \
-    requires(internal::kIs##CLASS##Op<L, R>)                        \
-  constexpr bool operator OP(L lhs, R rhs) {                        \
-    return SafeCompare<NAME, typename UnderlyingType<L>::type,      \
-                       typename UnderlyingType<R>::type>(lhs, rhs); \
+#define BASE_NUMERIC_COMPARISON_OPERATORS(CLASS, NAME, OP)                    \
+  template <typename L, typename R>                                           \
+    requires(internal::Is##CLASS##Op<L, R>)                                   \
+  constexpr bool operator OP(L lhs, R rhs) {                                  \
+    return SafeCompare<NAME, UnderlyingType<L>, UnderlyingType<R>>(lhs, rhs); \
   }
 
 BASE_NUMERIC_COMPARISON_OPERATORS(Strict, IsLess, <)

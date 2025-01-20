@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+
 #include <string>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
 

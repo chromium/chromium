@@ -10,8 +10,6 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_session.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
@@ -25,6 +23,8 @@
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_session.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace arc {
@@ -241,7 +241,8 @@ void ArcVmmManager::SendSwapRequest(
       request,
       base::BindOnce(
           [](vm_tools::concierge::SwapOperation op, base::OnceClosure cb,
-             std::optional<vm_tools::concierge::SwapVmResponse> response) {
+             std::optional<vm_tools::concierge::SuccessFailureResponse>
+                 response) {
             if (!response.has_value()) {
               LOG(ERROR) << "Failed to receive SwapVm response.";
             } else if (!response->success()) {
@@ -290,7 +291,7 @@ void ArcVmmManager::SendAggressiveBalloonRequest(
       request,
       base::BindOnce(
           [](bool enabled, base::OnceClosure cb,
-             std::optional<vm_tools::concierge::AggressiveBalloonResponse>
+             std::optional<vm_tools::concierge::SuccessFailureResponse>
                  response) {
             if (!response.has_value()) {
               LOG(ERROR) << "Failed to receive aggressive ballon response.";

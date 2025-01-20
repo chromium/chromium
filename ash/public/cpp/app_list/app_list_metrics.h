@@ -113,7 +113,7 @@ enum SearchResultType {
   // An app result which is an app that was installed on another device.
   PLAY_STORE_REINSTALL_APP,
   // An app result which is an internal app (files, settings, etc).
-  INTERNAL_APP,
+  INTERNAL_APP_DEPRECATED,
   // An app result which is an extension.
   EXTENSION_APP,
   // A Crostini App Result.

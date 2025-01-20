@@ -38,7 +38,8 @@ namespace content {
 namespace {
 class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
  public:
-  void RequestMediaAccessPermission(const MediaStreamRequest& request,
+  void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                    const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override {
     return RequestMediaAccessPermission(request, &callback);
   }
@@ -618,7 +619,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
       blink::mojom::MediaStreamType mic_type,
       blink::mojom::MediaStreamType cam_type) {
     return std::make_unique<MediaStreamRequest>(
-        rfh->GetProcess()->GetID(), rfh->GetRoutingID(), 0,
+        rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(), 0,
         url::Origin::Create(rfh->GetLastCommittedURL()), false,
         blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_ids=*/std::vector<std::string>{},
@@ -632,7 +633,8 @@ class MediaStreamUIProxyPermissionsPolicyTest
  private:
   class TestRFHDelegate : public RenderFrameHostDelegate {
    public:
-    void RequestMediaAccessPermission(const MediaStreamRequest& request,
+    void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                      const MediaStreamRequest& request,
                                       MediaResponseCallback callback) override {
       blink::mojom::StreamDevicesSet stream_devices_set;
       stream_devices_set.stream_devices.emplace_back(

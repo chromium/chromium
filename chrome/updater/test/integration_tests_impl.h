@@ -164,8 +164,8 @@ void EnterTestMode(const GURL& update_url,
 // JSON file.
 void ExitTestMode(UpdaterScope scope);
 
-// Sets the external constants for group policies.
-void SetGroupPolicies(const base::Value::Dict& values);
+// Sets the dict policies that are surfaced via external constants.
+void SetDictPolicies(const base::Value::Dict& values);
 
 // Sets platform policies. Platform policy is group policy on Windows, and
 // Managed Preferences on macOS.
@@ -198,7 +198,9 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool verify_app_logo_loaded,
                           bool expect_success,
                           bool wait_for_the_installer,
-                          const base::Value::List& additional_switches);
+                          int expected_exit_code,
+                          const base::Value::List& additional_switches,
+                          const base::FilePath& updater_path);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -237,6 +239,11 @@ void Update(UpdaterScope scope,
 // Invokes the active instance's UpdateService::CheckForUpdate (via RPC) for an
 // app.
 void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
+
+// Invokes UpdateService::CheckForUpdate (via RPC) for the opposite scope of the
+// given `scope` and `app_id`.
+void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
+                                            const std::string& app_id);
 
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
@@ -285,7 +292,8 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
 // Gets the real updater lower version paths/versions.
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix = {});
 
 // Gets the real updater current and lower version paths/versions.
 std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
@@ -416,7 +424,8 @@ void ExpectUpdateSequence(
     const base::Version& to_version,
     bool do_fault_injection,
     bool skip_download,
-    const base::Version& updater_version = base::Version(kUpdaterVersion));
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    const std::string& event_regex = ".*");
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -435,7 +444,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& to_version,
                            bool do_fault_injection,
                            bool skip_download,
-                           const base::Version& updater_version);
+                           const base::Version& updater_version,
+                           const std::string& event_regex);
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
 

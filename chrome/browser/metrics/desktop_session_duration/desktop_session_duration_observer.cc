@@ -20,7 +20,7 @@ DesktopSessionDurationObserver::DesktopSessionDurationObserver(
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
-DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {}
+DesktopSessionDurationObserver::~DesktopSessionDurationObserver() = default;
 
 // static
 DesktopSessionDurationObserver*
@@ -53,6 +53,7 @@ void DesktopSessionDurationObserver::UnregisterInputEventObserver(
 }
 
 void DesktopSessionDurationObserver::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   service_->OnUserEvent();
 }

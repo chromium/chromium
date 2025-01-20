@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/video_capture_system_impl.h"
 
 using testing::_;
@@ -32,14 +31,14 @@ void MockVideoCaptureDeviceTest::SetUp() {
   mock_device_factory_ = mock_device_factory.get();
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(mock_device_factory));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   mock_device_factory_adapter_ = std::make_unique<DeviceFactoryImpl>(
       std::move(video_capture_system), base::DoNothing(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #else
   mock_device_factory_adapter_ =
       std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   media::VideoCaptureDeviceDescriptor mock_descriptor;
   mock_descriptor.device_id = "MockDeviceId";

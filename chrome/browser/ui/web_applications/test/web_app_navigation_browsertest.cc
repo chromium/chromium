@@ -250,7 +250,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
-    if (!registrar.IsInstalled(app_id)) {
+    if (!registrar.IsInRegistrar(app_id)) {
       continue;
     }
     const WebApp* app = registrar.GetAppById(app_id);

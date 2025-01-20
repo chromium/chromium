@@ -27,13 +27,15 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
 #if defined(USE_AURA)
   wm::ActivationClient* client = wm::GetActivationClient(
       browser->window()->GetNativeWindow()->GetRootWindow());
-  if (!client)
+  if (!client) {
     return nullptr;
+  }
   gfx::NativeWindow active_window = client->GetActiveWindow();
 #elif BUILDFLAG(IS_MAC)
   NSWindow* active_window = platform_util::GetActiveWindow();
-  if (!active_window)
+  if (!active_window) {
     return nullptr;
+  }
 #endif
 
   views::Widget* widget =
@@ -46,14 +48,16 @@ namespace chrome {
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (view && view->tabstrip())
+  if (view && view->tabstrip()) {
     return view->tabstrip()->GetFocusedTabIndex();
+  }
   return std::nullopt;
 }
 
 void ExecuteUIDebugCommand(int id, const Browser* browser) {
-  if (!base::FeatureList::IsEnabled(features::kUIDebugTools))
+  if (!base::FeatureList::IsEnabled(features::kUIDebugTools)) {
     return;
+  }
 
   switch (id) {
     case IDC_DEBUG_TOGGLE_TABLET_MODE: {
@@ -64,12 +68,12 @@ void ExecuteUIDebugCommand(int id, const Browser* browser) {
       break;
     }
     case IDC_DEBUG_PRINT_VIEW_TREE:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view);
-      break;
     case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
-      if (views::View* view = GetActiveWindowRootView(browser))
-        PrintViewHierarchy(view, /* verbose= */ true);
+      if (views::View* view = GetActiveWindowRootView(browser)) {
+        LOG(ERROR) << '\n'
+                   << PrintViewHierarchy(
+                          view, id == IDC_DEBUG_PRINT_VIEW_TREE_DETAILS);
+      }
       break;
     default:
       NOTREACHED() << "Unimplemented UI Debug command: " << id;

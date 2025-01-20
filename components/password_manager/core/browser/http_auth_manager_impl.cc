@@ -160,7 +160,7 @@ void HttpAuthManagerImpl::OnLoginSuccesfull() {
 
 void HttpAuthManagerImpl::LogMessage(const Logger::StringID msg) const {
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogMessage(msg);
   }
 }

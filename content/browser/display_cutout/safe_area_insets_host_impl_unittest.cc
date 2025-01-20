@@ -59,11 +59,10 @@ class TestSafeAreaInsetsHostImpl : public SafeAreaInsetsHostImpl {
   }
   RenderFrameHost* latest_rfh() { return latest_rfh_.value(); }
   RenderFrameHost* previous_rfh() { return previous_rfh_.value(); }
+  RenderFrameHost* active_rfh() { return active_render_frame_host(); }
   int send_safe_area_to_frame_call_count() {
     return send_safe_area_to_frame_call_count_;
   }
-
-  RenderFrameHost* active_rfh() { return ActiveRenderFrameHost(); }
 
  protected:
   // Send the safe area insets to a `RenderFrameHost`.

@@ -345,8 +345,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
 
 void DevToolsListener::SendCommandMessage(content::DevToolsAgentHost* host,
                                           const std::string& command) {
-  auto message = base::as_bytes(base::make_span(command));
-  host->DispatchProtocolMessage(this, message);
+  host->DispatchProtocolMessage(this, base::as_byte_span(command));
 }
 
 bool DevToolsListener::AwaitCommandResponse(int id) {

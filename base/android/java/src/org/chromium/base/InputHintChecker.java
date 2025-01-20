@@ -8,12 +8,14 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** This class allows native code to discover the root view of the current Window. */
+@NullMarked
 @JNINamespace("base::android")
 public class InputHintChecker {
 
@@ -97,7 +99,7 @@ public class InputHintChecker {
 
     @NativeMethods
     public interface Natives {
-        void setView(Object view);
+        void setView(@Nullable Object view);
 
         void onCompositorViewHolderTouchEvent();
 

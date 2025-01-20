@@ -31,9 +31,8 @@ std::string GenerateValidVerificationKey(KeyType key_type) {
       break;
   }
   CHECK(TRUST_TOKEN_generate_key(
-      method, base::as_writable_bytes(base::make_span(signing)).data(),
-      &signing_len, signing.size(),
-      base::as_writable_bytes(base::make_span(verification)).data(),
+      method, base::as_writable_byte_span(signing).data(), &signing_len,
+      signing.size(), base::as_writable_byte_span(verification).data(),
       &verification_len, verification.size(),
       /*id=*/0));
   verification.resize(verification_len);

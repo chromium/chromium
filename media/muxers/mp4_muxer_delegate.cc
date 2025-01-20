@@ -122,6 +122,7 @@ Mp4MuxerDelegate::Mp4MuxerDelegate(
     VideoCodec video_codec,
     std::optional<VideoCodecProfile> video_profile,
     std::optional<VideoCodecLevel> video_level,
+    bool add_parameter_sets_in_bitstream,
     Muxer::WriteDataCB write_callback,
     size_t audio_sample_count_per_fragment)
     : write_callback_(std::move(write_callback)),
@@ -129,6 +130,7 @@ Mp4MuxerDelegate::Mp4MuxerDelegate(
       video_codec_(video_codec),
       video_profile_(std::move(video_profile)),
       video_level_(std::move(video_level)),
+      add_parameter_sets_in_bitstream_(add_parameter_sets_in_bitstream),
       audio_sample_count_per_fragment_(audio_sample_count_per_fragment) {}
 
 Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
@@ -183,7 +185,8 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
   if (video_codec_ == VideoCodec::kH264) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    visual_sample_entry.compressor_name = "AVC1 Coding";
+    visual_sample_entry.compressor_name =
+        add_parameter_sets_in_bitstream_ ? "AVC3 Coding" : "AVC1 Coding";
 
     mp4::writable_boxes::AVCDecoderConfiguration avc_config;
     mp4::AVCDecoderConfigurationRecord avc_config_record;
@@ -192,13 +195,16 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     DCHECK(result);
 
     avc_config.avc_config_record = std::move(avc_config_record);
+    avc_config.add_parameter_sets_in_bitstream =
+        add_parameter_sets_in_bitstream_;
     visual_sample_entry.avc_decoder_configuration = std::move(avc_config);
 #else
     NOTREACHED();
 #endif
   } else if (video_codec_ == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    visual_sample_entry.compressor_name = "HVC1 Coding";
+    visual_sample_entry.compressor_name =
+        add_parameter_sets_in_bitstream_ ? "HEV1 Coding" : "HVC1 Coding";
 
     mp4::writable_boxes::HEVCDecoderConfiguration hevc_config;
     mp4::HEVCDecoderConfigurationRecord hevc_config_record;
@@ -207,6 +213,8 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     DCHECK(result);
 
     hevc_config.hevc_config_record = std::move(hevc_config_record);
+    hevc_config.add_parameter_sets_in_bitstream =
+        add_parameter_sets_in_bitstream_;
     visual_sample_entry.hevc_decoder_configuration = std::move(hevc_config);
 #else
     NOTREACHED();
@@ -241,6 +249,13 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     visual_sample_entry.av1_decoder_configuration = std::move(av1_config);
   } else {
     NOTREACHED();
+  }
+
+  // `colr`
+  if (params.color_space && params.color_space->IsValid()) {
+    visual_sample_entry.color_information =
+        mp4::writable_boxes::ColorInformation(
+            VideoColorSpace::FromGfxColorSpace(*params.color_space));
   }
 
   description.video_sample_entry = std::move(visual_sample_entry);
@@ -542,12 +557,16 @@ void Mp4MuxerDelegate::BuildFileTypeBox(
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kHEVC:
-      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_HVC1);
+      mp4_file_type_box.compatible_brands.emplace_back(
+          add_parameter_sets_in_bitstream_ ? mp4::FOURCC_HEV1
+                                           : mp4::FOURCC_HVC1);
       break;
 #endif
     case VideoCodec::kH264:
     default:
-      mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
+      mp4_file_type_box.compatible_brands.emplace_back(
+          add_parameter_sets_in_bitstream_ ? mp4::FOURCC_AVC3
+                                           : mp4::FOURCC_AVC1);
       break;
   }
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_MP41);
@@ -687,8 +706,8 @@ scoped_refptr<DecoderBuffer> Mp4MuxerDelegate::ConvertNALUData(
     scoped_refptr<DecoderBuffer> encoded_data) {
   CHECK(video_codec_ == VideoCodec::kH264 || video_codec_ == VideoCodec::kHEVC);
   if (!h26x_converter_) {
-    h26x_converter_ =
-        std::make_unique<H26xAnnexBToBitstreamConverter>(video_codec_);
+    h26x_converter_ = std::make_unique<H26xAnnexBToBitstreamConverter>(
+        video_codec_, add_parameter_sets_in_bitstream_);
   }
 
   return h26x_converter_->Convert(encoded_data->AsSpan());

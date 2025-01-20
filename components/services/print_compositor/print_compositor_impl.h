@@ -24,11 +24,16 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "components/enterprise/watermarking/mojom/watermark.mojom-forward.h"  // nogncheck
+#endif
 
 class SkDocument;
 struct SkDocumentPage;
@@ -97,13 +102,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   void SetGenerateDocumentOutline(
       mojom::GenerateDocumentOutline generate_document_outline) override;
   void SetTitle(const std::string& title) override;
-  void SetWatermarkText(const std::string& watermark_text) override;
-
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  // Print UX requirement for watermarking. Values are in pixels. Constants
-  // exposed for testing.
-  static constexpr int kWatermarkBlockWidth = 350;
-  static constexpr float kWatermarkTextSize = 24.0f;
+  void SetWatermarkBlock(
+      watermark::mojom::WatermarkBlockPtr watermark_block) override;
 #endif
 
  protected:
@@ -130,9 +131,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       mojom::PrintCompositor::DocumentType document_type);
 
   // Make these functions virtual so tests can override them.
-  virtual void DrawPage(SkDocument* doc,
-                        const SkDocumentPage& page,
-                        const std::string& watermark_text);
+  virtual void DrawPage(SkDocument* doc, const SkDocumentPage& page);
   virtual void FulfillRequest(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
@@ -140,6 +139,12 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       CompositePagesCallback callback);
   virtual void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback);
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // Accessor for watermark block for tests
+  const watermark::mojom::WatermarkBlockPtr& watermark_block_for_testing()
+      const;
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, IsReadyToComposite);
@@ -154,6 +159,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       base::flat_map<uint32_t, sk_sp<SkPicture>>;
   using TypefaceDeserializationContext =
       base::flat_map<uint32_t, sk_sp<SkTypeface>>;
+  using ImageDeserializationContext = base::flat_map<uint32_t, sk_sp<SkImage>>;
 
   // Base structure to store a frame's content and its subframe
   // content information.
@@ -174,6 +180,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
     // Typefaces used within scope of this frame.
     TypefaceDeserializationContext typefaces;
+
+    // Images used within scope of this frame.
+    ImageDeserializationContext images;
   };
 
   // Other than content, it also stores the status during frame composition.
@@ -281,6 +290,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // Context for dealing with all typefaces encountered across multiple pages.
   TypefaceDeserializationContext typefaces_;
 
+  // Context for dealing with all images encountered across multiple pages.
+  ImageDeserializationContext images_;
+
   std::vector<std::unique_ptr<RequestInfo>> requests_;
   std::unique_ptr<DocumentInfo> doc_info_;
 
@@ -295,16 +307,27 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // The title of the document.
   std::string title_;
 
-  // The watermark text.
-  std::string watermark_text_;
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // The watermark block. The special value `nullptr` indicates that there is no
+  // watermark.
+  watermark::mojom::WatermarkBlockPtr watermark_block_;
+#endif
 };
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-// Draw the watermark specified by `watermark_text` using the provided canvas
+// Draw the watermark specified by `watermark_block` using the provided canvas
 // and its size. Exposed for testing.
-void DrawEnterpriseWatermark(SkCanvas* canvas,
-                             SkSize size,
-                             const std::string& watermark_text);
+void DrawEnterpriseWatermark(
+    SkCanvas* canvas,
+    SkSize size,
+    const watermark::mojom::WatermarkBlockPtr& watermark_block);
+
+// Helper function to draw the watermark block without checking for feature
+// flags. Exposed for testing.
+void DrawWatermarkBlockForTesting(
+    SkCanvas* canvas,
+    SkSize size,
+    const watermark::mojom::WatermarkBlockPtr& watermark_block);
 #endif
 
 }  // namespace printing

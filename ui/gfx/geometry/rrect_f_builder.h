@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_RRECT_F_BUILDER_H_
 #define UI_GFX_GEOMETRY_RRECT_F_BUILDER_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
 namespace gfx {
@@ -22,7 +23,7 @@ namespace gfx {
 //                  .set_lower_right(5, 6)
 //                  .set_lower_left(7, 8)
 //                  .Build();
-class GEOMETRY_SKIA_EXPORT RRectFBuilder {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectFBuilder {
  public:
   RRectFBuilder();
   RRectFBuilder(RRectFBuilder&& other);

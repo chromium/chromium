@@ -103,8 +103,7 @@ std::vector<pid_t> GetAllChildren(const ProcessMap& processes, pid_t root) {
 
 }  // namespace
 
-MemoryDetails::MemoryDetails() {
-}
+MemoryDetails::MemoryDetails() = default;
 
 ProcessData* MemoryDetails::ChromeBrowser() {
   return &process_data_[0];

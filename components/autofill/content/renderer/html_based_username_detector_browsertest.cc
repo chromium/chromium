@@ -280,10 +280,10 @@ TEST_F(HtmlBasedUsernameDetectorTest, SeveralDetections) {
 }
 
 TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
-  const TextField text_fields[] = {
+  const auto text_fields = std::to_array<TextField>({
       {"unknown", "12345"},
       {"something", "smith"},
-  };
+  });
 
   const std::string& form_html = GetFormHTML(text_fields[0], text_fields[1]);
 

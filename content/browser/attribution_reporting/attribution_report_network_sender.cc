@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -36,6 +37,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -56,7 +61,7 @@ enum class Status {
 
 template <typename T>
 void NetworkHistogram(std::string_view suffix,
-                      void (*hist_func)(const std::string&, T value),
+                      void (*hist_func)(std::string_view, T value),
                       bool is_debug_report,
                       std::optional<bool> has_trigger_context_id,
                       T value) {
@@ -78,9 +83,29 @@ void NetworkHistogram(std::string_view suffix,
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
+    : url_loader_factory_(std::move(url_loader_factory))
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      application_status_listener_(
+          base::android::ApplicationStatusListener::New(base::BindRepeating(
+              &AttributionReportNetworkSender::OnApplicationStateChanged,
+              // Listener is destroyed at destructor, and
+              // object will be alive for any callback.
+              base::Unretained(this)))) {
+  DCHECK(url_loader_factory_);
+  OnApplicationStateChanged(
+      base::android::ApplicationStatusListener::GetState());
+}
+
+void AttributionReportNetworkSender::OnApplicationStateChanged(
+    base::android::ApplicationState state) {
+  app_state_ = state;
+}
+#else
+{
   DCHECK(url_loader_factory_);
 }
+#endif
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
@@ -158,7 +183,7 @@ void AttributionReportNetworkSender::SendReport(GURL url,
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("conversion_measurement_report", R"(
@@ -248,6 +273,30 @@ void AttributionReportNetworkSender::OnReportSent(
         "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
         response_or_net_error);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  std::string_view suffix;
+  switch (app_state_) {
+    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+      suffix = "AppRunning";
+      break;
+    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+      suffix = "AppPaused";
+      break;
+    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+      suffix = "AppBackgrounded";
+      break;
+    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+      suffix = "AppDestroyed";
+      break;
+    case base::android::APPLICATION_STATE_UNKNOWN:
+      suffix = "AppStateUnknown";
+      break;
+  }
+  base::UmaHistogramSparse(
+      base::StrCat({"Conversions.HttpResponseOrNetErrorCode.", suffix}),
+      response_or_net_error);
+#endif
 
   std::optional<bool> has_trigger_context_id;
 

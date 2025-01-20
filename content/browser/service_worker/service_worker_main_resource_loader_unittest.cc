@@ -688,7 +688,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, RequestBody) {
 
   // Create a request with a body.
   auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  request_body->AppendBytes(kData.c_str(), kData.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(kData));
   std::unique_ptr<network::ResourceRequest> request = CreateRequest();
   request->method = "POST";
   request->request_body = request_body;

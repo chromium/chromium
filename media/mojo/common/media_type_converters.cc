@@ -124,7 +124,7 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
   data_buffer->duration = input.duration();
   data_buffer->is_key_frame = input.is_key_frame();
   data_buffer->data_size = base::checked_cast<uint32_t>(input.size());
-  if (input.has_side_data()) {
+  if (input.side_data()) {
     data_buffer->side_data =
         media::mojom::DecoderBufferSideData::From(*input.side_data());
   }

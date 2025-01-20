@@ -8,7 +8,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.url.GURL;
 
 /**
  * Java side of the JNI bridge between CollaborationServiceImpl in Java and C++. All method calls
@@ -33,13 +35,30 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
+    public void startJoinFlow(CollaborationControllerDelegate delegate, GURL url) {
+        CollaborationServiceImplJni.get().startJoinFlow(mNativePtr, delegate.getNativePtr(), url);
+    }
+
+    @Override
+    public void startShareOrManageFlow(CollaborationControllerDelegate delegate, String syncId) {
+        CollaborationServiceImplJni.get()
+                .startShareOrManageFlow(mNativePtr, delegate.getNativePtr(), syncId);
+    }
+
+    @Override
     public ServiceStatus getServiceStatus() {
         return CollaborationServiceImplJni.get().getServiceStatus(mNativePtr);
     }
 
     @Override
-    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
-        return CollaborationServiceImplJni.get().getCurrentUserRoleForGroup(mNativePtr, groupId);
+    public @MemberRole int getCurrentUserRoleForGroup(String collaborationId) {
+        return CollaborationServiceImplJni.get()
+                .getCurrentUserRoleForGroup(mNativePtr, collaborationId);
+    }
+
+    @Override
+    public GroupData getGroupData(String collaborationId) {
+        return CollaborationServiceImplJni.get().getGroupData(mNativePtr, collaborationId);
     }
 
     @CalledByNative
@@ -52,8 +71,17 @@ public class CollaborationServiceImpl implements CollaborationService {
         boolean isEmptyService(
                 long nativeCollaborationServiceAndroid, CollaborationServiceImpl caller);
 
+        void startJoinFlow(
+                long nativeCollaborationServiceAndroid, long delegateNativePtr, GURL url);
+
+        void startShareOrManageFlow(
+                long nativeCollaborationServiceAndroid, long delegateNativePtr, String syncId);
+
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
 
-        int getCurrentUserRoleForGroup(long nativeCollaborationServiceAndroid, String groupId);
+        int getCurrentUserRoleForGroup(
+                long nativeCollaborationServiceAndroid, String collaborationId);
+
+        GroupData getGroupData(long nativeCollaborationServiceAndroid, String collaborationId);
     }
 }

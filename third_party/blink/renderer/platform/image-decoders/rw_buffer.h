@@ -28,8 +28,10 @@ class PLATFORM_EXPORT RWBuffer {
   class PLATFORM_EXPORT ROIter {
    public:
     explicit ROIter(RWBuffer*, size_t);
-    size_t size() const;
-    const uint8_t* data() const;
+
+    // Returns a span of the current continuous block of memory. The span will
+    // be empty if the iterator is exhausted.
+    base::span<const uint8_t> operator*() const;
     // Checks whether there is another block available and advances the iterator
     // if there is.
     bool Next();
@@ -39,7 +41,7 @@ class PLATFORM_EXPORT RWBuffer {
 
    private:
     raw_ptr<const RWBuffer> rw_buffer_;
-    raw_ptr<RWBuffer::BufferBlock> block_;
+    raw_ptr<const RWBuffer::BufferBlock> block_;
     size_t remaining_;
   };
 
@@ -58,14 +60,14 @@ class PLATFORM_EXPORT RWBuffer {
   size_t size() const { return total_used_; }
 
   /**
-   * Append |length| bytes from |buffer|.
+   * Append bytes from |buffer|.
    *
    * If the caller knows in advance how much more data they are going to
    * append, they can pass a |reserve| hint (representing the number of upcoming
    * bytes *in addition* to the current append), to minimize the number of
    * internal allocations.
    */
-  void Append(const void* buffer, size_t length, size_t reserve = 0);
+  void Append(base::span<const uint8_t> buffer, size_t reserve = 0);
 
   scoped_refptr<ROBuffer> MakeROBufferSnapshot() const;
 
@@ -104,16 +106,10 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
     void Reset(const ROBuffer*);
 
     /**
-     * Return the current continuous block of memory, or nullptr if the
-     * iterator is exhausted
+     * Returns a span of the current continuous block of memory. The span will
+     * be empty if the iterator is exhausted.
      */
-    const uint8_t* data() const;
-
-    /**
-     * Returns the number of bytes in the current contiguous block of memory,
-     * or 0 if the iterator is exhausted.
-     */
-    size_t size() const;
+    base::span<const uint8_t> operator*() const;
 
     /**
      * Advance to the next contiguous block of memory, returning true if there

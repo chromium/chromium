@@ -2,24 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/management/management_ui.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,23 +24,21 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/grit/branded_strings.h"
-#include "ui/chromeos/devicetype_utils.h"
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/grit/branded_strings.h"
+#include "ui/chromeos/devicetype_utils.h"
+#else  // BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -64,14 +55,12 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
 
   source->SetDefaultResource(IDR_MANAGEMENT_MANAGEMENT_HTML);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddString("managementDeviceLearnMoreUrl",
                     chrome::kLearnMoreEnterpriseURL);
   source->AddString("managementAccountLearnMoreUrl",
                     chrome::kManagedUiLearnMoreUrl);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const size_t dlp_events_count =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile() &&
               policy::DlpRulesManagerFactory::GetForPrimaryProfile()
@@ -87,11 +76,10 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                     l10n_util::GetStringFUTF16(
                         IDS_MANAGEMENT_REPORT_PLUGIN_VM,
                         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kManagementResources, kManagementResourcesSize),
-      IDR_MANAGEMENT_MANAGEMENT_HTML);
+  webui::SetupWebUIDataSource(source, kManagementResources,
+                              IDR_MANAGEMENT_MANAGEMENT_HTML);
   return source;
 }
 
@@ -106,7 +94,7 @@ base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
 
 // static
 std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
@@ -120,7 +108,7 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 
   if (account_manager.empty()) {
     account_manager =
-        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
+        GetAccountManagerIdentity(profile).value_or(std::string());
   }
   if (account_manager.empty()) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
@@ -129,9 +117,11 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
   return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  return chrome::GetManagementPageSubtitle(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
+  // Call the global function explicitly to avoid a conflict with
+  // the static method ManagementUI::GetManagementPageSubtitle().
+  return ::GetManagementPageSubtitle(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -298,4 +288,4 @@ ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(ManagementUIHandler::Create(profile));
 }
 
-ManagementUI::~ManagementUI() {}
+ManagementUI::~ManagementUI() = default;

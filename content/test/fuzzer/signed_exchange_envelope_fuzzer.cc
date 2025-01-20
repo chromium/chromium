@@ -35,9 +35,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   auto before_fallback_url_bytes =
       CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
-          base::make_span(data, BeforeFallbackUrl::kEncodedSizeInBytes));
+          base::span(data, BeforeFallbackUrl::kEncodedSizeInBytes));
   auto before_fallback_url = BeforeFallbackUrl::Parse(
-      base::make_span(before_fallback_url_bytes), nullptr /* devtools_proxy */);
+      base::span(before_fallback_url_bytes), nullptr /* devtools_proxy */);
 
   data += BeforeFallbackUrl::kEncodedSizeInBytes;
   size -= BeforeFallbackUrl::kEncodedSizeInBytes;
@@ -49,9 +49,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto fallback_url_and_after_bytes =
       CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
-          base::make_span(data, fallback_url_and_after_length));
+          base::span(data, fallback_url_and_after_length));
   auto fallback_url_and_after = FallbackUrlAndAfter::Parse(
-      base::make_span(fallback_url_and_after_bytes), before_fallback_url,
+      base::span(fallback_url_and_after_bytes), before_fallback_url,
       nullptr /* devtools_proxy */);
   if (!fallback_url_and_after.is_valid())
     return 0;
@@ -65,14 +65,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   data += signature_header_field.size();
   size -= signature_header_field.size();
 
-  auto cbor_header =
-      CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(base::make_span(
-          data, std::min(size, fallback_url_and_after.cbor_header_length())));
+  auto cbor_header = CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(base::span(
+      data, std::min(size, fallback_url_and_after.cbor_header_length())));
 
-  SignedExchangeEnvelope::Parse(
-      SignedExchangeVersion::kB3, fallback_url_and_after.fallback_url(),
-      signature_header_field, base::make_span(cbor_header),
-      nullptr /* devtools_proxy */);
+  SignedExchangeEnvelope::Parse(SignedExchangeVersion::kB3,
+                                fallback_url_and_after.fallback_url(),
+                                signature_header_field, base::span(cbor_header),
+                                nullptr /* devtools_proxy */);
   return 0;
 }
 

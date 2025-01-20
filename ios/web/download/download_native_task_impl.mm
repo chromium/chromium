@@ -16,6 +16,7 @@ namespace web {
 DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     WebState* web_state,
     const GURL& original_url,
+    NSString* originating_host,
     NSString* http_method,
     const std::string& content_disposition,
     int64_t total_bytes,
@@ -25,6 +26,7 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     DownloadNativeTaskBridge* download)
     : DownloadTaskImpl(web_state,
                        original_url,
+                       originating_host,
                        http_method,
                        content_disposition,
                        total_bytes,

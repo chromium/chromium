@@ -80,107 +80,96 @@ std::string_view GetPromoActionHistogramSuffix(PromoAction promo_action) {
 
 void LogSigninAccessPointStarted(AccessPoint access_point,
                                  PromoAction promo_action) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint",
-                            static_cast<int>(access_point),
-                            static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint", access_point);
   switch (promo_action) {
     case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
       break;
     case PromoAction::PROMO_ACTION_WITH_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninStartedAccessPoint.WithDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint.WithDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NOT_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninStartedAccessPoint.NotDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint.NotDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninStartedAccessPoint.NewAccountNoExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninStartedAccessPoint.NewAccountExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
   }
 }
 
 void LogSigninAccessPointCompleted(AccessPoint access_point,
                                    PromoAction promo_action) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint",
-                            static_cast<int>(access_point),
-                            static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint", access_point);
   switch (promo_action) {
     case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
       break;
     case PromoAction::PROMO_ACTION_WITH_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninCompletedAccessPoint.WithDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint.WithDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NOT_DEFAULT:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Signin.SigninCompletedAccessPoint.NotDefault",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+      UMA_HISTOGRAM_ENUMERATION("Signin.SigninCompletedAccessPoint.NotDefault",
+                                access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninCompletedAccessPoint.NewAccountNoExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
     case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
       UMA_HISTOGRAM_ENUMERATION(
           "Signin.SigninCompletedAccessPoint.NewAccountExistingAccount",
-          static_cast<int>(access_point),
-          static_cast<int>(AccessPoint::ACCESS_POINT_MAX));
+          access_point);
       break;
   }
 }
 
 void LogSignInOffered(AccessPoint access_point, PromoAction promo_action) {
-  // Do not record any histogram if no signin promo.
-  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
-    return;
-  }
-
   static constexpr char signin_offered_base_histogram[] =
       "Signin.SignIn.Offered";
 
   // Log the generic offered histogram.
-  base::UmaHistogramEnumeration(signin_offered_base_histogram, access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration(signin_offered_base_histogram, access_point);
+
+  // Do not record the histogram with a promo suffix if this is invoked/recorded
+  // from a non-promo context.
+  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    return;
+  }
 
   // Log the specific offered histogram based on the `promo_action`.
   base::UmaHistogramEnumeration(
       base::StrCat({signin_offered_base_histogram,
                     GetPromoActionHistogramSuffix(promo_action)}),
-      access_point, AccessPoint::ACCESS_POINT_MAX);
+      access_point);
 }
 
 void LogSignInStarted(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point);
 }
 
+#if BUILDFLAG(IS_IOS)
+void LogSigninWithAccountType(SigninAccountType account_type) {
+  base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                account_type);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void LogSyncOptInStarted(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point);
 }
 
 void LogSyncSettingsOpened(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.OpenedSyncSettings",
-                                access_point, AccessPoint::ACCESS_POINT_MAX);
+                                access_point);
 }
 
 void RecordAccountsPerProfile(int total_number_accounts) {
@@ -355,7 +344,7 @@ void RecordHistoryOptInStateOnSignin(signin_metrics::AccessPoint access_point,
     base::UmaHistogramEnumeration(
         base::StrCat(
             {"Signin.HistoryAlreadyOptedInAccessPoint", consent_level_token}),
-        access_point, AccessPoint::ACCESS_POINT_MAX);
+        access_point);
   }
 }
 
@@ -479,9 +468,12 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
+    case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromCollaborationTabGroup"));
+      break;
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
               << "for access point " << static_cast<int>(access_point);
@@ -582,8 +574,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
       break;
-    case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED();
   }
 }
 
@@ -758,7 +748,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);
@@ -866,8 +855,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       break;
   }
 
-  base::UmaHistogramEnumeration(histogram, access_point,
-                                AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration(histogram, access_point);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

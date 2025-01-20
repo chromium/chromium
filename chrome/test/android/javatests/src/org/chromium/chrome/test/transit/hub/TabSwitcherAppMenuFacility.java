@@ -102,6 +102,6 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
     }
 
     private TabSwitcherListEditorFacility createListEditorFacility() {
-        return new TabSwitcherListEditorFacility(Collections.EMPTY_LIST);
+        return new TabSwitcherListEditorFacility(Collections.emptyList(), Collections.emptyList());
     }
 }

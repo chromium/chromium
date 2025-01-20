@@ -17,22 +17,23 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/fido_types.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -353,8 +354,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
 void CreditCardFidoAuthenticator::OptChange(
     base::Value::Dict authenticator_response) {
   payments::OptChangeRequestDetails request_details;
-  request_details.app_locale =
-      autofill_client_->GetPersonalDataManager()->app_locale();
+  request_details.app_locale = payments_data_manager().app_locale();
 
   switch (current_flow_) {
     case OPT_IN_WITH_CHALLENGE_FLOW:
@@ -566,11 +566,10 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
       relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
 
   const CoreAccountInfo account_info =
-      autofill_client_->GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetAccountInfoForPaymentsServer();
-  options->user.id =
-      std::vector<uint8_t>(account_info.gaia.begin(), account_info.gaia.end());
+      payments_data_manager().GetAccountInfoForPaymentsServer();
+  const std::string& gaia_id_str = account_info.gaia.ToString();
+  options->user.id = options->user.id =
+      std::vector<uint8_t>(gaia_id_str.begin(), gaia_id_str.end());
   options->user.name = account_info.email;
   options->user.display_name = autofill_client_->GetIdentityManager()
                                    ->FindExtendedAccountInfo(account_info)
@@ -742,12 +741,8 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     case AUTHENTICATION_FLOW: {
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
-      full_card_request_ = std::make_unique<payments::FullCardRequest>(
-          autofill_client_,
-          autofill_client_->GetPaymentsAutofillClient()
-              ->GetPaymentsNetworkInterface(),
-          autofill_client_->GetPersonalDataManager());
-
+      full_card_request_ =
+          std::make_unique<payments::FullCardRequest>(autofill_client_);
       std::optional<GURL> last_committed_primary_main_frame_origin;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard &&
           autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {

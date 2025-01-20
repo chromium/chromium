@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -144,12 +145,12 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Overload that makes it easy to pass in std::string values.
   void BindBlob(int param_index, base::span<const char> value) {
-    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+    BindBlob(param_index, base::as_byte_span(value));
   }
 
   // Overload that makes it easy to pass in std::u16string values.
   void BindBlob(int param_index, base::span<const char16_t> value) {
-    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+    BindBlob(param_index, base::as_byte_span(value));
   }
 
   // Conforms with base::Time serialization recommendations.
@@ -308,6 +309,8 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool step_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif  // DCHECK_IS_ON()
+
+  std::optional<base::TimeDelta> time_spent_stepping_ = std::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

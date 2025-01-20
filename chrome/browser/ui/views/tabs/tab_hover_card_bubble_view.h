@@ -34,6 +34,7 @@ class ImageSkia;
 class Tab;
 class TabStyle;
 class FadeLabelView;
+struct TabRendererData;
 
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
@@ -61,6 +62,10 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
   ~TabHoverCardBubbleView() override;
+
+  // Create the CollaborationMessagingRowData from TabRendererData.
+  CollaborationMessagingRowData GetCollaborationMessagingData(
+      const TabRendererData& tab_data);
 
   // Updates and formats title, alert state, domain, and preview image.
   void UpdateCardContent(const Tab* tab);

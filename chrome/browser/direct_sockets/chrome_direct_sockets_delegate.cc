@@ -77,7 +77,7 @@ bool ChromeDirectSocketsDelegate::IsAPIAccessAllowed(
     content::RenderFrameHost& rfh) {
   // No additional rules for Chrome Apps.
   if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
-          ->Contains(rfh.GetProcess()->GetID())) {
+          ->Contains(rfh.GetProcess()->GetDeprecatedID())) {
     return true;
   }
 
@@ -97,7 +97,8 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
   // model.
   if (const extensions::Extension* extension =
           extensions::ProcessMap::Get(rfh.GetBrowserContext())
-              ->GetEnabledExtensionByProcessID(rfh.GetProcess()->GetID())) {
+              ->GetEnabledExtensionByProcessID(
+                  rfh.GetProcess()->GetDeprecatedID())) {
     return ValidateAddressAndPortForChromeApp(extension, address, port,
                                               protocol);
   }
@@ -115,7 +116,7 @@ void ChromeDirectSocketsDelegate::RequestPrivateNetworkAccess(
     base::OnceCallback<void(bool)> callback) {
   // No additional rules for Chrome Apps.
   if (extensions::ProcessMap::Get(rfh.GetBrowserContext())
-          ->Contains(rfh.GetProcess()->GetID())) {
+          ->Contains(rfh.GetProcess()->GetDeprecatedID())) {
     std::move(callback).Run(/*allow_access=*/true);
     return;
   }

@@ -172,6 +172,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Overridden from views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;
 
+  // Updates Previous and Next focus accessibility attributes for the Tray
+  // Button views.
+  void InitializeTrayButtonsAccessibleNavFocus();
+
   // Sets the value for `open_shelf_pod_bubble_`. Note that we only keep track
   // of tray bubble of type `TrayBubbleType::kTrayBubble`.
   void SetOpenShelfPodBubble(TrayBubbleView* open_tray_bubble);

@@ -5,31 +5,36 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.TerminationStatus;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
 
 /**
  * This class receives callbacks that act as hooks for various a native web contents events related
  * to loading a url. A single web contents can have multiple WebContentObservers.
  */
+@NullMarked
 public abstract class WebContentsObserver {
-    // TODO(jdduke): Remove the destroy method and hold observer embedders
-    // responsible for explicit observer detachment.
-    // Using a weak reference avoids cycles that might prevent GC of WebView's WebContents.
-    protected WeakReference<WebContents> mWebContents;
+    private @Nullable WebContents mWebContents;
+    private boolean mHasBeenDestroyed;
 
-    public WebContentsObserver(WebContents webContents) {
-        mWebContents = new WeakReference<WebContents>(webContents);
-        webContents.addObserver(this);
+    public WebContentsObserver(@NonNull WebContents webContents) {
+        observe(webContents);
+    }
+
+    /** Return the web contents associated with the observer. */
+    @Nullable
+    public WebContents getWebContents() {
+        return mWebContents;
     }
 
     /**
@@ -204,12 +209,21 @@ public abstract class WebContentsObserver {
 
     /**
      * Called when the viewport fit of the Web Contents changes.
+     *
      * @param value the new viewport fit value.
      */
     public void viewportFitChanged(@ViewportFitType int value) {}
 
     /**
+     * Called when the safe area constraint of the Web Contents changes.
+     *
+     * @param hasConstraint Whether there are safe area constraint.
+     */
+    public void safeAreaConstraintChanged(boolean hasConstraint) {}
+
+    /**
      * Called when the virtual keyboard mode of the Web Contents changes.
+     *
      * @param mode the new virtual keyboard mode.
      */
     public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {}
@@ -230,13 +244,28 @@ public abstract class WebContentsObserver {
     /** Called when a MediaSession is created for the WebContents. */
     public void mediaSessionCreated(MediaSession mediaSession) {}
 
-    /** Stop observing the web contents and clean up associated references. */
-    public void destroy() {
-        if (mWebContents == null) return;
-        final WebContents webContents = mWebContents.get();
-        mWebContents = null;
-        if (webContents == null) return;
-        webContents.removeObserver(this);
+    /**
+     * Called when {@link #getWebContents()} is being destroyed.
+     *
+     * <p>After this call, clients should assume that {@link #getWebContents()} will be imminently
+     * destroyed and the C++ counterpart deleted.
+     */
+    public void webContentsDestroyed() {}
+
+    /**
+     * Updates the {@link WebContents} that this class is observing, and if null, stops observing
+     * any updates.
+     *
+     * @param webContents The WebContents to observe (or null to stop observing).
+     */
+    public final void observe(@Nullable WebContents webContents) {
+        if (mWebContents == webContents) return;
+        if (mWebContents != null) mWebContents.removeObserver(this);
+        mWebContents = webContents;
+        if (mWebContents != null) {
+            assert !mHasBeenDestroyed;
+            mWebContents.addObserver(this);
+        }
     }
 
     protected WebContentsObserver() {}

@@ -1,17 +1,28 @@
 caption: Controls the mode of DNS-over-HTTPS
 default_for_enterprise_users: 'off'
 desc: |-
-  Controls the mode of the DNS-over-HTTPS resolver. Please note that this policy will only set the default mode for each query. The mode may be overridden for special types of queries such as requests to resolve a DNS-over-HTTPS server hostname.
+  Controls the mode of the DNS-over-HTTPS resolver. Please note that this
+  policy will only set the default mode for each query. The mode may be
+  overridden for special types of queries such as requests to resolve a
+  DNS-over-HTTPS server hostname.
 
-        The <ph name="SECURE_DNS_MODE_OFF">"off"</ph> mode will disable DNS-over-HTTPS.
+  The <ph name="SECURE_DNS_MODE_OFF">"off"</ph> mode will disable
+  DNS-over-HTTPS.
 
-        The <ph name="SECURE_DNS_MODE_AUTOMATIC">"automatic"</ph> mode will send DNS-over-HTTPS queries first if a DNS-over-HTTPS server is available and may fallback to sending insecure queries on error.
+  The <ph name="SECURE_DNS_MODE_AUTOMATIC">"automatic"</ph> mode will send
+  DNS-over-HTTPS queries first if a DNS-over-HTTPS server is available and
+  may fallback to sending insecure queries on error.
 
-        The <ph name="SECURE_DNS_MODE_SECURE">"secure"</ph> mode will only send DNS-over-HTTPS queries and will fail to resolve on error.
+  The <ph name="SECURE_DNS_MODE_SECURE">"secure"</ph> mode will only send
+  DNS-over-HTTPS queries and will fail to resolve on error.
 
-        On <ph name="ANDROID_VERSION">Android Pie</ph> and above, if DNS-over-TLS is active, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not send insecure DNS requests.
+  On <ph name="ANDROID_VERSION">Android Pie</ph> and above, if DNS-over-TLS
+  is active, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not
+  send insecure DNS requests.
 
-        If this policy is unset the browser may send DNS-over-HTTPS requests to a resolver associated with the user's configured system resolver.
+  If this policy is unset, for managed devices DNS-over-HTTPS queries will not
+  be sent. Otherwise, the browser may send DNS-over-HTTPS requests to a
+  resolver associated with the user's configured system resolver.
 example_value: 'off'
 features:
   dynamic_refresh: true

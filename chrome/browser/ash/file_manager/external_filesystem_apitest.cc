@@ -48,6 +48,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -470,7 +471,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
-                                       kSecondProfileGiaId),
+                                       GaiaId(kSecondProfileGiaId)),
         kSecondProfileHash, false);
     // Set up the secondary profile.
     base::FilePath profile_dir = user_data_directory.AppendASCII(
@@ -626,7 +627,7 @@ class LocalAndDriveFileSystemExtensionApiTest
 class FileSystemExtensionApiTestWithApps
     : public LocalFileSystemExtensionApiTest {
  public:
-  FileSystemExtensionApiTestWithApps() {}
+  FileSystemExtensionApiTestWithApps() = default;
 
   // FileManagerPrivateApiTest:
   void SetUpOnMainThread() override {

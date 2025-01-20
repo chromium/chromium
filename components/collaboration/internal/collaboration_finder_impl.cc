@@ -15,9 +15,13 @@ namespace collaboration {
 
 CollaborationFinderImpl::CollaborationFinderImpl(
     data_sharing::DataSharingService* data_sharing_service)
-    : data_sharing_service_(data_sharing_service) {}
+    : data_sharing_service_(data_sharing_service) {
+  data_sharing_service_->AddObserver(this);
+}
 
-CollaborationFinderImpl::~CollaborationFinderImpl() = default;
+CollaborationFinderImpl::~CollaborationFinderImpl() {
+  data_sharing_service_->RemoveObserver(this);
+}
 
 void CollaborationFinderImpl::SetClient(Client* client) {
   CHECK(client);

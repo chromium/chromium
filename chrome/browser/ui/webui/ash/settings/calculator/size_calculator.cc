@@ -8,9 +8,6 @@
 #include <numeric>
 #include <type_traits>
 
-#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
@@ -34,6 +31,9 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -93,7 +93,7 @@ std::ostream& operator<<(std::ostream& out, SizeCalculator::CalculationType t) {
 SizeCalculator::SizeCalculator(CalculationType calculation_type)
     : calculation_type_(calculation_type) {}
 
-SizeCalculator::~SizeCalculator() {}
+SizeCalculator::~SizeCalculator() = default;
 
 void SizeCalculator::StartCalculation() {
   if (calculating_) {

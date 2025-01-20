@@ -73,7 +73,20 @@ class MockInputApi(object):
         self.fnmatch = fnmatch
         self.json = json
         self.re = re
-        self.os_path = os.path
+
+        # We want os_path.exists() and os_path.isfile() to work for files
+        # that are both in the filesystem and mock files we have added
+        # via InitFiles().
+        # By setting os_path to a copy of os.path rather than directly we
+        # can not only have os_path.exists() be a combined output for fake
+        # files and real files in the filesystem.
+        import importlib.util
+        SPEC_OS_PATH = importlib.util.find_spec('os.path')
+        os_path1 = importlib.util.module_from_spec(SPEC_OS_PATH)
+        SPEC_OS_PATH.loader.exec_module(os_path1)
+        sys.modules['os_path1'] = os_path1
+        self.os_path = os_path1
+
         self.platform = sys.platform
         self.python_executable = sys.executable
         self.python3_executable = sys.executable
@@ -106,13 +119,23 @@ class MockInputApi(object):
         def mock_exists(path):
             if not os.path.isabs(path):
                 path = os.path.join(self.presubmit_local_path, path)
-            return path in files_that_exist
+            path = os.path.normpath(path)
+            return path in files_that_exist or any(
+                f.startswith(path)
+                for f in files_that_exist) or os.path.exists(path)
+
+        def mock_isfile(path):
+            if not os.path.isabs(path):
+                path = os.path.join(self.presubmit_local_path, path)
+            path = os.path.normpath(path)
+            return path in files_that_exist or os.path.isfile(path)
 
         def mock_glob(pattern, *args, **kwargs):
-          return fnmatch.filter(files_that_exist, pattern)
+            return fnmatch.filter(files_that_exist, pattern)
 
         # Do not stub these in the constructor to not break existing tests.
         self.os_path.exists = mock_exists
+        self.os_path.isfile = mock_isfile
         self.glob = mock_glob
 
     def AffectedFiles(self, file_filter=None, include_deletes=True):
@@ -169,8 +192,10 @@ class MockInputApi(object):
     def ReadFile(self, filename, mode='r'):
         if hasattr(filename, 'AbsoluteLocalPath'):
             filename = filename.AbsoluteLocalPath()
+        norm_filename = os.path.normpath(filename)
         for file_ in self.files:
-            if filename in (file_.LocalPath(), file_.AbsoluteLocalPath()):
+            to_check = (file_.LocalPath(), file_.AbsoluteLocalPath())
+            if filename in to_check or norm_filename in to_check:
                 return '\n'.join(file_.NewContents())
         # Otherwise, file is not in our mock API.
         raise IOError("No such file or directory: '%s'" % filename)

@@ -4,21 +4,33 @@
 
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,8 +69,16 @@ class FaviconWatcher final : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
+class PageDiscardingHelperBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
+  PageDiscardingHelperBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(::features::kWebContentsDiscard,
+                                              GetParam());
+  }
+  ~PageDiscardingHelperBrowserTest() override = default;
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -107,6 +127,11 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
     favicon_watcher.Wait();
   }
 
+  base::WeakPtr<PageNode> GetPageNodeAtIndex(int index) {
+    return PerformanceManager::GetPrimaryPageNodeForWebContents(
+        browser()->tab_strip_model()->GetWebContentsAt(index));
+  }
+
   void ExpectImmediateDiscard(
       int index,
       DiscardReason discard_reason,
@@ -132,9 +157,7 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
     }
     SCOPED_TRACE(::testing::Message()
                  << discard_string << " discard from " << location.ToString());
-    base::WeakPtr<PageNode> page_node =
-        PerformanceManager::GetPrimaryPageNodeForWebContents(
-            browser()->tab_strip_model()->GetWebContentsAt(index));
+    base::WeakPtr<PageNode> page_node = GetPageNodeAtIndex(index);
     base::RunLoop run_loop;
     PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
@@ -158,9 +181,32 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetWebContentsAt(index)->WasDiscarded(),
         expected_result);
   }
+
+  void ExpectOptedOutOfDiscardingAndFreezing(
+      int index,
+      FreezingOptOutChecker& freezing_opt_out_checker,
+      bool expect_opted_out) {
+    base::WeakPtr<PageNode> page_node = GetPageNodeAtIndex(index);
+    RunInGraph([&] {
+      ASSERT_TRUE(page_node);
+      auto* helper = PageDiscardingHelper::GetFromGraph(page_node->GetGraph());
+      ASSERT_TRUE(helper);
+      EXPECT_EQ(
+          helper->IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
+                                             page_node->GetMainFrameUrl()),
+          expect_opted_out);
+      EXPECT_EQ(
+          freezing_opt_out_checker.IsPageOptedOutOfFreezing(
+              page_node->GetBrowserContextID(), page_node->GetMainFrameUrl()),
+          expect_opted_out);
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
@@ -239,6 +285,171 @@ IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
     }
   }
 }
+
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
+  const std::string default_browser_context_id =
+      browser()->profile()->UniqueId();
+  const std::string base_url_pattern =
+      embedded_test_server()->base_url().spec();
+
+  // Test urgent and proactive discards in a loop to avoid the overhead of
+  // starting a new browser every time.
+  for (auto discard_reason :
+       {DiscardReason::EXTERNAL, DiscardReason::URGENT,
+        DiscardReason::PROACTIVE, DiscardReason::SUGGESTED,
+        DiscardReason::FROZEN_WITH_GROWING_MEMORY}) {
+    {
+      // Also test that FreezingOptOutChecker is hooked up to
+      // PageDiscardingHelper correctly.
+      base::test::TestFuture<std::string_view> policy_changed_future;
+      auto policy_changed_callback =
+          policy_changed_future.GetSequenceBoundRepeatingCallback();
+
+      std::unique_ptr<FreezingOptOutChecker> freezing_opt_out_checker;
+      RunInGraph([&](Graph* graph) {
+        auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+        ASSERT_TRUE(helper);
+        freezing_opt_out_checker =
+            std::make_unique<FreezingOptOutChecker>(helper->GetWeakPtr());
+
+        helper->SetNoDiscardPatternsForProfile(default_browser_context_id,
+                                               {base_url_pattern});
+
+        // The callback wasn't set during SetNoDiscardPatternsForProfile(),
+        // which should safely do nothing. Future calls should notify the
+        // TestFuture.
+        freezing_opt_out_checker->SetOptOutPolicyChangedCallback(
+            std::move(policy_changed_callback));
+      });
+      EXPECT_FALSE(policy_changed_future.IsReady());
+
+      // Background page should be blocked from discarding because its url is
+      // in NoDiscardPatterns (URGENT, PROACTIVE and SUGGESTED discards only).
+      const int index1 = OpenNewBackgroundPage();
+      ExpectOptedOutOfDiscardingAndFreezing(index1, *freezing_opt_out_checker,
+                                            true);
+      switch (discard_reason) {
+        case DiscardReason::EXTERNAL:
+        case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+          ExpectImmediateDiscard(index1, discard_reason, true);
+          break;
+        case DiscardReason::URGENT:
+        case DiscardReason::PROACTIVE:
+        case DiscardReason::SUGGESTED:
+          ExpectImmediateDiscard(index1, discard_reason, false);
+          break;
+      }
+
+      // Empty pattern list.
+      RunInGraph([&](Graph* graph) {
+        auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+        ASSERT_TRUE(helper);
+        helper->SetNoDiscardPatternsForProfile(default_browser_context_id, {});
+      });
+      EXPECT_EQ(policy_changed_future.Take(), default_browser_context_id);
+
+      // No longer blocked from discarding. (Need a new page because the first
+      // may already be discarded.)
+      const int index2 = OpenNewBackgroundPage();
+      ExpectOptedOutOfDiscardingAndFreezing(index2, *freezing_opt_out_checker,
+                                            false);
+      ExpectImmediateDiscard(index2, discard_reason, true);
+
+      // Delete pattern list.
+      RunInGraph([&](Graph* graph) {
+        auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+        ASSERT_TRUE(helper);
+        helper->ClearNoDiscardPatternsForProfile(default_browser_context_id);
+      });
+      EXPECT_EQ(policy_changed_future.Take(), default_browser_context_id);
+
+      // With no list available, page should be treated as if it's opted out.
+      const int index3 = OpenNewBackgroundPage();
+      ExpectOptedOutOfDiscardingAndFreezing(index3, *freezing_opt_out_checker,
+                                            true);
+      switch (discard_reason) {
+        case DiscardReason::EXTERNAL:
+        case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+          ExpectImmediateDiscard(index3, discard_reason, true);
+          break;
+        case DiscardReason::URGENT:
+        case DiscardReason::PROACTIVE:
+        case DiscardReason::SUGGESTED:
+          ExpectImmediateDiscard(index3, discard_reason, false);
+          break;
+      }
+    }
+  }
+}
+
+// Regression test for crbug.com/386801193. Ensure discarded tabs remain
+// eligible for successive discard operations following a reactivation / reload.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardedTabEligibleForSuccessiveDiscards) {
+  // Add a new background tab.
+  OpenNewBackgroundPage();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+
+  // Attempt to discard the background tab.
+  const auto attempt_discard = [this]() {
+    base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          ASSERT_TRUE(discard_target_page_node);
+          auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+          ASSERT_TRUE(helper);
+          EXPECT_EQ(
+              CanDiscardResult::kEligible,
+              helper->CanDiscard(discard_target_page_node.get(),
+                                 DiscardReason::URGENT, base::TimeDelta()));
+          helper->DiscardAPage(
+              base::BindLambdaForTesting(
+                  [&](std::optional<base::TimeTicks> first_discarded_at) {
+                    EXPECT_TRUE(first_discarded_at.has_value());
+                    run_loop.Quit();
+                  }),
+              DiscardReason::URGENT, base::TimeDelta());
+        }));
+    run_loop.Run();
+  };
+  attempt_discard();
+
+  // Ensure the background tab has been discarded.
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+
+  // Activate and reload the discarded background page.
+  content::TestNavigationObserver reload_waiter(tab2->GetContents(), 1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab2);
+  reload_waiter.Wait();
+
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_FALSE(tab2->GetContents()->WasDiscarded());
+
+  // Background the discarded tab again and attempt another discard.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+  attempt_discard();
+
+  // Ensure the background tab has been discarded again.
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PageDiscardingHelperBrowserTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        PageDiscardingHelperBrowserTest::ParamType>& info) {
+      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
+    });
 
 }  // namespace
 

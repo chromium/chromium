@@ -94,6 +94,10 @@ void PageLifecycleStateManager::SetFrameTreeVisibility(
   // automatically resume.
 }
 
+BASE_FEATURE(kBackForwardCacheNonStickyDoubleFix,
+             "BackForwardCacheNonStickyDoubleFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 void PageLifecycleStateManager::SetIsInBackForwardCache(
     bool is_in_back_forward_cache,
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
@@ -116,10 +120,14 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kDispatchedPersisted;
   } else {
     DCHECK(page_restore_params);
-    // When a page is restored from the back-forward cache, we should reset the
-    // |pagehide_dispatch_| state so that we'd dispatch the
-    // events again the next time we navigate away from the page.
+    // When a page is restored from the back-forward cache, we should reset this
+    // state so that it behaves correctly next time navigation occurs.
     pagehide_dispatch_ = blink::mojom::PagehideDispatch::kNotDispatched;
+    // TODO(https://crbug.com/360183659): Make this unconditional after
+    // measuring the impact.
+    if (base::FeatureList::IsEnabled(kBackForwardCacheNonStickyDoubleFix)) {
+      did_receive_back_forward_cache_ack_ = false;
+    }
   }
 
   SendUpdatesToRendererIfNeeded(std::move(page_restore_params),

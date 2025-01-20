@@ -56,14 +56,38 @@ class SerialBootDeviceTest(unittest.TestCase):
     def test_check_health_undetectable(self, *_) -> None:
         self.assertNotEqual(serial_boot_device.main('health-check'), 0)
 
-    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
+    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False, True])
     @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False])
     @mock.patch('subprocess.run',
                 return_value=CompletedProcess(args=['/bin'], returncode=0))
     def test_boot_undetectable(self, mock_run, *_) -> None:
-        self.assertNotEqual(serial_boot_device.main('reboot'), 0)
-        mock_run.assert_not_called()
+        self.assertEqual(serial_boot_device.main('reboot'), 0)
+        mock_run.assert_called_once_with(
+            ['serialio', 'fuchsia-node-id', 'send', 'dm', 'reboot'])
 
+    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False, True])
+    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False])
+    @mock.patch('subprocess.run',
+                return_value=CompletedProcess(args=['/bin'], returncode=0))
+    def test_boot_undetectable_not_must_boot(self, mock_run, *_) -> None:
+        self.assertTrue(
+            serial_boot_device.boot_device('fuchsia-node-id',
+                                           'fuchsia-serial-num',
+                                           BootMode.REGULAR,
+                                           must_boot=False))
+        mock_run.assert_called_once_with(
+            ['serialio', 'fuchsia-node-id', 'send', 'dm', 'reboot'])
+
+    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
+    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False, True])
+    @mock.patch('subprocess.run',
+                return_value=CompletedProcess(args=['/bin'], returncode=0))
+    def test_boot_undetectable_to_fastboot(self, mock_run, *_) -> None:
+        self.assertEqual(serial_boot_device.main('reboot-fastboot'), 0)
+        mock_run.assert_called_once_with(
+            ['serialio', 'fuchsia-node-id', 'send', 'dm', 'reboot-bootloader'])
+
+    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False])
     @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[True, True])
     @mock.patch('subprocess.run',
                 return_value=CompletedProcess(args=['/bin'], returncode=0))
@@ -72,6 +96,7 @@ class SerialBootDeviceTest(unittest.TestCase):
         mock_run.assert_called_once_with(
             ['serialio', 'fuchsia-node-id', 'send', 'dm', 'reboot'])
 
+    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False])
     @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[True])
     @mock.patch('subprocess.run',
                 return_value=CompletedProcess(args=['/bin'], returncode=0))
@@ -96,7 +121,7 @@ class SerialBootDeviceTest(unittest.TestCase):
             timeout=30)
 
     @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[True])
-    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[True])
+    @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False, True])
     @mock.patch('subprocess.run',
                 return_value=CompletedProcess(args=['/bin'], returncode=0))
     def test_boot_from_fuchsia_to_fastboot(self, mock_run, *_) -> None:

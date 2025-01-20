@@ -214,7 +214,8 @@ SharedStorageDatabase::SharedStorageDatabase(
            // We DCHECK that the page size is valid in the constructor for
            // `SharedStorageOptions`.
            .page_size = options->max_page_size,
-           .cache_size = options->max_cache_size}),
+           .cache_size = options->max_cache_size},
+          /*tag=*/"SharedStorage"),
       db_path_(std::move(db_path)),
       special_storage_policy_(std::move(special_storage_policy)),
       // We DCHECK that these `options` fields are all positive in the
@@ -1240,9 +1241,6 @@ bool SharedStorageDatabase::DBExists() {
   // in `LazyInit()`.
   DCHECK_EQ(DBFileStatus::kNotChecked, db_file_status_);
 
-  // The histogram tag must be set before opening.
-  db_.set_histogram_tag("SharedStorage");
-
   if (!OpenImpl()) {
     db_file_status_ = DBFileStatus::kNoPreexistingFile;
     return false;
@@ -1263,11 +1261,6 @@ bool SharedStorageDatabase::DBExists() {
 }
 
 bool SharedStorageDatabase::OpenDatabase() {
-  // If the database is open, the histogram tag will have already been set in
-  // `DBExists()`, since it must be set before opening.
-  if (!db_.is_open())
-    db_.set_histogram_tag("SharedStorage");
-
   // If this is not the first call to `OpenDatabase()` because we are re-trying
   // initialization, then the error callback will have previously been set.
   db_.reset_error_callback();

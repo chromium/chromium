@@ -4,11 +4,6 @@
 
 #include "pdf/pdf_view_web_plugin.h"
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,8 +16,10 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -402,15 +399,6 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
   return std::make_unique<PDFiumEngine>(client, script_option);
 }
 
-std::unique_ptr<PdfAccessibilityDataHandler>
-PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
-    PdfAccessibilityActionHandler* action_handler,
-    PdfAccessibilityImageFetcher* image_fetcher,
-    blink::WebPluginContainer* plugin_container,
-    bool print_preview) {
-  return nullptr;
-}
-
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
@@ -491,6 +479,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
 
   pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
       this, this, client_->PluginContainer(), IsPrintPreview());
+  CHECK(pdf_accessibility_data_handler_);
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
   // continue after the plugin receives a "resetPrintPreviewMode" message.
@@ -1509,6 +1498,10 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   base::Value::Dict message;
   message.Set("type", "setHasSearchifyText");
   client_->PostMessage(std::move(message));
+  pdf_accessibility_data_handler_->OnHasSearchifyText();
+  if (chrome_pdf::features::IsPdfSearchifySaveEnabled()) {
+    SetPluginCanSave(true);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1528,12 +1521,34 @@ void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
 
 void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
                                    GetPdfBytesCallback callback) {
+  uint32_t page_count = engine_->GetNumberOfPages();
   if (engine_->GetLoadedByteSize() > size_limit) {
-    std::move(callback).Run(GetPdfBytesStatus::kSizeLimitExceeded, {});
+    std::move(callback).Run(GetPdfBytesStatus::kSizeLimitExceeded, {},
+                            page_count);
     return;
   }
 
-  std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData());
+  std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData(),
+                          page_count);
+}
+
+void PdfViewWebPlugin::GetMostVisiblePageIndex(
+    GetMostVisiblePageIndexCallback callback) {
+  auto page_index = engine_->GetMostVisiblePage();
+  if (page_index < 0) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(page_index);
+}
+
+void PdfViewWebPlugin::GetPageText(int32_t page_index,
+                                   GetPageTextCallback callback) {
+  if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+  std::move(callback).Run(engine_->GetPageText(page_index));
 }
 
 bool PdfViewWebPlugin::IsValid() const {
@@ -1584,6 +1599,8 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
            &PdfViewWebPlugin::HandleGetPasswordCompleteMessage},
           {"getSelectedText", &PdfViewWebPlugin::HandleGetSelectedTextMessage},
           {"getThumbnail", &PdfViewWebPlugin::HandleGetThumbnailMessage},
+          {"highlightTextFragments",
+           &PdfViewWebPlugin::HandleHighlightTextFragmentsMessage},
           {"print", &PdfViewWebPlugin::HandlePrintMessage},
           {"loadPreviewPage", &PdfViewWebPlugin::HandleLoadPreviewPageMessage},
           {"resetPrintPreviewMode",
@@ -1628,8 +1645,11 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     std::ostringstream view_stream;
     view_stream << named_destination->view;
     if (named_destination->xyz_params.empty()) {
-      for (unsigned long i = 0; i < named_destination->num_params; ++i)
-        view_stream << "," << named_destination->params[i];
+      UNSAFE_TODO({
+        for (unsigned long i = 0; i < named_destination->num_params; ++i) {
+          view_stream << "," << named_destination->params[i];
+        }
+      });
     } else {
       view_stream << "," << named_destination->xyz_params;
     }
@@ -1687,6 +1707,17 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
       page_index, device_scale_,
       base::BindOnce(&PdfViewWebPlugin::SendThumbnail,
                      weak_factory_.GetWeakPtr(), std::move(reply), page_index));
+}
+
+void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
+    const base::Value::Dict& message) {
+  const auto* text_fragment_value_list = message.FindList("textFragments");
+  std::vector<std::string> text_fragments;
+  text_fragments.reserve(text_fragment_value_list->size());
+  for (const base::Value& fragment : *text_fragment_value_list) {
+    text_fragments.push_back(fragment.GetString());
+  }
+  engine_->HighlightTextFragments(text_fragments);
 }
 
 void PdfViewWebPlugin::HandlePrintMessage(
@@ -1750,6 +1781,18 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
     case SaveRequestType::kEdited:
       SaveToBuffer(request_type, token);
       return;
+    case SaveRequestType::kSearchified:
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      CHECK(chrome_pdf::features::IsPdfSearchifySaveEnabled());
+      // TODO(crbug.com/382610226): If engine has searchified text, ensure all
+      // pages are searchified and then save.
+      SaveToBuffer(request_type, token);
+      return;
+#else
+      // PDF Searchify is not expected to be triggered when ScreenAI service is
+      // not enabled.
+      NOTREACHED();
+#endif
   }
   NOTREACHED();
 }
@@ -1767,7 +1810,12 @@ void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
 
 void PdfViewWebPlugin::HandleSetPresentationModeMessage(
     const base::Value::Dict& message) {
-  engine_->SetReadOnly(message.FindBool("enablePresentationMode").value());
+  const bool presentation_mode =
+      message.FindBool("enablePresentationMode").value();
+  engine_->SetReadOnly(presentation_mode);
+  if (presentation_mode) {
+    cursor_ = ui::mojom::CursorType::kPointer;
+  }
 }
 
 void PdfViewWebPlugin::HandleSetTwoUpViewMessage(
@@ -1914,7 +1962,8 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
 void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
                                     const std::string& token) {
   CHECK(request_type == SaveRequestType::kAnnotation ||
-        request_type == SaveRequestType::kEdited);
+        request_type == SaveRequestType::kEdited ||
+        request_type == SaveRequestType::kSearchified);
 
   engine_->KillFormFocus();
 
@@ -1932,6 +1981,10 @@ void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
 #if BUILDFLAG(ENABLE_PDF_INK2)
   use_save_data |= !!ink_module_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  use_save_data |= (request_type == SaveRequestType::kSearchified);
+#endif
 
   if (use_save_data) {
     base::Value::BlobStorage data = engine_->GetSaveData();
@@ -2288,7 +2341,9 @@ void PdfViewWebPlugin::OnViewportChanged(
     } else {
       alpha_type = kPremul_SkAlphaType;
     }
-    image_data_.allocPixels(SkImageInfo::MakeN32(
+    // Ignore the result. If the allocation fails, the image data buffer will be
+    // empty and the code below will handle that.
+    (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
         new_image_size.width(), new_image_size.height(), alpha_type));
     first_paint_ = true;
   }
@@ -2758,6 +2813,9 @@ gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
 AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
   AccessibilityDocInfo doc_info;
   doc_info.page_count = engine_->GetNumberOfPages();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+    doc_info.is_tagged = engine_->IsTagged();
+  }
   doc_info.text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info.text_copyable = engine_->HasPermission(DocumentPermission::kCopy);

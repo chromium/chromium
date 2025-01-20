@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/channel.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -112,6 +113,31 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxSurveyServiceSentimentSurveyPsbTest,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class PrivacySandboxSurveyServiceSentimentSurveyPsdTest
+    : public PrivacySandboxSurveyServiceTest,
+      public testing::WithParamInterface<
+          testing::tuple<version_info::Channel, std::string>> {};
+
+TEST_P(PrivacySandboxSurveyServiceSentimentSurveyPsdTest, SetsPsd) {
+  std::map<std::string, std::string> expected_map = {
+      {"Channel", testing::get<1>(GetParam())},
+  };
+
+  EXPECT_THAT(
+      survey_service()->GetSentimentSurveyPsd(testing::get<0>(GetParam())),
+      ContainerEq(expected_map));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxSurveyServiceSentimentSurveyPsdTest,
+    PrivacySandboxSurveyServiceSentimentSurveyPsdTest,
+    testing::Values(
+        testing::make_tuple(version_info::Channel::UNKNOWN, "unknown"),
+        testing::make_tuple(version_info::Channel::STABLE, "stable"),
+        testing::make_tuple(version_info::Channel::BETA, "beta"),
+        testing::make_tuple(version_info::Channel::DEV, "dev"),
+        testing::make_tuple(version_info::Channel::CANARY, "canary")));
 
 class PrivacySandboxSurveyServiceSentimentSurveyStatusHistogramTest
     : public PrivacySandboxSurveyServiceTest,

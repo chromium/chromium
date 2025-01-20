@@ -47,9 +47,7 @@ File::File(ScopedPlatformFile platform_file, bool async)
 }
 
 File::File(PlatformFile platform_file, bool async)
-    : file_(platform_file),
-      error_details_(FILE_OK),
-      async_(async) {
+    : file_(platform_file), error_details_(FILE_OK), async_(async) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK_GE(platform_file, -1);
 #endif

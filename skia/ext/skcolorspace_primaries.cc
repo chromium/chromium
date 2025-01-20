@@ -12,6 +12,8 @@
 #include <iomanip>
 #include <sstream>
 
+#include "third_party/skia/include/core/SkColorSpace.h"
+
 bool operator==(const SkColorSpacePrimaries& a,
                 const SkColorSpacePrimaries& b) {
   return a.fRX == b.fRX && a.fRY == b.fRY && a.fGX == b.fGX && a.fGY == b.fGY &&
@@ -27,18 +29,20 @@ namespace skia {
 
 std::string SkColorSpacePrimariesToString(
     const SkColorSpacePrimaries& primaries) {
-  if (primaries == SkNamedPrimariesExt::kInvalid)
+  if (primaries == SkNamedPrimariesExt::kInvalid) {
     return "invalid";
+  }
 
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4);
   ss << "{";
-  if (primaries == SkNamedPrimariesExt::kSRGB)
+  if (primaries == SkNamedPrimariesExt::kSRGB) {
     ss << "name:'srgb', ";
-  else if (primaries == SkNamedPrimariesExt::kP3)
+  } else if (primaries == SkNamedPrimariesExt::kP3) {
     ss << "name:'p3', ";
-  else if (primaries == SkNamedPrimariesExt::kRec2020)
+  } else if (primaries == SkNamedPrimaries::kRec2020) {
     ss << "name:'rec2020', ";
+  }
   ss << "r:[" << primaries.fRX << ", " << primaries.fRY << "], ";
   ss << "g:[" << primaries.fGX << ", " << primaries.fGY << "], ";
   ss << "b:[" << primaries.fBX << ", " << primaries.fBY << "], ";

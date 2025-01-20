@@ -4,9 +4,15 @@
 
 import {FacialGesture} from './facial_gestures.js';
 
+/** Minimum time duration for a gesture to be recognized. */
+const DEFAULT_MINIMUM_DURATION_MS = 150;
+
+/** Minimum repeat rate of a gesture. */
+const DEFAULT_REPEAT_DELAY_MS = 1000;
+
 export class GestureTimer {
-  private repeatDelayMs_ = GestureTimer.DEFAULT_REPEAT_DELAY_MS;
-  private minDurationMs_ = GestureTimer.DEFAULT_MINIMUM_DURATION_MS;
+  private repeatDelayMs_ = DEFAULT_REPEAT_DELAY_MS;
+  private minDurationMs_ = DEFAULT_MINIMUM_DURATION_MS;
   private gestureStart_: Map<FacialGesture, Date> = new Map();
   private gestureLastRecognized_: Map<FacialGesture, Date> = new Map();
   private useGestureDuration_ = true;
@@ -79,12 +85,4 @@ export class GestureTimer {
   setGestureDurationForTesting(useDuration: boolean): void {
     this.useGestureDuration_ = useDuration;
   }
-}
-
-export namespace GestureTimer {
-  /** Minimum repeat rate of a gesture. */
-  export const DEFAULT_REPEAT_DELAY_MS = 1000;
-
-  /** Minimum time duration for a gesture to be recognized. */
-  export const DEFAULT_MINIMUM_DURATION_MS = 150;
 }

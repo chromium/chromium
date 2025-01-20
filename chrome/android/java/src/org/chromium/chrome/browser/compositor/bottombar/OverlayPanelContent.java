@@ -475,7 +475,7 @@ public class OverlayPanelContent {
             OverlayPanelContentJni.get().destroyWebContents(mNativeOverlayPanelContentPtr);
             mWebContents = null;
             if (mWebContentsObserver != null) {
-                mWebContentsObserver.destroy();
+                mWebContentsObserver.observe(null);
                 mWebContentsObserver = null;
             }
 

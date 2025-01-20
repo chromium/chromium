@@ -29,6 +29,8 @@
 #include "base/trace_event/trace_event.h"
 #include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
+#include "content/browser/dips/dips_service_impl.h"
+#include "content/browser/dips/dips_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -496,6 +499,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
   }
+  if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
+  }
 
   if (storage_partition_remove_mask) {
     // If cookies are supposed to be conditionally deleted from the storage
@@ -671,6 +678,26 @@ void BrowsingDataRemoverImpl::RemoveImpl(
           delete_begin, delete_end, filter_builder->BuildNetworkServiceFilter(),
           CreateTaskCompletionClosureForMojo(
               TracingDataType::kSharedDictionary));
+    }
+  }
+
+  // Different types of DIPS events are cleared for DATA_TYPE_HISTORY and
+  // DATA_TYPE_COOKIES.
+  BtmEventRemovalType dips_mask = BtmEventRemovalType::kNone;
+  if ((remove_mask & DATA_TYPE_COOKIES) &&
+      !filter_builder->PartitionedCookiesOnly()) {
+    dips_mask |= BtmEventRemovalType::kStorage;
+  }
+  if (GetContentClient()->browser()->ShouldDipsDeleteInteractionRecords(
+          remove_mask)) {
+    dips_mask |= BtmEventRemovalType::kHistory;
+  }
+
+  if (dips_mask != BtmEventRemovalType::kNone) {
+    if (BtmServiceImpl* dips_service = BtmServiceImpl::Get(browser_context_)) {
+      dips_service->RemoveEvents(delete_begin_, delete_end_,
+                                 filter_builder->BuildNetworkServiceFilter(),
+                                 dips_mask);
     }
   }
 

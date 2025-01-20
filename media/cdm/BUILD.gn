@@ -202,6 +202,7 @@ source_set("unit_tests") {
     "aes_decryptor_unittest.cc",
     "cbcs_decryptor_unittest.cc",
     "cenc_decryptor_unittest.cc",
+    "cenc_utils_unittest.cc",
     "json_web_key_unittest.cc",
   ]
 
@@ -234,6 +235,7 @@ source_set("unit_tests") {
       "simple_cdm_allocator_unittest.cc",
       "simple_cdm_buffer.cc",
       "simple_cdm_buffer.h",
+      "supported_cdm_versions_unittest.cc",
     ]
 
     data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
@@ -244,10 +246,6 @@ source_set("unit_tests") {
       "//media/cdm/library_cdm:cdm_host_proxy",
       "//media/cdm/library_cdm:test_support",
     ]
-  }
-
-  if (proprietary_codecs) {
-    sources += [ "cenc_utils_unittest.cc" ]
   }
 
   if (is_win) {

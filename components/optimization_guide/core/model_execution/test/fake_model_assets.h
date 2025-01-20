@@ -23,19 +23,25 @@ namespace optimization_guide {
 // Base model files and metadata suitable for a FakeOnDeviceModelService.
 class FakeBaseModelAsset {
  public:
-  FakeBaseModelAsset();
+  struct Content {
+    uint32_t weight = 0;
+    proto::OnDeviceModelExecutionConfig config;
+    std::string version = "0.0.1";
+  };
+  explicit FakeBaseModelAsset(Content&& content);
+  explicit FakeBaseModelAsset(
+      proto::OnDeviceModelValidationConfig&& validation_config);
   ~FakeBaseModelAsset();
 
-  void Write(std::optional<proto::OnDeviceModelExecutionFeatureConfig> config =
-                 std::nullopt,
-             std::optional<proto::OnDeviceModelExecutionFeatureConfig> config2 =
-                 std::nullopt,
-             std::optional<proto::OnDeviceModelValidationConfig>
-                 validation_config = std::nullopt);
+  // Overwrites content in the same file.
+  void Write(Content&& content);
 
-  const base::FilePath& path() { return temp_dir_.GetPath(); }
+  const base::FilePath& path() const { return temp_dir_.GetPath(); }
+
+  const std::string& version() const { return version_; }
 
  private:
+  std::string version_;
   base::ScopedTempDir temp_dir_;
 };
 

@@ -36,7 +36,7 @@
   </settings-toggle-button>
   <iron-collapse
       opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
-    <div class="settings-box continuation">
+    <div class="settings-box">
       <div class="start" id="repeatDelayLabel" aria-hidden="true">
         $i18n{keyRepeatDelay}
       </div>
@@ -50,7 +50,7 @@
           label-max="$i18n{keyRepeatDelayLong}">
       </settings-slider>
     </div>
-    <div class="settings-box continuation">
+    <div class="settings-box">
       <div class="start" id="repeatRateLabel" aria-hidden="true">
         $i18n{keyRepeatRate}
       </div>
@@ -76,5 +76,10 @@
 <cr-link-row id="inputRow"
     class="hr" on-click="onShowInputSettingsClick"
     label="$i18n{keyboardShowInputSettings}"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>
+<cr-link-row id="a11yKeyboardRow"
+    class="hr" on-click="onShowA11yKeyboardSettingsClick"
+    label="$i18n{keyboardShowA11yKeyboardSettings}"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>

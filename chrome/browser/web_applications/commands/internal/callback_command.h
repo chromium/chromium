@@ -97,7 +97,7 @@ class CallbackCommandWithResult : public WebAppCommand<LockType, ItemType> {
             std::make_tuple(std::move(arg_for_shutdown))),
         callback_(std::move(command_callback)) {}
 
-  ~CallbackCommandWithResult() override {}
+  ~CallbackCommandWithResult() override = default;
 
  protected:
   // WebAppCommand:

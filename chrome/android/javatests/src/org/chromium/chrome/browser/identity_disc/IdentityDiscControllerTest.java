@@ -49,32 +49,24 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
-import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.AccountInfo;
@@ -171,28 +163,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testIdentityDiscSignedOut_replaceSyncBySigninDisabled() {
-        // When user is signed out, a signed-out avatar should be visible on the NTP.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string
-                                        .accessibility_toolbar_btn_signed_out_with_sync_identity_disc)));
-
-        // Clicking the signed-out avatar should lead to the sync consent screen.
-        ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(),
-                SyncConsentActivity.class,
-                () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testIdentityDiscSignedOut_replaceSyncBySigninEnabled() throws Exception {
+    public void testIdentityDiscSignedOut() throws Exception {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
         @StringRes int descriptionId = R.string.accessibility_toolbar_btn_signed_out_identity_disc;
         ViewUtils.waitForVisibleView(
@@ -232,7 +203,8 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(getSignedOutAvatarDescription())));
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
 
         // Clicking the signed-out avatar should lead to the settings screen.
         ActivityTestUtils.waitForActivity(
@@ -268,7 +240,8 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(getSignedOutAvatarDescription())));
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
 
     @Test
@@ -296,64 +269,8 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(getSignedOutAvatarDescription())));
-    }
-
-    @Test
-    @MediumTest
-    @SuppressWarnings("CheckReturnValue")
-    public void testIdentityDiscWithSigninAndEnableSync() {
-        // Identity Disc should be shown on sign-in state change without NTP refresh.
-        mSigninTestRule.addAccountThenSigninAndEnableSync(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(expectedContentDescription),
-                        isDisplayed()));
-
-        mSigninTestRule.signOut();
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(getSignedOutAvatarDescription()),
-                        isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testIdentityDiscWithSigninAndEnableSync_nonDisplayableEmail() {
-        // Identity Disc should be shown on sign-in state change without NTP refresh.
-        AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
-        SigninTestUtil.signinAndEnableSync(
-                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string.accessibility_toolbar_btn_identity_disc_with_name,
-                                accountInfo.getFullName());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(expectedContentDescription),
-                        isDisplayed()));
-
-        mSigninTestRule.forceSignOut();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withContentDescription(getSignedOutAvatarDescription()),
-                        isDisplayed()));
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
 
     @Test
@@ -469,9 +386,9 @@ public class IdentityDiscControllerTest {
     }
 
     private AccountInfo addAndSigninAccountWithNonDisplayableEmail() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        return AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        return TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
     }
 
     private IdentityDiscController buildControllerWithObserver(
@@ -486,11 +403,5 @@ public class IdentityDiscControllerTest {
 
     private PrimaryAccountChangeEvent newSigninEvent(int eventType) {
         return new PrimaryAccountChangeEvent(eventType, ConsentLevel.SIGNIN);
-    }
-
-    private @StringRes int getSignedOutAvatarDescription() {
-        return SigninUtils.shouldShowNewSigninFlow()
-                ? R.string.accessibility_toolbar_btn_signed_out_identity_disc
-                : R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc;
     }
 }

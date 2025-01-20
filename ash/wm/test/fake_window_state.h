@@ -58,8 +58,7 @@ class FakeWindowStateDelegate : public WindowStateDelegate {
   // WindowStateDelegate:
   bool ToggleFullscreen(WindowState* window_state) override;
   void ToggleLockedFullscreen(WindowState* window_state) override;
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override;
+  void OnDragStarted(int component) override;
   void OnDragFinished(bool cancel, const gfx::PointF& location) override;
 
  private:

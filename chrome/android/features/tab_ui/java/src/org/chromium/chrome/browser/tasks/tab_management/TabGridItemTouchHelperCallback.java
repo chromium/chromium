@@ -27,8 +27,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
@@ -523,10 +523,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 filter.willMergingCreateNewGroup(List.of(selectedCard, hoveredCard));
         filter.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
 
-        if (willMergingCreateNewGroup
-                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ TabGroupCreationDialogManager
-                                .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+        if (willMergingCreateNewGroup && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
             mTabGroupCreationDialogManager.showDialog(hoveredCard.getRootId(), filter);
         }
 

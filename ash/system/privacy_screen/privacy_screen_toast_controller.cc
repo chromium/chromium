@@ -10,12 +10,15 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/functional/bind.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -85,6 +88,7 @@ void PrivacyScreenToastController::HideToast() {
 
 void PrivacyScreenToastController::BubbleViewDestroyed() {
   close_timer_.Stop();
+  toast_view_ = nullptr;
   bubble_view_ = nullptr;
   bubble_widget_ = nullptr;
 }
@@ -100,9 +104,7 @@ void PrivacyScreenToastController::OnMouseExitedView() {
 }
 
 std::u16string PrivacyScreenToastController::GetAccessibleNameForBubble() {
-  if (!toast_view_)
-    return std::u16string();
-  return toast_view_->accessible_name();
+  return CalculateAccessibleNameForBubble();
 }
 
 void PrivacyScreenToastController::HideBubble(
@@ -135,12 +137,33 @@ void PrivacyScreenToastController::StartAutoCloseTimer() {
       this, &PrivacyScreenToastController::HideToast);
 }
 
+// static
+std::u16string
+PrivacyScreenToastController::CalculateAccessibleNameForBubble() {
+  auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
+      privacy_screen_controller->GetEnabled()
+          ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
+          : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
+
+  std::u16string managed_state =
+      privacy_screen_controller->IsManaged()
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED)
+          : std::u16string();
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
+      enabled_state, managed_state);
+}
+
 void PrivacyScreenToastController::UpdateToastView() {
   if (toast_view_) {
     auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
     toast_view_->SetPrivacyScreenEnabled(
         /*enabled=*/privacy_screen_controller->GetEnabled(),
         /*managed=*/privacy_screen_controller->IsManaged());
+    bubble_view_->UpdateAccessibleName();
     int width =
         std::clamp(toast_view_->GetPreferredSize().width(),
                    kPrivacyScreenToastMinWidth, kPrivacyScreenToastMaxWidth);

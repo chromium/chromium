@@ -7,12 +7,11 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -28,30 +27,37 @@ class AutofillBubbleSignInPromoView;
 // A view that can show up after saving a piece of autofill data without being
 // signed in to offer signing users in so they can access their credentials
 // across devices.
-class AutofillBubbleSignInPromoView : public views::View {
+class AutofillBubbleSignInPromoView : public views::View,
+                                      public views::WidgetObserver {
   METADATA_HEADER(AutofillBubbleSignInPromoView, views::View)
 
  public:
   explicit AutofillBubbleSignInPromoView(
       content::WebContents* web_contents,
       signin_metrics::AccessPoint access_point,
-      base::OnceCallback<void(content::WebContents*)> move_callback);
+      syncer::LocalDataItemModel::DataId data_id);
   AutofillBubbleSignInPromoView(const AutofillBubbleSignInPromoView&) = delete;
   AutofillBubbleSignInPromoView& operator=(
       const AutofillBubbleSignInPromoView&) = delete;
   ~AutofillBubbleSignInPromoView() override;
-
-  // Records that the bubble has been dismissed.
-  static void RecordSignInPromoDismissed(content::WebContents* web_contents);
 
  private:
   // Delegate for the personalized sign in promo view used when desktop identity
   // consistency is enabled.
   class DiceSigninPromoDelegate;
 
+  // views::WidgetObserver:
+  // Records that the bubble has been dismissed.
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // views::View:
+  void AddedToWidget() override;
+
   autofill::AutofillBubbleSignInPromoController controller_;
   const signin_metrics::AccessPoint access_point_;
   std::unique_ptr<DiceSigninPromoDelegate> dice_sign_in_promo_delegate_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_AUTOFILL_BUBBLE_SIGNIN_PROMO_VIEW_H_

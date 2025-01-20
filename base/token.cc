@@ -67,12 +67,14 @@ void WriteTokenToPickle(Pickle* pickle, const Token& token) {
 
 std::optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
   uint64_t high;
-  if (!pickle_iterator->ReadUInt64(&high))
+  if (!pickle_iterator->ReadUInt64(&high)) {
     return std::nullopt;
+  }
 
   uint64_t low;
-  if (!pickle_iterator->ReadUInt64(&low))
+  if (!pickle_iterator->ReadUInt64(&low)) {
     return std::nullopt;
+  }
 
   return Token(high, low);
 }

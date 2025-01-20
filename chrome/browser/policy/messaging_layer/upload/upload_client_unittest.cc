@@ -29,6 +29,7 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,7 +85,7 @@ class UploadClientTest : public ::testing::TestWithParam<
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), "12345"));
+        profile_->GetProfileUserName(), GaiaId("12345")));
     const user_manager::User* user =
         fake_user_manager->AddPublicAccountUser(account_id);
     fake_user_manager->UserLoggedIn(account_id, user->username_hash(),

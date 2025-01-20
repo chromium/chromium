@@ -26,12 +26,12 @@
 namespace cc {
 class AnimationHost;
 class AnimationTimeline;
+class DrawImage;
 enum class EventListenerClass;
 enum class EventListenerProperties;
 class Layer;
 class LayerTreeSettings;
 class LayerTreeDebugState;
-class PaintImage;
 struct ElementId;
 }  // namespace cc
 
@@ -50,6 +50,7 @@ struct FrameTimingDetails;
 
 namespace blink {
 
+class AnimationFrameTimingInfo;
 class LocalFrame;
 // In interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
 
   // Image decode functionality.
-  virtual void RequestDecode(const cc::PaintImage&,
+  virtual void RequestDecode(const cc::DrawImage&,
                              base::OnceCallback<void(bool)>) = 0;
 
   // Forwards to `WebFrameWidget::NotifyPresentationTime()`.
@@ -88,7 +89,7 @@ class PLATFORM_EXPORT FrameWidget {
   // is presented to the user. If the presentation is successful, the argument
   // passed to the callback is the presentation timestamp; otherwise, it would
   // be timestamp of when the failure is detected.
-  virtual void NotifyPresentationTimeInBlink(
+  virtual void NotifyPresentationTime(
       base::OnceCallback<void(const viz::FrameTimingDetails&)>
           presentation_callback) = 0;
 
@@ -247,7 +248,6 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
   // pixels).
-  virtual gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) = 0;
   virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) = 0;
   virtual gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) = 0;
   virtual float DIPsToBlinkSpace(float scalar) = 0;
@@ -320,6 +320,12 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void OnTaskCompletedForFrame(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
                                        LocalFrame*) = 0;
+
+  // Implementation of
+  // https://w3c.github.io/long-animation-frames/#record-rendering-time (the
+  // other parameters are recorded earlier).
+  virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      base::TimeTicks) = 0;
 };
 
 }  // namespace blink

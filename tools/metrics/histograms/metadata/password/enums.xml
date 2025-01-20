@@ -85,6 +85,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Edited"/>
 </enum>
 
+<enum name="AcknowledgeGroupedCredentialSheetBridgeDismissReason">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Back button pressed"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
 <enum name="AddCredentialFromSettingsUserInteractions">
   <int value="0" label="Add Credential Dialog is opened"/>
   <int value="1" label="Add Credential Dialog is closed"/>
@@ -139,22 +145,22 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AutofillSuggestionTriggerSource">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Form control elemnt clicked"/>
+  <int value="1" label="Form control element clicked"/>
   <int value="2" label="Textarea focused without click"/>
   <int value="3" label="Content editable clicked"/>
-  <int value="4" label="Text field did change"/>
-  <int value="5" label="Text field did receive keydown,"/>
+  <int value="4" label="Text field's value did change"/>
+  <int value="5" label="Text field did receive keydown"/>
   <int value="6" label="Open text data list chooser"/>
-  <int value="7" label="Show cards fromaccount"/>
+  <int value="7" label="Show cards from account"/>
   <int value="8" label="Password manager"/>
   <int value="9" label="iOS"/>
   <int value="10" label="Manual fallback address"/>
-  <int value="11" label="Manual fallback payments"/>
+  <int value="11" label="(Deprecated in M133) Manual fallback payments"/>
   <int value="12" label="Manual fallback passwords"/>
-  <int value="13" label="Manual fallback plus addresses"/>
+  <int value="13" label="(Deprecated in M133) Manual fallback plus addresses"/>
   <int value="14" label="Show prompt after dialog closed non manual fallback"/>
   <int value="15" label="Compose dialog lost focus"/>
-  <int value="16" label="Compose elayed proactive nudge"/>
+  <int value="16" label="Compose delayed proactive nudge"/>
   <int value="17" label="Password manager processed focused field"/>
 </enum>
 
@@ -475,6 +481,27 @@ chromium-metrics-reviews@google.com.
              policy"/>
 </enum>
 
+<!-- LINT.IfChange(LoginDbDeprecationExportProgress)-->
+
+<enum name="LoginDbDeprecationExportProgress">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Finished"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_runner.h:LoginDbDeprecationExportProgress)-->
+
+<!-- LINT.IfChange(LoginDbDeprecationExportResult) -->
+
+<enum name="LoginDbDeprecationExportResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No passwords"/>
+  <int value="2" label="Error fetching paswords"/>
+  <int value="3" label="File write error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_password_exporter.h:LoginDbDeprecationExportResult) -->
+
 <enum name="LoginsChangedTrigger">
   <summary>
     Triggers that may indirectly cause PasswordStore observers notifications
@@ -539,12 +566,20 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Passkey updated confirmation bubble"/>
   <int value="26" label="Passkey not accepted confirmation bubble"/>
   <int value="27" label="Password access loss warning"/>
+  <int value="28" label="Passkey upgrade bubble"/>
+  <int value="29" label="Password change state information bubble"/>
 </enum>
 
 <enum name="OutdatedGMSDialogDismissalReason">
   <int value="0" label="Other"/>
   <int value="1" label="Accepted"/>
   <int value="2" label="Rejected"/>
+</enum>
+
+<enum name="PasskeysMigrationStatus">
+  <int value="0" label="Passkey created"/>
+  <int value="1" label="Passkey updated"/>
+  <int value="2" label="Invalid passkey"/>
 </enum>
 
 <enum name="PasswordAccessLossWarningType">
@@ -737,9 +772,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Password"/>
   <int value="1" label="Manage passwords"/>
   <int value="2" label="Generate password"/>
-  <int value="3" label="Unlock account-store to fill password"/>
-  <int value="4" label="Unlock account-store to generate password"/>
-  <int value="5" label="Re-Signin to unlock account-stored passwords"/>
+  <int value="3" label="(obsolete) Unlock account-store to fill password"/>
+  <int value="4" label="(obsolete) Unlock account-store to generate password"/>
+  <int value="5"
+      label="(obsolete) Re-Signin to unlock account-stored passwords"/>
   <int value="6" label="WebAuthn credential"/>
   <int value="7" label="Sign in with another WebAuthn device"/>
 </enum>
@@ -1124,6 +1160,9 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Cross origin iframe">
     The form is in a cross origin iframe.
   </int>
+  <int value="13" label="Single username form">
+    The form is a single username form.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">
@@ -1411,6 +1450,8 @@ chromium-metrics-reviews@google.com.
   <int value="11016" label="EXTERNAL_API_EXCEPTION"/>
   <int value="11017" label="EXTERNAL_INVALID_LOCAL_KEYS"/>
   <int value="11018" label="DATABASE_ERROR"/>
+  <int value="11019" label="EMPTY_SECURITY_DOMAIN"/>
+  <int value="11020" label="IRRETRIEVABLE_SECURITY_DOMAIN"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
@@ -1473,9 +1514,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AuthErrorResolvable"/>
   <int value="2" label="AuthErrorUnresolvable"/>
   <int value="3" label="KeychainError"/>
-  <int value="4" label="kKeyRetrievalRequired"/>
-  <int value="5" label="kGMSCoreOutdatedSavingDisabled"/>
-  <int value="6" label="kGMSCoreOutdatedSavingPossible"/>
+  <int value="4" label="KeyRetrievalRequired"/>
+  <int value="5" label="GMSCoreOutdatedSavingDisabled"/>
+  <int value="6" label="GMSCoreOutdatedSavingPossible"/>
+  <int value="7" label="EmptySecurityDomain"/>
+  <int value="8" label="IrretrievableSecurityDomain"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">
@@ -1550,6 +1593,14 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Passkey copy display name button clicked"/>
   <int value="13" label="Passkey card delete button clicked"/>
   <int value="14" label="Passkey edit button clicked"/>
+</enum>
+
+<enum name="PasswordVsOtpFormType">
+  <int value="0"
+      label="Form without password and OTP fields (e.g. single username form)"/>
+  <int value="1" label="Password form"/>
+  <int value="2" label="OTP form"/>
+  <int value="3" label="Password + OTP form"/>
 </enum>
 
 <enum name="PasswordWeaknessScore">
@@ -1738,6 +1789,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="HTML based classifier"/>
   <int value="3" label="'autocomplete' attribute"/>
   <int value="4" label="Server-side prediction"/>
+  <int value="5" label="Client-side model prediction"/>
 </enum>
 
 <enum name="UseUpmLocalAndSeparateStoresState">

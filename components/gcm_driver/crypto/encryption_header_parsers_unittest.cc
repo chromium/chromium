@@ -12,6 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,28 +24,29 @@ namespace {
 const uint64_t kDefaultRecordSize = 4096;
 
 TEST(EncryptionHeaderParsersTest, ParseValidEncryptionHeaders) {
-  struct {
+  struct ExpectedResults {
     const char* const header;
     const char* const parsed_keyid;
     const char* const parsed_salt;
     uint64_t parsed_rs;
-  } expected_results[] = {
-    { "keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-      "foo", "sixteencoolbytes", 1024 },
-    { "keyid=foo; salt=c2l4dGVlbmNvb2xieXRlcw; rs=1024",
-      "foo", "sixteencoolbytes", 1024 },
-    { "KEYID=foo;SALT=c2l4dGVlbmNvb2xieXRlcw;RS=1024",
-      "foo", "sixteencoolbytes", 1024 },
-    { " keyid = foo ; salt = c2l4dGVlbmNvb2xieXRlcw ; rs = 1024 ",
-      "foo", "sixteencoolbytes", 1024 },
-    { "keyid=foo", "foo", "", kDefaultRecordSize },
-    { "keyid=foo;", "foo", "", kDefaultRecordSize },
-    { "keyid=\"foo\"", "foo", "", kDefaultRecordSize },
-    { "salt=c2l4dGVlbmNvb2xieXRlcw",
-      "", "sixteencoolbytes", kDefaultRecordSize },
-    { "rs=2048", "", "", 2048 },
-    { "keyid=foo;someothervalue=1;rs=42", "foo", "", 42 },
   };
+  auto expected_results = std::to_array<ExpectedResults>({
+      {"keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024", "foo",
+       "sixteencoolbytes", 1024},
+      {"keyid=foo; salt=c2l4dGVlbmNvb2xieXRlcw; rs=1024", "foo",
+       "sixteencoolbytes", 1024},
+      {"KEYID=foo;SALT=c2l4dGVlbmNvb2xieXRlcw;RS=1024", "foo",
+       "sixteencoolbytes", 1024},
+      {" keyid = foo ; salt = c2l4dGVlbmNvb2xieXRlcw ; rs = 1024 ", "foo",
+       "sixteencoolbytes", 1024},
+      {"keyid=foo", "foo", "", kDefaultRecordSize},
+      {"keyid=foo;", "foo", "", kDefaultRecordSize},
+      {"keyid=\"foo\"", "foo", "", kDefaultRecordSize},
+      {"salt=c2l4dGVlbmNvb2xieXRlcw", "", "sixteencoolbytes",
+       kDefaultRecordSize},
+      {"rs=2048", "", "", 2048},
+      {"keyid=foo;someothervalue=1;rs=42", "foo", "", 42},
+  });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
@@ -64,28 +67,26 @@ TEST(EncryptionHeaderParsersTest, ParseValidEncryptionHeaders) {
 TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
   const size_t kNumberOfValues = 2u;
 
-  struct {
+  struct ExpectedResults {
     const char* const header;
     struct {
       const char* const keyid;
       const char* const salt;
       uint64_t rs;
     } parsed_values[kNumberOfValues];
-  } expected_results[] = {
-    { "keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024,keyid=foo;salt=c2l4dGVlbm"
-          "Nvb2xieXRlcw;rs=1024",
-      { { "foo", "sixteencoolbytes", 1024 },
-        { "foo", "sixteencoolbytes", 1024 } } },
-    { "keyid=foo,salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-      { { "foo", "", kDefaultRecordSize },
-        { "", "sixteencoolbytes", 1024 } } },
-    { "keyid=foo,keyid=bar;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-      { { "foo", "", kDefaultRecordSize },
-        { "bar", "sixteencoolbytes", 1024 } } },
-    { "keyid=\"foo,keyid=bar\",salt=c2l4dGVlbmNvb2xieXRlcw",
-      { { "foo,keyid=bar", "", kDefaultRecordSize },
-        { "", "sixteencoolbytes", kDefaultRecordSize } } },
   };
+  auto expected_results = std::to_array<ExpectedResults>({
+      {"keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024,keyid=foo;salt=c2l4dGVlbm"
+       "Nvb2xieXRlcw;rs=1024",
+       {{"foo", "sixteencoolbytes", 1024}, {"foo", "sixteencoolbytes", 1024}}},
+      {"keyid=foo,salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
+       {{"foo", "", kDefaultRecordSize}, {"", "sixteencoolbytes", 1024}}},
+      {"keyid=foo,keyid=bar;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
+       {{"foo", "", kDefaultRecordSize}, {"bar", "sixteencoolbytes", 1024}}},
+      {"keyid=\"foo,keyid=bar\",salt=c2l4dGVlbmNvb2xieXRlcw",
+       {{"foo,keyid=bar", "", kDefaultRecordSize},
+        {"", "sixteencoolbytes", kDefaultRecordSize}}},
+  });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
@@ -106,47 +107,47 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
 }
 
 TEST(EncryptionHeaderParsersTest, ParseInvalidEncryptionHeaders) {
-  const char* const expected_failures[] = {
-    // Values in the name-value pairs are not optional.
-    "keyid",
-    "keyid=",
-    "keyid=foo;keyid",
-    "salt",
-    "salt=",
-    "rs",
-    "rs=",
+  const auto expected_failures = std::to_array<const char*>({
+      // Values in the name-value pairs are not optional.
+      "keyid",
+      "keyid=",
+      "keyid=foo;keyid",
+      "salt",
+      "salt=",
+      "rs",
+      "rs=",
 
-    // Supplying the same name multiple times in the same value is invalid.
-    "keyid=foo;keyid=bar",
-    "keyid=foo;bar=baz;keyid=qux",
+      // Supplying the same name multiple times in the same value is invalid.
+      "keyid=foo;keyid=bar",
+      "keyid=foo;bar=baz;keyid=qux",
 
-    // The salt must be a URL-safe base64 decodable string.
-    "salt=YmV/2ZXJ-sMDA",
-    "salt=dHdlbHZlY29vbGJ5dGVz=====",
-    "salt=c2l4dGVlbmNvb2xieXRlcw;salt=123$xyz",
-    "salt=123$xyz",
+      // The salt must be a URL-safe base64 decodable string.
+      "salt=YmV/2ZXJ-sMDA",
+      "salt=dHdlbHZlY29vbGJ5dGVz=====",
+      "salt=c2l4dGVlbmNvb2xieXRlcw;salt=123$xyz",
+      "salt=123$xyz",
 
-    // The record size must be a positive decimal integer greater than one that
-    // does not start with a plus.
-    "rs=0",
-    "rs=0x13",
-    "rs=1",
-    "rs=-1",
-    "rs=+5",
-    "rs=99999999999999999999999999999999",
-    "rs=foobar",
-  };
+      // The record size must be a positive decimal integer greater than one
+      // that does not start with a plus.
+      "rs=0",
+      "rs=0x13",
+      "rs=1",
+      "rs=-1",
+      "rs=+5",
+      "rs=99999999999999999999999999999999",
+      "rs=foobar",
+  });
 
-  const char* const expected_failures_second_iter[] = {
-    // Valid first field, missing value in the second field.
-    "keyid=foo,novaluekey",
+  const auto expected_failures_second_iter = std::to_array<const char*>({
+      // Valid first field, missing value in the second field.
+      "keyid=foo,novaluekey",
 
-    // Valid first field, undecodable salt in the second field.
-    "salt=c2l4dGVlbmNvb2xieXRlcw,salt=123$xyz",
+      // Valid first field, undecodable salt in the second field.
+      "salt=c2l4dGVlbmNvb2xieXRlcw,salt=123$xyz",
 
-    // Valid first field, invalid record size in the second field.
-    "rs=2,rs=0",
-  };
+      // Valid first field, invalid record size in the second field.
+      "rs=2,rs=0",
+  });
 
   for (size_t i = 0; i < std::size(expected_failures); i++) {
     SCOPED_TRACE(i);
@@ -169,28 +170,30 @@ TEST(EncryptionHeaderParsersTest, ParseInvalidEncryptionHeaders) {
 }
 
 TEST(EncryptionHeaderParsersTest, ParseValidCryptoKeyHeaders) {
-  struct {
+  struct ExpectedResults {
     const char* const header;
     const char* const parsed_keyid;
     const char* const parsed_aesgcm128;
     const char* const parsed_dh;
-  } expected_results[] = {
-    { "keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz",
-      "foo", "sixteencoolbytes", "twelvecoolbytes" },
-    { "keyid=foo; aesgcm128=c2l4dGVlbmNvb2xieXRlcw; dh=dHdlbHZlY29vbGJ5dGVz",
-      "foo", "sixteencoolbytes", "twelvecoolbytes" },
-    { "keyid = foo ; aesgcm128 = c2l4dGVlbmNvb2xieXRlcw ; dh = dHdlbHZlY29vbGJ5"
-          "dGVz ",
-      "foo", "sixteencoolbytes", "twelvecoolbytes" },
-    { "KEYID=foo;AESGCM128=c2l4dGVlbmNvb2xieXRlcw;DH=dHdlbHZlY29vbGJ5dGVz",
-      "foo", "sixteencoolbytes", "twelvecoolbytes" },
-    { "keyid=foo", "foo", "", "" },
-    { "aesgcm128=c2l4dGVlbmNvb2xieXRlcw", "", "sixteencoolbytes", "" },
-    { "aesgcm128=\"c2l4dGVlbmNvb2xieXRlcw\"", "", "sixteencoolbytes", "" },
-    { "dh=dHdlbHZlY29vbGJ5dGVz", "", "", "twelvecoolbytes" },
-    { "keyid=foo;someothervalue=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz",
-      "foo", "twelvecoolbytes", "" },
   };
+  auto expected_results = std::to_array<ExpectedResults>({
+      {"keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz",
+       "foo", "sixteencoolbytes", "twelvecoolbytes"},
+      {"keyid=foo; aesgcm128=c2l4dGVlbmNvb2xieXRlcw; dh=dHdlbHZlY29vbGJ5dGVz",
+       "foo", "sixteencoolbytes", "twelvecoolbytes"},
+      {"keyid = foo ; aesgcm128 = c2l4dGVlbmNvb2xieXRlcw ; dh = "
+       "dHdlbHZlY29vbGJ5"
+       "dGVz ",
+       "foo", "sixteencoolbytes", "twelvecoolbytes"},
+      {"KEYID=foo;AESGCM128=c2l4dGVlbmNvb2xieXRlcw;DH=dHdlbHZlY29vbGJ5dGVz",
+       "foo", "sixteencoolbytes", "twelvecoolbytes"},
+      {"keyid=foo", "foo", "", ""},
+      {"aesgcm128=c2l4dGVlbmNvb2xieXRlcw", "", "sixteencoolbytes", ""},
+      {"aesgcm128=\"c2l4dGVlbmNvb2xieXRlcw\"", "", "sixteencoolbytes", ""},
+      {"dh=dHdlbHZlY29vbGJ5dGVz", "", "", "twelvecoolbytes"},
+      {"keyid=foo;someothervalue=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz", "foo",
+       "twelvecoolbytes", ""},
+  });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
@@ -211,28 +214,26 @@ TEST(EncryptionHeaderParsersTest, ParseValidCryptoKeyHeaders) {
 TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
   const size_t kNumberOfValues = 2u;
 
-  struct {
+  struct ExpectedResults {
     const char* const header;
     struct {
       const char* const keyid;
       const char* const aesgcm128;
       const char* const dh;
     } parsed_values[kNumberOfValues];
-  } expected_results[] = {
-    { "keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz,"
-          "keyid=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz;dh=c2l4dGVlbmNvb2xieXRlcw",
-      { { "foo", "sixteencoolbytes", "twelvecoolbytes" },
-        { "bar", "twelvecoolbytes", "sixteencoolbytes" } } },
-    { "keyid=foo,aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-      { { "foo", "", "" },
-        { "", "sixteencoolbytes", "" } } },
-    { "keyid=foo,keyid=bar;dh=dHdlbHZlY29vbGJ5dGVz",
-      { { "foo", "", "" },
-        { "bar", "", "twelvecoolbytes" } } },
-    { "keyid=\"foo,keyid=bar\",aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-      { { "foo,keyid=bar", "", "" },
-        { "", "sixteencoolbytes", "" } } },
   };
+  auto expected_results = std::to_array<ExpectedResults>({
+      {"keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz,"
+       "keyid=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz;dh=c2l4dGVlbmNvb2xieXRlcw",
+       {{"foo", "sixteencoolbytes", "twelvecoolbytes"},
+        {"bar", "twelvecoolbytes", "sixteencoolbytes"}}},
+      {"keyid=foo,aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
+       {{"foo", "", ""}, {"", "sixteencoolbytes", ""}}},
+      {"keyid=foo,keyid=bar;dh=dHdlbHZlY29vbGJ5dGVz",
+       {{"foo", "", ""}, {"bar", "", "twelvecoolbytes"}}},
+      {"keyid=\"foo,keyid=bar\",aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
+       {{"foo,keyid=bar", "", ""}, {"", "sixteencoolbytes", ""}}},
+  });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
@@ -254,37 +255,37 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
 }
 
 TEST(EncryptionHeaderParsersTest, ParseInvalidCryptoKeyHeaders) {
-  const char* const expected_failures[] = {
-    // Values in the name-value pairs are not optional.
-    "keyid",
-    "keyid=",
-    "keyid=foo;keyid",
-    "aesgcm128",
-    "aesgcm128=",
-    "dh",
-    "dh=",
+  const auto expected_failures = std::to_array<const char*>({
+      // Values in the name-value pairs are not optional.
+      "keyid",
+      "keyid=",
+      "keyid=foo;keyid",
+      "aesgcm128",
+      "aesgcm128=",
+      "dh",
+      "dh=",
 
-    // Supplying the same name multiple times in the same value is invalid.
-    "keyid=foo;keyid=bar",
-    "keyid=foo;bar=baz;keyid=qux",
+      // Supplying the same name multiple times in the same value is invalid.
+      "keyid=foo;keyid=bar",
+      "keyid=foo;bar=baz;keyid=qux",
 
-    // The "aesgcm128" parameter must be a URL-safe base64 decodable string.
-    "aesgcm128=123$xyz",
-    "aesgcm128=foobar;aesgcm128=123$xyz",
+      // The "aesgcm128" parameter must be a URL-safe base64 decodable string.
+      "aesgcm128=123$xyz",
+      "aesgcm128=foobar;aesgcm128=123$xyz",
 
-    // The "dh" parameter must be a URL-safe base64 decodable string.
-    "dh=YmV/2ZXJ-sMDA",
-    "dh=dHdlbHZlY29vbGJ5dGVz=====",
-    "dh=123$xyz",
-  };
+      // The "dh" parameter must be a URL-safe base64 decodable string.
+      "dh=YmV/2ZXJ-sMDA",
+      "dh=dHdlbHZlY29vbGJ5dGVz=====",
+      "dh=123$xyz",
+  });
 
-  const char* const expected_failures_second_iter[] = {
-    // Valid first field, missing value in the second field.
-    "keyid=foo,novaluekey",
+  const auto expected_failures_second_iter = std::to_array<const char*>({
+      // Valid first field, missing value in the second field.
+      "keyid=foo,novaluekey",
 
-    // Valid first field, undecodable aesgcm128 value in the second field.
-    "dh=dHdlbHZlY29vbGJ5dGVz,aesgcm128=123$xyz",
-  };
+      // Valid first field, undecodable aesgcm128 value in the second field.
+      "dh=dHdlbHZlY29vbGJ5dGVz,aesgcm128=123$xyz",
+  });
 
   for (size_t i = 0; i < std::size(expected_failures); i++) {
     SCOPED_TRACE(i);

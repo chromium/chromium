@@ -94,8 +94,9 @@ void AssistantSetup::OnSearchAndAssistantStateReceived(bool is_disabled) {
 
 void AssistantSetup::OnAssistantStatusChanged(
     ash::assistant::AssistantStatus status) {
-  if (status == ash::assistant::AssistantStatus::NOT_READY)
+  if (status == ash::assistant::AssistantStatus::NOT_READY) {
     return;
+  }
 
   SyncSettingsState();
 }
@@ -115,8 +116,9 @@ void AssistantSetup::SyncSettingsState() {
 
 void AssistantSetup::OnGetSettingsResponse(const std::string& settings) {
   ash::assistant::SettingsUi settings_ui;
-  if (!settings_ui.ParseFromString(settings))
+  if (!settings_ui.ParseFromString(settings)) {
     return;
+  }
 
   // Sync activity control status.
   if (!settings_ui.has_consent_flow_ui()) {

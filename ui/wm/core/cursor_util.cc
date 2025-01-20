@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/wm/core/cursor_util.h"
 
+#include <array>
 #include <cfloat>
 #include <memory>
 #include <optional>
@@ -253,7 +249,8 @@ struct CursorResourceData {
 
 // Cursor resource data indexed by CursorType. Make sure to respect the order
 // defined at ui/base/cursor/mojom/cursor_type.mojom.
-constexpr std::optional<CursorResourceData> kNormalCursorResourceData[] = {
+constexpr auto kNormalCursorResourceData = std::to_array<
+    std::optional<CursorResourceData>>({
     {{CursorType::kPointer, IDR_AURA_CURSOR_PTR, {4, 4}, {7, 7}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_CROSSHAIR, {12, 12}, {24, 24}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_HAND, {9, 4}, {19, 8}}},
@@ -370,12 +367,13 @@ constexpr std::optional<CursorResourceData> kNormalCursorResourceData[] = {
       IDR_AURA_CURSOR_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
       {11, 11},
       {24, 23}}},
-};
+});
 
 static_assert(std::size(kNormalCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);
 
-constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
+constexpr auto kLargeCursorResourceData = std::to_array<
+    std::optional<CursorResourceData>>({
     {{CursorType::kPointer, IDR_AURA_CURSOR_BIG_PTR, {10, 10}, {20, 20}}},
     {{CursorType::kCross, IDR_AURA_CURSOR_BIG_CROSSHAIR, {30, 32}, {60, 64}}},
     {{CursorType::kHand, IDR_AURA_CURSOR_BIG_HAND, {25, 7}, {50, 14}}},
@@ -503,7 +501,7 @@ constexpr std::optional<CursorResourceData> kLargeCursorResourceData[] = {
       IDR_AURA_CURSOR_BIG_NORTH_WEST_SOUTH_EAST_NO_RESIZE,
       {32, 31},
       {64, 62}}},
-};
+});
 
 static_assert(std::size(kLargeCursorResourceData) ==
               static_cast<int>(CursorType::kMaxValue) + 1);

@@ -31,11 +31,12 @@ UiCredential MakeUiCredential(
     std::string_view username,
     std::string_view password,
     std::string_view origin = kExampleSite,
+    std::string_view display_name = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
-                      url::Origin::Create(GURL(origin)), match_type,
-                      base::Time());
+                      url::Origin::Create(GURL(origin)),
+                      std::string(display_name), match_type, base::Time());
 }
 
 password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
@@ -83,7 +84,7 @@ TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
       {MakeUiCredential("Berta", "30948", kExampleSite),
        MakeUiCredential("Adam", "Pas83B", std::string(kExampleSite) + "path"),
        MakeUiCredential(
-           "Dora", "PakudC", kExampleSite,
+           "Dora", "PakudC", kExampleSite, kExampleSite,
            password_manager_util::GetLoginMatchType::kAffiliated)});
 
   EXPECT_THAT(store()->GetCredentials(),
@@ -97,7 +98,7 @@ TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {
 
                   // The android credential stays untouched.
                   MakeUiCredential(
-                      "Dora", "PakudC", kExampleSite,
+                      "Dora", "PakudC", kExampleSite, kExampleSite,
                       password_manager_util::GetLoginMatchType::kAffiliated)));
 }
 

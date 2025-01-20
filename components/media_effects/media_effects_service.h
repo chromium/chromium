@@ -82,7 +82,7 @@ class MediaEffectsService : public KeyedService,
 
   // MediaEffectsModelProvider::Observer:
   void OnBackgroundSegmentationModelUpdated(
-      const base::FilePath& path) override;
+      base::optional_ref<const base::FilePath> path) override;
 
  private:
   VideoEffectsManagerImpl& GetOrCreateVideoEffectsManager(

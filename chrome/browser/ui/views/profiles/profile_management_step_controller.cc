@@ -117,13 +117,15 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
   void OnReloadRequested() override {
     // Sign-in may fail due to connectivity issues, allow reloading.
-    if (dice_sign_in_provider_)
+    if (dice_sign_in_provider_) {
       dice_sign_in_provider_->ReloadSignInPage();
+    }
   }
 
   void OnNavigateBackRequested() override {
-    if (dice_sign_in_provider_)
+    if (dice_sign_in_provider_) {
       NavigateBackInternal(dice_sign_in_provider_->contents());
+    }
   }
 
  private:

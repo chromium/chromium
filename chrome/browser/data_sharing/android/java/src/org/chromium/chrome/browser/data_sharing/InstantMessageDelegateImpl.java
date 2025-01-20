@@ -19,19 +19,18 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
@@ -42,7 +41,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -76,16 +76,20 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
     private final DataSharingUIDelegate mDataSharingUiDelegate;
+    private final TabGroupSyncService mTabGroupSyncService;
 
     /**
-     * @param profile The current profile to get dependencies with.
+     * @param messagingBackendService Where to register ourself as the current delegate.
+     * @param dataSharingService Data sharing service for the profile.
+     * @param tabGroupSyncService To access data about tab groups not open in the current model.
      */
-    /* package */ InstantMessageDelegateImpl(Profile profile) {
-        profile = profile.getOriginalProfile();
-        MessagingBackendService messagingBackendService =
-                MessagingBackendServiceFactory.getForProfile(profile);
+    /* package */ InstantMessageDelegateImpl(
+            MessagingBackendService messagingBackendService,
+            DataSharingService dataSharingService,
+            TabGroupSyncService tabGroupSyncService) {
         messagingBackendService.setInstantMessageDelegate(this);
-        mDataSharingUiDelegate = DataSharingServiceFactory.getForProfile(profile).getUiDelegate();
+        mDataSharingUiDelegate = dataSharingService.getUiDelegate();
+        mTabGroupSyncService = tabGroupSyncService;
     }
 
     /**
@@ -255,21 +259,18 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private Runnable prepareOpenTabAction(
             InstantMessage message, TabGroupModelFilter tabGroupModelFilter) {
-        Token tabGroupId = MessageUtils.extractTabGroupId(message);
+        // Okay to use extractTabGroupId here, as these actions require the tab to be in the current
+        // model already.
+        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
         String url = MessageUtils.extractTabUrl(message);
         return () -> doOpenTab(tabGroupId, url, tabGroupModelFilter);
     }
 
     private void doOpenTab(Token tabGroupId, String url, TabGroupModelFilter tabGroupModelFilter) {
         url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
-        // TODO(https://crbug.com/379134324): Refactor to be a call into TabUiUtils.
         int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
-        List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        if (relatedTabs.isEmpty()) return;
-        Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
-        TabCreator tabCreator = tabGroupModelFilter.getTabModel().getTabCreator();
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        tabCreator.createNewTab(loadUrlParams, TabLaunchType.FROM_TAB_GROUP_UI, lastTab);
+        TabGroupUtils.openUrlInGroup(
+                tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
     }
 
     private void showTabChange(
@@ -377,8 +378,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         givenName,
                         tabGroupTitle);
 
-        @Nullable Token tabGroupId = MessageUtils.extractTabGroupId(message);
-        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, tabGroupId);
+        String syncId = MessageUtils.extractSyncTabGroupId(message);
+        @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+        if (syncGroup == null) return;
+        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, syncGroup.syncId);
     }
 
     private void showGenericMessage(
@@ -406,6 +409,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         .with(MessageBannerProperties.TITLE, title)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
                         .with(MessageBannerProperties.ICON, icon)
+                        .with(
+                                MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX,
+                                icon.getIntrinsicWidth())
+                        .with(
+                                MessageBannerProperties.ICON_TINT_COLOR,
+                                MessageBannerProperties.TINT_NONE)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
                         .with(MessageBannerProperties.ON_FULLY_VISIBLE, onVisibleChange)
                         .build();
@@ -417,7 +426,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         String messageTitle = MessageUtils.extractTabGroupTitle(message);
         if (TextUtils.isEmpty(messageTitle)) {
             // Shouldn't need to check for any failure cases, should claim 1 tab if not found.
-            Token token = MessageUtils.extractTabGroupId(message);
+            String syncId = MessageUtils.extractSyncTabGroupId(message);
+            SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+            Token token = syncGroup.localId == null ? null : syncGroup.localId.tabGroupId;
             int rootId = tabGroupModelFilter.getRootIdFromStableId(token);
             int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
             return TabGroupTitleUtils.getDefaultTitle(context, tabCount);

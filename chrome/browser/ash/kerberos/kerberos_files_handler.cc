@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -79,7 +80,7 @@ std::optional<std::string> MaybeAdjustConfig(std::optional<std::string> config,
       "\tdns_canonicalize_hostname = %s\n"
       "\trdns = false\n";
   std::string adjusted_config = base::StringPrintf(
-      kKrb5CnameSettings, is_dns_cname_enabled ? "true" : "false");
+      kKrb5CnameSettings, base::ToString(is_dns_cname_enabled));
   adjusted_config.append(config.value());
   return adjusted_config;
 }

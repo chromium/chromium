@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_statistics.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/browser_thread.h"

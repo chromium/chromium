@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
 
@@ -80,7 +81,9 @@ const uint8_t BluetoothTestBase::kTestCableEid[] = {
 const char BluetoothTestBase::kTestUuidFormattedClientEid[] =
     "00010203-0405-0607-0809-101112131415";
 
-BluetoothTestBase::BluetoothTestBase() {}
+BluetoothTestBase::BluetoothTestBase(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : task_environment_(time_source) {}
 
 BluetoothTestBase::~BluetoothTestBase() = default;
 void BluetoothTestBase::StartLowEnergyDiscoverySession() {

@@ -1529,20 +1529,6 @@ TEST_F(PasswordSyncBridgeAccountStoreTest,
       "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync", 0);
-}
-
-TEST_F(PasswordSyncBridgeTest, ShouldReportStoredPasswordsIfProfileStore) {
-  fake_db()->AddLoginWithPrimaryKey(MakePasswordForm(kSignonRealm1, 100));
-  fake_db()->AddLoginWithPrimaryKey(MakePasswordForm(kSignonRealm2, 101));
-
-  base::HistogramTester histogram_tester;
-  std::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
-      bridge()->CreateMetadataChangeList(), syncer::EntityChangeList());
-  ASSERT_FALSE(error);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync", 2, 1);
 }
 
 TEST_F(PasswordSyncBridgeTest,

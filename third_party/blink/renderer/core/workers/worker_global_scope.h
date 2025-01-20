@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -72,7 +73,6 @@ class InstalledScriptsManager;
 class OffscreenFontSelector;
 class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
-class V8VoidFunction;
 class WorkerLocation;
 class WorkerNavigator;
 class WorkerThread;
@@ -80,6 +80,7 @@ class WorkerThread;
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
+      public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
       public Supplementable<WorkerGlobalScope> {
   DEFINE_WRAPPERTYPEINFO();
@@ -118,7 +119,6 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
   void close();
-  bool isSecureContextForBindings() const { return IsSecureContext(); }
 
   String origin() const;
 
@@ -239,9 +239,6 @@ class CORE_EXPORT WorkerGlobalScope
   }
 
   FontFaceSet* fonts();
-
-  // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
-  void queueMicrotask(V8VoidFunction*);
 
   TrustedTypePolicyFactory* GetTrustedTypes() const override;
   TrustedTypePolicyFactory* trustedTypes() const { return GetTrustedTypes(); }

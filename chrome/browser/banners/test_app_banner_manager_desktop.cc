@@ -171,8 +171,7 @@ void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
       base::StringPrintf("State updated to %d", static_cast<int>(state)));
   AppBannerManager::UpdateState(state);
 
-  if (state == AppBannerManager::State::PENDING_ENGAGEMENT ||
-      state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
+  if (state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
       state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED ||
       state == AppBannerManager::State::COMPLETE) {
     OnFinished();

@@ -116,7 +116,7 @@ class GpuExpectations(expectations.Expectations):
 
   def _GetKnownTags(self) -> Set[str]:
     if self._known_tags is None:
-      list_parser = self.ParseTaggedTestListContent(
+      list_parser = expectations.ParseTaggedTestListContent(
           self._GetExpectationFileTagHeader(''))
       self._known_tags = set()
       for ts in list_parser.tag_sets:

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -87,6 +88,16 @@ class GPU_GLES2_EXPORT SharedContextState
   using ContextLostCallback =
       base::OnceCallback<void(bool, error::ContextLostReason)>;
 
+  // This interface is used by the embedder to set custom GrContextOptions which
+  // are passed to Skia.
+  class GrContextOptionsProvider {
+   public:
+    ~GrContextOptionsProvider() = default;
+    // The passed GrContextOptions will have the default fields set. The
+    // embedder may modify the options as needed.
+    virtual void SetCustomGrContextOptions(GrContextOptions& options) const = 0;
+  };
+
   // TODO(vikassoni): Refactor code to have seperate constructor for GL and
   // Vulkan and not initialize/use GL related info for vulkan and vice-versa.
   SharedContextState(
@@ -100,7 +111,9 @@ class GPU_GLES2_EXPORT SharedContextState
       viz::MetalContextProvider* metal_context_provider = nullptr,
       DawnContextProvider* dawn_context_provider = nullptr,
       base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor = nullptr,
-      bool created_on_compositor_gpu_thread = false);
+      bool created_on_compositor_gpu_thread = false,
+      const gpu::SharedContextState::GrContextOptionsProvider*
+          gr_context_options_provider = nullptr);
 
   SharedContextState(const SharedContextState&) = delete;
   SharedContextState& operator=(const SharedContextState&) = delete;
@@ -285,6 +298,10 @@ class GPU_GLES2_EXPORT SharedContextState
  private:
   friend class base::RefCounted<SharedContextState>;
   friend class raster::RasterDecoderTestBase;
+  FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
+                           GLOptionsProviderSetsCustomOptions);
+  FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
+                           VulkanOptionsProviderSetsCustomOptions);
 
   // Observer which is notified when SkiaOutputSurfaceImpl takes ownership of a
   // shared image, and forward information to both histograms and task manager.
@@ -383,6 +400,8 @@ class GPU_GLES2_EXPORT SharedContextState
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
   const raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
+  raw_ptr<const GrContextOptionsProvider> gr_context_options_provider_ =
+      nullptr;
   bool created_on_compositor_gpu_thread_ = false;
   bool is_drdc_enabled_ = false;
   raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;

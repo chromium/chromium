@@ -136,7 +136,7 @@ class CommandBufferProxyImplTest
               return true;
             }));
 
-    proxy->Initialize(kNullSurfaceHandle, nullptr, SchedulingPriority::kNormal,
+    proxy->Initialize(nullptr, SchedulingPriority::kNormal,
                       ContextCreationAttribs(), GURL());
     // Use an arbitrary valid shm_id. The command buffer doesn't use this
     // directly, but not setting it triggers DCHECKs.

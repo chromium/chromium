@@ -18,7 +18,9 @@ using on_device_translation::LanguagePackKey;
 using on_device_translation::MockComponentManager;
 using on_device_translation::TestCanTranslate;
 using on_device_translation::TestCreateTranslator;
+using on_device_translation::TestLanguagePairAvailable;
 using on_device_translation::TestSimpleTranslationWorks;
+using on_device_translation::TestTranslatorCapabilitiesAvailable;
 
 namespace policy {
 
@@ -27,8 +29,7 @@ class TranslatorAPIPolicyTest : public PolicyTest {
  public:
   TranslatorAPIPolicyTest() {
     // Need to enable the feature to test the policy.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableTranslationAPI);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
     CHECK(tmp_dir_.CreateUniqueTempDir());
   }
   ~TranslatorAPIPolicyTest() override = default;
@@ -84,6 +85,8 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, DefaultAllowed) {
   NavigateToEmptyPage();
   TestSimpleTranslationWorks(browser(), "en", "ja");
   TestCanTranslate(browser(), "en", "ja", "readily");
+  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
+  TestTranslatorCapabilitiesAvailable(browser(), "readily");
 }
 
 // Test that set the policy to false will disallow the API.
@@ -94,6 +97,8 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Disallow) {
                        "NotSupportedError: Unable to create translator for the "
                        "given source and target language.");
   TestCanTranslate(browser(), "en", "ja", "no");
+  TestLanguagePairAvailable(browser(), "en", "ja", "no");
+  TestTranslatorCapabilitiesAvailable(browser(), "no");
 }
 
 // Test that set the policy to true will allow the API.
@@ -102,6 +107,8 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest, Allow) {
   SetTranslatorAPIAllowedPolicy(true);
   TestSimpleTranslationWorks(browser(), "en", "ja");
   TestCanTranslate(browser(), "en", "ja", "readily");
+  TestLanguagePairAvailable(browser(), "en", "ja", "readily");
+  TestTranslatorCapabilitiesAvailable(browser(), "readily");
 }
 
 // Test that the policy can be dynamically refreshed.

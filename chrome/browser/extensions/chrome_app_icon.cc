@@ -36,7 +36,7 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
   RoundedCornersImageSource& operator=(const RoundedCornersImageSource&) =
       delete;
 
-  ~RoundedCornersImageSource() override {}
+  ~RoundedCornersImageSource() override = default;
 
  private:
   // gfx::CanvasImageSource overrides:

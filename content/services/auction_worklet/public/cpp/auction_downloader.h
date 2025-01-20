@@ -12,21 +12,19 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "net/base/network_interfaces.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_loader_completion_status.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
-
-namespace network {
-class SimpleURLLoader;
-}
-
 namespace auction_worklet {
 
 // Download utility for auction scripts and JSON data. Creates requests and
@@ -65,6 +63,9 @@ class CONTENT_EXPORT AuctionDownloader {
   // When a URL appears in a network error message, it's truncated to never be
   // longed than this length.
   static constexpr size_t kMaxErrorUrlLength = 10 * 1024;
+
+  // Timeout for network requests it makes.
+  static constexpr base::TimeDelta kRequestTimeout = base::Seconds(30);
 
   // This handles how network requests get logged to devtools.
   class CONTENT_EXPORT NetworkEventsDelegate {
@@ -114,6 +115,7 @@ class CONTENT_EXPORT AuctionDownloader {
       MimeType mime_type,
       std::optional<std::string> post_body,
       std::optional<std::string> content_type,
+      bool is_trusted_bidding_signals_kvv1_download,
       ResponseStartedCallback response_started_callback,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
@@ -122,6 +124,14 @@ class CONTENT_EXPORT AuctionDownloader {
   ~AuctionDownloader();
 
   const GURL& source_url() const { return source_url_; }
+
+  // Checks if the response is allowed for Protected Audience-related requests,
+  // based on the headers. Returns an error string and sets `status_out` on
+  // error.
+  static std::optional<std::string> CheckResponseAllowed(
+      const GURL& url,
+      const network::mojom::URLResponseHead& response_head,
+      network::URLLoaderCompletionStatus& status_out);
 
  private:
   void OnHeadersOnlyReceived(scoped_refptr<net::HttpResponseHeaders> headers);
@@ -132,7 +142,8 @@ class CONTENT_EXPORT AuctionDownloader {
                   const net::RedirectInfo& redirect_info,
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
-  void OnResponseStarted(const GURL& final_url,
+  void OnResponseStarted(base::Time request_time,
+                         const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
 
   // Notifies tracing, devtools and callback of a failure and cancels any
@@ -144,8 +155,16 @@ class CONTENT_EXPORT AuctionDownloader {
                    int64_t encoded_data_length,
                    int64_t decoded_body_length);
 
+  // While revalidating a cached response, keep the SimpleURLLoader
+  // alive.
+  static void OnRevalidatedBodyReceived(
+      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      std::unique_ptr<std::string> body) {}
+
+  const raw_ref<network::mojom::URLLoaderFactory> url_loader_factory_;
   const GURL source_url_;
   const MimeType mime_type_;
+  const bool is_trusted_bidding_signals_kvv1_download_;
   // A UnguessableToken string to be used in devtools.
   std::string request_id_;
 

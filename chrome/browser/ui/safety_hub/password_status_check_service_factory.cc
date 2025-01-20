@@ -21,9 +21,6 @@ PasswordStatusCheckServiceFactory::GetInstance() {
 // static
 PasswordStatusCheckService* PasswordStatusCheckServiceFactory::GetForProfile(
     Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return nullptr;
-  }
   return static_cast<PasswordStatusCheckService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -53,10 +50,6 @@ PasswordStatusCheckServiceFactory::~PasswordStatusCheckServiceFactory() =
 std::unique_ptr<KeyedService>
 PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return nullptr;
-  }
-
   Profile* profile = Profile::FromBrowserContext(context);
   password_manager::PasswordStoreInterface* store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -70,4 +63,9 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<PasswordStatusCheckService>(
       Profile::FromBrowserContext(context));
+}
+
+bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
 }

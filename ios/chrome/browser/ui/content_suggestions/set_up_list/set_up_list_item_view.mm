@@ -35,7 +35,7 @@ namespace {
 constexpr CGFloat kPadding = 15;
 
 // The spacing between the title and description labels.
-constexpr CGFloat kTextSpacing = 5;
+constexpr CGFloat kTextSpacing = 2;
 constexpr CGFloat kCompactTextSpacing = 0;
 
 // The duration of the icon / label crossfade animation.
@@ -152,12 +152,6 @@ struct ViewConfig {
           kTextSpacing,
       };
     }
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.class ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(hideDescriptionOnTraitChange)];
-    }
   }
   return self;
 }
@@ -182,11 +176,6 @@ struct ViewConfig {
   [super traitCollectionDidChange:previousTraitCollection];
   if (@available(iOS 17, *)) {
     return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self hideDescriptionOnTraitChange];
   }
 }
 #endif
@@ -298,6 +287,8 @@ struct ViewConfig {
   textStack.axis = UILayoutConstraintAxisVertical;
   textStack.translatesAutoresizingMaskIntoConstraints = NO;
   textStack.spacing = _config.text_spacing;
+  textStack.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
 
   // Add a horizontal stack to contain the icon(s) and the text stack.
   NSArray* arrangedSubviews = putIconInSquareBackground
@@ -358,6 +349,10 @@ struct ViewConfig {
   if (_complete) {
     label.attributedText = Strikethrough(label.text);
   }
+  // Set height constraint. Applicable for larger text.
+  [NSLayoutConstraint activateConstraints:@[ [label.heightAnchor
+                                              constraintEqualToConstant:26] ]];
+
   [label
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
@@ -384,6 +379,10 @@ struct ViewConfig {
                        IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE)
                  : l10n_util::GetNSString(
                        IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
+    case SetUpListItemType::kDocking:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DOCK_CHROME_TITLE);
+    case SetUpListItemType::kAddressBar:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -403,6 +402,12 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.autofill_description);
     case SetUpListItemType::kNotifications:
       return l10n_util::GetNSString(_config.notifications_description);
+    case SetUpListItemType::kDocking:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_DOCK_CHROME_LONG_DESCRIPTION);
+    case SetUpListItemType::kAddressBar:
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_ADDRESS_BAR_SHORT_DESCRIPTION);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
@@ -421,21 +426,15 @@ struct ViewConfig {
       return set_up_list::kAutofillItemID;
     case SetUpListItemType::kNotifications:
       return set_up_list::kContentNotificationItemID;
+    case SetUpListItemType::kDocking:
+      return set_up_list::kDockingItemID;
+    case SetUpListItemType::kAddressBar:
+      return set_up_list::kAddressBarItemID;
     case SetUpListItemType::kAllSet:
       return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:
       return set_up_list::kFollowItemID;
   }
-}
-
-// Hides `_description` if the font size category is larger than
-// extra-extra-large.
-- (void)hideDescriptionOnTraitChange {
-  _description.hidden = self.traitCollection.preferredContentSizeCategory >
-                        UIContentSizeCategoryExtraExtraLarge;
-  // Force a layout since the size of text components may have changed.
-  [self setNeedsLayout];
-  [self layoutIfNeeded];
 }
 
 #pragma mark - Private methods (animation helpers)

@@ -50,7 +50,7 @@ class HistoryEmbeddingsInteractiveTest
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
                   context, std::make_unique<history_embeddings::MockEmbedder>(),
-                  /*answerer=*/nullptr, /*intent_classfier=*/nullptr);
+                  /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
 
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -59,11 +59,6 @@ class HistoryEmbeddingsInteractiveTest
  protected:
   history_embeddings::HistoryEmbeddingsService* service() {
     return HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
-  }
-
-  base::RepeatingCallback<void(history_embeddings::UrlPassages)>&
-  callback_for_tests() {
-    return service()->callback_for_tests_;
   }
 
   page_content_annotations::PageContentAnnotationsService*
@@ -118,8 +113,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, MAYBE_FeedbackDialog) {
       {"A a B C b a 2 D", 0.99},
   });
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<history_embeddings::UrlPassages> store_future;
-  callback_for_tests() = store_future.GetRepeatingCallback();
+  base::test::TestFuture<history_embeddings::UrlData> store_future;
+  service()->SetPassagesStoredCallbackForTesting(
+      store_future.GetRepeatingCallback());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
   EXPECT_TRUE(store_future.Wait());

@@ -146,11 +146,13 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
 
   ~TestInputEventObserver() override {}
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     dispatched_events_.push_back(event.GetType());
   }
 
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent& event) override {
     if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
@@ -624,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     EXPECT_TRUE(popup_routing_id);
     // Grab a pointer to the popup RenderWidget.
     RenderWidgetHost* popup_widget_host =
-        RenderWidgetHost::FromID(process->GetID(), popup_routing_id);
+        RenderWidgetHost::FromID(process->GetDeprecatedID(), popup_routing_id);
     ASSERT_TRUE(popup_widget_host);
     ASSERT_NE(popup_widget_host, root_frame_host->GetRenderWidgetHost());
 
@@ -705,7 +707,7 @@ class ShowPopupInterceptor
   }
 
   void DidCreatePopupWidget(RenderWidgetHostImpl* render_widget_host) {
-    process_id_ = render_widget_host->GetProcess()->GetID();
+    process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
     routing_id_ = render_widget_host->GetRoutingID();
     std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
                       .SwapImplForTesting(this);
@@ -747,7 +749,6 @@ class ShowPopupMenuInterceptor
   void ShowPopupMenu(
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int32_t item_height,
       double font_size,
       int32_t selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -755,8 +756,8 @@ class ShowPopupMenuInterceptor
       bool allow_multiple_selection) override {
     CHECK(GetForwardingInterface());
     GetForwardingInterface()->ShowPopupMenu(
-        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, item_height,
-        font_size, selected_item, std::move(menu_items), right_aligned,
+        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, font_size,
+        selected_item, std::move(menu_items), right_aligned,
         allow_multiple_selection);
   }
 
@@ -824,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 #else
   show_popup_interceptor.Wait();
   ASSERT_FALSE(
-      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetID(),
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
                                show_popup_interceptor.last_routing_id()));
 #endif  // BUILDFLAG(IS_MAC)
 }
@@ -910,9 +911,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).width").ExtractString());
-  EXPECT_EQ(
+  // Rounding of GetVisibleViewportSize in the presence of a non-integer
+  // devicePixelRatio device can make this off by one vs the video height.
+  EXPECT_NEAR(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
+      1);
 
   emulated_display_feature.orientation =
       DisplayFeature::Orientation::kHorizontal;
@@ -923,21 +927,26 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_EQ(
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 
   // No display feature/viewport segments are set, the video should go
   // fullscreen.
   view()->SetDisplayFeatureForTesting(nullptr);
   host()->SynchronizeVisualProperties();
   WaitForVisualPropertiesAck();
-  EXPECT_EQ(
+  // Rounding of GetVisibleViewportSize in the presence of a non-integer
+  // devicePixelRatio device can make this off by one vs the video height.
+  EXPECT_NEAR(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
-  EXPECT_EQ(
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
+      1);
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 
   constexpr char kExitFullscreenScript[] = R"JS(
     document.exitFullscreen().then(() => {
@@ -954,9 +963,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_EQ(
+  EXPECT_NEAR(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
+      1);
 }
 
 // Tests that the renderer receives the root widget's viewport segments and

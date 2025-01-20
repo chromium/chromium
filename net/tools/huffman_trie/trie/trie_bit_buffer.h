@@ -5,6 +5,7 @@
 #ifndef NET_TOOLS_HUFFMAN_TRIE_TRIE_TRIE_BIT_BUFFER_H_
 #define NET_TOOLS_HUFFMAN_TRIE_TRIE_TRIE_BIT_BUFFER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <vector>

@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/app/vector_icons",
   "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/mobile",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/network",

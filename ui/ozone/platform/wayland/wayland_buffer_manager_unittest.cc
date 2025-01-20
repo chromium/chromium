@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,8 +57,6 @@ using MockTerminateGpuCallback =
     base::MockCallback<base::OnceCallback<void(std::string)>>;
 
 constexpr gfx::Size kDefaultSize(1024, 768);
-
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
 // TODO(msisov): add a test to exercise buffer management with non-default scale
 // once all the patches land.
@@ -132,7 +129,6 @@ class WaylandBufferManagerTest : public WaylandTest {
                                     /*supports_viewporter=*/true,
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
-                                    kAugmentedSurfaceNotSupportedVersion,
                                     /*supports_single_pixel_buffer=*/true);
     surface_id_ = window_->root_surface()->get_surface_id();
   }
@@ -211,7 +207,6 @@ class WaylandBufferManagerTest : public WaylandTest {
                     /*supports_viewporter=*/true,
                     /*supports_acquire_fence=*/false,
                     /*supports_overlays=*/true,
-                    kAugmentedSurfaceNotSupportedVersion,
                     /*supports_single_pixel_buffer=*/true);
               }));
     }
@@ -1284,105 +1279,6 @@ TEST_P(WaylandBufferManagerTest,
   DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
   DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// This test ensures that a failed presentation feedback (with flags set as
-// `gfx::PresentationFeedback::kFailure`) is received by the client and
-// propagated as a failed presentation.
-TEST_P(WaylandBufferManagerTest, EnsureFailedPresentationIsSent) {
-  constexpr uint32_t kBufferId1 = 1;
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    // Enable wp_presentation support.
-    auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
-    ASSERT_TRUE(mock_wp_presentation);
-  });
-
-  const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInDIP(bounds);
-
-  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
-  });
-  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
-  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
-                                               false /* fail */);
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
-
-    constexpr uint32_t kNumberOfCommits = 1;
-    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
-  });
-
-  // All the other expectations must come in order.
-  ::testing::InSequence sequence;
-  EXPECT_CALL(mock_surface_gpu,
-              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
-      .Times(1);
-  EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
-
-  // Commit the buffer
-  CommitBuffer(widget, kBufferId1, kBufferId1,
-               gfx::FrameData(delegate_.viz_seq()), bounds,
-               gfx::RoundedCornersF(), kDefaultScale, bounds);
-
-  // Let the mojo message for OnSubmission go back.
-  base::RunLoop().RunUntilIdle();
-
-  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    // Verify we have a presentation callback now. This will be sent later.
-    EXPECT_EQ(
-        1u,
-        server->EnsureAndGetWpPresentation()->num_of_presentation_callbacks());
-
-    server->GetObject<wl::MockSurface>(id)->SendFrameCallback();
-  });
-
-  // Its all setup until this point.
-  // The main part of the test starts here.
-  EXPECT_CALL(
-      mock_surface_gpu,
-      OnPresentation(
-          kBufferId1,
-          ::testing::Field(
-              &gfx::PresentationFeedback::flags,
-              ::testing::Eq(gfx::PresentationFeedback::Flags::kFailure))))
-      .Times(1);
-
-  // Set `.flags` as `gfx::PresentationFeedback::kFailure`.
-  wl::MockWpPresentation::PresentationFeedbackParams params{
-      .tv_sec_hi = 1,
-      .tv_sec_lo = 1,
-      .tv_nsec = 1,
-      .refresh = 1,
-      .seq_hi = 1,
-      .seq_lo = 1,
-      .flags = gfx::PresentationFeedback::kFailure};
-
-  PostToServerAndWait([params](wl::TestWaylandServerThread* server) {
-    auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
-    EXPECT_EQ(1u, mock_wp_presentation->num_of_presentation_callbacks());
-    mock_wp_presentation->SendPresentationFeedbackToClient(/*last=*/false,
-                                                           params);
-  });
-
-  // Ensure that presentation feedback is flushed.
-  task_environment_.FastForwardBy(
-      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
-
-  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
-}
-#endif
 
 TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   constexpr uint32_t kDmabufBufferId = 1;
@@ -2668,7 +2564,6 @@ TEST_P(WaylandBufferManagerTest,
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2794,7 +2689,6 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2915,97 +2809,6 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
     }
 
     SendFrameCallbackForSurface(surface_id_);
-  }
-}
-
-TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
-  InitializeSurfaceAugmenter();
-  EXPECT_TRUE(connection_->surface_augmenter());
-}
-
-// TODO(crbug.com/374244479): this is not applicable to Linux.
-TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
-  if (!connection_->ShouldUseOverlayDelegation()) {
-    GTEST_SKIP();
-  }
-
-  InitializeSurfaceAugmenter();
-
-  std::vector<uint32_t> kBufferIds = {1, 2, 3};
-
-  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
-                                  window_->GetWidget());
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(3);
-  });
-
-  for (auto id : kBufferIds)
-    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, id);
-
-  PostToServerAndWait(
-      [size = kBufferIds.size()](wl::TestWaylandServerThread* server) {
-        auto* linux_dmabuf = server->zwp_linux_dmabuf_v1();
-        for (size_t i = 0; i < size; i++) {
-          zwp_linux_buffer_params_v1_send_created(
-              linux_dmabuf->buffer_params()[i]->resource(),
-              linux_dmabuf->buffer_params()[i]->buffer_resource());
-        }
-      });
-
-  std::vector<gfx::RRectF> rounded_corners_vec = {
-      {{10, 10, 200, 200}, {1, 1, 1, 1}},  {{10, 10, 200, 200}, {0, 1, 0, 1}},
-      {{10, 10, 200, 200}, {1, 0, 1, 0}},  {{10, 10, 200, 200}, {5, 10, 0, 1}},
-      {{10, 10, 200, 200}, {0, 2, 20, 3}}, {{10, 10, 200, 200}, {2, 3, 4, 5}},
-      {{10, 10, 200, 200}, {0, 0, 0, 0}},
-  };
-
-  // Use different scale factors to verify Ozone/Wayland translates the corners
-  // from px to dip.
-  std::vector<float> scale_factors = {1, 1.2, 1.5, 2};
-
-  uint32_t frame_id = 0u;
-  for (auto scale_factor : scale_factors) {
-    if (scale_factor != std::ceil(scale_factor)) {
-      // Fractional scales not supported when surface submission in pixel
-      // coordinates is disabled.
-      continue;
-    }
-    for (const auto& rounded_corners : rounded_corners_vec) {
-      std::vector<wl::WaylandOverlayConfig> overlay_configs;
-      for (auto id : kBufferIds) {
-        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-            id == 1 ? INT32_MIN : id, id, window_->GetBoundsInPixels()));
-        overlay_configs.back().surface_scale_factor = scale_factor;
-        overlay_configs.back().rounded_clip_bounds = rounded_corners;
-      }
-
-      buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), ++frame_id,
-                                          gfx::FrameData(),
-                                          std::move(overlay_configs));
-
-      base::RunLoop().RunUntilIdle();
-
-      for (auto& subsurface : window_->wayland_subsurfaces_) {
-        gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
-        // Ozone/Wayland applies ceiled scale factor if it's fractional.
-        rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
-        PostToServerAndWait(
-            [subsurface_id = subsurface->wayland_surface()->get_surface_id(),
-             &rounded_clip_bounds_dip](wl::TestWaylandServerThread* server) {
-              auto* mock_surface_of_subsurface =
-                  server->GetObject<wl::MockSurface>(subsurface_id);
-              EXPECT_TRUE(mock_surface_of_subsurface);
-
-              EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                            ->rounded_clip_bounds(),
-                        rounded_clip_bounds_dip);
-              mock_surface_of_subsurface->SendFrameCallback();
-            });
-      }
-
-      SendFrameCallbackForSurface(surface_id_);
-    }
   }
 }
 
@@ -3135,53 +2938,11 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
-}
-
-TEST_P(WaylandBufferManagerTest, DoesNotRequestReleaseForSolidColorBuffers) {
-  if (!connection_->linux_explicit_synchronization_v1())
-    GTEST_SKIP();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    server->EnsureSurfaceAugmenter();
-  });
-
-  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
-
-  const auto solid_color_buffer_id = buffer_manager_gpu_->AllocateBufferID();
-  buffer_manager_gpu_->CreateSolidColorBuffer(
-      SkColor4f::FromColor(SK_ColorBLUE), gfx::Size(1, 1),
-      solid_color_buffer_id);
-
-  base::RunLoop().RunUntilIdle();
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
-    constexpr uint32_t kNumberOfCommits = 1;
-    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
-  });
-
-  std::vector<wl::WaylandOverlayConfig> overlay_configs;
-  auto bounds = window_->GetBoundsInPixels();
-  overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-      INT32_MIN, solid_color_buffer_id, bounds));
-  buffer_manager_gpu_->CommitOverlays(widget_, 1u,
-                                      gfx::FrameData(delegate_.viz_seq()),
-                                      std::move(overlay_configs));
-
-  base::RunLoop().RunUntilIdle();
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    EXPECT_FALSE(
-        server->GetObject<wl::MockSurface>(id)->has_linux_buffer_release());
-  });
 }
 
 class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
@@ -3273,8 +3034,7 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
   }
 };
 
-// Tests viewport destination is set correctly when the augmenter subsurface
-// protocol is not available and then becomes available.
+// Tests viewport destination is set correctly.
 TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
   if (!connection_->ShouldUseOverlayDelegation()) {
     GTEST_SKIP();
@@ -3286,16 +3046,9 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
   for (const auto& data : test_data) {
     ViewportDestinationTestHelper(data[0] /* display_rect */,
                                   data[1] /* expected_rect */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
   }
 }
 
-// Tests viewport destination is set correctly when the augmenter subsurface
-// protocol is not available (the destination is rounded), and the protocol is
-// available (the destination is set with floating point precision).
 TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
   if (!connection_->ShouldUseOverlayDelegation()) {
     GTEST_SKIP();
@@ -3303,16 +3056,11 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
 
   constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
       {{gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {7, 12})},
-       {gfx::RectF({7, 8}, {43.562, 63.76}),
-        gfx::RectF({7, 8}, {43.562, 63.76})}}};
+       {gfx::RectF({7, 8}, {43.562, 63.76}), gfx::RectF({7, 8}, {44, 64})}}};
 
   for (const auto& data : test_data) {
     ViewportDestinationTestHelper(data[0] /* display_rect */,
                                   data[1] /* expected_rect */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
   }
 }
 

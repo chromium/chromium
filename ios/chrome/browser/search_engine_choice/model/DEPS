@@ -2,5 +2,5 @@ include_rules = [
   "+ios/chrome/browser/policy/model/profile_policy_connector.h",
   "+ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
-  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h",
+  "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h",
 ]

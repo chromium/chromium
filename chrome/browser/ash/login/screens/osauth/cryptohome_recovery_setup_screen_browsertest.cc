@@ -37,7 +37,7 @@ namespace ash {
 
 class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
  public:
-  CryptohomeRecoverySetupScreenTest() {}
+  CryptohomeRecoverySetupScreenTest() = default;
 
   ~CryptohomeRecoverySetupScreenTest() override = default;
 

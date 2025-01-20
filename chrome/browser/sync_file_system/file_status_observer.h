@@ -18,12 +18,12 @@ namespace sync_file_system {
 
 class FileStatusObserver {
  public:
-  FileStatusObserver() {}
+  FileStatusObserver() = default;
 
   FileStatusObserver(const FileStatusObserver&) = delete;
   FileStatusObserver& operator=(const FileStatusObserver&) = delete;
 
-  virtual ~FileStatusObserver() {}
+  virtual ~FileStatusObserver() = default;
 
   virtual void OnFileStatusChanged(const storage::FileSystemURL& url,
                                    SyncFileType file_type,

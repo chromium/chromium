@@ -8,19 +8,16 @@
 
 namespace media {
 
-DataBuffer::DataBuffer(int buffer_size) : data_size_(buffer_size) {
-  CHECK_GE(buffer_size, 0);
-  data_ = base::HeapArray<uint8_t>::Uninit(buffer_size);
+DataBuffer::DataBuffer(size_t capacity) {
+  CHECK_GE(capacity, 0u);
+  data_ = base::HeapArray<uint8_t>::Uninit(capacity);
 }
-
-DataBuffer::DataBuffer(base::HeapArray<uint8_t> buffer)
-    : data_size_(buffer.size()) {
+DataBuffer::DataBuffer(base::HeapArray<uint8_t> buffer) : size_(buffer.size()) {
   data_ = std::move(buffer);
   CHECK(data_.data());
 }
 
-DataBuffer::DataBuffer(base::span<const uint8_t> data)
-    : data_size_(data.size()) {
+DataBuffer::DataBuffer(base::span<const uint8_t> data) : size_(data.size()) {
   CHECK(!data.empty());
   data_ = base::HeapArray<uint8_t>::CopiedFrom(data);
 }
@@ -38,4 +35,11 @@ scoped_refptr<DataBuffer> DataBuffer::CopyFrom(base::span<const uint8_t> data) {
 scoped_refptr<DataBuffer> DataBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(new DataBuffer(DataBufferType::kEndOfStream));
 }
+
+void DataBuffer::Append(base::span<const uint8_t> data) {
+  CHECK(!end_of_stream());
+  data_.subspan(size_, data.size()).copy_from(data);
+  size_ += data.size();
+}
+
 }  // namespace media

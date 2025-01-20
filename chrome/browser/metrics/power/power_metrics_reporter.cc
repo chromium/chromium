@@ -199,11 +199,6 @@ void PowerMetricsReporter::ReportMetrics(
   const std::vector<const char*> long_interval_suffixes{
       "", long_interval_scenario_params.histogram_suffix};
 
-  if (aggregated_process_metrics.cpu_usage) {
-    TRACE_COUNTER("power", "AverageCPU.Total",
-                  *aggregated_process_metrics.cpu_usage);
-  }
-
   // Report process metrics histograms.
   ReportAggregatedProcessMetricsHistograms(aggregated_process_metrics,
                                            long_interval_suffixes);

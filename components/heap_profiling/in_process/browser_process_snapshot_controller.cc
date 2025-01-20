@@ -7,14 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -99,25 +97,8 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
       // processes to measure.
       continue;
     }
-    int snapshot_probability_pct;
-    switch (process_type) {
-      case sampling_profiler::ProfilerProcessType::kGpu:
-        snapshot_probability_pct = kGpuSnapshotProbability.Get();
-        break;
-      case sampling_profiler::ProfilerProcessType::kNetworkService:
-        snapshot_probability_pct = kNetworkSnapshotProbability.Get();
-        break;
-      case sampling_profiler::ProfilerProcessType::kRenderer:
-        snapshot_probability_pct = kRendererSnapshotProbability.Get();
-        break;
-      case sampling_profiler::ProfilerProcessType::kUtility:
-        snapshot_probability_pct = kUtilitySnapshotProbability.Get();
-        break;
-      default:
-        NOTREACHED();
-    }
-    CHECK_GE(snapshot_probability_pct, 0);
-    CHECK_LE(snapshot_probability_pct, 100);
+    const int snapshot_probability_pct =
+        GetSnapshotProbabilityForProcess(process_type);
     if (snapshot_probability_pct == 0) {
       // No need to test each process since none will be chosen.
       continue;

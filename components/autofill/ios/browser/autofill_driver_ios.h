@@ -14,8 +14,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 #import "url/origin.h"
@@ -90,6 +90,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   AutofillDriverIOS* GetParent() override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
@@ -126,6 +127,12 @@ class AutofillDriverIOS final : public AutofillDriver,
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override;
 
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
@@ -151,9 +158,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   void CaretMovedInFormField(const FormData& form,
                              const FieldGlobalId& field_id,
                              const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(const FormData& form,
-                          const FieldGlobalId& field_id,
-                          base::TimeTicks timestamp);
+  void TextFieldValueChanged(const FormData& form,
+                             const FieldGlobalId& field_id,
+                             base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
 

@@ -51,7 +51,7 @@ const char kFlagsKey[] = "Flags";
 const char kVersionKey[] = "Version";
 const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
-const char kUriKey[] = "Uri";
+const char kLocationsKey[] = "Locations";
 const char kChecksumKey[] = "Checksum";
 const char kTrustFlagsKey[] = "TrustFlags";
 const char kFakeRemoteIdForTesting[] = "test-remote";
@@ -83,6 +83,74 @@ class MockObserver : public ash::FwupdClient::Observer {
               OnDeviceRequestResponse,
               (ash::FwupdRequest request),
               (override));
+};
+
+struct RequestUpdatesResponse {
+ public:
+  std::string checksum = kFakeSha256ForTesting;
+  std::optional<std::string> description = kFakeUpdateDescriptionForTesting;
+  std::optional<uint32_t> priority = kFakeUpdatePriorityForTesting;
+  bool trusted = true;
+  std::vector<std::string> locations = {kFakeUpdateUriForTesting};
+  std::string version = kFakeUpdateVersionForTesting;
+
+  std::unique_ptr<dbus::Response> Create() {
+    auto response = dbus::Response::CreateEmpty();
+
+    dbus::MessageWriter response_writer(response.get());
+    dbus::MessageWriter response_array_writer(nullptr);
+    dbus::MessageWriter update_array_writer(nullptr);
+    dbus::MessageWriter dict_writer(nullptr);
+    dbus::MessageWriter variant_writer(nullptr);
+
+    // The response is an array of arrays of dictionaries. Each dictionary is
+    // one update description.
+    response_writer.OpenArray("a{sv}", &response_array_writer);
+    response_array_writer.OpenArray("{sv}", &update_array_writer);
+
+    update_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kChecksumKey);
+    dict_writer.AppendVariantOfString(checksum);
+    update_array_writer.CloseContainer(&dict_writer);
+
+    if (description.has_value()) {
+      update_array_writer.OpenDictEntry(&dict_writer);
+      dict_writer.AppendString(kDescriptionKey);
+      dict_writer.AppendVariantOfString(*description);
+      update_array_writer.CloseContainer(&dict_writer);
+    }
+
+    if (priority.has_value()) {
+      update_array_writer.OpenDictEntry(&dict_writer);
+      dict_writer.AppendString(kPriorityKey);
+      dict_writer.AppendVariantOfUint32(*priority);
+      update_array_writer.CloseContainer(&dict_writer);
+    }
+
+    if (trusted) {
+      update_array_writer.OpenDictEntry(&dict_writer);
+      dict_writer.AppendString(kTrustFlagsKey);
+      dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+      update_array_writer.CloseContainer(&dict_writer);
+    }
+
+    update_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kLocationsKey);
+    dict_writer.OpenVariant("as", &variant_writer);
+    variant_writer.AppendArrayOfStrings(locations);
+    dict_writer.CloseContainer(&variant_writer);
+    update_array_writer.CloseContainer(&dict_writer);
+
+    update_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kVersionKey);
+    dict_writer.AppendVariantOfString(version);
+    update_array_writer.CloseContainer(&dict_writer);
+
+    response_array_writer.CloseContainer(&update_array_writer);
+    response_writer.CloseContainer(&response_array_writer);
+
+    return response;
+  }
 };
 
 }  // namespace
@@ -147,149 +215,6 @@ class FwupdClientTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
                        std::move(result.first), std::move(result.second)));
-  }
-
-  std::unique_ptr<dbus::Response> CreateOneUpdateResponseWithChecksum(
-      const std::string& checksum) {
-    auto response = dbus::Response::CreateEmpty();
-
-    dbus::MessageWriter response_writer(response.get());
-    dbus::MessageWriter response_array_writer(nullptr);
-    dbus::MessageWriter device_array_writer(nullptr);
-    dbus::MessageWriter dict_writer(nullptr);
-
-    // The response is an array of arrays of dictionaries. Each dictionary is
-    // one device description.
-    response_writer.OpenArray("a{sv}", &response_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kDescriptionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-    SetExpectedDescription(kFakeUpdateDescriptionForTesting);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kVersionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kPriorityKey);
-    dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kUriKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kChecksumKey);
-    dict_writer.AppendVariantOfString(checksum);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kTrustFlagsKey);
-    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    response_array_writer.CloseContainer(&device_array_writer);
-    response_writer.CloseContainer(&response_array_writer);
-
-    return response;
-  }
-
-  std::unique_ptr<dbus::Response> CreateOneUpdateResponseWithNoDescription() {
-    auto response = dbus::Response::CreateEmpty();
-
-    dbus::MessageWriter response_writer(response.get());
-    dbus::MessageWriter response_array_writer(nullptr);
-    dbus::MessageWriter device_array_writer(nullptr);
-    dbus::MessageWriter dict_writer(nullptr);
-
-    // The response is an array of arrays of dictionaries. Each dictionary is
-    // one device description.
-    response_writer.OpenArray("a{sv}", &response_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kVersionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kPriorityKey);
-    dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kUriKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kChecksumKey);
-    dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-    SetExpectedChecksum(kFakeSha256ForTesting);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kTrustFlagsKey);
-    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    response_array_writer.CloseContainer(&device_array_writer);
-    response_writer.CloseContainer(&response_array_writer);
-
-    return response;
-  }
-
-  std::unique_ptr<dbus::Response>
-  CreateOneUpdateResponseWithNoTrustedReports() {
-    auto response = dbus::Response::CreateEmpty();
-
-    dbus::MessageWriter response_writer(response.get());
-    dbus::MessageWriter response_array_writer(nullptr);
-    dbus::MessageWriter device_array_writer(nullptr);
-    dbus::MessageWriter dict_writer(nullptr);
-
-    // The response is an array of arrays of dictionaries. Each dictionary is
-    // one update description.
-    response_writer.OpenArray("a{sv}", &response_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kDescriptionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-    SetExpectedDescription(kFakeUpdateDescriptionForTesting);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kVersionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kPriorityKey);
-    dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kUriKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kChecksumKey);
-    dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-    SetExpectedChecksum(kFakeSha256ForTesting);
-
-    response_array_writer.CloseContainer(&device_array_writer);
-    response_writer.CloseContainer(&response_array_writer);
-
-    return response;
   }
 
   std::unique_ptr<dbus::Response> CreateCheckDevicesResponse() {
@@ -578,54 +503,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  auto response = dbus::Response::CreateEmpty();
+  RequestUpdatesResponse response;
 
-  dbus::MessageWriter response_writer(response.get());
-  dbus::MessageWriter response_array_writer(nullptr);
-  dbus::MessageWriter device_array_writer(nullptr);
-  dbus::MessageWriter dict_writer(nullptr);
-
-  // The response is an array of arrays of dictionaries. Each dictionary is one
-  // update description.
-  response_writer.OpenArray("a{sv}", &response_array_writer);
-  response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kDescriptionKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
   SetExpectedDescription(kFakeUpdateDescriptionForTesting);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kVersionKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kPriorityKey);
-  dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kUriKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kTrustFlagsKey);
-  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kChecksumKey);
-  dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
   SetExpectedChecksum(kFakeSha256ForTesting);
-
-  response_array_writer.CloseContainer(&device_array_writer);
-  response_writer.CloseContainer(&response_array_writer);
-
-  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
@@ -644,49 +526,13 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  auto response = dbus::Response::CreateEmpty();
+  RequestUpdatesResponse response;
+  response.priority = std::nullopt;
 
-  dbus::MessageWriter response_writer(response.get());
-  dbus::MessageWriter response_array_writer(nullptr);
-  dbus::MessageWriter device_array_writer(nullptr);
-  dbus::MessageWriter dict_writer(nullptr);
-
-  // The response is an array of arrays of dictionaries. Each dictionary is one
-  // update description.
-  response_writer.OpenArray("a{sv}", &response_array_writer);
-  response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kDescriptionKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
   SetExpectedDescription(kFakeUpdateDescriptionForTesting);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kVersionKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kUriKey);
-  dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kChecksumKey);
-  dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
   SetExpectedChecksum(kFakeSha256ForTesting);
 
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kTrustFlagsKey);
-  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  response_array_writer.CloseContainer(&device_array_writer);
-  response_writer.CloseContainer(&response_array_writer);
-
-  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
 
   // Since priority is not specified, we want to use lowest priority
   SetExpectedPriority(0);
@@ -711,9 +557,13 @@ TEST_F(FwupdClientTest, TwoChecksumAvailable) {
   const std::string checksum = std::string(kFakeSha256ForTesting) +
                                ",badbbadbad1ef97238fb24c5e40a979bc544bb2b";
 
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithChecksum(checksum), nullptr);
+  RequestUpdatesResponse response;
+  response.checksum = checksum;
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
+
   SetExpectedChecksum(kFakeSha256ForTesting);
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
@@ -735,9 +585,13 @@ TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
   const std::string checksum = "badbbadbad1ef97238fb24c5e40a979bc544bb2b," +
                                std::string(kFakeSha256ForTesting);
 
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithChecksum(checksum), nullptr);
+  RequestUpdatesResponse response;
+  response.checksum = checksum;
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
+
   SetExpectedChecksum(kFakeSha256ForTesting);
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
@@ -756,8 +610,10 @@ TEST_F(FwupdClientTest, MissingChecksum) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  AddDbusMethodCallResultSimulation(CreateOneUpdateResponseWithChecksum(""),
-                                    nullptr);
+  RequestUpdatesResponse response;
+  response.checksum = "";
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
   SetExpectNoUpdates(/*expect_no_updates=*/true);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
@@ -777,10 +633,10 @@ TEST_F(FwupdClientTest, BadFormatChecksum) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  const std::string checksum = std::string(kFakeSha256ForTesting) + ",";
+  RequestUpdatesResponse response;
+  response.checksum = std::string(kFakeSha256ForTesting) + ",";
 
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithChecksum(checksum), nullptr);
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
   SetExpectNoUpdates(/*expect_no_updates=*/true);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
@@ -800,8 +656,10 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  AddDbusMethodCallResultSimulation(CreateOneUpdateResponseWithChecksum(","),
-                                    nullptr);
+  RequestUpdatesResponse response;
+  response.checksum = ",";
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
   SetExpectNoUpdates(/*expect_no_updates=*/true);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
@@ -822,33 +680,11 @@ TEST_F(FwupdClientTest, NoTrustedReports) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+  RequestUpdatesResponse response;
+  response.trusted = false;
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
   SetExpectNoUpdates(/*expect_no_updates=*/true);
-
-  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
-
-  run_loop_.Run();
-}
-
-// Test that updates lacking the trusted report flag are allowed if the
-// UpstreamTrustedReportsFirmware is disabled.
-TEST_F(FwupdClientTest, UpstreamTrustedReportsFirmwareDisabled) {
-  // The observer will check that the update description is parsed and passed
-  // correctly.
-  MockObserver observer;
-  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
-      .Times(1)
-      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
-  fwupd_client_->AddObserver(&observer);
-
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
-
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
-
-  DisableFeatureFlag(features::kUpstreamTrustedReportsFirmware);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
@@ -869,13 +705,18 @@ TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  AddDbusMethodCallResultSimulation(
-      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+  RequestUpdatesResponse response;
+  response.trusted = false;
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
 
   // Enable reven firmware updates.
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
   EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
+  SetExpectedChecksum(kFakeSha256ForTesting);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
@@ -945,8 +786,12 @@ TEST_F(FwupdClientTest, NoDescription) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  AddDbusMethodCallResultSimulation(CreateOneUpdateResponseWithNoDescription(),
-                                    nullptr);
+  RequestUpdatesResponse response;
+  response.description = std::nullopt;
+
+  SetExpectedChecksum(kFakeSha256ForTesting);
+
+  AddDbusMethodCallResultSimulation(response.Create(), nullptr);
   SetExpectedDescription("");
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
@@ -1110,6 +955,68 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
         run_loop_.Quit();
       }));
   run_loop_.Run();
+}
+
+TEST(FwupdClientUpdatePath, MissingLocations) {
+  base::Value::Dict dict;
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, EmptyLocations) {
+  base::Value::Dict dict;
+  dict.Set(kLocationsKey, base::Value::List());
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, WrongType) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append(123);
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, InvalidUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, InvalidScheme) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("invalid:///usr/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, FileUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("file:///usr/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_EQ(GetUpdatePathFromDict(dict).value(), "file:///usr/test.cab");
+}
+
+TEST(FwupdClientUpdatePath, HttpsUrlNotOnMirror) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("https://fwupd.org/downloads/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, ValidHttpsUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append(
+      "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_EQ(
+      GetUpdatePathFromDict(dict).value(),
+      "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
 }
 
 }  // namespace ash

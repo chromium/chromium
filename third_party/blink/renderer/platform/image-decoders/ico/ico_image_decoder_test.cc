@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <memory>
+
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
@@ -31,7 +32,7 @@ TEST(ICOImageDecoderTests, trunctedIco) {
   ASSERT_FALSE(data.empty());
 
   scoped_refptr<SharedBuffer> truncated_data =
-      SharedBuffer::Create(data.data(), data.size() / 2);
+      SharedBuffer::Create(base::span(data).first(data.size() / 2));
   auto decoder = CreateICODecoder();
 
   decoder->SetData(truncated_data.get(), false);
@@ -51,11 +52,10 @@ TEST(ICOImageDecoderTests, errorInPngInIco) {
   constexpr size_t kCrcOffset = 22 + 29;
   constexpr size_t kCrcSize = 4;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kCrcOffset);
+      SharedBuffer::Create(base::span(data).first(kCrcOffset));
   Vector<char> bad_crc(kCrcSize, 0);
   modified_data->Append(bad_crc);
-  modified_data->Append(data.data() + kCrcOffset + kCrcSize,
-                        data.size() - kCrcOffset - kCrcSize);
+  modified_data->Append(base::span(data).subspan(kCrcOffset + kCrcSize));
 
   auto decoder = CreateICODecoder();
   decoder->SetData(modified_data.get(), true);
@@ -94,7 +94,7 @@ TEST(ICOImageDecoderTests, NullData) {
   ASSERT_LT(kSizeOfBadBlock, ico_file_data.size());
 
   scoped_refptr<SharedBuffer> truncated_data =
-      SharedBuffer::Create(ico_file_data.data(), kSizeOfBadBlock);
+      SharedBuffer::Create(base::span(ico_file_data).first(kSizeOfBadBlock));
   auto decoder = CreateICODecoder();
 
   decoder->SetData(truncated_data.get(), false);

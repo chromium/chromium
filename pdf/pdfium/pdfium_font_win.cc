@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -59,6 +60,13 @@ std::string GetSubstFont(const std::string& face) {
   return face;
 }
 
+// Kill switch in case this goes horribly wrong.
+// TODO(crbug.com/381126164): Remove after this lands safely in a Stable
+// release.
+BASE_FEATURE(kPdfEnumFontsWin,
+             "PdfEnumFontsWin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Maps font description and charset to `FontId` as requested by PDFium, with
 // `FontId` as an opaque type that PDFium works with. Based on the `FontId`,
 // PDFium can read from the font files using GetFontData(). Properly frees the
@@ -69,9 +77,31 @@ class SkiaFontMapper {
   // `FPDF_SYSFONTINFO` functions.
   using FontId = void*;
 
-  SkiaFontMapper() { manager_ = skia::DefaultFontMgr(); }
+  SkiaFontMapper() : manager_(skia::DefaultFontMgr()) {}
 
   ~SkiaFontMapper() = delete;
+
+  void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
+    if (!base::FeatureList::IsEnabled(kPdfEnumFontsWin)) {
+      return;
+    }
+
+    const int count = manager_->countFamilies();
+    for (int i = 0; i < count; ++i) {
+      SkString family;
+      manager_->getFamilyName(i, &family);
+      // Skia does not make any guarantees about whether `family` can be empty
+      // or not.
+      // PDFium does not check if FPDF_AddInstalledFont() got an empty string.
+      // Do an explicit check here to make sure the two sides play nicely
+      // together.
+      if (!family.isEmpty()) {
+        // It may be better to pick a more accurate character set value, but
+        // this is good enough for now.
+        FPDF_AddInstalledFont(mapper, family.c_str(), FXFONT_DEFAULT_CHARSET);
+      }
+    }
+  }
 
   // Returns a handle to the font mapped based on `desc`, for use
   // as the `font_id` in GetFontData() and DeleteFont() below. Returns nullptr
@@ -306,7 +336,7 @@ class SkiaFontMapper {
     return nullptr;
   }
 
-  sk_sp<SkFontMgr> manager_;
+  sk_sp<SkFontMgr> const manager_;
   base::flat_map<FontId, sk_sp<SkTypeface>> id_to_typeface_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -314,6 +344,16 @@ class SkiaFontMapper {
 SkiaFontMapper& GetSkiaFontMapper() {
   static base::NoDestructor<SkiaFontMapper> mapper;
   return *mapper;
+}
+
+void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
+  // Exit early if PDFium was specifically configured in `kNoMapping` mode.
+  if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
+    CHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
+    return;
+  }
+
+  GetSkiaFontMapper().EnumFonts(sysfontinfo, mapper);
 }
 
 // Note: `exact` is obsolete.
@@ -324,7 +364,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
               int pitch,
               const char* face,
               int* exact) {
-  // Exit early if pdfium was specifically configured in kNoMapping mode.
+  // Exit early if PDFium was specifically configured in `kNoMapping` mode.
   if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
     CHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
     return nullptr;
@@ -349,7 +389,7 @@ void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
 
 FPDF_SYSFONTINFO g_font_info = {.version = 1,
                                 .Release = nullptr,
-                                .EnumFonts = nullptr,
+                                .EnumFonts = EnumFonts,
                                 .MapFont = MapFont,
                                 .GetFont = nullptr,
                                 .GetFontData = GetFontData,

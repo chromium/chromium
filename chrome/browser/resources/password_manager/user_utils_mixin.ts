@@ -138,19 +138,19 @@ export const UserUtilMixin = dedupingMixin(
         }
 
         private computeIsEligibleForAccountStorage_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isEligibleForAccountStorage;
+          return !!(this.syncInfo_?.isEligibleForAccountStorage);
         }
 
         private computeIsSyncingPasswords_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isSyncingPasswords;
+          return !!(this.syncInfo_?.isSyncingPasswords);
         }
 
         private computeAccountEmail_(): string {
-          return (this.accountInfo_ ? this.accountInfo_.email : '');
+          return this.accountInfo_?.email || '';
         }
 
         private computeAvatarImage_(): string {
-          return this.accountInfo_.avatarImage || '';
+          return this.accountInfo_?.avatarImage || '';
         }
 
         private computeIsAccountStoreUser_(): boolean {

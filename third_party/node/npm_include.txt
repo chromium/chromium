@@ -1,3 +1,12 @@
+@azure/msal-browser/lib/**/*.d.ts
+@azure/msal-browser/lib/msal-browser.min.js
+@azure/msal-browser/LICENSE
+@azure/msal-common/lib/types/exports-browser-only.d.ts
+@azure/msal-common/lib/types/exports-common.d.ts
+@azure/msal-common/lib/types/index-browser.d.ts
+@azure/msal-common/lib/types/packageMetadata.d.ts
+@azure/msal-common/lib/types/**/*.d.ts
+@azure/msal-common/LICENSE
 @mediapipe/tasks-vision/wasm/vision_wasm_internal.js
 @mediapipe/tasks-vision/vision.d.ts
 @mediapipe/tasks-vision/vision_bundle.mjs
@@ -51,5 +60,6 @@
 /typescript/lib/lib.d.ts
 /typescript/lib/lib.*.d.ts
 /typescript/lib/tsc.js
+/typescript/lib/_tsc.js
 /typescript/lib/tsserver.js
 /typescript/lib/typescript.js

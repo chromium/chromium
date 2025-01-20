@@ -6,11 +6,10 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_HASH_REALTIME_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "services/network/public/mojom/network_context.mojom.h"
 
 class KeyedService;
-class ProfileIOS;
 
 namespace safe_browsing {
 class HashRealTimeService;
@@ -18,15 +17,11 @@ class HashRealTimeService;
 
 // Singleton that owns HashRealTimeService objects, one for each active profile.
 // It returns nullptr for incognito profiles.
-class HashRealTimeServiceFactory : public BrowserStateKeyedServiceFactory {
+class HashRealTimeServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static safe_browsing::HashRealTimeService* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of HashRealTimeServiceFactory.
   static HashRealTimeServiceFactory* GetInstance();
-
-  HashRealTimeServiceFactory(const HashRealTimeServiceFactory&) = delete;
-  HashRealTimeServiceFactory& operator=(const HashRealTimeServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<HashRealTimeServiceFactory>;

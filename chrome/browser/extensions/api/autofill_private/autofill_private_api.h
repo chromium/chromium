@@ -10,8 +10,33 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
+namespace autofill {
+class AddressDataManager;
+class ContentAutofillClient;
+class PaymentsDataManager;
+}  // namespace autofill
+
 namespace extensions {
-class AutofillPrivateGetAccountInfoFunction : public ExtensionFunction {
+
+// A small helper class that exposes getters for Autofill's data managers.
+class AutofillPrivateExtensionFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateExtensionFunction() = default;
+  AutofillPrivateExtensionFunction(const AutofillPrivateExtensionFunction&) =
+      delete;
+  AutofillPrivateExtensionFunction& operator=(
+      const AutofillPrivateExtensionFunction&) = delete;
+
+ protected:
+  ~AutofillPrivateExtensionFunction() override = default;
+
+  autofill::AddressDataManager* address_data_manager();
+  autofill::ContentAutofillClient* autofill_client();
+  autofill::PaymentsDataManager* payments_data_manager();
+};
+
+class AutofillPrivateGetAccountInfoFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetAccountInfoFunction() = default;
   AutofillPrivateGetAccountInfoFunction(
@@ -28,7 +53,8 @@ class AutofillPrivateGetAccountInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateSaveAddressFunction : public ExtensionFunction {
+class AutofillPrivateSaveAddressFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateSaveAddressFunction() = default;
   AutofillPrivateSaveAddressFunction(
@@ -45,7 +71,8 @@ class AutofillPrivateSaveAddressFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetCountryListFunction : public ExtensionFunction {
+class AutofillPrivateGetCountryListFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetCountryListFunction() = default;
   AutofillPrivateGetCountryListFunction(
@@ -62,7 +89,8 @@ class AutofillPrivateGetCountryListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetAddressComponentsFunction : public ExtensionFunction {
+class AutofillPrivateGetAddressComponentsFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetAddressComponentsFunction() = default;
   AutofillPrivateGetAddressComponentsFunction(
@@ -79,7 +107,8 @@ class AutofillPrivateGetAddressComponentsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetAddressListFunction : public ExtensionFunction {
+class AutofillPrivateGetAddressListFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetAddressListFunction() = default;
   AutofillPrivateGetAddressListFunction(
@@ -96,7 +125,8 @@ class AutofillPrivateGetAddressListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateSaveCreditCardFunction : public ExtensionFunction {
+class AutofillPrivateSaveCreditCardFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateSaveCreditCardFunction() = default;
   AutofillPrivateSaveCreditCardFunction(
@@ -113,7 +143,8 @@ class AutofillPrivateSaveCreditCardFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
+class AutofillPrivateRemoveEntryFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateRemoveEntryFunction() = default;
   AutofillPrivateRemoveEntryFunction(
@@ -130,7 +161,8 @@ class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetCreditCardListFunction : public ExtensionFunction {
+class AutofillPrivateGetCreditCardListFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetCreditCardListFunction() = default;
   AutofillPrivateGetCreditCardListFunction(
@@ -147,7 +179,8 @@ class AutofillPrivateGetCreditCardListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateMigrateCreditCardsFunction : public ExtensionFunction {
+class AutofillPrivateMigrateCreditCardsFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateMigrateCreditCardsFunction() = default;
   AutofillPrivateMigrateCreditCardsFunction(
@@ -165,7 +198,7 @@ class AutofillPrivateMigrateCreditCardsFunction : public ExtensionFunction {
 };
 
 class AutofillPrivateLogServerCardLinkClickedFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateLogServerCardLinkClickedFunction() = default;
   AutofillPrivateLogServerCardLinkClickedFunction(
@@ -183,7 +216,7 @@ class AutofillPrivateLogServerCardLinkClickedFunction
 };
 
 class AutofillPrivateLogServerIbanLinkClickedFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateLogServerIbanLinkClickedFunction() = default;
   AutofillPrivateLogServerIbanLinkClickedFunction(
@@ -200,7 +233,8 @@ class AutofillPrivateLogServerIbanLinkClickedFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateSaveIbanFunction : public ExtensionFunction {
+class AutofillPrivateSaveIbanFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateSaveIbanFunction() = default;
   AutofillPrivateSaveIbanFunction(const AutofillPrivateSaveIbanFunction&) =
@@ -217,7 +251,8 @@ class AutofillPrivateSaveIbanFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetIbanListFunction : public ExtensionFunction {
+class AutofillPrivateGetIbanListFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetIbanListFunction() = default;
   AutofillPrivateGetIbanListFunction(
@@ -234,7 +269,8 @@ class AutofillPrivateGetIbanListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateIsValidIbanFunction : public ExtensionFunction {
+class AutofillPrivateIsValidIbanFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateIsValidIbanFunction() = default;
   AutofillPrivateIsValidIbanFunction(
@@ -251,7 +287,8 @@ class AutofillPrivateIsValidIbanFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateAddVirtualCardFunction : public ExtensionFunction {
+class AutofillPrivateAddVirtualCardFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateAddVirtualCardFunction() = default;
   AutofillPrivateAddVirtualCardFunction(
@@ -268,7 +305,8 @@ class AutofillPrivateAddVirtualCardFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateRemoveVirtualCardFunction : public ExtensionFunction {
+class AutofillPrivateRemoveVirtualCardFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateRemoveVirtualCardFunction() = default;
   AutofillPrivateRemoveVirtualCardFunction(
@@ -286,7 +324,7 @@ class AutofillPrivateRemoveVirtualCardFunction : public ExtensionFunction {
 };
 
 class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() = default;
   AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction(
@@ -311,7 +349,8 @@ class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
 };
 
 // Performs a local reauth before releasing data if reauth is enabled.
-class AutofillPrivateGetLocalCardFunction : public ExtensionFunction {
+class AutofillPrivateGetLocalCardFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetLocalCardFunction() = default;
   AutofillPrivateGetLocalCardFunction(
@@ -333,7 +372,7 @@ class AutofillPrivateGetLocalCardFunction : public ExtensionFunction {
 };
 
 class AutofillPrivateCheckIfDeviceAuthAvailableFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateCheckIfDeviceAuthAvailableFunction() = default;
   AutofillPrivateCheckIfDeviceAuthAvailableFunction(
@@ -350,7 +389,8 @@ class AutofillPrivateCheckIfDeviceAuthAvailableFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateBulkDeleteAllCvcsFunction : public ExtensionFunction {
+class AutofillPrivateBulkDeleteAllCvcsFunction
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateBulkDeleteAllCvcsFunction() = default;
   AutofillPrivateBulkDeleteAllCvcsFunction(
@@ -368,7 +408,7 @@ class AutofillPrivateBulkDeleteAllCvcsFunction : public ExtensionFunction {
 };
 
 class AutofillPrivateSetAutofillSyncToggleEnabledFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateSetAutofillSyncToggleEnabledFunction() = default;
   AutofillPrivateSetAutofillSyncToggleEnabledFunction(
@@ -386,7 +426,7 @@ class AutofillPrivateSetAutofillSyncToggleEnabledFunction
 };
 
 class AutofillPrivateGetUserAnnotationsEntriesFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateGetUserAnnotationsEntriesFunction() = default;
   AutofillPrivateGetUserAnnotationsEntriesFunction(
@@ -407,7 +447,7 @@ class AutofillPrivateGetUserAnnotationsEntriesFunction
 };
 
 class AutofillPrivateHasUserAnnotationsEntriesFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateHasUserAnnotationsEntriesFunction() = default;
   AutofillPrivateHasUserAnnotationsEntriesFunction(
@@ -428,7 +468,7 @@ class AutofillPrivateHasUserAnnotationsEntriesFunction
 };
 
 class AutofillPrivateTriggerAnnotationsBootstrappingFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateTriggerAnnotationsBootstrappingFunction() = default;
   AutofillPrivateTriggerAnnotationsBootstrappingFunction(
@@ -451,7 +491,7 @@ class AutofillPrivateTriggerAnnotationsBootstrappingFunction
 };
 
 class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() = default;
   AutofillPrivateIsUserEligibleForAutofillImprovementsFunction(
@@ -473,7 +513,7 @@ class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
 };
 
 class AutofillPrivateDeleteUserAnnotationsEntryFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateDeleteUserAnnotationsEntryFunction() = default;
   AutofillPrivateDeleteUserAnnotationsEntryFunction(
@@ -494,7 +534,7 @@ class AutofillPrivateDeleteUserAnnotationsEntryFunction
 };
 
 class AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivateDeleteAllUserAnnotationsEntriesFunction() = default;
   AutofillPrivateDeleteAllUserAnnotationsEntriesFunction(
@@ -515,7 +555,7 @@ class AutofillPrivateDeleteAllUserAnnotationsEntriesFunction
 };
 
 class AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-    : public ExtensionFunction {
+    : public AutofillPrivateExtensionFunction {
  public:
   AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() = default;
   AutofillPrivatePredictionImprovementsIphFeatureUsedFunction(

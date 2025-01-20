@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -24,8 +25,9 @@ ChildAccountInfoFetcherAndroid::Create(AccountFetcherService* service,
   CoreAccountInfo account_info =
       service->account_tracker_service()->GetAccountInfo(account_id);
   // The AccountTrackerService may not be populated correctly in tests.
-  if (account_info.email.empty())
+  if (account_info.email.empty()) {
     return nullptr;
+  }
 
   // Call the constructor directly instead of using std::make_unique because the
   // constructor is private.
@@ -53,8 +55,11 @@ void signin::JNI_ChildAccountInfoFetcher_SetIsChildAccount(
     jlong native_service,
     const JavaParamRef<jobject>& j_account_id,
     jboolean is_child_account) {
-  AccountFetcherService* service =
-      reinterpret_cast<AccountFetcherService*>(native_service);
-  service->SetIsChildAccount(ConvertFromJavaCoreAccountId(env, j_account_id),
-                             is_child_account);
+  if (!base::FeatureList::IsEnabled(
+          switches::kForceSupervisedSigninWithCapabilities)) {
+    AccountFetcherService* service =
+        reinterpret_cast<AccountFetcherService*>(native_service);
+    service->SetIsChildAccount(ConvertFromJavaCoreAccountId(env, j_account_id),
+                               is_child_account);
+  }
 }

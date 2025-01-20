@@ -74,7 +74,10 @@ export class UpdateCardElement extends UpdateCardElementBase {
   }
 
   protected getUpdateButtonA11yLabel(): string {
-    return this.i18n('updateButtonA11yLabel', this.computeDeviceName());
+    const version = this.update.deviceVersion ?? '';
+
+    return this.i18n(
+        'updateButtonA11yLabel', this.computeDeviceName(), version);
   }
 }
 

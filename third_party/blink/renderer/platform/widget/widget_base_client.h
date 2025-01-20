@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
@@ -47,7 +48,7 @@ class WidgetBaseClient {
 
   // Called to update the document lifecycle, advance the state of animations
   // and dispatch rAF.
-  virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
+  virtual void BeginMainFrame(const viz::BeginFrameArgs& args) = 0;
 
   // Requests that the lifecycle of the widget be updated.
   virtual void UpdateLifecycle(WebLifecycleUpdate requested_update,

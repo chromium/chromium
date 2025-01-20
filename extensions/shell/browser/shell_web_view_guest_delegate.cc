@@ -29,4 +29,6 @@ ShellWebViewGuestDelegate::GetDefaultUserAgentOverride() {
   return std::nullopt;
 }
 
+void ShellWebViewGuestDelegate::SetClientHintsEnabled(bool enable) {}
+
 }  // namespace extensions

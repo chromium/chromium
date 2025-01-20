@@ -596,6 +596,15 @@ LoginShelfView::GetShutdownConfirmationBubbleForTesting() {
   return test_shutdown_confirmation_bubble_;
 }
 
+LoginShelfButton* LoginShelfView::GetLoginShelfButtonByID(ButtonId button_id) {
+  for (LoginShelfButton* button : login_shelf_buttons_) {
+    if (button->GetID() == button_id) {
+      return button;
+    }
+  }
+  return nullptr;
+}
+
 void LoginShelfView::SetButtonVisible(ButtonId button_id, bool visible) {
   GetButtonContainerByID(button_id)->SetVisible(visible);
   GetViewByID(button_id)->SetVisible(visible);

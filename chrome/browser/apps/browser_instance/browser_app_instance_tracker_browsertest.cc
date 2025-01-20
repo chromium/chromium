@@ -500,13 +500,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, PopupBrowserWindow) {
     });
   }
 }
-// Broken on ChromeOS <https://crbug.com/1493240>
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DevtoolsWindow DISABLED_DevtoolsWindow
-#else
-#define MAYBE_DevtoolsWindow DevtoolsWindow
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MAYBE_DevtoolsWindow) {
+
+// Disabled due to https://crbug.com/1493240.
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, DISABLED_DevtoolsWindow) {
   Browser* browser = CreateBrowser();
   InsertForegroundTab(browser, "https://c.example.org");
   aura::Window* window1 = browser->window()->GetNativeWindow();

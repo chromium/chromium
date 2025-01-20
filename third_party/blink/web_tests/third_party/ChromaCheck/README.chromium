@@ -1,11 +1,17 @@
-ChromaCheck Sbix
+Name: ChromaCheck Sbix
+Short Name: ChromaCheck
+URL: https://github.com/RoelN/ChromaCheck
+Version: N/A
+Revision: 8dadeaafb179b5571e6acdad25f4660a1cdcd395
 License: MIT
 License File: LICENSE.md
+Security Critical: no
+Package Excluded: yes
 Shipped: no
 
 1. Source Origin
 https://github.com/RoelN/ChromaCheck/blob/master/fonts/chromacheck-sbix.woff
-Version: 8dadeaafb179b5571e6acdad25f4660a1cdcd395
+at commit revision 8dadeaafb179b5571e6acdad25f4660a1cdcd395
 
 2. License
 For license information, see the LICENSE.md file.

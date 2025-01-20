@@ -38,7 +38,6 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
   explicit SVGAElement(Document&);
 
   Element* interestTargetElement() override;
-  AtomicString interestAction() const override;
 
   void Trace(Visitor*) const override;
 
@@ -56,8 +55,9 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const final;
-  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
-                               UpdateBehavior::kStyleAndLayout) const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   bool IsURLAttribute(const Attribute&) const override;
   bool CanStartSelection() const override;
   int DefaultTabIndex() const override;

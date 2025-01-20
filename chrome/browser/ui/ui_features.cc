@@ -18,7 +18,7 @@ namespace features {
 // by the platform (e.g. Wayland). See https://crbug.com/896640
 BASE_FEATURE(kAllowWindowDragUsingSystemDragDrop,
              "AllowWindowDragUsingSystemDragDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of WGC for the Eye Dropper screen capture.
 BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
@@ -98,24 +98,24 @@ BASE_FEATURE(kFewerUpdateConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating passwords.
 BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,
              "IOSPromoRefreshedPasswordBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating addresses.
 BASE_FEATURE(kIOSPromoAddressBubble,
              "IOSPromoAddressBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature controls whether the user can be shown the Chrome for iOS promo
 // when saving or updating payments.
 BASE_FEATURE(kIOSPromoPaymentBubble,
              "IOSPromoPaymentBubble",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kIOSPromoPasswordBubbleQRCodeURL{
     &kIOSPromoRefreshedPasswordBubble, "password_promo_qr_code_url",
@@ -130,12 +130,6 @@ const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL{
     &kIOSPromoPaymentBubble, "payment_promo_qr_code_url",
     "https://www.google.com/chrome/go-mobile/"
     "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment"};
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if !BUILDFLAG(IS_ANDROID)
-// Enables or disables the Happiness Tracking Surveys being delivered via chrome
-// webui, rather than a separate static website.
-BASE_FEATURE(kHaTSWebUI, "HaTSWebUI", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -189,35 +183,7 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
-// the browser width is resized smaller than normal.
-BASE_FEATURE(kResponsiveToolbar,
-             "ResponsiveToolbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the side search feature for Google Search. Presents recent Google
-// search results in a browser side panel.
-BASE_FEATURE(kSideSearch, "SideSearch", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSideSearchFeedback,
-             "SideSearchFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Displays right-click search results of a highlighted text in side panel,
-// So users are not forced to switch to a new tab to view the search results
-BASE_FEATURE(kSearchWebInSidePanel,
-             "SearchWebInSidePanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSidePanelWebView,
-             "SidePanelWebView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if !defined(ANDROID)
-BASE_FEATURE(kSidePanelCompanionDefaultPinned,
-             "SidePanelCompanionDefaultPinned",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
@@ -299,35 +265,12 @@ BASE_FEATURE(kTabOrganizationAppMenuItem,
              "TabOrganizationAppMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kMultiTabOrganization,
-             "MultiTabOrganization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabReorganization,
-             "TabReorganization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabReorganizationDivider,
-             "TabReorganizationDivider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kMultiTabOrganization,
-             "MultiTabOrganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabReorganization,
-             "TabReorganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabReorganizationDivider,
-             "TabReorganizationDivider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kTabOrganizationModelStrategy,
              "TabOrganizationModelStrategy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabOrganizationUserInstruction,
+             "TabOrganizationUserInstruction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
@@ -349,18 +292,6 @@ const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
 const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
     &kTabOrganization, "trigger_demo_mode", false};
 
-// Controls feature parameters for Tab Search's `Recently Closed` entries.
-BASE_FEATURE(kTabSearchRecentlyClosed,
-             "TabSearchRecentlyClosed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
-    8};
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
-
 // Enables creating a web app window when tearing off a tab with a url
 // controlled by a web app.
 BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
@@ -368,9 +299,15 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kToolbarPinning,
              "ToolbarPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kToolbarPinning,
+             "ToolbarPinning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 bool IsToolbarPinningEnabled() {
   return base::FeatureList::IsEnabled(kToolbarPinning);
@@ -378,6 +315,10 @@ bool IsToolbarPinningEnabled() {
 
 BASE_FEATURE(kPinnedCastButton,
              "PinnedCastButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPinnableDownloadsButton,
+             "PinnableDownloadsButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -450,19 +391,11 @@ BASE_FEATURE(kViewsJSAppModalDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Reduce resource usage when view is hidden by not rendering loading animation.
-// TODO(crbug.com/40224168): Clean up the feature in M117.
-BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
-             "StopLoadingAnimationForHiddenWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUsePortalAccentColor,
              "UsePortalAccentColor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kCompactMode, "CompactMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
              "PageSpecificDataDialogRelatedInstalledAppsSection",
@@ -479,5 +412,13 @@ BASE_FEATURE(kEnablePolicyPromotionBanner,
 BASE_FEATURE(kInlineFullscreenPerfExperiment,
              "InlineFullscreenPerfExperiment",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageActionsMigration,
+             "PageActionsMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCompositorLoadingAnimations,
+             "CompositorLoadingAnimations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

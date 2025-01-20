@@ -57,7 +57,6 @@ WebContentsTagsManager::WebContentsTagsManager()
     : provider_(nullptr) {
 }
 
-WebContentsTagsManager::~WebContentsTagsManager() {
-}
+WebContentsTagsManager::~WebContentsTagsManager() = default;
 
 }  // namespace task_manager

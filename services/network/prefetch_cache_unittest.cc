@@ -104,8 +104,8 @@ TEST_F(PrefetchCacheTest, EmplaceNoNIK) {
 
 TEST_F(PrefetchCacheTest, EmplaceTransientNIK) {
   // This will log a warning when debug logging is enabled but it is harmless.
-  EXPECT_FALSE(cache().Emplace(
-      MakeResourceRequest(TestURL(), net::IsolationInfo::CreateTransient())));
+  EXPECT_FALSE(cache().Emplace(MakeResourceRequest(
+      TestURL(), net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt))));
 }
 
 TEST_F(PrefetchCacheTest, EmplaceFileURL) {

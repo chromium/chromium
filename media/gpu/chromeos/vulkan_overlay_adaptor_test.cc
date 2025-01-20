@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 
 #include <linux/videodev2.h>
@@ -420,7 +425,6 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
       break;
     default:
       NOTREACHED() << "Invalid overlay transform: " << transform;
-      return nullptr;
   }
 
   // Assemble a graph of the available LibYUV conversion functions.
@@ -794,7 +798,7 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
       VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
 
   bool performed_cleanup = false;
-  auto fence_helper =
+  auto* fence_helper =
       vulkan_overlay_adaptor->GetVulkanDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
       [](bool* cleanup_flag, gpu::VulkanDeviceQueue* device_queue,

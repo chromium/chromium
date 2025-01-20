@@ -1,7 +1,7 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) $(var.CompanyFullName)'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
-  <?define InstallCommandBase='--silent --install=[ProductTag] --installsource=enterprisemsi[OptOmahaArgs]'?>
+  <?define InstallCommandBase='--silent --install="[ProductTag]" --installsource=enterprisemsi[OptOmahaArgs]'?>
 
   <Package
     Name="$(var.ProductName)"
@@ -10,11 +10,12 @@
     UpgradeCode="$(var.MsiUpgradeCode)"
     Version="$(var.ProductVersion)"
     Manufacturer="$(var.CompanyFullName)"
-    InstallerVersion="150"
+    InstallerVersion="200"
     ProductCode="$(var.MsiProductId)"
     Scope="perMachine">
     <SummaryInformation
       Description="$(var.ProductName) Installer"
+      Comments='$(var.Copyright)'
       Manufacturer="$(var.CompanyFullName)"
     />
 
@@ -224,8 +225,14 @@
       />
 
       <!-- The conditions in the following custom actions trigger the action when either:
-           1) The product is transitioning from absent to present locally OR
-           2) The product is present and being reinstalled. -->
+           1) This is a fresh installation, i.e.,
+              "(?ProductClientState = INSTALLSTATE_ABSENT) AND ($ProductClientState = INSTALLSTATE_LOCAL)".
+           OR
+           2) This is an overinstall, i.e., "((?ProductClientState = INSTALLSTATE_LOCAL) AND REINSTALL)".
+           `?`: is used to query whether component `ProductClientState` is currently installed.
+           `$`: is used to query whether component `ProductClientState` is being installed with this MSI.
+           Reference: https://learn.microsoft.com/en-us/windows/win32/msi/conditional-statement-syntax.
+      -->
       <!-- Build tag property. -->
       <!-- First, read the tag from the .msi. -->
       <Custom

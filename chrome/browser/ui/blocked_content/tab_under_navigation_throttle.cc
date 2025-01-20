@@ -71,8 +71,9 @@ TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   // Otherwise, it should be safe to avoid creating a throttle in non primary
   // pages because prerendered pages should not be able to open popups. A
   // tab-under could therefore never occur within the non-primary page.
-  if (handle->IsInPrimaryMainFrame())
+  if (handle->IsInPrimaryMainFrame()) {
     return base::WrapUnique(new TabUnderNavigationThrottle(handle));
+  }
   return nullptr;
 }
 
@@ -105,8 +106,9 @@ bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
   // away while in the background.
   content::WebContents* contents = navigation_handle()->GetWebContents();
   const GURL& previous_main_frame_url = contents->GetLastCommittedURL();
-  if (previous_main_frame_url.is_empty())
+  if (previous_main_frame_url.is_empty()) {
     return false;
+  }
 
   // Same-site navigations are exempt from tab-under protection.
   const GURL& target_url = navigation_handle()->GetURL();

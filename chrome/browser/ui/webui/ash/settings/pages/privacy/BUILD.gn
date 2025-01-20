@@ -58,11 +58,11 @@ static_library("privacy") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:chrome_features",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/install_attributes",
@@ -72,6 +72,7 @@ static_library("privacy") {
     "//components/sync/base:features",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
     "//url",
   ]
 

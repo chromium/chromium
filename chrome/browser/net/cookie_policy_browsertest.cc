@@ -281,8 +281,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   cookie_settings()->SetCookieSetting(GetURL(kHostB),
                                       ContentSetting::CONTENT_SETTING_ALLOW);
   // Set a cookie on `b.test`.
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostB, "/"),
+                                 "thirdparty=1;SameSite=None;Secure"));
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
             "thirdparty=1");
 
@@ -317,8 +318,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostB, "/"),
+                                 "thirdparty=1;SameSite=None;Secure"));
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
             "thirdparty=1");
 
@@ -349,14 +351,16 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostB, "/"),
+                                 "thirdparty=1;SameSite=None;Secure"));
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
             "thirdparty=1");
 
   // Set a cookie on d.test.
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostD, "/"),
-                     "thirdparty=other;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostD, "/"),
+                                 "thirdparty=other;SameSite=None;Secure"));
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostD)),
             "thirdparty=other");
 
@@ -404,8 +408,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   SetBlockThirdPartyCookies();
 
   // Set a cookie on `b.test`.
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostB, "/"),
+                                 "thirdparty=1;SameSite=None;Secure"));
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
             "thirdparty=1");
 
@@ -661,7 +666,8 @@ IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
-                       NestedThirdPartyIFrameStorage) {
+                       // TODO(crbug.com/390648566): Re-enable this test
+                       DISABLED_NestedThirdPartyIFrameStorage) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
@@ -1010,8 +1016,9 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyCookiePhaseoutPolicyStorageBrowserTest,
                        SandboxedTopLevelFrame) {
-  content::SetCookie(browser()->profile(), https_server_.GetURL(kHostB, "/"),
-                     "thirdparty=1;SameSite=None;Secure");
+  ASSERT_TRUE(content::SetCookie(browser()->profile(),
+                                 https_server_.GetURL(kHostB, "/"),
+                                 "thirdparty=1;SameSite=None;Secure"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

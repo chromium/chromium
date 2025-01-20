@@ -249,7 +249,7 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionResults) {
   ExpectResultsReceived(second_results);
 
   SendTranscriptionError();
-  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kNoSpeech, error_);
+  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
 }
 
 TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionAudioChunksEnded) {
@@ -274,7 +274,7 @@ TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionAudioChunksEnded) {
   client_under_test_->AudioChunksEnded();
   client_under_test_->EndRecognition();
   loop.RunUntilIdle();
-  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
+  ASSERT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
 }
 
 TEST_F(SodaSpeechRecognitionEngineImplTest, SpeechRecognitionEndOfUtterance) {

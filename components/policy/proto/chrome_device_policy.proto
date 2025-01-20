@@ -1817,12 +1817,6 @@ message RevenDeviceHWDataUsageEnabledProto {
   optional bool hardware_data_usage_enabled = 1 [default = false];
 }
 
-// Controls whether Login WebUI will be explicitly loaded on start.
-// Overrides EnableLazyLoginWebUILoading feature.
-message DeviceLoginScreenWebUILazyLoadingProto {
-  optional bool enabled = 1 [default = false];
-}
-
 // Setting that controls different configurations for the Encrypted Reporting
 // Pipeline.
 message EncryptedReportingPipelineConfigurationProto {
@@ -1867,7 +1861,7 @@ message OBSOLETE_ExtendedFkeysModifierProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 71, 90;
+  reserved 61, 71, 90, 131;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -2038,8 +2032,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
   optional BooleanPolicyProto chromad_to_cloud_migration_enabled = 129;
   optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
-  optional DeviceLoginScreenWebUILazyLoadingProto login_web_ui_lazy_loading =
-      131;
   optional DeviceKeylockerForStorageEncryptionEnabledProto
       keylocker_for_storage_encryption_enabled = 132;
   optional BooleanPolicyProto device_run_automatic_cleanup_on_login = 133;
@@ -2098,4 +2090,6 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DevicePostQuantumKeyAgreementEnabled = 1276;
   optional StringPolicyProto DeviceRestrictionSchedule = 1290;
   optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314;
+  optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
+  optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
 }

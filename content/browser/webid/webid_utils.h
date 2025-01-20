@@ -86,9 +86,6 @@ CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
 CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
     FedCmDisconnectStatus disconnect_status_for_metrics);
 
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
-                                                const url::Origin& idp_origin);
-
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
 std::string FormatUrlForDisplay(const GURL& url);
 

@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 
 namespace webnn {
 
@@ -26,21 +27,22 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes cumulative_sum_input,
                  SupportedDataTypes dequantize_linear_input,
                  SupportedDataTypes dequantize_linear_scale,
-                 SupportedDataTypes add_input,
-                 SupportedDataTypes sub_input,
-                 SupportedDataTypes mul_input,
-                 SupportedDataTypes div_input,
-                 SupportedDataTypes max_input,
-                 SupportedDataTypes min_input,
-                 SupportedDataTypes pow_input,
-                 SupportedDataTypes equal_input,
-                 SupportedDataTypes greater_input,
-                 SupportedDataTypes greater_or_equal_input,
-                 SupportedDataTypes lesser_input,
-                 SupportedDataTypes lesser_or_equal_input,
-                 SupportedDataTypes logical_and_input,
-                 SupportedDataTypes logical_or_input,
-                 SupportedDataTypes logical_xor_input,
+                 SupportedTensors add_input,
+                 SupportedTensors sub_input,
+                 SupportedTensors mul_input,
+                 SupportedTensors div_input,
+                 SupportedTensors max_input,
+                 SupportedTensors min_input,
+                 SupportedTensors pow_input,
+                 SupportedTensors equal_input,
+                 SupportedTensors greater_input,
+                 SupportedTensors greater_or_equal_input,
+                 SupportedTensors lesser_input,
+                 SupportedTensors lesser_or_equal_input,
+                 SupportedTensors not_equal_input,
+                 SupportedTensors logical_and_input,
+                 SupportedTensors logical_or_input,
+                 SupportedTensors logical_xor_input,
                  SupportedDataTypes logical_not_input,
                  SupportedDataTypes logical_output,
                  SupportedDataTypes abs_input,
@@ -77,7 +79,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes linear_input,
                  SupportedDataTypes lstm_input,
                  SupportedDataTypes lstm_cell_input,
-                 SupportedDataTypes matmul_input,
+                 SupportedTensors matmul_input,
                  SupportedDataTypes pad_input,
                  SupportedDataTypes average_pool2d_input,
                  SupportedDataTypes l2_pool2d_input,
@@ -98,6 +100,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes relu_input,
                  SupportedDataTypes resample2d_input,
                  SupportedDataTypes reshape_input,
+                 SupportedDataTypes reverse_input,
                  SupportedDataTypes scatter_elements_input,
                  SupportedDataTypes scatter_elements_indices,
                  SupportedDataTypes scatter_nd_input,
@@ -138,21 +141,22 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes cumulative_sum_input;
   SupportedDataTypes dequantize_linear_input;
   SupportedDataTypes dequantize_linear_scale;
-  SupportedDataTypes add_input;
-  SupportedDataTypes sub_input;
-  SupportedDataTypes mul_input;
-  SupportedDataTypes div_input;
-  SupportedDataTypes max_input;
-  SupportedDataTypes min_input;
-  SupportedDataTypes pow_input;
-  SupportedDataTypes equal_input;
-  SupportedDataTypes greater_input;
-  SupportedDataTypes greater_or_equal_input;
-  SupportedDataTypes lesser_input;
-  SupportedDataTypes lesser_or_equal_input;
-  SupportedDataTypes logical_and_input;
-  SupportedDataTypes logical_or_input;
-  SupportedDataTypes logical_xor_input;
+  SupportedTensors add_input;
+  SupportedTensors sub_input;
+  SupportedTensors mul_input;
+  SupportedTensors div_input;
+  SupportedTensors max_input;
+  SupportedTensors min_input;
+  SupportedTensors pow_input;
+  SupportedTensors equal_input;
+  SupportedTensors greater_input;
+  SupportedTensors greater_or_equal_input;
+  SupportedTensors lesser_input;
+  SupportedTensors lesser_or_equal_input;
+  SupportedTensors not_equal_input;
+  SupportedTensors logical_and_input;
+  SupportedTensors logical_or_input;
+  SupportedTensors logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
   SupportedDataTypes abs_input;
@@ -189,7 +193,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes linear_input;
   SupportedDataTypes lstm_input;
   SupportedDataTypes lstm_cell_input;
-  SupportedDataTypes matmul_input;
+  SupportedTensors matmul_input;
   SupportedDataTypes pad_input;
   SupportedDataTypes average_pool2d_input;
   SupportedDataTypes l2_pool2d_input;
@@ -210,6 +214,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+  SupportedDataTypes reverse_input;
   SupportedDataTypes scatter_elements_input;
   SupportedDataTypes scatter_elements_indices;
   SupportedDataTypes scatter_nd_input;
@@ -255,6 +260,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.greater_or_equal_input == rhs.greater_or_equal_input &&
          lhs.lesser_input == rhs.lesser_input &&
          lhs.lesser_or_equal_input == rhs.lesser_or_equal_input &&
+         lhs.not_equal_input == rhs.not_equal_input &&
          lhs.logical_and_input == rhs.logical_and_input &&
          lhs.logical_or_input == rhs.logical_or_input &&
          lhs.logical_xor_input == rhs.logical_xor_input &&
@@ -315,6 +321,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.relu_input == rhs.relu_input &&
          lhs.resample2d_input == rhs.resample2d_input &&
          lhs.reshape_input == rhs.reshape_input &&
+         lhs.reverse_input == rhs.reverse_input &&
          lhs.scatter_elements_input == rhs.scatter_elements_input &&
          lhs.scatter_elements_indices == rhs.scatter_elements_indices &&
          lhs.scatter_nd_input == rhs.scatter_nd_input &&

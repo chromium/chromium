@@ -199,6 +199,10 @@ public final class DefaultBrowserInfo {
                 protected void onPostExecute(DefaultInfo info) {
                     if (info == null) return;
 
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(
+                                    ChromePreferenceKeys.CHROME_DEFAULT_BROWSER,
+                                    info.isChromeDefault);
                     RecordHistogram.recordCount100Histogram(
                             getSystemBrowserCountUmaName(info), info.systemCount);
                     RecordHistogram.recordCount100Histogram(

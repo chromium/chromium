@@ -42,6 +42,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/display/screen.h"
 
@@ -86,7 +87,7 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
-                !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+            !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
   dict->Set(
@@ -126,8 +127,6 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             !features::IsOobeDisplaySizeEnabled());
   dict->Set("testapi_shouldSkipGaiaInfoScreen",
             !features::IsOobeGaiaInfoScreenEnabled());
-  dict->Set("testapi_isOobeQuickStartEnabled",
-            features::IsOobeQuickStartEnabled());
   dict->Set("testapi_isCrossDeviceFeatureSuiteAllowed",
             features::IsCrossDeviceFeatureSuiteAllowed());
 

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -37,8 +36,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/webui/webui_util.h"
 
 ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -109,7 +108,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   };
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kResources),
+      source, kResources,
       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_HTML);
 
   source->AddResourcePath("images/left-banner.svg",
@@ -228,8 +227,7 @@ void ManagedUserProfileNoticeUI::Initialize(
       std::string manager =
           signin_util::IsProfileSeparationEnforcedByProfile(
               profile, create_param->account_info.email)
-              ? chrome::GetEnterpriseAccountDomain(*profile).value_or(
-                    std::string())
+              ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
               : enterprise_util::GetDomainFromEmail(
                     create_param->account_info.email);
       update_data.Set(

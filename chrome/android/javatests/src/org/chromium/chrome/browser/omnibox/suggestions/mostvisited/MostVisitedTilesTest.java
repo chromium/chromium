@@ -204,18 +204,6 @@ public class MostVisitedTilesTest {
         mOmnibox.checkSuggestionsShown();
     }
 
-    private void clickTileAtPosition(int position) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LayoutManager manager = mCarousel.view.getLayoutManager();
-                    Assert.assertTrue(position < manager.getItemCount());
-                    manager.scrollToPosition(position);
-                    View view = manager.findViewByPosition(position);
-                    Assert.assertNotNull(view);
-                    view.performClick();
-                });
-    }
-
     private void longClickTileAtPosition(int position) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

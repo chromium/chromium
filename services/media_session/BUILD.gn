@@ -43,7 +43,6 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//services/media_session/public/cpp",
     "//services/media_session/public/cpp/test:test_support",
     "//services/media_session/public/mojom",

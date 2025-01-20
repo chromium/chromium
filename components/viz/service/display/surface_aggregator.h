@@ -213,7 +213,10 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const gfx::Transform& target_transform,
       const std::optional<gfx::Rect> clip_rect,
       const std::optional<gfx::Rect> dest_root_target_clip_rect,
-      const MaskFilterInfoExt& mask_filter_info_pair);
+      const MaskFilterInfoExt& mask_filter_info_pair,
+      std::optional<cc::PaintFlags::FilterQuality> filter_quality,
+      std::optional<cc::PaintFlags::DynamicRangeLimitMixture>
+          dynamic_range_limit);
 
   // Recursively walks through the render pass and updates the
   // |intersects_damage_under| flag on all RenderPassDrawQuads(RPDQ).

@@ -22,13 +22,16 @@
 
 namespace viz {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FrameIntervalMatcherType {
-  kNone,
-  kInputBoost,
-  kOnlyVideo,
-  kVideoConference,
-  kOnlyAnimatingImage,
-  kOnlyScrollBarFadeOut,
+  kNone = 0,
+  kInputBoost = 1,
+  kOnlyVideo = 2,
+  kVideoConference = 3,
+  kOnlyAnimatingImage = 4,
+  kOnlyScrollBarFadeOut = 5,
+  kMaxValue = kOnlyScrollBarFadeOut,
 };
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.
@@ -58,7 +61,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     FixedIntervalSettings(const FixedIntervalSettings&);
     ~FixedIntervalSettings();
 
-    base::TimeDelta default_interval;  // Must be in `supported_intervals`.
+    base::TimeDelta default_interval;  // Used for FrameIntervalClass::kDefault.
     base::flat_set<base::TimeDelta> supported_intervals;  // Cannot be empty.
   };
 
@@ -69,7 +72,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     ContinuousRangeSettings(const ContinuousRangeSettings&);
     ~ContinuousRangeSettings();
 
-    base::TimeDelta min_interval;  // Used as default value.
+    base::TimeDelta default_interval;  // Used for FrameIntervalClass::kDefault.
+    base::TimeDelta min_interval;
     base::TimeDelta max_interval;
   };
 

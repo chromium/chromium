@@ -196,7 +196,6 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
     RealboxHandler realbox_handler = RealboxHandler(
         remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),
         GetWebContents(), /*metrics_reporter=*/nullptr,
-        /*lens_searchbox_client=*/nullptr,
         /*omnibox_controller=*/nullptr);
     realbox_handler.SetPage(page.GetRemotePage());
     content::test::PrerenderHostRegistryObserver registry_observer(

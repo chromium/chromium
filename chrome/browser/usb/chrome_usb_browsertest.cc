@@ -75,11 +75,11 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
@@ -121,10 +121,10 @@ MATCHER_P(FailedWithSubstr, substr, "") {
   return arg.error.find(substr) != std::string::npos;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 
 // Observer for an extension service worker events like start, activated, and
 // stop.
@@ -1145,8 +1145,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Base Test fixture with kEnableWebUsbOnExtensionServiceWorker default
-// disabled.
 class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   WebUsbExtensionBrowserTest() = default;
@@ -1166,16 +1164,14 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     chooser_context->GetDevices(devices_future.GetCallback());
     ASSERT_TRUE(devices_future.Get().empty());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Create a user account affiliated with the machine owner.
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     fake_user_manager->AddUserWithAffiliation(kManagedUserAccountId, true);
     fake_user_manager->LoginUser(kManagedUserAccountId);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
     display_service_for_system_notification_ =
         std::make_unique<NotificationDisplayServiceTester>(
             /*profile=*/nullptr);
@@ -1183,23 +1179,23 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
     // TODO(b/208629291): Consider removing all users from ProfileHelper in the
     // destructor of ash::FakeChromeUserManager.
     GetFakeUserManager()->RemoveUserFromList(kManagedUserAccountId);
     scoped_user_manager_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     ExtensionBrowserTest::TearDownOnMainThread();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetUpPolicy(const extensions::Extension* extension) {
     // Define a policy to automatically grant permission to access the device
@@ -1332,41 +1328,10 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
-
-// Test fixture with kEnableWebUsbOnExtensionServiceWorker disabled.
-class WebUsbExtensionFeatureDisabledBrowserTest
-    : public WebUsbExtensionBrowserTest {
- public:
-  WebUsbExtensionFeatureDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kEnableWebUsbOnExtensionServiceWorker});
-  }
-};
-
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
-#else
-#define MAYBE_FeatureDisabled FeatureDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
-                       MAYBE_FeatureDisabled) {
-  constexpr std::string_view kBackgroundJs = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.usb, undefined);
-        chrome.test.notifyPass();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
 
 // TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)

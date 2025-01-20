@@ -24,11 +24,12 @@ export function getHtml(this: ChromeSigninAppElement) {
     <div id="contents">
 
       <div class="account-icon-container" id="accountIconContainer">
-        <img class="account-icon" alt=""
+        <img class="account-icon"
+            alt="${this.interceptionParameters_.userBadgeAltText}"
             src="${this.interceptionParameters_.pictureUrl}">
         <div class="managed-user-badge"
             ?hidden="${!this.interceptionParameters_.managedUserBadge.length}">
-          <cr-icon class="icon"
+          <cr-icon class="icon" aria-hidden="true"
               icon="${this.interceptionParameters_.managedUserBadge}"></cr-icon>
         </div>
       </div>
@@ -41,8 +42,7 @@ export function getHtml(this: ChromeSigninAppElement) {
             aria-label="${this.getAcceptButtonAriaLabel_()}"
             @click="${this.onAccept_}">
           <div id="acceppt-button-content">
-            ${this.i18n('chromeSigninAcceptText',
-               this.interceptionParameters_.givenName)}
+            ${this.i18n('chromeSigninAcceptText', this.interceptionParameters_.givenName)}
           </div>
         </cr-button>
         <cr-button id="cancel-button" @click="${this.onCancel_}">

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "about_signin_internals_factory.cc",
@@ -60,11 +62,8 @@ source_set("model") {
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",
-    "//components/content_settings/core/browser:cookie_settings",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/metrics",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
@@ -81,7 +80,6 @@ source_set("model") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -109,7 +107,7 @@ source_set("model") {
     # TODO(crbug.com/325587123): This should depend on
     # //ios/chrome/browser/sync/model but doing so creates a circular
     # dependency.
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
   ]
   public_deps = [
     ":constants",
@@ -134,7 +132,6 @@ source_set("authentication_service") {
     ":system_identity_util",
     "//base",
     "//components/browser_sync",
-    "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser:features",
@@ -144,6 +141,7 @@ source_set("authentication_service") {
     "//components/sync/base",
     "//components/sync/service",
     "//google_apis",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -151,8 +149,12 @@ source_set("authentication_service") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/widget_kit/model:features",
+    "//ios/chrome/common/app_group",
   ]
+  if (ios_enable_widget_kit_extension && ios_enable_widgets_for_mim) {
+    deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
+  }
 }
 
 source_set("authentication_service_factory") {
@@ -262,7 +264,6 @@ source_set("system_identity_manager") {
     ":capabilities_types",
     ":system_identity",
     "//components/signin/internal/identity_manager",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -300,6 +301,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -358,7 +360,6 @@ source_set("trusted_vault") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
     "//components/trusted_vault",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
@@ -376,11 +377,10 @@ source_set("trusted_vault_factory") {
   deps = [
     ":trusted_vault",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -410,7 +410,6 @@ source_set("test_support") {
     ":trusted_vault",
     "//base",
     "//components/image_fetcher/core:test_support",
-    "//components/keyed_service/core",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/shared/model/profile",
@@ -468,6 +467,7 @@ source_set("unit_tests") {
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/signin/public/identity_manager/ios:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
@@ -475,7 +475,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
@@ -508,7 +507,7 @@ source_set("eg2_tests") {
   deps = [
     ":fake_system_identity",
     "//base",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

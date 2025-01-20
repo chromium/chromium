@@ -705,6 +705,16 @@ inline FixedPoint<fractional_bits, RawValue>& operator+=(
   return a;
 }
 
+template <unsigned fractional_bits, typename RawValue, typename SourceStorage>
+  requires(sizeof(SourceStorage) <= sizeof(RawValue))
+inline FixedPoint<fractional_bits, RawValue> operator+(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, SourceStorage>& b) {
+  FixedPoint<fractional_bits, RawValue> r = a;
+  r += b;
+  return r;
+}
+
 inline LayoutUnit& operator+=(LayoutUnit& a, std::integral auto b) {
   a = a + LayoutUnit(b);
   return a;

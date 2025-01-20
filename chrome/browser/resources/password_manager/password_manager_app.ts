@@ -5,7 +5,6 @@ import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '/shared/settings/prefs/prefs.js';
 import './checkup_section.js';
 import './checkup_details_section.js';
@@ -26,6 +25,7 @@ import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -152,6 +152,28 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   private toastMessage_: string;
   private showUndo_: boolean;
   private focusConfig_: FocusConfig;
+  private eventTracker_: EventTracker = new EventTracker();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const narrowQuery = window.matchMedia('(max-width: 1036px)');
+    this.narrow_ = narrowQuery.matches;
+    this.eventTracker_.add(
+        narrowQuery, 'change',
+        (e: MediaQueryListEvent) => this.narrow_ = e.matches);
+
+    const collapsedQuery = window.matchMedia('(max-width: 1200px)');
+    this.collapsed_ = collapsedQuery.matches;
+    this.eventTracker_.add(
+        collapsedQuery, 'change',
+        (e: MediaQueryListEvent) => this.collapsed_ = e.matches);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
 
   override ready() {
     super.ready();

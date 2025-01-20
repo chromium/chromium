@@ -47,11 +47,9 @@
 #include "device/fido/public_key.h"
 #include "device/fido/virtual_u2f_device.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -518,29 +516,6 @@ bool CheckCredentialListForExtraKeys(
   return true;
 }
 
-std::vector<uint8_t> EvaluateHMAC(
-    base::span<const uint8_t> hmac_key,
-    const std::array<uint8_t, 32>& hmac_salt1,
-    const std::optional<std::array<uint8_t, 32>>& hmac_salt2) {
-  uint8_t hmac_result[SHA256_DIGEST_LENGTH];
-  unsigned hmac_out_length;
-  HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt1.data(),
-       hmac_salt1.size(), hmac_result, &hmac_out_length);
-  CHECK_EQ(hmac_out_length, sizeof(hmac_result));
-
-  std::vector<uint8_t> outputs;
-  outputs.insert(outputs.end(), std::begin(hmac_result), std::end(hmac_result));
-
-  if (hmac_salt2) {
-    HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt2->data(),
-         hmac_salt2->size(), hmac_result, &hmac_out_length);
-    CHECK_EQ(hmac_out_length, sizeof(hmac_result));
-    outputs.insert(outputs.end(), std::begin(hmac_result),
-                   std::end(hmac_result));
-  }
-  return outputs;
-}
-
 }  // namespace
 
 VirtualCtap2Device::Config::Config() = default;
@@ -821,7 +796,7 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
     return 0;
   }
 
-  const auto request_bytes = base::make_span(command).subspan(1);
+  const auto request_bytes = base::span(command).subspan<1>();
   CtapDeviceResponseCode response_code =
       CtapDeviceResponseCode::kCtap1ErrInvalidCommand;
   std::vector<uint8_t> response_data;
@@ -1430,8 +1405,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       const std::array<uint8_t, 32>& hmac_key =
           user_verified ? registration.hmac_key->second
                         : registration.hmac_key->first;
-      prf_results = EvaluateHMAC(hmac_key, request.prf_input->salt1,
-                                 request.prf_input->salt2);
+      prf_results = request.prf_input->EvaluateHMAC(hmac_key);
     }
   }
 
@@ -1683,7 +1657,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       const std::array<uint8_t, 32>& hmac_key =
           user_verified ? hmac_keys.second : hmac_keys.first;
       const std::vector<uint8_t> outputs =
-          EvaluateHMAC(hmac_key, *hmac_salt1, hmac_salt2);
+          PRFInput::EvaluateHMAC(hmac_key, *hmac_salt1, hmac_salt2);
 
       std::vector<uint8_t> encrypted_outputs =
           pin::ProtocolVersion(*request.pin_protocol)
@@ -1800,8 +1774,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
       if (selected_input) {
         assertion.hmac_secret =
-            EvaluateHMAC(registration.second->hmac_key->second,
-                         selected_input->salt1, selected_input->salt2);
+            selected_input->EvaluateHMAC(registration.second->hmac_key->second);
       }
     }
 
@@ -2682,9 +2655,10 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
     }
     cbor::Value::MapValue response_map;
 
-    auto subspan = base::make_span(mutable_state()->large_blob).subspan(offset);
+    auto subspan = base::span(mutable_state()->large_blob)
+                       .subspan(static_cast<size_t>(offset));
     response_map.emplace(static_cast<uint8_t>(LargeBlobsResponseKey::kConfig),
-                         subspan.first(std::min<size_t>(get, subspan.size())));
+                         subspan.first(std::min(get, subspan.size())));
 
     *response =
         cbor::Writer::Write(cbor::Value(std::move(response_map))).value();

@@ -98,16 +98,18 @@ scoped_refptr<base::RefCountedMemory> GetUserImageFrame(
     user_manager::UserImage::ImageFormat image_format,
     int frame) {
   // Return all frames.
-  if (frame == -1)
+  if (frame == -1) {
     return image_bytes;
+  }
   // TODO(reveman): Add support for frames beyond 0 (crbug.com/750064).
   if (frame) {
     NOTIMPLEMENTED() << "Unsupported frame: " << frame;
     return nullptr;
   }
   // Only PNGs can be animated.
-  if (image_format != user_manager::UserImage::FORMAT_PNG)
+  if (image_format != user_manager::UserImage::FORMAT_PNG) {
     return image_bytes;
+  }
   // Extract first frame by re-encoding image.
   SkBitmap bitmap = gfx::PNGCodec::Decode(*image_bytes);
   if (bitmap.isNull()) {
@@ -169,9 +171,9 @@ scoped_refptr<base::RefCountedMemory> UserImageSource::GetUserImage(
   return GetUserImageInternal(account_id, -1);
 }
 
-UserImageSource::UserImageSource() {}
+UserImageSource::UserImageSource() = default;
 
-UserImageSource::~UserImageSource() {}
+UserImageSource::~UserImageSource() = default;
 
 std::string UserImageSource::GetSource() {
   return chrome::kChromeUIUserImageHost;

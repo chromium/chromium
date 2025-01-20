@@ -254,9 +254,11 @@ void CommitContributionImpl::PopulateCommitProto(
   commit_proto->set_deleted(entity_data.is_deleted());
   commit_proto->set_name(entity_data.name);
   commit_proto->set_mtime(TimeToProtoTime(entity_data.modification_time));
-  if (!entity_data.collaboration_id.empty()) {
+  if (entity_data.collaboration_metadata.has_value()) {
+    // Only the collaboration ID is needed for the commit. Other fields are
+    // populated by the server.
     commit_proto->mutable_collaboration()->set_collaboration_id(
-        entity_data.collaboration_id);
+        entity_data.collaboration_metadata->collaboration_id());
   }
 
   if (entity_data.is_deleted()) {

@@ -53,7 +53,8 @@ void ContextMenuHelper::ShowContextMenu(
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(
-          context_menu_params_, render_frame_host.GetProcess()->GetID(),
+          context_menu_params_,
+          render_frame_host.GetProcess()->GetDeprecatedID(),
           render_frame_host.GetFrameToken().value()),
       render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView(),
       view->content_offset() * view->GetDipScale());
@@ -67,7 +68,8 @@ void ContextMenuHelper::DismissContextMenu() {
 void ContextMenuHelper::OnContextMenuClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed);
+  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed,
+                                           context_menu_params_.impression);
 }
 
 void ContextMenuHelper::SetPopulatorFactory(

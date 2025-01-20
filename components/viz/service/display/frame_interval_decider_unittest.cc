@@ -22,6 +22,7 @@
 namespace viz {
 namespace {
 
+using ContinuousRangeSettings = FrameIntervalDecider::ContinuousRangeSettings;
 using FixedIntervalSettings = FrameIntervalDecider::FixedIntervalSettings;
 using FrameIntervalClass = FrameIntervalDecider::FrameIntervalClass;
 using Result = FrameIntervalDecider::Result;
@@ -249,7 +250,7 @@ TEST_F(FrameIntervalDeciderTest, NoMatchFixedIntervals) {
   FixedIntervalSettings fixed_interval_settings;
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(8));
   fixed_interval_settings.supported_intervals.insert(base::Milliseconds(16));
-  fixed_interval_settings.default_interval = base::Milliseconds(16);
+  fixed_interval_settings.default_interval = base::Milliseconds(0);
   settings_.interval_settings = fixed_interval_settings;
 
   InitializeDecider();
@@ -259,7 +260,24 @@ TEST_F(FrameIntervalDeciderTest, NoMatchFixedIntervals) {
   DrawSurfaces({surface}, kNow);
 
   EXPECT_TRUE(matchers_[1]->has_last_matcher_inputs());
-  ExpectResult(TakeLastResult(), base::Milliseconds(16));
+  ExpectResult(TakeLastResult(), base::Milliseconds(0));
+}
+
+TEST_F(FrameIntervalDeciderTest, NoMatchContinuousRange) {
+  ContinuousRangeSettings continuous_range_settings;
+  continuous_range_settings.min_interval = base::Milliseconds(8);
+  continuous_range_settings.max_interval = base::Milliseconds(16);
+  continuous_range_settings.default_interval = base::Milliseconds(0);
+  settings_.interval_settings = continuous_range_settings;
+
+  InitializeDecider();
+  FrameIntervalInputs inputs;
+  inputs.frame_time = kNow;
+  Surface* surface = CreateSurface(FrameSinkId(0, 1), inputs);
+  DrawSurfaces({surface}, kNow);
+
+  EXPECT_TRUE(matchers_[1]->has_last_matcher_inputs());
+  ExpectResult(TakeLastResult(), base::Milliseconds(0));
 }
 
 TEST_F(FrameIntervalDeciderTest, FirstMatch) {

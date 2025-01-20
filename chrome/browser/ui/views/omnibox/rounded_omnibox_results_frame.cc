@@ -49,7 +49,7 @@ struct WidgetEventPair {
 views::Widget* GetImmersiveFullscreenWidgetForEvent(
     views::View* this_view,
     const ui::MouseEvent* this_event) {
-  views::Widget* parent_widget = this_view->GetWidget()->parent();
+  const views::Widget* parent_widget = this_view->GetWidget()->parent();
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       parent_widget->GetNativeWindow());
 
@@ -107,8 +107,9 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
   views::Widget* parent_widget = this_widget->parent();
   std::unique_ptr<ui::MouseEvent> event(
       static_cast<ui::MouseEvent*>(this_event->Clone().release()));
-  if (!parent_widget)
+  if (!parent_widget) {
     return {nullptr, std::move(event)};
+  }
 
 // On macOS if the parent widget is the overlay widget we are in immersive
 // fullscreen. Don't walk any higher up the tree. The overlay or tab widget will
@@ -125,8 +126,9 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 #endif
 
   DCHECK_NE(this_widget, top_level);
-  if (!top_level)
+  if (!top_level) {
     return {nullptr, std::move(event)};
+  }
 
   gfx::Point event_location = this_event->location();
   views::View::ConvertPointToScreen(this_view, &event_location);
@@ -174,14 +176,16 @@ class TopBackgroundView : public views::View {
   // well to catch 'em all.
   void OnMouseMoved(const ui::MouseEvent& event) override {
     auto pair = GetParentWidgetAndEvent(this, &event);
-    if (pair.widget)
+    if (pair.widget) {
       pair.widget->OnMouseEvent(pair.event.get());
+    }
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     auto pair = GetParentWidgetAndEvent(this, event);
-    if (pair.widget)
+    if (pair.widget) {
       pair.widget->OnMouseEvent(pair.event.get());
+    }
 
     // If the original event isn't marked as "handled" then it will propagate up
     // the view hierarchy and might be double-handled. https://crbug.com/870341
@@ -189,7 +193,7 @@ class TopBackgroundView : public views::View {
   }
 
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
-    auto pair = GetParentWidgetAndEvent(this, &event);
+    const auto pair = GetParentWidgetAndEvent(this, &event);
     if (pair.widget) {
       views::View* omnibox_view =
           pair.widget->GetRootView()->GetEventHandlerForPoint(
@@ -228,7 +232,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));
@@ -331,14 +335,16 @@ void RoundedOmniboxResultsFrame::AddedToWidget() {
 // well to catch 'em all.
 void RoundedOmniboxResultsFrame::OnMouseMoved(const ui::MouseEvent& event) {
   auto pair = GetParentWidgetAndEvent(this, &event);
-  if (pair.widget)
+  if (pair.widget) {
     pair.widget->OnMouseEvent(pair.event.get());
+  }
 }
 
 void RoundedOmniboxResultsFrame::OnMouseEvent(ui::MouseEvent* event) {
   auto pair = GetParentWidgetAndEvent(this, event);
-  if (pair.widget)
+  if (pair.widget) {
     pair.widget->OnMouseEvent(pair.event.get());
+  }
 }
 
 #endif  // !USE_AURA

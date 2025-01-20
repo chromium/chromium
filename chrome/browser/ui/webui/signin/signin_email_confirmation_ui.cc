@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +20,7 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "ui/webui/webui_util.h"
 
 bool SigninEmailConfirmationUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -75,7 +75,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(strings);
 }
 
-SigninEmailConfirmationUI::~SigninEmailConfirmationUI() {}
+SigninEmailConfirmationUI::~SigninEmailConfirmationUI() = default;
 
 void SigninEmailConfirmationUI::Close() {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();

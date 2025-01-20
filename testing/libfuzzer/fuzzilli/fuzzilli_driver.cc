@@ -68,7 +68,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
   ctrl_write_file.WriteAtCurrentPosAndCheck(base::as_bytes(kHelloMessage));
   char actual_magic[kExpectedSize] = {};
   ctrl_read_file.ReadAtCurrentPosAndCheck(
-      base::as_writable_bytes(base::make_span(actual_magic)));
+      base::as_writable_byte_span(actual_magic));
 
   CHECK(base::ranges::equal(kHelloMessage, actual_magic));
 
@@ -76,7 +76,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
     // Read the action message ("exec") from Fuzzilli.
     constexpr auto kExpectedAction = base::span_from_cstring("exec");
     uint8_t action_msg[kExpectedAction.size()];
-    if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::make_span(action_msg)) ||
+    if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::span(action_msg)) ||
         !base::ranges::equal(kExpectedAction, action_msg)) {
       LOG(WARNING) << "Unexpected message from Fuzzilli: " << action_msg;
       return 0;
@@ -90,7 +90,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
     // Read the JavaScript script from Fuzzilli.
     std::vector<uint8_t> buffer(script_size + 1);
     data_read_file.ReadAtCurrentPosAndCheck(
-        base::make_span(buffer.data(), script_size));
+        base::span(buffer.data(), script_size));
     buffer[script_size] = 0;
 
     // Run the script:

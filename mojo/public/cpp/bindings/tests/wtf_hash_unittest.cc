@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
-
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 

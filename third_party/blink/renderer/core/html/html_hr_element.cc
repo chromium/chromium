@@ -46,7 +46,7 @@ bool HTMLHRElement::IsPresentationAttribute(const QualifiedName& name) const {
 void HTMLHRElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kAlignAttr) {
     if (EqualIgnoringASCIICase(value, "left")) {
       AddPropertyToPresentationAttributeStyle(
@@ -67,14 +67,18 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kMarginRight, CSSValueID::kAuto);
     }
   } else if (name == html_names::kWidthAttr) {
-    bool ok;
-    int v = value.ToInt(&ok);
-    if (ok && !v) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kWidth, 1,
-          CSSPrimitiveValue::UnitType::kPixels);
-    } else {
+    if (RuntimeEnabledFeatures::HTMLHRWidthAllowZeroEnabled()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+    } else {
+      bool ok;
+      int v = value.ToInt(&ok);
+      if (ok && !v) {
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kWidth, 1,
+            CSSPrimitiveValue::UnitType::kPixels);
+      } else {
+        AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+      }
     }
   } else if (name == html_names::kColorAttr) {
     for (CSSPropertyID property_id :
@@ -83,7 +87,10 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
       AddPropertyToPresentationAttributeStyle(style, property_id,
                                               CSSValueID::kSolid);
     }
-    AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderLeftColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderRightColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderBottomColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBorderTopColor, value);
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kNoshadeAttr) {
     if (!FastHasAttribute(html_names::kColorAttr)) {
@@ -97,8 +104,16 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
 
       const cssvalue::CSSColor& dark_gray_value =
           *cssvalue::CSSColor::Create(Color::kDarkGray);
-      style->SetProperty(CSSPropertyID::kBorderColor, dark_gray_value);
-      style->SetProperty(CSSPropertyID::kBackgroundColor, dark_gray_value);
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kBorderLeftColor),
+                         dark_gray_value);
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kBorderRightColor),
+                         dark_gray_value);
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kBorderBottomColor),
+                         dark_gray_value);
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kBorderTopColor),
+                         dark_gray_value);
+      style.emplace_back(CSSPropertyName(CSSPropertyID::kBackgroundColor),
+                         dark_gray_value);
     }
   } else if (name == html_names::kSizeAttr) {
     int size = value.ToInt();

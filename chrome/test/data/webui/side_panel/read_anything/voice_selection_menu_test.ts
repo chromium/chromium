@@ -200,8 +200,9 @@ suite('VoiceSelectionMenu', () => {
           getDropdownItemForVoice(selectedVoice)
               .querySelector<HTMLElement>('#check-mark')!;
 
-      assertFalse(hasStyle(checkMarkSelectedVoice, 'visibility', 'hidden'));
-      assertTrue(hasStyle(checkMarkVoice0, 'visibility', 'hidden'));
+      assertFalse(
+          hasStyle(checkMarkSelectedVoice, 'color', 'rgba(0, 0, 0, 0)'));
+      assertTrue(hasStyle(checkMarkVoice0, 'color', 'rgba(0, 0, 0, 0)'));
     });
 
     test('it groups voices by language', () => {
@@ -341,7 +342,7 @@ suite('VoiceSelectionMenu', () => {
 
       // The spinner should be visible and the preview button should be
       // disabled.
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-false'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-false'));
       assertTrue(previewButton.classList.contains('clickable-false'));
       assertTrue(hasStyle(previewButton, 'pointer-events', 'none'));
 
@@ -352,7 +353,7 @@ suite('VoiceSelectionMenu', () => {
 
       // After onstart, the spinner shouldn't be showing and the buttons
       // shouldn't be disabled.
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-true'));
       assertFalse(previewButton.classList.contains('clickable-false'));
       assertFalse(hasStyle(previewButton, 'pointer-events', 'none'));
     });
@@ -373,21 +374,17 @@ suite('VoiceSelectionMenu', () => {
               '#spinner-span')!;
 
       // The spinner shouldn't be visible
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-true'));
 
       // The play icon should flip to stop for the voice being previewed
       assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
       assertEquals(
           'read-anything-20:stop-circle', playIconOfPreviewVoice.ironIcon);
       assertStringContains(playIconOfPreviewVoice.title.toLowerCase(), 'stop');
-      assertStringContains(
-          playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'stop');
       // The play icon should remain unchanged for the other buttons
       assertTrue(isPositionedOnPage(playIconVoice0));
       assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
       assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-      assertStringContains(
-          playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
     });
 
     test('it shows play icon again when preview finishes', async () => {
@@ -413,10 +410,6 @@ suite('VoiceSelectionMenu', () => {
       assertEquals('read-anything-20:play-circle', playIconVoice0.ironIcon);
       assertStringContains(playIconOfPreviewVoice.title.toLowerCase(), 'play');
       assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-      assertStringContains(
-          playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'preview voice for');
-      assertStringContains(
-          playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
     });
   });
 

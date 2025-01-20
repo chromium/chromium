@@ -244,7 +244,8 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
   // Record what source was used to find main frame CSP. Do not record
   // this for fence frame roots since they will never become an
   // outermost main frame.
-  if (frame->IsMainFrame() && !frame->IsInFencedFrameTree()) {
+  bool is_main_frame = frame->IsMainFrame() && !frame->IsInFencedFrameTree();
+  if (is_main_frame) {
     for (const auto& policy : policies) {
       switch (policy->header->source) {
         case network::mojom::ContentSecurityPolicySource::kHTTP:
@@ -255,6 +256,12 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
           break;
       }
     }
+  }
+  // As the injection-mitigatedness of a context changes only when CSPs are
+  // added, we can measure the prevalance here:
+  if (execution_context_->IsInjectionMitigatedContext()) {
+    Count(is_main_frame ? WebFeature::kInjectionMitigatedContextMainFrame
+                        : WebFeature::kInjectionMitigatedContextSubFrame);
   }
 }
 

@@ -115,12 +115,12 @@ constexpr FilePath::CharType kArcExternalFilesRoot[] =
 constexpr char kArcStorageContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // A predefined removable media UUID for testing. Defined in
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/1274481): Move ash-wide constants to a common place.
 constexpr char kArcRemovableMediaUuidForTesting[] =
     "00000000000000000000000000000000DEADBEEF";
 // The dummy UUID of the MyFiles volume is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/"
@@ -286,6 +286,21 @@ std::optional<int> MyFilesFolderToMessageId(std::string folder) {
   return std::nullopt;
 }
 
+std::string GetMountPointNameForProfile(Profile* profile,
+                                        const std::string& folder_name) {
+  // To distinguish profiles in multi-profile session, we append user name hash
+  // to folder_name. Note that some profiles (like login or test profiles)
+  // are not associated with an user account. In that case, no suffix is added
+  // because such a profile never belongs to a multi-profile session.
+  const user_manager::User* const user =
+      user_manager::UserManager::IsInitialized()
+          ? ash::ProfileHelper::Get()->GetUserByProfile(
+                profile->GetOriginalProfile())
+          : nullptr;
+  const std::string id = user ? "-" + user->username_hash() : "";
+  return base::EscapeQueryParamValue(folder_name + id, false);
+}
+
 }  // namespace
 
 const FilePath::CharType kFuseBoxMediaPath[] =
@@ -449,17 +464,11 @@ bool MigrateToDriveFs(Profile* profile,
 }
 
 std::string GetDownloadsMountPointName(Profile* profile) {
-  // To distinguish profiles in multi-profile session, we append user name hash
-  // to "Downloads". Note that some profiles (like login or test profiles)
-  // are not associated with an user account. In that case, no suffix is added
-  // because such a profile never belongs to a multi-profile session.
-  const user_manager::User* const user =
-      user_manager::UserManager::IsInitialized()
-          ? ash::ProfileHelper::Get()->GetUserByProfile(
-                profile->GetOriginalProfile())
-          : nullptr;
-  const std::string id = user ? "-" + user->username_hash() : "";
-  return base::EscapeQueryParamValue(kFolderNameDownloads + id, false);
+  return GetMountPointNameForProfile(profile, kFolderNameDownloads);
+}
+
+std::string GetShareCacheMountPointName(Profile* profile) {
+  return GetMountPointNameForProfile(profile, kFolderNameShareCache);
 }
 
 std::string GetAndroidFilesMountPointName() {

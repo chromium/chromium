@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_ellipse_element.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_ellipse.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
@@ -130,7 +129,7 @@ void SVGEllipseElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGEllipseElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {cx_.Get(), cy_.Get(), rx_.Get(), ry_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);

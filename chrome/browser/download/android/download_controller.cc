@@ -424,18 +424,11 @@ void DownloadController::StartAndroidDownloadInternal(
                                 info.original_mime_type, default_file_name_);
   ScopedJavaLocalRef<jobject> jurl =
       url::GURLAndroid::FromNativeGURL(env, info.url);
-  ScopedJavaLocalRef<jstring> juser_agent =
-      ConvertUTF8ToJavaString(env, info.user_agent);
-  ScopedJavaLocalRef<jstring> jmime_type =
-      ConvertUTF8ToJavaString(env, info.original_mime_type);
-  ScopedJavaLocalRef<jstring> jcookie =
-      ConvertUTF8ToJavaString(env, info.cookie);
   ScopedJavaLocalRef<jobject> jreferer =
       url::GURLAndroid::FromNativeGURL(env, info.referer);
-  ScopedJavaLocalRef<jstring> jfile_name =
-      base::android::ConvertUTF16ToJavaString(env, file_name);
   Java_DownloadController_enqueueAndroidDownloadManagerRequest(
-      env, jurl, juser_agent, jfile_name, jmime_type, jcookie, jreferer);
+      env, jurl, info.user_agent, file_name, info.original_mime_type,
+      info.cookie, jreferer);
 
   WebContents* web_contents = wc_getter.Run();
   CloseTabIfEmpty(web_contents, nullptr);
@@ -548,7 +541,7 @@ void DownloadController::EnableVerifyAppsDone(
     download::DownloadItem* item,
     safe_browsing::VerifyAppsEnabledResult result) {
   base::UmaHistogramEnumeration(
-      "SBClientDownload.AndroidAppVerificationPromptResult", result);
+      "SBClientDownload.AndroidAppVerificationPromptResult2", result);
 
   if (app_verification_prompt_download_ != nullptr) {
     app_verification_prompt_download_ = nullptr;
@@ -573,14 +566,16 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
   if (web_contents) {
     tab = TabAndroid::FromWebContents(web_contents);
   }
-  download::DownloadItem::InsecureDownloadStatus status =
-      GetInsecureDownloadStatusForDownload(
-          Profile::FromBrowserContext(
-              content::DownloadItemUtils::GetBrowserContext(item)),
-          item->GetTargetFilePath(), item);
-  is_download_safe =
-      (status == download::DownloadItem::InsecureDownloadStatus::SAFE ||
-       status == download::DownloadItem::InsecureDownloadStatus::VALIDATED);
+  if (tab) {
+    download::DownloadItem::InsecureDownloadStatus status =
+        GetInsecureDownloadStatusForDownload(
+            Profile::FromBrowserContext(
+                content::DownloadItemUtils::GetBrowserContext(item)),
+            item->GetTargetFilePath(), item);
+    is_download_safe =
+        (status == download::DownloadItem::InsecureDownloadStatus::SAFE ||
+         status == download::DownloadItem::InsecureDownloadStatus::VALIDATED);
+  }
   Java_DownloadController_onDownloadCompleted(
       env, tab ? tab->GetJavaObject() : nullptr, j_item, is_download_safe);
 }
@@ -589,7 +584,8 @@ void DownloadController::StartContextMenuDownload(
     const ContextMenuParams& params,
     WebContents* web_contents,
     bool is_link) {
-  int process_id = web_contents->GetRenderViewHost()->GetProcess()->GetID();
+  int process_id =
+      web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
 
   const content::WebContents::Getter& wc_getter(

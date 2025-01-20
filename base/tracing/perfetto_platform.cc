@@ -21,15 +21,16 @@
 #include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 #endif
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 
 namespace {
 constexpr char kProcessNamePrefix[] = "org.chromium-";
 }  // namespace
 
-PerfettoPlatform::PerfettoPlatform(PerfettoTaskRunner* task_runner)
-    : task_runner_(task_runner), thread_local_object_([](void* object) {
+PerfettoPlatform::PerfettoPlatform(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)),
+      thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
       }) {}
 
@@ -48,8 +49,19 @@ PerfettoPlatform::GetOrCreateThreadLocalObject() {
 std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
     const CreateTaskRunnerArgs&) {
   // TODO(b/242965112): Add support for the builtin task runner
-  return std::make_unique<PerfettoTaskRunner>(
-      task_runner_->GetOrCreateTaskRunner());
+  DCHECK(!perfetto_task_runner_);
+  auto perfetto_task_runner =
+      std::make_unique<PerfettoTaskRunner>(task_runner_);
+  perfetto_task_runner_ = perfetto_task_runner->GetWeakPtr();
+  return perfetto_task_runner;
+}
+
+void PerfettoPlatform::ResetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  task_runner_ = task_runner;
+  if (perfetto_task_runner_) {
+    perfetto_task_runner_->ResetTaskRunnerForTesting(task_runner);  // IN-TEST
+  }
 }
 
 // This method is used by the SDK to determine the producer name.
@@ -81,5 +93,4 @@ perfetto::base::PlatformThreadId PerfettoPlatform::GetCurrentThreadId() {
   return base::PlatformThread::CurrentId();
 }
 
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

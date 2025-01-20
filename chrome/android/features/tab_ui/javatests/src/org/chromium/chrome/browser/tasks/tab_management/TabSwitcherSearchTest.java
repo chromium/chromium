@@ -59,6 +59,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,6 +69,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+@DisabledTest(message = "https://crbug.com/382536935")
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;
@@ -139,8 +141,7 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
@@ -221,22 +222,18 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
-        ViewGroup suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
         onView(withText("Last open tabs")).check(matches(isCompletelyDisplayed()));
 
         closeSearchAndVerify();
-        searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // ZPS for open tabs only shows the most recent 4 tabs.
-        suggestions = searchActivity.findViewById(R.id.omnibox_suggestions_dropdown);
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
 
         // Check the header text.
@@ -271,8 +268,7 @@ public class TabSwitcherSearchTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
-        SearchActivity searchActivity =
-                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
 
         // Tab URLs will be de-duped.
         verifySuggestions(urlsToOpen, /* includePrefix= */ true);
@@ -369,7 +365,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchTestUtils.openUrls(mActivityTestRule, urlsToOpen, /* incognito= */ true);
@@ -415,7 +410,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testTypedSuggestions_OpenSearchSuggestion() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -490,7 +484,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_bookmark_provider/true")
-    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testBookmarkSuggestions() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(
@@ -526,7 +519,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_history_provider/true")
-    @DisabledTest(message = "Flaky, crbug.com/379120629")
     public void testHistorySuggestions() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(
@@ -566,7 +558,7 @@ public class TabSwitcherSearchTest {
     }
 
     private ViewInteraction findMatchWithTextAndId(String text, int id) {
-        return onView(
+        return ViewUtils.onViewWaiting(
                 allOf(withId(id), withText(text), withEffectiveVisibility(Visibility.VISIBLE)));
     }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/apple/foundation_util.h"
@@ -69,8 +70,9 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
   DCHECK(profile_);
   profile_dir_ = profile_->GetPath();
 
-  if (auto* profile_manager = g_browser_process->profile_manager())
+  if (auto* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
+  }
 
   // Set the static icons in the menu.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -86,8 +88,9 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 
   // If the profile is incognito, no need to set history and tab restore
   // services.
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     return;
+  }
 
   // Check to see if the history service is ready. Because it loads async, it
   // may not be ready when the Bridge is created. If this happens, register for
@@ -143,8 +146,9 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
   NSUInteger added_count = 0;
 
   for (const auto& entry : entries) {
-    if (added_count >= kRecentlyClosedCount)
+    if (added_count >= kRecentlyClosedCount) {
       break;
+    }
     if (entry->type == sessions::tab_restore::Type::WINDOW) {
       bool added = AddWindowEntryToMenu(
           static_cast<sessions::tab_restore::Window*>(entry.get()), menu,
@@ -199,8 +203,9 @@ void HistoryMenuBridge::ResetMenu() {
 void HistoryMenuBridge::BuildMenu() {
   // If the history service is ready, use it. Otherwise, a Notification will
   // force an update when it's loaded.
-  if (history_service_)
+  if (history_service_) {
     CreateMenu();
+  }
 }
 
 HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForMenuItem(
@@ -234,8 +239,8 @@ const base::FilePath& HistoryMenuBridge::profile_dir() const {
 }
 
 NSMenu* HistoryMenuBridge::HistoryMenu() {
-  NSMenu* history_menu = [[[NSApp mainMenu] itemWithTag:IDC_HISTORY_MENU]
-                            submenu];
+  NSMenu* history_menu =
+      [[[NSApp mainMenu] itemWithTag:IDC_HISTORY_MENU] submenu];
   return history_menu;
 }
 
@@ -289,8 +294,9 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
 
   // Add a tooltip if the history item is for a single tab.
   if (item->tabs.empty()) {
-    NSString* tooltip = [NSString stringWithFormat:@"%@\n%@",
-        base::SysUTF16ToNSString(full_title), base::SysUTF8ToNSString(url)];
+    NSString* tooltip = [NSString
+        stringWithFormat:@"%@\n%@", base::SysUTF16ToNSString(full_title),
+                         base::SysUTF8ToNSString(url)];
     [item->menu_item setToolTip:tooltip];
   }
 
@@ -309,8 +315,9 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
     NSInteger index) {
   const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs =
       window->tabs;
-  if (tabs.empty())
+  if (tabs.empty()) {
     return false;
+  }
 
   // Create the item for the parent/window. Do not set the title yet because
   // the actual number of items that are in the menu will not be known until
@@ -325,8 +332,9 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
 
   // Sometimes it is possible for there to not be any subitems for a given
   // window; if that is the case, do not add the entry to the main menu.
-  if (added_count == 0)
+  if (added_count == 0) {
     return false;
+  }
 
   // Now that the number of tabs that has been added is known, set the title
   // of the parent menu item.
@@ -345,8 +353,9 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
                                             NSInteger index) {
   const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs =
       group->tabs;
-  if (tabs.empty())
+  if (tabs.empty()) {
     return false;
+  }
 
   // Create the item for the parent/group.
   auto item = std::make_unique<HistoryItem>();
@@ -642,8 +651,9 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
 }
 
 void HistoryMenuBridge::OnProfileMarkedForPermanentDeletion(Profile* profile) {
-  if (profile != profile_)
+  if (profile != profile_) {
     return;
+  }
   ResetMenu();
 }
 

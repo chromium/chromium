@@ -4,12 +4,12 @@
 
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 
-#include <Windows.h>
+#include <windows.h>
+#include <winternl.h>
 
 #include <MDMRegistration.h>
-#include <Shellapi.h>  // For CommandLineToArgvW()
+#include <Shellapi.h>
 #include <Shlobj.h>
-#include <Winternl.h>
 #include <aclapi.h>
 #include <atlconv.h>
 #include <dpapi.h>
@@ -19,7 +19,6 @@
 #include <security.h>
 #include <stdlib.h>
 #include <userenv.h>
-#include <wincred.h>
 
 #include <iomanip>
 #include <memory>
@@ -33,6 +32,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
+#include "base/win/wincred_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
@@ -430,7 +430,7 @@ void OSProcessManager::SetInstanceForTesting(OSProcessManager* instance) {
   *GetInstanceStorage() = instance;
 }
 
-OSProcessManager::~OSProcessManager() {}
+OSProcessManager::~OSProcessManager() = default;
 
 HRESULT OSProcessManager::GetTokenLogonSID(const base::win::ScopedHandle& token,
                                            PSID* sid) {

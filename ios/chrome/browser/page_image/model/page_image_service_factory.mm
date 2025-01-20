@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/image_service_impl.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
@@ -13,21 +11,19 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
 page_image_service::ImageService* PageImageServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<page_image_service::ImageService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<page_image_service::ImageService>(
+          profile, /*create=*/true);
 }
 
 PageImageServiceFactory::PageImageServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PageImageService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PageImageService") {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(RemoteSuggestionsServiceFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());

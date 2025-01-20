@@ -190,6 +190,13 @@ size_t FakeIGamepadStatics::GetGamepadRemovedEventHandlerCount() const {
   return gamepad_removed_event_handler_map_.size();
 }
 
+void FakeIGamepadStatics::Reset() {
+  gamepad_added_event_handler_map_.clear();
+  gamepad_removed_event_handler_map_.clear();
+  fake_gamepad_map_.clear();
+  fake_raw_game_controller_map_.clear();
+}
+
 void FakeIGamepadStatics::TriggerGamepadAddedCallbackOnRandomThread(
     const Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
         gamepad_to_add) {

@@ -145,10 +145,11 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
+  using AXPlatformNodeDelegate::GetBoundsRect;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
+      ui::AXOffscreenResult* offscreen_result) const override;
   gfx::NativeViewAccessible HitTestSync(
       int screen_physical_pixel_x,
       int screen_physical_pixel_y) const override;

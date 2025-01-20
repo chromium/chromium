@@ -149,7 +149,7 @@ void PowerHandler::TestAPI::SetAdaptiveCharging(bool enabled) {
 
 PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}
 
-PowerHandler::~PowerHandler() {}
+PowerHandler::~PowerHandler() = default;
 
 void PowerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

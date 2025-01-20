@@ -5,8 +5,11 @@
 #include "components/webauthn/android/webauthn_client_android.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/web_contents.h"

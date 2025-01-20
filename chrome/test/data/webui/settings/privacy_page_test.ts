@@ -467,7 +467,6 @@ suite(`TrackingProtectionSubpage`, function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: true,
     });
     resetRouterForTesting();
 
@@ -491,70 +490,6 @@ suite(`TrackingProtectionSubpage`, function() {
     resetRouterForTesting();
   });
 
-  test('trackingProtectionSubpageAttributes', async function() {
-    // The subpage is only in the DOM if the corresponding route is open.
-    const trackingProtectionLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#trackingProtectionLinkRow');
-    assertTrue(!!trackingProtectionLinkRow);
-    trackingProtectionLinkRow.click();
-    await flushTasks();
-
-    const trackingProtectionSubpage =
-        page.shadowRoot!.querySelector<PolymerElement>('#trackingProtection');
-    assertTrue(!!trackingProtectionSubpage);
-    assertEquals(
-        page.i18n('trackingProtectionPageTitle'),
-        trackingProtectionSubpage.getAttribute('page-title'));
-    const associatedControl =
-        trackingProtectionSubpage.get('associatedControl');
-    assertTrue(!!associatedControl);
-    assertEquals('trackingProtectionLinkRow', associatedControl.id);
-  });
-
-  test('clickTrackingProtectionRow', async function() {
-    const trackingProtectionLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#trackingProtectionLinkRow');
-    assertTrue(!!trackingProtectionLinkRow);
-    trackingProtectionLinkRow.click();
-    // Ensure UMA is logged.
-    assertEquals(
-        'Settings.TrackingProtection.OpenedFromPrivacyPage',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    // Ensure we navigate to the correct page.
-    await flushTasks();
-    assertEquals(
-        routes.TRACKING_PROTECTION, Router.getInstance().getCurrentRoute());
-  });
-});
-
-suite(`TrackingProtectionUxDisabled`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-      // Covering the case where we are in Mode B without the Tracking
-      // Protection UX.
-      is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
 
   test('cookiesSubpageAttributes', async function() {
     // The subpage is only in the DOM if the corresponding route is open.
@@ -992,8 +927,7 @@ suite('NotificationPermissionReview', function() {
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         oneElementMockData);
     await flushTasks();
-
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
 
     // Set guest mode back to false.
     loadTimeData.overrideValues({isGuest: false});
@@ -1024,88 +958,6 @@ suite('NotificationPermissionReview', function() {
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
-  });
-});
-
-// TODO(crbug.com/40267370): Remove the test once Safety Hub has been rolled out.
-suite('NotificationPermissionReviewSafetyHubDisabled', function() {
-  let page: SettingsPrivacyPageElement;
-  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
-
-  const oneElementMockData = [{
-    origin: 'www.example.com',
-    notificationInfoString: 'About 4 notifications a day',
-  }];
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-    resetRouterForTesting();
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  function createPage() {
-    page = document.createElement('settings-privacy-page');
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    await createPage();
-
-    // The UI should remain invisible even when there's an event that the
-    // notification permissions may have changed.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
-    // Set guest mode back to false.
-    loadTimeData.overrideValues({isGuest: false});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-  });
-
-  test('VisibilityWithChangingPermissionList', async function() {
-    // The element is not visible when there is nothing to review.
-    await createPage();
-    assertFalse(isChildVisible(page, 'review-notification-permissions'));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'review-notification-permissions'));
   });
 });
 

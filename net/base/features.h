@@ -5,6 +5,8 @@
 #ifndef NET_BASE_FEATURES_H_
 #define NET_BASE_FEATURES_H_
 
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 
@@ -210,8 +212,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
 // stable without issues.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
-// Changes the timeout after which unused sockets idle sockets are cleaned up.
-NET_EXPORT BASE_DECLARE_FEATURE(kNetUnusedIdleSocketTimeout);
+// Changes the interval between two search engine preconnect attempts.
+NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff
@@ -265,13 +267,6 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutTcpConnectAttemptMax;
 
-#if BUILDFLAG(ENABLE_REPORTING)
-// When enabled this feature will allow a new Reporting-Endpoints header to
-// configure reporting endpoints for report delivery. This is used to support
-// the new Document Reporting spec.
-NET_EXPORT BASE_DECLARE_FEATURE(kDocumentReporting);
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
 // When this feature is enabled, redirected requests will be considered
 // cross-site for the purpose of SameSite cookies if any redirect hop was
 // cross-site to the target URL, even if the original initiator of the
@@ -299,6 +294,18 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // When enabled, a cross-site ancestor chain bit is included in the partition
 // key in partitioned cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
+
+// When enabled, requestStorageAccessFor will require storage access permissions
+// granted by StorageAccessApi or StorageAccessHeaders to send cookies on
+// requests allowed because of requestStorageAccessFor instead of cors.
+NET_EXPORT BASE_DECLARE_FEATURE(kRequestStorageAccessNoCorsRequired);
+
+// When enabled, the Storage Access API follows the Same Origin Policy when
+// including cookies on network requests. (I.e., a cross-site cookie is only
+// included via the Storage Access API if the request's URL's origin [not site]
+// has opted into receiving cross-site cookies.)
+NET_EXPORT
+BASE_DECLARE_FEATURE(kStorageAccessApiFollowsSameOriginPolicy);
 
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
@@ -443,6 +450,25 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyExpirationFuzz;
 
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters an error indicating that the primary account is not
+// eligible (e.g., user is signed in but not eligible for IP protection) or
+// a 403 (FORBIDDEN) status code (e.g., quota exceeded).
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensNotEligibleBackoff;
+
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters a transient error, such as a failure to fetch
+// an OAuth token for a primary account or a network issue.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensTransientBackoff;
+
+// Backoff time applied when fetching tokens from the IP Protection auth
+// token server encounters a 400 (BAD REQUEST) or 401 (UNAUTHORIZED) status code
+// which suggests a bug.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensBugBackoff;
+
 // If true, only proxy traffic when the top-level site uses the http:// or
 // https:// schemes. This prevents attempts to proxy from top-level sites with
 // chrome://, chrome-extension://, or other non-standard schemes, in addition to
@@ -520,6 +546,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 // enables domain cookie shadowing protection.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 
+// Disallows cookies to have non ascii values in their name or value.
+NET_EXPORT BASE_DECLARE_FEATURE(kDisallowNonAsciiCookies);
+
 // Enables expiration duration limit (3 hours) for cookies on insecure websites.
 // This feature is a no-op unless kEnableSchemeBoundCookies is enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kTimeLimitedInsecureCookies);
@@ -532,9 +561,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 
 // Enables draft-07 version of WebTransport over HTTP/3.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
-
-// Enables Zstandard Content-Encoding support.
-NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
@@ -576,10 +602,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
 // enabled.
 NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
 
-// Enables storing connection subtype in NetworkChangeNotifierDelegateAndroid to
-// save the cost of the JNI call for future access.
-NET_EXPORT BASE_DECLARE_FEATURE(kStoreConnectionSubtype);
-
 // When enabled, all proxies in a proxy chain are partitioned by the NAK for the
 // endpoint of the connection. When disabled, proxies carrying tunnels to other
 // proxies (i.e., all proxies but the last one in the ProxyChain) are not
@@ -613,6 +635,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
 // Optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
 
+// Use the simdutf library to base64 decode data: URLs.
+NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
+
+// Further optimize parsing data: URLs.
+NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
+
 // Enables support for codepoints defined in draft-ietf-tls-tls13-pkcs1, which
 // enable RSA keys to be used with client certificates even if they do not
 // support RSA-PSS.
@@ -645,6 +673,33 @@ NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
+
+// If enabled, main frame navigation resources will be prioritized in Simple
+// Cache. So they will be less likely to be evicted.
+NET_EXPORT BASE_DECLARE_FEATURE(kSimpleCachePrioritizedCaching);
+// This is a factor by which we divide the size of an entry that has the
+// HINT_HIGH_PRIORITY flag set to prioritize it for eviction to be less likely
+// evicted.
+NET_EXPORT extern const base::FeatureParam<int>
+    kSimpleCachePrioritizedCachingPrioritizationFactor;
+// The period of time that the entry with HINT_HIGH_PRIORITY flag is considered
+// prioritized.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSimpleCachePrioritizedCachingPrioritizationPeriod;
+
+#if BUILDFLAG(USE_NSS_CERTS)
+// If enabled, use new implementation of client cert path building.
+NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
+// When enabled HSTS upgrades will only apply to top-level navigations.
+NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
+
+// Whether or not to apply No-Vary-Search processing in the HTTP disk cache.
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
+
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
+                                      kHttpCacheNoVarySearchCacheMaxEntries);
 
 }  // namespace net::features
 

@@ -155,8 +155,9 @@ bool CastSessionClientImpl::MatchesAutoJoinPolicy(
 
 void CastSessionClientImpl::OnMessage(
     PresentationConnectionMessagePtr message) {
-  if (!message->is_message())
+  if (!message->is_message()) {
     return;
+  }
 
   GetDataDecoder().ParseJson(
       message->get_message(),
@@ -316,15 +317,17 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
 
 void CastSessionClientImpl::CloseConnection(
     PresentationConnectionCloseReason close_reason) {
-  if (connection_remote_)
+  if (connection_remote_) {
     connection_remote_->DidClose(close_reason);
+  }
   TearDownPresentationConnection();
   activity_->CloseConnectionOnReceiver(client_id(), close_reason);
 }
 
 void CastSessionClientImpl::TerminateConnection() {
-  if (connection_remote_)
+  if (connection_remote_) {
     connection_remote_->DidChangeState(PresentationConnectionState::TERMINATED);
+  }
 
   TearDownPresentationConnection();
 }

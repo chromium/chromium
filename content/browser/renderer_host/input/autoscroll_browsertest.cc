@@ -51,7 +51,8 @@ class GestureScrollEventWatcher : public RenderWidgetHost::InputEventObserver {
       rwh_->RemoveInputEventObserver(this);
   }
 
-  void OnInputEventAck(blink::mojom::InputEventResultSource,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource,
                        blink::mojom::InputEventResultState,
                        const blink::WebInputEvent& event) override {
     if (event.GetType() != event_type_)

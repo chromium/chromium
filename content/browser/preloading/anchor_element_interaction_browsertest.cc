@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string_view>
 
 #include "base/run_loop.h"
@@ -121,12 +122,12 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest, MouseDownPrefetch) {
 
   auto* widget = GetWidgetHost();
   MainThreadFrameObserver(widget).Wait();
-  blink::WebMouseEvent mouse_events[] = {
+  auto mouse_events = std::to_array<blink::WebMouseEvent>({
       blink::SyntheticWebMouseEventBuilder::Build(
           blink::WebInputEvent::Type::kMouseDown, 50, 50, 0),
       blink::SyntheticWebMouseEventBuilder::Build(
           blink::WebInputEvent::Type::kMouseUp, 50, 50, 0),
-  };
+  });
   for (auto& event : mouse_events) {
     event.button = blink::WebMouseEvent::Button::kLeft;
     event.click_count = 1;

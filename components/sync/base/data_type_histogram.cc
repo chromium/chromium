@@ -13,8 +13,6 @@ namespace syncer {
 
 namespace {
 
-const char kLegacyModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
-
 const char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
 const char kDataTypeCountHistogramPrefix[] = "Sync.DataTypeCount.";
 const char kDataTypeUpdateDropHistogramPrefix[] = "Sync.DataTypeUpdateDrop.";
@@ -71,12 +69,6 @@ void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count) {
   std::string type_string = DataTypeToHistogramSuffix(data_type);
   std::string full_histogram_name = kDataTypeCountHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(full_histogram_name, count);
-
-  // TODO(crbug.com/358120886): Stop recording once alerts are switched to use
-  // Sync.DataTypeCount.
-  std::string legacy_histogram_name =
-      kLegacyModelTypeCountHistogramPrefix + type_string;
-  base::UmaHistogramCounts1M(legacy_histogram_name, count);
 }
 
 void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,

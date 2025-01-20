@@ -8,12 +8,10 @@
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
@@ -21,7 +19,6 @@
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -46,8 +43,8 @@ const std::string GetCountryCodeFromVariations() {
 // static
 PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<PersonalDataManager*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PersonalDataManager>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -57,9 +54,7 @@ PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
 }
 
 PersonalDataManagerFactory::PersonalDataManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PersonalDataManager",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PersonalDataManager") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
@@ -86,10 +81,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   AutofillImageFetcherBase* autofill_image_fetcher =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardArtImage)
-          ? AutofillImageFetcherFactory::GetForProfile(profile)
-          : nullptr;
+      AutofillImageFetcherFactory::GetForProfile(profile);
 
   return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, profile->GetPrefs(),

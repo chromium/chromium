@@ -29,9 +29,9 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
@@ -113,6 +113,10 @@ class MockAutofillClient : public TestContentAutofillClient {
               GetLastCommittedPrimaryMainFrameOrigin,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
 };
 
 class MockAutofillDriver : public TestContentAutofillDriver {
@@ -403,7 +407,7 @@ TEST_F(AddressAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   // Plus address creation can't be supported while plus address filling is
@@ -434,7 +438,7 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(controller()->GetSheetData(),
@@ -461,7 +465,7 @@ TEST_F(AddressAccessoryControllerTest,
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::make_span(profiles)));
+      .WillRepeatedly(Return(base::span(profiles)));
   controller()->RefreshSuggestions();
 
   EXPECT_EQ(
@@ -579,6 +583,9 @@ TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {
               ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                mojom::ActionPersistence::kFill, field_id,
                                plus_address));
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
+                                     plus_addresses::hats::SurveyType::
+                                         kFilledPlusAddressViaManualFallack));
   controller()->OnFillingTriggered(
       field_id, AccessorySheetField::Builder()
                     .SetSuggestionType(AccessorySuggestionType::kPlusAddress)

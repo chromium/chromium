@@ -391,17 +391,6 @@ GLuint TestGLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM(
   return texture_id;
 }
 
-void TestGLES2Interface::ResizeCHROMIUM(GLuint width,
-                                        GLuint height,
-                                        float device_scale,
-                                        GLcolorSpace color_space,
-                                        GLboolean has_alpha) {
-  reshape_called_ = true;
-  width_ = width;
-  height_ = height;
-  scale_factor_ = device_scale;
-}
-
 void TestGLES2Interface::LoseContextCHROMIUM(GLenum current, GLenum other) {
   if (context_lost_)
     return;

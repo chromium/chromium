@@ -31,8 +31,8 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
 
-/* Version number of package */
-#cmakedefine VERSION "@VERSION@"
+/* System configuration directory (/etc) */
+#cmakedefine XML_SYSCONFDIR "@XML_SYSCONFDIR@"
 
 /* TLS specifier */
 #cmakedefine XML_THREAD_LOCAL @XML_THREAD_LOCAL@

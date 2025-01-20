@@ -7,8 +7,8 @@
 
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace safe_browsing {
@@ -16,11 +16,10 @@ namespace safe_browsing {
 class ChromeSafeBrowsingUI;
 
 class ChromeSafeBrowsingUIConfig
-    : public content::DefaultWebUIConfig<ChromeSafeBrowsingUI> {
+    : public content::DefaultInternalWebUIConfig<ChromeSafeBrowsingUI> {
  public:
   ChromeSafeBrowsingUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           safe_browsing::kChromeUISafeBrowsingHost) {}
+      : DefaultInternalWebUIConfig(safe_browsing::kChromeUISafeBrowsingHost) {}
 };
 
 class ChromeSafeBrowsingUI : public SafeBrowsingUI {

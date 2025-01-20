@@ -6,6 +6,7 @@
 
 #include <functional>
 
+#include "base/time/clock.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/browser_process.h"

@@ -12,6 +12,7 @@ import android.content.res.AssetManager;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -27,7 +28,7 @@ public class AwAssetReader {
     private static final String TAG = "AwAssetReader";
 
     @CalledByNative
-    public static long[] open(String fileName) {
+    public static long[] open(@JniType("std::string") String fileName) {
         AssetFileDescriptor afd = null;
         try {
             // Use the embedding app's Context so that we can read assets properly.

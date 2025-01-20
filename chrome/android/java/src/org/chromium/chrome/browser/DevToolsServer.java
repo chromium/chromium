@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -71,7 +72,8 @@ public class DevToolsServer {
 
     @NativeMethods
     interface Natives {
-        long initRemoteDebugging(DevToolsServer caller, String socketNamePrefix);
+        long initRemoteDebugging(
+                DevToolsServer caller, @JniType("std::string") String socketNamePrefix);
 
         void destroyRemoteDebugging(DevToolsServer caller, long devToolsServer);
 

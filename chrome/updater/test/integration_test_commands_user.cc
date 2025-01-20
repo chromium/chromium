@@ -55,20 +55,22 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::Install(updater_scope_, switches);
   }
 
-  void InstallUpdaterAndApp(
-      const std::string& app_id,
-      const bool is_silent_install,
-      const std::string& tag,
-      const std::string& child_window_text_to_find,
-      const bool always_launch_cmd,
-      const bool verify_app_logo_loaded,
-      const bool expect_success,
-      const bool wait_for_the_installer,
-      const base::Value::List& additional_switches) const override {
+  void InstallUpdaterAndApp(const std::string& app_id,
+                            const bool is_silent_install,
+                            const std::string& tag,
+                            const std::string& child_window_text_to_find,
+                            const bool always_launch_cmd,
+                            const bool verify_app_logo_loaded,
+                            const bool expect_success,
+                            const bool wait_for_the_installer,
+                            const int expected_exit_code,
+                            const base::Value::List& additional_switches,
+                            const base::FilePath& updater_path) const override {
     updater::test::InstallUpdaterAndApp(
         updater_scope_, app_id, is_silent_install, tag,
         child_window_text_to_find, always_launch_cmd, verify_app_logo_loaded,
-        expect_success, wait_for_the_installer, additional_switches);
+        expect_success, wait_for_the_installer, expected_exit_code,
+        additional_switches, updater_path);
   }
 
   void ExpectInstalled() const override {
@@ -101,8 +103,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void SetGroupPolicies(const base::Value::Dict& values) const override {
-    updater::test::SetGroupPolicies(values);
+  void SetDictPolicies(const base::Value::Dict& values) const override {
+    updater::test::SetDictPolicies(values);
   }
 
   void SetPlatformPolicies(const base::Value::Dict& values) const override {
@@ -148,16 +150,16 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                                              to_version, updater_version);
   }
 
-  void ExpectUpdateSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const override {
+  void ExpectUpdateSequence(ScopedServer* test_server,
+                            const std::string& app_id,
+                            const std::string& install_data_index,
+                            UpdateService::Priority priority,
+                            const base::Version& from_version,
+                            const base::Version& to_version,
+                            bool do_fault_injection,
+                            bool skip_download,
+                            const base::Version& updater_version,
+                            const std::string& event_regex) const override {
     updater::test::ExpectUpdateSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
         from_version, to_version, do_fault_injection, skip_download,
@@ -176,20 +178,20 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
         from_version, to_version);
   }
 
-  void ExpectInstallSequence(
-      ScopedServer* test_server,
-      const std::string& app_id,
-      const std::string& install_data_index,
-      UpdateService::Priority priority,
-      const base::Version& from_version,
-      const base::Version& to_version,
-      bool do_fault_injection,
-      bool skip_download,
-      const base::Version& updater_version) const override {
+  void ExpectInstallSequence(ScopedServer* test_server,
+                             const std::string& app_id,
+                             const std::string& install_data_index,
+                             UpdateService::Priority priority,
+                             const base::Version& from_version,
+                             const base::Version& to_version,
+                             bool do_fault_injection,
+                             bool skip_download,
+                             const base::Version& updater_version,
+                             const std::string& event_regex) const override {
     updater::test::ExpectInstallSequence(
         updater_scope_, test_server, app_id, install_data_index, priority,
         from_version, to_version, do_fault_injection, skip_download,
-        updater_version);
+        updater_version, event_regex);
   }
 
   void ExpectEnterpriseCompanionAppOTAInstallSequence(
@@ -293,6 +295,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void CheckForUpdate(const std::string& app_id) const override {
     updater::test::CheckForUpdate(updater_scope_, app_id);
+  }
+
+  void ExpectCheckForUpdateOppositeScopeFails(
+      const std::string& app_id) const override {
+    updater::test::ExpectCheckForUpdateOppositeScopeFails(updater_scope_,
+                                                          app_id);
   }
 
   void Update(const std::string& app_id,

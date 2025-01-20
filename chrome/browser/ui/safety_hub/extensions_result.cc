@@ -43,9 +43,8 @@ SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 
 // static
 std::optional<std::unique_ptr<SafetyHubService::Result>>
-SafetyHubExtensionsResult::GetResult(
-    Profile* profile,
-    bool only_unpublished_extensions = false) {
+SafetyHubExtensionsResult::GetResult(Profile* profile,
+                                     bool only_unpublished_extensions = false) {
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   std::set<extensions::ExtensionId> triggering_extensions;

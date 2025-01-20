@@ -8,22 +8,17 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class ShareExtensionService;
 
 // Singleton that creates the ShareExtensionService and associates that service
 // with ProfileIOS.
-class ShareExtensionServiceFactory : public BrowserStateKeyedServiceFactory {
+class ShareExtensionServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ShareExtensionService* GetForProfile(ProfileIOS* profile);
-  static ShareExtensionService* GetForProfileIfExists(ProfileIOS* profile);
   static ShareExtensionServiceFactory* GetInstance();
-
-  ShareExtensionServiceFactory(const ShareExtensionServiceFactory&) = delete;
-  ShareExtensionServiceFactory& operator=(const ShareExtensionServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<ShareExtensionServiceFactory>;
@@ -33,8 +28,6 @@ class ShareExtensionServiceFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

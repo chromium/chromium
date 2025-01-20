@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface.Proxy;
 import org.chromium.mojo.system.DataPipe;
 import org.chromium.mojo.system.Handle;
@@ -20,6 +22,7 @@ import java.nio.charset.Charset;
  * A Decoder is a helper class for deserializing a mojo struct. It enables deserialization of basic
  * types from a {@link Message} object at a given offset into it's byte buffer.
  */
+@NullMarked
 public class Decoder {
 
     /** Helper class to validate the decoded message. */
@@ -266,7 +269,7 @@ public class Decoder {
      * Deserializes a pointer at the given offset. Returns a Decoder suitable to decode the content
      * of the pointer.
      */
-    public Decoder readPointer(int offset, boolean nullable) {
+    public @Nullable Decoder readPointer(int offset, boolean nullable) {
         int basePosition = mBaseOffset + offset;
         long pointerOffset = readLong(offset);
         if (pointerOffset == 0) {
@@ -282,7 +285,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of boolean at the given offset. */
-    public boolean[] readBooleans(int offset, int arrayNullability, int expectedLength) {
+    public boolean @Nullable [] readBooleans(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -304,7 +307,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Booleans at the given offset. */
-    public Boolean[] readBooleanNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Boolean @Nullable [] readBooleanNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -315,7 +319,7 @@ public class Decoder {
         boolean[] hasValueBitfield = readBitfield(1, si.elementsOrVersion, d.mMessage.getData());
         boolean[] values = readBitfield(1, si.elementsOrVersion, d.mMessage.getData());
 
-        Boolean[] result = new Boolean[si.elementsOrVersion];
+        @Nullable Boolean[] result = new Boolean[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -327,7 +331,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of bytes at the given offset. */
-    public byte[] readBytes(int offset, int arrayNullability, int expectedLength) {
+    public byte @Nullable [] readBytes(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -340,7 +344,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Bytes at the given offset. */
-    public Byte[] readByteNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Byte @Nullable [] readByteNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -352,7 +357,7 @@ public class Decoder {
         byte[] values = new byte[si.elementsOrVersion];
         d.mMessage.getData().get(values);
 
-        Byte[] result = new Byte[si.elementsOrVersion];
+        @Nullable Byte[] result = new Byte[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -364,7 +369,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of shorts at the given offset. */
-    public short[] readShorts(int offset, int arrayNullability, int expectedLength) {
+    public short @Nullable [] readShorts(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -377,7 +382,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Shorts at the given offset. */
-    public Short[] readShortNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Short @Nullable [] readShortNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -389,7 +395,7 @@ public class Decoder {
         short[] values = new short[si.elementsOrVersion];
         d.mMessage.getData().asShortBuffer().get(values);
 
-        Short[] result = new Short[si.elementsOrVersion];
+        @Nullable Short[] result = new Short[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -401,7 +407,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of ints at the given offset. */
-    public int[] readInts(int offset, int arrayNullability, int expectedLength) {
+    public int @Nullable [] readInts(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -414,7 +420,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Integers at the given offset. */
-    public Integer[] readIntNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Integer @Nullable [] readIntNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -426,7 +433,7 @@ public class Decoder {
         int[] values = new int[si.elementsOrVersion];
         d.mMessage.getData().asIntBuffer().get(values);
 
-        Integer[] result = new Integer[si.elementsOrVersion];
+        @Nullable Integer[] result = new Integer[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -438,7 +445,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of floats at the given offset. */
-    public float[] readFloats(int offset, int arrayNullability, int expectedLength) {
+    public float @Nullable [] readFloats(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -451,7 +458,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Integers at the given offset. */
-    public Float[] readFloatNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Float @Nullable [] readFloatNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -463,7 +471,7 @@ public class Decoder {
         float[] values = new float[si.elementsOrVersion];
         d.mMessage.getData().asFloatBuffer().get(values);
 
-        Float[] result = new Float[si.elementsOrVersion];
+        @Nullable Float[] result = new Float[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -475,7 +483,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of longs at the given offset. */
-    public long[] readLongs(int offset, int arrayNullability, int expectedLength) {
+    public long @Nullable [] readLongs(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -488,7 +496,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Longs at the given offset. */
-    public Long[] readLongNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Long @Nullable [] readLongNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -500,7 +509,7 @@ public class Decoder {
         long[] values = new long[si.elementsOrVersion];
         d.mMessage.getData().asLongBuffer().get(values);
 
-        Long[] result = new Long[si.elementsOrVersion];
+        @Nullable Long[] result = new Long[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -512,7 +521,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of doubles at the given offset. */
-    public double[] readDoubles(int offset, int arrayNullability, int expectedLength) {
+    public double @Nullable [] readDoubles(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -525,7 +534,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of Doubles at the given offset. */
-    public Double[] readDoubleNullables(int offset, int arrayNullability, int expectedLength) {
+    public @Nullable Double @Nullable [] readDoubleNullables(
+            int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -536,7 +546,7 @@ public class Decoder {
         boolean[] hasValueBitfield = readBitfield(8, si.elementsOrVersion, d.mMessage.getData());
         double[] values = new double[si.elementsOrVersion];
         d.mMessage.getData().asDoubleBuffer().get(values);
-        Double[] result = new Double[si.elementsOrVersion];
+        @Nullable Double[] result = new Double[si.elementsOrVersion];
         for (int i = 0; i < si.elementsOrVersion; ++i) {
             if (hasValueBitfield[i]) {
                 result[i] = values[i];
@@ -591,7 +601,7 @@ public class Decoder {
      *
      * @return a proxy to the service.
      */
-    public <P extends Proxy> P readServiceInterface(
+    public <P extends Proxy> @Nullable P readServiceInterface(
             int offset, boolean nullable, Interface.Manager<?, P> manager) {
         MessagePipeHandle handle = readMessagePipeHandle(offset, nullable);
         if (!handle.isValid()) {
@@ -602,7 +612,7 @@ public class Decoder {
     }
 
     /** Deserializes a |InterfaceRequest| at the given offset. */
-    public <I extends Interface> InterfaceRequest<I> readInterfaceRequest(
+    public <I extends Interface> @Nullable InterfaceRequest<I> readInterfaceRequest(
             int offset, boolean nullable) {
         MessagePipeHandle handle = readMessagePipeHandle(offset, nullable);
         if (handle == null) {
@@ -612,19 +622,19 @@ public class Decoder {
     }
 
     /** Deserializes an associated interface at the given offset. Not yet supported. */
-    public AssociatedInterfaceNotSupported readAssociatedServiceInterfaceNotSupported(
+    public @Nullable AssociatedInterfaceNotSupported readAssociatedServiceInterfaceNotSupported(
             int offset, boolean nullable) {
         return null;
     }
 
     /** Deserializes an associated interface request at the given offset. Not yet supported. */
-    public AssociatedInterfaceRequestNotSupported readAssociatedInterfaceRequestNotSupported(
-            int offset, boolean nullable) {
+    public @Nullable AssociatedInterfaceRequestNotSupported
+            readAssociatedInterfaceRequestNotSupported(int offset, boolean nullable) {
         return null;
     }
 
     /** Deserializes a string at the given offset. */
-    public String readString(int offset, boolean nullable) {
+    public @Nullable String readString(int offset, boolean nullable) {
         final int arrayNullability = nullable ? BindingsHelper.ARRAY_NULLABLE : 0;
         byte[] bytes = readBytes(offset, arrayNullability, BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
         if (bytes == null) {
@@ -634,7 +644,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |Handle| at the given offset. */
-    public Handle[] readHandles(int offset, int arrayNullability, int expectedLength) {
+    public Handle @Nullable [] readHandles(int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -651,7 +661,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |UntypedHandle| at the given offset. */
-    public UntypedHandle[] readUntypedHandles(
+    public UntypedHandle @Nullable [] readUntypedHandles(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -669,7 +679,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |ConsumerHandle| at the given offset. */
-    public DataPipe.ConsumerHandle[] readConsumerHandles(
+    public DataPipe.ConsumerHandle @Nullable [] readConsumerHandles(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -687,7 +697,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |ProducerHandle| at the given offset. */
-    public DataPipe.ProducerHandle[] readProducerHandles(
+    public DataPipe.ProducerHandle @Nullable [] readProducerHandles(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -705,7 +715,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |MessagePipeHandle| at the given offset. */
-    public MessagePipeHandle[] readMessagePipeHandles(
+    public MessagePipeHandle @Nullable [] readMessagePipeHandles(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -723,7 +733,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |SharedBufferHandle| at the given offset. */
-    public SharedBufferHandle[] readSharedBufferHandles(
+    public SharedBufferHandle @Nullable [] readSharedBufferHandles(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -741,7 +751,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |ServiceHandle| at the given offset. */
-    public <S extends Interface, P extends Proxy> S[] readServiceInterfaces(
+    public <S extends Interface, P extends Proxy> @Nullable S @Nullable [] readServiceInterfaces(
             int offset, int arrayNullability, int expectedLength, Interface.Manager<S, P> manager) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -750,7 +760,7 @@ public class Decoder {
         DataHeader si =
                 d.readDataHeaderForArray(
                         BindingsHelper.SERIALIZED_INTERFACE_SIZE, expectedLength, false);
-        S[] result = manager.buildArray(si.elementsOrVersion);
+        @Nullable S[] result = manager.buildArray(si.elementsOrVersion);
         for (int i = 0; i < result.length; ++i) {
             // This cast is necessary because java 6 doesn't handle wildcard correctly when using
             // Manager<S, ? extends S>
@@ -768,7 +778,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of |InterfaceRequest| at the given offset. */
-    public <I extends Interface> InterfaceRequest<I>[] readInterfaceRequests(
+    public <I extends Interface> @Nullable InterfaceRequest<I> @Nullable [] readInterfaceRequests(
             int offset, int arrayNullability, int expectedLength) {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
@@ -776,6 +786,7 @@ public class Decoder {
         }
         DataHeader si = d.readDataHeaderForArray(4, expectedLength, false);
         @SuppressWarnings("unchecked")
+        @Nullable
         InterfaceRequest<I>[] result = new InterfaceRequest[si.elementsOrVersion];
         for (int i = 0; i < result.length; ++i) {
             result[i] =
@@ -787,7 +798,7 @@ public class Decoder {
     }
 
     /** Deserializes an array of associated interfaces at the given offset. Not yet supported. */
-    public AssociatedInterfaceNotSupported[] readAssociatedServiceInterfaceNotSupporteds(
+    public AssociatedInterfaceNotSupported @Nullable [] readAssociatedServiceInterfaceNotSupporteds(
             int offset, int arrayNullability, int expectedLength) {
         return null;
     }
@@ -796,8 +807,9 @@ public class Decoder {
      * Deserializes an array of associated interface requests at the given offset. Not yet
      * supported.
      */
-    public AssociatedInterfaceRequestNotSupported[] readAssociatedInterfaceRequestNotSupporteds(
-            int offset, int arrayNullability, int expectedLength) {
+    public AssociatedInterfaceRequestNotSupported @Nullable []
+            readAssociatedInterfaceRequestNotSupporteds(
+                    int offset, int arrayNullability, int expectedLength) {
         return null;
     }
 

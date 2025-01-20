@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -35,15 +34,15 @@ import java.util.List;
 public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> {
     public static final ViewSpec TAB_LIST_EDITOR_LAYOUT = viewSpec(withId(R.id.selectable_list));
     public static final ViewSpec TAB_LIST_EDITOR_RECYCLER_VIEW =
-            viewSpec(
-                    allOf(
-                            isDescendantOfA(withId(R.id.selectable_list)),
-                            withId(R.id.tab_list_recycler_view)));
+            TAB_LIST_EDITOR_LAYOUT.descendant(withId(R.id.tab_list_recycler_view));
 
     private final List<Integer> mTabIdsSelected;
+    private final List<List<Integer>> mTabGroupsSelected;
 
-    public TabSwitcherListEditorFacility(List<Integer> tabIdsSelected) {
+    public TabSwitcherListEditorFacility(
+            List<Integer> tabIdsSelected, List<List<Integer>> tabGroupsSelected) {
         mTabIdsSelected = tabIdsSelected;
+        mTabGroupsSelected = tabGroupsSelected;
     }
 
     @Override
@@ -66,12 +65,20 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
         }
     }
 
-    public List<Integer> getTabIdsSelected() {
-        return mTabIdsSelected;
+    public List<Integer> getAllTabIdsSelected() {
+        List<Integer> allTabIds = new ArrayList<>(mTabIdsSelected);
+        for (List<Integer> tabGroupIds : mTabGroupsSelected) {
+            allTabIds.addAll(tabGroupIds);
+        }
+        return allTabIds;
     }
 
     public int getNumTabsSelected() {
-        return mTabIdsSelected.size();
+        int totalTabs = mTabIdsSelected.size();
+        for (List<Integer> tabGroupIds : mTabGroupsSelected) {
+            totalTabs += tabGroupIds.size();
+        }
+        return totalTabs;
     }
 
     /** Presses back to exit the facility. */
@@ -85,11 +92,23 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
 
     /** Add a tab in the grid to the selection. */
     public TabSwitcherListEditorFacility addTabToSelection(int index, int tabId) {
-        List<Integer> newTabIdsList = new ArrayList<>(mTabIdsSelected);
-        newTabIdsList.add(tabId);
+        List<Integer> newTabIdsSelected = new ArrayList<>(mTabIdsSelected);
+        newTabIdsSelected.add(tabId);
         return mHostStation.swapFacilitySync(
                 this,
-                new TabSwitcherListEditorFacility(newTabIdsList),
+                new TabSwitcherListEditorFacility(newTabIdsSelected, mTabGroupsSelected),
+                () ->
+                        ViewActionOnDescendant.performOnRecyclerViewNthItem(
+                                TAB_LIST_EDITOR_RECYCLER_VIEW.getViewMatcher(), index, click()));
+    }
+
+    /** Add a tab group in the grid to the selection. */
+    public TabSwitcherListEditorFacility addTabGroupToSelection(int index, List<Integer> tabIds) {
+        List<List<Integer>> newTabGroupsSelected = new ArrayList<>(mTabGroupsSelected);
+        newTabGroupsSelected.add(tabIds);
+        return mHostStation.swapFacilitySync(
+                this,
+                new TabSwitcherListEditorFacility(mTabIdsSelected, newTabGroupsSelected),
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItem(
                                 TAB_LIST_EDITOR_RECYCLER_VIEW.getViewMatcher(), index, click()));
@@ -99,5 +118,13 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     public TabListEditorAppMenu openAppMenuWithEditor() {
         return mHostStation.enterFacilitySync(
                 new TabListEditorAppMenu(this), HubBaseStation.HUB_MENU_BUTTON::click);
+    }
+
+    /**
+     * Returns whether any group is selected. Relevant because a group does not get created in this
+     * case, but rather all tabs get moved to one of the selected groups.
+     */
+    public boolean isAnyGroupSelected() {
+        return !mTabGroupsSelected.isEmpty();
     }
 }

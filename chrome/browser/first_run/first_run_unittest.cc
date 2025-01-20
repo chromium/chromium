@@ -37,21 +37,14 @@ base::FilePath GetSentinelFilePath() {
 }  // namespace
 
 class FirstRunTest : public testing::Test {
- public:
-  FirstRunTest(const FirstRunTest&) = delete;
-  FirstRunTest& operator=(const FirstRunTest&) = delete;
-
  protected:
-  FirstRunTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
-  ~FirstRunTest() override {}
-
   void TearDown() override {
     first_run::ResetCachedSentinelDataForTesting();
     Test::TearDown();
   }
 
  private:
-  base::ScopedPathOverride user_data_dir_override_;
+  base::ScopedPathOverride user_data_dir_override_{chrome::DIR_USER_DATA};
 };
 
 TEST_F(FirstRunTest, SetupInitialPrefsFromInstallPrefs_NoVariationsSeed) {

@@ -371,9 +371,9 @@ export class RecordingSession {
       this.currentSodaSession.unsubscribe();
       // TODO: b/369277555 - Investigate why SODA does not convert all results
       // to final.
+      this.sodaEventTransformer.finalizeTokens();
       this.transcription.value = this.sodaEventTransformer.getTranscription(
         this.currentSodaSession.language,
-        /* shouldFinalizeTranscription= */ true,
       );
       this.currentSodaSession = null;
     });

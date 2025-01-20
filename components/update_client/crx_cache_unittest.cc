@@ -36,10 +36,6 @@ base::FilePath BuildCrxFilePathForTest(const base::FilePath& dir_path,
 }  // namespace
 
 class CrxCacheTest : public testing::Test {
- public:
-  CrxCacheTest() = default;
-  ~CrxCacheTest() override = default;
-
  private:
   base::test::TaskEnvironment env_;
 };

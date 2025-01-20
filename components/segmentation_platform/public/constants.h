@@ -112,6 +112,10 @@ const char kComposePromotionUmaName[] = "ComposePromotion";
 
 const char kEphemeralHomeModuleBackendKey[] = "ephemeral_home_module_backend";
 
+// The key is used to decide whether the user would use FedCM.
+const char kFedCmUserKey[] = "fedcm_user";
+const char kFedCmUserUmaName[] = "FedCmUser";
+
 // SEGMENTATION_CLIENT_KEYS_END
 
 // Please keep the UMA names for keys in sync with SegmentationKey variant in
@@ -202,12 +206,14 @@ const char kSingleTab[] = "SingleTab";
 const char kPriceChange[] = "PriceChange";
 const char kTabResumptionForAndroidHome[] = "TabResumption";
 const char kSafetyHub[] = "SafetyHub";
+const char kAuxiliarySearch[] = "AuxiliarySearch";
 
 // Input Context keys for freshness for Android Home modules.
 const char kSingleTabFreshness[] = "single_tab_freshness";
 const char kPriceChangeFreshness[] = "price_change_freshness";
 const char kTabResumptionForAndroidHomeFreshness[] = "tab_resumption_freshness";
 const char kSafetyHubFreshness[] = "safety_hub_freshness";
+const char kAuxiliarySearchFreshness[] = "auxiliary_search_freshness";
 
 // Labels for IOS modules for ranking.
 const char kMostVisitedTiles[] = "MostVisitedTiles";

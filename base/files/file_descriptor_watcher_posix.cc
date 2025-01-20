@@ -182,8 +182,9 @@ FileDescriptorWatcher::Controller::~Controller() {
 
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
-    if (watcher_)
+    if (watcher_) {
       delete watcher_;
+    }
   } else {
     // Synchronously wait until |watcher_| is deleted on the MessagePumpForIO
     // thread. This ensures that the file descriptor is never accessed after
@@ -244,8 +245,9 @@ void FileDescriptorWatcher::Controller::RunCallback() {
   callback_copy.Run();
 
   // If |this| wasn't deleted, re-enable the watch.
-  if (weak_this)
+  if (weak_this) {
     StartWatching();
+  }
 }
 
 FileDescriptorWatcher::FileDescriptorWatcher(

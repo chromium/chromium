@@ -50,7 +50,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/RadioButtonGroupSafeBrowsingPreference.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentBase.java",
-    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentHelper.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragment.java",
   ]
   deps = [
@@ -114,6 +113,7 @@ android_library("javatests") {
     "//components/policy/android:policy_java_test_support",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

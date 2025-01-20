@@ -11,43 +11,38 @@ build_webui("build") {
   grd_prefix = "privacy_sandbox"
 
   static_files = [
-    "privacy_sandbox_dialog.html",
-    "privacy_sandbox_combined_dialog.html",
-    "privacy_sandbox_privacy_policy.html",
-    "privacy_sandbox_notice_dialog.html",
-    "privacy_sandbox_notice_restricted_dialog.html",
-    "images/privacy_sandbox_confirmation_banner.svg",
-    "images/privacy_sandbox_confirmation_banner_dark.svg",
-
-    "images/topics_banner.svg",
-    "images/topics_banner_dark.svg",
+    "images/chrome_logo.svg",
     "images/fledge_banner.svg",
     "images/fledge_banner_dark.svg",
-    "images/chrome_logo.svg",
+    "images/topics_banner.svg",
+    "images/topics_banner_dark.svg",
+    "privacy_sandbox_combined_dialog.html",
+    "privacy_sandbox_notice_dialog.html",
+    "privacy_sandbox_notice_restricted_dialog.html",
+    "privacy_sandbox_privacy_policy.html",
   ]
 
   web_component_files = [
-    "privacy_sandbox_dialog_app.ts",
     "privacy_sandbox_combined_dialog_app.ts",
+    "privacy_sandbox_dialog_consent_step.ts",
+    "privacy_sandbox_dialog_learn_more.ts",
+    "privacy_sandbox_dialog_notice_step.ts",
     "privacy_sandbox_notice_dialog_app.ts",
     "privacy_sandbox_notice_restricted_dialog_app.ts",
-    "privacy_sandbox_dialog_consent_step.ts",
-    "privacy_sandbox_dialog_notice_step.ts",
-    "privacy_sandbox_dialog_learn_more.ts",
   ]
 
   non_web_component_files = [
     "privacy_sandbox_dialog_browser_proxy.ts",
-    "privacy_sandbox_dialog_resize_mixin.ts",
     "privacy_sandbox_dialog_mixin.ts",
+    "privacy_sandbox_dialog_resize_mixin.ts",
     "privacy_sandbox_privacy_policy_dialog.html.ts",
     "privacy_sandbox_privacy_policy_dialog.ts",
   ]
 
   css_files = [
+    "privacy_sandbox_privacy_policy_dialog.css",
     "shared_style.css",
     "shared_vars.css",
-    "privacy_sandbox_privacy_policy_dialog.css",
   ]
 
   ts_composite = true

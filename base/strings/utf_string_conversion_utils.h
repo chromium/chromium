@@ -107,12 +107,12 @@ inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
 // string, and reserves that amount of space.  We assume that the input
 // character types are unsigned, which will be true for UTF-16 and -32 on our
 // systems.
-template<typename CHAR>
+template <typename CHAR>
 void PrepareForUTF8Output(const CHAR* src, size_t src_len, std::string* output);
 
 // Prepares an output buffer (containing either UTF-16 or -32 data) given some
 // UTF-8 input that will be converted to it.  See PrepareForUTF8Output().
-template<typename STRING>
+template <typename STRING>
 void PrepareForUTF16Or32Output(const char* src, size_t src_len, STRING* output);
 
 }  // namespace base

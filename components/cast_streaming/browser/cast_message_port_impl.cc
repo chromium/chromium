@@ -225,8 +225,9 @@ void CastMessagePortImpl::PostMessage(const std::string& sender_id,
                                       const std::string& message_namespace,
                                       const std::string& message) {
   DVLOG(3) << __func__;
-  if (!message_port_)
+  if (!message_port_) {
     return;
+  }
 
   DVLOG(3) << "Received Open Screen message. SenderId: " << sender_id
            << ". Namespace: " << message_namespace << ". Message: " << message;

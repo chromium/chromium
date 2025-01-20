@@ -194,6 +194,8 @@ XR_DEFINE_HANDLE(XrLightEstimatorANDROID)
 #define XR_TYPE_LIGHT_ESTIMATE_ANDROID ((XrStructureType)1000700002U)
 #define XR_TYPE_DIRECTIONAL_LIGHT_ANDROID ((XrStructureType)1000700003U)
 #define XR_TYPE_SPHERICAL_HARMONICS_ANDROID ((XrStructureType)1000700004U)
+#define XR_TYPE_SYSTEM_LIGHT_ESTIMATION_PROPERTIES_ANDROID \
+  ((XrStructureType)1000700006U)
 #define XR_TYPE_AMBIENT_LIGHT_ANDROID ((XrStructureType)1000700005U)
 #define XR_OBJECT_TYPE_LIGHT_ESTIMATOR_ANDROID ((XrObjectType)1000700000U)
 
@@ -208,6 +210,13 @@ typedef enum XrSphericalHarmonicsKindANDROID {
   XR_SPHERICAL_HARMONICS_KIND_AMBIENT_ANDROID = 1,
   XR_SPHERICAL_HARMONICS_KIND_MAX_ENUM_ANDROID = 0x7FFFFFFF
 } XrSphericalHarmonicsKindANDROID;
+
+typedef struct XrSystemLightEstimationPropertiesANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  XrBool32 supportsLightEstimation;
+} XrSystemLightEstimationPropertiesANDROID;
+
 typedef struct XrLightEstimatorCreateInfoANDROID {
   XrStructureType type;
   void* XR_MAY_ALIAS next;

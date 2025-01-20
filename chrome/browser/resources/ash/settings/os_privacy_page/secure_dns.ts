@@ -19,10 +19,8 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
-import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
-import './secure_dns_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
@@ -32,8 +30,6 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
 import {getTemplate} from './secure_dns.html.js';
 import type {SecureDnsInputElement} from './secure_dns_input.js';
@@ -119,33 +115,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
        */
       secureDnsInputValue_: String,
 
-      showDisableDnsDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-        },
-        readOnly: true,
-      },
-
-      isDeprecateDnsDialogEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isDeprecateDnsDialogEnabled');
-        },
-        readOnly: true,
-      },
-
-      shouldShowDialogWhenDisablingDns_: {
-        type: Boolean,
-        computed: 'computeShouldShowDialogWhenDisablingDns_(' +
-            'isDeprecateDnsDialogEnabled_, isRevampWayfindingEnabled_)',
-      },
-
       /**
        * Boolean to make network default description visible if user selects
        * Automatic option in DNS dropdown.
@@ -179,10 +148,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
-  private showDisableDnsDialog_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
-  private isDeprecateDnsDialogEnabled_: boolean;
-  private shouldShowDialogWhenDisablingDns_: boolean;
   private showNetworkDefaultDescription_: boolean;
   private showPrivacyPolicyDescription_: boolean;
   private networkDefaultAriaDescribedBy_: string|null;
@@ -206,15 +171,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           'secure-dns-setting-changed',
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));
-
-      // This event will only get dispatched from the DNS dialog. If the flag
-      // kOsSettingsDeprecateDnsDialog is enabled, we don't have to listen for
-      // the event.
-      if (this.shouldShowDialogWhenDisablingDns_) {
-        this.addEventListener(
-            'dns-settings-invalid-custom-to-off-mode',
-            () => this.onSecureDnsPrefChangedToFalse_());
-      }
     });
   }
 
@@ -519,52 +475,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       return this.resolverOptions_[index];
     }
     return undefined;
-  }
-
-  private onDnsToggleClick_(): void {
-    const secureDnsToggle =
-        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#secureDnsToggle');
-    assert(secureDnsToggle);
-    if (secureDnsToggle.checked) {
-      // Always allow turning on the toggle.
-      this.turnOnDnsToggle_();
-      return;
-    }
-
-    // Do not update the underlying pref value to false. Instead if the user is
-    // attempting to turn off the toggle, present the warning dialog.
-    this.showDisableDnsDialog_ = true;
-    return;
-  }
-
-  private onDisableDnsDialogClosed_(): void {
-    // Sync the toggle's value to its pref value.
-    const secureDnsToggle =
-        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#secureDnsToggle');
-    assert(secureDnsToggle);
-    secureDnsToggle.resetToPrefValue();
-
-    this.showDisableDnsDialog_ = false;
-  }
-
-  private getDnsRowIcon_(): string {
-    return this.isRevampWayfindingEnabled_ ? 'os-settings:privacy-secure-dns' :
-                                             '';
-  }
-
-  /**
-   * The DNS Dialog has been deprecated, so we will only show the dialog when
-   * the feature flag kOsSettingsDeprecateDnsDialog is disabled and revamp flag
-   * is enabled.
-   *
-   * Returns whether we should show the DNS dialog when the user toggles DNS
-   * from enabled to disabled.
-   */
-  private computeShouldShowDialogWhenDisablingDns_(): boolean {
-    return !this.isDeprecateDnsDialogEnabled_ &&
-        this.isRevampWayfindingEnabled_;
   }
 }
 

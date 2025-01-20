@@ -5,16 +5,15 @@
 #ifndef MOJO_CORE_CHANNEL_POSIX_H_
 #define MOJO_CORE_CHANNEL_POSIX_H_
 
-#include "mojo/core/channel.h"
-
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/message_loop/message_pump_for_io.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "mojo/core/channel.h"
 
 namespace mojo {
 namespace core {
@@ -23,7 +22,7 @@ class MessageView;
 
 class ChannelPosix : public Channel,
                      public base::CurrentThread::DestructionObserver,
-                     public base::MessagePumpForIO::FdWatcher {
+                     public base::IOWatcher::FdWatcher {
  public:
   ChannelPosix(Delegate* delegate,
                ConnectionParams connection_params,
@@ -78,10 +77,9 @@ class ChannelPosix : public Channel,
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override;
 
-  // base::MessagePumpForIO::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override
-      LOCKS_EXCLUDED(write_lock_);
+  // base::IOWatcher::FdWatcher:
+  void OnFdReadable(int fd) override;
+  void OnFdWritable(int fd) override LOCKS_EXCLUDED(write_lock_);
 
   // Attempts to write a message directly to the channel. If the full message
   // cannot be written, it's queued and a wait is initiated to write the message
@@ -118,9 +116,9 @@ class ChannelPosix : public Channel,
   // These watchers must only be accessed on the IO thread. These are locked for
   // allowing concurrent nullptr checking the unique_ptr but not dereferencing
   // outside of the `io_task_runner_`.
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_
+  std::unique_ptr<base::IOWatcher::FdWatch> read_watcher_
       GUARDED_BY(write_lock_);
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_
+  std::unique_ptr<base::IOWatcher::FdWatch> write_watcher_
       GUARDED_BY(write_lock_);
 
   base::circular_deque<base::ScopedFD> incoming_fds_;

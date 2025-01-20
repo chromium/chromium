@@ -30,6 +30,7 @@ export type {{struct.name}} = {{typemapped_structs[struct].typename}};
 export type {{struct.name}} = {{struct.name}}MojoType;
 {%- endif %}
 
+{%- set struct_type = typemapped_structs[struct].typename if struct in typemapped_structs else struct.name + 'MojoType' %}
 {%- if struct in typemapped_structs %}
 {%   set typemap = typemapped_structs[struct] %}
 const converterFor{{struct.name}}: {{struct.name}}TypeMapper<{{typemap.typename}}>
@@ -38,30 +39,13 @@ const converterFor{{struct.name}}: {{struct.name}}TypeMapper<{{typemap.typename}
 {#- TODO(ffred): there's a lot of dups with mojo type decl, refactor and move #}
 {# them into macros #}
 const adapterFor{{struct.name}} = new mojo.internal.TypemapAdapter(
-  (mappedType: {{typemap.typename}}): {{struct.name}}MojoType => {
-      return {
-{%-   for packed_field in struct.packed.packed_fields %}
-{%-     if packed_field|is_nullable_value_kind_packed_field %}
-{%-       if packed_field|is_primary_nullable_value_kind_packed_field %}
-{%-         set original_field = packed_field.original_field %}
-{%-         set name = original_field.name %}
-{%-         set kind = original_field.kind %}
-        {{name}}: converterFor{{struct.name}}.{{name}}(mappedType),
-{%-      endif %}
-{%-    else %}
-  {%- set f = packed_field.field %}
-        {{f.name}}: converterFor{{struct.name}}.{{f.name}}(mappedType),
-{%-    endif %}
-{%-   endfor %}
-      };
-  },
   (mojoType: {{struct.name}}MojoType) =>
       converterFor{{struct.name}}.convert(new {{struct.name}}DataView(mojoType)),
 );
 
-mojo.internal.TypemappedStruct<{{typemap.typename}}, {{struct.name}}MojoType> (
+mojo.internal.TypemappedStruct<{{struct_type}}, {{struct.name}}MojoType> (
 {%- else %}
-mojo.internal.Struct(
+mojo.internal.Struct<{{struct_type}}>(
 {%- endif %}
     {{struct.name}}Spec.$,
     '{{struct.name}}',
@@ -70,7 +54,9 @@ mojo.internal.Struct(
 {%- endif %}
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
-      mojo.internal.StructField(
+
+{%-   set field_type = packed_field.field.kind|ts_type %}
+      mojo.internal.StructField<{{struct_type}}, {{field_type}}>(
         '{{packed_field.field.name}}', {{packed_field.offset}},
         {% if packed_field.field.kind|is_bool_kind %}{{packed_field.bit}}
         {%- else %}0{% endif %},
@@ -93,7 +79,15 @@ mojo.internal.Struct(
           isPrimary: false,
 {%-     endif %}
           originalFieldName: "{{name}}",
-        }
+        },
+{%-   else %}
+        undefined,
+{%-   endif %}
+{%-   if struct in typemapped_structs %}
+{%-     set typemap = typemapped_structs[struct] %}
+        ((value: {{typemap.typename}}) => converterFor{{struct.name}}.{{packed_field.field.name}}(value)),
+{%-   else %}
+        undefined,
 {%-   endif %}
     ),
 {%- endfor %}

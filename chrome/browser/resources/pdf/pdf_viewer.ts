@@ -211,6 +211,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       pdfInk2Enabled_: {type: Boolean},
       // </if>
 
+      pdfUseShowSaveFilePicker_: {type: Boolean},
       printingEnabled_: {type: Boolean},
       showPasswordDialog_: {type: Boolean},
       showPropertiesDialog_: {type: Boolean},
@@ -268,6 +269,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   protected pdfInk2Enabled_: boolean = false;
   // </if>
+  private pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   protected printingEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
@@ -376,6 +378,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     } else {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
+
+    // Listen for hash updates from the browser.
+    chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
+        this.handleMaybeUpdateViewport_.bind(this));
 
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
@@ -735,6 +741,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+
+    // Text fragment directives should be handled after the document is set to
+    // finished loading.
+    if (progress === 100) {
+      this.maybeRenderTextDirectiveHighlights_();
+    }
   }
 
   protected onErrorDialog_() {
@@ -791,6 +803,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_pdf_ink2">
     this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
     // </if>
+    this.pdfUseShowSaveFilePicker_ =
+        loadTimeData.getBoolean('pdfUseShowSaveFilePicker');
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;
     assert(presetZoomFactors.length > 0);
@@ -923,11 +937,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.hasEdits_ = true;
         return;
       case 'setHasSearchifyText':
-        // TODO(crbug.com/360803943): Add test for metrics.
         this.hasSearchifyText_ = true;
         return;
       case 'showSearchifyInProgress':
-        // TODO(crbug.com/360803943): Add test.
         if ((data as unknown as {
               show: boolean,
             }).show) {
@@ -1007,6 +1019,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private handleNavigate_(url: string, disposition: WindowOpenDisposition):
       void {
     this.navigator_!.navigate(url, disposition);
+  }
+
+  /** Handles updating viewport params based on the `newUrl` provided. */
+  private handleMaybeUpdateViewport_(newUrl: string) {
+    assert(this.paramsParser);
+    this.paramsParser.getViewportFromUrlParams(newUrl).then(
+        params => this.handleUrlParams(params));
   }
 
   // <if expr="enable_pdf_ink2">
@@ -1091,6 +1110,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     const blob = new Blob(dataArray);
     const fileName = this.attachments_[index].name;
+    // TODO(crbug.com/373852607): Update to `showSaveFilePicker`.
     chrome.fileSystem.chooseEntry(
         {type: 'saveFile', suggestedName: fileName},
         (entry?: FileSystemFileEntry) => {
@@ -1135,6 +1155,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       saveMode = SaveRequestType.ANNOTATION;
     } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
+    } else if (this.hasSearchifyText_) {
+      saveMode = SaveRequestType.SEARCHIFIED;
     } else {
       saveMode = SaveRequestType.ORIGINAL;
     }
@@ -1255,10 +1277,27 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // </if>
 
   /**
+   * Sends a message to the PDF plugin to highlight the provided text
+   * directives if any.
+   */
+  private maybeRenderTextDirectiveHighlights_() {
+    assert(this.paramsParser);
+    const textDirectives = this.paramsParser.getTextFragments(this.originalUrl);
+    if (textDirectives.length > 0) {
+      this.pluginController_.highlightTextFragments(textDirectives);
+    }
+  }
+
+  /**
    * Saves the current PDF document to disk.
    */
   private async save_(requestType: SaveRequestType) {
     this.recordSaveMetrics_(requestType);
+
+    // TODO(crbug.com/382610226): Update for `SaveRequestType.SEARCHIFIED` to
+    // allow users to select saving original PDF or text extracted one.
+    // To do so, the save type should be asked first, and then content would be
+    // fetched based on the selected type.
 
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
@@ -1303,34 +1342,50 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // Create blob before callback to avoid race condition.
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
-    chrome.fileSystem.chooseEntry(
-        {
-          type: 'saveFile',
-          accepts: [{description: '*.pdf', extensions: ['pdf']}],
+    // TODO(crbug.com/373852607): When  OOPIF PDF is enabled, cross origin
+    // checks block the request for `showSaveFilePicker`. Fix the issue by
+    // allow-listing the request from PDF Viewer.
+    if (!this.pdfOopifEnabled && this.pdfUseShowSaveFilePicker_) {
+      try {
+        const fileHandle = await window.showSaveFilePicker({
           suggestedName: fileName,
-        },
-        (entry?: FileSystemFileEntry) => {
-          if (chrome.runtime.lastError) {
-            if (chrome.runtime.lastError.message !== 'User cancelled') {
-              console.error(
-                  'chrome.fileSystem.chooseEntry failed: ' +
-                  chrome.runtime.lastError.message);
-            }
-            return;
-          }
-          entry!.createWriter((writer: FileWriter) => {
-            writer.write(blob);
-            // <if expr="enable_ink or enable_pdf_ink2">
-            // Unblock closing the window now that the user has saved
-            // successfully.
-            this.setShowBeforeUnloadDialog_(false);
-            // </if>
-            // <if expr="enable_pdf_ink2">
-            this.hasSavedEdits_ =
-                this.hasSavedEdits_ || requestType === SaveRequestType.EDITED;
-            // </if>
-          });
+          types: [{
+            description: 'PDF Files',
+            accept: {'application/pdf': ['.pdf']},
+          }],
         });
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        this.onSaveSuccessful_(requestType);
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('window.showSaveFilePicker failed: ' + error);
+        }
+      }
+    } else {
+      chrome.fileSystem.chooseEntry(
+          {
+            type: 'saveFile',
+            accepts: [{description: '*.pdf', extensions: ['pdf']}],
+            suggestedName: fileName,
+          },
+          (entry?: FileSystemFileEntry) => {
+            if (chrome.runtime.lastError) {
+              if (chrome.runtime.lastError.message !== 'User cancelled') {
+                console.error(
+                    'chrome.fileSystem.chooseEntry failed: ' +
+                    chrome.runtime.lastError.message);
+              }
+              return;
+            }
+            entry!.createWriter((writer: FileWriter) => {
+              writer.write(blob);
+              this.onSaveSuccessful_(requestType);
+            });
+          });
+    }
 
     // <if expr="enable_pdf_ink2">
     // Ink2 doesn't need to exit annotation mode after save.
@@ -1342,6 +1397,21 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_ink">
     // Saving in Annotation mode is destructive: crbug.com/919364
     this.exitAnnotationMode_();
+    // </if>
+  }
+
+  /**
+   * Performs required tasks after a successful save.
+   */
+  private onSaveSuccessful_(requestType: SaveRequestType) {
+    // <if expr="enable_ink or enable_pdf_ink2">
+    // Unblock closing the window now that the user has saved
+    // successfully.
+    this.setShowBeforeUnloadDialog_(false);
+    // </if>
+    // <if expr="enable_pdf_ink2">
+    this.hasSavedEdits_ =
+        this.hasSavedEdits_ || requestType === SaveRequestType.EDITED;
     // </if>
   }
 
@@ -1372,6 +1442,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         break;
       case SaveRequestType.EDITED:
         record(UserAction.SAVE_EDITED);
+        break;
+      case SaveRequestType.SEARCHIFIED:
+        // TODO(crbug.com/382610226): Update metric after the code is updated to
+        // give users the option to save searchified or original PDF, and add
+        // test.
+        record(UserAction.SAVE_SEARCHIFIED);
         break;
     }
   }
@@ -1475,6 +1551,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 declare global {
   interface HTMLElementTagNameMap {
     'pdf-viewer': PdfViewerElement;
+  }
+  interface Window {
+    showSaveFilePicker(opts: unknown): Promise<FileSystemFileHandle>;
   }
 }
 

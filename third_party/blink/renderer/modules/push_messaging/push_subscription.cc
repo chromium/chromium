@@ -124,7 +124,7 @@ ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
   return promise;
 }
 
-ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
+ScriptObject PushSubscription::toJSONForBinding(ScriptState* script_state) {
   DCHECK(p256dh_);
 
   V8ObjectBuilder result(script_state);
@@ -142,7 +142,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
 
   result.Add("keys", keys);
 
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PushSubscription::Trace(Visitor* visitor) const {

@@ -36,15 +36,28 @@ class AXTreeFormatterMacBrowserTest : public ContentBrowserTest {
   AXTreeFormatterMacBrowserTest() = default;
   ~AXTreeFormatterMacBrowserTest() override = default;
 
+  // The tests should run against the external accessibility tree, similar to
+  // other content browser accessibility tests, such as accessibility dump tree
+  // tests. However, certain tests cannot currently be run against the external
+  // tree due to test infrastructure and accessibility API limitations. For such
+  // tests, continue using the internal accessibility tree, which provides
+  // richer accessibility information, such as deserialized text markers.
+  enum class AXTreeType {
+    kExternalAXTree = 0,
+    kInternalAXTree = 1,
+  };
+
   // Checks the formatted accessible tree for the given data URL.
   void TestFormat(const char* url,
                   const std::vector<ui::AXPropertyFilter>& property_filters,
                   const std::vector<ui::AXNodeFilter>& node_filters,
-                  const char* expected) const;
+                  const char* expected,
+                  AXTreeType tree_type = AXTreeType::kExternalAXTree) const;
 
   void TestFormat(const char* url,
                   const std::vector<const char*>& filters,
-                  const char* expected) const;
+                  const char* expected,
+                  AXTreeType tree_type = AXTreeType::kExternalAXTree) const;
 
   void TestScript(const char* url,
                   const std::vector<const char*>& scripts,
@@ -68,7 +81,8 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<ui::AXPropertyFilter>& property_filters,
     const std::vector<ui::AXNodeFilter>& node_filters,
-    const char* expected) const {
+    const char* expected,
+    AXTreeType tree_type) const {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
@@ -92,19 +106,24 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
   ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root);
 
-  std::string actual = formatter->Format(root);
+  std::string actual =
+      tree_type == AXTreeType::kExternalAXTree
+          ? formatter->Format({static_cast<gfx::AcceleratedWidget>(getpid()),
+                               ui::AXTreeSelector::ActiveTab})
+          : formatter->Format(root);
   EXPECT_EQ(actual, expected);
 }
 
 void AXTreeFormatterMacBrowserTest::TestFormat(
     const char* url,
     const std::vector<const char*>& filters,
-    const char* expected) const {
+    const char* expected,
+    AXTreeType tree_type) const {
   std::vector<ui::AXPropertyFilter> property_filters;
   for (const char* filter : filters) {
     property_filters.emplace_back(filter, ALLOW_EMPTY);
   }
-  TestFormat(url, property_filters, {}, expected);
+  TestFormat(url, property_filters, {}, expected, tree_type);
 }
 
 void AXTreeFormatterMacBrowserTest::TestScript(
@@ -195,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeAXTextMarker) {
              R"~~(AXWebArea
 ++AXGroup
 ++++AXStaticText AXStartTextMarker={:1, 0, down}
-)~~");
+)~~",
+             AXTreeType::kInternalAXTree);
 }
 
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
@@ -206,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                     </script>)~~",
              {":3;AXSelectedTextMarkerRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXStaticText AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:2, -1, down}}
-)~~");
+++++AXStaticText AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:2, -99, down}}
+)~~",
+             AXTreeType::kInternalAXTree);
 }
 
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeNSRange) {
@@ -216,10 +237,11 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeNSRange) {
                       let input = document.getElementById("input");
                       input.select();
                     </script>)~~",
-             {":3;AXSelectedTextRange=*"}, R"~~(AXWebArea
+             {":3;accessibilitySelectedTextRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXTextField AXSelectedTextRange={loc: 0, len: 8}
-)~~");
+++++AXTextField accessibilitySelectedTextRange={loc: 0, len: 8}
+)~~",
+             AXTreeType::kInternalAXTree);
 }
 
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
@@ -261,9 +283,15 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 // NULL values are filtered by the dump tree formatter.
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesIntArrayNilValue) {
-  TestFormat(R"~~(<table role="grid"></table>)~~",
-             {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
+  TestFormat(R"~~(<table role="grid"><tr><td>cell</td></tr></table>)~~",
+             {"AXCellForColumnAndRow([0, 1])=*"}, R"~~(AXWebArea
 ++AXTable
+++++AXRow
+++++++AXCell
+++++++++AXStaticText
+++++AXColumn
+++++++AXCell
+++++++++AXStaticText
 ++++AXGroup
 )~~");
 }
@@ -347,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
              R"~~(AXWebArea AXIndexForTextMarker({:2, 1, down})=1
 ++AXGroup
 ++++AXStaticText
-)~~");
+)~~",
+             AXTreeType::kInternalAXTree);
 }
 
 // Disabled because of flakiness: crbug.com/1342138.
@@ -372,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
              R"~~(AXWebArea
 ++AXGroup AXStringForTextMarkerRange({anchor: {:2, 1, down}, focus: {:2, 3, down}})='ex'
 ++++AXStaticText
-)~~");
+)~~",
+             AXTreeType::kInternalAXTree);
 }
 
 // Disabled because of flakiness: crbug.com/1342138.

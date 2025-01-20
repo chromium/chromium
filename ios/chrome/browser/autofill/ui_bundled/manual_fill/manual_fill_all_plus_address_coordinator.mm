@@ -57,10 +57,11 @@
   CHECK(plusAddressService);
 
   _plusAddressMediator = [[ManualFillPlusAddressMediator alloc]
-      initWithFaviconLoader:faviconLoader
-         plusAddressService:plusAddressService
-                        URL:URL
-             isOffTheRecord:profile->IsOffTheRecord()];
+        initWithFaviconLoader:faviconLoader
+           plusAddressService:plusAddressService
+                          URL:URL
+               isOffTheRecord:profile->IsOffTheRecord()
+      isAddressManualFallback:self.isAddressManualFallback];
 
   // Fetch all plus addresses before setting the consumer.
   [_plusAddressMediator fetchAllPlusAddresses];
@@ -125,7 +126,7 @@
   NOTREACHED();
 }
 
-- (void)openAllPlusAddressList {
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
   NOTREACHED();
 }
 

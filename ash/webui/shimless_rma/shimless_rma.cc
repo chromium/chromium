@@ -31,7 +31,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -489,9 +489,8 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(
       "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
-  const auto resources =
-      base::make_span(kAshShimlessRmaResources, kAshShimlessRmaResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, kAshShimlessRmaResources,
+                       IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
 
   AddShimlessRmaStrings(html_source);
   AddDevicePlaceholderStrings(html_source);

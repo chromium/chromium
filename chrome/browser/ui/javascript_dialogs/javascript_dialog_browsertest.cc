@@ -81,11 +81,11 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // Two tabs, one render process.
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::WebContentsAddedObserver new_wc_observer;
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   tab1->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"window.open('about:blank');", base::NullCallback(),
       content::ISOLATED_WORLD_ID_GLOBAL);
-  content::WebContents* tab2 = new_wc_observer.GetWebContents();
+  content::WebContents* tab2 = tab_added_waiter.Wait();
   ASSERT_NE(tab1, tab2);
   ASSERT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
             tab2->GetPrimaryMainFrame()->GetProcess());
@@ -121,9 +121,12 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
 
   // A subframe shows a dialog.
   std::string dialog_url = "data:text/html,<script>alert(\"hi\");</script>";
-  std::string script = "var iframe = document.createElement('iframe');"
-                       "iframe.src = '" + dialog_url + "';"
-                       "document.body.appendChild(iframe);";
+  std::string script =
+      "var iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      dialog_url +
+      "';"
+      "document.body.appendChild(iframe);";
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());

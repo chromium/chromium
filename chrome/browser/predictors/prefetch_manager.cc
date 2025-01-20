@@ -133,14 +133,11 @@ struct PrefetchInfo {
 struct PrefetchJob {
   PrefetchJob(PrefetchRequest prefetch_request, PrefetchInfo& info)
       : url(prefetch_request.url),
-        network_anonymization_key(
-            std::move(prefetch_request.network_anonymization_key)),
         destination(prefetch_request.destination),
         creation_time(base::TimeTicks::Now()),
         info(info.weak_factory.GetWeakPtr()) {
     DCHECK(url.is_valid());
     DCHECK(url.SchemeIsHTTPOrHTTPS());
-    DCHECK(network_anonymization_key.IsFullyPopulated());
     info.OnJobCreated();
   }
 
@@ -153,7 +150,6 @@ struct PrefetchJob {
   PrefetchJob& operator=(const PrefetchJob&) = delete;
 
   GURL url;
-  net::NetworkAnonymizationKey network_anonymization_key;
   network::mojom::RequestDestination destination;
   base::TimeTicks creation_time;
 

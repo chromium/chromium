@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_BREAK_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_BREAK_TOKEN_H_
 
@@ -259,7 +254,8 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
  private:
   const base::span<const Member<const BreakToken>> ChildBreakTokensInternal()
       const {
-    return base::make_span(child_break_tokens_, const_num_children_);
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    return UNSAFE_TODO(base::span(child_break_tokens_, const_num_children_));
   }
 
   Member<BlockBreakTokenData> data_;

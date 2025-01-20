@@ -147,7 +147,7 @@ std::optional<gfx::Rect> FakeTextInputClient::GetProximateCharacterBounds(
 }
 
 std::optional<size_t> FakeTextInputClient::GetProximateCharacterIndexFromPoint(
-    const gfx::Point& point,
+    const gfx::Point& screen_point_in_dips,
     IndexFromPointFlags flags) const {
   return std::nullopt;
 }

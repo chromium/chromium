@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
@@ -31,16 +30,9 @@
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/video_capture.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "media/capture/capture_switches.h"
-#include "services/video_capture/lacros/device_factory_adapter_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "media/capture/capture_switches.h"
@@ -74,7 +66,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
     return gpu_io_task_runner_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InjectGpuDependencies(
       mojo::PendingRemote<mojom::AcceleratorFactory> accelerator_factory_info) {
     DCHECK(gpu_io_task_runner_->RunsTasksInCurrentSequence());
@@ -90,7 +82,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       return;
     accelerator_factory_->CreateJpegDecodeAccelerator(std::move(receiver));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   // Task runner for operating |accelerator_factory_| and
@@ -101,9 +93,9 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
   // operated on.
   scoped_refptr<base::SequencedTaskRunner> gpu_io_task_runner_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   mojo::Remote<mojom::AcceleratorFactory> accelerator_factory_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<GpuDependenciesContext> weak_factory_for_gpu_io_thread_{
       this};
@@ -138,11 +130,11 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
           .SetGpuMemoryBufferManager(nullptr);
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(nullptr);
       media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
           nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       context_provider_.reset();
     }
   }
@@ -168,10 +160,10 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
         nullptr);
     media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(nullptr);
     media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (!viz_gpu_) {
       return;
@@ -190,7 +182,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     scoped_refptr<viz::ContextProvider> context_provider =
         base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
             std::move(gpu_channel_host), 0 /* stream ID */,
-            gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
+            gpu::SchedulingPriority::kNormal,
             GURL(std::string("chrome://gpu/VideoCapture")),
             false /* automatic flushes */, false /* support locking */,
             gpu::SharedMemoryLimits::ForMailboxContext(),
@@ -211,12 +203,12 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
         viz_gpu_->GetGpuMemoryBufferManager());
     media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     media::VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
         viz_gpu_->GetGpuChannel());
     media::VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
         viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // Task runner for operating |viz_gpu_| and
@@ -228,25 +220,6 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShouldUseVCDFromAsh() {
-  // LacrosService might be null in unit tests.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service) {
-    return false;
-  }
-  if (!lacros_service
-           ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
-    return false;
-  }
-  // Fake VCD on Lacros side can be used only when using shared memory. Other
-  // than this use case, try to use VCD on Ash side if possible.
-  auto useLacrosFakeVCD = media::ShouldUseFakeVideoCaptureDeviceFactory() &&
-                          !switches::IsVideoCaptureUseGpuMemoryBufferEnabled();
-  return !useLacrosFakeVCD;
-}
-#endif
 
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
@@ -261,7 +234,7 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
 #if BUILDFLAG(IS_MAC)
     InitializeDeviceMonitor();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     media::CameraAppDeviceBridgeImpl::GetInstance()->SetUITaskRunner(
         ui_task_runner_);
 #endif
@@ -274,10 +247,10 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
 }
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   factory_receivers_ash_.Clear();
   device_factory_ash_adapter_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   device_factory_.reset();
 
   if (gpu_dependencies_context_) {
@@ -286,7 +259,7 @@ VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void VideoCaptureServiceImpl::InjectGpuDependencies(
     mojo::PendingRemote<mojom::AcceleratorFactory> accelerator_factory) {
   LazyInitializeGpuDependenciesContext();
@@ -309,7 +282,7 @@ void VideoCaptureServiceImpl::BindVideoCaptureDeviceFactory(
   factory_receivers_ash_.Add(device_factory_ash_adapter_.get(),
                              std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void VideoCaptureServiceImpl::ConnectToVideoSourceProvider(
     mojo::PendingReceiver<mojom::VideoSourceProvider> receiver) {
@@ -329,17 +302,12 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
 
+    // Gpu channel is enabled on all platforms except Lacros.
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-#else
-  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     if (!viz_gpu_context_provider_) {
       viz_gpu_context_provider_ =
           std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
     }
-  }
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 }
 
@@ -361,7 +329,7 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(media_device_factory));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
       std::make_unique<DeviceFactoryImpl>(
           std::move(video_capture_system),
@@ -372,46 +340,10 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   device_factory_ash_adapter_ =
       std::make_unique<crosapi::VideoCaptureDeviceFactoryAsh>(
           device_factory_.get());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Even though Lacros uses GPU memory by default, the camera stack in
-  // Lacros cannot access GPU memory. Therefore, most of requests are
-  // forwarded to Ash-chrome. Requests will not be forwarded to
-  // Ash-chrome only when any of the following
-  //   1. Video capture system can not communicate with crosapi.
-  //   2. Use fake/file camera with shared memory. This is for CQ tests.
-  if (ShouldUseVCDFromAsh()) {
-    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
-      LOG(WARNING) << "Remember to add --use-fake-device-for-media-stream to "
-                      "/etc/chrome_dev.conf to use fake/file camera.";
-    }
-    mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
-        device_factory_ash;
-    chromeos::LacrosService::Get()->BindVideoCaptureDeviceFactory(
-        device_factory_ash.InitWithNewPipeAndPassReceiver());
-    device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
-        std::make_unique<DeviceFactoryAdapterLacros>(
-            std::move(device_factory_ash),
-            // Unretained(this) is safe, because |this| owns |device_factory_|
-            // and |device_factory_| owns the |DeviceFactoryAdapterLacros|
-            // instance.
-            base::BindOnce(
-                &VideoCaptureServiceImpl::OnDisconnectedFromVCDFactoryAsh,
-                base::Unretained(this))));
-  } else {
-    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
-      VLOG(1) << "Use fake device factory with shared memory in Lacros-Chrome";
-    } else {
-      LOG(WARNING)
-          << "Connected to an older version of ash. Use device factory in "
-             "Lacros-Chrome which is backed by Linux VCD instead of CrOS VCD.";
-    }
-    device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
-        std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system)));
-  }
 #else
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
       std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeVideoSourceProvider() {
@@ -466,14 +398,5 @@ void VideoCaptureServiceImpl::SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu) {
   viz_gpu_ = std::move(viz_gpu);
 }
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void VideoCaptureServiceImpl::OnDisconnectedFromVCDFactoryAsh() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  video_source_provider_.reset();
-  device_factory_.reset();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace video_capture

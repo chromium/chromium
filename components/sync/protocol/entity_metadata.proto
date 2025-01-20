@@ -7,16 +7,15 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-
-option optimize_for = LITE_RUNTIME;
-
 package sync_pb;
 
 import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+option optimize_for = LITE_RUNTIME;
 
 // Sync proto to store entity metadata in data type storage.
 message EntityMetadata {
@@ -95,8 +94,19 @@ message EntityMetadata {
   // types.
   // Introduced in M124.
   message CollaborationMetadata {
+    message Attribution {
+      // Obfuscated Gaia ID of the user.
+      optional string obfuscated_gaia_id = 1;
+    }
+
     // Collaboration ID which the current entity belongs to.
     optional string collaboration_id = 1;
+
+    // Information about when the specifics was created.
+    optional Attribution creation_attribution = 2;
+
+    // Information about when the specifics was last updated.
+    optional Attribution last_update_attribution = 3;
   }
   optional CollaborationMetadata collaboration = 15;
 

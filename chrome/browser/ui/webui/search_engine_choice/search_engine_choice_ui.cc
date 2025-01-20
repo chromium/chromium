@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
@@ -21,7 +16,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/search_engine_choice_resources.h"
@@ -36,6 +30,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 std::string GetChoiceListJSON(
@@ -76,7 +71,6 @@ bool SearchEngineChoiceUIConfig::IsWebUIEnabled(
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
       profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))) {
-
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISearchEngineChoiceHost);
@@ -138,9 +132,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       search_engine_choice_service->IsProfileEligibleForDseGuestPropagation());
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSearchEngineChoiceResources,
-                      kSearchEngineChoiceResourcesSize),
+      source, kSearchEngineChoiceResources,
       IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
 }
 

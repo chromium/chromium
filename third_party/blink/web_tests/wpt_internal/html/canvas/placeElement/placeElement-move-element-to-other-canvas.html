@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() placed elements that are moved to another canvas disappear.</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <link rel="match" href="placeElement-ref.html">
+  <!-- TODO(crbug.com/382294240): 2 pixels overflow the bounding box. -->
+  <meta name="fuzzy" content="maxDifference=0-40; totalPixels=0-2">
+  <style>
+    .fallback {
+      background-color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="mainCanvas">
+    <div class="fallback" id="fallback">Placed Element</div>
+    <div class="fallback" id="movedElement">Moved Element</div>
+  </canvas>
+  <canvas id="otherCanvas"></div>
+</body>
+
+<script>
+  const canvas = document.getElementById("mainCanvas");
+  canvas.height = 300;
+  const ctx = canvas.getContext("2d");
+  ctx.placeElement(document.getElementById("fallback"), 0, 0);
+  const movedElement = document.getElementById("movedElement");
+  ctx.placeElement(movedElement, 0, 150);
+
+  const otherCanvas = document.getElementById("otherCanvas");
+  function moveElementToOtherCanvas() {
+    // Placed elements that have been moved to another canvas should disapppear.
+    otherCanvas.appendChild(movedElement);
+  }
+  requestAnimationFrame(moveElementToOtherCanvas);
+</script>

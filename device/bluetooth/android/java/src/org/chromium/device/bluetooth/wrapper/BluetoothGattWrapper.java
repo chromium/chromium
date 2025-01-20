@@ -7,10 +7,13 @@ package org.chromium.device.bluetooth.wrapper;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattService;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Wraps android.bluetooth.BluetoothGatt. */
+@NullMarked
 public class BluetoothGattWrapper {
     private final BluetoothGatt mGatt;
     private final BluetoothDeviceWrapper mDeviceWrapper;

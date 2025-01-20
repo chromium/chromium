@@ -54,12 +54,12 @@ class FlexibleRoleTestView : public View {
   METADATA_HEADER(FlexibleRoleTestView, View)
 
  public:
-  explicit FlexibleRoleTestView(ax::mojom::Role role) : role_(role) {}
+  explicit FlexibleRoleTestView(ax::mojom::Role role) {
+    GetViewAccessibility().SetRole(role);
+  }
 
   FlexibleRoleTestView(const FlexibleRoleTestView&) = delete;
   FlexibleRoleTestView& operator=(const FlexibleRoleTestView&) = delete;
-
-  void set_role(ax::mojom::Role role) { role_ = role; }
 
   // Add a child view and resize to fit the child.
   void FitBoundsToNewChild(View* view) {
@@ -70,19 +70,12 @@ class FlexibleRoleTestView : public View {
 
   bool mouse_was_pressed() const { return mouse_was_pressed_; }
 
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    View::GetAccessibleNodeData(node_data);
-    node_data->role = role_;
-  }
-
   bool OnMousePressed(const ui::MouseEvent& event) override {
     mouse_was_pressed_ = true;
     return false;
   }
 
  private:
-  ax::mojom::Role role_;
   bool mouse_was_pressed_ = false;
 };
 
@@ -325,7 +318,7 @@ TEST_F(AXNativeWidgetMacTest, ParentAttribute) {
   EXPECT_NSEQ(NSAccessibilityGroupRole, ax_parent.accessibilityRole);
 
   // Test an ignored role parent is skipped in favor of the grandparent.
-  parent->set_role(ax::mojom::Role::kNone);
+  parent->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
   ASSERT_NSNE(nil, AXParentOf(ax_child));
   EXPECT_NSEQ(NSAccessibilityGroupRole, AXParentOf(ax_child).accessibilityRole);
 }
@@ -724,9 +717,8 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
       AXObjectHandlesSelector(ax_node, @selector(setAccessibilityValue:)));
   EXPECT_NSEQ(NSAccessibilityTextFieldRole, ax_node.accessibilityRole);
 
-  NSString* kShownValue =
-      @"•"
-      @"••••••••••••••••";
+  NSString* kShownValue = @"•"
+                          @"••••••••••••••••";
   // Sanity check.
   EXPECT_EQ(static_cast<NSUInteger>(kTestStringLength), [kShownValue length]);
   EXPECT_NSEQ(kShownValue, ax_node.accessibilityValue);

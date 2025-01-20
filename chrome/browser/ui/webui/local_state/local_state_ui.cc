@@ -86,5 +86,4 @@ LocalStateUI::LocalStateUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<LocalStateUIHandler>());
 }
 
-LocalStateUI::~LocalStateUI() {
-}
+LocalStateUI::~LocalStateUI() = default;

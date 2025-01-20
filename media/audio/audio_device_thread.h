@@ -50,6 +50,8 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
     // Called if the socket closes outside of destruction.
     virtual void OnSocketError() = 0;
 
+    virtual bool WillConfirmReadsViaShmem() const;
+
     base::TimeDelta buffer_duration() const {
       return audio_parameters_.GetBufferDuration();
     }
@@ -99,6 +101,9 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   const char* thread_name_;
   base::CancelableSyncSocket socket_;
   base::PlatformThreadHandle thread_handle_;
+
+  // False if callback_->WillConfirmReadsViaShmem() returned true.
+  const bool send_socket_messages_;
 };
 
 }  // namespace media.

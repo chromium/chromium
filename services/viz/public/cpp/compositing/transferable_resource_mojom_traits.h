@@ -14,6 +14,7 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
+#include "skia/public/mojom/surface_origin_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
@@ -44,7 +45,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.size;
   }
 
-  static viz::MemoryBufferId memory_buffer_id(
+  static gpu::Mailbox memory_buffer_id(
       const viz::TransferableResource& resource) {
     return resource.memory_buffer_id();
   }
@@ -111,26 +112,12 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.ycbcr_info;
   }
 
+  static GrSurfaceOrigin origin(const viz::TransferableResource& resource) {
+    return resource.origin;
+  }
+
   static bool Read(viz::mojom::TransferableResourceDataView data,
                    viz::TransferableResource* out);
-};
-
-template <>
-struct UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId> {
-  static viz::mojom::MemoryBufferIdDataView::Tag GetTag(
-      const viz::MemoryBufferId& memory_buffer_id);
-
-  static gpu::Mailbox mailbox(const viz::MemoryBufferId& memory_buffer_id) {
-    return absl::get<gpu::Mailbox>(memory_buffer_id);
-  }
-
-  static viz::SharedBitmapId shared_bitmap_id(
-      const viz::MemoryBufferId& memory_buffer_id) {
-    return absl::get<viz::SharedBitmapId>(memory_buffer_id);
-  }
-
-  static bool Read(viz::mojom::MemoryBufferIdDataView memory_buffer_id,
-                   viz::MemoryBufferId* out);
 };
 
 }  // namespace mojo

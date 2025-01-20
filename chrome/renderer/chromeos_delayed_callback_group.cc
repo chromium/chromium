@@ -17,7 +17,7 @@ DelayedCallbackGroup::CallbackEntry::CallbackEntry(
       callback_task_runner_(std::move(callback_task_runner)),
       expiration_time_(expiration_time) {}
 
-DelayedCallbackGroup::CallbackEntry::~CallbackEntry() {}
+DelayedCallbackGroup::CallbackEntry::~CallbackEntry() = default;
 
 DelayedCallbackGroup::DelayedCallbackGroup(
     base::TimeDelta expiration_delay,

@@ -7,7 +7,6 @@
  * certificates.
  */
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_entry.js';
 import './certificate_shared.css.js';
 

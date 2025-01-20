@@ -635,9 +635,10 @@ WebAuthenticationProxyServiceFactory::GetForBrowserContext(
           ->GetServiceForBrowserContext(context, true));
 }
 
-KeyedService* WebAuthenticationProxyServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebAuthenticationProxyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new WebAuthenticationProxyService(context);
+  return std::make_unique<WebAuthenticationProxyService>(context);
 }
 
 }  // namespace extensions

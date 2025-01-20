@@ -9,12 +9,13 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {UserAnnotationsManagerProxyImpl} from '../autofill_page/user_annotations_manager_proxy.js';
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './ai_page.html.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName} from './constants.js';
@@ -25,9 +26,9 @@ export interface SettingsAiPageElement {
   };
 }
 
-const SettingsAiPageElementBase =
-    RouteObserverMixin(PrefsMixin(BaseMixin(PolymerElement)));
-
+// BaseMixin is needed to populate the associatedControl field for search in
+// subpages, see crbug.com/378927854.
+const SettingsAiPageElementBase = PrefsMixin(BaseMixin(PolymerElement));
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
     return 'settings-ai-page';
@@ -42,6 +43,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       enableAiSettingsPageRefresh_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
+      showAutofillAIControl_: {
+        type: Boolean,
+        value: false,
       },
 
       showComposeControl_: {
@@ -90,6 +96,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
           }
 
+          if (routes.AUTOFILL_AI) {
+            map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
+          }
+
           return map;
         },
       },
@@ -107,6 +117,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private enableAiSettingsPageRefresh_: boolean;
+  private showAutofillAIControl_: boolean;
   private showComposeControl_: boolean;
   private showCompareControl_: boolean;
   private showHistorySearchControl_: boolean;
@@ -117,14 +128,23 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override currentRouteChanged() {
+  override async connectedCallback() {
+    super.connectedCallback();
+    await this.setShowAutofillAiControl_();
+    this.maybeLogVisibilityMetrics_();
+  }
+
+  private maybeLogVisibilityMetrics_() {
     // Only record metrics when the user first navigates to the main AI page.
     if (!this.shouldRecordMetrics_ || !this.enableAiSettingsPageRefresh_ ||
         Router.getInstance().getCurrentRoute() !== routes.AI) {
       return;
     }
-
     this.shouldRecordMetrics_ = false;
+
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.AutofillAI',
+        this.showAutofillAIControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.HistorySearch',
         this.showHistorySearchControl_);
@@ -140,6 +160,23 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         this.showWallpaperSearchControl_);
   }
 
+  private async setShowAutofillAiControl_() {
+    if (loadTimeData.valueExists('showAiSettingsForTesting') &&
+        loadTimeData.getBoolean('showAiSettingsForTesting')) {
+      this.showAutofillAIControl_ = true;
+      return;
+    }
+
+    if (!loadTimeData.getBoolean('autofillAiEnabled')) {
+      this.showAutofillAIControl_ = false;
+      return;
+    }
+
+    this.showAutofillAIControl_ =
+        await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
+        await UserAnnotationsManagerProxyImpl.getInstance().hasEntries();
+  }
+
   private onHistorySearchRowClick_() {
     if (this.enableAiSettingsPageRefresh_) {
       this.recordInteractionMetrics_(
@@ -149,6 +186,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
+  }
+
+  private onAutofillAiRowClick_() {
+    this.recordInteractionMetrics_(
+        AiPageInteractions.AUTOFILL_AI_CLICK,
+        'Settings.AiPage.AutofillAIEntryPointClick');
+
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().AUTOFILL_AI);
   }
 
   private onCompareRowClick_() {

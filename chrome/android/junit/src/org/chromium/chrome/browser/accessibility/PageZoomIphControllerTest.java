@@ -23,8 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -44,15 +42,11 @@ public class PageZoomIphControllerTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
-    private final TestValues mTestValues = new TestValues();
-
     private PageZoomIphController mPageZoomIphController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        FeatureList.setTestValues(mTestValues);
 
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
         doReturn(resources).when(mContext).getResources();

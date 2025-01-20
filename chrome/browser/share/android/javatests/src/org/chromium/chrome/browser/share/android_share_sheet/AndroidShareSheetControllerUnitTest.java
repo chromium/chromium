@@ -138,6 +138,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock Profile mProfile;
     @Mock Tracker mTracker;
     @Mock InsetObserver mInsetObserver;
+    @Mock TabGroupSharingController mTabGroupSharingController;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
@@ -180,6 +181,8 @@ public class AndroidShareSheetControllerUnitTest {
                     }
                 });
 
+        doReturn(true).when(mTabGroupSharingController).isAvailableForTab(any());
+
         mActivityScenario.getScenario().onActivity((activity) -> mActivity = activity);
         mActivityScenario.getScenario().moveToState(State.RESUMED);
         mWindow =
@@ -188,7 +191,7 @@ public class AndroidShareSheetControllerUnitTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
         mPrintCallback = new PayloadCallbackHelper<>();
         // Set up mock tab
         doReturn(mWindow).when(mTab).getWindowAndroid();
@@ -200,6 +203,7 @@ public class AndroidShareSheetControllerUnitTest {
                         () -> mTabModelSelector,
                         () -> mProfile,
                         mPrintCallback::notifyCalled,
+                        mTabGroupSharingController,
                         null);
     }
 
@@ -240,6 +244,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
+                    R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,
@@ -302,6 +307,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -325,6 +331,9 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
 
+        // Disable tab groups when page info is enabled. We do not plan to enable them together.
+        doReturn(false).when(mTabGroupSharingController).isAvailableForTab(any());
+
         PageInfoSharingController mockPageInfoSharingController =
                 Mockito.mock(PageInfoSharingController.class);
         PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
@@ -339,6 +348,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -367,6 +377,9 @@ public class AndroidShareSheetControllerUnitTest {
                         .setDetailedContentType(DetailedContentType.PAGE_INFO)
                         .build();
 
+        // Disable tab groups when page info is enabled. We do not plan to enable them together.
+        doReturn(false).when(mTabGroupSharingController).isAvailableForTab(any());
+
         PageInfoSharingController mockPageInfoSharingController =
                 Mockito.mock(PageInfoSharingController.class);
         PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
@@ -380,6 +393,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -517,6 +531,55 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
+    public void shareUrlWithPreviewImage() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
+
+        Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        ShadowShareImageFileUtils.sExpectedWebBitmap = testBitmap;
+
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setPreviewImageBitmap(testBitmap)
+                        .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals(
+                "Image preview Uri is null.",
+                TEST_WEB_FAVICON_PREVIEW_URI,
+                intent.getClipData().getItemAt(0).getUri());
+        watcher.assertExpected();
+
+        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
+    }
+
+    @Test
+    public void shareUrlWithPreviewImageUri() {
+        Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        // This testBitmap is unused since preview URI was set.
+        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
+        Uri testUri = Uri.parse("content://test.web.favicon.preview.shareUrlWithPreviewImageUri");
+
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setPreviewImageBitmap(testBitmap)
+                        .setPreviewImageUri(testUri)
+                        .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals(
+                "Image preview Uri is null.", testUri, intent.getClipData().getItemAt(0).getUri());
+    }
+
+    @Test
     public void shareTextWithPreviewFavicon() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
@@ -598,6 +661,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -652,6 +716,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTabModelSelector,
                 () -> mProfile,
                 mPrintCallback::notifyCalled,
+                mTabGroupSharingController,
                 mDeviceLockActivityLauncher);
 
         // Since link to share failed, the content being shared is a plain text.
@@ -793,6 +858,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
+                    R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,
@@ -840,14 +906,6 @@ public class AndroidShareSheetControllerUnitTest {
                         })
                 .when(mMockFaviconHelperJni)
                 .getLocalFaviconImageForURL(anyLong(), eq(mProfile), any(), anyInt(), any());
-    }
-
-    private void runModifyActionFromChooserIntent(Intent chooserIntent) throws CanceledException {
-        Bundle modifyAction =
-                chooserIntent.getParcelableExtra(Intent.EXTRA_CHOOSER_MODIFY_SHARE_ACTION);
-        PendingIntent action = modifyAction.getParcelable(KEY_CHOOSER_ACTION_ACTION);
-        action.send();
-        ShadowLooper.idleMainLooper();
     }
 
     private void assertCustomActions(Intent chooserIntent, Integer... expectedStringRes) {

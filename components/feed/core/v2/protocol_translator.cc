@@ -333,7 +333,7 @@ RefreshResponseData TranslateWireResponse(
         response_metadata.event_id().SerializeAsString());
   }
   result->stream_data.set_signed_in(!account_info.IsEmpty());
-  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_gaia(account_info.gaia.ToString());
   result->stream_data.set_email(account_info.email);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());

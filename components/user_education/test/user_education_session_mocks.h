@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_TEST_USER_EDUCATION_SESSION_MOCKS_H_
 
 #include "base/callback_list.h"
+#include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/session/user_education_idle_observer.h"
 #include "components/user_education/common/session/user_education_idle_policy.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
@@ -74,6 +75,22 @@ class MockUserEducationSessionManager : public UserEducationSessionManager {
               OnNewSession,
               (const base::Time, const base::Time, const base::Time),
               (override));
+};
+
+// Allows for overriding of `CanShowPromo()`. Other methods work as they
+// currently do in order to ensure that data is written to storage. Note that
+// a session manager is not necessary and may be passed to `Init()` as
+// `nullptr`.
+class MockFeaturePromoSessionPolicy : public FeaturePromoSessionPolicy {
+ public:
+  MockFeaturePromoSessionPolicy();
+  ~MockFeaturePromoSessionPolicy() override;
+
+  MOCK_METHOD(FeaturePromoResult,
+              CanShowPromo,
+              (PromoPriorityInfo to_show,
+               std::optional<PromoPriorityInfo> currently_showing),
+              (const override));
 };
 
 }  // namespace user_education::test

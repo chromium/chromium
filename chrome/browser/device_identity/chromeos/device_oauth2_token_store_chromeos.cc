@@ -118,12 +118,30 @@ void DeviceOAuth2TokenStoreChromeOS::SetAndSaveRefreshToken(
     // make sure the FlushTokenSaveCallbacks() is called.
     if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
       StoreRefreshTokenV3();
+      return;
     }
+
     if (system_salt_.empty()) {
       FlushTokenSaveCallbacks(false);
     } else {
       EncryptAndSaveToken();
     }
+  }
+}
+
+void DeviceOAuth2TokenStoreChromeOS::OnStoreTokenV3Done(bool success) {
+  if (success) {
+    // The value true is meant to be just a flag, that means the version 3 of
+    // storage for refresh_token is used.
+    local_state_->SetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used, true);
+  }
+
+  // Keep storing the token with the old method, to have a backup in case the
+  // feature is rolled back.
+  if (system_salt_.empty()) {
+    FlushTokenSaveCallbacks(false);
+  } else {
+    EncryptAndSaveToken();
   }
 }
 
@@ -140,15 +158,22 @@ void DeviceOAuth2TokenStoreChromeOS::OnRefreshTokenLoadedV3(
 }
 
 void DeviceOAuth2TokenStoreChromeOS::StoreRefreshTokenV3() {
-  base::FilePath path;
-  base::PathService::Get(chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
-  bool success =
-      base::ImportantFileWriter::WriteFileAtomically(path, refresh_token_);
-  if (success) {
-    // The value true is meant to be just a flag, that means the version 3 of
-    // storage for refresh_token is used.
-    local_state_->SetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used, true);
-  }
+  base::ThreadPool::CreateTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(
+              [](const std::string& refresh_token) {
+                base::FilePath path;
+                base::PathService::Get(
+                    chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, &path);
+                return base::ImportantFileWriter::WriteFileAtomically(
+                    path, refresh_token);
+              },
+              refresh_token_),
+          base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::OnStoreTokenV3Done,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DeviceOAuth2TokenStoreChromeOS::PrepareTrustedAccountId(
@@ -247,6 +272,7 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
   if (!refresh_token_.empty()) {
     if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
       StoreRefreshTokenV3();
+      return;
     }
 
     EncryptAndSaveToken();

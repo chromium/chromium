@@ -410,7 +410,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     mangle_localized_strings_ = mangle;
   }
 
-  std::string GetLoadedLocaleForTesting() { return loaded_locale_; }
+  const std::string& GetLoadedLocale() const { return loaded_locale_; }
 #if DCHECK_IS_ON()
   // Gets whether overriding locale strings is supported.
   bool get_can_override_locale_string_resources_for_test() {

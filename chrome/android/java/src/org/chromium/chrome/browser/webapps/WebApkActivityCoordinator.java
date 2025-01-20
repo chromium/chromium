@@ -8,49 +8,39 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
-import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
-
-import javax.inject.Inject;
 
 /**
  * Coordinator for the WebAPK activity component. Add methods here if other components need to
  * communicate with the WebAPK activity component.
  */
-@ActivityScope
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final Lazy<WebApkUpdateManager> mWebApkUpdateManager;
+    private final Supplier<WebApkUpdateManager> mWebApkUpdateManager;
 
-    @Inject
     public WebApkActivityCoordinator(
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappDisclosureController unused_disclosureController,
-            DisclosureInfobar unused_disclosureInfobar,
-            WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
-            Lazy<WebApkUpdateManager> webApkUpdateManager,
-            BaseCustomTabActivity activity) {
-        // The unused_ params are present just to initialize them.
-
-        mIntentDataProvider = activity.getIntentDataProvider();
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Supplier<WebApkUpdateManager> webApkUpdateManager,
+            WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mIntentDataProvider = intentDataProvider;
         mWebApkUpdateManager = webApkUpdateManager;
 
-        deferredStartupWithStorageHandler.addTask(
+        webappDeferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
-                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) {
+                        return;
+                    }
 
                     onDeferredStartupWithStorage(storage, didCreateStorage);
                 });
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     public void onDeferredStartupWithStorage(

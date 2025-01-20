@@ -37,10 +37,10 @@ public class PriceTrackingUtilities {
      * @return Whether the track prices on tabs is turned on by users.
      */
     public static boolean isTrackPricesOnTabsEnabled(Profile profile) {
-        return PriceTrackingFeatures.isPriceTrackingEligible(profile)
+        return PriceTrackingFeatures.isPriceAnnotationsEligible(profile)
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         TRACK_PRICES_ON_TABS,
-                        PriceTrackingFeatures.isPriceTrackingEnabled(profile));
+                        PriceTrackingFeatures.isPriceAnnotationsEnabled(profile));
     }
 
     /** Forbid showing the PriceWelcomeMessageCard any more. */
@@ -52,10 +52,10 @@ public class PriceTrackingUtilities {
      * @return Whether the PriceWelcomeMessageCard is enabled.
      */
     public static boolean isPriceWelcomeMessageCardEnabled(Profile profile) {
-        return PriceTrackingFeatures.isPriceTrackingEligible(profile)
+        return PriceTrackingFeatures.isPriceAnnotationsEligible(profile)
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
                         PRICE_WELCOME_MESSAGE_CARD,
-                        PriceTrackingFeatures.isPriceTrackingEnabled(profile));
+                        PriceTrackingFeatures.isPriceAnnotationsEnabled(profile));
     }
 
     /**

@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -35,6 +34,8 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
+
+import java.util.Set;
 
 /** Tests for {@link PriceTrackingFeatures}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -65,7 +66,7 @@ public class PriceTrackingFeaturesTest {
         setMbbStatus(true);
         setSignedInStatus(true);
         setTabSyncStatus(true, true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
     }
 
     @UiThreadTest
@@ -73,7 +74,7 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligible() {
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -81,9 +82,9 @@ public class PriceTrackingFeaturesTest {
     @Test
     @SmallTest
     public void testIsPriceTrackingEligibleFlagIsDisabled() {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -93,7 +94,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -103,7 +104,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNotSignedIn() {
         setSignedInStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -115,7 +116,7 @@ public class PriceTrackingFeaturesTest {
         Profile incognitoProfile =
                 ProfileManager.getLastUsedRegularProfile()
                         .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true);
-        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible(incognitoProfile));
+        Assert.assertFalse(PriceTrackingFeatures.isPriceAnnotationsEligible(incognitoProfile));
     }
 
     @UiThreadTest
@@ -128,7 +129,7 @@ public class PriceTrackingFeaturesTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -146,9 +147,6 @@ public class PriceTrackingFeaturesTest {
     private void setTabSyncStatus(boolean isSyncFeatureEnabled, boolean hasSessions) {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
         when(mSyncServiceMock.getActiveDataTypes())
-                .thenReturn(
-                        hasSessions
-                                ? CollectionUtil.newHashSet(DataType.SESSIONS)
-                                : CollectionUtil.newHashSet(DataType.AUTOFILL));
+                .thenReturn(hasSessions ? Set.of(DataType.SESSIONS) : Set.of(DataType.AUTOFILL));
     }
 }

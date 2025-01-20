@@ -88,24 +88,27 @@ namespace {
 
 // Returns true if |ancestor| is an ancestor of |layer|.
 bool LayerIsAncestor(const ui::Layer* ancestor, const ui::Layer* layer) {
-  while (layer && layer != ancestor)
+  while (layer && layer != ancestor) {
     layer = layer->parent();
+  }
   return layer == ancestor;
 }
 
 // Convenience functions for walking a View tree.
 const views::View* FirstView(const views::View* view) {
   const views::View* v = view;
-  while (!v->children().empty())
+  while (!v->children().empty()) {
     v = v->children().front();
+  }
   return v;
 }
 
 const views::View* NextView(const views::View* view) {
   const views::View* v = view;
   const views::View* parent = v->parent();
-  if (!parent)
+  if (!parent) {
     return nullptr;
+  }
   const auto next = std::next(parent->FindChild(v));
   return (next == parent->children().cend()) ? parent : FirstView(*next);
 }
@@ -113,15 +116,17 @@ const views::View* NextView(const views::View* view) {
 // Convenience functions for walking a Layer tree.
 const ui::Layer* FirstLayer(const ui::Layer* layer) {
   const ui::Layer* l = layer;
-  while (!l->children().empty())
+  while (!l->children().empty()) {
     l = l->children().front();
+  }
   return l;
 }
 
 const ui::Layer* NextLayer(const ui::Layer* layer) {
   const ui::Layer* parent = layer->parent();
-  if (!parent)
+  if (!parent) {
     return nullptr;
+  }
   const std::vector<raw_ptr<ui::Layer, VectorExperimental>> children =
       parent->children();
   const auto i = base::ranges::find(children, layer) + 1;
@@ -136,35 +141,42 @@ bool ViewAndLayerTreeAreConsistent(const views::View* view,
   const ui::Layer* l = FirstLayer(layer);
   while (v && l) {
     // Find the view with a layer.
-    while (v && !v->layer())
+    while (v && !v->layer()) {
       v = NextView(v);
+    }
     EXPECT_TRUE(v);
-    if (!v)
+    if (!v) {
       return false;
+    }
 
     // Check if the View tree and the Layer tree are in sync.
     EXPECT_EQ(l, v->layer());
-    if (v->layer() != l)
+    if (v->layer() != l) {
       return false;
+    }
 
     // Check if the visibility states of the View and the Layer are in sync.
     EXPECT_EQ(l->IsVisible(), v->IsDrawn());
     if (v->IsDrawn() != l->IsVisible()) {
-      for (const views::View* vv = v; vv; vv = vv->parent())
+      for (const views::View* vv = v; vv; vv = vv->parent()) {
         LOG(ERROR) << "V: " << vv << " " << vv->GetVisible() << " "
                    << vv->IsDrawn() << " " << vv->layer();
-      for (const ui::Layer* ll = l; ll; ll = ll->parent())
+      }
+      for (const ui::Layer* ll = l; ll; ll = ll->parent()) {
         LOG(ERROR) << "L: " << ll << " " << ll->IsVisible();
+      }
       return false;
     }
 
     // Check if the size of the View and the Layer are in sync.
     EXPECT_EQ(l->bounds(), v->bounds());
-    if (v->bounds() != l->bounds())
+    if (v->bounds() != l->bounds()) {
       return false;
+    }
 
-    if (v == view || l == layer)
+    if (v == view || l == layer) {
       return v == view && l == layer;
+    }
 
     v = NextView(v);
     l = NextLayer(l);
@@ -175,27 +187,32 @@ bool ViewAndLayerTreeAreConsistent(const views::View* view,
 
 // Constructs a View tree with the specified depth.
 void ConstructTree(views::View* view, int depth) {
-  if (depth == 0)
+  if (depth == 0) {
     return;
+  }
   int count = base::RandInt(1, 5);
   for (int i = 0; i < count; i++) {
     views::View* v = new views::View;
     view->AddChildView(v);
-    if (base::RandDouble() > 0.5)
+    if (base::RandDouble() > 0.5) {
       v->SetPaintToLayer();
-    if (base::RandDouble() < 0.2)
+    }
+    if (base::RandDouble() < 0.2) {
       v->SetVisible(false);
+    }
 
     ConstructTree(v, depth - 1);
   }
 }
 
 void ScrambleTree(views::View* view) {
-  if (view->children().empty())
+  if (view->children().empty()) {
     return;
+  }
 
-  for (views::View* child : view->children())
+  for (views::View* child : view->children()) {
     ScrambleTree(child);
+  }
 
   size_t count = view->children().size();
   if (count > 1) {
@@ -211,11 +228,13 @@ void ScrambleTree(views::View* view) {
     }
   }
 
-  if (!view->layer() && base::RandDouble() < 0.1)
+  if (!view->layer() && base::RandDouble() < 0.1) {
     view->SetPaintToLayer();
+  }
 
-  if (base::RandDouble() < 0.1)
+  if (base::RandDouble() < 0.1) {
     view->SetVisible(!view->GetVisible());
+  }
 }
 
 }  // namespace
@@ -2921,79 +2940,6 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
   widget->CloseNow();
 }
 
-class ViewPaintOptimizationTest : public ViewsTestBase {
- public:
-  ViewPaintOptimizationTest() = default;
-
-  ViewPaintOptimizationTest(const ViewPaintOptimizationTest&) = delete;
-  ViewPaintOptimizationTest& operator=(const ViewPaintOptimizationTest&) =
-      delete;
-
-  ~ViewPaintOptimizationTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        views::features::kEnableViewPaintOptimization);
-    ViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that only Views where SchedulePaint was invoked get repainted.
-TEST_F(ViewPaintOptimizationTest, PaintDirtyViewsOnly) {
-  ScopedTestPaintWidget widget(CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP));
-  View* root_view = widget->GetRootView();
-
-  TestView* v1 = root_view->AddChildView(std::make_unique<TestView>());
-  v1->SetBounds(10, 11, 12, 13);
-
-  TestView* v2 = root_view->AddChildView(std::make_unique<TestView>());
-  v2->SetBounds(3, 4, 6, 5);
-
-  TestView* v21 = v2->AddChildView(std::make_unique<TestView>());
-  v21->SetBounds(2, 3, 4, 5);
-
-  // Paint everything once, since it has to build its cache. Then we can test
-  // invalidation.
-  gfx::Rect first_paint(1, 1);
-  auto list = base::MakeRefCounted<cc::DisplayItemList>();
-  root_view->Paint(PaintInfo::CreateRootPaintInfo(
-      ui::PaintContext(list.get(), 1.f, first_paint, false),
-      root_view->size()));
-  v1->Reset();
-  v2->Reset();
-  v21->Reset();
-
-  gfx::Rect paint_area(10, 11, 12, 13);
-  list = base::MakeRefCounted<cc::DisplayItemList>();
-
-  // Schedule a paint on v2 which marks it invalidated.
-  v2->SchedulePaint();
-  EXPECT_FALSE(v1->did_paint_);
-  EXPECT_FALSE(v2->did_paint_);
-  EXPECT_FALSE(v21->did_paint_);
-
-  // Paint with an unknown invalidation. The invalidation is irrelevant since
-  // repainting a view only depends on whether the view had a scheduled paint.
-  gfx::Rect empty_rect;
-  EXPECT_TRUE(empty_rect.IsEmpty());
-
-  root_view->Paint(PaintInfo::CreateRootPaintInfo(
-      ui::PaintContext(list.get(), 1.f, paint_area, false), empty_rect.size()));
-
-  // Only v2 should be repainted.
-  EXPECT_FALSE(v1->did_paint_);
-  EXPECT_TRUE(v2->did_paint_);
-  EXPECT_FALSE(v21->did_paint_);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Accelerators
-////////////////////////////////////////////////////////////////////////////////
-
 namespace {
 
 // A Widget with a TestView in the view hierarchy. Used for accelerator tests.
@@ -3018,8 +2964,9 @@ class TestViewWidget {
     widget_->Init(std::move(params));
     View* root = widget_->GetRootView();
     view_ = root->AddChildView(std::move(view));
-    if (show_after_init)
+    if (show_after_init) {
       widget_->Show();
+    }
 
     EXPECT_TRUE(widget_->GetFocusManager());
   }
@@ -4453,14 +4400,16 @@ TEST_F(ViewTest, RemoveAllChildViews) {
 
   View* child1 = root->AddChildView(std::make_unique<View>());
 
-  for (size_t i = 0; i < 2; ++i)
+  for (size_t i = 0; i < 2; ++i) {
     root->AddChildView(std::make_unique<View>());
+  }
 
   View* foo = child1->AddChildView(std::make_unique<View>());
 
   // Add some nodes to |foo|.
-  for (size_t i = 0; i < 3; ++i)
+  for (size_t i = 0; i < 3; ++i) {
     foo->AddChildView(std::make_unique<View>());
+  }
 
   EXPECT_EQ(3u, root->children().size());
   EXPECT_EQ(1u, child1->children().size());
@@ -6278,8 +6227,9 @@ class NoLayerWhenHiddenView : public View {
   }
 
   void RemovedFromWidget() override {
-    if (removed_from_widget_)
+    if (removed_from_widget_) {
       std::move(removed_from_widget_).Run();
+    }
   }
 
  private:
@@ -6353,8 +6303,9 @@ TEST_F(ViewTest, ChildViewZOrderChanged) {
   const size_t kNumChildren = 4;
   auto view = std::make_unique<OrderableView>();
   view->SetPaintToLayer();
-  for (size_t i = 0; i < kNumChildren; ++i)
+  for (size_t i = 0; i < kNumChildren; ++i) {
     AddViewWithChildLayer(view.get());
+  }
   View::Views children = view->GetChildrenInZOrder();
   const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers =
       view->layer()->children();

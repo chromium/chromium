@@ -184,26 +184,6 @@ suite('<settings-cups-printers>', () => {
     assertTrue(isVisible(
         page.shadowRoot!.querySelector('#noConnectivityContentContainer')));
   });
-});
-
-suite('with isRevampWayfindingEnabled set to true', () => {
-  let page: SettingsCupsPrintersElement;
-  setup(() => {
-    loadTimeData.overrideValues({
-      isRevampWayfindingEnabled: true,
-    });
-
-    page = document.createElement('settings-cups-printers');
-    document.body.appendChild(page);
-    assertTrue(!!page);
-
-    flush();
-  });
-
-  teardown(() => {
-    Router.getInstance().resetRouteForTesting();
-    page.remove();
-  });
 
   test('Deep link to print jobs', async () => {
     const params = new URLSearchParams();

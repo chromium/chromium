@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -181,7 +182,7 @@ void UntrustedSource::StartDataRequest(
         IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_JS));
     return;
   }
-  if (base::Contains(path, "background.jpg")) {
+  if (base::EndsWith(path, "background.jpg")) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
         base::BindOnce(&ReadBackgroundImageData,
@@ -248,6 +249,11 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     ui::TemplateReplacements replacements;
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
     replacements["barHtml"] = data->bar_html;
+    replacements["varsHeadScript"] = base::StringPrintf(
+        "let abp = %s;", base::FeatureList::IsEnabled(
+                             ntp_features::kNtpOneGoogleBarAsyncBarParts)
+                             ? "true"
+                             : "false");
     replacements["inHeadScript"] = data->in_head_script;
     replacements["inHeadStyle"] = data->in_head_style;
     replacements["afterBarScript"] = data->after_bar_script;

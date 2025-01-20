@@ -34,6 +34,7 @@
 #include <array>
 #include <utility>
 
+#include "base/types/zip.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -165,14 +166,10 @@ bool CachedMatchedProperties::CorrespondsTo(
     return false;
   }
 
-  // These incantations are to make Clang realize it does not have to
-  // bounds-check.
-  auto lookup_it = lookup_properties.begin();
-  auto cached_it = matched_properties.begin();
-  for (; lookup_it != lookup_properties.end();
-       std::advance(lookup_it, 1), std::advance(cached_it, 1)) {
-    CSSPropertyValueSet* cached_properties = cached_it->first.Get();
-    DCHECK(!lookup_it->properties->ModifiedSinceHashing())
+  for (const auto [lookup_it, cached_it] :
+       base::zip(lookup_properties, matched_properties)) {
+    CSSPropertyValueSet* cached_properties = cached_it.first.Get();
+    DCHECK(!lookup_it.properties->ModifiedSinceHashing())
         << "This should have been checked in AddMatchedProperties()";
     if (cached_properties->ModifiedSinceHashing()) {
       // These properties were mutated as some point after original
@@ -184,10 +181,10 @@ bool CachedMatchedProperties::CorrespondsTo(
       // a hash collision.
       return false;
     }
-    if (!lookup_it->properties->Equals(*cached_properties)) {
+    if (!lookup_it.properties->Equals(*cached_properties)) {
       return false;
     }
-    if (lookup_it->data_ != cached_it->second) {
+    if (lookup_it.data_ != cached_it.second) {
       return false;
     }
   }
@@ -259,6 +256,11 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   if (builder.HasAnchorFunctions()) {
     // The result of anchor() and anchor-size() functions can depend on
     // the 'anchor' attribute on the element.
+    return false;
+  }
+  if (builder.HasSiblingFunctions()) {
+    // The result of sibling-index() and sibling-count() depends on the
+    // element's position in the DOM.
     return false;
   }
   // Avoiding cache for ::highlight styles, and the originating styles they are

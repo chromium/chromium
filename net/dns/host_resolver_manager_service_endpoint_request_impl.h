@@ -5,6 +5,7 @@
 #ifndef NET_DNS_HOST_RESOLVER_MANAGER_SERVICE_ENDPOINT_REQUEST_IMPL_H_
 #define NET_DNS_HOST_RESOLVER_MANAGER_SERVICE_ENDPOINT_REQUEST_IMPL_H_
 
+#include <deque>
 #include <optional>
 #include <set>
 #include <string>
@@ -79,12 +80,14 @@ class HostResolverManager::ServiceEndpointRequestImpl
     kNone,
     kCheckIPv6Reachability,
     kCheckIPv6ReachabilityComplete,
+    kDoResolveLocally,
     kStartJob,
   };
 
   int DoLoop(int rv);
   int DoCheckIPv6Reachability();
   int DoCheckIPv6ReachabilityComplete(int rv);
+  int DoResolveLocally();
   int DoStartJob();
 
   void OnIOComplete(int rv);
@@ -124,6 +127,11 @@ class HostResolverManager::ServiceEndpointRequestImpl
 
   // Set when the endpoint results are finalized.
   std::optional<FinalizedResult> finalized_result_;
+
+  // These fields are calculated by DoResolveLocally() and consumed by
+  // DoStartJob().
+  std::optional<JobKey> job_key_;
+  std::deque<TaskType> tasks_;
 
   // Set when a job is associated with `this`. Must be valid unless
   // `resolve_context_` becomes invalid. Cleared when the endpoints are

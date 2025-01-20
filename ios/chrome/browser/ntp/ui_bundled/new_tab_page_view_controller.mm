@@ -12,29 +12,29 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
-#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -209,20 +209,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
-  // TODO(crbug.com/40251609): The contentCollectionView width might be narrower
-  // than the ContentSuggestions view. This causes elements to be hidden. A
-  // gesture recognizer is added to allow these elements to be interactable.
-  UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(handleSingleTapInView:)];
-  singleTapRecognizer.delegate = self;
-  [self.view addGestureRecognizer:singleTapRecognizer];
-    _backgroundGradientView = [[GradientView alloc]
-        initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
-             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-    _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_backgroundGradientView];
-    AddSameConstraints(_backgroundGradientView, self.view);
+  _backgroundGradientView = [[GradientView alloc]
+      initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+           bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_backgroundGradientView];
+  AddSameConstraints(_backgroundGradientView, self.view);
   [self updateModularHomeBackgroundColorForUserInterfaceStyle:
             self.traitCollection.userInterfaceStyle];
   self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
@@ -396,7 +388,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
                         if (self.feedVisible) {
                           [self updateFeedInsetsForMinimumHeight];
                         }
-                        [self updateFeedContainerHeight];
+                        [self updateFeedContainerSizeAndPosition];
                       }];
 }
 
@@ -521,11 +513,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.collectionView.clipsToBounds = NO;
 
   [self.overscrollActionsController invalidate];
-
-  // Only re-configure `overscrollActionsController`.
-  if (self.overscrollActionsController) {
-    [self configureOverscrollActionsController];
-  }
+  [self configureOverscrollActionsController];
 
   // Update NTP collection view constraints to ensure the layout adapts to
   // changes in feed visibility.
@@ -693,13 +681,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
 }
 
 - (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type {
-  if (_feedContainer) {
-    // Feed content gets added to the top of the subview array, so after content
-    // loads the feed container needs to be sent to the back so that it isn't
-    // in front of the new content and doesn't intercept taps / interactions
-    // that are meant for the feed content.
-    [self.collectionView sendSubviewToBack:_feedContainer];
-  }
   [self updateFeedInsetsForMinimumHeight];
   // Updating insets can influence contentOffset, so update saved scroll state
   // after it. This handles what the starting offset be with the feed enabled,
@@ -712,7 +693,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setContentOffset:self.savedScrollOffset];
   }
 
-  [self updateFeedContainerHeight];
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)invalidate {
@@ -829,13 +810,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 
   [self updateScrollPositionToSave];
-
-  // The feed model callbacks don't always reliably tell us that the content has
-  // paginated, so check if the container should be extended.
-  if (self.collectionView.contentSize.height >
-      self.feedContainerHeightConstraint.constant) {
-    [self updateFeedContainerHeight];
-  }
+  [self updateFeedContainerSizeAndPosition];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -843,10 +818,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // now replaced. In these cases, ignore the scroll event.
   if (scrollView != self.collectionView) {
     return;
-  }
-
-  if (!self.overscrollActionsController) {
-    [self configureOverscrollActionsController];
   }
 
   // User has interacted with the surface, so it is safe to assume that a saved
@@ -1346,34 +1317,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
-// TODO(crbug.com/40251609): Remove once the Feed header properly supports
-// ContentSuggestions.
-- (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
-  CGPoint location = [recognizer locationInView:[recognizer.view superview]];
-  CGRect discBoundsInView =
-      [self.identityDiscButton convertRect:self.identityDiscButton.bounds
-                                    toView:self.view];
-  if (CGRectContainsPoint(discBoundsInView, location)) {
-    [self.identityDiscButton
-        sendActionsForControlEvents:UIControlEventTouchUpInside];
-  } else {
-    [self unfocusOmnibox];
-  }
-
-  if (IsHomeCustomizationEnabled()) {
-    CGRect customizationMenuBounds =
-        [[self.headerViewController customizationMenuButton]
-            convertRect:[self.headerViewController customizationMenuButton]
-                            .bounds
-                 toView:self.view];
-
-    if (CGRectContainsPoint(customizationMenuBounds, location)) {
-      [[self.headerViewController customizationMenuButton]
-          sendActionsForControlEvents:UIControlEventTouchUpInside];
-    }
-  }
-}
-
 // Handles the pinning of the sticky elements to the top of the NTP. This
 // includes the fake omnibox and if Web Channels is enabled, the feed header. If
 // `force` is YES, the sticky elements will always be set based on the scroll
@@ -1439,16 +1382,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
-    // When the feed is turned off, do not constrain the width of the empty
-    // collection view, in order to allow vertical scrolling gestures to
-    // happen on the side margins. The width of the feed header is controlled
-    // by the collectionView's contentLayoutGuide.
-    if (self.feedWrapperViewController.feedViewController) {
-      [self.collectionView.widthAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
-          .active = YES;
-    }
-
     [NSLayoutConstraint activateConstraints:@[
       // Apply parent collection view constraints.
       [self.collectionView.centerXAnchor
@@ -1483,7 +1416,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
         [self.feedTopSectionViewController.view.centerXAnchor
             constraintEqualToAnchor:self.collectionView.centerXAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor],
+            constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
         [self.feedTopSectionViewController.view.topAnchor
             constraintEqualToAnchor:self.feedHeaderViewController.view
                                         .bottomAnchor],
@@ -1518,7 +1451,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
       [_feedContainer.topAnchor
           constraintEqualToAnchor:self.feedHeaderViewController.view.topAnchor],
     ]];
-    [self updateFeedContainerHeight];
+    [self updateFeedContainerSizeAndPosition];
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -1648,8 +1581,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
 }
 
-// Updates the feed container's height constraint.
-- (void)updateFeedContainerHeight {
+// Updates the feed container's height constraint and z-position.
+- (void)updateFeedContainerSizeAndPosition {
   if (!_feedContainer) {
     return;
   }
@@ -1665,6 +1598,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   self.feedContainerHeightConstraint =
       [_feedContainer.heightAnchor constraintEqualToConstant:containerHeight];
   self.feedContainerHeightConstraint.active = YES;
+
+  // Feed content gets added to the top of the subview array, so after content
+  // loads the feed container needs to be sent to the back so that it isn't
+  // in front of the new content and doesn't intercept taps / interactions
+  // that are meant for the feed content.
+  [self.collectionView sendSubviewToBack:_feedContainer];
 }
 
 // Updates the width constraint of `moduleLayoutGuide`.

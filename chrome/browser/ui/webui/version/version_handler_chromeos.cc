@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/channel_info.h"
@@ -16,22 +17,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+VersionHandlerChromeOS::VersionHandlerChromeOS() = default;
 
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kCrosUrlVersionRedirect[] = "crosUrlVersionRedirect";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-}  // namespace
-
-VersionHandlerChromeOS::VersionHandlerChromeOS() {}
-
-VersionHandlerChromeOS::~VersionHandlerChromeOS() {}
+VersionHandlerChromeOS::~VersionHandlerChromeOS() = default;
 
 void VersionHandlerChromeOS::OnJavascriptDisallowed() {
   VersionHandler::OnJavascriptDisallowed();
@@ -59,34 +47,7 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
       base::BindOnce(&VersionHandlerChromeOS::GetArcAndArcAndroidSdkVersions),
       base::BindOnce(&VersionHandlerChromeOS::OnArcAndArcAndroidSdkVersions,
                      weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool is_lacros_enabled = crosapi::browser_util::IsLacrosEnabled();
-  FireWebUIListener("return-lacros-enabled", base::Value(is_lacros_enabled));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-
-void VersionHandlerChromeOS::RegisterMessages() {
-  VersionHandler::RegisterMessages();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      kCrosUrlVersionRedirect,
-      base::BindRepeating(&VersionHandlerChromeOS::HandleCrosUrlVersionRedirect,
-                          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
-    const base::Value::List& args) {
-  // Note: This will only be called by the UI when Lacros is available.
-  DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->SwitchToTab(
-      GURL(chrome::kChromeUIVersionURL),
-      /*path_behavior=*/NavigateParams::RESPECT);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void VersionHandlerChromeOS::OnPlatformVersion(
     const std::optional<std::string>& version) {

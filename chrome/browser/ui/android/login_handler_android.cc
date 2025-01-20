@@ -62,14 +62,15 @@ class LoginHandlerAndroid : public LoginHandler {
       return true;
     } else {
       LOG(WARNING) << "HTTP Authentication failed because TabAndroid is "
-          "missing";
+                      "missing";
       return false;
     }
   }
 
   void CloseDialog() override {
-    if (chrome_http_auth_handler_)
+    if (chrome_http_auth_handler_) {
       chrome_http_auth_handler_->CloseDialog();
+    }
   }
 
  private:

@@ -145,6 +145,8 @@ component("gl") {
     "shader_tracking.h",
     "shared_gl_fence_egl.cc",
     "shared_gl_fence_egl.h",
+    "startup_trace.cc",
+    "startup_trace.h",
     "sync_control_vsync_provider.cc",
     "sync_control_vsync_provider.h",
     "trace_util.cc",
@@ -159,6 +161,7 @@ component("gl") {
 
   deps = [
     ":buildflags",
+    "//build:android_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
@@ -254,8 +257,14 @@ component("gl") {
       "swap_chain_presenter.h",
       "vsync_provider_win.cc",
       "vsync_provider_win.h",
+      "vsync_provider_win_dcomp.cc",
+      "vsync_provider_win_dcomp.h",
       "vsync_thread_win.cc",
       "vsync_thread_win.h",
+      "vsync_thread_win_dcomp.cc",
+      "vsync_thread_win_dcomp.h",
+      "vsync_thread_win_dxgi.cc",
+      "vsync_thread_win_dxgi.h",
     ]
 
     libs = [

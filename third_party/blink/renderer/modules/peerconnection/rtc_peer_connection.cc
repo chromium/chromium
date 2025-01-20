@@ -1370,9 +1370,7 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
   // attribute.
   std::optional<DOMTimeStamp> expires;
   if (keygen_algorithm->IsObject()) {
-    Dictionary keygen_algorithm_dict(script_state->GetIsolate(),
-                                     keygen_algorithm->GetAsObject().V8Value(),
-                                     exception_state);
+    Dictionary keygen_algorithm_dict(keygen_algorithm->GetAsObject());
     if (exception_state.HadException())
       return EmptyPromise();
 

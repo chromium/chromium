@@ -18,17 +18,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #endif
 
 namespace {
 
-MATCHER_P4(SyncStatusLabelsMatch,
+MATCHER_P5(SyncStatusLabelsMatch,
            message_type,
            status_label_string_id,
            button_string_id,
+           secondary_button_string_id,
            action_type,
            "") {
   if (arg.message_type != message_type) {
@@ -40,6 +41,10 @@ MATCHER_P4(SyncStatusLabelsMatch,
     return false;
   }
   if (arg.button_string_id != button_string_id) {
+    *result_listener << "Wrong button string";
+    return false;
+  }
+  if (arg.secondary_button_string_id != secondary_button_string_id) {
     *result_listener << "Wrong button string";
     return false;
   }
@@ -62,9 +67,9 @@ enum DistinctState {
   STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR,
   STATUS_CASE_SYNCED,
   STATUS_CASE_SYNC_DISABLED_BY_POLICY,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   STATUS_CASE_SYNC_RESET_FROM_DASHBOARD,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   NUMBER_OF_STATUS_CASES
 };
 
@@ -87,20 +92,20 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetInitialSyncFeatureSetupComplete(false);
       service->SetSetupInProgress();
       return {SyncStatusMessageType::kPreSynced, IDS_SYNC_SETUP_IN_PROGRESS,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SETUP_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(false);
       service->SetHasUnrecoverableError(true);
-      return {
-        SyncStatusMessageType::kSyncError,
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-            IDS_SYNC_STATUS_UNRECOVERABLE_ERROR,
+      return {SyncStatusMessageType::kSyncError,
+#if !BUILDFLAG(IS_CHROMEOS)
+              IDS_SYNC_STATUS_UNRECOVERABLE_ERROR,
 #else
-            IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
+              IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
 #endif
-            IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate
-      };
+              IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kReauthenticate};
     }
     case STATUS_CASE_AUTH_ERROR: {
       test_environment->SetRefreshTokenForPrimaryAccount();
@@ -109,61 +114,67 @@ SyncStatusLabels SetUpDistinctCase(
           GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
       service->SetPersistentAuthError();
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
-              IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate};
+              IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kReauthenticate};
     }
     case STATUS_CASE_PROTOCOL_ERROR: {
       syncer::SyncStatus status;
       status.sync_protocol_error = {.action = syncer::UPGRADE_CLIENT};
       service->SetDetailedSyncStatus(/*engine_available=*/false, status);
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_UPGRADE_CLIENT,
-              IDS_SYNC_UPGRADE_CLIENT_BUTTON,
+              IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kUpgradeClient};
     }
     case STATUS_CASE_CONFIRM_SYNC_SETTINGS: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      return {SyncStatusMessageType::kSyncError,
-              IDS_SYNC_SETTINGS_NOT_CONFIRMED,
-              IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
-              SyncStatusActionType::kConfirmSyncSettings};
+      return {
+          SyncStatusMessageType::kSyncError, IDS_SYNC_SETTINGS_NOT_CONFIRMED,
+          IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
+          IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kConfirmSyncSettings};
     }
     case STATUS_CASE_PASSPHRASE_ERROR: {
       service->SetPassphraseRequired();
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_STATUS_NEEDS_PASSWORD,
-              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON,
+              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kEnterPassphrase};
     }
     case STATUS_CASE_TRUSTED_VAULT_KEYS_ERROR:
       service->SetTrustedVaultKeyRequired(true);
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
-              IDS_SETTINGS_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+              IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
     case STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR:
       service->SetTrustedVaultRecoverabilityDegraded(true);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
     case STATUS_CASE_SYNCED: {
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
       service->SetAllowedByEnterprisePolicy(false);
       return {SyncStatusMessageType::kSynced,
-              IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
       service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       return {SyncStatusMessageType::kSyncError,
               IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case NUMBER_OF_STATUS_CASES:
       NOTREACHED();
   }
-  return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
-          IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+  return {SyncStatusMessageType::kPreSynced, IDS_SYNC_EMPTY_STRING,
+          IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+          SyncStatusActionType::kNoAction};
 }
 
 // This test ensures that each distinctive SyncService status will return a
@@ -185,6 +196,7 @@ TEST(SyncUIUtilTest, DistinctCasesReportProperMessages) {
         SyncStatusLabelsMatch(expected_labels.message_type,
                               expected_labels.status_label_string_id,
                               expected_labels.button_string_id,
+                              expected_labels.secondary_button_string_id,
                               expected_labels.action_type));
   }
 }
@@ -203,7 +215,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
 
   // Expect the generic unrecoverable error action which is to reauthenticate.
   int unrecoverable_error =
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       IDS_SYNC_STATUS_UNRECOVERABLE_ERROR;
 #else
       IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT;
@@ -213,6 +225,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
                           /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
                             unrecoverable_error, IDS_SYNC_RELOGIN_BUTTON,
+                            IDS_SYNC_EMPTY_STRING,
                             SyncStatusActionType::kReauthenticate));
 
   // This time set action to SyncStatusActionType::kUpgradeClient.
@@ -223,10 +236,10 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
   EXPECT_THAT(
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
-      SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
-                            IDS_SYNC_UPGRADE_CLIENT,
-                            IDS_SYNC_UPGRADE_CLIENT_BUTTON,
-                            SyncStatusActionType::kUpgradeClient));
+      SyncStatusLabelsMatch(
+          SyncStatusMessageType::kSyncError, IDS_SYNC_UPGRADE_CLIENT,
+          IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SYNC_EMPTY_STRING,
+          SyncStatusActionType::kUpgradeClient));
 }
 
 TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
@@ -247,10 +260,10 @@ TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
   EXPECT_THAT(
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
-      SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
-                            IDS_SYNC_UPGRADE_CLIENT,
-                            IDS_SYNC_UPGRADE_CLIENT_BUTTON,
-                            SyncStatusActionType::kUpgradeClient));
+      SyncStatusLabelsMatch(
+          SyncStatusMessageType::kSyncError, IDS_SYNC_UPGRADE_CLIENT,
+          IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SYNC_EMPTY_STRING,
+          SyncStatusActionType::kUpgradeClient));
 }
 
 TEST(SyncUIUtilTest, SyncSettingsConfirmationNeededTest) {
@@ -268,7 +281,7 @@ TEST(SyncUIUtilTest, SyncSettingsConfirmationNeededTest) {
       SyncStatusLabelsMatch(
           SyncStatusMessageType::kSyncError, IDS_SYNC_SETTINGS_NOT_CONFIRMED,
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
-          SyncStatusActionType::kConfirmSyncSettings));
+          IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kConfirmSyncSettings));
 }
 
 // Errors in non-sync accounts should be ignored.
@@ -291,7 +304,8 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
-                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
+                            IDS_SYNC_EMPTY_STRING,
                             SyncStatusActionType::kNoAction));
 
   // Add an error to the secondary account.
@@ -305,7 +319,8 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
-                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
+                            IDS_SYNC_EMPTY_STRING,
                             SyncStatusActionType::kNoAction));
 }
 

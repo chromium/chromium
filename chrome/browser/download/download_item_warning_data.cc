@@ -39,12 +39,15 @@ enum class AddWarningActionEventOutcome {
   ADDED_WARNING_FIRST_SHOWN = 4,
   // The warning action event is successfully added.
   ADDED_WARNING_ACTION = 5,
-  kMaxValue = ADDED_WARNING_ACTION
+  // The warning action event is not added because the download is not
+  // dangerous.
+  NOT_ADDED_DOWNLOAD_NOT_DANGEROUS = 6,
+  kMaxValue = NOT_ADDED_DOWNLOAD_NOT_DANGEROUS
 };
 
 void RecordAddWarningActionEventOutcome(AddWarningActionEventOutcome outcome) {
   base::UmaHistogramEnumeration(
-      "Download.WarningData.AddWarningActionEventOutcome", outcome);
+      "Download.WarningData.AddWarningActionEventOutcome2", outcome);
 }
 
 void RecordSurfaceWithoutWarningShown(WarningSurface surface) {
@@ -104,6 +107,11 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   if (!download) {
     RecordAddWarningActionEventOutcome(
         AddWarningActionEventOutcome::NOT_ADDED_MISSING_DOWNLOAD);
+    return;
+  }
+  if (!download->IsDangerous()) {
+    RecordAddWarningActionEventOutcome(
+        AddWarningActionEventOutcome::NOT_ADDED_DOWNLOAD_NOT_DANGEROUS);
     return;
   }
   DownloadItemWarningData* data = GetOrCreate(download);

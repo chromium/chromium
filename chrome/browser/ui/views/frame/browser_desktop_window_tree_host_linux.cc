@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -330,11 +330,10 @@ void BrowserDesktopWindowTreeHostLinux::Show(
   }
 }
 
-bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect() const {
-  auto* x11_extension = GetX11Extension();
+bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
+    const ui::X11Extension& x11_extension) const {
   return (browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
-         x11_extension && x11_extension->IsWmTiling() &&
-         x11_extension->CanResetOverrideRedirect();
+         x11_extension.IsWmTiling() && x11_extension.CanResetOverrideRedirect();
 }
 
 gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(

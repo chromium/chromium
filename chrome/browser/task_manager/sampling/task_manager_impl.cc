@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
@@ -57,6 +58,17 @@ namespace {
 base::LazyInstance<TaskManagerImpl>::Leaky lazy_task_manager_instance =
     LAZY_INSTANCE_INITIALIZER;
 
+TaskId ComputeRootTaskId(const Task* task) {
+  CHECK(task);
+
+  // Walk up the tree to find the epoch task.
+  const Task* curr = task;
+  while (curr->HasParentTask()) {
+    curr = curr->GetParentTask().get();
+  }
+  return curr->task_id();
+}
+
 }  // namespace
 
 TaskManagerImpl::TaskManagerImpl()
@@ -79,10 +91,13 @@ TaskManagerImpl::TaskManagerImpl()
   // FallbackTaskProvider, so that a fallback task can be shown for a renderer
   // process if no other provider is shown for it.
   std::vector<std::unique_ptr<TaskProvider>> primary_subproviders;
+
   primary_subproviders.push_back(
       std::make_unique<SpareRenderProcessHostTaskProvider>());
   primary_subproviders.push_back(std::make_unique<WorkerTaskProvider>());
+
   primary_subproviders.push_back(std::make_unique<WebContentsTaskProvider>());
+
   task_providers_.push_back(std::make_unique<FallbackTaskProvider>(
       std::move(primary_subproviders),
       std::make_unique<RenderProcessHostTaskProvider>()));
@@ -114,7 +129,10 @@ TaskManagerImpl* TaskManagerImpl::GetInstance() {
 }
 
 bool TaskManagerImpl::IsCreated() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // In minimal mode, BrowserThread doesn't exist.
+  if (g_browser_process) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
   return lazy_task_manager_instance.IsCreated();
 }
 
@@ -251,8 +269,18 @@ const base::ProcessId& TaskManagerImpl::GetProcessId(TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->process_id();
 }
 
+TaskId TaskManagerImpl::GetRootTaskId(TaskId task_id) const {
+  const auto* task = GetTaskByTaskId(task_id);
+  CHECK(task);
+  return ComputeRootTaskId(task);
+}
+
 Task::Type TaskManagerImpl::GetType(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetType();
+}
+
+Task::SubType TaskManagerImpl::GetSubType(TaskId task_id) const {
+  return GetTaskByTaskId(task_id)->GetSubType();
 }
 
 SessionID TaskManagerImpl::GetTabId(TaskId task_id) const {

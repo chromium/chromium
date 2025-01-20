@@ -264,6 +264,10 @@ void GpuChannelHost::DestroyChannel() {
       base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
 }
 
+void GpuChannelHost::ResetChannelRemoteForTesting() {
+  gpu_channel_.reset();
+}
+
 int32_t GpuChannelHost::ReserveImageId() {
   return next_image_id_.GetNext();
 }

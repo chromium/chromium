@@ -27,8 +27,10 @@ enum class OptInEntryPoint {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubOptInEntryPoint)
 
 // Enumeration of possible opt-in entry points for Phone Hub Camera Roll
-// feature. Keep in sync with the corresponding
-// PhoneHubCameraRollOptInEntryPoint enum in
+// feature. Keep in sync with the corresponding CameraRollOptInEntryPoint enum
+// in
+// //chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom
+// and the PhoneHubCameraRollOptInEntryPoint enum in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
@@ -40,7 +42,7 @@ enum class CameraRollOptInEntryPoint {
   kSettings = 2,
   kMaxValue = kSettings,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollOptInEntryPoint)
+// LINT.ThenChange(//chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom:PhoneHubCameraRollOptInEntryPoint)
 
 // Enumeration of results of attempting to download a file from Phone Hub's
 // Camera Roll. Keep in sync with the corresponding
@@ -111,8 +113,7 @@ enum class PhoneHubMessageResult {
 // and PhoneHubPermissionsOnboardingSetUpResult enums in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupMode enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
 //
 // LINT.IfChange(PhoneHubPermissionsOnboardingSetUpMode)
 enum class PermissionsOnboardingSetUpMode {
@@ -129,8 +130,9 @@ enum class PermissionsOnboardingSetUpMode {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubPermissionsOnboardingSetUpMode)
 
 // Keep in sync with the PhoneHubPermissionsSetupFlowScreens enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
+//
+// LINT.IfChange(PhoneHubPermissionsSetupFlowScreens)
 enum class PermissionsOnboardingStep {
   kUnknown = 0,
   kDialogIntroAction = 1,
@@ -141,16 +143,14 @@ enum class PermissionsOnboardingStep {
   kDialogSetupFinished = 6,
   kDialogSetAPinOrPassword = 7
 };
+// LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:PhoneHubPermissionsSetupFlowScreens)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with the corresponding PhoneHubPermissionsOnboardingScreenEvent
 // enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
 // Keep in sync with the PhoneHubPermissionsSetupAction enum in
-// //chrome/browser/resources/ash/settings/multidevice_page/
-// multidevice_constants.ts
-// TODO(crbug.com/378518282): Verify multiple file syncing is supported before
-// updating the multidevice_constants.ts file.
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
 //
 // LINT.IfChange(PhoneHubPermissionsOnboardingScreenEvent)
 enum class PermissionsOnboardingScreenEvent {

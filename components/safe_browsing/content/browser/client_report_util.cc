@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/client_report_util.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 
@@ -165,7 +167,9 @@ GetSecurityInterstitialInteractionFromCommand(
 
 bool IsReportableUrl(const GURL& url) {
   // TODO(panayiotis): also skip internal urls.
-  return url.SchemeIs("http") || url.SchemeIs("https");
+  // chrome://safe-browsing/match?type=${THREAT_TYPE} is used for local tests.
+  return url.SchemeIs("http") || url.SchemeIs("https") ||
+         safe_browsing::IsSafeBrowsingWebUIUrl(url);
 }
 
 GURL GetPageUrl(const security_interstitials::UnsafeResource& resource) {

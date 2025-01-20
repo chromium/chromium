@@ -15,9 +15,10 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
@@ -216,7 +217,10 @@ public class HomepagePolicyManager implements PrefObserver {
 
     /** Called when the native library has finished loading. */
     private void onFinishNativeInitialization() {
-        if (!mIsInitializedWithNative) initializeWithNative(new PrefChangeRegistrar());
+        if (!mIsInitializedWithNative) {
+            initializeWithNative(
+                    PrefServiceUtil.createFor(ProfileManager.getLastUsedRegularProfile()));
+        }
     }
 
     private PrefService getPrefService() {

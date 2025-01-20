@@ -286,7 +286,7 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     assertEquals(savedNewFolderCount, 1);
   });
 
-  test('SavesNewFolderWithCustomNamne', async () => {
+  test('SavesNewFolderWithCustomName', async () => {
     let saveCount = 0;
     let savedUrl;
     let savedParent;

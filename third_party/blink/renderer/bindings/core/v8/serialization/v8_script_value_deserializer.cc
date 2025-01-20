@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
+#include <array>
 #include <limits>
 #include <optional>
 
@@ -40,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -96,10 +93,10 @@ const uint32_t kMinVersionForSeparateEnvelope = 16;
 // returned.
 size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
                            uint32_t* out_version) {
-  const uint8_t* raw_data = serialized_script_value->Data();
-  const size_t length = serialized_script_value->DataLengthInBytes();
-  if (!length || raw_data[0] != kVersionTag)
+  auto data = serialized_script_value->GetWireData();
+  if (data.empty() || data[0] != kVersionTag) {
     return 0;
+  }
 
   // Read a 32-bit unsigned integer from varint encoding.
   uint32_t version = 0;
@@ -107,9 +104,10 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
   unsigned shift = 0;
   bool has_another_byte;
   do {
-    if (i >= length)
+    if (i >= data.size()) {
       return 0;
-    uint8_t byte = raw_data[i];
+    }
+    uint8_t byte = data[i];
     if (shift < 32) [[likely]] {
       version |= static_cast<uint32_t>(byte & 0x7f) << shift;
       shift += 7;
@@ -129,8 +127,9 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
         1 + sizeof(uint64_t) + sizeof(uint32_t);
     DCHECK_LT(i, std::numeric_limits<size_t>::max() - kTrailerOffsetDataSize);
     i += kTrailerOffsetDataSize;
-    if (i >= length)
+    if (i >= data.size()) {
       return 0;
+    }
   }
 
   // Otherwise, we did read the envelope. Hurray!
@@ -528,7 +527,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return ReadDOMRectReadOnly();
     }
     case kDOMQuadTag: {
-      DOMPointInit* point_inits[4];
+      std::array<DOMPointInit*, 4> point_inits;
       for (int i = 0; i < 4; ++i) {
         auto* init = DOMPointInit::Create();
         double x = 0, y = 0, z = 0, w = 0;
@@ -593,20 +592,16 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           std::move(serialized_script_value_->MojoHandles()[index]));
     }
     case kOffscreenCanvasTransferTag: {
-      uint32_t width = 0, height = 0, canvas_id = 0, client_id = 0, sink_id = 0,
-               filter_quality = 0;
+      uint32_t width = 0, height = 0, canvas_id = 0, client_id = 0, sink_id = 0;
       if (!ReadUint32(&width) || !ReadUint32(&height) ||
           !ReadUint32(&canvas_id) || !ReadUint32(&client_id) ||
-          !ReadUint32(&sink_id) || !ReadUint32(&filter_quality))
+          !ReadUint32(&sink_id)) {
         return nullptr;
+      }
       OffscreenCanvas* canvas =
           OffscreenCanvas::Create(GetScriptState(), width, height);
       canvas->SetPlaceholderCanvasId(canvas_id);
       canvas->SetFrameSinkId(client_id, sink_id);
-      if (filter_quality == 0)
-        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kNone);
-      else
-        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kLow);
       return canvas;
     }
     case kReadableStreamTransferTag: {
@@ -817,8 +812,7 @@ scoped_refptr<BlobDataHandle> V8ScriptValueDeserializer::GetBlobDataHandle(
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
     v8::Isolate* isolate) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
+  ExceptionState exception_state(isolate);
   ScriptWrappable* wrappable = nullptr;
   SerializationTag tag = kVersionTag;
   if (ReadTag(&tag)) {
@@ -862,10 +856,8 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
-  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                    "Unable to deserialize SharedArrayBuffer.");
+  V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kDataCloneError,
+                             "Unable to deserialize SharedArrayBuffer.");
   // If the id does not map to a valid index, it is expected that the
   // SerializedScriptValue emptied its shared ArrayBufferContents when crossing
   // a process boundary.
@@ -879,10 +871,8 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
           serialized_script_value_->MaybeGetSharedValueConveyor()) {
     return conveyor;
   }
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
-                                 nullptr, nullptr);
-  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                    "Unable to deserialize shared JS value.");
+  V8ThrowDOMException::Throw(isolate, DOMExceptionCode::kDataCloneError,
+                             "Unable to deserialize shared JS value.");
   return nullptr;
 }
 

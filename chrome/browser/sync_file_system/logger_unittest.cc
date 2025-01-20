@@ -27,7 +27,7 @@ bool ContainsString(const std::string& contains_string,
 
 class LoggerTest : public testing::Test {
  public:
-  LoggerTest() {}
+  LoggerTest() = default;
 
   LoggerTest(const LoggerTest&) = delete;
   LoggerTest& operator=(const LoggerTest&) = delete;

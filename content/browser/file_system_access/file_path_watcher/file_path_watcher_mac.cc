@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_kqueue.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -17,6 +18,11 @@
 namespace content {
 
 namespace {
+
+// From experiment, we determined that the max calls to FSEventStreamCreate per
+// process is 512. There is a higher system wide limit (at least 970), but we
+// use the process limit since we'll hit it first.
+constexpr size_t kMaxCreateFSEventCalls = 512u;
 
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  public:
@@ -70,5 +76,14 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
 FilePathWatcher::FilePathWatcher()
     : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
+
+// static
+size_t FilePathWatcher::GetQuotaLimitImpl() {
+  // TODO(crbug.com/383148762): This is only applicable to the
+  // `FilePathWatcherFSEvents` implementation. `FilePathWatcherKQueue` is unused
+  // so this shouldn't matter.
+  return kMaxCreateFSEventCalls *
+         features::kFileSystemObserverQuotaLimitMacPercent.Get();
+}
 
 }  // namespace content

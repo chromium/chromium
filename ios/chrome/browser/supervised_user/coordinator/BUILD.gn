@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "parent_access_coordinator.h",
+    "parent_access_coordinator.mm",
+    "parent_access_mediator.h",
+    "parent_access_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/supervised_user/ui",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/web/model:delegate",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -24,57 +24,73 @@
           <div slot="collapse" class="settings-columned-section">
             <div class="column">
               <h3 class="description-header">
-                $i18n{privacyGuideFeatureDescriptionHeader}
+                $i18n{columnHeadingWhenOn}
               </h3>
-              <div id="updatedDescItemContainer" role="list">
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:data"
-                    label="$i18n{safeBrowsingEnhancedWhenOnBulOne}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:download"
-                    label="$i18n{safeBrowsingEnhancedWhenOnBulTwo}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:gshield"
-                    label="$i18n{safeBrowsingEnhancedWhenOnBulThree}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings:language"
-                    label="$i18n{safeBrowsingEnhancedWhenOnBulFour}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:vpn-key-new"
-                    label="$i18n{safeBrowsingEnhancedWhenOnBulFive}">
-                </privacy-guide-description-item>
-              </div>
+              <ul id="updatedDescItemContainer" class="icon-bulleted-list">
+                <li>
+                  <cr-icon icon="settings20:data" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedWhenOnBulOne}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings20:download" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedWhenOnBulTwo}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings20:gshield" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedWhenOnBulThree}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings:language" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedWhenOnBulFour}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings20:vpn-key-new" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedWhenOnBulFive}
+                  </div>
+                </li>
+              </ul>
             </div>
             <div class="column">
               <h3 class="description-header">
-                $i18n{privacyGuideThingsToConsider}
+                $i18n{columnHeadingConsider}
               </h3>
-              <div role="list">
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:link"
-                    label="$i18n{safeBrowsingEnhancedThingsToConsiderBulOne}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:account-circle"
-                    label="$i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings:performance"
-                    label="$i18n{safeBrowsingEnhancedThingsToConsiderBulThree}">
-                </privacy-guide-description-item>
-              </div>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon icon="settings20:link" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings20:account-circle" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon icon="settings:performance" aria-hidden="true">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
     </settings-collapse-radio-button>

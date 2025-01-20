@@ -20,7 +20,7 @@ config("nearby_include_config") {
     "//third_party",
 
     # For bloom filter.
-    "//third_party/smhasher",
+    "//third_party/smhasher/src",
   ]
 }
 
@@ -158,7 +158,6 @@ source_set("connections_implementation") {
     "src/connections/implementation/injected_bluetooth_device_store.h",
     "src/connections/implementation/internal_payload.h",
     "src/connections/implementation/internal_payload_factory.h",
-    "src/connections/implementation/message_lite.h",
     "src/connections/implementation/offline_frames.h",
     "src/connections/implementation/offline_frames_validator.h",
     "src/connections/implementation/offline_service_controller.h",
@@ -942,6 +941,7 @@ source_set("platform_public_types") {
     "src/internal/platform/timer_impl.h",
   ]
   public_deps = [
+    ":connections_implementation_flags",
     ":flags",
     ":platform_api_platform",
     ":platform_api_types",

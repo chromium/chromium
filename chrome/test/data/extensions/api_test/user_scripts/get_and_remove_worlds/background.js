@@ -51,6 +51,27 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function emptyWorldIdMapsToDefaultWorld() {
+    let defaultWorldWithEmptyIdConfig = { ...configForDefaultWorld };
+    defaultWorldWithEmptyIdConfig.worldId = '';
+
+    // Assign a config for a world with ''. This will map to the default world
+    // (where `worldId` is omitted).
+    await chrome.userScripts.configureWorld(defaultWorldWithEmptyIdConfig);
+    let worlds = await chrome.userScripts.getWorldConfigurations();
+    chrome.test.assertEq([configForDefaultWorld], worlds);
+
+    // Remove the default world configuration by removing the config for the
+    // empty-string world.
+    await chrome.userScripts.resetWorldConfiguration('');
+
+    // There should no longer be any registered configurations.
+    worlds = await chrome.userScripts.getWorldConfigurations();
+    chrome.test.assertEq([], worlds);
+
+    chrome.test.succeed();
+  },
+
   async function retrieveAndRemoveAdditionalWorldConfig() {
     // Add a non-default world config.
     await chrome.userScripts.configureWorld(configForOtherWorld);
@@ -96,10 +117,6 @@ chrome.test.runTests([
   },
 
   async function callingResetWithInvalidIdsFails() {
-    await chrome.test.assertPromiseRejects(
-        chrome.userScripts.resetWorldConfiguration(''),
-        'Error: If specified, `worldId` must be non-empty.');
-
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.resetWorldConfiguration('_foo'),
         `Error: World IDs beginning with '_' are reserved.`);

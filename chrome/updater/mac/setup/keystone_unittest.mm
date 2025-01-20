@@ -24,9 +24,7 @@
 namespace updater {
 
 class KeystoneTest : public testing::Test {
- public:
-  ~KeystoneTest() override = default;
-
+ protected:
   void SetUp() override {
     ASSERT_TRUE(temp_keystone_dir_.CreateUniqueTempDir());
 
@@ -46,7 +44,6 @@ class KeystoneTest : public testing::Test {
         temp_keystone_dir_.GetPath().AppendASCII("CountingMetrics.plist")));
   }
 
- protected:
   base::ScopedTempDir temp_keystone_dir_;
 };
 

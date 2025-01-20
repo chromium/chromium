@@ -177,6 +177,7 @@ class PasswordGenerationPopupControllerImpl
 
   // PasswordGenerationPopupController implementation:
   void PasswordAccepted() override;
+  void PasswordRejected() override;
   void SetSelected() override;
   void SelectionCleared() override;
 #if !BUILDFLAG(IS_ANDROID)

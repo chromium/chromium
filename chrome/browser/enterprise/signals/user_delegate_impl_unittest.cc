@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -121,19 +122,21 @@ TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
   auto other_account = identity_test_env_.MakeAccountAvailable(
-      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
+      kOtherUserEmail,
+      {.set_cookie = true, .gaia_id = GaiaId(kOtherUserGaiaId)});
 
   CreateDelegate();
-  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
+  EXPECT_FALSE(user_delegate_->IsSameUser(GaiaId(kOtherUserGaiaId)));
 }
 
 // Tests that IsSameUser returns false when there is no primary user.
 TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
   auto other_account = identity_test_env_.MakeAccountAvailable(
-      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
+      kOtherUserEmail,
+      {.set_cookie = true, .gaia_id = GaiaId(kOtherUserGaiaId)});
 
   CreateDelegate();
-  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
+  EXPECT_FALSE(user_delegate_->IsSameUser(GaiaId(kOtherUserGaiaId)));
 }
 
 // Tests that IsSameUser returns true when given the same user, and the

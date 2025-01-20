@@ -548,14 +548,14 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     wtf_size_t remove_idx = 0;
     for (const auto& [insert_end, remove_end] : metrics_partitions_) {
       // For each partition, removals are processed before insertions.
-      const auto removals = base::make_span(metrics_removed_anchors_)
+      const auto removals = base::span(metrics_removed_anchors_)
                                 .subspan(remove_idx, (remove_end - remove_idx));
       for (AnchorId removed_id : removals) {
         auto result = present.Set(removed_id, false);
         newly_removed.insert(removed_id, result.is_new_entry);
       }
-      const auto insertions = base::make_span(metrics_).subspan(
-          insert_idx, (insert_end - insert_idx));
+      const auto insertions =
+          base::span(metrics_).subspan(insert_idx, (insert_end - insert_idx));
       for (const auto& insertion : insertions) {
         present.Set(insertion->anchor_id, true);
       }

@@ -46,7 +46,7 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
   rc_config.num_temporal_layers = config.ts_number_layers;
   // Type of the video content (camera or display).
   rc_config.content_type = config.content_type;
-  rc_config.fixed_delta_qp = true;
+  rc_config.fixed_delta_qp = config.fixed_delta_qp;
   rc_config.ease_hrd_reduction = true;
   for (int tid = 0; tid < config.ts_number_layers; ++tid) {
     rc_config.layer_settings.emplace_back();

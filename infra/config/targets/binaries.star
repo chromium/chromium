@@ -233,6 +233,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "blink_python_tests",
     label = "//:blink_python_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     resultdb = targets.resultdb(
         enable = True,
     ),
@@ -561,6 +563,8 @@ targets.binaries.script(
     name = "chromedriver_py_tests",
     label = "//chrome/test/chromedriver:chromedriver_py_tests",
     script = "//testing/xvfb.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "../../testing/scripts/run_chromedriver_tests.py",
         "../../chrome/test/chromedriver/test/run_py_tests.py",
@@ -577,6 +581,8 @@ targets.binaries.script(
     name = "chromedriver_py_tests_headless_shell",
     label = "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
     script = "//testing/scripts/run_chromedriver_tests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "../../chrome/test/chromedriver/test/run_py_tests.py",
         "--chromedriver=chromedriver",
@@ -631,6 +637,8 @@ targets.binaries.script(
     name = "chromedriver_replay_unittests",
     label = "//chrome/test/chromedriver:chromedriver_replay_unittests",
     script = "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(
@@ -684,6 +692,8 @@ targets.binaries.script(
     name = "components_perftests",
     label = "//components:components_perftests",
     script = "//testing/scripts/run_performance_tests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--xvfb",
         "--non-telemetry=true",
@@ -994,6 +1004,8 @@ targets.binaries.script(
     name = "flatbuffers_unittests",
     label = "//third_party/flatbuffers:flatbuffers_unittests",
     script = "//testing/scripts/run_flatbuffers_unittests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     resultdb = targets.resultdb(
         enable = True,
         result_format = "single",
@@ -1106,6 +1118,8 @@ targets.binaries.script(
     name = "grit_python_unittests",
     label = "//tools/grit:grit_python_unittests",
     script = "//testing/scripts/run_isolated_script_test.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "../../tools/grit/grit/test_suite_all.py",
     ],
@@ -1127,6 +1141,11 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "headless_unittests",
     label = "//headless:headless_unittests",
+)
+
+targets.binaries.console_test_launcher(
+    name = "highway_tests",
+    label = "//third_party/highway:highway_tests",
 )
 
 targets.binaries.console_test_launcher(
@@ -1327,6 +1346,8 @@ targets.binaries.script(
 targets.binaries.generated_script(
     name = "mac_signing_tests",
     label = "//chrome/installer/mac:mac_signing_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.generated_script(
@@ -1434,6 +1455,8 @@ targets.binaries.script(
     name = "mojo_python_unittests",
     label = "//mojo/public/tools:mojo_python_unittests",
     script = "//testing/scripts/run_isolated_script_test.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "../../mojo/public/tools/run_all_python_unittests.py",
     ],
@@ -1556,6 +1579,11 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "opt_target_coverage_test",
+    label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+)
+
+targets.binaries.generated_script(
     name = "chrome_ai_wpt_tests",
     label = "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
     results_handler = "layout tests",
@@ -1667,13 +1695,27 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-    label = "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    name = "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+    label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
 )
 
 targets.binaries.generated_script(
+    name = "performance_test_suite_android_trichrome_chrome_google_bundle",
+    label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_bundle",
+)
+
+# TODO(https://crbug.com/378731077): Remove when migration is done.
+targets.binaries.generated_script(
+    name = "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    label = "//chrome/test:performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
+    skip_usage_check = True,  # Necessary until Pinpoint targets are migrated.
+)
+
+# TODO(https://crbug.com/378731077): Remove when migration is done.
+targets.binaries.generated_script(
     name = "performance_test_suite_android_clank_trichrome_bundle",
     label = "//chrome/test:performance_test_suite_android_clank_trichrome_bundle",
+    skip_usage_check = True,  # Necessary until Pinpoint targets are migrated.
 )
 
 targets.binaries.script(
@@ -2101,6 +2143,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.console_test_launcher(
     name = "updater_tests",
     label = "//chrome/updater:updater_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--gtest_shuffle",
         "--test-launcher-timeout=180000",
@@ -2112,6 +2156,8 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "updater_tests_system",
     label = "//chrome/updater:updater_tests_system",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--gtest_shuffle",
         "--test-launcher-timeout=180000",
@@ -2125,6 +2171,8 @@ targets.binaries.script(
     name = "updater_tests_win_uac",
     label = "//chrome/updater:updater_tests_win_uac",
     script = "//testing/scripts/run_telemetry_as_googletest.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "test_service/run_command_as_standard_user.py",
         "--command=updater_tests.exe",
@@ -2189,6 +2237,8 @@ targets.binaries.script(
     name = "views_perftests",
     label = "//ui/views:views_perftests",
     script = "//testing/scripts/run_performance_tests.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     args = [
         "--xvfb",
         "--non-telemetry=true",

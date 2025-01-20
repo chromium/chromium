@@ -88,6 +88,11 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // prepended automatically.
   virtual base::CommandLine::StringVector GetChromiumCommandLineArguments();
 
+  // Override if (unusually) your fuzzer should use Chromium in multi-
+  // process mode. This can make results more realistic, but impedes
+  // collection of coverage from the renderer.
+  virtual bool UseSingleProcessMode();
+
  protected:
   // Callback to actually do your fuzzing. This is called from the UI thread,
   // so you should take care not to block the thread too long. If you need

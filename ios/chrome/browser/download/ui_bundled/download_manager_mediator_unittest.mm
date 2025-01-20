@@ -282,8 +282,6 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 // Tests that calling `mediator_.SetGoogleDriveAppInstalled()` does inform the
 // consumer accordingly.
 TEST_F(DownloadManagerMediatorTest, SetGoogleDriveAppInstalled) {
-  base::test::ScopedFeatureList feature_list(kIOSSaveToDrive);
-
   // Add WebState to the task with the required tab helpers.
   web::FakeWebState web_state;
   DocumentDownloadTabHelper::CreateForWebState(&web_state);

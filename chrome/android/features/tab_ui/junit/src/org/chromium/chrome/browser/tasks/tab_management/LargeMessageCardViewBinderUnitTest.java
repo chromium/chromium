@@ -19,12 +19,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +40,8 @@ public class LargeMessageCardViewBinderUnitTest {
     private static final String FAKE_DISPLAY_TEXT = "Fake Text";
     private static final int FAKE_ICON_WIDTH = 666;
     private static final int FAKE_ICON_HEIGHT = 999;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock LargeMessageCardView mMockLargeCardView;
 
@@ -63,7 +67,6 @@ public class LargeMessageCardViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModel = new PropertyModel(MessageCardViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(

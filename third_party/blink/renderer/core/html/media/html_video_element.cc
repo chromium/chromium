@@ -186,7 +186,7 @@ void HTMLVideoElement::UpdatePosterImage() {
 void HTMLVideoElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
     const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
@@ -594,8 +594,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-        if (auto* context_provider = wrapper->ContextProvider())
-          raster_context_provider = context_provider->RasterContextProvider();
+        raster_context_provider =
+            wrapper->ContextProvider().RasterContextProvider();
       }
     }
     resource_provider_.reset();
@@ -851,6 +851,32 @@ void HTMLVideoElement::AttributeChanged(
 void HTMLVideoElement::OnRequestVideoFrameCallback() {
   if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this)) {
     vfc_requester->OnRequestVideoFrameCallback();
+  }
+}
+
+void HTMLVideoElement::SetCcLayer(cc::Layer* cc_layer) {
+  HTMLMediaElement::SetCcLayer(cc_layer);
+  if (auto* layer = CcLayer()) {
+    layer->SetFilterQuality(filter_quality_);
+    layer->SetDynamicRangeLimit(dynamic_range_limit_);
+  }
+}
+
+void HTMLVideoElement::StyleDidChange(const ComputedStyle* old_style,
+                                      const ComputedStyle& new_style) {
+  const auto new_filter_quality =
+      (new_style.ImageRendering() == EImageRendering::kPixelated)
+          ? cc::PaintFlags::FilterQuality::kNone
+          : cc::PaintFlags::FilterQuality::kLow;
+  const auto new_dynamic_range_limit = new_style.GetDynamicRangeLimit();
+  if (filter_quality_ != new_filter_quality ||
+      dynamic_range_limit_ != new_dynamic_range_limit) {
+    filter_quality_ = new_filter_quality;
+    dynamic_range_limit_ = new_dynamic_range_limit;
+    if (auto* layer = CcLayer()) {
+      layer->SetFilterQuality(filter_quality_);
+      layer->SetDynamicRangeLimit(dynamic_range_limit_);
+    }
   }
 }
 

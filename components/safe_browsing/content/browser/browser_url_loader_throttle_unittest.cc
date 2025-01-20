@@ -115,7 +115,8 @@ class FakeRealTimeUrlLookupService
       const GURL& url,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {}
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) override {}
 };
 
 class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
@@ -169,7 +170,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
             hash_realtime_selection,
             is_async_check,
             /*check_allowlist_before_hash_database=*/false,
-            SessionID::InvalidValue()) {}
+            SessionID::InvalidValue(),
+            /*referring_app_info=*/std::nullopt) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -286,7 +288,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
         async_check_enabled
             ? hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService
             : hash_realtime_utils::HashRealTimeSelection::kNone,
-        async_check_tracker_ ? async_check_tracker_->GetWeakPtr() : nullptr);
+        async_check_tracker_ ? async_check_tracker_->GetWeakPtr() : nullptr,
+        /*referring_app_info=*/std::nullopt);
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();

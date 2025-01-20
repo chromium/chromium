@@ -23,6 +23,7 @@
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -70,6 +71,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -141,8 +143,9 @@ void CopyAttributesToSyncItem(const AppListSyncableService::SyncItem* source,
 bool AppIsDefault(Profile* profile, const std::string& id) {
   // Querying the extension system is legacy logic from the time that we only
   // had extension apps.
-  if (extensions::ExtensionPrefs::Get(profile)->WasInstalledByDefault(id))
+  if (WasInstalledByDefault(extensions::ExtensionPrefs::Get(profile), id)) {
     return true;
+  }
 
   bool result = false;
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -1820,10 +1823,10 @@ std::string AppListSyncableService::SyncItem::ToString() const {
     if (!parent_id.empty()) {
       res += " <" + parent_id.substr(0, 8) + ">";
     }
-    res += " [" + item_pin_ordinal.ToDebugString() + "(up=" +
-           (is_user_pinned.has_value() ? (*is_user_pinned ? "true" : "false")
-                                       : "?") +
-           ")]";
+    res +=
+        " [" + item_pin_ordinal.ToDebugString() + "(up=" +
+        (is_user_pinned.has_value() ? base::ToString(*is_user_pinned) : "?") +
+        ")]";
   }
 
   if (item_color.IsValid()) {

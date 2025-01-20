@@ -5,6 +5,7 @@
 module commerce.mojom;
 
 import "components/commerce/core/mojom/shopping_service.mojom";
+import "components/commerce/core/mojom/shared.mojom";
 import "url/mojom/url.mojom";
 
 // This defines a binary detail (i.e., is syncing bookmarks) for shopping
@@ -37,7 +38,7 @@ interface CommerceInternalsHandlerFactory {
 
 struct Subscription {
   uint64 cluster_id;
-  array<shopping_service.mojom.BookmarkProductInfo> product_infos;
+  array<commerce.shared.mojom.BookmarkProductInfo> product_infos;
 };
 
 // TODO(crbug.com/359684270) add more comments and investigate
@@ -63,7 +64,7 @@ interface CommerceInternalsHandler {
   ResetPriceTrackingEmailPref();
   // Returns the product info for the provided URL if it exists.
   GetProductInfoForUrl(url.mojom.Url url) =>
-      (shopping_service.mojom.ProductInfo info);
+      (commerce.shared.mojom.ProductInfo info);
   // Returns the products the user has subscribed to.
   GetSubscriptionDetails() =>
      (array<Subscription> subscriptions);

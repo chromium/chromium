@@ -232,7 +232,6 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   }
 
-
   if (request_chip_controller_->is_confirmation_showing()) {
     request_chip_controller_->ResetPermissionPromptChip();
   }
@@ -257,7 +256,7 @@ bool PermissionDashboardController::Update(
           location_bar_view_->browser()
               ->tab_strip_model()
               ->GetActiveTab()
-              ->tab_features()
+              ->GetTabFeatures()
               ->permission_indicators_tab_data();
       if (permission_indicators_tab_data &&
           permission_indicators_tab_data->IsVerboseIndicatorAllowed(
@@ -319,7 +318,7 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
       location_bar_view_->browser()
           ->tab_strip_model()
           ->GetActiveTab()
-          ->tab_features()
+          ->GetTabFeatures()
           ->permission_indicators_tab_data();
 
   if (permission_indicators_tab_data) {

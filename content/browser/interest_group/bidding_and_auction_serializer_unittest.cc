@@ -112,8 +112,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithDefaultConfig) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
@@ -140,8 +138,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
@@ -188,8 +184,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 2, 1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 0);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 0);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
@@ -225,8 +219,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest,
@@ -323,8 +315,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 200, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
@@ -364,8 +354,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 95, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 // Test that the encrypted request still has the full size even when the

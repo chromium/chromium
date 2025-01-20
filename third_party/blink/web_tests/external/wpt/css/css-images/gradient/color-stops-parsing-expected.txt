@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] linear-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] linear-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-linear-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-linear-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] radial-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] radial-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-radial-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-radial-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] conic-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] conic-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-conic-gradient(black) [ parsable ]
+  assert_equals: expected true but got false
+[FAIL] repeating-conic-gradient(black 0%) [ parsable ]
+  assert_equals: expected true but got false
+Harness: the test ran to completion.
+

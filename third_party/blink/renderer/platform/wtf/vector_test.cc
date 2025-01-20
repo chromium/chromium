@@ -47,14 +47,6 @@ unsigned LivenessCounter::live_ = 0;
 
 namespace {
 
-struct SameSizeAsVector {
-  void* buffer;
-  wtf_size_t capacity;
-  wtf_size_t size;
-};
-
-ASSERT_SIZE(Vector<int>, SameSizeAsVector);
-
 #define FAIL_COMPILE 0
 #if FAIL_COMPILE
 // This code should trigger static_assert failure in Vector::TypeConstraints.
@@ -62,8 +54,20 @@ struct StackAllocatedType {
   STACK_ALLOCATED();
 };
 
-TEST(VectorTest, FailCompile) {
+TEST(VectorTest, FailCompile1) {
   Vector<StackAllocatedType> v;
+}
+
+TEST(VectorTest, FailCompile2) {
+  Vector<int> v1, v2;
+  // assign() without projection is available only if the input parameter is
+  // of a different vector type.
+  v1.assign(v2);
+}
+
+TEST(VectorTest, FailCompile3) {
+  Vector<int> v1;
+  Vector<int> v2 = ToVector(v1);
 }
 #endif
 
@@ -615,7 +619,7 @@ TEST(VectorTest, AppendContainers) {
 
   result.AppendVector(empty_vector);
   result.AppendRange(other_array.end(), other_array.end());
-  result.AppendSpan(base::span(other_c_array).subspan(4));
+  result.AppendSpan(base::span(other_c_array).subspan<4>());
   EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
 }
 
@@ -768,6 +772,12 @@ TEST(VectorTest, WTFEraseIf) {
   EXPECT_THAT(v, testing::ElementsAre(1, 3, 5));
 }
 
+TEST(VectorTest, CopyWithImplicitConversion) {
+  Vector<float> v1 = {1, 2, 3};
+  Vector<double> v2(v1);
+  EXPECT_THAT(v2, testing::ElementsAre(1, 2, 3));
+}
+
 TEST(VectorTest, CopyWithProjection) {
   {
     using ValueType = std::pair<int, int>;
@@ -778,6 +788,26 @@ TEST(VectorTest, CopyWithProjection) {
   {
     Vector<int> v1 = {1, 2, 3, 4, 5, 6};
     Vector<int> v2(v1, std::negate<>());
+    EXPECT_THAT(v2, testing::ElementsAre(-1, -2, -3, -4, -5, -6));
+  }
+}
+
+TEST(VectorTest, ToVector) {
+  std::array<int, 3> array = {1, 2, 3};
+  auto v = ToVector(array);
+  EXPECT_THAT(v, testing::ElementsAre(1, 2, 3));
+}
+
+TEST(VectorTest, ToVectorWithProjection) {
+  {
+    using ValueType = std::pair<int, int>;
+    Vector<ValueType> v1 = {{1, 2}, {3, 4}, {5, 6}};
+    auto v2 = ToVector(v1, &ValueType::second);
+    EXPECT_THAT(v2, testing::ElementsAre(2, 4, 6));
+  }
+  {
+    Vector<int> v1 = {1, 2, 3, 4, 5, 6};
+    auto v2 = ToVector(v1, std::negate<>());
     EXPECT_THAT(v2, testing::ElementsAre(-1, -2, -3, -4, -5, -6));
   }
 }

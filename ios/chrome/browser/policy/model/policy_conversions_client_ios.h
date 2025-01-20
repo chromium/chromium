@@ -10,18 +10,14 @@
 
 class ProfileIOS;
 
-namespace web {
-class BrowserState;
-}
-
 // PolicyConversionsClientIOS provides an implementation of the
 // PolicyConversionsClient interface that is based on Profile and is
 // suitable for use in //ios/chrome.
 class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
  public:
   // Creates a PolicyConversionsClientIOS which retrieves BrowserState-specific
-  // policy information from the given `browser_state`.
-  explicit PolicyConversionsClientIOS(web::BrowserState* browser_state);
+  // policy information from the given `profile`.
+  explicit PolicyConversionsClientIOS(ProfileIOS* profile);
 
   PolicyConversionsClientIOS(const PolicyConversionsClientIOS&) = delete;
   PolicyConversionsClientIOS& operator=(const PolicyConversionsClientIOS&) =

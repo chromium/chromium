@@ -18,16 +18,20 @@ LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
 def from_original_video(recorded: str, original: str) -> object:
     """ Analyzes the |recorded| video file by using the |original| as the
         reference, and returns the results as an json object. """
-    BINARY = '/usr/local/cipd/local_analyzer/local_video_analyzer.par'
-    if not os.path.isfile(BINARY):
-        logging.warning(
-            '%s is not found, no video analysis result would be ' +
-            'generated.', BINARY)
-        return {}
+    binary = '/usr/local/cipd/local_analyzer/local_video_analyzer.par'
+    assert os.path.isfile(binary)
+    _, filename = os.path.split(original)
+    output_dir = os.path.join(LOG_DIR, filename)
+    os.mkdir(output_dir)
     subprocess.run([
-        BINARY, '--gid=', '--uid=', f'--ref_video_file={original}',
-        f'--test_video_file={recorded}', f'--output_folder={LOG_DIR}'
+        binary, '--gid=', '--uid=', '--loas_pwd_fallback_in_corp',
+        f'--ref_video_file={original}', f'--test_video_file={recorded}',
+        f'--output_folder={output_dir}'
     ],
                    check=True)
-    with open(os.path.join(LOG_DIR, 'results.json'), 'r') as file:
-        return json.load(file)
+    try:
+        with open(os.path.join(output_dir, 'results.json'), 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        logging.warning('No results.json file generated in %s', output_dir)
+        return {}

@@ -32,7 +32,6 @@
 
 namespace {
 
-// TODO(b/302179948) Increment version once server change hits beta.
 // send_key_events() is only available since version 2.
 constexpr uint32_t kMinVersion = 2;
 
@@ -288,6 +287,18 @@ void WaylandInputEmulate::ForceUseScreenCoordinatesOnce() {
 }
 #endif
 
+void WaylandInputEmulate::DestroyTestWindowState(TestWindow* window) {
+  if (window->frame_callback) {
+    wl_callback_destroy(window->frame_callback.ExtractAsDangling());
+  }
+  if (window->buffer) {
+    auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+    // This also destroys the buffer.
+    wayland_proxy->DestroyShmForWlBuffer(window->buffer.ExtractAsDangling());
+    wayland_proxy->FlushForTesting();
+  }
+}
+
 void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
                                              bool is_configured) {
   auto it = windows_.find(widget);
@@ -299,18 +310,8 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
   if (!is_configured) {
     test_surface->buffer_attached_and_configured = false;
     test_surface->waiting_for_buffer_commit = false;
-    // Also destroy the frame callback...
-    if (test_surface->frame_callback) {
-      wl_callback_destroy(test_surface->frame_callback);
-      test_surface->frame_callback = nullptr;
-    }
-    // ... and the buffer.
-    if (test_surface->buffer) {
-      auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-      wayland_proxy->DestroyShmForWlBuffer(test_surface->buffer);
-      wayland_proxy->FlushForTesting();
-      test_surface->buffer = nullptr;
-    }
+    DestroyTestWindowState(test_surface);
+
     DispatchPendingRequests();
     return;
   }
@@ -369,18 +370,7 @@ void WaylandInputEmulate::OnWindowRemoved(gfx::AcceleratedWidget widget) {
   auto it = windows_.find(widget);
   CHECK(it != windows_.end());
 
-  // Destroy the frame callback.
-  if (it->second->frame_callback) {
-    wl_callback_destroy(it->second->frame_callback);
-    it->second->frame_callback = nullptr;
-  }
-
-  // Destroy the attached buffer.
-  if (it->second->buffer) {
-    auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-    wayland_proxy->DestroyShmForWlBuffer(it->second->buffer);
-    wayland_proxy->FlushForTesting();
-  }
+  DestroyTestWindowState(it->second.get());
   windows_.erase(it);
 }
 

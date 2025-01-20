@@ -159,11 +159,20 @@ bool PolicyErrorMap::HasFatalError(const std::string& policy) {
 }
 
 std::u16string PolicyErrorMap::GetErrorMessages(const std::string& policy) {
+  return GetErrorMessages(policy, PolicyMap::MessageType::kError);
+}
+
+std::u16string PolicyErrorMap::GetErrorMessages(
+    const std::string& policy,
+    PolicyMap::MessageType message_type) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
   std::vector<std::u16string_view> list;
-  for (auto it = range.first; it != range.second; ++it)
-    list.push_back(it->second.message);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second.level == message_type) {
+      list.push_back(it->second.message);
+    }
+  }
   return base::JoinString(list, u"\n");
 }
 

@@ -61,6 +61,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
@@ -1271,7 +1272,8 @@ bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
     char16_t ch) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Only check for acceleration when the current input text is "@" exactly.
-  if (input_text.size() != 1 || !input_text.starts_with('@') ||
+  if (AutocompleteInput::GetFeaturedKeywordMode(input_text) !=
+          AutocompleteInput::FeaturedKeywordMode::kExact ||
       !history_embeddings::GetFeatureParameters().at_keyword_acceleration) {
     return false;
   }
@@ -1583,7 +1585,7 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
     // We don't call MaybeStripKeyword, as we haven't yet updated our internal
     // state (keyword_ and is_keyword_hint_), and MaybeStripKeyword checks this.
     user_text_ =
-        KeywordProvider::SplitReplacementStringFromInput(user_text_, false);
+        AutocompleteInput::SplitReplacementStringFromInput(user_text_, false);
     original_user_text_with_keyword_.clear();
   }
 
@@ -1620,7 +1622,7 @@ void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
 std::u16string OmniboxEditModel::MaybeStripKeyword(
     const std::u16string& text) const {
   return is_keyword_selected()
-             ? KeywordProvider::SplitReplacementStringFromInput(text, false)
+             ? AutocompleteInput::SplitReplacementStringFromInput(text, false)
              : text;
 }
 
@@ -2032,12 +2034,15 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // associated_keyword of the match we're on. Populate the a11y string
       // with information from the keyword match, rather than the current match.
       CHECK(match.associated_keyword) << match.keyword;
-      TemplateURL* turl = match.associated_keyword->GetTemplateURL(
+      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
           controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
-      return l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE,
-                                        replacement_string);
+      int message_id = (turl && turl->starter_pack_id() ==
+                                    TemplateURLStarterPackData::kGemini)
+                           ? IDS_ACC_ASK_KEYWORD_MODE
+                           : IDS_ACC_KEYWORD_MODE;
+      return l10n_util::GetStringFUTF16(message_id, replacement_string);
     }
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
@@ -2571,19 +2576,20 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                                           now - last_omnibox_focus_);
   }
 
-  IDNA2008DeviationCharacter deviation_char_in_hostname =
-      IDNA2008DeviationCharacter::kNone;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
     if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_KEYWORD)) {
+            match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
+        match.provider->type() ==
+            AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
       // The user is using a non-substituting keyword or is explicitly in
       // keyword mode.
 
       // Don't increment usage count for extension keywords.
-      if (controller_->client()->ProcessExtensionKeyword(
-              input_text, template_url, match, disposition)) {
+      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+        controller_->client()->ProcessExtensionMatch(input_text, template_url,
+                                                     match, disposition);
         if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
           base::AutoReset<bool> tmp(&in_revert_, true);
           view_->RevertAll();
@@ -2626,24 +2632,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
         ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
                                                     ui::PAGE_TRANSITION_LINK)) {
       net::cookie_util::RecordCookiePortOmniboxHistograms(destination_url);
-
-      if (destination_url.SchemeIsHTTPOrHTTPS()) {
-        // Extract the typed hostname from autocomplete input for IDNA 2008
-        // metrics. We can't use GURL here as it removes the deviation
-        // characters that we want to measure.
-        size_t hostname_begin = input_.parts().host.begin;
-        if (input_.added_default_scheme_to_typed_url() && hostname_begin > 0) {
-          // If the omnibox upgrades a navigation to https, it offsets
-          // components by one to the right due to the added "s" to http. Adjust
-          // the offset again. Ideally, hostname_begin should always be non-zero
-          // in that case, but we check it for safety.
-          --hostname_begin;
-        }
-        std::u16string hostname(input_.text(), hostname_begin,
-                                static_cast<size_t>(input_.parts().host.len));
-        deviation_char_in_hostname =
-            navigation_metrics::RecordIDNA2008Metrics(hostname);
-      }
     }
   }
 
@@ -2697,8 +2685,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
           VerbatimMatchForInput(
               autocomplete_controller()->history_url_provider(),
               autocomplete_controller()->autocomplete_provider_client(),
-              alternate_input, alternate_nav_url, false),
-          deviation_char_in_hostname);
+              alternate_input, alternate_nav_url, false));
     }
   }
 }
@@ -2770,10 +2757,12 @@ bool OmniboxEditModel::CreatedKeywordSearchByInsertingSpaceInMiddle(
   std::u16string keyword;
   base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
                        &keyword);
-  return !keyword.empty() && !autocomplete_controller()
-                                  ->keyword_provider()
-                                  ->GetKeywordForText(keyword)
-                                  .empty();
+  return !keyword.empty() &&
+         !autocomplete_controller()
+              ->keyword_provider()
+              ->GetKeywordForText(
+                  keyword, controller_->client()->GetTemplateURLService())
+              .empty();
 }
 
 //  static

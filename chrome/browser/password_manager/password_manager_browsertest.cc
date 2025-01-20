@@ -49,9 +49,9 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-test-utils.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -92,6 +92,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -4097,7 +4098,8 @@ class PasswordManagerBrowserTestWithSigninInterception
   // another dummy account in Chrome that acts as the primary.
   void SetupAccountsForSavingGaiaPassword() {
     CoreAccountId dummy_account = helper_.AddGaiaAccountToProfile(
-        browser()->profile(), "dummy_email@example.com", "dummy_gaia_id");
+        browser()->profile(), "dummy_email@example.com",
+        GaiaId("dummy_gaia_id"));
     IdentityManagerFactory::GetForProfile(browser()->profile())
         ->GetPrimaryAccountMutator()
         ->SetPrimaryAccount(dummy_account, signin::ConsentLevel::kSignin);

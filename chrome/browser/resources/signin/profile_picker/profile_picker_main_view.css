@@ -37,12 +37,53 @@
   text-align: center;
 }
 
+#images-container {
+  display: flex;
+  justify-content: center;
+  column-gap: 12px;
+}
+
+#glic-logo,
 #product-logo {
   height: 32px;
 }
 
+#glic-logo {
+  content: url(glic_logo.svg);
+}
+
 .title {
   margin-bottom: 8px;
+}
+
+/* This style will be applied on parts of the Glic version of the title. */
+/* Check IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC string resource. */
+.glic-brand-style {
+  background: linear-gradient(74deg,
+      darkgrey 0%,
+      white 50%,
+      grey 100%);
+
+  background-clip: text;
+  color: transparent;
+}
+
+#footer-text {
+  font-size: 0.75rem;
+  line-height: 22px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  max-width: 370px;
+  position: relative;
+  text-align: center;
+  /* TODO(crbug.com/385726690): "z-index" and "position: relative" are needed
+   * here because the footer section might overlap with this text, and since we
+   * need this text to be clickable, it should have the priority. This should
+   * be fixed when moving this div in the upper container, which won't need
+   * this workaround.
+   */
+  z-index: 1;
 }
 
 .subtitle {

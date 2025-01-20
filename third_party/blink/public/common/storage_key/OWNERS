@@ -1,7 +1,5 @@
-file://storage/OWNERS
-
 # Primary:
-ayui@chromium.org
+file://storage/OWNERS
 
 # Secondary:
 arichiv@chromium.org

@@ -44,7 +44,7 @@ class SetIconAPITest : public ExtensionApiTest {
       // Set the channel to "trunk" since declarativeContent is restricted
       // to trunk.
       : current_channel_(version_info::Channel::UNKNOWN) {}
-  ~SetIconAPITest() override {}
+  ~SetIconAPITest() override = default;
 
  protected:
   const Extension* LoadTestExtension() {

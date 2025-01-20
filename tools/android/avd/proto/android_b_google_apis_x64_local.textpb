@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 16 (Baklava Developer Preview 1) AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "PwE-fhnGAi9WQGkO2khXwvg9MhB2ROmJRBCvQhwkn3kC"  # 35.2.10 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-baklava/google_apis/x86_64"
+    version: "4Hz6NKLpNeRQgUbzHhpArXl4xhQySAbE406KXvgBj7YC"  # (v2) BP21.241121.010
+}
+system_image_name: "system-images;android-Baklava;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-baklava/google_apis/x86_64"
+  version: "vvxgAC7ifxXS96BMN3GOl0CGQcziiV3kZr_VeGa0VLIC"
+}
+avd_name: "android_b_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}

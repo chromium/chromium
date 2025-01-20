@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -184,7 +185,7 @@ class EligibilityServiceOTRProfileTest
   EligibilityServiceOTRProfileTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"enable_otr_profiles", GetParam() ? "true" : "false"}});
+        {{"enable_otr_profiles", base::ToString(GetParam())}});
   }
 
  private:

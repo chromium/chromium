@@ -19,7 +19,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -207,7 +207,10 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(web_contents);
-  if (ui_manager->IsAllowlisted(resource) && security_interstitial_tab_helper &&
+  bool is_allowlisted =
+      ui_manager->IsAllowlisted(resource.url, resource.rfh_locator,
+                                resource.navigation_id, resource.threat_type);
+  if (is_allowlisted && security_interstitial_tab_helper &&
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.

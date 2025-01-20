@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -328,9 +329,16 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   RegisterWebApp(CreateWebApp(kDevAppStartUrl));
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> installed_app =
-      fake_provider().registrar_unsafe().FindInstalledAppWithUrlInScope(
-          kDevAppStartUrl);
+      fake_provider().registrar_unsafe().FindBestAppWithUrlInScope(
+          kDevAppStartUrl,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          },
+          {});
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactoryForFrame();

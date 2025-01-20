@@ -47,8 +47,9 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
 }
 
 BatterySaverButton::~BatterySaverButton() {
-  if (IsBubbleShowing())
+  if (IsBubbleShowing()) {
     BatterySaverBubbleView::CloseBubble(bubble_);
+  }
 }
 
 bool BatterySaverButton::IsBubbleShowing() const {
@@ -62,8 +63,9 @@ void BatterySaverButton::Show() {
 
   // Wait until the view is properly laid out before triggering the promo
   // The promo will be triggered in |OnBoundsChanged| if the flag is set
-  if (!was_visible)
+  if (!was_visible) {
     pending_promo_ = true;
+  }
 }
 
 void BatterySaverButton::Hide() {
@@ -89,11 +91,13 @@ bool BatterySaverButton::ShouldShowInkdropAfterIphInteraction() {
 void BatterySaverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ToolbarButton::OnBoundsChanged(previous_bounds);
 
-  if (!GetVisible() || size().IsEmpty())
+  if (!GetVisible() || size().IsEmpty()) {
     return;
+  }
 
-  if (pending_promo_)
+  if (pending_promo_) {
     MaybeShowFeaturePromo();
+  }
 }
 
 void BatterySaverButton::OnClicked() {

@@ -176,6 +176,9 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // range from |event_min| to |event_max|, inclusive.
     void RegisterGlobalEventHook(UINT event_min, UINT event_max);
 
+    // Returns the delay to use for scheduling the next occlusion calculation.
+    const base::TimeDelta GetUpdateOcclusionDelay();
+
     // Registers the EVENT_OBJECT_LOCATIONCHANGE event hook for the process with
     // passed id. The process has one or more visible, opaque windows.
     void RegisterEventHookForProcess(DWORD pid);

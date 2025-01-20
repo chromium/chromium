@@ -83,8 +83,10 @@ public class StartupPaintPreviewHelperTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
+                                .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(tab).allowUndo(false).build()));
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
         assertHasCaptureForTab(tab, false);
     }
 
@@ -149,8 +151,10 @@ public class StartupPaintPreviewHelperTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
+                                .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(tab).allowUndo(false).build()));
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
         assertHasCaptureForTab(previewTab, false);
     }
 

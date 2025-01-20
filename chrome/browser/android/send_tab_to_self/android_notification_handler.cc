@@ -43,14 +43,16 @@ namespace {
 
 content::WebContents* GetWebContentsForProfile(Profile* profile) {
   for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile)
+    if (tab_model->GetProfile() != profile) {
       continue;
+    }
 
     int tab_count = tab_model->GetTabCount();
     for (int i = 0; i < tab_count; i++) {
       content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
-      if (web_contents)
+      if (web_contents) {
         return web_contents;
+      }
     }
   }
   return nullptr;
@@ -178,8 +180,9 @@ void AndroidNotificationHandler::DismissEntries(
 }
 
 void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
 
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,

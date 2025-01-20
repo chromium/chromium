@@ -65,9 +65,6 @@ declare namespace chrome {
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
-    // Whether the automatic voice switching feature flag is enabled.
-    let isAutoVoiceSwitchingEnabled: boolean;
-
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 
@@ -280,6 +277,9 @@ declare namespace chrome {
 
     // Read Aloud state should be updated if the lock screen state changes.
     function onLockScreen(): void;
+
+    // Ping that a new tts engine has installed.
+    function onTtsEngineInstalled(): void;
 
     // Called with the response of sendGetVoicePackInfoRequest() or
     // sendInstallVoicePackRequest()

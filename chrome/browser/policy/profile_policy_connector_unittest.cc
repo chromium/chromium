@@ -137,8 +137,8 @@ void UpdateChromePolicyToMockProviderAndVerify(
 
 class ProfilePolicyConnectorTest : public testing::Test {
  protected:
-  ProfilePolicyConnectorTest() {}
-  ~ProfilePolicyConnectorTest() override {}
+  ProfilePolicyConnectorTest() = default;
+  ~ProfilePolicyConnectorTest() override = default;
 
   void SetUp() override {
     auto cloud_policy_store = std::make_unique<MockCloudPolicyStore>();

@@ -133,151 +133,211 @@ enum class ProfileSignout {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
+// Each entry has a synonym in order to progressively remove the ACCESS_POINT
+// prefix.
+// TODO(crbug.com/389192722): Remove the long version of the entry.
 // LINT.IfChange
 enum class AccessPoint : int {
-  ACCESS_POINT_START_PAGE = 0,
-  ACCESS_POINT_NTP_LINK = 1,
+  kStartPage = 0,
+  ACCESS_POINT_START_PAGE = kStartPage,
+  kNTPLink = 1,
+  ACCESS_POINT_NTP_LINK = kNTPLink,
   // Access point from the three dot app menu.
-  ACCESS_POINT_MENU = 2,
-  ACCESS_POINT_SETTINGS = 3,
-  ACCESS_POINT_SUPERVISED_USER = 4,
-  ACCESS_POINT_EXTENSION_INSTALL_BUBBLE = 5,
-  ACCESS_POINT_EXTENSIONS = 6,
-  // ACCESS_POINT_APPS_PAGE_LINK = 7, no longer used.
-  ACCESS_POINT_BOOKMARK_BUBBLE = 8,
-  ACCESS_POINT_BOOKMARK_MANAGER = 9,
-  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN = 10,
-  ACCESS_POINT_USER_MANAGER = 11,
-  ACCESS_POINT_DEVICES_PAGE = 12,
-  // ACCESS_POINT_CLOUD_PRINT = 13, no longer used.
-  // ACCESS_POINT_CONTENT_AREA = 14, no longer used.
-  ACCESS_POINT_SIGNIN_PROMO = 15,
-  ACCESS_POINT_RECENT_TABS = 16,
+  kMenu = 2,
+  ACCESS_POINT_MENU = kMenu,
+  kSettings = 3,
+  ACCESS_POINT_SETTINGS = kSettings,
+  kSupervisedUser = 4,
+  ACCESS_POINT_SUPERVISED_USER = kSupervisedUser,
+  kExtensionInstallBubble = 5,
+  ACCESS_POINT_EXTENSION_INSTALL_BUBBLE = kExtensionInstallBubble,
+  kExtensions = 6,
+  ACCESS_POINT_EXTENSIONS = kExtensions,
+  // APPS_PAGE_LINK = 7, no longer used.
+  kBookmarkBubble = 8,
+  ACCESS_POINT_BOOKMARK_BUBBLE = kBookmarkBubble,
+  kBookmarkManager = 9,
+  ACCESS_POINT_BOOKMARK_MANAGER = kBookmarkManager,
+  kAvatarBubbleSignIn = 10,
+  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN = kAvatarBubbleSignIn,
+  kUserManager = 11,
+  ACCESS_POINT_USER_MANAGER = kUserManager,
+  kDevicesPage = 12,
+  ACCESS_POINT_DEVICES_PAGE = kDevicesPage,
+  // CLOUD_PRINT = 13, no longer used.
+  // CONTENT_AREA = 14, no longer used.
+  kSigninPromo = 15,
+  ACCESS_POINT_SIGNIN_PROMO = kSigninPromo,
+  kRecentTabs = 16,
+  ACCESS_POINT_RECENT_TABS = kRecentTabs,
   // This should never have been used to get signin URL.
-  ACCESS_POINT_UNKNOWN = 17,
-  ACCESS_POINT_PASSWORD_BUBBLE = 18,
-  ACCESS_POINT_AUTOFILL_DROPDOWN = 19,
-  // ACCESS_POINT_NTP_CONTENT_SUGGESTIONS = 20, no longer used.
-  ACCESS_POINT_RESIGNIN_INFOBAR = 21,
-  ACCESS_POINT_TAB_SWITCHER = 22,
-  // ACCESS_POINT_FORCE_SIGNIN_WARNING = 23, no longer used.
-  // ACCESS_POINT_SAVE_CARD_BUBBLE = 24, no longer used
-  // ACCESS_POINT_MANAGE_CARDS_BUBBLE = 25, no longer used
-  ACCESS_POINT_MACHINE_LOGON = 26,
-  ACCESS_POINT_GOOGLE_SERVICES_SETTINGS = 27,
-  ACCESS_POINT_SYNC_ERROR_CARD = 28,
-  ACCESS_POINT_FORCED_SIGNIN = 29,
-  ACCESS_POINT_ACCOUNT_RENAMED = 30,
-  ACCESS_POINT_WEB_SIGNIN = 31,
-  ACCESS_POINT_SAFETY_CHECK = 32,
-  ACCESS_POINT_KALEIDOSCOPE = 33,
-  ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = 34,
-  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 35,
-  ACCESS_POINT_SEND_TAB_TO_SELF_PROMO = 36,
-  ACCESS_POINT_NTP_FEED_TOP_PROMO = 37,
-  ACCESS_POINT_SETTINGS_SYNC_OFF_ROW = 38,
-  ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO = 39,
-  ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN = 40,
-  ACCESS_POINT_NTP_SIGNED_OUT_ICON = 41,
-  ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO = 42,
-  ACCESS_POINT_NTP_FEED_BOTTOM_PROMO = 43,
-  ACCESS_POINT_DESKTOP_SIGNIN_MANAGER = 44,
+  kUnknown = 17,
+  ACCESS_POINT_UNKNOWN = kUnknown,
+  kPasswordBubble = 18,
+  ACCESS_POINT_PASSWORD_BUBBLE = kPasswordBubble,
+  kAutofillDropdown = 19,
+  ACCESS_POINT_AUTOFILL_DROPDOWN = kAutofillDropdown,
+  // NTP_CONTENT_SUGGESTIONS = 20, no longer used.
+  kResigninInfobar = 21,
+  ACCESS_POINT_RESIGNIN_INFOBAR = kResigninInfobar,
+  kTabSwitcher = 22,
+  ACCESS_POINT_TAB_SWITCHER = kTabSwitcher,
+  // FORCE_SIGNIN_WARNING = 23, no longer used.
+  // SAVE_CARD_BUBBLE = 24, no longer used
+  // MANAGE_CARDS_BUBBLE = 25, no longer used
+  kMachineLogon = 26,
+  ACCESS_POINT_MACHINE_LOGON = kMachineLogon,
+  kGoogleServicesSettings = 27,
+  ACCESS_POINT_GOOGLE_SERVICES_SETTINGS = kGoogleServicesSettings,
+  kSyncErrorCard = 28,
+  ACCESS_POINT_SYNC_ERROR_CARD = kSyncErrorCard,
+  kForcedSignin = 29,
+  ACCESS_POINT_FORCED_SIGNIN = kForcedSignin,
+  kAccountRenamed = 30,
+  ACCESS_POINT_ACCOUNT_RENAMED = kAccountRenamed,
+  kWebSignin = 31,
+  ACCESS_POINT_WEB_SIGNIN = kWebSignin,
+  kSafetyCheck = 32,
+  ACCESS_POINT_SAFETY_CHECK = kSafetyCheck,
+  kKaleidoscope = 33,
+  ACCESS_POINT_KALEIDOSCOPE = kKaleidoscope,
+  kEnterpriseSignoutCoordinator = 34,
+  ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = kEnterpriseSignoutCoordinator,
+  kSigninInterceptFirstRunExperience = 35,
+  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE =
+      kSigninInterceptFirstRunExperience,
+  kSendTabToSelfPromo = 36,
+  ACCESS_POINT_SEND_TAB_TO_SELF_PROMO = kSendTabToSelfPromo,
+  kNTPFeedTopPromo = 37,
+  ACCESS_POINT_NTP_FEED_TOP_PROMO = kNTPFeedTopPromo,
+  kSettingsSyncOffRow = 38,
+  ACCESS_POINT_SETTINGS_SYNC_OFF_ROW = kSettingsSyncOffRow,
+  kPostDeviceRestoreSigninPromo = 39,
+  ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO = kPostDeviceRestoreSigninPromo,
+  kPostDeviceRestoreBackgroundSignin = 40,
+  ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN =
+      kPostDeviceRestoreBackgroundSignin,
+  kNTPSignedOutIcon = 41,
+  ACCESS_POINT_NTP_SIGNED_OUT_ICON = kNTPSignedOutIcon,
+  kNTPFeedCardMenuPromo = 42,
+  ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO = kNTPFeedCardMenuPromo,
+  kNTPFeedBottomPromo = 43,
+  ACCESS_POINT_NTP_FEED_BOTTOM_PROMO = kNTPFeedBottomPromo,
+  kDesktopSigninManager = 44,
+  ACCESS_POINT_DESKTOP_SIGNIN_MANAGER = kDesktopSigninManager,
   // Access point for the "For You" First Run Experience on Desktop. See
   // go/for-you-fre or launch/4223982 for more info.
-  ACCESS_POINT_FOR_YOU_FRE = 45,
+  kForYouFRE = 45,
+  ACCESS_POINT_FOR_YOU_FRE = kForYouFRE,
   // Access point for Cormorant (Creator Feed) on Android only when the "Follow"
   // button is tapped while in a signed-out state.
-  ACCESS_POINT_CREATOR_FEED_FOLLOW = 46,
+  kCreatorFeedFollow = 46,
+  ACCESS_POINT_CREATOR_FEED_FOLLOW = kCreatorFeedFollow,
   // Access point for the reading list sign-in promo (launch/4231282).
-  ACCESS_POINT_READING_LIST = 47,
+  kReadingList = 47,
+  ACCESS_POINT_READING_LIST = kReadingList,
   // Access point for the reauth info bar.
-  ACCESS_POINT_REAUTH_INFO_BAR = 48,
+  kReauthInfoBar = 48,
+  ACCESS_POINT_REAUTH_INFO_BAR = kReauthInfoBar,
   // Access point for the consistency service.
-  ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE = 49,
+  kAccountConsistencyService = 49,
+  ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE = kAccountConsistencyService,
   // Access point for the search companion sign-in promo.
-  ACCESS_POINT_SEARCH_COMPANION = 50,
+  kSearchCompanion = 50,
+  ACCESS_POINT_SEARCH_COMPANION = kSearchCompanion,
   // Access point for the IOS Set Up List on the NTP.
-  ACCESS_POINT_SET_UP_LIST = 51,
+  kSetUpList = 51,
+  ACCESS_POINT_SET_UP_LIST = kSetUpList,
   // Access point for the local password migration warning on Android.
-  ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID = 52,
+  kPasswordMigrationWarningAndroid = 52,
+  ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID =
+      kPasswordMigrationWarningAndroid,
   // Access point for the Save to Photos feature on iOS.
-  ACCESS_POINT_SAVE_TO_PHOTOS_IOS = 53,
+  kSaveToPhotosIOS = 53,
+  ACCESS_POINT_SAVE_TO_PHOTOS_IOS = kSaveToPhotosIOS,
   // Access point for the Chrome Signin Intercept Bubble.
-  ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE = 54,
+  kChromeSigninInterceptBubble = 54,
+  ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE = kChromeSigninInterceptBubble,
   // Restore primary account info in case it was lost.
-  ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD = 55,
+  kRestorePrimaryAccountOnProfileLoad = 55,
+  ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD =
+      kRestorePrimaryAccountOnProfileLoad,
   // Access point for the tab organization UI within the tab search bubble.
-  ACCESS_POINT_TAB_ORGANIZATION = 56,
+  kTabOrganization = 56,
+  ACCESS_POINT_TAB_ORGANIZATION = kTabOrganization,
   // Access point for the Save to Drive feature on iOS.
-  ACCESS_POINT_SAVE_TO_DRIVE_IOS = 57,
+  kSaveToDriveIOS = 57,
+  ACCESS_POINT_SAVE_TO_DRIVE_IOS = kSaveToDriveIOS,
   // Access point for the Tips Notification on iOS.
-  ACCESS_POINT_TIPS_NOTIFICATION = 58,
+  kTipsNotification = 58,
+  ACCESS_POINT_TIPS_NOTIFICATION = kTipsNotification,
   // Access point for the Notifications Opt-In Screen.
-  ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE = 59,
+  kNotificationsOptInScreenContentToggle = 59,
+  ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE =
+      kNotificationsOptInScreenContentToggle,
   // Access point for a web sign with an explicit signin choice remembered.
-  ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED = 60,
+  kSigninChoiceRemembered = 60,
+  ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED = kSigninChoiceRemembered,
   // Confirmation prompt shown when the user tries to sign out from the profile
   // menu or settings. The signout prompt may have a "Verify it's you" button
   // allowing the user to reauth.
-  ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT = 61,
-  ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT = 62,
+  kProfileMenuSignoutConfirmationPrompt = 61,
+  ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT =
+      kProfileMenuSignoutConfirmationPrompt,
+  kSettingsSignoutConfirmationPrompt = 62,
+  ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT =
+      kSettingsSignoutConfirmationPrompt,
   // The identity disc (avatar) on the New Tab page. Note that this only covers
-  // signed-in avatars - interactions with the signed-out avatar are instead
+  // SignedIn avatars - interactions with the signed-out avatar are instead
   // counted under ACCESS_POINT_NTP_SIGNED_OUT_ICON.
-  ACCESS_POINT_NTP_IDENTITY_DISC = 63,
+  kNTPIdentityDisc = 63,
+  ACCESS_POINT_NTP_IDENTITY_DISC = kNTPIdentityDisc,
   // The identity is received through an interception of a 3rd party OIDC auth
   // redirection.
-  ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION = 64,
+  kOIDCRedirectionInterception = 64,
+  ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION = kOIDCRedirectionInterception,
   // The "Sign in again" button on a Web Authentication modal dialog when
   // reauthentication is necessary to sign in with or save a passkey from the
   // Google Password Manager.
-  ACCESS_POINT_WEBAUTHN_MODAL_DIALOG = 65,
+  kWebauthnModalDialog = 65,
+  ACCESS_POINT_WEBAUTHN_MODAL_DIALOG = kWebauthnModalDialog,
   // Signin button from the profile menu that is labelled as a "Signin" button,
   // but is followed by a Sync confirmation screen as a promo.
-  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO = 66,
+  kAvatarBubbleSignInWithSyncPromo = 66,
+  ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO =
+      kAvatarBubbleSignInWithSyncPromo,
   // Signin using the account menu.
-  ACCESS_POINT_ACCOUNT_MENU = 67,
+  kAccountMenu = 67,
+  ACCESS_POINT_ACCOUNT_MENU = kAccountMenu,
   // Signin via Product Specifications.
-  ACCESS_POINT_PRODUCT_SPECIFICATIONS = 68,
+  kProductSpecifications = 68,
+  ACCESS_POINT_PRODUCT_SPECIFICATIONS = kProductSpecifications,
   // The user is signed-back into their previous account after failing to switch
   // to a new one.
-  ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH = 69,
+  kAccountMenuFailedSwitch = 69,
+  ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH = kAccountMenuFailedSwitch,
   // The user signs in from a sign in promo after an address save.
-  ACCESS_POINT_ADDRESS_BUBBLE = 70,
+  kAddressBubble = 70,
+  ACCESS_POINT_ADDRESS_BUBBLE = kAddressBubble,
   // A message notification displayed on CCTs embedded in 1P apps when there is
   // an account mismatch between Chrome and the 1P app. Android only.
-  ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION = 71,
+  kCCTAccountMismatchNotification = 71,
+  ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION =
+      kCCTAccountMismatchNotification,
   // Access point for the Drive file picker on iOS.
-  ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 72,
+  kDriveFilePickerIOS = 72,
+  ACCESS_POINT_DRIVE_FILE_PICKER_IOS = kDriveFilePickerIOS,
   // Access point triggered when a user attempts to share or join a tab group
   // without being signed in or synced.
-  ACCESS_POINT_COLLABORATION_TAB_GROUP = 73,
+  kCollaborationTabGroup = 73,
+  ACCESS_POINT_COLLABORATION_TAB_GROUP = kCollaborationTabGroup,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  ACCESS_POINT_MAX,  // This must be last.
+  kMaxValue = ACCESS_POINT_COLLABORATION_TAB_GROUP,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
-
-// Enum values which enumerates all access points where transactional reauth
-// could be initiated. Transactional reauth is used when the user already has
-// a valid refresh token but a system still wants to verify user's identity.
-enum class ReauthAccessPoint {
-  kUnknown,
-  // Account password storage opt-in:
-  kAutofillDropdown,
-  // The password save bubble, which included the destination picker (set to
-  // "Save to your Google Account").
-  kPasswordSaveBubble,
-  kPasswordSettings,
-  kGeneratePasswordDropdown,
-  kGeneratePasswordContextMenu,
-  // The password save bubble *without* a destination picker, i.e. the password
-  // was already saved locally.
-  kPasswordSaveLocallyBubble,
-  kMax = kPasswordSaveLocallyBubble
-};
 
 // Enum values which enumerates all user actions on the sign-in promo.
 enum class PromoAction : int {
@@ -568,6 +628,20 @@ enum class SignoutDataLossAlertReason : int {
   // A managed user is signing out and the data will be cleared from the device.
   kSignoutWithClearDataForManagedUser = 1,
 };
+
+// Values of Signin.AccountType histogram. This histogram records if the user
+// uses a gmail account or a managed account when signing in.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with SigninAccountType in
+// tools/metrics/histograms/metadata/signin/enums.xml.
+enum class SigninAccountType {
+  // Gmail account.
+  kRegular = 0,
+  // Managed account.
+  kManaged = 1,
+  // Always the last enumerated type.
+  kMaxValue = kManaged,
+};
 #endif  // BUILDFLAG(IS_IOS)
 
 // -----------------------------------------------------------------------------
@@ -591,6 +665,11 @@ void LogSignInOffered(AccessPoint access_point, PromoAction promo_action);
 // completion events are automatically logged when the primary account state
 // changes, see `signin::PrimaryAccountMutator`.
 void LogSignInStarted(AccessPoint access_point);
+
+#if BUILDFLAG(IS_IOS)
+// Records the account type when the user signs in.
+void LogSigninWithAccountType(SigninAccountType account_type);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Logs sync opt-in start events and their associated access points. The
 // completion events are automatically logged when the primary account state

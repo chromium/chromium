@@ -13,7 +13,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/prefs/pref_service.h"
@@ -32,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -102,9 +105,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
-  void TearDown() override {
-    safety_check_manager_->StopSafetyCheck();
-  }
+  void TearDown() override { safety_check_manager_->StopSafetyCheck(); }
 
   // Sets up a mock notification center, so notification requests can be
   // tested.
@@ -159,6 +160,14 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
     OCMExpect([mock_notification_center_
         addNotificationRequest:request
          withCompletionHandler:[OCMArg checkWithBlock:completionCaller]]);
+  }
+
+  // Sets up an OCMock expectation that a notification matching
+  // `notification_id` is NOT requested.
+  void RejectNotificationRequest(NSString* notification_id) {
+    OCMReject([mock_notification_center_
+        addNotificationRequest:NotificationRequestArg(notification_id)
+         withCompletionHandler:[OCMArg any]]);
   }
 
  protected:
@@ -258,5 +267,112 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
 
   run_loop.Run();
 
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that the IOS.Notifications.SafetyCheck.Triggered histogram is properly
+// fired when a Safety Check notification is triggered.
+TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
+  StubGetPendingRequests(nil);
+  base::HistogramTester histogram_tester;
+
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // First invocation of OnSceneActiveForegroundBrowserReady
+  // This schedules the notification for the first time.
+  {
+    base::RunLoop run_loop;
+    notification_client_->OnSceneActiveForegroundBrowserReady(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Second invocation of OnSceneActiveForegroundBrowserReady
+  // This simulates a follow-up where the notification is marked as triggered.
+  {
+    base::RunLoop run_loop;
+    notification_client_->OnSceneActiveForegroundBrowserReady(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Verify histogram was fired after the second invocation.
+  histogram_tester.ExpectBucketCount(
+      "IOS.Notifications.SafetyCheck.Triggered",
+      static_cast<int>(SafetyCheckNotificationType::kPasswords), 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Notification.Received",
+      static_cast<int>(NotificationType::kSafetyCheckPasswords), 1);
+}
+
+// Tests that a notification is not scheduled if one has already been
+// delivered to the notification center.
+TEST_F(SafetyCheckNotificationClientTest,
+       NotificationNotScheduledIfAlreadyPresent) {
+  StubGetPendingRequests(nil);
+  // Expect that a notification request with ID
+  // `kSafetyCheckPasswordNotificationID` is NOT made.
+  RejectNotificationRequest(kSafetyCheckPasswordNotificationID);
+
+  // Set up a delivered notification by setting the timestamp to 1 minute ago.
+  local_pref_service_->SetTime(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp,
+      base::Time::Now() - base::Minutes(1));
+
+  // Set up the conditions to trigger a password notification, so we would
+  // expect a notification if there was no notification in the notification
+  // center.
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Run the notification scheduling logic.
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that no notification request was made.
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that a notification is scheduled after the 30-day suppression
+// period expires.
+TEST_F(SafetyCheckNotificationClientTest,
+       NotificationScheduledAfterSuppressionPeriodExpires) {
+  StubGetPendingRequests(nil);
+  // Expect that a notification request IS made.
+  ExpectNotificationRequest(kSafetyCheckPasswordNotificationID);
+
+  // Simulate a notification being delivered more than 30 days ago.
+  local_pref_service_->SetTime(
+      prefs::kIosSafetyCheckNotificationFirstPresentTimestamp,
+      base::Time::Now() - base::Days(31));
+
+  // Set up the conditions to trigger a password notification.
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  // Run the notification scheduling logic.
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the notification request was made.
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }

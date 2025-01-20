@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "components/webcrypto/algorithm_dispatch.h"
@@ -114,7 +116,7 @@ struct AesGcmKnownAnswer {
 
 // NIST GCM test vectors:
 // http://csrc.nist.gov/groups/STM/cavp/documents/mac/gcmtestvectors.zip
-const AesGcmKnownAnswer kAesGcmKnownAnswers[] = {
+const auto kAesGcmKnownAnswers = std::to_array<AesGcmKnownAnswer>({
     {"cf063a34d4a9a76c2c86787d3f96db71", "113b9785971864c83b01c787", "", "",
      "72ac8493e3a5228b5d130a69d2510e42", 128},
     {"6dfa1a07c14f978020ace450ad663d18", "34edfa462a14c6969a680ec1", "",
@@ -135,7 +137,7 @@ const AesGcmKnownAnswer kAesGcmKnownAnswers[] = {
      "fda718aa1ec163487e21afc34f5a3a34795a9ee71dd3e7ee9a18fdb24181dc982b29c6ec7"
      "23294a130ca2234952bb0ef68c0f34795fbe0",
      32},
-};
+});
 
 // TODO(eroman):
 //   * Test decryption when the tag length exceeds input size

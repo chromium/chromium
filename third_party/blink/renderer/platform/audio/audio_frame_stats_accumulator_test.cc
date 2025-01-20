@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/time/time.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -71,13 +73,17 @@ TEST(AudioFrameStatsAccumulatorTest, Update) {
   uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
-  int frames[] = {480, 520, 400};
-  media::AudioGlitchInfo glitch_info[] = {
+  auto frames = std::to_array<int>({480, 520, 400});
+  auto glitch_info = std::to_array<media::AudioGlitchInfo>({
       {},
       {.duration = base::Milliseconds(2), .count = 1},
-      {.duration = base::Milliseconds(3), .count = 2}};
-  base::TimeDelta latency[] = {base::Milliseconds(30), base::Milliseconds(20),
-                               base::Milliseconds(70)};
+      {.duration = base::Milliseconds(3), .count = 2},
+  });
+  auto latency = std::to_array<base::TimeDelta>({
+      base::Milliseconds(30),
+      base::Milliseconds(20),
+      base::Milliseconds(70),
+  });
 
   accumulator.Update(frames[0], sample_rate, latency[0], glitch_info[0]);
   total_frames += frames[0];
@@ -143,13 +149,17 @@ TEST(AudioFrameStatsAccumulatorTest, Absorb) {
   uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
-  int frames[] = {480, 520, 400};
-  media::AudioGlitchInfo glitch_info[] = {
+  auto frames = std::to_array<int>({480, 520, 400});
+  auto glitch_info = std::to_array<media::AudioGlitchInfo>({
       {.duration = base::Milliseconds(1), .count = 2},
       {.duration = base::Milliseconds(2), .count = 1},
-      {.duration = base::Milliseconds(1), .count = 1}};
-  base::TimeDelta latency[] = {base::Milliseconds(10), base::Milliseconds(20),
-                               base::Milliseconds(30)};
+      {.duration = base::Milliseconds(1), .count = 1},
+  });
+  auto latency = std::to_array<base::TimeDelta>({
+      base::Milliseconds(10),
+      base::Milliseconds(20),
+      base::Milliseconds(30),
+  });
 
   accumulator.Update(frames[0], sample_rate, latency[0], glitch_info[0]);
   total_frames += frames[0];
@@ -260,12 +270,13 @@ TEST(AudioFrameStatsAccumulatorTest, UpdateDifferentSampleRates) {
   uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
-  int sample_rate[] = {16000, 48000};
-  int frames[] = {480, 1024};
-  media::AudioGlitchInfo glitch_info[] = {
-      {.duration = base::Milliseconds(5), .count = 2},
-      {.duration = base::Milliseconds(1), .count = 1}};
-  base::TimeDelta latency[] = {base::Milliseconds(60), base::Milliseconds(70)};
+  auto sample_rate = std::to_array<int>({16000, 48000});
+  auto frames = std::to_array<int>({480, 1024});
+  auto glitch_info = std::to_array<media::AudioGlitchInfo>(
+      {{.duration = base::Milliseconds(5), .count = 2},
+       {.duration = base::Milliseconds(1), .count = 1}});
+  auto latency = std::to_array<base::TimeDelta>(
+      {base::Milliseconds(60), base::Milliseconds(70)});
 
   accumulator.Update(frames[0], sample_rate[0], latency[0], glitch_info[0]);
   total_frames += frames[0];

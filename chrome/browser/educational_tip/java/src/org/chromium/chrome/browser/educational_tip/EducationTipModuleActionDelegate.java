@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** The delegate to provide actions for the educational tips module. */
@@ -23,6 +24,10 @@ public interface EducationTipModuleActionDelegate {
     /** Gets the profile supplier. */
     @NonNull
     ObservableSupplier<Profile> getProfileSupplier();
+
+    /** Gets the tab model selector. */
+    @NonNull
+    TabModelSelector getTabModelSelector();
 
     /** Gets the instance of {@link BottomSheetController}. */
     @NonNull

@@ -67,8 +67,8 @@ double DeviceMotionEvent::interval() const {
 }
 
 // static
-ScriptPromise<V8DeviceOrientationPermissionState>
-DeviceMotionEvent::requestPermission(ScriptState* script_state) {
+ScriptPromise<V8PermissionState> DeviceMotionEvent::requestPermission(
+    ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return EmptyPromise();
 

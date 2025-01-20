@@ -249,7 +249,7 @@ void ExternalProcessImporterClient::OnAutofillFormDataImportGroup(
     bridge_->SetAutofillFormData(autofill_form_data_);
 }
 
-ExternalProcessImporterClient::~ExternalProcessImporterClient() {}
+ExternalProcessImporterClient::~ExternalProcessImporterClient() = default;
 
 void ExternalProcessImporterClient::Cleanup() {
   if (cancelled_)

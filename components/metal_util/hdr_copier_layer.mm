@@ -48,6 +48,7 @@ NSString* tonemapping_shader_source =
      "using metal::sampler;\n"
      "using metal::texture2d;\n"
      "using metal::abs;\n"
+     "using metal::clamp;\n"
      "using metal::dot;\n"
      "using metal::exp;\n"
      "using metal::exp2;\n"
@@ -169,8 +170,9 @@ NSString* tonemapping_shader_source =
      "         gain *= 1000.f / 203.f;\n"
      "         // Compute the gain weight;\n"
      "         const float contentHdrHeadroom = 1000.f/203.f;\n"
-     "         const float weight = log2(screenHdrHeadroom) /\n"
-     "                              log2(contentHdrHeadroom);\n"
+     "         const float weight = clamp(\n"
+     "             log2(screenHdrHeadroom) / log2(contentHdrHeadroom),\n"
+     "             0.f, 1.f);\n"
      "         // Apply the gain.\n"
      "         color.xyz *= exp2(weight * log2(gain));\n"
      "         break;\n"
@@ -283,6 +285,9 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
 
 @implementation HDRCopierLayer {
   id<MTLRenderPipelineState> __strong _renderPipelineState;
+  IOSurfaceRef _buffer;
+  id<MTLDevice> _device;
+  float _screenHdrHeadroom;
   gfx::ColorSpace _colorSpace;
   std::optional<gfx::HDRMetadata> _hdrMetadata;
 }
@@ -308,6 +313,27 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
      screenHdrHeadroom:(float)screenHdrHeadroom
             colorSpace:(gfx::ColorSpace)colorSpace
               metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata {
+  // HLG does not use the OS-provided tone mapping, so it will need to be
+  // re-drawn whenever the HDR headroom changes.
+  // https://crbug.com/343249142
+  bool useCustomToneMapping =
+      colorSpace.GetTransferID() == gfx::ColorSpace::TransferID::HLG;
+
+  // Early-out if nothing changed.
+  if (buffer == _buffer && device == _device &&
+      screenHdrHeadroom == _screenHdrHeadroom && colorSpace == _colorSpace &&
+      hdrMetadata == _hdrMetadata) {
+    // If custom tone mapping is not performed, then content does not need to
+    // re-render when HDR headroom changes.
+    if (!useCustomToneMapping) {
+      _screenHdrHeadroom = screenHdrHeadroom;
+      return;
+    }
+  }
+  _screenHdrHeadroom = screenHdrHeadroom;
+  _buffer = buffer;
+  _device = device;
+
   // Retrieve information about the IOSurface.
   size_t width = IOSurfaceGetWidth(buffer);
   size_t height = IOSurfaceGetHeight(buffer);
@@ -323,26 +349,17 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   if (@available(iOS 16.0, *)) {
     if (_colorSpace != colorSpace || _hdrMetadata != hdrMetadata) {
       CAEDRMetadata* edrMetadata = nil;
-      switch (colorSpace.GetTransferID()) {
-        case gfx::ColorSpace::TransferID::PQ: {
-          base::apple::ScopedCFTypeRef<CFDataRef> display_info =
-              gfx::GenerateMasteringDisplayColorVolume(hdrMetadata);
-          base::apple::ScopedCFTypeRef<CFDataRef> content_info =
-              gfx::GenerateContentLightLevelInfo(hdrMetadata);
-          edrMetadata = [CAEDRMetadata
-              HDR10MetadataWithDisplayInfo:base::apple::CFToNSPtrCast(
-                                               display_info.get())
-                               contentInfo:base::apple::CFToNSPtrCast(
-                                               content_info.get())
-                        opticalOutputScale:203];
-          break;
-        }
-        case gfx::ColorSpace::TransferID::HLG:
-          // HLG does not use the OS-provided tone mapping.
-          // https://crbug.com/343249142
-          break;
-        default:
-          break;
+      if (colorSpace.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
+        base::apple::ScopedCFTypeRef<CFDataRef> display_info =
+            gfx::GenerateMasteringDisplayColorVolume(hdrMetadata);
+        base::apple::ScopedCFTypeRef<CFDataRef> content_info =
+            gfx::GenerateContentLightLevelInfo(hdrMetadata);
+        edrMetadata = [CAEDRMetadata
+            HDR10MetadataWithDisplayInfo:base::apple::CFToNSPtrCast(
+                                             display_info.get())
+                             contentInfo:base::apple::CFToNSPtrCast(
+                                             content_info.get())
+                      opticalOutputScale:203];
       }
       self.EDRMetadata = edrMetadata;
       _colorSpace = colorSpace;
@@ -459,7 +476,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
       skcms_Matrix3x3 src_to_xyz;
       skcms_Matrix3x3 rec2020_to_xyz;
       skcms_Matrix3x3 xyz_to_rec2020;
-      SkNamedPrimariesExt::kRec2020.toXYZD50(&rec2020_to_xyz);
+      SkNamedPrimaries::kRec2020.toXYZD50(&rec2020_to_xyz);
       colorSpace.GetPrimaryMatrix(&src_to_xyz);
       skcms_Matrix3x3_invert(&rec2020_to_xyz, &xyz_to_rec2020);
       skcms_Matrix3x3 m = skcms_Matrix3x3_concat(&xyz_to_rec2020, &src_to_xyz);

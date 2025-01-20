@@ -20,9 +20,9 @@
 
 namespace extensions {
 
-ChromeExtensionHostDelegate::ChromeExtensionHostDelegate() {}
+ChromeExtensionHostDelegate::ChromeExtensionHostDelegate() = default;
 
-ChromeExtensionHostDelegate::~ChromeExtensionHostDelegate() {}
+ChromeExtensionHostDelegate::~ChromeExtensionHostDelegate() = default;
 
 void ChromeExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {

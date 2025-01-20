@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -38,7 +39,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
-#include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -157,18 +157,16 @@ class RequestImpl : public TailoredSecurityService::Request {
   void Shutdown() override {}
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
-    response_code_ = -1;
+    response_code_ = 0;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {
       response_code_ =
           simple_url_loader_->ResponseInfo()->headers->response_code();
     }
+    RecordHttpResponseOrErrorCode(
+        "SafeBrowsing.TailoredSecurityService.OAuthTokenNetworkResult",
+        simple_url_loader_->NetError(), response_code_);
     simple_url_loader_.reset();
-
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(
-        "SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode",
-        net::HttpUtil::MapStatusCodeForHistogram(response_code_),
-        net::HttpUtil::GetStatusCodesForHistogram());
 
     // If the response code indicates that the token might not be valid,
     // invalidate the token and try again.
@@ -523,29 +521,23 @@ void TailoredSecurityService::Shutdown() {
 }
 
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
-                       TailoredSecurityRetryState::UNKNOWN);
-    prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
-                    base::Time::Now());
-    // If this method fails, then a retry is needed. If it succeeds, the
-    // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
-    // us.
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                       TailoredSecurityRetryState::RETRY_NEEDED);
-  }
+  // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+                     TailoredSecurityRetryState::UNKNOWN);
+  prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                  base::Time::Now());
+  // If this method fails, then a retry is needed. If it succeeds, the
+  // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
+  // us.
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                     TailoredSecurityRetryState::RETRY_NEEDED);
 
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TailoredSecurityService::SaveRetryState(TailoredSecurityRetryState state) {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
-  }
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
 }
 
 void TailoredSecurityService::SetCanQuery(bool can_query) {

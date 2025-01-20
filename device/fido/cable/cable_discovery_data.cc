@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/string_compare.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -64,8 +65,7 @@ bool CableDiscoveryData::operator==(const CableDiscoveryData& other) const {
       return v2.value() == other.v2.value();
 
     case CableDiscoveryData::Version::INVALID:
-      CHECK(false);
-      return false;
+      NOTREACHED();
   }
 }
 

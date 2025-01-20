@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 177) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 181) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -49,26 +49,25 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | |
 | # Create Shortcut |
 | create_shortcut | Site, WindowOptions |  | 29 | Implemented | Use the 'create shortcut' functionality at the given location using the "Create Shortcut" menu option (3-dot->"More Tools"->"Create Shortcut)  The WindowOption specified if the "Open in a window" checkbox should be selected. |  |
+| create_shortcut_tabbed | Site | create_shortcut($1, Browser) | 54 | Parameterized |  |  |
+| create_shortcut_windowed | Site | create_shortcut($1, Windowed) | 179 | Parameterized |  |  |
+| create_shortcut_all | Site | create_shortcut($1, WindowOptions::All) | 180 | Parameterized |  |  |
 | |
 | # Install |
 | install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
 | install_policy_app | Site, ShortcutOptions, WindowOptions, InstallMode |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). This installation action also opens the target site in a tab to match the expectation of installs opening the app first for some CUJs.|  |
-| install_menu_option | InstallableSite |  | 47 | Implemented |  |  |
+| install_menu_option | Site |  | 47 | Implemented | Install from the "3-dot" > "Cast, Save and Share" > "Install" |  | InstallMenu |
 | install_no_shortcut | Site | install_policy_app($1, NoShortcut, WindowOptions::All, WebApp) | 56 | Parameterized |  |  |
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser, WebApp) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed_no_shortcut | Site | install_policy_app($1, NoShortcut, Windowed, WebApp) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |
-| install_by_user_windowed | InstallableSite | install_omnibox_icon($1) & install_menu_option($1) | 137 | Parameterized | All user installation methods that result in a windowed webapp without shortcut. |  |
 | # Install & Create Shortcut Parameterized |
-| install_or_shortcut | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
-| install_or_shortcut_by_user | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_menu_option($1) | 53 | Parameterized |  |  |
-| install_or_shortcut_by_user_tabbed | Site | create_shortcut($1, Browser) | 54 | Parameterized |  |  |
-| install_or_shortcut_by_user_windowed | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_menu_option($1) | 55 | Parameterized |  |  |
-| install_or_shortcut_tabbed | Site | create_shortcut($1, Browser) & install_policy_app($1, ShortcutOptions::All, Browser, WebApp) | 61 | Parameterized | All installation methods that result in a tabbed webapp. |  |
-| install_or_shortcut_tabbed_with_shortcut | Site | create_shortcut($1, Browser) & install_policy_app($1, WithShortcut, Browser) | 128 | Parameterized | All installation methods that result in a tabbed webapp with shortcut created. |  |
-| install_or_shortcut_windowed | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 62 | Parameterized | All installation methods that result in a windowed webapp. |  |
-| install_or_shortcut_windowed_with_shortcut | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) &  install_policy_app($1, WithShortcut, Windowed, WebApp) & install_menu_option($1) | 130 | Parameterized | All installation methods that result in a windowed webapp with shortcut created. |  |
-| install_or_shortcut_by_user_windowed_with_shortcut | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_menu_option($1) | 136 | Parameterized | All user initiated installation methods that result in a windowed webapp with shortcut created. |  |
-| install_or_shortcut_with_shortcut | Site | install_policy_app($1, WithShortcut, WindowOptions::All, WebApp) & create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_menu_option($1) | 63 | Parameterized |  |  |
+| install | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
+| install_tabbed | Site | install_policy_app($1, ShortcutOptions::All, Browser, WebApp) | 61 | Parameterized | All installation methods that result in a tabbed webapp. |  |
+| install_tabbed_with_shortcut | Site | install_policy_app($1, WithShortcut, Browser, WebApp) | 128 | Parameterized | All installation methods that result in a tabbed webapp with shortcut created. |  |
+| install_windowed | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 62 | Parameterized | All installation methods that result in a windowed webapp. |  |
+| install_windowed_with_shortcut | Site | install_omnibox_icon($1) & install_policy_app($1, WithShortcut, Windowed, WebApp) & install_menu_option($1) | 130 | Parameterized | All installation methods that result in a windowed webapp with shortcut created. |  |
+| install_by_user | Site | install_omnibox_icon($1) & install_menu_option($1) | 136 | Parameterized | All user initiated installation methods that result in a windowed webapp with shortcut created. |  |
+| install_with_shortcut | Site | install_policy_app($1, WithShortcut, WindowOptions::All, WebApp) & install_omnibox_icon($1) & install_menu_option($1) | 63 | Parameterized |  |  |
 | |
 | # Uninstall |
 | uninstall_from_os | Site |  | 87 | Implemented | Uninstalls the app from OS integration - e.g. Windows Control Panel / Start menu |  |
@@ -149,13 +148,13 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | sync_sign_out |  |  | 174 | Implemented | Sign out of chrome sync in the current profile |  |
 | sync_sign_in |  |  | 175 | Implemented | Sign in to chrome sync in the current profile |  |
 | switch_incognito_profile |  |  | 73 | Implemented | Switch to using incognito mode | P2 |
-| switch_active_profile | ProfileName |  | 160 | Implemented | Switch to using a different profile |  |
+| switch_active_profile | ProfileName |  | 160 | Implemented | Switch to using a different profile |  | SwitchProfile |
 | # File handling |
 | check_site_handles_file | Site, FileExtension |  | 118 | Implemented |  |  |
 | check_site_not_handles_file | Site, FileExtension |  | 122 | Implemented |  |  |
 | check_file_handling_dialog | IsShown |  | 119 | Not Implemented |  |  |
-| launch_file_expect_dialog | Site, FilesOptions, AllowDenyOptions, AskAgainOptions |  | 120 | Implemented |  |  |
-| launch_file_expect_no_dialog | Site, FilesOptions |  | 121 | Implemented |  |  |
+| launch_file_expect_dialog | Site, FilesOptions, AllowDenyOptions, AskAgainOptions |  | 120 | Implemented |  |  | LaunchFileAck |
+| launch_file_expect_no_dialog | Site, FilesOptions |  | 121 | Implemented |  |  | LaunchFileNoOp |
 | check_files_loaded_in_site | Site, FilesOptions |  | 126 | Not Implemented | Check that the appropriate file contents have loaded in in PWA windows. |  |
 | add_file_handling_policy_approval | Site |  | 124 | Not Implemented |  |  |
 | remove_file_handling_policy_approval | Site |  | 125 | Not Implemented |  |  |

@@ -10,6 +10,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -103,7 +104,11 @@ class CC_EXPORT CompositorFrameReportingController {
     tick_clock_ = tick_clock;
   }
 
-  std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>&
+  ReportersForTesting() {
+    return reporters_;
+  }
 
   void SetDroppedFrameCounter(DroppedFrameCounter* counter);
 
@@ -151,7 +156,10 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
+  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollingThread() const;
   CompositorFrameReporter::SmoothThread GetSmoothThreadAtTime(
+      base::TimeTicks timestamp) const;
+  CompositorFrameReporter::SmoothEffectDrivingThread GetScrollThreadAtTime(
       base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
@@ -196,10 +204,15 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
+  bool is_raster_thread_driving_smoothness_ = false;
   // Sorted history of smooththread. Element i indicating the smooththread
   // from timestamp of element i-1 until timestamp of element i.
   std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>
       smooth_thread_history_;
+  // Sorted history of scrollthread. Element i indicating the smooththread
+  // from timestamp of element i-1 until timestamp of element i.
+  std::map<base::TimeTicks, CompositorFrameReporter::SmoothEffectDrivingThread>
+      scroll_thread_history_;
 
   // Must outlive `reporters_` and `submitted_compositor_frames_` (which also
   // have reporters), since destroying the reporters can flush frames to
@@ -216,8 +229,9 @@ class CC_EXPORT CompositorFrameReportingController {
       scroll_jank_dropped_frame_tracker_;
   std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
 
-  std::unique_ptr<CompositorFrameReporter>
-      reporters_[PipelineStage::kNumPipelineStages];
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>
+      reporters_;
 
   // Mapping of frame token to pipeline reporter for submitted compositor
   // frames.

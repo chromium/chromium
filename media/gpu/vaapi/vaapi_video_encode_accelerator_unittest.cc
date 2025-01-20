@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_video_encode_accelerator.h"
 
+#include <array>
 #include <memory>
 #include <numeric>
 #include <vector>
@@ -51,11 +47,12 @@ constexpr Bitrate kDefaultBitrate =
 constexpr uint32_t kDefaultFramerate = 30;
 constexpr size_t kMaxNumOfRefFrames = 3u;
 
-constexpr int kSpatialLayersResolutionDenom[][3] = {
-    {1, 0, 0},  // For one spatial layer.
-    {2, 1, 0},  // For two spatial layers.
-    {4, 2, 1},  // For three spatial layers.
-};
+constexpr auto kSpatialLayersResolutionDenom =
+    std::to_array<std::array<int, 3>>({
+        {1, 0, 0},  // For one spatial layer.
+        {2, 1, 0},  // For two spatial layers.
+        {4, 2, 1},  // For three spatial layers.
+    });
 
 VideoEncodeAccelerator::Config DefaultVideoEncodeAcceleratorConfig() {
   VideoEncodeAccelerator::Config vea_config(
@@ -141,8 +138,8 @@ MATCHER_P2(MatchesEncoderInfo,
     }
   }
   return arg.implementation_name == "VaapiVideoEncodeAccelerator" &&
-         arg.supports_native_handle && !arg.has_trusted_rate_controller &&
-         arg.is_hardware_accelerated && !arg.supports_simulcast;
+         arg.supports_native_handle && arg.is_hardware_accelerated &&
+         !arg.supports_simulcast;
 }
 
 MATCHER(ContainsTooManyEncoderInstances, "") {
@@ -572,8 +569,9 @@ class VaapiVideoEncodeAcceleratorTest
   }
 
   void EncodeSequenceForVP9MultipleSpatialLayers(size_t num_spatial_layers) {
-    constexpr int32_t kBitstreamIds[] = {12, 13, 14};
-    constexpr uint64_t kEncodedChunkSizes[] = {1234, 1235, 1236};
+    constexpr auto kBitstreamIds = std::to_array<int32_t>({12, 13, 14});
+    constexpr auto kEncodedChunkSizes =
+        std::to_array<uint64_t>({1234, 1235, 1236});
     ASSERT_LE(num_spatial_layers, std::size(kBitstreamIds));
     ASSERT_LE(num_spatial_layers, std::size(kEncodedChunkSizes));
     base::RunLoop run_loop;
@@ -609,7 +607,8 @@ class VaapiVideoEncodeAcceleratorTest
     std::vector<gfx::Size> svc_resolutions =
         GetDefaultSVCResolutions(num_spatial_layers);
 
-    constexpr VASurfaceID kEncodeSurfaceIds[] = {458, 459, 460};
+    constexpr auto kEncodeSurfaceIds =
+        std::to_array<VASurfaceID>({458, 459, 460});
     for (size_t i = 0; i < num_spatial_layers; i++) {
       // For reconstructed surface.
       if (va_encode_surface_ids_[i].empty()) {
@@ -645,7 +644,7 @@ class VaapiVideoEncodeAcceleratorTest
             mock_vaapi_wrapper_, kSourceSurfaceId, kDefaultEncodeSize,
             VA_RT_FORMAT_YUV420)));
 
-    constexpr VASurfaceID kVppDestSurfaceIds[] = {456, 457};
+    constexpr auto kVppDestSurfaceIds = std::to_array<VASurfaceID>({456, 457});
 
     // Create Surfaces.
     for (size_t i = 0; i < num_spatial_layers - 1; ++i) {
@@ -678,7 +677,7 @@ class VaapiVideoEncodeAcceleratorTest
     }
 
     // Create CodedBuffers in creating EncodeJobs.
-    constexpr VABufferID kCodedBufferIds[] = {123, 124, 125};
+    constexpr auto kCodedBufferIds = std::to_array<VABufferID>({123, 124, 125});
     for (size_t i = 0; i < num_spatial_layers; ++i) {
       const VABufferID kCodedBufferId = kCodedBufferIds[i];
       EXPECT_CALL(*mock_vaapi_wrapper_,

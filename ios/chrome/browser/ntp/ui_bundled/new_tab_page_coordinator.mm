@@ -30,6 +30,8 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
@@ -61,6 +63,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_sign_in_promo_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/following_feed_overlay/following_feed_overlay_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
@@ -100,6 +103,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
@@ -110,16 +115,12 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
-#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -281,8 +282,12 @@
   TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
   // Indicates whether the fakebox was tapped as part of an omnibox focus event.
   BOOL _fakeboxTapped;
-  // Whether an account menu is displayed on top of this NTP.
-  BOOL _accountMenuCoordinatorStarted;
+  // Whether the account menu is displayed on top of this NTP.
+  BOOL _showAccountMenuInProgress;
+  // Whether the signin menu is displayed on top of this NTP.
+  BOOL _showSigninCommandInProgress;
+  // The coordinator to control the overlay modal for the following feed.
+  FollowingFeedOverlayCoordinator* _followingFeedOverlayCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -377,7 +382,7 @@
   [self configureContentSuggestionsCoordinator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     [self configureTabGroupIndicator];
   }
 
@@ -405,10 +410,8 @@
 
   [sceneState.profileState removeObserver:self];
 
-  if (IsTabGroupIndicatorEnabled()) {
-    [_tabGroupIndicatorCoordinator stop];
-    _tabGroupIndicatorCoordinator = nil;
-  }
+  [_tabGroupIndicatorCoordinator stop];
+  _tabGroupIndicatorCoordinator = nil;
 
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;
@@ -685,6 +688,11 @@
   self.feedMetricsRecorder =
       [componentFactory feedMetricsRecorderForBrowser:browser];
   self.NTPMetricsRecorder = [[NewTabPageMetricsRecorder alloc] init];
+  if (IsNewFollowingFeedEntryPointsEnabled()) {
+    _followingFeedOverlayCoordinator = [[FollowingFeedOverlayCoordinator alloc]
+        initWithBaseViewController:self.NTPViewController
+                           browser:browser];
+  }
 }
 
 #pragma mark - Configurators
@@ -720,10 +728,15 @@
   if ([self shouldFeedBeVisible]) {
     if ([self isFollowingFeedAvailable] &&
         self.selectedFeed == FeedTypeFollowing) {
-      self.feedViewController = [self.componentFactory
-              followingFeedForBrowser:self.browser
-          viewControllerConfiguration:[self feedViewControllerConfiguration]
-                             sortType:self.followingFeedSortType];
+      if (IsNewFollowingFeedEntryPointsEnabled()) {
+        // TODO(crbug.com/359325090): Configure the following feed in an overlay
+        // view.
+      } else {
+        self.feedViewController = [self.componentFactory
+                followingFeedForBrowser:self.browser
+            viewControllerConfiguration:[self feedViewControllerConfiguration]
+                               sortType:self.followingFeedSortType];
+      }
     } else {
       self.feedViewController = [self.componentFactory
                discoverFeedForBrowser:self.browser
@@ -735,6 +748,10 @@
   // always be below the block that sets `feedViewController`.
   if ([self isFeedVisible]) {
     self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
+  }
+
+  if (IsNewFollowingFeedEntryPointsEnabled()) {
+    _followingFeedOverlayCoordinator.feedControlDelegate = self;
   }
 }
 
@@ -836,6 +853,8 @@
   _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
       initWithBaseViewController:self.NTPViewController
                          browser:self.browser];
+  _tabGroupIndicatorCoordinator.parentViewController =
+      self.headerViewController;
   _tabGroupIndicatorCoordinator.toolbarHeightDelegate = nil;
   _tabGroupIndicatorCoordinator.displayedOnNTP = YES;
   [_tabGroupIndicatorCoordinator start];
@@ -897,6 +916,10 @@
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
+    // Double tap, or tap before dismissing of the previous one is complete.
+    return;
+  }
   if (IsHomeCustomizationEnabled()) {
     [self dismissCustomizationMenu];
   }
@@ -910,25 +933,31 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-      if (_accountMenuCoordinatorStarted) {
-        // Double tap, or tap before dismiss of the previous one is complete.
-        return;
-      }
-      _accountMenuCoordinatorStarted = YES;
+      _showAccountMenuInProgress = YES;
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc
-                                  completion:^() {
-                                    [weakSelf accountMenuCoordinatorIsStopped];
+                        skipIfUINotAvailable:NO
+                                  completion:^{
+                                    [weakSelf showAccountMenuDidFinish];
                                   }];
 
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
   } else {
+    __weak __typeof(self) weakSelf = self;
+    _showSigninCommandInProgress = YES;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
+                 identity:nil
               accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+                              ACCESS_POINT_NTP_SIGNED_OUT_ICON
+              promoAction:signin_metrics::PromoAction::
+                              PROMO_ACTION_NO_SIGNIN_PROMO
+               completion:^(SigninCoordinatorResult result,
+                            id<SystemIdentity> completionIdentity) {
+                 [weakSelf showSigninCommandDidFinish];
+               }];
     [handler showSignin:showSigninCommand
         baseViewController:self.baseViewController];
   }
@@ -1037,6 +1066,15 @@
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
+  if (IsNewFollowingFeedEntryPointsEnabled()) {
+    if (self.selectedFeed == FeedTypeFollowing) {
+      _followingFeedOverlayCoordinator.animatePresentation = YES;
+      [_followingFeedOverlayCoordinator start];
+    } else {
+      [_followingFeedOverlayCoordinator stop];
+    }
+    return;
+  }
   [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
@@ -1142,22 +1180,32 @@
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInPromoUI {
-  // Both possible flows (sign-in only and sign-in + sync) involve sign-in. So
-  // they shouldn't be offered if sign-in is disallowed.
   if (![self isSignInAllowed]) {
     [self showSignInDisableMessage];
     [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
                                   feed::FeedSignInUI::kShowSignInDisableToast];
     return;
   }
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
+    return;
+  }
 
   BOOL hasUserIdentities = [self hasIdentitiesOnDevice];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  __weak __typeof(self) weakSelf = self;
+  _showSigninCommandInProgress = YES;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO];
+                            ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:^(SigninCoordinatorResult result,
+                          id<SystemIdentity> completionIdentity) {
+               [weakSelf showSigninCommandDidFinish];
+             }];
   [handler showSignin:command baseViewController:self.NTPViewController];
   [self.feedMetricsRecorder recordShowSignInRelatedUIWithType:
                                 feed::FeedSignInUI::kShowSignInOnlyFlow];
@@ -1175,6 +1223,9 @@
                                   feed::FeedSyncPromo::kShowDisableToast];
     return;
   }
+  if (_showAccountMenuInProgress || _showSigninCommandInProgress) {
+    return;
+  }
 
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -1182,10 +1233,19 @@
   auto operation = [self hasIdentitiesOnDevice]
                        ? AuthenticationOperation::kSigninOnly
                        : AuthenticationOperation::kInstantSignin;
+  __weak __typeof(self) weakSelf = self;
+  _showSigninCommandInProgress = YES;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
+               identity:nil
             accessPoint:signin_metrics::AccessPoint::
-                            ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
+                            ACCESS_POINT_NTP_FEED_BOTTOM_PROMO
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:^(SigninCoordinatorResult result,
+                          id<SystemIdentity> completionIdentity) {
+               [weakSelf showSigninCommandDidFinish];
+             }];
   [handler showSignin:command baseViewController:self.NTPViewController];
   // TODO(crbug.com/40066051): Strictly speaking this should record a bucket
   // other than kShowSyncFlow. But I don't think we care too much about this
@@ -1224,7 +1284,8 @@
   id<FakeboxFocuser> fakeboxFocuserHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
   [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
-                                          pinned:[self isFakeboxPinned]];
+                                          pinned:[self isFakeboxPinned]
+                  fakeboxButtonsSnapshotProvider:self.headerViewController];
 }
 
 - (void)refreshNTPContent {
@@ -1595,8 +1656,22 @@
 
 // Update the state, to take into account that the menu coordinator is stopped.
 - (void)accountMenuCoordinatorIsStopped {
-  CHECK(_accountMenuCoordinatorStarted);
-  _accountMenuCoordinatorStarted = NO;
+  CHECK(_showAccountMenuInProgress);
+  _showAccountMenuInProgress = NO;
+}
+
+// Update the state, to take into account that the account menu coordinator is
+// stopped.
+- (void)showAccountMenuDidFinish {
+  CHECK(_showAccountMenuInProgress, base::NotFatalUntil::M135);
+  _showAccountMenuInProgress = NO;
+}
+
+// Update the state, to take into account that the signin coordinator
+// coordinator is stopped.
+- (void)showSigninCommandDidFinish {
+  CHECK(_showSigninCommandInProgress, base::NotFatalUntil::M135);
+  _showSigninCommandInProgress = NO;
 }
 
 // Updates the feed visibility or content based on the supervision state
@@ -1689,6 +1764,7 @@
   viewControllerConfig.previewDelegate = self;
   viewControllerConfig.manageDelegate = self;
   viewControllerConfig.signInPromoDelegate = self;
+  viewControllerConfig.controlDelegate = self;
 
   return viewControllerConfig;
 }
@@ -1963,7 +2039,6 @@
   if (!_customizationCoordinator) {
     return;
   }
-  [self.NTPViewController dismissViewControllerAnimated:YES completion:nil];
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 }

@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "v8/include/v8-profiler.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -80,6 +82,7 @@ void UserTiming::AddMarkToPerformanceTimeline(
                            : ScriptValue();
   String serialized_detail = GetSerializedDetail(detail);
   auto source_location = CaptureSourceLocation();
+  const base::TimeTicks callTime = base::TimeTicks::Now();
 
   const auto trace_event_details = [&](perfetto::EventContext ctx) {
     ctx.event()->set_name(mark.name().Utf8().c_str());
@@ -87,6 +90,7 @@ void UserTiming::AddMarkToPerformanceTimeline(
       auto dict = std::move(trace_context).WriteDictionary();
       dict.Add("startTime", mark.startTime());
       dict.Add("stackTrace", source_location);
+      dict.Add("callTime", callTime);
       // Only set when performance_ is a WindowPerformance.
       // performance_->timing() returns null when performance_ is a
       // WorkerPerformance.
@@ -248,17 +252,21 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     WTF::AddFloatToHash(hash, end_time);
     String serialized_detail = GetSerializedDetail(detail);
     auto source_location = CaptureSourceLocation();
+    v8::Isolate* isolate = script_state->GetIsolate();
+    const base::TimeTicks callTime = base::TimeTicks::Now();
+    v8::CpuProfiler::CollectSample(isolate);
     if (serialized_detail.length()) {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
                         unsafe_start_time, "startTime", start_time,
-                        "stackTrace", source_location, "detail",
-                        serialized_detail, [&](perfetto::EventContext ctx) {
+                        "stackTrace", source_location, "callTime", callTime,
+                        "detail", serialized_detail,
+                        [&](perfetto::EventContext ctx) {
                           ctx.event()->set_name(measure_name.Utf8().c_str());
                         });
     } else {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
                         unsafe_start_time, "startTime", start_time,
-                        "stackTrace", source_location,
+                        "stackTrace", source_location, "callTime", callTime,
                         [&](perfetto::EventContext ctx) {
                           ctx.event()->set_name(measure_name.Utf8().c_str());
                         });

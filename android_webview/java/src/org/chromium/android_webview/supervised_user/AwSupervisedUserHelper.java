@@ -18,7 +18,7 @@ import org.chromium.base.ThreadUtils;
 @JNINamespace("android_webview")
 final class AwSupervisedUserHelper {
     private static final String HELP_CENTER_URL =
-            "https://support.google.com/families?p=chrome_controlaccess";
+            "https://support.google.com/families?p=content_blocked_webview";
 
     @CalledByNative
     public static void openHelpCenterInDefaultBrowser() {

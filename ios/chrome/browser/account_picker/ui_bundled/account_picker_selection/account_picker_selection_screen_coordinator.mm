@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface AccountPickerSelectionScreenCoordinator () <
     AccountPickerSelectionScreenTableViewControllerActionDelegate>
@@ -34,6 +35,8 @@
   [super start];
   _mediator = [[AccountPickerSelectionScreenMediator alloc]
       initWithSelectedIdentity:selectedIdentity
+               identityManager:IdentityManagerFactory::GetForProfile(
+                                   self.browser->GetProfile())
          accountManagerService:ChromeAccountManagerServiceFactory::
                                    GetForProfile(self.browser->GetProfile())];
 
@@ -77,8 +80,8 @@
       ChromeAccountManagerServiceFactory::GetForProfile(
           self.browser->GetProfile());
 
-  id<SystemIdentity> identity = accountManagerService->GetIdentityWithGaiaID(
-      base::SysNSStringToUTF8(gaiaID));
+  id<SystemIdentity> identity =
+      accountManagerService->GetIdentityWithGaiaID(GaiaId(gaiaID));
   DCHECK(identity);
   _mediator.selectedIdentity = identity;
   [self.delegate accountPickerSelectionScreenCoordinatorIdentitySelected:self];

@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Flag;
@@ -215,10 +216,12 @@ public class AwContentsStatics {
 
         void logFlagMetrics(String[] switches, String[] features);
 
+        @JniType("std::string")
         String getSafeBrowsingPrivacyPolicyUrl();
 
         void clearClientCertPreferences(Runnable callback);
 
+        @JniType("std::string")
         String getUnreachableWebDataUrl();
 
         String getProductVersion();
@@ -229,6 +232,7 @@ public class AwContentsStatics {
 
         boolean isMultiProcessEnabled();
 
+        @JniType("std::string")
         String getVariationsHeader();
     }
 }

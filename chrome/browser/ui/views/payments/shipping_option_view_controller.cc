@@ -42,7 +42,7 @@ class ShippingOptionItem final : public PaymentRequestItemList::Item {
   ShippingOptionItem(const ShippingOptionItem&) = delete;
   ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
 
-  ~ShippingOptionItem() override {}
+  ~ShippingOptionItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -106,13 +106,15 @@ ShippingOptionViewController::ShippingOptionViewController(
 }
 
 ShippingOptionViewController::~ShippingOptionViewController() {
-  if (spec())
+  if (spec()) {
     spec()->RemoveObserver(this);
+  }
 }
 
 void ShippingOptionViewController::OnSpecUpdated() {
-  if (!spec())
+  if (!spec()) {
     return;
+  }
 
   if (spec()->current_update_reason() ==
       PaymentRequestSpec::UpdateReason::SHIPPING_OPTION) {

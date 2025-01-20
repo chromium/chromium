@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
 #include "ash/constants/ash_features.h"
@@ -28,7 +23,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,6 +40,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/nearby_sharing/internal/resources/grit/nearby_share_internal_strings.h"
@@ -500,8 +495,7 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_HIDDEN},
       {"nearbyShareDescriptionOff",
        IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF},
-      {"multideviceSuiteToggleLabel",
-       IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL},
+      {"multideviceSuiteToggleLabel", IDS_OS_SETTINGS_MULTIDEVICE_TOGGLE_LABEL},
       {"multideviceSuiteToggleA11yLabel",
        IDS_SETTINGS_MULTIDEVICE_SUITE_TOGGLE_A11Y_LABEL},
       {"multideviceSmartLockItemTitle", IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE},
@@ -689,18 +683,11 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_SETUP_SUMMARY,
                                  ui::GetChromeOSDeviceName(),
                                  kBetterTogetherLearnMoreUrl));
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    html_source->AddString(
-        "multideviceNoHostText",
-        l10n_util::GetStringFUTF16(
-            IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
-            ui::GetChromeOSDeviceName(), kBetterTogetherLearnMoreUrl));
-  } else {
-    html_source->AddString(
-        "multideviceNoHostText",
-        l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
-                                   kBetterTogetherLearnMoreUrl));
-  }
+  html_source->AddString(
+      "multideviceNoHostText",
+      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
+                                 ui::GetChromeOSDeviceName(),
+                                 kBetterTogetherLearnMoreUrl));
   html_source->AddString(
       "multideviceSmartLockItemSummary",
       l10n_util::GetStringFUTF16(
@@ -755,9 +742,17 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY,
           GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
+  html_source->AddString(
+      "authPrompt",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT_LOCATION)));
 
   html_source->AddBoolean("isCrossDeviceFeatureSuiteEnabled",
                           features::IsCrossDeviceFeatureSuiteAllowed());
+  html_source->AddBoolean("isAuthPanelEnabled",
+                          ash::features::IsUseAuthPanelInSessionEnabled());
 
   // We still need to register strings even if Nearby Share is not supported.
   // For example, the HTML is always built but only displayed if Nearby Share is

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -61,10 +62,13 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 
     public CronetHttpURLConnection(URL url, CronetEngine cronetEngine) {
         super(url);
-        mCronetEngine = cronetEngine;
-        mMessageLoop = new MessageLoop();
-        mInputStream = new CronetInputStream(this);
-        mRequestHeaders = new ArrayList<Pair<String, String>>();
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetHttpURLConnection#CronetHttpURLConnection")) {
+            mCronetEngine = cronetEngine;
+            mMessageLoop = new MessageLoop();
+            mInputStream = new CronetInputStream(this);
+            mRequestHeaders = new ArrayList<Pair<String, String>>();
+        }
     }
 
     /**
@@ -258,51 +262,55 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             // Output stream is not ready to start the request. It will call us back when it is.
             return;
         }
-        final ExperimentalUrlRequest.Builder requestBuilder =
-                (ExperimentalUrlRequest.Builder)
-                        mCronetEngine.newUrlRequestBuilder(
-                                getURL().toString(), new CronetUrlRequestCallback(), mMessageLoop);
-        if (doOutput) {
-            if (method.equals("GET")) {
-                method = "POST";
-            }
-            if (mOutputStream != null) {
-                requestBuilder.setUploadDataProvider(
-                        mOutputStream.getUploadDataProvider(), mMessageLoop);
-                if (getRequestProperty(CONTENT_LENGTH) == null && !isChunkedUpload()) {
-                    addRequestProperty(
-                            CONTENT_LENGTH,
-                            Long.toString(mOutputStream.getUploadDataProvider().getLength()));
+        try (var traceEvent = ScopedSysTraceEvent.scoped("CronetHttpURLConnection#startRequest")) {
+            final ExperimentalUrlRequest.Builder requestBuilder =
+                    (ExperimentalUrlRequest.Builder)
+                            mCronetEngine.newUrlRequestBuilder(
+                                    getURL().toString(),
+                                    new CronetUrlRequestCallback(),
+                                    mMessageLoop);
+            if (doOutput) {
+                if (method.equals("GET")) {
+                    method = "POST";
                 }
-            } else {
-                if (getRequestProperty(CONTENT_LENGTH) == null) {
-                    addRequestProperty(CONTENT_LENGTH, "0");
+                if (mOutputStream != null) {
+                    requestBuilder.setUploadDataProvider(
+                            mOutputStream.getUploadDataProvider(), mMessageLoop);
+                    if (getRequestProperty(CONTENT_LENGTH) == null && !isChunkedUpload()) {
+                        addRequestProperty(
+                                CONTENT_LENGTH,
+                                Long.toString(mOutputStream.getUploadDataProvider().getLength()));
+                    }
+                } else {
+                    if (getRequestProperty(CONTENT_LENGTH) == null) {
+                        addRequestProperty(CONTENT_LENGTH, "0");
+                    }
+                }
+                // Default Content-Type to application/x-www-form-urlencoded
+                if (getRequestProperty("Content-Type") == null) {
+                    addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 }
             }
-            // Default Content-Type to application/x-www-form-urlencoded
-            if (getRequestProperty("Content-Type") == null) {
-                addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            for (Pair<String, String> requestHeader : mRequestHeaders) {
+                requestBuilder.addHeader(requestHeader.first, requestHeader.second);
             }
-        }
-        for (Pair<String, String> requestHeader : mRequestHeaders) {
-            requestBuilder.addHeader(requestHeader.first, requestHeader.second);
-        }
-        if (!getUseCaches()) {
-            requestBuilder.disableCache();
-        }
-        // Set HTTP method.
-        requestBuilder.setHttpMethod(method);
-        if (checkTrafficStatsTag()) {
-            requestBuilder.setTrafficStatsTag(mTrafficStatsTag);
-        }
-        if (checkTrafficStatsUid()) {
-            requestBuilder.setTrafficStatsUid(mTrafficStatsUid);
-        }
+            if (!getUseCaches()) {
+                requestBuilder.disableCache();
+            }
+            // Set HTTP method.
+            requestBuilder.setHttpMethod(method);
+            if (checkTrafficStatsTag()) {
+                requestBuilder.setTrafficStatsTag(mTrafficStatsTag);
+            }
+            if (checkTrafficStatsUid()) {
+                requestBuilder.setTrafficStatsUid(mTrafficStatsUid);
+            }
 
-        mRequest = requestBuilder.build();
-        // Start the request.
-        mRequest.start();
-        connected = true;
+            mRequest = requestBuilder.build();
+            // Start the request.
+            mRequest.start();
+            connected = true;
+        }
     }
 
     private boolean checkTrafficStatsTag() {
@@ -444,32 +452,33 @@ public class CronetHttpURLConnection extends HttpURLConnection {
     }
 
     /**
-     * Used by {@link CronetInputStream} to get more data from the network
-     * stack. This should only be called after the request has started. Note
-     * that this call might block if there isn't any more data to be read.
-     * Since byteBuffer is passed to the UrlRequest, it must be a direct
+     * Used by {@link CronetInputStream} to get more data from the network stack. This should only
+     * be called after the request has started. Note that this call might block if there isn't any
+     * more data to be read. Since byteBuffer is passed to the UrlRequest, it must be a direct
      * ByteBuffer.
      */
     void getMoreData(ByteBuffer byteBuffer) throws IOException {
-        mRequest.read(byteBuffer);
-        mMessageLoop.loop(getReadTimeout());
+        try (var traceEvent = ScopedSysTraceEvent.scoped("CronetHttpURLConnection#getMoreData")) {
+            mRequest.read(byteBuffer);
+            mMessageLoop.loop(getReadTimeout());
+        }
     }
 
     /**
      * Sets {@link android.net.TrafficStats} tag to use when accounting socket traffic caused by
-     * this request. See {@link android.net.TrafficStats} for more information. If no tag is
-     * set (e.g. this method isn't called), then Android accounts for the socket traffic caused
-     * by this request as if the tag value were set to 0.
-     * <p>
-     * <b>NOTE:</b>Setting a tag disallows sharing of sockets with requests
-     * with other tags, which may adversely effect performance by prohibiting
-     * connection sharing. In other words use of multiplexed sockets (e.g. HTTP/2
-     * and QUIC) will only be allowed if all requests have the same socket tag.
+     * this request. See {@link android.net.TrafficStats} for more information. If no tag is set
+     * (e.g. this method isn't called), then Android accounts for the socket traffic caused by this
+     * request as if the tag value were set to 0.
      *
-     * @param tag the tag value used to when accounting for socket traffic caused by this
-     *            request. Tags between 0xFFFFFF00 and 0xFFFFFFFF are reserved and used
-     *            internally by system services like {@link android.app.DownloadManager} when
-     *            performing traffic on behalf of an application.
+     * <p><b>NOTE:</b>Setting a tag disallows sharing of sockets with requests with other tags,
+     * which may adversely effect performance by prohibiting connection sharing. In other words use
+     * of multiplexed sockets (e.g. HTTP/2 and QUIC) will only be allowed if all requests have the
+     * same socket tag.
+     *
+     * @param tag the tag value used to when accounting for socket traffic caused by this request.
+     *     Tags between 0xFFFFFF00 and 0xFFFFFFFF are reserved and used internally by system
+     *     services like {@link android.app.DownloadManager} when performing traffic on behalf of an
+     *     application.
      */
     public void setTrafficStatsTag(int tag) {
         if (connected) {
@@ -522,69 +531,94 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 
         @Override
         public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
-            mResponseInfo = info;
-            mHasResponseHeadersOrCompleted = true;
-            // Quits the message loop since we have the headers now.
-            mMessageLoop.quit();
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#onResponseStarted")) {
+                mResponseInfo = info;
+                mHasResponseHeadersOrCompleted = true;
+                // Quits the message loop since we have the headers now.
+                mMessageLoop.quit();
+            }
         }
 
         @Override
         public void onReadCompleted(
                 UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
-            mResponseInfo = info;
-            mMessageLoop.quit();
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#onReadCompleted")) {
+                mResponseInfo = info;
+                mMessageLoop.quit();
+            }
         }
 
         @Override
         public void onRedirectReceived(
                 UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
-            mOnRedirectCalled = true;
-            try {
-                URL newUrl = new URL(newLocationUrl);
-                boolean sameProtocol = newUrl.getProtocol().equals(url.getProtocol());
-                if (instanceFollowRedirects) {
-                    // Update the url variable even if the redirect will not be
-                    // followed due to different protocols.
-                    url = newUrl;
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#"
+                                    + "onRedirectReceived")) {
+                mOnRedirectCalled = true;
+                try {
+                    URL newUrl = new URL(newLocationUrl);
+                    boolean sameProtocol = newUrl.getProtocol().equals(url.getProtocol());
+                    if (instanceFollowRedirects) {
+                        // Update the url variable even if the redirect will not be
+                        // followed due to different protocols.
+                        url = newUrl;
+                    }
+                    if (instanceFollowRedirects && sameProtocol) {
+                        mRequest.followRedirect();
+                        return;
+                    }
+                } catch (MalformedURLException e) {
+                    // Ignored. Just cancel the request and not follow the redirect.
                 }
-                if (instanceFollowRedirects && sameProtocol) {
-                    mRequest.followRedirect();
-                    return;
-                }
-            } catch (MalformedURLException e) {
-                // Ignored. Just cancel the request and not follow the redirect.
+                mResponseInfo = info;
+                mRequest.cancel();
+                setResponseDataCompleted(null);
             }
-            mResponseInfo = info;
-            mRequest.cancel();
-            setResponseDataCompleted(null);
         }
 
         @Override
         public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
-            mResponseInfo = info;
-            setResponseDataCompleted(null);
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#onSucceeded")) {
+                mResponseInfo = info;
+                setResponseDataCompleted(null);
+            }
         }
 
         @Override
         public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException exception) {
-            if (exception == null) {
-                throw new IllegalStateException("Exception cannot be null in onFailed.");
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#onFailed")) {
+                if (exception == null) {
+                    throw new IllegalStateException("Exception cannot be null in onFailed.");
+                }
+                mResponseInfo = info;
+                setResponseDataCompleted(exception);
             }
-            mResponseInfo = info;
-            setResponseDataCompleted(exception);
         }
 
         @Override
         public void onCanceled(UrlRequest request, UrlResponseInfo info) {
-            mResponseInfo = info;
-            setResponseDataCompleted(new IOException("disconnect() called"));
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetHttpURLConnection.CronetUrlRequestCallback#onCanceled")) {
+                mResponseInfo = info;
+                setResponseDataCompleted(new IOException("disconnect() called"));
+            }
         }
 
         /**
-         * Notifies {@link #mInputStream} that transferring of response data has
-         * completed.
-         * @param exception if not {@code null}, it is the exception to report when
-         *            caller tries to read more data.
+         * Notifies {@link #mInputStream} that transferring of response data has completed.
+         *
+         * @param exception if not {@code null}, it is the exception to report when caller tries to
+         *     read more data.
          */
         private void setResponseDataCompleted(IOException exception) {
             mException = exception;
@@ -601,26 +635,30 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 
     /** Blocks until the response headers are received. */
     private void getResponse() throws IOException {
-        if (mOutputStream != null) {
-            mOutputStream.checkReceivedEnoughContent();
-            // Ideally the user should have closed the output stream by this point, but if they
-            // didn't, we implicitly do it for them, as it's not possible to write after the full
-            // request body has been sent anyway. This is consistent with what the default Android
-            // implementation does.
-            mOutputStream.close();
+        try (var traceEvent = ScopedSysTraceEvent.scoped("CronetHttpURLConnection#getResponse")) {
+            if (mOutputStream != null) {
+                mOutputStream.checkReceivedEnoughContent();
+                // Ideally the user should have closed the output stream by this point, but if they
+                // didn't, we implicitly do it for them, as it's not possible to write after the
+                // full
+                // request body has been sent anyway. This is consistent with what the default
+                // Android
+                // implementation does.
+                mOutputStream.close();
+            }
+            if (!mHasResponseHeadersOrCompleted) {
+                startRequest();
+                // Blocks until onResponseStarted or onFailed is called.
+                mMessageLoop.loop();
+            }
+            checkHasResponseHeaders();
         }
-        if (!mHasResponseHeadersOrCompleted) {
-            startRequest();
-            // Blocks until onResponseStarted or onFailed is called.
-            mMessageLoop.loop();
-        }
-        checkHasResponseHeaders();
     }
 
     /**
-     * Checks whether response headers are received, and throws an exception if
-     * an exception occurred before headers received. This method should only be
-     * called after onResponseStarted or onFailed.
+     * Checks whether response headers are received, and throws an exception if an exception
+     * occurred before headers received. This method should only be called after onResponseStarted
+     * or onFailed.
      */
     private void checkHasResponseHeaders() throws IOException {
         if (!mHasResponseHeadersOrCompleted) throw new IllegalStateException("No response.");

@@ -456,7 +456,7 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
     EXPECT_FALSE(fake_os_integration().IsFileExtensionHandled(
         profile(), app_id, app_name, extension));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   // The file handling continues to not be registered.
   SynchronizeOsOptions options;

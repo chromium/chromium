@@ -30,27 +30,11 @@ constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
     "\x03\x18\x32";
 
-// The hash value for the secret key of the sparky feature.
-constexpr char kSparkyHashKey[] =
-    "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
-    "\x44\x77";
+// The hash value for the secret key of the mantis feature.
+constexpr char kMantisHashKey[] =
+    "\x7c\x8c\x82\x6f\x3e\xcd\x16\xf0\xfb\xfe\xfc\x9c\x2a\x48\x07\x75\x7e\xea"
+    "\x46\xf2";
 
-// The hash value for the secret key of the Scanner feature update.
-constexpr std::string_view kScannerUpdateHashKey(
-    "\xF0\xC9\xFD\x45\x31\x92\x95\xAC\xBB\xD8\xD4\xB3\x5F\xF8\x98\x3B\x3B\x4F"
-    "\x02\xF1",
-    base::kSHA1Length);
-
-// Whether checking the Scanner update secret key is ignored.
-bool g_ignore_scanner_update_secret_key = false;
-
-// The hash value for the secret key of the Sunfish feature.
-constexpr std::string_view kSunfishFeatureHashKey(
-    "\xce\x89\xdb\x48\xdc\x19\x49\x2a\xba\xd8\xaa\x48\xaa\x28\xc0\xd1\xc0\x10"
-    "\xf4\x2e",
-    base::kSHA1Length);
-
-bool g_ignore_sunfish_secret_key = false;
 
 }  // namespace
 
@@ -465,9 +449,6 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
-// Disables the Lacros keep alive for testing.
-const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
-
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
 
@@ -478,6 +459,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 // unexpected behavior during tests.
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
+
+// Skips OOBE network setup even if there is no internet connection.
+const char kOOBESkipNetworkSetupForTesting[] =
+    "oobe-skip-network-setup-for-testing";
 
 // Disables network screen skip check which is based on ethernet connection.
 const char kDisableOOBENetworkScreenSkippingForTesting[] =
@@ -504,9 +489,6 @@ const char kEnableArcVmDlc[] = "enable-arcvm-dlc";
 
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
-
-// Adds ash-browser back to launcher, even if in LacrosOnly mode.
-const char kEnableAshDebugBrowser[] = "enable-ash-debug-browser";
 
 // Used to override `kDisableBirchWeatherApiForTesting` for specific tast tests.
 const char kEnableBirchWeatherApiForTestingOverride[] =
@@ -567,9 +549,9 @@ const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
 const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
     "enterprise-force-manual-enrollment-in-test-builds";
 
-// Whether to enable unified state determination.
+// Whether to enable state determination.
 const char kEnterpriseEnableUnifiedStateDetermination[] =
-    "enterprise-enable-unified-state-determination";
+    "enterprise-enable-state-determination";
 
 // Whether to enable forced enterprise re-enrollment.
 const char kEnterpriseEnableForcedReEnrollment[] =
@@ -787,92 +769,6 @@ const char kInstallLogFastUploadForTests[] =
 const char kKioskSplashScreenMinTimeSeconds[] =
     "kiosk-splash-screen-min-time-seconds";
 
-// When this flag is set, the lacros-availability policy is ignored.
-const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
-
-// If this switch is set, then ash-chrome will pass additional arguments when
-// launching lacros-chrome. The string '####' is used as a delimiter. Example:
-// --lacros-chrome-additional-args="--foo=5####--bar=/tmp/dir name". Will
-// result in two arguments passed to lacros-chrome:
-//   --foo=5
-//   --bar=/tmp/dir name
-const char kLacrosChromeAdditionalArgs[] = "lacros-chrome-additional-args";
-
-// If this switch is set, then ash-chrome will read from the provided path
-// and pass additional arguments when launching lacros-chrome. Each non-empty
-// line in the file will be treated as an argument. Example file contents:
-//   --foo=5
-//   --bar=/tmp/dir name
-const char kLacrosChromeAdditionalArgsFile[] =
-    "lacros-chrome-additional-args-file";
-
-// Additional environment variables set for lacros-chrome. The string '####' is
-// used as a delimiter. For example:
-// --lacros-chrome-additional-env=WAYLAND_DEBUG=client####FOO=bar
-// will enable Wayland protocol logging and set FOO=bar.
-const char kLacrosChromeAdditionalEnv[] = "lacros-chrome-additional-env";
-
-// If this switch is set, then ash-chrome will exec the lacros-chrome binary
-// from the indicated path rather than from component updater. Note that the
-// path should be to a directory that contains a binary named 'chrome'.
-const char kLacrosChromePath[] = "lacros-chrome-path";
-
-// If set, ash-chrome will drop a Unix domain socket to wait for a process to
-// connect to it, and the connection will be used to request file descriptors
-// from ash-chrome, and when the process forks to start a lacros-chrome, the
-// obtained file descriptor will be used by lacros-chrome to set up the mojo
-// connection with ash-chrome. There are mainly two use cases:
-// 1. Test launcher to run browser tests in testing environment.
-// 2. A terminal to start lacros-chrome with a debugger.
-const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
-
-// When this flag is set, the lacros-selection policy is ignored.
-const char kLacrosSelectionPolicyIgnore[] = "lacros-selection-policy-ignore";
-
-// If set, it passes the ids of additional extensions allowed to run in
-// both ash and lacros when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-// Note: The ids passed to this switch and the ids passed to
-// kExtensionsRunInAshOnly should be mutually exclusive, i.e., without overlaps.
-// If any extension passed to this switch are to be published to app service,
-// it must be listed in one of the app service block switches so that
-// it won't be published to app service in both ash and lacros. Currently,
-// we don't have any use case with an extension running in both ash and lacros
-// to be published to app service, therefore, we haven't defined the app service
-// block switch for extensions.
-const char kExtensionsRunInBothAshAndLacros[] =
-    "extensions-run-in-ash-and-lacros";
-
-// If set, it passes the ids of additional extension apps allowed to run in
-// in both ash and lacros when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-// Note: The ids passed to this switch and the ids passed to
-// kExtensionAppsRunInAshOnly should be mutually exclusive, i.e., without
-// overlaps. If any extension app passed to this switch are to be publisedh to
-// app service, it must be listed in one of the app service block switches so
-// that it won't be published to app service in both ash and lacros. Currently,
-// we only have the use case of an extension app running in both ash and lacros
-// to be published to app service in lacros only, therefore, we only add the
-// kExtensionAppsBlockForAppServiceInAsh switch.
-const char kExtensionAppsRunInBothAshAndLacros[] =
-    "extension-apps-run-in-ash-and-lacros";
-
-// If set, it passes the ids of the additional extensions allowed to run in
-// ash only when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionsRunInAshOnly[] = "extensions-run-in-ash-only";
-
-// If set, it passes the ids of the additional extension apps allowed to run in
-// ash only when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionAppsRunInAshOnly[] = "extension-apps-run-in-ash-only";
-
-// If set, it passes the ids of the extension apps blocked for app service
-// in ash when lacros is enabled. The ids are separated by ",".
-// This should only used for testing.
-const char kExtensionAppsBlockForAppServiceInAsh[] =
-    "extension-apps-block-for-app-service-in-ash";
-
 // Start Chrome in RMA mode. Launches RMA app automatically.
 // kRmaNotAllowed switch takes priority over this one.
 const char kLaunchRma[] = "launch-rma";
@@ -893,21 +789,6 @@ const char kLoginProfile[] = "login-profile";
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
 
-// This flag is set if lacros is not allowed. Specifically this flag is set if
-// there are more than two signed in users i.e. inside multi-user session.
-const char kDisallowLacros[] = "disallow-lacros";
-
-// This flag disables "disallow-lacros" above, if both are set together.
-// I.e., if user flips feature flag, or policy is set, lacros can be
-// used, event if --disallow-lacros is set.
-const char kDisableDisallowLacros[] = "disable-disallow-lacros";
-
-// Supply secret key for the sparky feature.
-const char kSparkyFeatureKey[] = "sparky-feature-key";
-
-// Supply server url for the sparky feature.
-const char kSparkyServerUrl[] = "sparky-server-url";
-
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -918,6 +799,9 @@ const char kBrowserDataBackwardMigrationForUser[] =
 
 // Supply secret key for Coral feature.
 const char kCoralFeatureKey[] = "coral-feature-key";
+
+// Supply secret key for Mantis feature.
+const char kMantisFeatureKey[] = "mantis-feature-key";
 
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
@@ -1073,12 +957,6 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // New modular design for the shelf with apps separated into a hotseat UI and
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
-
-// Supply the secret key for Scanner (for more details see b/363103871).
-const char kScannerUpdateKey[] = "scanner-update-key";
-
-// Supply the secret key for Sunfish.
-const char kSunfishFeatureKey[] = "sunfish-feature-key";
 
 // Supply secret key for Seal feature.
 const char kSealKey[] = "seal-key";
@@ -1247,11 +1125,6 @@ bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting() {
       kOobeShowAccessibilityButtonOnMarketingOptInForTesting);
 }
 
-bool IsAshDebugBrowserEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kEnableAshDebugBrowser);
-}
-
 bool IsTabletFormFactor() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableTabletFormFactor);
@@ -1304,6 +1177,11 @@ bool AreEmptyPasswordsAllowedForForTesting() {
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
+}
+
+bool IsOOBENetworkSetupSkippedForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOOBESkipNetworkSetupForTesting);
 }
 
 bool IsOOBENetworkScreenSkippingDisabledForTesting() {
@@ -1402,82 +1280,21 @@ bool IsCampbellSecretKeyMatched() {
   return key_matched;
 }
 
-bool IsSparkySecretKeyMatched() {
+bool IsMantisSecretKeyMatched() {
   // Commandline looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-feature-key="INSERT KEY HERE" --enable-features=Sparky
+  //  --mantis-feature-key="INSERT KEY HERE"
+  //  --enable-features=MediaAppImageMantis
   const std::string provided_key_hash = base::SHA1HashString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kSparkyFeatureKey));
+          kMantisFeatureKey));
 
-  bool sparky_key_matched = (provided_key_hash == kSparkyHashKey);
-  if (!sparky_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  const bool key_matched = (provided_key_hash == kMantisHashKey);
+  if (!key_matched) {
+    LOG(ERROR) << "Provided secret key does not match the expected one.";
   }
 
-  return sparky_key_matched;
-}
-
-std::optional<std::string> ObtainSparkyServerUrl() {
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sparky-server-url="INSERT KEY HERE"
-  //  --enable-features=Sparky
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSparkyServerUrl)) {
-    return std::make_optional(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            kSparkyServerUrl));
-  }
-  return std::nullopt;
-}
-
-bool IsScannerUpdateSecretKeyMatched() {
-  if (g_ignore_scanner_update_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --scanner-update-key="INSERT KEY HERE" --enable-features=ScannerUpdate
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kScannerUpdateKey));
-
-  const bool scanner_key_matched = (provided_key_hash == kScannerUpdateHashKey);
-  if (!scanner_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return scanner_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreScannerUpdateSecretKeyForTest() {
-  return {&g_ignore_scanner_update_secret_key, true};
-}
-
-bool IsSunfishSecretKeyMatched() {
-  if (g_ignore_sunfish_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --sunfish-feature-key="INSERT KEY HERE" --enable-features=SunfishFeature
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kSunfishFeatureKey));
-
-  const bool sunfish_key_matched =
-      (provided_key_hash == kSunfishFeatureHashKey);
-  if (!sunfish_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return sunfish_key_matched;
-}
-
-base::AutoReset<bool> SetIgnoreSunfishSecretKeyForTest() {
-  return {&g_ignore_sunfish_secret_key, true};
+  return key_matched;
 }
 
 }  // namespace ash::switches

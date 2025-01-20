@@ -1,0 +1,70 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIPhotoEditingSettings": 0
+        },
+        "prefs": {
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIPhotoEditingSettings": 1
+        },
+        "prefs": {
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIPhotoEditingSettings": 2
+        },
+        "prefs": {
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 2,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by GenAiDefaultSettings only on ChromeOS",
+        "policies": {},
+        "prefs": {
+          "ash.gen_ai_photo_editing_settings": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

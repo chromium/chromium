@@ -13,6 +13,6 @@
     [HighEntropy=Direct, Measure] sequence<DOMString> getTransports();
 
     ArrayBuffer getAuthenticatorData();
-    ArrayBuffer? getPublicKey();
+    [Measure] ArrayBuffer? getPublicKey();
     COSEAlgorithmIdentifier getPublicKeyAlgorithm();
 };

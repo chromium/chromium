@@ -84,13 +84,16 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
     SetNeedsBoundariesUpdate();
   }
 
+  const ComputedStyle& style = StyleRef();
+
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::UpdateReferenceBoxDependency(*this);
-  SVGResources::UpdatePaints(*this, old_style, StyleRef());
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(style)
+          : TransformHelper::UpdateReferenceBoxDependency(*this);
+  SVGResources::UpdatePaints(*this, old_style, style);
 
   if (old_style) {
-    const ComputedStyle& style = StyleRef();
     // Most of the stroke attributes (caps, joins, miters, width, etc.) will
     // cause a re-layout which will clear the stroke-path cache; however, there
     // are a couple of additional properties that *won't* cause a layout, but
@@ -346,10 +349,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     needs_boundaries_update_ = true;
   }
 
-  SVGLayoutResult result;
-  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = UpdateAfterSVGLayout(layout_info, bbox_changed);
 
   if (needs_boundaries_update_) {
     if (!IsShapeEmpty()) {
@@ -359,14 +359,19 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
       decorated_bounding_box_ = fill_bounding_box_;
     }
     needs_boundaries_update_ = false;
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
+
+  const bool has_viewport_dependence =
+      GetElement()->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
 
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return result;
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

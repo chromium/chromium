@@ -4,6 +4,12 @@
 
 #include "base/files/drive_info.h"
 
+#include <IOKit/IOTypes.h>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "build/build_config.h"
+
 #if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include <DiskArbitration/DiskArbitration.h>
@@ -13,15 +19,7 @@
 #include <IOKit/storage/IOMedia.h>
 #include <IOKit/storage/IOStorageDeviceCharacteristics.h>
 #include <sys/stat.h>
-#endif
 
-#include <IOKit/IOTypes.h>
-
-#include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_MAC)
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
@@ -48,17 +46,14 @@ T QueryParentsForProperty(io_object_t io_object, const char* key) {
 
 namespace base {
 
-DriveInfo::DriveInfo() = default;
-DriveInfo::~DriveInfo() = default;
-DriveInfo::DriveInfo(DriveInfo&&) = default;
-DriveInfo& DriveInfo::operator=(DriveInfo&&) = default;
-
 std::optional<DriveInfo> GetIOObjectDriveInfo(io_object_t io_object) {
 #if BUILDFLAG(IS_IOS)
   DriveInfo info;
   info.has_seek_penalty = false;
   return info;
-#else  // BUILDFLAG(IS_MAC)
+#else
+  static_assert(BUILDFLAG(IS_MAC));
+
   if (!IOObjectConformsTo(io_object, kIOMediaClass)) {
     return std::nullopt;
   }
@@ -213,7 +208,7 @@ std::optional<DriveInfo> GetIOObjectDriveInfo(io_object_t io_object) {
   }
 
   return drive_info;
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 std::optional<DriveInfo> GetBSDNameDriveInfo(const std::string_view bsd_name) {
@@ -222,6 +217,7 @@ std::optional<DriveInfo> GetBSDNameDriveInfo(const std::string_view bsd_name) {
   info.has_seek_penalty = false;
   return info;
 #else  // BUILDFLAG(IS_MAC)
+  CHECK_NE(bsd_name.find("/dev/"), 0UL);
   std::string full_name("/dev/");
   full_name.append(bsd_name);
   apple::ScopedCFTypeRef<DASessionRef> session(
@@ -251,7 +247,8 @@ std::optional<DriveInfo> GetFileDriveInfo(const FilePath& file_path) {
     return std::nullopt;
   }
   char devname_buf[256];
-  const char* dev_name = devname_r(path_stat.st_dev, S_IFBLK, devname_buf, 256);
+  const char* dev_name =
+      devname_r(path_stat.st_dev, S_IFBLK, devname_buf, sizeof(devname_buf));
   if (!dev_name) {
     return std::nullopt;
   }

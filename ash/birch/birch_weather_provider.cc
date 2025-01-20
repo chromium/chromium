@@ -44,6 +44,12 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
     Shell::Get()->birch_model()->SetWeatherItems({});
     return;
   }
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
+      Shell::Get()->session_controller()->IsActiveAccountManaged()) {
+    // Weather not allowed for managed accounts.
+    Shell::Get()->birch_model()->SetWeatherItems({});
+    return;
+  }
   const auto* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   if (!pref_service ||

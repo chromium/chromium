@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/legacy/v4l2_video_decode_accelerator.h"
 
 #include <dlfcn.h>
@@ -78,7 +83,7 @@ namespace {
 bool IsVp9KSVCStream(uint32_t input_format_fourcc,
                      const DecoderBuffer& decoder_buffer) {
   return input_format_fourcc == V4L2_PIX_FMT_VP9 &&
-         decoder_buffer.has_side_data() &&
+         decoder_buffer.side_data() &&
          !decoder_buffer.side_data()->spatial_layers.empty();
 }
 

@@ -15,10 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/net/arc_app_metadata_provider.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,6 +27,9 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
+#include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "chromeos/ash/experiences/arc/net/arc_app_metadata_provider.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcDefaultAppList;
@@ -308,8 +308,8 @@ class ArcAppListPrefs : public KeyedService,
     ~Observer() override;
   };
 
-  static ArcAppListPrefs* Create(Profile* profile);
-  static ArcAppListPrefs* Create(
+  static std::unique_ptr<ArcAppListPrefs> Create(Profile* profile);
+  static std::unique_ptr<ArcAppListPrefs> Create(
       Profile* profile,
       arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
           app_connection_holder_for_testing);
@@ -334,6 +334,11 @@ class ArcAppListPrefs : public KeyedService,
 
   static void UprevCurrentIconsVersionForTesting();
 
+  // See the Create methods.
+  ArcAppListPrefs(
+      Profile* profile,
+      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
+          app_connection_holder_for_testing);
   ArcAppListPrefs(const ArcAppListPrefs&) = delete;
   ArcAppListPrefs& operator=(const ArcAppListPrefs&) = delete;
   ~ArcAppListPrefs() override;
@@ -500,12 +505,6 @@ class ArcAppListPrefs : public KeyedService,
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
   friend class app_list::test::ArcAppShortcutsSearchProviderTest;
-
-  // See the Create methods.
-  ArcAppListPrefs(
-      Profile* profile,
-      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
-          app_connection_holder_for_testing);
 
   // arc::ConnectionObserver<arc::mojom::AppInstance>:
   void OnConnectionReady() override;

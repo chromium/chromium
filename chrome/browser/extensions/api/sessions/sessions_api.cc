@@ -658,8 +658,7 @@ SessionsAPI::SessionsAPI(content::BrowserContext* context)
       api::sessions::OnChanged::kEventName);
 }
 
-SessionsAPI::~SessionsAPI() {
-}
+SessionsAPI::~SessionsAPI() = default;
 
 void SessionsAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

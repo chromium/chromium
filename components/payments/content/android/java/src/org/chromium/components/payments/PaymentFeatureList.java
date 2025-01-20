@@ -6,6 +6,8 @@ package org.chromium.components.payments;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Exposes payment specific features to java since files in org.chromium.components.payments cannot
  * depend on org.chromium.chrome.browser.flags.ChromeFeatureList.
@@ -14,10 +16,12 @@ import org.jni_zero.JNINamespace;
  * components/payments/content/android/payment_feature_map.cc
  */
 @JNINamespace("payments::android")
+@NullMarked
 public abstract class PaymentFeatureList {
     /** Alphabetical: */
     public static final String ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS =
             "AndroidPaymentIntentsOmitDeprecatedParameters";
+
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GOOGLE_PAY_VIA_ANDROID_INTENTS = "GooglePayViaAndroidIntents";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";

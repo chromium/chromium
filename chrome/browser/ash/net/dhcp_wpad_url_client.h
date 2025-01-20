@@ -22,7 +22,7 @@ class DhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
   DhcpWpadUrlClient(const DhcpWpadUrlClient&) = delete;
   DhcpWpadUrlClient& operator=(const DhcpWpadUrlClient&) = delete;
 
-  ~DhcpWpadUrlClient() override {}
+  ~DhcpWpadUrlClient() override = default;
 
   // Gets the PAC script URL from the DefaultNetwork and calls |callback| with
   // the result. If an error occurs or no PAC URL is provided, |callback| is

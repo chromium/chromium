@@ -68,17 +68,7 @@ def boot_device(node_id: str,
                     ], 'Unsupported BootMode %s for serial_boot_device.' % mode
     assert _env_ready()
 
-    if is_in_fuchsia(node_id):
-        if not must_boot and mode == BootMode.REGULAR:
-            return True
-        # pylint: disable=subprocess-run-check
-        if subprocess.run([
-                'serialio', node_id, 'send', 'dm', 'reboot' +
-            ('' if mode == BootMode.REGULAR else '-bootloader')
-        ]).returncode != 0:
-            logging.error('Failed to send dm reboot[-bootloader] via serialio')
-            return False
-    elif is_in_fastboot(serial_num):
+    if is_in_fastboot(serial_num):
         # fastboot is stateless and there isn't a reason to reboot the device
         # again to go to the fastboot.
         if mode == BootMode.BOOTLOADER:
@@ -88,9 +78,23 @@ def boot_device(node_id: str,
             # the case, it would be safer to return false.
             return False
     else:
-        logging.error('Cannot find node id %s or fastboot serial number %s',
-                      node_id, serial_num)
-        return False
+        # Even not must_boot, still check if the device is running fuchsia to
+        # detect the broken state and force a reboot to recover it.
+        if is_in_fuchsia(node_id):
+            if not must_boot and mode == BootMode.REGULAR:
+                return True
+        else:
+            logging.error('Cannot find node id %s or fastboot serial number '
+                          '%s, the os may run into panic, will try to use dm '
+                          'to reboot it anyway.',
+                          node_id, serial_num)
+        # pylint: disable=subprocess-run-check
+        if subprocess.run([
+                'serialio', node_id, 'send', 'dm', 'reboot' +
+                ('' if mode == BootMode.REGULAR else '-bootloader')
+        ]).returncode != 0:
+            logging.error('Failed to send dm reboot[-bootloader] via serialio')
+            return False
 
     start_sec = time.time()
     while time.time() - start_sec < 600:

@@ -19,11 +19,13 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -49,6 +51,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -61,6 +64,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -79,6 +83,16 @@ namespace {
 // both IE and FF restrict the max width of a menu.
 const int kMaxMenuWidth = 400;
 
+size_t GetSubmenuChildCount(const MenuItemView* menu) {
+  return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
+}
+
+size_t SubmenuIndexOf(const MenuItemView* parent, const views::View* child) {
+  std::optional<size_t> index = parent->GetSubmenu()->GetIndexOf(child);
+  CHECK(index.has_value());
+  return index.value();
+}
+
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
   const gfx::Image& image = model->GetFavicon(node);
@@ -86,72 +100,12 @@ ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                          : ui::ImageModel::FromImage(image);
 }
 
-BookmarkParentFolder GetBookmarkParentFolderForNode(
-    const BookmarkNode* parent_node) {
-  CHECK(parent_node->is_folder());
-  if (!parent_node->is_permanent_node()) {
-    return BookmarkParentFolder::FromNonPermanentNode(parent_node);
-  }
-  switch (parent_node->type()) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-    case bookmarks::BookmarkNode::FOLDER:
-      return BookmarkParentFolder::ManagedFolder();
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-      return BookmarkParentFolder::BookmarkBarFolder();
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return BookmarkParentFolder::OtherFolder();
-    case bookmarks::BookmarkNode::MOBILE:
-      return BookmarkParentFolder::MobileFolder();
-  }
-  NOTREACHED();
-}
-
-class BookmarkFolderOrURL {
- public:
-  explicit BookmarkFolderOrURL(const BookmarkNode* node)
-      : folder_or_url_(GetFromNode(node)) {}
-
-  const BookmarkParentFolder* GetIfBookmarkFolder() const {
-    if (folder_or_url_.index() == 0) {
-      return &std::get<0>(folder_or_url_);
-    }
-    return nullptr;
-  }
-
-  const BookmarkNode* GetIfBookmarkURL() const {
-    if (folder_or_url_.index() == 0) {
-      return nullptr;
-    }
-    const BookmarkNode* node = std::get<1>(folder_or_url_);
-    return node;
-  }
-
-  const BookmarkNode* GetIfNonPermanentNode() const {
-    const BookmarkParentFolder* folder = GetIfBookmarkFolder();
-    if (folder && folder->as_permanent_folder().has_value()) {
-      return nullptr;
-    }
-    return folder ? folder->as_non_permanent_folder() : GetIfBookmarkURL();
-  }
-
- private:
-  static std::variant<BookmarkParentFolder, raw_ptr<const BookmarkNode>>
-  GetFromNode(const BookmarkNode* node) {
-    CHECK(node);
-    if (node->is_url()) {
-      return node;
-    }
-    return GetBookmarkParentFolderForNode(node);
-  }
-
-  const std::variant<BookmarkParentFolder, raw_ptr<const BookmarkNode>>
-      folder_or_url_;
-};
-
-BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService(
-    Profile* profile) {
-  return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+bool ShouldBuildPermanentNode(const BookmarkMergedSurfaceService* service,
+                              const BookmarkParentFolder& folder) {
+  return base::ranges::any_of(
+      service->GetUnderlyingNodes(folder), [](const BookmarkNode* node) {
+        return node->IsVisible() && !node->children().empty();
+      });
 }
 
 // The current behavior is that the menu gets closed (see MenuController) after
@@ -168,7 +122,8 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
         drop_data_(std::move(drop_data)),
         drop_parent_(drop_parent),
         index_to_drop_at_(index_to_drop_at),
-        bookmark_service_(GetBookmarkMergedSurfaceService(profile)) {
+        bookmark_service_(
+            BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)) {
     DCHECK(drop_data_.is_valid());
     CHECK(bookmark_service_);
     bookmark_model_observation_.Observe(bookmark_service_->bookmark_model());
@@ -212,116 +167,120 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
       bookmark_model_observation_{this};
 };
 
-bool IsDropValid(const BookmarkFolderOrURL* target,
-                 const views::MenuDelegate::DropPosition* position) {
-  CHECK(target);
-  const BookmarkParentFolder* target_folder = target->GetIfBookmarkFolder();
-  bool drop_on_url_node = !target_folder;
-  switch (*position) {
-    case views::MenuDelegate::DropPosition::kUnknow:
-    case views::MenuDelegate::DropPosition::kNone:
-      return false;
+}  // namespace
 
-    case views::MenuDelegate::DropPosition::kBefore:
-      if (drop_on_url_node || target_folder->HoldsNonPermanentFolder() ||
-          target_folder->as_permanent_folder() ==
-              PermanentFolderType::kOtherNode) {
-        return true;
-      }
-      // Dropping before permanent mobile and managed nodes makes no sense.
-      return false;
+BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
+    const BookmarkNode* node)
+    : folder_or_url_(GetFromNode(node)) {}
 
-    case views::MenuDelegate::DropPosition::kAfter:
-      if (drop_on_url_node || target_folder->HoldsNonPermanentFolder() ||
-          target_folder->as_permanent_folder() ==
-              PermanentFolderType::kManagedNode) {
-        return true;
-      }
-      // Dropping after permanent other and mobile nodes makes no sense.
-      return false;
+BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
+    const BookmarkParentFolder& folder)
+    : folder_or_url_(folder) {}
 
-    case views::MenuDelegate::DropPosition::kOn:
-      return !drop_on_url_node;
+BookmarkMenuDelegate::BookmarkFolderOrURL::~BookmarkFolderOrURL() = default;
+
+BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
+    const BookmarkFolderOrURL& other) = default;
+
+BookmarkMenuDelegate::BookmarkFolderOrURL&
+BookmarkMenuDelegate::BookmarkFolderOrURL::operator=(
+    const BookmarkFolderOrURL& other) = default;
+
+const BookmarkParentFolder*
+BookmarkMenuDelegate::BookmarkFolderOrURL::GetIfBookmarkFolder() const {
+  if (folder_or_url_.index() == 0) {
+    return &std::get<0>(folder_or_url_);
   }
-  NOTREACHED();
+  return nullptr;
 }
 
-std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> GetUnderlyingNodes(
-    BookmarkMergedSurfaceService* bookmark_merged_service,
-    const BookmarkFolderOrURL& folder_or_url) {
-  if (const BookmarkNode* node = folder_or_url.GetIfBookmarkURL(); node) {
+const BookmarkNode*
+BookmarkMenuDelegate::BookmarkFolderOrURL::GetIfBookmarkURL() const {
+  if (folder_or_url_.index() == 0) {
+    return nullptr;
+  }
+  const BookmarkNode* node = std::get<1>(folder_or_url_);
+  return node;
+}
+
+const BookmarkNode*
+BookmarkMenuDelegate::BookmarkFolderOrURL::GetIfNonPermanentNode() const {
+  const BookmarkParentFolder* folder = GetIfBookmarkFolder();
+  if (folder && folder->as_permanent_folder().has_value()) {
+    return nullptr;
+  }
+  return folder ? folder->as_non_permanent_folder() : GetIfBookmarkURL();
+}
+
+std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
+BookmarkMenuDelegate::BookmarkFolderOrURL::GetUnderlyingNodes(
+    const BookmarkMergedSurfaceService* bookmark_merged_service) const {
+  if (const BookmarkNode* node = GetIfBookmarkURL(); node) {
     return {node};
   }
   std::vector<const BookmarkNode*> nodes =
-      bookmark_merged_service->GetUnderlyingNodes(
-          *folder_or_url.GetIfBookmarkFolder());
+      bookmark_merged_service->GetUnderlyingNodes(*GetIfBookmarkFolder());
   return base::ToVector(nodes, [](const BookmarkNode* node) {
     return raw_ptr<const BookmarkNode, VectorExperimental>(node);
   });
 }
 
-}  // namespace
+// static
+std::variant<BookmarkParentFolder, raw_ptr<const BookmarkNode>>
+BookmarkMenuDelegate::BookmarkFolderOrURL::GetFromNode(
+    const BookmarkNode* node) {
+  CHECK(node);
+  if (node->is_url()) {
+    return node;
+  }
+  return BookmarkParentFolder::FromFolderNode(node);
+}
 
 BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
-                                           views::Widget* parent)
+                                           views::Widget* parent,
+                                           views::MenuDelegate* real_delegate,
+                                           BookmarkLaunchLocation location)
     : browser_(browser),
       profile_(browser->profile()),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
       next_menu_id_(AppMenuModel::kMinBookmarksCommandId),
-      real_delegate_(nullptr),
+      real_delegate_(real_delegate),
       is_mutating_model_(false),
-      location_(BookmarkLaunchLocation::kNone) {}
+      location_(location) {
+  bookmark_model_observation_.Observe(GetBookmarkModel());
+}
 
 BookmarkMenuDelegate::~BookmarkMenuDelegate() {
   bookmark_model_observation_.Reset();
 }
 
-void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
-                                MenuItemView* parent,
-                                const BookmarkNode* node,
-                                size_t start_child_index,
-                                ShowOptions show_options,
-                                BookmarkLaunchLocation location) {
-  bookmark_model_observation_.Observe(GetBookmarkModel());
-  real_delegate_ = real_delegate;
-  location_ = location;
+void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
+  CHECK(!parent_menu_item_);
+  CHECK(parent);
+  CHECK(parent->GetSubmenu());
+  parent_menu_item_ = parent;
   // Assume that the menu will only use mnemonics if there's already a parent
-  // menu and that parent uses them. In cases where the BookmarkMenuDelegate
-  // will be the root, client code does not current enable mnemonics.
-  menu_uses_mnemonics_ = parent && parent->GetRootMenuItem()->has_mnemonics();
-  if (parent) {
-    parent_menu_item_ = parent;
-
-    // Add a separator if there are existing items in the menu, and if the
-    // current node has children. If |node| is the bookmark bar then the
-    // managed node is shown as its first child, if it's not empty.
-    BookmarkModel* model = GetBookmarkModel();
-    bookmarks::ManagedBookmarkService* managed = GetManagedBookmarkService();
-    bool show_forced_folders = show_options == SHOW_PERMANENT_FOLDERS &&
-                               node == model->bookmark_bar_node();
-    bool show_managed =
-        show_forced_folders && !managed->managed_node()->children().empty();
-    bool has_children =
-        (start_child_index < node->children().size()) || show_managed;
-    if (has_children && parent->GetSubmenu() &&
-        !parent->GetSubmenu()->GetMenuItems().empty()) {
-      parent->AppendSeparator();
-      // Add a "Bookmarks" title.
-      parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
-    }
-
-    if (show_managed) {
-      BuildMenuForManagedNode(parent);
-    }
-    BuildMenu(node, start_child_index, parent);
-    if (show_options == SHOW_PERMANENT_FOLDERS) {
-      BuildMenusForPermanentNodes(parent);
-    }
-  } else {
-    menu_ = CreateMenu(node, start_child_index, show_options);
+  // menu that uses them.
+  menu_uses_mnemonics_ = parent_menu_item_->GetRootMenuItem()->has_mnemonics();
+  if (ShouldHaveBookmarksTitle()) {
+    const size_t title_index = GetSubmenuChildCount(parent_menu_item_);
+    BuildBookmarksTitle(title_index);
   }
+
+  const BookmarkParentFolder managed_folder =
+      BookmarkParentFolder::ManagedFolder();
+  if (ShouldBuildPermanentNode(GetBookmarkMergedSurfaceService(),
+                               managed_folder)) {
+    BuildMenuForFolder(
+        managed_folder,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                      ui::kColorMenuIcon),
+        parent_menu_item_);
+  }
+  BuildMenu(BookmarkParentFolder::BookmarkBarFolder(), 0, parent);
+  BuildMenusForPermanentNodes();
 }
 
 const BookmarkModel* BookmarkMenuDelegate::GetBookmarkModel() const {
@@ -333,13 +292,64 @@ BookmarkMenuDelegate::GetManagedBookmarkService() {
   return ManagedBookmarkServiceFactory::GetForProfile(profile_);
 }
 
-void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
+const BookmarkMergedSurfaceService*
+BookmarkMenuDelegate::GetBookmarkMergedSurfaceService() const {
+  return BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_);
+}
+
+void BookmarkMenuDelegate::SetActiveMenu(const BookmarkParentFolder& folder,
                                          size_t start_index) {
-  DCHECK(!parent_menu_item_);
+  CHECK(!parent_menu_item_);
+  BookmarkFolderOrURL node(folder);
   if (!node_to_menu_map_[node]) {
-    CreateMenu(node, start_index, HIDE_PERMANENT_FOLDERS);
+    CreateMenu(folder, start_index);
   }
   menu_ = node_to_menu_map_[node];
+}
+
+void BookmarkMenuDelegate::SetMenuStartIndex(const BookmarkParentFolder& folder,
+                                             size_t start_index) {
+  CHECK(!parent_menu_item_);
+  const BookmarkMergedSurfaceService* service =
+      GetBookmarkMergedSurfaceService();
+  auto node_to_start_idx = node_start_child_idx_map_.find(folder);
+  const size_t prev_start_idx =
+      node_to_start_idx == node_start_child_idx_map_.end()
+          ? 0
+          : node_to_start_idx->second;
+
+  if (prev_start_idx == start_index) {
+    return;
+  }
+
+  // It's possible the menu hasn't been built yet, so no update is necessary.
+  auto node_to_menu = node_to_menu_map_.find(BookmarkFolderOrURL(folder));
+  if (node_to_menu == node_to_menu_map_.end()) {
+    return;
+  }
+
+  CHECK_LE(start_index, service->GetChildrenCount(folder));
+  node_start_child_idx_map_[folder] = start_index;
+  MenuItemView* parent_menu = node_to_menu->second;
+
+  // Remove obsolete bookmark menus if the start index increased.
+  BookmarkParentFolderChildren children = service->GetChildren(folder);
+  for (size_t idx = prev_start_idx; idx < start_index; ++idx) {
+    const BookmarkNode* child_node = children[idx];
+    if (auto child_node_to_menu =
+            node_to_menu_map_.find(BookmarkFolderOrURL(child_node));
+        child_node_to_menu != node_to_menu_map_.end()) {
+      RemoveBookmarkNode(child_node, child_node_to_menu->second);
+    }
+  }
+
+  // Add missing bookmark menus if the start index decreased.
+  for (size_t idx = start_index; idx < prev_start_idx; ++idx) {
+    const BookmarkNode* child_node = children[idx];
+    AddBookmarkNode(child_node, parent_menu, idx);
+  }
+
+  parent_menu->ChildrenChanged();
 }
 
 std::u16string BookmarkMenuDelegate::GetTooltipText(
@@ -348,7 +358,7 @@ std::u16string BookmarkMenuDelegate::GetTooltipText(
   auto i = menu_id_to_node_map_.find(id);
   // Ignore queries about unknown items, e.g. the empty menu item.
   if (i != menu_id_to_node_map_.end()) {
-    BookmarkFolderOrURL folder_or_url = BookmarkFolderOrURL(i->second);
+    BookmarkFolderOrURL folder_or_url = i->second;
     if (const BookmarkNode* node = folder_or_url.GetIfBookmarkURL(); node) {
       const views::TooltipManager* tooltip_manager =
           parent_->GetTooltipManager();
@@ -379,8 +389,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
                        profile_metrics::GetBrowserProfileType(profile_));
 
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> selection =
-      GetUnderlyingNodes(GetBookmarkMergedSurfaceService(profile_),
-                         BookmarkFolderOrURL(menu_id_to_node_map_[id]));
+      menu_id_to_node_map_.find(id)->second.GetUnderlyingNodes(
+          GetBookmarkMergedSurfaceService());
   chrome::OpenAllIfAllowed(browser_, selection,
                            ui::DispositionFromEventFlags(mouse_event_flags),
                            false);
@@ -402,12 +412,11 @@ bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
   }
   if (ui::DispositionFromEventFlags(event.flags()) ==
       WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    CHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
-    const BookmarkFolderOrURL node =
-        BookmarkFolderOrURL(menu_id_to_node_map_[id]);
+    auto menu_id_to_node = menu_id_to_node_map_.find(id);
+    CHECK(menu_id_to_node != menu_id_to_node_map_.end());
     // Close the menu before opening a folder since this may pop up a dialog
     // over the menu. See https://crbug.com/1105587 for details.
-    return !node.GetIfBookmarkFolder();
+    return !menu_id_to_node->second.GetIfBookmarkFolder();
   }
   return false;
 }
@@ -452,16 +461,15 @@ bool BookmarkMenuDelegate::CanDrop(MenuItemView* menu,
 
   // Drag originated from same profile and is not a URL. Only accept it if
   // the dragged node is not a parent of the node menu represents.
-  if (menu_id_to_node_map_.find(menu->GetCommand()) ==
-      menu_id_to_node_map_.end()) {
+  auto menu_id_to_node = menu_id_to_node_map_.find(menu->GetCommand());
+  if (menu_id_to_node == menu_id_to_node_map_.end()) {
     // If we don't know the menu assume its because we're embedded. We'll
     // figure out the real operation when GetDropOperation is invoked.
     return true;
   }
 
   const BookmarkNode* non_permanent_drop_node =
-      BookmarkFolderOrURL(menu_id_to_node_map_[menu->GetCommand()])
-          .GetIfNonPermanentNode();
+      menu_id_to_node->second.GetIfNonPermanentNode();
   if (!non_permanent_drop_node) {
     // Drop on permanent node.
     // `drag_node` can't be a permanent node or a root node.
@@ -520,14 +528,17 @@ bool BookmarkMenuDelegate::ShowContextMenu(
     ui::mojom::MenuSourceType source_type) {
   // The IDC_SHOW_BOOKMARK_SIDE_PANEL menu item does not map to a bookmark node
   // and therefore no context menu for it should be shown.
-  if (menu_id_to_node_map_.find(id) == menu_id_to_node_map_.end()) {
+  auto menu_id_to_node = menu_id_to_node_map_.find(id);
+  if (menu_id_to_node == menu_id_to_node_map_.end()) {
     return false;
   }
-  const BookmarkNode* node = menu_id_to_node_map_[id];
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes(1, node);
+
+  const BookmarkFolderOrURL folder_or_url = menu_id_to_node->second;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      folder_or_url.GetUnderlyingNodes(GetBookmarkMergedSurfaceService());
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, location_, node->parent(), nodes,
-      ShouldCloseOnRemove(node));
+      parent_, browser_, profile_, location_, nodes,
+      ShouldCloseOnRemove(folder_or_url));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
   return true;
@@ -538,8 +549,8 @@ bool BookmarkMenuDelegate::CanDrag(MenuItemView* menu) {
     return false;
   }
   // Don't let users drag permanent nodes (managed, other or mobile folder).
-  return BookmarkFolderOrURL(menu_id_to_node_map_[menu->GetCommand()])
-      .GetIfNonPermanentNode();
+  return menu_id_to_node_map_.find(menu->GetCommand())
+      ->second.GetIfNonPermanentNode();
 }
 
 void BookmarkMenuDelegate::WriteDragData(MenuItemView* sender,
@@ -549,9 +560,8 @@ void BookmarkMenuDelegate::WriteDragData(MenuItemView* sender,
 
   base::RecordAction(UserMetricsAction("BookmarkBar_DragFromFolder"));
 
-  const BookmarkNode* node =
-      BookmarkFolderOrURL(menu_id_to_node_map_[sender->GetCommand()])
-          .GetIfNonPermanentNode();
+  const BookmarkNode* node = menu_id_to_node_map_.find(sender->GetCommand())
+                                 ->second.GetIfNonPermanentNode();
   // Permanent nodes can't be dragged.
   CHECK(node);
   BookmarkNodeData drag_data(node);
@@ -560,8 +570,8 @@ void BookmarkMenuDelegate::WriteDragData(MenuItemView* sender,
 
 int BookmarkMenuDelegate::GetDragOperations(MenuItemView* sender) {
   return chrome::GetBookmarkDragOperation(
-      profile_, BookmarkFolderOrURL(menu_id_to_node_map_[sender->GetCommand()])
-                    .GetIfNonPermanentNode());
+      profile_, menu_id_to_node_map_.find(sender->GetCommand())
+                    ->second.GetIfNonPermanentNode());
 }
 
 int BookmarkMenuDelegate::GetMaxWidthForMenu(MenuItemView* menu) {
@@ -570,18 +580,72 @@ int BookmarkMenuDelegate::GetMaxWidthForMenu(MenuItemView* menu) {
 
 void BookmarkMenuDelegate::WillShowMenu(MenuItemView* menu) {
   auto iter = menu_id_to_node_map_.find(menu->GetCommand());
-  if ((iter != menu_id_to_node_map_.end()) &&
-      !iter->second->children().empty() &&
+  if (iter != menu_id_to_node_map_.end() &&
       menu->GetSubmenu()->GetMenuItems().empty()) {
-    BuildMenu(iter->second, 0, menu);
+    if (const BookmarkParentFolder* folder = iter->second.GetIfBookmarkFolder();
+        folder &&
+        GetBookmarkMergedSurfaceService()->GetChildrenCount(*folder)) {
+      BuildMenu(*folder, 0, menu);
+    }
   }
 }
 
 void BookmarkMenuDelegate::BookmarkModelChanged() {}
 
+void BookmarkMenuDelegate::BookmarkNodeMoved(const BookmarkNode* old_parent,
+                                             size_t old_index,
+                                             const BookmarkNode* new_parent,
+                                             size_t new_index) {
+  MenuItemView* old_parent_menu = nullptr;
+  const BookmarkFolderOrURL moved_node =
+      BookmarkFolderOrURL(new_parent->children()[new_index].get());
+  // Permanent nodes can't be moved.
+  CHECK(moved_node.GetIfNonPermanentNode());
+  auto node_to_menu = node_to_menu_map_.find(moved_node);
+
+  // The moved node will not have a menu item if it was moved without being
+  // built (e.g., through the bookmark editor).
+  if (node_to_menu != node_to_menu_map_.end()) {
+    MenuItemView* moved_menu = node_to_menu->second;
+    old_parent_menu = moved_menu->GetParentMenuItem();
+    CHECK(old_parent_menu);
+    RemoveBookmarkNode(moved_node.GetIfNonPermanentNode(), moved_menu);
+  }
+
+  GetAndUpdateStaleMenuArtifacts();
+
+  const BookmarkFolderOrURL folder_or_url_parent(new_parent);
+  auto parent_node_to_menu = node_to_menu_map_.find(folder_or_url_parent);
+  MenuItemView* new_parent_menu = parent_node_to_menu != node_to_menu_map_.end()
+                                      ? parent_node_to_menu->second
+                                      : nullptr;
+  // The new parent's menu might not exist from this controller's perspective.
+  // E.g., the bookmark is moved from a menu controlled by this, to a
+  // different menu controlled by another controller.
+  if (new_parent_menu) {
+    CHECK(new_parent_menu->HasSubmenu());
+    // The parent menu might exist but might not be built yet.
+    // E.g., drag and dropping the bookmark onto an empty folder; the folder
+    // will not have been built yet because it's empty.
+    CHECK(folder_or_url_parent.GetIfBookmarkFolder());
+    if (built_nodes_.contains(*folder_or_url_parent.GetIfBookmarkFolder())) {
+      AddBookmarkNode(moved_node.GetIfNonPermanentNode(), new_parent_menu,
+                      GetBookmarkMergedSurfaceService()->GetIndexOf(
+                          moved_node.GetIfNonPermanentNode()));
+    }
+  }
+
+  if (old_parent_menu) {
+    old_parent_menu->ChildrenChanged();
+  }
+  if (new_parent_menu && !new_parent->HasAncestor(old_parent)) {
+    new_parent_menu->ChildrenChanged();
+  }
+}
+
 void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
     const BookmarkNode* node) {
-  auto menu_pair = node_to_menu_map_.find(node);
+  auto menu_pair = node_to_menu_map_.find(BookmarkFolderOrURL(node));
   if (menu_pair == node_to_menu_map_.end()) {
     return;  // We're not showing a menu item for the node.
   }
@@ -603,18 +667,15 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
   // Remove the menu items.
   std::set<MenuItemView*> changed_parent_menus;
   for (const BookmarkNode* bookmark : bookmarks) {
-    auto node_to_menu = node_to_menu_map_.find(bookmark);
+    // Permanent nodes can't be removed from the UI.
+    CHECK(!bookmark->is_permanent_node());
+    auto node_to_menu = node_to_menu_map_.find(BookmarkFolderOrURL(bookmark));
     if (node_to_menu != node_to_menu_map_.end()) {
       MenuItemView* menu = node_to_menu->second;
-      MenuItemView* parent = menu->GetParentMenuItem();
-      // |parent| is NULL when removing a root. This happens when right clicking
-      // to delete an empty folder.
-      if (parent) {
-        changed_parent_menus.insert(parent);
-        parent->RemoveMenuItem(menu);
+      RemoveBookmarkNode(bookmark, menu);
+      if (MenuItemView* parent_menu = menu->GetParentMenuItem()) {
+        changed_parent_menus.insert(parent_menu);
       }
-      node_to_menu_map_.erase(node_to_menu);
-      menu_id_to_node_map_.erase(menu->GetCommand());
     }
   }
 
@@ -624,32 +685,128 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
   // is the DCHECK.
   DCHECK_LE(changed_parent_menus.size(), 1U);
 
-  // Remove any descendants of the removed nodes in |node_to_menu_map_|.
-  for (auto i(node_to_menu_map_.begin()); i != node_to_menu_map_.end();) {
-    bool ancestor_removed = false;
-    for (const BookmarkNode* bookmark : bookmarks) {
-      if (i->first->HasAncestor(bookmark)) {
-        ancestor_removed = true;
-        break;
-      }
-    }
-    if (ancestor_removed) {
-      menu_id_to_node_map_.erase(i->second->GetCommand());
-      node_to_menu_map_.erase(i++);
-    } else {
-      ++i;
-    }
-  }
-
   for (MenuItemView* changed_parent_menu : changed_parent_menus) {
     changed_parent_menu->ChildrenChanged();
   }
+}
+
+// E.g, the App menu should remove the "other bookmarks" menu item if this is
+// the last item being removed from it.
+void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
+                                              MenuItemView* menu) {
+  CHECK(!node->is_root());
+  // Remove any descendants of the removed nodes.
+  for (auto i = node_to_menu_map_.begin(); i != node_to_menu_map_.end();) {
+    auto underlying_nodes =
+        i->first.GetUnderlyingNodes(GetBookmarkMergedSurfaceService());
+    if (underlying_nodes.size() != 1) {
+      // This menu represents more than one node, this is possible for permanent
+      // nodes. Given that:
+      // - Root node can't be removed
+      // - Only one node is removed (not all underlying nodes)
+      // This menu shouldn't be removed.
+      ++i;
+      continue;
+    }
+
+    if (!underlying_nodes[0]->HasAncestor(node)) {
+      ++i;
+      continue;
+    }
+    if (i->first.GetIfBookmarkFolder()) {
+      built_nodes_.erase(*i->first.GetIfBookmarkFolder());
+    }
+    menu_id_to_node_map_.erase(i->second->GetCommand());
+    i = node_to_menu_map_.erase(i);
+  }
+
+  // The parent menu is null when removing a root menu item.
+  if (MenuItemView* parent_menu = menu->GetParentMenuItem()) {
+    parent_menu->RemoveMenuItem(menu);
+  }
+}
+
+void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
+                                           MenuItemView* new_parent_menu,
+                                           size_t new_index) {
+  const BookmarkParentFolder new_parent_folder =
+      BookmarkParentFolder::FromFolderNode(node->parent());
+  size_t insertion_idx = new_index;
+
+  // The bookmark bar view creates individual menus for bookmarks in the
+  // bookmarks bar. Bookmarks that overflow from the bar belong to a
+  // single menu, which uses a node offset. This offset should be applied to
+  // `new_index` to ensure the moved node's menu item appears in the right
+  // spot in the overflow menu.
+  if (auto node_to_start_child_idx =
+          node_start_child_idx_map_.find(new_parent_folder);
+      node_to_start_child_idx != node_start_child_idx_map_.end()) {
+    // If `new_index` is less than the menu's start index, this means that
+    // the moved bookmark isn't in its parent's menu. The client will reorder
+    // the menu in the bookmarks bar. Therefore, we skip the update.
+    if (new_index < node_to_start_child_idx->second) {
+      return;
+    }
+    insertion_idx -= node_to_start_child_idx->second;
+  }
+
+  // If the bookmark is embedded in a larger menu not controlled by this (e.g.,
+  // App menu), then the bookmark's menu item is inserted relative to the
+  // "Bookmarks" title.
+  if (new_parent_menu == parent_menu_item_) {
+    if (bookmarks_title_) {
+      insertion_idx += SubmenuIndexOf(parent_menu_item_, bookmarks_title_) + 1;
+    }
+    // The managed bookmarks folder is displayed immediately after the
+    // "Bookmarks" title.
+    if (node_to_menu_map_.contains(
+            BookmarkFolderOrURL(BookmarkParentFolder::ManagedFolder()))) {
+      ++insertion_idx;
+    }
+  }
+
+  // The "other" bookmarks folder is built with a header. The new node's menu
+  // is inserted relative to that.
+  if (new_parent_folder.as_permanent_folder() ==
+      BookmarkParentFolder::PermanentFolderType::kOtherNode) {
+    CHECK(other_node_menu_separator_);
+    insertion_idx +=
+        SubmenuIndexOf(new_parent_menu, other_node_menu_separator_) + 1;
+  }
+
+  BuildNodeMenuItemAt(node, new_parent_menu, insertion_idx);
+}
+
+// TODO(crbug.com/382711086): This should be updated to also remove
+// empty permanent folders of the App menu. Warning: simply removing the menu
+// here breaks DnD when the dragged bookmark is a child of the removed permanent
+// node folder because DnD clients don't gracefully handle deleting the widget
+// running the drag loop.
+std::vector<raw_ref<MenuItemView>>
+BookmarkMenuDelegate::GetAndUpdateStaleMenuArtifacts() {
+  std::vector<raw_ref<MenuItemView>> updated_menus = {};
+  if (parent_menu_item_) {
+    if (MenuItemView* updated_menu = UpdateBookmarksTitle()) {
+      updated_menus.emplace_back(*updated_menu);
+    }
+  }
+  if (MenuItemView* updated_menu = UpdateOtherNodeSeparator()) {
+    updated_menus.emplace_back(*updated_menu);
+  }
+  return updated_menus;
 }
 
 void BookmarkMenuDelegate::DidRemoveBookmarks() {
   // Balances remove in WillRemoveBookmarksImpl.
   bookmark_model_observation_.Observe(GetBookmarkModel());
   DCHECK(is_mutating_model_);
+
+  std::vector<raw_ref<MenuItemView>> updated_menus =
+      GetAndUpdateStaleMenuArtifacts();
+  for (raw_ref<MenuItemView> updated_menu : updated_menus) {
+    updated_menu->ChildrenChanged();
+  }
+
   is_mutating_model_ = false;
 }
 
@@ -657,12 +814,47 @@ void BookmarkMenuDelegate::OnContextMenuClosed() {
   context_menu_.reset();
 }
 
+bool BookmarkMenuDelegate::IsDropValid(
+    const BookmarkFolderOrURL* target,
+    const views::MenuDelegate::DropPosition* position) {
+  CHECK(target);
+  const BookmarkParentFolder* target_folder = target->GetIfBookmarkFolder();
+  bool drop_on_url_node = !target_folder;
+  switch (*position) {
+    case views::MenuDelegate::DropPosition::kUnknow:
+    case views::MenuDelegate::DropPosition::kNone:
+      return false;
+
+    case views::MenuDelegate::DropPosition::kBefore:
+      if (drop_on_url_node || target_folder->HoldsNonPermanentFolder() ||
+          target_folder->as_permanent_folder() ==
+              PermanentFolderType::kOtherNode) {
+        return true;
+      }
+      // Dropping before permanent mobile and managed nodes makes no sense.
+      return false;
+
+    case views::MenuDelegate::DropPosition::kAfter:
+      if (drop_on_url_node || target_folder->HoldsNonPermanentFolder() ||
+          target_folder->as_permanent_folder() ==
+              PermanentFolderType::kManagedNode) {
+        return true;
+      }
+      // Dropping after permanent other and mobile nodes makes no sense.
+      return false;
+
+    case views::MenuDelegate::DropPosition::kOn:
+      return !drop_on_url_node;
+  }
+  NOTREACHED();
+}
+
 std::optional<BookmarkMenuDelegate::DropParams>
 BookmarkMenuDelegate::GetDropParams(
     views::MenuItemView* menu,
     views::MenuDelegate::DropPosition* position) {
-  BookmarkFolderOrURL drop_node =
-      BookmarkFolderOrURL(menu_id_to_node_map_[menu->GetCommand()]);
+  const BookmarkFolderOrURL drop_node =
+      menu_id_to_node_map_.find(menu->GetCommand())->second;
   if (!IsDropValid(&drop_node, position)) {
     return std::nullopt;
   }
@@ -670,8 +862,8 @@ BookmarkMenuDelegate::GetDropParams(
   const BookmarkParentFolder* drop_folder = drop_node.GetIfBookmarkFolder();
   // Initial params drop on bookmark bar.
   DropParams drop_params(BookmarkParentFolder::BookmarkBarFolder(), 0);
-  BookmarkMergedSurfaceService* service =
-      GetBookmarkMergedSurfaceService(profile_);
+  const BookmarkMergedSurfaceService* service =
+      GetBookmarkMergedSurfaceService();
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
       if (drop_folder && drop_folder->as_permanent_folder() ==
@@ -687,7 +879,7 @@ BookmarkMenuDelegate::GetDropParams(
         const BookmarkNode* node = drop_node.GetIfNonPermanentNode();
         CHECK(node);
         drop_params.drop_parent =
-            GetBookmarkParentFolderForNode(node->parent());
+            BookmarkParentFolder::FromFolderNode(node->parent());
         drop_params.index_to_drop_at = service->GetIndexOf(node) + 1;
       }
       break;
@@ -711,7 +903,7 @@ BookmarkMenuDelegate::GetDropParams(
         const BookmarkNode* node = drop_node.GetIfNonPermanentNode();
         CHECK(node);
         drop_params.drop_parent =
-            GetBookmarkParentFolderForNode(node->parent());
+            BookmarkParentFolder::FromFolderNode(node->parent());
         drop_params.index_to_drop_at = service->GetIndexOf(node);
       }
       break;
@@ -723,18 +915,26 @@ BookmarkMenuDelegate::GetDropParams(
   return drop_params;
 }
 
-bool BookmarkMenuDelegate::ShouldCloseOnRemove(const BookmarkNode* node) const {
+bool BookmarkMenuDelegate::ShouldCloseOnRemove(
+    const BookmarkFolderOrURL& folder_or_url) const {
   // We never need to close when embedded in the app menu.
   const bool is_shown_from_app_menu = parent_menu_item_ != nullptr;
   if (is_shown_from_app_menu) {
     return false;
   }
 
+  const BookmarkNode* node = folder_or_url.GetIfNonPermanentNode();
+  if (!node) {
+    // Permanent node.
+    return false;
+  }
+
   const bool is_only_child_of_other_folder =
-      node->parent() == GetBookmarkModel()->other_node() &&
-      node->parent()->children().size() == 1;
+      node->parent()->type() == BookmarkNode::OTHER_NODE &&
+      GetBookmarkMergedSurfaceService()->GetChildrenCount(
+          BookmarkParentFolder::OtherFolder()) == 1u;
   const bool is_child_of_bookmark_bar =
-      node->parent() == GetBookmarkModel()->bookmark_bar_node();
+      node->parent()->type() == BookmarkNode::BOOKMARK_BAR;
   // The 'other' bookmarks folder hides when it has no more items, so we need
   // to exit the menu when the last node is removed.
   // If the parent is the bookmark bar, then the menu is showing for an item on
@@ -743,111 +943,131 @@ bool BookmarkMenuDelegate::ShouldCloseOnRemove(const BookmarkNode* node) const {
   return is_only_child_of_other_folder || is_child_of_bookmark_bar;
 }
 
-MenuItemView* BookmarkMenuDelegate::CreateMenu(const BookmarkNode* parent,
-                                               size_t start_child_index,
-                                               ShowOptions show_options) {
+MenuItemView* BookmarkMenuDelegate::CreateMenu(
+    const BookmarkParentFolder& folder,
+    size_t start_child_index) {
   MenuItemView* menu = new MenuItemView(real_delegate_);
   menu->SetCommand(GetAndIncrementNextMenuID());
-  AddMenuToMaps(menu, parent);
-  bool show_permanent = show_options == SHOW_PERMANENT_FOLDERS;
-  if (show_permanent && parent == GetBookmarkModel()->bookmark_bar_node()) {
-    BuildMenuForManagedNode(menu);
-  }
-  BuildMenu(parent, start_child_index, menu);
-  if (show_permanent) {
-    BuildMenusForPermanentNodes(menu);
-  }
+  AddMenuToMaps(menu, BookmarkFolderOrURL(folder));
+  node_start_child_idx_map_[folder] = start_child_index;
+  BuildMenu(folder, start_child_index, menu);
   return menu;
 }
 
-void BookmarkMenuDelegate::BuildMenusForPermanentNodes(
-    views::MenuItemView* menu) {
-  BookmarkModel* model = GetBookmarkModel();
-  bool added_separator = false;
-  BuildMenuForPermanentNode(
-      model->other_node(),
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
-  BuildMenuForPermanentNode(
-      model->mobile_node(),
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
-}
+void BookmarkMenuDelegate::BuildMenusForPermanentNodes() {
+  CHECK(parent_menu_item_);
+  const BookmarkParentFolder other_folder(BookmarkParentFolder::OtherFolder());
+  const BookmarkParentFolder mobile_folder(
+      BookmarkParentFolder::MobileFolder());
+  const bool should_build_other_node =
+      ShouldBuildPermanentNode(GetBookmarkMergedSurfaceService(), other_folder);
+  const bool should_build_mobile_node = ShouldBuildPermanentNode(
+      GetBookmarkMergedSurfaceService(), mobile_folder);
 
-void BookmarkMenuDelegate::BuildMenuForPermanentNode(const BookmarkNode* node,
-                                                     const ui::ImageModel& icon,
-                                                     MenuItemView* menu,
-                                                     bool* added_separator) {
-  if (!node->IsVisible() || node->GetTotalNodeCount() == 1) {
-    return;  // No children, don't create a menu.
+  if (!should_build_other_node && !should_build_mobile_node) {
+    return;
   }
 
-  if (!*added_separator) {
-    *added_separator = true;
-    menu->AppendSeparator();
+  views::SubmenuView* submenu = parent_menu_item_->GetSubmenu();
+  CHECK(!permanent_nodes_separator_);
+  parent_menu_item_->AppendSeparator();
+  permanent_nodes_separator_ = submenu->children().back().get();
+
+  const ui::ImageModel& folder_icon = chrome::GetBookmarkFolderIcon(
+      chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
+  if (should_build_other_node) {
+    BuildMenuForFolder(other_folder, folder_icon, parent_menu_item_);
   }
 
-  AddMenuToMaps(menu->AppendSubMenu(GetAndIncrementNextMenuID(),
-                                    MaybeEscapeLabel(node->GetTitle()), icon),
-                node);
+  if (should_build_mobile_node) {
+    BuildMenuForFolder(mobile_folder, folder_icon, parent_menu_item_);
+  }
 }
 
-void BookmarkMenuDelegate::BuildMenuForManagedNode(MenuItemView* menu) {
-  // Don't add a separator for this menu.
-  bool added_separator = true;
-  const BookmarkNode* node = GetManagedBookmarkService()->managed_node();
-  BuildMenuForPermanentNode(
-      node,
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                    ui::kColorMenuIcon),
-      menu, &added_separator);
+void BookmarkMenuDelegate::BuildMenuForFolder(
+    const BookmarkParentFolder& folder,
+    const ui::ImageModel& icon,
+    MenuItemView* parent_menu) {
+  BuildMenuForFolderAt(folder, icon, parent_menu,
+                       GetSubmenuChildCount(parent_menu));
 }
 
-void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
+void BookmarkMenuDelegate::BuildMenuForFolderAt(
+    const BookmarkParentFolder& folder,
+    const ui::ImageModel& icon,
+    MenuItemView* parent_menu,
+    size_t index) {
+  // Underlying nodes share the same title.
+  std::vector<const BookmarkNode*> nodes =
+      GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder);
+  CHECK(!nodes.empty());
+  AddMenuToMaps(parent_menu->AddMenuItemAt(
+                    index, GetAndIncrementNextMenuID(),
+                    MaybeEscapeLabel(nodes[0]->GetTitle()), std::u16string(),
+                    std::u16string(), ui::ImageModel(), icon,
+                    MenuItemView::Type::kSubMenu, ui::NORMAL_SEPARATOR),
+                BookmarkFolderOrURL(folder));
+}
+
+void BookmarkMenuDelegate::BuildMenuForURLAt(const BookmarkNode* node,
+                                             MenuItemView* parent_menu,
+                                             size_t index) {
+  MenuItemView* child_menu_item = parent_menu->AddMenuItemAt(
+      index, GetAndIncrementNextMenuID(), MaybeEscapeLabel(node->GetTitle()),
+      std::u16string(), std::u16string(), ui::ImageModel(),
+      GetFaviconForNode(GetBookmarkModel(), node), MenuItemView::Type::kNormal,
+      ui::NORMAL_SEPARATOR);
+  child_menu_item->GetViewAccessibility().SetDescription(
+      url_formatter::FormatUrl(
+          node->url(), url_formatter::kFormatUrlOmitDefaults,
+          base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  AddMenuToMaps(child_menu_item, BookmarkFolderOrURL(node));
+}
+
+void BookmarkMenuDelegate::BuildNodeMenuItem(const BookmarkNode* node,
+                                             MenuItemView* parent_menu) {
+  BuildNodeMenuItemAt(node, parent_menu, GetSubmenuChildCount(parent_menu));
+}
+
+void BookmarkMenuDelegate::BuildNodeMenuItemAt(const BookmarkNode* node,
+                                               MenuItemView* parent_menu,
+                                               size_t index) {
+  if (node->is_url()) {
+    BuildMenuForURLAt(node, parent_menu, index);
+  } else {
+    CHECK(node->is_folder());
+    const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
+        chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
+    BuildMenuForFolderAt(BookmarkParentFolder::FromFolderNode(node),
+                         folder_icon, parent_menu, index);
+  }
+}
+
+void BookmarkMenuDelegate::BuildMenu(const BookmarkParentFolder& folder,
                                      size_t start_child_index,
                                      MenuItemView* menu) {
-  DCHECK_LE(start_child_index, parent->children().size());
-  if (parent == GetBookmarkModel()->other_node()) {
-    ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
-        kBookmarksSidePanelIcon, ui::kColorMenuIcon,
-        ui::SimpleMenuModel::kDefaultIconSize);
-    menu->AppendMenuItem(
-        IDC_SHOW_BOOKMARK_SIDE_PANEL,
-        l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL),
-        bookmarks_side_panel_icon);
-    if (!parent->children().empty()) {
-      menu->AppendSeparator();
-    }
+  const BookmarkMergedSurfaceService* service =
+      GetBookmarkMergedSurfaceService();
+  DCHECK_LE(start_child_index, service->GetChildrenCount(folder));
+  if (folder.as_permanent_folder() ==
+      BookmarkParentFolder::PermanentFolderType::kOtherNode) {
+    BuildOtherNodeMenuHeader(menu);
   }
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
-  for (auto i = parent->children().cbegin() + start_child_index;
-       i != parent->children().cend(); ++i) {
-    const BookmarkNode* node = i->get();
-    const int id = GetAndIncrementNextMenuID();
-    MenuItemView* child_menu_item;
-    if (node->is_url()) {
-      child_menu_item =
-          menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
-                               GetFaviconForNode(GetBookmarkModel(), node));
-      child_menu_item->GetViewAccessibility().SetDescription(
-          url_formatter::FormatUrl(
-              node->url(), url_formatter::kFormatUrlOmitDefaults,
-              base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    } else {
-      DCHECK(node->is_folder());
-      child_menu_item = menu->AppendSubMenu(
-          id, MaybeEscapeLabel(node->GetTitle()), folder_icon);
-    }
-    AddMenuToMaps(child_menu_item, node);
+  BookmarkParentFolderChildren children =
+      GetBookmarkMergedSurfaceService()->GetChildren(folder);
+  for (auto i = children.begin() + start_child_index; i != children.end();
+       ++i) {
+    BuildNodeMenuItem(*i, menu);
   }
+  AddMenuToMaps(menu, BookmarkFolderOrURL(folder));
+  built_nodes_.insert(folder);
 }
 
 void BookmarkMenuDelegate::AddMenuToMaps(MenuItemView* menu,
-                                         const BookmarkNode* node) {
-  menu_id_to_node_map_[menu->GetCommand()] = node;
+                                         const BookmarkFolderOrURL& node) {
+  menu_id_to_node_map_.insert_or_assign(menu->GetCommand(), node);
   node_to_menu_map_[node] = menu;
 }
 
@@ -860,4 +1080,118 @@ int BookmarkMenuDelegate::GetAndIncrementNextMenuID() {
   const int current_id = next_menu_id_;
   next_menu_id_ += AppMenuModel::kNumUnboundedMenuTypes;
   return current_id;
+}
+
+MenuItemView* BookmarkMenuDelegate::UpdateBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  // Check if we need to add/remove the bookmarks title. If not, then return
+  // null since the parent menu doesn't need to be updated.
+  const bool should_have_title = ShouldHaveBookmarksTitle();
+  if (!bookmarks_title_ && !should_have_title) {
+    return nullptr;
+  }
+  if (bookmarks_title_ && should_have_title) {
+    return nullptr;
+  }
+
+  if (bookmarks_title_) {
+    RemoveBookmarksTitle();
+  } else {
+    // If permanent nodes are already built in `parent_menu_item_`, then add the
+    // title above them. Otherwise, append the title to the parent menu.
+    // E.g., this can happen in the App menu if there are initially no bookmarks
+    // in the bookmarks bar, but there are bookmarks in the "other" bookmarks
+    // folder, which has its own section. The "Bookmarks" title would need
+    // to be inserted above the "other" bookmarks.
+    size_t offset =
+        permanent_nodes_separator_
+            ? SubmenuIndexOf(parent_menu_item_, permanent_nodes_separator_)
+            : GetSubmenuChildCount(parent_menu_item_);
+    BuildBookmarksTitle(offset);
+  }
+  return parent_menu_item_;
+}
+
+bool BookmarkMenuDelegate::ShouldHaveBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  const BookmarkMergedSurfaceService* service =
+      GetBookmarkMergedSurfaceService();
+  const bool bookmark_bar_has_children =
+      service->GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder());
+  return (bookmark_bar_has_children ||
+          ShouldBuildPermanentNode(service,
+                                   BookmarkParentFolder::ManagedFolder())) &&
+         !parent_menu_item_->GetSubmenu()->children().empty();
+}
+
+void BookmarkMenuDelegate::BuildBookmarksTitle(size_t index) {
+  CHECK(!bookmarks_title_);
+  CHECK(!bookmarks_title_separator_);
+  parent_menu_item_->AddSeparatorAt(index);
+  bookmarks_title_separator_ =
+      parent_menu_item_->GetSubmenu()->children()[index].get();
+  bookmarks_title_ = parent_menu_item_->AddTitleAt(
+      l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE), index + 1);
+}
+
+void BookmarkMenuDelegate::RemoveBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  CHECK(bookmarks_title_);
+  CHECK(bookmarks_title_separator_);
+  views::View* title = bookmarks_title_.get();
+  views::View* separator = bookmarks_title_separator_.get();
+  bookmarks_title_ = nullptr;
+  bookmarks_title_separator_ = nullptr;
+  parent_menu_item_->RemoveMenuItem(title);
+  parent_menu_item_->RemoveMenuItem(separator);
+}
+
+MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {
+  const BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
+
+  // The menu hasn't been built yet, so no update required.
+  if (!built_nodes_.contains(other_folder)) {
+    return nullptr;
+  }
+
+  const bool should_have_separator =
+      GetBookmarkMergedSurfaceService()->GetChildrenCount(other_folder);
+  // Check if we need to add/remove the separator. If not, then return
+  // null since the parent menu doesn't need to be updated.
+  if (!should_have_separator && !other_node_menu_separator_) {
+    return nullptr;
+  }
+  if (should_have_separator && other_node_menu_separator_) {
+    return nullptr;
+  }
+
+  MenuItemView* other_node_menu =
+      node_to_menu_map_[BookmarkFolderOrURL(other_folder)];
+  if (other_node_menu_separator_) {
+    views::View* separator = other_node_menu_separator_.get();
+    other_node_menu_separator_ = nullptr;
+    other_node_menu->RemoveMenuItem(separator);
+  } else {
+    other_node_menu->RemoveAllMenuItems();
+    BuildOtherNodeMenuHeader(other_node_menu);
+  }
+  return other_node_menu;
+}
+
+void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
+  CHECK(!menu->HasSubmenu() || menu->GetSubmenu()->children().empty());
+  ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
+      kBookmarksSidePanelIcon, ui::kColorMenuIcon,
+      ui::SimpleMenuModel::kDefaultIconSize);
+  menu->AppendMenuItem(
+      IDC_SHOW_BOOKMARK_SIDE_PANEL,
+      l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL),
+      bookmarks_side_panel_icon);
+  bool other_folder_children_count =
+      GetBookmarkMergedSurfaceService()->GetChildrenCount(
+          BookmarkParentFolder::OtherFolder());
+  if (other_folder_children_count) {
+    menu->AppendSeparator();
+    other_node_menu_separator_ = menu->GetSubmenu()->children().back().get();
+  }
 }

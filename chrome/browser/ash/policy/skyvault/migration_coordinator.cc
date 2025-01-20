@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 
 #include <memory>
@@ -249,7 +254,6 @@ void OneDriveMigrationUploader::OnLogFileReady(base::File log_file) {
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
-    // TODO(aidazolic): Ignore files that failed previously.
     base::FilePath relative_path =
         GetPathRelativeToMyFiles(profile_, file_path);
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
@@ -307,7 +311,6 @@ void OneDriveMigrationUploader::OnUploadDone(
     return;
   }
 
-  // TODO(aidazolic): UMA.
   log_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&LogError, std::ref(error_log_file_),
@@ -410,7 +413,6 @@ void GoogleDriveMigrationUploader::OnUploadDone(
     return;
   }
 
-  // TODO(aidazolic): UMA.
   log_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&LogError, std::ref(error_log_file_),

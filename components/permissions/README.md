@@ -221,9 +221,6 @@ A quiet UI prompt can be triggered if any of these conditions are met:
     bad reputation.
 
 The
-[AdaptiveQuietNotificationPermissionUiEnabler](https://cs.chromium.org/chromium/src/chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h)
-is responsible for recording the permission prompts outcomes and, if needed,
-enabling the quiet UI in settings. The
 [ContextualNotificationPermissionUiSelector](https://cs.chromium.org/chromium/src/chrome/browser/permissions/contextual_notification_permission_ui_selector.h)
 checks if the quiet UI is enabled in settings (among other things) when choosing
 the appropriate UI flavor.

@@ -128,7 +128,6 @@ NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
   sequence_manager_ = base::sequence_manager::CreateUnboundSequenceManager(
       base::sequence_manager::SequenceManager::Settings::Builder()
           .SetMessagePumpType(message_pump_type)
-          .SetRandomisedSamplingEnabled(true)
           .SetPrioritySettings(CreatePrioritySettings())
           .Build());
   internal_task_queue_ = sequence_manager_->CreateTaskQueue(

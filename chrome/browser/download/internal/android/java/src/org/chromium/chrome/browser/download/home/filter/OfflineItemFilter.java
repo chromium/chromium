@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -120,10 +119,10 @@ public abstract class OfflineItemFilter
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemUpdated(oldItem, item);
         } else if (!oldInList && newInList) {
             mItems.add(item);
-            Collection<OfflineItem> newItems = CollectionUtil.newHashSet(item);
+            Collection<OfflineItem> newItems = Set.of(item);
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemsAdded(newItems);
         } else if (oldInList && !newInList) {
-            Collection<OfflineItem> oldItems = CollectionUtil.newHashSet(oldItem);
+            Collection<OfflineItem> oldItems = Set.of(oldItem);
             for (OfflineItemFilterObserver obs : mObservers) obs.onItemsRemoved(oldItems);
         }
     }

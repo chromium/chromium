@@ -2067,7 +2067,7 @@ TEST_F(DataTypeManagerImplTest,
 }
 
 TEST_F(DataTypeManagerImplTest,
-       ShouldOnlyMigrateActiveTypesUponTriggerLocalDataMigrationWithItems) {
+       ShouldOnlyMigrateActiveTypesUponTriggerLocalDataMigrationForItems) {
   InitDataTypeManager(
       /*types_without_transport_mode_support=*/{},
       /*types_with_transport_mode_support=*/{PASSWORDS, READING_LIST},
@@ -2079,16 +2079,16 @@ TEST_F(DataTypeManagerImplTest,
   // Only the controller for passwords should be exercised, because reading list
   // is not active.
   EXPECT_CALL(*GetBatchUploader(READING_LIST),
-              TriggerLocalDataMigration(testing::_))
+              TriggerLocalDataMigrationForItems(testing::_))
       .Times(0);
   std::vector<syncer::LocalDataItemModel::DataId> password_ids{"p1", "p2"};
   std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
       {DataType::PASSWORDS, password_ids},
       {DataType::READING_LIST, {"rl1", "rl2"}}};
   EXPECT_CALL(*GetBatchUploader(PASSWORDS),
-              TriggerLocalDataMigration(password_ids));
+              TriggerLocalDataMigrationForItems(password_ids));
 
-  dtm_->TriggerLocalDataMigration(items);
+  dtm_->TriggerLocalDataMigrationForItems(items);
 }
 
 TEST_F(DataTypeManagerImplTest, ShouldGetAllNodesForDebugging) {

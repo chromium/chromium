@@ -34,6 +34,9 @@ class ChromeInternalLogSource : public SystemLogsSource {
   void PopulateExtensionInfoLogs(SystemLogsResponse* response);
   void PopulatePowerApiLogs(SystemLogsResponse* response);
   void PopulateDataReductionProxyLogs(SystemLogsResponse* response);
+#if !BUILDFLAG(IS_CHROMEOS)
+  void PopulateVariations(SystemLogsResponse* response);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void PopulateLocalStateSettings(SystemLogsResponse* response);
@@ -42,7 +45,6 @@ class ChromeInternalLogSource : public SystemLogsSource {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
-  void PopulateUsbKeyboardDetected(SystemLogsResponse* response);
   void PopulateEnrolledToDomain(SystemLogsResponse* response);
   void PopulateInstallerBrandCode(SystemLogsResponse* response);
   void PopulateLastUpdateState(SystemLogsResponse* response);

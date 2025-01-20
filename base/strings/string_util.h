@@ -4,11 +4,6 @@
 //
 // This file defines utility functions for working with strings.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_STRINGS_STRING_UTIL_H_
 #define BASE_STRINGS_STRING_UTIL_H_
 
@@ -42,6 +37,7 @@ namespace base {
 // Wrapper for vsnprintf that always null-terminates and always returns the
 // number of characters that would be in an untruncated formatted
 // string, even when truncation occurs.
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
 PRINTF_FORMAT(3, 0)
 int vsnprintf(char* buffer, size_t size, const char* format, va_list arguments);
 
@@ -49,6 +45,7 @@ int vsnprintf(char* buffer, size_t size, const char* format, va_list arguments);
 
 // We separate the declaration from the implementation of this inline
 // function just so the PRINTF_FORMAT works.
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
 PRINTF_FORMAT(3, 4)
 inline int snprintf(char* buffer, size_t size, const char* format, ...);
 inline int snprintf(char* buffer, size_t size, const char* format, ...) {
@@ -236,7 +233,7 @@ BASE_EXPORT const std::u16string& EmptyString16();
 // Contains the set of characters representing whitespace in the corresponding
 // encoding. Null-terminated. The ASCII versions are the whitespaces as defined
 // by HTML5, and don't include control characters.
-BASE_EXPORT extern const wchar_t kWhitespaceWide[];  // Includes Unicode.
+BASE_EXPORT extern const wchar_t kWhitespaceWide[];    // Includes Unicode.
 BASE_EXPORT extern const char16_t kWhitespaceUTF16[];  // Includes Unicode.
 BASE_EXPORT extern const char16_t
     kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
@@ -274,10 +271,10 @@ BASE_EXPORT bool ReplaceChars(std::string_view input,
                               std::string* output);
 
 enum TrimPositions {
-  TRIM_NONE     = 0,
-  TRIM_LEADING  = 1 << 0,
+  TRIM_NONE = 0,
+  TRIM_LEADING = 1 << 0,
   TRIM_TRAILING = 1 << 1,
-  TRIM_ALL      = TRIM_LEADING | TRIM_TRAILING,
+  TRIM_ALL = TRIM_LEADING | TRIM_TRAILING,
 };
 
 // Removes characters in |trim_chars| from the beginning and end of |input|.
@@ -412,10 +409,11 @@ BASE_EXPORT bool EndsWith(
 template <typename Char>
   requires(std::integral<Char>)
 constexpr bool IsAsciiWhitespace(Char c) {
-  // kWhitespaceASCII is a null-terminated string.
-  for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
-    if (*cur == c)
+  // SAFETY: kWhitespaceASCII is a NUL-terminated string.
+  for (const char* cur = kWhitespaceASCII; *cur; UNSAFE_BUFFERS(++cur)) {
+    if (*cur == c) {
       return true;
+    }
   }
   return false;
 }
@@ -478,8 +476,7 @@ constexpr bool IsAsciiPunctuation(Char c) {
 template <typename Char>
   requires(std::integral<Char>)
 constexpr bool IsHexDigit(Char c) {
-  return (c >= '0' && c <= '9') ||
-         (c >= 'A' && c <= 'F') ||
+  return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
          (c >= 'a' && c <= 'f');
 }
 
@@ -502,11 +499,12 @@ inline char HexDigitToInt(char16_t c) {
 template <typename Char>
   requires(sizeof(Char) > 1)
 constexpr bool IsUnicodeWhitespace(Char c) {
-  // kWhitespaceWide is a null-terminated string.
-  for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
+  // SAFETY: kWhitespaceWide is a NUL-terminated string.
+  for (const auto* cur = kWhitespaceWide; *cur; UNSAFE_BUFFERS(++cur)) {
     if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
-        static_cast<typename std::make_unsigned_t<Char>>(c))
+        static_cast<typename std::make_unsigned_t<Char>>(c)) {
       return true;
+    }
   }
   return false;
 }
@@ -611,14 +609,22 @@ BASE_EXPORT std::u16string JoinString(
 // Additionally, any number of consecutive '$' characters is replaced by that
 // number less one. Eg $$->$, $$$->$$, etc. The offsets parameter here can be
 // NULL. This only allows you to use up to nine replacements.
+//
+// Calling ReplaceStringPlaceholders(u"$1", {ReturnU16string()}, nullptr) will
+// unexpectedly give you the single-u16string overload below, the same as if you
+// had written ReplaceStringPlaceholders(u"$1", ReturnU16String(), nullptr).
+// This is surprising but mostly harmless. Call the base::span constructor
+// explicitly if you need to force this overload, ie.
+// ReplaceStringPlaceholders(
+//     u"$1", base::span<const std::u16string>({ReturnU16string()}), nullptr).
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
     std::u16string_view format_string,
-    const std::vector<std::u16string>& subst,
+    base::span<const std::u16string> subst,
     std::vector<size_t>* offsets);
 
 BASE_EXPORT std::string ReplaceStringPlaceholders(
     std::string_view format_string,
-    const std::vector<std::string>& subst,
+    base::span<const std::string> subst,
     std::vector<size_t>* offsets);
 
 // Single-string shortcut for ReplaceStringHolders. |offset| may be NULL.

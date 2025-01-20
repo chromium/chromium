@@ -23,14 +23,12 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/content_settings/core/browser/content_settings_provider.h"
-#import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/net_log/chrome_net_log.h"
 #import "components/prefs/pref_service.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
 #import "ios/chrome/browser/net/model/ios_chrome_http_user_agent_settings.h"
@@ -86,7 +84,6 @@ void ProfileIOSIOData::InitializeOnUIThread(ProfileIOS* profile) {
 
   params->io_thread = GetApplicationContext()->GetIOSChromeIOThread();
 
-  params->cookie_settings = ios::CookieSettingsFactory::GetForProfile(profile);
   params->host_content_settings_map =
       ios::HostContentSettingsMapFactory::GetForProfile(profile);
 
@@ -123,12 +120,6 @@ net::URLRequestContext* ProfileIOSIOData::GetMainRequestContext()
     const {
   DCHECK(initialized_);
   return main_request_context_.get();
-}
-
-content_settings::CookieSettings* ProfileIOSIOData::GetCookieSettings()
-    const {
-  DCHECK(initialized_);
-  return cookie_settings_.get();
 }
 
 HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap()
@@ -170,7 +161,6 @@ void ProfileIOSIOData::Init(
   net::URLRequestContextBuilder context_builder;
   context_builder.set_net_log(io_thread->net_log());
   auto network_delegate = std::make_unique<IOSChromeNetworkDelegate>();
-  network_delegate->set_cookie_settings(profile_params_->cookie_settings.get());
   context_builder.set_network_delegate(std::move(network_delegate));
   auto quic_context = std::make_unique<net::QuicContext>();
   *quic_context->params() = io_thread->quic_params();
@@ -189,8 +179,7 @@ void ProfileIOSIOData::Init(
         profile_params_->path.Append(FILE_PATH_LITERAL("TransportSecurity")));
   }
 
-  // Take ownership over these parameters.
-  cookie_settings_ = profile_params_->cookie_settings;
+  // Take ownership over this parameter.
   host_content_settings_map_ = profile_params_->host_content_settings_map;
 
   context_builder.SetHttpAuthHandlerFactory(

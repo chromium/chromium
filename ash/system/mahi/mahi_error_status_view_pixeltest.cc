@@ -136,7 +136,7 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/7,
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/8,
       error_status_view));
 }
 

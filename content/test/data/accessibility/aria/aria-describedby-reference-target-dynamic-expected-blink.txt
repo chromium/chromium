@@ -8,7 +8,7 @@ rootWebArea
 rootWebArea name='set-describedby'
 ++genericContainer ignored
 ++++genericContainer
-++++++genericContainer ignored invisible
+++++++none ignored invisible
 ++++++++genericContainer ignored invisible
 ++++++++++staticText ignored invisible
 ++++++textField description='mmddyy' descriptionFrom=relatedElement

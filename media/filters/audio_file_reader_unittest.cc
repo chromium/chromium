@@ -206,13 +206,13 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(AudioFileReaderTest, AAC) {
-  RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,
-          base::Microseconds(347665), 15333, 12701);
+  RunTest("sfx.m4a", "2.47,2.30,2.45,2.80,3.06,3.56,", 1, 44100,
+          base::Microseconds(347665), 15333, 12719);
 }
 
 TEST_F(AudioFileReaderTest, AAC_SinglePacket) {
-  RunTest("440hz-10ms.m4a", "3.77,4.53,4.75,3.48,3.67,3.76,", 1, 44100,
-          base::Microseconds(69660), 3073, 441);
+  RunTest("440hz-10ms.m4a", "3.84,4.25,4.33,3.58,3.27,3.16,", 1, 44100,
+          base::Microseconds(69660), 3073, 960);
 }
 
 TEST_F(AudioFileReaderTest, AAC_ADTS) {

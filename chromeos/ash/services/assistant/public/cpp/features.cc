@@ -56,6 +56,10 @@ BASE_FEATURE(kEnableAssistantOnboarding,
              "AssistantOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableNewEntryPoint,
+             "ChromeOSEnableNewEntryPoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
       assistant::features::kAssistantAppSupport);
@@ -106,6 +110,10 @@ bool IsLibAssistantDLCEnabled() {
 
 bool IsOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAssistantOnboarding);
+}
+
+bool IsNewEntryPointEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNewEntryPoint);
 }
 
 }  // namespace ash::assistant::features

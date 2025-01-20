@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
-
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
 #include "base/run_loop.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/cocoa/nswindow_test_util.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/test/ui_controls.h"

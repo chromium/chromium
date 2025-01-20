@@ -116,11 +116,11 @@ void NfcPermissionContextTests::CheckPermissionMessageSentInternal(
     MockRenderProcessHost* process,
     int request_id,
     bool allowed) {
-  ASSERT_EQ(responses_.count(process->GetID()), 1U);
+  ASSERT_EQ(responses_.count(process->GetDeprecatedID()), 1U);
   EXPECT_EQ(permissions::PermissionRequestID::RequestLocalId(request_id),
-            responses_[process->GetID()].first);
-  EXPECT_EQ(allowed, responses_[process->GetID()].second);
-  responses_.erase(process->GetID());
+            responses_[process->GetDeprecatedID()].first);
+  EXPECT_EQ(allowed, responses_[process->GetDeprecatedID()].second);
+  responses_.erase(process->GetDeprecatedID());
 }
 
 void NfcPermissionContextTests::SetUp() {

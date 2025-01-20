@@ -6,8 +6,8 @@
 <settings-toggle-button id="toggleButton" on-change="onMemorySaverModeChange_"
     pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
     label="$i18n{memorySaverModeLabel}"
-    sub-label="$i18n{memorySaverModeDescription}"
-    learn-more-url="$i18n{memorySaverLearnMoreUrl}"
+    sub-label-with-link="$i18n{memorySaverModeDescription}"
+    on-sub-label-link-clicked="onMemorySaverLearnMoreLinkClick_"
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[numericCheckedValue_]]">
 </settings-toggle-button>

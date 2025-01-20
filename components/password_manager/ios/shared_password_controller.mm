@@ -15,6 +15,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/containers/to_vector.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -24,9 +25,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
@@ -35,6 +36,7 @@
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
@@ -86,7 +88,6 @@ using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
-using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
@@ -451,24 +452,20 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 }
 
 - (void)onFieldTypesDetermined:(AutofillManager&)manager
-                       forForm:(FormGlobalId)form
+                       forForm:(FormGlobalId)formId
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
-  // Heuristics predictions are not relevant to PWM because it runs its own
-  // heuristics - only server predictions are.
-  if (source ==
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete) {
+  if (source != AutofillManager::Observer::FieldTypeSource::kAutofillServer &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
     return;
   }
 
-  autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(formId);
   if (!form_structure) {
     return;
   }
   FormData form_data = form_structure->ToFormData();
-  base::flat_map<autofill::FieldGlobalId,
-                 autofill::AutofillType::ServerPrediction>
-      predictions = form_structure->GetServerPredictions();
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)) {
@@ -476,8 +473,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // form when Autofill across frames is enabled.
 
     // Split the browser form into renderer forms.
+    // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
     const autofill::AutofillDriverRouter& router =
-        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
+        static_cast<autofill::AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
     std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Process predictions for each renderer form.
@@ -488,24 +488,24 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       if (!child_frame) {
         continue;
       }
-      _passwordManager->ProcessAutofillPredictions(
-          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                   child_frame),
-          renderer_form, predictions);
+      [self propagatePredictionsToPasswordManagerFrom:manager
+                                          forFormData:renderer_form
+                                         globalFormId:formId
+                                              inFrame:child_frame
+                                           fromSource:source];
     }
   } else {
-    auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-    web::WebFrame* frame = driver.web_frame();
+    auto& autofill_driver =
+        static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+    web::WebFrame* frame = autofill_driver.web_frame();
     if (!frame) {
       return;
     }
-    // `GetFormDataAndServerPredictions` returns the same number of `FormData`
-    // as `FormStructure` that are passed to it, i.e. one in this case.
-    // Therefore take the front.
-    _passwordManager->ProcessAutofillPredictions(
-        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                 frame),
-        form_data, predictions);
+    [self propagatePredictionsToPasswordManagerFrom:manager
+                                        forFormData:form_data
+                                       globalFormId:formId
+                                            inFrame:frame
+                                         fromSource:source];
   }
 }
 
@@ -645,7 +645,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     [suggestions addObject:suggestion];
   }
 
-  if ([self canGeneratePasswordForForm:formQuery.formRendererID
+  if (!formQuery.onlyPassword &&
+      [self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {
@@ -759,7 +760,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
             (const autofill::PasswordFormFillData&)formData
                          forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
-                  forSecurityOrigin:(const GURL&)origin {
+                  forSecurityOrigin:(const url::Origin&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);
@@ -1132,6 +1133,33 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 - (web::WebFramesManager*)webFramesManager {
   return password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->GetWebFramesManager(_webState);
+}
+
+- (void)propagatePredictionsToPasswordManagerFrom:(AutofillManager&)manager
+                                      forFormData:(FormData)form
+                                     globalFormId:(FormGlobalId)globalFormId
+                                          inFrame:(web::WebFrame*)frame
+                                       fromSource:(AutofillManager::Observer::
+                                                       FieldTypeSource)source {
+  PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame);
+  std::vector<autofill::FieldGlobalId> field_ids =
+      base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
+  switch (source) {
+    case AutofillManager::Observer::FieldTypeSource::kAutofillServer:
+      _passwordManager->ProcessAutofillPredictions(
+          driver, form,
+          manager.GetServerPredictionsForForm(globalFormId, field_ids));
+      break;
+    case AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
+      _passwordManager->ProcessClassificationModelPredictions(
+          driver, form,
+          manager.GetHeursticPredictionForForm(
+              autofill::HeuristicSource::kPasswordManagerMachineLearning,
+              globalFormId, field_ids));
+      break;
+  }
 }
 
 #pragma mark - FormActivityObserver

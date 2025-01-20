@@ -651,7 +651,7 @@ TEST_F(
   EXPECT_EQ(browsing_topics_state().epochs().size(), 1u);
   EXPECT_EQ(browsing_topics_state().epochs()[0].calculation_time(), kTime1);
   EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
-            start_time - base::Microseconds(1));
+            start_time);
 
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
 

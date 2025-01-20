@@ -1,7 +1,6 @@
 {
   "description": "An incoming source with null scopes should remove previous matching sources' scopes data.",
   "api_config": {
-    "needs_attribution_scopes": true,
     "max_destinations_per_rate_limit_window": "2",
     "max_destinations_per_rate_limit_window_reporting_site": "2"
   },

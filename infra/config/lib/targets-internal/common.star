@@ -569,15 +569,137 @@ def _finalize_swarming(swarming):
         d["named_caches"] = [_finalize_named_cache(c) for c in named_caches]
     if d["shards"] == 1:
         d.pop("shards")
+    all_dimension_sets = [d.get("dimensions", {})]
     if d["optional_dimensions"]:
         d["optional_dimensions"] = {str(k): v for k, v in d["optional_dimensions"].items()}
+        all_dimension_sets.extend(d["optional_dimensions"].values())
+    for dimensions in all_dimension_sets:
+        if not dimensions:
+            continue
+        for v in dimensions.values():
+            if v != None and type(v) != type(""):
+                fail("all dimension values must be None or strings, {} is type {}".format(v, type(v)))
     return {k: v for k, v in d.items() if v != None}
+
+def _skylab(
+        *,
+        cros_board = None,
+        cros_build_target = None,
+        cros_img = None,
+        use_lkgm = None,
+        cros_model = None,
+        cros_cbx = None,
+        autotest_name = None,
+        bucket = None,
+        dut_pool = None,
+        public_builder = None,
+        public_builder_bucket = None,
+        # TODO(gbeaty) Tast tests should have their own test function defined
+        # and this should be removed from this function
+        tast_expr = None,
+        test_level_retries = None,
+        timeout_sec = None,
+        shards = None):
+    """Define a Skylab test target.
+
+    Args:
+        cros_board: The CrOS DUT board name, e.g. "eve", "kevin".
+        cros_build_target: The CrOS build target name, e.g. "eve-arc-t".
+            If unspecified, the build target equals to cros_board will be used.
+        cros_img: ChromeOS image version to be deployed to DUT.
+            Must be empty when use_lkgm is true.
+            For example, "brya-release/R118-15604.42.0"
+        use_lkgm: If True, use a ChromeOS image version derived from
+            chromeos/CHROMEOS_LKGM file.
+        cros_model: Optional ChromeOS DUT model.
+        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
+             board, not all models are CBX-capable.
+        autotest_name: The name of the autotest to be executed in
+            Skylab.
+        bucket: Optional Google Storage bucket where the specified
+            image(s) are stored.
+        dut_pool: The skylab device pool to run the test. By default the
+            quota pool, shared by all CrOS tests.
+        public_builder: Optional Public CTP Builder.
+            The public_builder and public_builder_bucket fields can be
+            used when default CTP builder is not sufficient/advised
+            (ex: chromium cq, satlab for partners).
+        public_builder_bucket: Optional luci bucket. See public_builder
+            above.
+        tast_expr: The tast expression to run.
+        test_level_retries: The number of times to retry tests. Only applicable
+            to skylab tests.
+        timeout_sec: The maximum time the test can take to run.
+        shards: The number of shards used to run the test.
+    """
+    return struct(
+        cros_board = cros_board,
+        cros_build_target = cros_build_target,
+        cros_img = cros_img,
+        use_lkgm = use_lkgm,
+        cros_model = cros_model,
+        cros_cbx = cros_cbx,
+        autotest_name = autotest_name,
+        bucket = bucket,
+        dut_pool = dut_pool,
+        public_builder = public_builder,
+        public_builder_bucket = public_builder_bucket,
+        tast_expr = tast_expr,
+        test_level_retries = test_level_retries,
+        timeout_sec = timeout_sec,
+        shards = shards,
+    )
+
+def _merge_skylab(skylab1, skylab2):
+    if not (skylab1 and skylab2):
+        return skylab1 or skylab2
+    d = {a: getattr(skylab1, a) for a in dir(skylab1)}
+    for a in dir(skylab2):
+        value = getattr(skylab2, a)
+        if value != None:
+            d[a] = value
+    return _skylab(**d)
 
 def _finalize_resultdb(resultdb):
     if not resultdb:
         return None
     d = {a: getattr(resultdb, a) for a in dir(resultdb)}
     return {k: v for k, v in d.items() if v != None}
+
+# flag to merge -> inter-value separator
+_FLAGS_TO_MERGE = {
+    "--enable-features=": ",",
+    "--extra-browser-args=": " ",
+    "--test-launcher-filter-file=": ";",
+    "--extra-app-args=": ",",
+}
+
+def _merge_args(spec_value):
+    new_args = []
+    merged = {}
+    for arg in spec_value["args"]:
+        found_flag = False
+        for flag in _FLAGS_TO_MERGE:
+            # Add a placeholder, recording the index and the flag's value. Later
+            # instances of the flag will add their value to the list without
+            # updating new_args. After all arguments have been examined, the
+            # placeholders will be replaced with the flag with combined values.
+            if arg.startswith(flag):
+                value = arg.removeprefix(flag)
+                if flag not in merged:
+                    merged[flag] = len(new_args), [value]
+                    new_args.append(None)
+                else:
+                    _, values = merged[flag]
+                    values.append(value)
+                found_flag = True
+                break
+        if not found_flag:
+            new_args.append(arg)
+    for flag, (idx, values) in merged.items():
+        separator = _FLAGS_TO_MERGE[flag]
+        new_args[idx] = flag + separator.join(values)
+    spec_value["args"] = new_args
 
 def _spec_init(node, settings, *, additional_fields = {}, binary_node = None):
     """Init for gtest and isolated script test specs."""
@@ -596,6 +718,7 @@ def _spec_init(node, settings, *, additional_fields = {}, binary_node = None):
         isolate_profile_data = None,
         swarming = _swarming(enable = settings.use_swarming),
         merge = binary_test_config.merge,
+        skylab = None,
         resultdb = binary_test_config.resultdb,
         results_handler = binary_test_config.results_handler,
         **additional_fields
@@ -619,27 +742,59 @@ def _resolve_magic_args(builder_name, settings, spec_value):
             new_args.append(arg)
     spec_value["args"] = new_args
 
-def _spec_finalize(builder_name, settings, spec_value, default_merge_script):
+def _spec_finalize(builder_name, settings, spec_value, default_merge_script, default_test_type, *, default_shard_level_retries_on_ctp = 1):
     swarming = _finalize_swarming(spec_value["swarming"])
     spec_value["swarming"] = swarming
 
-    # Ensure all Android Swarming tests run only on userdebug builds if another
-    # build type was not specified.
-    if swarming and settings.is_android:
-        dimensions = swarming.get("dimensions", {})
-        if dimensions.get("os") == "Android" and "device_os_type" not in dimensions:
-            swarming["dimensions"] = dimensions | {"device_os_type": "userdebug"}
-    if swarming and not spec_value["merge"]:
-        spec_value["merge"] = _merge(
-            script = "//testing/merge_scripts/{}.py".format(default_merge_script),
-        )
+    test_type = default_test_type
+
+    skylab = spec_value.pop("skylab", None)
+    if skylab and skylab.cros_board:
+        if swarming:
+            fail("test {} on {} has both swarming ({}) and skylab ({}) configuration".format(spec_value["name"], builder_name, swarming, skylab))
+
+        test_type = "skylab_tests"
+
+        for a in dir(skylab):
+            value = getattr(skylab, a)
+            if value:
+                spec_value[a] = value
+
+        if "autotest_name" not in spec_value:
+            if "tast_expr" in spec_value:
+                if "lacros" in spec_value["name"]:
+                    autotest_name = "tast.lacros-from-gcs"
+                else:
+                    autotest_name = "tast.chrome-from-gcs"
+            elif "benchmark" in spec_value:
+                autotest_name = "chromium_Telemetry"
+            else:
+                autotest_name = "chromium"
+            spec_value["autotest_name"] = autotest_name
+
+        if spec_value.get("experiment_percentage") != 100 and default_shard_level_retries_on_ctp != None:
+            spec_value.setdefault("shard_level_retries_on_ctp", default_shard_level_retries_on_ctp)
+
+    elif swarming:
+        # Ensure all Android Swarming tests run only on userdebug builds if
+        # another build type was not specified.
+        if settings.is_android:
+            dimensions = swarming.get("dimensions", {})
+            if dimensions.get("os") == "Android" and "device_os_type" not in dimensions:
+                swarming["dimensions"] = dimensions | {"device_os_type": "userdebug"}
+        if not spec_value["merge"]:
+            spec_value["merge"] = _merge(
+                script = "//testing/merge_scripts/{}.py".format(default_merge_script),
+            )
+
     spec_value["merge"] = _finalize_merge(spec_value["merge"])
     spec_value["resultdb"] = _finalize_resultdb(spec_value["resultdb"])
 
     if spec_value["args"]:
         _resolve_magic_args(builder_name, settings, spec_value)
+        _merge_args(spec_value)
 
-    return spec_value
+    return test_type, spec_value
 
 common = struct(
     # Functions used for creating objects that are part of the public API that
@@ -652,9 +807,11 @@ common = struct(
     merge = _merge,
     remove = _remove,
     swarming = _swarming,
+    skylab = _skylab,
 
     # Functions for performing common operations
     merge_swarming = _merge_swarming,
+    merge_skylab = _merge_skylab,
 
     # Functions used for creating nodes by functions that define targets
     binary_test_config = _binary_test_config,

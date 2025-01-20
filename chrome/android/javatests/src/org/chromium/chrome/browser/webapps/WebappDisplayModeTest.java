@@ -133,9 +133,7 @@ public class WebappDisplayModeTest {
     }
 
     private WebappActivity startActivity(@DisplayMode.EnumType int displayMode, String action) {
-        String url =
-                WebappTestPage.getServiceWorkerUrlWithAction(
-                        mActivityTestRule.getTestServer(), action);
+        String url = WebappTestPage.getTestUrlWithAction(mActivityTestRule.getTestServer(), action);
         mActivityTestRule.startWebappActivity(
                 mActivityTestRule
                         .createIntent()

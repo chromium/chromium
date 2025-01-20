@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/ui_base_features.h"
 
 namespace test {
@@ -23,6 +24,7 @@ namespace {
 
 constexpr char kTestAccount1[] = "user1@test.com";
 constexpr char kTestAccount2[] = "user2@test.com";
+constexpr char kFakeGaia2[] = "fakegaia2";
 
 }  // namespace
 
@@ -34,8 +36,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
       delete;
 
   ash::MultiUserWindowManager* GetMultiUserWindowManager() {
-    if (!MultiUserWindowManagerHelper::GetInstance())
+    if (!MultiUserWindowManagerHelper::GetInstance()) {
       MultiUserWindowManagerHelper::CreateInstanceForTest(test_account_id1_);
+    }
     return MultiUserWindowManagerHelper::GetWindowManager();
   }
 
@@ -46,7 +49,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     // Create secondary user/profile.
-    LogIn(kTestAccount2);
+    LogIn(kTestAccount2, GaiaId(kFakeGaia2));
     second_profile_ = CreateProfile(kTestAccount2);
   }
 
@@ -57,7 +60,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindow:
-  std::string GetDefaultProfileName() override { return kTestAccount1; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kTestAccount1;
+  }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);

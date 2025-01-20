@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace content {
@@ -113,12 +115,24 @@ class ExtensionsMenuMainPageView : public views::View {
   views::View* GetExtensionRequestEntry(
       const extensions::ExtensionId& extension_id) const;
 
+  // Returns the header builder, which contains information about the site.
+  [[nodiscard]] views::Builder<views::FlexLayoutView> CreateHeaderBuilder(
+      gfx::Insets margins,
+      views::FlexSpecification stretch_specification);
+
   // Returns the site settings section builder, which contains information and
   // access controls for the site.
   [[nodiscard]] views::Builder<views::FlexLayoutView> CreateSiteSettingsBuilder(
       gfx::Insets margins,
-      views::FlexSpecification,
-      ExtensionsMenuHandler* menu_handler);
+      views::FlexSpecification);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Returns the webstore button builder.
+  [[nodiscard]] views::Builder<HoverButton> CreateWebstoreButtonBuilder();
+#endif
+
+  // Returns the manage extensions button builder.
+  [[nodiscard]] views::Builder<HoverButton> CreateManageButtonBuilder();
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;

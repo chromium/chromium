@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 48
+// Next tag: 49
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -730,17 +730,33 @@ message SystemProfileProto {
   // is normally equal to the MetricsStateManager's initial_client_id_.
   optional string client_uuid = 34;
 
-  // The session's hash. At the beginning of a Chrome session, a random number
-  // will be generated, and all logs from that session will have this field set
-  // to that number. This is kept track of properly even when creating logs from
-  // previous sessions (e.g. independent logs from PMA files and stability
-  // logs), which is not the case for the `session_id` field in
-  // ChromeUserMetricsExtension. A benefit of this is that this can
-  // differentiate sessions between cloned installs that may report the same
-  // `session_id` but are actually different sessions.
+  // The session's hash. At the beginning of a Chrome session (i.e. process
+  // startup), a random number will be generated, and all logs from that session
+  // (i.e. process) will have this field set to that number. This is kept track
+  // of properly even when creating logs from previous sessions (e.g. stability
+  // logs, and independent logs from PMA files), which is not the case for the
+  // `session_id` field in ChromeUserMetricsExtension. A benefit of generating
+  // a session hash this way (rather than an incremental counter) is that it can
+  // differentiate sessions between, say, cloned installs, that may report the
+  // same `session_id` but are actually different sessions.
   // Note: Added in M125. Clients before will not set this field, and trying to
   // read it will return the default value of 0.
   optional fixed64 session_hash = 46;
+
+  // An ID/counter that is incremented every time Chrome is foregrounded or
+  // backgrounded.
+  // In combination with the `session_hash` field above, this field can be used
+  // to identify continuous foreground/background "periods". For example, if
+  // two records have the same `session_hash` and `fg_bg_id` values, then all
+  // the metrics contained within them are from the same foreground (or
+  // background) "period" -- i.e., there was no background (or foreground)
+  // action at any point during the two records.
+  // Note: This field is only set on mobile platforms (Android, WebView, iOS),
+  // and even then may be unset in certain edge cases where the continuity of a
+  // foreground/background "session" could not be properly determined.
+  // TODO: b/383881315 - Clarify some common questions/situations once the
+  // implementation is complete. See comments in cl/705639538 for examples.
+  optional int32 fg_bg_id = 48;
 
   // Information about the A/V output device(s) (typically just a TV).
   // However, a configuration may have one or more intermediate A/V devices
@@ -1140,6 +1156,7 @@ message SystemProfileProto {
     THIRD_PARTY_COOKIE_DEPRECATION_METADATA = 63;
     GROWTH_CAMPAIGNS = 64;
     MASKED_DOMAIN_LIST = 65;
+    AMOUNT_EXTRACTION_HEURISTIC_REGEXES = 66;
   }
 
   // Information about what Chrome components are registered and at which

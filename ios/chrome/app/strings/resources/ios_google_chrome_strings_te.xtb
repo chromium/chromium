@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1066101356081285416">మీరు చూసే సైట్‌లలోని ట్రాకింగ్ నంబర్‌లను Chrome గుర్తించి, కొత్త ట్యాబ్ పేజీలో మీ ప్యాకేజీ అప్‌డేట్‌లను చూపుతుంది. ఈ ఫీచర్‌ను అందించడానికి, అందరి కోసం షాపింగ్ ఫీచర్‌లను మెరుగుపరచడానికి ప్యాకేజీ ట్రాకింగ్ నంబర్, వెబ్‌సైట్ పేరు Googleకు పంపబడతాయి. మీరు దీనిని <ph name="BEGIN_LINK" />ప్యాకేజీ ట్రాకింగ్ సెట్టింగ్‌ల<ph name="END_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
+<translation id="1076643793026027628">Chrome ఆటోమేటిక్‌గా అజ్ఞాత విండోలో YouTube అజ్ఞాత లింక్‌లను తెరుస్తుంది.</translation>
 <translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
 <translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1146503048444965320">Chromeలో కొత్త ట్యాబ్‌ను తెరవండి</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">మెసేజ్‌లలో, ఇతర యాప్‌లలో కనిపించే లింక్‌లను ట్యాప్ చేయడం ద్వారా ఎప్పుడైనా, ఎక్కడైనా Chromeను ఉపయోగించండి.</translation>
 <translation id="1229222343402087523">Chromeలో ${searchPhrase}ను సెర్చ్ చేయండి</translation>
 <translation id="1237769345474105984">Chromeలో</translation>
-<translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="124228879633599436">మీ Chrome వెర్షన్ కాలం చెల్లింది. సురక్షితంగా ఉండటానికి దీన్ని అప్‌డేట్ చేయండి.</translation>
 <translation id="1333745675627230582">Chrome Dino గేమ్‌ను ఆడండి</translation>
 <translation id="1352919863522755794">Google Password Manager మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయడానికి ట్రై చేయండి.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి Chrome సెట్టింగ్‌ను తెరుస్తుంది.</translation>
 <translation id="1670609221633730681">Chrome చిట్కా: మీ అడ్రస్ బార్ పొజిషన్‌ను ఎంచుకోండి</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chromeలో మీ పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
 <translation id="1790080846677398234">Chromeలో మీ బుక్‌మార్క్‌లకు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
 <translation id="1799920918471566157">Chrome చిట్కాలు</translation>
 <translation id="1830634592642484976">ఈ అడ్రస్ ప్రస్తుతం Chromeలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దానిని సేవ్ చేయండి.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">అంటే Chrome ప్రతిసారీ మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుందని అర్థం.</translation>
 <translation id="3740397331642243698">ఇన్‌పుట్ చేసిన URLలను Google Chromeలో అజ్ఞాత మోడ్‌లో తెరుస్తుంది.</translation>
 <translation id="3741995255368156336">Chrome చదవాల్సిన లిస్ట్‌ను తెరుస్తుంది.</translation>
+<translation id="3808570423967020928">మీ మొదటి స్క్రీన్ డాక్ నుండి Chromeను మరింత వేగంగా యాక్సెస్ చేయండి.</translation>
 <translation id="3827545470516145620">ఈ పరికరంలో మీరు స్టాండర్డ్ సెక్యూరిటీ రక్షణను పొందుతున్నారు</translation>
 <translation id="384394811301901750">Google Chrome ప్రస్తుతం మీ కెమెరాను ఉపయోగించలేదు</translation>
 <translation id="3863841106411295595">Chromeలో మీ చదవాల్సిన లిస్ట్‌కు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">ఈ సైట్‌కు, అలాగే Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="4646014602299206846">మీరు చూసే సైట్‌లలోని ప్యాకేజీ ట్రాకింగ్ నంబర్‌లను Chrome గుర్తించి, కొత్త ట్యాబ్ పేజీలో మీ ప్యాకేజీ అప్‌డేట్‌లను చూపుతుంది. ఈ ఫీచర్‌ను అందించి, ప్రతి ఒక్కరి కోసం Shoppingను మెరుగుపరచడానికి మీ డేటాను Googleతో షేర్ చేయడం జరుగుతుంది.</translation>
 <translation id="4647910807533196601">Chromeలో నా ఇటీవలి ట్యాబ్‌ను తెరవండి.</translation>
+<translation id="4693084815234024320">మీరు Chrome అజ్ఞాత విండోలో ఉన్నారు</translation>
 <translation id="4724297637870447613">Chromeని ప్రతిచోటా ఉపయోగించండి</translation>
 <translation id="4738647308035481133">Google Chrome పేజీ</translation>
 <translation id="4742795653798179840">Chrome డేటాను తొలగించడం జరిగింది</translation>
@@ -219,9 +222,12 @@
 
 మీ Chrome ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి డేటాను ఉపయోగించే మరిన్ని సెట్టింగ్‌ల కోసం <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="6922332667202044570">Chromeలో బ్రౌజింగ్ డేటాను తొలగించండి.</translation>
+<translation id="6924922227983877439">లింక్‌లను ఆటోమేటిక్‌గా Chromeలో తెరవండి</translation>
+<translation id="6931601805528922498">సైన్ ఇన్ చేయడం వలన ఆఫీస్ సంబంధిత బ్రౌజింగ్ కోసం మీ ఖాతాను Chromeకు జోడిస్తుంది.</translation>
 <translation id="6975725306479268850">ఆటోఫిల్ కోసం Chromeను ఉపయోగించండి</translation>
 <translation id="7056826488869329999">Chromeలో సేఫ్టీ చెక్‌ను తెరిచి, రన్ చేయండి.</translation>
 <translation id="7061455974939528301">Chrome చిహ్నాన్ని నొక్కి, పట్టుకుని, "మొదటి స్క్రీన్‌ను ఎడిట్ చేయండి"ని క్లిక్ చేయండి</translation>
+<translation id="7065813315247345131">Chromeను డాక్‌కు తరలించండి</translation>
 <translation id="7124339256045485976">Chromeను అప్‌డేట్‌గా ఉంచండి</translation>
 <translation id="7161390184744336561">Google Chrome వెర్షన్ కాలం చెల్లింది</translation>
 <translation id="7165736900384873061">Google Chrome QR స్కానర్‌ని వినియోగించండి</translation>
@@ -282,7 +288,7 @@
 
 మీ రహస్య పదబంధం ఉన్న కొంతమంది మాత్రమే ఎన్‌క్రిప్ట్ చేసిన మీ డేటాను చదవగలరు. రహస్య పదబంధం Googleకు పంపబడదు లేదా Googleలో స్టోర్ చేయబడదు. మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
 <translation id="8357607116237445042">ఈ పరికరం నుండి మీ Chrome డేటాను క్లియర్ చేయాలా లేదా ఉంచాలా అనే దాన్ని ఎంచుకోండి</translation>
-<translation id="8370517070665726704">కాపీరైట్ <ph name="YEAR" /> Google LLC. సర్వ హక్కులు ప్రత్యేకించబడ్డాయి.</translation>
+<translation id="8370517070665726704">కాపీరైట్ <ph name="YEAR" /> సర్వ హక్కులు Google LLCకి రిజర్వ్ అయ్యాయి.</translation>
 <translation id="8371138994040262994">Chromeలో సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="8387459386171870978">Chromeని ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="840168496893712993">కొన్ని యాడ్-ఆన్‌లు Chrome క్రాష్ అయ్యేలా చేశాయి. దయచేసి వాటిని అన్‌ఇన్‌స్టాల్ చేయడాన్ని ప్రయత్నించండి.</translation>

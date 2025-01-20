@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/performance_manager/public/side_panel_loading_policy.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -38,6 +39,11 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
 
+  // The mechanism that ensure the Side Panel will load at high priority even
+  // while it is still not visible requires the WebContents to be tagged.
+  performance_manager::execution_context_priority::MarkAsSidePanel(
+      contents_wrapper_->web_contents());
+
   // For per-window side panels the scoped browser does not change. The browser
   // is cleared automatically when the browser is closed.
   if (scope.get_scope_type() == SidePanelEntryScope::ScopeType::kBrowser) {
@@ -65,20 +71,23 @@ void SidePanelWebUIView::ViewHierarchyChanged(
   WebView::ViewHierarchyChanged(details);
   // Ensure the WebContents is in a visible state after being added to the
   // side panel so the correct lifecycle hooks are triggered.
-  if (details.is_add && details.child == this)
+  if (details.is_add && details.child == this) {
     contents_wrapper_->web_contents()->WasShown();
+  }
 }
 
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
-  if (on_show_cb_)
+  if (on_show_cb_) {
     on_show_cb_.Run();
+  }
 }
 
 void SidePanelWebUIView::CloseUI() {
-  if (close_cb_)
+  if (close_cb_) {
     close_cb_.Run();
+  }
 }
 
 void SidePanelWebUIView::ShowCustomContextMenu(
@@ -96,8 +105,9 @@ void SidePanelWebUIView::ShowCustomContextMenu(
 }
 
 void SidePanelWebUIView::HideCustomContextMenu() {
-  if (context_menu_runner_)
+  if (context_menu_runner_) {
     context_menu_runner_->Cancel();
+  }
 }
 
 bool SidePanelWebUIView::HandleKeyboardEvent(

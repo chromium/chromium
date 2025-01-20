@@ -18,8 +18,7 @@ namespace utils = extensions::api_test_utils;
 
 namespace extensions {
 
-ExtensionApiUnittest::~ExtensionApiUnittest() {
-}
+ExtensionApiUnittest::~ExtensionApiUnittest() = default;
 
 void ExtensionApiUnittest::SetUp() {
   BrowserWithTestWindowTest::SetUp();

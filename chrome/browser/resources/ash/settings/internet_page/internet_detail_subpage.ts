@@ -17,7 +17,6 @@ import 'chrome://resources/ash/common/network/network_ip_config.js';
 import 'chrome://resources/ash/common/network/network_nameservers.js';
 import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -63,7 +62,6 @@ import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://r
 import {assertExists, castExists} from '../assert_extras.js';
 import type {DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
@@ -262,14 +260,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      showMeteredToggle_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('showMeteredToggle') &&
-              loadTimeData.getBoolean('showMeteredToggle');
-        },
-      },
-
       /**
        * Whether to show the Hidden toggle on configured wifi networks (flag).
        */
@@ -336,13 +326,6 @@ export class SettingsInternetDetailPageElement extends
       passpointSubscription_: {
         type: Object,
         notify: true,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
       },
 
       advancedExpanded_: Boolean,
@@ -419,7 +402,6 @@ export class SettingsInternetDetailPageElement extends
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isTrafficCountersForWifiTestingEnabled_: boolean;
@@ -973,8 +955,8 @@ export class SettingsInternetDetailPageElement extends
       textMessageAllowState: {
         allowTextMessages: e.detail.value,
       },
-      roaming: undefined,
-      apn: undefined,
+      roaming: null,
+      apn: null,
     };
     this.networkConfig_.setProperties(this.guid, config).then(response => {
       if (!response.success) {
@@ -1830,7 +1812,7 @@ export class SettingsInternetDetailPageElement extends
     const config = this.getDefaultConfigProperties_();
     const apn = event.detail;
     config.typeConfig
-        .cellular = {apn, roaming: undefined, textMessageAllowState: undefined};
+        .cellular = {apn, roaming: null, textMessageAllowState: null};
     this.setMojoNetworkProperties_(config);
   }
 
@@ -2012,8 +1994,7 @@ export class SettingsInternetDetailPageElement extends
 
   private showMetered_(): boolean {
     const managedProperties = this.managedProperties_;
-    return this.showMeteredToggle_ && !!managedProperties &&
-        this.isRemembered_(managedProperties) &&
+    return !!managedProperties && this.isRemembered_(managedProperties) &&
         (managedProperties.type === NetworkType.kCellular ||
          managedProperties.type === NetworkType.kWiFi);
   }

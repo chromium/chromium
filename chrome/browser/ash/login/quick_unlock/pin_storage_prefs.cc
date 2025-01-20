@@ -22,7 +22,7 @@ void PinStoragePrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 PinStoragePrefs::PinStoragePrefs(PrefService* pref_service)
     : pref_service_(pref_service) {}
 
-PinStoragePrefs::~PinStoragePrefs() {}
+PinStoragePrefs::~PinStoragePrefs() = default;
 
 void PinStoragePrefs::AddUnlockAttempt() {
   ++unlock_attempt_count_;

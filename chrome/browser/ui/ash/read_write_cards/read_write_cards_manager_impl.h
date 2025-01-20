@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 class QuickAnswersControllerImpl;
 
@@ -59,14 +61,15 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  private:
   friend class ReadWriteCardsManagerImplTest;
 
-  void OnGetEditorContext(const content::ContextMenuParams& params,
-                          editor_menu::FetchControllersCallback callback,
-                          const editor_menu::EditorContext& editor_context);
+  void OnGetEditorMenuCardContext(
+      const content::ContextMenuParams& params,
+      editor_menu::FetchControllersCallback callback,
+      const editor_menu::EditorMenuCardContext& editor_menu_card_context);
 
   // Get the controllers that should be fetched into `FetchController`.
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       const content::ContextMenuParams& params,
-      const editor_menu::EditorContext& editor_context);
+      const editor_menu::EditorMenuCardContext& editor_menu_card_context);
 
   // Helper function to get the Mahi and/or Quick Answers controllers that need
   // to be fetched.
@@ -82,7 +85,7 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   // if we should not initiate an opt-in flow.
   std::optional<OptInFeatures> GetMagicBoostOptInFeatures(
       const content::ContextMenuParams& params,
-      const editor_menu::EditorContext& editor_context);
+      const editor_menu::EditorMenuCardContext& editor_menu_card_context);
 
   // `chromeos::ReadWriteCardsUiController` MUST be destructed after
   // `QuickAnswersUiController`, which is owned by `QuickAnswersControllerImpl`.

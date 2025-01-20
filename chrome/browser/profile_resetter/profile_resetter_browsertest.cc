@@ -72,7 +72,7 @@ RemoveCookieTester::RemoveCookieTester(Profile* profile)
       cookie_manager_.BindNewPipeAndPassReceiver());
 }
 
-RemoveCookieTester::~RemoveCookieTester() {}
+RemoveCookieTester::~RemoveCookieTester() = default;
 
 // Returns true and sets |*cookie| if the given cookie exists in
 // the cookie store.

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -41,6 +42,8 @@ class TickClock;
 namespace safe_browsing {
 class ClientPhishingRequest;
 class ClientSideDetectionService;
+
+using HostInnerTextCallback = base::OnceCallback<void(std::string)>;
 
 // This class is used to receive the IPC from the renderer which
 // notifies the browser that a URL was classified as phishing.  This
@@ -85,6 +88,11 @@ class ClientSideDetectionHost
     virtual VerdictCacheManager* GetCacheManager() = 0;
     // Returns the management status for current profile.
     virtual ChromeUserPopulation GetUserPopulation() = 0;
+    // Returns the inner text from the tab, which is combined inner-text of all
+    // suitable iframes . The callback is used to retrieve a string back from
+    // the delegate when the inner text function is completed. This string is
+    // then used to provide the on-device model the information about the page.
+    virtual void GetInnerText(HostInnerTextCallback callback) = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for
@@ -143,6 +151,7 @@ class ClientSideDetectionHost
  private:
   friend class ClientSideDetectionHostTestBase;
   friend class ClientSideDetectionHostNotificationTest;
+  friend class ClientSideDetectionHostScamDetectionTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
@@ -183,6 +192,8 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionRTLookupResponseForceRequestTest,
       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostScamDetectionTest,
+                           KeyboardLockRequestTriggersOnDeviceLLM);
 
   // Helper function to create preclassification check once requirements are
   // met.
@@ -222,6 +233,18 @@ class ClientSideDetectionHost
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
 
+  // |verdict| is an encoded ClientPhishingRequest protocol message, which will
+  // contain on device model output if the execution is successful.
+  void MaybeInquireOnDeviceForScamDetection(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
+
+  // |verdict| is an encoded ClientPhishingRequest protocol message. This is the
+  // last step before sending the ping to the server.
+  void MaybeGetAccessToken(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist);
+
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
   // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
@@ -234,7 +257,8 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist,
       GURL phishing_url,
       bool is_phishing,
-      std::optional<net::HttpStatusCode> response_code);
+      std::optional<net::HttpStatusCode> response_code,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict);
 
   // Whether request is forced for |current_url_|. This function also checks
   // whether enhanced protection is enabled.
@@ -286,6 +310,21 @@ class ClientSideDetectionHost
 
   // Check if sample ping can be sent to Safe Browsing.
   bool CanSendSamplePing();
+
+  // Callback function when GetInnerText is completed in the delegate. This
+  // inner text is fetched as part of querying the on-device model through the
+  // CSD service class.
+  void OnInnerTextComplete(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      std::string inner_text);
+
+  // Callback function when InquireOnDeviceModel from the CSD service is
+  // completed.
+  void OnInquireOnDeviceModelDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      std::optional<optimization_guide::proto::ScamDetectionResponse> response);
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.

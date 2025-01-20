@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/buildflags.h"
 
 class ChromeAutofillAiClient;
 class LensOverlayController;
@@ -43,6 +44,12 @@ namespace extensions {
 class ExtensionSidePanelManager;
 }  // namespace extensions
 
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicTabIndicatorHelper;
+}
+#endif
+
 namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
@@ -55,9 +62,27 @@ namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
 
+namespace tab_groups {
+class SavedTabGroupWebContentsListener;
+}  // namespace tab_groups
+
+namespace page_actions {
+class PageActionController;
+}  // namespace page_actions
+
+namespace passage_embeddings {
+class EmbedderTabObserver;
+}  // namespace passage_embeddings
+
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
 namespace tabs {
 
+class DisconnectFileChooserOnBackgroundController;
 class TabInterface;
+class TabDialogManager;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -110,16 +135,28 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
-  contextual_cueing::ContextualCueingHelper* contextual_cueing_tab_helper() {
-    return contextual_cueing_helper_.get();
-  }
-
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
     return privacy_sandbox_tab_observer_.get();
   }
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
+  }
+
+  tab_groups::SavedTabGroupWebContentsListener*
+  saved_tab_group_web_contents_listener() {
+    return saved_tab_group_web_contents_listener_.get();
+  }
+
+  TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
+
+  page_actions::PageActionController* page_action_controller() {
+    return page_action_controller_.get();
+  }
+
+  tab_groups::CollaborationMessagingTabData*
+  collaboration_messaging_tab_data() {
+    return collaboration_messaging_tab_data_.get();
   }
 
   // Called exactly once to initialize features.
@@ -171,10 +208,6 @@ class TabFeatures {
   // Responsible for commerce related features.
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
 
-  // Responsible for contextual cueing features.
-  std::unique_ptr<contextual_cueing::ContextualCueingHelper>
-      contextual_cueing_helper_;
-
   // Responsible for updating status indicator of the pinned translate button.
   std::unique_ptr<PinnedTranslateActionListener>
       pinned_translate_action_listener_;
@@ -191,8 +224,33 @@ class TabFeatures {
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
 
+  // Responsible for keeping a tab within a tab group in sync with its remote
+  // tab counterpart from sync.
+  std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
+      saved_tab_group_web_contents_listener_;
+
+  // Manages various tab modal dialogs.
+  std::unique_ptr<TabDialogManager> tab_dialog_manager_;
+
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Responsible for managing page actions of a tab.
+  std::unique_ptr<page_actions::PageActionController> page_action_controller_;
+
+  // Contains the recent collaboration message for a shared tab.
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging_tab_data_;
+
+  std::unique_ptr<passage_embeddings::EmbedderTabObserver>
+      embedder_tab_observer_;
+
+  std::unique_ptr<DisconnectFileChooserOnBackgroundController>
+      disconnect_file_chooser_on_background_controller_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+#endif
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

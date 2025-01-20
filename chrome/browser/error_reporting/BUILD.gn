@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 
-# TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
-# thunking issues. Fix & re-enable.
-assert(is_linux || is_chromeos)
+# TODO(crbug.com/40188745): fuchsia cannot use components/crash.
+assert(!is_android && !is_fuchsia)
 
 source_set("constants") {
   sources = [
@@ -57,8 +56,10 @@ source_set("test_support") {
     "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
-    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
     "//components/variations",
+  ]
+  public_deps = [
+    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
   ]
   if (is_chromeos) {
     data_deps = [ ":mock_chromeos_crash_reporter" ]

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -384,6 +383,8 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_IgnoreMediaControls) {
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetRight));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath));
 }
 
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_InvalidProperty) {
@@ -403,6 +404,23 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetBottom) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSEnvironmentVariable));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom));
+}
+
+TEST_F(StyleEnvironmentVariablesTest,
+       RecordUseCounter_SafeAreaInsetBottom_FastPath) {
+  const String name = "safe-area-inset-bottom";
+  InitializeWithHTML(GetFrame(),
+                     "<style>"
+                     "  #target { bottom: env(" +
+                         name +
+                         "); }"
+                         "</style>"
+                         "<div>"
+                         "  <div id=target></div>"
+                         "</div>");
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath));
 }
 
 // TODO(https://crbug.com/1430288) remove after data collected (end of '23)

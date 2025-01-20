@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -353,7 +354,8 @@ TEST_F(BuiltinProviderTest, Inlining) {
   struct InliningTestData {
     const std::u16string input;
     const std::u16string expected_inline_autocompletion;
-  } cases[] = {
+  };
+  auto cases = std::to_array<InliningTestData>({
       // Typing along "about://media" should not yield an inline autocompletion
       // until the completion is unique.  We don't bother checking every single
       // character before the first "m" is typed.
@@ -430,7 +432,7 @@ TEST_F(BuiltinProviderTest, Inlining) {
       {kAbout + kSep + kHostB.substr(0, 2) + u"/", std::u16string()},
       {kAbout + kSep + kHostB.substr(0, 2) + u"a", std::u16string()},
       {kAbout + kSep + kHostB.substr(0, 2) + u"+", std::u16string()},
-  };
+  });
 
   ACMatches matches;
   for (size_t i = 0; i < std::size(cases); ++i) {

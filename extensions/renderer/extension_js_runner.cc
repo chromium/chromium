@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/extension_js_runner.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/renderer/script_context.h"
@@ -21,8 +22,7 @@ ExtensionJSRunner::~ExtensionJSRunner() = default;
 
 void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                       v8::Local<v8::Context> context,
-                                      int argc,
-                                      v8::Local<v8::Value> argv[],
+                                      base::span<v8::Local<v8::Value>> args,
                                       ResultCallback callback) {
   blink::WebScriptExecutionCallback wrapper_callback;
   if (callback) {
@@ -32,15 +32,14 @@ void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,
   }
 
   // TODO(devlin): Move ScriptContext::SafeCallFunction() into here?
-  script_context_->SafeCallFunction(function, argc, argv,
+  script_context_->SafeCallFunction(function, args.size(), GetArgv(args),
                                     std::move(wrapper_callback));
 }
 
 v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
     v8::Local<v8::Function> function,
     v8::Local<v8::Context> context,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
+    base::span<v8::Local<v8::Value>> args) {
   DCHECK(script_context_->v8_context() == context);
 
   v8::Isolate* isolate = context->GetIsolate();
@@ -64,10 +63,10 @@ v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
   // entry points would be reached during suspension. It would be nice to reduce
   // or eliminate the need for this method.
   if (web_frame) {
-    result = web_frame->CallFunctionEvenIfScriptDisabled(function, global, argc,
-                                                         argv);
+    result = web_frame->CallFunctionEvenIfScriptDisabled(
+        function, global, args.size(), GetArgv(args));
   } else {
-    result = function->Call(context, global, argc, argv);
+    result = function->Call(context, global, args.size(), GetArgv(args));
   }
 
   return result;

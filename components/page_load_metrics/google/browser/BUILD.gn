@@ -19,6 +19,7 @@ source_set("browser") {
     "//components/google/core/common",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/common",
+    "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

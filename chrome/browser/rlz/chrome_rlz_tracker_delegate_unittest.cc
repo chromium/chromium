@@ -4,21 +4,20 @@
 
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ChromeRLZTrackerDelegateTest : public testing::Test {
  public:
-  ChromeRLZTrackerDelegateTest()
-      : delegate_(std::make_unique<ChromeRLZTrackerDelegate>()) {}
-  ~ChromeRLZTrackerDelegateTest() override {}
-
   ChromeRLZTrackerDelegate* delegate() { return delegate_.get(); }
 
   MOCK_METHOD0(TestCallback, void(void));
 
  private:
-  std::unique_ptr<ChromeRLZTrackerDelegate> delegate_;
+  std::unique_ptr<ChromeRLZTrackerDelegate> delegate_{
+      std::make_unique<ChromeRLZTrackerDelegate>()};
 };
 
 TEST_F(ChromeRLZTrackerDelegateTest, HomepageSearchCallback) {

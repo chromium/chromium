@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -56,10 +57,9 @@ void WorkerModuleScriptFetcher::Fetch(
     DCHECK_EQ(level_, ModuleGraphLevel::kTopLevelModuleFetch);
 
     auto identifier = CreateUniqueIdentifier();
-    if (global_scope_->IsServiceWorkerGlobalScope()) {
-      global_scope_->SetMainResoureIdentifier(identifier);
-    }
-
+    global_scope_->SetMainResoureIdentifier(identifier);
+    probe::WillSendWorkerMainRequest(global_scope_.Get(), identifier,
+                                     fetch_params.Url());
     fetch_params.MutableResourceRequest().SetInspectorId(identifier);
     worker_main_script_loader_ = MakeGarbageCollected<WorkerMainScriptLoader>();
     worker_main_script_loader_->Start(

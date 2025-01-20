@@ -10,6 +10,7 @@ var $CustomElementRegistry =
 var $Element = require('safeMethods').SafeMethods.$Element;
 var $EventTarget = require('safeMethods').SafeMethods.$EventTarget;
 var $HTMLElement = require('safeMethods').SafeMethods.$HTMLElement;
+var GuestViewConstants = require('guestViewConstants').GuestViewConstants;
 var GuestViewContainer = require('guestViewContainer').GuestViewContainer;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 var IdGenerator = requireNative('id_generator');
@@ -126,8 +127,7 @@ function promiseWrap(
     handler, handlerArguments, callbackIndex, verifyEnvironment) {
   const args = $Array.slice(handlerArguments);
   if (args[callbackIndex] !== undefined) {
-    throw new Error('Callback form deprecated, see API doc ' +
-                    'for correct usage.');
+    throw new Error(GuestViewConstants.ERROR_MSG_CALLBACK_NOT_ALLOWED);
   }
   return new $Promise.self((resolve, reject) => {
     if (!verifyEnvironment(reject)) {

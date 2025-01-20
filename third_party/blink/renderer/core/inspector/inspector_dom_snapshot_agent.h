@@ -7,11 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,9 +42,9 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
   protocol::Response disable() override;
   protocol::Response getSnapshot(
       std::unique_ptr<protocol::Array<String>> style_filter,
-      protocol::Maybe<bool> include_event_listeners,
-      protocol::Maybe<bool> include_paint_order,
-      protocol::Maybe<bool> include_user_agent_shadow_tree,
+      std::optional<bool> include_event_listeners,
+      std::optional<bool> include_paint_order,
+      std::optional<bool> include_user_agent_shadow_tree,
       std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>*
           dom_nodes,
       std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*
@@ -53,10 +53,10 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
           computed_styles) override;
   protocol::Response captureSnapshot(
       std::unique_ptr<protocol::Array<String>> computed_styles,
-      protocol::Maybe<bool> include_paint_order,
-      protocol::Maybe<bool> include_dom_rects,
-      protocol::Maybe<bool> include_blended_background_colors,
-      protocol::Maybe<bool> include_text_color_opacities,
+      std::optional<bool> include_paint_order,
+      std::optional<bool> include_dom_rects,
+      std::optional<bool> include_blended_background_colors,
+      std::optional<bool> include_text_color_opacities,
       std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>*
           documents,
       std::unique_ptr<protocol::Array<String>>* strings) override;

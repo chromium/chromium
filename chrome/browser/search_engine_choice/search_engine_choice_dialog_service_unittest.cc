@@ -17,7 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
-#include "components/search_engines/prepopulated_engines.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_utils.h"
@@ -28,6 +28,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 
@@ -49,8 +50,7 @@ void SetUserSelectedDefaultSearchProvider(
       "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
 
   if (created_by_policy) {
-    data.created_by_policy =
-        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
   }
 
   TemplateURL* template_url =
@@ -60,7 +60,8 @@ void SetUserSelectedDefaultSearchProvider(
 
 struct TestParam {
   std::string test_suffix;
-  std::optional<search_engines::SearchEngineCountryListOverride> list_override;
+  std::optional<regional_capabilities::SearchEngineCountryListOverride>
+      list_override;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -75,9 +76,10 @@ const TestParam kTestParams[] = {
     {.test_suffix = "BelgiumSearchEngineList"},
     {.test_suffix = "DefaultSearchEngineList",
      .list_override =
-         search_engines::SearchEngineCountryListOverride::kEeaDefault},
+         regional_capabilities::SearchEngineCountryListOverride::kEeaDefault},
     {.test_suffix = "AllEeaSearchEngineList",
-     .list_override = search_engines::SearchEngineCountryListOverride::kEeaAll},
+     .list_override =
+         regional_capabilities::SearchEngineCountryListOverride::kEeaAll},
 };
 #endif
 
@@ -188,13 +190,14 @@ class SearchEngineListCountryOverrideParametrizedTest
 
     if (search_engine_list_override.has_value() &&
         search_engine_list_override.value() ==
-            search_engines::SearchEngineCountryListOverride::kEeaAll) {
+            regional_capabilities::SearchEngineCountryListOverride::kEeaAll) {
       command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
                                       switches::kEeaListCountryOverride);
     }
     if (search_engine_list_override.has_value() &&
         search_engine_list_override.value() ==
-            search_engines::SearchEngineCountryListOverride::kEeaDefault) {
+            regional_capabilities::SearchEngineCountryListOverride::
+                kEeaDefault) {
       command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
                                       switches::kDefaultListCountryOverride);
     }
@@ -523,8 +526,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest, IsUrlSuitableForDialog) {
   EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUISettingsURL)));
   EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
-      GURL(chrome::kChromeUIWelcomeURL)));
-  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUIDevToolsURL)));
   EXPECT_TRUE(search_engine_choice_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUINewTabPageURL)));
@@ -585,14 +586,14 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
 
   if (search_engine_list_override.has_value() &&
       search_engine_list_override.value() ==
-          search_engines::SearchEngineCountryListOverride::kEeaDefault) {
+          regional_capabilities::SearchEngineCountryListOverride::kEeaDefault) {
     expected_search_engine_list_size =
         TemplateURLPrepopulateData::GetDefaultPrepopulatedEngines().size();
   }
 
   if (search_engine_list_override.has_value() &&
       search_engine_list_override.value() ==
-          search_engines::SearchEngineCountryListOverride::kEeaAll) {
+          regional_capabilities::SearchEngineCountryListOverride::kEeaAll) {
     expected_search_engine_list_size =
         TemplateURLPrepopulateData::GetAllEeaRegionPrepopulatedEngines().size();
   }

@@ -537,4 +537,14 @@ public class TabUiThemeProvider {
     public static float getMessageCardMarginDimension(Context context) {
         return context.getResources().getDimension(R.dimen.tab_list_selected_inset);
     }
+
+    /**
+     * Returns the color used for the shared tab notification bubble.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @return The color for the tab notification bubble.
+     */
+    public static @ColorInt int getTabBubbleFillColor(Context context) {
+        return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+    }
 }

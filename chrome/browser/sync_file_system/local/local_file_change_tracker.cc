@@ -73,7 +73,7 @@ class LocalFileChangeTracker::TrackerDB {
 };
 
 LocalFileChangeTracker::ChangeInfo::ChangeInfo() : change_seq(-1) {}
-LocalFileChangeTracker::ChangeInfo::~ChangeInfo() {}
+LocalFileChangeTracker::ChangeInfo::~ChangeInfo() = default;
 
 // LocalFileChangeTracker ------------------------------------------------------
 

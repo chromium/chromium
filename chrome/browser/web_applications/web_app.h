@@ -33,11 +33,11 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
@@ -222,8 +222,6 @@ class WebApp {
     return note_taking_new_note_url_;
   }
 
-  const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
-
   const base::flat_set<ScopeExtensionInfo>& scope_extensions() const {
     return scope_extensions_;
   }
@@ -361,6 +359,13 @@ class WebApp {
 
   bool is_diy_app() const { return is_diy_app_; }
 
+  bool was_shortcut_app() const { return was_shortcut_app_; }
+
+  const std::vector<blink::Manifest::RelatedApplication>& related_applications()
+      const {
+    return related_applications_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -426,7 +431,6 @@ class WebApp {
       base::flat_set<std::string> allowed_launch_protocols);
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
-  void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetScopeExtensions(base::flat_set<ScopeExtensionInfo> scope_extensions);
   void SetValidatedScopeExtensions(
       base::flat_set<ScopeExtensionInfo> validated_scope_extensions);
@@ -460,6 +464,9 @@ class WebApp {
   void SetSupportedLinksOfferIgnoreCount(int ignore_count);
   void SetSupportedLinksOfferDismissCount(int dismiss_count);
   void SetIsDiyApp(bool is_diy_app);
+  void SetWasShortcutApp(bool was_shortcut_app);
+  void SetRelatedApplications(
+      std::vector<blink::Manifest::RelatedApplication> related_applications);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -508,7 +515,7 @@ class WebApp {
   webapps::AppId app_id_;
 
   // This set always contains at least one source.
-  WebAppManagementTypes sources_{};
+  WebAppManagementTypes sources_;
 
   std::string name_;
   std::string description_;
@@ -542,8 +549,6 @@ class WebApp {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
-  // TODO(crbug.com/40127045): No longer aiming to ship, remove.
-  apps::UrlHandlers url_handlers_;
   base::flat_set<ScopeExtensionInfo> scope_extensions_;
   base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;
   GURL lock_screen_start_url_;
@@ -600,6 +605,10 @@ class WebApp {
   int supported_links_offer_dismiss_count_ = 0;
 
   bool is_diy_app_ = false;
+
+  bool was_shortcut_app_ = false;
+
+  std::vector<blink::Manifest::RelatedApplication> related_applications_;
 
   // New fields must be added to:
   //  - |operator==|

@@ -160,7 +160,7 @@ void CastCdm::OnSessionKeysChange(const std::string& session_id,
                                   ::media::CdmKeysInfo keys_info) {
   logging::LogMessage log_message(__FILE__, __LINE__, logging::LOGGING_INFO);
   log_message.stream() << "keystatuseschange ";
-  int status_count[kKeyStatusCount] = {0};
+  int status_count[kKeyStatusCount] = {};
   for (const auto& key_info : keys_info) {
     status_count[key_info->status]++;
   }

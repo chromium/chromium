@@ -33,6 +33,7 @@ function createSampleURLVisit(
           displayString: 'You visited 0 seconds ago',
         },
         formFactor: FormFactor.kDesktop,
+        isKnownToSync: false,
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},
         urlKey: '',
@@ -168,7 +169,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       await microtasksFinished();
 
       const dismissEvent: DismissModuleElementEvent = await waitForDismissEvent;
-      assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+      assertEquals(`Tab hidden`, dismissEvent.detail.message);
       assertEquals(
           1, metrics.count(`NewTabPage.TabResumption.VisitDismissIndex`, 0));
       assertEquals(1, handler.getCallCount(`dismissURLVisit`));

@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -101,7 +102,11 @@ import java.util.stream.Collectors;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
+@DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH
+})
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
@@ -513,6 +518,12 @@ public class TabPersistentStoreTest {
             Assert.assertEquals(false, details.isIncognitoActiveIndex);
         }
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes("Tabs.Startup.UniqueUrlCount.Regular", 1, 5)
+                        .expectIntRecordTimes("Tabs.Startup.UniqueUrlCount.Regular", 2, 1)
+                        .build();
+
         // Restore the TabStates.  The first Tab added should be the most recently selected tab.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -527,6 +538,7 @@ public class TabPersistentStoreTest {
             int tabId = info.contents[i].tabId;
             Assert.assertNotNull(regularCreator.created.get(tabId));
         }
+        watcher.assertExpected();
     }
 
     @Test
@@ -1415,22 +1427,6 @@ public class TabPersistentStoreTest {
         Assert.assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
     }
 
-    private void addTabsToSaveQueue(TabPersistentStore store, Tab[] tabsToSave) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (int i = 0; i < tabsToSave.length; i++) {
-                        // Tabs are uninitialized so TabState won't save unless we override here.
-                        // It doesn't matter what TabState is saved for the tests which use this
-                        // function only that it is saved. So an arbitrary TabState is used.
-                        TabStateExtractor.setTabStateForTesting(
-                                tabsToSave[i].getId(), new TabState());
-                        TabStateAttributes.from(tabsToSave[i])
-                                .setStateForTesting(TabStateAttributes.DirtinessState.DIRTY);
-                        store.addTabToSaveQueue(tabsToSave[i]);
-                    }
-                });
-    }
-
     private TestTabModelSelector createAndRestoreRealTabModelImpls(TabModelMetaDataInfo info)
             throws Exception {
         return createAndRestoreRealTabModelImpls(info, true, true);
@@ -1571,7 +1567,11 @@ public class TabPersistentStoreTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     regularModel.addObserver(closeObserver);
-                    regularModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    regularModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
         Assert.assertEquals(info.numRegularTabs, closedTabIds.size());
 

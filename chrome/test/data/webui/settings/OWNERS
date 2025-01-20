@@ -1,18 +1,14 @@
 file://chrome/browser/resources/settings/OWNERS
 
 per-file cookies_page_test.ts=fmacintosh@google.com,rainhard@chromium.org
+per-file cr_lottie*=nsatragno@chromium.org
 per-file *language* , translate_* = file://components/language/OWNERS
 per-file privacy_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file privacy_guide_fragments_test.ts=rainhard@chromium.org
+per-file privacy_guide_*_fragment_test.ts=rainhard@chromium.org
 per-file privacy_guide_integration_test.ts=rainhard@chromium.org
 per-file privacy_guide_page_test.ts=rainhard@chromium.org
 per-file privacy_guide_test_util.ts=rainhard@chromium.org
-per-file review_notification_permissions_interactive_ui_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file review_notification_permissions_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file safety_check_page_test.ts=rainhard@chromium.org
 per-file site_settings_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
 per-file test_privacy_page_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org
 per-file test_safety_hub_browser_proxy.ts=sideyilmaz@chromium.org,rainhard@chromium.org
 per-file test_site_settings_prefs_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file unused_site_permissions_interactive_ui_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org
-per-file unused_site_permissions_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org

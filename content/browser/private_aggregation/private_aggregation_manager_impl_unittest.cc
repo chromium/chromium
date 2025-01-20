@@ -253,7 +253,7 @@ TEST_F(PrivateAggregationManagerImplTest,
 
     EXPECT_CALL(checkpoint, Call(0));
     EXPECT_CALL(*budgeter_, ConsumeBudget(/*budget=*/125, example_key,
-                                          /*minimum_histogram_value=*/5, _))
+                                          /*minimum_value_for_metrics=*/5, _))
         .WillOnce(Invoke(
             [&checkpoint](
                 int, const PrivateAggregationBudgetKey&, int,

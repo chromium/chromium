@@ -47,7 +47,7 @@ bool IsLoginScreenStorageCrosapiAvailable() {
 class LoginScreenStorageExtensionApiTest
     : public extensions::MixinBasedExtensionApiTest {
  public:
-  LoginScreenStorageExtensionApiTest() {}
+  LoginScreenStorageExtensionApiTest() = default;
 
   LoginScreenStorageExtensionApiTest(
       const LoginScreenStorageExtensionApiTest&) = delete;

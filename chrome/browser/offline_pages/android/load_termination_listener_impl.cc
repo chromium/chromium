@@ -20,8 +20,7 @@ LoadTerminationListenerImpl::LoadTerminationListenerImpl() {
   }
 }
 
-LoadTerminationListenerImpl::~LoadTerminationListenerImpl() {
-}
+LoadTerminationListenerImpl::~LoadTerminationListenerImpl() = default;
 
 void LoadTerminationListenerImpl::OnApplicationStateChange(
     base::android::ApplicationState application_state) {

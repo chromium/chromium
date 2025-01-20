@@ -19,7 +19,7 @@ namespace commerce {
 namespace {
 const char kShoppingURL[] = "https://example.com";
 const char kShoppingURLDomain[] = "example.com";
-}
+}  // namespace
 
 class DiscountsPageActionControllerUnittest : public testing::Test {
  public:

@@ -19,11 +19,7 @@ using ::testing::_;
 }  // namespace
 
 class TpcdMetadataComponentInstallerTest : public ::testing::Test {
- public:
-  TpcdMetadataComponentInstallerTest() = default;
-
-  ~TpcdMetadataComponentInstallerTest() override = default;
-
+ protected:
   content::BrowserTaskEnvironment& task_env() { return task_env_; }
 
  private:

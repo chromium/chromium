@@ -68,18 +68,6 @@ using blink::MediaStreamDevices;
 using content::BrowserThread;
 using content::MediaCaptureDevices;
 
-namespace {
-
-content::WebContents* WebContentsFromIds(int render_process_id,
-                                         int render_frame_id) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-  return web_contents;
-}
-
-}  // namespace
-
 MediaCaptureDevicesDispatcher* MediaCaptureDevicesDispatcher::GetInstance() {
   return base::Singleton<MediaCaptureDevicesDispatcher>::get();
 }
@@ -116,7 +104,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       std::make_unique<PermissionBubbleMediaAccessHandler>());
 }
 
-MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() {}
+MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() = default;
 
 void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -158,10 +146,13 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
   }
 #endif
 
+  auto* render_frame_host = content::RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(web_contents, request.video_type,
+    if (handler->SupportsStreamType(render_frame_host, request.video_type,
                                     extension) ||
-        handler->SupportsStreamType(web_contents, request.audio_type,
+        handler->SupportsStreamType(render_frame_host, request.audio_type,
                                     extension)) {
       handler->HandleRequest(web_contents, request, std::move(callback),
                              extension);
@@ -200,9 +191,7 @@ bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            content::WebContents::FromRenderFrameHost(render_frame_host), type,
-            extension)) {
+    if (handler->SupportsStreamType(render_frame_host, type, extension)) {
       return handler->CheckMediaAccessPermission(
           render_frame_host, security_origin, type, extension);
     }
@@ -349,9 +338,9 @@ void MediaCaptureDevicesDispatcher::UpdateMediaRequestStateOnUIThread(
     content::MediaRequestState state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            WebContentsFromIds(render_process_id, render_frame_id), stream_type,
-            nullptr)) {
+    if (handler->SupportsStreamType(content::RenderFrameHost::FromID(
+                                        render_process_id, render_frame_id),
+                                    stream_type, nullptr)) {
       handler->UpdateMediaRequestState(render_process_id, render_frame_id,
                                        page_request_id, stream_type, state);
       break;
@@ -424,9 +413,9 @@ void MediaCaptureDevicesDispatcher::UpdateVideoScreenCaptureStatus(
   DCHECK(blink::IsVideoScreenCaptureMediaType(stream_type));
 
   for (const auto& handler : media_access_handlers_) {
-    if (handler->SupportsStreamType(
-            WebContentsFromIds(render_process_id, render_frame_id), stream_type,
-            nullptr)) {
+    if (handler->SupportsStreamType(content::RenderFrameHost::FromID(
+                                        render_process_id, render_frame_id),
+                                    stream_type, nullptr)) {
       handler->UpdateVideoScreenCaptureStatus(
           render_process_id, render_frame_id, page_request_id, is_secure);
       break;

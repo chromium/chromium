@@ -13,8 +13,8 @@ Files /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc and
 Files /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h and third_party/private-join-and-compute/crypto/ec_commutative_cipher.h differ
 Files /tmp/private-join-and-compute.original/crypto/ec_group.cc and third_party/private-join-and-compute/crypto/ec_group.cc differ
 Files /tmp/private-join-and-compute.original/crypto/ec_point.cc and third_party/private-join-and-compute/crypto/ec_point.cc differ
-Only in /tmp/private-join-and-compute.original/crypto: elgamal.cc
-Only in /tmp/private-join-and-compute.original/crypto: elgamal.h
+Files /tmp/private-join-and-compute.original/crypto/elgamal.cc and third_party/private-join-and-compute/crypto/elgamal.cc differ
+Files /tmp/private-join-and-compute.original/crypto/elgamal.h and third_party/private-join-and-compute/crypto/elgamal.h differ
 Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.cc
 Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.h
 Only in /tmp/private-join-and-compute.original/crypto: mont_mul.cc

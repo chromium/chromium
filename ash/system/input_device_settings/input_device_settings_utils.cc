@@ -445,7 +445,7 @@ bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard) {
 
 bool IsSplitModifierKeyboard(int device_id) {
   return Shell::Get()->keyboard_capability()->HasFunctionKey(device_id) &&
-         Shell::Get()->keyboard_capability()->HasRightAltKey(device_id);
+         Shell::Get()->keyboard_capability()->HasQuickInsertKey(device_id);
 }
 
 std::string GetDeviceKeyForMetadataRequest(const std::string& device_key) {

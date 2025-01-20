@@ -64,9 +64,11 @@ class FakeMahiProvider : public manta::MahiProvider {
 
   void Summarize(const std::string& input,
                  const std::string& title,
+                 const std::optional<std::string>& context,
                  const std::optional<std::string>& url,
                  manta::MantaGenericCallback callback) override {
     ++num_summarize_call_;
+    latest_summary_input_ = input;
     latest_title_ = title;
     latest_url_ = url;
     std::move(callback).Run(base::Value::Dict().Set("outputData", kFakeSummary),
@@ -94,10 +96,15 @@ class FakeMahiProvider : public manta::MahiProvider {
     return latest_elucidation_input_;
   }
 
+  const std::string& latest_summary_input() const {
+    return latest_summary_input_;
+  }
+
  private:
   int num_summarize_call_ = 0;
   std::string latest_title_;
   std::string latest_elucidation_input_;
+  std::string latest_summary_input_;
   std::optional<std::string> latest_url_;
 };
 
@@ -142,7 +149,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
   }
 
   void TearDown() override {
@@ -550,6 +557,34 @@ TEST_F(MahiManagerImplTest, GetElucidationForMediaApp) {
   // Checks the elucidation result.
   EXPECT_EQ(test_future.Get<std::u16string>(),
             base::UTF8ToUTF16(std::string(kFakeElucidation)));
+}
+
+// Tests that `GetSummary` uses `current_selected_text_` as content if it's not
+// nullopt.
+TEST_F(MahiManagerImplTest, GetSummaryForSelectedText) {
+  const std::u16string selected_text = u"test selected text";
+  chromeos::MahiWebContentsManager::Get()->SetSelectedText(selected_text);
+
+  base::test::TestFuture<std::u16string, chromeos::MahiResponseStatus>
+      test_future;
+
+  // Sets a valid URL so that the cache manager won't drop the content.
+  mahi_manager_impl_->SetCurrentFocusedPageInfo(
+      CreatePageInfo("http://url1.com/abc#random", /*title=*/u"Title of url1",
+                     /*is_incognito=*/false));
+  UpdateCurrentSelectedText();
+  mahi_manager_impl_->GetSummary(test_future.GetCallback());
+
+  // Checks the request to mahi provider uses the selected text as input.
+  EXPECT_EQ(GetMahiProvider()->latest_summary_input(),
+            base::UTF16ToUTF8(selected_text));
+  // Checks the summary result.
+  EXPECT_EQ(test_future.Get<std::u16string>(),
+            base::UTF8ToUTF16(std::string(kFakeSummary)));
+
+  // Checks the page content is request and cached even if the summary is for
+  // selected text.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
 }
 
 }  // namespace ash

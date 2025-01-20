@@ -35,12 +35,11 @@ ManagedProfileCreator::ManagedProfileCreator(
       profile_manager->GetProfileAttributesStorage();
   profile_observation_.Observe(&storage);
 
-  auto icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   std::u16string name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(icon_index)
+                            ? storage.ChooseNameForNewProfile()
                             : local_profile_name;
   ProfileManager::CreateMultiProfileAsync(
-      name, icon_index, /*is_hidden=*/id_.empty(),
+      name, profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/id_.empty(),
       base::BindRepeating(&ManagedProfileCreator::OnNewProfileInitialized,
                           weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&ManagedProfileCreator::OnNewProfileCreated,

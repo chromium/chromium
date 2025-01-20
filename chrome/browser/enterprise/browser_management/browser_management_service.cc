@@ -45,36 +45,40 @@ BrowserManagementService::BrowserManagementService(Profile* profile)
     : ManagementService(GetManagementStatusProviders(profile)) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&BrowserManagementService::UpdateManagementIcon,
-                                weak_ptr_factory_.GetWeakPtr(), profile));
+      FROM_HERE,
+      base::BindOnce(&BrowserManagementService::UpdateManagementIconForProfile,
+                     weak_ptr_factory_.GetWeakPtr(), profile));
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kEnterpriseLogoUrl,
-      base::BindRepeating(&BrowserManagementService::UpdateManagementIcon,
-                          weak_ptr_factory_.GetWeakPtr(), profile));
+      prefs::kEnterpriseLogoUrlForProfile,
+      base::BindRepeating(
+          &BrowserManagementService::UpdateManagementIconForProfile,
+          weak_ptr_factory_.GetWeakPtr(), profile));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
-ui::ImageModel* BrowserManagementService::GetManagementIcon() {
+ui::ImageModel* BrowserManagementService::GetManagementIconForProfile() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return management_icon_.IsEmpty() ? nullptr : &management_icon_;
+  return management_icon_for_profile_.IsEmpty() ? nullptr
+                                                : &management_icon_for_profile_;
 #else
   return nullptr;
 #endif
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void BrowserManagementService::UpdateManagementIcon(Profile* profile) {
+void BrowserManagementService::UpdateManagementIconForProfile(
+    Profile* profile) {
   enterprise_util::GetManagementIcon(
       GURL(profile->GetPrefs()->GetString(prefs::kEnterpriseLogoUrlForProfile)),
       profile,
-      base::BindOnce(&BrowserManagementService::SetManagementIcon,
+      base::BindOnce(&BrowserManagementService::SetManagementIconForProfile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BrowserManagementService::SetManagementIcon(
+void BrowserManagementService::SetManagementIconForProfile(
     const gfx::Image& management_icon) {
-  management_icon_ = ui::ImageModel::FromImage(management_icon);
+  management_icon_for_profile_ = ui::ImageModel::FromImage(management_icon);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

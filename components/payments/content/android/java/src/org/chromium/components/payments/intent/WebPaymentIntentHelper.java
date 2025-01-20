@@ -236,9 +236,9 @@ public class WebPaymentIntentHelper {
      *         allowed.
      * @param schemelessIframeOrigin The schemeless origin of the iframe that invoked
      *         PaymentRequest. Only non-empty string is allowed.
-     * @param certificateChain The site certificate chain of the merchant. Can be null for
-     *         localhost or local file, which are secure contexts without SSL. Each byte array
-     *         cannot be null.
+     * @param certificateChain The site certificate chain of the merchant. Can be null when
+     *         ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or
+     *         local file, which are secure contexts without SSL. Each byte array cannot be null.
      * @param methodDataMap The payment-method specific data for all applicable payment methods,
      *         e.g., whether the app should be invoked in test or production, a merchant identifier,
      *         or a public key. The map and its values cannot be null. The map should have at
@@ -318,8 +318,9 @@ public class WebPaymentIntentHelper {
      *     allowed.
      * @param schemelessIframeOrigin The schemeless origin of the iframe that invoked
      *     PaymentRequest. Only non-empty string is allowed.
-     * @param certificateChain The site certificate chain of the merchant. Can be null for localhost
-     *     or local file, which are secure contexts without SSL. Each byte array cannot be null.
+     * @param certificateChain The site certificate chain of the merchant. Can be null when
+     *     ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for localhost or local
+     *     file, which are secure contexts without SSL. Each byte array cannot be null.
      * @param methodDataMap The payment-method specific data for all applicable payment methods,
      *     e.g., whether the app should be invoked in test or production, a merchant identifier, or
      *     a public key. The map should have at least one entry.

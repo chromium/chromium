@@ -396,7 +396,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   MockTCPConnectedSocket(const MockTCPConnectedSocket&) = delete;
   MockTCPConnectedSocket& operator=(const MockTCPConnectedSocket&) = delete;
 
-  ~MockTCPConnectedSocket() override {}
+  ~MockTCPConnectedSocket() override = default;
 
   // mojom::TCPConnectedSocket implementation:
 
@@ -575,7 +575,7 @@ class MockTCPServerSocket : public network::mojom::TCPServerSocket {
   MockTCPServerSocket(const MockTCPServerSocket&) = delete;
   MockTCPServerSocket& operator=(const MockTCPServerSocket&) = delete;
 
-  ~MockTCPServerSocket() override {}
+  ~MockTCPServerSocket() override = default;
 
   // TCPServerSocket implementation:
   void Accept(mojo::PendingRemote<network::mojom::SocketObserver> observer,
@@ -622,7 +622,7 @@ class MockTCPBoundSocket : public network::mojom::TCPBoundSocket {
   MockTCPBoundSocket(const MockTCPBoundSocket&) = delete;
   MockTCPBoundSocket& operator=(const MockTCPBoundSocket&) = delete;
 
-  ~MockTCPBoundSocket() override {}
+  ~MockTCPBoundSocket() override = default;
 
   // mojom::TCPBoundSocket implementation:
   void Listen(uint32_t backlog,
@@ -677,7 +677,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   MockNetworkContext(const MockNetworkContext&) = delete;
   MockNetworkContext& operator=(const MockNetworkContext&) = delete;
 
-  ~MockNetworkContext() override {}
+  ~MockNetworkContext() override = default;
 
   // network::mojom::NetworkContext implementation:
 
@@ -1344,27 +1344,6 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, URLLoader3) {
 }
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, URLLoaderTrusted) {
   RUN_URLLOADER_TRUSTED_SUBTESTS;
-}
-
-class OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest
-    : public OutOfProcessPPAPITest {
- public:
-  OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kPepperCrossOriginRedirectRestriction);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OutOfProcessWithoutPepperCrossOriginRestrictionPPAPITest,
-                       URLLoaderRestrictURLRedirectDisabled) {
-  // This test verifies if the restriction in the pepper_url_loader_host.cc
-  // can be managed via base::FeatureList, and does not need to run with various
-  // NaCl sandbox modes.
-  RunTestViaHTTP(LIST_TEST(URLLoader_RestrictURLRedirectCommon)
-                 LIST_TEST(URLLoader_RestrictURLRedirectDisabled));
 }
 
 IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(URLLoader0)) {

@@ -11,8 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -129,8 +129,8 @@ void SaveAddressProfileViewTest::CreateViewAndShow(
   anchor_widget_->Init(std::move(params));
   anchor_widget_->Show();
 
-  view_ = new SaveAddressProfileView(std::move(controller),
-                                     anchor_widget_->GetContentsView(),
+  view_ = new SaveAddressProfileView(anchor_widget_->GetContentsView(),
+                                     std::move(controller),
                                      test_web_contents_.get());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
@@ -146,7 +146,7 @@ TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
   EXPECT_CALL(
       *controller,
       OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
-                     Property(&profile_ref::has_value, false)));
+                     Property(&profile_ref::has_value, true)));
   CreateViewAndShow(std::move(controller));
   view()->AcceptDialog();
 }

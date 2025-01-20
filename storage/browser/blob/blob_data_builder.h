@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
 
   // Copies the given data into the blob.
   void AppendData(const std::string& data) {
-    AppendData(base::as_bytes(base::make_span(data.c_str(), data.size())));
+    AppendData(base::as_byte_span(data));
   }
 
   // Copies the given data into the blob.

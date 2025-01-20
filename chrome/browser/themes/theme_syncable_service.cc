@@ -83,8 +83,13 @@ bool HasNonDefaultBrowserColorScheme(
              ThemeService::BrowserColorScheme::kSystem;
 }
 
-base::Value::Dict SpecificsNtpBackgroundToDict(
-    const sync_pb::ThemeSpecifics::NtpCustomBackground& ntp_background) {
+std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
+    const sync_pb::ThemeSpecifics& theme_specifics) {
+  if (!theme_specifics.has_ntp_background()) {
+    return std::nullopt;
+  }
+  const sync_pb::ThemeSpecifics::NtpCustomBackground& ntp_background =
+      theme_specifics.ntp_background();
   base::Value::Dict dict;
   if (ntp_background.has_url()) {
     dict.Set(kNtpCustomBackgroundURL, ntp_background.url());
@@ -456,8 +461,8 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   if (change_list.size() != 1) {
     string err_msg = base::StringPrintf("Received %d theme changes: ",
                                         static_cast<int>(change_list.size()));
-    for (size_t i = 0; i < change_list.size(); ++i) {
-      base::StringAppendF(&err_msg, "[%s] ", change_list[i].ToString().c_str());
+    for (const auto& i : change_list) {
+      base::StringAppendF(&err_msg, "[%s] ", i.ToString().c_str());
     }
     return syncer::ModelError(FROM_HERE, err_msg);
   }
@@ -517,8 +522,6 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
   if (new_specs.use_custom_theme()) {
-    // TODO(akalin): Figure out what to do about third-party themes
-    // (i.e., those not on either Google gallery).
     string id(new_specs.custom_theme_id());
     GURL update_url(new_specs.custom_theme_update_url());
     DVLOG(1) << "Applying theme " << id << " with update_url " << update_url;
@@ -595,17 +598,21 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
   }
 
   if (use_new_fields) {
+    PrefService* prefs = profile_->GetPrefs();
     // NTP background can exist along with the other (non-extension) themes.
-    if (new_specs.has_ntp_background() && profile_->GetPrefs()) {
-      DVLOG(1) << "Applying custom NTP background";
-
-      if (base::Value::Dict dict =
-              SpecificsNtpBackgroundToDict(new_specs.ntp_background());
-          !dict.empty()) {
+    if (prefs) {
+      if (std::optional<base::Value::Dict> dict =
+              NtpBackgroundDictFromSpecifics(new_specs);
+          dict && !dict->empty()) {
+        DVLOG(1) << "Applying custom NTP background";
         // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
         // of setting the pref directly.
-        profile_->GetPrefs()->SetDict(
-            prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse, std::move(dict));
+        prefs->SetDict(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                       std::move(*dict));
+      } else {
+        // Clear the current ntp background if none received from remote.
+        DVLOG(1) << "Removing custom NTP background";
+        prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
       }
     }
 
@@ -622,7 +629,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
       // another client has already uploaded the latest theme with the new
       // fields. Thus, there's no point in reading the syncing theme prefs
       // anymore.
-      if (PrefService* prefs = profile_->GetPrefs()) {
+      if (prefs) {
         prefs->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
         pref_service_syncable_observer_.reset();
       }
@@ -678,9 +685,12 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   }
 
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
-    // Fetch ntp background dict from pref.
-    // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
-    if (PrefService* prefs = profile_->GetPrefs()) {
+    // Skip setting background in the specifics if the background is set using
+    // local resource.
+    PrefService* prefs = profile_->GetPrefs();
+    if (prefs && !prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+      // Fetch ntp background dict from pref.
+      // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
       if (const base::Value* pref = prefs->GetUserPrefValue(
               prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
         *theme_specifics.mutable_ntp_background() =
@@ -732,6 +742,11 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
         use_system_theme_by_default_);
   }
   return theme_specifics;
+}
+
+sync_pb::ThemeSpecifics
+ThemeSyncableService::GetThemeSpecificsFromCurrentThemeForTesting() const {
+  return GetThemeSpecificsFromCurrentTheme();
 }
 
 /* static */
@@ -813,6 +828,12 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
       prefs) {
     for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
+      // Skip setting ntp background pref if the background is currently set
+      // using a local resource.
+      if (pref_in_migration == ThemePrefInMigration::kNtpCustomBackgroundDict &&
+          prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
+        continue;
+      }
       if (const base::Value* value =
               prefs->GetUserPrefValue(pref_names.non_syncing_pref_name)) {
         prefs->Set(pref_names.syncing_pref_name, value->Clone());

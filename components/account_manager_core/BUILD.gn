@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -36,18 +35,12 @@ component("account_manager_core") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//components/prefs:prefs",
     "//google_apis:google_apis",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp:cpp",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [ "chromeos/account_manager_facade_factory_lacros.cc" ]
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 
   public_deps = [
     ":account_manager_proto",

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/socket/udp_socket.h"
 
 #include <utility>
@@ -130,11 +125,11 @@ void UDPSocket::Read(int count, ReadCompletionCallback callback) {
 int UDPSocket::WriteImpl(net::IOBuffer* io_buffer,
                          int io_buffer_size,
                          net::CompletionOnceCallback callback) {
-  if (!IsConnected())
+  if (!IsConnected()) {
     return net::ERR_SOCKET_NOT_CONNECTED;
-  base::span<const uint8_t> data(
-      reinterpret_cast<const uint8_t*>(io_buffer->data()),
-      static_cast<size_t>(io_buffer_size));
+  }
+  base::span<const uint8_t> data =
+      io_buffer->span().subspan(0u, static_cast<size_t>(io_buffer_size));
   socket_->Send(
       data,
       net::MutableNetworkTrafficAnnotationTag(
@@ -180,9 +175,8 @@ void UDPSocket::SendTo(scoped_refptr<net::IOBuffer> io_buffer,
     return;
   }
 
-  base::span<const uint8_t> data(
-      reinterpret_cast<const uint8_t*>(io_buffer->data()),
-      static_cast<size_t>(byte_count));
+  base::span<const uint8_t> data =
+      io_buffer->span().subspan(0u, static_cast<size_t>(byte_count));
   socket_->SendTo(
       address, data,
       net::MutableNetworkTrafficAnnotationTag(

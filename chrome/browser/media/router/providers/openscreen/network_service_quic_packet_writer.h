@@ -6,15 +6,15 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_NETWORK_SERVICE_QUIC_PACKET_WRITER_H_
 
 #include <stddef.h>
+
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
-
-#include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
 namespace media_router {
 
@@ -33,7 +33,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when we received an async reply from the socket that a write
     // error occurred.

@@ -40,9 +40,9 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
-ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() {}
+ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() = default;
 
-ChromeRLZTrackerDelegate::~ChromeRLZTrackerDelegate() {}
+ChromeRLZTrackerDelegate::~ChromeRLZTrackerDelegate() = default;
 
 // static
 void ChromeRLZTrackerDelegate::RegisterProfilePrefs(

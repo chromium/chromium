@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_base_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
@@ -4411,6 +4412,31 @@ TEST_F(SpeculationRuleSetTest, ImplicitSource) {
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesPredicate(Href({URLPattern("/foo")})),
                           MatchesListOfURLs("https://example.com/bar")));
+}
+
+// Regression test for crbug.com/386547460.
+// This test will hit a DCHECK if we use document.scripts() when iterating
+// through scripts in |Document::UpdateBaseURL()| as the HTMLCollection's cached
+// node and count will not have been invalidated at that point, despite a
+// <script> having been removed.
+TEST_F(SpeculationRuleSetTest, Crbug386547460) {
+  base::HistogramTester histogram_tester;
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  document.documentElement()->setInnerHTML(R"html(
+    <head>
+      <script></script>
+    </head>
+    <body>
+      <script></script>
+      <base href="base.com"></base>
+    </body>
+  )html");
+
+  document.scripts()->item(2);
+  document.body()->setOuterHTML("<body>42</body>");
 }
 
 }  // namespace

@@ -30,6 +30,8 @@ constexpr char kChromeSignoutPromptHistogramUnsyncedReauthVariant[] =
     "UnsyncedReauth";
 constexpr char kChromeSignoutPromptHistogramUnsyncedVariant[] = "Unsynced";
 constexpr char kChromeSignoutPromptHistogramNoUnsyncedVariant[] = "NoUnsynced";
+constexpr char kChromeSignoutPromptHistogramSupervisedProfileVariant[] =
+    "SupervisedProfile";
 
 ChromeSignoutConfirmationChoice RecordChromeSignoutConfirmationPromptMetrics(
     ChromeSignoutConfirmationPromptVariant variant,
@@ -45,6 +47,10 @@ ChromeSignoutConfirmationChoice RecordChromeSignoutConfirmationPromptMetrics(
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
       histogram_variant_name =
           kChromeSignoutPromptHistogramUnsyncedReauthVariant;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+      histogram_variant_name =
+          kChromeSignoutPromptHistogramSupervisedProfileVariant;
       break;
   }
 
@@ -94,6 +100,12 @@ CreateChromeSignoutConfirmationPromptDialogModel(
       cancel_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON;
       ok_choice = ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth;
       cancel_choice = ChromeSignoutConfirmationChoice::kSignout;
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
+      title_string_id =
+          IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE;
+      body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY;
+      ok_string_id = IDS_SCREEN_LOCK_SIGN_OUT;
       break;
   }
   std::u16string ok_label = l10n_util::GetStringUTF16(ok_string_id);

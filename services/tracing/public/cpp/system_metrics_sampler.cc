@@ -81,7 +81,9 @@ void SystemMetricsSampler::OnStop(const StopArgs&) {
 SystemMetricsSampler::SystemSampler::SystemSampler(
     base::TimeDelta sampling_interval)
     : cpu_probe_{system_cpu::CpuProbe::Create()} {
-  cpu_probe_->StartSampling();
+  if (cpu_probe_) {
+    cpu_probe_->StartSampling();
+  }
   sample_timer_.Start(FROM_HERE, sampling_interval, this,
                       &SystemSampler::SampleSystemMetrics);
 }
@@ -89,8 +91,10 @@ SystemMetricsSampler::SystemSampler::SystemSampler(
 SystemMetricsSampler::SystemSampler::~SystemSampler() = default;
 
 void SystemMetricsSampler::SystemSampler::SampleSystemMetrics() {
-  cpu_probe_->RequestSample(
-      base::BindOnce(&SystemSampler::OnCpuProbeResult, base::Unretained(this)));
+  if (cpu_probe_) {
+    cpu_probe_->RequestSample(base::BindOnce(&SystemSampler::OnCpuProbeResult,
+                                             base::Unretained(this)));
+  }
   std::optional<base::CpuThroughputEstimationResult> cpu_throughput =
       base::EstimateCpuThroughput();
   if (cpu_throughput) {
@@ -160,11 +164,29 @@ SystemMetricsSampler::ProcessSampler::~ProcessSampler() = default;
 
 void SystemMetricsSampler::ProcessSampler::SampleProcessMetrics() {
   auto cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
-  if (!cpu_usage.has_value()) {
-    return;
+  if (cpu_usage.has_value()) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
+                  *cpu_usage);
   }
-  TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "CpuUsage",
-                *cpu_usage);
+  auto memory_info = process_metrics_->GetMemoryInfo();
+  if (memory_info.has_value()) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "ResidentSet",
+                  memory_info->resident_set_bytes);
+#if BUILDFLAG(IS_MAC)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                  "PhysicalMemoryFootprint",
+                  memory_info->physical_footprint_bytes);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "VmSwapMemory",
+                  memory_info->vm_swap_bytes);
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "RssAnonMemory",
+                  memory_info->rss_anon_bytes);
+#elif BUILDFLAG(IS_WIN)
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"), "PrivateMemory",
+                  memory_info->private_bytes);
+#endif  // BUILDFLAG(IS_WIN)
+  }
 }
 
 }  // namespace tracing

@@ -126,10 +126,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
     return expand_child_suggestions_view_.get();
   }
 
-  views::View* GetExpandChildSuggestionsIconViewForTesting() {
-    return expand_child_suggestions_view_icon_.get();
-  }
-
  protected:
   base::WeakPtr<AutofillPopupController> controller() { return controller_; }
 
@@ -152,15 +148,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Updates the background according to the control cell highlighting state.
   void UpdateBackground();
-
-  // Updates the expand subpopup icon visibility. By default the icon is
-  // always visible in the case children suggestion exist. The exception is when
-  // `CanUpdateOpenSubPopupIconVisibilityOnHover()` returns true. In this case
-  // the icon is visible only when a cell is selected (e.g. when the row is
-  // hovered) or the sub-popup is open.
-  // TODO(crbug.com/40274514): Maybe remove this method once experiment is
-  // complete.
-  void UpdateOpenSubPopupIconVisibility();
 
   // This method is just a getter for the `barrier_for_accepting_` which is
   // set `true` when the view's visible part is big enough and was present on
@@ -187,7 +174,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
       content_view_observer_{this};
   // The view wrapping the control area of the row.
   raw_ptr<views::View> expand_child_suggestions_view_ = nullptr;
-  raw_ptr<views::View> expand_child_suggestions_view_icon_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       expand_child_suggestions_view_observer_{this};
 

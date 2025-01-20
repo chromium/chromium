@@ -60,8 +60,7 @@ void ClearFileReferenceOnIOThread(
 
 static PageCaptureSaveAsMHTMLFunction::TestDelegate* test_delegate_ = nullptr;
 
-PageCaptureSaveAsMHTMLFunction::PageCaptureSaveAsMHTMLFunction() {
-}
+PageCaptureSaveAsMHTMLFunction::PageCaptureSaveAsMHTMLFunction() = default;
 
 PageCaptureSaveAsMHTMLFunction::~PageCaptureSaveAsMHTMLFunction() {
   if (mhtml_file_.get()) {

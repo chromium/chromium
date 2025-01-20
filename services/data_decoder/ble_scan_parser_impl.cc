@@ -13,21 +13,21 @@ namespace data_decoder {
 
 // Definitions of the data type flags:
 // https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
-const int kDataTypeFlags = 0x01;
-const int kDataTypeServiceUuids16BitPartial = 0x02;
-const int kDataTypeServiceUuids16BitComplete = 0x03;
-const int kDataTypeServiceUuids32BitPartial = 0x04;
-const int kDataTypeServiceUuids32BitComplete = 0x05;
-const int kDataTypeServiceUuids128BitPartial = 0x06;
-const int kDataTypeServiceUuids128BitComplete = 0x07;
-const int kDataTypeLocalNameShort = 0x08;
-const int kDataTypeLocalNameComplete = 0x09;
-const int kDataTypeTxPowerLevel = 0x0A;
-const int kDataTypeServiceData = 0x16;
-const int kDataTypeManufacturerData = 0xFF;
+constexpr uint8_t kDataTypeFlags = 0x01;
+constexpr uint8_t kDataTypeServiceUuids16BitPartial = 0x02;
+constexpr uint8_t kDataTypeServiceUuids16BitComplete = 0x03;
+constexpr uint8_t kDataTypeServiceUuids32BitPartial = 0x04;
+constexpr uint8_t kDataTypeServiceUuids32BitComplete = 0x05;
+constexpr uint8_t kDataTypeServiceUuids128BitPartial = 0x06;
+constexpr uint8_t kDataTypeServiceUuids128BitComplete = 0x07;
+constexpr uint8_t kDataTypeLocalNameShort = 0x08;
+constexpr uint8_t kDataTypeLocalNameComplete = 0x09;
+constexpr uint8_t kDataTypeTxPowerLevel = 0x0A;
+constexpr uint8_t kDataTypeServiceData = 0x16;
+constexpr uint8_t kDataTypeManufacturerData = 0xFF;
 
-const char kUuidPrefix[] = "0000";
-const char kUuidSuffix[] = "-0000-1000-8000-00805F9B34FB";
+constexpr char kUuidPrefix[] = "0000";
+constexpr char kUuidSuffix[] = "-0000-1000-8000-00805F9B34FB";
 
 BleScanParserImpl::BleScanParserImpl() = default;
 
@@ -50,13 +50,13 @@ mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
 
   // A reference for BLE advertising data: https://bit.ly/2DUTnsk
   for (size_t i = 0; i < advertisement_data.size();) {
-    uint8_t length = advertisement_data[i++];
+    size_t length = advertisement_data[i++];
     if (length <= 1 || length > advertisement_data.size() - i) {
       return nullptr;
     }
 
     // length includes the field_type byte.
-    uint8_t data_length = length - 1;
+    size_t data_length = length - 1;
     uint8_t field_type = advertisement_data[i++];
 
     switch (field_type) {
@@ -99,7 +99,7 @@ mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
           return nullptr;
         }
 
-        base::span<const uint8_t> uuid = advertisement_data.subspan(i, 2);
+        base::span<const uint8_t> uuid = advertisement_data.subspan(i, 2u);
         base::span<const uint8_t> data =
             advertisement_data.subspan(i + 2, data_length - 2);
         service_data_map[ParseUuid(uuid, UuidFormat::kFormat16Bit)] =
@@ -166,7 +166,7 @@ bool BleScanParserImpl::ParseServiceUuids(
     base::span<const uint8_t> bytes,
     UuidFormat format,
     std::vector<device::BluetoothUUID>* service_uuids) {
-  int uuid_length = 0;
+  size_t uuid_length = 0;
   switch (format) {
     case UuidFormat::kFormat16Bit:
       uuid_length = 2;

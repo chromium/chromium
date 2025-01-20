@@ -123,7 +123,7 @@ CPUIdentity::CPUIdentity() : family(0), model(0) {}
 
 CPUIdentity::CPUIdentity(const CPUIdentity& other) = default;
 
-CPUIdentity::~CPUIdentity() {}
+CPUIdentity::~CPUIdentity() = default;
 
 std::string GetCpuUarch(const CPUIdentity& cpuid) {
   if (cpuid.vendor != "GenuineIntel" && cpuid.vendor != "AuthenticAMD")

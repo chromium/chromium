@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_mute_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_list_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_overlay_play_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_play_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_remaining_time_display_element.h"
@@ -155,13 +155,19 @@ enum DownloadActionMetrics {
 
 }  // namespace
 
-class MediaControlsImplTest : public PageTestBase,
-                              private ScopedMediaCastOverlayButtonForTest {
+class MediaControlsImplTest
+    : public PageTestBase,
+      private ScopedMediaCastOverlayButtonForTest,
+      private ScopedMediaControlsOverlayPlayButtonForTest {
  public:
   explicit MediaControlsImplTest(
       base::test::TaskEnvironment::TimeSource time_source)
-      : PageTestBase(time_source), ScopedMediaCastOverlayButtonForTest(true) {}
-  MediaControlsImplTest() : ScopedMediaCastOverlayButtonForTest(true) {}
+      : PageTestBase(time_source),
+        ScopedMediaCastOverlayButtonForTest(true),
+        ScopedMediaControlsOverlayPlayButtonForTest(true) {}
+  MediaControlsImplTest()
+      : ScopedMediaCastOverlayButtonForTest(true),
+        ScopedMediaControlsOverlayPlayButtonForTest(true) {}
 
  protected:
   void SetUp() override {
@@ -195,6 +201,13 @@ class MediaControlsImplTest : public PageTestBase,
     // been properly notified of the video size.
     media_controls_->NotifyElementSizeChanged(
         media_controls_->MediaElement().GetBoundingClientRect());
+  }
+
+  void SetElementHeight(int height) {
+    auto* size = media_controls_->MediaElement().GetBoundingClientRect();
+    media_controls_->NotifyElementSizeChanged(DOMRectReadOnly::FromRect(
+        gfx::Rect(size->left(), size->top(), size->width(), height)));
+    test::RunPendingTasks();
   }
 
   void SimulateHideMediaControlsTimerFired() {
@@ -272,6 +285,9 @@ class MediaControlsImplTest : public PageTestBase,
   MediaControlOverflowMenuListElement* OverflowMenuListElement() const {
     return media_controls_->overflow_list_.Get();
   }
+  MediaControlOverlayPlayButtonElement* OverlayPlayButtonElement() const {
+    return media_controls_->overlay_play_button_.Get();
+  }
 
   MockWebMediaPlayerForImpl* WebMediaPlayer() {
     return static_cast<MockWebMediaPlayerForImpl*>(
@@ -284,8 +300,7 @@ class MediaControlsImplTest : public PageTestBase,
     MediaControls().MediaElement().SetSrc(
         AtomicString("https://example.com/foo.mp4"));
     test::RunPendingTasks();
-    WebTimeRange time_range(0.0, duration);
-    WebMediaPlayer()->seekable_.Assign(base::span_from_ref(time_range));
+    WebMediaPlayer()->seekable_ = WebTimeRanges(0.0, duration);
     MediaControls().MediaElement().DurationChanged(duration,
                                                    false /* requestSeek */);
     SimulateLoadedMetadata();
@@ -1623,6 +1638,32 @@ TEST_F(MediaControlsImplTest, OverflowMenuInPaintContainment) {
   MediaControls().ToggleOverflowMenu();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(overflow_list->IsInTopLayer());
+}
+
+TEST_F(MediaControlsImplTest, OverlayPlayButtonHidesWhenTooShort) {
+  EnsureSizing();
+
+  auto* overlay_play_button = OverlayPlayButtonElement();
+  ASSERT_NE(nullptr, overlay_play_button);
+
+  // The overflow button must fit with enough vertical space for itself, the
+  // timeline, and the row of buttons.
+  const int min_height = TimelineElement()->GetSizeOrDefault().height() +
+                         PlayButtonElement()->GetSizeOrDefault().height() +
+                         overlay_play_button->GetSizeOrDefault().height();
+
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Set the size to be too small.
+  SetElementHeight(min_height - 1);
+  EXPECT_FALSE(overlay_play_button->DoesFit());
+
+  // Set the size to be large enough.
+  SetElementHeight(min_height);
+  EXPECT_TRUE(overlay_play_button->DoesFit());
 }
 
 }  // namespace blink

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, PerDeviceSubsectionHeaderElement, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {PerDeviceSubsectionHeaderElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -194,5 +195,12 @@ suite('<settings-per-device-keyboard>', () => {
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<HTMLElement>(
                 '#noKeyboardsConnectedMessage')!.innerText.trim());
+  });
+
+  test('Navigate to a11y keyboard settings subpage', async () => {
+    perDeviceKeyboardPage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
+    assertEquals(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT, Router.getInstance().currentRoute);
   });
 });

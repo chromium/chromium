@@ -4,7 +4,10 @@
 
 package org.chromium.base.process_launcher;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface representing a connection to the Android service. Can be mocked in unit-tests. */
+@NullMarked
 /* package */ interface ChildServiceConnection {
     boolean bindServiceConnection();
 

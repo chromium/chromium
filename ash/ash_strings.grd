@@ -14,7 +14,7 @@ Style notes:
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/ash_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -452,8 +452,38 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby visibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_CONTACTS_SUBLABEL" desc="The sublabel in the Contacts visibility row.">
+        Only your contacts with a Google Account
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_LABEL" desc="The label in the Everyone visibility toggle row.">
+        Visible to everyone
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_EVERYONE_SUBLABEL" desc="The sublabel in the Everyone visibility toggle row.">
+        For 10 min
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_HIDDEN_SUBLABEL" desc="The sublabel in the Hidden visibility row.">
+        No one can share with you
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_YOUR_DEVICES_SUBLABEL" desc="The sublabel in the Your devices visibility row.">
+        Only devices signed into <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL" desc="The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
-        Nearby Share
+        Quick Share
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_CONTACTS" desc="Quick Share quick settings tile label indicates device is in Contacts visibility.">
+        Contacts
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_HIDDEN" desc="Quick Share quick settings tile label indicates device is in Hidden visibility.">
+        Hidden
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF" desc="Quick Share quick settings tile label indicates Quick Share is disabled.">
+        Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON" desc="Quick Share quick settings tile label indicates Quick Share is enabled.">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_YOUR_DEVICES" desc="Quick Share quick settings tile sublabel indicates device is in Your devices visibility.">
+        Your devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH" desc="Feature name placeholder: The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
@@ -1254,8 +1284,11 @@ Style notes:
     system tray to toggle on/off spoken feedback feature.">
         ChromeVox (spoken feedback)
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
-        Mouse keys
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Resume mouse keys
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE" desc="The label used in the accessibility menu of the system tray to pause/resume the mouse keys feature.">
+        Pause mouse keys
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
@@ -1510,6 +1543,17 @@ Style notes:
         To hear text read aloud, select the Select-to-speak icon on the bottom of your screen, then highlight text.
 
 You can also use the keyboard shortcut. First, highlight text, then press <ph name="modifier">$1<ex>launcher</ex></ph> + s.
+      </message>
+
+      <!-- FaceGaze dialog strings -->
+      <message name="IDS_ASH_FACEGAZE_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables FaceGaze, to confirm they meant to disable the feature.">
+        Are you sure you want to turn off face control?
+      </message>
+      <message name="IDS_ASH_FACEGAZE_CURSOR_CONTROL_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables cursor control in FaceGaze, to confirm they meant to disable the feature.">
+        Are you sure you want to turn off mouse cursor control?
+      </message>
+      <message name="IDS_ASH_FACEGAZE_ACTIONS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables performing actions using facial gestures in FaceGaze, to confirm they meant to disable the feature.">
+        Are you sure you want to turn off facial gestures?
       </message>
 
       <!-- Accessibility nudges -->
@@ -1872,10 +1916,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
-        Test your mic sound
+        Test your mic
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
-        You can test your microphone sound. Close panel to stop.
+        Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
         Connect wired headphone
@@ -1884,7 +1928,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
-        <ph name="TITLE">$1<ex>Test your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can test your microphone sound. Close panel to stop.</ex></ph>
+        <ph name="TITLE">$1<ex>Test your mic</ex></ph>. <ph name="DESCRIPTION">$2<ex>Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.</ex></ph>
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
@@ -2758,6 +2802,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION" desc="The extra accessible description of saved desk grid item">
         Press Ctrl+W to delete
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" translateable="false" desc="The label visible above template items in the saved desk library.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" translateable="false" desc="The label visible above the save and recall items in the saved desk library.">
+        Saved for later
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_CORAL_GRID_LABEL" translateable="false" desc="The label visible above the coral saved group items in the saved desk library.">
+        Saved Groups
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The new desk button's accessible name">
@@ -2813,6 +2866,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
       <message name="IDS_ASH_DESKS_DESK_16_MINI_VIEW_TITLE" desc="The label of the sixteenth virtual desk thumbnail.">
         Desk 16
+      </message>
+      <message name="IDS_ASH_CAMERA_NOW_ALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now enabled.">
+        Apps can access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_NOW_DISALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now disabled.">
+        Apps can't access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_ACCESS_DISABLED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, but camera access cannot be enabled because there is currently an admin remote desktop session active.">
+        Can't turn on camera access remotely
       </message>
       <message name="IDS_ASH_DESKS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to add a new virtual desk when the maximum number of desks has been reached.">
         Maximum number of desks reached.
@@ -3597,8 +3659,8 @@ No devices connected.
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO" desc="label used for the information of who is controlling mic input gain. [ICU Syntax]">
         {NUM_APPS, plural,
-         =1 {Mic input controlled by <ph name="app_name">$1<ex>App</ex></ph>}
-         other {Mic input controlled by # apps}}
+         =1 {Mic volume controlled by <ph name="app_name">$1<ex>App</ex></ph>}
+         other {Mic volume controlled by # apps}}
       </message>
 
       <!-- Status tray Live Caption strings. -->
@@ -4215,6 +4277,9 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_ACCESSIBILITY_SETTINGS" desc="Label for accelerator action - Open accessibility quick settings.">
         Open accessibility options
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DO_NOT_DISTURB" desc="Label for accelerator action - Turn on/off do not disturb.">
+        Turn on/off do not disturb
+      </message>
 
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
         Focus on the camera preview
@@ -4227,6 +4292,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW" desc="Label for accelerator action - Resize the picture-in-picture window.">
         Switch between the maximum or current size of the picture-in-picture window
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED" desc="Label for accelerator action - Toggle whether the camera access setting is enabled.">
+        Turn on/off camera access
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Move focus to previous pane.">
         Move focus to previous pane
@@ -4296,6 +4364,9 @@ No devices connected.
       </message>
        <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
         Open Crosh window
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_GEMINI_APP" desc="Label for accelerator action - Toggle Gemini App.">
+        Toggle Gemini
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Label for accelerator action - Open Diagnostics App.">
         Open Diagnostics app
@@ -4448,7 +4519,7 @@ No devices connected.
         Mirror monitors
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MOUSE_KEYS" desc="Label for accelerator action - Pause and resume mouse keys.">
-        Pause/resume mouse keys when it's on
+        When turned on, pause and resume mouse keys
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" desc="Label for accelerator action - Overview mode.">
         Overview mode
@@ -6771,6 +6842,24 @@ Here are some things you can try to get started.
         Use the screen capture tool in quick settings to take screenshots
       </message>
 
+      <!-- Scanner -->
+      <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL" desc="The label on a button that can be clicked to create a new calendar event from the contents of a screenshot." translateable="false">
+        Add to Calendar
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL" desc="The label on a button that can be clicked to create a new contact from the contents of a screenshot." translateable="false">
+        Create contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_SHEET" desc="The label on a button that can be clicked to create a new Google Sheet from the contents of a screenshot." translateable="false">
+        Create Google Sheets
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_DOC" desc="The label on a button that can be clicked to create a new Google Doc from the contents of a screenshot." translateable="false">
+        Create Google Docs
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot." translateable="false">
+        Copy text and format
+      </message>
+
       <!-- Snap Group -->
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
         Lock the windows
@@ -7446,9 +7535,6 @@ New install
       <message name="IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an installed app.">
         <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App
       </message>
-      <message name="IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an internal app.">
-        <ph name="APP_NAME">$1<ex>Camera</ex></ph>, App
-      </message>
       <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
         <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
       </message>
@@ -7748,6 +7834,14 @@ New install
         desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the previous week. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday last week (8 days from ago), as opposed to the Monday that just passed (1 day from now).">
         <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph> last week
       </message>
+      <message name="IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for emojis, GIFs, symbols, and emoticons.">
+        Search emojis, GIFs, and more
+      </message>
+      <message name="IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains a grid of featured GIFs (in the sense of highlighted or promoted). The featured GIFs change throughout the day.">
+        Featured GIFs
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
@@ -7964,6 +8058,26 @@ Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS"
 Otherwise the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS">$1<ex>30 seconds</ex></ph>.
       </message>
 
+      <!-- Mouse Keys touchpad feature -->
+      <message name="IDS_ASH_MOUSE_KEYS_LEFT_MOUSE_BUTTON" desc="Label to show left mouse button click.">
+        Left mouse button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_RIGHT_MOUSE_BUTTON" desc="Label to show right mouse button click.">
+        Right mouse button
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_BOTH_MOUSE_BUTTONS" desc="Label to show both mouse buttons click.">
+        Both mouse buttons
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_PERIOD_RELEASE" desc="Label to show how to release mouse button after a drag.">
+        Press "." to release
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_PAUSED" desc="Label to show the mouse keys paused state.">
+        Mouse keys paused
+      </message>
+      <message name="IDS_ASH_MOUSE_KEYS_RESUMED" desc="Label to show the mouse keys resumed state.">
+        Mouse keys resumed
+      </message>
+
       <!-- Guest session confirmation dialog -->
       <message name="IDS_GUEST_SESSION_CONFIRMATION_DIALOG_TITLE" desc="Title of the dialog for switching to device guest mode.">
         Sign out now?
@@ -8167,17 +8281,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour.">
         Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>. Get up and running in 5 steps.
       </message>
-      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT_V2" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour V2.">
-        Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
-      </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT" desc="Text shown as the Welcome Tour dialog title.">
         Hi there. <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> is a little different.
       </message>
-      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT_V2" desc="Text shown as the Welcome Tour V2 dialog title.">
-        6 tips to get started on <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
-      </message>
       <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour.">
-        Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers, and the newest <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> features.
+        Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, special offers, and the newest <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> features.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the Files app as part of the System UI Welcome Tour.">
         Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. You can find the Files app in Launcher. Manage your local files and your Google Drive files, all in the Files app.
@@ -8806,31 +8914,55 @@ To shut down the device, press and hold the power button on the device again.
         Send feedback
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION" desc="The description for the user feedback UI">
-        This is experimental AI feature and won't always get it right.
+        Generative AI can make mistakes, including about people, so double-check it.
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME" desc="The accessible name for the thumb up button which is in the user feedback UI">
-        Thumbs up would submit the feedback that you like this suggestion
+        Thumbs up would submit the feedback that you like this suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME" desc="The accessible name for the thumb down button which is in the user feedback UI">
-        Thumbs down would submit the feedback that you dislike this suggestion
+        Thumbs down would submit the feedback that you dislike this suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the tab section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the tab section.">
         Tabs
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the app section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the app section.">
         Apps
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the birch coral button selector UI.">
         Coral selector
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Hide
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP" desc="The tooltip of the close button on smart grouping expanded menu item">
+        Remove item from suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Show
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" desc="The accessible name for the birch coral button selector UI.">
+        Hide items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" translateable="false" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" desc="The accessible name for the birch coral button selector UI.">
+        Show items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
         Maximum number of saved groups reached.
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME" desc="The general name of the suggestions provided by coral service">
+        Suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM" desc="The name of smart grouping service in Glanceables bar context menu item">
+        App &amp; tab groups
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE" desc="The subtitle of coral restore chip">
+        Resume suggested group
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE" desc="The subtitle of coral in-session chip">
+        Organize in a new desk
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP" desc="The chip menu item label of opening a group">
+        Open
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP" desc="The chip menu item label of saving a group as a desk template">
+        Save group for later
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP" desc="The chip menu item label of hiding a group">
+        Hide all group suggestions
       </message>
 
       <!-- Graduation app strings -->

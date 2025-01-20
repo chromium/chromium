@@ -612,28 +612,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     const char* csp_frame_src;
     const char* sub_document_url;
     int expected_kCspWouldBlockIfWildcardDoesNotMatchWs;
-    int expected_kCspWouldBlockIfWildcardDoesNotMatchFtp;
   } test_cases[] = {
-      {"*", "http://example.com", 0, 0},
+      {"*", "http://example.com", 0},
       // Feature shouldn't be logged if matches explicitly.
-      {"ftp:*", "ftp://example.com", 0, 0},
-      {"ws:*", "ws://example.com", 0, 0},
-      {"wss:*", "wss://example.com", 0, 0},
-      // Feature should be logged if matched with wildcard.
-      {
-          "*",
-          "ftp://example.com",
-          0,
-          base::FeatureList::IsEnabled(
-              network::features::kCspStopMatchingWildcardDirectivesToFtp)
-              ? 0
-              : 1,
-      },
-      {"*", "ws://example.com", 1, 0},
-      {"*", "wss://example.com", 1, 0},
+      {"ftp:*", "ftp://example.com", 0},
+      {"ws:*", "ws://example.com", 0},
+      {"wss:*", "wss://example.com", 0},
+      {"*", "ws://example.com", 1},
+      {"*", "wss://example.com", 1},
   };
   int total_kCspWouldBlockIfWildcardDoesNotMatchWs = 0;
-  int total_kCspWouldBlockIfWildcardDoesNotMatchFtp = 0;
   for (const auto& test_case : test_cases) {
     GURL main_document_url = https_server().GetURL(
         "a.com",
@@ -656,9 +644,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs,
                  total_kCspWouldBlockIfWildcardDoesNotMatchWs +=
                  test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchWs);
-    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp,
-                 total_kCspWouldBlockIfWildcardDoesNotMatchFtp +=
-                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchFtp);
   }
 }
 
@@ -2958,6 +2943,30 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   )",
                                                                  url)));
   CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NoCharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/utf8.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 0);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/no_charset.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 1);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       ISO2022JPDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/iso_2022_jp.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 1);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

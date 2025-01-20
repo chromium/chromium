@@ -74,6 +74,9 @@ enum TrustTokenOperationStatus {
   // The operation was executed by a means other than sending the resource
   // request at hand, so there's no response to provide for the request.
   kOperationSuccessfullyFulfilledLocally = 11,
+
+  // The limit on issuers per-site was hit.
+  kSiteIssuerLimit = 12,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TrustTokenOperationStatus)
 

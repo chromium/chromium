@@ -28,7 +28,7 @@ UninstallAppTask::UninstallAppTask(SyncEngineContext* sync_context,
       uninstall_flag_(uninstall_flag),
       app_root_tracker_id_(0) {}
 
-UninstallAppTask::~UninstallAppTask() {}
+UninstallAppTask::~UninstallAppTask() = default;
 
 void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
   if (!IsContextReady()) {

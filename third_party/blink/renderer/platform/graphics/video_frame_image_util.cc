@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -160,7 +161,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
            const gpu::SyncToken& sync_token, bool is_lost) {
           if (is_lost || !context_provider)
             return;
-          auto* ri = context_provider->ContextProvider()->RasterInterface();
+          auto* ri = context_provider->ContextProvider().RasterInterface();
           media::WaitAndReplaceSyncTokenClient client(ri);
           frame->UpdateReleaseSyncToken(&client);
         },
@@ -168,8 +169,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
         frame->shared_image(), frame->acquire_sync_token(), 0u, sk_image_info,
-        frame->shared_image()->GetTextureTarget(),
-        frame->metadata().texture_origin_is_top_left,
         // Pass nullptr for |context_provider_wrapper|, because we don't
         // know which context the mailbox came from. It is used only to
         // detect when the mailbox is invalid due to context loss, and is
@@ -313,8 +312,8 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
                               bool ignore_video_transformation) {
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
+    raster_context_provider =
+        wrapper->ContextProvider().RasterContextProvider();
   }
 
   media::PaintCanvasVideoRenderer video_renderer;
@@ -333,26 +332,26 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
   if (!wrapper)
     return nullptr;
 
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
+  return base::WrapRefCounted(
+      wrapper->ContextProvider().RasterContextProvider());
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     const SkImageInfo& info,
     viz::RasterContextProvider* raster_context_provider) {
-  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
-                                                        kShouldInitialize);
+    return CanvasResourceProvider::CreateBitmapProvider(
+        gfx::Size(info.width(), info.height()), info.colorType(),
+        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+        kShouldInitialize);
   }
   return CanvasResourceProvider::CreateSharedImageProvider(
-      info, kFilterQuality, kShouldInitialize,
-      SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
+      kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+      RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink

@@ -13,12 +13,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,12 +32,10 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -43,7 +45,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 
@@ -51,7 +53,13 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
+public class AccountPickerDialogTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -68,6 +76,11 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     private AccountPickerDialogCoordinator mCoordinator;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -76,11 +89,10 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
                 () -> {
                     mCoordinator =
                             new AccountPickerDialogCoordinator(
-                                    getActivity(),
+                                    sActivity,
                                     mListenerMock,
                                     new ModalDialogManager(
-                                            new AppModalPresenter(getActivity()),
-                                            ModalDialogType.APP));
+                                            new AppModalPresenter(sActivity), ModalDialogType.APP));
                 });
     }
 
@@ -91,7 +103,6 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testTitle() {
         onView(withText(R.string.signin_account_picker_dialog_title))
                 .inRoot(isDialog())
@@ -100,7 +111,6 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testAddAccount() {
         onView(withText(R.string.signin_add_account_to_device)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).addAccount();
@@ -108,7 +118,6 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectDefaultAccount() {
         onView(withText(TestAccounts.ACCOUNT1.getEmail()))
                 .inRoot(isDialog())
@@ -119,7 +128,6 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectNonDefaultAccount() {
         onView(withText(TestAccounts.ACCOUNT2.getEmail())).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT2.getEmail());
@@ -128,22 +136,9 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testAccountPickerDialogView() throws IOException {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(
                 mCoordinator.getAccountPickerViewForTests(), "account_picker_dialog");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testAccountPickerDialogView_replaceSyncWithSigninPromosEnabled()
-            throws IOException {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                mCoordinator.getAccountPickerViewForTests(),
-                "account_picker_dialog_replace_sync_with_signin_promos_enabled");
     }
 }

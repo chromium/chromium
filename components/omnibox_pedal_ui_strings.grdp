@@ -82,9 +82,6 @@
     Update Chrome button, activate to update Chrome from your Chrome settings
   </message>
 
-  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT" desc="The button text contents to suggest pedal action, RUN_CHROME_SAFETY_CHECK">
-    Run Chrome safety check
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, RUN_CHROME_SAFETY_CHECK">
     Run a safety check in Chrome settings
   </message>

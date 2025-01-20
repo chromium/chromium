@@ -44,8 +44,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mShoppingService = shoppingService;
-        mBasicBookmarkQueryHandler =
-                new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs, shoppingService);
+        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs);
     }
 
     @Override

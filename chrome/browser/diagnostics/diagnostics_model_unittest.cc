@@ -21,7 +21,7 @@ class DiagnosticsModelTest : public testing::Test {
  protected:
   DiagnosticsModelTest() : cmdline_(base::CommandLine::NO_PROGRAM) {}
 
-  ~DiagnosticsModelTest() override {}
+  ~DiagnosticsModelTest() override = default;
 
   void SetUp() override {
     model_.reset(MakeDiagnosticsModel(cmdline_));

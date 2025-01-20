@@ -12,8 +12,6 @@ source_set("model") {
   deps = [
     ":metrics",
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
@@ -24,6 +22,7 @@ source_set("model") {
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync/model",

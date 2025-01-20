@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/blink_buildflags.h"
@@ -26,9 +27,10 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,33 +46,6 @@ const char kSampleStrippedURL[] =
 
 using testing::Return;
 
-class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
- public:
-  FakeAutocompleteProviderClient() {
-    set_template_url_service(
-        search_engines_test_environment_.template_url_service());
-  }
-
-  ~FakeAutocompleteProviderClient() {
-    // We do that because the `TemplateURLService` object lives in
-    // `MockAutocompleteProviderClient` which is the parent class while its pref
-    // live in `SearchEnginesTestEnvironment`.
-    set_template_url_service(nullptr);
-  }
-
-  FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
-      delete;
-  FakeAutocompleteProviderClient& operator=(
-      const FakeAutocompleteProviderClient&) = delete;
-
-  bool SearchSuggestEnabled() const override { return true; }
-
-  std::string ProfileUserName() const override { return "goodEmail@gmail.com"; }
-
- private:
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-};
-
 }  // namespace
 
 class FakeDocumentProvider : public DocumentProvider {
@@ -81,7 +56,7 @@ class FakeDocumentProvider : public DocumentProvider {
     matches_cache_ = MatchesCache(4);
   }
 
-  using DocumentProvider::backoff_for_session_;
+  using DocumentProvider::backoff_for_this_instance_only_;
   using DocumentProvider::done_;
   using DocumentProvider::GenerateLastModifiedString;
   using DocumentProvider::input_;
@@ -89,7 +64,9 @@ class FakeDocumentProvider : public DocumentProvider {
   using DocumentProvider::IsInputLikelyURL;
   using DocumentProvider::matches_;
   using DocumentProvider::OnDocumentSuggestionsLoaderAvailable;
+  using DocumentProvider::OnURLLoadComplete;
   using DocumentProvider::ParseDocumentSearchResults;
+  using DocumentProvider::time_request_sent_;
   using DocumentProvider::time_run_invoked_;
   using DocumentProvider::UpdateResults;
 
@@ -145,6 +122,8 @@ class DocumentProviderTest : public testing::Test,
     return summaries;
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+    base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Not enabled by default on mobile, so have to enable it explicitly.
   base::test::ScopedFeatureList feature_list_{omnibox::kDocumentProvider};
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
@@ -250,11 +229,10 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
     EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
   }
 
-  // |backoff_for_session_| should be false. This should be the case by default;
-  // i.e. we didn't explicitly set this to false above.
-  provider_->backoff_for_session_ = true;
+  // Backoff state should be respected.
+  provider_->backoff_for_this_instance_only_ = true;
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
-  provider_->backoff_for_session_ = false;
+  provider_->backoff_for_this_instance_only_ = false;
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
 
   // Google should be the default search provider. This should be the case by
@@ -393,8 +371,6 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
             "http://sites.google.com/google.com/abc/def");
   EXPECT_EQ(matches[2].fill_into_edit,
             u"http://sites.google.com/google.com/abc/def");
-
-  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
@@ -615,8 +591,6 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
   EXPECT_EQ(matches[2].relevance, 1232);  // Tie demoted, twice.
   EXPECT_EQ(matches[2].stripped_destination_url,
             GURL("http://documentprovider.tld/doc?id=3"));
-
-  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
@@ -675,8 +649,6 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
   EXPECT_EQ(matches[2].relevance, 1232);
   EXPECT_EQ(matches[2].stripped_destination_url,
             GURL("http://documentprovider.tld/doc?id=3"));
-
-  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
@@ -734,32 +706,6 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
   EXPECT_EQ(matches[2].relevance, 0);
   EXPECT_EQ(matches[2].stripped_destination_url,
             GURL("http://documentprovider.tld/doc?id=3"));
-
-  EXPECT_FALSE(provider_->backoff_for_session_);
-}
-
-TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
-  // Same as above, but the message doesn't match. We should accept this
-  // response, but it isn't expected to trigger backoff.
-  const char kMismatchedMessageJSON[] = R"({
-      "error": {
-        "code": 403,
-        "message": "Some other thing went wrong.",
-        "status": "PERMISSION_DENIED",
-      }
-    })";
-
-  ACMatches matches;
-  ASSERT_FALSE(provider_->backoff_for_session_);
-
-  std::optional<base::Value> bad_response = base::JSONReader::Read(
-      kMismatchedMessageJSON, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(bad_response);
-  ASSERT_TRUE(bad_response->is_dict());
-  matches = provider_->ParseDocumentSearchResults(*bad_response);
-  EXPECT_EQ(matches.size(), 0u);
-  // Shouldn't prohibit future requests or trigger backoff.
-  EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
 // This test is affected by an iOS 10 simulator bug: https://crbug.com/782033.
@@ -1022,7 +968,7 @@ TEST_F(DocumentProviderTest, MaxMatches) {
       /*enabled_features=*/{{omnibox::kUrlScoringModel, {}},
                             {omnibox::kMlUrlScoring,
                              {{"MlUrlScoringUnlimitedNumCandidates", "true"}}}},
-      /*disabled_feature=*/{});
+      /*disabled_features=*/{});
 
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
 
@@ -1227,5 +1173,53 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
             {}
           ]})",
          "input", {1000, 0, 0, 0, 0, 0});
+  }
+}
+
+TEST_F(DocumentProviderTest, Backoff) {
+  provider_->time_run_invoked_ = base::TimeTicks::Now();
+  provider_->time_request_sent_ = base::TimeTicks::Now();
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::DocumentProvider> scoped_config;
+    scoped_config.Get().enabled = true;
+    scoped_config.Get().scope_backoff_to_profile = false;
+
+    EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
+
+    provider_->done_ = false;
+    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    EXPECT_FALSE(provider_->backoff_for_this_instance_only_);
+
+    provider_->done_ = false;
+    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    EXPECT_TRUE(provider_->backoff_for_this_instance_only_);
+  }
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::DocumentProvider> scoped_config;
+    scoped_config.Get().enabled = true;
+    scoped_config.Get().scope_backoff_to_profile = true;
+    scoped_config.Get().backoff_duration = base::Minutes(30);
+
+    EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
+
+    provider_->done_ = false;
+    provider_->OnURLLoadComplete(nullptr, 200, nullptr);
+    EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
+
+    provider_->done_ = false;
+    provider_->OnURLLoadComplete(nullptr, 400, nullptr);
+    EXPECT_TRUE(client_->GetDocumentSuggestionsService()->should_backoff());
+
+    // After 20 minutes, the backoff state should still be active.
+    task_environment_.FastForwardBy(base::Minutes(20));
+    EXPECT_TRUE(client_->GetDocumentSuggestionsService()->should_backoff());
+
+    // After another 20 minutes, the backoff state should have been reset.
+    task_environment_.FastForwardBy(base::Minutes(20));
+    EXPECT_FALSE(client_->GetDocumentSuggestionsService()->should_backoff());
   }
 }

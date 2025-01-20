@@ -4,6 +4,7 @@
 
 #include "media/base/audio_limiter.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -13,11 +14,6 @@
 #include "media/base/fake_audio_render_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/41494069): Update these tests once AudioBus is spanified..
-#pragma allow_unsafe_buffers
-#endif
 
 namespace media {
 
@@ -39,18 +35,16 @@ void RunConvertBenchmark(const AudioParameters& params,
   sine_source.OnMoreData(base::TimeDelta(), base::TimeTicks(), {},
                          input_bus.get());
 
-  for (int ch = 0; ch < input_bus->channels(); ++ch) {
-    float* channel_data = input_bus->channel(ch);
-    for (int i = 0; i < input_bus->frames(); ++i) {
-      channel_data[i] *= amplitude;
-    }
+  for (auto channel : input_bus->AllChannels()) {
+    std::ranges::transform(channel, channel.begin(), [amplitude](float sample) {
+      return sample * amplitude;
+    });
   }
 
   AudioLimiter::OutputChannels output_channels;
-  for (int ch = 0; ch < output_bus->channels(); ++ch) {
+  for (auto channel : output_bus->AllChannels()) {
     output_channels.emplace_back(
-        reinterpret_cast<uint8_t*>(output_bus->channel(ch)),
-        output_bus->frames() * sizeof(float));
+        base::as_writable_byte_span(base::allow_nonunique_obj, channel));
   }
 
   AudioLimiter limiter(params.sample_rate(), params.channels());

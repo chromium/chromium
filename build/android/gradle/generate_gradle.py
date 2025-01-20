@@ -460,6 +460,8 @@ def _CreateRelativeSymlink(target_path, link_path):
   link_dir = os.path.dirname(link_path)
   relpath = os.path.relpath(target_path, link_dir)
   logging.debug('Creating symlink %s -> %s', link_path, relpath)
+  if not os.path.exists(link_dir):
+    os.makedirs(link_dir)
   os.symlink(relpath, link_path)
 
 
@@ -472,8 +474,6 @@ def _CreateJniLibsDir(output_dir, entry_output_dir, so_files):
     symlink_dir = os.path.join(entry_output_dir, _JNI_LIBS_SUBDIR)
     shutil.rmtree(symlink_dir, True)
     abi_dir = os.path.join(symlink_dir, _ARMEABI_SUBDIR)
-    if not os.path.exists(abi_dir):
-      os.makedirs(abi_dir)
     for so_file in so_files:
       target_path = os.path.join(output_dir, so_file)
       symlinked_path = os.path.join(abi_dir, so_file)

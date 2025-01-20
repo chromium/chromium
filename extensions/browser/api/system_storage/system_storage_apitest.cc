@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <atomic>
@@ -30,7 +25,7 @@ using extensions::test::kRemovableStorageData;
 using storage_monitor::StorageMonitor;
 using storage_monitor::TestStorageMonitor;
 
-const struct TestStorageUnitInfo kTestingData[] = {
+constexpr TestStorageUnitInfo kTestingData[] = {
     {"dcim:device:001", "0xbeaf", 4098, 1},
     {"path:device:002", "/home", 4098, 2},
     {"path:device:003", "/data", 10000, 3}};
@@ -39,8 +34,7 @@ const struct TestStorageUnitInfo kTestingData[] = {
 
 class TestStorageInfoProvider : public extensions::StorageInfoProvider {
  public:
-  TestStorageInfoProvider(const struct TestStorageUnitInfo* testing_data,
-                          size_t n);
+  TestStorageInfoProvider() = default;
 
   void set_expected_call_count(int count) { expected_call_count_ = count; }
 
@@ -52,13 +46,11 @@ class TestStorageInfoProvider : public extensions::StorageInfoProvider {
   }
 
  private:
-  ~TestStorageInfoProvider() override;
+  ~TestStorageInfoProvider() override = default;
 
   // StorageInfoProvider implementations.
   double GetStorageFreeSpaceFromTransientIdAsync(
       const std::string& transient_id) override;
-
-  std::vector<struct TestStorageUnitInfo> testing_data_;
 
   // Read on the IO thread, written from another thread.
   std::atomic<int> callback_count_{0};
@@ -69,20 +61,12 @@ class TestStorageInfoProvider : public extensions::StorageInfoProvider {
   base::RunLoop run_loop_;
 };
 
-TestStorageInfoProvider::TestStorageInfoProvider(
-    const struct TestStorageUnitInfo* testing_data,
-    size_t n)
-    : testing_data_(testing_data, testing_data + n) {
-}
-
-TestStorageInfoProvider::~TestStorageInfoProvider() = default;
-
 double TestStorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
     const std::string& transient_id) {
   double result = -1;
   std::string device_id =
       StorageMonitor::GetInstance()->GetDeviceIdForTransientId(transient_id);
-  for (const auto& info : testing_data_) {
+  for (const auto& info : kTestingData) {
     if (info.device_id == device_id) {
       result = static_cast<double>(info.available_capacity);
       break;
@@ -124,8 +108,7 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
 
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
   SetUpAllMockStorageDevices();
-  auto provider = base::MakeRefCounted<TestStorageInfoProvider>(
-      kTestingData, std::size(kTestingData));
+  auto provider = base::MakeRefCounted<TestStorageInfoProvider>();
   extensions::StorageInfoProvider::InitializeForTesting(provider);
   std::vector<std::unique_ptr<ExtensionTestMessageListener>>
       device_ids_listeners;

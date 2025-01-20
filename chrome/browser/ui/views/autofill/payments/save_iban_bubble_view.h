@@ -56,7 +56,6 @@ class SaveIbanBubbleView : public AutofillLocationBarBubble,
                        const std::u16string& new_contents) override;
 
  protected:
-
   virtual void CreateMainContentView();
 
   IbanBubbleController* controller() const { return controller_; }

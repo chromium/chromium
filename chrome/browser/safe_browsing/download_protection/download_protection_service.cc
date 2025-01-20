@@ -651,12 +651,6 @@ void DownloadProtectionService::UploadForDeepScanning(
         safe_browsing::SafeBrowsingMetricsCollector::EventType::
             DOWNLOAD_DEEP_SCAN);
   }
-
-  if (trigger ==
-      DownloadItemWarningData::DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN) {
-    profile->GetPrefs()->SetBoolean(
-        prefs::kSafeBrowsingAutomaticDeepScanPerformed, true);
-  }
 }
 
 // static

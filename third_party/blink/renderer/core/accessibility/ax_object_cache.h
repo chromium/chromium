@@ -56,6 +56,7 @@ class HTMLCanvasElement;
 class HTMLOptionElement;
 class HTMLFrameOwnerElement;
 class HTMLSelectElement;
+class LayoutBlockFlow;
 struct PhysicalRect;
 class WebPluginContainer;
 
@@ -265,6 +266,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Determine if a serialization is in the process or not.
   virtual bool IsSerializationInFlight() const = 0;
+
+  // Clears the cached fragment data associated with `block_flow` if it exists.
+  virtual void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) = 0;
 
  protected:
   friend class ScopedBlinkAXEventIntent;

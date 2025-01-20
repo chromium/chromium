@@ -64,7 +64,8 @@ public class CreatorActivity extends SnackbarActivity {
                     tabModelSelectorProvider,
                     profileSupplier,
                     delegate,
-                    isCustomTab);
+                    isCustomTab,
+                    /* dataSharingTabManager= */ null);
         }
 
         @Override
@@ -105,7 +106,7 @@ public class CreatorActivity extends SnackbarActivity {
                         false,
                         intentRequestTracker,
                         getInsetObserver(),
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
 
         TabShareDelegateImpl tabshareDelegate =
                 new TabShareDelegateImpl(
@@ -143,7 +144,8 @@ public class CreatorActivity extends SnackbarActivity {
                         /* tabModelSelectProvider */ new ObservableSupplierImpl<>(),
                         mProfileSupplier,
                         new ShareDelegateImpl.ShareSheetDelegate(),
-                        /* isCustomTab= */ false);
+                        /* isCustomTab= */ false,
+                        null);
         mShareDelegateSupplier.set(shareDelegate);
         mCreatorActionDelegate =
                 new CreatorActionDelegateImpl(
@@ -197,6 +199,6 @@ public class CreatorActivity extends SnackbarActivity {
     // This implements the SignInInterstitialInitiator interface.
     public void showSignInInterstitial() {
         mCreatorActionDelegate.showSignInInterstitial(
-                SigninAccessPoint.CREATOR_FEED_FOLLOW, mBottomSheetController, mWindowAndroid);
+                SigninAccessPoint.CREATOR_FEED_FOLLOW, mBottomSheetController);
     }
 }

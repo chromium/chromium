@@ -385,7 +385,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                              BookmarkData,
                              TextData,
                              WebkitData,
-                             RawData,
                              SvgData,
                              FilenamesData,
                              WebCustomFormatMapData
@@ -433,6 +432,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
+      const std::vector<RawData>& raw_objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src,
       uint32_t privacy_types) = 0;
@@ -464,6 +464,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteConfidentialDataForPassword() = 0;
 
   void DispatchPortableRepresentation(const ObjectMapParams& params);
+  void DispatchPortableRepresentation(const RawData& data);
 
   // Write directly to the system clipboard.
   void DispatchPlatformRepresentations(

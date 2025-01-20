@@ -4,14 +4,9 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 
-#import <memory>
-
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
 
@@ -27,14 +22,14 @@ AutocompleteScoringModelServiceFactory::GetInstance() {
 // static
 AutocompleteScoringModelService*
 AutocompleteScoringModelServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<AutocompleteScoringModelService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<AutocompleteScoringModelService>(
+      profile, /*create=*/true);
 }
 
 AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutocompleteScoringModelService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AutocompleteScoringModelService",
+                                    ProfileSelection::kOwnInstanceInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
@@ -50,15 +45,6 @@ AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
   return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(
                                   optimization_guide)
                             : nullptr;
-}
-
-web::BrowserState* AutocompleteScoringModelServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool AutocompleteScoringModelServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

@@ -184,6 +184,24 @@ chromium-metrics-reviews@google.com.
              memory"/>
 </enum>
 
+<!-- LINT.IfChange(CustomTabsUrlScheme) -->
+
+<enum name="CustomTabsUrlScheme">
+  <int value="0" label="Unknown scheme"/>
+  <int value="1" label="HTTP"/>
+  <int value="2" label="HTTPS"/>
+  <int value="3" label="File"/>
+  <int value="4" label="Ftp"/>
+  <int value="5" label="Data"/>
+  <int value="6" label="Javascript"/>
+  <int value="7" label="Chrome"/>
+  <int value="8" label="Blob"/>
+  <int value="9" label="Content"/>
+  <int value="10" label="Intent"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:UrlScheme) -->
+
 <enum name="GoogleBottomBarButtonEvent">
   <int value="0" label="Unknown button"/>
   <int value="1" label="Chrome Page Insights button"/>

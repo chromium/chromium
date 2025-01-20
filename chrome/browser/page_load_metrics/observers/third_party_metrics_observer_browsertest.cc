@@ -134,7 +134,6 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
 
   // TODO(ericrobinson) The following functions all have an assumed frame.
   // Prefer passing in a frame to make the tests clearer and extendable.
-
   void NavigateFrameAndWaitForFCP(
       const std::string& host,
       const std::string& path,
@@ -142,10 +141,18 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     GURL page = https_server()->GetURL(host, path);
     NavigateFrameAndWaitForFCP(page, waiter);
   }
-
   void NavigateFrameAndWaitForFCP(
       const GURL& url,
       page_load_metrics::PageLoadMetricsTestWaiter* waiter) {
+    NavigateFrameAndWaitFor(url, waiter,
+                            page_load_metrics::PageLoadMetricsTestWaiter::
+                                TimingField::kFirstContentfulPaint);
+  }
+
+  void NavigateFrameAndWaitFor(
+      const GURL& url,
+      page_load_metrics::PageLoadMetricsTestWaiter* waiter,
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField field) {
     // Waiting for the frame to navigate ensures that any previous RFHs for this
     // frame have been deleted and therefore won't pollute any future frame
     // expectations (such as FCP).
@@ -153,9 +160,7 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
     NavigateFrameToUrl(url);
     waiter->Wait();
 
-    waiter->AddSubFrameExpectation(
-        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
-            kFirstContentfulPaint);
+    waiter->AddSubFrameExpectation(field);
     waiter->Wait();
   }
 
@@ -247,14 +252,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 3);
 }
 
-// TODO(crbug.com/334416161): Re-enble this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpaqueOriginSubframe DISABLED_OpaqueOriginSubframe
-#else
-#define MAYBE_OpaqueOriginSubframe OpaqueOriginSubframe
-#endif
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
-                       MAYBE_OpaqueOriginSubframe) {
+                       OpaqueOriginSubframe) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
@@ -265,7 +264,9 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameAndWaitForFCP("b.com", "/select.html", &waiter);
 
   // Navigate the frame to an opaque origin URL.
-  NavigateFrameAndWaitForFCP(GURL("data:,hello"), &waiter);
+  NavigateFrameAndWaitFor(GURL("data:,hello"), &waiter,
+                          page_load_metrics::PageLoadMetricsTestWaiter::
+                              TimingField::kLargestContentfulPaint);
 
   content::RenderFrameHost* subframe_rfh =
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), /*index=*/0);

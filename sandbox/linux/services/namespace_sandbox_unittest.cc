@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
@@ -146,8 +147,8 @@ TEST_F(NamespaceSandboxTest, NestedNamespaceSandbox) {
 
 const int kNormalExitCode = 0;
 
-// Ensure that CHECK(false) is distinguishable from _exit(kNormalExitCode).
-// Allowing noise since CHECK(false) will write a stack trace to stderr.
+// Ensure that NOTREACHED() does not emit kNormalExitCode. Allowing noise since
+// NOTREACHED() will write a stack trace to stderr.
 SANDBOX_TEST_ALLOW_NOISE(ForkInNewPidNamespace, CheckDoesNotReturnZero) {
   if (!Credentials::CanCreateProcessInNewUserNS()) {
     return;
@@ -159,8 +160,7 @@ SANDBOX_TEST_ALLOW_NOISE(ForkInNewPidNamespace, CheckDoesNotReturnZero) {
   CHECK_GE(pid, 0);
 
   if (pid == 0) {
-    CHECK(false);
-    _exit(kNormalExitCode);
+    NOTREACHED();
   }
 
   int status;

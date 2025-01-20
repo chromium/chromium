@@ -3,7 +3,7 @@ Short Name: AFL
 URL: http://lcamtuf.coredump.cx/afl/
 Version: 2.52b
 Date: 2018-08-17
-License: Apache 2.0
+License: Apache-2.0
 License File: src/docs/COPYING
 Security Critical: no
 Shipped: no

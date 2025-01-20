@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <vector>
 
+#import "base/base_paths.h"
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -59,10 +60,10 @@
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
@@ -216,13 +217,13 @@ void ApplicationContextImpl::StartTearDown() {
   }
 
   // Need to clear profiles before the IO thread. In detail:
-  // - First destroy the profiles, including their keyed services, which may
-  //   depend on the AccountProfileMapper.
+  // - First unload the profiles (which deallocate them), including their
+  // keyed services, which may depend on the AccountProfileMapper.
   // - Then destroy the AccountProfileMapper, which depends on the
   //   ProfileManagerIOS.
   // - Finally destroy the ProfileManagerIOS.
   if (profile_manager_) {
-    profile_manager_->DestroyAllProfiles();
+    profile_manager_->UnloadAllProfiles();
   }
   account_profile_mapper_.reset();
   profile_manager_.reset();
@@ -252,6 +253,8 @@ void ApplicationContextImpl::StartTearDown() {
   application_breadcrumbs_logger_.reset();
 
   ios_chrome_io_thread_->NetworkTearDown();
+
+  additional_features_controller_->ShutDown();
 }
 
 void ApplicationContextImpl::PostDestroyThreads() {
@@ -461,6 +464,8 @@ SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+    safe_browsing_service_->Initialize(
+        base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return safe_browsing_service_.get();
 }
@@ -672,7 +677,7 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
         case AppState::kBackgroundFromActive:
           if (history::HistoryService* history_service =
-                  ios::HistoryServiceFactory::GetForProfileIfExists(
+                  ios::HistoryServiceFactory::GetForProfile(
                       profile, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }

@@ -267,6 +267,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
         MultitaskButton::Type::kFloat, is_portrait_mode,
         /*paint_as_active=*/floated, l10n_util::GetStringUTF16(message_id));
     float_button->SetPreferredSize(preferred_size);
+    float_button->SetMirrored(is_reversed_);
     float_button_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id,
                                        label_max_length));

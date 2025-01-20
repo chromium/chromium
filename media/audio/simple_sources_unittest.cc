@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -44,20 +45,19 @@ TEST(SimpleSources, SineWaveAudioSource) {
 
   uint32_t half_period = AudioParameters::kTelephoneSampleRate / (freq * 2);
 
+  auto first_channel = audio_bus->channel_span(0);
+
   // Spot test positive incursion of sine wave.
-  EXPECT_NEAR(0, audio_bus->channel(0)[0],
-              std::numeric_limits<float>::epsilon());
-  EXPECT_FLOAT_EQ(0.15643446f, audio_bus->channel(0)[1]);
-  EXPECT_LT(audio_bus->channel(0)[1], audio_bus->channel(0)[2]);
-  EXPECT_LT(audio_bus->channel(0)[2], audio_bus->channel(0)[3]);
+  EXPECT_NEAR(0, first_channel[0], std::numeric_limits<float>::epsilon());
+  EXPECT_FLOAT_EQ(0.15643446f, first_channel[1]);
+  EXPECT_LT(first_channel[1], first_channel[2]);
+  EXPECT_LT(first_channel[2], first_channel[3]);
   // Spot test negative incursion of sine wave.
-  EXPECT_NEAR(0, audio_bus->channel(0)[half_period],
+  EXPECT_NEAR(0, first_channel[half_period],
               std::numeric_limits<float>::epsilon());
-  EXPECT_FLOAT_EQ(-0.15643446f, audio_bus->channel(0)[half_period + 1]);
-  EXPECT_GT(audio_bus->channel(0)[half_period + 1],
-            audio_bus->channel(0)[half_period + 2]);
-  EXPECT_GT(audio_bus->channel(0)[half_period + 2],
-            audio_bus->channel(0)[half_period + 3]);
+  EXPECT_FLOAT_EQ(-0.15643446f, first_channel[half_period + 1]);
+  EXPECT_GT(first_channel[half_period + 1], first_channel[half_period + 2]);
+  EXPECT_GT(first_channel[half_period + 2], first_channel[half_period + 3]);
 }
 
 TEST(SimpleSources, SineWaveAudioCapped) {
@@ -95,7 +95,7 @@ void VerifyContainsTestFile(const AudioBus* audio_bus) {
   // Convert the test data (little-endian) into floats and compare. We need to
   // index past the first bytes in the data, which contain the wav header.
   const int kFirstSampleIndex = 12 + 8 + 16 + 8;
-  int16_t data[2];
+  std::array<int16_t, 2> data;
   data[0] = kTestAudioData[kFirstSampleIndex];
   data[0] |= (kTestAudioData[kFirstSampleIndex + 1] << 8);
   data[1] = kTestAudioData[kFirstSampleIndex + 2];
@@ -103,15 +103,15 @@ void VerifyContainsTestFile(const AudioBus* audio_bus) {
 
   // The first frame should hold the WAV data.
   EXPECT_FLOAT_EQ(static_cast<float>(data[0]) / ((1 << 15) - 1),
-                  audio_bus->channel(0)[0]);
+                  audio_bus->channel_span(0)[0]);
   EXPECT_FLOAT_EQ(static_cast<float>(data[1]) / ((1 << 15) - 1),
-                  audio_bus->channel(1)[0]);
+                  audio_bus->channel_span(1)[0]);
 
   // All other frames should be zero-padded. This applies even when looping, as
   // the looping will restart on the next call to OnMoreData.
-  for (int channel = 0; channel < audio_bus->channels(); ++channel) {
+  for (auto channel : audio_bus->AllChannels()) {
     for (int frame = 1; frame < audio_bus->frames(); ++frame) {
-      EXPECT_FLOAT_EQ(0.0, audio_bus->channel(channel)[frame]);
+      EXPECT_FLOAT_EQ(0.0, channel[frame]);
     }
   }
 }
@@ -147,11 +147,8 @@ TEST(SimpleSources, FileSourceTestDataWithoutLooping) {
   audio_bus->Zero();
   source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                     audio_bus.get());
-  for (int channel = 0; channel < audio_bus->channels(); ++channel) {
-    for (int frame = 0; frame < audio_bus->frames(); ++frame) {
-      EXPECT_FLOAT_EQ(0.0, audio_bus->channel(channel)[frame]);
-    }
-  }
+
+  EXPECT_TRUE(audio_bus->AreFramesZero());
 }
 
 TEST(SimpleSources, FileSourceTestDataWithLooping) {
@@ -202,11 +199,7 @@ TEST(SimpleSources, BadFilePathFails) {
                                  audio_bus.get()));
 
   // Confirm all frames are zero-padded.
-  for (int channel = 0; channel < audio_bus->channels(); ++channel) {
-    for (int frame = 0; frame < audio_bus->frames(); ++frame) {
-      EXPECT_FLOAT_EQ(0.0, audio_bus->channel(channel)[frame]);
-    }
-  }
+  EXPECT_TRUE(audio_bus->AreFramesZero());
 }
 
 TEST(SimpleSources, FileSourceCorruptTestDataFails) {
@@ -238,11 +231,7 @@ TEST(SimpleSources, FileSourceCorruptTestDataFails) {
                                  audio_bus.get()));
 
   // Confirm all frames are zero-padded.
-  for (int channel = 0; channel < audio_bus->channels(); ++channel) {
-    for (int frame = 0; frame < audio_bus->frames(); ++frame) {
-      EXPECT_FLOAT_EQ(0.0, audio_bus->channel(channel)[frame]);
-    }
-  }
+  EXPECT_TRUE(audio_bus->AreFramesZero());
 }
 
 }  // namespace media

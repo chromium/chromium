@@ -96,7 +96,7 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
       file_cursor_position_(0),
       file_inode_(0) {}
 
-SingleLogFileLogSource::~SingleLogFileLogSource() {}
+SingleLogFileLogSource::~SingleLogFileLogSource() = default;
 
 // static
 void SingleLogFileLogSource::SetChromeStartTimeForTesting(

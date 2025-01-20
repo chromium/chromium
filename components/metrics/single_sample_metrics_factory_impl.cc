@@ -26,7 +26,7 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
     DCHECK(thread_checker_.CalledOnValidThread());
   }
 
-  void SetSample(base::HistogramBase::Sample sample) override {
+  void SetSample(base::HistogramBase::Sample32 sample) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     metric_->SetSample(sample);
   }
@@ -50,8 +50,8 @@ SingleSampleMetricsFactoryImpl::~SingleSampleMetricsFactoryImpl() = default;
 std::unique_ptr<base::SingleSampleMetric>
 SingleSampleMetricsFactoryImpl::CreateCustomCountsMetric(
     const std::string& histogram_name,
-    base::HistogramBase::Sample min,
-    base::HistogramBase::Sample max,
+    base::HistogramBase::Sample32 min,
+    base::HistogramBase::Sample32 max,
     uint32_t bucket_count) {
   return CreateMetric(histogram_name, min, max, bucket_count,
                       base::HistogramBase::kUmaTargetedHistogramFlag);
@@ -64,8 +64,8 @@ void SingleSampleMetricsFactoryImpl::DestroyProviderForTesting() {
 
 std::unique_ptr<base::SingleSampleMetric>
 SingleSampleMetricsFactoryImpl::CreateMetric(const std::string& histogram_name,
-                                             base::HistogramBase::Sample min,
-                                             base::HistogramBase::Sample max,
+                                             base::HistogramBase::Sample32 min,
+                                             base::HistogramBase::Sample32 max,
                                              uint32_t bucket_count,
                                              int32_t flags) {
   mojo::PendingRemote<mojom::SingleSampleMetric> metric;

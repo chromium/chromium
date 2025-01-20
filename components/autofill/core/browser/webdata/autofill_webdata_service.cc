@@ -10,8 +10,10 @@
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -117,6 +119,46 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
+                     autofill_backend_),
+      consumer);
+}
+
+void AutofillWebDataService::AddEntityInstance(const EntityInstance& entity) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::AddEntityInstance,
+                                autofill_backend_, entity));
+}
+
+void AutofillWebDataService::UpdateEntityInstance(
+    const EntityInstance& entity) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateEntityInstance,
+                     autofill_backend_, entity));
+}
+
+void AutofillWebDataService::RemoveEntityInstance(const base::Uuid& guid) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::RemoveEntityInstance,
+                     autofill_backend_, guid));
+}
+
+void AutofillWebDataService::RemoveEntityInstancesModifiedBetween(
+    base::Time delete_begin,
+    base::Time delete_end) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AutofillWebDataBackendImpl::RemoveEntityInstancesModifiedBetween,
+          autofill_backend_, delete_begin, delete_end));
+}
+
+WebDataServiceBase::Handle AutofillWebDataService::GetEntityInstances(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetEntityInstances,
                      autofill_backend_),
       consumer);
 }
@@ -322,6 +364,17 @@ WebDataServiceBase::Handle AutofillWebDataService::GetPaymentInstruments(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetPaymentInstruments,
                      autofill_backend_),
+      consumer);
+}
+
+WebDataServiceBase::Handle
+AutofillWebDataService::GetPaymentInstrumentCreationOptions(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &AutofillWebDataBackendImpl::GetPaymentInstrumentCreationOptions,
+          autofill_backend_),
       consumer);
 }
 

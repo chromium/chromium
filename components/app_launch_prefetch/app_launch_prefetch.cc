@@ -4,10 +4,14 @@
 
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
 
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/win/windows_version.h"
+
+namespace app_launch_prefetch {
 
 namespace {
 
@@ -28,48 +32,53 @@ BASE_FEATURE(kExpandedPrefetchRange,
 // otherwise it is treated as 0 by the Windows prefetcher and will interfere
 // with the main process launch.
 
-constexpr base::CommandLine::StringViewType kPrefetchArgument1 = L"/prefetch:1";
-constexpr base::CommandLine::StringViewType kPrefetchArgument2 = L"/prefetch:2";
-constexpr base::CommandLine::StringViewType kPrefetchArgument3 = L"/prefetch:3";
-constexpr base::CommandLine::StringViewType kPrefetchArgument4 = L"/prefetch:4";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument1 = {L"/prefetch:1", 1};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument2 = {L"/prefetch:2", 2};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument3 = {L"/prefetch:3", 3};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument4 = {L"/prefetch:4", 4};
 
 // /prefetch:5, /prefetch:6 and /prefetch:7 are reserved for content embedders
 // and are not to be used by content itself, with caveats: we violate this
 // rule with kBrowserBackground using bucket 5, while the 7th bucket is used by
 // the crashpad fallback handler.
-constexpr base::CommandLine::StringViewType kPrefetchArgument5 = L"/prefetch:5";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument5 = {L"/prefetch:5", 5};
 // constexpr base::CommandLine::StringViewType kPrefetchArgument6 =
 // "/prefetch:6";
-constexpr base::CommandLine::StringViewType kPrefetchArgument7 = L"/prefetch:7";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument7 = {L"/prefetch:7", 7};
 
 // Catch all for Windows versions before Win 11 21H2.
-constexpr base::CommandLine::StringViewType kPrefetchArgument8 = L"/prefetch:8";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument8 = {L"/prefetch:8", 8};
 
 // On Windows 11 21H2 and later the prefetch range was expanded to be [1,16]
 
-constexpr base::CommandLine::StringViewType kPrefetchArgument9 = L"/prefetch:9";
-constexpr base::CommandLine::StringViewType kPrefetchArgument10 =
-    L"/prefetch:10";
-constexpr base::CommandLine::StringViewType kPrefetchArgument11 =
-    L"/prefetch:11";
-constexpr base::CommandLine::StringViewType kPrefetchArgument12 =
-    L"/prefetch:12";
-constexpr base::CommandLine::StringViewType kPrefetchArgument13 =
-    L"/prefetch:13";
-constexpr base::CommandLine::StringViewType kPrefetchArgument14 =
-    L"/prefetch:14";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument9 = {L"/prefetch:9", 9};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument10 = {L"/prefetch:10", 10};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument11 = {L"/prefetch:11", 11};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument12 = {L"/prefetch:12", 12};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument13 = {L"/prefetch:13", 13};
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument14 = {L"/prefetch:14", 14};
 // constexpr base::CommandLine::StringViewType kPrefetchArgument15 =
 // "/prefetch:15";
 
 // Catch all for Windows versions  Win 11 21H2 and later.
-constexpr base::CommandLine::StringViewType kPrefetchArgument16 =
-    L"/prefetch:16";
+constexpr std::tuple<base::CommandLine::StringViewType, int>
+    kPrefetchArgument16 = {L"/prefetch:16", 16};
 
-}  // namespace
-
-namespace app_launch_prefetch {
-
-base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
+const std::tuple<base::CommandLine::StringViewType, int>& GetPrefetchInfo(
+    SubprocessType type) {
   using enum SubprocessType;
   if (base::win::GetVersion() >= base::win::Version::WIN11 &&
       base::FeatureList::GetInstance() &&
@@ -138,8 +147,6 @@ base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
         return kPrefetchArgument5;
       case kCrashpadFallback:
         return kPrefetchArgument7;
-      case kCatchAll:
-        return kPrefetchArgument8;
       case kGPUInfo:
         return kPrefetchArgument8;
       case kUtilityAudio:
@@ -148,8 +155,20 @@ base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
         return kPrefetchArgument8;
       case kUtilityOther:
         return kPrefetchArgument8;
+      case kCatchAll:
+        return kPrefetchArgument8;
     }
   }
+}
+
+}  // namespace
+
+base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
+  return std::get<0>(GetPrefetchInfo(type));
+}
+
+uint32_t GetPrefetchBucket(SubprocessType type) {
+  return std::get<1>(GetPrefetchInfo(type));
 }
 
 }  // namespace app_launch_prefetch

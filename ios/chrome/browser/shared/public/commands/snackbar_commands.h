@@ -41,6 +41,9 @@
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction;
 
+// Dismisses all presented snackbars.
+- (void)dismissAllSnackbars;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SNACKBAR_COMMANDS_H_

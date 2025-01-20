@@ -28,7 +28,7 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
       delete;
 
-  ~ShapedAppWindowTargeterTest() override {}
+  ~ShapedAppWindowTargeterTest() override = default;
 
   views::Widget* widget() { return widget_.get(); }
 

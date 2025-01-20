@@ -36,10 +36,6 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
 class ClipboardProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
@@ -265,6 +261,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     return history_url_provider_;
   }
   KeywordProvider* keyword_provider() const { return keyword_provider_; }
+  UnscopedExtensionProvider* unscoped_extension_provider() const {
+    return unscoped_extension_provider_;
+  }
   SearchProvider* search_provider() const { return search_provider_; }
   ClipboardProvider* clipboard_provider() const { return clipboard_provider_; }
   VoiceSuggestProvider* voice_suggest_provider() const {
@@ -289,8 +288,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Returns whether the given provider should be ran based on whether we're in
   // keyword mode and which keyword we're searching. Currently runs all enabled
-  // providers unless in a Starter Pack scope, except for OpenTabProvider which
-  // only runs on Lacros and the @tabs scope.
+  // providers unless in a Starter Pack scope, except for the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
   const base::TimeTicks& last_time_default_match_changed() const {
@@ -518,6 +516,8 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   raw_ptr<KeywordProvider> keyword_provider_;
 
+  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_;
+
   raw_ptr<SearchProvider> search_provider_;
 
   raw_ptr<ZeroSuggestProvider> zero_suggest_provider_;
@@ -532,9 +532,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   raw_ptr<FeaturedSearchProvider> featured_search_provider_;
-#endif
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these

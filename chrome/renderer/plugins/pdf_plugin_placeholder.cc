@@ -29,7 +29,7 @@ PDFPluginPlaceholder::PDFPluginPlaceholder(content::RenderFrame* render_frame,
                                            const blink::WebPluginParams& params)
     : plugins::PluginPlaceholderBase(render_frame, params) {}
 
-PDFPluginPlaceholder::~PDFPluginPlaceholder() {}
+PDFPluginPlaceholder::~PDFPluginPlaceholder() = default;
 
 v8::Local<v8::Value> PDFPluginPlaceholder::GetV8Handle(v8::Isolate* isolate) {
   return gin::CreateHandle(isolate, this).ToV8();

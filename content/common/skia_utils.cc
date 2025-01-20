@@ -24,11 +24,6 @@ namespace {
 // allocation that exceeds this limit.
 const size_t kImageCacheSingleAllocationByteLimit = 64 * 1024 * 1024;
 
-// Decreases the size of the font cache to 1MiB.
-BASE_FEATURE(kSmallerFontCache,
-             "SmallerFontCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 void InitializeSkia() {
@@ -40,12 +35,13 @@ void InitializeSkia() {
   }
 
   const int kMB = 1024 * 1024;
+
+  // Could also reduce the maximum number of cached strikes, but the intent
+  // being to reduce memory usage, only control cache memory usage.
+  SkGraphics::SetFontCacheLimit(kMB);
+
+#if !BUILDFLAG(IS_ANDROID)
   size_t font_cache_limit;
-#if BUILDFLAG(IS_ANDROID)
-  font_cache_limit =
-      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() ? kMB : 8 * kMB;
-  SkGraphics::SetFontCacheLimit(font_cache_limit);
-#else
   if (cmd.HasSwitch(switches::kSkiaFontCacheLimitMb)) {
     if (base::StringToSizeT(
             cmd.GetSwitchValueASCII(switches::kSkiaFontCacheLimitMb),
@@ -63,12 +59,6 @@ void InitializeSkia() {
     }
   }
 #endif
-
-  if (base::FeatureList::IsEnabled(kSmallerFontCache)) {
-    // Could also reduce the maximum number of cached strikes, but the intent
-    // being to reduce memory usage, only control cache memory usage.
-    SkGraphics::SetFontCacheLimit(kMB);
-  }
 
   InitSkiaEventTracer();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

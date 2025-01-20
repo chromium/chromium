@@ -27,7 +27,7 @@ constexpr double kFadeDistanceSquared = 20.0f * 20.0f;
 constexpr float kMinTouchMajorForHitTesting = 1.0f;
 
 // The maximum touch size to use when computing whether a touch point is
-// targetting a touch handle. This is necessary for devices that misreport
+// targeting a touch handle. This is necessary for devices that misreport
 // touch radii, preventing inappropriately largely touch sizes from completely
 // breaking handle dragging behavior.
 constexpr float kMaxTouchMajorForHitTesting = 36.0f;
@@ -181,7 +181,7 @@ bool TouchHandle::WillHandleTouchEvent(const MotionEvent& event) {
                      kMaxTouchMajorForHitTesting) *
           0.5f;
       const gfx::RectF drawable_bounds = drawable_->GetVisibleBounds();
-      // Only use the touch radius for targetting if the touch is at or below
+      // Only use the touch radius for targeting if the touch is at or below
       // the drawable area. This makes it easier to interact with the line of
       // text above the drawable.
       if (touch_point.y() < drawable_bounds.y() ||
@@ -312,6 +312,13 @@ void TouchHandle::UpdateHandleLayout() {
 void TouchHandle::SetTransparent() {
   SetAlpha(0.f);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void TouchHandle::OnUpdateNativeViewTree(gfx::NativeView parent_native_view,
+                                         cc::slim::Layer* parent_layer) {
+  drawable_->OnUpdateNativeViewTree(parent_native_view, parent_layer);
+}
+#endif
 
 gfx::PointF TouchHandle::ComputeHandleOrigin() const {
   gfx::PointF focus = mirror_vertical_ ? focus_top_ : focus_bottom_;

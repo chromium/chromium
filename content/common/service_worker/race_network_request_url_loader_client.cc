@@ -29,6 +29,21 @@ const char kMainResourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
 const char kSubresourceHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.Subresource";
+const char kMainResourceHistogramForRaceNetworkFetchEvent[] =
+    "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest";
+const char kSubresourceHistogramForRaceNetworkFetchEvent[] =
+    "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest";
+
+void RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+    bool is_main_resource,
+    bool is_cloning_data_finished_before_response_complete) {
+  base::UmaHistogramBoolean(
+      base::StrCat({is_main_resource
+                        ? kMainResourceHistogramForRaceNetworkFetchEvent
+                        : kSubresourceHistogramForRaceNetworkFetchEvent,
+                    ".IsCloningDataFinishedBeforeResponseComplete"}),
+      is_cloning_data_finished_before_response_complete);
+}
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -114,6 +129,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       head_ = std::move(head);
       head_->load_timing.request_start = request_start_;
       head_->load_timing.request_start_time = request_start_time_;
+      head_->load_timing.receive_headers_start = base::TimeTicks::Now();
+      head_->load_timing.receive_headers_end =
+          head_->load_timing.receive_headers_start;
       cached_metadata_ = std::move(cached_metadata);
       if (base::FeatureList::IsEnabled(
               features::
@@ -203,15 +221,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
       "state", state_);
-  if (owner_->IsMainResourceLoader()) {
-    base::UmaHistogramBoolean(
-        "ServiceWorker.FetchEvent.MainResource.RaceNetworkRequest.Redirect",
-        redirected_);
-  } else {
-    base::UmaHistogramBoolean(
-        "ServiceWorker.FetchEvent.Subresource.RaceNetworkRequest.Redirect",
-        redirected_);
-  }
+  base::UmaHistogramBoolean(
+      base::StrCat({owner_->IsMainResourceLoader()
+                        ? kMainResourceHistogramForRaceNetworkFetchEvent
+                        : kSubresourceHistogramForRaceNetworkFetchEvent,
+                    ".Redirect"}),
+      redirected_);
 
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
@@ -367,6 +382,20 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
         read_buffer_manager_->IsWatching()) {
       read_buffer_manager_->CancelWatching();
     }
+  } else if (clone_response_for_fetch_handler_completed_) {
+    // In some scenario, there is a case that data clonings for both network and
+    // fetch handler were finished, but still waiting for `OnComplete()` from
+    // the original resource loading. We need to call `OnComplete()` to complete
+    // the fetch handler if it's not called yet. crbug.com/384414080 for more
+    // contexts.
+    //
+    // Note: This is needed only when the
+    // ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement feature
+    // is enabled.
+    forwarding_client_->OnComplete(completion_status_.value());
+    RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+        is_main_resource_,
+        /*is_cloning_data_finished_before_response_complete=*/true);
   }
 }
 
@@ -430,7 +459,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "url", request_.url, "read_data_result", read_result);
-  RecordMojoResultForDataTransfer(read_result, "Read");
   switch (read_result) {
     case MOJO_RESULT_OK:
       write_buffer_manager_for_race_network_request_.ArmOrNotify();
@@ -467,7 +495,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If both data pipes are watched, write data to both pipes. Cancel writing
     // process if one of them is failed.
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -484,7 +511,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
         return;
     }
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -526,7 +552,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -546,7 +571,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -575,17 +599,11 @@ bool ServiceWorkerRaceNetworkRequestURLLoaderClient::IsReadyToHandleReadWrite(
     return false;
   }
 
-  RecordMojoResultForDataTransfer(result, "Initial");
   if (result != MOJO_RESULT_OK) {
     return false;
   }
 
   return true;
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordMojoResultForWrite(
-    MojoResult result) {
-  RecordMojoResultForDataTransfer(result, "WriteForRaceNetworkRequset");
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
@@ -644,16 +662,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
       fetch_handler_end_time_.value() - response_received_time_.value());
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    RecordMojoResultForDataTransfer(MojoResult result,
-                                    const std::string& suffix) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"ServiceWorker.FetchEvent",
-                    is_main_resource_ ? ".MainResource" : ".Subresource",
-                    ".RaceNetworkRequest.DataTransfer.", suffix}),
-      ConvertMojoResultForUMA(result));
-}
-
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CloneResponse() {
   simple_buffer_manager_->Clone(
       write_buffer_manager_for_race_network_request_.ReleaseProducerHandle(),
@@ -688,13 +696,22 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted() {
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     OnCloneCompletedForFetchHandler() {
-  CHECK(completion_status_.has_value());
-  forwarding_client_->OnComplete(completion_status_.value());
-  write_buffer_manager_for_fetch_handler_.ResetProducer();
+  clone_response_for_fetch_handler_completed_ = true;
+  if (completion_status_.has_value()) {
+    // If `completion_status_` already exists, which means the resource load was
+    // already completed. Then the resource load for fetch handler should be
+    // completed as well.
+    forwarding_client_->OnComplete(completion_status_.value());
+    write_buffer_manager_for_fetch_handler_.ResetProducer();
+    RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
+        is_main_resource_,
+        /*is_cloning_data_finished_before_response_complete=*/false);
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     State new_state) {
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "current_state", static_cast<int>(state_));
   switch (new_state) {
     case State::kWaitForBody:
       NOTREACHED();

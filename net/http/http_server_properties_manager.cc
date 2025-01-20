@@ -592,7 +592,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
         advertised_versions.push_back(version);
       }
     }
-    alternative_service_info->set_advertised_versions(advertised_versions);
+    alternative_service_info->SetAdvertisedVersions(advertised_versions);
   }
 
   return true;

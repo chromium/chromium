@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
 #include <algorithm>
@@ -23,7 +18,6 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_search_resources.h"
 #include "chrome/grit/tab_search_resources_map.h"
@@ -38,6 +32,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 TabSearchUIConfig::TabSearchUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -95,6 +90,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       // Auto tab groups UI strings
+      {"a11yTabExcludedFromGroup", IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED},
       {"clearAriaLabel", IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL},
       {"clearSuggestions", IDS_TAB_ORGANIZATION_CLEAR_SUGGESTIONS},
       {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
@@ -138,7 +134,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"rejectAriaLabel", IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL},
       {"successMissingActiveTabTitle",
        IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE},
-      {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"successTitleSingle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE},
       {"successTitleMulti", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_MULTI},
       {"tabOrganizationCloseTabAriaLabel",
@@ -153,13 +148,22 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
+      {"a11yTabExcludedFromList", IDS_DECLUTTER_A11Y_TAB_EXCLUDED},
       {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
       {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
       {"declutterCloseTabTooltip", IDS_DECLUTTER_CLOSE_TAB_TOOLTIP},
+      {"declutterDuplicateBody", IDS_DECLUTTER_DUPLICATE_BODY},
+      {"declutterDuplicateTitle", IDS_DECLUTTER_DUPLICATE_TITLE},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
+      {"declutterEmptyBodyNoDedupe", IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
+      {"declutterInactiveTitle", IDS_DECLUTTER_INACTIVE_TITLE},
+      {"declutterInactiveTitleNoDedupe",
+       IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
       {"declutterTitle", IDS_DECLUTTER_TITLE},
+      {"duplicateItemTitleMulti", IDS_DUPLICATE_ITEM_TITLE_MULTI},
+      {"duplicateItemTitleSingle", IDS_DUPLICATE_ITEM_TITLE_SINGLE},
       // Selector UI strings
       {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
       {"autoTabGroupsSelectorSubheading",
@@ -173,9 +177,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("close", IDS_CLOSE);
 
-  source->AddInteger(
-      "recentlyClosedDefaultItemDisplayCount",
-      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+  source->AddInteger("recentlyClosedDefaultItemDisplayCount",
+                     TabSearchPageHandler::kMinRecentlyClosedItemDisplayCount);
 
   bool tab_organization_enabled = false;
   if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
@@ -187,14 +190,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   }
   source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
   source->AddBoolean(
-      "multiTabOrganizationEnabled",
-      base::FeatureList::IsEnabled(features::kMultiTabOrganization));
-  source->AddBoolean(
-      "tabReorganizationDividerEnabled",
-      base::FeatureList::IsEnabled(features::kTabReorganizationDivider));
-  source->AddBoolean(
       "tabOrganizationModelStrategyEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
+  source->AddBoolean(
+      "TabOrganizationUserInstructionEnabled",
+      base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction));
 
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
   source->AddBoolean(
@@ -209,18 +209,21 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   // TODO(b/362269642): Once the stale threshold duration is Finch-
   // configurable, replace the hardcoded 7 below with the value of that
   // parameter.
-  source->AddString("declutterBody",
-                    l10n_util::GetStringFUTF16(IDS_DECLUTTER_BODY, u"7"));
+  source->AddString(
+      "declutterInactiveBody",
+      l10n_util::GetStringFUTF16(IDS_DECLUTTER_INACTIVE_BODY, u"7"));
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-      IDR_TAB_SEARCH_TAB_SEARCH_HTML);
+  webui::SetupWebUIDataSource(source, kTabSearchResources,
+                              IDR_TAB_SEARCH_TAB_SEARCH_HTML);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "declutterSelectorHeadingNoDedupe",
+      IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE);
   plural_string_handler->AddLocalizedString("declutterSelectorHeading",
                                             IDS_DECLUTTER_SELECTOR_HEADING);
   web_ui->AddMessageHandler(std::move(plural_string_handler));

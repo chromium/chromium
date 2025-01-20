@@ -8,7 +8,6 @@
  * set a shortcut for remapping key events to F11/F12.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import './input_device_settings_shared.css.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';

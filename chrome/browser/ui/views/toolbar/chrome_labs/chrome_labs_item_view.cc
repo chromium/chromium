@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
+
+#include <array>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -91,7 +88,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
         description_translation_id = IDS_CHROMELABS_DISABLED;
       }
     } else {
-      const int kEnableDisableDescriptions[] = {
+      static constexpr std::array kEnableDisableDescriptions{
           IDS_CHROMELABS_DEFAULT,
           IDS_CHROMELABS_ENABLED,
           IDS_CHROMELABS_DISABLED,
@@ -159,24 +156,26 @@ ChromeLabsItemView::ChromeLabsItemView(
   experiment_name_->GetViewAccessibility().SetIsIgnored(true);
   experiment_description->GetViewAccessibility().SetIsIgnored(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  if (!lab.visible_name.empty())
+  if (!lab.visible_name.empty()) {
     GetViewAccessibility().SetName(lab.visible_name,
                                    ax::mojom::NameFrom::kAttribute);
+  }
 
-    // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
-    // does not announce the accessible description for groups
-    // (crbug.com/1197159). The MacOS specific code here provides a temporary
-    // mitigation for screen reader users and moves announcing the description
-    // to when the user interacts with the combobox of that experiment. Don’t
-    // add an accessible description for now to prevent the screen reader from
-    // announcing the description twice in the time between when the VoiceOver
-    // bug is fixed and this code gets removed.
-    // TODO(elainechien): Remove MacOS specific code for experiment description
-    // when VoiceOver bug is fixed.
+  // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
+  // does not announce the accessible description for groups
+  // (crbug.com/1197159). The MacOS specific code here provides a temporary
+  // mitigation for screen reader users and moves announcing the description
+  // to when the user interacts with the combobox of that experiment. Don’t
+  // add an accessible description for now to prevent the screen reader from
+  // announcing the description twice in the time between when the VoiceOver
+  // bug is fixed and this code gets removed.
+  // TODO(elainechien): Remove MacOS specific code for experiment description
+  // when VoiceOver bug is fixed.
 
 #if !BUILDFLAG(IS_MAC)
-  if (!lab.visible_description.empty())
+  if (!lab.visible_description.empty()) {
     GetViewAccessibility().SetDescription(lab.visible_description);
+  }
 #endif
 
   AddChildView(

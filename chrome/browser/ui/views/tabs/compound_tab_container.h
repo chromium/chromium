@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMPOUND_TAB_CONTAINER_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_container_controller.h"
@@ -61,8 +62,8 @@ class CompoundTabContainer : public TabContainer,
                       bool is_collapsing,
                       ToggleTabGroupCollapsedStateOrigin origin) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
-  void NotifyTabGroupEditorBubbleOpened() override;
-  void NotifyTabGroupEditorBubbleClosed() override;
+  void NotifyTabstripBubbleOpened() override;
+  void NotifyTabstripBubbleClosed() override;
   std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const override;
   Tab* GetTabAtModelIndex(int index) const override;

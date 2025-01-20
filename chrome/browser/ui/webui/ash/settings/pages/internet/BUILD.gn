@@ -26,7 +26,6 @@ static_library("internet") {
 
   deps = [
     "//ash/components/arc/mojom",
-    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/network_ui:network_health_resource_provider",
@@ -40,13 +39,13 @@ static_library("internet") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc/session",
     "//chromeos/strings",
     "//components/onc",
     "//components/prefs",
@@ -58,6 +57,7 @@ static_library("internet") {
     "//ui/chromeos/strings",
     "//ui/chromeos/strings:strings_provider",
     "//ui/events:event_constants",
+    "//ui/webui",
   ]
 }
 

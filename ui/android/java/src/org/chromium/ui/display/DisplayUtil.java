@@ -4,6 +4,8 @@
 
 package org.chromium.ui.display;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Insets;
@@ -16,12 +18,14 @@ import android.util.TypedValue;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
  * DisplayAndroid class.
  */
+@NullMarked
 public abstract class DisplayUtil {
     private static @Nullable Float sUiScalingFactorForAutomotiveOverride;
 
@@ -41,7 +45,7 @@ public abstract class DisplayUtil {
      */
     @Deprecated
     public static float getUiScalingFactorForAutomotive() {
-        return sUiScalingFactorForAutomotiveOverride;
+        return assumeNonNull(sUiScalingFactorForAutomotiveOverride);
     }
 
     public static int getUiDensityForAutomotive(Context context, int baseDensity) {

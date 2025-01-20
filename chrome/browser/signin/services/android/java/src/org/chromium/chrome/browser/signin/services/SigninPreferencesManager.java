@@ -23,19 +23,22 @@ public class SigninPreferencesManager {
     private final SharedPreferencesManager mManager;
 
     /** Suffix strings for promo shown count preference and histograms. */
+    // LINT.IfChange(SigninPromoAccessPointId)
     @StringDef({
-        SyncPromoAccessPointId.BOOKMARKS,
-        SyncPromoAccessPointId.NTP,
-        SyncPromoAccessPointId.RECENT_TABS,
-        SyncPromoAccessPointId.SETTINGS
+        SigninPromoAccessPointId.BOOKMARKS,
+        SigninPromoAccessPointId.NTP,
+        SigninPromoAccessPointId.RECENT_TABS,
+        SigninPromoAccessPointId.SETTINGS
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SyncPromoAccessPointId {
+    public @interface SigninPromoAccessPointId {
         String BOOKMARKS = "Bookmarks";
         String NTP = "Ntp";
         String RECENT_TABS = "RecentTabs"; // Only used for histograms
         String SETTINGS = "Settings";
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:SigninPromoAccessPoint)
 
     private SigninPreferencesManager() {
         mManager = ChromeSharedPreferences.getInstance();

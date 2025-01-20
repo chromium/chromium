@@ -17,12 +17,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -38,8 +36,7 @@ using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 
-class NetworkIconTest : public AshTestBase,
-                        public testing::WithParamInterface<bool> {
+class NetworkIconTest : public AshTestBase {
  public:
   NetworkIconTest() = default;
 
@@ -49,18 +46,6 @@ class NetworkIconTest : public AshTestBase,
   ~NetworkIconTest() override = default;
 
   void SetUp() override {
-    if (IsJellyrollEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kJellyroll,
-                                chromeos::features::kJelly},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{chromeos::features::kJellyroll,
-                                 chromeos::features::kJelly});
-    }
-
     AshTestBase::SetUp();
     SetUpDefaultNetworkState();
     network_state_model_ = std::make_unique<TrayNetworkStateModel>();
@@ -80,8 +65,6 @@ class NetworkIconTest : public AshTestBase,
                Shell::GetPrimaryRootWindow())
         ->GetColorProvider();
   }
-
-  bool IsJellyrollEnabled() const { return GetParam(); }
 
   std::string ConfigureService(const std::string& shill_json_string) {
     return helper().ConfigureService(shill_json_string);
@@ -182,7 +165,6 @@ class NetworkIconTest : public AshTestBase,
   IconType icon_type_ = ICON_TYPE_TRAY_REGULAR;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
@@ -193,15 +175,13 @@ class NetworkIconTest : public AshTestBase,
   std::string cellular_path_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Jellyroll, NetworkIconTest, testing::Bool());
-
 // This tests that the correct icons are being generated for the correct
 // networks by pairwise comparison of three different network types, verifying
 // that the Tether and cellular icon are the same, Tether and Wi-Fi icons are
 // different, and cellular and Wi-Fi icons are different. Additionally, it
 // verifies that the Tether network and Wi-Fi network with associated Tether
 // guid are treated the same for purposes of icon display
-TEST_P(NetworkIconTest, CompareImagesByNetworkType_NotVisible) {
+TEST_F(NetworkIconTest, CompareImagesByNetworkType_NotVisible) {
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       "wifi", NetworkType::kWiFi, ConnectionStateType::kNotConnected, 50);
 
@@ -216,7 +196,7 @@ TEST_P(NetworkIconTest, CompareImagesByNetworkType_NotVisible) {
                                    tether_network.get());
 }
 
-TEST_P(NetworkIconTest, CompareImagesByNetworkType_Connecting) {
+TEST_F(NetworkIconTest, CompareImagesByNetworkType_Connecting) {
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       "wifi", NetworkType::kWiFi, ConnectionStateType::kConnecting, 50);
 
@@ -231,7 +211,7 @@ TEST_P(NetworkIconTest, CompareImagesByNetworkType_Connecting) {
                                    tether_network.get());
 }
 
-TEST_P(NetworkIconTest, CompareImagesByNetworkType_Connected) {
+TEST_F(NetworkIconTest, CompareImagesByNetworkType_Connected) {
   NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
       "wifi", NetworkType::kWiFi, ConnectionStateType::kOnline, 50);
 
@@ -246,7 +226,7 @@ TEST_P(NetworkIconTest, CompareImagesByNetworkType_Connected) {
                                    tether_network.get());
 }
 
-TEST_P(NetworkIconTest, NetworkSignalStrength) {
+TEST_F(NetworkIconTest, NetworkSignalStrength) {
   // Signal strength is divided into four categories: none, weak, medium and
   // strong. They are meant to match the number of sections in the wifi icon.
   // The wifi icon currently has four levels; signals [0, 100] are mapped to [1,
@@ -260,7 +240,7 @@ TEST_P(NetworkIconTest, NetworkSignalStrength) {
   EXPECT_EQ(SignalStrength::STRONG, GetSignalStrength(100));
 }
 
-TEST_P(NetworkIconTest, DefaultImageWifiConnected) {
+TEST_F(NetworkIconTest, DefaultImageWifiConnected) {
   // Set the Wifi service as connected.
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -279,7 +259,7 @@ TEST_P(NetworkIconTest, DefaultImageWifiConnected) {
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
 }
 
-TEST_P(NetworkIconTest, DefaultImageWifiConnecting) {
+TEST_F(NetworkIconTest, DefaultImageWifiConnecting) {
   // Set the Wifi service as connected.
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -298,7 +278,7 @@ TEST_P(NetworkIconTest, DefaultImageWifiConnecting) {
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
 }
 
-TEST_P(NetworkIconTest, ConnectingIconChangesInDarkMode) {
+TEST_F(NetworkIconTest, ConnectingIconChangesInDarkMode) {
   SetServiceProperty(wifi1_path(), shill::kStateProperty,
                      base::Value(shill::kStateAssociation));
 
@@ -325,7 +305,7 @@ TEST_P(NetworkIconTest, ConnectingIconChangesInDarkMode) {
 // connected, but that is not always the case. For example, if the connected
 // wifi service has no Internet connectivity, cellular service will be selected
 // as default.
-TEST_P(NetworkIconTest, DefaultImageCellularDefaultWithWifiConnected) {
+TEST_F(NetworkIconTest, DefaultImageCellularDefaultWithWifiConnected) {
   // Set both wifi and cellular networks in a connected state, but with wifi not
   // online - this should prompt fake shill manager implementation to prefer
   // cellular network over wifi.
@@ -354,7 +334,7 @@ TEST_P(NetworkIconTest, DefaultImageCellularDefaultWithWifiConnected) {
 
 // Tests the use case where the default network starts reconnecting while
 // another network is connected.
-TEST_P(NetworkIconTest, DefaultImageReconnectingWifiWithCellularConnected) {
+TEST_F(NetworkIconTest, DefaultImageReconnectingWifiWithCellularConnected) {
   // First connect both wifi and cellular network (with wifi as default).
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -420,7 +400,7 @@ TEST_P(NetworkIconTest, DefaultImageReconnectingWifiWithCellularConnected) {
       gfx::Image(default_image), ImageForNetwork(reference_network_3.get())));
 }
 
-TEST_P(NetworkIconTest, DefaultImageDisconnectWifiWithCellularConnected) {
+TEST_F(NetworkIconTest, DefaultImageDisconnectWifiWithCellularConnected) {
   // First connect both wifi and cellular network (with wifi as default).
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -450,7 +430,7 @@ TEST_P(NetworkIconTest, DefaultImageDisconnectWifiWithCellularConnected) {
 
 // Tests that the default network image remains the same if non-default network
 // reconnects.
-TEST_P(NetworkIconTest, DefaultImageWhileNonDefaultNetworkReconnecting) {
+TEST_F(NetworkIconTest, DefaultImageWhileNonDefaultNetworkReconnecting) {
   // First connect both wifi and cellular network (with wifi as default).
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -509,7 +489,7 @@ TEST_P(NetworkIconTest, DefaultImageWhileNonDefaultNetworkReconnecting) {
 
 // Tests that the default network image shows a cellular network icon if
 // cellular network is connected while wifi is connecting.
-TEST_P(NetworkIconTest, DefaultImageConnectingToWifiWhileCellularConnected) {
+TEST_F(NetworkIconTest, DefaultImageConnectingToWifiWhileCellularConnected) {
   // Connect cellular network, and set the wifi as connecting.
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -535,7 +515,7 @@ TEST_P(NetworkIconTest, DefaultImageConnectingToWifiWhileCellularConnected) {
 
 // Test that a connecting cellular icon is displayed when activating a cellular
 // network (if other networks are not connected).
-TEST_P(NetworkIconTest, DefaultNetworkImageActivatingCellularNetwork) {
+TEST_F(NetworkIconTest, DefaultNetworkImageActivatingCellularNetwork) {
   SetServiceProperty(cellular_path(), shill::kSignalStrengthProperty,
                      base::Value(65));
   SetServiceProperty(cellular_path(), shill::kActivationStateProperty,
@@ -555,7 +535,7 @@ TEST_P(NetworkIconTest, DefaultNetworkImageActivatingCellularNetwork) {
 
 // Tests that default network image is a wifi network image if wifi network is
 // connected during cellular network activation.
-TEST_P(NetworkIconTest,
+TEST_F(NetworkIconTest,
        DefaultNetworkImageActivatingCellularNetworkWithConnectedWifi) {
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -580,7 +560,7 @@ TEST_P(NetworkIconTest,
 }
 
 // Tests VPN badging for the default network.
-TEST_P(NetworkIconTest, DefaultNetworkVpnBadge) {
+TEST_F(NetworkIconTest, DefaultNetworkVpnBadge) {
   // Set up initial state with Ethernet and WiFi connected.
   std::string ethernet_path = ConfigureService(
       R"({"GUID": "ethernet_guid", "Type": "ethernet", "State": "online"})");
@@ -646,7 +626,7 @@ TEST_P(NetworkIconTest, DefaultNetworkVpnBadge) {
 }
 
 // Tests that wifi image is shown when connecting to wifi network with vpn.
-TEST_P(NetworkIconTest, DefaultNetworkImageVpnAndWifi) {
+TEST_F(NetworkIconTest, DefaultNetworkImageVpnAndWifi) {
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(65));
   SetServiceProperty(wifi1_path(), shill::kStateProperty,
@@ -670,7 +650,7 @@ TEST_P(NetworkIconTest, DefaultNetworkImageVpnAndWifi) {
 
 // Tests that cellular image is shown when connecting to cellular network with
 // VPN.
-TEST_P(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
+TEST_F(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
   SetServiceProperty(cellular_path(), shill::kSignalStrengthProperty,
                      base::Value(65));
   SetServiceProperty(cellular_path(), shill::kStateProperty,
@@ -694,7 +674,7 @@ TEST_P(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
 
 // Tests the case of getting the WiFi Enabled state icon when there is
 // no color provider, in which case the window background color is used.
-TEST_P(NetworkIconTest, GetImageModelForWiFiEnabledState) {
+TEST_F(NetworkIconTest, GetImageModelForWiFiEnabledState) {
   views::ImageView* image_view =
       new views::ImageView(GetImageModelForWiFiEnabledState(true));
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();

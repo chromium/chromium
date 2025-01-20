@@ -6,5 +6,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/tips_manager/model",
-  "+ios/chrome/browser/ui/settings/password",
+  "+ios/chrome/browser/settings/ui_bundled/password",
 ]

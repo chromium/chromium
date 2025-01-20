@@ -29,10 +29,12 @@
 
 namespace media {
 
+using AlignedFloatArray = base::AlignedHeapArray<float>;
+
 static const int kChannels = 6;
 static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_5_1;
 // Use a buffer size which is intentionally not a multiple of kChannelAlignment.
-static const int kFrameCount = media::AudioBus::kChannelAlignment * 32 - 1;
+static const size_t kFrameCount = media::AudioBus::kChannelAlignment * 32 - 1;
 static const int kSampleRate = 48000;
 
 class AudioBusTest : public testing::Test {
@@ -42,19 +44,17 @@ class AudioBusTest : public testing::Test {
   AudioBusTest(const AudioBusTest&) = delete;
   AudioBusTest& operator=(const AudioBusTest&) = delete;
 
-  ~AudioBusTest() override {
-    for (size_t i = 0; i < data_.size(); ++i)
-      base::AlignedFree(data_[i]);
-  }
+  ~AudioBusTest() override = default;
 
   void VerifyChannelAndFrameCount(AudioBus* bus) {
     EXPECT_EQ(kChannels, bus->channels());
-    EXPECT_EQ(kFrameCount, bus->frames());
+    EXPECT_EQ(static_cast<int>(kFrameCount), bus->frames());
   }
 
-  void VerifyArrayIsFilledWithValue(const float data[], int size, float value) {
-    for (int i = 0; i < size; ++i)
+  void VerifySpanIsFilledWithValue(AudioBus::ConstChannel data, float value) {
+    for (size_t i = 0; i < data.size(); ++i) {
       ASSERT_FLOAT_EQ(value, data[i]) << "i=" << i;
+    }
   }
 
   // Verify values for each channel in |result| are within |epsilon| of
@@ -67,11 +67,8 @@ class AudioBusTest : public testing::Test {
     ASSERT_EQ(expected->is_bitstream_format(), result->is_bitstream_format());
 
     if (expected->is_bitstream_format()) {
-      ASSERT_EQ(expected->GetBitstreamDataSize(),
-                result->GetBitstreamDataSize());
       ASSERT_EQ(expected->GetBitstreamFrames(), result->GetBitstreamFrames());
-      ASSERT_EQ(0, memcmp(expected->channel(0), result->channel(0),
-                          result->GetBitstreamDataSize()));
+      ASSERT_EQ(expected->bitstream_data(), result->bitstream_data());
       return;
     }
 
@@ -80,10 +77,11 @@ class AudioBusTest : public testing::Test {
         SCOPED_TRACE(base::StringPrintf("ch=%d, i=%d", ch, i));
 
         if (epsilon == 0) {
-          ASSERT_FLOAT_EQ(expected->channel(ch)[i], result->channel(ch)[i]);
+          ASSERT_FLOAT_EQ(expected->channel_span(ch)[i],
+                          result->channel_span(ch)[i]);
         } else {
-          ASSERT_NEAR(expected->channel(ch)[i], result->channel(ch)[i],
-                      epsilon);
+          ASSERT_NEAR(expected->channel_span(ch)[i],
+                      result->channel_span(ch)[i], epsilon);
         }
       }
     }
@@ -98,29 +96,38 @@ class AudioBusTest : public testing::Test {
   // the Zero() method and verify it does as advertised.  Also test data if data
   // is 16-byte aligned as advertised (see kChannelAlignment in audio_bus.h).
   void VerifyReadWriteAndAlignment(AudioBus* bus) {
-    for (int i = 0; i < bus->channels(); ++i) {
+    int channel_count = 0;
+    for (auto channel : bus->AllChannels()) {
       // Verify that the address returned by channel(i) is a multiple of
       // AudioBus::kChannelAlignment.
-      ASSERT_EQ(0U, reinterpret_cast<uintptr_t>(
-          bus->channel(i)) & (AudioBus::kChannelAlignment - 1));
-
+      ASSERT_TRUE(AudioBus::IsAligned(channel));
       // Write into the channel buffer.
-      std::fill(bus->channel(i), bus->channel(i) + bus->frames(), i);
+      std::ranges::fill(channel, channel_count++);
     }
 
-    for (int i = 0; i < bus->channels(); ++i)
-      VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), i);
+    for (int i = 0; i < bus->channels(); ++i) {
+      VerifySpanIsFilledWithValue(bus->channel_span(i), i);
+    }
 
     bus->Zero();
-    for (int i = 0; i < bus->channels(); ++i)
-      VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), 0);
+    for (int i = 0; i < bus->channels(); ++i) {
+      VerifySpanIsFilledWithValue(bus->channel_span(i), 0);
+    }
   }
 
   // Verify copying to and from |bus1| and |bus2|.
   void CopyTest(AudioBus* bus1, AudioBus* bus2) {
     // Fill |bus1| with dummy data.
-    for (int i = 0; i < bus1->channels(); ++i)
-      std::fill(bus1->channel(i), bus1->channel(i) + bus1->frames(), i);
+    if (bus1->is_bitstream_format()) {
+      uint8_t filler = 1;
+      std::ranges::generate(bus1->bitstream_data(),
+                            [filler]() mutable { return filler++; });
+    } else {
+      int filler = 1;
+      for (auto channel : bus1->AllChannels()) {
+        std::ranges::fill(channel, filler);
+      }
+    }
 
     // Verify copy from |bus1| to |bus2|.
     bus2->Zero();
@@ -134,7 +141,25 @@ class AudioBusTest : public testing::Test {
   }
 
  protected:
-  std::vector<float*> data_;
+  void AllocateDataPerChannel() {
+    data_.reserve(kChannels);
+    for (int i = 0; i < kChannels; ++i) {
+      data_.push_back(
+          base::AlignedUninit<float>(kFrameCount, AudioBus::kChannelAlignment));
+    }
+  }
+
+  // TODO(crbug.com/373960632): remove this when all ctors take spans.
+  std::vector<float*> GetRawPointers(std::vector<AlignedFloatArray>& data) {
+    std::vector<float*> result;
+    result.reserve(data_.size());
+    for (AlignedFloatArray& array : data) {
+      result.push_back(array.as_span().data());
+    }
+    return result;
+  }
+
+  std::vector<AlignedFloatArray> data_;
 };
 
 // Verify basic Create(...) method works as advertised.
@@ -156,16 +181,13 @@ TEST_F(AudioBusTest, CreateUsingAudioParameters) {
 
 // Verify an AudioBus created via CreateWrapper(...) works as advertised.
 TEST_F(AudioBusTest, CreateWrapper) {
-  data_.reserve(kChannels);
-  for (int i = 0; i < kChannels; ++i) {
-    data_.push_back(static_cast<float*>(base::AlignedAlloc(
-        sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
-  }
+  AllocateDataPerChannel();
 
   std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
   bus->set_frames(kFrameCount);
-  for (int i = 0; i < bus->channels(); ++i)
-    bus->SetChannelData(i, data_[i]);
+  for (int i = 0; i < bus->channels(); ++i) {
+    bus->SetChannelData(i, data_[i].as_span());
+  }
 
   bool deleted = false;
   bus->SetWrappedDataDeleter(
@@ -179,15 +201,81 @@ TEST_F(AudioBusTest, CreateWrapper) {
   EXPECT_TRUE(deleted);
 }
 
-// Verify an AudioBus created via wrapping a vector works as advertised.
-TEST_F(AudioBusTest, WrapVector) {
-  data_.reserve(kChannels);
-  for (int i = 0; i < kChannels; ++i) {
-    data_.push_back(static_cast<float*>(base::AlignedAlloc(
-        sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
+TEST_F(AudioBusTest, AllChannels) {
+  AllocateDataPerChannel();
+
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  bus->set_frames(kFrameCount);
+  AudioBus::ChannelVector channels;
+  int value = 1;
+  for (AlignedFloatArray& data : data_) {
+    AudioBus::Channel channel(data);
+
+    // Fill each channel with a different value.
+    std::ranges::fill(channel, value++);
+    channels.push_back(channel);
   }
 
-  std::unique_ptr<AudioBus> bus = AudioBus::WrapVector(kFrameCount, data_);
+  bus->SetAllChannels(channels);
+
+  VerifyChannelAndFrameCount(bus.get());
+
+  // Verify looping through `AllChannels()` is equivalent to getting each
+  // channel individually.
+  int current_channel = 0;
+  for (auto channel : bus->AllChannels()) {
+    EXPECT_EQ(channel, bus->channel_span(current_channel++));
+  }
+
+  EXPECT_EQ(current_channel, kChannels);
+}
+
+TEST_F(AudioBusTest, AllChannelsSubspan) {
+  AllocateDataPerChannel();
+
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  bus->set_frames(kFrameCount);
+  AudioBus::ChannelVector channels;
+  int value = 1;
+  for (AlignedFloatArray& data : data_) {
+    AudioBus::Channel channel(data);
+
+    // Fill each sample with a different value.
+    for (float& sample : channel) {
+      sample = value++;
+    }
+
+    channels.push_back(channel);
+  }
+
+  bus->SetAllChannels(channels);
+
+  // Verify looping through `AllChannelsSubspan()` is equivalent to getting each
+  // channel individually and applying `subspan()` to them.
+  int current_channel = 0;
+  constexpr size_t kOffset = 3;
+  constexpr size_t kCount = 25;
+  for (auto channel : bus->AllChannelsSubspan(kOffset, kCount)) {
+    EXPECT_EQ(channel,
+              bus->channel_span(current_channel++).subspan(kOffset, kCount));
+  }
+
+  EXPECT_EQ(current_channel, kChannels);
+}
+
+// Verify an AudioBus created via wrapping a vector works as advertised.
+TEST_F(AudioBusTest, WrapVector) {
+  AllocateDataPerChannel();
+
+  std::vector<float*> data_pointers;
+  data_pointers.reserve(kChannels);
+
+  for (AlignedFloatArray& data : data_) {
+    data_pointers.push_back(data.as_span().data());
+  }
+
+  std::unique_ptr<AudioBus> bus =
+      AudioBus::WrapVector(kFrameCount, GetRawPointers(data_));
   VerifyChannelAndFrameCount(bus.get());
   VerifyReadWriteAndAlignment(bus.get());
 }
@@ -197,26 +285,30 @@ TEST_F(AudioBusTest, WrapMemory) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kSampleRate, kFrameCount);
-  int data_size = AudioBus::CalculateMemorySize(params);
-  std::unique_ptr<float, base::AlignedFreeDeleter> data(static_cast<float*>(
-      base::AlignedAlloc(data_size, AudioBus::kChannelAlignment)));
+  size_t total_frame_count =
+      AudioBus::CalculateMemorySize(params) / sizeof(float);
+  AlignedFloatArray data = base::AlignedUninit<float>(
+      total_frame_count, AudioBus::kChannelAlignment);
 
   // Fill the memory with a test value we can check for after wrapping.
   static const float kTestValue = 3;
-  std::fill(
-      data.get(), data.get() + data_size / sizeof(*data.get()), kTestValue);
+  std::ranges::fill(data, kTestValue);
 
-  std::unique_ptr<AudioBus> bus = AudioBus::WrapMemory(params, data.get());
+  std::unique_ptr<AudioBus> bus =
+      AudioBus::WrapMemory(params, data.as_span().data());
   // Verify the test value we filled prior to wrapping.
-  for (int i = 0; i < bus->channels(); ++i)
-    VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), kTestValue);
+  for (auto channel : bus->AllChannels()) {
+    VerifySpanIsFilledWithValue(channel, kTestValue);
+  }
   VerifyChannelAndFrameCount(bus.get());
   VerifyReadWriteAndAlignment(bus.get());
 
   // Verify the channel vectors lie within the provided memory block.
-  EXPECT_GE(bus->channel(0), data.get());
-  EXPECT_LT(bus->channel(bus->channels() - 1) + bus->frames(),
-            data.get() + data_size / sizeof(*data.get()));
+  const float* backing_memory_start = data.as_span().data();
+  const float* backing_memory_end = backing_memory_start + total_frame_count;
+  EXPECT_GE(bus->channel_span(0).data(), backing_memory_start);
+  EXPECT_LT(bus->channel_span(bus->channels() - 1).data() + bus->frames(),
+            backing_memory_end);
 }
 
 // Simulate a shared memory transfer and verify results.
@@ -236,13 +328,9 @@ TEST_F(AudioBusTest, CopyTo) {
   {
     SCOPED_TRACE("Wrapped Vector");
     // Try a copy to an AudioBus wrapping a vector.
-    data_.reserve(kChannels);
-    for (int i = 0; i < kChannels; ++i) {
-      data_.push_back(static_cast<float*>(base::AlignedAlloc(
-          sizeof(*data_[i]) * kFrameCount, AudioBus::kChannelAlignment)));
-    }
+    AllocateDataPerChannel();
 
-    bus2 = AudioBus::WrapVector(kFrameCount, data_);
+    bus2 = AudioBus::WrapVector(kFrameCount, GetRawPointers(data_));
     CopyTest(bus1.get(), bus2.get());
   }
   {
@@ -262,50 +350,60 @@ TEST_F(AudioBusTest, Zero) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrameCount);
 
   // Fill the bus with dummy data.
-  for (int i = 0; i < bus->channels(); ++i)
-    std::fill(bus->channel(i), bus->channel(i) + bus->frames(), i + 1);
+  int value = 1;
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, value++);
+  }
   EXPECT_FALSE(bus->AreFramesZero());
 
   // Zero first half the frames of each channel.
   bus->ZeroFrames(kFrameCount / 2);
-  for (int i = 0; i < bus->channels(); ++i) {
+
+  value = 1;
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("First Half Zero");
-    VerifyArrayIsFilledWithValue(bus->channel(i), kFrameCount / 2, 0);
-    VerifyArrayIsFilledWithValue(bus->channel(i) + kFrameCount / 2,
-                                 kFrameCount - kFrameCount / 2, i + 1);
+    auto [first_half, second_half] = channel.split_at(kFrameCount / 2);
+    VerifySpanIsFilledWithValue(first_half, 0);
+    VerifySpanIsFilledWithValue(second_half, value++);
   }
   EXPECT_FALSE(bus->AreFramesZero());
 
   // Fill the bus with dummy data.
-  for (int i = 0; i < bus->channels(); ++i)
-    std::fill(bus->channel(i), bus->channel(i) + bus->frames(), i + 1);
+  value = 1;
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, value++);
+  }
 
   // Zero the last half of the frames.
-  bus->ZeroFramesPartial(kFrameCount / 2, kFrameCount - kFrameCount / 2);
-  for (int i = 0; i < bus->channels(); ++i) {
+  static constexpr size_t kRemainingFrames = kFrameCount - kFrameCount / 2;
+  bus->ZeroFramesPartial(kFrameCount / 2, kRemainingFrames);
+  value = 1;
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("Last Half Zero");
-    VerifyArrayIsFilledWithValue(bus->channel(i) + kFrameCount / 2,
-                                 kFrameCount - kFrameCount / 2, 0);
-    VerifyArrayIsFilledWithValue(bus->channel(i), kFrameCount / 2, i + 1);
+    auto [first_half, second_half] = channel.split_at(kFrameCount / 2);
+    VerifySpanIsFilledWithValue(first_half, value++);
+    VerifySpanIsFilledWithValue(second_half, 0);
   }
   EXPECT_FALSE(bus->AreFramesZero());
 
   // Fill the bus with dummy data.
-  for (int i = 0; i < bus->channels(); ++i)
-    std::fill(bus->channel(i), bus->channel(i) + bus->frames(), i + 1);
+  value = 1;
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, value++);
+  }
 
   // Zero all the frames of each channel.
   bus->Zero();
-  for (int i = 0; i < bus->channels(); ++i) {
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("All Zero");
-    VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), 0);
+    VerifySpanIsFilledWithValue(channel, 0);
   }
   EXPECT_TRUE(bus->AreFramesZero());
 }
 
 // Each test vector represents two channels of data in the following arbitrary
 // layout: <min, zero, max, min, max / 2, min / 2, zero, max, zero, zero>.
-static const int kTestVectorSize = 10;
+static constexpr int kTestVectorSize = 10;
 static const uint8_t kTestVectorUint8[kTestVectorSize] = {
     0,         -INT8_MIN,          UINT8_MAX,
     0,         INT8_MAX / 2 + 128, INT8_MIN / 2 + 128,
@@ -338,7 +436,7 @@ static const float kTestVectorFloat32Sanitized[kTestVectorSize] = {
     -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, -1.0f, -1.0f};
 
 // Expected results.
-static const int kTestVectorFrameCount = kTestVectorSize / 2;
+static constexpr size_t kTestVectorFrameCount = kTestVectorSize / 2;
 static const float kTestVectorResult[][kTestVectorFrameCount] = {
     {-1.0f, 1.0f, 0.5f, 0.0f, 0.0f},
     {0.0f, -1.0f, -0.5f, 1.0f, 0.0f}};
@@ -351,8 +449,7 @@ TEST_F(AudioBusTest, FromInterleaved) {
   std::unique_ptr<AudioBus> expected =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    memcpy(expected->channel(ch), kTestVectorResult[ch],
-           kTestVectorFrameCount * sizeof(*expected->channel(ch)));
+    expected->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -396,8 +493,8 @@ TEST_F(AudioBusTest, FromInterleaved) {
 // Verify FromInterleavedPartial() deinterleaves audio correctly.
 TEST_F(AudioBusTest, FromInterleavedPartial) {
   // Only deinterleave the middle two frames in each channel.
-  static const int kPartialStart = 1;
-  static const int kPartialFrames = 2;
+  static constexpr size_t kPartialStart = 1;
+  static constexpr size_t kPartialFrames = 2;
   ASSERT_LE(kPartialStart + kPartialFrames, kTestVectorFrameCount);
 
   std::unique_ptr<AudioBus> bus =
@@ -405,10 +502,11 @@ TEST_F(AudioBusTest, FromInterleavedPartial) {
   std::unique_ptr<AudioBus> expected =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   expected->Zero();
-  for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    memcpy(expected->channel(ch) + kPartialStart,
-           kTestVectorResult[ch] + kPartialStart,
-           kPartialFrames * sizeof(*expected->channel(ch)));
+  int current_channel = 0;
+  for (auto partial_channel :
+       expected->AllChannelsSubspan(kPartialStart, kPartialFrames)) {
+    partial_channel.copy_from(base::span(kTestVectorResult[current_channel++])
+                                  .subspan(kPartialStart, kPartialFrames));
   }
 
   {
@@ -427,8 +525,7 @@ TEST_F(AudioBusTest, ToInterleaved) {
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   // Fill the bus with our test vector.
   for (int ch = 0; ch < bus->channels(); ++ch) {
-    memcpy(bus->channel(ch), kTestVectorResult[ch],
-           kTestVectorFrameCount * sizeof(*bus->channel(ch)));
+    bus->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -479,7 +576,7 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
   bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
                                                 bus->frames());
   // Verify FromInterleaved applied no sanity.
-  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
+  ASSERT_EQ(bus->channel_span(0)[0], kTestVectorFloat32Invalid[0]);
   float test_array[std::size(kTestVectorFloat32Sanitized)];
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array);
   for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i)
@@ -507,7 +604,7 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
       kTestVectorFloat32Sanitized, bus->frames());
 
   // Verify FromInterleaved applied no sanity.
-  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
+  ASSERT_EQ(bus->channel_span(0)[0], kTestVectorFloat32Invalid[0]);
 
   std::unique_ptr<AudioBus> copy_to_bus =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
@@ -515,7 +612,8 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
 
   for (int ch = 0; ch < expected->channels(); ++ch) {
     for (int i = 0; i < expected->frames(); ++i)
-      ASSERT_EQ(copy_to_bus->channel(ch)[i], expected->channel(ch)[i]);
+      ASSERT_EQ(copy_to_bus->channel_span(ch)[i],
+                expected->channel_span(ch)[i]);
   }
 
   ASSERT_EQ(expected->channels(), copy_to_bus->channels());
@@ -527,15 +625,14 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
 // Verify ToInterleavedPartial() interleaves audio correctly.
 TEST_F(AudioBusTest, ToInterleavedPartial) {
   // Only interleave the middle two frames in each channel.
-  static const int kPartialStart = 1;
-  static const int kPartialFrames = 2;
+  static constexpr size_t kPartialStart = 1;
+  static constexpr size_t kPartialFrames = 2;
   ASSERT_LE(kPartialStart + kPartialFrames, kTestVectorFrameCount);
 
   std::unique_ptr<AudioBus> expected =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    memcpy(expected->channel(ch), kTestVectorResult[ch],
-           kTestVectorFrameCount * sizeof(*expected->channel(ch)));
+    expected->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -562,11 +659,10 @@ struct ZeroingOutTestData {
     // Create a bus and fill each channel with a test pattern of form
     // [1.0, 2.0, 3.0, ...]
     bus_under_test = AudioBus::Create(kChannelCount, kFrameCount);
-    for (int ch = 0; ch < kChannelCount; ++ch) {
-      auto* sample_array_for_current_channel = bus_under_test->channel(ch);
-      for (int frame_index = 0; frame_index < kFrameCount; frame_index++) {
-        sample_array_for_current_channel[frame_index] =
-            static_cast<float>(frame_index + 1);
+    for (auto channel : bus_under_test->AllChannels()) {
+      int value = 1;
+      for (float& sample : channel) {
+        sample = value++;
       }
     }
 
@@ -585,13 +681,14 @@ TEST_F(AudioBusTest, FromInterleavedZerosOutUntouchedFrames) {
   test_data.bus_under_test->FromInterleaved<Float32SampleTypeTraits>(
       &test_data.interleaved_dummy_frames[0], test_data.kInterleavedFrameCount);
 
+  const size_t untouched_frame_count =
+      test_data.kFrameCount - test_data.kInterleavedFrameCount;
+
   // Verification
-  for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
-    auto* sample_array_for_current_channel =
-        test_data.bus_under_test->channel(ch);
-    for (int frame_index = test_data.kInterleavedFrameCount;
-         frame_index < test_data.kFrameCount; frame_index++) {
-      ASSERT_EQ(0.0f, sample_array_for_current_channel[frame_index]);
+  for (auto partial_channel : test_data.bus_under_test->AllChannelsSubspan(
+           test_data.kInterleavedFrameCount, untouched_frame_count)) {
+    for (auto sample : partial_channel) {
+      ASSERT_EQ(0.0f, sample);
     }
   }
 }
@@ -610,8 +707,8 @@ TEST_F(AudioBusTest, FromInterleavedPartialDoesNotZeroOutUntouchedFrames) {
 
     // Verification
     for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
-      auto* sample_array_for_current_channel =
-          test_data.bus_under_test->channel(ch);
+      auto sample_array_for_current_channel =
+          test_data.bus_under_test->channel_span(ch);
       for (int frame_index =
                test_data.kInterleavedFrameCount + kWriteOffsetInFrames;
            frame_index < test_data.kFrameCount; frame_index++) {
@@ -633,8 +730,8 @@ TEST_F(AudioBusTest, FromInterleavedPartialDoesNotZeroOutUntouchedFrames) {
 
     // Verification
     for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
-      auto* sample_array_for_current_channel =
-          test_data.bus_under_test->channel(ch);
+      auto sample_array_for_current_channel =
+          test_data.bus_under_test->channel_span(ch);
       // Check untouched frames before write offset
       for (int frame_index = 0; frame_index < kWriteOffsetInFrames;
            frame_index++) {
@@ -656,31 +753,31 @@ TEST_F(AudioBusTest, Scale) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrameCount);
 
   // Fill the bus with dummy data.
-  static const float kFillValue = 1;
-  for (int i = 0; i < bus->channels(); ++i)
-    std::fill(bus->channel(i), bus->channel(i) + bus->frames(), kFillValue);
+  static constexpr float kFillValue = 1;
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, kFillValue);
+  }
 
   // Adjust by an invalid volume and ensure volume is unchanged.
   bus->Scale(-1);
-  for (int i = 0; i < bus->channels(); ++i) {
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("Invalid Scale");
-    VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), kFillValue);
+    VerifySpanIsFilledWithValue(channel, kFillValue);
   }
 
   // Verify correct volume adjustment.
-  static const float kVolume = 0.5;
+  static constexpr float kVolume = 0.5;
   bus->Scale(kVolume);
-  for (int i = 0; i < bus->channels(); ++i) {
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("Half Scale");
-    VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(),
-                                 kFillValue * kVolume);
+    VerifySpanIsFilledWithValue(channel, kFillValue * kVolume);
   }
 
   // Verify zero volume case.
   bus->Scale(0);
-  for (int i = 0; i < bus->channels(); ++i) {
+  for (auto channel : bus->AllChannels()) {
     SCOPED_TRACE("Zero Scale");
-    VerifyArrayIsFilledWithValue(bus->channel(i), bus->frames(), 0);
+    VerifySpanIsFilledWithValue(channel, 0);
   }
 }
 
@@ -692,19 +789,19 @@ TEST_F(AudioBusTest, Bitstream) {
   bus->set_is_bitstream_format(true);
   EXPECT_TRUE(bus->is_bitstream_format());
 
-  EXPECT_EQ(size_t{0}, bus->GetBitstreamDataSize());
-  bus->SetBitstreamDataSize(kDataSize);
-  EXPECT_EQ(kDataSize, bus->GetBitstreamDataSize());
+  EXPECT_EQ(0u, bus->bitstream_data().size());
+  bus->SetBitstreamSize(kDataSize);
+  EXPECT_EQ(kDataSize, bus->bitstream_data().size());
 
   EXPECT_EQ(0, bus->GetBitstreamFrames());
   bus->SetBitstreamFrames(kFrameCount);
-  EXPECT_EQ(kFrameCount, bus->GetBitstreamFrames());
+  EXPECT_EQ(static_cast<int>(kFrameCount), bus->GetBitstreamFrames());
 
   std::unique_ptr<AudioBus> bus2 = AudioBus::Create(1, kFrameCount);
   CopyTest(bus.get(), bus2.get());
 
   bus->Zero();
-  EXPECT_EQ(size_t{0}, bus->GetBitstreamDataSize());
+  EXPECT_EQ(0u, bus->bitstream_data().size());
   EXPECT_EQ(0, bus->GetBitstreamFrames());
 }
 

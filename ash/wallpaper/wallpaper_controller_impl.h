@@ -31,7 +31,6 @@
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
-#include "ash/wallpaper/wallpaper_info_migrator.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -429,24 +428,6 @@ class ASH_EXPORT WallpaperControllerImpl
     base::FilePath file_path;
   };
 
-  // Saves the wallpaper info to pref store. No-op if `migrated_info` is
-  // nullopt.
-  void SaveMigratedWallpaperInfo(
-      const std::optional<WallpaperInfo>& migrated_info);
-
-  // Processes the wallpaper info after having saved it to the local store.
-  void HandleWallpaperInfoAfterMigration(const AccountId& account_id);
-
-  // Processes the synced wallpaper info after the migration.
-  void HandleSyncedWallpaperInfoAfterMigration(
-      const AccountId& account_id,
-      const std::optional<WallpaperInfo>& synced_info);
-
-  // Processes the deprecated synced wallpaper info after the migration.
-  void HandleDeprecatedSyncedWallpaperInfoAfterMigration(
-      const AccountId& account_id,
-      const std::optional<WallpaperInfo>& synced_info);
-
   // Callback after `WallpaperResizer` is done scaling the current wallpaper to
   // the current display size.
   void OnWallpaperResized();
@@ -591,8 +572,6 @@ class ASH_EXPORT WallpaperControllerImpl
                                       bool preview_mode,
                                       SetWallpaperCallback callback,
                                       const base::FilePath& file_path);
-
-  void OnSeaPenFilesMigrated(const AccountId& account_id, bool success);
 
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a
   // policy wallpaper for public accounts. Shows the wallpaper immediately if
@@ -868,10 +847,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // A utility class that handles file operations and decoding for SeaPen
   // wallpapers.
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
-
-  // A utility class that migrates non versioned wallpaper info to the
-  // versioned format.
-  WallpaperInfoMigrator wallpaper_info_migrator_;
 
   // Provides signals to trigger wallpaper daily refresh.
   std::unique_ptr<WallpaperDailyRefreshScheduler> daily_refresh_scheduler_;

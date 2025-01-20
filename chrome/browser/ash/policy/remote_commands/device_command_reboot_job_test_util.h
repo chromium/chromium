@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"

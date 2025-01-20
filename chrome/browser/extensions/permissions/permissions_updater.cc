@@ -79,7 +79,7 @@ class PermissionsUpdaterShutdownNotifierFactory
     DependsOn(EventRouterFactory::GetInstance());
     DependsOn(ExtensionSystemFactory::GetInstance());
   }
-  ~PermissionsUpdaterShutdownNotifierFactory() override {}
+  ~PermissionsUpdaterShutdownNotifierFactory() override = default;
 };
 
 // Returns an URLPatternSet containing the sites that the user has indicated
@@ -207,7 +207,7 @@ PermissionsUpdater::NetworkPermissionsUpdateHelper::
                   base::Unretained(this)))) {}
 
 PermissionsUpdater::NetworkPermissionsUpdateHelper::
-    ~NetworkPermissionsUpdateHelper() {}
+    ~NetworkPermissionsUpdateHelper() = default;
 
 void PermissionsUpdater::NetworkPermissionsUpdateHelper::OnShutdown() {
   // The profile is shutting down. Don't dispatch the permissions updated
@@ -230,7 +230,7 @@ PermissionsUpdater::PermissionsUpdater(content::BrowserContext* browser_context,
                                        InitFlag init_flag)
     : browser_context_(browser_context), init_flag_(init_flag) {}
 
-PermissionsUpdater::~PermissionsUpdater() {}
+PermissionsUpdater::~PermissionsUpdater() = default;
 
 void PermissionsUpdater::GrantOptionalPermissions(
     const Extension& extension,

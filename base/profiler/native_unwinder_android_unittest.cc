@@ -9,11 +9,11 @@
 
 #include "base/profiler/native_unwinder_android.h"
 
-#include <sys/mman.h>
-
 #include <inttypes.h>
 #include <stdio.h>  // For printf address.
 #include <string.h>
+#include <sys/mman.h>
+
 #include <algorithm>
 #include <iterator>
 #include <vector>
@@ -25,6 +25,7 @@
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map_impl.h"
 #include "base/profiler/register_context.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/stack_sampler.h"
@@ -168,8 +169,9 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -207,8 +209,9 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -404,8 +407,9 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),

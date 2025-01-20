@@ -38,15 +38,10 @@ suite('<os-settings-bluetooth-summary>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function init(isBluetoothDisconnectWarningEnabled: boolean = false) {
-    if (isBluetoothDisconnectWarningEnabled) {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': true});
-      hidPreservingController = new FakeHidPreservingBluetoothStateController();
-      hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
-      setHidPreservingControllerForTesting(hidPreservingController);
-    } else {
-      loadTimeData.overrideValues({'bluetoothDisconnectWarningFlag': false});
-    }
+  async function init() {
+    hidPreservingController = new FakeHidPreservingBluetoothStateController();
+    hidPreservingController.setBluetoothConfigForTesting(bluetoothConfig);
+    setHidPreservingControllerForTesting(hidPreservingController);
 
     browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
     OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
@@ -66,9 +61,9 @@ suite('<os-settings-bluetooth-summary>', () => {
     bluetoothConfig.observeSystemProperties(propertiesObserver);
   }
 
-  test('Toggle Bluetooth with bluetoothDisconnectWarningFlag on', async () => {
+  test('Toggle Bluetooth', async () => {
     await flushTasks();
-    await init(/* isBluetoothDisconnectWarningEnabled= */ true);
+    await init();
     bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
     await flushTasks();
 

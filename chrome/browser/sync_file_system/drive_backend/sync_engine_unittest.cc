@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/sync_file_system/drive_backend/sync_engine.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
@@ -36,12 +32,12 @@ namespace drive_backend {
 
 class SyncEngineTest : public testing::Test {
  public:
-  SyncEngineTest() {}
+  SyncEngineTest() = default;
 
   SyncEngineTest(const SyncEngineTest&) = delete;
   SyncEngineTest& operator=(const SyncEngineTest&) = delete;
 
-  ~SyncEngineTest() override {}
+  ~SyncEngineTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
@@ -152,15 +148,16 @@ TEST_F(SyncEngineTest, OriginTest) {
 }
 
 TEST_F(SyncEngineTest, UpdateServiceState) {
-  struct {
+  struct TestData {
     RemoteServiceState state;
     const char* description;
-  } test_data[] = {
-    {REMOTE_SERVICE_OK, "OK"},
-    {REMOTE_SERVICE_TEMPORARY_UNAVAILABLE, "TEMPORARY_UNAVAILABLE"},
-    {REMOTE_SERVICE_AUTHENTICATION_REQUIRED, "AUTHENTICATION_REQUIRED"},
-    {REMOTE_SERVICE_DISABLED, "DISABLED"},
   };
+  auto test_data = std::to_array<TestData>({
+      {REMOTE_SERVICE_OK, "OK"},
+      {REMOTE_SERVICE_TEMPORARY_UNAVAILABLE, "TEMPORARY_UNAVAILABLE"},
+      {REMOTE_SERVICE_AUTHENTICATION_REQUIRED, "AUTHENTICATION_REQUIRED"},
+      {REMOTE_SERVICE_DISABLED, "DISABLED"},
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     PostUpdateServiceState(test_data[i].state, test_data[i].description);

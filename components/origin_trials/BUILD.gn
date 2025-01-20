@@ -28,8 +28,6 @@ source_set("browser") {
 
 source_set("common") {
   sources = [
-    "common/features.cc",
-    "common/features.h",
     "common/origin_trials_persistence_provider.h",
     "common/persisted_trial_token.cc",
     "common/persisted_trial_token.h",

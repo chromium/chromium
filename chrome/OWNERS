@@ -38,6 +38,7 @@ twellington@chromium.org
 # project to these reviewers; other CLs should be sent to the reviewers above.
 hidehiko@chromium.org
 khorimoto@chromium.org
+neis@chromium.org
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing
@@ -68,6 +69,7 @@ per-file browser/resources/settings/internal=*
 per-file browser/spellchecker/internal=*
 per-file installer/mac/internal=*
 per-file installer/mac/third_party/xz/xz=*
+per-file release_scripts=*
 per-file services/speech/internal=*
 per-file test/data/autofill/captured_sites/artifacts=*
 per-file test/data/firefox3_profile/searchplugins=*

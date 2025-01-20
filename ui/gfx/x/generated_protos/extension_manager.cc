@@ -79,7 +79,7 @@ void ExtensionManager::Init(Connection* conn) {
   // if the server extension is an earlier version.
   // Always take the event with the later `first_event`
   // to prevent conflicts.
-  uint8_t first_events[128] = {0};
+  uint8_t first_events[128] = {};
   auto set_type = [&](uint8_t first_event, uint8_t op, uint8_t type_id) {
     const uint8_t id = first_event + op;
     if (first_events[id] <= first_event) {

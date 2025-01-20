@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 23
+// Next MinVersion: 24
 
 module ash.ime.mojom;
 
@@ -25,7 +25,7 @@ enum KeyEventType {
 // If a key is not listed here, then it means that the Chrome OS first-party
 // IMEs do not handle it and it is safe for the OS to handle the key itself.
 //
-// Next ordinal: 18
+// Next ordinal: 40
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.NamedDomKey"]
 enum NamedDomKey {
   [Default] kOther = 0,
@@ -61,6 +61,19 @@ enum NamedDomKey {
   [MinVersion=16] kF10 = 27,
   [MinVersion=16] kF11 = 28,
   [MinVersion=16] kF12 = 29,
+  // Chrome action keys (top row keys)
+  [MinVersion=23] kBrowserBack = 30,
+  [MinVersion=23] kBrowserForward = 31,
+  [MinVersion=23] kBrowserRefresh = 32,
+  // ZoomToggle corresponds to the "full screen" action.
+  [MinVersion=23] kZoomToggle = 33,
+  // LaunchMyComputer corresponds to "Show all open windows" action.
+  [MinVersion=23] kLaunchMyComputer = 34,
+  [MinVersion=23] kBrightnessDown = 35,
+  [MinVersion=23] kBrightnessUp = 36,
+  [MinVersion=23] kAudioVolumeMute = 37,
+  [MinVersion=23] kAudioVolumeDown = 38,
+  [MinVersion=23] kAudioVolumeUp = 39,
 };
 
 // Represents a key pressed by the user, taking into account aspects like

@@ -69,10 +69,9 @@ void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
 
   // As |histogram_name| may change between calls, the UMA_HISTOGRAM_ENUMERATION
   // macro cannot be used here.
-  base::HistogramBase* counter =
-      base::LinearHistogram::FactoryGet(
-          histogram_name, 1, int_boundary_value, bucket_count + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* counter = base::LinearHistogram::FactoryGet(
+      histogram_name, 1, int_boundary_value, bucket_count + 1,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   counter->Add(int_value);
 }
 

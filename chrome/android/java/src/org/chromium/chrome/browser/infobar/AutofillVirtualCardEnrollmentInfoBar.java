@@ -27,7 +27,7 @@ import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 import java.util.LinkedList;
 
@@ -214,7 +214,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
             SpannableString text = new SpannableString(mDescriptionText);
             int offset = mDescriptionText.length() - mLearnMoreLinkText.length();
             text.setSpan(
-                    new NoUnderlineClickableSpan(
+                    new ChromeClickableSpan(
                             layout.getContext(),
                             (unused) -> {
                                 AutofillVirtualCardEnrollmentInfoBarJni.get()

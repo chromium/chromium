@@ -122,14 +122,14 @@ INSTANTIATE_TEST_SUITE_P(AllChannels,
                                          version_info::Channel::CANARY,
                                          version_info::Channel::DEFAULT));
 
-class AccessibilityCommonFazeGazeTest : public AccessibilityCommonTest {
+class AccessibilityCommonFaceGazeTest : public AccessibilityCommonTest {
  public:
-  AccessibilityCommonFazeGazeTest() = default;
-  ~AccessibilityCommonFazeGazeTest() override = default;
-  AccessibilityCommonFazeGazeTest(const AccessibilityCommonFazeGazeTest&) =
+  AccessibilityCommonFaceGazeTest() = default;
+  ~AccessibilityCommonFaceGazeTest() override = default;
+  AccessibilityCommonFaceGazeTest(const AccessibilityCommonFaceGazeTest&) =
       delete;
-  AccessibilityCommonFazeGazeTest& operator=(
-      const AccessibilityCommonFazeGazeTest&) = delete;
+  AccessibilityCommonFaceGazeTest& operator=(
+      const AccessibilityCommonFaceGazeTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(features::kAccessibilityFaceGaze);
@@ -141,14 +141,14 @@ class AccessibilityCommonFazeGazeTest : public AccessibilityCommonTest {
 };
 
 INSTANTIATE_TEST_SUITE_P(AllChannels,
-                         AccessibilityCommonFazeGazeTest,
+                         AccessibilityCommonFaceGazeTest,
                          testing::Values(version_info::Channel::STABLE,
                                          version_info::Channel::BETA,
                                          version_info::Channel::DEV,
                                          version_info::Channel::CANARY,
                                          version_info::Channel::DEFAULT));
 
-IN_PROC_BROWSER_TEST_P(AccessibilityCommonFazeGazeTest, ToggleFazeGaze) {
+IN_PROC_BROWSER_TEST_P(AccessibilityCommonFaceGazeTest, ToggleFaceGaze) {
   extensions::ScopedCurrentChannel channel(GetParam());
 
   AccessibilityManager* manager = AccessibilityManager::Get();

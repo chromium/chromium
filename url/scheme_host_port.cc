@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <compare>
 #include <ostream>
 #include <string_view>
 #include <tuple>
@@ -268,10 +269,10 @@ size_t SchemeHostPort::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(host_);
 }
 
-bool SchemeHostPort::operator<(const SchemeHostPort& other) const {
-  return std::tie(port_, scheme_, host_) <
-         std::tie(other.port_, other.scheme_, other.host_);
-}
+bool SchemeHostPort::operator==(const SchemeHostPort& other) const = default;
+
+std::strong_ordering SchemeHostPort::operator<=>(
+    const SchemeHostPort& other) const = default;
 
 std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
   std::string result;

@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -77,8 +76,12 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_table_caption_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
+#include "third_party/blink/renderer/core/html/html_table_col_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_table_row_element.h"
+#include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -225,7 +228,7 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
       }
     }
     if (const ComputedStyle* style =
-            ancestor.GetComputedStyleForElementOrLayoutObject()) {
+            GetComputedStyleForElementOrLayoutObject(ancestor)) {
       switch (style->UsedUserModify()) {
         case EUserModify::kReadOnly:
           return false;
@@ -894,6 +897,18 @@ TextDirection PrimaryDirectionOf(const Node& node) {
   return primary_direction;
 }
 
+const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
+    const Node& node) {
+  if (const auto* element = DynamicTo<Element>(node)) {
+    return element->GetComputedStyle();
+  }
+  // Text nodes and Document.
+  if (LayoutObject* layout_object = node.GetLayoutObject()) {
+    return layout_object->Style();
+  }
+  return nullptr;
+}
+
 String StringWithRebalancedWhitespace(const String& string,
                                       bool start_is_start_of_paragraph,
                                       bool should_emit_nbs_pbefore_end) {
@@ -1133,6 +1148,13 @@ bool IsTableCell(const Node* node) {
   DCHECK(node);
   LayoutObject* r = node->GetLayoutObject();
   return r ? r->IsTableCell() : IsA<HTMLTableCellElement>(*node);
+}
+
+bool IsTablePartElement(const Node* n) {
+  return n &&
+         (IsA<HTMLTableCellElement>(*n) || IsA<HTMLTableCaptionElement>(*n) ||
+          IsA<HTMLTableColElement>(*n) || IsA<HTMLTableSectionElement>(*n) ||
+          IsA<HTMLTableRowElement>(*n));
 }
 
 HTMLElement* CreateDefaultParagraphElement(Document& document) {

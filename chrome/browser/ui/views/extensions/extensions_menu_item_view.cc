@@ -325,8 +325,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       .SetNotifyEnterExitOnChild(true)
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetProperty(views::kBoxLayoutFlexKey,
-                   views::BoxLayoutFlexSpecification())
       .SetProperty(views::kElementIdentifierKey,
                    kExtensionMenuItemViewElementId)
       .AddChildren(

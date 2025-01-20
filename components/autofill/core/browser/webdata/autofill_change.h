@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -43,7 +42,8 @@ using AutocompleteChangeList = std::vector<AutocompleteChange>;
 // TODO(crbug.com/40928146): Update the name for `AutofillDataModelChange` as it
 // now captures non data model changes.
 template <typename DataType, typename KeyType>
-  requires std::derived_from<DataType, AutofillDataModel> ||
+  requires std::same_as<DataType, AutofillProfile> ||
+           std::same_as<DataType, CreditCard> || std::same_as<DataType, Iban> ||
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
  public:

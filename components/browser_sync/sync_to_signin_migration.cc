@@ -5,11 +5,17 @@
 #include "components/browser_sync/sync_to_signin_migration.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_constants.h"
@@ -25,6 +31,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace browser_sync {
 
@@ -182,7 +189,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 
   // Mark the user as syncing again.
   pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   pref_service->SetBoolean(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
 #endif
@@ -227,41 +234,62 @@ const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
   return doing_migration ? "Migration." : "DryRun.";
 }
 
-}  // namespace
+// Represents a potentially blocking operation that can succeed or fail.
+using BlockingOperation = base::OnceCallback<bool()>;
 
-SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
-    const PrefService* pref_service,
-    syncer::DataType type,
-    const char* type_enabled_pref) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In ChromeOS-Ash, the "initial-setup-complete" pref doesn't exist.
-  bool initial_setup_complete = true;
-#else
-  bool initial_setup_complete = pref_service->GetBoolean(
-      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
-#endif
-  bool sync_everything = pref_service->GetBoolean(
-      syncer::prefs::internal::kSyncKeepEverythingSynced);
-
-  bool type_enabled =
-      initial_setup_complete &&
-      (sync_everything || pref_service->GetBoolean(type_enabled_pref));
-  if (!type_enabled) {
-    return SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeDisabled;
+// Runs `blocking_operations` and return the aggregated success or failure.
+bool RunBlockingOperations(bool migration_successful,
+                           std::vector<BlockingOperation> blocking_operations) {
+  for (auto& operation : blocking_operations) {
+    if (!std::move(operation).Run()) {
+      migration_successful = false;
+    }
   }
-
-  bool type_active = syncer::SyncFeatureStatusForMigrationsRecorder::
-      GetSyncDataTypeActiveForSyncToSigninMigration(pref_service, type);
-  if (!type_active) {
-    return SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive;
-  }
-
-  return SyncToSigninMigrationDataTypeDecision::kMigrate;
+  return migration_successful;
 }
 
-void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
-                                       PrefService* pref_service) {
+// Rename a file from `from_path` to `dest_path` and report the status code
+// via the histogram named `histogram_name`.
+bool RenameFileAndReportSuccess(const base::FilePath& from_path,
+                                const base::FilePath& dest_path,
+                                const char* histogram_name) {
+  base::File::Error error = base::File::Error::FILE_OK;
+  base::ReplaceFile(from_path, dest_path, &error);
+  base::UmaHistogramExactLinear(histogram_name, -error,
+                                -base::File::FILE_ERROR_MAX);
+  return error == base::File::Error::FILE_OK;
+}
+
+// Record the overall migration outcome, i.e. whether all individual data type
+// migrations were successful. The total count of this histogram also serves
+// as the number of migrations that were completed.
+void RecordMigrationResult(base::Time start_time, bool migration_successful) {
+  base::UmaHistogramBoolean("Sync.SyncToSigninMigrationOutcome",
+                            migration_successful);
+  base::UmaHistogramTimes("Sync.SyncToSigninMigrationTime",
+                          base::Time::Now() - start_time);
+}
+
+// Helper used to share the logic between MaybeMigrateSyncingUserToSignedIn()
+// and MaybeMigrateSyncingUserToSignedInAsync(). If `closure` is null, all is
+// run on the current sequence otherwise IO ops are scheduled on a background
+// sequence and `closure` is invoked when all operation completes.
+void MaybeMigrateSyncingUserToSignedInInternal(
+    const base::FilePath& profile_path,
+    PrefService* pref_service,
+    base::OnceClosure closure) {
   base::Time start_time = base::Time::Now();
+
+  // Store the closure in a ScopedClosureRunner to ensure it is always run
+  // even if the migration is unnecessary and the function returns early.
+  // Wrap it in a base::BindPostTask(...) to ensure it is always called
+  // asynchronously even if no migration is necessary.
+  const bool is_blocking_allowed = closure.is_null();
+  base::ScopedClosureRunner runner(
+      is_blocking_allowed
+          ? base::OnceClosure()
+          : base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                               std::move(closure)));
 
   // ======================================
   // Global migration decision and metrics.
@@ -348,8 +376,8 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
 
   // The account identifier of an account is its Gaia ID. So
   // `kGoogleServicesAccountId` stores the Gaia ID of the syncing account.
-  const std::string gaia_id =
-      pref_service->GetString(prefs::kGoogleServicesAccountId);
+  const GaiaId gaia_id =
+      GaiaId(pref_service->GetString(prefs::kGoogleServicesAccountId));
   // Guaranteed to be non-empty by GetSyncToSigninMigrationDecision().
   CHECK(!gaia_id.empty());
 
@@ -361,7 +389,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // Save the ID and username of the migrated account, to be able to revert the
   // migration if necessary.
   pref_service->SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
-                          gaia_id);
+                          gaia_id.ToString());
   pref_service->SetString(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       pref_service->GetString(prefs::kGoogleServicesLastSyncingUsername));
@@ -371,7 +399,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // Also clear the "InitialSyncFeatureSetup" pref. It's not needed
   // post-migration, and that pref being true without ConsentLevel::kSync would
   // be an inconsistent state.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   pref_service->ClearPref(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 #endif
@@ -391,6 +419,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // ==============================
 
   bool migration_successful = true;
+  std::vector<BlockingOperation> blocking_operations;
 
 // On Android no password migration is required here, because other layers are
 // responsible for migrating the user to the local+account model, e.g.
@@ -402,14 +431,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         profile_path.Append(password_manager::kLoginDataForProfileFileName);
     base::FilePath to_path =
         profile_path.Append(password_manager::kLoginDataForAccountFileName);
-    base::File::Error error = base::File::Error::FILE_OK;
-    base::ReplaceFile(from_path, to_path, &error);
-    base::UmaHistogramExactLinear(
-        "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", -error,
-        -base::File::FILE_ERROR_MAX);
-
-    migration_successful =
-        migration_successful && (error == base::File::Error::FILE_OK);
+    blocking_operations.push_back(
+        base::BindOnce(&RenameFileAndReportSuccess, from_path, to_path,
+                       "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove"));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -419,14 +443,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         profile_path.Append(bookmarks::kLocalOrSyncableBookmarksFileName);
     base::FilePath to_path =
         profile_path.Append(bookmarks::kAccountBookmarksFileName);
-    base::File::Error error = base::File::Error::FILE_OK;
-    base::ReplaceFile(from_path, to_path, &error);
-    base::UmaHistogramExactLinear(
-        "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove", -error,
-        -base::File::FILE_ERROR_MAX);
-
-    migration_successful =
-        migration_successful && (error == base::File::Error::FILE_OK);
+    blocking_operations.push_back(
+        base::BindOnce(&RenameFileAndReportSuccess, from_path, to_path,
+                       "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove"));
   }
 
   // Reading list: Set migration pref. The DataTypeStoreServiceImpl will read
@@ -445,13 +464,64 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     // histograms.
   }
 
-  // Finally, record the overall outcome, i.e. whether all individual data type
-  // migrations were successful. The total count of this histogram also serves
-  // as the number of migrations that were completed.
-  base::UmaHistogramBoolean("Sync.SyncToSigninMigrationOutcome",
-                            migration_successful);
-  base::UmaHistogramTimes("Sync.SyncToSigninMigrationTime",
-                          base::Time::Now() - start_time);
+  if (!is_blocking_allowed) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&RunBlockingOperations, migration_successful,
+                       std::move(blocking_operations)),
+        base::BindOnce(&RecordMigrationResult, start_time)
+            .Then(runner.Release()));
+    return;
+  }
+
+  RecordMigrationResult(start_time,
+                        RunBlockingOperations(migration_successful,
+                                              std::move(blocking_operations)));
+}
+
+}  // namespace
+
+SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
+    const PrefService* pref_service,
+    syncer::DataType type,
+    const char* type_enabled_pref) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // In ChromeOS-Ash, the "initial-setup-complete" pref doesn't exist.
+  bool initial_setup_complete = true;
+#else
+  bool initial_setup_complete = pref_service->GetBoolean(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
+#endif
+  bool sync_everything = pref_service->GetBoolean(
+      syncer::prefs::internal::kSyncKeepEverythingSynced);
+
+  bool type_enabled =
+      initial_setup_complete &&
+      (sync_everything || pref_service->GetBoolean(type_enabled_pref));
+  if (!type_enabled) {
+    return SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeDisabled;
+  }
+
+  bool type_active = syncer::SyncFeatureStatusForMigrationsRecorder::
+      GetSyncDataTypeActiveForSyncToSigninMigration(pref_service, type);
+  if (!type_active) {
+    return SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive;
+  }
+
+  return SyncToSigninMigrationDataTypeDecision::kMigrate;
+}
+
+void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
+                                       PrefService* pref_service) {
+  MaybeMigrateSyncingUserToSignedInInternal(profile_path, pref_service, {});
+}
+
+void MaybeMigrateSyncingUserToSignedInAsync(const base::FilePath& profile_path,
+                                            PrefService* pref_service,
+                                            base::OnceClosure closure) {
+  CHECK(!closure.is_null());
+  MaybeMigrateSyncingUserToSignedInInternal(profile_path, pref_service,
+                                            std::move(closure));
 }
 
 bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
@@ -466,11 +536,11 @@ bool WasPrimaryAccountMigratedFromSyncingToSignedIn(
   // Check if the current signed-in account ID matches the migrated account ID.
   // In the common case where the account was *not* migrated, the migrated
   // account ID will be empty, and thus not match the current account ID.
-  std::string authenticated_gaia_id =
+  const GaiaId authenticated_gaia_id =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
-  std::string migrated_gaia_id = pref_service->GetString(
-      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  const GaiaId migrated_gaia_id(pref_service->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
   return migrated_gaia_id == authenticated_gaia_id;
 }
 

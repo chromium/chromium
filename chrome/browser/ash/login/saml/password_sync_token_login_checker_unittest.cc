@@ -16,6 +16,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +41,7 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
   void OnTokenVerified(bool is_verified);
 
   const AccountId saml_login_account_id_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail, kSAMLUserId);
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail, GaiaId(kSAMLUserId));
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

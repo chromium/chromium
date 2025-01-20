@@ -9,13 +9,16 @@
 
 #include "base/base64.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -57,16 +60,55 @@ class IwaKeyDistributionComponentInstallBrowserTest
 IN_PROC_BROWSER_TEST_F(
     IwaKeyDistributionComponentInstallBrowserTest,
     CallComponentReadyWhenRegistrationFindsExistingComponent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Override the pre-install component directory and its alternative directory
+  // so that the component update will not find the pre-loaded component.
+  base::ScopedPathOverride preinstalled_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED);
+  base::ScopedPathOverride preinstalled_alt_dir_override(
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT);
+
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.0.0"),
                                                        CreateValidData()),
               HasValue());
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("1.0.0"),
                                                        CreateValidData()),
-              ErrorIs(Eq(IwaKeyDistributionInfoProvider::ComponentUpdateError::
-                             kStaleVersion)));
+              ErrorIs(Eq(IwaComponentUpdateError::kStaleVersion)));
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.1.0"),
                                                        CreateValidData()),
               HasValue());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
+                       PreloadedComponent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Override the user-wide component directory to make sure there is no
+  // downloaded component.
+  base::ScopedPathOverride user_dir_override(
+      component_updater::DIR_COMPONENT_USER);
+
+  base::HistogramTester ht;
+
+  // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
+  // UMAs.
+  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
+              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
+
+  ASSERT_OK_AND_ASSIGN(
+      (auto [version, is_preloaded]),
+      test::RegisterIwaKeyDistributionComponentAndWaitForLoad());
+  ASSERT_TRUE(is_preloaded);
+
+  // Trigger a call to GetKeyRotationInfo() to ensure the correctness of logged
+  // UMAs.
+  IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo("anything");
+
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
+                       base::Bucket(KeyRotationInfoSource::kPreloaded, 1)));
 }
 
 }  // namespace web_app

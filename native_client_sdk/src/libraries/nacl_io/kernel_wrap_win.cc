@@ -45,7 +45,7 @@ EXTERN_C_BEGIN
 // This needs to be included because it is defined in read.c, which we wish to
 // override. Define with dummy values for now... though this seems like it will
 // break ftelli64/fgetpos/fstream.
-char _lookuptrailbytes[256] = {0};
+char _lookuptrailbytes[256] = {};
 
 int _access(const char* path, int amode) {
   return ki_access(path, amode);

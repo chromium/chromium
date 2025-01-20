@@ -33,7 +33,7 @@ const char kSharedWorkerTestPage[] = "/workers/workers_ui_shared_worker.html";
 
 class InspectUITest : public WebUIMochaBrowserTest {
  public:
-  InspectUITest() {}
+  InspectUITest() = default;
 
   InspectUITest(const InspectUITest&) = delete;
   InspectUITest& operator=(const InspectUITest&) = delete;

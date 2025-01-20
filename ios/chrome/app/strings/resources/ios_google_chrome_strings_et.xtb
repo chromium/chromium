@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="1146503048444965320">Ava Chrome'is uus vaheleht</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites ja muudes rakendustes linke.</translation>
 <translation id="1229222343402087523">Otsi Chrome'is päringut ${searchPhrase}</translation>
 <translation id="1237769345474105984">Chrome'ilt</translation>
-<translation id="1240190568154816272">Chrome’i nõuanded</translation>
 <translation id="124228879633599436">Teie Chrome on aegunud. Turvalisuse tagamiseks värskendage seda.</translation>
 <translation id="1333745675627230582">Chrome'i dinosaurusemängu mängimine</translation>
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
@@ -38,6 +38,7 @@ Tasub teada
 <translation id="1646463005043273333">Avab Chrome'i seaded, et Chrome vaikebrauseriks määrata.</translation>
 <translation id="1670609221633730681">Chrome'i nõuanne: valige oma aadressiriba asukoht</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salvestage oma paroolid Chrome'i</translation>
 <translation id="1790080846677398234">Lisab sisestatud URL-id Chrome'is teie järjehoidjatesse.</translation>
 <translation id="1799920918471566157">Chrome’i nõuanded</translation>
 <translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3740397331642243698">Avab sisestatud URL-id Google Chrome'is inkognito režiimis.</translation>
 <translation id="3741995255368156336">Avab Chrome'i lugemisloendi.</translation>
+<translation id="3808570423967020928">Saate Chrome'i avakuva doki kaudu kiiremini avada.</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
 <translation id="3863841106411295595">Lisab sisestatud URL-id Chrome'is teie lugemisloendisse.</translation>
@@ -125,6 +127,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="4636900170638246267">Logige sellele saidile ja Chrome'i sisse.</translation>
 <translation id="4646014602299206846">Chrome tuvastab teie külastatud saitidel saadetiste jälgimisnumbrid ja kuvab saadetiste värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et seda funktsiooni pakkuda ja ostlemine kõigi jaoks paremaks muuta.</translation>
 <translation id="4647910807533196601">Ava Chrome'is minu viimane vaheleht.</translation>
+<translation id="4693084815234024320">Olete Chrome'i inkognito režiimis</translation>
 <translation id="4724297637870447613">Chrome'i kasutamine kõikjal</translation>
 <translation id="4738647308035481133">Google Chrome'i leht</translation>
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>
@@ -219,9 +222,12 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 
 Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Chrome'is sirvimisandmete kustutamine.</translation>
+<translation id="6924922227983877439">Avage lingid vaikimisi Chrome'is</translation>
+<translation id="6931601805528922498">Sisselogimisel lisatakse teie konto tööalaseks sirvimiseks Chrome'i.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="7056826488869329999">Avab ja käitab Chrome'is ohutuskontrolli.</translation>
 <translation id="7061455974939528301">Hoidke Chrome'i ikooni all ja puudutage valikut „Edit home screen”</translation>
+<translation id="7065813315247345131">Chrome teisaldamine dokki</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
 <translation id="7161390184744336561">Google Chrome on aegunud</translation>
 <translation id="7165736900384873061">Google Chrome'i QR-skanneri kasutamise alustamine</translation>

@@ -36,17 +36,17 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -108,7 +108,7 @@ class AutofillTest : public InProcessBrowserTest {
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  AutofillTest() {}
+  AutofillTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -427,16 +427,11 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(
       actual_phone_numbers,
-      UnorderedElementsAre(base::FeatureList::IsEnabled(
-                               features::kAutofillInferCountryCallingCode)
-                               ? u"14088714567"
-                               : u"4088714567",
-                           u"+4940808179000", u"", u""));
+      UnorderedElementsAre(u"14088714567", u"+4940808179000", u"", u""));
 }
 
-// Prepend country codes when formatting phone numbers if:
-// - It was provided in the first place.
-// - `AutofillInferCountryCallingCode` is enabled.
+// Prepend country codes when formatting phone numbers if it was provided or if
+// it could be inferred form the provided country.
 IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
   FormMap data = {{"NAME_FIRST", "Bob"},
                   {"NAME_LAST", "Smith"},
@@ -459,13 +454,10 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
         profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   }
 
-  // With `AutofillInferCountryCallingCode` enabled, the country code of the
-  // second phone number is derived from the profile (Germany).
-  std::vector<std::u16string> expected_phone_numbers = {
-      u"+49 8450 777777",
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? u"+49 8450 777777"
-          : u"08450 777777"};
+  // Expect that the country code of the second phone number is derived from the
+  // profile (Germany).
+  std::vector<std::u16string> expected_phone_numbers = {u"+49 8450 777777",
+                                                        u"+49 8450 777777"};
 
   EXPECT_THAT(actual_phone_numbers,
               UnorderedElementsAreArray(expected_phone_numbers));

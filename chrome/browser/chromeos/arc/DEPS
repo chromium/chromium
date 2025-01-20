@@ -1,4 +1,6 @@
 include_rules = [
+  "+chromeos/ash/experiences/arc/intent_helper",
+
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
@@ -34,6 +36,10 @@ specific_include_rules = {
     "+chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h",
   ],
   "start_smart_selection_action_menu\.cc": [
-    "+ash/components/arc/metrics/arc_metrics_constants.h",
+    "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
+  ],
+  "arc_external_protocol_dialog_unittest\.cc": [
+    "+chromeos/ash/experiences/arc/test/fake_arc_icon_cache.h",
+    "+chromeos/ash/experiences/arc/test/fake_arc_intent_helper_mojo.h",
   ],
 }

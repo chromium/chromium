@@ -29,7 +29,7 @@ namespace blink {
 
 class HTMLSelectElement;
 
-class HTMLHRElement final : public HTMLElement {
+class CORE_EXPORT HTMLHRElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -46,7 +46,7 @@ class HTMLHRElement final : public HTMLElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 };

@@ -59,7 +59,8 @@ void RasterBufferProvider::PlaybackToMemory(
 
   DCHECK(IsSupportedPlaybackToMemoryFormat(format)) << format.ToString();
 
-  SkColorType color_type = ToClosestSkColorType(gpu_compositing, format);
+  SkColorType color_type =
+      ToClosestSkColorTypeDeprecated(gpu_compositing, format);
 
   // Uses kPremul_SkAlphaType since the result is not known to be opaque.
   SkImageInfo info = SkImageInfo::Make(size.width(), size.height(), color_type,
@@ -104,8 +105,8 @@ void RasterBufferProvider::PlaybackToMemory(
 
     TRACE_EVENT0("cc",
                  "RasterBufferProvider::PlaybackToMemory::ConvertRGBA4444");
-    SkImageInfo dst_info =
-        info.makeColorType(ToClosestSkColorType(gpu_compositing, format));
+    SkImageInfo dst_info = info.makeColorType(
+        ToClosestSkColorTypeDeprecated(gpu_compositing, format));
     auto dst_canvas =
         SkCanvas::MakeRasterDirect(dst_info, memory, stride, &surface_props);
     DCHECK(dst_canvas);

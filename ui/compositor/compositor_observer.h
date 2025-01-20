@@ -12,6 +12,10 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/compositor_export.h"
 
+namespace viz {
+class SurfaceInfo;
+}
+
 namespace gfx {
 class Size;
 struct PresentationFeedback;
@@ -98,6 +102,11 @@ class COMPOSITOR_EXPORT CompositorObserver {
   // Called when the compositor receives a new refresh rate preference.
   virtual void OnSetPreferredRefreshRate(Compositor* compositor,
                                          float refresh_rate) {}
+
+  // Called when a CompositorFrame with a new SurfaceId activates for the first
+  // time.
+  virtual void OnFirstSurfaceActivation(Compositor* compositor,
+                                        const viz::SurfaceInfo& surface_info) {}
 };
 
 }  // namespace ui

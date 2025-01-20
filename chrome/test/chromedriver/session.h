@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
@@ -82,7 +84,6 @@ struct Session {
   // BiDi channels
   static const char kChannelSuffix[];
   static const char kNoChannelSuffix[];
-  static const char kBlockingChannelSuffix[];
 
   explicit Session(const std::string& id);
   Session(const std::string& id, std::unique_ptr<Chrome> chrome);
@@ -104,13 +105,15 @@ struct Session {
                          CloseFunc close_connection);
   void RemoveBidiConnection(int connection_id);
   void CloseAllConnections();
+  static void Terminate();
+  Status SendBidiSessionEnd();
+  static void HandleMessagesAndTerminateIfNecessary();
 
   const std::string id;
   bool w3c_compliant;
   bool web_socket_url = false;
   bool quit;
   bool detach;
-  bool awaiting_bidi_response = false;
   std::unique_ptr<Chrome> chrome;
   std::string window;
   std::string bidi_mapper_web_view_id;
@@ -156,6 +159,8 @@ struct Session {
   int click_count;
   base::TimeTicks mouse_click_timestamp;
   std::string host;
+  scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner;
+  base::OnceClosure terminate_on_cmd;
 
  private:
   void SwitchFrameInternal(bool for_top_frame);

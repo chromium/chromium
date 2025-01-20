@@ -11,10 +11,12 @@
 #include <set>
 #include <string>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -24,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -113,6 +116,28 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;
 
+  // The cached compression group of a trusted signals response, or an error
+  // message. May be for bidding signals or scoring signals, but not both.
+  // CompressionGroupData are indexed by UnguessableTokens which can be used to
+  // retrieve them over the auction_worklet::mojom::TrustedSignalsCache Mojo
+  // interface.
+  //
+  // Public so that Handle can depend on it.
+  //
+  // CompressionGroupData objects are created when RequestTrusted*Signals() is
+  // called and can't reuse an existing one, at which point a new or existing
+  // Fetch in `fetch_map_` is also associated with the CompressionGroupData.
+  // Each CompressionGroupData owns all CacheEntries that refer to it, and the
+  // compression group of the associated fetch as well.  No two
+  // CompressionGroupData objects represent the same compression group from a
+  // single Fetch.
+  //
+  // CompressionGroupData objects are refcounted, and when the last reference is
+  // released, all associated CacheEntries are destroyed, and the compression
+  // group of the associated fetch (if the fetche associated with the
+  // CompressionGroupData has not yet completed) is destroyed as well.
+  class CompressionGroupData;
+
   // As long as a Handle is alive, any Mojo
   // auction_worklet::mojom::TrustedSignalsCache created by invoking
   // CreateMojoPipe() can retrieve the response associated with the
@@ -121,43 +146,54 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // any point in time, but the fetch may be made asynchronously, so there's no
   // guarantee of a timely response.
   //
-  // Refcounted so that one handle can be reused for all requests with the same
-  // `compression_group_token`, so when the Handle is destroyed, we know there
-  // are no Handles that refer to the corresponding entry in the cache, and it
-  // may be deleted.
-  //
   // Any pending or future requests through a handed out
   // auction_worklet::mojom::TrustedSignalsCache pipe for the
   // `compression_group_token` associated with a destroyed Handle will be sent
   // an error message.
   //
-  // All outstanding Handles must be released before the TrustedSignalsCacheImpl
-  // may be destroyed.
+  // All outstanding Handles must be destroyed before the underlying
+  // CompressionGroupData may be destroyed.
   //
-  // Currently, the internal CompressionGroupData class is a subclass of this,
-  // so callers are hanging on to data associated with a compression group
-  // directly, but that's not a fundamental design requirement of the API.
-  class Handle : public base::RefCounted<Handle> {
+  // TODO(https://crbug.com/333445540): Remove refcounting, which is only done
+  // for legacy reasons.
+  class CONTENT_EXPORT Handle : public base::RefCounted<Handle> {
    public:
+    // Takes ownership of a reference to CompressionGroupData.
+    explicit Handle(scoped_refptr<CompressionGroupData> compression_group_data);
     Handle(Handle&) = delete;
     Handle& operator=(Handle&) = delete;
 
     // The token that needs to be passed to GetTrustedSignals() to retrieve the
     // response through the auction_worklet::mojom::TrustedSignalsCache API.
     // Will not change for the lifetime of the handle.
-    const base::UnguessableToken& compression_group_token() const {
-      return compression_group_token_;
-    }
+    base::UnguessableToken compression_group_token() const;
+
+    // Attempts to start the network fetch, if it hasn't started already. Not
+    // guaranteed to immediately start the fetch, as it may currently be
+    // retrieving the coordinator key. If this isn't called within
+    // `kAutoStartDelay` of a fetch being created, it will automatically be
+    // invoked for the fetch. Note that since fetches may be reused, it's
+    // possible for a fetch of any age to be assigned to a new Handle, and for
+    // another Handle to start the fetch assigned to a Handle.
+    //
+    // Handles that share a `compression_group_token` always share a Fetch,
+    // though other Handles may share the fetch as well.
+    void StartFetch();
 
    protected:
     friend class base::RefCounted<Handle>;
 
-    Handle();
     virtual ~Handle();
 
-    const base::UnguessableToken compression_group_token_{
-        base::UnguessableToken::Create()};
+    // The underlying CompressionGroupData. Only released on destruction.
+    scoped_refptr<CompressionGroupData> compression_group_data_;
   };
+
+  static constexpr size_t kNonceCacheSize = 50;
+
+  // If StartFetch() isn't called on any handle for a request that has been
+  // around this long, automatically call SetFetchCanStart() for the fetch.
+  static constexpr base::TimeDelta kAutoStartDelay = base::Milliseconds(10);
 
   TrustedSignalsCacheImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -186,6 +222,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // over the network after a post task.
   scoped_refptr<Handle> RequestTrustedBiddingSignals(
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& interest_group_owner,
       const std::string& interest_group_name,
       blink::mojom::InterestGroup_ExecutionMode execution_mode,
@@ -218,6 +255,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // origin} triplet.
   scoped_refptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
       const url::Origin& main_frame_origin,
+      network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& seller,
       const GURL& trusted_signals_url,
       const url::Origin& coordinator,
@@ -245,6 +283,38 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     url::Origin script_origin;
   };
 
+  // Values that prevent sharing network nonces used to distinghuish network
+  // partitions used to fetch the signals. Note that the network partition also
+  // uses the top frame site in addition to the nonce, so there's no need to
+  // include that.
+  //
+  // Since the `signals_url` is sent to the untrusted server in front of the
+  // TEE, using the same network partition for different signals URLs would leak
+  // data, so key on that.
+  //
+  // Sharing partitions for different owners or different signals types also
+  // seems potentially leaky, so include those as well.
+  struct NetworkPartitionNonceKey {
+    NetworkPartitionNonceKey();
+    NetworkPartitionNonceKey(const url::Origin& script_origin,
+                             SignalsType signals_type,
+                             const GURL& trusted_signals_url);
+    NetworkPartitionNonceKey(const NetworkPartitionNonceKey&);
+    NetworkPartitionNonceKey(NetworkPartitionNonceKey&&);
+    ~NetworkPartitionNonceKey();
+
+    NetworkPartitionNonceKey& operator=(const NetworkPartitionNonceKey&);
+    NetworkPartitionNonceKey& operator=(NetworkPartitionNonceKey&&);
+
+    bool operator<(const NetworkPartitionNonceKey& other) const;
+
+    // Values are roughly in order of what is expected to be most performant for
+    // comparisons.
+    url::Origin script_origin;
+    SignalsType signals_type;
+    GURL trusted_signals_url;
+  };
+
   // Key used for live or pending requests to a trusted server. Two request with
   // the same FetchKey can be merged together, but the requests themselves may
   // differ in other fields. Before the network request is started, any request
@@ -267,6 +337,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // scoring signals fetches, it's the seller origin (component or top-level,
     // depending on which seller will be receiving the signals).
     FetchKey(const url::Origin& main_frame_origin,
+             network::mojom::IPAddressSpace ip_address_space,
              SignalsType signals_type,
              const url::Origin& script_origin,
              const GURL& trusted_signals_url,
@@ -281,45 +352,35 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
     bool operator<(const FetchKey& other) const;
 
+    const url::Origin& script_origin() const {
+      return network_partition_nonce_key.script_origin;
+    }
+    SignalsType signals_type() const {
+      return network_partition_nonce_key.signals_type;
+    }
+    const GURL& trusted_signals_url() const {
+      return network_partition_nonce_key.trusted_signals_url;
+    }
+
     // Order here matches comparison order in operator<(), and is based on a
     // guess on what order will result in the most performant comparisons.
 
-    url::Origin script_origin;
-    SignalsType signals_type;
+    NetworkPartitionNonceKey network_partition_nonce_key;
 
     // The origin of the frame running the auction that needs the signals. This
     // could potentially be used to separate compression groups instead of
     // fetches, but best to be safe.
     url::Origin main_frame_origin;
 
-    GURL trusted_signals_url;
     url::Origin coordinator;
+
+    network::mojom::IPAddressSpace ip_address_space;
   };
 
   // A pending or live network request. May be for bidding signals or scoring
   // signals, but not both.
   struct Fetch;
   using FetchMap = std::multimap<FetchKey, Fetch>;
-
-  // The cached compression group of a trusted signals response, or an error
-  // message. May be for bidding signals or scoring signals, but not both.
-  // CompressionGroupData are indexed by UnguessableTokens which can be used to
-  // retrieve them over the auction_worklet::mojom::TrustedSignalsCache Mojo
-  // interface.
-  //
-  // CompressionGroupData objects are created when RequestTrusted*Signals() is
-  // called and can't reuse an existing one, at which point a new or existing
-  // Fetch in `fetch_map_` is also associated with the CompressionGroupData.
-  // Each CompressionGroupData owns all CacheEntries that refer to it, and the
-  // compression group of the associated fetch as well.  No two
-  // CompressionGroupData objects represent the same compression group from a
-  // single Fetch.
-  //
-  // CompressionGroupData objects are refcounted, and when the last reference is
-  // released, all associated CacheEntries are destroyed, and the compression
-  // group of the associated fetch (if the fetche associated with the
-  // CompressionGroupData has not yet completed) is destroyed as well.
-  class CompressionGroupData;
 
   // A key that distinguishes bidding signals entries in the cache. The key is
   // used to find all potential matching entries whenever
@@ -346,6 +407,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
+                    network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& joining_origin,
                     base::Value::Dict additional_params);
 
@@ -401,6 +463,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
                     const url::Origin& main_frame_origin,
+                    network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& interest_group_owner,
                     const url::Origin& joining_origin,
                     const GURL& render_url,
@@ -457,22 +520,27 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
           interest_group_owner_if_scoring_signals);
 
   // Starts retrieving the coordinator key for the specified fetch. Will invoke
-  // StartFetch() on complete, which may happen synchronously.
+  // StartFetchIfReady() on complete, which may happen synchronously.
   void GetCoordinatorKey(FetchMap::iterator fetch_it);
 
-  // If the key was successfully fetched, starts the corresponding Fetch.
+  // If the key was successfully fetched, sets `coordinator_key` and calls
+  // StartFetchIfReady(). On error, calls OnFetchComplete().
   void OnCoordinatorKeyReceived(
       FetchMap::iterator fetch_it,
       base::expected<BiddingAndAuctionServerKey, std::string>
           bidding_and_auction_server_key);
 
-  // Called by StartFetch() to request bidding/scoring signals.
-  void StartBiddingSignalsFetch(
-      FetchMap::iterator fetch_it,
-      const BiddingAndAuctionServerKey& bidding_and_auction_key);
-  void StartScoringSignalsFetch(
-      FetchMap::iterator fetch_it,
-      const BiddingAndAuctionServerKey& bidding_and_auction_key);
+  // Sets `can_start` to true for `fetch_it` and calls StartFetchIfReady(). Does
+  // nothing if `can_start` is already set.
+  void SetFetchCanStart(FetchMap::iterator fetch_it);
+
+  // Starts the fetch if it has a `coordinator_key` and its `can_start` field is
+  // true.
+  void StartFetchIfReady(FetchMap::iterator fetch_it);
+
+  // Called by StartFetchIfReady() to request bidding/scoring signals.
+  void StartBiddingSignalsFetch(FetchMap::iterator fetch_it);
+  void StartScoringSignalsFetch(FetchMap::iterator fetch_it);
 
   void OnFetchComplete(
       FetchMap::iterator fetch_it,
@@ -508,6 +576,9 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   void DestroyBiddingCacheEntry(BiddingCacheEntryMap::iterator cache_entry_it);
   void DestroyScoringCacheEntry(ScoringCacheEntryMap::iterator cache_entry_it);
 
+  base::UnguessableToken GetNetworkPartitionNonce(
+      const NetworkPartitionNonceKey& network_partition_nonce_key);
+
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
@@ -538,6 +609,13 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   std::map<base::UnguessableToken,
            raw_ptr<CompressionGroupData, CtnExperimental>>
       compression_group_data_map_;
+
+  // Cache of the most recently used network partition nonces. When a nonce is
+  // evicted, any network state cached in the network process associated with
+  // the nonce will no longer be usable, and if the key for the evicted entry is
+  // seen again, a new UnguessableToken will be created.
+  base::LRUCache<NetworkPartitionNonceKey, base::UnguessableToken>
+      network_partition_nonce_cache_;
 };
 
 }  // namespace content

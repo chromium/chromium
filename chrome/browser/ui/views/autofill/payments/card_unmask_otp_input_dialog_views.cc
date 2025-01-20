@@ -10,7 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -134,8 +134,9 @@ views::View* CardUnmaskOtpInputDialogViews::GetInitiallyFocusedView() {
 void CardUnmaskOtpInputDialogViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  if (otp_input_textfield_->GetInvalid())
+  if (otp_input_textfield_->GetInvalid()) {
     HideInvalidState();
+  }
 
   SetButtonEnabled(
       ui::mojom::DialogButton::kOk,

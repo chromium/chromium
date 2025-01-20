@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_content_client.h"
+#include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "components/memory_system/memory_system.h"
 #include "content/public/app/content_main_delegate.h"
 
@@ -65,6 +66,7 @@ class AwMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<AwContentBrowserClient> content_browser_client_;
   std::unique_ptr<AwContentGpuClient> content_gpu_client_;
   std::unique_ptr<AwContentRendererClient> content_renderer_client_;
+  AwGrContextOptionsProvider aw_gr_context_options_provider_;
 
   memory_system::MemorySystem memory_system_;
 };

@@ -48,8 +48,7 @@ ChromeWebViewGuestDelegate::ChromeWebViewGuestDelegate(
     WebViewGuest* web_view_guest)
     : pending_context_menu_request_id_(0), web_view_guest_(web_view_guest) {}
 
-ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
-}
+ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() = default;
 
 bool ChromeWebViewGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -127,9 +126,14 @@ std::optional<blink::UserAgentOverride>
 ChromeWebViewGuestDelegate::GetDefaultUserAgentOverride() {
   // Controlled Frame has its own UserAgentOverride.
   if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
-    return controlled_frame::GetDefaultControlledFrameUserAgentOverride();
+    return controlled_frame::GetDefaultControlledFrameUserAgentOverride(
+        enable_client_hints_brand_);
   }
   return std::nullopt;
+}
+
+void ChromeWebViewGuestDelegate::SetClientHintsEnabled(bool enable) {
+  enable_client_hints_brand_ = enable;
 }
 
 }  // namespace extensions

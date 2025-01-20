@@ -6,7 +6,9 @@
 #define NET_DISK_CACHE_SIMPLE_SIMPLE_FILE_TRACKER_H_
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <array>
 #include <list>
 #include <memory>
 #include <unordered_map>
@@ -177,9 +179,9 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // Note that these are stored indirect since we hand out pointers to these,
     // and we don't want those to become invalid if some other thread appends
     // things here.
-    std::unique_ptr<base::File> files[kSimpleEntryTotalFileCount];
+    std::array<std::unique_ptr<base::File>, kSimpleEntryTotalFileCount> files;
 
-    State state[kSimpleEntryTotalFileCount];
+    std::array<State, kSimpleEntryTotalFileCount> state;
     std::list<raw_ptr<TrackedFiles, CtnExperimental>>::iterator position_in_lru;
 
     // true if position_in_lru is valid. For entries where we closed everything,

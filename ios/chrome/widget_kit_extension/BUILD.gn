@@ -17,10 +17,6 @@ config("ios_enable_lockscreen_widget") {
   swiftflags = [ "-DIOS_ENABLE_LOCKSCREEN_WIDGET" ]
 }
 
-config("ios_enable_shortcuts_widget") {
-  swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
-}
-
 config("ios_enable_widgets_for_mim") {
   swiftflags = [ "-DIOS_ENABLE_WIDGETS_FOR_MIM" ]
 }
@@ -44,6 +40,8 @@ swift_source_set("widget_kit_extension_swift") {
     "quick_actions_widget.swift",
     "search_passwords_widget.swift",
     "search_widget.swift",
+    "shortcuts_widget.swift",
+    "timeline_provider_util.swift",
     "widget_constants.swift",
   ]
   bridge_header = "widget_kit_swift_bridge.h"
@@ -67,13 +65,10 @@ swift_source_set("widget_kit_extension_swift") {
     configs += [ ":ios_enable_lockscreen_widget" ]
   }
 
-  if (ios_enable_shortcuts_widget) {
-    configs += [ ":ios_enable_shortcuts_widget" ]
-    sources += [ "shortcuts_widget.swift" ]
-  }
-
   if (ios_enable_widgets_for_mim) {
     configs += [ ":ios_enable_widgets_for_mim" ]
+    generate_intents = true
+    sources += [ "select_profile_intent.swift" ]
   }
 
   frameworks = [

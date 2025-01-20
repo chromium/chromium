@@ -80,11 +80,6 @@ void RecordMaxTouchPointsSupportedBySystem(int max_touch_points) {
 
 #if BUILDFLAG(IS_WIN)
 
-bool IsTabletMode() {
-  return base::win::IsWindows10OrGreaterTabletMode(
-      gfx::SingletonHwnd::GetInstance()->hwnd());
-}
-
 bool IsWndProcMessageObserved(UINT message) {
 #if BUILDFLAG(USE_BLINK)
   return message == WM_SETTINGCHANGE || message == WM_POINTERDEVICECHANGE;
@@ -96,7 +91,7 @@ bool IsWndProcMessageObserved(UINT message) {
 void SequencedWndProcHandler(UINT message, WPARAM wparam, LPARAM lparam) {
   switch (message) {
     case WM_SETTINGCHANGE:
-      TouchUiController::Get()->OnTabletModeToggled(IsTabletMode());
+      TouchUiController::Get()->RefreshTabletMode();
       break;
 #if BUILDFLAG(USE_BLINK)
     case WM_POINTERDEVICECHANGE:
@@ -189,14 +184,18 @@ TouchUiController::TouchUiController(TouchUiState touch_ui_state)
 #if BUILDFLAG(IS_WIN)
     singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
         base::BindRepeating(&OnWndProc));
-    tablet_mode_ = IsTabletMode();
-#endif
+    base::win::IsDeviceInTabletMode(
+        gfx::SingletonHwnd::GetInstance()->hwnd(),
+        base::BindOnce(&TouchUiController::SetInitialTabletMode,
+                       weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_WIN)
   }
-
+#if !BUILDFLAG(IS_WIN)
   if (touch_ui())
     RecordEnteredTouchMode();
   else
     RecordEnteredNonTouchMode();
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 TouchUiController::~TouchUiController() = default;
@@ -207,6 +206,32 @@ void TouchUiController::OnTabletModeToggled(bool enabled) {
   if (touch_ui() != was_touch_ui)
     TouchUiChanged();
 }
+
+#if BUILDFLAG(IS_WIN)
+void TouchUiController::RefreshTabletMode() {
+  base::win::IsDeviceInTabletMode(
+      gfx::SingletonHwnd::GetInstance()->hwnd(),
+      base::BindOnce(&TouchUiController::OnTabletModeToggled,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void TouchUiController::SetInitialTabletMode(bool enabled) {
+  const bool was_touch_ui = touch_ui();
+  tablet_mode_ = enabled;
+  // Unconditionally record the histogram following discovery of the initial
+  // mode.
+  if (touch_ui()) {
+    RecordEnteredTouchMode();
+  } else {
+    RecordEnteredNonTouchMode();
+  }
+  // Notify observers only if the mode has changed.
+  if (touch_ui() != was_touch_ui) {
+    TRACE_EVENT0("ui", "TouchUiController.NotifyListeners");
+    callback_list_.Notify();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 base::CallbackListSubscription TouchUiController::RegisterCallback(
     const base::RepeatingClosure& closure) {

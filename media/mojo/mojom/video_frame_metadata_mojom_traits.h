@@ -93,11 +93,6 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.interactive_content;
   }
 
-  static bool texture_origin_is_top_left(
-      const media::VideoFrameMetadata& input) {
-    return input.texture_origin_is_top_left;
-  }
-
   static uint32_t sub_capture_target_version(
       const media::VideoFrameMetadata& input) {
     return input.sub_capture_target_version;

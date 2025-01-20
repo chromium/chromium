@@ -28,6 +28,7 @@
 
 namespace apps::test {
 namespace {
+
 std::optional<std::string> WaitForNextMessage(
     content::DOMMessageQueue& message_queue) {
   std::string message;
@@ -39,32 +40,10 @@ std::optional<std::string> WaitForNextMessage(
   EXPECT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
   return unquoted_message;
 }
-}  // namespace
-
-std::string ToString(LinkCapturingFeatureVersion version) {
-  switch (version) {
-    case LinkCapturingFeatureVersion::kV1DefaultOff:
-      return "V1DefaultOff";
-    case LinkCapturingFeatureVersion::kV2DefaultOff:
-      return "V2DefaultOff";
-#if !BUILDFLAG(IS_CHROMEOS)
-    case LinkCapturingFeatureVersion::kV1DefaultOn:
-      return "V1DefaultOn";
-    case LinkCapturingFeatureVersion::kV2DefaultOn:
-      return "V2DefaultOn";
-#endif
-  }
-}
-
-std::string LinkCapturingVersionToString(
-    const testing::TestParamInfo<LinkCapturingFeatureVersion>& version) {
-  return ToString(version.param);
-}
 
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     std::optional<bool> override_captures_by_default,
     bool use_v2) {
-  CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
   // TODO(crbug.com/376922620): Create a feature flag to turn off the v1
@@ -96,8 +75,31 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+}  // namespace
+
+std::string ToString(LinkCapturingFeatureVersion version) {
+  switch (version) {
+    case LinkCapturingFeatureVersion::kV1DefaultOff:
+      return "V1DefaultOff";
+    case LinkCapturingFeatureVersion::kV2DefaultOff:
+      return "V2DefaultOff";
+#if !BUILDFLAG(IS_CHROMEOS)
+    case LinkCapturingFeatureVersion::kV1DefaultOn:
+      return "V1DefaultOn";
+    case LinkCapturingFeatureVersion::kV2DefaultOn:
+      return "V2DefaultOn";
+#endif
+  }
+}
+
+std::string LinkCapturingVersionToString(
+    const testing::TestParamInfo<LinkCapturingFeatureVersion>& version) {
+  return ToString(version.param);
+}
+
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     LinkCapturingFeatureVersion version) {
+  CHECK_IS_TEST();
   switch (version) {
     case LinkCapturingFeatureVersion::kV1DefaultOff:
       return GetFeaturesToEnableLinkCapturingUX(

@@ -10,6 +10,8 @@
 #include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/protocol/target_handler.h"
+#include "headless/public/headless_window_state.h"
 
 namespace headless {
 namespace protocol {
@@ -24,7 +26,7 @@ std::unique_ptr<Browser::Bounds> CreateBrowserBounds(
       .SetTop(bounds.y())
       .SetWidth(bounds.width())
       .SetHeight(bounds.height())
-      .SetWindowState(web_contents->window_state())
+      .SetWindowState(GetProtocolWindowState(web_contents->window_state()))
       .Build();
 }
 
@@ -45,7 +47,7 @@ Response BrowserHandler::Disable() {
 }
 
 Response BrowserHandler::GetWindowForTarget(
-    Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<Browser::Bounds>* out_bounds) {
   auto agent_host =
@@ -97,26 +99,37 @@ Response BrowserHandler::SetWindowBounds(
     bounds.set_height(window_bounds->GetHeight(bounds.height()));
   }
 
-  const std::string window_state = window_bounds->GetWindowState("normal");
-  if (set_bounds && window_state != "normal") {
-    return Response::ServerError(
-        "The 'minimized', 'maximized' and 'fullscreen' states cannot be "
-        "combined with 'left', 'top', 'width' or 'height'");
+  std::optional<HeadlessWindowState> headless_window_state;
+  if (window_bounds->HasWindowState()) {
+    std::string protocol_window_state = window_bounds->GetWindowState().value();
+    headless_window_state = GetWindowStateFromProtocol(protocol_window_state);
+    if (!headless_window_state) {
+      return Response::InvalidParams("Invalid window state: " +
+                                     protocol_window_state);
+    }
+    if (set_bounds && headless_window_state != HeadlessWindowState::kNormal) {
+      return Response::InvalidParams(
+          "The 'minimized', 'maximized' and 'fullscreen' states cannot be "
+          "combined with 'left', 'top', 'width' or 'height'");
+    }
   }
 
-  if (set_bounds && web_contents->window_state() != "normal") {
-    return Response::ServerError(
+  if (set_bounds &&
+      web_contents->window_state() != HeadlessWindowState::kNormal) {
+    return Response::InvalidParams(
         "To resize minimized/maximized/fullscreen window, restore it to normal "
         "state first.");
   }
 
-  web_contents->set_window_state(window_state);
+  web_contents->SetWindowState(
+      headless_window_state.value_or(HeadlessWindowState::kNormal));
   web_contents->SetBounds(bounds);
   return Response::Success();
 }
 
-protocol::Response BrowserHandler::SetDockTile(Maybe<std::string> label,
-                                               Maybe<protocol::Binary> image) {
+protocol::Response BrowserHandler::SetDockTile(
+    std::optional<std::string> label,
+    std::optional<protocol::Binary> image) {
   return Response::Success();
 }
 

@@ -227,7 +227,6 @@ class BrowserTabStripModelDelegateVariantTest
   BrowserTabStripModelDelegateVariantTest() {
     std::vector<base::test::FeatureRef> saved_tab_group_features = {
         tab_groups::kTabGroupsSaveV2,
-        tab_groups::kTabGroupsSaveUIUpdate,
     };
     if (IsSavedTabGroupsV2()) {
       feature_list_.InitWithFeatures(saved_tab_group_features, {});

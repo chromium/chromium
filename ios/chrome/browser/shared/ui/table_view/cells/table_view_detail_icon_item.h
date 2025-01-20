@@ -88,6 +88,9 @@ enum class BadgeType {
 // aligned with the top of the cell. YES by default.
 @property(nonatomic, assign) BOOL iconCenteredVertically;
 
+// Margin on top of `textLabel`. This is 0 by default.
+@property(nonatomic, assign) CGFloat textLabelMarginTop;
+
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text
 // labels will expand to fill the full width of the cell. The image view will be

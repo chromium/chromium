@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.EXPAND_NEW_TAB_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.FADE_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.TIMEOUT_MS;
-import static org.chromium.chrome.browser.hub.HubLayoutConstants.TRANSLATE_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_TIMEOUT_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_TRANSLATE_DURATION_MS;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -179,7 +179,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void onFinishNativeInitialization() {
-        super.onFinishNativeInitialization();
         ensureSceneLayersExist();
     }
 
@@ -193,7 +192,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void destroy() {
-        super.destroy();
         if (mTabSceneLayer != null) {
             mTabSceneLayer.destroy();
             mTabSceneLayer = null;
@@ -212,7 +210,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     protected void updateLayout(long time, long dt) {
         ensureSceneLayersExist();
-        super.updateLayout(time, dt);
         if (!hasLayoutTab()) return;
 
         boolean needUpdate = updateSnap(dt, getLayoutTab());
@@ -456,9 +453,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             boolean background,
             float originX,
             float originY) {
-        super.onTabCreated(
-                time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
-
         // Background tab creation or creation while hiding does not trigger a Hub layout
         // transition.
         if (background || isStartingToHide()) return;
@@ -478,15 +472,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mCurrentSceneLayer = mEmptySceneLayer;
         updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
-        @ColorInt int backgroundColor;
-        if (newIsIncognito) {
-            backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito);
-        } else {
-            // See https://crbug/1507124.
-            backgroundColor =
-                    ChromeColors.getSurfaceColor(
-                            getContext(), R.dimen.home_surface_background_color_elevation);
-        }
+        @ColorInt
+        int backgroundColor =
+                NewTabAnimationsUtils.getBackgroundColor(getContext(), newIsIncognito);
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =
@@ -494,14 +482,16 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         mHubController.getContainerView(),
                         animationDataSupplier,
                         backgroundColor,
-                        EXPAND_NEW_TAB_DURATION_MS,
+                        HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
                         mOnToolbarAlphaChange);
 
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
         int searchBoxHeight =
-                HubUtils.getSearchBoxHeight(
-                        containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
+                OmniboxFeatures.sAndroidHubSearch.isEnabled()
+                        ? HubUtils.getSearchBoxHeight(
+                                containerView, R.id.hub_toolbar, R.id.toolbar_action_container)
+                        : 0;
 
         View paneHost = mHubController.getPaneHostView();
         assert paneHost.isLaidOut();
@@ -530,9 +520,14 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 new ShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ false));
 
+        assert mCurrentAnimationRunner == null;
         mCurrentAnimationRunner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
         mCurrentAnimationRunner.addListener(
@@ -590,8 +585,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         ensureSceneLayersExist();
-        super.updateSceneLayer(
-                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
 
         if (mCurrentSceneLayer != mTabSceneLayer) return;
 
@@ -629,10 +622,13 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
-                    containerView, mScrimController, TRANSLATE_DURATION_MS, getContainerYOffset());
+                    containerView,
+                    mScrimController,
+                    HUB_LAYOUT_TRANSLATE_DURATION_MS,
+                    getContainerYOffset());
         } else if (pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
-                    containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
+                    containerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
         return pane.createShowHubLayoutAnimatorProvider(containerView);
     }
@@ -643,10 +639,13 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
-                    containerView, mScrimController, TRANSLATE_DURATION_MS, getContainerYOffset());
+                    containerView,
+                    mScrimController,
+                    HUB_LAYOUT_TRANSLATE_DURATION_MS,
+                    getContainerYOffset());
         } else if (pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
-                    containerView, FADE_DURATION_MS, mOnToolbarAlphaChange);
+                    containerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
         return pane.createHideHubLayoutAnimatorProvider(containerView);
     }
@@ -664,7 +663,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private void queueAnimation() {
         if (mCurrentAnimationRunner == null) return;
 
-        mCurrentAnimationRunner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+        mCurrentAnimationRunner.runWithWaitForAnimatorTimeout(HUB_LAYOUT_TIMEOUT_MS);
     }
 
     private void ensureSceneLayersExist() {

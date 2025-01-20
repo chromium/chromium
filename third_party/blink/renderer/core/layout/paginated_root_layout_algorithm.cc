@@ -85,7 +85,7 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
     // so that we don't have to add work-arounds to ignore it on the paint side.
     LogicalOffset origin =
         converter.ToLogical(PhysicalOffset(), result.fragment->Size());
-    page_containers.emplace_back(result.fragment, origin);
+    page_containers.emplace_back(*result.fragment, origin);
 
     page_area_params.break_token = result.fragmentainer_break_token;
     counters_context = std::move(result.counters_context);
@@ -141,7 +141,7 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
 
       page_area_params.break_token = result.fragmentainer_break_token;
       counters_context = std::move(result.counters_context);
-      page_containers.emplace_back(result.fragment, old_container.offset);
+      page_containers.emplace_back(*result.fragment, old_container.offset);
       page_index++;
     }
   }

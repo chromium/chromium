@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
+#include "ash/capture_mode/action_button_container_view.h"
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -17,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/shell.h"
@@ -46,8 +48,7 @@ namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
     CaptureModeSessionFocusCycler::HighlightHelper,
-    kCaptureModeHighlightHelper,
-    nullptr)
+    kCaptureModeHighlightHelper)
 
 // The focusable items for the FocusGroup::kSelection group.
 constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
@@ -451,10 +452,16 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
                              FocusGroup::kSettingsMenu,
                              FocusGroup::kSettingsClose},
       groups_for_region_{
-          FocusGroup::kNone,          FocusGroup::kTypeSource,
-          FocusGroup::kSelection,     FocusGroup::kCameraPreview,
-          FocusGroup::kCaptureButton, FocusGroup::kRecordingTypeMenu,
-          FocusGroup::kSettingsMenu,  FocusGroup::kSettingsClose},
+          FocusGroup::kNone,
+          FocusGroup::kTypeSource,
+          FocusGroup::kSelection,
+          FocusGroup::kCameraPreview,
+          FocusGroup::kCaptureButton,
+          FocusGroup::kActionButtons,
+          FocusGroup::kRecordingTypeMenu,
+          FocusGroup::kSettingsMenu,
+          FocusGroup::kSettingsClose,
+      },
       groups_for_window_{FocusGroup::kNone, FocusGroup::kTypeSource,
                          FocusGroup::kCaptureWindow, FocusGroup::kSettingsMenu,
                          FocusGroup::kSettingsClose},
@@ -462,6 +469,9 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
+      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSelection,
+                          FocusGroup::kActionButtons,
+                          FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
@@ -541,8 +551,7 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (current_group_is_selection) {
     const gfx::Rect user_region =
         CaptureModeController::Get()->user_capture_region();
-    if (user_region.IsEmpty())
-      return;
+    DCHECK(!user_region.IsEmpty());
 
     const auto fine_tune_position = GetFocusedFineTunePosition();
     DCHECK_NE(fine_tune_position, FineTunePosition::kNone);
@@ -751,9 +760,13 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
 
 const std::vector<CaptureModeSessionFocusCycler::FocusGroup>&
 CaptureModeSessionFocusCycler::GetCurrentGroupList() const {
-  if (session_->active_behavior()->behavior_type() ==
-      BehaviorType::kGameDashboard) {
+  // Behavior-specific focus groups.
+  BehaviorType active_behavior = session_->active_behavior()->behavior_type();
+  if (active_behavior == BehaviorType::kGameDashboard) {
     return groups_for_game_capture_;
+  }
+  if (active_behavior == BehaviorType::kSunfish) {
+    return groups_for_sunfish_;
   }
 
   switch (session_->controller_->source()) {
@@ -779,12 +792,14 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kStartRecordingButton:
       return session_->capture_mode_bar_view_->GetStartRecordingButton();
-    case FocusGroup::kSelection:
+    case FocusGroup::kSelection: {
+      return !CaptureModeController::Get()->user_capture_region().IsEmpty();
+    }
     case FocusGroup::kCaptureButton: {
-      // The selection UI and capture button are focusable only when it is
-      // interactable, meaning it has buttons that can be pressed. The capture
-      // label widget can be hidden when it intersects with other capture UIs.
-      // In that case, we shouldn't navigate to it via the keyboard.
+      // The capture button is focusable only when it is interactable, meaning
+      // it has buttons that can be pressed. The capture label widget can be
+      // hidden when it intersects with other capture UIs. In that case, we
+      // shouldn't navigate to it via the keyboard.
       auto* capture_label_view = session_->capture_label_view_.get();
       return capture_label_view &&
              capture_label_view->GetWidget()->IsVisible() &&
@@ -801,6 +816,10 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kRecordingTypeMenu:
       return !!GetRecordingTypeMenuWidget();
+    case FocusGroup::kActionButtons: {
+      return session_->action_container_view_ &&
+             !session_->action_container_view_->children().empty();
+    }
   }
 }
 
@@ -904,6 +923,19 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       session_->recording_type_menu_view_->AppendHighlightableItems(items);
       break;
     }
+    case FocusGroup::kActionButtons: {
+      auto* action_container_view = session_->action_container_view_.get();
+      if (action_container_view) {
+        for (views::View* action_button : action_container_view->children()) {
+          if (action_button && action_button->GetEnabled()) {
+            auto* highlight_helper = HighlightHelper::Get(action_button);
+            CHECK(highlight_helper);
+            items.push_back(highlight_helper);
+          }
+        }
+      }
+      break;
+    }
   }
   return items;
 }
@@ -936,6 +968,8 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
       return GetCameraPreviewWidget()->GetNativeWindow();
     case FocusGroup::kRecordingTypeMenu:
       return GetRecordingTypeMenuWidget()->GetNativeWindow();
+    case FocusGroup::kActionButtons:
+      return session_->action_container_widget()->GetNativeWindow();
   }
 }
 

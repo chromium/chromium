@@ -47,8 +47,9 @@ class EyeDropperBrowserTest : public UiBrowserTest,
 
   bool VerifyUi() override {
 #if BUILDFLAG(IS_WIN)
-    if (!eye_dropper_)
+    if (!eye_dropper_) {
       return false;
+    }
 
     views::Widget* widget =
         static_cast<eye_dropper::EyeDropperView*>(eye_dropper_.get())

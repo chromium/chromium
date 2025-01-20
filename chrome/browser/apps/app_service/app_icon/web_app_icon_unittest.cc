@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -46,7 +45,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -55,12 +54,11 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -76,9 +74,6 @@ class WebAppIconFactoryTest : public testing::Test {
     testing::Test::SetUp();
 
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = builder.Build();
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -104,7 +99,7 @@ class WebAppIconFactoryTest : public testing::Test {
     return icon;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::IconValuePtr GetWebAppCompressedIconData(
       const std::string& app_id,
       ui::ResourceScaleFactor scale_factor) {
@@ -113,7 +108,7 @@ class WebAppIconFactoryTest : public testing::Test {
                                       scale_factor, result.GetCallback());
     return result.Take();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   web_app::WebAppIconManager& icon_manager() {
     return web_app_provider().icon_manager();
@@ -426,7 +421,7 @@ TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
   VerifyIcon(src_image_skia, dst);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
   gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
       /*icon_bitmaps=*/std::map<web_app::SquareSizePx, SkBitmap>{},
@@ -1382,6 +1377,6 @@ TEST_F(AppServiceWebAppIconTest, IconLoadingForReinstallApps) {
   VerifyIcon(src_image_skia4, iv4->uncompressed);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

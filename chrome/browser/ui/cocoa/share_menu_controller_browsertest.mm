@@ -112,8 +112,9 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, PopulatesMenu) {
   NSUInteger i = 0;
   // Ensure there's a menu item for each service besides reading list.
   for (NSSharingService* service in sharing_services_for_url) {
-    if ([service isEqual:reading_list_service])
+    if ([service isEqual:reading_list_service]) {
       continue;
+    }
     NSMenuItem* menu_item = [menu itemAtIndex:i];
     EXPECT_NSEQ(menu_item.representedObject, service);
     EXPECT_EQ(menu_item.target, static_cast<id>(controller_));
@@ -198,10 +199,11 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, Histograms) {
   tester.ExpectBucketCount(histogram_name, true, 2);
   tester.ExpectTotalCount(histogram_name, 2);
 
-  [controller_
-           sharingService:service
-      didFailToShareItems:@[]
-                    error:[NSError errorWithDomain:@"" code:0 userInfo:nil]];
+  [controller_ sharingService:service
+          didFailToShareItems:@[]
+                        error:[NSError errorWithDomain:@""
+                                                  code:0
+                                              userInfo:nil]];
   tester.ExpectTotalCount(histogram_name, 3);
   tester.ExpectBucketCount(histogram_name, false, 1);
 }

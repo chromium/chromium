@@ -7,9 +7,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
@@ -102,8 +102,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   if (!entry.profile_label().empty())
     specifics->set_profile_label(entry.profile_label());
 
-  specifics->set_use_count(entry.use_count());
-  specifics->set_use_date(entry.use_date().ToTimeT());
+  specifics->set_use_count(entry.usage_history().use_count());
+  specifics->set_use_date(entry.usage_history().use_date().ToTimeT());
   specifics->set_address_home_language_code(
       data_util::TruncateUTF8(entry.language_code()));
 
@@ -331,8 +331,9 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).
-  profile.set_use_count(specifics.use_count());
-  profile.set_use_date(base::Time::FromTimeT(specifics.use_date()));
+  profile.usage_history().set_use_count(specifics.use_count());
+  profile.usage_history().set_use_date(
+      base::Time::FromTimeT(specifics.use_date()));
   profile.set_language_code(specifics.address_home_language_code());
 
   // Set the profile label if it exists.
@@ -604,7 +605,7 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
   // TODO(crbug.com/359768803): Handle alternative names here.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 177,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

@@ -45,7 +45,6 @@ static_library("apps") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/settings:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
@@ -58,6 +57,7 @@ static_library("apps") {
     "//ui/chromeos",
     "//ui/display",
     "//ui/events:event_constants",
+    "//ui/webui",
   ]
 }
 

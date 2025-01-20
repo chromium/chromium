@@ -6,12 +6,12 @@ package org.chromium.base.supplier;
 
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -30,11 +30,12 @@ import java.util.Objects;
  *
  * @param <E> The type of the wrapped object.
  */
-public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
+@NullMarked
+public class ObservableSupplierImpl<E extends @Nullable Object> implements ObservableSupplier<E> {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final Handler mHandler = new Handler();
 
-    private E mObject;
+    private @Nullable E mObject;
     private final ObserverList<Callback<E>> mObservers = new ObserverList<>();
 
     public ObservableSupplierImpl() {
@@ -47,7 +48,7 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     }
 
     @Override
-    public E addObserver(Callback<E> obs) {
+    public @Nullable E addObserver(Callback<E> obs) {
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
@@ -85,7 +86,7 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
         mObject = object;
 
         for (Callback<E> observer : mObservers) {
-            observer.onResult(mObject);
+            observer.onResult(object);
         }
     }
 

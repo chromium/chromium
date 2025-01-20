@@ -191,11 +191,6 @@ suite('FirmwareUpdateAppTest', () => {
   });
 
   test('ConfirmationDialogShowsDisclaimerWhenFlagEnabled', async () => {
-    // Enable the upstream trusted reports flag
-    loadTimeData.overrideValues({
-      isUpstreamTrustedReportsFirmwareEnabled: true,
-    });
-
     // Setup the app.
     initializePage();
     await flushTasks();
@@ -213,41 +208,9 @@ suite('FirmwareUpdateAppTest', () => {
 
     // The disclaimer should be displayed.
     assertTrue(!!fwConfirmDialog.shadowRoot!.querySelector('#disclaimer'));
-
-    // Clear app element to reset the test.
-    page?.remove();
-    await flushTasks();
-
-    // Disable the upstream trusted reports flag
-    loadTimeData.overrideValues({
-      isUpstreamTrustedReportsFirmwareEnabled: false,
-    });
-
-    // Setup the app.
-    initializePage();
-    await flushTasks();
-    assert(page);
-
-    // Open dialog for first firmware update card.
-    whenFired = eventToPromise('cr-dialog-open', page);
-    button = strictQuery(
-        `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
-    button.click();
-    await flushTasks();
-    await whenFired;
-    fwConfirmDialog = strictQuery(
-        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
-
-    // The disclaimer should not be displayed.
-    assertFalse(!!fwConfirmDialog.shadowRoot!.querySelector('#disclaimer'));
   });
 
   test('DisclaimerModifiedIfUpdateNeedsReboot', async () => {
-    // Enable the upstream trusted reports flag
-    loadTimeData.overrideValues({
-      isUpstreamTrustedReportsFirmwareEnabled: true,
-    });
-
     // Setup the app.
     initializePage();
     await flushTasks();

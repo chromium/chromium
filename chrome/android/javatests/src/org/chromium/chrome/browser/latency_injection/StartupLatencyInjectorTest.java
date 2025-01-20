@@ -39,7 +39,7 @@ public class StartupLatencyInjectorTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(HISTOGRAM_TOTAL_WAIT_TIME, 2)
                         .build();
-        StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS.setForTesting(100);
+        ChromeFeatureList.sClankStartupLatencyInjectionAmountMs.setForTesting(100);
         mTabbedActivityTestRule.startMainActivityFromLauncher();
         mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
         ChromeApplicationTestUtils.fireHomeScreenIntent(mTabbedActivityTestRule.getActivity());

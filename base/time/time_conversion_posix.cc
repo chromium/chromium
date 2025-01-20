@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
-
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
@@ -11,6 +9,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 
 namespace base {
 
@@ -37,11 +36,13 @@ struct timespec TimeDelta::ToTimeSpec() const {
 Time Time::FromTimeVal(struct timeval t) {
   DCHECK_LT(t.tv_usec, static_cast<int>(Time::kMicrosecondsPerSecond));
   DCHECK_GE(t.tv_usec, 0);
-  if (t.tv_usec == 0 && t.tv_sec == 0)
+  if (t.tv_usec == 0 && t.tv_sec == 0) {
     return Time();
+  }
   if (t.tv_usec == static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1 &&
-      t.tv_sec == std::numeric_limits<time_t>::max())
+      t.tv_sec == std::numeric_limits<time_t>::max()) {
     return Max();
+  }
   return Time((static_cast<int64_t>(t.tv_sec) * Time::kMicrosecondsPerSecond) +
               t.tv_usec + kTimeTToMicrosecondsOffset);
 }

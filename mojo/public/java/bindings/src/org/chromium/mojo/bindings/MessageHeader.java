@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /** Header information for a message. */
+@NullMarked
 public class MessageHeader {
 
     private static final int SIMPLE_MESSAGE_SIZE = 24;

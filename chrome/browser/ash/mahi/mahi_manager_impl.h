@@ -173,8 +173,17 @@ class MahiManagerImpl : public chromeos::MahiManager,
       crosapi::mojom::MahiPageInfo::New();
 
   // Stores current selected text when the user triggers feature that works for
-  // selected text, e.g. Elucidation.
-  std::u16string current_selected_text_;
+  // selected text, e.g. Elucidation, or Summary for selection.
+  // Unlike `current_page_info_` that may change when the user activates another
+  // browser tab, therefore we need `current_panel_info_` to keep track of the
+  // page info used by the existing result panel for future interactions
+  // launched from the panel (e.g. QA), `current_selected_text_` is only updated
+  // when user explicitly triggers Mahi functions from the widget, therefore it
+  // is always the source of truth if an existing result panel is based on user
+  // selected text.
+  // That's to say, if `current_selected_text_` is not nullopt, the existing
+  // result panel must be based on it. We rely on this fact for a few checks.
+  std::optional<std::u16string> current_selected_text_;
 
   // Pair of question and their corresponding answer for the current panel
   // content

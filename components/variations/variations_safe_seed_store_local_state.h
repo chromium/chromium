@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_safe_seed_store.h"
 
@@ -15,6 +16,8 @@ class PrefService;
 class PrefRegistrySimple;
 
 namespace variations {
+
+class EntropyProviders;
 
 // Implementation of VariationsSafeSeedStore that uses local state and the
 // standard prefs from it.
@@ -25,9 +28,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   // uses.
   // |seed_file_dir| is the file path to the seed file directory. If empty, the
   // seed is not stored in a separate seed file, only in |local_state_|.
+  // |channel| describes the release channel of the browser.
+  // |entropy_providers| is used to provide entropy when setting up the seed
+  // file field trial. If null, the client will not participate in the
+  // experiment.
   explicit VariationsSafeSeedStoreLocalState(
       PrefService* local_state,
-      const base::FilePath& seed_file_dir);
+      const base::FilePath& seed_file_dir,
+      version_info::Channel channel,
+      const EntropyProviders* entropy_providers);
 
   VariationsSafeSeedStoreLocalState(const VariationsSafeSeedStoreLocalState&) =
       delete;

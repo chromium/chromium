@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Einkaufsfunktionen von Google für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
+<translation id="1076643793026027628">In Chrome werden YouTube-Inkognitolinks automatisch im Inkognitomodus geöffnet.</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1146503048444965320">Neuen Tab in Chrome öffnen</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten und anderen Apps auf Links tippst.</translation>
 <translation id="1229222343402087523">In Chrome nach ${searchPhrase} suchen</translation>
 <translation id="1237769345474105984">Aus Chrome</translation>
-<translation id="1240190568154816272">Chrome-Tipps</translation>
 <translation id="124228879633599436">Deine Version von Chrome ist veraltet. Aktualisiere sie, um deine Daten besser zu schützen.</translation>
 <translation id="1333745675627230582">Chrome Dino spielen</translation>
 <translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
@@ -38,6 +38,7 @@ Wichtige Hinweise:
 <translation id="1646463005043273333">Öffnet die Chrome-Einstellung, mit der Chrome als Standardbrowser festgelegt wird.</translation>
 <translation id="1670609221633730681">Chrome-Tipp: Position der Adressleiste auswählen</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Passwörter in Chrome speichern</translation>
 <translation id="1790080846677398234">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chrome hinzu.</translation>
 <translation id="1799920918471566157">Chrome-Tipps</translation>
 <translation id="1830634592642484976">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="USER_EMAIL" />).</translation>
@@ -82,7 +83,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="2788811701191021538">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chrome geöffnet.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
-<translation id="2923827943290349720">Sperren Sie die Inkognitotabs, wenn Sie Chrome schließen</translation>
+<translation id="2923827943290349720">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="2940565985148833945">Chrome-Tipp: Mit Lens suchen</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
 <translation id="2986402782150919988">Lesezeichen in Chrome hinzufügen</translation>
@@ -109,6 +110,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3740397331642243698">Öffnet die eingegebenen URLs in Google Chrome im Inkognitomodus.</translation>
 <translation id="3741995255368156336">Öffnet die Chrome-Leseliste.</translation>
+<translation id="3808570423967020928">Über das Startbildschirm-Dock schneller auf Chrome zugreifen.</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3863841106411295595">Fügt die eingegebenen URLs deiner Leseliste in Chrome hinzu.</translation>
@@ -125,6 +127,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
 <translation id="4646014602299206846">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern.</translation>
 <translation id="4647910807533196601">Aktuellen Tab in Chrome öffnen.</translation>
+<translation id="4693084815234024320">Chrome befindet sich im Inkognitomodus</translation>
 <translation id="4724297637870447613">Chrome überall nutzen</translation>
 <translation id="4738647308035481133">Google Chrome-Seite</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
@@ -142,7 +145,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="5030102366287574140">Chrome kann helfen, dich vor Bedrohungen wie Datenpannen und unsicheren Websites zu schützen</translation>
 <translation id="5109169629909011627">Chrome-Lesezeichen ansehen</translation>
 <translation id="5112925986883715005">Chrome-Leseliste ansehen</translation>
-<translation id="5119391094379141756">Chrome auswählen</translation>
+<translation id="5119391094379141756">Wähle Chrome aus</translation>
 <translation id="5123188916260706415">Sprachsuche in Chrome</translation>
 <translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
 <translation id="5184329579814168207">In Chrome öffnen</translation>
@@ -219,9 +222,12 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 
 Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Browserdaten in Chrome löschen.</translation>
+<translation id="6924922227983877439">Links standardmäßig in Chrome öffnen</translation>
+<translation id="6931601805528922498">Wenn du dich anmeldest, wird dein Konto Chrome hinzugefügt, damit du zu beruflichen Zwecken surfen kannst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>
 <translation id="7061455974939528301">Halte das Chrome-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
+<translation id="7065813315247345131">Chrome zum Dock hinzufügen</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>

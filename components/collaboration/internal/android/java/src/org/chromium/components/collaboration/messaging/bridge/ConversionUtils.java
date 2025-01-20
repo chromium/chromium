@@ -17,6 +17,7 @@ import org.chromium.components.collaboration.messaging.InstantNotificationType;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
+import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
@@ -44,7 +45,9 @@ class ConversionUtils {
             @Nullable String lastKnownTabTitle,
             @Nullable String lastKnownTabUrl,
             @Nullable GroupMember affectedUser,
-            GroupMember triggeringUser) {
+            boolean affectedUserIsSelf,
+            GroupMember triggeringUser,
+            boolean triggeringUserIsSelf) {
         MessageAttribution attribution = new MessageAttribution();
         attribution.collaborationId = collaborationId;
         if (localTabGroupId != null
@@ -72,7 +75,9 @@ class ConversionUtils {
             attribution.tabMetadata.lastKnownUrl = lastKnownTabUrl;
         }
         attribution.affectedUser = affectedUser;
+        attribution.affectedUserIsSelf = affectedUserIsSelf;
         attribution.triggeringUser = triggeringUser;
+        attribution.triggeringUserIsSelf = triggeringUserIsSelf;
         return attribution;
     }
 
@@ -125,13 +130,17 @@ class ConversionUtils {
             @CollaborationEvent int collaborationEvent,
             String titleText,
             String descriptionText,
-            String timestampText,
+            String timeDeltaText,
+            boolean showFavicon,
+            @RecentActivityAction int action,
             MessageAttribution activityMetadata) {
         ActivityLogItem activityLogItem = new ActivityLogItem();
         activityLogItem.collaborationEvent = collaborationEvent;
         activityLogItem.titleText = titleText;
         activityLogItem.descriptionText = descriptionText;
-        activityLogItem.timestampText = timestampText;
+        activityLogItem.timeDeltaText = timeDeltaText;
+        activityLogItem.showFavicon = showFavicon;
+        activityLogItem.action = action;
         activityLogItem.activityMetadata = activityMetadata;
 
         if (list != null) {

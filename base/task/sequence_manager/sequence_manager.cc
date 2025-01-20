@@ -6,8 +6,7 @@
 
 #include <utility>
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
@@ -31,12 +30,6 @@ void CheckPriorities(TaskQueue::QueuePriority priority_count,
 }
 
 }  // namespace
-
-SequenceManager::MetricRecordingSettings::MetricRecordingSettings(
-    double task_thread_time_sampling_rate)
-    : task_sampling_rate_for_recording_cpu_time(
-          base::ThreadTicks::IsSupported() ? task_thread_time_sampling_rate
-                                           : 0) {}
 
 // static
 SequenceManager::PrioritySettings
@@ -120,13 +113,6 @@ SequenceManager::Settings::Builder::SetMessagePumpType(
 }
 
 SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetRandomisedSamplingEnabled(
-    bool randomised_sampling_enabled_val) {
-  settings_.randomised_sampling_enabled = randomised_sampling_enabled_val;
-  return *this;
-}
-
-SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetTickClock(const TickClock* clock_val) {
   settings_.clock = clock_val;
   return *this;
@@ -188,5 +174,4 @@ SequenceManager::Settings SequenceManager::Settings::Builder::Build() {
   return std::move(settings_);
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

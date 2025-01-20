@@ -4,7 +4,10 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The header for a mojo complex element. */
+@NullMarked
 public final class DataHeader {
     /** The size of a serialized header, in bytes. */
     public static final int HEADER_SIZE = 8;

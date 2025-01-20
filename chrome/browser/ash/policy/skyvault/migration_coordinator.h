@@ -177,9 +177,6 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
            base::WeakPtr<ash::cloud_upload::OdfsSkyvaultUploader>>
       uploaders_;
 
-  // Flag to indicate that Run() method should wait.
-  bool emulate_slow_for_testing_ = false;
-
   base::WeakPtrFactory<OneDriveMigrationUploader> weak_ptr_factory_{this};
 };
 

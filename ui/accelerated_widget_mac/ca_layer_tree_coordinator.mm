@@ -202,6 +202,9 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     feedback.flags = gfx::PresentationFeedback::kHWCompletion |
                      gfx::PresentationFeedback::kVSync;
   }
+#else
+  // Disable -Wunused-private-field warning.
+  (void)new_presentation_feedback_timestamps_;
 #endif
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

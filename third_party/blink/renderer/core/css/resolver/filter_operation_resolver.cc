@@ -274,7 +274,8 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-      container_sizes, anchor_data, 1 /* zoom */, ignored_flags);
+      container_sizes, anchor_data, 1 /* zoom */, ignored_flags,
+      /*element=*/nullptr);
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {
     if (curr_value->IsURIValue()) {

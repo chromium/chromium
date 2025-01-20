@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor_impl.h"
 
+#include <cmath>
 #include <optional>
 #include <vector>
 
@@ -16,6 +17,8 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -27,11 +30,15 @@ namespace autofill_ai {
 
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
+    optimization_guide::ModelQualityLogsUploaderService* logs_uploader,
     user_annotations::UserAnnotationsService* user_annotations_service)
     : model_executor_(model_executor),
       user_annotations_service_(user_annotations_service) {
   CHECK(model_executor_);
   CHECK(user_annotations_service_);
+  if (logs_uploader) {
+    logs_uploader_ = logs_uploader->GetWeakPtr();
+  }
 }
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
@@ -82,38 +89,48 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
       std::make_move_iterator(user_annotations.begin()),
       std::make_move_iterator(user_annotations.end())};
 
-  model_executor_->ExecuteModel(
+  SetLatestRequestForDebugging(request);
+  optimization_guide::ModelExecutionCallbackWithLogging<
+      optimization_guide::proto::FormsPredictionsLoggingData>
+      wrapper_callback =
+          base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
+                         std::move(callback));
+  optimization_guide::ExecuteModelWithLogging(
+      model_executor_,
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
-      kExecutionTimeout.Get(),
-      base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
-                     std::move(callback)));
+      kExecutionTimeout.Get(), std::move(wrapper_callback));
 }
 
 void AutofillAiModelExecutorImpl::OnModelExecuted(
     autofill::FormData form_data,
     PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    std::unique_ptr<optimization_guide::proto::FormsPredictionsLoggingData>
+        logging_data) {
+  CHECK(logging_data);
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      logs_uploader_);
   const std::optional<std::string> execution_id =
-      log_entry ? log_entry->model_execution_id()
-                : std::optional<std::string>();
+      logging_data->model_execution_info().execution_id();
   if (!execution_result.response.has_value()) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
-  std::optional<optimization_guide::proto::FormsPredictionsResponse>
-      maybe_response = optimization_guide::ParsedAnyMetadata<
+  SetLatestResponseForDebugging(
+      optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsPredictionsResponse>(
-          execution_result.response.value());
-  if (!maybe_response) {
+          execution_result.response.value()));
+
+  if (!GetLatestResponse()) {
     std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
   std::move(callback).Run(
-      ExtractPredictions(form_data, maybe_response->form_data()), execution_id);
+      ExtractPredictions(form_data, GetLatestResponse()->form_data()),
+      execution_id);
 }
 
 // static
@@ -184,6 +201,30 @@ AutofillAiModelExecutorImpl::ExtractPredictions(
                                         std::move(label), field.IsFocusable()});
   }
   return predictions;
+}
+
+void AutofillAiModelExecutorImpl::SetLatestRequestForDebugging(
+    optimization_guide::proto::FormsPredictionsRequest request) {
+  // Reset `latest_response_` to ensure it always matches `latest_request_`, if
+  // it exists.
+  latest_response_.reset();
+  latest_request_ = std::move(request);
+}
+
+void AutofillAiModelExecutorImpl::SetLatestResponseForDebugging(
+    std::optional<optimization_guide::proto::FormsPredictionsResponse>
+        response) {
+  latest_response_ = std::move(response);
+}
+
+const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+AutofillAiModelExecutorImpl::GetLatestRequest() const {
+  return latest_request_;
+}
+
+const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+AutofillAiModelExecutorImpl::GetLatestResponse() const {
+  return latest_response_;
 }
 
 }  // namespace autofill_ai

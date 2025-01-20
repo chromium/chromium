@@ -67,6 +67,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
+    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
@@ -83,6 +84,8 @@ public class EdgeToEdgeInstrumentationTest {
             "/chrome/test/data/android/edge_to_edge/viewport-fit-auto.html";
     private static final String TEST_COVER_PAGE =
             "/chrome/test/data/android/edge_to_edge/viewport-fit-cover.html";
+    private static final String TEST_CONTAIN_PAGE =
+            "/chrome/test/data/android/edge_to_edge/viewport-fit-contain.html";
 
     private static final int TO_EDGE_PADDING = 0;
 
@@ -169,6 +172,17 @@ public class EdgeToEdgeInstrumentationTest {
         assertFalse(
                 "Helper optOutOfToEdge failed to stop opting into E2E",
                 mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+    }
+
+    void loadSafeAreaConstrainPage() {
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_CONTAIN_PAGE));
+        waitUntilNotOptedIntoEdgeToEdge();
+        assertFalse(
+                "Helper loadSafeAreaConstrainPage failed to stop opting into E2E",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Safe area constraint should be set for contain pages.",
+                mEdgeToEdgeController.getHasSafeAreaConstraintForTesting());
     }
 
     void waitUntilOptedIntoEdgeToEdge() {
@@ -387,6 +401,34 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testFloatingSnackbar() throws InterruptedException {
+        activateFeatureToEdge();
+        optOutOfToEdge();
+        var snackbarManager = mActivity.getSnackbarManager();
+        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                    "Test",
+                                    new SnackbarManager.SnackbarController() {},
+                                    Snackbar.TYPE_PERSISTENT,
+                                    Snackbar.UMA_TEST_SNACKBAR));
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        var adjuster =
+                snackbarManager
+                        .getCurrentSnackbarViewForTesting()
+                        .getEdgeToEdgePadAdjusterForTesting();
+        Assert.assertNull(
+                "Pad Adjuster is not used in the floating snackbar and should be null.", adjuster);
+    }
+
+    @Test
+    @MediumTest
     @DisabledTest(message = "crbug.com/41492043")
     public void testUnfold() {
         activateFeatureToEdge();
@@ -459,6 +501,39 @@ public class EdgeToEdgeInstrumentationTest {
                 mActivity.getWindow().getNavigationBarColor());
 
         TabUiTestHelper.enterTabSwitcher(mActivity);
+        assertEquals(
+                "Should still be drawing toEdge in the Tab Switcher.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.leaveTabSwitcher(mActivity);
+        assertEquals(
+                "Should stay toEdge upon leaving the Tab Switcher.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigationBarColor_BottomChinAndKeyNativeDisabled() {
+        optOutOfToEdge();
+        assertEquals(
+                "Navigation bar should have the right color when transitioning away from edge to"
+                        + " edge,",
+                mActivity.getActivityTab().getBackgroundColor(),
+                mActivity.getWindow().getNavigationBarColor());
+
+        goToEdge();
+        assertEquals(
+                "Navigation bar should be transparent in edge to edge.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.enterTabSwitcher(mActivity);
         assertNotEquals(
                 "Should not be drawing toEdge in the Tab Switcher.",
                 Color.TRANSPARENT,
@@ -469,6 +544,24 @@ public class EdgeToEdgeInstrumentationTest {
                 "Should return toEdge upon leaving the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
+    public void testSafeAreaConstraint() {
+        loadSafeAreaConstrainPage();
+
+        int bottomInsets = mEdgeToEdgeController.getBottomInsetPx();
+        int bottomControlsMinHeight =
+                mActivity
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomControlsStackerForTesting()
+                        .getTotalMinHeight();
+        assertEquals(
+                "Bottom controls min height should be set as the height of the bottom insets.",
+                bottomInsets,
+                bottomControlsMinHeight);
     }
 
     private void assertOptedIntoEdgeToEdge() {

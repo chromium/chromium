@@ -174,7 +174,7 @@ public class XrSessionCoordinator {
     }
 
     @CalledByNative
-    private void startXrSession() {
+    private void startXrSession(final WebContents webContents, boolean needsSeparateActivity) {
         if (DEBUG_LOGS) Log.i(TAG, "startXrSession");
         // The higher levels should have guaranteed that we're only called if there isn't any other
         // active session going on.
@@ -186,8 +186,16 @@ public class XrSessionCoordinator {
         mActiveSessionType = SessionType.VR;
         sActiveSessionAvailableSupplier.set(SessionType.VR);
 
-        Intent intent = XrHostActivity.createIntent(getApplicationContext());
-        getApplicationContext().startActivity(intent);
+        if (needsSeparateActivity) {
+            Intent intent = XrHostActivity.createIntent(getApplicationContext());
+            getApplicationContext().startActivity(intent);
+        } else {
+            XrSessionCoordinatorJni.get()
+                    .onXrHostActivityReady(
+                            mNativeXrSessionCoordinator,
+                            XrSessionCoordinator.this,
+                            getActivity(webContents));
+        }
     }
 
     private void endSessionFromXrHost() {
@@ -343,11 +351,12 @@ public class XrSessionCoordinator {
 
     @CalledByNative
     private void onNativeDestroy() {
-        // Native destructors should end sessions before destroying the native XrSessionCoordinator
-        // object.
-        assert sActiveSessionInstance != this : "unexpected active session in onNativeDestroy";
-
+        // The native object is in a bad state, we need to clean ourselves up, but we shouldn't call
+        // back into it, so clear it then end any session we may have.
         mNativeXrSessionCoordinator = 0;
+        if (sActiveSessionInstance == this) {
+            endSession();
+        }
     }
 
     @NativeMethods

@@ -371,6 +371,7 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::str_format
+    absl::config
     absl::core_headers
     GTest::gmock_main
 )

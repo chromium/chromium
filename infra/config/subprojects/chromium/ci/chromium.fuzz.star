@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -85,7 +86,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
+            target_platform = builder_config.target_platform.LINUX,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan",
@@ -303,6 +304,53 @@ ci.builder(
 )
 
 ci.builder(
+    name = "ASAN Release V8 Sandbox Testing",
+    description_html = "This builder produces an ASan Chromium build in the V8 Sandbox Testing configuration.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            archive_name_prefix = "asan-v8-sandbox-testing",
+            archive_subdir = "v8-sandbox-testing",
+            gs_acl = "public-read",
+            gs_bucket = "chromium-browser-asan",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "fuzzer",
+            "v8_sandbox_testing",
+            "release_builder",
+            "remoteexec",
+            "x64",
+            "linux",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
+    # TODO(saelo): remove this once we've verified that the builder works.
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "linux asan",
+        short_name = "sbxtst",
+    ),
+    contact_team_email = "v8-infra@google.com",
+)
+
+ci.builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
@@ -346,6 +394,7 @@ ci.builder(
         short_name = "centipede",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    execution_timeout = 4 * time.hour,
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",
@@ -1293,7 +1342,7 @@ ci.builder(
                 "clobber",
                 "mb",
             ],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),

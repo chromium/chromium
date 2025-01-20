@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_notice_eea_ad_measurement_dropdown"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_bullet_one"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leading="@dimen/text_size_medium_leading"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_description_android"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:text="@string/privacy_sandbox_m1_notice_eea_learn_more_description_android"
+        app:leading="@dimen/text_size_medium_leading"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+</LinearLayout>

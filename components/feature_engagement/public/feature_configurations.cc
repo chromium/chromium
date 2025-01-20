@@ -15,9 +15,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/feature_engagement/public/ios_promo_feature_configuration.h"
 #endif  // BUILDFLAG(IS_IOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/feature_engagement/public/scalable_iph_feature_configurations.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -503,7 +503,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHDownloadEsbPromoFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
     // Don't show if user has already seen an IPH this session.
     // Show the promo max once a year if the user hasn't interacted with
@@ -529,7 +532,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // c/b/ui/webui/downloads/downloads_dom_handler.cc
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
 
     // This isn't an IPH so we don't suppress other engagement features.
@@ -616,7 +622,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
   if (kIPHiOSPasswordPromoDesktopFeature.name == feature->name) {
     // A config for allowing other IPH's to explicitly block the iOS password
     // promo bubble on desktop if needed. Blocked and blocking by default, so
@@ -679,7 +685,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(ANY, 0), 0, 0);
     return config;
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 
@@ -717,6 +723,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHTabGroupShareNotificationBubbleOnStripFeature.name == feature->name) {
+    // A config to show IPH for TabGroupShare notification bubble when a shared
+    // group is updated by a group member. This will only be shown the first
+    // time the notification bubble is displayed.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig(
+        "tab_group_share_notification_bubble_on_strip_iph_triggered",
+        Comparator(LESS_THAN, 1), 360, 360);
+    config->used =
+        EventConfig("tab_group_share_notification_bubble_clicked",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHTabGroupCreationDialogSyncTextFeature.name == feature->name) {
     // A config that allows the sync text IPH on the TabGroupCreationDialog to
     // be shown up to 3 times total (10 year max in place of unlimited window).
@@ -744,6 +767,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(EventConfig("app_specific_history_iph_trigger",
                                              Comparator(LESS_THAN, 1), 7, 360));
     config->used = EventConfig("history_toolbar_search_menu_item_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+  if (kIPHBottomToolbarTipFeature.name == feature->name) {
+    // A config that allows the Bottom Toolbar IPH to be shown once
+    // a week, up to 3 times, unless the user interacts with Bottom Toolbar
+    // controls.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+
+    config->trigger = EventConfig("bottom_toolbar_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->event_configs.insert(EventConfig("bottom_toolbar_iph_trigger",
+                                             Comparator(LESS_THAN, 1), 7, 360));
+    config->used = EventConfig("bottom_toolbar_menu_triggered",
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
@@ -1081,26 +1121,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 14, 90);
     config->snooze_params.snooze_interval = 7;
     config->snooze_params.max_limit = 3;
-    return config;
-  }
-  if (kIPHTabSwitcherFloatingActionButtonFeature.name == feature->name) {
-    // Allows an IPH for the tab groups surface through hub toolbar when:
-    // * Only once per week.
-    // * Up to 3 times per year.
-    // * And only as long as the user has never manually pressed the
-    // floating new tab button.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(LESS_THAN, 1);
-    config->trigger =
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(EQUAL, 0), 7, 7);
-    config->event_configs.insert(
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(LESS_THAN, 3), 360, 360));
-    config->used = EventConfig("tab_switcher_floating_action_button_clicked",
-                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
   if (kIPHWebFeedFollowFeature.name == feature->name) {
@@ -1638,6 +1658,31 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHAutofillCardInfoRetrievalSuggestionFeature.name == feature->name) {
+    // A config that allows the card info retrieval suggestion IPH to be shown
+    // when it has been shown less than three times in last 90 days and only
+    // once per session. IPH will not be shown once user has selected the
+    // suggestion.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("autofill_card_info_retrieval_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 90, 360);
+    config->used =
+        EventConfig("autofill_card_info_retrieval_suggestion_accepted",
+                    Comparator(ANY, 0), 90, 360);
+
+    // This promo blocks specific promos in the same session.
+    config->session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config->session_rate_impact.affected_features.emplace();
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_KeyboardAccessoryBarSwiping");
+    config->session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardSuggestion");
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -1688,24 +1733,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 14, k10YearsInDays));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    return config;
-  }
-
-  if (kIPHAutofillManualFallbackFeature.name == feature->name) {
-    // Autofill Manual Fallback IPH is shown if all of the following are true:
-    // * it has not been shown before in the last 90 days;
-    // * the user has never used the autofill manual fallback.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->trigger = EventConfig("autofill_manual_fallback_trigger",
-                                  Comparator(LESS_THAN, 1), 90, 360);
-    config->used =
-        EventConfig("autofill_manual_fallback_accepted", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 
@@ -2274,14 +2301,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (std::optional<FeatureConfig> scalable_iph_feature_config =
           GetScalableIphFeatureConfig(feature)) {
     return scalable_iph_feature_config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
     // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
     std::optional<FeatureConfig> config = FeatureConfig();
@@ -2304,7 +2331,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         kMaxStoragePeriod, kMaxStoragePeriod));
     return config;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this

@@ -409,7 +409,7 @@ class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
         model_->SetStep(Step::kGPMEnterPin);
       }
     } else {
-      model_->SetStep(Step::kSelectSingleAccount);
+      model_->SetStep(Step::kSelectAccount);
     }
   }
 
@@ -541,8 +541,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #else
       Step::kCableV2QRCode;
 #endif
-  [[maybe_unused]] const auto use_pk = Step::kPreSelectSingleAccount;
-  [[maybe_unused]] const auto use_pk_multi = Step::kPreSelectAccount;
+  [[maybe_unused]] const auto use_pk = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
   const auto pconf = Step::kPhoneConfirmationSheet;
   const auto hero = Step::kSelectPriorityMechanism;
@@ -888,11 +887,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       // immediately.
       {L,
        ga,
-       {cable},
+       {cable, internal},
        {only_hybrid_or_internal, enclave_cred, uv_pref},
        {},
        {c(enclave_cred1), add},
-       kIsMac ? enclave_touchid : use_pk},
+       kIsMac ? enclave_touchid : hero},
      #endif
       // But, again, not for uv=discouraged.
       {L,
@@ -901,7 +900,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {only_hybrid_or_internal, enclave_cred},
        {},
        {c(enclave_cred1), add},
-       use_pk},
+       hero},
       // When the enclave needs to sign-in again, that should appear as a
       // mechanism and the MSS should be shown.
       {L,
@@ -2215,64 +2214,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
 }
 
-// Tests that if GPM passkeys change during a conditional UI request, the
-// request is restarted.
-TEST_F(AuthenticatorRequestDialogControllerTest,
-       ConditionalUIPhonePasskeyUpdated) {
-  auto model =
-      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
-      model.get(), main_rfh());
-  TransportAvailabilityInfo transport_info;
-  transport_info.attestation_conveyance_preference =
-      device::AttestationConveyancePreference::kNone;
-  controller->set_ui_presentation(UIPresentation::kAutofill);
-  controller->StartFlow(std::move(transport_info));
-  ASSERT_EQ(model->step(), Step::kPasskeyAutofill);
-  testing::NiceMock<MockDialogModelObserver> mock_observer;
-  model->observers.AddObserver(&mock_observer);
-
-  // Notifying that passkeys changed during a conditional request should restart
-  // it.
-  EXPECT_CALL(mock_observer, OnStartOver());
-  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
-      ->OnPasskeysChanged({});
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
-
-  // Notifying that passkeys changed during any other step should be ignored.
-  controller->SetCurrentStepForTesting(Step::kUsbInsertAndActivate);
-  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
-      ->OnPasskeysChanged({});
-  EXPECT_CALL(mock_observer, OnStartOver()).Times(0);
-  model->observers.RemoveObserver(&mock_observer);
-}
-
-// Tests that if the transport availability is updated during a conditional UI
-// request, the list of passkeys is updated.
-TEST_F(AuthenticatorRequestDialogControllerTest,
-       ConditionalUITransportAvailabilityUpdated) {
-  NavigateAndCommit(GURL("rp.com"));
-  ChromeWebAuthnCredentialsDelegate* delegate =
-      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
-          ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
-  ASSERT_TRUE(delegate);
-
-  auto model =
-      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
-      model.get(), main_rfh());
-  TransportAvailabilityInfo transports_info;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
-  transports_info.recognized_credentials = {};
-  controller->set_ui_presentation(UIPresentation::kAutofill);
-  controller->StartFlow(transports_info);
-  EXPECT_TRUE(delegate->GetPasskeys()->empty());
-
-  transports_info.recognized_credentials = {kCred1};
-  controller->OnTransportAvailabilityChanged(transports_info);
-  EXPECT_FALSE(delegate->GetPasskeys()->empty());
-}
-
 // Tests that if the stored preference for the most recently used phone is not
 // valid base64, the value is ignored.
 TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
@@ -2423,7 +2364,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     if (has_empty_allow_list) {
       EXPECT_EQ(model->step(), Step::kSelectPriorityMechanism);
     } else {
-      EXPECT_EQ(model->step(), Step::kPreSelectSingleAccount);
+      EXPECT_EQ(model->step(), Step::kPreSelectAccount);
     }
     task_environment()->RunUntilIdle();
 
@@ -3045,7 +2986,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.short_name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.description,
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE));
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech1.icon, vector_icons::kPasskeyIcon);
   mech1.callback.Run();
   device::DiscoverableCredentialMetadata result =
@@ -3065,7 +3006,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
       model->mechanisms[1];
   EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
-  EXPECT_EQ(mech2.description, u"Use device sign-in");
+  EXPECT_EQ(mech2.description,
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY));
   EXPECT_EQ(mech2.icon, vector_icons::kPasskeyIcon);
   mech2.callback.Run();
   result = account_preselected_callback.WaitForResult();

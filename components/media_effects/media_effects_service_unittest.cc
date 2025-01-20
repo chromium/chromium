@@ -5,6 +5,7 @@
 #include "components/media_effects/media_effects_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -58,7 +59,7 @@ class FakeModelProvider : public MediaEffectsModelProvider {
   void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
     if (model_path_) {
-      observer->OnBackgroundSegmentationModelUpdated(*model_path_);
+      observer->OnBackgroundSegmentationModelUpdated(model_path_);
     }
   }
 
@@ -67,10 +68,10 @@ class FakeModelProvider : public MediaEffectsModelProvider {
   }
 
   // Sets the model path and notifies observers about it:
-  void SetModelPath(base::FilePath model_path) {
+  void SetModelPath(std::optional<base::FilePath> model_path) {
     model_path_ = std::move(model_path);
     for (auto& observer : observers_) {
-      observer.OnBackgroundSegmentationModelUpdated(*model_path_);
+      observer.OnBackgroundSegmentationModelUpdated(model_path_);
     }
   }
 
@@ -345,8 +346,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
 
   // Validate that the contents match the contents of the model file:
   std::string contents(sizeof(kFirstModelBytes), '\0');
-  ASSERT_TRUE(
-      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  ASSERT_TRUE(model_file.Read(0, base::as_writable_byte_span(contents)));
   EXPECT_STREQ(contents.data(), kFirstModelBytes);
 
   // Setting the model file path for the second time propagates the model file
@@ -366,8 +366,7 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
 
   // Validate that the contents match the contents of the model file:
   contents.resize(sizeof(kSecondModelBytes));
-  ASSERT_TRUE(
-      model_file.Read(0, base::as_writable_bytes(base::make_span(contents))));
+  ASSERT_TRUE(model_file.Read(0, base::as_writable_byte_span(contents)));
   EXPECT_STREQ(contents.data(), kSecondModelBytes);
 
   // Setting the model file to a path that doesn't exist does not propagate the
@@ -379,9 +378,14 @@ TEST_F(MediaEffectsServiceTest, ModelFileIsOpenedAndSentToVideoEffects) {
       fake_effects_service.GetBackgroundSegmentationModelFuture();
   model_provider_->SetModelPath(
       temporary_directory.GetPath().AppendASCII("should_not_exist.tmp"));
-  // Since we want to make sure that the service did *not* receive the model
-  // file, make the run loop run until it's idle and then verify that the future
-  // is not ready.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(model_opened_future->IsReady());
+
+  model_file = model_opened_future->Take();
+  EXPECT_FALSE(model_file.IsValid());
+
+  model_opened_future =
+      fake_effects_service.GetBackgroundSegmentationModelFuture();
+  model_provider_->SetModelPath(std::nullopt);
+
+  model_file = model_opened_future->Take();
+  EXPECT_FALSE(model_file.IsValid());
 }

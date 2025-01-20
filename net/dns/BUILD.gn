@@ -103,6 +103,8 @@ source_set("dns") {
     "resolve_context.h",
     "serial_worker.cc",
     "serial_worker.h",
+    "stale_host_resolver.cc",
+    "stale_host_resolver.h",
     "system_dns_config_change_notifier.cc",
     "system_dns_config_change_notifier.h",
     "test_dns_config_service.cc",
@@ -438,6 +440,7 @@ source_set("tests") {
     "record_rdata_unittest.cc",
     "resolve_context_unittest.cc",
     "serial_worker_unittest.cc",
+    "stale_host_resolver_unittest.cc",
     "system_dns_config_change_notifier_unittest.cc",
   ]
 

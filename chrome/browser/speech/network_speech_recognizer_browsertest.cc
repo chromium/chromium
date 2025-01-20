@@ -34,7 +34,7 @@ using ::testing::InvokeWithoutArgs;
 
 class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
  public:
-  MockSpeechRecognizerDelegate() {}
+  MockSpeechRecognizerDelegate() = default;
 
   base::WeakPtr<MockSpeechRecognizerDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/thumbnail/cc/etc1_thumbnail_helper.h"
 
 #include <array>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -246,8 +252,16 @@ void CompressTask(SkBitmap raw_data,
                   bool supports_etc_non_power_of_two,
                   base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
                       post_compression_task) {
-  sk_sp<SkPixelRef> compressed_data = ui::UIResourceProvider::CompressBitmap(
-      raw_data, supports_etc_non_power_of_two);
+  sk_sp<SkPixelRef> compressed_data = nullptr;
+
+  if (base::FeatureList::IsEnabled(ui::kCompressBitmapAtBackgroundPriority)) {
+    compressed_data =
+        ui::UIResourceProvider::CompressBitmapAtBackgroundPriority(
+            raw_data, supports_etc_non_power_of_two);
+  } else {
+    compressed_data = ui::UIResourceProvider::CompressBitmap(
+        raw_data, supports_etc_non_power_of_two);
+  }
   gfx::Size content_size = compressed_data
                                ? gfx::Size(raw_data.width(), raw_data.height())
                                : gfx::Size();

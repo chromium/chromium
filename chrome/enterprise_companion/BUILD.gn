@@ -98,6 +98,7 @@ source_set("base") {
     "//chrome/enterprise_companion/telemetry_logger/proto",
     "//chrome/updater:public_sources",
     "//chrome/updater/protos:omaha_proto",
+    "//components/crash/core/common",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
@@ -280,13 +281,6 @@ test("enterprise_companion_integration_tests") {
   data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
   data_deps = []
 
-  # The MacOS integration tests require the pkg installer to be built, which is
-  # only possible on MacOS hosts.
-  if (is_mac && host_os == "mac") {
-    sources += [ "test/integration_tests_mac.cc" ]
-    data_deps += [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
-  }
-
   if (is_mac) {
     data_deps +=
         [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
@@ -302,6 +296,7 @@ test("enterprise_companion_integration_tests") {
 
 static_library("client") {
   sources = [
+    "constants.h",
     "enterprise_companion_client.cc",
     "enterprise_companion_client.h",
   ]
@@ -309,6 +304,7 @@ static_library("client") {
     ":branding_header",
     ":installer_paths",
     "//components/named_mojo_ipc_server",
+    "//components/policy/core/common:common_constants",
     "//mojo/public/cpp/platform",
   ]
   public_deps = [ "mojom/" ]
@@ -414,10 +410,6 @@ group("all") {
   ]
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
-
-    if (is_mac) {
-      deps += [ "//chrome/enterprise_companion/mac" ]
-    }
   }
 }
 

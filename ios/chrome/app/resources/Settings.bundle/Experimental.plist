@@ -487,6 +487,32 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>AsyncStartupOverrideResponse</string>
+			<key>Title</key>
+			<string>Asynchronous startup</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>500ms</string>
+				<string>FirstPartyIncognitoNoDelay</string>
+				<string>FirstPartyIncognito500Delay</string>
+                                <string>AlwaysShowTheUI</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>500ms delay</string>
+				<string>With first party incognito</string>
+				<string>With 500ms delayed first party incognito</string>
+                                <string>Always show the UI</string>
+			</array>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
@@ -564,26 +590,6 @@
 				<string>100</string>
 				<string>1000</string>
 				<string>10000 (this can OOM debug builds)</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Switch Profile Debugging</string>
-			<key>Key</key>
-			<string>DisplaySwitchProfile</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Disabled</string>
-				<string>Enabled</string>
 			</array>
 		</dict>
 		<dict>

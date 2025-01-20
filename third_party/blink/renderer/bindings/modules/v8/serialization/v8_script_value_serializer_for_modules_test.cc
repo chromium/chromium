@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
@@ -241,8 +238,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
   // This is encoded data generated from Chromium (around M55).
   ScriptState* script_state = scope.GetScriptState();
   Vector<uint8_t> encoded_data;
-  encoded_data.Append(kEcdsaCertificateEncoded,
-                      sizeof(kEcdsaCertificateEncoded));
+  encoded_data.AppendSpan(base::span(kEcdsaCertificateEncoded));
   scoped_refptr<SerializedScriptValue> input = SerializedValue(encoded_data);
 
   // Decode test.
@@ -289,8 +285,7 @@ CryptoKey* ConvertCryptoResult<CryptoKey*>(v8::Isolate* isolate,
 template <>
 CryptoKeyPair ConvertCryptoResult<CryptoKeyPair>(v8::Isolate* isolate,
                                                  const ScriptValue& value) {
-  NonThrowableExceptionState exception_state;
-  Dictionary dictionary(isolate, value.V8Value(), exception_state);
+  Dictionary dictionary(isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> private_key, public_key;
   EXPECT_TRUE(dictionary.Get("publicKey", public_key));
   EXPECT_TRUE(dictionary.Get("privateKey", private_key));
@@ -363,7 +358,7 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
           std::move(function)),
       MakeGarbageCollected<WebCryptoResultAdapter<IDLAny, DOMException*>>(
           WTF::BindRepeating([](DOMException* exception) {
-            CHECK(false) << "crypto operation failed";
+            NOTREACHED() << "crypto operation failed";
           })));
   return result->Result();
 }
@@ -1357,7 +1352,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kTotalSamples = (kFrames * kChannels);
   const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
-    float* data = audio_bus->channel(ch);
+    auto data = audio_bus->channel_span(ch);
     for (unsigned i = 0; i < kFrames; ++i)
       data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }
@@ -1387,9 +1382,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
 
   // Copy out the frames to make sure they haven't been changed during the
   // transfer.
-  DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  auto* copy_dest = DOMFloat32Array::Create(kFrames);
   AllowSharedBufferSource* dest =
-      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
+      MakeGarbageCollected<AllowSharedBufferSource>(MaybeShared(copy_dest));
   AudioDataCopyToOptions* options =
       MakeGarbageCollected<AudioDataCopyToOptions>();
 
@@ -1398,7 +1393,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
     new_data->copyTo(dest, options, scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-    float* new_samples = static_cast<float*>(copy_dest->Data());
+    auto new_samples = copy_dest->AsSpan();
 
     for (unsigned int i = 0; i < kFrames; ++i)
       ASSERT_EQ(new_samples[i], (i + ch * kFrames) * kSampleMultiplier);
@@ -2057,11 +2052,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
   // Attempt to serialize the ArrayBuffer. It should not fail with a TypeError
   // even though it has an ArrayBufferDetachKey because it will not be detached.
   V8ScriptValueSerializer::Options serialize_options;
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "Window", "postMessage");
   EXPECT_TRUE(V8ScriptValueSerializerForModules(script_state, serialize_options)
-                  .Serialize(v8_ab, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
+                  .Serialize(v8_ab, ASSERT_NO_EXCEPTION));
   EXPECT_FALSE(v8_ab->WasDetached());
 }
 

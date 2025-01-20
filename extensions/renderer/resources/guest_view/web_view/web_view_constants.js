@@ -25,11 +25,11 @@ var WebViewConstants = {
       'Script cannot be injected into content until the page has loaded.',
   ERROR_MSG_DIALOG_ACTION_ALREADY_TAKEN:
       'An action has already been taken for this "dialog" event.',
+  ERROR_MSG_INVALID_PARTITION_ATTRIBUTE: 'Invalid partition attribute.',
   ERROR_MSG_NEWWINDOW_ACTION_ALREADY_TAKEN:
       'An action has already been taken for this "newwindow" event.',
   ERROR_MSG_PERMISSION_ACTION_ALREADY_TAKEN:
       'Permission has already been decided for this "permissionrequest" event.',
-  ERROR_MSG_INVALID_PARTITION_ATTRIBUTE: 'Invalid partition attribute.',
   WARNING_MSG_DIALOG_REQUEST_BLOCKED: '%1 %2 dialog was blocked.',
   WARNING_MSG_LOAD_ABORTED: 'The load has aborted with error %1: %2.',
   WARNING_MSG_NEWWINDOW_REQUEST_BLOCKED: 'A new window was blocked.',
@@ -46,10 +46,5 @@ var WebViewAttributeNames = [
   WebViewConstants.ATTRIBUTE_SRC
 ];
 
-function tagLogMessage(tag, message) {
-  return `<${tag}>: ${message}`;
-}
-
 exports.$set('WebViewConstants', $Object.freeze(WebViewConstants));
 exports.$set('WebViewAttributeNames', $Object.freeze(WebViewAttributeNames));
-exports.$set('tagLogMessage', tagLogMessage);

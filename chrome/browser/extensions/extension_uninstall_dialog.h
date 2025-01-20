@@ -59,7 +59,7 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
     }
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates the Views implementation of ExtensionUninstallDialog. The dialog

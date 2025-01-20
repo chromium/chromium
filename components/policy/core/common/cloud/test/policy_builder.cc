@@ -12,9 +12,9 @@
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "crypto/signature_creator.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace em = enterprise_management;
 
@@ -647,7 +647,7 @@ std::vector<std::string> PolicyBuilder::GetUserAffiliationIds() {
 
 // static
 AccountId PolicyBuilder::GetFakeAccountIdForTesting() {
-  return AccountId::FromUserEmailGaiaId(kFakeUsername, kFakeGaiaId);
+  return AccountId::FromUserEmailGaiaId(kFakeUsername, GaiaId(kFakeGaiaId));
 }
 
 void PolicyBuilder::SetSignatureType(
@@ -674,7 +674,7 @@ TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
 template class TypedPolicyBuilder<em::ExternalPolicyData>;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 StringPolicyBuilder::StringPolicyBuilder() = default;
 
 void StringPolicyBuilder::Build() {

@@ -9,3 +9,6 @@ per-file tab_search_button*=tluk@chromium.org
 
 # For changes related to the tab alert indicator/button.
 mfoltz@chromium.org
+
+# For changes related to fallback (system-DnD-based) tab dragging.
+per-file tab_drag_controller*=max@igalia.com

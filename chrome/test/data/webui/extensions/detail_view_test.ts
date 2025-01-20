@@ -52,6 +52,11 @@ suite('ExtensionDetailViewTest', function() {
     document.body.appendChild(toastManager);
   }
 
+  function testWarningVisible(id: string, expectVisible: boolean): void {
+    const f: (arg: boolean) => void = expectVisible ? assertTrue : assertFalse;
+    f(isChildVisible(item, id));
+  }
+
   function updateItemData(
       properties?: Partial<chrome.developerPrivate.ExtensionInfo>):
       Promise<void> {
@@ -487,12 +492,6 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('Warnings', async () => {
-    function testWarningVisible(id: string, expectVisible: boolean): void {
-      const f: (arg: boolean) => void =
-          expectVisible ? assertTrue : assertFalse;
-      f(isChildVisible(item, id));
-    }
-
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
@@ -601,6 +600,29 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', false);
+  });
+
+  test('UnsupportedDeveloperExtensionWarning', async () => {
+    // Ensure both the unsupported developer extension warning and the
+    // safety check warning are not visible.
+    testWarningVisible('#safetyCheckWarningContainer', false);
+    testWarningVisible('#unsupported-developer-extension-warning', false);
+
+    // Update item with safety check warning and unsupported developer
+    // extension disable reason.
+    await updateItemData({safetyCheckText: {'detailString': 'Test Message'}});
+    await updateItemDisableReasons({unsupportedDeveloperExtension: true});
+
+    // Verify that the safety check warning takes priority and is the only
+    // warning shown.
+    testWarningVisible('#safetyCheckWarningContainer', true);
+    testWarningVisible('#unsupported-developer-extension-warning', false);
+
+    // Remove safety check warning and verify that the unsupported developer
+    // extension warning is shown.
+    await updateItemData({safetyCheckText: {}});
+    testWarningVisible('#safetyCheckWarningContainer', false);
+    testWarningVisible('#unsupported-developer-extension-warning', true);
   });
 
   test('NoSiteAccessWithEnhancedSiteControls', async () => {
@@ -1023,5 +1045,15 @@ suite('ExtensionDetailViewTest', function() {
     await microtasksFinished();
     assertTrue(isVisible(itemPinnedToggle));
     assertFalse(itemPinnedToggle!.checked);
+  });
+
+  test('CanUploadAsAccountExtension', async () => {
+    testVisible(item, '#account-upload-button', false);
+    await updateItemData({canUploadAsAccountExtension: true});
+    testVisible(item, '#account-upload-button', true);
+
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
+        'uploadItemToAccount', [item.data.id]);
   });
 });

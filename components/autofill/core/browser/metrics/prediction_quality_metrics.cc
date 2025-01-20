@@ -6,15 +6,18 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/label_source_util.h"
 
 namespace autofill::autofill_metrics {
@@ -27,6 +30,8 @@ constexpr std::string_view kAggregateFieldPredictionMetricPrefix =
     "Autofill.FieldPredictionQuality.Aggregate.";
 constexpr std::string_view kByFieldTypeFieldPredictionMetricPrefix =
     "Autofill.FieldPredictionQuality.ByFieldType.";
+constexpr std::string_view kFieldPredictionOverlapPrefix =
+    "Autofill.FieldPredictionOverlap.";
 
 // Don't change the enum values because they are recorded in metrics.
 enum FieldTypeGroupForMetrics {
@@ -78,11 +83,93 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
   GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
-  GROUP_PREDICTION_IMPROVEMENTS = 48,
+  GROUP_AUTOFILL_AI = 48,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
+
+// Given a set of `possible_types` for a field, select the best type to use as
+// the "actual" field type when calculating metrics. If the `predicted_type` is
+// among the `possible_types` then use that as the best type (i.e., the
+// prediction is deemed to have been correct).
+FieldType GetActualFieldType(const FieldTypeSet& possible_types,
+                             FieldType predicted_type) {
+  DCHECK_NE(possible_types.size(), 0u);
+
+  if (possible_types.count(EMPTY_TYPE)) {
+    DCHECK_EQ(possible_types.size(), 1u);
+    return EMPTY_TYPE;
+  }
+
+  if (possible_types.count(UNKNOWN_TYPE)) {
+    DCHECK_EQ(possible_types.size(), 1u);
+    return UNKNOWN_TYPE;
+  }
+
+  if (possible_types.count(predicted_type)) {
+    return predicted_type;
+  }
+
+  // Collapse field types that Chrome treats as identical, e.g. home and
+  // billing address fields.
+  FieldTypeSet collapsed_field_types;
+  for (FieldType type : possible_types) {
+    DCHECK_NE(type, EMPTY_TYPE);
+    DCHECK_NE(type, UNKNOWN_TYPE);
+
+    // A phone number that's only missing its country code is (for metrics
+    // purposes) the same as the whole phone number.
+    if (type == PHONE_HOME_CITY_AND_NUMBER) {
+      collapsed_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
+    } else {
+      collapsed_field_types.insert(type);
+    }
+  }
+
+  // Capture the field's type, if it is unambiguous.
+  FieldType actual_type = AMBIGUOUS_TYPE;
+  if (collapsed_field_types.size() == 1) {
+    actual_type = *collapsed_field_types.begin();
+  }
+
+  return actual_type;
+}
+
+bool FilledTypeAgreesWithActual(const FieldTypeSet& possible_types,
+                                FieldType predicted_type) {
+  return predicted_type == GetActualFieldType(possible_types, predicted_type);
+}
+
+FieldPredictionOverlapSourcesSuperset GetFieldPredictionOverlapSample(
+    bool server_agrees,
+    bool heuristics_agree,
+    bool autocomplete_agrees) {
+  if (server_agrees && heuristics_agree && autocomplete_agrees) {
+    return FieldPredictionOverlapSourcesSuperset::
+        kServerHeuristicsAutocompleteCorrect;
+  }
+  if (server_agrees && heuristics_agree) {
+    return FieldPredictionOverlapSourcesSuperset::kServerHeuristicsCorrect;
+  }
+  if (heuristics_agree && autocomplete_agrees) {
+    return FieldPredictionOverlapSourcesSuperset::
+        kHeuristicsAutocompleteCorrect;
+  }
+  if (server_agrees && autocomplete_agrees) {
+    return FieldPredictionOverlapSourcesSuperset::kServerAutocompleteCorrect;
+  }
+  if (heuristics_agree) {
+    return FieldPredictionOverlapSourcesSuperset::kHeuristicsCorrect;
+  }
+  if (server_agrees) {
+    return FieldPredictionOverlapSourcesSuperset::kServerCorrect;
+  }
+  if (autocomplete_agrees) {
+    return FieldPredictionOverlapSourcesSuperset::kAutocompleteCorrect;
+  }
+  return FieldPredictionOverlapSourcesSuperset::kNoneCorrect;
+}
 
 }  // namespace
 
@@ -133,8 +220,8 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
       group = GROUP_IBAN;
       break;
 
-    case FieldTypeGroup::kPredictionImprovements:
-      group = GROUP_PREDICTION_IMPROVEMENTS;
+    case FieldTypeGroup::kAutofillAi:
+      group = GROUP_AUTOFILL_AI;
       break;
 
     case FieldTypeGroup::kAddress:
@@ -290,6 +377,8 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case SINGLE_USERNAME:
         case NOT_USERNAME:
         case ONE_TIME_CODE:
+        case NAME_LAST_PREFIX:
+        case NAME_LAST_CORE:
         case NAME_LAST_FIRST:
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:
@@ -300,6 +389,15 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
         case IMPROVED_PREDICTION:
+        case PASSPORT_NAME_TAG:
+        case PASSPORT_NUMBER:
+        case PASSPORT_ISSUING_COUNTRY_TAG:
+        case PASSPORT_EXPIRATION_DATE_TAG:
+        case PASSPORT_ISSUE_DATE_TAG:
+        case PASSPORT_COUNTRY_OF_BIRTH_TAG:
+        case LOYALTY_CARD_PROGRAM:
+        case LOYALTY_CARD_PROVIDER:
+        case LOYALTY_CARD_MEMBER_ID:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;
@@ -397,53 +495,6 @@ const char* GetQualityMetricTypeSuffix(QualityMetricType metric_type) {
     case TYPE_AUTOCOMPLETE_BASED:
       return ".BasedOnAutocomplete";
   }
-}
-
-// Given a set of |possible_types| for a field, select the best type to use as
-// the "actual" field type when calculating metrics. If the |predicted_type| is
-// among the |possible_types] then use that as the best type (i.e., the
-// prediction is deemed to have been correct).
-FieldType GetActualFieldType(const FieldTypeSet& possible_types,
-                             FieldType predicted_type) {
-  DCHECK_NE(possible_types.size(), 0u);
-
-  if (possible_types.count(EMPTY_TYPE)) {
-    DCHECK_EQ(possible_types.size(), 1u);
-    return EMPTY_TYPE;
-  }
-
-  if (possible_types.count(UNKNOWN_TYPE)) {
-    DCHECK_EQ(possible_types.size(), 1u);
-    return UNKNOWN_TYPE;
-  }
-
-  if (possible_types.count(predicted_type)) {
-    return predicted_type;
-  }
-
-  // Collapse field types that Chrome treats as identical, e.g. home and
-  // billing address fields.
-  FieldTypeSet collapsed_field_types;
-  for (FieldType type : possible_types) {
-    DCHECK_NE(type, EMPTY_TYPE);
-    DCHECK_NE(type, UNKNOWN_TYPE);
-
-    // A phone number that's only missing its country code is (for metrics
-    // purposes) the same as the whole phone number.
-    if (type == PHONE_HOME_CITY_AND_NUMBER) {
-      collapsed_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
-    } else {
-      collapsed_field_types.insert(type);
-    }
-  }
-
-  // Capture the field's type, if it is unambiguous.
-  FieldType actual_type = AMBIGUOUS_TYPE;
-  if (collapsed_field_types.size() == 1) {
-    actual_type = *collapsed_field_types.begin();
-  }
-
-  return actual_type;
 }
 
 // Check if the value of |field| is same as one of the other autofilled
@@ -609,7 +660,8 @@ void LogPredictionQualityMetricsForCommonFields(
 void LogPredictionQualityMetrics(
     QualityMetricPredictionSource prediction_source,
     FieldType predicted_type,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type,
@@ -637,8 +689,8 @@ void LogPredictionQualityMetrics(
   base::UmaHistogramSparse(raw_data_histogram,
                            (predicted_type << 16) | actual_type);
 
-  form_interactions_ukm_logger->LogFieldType(
-      form.form_parsed_timestamp(), form.form_signature(),
+  form_interactions_ukm_logger.LogFieldType(
+      source_id, form.form_parsed_timestamp(), form.form_signature(),
       field.GetFieldSignature(), prediction_source, metric_type, predicted_type,
       actual_type);
 
@@ -676,13 +728,14 @@ void LogPredictionQualityMetrics(
 }  // namespace
 
 void LogHeuristicPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
   if (metric_type == TYPE_SUBMISSION) {
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
@@ -710,38 +763,41 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
 }
 
 void LogMlPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_ML_PREDICTIONS,
       field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
 }
 
 // static
 void LogServerPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
-                              form_interactions_ukm_logger, form, field,
-                              metric_type,
+                              form_interactions_ukm_logger, source_id, form,
+                              field, metric_type,
                               /*log_rationalization_metrics=*/false);
 }
 
 // static
 void LogOverallPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/true);
 }
 
@@ -769,6 +825,100 @@ void LogEmailFieldPredictionMetrics(const AutofillField& field) {
                             : EmailPredictionConfusionMatrix::kFalseNegative;
     base::UmaHistogramEnumeration("Autofill.EmailPredictionCorrectness.Recall",
                                   prediction_recall);
+  }
+}
+
+void LogLocalHeuristicMatchedAttribute(
+    DenseSet<MatchAttribute> match_attributes) {
+  // `match_attributes` can be empty if the field was classified as
+  // UNKNOWN_TYPE. It can contain more than one entry if label and name were
+  // used for the classification. In these cases, the metrics emit kNone and
+  // kAmbiguous, respectively.
+  enum class MetricsMatchAttribute {
+    kNone = 0,
+    kAmbiguous = 1,
+    kLabel = 2,
+    kName = 3,
+    kMaxValue = kName
+  };
+  base::UmaHistogramEnumeration("Autofill.LocalHeuristics.MatchedAttribute",
+                                [&] {
+                                  if (match_attributes.empty()) {
+                                    return MetricsMatchAttribute::kNone;
+                                  }
+                                  if (match_attributes.size() != 1) {
+                                    return MetricsMatchAttribute::kAmbiguous;
+                                  }
+                                  switch (*match_attributes.begin()) {
+                                    case MatchAttribute::kLabel:
+                                      return MetricsMatchAttribute::kLabel;
+                                    case MatchAttribute::kName:
+                                      return MetricsMatchAttribute::kName;
+                                  }
+                                }());
+}
+
+void LogFieldPredictionOverlapMetrics(const AutofillField& field) {
+  static constexpr std::string_view kAutocompletePresent =
+      "AutocompleteAttributePresent.";
+  static constexpr std::string_view kAutocompleteAbsent =
+      "AutocompleteAttributeAbsent.";
+  static constexpr std::string_view kAutocompleteAggregate =
+      "AutocompleteAttributeAggregate.";
+  static constexpr std::string_view kSourcesOverall = "Overall.";
+  static constexpr std::string_view kAllTypes = "AllTypes";
+
+  // In the majority of cases, there is only one possible type - let's discard
+  // situations with multiple so that the metric is easy to interpret.
+  if (field.possible_types().size() != 1) {
+    return;
+  }
+  FieldType submitted_field_type = *field.possible_types().begin();
+  if (submitted_field_type == UNKNOWN_TYPE ||
+      submitted_field_type == EMPTY_TYPE) {
+    return;
+  }
+  bool server_agrees =
+      FilledTypeAgreesWithActual(field.possible_types(), field.server_type());
+  bool heuristics_agree = FilledTypeAgreesWithActual(field.possible_types(),
+                                                     field.heuristic_type());
+  // We treat ac=garbage the same as ac unspecified because if it's garbage we
+  // can't say what type it was supposed to represent.
+  bool autocomplete_present =
+      field.html_type() != HtmlFieldType::kUnspecified &&
+      field.html_type() != HtmlFieldType::kUnrecognized;
+  bool autocomplete_agrees =
+      autocomplete_present &&
+      FilledTypeAgreesWithActual(
+          field.possible_types(),
+          HtmlFieldTypeToBestCorrespondingFieldType(field.html_type()));
+
+  FieldPredictionOverlapSourcesSuperset sample =
+      GetFieldPredictionOverlapSample(server_agrees, heuristics_agree,
+                                      autocomplete_agrees);
+
+  std::string_view field_type_str = FieldTypeToStringView(submitted_field_type);
+
+  // TODO(crbug.com/376432267): Add per active source histogram as well.
+  {
+    // Autocomplete-aggreated histograms:
+    std::string prefix =
+        base::StrCat({kFieldPredictionOverlapPrefix, kAutocompleteAggregate});
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, kSourcesOverall, kAllTypes}), sample);
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, kSourcesOverall, field_type_str}), sample);
+  }
+
+  // Autocomplete-specific histograms:
+  {
+    std::string prefix = base::StrCat(
+        {kFieldPredictionOverlapPrefix,
+         autocomplete_present ? kAutocompletePresent : kAutocompleteAbsent});
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, kSourcesOverall, kAllTypes}), sample);
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, kSourcesOverall, field_type_str}), sample);
   }
 }
 

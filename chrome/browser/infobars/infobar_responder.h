@@ -11,7 +11,7 @@
 namespace infobars {
 class ContentInfoBarManager;
 class InfoBar;
-}
+}  // namespace infobars
 
 class ConfirmInfoBarDelegate;
 
@@ -22,11 +22,7 @@ class ConfirmInfoBarDelegate;
 // The asynchronous response matches how real users will use the infobar.
 class InfoBarResponder : public infobars::InfoBarManager::Observer {
  public:
-  enum AutoResponseType {
-    ACCEPT,
-    DENY,
-    DISMISS
-  };
+  enum AutoResponseType { ACCEPT, DENY, DISMISS };
 
   // The responder will asynchronously perform the requested |response|.
   InfoBarResponder(infobars::ContentInfoBarManager* infobar_manager,

@@ -339,6 +339,13 @@ export class PluginController implements ContentController {
     this.postMessage_({type: 'selectAll'});
   }
 
+  highlightTextFragments(textFragments: string[]) {
+    this.postMessage_({
+      type: 'highlightTextFragments',
+      textFragments,
+    });
+  }
+
   getSelectedText(): Promise<{selectedText: string}> {
     return this.postMessageWithReply_({type: 'getSelectedText'});
   }

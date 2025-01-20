@@ -17,7 +17,7 @@ MediaSinkWithCastModes::MediaSinkWithCastModes(
 MediaSinkWithCastModes::MediaSinkWithCastModes(
     const MediaSinkWithCastModes& other) = default;
 
-MediaSinkWithCastModes::~MediaSinkWithCastModes() {}
+MediaSinkWithCastModes::~MediaSinkWithCastModes() = default;
 
 bool MediaSinkWithCastModes::operator==(
     const MediaSinkWithCastModes& other) const {

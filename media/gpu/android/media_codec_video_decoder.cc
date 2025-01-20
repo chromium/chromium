@@ -813,7 +813,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
               &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr()))),
       decoder_config_.coded_size(),
       decoder_config_.color_space_info().ToGfxColorSpace(),
-      coded_size_alignment, use_block_model_);
+      coded_size_alignment);
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.

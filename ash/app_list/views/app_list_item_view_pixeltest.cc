@@ -262,7 +262,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/11, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.

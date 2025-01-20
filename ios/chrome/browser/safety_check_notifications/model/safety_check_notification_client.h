@@ -107,7 +107,7 @@ class SafetyCheckNotificationClient
   // Navigates to and displays the relevant UI based on the provided
   // `notification_metadata`.
   void ShowUIForNotificationMetadata(NSDictionary* notification_metadata,
-                                     Browser* browser);
+                                     base::WeakPtr<Browser> weak_browser);
 
   // Logs to a histogram if notifications that were requested have been
   // triggered.
@@ -120,6 +120,15 @@ class SafetyCheckNotificationClient
   // Called with all the delivered `notifications` that are still present in
   // Notification Center.
   void OnGetDeliveredNotifications(NSArray<UNNotification*>* notifications);
+
+  // Checks if scheduling of Safety Check notifications is currently allowed
+  // based on the presence of a timestamp in
+  // `prefs::kIosSafetyCheckNotificationFirstPresentTimestamp`. If the
+  // timestamp is set and the duration defined by
+  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has elapsed since
+  // it was set, this function clears the timestamp, effectively re-allowing
+  // scheduling. Returns `true` if scheduling is allowed, `false` otherwise.
+  bool CheckAndResetIfSchedulingIsAllowed();
 
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =

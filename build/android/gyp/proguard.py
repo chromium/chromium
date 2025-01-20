@@ -60,7 +60,7 @@ _IGNORE_WARNINGS = (
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
     # Happens on internal builds. It's a real failure, but happens in dead code.
-    r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',   # pylint: disable=line-too-long
+    r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',  # pylint: disable=line-too-long
     # This class is referenced by kotlinx-coroutines-core-jvm but it does not
     # depend on it. Not actually needed though.
     r'Missing class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement',
@@ -351,6 +351,9 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         '-Dcom.android.tools.r8.allowCodeReplacement=false',
         # Required to use "-keep,allowcodereplacement"
         '-Dcom.android.tools.r8.allowTestProguardOptions=true',
+        # Can remove this once the pass is enabled by default.
+        # b/145280859
+        '-Dcom.android.tools.r8.enableListIterationRewriting=1',
     ]
     if options.sdk_extension_jars:
       # Enable API modelling for OS extensions. https://b/326252366
@@ -594,7 +597,9 @@ def _CombineConfigs(configs,
 
   def format_config_contents(path, contents):
     formatted_contents = []
-    if not contents.strip():
+    # Ignore files that contain only comments (androidx has a lot of these).
+    if all(l.isspace() or l.rstrip().startswith('#')
+           for l in contents.splitlines()):
       return []
 
     # Fix up line endings (third_party configs can have windows endings).

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_IMPL_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
@@ -80,8 +81,8 @@ class TabContainerImpl : public TabContainer,
                       ToggleTabGroupCollapsedStateOrigin origin) override;
   void OnGroupClosed(const tab_groups::TabGroupId& group) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
-  void NotifyTabGroupEditorBubbleOpened() override;
-  void NotifyTabGroupEditorBubbleClosed() override;
+  void NotifyTabstripBubbleOpened() override;
+  void NotifyTabstripBubbleClosed() override;
 
   std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const override;
@@ -370,12 +371,6 @@ class TabContainerImpl : public TabContainer,
 
   // Valid for the lifetime of a link drag over us.
   std::unique_ptr<DropArrow> drop_arrow_;
-
-  // Size we last laid out at.
-  gfx::Size last_layout_size_;
-
-  // The width available for tabs at the time of last layout.
-  int last_available_width_ = 0;
 
   // If this value is defined, it is used as the width to lay out tabs
   // (instead of GetAvailableWidthForTabStrip()). It is defined when closing

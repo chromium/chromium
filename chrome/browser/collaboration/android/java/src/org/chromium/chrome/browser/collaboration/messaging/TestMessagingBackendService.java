@@ -61,4 +61,7 @@ class TestMessagingBackendService implements MessagingBackendService {
     public List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params) {
         return new ArrayList<ActivityLogItem>();
     }
+
+    @Override
+    public void clearDirtyTabMessagesForGroup(EitherGroupId groupId) {}
 }

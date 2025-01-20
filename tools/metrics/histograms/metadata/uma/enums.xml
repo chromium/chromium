@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="From backup"/>
   <int value="3" label="New"/>
   <int value="4" label="From provisional id"/>
-  <int value="5" label="From external"/>
+  <int value="5" label="(Deprecated) From external"/>
 </enum>
 
 <enum name="FileMetricsProviderAccessResult">

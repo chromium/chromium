@@ -10,8 +10,8 @@
 #include "base/functional/overloaded.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -46,26 +46,17 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kPasswordAccountStorageEmpty:
-    case SuggestionType::kPasswordAccountStorageOptIn:
-    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-    case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kPredictionImprovementsFeedback:
-    case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kAutofillAiFeedback:
+    case SuggestionType::kEditAutofillAiData:
       return true;
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      return features::
-          kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
-              .Get();
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kComposeResumeNudge:
@@ -77,16 +68,11 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
@@ -96,15 +82,16 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsError:
-    case SuggestionType::kRetrievePredictionImprovements:
-    case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kAutofillAiError:
+    case SuggestionType::kRetrieveAutofillAi:
+    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
       return false;
   }
@@ -176,6 +163,9 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
          IphEventPair{
              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
              "autofill_virtual_card_suggestion_accepted"},
+         IphEventPair{&feature_engagement::
+                          kIPHAutofillCardInfoRetrievalSuggestionFeature,
+                      "autofill_card_info_retrieval_suggestion_accepted"},
          IphEventPair{&feature_engagement::
                           kIPHAutofillDisabledVirtualCardSuggestionFeature,
                       "autofill_disabled_virtual_card_suggestion_accepted"},

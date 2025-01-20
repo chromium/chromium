@@ -25,7 +25,6 @@ void LogOfferNotificationBubbleOfferMetric(
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       histogram_name += "GPayPromoCodeOffer";
       break;
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -43,7 +42,6 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
       histogram_name += "GPayPromoCodeOffer";
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -64,7 +62,6 @@ void LogOfferNotificationBubbleResultMetric(
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       histogram_name += "GPayPromoCodeOffer.";
       break;
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -83,7 +80,6 @@ void LogOfferNotificationBubbleSuppressed(
       histogram_name += "GPayPromoCodeOffer";
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -107,7 +103,6 @@ void LogStoredOfferMetrics(
       case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
         related_merchant_count_histogram_name += ".CardLinkedOffer";
         break;
-      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
     }
@@ -157,7 +152,6 @@ void LogIndividualOfferSuggestionEvent(
       histogram_name += ".GPayPromoCodeOffer";
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }

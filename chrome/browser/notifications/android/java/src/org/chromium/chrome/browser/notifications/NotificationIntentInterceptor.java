@@ -347,4 +347,9 @@ public class NotificationIntentInterceptor {
         hashcode = hashcode * 31 + requestCode;
         return hashcode;
     }
+
+    /** Allows tests to read pending intent with the private extra name. */
+    public static PendingIntent getPendingIntentForTesting(Intent trampolineIntent) {
+        return trampolineIntent.getParcelableExtra(EXTRA_PENDING_INTENT);
+    }
 }

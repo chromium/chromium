@@ -8,9 +8,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -26,15 +28,16 @@ import java.util.function.BiConsumer;
  * covers all Binder calls made through BinderProxy, which covers Chromium code, as well as
  * third-party and framework code.
  */
+@NullMarked
 public class BinderCallsListener {
     private static final String TAG = "BinderCallsListener";
     private static final String PROXY_TRANSACT_LISTENER_CLASS_NAME =
             "android.os.Binder$ProxyTransactListener";
 
-    private static BinderCallsListener sInstance;
+    private static @Nullable BinderCallsListener sInstance;
 
-    private Object mImplementation;
-    private InterfaceInvocationHandler mInvocationHandler;
+    private @Nullable Object mImplementation;
+    private @Nullable InterfaceInvocationHandler mInvocationHandler;
     private boolean mInstalled;
 
     @UiThread
@@ -80,7 +83,7 @@ public class BinderCallsListener {
         return installListener(mImplementation);
     }
 
-    private boolean installListener(Object listener) {
+    private boolean installListener(@Nullable Object listener) {
         if (mInstalled) return false;
 
         try {
@@ -119,11 +122,11 @@ public class BinderCallsListener {
     }
 
     private static class InterfaceInvocationHandler implements InvocationHandler {
-        private String mCurrentInterfaceDescriptor;
-        private BiConsumer<String, String> mObserver;
+        private @Nullable String mCurrentInterfaceDescriptor;
+        private @Nullable BiConsumer<String, String> mObserver;
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) {
+        public @Nullable Object invoke(Object proxy, Method method, Object[] args) {
             if (!ThreadUtils.runningOnUiThread()) return null;
             switch (method.getName()) {
                 case "onTransactStarted":

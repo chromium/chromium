@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -340,17 +341,12 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
 
   // This test should pass on all platforms, including on a ChromeOS
   // guest session.
-  EXPECT_TRUE(test_provider->registrar_unsafe().IsInstalled(app_id));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            test_provider->registrar_unsafe().GetInstallState(app_id));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // This waits until ExternallyManagedAppManager::SynchronizeInstalledApps()
-  // has finished running, hence we know that for guest mode, the app was not
-  // installed.
   Profile* guest_profile = CreateGuestBrowser()->profile();
-  WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
-  DCHECK(guest_provider);
-  test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
-  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(WebAppProvider::GetForTest(guest_profile));
 #endif
 }
 

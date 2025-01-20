@@ -45,6 +45,9 @@ ScopedIPCSupport::ScopedIPCSupport(
 ScopedIPCSupport::~ScopedIPCSupport() {
   if (IsMojoIpczEnabled()) {
     // No extra shutdown required for mojo-ipcz.
+    // Suppress -Wunused-private-field warning, to not leak the buildflags
+    // include into the header.
+    (void)shutdown_policy_;
     return;
   }
 

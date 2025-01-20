@@ -40,6 +40,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -267,7 +268,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   DCHECK(!app_locale.empty());
   params.Set("hl", app_locale);
   params.Set("email", context.email);
-  params.Set("gaiaId", context.gaia_id);
+  params.Set("gaiaId", context.gaia_id.ToString());
   params.Set("extractSamlPasswordAttributes",
              login::ExtractSamlPasswordAttributesEnabled());
   params.Set("clientVersion", version_info::GetVersionNumber());
@@ -283,9 +284,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   // TODO(crbug.com/377862442) Add autoreload url param.
 
   CallJavascript("loadAuthenticator", params);
-  if (features::IsNewLockScreenReauthLayoutEnabled()) {
-    UpdateOrientationAndWidth();
-  }
+  UpdateOrientationAndWidth();
 }
 
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {
@@ -310,11 +309,10 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   };
 
   CHECK_EQ(params.size(), 7u);
-  std::string gaia_id, email, password;
   bool using_saml;
-  gaia_id = params[0].GetString();
-  email = params[1].GetString();
-  password = params[2].GetString();
+  GaiaId gaia_id(params[0].GetString());
+  std::string email = params[1].GetString();
+  std::string password = params[2].GetString();
   auto scraped_saml_passwords =
       ::login::ConvertToStringList(params[3].GetList());
   using_saml = params[4].GetBool();

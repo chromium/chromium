@@ -935,8 +935,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
 // This is a regression test for https://crbug.com/1188889.
-// TODO(crbug.com/41490490): Re-enable this test.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/41483732): Re-enable this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NavigateToForbiddenUrl DISABLED_NavigateToForbiddenUrl
 #else
 #define MAYBE_NavigateToForbiddenUrl NavigateToForbiddenUrl

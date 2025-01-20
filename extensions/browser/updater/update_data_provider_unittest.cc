@@ -139,8 +139,16 @@ class UpdateDataProviderTest : public ExtensionsTest {
       test_browser_client->AddEnabledExtension(extension_id);
     } else {
       extension_registry()->AddDisabled(builder.Build());
-      ExtensionPrefs::Get(browser_context())
-          ->AddDisableReasons(extension_id, disable_reasons);
+
+      if (disable_reasons != disable_reason::DisableReason::DISABLE_NONE) {
+        // Some tests (e.g. GetData_DisabledExtension_WithNoReason) disable an
+        // extension with no disable reasons. In this case we shouldn't call
+        // `AddDisableReasons` because it expects at least one disable reason.
+        // TODO(crbug.com/40554334): We can clean this up after
+        // `Extension::State` is removed.
+        ExtensionPrefs::Get(browser_context())
+            ->AddDisableReasons(extension_id, disable_reasons);
+      }
     }
 
     const Extension* extension =

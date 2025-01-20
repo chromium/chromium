@@ -35,18 +35,18 @@ DigitalIdentitySafetyInterstitialControllerDesktop::CloseOnNavigationObserver::
     return;
   }
   WebContentsModalDialogManager::FromWebContents(web_contents_.get())
-      ->RemoveCloseOnNavigationObserver(this);
+      ->RemoveObserver(this);
 }
 
 void DigitalIdentitySafetyInterstitialControllerDesktop::
     CloseOnNavigationObserver::Observe(content::WebContents& web_contents) {
   web_contents_ = web_contents.GetWeakPtr();
   WebContentsModalDialogManager::FromWebContents(web_contents_.get())
-      ->AddCloseOnNavigationObserver(this);
+      ->AddObserver(this);
 }
 
 void DigitalIdentitySafetyInterstitialControllerDesktop::
-    CloseOnNavigationObserver::OnWillClose() {
+    CloseOnNavigationObserver::OnWillCloseOnNavigation() {
   will_close_due_to_navigation_ = true;
 }
 

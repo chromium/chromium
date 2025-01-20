@@ -150,6 +150,10 @@ struct WebNNContextToken {
   mojo_base.mojom.UnguessableToken value;
 };
 
+struct WebNNPendingConstantToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
 struct WebNNTensorToken {
   mojo_base.mojom.UnguessableToken value;
 };

@@ -14,6 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,6 +97,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485872")
     public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
         onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));

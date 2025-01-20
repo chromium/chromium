@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/bluetooth_config/public/cpp:unit_tests",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/dbus/power",
+    "//components/prefs:test_support",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",

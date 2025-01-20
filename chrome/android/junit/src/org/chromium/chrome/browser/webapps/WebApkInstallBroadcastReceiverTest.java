@@ -29,13 +29,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webapps.WebApkInstallResult;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
-@EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION})
+@EnableFeatures({
+    ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+    NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED
+})
 public class WebApkInstallBroadcastReceiverTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";

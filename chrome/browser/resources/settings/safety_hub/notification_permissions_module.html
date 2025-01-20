@@ -11,16 +11,16 @@
     header="[[headerString_]]"
     subheader="[[subheaderString_]]"
     header-icon="[[headerIconString_]]"
-    button-aria-label-id="safetyCheckNotificationPermissionReviewDontAllowAriaLabel"
+    button-aria-label-id="safetyHubNotificationPermissionReviewDontAllowAriaLabel"
     button-icon="cr20:block"
-    button-tooltip-text="$i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}"
+    button-tooltip-text="$i18n{safetyHubNotificationPermissionReviewDontAllowLabel}"
     more-action-visible
-    more-button-aria-label-id="safetyCheckNotificationPermissionReviewMoreActionsAriaLabel"
+    more-button-aria-label-id="safetyHubNotificationPermissionReviewMoreActionsAriaLabel"
     sites="[[sites_]]">
   <div slot="button-container">
     <cr-button id="blockAllButton" on-click="onBlockAllClick_"
         hidden$="[[shouldShowCompletionInfo_]]">
-      $i18n{safetyCheckNotificationPermissionReviewBlockAllLabel}
+      $i18n{safetyHubNotificationPermissionReviewBlockAllLabel}
     </cr-button>
     <cr-icon-button id="moreActionButton" class="icon-more-vert"
         on-click="onHeaderMoreActionClick_"
@@ -29,18 +29,18 @@
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
         on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]"
         on-focus="showUndoTooltip_" on-mouseenter="showUndoTooltip_"
-        aria-label$="$i18n{safetyCheckNotificationPermissionReviewUndo}">>
+        aria-label$="$i18n{safetyHubNotificationPermissionReviewUndo}">>
     </cr-icon-button>
   </div>
 </settings-safety-hub-module>
 <cr-action-menu id="actionMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_"
       aria-label$="[[getIgnoreAriaLabelForOrigins(lastOrigins_)]]">
-    $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
+    $i18n{safetyHubNotificationPermissionReviewIgnoreLabel}
   </button>
   <button class="dropdown-item" id="reset" on-click="onResetClick_"
       aria-label$="[[getResetAriaLabelForOrigins(lastOrigins_)]]">
-    $i18n{safetyCheckNotificationPermissionReviewResetLabel}
+    $i18n{safetyHubNotificationPermissionReviewResetLabel}
   </button>
 </cr-action-menu>
 <cr-action-menu id="headerActionMenu" role-description="$i18n{menu}">
@@ -52,10 +52,10 @@
 <cr-toast id="undoToast" duration="5000">
   <div id="undoNotification">[[toastText_]]</div>
   <cr-button id="toastUndoButton" on-click="onUndoClick_"
-      aria-label="$i18n{safetyCheckNotificationPermissionReviewUndo}">
-    $i18n{safetyCheckNotificationPermissionReviewUndo}
+      aria-label="$i18n{safetyHubNotificationPermissionReviewUndo}">
+    $i18n{safetyHubNotificationPermissionReviewUndo}
   </cr-button>
 </cr-toast>
 <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
-  $i18n{safetyCheckNotificationPermissionReviewUndo}
+  $i18n{safetyHubNotificationPermissionReviewUndo}
 </cr-tooltip>

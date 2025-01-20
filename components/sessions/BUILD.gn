@@ -136,7 +136,6 @@ source_set("shared") {
 
   public_deps = [
     ":session_id",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//skia",
   ]
@@ -195,6 +194,7 @@ source_set("unit_tests") {
     "core/command_storage_manager_unittest.cc",
     "core/serialized_navigation_entry_unittest.cc",
     "core/session_id_generator_unittest.cc",
+    "core/tab_restore_service_helper_unittest.cc",
   ]
 
   if (!is_ios) {

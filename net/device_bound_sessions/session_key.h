@@ -26,8 +26,24 @@ struct NET_EXPORT SessionKey {
 
   SchemefulSite site;
   Id id;
+
+  bool operator==(const SessionKey& other) const;
+  bool operator<(const SessionKey& other) const;
 };
 
 }  // namespace net::device_bound_sessions
+
+namespace std {
+
+// Implement hashing of session id, so it can be used as key in STL containers.
+template <>
+struct hash<net::device_bound_sessions::SessionKey::Id> {
+  std::size_t operator()(
+      const net::device_bound_sessions::SessionKey::Id& session_id) const {
+    return std::hash<std::string>()(session_id.value());
+  }
+};
+
+}  // namespace std
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_

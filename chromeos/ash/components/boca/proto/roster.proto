@@ -27,6 +27,8 @@ message StudentGroup {
   }
 
   GroupSource group_source = 3;
+
+  string student_group_id = 4;
 }
 
 message UserIdentity {

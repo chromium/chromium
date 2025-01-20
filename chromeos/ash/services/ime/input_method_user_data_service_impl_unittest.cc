@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
 
+#include <string>
+
 #include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
@@ -417,6 +419,122 @@ TEST(InputMethodUserDataServiceTest, DeleteJapaneseDictionaryOnError) {
   TestFuture<mojom::StatusPtr> config_future;
   service.DeleteJapaneseDictionary(
       /*dict_id=*/999, config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = false;
+  expected->reason = "Unknown Error";
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, ExportJapaneseDictionary) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_export_japanese_dictionary()->set_dictionary_id(999);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+  response_pb.set_export_japanese_dictionary("reading1\tword1\t人名\ttext 1");
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<const std::string&> config_future;
+  service.ExportJapaneseDictionary(/*dict_id=*/999,
+                                   config_future.GetCallback());
+
+  EXPECT_EQ(config_future.Get(), "reading1\tword1\t人名\ttext 1");
+}
+
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataConversion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      true);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      false);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/false,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataSuggestion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      false);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      true);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/false,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest,
+     ClearJapanesePersonalizationDataSuggestionAndConversion) {
+  chromeos_input::UserDataRequest request_pb;
+  request_pb.mutable_clear_personalization_data()->set_clear_conversion_history(
+      true);
+  request_pb.mutable_clear_personalization_data()->set_clear_suggestion_history(
+      true);
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+
+  auto c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
+
+  mojom::StatusPtr expected = mojom::Status::New();
+  expected->success = true;
+  EXPECT_EQ(config_future.Get(), expected);
+}
+
+TEST(InputMethodUserDataServiceTest, ClearJapanesePersonalizationDataOnError) {
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(false);
+  response_pb.mutable_status()->set_reason("Unknown Error");
+
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest)
+      .Times(1)
+      .WillOnce(Return(response_pb));
+
+  InputMethodUserDataServiceImpl service(std::move(c_api));
+  TestFuture<mojom::StatusPtr> config_future;
+  service.ClearJapanesePersonalizationData(/*clear_conversion_history=*/true,
+                                           /*clear_suggestion_history=*/true,
+                                           config_future.GetCallback());
 
   mojom::StatusPtr expected = mojom::Status::New();
   expected->success = false;

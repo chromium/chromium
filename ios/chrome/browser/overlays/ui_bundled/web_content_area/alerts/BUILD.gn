@@ -16,8 +16,8 @@ source_set("alerts") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/ui/presenters",
   ]
 }
 

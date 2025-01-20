@@ -37,12 +37,10 @@ crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
     case apps::AppType::kArc:
       return crosapi::mojom::VideoConferenceAppType::kArcApp;
     case apps::AppType::kChromeApp:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return crosapi::mojom::VideoConferenceAppType::kChromeApp;
     case apps::AppType::kWeb:
       return crosapi::mojom::VideoConferenceAppType::kWebApp;
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
     default:
       return crosapi::mojom::VideoConferenceAppType::kAppServiceUnknown;

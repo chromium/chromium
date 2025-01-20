@@ -27,35 +27,35 @@ namespace extensions {
 
 class TtsSpeakFunction : public ExtensionFunction {
  private:
-  ~TtsSpeakFunction() override {}
+  ~TtsSpeakFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.speak", TTS_SPEAK)
 };
 
 class TtsStopSpeakingFunction : public ExtensionFunction {
  private:
-  ~TtsStopSpeakingFunction() override {}
+  ~TtsStopSpeakingFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.stop", TTS_STOP)
 };
 
 class TtsPauseFunction : public ExtensionFunction {
  private:
-  ~TtsPauseFunction() override {}
+  ~TtsPauseFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.pause", TTS_PAUSE)
 };
 
 class TtsResumeFunction : public ExtensionFunction {
  private:
-  ~TtsResumeFunction() override {}
+  ~TtsResumeFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.resume", TTS_RESUME)
 };
 
 class TtsIsSpeakingFunction : public ExtensionFunction {
  private:
-  ~TtsIsSpeakingFunction() override {}
+  ~TtsIsSpeakingFunction() override = default;
   void OnIsSpeakingComplete(bool speaking);
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.isSpeaking", TTS_ISSPEAKING)
@@ -63,7 +63,7 @@ class TtsIsSpeakingFunction : public ExtensionFunction {
 
 class TtsGetVoicesFunction : public ExtensionFunction {
  private:
-  ~TtsGetVoicesFunction() override {}
+  ~TtsGetVoicesFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.getVoices", TTS_GETVOICES)
 };

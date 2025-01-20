@@ -30,7 +30,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/kcer/extra_instances.h"
+#include "chromeos/ash/components/kcer/extra_instances.h"
 #endif
 
 namespace {
@@ -71,7 +71,7 @@ CertificateManagerModel::CertInfo* GetCertInfoFromOrgGroupingMap(
 
 class CertificateManagerModelTest : public testing::Test {
  public:
-  CertificateManagerModelTest() {}
+  CertificateManagerModelTest() = default;
 
   CertificateManagerModelTest(const CertificateManagerModelTest&) = delete;
   CertificateManagerModelTest& operator=(const CertificateManagerModelTest&) =

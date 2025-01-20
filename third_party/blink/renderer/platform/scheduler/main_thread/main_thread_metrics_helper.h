@@ -10,16 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 
 namespace blink {
 namespace scheduler {
@@ -28,23 +22,12 @@ enum class MainThreadTaskLoadState;
 class MainThreadTaskQueue;
 class MainThreadSchedulerImpl;
 
-enum class UkmRecordingStatus {
-  kSuccess = 0,
-  kErrorMissingFrame = 1,
-  kErrorDetachedFrame = 2,
-  kErrorMissingUkmRecorder = 3,
-
-  kCount = 4,
-};
-
 // Helper class to take care of metrics on behalf of MainThreadScheduler.
 // This class should be used only on the main thread.
-class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
+class PLATFORM_EXPORT MainThreadMetricsHelper {
  public:
   MainThreadMetricsHelper(MainThreadSchedulerImpl* main_thread_scheduler,
-                          bool has_cpu_timing_for_each_task,
-                          base::TimeTicks now,
-                          bool renderer_backgrounded);
+                          base::TimeTicks now);
   MainThreadMetricsHelper(const MainThreadMetricsHelper&) = delete;
   MainThreadMetricsHelper& operator=(const MainThreadMetricsHelper&) = delete;
   ~MainThreadMetricsHelper();
@@ -54,13 +37,9 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
-  void OnRendererForegrounded(base::TimeTicks now);
-  void OnRendererBackgrounded(base::TimeTicks now);
   void OnRendererShutdown(base::TimeTicks now);
 
   void RecordMainThreadTaskLoad(base::TimeTicks time, double load);
-  void RecordForegroundMainThreadTaskLoad(base::TimeTicks time, double load);
-  void RecordBackgroundMainThreadTaskLoad(base::TimeTicks time, double load);
 
   void ResetForTest(base::TimeTicks now);
   void DisableMetricsSubsamplingForTesting();
@@ -78,8 +57,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   std::optional<base::TimeTicks> last_reported_task_;
 
   ThreadLoadTracker main_thread_load_tracker_;
-  ThreadLoadTracker background_main_thread_load_tracker_;
-  ThreadLoadTracker foreground_main_thread_load_tracker_;
 
   // When adding a new renderer priority, initialize an entry in the constructor
   // and update histograms.xml.

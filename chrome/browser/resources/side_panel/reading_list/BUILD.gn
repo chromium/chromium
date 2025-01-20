@@ -10,9 +10,9 @@ build_webui("build") {
   grd_prefix = "side_panel_reading_list"
 
   static_files = [
-    "reading_list.html",
-    "images/read_later_empty_dark.svg",
     "images/read_later_empty.svg",
+    "images/read_later_empty_dark.svg",
+    "reading_list.html",
   ]
 
   non_web_component_files = [

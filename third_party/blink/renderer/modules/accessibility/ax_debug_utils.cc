@@ -167,7 +167,7 @@ void CheckTreeConsistency(
         msg << "\n* Serialized an unincluded node: " << obj;
       }
     }
-    DCHECK(false) << msg.str();
+    NOTREACHED(base::NotFatalUntil::M140) << msg.str();
   }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()

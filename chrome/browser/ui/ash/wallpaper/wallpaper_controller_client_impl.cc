@@ -87,8 +87,9 @@ bool IsKnownUser(const AccountId& account_id) {
 // Returns the type of the user with the specified |id| or kRegular.
 user_manager::UserType GetUserType(const AccountId& id) {
   if (user_manager::UserManager::IsInitialized()) {
-    if (auto* user = user_manager::UserManager::Get()->FindUser(id))
+    if (auto* user = user_manager::UserManager::Get()->FindUser(id)) {
       return user->GetType();
+    }
   }
   // TODO(b/258750657): Convert this to a DCHECK when tests are fixed.
   LOG(WARNING) << "No matching user. This should only happen in tests.";
@@ -114,8 +115,9 @@ std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
 
   // System salt must be defined at this point.
   const ash::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
-  if (!salt)
+  if (!salt) {
     LOG(FATAL) << "WallpaperManager HashWallpaperFilesIdStr(): no salt!";
+  }
 
   std::vector<uint8_t> data = *salt;
   // Note: The original code in https://codereview.chromium.org/1886653002/
@@ -194,8 +196,9 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl(
 
   SessionManager* session_manager = SessionManager::Get();
   // SessionManager might not exist in unit tests.
-  if (session_manager)
+  if (session_manager) {
     session_observation_.Observe(session_manager);
+  }
 
   if (user_manager::UserManager::IsInitialized()) {
     user_manager_observation_.Observe(user_manager::UserManager::Get());
@@ -255,8 +258,9 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
   }
 
   // Do not set wallpaper in tests.
-  if (ash::WizardController::IsZeroDelayEnabled())
+  if (ash::WizardController::IsZeroDelayEnabled()) {
     return;
+  }
 
   // Show the wallpaper of the active user during an user session.
   if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
@@ -283,8 +287,9 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
 void WallpaperControllerClientImpl::SetPolicyWallpaper(
     const AccountId& account_id,
     std::unique_ptr<std::string> data) {
-  if (!data || !IsKnownUser(account_id))
+  if (!data || !IsKnownUser(account_id)) {
     return;
+  }
 
   wallpaper_controller_->SetPolicyWallpaper(account_id, GetUserType(account_id),
                                             *data);
@@ -322,8 +327,9 @@ void WallpaperControllerClientImpl::RemoveUserWallpaper(
 
 void WallpaperControllerClientImpl::RemovePolicyWallpaper(
     const AccountId& account_id) {
-  if (!IsKnownUser(account_id))
+  if (!IsKnownUser(account_id)) {
     return;
+  }
 
   wallpaper_controller_->RemovePolicyWallpaper(account_id);
 }
@@ -338,13 +344,15 @@ void WallpaperControllerClientImpl::GetFilesId(
 bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
     const AccountId& account_id) const {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
+  if (!sync_service) {
     return false;
+  }
   syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
   return user_settings->IsSyncAllOsTypesEnabled() ||
          profile->GetPrefs()->GetBoolean(
@@ -461,8 +469,9 @@ void WallpaperControllerClientImpl::InitController() {
 }
 
 void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
-  if (user_manager::UserManager::Get()->IsUserLoggedIn())
+  if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return;
+  }
 
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();

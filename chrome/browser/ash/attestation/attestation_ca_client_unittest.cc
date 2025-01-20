@@ -84,7 +84,7 @@ class AttestationCAClientTest : public ::testing::Test {
         num_invocations_(0),
         result_(false) {}
 
-  ~AttestationCAClientTest() override {}
+  ~AttestationCAClientTest() override = default;
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(

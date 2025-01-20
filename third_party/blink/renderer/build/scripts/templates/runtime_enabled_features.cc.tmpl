@@ -3,6 +3,7 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -114,8 +115,7 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   if (feature != std::end(kFeatures) && feature->name == name) {
     return feature->GetFunction();
   } else {
-    CHECK(false) << " RuntimeEnabledFeature not recognized: " << name;
-    return false;
+    NOTREACHED() << " RuntimeEnabledFeature not recognized: " << name;
   }
 }
 

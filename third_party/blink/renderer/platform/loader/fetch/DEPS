@@ -1,4 +1,5 @@
 include_rules = [
+  "+base/containers/fixed_flat_set.h",
   "+base/containers/flat_set.h",
   "+net/base/auth.h",
   "+net/base/ip_endpoint.h",

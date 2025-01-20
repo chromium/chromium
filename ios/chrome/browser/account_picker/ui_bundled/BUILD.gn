@@ -20,6 +20,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_selection",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -29,8 +31,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
@@ -321,12 +321,12 @@ class ResponseBodyLoader::Buffer final
   bool IsEmpty() const { return buffered_data_.empty(); }
 
   // Add |buffer| to |buffered_data_|.
-  void AddChunk(const char* buffer, size_t available) {
+  void AddChunk(base::span<const char> buffer) {
     TRACE_EVENT2("loading", "ResponseBodyLoader::Buffer::AddChunk",
                  "total_bytes_read", static_cast<int>(total_bytes_read_),
-                 "added_bytes", static_cast<int>(available));
+                 "added_bytes", static_cast<int>(buffer.size()));
     Vector<char> new_chunk;
-    new_chunk.Append(buffer, base::checked_cast<wtf_size_t>(available));
+    new_chunk.AppendSpan(buffer);
     buffered_data_.emplace_back(std::move(new_chunk));
   }
 
@@ -339,7 +339,7 @@ class ResponseBodyLoader::Buffer final
     // Send as much of the chunk as possible without exceeding |max_chunk_size|.
     base::span<const char> span(current_chunk);
     span = span.subspan(offset_in_current_chunk_);
-    span = span.subspan(0, std::min(span.size(), max_chunk_size));
+    span = span.first(std::min(span.size(), max_chunk_size));
     owner_->DidReceiveData(span);
 
     size_t sent_size = span.size();
@@ -594,7 +594,7 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {
-    const size_t chunk_size = network::features::kMaxNumConsumedBytesInTask;
+    const size_t chunk_size = network::kMaxNumConsumedBytesInTask;
     if (chunk_size == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.
@@ -627,7 +627,7 @@ void ResponseBodyLoader::OnStateChange() {
       if (IsSuspendedForBackForwardCache()) {
         // Save the read data into |body_buffer_| instead.
         DidBufferLoadWhileInBackForwardCache(buffer.size());
-        body_buffer_->AddChunk(buffer.data(), buffer.size());
+        body_buffer_->AddChunk(buffer);
         if (!BackForwardCacheBufferLimitTracker::Get()
                  .IsUnderPerProcessBufferLimit()) {
           // We've read too much data while suspended for back-forward cache.

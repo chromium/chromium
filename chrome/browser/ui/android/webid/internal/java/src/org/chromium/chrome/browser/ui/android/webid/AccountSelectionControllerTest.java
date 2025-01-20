@@ -30,6 +30,10 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -59,8 +64,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -173,7 +176,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         "",
                         mTestConfigUrl,
                         mTestLoginUrl,
-                        /* supportsAddAccount= */ false);
+                        /* showUseDifferentAccountButton= */ false);
         ClientIdMetadata clientMetadataNoBrandIconUrl =
                 new ClientIdMetadata(
                         mTestUrlTermsOfService, mTestUrlPrivacyPolicy, /* brandIconUrl= */ "");
@@ -699,19 +702,91 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
+    @Test
+    public void testFilteredOutAccountNoClickListener() {
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount, mFilteredOutAccount),
+                mIdpDataWithUseDifferentAccount,
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+        assertEquals(3, mSheetAccountItems.size());
+        // First account has a click listener.
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Second account is filtered out, so does not.
+        assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Third is the use other account button.
+        assertNotNull(mSheetAccountItems.get(2).model.get(AddAccountButtonProperties.PROPERTIES));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        assertEquals(3, sheetItemListView.getAdapter().getItemCount());
+
+        View anaRow = sheetItemListView.getChildAt(0);
+        assertEquals(anaRow.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        TextView textView = anaRow.findViewById(R.id.title);
+        assertEquals("Ana Doe", textView.getText());
+        textView = anaRow.findViewById(R.id.description);
+        assertEquals("ana@email.example", textView.getText());
+
+        View nicolasRow = sheetItemListView.getChildAt(1);
+        assertEquals(
+                nicolasRow.getAlpha(),
+                AccountSelectionViewBinder.DISABLED_OPACITY,
+                ALPHA_COMPARISON_DELTA);
+        textView = nicolasRow.findViewById(R.id.title);
+        assertEquals("nicolas@example.com", textView.getText());
+        textView = nicolasRow.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
+
+        View addAccountButton = sheetItemListView.getChildAt(2);
+        assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        textView = addAccountButton.findViewById(R.id.title);
+        assertEquals("Use a different account", textView.getText());
+    }
+
+    @Test
+    public void testFilteredOutAccountNoContinueButton() {
+        // Show a newly logged in filtered account.
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mFilteredOutAccount),
+                mIdpDataWithUseDifferentAccount,
+                /* isAutoReauthn= */ false,
+                Arrays.asList(mFilteredOutAccount));
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(2, mSheetAccountItems.size());
+        assertNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        View filteredAccountRow = sheetItemListView.getChildAt(0);
+        assertEquals(
+                filteredAccountRow.getAlpha(),
+                AccountSelectionViewBinder.DISABLED_OPACITY,
+                ALPHA_COMPARISON_DELTA);
+        TextView textView = filteredAccountRow.findViewById(R.id.title);
+        assertEquals("nicolas@example.com", textView.getText());
+        textView = filteredAccountRow.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
+
+        View addAccountButton = sheetItemListView.getChildAt(1);
+        assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        textView = addAccountButton.findViewById(R.id.title);
+        assertEquals("Use a different account", textView.getText());
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
         mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
-    }
-
-    private static int countListItemsOfType(ModelList list, int searchType) {
-        int count = 0;
-        for (ListItem item : list) {
-            if (item.type == searchType) {
-                count += 1;
-            }
-        }
-        return count;
     }
 }

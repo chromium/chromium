@@ -94,12 +94,12 @@ TEST_F(InitAwareBackgroundDownloadServiceTest, TestApiPassThrough) {
 
     histogram_tester.ExpectBucketCount(
         "Download.Service.Request.ClientAction",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             stats::ServiceApiAction::START_DOWNLOAD),
         1);
     histogram_tester.ExpectBucketCount(
         "Download.Service.Request.ClientAction.__Test__",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             stats::ServiceApiAction::START_DOWNLOAD),
         1);
     histogram_tester.ExpectTotalCount("Download.Service.Request.ClientAction",

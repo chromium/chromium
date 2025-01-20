@@ -13,6 +13,8 @@ EXPORTS
   InjectDumpForHungInput_ExportThunk
   RequestSingleCrashUpload_ExportThunk
   SetUploadConsent_ExportThunk
+  GetUploadConsent_ExportThunk
+  GetProductInfo_ExportThunk
 
   ; From chrome/chrome_elf/crash/crash_helper.cc
   SetMetricsClientId

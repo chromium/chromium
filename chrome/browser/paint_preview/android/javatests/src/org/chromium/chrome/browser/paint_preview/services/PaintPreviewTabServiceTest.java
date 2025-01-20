@@ -115,7 +115,11 @@ public class PaintPreviewTabServiceTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
+                    mTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                 });
 
         CriteriaHelper.pollUiThread(

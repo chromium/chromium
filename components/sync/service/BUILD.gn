@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 static_library("service") {
@@ -37,6 +36,8 @@ static_library("service") {
     "history_sync_session_durations_metrics_recorder.h",
     "local_data_description.cc",
     "local_data_description.h",
+    "local_data_migration_item_queue.cc",
+    "local_data_migration_item_queue.h",
     "model_load_manager.cc",
     "model_load_manager.h",
     "non_ui_syncable_service_based_data_type_controller.cc",
@@ -102,7 +103,6 @@ static_library("service") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/os_crypt/sync",

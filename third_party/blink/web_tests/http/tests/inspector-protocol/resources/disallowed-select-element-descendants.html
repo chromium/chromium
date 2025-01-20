@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Disallowed select element descendants</title>
+    <style>
+      select, ::picker(select) {
+        appearance: base-select;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Content model for <select>. -->
+    <select>
+      <label>text</label>
+    </select>
+
+    <!-- Content model for <optgroup>. -->
+    <select>
+      <optgroup>
+        <option>..</option>
+        <input/>
+      </optgroup>
+    </select>
+
+    <!-- Non-phrasing content used within an <option>. -->
+    <select>
+      <option>
+        <article></article>
+      </option>
+    </select>
+
+    <!-- Interactive (inc. tabindex, contenteditable, etc.) inside of an <option>. -->
+    <select>
+      <div>
+        <option>
+          <span tabindex="1">..</span>
+        </option>
+      </div>
+    </select>
+
+    <select>
+      <div>
+        <option>
+          <button></button>
+        </option>
+      </div>
+    </select>
+
+    <!-- Interactive (inc. tabindex, contenteditable, etc.) inside of a <legend>. -->
+    <select>
+      <optgroup>
+          <legend>
+            <div contenteditable="true"></div>
+          </legend>
+      </optgroup>
+    </select>
+
+    <select>
+      <optgroup>
+          <legend>
+            <button></button>
+          </legend>
+      </optgroup>
+    </select>
+
+  </body>
+</html>

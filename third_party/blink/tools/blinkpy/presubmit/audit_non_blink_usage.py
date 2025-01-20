@@ -59,6 +59,7 @@ _CONFIG = [
             # //base constructs that are allowed everywhere
             'base::(byte_)?span_from_ref',
             'base::AdoptRef',
+            'base::allow_nonunique_obj',
             'base::ApplyMetadataToPastSamples',
             'base::as_byte_span',
             'base::as_byte_span',
@@ -87,6 +88,7 @@ _CONFIG = [
             'base::File',
             'base::FileErrorOr',
             'base::FilePath',
+            'base::FindOrNull',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
             'base::HashingLRUCache',
@@ -101,7 +103,6 @@ _CONFIG = [
             'base::JobDelegate',
             'base::JobHandle',
             'base::Location',
-            'base::make_span',
             'base::MakeRefCounted',
             'base::MatcherStringPattern',
             'base::MatchPattern',
@@ -153,6 +154,7 @@ _CONFIG = [
             'base::TimeTicks',
             'base::to_underlying',
             'base::Token',
+            'base::ToVector',
             'base::trace_event::.*',
             'base::unexpected',
             'base::UnguessableToken',
@@ -173,6 +175,9 @@ _CONFIG = [
             'base::expected',
             'base::ok',
             'base::unexpected',
+
+            # //base/types/zip.h
+            'base::zip',
 
             # //base/functional/bind.h
             'base::IgnoreResult',
@@ -282,6 +287,9 @@ _CONFIG = [
             'base::StrAppend',
             'base::StrCat',
 
+            # //base/strings/string_split.h.
+            'base::SplitStringOnce',
+
             # Debugging helpers from //base/debug are allowed everywhere.
             'base::debug::.+',
 
@@ -337,6 +345,9 @@ _CONFIG = [
             'base::UnsafeSharedMemoryRegion',
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
+
+            # tracing
+            'perfetto::.+',
         ]
     },
     {
@@ -418,6 +429,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/common/shared_storage/module_script_downloader.cc',
+        ],
+        'allowed': [
+            'net::SiteForCookies',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/'],
         'allowed': [
             # TODO(dcheng): Should these be in a more specific config?
@@ -445,6 +464,7 @@ _CONFIG = [
             'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
+            'cc::DrawImage',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
@@ -626,7 +646,6 @@ _CONFIG = [
             'cc::kManipulationInfoTouch',
             'cc::kManipulationInfoWheel',
             'cc::kMinFractionToStepWhenPaging',
-            'cc::kPercentDeltaForDirectionalScroll',
             'cc::kPixelsPerLineStep',
             'cc::MainThreadScrollingReason',
             'cc::ManipulationInfo',
@@ -718,7 +737,6 @@ _CONFIG = [
             # are OK.
             'icu::.+',
             'inspector_protocol_encoding::.+',
-            'perfetto::.+',  # tracing
             'snappy::.+',
             'testing::.+',  # googlemock / googletest
             'v8::.+',
@@ -957,11 +975,18 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/animation_frame',
+            'third_party/blink/renderer/core/exported/test_web_frame_content_dumper.cc',
+            'third_party/blink/renderer/core/exported/web_page_popup_impl',
+            'third_party/blink/renderer/core/frame/animation_frame_timing_monitor',
+            'third_party/blink/renderer/core/frame/web_frame_widget_impl',
+            'third_party/blink/renderer/core/html/canvas',
             'third_party/blink/renderer/core/offscreencanvas',
-            'third_party/blink/renderer/core/html/canvas'
+            'third_party/blink/renderer/core/timing/animation_frame_timing_info.h',
+            'third_party/blink/renderer/core/timing/window_performance',
         ],
         'allowed': [
             'viz::BeginFrameArgs',
+            'viz::BeginFrameId',
         ],
     },
     {
@@ -989,10 +1014,12 @@ _CONFIG = [
             'third_party/blink/common/messaging/accelerated_static_bitmap_image_mojom_traits.cc'
         ],
         'allowed': [
+            'gpu::ExportedSharedImage',
             'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',
             'gpu::SharedImageUsageSet',
+            'gpu::SyncToken',
         ],
     },
     {
@@ -1261,6 +1288,14 @@ _CONFIG = [
         ],
         'allowed': [
             'ui::mojom::MenuSourceType',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/platform/web_content_security_policy_struct.h',
+        ],
+        'allowed': [
+            'network::mojom::IntegrityAlgorithm',
         ],
     },
     {
@@ -1816,6 +1851,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/loader/url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/child_url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/tracked_child_url_loader_factory_bundle.cc',
+        ],
+        'allowed': ['mojom::LocalResourceLoaderConfigPtr'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h',
         ],
         # base::RefCounted is prohibited in platform/ as defined above, but
@@ -2297,6 +2340,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/common/privacy_budget/identifiable_token.h',
+        ],
+        'allowed': [
+            'internal::DigestOfObjectRepresentation',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/public/common/tokens/',
         ],
         'allowed': [
@@ -2501,7 +2552,8 @@ def check(path, contents):
             or basename.endswith('_test') or basename.endswith('_test_helpers')
             or basename.endswith('_test_utils')
             or basename.endswith('_unittest') or basename.endswith('_fuzzer')
-            or basename.endswith('_perftest')):
+            or basename.endswith('_perftest')
+            or basename.endswith('_fuzztest')):
         return results
     entries = _find_matching_entries(path)
     if not entries:
@@ -2541,6 +2593,13 @@ def main():
                     print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
+                    print('')
+                    print(
+                        'This check originates in third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py.'
+                    )
+                    print(
+                        'If you think this should be allowed, send a CL with an edit to that file.'
+                    )
         except (IOError, UnicodeDecodeError) as e:
             print('could not open %s: %s' % (path, e))
 

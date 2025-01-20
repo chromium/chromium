@@ -11,13 +11,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_data_remover.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
@@ -64,8 +57,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_data_remover.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -81,6 +79,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -178,7 +177,8 @@ class FakeAuthInstance : public mojom::AuthInstance {
   void GetGoogleAccounts(GetGoogleAccountsCallback callback) override {
     std::vector<mojom::ArcAccountInfoPtr> accounts;
     accounts.emplace_back(mojom::ArcAccountInfo::New(
-        kFakeUserName, signin::GetTestGaiaIdForEmail(kFakeUserName)));
+        kFakeUserName,
+        signin::GetTestGaiaIdForEmail(kFakeUserName).ToString()));
     std::move(callback).Run(std::move(accounts));
   }
 
@@ -261,8 +261,7 @@ class AccountAppsAvailabilitySetter {
   // Returns `true` if account with `gaia_id` was found in AccountManager and
   // `SetIsAccountAvailableInArc` for this account was called. Returns `false`
   // otherwise.
-  bool SetIsAccountAvailableInArc(const std::string& gaia_id,
-                                  bool is_available) {
+  bool SetIsAccountAvailableInArc(const GaiaId& gaia_id, bool is_available) {
     std::vector<account_manager::Account> result;
     base::RunLoop run_loop;
     account_manager_facade_->GetAccounts(base::BindLambdaForTesting(
@@ -274,7 +273,7 @@ class AccountAppsAvailabilitySetter {
     run_loop.Run();
 
     for (auto account : result) {
-      if (account.key.id() == gaia_id) {
+      if (GaiaId(account.key.id()) == gaia_id) {
         account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                                is_available);
         return true;
@@ -298,15 +297,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   ~ArcAuthServiceTest() override = default;
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> lacros =
-        ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(
-        ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    feature_list_.InitWithFeatures({}, lacros);
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -450,9 +440,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
         ash::ProfileHelper::Get()->GetUserByProfile(profile())));
   }
 
-  bool SetIsAccountAvailableInArc(std::string gaia, bool is_available) {
+  bool SetIsAccountAvailableInArc(const GaiaId& gaia_id, bool is_available) {
     DCHECK(arc_availability_setter_);
-    return arc_availability_setter_->SetIsAccountAvailableInArc(gaia,
+    return arc_availability_setter_->SetIsAccountAvailableInArc(gaia_id,
                                                                 is_available);
   }
 
@@ -586,7 +576,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<AccountAppsAvailabilitySetter> arc_availability_setter_;
   std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
-  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
 
   // Not owned.
@@ -881,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, FetchGoogleAccountsFromArc) {
   ASSERT_EQ(1u, arc_google_accounts().size());
   EXPECT_EQ(kFakeUserName, arc_google_accounts()[0]->email);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kFakeUserName),
-            arc_google_accounts()[0]->gaia_id);
+            GaiaId(arc_google_accounts()[0]->gaia_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
@@ -904,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   ASSERT_EQ(1u, arc_google_accounts().size());
   EXPECT_EQ(kFakeUserName, arc_google_accounts()[0]->email);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kFakeUserName),
-            arc_google_accounts()[0]->gaia_id);
+            GaiaId(arc_google_accounts()[0]->gaia_id));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1385,9 +1374,9 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
   auth_service().HandleRemoveAccountRequest("dummyemail@google.com");
 
-  EXPECT_EQ(chrome::GetOSSettingsUrl(
-                chromeos::settings::mojom::kMyAccountsSubpagePath),
-            settings_window_manager().last_url());
+  EXPECT_EQ(
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath),
+      settings_window_manager().last_url());
 }
 
 }  // namespace arc

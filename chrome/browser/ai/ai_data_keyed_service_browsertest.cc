@@ -10,9 +10,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
+#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -20,12 +22,49 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill_ai/core/browser/autofill_ai_features.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::ReturnRef;
+
+class MockAutofillAiModelExecutor
+    : public autofill_ai::AutofillAiModelExecutor {
+ public:
+  MOCK_METHOD(
+      void,
+      GetPredictions,
+      (autofill::FormData form_data,
+       (base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map),
+       (base::flat_map<autofill::FieldGlobalId, bool> sensitivity_map),
+       optimization_guide::proto::AXTreeUpdate ax_tree_update,
+       PredictionsReceivedCallback callback),
+      (override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
+      GetLatestRequest,
+      (),
+      (const override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
+      GetLatestResponse,
+      (),
+      (const override));
+};
 
 class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -38,9 +77,12 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
   ~AiDataKeyedServiceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
+
     ASSERT_TRUE(https_server_->Start());
 
     url_ = https_server_->GetURL("/simple.html");
@@ -59,14 +101,33 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
   void LoadSimplePageAndData() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url(), 1);
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_, 1);
+
     AiDataKeyedService* ai_data_service =
         AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
 
     base::RunLoop run_loop;
-    auto dom_node_id = 0;
-    ai_data_service->GetAiDataWithSpecifiers(
-        1, dom_node_id, web_contents, "test",
+    ai_data_service->GetAiData(
+        1, web_contents, "",
+        base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
+                       base::Unretained(this), run_loop.QuitClosure()),
+        1);
+    run_loop.Run();
+    DCHECK(ai_data());
+  }
+
+  void LoadSimplePageAndDataWithSpecifier(
+      AiDataKeyedService::AiDataSpecifier specifier) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_, 1);
+
+    AiDataKeyedService* ai_data_service =
+        AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
+
+    base::RunLoop run_loop;
+    ai_data_service->GetAiDataWithSpecifier(
+        web_contents, std::move(specifier),
         base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -82,7 +143,8 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
                        AllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "hpkopmikdojpadgmioifjjodbmnjjjca", "nfdaijodggdcjengofmbibbkcnopmikg"};
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -207,6 +269,133 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
   EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
+  LoadSimplePageAndData();
+
+  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  const auto& content_attributes =
+      page_content.root_node().content_attributes();
+  EXPECT_EQ(content_attributes.attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {
+  AiDataKeyedService::AiDataSpecifier specifier;
+  auto* browser_specifier =
+      specifier.mutable_browser_data_collection_specifier();
+  auto* foreground_tab_specifier =
+      browser_specifier->mutable_foreground_tab_page_context_specifier();
+  foreground_tab_specifier->set_inner_text(true);
+  foreground_tab_specifier->set_tab_screenshot(true);
+  foreground_tab_specifier->set_ax_tree(true);
+  foreground_tab_specifier->set_pdf_data(true);
+  foreground_tab_specifier->set_forms_data(true);
+  auto* general_tabs_specifier =
+      browser_specifier->mutable_tabs_context_specifier()
+          ->mutable_general_tab_specifier();
+  general_tabs_specifier->mutable_page_context_specifier()->set_inner_text(
+      true);
+  general_tabs_specifier->set_tab_limit(2);
+  browser_specifier->set_site_engagement(true);
+  browser_specifier->set_tab_groups(true);
+
+  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
+  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  const auto& content_attributes =
+      page_content.root_node().content_attributes();
+  EXPECT_EQ(content_attributes.attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 1);
+  EXPECT_NE(ai_data()->site_engagement().entries()[0].url(), "");
+  EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
+  AiDataKeyedService::AiDataSpecifier specifier;
+  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+
+  EXPECT_EQ(ai_data()->page_context().tab_screenshot(), "");
+  EXPECT_EQ(ai_data()->page_context().inner_text(), "");
+  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 0);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+class AiDataKeyedServiceBrowserTestWithFormsPredictions
+    : public AiDataKeyedServiceBrowserTest {
+ public:
+  ~AiDataKeyedServiceBrowserTestWithFormsPredictions() override = default;
+  AiDataKeyedServiceBrowserTestWithFormsPredictions() {
+    scoped_feature_list_.InitAndEnableFeature(autofill_ai::kAutofillAi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithFormsPredictions,
+                       GetFormsPredictionsDataForModelPrototyping) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
+
+  // Set up test data.
+  auto request =
+      std::make_optional<optimization_guide::proto::FormsPredictionsRequest>();
+  optimization_guide::proto::UserAnnotationsEntry* entry =
+      request->add_entries();
+  entry->set_key("test_key");
+  entry->set_value("test_value");
+  auto response =
+      std::make_optional<optimization_guide::proto::FormsPredictionsResponse>();
+  optimization_guide::proto::FilledFormData* filled_form_data =
+      response->mutable_form_data();
+  optimization_guide::proto::FilledFormFieldData* filled_field =
+      filled_form_data->add_filled_form_field_data();
+  filled_field->set_normalized_label("test_label");
+
+  // Set up mock.
+  auto mock_autofill_ai_model_executor =
+      std::make_unique<MockAutofillAiModelExecutor>();
+  EXPECT_CALL(*mock_autofill_ai_model_executor, GetLatestRequest)
+      .WillOnce(ReturnRef(request));
+  EXPECT_CALL(*mock_autofill_ai_model_executor, GetLatestResponse)
+      .WillOnce(ReturnRef(response));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab)
+      << "Active WebContents isn't a tab. TabInterface::GetFromContents() "
+         "was expected to crash.";
+  ChromeAutofillAiClient* client =
+      tab->GetTabFeatures()->chrome_autofill_ai_client();
+  ASSERT_TRUE(client)
+      << "TabFeatures hasn't created ChromeAutofillAiClient yet.";
+  client->SetModelExecutorForTesting(
+      std::move(mock_autofill_ai_model_executor));
+
+  LoadSimplePageAndData();
+
+  ASSERT_TRUE(ai_data());
+  ASSERT_EQ(ai_data()->forms_predictions_request().entries().size(), 1);
+  EXPECT_EQ(ai_data()->forms_predictions_request().entries()[0].key(),
+            "test_key");
+  EXPECT_EQ(ai_data()->forms_predictions_request().entries()[0].value(),
+            "test_value");
+  ASSERT_EQ(ai_data()
+                ->forms_predictions_response()
+                .form_data()
+                .filled_form_field_data()
+                .size(),
+            1);
+  EXPECT_EQ(ai_data()
+                ->forms_predictions_response()
+                .form_data()
+                .filled_form_field_data()[0]
+                .normalized_label(),
+            "test_label");
+}
+#endif
+
 class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
     : public AiDataKeyedServiceBrowserTest {
  public:
@@ -224,7 +413,7 @@ class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
                        BlockedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "nfdaijodggdcjengofmbibbkcnopmikg"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -249,10 +438,8 @@ IN_PROC_BROWSER_TEST_F(
     AiDataKeyedServiceBrowserTestWithRemotelyAllowlistedExtensions,
     RemotelyAllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "1234",
-      "hpkopmikdojpadgmioifjjodbmnjjjca",
-      "nfdaijodggdcjengofmbibbkcnopmikg",
-  };
+      "1234", "hpkopmikdojpadgmioifjjodbmnjjjca",
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -276,7 +463,8 @@ class AiDataKeyedServiceBrowserTestWithAllowAndBlock
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithAllowAndBlock,
                        AllowAndBlock) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "hpkopmikdojpadgmioifjjodbmnjjjca", "nfdaijodggdcjengofmbibbkcnopmikg"};
+      "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);

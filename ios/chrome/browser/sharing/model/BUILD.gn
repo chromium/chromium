@@ -12,6 +12,7 @@ source_set("model") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ui/base:base",

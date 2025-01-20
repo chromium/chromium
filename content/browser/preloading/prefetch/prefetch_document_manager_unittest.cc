@@ -129,8 +129,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
     candidates.push_back(std::move(candidate1));
 
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates);
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
         network::mojom::URLResponseHead::New();
@@ -138,6 +137,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     head->parsed_headers->no_vary_search_with_parse_error =
         network::mojom::NoVarySearchWithParseError::NewParseError(parse_error);
 
+    GetPrefetches()[0]->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
 
@@ -194,8 +194,7 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidates.push_back(std::move(candidate2));
   candidates.push_back(std::move(candidate3));
 
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   ASSERT_EQ(GetPrefetches().size(), 3u);
   {
@@ -372,8 +371,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &GetPrimaryMainFrame());
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.
@@ -481,8 +479,7 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
           .AppendFencedFrame();
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(fenced_frame_rfh);
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Check that the candidate was sent to |PrefetchService|.
   const auto& prefetch_urls = GetPrefetches();

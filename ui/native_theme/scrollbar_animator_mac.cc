@@ -44,8 +44,9 @@ void ScrollbarAnimationTimerMac::TimerFired() {
   double current_time = base::Time::Now().InSecondsFSinceUnixEpoch();
   double delta = current_time - start_time_;
 
-  if (delta >= duration_)
+  if (delta >= duration_) {
     timer_.Stop();
+  }
 
   double fraction = delta / duration_;
   fraction = std::clamp(fraction, 0.0, 1.0);
@@ -75,28 +76,33 @@ OverlayScrollbarAnimatorMac::~OverlayScrollbarAnimatorMac() = default;
 void OverlayScrollbarAnimatorMac::MouseDidEnter() {
   // If the scrollbar is completely hidden, ignore this. We will initialize
   // the `mouse_in_track_` state if there's a scroll.
-  if (thumb_alpha_ == 0.f)
+  if (thumb_alpha_ == 0.f) {
     return;
+  }
 
-  if (mouse_in_track_)
+  if (mouse_in_track_) {
     return;
+  }
   mouse_in_track_ = true;
 
   // Cancel any in-progress fade-out, and ensure that the fade-out timer be
   // disabled.
-  if (fade_out_animation_)
+  if (fade_out_animation_) {
     FadeOutAnimationCancel();
+  }
   FadeOutTimerUpdate();
 
   // Start the fade-in animation (unless it is in progress or has already
   // completed).
-  if (!fade_in_track_animation_ && track_alpha_ != 1.f)
+  if (!fade_in_track_animation_ && track_alpha_ != 1.f) {
     FadeInTrackAnimationStart();
+  }
 
   // Start the expand-thumb animation (unless it is in progress or has already
   // completed).
-  if (!expand_thumb_animation_ && thumb_width_ != thumb_width_expanded_)
+  if (!expand_thumb_animation_ && thumb_width_ != thumb_width_expanded_) {
     ExpandThumbAnimationStart();
+  }
 }
 
 void OverlayScrollbarAnimatorMac::MouseDidExit() {
@@ -159,8 +165,9 @@ void OverlayScrollbarAnimatorMac::ExpandThumbAnimationTicked(double progress) {
   thumb_width_ = (1 - progress) * thumb_width_unexpanded_ +
                  progress * thumb_width_expanded_;
   client_->SetThumbNeedsDisplay();
-  if (progress == 1)
+  if (progress == 1) {
     expand_thumb_animation_.reset();
+  }
 }
 
 void OverlayScrollbarAnimatorMac::FadeInTrackAnimationStart() {

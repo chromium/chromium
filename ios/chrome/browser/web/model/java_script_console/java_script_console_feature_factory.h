@@ -6,14 +6,13 @@
 #define IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class JavaScriptConsoleFeature;
-class ProfileIOS;
 
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
 // a profile.
-class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {
+class JavaScriptConsoleFeatureFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static JavaScriptConsoleFeatureFactory* GetInstance();
   static JavaScriptConsoleFeature* GetForProfile(ProfileIOS* profile);
@@ -27,13 +26,6 @@ class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* browser_state) const override;
-
-  JavaScriptConsoleFeatureFactory(const JavaScriptConsoleFeatureFactory&) =
-      delete;
-  JavaScriptConsoleFeatureFactory& operator=(
-      const JavaScriptConsoleFeatureFactory&) = delete;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_

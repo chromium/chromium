@@ -12,8 +12,8 @@ build_webui("build") {
   static_files = [ "history_clusters.html" ]
 
   non_web_component_files = [
-    "app.ts",
     "app.html.ts",
+    "app.ts",
     "history_clusters.ts",
   ]
   css_files = [ "app.css" ]

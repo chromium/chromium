@@ -512,54 +512,5 @@ TEST_F(LayerImplScrollTest, PushPropertiesToMirrorsCurrentScrollOffset) {
                    CurrentScrollOffset(pending_layer.get()));
 }
 
-TEST_F(LayerImplTest, JitterTest) {
-  host_impl()->CreatePendingTree();
-  auto* root_layer = EnsureRootLayerInPendingTree();
-  root_layer->SetBounds(gfx::Size(50, 50));
-  SetupViewport(root_layer, gfx::Size(100, 100), gfx::Size(100, 100));
-  auto* scroll_layer =
-      host_impl()->pending_tree()->InnerViewportScrollLayerForTesting();
-  auto* content_layer = AddLayerInPendingTree<LayerImpl>();
-  content_layer->SetBounds(gfx::Size(100, 100));
-  content_layer->SetDrawsContent(true);
-  CopyProperties(
-      host_impl()->pending_tree()->OuterViewportScrollLayerForTesting(),
-      content_layer);
-  UpdatePendingTreeDrawProperties();
-
-  host_impl()->pending_tree()->PushPageScaleFromMainThread(1.f, 1.f, 1.f);
-  const int scroll = 5;
-  int accumulated_scroll = 0;
-  for (int i = 0; i < LayerTreeImpl::kFixedPointHitsThreshold + 1; ++i) {
-    host_impl()->ActivateSyncTree();
-    accumulated_scroll += scroll;
-    SetScrollOffset(
-        host_impl()->active_tree()->InnerViewportScrollLayerForTesting(),
-        gfx::PointF(0, accumulated_scroll));
-    UpdateActiveTreeDrawProperties();
-
-    host_impl()->CreatePendingTree();
-    LayerTreeImpl* pending_tree = host_impl()->pending_tree();
-    pending_tree->set_source_frame_number(i + 1);
-    pending_tree->PushPageScaleFromMainThread(1.f, 1.f, 1.f);
-    // Simulate scroll offset pushed from the main thread.
-    SetScrollOffset(scroll_layer, gfx::PointF(0, accumulated_scroll));
-    // The scroll done on the active tree is undone on the pending tree.
-    content_layer->SetOffsetToTransformParent(
-        gfx::Vector2dF(0, accumulated_scroll));
-    content_layer->SetNeedsPushProperties();
-    UpdateDrawProperties(pending_tree);
-
-    float jitter = content_layer->CalculateJitter();
-    // There should not be any jitter measured till we hit the fixed point hits
-    // threshold. 250 is sqrt(50 * 50) * 5. 50x50 is the visible bounds of
-    // content (clipped by the viewport). 5 is the distance between the
-    // locations of the content in the pending tree and the active tree.
-    float expected_jitter =
-        (i == pending_tree->kFixedPointHitsThreshold) ? 250 : 0;
-    EXPECT_EQ(jitter, expected_jitter);
-  }
-}
-
 }  // namespace
 }  // namespace cc

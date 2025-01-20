@@ -14,13 +14,13 @@
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
-#import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
@@ -133,6 +133,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     kCardholderNamePrefKey :
         base::SysUTF16ToNSString(delegate->cardholder_name()),
     kCardIssuerIconNamePrefKey : NativeImage(delegate->issuer_icon_id()),
+    kCardNetworkPrefKey : base::SysUTF16ToNSString(delegate->card_network()),
     kCardNumberPrefKey : cardNumber,
     kExpirationMonthPrefKey :
         base::SysUTF16ToNSString(delegate->expiration_date_month()),
@@ -176,15 +177,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       [self.consumer showProgressWithUploadCompleted:YES];
 
       // Auto close modal after showing successful card save confirmation.
-      __weak __typeof(self) weakSelf = self;
-      _autoCloseConfirmationTimer.Start(
-          FROM_HERE,
-          UIAccessibilityIsVoiceOverRunning()
-              ? kConfirmationStateDurationIfVoiceOverRunning
-              : kConfirmationStateDuration,
-          base::BindOnce(^{
-            [weakSelf dimissConfirmationStateOnTimeout];
-          }));
+      [self closeModalAfterDelay];
     } else {
       // On card save failure, this modal is dimissed and user is shown an error
       // dialog triggered from IOSChromePaymentsAutofillClient.
@@ -221,16 +214,26 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
       base::SysNSStringToUTF16(year)));
 
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+        /*is_shown=*/false);
+    [self dismissOverlay];
+    return;
+  }
+
+  if (delegate->is_for_upload()) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
         /*is_shown=*/true);
     _creditCardUploadCompleted = NO;
     [self.consumer showProgressWithUploadCompleted:NO];
   } else {
-    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-        /*is_shown=*/false);
-    [self dismissOverlay];
+    // Show progress as completed immediately when saving the card locally,
+    // then close the modal after a delay.
+    [self.consumer showProgressWithUploadCompleted:YES];
+    autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/false);
+    [self closeModalAfterDelay];
   }
 }
 
@@ -293,6 +296,19 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     return;
   }
   self.saveCardDelegate->OnConfirmationClosed();
+}
+
+- (void)closeModalAfterDelay {
+  // Auto close modal after showing successful card save confirmation.
+  __weak __typeof(self) weakSelf = self;
+  _autoCloseConfirmationTimer.Start(
+      FROM_HERE,
+      UIAccessibilityIsVoiceOverRunning()
+          ? kConfirmationStateDurationIfVoiceOverRunning
+          : kConfirmationStateDuration,
+      base::BindOnce(^{
+        [weakSelf dimissConfirmationStateOnTimeout];
+      }));
 }
 
 @end

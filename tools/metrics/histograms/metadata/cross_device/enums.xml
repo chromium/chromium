@@ -213,14 +213,6 @@ chromium-metrics-reviews@google.com.
       label="Error: Failed to create DeviceSync:BetterTogether key"/>
 </enum>
 
-<enum name="CryptAuthV2EnrollmentUserKeyPairState">
-  <int value="0" label="v1 and v2 do not exist"/>
-  <int value="1" label="v1 exists but not v2"/>
-  <int value="2" label="v2 exists but not v1"/>
-  <int value="3" label="v1 and v2 exist and agree"/>
-  <int value="4" label="v1 and v2 exist and disagree"/>
-</enum>
-
 <enum name="CryptAuthV2InvocationReason">
   <int value="0" label="Invocation reason unspecified"/>
   <int value="1" label="Initialization"/>
@@ -475,6 +467,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Success page"/>
 </enum>
 
+<!-- LINT.IfChange(MultiDeviceSetupHostStatus) -->
+
 <enum name="MultiDevice_Setup_HostStatus">
   <int value="0" label="No eligible hosts"/>
   <int value="1" label="Eligible host exists but no host set"/>
@@ -482,6 +476,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Host set but not yet verified"/>
   <int value="4" label="Host verified"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:MultiDeviceSetupHostStatus) -->
 
 <enum name="MultiDevice_VerifyAndForgetHostConfirmationState">
   <int value="0" label="Button clicked"/>

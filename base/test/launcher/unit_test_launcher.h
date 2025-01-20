@@ -198,6 +198,6 @@ class MergeTestFilterSwitchHandler : public DuplicateSwitchHandler {
 
 #endif  // BUILDFLAG(USE_BLINK)
 
-}   // namespace base
+}  // namespace base
 
 #endif  // BASE_TEST_LAUNCHER_UNIT_TEST_LAUNCHER_H_

@@ -8,6 +8,7 @@
 #include <linux/rtnetlink.h>
 #include <sched.h>
 
+#include <array>
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -589,7 +590,7 @@ TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
   InitializeAddressTracker(true);
 
   for (int i = 0; i < 10; i++) {
-    char buf[IFNAMSIZ] = {0};
+    char buf[IFNAMSIZ] = {};
     EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
   }
 }
@@ -807,7 +808,7 @@ TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackersInPidNamespaces) {
   for (const Child& child : children) {
     ASSERT_TRUE(child.process.IsValid());
 
-    uint8_t message[] = {0};
+    auto message = std::to_array<uint8_t>({0});
     ASSERT_TRUE(parent_reader.ReadAtCurrentPosAndCheck(message));
     ASSERT_EQ(message[0], kChildInitializedAndWaiting);
   }
@@ -851,7 +852,7 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
     return 1;
 
   // Block until the parent says all children have initialized their trackers.
-  uint8_t message[] = {0};
+  auto message = std::to_array<uint8_t>({0});
   if (!reader.ReadAtCurrentPosAndCheck(message) || message[0] != kChildMayExit)
     return 1;
   return 0;

@@ -301,7 +301,7 @@ void AppTestHelper::FirstTaskRun() {
                                    WithSwitch("update_url",
                                               Wrap(&EnterTestMode))))))))},
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
-          {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
+          {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
           {"set_platform_policies",
            WithSwitch("values", Wrap(&SetPlatformPolicies))},
           {"set_machine_managed",
@@ -372,25 +372,29 @@ void AppTestHelper::FirstTaskRun() {
           {"install", WithSwitch("switches", WithSystemScope(Wrap(&Install)))},
           {"install_updater_and_app",
            WithSwitch(
-               "additional_switches",
+               "updater_path",
                WithSwitch(
-                   "wait_for_the_installer",
+                   "additional_switches",
                    WithSwitch(
-                       "expect_success",
+                       "expected_exit_code",
                        WithSwitch(
-                           "verify_app_logo_loaded",
+                           "wait_for_the_installer",
                            WithSwitch(
-                               "always_launch_cmd",
+                               "expect_success",
                                WithSwitch(
-                                   "child_window_text_to_find",
+                                   "verify_app_logo_loaded",
                                    WithSwitch(
-                                       "tag",
+                                       "always_launch_cmd",
                                        WithSwitch(
-                                           "is_silent_install",
+                                           "child_window_text_to_find",
                                            WithSwitch(
-                                               "app_id",
-                                               WithSystemScope(Wrap(
-                                                   &InstallUpdaterAndApp)))))))))))},
+                                               "tag",
+                                               WithSwitch(
+                                                   "is_silent_install",
+                                                   WithSwitch(
+                                                       "app_id",
+                                                       WithSystemScope(Wrap(
+                                                           &InstallUpdaterAndApp)))))))))))))},  // NOLINT
           {"print_log", WithSystemScope(Wrap(&PrintLog))},
           {"run_wake",
            WithSwitch("version", WithSwitch("exit_code",
@@ -410,6 +414,10 @@ void AppTestHelper::FirstTaskRun() {
                       WithSystemScope(Wrap(&RegisterAppByValue)))},
           {"check_for_update",
            (WithSwitch("app_id", WithSystemScope(Wrap(&CheckForUpdate))))},
+          {"expect_check_for_update_opposite_scope_fails",
+           (WithSwitch("app_id",
+                       WithSystemScope(
+                           Wrap(&ExpectCheckForUpdateOppositeScopeFails))))},
           {"update_all", WithSystemScope(Wrap(&UpdateAll))},
           {"get_app_states", WithSwitch("expected_app_states",
                                         WithSystemScope(Wrap(&GetAppStates)))},

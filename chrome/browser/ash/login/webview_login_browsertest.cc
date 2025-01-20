@@ -117,6 +117,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -1385,13 +1386,7 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
 
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
  protected:
-  ReauthEndpointWebviewLoginTest() {
-    // TODO(https://crbug.com/1153912) Makes tests work with
-    // kParentAccessCodeForOnlineLogin enabled.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kParentAccessCodeForOnlineLogin);
-  }
+  ReauthEndpointWebviewLoginTest() = default;
   ~ReauthEndpointWebviewLoginTest() override = default;
 
   LoginManagerMixin::TestUserInfo reauth_user_{
@@ -2705,7 +2700,6 @@ class WebviewLoginQuickStartTest : public WebviewLoginTest {
  public:
   WebviewLoginQuickStartTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);

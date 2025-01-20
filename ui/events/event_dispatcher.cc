@@ -183,7 +183,7 @@ void EventDispatcher::DispatchEvent(EventHandler* handler, Event* event) {
     return;
   }
 
-  base::AutoReset<Event*> event_reset(&current_event_, event);
+  base::AutoReset<raw_ptr<Event>> event_reset(&current_event_, event);
   handler->OnEvent(event);
   if (!delegate_ && event->cancelable())
     event->StopPropagation();

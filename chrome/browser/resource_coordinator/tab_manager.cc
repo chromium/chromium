@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -175,9 +171,12 @@ void TabManager::RemoveObserver(TabLifecycleObserver* observer) {
 bool TabManager::IsInternalPage(const GURL& url) {
   // There are many chrome:// UI URLs, but only look for the ones that users
   // are likely to have open. Most of the benefit is the from NTP URL.
-  const char* const kInternalPagePrefixes[] = {
-      chrome::kChromeUIDownloadsURL, chrome::kChromeUIHistoryURL,
-      chrome::kChromeUINewTabURL, chrome::kChromeUISettingsURL};
+  const auto kInternalPagePrefixes = std::to_array<const char*>({
+      chrome::kChromeUIDownloadsURL,
+      chrome::kChromeUIHistoryURL,
+      chrome::kChromeUINewTabURL,
+      chrome::kChromeUISettingsURL,
+  });
   // Prefix-match against the table above. Use strncmp to avoid allocating
   // memory to convert the URL prefix constants into std::strings.
   for (size_t i = 0; i < std::size(kInternalPagePrefixes); ++i) {

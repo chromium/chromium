@@ -119,7 +119,7 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
   }
 
  protected:
-  WebUIBrowserAsyncTest() {}
+  WebUIBrowserAsyncTest() = default;
 
   // Class to synchronize asynchronous javascript activity with the tests.
   class AsyncWebUIMessageHandler : public WebUIMessageHandler {

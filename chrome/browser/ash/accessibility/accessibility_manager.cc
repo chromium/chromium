@@ -1950,20 +1950,20 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
 
     base::UmaHistogramBoolean(
         "Accessibility.CrosCursorColor",
-        prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
+        prefs->GetInteger(prefs::kAccessibilityCursorColor) !=
+            static_cast<int>(kDefaultCursorColor));
 
-      bool color_correction_enabled = IsColorCorrectionEnabled();
-      base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
-                                color_correction_enabled);
-      if (color_correction_enabled) {
-        base::UmaHistogramEnumeration(
-            "Accessibility.CrosColorCorrection.FilterType",
-            static_cast<ColorVisionCorrectionType>(prefs->GetInteger(
-                prefs::kAccessibilityColorVisionCorrectionType)));
-        base::UmaHistogramPercentage(
-            "Accessibility.CrosColorCorrection.FilterAmount",
-            prefs->GetInteger(
-                prefs::kAccessibilityColorVisionCorrectionAmount));
+    bool color_correction_enabled = IsColorCorrectionEnabled();
+    base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
+                              color_correction_enabled);
+    if (color_correction_enabled) {
+      base::UmaHistogramEnumeration(
+          "Accessibility.CrosColorCorrection.FilterType",
+          static_cast<ColorVisionCorrectionType>(prefs->GetInteger(
+              prefs::kAccessibilityColorVisionCorrectionType)));
+      base::UmaHistogramPercentage(
+          "Accessibility.CrosColorCorrection.FilterAmount",
+          prefs->GetInteger(prefs::kAccessibilityColorVisionCorrectionAmount));
     }
 
     if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
@@ -2281,7 +2281,8 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
 
   const bool enable_v3_manifest =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableExperimentalAccessibilityManifestV3);
+          ::switches::kEnableExperimentalAccessibilityManifestV3) ||
+      ::features::IsAccessibilityManifestV3EnabledForEnhancedNetworkTts();
   const base::FilePath::CharType* manifest_filename =
       enable_v3_manifest ? extension_misc::kEnhancedNetworkTtsManifestV3Filename
                          : extension_misc::kEnhancedNetworkTtsManifestFilename;

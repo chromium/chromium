@@ -23,6 +23,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -238,8 +239,9 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 29 adds selectableBuyerAndSellerReportingIds field to ad object.
 // Version 30 compresses the AdsProto field using Snappy compression and runs a
 // VACUUM command.
+// Version 31 adds creative_scanning_metadata field to ad object.
 
-const int kCurrentVersionNumber = 30;
+const int kCurrentVersionNumber = 31;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -432,6 +434,9 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
             allowed_reporting_origin.Serialize());
       }
     }
+    if (ad.creative_scanning_metadata.has_value()) {
+      ad_proto->set_creative_scanning_metadata(*ad.creative_scanning_metadata);
+    }
   }
   return ad_protos;
 }
@@ -566,6 +571,10 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
       }
       ad.allowed_reporting_origins =
           std::move(allowed_reporting_origins_vector);
+    }
+    if (ad_proto.has_creative_scanning_metadata()) {
+      ad.creative_scanning_metadata =
+          std::move(*ad_proto.mutable_creative_scanning_metadata());
     }
   }
   UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDeserializationTime",
@@ -2922,123 +2931,126 @@ bool UpgradeDB(sql::Database& db,
         if (!UpgradeV6SchemaToV7(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 7:
         if (!UpgradeV7SchemaToV8(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 8:
         if (!UpgradeV8SchemaToV9(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 9:
         if (!UpgradeV9SchemaToV10(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 10:
         if (!UpgradeV10SchemaToV11(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 11:
         if (!UpgradeV11SchemaToV12(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 12:
         if (!UpgradeV12SchemaToV13(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 13:
         if (!UpgradeV13SchemaToV14(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 14:
         if (!UpgradeV14SchemaToV15(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 15:
         if (!UpgradeV15SchemaToV16(db, meta_table, pass_key)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 16:
         if (!UpgradeV16SchemaToV17(db, meta_table, pass_key)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 17:
         if (!UpgradeV17SchemaToV18(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 18:
         if (!UpgradeV18SchemaToV19(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 19:
         if (!UpgradeV19SchemaToV20(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 20:
         if (!UpgradeV20SchemaToV21(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 21:
         if (!UpgradeV21SchemaToV22(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 22:
         if (!UpgradeV22SchemaToV23(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 23:
         if (!UpgradeV23SchemaToV24(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 24:
         if (!UpgradeV24SchemaToV25(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 25:
         vacuum_db_post_upgrade = true;
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 26:
         vacuum_db_post_upgrade = true;
         if (!UpgradeV26SchemaToV27(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 27:
         if (!UpgradeV27SchemaToV28(db, meta_table)) {
           return false;
         }
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 28:
         // v29 adds a new field in the IG.ads structure, and so doesn't require
         // any changes to the InterestGroup table. Existing data is
         // forwards-compatible because `FromInterestGroupAdValue` correctly
         // handles the lack of a value for
         // `selectable_buyer_and_seller_reporting_ids`.
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case 29:
         vacuum_db_post_upgrade = true;
         if (!UpgradeV29SchemaToV30(db, meta_table)) {
           return false;
         }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 30:
+        // Conversion is a no-op, just bookkeeping for a proto change.
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }
@@ -3387,6 +3399,13 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  // NOTE: Join and bid history can expire up to a few hours before the interest
+  // group, since join and bid history are floored to UTC days, but the
+  // interest group doesn't necessarily expire at UTC midnight.
+  //
+  // The reason for this is to reduce the number of join / bid rows stored.
+  //
+  // For joins, this can result in a join count of 0.
   int64_t join_day = join_time.ToDeltaSinceWindowsEpoch()
                          .FloorToMultiple(base::Days(1))
                          .InMicroseconds();
@@ -3441,7 +3460,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
     base::Time exact_join_time,
     base::Time last_updated,
     base::Time next_update_after) {
-  DCHECK(data.IsValid());
+  DCHECK(data.IsValid() && data.IsValidForJoinAndUpdate());
   url::Origin joining_origin = url::Origin::Create(joining_url);
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
@@ -3864,7 +3883,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
         std::move(update.aggregation_coordinator_origin);
   }
 
-  if (!updated_group.IsValid()) {
+  if (!updated_group.IsValid() || !updated_group.IsValidForJoinAndUpdate()) {
     // TODO(behamilton): Report errors to devtools.
     return std::nullopt;
   }
@@ -3962,6 +3981,11 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  // NOTE: Join and bid history can expire up to a few hours before the interest
+  // group, since join and bid history are floored to UTC days, but the
+  // interest group doesn't necessarily expire at UTC midnight.
+  //
+  // The reason for this is to reduce the number of join / bid rows stored.
   int64_t bid_day = bid_time.ToDeltaSinceWindowsEpoch()
                         .FloorToMultiple(base::Days(1))
                         .InMicroseconds();
@@ -4371,9 +4395,21 @@ bool GetPreviousWins(sql::Database& db,
         /*ad_json=*/prev_wins.ColumnString(1));
     output->prev_wins.push_back(std::move(prev_win));
   }
-  return prev_wins.Succeeded();
+  bool succeeded = prev_wins.Succeeded();
+  if (succeeded) {
+    UMA_HISTOGRAM_COUNTS_100000("Storage.InterestGroup.PrevWinsNumEntries",
+                                output->prev_wins.size());
+  }
+  return succeeded;
 }
 
+// NOTE: Join and bid history can expire up to a few hours before the interest
+// group, since join and bid history are floored to UTC days, but the
+// interest group doesn't necessarily expire at UTC midnight.
+//
+// The reason for this is to reduce the number of join / bid rows stored.
+//
+// For joins, this can result in a join count of 0.
 bool GetJoinCount(sql::Database& db,
                   const blink::InterestGroupKey& group_key,
                   base::Time joined_after,
@@ -4400,6 +4436,11 @@ bool GetJoinCount(sql::Database& db,
   return join_count.Succeeded();
 }
 
+// NOTE: Join and bid history can expire up to a few hours before the interest
+// group, since join and bid history are floored to UTC days, but the
+// interest group doesn't necessarily expire at UTC midnight.
+//
+// The reason for this is to reduce the number of join / bid rows stored.
 bool GetBidCount(sql::Database& db,
                  const blink::InterestGroupKey& group_key,
                  base::Time now,
@@ -5443,11 +5484,16 @@ void ReportUpgradeDBResult(bool upgrade_succeeded, int db_version) {
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
 constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
-constexpr base::TimeDelta InterestGroupStorage::kIdlePeriod;
+constexpr base::TimeDelta InterestGroupStorage::kDefaultIdlePeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateSucceededBackoffPeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateFailedBackoffPeriod;
 
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
+    : InterestGroupStorage(std::move(path),
+                           /*idle_period=*/kDefaultIdlePeriod) {}
+
+InterestGroupStorage::InterestGroupStorage(const base::FilePath& path,
+                                           base::TimeDelta idle_period)
     : path_to_database_(DBPath(path)),
       max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
       max_owner_regular_interest_groups_(MaxOwnerRegularInterestGroups()),
@@ -5455,9 +5501,8 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
       max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
-      db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
       db_maintenance_timer_(FROM_HERE,
-                            kIdlePeriod,
+                            idle_period,
                             this,
                             &InterestGroupStorage::PerformDBMaintenance) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -5491,10 +5536,10 @@ bool InterestGroupStorage::EnsureDBInitialized() {
 bool InterestGroupStorage::InitializeDB() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_ = std::make_unique<sql::Database>(GetDatabaseOptions());
+  db_ = std::make_unique<sql::Database>(GetDatabaseOptions(),
+                                        sql::Database::Tag("InterestGroups"));
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
-  db_->set_histogram_tag("InterestGroups");
 
   if (path_to_database_.empty()) {
     if (!db_->OpenInMemory()) {
@@ -6113,6 +6158,17 @@ base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
 
 /* static */ int InterestGroupStorage::GetCurrentVersionNumberForTesting() {
   return kCurrentVersionNumber;
+}
+
+/*static */ std::unique_ptr<InterestGroupStorage>
+InterestGroupStorage::CreateWithIdlePeriodForTesting(
+    const base::FilePath& path,
+    base::TimeDelta idle_period) {
+  return base::WrapUnique(new InterestGroupStorage(path, idle_period));
+}
+
+void InterestGroupStorage::ResetIdleTimerForTesting() {
+  EnsureDBInitialized();
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

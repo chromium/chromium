@@ -32,13 +32,15 @@ void WebDataServiceBase::Init(ProfileErrorCallback callback) {
 }
 
 void WebDataServiceBase::ShutdownDatabase() {
-  if (wdbs_)
+  if (wdbs_) {
     wdbs_->ShutdownDatabase();
+  }
 }
 
 void WebDataServiceBase::CancelRequest(Handle h) {
-  if (wdbs_)
+  if (wdbs_) {
     wdbs_->CancelRequest(h);
+  }
 }
 
 WebDatabase* WebDataServiceBase::GetDatabase() {

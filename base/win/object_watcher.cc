@@ -38,8 +38,9 @@ bool ObjectWatcher::StartWatchingMultipleTimes(HANDLE object,
 }
 
 bool ObjectWatcher::StopWatching() {
-  if (!wait_object_)
+  if (!wait_object_) {
     return false;
+  }
 
   // Make sure ObjectWatcher is used in a sequenced fashion.
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -108,8 +109,9 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
   // Since our job is to just notice when an object is signaled and report the
   // result back to this sequence, we can just run on a Windows wait thread.
   DWORD wait_flags = WT_EXECUTEINWAITTHREAD;
-  if (run_once_)
+  if (run_once_) {
     wait_flags |= WT_EXECUTEONLYONCE;
+  }
 
   // DoneWaiting can be synchronously called from RegisterWaitForSingleObject,
   // so set up all state now.
@@ -134,8 +136,9 @@ void ObjectWatcher::Signal(Delegate* delegate) {
   // StartWatching(). As a result, we save any state we need and clear previous
   // watcher state before signaling the delegate.
   HANDLE object = object_;
-  if (run_once_)
+  if (run_once_) {
     StopWatching();
+  }
   delegate->OnObjectSignaled(object);
 }
 

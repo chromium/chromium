@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -2736,32 +2737,6 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedFramebufferBound(
   }
 
   return false;
-}
-
-void GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult(
-    const char* function_name,
-    uint64_t swap_id,
-    gfx::SwapCompletionResult result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "gpu", "AsyncSwapBuffers",
-      TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-  CheckSwapBuffersResult(result.swap_result, function_name);
-}
-
-error::Error GLES2DecoderPassthroughImpl::CheckSwapBuffersResult(
-    gfx::SwapResult result,
-    const char* function_name) {
-  if (result == gfx::SwapResult::SWAP_FAILED) {
-    // If SwapBuffers failed, we may not have a current context any more.
-    LOG(ERROR) << "Context lost because " << function_name << " failed.";
-    if (!context_->IsCurrent(surface_.get()) || !CheckResetStatus()) {
-      MarkContextLost(error::kUnknown);
-      group_->LoseContexts(error::kUnknown);
-      return error::kLostContext;
-    }
-  }
-
-  return error::kNoError;
 }
 
 // static

@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -48,16 +47,19 @@ HTMLMeterElement::~HTMLMeterElement() = default;
 
 LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
   switch (style.EffectiveAppearance()) {
-    case kMeterPart:
+    case AppearanceValue::kMeter:
       UseCounter::Count(GetDocument(),
                         WebFeature::kMeterElementWithMeterAppearance);
       break;
-    case kNoControlPart:
+    case AppearanceValue::kNone:
       UseCounter::Count(GetDocument(),
                         WebFeature::kMeterElementWithNoneAppearance);
       break;
     default:
       break;
+  }
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
   }
   return HTMLElement::CreateLayoutObject(style);
 }
@@ -206,13 +208,6 @@ void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   bar->AppendChild(value_);
 
   inner->AppendChild(bar);
-
-  if (!RuntimeEnabledFeatures::MeterAppearanceNoneFallbackStyleEnabled()) {
-    auto* fallback = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-    fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
-    fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
-    root.AppendChild(fallback);
-  }
 }
 
 void HTMLMeterElement::UpdateValueAppearance(double percentage) {

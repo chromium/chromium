@@ -615,8 +615,8 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
   UpdateClearButtonVisibility();
 }
 
-ControlPart MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
-  return kTextFieldPart;
+AppearanceValue MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
+  return AppearanceValue::kTextField;
 }
 
 void MultipleFieldsTemporalInputTypeView::OpenPopupView() {
@@ -636,6 +636,13 @@ bool MultipleFieldsTemporalInputTypeView::HasOpenedPopup() const {
   if (PickerIndicatorElement* picker = GetPickerIndicatorElement())
     return picker->HasOpenedPopup();
 
+  return false;
+}
+
+bool MultipleFieldsTemporalInputTypeView::IsPickerVisible() const {
+  if (PickerIndicatorElement* picker = GetPickerIndicatorElement()) {
+    return picker->IsPickerVisible();
+  }
   return false;
 }
 

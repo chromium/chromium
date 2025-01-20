@@ -78,7 +78,9 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
   // extra resource requests with data URLs to avoid copy / initialization
   // overhead, which can be significant for large URLs.
   if (resource_url.empty() || resource_url.StartsWith("#") ||
-      ProtocolIs(resource_url, "data")) {
+      (ProtocolIs(resource_url, "data") &&
+       (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() ||
+        request_type != PreloadRequest::kRequestTypeLinkRelPreload))) {
     return nullptr;
   }
 
@@ -101,7 +103,11 @@ Resource* PreloadRequest::Start(Document* document) {
 
   const KURL& url = CompleteURL(document);
   // Data URLs are filtered out in the preload scanner.
-  DCHECK(!url.ProtocolIsData());
+  // If the PreloadLinkRelDataUrls feature is enabled, only data URLs that are
+  // not preloaded via the link element are filtered out in the preload scanner.
+  DCHECK(!url.ProtocolIsData() ||
+         (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
+          request_type_ == RequestType::kRequestTypeLinkRelPreload));
 
   ResourceRequest resource_request(url);
   resource_request.SetReferrerPolicy(referrer_policy_);
@@ -117,16 +123,14 @@ Resource* PreloadRequest::Start(Document* document) {
   // called again later.
   if (is_attribution_reporting_eligible_img_or_script_ &&
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-          url, /*element=*/nullptr,
-          /*request_id=*/std::nullopt, /*log_issues=*/false)) {
+          url, /*element=*/nullptr, /*log_issues=*/false)) {
     resource_request.SetAttributionReportingEligibility(
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
 
   bool shared_storage_writable_opted_in =
       shared_storage_writable_opted_in_ &&
-      RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
-          document->domWindow()) &&
+      RuntimeEnabledFeatures::SharedStorageAPIEnabled(document->domWindow()) &&
       document->domWindow()->IsSecureContext() &&
       !document->domWindow()->GetSecurityOrigin()->IsOpaque();
   resource_request.SetSharedStorageWritableOptedIn(
@@ -135,6 +139,12 @@ Resource* PreloadRequest::Start(Document* document) {
     CHECK_EQ(resource_type_, ResourceType::kImage);
     UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
   }
+
+  bool browsing_topics =
+      browsing_topics_eligible_ && RuntimeEnabledFeatures::TopicsAPIEnabled() &&
+      document->domWindow()->IsSecureContext() &&
+      !document->domWindow()->GetSecurityOrigin()->IsOpaque();
+  resource_request.SetBrowsingTopics(browsing_topics);
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;

@@ -96,8 +96,10 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
                                     error:nil];
     }
 
-    // Write to file.
-    [data writeToURL:file_url atomically:YES];
+    // Create or overwrite the favicon file.
+    [file_manager createFileAtPath:[file_url path]
+                          contents:data
+                        attributes:nil];
   });
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -343,8 +345,18 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
     NSDictionary* fileAttribs =
         [file_manager attributesOfItemAtPath:filePath.path error:nil];
     if (fileAttribs) {
-      [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
-                            forKey:fileName];
+      // Try to get the modification date first but fallback to the creation
+      // date if necessary.
+      NSDate* date = fileAttribs[NSFileModificationDate]
+                         ?: fileAttribs[NSFileCreationDate];
+
+      // If for some reason these attributes are not set, don't add the info to
+      // the dictionary. The favicon will either be refetched and overwritten,
+      // or deleted in cleanup if there are no credentials using it anymore.
+      if (date) {
+        [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
+                              forKey:fileName];
+      }
     }
   }
   return favicon_info_dict;

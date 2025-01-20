@@ -7,11 +7,9 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-SelectFileDialogExtensionFactory::SelectFileDialogExtensionFactory() {
-}
+SelectFileDialogExtensionFactory::SelectFileDialogExtensionFactory() = default;
 
-SelectFileDialogExtensionFactory::~SelectFileDialogExtensionFactory() {
-}
+SelectFileDialogExtensionFactory::~SelectFileDialogExtensionFactory() = default;
 
 ui::SelectFileDialog* SelectFileDialogExtensionFactory::Create(
     ui::SelectFileDialog::Listener* listener,

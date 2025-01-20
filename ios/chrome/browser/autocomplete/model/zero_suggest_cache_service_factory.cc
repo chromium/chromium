@@ -4,8 +4,6 @@
 
 #include "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
@@ -17,8 +15,8 @@ namespace ios {
 // static
 ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<ZeroSuggestCacheService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<ZeroSuggestCacheService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -28,9 +26,7 @@ ZeroSuggestCacheServiceFactory* ZeroSuggestCacheServiceFactory::GetInstance() {
 }
 
 ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ZeroSuggestCacheService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("ZeroSuggestCacheService") {}
 
 ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
 

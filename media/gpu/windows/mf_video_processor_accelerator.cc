@@ -6,6 +6,7 @@
 
 #include <mfapi.h>
 
+#include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -33,6 +34,17 @@ bool MediaFoundationVideoProcessorAccelerator::Initialize(
 
 bool MediaFoundationVideoProcessorAccelerator::InitializeVideoProcessor(
     const Config& config) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS5) {
+    DCHECK(config.output_format != PIXEL_FORMAT_ABGR);
+    DCHECK(config.output_format != PIXEL_FORMAT_XBGR);
+    if (config.output_format == PIXEL_FORMAT_ABGR ||
+        config.output_format == PIXEL_FORMAT_XBGR) {
+      VLOG(ERROR)
+          << "Video processor cannot output BGR textures on this OS version";
+      return E_UNEXPECTED;
+    }
+  }
+
   HRESULT hr =
       CoCreateInstance(CLSID_VideoProcessorMFT, nullptr, CLSCTX_INPROC_SERVER,
                        IID_PPV_ARGS(&video_processor_));

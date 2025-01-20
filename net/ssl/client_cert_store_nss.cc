@@ -26,9 +26,11 @@
 #include "crypto/nss_crypto_module_delegate.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
+#include "net/base/features.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_platform_key_nss.h"
 #include "net/ssl/threaded_ssl_private_key.h"
@@ -72,6 +74,34 @@ class ClientCertIdentityNSS : public ClientCertIdentity {
 
 }  // namespace
 
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
+ClientCertStoreNSS::IssuerSourceNSS::GetCertsByName(
+    base::span<const uint8_t> name) {
+  // This method may acquire the NSS lock or reenter this code via extension
+  // hooks (such as smart card UI). To ensure threads are not starved or
+  // deadlocked, the base::ScopedBlockingCall below increments the thread pool
+  // capacity if this method takes too much time to run.
+  // (The ScopedBlockingCall here is not redundant with the one below since
+  // the IssuerSourceNSS class may be used from other places outside of
+  // ClientCertStoreNSS.)
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> result;
+
+  SECItem issuer_item;
+  issuer_item.len = name.size();
+  issuer_item.data = const_cast<unsigned char*>(name.data());
+  ScopedCERTCertificate nss_issuer(
+      CERT_FindCertByName(CERT_GetDefaultCertDB(), &issuer_item));
+  if (nss_issuer) {
+    result.push_back(x509_util::CreateCryptoBuffer(
+        x509_util::CERTCertificateAsSpan(nss_issuer.get())));
+  }
+
+  return result;
+}
+
 ClientCertStoreNSS::ClientCertStoreNSS(
     const PasswordDelegateFactory& password_delegate_factory)
     : password_delegate_factory_(password_delegate_factory) {}
@@ -104,51 +134,59 @@ void ClientCertStoreNSS::OnClientCertsResponse(
 void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     ClientCertIdentityList* identities,
     const SSLCertRequestInfo& request) {
-  size_t num_raw = 0;
+  if (base::FeatureList::IsEnabled(features::kNewClientCertPathBuilding)) {
+    ClientCertIssuerSourceCollection sources;
+    sources.push_back(std::make_unique<IssuerSourceNSS>());
+    FilterMatchingClientCertIdentities(identities, request, sources);
+  } else {
+    size_t num_raw = 0;
 
-  auto keep_iter = identities->begin();
+    auto keep_iter = identities->begin();
 
-  base::Time now = base::Time::Now();
+    base::Time now = base::Time::Now();
 
-  for (auto examine_iter = identities->begin();
-       examine_iter != identities->end(); ++examine_iter) {
-    ++num_raw;
+    for (auto examine_iter = identities->begin();
+         examine_iter != identities->end(); ++examine_iter) {
+      ++num_raw;
 
-    X509Certificate* cert = (*examine_iter)->certificate();
+      X509Certificate* cert = (*examine_iter)->certificate();
 
-    // Only offer unexpired certificates.
-    if (now < cert->valid_start() || now > cert->valid_expiry()) {
-      continue;
+      // Only offer unexpired certificates.
+      if (now < cert->valid_start() || now > cert->valid_expiry()) {
+        continue;
+      }
+
+      ScopedCERTCertificateList nss_intermediates;
+      if (!MatchClientCertificateIssuers(cert, request.cert_authorities,
+                                         &nss_intermediates)) {
+        continue;
+      }
+
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+      intermediates.reserve(nss_intermediates.size());
+      for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
+        intermediates.push_back(x509_util::CreateCryptoBuffer(
+            x509_util::CERTCertificateAsSpan(nss_intermediate.get())));
+      }
+
+      // Retain a copy of the intermediates. Some deployments expect the client
+      // to supply intermediates out of the local store. See
+      // https://crbug.com/548631.
+      (*examine_iter)->SetIntermediates(std::move(intermediates));
+
+      if (examine_iter == keep_iter) {
+        ++keep_iter;
+      } else {
+        *keep_iter++ = std::move(*examine_iter);
+      }
     }
+    identities->erase(keep_iter, identities->end());
 
-    ScopedCERTCertificateList nss_intermediates;
-    if (!MatchClientCertificateIssuers(cert, request.cert_authorities,
-                                       &nss_intermediates)) {
-      continue;
-    }
+    DVLOG(2) << "num_raw:" << num_raw << " num_filtered:" << identities->size();
 
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-    intermediates.reserve(nss_intermediates.size());
-    for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
-      intermediates.push_back(x509_util::CreateCryptoBuffer(
-          x509_util::CERTCertificateAsSpan(nss_intermediate.get())));
-    }
-
-    // Retain a copy of the intermediates. Some deployments expect the client to
-    // supply intermediates out of the local store. See
-    // https://crbug.com/548631.
-    (*examine_iter)->SetIntermediates(std::move(intermediates));
-
-    if (examine_iter == keep_iter)
-      ++keep_iter;
-    else
-      *keep_iter++ = std::move(*examine_iter);
+    std::sort(identities->begin(), identities->end(),
+              ClientCertIdentitySorter());
   }
-  identities->erase(keep_iter, identities->end());
-
-  DVLOG(2) << "num_raw:" << num_raw << " num_filtered:" << identities->size();
-
-  std::sort(identities->begin(), identities->end(), ClientCertIdentitySorter());
 }
 
 // static

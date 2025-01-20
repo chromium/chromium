@@ -7,6 +7,9 @@
 #include "base/check.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 
 namespace gpu {
@@ -32,6 +35,20 @@ GrVkImageInfo TextureHolderVk::GetGrVkImageInfo() const {
   bool result = GrBackendTextures::GetVkImageInfo(backend_texture, &info);
   CHECK(result);
   return info;
+}
+
+bool TextureHolderVk::Readback(GrDirectContext* context,
+                               const SkPixmap& destination) {
+  CHECK(context);
+  auto sk_image = SkImages::BorrowTextureFrom(
+      context, backend_texture, kTopLeft_GrSurfaceOrigin,
+      destination.colorType(), SkAlphaType::kOpaque_SkAlphaType,
+      /*sk_color_space=*/nullptr);
+  if (!sk_image) {
+    return false;
+  }
+
+  return sk_image->readPixels(context, destination, 0, 0);
 }
 
 }  // namespace gpu

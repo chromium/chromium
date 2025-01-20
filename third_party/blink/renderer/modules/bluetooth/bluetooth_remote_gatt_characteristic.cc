@@ -45,15 +45,11 @@ BluetoothRemoteGATTCharacteristic::BluetoothRemoteGATTCharacteristic(
       characteristic_->properties);
 }
 
-void BluetoothRemoteGATTCharacteristic::SetValue(DOMDataView* dom_data_view) {
-  value_ = dom_data_view;
-}
-
 void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
     base::span<const uint8_t> value) {
   if (!GetGatt()->connected())
     return;
-  SetValue(BluetoothRemoteGATTUtils::ConvertSpanToDataView(value));
+  value_ = BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
   if (notification_registration_in_progress()) {
     // Save event and value to be dispatched after notification is registered.
     deferred_value_change_data_.push_back(
@@ -105,19 +101,17 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    DOMDataView* dom_data_view =
-        BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
-    SetValue(dom_data_view);
+    value_ = BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
     if (notification_registration_in_progress()) {
       // Save event to be dispatched after notification is registered.
       deferred_value_change_data_.push_back(
           MakeGarbageCollected<DeferredValueChange>(
               Event::Create(event_type_names::kCharacteristicvaluechanged),
-              dom_data_view, resolver));
+              value_, resolver));
     } else {
       DispatchEvent(
           *Event::Create(event_type_names::kCharacteristicvaluechanged));
-      resolver->Resolve(NotShared(dom_data_view));
+      resolver->Resolve(value_);
     }
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -174,7 +168,7 @@ void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    SetValue(new_value);
+    value_ = NotShared(new_value);
     resolver->Resolve();
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -217,7 +211,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
   }
 
   // Let newValue be a copy of the bytes held by value.
-  DOMDataView* new_value =
+  NotShared<DOMDataView> new_value =
       BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -230,7 +224,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
       characteristic_->instance_id, value, write_type,
       WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::WriteValueCallback,
                     WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(new_value)));
+                    WrapPersistent(new_value.Get())));
 
   return promise;
 }

@@ -266,6 +266,21 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_generative_ai_photo_editing(true);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_generative_ai_photo_editing(false);
+  EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest,
        IsSubjectToPrivacySandboxRestrictedMeasurementApiNotice) {
   AccountCapabilities capabilities;

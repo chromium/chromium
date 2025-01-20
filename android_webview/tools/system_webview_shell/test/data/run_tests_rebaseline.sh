@@ -43,14 +43,8 @@ echo "Running test from:"
 echo $SCRIPT_BUILD_DIR
 
 echo ""
-echo "Running the layout test using test runner to install it..."
-$RUNNER
-
-echo ""
-echo "Running layout test again in rebaseline mode..."
-adb shell am instrument -w -e mode rebaseline -e class \
-    $PACKAGE_NAME.WebViewLayoutTest \
-    $PACKAGE_NAME/org.chromium.base.test.BaseChromiumAndroidJUnitRunner
+echo "Running layout test in rebaseline mode..."
+"$RUNNER" --webview-rebaseline-mode
 
 echo ""
 echo "Pulling new expected files..."

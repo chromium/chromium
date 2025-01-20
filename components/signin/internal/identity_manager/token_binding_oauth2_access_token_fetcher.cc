@@ -13,28 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 
 namespace {
 constexpr std::string_view kAssertionFailedPlaceholder = "SIGNATURE_FAILED";
-
-std::string DecryptToken(const HybridEncryptionKey& ephemeral_key,
-                         std::string_view base64_encrypted_token) {
-  std::optional<std::vector<uint8_t>> encrypted_token = base::Base64UrlDecode(
-      base64_encrypted_token, base::Base64UrlDecodePolicy::IGNORE_PADDING);
-  if (!encrypted_token.has_value()) {
-    return std::string();
-  }
-
-  std::optional<std::vector<uint8_t>> decryption_result =
-      ephemeral_key.Decrypt(*encrypted_token);
-  if (!decryption_result.has_value()) {
-    return std::string();
-  }
-
-  return std::string(decryption_result->begin(), decryption_result->end());
-}
 }
 
 TokenBindingOAuth2AccessTokenFetcher::TokenBindingOAuth2AccessTokenFetcher(
@@ -49,8 +33,8 @@ TokenBindingOAuth2AccessTokenFetcher::~TokenBindingOAuth2AccessTokenFetcher() =
     default;
 
 void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
-    std::string assertion,
-    std::optional<HybridEncryptionKey> ephemeral_key) {
+    std::optional<HybridEncryptionKey> ephemeral_key,
+    std::string assertion) {
   if (assertion.empty()) {
     // Even if the assertion failed, we want to make a server request because
     // the server doesn't verify assertions during dark launch.
@@ -59,7 +43,8 @@ void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
     assertion = kAssertionFailedPlaceholder;
   } else if (ephemeral_key.has_value()) {
     fetcher_->SetTokenDecryptor(
-        base::BindRepeating(&DecryptToken, std::move(ephemeral_key).value()));
+        base::BindRepeating(&signin::DecryptValueWithEphemeralKey,
+                            std::move(ephemeral_key).value()));
   }
   fetcher_->SetBindingKeyAssertion(std::move(assertion));
   is_binding_key_assertion_set_ = true;

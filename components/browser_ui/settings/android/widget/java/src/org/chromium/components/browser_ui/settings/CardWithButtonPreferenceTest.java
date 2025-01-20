@@ -7,10 +7,12 @@ package org.chromium.components.browser_ui.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.allOf;
 
 import android.app.Activity;
@@ -63,10 +65,9 @@ public class CardWithButtonPreferenceTest {
         preference.setSummary(SUMMARY);
         preference.setButtonText(BUTTON_TEXT);
         CallbackHelper callback = new CallbackHelper();
-        preference.setOnPreferenceClickListener(
-                prefClicked -> {
+        preference.setOnButtonClick(
+                () -> {
                     callback.notifyCalled();
-                    return true;
                 });
 
         mPreferenceScreen.addPreference(preference);
@@ -77,8 +78,11 @@ public class CardWithButtonPreferenceTest {
         getSummaryView().check(matches(allOf(withText(SUMMARY), isDisplayed())));
         getButtonView().check(matches(allOf(withText(BUTTON_TEXT), isDisplayed())));
 
-        getButtonView().perform(click());
+        // Only the button is clickable.
+        getTitleView().check(matches(not(isClickable())));
+        getSummaryView().check(matches(not(isClickable())));
 
+        getButtonView().perform(click());
         Assert.assertEquals(1, callback.getCallCount());
     }
 

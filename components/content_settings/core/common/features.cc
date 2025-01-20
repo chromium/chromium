@@ -78,10 +78,6 @@ BASE_FEATURE(kUserBypassFeedback,
              "UserBypassFeedback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedSemanticsActivityIndicators,
-             "ImprovedSemanticsActivityIndicators",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLeftHandSideActivityIndicators,
              "LeftHandSideActivityIndicators",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -89,7 +85,7 @@ BASE_FEATURE(kLeftHandSideActivityIndicators,
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings,
              "CrosBlockWarnings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kTrackingProtection3pcd,
@@ -102,12 +98,66 @@ BASE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff,
 
 const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
 
+const char kTpcdWriteRedirectHeuristicGrantsName[] =
+    "TpcdWriteRedirectHeuristicGrants";
+const char kTpcdRedirectHeuristicRequireABAFlowName[] =
+    "TpcdRedirectHeuristicRequireABAFlow";
+const char kTpcdRedirectHeuristicRequireCurrentInteractionName[] =
+    "TpcdRedirectHeuristicRequireCurrentInteraction";
+
+const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[] =
+    "TpcdWritePopupCurrentInteractionHeuristicsGrants";
+const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
+    "TpcdWritePopupPastInteractionHeuristicsGrants";
+const char kTpcdBackfillPopupHeuristicsGrantsName[] =
+    "TpcdBackfillPopupHeuristicsGrants";
+const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
+    "TpcdPopupHeuristicDisableForAdTaggedPopups";
+const char kTpcdPopupHeuristicEnableForIframeInitiatorName[] =
+    "TpcdPopupHeuristicEnableForIframeInitiator";
+
 BASE_FEATURE(kTpcdHeuristicsGrants,
              "TpcdHeuristicsGrants",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
     &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, true};
+
+const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdWriteRedirectHeuristicGrantsName, base::Minutes(15)};
+
+const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdRedirectHeuristicRequireABAFlowName, true};
+
+const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireCurrentInteraction{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdRedirectHeuristicRequireCurrentInteractionName, true};
+
+const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupCurrentInteractionHeuristicsGrants{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName, base::Days(30)};
+
+const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupPastInteractionHeuristicsGrants{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        kTpcdWritePopupPastInteractionHeuristicsGrantsName, base::TimeDelta()};
+
+const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdBackfillPopupHeuristicsGrantsName, base::Days(30)};
+
+const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdPopupHeuristicDisableForAdTaggedPopupsName, false};
+
+const base::FeatureParam<EnableForIframeTypes>
+    kTpcdPopupHeuristicEnableForIframeInitiator{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        kTpcdPopupHeuristicEnableForIframeInitiatorName,
+        EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
 BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",

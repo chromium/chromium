@@ -32,7 +32,7 @@ const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 const int kSteamClientGameId = 769;
 
 namespace {
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfAppIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfAppIdKey)
 
 // Returns an ID for this window, as set by the Wayland client that created it.
 //

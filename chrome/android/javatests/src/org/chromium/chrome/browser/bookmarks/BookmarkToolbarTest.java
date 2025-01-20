@@ -128,7 +128,7 @@ public class BookmarkToolbarTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWindowAndroid = new WindowAndroid(sActivity, /* trackOcclusion= */ false);
+                    mWindowAndroid = new WindowAndroid(sActivity, /* trackOcclusion= */ true);
                     mContentView = new LinearLayout(sActivity);
                     mContentView.setBackgroundColor(Color.WHITE);
                     FrameLayout.LayoutParams params =

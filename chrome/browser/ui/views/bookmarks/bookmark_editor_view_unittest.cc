@@ -84,20 +84,20 @@ class BookmarkEditorViewTest : public testing::Test {
   }
 
   void SetURLText(const std::u16string& text) {
-    if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER)
+    if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER) {
       editor_->url_tf_->SetText(text);
+    }
   }
 
   std::u16string GetURLText() const {
-    if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER)
+    if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER) {
       return editor_->url_tf_->GetText();
+    }
 
     return std::u16string();
   }
 
-  void ApplyEdits() {
-    editor_->ApplyEdits();
-  }
+  void ApplyEdits() { editor_->ApplyEdits(); }
 
   void ApplyEdits(BookmarkEditorView::EditorNode* node) {
     editor_->ApplyEdits(node);
@@ -113,14 +113,13 @@ class BookmarkEditorViewTest : public testing::Test {
   }
 
   bool URLTFHasParent() {
-    if (editor_->details_.type == BookmarkEditor::EditDetails::NEW_FOLDER)
+    if (editor_->details_.type == BookmarkEditor::EditDetails::NEW_FOLDER) {
       return false;
+    }
     return editor_->url_tf_->parent();
   }
 
-  void ExpandAndSelect() {
-    editor_->ExpandAndSelect();
-  }
+  void ExpandAndSelect() { editor_->ExpandAndSelect(); }
 
   void DeleteNode(base::OnceCallback<bool(const bookmarks::BookmarkNode* node)>
                       non_empty_folder_confirmation_cb) {

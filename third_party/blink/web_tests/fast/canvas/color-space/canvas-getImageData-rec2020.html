@@ -22,7 +22,7 @@ function drawSRGBThenGetImageDataRec2020() {
     canvas.width = 10;
     canvas.height = 10;
     var ctx = canvas.getContext('2d',
-        {colorSpace: 'rec2020', pixelFormat:'float16'});
+        {colorSpace: 'rec2020', colorType:'float16'});
     var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};
     ctx.fillStyle = 'rgb(50, 100, 150)';
     ctx.fillRect(0, 0, 10, 10);
@@ -37,7 +37,7 @@ function putImageDataRec2020ThenGetImageDataRec2020() {
     canvas.width = 10;
     canvas.height = 10;
     var ctx = canvas.getContext('2d',
-        {colorSpace: 'rec2020', pixelFormat:'float16'})
+        {colorSpace: 'rec2020', colorType:'float16'})
     var imageData = ctx.createImageData(1, 1,
         {colorSpace: 'rec2020', storageFormat:'float32'});
     var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};
@@ -57,7 +57,7 @@ function putImageDataSRGBThenGetImageDataRec2020() {
     canvas.width = 10;
     canvas.height = 10;
     var ctx = canvas.getContext('2d',
-        {colorSpace: 'rec2020', pixelFormat:'float16'});
+        {colorSpace: 'rec2020', colorType:'float16'});
     var imageData = ctx.createImageData(1, 1,
         {colorSpace: 'srgb', storageFormat:'uint8'});
     var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};

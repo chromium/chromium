@@ -239,8 +239,8 @@ void ProxyImpl::SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect) {
   SetNeedsRedrawOnImplThread();
 }
 
-void ProxyImpl::SetNeedsCommitOnImpl() {
-  SetNeedsCommitOnImplThread();
+void ProxyImpl::SetNeedsCommitOnImpl(bool urgent) {
+  SetNeedsCommitOnImplThread(urgent);
 }
 
 void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
@@ -413,7 +413,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // ApplyCompositorChanges. This means we are guaranteed to run another main
   // frame after FCP, which is good because there may be hover effects to apply.
   if (!scroll_and_viewport_changes_synced)
-    scheduler_->SetNeedsBeginMainFrame();
+    scheduler_->SetNeedsBeginMainFrame(false);
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -483,21 +483,15 @@ void ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread() {
   scheduler_->SetNeedsOneBeginImplFrame();
 }
 
-void ProxyImpl::SetNeedsUpdateDisplayTreeOnImplThread() {
-  TRACE_EVENT0("cc", "ProxyImpl::SetNeedsUpdateDisplayTreeOnImplThread");
-  DCHECK(IsImplThread());
-  scheduler_->SetNeedsUpdateDisplayTree();
-}
-
 void ProxyImpl::SetNeedsPrepareTilesOnImplThread() {
   DCHECK(IsImplThread());
   scheduler_->SetNeedsPrepareTiles();
 }
 
-void ProxyImpl::SetNeedsCommitOnImplThread() {
+void ProxyImpl::SetNeedsCommitOnImplThread(bool urgent) {
   TRACE_EVENT0("cc", "ProxyImpl::SetNeedsCommitOnImplThread");
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsBeginMainFrame();
+  scheduler_->SetNeedsBeginMainFrame(urgent);
 }
 
 void ProxyImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
@@ -628,7 +622,7 @@ void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
         base::BindOnce(&ProxyMain::NotifyImageDecodeRequestFinished,
                        proxy_main_weak_ptr_, request_id, decode_succeeded));
   } else {
-    SetNeedsCommitOnImplThread();
+    SetNeedsCommitOnImplThread(/* urgent= */ false);
   }
 }
 
@@ -680,11 +674,13 @@ void ProxyImpl::NotifyPaintWorkletStateChange(
   scheduler_->NotifyPaintWorkletStateChange(state);
 }
 
-void ProxyImpl::NotifyThroughputTrackerResults(CustomTrackerResults results) {
+void ProxyImpl::NotifyCompositorMetricsTrackerResults(
+    CustomTrackerResults results) {
   DCHECK(IsImplThread());
   MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::NotifyThroughputTrackerResults,
-                                proxy_main_weak_ptr_, std::move(results)));
+      FROM_HERE,
+      base::BindOnce(&ProxyMain::NotifyCompositorMetricsTrackerResults,
+                     proxy_main_weak_ptr_, std::move(results)));
 }
 
 void ProxyImpl::DidObserveFirstScrollDelay(
@@ -781,46 +777,6 @@ DrawResult ProxyImpl::ScheduledActionDrawForced() {
   DCHECK(IsImplThread());
   bool forced_draw = true;
   return DrawInternal(forced_draw);
-}
-
-void ProxyImpl::ScheduledActionUpdateDisplayTree() {
-  TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionUpdateDisplayTree");
-  DCHECK(IsImplThread());
-  DCHECK(host_impl_.get());
-
-  TRACE_EVENT("cc,benchmark", "MainFrame.UpdateDisplayTree",
-              [&](perfetto::EventContext ctx) {
-                EmitMainFramePipelineStep(
-                    ctx, host_impl_->active_tree()->trace_id(),
-                    perfetto::protos::pbzero::MainFramePipeline::Step::
-                        UPDATE_DISPLAY_TREE);
-              });
-
-  // TODO(rockot): Maybe this flag should be renamed to reflect that we hold it
-  // during display tree updates too.
-  base::AutoReset<bool> mark_inside(&inside_draw_, true);
-
-  LayerTreeHostImpl::FrameData frame;
-  frame.begin_frame_ack = scheduler_->CurrentBeginFrameAckForActiveTree();
-  frame.origin_begin_main_frame_args =
-      scheduler_->last_activate_origin_frame_args();
-  host_impl_->UpdateDisplayTree(frame);
-
-  // Tell the main thread that the frame was drawn.
-  if (next_frame_is_newly_committed_frame_) {
-    next_frame_is_newly_committed_frame_ = false;
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProxyMain::DidCommitAndDrawFrame, proxy_main_weak_ptr_,
-                       host_impl_->active_tree()->source_frame_number()));
-  }
-
-  // The tile visibility/priority of the pending tree needs to be updated so
-  // that it doesn't get activated before the raster is complete.
-  if (host_impl_->pending_tree()) {
-    host_impl_->pending_tree()->UpdateDrawProperties(
-        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
-  }
 }
 
 void ProxyImpl::ScheduledActionCommit() {
@@ -1033,7 +989,7 @@ base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
 }
 
 void ProxyImpl::QueueImageDecodeOnImpl(int request_id,
-                                       std::unique_ptr<PaintImage> image) {
+                                       std::unique_ptr<DrawImage> image) {
   host_impl_->QueueImageDecode(request_id, *image);
 }
 

@@ -369,11 +369,13 @@ int UDPSocketWin::GetPeerAddress(IPEndPoint* address) const {
   // TODO(szym): Simplify. http://crbug.com/126152
   if (!remote_address_.get()) {
     SockaddrStorage storage;
-    if (getpeername(socket_, storage.addr, &storage.addr_len))
+    if (getpeername(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(WSAGetLastError());
+    }
     auto remote_address = std::make_unique<IPEndPoint>();
-    if (!remote_address->FromSockAddr(storage.addr, storage.addr_len))
+    if (!remote_address->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     remote_address_ = std::move(remote_address);
   }
 
@@ -390,11 +392,13 @@ int UDPSocketWin::GetLocalAddress(IPEndPoint* address) const {
   // TODO(szym): Simplify. http://crbug.com/126152
   if (!local_address_.get()) {
     SockaddrStorage storage;
-    if (getsockname(socket_, storage.addr, &storage.addr_len))
+    if (getsockname(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(WSAGetLastError());
+    }
     auto local_address = std::make_unique<IPEndPoint>();
-    if (!local_address->FromSockAddr(storage.addr, storage.addr_len))
+    if (!local_address->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     local_address_ = std::move(local_address);
     net_log_.AddEvent(NetLogEventType::UDP_LOCAL_ADDRESS, [&] {
       return CreateNetLogUDPConnectParams(*local_address_,
@@ -505,10 +509,11 @@ int UDPSocketWin::InternalConnect(const IPEndPoint& address) {
              sizeof(randomize_port_value));
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
-  int rv = connect(socket_, storage.addr, storage.addr_len);
+  int rv = connect(socket_, storage.addr(), storage.addr_len);
   if (rv < 0)
     return MapSystemError(WSAGetLastError());
 
@@ -734,7 +739,7 @@ void UDPSocketWin::DidCompleteRead() {
   IPEndPoint address;
   IPEndPoint* address_to_log = nullptr;
   if (result >= 0) {
-    if (address.FromSockAddr(core_->recv_addr_storage_.addr,
+    if (address.FromSockAddr(core_->recv_addr_storage_.addr(),
                              core_->recv_addr_storage_.addr_len)) {
       if (recv_from_address_) {
         *recv_from_address_ = address;
@@ -892,7 +897,7 @@ void UDPSocketWin::PopulateWSAMSG(WSAMSG& message,
   } else {
     is_ipv6 = (addr_family_ == AF_INET6);
   }
-  message.name = storage.addr;
+  message.name = storage.addr();
   message.namelen = storage.addr_len;
   message.lpBuffers = data_buffer;
   message.dwBufferCount = 1;
@@ -957,7 +962,7 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
       SetLastTosFromWSAMSG(*message);
     }
   } else {
-    rv = WSARecvFrom(socket_, &read_buffer, 1, &num, &flags, storage.addr,
+    rv = WSARecvFrom(socket_, &read_buffer, 1, &num, &flags, storage.addr(),
                      &storage.addr_len, &core_->read_overlapped_, nullptr);
   }
   if (rv == 0) {
@@ -967,7 +972,7 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
       IPEndPoint address_storage;
       IPEndPoint* address_to_log = nullptr;
       if (result >= 0) {
-        if (address_storage.FromSockAddr(core_->recv_addr_storage_.addr,
+        if (address_storage.FromSockAddr(core_->recv_addr_storage_.addr(),
                                          core_->recv_addr_storage_.addr_len)) {
           if (address) {
             *address = address_storage;
@@ -999,7 +1004,7 @@ int UDPSocketWin::InternalSendToOverlapped(IOBuffer* buf,
                                            const IPEndPoint* address) {
   DCHECK(!core_->write_iobuffer_.get());
   SockaddrStorage storage;
-  struct sockaddr* addr = storage.addr;
+  struct sockaddr* addr = storage.addr();
   // Convert address.
   if (!address) {
     addr = nullptr;
@@ -1087,7 +1092,7 @@ int UDPSocketWin::InternalRecvFromNonBlocking(IOBuffer* buf,
                         // returns the number of bytes received.
     }
   } else {
-    rv = recvfrom(socket_, buf->data(), buf_len, 0, storage.addr,
+    rv = recvfrom(socket_, buf->data(), buf_len, 0, storage.addr(),
                   &storage.addr_len);
   }
   if (rv == SOCKET_ERROR) {
@@ -1105,7 +1110,7 @@ int UDPSocketWin::InternalRecvFromNonBlocking(IOBuffer* buf,
   IPEndPoint address_storage;
   IPEndPoint* address_to_log = nullptr;
   if (rv >= 0) {
-    if (address_storage.FromSockAddr(storage.addr, storage.addr_len)) {
+    if (address_storage.FromSockAddr(storage.addr(), storage.addr_len)) {
       if (address) {
         *address = address_storage;
       }
@@ -1123,7 +1128,7 @@ int UDPSocketWin::InternalSendToNonBlocking(IOBuffer* buf,
                                             const IPEndPoint* address) {
   DCHECK(!write_iobuffer_ || write_iobuffer_.get() == buf);
   SockaddrStorage storage;
-  struct sockaddr* addr = storage.addr;
+  struct sockaddr* addr = storage.addr();
   // Convert address.
   if (address) {
     if (!address->ToSockAddr(addr, &storage.addr_len)) {
@@ -1226,10 +1231,10 @@ int UDPSocketWin::SetMulticastOptions() {
 
 int UDPSocketWin::DoBind(const IPEndPoint& address) {
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len)) {
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
   }
-  int rv = bind(socket_, storage.addr, storage.addr_len);
+  int rv = bind(socket_, storage.addr(), storage.addr_len);
   if (rv == 0) {
     return OK;
   }
@@ -1525,7 +1530,7 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
   }
 
   SockaddrStorage storage;
-  if (!remote_address.ToSockAddr(storage.addr, &storage.addr_len)) {
+  if (!remote_address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
   }
 
@@ -1537,7 +1542,7 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
 
   const QOS_TRAFFIC_TYPE traffic_type = DscpToTrafficType(dscp_value_);
 
-  if (!api_->AddSocketToFlow(qos_handle_, socket_, storage.addr, traffic_type,
+  if (!api_->AddSocketToFlow(qos_handle_, socket_, storage.addr(), traffic_type,
                              QOS_NON_ADAPTIVE_FLOW, &flow_id_)) {
     DWORD err = ::GetLastError();
     if (err == ERROR_DEVICE_REINITIALIZATION_NEEDED) {

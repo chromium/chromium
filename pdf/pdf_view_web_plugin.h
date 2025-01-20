@@ -113,6 +113,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     kAnnotation = 0,
     kOriginal = 1,
     kEdited = 2,
+    kSearchified = 3,
   };
 
   // Provides services from the plugin's container.
@@ -233,13 +234,13 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     virtual void RecordComputedAction(const std::string& action) {}
 
     // Creates an implementation of `PdfAccessibilityDataHandler` catered to the
-    // client.
+    // client. The return value must be non-null.
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
         PdfAccessibilityImageFetcher* image_fetcher,
         blink::WebPluginContainer* plugin_container,
-        bool print_preview);
+        bool print_preview) = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // Performs OCR on `image` and sends the recognized text to `callback`.
@@ -394,6 +395,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
   void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override;
+  void GetPageText(int32_t page_index, GetPageTextCallback callback) override;
+  void GetMostVisiblePageIndex(GetMostVisiblePageIndexCallback callback) override;
 
   // UrlLoader::Client:
   bool IsValid() const override;
@@ -445,6 +448,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
   }
+
+  void set_cursor_type_for_testing(ui::mojom::CursorType cursor_type) {
+    cursor_ = cursor_type;
+  }
+  const ui::Cursor& cursor_for_testing() const { return cursor_; }
 
   int GetContentRestrictionsForTesting() const {
     return GetContentRestrictions();
@@ -540,6 +548,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);
+  void HandleHighlightTextFragmentsMessage(const base::Value::Dict& message);
   void HandlePrintMessage(const base::Value::Dict& /*message*/);
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(

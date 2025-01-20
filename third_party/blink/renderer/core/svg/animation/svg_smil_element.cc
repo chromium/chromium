@@ -589,7 +589,7 @@ bool SVGSMILElement::IsPresentationAttribute(
 void SVGSMILElement::CollectStyleForPresentationAttribute(
     const QualifiedName& attr_name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (attr_name == svg_names::kFillAttr)
     return;
   SVGElement::CollectStyleForPresentationAttribute(attr_name, value, style);

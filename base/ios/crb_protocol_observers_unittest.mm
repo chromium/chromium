@@ -25,12 +25,12 @@
 @end
 
 // Implements only the required methods in the TestObserver protocol.
-@interface TestPartialObserver : NSObject<TestObserver>
+@interface TestPartialObserver : NSObject <TestObserver>
 @property(nonatomic, readonly) BOOL requiredMethodInvoked;
 @end
 
 // Implements all the methods in the TestObserver protocol.
-@interface TestCompleteObserver : TestPartialObserver<TestObserver>
+@interface TestCompleteObserver : TestPartialObserver <TestObserver>
 @property(nonatomic, readonly) BOOL optionalMethodInvoked;
 @end
 

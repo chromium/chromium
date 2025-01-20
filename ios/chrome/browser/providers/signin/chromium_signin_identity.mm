@@ -58,13 +58,16 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                        HostedDomainCallback callback) final;
   NSString* GetCachedHostedDomainForIdentity(id<SystemIdentity> identity) final;
   void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::set<std::string>& names,
+                         const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final;
 };
 
 ChromiumSystemIdentityManager::ChromiumSystemIdentityManager() = default;
@@ -173,7 +176,7 @@ NSString* ChromiumSystemIdentityManager::GetCachedHostedDomainForIdentity(
 
 void ChromiumSystemIdentityManager::FetchCapabilities(
     id<SystemIdentity> identity,
-    const std::set<std::string>& names,
+    const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
   NOTREACHED();
 }
@@ -188,6 +191,13 @@ bool ChromiumSystemIdentityManager::HandleMDMNotification(
 
 bool ChromiumSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
                                                NSError* error) {
+  NOTREACHED();
+}
+
+void ChromiumSystemIdentityManager::FetchTokenAuthURL(
+    id<SystemIdentity> identity,
+    NSURL* target_url,
+    AuthenticatedURLCallback callback) {
   NOTREACHED();
 }
 

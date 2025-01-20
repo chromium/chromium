@@ -150,6 +150,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // Put MVT as the top magic stack module for easier tapping.
+  config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector
             (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
       [self isRunningTest:@selector(MAYBE_testMovePrerenderedTabInTabStrip)]) {

@@ -22,7 +22,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -82,9 +81,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment
 
     private SpannableString getInstructionsText() {
         boolean shouldReplaceSyncSettingsWithAccountSettings =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        && !SyncServiceFactory.getForProfile(mProfile).hasSyncConsent();
+                !SyncServiceFactory.getForProfile(mProfile).hasSyncConsent();
         return SpanApplier.applySpans(
                 getString(
                         shouldReplaceSyncSettingsWithAccountSettings

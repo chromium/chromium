@@ -13,7 +13,7 @@
 namespace flags_ui {
 
 // Returns the UMA id for the specified switch name.
-base::HistogramBase::Sample GetSwitchUMAId(const std::string& switch_name);
+base::HistogramBase::Sample32 GetSwitchUMAId(const std::string& switch_name);
 
 // Sends stats (as UMA histogram) about a set of command line |flags| in
 // a histogram, with an enum value for each flag in |switches| and |features|,
@@ -26,7 +26,7 @@ namespace testing {
 
 // This value is reported as switch histogram ID if switch name has unknown
 // format.
-extern const base::HistogramBase::Sample kBadSwitchFormatHistogramId;
+extern const base::HistogramBase::Sample32 kBadSwitchFormatHistogramId;
 
 }  // namespace testing
 

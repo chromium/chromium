@@ -74,6 +74,9 @@ def _convert_basic_suite(
         case 'android_swarming' | 'chromeos_swarming' | 'swarming':
           anonymous_mixin_builder[key] = values.convert_swarming(value)
 
+        case 'skylab':
+          anonymous_mixin_builder[key] = values.convert_skylab(value)
+
         case 'mixins':
           mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
           for e in value:

@@ -94,8 +94,6 @@ class TouchInjector : public ui::EventRewriter {
   // DisplayMode::kView).
   void OnInputBindingChange(Action* target_action,
                             std::unique_ptr<InputElement> input_element);
-  // Apply pending binding as current binding, but don't save into the storage.
-  void OnApplyPendingBinding();
   // Save customized input binding/pending binding as current binding and go
   // back from edit mode to view mode.
   void OnBindingSave();

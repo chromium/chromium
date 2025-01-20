@@ -8,16 +8,12 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-
-import javax.inject.Inject;
 
 /**
  * Implements the new "Running in Chrome" Snackbar behavior, taking over from {@link
@@ -29,7 +25,6 @@ import javax.inject.Inject;
  *
  * <p>Thread safety: All methods should be called on the UI thread.
  */
-@ActivityScope
 public class DisclosureSnackbar extends DisclosureInfobar {
     // TODO(crbug.com/40125323): Once this feature is enabled by default, remove
     // TrustedWebActivityDisclosureView and simplify this class.
@@ -40,13 +35,12 @@ public class DisclosureSnackbar extends DisclosureInfobar {
 
     private boolean mShown;
 
-    @Inject
-    DisclosureSnackbar(
+    public DisclosureSnackbar(
             Resources resources,
-            Lazy<SnackbarManager> snackbarManager,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
             TrustedWebActivityModel model,
-            BaseCustomTabActivity activity) {
-        super(resources, snackbarManager, model, activity);
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        super(resources, snackbarManagerSupplier, model, lifecycleDispatcher);
         mResources = resources;
     }
 

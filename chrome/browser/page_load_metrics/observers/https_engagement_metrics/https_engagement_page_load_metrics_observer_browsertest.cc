@@ -35,7 +35,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   HttpsEngagementPageLoadMetricsBrowserTest& operator=(
       const HttpsEngagementPageLoadMetricsBrowserTest&) = delete;
 
-  ~HttpsEngagementPageLoadMetricsBrowserTest() override {}
+  ~HttpsEngagementPageLoadMetricsBrowserTest() override = default;
 
   void StartHttpsServer(bool cert_error) {
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(

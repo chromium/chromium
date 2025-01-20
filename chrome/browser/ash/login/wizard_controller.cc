@@ -17,7 +17,6 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 // Make sure to include new screen to all relevant metric enums.
 // LINT.IfChange(UsageMetrics)
 #include "chrome/browser/ash/login/screens/account_selection_screen.h"
@@ -453,10 +453,14 @@ WizardController::~WizardController() {
     obs.OnShutdown();
   }
 
-  if (GetOobeUI() && GetOobeUI()->GetOobeScreensHandlerFactory()) {
-      GetOobeUI()
-        ->GetOobeScreensHandlerFactory()
-        ->UnbindScreensHandlerFactory();
+  // Use `OobeUI` reference in `oobe_ui_observation_` because the destructor
+  // could be called after `LoginDisplayHost` resets its reference to OobeUI.
+  // As a result,`GetOobeUI()` would return nullptr but the actual OobeUI
+  // instance might still be alive and could call us.
+  // See http://crbug.com/384745864.
+  OobeUI* oobe_ui = oobe_ui_observation_.GetSource();
+  if (oobe_ui && oobe_ui->GetOobeScreensHandlerFactory()) {
+    oobe_ui->GetOobeScreensHandlerFactory()->UnbindScreensHandlerFactory();
   }
 
   previous_screens_.clear();
@@ -1043,6 +1047,11 @@ void WizardController::ShowQuickStartScreen() {
 }
 
 void WizardController::ShowNetworkScreen() {
+  if (switches::IsOOBENetworkSetupSkippedForTesting()) {
+    OnNetworkScreenExit(NetworkScreen::Result::NOT_APPLICABLE);
+    return;
+  }
+
   SetCurrentScreen(GetScreen(NetworkScreenView::kScreenId));
 }
 

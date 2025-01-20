@@ -333,8 +333,9 @@ void SharesheetHeaderView::ShowTextPreview() {
     preview_labels.push_back(std::move(file_label));
   }
 
-  if (preview_labels.size() == 0)
+  if (preview_labels.size() == 0) {
     return;
+  }
 
   int index = 0;
   int max_lines = std::min(preview_labels.size(), kTextPreviewMaximumLines);

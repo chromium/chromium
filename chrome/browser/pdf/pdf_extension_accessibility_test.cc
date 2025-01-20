@@ -40,7 +40,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -53,7 +52,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
@@ -78,7 +76,12 @@
 
 // Fake ScreenAI library returns empty results for all queries, so testing with
 // it is not helpful.
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+// The tests are disabled on Linux due to the flakiness of notifications on
+// Linux screen reader (crbug.com/348626870).
+// TODO(crbug.com/360803943): Try to enable on Linux with pdf-searchify without
+// relying on notifications.
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
+    !BUILDFLAG(USE_FAKE_SCREEN_AI) && !BUILDFLAG(IS_LINUX)
 #define PDF_OCR_INTEGRATION_TEST_ENABLED
 #endif
 
@@ -225,23 +228,11 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
     find_criteria.role = ax::mojom::Role::kPdfRoot;
     ui::AXPlatformNodeDelegate* pdf_root =
         content::FindAccessibilityNode(web_contents, find_criteria);
-    if (!pdf_root) {
-      return ui::AXTreeUpdate();
-    }
     ui::AXTreeID pdf_tree_id = pdf_root->GetTreeData().tree_id;
     EXPECT_NE(pdf_tree_id, ui::AXTreeIDUnknown());
     EXPECT_EQ(pdf_root->GetTreeData().focus_id, pdf_root->GetId());
 
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
-  }
-
-  std::string GetAccesssibilitTreeDump() {
-    ui::AXTreeUpdate ax_tree =
-        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-    if (ax_tree.nodes.empty()) {
-      return "";
-    }
-    return DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
   }
 
   void EnableScreenReader(bool enabled) {
@@ -539,37 +530,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                                                 "1 First Section\r\n");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", true,
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
+                               /*sample=*/true,
                                /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
                               /*expected_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       RecordInaccessiblePdfUKM) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  base::test::TestFuture<void> ukm_recorded;
-  ukm_recorder.SetOnAddEntryCallback(
-      ukm::builders::Accessibility_InaccessiblePDFs::kEntryName,
-      ukm_recorded.GetRepeatingCallback());
-
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
-      "/pdf/accessibility/hello-world-in-image.pdf")));
-
-  WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
-  // This string is defined as `IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION` in
-  // blink_accessibility_strings.grd.
-#if BUILDFLAG(IS_WIN)
-  const char kUnlabeledImageName[] = "Unlabeled graphic";
-#else
-  const char kUnlabeledImageName[] = "Unlabeled image";
-#endif  // BUILDFLAG(IS_WIN)
-  WaitForAccessibilityTreeToContainNodeWithName(contents, kUnlabeledImageName);
-
-  ASSERT_TRUE(ukm_recorded.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
@@ -593,9 +558,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   WaitForAccessibilityTreeToContainNodeWithName(contents, kUnlabeledImageName);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText", false,
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2", false,
                                /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText",
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
                               /*expected_count=*/1);
 }
 
@@ -1080,7 +1045,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
+  base::HistogramTester histograms;
   RunPDFTest(FILE_PATH_LITERAL("hello-world.pdf"));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
+                               /*sample=*/true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
+                              /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
@@ -1435,23 +1407,15 @@ class PdfOcrIntegrationTest
         base::StrCat({"/pdf/accessibility/", pdf_file}));
     ASSERT_TRUE(LoadPdf(test_file_url));
 
+    WaitForTreeStatus(status_message_id);
+
+    ui::AXTreeUpdate ax_tree =
+        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
+    std::string ax_tree_dump =
+        DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
     std::string expected_tree_dump = GetExpectedAXTreeDumpForPdf(
         test_pdf_path, IsOcrAvailable(), IsSearchifyEnabled());
     ASSERT_NE("", expected_tree_dump);
-
-    std::string ax_tree_dump;
-#if BUILDFLAG(IS_LINUX)
-    // Notifications are flaky on Linux screen reader (crbug.com/348626870),
-    // therefore instead of waiting for the correct notification, keep checking
-    // the size of the accessibility tree dump, until it becomes expected.
-    do {
-      WaitForAccessibilityTreeToChange(GetActiveWebContents());
-      ax_tree_dump = GetAccesssibilitTreeDump();
-    } while (ax_tree_dump.size() != expected_tree_dump.size());
-#else
-    WaitForTreeStatus(status_message_id);
-    ax_tree_dump = GetAccesssibilitTreeDump();
-#endif
 
     ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
   }
@@ -1548,13 +1512,34 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
 // TODO(crbug.com/360803943): Add a test case with more than one image.
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
+  base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
                        GetExpectedStatus(/*has_content=*/true));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectUniqueSample("Accessibility.PDF.HasAccessibleText2",
+                                /*sample=*/false,
+                                /*expected_count=*/1);
+
+  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  // Screen Reader is always enabled for this test.
+  // TODO(crbug.com/360803943): Try adding Searchify browser test without
+  // screen reader.
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
+      /*sample=*/true, expected_count);
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
+  base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf",
                        GetExpectedStatus(/*has_content=*/true));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
+      /*sample=*/true, expected_count);
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {

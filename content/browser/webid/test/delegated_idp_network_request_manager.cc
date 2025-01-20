@@ -53,30 +53,35 @@ void DelegatedIdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
+    bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
-                              std::move(callback), std::move(continue_on),
+                              idp_blindness, std::move(callback),
+                              std::move(continue_on),
                               std::move(record_error_metrics_callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     base::TimeDelta api_call_to_show_dialog_time,
     base::TimeDelta show_dialog_to_continue_clicked_time,
     base::TimeDelta account_selected_to_token_response_time,
     base::TimeDelta api_call_to_token_response_time) {
   delegate_->SendSuccessfulTokenRequestMetrics(
-      metrics_endpoint_url, api_call_to_show_dialog_time,
+      metrics_endpoint_url, did_show_ui, api_call_to_show_dialog_time,
       show_dialog_to_continue_clicked_time,
       account_selected_to_token_response_time, api_call_to_token_response_time);
 }
 
 void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
     const GURL& metrics_endpoint_url,
+    bool did_show_ui,
     MetricsEndpointErrorCode error_code) {
-  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, error_code);
+  delegate_->SendFailedTokenRequestMetrics(metrics_endpoint_url, did_show_ui,
+                                           error_code);
 }
 
 void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cdm/cenc_decryptor.h"
 
 #include <stdint.h>
@@ -19,8 +14,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "crypto/encryptor.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/aes_ctr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
@@ -28,6 +22,8 @@
 namespace media {
 
 namespace {
+
+constexpr size_t kRequiredKeyBytes = 16;
 
 enum ClearBytesBufferSel { kSrcContainsClearBytes, kDstContainsClearBytes };
 
@@ -38,23 +34,24 @@ enum ClearBytesBufferSel { kSrcContainsClearBytes, kDstContainsClearBytes };
 // kDstContainsClearBytes, then any clear bytes mentioned in |subsamples|
 // will be skipped in |dst|. This is used when copying the decrypted bytes
 // back into the buffer, replacing the encrypted portions.
-//
-// TODO(crbug.com/40284755): This function is not bounds-safe. Make this
-// span-based instead.
 void CopySubsamples(const std::vector<SubsampleEntry>& subsamples,
                     const ClearBytesBufferSel sel,
-                    const uint8_t* src,
-                    uint8_t* dst) {
-  for (size_t i = 0; i < subsamples.size(); i++) {
-    const SubsampleEntry& subsample = subsamples[i];
+                    base::span<const uint8_t> src,
+                    base::span<uint8_t> dst) {
+  size_t src_i = 0;
+  size_t dst_i = 0;
+  for (const auto& subsample : subsamples) {
     if (sel == kSrcContainsClearBytes) {
-      src += subsample.clear_bytes;
+      src_i += subsample.clear_bytes;
     } else {
-      dst += subsample.clear_bytes;
+      dst_i += subsample.clear_bytes;
     }
-    memcpy(dst, src, subsample.cypher_bytes);
-    src += subsample.cypher_bytes;
-    dst += subsample.cypher_bytes;
+
+    auto src_view = src.subspan(src_i, subsample.cypher_bytes);
+    auto dst_view = dst.subspan(dst_i, subsample.cypher_bytes);
+    dst_view.copy_from(src_view);
+    src_i += subsample.cypher_bytes;
+    dst_i += subsample.cypher_bytes;
   }
 }
 
@@ -64,16 +61,15 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
   output->set_timestamp(input.timestamp());
   output->set_duration(input.duration());
   output->set_is_key_frame(input.is_key_frame());
-  if (input.has_side_data()) {
+  if (input.side_data()) {
     output->set_side_data(input.side_data()->Clone());
   }
 }
 
 }  // namespace
 
-scoped_refptr<DecoderBuffer> DecryptCencBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key) {
+scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   base::span<const uint8_t> sample = input;
   DCHECK(!sample.empty()) << "No data to decrypt.";
 
@@ -81,31 +77,23 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCenc, decrypt_config->encryption_scheme());
 
-  const std::string& iv = decrypt_config->iv();
-  DCHECK_EQ(iv.size(), static_cast<size_t>(DecryptConfig::kDecryptionKeySize));
-
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(&key, crypto::Encryptor::CTR, "")) {
-    DVLOG(1) << "Could not initialize decryptor.";
+  if (key.size() != kRequiredKeyBytes) {
+    DVLOG(1) << "Supplied key is the wrong size for CENC";
     return nullptr;
   }
 
-  if (!encryptor.SetCounter(iv)) {
-    DVLOG(1) << "Could not set counter block.";
+  auto iv = base::as_byte_span(decrypt_config->iv())
+                .to_fixed_extent<crypto::aes_ctr::kCounterSize>();
+  if (!iv) {
+    DVLOG(1) << "Supplied IV is the wrong size for CENC";
     return nullptr;
   }
 
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
-    std::string decrypted_text;
-    std::string_view encrypted_text = base::as_string_view(sample);
-    if (!encryptor.Decrypt(encrypted_text, &decrypted_text)) {
-      DVLOG(1) << "Could not decrypt data.";
-      return nullptr;
-    }
-
-    // TODO(xhwang): Find a way to avoid this data copy.
-    auto output = DecoderBuffer::CopyFrom(base::as_byte_span(decrypted_text));
+    auto decrypted = base::HeapArray<uint8_t>::Uninit(sample.size());
+    crypto::aes_ctr::Decrypt(key, *iv, sample, decrypted);
+    auto output = DecoderBuffer::FromArray(std::move(decrypted));
     CopyExtraSettings(input, output.get());
     return output;
   }
@@ -134,22 +122,15 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   // copy all encrypted subsamples to a contiguous buffer, decrypt them, then
   // copy the decrypted bytes over the encrypted bytes in the output.
   // TODO(strobe): attempt to reduce number of memory copies
-  auto encrypted_bytes = base::HeapArray<uint8_t>::Uninit(total_encrypted_size);
-  CopySubsamples(subsamples, kSrcContainsClearBytes, sample.data(),
-                 encrypted_bytes.data());
+  auto encrypted = base::HeapArray<uint8_t>::Uninit(total_encrypted_size);
+  auto decrypted = base::HeapArray<uint8_t>::Uninit(total_encrypted_size);
+  CopySubsamples(subsamples, kSrcContainsClearBytes, sample, encrypted);
 
-  std::string_view encrypted_text = base::as_string_view(encrypted_bytes);
-  std::string decrypted_text;
-  if (!encryptor.Decrypt(encrypted_text, &decrypted_text)) {
-    DVLOG(1) << "Could not decrypt data.";
-    return nullptr;
-  }
-  DCHECK_EQ(decrypted_text.size(), encrypted_text.size());
+  crypto::aes_ctr::Decrypt(key, *iv, encrypted, decrypted);
 
   scoped_refptr<DecoderBuffer> output = DecoderBuffer::CopyFrom(sample);
-  CopySubsamples(subsamples, kDstContainsClearBytes,
-                 reinterpret_cast<const uint8_t*>(decrypted_text.data()),
-                 output->writable_data());
+  CopySubsamples(subsamples, kDstContainsClearBytes, decrypted,
+                 output->writable_span());
   CopyExtraSettings(input, output.get());
   return output;
 }

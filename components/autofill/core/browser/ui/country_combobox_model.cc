@@ -12,9 +12,9 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/models/combobox_model_observer.h"
@@ -26,15 +26,14 @@ CountryComboboxModel::CountryComboboxModel() = default;
 CountryComboboxModel::~CountryComboboxModel() = default;
 
 void CountryComboboxModel::SetCountries(
-    const PersonalDataManager& manager,
+    const AddressDataManager& adm,
     const base::RepeatingCallback<bool(const std::string&)>& filter,
     const std::string& app_locale) {
   countries_.clear();
 
   // Insert the default country at the top as well as in the ordered list.
-  std::string default_country_code = manager.address_data_manager()
-                                         .GetDefaultCountryCodeForNewAddress()
-                                         .value();
+  std::string default_country_code =
+      adm.GetDefaultCountryCodeForNewAddress().value();
   DCHECK(!default_country_code.empty());
 
   if (filter.is_null() || filter.Run(default_country_code)) {

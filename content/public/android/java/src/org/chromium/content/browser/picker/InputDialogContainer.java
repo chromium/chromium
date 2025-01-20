@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
@@ -19,6 +21,9 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
 import org.chromium.content.browser.picker.DateTimePickerDialog.OnDateTimeSetListener;
 import org.chromium.content.browser.picker.MultiFieldTimePickerDialog.OnMultiFieldTimeSetListener;
@@ -33,6 +38,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /** Opens the appropriate date/time picker dialog for the given dialog type. */
+@NullMarked
 public class InputDialogContainer {
     private static final String TAG = "InputDialogContainer";
 
@@ -48,7 +54,7 @@ public class InputDialogContainer {
     // Prevents sending two notifications (from onClick and from onDismiss)
     private boolean mDialogAlreadyDismissed;
 
-    private AlertDialog mDialog;
+    private @Nullable AlertDialog mDialog;
     private final InputActionDelegate mInputActionDelegate;
 
     public static boolean isDialogInputType(int type) {
@@ -180,7 +186,8 @@ public class InputDialogContainer {
                             dismissDialog();
                             showPickerDialog(dialogType, dialogValue, min, max, step);
                         } else {
-                            double suggestionValue = adapter.getItem(position).value();
+                            double suggestionValue =
+                                    assumeNonNull(adapter.getItem(position)).value();
                             mInputActionDelegate.replaceDateTime(suggestionValue);
                             dismissDialog();
                             mDialogAlreadyDismissed = true;
@@ -262,20 +269,27 @@ public class InputDialogContainer {
 
         int stepTime = (int) step;
 
+        AlertDialog dialog;
         if (dialogType == TextInputType.DATE) {
-            DatePickerDialogCompat dialog =
+            DatePickerDialogCompat dateDialog =
                     new DatePickerDialogCompat(
                             mContext, new DateListener(dialogType), year, month, monthDay);
             DateDialogNormalizer.normalize(
-                    dialog.getDatePicker(), dialog, year, month, monthDay, (long) min, (long) max);
+                    dateDialog.getDatePicker(),
+                    dateDialog,
+                    year,
+                    month,
+                    monthDay,
+                    (long) min,
+                    (long) max);
 
-            dialog.setTitle(mContext.getText(R.string.date_picker_dialog_title));
-            mDialog = dialog;
+            dateDialog.setTitle(mContext.getText(R.string.date_picker_dialog_title));
+            dialog = dateDialog;
         } else if (dialogType == TextInputType.TIME) {
             // If user doesn't need to set seconds and milliseconds, show the default clock style
             // time picker dialog. Otherwise, show a full spinner style time picker.
             if (stepTime < 0 || stepTime >= 60000 /* milliseconds in a minute */) {
-                mDialog =
+                dialog =
                         new TimePickerDialog(
                                 mContext,
                                 new TimeListener(dialogType),
@@ -283,7 +297,7 @@ public class InputDialogContainer {
                                 minute,
                                 DateFormat.is24HourFormat(mContext));
             } else {
-                mDialog =
+                dialog =
                         new MultiFieldTimePickerDialog(
                                 mContext,
                                 /* theme= */ 0,
@@ -299,7 +313,7 @@ public class InputDialogContainer {
             }
         } else if (dialogType == TextInputType.DATE_TIME
                 || dialogType == TextInputType.DATE_TIME_LOCAL) {
-            mDialog =
+            dialog =
                     new DateTimePickerDialog(
                             mContext,
                             new DateTimeListener(dialogType),
@@ -312,26 +326,28 @@ public class InputDialogContainer {
                             min,
                             max);
         } else if (dialogType == TextInputType.MONTH) {
-            mDialog =
+            dialog =
                     new MonthPickerDialog(
                             mContext, new MonthOrWeekListener(dialogType), year, month, min, max);
         } else if (dialogType == TextInputType.WEEK) {
-            mDialog =
+            dialog =
                     new WeekPickerDialog(
                             mContext, new MonthOrWeekListener(dialogType), year, week, min, max);
+        } else {
+            assert false : "type was " + dialogType;
+            dialog = assumeNonNull(null);
         }
-
-        mDialog.setButton(
+        dialog.setButton(
                 DialogInterface.BUTTON_POSITIVE,
                 mContext.getText(R.string.date_picker_dialog_set),
-                (DialogInterface.OnClickListener) mDialog);
+                (DialogInterface.OnClickListener) dialog);
 
-        mDialog.setButton(
+        dialog.setButton(
                 DialogInterface.BUTTON_NEGATIVE,
                 mContext.getText(android.R.string.cancel),
                 (DialogInterface.OnClickListener) null);
 
-        mDialog.setButton(
+        dialog.setButton(
                 DialogInterface.BUTTON_NEUTRAL,
                 mContext.getText(R.string.date_picker_dialog_clear),
                 new DialogInterface.OnClickListener() {
@@ -342,7 +358,7 @@ public class InputDialogContainer {
                     }
                 });
 
-        mDialog.setOnDismissListener(
+        dialog.setOnDismissListener(
                 new OnDismissListener() {
                     @Override
                     public void onDismiss(final DialogInterface dialog) {
@@ -353,10 +369,12 @@ public class InputDialogContainer {
                     }
                 });
 
+        mDialog = dialog;
         mDialogAlreadyDismissed = false;
-        mDialog.show();
+        dialog.show();
     }
 
+    @EnsuresNonNullIf("mDialog")
     private boolean isDialogShowing() {
         return mDialog != null && mDialog.isShowing();
     }

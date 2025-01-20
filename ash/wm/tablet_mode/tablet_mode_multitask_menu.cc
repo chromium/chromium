@@ -94,8 +94,6 @@ class TabletModeMultitaskMenuView : public views::View {
       buttons |= chromeos::MultitaskMenuView::kFloat;
     }
 
-    // TODO(sophiewen): Ensure that there is always 2 buttons or more if this
-    // view is created.
     DCHECK_GE(std::bitset<4 + 1>(buttons).count(), 1u);
 
     menu_view_base_ =

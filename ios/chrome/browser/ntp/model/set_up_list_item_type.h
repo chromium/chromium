@@ -16,7 +16,9 @@ enum class SetUpListItemType {
   kFollow = 4,
   kAllSet = 5,
   kNotifications = 6,
-  kMaxValue = kNotifications
+  kDocking = 7,
+  kAddressBar = 8,
+  kMaxValue = kAddressBar
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

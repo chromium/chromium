@@ -24,6 +24,7 @@ class Size;
 namespace gpu {
 class ClientSharedImage;
 class GpuMemoryBufferManager;
+struct SharedImageCapabilities;
 class SharedImageInterface;
 struct SyncToken;
 }  // namespace gpu
@@ -52,8 +53,6 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         const viz::SharedImageFormat& si_format,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
@@ -63,8 +62,6 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gfx::BufferUsage buffer_usage,
         const viz::SharedImageFormat& si_format,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
@@ -72,6 +69,8 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
     virtual void DestroySharedImage(
         const gpu::SyncToken& sync_token,
         scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
+
+    virtual const gpu::SharedImageCapabilities& GetCapabilities() = 0;
 
     virtual ~Context() = default;
   };

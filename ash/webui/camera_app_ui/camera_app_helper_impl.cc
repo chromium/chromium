@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/typed_macros.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/onc/onc_constants.h"
@@ -617,6 +618,34 @@ void CameraAppHelperImpl::PerformOcrInline(
 void CameraAppHelperImpl::CreatePdfBuilder(
     mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) {
   return camera_app_ui_->delegate()->CreatePdfBuilder(std::move(receiver));
+}
+
+void CameraAppHelperImpl::GetAspectRatioOrder(
+    GetAspectRatioOrderCallback callback) {
+  base::SysInfo::GetHardwareInfo(base::BindOnce(
+      [](GetAspectRatioOrderCallback callback,
+         base::SysInfo::HardwareInfo hardware_info) {
+        std::string board = base::SysInfo::HardwareModelName();
+        std::string model = hardware_info.model;
+        // This customization is added to use the device's maximum resolution by
+        // default. It's not intended for general use and should not be
+        // replicated. Refer to crbug.com/316111545 for more details.
+        if ((board == "REX" && model == "screebo") ||
+            (board == "REX" && model == "screebo4es")) {
+          std::move(callback).Run({
+              camera_app::mojom::AspectRatio::k16To9,
+              camera_app::mojom::AspectRatio::k4To3,
+              camera_app::mojom::AspectRatio::kOthers,
+          });
+        } else {
+          std::move(callback).Run({
+              camera_app::mojom::AspectRatio::k4To3,
+              camera_app::mojom::AspectRatio::k16To9,
+              camera_app::mojom::AspectRatio::kOthers,
+          });
+        }
+      },
+      std::move(callback)));
 }
 
 }  // namespace ash

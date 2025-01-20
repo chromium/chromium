@@ -66,7 +66,8 @@ std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
 void FakeRealTimeUrlLookupService::SendSampledRequest(
     const GURL& url,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID session_id) {}
+    SessionID session_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {}
 
 bool FakeRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
   return true;
@@ -96,7 +97,8 @@ void FakeRealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     safe_browsing::RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID session_id) {}
+    SessionID session_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {}
 
 std::optional<std::string> FakeRealTimeUrlLookupService::GetDMTokenString()
     const {

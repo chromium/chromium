@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
@@ -195,7 +194,10 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     cta.getTabModelSelector()
                             .getCurrentModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).build(),
+                                    /* allowDialog= */ false);
                 });
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
@@ -213,10 +215,6 @@ public class TabSwitcherLayoutTest {
 
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
-    }
-
-    private int getTabCountInCurrentTabModel() {
-        return mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount();
     }
 
     @Test
@@ -321,6 +319,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PANE_ANDROID)
     public void testCloseButtonDescription() {
         String expectedDescription = "Close New tab tab";
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1033,221 +1032,6 @@ public class TabSwitcherLayoutTest {
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text)))
                 .check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/360393681")
-    public void testTabGroupColorInTabSwitcher() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-
-        // Expect that the the dialog is dismissed via another action.
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabGroupParity.TabGroupCreationDialogResultAction", 2);
-
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
-
-        // Verify the color icon exists.
-        onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
-                .check(matches(isDisplayed()));
-        watcher.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/360393681")
-    public void testTabGroupCreation_acceptInputValues() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        // Verify the visual data dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Change the title.
-        editGroupVisualDataDialogTitle(cta, "Test");
-        // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
-        String notSelectedStringBlue =
-                cta.getString(
-                        R.string
-                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
-                        blueColor);
-        onView(withContentDescription(notSelectedStringBlue)).perform(click());
-
-        // Expect a changed color and title selection to be recorded and an acceptance action.
-        var histograms =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.TabGroupParity.TabGroupCreationFinalSelections", 3)
-                        .expectIntRecord(
-                                "Android.TabGroupParity.TabGroupCreationDialogResultAction", 0)
-                        .build();
-
-        // Accept the change.
-        onView(withId(R.id.positive_button)).perform(click());
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-        // Check that the title change is reflected.
-        verifyFirstCardTitle("Test");
-        // Verify the color icon exists.
-        verifyFirstCardColor(TabGroupColorId.BLUE);
-        histograms.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/360393681")
-    public void testTabGroupCreation_acceptNullTitle() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        // Verify the visual data dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Close the soft keyboard that appears when the dialog is shown.
-        closeSoftKeyboard();
-
-        // Expect changed color and title selection to be recorded.
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabGroupParity.TabGroupCreationFinalSelections", 0);
-
-        // Accept without changing the title.
-        onView(withId(R.id.positive_button)).perform(click());
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-
-        // Check that the title change is reflected.
-        verifyFirstCardTitle("2 tabs");
-        verifyFirstCardColor(TabGroupColorId.GREY);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/360393681")
-    public void testTabGroupCreation_dismissEmptyTitle() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        // Verify the visual data dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Close the soft keyboard that appears when the dialog is shown.
-        closeSoftKeyboard();
-
-        // Change the title.
-        editGroupVisualDataDialogTitle(cta, "");
-        // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
-        String notSelectedStringBlue =
-                cta.getString(
-                        R.string
-                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
-                        blueColor);
-        onView(withContentDescription(notSelectedStringBlue)).perform(click());
-
-        // Enact a backpress to dismiss the dialog.
-        Espresso.pressBack();
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-        // Check that the title change has reverted to the default null state.
-        verifyFirstCardTitle("2 tabs");
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "Flaky - crbug.com/353463207")
-    public void testTabGroupCreation_rejectInvalidTitle() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        // Verify the visual data dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Change the title and accept.
-        editGroupVisualDataDialogTitle(cta, "");
-        onView(withId(R.id.positive_button)).perform(click());
-
-        // Verify that the change was rejected and the dialog is still showing.
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Exit the dialog.
-        Espresso.pressBack();
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "Flaky - crbug.com/353463207")
-    public void testTabGroupCreation_dismissSavesState() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeNormalTabsToGroupWithDialog(cta, 2);
-        // Verify the visual data dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Change the title.
-        editGroupVisualDataDialogTitle(cta, "Test");
-        // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
-        String notSelectedStringBlue =
-                cta.getString(
-                        R.string
-                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
-                        blueColor);
-        onView(withContentDescription(notSelectedStringBlue)).perform(click());
-
-        // Expect that the dismiss action is recorded.
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabGroupParity.TabGroupCreationDialogResultAction", 1);
-
-        // Enact a backpress to dismiss the dialog.
-        Espresso.pressBack();
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-        // Check that the title change is reflected.
-        verifyFirstCardTitle("Test");
-        // Verify the color icon exists.
-        verifyFirstCardColor(TabGroupColorId.BLUE);
-        watcher.assertExpected();
     }
 
     @Test

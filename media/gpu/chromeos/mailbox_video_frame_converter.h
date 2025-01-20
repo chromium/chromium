@@ -59,8 +59,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
         viz::SharedImageFormat format,
         const gfx::Size& size,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage) = 0;
     virtual std::optional<gpu::SyncToken> UpdateSharedImage(
         const gpu::Mailbox& mailbox) = 0;

@@ -14,7 +14,6 @@
 
 #include "base/containers/span.h"
 #include "base/pickle.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"

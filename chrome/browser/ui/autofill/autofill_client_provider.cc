@@ -15,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/autofill/android/android_autofill_availability_status.h"
 #include "chrome/browser/autofill/android/jni_headers/AutofillClientProviderUtils_jni.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -92,6 +91,16 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
                     uses_platform_autofill_);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVirtualViewStructureAndroid) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillThirdPartyModeContentProvider)) {
+    Java_AutofillClientProviderUtils_setThirdPartyModePref(
+        base::android::AttachCurrentThread(), uses_platform_autofill_);
+  } else {
+    Java_AutofillClientProviderUtils_unsetThirdPartyModePref(
+        base::android::AttachCurrentThread());
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

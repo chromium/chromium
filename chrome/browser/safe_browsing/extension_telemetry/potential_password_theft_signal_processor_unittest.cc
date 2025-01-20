@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
-#include "base/test/scoped_feature_list.h"
+
+#include <array>
+#include <vector>
+
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -32,9 +35,14 @@ using RemoteHostContactedInfo =
 using LoginReputationClientReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
 
-constexpr const char* kExtensionId[] = {"crx-0", "crx-1"};
-const char* host_urls[] = {"http://www.google.com", "http://www.youtube.com",
-                           "http://www.giggle.com", "http://www.yutube.com"};
+constexpr const auto kExtensionId =
+    std::to_array<const char*>({"crx-0", "crx-1"});
+auto host_urls = std::to_array<const char*>({
+    "http://www.google.com",
+    "http://www.youtube.com",
+    "http://www.giggle.com",
+    "http://www.yutube.com",
+});
 RemoteHostContactedInfo::ProtocolType kProtocolType =
     RemoteHostContactedInfo::HTTP_HTTPS;
 
@@ -68,7 +76,6 @@ class PotentialPasswordTheftSignalProcessorTest : public ::testing::Test {
     return reused_password_account_type;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
   PotentialPasswordTheftSignalProcessor processor_;
   content::BrowserTaskEnvironment task_environment_;
 
@@ -87,8 +94,6 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, ProcessTwoSignalsInOrder) {
   auto pw_reuse_signal = PasswordReuseSignal(kExtensionId[0], pw_reuse_event_0);
   auto remote_host_signal = RemoteHostContactedSignal(
       kExtensionId[0], GURL(host_urls[0]), kProtocolType);
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryPotentialPasswordTheft);
   processor_.ProcessSignal(pw_reuse_signal);
 
   EXPECT_FALSE(processor_.IsPasswordQueueEmptyForTest());
@@ -124,8 +129,6 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest,
       kExtensionId[0], GURL(host_urls[0]), kProtocolType);
   auto remote_host_signal_1 = RemoteHostContactedSignal(
       kExtensionId[0], GURL(host_urls[1]), kProtocolType);
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryPotentialPasswordTheft);
   processor_.ProcessSignal(remote_host_signal_0);
   task_environment_.FastForwardBy(base::Milliseconds(100));
   processor_.ProcessSignal(remote_host_signal_1);
@@ -163,8 +166,6 @@ TEST_F(PotentialPasswordTheftSignalProcessorTest, VerifyProtoData) {
   auto remote_host_signal_3 = RemoteHostContactedSignal(
       kExtensionId[0], GURL(host_urls[3]), kProtocolType);
 
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryPotentialPasswordTheft);
   processor_.ProcessSignal(pw_reuse_signal_0);
   task_environment_.FastForwardBy(base::Milliseconds(50));
   processor_.ProcessSignal(pw_reuse_signal_1);

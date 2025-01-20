@@ -39,14 +39,33 @@ std::u16string GetUrlFilteringCustomMessage(
     const std::vector<security_interstitials::UnsafeResource>&
         unsafe_resources_) {
   std::u16string custom_message = u"";
+  int highest_severity_verdict = 0;
 
-  // Threat info already ordered by severity
   if (!unsafe_resources_.empty() &&
       !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
-    custom_message = GetCustomMessageFromNavigationRule(
-        unsafe_resources_[0]
-            .rt_lookup_response.threat_info()[0]
-            .matched_url_navigation_rule());
+    const auto& threat_infos =
+        unsafe_resources_[0].rt_lookup_response.threat_info();
+
+    // If it exists, We pick a non-empty custom message from all matched rules
+    // at the same highest severity level.
+    for (const auto& threat_info : threat_infos) {
+      if (!threat_info.has_matched_url_navigation_rule() ||
+          !threat_info.has_verdict_type()) {
+        continue;
+      }
+      int current_verdict = static_cast<int>(threat_info.verdict_type());
+
+      // Verdict type is an enum from 1 to 100 representing the danger
+      // confidence level.
+      if (current_verdict >= highest_severity_verdict) {
+        std::u16string message = GetCustomMessageFromNavigationRule(
+            threat_info.matched_url_navigation_rule());
+        if (!message.empty()) {
+          custom_message = message;
+        }
+        highest_severity_verdict = current_verdict;
+      }
+    }
   }
   return custom_message;
 }

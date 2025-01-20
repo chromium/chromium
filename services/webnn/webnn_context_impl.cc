@@ -224,8 +224,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.lstm_cell_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.matmul_input.RetainAll(
-      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.matmul_input.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, {2, 8}});
   backend_context_properties.data_type_limits.average_pool2d_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.l2_pool2d_input.RetainAll(

@@ -26,7 +26,6 @@
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
@@ -245,22 +244,6 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
   display::test::TestScreen test_screen_;
 };
 
-class BuiltInAppTest : public AppServiceAppModelBuilderTest {
- public:
-  // Don't call AppListTestBase::SetUp() - it's called from CreateBuilder().
-  void SetUp() override {}
-
- protected:
-  // Creates a new builder. Should be called only once for each test.
-  // Calls `AppListTestBase::SetUp()`.
-  void CreateBuilder(bool guest_mode) {
-    AppListTestBase::SetUp(guest_mode);
-    AppServiceAppModelBuilderTest::CreateBuilder(guest_mode);
-    RemoveApps(apps::AppType::kBuiltIn, GetAppServiceProfile(),
-               model_updater_.get());
-  }
-};
-
 class ExtensionAppTest : public AppServiceAppModelBuilderTest {
  public:
   void SetUp() override {
@@ -394,30 +377,6 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
  private:
   base::test::ScopedCommandLine scoped_command_line_;
 };
-
-TEST_F(BuiltInAppTest, Build) {
-  // The internal apps list is provided by GetInternalAppList() in
-  // internal_app_metadata.cc. Only count the apps can display in launcher.
-  std::string built_in_apps_name;
-  CreateBuilder(false);
-  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(
-                &built_in_apps_name, GetAppServiceProfile()),
-            model_updater_->ItemCount());
-  EXPECT_EQ(built_in_apps_name,
-            base::JoinString(GetModelContent(model_updater_.get()), ","));
-}
-
-TEST_F(BuiltInAppTest, BuildGuestMode) {
-  // The internal apps list is provided by GetInternalAppList() in
-  // internal_app_metadata.cc. Only count the apps can display in launcher.
-  std::string built_in_apps_name;
-  CreateBuilder(true);
-  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(
-                &built_in_apps_name, GetAppServiceProfile()),
-            model_updater_->ItemCount());
-  EXPECT_EQ(built_in_apps_name,
-            base::JoinString(GetModelContent(model_updater_.get()), ","));
-}
 
 TEST_F(ExtensionAppTest, Build) {
   // The apps list would have 3 extension apps in the profile.
@@ -689,7 +648,7 @@ TEST_F(WebAppBuilderDemoModeTest, WebAppListOffline) {
 class CrostiniAppTest : public AppServiceAppModelBuilderTest {
  public:
   CrostiniAppTest() = default;
-  ~CrostiniAppTest() override {}
+  ~CrostiniAppTest() override = default;
 
   CrostiniAppTest(const CrostiniAppTest&) = delete;
   CrostiniAppTest& operator=(const CrostiniAppTest&) = delete;

@@ -11,12 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -39,7 +39,7 @@ namespace {
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
-using PredictionImprovementsPayload = Suggestion::PredictionImprovementsPayload;
+using AutofillAiPayload = Suggestion::AutofillAiPayload;
 using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -69,9 +69,9 @@ auto HasType(SuggestionType expected_type) {
   return Field("Suggestion::type", &Suggestion::type, Eq(expected_type));
 }
 
-auto HasPredictionImprovementsPayload(auto expected_payload) {
+auto HasAutofillAiPayload(auto expected_payload) {
   return Field("Suggestion::payload", &Suggestion::payload,
-               VariantWith<PredictionImprovementsPayload>(expected_payload));
+               VariantWith<AutofillAiPayload>(expected_payload));
 }
 
 auto HasValueToFill(const std::u16string& expected_value_to_fill) {
@@ -104,6 +104,16 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
        optimization_guide::proto::AXTreeUpdate ax_tree_update,
        PredictionsReceivedCallback callback),
       (override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
+      GetLatestRequest,
+      (),
+      (const override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
+      GetLatestResponse,
+      (),
+      (const override));
 };
 
 const GURL& url() {
@@ -219,18 +229,16 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_ShowError) {
 
   {
     InSequence s;
-    EXPECT_CALL(
-        update_suggestions_callback,
-        Run(ElementsAre(HasType(kPredictionImprovementsLoadingState)), _));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
     EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kPredictionImprovementsError),
-                                HasType(kSeparator),
-                                HasType(kPredictionImprovementsFeedback)),
+                Run(ElementsAre(HasType(kAutofillAiError), HasType(kSeparator),
+                                HasType(kAutofillAiFeedback)),
                     _));
   }
 
@@ -259,9 +267,8 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
       update_suggestions_callback;
   {
     InSequence s;
-    EXPECT_CALL(
-        update_suggestions_callback,
-        Run(ElementsAre(HasType(kPredictionImprovementsLoadingState)), _));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
@@ -281,7 +288,7 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
 }
 
 // Tests that the `update_suggestions_callback` is called eventually with the
-// `kFillPredictionImprovements` suggestion.
+// `kFillAutofillAi` suggestion.
 TEST_F(AutofillAiManagerTest, EndToEnd) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
@@ -304,9 +311,8 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
   const autofill::FormFieldData& filled_field = filled_form.fields().front();
   {
     InSequence s;
-    EXPECT_CALL(
-        update_suggestions_callback,
-        Run(ElementsAre(HasType(kPredictionImprovementsLoadingState)), _));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
@@ -314,21 +320,17 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(
         update_suggestions_callback,
-        Run(AllOf(ElementsAre(HasType(kFillPredictionImprovements),
-                              HasType(kSeparator),
-                              HasType(kPredictionImprovementsFeedback)),
-                  FirstElementIs(HasPredictionImprovementsPayload(
-                      Field(&PredictionImprovementsPayload::values_to_fill,
+        Run(AllOf(ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                              HasType(kAutofillAiFeedback)),
+                  FirstElementIs(HasAutofillAiPayload(
+                      Field(&AutofillAiPayload::values_to_fill,
                             ElementsAre(Pair(filled_field.global_id(),
                                              filled_field.value()))))),
                   FirstElementIs(Field(
                       &Suggestion::children,
-                      ElementsAre(
-                          HasType(kFillPredictionImprovements),
-                          HasType(kSeparator),
-                          HasType(kFillPredictionImprovements),
-                          HasType(kSeparator),
-                          HasType(kEditPredictionImprovementsInformation))))),
+                      ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
+                                  HasType(kFillAutofillAi), HasType(kSeparator),
+                                  HasType(kEditAutofillAiData))))),
             _));
   }
 
@@ -338,8 +340,7 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
   const std::vector<Suggestion> suggestions_while_loading =
       manager().GetSuggestions({}, filled_form, filled_form.fields().front());
   ASSERT_FALSE(suggestions_while_loading.empty());
-  EXPECT_THAT(suggestions_while_loading[0],
-              HasType(kPredictionImprovementsLoadingState));
+  EXPECT_THAT(suggestions_while_loading[0], HasType(kAutofillAiLoadingState));
 
   std::move(predictions_received_callback)
       .Run(PredictionsByGlobalId{{filled_field.global_id(),
@@ -371,18 +372,16 @@ TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
 
   {
     InSequence s;
-    EXPECT_CALL(
-        update_suggestions_callback,
-        Run(ElementsAre(HasType(kPredictionImprovementsLoadingState)), _));
+    EXPECT_CALL(update_suggestions_callback,
+                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kPredictionImprovementsError),
-                                HasType(kSeparator),
-                                HasType(kPredictionImprovementsFeedback)),
+                Run(ElementsAre(HasType(kAutofillAiError), HasType(kSeparator),
+                                HasType(kAutofillAiFeedback)),
                     _));
   }
 
@@ -463,12 +462,12 @@ INSTANTIATE_TEST_SUITE_P(
             .prediction_retrieval_state =
                 AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
             .trigger_automatically = false,
-            .expected_suggestion_type = kRetrievePredictionImprovements},
+            .expected_suggestion_type = kRetrieveAutofillAi},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
                 AutofillAiManager::PredictionRetrievalState::kDoneError,
             .trigger_automatically = false,
-            .expected_suggestion_type = kRetrievePredictionImprovements},
+            .expected_suggestion_type = kRetrieveAutofillAi},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state = AutofillAiManager::
                 PredictionRetrievalState::kIsLoadingPredictions,
@@ -478,12 +477,12 @@ INSTANTIATE_TEST_SUITE_P(
             .prediction_retrieval_state =
                 AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
             .trigger_automatically = true,
-            .expected_suggestion_type = kPredictionImprovementsLoadingState},
+            .expected_suggestion_type = kAutofillAiLoadingState},
         GetSuggestionsFormNotEqualCachedFormTestData{
             .prediction_retrieval_state =
                 AutofillAiManager::PredictionRetrievalState::kDoneError,
             .trigger_automatically = true,
-            .expected_suggestion_type = kPredictionImprovementsLoadingState}));
+            .expected_suggestion_type = kAutofillAiLoadingState}));
 
 // Tests that trigger suggestions are returned by `GetSuggestions()` when the
 // class is in `kReady` state.
@@ -493,7 +492,7 @@ TEST_F(AutofillAiManagerTest, GetSuggestions_Ready_ReturnsTriggerSuggestion) {
   test_api(manager()).SetPredictionRetrievalState(
       AutofillAiManager::PredictionRetrievalState::kReady);
   EXPECT_THAT(manager().GetSuggestions({}, form, field),
-              ElementsAre(HasType(kRetrievePredictionImprovements)));
+              ElementsAre(HasType(kRetrieveAutofillAi)));
 }
 
 // Tests that loading suggestions are returned by `GetSuggestions()` when the
@@ -506,7 +505,7 @@ TEST_F(AutofillAiManagerTest,
       AutofillAiManager::PredictionRetrievalState::kIsLoadingPredictions);
   EXPECT_THAT(
       manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field),
-      ElementsAre(HasType(kPredictionImprovementsLoadingState)));
+      ElementsAre(HasType(kAutofillAiLoadingState)));
 }
 
 struct FallbackTestData {
@@ -560,7 +559,7 @@ TEST_P(
   const std::vector<Suggestion> suggestions =
       manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field);
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0], HasType(kPredictionImprovementsError));
+  EXPECT_THAT(suggestions[0], HasType(kAutofillAiError));
 }
 
 // Tests that the trigger suggestion is returned by `GetSuggestions()` when the
@@ -577,7 +576,7 @@ TEST_P(
   test_api(manager()).SetErrorOrNoInfoSuggestionShown(true);
   EXPECT_THAT(
       manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field),
-      ElementsAre(HasType(kRetrievePredictionImprovements)));
+      ElementsAre(HasType(kRetrieveAutofillAi)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -605,7 +604,7 @@ INSTANTIATE_TEST_SUITE_P(
 // before autofill suggestions.
 TEST_F(
     AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessWithAutofillSuggestions_PredictionImprovementsSuggestionsShownBeforeAutofill) {
+    GetSuggestions_DoneSuccessWithAutofillSuggestions_AutofillAiSuggestionsShownBeforeAutofill) {
   std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
                                                   Suggestion(kSeparator),
                                                   Suggestion(kManageAddress)};
@@ -630,9 +629,8 @@ TEST_F(
 
   EXPECT_THAT(manager().GetSuggestions(autofill_suggestions, form,
                                        form.fields().front()),
-              ElementsAre(HasType(kFillPredictionImprovements),
-                          HasType(kAddressEntry), HasType(kSeparator),
-                          HasType(kPredictionImprovementsFeedback)));
+              ElementsAre(HasType(kFillAutofillAi), HasType(kAddressEntry),
+                          HasType(kSeparator), HasType(kAutofillAiFeedback)));
 }
 
 // Tests that the filling suggestion incl. its children is created as expected
@@ -674,32 +672,31 @@ TEST_F(AutofillAiManagerTest,
                                form.fields()[0]),
       ElementsAre(
           AllOf(
-              HasType(kFillPredictionImprovements),
-              HasPredictionImprovementsPayload(Field(
-                  "PredictionImprovementsPayload::values_to_fill",
-                  &PredictionImprovementsPayload::values_to_fill,
+              HasType(kFillAutofillAi),
+              HasAutofillAiPayload(Field(
+                  "AutofillAiPayload::values_to_fill",
+                  &AutofillAiPayload::values_to_fill,
                   ElementsAre(
                       Pair(form.fields()[0].global_id(), trigger_field_value),
                       Pair(form.fields()[1].global_id(), select_field_value)))),
-              Field("Suggestion::children", &Suggestion::children,
-                    ElementsAre(
-                        AllOf(HasType(kFillPredictionImprovements),
-                              HasPredictionImprovementsPayload(_)),
-                        HasType(kSeparator),
-                        AllOf(HasType(kFillPredictionImprovements),
-                              HasValueToFill(trigger_field_value),
-                              HasMainText(trigger_field_value),
-                              HasLabel(trigger_field_label)),
-                        AllOf(HasType(kFillPredictionImprovements),
-                              // For <select> elements expect both value to fill
-                              // and main text to be set to the option text, not
-                              // the value.
-                              HasValueToFill(select_field_option_text),
-                              HasMainText(select_field_option_text),
-                              HasLabel(select_field_label)),
-                        HasType(kSeparator),
-                        HasType(kEditPredictionImprovementsInformation)))),
-          HasType(kSeparator), HasType(kPredictionImprovementsFeedback)));
+              Field(
+                  "Suggestion::children", &Suggestion::children,
+                  ElementsAre(
+                      AllOf(HasType(kFillAutofillAi), HasAutofillAiPayload(_)),
+                      HasType(kSeparator),
+                      AllOf(HasType(kFillAutofillAi),
+                            HasValueToFill(trigger_field_value),
+                            HasMainText(trigger_field_value),
+                            HasLabel(trigger_field_label)),
+                      AllOf(HasType(kFillAutofillAi),
+                            // For <select> elements expect both value
+                            // to fill and main text to be set to the
+                            // option text, not the value.
+                            HasValueToFill(select_field_option_text),
+                            HasMainText(select_field_option_text),
+                            HasLabel(select_field_label)),
+                      HasType(kSeparator), HasType(kEditAutofillAiData)))),
+          HasType(kSeparator), HasType(kAutofillAiFeedback)));
 }
 
 // Tests that the filling suggestion label is correct when only one field can be
@@ -894,9 +891,8 @@ TEST_P(AutofillAiManagerImportFormTest,
   test_api(*eligible_form_structure)
       .PushField()
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes,
-          autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
+                          autofill::IMPROVED_PREDICTION);
 #else
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
@@ -954,9 +950,8 @@ TEST_F(AutofillAiManagerTest, FormNotImportedWhenPrefDisabled) {
   test_api(*eligible_form_structure)
       .PushField()
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes,
-          autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
+                          autofill::IMPROVED_PREDICTION);
 #else
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
@@ -1022,7 +1017,7 @@ TEST_F(AutofillAiManagerTest, HasDataStoredReturnsFalseIfDataIsNotStored) {
 // Tests that the prediction improvements settings page is opened when the
 // manage prediction improvements link is clicked.
 TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
-  EXPECT_CALL(client(), OpenPredictionImprovementsSettings);
+  EXPECT_CALL(client(), OpenAutofillAiSettings);
   manager().UserClickedLearnMore();
 }
 
@@ -1040,7 +1035,7 @@ TEST_F(AutofillAiManagerTest,
       update_suggestions_callback;
   EXPECT_CALL(update_suggestions_callback, Run).Times(0);
   EXPECT_CALL(client(), GetAXTree).Times(0);
-  manager().OnSuggestionsShown({kPredictionImprovementsLoadingState}, form,
+  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
                                form.fields().front(),
                                update_suggestions_callback.Get());
 }
@@ -1084,7 +1079,7 @@ TEST_F(
   const std::vector<Suggestion> suggestions = manager().GetSuggestions(
       /*autofill_suggestions=*/{}, form_b, form_b.fields().front());
   ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0], HasType(kRetrievePredictionImprovements));
+  EXPECT_THAT(suggestions[0], HasType(kRetrieveAutofillAi));
 }
 
 // TODO(crbug.com/376016081): Refactor test to expect if suggestions are
@@ -1152,7 +1147,7 @@ TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
   if (GetParam()) {
     EXPECT_CALL(client(), GetAXTree);
   }
-  manager().OnSuggestionsShown({kPredictionImprovementsLoadingState}, form,
+  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
                                form.fields().front(),
                                update_suggestions_callback.Get());
 }
@@ -1170,7 +1165,7 @@ TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
   test_api(manager()).SetPredictionRetrievalState(
       AutofillAiManager::PredictionRetrievalState::kReady);
   EXPECT_THAT(manager().GetSuggestions({}, form, field),
-              ElementsAre(HasType(kPredictionImprovementsLoadingState)));
+              ElementsAre(HasType(kAutofillAiLoadingState)));
 }
 
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
@@ -1192,7 +1187,7 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
         test_api(*form).PushField();
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::HeuristicSource::kAutofillAiRegexes,
         autofill::IMPROVED_PREDICTION);
 #else
     prediction_improvement_field.set_heuristic_type(
@@ -1307,8 +1302,7 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   EXPECT_FALSE(manager().IsEligibleForAutofillAi(form, field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       PredictionImprovementsEligibility_Eligible) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});

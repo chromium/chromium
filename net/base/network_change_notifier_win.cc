@@ -196,7 +196,7 @@ NetworkChangeNotifierWin::RecomputeCurrentConnectionType() {
   // Allocate 256 bytes for name, it should be enough for most cases.
   // If the name is longer, it is OK as we will check the code returned and
   // set correct network status.
-  char result_buffer[sizeof(WSAQUERYSET) + 256] = {0};
+  char result_buffer[sizeof(WSAQUERYSET) + 256] = {};
   DWORD length = sizeof(result_buffer);
   reinterpret_cast<WSAQUERYSET*>(&result_buffer[0])->dwSize =
       sizeof(WSAQUERYSET);

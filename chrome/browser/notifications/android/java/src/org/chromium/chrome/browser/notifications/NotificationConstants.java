@@ -17,6 +17,8 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE";
     static final String ACTION_COMMIT_UNSUBSCRIBE =
             "org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE";
+    static final String ACTION_SHOW_ORIGINAL_NOTIFICATION =
+            "org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION";
 
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been
@@ -43,6 +45,8 @@ public class NotificationConstants {
     static final String EXTRA_NOTIFICATION_REPLY = "notification_reply";
     static final String EXTRA_NOTIFICATION_ACTION = "notification_action";
     static final String EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL = "notification_backup_of_original";
+    static final String EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT =
+            "notification_backup_for_suspicious_verdict";
 
     static final String EXTRA_JOB_SCHEDULED_TIME_MS = "notification_job_scheduled_time_ms";
     static final String EXTRA_JOB_STARTED_TIME_MS = "notification_job_started_time_ms";

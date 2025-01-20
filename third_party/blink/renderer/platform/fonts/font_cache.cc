@@ -34,6 +34,7 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
@@ -325,7 +326,7 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   base::debug::Alias(&is_test_font_mgr);
   base::debug::Alias(&num_families);
 
-  CHECK(false);
+  NOTREACHED();
 }
 
 void FontCache::DumpShapeResultCache(

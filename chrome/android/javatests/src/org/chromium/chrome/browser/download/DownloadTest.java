@@ -36,13 +36,8 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -51,7 +46,6 @@ import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -314,27 +308,6 @@ public class DownloadTest {
                     Criteria.checkThat(
                             sDownloadTestRule.getActivity().getCurrentTabModel().getCount(),
                             Matchers.is(initialTabCount));
-                });
-    }
-
-    private void openNewTab(String url) {
-        Tab oldTab = sDownloadTestRule.getActivity().getActivityTabProvider().get();
-        TabCreator tabCreator = sDownloadTestRule.getActivity().getTabCreator(false);
-        final TabModel model = sDownloadTestRule.getActivity().getCurrentTabModel();
-        final int count = model.getCount();
-        final Tab newTab =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return tabCreator.createNewTab(
-                                    new LoadUrlParams(url, PageTransition.LINK),
-                                    TabLaunchType.FROM_LINK,
-                                    oldTab);
-                        });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(count + 1, Matchers.is(model.getCount()));
-                    Criteria.checkThat(newTab, Matchers.is(model.getTabAt(count)));
-                    Criteria.checkThat(ChromeTabUtils.isRendererReady(newTab), Matchers.is(true));
                 });
     }
 

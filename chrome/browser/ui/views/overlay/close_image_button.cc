@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -16,6 +18,7 @@
 
 namespace {
 
+constexpr int kCloseButtonTopMargin = 5;
 constexpr int kCloseButtonMargin = 4;
 constexpr int kCloseButtonSize = 24;
 constexpr int kCloseButtonIconSize = 16;
@@ -49,9 +52,13 @@ void CloseImageButton::SetPosition(
   }
 #endif
 
-  views::ImageButton::SetPosition(
-      gfx::Point(size.width() - kCloseButtonSize - kCloseButtonMargin,
-                 kCloseButtonMargin));
+  const int top_margin = base::FeatureList::IsEnabled(
+                             media::kVideoPictureInPictureControlsUpdate2024)
+                             ? kCloseButtonTopMargin
+                             : kCloseButtonMargin;
+
+  views::ImageButton::SetPosition(gfx::Point(
+      size.width() - kCloseButtonSize - kCloseButtonMargin, top_margin));
 }
 
 BEGIN_METADATA(CloseImageButton)

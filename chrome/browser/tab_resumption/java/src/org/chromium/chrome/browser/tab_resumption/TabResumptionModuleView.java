@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
@@ -42,7 +43,7 @@ public class TabResumptionModuleView extends LinearLayout {
 
     public TabResumptionModuleView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mUseSalientImage = TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue();
+        mUseSalientImage = ChromeFeatureList.sTabResumptionModuleAndroidUseSalientImage.getValue();
     }
 
     @Override
@@ -53,7 +54,7 @@ public class TabResumptionModuleView extends LinearLayout {
         mSeeMoreViewText = res.getString(R.string.tab_resumption_module_see_more);
         ((TextView) findViewById(R.id.tab_resumption_see_more_link))
                 .setVisibility(
-                        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE.getValue()
+                        ChromeFeatureList.sTabResumptionModuleAndroidShowSeeMore.getValue()
                                 ? View.VISIBLE
                                 : View.GONE);
     }

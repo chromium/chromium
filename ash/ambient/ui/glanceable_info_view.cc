@@ -127,7 +127,7 @@ void GlanceableInfoView::ShowWeather() {
   // Hide the weather info when the model is incomplete.
   if (weather_model->IsIncomplete()) {
     temperature_->SetText(std::u16string());
-    weather_condition_icon_->SetImage(gfx::ImageSkia());
+    weather_condition_icon_->SetImage(ui::ImageModel());
     return;
   }
 
@@ -139,7 +139,8 @@ void GlanceableInfoView::ShowWeather() {
   gfx::ImageSkia icon_resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kWeatherIconSizeDip, kWeatherIconSizeDip));
-  weather_condition_icon_->SetImage(icon_resized);
+  weather_condition_icon_->SetImage(
+      ui::ImageModel::FromImageSkia(icon_resized));
 
   temperature_->SetText(GetTemperatureText());
 }

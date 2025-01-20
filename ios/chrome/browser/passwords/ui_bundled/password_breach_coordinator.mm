@@ -12,14 +12,14 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_mediator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_presenter.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -111,9 +111,9 @@ using password_manager::CredentialLeakType;
       .permittedArrowDirections = UIPopoverArrowDirectionUp;
 }
 
-- (void)openSavedPasswordsSettings {
-  id<SettingsCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
+- (void)openPasswordCheckup {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   UMA_HISTOGRAM_ENUMERATION(
@@ -122,8 +122,8 @@ using password_manager::CredentialLeakType;
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
 
-  [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO];
+  [handler dismissModalsAndShowPasswordCheckupPageForReferrer:
+               password_manager::PasswordCheckReferrer::kPasswordBreachDialog];
 }
 
 @end

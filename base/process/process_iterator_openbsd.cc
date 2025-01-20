@@ -16,8 +16,9 @@ namespace base {
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
     : filter_(filter) {
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid(),
-                sizeof(struct kinfo_proc), 0 };
+  int mib[] = {
+      CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid(), sizeof(struct kinfo_proc),
+      0};
 
   bool done = false;
   int try_num = 1;
@@ -67,10 +68,11 @@ bool ProcessIterator::CheckForNextProcess() {
     kinfo_proc& kinfo = kinfo_procs_[index_of_kinfo_proc_];
 
     // Skip processes just awaiting collection
-    if ((kinfo.p_pid > 0) && (kinfo.p_stat == SZOMB))
+    if ((kinfo.p_pid > 0) && (kinfo.p_stat == SZOMB)) {
       continue;
+    }
 
-    int mib[] = { CTL_KERN, KERN_PROC_ARGS, kinfo.p_pid };
+    int mib[] = {CTL_KERN, KERN_PROC_ARGS, kinfo.p_pid};
 
     // Find out what size buffer we need.
     size_t data_len = 0;
@@ -91,8 +93,8 @@ bool ProcessIterator::CheckForNextProcess() {
     // |entry_.cmd_line_args_|.
     std::string delimiters;
     delimiters.push_back('\0');
-    entry_.cmd_line_args_ = SplitString(data, delimiters, KEEP_WHITESPACE,
-                                        SPLIT_WANT_NONEMPTY);
+    entry_.cmd_line_args_ =
+        SplitString(data, delimiters, KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     // |data| starts with the full executable path followed by a null character.
     // We search for the first instance of '\0' and extract everything before it
@@ -107,11 +109,12 @@ bool ProcessIterator::CheckForNextProcess() {
     entry_.ppid_ = kinfo.p_ppid;
     entry_.gid_ = kinfo.p__pgid;
     size_t last_slash = data.rfind('/', exec_name_end);
-    if (last_slash == std::string::npos)
+    if (last_slash == std::string::npos) {
       entry_.exe_file_.assign(data, 0, exec_name_end);
-    else
+    } else {
       entry_.exe_file_.assign(data, last_slash + 1,
                               exec_name_end - last_slash - 1);
+    }
     // Start w/ the next entry next time through
     ++index_of_kinfo_proc_;
     // Done

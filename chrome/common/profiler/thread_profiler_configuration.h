@@ -112,7 +112,7 @@ class ThreadProfilerConfiguration {
   // one of a set of variations.
   struct Variation {
     VariationGroup group;
-    int weight;
+    double weight;
   };
 
   ThreadProfilerConfiguration();

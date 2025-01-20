@@ -433,9 +433,10 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  const auto [autocomplete_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+  auto autocomplete_input = input;
+  const auto* starter_pack_engine =
+      AutocompleteInput::AdjustInputForStarterPackEngines(
+          client()->GetTemplateURLService(), &autocomplete_input);
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
@@ -446,8 +447,10 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // likely to be looking for a starer pack scope than a URL. However,
   // URLs containing '@' before the host, such as '@history.com', area valid
   // URLs and still needs to run autocompletion.
-  if (autocomplete_input.text().starts_with('@'))
+  if (autocomplete_input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     fixup_return.second = u"@" + fixup_return.second;
+  }
 
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);

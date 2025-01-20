@@ -10,7 +10,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -126,10 +125,6 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
     OnGenerateHttpNegotiateAuthTokenCallback callback) {
   std::move(callback).Run(net::ERR_FAILED, server_auth_token);
 }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)

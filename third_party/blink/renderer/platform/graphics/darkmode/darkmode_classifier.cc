@@ -11,7 +11,9 @@
 // trained by TensorFlow. Please do not edit.
 
 #include "darkmode_classifier.h"
+
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -167,13 +169,13 @@ void DepthwiseConv2dNative(const int32_t* __restrict input_shape,
       ((out_width - 1) * stride_x + kernel_width - in_width) / 2;
 
   // Cache the strides for address computations.
-  const int in_strides[4] = {
+  const std::array<int, 4> in_strides = {
       input_shape[1] * input_shape[2] * input_shape[3],  // batch
       input_shape[2] * input_shape[3],                   // y
       input_shape[3],                                    // x
       1,                                                 // channel
   };
-  const int kernel_strides[4] = {
+  const std::array<int, 4> kernel_strides = {
       kernel_shape[1] * kernel_shape[2] * kernel_shape[3],  // y
       kernel_shape[2] * kernel_shape[3],                    // x
       kernel_shape[3],                                      // in channels
@@ -431,7 +433,7 @@ void MaxPool(const int32_t* __restrict input_shape,
       ((out_width - 1) * stride_x + kernel_width - in_width) / 2;
 
   // Cache the strides for address computations.
-  const int in_strides[4] = {
+  const std::array<int, 4> in_strides = {
       input_shape[1] * input_shape[2] * input_shape[3],  // batch
       input_shape[2] * input_shape[3],                   // y
       input_shape[3],                                    // x
@@ -575,16 +577,16 @@ void StridedSlice(const int32_t input_rank,
   assert(input_rank < MAX_RANK);
 
   // Compute the address strides for each dimension.
-  int dim_addr_strides[MAX_RANK] = {0};
+  std::array<int, MAX_RANK> dim_addr_strides = {};
   dim_addr_strides[input_rank - 1] = 1;
   for (int dim = input_rank - 2; dim >= 0; --dim) {
     dim_addr_strides[dim] = dim_addr_strides[dim + 1] * input_shape[dim + 1];
   }
 
   // Resolve the masks and get explicit ranges for each dimension.
-  int dim_begin[MAX_RANK];
-  int dim_end[MAX_RANK];
-  bool dim_is_full_range[MAX_RANK];
+  std::array<int, MAX_RANK> dim_begin;
+  std::array<int, MAX_RANK> dim_end;
+  std::array<bool, MAX_RANK> dim_is_full_range;
   for (int dim = 0; dim < input_rank; ++dim) {
     const int stride = strides[dim];
     dim_begin[dim] =
@@ -611,7 +613,7 @@ void StridedSlice(const int32_t input_rank,
   }
 
   // Initialize the read pos for each dimension according to the begin offsets.
-  int read_pos[MAX_RANK] = {0};
+  std::array<int, MAX_RANK> read_pos = {};
   for (int dim = 0; dim < input_rank; ++dim) {
     read_pos[dim] = dim_begin[dim];
   }
@@ -653,15 +655,21 @@ void TransposeRank3(const int32_t* __restrict input_shape,
                     const int32_t* __restrict perm,
                     T* __restrict output_values) {
   BENCHMARK_TIMER("TransposeRank3");
-  const int32_t in_strides[3] = {
+  const std::array<int32_t, 3> in_strides = {
       input_shape[1] * input_shape[2],
       input_shape[2],
       1,
   };
-  const int32_t out_strides[3] = {in_strides[perm[0]], in_strides[perm[1]],
-                                  in_strides[perm[2]]};
-  const int32_t out_shape[3] = {input_shape[perm[0]], input_shape[perm[1]],
-                                input_shape[perm[2]]};
+  const std::array<int32_t, 3> out_strides = {
+      in_strides[perm[0]],
+      in_strides[perm[1]],
+      in_strides[perm[2]],
+  };
+  const std::array<int32_t, 3> out_shape = {
+      input_shape[perm[0]],
+      input_shape[perm[1]],
+      input_shape[perm[2]],
+  };
 
   int32_t write_offset = 0;
   for (int32_t it0 = 0; it0 < out_shape[0]; ++it0) {
@@ -682,16 +690,24 @@ void TransposeRank4(const int32_t* __restrict input_shape,
                     const int32_t* __restrict perm,
                     T* __restrict output_values) {
   BENCHMARK_TIMER("TransposeRank4");
-  const int32_t in_strides[4] = {
+  const std::array<int32_t, 4> in_strides = {
       input_shape[1] * input_shape[2] * input_shape[3],
       input_shape[2] * input_shape[3],
       input_shape[3],
       1,
   };
-  const int32_t out_strides[4] = {in_strides[perm[0]], in_strides[perm[1]],
-                                  in_strides[perm[2]], in_strides[perm[3]]};
-  const int32_t out_shape[4] = {input_shape[perm[0]], input_shape[perm[1]],
-                                input_shape[perm[2]], input_shape[perm[3]]};
+  const std::array<int32_t, 4> out_strides = {
+      in_strides[perm[0]],
+      in_strides[perm[1]],
+      in_strides[perm[2]],
+      in_strides[perm[3]],
+  };
+  const std::array<int32_t, 4> out_shape = {
+      input_shape[perm[0]],
+      input_shape[perm[1]],
+      input_shape[perm[2]],
+      input_shape[perm[3]],
+  };
 
   int32_t write_offset = 0;
   for (int32_t it0 = 0; it0 < out_shape[0]; ++it0) {
@@ -1142,7 +1158,7 @@ void Inference(
     ,
     FixedAllocations* __restrict fixed) {
   const int32_t input0_shape[] = {1, 4};
-  int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0_shape[2];
+  std::array<int32_t, 2> logits_MatMul_merged_with_dnn_logits_BiasAdd0_shape;
 
   // dnn/hiddenlayer_0/MatMul_merged_with_dnn/hiddenlayer_0/BiasAdd
   FullyConnected<float>(input0_shape, input0,

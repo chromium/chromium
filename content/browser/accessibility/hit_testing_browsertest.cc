@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
@@ -435,8 +434,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
 // this platform.
 #if !BUILDFLAG(IS_ANDROID)
 
-// crbug.com/1317505: Flaky on Lacros and Linux Wayland
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// crbug.com/1317505: Flaky on Linux Wayland
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_HitTestInPopup DISABLED_HitTestInPopup
 #else
 #define MAYBE_HitTestInPopup HitTestInPopup

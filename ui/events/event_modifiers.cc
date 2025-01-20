@@ -9,6 +9,8 @@
 
 #include "ui/events/event_modifiers.h"
 
+#include <array>
+
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 
@@ -16,7 +18,7 @@ namespace ui {
 
 namespace {
 
-static const int kEventFlagFromModifiers[] = {
+const auto kEventFlagFromModifiers = std::to_array<int>({
     EF_NONE,                  // MODIFIER_NONE,
     EF_SHIFT_DOWN,            // MODIFIER_SHIFT
     EF_CONTROL_DOWN,          // MODIFIER_CONTROL
@@ -31,7 +33,7 @@ static const int kEventFlagFromModifiers[] = {
     EF_BACK_MOUSE_BUTTON,     // MODIFIER_BACK_MOUSE_BUTTON
     EF_FORWARD_MOUSE_BUTTON,  // MODIFIER_FORWARD_MOUSE_BUTTON
     EF_FUNCTION_DOWN,         // MODIFIER_FUNCTION
-};
+});
 
 }  // namespace
 

@@ -10,11 +10,11 @@
 
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/sync/service/sync_service.h"
@@ -79,8 +79,8 @@ void AutofillCounter::Count() {
   num_credit_cards_ = base::ranges::count_if(
       personal_data_manager_->payments_data_manager().GetLocalCreditCards(),
       [start, end](const autofill::CreditCard* card) {
-        return (card->modification_date() >= start &&
-                card->modification_date() < end);
+        return (card->usage_history().modification_date() >= start &&
+                card->usage_history().modification_date() < end);
       });
 
   // Addresses.
@@ -88,8 +88,8 @@ void AutofillCounter::Count() {
       personal_data_manager_->address_data_manager().GetProfilesByRecordType(
           autofill::AutofillProfile::RecordType::kLocalOrSyncable),
       [start, end](const autofill::AutofillProfile* address) {
-        return (address->modification_date() >= start &&
-                address->modification_date() < end);
+        return (address->usage_history().modification_date() >= start &&
+                address->usage_history().modification_date() < end);
       });
 
   CancelAllRequests();

@@ -12,10 +12,10 @@ import com.google.android.play.core.splitinstall.SplitInstallRequest;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.BuildConfig;
 import org.chromium.ui.base.ResourceBundle;
 
 import java.lang.annotation.Retention;
@@ -82,7 +82,7 @@ public class LanguageSplitInstaller {
      */
     public Set<String> getInstalledLanguages() {
         // On non-bundle builds return all packaged locales.
-        if (!BuildConfig.IS_BUNDLE) {
+        if (!BundleUtils.isBundle()) {
             return new HashSet<String>(Arrays.asList(ResourceBundle.getAvailableLocales()));
         }
         return mSplitInstallManager.getInstalledLanguages();

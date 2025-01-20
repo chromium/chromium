@@ -10,7 +10,7 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:chrome_all_java",
-    "//chrome/android:chrome_test_java",
+    "//chrome/android/javatests:*",
     "//chrome/browser/ui/android/edge_to_edge/test:*",
   ]
   sources = [
@@ -64,6 +64,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//cc:cc_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",

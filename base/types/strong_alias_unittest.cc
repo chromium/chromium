@@ -41,7 +41,7 @@ uint64_t GetExampleValue<uint64_t>(int index) {
 
 template <>
 std::string GetExampleValue<std::string>(int index) {
-  return std::string('a', index);
+  return std::string(index, 'a');
 }
 
 template <typename T, typename U>
@@ -149,7 +149,7 @@ TYPED_TEST(StrongAliasTest, MutableOperatorStar) {
   { Ptr ignore(*std::move(a)); }
   { Ptr ignore(std::move(*b)); }
 
-  EXPECT_FALSE(a.value());
+  EXPECT_FALSE(a.value());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(b.value());
 }
 
@@ -168,7 +168,7 @@ TYPED_TEST(StrongAliasTest, MutableValue) {
   { Ptr ignore(std::move(a).value()); }
   { Ptr ignore(std::move(b.value())); }
 
-  EXPECT_FALSE(a.value());
+  EXPECT_FALSE(a.value());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(b.value());
 }
 
@@ -258,7 +258,7 @@ TEST(StrongAliasTest, CanBeDerivedFrom) {
   // those methods without the need to change any other code.
   class CountryCode : public StrongAlias<CountryCode, std::string> {
    public:
-    CountryCode(const std::string& value)
+    explicit CountryCode(const std::string& value)
         : StrongAlias<CountryCode, std::string>::StrongAlias(value) {
       if (value_.length() != 2) {
         // Country code invalid!
@@ -295,7 +295,7 @@ TEST(StrongAliasTest, CanWrapComplexStructures) {
 
 TYPED_TEST(StrongAliasTest, CanBeKeysInStdUnorderedMap) {
   using FooAlias = StrongAlias<class FooTag, TypeParam>;
-  std::unordered_map<FooAlias, std::string, typename FooAlias::Hasher> map;
+  std::unordered_map<FooAlias, std::string> map;
 
   FooAlias k1(GetExampleValue<TypeParam>(0));
   FooAlias k2(GetExampleValue<TypeParam>(1));

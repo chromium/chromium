@@ -17,20 +17,12 @@ namespace features {
 
 // All features in alphabetical order.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// If enabled device status collector will add the type of session (Affiliated
-// User, Kiosks, Managed Guest Sessions) to the device status report.
-BASE_FEATURE(kActivityReportingSessionType,
-             "ActivityReportingSessionType",
+#if BUILDFLAG(IS_ANDROID)
+// Kill switch for disconnecting file select dialog when tab is deactivated.
+BASE_FEATURE(kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,
+             "AndroidDisconnectFileChooserOnTabDeactivateKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables logging for adaptive screen brightness on Chrome OS.
-BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
-             "AdaptiveScreenBrightnessLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
@@ -43,7 +35,7 @@ BASE_FEATURE(kAppPreloadService,
 // as long as the PWA is on the start menu.  b/40285965.
 BASE_FEATURE(kAppSpecificNotifications,
              "AppSpecificNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -148,23 +140,11 @@ BASE_FEATURE(kEnableCertManagementUIV2EditCerts,
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable additional Crostini session status reporting for
-// managed devices only, i.e. reports of installed apps and kernel version.
-BASE_FEATURE(kCrostiniAdditionalEnterpriseReporting,
-             "CrostiniAdditionalEnterpriseReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable advanced access controls for Crostini-related features
 // (e.g. restricting VM CLI tools access, restricting Crostini root access).
 BASE_FEATURE(kCrostiniAdvancedAccessControls,
              "CrostiniAdvancedAccessControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables infrastructure for applying Ansible playbook to default Crostini
-// container.
-BASE_FEATURE(kCrostiniAnsibleInfrastructure,
-             "CrostiniAnsibleInfrastructure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables infrastructure for generating Ansible playbooks for the default
 // Crostini container from software configurations in JSON schema.
@@ -289,17 +269,6 @@ BASE_FEATURE(kShortcutsNotAppsRevealDesktop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Enables notification permission revocation for origins that may send
-// disruptive notifications.
-BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
-             "DisruptiveNotificationPermissionRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable WebUSB on extension service workers.
-BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
-             "EnableWebUsbOnExtensionServiceWorker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
@@ -326,11 +295,32 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether to sync @google.com account cookies. This is only for development and
+// testing.
 
-bool IsGlicEnabled() {
-  return IsTabstripComboButtonEnabled() &&
-         base::FeatureList::IsEnabled(features::kGlic);
-}
+BASE_FEATURE(kGlicDevelopmentSyncGoogleCookies,
+             "GlicDevelopmentCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
+    &kGlic, "open-status-icon-menu-with-secondary-click", true};
+
+BASE_FEATURE(kGlicURLConfig,
+             "GlicURLConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
+                                                    "glic-guest-url", ""};
+
+BASE_FEATURE(kGlicCSPConfig,
+             "GlicCSPConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/378951332): Configure an approved CSP.
+const base::FeatureParam<std::string> kGlicWebUICSPOverride{
+    &kGlicCSPConfig, "glic-webui-csp-override",
+    "child-src 'self'"
+    " https://*.google.com/"
+    " https://*.googleplex.com/;"};
 
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
@@ -338,6 +328,22 @@ BASE_FEATURE(kTabstripComboButton,
 
 bool IsTabstripComboButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+}
+
+const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
+    &kTabstripComboButton, "has_background", true};
+
+const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
+    &kTabstripComboButton, "reverse_button_order", false};
+
+bool HasTabstripComboButtonWithBackground() {
+  return IsTabstripComboButtonEnabled() &&
+         features::kTabstripComboButtonHasBackground.Get();
+}
+
+bool HasTabstripComboButtonWithReverseButtonOrder() {
+  return IsTabstripComboButtonEnabled() &&
+         features::kTabstripComboButtonHasReverseButtonOrder.Get();
 }
 
 // Force Privacy Guide to be available even if it would be unavailable
@@ -350,13 +356,7 @@ BASE_FEATURE(kPrivacyGuideForceAvailable,
 // settings.
 BASE_FEATURE(kLinkedServicesSetting,
              "LinkedServicesSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCbdTimeframeRequired,
-             "CbdTimeframeRequired",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
@@ -417,6 +417,10 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
              "HappinessTrackingSurveysForDesktopSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForDesktopSettingsTime{
+        &kHappinessTrackingSurveysForDesktopSettings, "settings-time",
+        base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Privacy Settings.
@@ -464,7 +468,6 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopWhatsNewTime{
         &kHappinessTrackingSurveysForDesktopWhatsNew, "whats-new-time",
         base::Seconds(20)};
-
 
 // Enables or disables the Happiness Tracking System for Chrome security page.
 BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,
@@ -569,10 +572,6 @@ BASE_FEATURE(kHappinessTrackingGeneralCamera,
 BASE_FEATURE(kHappinessTrackingGeneralCameraPrioritized,
              "HappinessTrackingGeneralCameraPrioritized",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables the Happiness Tracking System for Privacy Hub post launch survey.
-BASE_FEATURE(kHappinessTrackingPrivacyHubPostLaunch,
-             "HappinessTrackingPrivacyHubPostLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Happiness Tracking System for OS Settings Search survey.
 BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
              "HappinessTrackingOsSettingsSearch",
@@ -597,16 +596,17 @@ BASE_FEATURE(kHappinessTrackingOffice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Hides the origin text from showing up briefly in WebApp windows.
-BASE_FEATURE(kHideWebAppOriginText,
-             "HideWebAppOriginText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on
 // HTTP when HTTPS can't be reasonably expected.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kHttpsFirstBalancedMode,
+             "HttpsFirstBalancedMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Automatically enables HTTPS-First Mode in a balanced configuration when
 // possible.
@@ -678,16 +678,7 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Slide tabs out of the way during the reveal of the close, minimize and
-// maximize (traffic lights) buttons. kImmersiveFullscreenTabs must be enabled
-// for this feature to have an effect.
-// If remote_cocoa::features::kFullscreenAlwaysShowTrafficLights is enabled,
-// this feature has no effect.
-BASE_FEATURE(kFullscreenAnimateTabs,
-             "FullscreenAnimateTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables scraping of password-expiry information during SAML login flow, which
@@ -712,12 +703,9 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables automatic updates of Isolated Web Apps.
-BASE_FEATURE(kIsolatedWebAppAutomaticUpdates,
-             "IsolatedWebAppAutomaticUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kInternalOnlyUisPref,
+             "InternalOnlyUisPref",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.
@@ -734,12 +722,6 @@ BASE_FEATURE(kIsolatedWebAppUnmanagedInstall,
 // Enables users to install isolated web apps in managed guest sessions.
 BASE_FEATURE(kIsolatedWebAppManagedGuestSessionInstall,
              "IsolatedWebAppManagedGuestSessionInstall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kKioskEnableSystemWebApps,
-             "KioskEnableSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -783,7 +765,7 @@ constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryServer{
 // Minimum amount of time allowed between requesting k-anonymity status from the
 // Query server for a distinct group.
 constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceQueryInterval{
-    &kKAnonymityService, "KAnonymityServiceJoinInterval", base::Days(1)};
+    &kKAnonymityService, "KAnonymityServiceQueryInterval", base::Days(1)};
 
 // When enabled, the k-Anonymity Service will send requests to the Join and
 // Query k-anonymity servers.
@@ -816,40 +798,13 @@ BASE_FEATURE(kListWebAppsSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// Enable screen capture system permission check on Mac 10.15+.
-BASE_FEATURE(kMacSystemScreenCapturePermissionCheck,
-             "MacSystemScreenCapturePermissionCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Whether to show the Metered toggle in Settings, allowing users to toggle
-// whether to treat a WiFi or Cellular network as 'metered'.
-BASE_FEATURE(kMeteredShowToggle,
-             "MeteredShowToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
 BASE_FEATURE(kShowHiddenNetworkToggle,
              "ShowHiddenNetworkToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kMoveWebApp,
-             "MoveWebApp",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix(
-    &kMoveWebApp,
-    "uninstallStartUrlPrefix",
-    "");
-const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPattern(
-    &kMoveWebApp,
-    "uninstallStartUrlPattern",
-    "");
-const base::FeatureParam<std::string>
-    kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
 
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
@@ -889,9 +844,6 @@ BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kOfflineContentOnNetError,
-             "OfflineContentOnNetError",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOfflineAutoFetch,
              "OfflineAutoFetch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -910,24 +862,20 @@ BASE_FEATURE(kOomIntervention,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables or disables the page content opt-in and setting.
-BASE_FEATURE(kPageContentOptIn,
-             "PageContentOptIn",
+#if BUILDFLAG(IS_WIN)
+// Changes behavior of App Launch Prefetch to ignore chrome browser launches
+// after acquiry of the singleton.
+BASE_FEATURE(kOverridePrefetchOnSingleton,
+             "OverridePrefetchOnSingleton",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables usage of Parent Access Code in the login flow for reauth and add
-// user. Requires |kParentAccessCode| to be enabled.
-BASE_FEATURE(kParentAccessCodeForOnlineLogin,
-             "ParentAccessCodeForOnlineLogin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Keep a client-side log of when websites access permission-gated capabilities
-// to allow the user to audit usage.
-BASE_FEATURE(kPermissionAuditing,
-             "PermissionAuditing",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Skips requesting the Parent Access Code for reauth.
+BASE_FEATURE(kSkipParentAccessCodeForReauth,
+             "SkipParentAccessCodeForReauth",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
@@ -944,6 +892,12 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 // preview.
 BASE_FEATURE(kPrintPreviewCrosPrimary,
              "PrintPreviewCrosPrimary",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, use managed per-printer print job options set via
+// DevicePrinters/PrinterBulkConfiguration policy in print preview.
+BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
+             "UseManagedPrintJobOptionsInPrintPreview",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -998,14 +952,7 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 #endif
 
 // Enables Safety Hub feature.
-BASE_FEATURE(kSafetyHub,
-             "SafetyHub",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
+BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables Safety Hub card in magic stack.
@@ -1017,6 +964,17 @@ BASE_FEATURE(kSafetyHubMagicStack,
 BASE_FEATURE(kSafetyHubFollowup,
              "SafetyHubFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Safety Hub organic HaTS survey on Android.
+BASE_FEATURE(kSafetyHubAndroidOrganicSurvey,
+             "SafetyHubAndroidOrganicSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kSafetyHubAndroidOrganicTriggerId(
+    &kSafetyHubAndroidOrganicSurvey,
+    "trigger_id",
+    /*default_value=*/
+    "");
 
 // Enables Safety Hub HaTS survey on Android.
 BASE_FEATURE(kSafetyHubAndroidSurvey,
@@ -1040,6 +998,11 @@ BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enables Safety Hub services on start up feature.
+BASE_FEATURE(kSafetyHubServicesOnStartUp,
+             "SafetyHubServicesOnStartUp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",
@@ -1250,10 +1213,6 @@ BASE_FEATURE(kTPMFirmwareUpdate,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables the demo version of the Support Tool. The tool will be available in
-// chrome://support-tool. See go/support-tool-v1-design for more details.
-BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Support Tool to include a screenshot in the exported support tool
 // packet.
 BASE_FEATURE(kSupportToolScreenshot,
@@ -1484,30 +1443,11 @@ BASE_FEATURE(kWebAppSyncGeneratedIconRetroactiveFix,
 BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
              "WebAppSyncGeneratedIconUpdateFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAppUniversalInstall,
-             "WebAppUniversalInstall",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID)
-// Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
-// Please note that a Chrome policy must also be set, for this to have effect.
-// Effectively, this is a kill-switch for the feature.
-// TODO(crbug.com/40545136): Remove this kill-switch.
-BASE_FEATURE(kWebRtcRemoteEventLog,
-             "WebRtcRemoteEventLog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Compress remote-bound WebRTC event logs (if used; see kWebRtcRemoteEventLog).
-BASE_FEATURE(kWebRtcRemoteEventLogGzipped,
-             "WebRtcRemoteEventLogGzipped",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Enables Web Share (navigator.share)
@@ -1557,8 +1497,8 @@ BASE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsParentAccessCodeForOnlineLoginEnabled() {
-  return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
+bool IsParentAccessCodeForReauthEnabled() {
+  return !base::FeatureList::IsEnabled(kSkipParentAccessCodeForReauth);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1587,5 +1527,11 @@ BASE_FEATURE(kPeriodicLogUploadMigration,
              "PeriodicLogUploadMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// A feature to disable shortcut creation from the Chrome UI, and instead use
+// that to create DIY apps.
+BASE_FEATURE(kDisableShortcutsEnableDiy,
+             "DisableShortcutsEnableDiy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

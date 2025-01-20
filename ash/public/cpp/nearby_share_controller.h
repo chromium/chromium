@@ -18,6 +18,9 @@ class ASH_PUBLIC_EXPORT NearbyShareController {
   // To be called whenever Nearby Share's  High Visibility state changes.
   virtual void HighVisibilityEnabledChanged(bool enabled) = 0;
 
+  // To be called whenever Nearby Share's enabled state changes.
+  virtual void NearbyShareEnabledChanged(bool enabled) = 0;
+
   // Call on change in Nearby Share selected Visibility.
   virtual void VisibilityChanged(
       ::nearby_share::mojom::Visibility visibility) const = 0;

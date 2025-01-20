@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 
 #include <memory>
@@ -164,6 +159,58 @@ class ExtensionPrefsDeprecatedDisableReason : public ExtensionPrefsTest {
 };
 
 TEST_F(ExtensionPrefsDeprecatedDisableReason, MigrateExtensionState) {}
+
+class ExtensionPrefsDisableReasonsBitflagToListMigration
+    : public ExtensionPrefsTest {
+ public:
+  void Initialize() override {
+    extension_1_ = prefs_.AddExtension("test1");
+    prefs()->SetExtensionDisabled(extension_1_->id(),
+                                  extension_1_disable_reasons_);
+
+    extension_2_ = prefs_.AddExtension("test2");
+    prefs()->SetExtensionDisabled(extension_2_->id(),
+                                  extension_2_disable_reasons_);
+  }
+
+  void Verify() override {
+    // Verify that the disable reasons are returned correctly.
+    EXPECT_EQ(prefs()->GetDisableReasons(extension_1_->id()),
+              extension_1_disable_reasons_);
+    EXPECT_EQ(prefs()->GetDisableReasons(extension_2_->id()),
+              extension_2_disable_reasons_);
+
+    // Verify() is called twice.
+    // In the first execution, we have the modern state. We wipe out this state
+    // and simulate the legacy state. In the second execution, `ExtensionPrefs`
+    // is re-constructed. It should re-construct the modern state from the
+    // simulated legacy state.
+    SimulateLegacyState();
+  }
+
+ private:
+  void SimulateLegacyState() {
+    // Write the disable reasons to the preference as a bitflag.
+    constexpr const char kPrefDisableReasons[] = "disable_reasons";
+    prefs()->UpdateExtensionPref(extension_1_->id(), kPrefDisableReasons,
+                                 base::Value(extension_1_disable_reasons_));
+    prefs()->UpdateExtensionPref(extension_2_->id(), kPrefDisableReasons,
+                                 base::Value(extension_2_disable_reasons_));
+  }
+
+  scoped_refptr<Extension> extension_1_;
+  const int extension_1_disable_reasons_ =
+      disable_reason::DISABLE_USER_ACTION |
+      disable_reason::DISABLE_BLOCKED_BY_POLICY;
+
+  scoped_refptr<Extension> extension_2_;
+  const int extension_2_disable_reasons_ =
+      disable_reason::DISABLE_PERMISSIONS_INCREASE |
+      disable_reason::DISABLE_NOT_VERIFIED |
+      disable_reason::DISABLE_USER_ACTION;
+};
+
+TEST_F(ExtensionPrefsDisableReasonsBitflagToListMigration, TestPrefMigration) {}
 
 class ExtensionPrefsEscalatePermissions : public ExtensionPrefsTest {
  public:
@@ -668,8 +715,8 @@ class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
   void Initialize() override {
     extension_ = prefs_.AddExtension("test1");
     // Cache the first install time.
-    first_install_time_ = prefs()->GetFirstInstallTime(extension_->id());
-    auto last_update_time = prefs()->GetLastUpdateTime(extension_->id());
+    first_install_time_ = GetFirstInstallTime(prefs(), extension_->id());
+    auto last_update_time = GetLastUpdateTime(prefs(), extension_->id());
     // First time install will result in same value for both first_install_time
     // and last_update_time prefs.
     EXPECT_NE(base::Time(), first_install_time_);
@@ -681,8 +728,8 @@ class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
   }
 
   void Verify() override {
-    auto first_install_time = prefs()->GetFirstInstallTime(extension_->id());
-    auto last_update_time = prefs()->GetLastUpdateTime(extension_->id());
+    auto first_install_time = GetFirstInstallTime(prefs(), extension_->id());
+    auto last_update_time = GetLastUpdateTime(prefs(), extension_->id());
     EXPECT_NE(base::Time(), first_install_time);
     EXPECT_NE(base::Time(), last_update_time);
     // Verify that the first_install_time remains unchanged after the extension
@@ -814,9 +861,9 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
   }
 
   void Verify() override {
-    EXPECT_TRUE(prefs()->IsFromWebStore(webstore_extension_->id()));
-    EXPECT_TRUE(prefs()->WasInstalledByDefault(default_extension_->id()));
-    EXPECT_TRUE(prefs()->WasInstalledByOem(oem_extension_->id()));
+    EXPECT_TRUE(IsFromWebStore(prefs(), webstore_extension_->id()));
+    EXPECT_TRUE(WasInstalledByDefault(prefs(), default_extension_->id()));
+    EXPECT_TRUE(WasInstalledByOem(prefs(), oem_extension_->id()));
   }
 
  private:
@@ -850,9 +897,6 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase() {
   internal_extension_ = Extension::Create(
       prefs_.temp_dir().AppendASCII("internal extension"),
       ManifestLocation::kInternal, simple_dict, Extension::NO_FLAGS, &error);
-
-  for (size_t i = 0; i < kNumInstalledExtensions; ++i)
-    installed_[i] = false;
 }
 
 PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() = default;
@@ -860,7 +904,7 @@ PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() = default;
 // Tests clearing the last launched preference.
 class ExtensionPrefsClearLastLaunched : public ExtensionPrefsTest {
  public:
-  ~ExtensionPrefsClearLastLaunched() override {}
+  ~ExtensionPrefsClearLastLaunched() override = default;
 
   void Initialize() override {
     extension_a_ = prefs_.AddExtension("a");
@@ -894,7 +938,7 @@ TEST_F(ExtensionPrefsClearLastLaunched, ExtensionPrefsClearLastLaunched) {}
 
 class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
  public:
-  ~ExtensionPrefsComponentExtension() override {}
+  ~ExtensionPrefsComponentExtension() override = default;
   void Initialize() override {
     // Adding a component extension.
     component_extension_ =
@@ -980,7 +1024,7 @@ class ExtensionPrefsRuntimeGrantedPermissions : public ExtensionPrefsTest {
   ExtensionPrefsRuntimeGrantedPermissions& operator=(
       const ExtensionPrefsRuntimeGrantedPermissions&) = delete;
 
-  ~ExtensionPrefsRuntimeGrantedPermissions() override {}
+  ~ExtensionPrefsRuntimeGrantedPermissions() override = default;
 
   void Initialize() override {
     extension_a_ = prefs_.AddExtension("a");

@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -49,9 +48,9 @@ const extensions::Extension* GetExtension(Profile* profile,
 
 }  // namespace
 
-AppListControllerDelegate::AppListControllerDelegate() {}
+AppListControllerDelegate::AppListControllerDelegate() = default;
 
-AppListControllerDelegate::~AppListControllerDelegate() {}
+AppListControllerDelegate::~AppListControllerDelegate() = default;
 
 void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                                   const std::string& app_id) {
@@ -66,7 +65,7 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                   ash::settings::AppManagementEntryPoint::
                                       kAppListContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(profile, GetEscapedAppId(app_id, app_type),
+    chrome::ShowAppManagementPage(profile, app_id,
                                   ash::settings::AppManagementEntryPoint::
                                       kAppListContextMenuAppInfoChromeApp);
   }

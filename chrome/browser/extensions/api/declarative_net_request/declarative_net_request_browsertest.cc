@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -33,6 +29,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -112,6 +109,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
@@ -137,8 +135,10 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -204,7 +204,7 @@ class RulesetLoaderThrottle {
         RulesMonitorService::SetLoadRulesetThrottleCallbackForTesting(
             &throttle_callback_);
   }
-  ~RulesetLoaderThrottle() {}
+  ~RulesetLoaderThrottle() = default;
 
   // Waits until a ruleset load request is enqueued. Once the caller is
   // unblocked, it can do whatever it pleases before letting all the pending
@@ -1915,8 +1915,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
     // Verify that the install time of this extension is greater than the last
     // extension.
-    base::Time install_time = ExtensionPrefs::Get(profile())->GetLastUpdateTime(
-        last_loaded_extension_id());
+    base::Time install_time = GetLastUpdateTime(ExtensionPrefs::Get(profile()),
+                                                last_loaded_extension_id());
     EXPECT_GT(install_time, last_extension_install_time);
     last_extension_install_time = install_time;
   }
@@ -2870,10 +2870,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   }
 }
 
-// Tests that we surface a warning to the user if any of its ruleset fail to
-// load.
+// Tests that we reindex rulesets on checksum mismatch.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       WarningOnFailedRulesetLoad) {
+                       RulesetLoadReindexOnChecksumMismatch) {
   const size_t kNumStaticRulesets = 4;
   const char* kStaticFilterPrefix = "static";
   std::vector<TestRulesetInfo> rulesets;
@@ -2888,8 +2887,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rulesets.emplace_back(id, ToListValue(rules));
   }
 
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
-      rulesets, "extension_directory", {} /* hosts */));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets(rulesets, "extension_directory", /*hosts=*/{}));
 
   const ExtensionId& extension_id = last_loaded_extension_id();
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
@@ -2918,48 +2917,102 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   WaitForExtensionsWithRulesetsCount(0);
   EXPECT_FALSE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
-  // Reindexing and loading corrupted rulesets should fail now. This should
-  // cause a warning.
+  // Reindexing and loading corrupted rulesets should succeed.
+  // TODO(crbug.com/380434972): Check that a content verification job has been
+  // started in case ruleset files are corrupted.
   base::HistogramTester tester;
-  WarningService* warning_service = WarningService::Get(profile());
-  WarningServiceObserver warning_observer(warning_service, extension_id);
   EnableExtension(extension_id);
   WaitForExtensionsWithRulesetsCount(1);
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
-  // Wait till we surface a warning.
-  warning_observer.WaitForWarning();
-  EXPECT_THAT(warning_service->GetWarningTypesAffectingExtension(extension_id),
-              ::testing::ElementsAre(Warning::kRulesetFailedToLoad));
-
-  // Verify that loading the corrupted rulesets failed due to checksum mismatch.
-  // The non-corrupted rulesets should load fine.
+  // Verify that loading all rulesets succeeded since the previously corrupt
+  // rulesets were reindexed successfully.
   tester.ExpectTotalCount(kLoadRulesetResultHistogram, rulesets.size());
-  EXPECT_EQ(corrupted_ruleset_indices.size(),
-            static_cast<size_t>(tester.GetBucketCount(
-                kLoadRulesetResultHistogram,
-                LoadRulesetResult::kErrorChecksumMismatch /*sample*/)));
-  EXPECT_EQ(non_corrupted_ruleset_indices.size(),
-            static_cast<size_t>(
-                tester.GetBucketCount(kLoadRulesetResultHistogram,
-                                      LoadRulesetResult::kSuccess /*sample*/)));
+  EXPECT_EQ(rulesets.size(), static_cast<size_t>(tester.GetBucketCount(
+                                 kLoadRulesetResultHistogram,
+                                 /*sample=*/LoadRulesetResult::kSuccess)));
 
-  // Verify that re-indexing the corrupted rulesets failed.
+  // Verify that re-indexing the corrupted rulesets succeeded.
   tester.ExpectUniqueSample(
       "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
-      false /*sample*/, corrupted_ruleset_indices.size() /*count*/);
+      /*sample=*/true,
+      /*expected_bucket_count=*/corrupted_ruleset_indices.size());
 
-  // Finally verify that the non-corrupted rulesets still work fine, but others
-  // don't.
+  // Finally verify that all rulesets still work fine.
   std::vector<GURL> expected_blocked_urls;
   for (int index : non_corrupted_ruleset_indices)
     expected_blocked_urls.push_back(urls_for_indices[index]);
 
-  std::vector<GURL> expected_allowed_urls;
   for (int index : corrupted_ruleset_indices)
-    expected_allowed_urls.push_back(urls_for_indices[index]);
+    expected_blocked_urls.push_back(urls_for_indices[index]);
 
-  VerifyNavigations(expected_blocked_urls, expected_allowed_urls);
+  VerifyNavigations(expected_blocked_urls,
+                    /*expected_allowed_urls=*/std::vector<GURL>());
+}
+
+// Tests that checksum mismatches resulting from prefs corruption shouldn't
+// prevent rulesets from being re-enabled.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       UpdateEnabledRulesetsChecksumMismatch) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Load an extension that blocks navigations to google.com.
+  std::vector<TestRule> rules = {CreateMainFrameBlockRule("google")};
+  auto ruleset = TestRulesetInfo("id1", ToListValue(rules), true);
+
+  constexpr char kDirectory1[] = "dir1";
+  const int kInvalidRulesetChecksum = -1;
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets({ruleset}, kDirectory1, /*hosts=*/{}));
+
+  // Verify that the navigation is blocked.
+  std::vector<GURL> google_url({GetURLForFilter("google")});
+  VerifyNavigations(google_url, /*expected_allowed_urls=*/std::vector<GURL>());
+
+  const ExtensionId& extension_id = last_loaded_extension_id();
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+
+  int expected_checksum = kInvalidRulesetChecksum;
+  PrefsHelper helper(*prefs);
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, expected_checksum));
+
+  // Disable the ruleset and verify that navigations to google.com are no longer
+  // blocked.
+  ASSERT_NO_FATAL_FAILURE(UpdateEnabledRulesets(extension_id, {"id1"}, {}));
+
+  VerifyNavigations(/*expected_blocked_urls=*/std::vector<GURL>(), google_url);
+
+  // Simulate a prefs corruption.
+  helper.SetStaticRulesetChecksum(extension_id, kMinValidStaticRulesetID,
+                                  kInvalidRulesetChecksum);
+
+  base::HistogramTester tester;
+
+  // Try to enable the ruleset again; there should be no errors.
+  ASSERT_NO_FATAL_FAILURE(UpdateEnabledRulesets(extension_id, {}, {"id1"}));
+
+  // Verify that the checksum has been updated and is equal to its
+  // pre-corruption value and that reindexing has succeeded.
+  // TODO(crbug.com/380434972): Check that a content verification job has been
+  // started in case ruleset files are corrupted.
+  EXPECT_EQ(1u, static_cast<size_t>(tester.GetBucketCount(
+                    kLoadRulesetResultHistogram,
+                    /*sample=*/LoadRulesetResult::kSuccess)));
+
+  // Verify that re-indexing the corrupted rulesets succeeded.
+  tester.ExpectUniqueSample(
+      "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
+      /*sample=*/true, /*expected_bucket_count=*/1u);
+
+  int actual_checksum = kInvalidRulesetChecksum;
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, actual_checksum));
+  EXPECT_EQ(expected_checksum, actual_checksum);
+
+  // Verify that the navigation is blocked after re-enabling the ruleset.
+  VerifyNavigations(google_url, /*expected_allowed_urls=*/std::vector<GURL>());
 }
 
 // Tests that we reindex the extension rulesets in case its ruleset format
@@ -3787,14 +3840,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
       base::StringPrintf(kFetchTemplate, fetch_url.spec().c_str());
 
   GURL new_url = embedded_test_server()->GetURL(kHost, kUrlPath);
-  struct {
+  struct Cases {
     int expected_tab_id;
     std::string expected_host;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {first_tab_id, "rule1.com"},
       {second_tab_id, kHost},
       {third_tab_id, "rule3.com"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));
@@ -4353,7 +4407,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Testing URL: %s, using referrer: %s",
                                     test_case.url.spec().c_str(),
-                                    test_case.use_referrer ? "true" : "false"));
+                                    base::ToString(test_case.use_referrer)));
 
     NavigateFrame(kFrameName1, test_case.url, test_case.use_referrer);
     EXPECT_EQ(test_case.expected_ext_1_badge_text,
@@ -4506,7 +4560,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
           last_loaded_extension_id(), kGetOnRuleMatchedDebugScript);
 
   std::string expected_event_availability =
-      GetLoadType() == ExtensionLoadType::UNPACKED ? "true" : "false";
+      base::ToString(GetLoadType() == ExtensionLoadType::UNPACKED);
 
   ASSERT_EQ(expected_event_availability, actual_event_availability);
 }
@@ -5567,7 +5621,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 class DeclarativeNetRequestHostPermissionsBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
-  DeclarativeNetRequestHostPermissionsBrowserTest() {}
+  DeclarativeNetRequestHostPermissionsBrowserTest() = default;
 
   DeclarativeNetRequestHostPermissionsBrowserTest(
       const DeclarativeNetRequestHostPermissionsBrowserTest&) = delete;
@@ -5659,7 +5713,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestHostPermissionsBrowserTest,
 class DeclarativeNetRequestResourceTypeBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
-  DeclarativeNetRequestResourceTypeBrowserTest() {}
+  DeclarativeNetRequestResourceTypeBrowserTest() = default;
 
   DeclarativeNetRequestResourceTypeBrowserTest(
       const DeclarativeNetRequestResourceTypeBrowserTest&) = delete;
@@ -5688,12 +5742,16 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 
   void RunTests(const std::vector<TestCase>& test_cases) {
     // Start a web socket test server to test the websocket resource type.
-    net::SpawnedTestServer websocket_test_server(
-        net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
+    net::EmbeddedTestServer websocket_test_server(
+        net::EmbeddedTestServer::TYPE_HTTP);
+
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server);
+
     ASSERT_TRUE(websocket_test_server.Start());
 
     // The |websocket_url| will echo the message we send to it.
-    GURL websocket_url = websocket_test_server.GetURL("echo-with-no-extension");
+    GURL websocket_url = net::test_server::GetWebSocketURL(
+        websocket_test_server, "/echo-with-no-extension");
 
     auto execute_script = [](content::RenderFrameHost* frame,
                              const std::string& script) {
@@ -8263,7 +8321,7 @@ using DeclarativeNetRequestAllowChromeURLsBrowserTest =
     DeclarativeNetRequestBrowserTest;
 
 // Ensure that an extension can block requests that it initiated, but not
-// requests that other extensions initiated, unless the
+// non-navigation requests that other extensions initiated, unless the
 // --extensions-on-chrome-urls switch is used.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
                        CrossExtensionRequestBlocking) {
@@ -8382,6 +8440,91 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
               GetMatchedRuleCount(extension_1->id(), std::nullopt /* tab_id */,
                                   start_time));
   }
+}
+
+// Ensure that extensions can block main_frame navigation requests that other
+// extensions initiated, but not sub_frame requests unless the
+// --extensions-on-chrome-urls switch is used.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
+                       CrossExtensionNavigationRequestBlocking) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission |
+                   ConfigFlag::kConfig_HasManifestSandbox);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  // Extension 1 - Blocks navigation requests to example.com.
+  TestRule blocking_rule = CreateGenericRule(kMinValidID);
+  blocking_rule.id = 1;
+  blocking_rule.action->type = "block";
+  blocking_rule.condition->url_filter = "example.com";
+  blocking_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame", "sub_frame"});
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({std::move(blocking_rule)}, "test_extension_1",
+                             {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_1 = last_loaded_extension();
+
+  // Extension 2 - Doesn't block any requests.
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {}, "test_extension_2", {URLPattern::kAllUrlsPattern}));
+  const Extension* extension_2 = last_loaded_extension();
+
+  // Initiate main_frame and sub_frame requests via an extension page.
+  base::Time start_time = base::Time::Now();
+  GURL extension_page_url = extension_2->GetResourceURL("/manifest.json");
+  GURL main_frame_url = embedded_test_server()->GetURL("example.com", "/");
+  GURL sub_frame_url =
+      embedded_test_server()->GetURL("example.com", "/child_frame.html");
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page_url));
+  content::RenderFrameHost* extension_page = GetPrimaryMainFrame();
+
+  content::TestNavigationObserver navigation_observer(main_frame_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  constexpr char kNavigationRequestsTemplate[] = R"(
+      const frame = document.createElement('iframe');
+      frame.src = '%s';
+      document.body.appendChild(frame);
+
+      window.open('%s');
+  )";
+
+  ASSERT_TRUE(content::ExecJs(
+      extension_page, base::StringPrintf(kNavigationRequestsTemplate,
+                                         sub_frame_url.spec().c_str(),
+                                         main_frame_url.spec().c_str())));
+  navigation_observer.Wait();
+
+  // The main_frame request should be blocked.
+  content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
+  EXPECT_FALSE(WasFrameWithScriptLoaded(main_frame));
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(navigation_observer.last_net_error_code(),
+            net::ERR_BLOCKED_BY_CLIENT);
+
+  // The sub_frame request shouldn't be blocked, unless the the
+  // --extensions-on-chrome-urls switch is used.
+  bool should_iframe_navigation_succeed = !GetAllowChromeURLs();
+  content::RenderFrameHost* sub_frame =
+      content::ChildFrameAt(extension_page, 0);
+  ASSERT_TRUE(sub_frame);
+  EXPECT_EQ(sub_frame_url, sub_frame->GetLastCommittedURL());
+  content::WaitForLoadStop(
+      content::WebContents::FromRenderFrameHost(sub_frame));
+  EXPECT_EQ(should_iframe_navigation_succeed,
+            WasFrameWithScriptLoaded(sub_frame));
+
+  // The rule should have matched once (the main_frame request), or twice (both
+  // sub_frame and main_frame requests) if the switch was used.
+  std::string expected_match_count =
+      base::NumberToString(should_iframe_navigation_succeed ? 1 : 2);
+  EXPECT_EQ(expected_match_count,
+            GetMatchedRuleCount(extension_1->id(), std::nullopt /* tab_id */,
+                                start_time));
 }
 
 // A derivative of DeclarativeNetRequestBrowserTest which allows the test to

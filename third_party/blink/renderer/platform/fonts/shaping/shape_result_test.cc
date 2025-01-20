@@ -7,13 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include <array>
 
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -81,10 +82,7 @@ class ShapeResultTest : public FontTestBase {
   }
 
   ShapeResult* CreateShapeResult(TextDirection direction) const {
-    return MakeGarbageCollected<ShapeResult>(direction == TextDirection::kLtr
-                                                 ? GetFont(kLatinFont)
-                                                 : GetFont(kArabicFont),
-                                             0, 0, direction);
+    return MakeGarbageCollected<ShapeResult>(0, 0, direction);
   }
 
   const Font* GetFont(FontType type) const {
@@ -98,14 +96,15 @@ class ShapeResultTest : public FontTestBase {
 
 void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   const unsigned num_ranges = 4;
-  ShapeResult::ShapeRange ranges[num_ranges] = {
+  std::array<ShapeResult::ShapeRange, num_ranges> ranges = {{
       {0, 10, CreateShapeResult(TextDirection::kLtr)},
       {10, 20, CreateShapeResult(TextDirection::kLtr)},
       {20, 30, CreateShapeResult(TextDirection::kLtr)},
-      {30, 38, CreateShapeResult(TextDirection::kLtr)}};
+      {30, 38, CreateShapeResult(TextDirection::kLtr)},
+  }};
   result->CopyRanges(&ranges[0], num_ranges);
 
-  Vector<ShapeResultTestGlyphInfo> glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*ranges[i].target, &glyphs[i]);
   EXPECT_EQ(glyphs[0].size(), 10u);
@@ -113,12 +112,12 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 10u);
   EXPECT_EQ(glyphs[3].size(), 8u);
 
-  ShapeResult* reference[num_ranges];
+  std::array<ShapeResult*, num_ranges> reference;
   reference[0] = result->SubRange(0, 10);
   reference[1] = result->SubRange(10, 20);
   reference[2] = result->SubRange(20, 30);
   reference[3] = result->SubRange(30, 38);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> reference_glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*reference[i], &reference_glyphs[i]);
   EXPECT_EQ(reference_glyphs[0].size(), 10u);
@@ -134,14 +133,15 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
 
 void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   const unsigned num_ranges = 4;
-  ShapeResult::ShapeRange ranges[num_ranges] = {
+  std::array<ShapeResult::ShapeRange, num_ranges> ranges = {{
       {0, 4, CreateShapeResult(TextDirection::kRtl)},
       {4, 7, CreateShapeResult(TextDirection::kRtl)},
       {7, 10, CreateShapeResult(TextDirection::kRtl)},
-      {10, 15, CreateShapeResult(TextDirection::kRtl)}};
+      {10, 15, CreateShapeResult(TextDirection::kRtl)},
+  }};
   result->CopyRanges(&ranges[0], num_ranges);
 
-  Vector<ShapeResultTestGlyphInfo> glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*ranges[i].target, &glyphs[i]);
   EXPECT_EQ(glyphs[0].size(), 4u);
@@ -149,12 +149,12 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 3u);
   EXPECT_EQ(glyphs[3].size(), 5u);
 
-  ShapeResult* reference[num_ranges];
+  std::array<ShapeResult*, num_ranges> reference;
   reference[0] = result->SubRange(0, 4);
   reference[1] = result->SubRange(4, 7);
   reference[2] = result->SubRange(7, 10);
   reference[3] = result->SubRange(10, 17);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> reference_glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*reference[i], &reference_glyphs[i]);
   EXPECT_EQ(reference_glyphs[0].size(), 4u);
@@ -190,8 +190,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
@@ -207,19 +206,19 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_c(string.Substring(7, 32));
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
   shaper_d.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
 
-  ShapeResult::ShapeRange ranges[] = {
+  auto ranges = std::to_array<ShapeResult::ShapeRange>({
       {4, 17, CreateShapeResult(TextDirection::kLtr)},
       {20, 23, CreateShapeResult(TextDirection::kLtr)},
-      {25, 31, CreateShapeResult(TextDirection::kLtr)}};
+      {25, 31, CreateShapeResult(TextDirection::kLtr)},
+  });
   result->CopyRanges(&ranges[0], 3);
-  Vector<ShapeResultTestGlyphInfo> glyphs[3];
+  std::array<Vector<ShapeResultTestGlyphInfo>, 3> glyphs;
   ComputeGlyphResults(*ranges[0].target, &glyphs[0]);
   ComputeGlyphResults(*ranges[1].target, &glyphs[1]);
   ComputeGlyphResults(*ranges[2].target, &glyphs[2]);
@@ -227,11 +226,11 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   EXPECT_EQ(glyphs[1].size(), 3u);
   EXPECT_EQ(glyphs[2].size(), 6u);
 
-  ShapeResult* reference[3];
+  std::array<ShapeResult*, 3> reference;
   reference[0] = result->SubRange(4, 17);
   reference[1] = result->SubRange(20, 23);
   reference[2] = result->SubRange(25, 31);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[3];
+  std::array<Vector<ShapeResultTestGlyphInfo>, 3> reference_glyphs;
   ComputeGlyphResults(*reference[0], &reference_glyphs[0]);
   ComputeGlyphResults(*reference[1], &reference_glyphs[1]);
   ComputeGlyphResults(*reference[2], &reference_glyphs[2]);
@@ -272,8 +271,7 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
 
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kArabicFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 2u, result);
   shaper_b.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 7u, result);
   shaper_c.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 8u, result);

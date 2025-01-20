@@ -9,23 +9,23 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -191,33 +191,30 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
 }
 
 TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   Profile* regular_profile = profile();
 
   EXPECT_FALSE(AreWebAppsEnabled(nullptr));
   EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
-  EXPECT_TRUE(AreWebAppsEnabled(
+  EXPECT_FALSE(AreWebAppsEnabled(
       regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  EXPECT_TRUE(AreWebAppsEnabled(regular_profile->GetOffTheRecordProfile(
+  EXPECT_FALSE(AreWebAppsEnabled(regular_profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true)));
 
   Profile* guest_profile = profile_manager().CreateGuestProfile();
-  EXPECT_TRUE(AreWebAppsEnabled(guest_profile));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(AreWebAppsEnabled(guest_profile));
+  EXPECT_FALSE(AreWebAppsEnabled(guest_profile->GetOriginalProfile()));
   EXPECT_TRUE(AreWebAppsEnabled(
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* system_profile = profile_manager().CreateSystemProfile();
-  EXPECT_FALSE(AreWebAppsEnabled(system_profile));
+#else
+  EXPECT_TRUE(AreWebAppsEnabled(guest_profile));
+  EXPECT_TRUE(AreWebAppsEnabled(guest_profile->GetOriginalProfile()));
   EXPECT_FALSE(AreWebAppsEnabled(
-      system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-#endif
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* signin_profile =
       profile_manager().CreateTestingProfile(chrome::kInitialProfile);
   EXPECT_FALSE(AreWebAppsEnabled(signin_profile));
@@ -239,16 +236,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kKioskEnableSystemWebApps);
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
-  }
-  {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* user = user_manager->AddWebKioskAppUser(account_id);
     user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
@@ -260,10 +247,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 }
 
 TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   Profile* regular_profile = profile();
 
   EXPECT_FALSE(AreWebAppsEnabled(nullptr));
@@ -280,14 +263,14 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   EXPECT_FALSE(AreWebAppsUserInstallable(
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   Profile* system_profile = profile_manager().CreateSystemProfile();
   EXPECT_FALSE(AreWebAppsUserInstallable(system_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* signin_profile =
       profile_manager().CreateTestingProfile(chrome::kInitialProfile);
   EXPECT_FALSE(AreWebAppsUserInstallable(signin_profile));
@@ -297,66 +280,71 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   Profile* regular_profile = profile();
 
+  Profile* expected_otr_browser_context = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+  // where `AreWebAppsEnabled` returns `false`.
+  expected_otr_browser_context = regular_profile;
+#endif
+
   EXPECT_EQ(regular_profile, GetBrowserContextForWebApps(regular_profile));
-  EXPECT_EQ(regular_profile,
+  EXPECT_EQ(expected_otr_browser_context,
             GetBrowserContextForWebApps(regular_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
-  EXPECT_EQ(regular_profile,
+  EXPECT_EQ(expected_otr_browser_context,
             GetBrowserContextForWebApps(regular_profile->GetOffTheRecordProfile(
                 Profile::OTRProfileID::CreateUniqueForTesting(),
                 /*create_if_needed=*/true)));
 
   Profile* guest_profile = profile_manager().CreateGuestProfile();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  guest_profile =
-      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* guest_otr_profile = guest_profile->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(nullptr, GetBrowserContextForWebApps(guest_profile));
+  EXPECT_EQ(guest_otr_profile, GetBrowserContextForWebApps(guest_otr_profile));
+#else
   EXPECT_EQ(guest_profile, GetBrowserContextForWebApps(guest_profile));
-  EXPECT_EQ(guest_profile,
-            GetBrowserContextForWebApps(guest_profile->GetPrimaryOTRProfile(
-                /*create_if_needed=*/true)));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(nullptr, GetBrowserContextForWebApps(guest_otr_profile));
+
   Profile* system_profile = profile_manager().CreateSystemProfile();
   EXPECT_EQ(nullptr, GetBrowserContextForWebApps(system_profile));
   EXPECT_EQ(nullptr,
             GetBrowserContextForWebApps(system_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   Profile* regular_profile = profile();
+
+  Profile* expected_otr_browser_context = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+  // where `AreWebAppsEnabled` returns `false`.
+  expected_otr_browser_context = regular_profile;
+#endif
 
   EXPECT_EQ(regular_profile,
             GetBrowserContextForWebAppMetrics(regular_profile));
   EXPECT_EQ(
-      regular_profile,
+      expected_otr_browser_context,
       GetBrowserContextForWebAppMetrics(
           regular_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_EQ(
-      regular_profile,
+      expected_otr_browser_context,
       GetBrowserContextForWebAppMetrics(regular_profile->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true)));
 
   Profile* guest_profile = profile_manager().CreateGuestProfile();
+  Profile* guest_otr_profile = guest_profile->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
   EXPECT_EQ(nullptr, GetBrowserContextForWebAppMetrics(guest_profile));
-  EXPECT_EQ(
-      nullptr,
-      GetBrowserContextForWebAppMetrics(
-          guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+  EXPECT_EQ(nullptr, GetBrowserContextForWebAppMetrics(guest_otr_profile));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   Profile* system_profile = profile_manager().CreateSystemProfile();
   EXPECT_EQ(nullptr, GetBrowserContextForWebAppMetrics(system_profile));
   EXPECT_EQ(
@@ -368,7 +356,7 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/331208955): Remove after migration.
-TEST_F(WebAppUtilsTest, CanUserUninstalGeminiApp) {
+TEST_F(WebAppUtilsTest, CanUserUninstallGeminiApp) {
   EXPECT_FALSE(CanUserUninstallWebApp(
       ash::kGeminiAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
   EXPECT_TRUE(CanUserUninstallWebApp(

@@ -68,7 +68,7 @@ typedef testing::Test ShortcutsDatabaseMigrationTest;
 
 // Checks that the database at |db_path| has the version 0 columns iff |is_v0|.
 void CheckV0ColumnExistence(const base::FilePath& db_path, bool is_v0) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(db_path));
   EXPECT_EQ(is_v0,
             connection.DoesColumnExist("omni_box_shortcuts", "fill_into_edit"));
@@ -88,7 +88,7 @@ void CheckV2Migration(base::FilePath sql_path) {
 
   // Check document_type column does not yet exist.
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(db_path));
     EXPECT_FALSE(
         connection.DoesColumnExist("omni_box_shortcuts", "document_type"));
@@ -101,7 +101,7 @@ void CheckV2Migration(base::FilePath sql_path) {
     db->Init();
   }
 
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(db_path));
 
   // Check a meta table was created.
@@ -290,7 +290,7 @@ TEST(ShortcutsDatabaseMigrationTest, MigrateTableAddFillIntoEdit) {
 
   CheckV0ColumnExistence(db_path, true);
 
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(db_path));
 
   // Check a meta table was created.
@@ -332,7 +332,7 @@ TEST(ShortcutsDatabaseMigrationTest, MigrateV0ToV1) {
   }
 
   // Check that all the old type values got converted to new values.
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(db_path));
 
   // Check a meta table was created.
@@ -368,7 +368,7 @@ TEST(ShortcutsDatabaseMigrationTest, Recovery1) {
   static const char kCountSql[] = "SELECT COUNT(*) FROM omni_box_shortcuts";
   int row_count;
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(db_path));
     sql::Statement statement(connection.GetUniqueStatement(kCountSql));
     ASSERT_TRUE(statement.is_valid());
@@ -385,7 +385,7 @@ TEST(ShortcutsDatabaseMigrationTest, Recovery1) {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
 
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_FALSE(connection.Open(db_path));
     sql::Statement statement(connection.GetUniqueStatement(kCountSql));
     ASSERT_FALSE(statement.is_valid());
@@ -411,7 +411,7 @@ TEST(ShortcutsDatabaseMigrationTest, Recovery1) {
   // The previously-broken statement works and all of the data should have been
   // recovered.
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(db_path));
     sql::Statement statement(connection.GetUniqueStatement(kCountSql));
     ASSERT_TRUE(statement.is_valid());

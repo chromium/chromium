@@ -131,7 +131,8 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   void ColorCorrectImage(int from_row, int to_row, ImageFrame* buffer);
 
   // Returns decoder_->image or decoder_->image->gainMap->image depending on
-  // aux_image_.
+  // aux_image_. May be nullptr if requesting the gain map image
+  // (cc::AuxImage::kGainmap) but no gain map is present.
   crabbyavif::avifImage* GetDecoderImage() const;
 
   bool have_parsed_current_data_ = false;

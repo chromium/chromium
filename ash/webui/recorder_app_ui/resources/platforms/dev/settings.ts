@@ -14,6 +14,9 @@ export enum ColorTheme {
 }
 
 export const devSettingsSchema = z.object({
+  // Force language picker or dropdown display even if there's only one
+  // language option.
+  forceLanguageSelection: z.boolean(),
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
@@ -25,6 +28,7 @@ export const devSettingsSchema = z.object({
 type DevSettings = Infer<typeof devSettingsSchema>;
 
 const defaultSettings: DevSettings = {
+  forceLanguageSelection: false,
   forceTheme: ColorTheme.LIGHT,
   sodaInstalled: false,
   canUseSpeakerLabel: true,

@@ -26,8 +26,10 @@
 // https://html.spec.whatwg.org/C/#textmetrics
 
 dictionary TextClusterOptions {
-  DOMString? align = null;
-  DOMString? baseline = null;
+  DOMString align;
+  DOMString baseline;
+  double x;
+  double y;
 };
 
 [Exposed=(Window,Worker)]
@@ -42,14 +44,14 @@ interface TextMetrics {
     readonly attribute double fontBoundingBoxDescent;
     readonly attribute double actualBoundingBoxAscent;
     readonly attribute double actualBoundingBoxDescent;
-  [RuntimeEnabled=TextMetricsBaselines, MeasureAs="WebDXFeature::kCanvasTextBaselines"] readonly attribute double hangingBaseline;
-    [RuntimeEnabled=TextMetricsBaselines, MeasureAs="WebDXFeature::kCanvasTextBaselines"] readonly attribute double alphabeticBaseline;
-    [RuntimeEnabled=TextMetricsBaselines, MeasureAs="WebDXFeature::kCanvasTextBaselines"] readonly attribute double ideographicBaseline;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double hangingBaseline;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double alphabeticBaseline;
+    [RuntimeEnabled=TextMetricsBaselines] readonly attribute double ideographicBaseline;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
 
     // For editing, to get the text offset at a point
-    [RuntimeEnabled=ExtendedTextMetrics] unsigned long caretPositionFromPoint(double x);
+    [RuntimeEnabled=ExtendedTextMetrics] unsigned long getIndexFromOffset(double x);
 
     // For selection
     [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);

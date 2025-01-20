@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
@@ -49,6 +50,14 @@ void RunGetClassificationResultCallback(const JavaRef<jobject>& j_callback,
       j_callback,
       SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
           env, result));
+}
+
+void RunInputKeysForModelCallback(const JavaRef<jobject>& j_callback,
+                                  std::set<std::string> input_keys) {
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<std::string> inputs_vector(input_keys.begin(), input_keys.end());
+  base::android::RunObjectCallbackAndroid(
+      j_callback, base::android::ToJavaArrayOfStrings(env, inputs_vector));
 }
 
 }  // namespace
@@ -125,6 +134,16 @@ SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
   return SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
       env, segmentation_platform_service_->GetCachedSegmentResult(
                ConvertJavaStringToUTF8(env, j_segmentation_key)));
+}
+
+void SegmentationPlatformServiceAndroid::GetInputKeysForModel(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_segmentation_key,
+    const JavaParamRef<jobject>& j_callback) {
+  segmentation_platform_service_->GetInputKeysForModel(
+      ConvertJavaStringToUTF8(env, j_segmentation_key),
+      base::BindOnce(&RunInputKeysForModelCallback,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 ScopedJavaLocalRef<jobject>

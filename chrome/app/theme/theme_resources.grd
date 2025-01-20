@@ -9,7 +9,7 @@
      currently set to true for all resources, but the default will
      become false in near future.
   -->
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/theme_resources.h" type="rc_header" context="default_100_percent">
       <emit emit_type='prepend'></emit>
@@ -154,9 +154,7 @@
         </if>
       </if>
       <structure type="chrome_scaled_image" name="IDR_PLUGINS_FAVICON" file="common/favicon_plugins.png" />
-      <if expr="not is_android">
-        <structure type="chrome_scaled_image" name="IDR_PRERENDER" file="common/prerender_succeed_icon.png" />
-      </if>
+      <structure type="chrome_scaled_image" name="IDR_PRERENDER" file="common/prerender_succeed_icon.png" />
       <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/product_logo_32.png" />
       <if expr="_google_chrome">
         <then>
@@ -167,9 +165,7 @@
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/linux/product_logo_32_dev.png" />
             </then>
             <else> <!-- not is_linux -->
-              <if expr="not is_android">
-                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
-              </if> <!-- not is_android -->
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="${branding_path_component}/product_logo_32_beta.png" />
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/product_logo_32_dev.png" />
             </else>
@@ -281,11 +277,7 @@
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD" file="common/save_password.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="common/save_card.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_CONVENIENCE" file="common/save_card_convenience.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_CONVENIENCE_DARK" file="common/save_card_convenience_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_DARK" file="common/save_card_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_EDUCATION" file="common/save_card_education.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_EDUCATION_DARK" file="common/save_card_education_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURITY" file="common/save_card_security.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURITY_DARK" file="common/save_card_security_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CVC" file="common/save_cvc.png" />
@@ -384,10 +376,8 @@
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_CONSENTED_DARK" file="common/safer_with_google_shield_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED" file="common/safer_with_google_shield.png" />
       </if>
-      <if expr="_google_chrome">
-        <if expr="not is_android">
-          <structure type="chrome_scaled_image" name="IDR_SUCCESS_GREEN_CHECKMARK" file="google_chrome/success_green_checkmark.png" />
-        </if>
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_SUCCESS_GREEN_CHECKMARK" file="common/success_green_checkmark.png" />
       </if>
     </structures>
   </release>

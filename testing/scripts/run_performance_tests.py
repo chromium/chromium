@@ -40,6 +40,7 @@ $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 
 import argparse
 from collections import OrderedDict
+import datetime
 import json
 import os
 import pathlib
@@ -49,9 +50,11 @@ import time
 import tempfile
 import traceback
 
+# vpython-provided modules.
+# pylint: disable=import-error
 import six
-
 import requests
+# pylint: enable=import-error
 
 import common
 
@@ -68,11 +71,7 @@ else:
   print('Optional crossbench_result_converter not available.')
 import generate_legacy_perf_dashboard_json
 from core import path_util
-
-PERF_CORE_DIR = PERF_DIR / 'core'
-sys.path.append(str(PERF_CORE_DIR))
-# //tools/perf/core imports.
-import results_merger
+from core import results_merger
 
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
 # //testing imports.
@@ -88,6 +87,7 @@ if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   sys.path.append(str(TELEMETRY_DIR))
   from telemetry.internal.browser import browser_finder
   from telemetry.internal.browser import browser_options
+  from telemetry.core import util
   from telemetry.internal.util import binary_manager
 else:
   print('Optional telemetry library not available.')
@@ -174,6 +174,14 @@ class OutputFilePaths(object):
     return os.path.join(self.benchmark_path, 'perf_results.csv')
 
 
+def print_start(step, attempt=None):
+  if attempt is None:
+    attempt_str = ''
+  else:
+    attempt_str = f' (attempt #{attempt})'
+  print(f'\n### {step}{attempt_str} {datetime.datetime.now()} ###')
+
+
 def print_duration(step, start):
   print('Duration of %s: %d seconds' % (step, time.time() - start))
 
@@ -242,14 +250,18 @@ class GtestCommandGenerator(object):
       return ['--gtest_filter=' + ':'.join(filter_list)]
     return []
 
+  # pylint: disable=no-self-use
   def _generate_repeat_args(self):
     # TODO(crbug.com/40608634): Support --isolated-script-test-repeat.
     return []
+  # pylint: enable=no-self-use
 
+  # pylint: disable=no-self-use
   def _generate_also_run_disabled_tests_args(self):
     # TODO(crbug.com/40608634): Support
     # --isolated-script-test-also-run-disabled-tests.
     return []
+  # pylint: enable=no-self-use
 
   def _generate_output_args(self, output_dir):
     output_args = []
@@ -391,6 +403,7 @@ def execute_gtest_perf_test(command_generator,
       # the actual executable name.
       executable_name = executable_name[8:]
     if executable_name in GTEST_CONVERSION_WHITELIST:
+      # //third_party/catapult/tracing imports.
       with path_util.SysPath(path_util.GetTracingDir()):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
@@ -505,7 +518,7 @@ class TelemetryCommandGenerator(object):
         selection_args.append('--story-shard-end-index=%d' %
                               (self._story_selection_config['end']))
       if 'sections' in self._story_selection_config:
-        range_string = self._generate_story_index_ranges(
+        range_string = _generate_story_index_ranges(
             self._story_selection_config['sections'])
         if range_string:
           selection_args.append('--story-shard-indexes=%s' % range_string)
@@ -519,26 +532,6 @@ class TelemetryCommandGenerator(object):
           self._options.isolated_script_test_output)
       return ['--logs-dir', os.path.join(isolated_out_dir, self.benchmark)]
     return []
-
-  def _generate_story_index_ranges(self, sections):
-    range_string = ''
-    for section in sections:
-      begin = section.get('begin', '')
-      end = section.get('end', '')
-      # If there only one story in the range, we only keep its index.
-      # In general, we expect either begin or end, or both.
-      if begin != '' and end != '' and end - begin == 1:
-        new_range = str(begin)
-      elif begin != '' or end != '':
-        new_range = '%s-%s' % (str(begin), str(end))
-      else:
-        raise ValueError('Index ranges in "sections" in shard map should have'
-                         'at least one of "begin" and "end": %s' % str(section))
-      if range_string:
-        range_string += ',%s' % new_range
-      else:
-        range_string = new_range
-    return range_string
 
   def _generate_reference_build_args(self):
     if self._is_reference:
@@ -554,6 +547,27 @@ class TelemetryCommandGenerator(object):
     if self._options.results_label:
       return ['--results-label=' + self._options.results_label]
     return []
+
+
+def _generate_story_index_ranges(sections):
+  range_string = ''
+  for section in sections:
+    begin = section.get('begin', '')
+    end = section.get('end', '')
+    # If there only one story in the range, we only keep its index.
+    # In general, we expect either begin or end, or both.
+    if begin != '' and end != '' and end - begin == 1:
+      new_range = str(begin)
+    elif begin != '' or end != '':
+      new_range = '%s-%s' % (str(begin), str(end))
+    else:
+      raise ValueError('Index ranges in "sections" in shard map should have'
+                       'at least one of "begin" and "end": %s' % str(section))
+    if range_string:
+      range_string += ',%s' % new_range
+    else:
+      range_string = new_range
+  return range_string
 
 
 def execute_telemetry_benchmark(command_generator,
@@ -708,28 +722,33 @@ class CrossbenchTest(object):
   CHROME_BROWSER = '--browser=%s'
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
-  BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
+  BENCHMARK_FILESERVERS = {
+      'speedometer_3.0': 'third_party/speedometer/v3.0',
+      'speedometer_2.1': 'third_party/speedometer/v2.1',
+      'speedometer_2.0': 'third_party/speedometer/v2.0'
+  }
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    browser_arg = self._get_browser_arg(options.passthrough_args)
-    self.is_android = self._is_android(browser_arg)
+    browser_arg = _get_browser_arg(options.passthrough_args)
+    self.is_android = _is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
     self.network = self._get_network_arg(options.passthrough_args)
 
-  def _get_browser_arg(self, args):
-    browser_arg = self._get_arg(args, '--browser=', must_exists=True)
-    return browser_arg.split('=', 1)[1]
-
   def _get_network_arg(self, args):
-    if _arg := self._get_arg(args, '--network='):
+    if _arg := _get_arg(args, '--network='):
       return [_arg]
-    if _arg := self._get_arg(args, '--fileserver'):
+    if _arg := _get_arg(args, '--fileserver'):
       return self._create_fileserver_network(_arg)
-    if self._get_arg(args, '--wpr'):
+    if _get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
+    if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
+      # Use file server when it is available.
+      arg = '--fileserver'
+      args.append(arg)
+      return self._create_fileserver_network(arg)
     return []
 
   def _create_fileserver_network(self, arg):
@@ -744,51 +763,24 @@ class CrossbenchTest(object):
     # Replacing --fileserver with --network.
     self.options.passthrough_args.remove(arg)
     return [
-        self._create_network_json('local',
-                                  path=fileserver_relative_path,
-                                  url='http://localhost:0')
+        _create_network_json('local',
+                             path=fileserver_relative_path,
+                             url='http://localhost:0')
     ]
 
   def _create_wpr_network(self, args):
-    wpr_arg = self._get_arg(args, '--wpr')
+    wpr_arg = _get_arg(args, '--wpr')
     if wpr_arg and '=' in wpr_arg:
       wpr_name = wpr_arg.split('=', 1)[1]
     else:
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
+      raise ValueError('The archive file path is missing!')
     archive = str(PAGE_SETS_DATA / wpr_name)
     if (wpr_go := fetch_binary_path('wpr_go')) is None:
       raise ValueError(f'wpr_go not found: {wpr_go}')
     if wpr_arg:
       # Replacing --wpr with --network.
       self.options.passthrough_args.remove(wpr_arg)
-    return [self._create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
-
-  def _create_network_json(self, config_type, path, url=None, wpr_go_bin=None):
-    network_dict = {'type': config_type}
-    network_dict['path'] = path
-    if url:
-      network_dict['url'] = url
-    if wpr_go_bin:
-      network_dict['wpr_go_bin'] = wpr_go_bin
-    network_json = json.dumps(network_dict)
-    return f'--network={network_json}'
-
-  def _get_arg(self, args, arg, must_exists=False):
-    if _args := [a for a in args if a.startswith(arg)]:
-      if len(_args) != 1:
-        raise ValueError(f'Expects exactly one {arg} on command line')
-      return _args[0]
-    if must_exists:
-      raise ValueError(f'{arg} argument is missing!')
-    return []
-
-  def _is_android(self, browser_arg):
-    """Is the test running on an Android device.
-
-    See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
-    """
-    return browser_arg.lower().startswith('android')
+    return [_create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
 
   def _find_browser(self, browser_arg):
     # Replacing --browser with the generated self.browser.
@@ -918,6 +910,40 @@ class CrossbenchTest(object):
         self.options.passthrough_args)
 
 
+def _create_network_json(config_type, path, url=None, wpr_go_bin=None):
+  network_dict = {'type': config_type}
+  network_dict['path'] = path
+  if url:
+    network_dict['url'] = url
+  if wpr_go_bin:
+    network_dict['wpr_go_bin'] = wpr_go_bin
+  network_json = json.dumps(network_dict)
+  return f'--network={network_json}'
+
+
+def _get_browser_arg(args):
+  browser_arg = _get_arg(args, '--browser=', must_exists=True)
+  return browser_arg.split('=', 1)[1]
+
+
+def _get_arg(args, arg, must_exists=False):
+  if _args := [a for a in args if a.startswith(arg)]:
+    if len(_args) != 1:
+      raise ValueError(f'Expects exactly one {arg} on command line')
+    return _args[0]
+  if must_exists:
+    raise ValueError(f'{arg} argument is missing!')
+  return []
+
+
+def _is_android(browser_arg):
+  """Is the test running on an Android device.
+
+  See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
+  """
+  return browser_arg.lower().startswith('android')
+
+
 def parse_arguments(args):
   parser = argparse.ArgumentParser()
   parser.add_argument('executable', help='The name of the executable to run.')
@@ -1016,7 +1042,49 @@ def parse_arguments(args):
   return options
 
 
+def _set_cwd():
+  """Change current working directory to build output directory.
+
+  On perf waterfall, the recipe sets the current working directory to the chrome
+  build output directory. Pinpoint, on the other hand, does not know where the
+  build output directory is, so it is hardcoded to set current working directory
+  to out/Release. This used to be correct most of the time, but this has been
+  changed by https://crbug.com/355218109, causing various problems (e.g.,
+  https://crbug.com/377748127). This function attempts to detect such cases and
+  change the current working directory to chrome output directory.
+  """
+
+  # If the current directory is named out/Release and is empty, we are likely
+  # running on Pinpoint with a wrong working directory.
+  cwd = pathlib.Path.cwd()
+  if list(cwd.iterdir()):
+    return
+  if cwd.name != 'Release' or cwd.parent.name != 'out':
+    return
+
+  print(f'Current directory {cwd} is empty, attempting to find build output')
+  candidates = []
+  for build_dir in util.GetBuildDirectories():
+    path = pathlib.Path(build_dir).resolve()
+    if path.exists() and list(path.iterdir()):
+      candidates.append(path)
+
+  if len(candidates) != 1:
+    if not candidates:
+      print('No build output directory found')
+    else:
+      print(f'Multiple build output directories found: {candidates}')
+    raise RuntimeError(
+        'Unable to find build output. Please change to the build output '
+        'directory before running this script.')
+
+  print(f'Changing current directory to {candidates[0]}')
+  os.chdir(candidates[0])
+
+
 def main(sys_args):
+  sys.stdout.reconfigure(line_buffering=True)
+  _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
   isolated_out_dir = os.path.dirname(options.isolated_script_test_output)
@@ -1070,7 +1138,7 @@ def main(sys_args):
     if not benchmark_name:
       benchmark_name = options.executable
     output_paths = OutputFilePaths(isolated_out_dir, benchmark_name).SetUp()
-    print('\n### {folder} ###'.format(folder=benchmark_name))
+    print_start(benchmark_name)
     overall_return_code = execute_gtest_perf_test(
         command_generator,
         output_paths,
@@ -1082,8 +1150,7 @@ def main(sys_args):
     for benchmark in benchmarks:
       command_generator = TelemetryCommandGenerator(benchmark, options)
       for run_num in range(options.benchmark_max_runs):
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
-                                                           num=run_num))
+        print_start(benchmark, run_num)
         output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
         return_code = execute_telemetry_benchmark(
             command_generator,
@@ -1140,8 +1207,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           benchmark, options, story_selection_config=story_selection_config)
       for run_num in range(options.benchmark_max_runs):
         output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=benchmark,
-                                                           num=run_num))
+        print_start(benchmark, run_num)
         return_code = execute_telemetry_benchmark(
             command_generator,
             output_paths,
@@ -1161,8 +1227,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
             options,
             story_selection_config=story_selection_config,
             is_reference=True)
-        print(
-            '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
+        print_start(reference_benchmark_foldername)
         # We intentionally ignore the return code and test results of the
         # reference build.
         execute_telemetry_benchmark(
@@ -1184,8 +1249,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           ignore_shard_env_vars=True)
       for run_num in range(options.benchmark_max_runs):
         output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
-        print('\n### {folder} (attempt #{num}) ###'.format(folder=name,
-                                                           num=run_num))
+        print_start(name, run_num)
         return_code = execute_gtest_perf_test(command_generator, output_paths,
                                               options.xvfb)
         if return_code == 0:
@@ -1203,10 +1267,14 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
         options.passthrough_args.extend(benchmark_args)
       options.benchmarks = benchmark
       crossbench_test = CrossbenchTest(options, isolated_out_dir)
+      # CrossbenchTest may filter some arguments.
+      benchmark_args = [
+          x for x in benchmark_args if x in options.passthrough_args
+      ]
       for run_num in range(options.benchmark_max_runs):
-        print(f'\n### {display_name} (attempt #{run_num}) ###')
+        print_start(display_name, run_num)
         return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                        [])
+                                                        benchmark_args)
         if return_code == 0:
           break
       overall_return_code = return_code or overall_return_code

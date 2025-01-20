@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 using vm_tools::apps::App;
@@ -34,7 +35,8 @@ CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
 
   ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-  auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+  auto account =
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       account, false, user_manager::UserType::kRegular, profile);
   fake_user_manager_->LoginUser(account);

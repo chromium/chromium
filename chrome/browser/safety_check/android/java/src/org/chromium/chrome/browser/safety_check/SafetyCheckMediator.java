@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
@@ -49,9 +48,10 @@ import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperti
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.prefs.PrefService;
@@ -105,9 +105,6 @@ class SafetyCheckMediator {
 
     /** Client to launch a SigninActivity. */
     private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-
-    /** Client to launch a SyncActivity. */
-    private SyncConsentActivityLauncher mSyncLauncher;
 
     /** Async logic for password check. */
     private boolean mShowSafePasswordState;
@@ -201,7 +198,6 @@ class SafetyCheckMediator {
      * @param safetyCheckModel A model instance.
      * @param client An updates client.
      * @param signinLauncher An instance implementing {@link SigninAndHistorySyncActivityLauncher}.
-     * @param syncLauncher An instance implementing {@SigninActivityLauncher}.
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      */
@@ -213,7 +209,6 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncConsentActivityLauncher syncLauncher,
             SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
@@ -228,7 +223,6 @@ class SafetyCheckMediator {
                 client,
                 bridge,
                 signinLauncher,
-                syncLauncher,
                 syncService,
                 prefService,
                 new Handler(),
@@ -248,7 +242,6 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncConsentActivityLauncher syncLauncher,
             SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
@@ -264,7 +257,6 @@ class SafetyCheckMediator {
                 client,
                 bridge,
                 signinLauncher,
-                syncLauncher,
                 syncService,
                 prefService,
                 handler,
@@ -282,7 +274,6 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncConsentActivityLauncher syncLauncher,
             @Nullable SyncService syncService,
             PrefService prefService,
             Handler handler,
@@ -296,7 +287,6 @@ class SafetyCheckMediator {
         mUpdatesClient = client;
         mBridge = bridge;
         mSigninLauncher = signinLauncher;
-        mSyncLauncher = syncLauncher;
         mSyncService = syncService;
         mHandler = handler;
         mPreferenceManager = ChromeSharedPreferences.getInstance();
@@ -600,38 +590,29 @@ class SafetyCheckMediator {
         } else if (state == PasswordsState.SIGNED_OUT) {
             listener =
                     (p) -> {
-                        if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                            AccountPickerBottomSheetStrings strings =
-                                    new AccountPickerBottomSheetStrings.Builder(
-                                                    R.string
-                                                            .signin_account_picker_bottom_sheet_title)
-                                            .setSubtitleStringId(
-                                                    R.string
-                                                            .safety_check_passwords_error_signed_out)
-                                            .build();
-                            // Open the sign-in page.
-                            @Nullable
-                            Intent intent =
-                                    mSigninLauncher.createBottomSheetSigninIntentOrShowError(
-                                            p.getContext(),
-                                            mProfile,
-                                            strings,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.ADD_ACCOUNT,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.SAFETY_CHECK,
-                                            /* selectedCoreAccountId= */ null);
-                            if (intent != null) {
-                                p.getContext().startActivity(intent);
-                            }
-                        } else {
-                            // Open the sync page.
-                            mSyncLauncher.launchActivityIfAllowed(
-                                    p.getContext(), SigninAccessPoint.SAFETY_CHECK);
+                        AccountPickerBottomSheetStrings strings =
+                                new AccountPickerBottomSheetStrings.Builder(
+                                                R.string.signin_account_picker_bottom_sheet_title)
+                                        .setSubtitleStringId(
+                                                R.string.safety_check_passwords_error_signed_out)
+                                        .build();
+                        BottomSheetSigninAndHistorySyncConfig config =
+                                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                                strings,
+                                                NoAccountSigninMode.BOTTOM_SHEET,
+                                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                                HistorySyncConfig.OptInMode.NONE)
+                                        .build();
+                        // Open the sign-in page.
+                        @Nullable
+                        Intent intent =
+                                mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                                        p.getContext(),
+                                        mProfile,
+                                        config,
+                                        SigninAccessPoint.SAFETY_CHECK);
+                        if (intent != null) {
+                            p.getContext().startActivity(intent);
                         }
                         return true;
                     };

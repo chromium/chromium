@@ -40,7 +40,8 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     DeskTemplateType template_type,
     const std::string& template_name,
     aura::Window* root_window_to_show,
-    AccountId current_account_id) {
+    AccountId current_account_id,
+    const base::flat_set<std::string>& coral_app_id_allowlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto current_serial = serial_++;
@@ -67,6 +68,15 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   for (aura::Window* window : mru_windows) {
     // Skip transient windows without reporting.
     if (wm::GetTransientParent(window)) {
+      continue;
+    }
+
+    const std::string app_id = saved_desk_util::GetAppId(window);
+
+    // Coral desk templates only contain a subset of the apps on the active
+    // desk.
+    if (template_type == DeskTemplateType::kCoral &&
+        !coral_app_id_allowlist.contains(app_id)) {
       continue;
     }
 
@@ -105,7 +115,6 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     }
 
     // Skip windows that do not associate with a full restore app id.
-    const std::string app_id = saved_desk_util::GetAppId(window);
     if (!Shell::Get()
              ->overview_controller()
              ->disable_app_id_check_for_saved_desks() &&
@@ -145,8 +154,8 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.callback = std::move(callback);
 
   // If all requests in the loop above returned data synchronously, then we
-  // have no pending requests and send the data right away.  Otherwise it will
-  // be sent after the last pending request is handled.
+  // have no pending requests and send the data right away. Otherwise it will be
+  // sent after the last pending request is handled.
   if (call.pending_request_count == 0) {
     SendDeskTemplate(current_serial);
   }

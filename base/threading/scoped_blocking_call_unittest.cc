@@ -191,11 +191,11 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
     // be caused by ScopedBlockingCall interference in the same process but
     // outside this test's managed threads: crbug.com/1071166.
     EnableIOJankMonitoringForProcess(
-        BindLambdaForTesting([&](int janky_intervals_per_minute,
-                                 int total_janks_per_minute) {
-          reports_.emplace_back(
-              janky_intervals_per_minute, total_janks_per_minute);
-        }),
+        BindLambdaForTesting(
+            [&](int janky_intervals_per_minute, int total_janks_per_minute) {
+              reports_.emplace_back(janky_intervals_per_minute,
+                                    total_janks_per_minute);
+            }),
         OnlyObservedThreadsForTest(true));
 
     internal::SetBlockingObserverForCurrentThread(&main_thread_observer);
@@ -210,8 +210,9 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (task_environment_)
+    if (task_environment_) {
       StopMonitoring();
+    }
   }
 
  protected:
@@ -733,10 +734,11 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, BackgroundBlockingCallsIgnored) {
   task_environment_->FastForwardBy(
       internal::IOJankMonitoringWindow::kMonitoringWindow);
 
-  if (internal::CanUseBackgroundThreadTypeForWorkerThread())
+  if (internal::CanUseBackgroundThreadTypeForWorkerThread()) {
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(0, 0)));
-  else
+  } else {
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 7)));
+  }
 }
 
 TEST_F(ScopedBlockingCallIOJankMonitoringTest,
@@ -779,10 +781,11 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   task_environment_->FastForwardBy(
       internal::IOJankMonitoringWindow::kMonitoringWindow);
 
-  if (internal::CanUseBackgroundThreadTypeForWorkerThread())
+  if (internal::CanUseBackgroundThreadTypeForWorkerThread()) {
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 7)));
-  else
+  } else {
     EXPECT_THAT(reports_, ElementsAre(std::make_pair(7, 14)));
+  }
 }
 
 TEST_F(ScopedBlockingCallIOJankMonitoringTest, WillBlockNotMonitored) {

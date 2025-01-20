@@ -37,7 +37,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -85,6 +85,8 @@ EditorSubmenu GetEditorSubmenu(
       return EditorSubmenu::kTone;
     case chromeos::editor_menu::PresetQueryCategory::kProofread:
       return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kLobster:
+      return EditorSubmenu::kNone;
   }
 }
 
@@ -111,13 +113,14 @@ QuickInsertZeroStateView::QuickInsertZeroStateView(
     // kEditorRewrite and LobsterWithSelectedText are not visible in the
     // zero-state, since it's replaced with the rewrite suggestions and the
     // lobster result, respectively.
+    // kGifs is shown in the emoji bar instead of this view.
     if (category == QuickInsertCategory::kEditorRewrite ||
-        category == QuickInsertCategory::kLobsterWithSelectedText) {
+        category == QuickInsertCategory::kLobsterWithSelectedText ||
+        category == QuickInsertCategory::kGifs) {
       continue;
     }
 
-    if (!base::FeatureList::IsEnabled(
-            ash::features::kLobsterQuickInsertZeroState) &&
+    if (!base::FeatureList::IsEnabled(features::kLobsterQuickInsertZeroState) &&
         category == QuickInsertCategory::kLobsterWithNoSelectedText) {
       continue;
     }

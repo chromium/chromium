@@ -74,7 +74,7 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
     test_features_.InitWithFeatures(
-        {commerce::kCommerceAllowChipExpansion, commerce::kShoppingList,
+        {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
         {});
   }
@@ -185,11 +185,7 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     product_info_->image_url = GURL("http://example.com/image.png");
     mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
-    EXPECT_CALL(*mock_shopping_service_, IsPriceInsightsEligible)
-        .Times(testing::AnyNumber());
-
     mock_shopping_service_->SetIsShoppingListEligible(true);
-    mock_shopping_service_->SetIsPriceInsightsEligible(false);
     mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
   }
 
@@ -352,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
                   return view->GetVectorIcon().name ==
-                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
+                         omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
       PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
@@ -373,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
                   return view->GetVectorIcon().name ==
-                          omnibox::kPriceTrackingEnabledRefreshIcon.name;
+                         omnibox::kPriceTrackingEnabledRefreshIcon.name;
                 })));
 }
 
@@ -576,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
                   return view->GetVectorIcon().name ==
-                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
+                         omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
       PressButton(kPriceTrackingChipElementId),
 
@@ -590,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
                   return view->GetVectorIcon().name ==
-                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
+                         omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
       EnsureNotPresent(kPriceTrackingBubbleDialogId));
 }

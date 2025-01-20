@@ -149,16 +149,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
 
-<!-- LINT.IfChange(FaviconAvailabilityStatus) -->
-
-<enum name="FaviconAvailabilityStatus">
-  <int value="0" label="Favicon available locally"/>
-  <int value="1" label="(obsolete) Favicon available via sync"/>
-  <int value="2" label="Favicon not available"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/favicon/core/history_ui_favicon_request_handler_impl.h:FaviconAvailabilityStatus) -->
-
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
 <enum name="InvalidBookmarkSpecificsError">
@@ -341,6 +331,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="FirstPlusAddressCreationTime"/>
   <int value="78" label="LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>
+  <int value="80" label="FacilitatedPaymentsEwallet"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -381,7 +372,8 @@ chromium-metrics-reviews@google.com.
   <int value="100032" label="AccessibilityAutoclickMovementThreshold"/>
   <int value="100033" label="AccessibilityAutoclickRevertToLeftClick"/>
   <int value="100034" label="AccessibilityAutoclickStabilizePosition"/>
-  <int value="100035" label="AccessibilityCursorColor"/>
+  <int value="100035"
+      label="(obsolete, no longer synced) AccessibilityCursorColor"/>
   <int value="100036"
       label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="100037" label="AccessibilityFloatingMenuPosition"/>
@@ -655,7 +647,7 @@ chromium-metrics-reviews@google.com.
   <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
   <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
   <int value="100281" label="AccessibilityMainNodeAnnotationsEnabled"/>
-  <int value="100282" label="SyncableVersionedWallpaperInfo"/>
+  <int value="100282" label="(obsolete) SyncableVersionedWallpaperInfo"/>
   <int value="100283" label="FocusModeSelectedTask"/>
   <int value="100284" label="FocusModeSoundSection"/>
   <int value="100285" label="kAccessibilityFaceGazeActionsEnabled"/>
@@ -688,6 +680,18 @@ chromium-metrics-reviews@google.com.
   <int value="100312" label="AccessibilitySlowKeysDelayMs"/>
   <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
   <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
+  <int value="100315" label="OfficeFilesAlwaysMoveToDriveSyncable"/>
+  <int value="100316" label="OfficeFilesAlwaysMoveToOneDriveSyncable"/>
+  <int value="100317" label="OfficeMoveConfirmationShownForDriveSyncable"/>
+  <int value="100318" label="OfficeMoveConfirmationShownForOneDriveSyncable"/>
+  <int value="100319"
+      label="OfficeMoveConfirmationShownForLocalToDriveSyncable"/>
+  <int value="100320"
+      label="OfficeMoveConfirmationShownForLocalToOneDriveSyncable"/>
+  <int value="100321"
+      label="OfficeMoveConfirmationShownForCloudToDriveSyncable"/>
+  <int value="100322"
+      label="OfficeMoveConfirmationShownForCloudToOneDriveSyncable"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
@@ -893,8 +897,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
   <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
   <int value="3" label="NETWORK_IO_ERROR"/>
-  <int value="4" label="SYNC_SERVER_ERROR"/>
-  <int value="5" label="SYNC_AUTH_ERROR"/>
+  <int value="4" label="HTTP_ERROR"/>
+  <int value="5" label="HTTP_AUTH_ERROR"/>
   <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
   <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
   <int value="8" label="SERVER_RETURN_THROTTLED"/>
@@ -903,7 +907,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="(deprecated) SERVER_RETURN_CLEAR_PENDING"/>
   <int value="12" label="SERVER_RETURN_NOT_MY_BIRTHDAY"/>
   <int value="13" label="SERVER_RETURN_CONFLICT"/>
-  <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
+  <int value="14" label="PROTOCOL_VIOLATION_ERROR"/>
   <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
   <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
   <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
@@ -912,6 +916,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
   <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
   <int value="22" label="SYNCER_OK"/>
+  <int value="23" label="SERVER_RETURN_INVALID_MESSAGE"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/syncer.h:SyncerErrorValues) -->
@@ -1290,9 +1295,23 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
+  <int value="5" label="Account menu"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
+<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTriggerForUMA) -->
+
+<!-- LINT.IfChange(UserActionableError) -->
+
+<enum name="UserActionableError">
+  <int value="1" label="Sign in needs update"/>
+  <int value="2" label="Needs passphrase"/>
+  <int value="3" label="Needs trusted vault key for passwords"/>
+  <int value="4" label="Needs trusted vault key for everything"/>
+  <int value="5" label="Trusted vault recoverability degraded for passwords"/>
+  <int value="6" label="Trusted vault recoverability degraded for everything"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->
 
 </enums>
 

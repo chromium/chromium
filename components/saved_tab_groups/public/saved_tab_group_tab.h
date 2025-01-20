@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -36,7 +37,8 @@ class SavedTabGroupTab {
           std::nullopt,
       std::optional<base::Time> update_time_windows_epoch_micros = std::nullopt,
       std::optional<gfx::Image> favicon = std::nullopt,
-      bool is_pending_sanitization = false);
+      bool is_pending_sanitization = false,
+      bool is_pending_ntp = false);
   SavedTabGroupTab(const SavedTabGroupTab& other);
   SavedTabGroupTab& operator=(const SavedTabGroupTab& other);
   SavedTabGroupTab(SavedTabGroupTab&& other);
@@ -67,6 +69,10 @@ class SavedTabGroupTab {
     return redirect_url_chain_;
   }
   bool is_pending_sanitization() const { return is_pending_sanitization_; }
+  const SharedAttribution& shared_attribution() const {
+    return shared_attribution_;
+  }
+  bool is_pending_ntp() const { return is_pending_ntp_; }
 
   // Mutators.
   SavedTabGroupTab& SetURL(GURL url) {
@@ -117,6 +123,20 @@ class SavedTabGroupTab {
     is_pending_sanitization_ = is_pending_sanitization;
     return *this;
   }
+  SavedTabGroupTab& SetIsPendingNtp(bool is_pending_ntp) {
+    is_pending_ntp_ = is_pending_ntp;
+    return *this;
+  }
+
+  // Sets the updater of the tab, and also the creator if it's the first update.
+  // This method should be preferred over SetCreatedByAttribution() for local
+  // changes.
+  SavedTabGroupTab& SetUpdatedByAttribution(GaiaId updated_by);
+
+  // Sets the creator of the tab. Must be called only when there is no creator
+  // already set. Don't invoke this method, as it should only be invoked from
+  // the sync bridge for incoming sync updates (use SetUpdatedByAttribution()).
+  SavedTabGroupTab& SetCreatedByAttribution(GaiaId created_by);
 
   // Merges this tabs data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values in the tab.
@@ -152,12 +172,16 @@ class SavedTabGroupTab {
   // A guid which refers to the device which created the tab group. If metadata
   // is not being tracked when the saved tab group is being created, this value
   // will be null. The value could also be null if the group was created before
-  // M127. Used for metrics purposes only.
+  // M127. Used for metrics purposes only. Applicable for saved tab groups only.
   std::optional<std::string> creator_cache_guid_;
 
   // The cache guid of the device that last modified this tab group. Can be null
-  // if the group was just created. Used for metrics purposes only.
+  // if the group was just created. Used for metrics purposes only. Applicable
+  // for saved tab groups only.
   std::optional<std::string> last_updater_cache_guid_;
+
+  // Atribution data for the shared tab. Applicable to shared tab groups only.
+  SharedAttribution shared_attribution_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;
@@ -180,6 +204,14 @@ class SavedTabGroupTab {
   // URL or title sanitization. If a tab is pending sanitization, the group
   // will not be synced until the pending state is cleared.
   bool is_pending_sanitization_;
+
+  // Whether the current tab is a pending NTP. The pending NTPs are
+  // real NTPs in the local tab model, but never synced to the server side.
+  // Pending NTPs are converted to regular tabs and synced to the server
+  // side when there is a navigation or tab addition either locally or from the
+  // server side. A pending NTP always has the position zero and is the only
+  // tab in the group.
+  bool is_pending_ntp_ = false;
 };
 
 class SavedTabGroupTabBuilder {

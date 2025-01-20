@@ -86,7 +86,7 @@ class ToolbarActionsModel
     virtual void OnToolbarPinnedActionsChanged() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // Convenience function to get the ToolbarActionsModel for a Profile.

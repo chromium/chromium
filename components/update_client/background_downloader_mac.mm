@@ -190,8 +190,6 @@ class BackgroundDownloaderSharedSessionImpl {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false,
                    {metrics.error, metrics.extra_code1, base::FilePath()},
                    metrics);
@@ -202,8 +200,6 @@ class BackgroundDownloaderSharedSessionImpl {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false,
                    {metrics.error, metrics.extra_code1, base::FilePath()},
                    metrics);
@@ -211,8 +207,6 @@ class BackgroundDownloaderSharedSessionImpl {
     }
 
     if (HandleDownloadFromCache(url, callback)) {
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kDownloadRecoveredFromCache);
       return;
     }
 
@@ -236,21 +230,15 @@ class BackgroundDownloaderSharedSessionImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (has_download) {
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kSessionHasOngoingDownload);
       downloads_.emplace(url, callback);
     } else if (num_tasks >= kMaxTasks) {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS);
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kTooManyTasks);
       callback.Run(false,
                    {metrics.error, metrics.extra_code1, base::FilePath()},
                    metrics);
     } else {
-      metrics::RecordBDMStartDownloadOutcome(
-          metrics::BDMStartDownloadOutcome::kNewDownloadTaskCreated);
       NSMutableURLRequest* urlRequest =
           [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
       NSURLSessionDownloadTask* downloadTask =
@@ -413,7 +401,6 @@ class BackgroundDownloaderSharedSessionImpl {
     CHECK(results_.contains(url));
 
     bool requestor_known = downloads_.contains(url);
-    metrics::RecordBDMResultRequestorKnown(requestor_known);
     if (requestor_known) {
       DownloadResult result = results_.at(url);
       downloads_.at(url).Run(result.is_handled, result.result,

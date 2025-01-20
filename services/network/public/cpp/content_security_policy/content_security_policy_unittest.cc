@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -1245,10 +1246,10 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->hashes.push_back(
-                mojom::CSPHashSource::New(mojom::CSPHashAlgorithm::SHA256,
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
                                           std::vector<uint8_t>{'a', 'b', 'c'}));
             csp->hashes.push_back(
-                mojom::CSPHashSource::New(mojom::CSPHashAlgorithm::SHA256,
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
                                           std::vector<uint8_t>{'A', 'B', 'C'}));
             csp->nonces.push_back("cde");
             return csp;
@@ -1305,6 +1306,33 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "keyword 'none' alongside with other source expressions. The keyword "
           "'none' must be the only source expression in the directive value, "
           "otherwise it is ignored.",
+      },
+      {
+          "'none' 'report-sha256'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha256;
+            return csp;
+          }),
+          "",
+      },
+      {
+          "'none' 'report-sha384'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha384;
+            return csp;
+          }),
+          "",
+      },
+      {
+          "'none' 'report-sha512'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
+            return csp;
+          }),
+          "",
       },
       {
           "'self'",
@@ -1429,7 +1457,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
 }
 
 TEST(ContentSecurityPolicy, ParseHash) {
-  using Algo = mojom::CSPHashAlgorithm;
+  using Algo = mojom::IntegrityAlgorithm;
   struct TestCase {
     std::string hash;
     Algo expected_algorithm;
@@ -1438,25 +1466,29 @@ TEST(ContentSecurityPolicy, ParseHash) {
       // For this test, we have the following base64 encoding:
       // abc => YWJj    ABC => QUJD    cd => Y2Q=    abcd => YWJjZA==
       // We also test base64 without padding.
-      {"'sha256-YWJj'", Algo::SHA256, {'a', 'b', 'c'}},
-      {"'sha256-QUJD'", Algo::SHA256, {'A', 'B', 'C'}},
-      {"'sha256", Algo::None, {}},
-      {"'sha256-'", Algo::None, {}},
-      {"'sha384-YWJj'", Algo::SHA384, {'a', 'b', 'c'}},
-      {"'sha512-YWJjZA'", Algo::SHA512, {'a', 'b', 'c', 'd'}},
-      {"'sha-YWJj'", Algo::None, {}},
-      {"'sha256-*'", Algo::None, {}},
-      {"'sha-256-Y2Q'", Algo::SHA256, {'c', 'd'}},
-      {"'sha-384-Y2Q='", Algo::SHA384, {'c', 'd'}},
-      {"'sha-512-Y2Q='", Algo::SHA512, {'c', 'd'}},
+      //
+      // (Using `Algo::kMaxValue` to represent invalid entries here. We just
+      // need something as a placeholder, as we distinguish valid from invalid
+      // items based on the |expected_hash| vector being empty or not.)
+      {"'sha256-YWJj'", Algo::kSha256, {'a', 'b', 'c'}},
+      {"'sha256-QUJD'", Algo::kSha256, {'A', 'B', 'C'}},
+      {"'sha256", Algo::kMaxValue, {}},
+      {"'sha256-'", Algo::kMaxValue, {}},
+      {"'sha384-YWJj'", Algo::kSha384, {'a', 'b', 'c'}},
+      {"'sha512-YWJjZA'", Algo::kSha512, {'a', 'b', 'c', 'd'}},
+      {"'sha-YWJj'", Algo::kMaxValue, {}},
+      {"'sha256-*'", Algo::kMaxValue, {}},
+      {"'sha-256-Y2Q'", Algo::kSha256, {'c', 'd'}},
+      {"'sha-384-Y2Q='", Algo::kSha384, {'c', 'd'}},
+      {"'sha-512-Y2Q='", Algo::kSha512, {'c', 'd'}},
       // "ABCDE" is not valid base64 and should be ignored.
-      {"'sha256-ABCDE'", Algo::None, {}},
-      {"'sha256--__'", Algo::SHA256, {0xfb, 0xff}},
-      {"'sha256-++/'", Algo::SHA256, {0xfb, 0xef}},
+      {"'sha256-ABCDE'", Algo::kMaxValue, {}},
+      {"'sha256--__'", Algo::kSha256, {0xfb, 0xff}},
+      {"'sha256-++/'", Algo::kSha256, {0xfb, 0xef}},
       // Other invalid hashes should be ignored.
-      {"'sha256-YWJj", Algo::None, {}},
-      {"'sha111-YWJj'", Algo::None, {}},
-      {"'sha256-ABC('", Algo::None, {}},
+      {"'sha256-YWJj", Algo::kMaxValue, {}},
+      {"'sha111-YWJj'", Algo::kMaxValue, {}},
+      {"'sha256-ABC('", Algo::kMaxValue, {}},
   };
 
   for (auto& test : cases) {
@@ -1468,7 +1500,7 @@ TEST(ContentSecurityPolicy, ParseHash) {
                                         &policies);
     const std::vector<mojom::CSPHashSourcePtr>& hashes =
         policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]->hashes;
-    if (test.expected_algorithm != Algo::None) {
+    if (!test.expected_hash.empty()) {
       EXPECT_EQ(1u, hashes.size()) << test.hash << " should parse to one hash";
       EXPECT_EQ(test.expected_algorithm, hashes[0]->algorithm)
           << test.hash << " should have algorithm " << test.expected_algorithm;

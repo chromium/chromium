@@ -6,12 +6,14 @@
 
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -99,6 +101,10 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
       {"PRE_FlowFromWarningToUnsupported",
        MV2ExperimentStage::kDisableWithReEnable},
       {"FlowFromWarningToUnsupported", MV2ExperimentStage::kUnsupported},
+      {"UnpackedExtensionsCanBeInstalledInDisabledPhase",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"UnpackedExtensionsCannotBeInstalledInUnsupportedPhase",
+       MV2ExperimentStage::kUnsupported},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -950,6 +956,81 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
     EXPECT_EQ(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
               disable_reason);
   }
+}
+
+// Tests that unpacked extensions can be installed in the disabled experiment
+// phase.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       UnpackedExtensionsCanBeInstalledInDisabledPhase) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+  WaitForExtensionSystemReady();
+
+  static constexpr char kMv2Manifest[] =
+      R"({
+           "name": "Simple MV2",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kMv2Manifest);
+
+  base::RunLoop run_loop;
+  std::string id;
+  scoped_refptr<UnpackedInstaller> installer =
+      UnpackedInstaller::Create(extension_service());
+  auto on_complete = [&run_loop, &id](const Extension* extension,
+                                      const base::FilePath& file_path,
+                                      const std::string& error) {
+    EXPECT_TRUE(extension);
+    EXPECT_EQ("", error);
+    id = extension->id();
+    run_loop.Quit();
+  };
+  installer->set_completion_callback(base::BindLambdaForTesting(on_complete));
+  installer->set_be_noisy_on_failure(false);
+  installer->Load(test_dir.UnpackedPath());
+  run_loop.Run();
+
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(id));
+}
+
+// Tests that unpacked extensions cannot be installed in the unsupported
+// experiment phase.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       UnpackedExtensionsCannotBeInstalledInUnsupportedPhase) {
+  EXPECT_EQ(MV2ExperimentStage::kUnsupported, GetActiveExperimentStage());
+  WaitForExtensionSystemReady();
+
+  static constexpr char kMv2Manifest[] =
+      R"({
+           "name": "Simple MV2",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kMv2Manifest);
+
+  base::RunLoop run_loop;
+  std::string install_error;
+  scoped_refptr<UnpackedInstaller> installer =
+      UnpackedInstaller::Create(extension_service());
+  auto on_complete = [&run_loop, &install_error](
+                         const Extension* extension,
+                         const base::FilePath& file_path,
+                         const std::string& error) {
+    install_error = error;
+    run_loop.Quit();
+  };
+  installer->set_completion_callback(base::BindLambdaForTesting(on_complete));
+  installer->set_be_noisy_on_failure(false);
+  installer->Load(test_dir.UnpackedPath());
+  run_loop.Run();
+
+  EXPECT_EQ(
+      "Cannot install extension because it uses an unsupported "
+      "manifest version.",
+      install_error);
 }
 
 class ManifestV2ExperimentWithLegacyExtensionSupportTest

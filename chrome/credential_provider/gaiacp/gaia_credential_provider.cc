@@ -9,6 +9,9 @@
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 
+#include <credentialprovider.h>
+#include <shlguid.h>
+
 #include <iomanip>
 #include <map>
 #include <string>
@@ -315,9 +318,9 @@ void CGaiaCredentialProvider::ProviderConcurrentState::InternalReset() {
   auto_logon_credential_.Reset();
 }
 
-CGaiaCredentialProvider::CGaiaCredentialProvider() {}
+CGaiaCredentialProvider::CGaiaCredentialProvider() = default;
 
-CGaiaCredentialProvider::~CGaiaCredentialProvider() {}
+CGaiaCredentialProvider::~CGaiaCredentialProvider() = default;
 
 HRESULT CGaiaCredentialProvider::FinalConstruct() {
   LOGFN(VERBOSE);

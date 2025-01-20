@@ -15,6 +15,7 @@
 #import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -137,6 +137,10 @@ float IntervalMap(float value,
   return out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min);
 }
 
+// Value of the progress bar when lens request is delayed because of low
+// network.
+const CGFloat kProgressBarLensRequestPendingNetwork = 0.5f;
+
 // Value of the progress bar when lens request starts.
 const CGFloat kProgressBarLensRequestStarted = 0.15f;
 
@@ -148,18 +152,6 @@ const CGFloat kProgressBarEmpty = 0.0f;
 
 // Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
-
-// Zoom level values for content sizes.
-const int kZoomPercentageXS = 70;
-const int kZoomPercentageS = 85;
-const int kZoomPercentageM = 100;
-const int kZoomPercentageL = 110;
-const int kZoomPercentageXL = 120;
-const int kZoomPercentage2XL = 130;
-const int kZoomPercentage3XL = 140;
-// Single maximum zoom level for accessibility. This value is only slightly
-// higher than the 3XL zoom avoid visually breaking the LRP.
-const int kZoomPercentageAccesibility = 160;
 
 // Query parameter for dark mode.
 inline constexpr char kDarkModeParameterKey[] = "cs";
@@ -194,8 +186,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   BOOL _isDarkMode;
   /// The last commited progress to the loading bar.
   float _lastCommitedProgress;
-  /// The content size category.
-  UIContentSizeCategory _contentSizeCategory;
 }
 
 - (instancetype)
@@ -212,7 +202,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
         std::make_unique<web::WebStateObserverBridge>(self);
     [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
-    _contentSizeCategory = UIContentSizeCategoryUnspecified;
     if (webStateList) {
       _webStateList = webStateList->AsWeakPtr();
     }
@@ -267,36 +256,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   }
 }
 
-- (void)setContentSizeCategory:(UIContentSizeCategory)category {
-  _contentSizeCategory = category;
-  [self adjustPageZoomForContentSize];
-}
-
-- (void)adjustPageZoomForContentSize {
-  NSDictionary<NSString*, NSNumber*>* sizeMapping = @{
-    UIContentSizeCategoryExtraSmall : @(kZoomPercentageXS),
-    UIContentSizeCategorySmall : @(kZoomPercentageS),
-    UIContentSizeCategoryMedium : @(kZoomPercentageM),
-    UIContentSizeCategoryLarge : @(kZoomPercentageL),
-    UIContentSizeCategoryExtraLarge : @(kZoomPercentageXL),
-    UIContentSizeCategoryExtraExtraLarge : @(kZoomPercentage2XL),
-    UIContentSizeCategoryExtraExtraExtraLarge : @(kZoomPercentage3XL),
-    UIContentSizeCategoryAccessibilityMedium : @(kZoomPercentageAccesibility),
-    UIContentSizeCategoryAccessibilityLarge : @(kZoomPercentageAccesibility),
-    UIContentSizeCategoryAccessibilityExtraLarge :
-        @(kZoomPercentageAccesibility),
-    UIContentSizeCategoryAccessibilityExtraExtraLarge :
-        @(kZoomPercentageAccesibility),
-    UIContentSizeCategoryAccessibilityExtraExtraExtraLarge :
-        @(kZoomPercentageAccesibility),
-  };
-
-  int zoomValue = [sizeMapping[_contentSizeCategory] intValue];
-  if (_webState && zoomValue) {
-    ios::provider::SetTextZoomForWebState(_webState.get(), zoomValue);
-  }
-}
-
 #pragma mark - LensOverlayResultConsumer
 
 - (void)loadResultsURL:(GURL)URL {
@@ -328,6 +287,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)handleSearchRequestErrored {
   _lastCommitedProgress = kProgressBarFull;
   [_consumer setLoadingProgress:kProgressBarFull];
+  [self.errorHandler showNoInternetAlert];
+}
+
+- (void)handleSlowRequestHasStarted {
+  [_consumer setLoadingProgress:kProgressBarLensRequestPendingNetwork];
 }
 
 #pragma mark - CRWWebStatePolicyDecider
@@ -370,7 +334,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [_consumer setWebViewHidden:NO];
-  [self adjustPageZoomForContentSize];
 }
 
 - (void)webState:(web::WebState*)webState

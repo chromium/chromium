@@ -114,17 +114,15 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
 
   base::win::ScopedPropVariant prop_var;
   // The relaunch name should be the extension name.
-  EXPECT_EQ(S_OK,
-            pps->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource,
-                          prop_var.Receive()));
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource,
+                                prop_var.Receive()));
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   EXPECT_EQ(base::UTF8ToWide(extension->name()), prop_var.get().pwszVal);
   prop_var.Reset();
 
   // The relaunch command should specify the profile and the app id.
-  EXPECT_EQ(
-      S_OK,
-      pps->GetValue(PKEY_AppUserModel_RelaunchCommand, prop_var.Receive()));
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchCommand,
+                                prop_var.Receive()));
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   base::CommandLine cmd_line(
       base::CommandLine::FromString(prop_var.get().pwszVal));
@@ -138,9 +136,8 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
   base::FilePath web_app_dir =
       web_app::GetOsIntegrationResourcesDirectoryForApp(
           browser->profile()->GetPath(), extension->id(), GURL());
-  EXPECT_EQ(S_OK,
-            pps->GetValue(PKEY_AppUserModel_RelaunchIconResource,
-                          prop_var.Receive()));
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchIconResource,
+                                prop_var.Receive()));
   EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
   EXPECT_EQ(
       AddIdToIconPath(web_app::internals::GetIconFilePath(
@@ -156,7 +153,7 @@ void ValidateHostedAppWindowProperties(const Browser* browser,
 // having --user-data-dir specified.
 class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
  public:
-  BrowserTestWithProfileShortcutManager() {}
+  BrowserTestWithProfileShortcutManager() = default;
 
   BrowserTestWithProfileShortcutManager(
       const BrowserTestWithProfileShortcutManager&) = delete;
@@ -176,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
 
   // If multiprofile mode is not enabled, we can't test the behavior when there
   // are multiple profiles.
-  if (!profiles::IsMultipleProfilesEnabled())
+  if (!profiles::IsMultipleProfilesEnabled()) {
     return;
+  }
 
   // Two profile case. Both profile names should be shown.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -224,8 +222,9 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   // Find the new browser.
   Browser* app_browser = nullptr;
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser())
+    if (b != browser()) {
       app_browser = b;
+    }
   }
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(app_browser != browser());

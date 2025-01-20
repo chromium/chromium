@@ -101,11 +101,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   uint64_t size = largest_image->recorded_size;
   double bpp = largest_image->EntropyForLCP();
 
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
-    if (bpp < features::kMinimumEntropyForLCP.Get()) {
-      return;
-    }
+  if (bpp < kMinimumEntropyForLCP) {
+    return;
   }
+
   largest_image_bpp_ = bpp;
   largest_reported_size_ = size;
   const KURL& url = media_timing->Url();
@@ -123,29 +122,13 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  base::TimeTicks render_time;
-  base::TimeTicks start_time = largest_image->load_time;
-  if (expose_paint_time_to_api) {
-    start_time = render_time = largest_image->paint_time;
-  }
-
-  if (RuntimeEnabledFeatures::ExposeRenderTimeNonTaoDelayedImageEnabled() &&
-      !expose_paint_time_to_api) {
-    // For Non-Tao images, set start time to the max of FCP and load time.
-    base::TimeTicks fcp =
-        PaintTiming::From(*window_performance_->DomWindow()->document())
-            .FirstContentfulPaintPresentation();
-    DCHECK(!fcp.is_null());
-    start_time = std::max(fcp, largest_image->load_time);
-  }
-
   window_performance_->OnLargestContentfulPaintUpdated(
-      /*start_time=*/start_time, /*render_time=*/render_time,
+      expose_paint_time_to_api
+          ? std::make_optional(largest_image->paint_timing_info)
+          : std::nullopt,
       /*paint_size=*/largest_image->recorded_size,
       /*load_time=*/largest_image->load_time,
-      /*first_animated_frame_time=*/
-      expose_paint_time_to_api ? largest_image->first_animated_frame_time
-                               : base::TimeTicks(),
+
       /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
       is_triggered_by_soft_navigation);
 
@@ -183,11 +166,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       text_element ? text_element->GetIdAttribute() : AtomicString();
   // Always use paint time as start time for text LCP candidate.
   window_performance_->OnLargestContentfulPaintUpdated(
-      /*start_time=*/largest_text.paint_time,
-      /*render_time=*/largest_text.paint_time,
+      largest_text.paint_timing_info,
       /*paint_size=*/largest_text.recorded_size,
       /*load_time=*/base::TimeTicks(),
-      /*first_animated_frame_time=*/base::TimeTicks(), /*id=*/text_id,
+      /*id=*/text_id,
       /*url=*/g_empty_string, /*element=*/text_element,
       is_triggered_by_soft_navigation);
 
@@ -224,11 +206,10 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
     std::optional<WebURLRequest::Priority> priority) {
   // (Experimental) Images with insufficient entropy are not considered
   // candidates for LCP
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
-    if (image_bpp < features::kMinimumEntropyForLCP.Get()) {
-      return false;
-    }
+  if (image_bpp < kMinimumEntropyForLCP) {
+    return false;
   }
+
   if (!HasLargestImagePaintChangedForMetrics(image_paint_time,
                                              image_paint_size)) {
     return false;

@@ -4,6 +4,8 @@
 
 package org.chromium.device.bluetooth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.bluetooth.BluetoothDevice;
 
 import org.jni_zero.CalledByNative;
@@ -12,6 +14,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattCallbackWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
@@ -29,16 +33,15 @@ import java.util.HashMap;
  * Lifetime is controlled by device::BluetoothDeviceAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothDevice {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothDeviceAndroid;
     final BluetoothDeviceWrapper mDevice;
-    BluetoothGattWrapper mBluetoothGatt;
+    @Nullable BluetoothGattWrapper mBluetoothGatt;
     private final BluetoothGattCallbackImpl mBluetoothGattCallbackImpl;
-    final HashMap<
-                    BluetoothGattCharacteristicWrapper,
-                    ChromeBluetoothRemoteGattCharacteristic>
+    final HashMap<BluetoothGattCharacteristicWrapper, ChromeBluetoothRemoteGattCharacteristic>
             mWrapperToChromeCharacteristicsMap;
     final HashMap<BluetoothGattDescriptorWrapper, ChromeBluetoothRemoteGattDescriptor>
             mWrapperToChromeDescriptorsMap;
@@ -140,10 +143,11 @@ final class ChromeBluetoothDevice {
 
         private void onConnectionStateChangeUiThread(int status, int newState) {
             if (newState == android.bluetooth.BluetoothProfile.STATE_CONNECTED) {
+                BluetoothGattWrapper bluetoothGatt = assumeNonNull(mBluetoothGatt);
                 // Try requesting for a larger ATT MTU so that more information can be exchanged per
                 // transmission.
-                if (!mBluetoothGatt.requestMtu(517)) {
-                    mBluetoothGatt.discoverServices();
+                if (!bluetoothGatt.requestMtu(517)) {
+                    bluetoothGatt.discoverServices();
                 }
             } else if (newState == android.bluetooth.BluetoothProfile.STATE_DISCONNECTED) {
                 if (mBluetoothGatt != null) {

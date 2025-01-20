@@ -87,7 +87,7 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
     player_host->OnMediaPlayerAdded(
         std::move(player),
         dummy_player_observer.InitWithNewEndpointAndPassReceiver(),
-        player_id.delegate_id);
+        player_id.player_id);
     player_host.FlushForTesting();
   }
 

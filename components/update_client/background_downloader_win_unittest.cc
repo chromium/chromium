@@ -29,14 +29,10 @@ constexpr char kTestDownloadContent[] = "Hello, World!";
 }  // namespace
 
 class BackgroundDownloaderWinTest : public testing::Test {
- public:
-  BackgroundDownloaderWinTest() = default;
-  ~BackgroundDownloaderWinTest() override = default;
-
+ protected:
   // Overrides from testing::Test
   void TearDown() override;
 
- protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<BackgroundDownloader> downloader_ =
       base::MakeRefCounted<BackgroundDownloader>(nullptr);

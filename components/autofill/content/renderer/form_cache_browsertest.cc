@@ -18,7 +18,6 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -74,6 +73,12 @@ const FormData* GetFormByName(const std::vector<FormData>& forms,
 
 class FormCacheBrowserTest : public test::AutofillRendererTest {
  public:
+  static constexpr CallTimerState kCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kExtractForms,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
   ~FormCacheBrowserTest() override = default;
 
   void SetUp() override {
@@ -87,11 +92,16 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
-    return form_cache_->UpdateFormCache(GetFieldDataManager());
+    return form_cache_->UpdateFormCache(GetFieldDataManager(),
+                                        kCallTimerStateDummy);
   }
 
   size_t num_extracted_forms() {
-    return test_api(*form_cache_).num_extracted_forms();
+    return std::ranges::count_if(form_cache_->extracted_forms(),
+                                 [](const auto& id_and_form) {
+                                   const auto& [id, form] = id_and_form;
+                                   return form != nullptr;
+                                 });
   }
 
   FieldDataManager& GetFieldDataManager() const {
@@ -562,10 +572,10 @@ TEST_F(FormCacheBrowserTest, FieldAndFrameLimit) {
   EXPECT_THAT(forms.updated_forms,
               Each(Property("fields", &FormData::fields, SizeIs(1))));
   EXPECT_THAT(
-      base::make_span(forms.updated_forms).first(kMaxExtractableChildFrames),
+      base::span(forms.updated_forms).first<kMaxExtractableChildFrames>(),
       Each(Property("child_frames", &FormData::child_frames, SizeIs(1))));
   EXPECT_THAT(
-      base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
+      base::span(forms.updated_forms).subspan<kMaxExtractableChildFrames>(),
       Each(Property("child_frames", &FormData::child_frames, IsEmpty())));
 
   EXPECT_THAT(forms.removed_forms, IsEmpty());
@@ -578,14 +588,15 @@ TEST_F(FormCacheBrowserTest, UpdateFormCacheMeasuresTotalTime) {
     <input>
   )");
   // FormCache::UpdateFormCache() is called by AutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache", 1);
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache.UpdateFormCache", 1);
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.UpdateFormCache",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.UpdateFormCache.DidDispatchDomContentLoadedEvent",
+      1);
   // form_util::ExtractFormData() is also called by PasswordAutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.ExtractFormData", 3);
-  histogram_tester.ExpectTotalCount(  //
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.ExtractFormData",
+                                    3);
+  histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
 }
 

@@ -281,10 +281,15 @@ public class PaymentRequestService
 
         /**
          * @param webContents The WebContents to get site certificate chain from.
-         * @return The site certificate chain of the given WebContents.
+         * @return The site certificate chain of the given WebContents. Can return null when
+         *     ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or when the page is
+         *     localhost or is a file.
          */
-        default byte[][] getCertificateChain(WebContents webContents) {
-            return CertificateChainHelper.getCertificateChain(webContents);
+        @Nullable default byte[][] getCertificateChain(WebContents webContents) {
+            return PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                           PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS)
+                    ? null
+                    : CertificateChainHelper.getCertificateChain(webContents);
         }
 
         /**

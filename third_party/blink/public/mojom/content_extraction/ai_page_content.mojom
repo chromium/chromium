@@ -1,0 +1,224 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// This is a mojom representation of the corresponding AnnotatedPageContent
+// proto.
+// See components/optimization_guide/proto/features/common_quality_data.proto
+// for details.
+//
+// Note: The proto representation needs to remain backwards compatible with
+// older client versions but there's no such limitation on the mojom
+// representation.
+
+enum AIPageContentAttributeType {
+  kRoot,
+  kIframe,
+  kContainer,
+
+  // Text chunks.
+  kText,
+  kAnchor,
+  kParagraph,
+  kHeading,
+
+  // Image chunks.
+  kImage,
+
+  // Structured chunks.
+  kForm,
+  kTable,
+  kTableRow,
+  kTableCell,
+  kOrderedList,
+  kUnorderedList,
+  kListItem,
+};
+
+enum AIPageContentAnnotatedRole {
+  kHeader,
+  kNav,
+  kSearch,
+  kMain,
+  kArticle,
+  kSection,
+  kAside,
+  kFooter,
+  kContentHidden,
+};
+
+struct AIPageContentGeometry {
+  // The bounding box of the content node, in the page coordinate system.
+  gfx.mojom.Rect outer_bounding_box;
+
+  // Subset of this node visible on the page. Empty if offscreen.
+  gfx.mojom.Rect visible_bounding_box;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position;
+
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y;
+};
+
+enum AIPageContentTextSize {
+  kXS,
+  kS,
+  kM,
+  kL,
+  kXL,
+};
+
+struct AIPageContentTextStyle {
+  AIPageContentTextSize text_size;
+  bool has_emphasis;
+};
+
+struct AIPageContentTextInfo {
+  string text_content;
+  AIPageContentTextStyle text_style;
+};
+
+enum AIPageContentAnchorRel {
+  kRelationUnknown,
+  kRelationNoReferrer,
+  kRelationNoOpener,
+  kRelationOpener,
+  kRelationPrivacyPolicy,
+  kRelationTermsOfService,
+};
+
+struct AIPageContentAnchorData {
+  url.mojom.Url url;
+
+  // The relationship between the linked URL and the current document.
+  array<AIPageContentAnchorRel> rel;
+
+  // TODO(crbug.com/382119737): Consider adding fields for target, MIME type,
+  // and whether the link is a download.
+};
+
+struct AIPageContentImageInfo {
+  string? image_caption;
+
+  // Provides the origin for this image if there is a resource currently being
+  // rendered. For example, an image element whose resource is not available
+  // will be empty.
+  url.mojom.Origin? source_origin;
+};
+
+// Provides metadata for frames (local and remote) accessible from the
+// LocalFrameRoot of the corresponding AIPageContentAgent.
+struct AIPageContentIframeData {
+  blink.mojom.FrameToken frame_token;
+
+  // Indicates whether the iframe is likely to be an ad frame. This is set for
+  // both the root ad frame and its descendants.
+  bool likely_ad_frame;
+};
+
+struct AIPageContentTableData {
+  // The name of the table, coming from the caption.
+  string? table_name;
+};
+
+enum AIPageContentTableRowType {
+  kHeader,
+  kBody,
+  kFooter,
+};
+
+struct AIPageContentTableRowData {
+  AIPageContentTableRowType row_type;
+};
+
+struct AIPageContentFormData {
+  // TODO(crbug.com/381879263): Add fields for form data.
+};
+
+struct AIPageContentAttributes {
+  // The IDs of the DOM nodes whose content is represented by this ContentNode.
+  array<int32> dom_node_ids;
+
+  // If this content node represents an entire subtree, this is the ID of the
+  // common ancestor of all the nodes in the subtree.
+  int32? common_ancestor_dom_node_id;
+
+  AIPageContentAttributeType attribute_type;
+
+  // Geometry of the common_ancestor_dom_node_id.
+  AIPageContentGeometry? geometry;
+
+  // Only set if attribute_type is kText.
+  AIPageContentTextInfo? text_info;
+
+  // Only set if attribute_type is kImage.
+  AIPageContentImageInfo? image_info;
+
+  // Only set if attribute_type is kAnchor.
+  AIPageContentAnchorData? anchor_data;
+
+  // Only set if attribute_type is kForm.
+  AIPageContentFormData? form_data;
+
+  // Only set if attribute_type is kTable.
+  AIPageContentTableData? table_data;
+
+  // Only set if attribute_type is kIframe.
+  AIPageContentIframeData? iframe_data;
+
+  // Only set if attribute_type is kTableRow.
+  AIPageContentTableRowData? table_row_data;
+
+  array<AIPageContentAnnotatedRole> annotated_roles;
+};
+
+// A semantic chunk of information on a page. It can represent text, structured
+// content, or containers for other ContentNodes.
+struct AIPageContentNode {
+  array<AIPageContentNode> children_nodes;
+  AIPageContentAttributes content_attributes;
+};
+
+// Represents the parsed content of a page.
+struct AIPageContent {
+  AIPageContentNode root_node;
+};
+
+struct AIPageContentOptions {
+  // Indicates whether the geometry for each ContentNode should be included in
+  // the content.
+  bool include_geometry = true;
+
+  // Indicates whether this request is on the critical path, i.e., user visible.
+  // Requests which are not on the critical path can be de-prioritized to avoid
+  // blocking higher priority work.
+  bool on_critical_path = true;
+
+  // The page can have content which is currently hidden but can be accessed by
+  // the user via find-in-page. This content's style and layout is not kept
+  // up-to-date as an optimization. Including it will force the renderer to
+  // update it's style and layout.
+  bool include_hidden_searchable_content = true;
+};
+
+// Used to obtain the AIPageContent representation for Documents. Lives in the
+// renderer process and called by the browser process to pull data for a
+// Document.
+// The interface is only available for the outermost main frame.
+interface AIPageContentAgent {
+  // Provides the AIPageContent representation for this LocalFrame and all
+  // LocalFrames accessible from the LocalFrameRoot.
+  GetAIPageContent(AIPageContentOptions request) => (AIPageContent page_content);
+};

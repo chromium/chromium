@@ -4,7 +4,9 @@
 
 import("//build/buildflag_header.gni")
 
-static_library("feature_list") {
+component("feature_list") {
+  defines = [ "IS_COMPONENTS_FEED_FEATURE_LIST_IMPL" ]
+
   sources = [
     "feed_feature_list.cc",
     "feed_feature_list.h",

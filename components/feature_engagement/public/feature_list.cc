@@ -70,8 +70,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPageInfoStoreInfoFeature,
     &kIPHPageZoomFeature,
     &kIPHPreviewsOmniboxUIFeature,
-    &kIPHPriceDropNTPFeature,
-    &kIPHQuietNotificationPromptsFeature,
     &kIPHReadAloudAppMenuFeature,
     &kIPHReadAloudExpandedPlayerFeature,
     &kIPHReadLaterContextMenuFeature,
@@ -84,14 +82,14 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShoppingListMenuItemFeature,
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
-    &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabGroupsDragAndDropFeature,
+    &kIPHTabGroupShareNotificationBubbleOnStripFeature,
     &kIPHTabGroupsRemoteGroupFeature,
     &kIPHTabGroupsSurfaceFeature,
     &kIPHTabGroupsSurfaceOnHideFeature,
+    &kIPHTabGroupSyncOnStripFeature,
     &kIPHTabSwitcherButtonFeature,
     &kIPHTabSwitcherButtonSwitchIncognitoFeature,
-    &kIPHTabSwitcherFloatingActionButtonFeature,
     &kIPHTranslateMenuButtonFeature,
     &kIPHVideoTutorialNTPChromeIntroFeature,
     &kIPHVideoTutorialNTPDownloadFeature,
@@ -114,8 +112,12 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRestoreTabsOnFREFeature,
     &kIPHRtlGestureNavigationFeature,
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     &kIPHBottomToolbarTipFeature,
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS)
     &kIPHLongPressToolbarTipFeature,
     &kIPHBadgedReadingListFeature,
     &kIPHWhatsNewFeature,
@@ -158,6 +160,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHHomeCustomizationMenuFeature,
     &kIPHiOSLensOverlayEntrypointTipFeature,
+    &kIPHiOSSharedTabGroupForeground,
+    &kIPHiOSDefaultBrowserBannerPromoFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -177,6 +181,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDownloadEsbPromoFeature,
     &kIPHExperimentalAIPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+    &kIPHGlicPromoFeature,
     &kIPHHistorySearchFeature,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     &kIPHExtensionsMenuFeature,
@@ -189,6 +194,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHLensOverlayFeature,
     &kIPHLensOverlayTranslateButtonFeature,
     &kIPHLiveCaptionFeature,
+    &kIPHMerchantTrustFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
@@ -231,10 +237,10 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    &kIPHAutofillCardInfoRetrievalSuggestionFeature,
     &kIPHAutofillCreditCardBenefitFeature,
     &kIPHAutofillDisabledVirtualCardSuggestionFeature,
     &kIPHAutofillExternalAccountProfileSuggestionFeature,
-    &kIPHAutofillManualFallbackFeature,
     &kIPHAutofillPredictionImprovementsFeature,
     &kIPHAutofillPredictionImprovementsBootstrappingFeature,
     &kIPHAutofillVirtualCardCVCSuggestionFeature,
@@ -245,7 +251,7 @@ const base::Feature* const kAllFeatures[] = {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     &kIPHGrowthFramework,
     &kIPHGoogleOneOfferNotificationFeature,
     &kIPHLauncherSearchHelpUiFeature,
@@ -281,23 +287,20 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHScalableIphHelpAppBasedNineFeature,
     &kIPHScalableIphHelpAppBasedTenFeature,
     &kIPHScalableIphGamingFeature,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     &kIPHDesktopPWAsLinkCapturingLaunch,
     &kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
-    &kIPHToolbarManagementButtonFeature,
 #endif  // BUILDFLAG(IS_WIN) ||  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
     &kIPHiOSPasswordPromoDesktopFeature,
     &kIPHiOSAddressPromoDesktopFeature,
     &kIPHiOSPaymentPromoDesktopFeature
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 }  // namespace
-
-const char kIPHDemoModeFeatureChoiceParam[] = "chosen_feature";
 
 std::vector<const base::Feature*> GetAllFeatures() {
   return std::vector<const base::Feature*>(

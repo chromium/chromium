@@ -85,11 +85,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public void closeAllTabs() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getTotalTabCount() {
         return mTabCount;
     }

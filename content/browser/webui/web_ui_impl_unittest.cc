@@ -10,6 +10,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -28,9 +29,9 @@ TEST_F(WebUIImplTest, LocalResourceLoaderConfigForDefaultDataSource) {
   URLDataManagerBackend data_backend;
   auto config =
       WebUIImpl::GetLocalResourceLoaderConfigForTesting(&data_backend);
-  ASSERT_EQ(config->sources.size(), 1ul);
-  const auto& config_source = config->sources[0];
-  EXPECT_EQ(config_source->name, "resources");
+  url::Origin origin = url::Origin::Create(GURL("chrome://resources/"));
+  const auto& config_source = config->sources[origin];
+  ASSERT_TRUE(config_source);
   EXPECT_TRUE(config_source->headers.starts_with("HTTP/1.1 200 OK"));
   EXPECT_EQ(config_source->should_replace_i18n_in_js, false);
   EXPECT_GT(config_source->path_to_resource_id_map.size(), 0ul);
@@ -49,14 +50,9 @@ TEST_F(WebUIImplTest, LocalResourceLoaderConfigForCustomDataSource) {
   data_backend.AddDataSource(data_source);
   auto config =
       WebUIImpl::GetLocalResourceLoaderConfigForTesting(&data_backend);
-  ASSERT_EQ(config->sources.size(), 2ul);
-  auto it =
-      std::find_if(config->sources.begin(), config->sources.end(),
-                   [](const blink::mojom::LocalResourceSourcePtr& source) {
-                     return source->name == "my-data-source";
-                   });
-  ASSERT_NE(it, config->sources.end());
-  const auto& config_source = *it;
+  url::Origin origin = url::Origin::Create(GURL("chrome://my-data-source"));
+  const auto& config_source = config->sources[origin];
+  ASSERT_TRUE(config_source);
   EXPECT_TRUE(config_source->headers.starts_with("HTTP/1.1 200 OK"));
   EXPECT_EQ(config_source->should_replace_i18n_in_js, true);
   EXPECT_EQ(config_source->path_to_resource_id_map["path/to/resource"], 42);

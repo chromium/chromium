@@ -62,9 +62,6 @@ LensPreselectionBubble::LensPreselectionBubble(
       offline_(offline),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
-  // Should be true for menu button to work, although this constraint is not
-  // being upheld on Mac and Linux. See crbug.com/378566071.
-  SetCanActivate(true);
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
@@ -101,8 +98,8 @@ void LensPreselectionBubble::Init() {
     views::HighlightPathGenerator::Install(
         button.get(),
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
-    button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));
+    button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL));
     more_info_button_ = AddChildView(std::move(button));
     more_info_button_->SetButtonController(
         std::make_unique<views::MenuButtonController>(
@@ -154,9 +151,14 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
         anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
     // Take bubble out of its original bounds to cross "line of death". However,
     // if there is no line of death, we set the bubble to below the top of the
-    // screen.
-    const int y = std::max(kPreselectionBubbleMinY,
-                           anchor_bounds.bottom() - bubble_size.height() / 2);
+    // screen. On Mac, the |bottom| of |anchor_bounds| can be negative so set
+    // the appropriate minY based on whether the top container is showing (has a
+    // height > 0).
+    const int minY = anchor_bounds.height() > 0
+                         ? anchor_bounds.bottom() - bubble_size.height() / 2
+                         : kPreselectionBubbleMinY;
+    const int y =
+        std::max(minY, anchor_bounds.bottom() - bubble_size.height() / 2);
     return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
   }
   return gfx::Rect();

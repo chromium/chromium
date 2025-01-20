@@ -305,9 +305,6 @@ class CC_EXPORT ScrollbarController {
 
   float GetViewportLength() const;
 
-  // Returns the pixel distance for a percent-based scroll of the scrollbar
-  float GetScrollDistanceForPercentBasedScroll() const;
-
   // Returns the page scale factor (i.e. pinch zoom factor). This is relevant
   // for root viewport scrollbar scrolling.
   float GetPageScaleFactorForScroll() const;

@@ -105,7 +105,7 @@ import java.util.Objects;
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
  * class is not intended to be extended.
  */
-class TabImpl implements Tab, SensitiveContentClient.Observer {
+class TabImpl implements Tab {
     /** Used for logging. */
     private static final String TAG = "Tab";
 
@@ -290,6 +290,12 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     private String mPendingNativePageHost;
 
     private SmoothTransitionDelegate mNativePageSmoothTransitionDelegate;
+
+    /**
+     * Notified when the content sensitivity changes, and sets the content sensitivity property on
+     * the {@link TabState}.
+     */
+    private SensitiveContentClient.Observer mSensitiveContentClientObserver;
 
     /** Tracks the origin of a background color change. */
     @IntDef({
@@ -502,7 +508,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
     @CalledByNative
     @Override
-    public String getTitle() {
+    public @JniType("std::u16string") String getTitle() {
         if (TextUtils.isEmpty(mTitle)) updateTitle();
         return mTitle;
     }
@@ -829,10 +835,21 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
             initWebContents(webContents);
             loadUrl(mPendingLoadParams);
             mPendingLoadParams = null;
-            return true;
+        } else {
+            restoreIfNeeded(caller);
         }
 
-        restoreIfNeeded(caller);
+        // If we are trying to share a tab, and it has never been loaded, then it will not have its
+        // physical backing size set, which means it will never produce any frames. In this case,
+        // set the physical backing size to an estimate of what it would be if it were shown.
+        if (caller == TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER && !hasBacking()) {
+            var display = mWindowAndroid.getDisplay();
+            int width = (int) (mWebContents.getWidth() * display.getDipScale());
+            int height = (int) (mWebContents.getHeight() * display.getDipScale());
+            TabImplJni.get()
+                    .onPhysicalBackingSizeChanged(mNativeTabAndroid, mWebContents, width, height);
+        }
+
         return true;
     }
 
@@ -1002,6 +1019,21 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     public final void hide(@TabHidingType int type) {
         try {
             TraceEvent.begin("Tab.hide");
+
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList
+                            .ANDROID_DISCONNECT_FILE_CHOOSER_ON_TAB_DEACTIVATE_KILL_SWITCH)) {
+                WebContents webContents = getWebContents();
+                // File select related dialogs typical does not have indication on which origin or
+                // tab made the request. So to avoid security issues from user confusion, if a tab
+                // changes makes this no longer the active tab, then disconnect any file select
+                // dialogs. Notably only want to do this for tab change, but not (as an example)
+                // for hiding the activity.
+                if (type == TabHidingType.CHANGED_TABS && webContents != null) {
+                    webContents.disconnectFileSelectListenerIfAny();
+                }
+            }
+
             if (isHidden()) return;
             mIsHidden = true;
             updateInteractableState();
@@ -1054,6 +1086,10 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
         TabImportanceManager.tabDestroyed(this);
 
+        if (mWindowAndroid != null) {
+            mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
+        }
+
         // Destroys the native tab after destroying the ContentView but before destroying the
         // InfoBarContainer. The native tab should be destroyed before the infobar container as
         // destroying the native tab cleanups up any remaining infobars. The infobar container
@@ -1065,16 +1101,17 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     }
 
     /**
-     * WARNING: This method is deprecated. Consider other ways such as passing the dependencies
-     *          to the constructor, rather than accessing ChromeActivity from Tab and using getters.
-     * @return {@link ChromeActivity} that currently contains this {@link Tab} in its
-     *         {@link TabModel}.
+     * WARNING: This method is deprecated. Consider other ways such as passing the dependencies to
+     * the constructor, rather than accessing ChromeActivity from Tab and using getters.
+     *
+     * @return {@link ChromeActivity} that currently contains this {@link Tab} in its {@link
+     *     TabModel}.
      */
     @Deprecated
-    ChromeActivity<?> getActivity() {
+    ChromeActivity getActivity() {
         if (getWindowAndroid() == null) return null;
         Activity activity = ContextUtils.activityFromContext(getWindowAndroid().getContext().get());
-        if (activity instanceof ChromeActivity) return (ChromeActivity<?>) activity;
+        if (activity instanceof ChromeActivity) return (ChromeActivity) activity;
         return null;
     }
 
@@ -1375,6 +1412,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     }
 
     void handleBackForwardTransitionUiChanged() {
+        if (isDestroyed()) return;
+
         for (TabObserver observer : mObservers) {
             observer.didBackForwardTransitionAnimationChange(this);
         }
@@ -1893,9 +1932,14 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                     && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                mSensitiveContentClientObserver = this::setTabHasSensitiveContent;
                 // Adding the observation has to happen after the native `initWebContents`, so that
                 // the {@link SensitiveContentClient} is properly initialized.
-                SensitiveContentClient.fromWebContents(webContents).addObserver(this);
+                SensitiveContentClient sensitiveContentClient =
+                        SensitiveContentClient.fromWebContents(webContents);
+                sensitiveContentClient.addObserver(mSensitiveContentClientObserver);
+                sensitiveContentClient.restoreContentSensitivityFromTabState(
+                        getTabHasSensitiveContent());
             }
         } finally {
             TraceEvent.end("ChromeTab.initWebContents");
@@ -2271,6 +2315,11 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     }
 
     @VisibleForTesting
+    boolean hasBacking() {
+        return !TabImplJni.get().isPhysicalBackingSizeEmpty(mNativeTabAndroid, mWebContents);
+    }
+
+    @VisibleForTesting
     protected void setTitle(String title) {
         mTitle = title;
     }
@@ -2345,7 +2394,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
-            SensitiveContentClient.fromWebContents(mWebContents).removeObserver(this);
+            SensitiveContentClient.fromWebContents(mWebContents)
+                    .removeObserver(mSensitiveContentClientObserver);
         }
 
         if (mAutofillProvider != null) {
@@ -2510,12 +2560,6 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         }
     }
 
-    // SensitiveContentClient.Observer
-    @Override
-    public void onContentSensitivityChanged(boolean contentIsSensitive) {
-        setTabHasSensitiveContent(contentIsSensitive);
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -2544,15 +2588,26 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
         void releaseWebContents(long nativeTabAndroid);
 
+        boolean isPhysicalBackingSizeEmpty(long nativeTabAndroid, WebContents webContents);
+
         void onPhysicalBackingSizeChanged(
                 long nativeTabAndroid, WebContents webContents, int width, int height);
 
-        void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
+        void setActiveNavigationEntryTitleForUrl(
+                long nativeTabAndroid,
+                @JniType("std::string") String url,
+                @JniType("std::u16string") String title);
 
         void loadOriginalImage(long nativeTabAndroid);
 
         boolean handleNonNavigationAboutURL(GURL url);
 
         void onShow(long nativeTabAndroid);
+    }
+
+    @VisibleForTesting
+    @ChildProcessImportance
+    int getImportance() {
+        return mImportance;
     }
 }

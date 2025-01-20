@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
@@ -10,7 +12,6 @@
 #include <tuple>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -34,8 +35,9 @@ CommandLine::StringVector GenerateNativeStringVector(
     FuzzedDataProvider& provider) {
   CommandLine::StringVector strings(
       provider.ConsumeIntegralInRange<int>(0, 100));
-  for (auto& item : strings)
+  for (auto& item : strings) {
     item = GenerateNativeString(provider);
+  }
   return strings;
 }
 
@@ -105,15 +107,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       case 2: {
         // Add an argument.
         CommandLine::StringType arg = GenerateNativeString(provider);
-        if (!arg.empty() && IsStringASCII(arg))
+        if (!arg.empty() && IsStringASCII(arg)) {
           command_line.AppendArgNative(arg);
+        }
         break;
       }
       case 3: {
         // Add a wrapper.
         CommandLine::StringType wrapper = GenerateNativeString(provider);
-        if (!wrapper.empty())
+        if (!wrapper.empty()) {
           command_line.PrependWrapper(wrapper);
+        }
         break;
       }
       case 4: {

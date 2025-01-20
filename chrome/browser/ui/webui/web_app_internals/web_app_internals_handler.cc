@@ -66,9 +66,7 @@ constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
 constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
-#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIsolatedWebAppPolicyManager[] = "IsolatedWebAppPolicyManager";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 constexpr char kIwaKeyDistributionInfoProvider[] =
     "IwaKeyDistributionInfoProvider";
 constexpr char kNavigationCapturing[] = "NavigationCapturing";
@@ -105,9 +103,7 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kAppShimRegistryLocalStorage);
 #endif
   index.Append(kIsolatedWebAppUpdateManager);
-#if BUILDFLAG(IS_CHROMEOS)
   index.Append(kIsolatedWebAppPolicyManager);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   index.Append(kWebAppDirectoryDiskState);
 
   return root;
@@ -318,14 +314,12 @@ base::Value BuildIsolatedWebAppUpdaterManagerJson(
                               provider.iwa_update_manager().AsDebugValue()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIsolatedWebAppPolicyManagerJson(
     web_app::WebAppProvider& provider) {
   return base::Value(
       base::Value::Dict().Set(kIsolatedWebAppPolicyManager,
                               provider.iwa_policy_manager().GetDebugValue()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::Value BuildIwaKeyDistributionInfoProviderJson() {
   return base::Value(base::Value::Dict().Set(
@@ -405,9 +399,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
   root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
-#if BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIsolatedWebAppPolicyManagerJson(*provider));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIwaKeyDistributionInfoProviderJson());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
@@ -513,4 +505,23 @@ void WebAppInternalsHandler::SetUpdateChannelForIsolatedWebApp(
     SetUpdateChannelForIsolatedWebAppCallback callback) {
   iwa_handler_.SetUpdateChannelForIsolatedWebApp(app_id, update_channel,
                                                  std::move(callback));
+}
+
+void WebAppInternalsHandler::SetPinnedVersionForIsolatedWebApp(
+    const webapps::AppId& app_id,
+    const std::string& pinned_version,
+    SetPinnedVersionForIsolatedWebAppCallback callback) {
+  iwa_handler_.SetPinnedVersionForIsolatedWebApp(app_id, pinned_version,
+                                                 std::move(callback));
+}
+
+void WebAppInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
+    const webapps::AppId& app_id) {
+  iwa_handler_.ResetPinnedVersionForIsolatedWebApp(app_id);
+}
+
+void WebAppInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
+    bool allow_downgrades,
+    const webapps::AppId& app_id) {
+  iwa_handler_.SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
 }

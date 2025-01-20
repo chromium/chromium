@@ -6,7 +6,6 @@
 #define BASE_PROFILER_NATIVE_UNWINDER_ANDROID_MEMORY_REGIONS_MAP_IMPL_H_
 
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
-
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 

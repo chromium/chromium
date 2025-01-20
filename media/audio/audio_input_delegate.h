@@ -12,7 +12,7 @@
 
 namespace base {
 class CancelableSyncSocket;
-class ReadOnlySharedMemoryRegion;
+class UnsafeSharedMemoryRegion;
 }  // namespace base
 
 namespace media {
@@ -28,7 +28,7 @@ class MEDIA_EXPORT AudioInputDelegate {
     // Called when the underlying stream is ready for recording.
     virtual void OnStreamCreated(
         int stream_id,
-        base::ReadOnlySharedMemoryRegion shared_memory_region,
+        base::UnsafeSharedMemoryRegion shared_memory_region,
         std::unique_ptr<base::CancelableSyncSocket> socket,
         bool initially_muted) = 0;
 

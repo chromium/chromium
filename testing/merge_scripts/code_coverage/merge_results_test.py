@@ -400,8 +400,9 @@ class MergeProfilesTest(unittest.TestCase):
             mock_merge_js_results_path = 'path/to/js/merge_js_results.py'
             mock_os_path_join.return_value = mock_merge_js_results_path
             python_exec = sys.executable
-            merge_results.main()
+            rc = merge_results.main()
 
+            self.assertEqual(rc, 1)
             mock_exec_cmd.assert_called_with([
                 python_exec, mock_merge_js_results_path, '--task-output-dir',
                 task_output_dir, '--javascript-coverage-dir',

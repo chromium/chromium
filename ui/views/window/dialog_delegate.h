@@ -45,6 +45,28 @@ class DialogObserver;
 //  let you set properties on it without overriding virtuals. Doing this also
 //  means you do not need to deal with implementing ::DeleteDelegate().
 //
+//  This class overrides WidgetDelegate::CreateClientView() to create an
+//  instance of DialogClientView as the client view for the widget. This class
+//  coordinates with DialogClientView to call Widget::Close() at 3 places:
+//    * DialogDelegate::AcceptDialog() -- OK button pressed
+//    * DialogDelegate::CancelDialog() -- cancel button pressed
+//    * DialogClientView::AcceleratorPressed -- esc pressed
+//  Subclasses have further coordination points.
+//
+//  The problem with Widget::Close() is that it's asynchronous, which doesn't
+//  play well with CLIENT_OWNS_WIDGET, because it means that the client needs to
+//  handle the edge case of Widget is closed (e.g. by this class), but not
+//  destroyed.
+//
+//  The solution is to use the method: Widget::MakeCloseSynchronous(). This
+//  allows the client to control how the widget is closed, which should
+//  typically be resetting the unique_pt<Widget>. The combination of
+//  Widget::MakeCloseSynchronous() and CLIENT_OWNS_WIDGET replaces: Cancel(),
+//  Accept(), SetAcceptCallback(), SetCancelCallback(),
+//  SetCancelCallbackWithClose(), SetCloseCallback(), Close(), AcceptDialog(),
+//  CancelDialog().
+//
+//
 ///////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
  public:
@@ -155,14 +177,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // this is called when the user presses the "Cancel" button.  This function
   // should return true if the window can be closed after it returns, or false
   // if it must remain open. By default, return true without doing anything.
-  // DEPRECATED: use |SetCancelCallback| instead.
+  // DEPRECATED: use |Widget::MakeCloseSynchronous| instead.
   virtual bool Cancel();
 
   // For Dialog boxes, this is called when the user presses the "OK" button, or
   // the Enter key. This function should return true if the window can be closed
   // after it returns, or false if it must remain open. By default, return true
   // without doing anything.
-  // DEPRECATED: use |SetAcceptCallback| instead.
+  // DEPRECATED: use |Widget::MakeCloseSynchronous| instead.
   virtual bool Accept();
 
   // Overridden from WidgetDelegate:
@@ -263,11 +285,18 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Called when the user presses the dialog's "OK" button or presses the dialog
   // accept accelerator, if there is one. The dialog is closed after the
   // callback is run.
+  // DEPRECATED: use |Widget::MakeCloseSynchronous| instead, and handle the
+  // case of Widget::ClosedReason == kAcceptButtonClicked.
   void SetAcceptCallback(base::OnceClosure callback);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog
   // accept accelerator, if there is one. Callbacks can return true to close the
   // dialog, false to leave the dialog open.
+  // Most use cases can use |Widget::MakeCloseSynchronous| instead, and handle
+  // the case of Widget::ClosedReason == kAcceptButtonClicked.
+  // Currently, there is no other mechanism to handle the accept and not close
+  // the dialog. This should eventually be replaced with a new method
+  // SetUserDidAcceptCallback() which does nothing other than run the callback.
   void SetAcceptCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
   // Called when the user cancels the dialog, which can happen either by:
@@ -277,7 +306,12 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // The dialog is closed after the callback is run. The callback variant which
   // returns a bool decides whether the dialog actually closes or not; returning
   // false prevents closing, returning true allows closing.
+  // DEPRECATED: use |Widget::MakeCloseSynchronous| instead, and handle the
+  // case of Widget::ClosedReason != kAcceptButtonClicked.
   void SetCancelCallback(base::OnceClosure callback);
+  // Currently, there is no other mechanism to handle the cancel and not close
+  // the dialog. This should eventually be replaced with a new method
+  // SetUserDidCancelCallback() which does nothing other than run the callback.
   void SetCancelCallbackWithClose(base::RepeatingCallback<bool()> callback);
 
   // Called when:
@@ -287,6 +321,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // that case, the normal widget close path is skipped, so no orderly teardown
   // of the dialog's widget happens. The main way that can happen in production
   // use is if the dialog's parent widget is closed.
+  // DEPRECATED. When using a Widget with CLIENT_OWNS_WIDGET and
+  // Widget::MakeCloseSynchronous(), the only way to close a Widget is by
+  // resetting the unique_ptr. That means this method is no longer required.
   void SetCloseCallback(base::OnceClosure callback);
 
   // Sets the ownership of the views::Widget created by CreateDialogWidget().
@@ -331,12 +368,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // 2) Depending on their return value, close the dialog's widget.
   // Neither of these methods can be called before the dialog has been
   // initialized.
+  // DEPRECATED. To close the dialog, reset the unique_ptr instead.
   void AcceptDialog();
   void CancelDialog();
 
   // This method invokes the behavior that *would* happen if this dialog's
   // containing widget were closed. It is present only as a compatibility shim
   // for unit tests; do not add new calls to it.
+  // DEPRECATED. Use CLIENT_OWNS_WIDGET and reset the unique_ptr instead.
   // TODO(crbug.com/40101916): Delete this.
   bool Close();
 

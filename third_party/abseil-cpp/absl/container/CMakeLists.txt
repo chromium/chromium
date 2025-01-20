@@ -749,6 +749,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::bits
+    absl::common_policy_traits
     absl::compressed_tuple
     absl::config
     absl::container_common

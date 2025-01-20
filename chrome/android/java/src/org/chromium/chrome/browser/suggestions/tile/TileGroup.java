@@ -14,11 +14,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CancelableRunnable;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -128,10 +128,12 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     /** Delegate for handling interactions with tiles. */
-    public interface TileInteractionDelegate extends OnClickListener, OnCreateContextMenuListener {
+    public interface TileInteractionDelegate
+            extends OnClickListener, OnCreateContextMenuListener, View.OnLongClickListener {
         /**
          * Set a runnable for click events on the tile. This is primarily used to track interaction
          * with the tile used by feature engagement purposes.
+         *
          * @param clickRunnable The {@link Runnable} to be executed when tile is clicked.
          */
         void setOnClickRunnable(Runnable clickRunnable);
@@ -513,31 +515,6 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     private class TileInteractionDelegateImpl
             implements TileInteractionDelegate, ContextMenuManager.Delegate, View.OnTouchListener {
-
-        /**
-         * CancelableRunnable is a Runnable class can be canceled. It is created here instead of
-         * making CallbackController.CancelableRunnable reusable is that this class is expected to
-         * be used on UI thread only, so locking mechanism is not required.
-         */
-        private static class CancelableRunnable implements Runnable {
-            private Runnable mRunnable;
-
-            private CancelableRunnable(@NonNull Runnable runnable) {
-                mRunnable = runnable;
-            }
-
-            public void cancel() {
-                mRunnable = null;
-            }
-
-            @Override
-            public void run() {
-                // This is run on UI thread only, so it is not necessary to guard this against
-                // another thread.
-                if (mRunnable != null) mRunnable.run();
-            }
-        }
-
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
         private Runnable mOnRemoveRunnable;
@@ -633,12 +610,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
                 if (mSuggestion == null) return false;
                 Tile tile = findTile(mSuggestion);
-                // Avoid prerendering the tile if it is search related, since parameters are not
-                // handled for prerendering cases. This will cause problems for default search
-                // engines.
-                // TODO(crbug.com/40282403): Move the logic to `PrerenderManager` if the issue
-                // is fixed by the check.
-                if (tile == null || mTileRenderer.isSearchTile(tile)) return false;
+                if (tile == null) return false;
                 maybePrerender(tile.getUrl());
             }
             if (event.getAction() == MotionEvent.ACTION_CANCEL) {
@@ -705,7 +677,17 @@ public class TileGroup implements MostVisitedSites.Observer {
         @Override
         public void onCreateContextMenu(
                 ContextMenu contextMenu, View view, ContextMenuInfo contextMenuInfo) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) return;
+
             mContextMenuManager.createContextMenu(contextMenu, view, this);
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
+                return false;
+            }
+            return mContextMenuManager.showListContextMenu(view, this);
         }
 
         @Override

@@ -366,6 +366,10 @@ void Surface::OnActivationDependencyResolved(
   blocking_allocation_groups_.erase(group);
   if (!activation_dependencies_.empty())
     return;
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("viz", "SurfaceQueuedPending",
+                                  TRACE_ID_LOCAL(this));
+
   // All blockers have been cleared. The surface can be activated now.
   ActivatePendingFrame();
 }

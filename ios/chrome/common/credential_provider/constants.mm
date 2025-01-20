@@ -36,10 +36,35 @@ NSString* const kUserDefaultsCredentialProviderManagedUserEmail =
 NSString* const kUserDefaultsCredentialProviderNewCredentials =
     @"kUserDefaultsCredentialProviderNewCredentials";
 
-// Used to generate the key for the app group user defaults containg whether
+// Used to generate the key for the app group user defaults containing whether
 // saving passwords is currently enabled.
 NSString* const kUserDefaulsCredentialProviderSavingPasswordsEnabled =
     @"kUserDefaulsCredentialProviderSavingPasswordsEnabled";
+
+// Used to generate the key for the app group user defaults containing whether
+// saving passwords is currently managed by enterprise policy.
+NSString* const kUserDefaultsCredentialProviderSavingPasswordsManaged =
+    @"kUserDefaultsCredentialProviderSavingPasswordsManaged";
+
+// Used to generate the key for the app group user defaults containing whether
+// saving passkeys is currently allowed by enterprise policy.
+NSString* const kUserDefaulsCredentialProviderSavingPasskeysEnabled =
+    @"kUserDefaulsCredentialProviderSavingPasskeysEnabled";
+
+// Used to generate the key for the app group user defaults containing whether
+// syncing passwords is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasswordSyncSetting =
+    @"kUserDefaultsCredentialProviderPasswordSyncSetting";
+
+// Used to generate the key for the app group user defaults containing whether
+// passkey PRF support is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasskeyPRFSetting =
+    @"kUserDefaultsCredentialProviderPasskeyPRFSetting";
+
+// Used to generate the key for the app group user defaults containing whether
+// the passkeys M2 feature is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasskeysM2Enabled =
+    @"kUserDefaultsCredentialProviderPasskeysM2Enabled";
 
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
@@ -95,8 +120,36 @@ NSString* AppGroupUserDefaultsCredentialProviderNewCredentials() {
       stringByAppendingString:kUserDefaultsCredentialProviderNewCredentials];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled() {
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaulsCredentialProviderSavingPasswordsEnabled];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaultsCredentialProviderSavingPasswordsManaged];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaulsCredentialProviderSavingPasskeysEnabled];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting() {
+  return
+      [AppGroupPrefix() stringByAppendingString:
+                            kUserDefaultsCredentialProviderPasswordSyncSetting];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderPasskeyPRFSetting];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderPasskeysM2Enabled];
 }

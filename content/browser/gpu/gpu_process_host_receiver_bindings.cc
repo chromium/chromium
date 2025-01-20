@@ -7,7 +7,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -20,7 +19,7 @@
 #include "media/mojo/mojom/android_overlay.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "content/browser/font_service.h"  // nogncheck
 #endif
@@ -49,7 +48,7 @@ void GpuProcessHost::BindHostReceiver(
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto font_receiver =
           generic_receiver.As<font_service::mojom::FontService>()) {
     ConnectToFontService(std::move(font_receiver));

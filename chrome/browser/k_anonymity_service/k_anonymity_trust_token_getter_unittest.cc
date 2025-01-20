@@ -66,8 +66,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{network::features::kPrivateStateTokens, {}},
-                              {features::kKAnonymityService,
+        /*enabled_features=*/{{features::kKAnonymityService,
                                {{"KAnonymityServiceAuthServer", kAuthServer}}}},
         /*disabled_features=*/{});
     TestingProfile::Builder builder;

@@ -32,6 +32,8 @@
 
 #include <unicode/uchar.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -175,7 +177,7 @@ TEST(UnicodeUtilitiesTest, OnlyKanaLettersEqualityTest) {
                                             base::span(kKanaString)));
 
   UChar voiced_kana_string1[] = {0x3042, 0x3099};
-  UChar voiced_kana_string2[] = {0x3042, 0x309A};
+  auto voiced_kana_string2 = std::to_array<UChar>({0x3042, 0x309A});
 
   // Comparing strings with different sound marks should fail.
   EXPECT_FALSE(CheckOnlyKanaLettersInStrings(base::span(voiced_kana_string1),
@@ -224,7 +226,7 @@ TEST(UnicodeUtilitiesTest, StringsWithKanaLettersTest) {
                                      base::span(kKanaString4)));
 
   UChar voiced_kana_string1[] = {0x3042, 0x3099};
-  UChar voiced_kana_string2[] = {0x3042, 0x309A};
+  auto voiced_kana_string2 = std::to_array<UChar>({0x3042, 0x309A});
 
   // Comparing strings with different sound marks should fail.
   EXPECT_FALSE(CheckKanaStringsEqual(base::span(voiced_kana_string1),

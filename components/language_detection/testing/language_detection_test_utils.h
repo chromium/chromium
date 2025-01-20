@@ -10,6 +10,9 @@
 namespace language_detection {
 class LanguageDetectionModel;
 
+// Returns a `base::FilePath` for the valid model file.
+base::FilePath GetValidModelFilePath();
+
 // Returns a `base::File` for the valid model file.
 base::File GetValidModelFile();
 

@@ -26,13 +26,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
-#endif
-
 namespace drive {
 
 class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
@@ -48,18 +41,8 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
           extension_receiver,
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote)
-      :
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        keep_alive_(std::make_unique<ScopedKeepAlive>(
-            KeepAliveOrigin::DRIVEFS_NATIVE_MESSAGE_HOST_LACROS,
-            KeepAliveRestartOption::ENABLED)),
-        profile_keep_alive_(std::make_unique<ScopedProfileKeepAlive>(
-            profile,
-            ProfileKeepAliveOrigin::kDriveFsNativeMessageHostLacros)),
-#endif
-        pending_receiver_(std::move(extension_receiver)),
-        drivefs_remote_(std::move(drivefs_remote)) {
-  }
+      : pending_receiver_(std::move(extension_receiver)),
+        drivefs_remote_(std::move(drivefs_remote)) {}
 
   DriveFsNativeMessageHost(const DriveFsNativeMessageHost&) = delete;
   DriveFsNativeMessageHost& operator=(const DriveFsNativeMessageHost&) = delete;
@@ -108,12 +91,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
                           ": " + reason);
     drivefs_remote_.reset();
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Used to keep lacros alive while connected to DriveFS.
-  std::unique_ptr<ScopedKeepAlive> keep_alive_;
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-#endif
 
   CreateNativeHostSessionCallback create_native_host_callback_;
 

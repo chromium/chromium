@@ -158,9 +158,9 @@ BufferStatus StarboardDecoder::PushBufferInternal(
       // They key is not available yet; register a callback to push the buffer
       // once the key becomes available.
       CHECK_GE(drm_sample_info->identifier_size, 0);
-      const size_t key_hash = base::FastHash(base::make_span(
-          drm_sample_info->identifier,
-          static_cast<size_t>(drm_sample_info->identifier_size)));
+      const size_t key_hash = base::FastHash(
+          base::span(drm_sample_info->identifier,
+                     static_cast<size_t>(drm_sample_info->identifier_size)));
       LOG(INFO) << "Waiting for DRM key with hash: " << key_hash;
       pending_drm_key_ = base::BindOnce(
           &StarboardDecoder::PushBufferInternal, base::Unretained(this),

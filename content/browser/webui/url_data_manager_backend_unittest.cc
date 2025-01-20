@@ -5,6 +5,7 @@
 #include "content/browser/webui/url_data_manager_backend.h"
 
 #include "content/browser/webui/web_ui_data_source_impl.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -28,17 +29,18 @@ class URLDataManagerBackendTest : public testing::TestWithParam<TestCase> {
   BrowserTaskEnvironment task_environment;
 };
 
-// A data source should have a scheme matching that of the URL it serves.
-TEST_P(URLDataManagerBackendTest, DataSourceSchemeMatchesURLScheme) {
+// A data source should have an origin matching that of the URL it serves.
+TEST_P(URLDataManagerBackendTest, DataSourceOriginMatchesURL) {
   URLDataManagerBackend data_backend;
   data_backend.AddDataSource(CreateWebUIDataSource(GetParam().source_name));
 
   GURL url(GetParam().url);
-  auto* data_source = data_backend.GetDataSourceFromURL(url);
+  URLDataSourceImpl* data_source = data_backend.GetDataSourceFromURL(url);
   ASSERT_TRUE(data_source);
   ASSERT_TRUE(data_source->IsWebUIDataSourceImpl());
-  auto scheme = static_cast<WebUIDataSourceImpl*>(data_source)->GetScheme();
-  ASSERT_EQ(url.scheme(), scheme);
+  url::Origin origin =
+      static_cast<WebUIDataSourceImpl*>(data_source)->GetOrigin();
+  ASSERT_TRUE(origin.IsSameOriginWith(url));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -46,8 +48,6 @@ INSTANTIATE_TEST_SUITE_P(
     URLDataManagerBackendTest,
     testing::Values(TestCase{"chrome://test-data-source/", "test-data-source"},
                     TestCase{"chrome-untrusted://test-data-source/",
-                             "chrome-untrusted://test-data-source/"},
-                    TestCase{"test-data-source://any-host/",
-                             "test-data-source://"}));
+                             "chrome-untrusted://test-data-source/"}));
 
 }  // namespace content

@@ -16,6 +16,9 @@ namespace data_controls {
 // types.
 BASE_DECLARE_FEATURE(kEnableScreenshotProtection);
 
+// Controls enabling Data Controls rules for clipboard copy / paste on Android.
+BASE_DECLARE_FEATURE(kEnableClipboardDataControlsAndroid);
+
 }  // namespace data_controls
 
 #endif  // COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_FEATURES_H_

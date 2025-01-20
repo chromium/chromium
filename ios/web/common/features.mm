@@ -51,7 +51,7 @@ const char kOneTapForMapsConsentModeIPHParam[] = "iph";
 const char kOneTapForMapsConsentModeIPHForcedParam[] = "iphforced";
 BASE_FEATURE(kOneTapForMaps,
              "EnableOneTapForMaps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
              "ScrollViewProxyScrollEnabledWorkaround",
@@ -87,10 +87,6 @@ BASE_FEATURE(kDetectDestroyedNavigationContexts,
              "DetectDestroyedNavigationContexts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableViewportIntents,
-             "EnableViewportIntents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableNewParcelTrackingNumberDetection,
              "EnableNewParcelTrackingNumberDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -117,6 +113,10 @@ BASE_FEATURE(kLogJavaScriptErrors,
 BASE_FEATURE(kWebKitHandlesMarketplaceKitLinks,
              "WebKitHandlesMarketplaceKitLinks",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRestoreWKWebViewEditMenuHandler,
+             "RestoreWKWebViewEditMenuHandler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace web

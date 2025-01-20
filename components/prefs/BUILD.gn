@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 component("prefs") {
   sources = [
     "command_line_pref_store.cc",
@@ -58,12 +56,13 @@ component("prefs") {
 
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
-
+  deps = []
   public_deps = [ "//base" ]
 
   if (is_android) {
     sources += [
+      "android/pref_change_registrar_android.cc",
+      "android/pref_change_registrar_android.h",
       "android/pref_service_android.cc",
       "android/pref_service_android.h",
     ]

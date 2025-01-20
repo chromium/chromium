@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -529,7 +530,9 @@ void SCKAudioInputStream::OnStreamSample(
     for (int channel = 0; channel < params_.channels(); channel++) {
       float* channel_data = reinterpret_cast<float*>(buffer) +
                             channel * total_frame_count + frames_delivered;
-      audio_bus_->SetChannelData(channel, channel_data);
+      audio_bus_->SetChannelData(
+          channel, base::span(channel_data, base::checked_cast<size_t>(
+                                                params_.frames_per_buffer())));
     }
 
     // Adjust the volume.

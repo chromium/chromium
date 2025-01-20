@@ -1037,7 +1037,7 @@ ExtensionManagementFactory::ExtensionManagementFactory()
   DependsOn(InstallStageTrackerFactory::GetInstance());
 }
 
-ExtensionManagementFactory::~ExtensionManagementFactory() {}
+ExtensionManagementFactory::~ExtensionManagementFactory() = default;
 
 std::unique_ptr<KeyedService>
 ExtensionManagementFactory::BuildServiceInstanceForBrowserContext(

@@ -29,12 +29,10 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
             ui::WindowAndroid* window_android);
 
   // Called from Java via JNI.
-  void Accepted(JNIEnv* env,
-                const base::android::JavaParamRef<jstring>& jdownload_guid);
+  void Accepted(JNIEnv* env, std::string& download_guid);
 
   // Called from Java via JNI.
-  void Cancelled(JNIEnv* env,
-                 const base::android::JavaParamRef<jstring>& jdownload_guid);
+  void Cancelled(JNIEnv* env, std::string& download_guid);
 
   // download::DownloadItem::Observer:
   void OnDownloadDestroyed(download::DownloadItem* download_item) override;

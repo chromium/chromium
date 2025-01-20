@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
@@ -27,16 +28,18 @@ namespace {
 
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern) {
-  if (pattern.empty())
+  if (pattern.empty()) {
     return true;
+  }
 
   // Patterns like "*@foo.com" are not accepted by our regex engine (since they
   // are not valid regular expressions - they should instead be ".*@foo.com").
   // For convenience, detect these patterns and insert a "." character at the
   // front.
   std::u16string utf16_pattern = base::UTF8ToUTF16(pattern);
-  if (utf16_pattern[0] == L'*')
+  if (utf16_pattern[0] == L'*') {
     utf16_pattern.insert(utf16_pattern.begin(), L'.');
+  }
 
   // See if the username matches the policy-provided pattern.
   UErrorCode status = U_ZERO_ERROR;
@@ -87,7 +90,7 @@ bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
          !manager.HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
-base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
+base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
   CHECK(accounts_in_cookie_jar_info.AreAccountsFresh());
@@ -95,7 +98,7 @@ base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
   // cookies.
 
   // `base::flat_set` has an optimized constructor from a vector.
-  base::flat_set<std::string> gaia_ids(base::ToVector(
+  base::flat_set<GaiaId> gaia_ids(base::ToVector(
       accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
       &gaia::ListedAccount::gaia_id));
 
@@ -106,12 +109,12 @@ base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
 
   // If there is a Primary account, also keep it even if it was removed (not in
   // the cookie jar at all).
-  std::string primary_account_gaia_id =
+  GaiaId primary_account_gaia_id =
       identity_manager
           ? identity_manager
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                 .gaia
-          : std::string();
+          : GaiaId();
   if (!primary_account_gaia_id.empty()) {
     gaia_ids.insert(primary_account_gaia_id);
   }

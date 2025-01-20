@@ -23,11 +23,14 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
+@NullMarked
 class AudioDeviceListener {
     private static final boolean DEBUG = false;
 
@@ -61,18 +64,18 @@ class AudioDeviceListener {
     private boolean mIsBluetoothLeAudioSupported;
 
     // Broadcast receiver for wired headset intent broadcasts.
-    private BroadcastReceiver mWiredHeadsetReceiver;
+    private @Nullable BroadcastReceiver mWiredHeadsetReceiver;
 
     // Broadcast receiver for Bluetooth headset intent broadcasts.
     // Utilized to detect changes in Bluetooth headset availability.
-    private BroadcastReceiver mBluetoothHeadsetReceiver;
+    private @Nullable BroadcastReceiver mBluetoothHeadsetReceiver;
 
     // The UsbManager of this system.
     private final UsbManager mUsbManager;
 
     // Broadcast receiver for USB audio devices intent broadcasts.
     // Utilized to detect if a USB device is attached or detached.
-    private BroadcastReceiver mUsbAudioReceiver;
+    private @Nullable BroadcastReceiver mUsbAudioReceiver;
 
     private final AudioDeviceSelector.Devices mDeviceStates;
 
@@ -116,7 +119,7 @@ class AudioDeviceListener {
      * Register for BT intents if we have the BLUETOOTH permission. Also extends the list of
      * available devices with a BT device if one exists.
      */
-    private void registerBluetoothIntentsIfNeeded(BluetoothAdapter adapter) {
+    private void registerBluetoothIntentsIfNeeded(@Nullable BluetoothAdapter adapter) {
         // Add a Bluetooth headset to the list of available devices if a BT
         // headset is detected and if we have the BLUETOOTH permission.
         // We must do this initial check using a dedicated method since the
@@ -144,7 +147,7 @@ class AudioDeviceListener {
         mBluetoothHeadsetReceiver = null;
     }
 
-    private BluetoothAdapter getBluetoothAdapter() {
+    private @Nullable BluetoothAdapter getBluetoothAdapter() {
         if (!mHasBluetoothPermission) {
             Log.w(TAG, "getBluetoothAdapter() requires BLUETOOTH permission");
             return null;
@@ -165,7 +168,7 @@ class AudioDeviceListener {
     }
 
     /** Returns whether the current device supports Bluetooth LE Audio. */
-    public boolean isLeAudioSupported(BluetoothAdapter adapter) {
+    public boolean isLeAudioSupported(@Nullable BluetoothAdapter adapter) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             // isLeAudioSupported() requires API Level 33.
             return false;
@@ -184,7 +187,7 @@ class AudioDeviceListener {
      * android.bluetooth.BluetoothAdapter.getProfileConnectionState() requires the BLUETOOTH
      * permission.
      */
-    private boolean hasBluetoothHeadset(BluetoothAdapter btAdapter) {
+    private boolean hasBluetoothHeadset(@Nullable BluetoothAdapter btAdapter) {
         if (btAdapter == null) {
             // Bluetooth not supported on this platform.
             return false;
@@ -423,6 +426,7 @@ class AudioDeviceListener {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        assert device != null;
                         if (DEBUG) {
                             logd(
                                     "UsbDeviceBroadcastReceiver.onReceive: a= "
@@ -484,19 +488,17 @@ class AudioDeviceListener {
         Log.d(TAG, msg);
     }
 
-    /** Trivial helper method for error logging */
-    private static void loge(String msg) {
-        Log.e(TAG, msg);
-    }
-
+    @Nullable
     BroadcastReceiver getWiredHeadsetReceiverForTesting() {
         return mWiredHeadsetReceiver;
     }
 
+    @Nullable
     BroadcastReceiver getBluetoothHeadsetReceiverForTesting() {
         return mBluetoothHeadsetReceiver;
     }
 
+    @Nullable
     BroadcastReceiver getUsbReceiverForTesting() {
         return mUsbAudioReceiver;
     }

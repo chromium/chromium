@@ -153,8 +153,9 @@ bool ParseProcStats(const std::string& stats_data,
                     std::vector<std::string>* proc_stats) {
   // |stats_data| may be empty if the process disappeared somehow.
   // e.g. http://crbug.com/145811
-  if (stats_data.empty())
+  if (stats_data.empty()) {
     return false;
+  }
 
   // The stat file is formatted as:
   // pid (process name) data1 data2 .... dataN
@@ -174,16 +175,16 @@ bool ParseProcStats(const std::string& stats_data,
   // PID.
   proc_stats->push_back(stats_data.substr(0, open_parens_idx));
   // Process name without parentheses.
-  proc_stats->push_back(
-      stats_data.substr(open_parens_idx + 1,
-                        close_parens_idx - (open_parens_idx + 1)));
+  proc_stats->push_back(stats_data.substr(
+      open_parens_idx + 1, close_parens_idx - (open_parens_idx + 1)));
 
   // Split the rest.
-  std::vector<std::string> other_stats = SplitString(
-      stats_data.substr(close_parens_idx + 2), " ",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& i : other_stats)
+  std::vector<std::string> other_stats =
+      SplitString(stats_data.substr(close_parens_idx + 2), " ",
+                  base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& i : other_stats) {
     proc_stats->push_back(i);
+  }
   return true;
 }
 
@@ -224,11 +225,13 @@ size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
 int64_t ReadStatFileAndGetFieldAsInt64(const FilePath& stat_file,
                                        ProcStatsFields field_num) {
   std::string stats_data;
-  if (!ReadProcFile(stat_file, &stats_data))
+  if (!ReadProcFile(stat_file, &stats_data)) {
     return 0;
+  }
   std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
   return GetProcStatsFieldAsInt64(proc_stats, field_num);
 }
 
@@ -244,52 +247,61 @@ int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num) {
 
 size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num) {
   std::string stats_data;
-  if (!ReadProcStats(pid, &stats_data))
+  if (!ReadProcStats(pid, &stats_data)) {
     return 0;
+  }
   std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
   return GetProcStatsFieldAsSizeT(proc_stats, field_num);
 }
 
 Time GetBootTime() {
   FilePath path("/proc/stat");
   std::string contents;
-  if (!ReadProcFile(path, &contents))
+  if (!ReadProcFile(path, &contents)) {
     return Time();
+  }
   ProcStatMap proc_stat;
   ParseProcStat(contents, &proc_stat);
   ProcStatMap::const_iterator btime_it = proc_stat.find("btime");
-  if (btime_it == proc_stat.end())
+  if (btime_it == proc_stat.end()) {
     return Time();
+  }
   int btime;
-  if (!StringToInt(btime_it->second, &btime))
+  if (!StringToInt(btime_it->second, &btime)) {
     return Time();
+  }
   return Time::FromTimeT(btime);
 }
 
 TimeDelta GetUserCpuTimeSinceBoot() {
   FilePath path("/proc/stat");
   std::string contents;
-  if (!ReadProcFile(path, &contents))
+  if (!ReadProcFile(path, &contents)) {
     return TimeDelta();
+  }
 
   ProcStatMap proc_stat;
   ParseProcStat(contents, &proc_stat);
   ProcStatMap::const_iterator cpu_it = proc_stat.find("cpu");
-  if (cpu_it == proc_stat.end())
+  if (cpu_it == proc_stat.end()) {
     return TimeDelta();
+  }
 
   std::vector<std::string> cpu = SplitString(
       cpu_it->second, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
-  if (cpu.size() < 2 || cpu[0] != "cpu")
+  if (cpu.size() < 2 || cpu[0] != "cpu") {
     return TimeDelta();
+  }
 
   uint64_t user;
   uint64_t nice;
-  if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice))
+  if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice)) {
     return TimeDelta();
+  }
 
   return ClockTicksToTimeDelta(checked_cast<int64_t>(user + nice));
 }

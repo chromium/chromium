@@ -93,7 +93,8 @@ EntityData GenerateSharedTabGroupDataEntityData(
   entity_data.creation_time = base::Time::Now();
   entity_data.modification_time = entity_data.creation_time;
   entity_data.name = storage_key;
-  entity_data.collaboration_id = collaboration_id;
+  entity_data.collaboration_metadata = CollaborationMetadata::ForLocalChange(
+      /*changed_by=*/GaiaId(), collaboration_id);
   // The tracker requires non-empty specifics with any data type.
   entity_data.specifics.mutable_shared_tab_group_data();
   return entity_data;

@@ -10,11 +10,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/payments_data_manager_test_base.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +92,7 @@ TEST_F(PaymentsDataCleanerTest,
   test::SetCreditCardInfo(&credit_card1, "Alice",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  credit_card1.set_use_date(now - base::Days(4));
+  credit_card1.usage_history().set_use_date(now - base::Days(4));
 
   // Create a local card that was expired 400 days ago, but recently used.
   // It is expected to remain.
@@ -101,7 +101,7 @@ TEST_F(PaymentsDataCleanerTest,
   test::SetCreditCardInfo(&credit_card2, "Bob",
                           "378282246310006" /* American Express */, "04",
                           "1999", "1");
-  credit_card2.set_use_date(now - base::Days(4));
+  credit_card2.usage_history().set_use_date(now - base::Days(4));
 
   // Create a local card expired recently, and last used 400 days ago.
   // It is expected to remain.
@@ -114,7 +114,7 @@ TEST_F(PaymentsDataCleanerTest,
       expiry_date, "yyyy", icu::TimeZone::getGMT());
   test::SetCreditCardInfo(&credit_card3, "Clyde", "4111111111111111" /* Visa */,
                           month.c_str(), year.c_str(), "1");
-  credit_card3.set_use_date(now - base::Days(400));
+  credit_card3.usage_history().set_use_date(now - base::Days(400));
 
   // Create a local card expired 400 days ago, and last used 400 days ago.
   // It is expected to be deleted.
@@ -123,7 +123,7 @@ TEST_F(PaymentsDataCleanerTest,
   test::SetCreditCardInfo(&credit_card4, "David",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card4.set_use_date(now - base::Days(400));
+  credit_card4.usage_history().set_use_date(now - base::Days(400));
   personal_data().payments_data_manager().AddCreditCard(credit_card1);
   personal_data().payments_data_manager().AddCreditCard(credit_card2);
   personal_data().payments_data_manager().AddCreditCard(credit_card3);
@@ -133,7 +133,7 @@ TEST_F(PaymentsDataCleanerTest,
   // It is expected to remain because we do not delete server cards.
   CreditCard credit_card5(CreditCard::RecordType::kMaskedServerCard, "c987");
   test::SetCreditCardInfo(&credit_card5, "Frank", "6543", "01", "1998", "1");
-  credit_card5.set_use_date(now - base::Days(400));
+  credit_card5.usage_history().set_use_date(now - base::Days(400));
   credit_card5.SetNetworkForMaskedCard(kVisaCard);
 
   // Save the server card and set used_date to desired date.
@@ -179,7 +179,7 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   test::SetCreditCardInfo(&credit_card0, "Bob0",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card0.set_use_count(10000);
+  credit_card0.usage_history().set_use_count(10000);
   personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -187,7 +187,7 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   test::SetCreditCardInfo(&credit_card1, "Bob1",
                           "5105105105105101" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card1.set_use_count(1000);
+  credit_card1.usage_history().set_use_count(1000);
   personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -195,7 +195,7 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   test::SetCreditCardInfo(&credit_card2, "Bob2",
                           "5105105105105102" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card2.set_use_count(100);
+  credit_card2.usage_history().set_use_count(100);
   personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
   // Create a card with a settings origin.
@@ -204,7 +204,7 @@ TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   test::SetCreditCardInfo(&credit_card3, "Bob3",
                           "5105105105105103" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card3.set_use_count(10);
+  credit_card3.usage_history().set_use_count(10);
   personal_data().payments_data_manager().AddCreditCard(credit_card3);
 
   PersonalDataChangedWaiter(personal_data()).Wait();

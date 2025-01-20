@@ -71,4 +71,9 @@
     # https://clang.llvm.org/extra/clang-tidy/checks/misc/include-cleaner.html
     - key: misc-include-cleaner.IgnoreHeaders
       value:        (gmock/gmock|gtest/gtest|third_party|build/linux/debian).*
+
+  ExtraArgs:
+    # b/382774818: disable unknown pragma warnings until we can figure out why
+    # unknown pragmas are being warned about.
+    - -Wno-unknown-pragmas
 ...

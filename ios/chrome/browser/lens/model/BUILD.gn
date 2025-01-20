@@ -11,13 +11,13 @@ source_set("model") {
   ]
   deps = [
     "//components/search_engines",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
   ]
@@ -30,9 +30,9 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",
     "//testing/gtest",

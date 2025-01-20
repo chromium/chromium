@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -208,8 +207,7 @@ void TextControlElement::UpdatePlaceholderVisibility() {
   bool place_holder_was_visible = IsPlaceholderVisible();
   HTMLElement* placeholder = PlaceholderElement();
   if (!placeholder) {
-    if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-        !InnerEditorElement()) {
+    if (!InnerEditorElement()) {
       // The place holder visibility needs to be updated as it may be used by
       // CSS selectors.
       SetPlaceholderVisibility(PlaceholderShouldBeVisible());

@@ -34,7 +34,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
       delete;
 
  protected:
-  ForceMaximizeOnFirstRunTest() {}
+  ForceMaximizeOnFirstRunTest() = default;
 
   void GetPolicySettings(
       enterprise_management::CloudPolicySettings* policy) const override {

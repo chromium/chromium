@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Түрту арқылы толтырылатын тіркелу деректері тізімі толық экранға ашылған.</translation>
 <translation id="5591247451101092906">Сақталған құпия сөз бен кіру кілтінің қайсысын пайдалану керек?</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
+<translation id="592182999816790476"><ph name="WEBSITE" /> веб-сайты үшін сақталған <ph name="USERNAME" /> құпия сөзі</translation>
 <translation id="6560306912274274630">Пайдаланушының (<ph name="USERNAME" />) кіру кілті. Экран құлпын қолданыңыз.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бұл сайтқа арналған жаңа құпия сөз}other{Бұл сайтқа арналған жаңа құпия сөздер}}</translation>
 <translation id="7286867818472074330">Кіру кілтін таңдау</translation>

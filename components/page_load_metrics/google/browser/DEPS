@@ -1,6 +1,7 @@
 include_rules = [
   "+components/crash/core/common",
   "+components/google/core/common",
+  "+components/policy/content",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/prefs",

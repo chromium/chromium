@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -59,7 +60,7 @@ std::string GetEmptyTreeHash() {
 
 // SHA-256 Merkle leaf hashes for the sample tree that all of the other test
 // data relates to (8 leaves).
-const char* const kLeafHashes[8] = {
+const std::array<const char*, 8> kLeafHashes = {
     "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
     "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
     "0298d122906dcfc10892cb53a73992fc5b9f493ea4c9badb27b791b4127a7fe7",
@@ -67,12 +68,13 @@ const char* const kLeafHashes[8] = {
     "bc1a0643b12e4d2d7c77918f44e0f4f79a838b6cf9ec5b5c283e1f4d88599e6b",
     "4271a26be0d8a84f0bd54c8c302e7cb3a3b5d1fa6780a40bcce2873477dab658",
     "b08693ec2e721597130641e8211e7eedccb4c26413963eee6c1e2ed16ffb1a5f",
-    "46f6ffadd3d06a09ff3c5860d2755c8b9819db7df44251788c7d8e3180de8eb1"};
+    "46f6ffadd3d06a09ff3c5860d2755c8b9819db7df44251788c7d8e3180de8eb1",
+};
 
 // SHA-256 Merkle root hashes from building the sample tree leaf-by-leaf.
 // The first entry is the root when the tree contains 1 leaf, and the last is
 // the root when the tree contains all 8 leaves.
-const char* const kRootHashes[8] = {
+const std::array<const char*, 8> kRootHashes = {
     "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
     "fac54203e7cc696cf0dfcb42c92a1d9dbaf70ad9e621f4bd8d98662f00e3c125",
     "aeb6bcfe274b70a14fb067a5e5578264db0fa9b51af5e0ba159158f329e06e77",
@@ -80,7 +82,8 @@ const char* const kRootHashes[8] = {
     "4e3bbb1f7b478dcfe71fb631631519a3bca12c9aefca1612bfce4c13a86264d4",
     "76e67dadbcdf1e10e1b74ddc608abd2f98dfb16fbce75277b5232a127f2087ef",
     "ddb89be403809e325750d3d263cd78929c2942b7942a34b77e122c9594a74c8c",
-    "5dc9da79a70659a9ad559cb701ded9a2ab9d823aad2f4960cfe370eff4604328"};
+    "5dc9da79a70659a9ad559cb701ded9a2ab9d823aad2f4960cfe370eff4604328",
+};
 
 // A single consistency proof. Contains at most 3 proof nodes (all test proofs
 // will be for a tree of size 8).
@@ -93,7 +96,7 @@ struct ConsistencyProofTestVector {
 
 // A collection of consistency proofs between various sub-trees of the sample
 // tree.
-const ConsistencyProofTestVector kConsistencyProofs[] = {
+const auto kConsistencyProofs = std::to_array<ConsistencyProofTestVector>({
     // Empty consistency proof between trees of the same size (1).
     {1, 1, 0, {"", "", ""}},
     // Consistency proof between tree of size 1 and tree of size 8, with 3
@@ -118,7 +121,8 @@ const ConsistencyProofTestVector kConsistencyProofs[] = {
      5,
      2,
      {"5f083f0a1a33ca076a95279832580db3e0ef4584bdff1f54c8a360f50de3031e",
-      "bc1a0643b12e4d2d7c77918f44e0f4f79a838b6cf9ec5b5c283e1f4d88599e6b", ""}}};
+      "bc1a0643b12e4d2d7c77918f44e0f4f79a838b6cf9ec5b5c283e1f4d88599e6b", ""}},
+});
 
 // A single audit proof. Contains at most 3 proof nodes (all test proofs will be
 // for a tree of size 8).
@@ -131,7 +135,7 @@ struct AuditProofTestVector {
 
 // A collection of audit proofs for various leaves and sub-trees of the tree
 // defined by |kRootHashes|.
-const AuditProofTestVector kAuditProofs[] = {
+const auto kAuditProofs = std::to_array<AuditProofTestVector>({
     {0, 1, 0, {"", "", ""}},
     {0,
      8,
@@ -155,7 +159,8 @@ const AuditProofTestVector kAuditProofs[] = {
      3,
      {"6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
       "5f083f0a1a33ca076a95279832580db3e0ef4584bdff1f54c8a360f50de3031e",
-      "bc1a0643b12e4d2d7c77918f44e0f4f79a838b6cf9ec5b5c283e1f4d88599e6b"}}};
+      "bc1a0643b12e4d2d7c77918f44e0f4f79a838b6cf9ec5b5c283e1f4d88599e6b"}},
+});
 
 // Decodes a hexadecimal string into the binary data it represents.
 std::string HexToBytes(const std::string& hex_data) {

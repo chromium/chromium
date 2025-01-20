@@ -29,9 +29,11 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
@@ -187,7 +189,16 @@ public class PartnerHomepageIntegrationTest {
                                             if (tabModel.getCount() == 0) tabClosed.notifyCalled();
                                         }
                                     });
-                            mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
+                            TabClosureParams params =
+                                    TabClosureParams.closeAllTabs().uponExit(false).build();
+                            TabModelSelector selector =
+                                    mActivityTestRule.getActivity().getTabModelSelector();
+                            selector.getModel(false)
+                                    .getTabRemover()
+                                    .closeTabs(params, /* allowDialog= */ false);
+                            selector.getModel(true)
+                                    .getTabRemover()
+                                    .closeTabs(params, /* allowDialog= */ false);
                         });
 
         try {

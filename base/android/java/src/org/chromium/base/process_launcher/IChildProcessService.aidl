@@ -31,6 +31,10 @@ interface IChildProcessService {
   // Notifies about memory pressure. The argument is MemoryPressureLevel enum.
   oneway void onMemoryPressure(int pressure);
 
+  // Notifies that we should freeze ourselves (as opposed to relying on  App
+  // Freezer).
+  oneway void onSelfFreeze();
+
   // Dumps the stack for the child process without crashing it.
   oneway void dumpProcessStack();
 

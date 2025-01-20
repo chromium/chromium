@@ -40,8 +40,7 @@
 #include "base/win/windows_version.h"
 #endif
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -62,7 +61,7 @@ END_METADATA
 
 class MenuControllerUITest : public InProcessBrowserTest {
  public:
-  MenuControllerUITest() {}
+  MenuControllerUITest() = default;
 
   MenuControllerUITest(const MenuControllerUITest&) = delete;
   MenuControllerUITest& operator=(const MenuControllerUITest&) = delete;
@@ -271,5 +270,4 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

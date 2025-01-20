@@ -6,23 +6,17 @@
 #define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_MODEL_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ContextualPanelModelService;
-class ProfileIOS;
 
 // Singleton that owns all ContextualPanelModelServices and associates them with
 // profiles.
 class ContextualPanelModelServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   static ContextualPanelModelService* GetForProfile(ProfileIOS* profile);
   static ContextualPanelModelServiceFactory* GetInstance();
-
-  ContextualPanelModelServiceFactory(
-      const ContextualPanelModelServiceFactory&) = delete;
-  ContextualPanelModelServiceFactory& operator=(
-      const ContextualPanelModelServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ContextualPanelModelServiceFactory>;

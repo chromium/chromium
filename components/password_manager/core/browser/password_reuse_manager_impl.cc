@@ -559,7 +559,7 @@ void PasswordReuseManagerImpl::MaybeSavePasswordHash(
   }
 
   if (password_manager_util::IsLoggingActive(client)) {
-    BrowserSavePasswordProgressLogger logger(client->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client->GetCurrentLogManager());
     logger.LogMessage(
         autofill::SavePasswordProgressLogger::STRING_SAVE_PASSWORD_HASH);
   }

@@ -113,7 +113,6 @@ class MockServer : public base::RefCountedThreadSafe<MockServer> {
 class TestDelegate : public TelemetryLogger<TestEvent>::Delegate {
  public:
   explicit TestDelegate(scoped_refptr<MockServer> server) : server_(server) {}
-  ~TestDelegate() override = default;
 
   // Overrides for TelemetryLogger<TestEvent>::Delegate.
   bool StoreNextAllowedAttemptTime(base::Time time) override {
@@ -152,9 +151,6 @@ class TestDelegate : public TelemetryLogger<TestEvent>::Delegate {
 
 class TelemetryLoggerTest : public testing::Test {
  protected:
-  TelemetryLoggerTest() = default;
-  ~TelemetryLoggerTest() override = default;
-
   void WaitForExpectedRequests(
       scoped_refptr<MockServer> server,
       base::TimeDelta fast_forward_interval = base::Seconds(1)) {

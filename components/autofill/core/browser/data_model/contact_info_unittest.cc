@@ -10,11 +10,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,13 +79,21 @@ TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
 INSTANTIATE_TEST_SUITE_P(
     SetFullAlternativeName,
     SetFullAlternativeNameTest,
-    testing::Values(FullAlternativeNameTestCase{u"", u"", u""},
-                    FullAlternativeNameTestCase{u"John Smith", u"John",
-                                                u"Smith"},
-                    FullAlternativeNameTestCase{u"やまもと あおい", u"あおい",
-                                                u"やまもと"}));
+    testing::Values(
+        FullAlternativeNameTestCase{u"", u"", u""},
+        FullAlternativeNameTestCase{u"John Smith", u"John", u"Smith"},
+        FullAlternativeNameTestCase{u"やまもと あおい", u"あおい", u"やまもと"},
+        FullAlternativeNameTestCase{u"さとう さくら", u"さくら", u"さとう"},
+        FullAlternativeNameTestCase{u"たなか・あおい", u"あおい", u"たなか"},
+        FullAlternativeNameTestCase{u"スズキ-エミ", u"エミ", u"スズキ"}));
 
-TEST(NameInfoTest, GetMatchingTypes) {
+class NameInfoTest : public testing::Test {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillSupportPhoneticNameForJP};
+};
+
+TEST_F(NameInfoTest, GetMatchingTypes) {
   NameInfo name;
 
   test::FormGroupValues name_values = {
@@ -128,9 +136,9 @@ TEST(NameInfoTest, GetMatchingTypes) {
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 
-TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillSupportPhoneticNameForJP);
+// Tests the scenario in which the profile with an alternative name is correctly
+// finalized after import.
+TEST_F(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
   NameInfo name;
 
   test::FormGroupValues name_values = {
@@ -144,6 +152,9 @@ TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
   name.FinalizeAfterImport();
 
   test::FormGroupValues expectation = {
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
       {.type = NAME_FIRST,
        .value = "葵",
        .verification_status = VerificationStatus::kParsed},
@@ -162,6 +173,204 @@ TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
       {.type = NAME_LAST_CONJUNCTION,
        .value = "",
        .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kParsed}};
+
+  test::VerifyFormGroupValues(name, expectation);
+
+  // Both "あおい" and "アオイ" are semantically equal.
+  FieldTypeSet matching_types;
+  name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+  matching_types.clear();
+
+  // Both "やまもと" and "ヤマモト" are semantically equal.
+  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
+}
+
+// Tests the scenario in which the profile with full name and alternative family
+// name is correctly finalized after import.
+TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName1) {
+  NameInfo name;
+
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
+  name.FinalizeAfterImport();
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "葵",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kFormatted},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "",
+       .verification_status = VerificationStatus::kNoStatus},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kObserved}};
+
+  test::VerifyFormGroupValues(name, expectation);
+
+  FieldTypeSet matching_types;
+  name.GetMatchingTypesWithProfileSources(u"葵", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({NAME_FIRST}));
+  matching_types.clear();
+
+  // Both "やまもと" and "ヤマモト" are semantically equal.
+  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types,
+            FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types,
+            FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
+
+  // ALTERNATIVE_GIVEN_NAME does not get set.
+  EXPECT_THAT(name.GetRawInfo(ALTERNATIVE_GIVEN_NAME), testing::IsEmpty());
+}
+
+// Tests the scenario in which the profile without an alternative full name
+// is correctly finalized after import.
+TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName2) {
+  NameInfo name;
+
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
+  name.FinalizeAfterImport();
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_FIRST,
+       .value = "葵",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kFormatted},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kObserved}};
+
+  test::VerifyFormGroupValues(name, expectation);
+
+  FieldTypeSet matching_types;
+  // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
+  name.GetMatchingTypesWithProfileSources(u"やまもと あおい", "JP",
+                                          &matching_types, nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"ヤマモト アオイ", "JP",
+                                          &matching_types, nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
+}
+
+// Tests the scenario in which the profile with an incomplete structured name
+// is correctly finalized after import.
+TEST_F(NameInfoTest, FinalizeAfterImportWithIncompleteNameAndAlternativeName) {
+  NameInfo name;
+
+  test::FormGroupValues name_values = {
+      {.type = NAME_FIRST,
+       .value = "葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
+  name.FinalizeAfterImport();
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_FULL,
+       .value = "葵",
+       .verification_status = VerificationStatus::kFormatted},
+      {.type = NAME_FIRST,
+       .value = "葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "",
+       .verification_status = VerificationStatus::kFormatted},
+      {.type = NAME_LAST_FIRST,
+       .value = "",
+       .verification_status = VerificationStatus::kNoStatus},
+      {.type = NAME_LAST_SECOND,
+       .value = "",
+       .verification_status = VerificationStatus::kNoStatus},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved},
       {.type = ALTERNATIVE_GIVEN_NAME,
        .value = "あおい",
        .verification_status = VerificationStatus::kParsed},
@@ -172,9 +381,108 @@ TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
+  name.GetMatchingTypesWithProfileSources(u"葵", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({NAME_FULL, NAME_FIRST}));
+  matching_types.clear();
+
+  // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
   name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
                                           nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"やまもと", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"ヤマモト", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"やまもと あおい", "JP",
+                                          &matching_types, nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
+  matching_types.clear();
+
+  name.GetMatchingTypesWithProfileSources(u"ヤマモト アオイ", "JP",
+                                          &matching_types, nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
+}
+
+// Tests the scenario in which the structured name is merged.
+TEST_F(NameInfoTest, MergeStructuredName) {
+  NameInfo name1;
+  test::SetFormGroupValues(name1, {{.type = NAME_FULL, .value = "John Doe"}});
+
+  NameInfo name2;
+  test::SetFormGroupValues(name2, {{.type = NAME_FIRST, .value = "John"},
+                                   {.type = NAME_FULL, .value = "John Doe"},
+                                   {.type = NAME_LAST, .value = "Doe"}});
+
+  EXPECT_TRUE(name1.MergeStructuredName(name2));
+
+  test::VerifyFormGroupValues(name1, {{.type = NAME_FULL, .value = "John Doe"},
+                                      {.type = NAME_FIRST, .value = "John"},
+                                      {.type = NAME_LAST, .value = "Doe"}});
+}
+
+// Tests the scenario in which the alternative name is merged.
+TEST_F(NameInfoTest, MergeStructuredAlternativeName) {
+  NameInfo stored_profile;
+  test::SetFormGroupValues(
+      stored_profile,
+      {{.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもとあおい"},
+       {.type = ALTERNATIVE_FULL_NAME, .value = "やまもと あおい"}});
+
+  NameInfo submitted_data;
+  test::SetFormGroupValues(
+      submitted_data,
+      {{.type = ALTERNATIVE_GIVEN_NAME, .value = "あおい"},
+       {.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもと"},
+       {.type = ALTERNATIVE_FULL_NAME, .value = "やまもと あおい"}});
+
+  EXPECT_TRUE(stored_profile.MergeStructuredName(submitted_data));
+
+  test::VerifyFormGroupValues(
+      stored_profile,
+      {{.type = ALTERNATIVE_GIVEN_NAME, .value = "あおい"},
+       {.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもと"},
+       {.type = ALTERNATIVE_FULL_NAME, .value = "やまもと あおい"}});
+}
+
+// Tests the scenario in which both the structured name and the alternative
+// name are merged.
+TEST_F(NameInfoTest, MergeStructuredNameMergingBoth) {
+  NameInfo stored_profile;
+  test::SetFormGroupValues(
+      stored_profile, {{.type = NAME_FULL, .value = "John Doe"},
+                       {.type = ALTERNATIVE_FULL_NAME, .value = "John Doe"}});
+
+  NameInfo submitted_data;
+  test::SetFormGroupValues(
+      submitted_data, {{.type = NAME_LAST, .value = "Doe"},
+                       {.type = NAME_FIRST, .value = "John"},
+                       {.type = NAME_FULL, .value = "John Doe"},
+                       {.type = ALTERNATIVE_GIVEN_NAME, .value = "John"},
+                       {.type = ALTERNATIVE_FAMILY_NAME, .value = "Doe"},
+                       {.type = ALTERNATIVE_FULL_NAME, .value = "John Doe"}});
+
+  EXPECT_TRUE(stored_profile.MergeStructuredName(submitted_data));
+
+  test::VerifyFormGroupValues(
+      stored_profile, {{.type = NAME_LAST, .value = "Doe"},
+                       {.type = NAME_FIRST, .value = "John"},
+                       {.type = NAME_FULL, .value = "John Doe"},
+                       {.type = ALTERNATIVE_GIVEN_NAME, .value = "John"},
+                       {.type = ALTERNATIVE_FAMILY_NAME, .value = "Doe"}});
 }
 
 INSTANTIATE_TEST_SUITE_P(

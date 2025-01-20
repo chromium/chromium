@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -152,8 +151,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 // not great to dynamically remove the preference in this way.
             case SiteSettingsCategory.Type.ADS:
                 return SiteSettingsCategory.adsCategoryEnabled();
-            case SiteSettingsCategory.Type.ANTI_ABUSE:
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVATE_STATE_TOKENS);
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
                 return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
@@ -169,8 +166,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return PackageManagerUtils.hasSystemFeature(
                                 PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
                         && WebXrAndroidFeatureMap.isHandTrackingEnabled();
-            case SiteSettingsCategory.Type.NFC:
-                return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !BuildConfig.IS_DESKTOP_ANDROID;
@@ -196,6 +191,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.PERMISSION_DEDICATED_CPSS_SETTING_ANDROID);
+    }
+
+    @Override
+    public boolean isPermissionSiteSettingsRadioButtonFeatureEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON);
     }
 
     @Override
@@ -364,27 +364,22 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionBrandedUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX);
-    }
-
-    @Override
     public boolean shouldShowTrackingProtectionActFeaturesUi() {
-        return shouldDisplayIpProtection() || shouldDisplayFingerprintingProtection();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ACT_USER_BYPASS_UX)
+                && (shouldDisplayIpProtection() || shouldDisplayFingerprintingProtection());
     }
 
     @Override
     public boolean shouldDisplayIpProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
-                // This is copied from the `IsIpProtectionEnabled` check in the TPS API.
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+        // This is copied from the `IsIpProtectionEnabled` check in the TPS API.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
                 && UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
 
     @Override
     public boolean shouldDisplayFingerprintingProtection() {
-        // Note: this is an interim check and will have to be updated for incognito FPP.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
+                && UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
     }
 
     @Override
@@ -409,17 +404,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
-        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            currentActivity,
-                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
-        } else {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            currentActivity,
-                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
-        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        currentActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
     }
 
     @Override

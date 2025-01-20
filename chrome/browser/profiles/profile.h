@@ -121,6 +121,7 @@ class Profile : public content::BrowserContext {
     }
 
     bool AllowsBrowserWindows() const;
+    bool IsDevTools() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Returns true if the OTR Profile was created for captive portal signin.
@@ -429,6 +430,10 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is a system profile.
   bool IsSystemProfile() const;
+
+  // Returns true if this OffTheRecord profile was created via the
+  // "createBrowsingContext" Chrome DevTools Protocol command.
+  bool IsDevToolsOTRProfile() const;
 
   bool CanUseDiskWhenOffTheRecord() override;
 

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -245,18 +246,20 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   BlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
+  if (RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled()) {
+    InvalidateDescendantObjectBoundingBoxes();
+  }
 
   const gfx::RectF boundaries = ObjectBoundingBox();
-  const bool bounds_changed = old_boundaries != boundaries;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_boundaries != boundaries;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
-  return result;
+
+  // Any element of the <text> subtree is advertised as having a viewport
+  // dependence. On any viewport size change, we have to relayout the text
+  // subtree, as the effective 'on-screen' font size may change.
+  return SVGLayoutResult(bounds_changed, /*has_viewport_dependence=*/true);
 }
 
 bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
@@ -404,6 +407,16 @@ void LayoutSVGText::SetNeedsTextMetricsUpdate() {
 bool LayoutSVGText::NeedsTextMetricsUpdate() const {
   NOT_DESTROYED();
   return needs_text_metrics_update_;
+}
+
+void LayoutSVGText::InvalidateDescendantObjectBoundingBoxes() {
+  NOT_DESTROYED();
+  for (LayoutObject* object = NextInPreOrder(this); object;
+       object = object->NextInPreOrder(this)) {
+    if (auto* svg_inline = DynamicTo<LayoutSVGInline>(object)) {
+      svg_inline->InvalidateObjectBoundingBox();
+    }
+  }
 }
 
 LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(LayoutObject* start) {

@@ -27,7 +27,7 @@ using ::testing::ElementsAre;
 // transition to LoadingState::kLoadedIdle. Collects all intermediate states
 // observed in-between. Generates an error if transitions are observed for
 // another PageNode than |page_node|.
-class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
+class PageLoadingStateObserver : public PageNodeObserver,
                                  public GraphOwnedDefaultImpl {
  public:
   PageLoadingStateObserver(base::WeakPtr<PageNode> page_node,

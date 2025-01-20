@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,7 +37,8 @@ class ColorPickerView;
 class TabGroupHeader;
 
 // A dialog for changing a tab group's visual parameters.
-class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
+class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
+                                 public TabStripModelObserver {
   METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
  public:
@@ -47,7 +49,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int TAB_GROUP_HEADER_CXMENU_SHARE = 5;
   static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 6;
   static constexpr int TAB_GROUP_HEADER_CXMENU_DELETE_GROUP = 7;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 8;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_LEAVE_GROUP = 8;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 9;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY = 10;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -78,6 +82,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
                            bool stop_context_menu_propagation);
   ~TabGroupEditorBubbleView() override;
 
+  // TabStripModelObserver:
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+
   void UpdateGroup();
   const std::u16string GetTextForCloseButton() const;
   const std::u16string GetSaveToggleAccessibleName() const;
@@ -86,7 +93,11 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   bool CanShareGroups() const;
   bool IsGroupSaved() const;
   bool IsGroupShared() const;
+  bool HasRecentActivity() const;
   bool ShouldShowSavedFooter() const;
+  // Returns true if the user created the group. Returns false in cases where
+  // the user was invited to join the group.
+  bool OwnsGroup() const;
 
   // When certain settings change, the menu items need to be updated, this
   // method destroys the children of the view, and then recreates them in the
@@ -100,9 +111,11 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   std::unique_ptr<views::LabelButton> BuildUngroupButton();
   std::unique_ptr<views::LabelButton> BuildHideGroupButton();
   std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
+  std::unique_ptr<views::LabelButton> BuildLeaveGroupButton();
   std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
   std::unique_ptr<views::LabelButton> BuildManageSharedGroupButton();
   std::unique_ptr<views::LabelButton> BuildShareGroupButton();
+  std::unique_ptr<views::LabelButton> BuildRecentActivityButton();
 
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
@@ -110,7 +123,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void ShareOrManagePressed();
   void HideGroupPressed();
   void DeleteGroupPressed();
+  void LeaveGroupPressed();
   void MoveGroupToNewWindowPressed();
+  void RecentActivityPressed();
 
   // The action for moving a group to a new window is only enabled when the
   // tabstrip contains more than just the tabs in the current group.
@@ -177,6 +192,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     bool stop_context_menu_propagation_;
   };
   std::unique_ptr<TitleField> BuildTitleField(const std::u16string& title);
+  std::u16string GetGroupTitle();
 
   class Footer : public views::View {
     METADATA_HEADER(Footer, views::View)

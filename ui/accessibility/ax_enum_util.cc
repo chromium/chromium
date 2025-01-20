@@ -1313,6 +1313,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "fontFamily";
     case ax::mojom::StringAttribute::kHtmlId:
       return "htmlId";
+    case ax::mojom::StringAttribute::kHtmlInputName:
+      return "htmlInputName";
     case ax::mojom::StringAttribute::kHtmlTag:
       return "htmlTag";
     case ax::mojom::StringAttribute::kImageAnnotation:
@@ -1404,6 +1406,8 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kFontFamily;
   } else if (string_attribute == "kHtmlId") {
     return ax::mojom::StringAttribute::kHtmlId;
+  } else if (string_attribute == "kHtmlInputName") {
+    return ax::mojom::StringAttribute::kHtmlInputName;
   } else if (string_attribute == "kHtmlTag") {
     return ax::mojom::StringAttribute::kHtmlTag;
   } else if (string_attribute == "kImageAnnotation") {

@@ -9,25 +9,26 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace autofill::autofill_metrics {
 
@@ -144,6 +145,41 @@ void LogDurationMetrics(const FormStructure& form,
   }
 }
 
+// Returns the character set of the submitted value for the alternative name
+// field.
+AutofillAlternativeNameFieldValueCharacterSet
+GetAlternativeNameFieldValueCharacterSet(
+    const std::u16string& submitted_value) {
+  UErrorCode error = U_ZERO_ERROR;
+  for (base::i18n::UTF16CharIterator iter(submitted_value); !iter.end();
+       iter.Advance()) {
+    if (uscript_getScript(iter.get(), &error) == USCRIPT_KATAKANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kKatakana;
+    } else if (uscript_getScript(iter.get(), &error) == USCRIPT_HIRAGANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kHiragana;
+    }
+  }
+  return AutofillAlternativeNameFieldValueCharacterSet::kOther;
+}
+
+// Records the character set of the submitted value for each alternative name
+// field in the form.
+void LogSubmittedAlternativeNameCharacterSetValues(const FormStructure& form) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (IsAlternativeNameType(field->Type().GetStorableType()) &&
+        !field->value(ValueSemantics::kCurrent).empty()) {
+      base::UmaHistogramEnumeration(
+          "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+          GetAlternativeNameFieldValueCharacterSet(
+              field->value(ValueSemantics::kCurrent)));
+    }
+  }
+}
+
 void LogExtractionMetrics(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     CHECK(!field->possible_types().empty());
@@ -157,20 +193,21 @@ void LogExtractionMetrics(const FormStructure& form) {
 
 void LogPredictionMetrics(
     const FormStructure& form,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     bool observed_submission) {
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
-    LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger, form,
-                                         *field, metric_type);
-    LogServerPredictionQualityMetrics(form_interactions_ukm_logger, form,
-                                      *field, metric_type);
-    LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, form,
-                                       *field, metric_type);
+    LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger,
+                                         source_id, form, *field, metric_type);
+    LogServerPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
+                                      form, *field, metric_type);
+    LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
+                                       form, *field, metric_type);
     LogEmailFieldPredictionMetrics(*field);
-    autofill_metrics::LogShadowPredictionComparison(*field,
-                                                    GetActiveHeuristicSource());
+    LogShadowPredictionComparison(*field, GetActiveHeuristicSource());
+    LogFieldPredictionOverlapMetrics(*field);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // If ML predictions are the active heuristic source, don't record samples
     // as these would be redundant to the ".Heuristic" sub-metric of
@@ -178,35 +215,36 @@ void LogPredictionMetrics(
     if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
         GetActiveHeuristicSource() !=
             HeuristicSource::kAutofillMachineLearning) {
-      LogMlPredictionQualityMetrics(form_interactions_ukm_logger, form, *field,
-                                    metric_type);
+      LogMlPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
+                                    form, *field, metric_type);
     }
 #endif
   }
 }
 
-void LogFillingMetrics(
-    const FormStructure& form,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    bool observed_submission) {
+void LogFillingMetrics(const FormStructure& form,
+                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
+                       ukm::SourceId source_id,
+                       bool observed_submission) {
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
-    form_interactions_ukm_logger->LogFieldFillStatus(form, *field, metric_type);
+    form_interactions_ukm_logger.LogFieldFillStatus(source_id, form, *field,
+                                                    metric_type);
   }
   if (!observed_submission) {
     return;
   }
   LogPerfectFillingMetric(form);
   LogPreFillMetrics(form);
-  autofill_metrics::LogFieldFillingStatsAndScore(form);
+  LogFieldFillingStatsAndScore(form);
   LogFillingQualityMetrics(form);
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (field->is_autofilled() || field->previously_autofilled()) {
       AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
-          form_interactions_ukm_logger, form, *field);
+          form_interactions_ukm_logger, source_id, form, *field);
     }
     if (FieldHasMeaningfulPossibleFieldTypes(*field) &&
         field->is_autofilled()) {
@@ -221,21 +259,24 @@ void LogFillingMetrics(
 
 }  // namespace
 
-void LogQualityMetrics(
-    const FormStructure& form_structure,
-    base::TimeTicks load_time,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    bool observed_submission) {
+void LogQualityMetrics(const FormStructure& form_structure,
+                       base::TimeTicks load_time,
+                       base::TimeTicks interaction_time,
+                       base::TimeTicks submission_time,
+                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
+                       ukm::SourceId source_id,
+                       bool observed_submission) {
   // Use the same timestamp on UKM Metrics generated within this method's scope.
-  UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
+  UkmTimestampPin timestamp_pin(&form_interactions_ukm_logger);
 
-  LogPredictionMetrics(form_structure, form_interactions_ukm_logger,
+  LogPredictionMetrics(form_structure, form_interactions_ukm_logger, source_id,
                        observed_submission);
-  LogFillingMetrics(form_structure, form_interactions_ukm_logger,
+  LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
                     observed_submission);
   if (observed_submission) {
+    // TODO(crbug.com/359768803): Remove this metric once the feature is
+    // launched.
+    LogSubmittedAlternativeNameCharacterSetValues(form_structure);
     LogExtractionMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
@@ -247,14 +288,16 @@ void LogQualityMetrics(
 // autocomplete attribute takes precedence over other type predictions).
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id) {
   const QualityMetricType metric_type = TYPE_AUTOCOMPLETE_BASED;
   for (const auto& field : form_structure) {
     if (field->html_type() != HtmlFieldType::kUnspecified &&
         field->html_type() != HtmlFieldType::kUnrecognized) {
       LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger,
-                                           form_structure, *field, metric_type);
-      LogServerPredictionQualityMetrics(form_interactions_ukm_logger,
+                                           source_id, form_structure, *field,
+                                           metric_type);
+      LogServerPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
                                         form_structure, *field, metric_type);
     }
   }

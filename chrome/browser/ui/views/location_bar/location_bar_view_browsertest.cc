@@ -17,11 +17,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -52,6 +59,15 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
+
+namespace {
+void FocusNextView(views::FocusManager* focus_manager) {
+  views::View* const focused_view = focus_manager->GetFocusedView();
+  views::View* const next_view =
+      focus_manager->GetNextFocusableView(focused_view, nullptr, false, false);
+  focus_manager->SetFocusedView(next_view);
+}
+}  // namespace
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -201,8 +217,9 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, OmniboxViewViewsSize) {
   // so it's not possible to test the leading side).
   views::View* omnibox_view_views = GetLocationBarView()->omnibox_view();
   for (views::View* child : GetLocationBarView()->children()) {
-    if (child != omnibox_view_views)
+    if (child != omnibox_view_views) {
       child->SetVisible(false);
+    }
   }
 
   views::test::RunScheduledLayout(GetLocationBarView());
@@ -226,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
   views::Label* ime_inline_autocomplete_view =
       GetLocationBarView()->ime_inline_autocomplete_view_;
   for (views::View* child : GetLocationBarView()->children()) {
-    if (child != omnibox_view_views)
+    if (child != omnibox_view_views) {
       child->SetVisible(false);
+    }
   }
   omnibox_view_views->SetText(u"谷");
   GetLocationBarView()->SetImeInlineAutocompletion(u"歌");
@@ -399,4 +417,70 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 
   // Geolocation icon should be off.
   EXPECT_FALSE(geolocation_icon.GetVisible());
+}
+
+class LocationBarViewPageActionMigrationTest
+    : public LocationBarViewBrowserTest {
+ public:
+  LocationBarViewPageActionMigrationTest() {
+    scoped_feature_list_.InitWithFeatures({::features::kPageActionsMigration},
+                                          {});
+  }
+  ~LocationBarViewPageActionMigrationTest() override = default;
+
+  LocationBarViewPageActionMigrationTest(
+      const LocationBarViewPageActionMigrationTest&) = delete;
+  LocationBarViewPageActionMigrationTest& operator=(
+      const LocationBarViewPageActionMigrationTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Wayland doesn't support changing window activation programmatically.
+// TODO(crbug.com/376285664): Remove this test altogether once the migration
+// is complete.
+#if BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_LocationBarFocusOrder DISABLED_LocationBarFocusOrder
+#else
+#define MAYBE_LocationBarFocusOrder ocationBarFocusOrder
+#endif
+
+// Tests that shifting focus from the omnibox will focus the migrated page
+// actions first, followed by the legacy page actions.
+IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
+                       MAYBE_LocationBarFocusOrder) {
+  actions::ActionItem* const lens_action =
+      actions::ActionManager::Get().FindAction(
+          kActionSidePanelShowLensOverlayResults);
+  ASSERT_NE(nullptr, lens_action);
+  lens_action->SetVisible(true);
+  lens_action->SetEnabled(true);
+  browser()
+      ->GetActiveTabInterface()
+      ->GetTabFeatures()
+      ->page_action_controller()
+      ->Show(kActionSidePanelShowLensOverlayResults);
+
+  views::View* const lens_overlay_page_action_view =
+      GetLocationBarView()->page_action_container()->GetPageActionView(
+          kActionSidePanelShowLensOverlayResults);
+  views::View* const bookmark_page_action_view =
+      GetLocationBarView()->page_action_icon_controller()->GetIconView(
+          PageActionIconType::kBookmarkStar);
+  ASSERT_TRUE(lens_overlay_page_action_view->GetVisible());
+  ASSERT_TRUE(bookmark_page_action_view->GetVisible());
+
+  views::FocusManager* const focus_manager =
+      GetLocationBarView()->GetFocusManager();
+
+  GetLocationBarView()->FocusLocation(true);
+  OmniboxViewViews* const omnibox = GetLocationBarView()->omnibox_view();
+  ASSERT_EQ(omnibox, focus_manager->GetFocusedView());
+
+  FocusNextView(focus_manager);
+  EXPECT_EQ(lens_overlay_page_action_view, focus_manager->GetFocusedView());
+
+  FocusNextView(focus_manager);
+  EXPECT_EQ(bookmark_page_action_view, focus_manager->GetFocusedView());
 }

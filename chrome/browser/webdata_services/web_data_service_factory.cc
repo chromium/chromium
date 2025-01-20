@@ -73,7 +73,7 @@ void ProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
 // account web database should be persisted on disk or in-memory only.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(WebDatabaseAutofillAccountStorageWithReason)
+// LINT.IfChange(WebDatabaseAutofillAccountStorageResult)
 enum class AutofillAccountStorageResult {
   kInMemory_FlagDisabled = 0,
   kInMemory_SignedInImplicitly = 1,
@@ -82,7 +82,7 @@ enum class AutofillAccountStorageResult {
   kOnDisk_SyncFeatureEnabled = 4,
   kMaxValue = kOnDisk_SyncFeatureEnabled
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:WebDatabaseAutofillAccountStorageWithReason)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/others/enums.xml:WebDatabaseAutofillAccountStorageResult)
 
 // See `ShouldUseInMemoryAutofillAccountDatabase()` for details about how this
 // function is useful. Instead of returning a boolean, this function returns an

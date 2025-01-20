@@ -98,7 +98,7 @@ class Summer {
   void AddFiveParam(int a, int b, int c, int d, int e) {
     value_ = a + b + c + d + e;
   }
-  void AddSixParam(int a, int b, int c, int d, int e , int f) {
+  void AddSixParam(int a, int b, int c, int d, int e, int f) {
     value_ = a + b + c + d + e + f;
   }
 

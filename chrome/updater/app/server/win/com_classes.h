@@ -14,6 +14,7 @@
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
 namespace updater {
@@ -25,7 +26,8 @@ namespace updater {
 class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
  public:
   explicit UpdateStateImpl(const UpdateService::UpdateState& update_state)
-      : update_state_(update_state) {}
+      : DYNAMICIIDSIMPL(IUpdateState)(GetUpdaterScope()),
+        update_state_(update_state) {}
   UpdateStateImpl(const UpdateStateImpl&) = delete;
   UpdateStateImpl& operator=(const UpdateStateImpl&) = delete;
 
@@ -53,7 +55,9 @@ class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
 class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
  public:
   CompleteStatusImpl(int code, const std::wstring& message)
-      : code_(code), message_(message) {}
+      : DYNAMICIIDSIMPL(ICompleteStatus)(GetUpdaterScope()),
+        code_(code),
+        message_(message) {}
   CompleteStatusImpl(const CompleteStatusImpl&) = delete;
   CompleteStatusImpl& operator=(const CompleteStatusImpl&) = delete;
 
@@ -68,10 +72,11 @@ class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
   const std::wstring message_;
 };
 
-// This class implements the IUpdater interface and exposes it as a COM object.
-class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
+// This class implements the IUpdater interfaces and exposes them as a COM
+// object.
+class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
  public:
-  UpdaterImpl() = default;
+  UpdaterImpl();
   UpdaterImpl(const UpdaterImpl&) = delete;
   UpdaterImpl& operator=(const UpdaterImpl&) = delete;
 
@@ -123,6 +128,46 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
                               IUpdaterObserver* observer) override;
   IFACEMETHODIMP GetAppStates(IUpdaterAppStatesCallback* callback) override;
 
+  // Overrides for IUpdater2.
+  IFACEMETHODIMP RegisterApp2(const wchar_t* app_id,
+                              const wchar_t* brand_code,
+                              const wchar_t* brand_path,
+                              const wchar_t* tag,
+                              const wchar_t* version,
+                              const wchar_t* existence_checker_path,
+                              const wchar_t* install_id,
+                              IUpdaterCallback* callback) override;
+  IFACEMETHODIMP CheckForUpdate2(const wchar_t* app_id,
+                                 LONG priority,
+                                 BOOL same_version_update_allowed,
+                                 const wchar_t* language,
+                                 IUpdaterObserver* observer) override;
+  IFACEMETHODIMP Update2(const wchar_t* app_id,
+                         const wchar_t* install_data_index,
+                         LONG priority,
+                         BOOL same_version_update_allowed,
+                         const wchar_t* language,
+                         IUpdaterObserver* observer) override;
+  IFACEMETHODIMP Install2(const wchar_t* app_id,
+                          const wchar_t* brand_code,
+                          const wchar_t* brand_path,
+                          const wchar_t* tag,
+                          const wchar_t* version,
+                          const wchar_t* existence_checker_path,
+                          const wchar_t* client_install_data,
+                          const wchar_t* install_data_index,
+                          const wchar_t* install_id,
+                          LONG priority,
+                          const wchar_t* language,
+                          IUpdaterObserver* observer) override;
+  IFACEMETHODIMP RunInstaller2(const wchar_t* app_id,
+                               const wchar_t* installer_path,
+                               const wchar_t* install_args,
+                               const wchar_t* install_data,
+                               const wchar_t* install_settings,
+                               const wchar_t* language,
+                               IUpdaterObserver* observer) override;
+
  private:
   ~UpdaterImpl() override = default;
 };
@@ -131,7 +176,8 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
 // object.
 class UpdaterInternalImpl : public DYNAMICIIDSIMPL(IUpdaterInternal) {
  public:
-  UpdaterInternalImpl() = default;
+  UpdaterInternalImpl()
+      : DYNAMICIIDSIMPL(IUpdaterInternal)(GetUpdaterScope()) {}
   UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;
   UpdaterInternalImpl& operator=(const UpdaterInternalImpl&) = delete;
 

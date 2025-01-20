@@ -66,7 +66,7 @@ class AddSyncedVisitTask : public history::HistoryDBTask {
 
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class HistoryApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {

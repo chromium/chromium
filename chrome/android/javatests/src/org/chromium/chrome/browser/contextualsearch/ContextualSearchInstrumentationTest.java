@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -75,6 +76,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/378735617
     public void testPrivacyNeutralPeekExpandMaximize() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         mPolicy.overrideDecidedStateForTesting(false);

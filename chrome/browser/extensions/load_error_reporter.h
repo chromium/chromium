@@ -31,7 +31,7 @@ class LoadErrorReporter {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when an unpacked extension fails to load.
     virtual void OnLoadFailure(content::BrowserContext* browser_context,

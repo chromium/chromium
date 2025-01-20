@@ -106,8 +106,9 @@ void Noise::MixKeyAndHash(base::span<const uint8_t> ikm) {
        chaining_key_.data(), chaining_key_.size(), /*info=*/nullptr, 0);
   DCHECK_EQ(chaining_key_.size(), 32u);
   memcpy(chaining_key_.data(), output, 32);
-  MixHash(base::span<const uint8_t>(&output[32], 32u));
-  InitializeKey(base::span<const uint8_t, 32>(&output[64], 32u));
+  const auto [hash, key] = base::span(output).subspan<32>().split_at<32>();
+  MixHash(hash);
+  InitializeKey(key);
 }
 
 std::vector<uint8_t> Noise::EncryptAndHash(
@@ -156,7 +157,7 @@ void Noise::MixHashPoint(const EC_POINT* point) {
 
 std::tuple<std::array<uint8_t, 32>, std::array<uint8_t, 32>>
 Noise::traffic_keys() const {
-  return HKDF2(chaining_key_, base::span<const uint8_t>());
+  return HKDF2(chaining_key_, {});
 }
 
 void Noise::InitializeKey(base::span<const uint8_t, 32> key) {

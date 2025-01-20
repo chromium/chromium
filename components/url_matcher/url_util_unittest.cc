@@ -85,7 +85,7 @@ bool MatchFilters(const std::vector<std::string>& patterns,
   base::Value::List list;
   for (const auto& pattern : patterns)
     list.Append(pattern);
-  AddAllowFilters(&matcher, list);
+  AddAllowFiltersWithLimit(&matcher, list);
   return !matcher.MatchURL(GURL(url)).empty();
 }
 

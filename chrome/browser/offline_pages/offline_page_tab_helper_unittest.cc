@@ -46,7 +46,7 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
   OfflinePageTabHelperTest(const OfflinePageTabHelperTest&) = delete;
   OfflinePageTabHelperTest& operator=(const OfflinePageTabHelperTest&) = delete;
 
-  ~OfflinePageTabHelperTest() override {}
+  ~OfflinePageTabHelperTest() override = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -323,7 +323,8 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
   SimulateOfflinePageLoad(kTestUrl, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kSuccess);
 
-  int process_id = web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   int main_frame_id = web_contents()->GetPrimaryMainFrame()->GetRoutingID();
 
   // Navigate away.

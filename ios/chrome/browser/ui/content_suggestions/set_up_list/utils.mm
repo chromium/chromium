@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -27,15 +28,18 @@ bool IsSetUpListActive(PrefService* local_prefs,
       return false;
     }
   }
-  // Check if we are within 14 days of FRE.
-  if (IsFirstRun()) {
+  // Check if we are within the duration of the Set Up List, relevant to the
+  // FRE.
+  if (set_up_list::GetSetUpListInFirstRunVariation() ==
+          set_up_list::FirstRunVariationType::kDisabled &&
+      IsFirstRun()) {
     // If this is the first time the app has been opened, First Run will not
     // have been completed yet. In this case, we will wait until the next run.
     return false;
   }
-  if (!IsFirstRunRecent(base::Days(14))) {
-    // It has been 14+ days since FRE, but if user has interacted in the last
-    // day the time will be extended.
+  if (!IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())) {
+    // It is past the max duration of the Set Up List, but if user has
+    // interacted in the last day the time will be extended.
     base::Time last_interaction =
         set_up_list_prefs::GetLastInteraction(local_prefs);
     if (base::Time::Now() > last_interaction + base::Days(1)) {
@@ -47,6 +51,10 @@ bool IsSetUpListActive(PrefService* local_prefs,
 }
 
 bool ShouldShowCompactedSetUpListModule() {
+  if (set_up_list::GetSetUpListInFirstRunVariation() !=
+      set_up_list::FirstRunVariationType::kDisabled) {
+    return true;
+  }
   return !IsFirstRunRecent(base::Days(TimeUntilShowingCompactedSetUpList()));
 }
 

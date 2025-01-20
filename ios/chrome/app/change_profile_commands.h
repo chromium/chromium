@@ -5,15 +5,19 @@
 #ifndef IOS_CHROME_APP_CHANGE_PROFILE_COMMANDS_H_
 #define IOS_CHROME_APP_CHANGE_PROFILE_COMMANDS_H_
 
-#import <Foundation/Foundation.h>
+#import <string_view>
 
-// Callback invoked when the profile change request is complete.
-using ChangeProfileCompletion = void (^)(bool success);
+#import "base/functional/callback_forward.h"
+#import "ios/chrome/app/change_profile_continuation.h"
+
+@class SceneState;
+
+using ProfileDeletedCallback = base::OnceCallback<void(bool)>;
 
 // App-level commands related to switching profiles.
 @protocol ChangeProfileCommands
 
-// Change the profile used by the scene with `sceneIdentifier` and invoke
+// Changes the profile used by the scene with `sceneIdentifier` and invoke
 // `completion` when the profile is fully initialised (or as soon as the
 // operation fails in case of failure).
 //
@@ -24,9 +28,19 @@ using ChangeProfileCompletion = void (^)(bool success);
 // The method may fail if the feature kSeparateProfilesForManagedAccounts
 // is disabled or not available (on iOS < 17), if creating the profile is
 // impossible or fails, or if no scene named `sceneIdentifier` exists.
-- (void)changeProfile:(NSString*)profileName
-             forScene:(NSString*)sceneIdentifier
-           completion:(ChangeProfileCompletion)completion;
+//
+// The continuation will be called asynchronously, when the profile has
+// been switched for the SceneState.
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+         continuation:(ChangeProfileContinuation)continuation;
+
+// Deletes the profile named `profileName` and invoke `completion` when the
+// profile is marked for deletion and unloaded (or as soon as the operation
+// fails in case of failure). Each scenes that are currently displaying
+// `profileName` will switch to the personal profile.
+- (void)deleteProfile:(std::string_view)profileName
+           completion:(ProfileDeletedCallback)completion;
 
 @end
 

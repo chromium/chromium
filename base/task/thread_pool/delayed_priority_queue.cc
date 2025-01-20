@@ -63,14 +63,16 @@ class DelayedPriorityQueue::TaskSourceAndDelayedSortKey {
   void ClearHeapHandle() {
     // Ensure |task_source_| is not nullptr, which may be the case if
     // take_task_source() was called before this.
-    if (task_source_)
+    if (task_source_) {
       task_source_->ClearDelayedHeapHandle();
+    }
   }
 
   // Required by IntrusiveHeap.
   HeapHandle GetHeapHandle() const {
-    if (task_source_)
+    if (task_source_) {
       return task_source_->GetDelayedHeapHandle();
+    }
     return HeapHandle::Invalid();
   }
 
@@ -86,8 +88,9 @@ class DelayedPriorityQueue::TaskSourceAndDelayedSortKey {
 DelayedPriorityQueue::DelayedPriorityQueue() = default;
 
 DelayedPriorityQueue::~DelayedPriorityQueue() {
-  if (!is_flush_task_sources_on_destroy_enabled_)
+  if (!is_flush_task_sources_on_destroy_enabled_) {
     return;
+  }
 
   while (!container_.empty()) {
     auto task_source = PopTaskSource();
@@ -127,12 +130,14 @@ scoped_refptr<TaskSource> DelayedPriorityQueue::PopTaskSource() {
 
 scoped_refptr<TaskSource> DelayedPriorityQueue::RemoveTaskSource(
     scoped_refptr<TaskSource> task_source) {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return nullptr;
+  }
 
   const HeapHandle heap_handle = task_source->delayed_heap_handle();
-  if (!heap_handle.IsValid())
+  if (!heap_handle.IsValid()) {
     return nullptr;
+  }
 
   TaskSourceAndDelayedSortKey& task_source_and_delayed_sort_key =
       const_cast<DelayedPriorityQueue::TaskSourceAndDelayedSortKey&>(
@@ -146,12 +151,14 @@ scoped_refptr<TaskSource> DelayedPriorityQueue::RemoveTaskSource(
 
 void DelayedPriorityQueue::UpdateDelayedSortKey(
     scoped_refptr<TaskSource> task_source) {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return;
+  }
 
   const HeapHandle heap_handle = task_source->delayed_heap_handle();
-  if (!heap_handle.IsValid())
+  if (!heap_handle.IsValid()) {
     return;
+  }
 
   DCHECK_EQ(container_.at(heap_handle).task_source(), task_source);
 

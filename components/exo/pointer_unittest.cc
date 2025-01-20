@@ -2176,8 +2176,8 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
   constexpr gfx::Size buffer_size(10, 10);
   const auto buffer_format = gfx::BufferFormat::RGBA_8888;
   // Setting some default usage in order to get a mappable shared image.
-  const auto si_usage =
-      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Create a mappable shared image.
   auto shared_image = test_sii->CreateSharedImage(

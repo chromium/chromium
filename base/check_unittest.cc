@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -257,7 +258,7 @@ TEST(CheckDeathTest, CheckOpStrings) {
 }
 
 TEST(CheckDeathTest, CheckOpPointers) {
-  uint8_t arr[] = {3, 2, 1, 0};
+  auto arr = std::to_array<uint8_t>({3, 2, 1, 0});
   uint8_t* arr_start = &arr[0];
   // Print pointers and not the binary data in `arr`.
 #if BUILDFLAG(IS_WIN)
@@ -409,26 +410,30 @@ TEST(CheckTest, DcheckReleaseBehavior) {
 
 TEST(CheckTest, DCheckEqStatements) {
   bool reached = false;
-  if (false)
+  if (false) {
     DCHECK_EQ(false, true);  // Unreached.
-  else
+  } else {
     DCHECK_EQ(true, reached = true);  // Reached, passed.
+  }
   ASSERT_EQ(DCHECK_IS_ON() ? true : false, reached);
 
-  if (false)
+  if (false) {
     DCHECK_EQ(false, true);  // Unreached.
+  }
 }
 
 TEST(CheckTest, CheckEqStatements) {
   bool reached = false;
-  if (false)
+  if (false) {
     CHECK_EQ(false, true);  // Unreached.
-  else
+  } else {
     CHECK_EQ(true, reached = true);  // Reached, passed.
+  }
   ASSERT_TRUE(reached);
 
-  if (false)
+  if (false) {
     CHECK_EQ(false, true);  // Unreached.
+  }
 }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -541,20 +546,51 @@ TEST(CheckDeathTest, OstreamVsToString) {
                CHECK_EQ(g, h));
 }
 
-// This non-void function is here to make sure that NOTREACHED() is properly
-// annotated as [[noreturn]] and does not require a return statement.
+TEST(CheckDeathTest, NotReached) {
+  // Expect to be CHECK fatal but with a different error message.
+  EXPECT_CHECK("NOTREACHED hit. foo", NOTREACHED() << "foo");
+}
+
+// These non-void functions are here to make sure that CHECK failures and
+// NOTREACHED() are properly annotated as [[noreturn]] by not requiring a return
+// statement.
 int NotReachedInFunction() {
   NOTREACHED();
   // No return statement here.
 }
 
-TEST(CheckDeathTest, NotReached) {
-  // Expect to be CHECK fatal but with a different error message.
-  EXPECT_CHECK("NOTREACHED hit. foo", NOTREACHED() << "foo");
+int CheckFailureInFunction() {
+  constexpr int kFalse = false;
+  CHECK(kFalse);
+
+  // No return statement here.
+}
+
+int PCheckFailureInFunction() {
+  constexpr int kFalse = false;
+  PCHECK(kFalse);
+
+  // No return statement here.
+}
+
+TEST(CheckDeathTest, CheckFailuresAreNoreturn) {
   // This call can't use EXPECT_CHECK as the NOTREACHED happens on a different
   // line.
   EXPECT_DEATH_IF_SUPPORTED(NotReachedInFunction(),
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
+
+  // This call can't use EXPECT_CHECK as the CHECK failure happens on a
+  // different line.
+  EXPECT_DEATH_IF_SUPPORTED(CheckFailureInFunction(),
+                            CHECK_WILL_STREAM() ? "Check failed: " : "");
+
+  // This call can't use EXPECT_CHECK as the PCHECK failure happens on a
+  // different line.
+  EXPECT_DEATH_IF_SUPPORTED(PCheckFailureInFunction(),
+                            CHECK_WILL_STREAM() ? "Check failed: " : "");
+
+  // TODO(crbug.com/40122554): Make sure CHECK_LT(1, 1) is [[noreturn]]. That
+  // doesn't work in the current developer build.
 }
 
 TEST(CheckDeathTest, DumpWillBeCheck) {

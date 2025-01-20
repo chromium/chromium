@@ -31,13 +31,13 @@ using testing::AtLeast;
 
 class BrowserShutdownBrowserTest : public InProcessBrowserTest {
  public:
-  BrowserShutdownBrowserTest() {}
+  BrowserShutdownBrowserTest() = default;
 
   BrowserShutdownBrowserTest(const BrowserShutdownBrowserTest&) = delete;
   BrowserShutdownBrowserTest& operator=(const BrowserShutdownBrowserTest&) =
       delete;
 
-  ~BrowserShutdownBrowserTest() override {}
+  ~BrowserShutdownBrowserTest() override = default;
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -45,7 +45,7 @@ class BrowserShutdownBrowserTest : public InProcessBrowserTest {
 
 class BrowserClosingObserver : public BrowserListObserver {
  public:
-  BrowserClosingObserver() {}
+  BrowserClosingObserver() = default;
 
   BrowserClosingObserver(const BrowserClosingObserver&) = delete;
   BrowserClosingObserver& operator=(const BrowserClosingObserver&) = delete;

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -19,7 +20,10 @@ import org.chromium.base.ObserverList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Optional;
 
 /**
  * Java counterpart of the `AndroidSensitiveContentClient`. Used to retrieve the container view and
@@ -40,6 +44,20 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
         void setContentSensitivity(View containerView, boolean contentIsSensitive);
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        TabSwitchingAnimation.NEW_TAB_IN_BACKGROUND,
+        TabSwitchingAnimation.TOP_TOOLBAR_SWIPE,
+        TabSwitchingAnimation.COUNT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabSwitchingAnimation {
+        int NEW_TAB_IN_BACKGROUND = 0;
+        int TOP_TOOLBAR_SWIPE = 1;
+        int COUNT = 2;
+    }
+
     /** Caches the current content sensitivity of the {@link WebContents}. */
     private boolean mContentIsSensitive;
 
@@ -55,7 +73,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      * reference to the {@link ViewAndroidDelegate}. Therefore, the reference is weak, to allow
      * garbage collection.
      */
-    private WeakReference<ViewAndroidDelegate> mLastViewAndroidDelegate;
+    private WeakReference<ViewAndroidDelegate> mViewAndroidDelegate;
 
     /**
      * Sets the provided content sensitivity on the provided view, in production. In tests, it is
@@ -65,6 +83,12 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     private final ContentSensitivitySetter mContentSensitivitySetter;
 
     private final ObserverList<Observer> mObservers;
+
+    /**
+     * Has value if the content sensitivity was restored from tab state. The value is true if the
+     * content is sensitive, and false otherwise.
+     */
+    private Optional<Boolean> mContentRestoredFromTabStateIsSensitive = Optional.empty();
 
     /**
      * Retrieves the client from {@link WebContents}, by calling the native client. The native
@@ -95,10 +119,10 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     SensitiveContentClient(
             WebContents webContents, ContentSensitivitySetter contentSensitivitySetter) {
         mWebContents = webContents;
-        mLastViewAndroidDelegate =
+        mViewAndroidDelegate =
                 new WeakReference<ViewAndroidDelegate>(mWebContents.getViewAndroidDelegate());
-        if (mLastViewAndroidDelegate.get() != null) {
-            mLastViewAndroidDelegate.get().addObserver(this);
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().addObserver(this);
         }
         mContentSensitivitySetter = contentSensitivitySetter;
         mObservers = new ObserverList<Observer>();
@@ -106,10 +130,30 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
 
     @CalledByNative
     private void destroy() {
-        if (mLastViewAndroidDelegate.get() != null) {
-            mLastViewAndroidDelegate.get().removeObserver(this);
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().removeObserver(this);
         }
         mObservers.clear();
+    }
+
+    /**
+     * Updates the content sensitivity of the container view. Called by {@link TabImpl} when the tab
+     * gets initialized, in case the {@link WebContents} of the tab were deleted (for example,
+     * because of browser restart).
+     *
+     * @param contentIsSensitive Content sensitivity.
+     */
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void restoreContentSensitivityFromTabState(boolean contentIsSensitive) {
+        // It is important to update {@code mContentIsSensitive} now, in case the container view is
+        // currently null. Thus, the sensitivity will be set later, when the container view can be
+        // accessed. The observers will not be notified about the content sensitivity change,
+        // because {@code mContentIsSensitive} and {@code contentIsSensitive} have the same value.
+        // This is ok, because {@link TabImpl} is both the observer and the one that calls this
+        // method, so it is aware of the content sensitivity.
+        mContentIsSensitive = contentIsSensitive;
+        mContentRestoredFromTabStateIsSensitive = Optional.of(contentIsSensitive);
+        setContentSensitivity(contentIsSensitive);
     }
 
     /**
@@ -120,7 +164,25 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      */
     @Override
     public void onUpdateContainerView(ViewGroup view) {
-        assert view == mWebContents.getViewAndroidDelegate().getContainerView();
+        assert view == mViewAndroidDelegate.get().getContainerView();
+        setContentSensitivity(mContentIsSensitive);
+    }
+
+    /**
+     * A new {@link ViewAndroidDelegate} is associated with the new {@link WebContents}. The new
+     * {@link ViewAndroidDelegate} must be now observed.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onViewAndroidDelegateSet() {
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().removeObserver(this);
+        }
+        mViewAndroidDelegate =
+                new WeakReference<ViewAndroidDelegate>(mWebContents.getViewAndroidDelegate());
+        if (mViewAndroidDelegate.get() != null) {
+            mViewAndroidDelegate.get().addObserver(this);
+        }
         setContentSensitivity(mContentIsSensitive);
     }
 
@@ -133,21 +195,13 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     @CalledByNative
     @VisibleForTesting
     void setContentSensitivity(boolean contentIsSensitive) {
-        final ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
-        if (mLastViewAndroidDelegate.get() != viewAndroidDelegate) {
-            if (mLastViewAndroidDelegate.get() != null) {
-                mLastViewAndroidDelegate.get().removeObserver(this);
-            }
-            if (viewAndroidDelegate != null) {
-                viewAndroidDelegate.addObserver(this);
-            }
-            mLastViewAndroidDelegate = new WeakReference<ViewAndroidDelegate>(viewAndroidDelegate);
-        }
-
-        if (viewAndroidDelegate == null) {
+        // If {@link WebContents} is being destroyed, then `mWebContents.getViewAndroidDelegate()`
+        // might be null, while `mViewAndroidDelegate.get()` might not be null.
+        if (mWebContents.getViewAndroidDelegate() == null) {
             return;
         }
-        View containerView = viewAndroidDelegate.getContainerView();
+        assert mWebContents.getViewAndroidDelegate() == mViewAndroidDelegate.get();
+        View containerView = mViewAndroidDelegate.get().getContainerView();
         if (containerView == null) {
             return;
         }
@@ -159,7 +213,13 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
         }
     }
 
+    @VisibleForTesting
+    public Optional<Boolean> getContentRestoredFromTabStateIsSensitive() {
+        return mContentRestoredFromTabStateIsSensitive;
+    }
+
     /** Observes changes made by the {@link SensitiveContentClient}. */
+    @FunctionalInterface
     public static interface Observer {
         /**
          * Called when the content sensitivity changed.

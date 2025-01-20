@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/network_ui/network_ui.h"
 
 #include <memory>
@@ -37,7 +32,6 @@
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui/network_logs_message_handler.h"
 #include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -71,6 +65,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -106,8 +101,9 @@ bool GetServicePathFromGuid(const std::string& guid,
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
           guid);
-  if (!network)
+  if (!network) {
     return false;
+  }
   *service_path = network->path();
   return true;
 }
@@ -115,12 +111,14 @@ bool GetServicePathFromGuid(const std::string& guid,
 void SetDeviceProperties(base::Value::Dict* dictionary) {
   DCHECK(dictionary);
   const std::string* device = dictionary->FindString(shill::kDeviceProperty);
-  if (!device)
+  if (!device) {
     return;
+  }
   const DeviceState* device_state =
       NetworkHandler::Get()->network_state_handler()->GetDeviceState(*device);
-  if (!device_state)
+  if (!device_state) {
     return;
+  }
 
   base::Value::Dict device_dictionary = device_state->properties().Clone();
   if (!device_state->ip_configs().empty()) {
@@ -131,8 +129,9 @@ void SetDeviceProperties(base::Value::Dict* dictionary) {
     }
     device_dictionary.Set(shill::kIPConfigsProperty, std::move(ip_configs));
   }
-  if (!device_dictionary.empty())
+  if (!device_dictionary.empty()) {
     dictionary->Set(shill::kDeviceProperty, std::move(device_dictionary));
+  }
 }
 
 bool IsGuestModeActive() {
@@ -157,8 +156,9 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
   const ManagedNetworkConfigurationHandler*
       managed_network_configuration_handler =
           NetworkHandler::Get()->managed_network_configuration_handler();
-  if (!managed_network_configuration_handler)
+  if (!managed_network_configuration_handler) {
     return std::nullopt;
+  }
   if (managed_network_configuration_handler
           ->AllowOnlyPolicyCellularNetworks()) {
     NET_LOG(ERROR)
@@ -167,8 +167,9 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
   }
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
-  if (!network_state_handler)
+  if (!network_state_handler) {
     return std::nullopt;
+  }
   NetworkStateHandler::NetworkStateList state_list;
   network_state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
                                               /*configured_only=*/false,
@@ -226,13 +227,13 @@ namespace network_ui {
 
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
-  NetworkConfigMessageHandler() {}
+  NetworkConfigMessageHandler() = default;
 
   NetworkConfigMessageHandler(const NetworkConfigMessageHandler&) = delete;
   NetworkConfigMessageHandler& operator=(const NetworkConfigMessageHandler&) =
       delete;
 
-  ~NetworkConfigMessageHandler() override {}
+  ~NetworkConfigMessageHandler() override = default;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
@@ -421,8 +422,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void ResetESimCache(const base::Value::List& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
@@ -432,8 +434,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void DisableActiveESimProfile(const base::Value::List& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
@@ -442,13 +445,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   void ResetEuicc(const base::Value::List& arg_list) {
     std::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
-    if (!euicc_path)
+    if (!euicc_path) {
       return;
+    }
 
     CellularESimUninstallHandler* handler =
         NetworkHandler::Get()->cellular_esim_uninstall_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
     NET_LOG(EVENT) << "Executing reset EUICC on " << euicc_path->value();
     handler->ResetEuiccMemory(
         *euicc_path, base::BindOnce(&NetworkConfigMessageHandler::OnEuiccReset,
@@ -1042,9 +1047,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   traffic_counters::AddResources(html);
 
-  webui::SetupWebUIDataSource(
-      html, base::make_span(kNetworkUiResources, kNetworkUiResourcesSize),
-      IDR_NETWORK_UI_NETWORK_HTML);
+  webui::SetupWebUIDataSource(html, kNetworkUiResources,
+                              IDR_NETWORK_UI_NETWORK_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct
   // policies for JS WebUIs.

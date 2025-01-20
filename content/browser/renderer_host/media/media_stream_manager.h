@@ -55,7 +55,7 @@
 
 namespace media {
 class AudioSystem;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class JpegAcceleratorProviderImpl;
 class SystemEventMonitorImpl;
 #endif
@@ -72,6 +72,7 @@ class AudioServiceListener;
 class FakeMediaStreamUIProxy;
 class MediaStreamUIProxy;
 class PermissionControllerImpl;
+class PreferredAudioOutputDeviceManager;
 class VideoCaptureManager;
 class VideoCaptureProvider;
 
@@ -188,6 +189,9 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Used to access AudioSystem.
   media::AudioSystem* audio_system();
+
+  // Used to access PreferredAudioOutputDeviceManager.
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager();
 
   // AddVideoCaptureObserver() and RemoveAllVideoCaptureObservers() must be
   // called after InitializeDeviceManagersOnIOThread() and before
@@ -361,6 +365,11 @@ class CONTENT_EXPORT MediaStreamManager
   // is allowed to access |origin|.
   static bool IsOriginAllowed(int render_process_id, const url::Origin& origin);
 
+  // Returns internal single instance of PreferredAudioOutputDeviceManager
+  // object instance. The client should not take ownership of the returned
+  // object.
+  static PreferredAudioOutputDeviceManager* GetPreferredOutputManagerInstance();
+
   // Set whether the capturing is secure for the capturing session with given
   // |session_id|, |render_process_id|, and the MediaStreamType |type|.
   // Must be called on the IO thread.
@@ -388,9 +397,14 @@ class CONTENT_EXPORT MediaStreamManager
                           MediaRequestState new_state);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void SetConditionalFocusWindowForTesting(base::TimeDelta window);
+
   void SetCapturedSurfaceControllerFactoryForTesting(
       CapturedSurfaceControllerFactoryCallback factory);
 #endif
+
+  void SetPreferredAudioOutputDeviceManagerForTesting(
+      std::unique_ptr<PreferredAudioOutputDeviceManager> manager);
 
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
@@ -794,7 +808,7 @@ class CONTENT_EXPORT MediaStreamManager
   // the browser makes its own decision and ignores further instructions
   // from Web-applications, thereby preventing applications from changing
   // focus at an arbitrary time.
-  const base::TimeDelta conditional_focus_window_;
+  base::TimeDelta conditional_focus_window_ = base::Seconds(1);
 
   CapturedSurfaceControllerFactoryCallback captured_surface_controller_factory_;
 #endif
@@ -808,6 +822,8 @@ class CONTENT_EXPORT MediaStreamManager
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
 
+  std::unique_ptr<PreferredAudioOutputDeviceManager>
+      preferred_audio_output_device_manager_;
   // All non-closed request. Must be accessed on IO thread.
   DeviceRequests requests_;
 
@@ -857,7 +873,7 @@ class CONTENT_EXPORT MediaStreamManager
 
   GenerateStreamTestCallback generate_stream_test_callback_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<media::JpegAcceleratorProviderImpl>
       jpeg_accelerator_provider_;
 

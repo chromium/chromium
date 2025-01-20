@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -19,14 +20,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleConsumer;
 
 /** A {@link Pane} representing the incognito tab switcher. */
@@ -50,14 +51,50 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
                 @Override
                 public void didBecomeEmpty() {
-                    mReferenceButtonDataSupplier.set(null);
-                    if (isFocused()) {
-                        @Nullable PaneHubController controller = getPaneHubController();
-                        assert controller != null
-                                : "isFocused requires a non-null PaneHubController.";
-                        controller.focusPane(PaneId.TAB_SWITCHER);
-                    }
-                    destroyTabSwitcherPaneCoordinator();
+                    TabSwitcherPaneCoordinator paneCoordinator = getTabSwitcherPaneCoordinator();
+                    assert paneCoordinator != null;
+
+                    ObservableSupplier<Boolean> isAnimatingSupplier =
+                            paneCoordinator.getIsRecyclerViewAnimatorRunning();
+
+                    AtomicBoolean startedAnimating = new AtomicBoolean(false);
+
+                    // Create Callback object to allow us to pass a reference to said callback
+                    // inside the onResult method.
+                    Callback<Boolean> onAnimationStatusChange =
+                            new Callback<>() {
+                                @Override
+                                public void onResult(Boolean isAnimating) {
+                                    // This ensures that:
+                                    // a) The RecyclerView has started any final
+                                    //        animation prior to changing tab switcher panes.
+                                    // b) The animation only runs when the tab grid dialog is not
+                                    // visible.
+                                    Supplier<Boolean> dialogShowingOrAnimationSupplier =
+                                            paneCoordinator
+                                                    .getTabGridDialogShowingOrAnimationSupplier();
+                                    boolean isTabGridDialogVisible =
+                                            dialogShowingOrAnimationSupplier != null
+                                                    && dialogShowingOrAnimationSupplier.get();
+                                    if (!isTabGridDialogVisible
+                                            && (isAnimating || !startedAnimating.get())) {
+                                        startedAnimating.set(isAnimating);
+                                        return;
+                                    }
+                                    mReferenceButtonDataSupplier.set(null);
+                                    if (isFocused()) {
+                                        @Nullable
+                                        PaneHubController controller = getPaneHubController();
+                                        assert controller != null
+                                                : "isFocused requires a non-null"
+                                                        + " PaneHubController.";
+                                        controller.focusPane(PaneId.TAB_SWITCHER);
+                                    }
+                                    destroyTabSwitcherPaneCoordinator();
+                                    isAnimatingSupplier.removeObserver(this);
+                                }
+                            };
+                    isAnimatingSupplier.addObserver(onAnimationStatusChange);
                 }
             };
 
@@ -102,7 +139,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     /**
      * @param context The activity context.
-     * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param incognitoTabGroupModelFilterSupplier The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
@@ -113,7 +149,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabGroupModelFilter> incognitoTabGroupModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
@@ -123,7 +158,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
-                profileProviderSupplier,
                 factory,
                 /* isIncognito= */ true,
                 onToolbarAlphaChange,
@@ -150,7 +184,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 new DelegateButtonData(
                         newTabButtonData,
                         () -> {
-                            notifyNewTabButtonClick();
                             newTabButtonClickListener.onClick(null);
                         });
         mDisabledNewTabButtonData = new DelegateButtonData(newTabButtonData, null);
@@ -212,8 +245,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
-    public int getCurrentTabId() {
-        return TabModelUtils.getCurrentTabId(
+    public @Nullable Tab getCurrentTab() {
+        return TabModelUtils.getCurrentTab(
                 mIncognitoTabGroupModelFilterSupplier.get().getTabModel());
     }
 
@@ -257,7 +290,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        filter.getTabModel(), coordinator::setTabSwitcherContentSensitivity);
+                        filter.getTabModel(),
+                        coordinator::setTabSwitcherContentSensitivity,
+                        "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity");
             }
             coordinator.resetWithTabList(tabList);
             finishWaitForTabStateInitializedTimer();
@@ -306,12 +341,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     private void setNewTabButtonEnabledState(boolean enabled) {
-        if (enabled) {
-            mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
-        } else {
-            // The FAB may overlap the reauth buttons. So just remove it by nulling instead.
-            mNewTabButtonDataSupplier.set(
-                    HubFieldTrial.usesFloatActionButton() ? null : mDisabledNewTabButtonData);
-        }
+        mNewTabButtonDataSupplier.set(
+                enabled ? mEnabledNewTabButtonData : mDisabledNewTabButtonData);
     }
 }

@@ -6,7 +6,10 @@ enum MKDIR_CODE {MKDIR_SUCCESS,MKDIR_ERROR,MKDIR_BADPATH};
 MKDIR_CODE MakeDir(const std::wstring &Name,bool SetAttr,uint Attr);
 bool CreateDir(const std::wstring &Name);
 bool CreatePath(const std::wstring &Path,bool SkipLastName,bool Silent);
+
 void SetDirTime(const std::wstring &Name,RarTime *ftm,RarTime *ftc,RarTime *fta);
+
+
 bool IsRemovable(const std::wstring &Name);
 
 #ifndef SFX_MODULE
@@ -28,8 +31,7 @@ bool IsDeleteAllowed(uint FileAttr);
 void PrepareToDelete(const std::wstring &Name);
 uint GetFileAttr(const std::wstring &Name);
 bool SetFileAttr(const std::wstring &Name,uint Attr);
-wchar* MkTemp(wchar *Name,size_t MaxSize);
-bool MkTemp(std::wstring &Name);
+bool MkTemp(std::wstring &Name,const wchar *Ext);
 
 enum CALCFSUM_FLAGS {CALCFSUM_SHOWTEXT=1,CALCFSUM_SHOWPERCENT=2,CALCFSUM_SHOWPROGRESS=4,CALCFSUM_CURPOS=8};
 
@@ -41,6 +43,7 @@ bool DelDir(const std::wstring &Name);
 
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
 bool SetFileCompression(const std::wstring &Name,bool State);
+bool SetFileCompression(HANDLE hFile,bool State);
 void ResetFileCache(const std::wstring &Name);
 #endif
 

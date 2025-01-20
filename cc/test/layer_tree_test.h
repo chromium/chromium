@@ -140,6 +140,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   void RealEndTest();
 
+  void SkipTest() { skip_test_ = true; }
+
   std::unique_ptr<LayerTreeFrameSink>
   ReleaseLayerTreeFrameSinkOnLayerTreeHost();
   void SetVisibleOnLayerTreeHost(bool visible);
@@ -284,6 +286,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   mutable base::Lock test_ended_lock_;
   bool ended_ = false;
 
+  bool skip_test_ = false;
+
   int timeout_seconds_ = 0;
 
   raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;  // NOT OWNED.
@@ -298,7 +302,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<TestTaskGraphRunner> task_graph_runner_;
   base::CancelableOnceClosure timeout_;
   base::OnceClosure quit_closure_;
-  scoped_refptr<viz::TestContextProvider> compositor_contexts_;
+  scoped_refptr<viz::TestContextProvider> context_provider_sw_;
   bool skip_allocate_initial_local_surface_id_ = false;
   viz::ParentLocalSurfaceIdAllocator allocator_;
   base::WeakPtr<LayerTreeTest> main_thread_weak_ptr_;

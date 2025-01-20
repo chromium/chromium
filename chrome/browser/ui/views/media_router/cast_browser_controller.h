@@ -14,24 +14,22 @@
 #include "ui/events/event.h"
 
 class Browser;
+class ToolbarButton;
 
 namespace media_router {
 
 class MediaRouter;
 class LoggerImpl;
 
-// TODO(crbug.com/376495209): Add comments for methods and members of this class.
-// Controller for the Cast toolbar icon. There should be one instance of this
-// class per browser.
-class CastBrowserController :
-                          public IssuesObserver,
-                          public MediaRoutesObserver,
-                          public MirroringMediaControllerHost::Observer {
-
+// TODO(crbug.com/376495209): Add comments for methods and members of this
+// class. Controller for the Cast toolbar icon. There should be one instance of
+// this class per browser.
+class CastBrowserController : public IssuesObserver,
+                              public MediaRoutesObserver,
+                              public MirroringMediaControllerHost::Observer {
  public:
   explicit CastBrowserController(Browser* browser);
-  CastBrowserController(Browser* browser,
-                    MediaRouter* media_router);
+  CastBrowserController(Browser* browser, MediaRouter* media_router);
   CastBrowserController(const CastBrowserController&) = delete;
   CastBrowserController& operator=(const CastBrowserController&) = delete;
   ~CastBrowserController() override;
@@ -55,8 +53,7 @@ class CastBrowserController :
  private:
   CastToolbarButtonController* GetActionController() const;
 
-  // Updates insets per touch ui mode.
-  void UpdateLayoutInsetDelta();
+  ToolbarButton* GetToolbarButton() const;
 
   void LogIconChange(const gfx::VectorIcon* icon);
 

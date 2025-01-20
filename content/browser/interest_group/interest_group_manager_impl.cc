@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -128,7 +129,7 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
   resource_request->request_initiator = frame_origin;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   resource_request->trusted_params->client_security_state =
       client_security_state.Clone();
   if (user_agent_override.has_value()) {
@@ -241,6 +242,17 @@ double GetRealTimeReportingQuota(
                            rate_limit_window.InMilliseconds();
   double new_quota = quota->second + recovered_quota;
   return std::min(new_quota, max_real_time_reports);
+}
+
+void RecordNumberOfSelectableBuyerAndSellerReportingIds(
+    base::span<const blink::InterestGroup::Ad> ads) {
+  for (const blink::InterestGroup::Ad& ad : ads) {
+    if (ad.selectable_buyer_and_seller_reporting_ids) {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds",
+          ad.selectable_buyer_and_seller_reporting_ids->size());
+    }
+  }
 }
 
 }  // namespace
@@ -379,6 +391,10 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
   // Create notify callback first.
   base::OnceClosure notify_callback = CreateNotifyInterestGroupAccessedCallback(
       InterestGroupObserver::kJoin, group.owner, group.name);
+
+  if (group.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*group.ads);
+  }
 
   blink::InterestGroupKey group_key(group.owner, group.name);
   caching_storage_.JoinInterestGroup(
@@ -531,6 +547,11 @@ bool InterestGroupManagerImpl::GetCachedOwnerAndSignalsOrigins(
                                                           signals_origin);
 }
 
+void InterestGroupManagerImpl::UpdateCachedOriginsIfEnabled(
+    const url::Origin& owner) {
+  caching_storage_.UpdateCachedOriginsIfEnabled(owner);
+}
+
 void InterestGroupManagerImpl::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::OnceClosure completion_callback) {
@@ -561,10 +582,11 @@ std::optional<std::string> InterestGroupManagerImpl::MaybeGetUserAgentOverride(
               .GetDelegate()
               ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
       if (override_user_agent) {
-        std::string maybe_user_agent = frame_tree_node->navigator()
-                                           .GetDelegate()
-                                           ->GetUserAgentOverride()
-                                           .ua_string_override;
+        std::string maybe_user_agent =
+            frame_tree_node->navigator()
+                .GetDelegate()
+                ->GetUserAgentOverride(frame_tree_node->frame_tree())
+                .ua_string_override;
         if (!maybe_user_agent.empty()) {
           return std::move(maybe_user_agent);
         }
@@ -979,6 +1001,9 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update,
     base::OnceCallback<void(bool)> callback) {
+  if (update.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*update.ads);
+  }
   caching_storage_.UpdateInterestGroup(
       group_key, std::move(update),
       base::BindOnce(&InterestGroupManagerImpl::OnUpdateComplete,

@@ -155,12 +155,22 @@ void FetchInstallabilityForChromeManagement::OnAppLockGranted() {
     return;
   }
   DCHECK(!app_id_.empty());
+
   InstallableCheckResult result;
-  if (app_lock_->registrar().IsInstalled(app_id_)) {
-    result = InstallableCheckResult::kAlreadyInstalled;
-  } else {
+  if (app_lock_->registrar().GetInstallState(app_id_) == std::nullopt) {
     result = InstallableCheckResult::kInstallable;
+  } else {
+    switch (app_lock_->registrar().GetInstallState(app_id_).value()) {
+      case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+        result = InstallableCheckResult::kInstallable;
+        break;
+      case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
+      case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
+        result = InstallableCheckResult::kAlreadyInstalled;
+        break;
+    }
   }
+
   CompleteAndSelfDestruct(CommandResult::kSuccess, result, app_id_);
 }
 

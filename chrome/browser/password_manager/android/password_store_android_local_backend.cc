@@ -78,12 +78,6 @@ void PasswordStoreAndroidLocalBackend::GetAutofillableLoginsAsync(
   GetAutofillableLoginsInternal(std::string(), std::move(callback));
 }
 
-void PasswordStoreAndroidLocalBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreAndroidLocalBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -116,17 +110,6 @@ void PasswordStoreAndroidLocalBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   RemoveLoginInternal(std::string(), form, std::move(callback));
-}
-
-void PasswordStoreAndroidLocalBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  RemoveLoginsByURLAndTimeInternal(std::string(), url_filter, delete_begin,
-                                   delete_end, std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginsCreatedBetweenAsync(

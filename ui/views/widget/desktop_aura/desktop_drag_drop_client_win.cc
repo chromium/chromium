@@ -26,15 +26,15 @@ DesktopDragDropClientWin::DesktopDragDropClientWin(
     aura::Window* root_window,
     HWND window,
     DesktopWindowTreeHostWin* desktop_host)
-    : drag_drop_in_progress_(false),
-      desktop_host_(desktop_host) {
+    : drag_drop_in_progress_(false), desktop_host_(desktop_host) {
   drop_target_ = new DesktopDropTargetWin(root_window);
   drop_target_->Init(window);
 }
 
 DesktopDragDropClientWin::~DesktopDragDropClientWin() {
-  if (drag_drop_in_progress_)
+  if (drag_drop_in_progress_) {
     DragCancel();
+  }
 }
 
 ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
@@ -108,11 +108,13 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
   }
   drag_source_copy->set_data(nullptr);
 
-  if (alive)
+  if (alive) {
     drag_drop_in_progress_ = false;
+  }
 
-  if (result != DRAGDROP_S_DROP)
+  if (result != DRAGDROP_S_DROP) {
     effect = DROPEFFECT_NONE;
+  }
 
   return ui::PreferredDragOperation(
       ui::DragDropTypes::DropEffectToDragOperation(effect));

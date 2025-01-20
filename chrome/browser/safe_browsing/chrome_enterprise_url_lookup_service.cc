@@ -9,8 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -32,16 +30,20 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 namespace safe_browsing {
 
 namespace {
-
-constexpr char kUrlFilteringEndpointFlag[] = "url-filtering-endpoint";
 
 std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
@@ -51,13 +53,13 @@ std::optional<GURL> GetUrlOverride() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kUrlFilteringEndpointFlag)) {
-    GURL url =
-        GURL(command_line->GetSwitchValueASCII(kUrlFilteringEndpointFlag));
+  if (command_line->HasSwitch(switches::kUrlFilteringEndpointFlag)) {
+    GURL url = GURL(
+        command_line->GetSwitchValueASCII(switches::kUrlFilteringEndpointFlag));
     if (url.is_valid()) {
       return url;
     } else {
-      LOG(ERROR) << "--" << kUrlFilteringEndpointFlag
+      LOG(ERROR) << "--" << switches::kUrlFilteringEndpointFlag
                  << " is set to an invalid URL";
     }
   }
@@ -146,11 +148,13 @@ void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   token_fetcher_->Start(base::BindOnce(
       &ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken,
       weak_factory_.GetWeakPtr(), url, std::move(response_callback),
-      std::move(callback_task_runner), base::TimeTicks::Now(), tab_id));
+      std::move(callback_task_runner), base::TimeTicks::Now(), tab_id,
+      std::move(referring_app_info)));
 }
 
 void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
@@ -159,6 +163,7 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
     SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
     const std::string& access_token) {
   if (shutting_down()) {
     return;
@@ -166,13 +171,20 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
 
   MaybeSendRequest(url, access_token, std::move(response_callback),
                    std::move(callback_task_runner),
-                   /* is_sampled_report */ false, tab_id);
+                   /* is_sampled_report */ false, tab_id,
+                   std::move(referring_app_info));
 }
 
 std::optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   DCHECK(connectors_service_);
-  return connectors_service_->GetDMTokenForRealTimeUrlCheck();
+  base::expected<std::string, enterprise_connectors::ConnectorsServiceBase::
+                                  NoDMTokenForRealTimeUrlCheckReason>
+      dm_token = connectors_service_->GetDMTokenForRealTimeUrlCheck();
+  if (dm_token.has_value()) {
+    return dm_token.value();
+  }
+  return std::nullopt;
 }
 
 GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {

@@ -32,8 +32,7 @@ StorageAccessHeaderService* StorageAccessHeaderServiceFactory::GetForProfile(
 // static
 ProfileSelections StorageAccessHeaderServiceFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(
-          network::features::kStorageAccessHeadersTrial) ||
-      !base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
+          network::features::kStorageAccessHeadersTrial)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 

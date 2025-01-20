@@ -19,14 +19,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -135,12 +132,12 @@ TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
       apps::LaunchContainer::kLaunchContainerWindow, std::move(intent),
       &profile_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(params.launch_files.size(), 1U);
   EXPECT_EQ("foo.txt", params.launch_files[0].MaybeAsASCII());
 #else
   ASSERT_EQ(params.launch_files.size(), 0U);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_NoAppID) {
@@ -304,62 +301,6 @@ TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
   EXPECT_EQ(apps::LaunchSource::kFromIntentUrl, converted_params.launch_source);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
-  constexpr char kIntentMimeType[] = "image/*";
-  constexpr char kShareText[] = "Message";
-  constexpr char kFilePath[] = "/tmp/picture.png";
-  constexpr char kFileMimeType[] = "image/png";
-  constexpr char kBaseName[] = "picture.png";
-
-  crosapi::mojom::LaunchParamsPtr crosapi_params =
-      crosapi::mojom::LaunchParams::New();
-  crosapi_params->container =
-      crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
-  crosapi_params->disposition =
-      crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
-  crosapi_params->launch_source = apps::LaunchSource::kFromSharesheet;
-  const int64_t kDisplayId = 5;
-  crosapi_params->display_id = kDisplayId;
-  crosapi_params->intent = crosapi::mojom::Intent::New();
-  crosapi_params->intent->action = apps_util::kIntentActionSend;
-  crosapi_params->intent->mime_type = kIntentMimeType;
-  crosapi_params->intent->share_text = kShareText;
-  {
-    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
-    auto crosapi_file = crosapi::mojom::IntentFile::New();
-    crosapi_file->file_path = base::FilePath(kFilePath);
-    crosapi_file->mime_type = kFileMimeType;
-    crosapi_files.push_back(std::move(crosapi_file));
-    crosapi_params->intent->files = std::move(crosapi_files);
-  }
-
-  auto converted_params =
-      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
-
-  EXPECT_EQ(converted_params.container,
-            apps::LaunchContainer::kLaunchContainerWindow);
-  EXPECT_EQ(converted_params.disposition,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  EXPECT_EQ(converted_params.launch_source,
-            apps::LaunchSource::kFromSharesheet);
-  EXPECT_EQ(converted_params.display_id, kDisplayId);
-
-  EXPECT_EQ(converted_params.launch_files.size(), 1U);
-  EXPECT_EQ(converted_params.launch_files[0], base::FilePath(kFilePath));
-
-  EXPECT_EQ(converted_params.intent->action, apps_util::kIntentActionSend);
-  EXPECT_EQ(converted_params.intent->mime_type, kIntentMimeType);
-  EXPECT_EQ(converted_params.intent->share_text, kShareText);
-  EXPECT_EQ(converted_params.intent->files.size(), 1U);
-  EXPECT_EQ(converted_params.intent->files[0]->file_name,
-            base::SafeBaseName::Create(kBaseName));
-  EXPECT_EQ(converted_params.intent->files[0]->mime_type, kFileMimeType);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Fake AppPublisher for tracking app launches.
 class FakePublisher : public AppPublisher {
  public:
@@ -497,9 +438,6 @@ TEST_F(LaunchUtilsNewWindowTest,
   LaunchUrlInInstalledAppOrBrowser(&profile_, GURL("https://www.example.com/"),
                                    LaunchSource::kFromTest);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -46,15 +45,12 @@ static_assert(std::size(kPublicKeySHA256) == crypto::kSHA256Length);
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
     OptimizationGuideOnDeviceModelInstallerPolicy(
-        scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+        base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
             state_manager)
     : state_manager_(state_manager) {}
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
-    ~OptimizationGuideOnDeviceModelInstallerPolicy() {
-  content::GetUIThreadTaskRunner()->ReleaseSoon(FROM_HERE,
-                                                std::move(state_manager_));
-}
+    ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
@@ -86,14 +82,16 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomUninstall() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComplete,
-                     state_manager_->GetWeakPtr()));
+                     state_manager_));
 }
 
 void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  state_manager_->SetReady(version, install_dir, manifest);
+  if (state_manager_) {
+    state_manager_->SetReady(version, install_dir, manifest);
+  }
 }
 
 base::FilePath
@@ -148,7 +146,7 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand() {
 
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
-    scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+    base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
     bool is_already_installing) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto register_callback = base::BindOnce(
@@ -171,7 +169,7 @@ void RegisterOptimizationGuideOnDeviceModelComponent(
 }
 
 void UninstallOptimizationGuideOnDeviceModelComponent(
-    scoped_refptr<OnDeviceModelComponentStateManager> state_manager) {
+    base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(

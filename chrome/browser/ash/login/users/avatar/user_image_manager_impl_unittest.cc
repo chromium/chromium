@@ -24,6 +24,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,7 +32,7 @@
 namespace ash {
 namespace {
 
-constexpr std::string_view kFakeRegularUserEmail = "test@example.com";
+constexpr char kFakeRegularUserEmail[] = "test@example.com";
 
 }  // namespace
 
@@ -117,7 +118,7 @@ TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   base::HistogramTester histogram_tester;
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      std::string(kFakeRegularUserEmail), std::string(kFakeRegularUserEmail));
+      std::string(kFakeRegularUserEmail), GaiaId(kFakeRegularUserEmail));
   AddUser(account_id);
 
   EXPECT_CALL(*mock_user_image_loader_delegate(), FromGURLAnimated);

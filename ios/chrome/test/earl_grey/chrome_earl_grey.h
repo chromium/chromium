@@ -30,6 +30,12 @@ namespace chrome_test_util {
 // windows. Use only for single window tests.
 UIWindow* GetAnyKeyWindow();
 
+// Assert the error is nil. Use the error description as error message.
+void GREYAssertErrorNil(NSError* error);
+
+// Assert the error is nil. Postpone the error description to the error message.
+void GREYAssertErrorNil(NSError* error, NSString* description);
+
 }  // namespace chrome_test_util
 
 // Overload of grey_longPressWithDuration() taking a base::TimeDelta.
@@ -94,6 +100,18 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 - (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
+
+#pragma mark - Profile Utilities (EG2)
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
+// profile, more precisely the profile associated with the foreground active
+// scene.
+- (NSString*)currentProfileName;
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
+- (NSString*)personalProfileName;
 
 #pragma mark - History Utilities (EG2)
 
@@ -974,6 +992,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 #pragma mark - Notification Utilities
 
 - (void)requestTipsNotification:(TipsNotificationType)type;
+
+#pragma mark - Variations Utilities
+
+// Forces an override of the variations stored permanent country.
+- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country;
 
 @end
 

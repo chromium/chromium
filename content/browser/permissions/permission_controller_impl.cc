@@ -4,6 +4,8 @@
 
 #include "content/browser/permissions/permission_controller_impl.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
@@ -30,16 +32,6 @@
 namespace content {
 
 namespace {
-
-constexpr char kPermissionBlockedFencedFrameMessage[] =
-    "%s permission has been blocked because it was requested inside a fenced "
-    "frame. Fenced frames don't currently support permission requests.";
-
-#if !BUILDFLAG(IS_ANDROID)
-const char kPermissionBlockedPermissionsPolicyMessage[] =
-    "%s permission has been blocked because of a permissions policy applied to"
-    " the current document. See https://goo.gl/EuHzyv for more details.";
-#endif
 
 std::optional<blink::scheduler::WebSchedulerTrackedFeature>
 PermissionToSchedulingFeature(PermissionType permission_name) {
@@ -96,15 +88,6 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::WEB_APP_INSTALLATION:
       return std::nullopt;
   }
-}
-
-void LogPermissionBlockedMessage(PermissionType permission,
-                                 RenderFrameHost* rfh,
-                                 const char* message) {
-  rfh->GetOutermostMainFrame()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintfNonConstexpr(
-          message, blink::GetPermissionString(permission).c_str()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -179,14 +162,21 @@ bool IsRequestAllowed(
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
         case PermissionStatusSource::FENCED_FRAME:
-          LogPermissionBlockedMessage(permission, render_frame_host,
-                                      kPermissionBlockedFencedFrameMessage);
+          render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kWarning,
+              blink::GetPermissionString(permission) +
+                  " permission has been blocked because it was requested "
+                  "inside a fenced frame. Fenced frames don't currently "
+                  "support permission requests.");
           break;
 #if !BUILDFLAG(IS_ANDROID)
         case PermissionStatusSource::FEATURE_POLICY:
-          LogPermissionBlockedMessage(
-              permission, render_frame_host,
-              kPermissionBlockedPermissionsPolicyMessage);
+          render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kWarning,
+              blink::GetPermissionString(permission) +
+                  " permission has been blocked because of a permissions "
+                  "policy applied to the current document. See "
+                  "https://goo.gl/EuHzyv for more details.");
           break;
 #endif
         default:
@@ -756,12 +746,13 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
         PermissionUtil::GetLastCommittedOriginAsURL(
             render_frame_host->GetMainFrame());
     subscription->render_frame_id = render_frame_host->GetRoutingID();
-    subscription->render_process_id = render_frame_host->GetProcess()->GetID();
+    subscription->render_process_id =
+        render_frame_host->GetProcess()->GetDeprecatedID();
   } else {
     subscription->embedding_origin = requesting_origin;
     subscription->render_frame_id = -1;
     subscription->render_process_id =
-        render_process_host ? render_process_host->GetID() : -1;
+        render_process_host ? render_process_host->GetDeprecatedID() : -1;
   }
   subscriptions_.AddWithID(std::move(subscription), id);
 

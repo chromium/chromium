@@ -95,7 +95,7 @@ void HistogramWaiter::Wait() {
 
 void HistogramWaiter::OnHistogramCallback(const char* metric_name,
                                           uint64_t name_hash,
-                                          base::HistogramBase::Sample sample) {
+                                          base::HistogramBase::Sample32 sample) {
   run_loop_.Quit();
   histogram_observer_.reset();
 }

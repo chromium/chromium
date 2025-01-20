@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.LoadingView;
@@ -104,15 +104,15 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
                 LayoutInflater.from(LightweightFirstRunActivity.this)
                         .inflate(R.layout.lightweight_fre_tos, null));
 
-        NoUnderlineClickableSpan clickableGoogleTermsSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan clickableGoogleTermsSpan =
+                new ChromeClickableSpan(
                         this, (view) -> showInfoPage(R.string.google_terms_of_service_url));
-        NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan clickableChromeAdditionalTermsSpan =
+                new ChromeClickableSpan(
                         this,
                         (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
-        NoUnderlineClickableSpan clickableGooglePrivacySpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan clickableGooglePrivacySpan =
+                new ChromeClickableSpan(
                         this, (view) -> showInfoPage(R.string.google_privacy_policy_url));
         String associatedAppName =
                 IntentUtils.safeGetStringExtra(getIntent(), EXTRA_ASSOCIATED_APP_NAME);
@@ -267,7 +267,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
     private void exitLightweightFirstRun() {
         finish();
-        sendFirstRunCompletePendingIntent();
+        sendFirstRunCompleteIntent();
     }
 
     private void acceptTermsOfService() {

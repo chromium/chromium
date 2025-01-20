@@ -342,7 +342,9 @@ GpuChannelManager::GpuChannelManager(
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
-    webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory)
+    webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory,
+    const SharedContextState::GrContextOptionsProvider*
+        gr_context_options_provider)
     : task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       gpu_preferences_(gpu_preferences),
@@ -370,7 +372,8 @@ GpuChannelManager::GpuChannelManager(
       vulkan_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
-      peak_memory_monitor_(this, task_runner) {
+      peak_memory_monitor_(this, task_runner),
+      gr_context_options_provider_(gr_context_options_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(task_runner->BelongsToCurrentThread());
   DCHECK(io_task_runner);
@@ -1003,7 +1006,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
                      context_lost_count_ + 1),
       gpu_preferences_.gr_context_type, vulkan_context_provider_,
       metal_context_provider_, dawn_context_provider_,
-      peak_memory_monitor_.GetWeakPtr());
+      peak_memory_monitor_.GetWeakPtr(),
+      /*created_on_compositor_gpu_thread=*/false, gr_context_options_provider_);
 
   // Initialize GL context, so Vulkan and GL interop can work properly.
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
@@ -1102,7 +1106,7 @@ void GpuChannelManager::OnContextLost(
   // Work around issues with recovery by allowing a new GPU process to launch.
   if (force_restart || gpu_driver_bug_workarounds_.exit_on_context_lost ||
       (shared_context_state_ && !shared_context_state_->GrContextIsGL())) {
-    delegate_->MaybeExitOnContextLost(synthetic_loss, context_lost_reason);
+    delegate_->MaybeExitOnContextLost(context_lost_reason);
   }
 }
 

@@ -222,7 +222,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
 
 class FakePrinterDetector : public PrinterDetector {
  public:
-  FakePrinterDetector() {}
+  FakePrinterDetector() = default;
   ~FakePrinterDetector() override = default;
 
   void RegisterPrintersFoundCallback(OnPrintersFoundCallback cb) override {
@@ -263,7 +263,7 @@ class FakePrinterDetector : public PrinterDetector {
 // the effective make and model in the PpdReference.
 class FakePpdProvider : public PpdProvider {
  public:
-  FakePpdProvider() {}
+  FakePpdProvider() = default;
 
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
@@ -311,7 +311,7 @@ class FakePpdProvider : public PpdProvider {
                      ReverseLookupCallback cb) override {}
 
  private:
-  ~FakePpdProvider() override {}
+  ~FakePpdProvider() override = default;
   std::string usb_manufacturer_;
   std::string license_name_;
   std::string ppd_content_ = "ppd content";
@@ -320,7 +320,7 @@ class FakePpdProvider : public PpdProvider {
 class FakeLocalPrintersObserver
     : public CupsPrintersManager::LocalPrintersObserver {
  public:
-  FakeLocalPrintersObserver() {}
+  FakeLocalPrintersObserver() = default;
   ~FakeLocalPrintersObserver() override = default;
 
   void OnLocalPrintersUpdated() override { ++num_observer_calls_; }

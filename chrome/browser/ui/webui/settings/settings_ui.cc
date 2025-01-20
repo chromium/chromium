@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 
 #include <stddef.h>
@@ -23,9 +18,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -72,7 +69,6 @@
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
-#include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
@@ -84,7 +80,6 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -125,6 +120,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/settings_shared_resources.h"
@@ -248,7 +244,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());
   AddSettingsPageUIHandler(
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
-  AddSettingsPageUIHandler(std::make_unique<SafetyCheckHandler>());
   AddSettingsPageUIHandler(std::make_unique<SafetyHubHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<DownloadsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ExtensionControlHandler>());
@@ -319,10 +314,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
 
-  html_source->AddBoolean(
-      "turnOffSyncAllowedForManagedProfiles",
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
+  html_source->AddBoolean("isDasherlessProfile",
+                          entry && entry->IsDasherlessManagement());
 
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
@@ -355,12 +353,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   bool show_privacy_guide =
       base::FeatureList::IsEnabled(features::kPrivacyGuideForceAvailable) ||
-      (!chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild());
+      (!ShouldDisplayManagedUi(profile) && !profile->IsChild());
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
-
-  html_source->AddBoolean(
-      "enableCbdTimeframeRequired",
-      base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
 
   html_source->AddBoolean("enableHandTrackingContentSetting",
 #if BUILDFLAG(ENABLE_VR)
@@ -391,17 +385,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
+  const bool compose_visible = ComposeEnabling::IsSettingVisible(profile);
 #else
   const bool compose_enabled = false;
+  const bool compose_visible = false;
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
   html_source->AddBoolean(
       "enableComposeProactiveNudge",
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
-
-  html_source->AddBoolean(
-      "enablePageContentSetting",
-      base::FeatureList::IsEnabled(features::kPageContentOptIn));
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
@@ -430,34 +422,22 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString("securityKeysNewPIN",
                                             IDS_SETTINGS_SECURITY_KEYS_NEW_PIN);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckExtensionsReviewLabel",
+      "safetyHubExtensionsReviewLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewHeaderLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_HEADER_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewBlockAllToastLabel",
+      "safetyHubNotificationPermissionReviewBlockAllToastLabel",
       IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_BLOCK_ALL_TOAST_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewPrimaryLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsHeaderLabel",
-      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_HEADER_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewSecondaryLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsPrimaryLabel",
+      "safetyHubUnusedSitePermissionsPrimaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsSecondaryLabel",
+      "safetyHubUnusedSitePermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
       "safetyHubRevokedPermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsToastBulkLabel",
+      "safetyHubUnusedSitePermissionsToastBulkLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL);
   plural_string_handler->AddLocalizedString(
       "safetyHubNotificationPermissionsPrimaryLabel",
@@ -470,13 +450,21 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-  webui::SetupWebUIDataSource(
-      html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
-      IDR_SETTINGS_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kSettingsResources,
+                              IDR_SETTINGS_SETTINGS_HTML);
+  // Add chrome://webui-test for cr-lottie test.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src chrome://webui-test chrome://resources chrome://theme "
+      "'self';");
+  // Add TrustedTypes policy for cr-lottie.
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      base::StrCat({webui::kDefaultTrustedTypesPolicies,
+                    " lottie-worker-script-loader;"}));
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  html_source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
@@ -500,31 +488,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           is_restricted_notice_enabled);
 
   html_source->AddBoolean(
-      "privateStateTokensEnabled",
-      base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) ||
-          base::FeatureList::IsEnabled(network::features::kFledgePst));
-
-  html_source->AddBoolean(
-      "safetyCheckUnusedSitePermissionsEnabled",
-      base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions));
-
-  html_source->AddBoolean(
       "safetyHubAbusiveNotificationRevocationEnabled",
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation));
-
-  html_source->AddBoolean("enableSafetyHub",
-                          base::FeatureList::IsEnabled(features::kSafetyHub));
 
   // Mode B UX
   html_source->AddBoolean(
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
-  html_source->AddBoolean(
-      "isTrackingProtectionUxEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kTrackingProtection3pcdUx));
 
   html_source->AddBoolean(
       "isAlwaysBlock3pcsIncognitoEnabled",
@@ -564,9 +536,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kAutomaticFullscreenContentSetting));
 
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableSmartCardReadersContentSetting",
       base::FeatureList::IsEnabled(blink::features::kSmartCard));
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // System
@@ -579,24 +553,44 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
+#if BUILDFLAG(ENABLE_GLIC)
+  html_source->AddBoolean("showGlicSettings", GlicEnabling::IsEnabledByFlags());
+#endif
+
   // AI
-  const bool ai_settings_refresh_enabled = base::FeatureList::IsEnabled(
-      optimization_guide::features::kAiSettingsPageRefresh);
+  const bool ai_settings_refresh_enabled =
+      optimization_guide::features::IsAiSettingsPageRefreshEnabled();
 
   if (ai_settings_refresh_enabled) {
     const bool show_ai_settings_for_testing =
         optimization_guide::features::kShowAiSettingsForTesting.Get();
 
+    html_source->AddBoolean("showAiSettingsForTesting",
+                            show_ai_settings_for_testing);
+
+    const bool use_is_setting_visible = base::FeatureList::IsEnabled(
+        optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
+
     std::pair<const std::string_view, bool> optimization_guide_features[] = {
         {"showTabOrganizationControl",
-         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
-        {"showComposeControl", compose_enabled},
+         use_is_setting_visible
+             ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
+             : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+        {"showComposeControl",
+         use_is_setting_visible ? compose_visible : compose_enabled},
         {"showWallpaperSearchControl",
-         customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
+         use_is_setting_visible
+             ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
+                   profile)
+             : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-        {"showCompareControl", commerce::CanFetchProductSpecificationsData(
-                                   shopping_service->GetAccountChecker())},
+        {"showCompareControl",
+         use_is_setting_visible
+             ? commerce::IsProductSpecificationsSettingVisible(
+                   shopping_service->GetAccountChecker())
+             : commerce::CanFetchProductSpecificationsData(
+                   shopping_service->GetAccountChecker())},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;
@@ -642,6 +636,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean("enableAiSettingsPageRefresh",
                           ai_settings_refresh_enabled);
+  html_source->AddBoolean(
+      "enableAiSettingsInPrivacyGuide",
+      optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
 
   TryShowHatsSurveyWithTimeout();
 }
@@ -728,8 +725,12 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
       HatsServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()),
                                         /* create_if_necessary = */ true);
   if (hats_service) {
+    int timeout_ms =
+        features::kHappinessTrackingSurveysForDesktopSettingsTime.Get()
+            .InMilliseconds();
     hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), 20000);
+        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), timeout_ms, {},
+        {}, HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
   }
 }
 
@@ -757,6 +758,8 @@ void SettingsUI::CreateHelpBubbleHandler(
           kAnonymizedUrlCollectionPersonalizationSettingId,
           kInactiveTabSettingElementId,
           kAutofillPredictionImprovementsHeaderElementId,
+          kGlicOsToggleElementId,
+          kGlicOsWidgetKeyboardShortcutElementId,
       });
 }
 

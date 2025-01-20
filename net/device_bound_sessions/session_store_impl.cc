@@ -65,7 +65,8 @@ SessionStoreImpl::SessionStoreImpl(base::FilePath db_storage_path,
           base::ThreadPool::CreateSequencedTaskRunner(kDBTaskTraits)),
       db_storage_path_(std::move(db_storage_path)),
       db_(std::make_unique<sql::Database>(
-          sql::DatabaseOptions{.page_size = 4096, .cache_size = 500})),
+          sql::DatabaseOptions{.page_size = 4096, .cache_size = 500},
+          sql::Database::Tag("DBSCSessions"))),
       table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
           db_task_runner_)),
       session_table_(
@@ -76,9 +77,7 @@ SessionStoreImpl::SessionStoreImpl(base::FilePath db_storage_path,
               table_manager_,
               session_table_.get(),
               /*max_num_entries=*/std::nullopt,
-              kFlushDelay)) {
-  db_->set_histogram_tag("DBSCSessions");
-}
+              kFlushDelay)) {}
 
 SessionStoreImpl::~SessionStoreImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

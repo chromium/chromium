@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -47,7 +48,7 @@ TEST_F(VirtualDisplayUtilLinuxInteractiveUitest, IsAPIAvailable) {
 }
 
 TEST_F(VirtualDisplayUtilLinuxInteractiveUitest, AddRemove) {
-  int64_t display_id[3];
+  std::array<int64_t, 3> display_id;
   int initial_display_count = screen()->GetNumDisplays();
   display_id[0] = virtual_display_util_->AddDisplay(
       display::test::VirtualDisplayUtilLinux::k1920x1080);

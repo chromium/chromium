@@ -168,6 +168,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display/manager",
   ]
+
+  public_deps = [ "//services/viz/privileged/mojom/compositing" ]
 }
 
 source_set("features") {

@@ -54,7 +54,6 @@ void WebKioskAppServiceLauncher::Initialize() {
   // set the complete url as override url.
   app_service_launcher().SetLaunchUrl(GetCurrentApp()->install_url());
 
-  // TODO(crbug.com/372848158): Move to base class if it works for IWAs.
   profile()->GetExtensionSpecialStoragePolicy()->AddOriginWithUnlimitedStorage(
       url::Origin::Create(GetCurrentApp()->install_url()));
 }

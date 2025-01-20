@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,8 +28,17 @@ namespace {
 
 constexpr char kDeiceRemoteCommandsInvalidatorTypeName[] =
     "DEVICE_REMOTE_COMMAND";
+
+// Right now, consumer user remote commands are only supported on ChromeOS while
+// profile remote commands are only supported on other platforms.
+// If we want support support both commands on the same platform, we need to
+// update the `PolicyInvalidationScope` to be more granular.
 constexpr char kUserRemoteCommandsInvalidatorTypeName[] =
+#if BUILDFLAG(IS_CHROMEOS)
     "CONSUMER_USER_REMOTE_COMMAND";
+#else
+    "PROFILE_REMOTE_COMMAND";
+#endif
 
 }  // namespace
 

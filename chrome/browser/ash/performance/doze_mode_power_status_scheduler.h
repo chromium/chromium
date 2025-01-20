@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/wm/video_detector.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/performance/pausable_timer.h"
+#include "chromeos/ash/experiences/arc/power/arc_power_bridge.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/metrics/daily_event.h"
@@ -106,7 +106,7 @@ class DozeModePowerStatusScheduler
   // Calculate power status based on current conditions.
   PowerStatus CalculatePowerStatus();
 
-  // Send power status to crosvm.
+  // Send a request to crosvm to modify the fake power config.
   void SendPowerStatus(PowerStatus status);
 
   base::ScopedObservation<arc::ArcPowerBridge, arc::ArcPowerBridge::Observer>
@@ -140,6 +140,8 @@ class DozeModePowerStatusScheduler
   const raw_ptr<PrefService> local_state_;
   std::optional<metrics::DailyEvent> daily_event_;
   base::RepeatingTimer daily_event_timer_;
+
+  std::string user_id_hash_;
 };
 
 }  // namespace ash

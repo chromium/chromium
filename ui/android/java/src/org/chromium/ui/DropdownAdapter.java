@@ -4,6 +4,8 @@
 
 package org.chromium.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -22,13 +24,17 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 import java.util.Set;
 
 /** Dropdown item adapter for DropdownPopupWindow. */
+@NullMarked
 public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final Context mContext;
-    private final Set<Integer> mSeparators;
+    private final @Nullable Set<Integer> mSeparators;
     private final boolean mAreAllItemsEnabled;
     private final int mLabelMargin;
 
@@ -39,7 +45,9 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
      * @param separators Set of positions that separate {@code items}.
      */
     public DropdownAdapter(
-            Context context, List<? extends DropdownItem> items, Set<Integer> separators) {
+            Context context,
+            List<? extends DropdownItem> items,
+            @Nullable Set<Integer> separators) {
         super(context, R.layout.dropdown_item);
         mContext = context;
         addAll(items);
@@ -51,7 +59,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
 
     private boolean checkAreAllItemsEnabled() {
         for (int i = 0; i < getCount(); i++) {
-            DropdownItem item = getItem(i);
+            DropdownItem item = assumeNonNull(getItem(i));
             if (item.isEnabled() && !item.isGroupHeader()) {
                 return false;
             }
@@ -60,9 +68,11 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View layout = convertView;
-        if (convertView == null) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
+        View layout;
+        if (convertView != null) {
+            layout = convertView;
+        } else {
             LayoutInflater inflater =
                     (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             layout = inflater.inflate(R.layout.dropdown_item, null);
@@ -88,7 +98,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             divider.setDividerColor(dividerColor);
         }
 
-        DropdownItem item = getItem(position);
+        DropdownItem item = assumeNonNull(getItem(position));
 
         // Note: trying to set the height of the root LinearLayout breaks accessibility,
         // so we have to adjust the height of this LinearLayout that wraps the TextViews instead.
@@ -179,7 +189,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     @Override
     public boolean isEnabled(int position) {
         if (position < 0 || position >= getCount()) return false;
-        DropdownItem item = getItem(position);
+        DropdownItem item = assumeNonNull(getItem(position));
         return item.isEnabled() && !item.isGroupHeader();
     }
 }

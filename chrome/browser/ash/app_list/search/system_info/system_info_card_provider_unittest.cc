@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file.h"
@@ -33,6 +32,7 @@
 #include "chromeos/ash/components/system_info/cpu_data.h"
 #include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/components/system_info/system_info_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"

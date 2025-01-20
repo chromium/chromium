@@ -26,6 +26,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -548,7 +549,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
   VerifyPolicies(expected_policies);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
+// TODO(crbug.com/384989795): Fails on desktop android, see bug.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_SendPolicyValues DISABLED_SendPolicyValues
+#else
+#define MAYBE_SendPolicyValues SendPolicyValues
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_SendPolicyValues) {
   // Verifies that policy values are sent to the UI and processed there
   // correctly by setting the values of four known and one unknown policy and
   // checking that the policy table contains the policy names, values and
@@ -1058,7 +1065,7 @@ class PolicyUIManagedStatusTest : public PolicyUITest,
 
   // The browser's locale needs to be "en-US" to be able to see the banner
   static constexpr std::string_view kValidLocale = "en-US";
-  static constexpr std::string_view kInvalidLocale = "not-en-US";
+  static constexpr std::string_view kInvalidLocale = "en-AU";
 
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {

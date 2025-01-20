@@ -7,16 +7,19 @@ import 'chrome://read-later.top-chrome/shared/sp_footer.js';
 import 'chrome://read-later.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './reading_list_item.js';
 import '/strings.m.js';
 
-import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import {CrSelectableMixin} from 'chrome://resources/cr_elements/cr_selectable_mixin.js';
+import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
@@ -25,17 +28,15 @@ import type {ReadingListApiProxy} from './reading_list_api_proxy.js';
 import {ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
 import {getCss} from './reading_list_app.css.js';
 import {getHtml} from './reading_list_app.html.js';
-import type {ReadingListItemElement} from './reading_list_item.js';
 import {MARKED_AS_READ_UI_EVENT} from './reading_list_item.js';
 
 const navigationKeys: Set<string> = new Set(['ArrowDown', 'ArrowUp']);
 
-const ReadingListAppElementBase =
-    HelpBubbleMixinLit(CrSelectableMixin(CrLitElement));
+const ReadingListAppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface ReadingListAppElement {
   $: {
-    readingListList: HTMLElement,
+    readingListList: CrLazyListElement,
   };
 }
 
@@ -61,18 +62,34 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     return {
       unreadItems_: {type: Array},
       readItems_: {type: Array},
+      focusedIndex_: {type: Number},
+      focusedItem_: {type: Object},
       currentPageActionButtonState_: {type: Number},
       buttonRipples: {type: Boolean},
       loadingContent_: {type: Boolean},
+      itemSize_: {type: Number},
+      scrollTarget_: {type: Object},
+      unreadHeader_: {type: String},
+      readHeader_: {type: String},
+      unreadExpanded_: {type: Boolean},
+      readExpanded_: {type: Boolean},
     };
   }
 
   protected unreadItems_: ReadLaterEntry[] = [];
   protected readItems_: ReadLaterEntry[] = [];
+  protected focusedIndex_: number = -1;
+  protected focusedItem_: HTMLElement|null = null;
   private currentPageActionButtonState_: CurrentPageActionButtonState =
       CurrentPageActionButtonState.kDisabled;
   buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
   protected loadingContent_: boolean = true;
+  protected itemSize_: number = 48;
+  protected scrollTarget_: HTMLElement|null = null;
+  private unreadHeader_: string = loadTimeData.getString('unreadHeader');
+  private readHeader_: string = loadTimeData.getString('readHeader');
+  private unreadExpanded_: boolean = true;
+  private readExpanded_: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -82,9 +99,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
-
-    /** Property for CrSelectableMixin */
-    this.attrForSelected = 'data-url';
 
     this.visibilityChangedListener_ = () => {
       // Refresh Reading List's list data when transitioning into a visible
@@ -110,6 +124,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
             (state: CurrentPageActionButtonState) =>
                 this.updateCurrentPageActionButton_(state)));
 
+    this.scrollTarget_ = this.$.readingListList;
     this.updateReadLaterEntries_();
     this.apiProxy_.updateCurrentPageActionButtonState();
 
@@ -133,6 +148,23 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
         this.shadowRoot!, MARKED_AS_READ_UI_EVENT);
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('unreadItems_') ||
+        changedPrivateProperties.has('readItems_')) {
+      const listLength = this.getAllItems_().length;
+      if (this.focusedIndex_ >= listLength) {
+        this.focusedIndex_ = listLength - 1;
+      } else if (this.focusedIndex_ === -1 && listLength > 0) {
+        this.focusedIndex_ = 1;
+      }
+    }
+  }
+
   override firstUpdated() {
     this.registerHelpBubble(
         ADD_CURRENT_TAB_ELEMENT_ID, '#currentPageActionButton');
@@ -144,20 +176,84 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     }
   }
 
-  // Override `observeItems` from CrSelectableMixin.
-  override observeItems() {
-    // Turn off default observation logic in CrSelectableMixin.
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('focusedIndex_')) {
+      this.updateFocusedItem_();
+    }
   }
 
-  // Override `queryItems` from CrSelectableMixin.
-  override queryItems() {
-    return Array.from(this.shadowRoot!.querySelectorAll('reading-list-item'));
+  getFocusedIndexForTesting() {
+    return this.focusedIndex_;
   }
 
-  // Override `queryMatchingItem` from CrSelectableMixin.
-  override queryMatchingItem(selector: string) {
-    return this.shadowRoot!.querySelector<HTMLElement>(
-        `reading-list-item${selector}`);
+  setExpandedForTesting() {
+    this.readExpanded_ = true;
+    this.unreadExpanded_ = true;
+  }
+
+  protected updateFocusedItem_() {
+    this.focusedItem_ = this.focusedIndex_ === -1 ?
+        null :
+        this.querySelector<HTMLElement>(
+            `cr-lazy-list > *:nth-child(${this.focusedIndex_ + 1})`);
+  }
+
+  protected getAllItems_(): ReadLaterEntry[] {
+    const allItems: ReadLaterEntry[] = [];
+    if (this.unreadItems_.length > 0) {
+      allItems.push(this.createHeaderEntry_(this.unreadHeader_));
+      if (this.unreadExpanded_) {
+        allItems.push(...this.unreadItems_);
+      }
+    }
+    if (this.readItems_.length > 0) {
+      allItems.push(this.createHeaderEntry_(this.readHeader_));
+      if (this.readExpanded_) {
+        allItems.push(...this.readItems_);
+      }
+    }
+    return allItems;
+  }
+
+  private createHeaderEntry_(title: string): ReadLaterEntry {
+    return {
+      title: title,
+      url: {url: ''},
+      displayUrl: '',
+      updateTime: 0n,
+      read: false,
+      displayTimeSinceUpdate: '',
+    };
+  }
+
+  protected getExpandButtonIcon_(title: string): string {
+    switch (title) {
+      case this.unreadHeader_:
+        return this.unreadExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+      case this.readHeader_:
+        return this.readExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+      default:
+        assertNotReached();
+    }
+  }
+
+  protected onExpandButtonClick_(e: Event) {
+    const title: string = (e.target as HTMLElement).dataset['title']!;
+    switch (title) {
+      case this.unreadHeader_:
+        this.unreadExpanded_ = !this.unreadExpanded_;
+        break;
+      case this.readHeader_:
+        this.readExpanded_ = !this.readExpanded_;
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   /**
@@ -178,13 +274,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.updateReadingListItems_(entries);
   }
 
-  private async updateReadingListItems_(entries: ReadLaterEntriesByStatus) {
+  private updateReadingListItems_(entries: ReadLaterEntriesByStatus) {
     this.unreadItems_ = entries.unreadEntries;
     this.readItems_ = entries.readEntries;
     this.loadingContent_ = false;
-
-    await this.updateComplete;
-    this.itemsChanged();
   }
 
   private updateCurrentPageActionButton_(state: CurrentPageActionButtonState) {
@@ -260,31 +353,55 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     );
   }
 
-
   protected async onItemKeyDown_(e: KeyboardEvent) {
     if (e.shiftKey || !navigationKeys.has(e.key)) {
       return;
     }
-    switch (e.key) {
-      case 'ArrowDown':
-        this.selectNext();
-        await this.updateComplete;
-        (this.selectedItem as ReadingListItemElement).focus();
-        break;
-      case 'ArrowUp':
-        this.selectPrevious();
-        await this.updateComplete;
-        (this.selectedItem as ReadingListItemElement).focus();
-        break;
-      default:
-        assertNotReached();
-    }
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
+
+    // Skip focus traversal for the header of the first section.
+    const indicesToSkip = [0];
+    if (this.unreadItems_.length > 0 && this.readItems_.length > 0) {
+      // If both sections are shown, skip the header of the second section too.
+      if (this.unreadExpanded_) {
+        indicesToSkip.push(this.unreadItems_.length + 1);
+      } else {
+        indicesToSkip.push(1);
+      }
+    }
+    const listLength = this.getAllItems_().length;
+
+    // Identify the new focused index.
+    let newFocusedIndex = 0;
+    if (e.key === 'ArrowUp') {
+      newFocusedIndex = (this.focusedIndex_ + listLength - 1) % listLength;
+      while (indicesToSkip.includes(newFocusedIndex)) {
+        newFocusedIndex = (newFocusedIndex + listLength - 1) % listLength;
+      }
+    } else {
+      newFocusedIndex = (this.focusedIndex_ + 1) % listLength;
+      while (indicesToSkip.includes(newFocusedIndex)) {
+        newFocusedIndex = (newFocusedIndex + 1) % listLength;
+      }
+    }
+    this.focusedIndex_ = newFocusedIndex;
+
+    const element =
+        await this.$.readingListList.ensureItemRendered(this.focusedIndex_);
+    element.focus();
   }
 
   protected onItemFocus_(e: Event) {
-    this.selected = (e.currentTarget as ReadingListItemElement).dataset['url']!;
+    const renderedItems =
+        this.querySelectorAll<HTMLElement>('cr-lazy-list > *');
+    const focusedIdx = Array.from(renderedItems).findIndex(item => {
+      return item === e.target || item.shadowRoot?.activeElement === e.target;
+    });
+
+    if (focusedIdx !== -1) {
+      this.focusedIndex_ = focusedIdx;
+    }
   }
 
   protected shouldShowHr_(): boolean {

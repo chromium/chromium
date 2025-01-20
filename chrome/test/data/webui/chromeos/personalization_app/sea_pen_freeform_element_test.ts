@@ -12,7 +12,7 @@ import {assert} from 'chrome://webui-test/chai.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, dispatchKeydown, getActiveElement, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
@@ -61,9 +61,9 @@ suite('SeaPenFreeformElementTest', function() {
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
         'sample prompts element shown on freeform page');
 
-    assertFalse(
-        !!freeformElement.shadowRoot!.querySelector('#tabContainer'),
-        'tab container is not shown');
+    const tabContainer = freeformElement.shadowRoot!.querySelector(
+                             '#tabContainer') as HTMLElement;
+    assertTrue(!!tabContainer.hidden, 'tab container is not shown');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector('#promptingGuide'),
         'Prompting guide is shown');
@@ -109,21 +109,21 @@ suite('SeaPenFreeformElementTest', function() {
     freeformElement = initElement(SeaPenFreeformElement);
     await waitAfterNextRender(freeformElement);
 
-    const tabContainer =
-        freeformElement.shadowRoot!.querySelector('#tabContainer');
+    const tabContainer = freeformElement.shadowRoot!.querySelector(
+        '#tabContainer:not([hidden])');
     assertTrue(!!tabContainer, 'tab container displays');
 
     // Sample prompts tab should be present and but not pressed.
     const samplePromptsTabButton =
         tabContainer!.querySelector<CrButtonElement>('#samplePromptsTab');
     assertTrue(!!samplePromptsTabButton, 'sample prompts tab displays');
-    assertEquals(samplePromptsTabButton.getAttribute('aria-pressed'), 'false');
+    assertEquals(samplePromptsTabButton.getAttribute('aria-selected'), 'false');
 
     // Results tab should be present and pressed.
     const resultsTabButton =
         tabContainer!.querySelector<CrButtonElement>('#resultsTab');
     assertTrue(!!resultsTabButton, 'results tab display');
-    assertEquals(resultsTabButton.getAttribute('aria-pressed'), 'true');
+    assertEquals(resultsTabButton.getAttribute('aria-selected'), 'true');
 
     assertFalse(
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
@@ -154,8 +154,8 @@ suite('SeaPenFreeformElementTest', function() {
     freeformElement = initElement(SeaPenFreeformElement);
     await waitAfterNextRender(freeformElement);
 
-    const tabContainer =
-        freeformElement.shadowRoot!.querySelector('#tabContainer');
+    const tabContainer = freeformElement.shadowRoot!.querySelector(
+        '#tabContainer:not([hidden])');
     assertTrue(!!tabContainer, 'tab container displays');
 
     // Switch to Sample Prompts tab
@@ -247,18 +247,41 @@ suite('SeaPenFreeformElementTest', function() {
     await waitAfterNextRender(freeformElement);
 
     // Results tab should be present and pressed.
-    const tabContainer =
-        freeformElement.shadowRoot!.querySelector('#tabContainer');
-    assertTrue(!!tabContainer, 'tab container should exist');
+    const tabContainer = freeformElement.shadowRoot!.querySelector(
+        '#tabContainer:not([hidden])');
+    assertTrue(!!tabContainer, 'tab container should be shown');
     const resultsTabButton =
         tabContainer!.querySelector<CrButtonElement>('#resultsTab');
     assertTrue(!!resultsTabButton, 'results tab displays');
     assertEquals(
-        'true', resultsTabButton.getAttribute('aria-pressed'),
-        'results tab is pressed');
+        'true', resultsTabButton.getAttribute('aria-selected'),
+        'results tab is selected');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenImagesElement.is),
         'sea-pen-images is shown');
+  });
+
+  test('keypress moves focus', async () => {
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
+        seaPenProvider.seaPenFreeformQuery;
+    freeformElement = initElement(SeaPenFreeformElement);
+    await waitAfterNextRender(freeformElement);
+    const tabContainer = freeformElement.shadowRoot!.querySelector<HTMLElement>(
+        '#tabContainer:not([hidden])');
+    const samplePromptsTabButton =
+        tabContainer!.querySelector<CrButtonElement>('#samplePromptsTab');
+    const resultsTabButton =
+        tabContainer!.querySelector<CrButtonElement>('#resultsTab');
+    resultsTabButton?.focus();
+
+    dispatchKeydown(tabContainer!, 'ArrowLeft');
+
+    assertEquals(
+        samplePromptsTabButton, getActiveElement(freeformElement),
+        'sample prompts tab should be focused');
+    assertEquals(
+        'true', resultsTabButton?.ariaSelected,
+        'The results tab should still be selected');
   });
 });

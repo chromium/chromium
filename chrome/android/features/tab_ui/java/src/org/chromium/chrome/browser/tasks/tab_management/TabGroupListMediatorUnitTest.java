@@ -653,8 +653,7 @@ public class TabGroupListMediatorUnitTest {
                 .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         verify(mDataSharingService)
-                .removeMember(
-                        eq(COLLABORATION_ID1), eq(EMAIL2), mActionOutcomeCallbackCaptor.capture());
+                .leaveGroup(eq(COLLABORATION_ID1), mActionOutcomeCallbackCaptor.capture());
         mActionOutcomeCallbackCaptor
                 .getValue()
                 .onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);

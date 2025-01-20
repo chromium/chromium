@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_mediator.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/parcel_tracking/infobar_parcel_tracking_modal_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
-#import "ios/chrome/browser/ui/infobars/modals/parcel_tracking/infobar_parcel_tracking_modal_consumer.h"
 
 @implementation ParcelTrackingInfobarModalOverlayMediator
 

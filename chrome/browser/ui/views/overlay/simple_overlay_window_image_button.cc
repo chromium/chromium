@@ -34,11 +34,13 @@ void SimpleOverlayWindowImageButton::SetVisible(bool visible) {
 
 void SimpleOverlayWindowImageButton::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  if (!size().IsEmpty())
+  if (!size().IsEmpty()) {
     last_visible_size_ = size();
+  }
 
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImage();
 }

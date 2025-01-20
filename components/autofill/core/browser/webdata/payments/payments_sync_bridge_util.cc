@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -23,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -887,6 +887,16 @@ void SetAutofillWalletSpecificsFromPaymentInstrument(
   *wallet_specifics.mutable_payment_instrument() = payment_instrument;
 }
 
+void SetAutofillWalletSpecificsFromPaymentInstrumentCreationOption(
+    const sync_pb::PaymentInstrumentCreationOption&
+        payment_instrument_creation_option,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics) {
+  wallet_specifics.set_type(
+      AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION);
+  *wallet_specifics.mutable_payment_instrument_creation_option() =
+      payment_instrument_creation_option;
+}
+
 void CopyRelevantWalletMetadataAndCvc(
     const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -900,8 +910,10 @@ void CopyRelevantWalletMetadataAndCvc(
       if (saved_card->server_id() == server_card.server_id()) {
         // The wallet data doesn't have the use stats. Use the ones present on
         // disk to not overwrite them with bad data.
-        server_card.set_use_count(saved_card->use_count());
-        server_card.set_use_date(saved_card->use_date());
+        server_card.usage_history().set_use_count(
+            saved_card->usage_history().use_count());
+        server_card.usage_history().set_use_date(
+            saved_card->usage_history().use_date());
 
         // Wallet data from the server doesn't have the CVC data as it's
         // decoupled. Use the data present in the local storage, to prevent
@@ -927,7 +939,9 @@ void PopulateWalletTypesFromSyncData(
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
     std::vector<BankAccount>& bank_accounts,
     std::vector<CreditCardBenefit>& benefits,
-    std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments,
+    std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        payment_instrument_creation_options) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -979,11 +993,19 @@ void PopulateWalletTypesFromSyncData(
                    IsEwalletAccountSupported()) {
           payment_instruments.push_back(
               autofill_specifics.payment_instrument());
+        } else if (autofill_specifics.payment_instrument()
+                           .instrument_details_case() ==
+                       sync_pb::PaymentInstrument::InstrumentDetailsCase::
+                           kBnplIssuerDetails &&
+                   IsBnplIssuerSupported()) {
+          payment_instruments.push_back(
+              autofill_specifics.payment_instrument());
         }
         break;
-      // TODO(crbug.com/374767814): Implement PopulateWalletTypesFromSyncData
-      // for Payment Instrument Creation Option.
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
+        payment_instrument_creation_options.push_back(
+            autofill_specifics.payment_instrument_creation_option());
+        break;
       // This entry is deprecated and not supported anymore.
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
@@ -1066,6 +1088,33 @@ bool AreAnyItemsDifferent(
   return AreAnyItemsDifferent(old_instrument_strings, new_instrument_strings);
 }
 
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        old_creation_options,
+    const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+        new_creation_options) {
+  int old_creation_options_size = old_creation_options.size();
+  int new_creation_options_size = new_creation_options.size();
+  if (old_creation_options_size != new_creation_options_size) {
+    return true;
+  }
+
+  std::vector<std::string> old_creation_option_strings,
+      new_creation_option_strings;
+  old_creation_option_strings.reserve(old_creation_options_size);
+  new_creation_option_strings.reserve(new_creation_options_size);
+
+  for (const auto& creation_option : old_creation_options) {
+    old_creation_option_strings.push_back(creation_option.SerializeAsString());
+  }
+  for (const auto& creation_option : new_creation_options) {
+    new_creation_option_strings.push_back(creation_option.SerializeAsString());
+  }
+
+  return AreAnyItemsDifferent(old_creation_option_strings,
+                              new_creation_option_strings);
+}
+
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
   if (!specifics.has_id())
@@ -1146,6 +1195,17 @@ bool AreMaskedBankAccountSupported() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool IsBnplIssuerSupported() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
 bool IsEwalletAccountSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(features::kAutofillSyncEwalletAccounts);
@@ -1155,9 +1215,15 @@ bool IsEwalletAccountSupported() {
 }
 
 bool IsGenericPaymentInstrumentSupported() {
-  // Currently only eWallet account is using generic payment instrument proto
-  // for read/write.
-  return IsEwalletAccountSupported();
+  // Currently only eWallet accounts and BNPL are using the generic payment
+  // instrument proto for read/write.
+  return IsEwalletAccountSupported() || IsBnplIssuerSupported();
+}
+
+bool IsPaymentInstrumentCreationOptionSupported() {
+  // Currently only BNPL issuer is using the payment instrument
+  // creation option proto for read/write.
+  return IsBnplIssuerSupported();
 }
 
 }  // namespace autofill

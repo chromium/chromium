@@ -19,7 +19,7 @@
 
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 // Tests management API from a non-persistent extension (event page or
 // Service Worker).

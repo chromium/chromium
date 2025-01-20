@@ -307,7 +307,7 @@ static bool GetBordersFromFrameAttributeValue(const AtomicString& value,
 void HTMLTableElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,
                          kAllowPercentageValues, kDontAllowZeroValues);
@@ -328,8 +328,12 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
         style, CSSPropertyID::kBorderRightWidth, width,
         CSSPrimitiveValue::UnitType::kPixels);
   } else if (name == html_names::kBordercolorAttr) {
-    if (!value.empty())
-      AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
+    if (!value.empty()) {
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderLeftColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderRightColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderBottomColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderTopColor, value);
+    }
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kBackgroundAttr) {

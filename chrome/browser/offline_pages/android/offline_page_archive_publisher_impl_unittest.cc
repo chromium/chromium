@@ -28,7 +28,7 @@ class OfflinePageArchivePublisherImplTest : public testing::Test {
   OfflinePageArchivePublisherImplTest()
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {}
-  ~OfflinePageArchivePublisherImplTest() override {}
+  ~OfflinePageArchivePublisherImplTest() override = default;
 
   void SetUp() override;
   void PumpLoop();

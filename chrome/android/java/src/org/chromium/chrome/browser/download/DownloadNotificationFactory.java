@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.core.app.NotificationCompat;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -157,7 +155,6 @@ public final class DownloadNotificationFactory {
                         NotificationConstants.EXTRA_NOTIFICATION_ID,
                         downloadUpdate.getNotificationId());
                 builder.setOngoing(true)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(false)
                         .addAction(
                                 R.drawable.ic_pause_white_24dp,

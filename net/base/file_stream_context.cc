@@ -20,6 +20,10 @@
 #include "net/base/apple/guarded_fd.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace net {
 
 namespace {

@@ -182,7 +182,7 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   response.reserve(1 + x962.size() + 1 + key_handle.size() +
                    attestation_cert->size() + sig.size());
   response.push_back(kU2fRegistrationResponseHeader);
-  Append(&response, base::as_bytes(base::make_span(x962)));
+  Append(&response, base::as_byte_span(x962));
   response.push_back(key_handle.size());
   Append(&response, key_handle);
   Append(&response, *attestation_cert);
@@ -215,13 +215,14 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
   if (data.size() < 32 + 32 + 1)
     return ErrorStatus(apdu::ApduResponse::Status::SW_WRONG_LENGTH);
 
-  auto challenge_param = data.first<32>();
-  auto application_parameter = data.subspan<32, 32>();
-  size_t key_handle_length = data[64];
-  if (data.size() != 32 + 32 + 1 + key_handle_length)
+  const auto [challenge_param, after_challenge] = data.split_at<32>();
+  const auto [application_parameter, after_application] =
+      after_challenge.split_at<32>();
+  const auto [key_handle_length, key_handle] = after_application.split_at<1>();
+  if (key_handle.size() != key_handle_length[0]) {
     return ErrorStatus(apdu::ApduResponse::Status::SW_WRONG_LENGTH);
+  }
 
-  auto key_handle = data.last(key_handle_length);
   auto* registration = FindRegistrationData(key_handle, application_parameter);
   if (!registration)
     return ErrorStatus(apdu::ApduResponse::Status::SW_WRONG_DATA);

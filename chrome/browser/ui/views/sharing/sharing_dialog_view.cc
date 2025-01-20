@@ -144,8 +144,9 @@ std::u16string SharingDialogView::GetWindowTitle() const {
 }
 
 void SharingDialogView::WindowClosing() {
-  if (data_.close_callback)
+  if (data_.close_callback) {
     std::move(data_.close_callback).Run(this);
+  }
 }
 
 void SharingDialogView::WebContentsDestroyed() {
@@ -205,8 +206,9 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
     if (bubble && bubble->bubble_type() ==
-                      IntentPickerBubbleView::BubbleType::kClickToCall)
+                      IntentPickerBubbleView::BubbleType::kClickToCall) {
       return bubble;
+    }
   }
 #endif
   return static_cast<SharingDialogView*>(dialog);

@@ -463,7 +463,8 @@ a video series of interviews with Chromium software engineers.
 *   [What's Up With Processes - Episode 8](transcripts/wuwt-e08-processes.md)
 *   [What's Up With Site Isolation - Episode 9](transcripts/wuwt-e09-site-isolation.md)
 *   [What's Up With Web Platform - Episode 10](transcripts/wuwt-e10-web-platform.md)
-*   [What's Up With Web Standards - Episode 11](transcriptswuwt-e11-web-standards.md)
+*   [What's Up With Web Standards - Episode 11](transcripts/wuwt-e11-web-standards.md)
+*   [What's Up With Base - Episode 12](transcripts/wuwt-e12-base.md)
 
 ### Probably Obsolete
 *   [TPM Quick Reference](tpm_quick_ref.md) - Trusted Platform Module notes.

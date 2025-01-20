@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -85,7 +86,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Make sure to call DoneReading so that any final bytes that were read that
   // didn't align exactly on a block size boundary get their hash checked as
   // well.
-  void BytesRead(const char* data, int count, MojoResult read_result);
+  void BytesRead(base::span<const char> data, MojoResult read_result);
 
   // Call once when finished adding bytes via OnDone.
   void DoneReading();
@@ -134,7 +135,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   void OnHashMismatch();
 
   // Same as BytesRead, but is run without acquiring lock.
-  void BytesReadImpl(const char* data, int count, MojoResult read_result);
+  void BytesReadImpl(base::span<const char> data, MojoResult read_result);
 
   // Called each time we're done adding bytes for the current block, and are
   // ready to finish the hash operation for those bytes and make sure it

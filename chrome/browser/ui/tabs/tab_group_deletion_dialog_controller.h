@@ -35,6 +35,25 @@ class DeletionDialogController {
     UngroupSingle,
     RemoveTabAndDelete,
     CloseTabAndDelete,
+    LeaveGroup,
+  };
+
+  // Encapsulates metadata required to determine which strings should be
+  // displayed in the deletion dialog.
+  struct DialogMetadata {
+    DialogMetadata(DialogType type,
+                   int closing_group_count,
+                   bool closing_multiple_tabs);
+    // Used for testing.
+    explicit DialogMetadata(DialogType type);
+    DialogMetadata(const DialogMetadata&) = delete;
+
+    ~DialogMetadata();
+
+    DialogType type;
+    int closing_group_count = 0;
+    bool closing_multiple_tabs = false;
+    std::optional<std::u16string> title_of_closing_group;
   };
 
   // State object that represents the current dialog that is being shown.
@@ -78,20 +97,18 @@ class DeletionDialogController {
   void SimulateOkButtonForTesting() { OnDialogOk(); }
 
   // Attempt to show the dialog. The dialog will only show if it is not already
-  // showing, and if the skip dialog option hasn't been set to true. tab_count
-  // and group_count help construct strings for the dialog.
-  bool MaybeShowDialog(DialogType type,
-                       base::OnceCallback<void()> on_ok_callback,
-                       int tab_count,
-                       int group_count);
+  // showing, and if the skip dialog option hasn't been set to true.
+  // `dialog_metadata` contains information that is used to help construct the
+  // strings for the dialog.
+  bool MaybeShowDialog(const DialogMetadata& dialog_metadata,
+                       base::OnceCallback<void()> on_ok_callback);
 
   void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);
 
  private:
   // Builds a DialogModel for showing the dialog.
-  std::unique_ptr<ui::DialogModel> BuildDialogModel(DialogType type,
-                                                    int tab_count = 0,
-                                                    int group_count = 0);
+  std::unique_ptr<ui::DialogModel> BuildDialogModel(
+      const DialogMetadata& dialog_metadata);
 
   void CreateDialogFromBrowser(Browser* browser,
                                std::unique_ptr<ui::DialogModel> dialog_model);

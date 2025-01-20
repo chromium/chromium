@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_navigation
-  webdriver.error.TimeoutException: timeout (500): Timed out after 2.0 seconds
-Harness: the test ran to completion.

@@ -66,8 +66,8 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
       const BiddingAndAuctionServerKeyFetcher&) = delete;
 
   // Fetch keys for all coordinators in kFledgeBiddingAndAuctionKeyConfig if
-  // kFledgePrefetchBandAKeys and kFledgeBiddingAndAuctionServer are enabled and
-  // if the keys haven't been fetched yet.
+  // kFledgeBiddingAndAuctionServer is enabled and if the keys haven't been
+  // fetched yet.
   void MaybePrefetchKeys();
 
   // GetOrFetchKey provides a key in the callback if necessary. If the key is

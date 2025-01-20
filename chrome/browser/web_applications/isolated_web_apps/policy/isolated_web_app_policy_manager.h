@@ -10,28 +10,42 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
 namespace web_app {
 
+// Controls whether we attempt to fetch latest component data before processing
+// the policy for the first time.
+BASE_DECLARE_FEATURE(kIwaPolicyManagerOnDemandComponentUpdate);
+
 // This class is responsible for installing, uninstalling, updating etc.
 // of the policy installed IWAs.
-class IsolatedWebAppPolicyManager {
+class IsolatedWebAppPolicyManager
+    : public IwaKeyDistributionInfoProvider::Observer {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  static void SetOnInstallTaskCompletedCallbackForTesting(
+      base::RepeatingCallback<void(web_package::SignedWebBundleId,
+                                   IwaInstaller::Result)> callback);
 
   explicit IsolatedWebAppPolicyManager(Profile* profile);
 
   IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
   IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
       delete;
-  ~IsolatedWebAppPolicyManager();
+  ~IsolatedWebAppPolicyManager() override;
 
   void Start(base::OnceClosure on_started_callback);
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
@@ -39,10 +53,13 @@ class IsolatedWebAppPolicyManager {
   base::Value GetDebugValue() const;
 
  private:
+  void StartImpl();
+
+  void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
   int GetPendingInitCount();
   void SetPendingInitCount(int pending_count);
-  void ProcessPolicy(base::OnceClosure finished_closure);
+  void ProcessPolicy();
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
@@ -65,6 +82,10 @@ class IsolatedWebAppPolicyManager {
 
   void CleanupOrphanedBundles(base::OnceClosure finished_closure);
 
+  // IwaKeyDistributionInfoProvider::Observer:
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
+
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.
   class ProcessLogs {
@@ -86,7 +107,6 @@ class IsolatedWebAppPolicyManager {
   raw_ptr<WebAppProvider> provider_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   ProcessLogs process_logs_;
-  base::OnceClosure on_started_callback_;
 
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
@@ -94,10 +114,16 @@ class IsolatedWebAppPolicyManager {
 
   net::BackoffEntry install_retry_backoff_entry_;
 
+  base::OnceClosure initial_policy_processing_finished_cb_;
+
   // We must execute install tasks in a queue, because each task uses a
   // `WebContents`, and installing an unbound number of apps in parallel would
   // use too many resources.
   base::queue<std::unique_ptr<IwaInstaller>> install_tasks_;
+
+  base::ScopedObservation<IwaKeyDistributionInfoProvider,
+                          IwaKeyDistributionInfoProvider::Observer>
+      key_distribution_info_observation_{this};
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_ptr_factory_{this};
 };

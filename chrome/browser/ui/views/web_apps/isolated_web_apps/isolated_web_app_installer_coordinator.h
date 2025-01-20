@@ -33,7 +33,6 @@ class IsolatedWebAppInstallerCoordinator {
 
   ~IsolatedWebAppInstallerCoordinator();
 
-
   void FocusWindow();
 
   IsolatedWebAppInstallerModel* GetModelForTesting();

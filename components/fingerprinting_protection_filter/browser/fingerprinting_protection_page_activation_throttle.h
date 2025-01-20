@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -38,6 +39,7 @@ class FingerprintingProtectionPageActivationThrottle
  public:
   FingerprintingProtectionPageActivationThrottle(
       content::NavigationHandle* handle,
+      HostContentSettingsMap* content_settings,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       PrefService* prefs,
       bool is_incognito = false);
@@ -58,9 +60,15 @@ class FingerprintingProtectionPageActivationThrottle
 
   bool GetEnablePerformanceMeasurements(bool is_incognito) const;
 
+  bool HasContentSettingsCookieException() const;
+
+  bool HasTrackingProtectionException() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestGetActivationTest,
                            GetActivationComputesLevelAndDecision);
+  FRIEND_TEST_ALL_PREFIXES(FPFPageActivationThrottleTestRefreshHeuristicUmaTest,
+                           RefreshHeuristicUmasAreLoggedCorrectly);
 
   // Computes the ActivationLevel and ActivationDecision for the current URL
   // based on feature flags/params and prefs. This function is necessary because
@@ -81,6 +89,7 @@ class FingerprintingProtectionPageActivationThrottle
       subresource_filter::ActivationDecision decision,
       subresource_filter::mojom::ActivationLevel level) const;
 
+  raw_ptr<HostContentSettingsMap> content_settings_;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
   raw_ptr<PrefService> prefs_;

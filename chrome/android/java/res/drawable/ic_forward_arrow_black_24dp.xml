@@ -13,6 +13,6 @@ found in the LICENSE file.
     android:autoMirrored="true">
 
     <path
-        android:fillColor="@color/modern_grey_700"
+        android:fillColor="@color/baseline_neutral_30"
         android:pathData="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z" />
 </vector>

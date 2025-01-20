@@ -38,12 +38,6 @@
 #include "base/process/process_metrics.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check.h"
-#include "base/files/file_util.h"
-#include "chrome/common/chrome_paths_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -112,26 +106,6 @@ void ChromeTestSuite::Initialize() {
   path = path.Append(chrome::kFrameworkName);
   base::apple::SetOverrideFrameworkBundlePath(path);
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The lacros binary receives certain paths from ash very early in startup.
-  // Simulate that behavior here. See chrome_paths_lacros.cc for details. The
-  // specific path doesn't matter as long as it exists.
-  CHECK(scoped_temp_dir_.CreateUniqueTempDir());
-  base::FilePath temp_path = scoped_temp_dir_.GetPath();
-  chrome::SetLacrosDefaultPaths(
-      /*documents_dir=*/temp_path,
-      /*downloads_dir=*/temp_path,
-      /*drivefs=*/base::FilePath(),
-      /*onedrive=*/base::FilePath(),
-      /*removable_media_dir=*/base::FilePath(),
-      /*android_files_dir=*/base::FilePath(),
-      /*linux_files_dir=*/base::FilePath(),
-      /*ash_resources_dir=*/base::FilePath(),
-      /*share_cache_dir=*/temp_path,
-      /*preinstalled_web_app_config_dir=*/base::FilePath(),
-      /*preinstalled_web_app_extra_config_dir=*/base::FilePath());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromeTestSuite::Shutdown() {

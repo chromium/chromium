@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/alsa/alsa_input.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -67,7 +64,8 @@ AudioInputStream::OpenOutcome AlsaPcmInputStream::Open() {
   buffer_us = std::max(buffer_us, AlsaPcmOutputStream::kMinLatencyMicros);
 
   if (device_name_ == kAutoSelectDevice) {
-    const char* device_names[] = { kDefaultDevice1, kDefaultDevice2 };
+    auto device_names =
+        std::to_array<const char*>({kDefaultDevice1, kDefaultDevice2});
     for (size_t i = 0; i < std::size(device_names); ++i) {
       device_handle_ = alsa_util::OpenCaptureDevice(
           wrapper_, device_names[i], params_.channels(), params_.sample_rate(),

@@ -10,7 +10,6 @@ import "media/mojo/mojom/audio_logging.mojom";
 import "media/mojo/mojom/audio_output_stream.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/audio_processing.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/context.mojom";
 
@@ -38,12 +37,13 @@ interface AudioStreamFactory {
   // obtained from the audio.mojom.SystemInfo interface, or "default".
   // |shared_memory_count| indicates how many buffer segments can the input
   // stream client read at once, to avoid data overwriting. |enable_agc| is used
-  // for enabling automatic gain control. |key_press_count_buffer| is an
-  // optional readonly shared memory handle for reading the current key press
-  // count, updated by browser process in media::UserInputMonitor
-  // implementation. When |processing_config| is passed, audio processing is
-  // requested (described by |processing_config|), and the audio service will
-  // apply it, on supported platforms (Win, Mac so far).
+  // for enabling automatic gain control. When |processing_config| is passed,
+  // audio processing is requested (described by |processing_config|), and the
+  // audio service will apply it, on supported platforms (Win, Mac so far).
+  //
+  // TODO(crbug.com/380824693) : If the experiment to optimize audio input IPC
+  // using shared memory verification fails, we should revert this API to return
+  // ReadOnlyAudioDataPipe.
   CreateInputStream(
     pending_receiver<media.mojom.AudioInputStream> stream,
     pending_remote<media.mojom.AudioInputStreamClient> client,
@@ -51,9 +51,8 @@ interface AudioStreamFactory {
     pending_remote<media.mojom.AudioLog>? log,
     string device_id, media.mojom.AudioParameters params,
     uint32 shared_memory_count, bool enable_agc,
-    mojo_base.mojom.ReadOnlySharedMemoryRegion? key_press_count_buffer,
     media.mojom.AudioProcessingConfig? processing_config)
-      => (media.mojom.ReadOnlyAudioDataPipe? data_pipe, bool initially_muted,
+      => (media.mojom.ReadWriteAudioDataPipe? data_pipe, bool initially_muted,
           mojo_base.mojom.UnguessableToken? stream_id);
 
   // Associates an output device with an input stream, so that the input knows
@@ -115,5 +114,5 @@ interface AudioStreamFactory {
       media.mojom.AudioParameters params,
       uint32 shared_memory_count,
       mojo_base.mojom.UnguessableToken group_id)
-    => (media.mojom.ReadOnlyAudioDataPipe? data_pipe);
+    => (media.mojom.ReadWriteAudioDataPipe? data_pipe);
 };

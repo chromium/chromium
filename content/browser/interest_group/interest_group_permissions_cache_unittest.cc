@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/interest_group_permissions_cache.h"
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -113,12 +114,12 @@ TEST_F(InterestGroupPermissionsCacheTest, MultipleEntries) {
   // NetworkIsolationKey. This coincidentally covers all distinct permissions
   // values, but that is not necessary for this test. They all just need to be
   // distinct.
-  const Permissions kPermissionsValues[4] = {
+  const auto kPermissionsValues = std::to_array<Permissions, 4>({
       {/*can_join=*/true, /*can_leave=*/true},
       {/*can_join=*/true, /*can_leave=*/false},
       {/*can_join=*/false, /*can_leave=*/true},
       {/*can_join=*/false, /*can_leave=*/false},
-  };
+  });
 
   // Each set of permissions varies in only one value from the first set. Some
   // of these combinations can't actually occur (in particular, the frame origin

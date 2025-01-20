@@ -58,11 +58,15 @@ source_set("lib") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "soda_speech_recognizer_impl_unittest.cc" ]
+  sources = [
+    "soda_speech_recognizer_impl_unittest.cc",
+    "speech_recognition_recognizer_impl_unittest.cc",
+  ]
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/services/speech/soda:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/bindings",

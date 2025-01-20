@@ -40,9 +40,9 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/net/dhcp_wpad_url_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -105,7 +105,7 @@ class BaseHttpProxyScriptBrowserTest : public InProcessBrowserTest {
   BaseHttpProxyScriptBrowserTest& operator=(
       const BaseHttpProxyScriptBrowserTest&) = delete;
 
-  ~BaseHttpProxyScriptBrowserTest() override {}
+  ~BaseHttpProxyScriptBrowserTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(http_server_.Start());
@@ -133,7 +133,7 @@ class HttpProxyScriptBrowserTest : public BaseHttpProxyScriptBrowserTest {
   HttpProxyScriptBrowserTest& operator=(const HttpProxyScriptBrowserTest&) =
       delete;
 
-  ~HttpProxyScriptBrowserTest() override {}
+  ~HttpProxyScriptBrowserTest() override = default;
 
   std::string GetPacFilename() override {
     // PAC script that sends all requests to an invalid proxy server.
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
   VerifyProxyScript(browser());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests the use of a PAC script set via Web Proxy Autodiscovery Protocol.
 // TODO(crbug.com/41475031): Add a test case for when DhcpWpadUrlClient
 // returns an empty PAC URL.
@@ -158,7 +158,7 @@ class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
   WPADHttpProxyScriptBrowserTest& operator=(
       const WPADHttpProxyScriptBrowserTest&) = delete;
 
-  ~WPADHttpProxyScriptBrowserTest() override {}
+  ~WPADHttpProxyScriptBrowserTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(http_server_.Start());
@@ -183,7 +183,7 @@ class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
 IN_PROC_BROWSER_TEST_F(WPADHttpProxyScriptBrowserTest, Verify) {
   VerifyProxyScript(browser());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests the use of a PAC script that rejects requests to
 // https://www.google.com/ when myIpAddress() and myIpAddressEx() appear to be
@@ -198,7 +198,7 @@ class MyIpAddressProxyScriptBrowserTest
   MyIpAddressProxyScriptBrowserTest& operator=(
       const MyIpAddressProxyScriptBrowserTest&) = delete;
 
-  ~MyIpAddressProxyScriptBrowserTest() override {}
+  ~MyIpAddressProxyScriptBrowserTest() override = default;
 
   std::string GetPacFilename() override {
     // PAC script that sends all requests to an invalid proxy server provided
@@ -214,14 +214,14 @@ IN_PROC_BROWSER_TEST_F(MyIpAddressProxyScriptBrowserTest, Verify) {
 // Fetch PAC script via a hanging http:// URL.
 class HangingPacRequestProxyScriptBrowserTest : public InProcessBrowserTest {
  public:
-  HangingPacRequestProxyScriptBrowserTest() {}
+  HangingPacRequestProxyScriptBrowserTest() = default;
 
   HangingPacRequestProxyScriptBrowserTest(
       const HangingPacRequestProxyScriptBrowserTest&) = delete;
   HangingPacRequestProxyScriptBrowserTest& operator=(
       const HangingPacRequestProxyScriptBrowserTest&) = delete;
 
-  ~HangingPacRequestProxyScriptBrowserTest() override {}
+  ~HangingPacRequestProxyScriptBrowserTest() override = default;
 
   void SetUp() override {
     // Must start listening (And get a port for the proxy) before calling

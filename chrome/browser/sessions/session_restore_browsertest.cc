@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <set>
 #include <vector>
 
@@ -54,7 +55,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
@@ -342,8 +342,13 @@ class SessionRestoreTest : public InProcessBrowserTest {
         content::RenderProcessHost::AllHostsIterator();
     int count = 0;
     while (!hosts.IsAtEnd()) {
-      if (hosts.GetCurrentValue()->IsInitializedAndNotDead())
+      content::RenderProcessHost* current_host = hosts.GetCurrentValue();
+
+      // Count live renderers but exclude spares.
+      if (current_host->IsInitializedAndNotDead() && !current_host->IsSpare()) {
         count++;
+      }
+
       hosts.Advance();
     }
     return count;
@@ -2352,7 +2357,7 @@ class LoadOrderObserver : public BrowserListObserver,
 IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
   Profile* profile = browser()->profile();
 
-  const int activation_order[] = {4, 2, 1, 5, 0, 3};
+  const auto activation_order = std::to_array<int>({4, 2, 1, 5, 0, 3});
 
   // Replace the first tab and add the other tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrls[0])));
@@ -2411,7 +2416,7 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
-  const int activation_order[] = {4, 2, 5, 0, 3, 1};
+  const auto activation_order = std::to_array<int>({4, 2, 5, 0, 3, 1});
   Profile* profile = browser()->profile();
 
   // Close the browser that gets opened automatically so we can track the order
@@ -4380,7 +4385,7 @@ class SessionRestoreStaleSessionCookieDeletionTest
   SessionRestoreStaleSessionCookieDeletionTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatureState(
-        kDeleteStaleSessionCookiesOnStartup,
+        features::kDeleteStaleSessionCookiesOnStartup,
         ShouldDeleteStaleSessionCookiesOnStartup());
   }
 
@@ -4688,88 +4693,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
   EXPECT_EQ(u"Group2", local_group2->visual_data()->title());
   EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
             local_group2->visual_data()->color());
-}
-
-IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
-                       GroupsOfSizeZeroHaveTabsAddedToThem) {
-  // The sync migration uses a different keyed service, and will need to be
-  // investigated separately.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    GTEST_SKIP();
-  }
-
-  base::Uuid saved_group_id;
-  base::Uuid tab_id_1;
-  base::Uuid tab_id_2;
-  auto* saved_tab_group_keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser()->profile());
-
-  {  // Create the browser add 2 tabs to a group and save it.
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_BACKGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-    tab_groups::LocalTabGroupID local_id =
-        browser()->tab_strip_model()->AddToNewGroup({0, 1});
-
-    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-      saved_tab_group_keyed_service->SaveGroup(local_id);
-    }
-
-    const tab_groups::SavedTabGroup* saved_group =
-        saved_tab_group_keyed_service->model()->Get(local_id);
-    ASSERT_NE(nullptr, saved_group);
-
-    saved_group_id = saved_group->saved_guid();
-    browser()
-        ->tab_strip_model()
-        ->group_model()
-        ->GetTabGroup(local_id)
-        ->SetVisualData(tab_groups::TabGroupVisualData(
-            u"x", tab_groups::TabGroupColorId::kGrey));
-
-    tab_id_1 = saved_group->saved_tabs()[0].saved_tab_guid();
-    tab_id_2 = saved_group->saved_tabs()[1].saved_tab_guid();
-  }
-
-  // Create the new browser, restore, and expect the group to have 2 tabs.
-  Browser* new_browser = QuitBrowserAndRestore(
-      browser(), GURL(), true, base::BindLambdaForTesting([&]() {
-        saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
-            saved_group_id, tab_id_1,
-            /*prevent_group_destruction_for_testing=*/true);
-        saved_tab_group_keyed_service->model()->RemoveTabFromGroupFromSync(
-            saved_group_id, tab_id_2,
-            /*prevent_group_destruction_for_testing=*/true);
-
-        const tab_groups::SavedTabGroup* saved_group =
-            saved_tab_group_keyed_service->model()->Get(saved_group_id);
-        EXPECT_TRUE(saved_group);
-      }));
-  saved_tab_group_keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          new_browser->profile());
-  ASSERT_NE(nullptr, saved_tab_group_keyed_service);
-
-  const tab_groups::SavedTabGroup* saved_group =
-      saved_tab_group_keyed_service->model()->Get(saved_group_id);
-  EXPECT_TRUE(saved_group);
-  EXPECT_TRUE(saved_group->local_group_id().has_value());
-  EXPECT_EQ(2u, saved_group->saved_tabs().size());
-  for (const auto& saved_tab : saved_group->saved_tabs()) {
-    EXPECT_TRUE(saved_tab.local_tab_id().has_value());
-  }
-
-  // expect 1 extra tab in the tabstrip.
-  EXPECT_EQ(3, new_browser->tab_strip_model()->count());
-  EXPECT_TRUE(new_browser->tab_strip_model()->group_model()->ContainsTabGroup(
-      saved_group->local_group_id().value()));
 }
 
 INSTANTIATE_TEST_SUITE_P(SessionRestore,

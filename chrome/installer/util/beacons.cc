@@ -68,7 +68,7 @@ Beacon::Beacon(std::wstring_view name, BeaconType type, BeaconScope scope)
   Initialize(name);
 }
 
-Beacon::~Beacon() {}
+Beacon::~Beacon() = default;
 
 void Beacon::Update() {
   const REGSAM kAccess = KEY_WOW64_32KEY | KEY_QUERY_VALUE | KEY_SET_VALUE;

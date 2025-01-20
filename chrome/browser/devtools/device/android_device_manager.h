@@ -81,7 +81,7 @@ class AndroidDeviceManager {
       virtual void OnSocketClosed() = 0;
 
      protected:
-      virtual ~Delegate() {}
+      virtual ~Delegate() = default;
     };
 
     AndroidWebSocket(const AndroidWebSocket&) = delete;

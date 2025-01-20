@@ -117,6 +117,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
@@ -269,7 +270,7 @@ class InnerWebContentsAttachDelayer {
       content::RenderFrameHost* outer_frame) {
     auto* mime_handler_view_helper =
         extensions::MimeHandlerViewAttachHelper::Get(
-            outer_frame->GetProcess()->GetID());
+            outer_frame->GetProcess()->GetDeprecatedID());
     mime_handler_view_helper->set_resume_attach_callback_for_testing(
         base::BindOnce(&InnerWebContentsAttachDelayer::ResumeAttachCallback,
                        base::Unretained(this)));
@@ -614,8 +615,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadInPlatformApp) {
 
 class DownloadAwaiter : public content::DownloadManager::Observer {
  public:
-  DownloadAwaiter() {}
-  ~DownloadAwaiter() override {}
+  DownloadAwaiter() = default;
+  ~DownloadAwaiter() override = default;
 
   const GURL& GetLastUrl() {
     // Wait until the download has been created.
@@ -1406,7 +1407,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
 #if BUILDFLAG(IS_WIN)
-  constexpr int kFirstPosition = 915;
+  const int kFirstPosition = ui::IsFluentScrollbarEnabled() ? 917 : 915;
 #elif BUILDFLAG(IS_CHROMEOS)
   constexpr int kFirstPosition = 937;
 #else
@@ -1425,7 +1426,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
 #if BUILDFLAG(IS_WIN)
-  constexpr int kSecondPosition = 1831;
+  const int kSecondPosition = ui::IsFluentScrollbarEnabled() ? 1834 : 1831;
 #elif BUILDFLAG(IS_CHROMEOS)
   constexpr int kSecondPosition = 1875;
 #else
@@ -3093,7 +3094,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
 // Test that a PDF with COEP: require-corp header can load successfully.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        CrossOriginEmbedderPolicyRequireCorpPdf) {
-  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-coep.pdf")));
+  EXPECT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/test-coep-require-corp.pdf")));
+}
+
+// Test that a PDF with COEP: credentialless header can load successfully.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       CrossOriginEmbedderPolicyCredentiallessPdf) {
+  EXPECT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/test-coep-credentialless.pdf")));
 }
 
 // Test that a PDF without the COEP: require-corp header fails to load when

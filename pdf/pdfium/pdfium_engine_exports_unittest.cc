@@ -183,8 +183,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfPagesToNupPdf) {
       pdf_buffers, 2, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   ASSERT_GT(output_pdf_buffer.size(), 0U);
 
-  base::span<const uint8_t> output_pdf_span =
-      base::make_span(output_pdf_buffer);
+  base::span<const uint8_t> output_pdf_span = base::span(output_pdf_buffer);
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(1, page_count);
@@ -210,8 +209,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
       pdf_data.value(), 4, gfx::Size(612, 792), gfx::Rect(22, 20, 570, 750));
   ASSERT_GT(output_pdf_buffer.size(), 0U);
 
-  base::span<const uint8_t> output_pdf_span =
-      base::make_span(output_pdf_buffer);
+  base::span<const uint8_t> output_pdf_span = base::span(output_pdf_buffer);
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);

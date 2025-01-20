@@ -58,9 +58,9 @@ void FetchContext::UpgradeResourceRequestForLoader(
     ResourceRequest&,
     const ResourceLoaderOptions&) {}
 
-void FetchContext::StartSpeculativeImageDecode(Resource* resource,
+bool FetchContext::StartSpeculativeImageDecode(Resource* resource,
                                                base::OnceClosure callback) {
-  std::move(callback).Run();
+  return false;
 }
 
 }  // namespace blink

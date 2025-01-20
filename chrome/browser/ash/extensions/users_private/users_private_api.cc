@@ -250,11 +250,11 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // UsersPrivateIsUserListManagedFunction
 
-UsersPrivateIsUserListManagedFunction::UsersPrivateIsUserListManagedFunction() {
-}
+UsersPrivateIsUserListManagedFunction::UsersPrivateIsUserListManagedFunction() =
+    default;
 
 UsersPrivateIsUserListManagedFunction::
-    ~UsersPrivateIsUserListManagedFunction() {}
+    ~UsersPrivateIsUserListManagedFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserListManagedFunction::Run() {
   return RespondNow(WithArguments(IsDeviceEnterpriseManaged()));

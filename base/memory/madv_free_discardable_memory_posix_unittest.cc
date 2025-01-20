@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/madv_free_discardable_memory_posix.h"
+
 #include <fcntl.h>
 #include <stdint.h>
-
 #include <sys/mman.h>
+
 #include <memory>
 
 #include "base/files/scoped_file.h"
@@ -13,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
-#include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,7 @@ std::atomic<size_t> allocator_byte_count;
 class MadvFreeDiscardableMemoryPosixTester
     : public MadvFreeDiscardableMemoryPosix {
  public:
-  MadvFreeDiscardableMemoryPosixTester(size_t size_in_bytes)
+  explicit MadvFreeDiscardableMemoryPosixTester(size_t size_in_bytes)
       : MadvFreeDiscardableMemoryPosix(size_in_bytes, &allocator_byte_count) {}
 
   using MadvFreeDiscardableMemoryPosix::DiscardPage;

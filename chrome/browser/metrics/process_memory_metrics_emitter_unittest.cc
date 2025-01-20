@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -97,7 +98,7 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   }
 
  private:
-  ~ProcessMemoryMetricsEmitterFake() override {}
+  ~ProcessMemoryMetricsEmitterFake() override = default;
 
   raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 };
@@ -527,7 +528,7 @@ void PopulateMetrics(GlobalMemoryDumpPtr& global_dump,
   }
 
   // We shouldn't reach here.
-  CHECK(false);
+  NOTREACHED();
 }
 
 MetricMap GetExpectedProcessMetrics(HistogramProcessType ptype) {
@@ -555,8 +556,7 @@ MetricMap GetExpectedProcessMetrics(HistogramProcessType ptype) {
   }
 
   // We shouldn't reach here.
-  CHECK(false);
-  return MetricMap();
+  NOTREACHED();
 }
 
 ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {

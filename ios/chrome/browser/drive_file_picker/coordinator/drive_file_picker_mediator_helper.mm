@@ -78,10 +78,13 @@ NSString* kAlsoShowFoldersExtraTerm =
     @"mimeType='application/vnd.google-apps.folder'";
 // Prefix of MIME types associated with Google apps.
 NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
-// MIME type for shortcut items.
-NSString* kShortcutMIMEType = @"application/vnd.google-apps.shortcut";
+// MIME type for folder items.
+NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
 // Prefix of MIME types associated with images.
 NSString* kImageMIMETypePrefix = @"image/";
+// Prefix of the icon link for shortcuts.
+NSString* kShortcutImageLinkPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/64/type/";
 
 // Replaces `/` and `\` characters with `_` in `file_path` and returns the
 // result.
@@ -104,6 +107,12 @@ NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
     UTType* file_extension_type =
         [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(
                                               truncated_file_extension)];
+    if (!file_extension_type) {
+      // `file_extension_type` can sometimes be nil according to crash reports,
+      // although this behaviour is not documented. If so, discard this file
+      // extension.
+      continue;
+    }
     [types addObject:file_extension_type];
   }
   // Add accepted MIME types.
@@ -275,9 +284,19 @@ bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
   if (item.is_folder || item.is_shared_drive) {
     return true;
   }
+  // Shortcuts to folders can be opened.
+  if (item.is_shortcut &&
+      [item.shortcut_target_mime_type isEqualToString:kFolderMIMEType]) {
+    return true;
+  }
   // Non-downloadable files cannot be selected.
-  if (!item.can_download ||
-      [item.mime_type hasPrefix:kGoogleAppsMIMETypePrefix]) {
+  if (!item.is_shortcut && !item.can_download) {
+    return false;
+  }
+  // "Workspace" files cannot be selected.
+  NSString* target_mime_type =
+      item.is_shortcut ? item.shortcut_target_mime_type : item.mime_type;
+  if ([target_mime_type hasPrefix:kGoogleAppsMIMETypePrefix]) {
     return false;
   }
   // If the list of accepted types is empty, or the user opted to ignore it,
@@ -287,7 +306,7 @@ bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
   }
   // If there is a non-empty list of accepted types, then any downloadable file
   // conforming to one of these types can be selected.
-  UTType* item_type = [UTType typeWithMIMEType:item.mime_type];
+  UTType* item_type = [UTType typeWithMIMEType:target_mime_type];
   for (UTType* accepted_type in accepted_types) {
     if ([item_type conformsToType:accepted_type]) {
       return true;
@@ -442,13 +461,14 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     NSString* search_text,
     UIImage* fetched_icon,
     NSString* fetched_icon_link) {
+  BOOL item_is_shortcut_to_folder =
+      item.is_shortcut &&
+      [item.shortcut_target_mime_type isEqualToString:kFolderMIMEType];
   DriveItemType type;
-  if (item.is_folder) {
+  if (item.is_folder || item_is_shortcut_to_folder) {
     type = DriveItemType::kFolder;
   } else if (item.is_shared_drive) {
     type = DriveItemType::kSharedDrive;
-  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
-    type = DriveItemType::kShortcut;
   } else {
     type = DriveItemType::kFile;
   }
@@ -466,6 +486,7 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
       (fetched_icon == nil && fetched_icon_link != nil);
   drive_file_picker_item.iconIsThumbnail =
       [fetched_icon_link isEqualToString:item.thumbnail_link];
+  drive_file_picker_item.isShortcut = item.is_shortcut;
   return drive_file_picker_item;
 }
 
@@ -529,7 +550,7 @@ UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item) {
   } else if (item.is_folder) {
     return DefaultSymbolWithPointSize(kFolderSymbol,
                                       kDriveFilePickerItemIconSize);
-  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
+  } else if (item.is_shortcut) {
     return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
                                       kDriveFilePickerItemIconSize);
   } else {
@@ -545,10 +566,13 @@ NSString* GetImageLinkForDriveItem(const DriveItem& item) {
   } else if ([item.mime_type hasPrefix:kImageMIMETypePrefix] &&
              item.thumbnail_link) {
     imageLink = item.thumbnail_link;
-  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
-    // TODO(crbug.com/372214672): When target MIME type is known, use the asset
-    // which matches that MIME type.
-    imageLink = nil;
+  } else if (item.is_shortcut) {
+    if (item.shortcut_target_mime_type) {
+      // Icon links are expected to have the following format:
+      // https://drive-thirdparty.googleusercontent.com/64/type/<MIME type>
+      imageLink = [kShortcutImageLinkPrefix
+          stringByAppendingString:item.shortcut_target_mime_type];
+    }
   } else {
     // Otherwise the icon link should be fetched.
     imageLink = item.icon_link;

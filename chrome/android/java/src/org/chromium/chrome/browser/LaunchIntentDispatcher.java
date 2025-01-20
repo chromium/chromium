@@ -22,7 +22,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
 import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.core.os.BuildCompat;
 
@@ -34,6 +33,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -155,9 +155,9 @@ public class LaunchIntentDispatcher {
     }
 
     /**
-     * Figure out how to route the Intent.  Because this is on the critical path to startup, please
-     * avoid making the pathway any more complicated than it already is.  Make sure that anything
-     * you add _absolutely has_ to be here.
+     * Figure out how to route the Intent. Because this is on the critical path to startup, please
+     * avoid making the pathway any more complicated than it already is. Make sure that anything you
+     * add _absolutely has_ to be here.
      */
     private @Action int dispatch() {
         // Read partner browser customizations information asynchronously.
@@ -199,7 +199,7 @@ public class LaunchIntentDispatcher {
         }
 
         // Check if we should push the user through First Run.
-        if (FirstRunFlowSequencer.launch(mActivity, mIntent, /* preferLightweightFre= */ false)) {
+        if (FirstRunFlowSequencer.launch(mActivity, mIntent)) {
             return Action.FINISH_ACTIVITY;
         }
 
@@ -217,6 +217,7 @@ public class LaunchIntentDispatcher {
         return dispatchToTabbedActivity();
     }
 
+    @SuppressWarnings(value = "UnsafeImplicitIntentLaunch")
     private boolean processWebSearchIntent(Intent intent) {
         if (intent == null) return false;
 
@@ -366,8 +367,7 @@ public class LaunchIntentDispatcher {
      */
     private boolean launchCustomTabActivity() {
         CustomTabsConnection.getInstance()
-                .onHandledIntent(
-                        CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
+                .onHandledIntent(SessionHolder.getSessionHolderFromIntent(mIntent), mIntent);
 
         boolean isCustomTab = true;
         if (IntentHandler.shouldIgnoreIntent(mIntent, mActivity, isCustomTab)) {

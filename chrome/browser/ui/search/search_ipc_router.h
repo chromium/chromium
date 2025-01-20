@@ -29,7 +29,7 @@ class GURL;
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 class SearchIPCRouterTest;
 
@@ -59,7 +59,7 @@ class SearchIPCRouter : public search::mojom::EmbeddedSearch {
   // versa (decide whether to send messages to the page).
   class Policy {
    public:
-    virtual ~Policy() {}
+    virtual ~Policy() = default;
 
     // SearchIPCRouter calls these functions before sending/receiving messages
     // to/from the page.

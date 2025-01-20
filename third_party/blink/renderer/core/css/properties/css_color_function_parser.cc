@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -138,8 +139,8 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
          color_mix_value->Percentage1()->IsNumericLiteralValue()) &&
         (!color_mix_value->Percentage2() ||
          color_mix_value->Percentage2()->IsNumericLiteralValue())) {
-      return color_mix_value->Mix(*color1, *color2,
-                                  CSSToLengthConversionData());
+      return color_mix_value->Mix(
+          *color1, *color2, CSSToLengthConversionData(/*element=*/nullptr));
     }
   }
   if (auto* relative_color_value =
@@ -388,18 +389,36 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenStream& stream,
   return false;
 }
 
-void ColorFunctionParser::MakePerColorSpaceAdjustments() {
-  if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
+void ColorFunctionParser::MakePerColorSpaceAdjustments(
+    bool is_relative_color,
+    bool is_legacy_syntax,
+    Color::ColorSpace color_space,
+    std::array<std::optional<double>, 3>& channels,
+    std::optional<double>& alpha) {
+  for (int i = 0; i < 3; i++) {
+    if (channels[i].has_value() && ColorChannelIsHue(color_space, i)) {
+      // Non-finite values should be clamped to the range [0, 360].
+      // Since 0 = 360 in this case, they can all simply become zero.
+      if (!isfinite(channels[i].value())) {
+        channels[i] = 0.0;
+      }
+
+      // Wrap hue to be in the range [0, 360].
+      channels[i].value() =
+          fmod(fmod(channels[i].value(), 360.0) + 360.0, 360.0);
+    }
+  }
+
+  if (color_space == Color::ColorSpace::kSRGBLegacy) {
     for (int i = 0; i < 3; i++) {
-      if (channel_types_[i] == ChannelType::kNone) {
+      if (!channels[i].has_value()) {
         continue;
       }
-      if (!isfinite(channels_[i].value())) {
-        channels_[i].value() = channels_[i].value() > 0 ? 255.0 : 0;
-      } else if (!IsRelativeColor()) {
+      if (!isfinite(channels[i].value())) {
+        channels[i].value() = channels[i].value() > 0 ? 255.0 : 0;
+      } else if (!is_relative_color) {
         // Clamp to [0, 1] range, but allow out-of-gamut relative colors.
-        channels_[i].value() =
-            ClampTo<double>(channels_[i].value(), 0.0, 255.0);
+        channels[i].value() = ClampTo<double>(channels[i].value(), 0.0, 255.0);
       }
     }
     // TODO(crbug.com/1399566): There are many code paths that still compress
@@ -408,20 +427,20 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments() {
     // See compositing/background-color/background-color-alpha.html for example.
     // Ideally we would allow alpha to be any float value, but we have to clean
     // up all spots where this compression happens before this is possible.
-    if (!IsRelativeColor() && alpha_.has_value()) {
-      alpha_ = round(alpha_.value() * 255.0) / 255.0;
+    if (!is_relative_color && alpha.has_value()) {
+      alpha = round(alpha.value() * 255.0) / 255.0;
     }
   }
 
-  if (color_space_ == Color::ColorSpace::kHSL ||
-      color_space_ == Color::ColorSpace::kHWB) {
+  if (color_space == Color::ColorSpace::kHSL ||
+      color_space == Color::ColorSpace::kHWB) {
     for (int i : {1, 2}) {
       // Raw numbers are interpreted as percentages in these color spaces.
-      if (channels_[i].has_value()) {
-        channels_[i] = channels_[i].value() / 100.0;
+      if (channels[i].has_value()) {
+        channels[i] = channels[i].value() / 100.0;
 
-        if (is_legacy_syntax_) {
-          channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
+        if (is_legacy_syntax) {
+          channels[i] = ClampTo<double>(channels[i].value(), 0.0, 1.0);
         }
       }
     }
@@ -499,9 +518,11 @@ double ColorFunctionParser::ResolveRelativeChannelValue(
           DynamicTo<CSSMathFunctionValue>(value)) {
     switch (calc_value->Category()) {
       case kCalcNumber:
-        return calc_value->GetDoubleValueWithoutClamping();
+        return calc_value->DoubleValue();
       case kCalcPercent:
-        return (calc_value->GetDoubleValue() / 100) * percentage_base;
+        return (CSSValueClampingUtils::ClampDouble(calc_value->DoubleValue()) /
+                100) *
+               percentage_base;
       case kCalcAngle:
         return calc_value->ComputeDegrees();
       default:
@@ -514,6 +535,44 @@ double ColorFunctionParser::ResolveRelativeChannelValue(
 
 bool ColorFunctionParser::IsRelativeColor() const {
   return !!unresolved_origin_color_;
+}
+
+static bool ChannelIsResolvable(const CSSValue* channel) {
+  if (IsA<CSSIdentifierValue>(channel)) {
+    // Channel identifiers for relative colors (e.g. “r”).
+    return true;
+  }
+
+  const CSSPrimitiveValue* color = DynamicTo<CSSPrimitiveValue>(channel);
+  if (color && color->IsNumericLiteralValue()) {
+    // Numeric literals.
+    return true;
+  }
+
+  const CSSMathFunctionValue* calc = DynamicTo<CSSMathFunctionValue>(channel);
+  if (calc && calc->ExpressionNode()->IsNumericLiteral()) {
+    // calc() of a single value. We wouldn't technically need
+    // to accept this as a special case, but it _is_ resolvable,
+    // and doing this allows us to hit the less-compliant code
+    // in CSSUnresolvedColorValue::CustomCSSText() much less often.
+    return true;
+  }
+
+  return false;
+}
+
+bool ColorFunctionParser::AllChannelsAreResolvable() const {
+  for (int i = 0; i < 3; i++) {
+    if (!ChannelIsResolvable(unresolved_channels_[i])) {
+      return false;
+    }
+  }
+
+  if (unresolved_alpha_) {
+    return ChannelIsResolvable(unresolved_alpha_);
+  }
+
+  return true;
 }
 
 CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
@@ -642,45 +701,37 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   // - (Legacy behavior) Resolve channel values at parse time if the origin
   //   color is resolvable at parse time.
   // - (WPT-compliant behavior) Always defer resolution until used-value time.
-  if (!IsRelativeColor() ||
-      (origin_color_.has_value() &&
-       !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled())) {
+  if (AllChannelsAreResolvable() &&
+      (!IsRelativeColor() ||
+       (origin_color_.has_value() &&
+        !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled()))) {
     // Resolve channel values.
+    std::array<std::optional<double>, 3> channels;
     for (int i = 0; i < 3; i++) {
       if (channel_types_[i] != ChannelType::kNone) {
-        channels_[i] = ResolveColorChannel(
+        channels[i] = ResolveColorChannel(
             unresolved_channels_[i], channel_types_[i],
             function_metadata_->channel_percentage[i], color_channel_map_);
-
-        if (ColorChannelIsHue(color_space_, i)) {
-          // Non-finite values should be clamped to the range [0, 360].
-          // Since 0 = 360 in this case, they can all simply become zero.
-          if (!isfinite(channels_[i].value())) {
-            channels_[i] = 0.0;
-          }
-
-          // Wrap hue to be in the range [0, 360].
-          channels_[i].value() =
-              fmod(fmod(channels_[i].value(), 360.0) + 360.0, 360.0);
-        }
       }
     }
 
+    std::optional<double> alpha = 1.0;
     if (has_alpha) {
       if (alpha_channel_type_ != ChannelType::kNone) {
-        alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
-                              color_channel_map_);
+        alpha = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
+                             color_channel_map_);
       } else {
-        alpha_.reset();
+        alpha.reset();
       }
     } else if (IsRelativeColor()) {
-      alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
+      alpha = color_channel_map_.at(CSSValueID::kAlpha);
     }
 
-    MakePerColorSpaceAdjustments();
+    MakePerColorSpaceAdjustments(IsRelativeColor(), is_legacy_syntax_,
+                                 color_space_, channels, alpha);
 
-    resolved_color = Color::FromColorSpace(color_space_, channels_[0],
-                                           channels_[1], channels_[2], alpha_);
+    resolved_color = Color::FromColorSpace(color_space_, channels[0],
+                                           channels[1], channels[2], alpha);
     if (IsRelativeColor() && Color::IsLegacyColorSpace(color_space_)) {
       resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
     }
@@ -726,10 +777,22 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   if (resolved_color.has_value()) {
     return cssvalue::CSSColor::Create(*resolved_color);
-  } else {
+  } else if (unresolved_origin_color_) {
     return MakeGarbageCollected<cssvalue::CSSRelativeColorValue>(
         *unresolved_origin_color_, color_space_, *unresolved_channels_[0],
         *unresolved_channels_[1], *unresolved_channels_[2], unresolved_alpha_);
+  } else {
+    if (!has_alpha) {
+      unresolved_alpha_ = CSSNumericLiteralValue::Create(
+          1.0, CSSNumericLiteralValue::UnitType::kNumber);
+      alpha_channel_type_ = ChannelType::kNumber;
+    }
+
+    return MakeGarbageCollected<cssvalue::CSSUnresolvedColorValue>(
+        color_space_, DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[0]),
+        DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[1]),
+        DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[2]), channel_types_,
+        DynamicTo<CSSPrimitiveValue>(unresolved_alpha_), alpha_channel_type_);
   }
 }
 

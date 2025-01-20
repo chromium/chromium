@@ -169,9 +169,8 @@ bool DevToolsServer::IsStarted() const {
 static jlong JNI_DevToolsServer_InitRemoteDebugging(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& socket_name_prefix) {
-  DevToolsServer* server = new DevToolsServer(
-      base::android::ConvertJavaStringToUTF8(env, socket_name_prefix));
+    std::string& socket_name_prefix) {
+  DevToolsServer* server = new DevToolsServer(socket_name_prefix);
   return reinterpret_cast<intptr_t>(server);
 }
 

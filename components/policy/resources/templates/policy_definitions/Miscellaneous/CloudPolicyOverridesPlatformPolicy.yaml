@@ -3,11 +3,12 @@ caption: <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud policy over
 desc: |-
   Setting the policy to Enabled means cloud policy takes precedence if it conflicts with platform policy.
 
-        Setting the policy to Disabled or leaving it unset means platform policy takes precedence if it conflicts with cloud policy.
+  Setting the policy to Disabled or leaving it unset means platform policy takes precedence if it conflicts with cloud policy.
 
-        This mandatory policy affects machine scope cloud policies.
+  This mandatory policy affects machine scope cloud policies.
 
-        This policy is only available on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>; it has no effect on <ph name="GOOGLE_UPDATE_NAME">Google Update</ph>.
+  This policy is specific to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and does not affect <ph name="GOOGLE_UPDATE_NAME">Google Update</ph> because they are independent applications.
+  <ph name="GOOGLE_UPDATE_NAME">Google Update</ph> has a separate policy with the same name.
 example_value: false
 features:
   dynamic_refresh: true

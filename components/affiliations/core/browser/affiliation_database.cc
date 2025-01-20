@@ -140,8 +140,8 @@ AffiliationDatabase::AffiliationDatabase() = default;
 AffiliationDatabase::~AffiliationDatabase() = default;
 
 bool AffiliationDatabase::Init(const base::FilePath& path) {
-  sql_connection_ = std::make_unique<sql::Database>(sql::DatabaseOptions{});
-  sql_connection_->set_histogram_tag("Affiliation");
+  sql_connection_ =
+      std::make_unique<sql::Database>(sql::Database::Tag("Affiliation"));
   sql_connection_->set_error_callback(base::BindRepeating(
       &AffiliationDatabase::SQLErrorCallback, base::Unretained(this)));
 

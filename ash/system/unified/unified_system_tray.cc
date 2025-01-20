@@ -101,9 +101,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
 
-  time_view_ = AddTrayItemToContainer(
+  time_tray_item_view_ = AddTrayItemToContainer(
       std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kTime));
-
 
   AddTrayItemToContainer(std::make_unique<ScreenCaptureTrayItemView>(shelf));
 
@@ -139,16 +138,22 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     channel_indicator_view_ =
         AddTrayItemToContainer(std::make_unique<ChannelIndicatorView>(
             shelf, Shell::Get()->shell_delegate()->GetChannel()));
+    channel_indicator_view_->AddObserver(this);
   }
 
   set_separator_visibility(false);
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
+  PowerStatus::Get()->AddObserver(this);
+
+  SubscribeCallbacksForAccessibility();
+  UpdateAccessibleName();
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
+  PowerStatus::Get()->RemoveObserver(this);
 
   DestroyBubble();
 }
@@ -313,6 +318,10 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
       0);
 }
 
+void UnifiedSystemTray::OnPowerStatusChanged() {
+  UpdateAccessibleName();
+}
+
 void UnifiedSystemTray::OnOpeningCalendarView() {
   SetIsActive(false);
   for (auto& observer : observers_) {
@@ -335,6 +344,13 @@ void UnifiedSystemTray::OnDisplayTabletStateChanged(
   }
 
   UpdateLayout();
+}
+
+void UnifiedSystemTray::OnTrayItemChildViewChanged() {
+  UpdateAccessibleName();
+  if (channel_indicator_view_) {
+    SubscribeChannelIndicatorImageOrLabelCallbacks();
+  }
 }
 
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
@@ -395,7 +411,7 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
   if (IsBubbleShown()) {
     return GetAccessibleNameForQuickSettingsBubble();
   } else {
-    return GetAccessibleNameForTray();
+    return CalculateAccessibleName();
   }
 }
 
@@ -408,6 +424,10 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
         IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
 }
 
+void UnifiedSystemTray::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(CalculateAccessibleName());
+}
+
 void UnifiedSystemTray::HandleLocaleChange() {
   // Re-adds the child views to force the layer's bounds to be updated
   // (`SetLayerBounds`) for text direction (if needed).
@@ -416,52 +436,9 @@ void UnifiedSystemTray::HandleLocaleChange() {
     item->HandleLocaleChange();
     tray_container()->AddChildView(item);
   }
-}
 
-std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
-  std::u16string time = base::TimeFormatTimeOfDayWithHourClockType(
-      base::Time::Now(),
-      Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
-      base::kKeepAmPm);
-  std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
-  std::vector<std::u16string> status = {time, battery};
-
-  status.push_back(channel_indicator_view_ &&
-                           channel_indicator_view_->GetVisible()
-                       ? channel_indicator_view_->GetAccessibleNameString()
-                       : std::u16string());
-
-  std::u16string network_string, hotspot_string;
-  if (network_tray_view_->GetVisible()) {
-    network_string = network_tray_view_->GetAccessibleNameString();
-  }
-  if (hotspot_tray_view_ && hotspot_tray_view_->GetVisible()) {
-    hotspot_string = hotspot_tray_view_->GetAccessibleNameString();
-  }
-  if (!network_string.empty() && !hotspot_string.empty()) {
-    status.push_back(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NETWORK_ACCESSIBLE_DESCRIPTION,
-        {hotspot_string, network_string}, /*offsets=*/nullptr));
-  } else if (!hotspot_string.empty()) {
-    status.push_back(hotspot_string);
-  } else {
-    status.push_back(network_string);
-  }
-
-  status.push_back(managed_device_view_->GetVisible()
-                       ? managed_device_view_->image_view()->GetTooltipText()
-                       : std::u16string());
-
-  status.push_back(ime_mode_view_->GetVisible()
-                       ? ime_mode_view_->label()->GetAccessibleNameString()
-                       : std::u16string());
-  status.push_back(
-      current_locale_view_->GetVisible()
-          ? current_locale_view_->label()->GetAccessibleNameString()
-          : std::u16string());
-
-  return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION,
-                                    status, nullptr);
+  // TrayItemView objects can impact the accessible name.
+  UpdateAccessibleName();
 }
 
 void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
@@ -487,7 +464,7 @@ void UnifiedSystemTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 
 void UnifiedSystemTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
-  time_view_->UpdateAlignmentForShelf(shelf());
+  time_tray_item_view_->UpdateAlignmentForShelf(shelf());
 }
 
 void UnifiedSystemTray::ShowBubbleInternal() {
@@ -554,10 +531,158 @@ void UnifiedSystemTray::DestroyBubble() {
   bubble_.reset();
 }
 
+std::u16string UnifiedSystemTray::CalculateAccessibleName() {
+  std::u16string time = base::TimeFormatTimeOfDayWithHourClockType(
+      GetTimeNow(),
+      Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+      base::kKeepAmPm);
+  std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
+  std::vector<std::u16string> status = {time, battery};
+
+  status.push_back(channel_indicator_view_ &&
+                           channel_indicator_view_->GetVisible()
+                       ? channel_indicator_view_->GetAccessibleNameString()
+                       : std::u16string());
+
+  std::u16string network_string, hotspot_string;
+  if (network_tray_view_->GetVisible()) {
+    network_string = network_tray_view_->GetAccessibleNameString();
+  }
+  if (hotspot_tray_view_ && hotspot_tray_view_->GetVisible()) {
+    hotspot_string = hotspot_tray_view_->GetAccessibleNameString();
+  }
+  if (!network_string.empty() && !hotspot_string.empty()) {
+    status.push_back(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_ACCESSIBLE_DESCRIPTION,
+        {hotspot_string, network_string}, /*offsets=*/nullptr));
+  } else if (!hotspot_string.empty()) {
+    status.push_back(hotspot_string);
+  } else {
+    status.push_back(network_string);
+  }
+
+  status.push_back(managed_device_view_->GetVisible()
+                       ? managed_device_view_->image_view()->GetTooltipText()
+                       : std::u16string());
+
+  status.push_back(ime_mode_view_->GetVisible()
+                       ? ime_mode_view_->label()->GetAccessibleNameString()
+                       : std::u16string());
+  status.push_back(
+      current_locale_view_->GetVisible()
+          ? current_locale_view_->label()->GetAccessibleNameString()
+          : std::u16string());
+
+  return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION,
+                                    status, nullptr);
+}
+
+void UnifiedSystemTray::OnChildViewNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateAccessibleName();
+}
+
+void UnifiedSystemTray::SubscribeCallbacksForAccessibility() {
+  time_view_text_changed_subscription_ =
+      time_tray_item_view_->time_view()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
+
+  if (channel_indicator_view_) {
+    channel_indicator_visible_changed_subscription_ =
+        channel_indicator_view_->AddVisibleChangedCallback(base::BindRepeating(
+            &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+    SubscribeChannelIndicatorImageOrLabelCallbacks();
+  }
+
+  newtwork_tray_visible_changed_subscription_ =
+      network_tray_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  network_tray_tooltip_text_changed_subscription_ =
+      network_tray_view_->AddTooltipTextChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  hotspot_tray_visible_changed_subscription_ =
+      hotspot_tray_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  hotspot_tray_tooltip_text_changed_subscription_ =
+      hotspot_tray_view_->AddTooltipTextChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  managed_device_visible_changed_subscription_ =
+      managed_device_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  managed_device_image_tooltip_text_changed_subscription_ =
+      managed_device_view_->image_view()->AddTooltipTextChangedCallback(
+          base::BindRepeating(&UnifiedSystemTray::UpdateAccessibleName,
+                              base::Unretained(this)));
+
+  ime_mode_visible_changed_subscription_ =
+      ime_mode_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  ime_mode_label_name_changed_subscription_ =
+      ime_mode_view_->label()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
+
+  current_locale_visible_changed_subscription_ =
+      current_locale_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  current_locale_label_name_changed_subscription_ =
+      current_locale_view_->label()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
+}
+
+void UnifiedSystemTray::SubscribeChannelIndicatorImageOrLabelCallbacks() {
+  if (channel_indicator_view_->image_view()) {
+    channel_indicator_image_name_changed_subscription_ =
+        channel_indicator_view_->image_view()
+            ->GetViewAccessibility()
+            .AddStringAttributeChangedCallback(
+                ax::mojom::StringAttribute::kName,
+                base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                    base::Unretained(this)));
+  }
+
+  if (channel_indicator_view_->label()) {
+    channel_indicator_label_changed_subscription_ =
+        channel_indicator_view_->label()
+            ->GetViewAccessibility()
+            .AddStringAttributeChangedCallback(
+                ax::mojom::StringAttribute::kName,
+                base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                    base::Unretained(this)));
+  }
+}
+
 void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
   for (TrayItemView* tray_item : tray_items_) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
+}
+
+const base::Time UnifiedSystemTray::GetTimeNow() {
+  return clock_for_testing_ ? clock_for_testing_->Now() : base::Time::Now();
+}
+
+void UnifiedSystemTray::OverrideClockForTesting(base::Clock* test_clock) {
+  clock_for_testing_ = test_clock;
 }
 
 BEGIN_METADATA(UnifiedSystemTray)

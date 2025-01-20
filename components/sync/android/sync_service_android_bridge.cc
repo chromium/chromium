@@ -26,6 +26,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -452,7 +453,8 @@ void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
   AppendJavaStringArrayToStringVector(env, gaia_ids, &gaia_id_strings);
   std::vector<signin::GaiaIdHash> gaia_id_hashes;
   for (const std::string& gaia_id_string : gaia_id_strings) {
-    gaia_id_hashes.push_back(signin::GaiaIdHash::FromGaiaId(gaia_id_string));
+    gaia_id_hashes.push_back(
+        signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id_string)));
   }
   native_sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
       gaia_id_hashes);

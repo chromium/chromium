@@ -23,13 +23,13 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -335,13 +335,8 @@ void PaymentMethodAccessoryControllerImpl::OnPersonalDataChanged() {
 }
 
 void PaymentMethodAccessoryControllerImpl::OnCreditCardFetched(
-    CreditCardFetchResult result,
-    const CreditCard* credit_card) {
-  if (result != CreditCardFetchResult::kSuccess)
-    return;
-  DCHECK(credit_card);
-
-  ApplyToField(credit_card->number());
+    const CreditCard& credit_card) {
+  ApplyToField(credit_card.number());
 }
 
 void PaymentMethodAccessoryControllerImpl::ApplyToField(
@@ -433,13 +428,15 @@ PaymentMethodAccessoryControllerImpl::GetUnmaskedCreditCards() const {
   }
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       autofill_manager->GetCreditCardAccessManager().GetCachedUnmaskedCards();
-  // Show unmasked virtual cards in the manual filling view if they exist. All
-  // other cards are dropped.
-  auto not_virtual_card = [](const CachedServerCardInfo* card_info) {
+  // Show unmasked virtual cards and card info retrieval enrolled server cards
+  // in the manual filling view if they exist. All other cards are dropped.
+  auto non_runtime_retrieval_card = [](const CachedServerCardInfo* card_info) {
     return card_info->card.record_type() !=
-           CreditCard::RecordType::kVirtualCard;
+               CreditCard::RecordType::kVirtualCard &&
+           card_info->card.card_info_retrieval_enrollment_state() !=
+               CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
   };
-  std::erase_if(unmasked_cards, not_virtual_card);
+  std::erase_if(unmasked_cards, non_runtime_retrieval_card);
   return unmasked_cards;
 }
 

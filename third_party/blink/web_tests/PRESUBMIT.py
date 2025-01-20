@@ -376,21 +376,6 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
     return results
 
 
-def _CheckWebViewExpectations(input_api, output_api):
-    src_dir = os.path.join(input_api.PresubmitLocalPath(), os.pardir,
-                           os.pardir, os.pardir)
-    webview_data_dir = input_api.os_path.join(src_dir, 'android_webview',
-                                              'tools', 'system_webview_shell',
-                                              'test', 'data', 'webexposed')
-    if webview_data_dir not in sys.path:
-        sys.path.append(webview_data_dir)
-
-    # pylint: disable=import-outside-toplevel
-    from exposed_webview_interfaces_presubmit import (
-        CheckNotWebViewExposedInterfaces)
-    return CheckNotWebViewExposedInterfaces(input_api, output_api)
-
-
 class _DoctypeParser(HTMLParser):
     """Parses HTML to check if there exists a DOCTYPE declaration before all other tags.
     """
@@ -471,7 +456,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
     return results
 
@@ -488,6 +472,5 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
     return results

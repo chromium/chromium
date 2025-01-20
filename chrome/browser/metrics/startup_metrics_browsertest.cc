@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, MAYBE_ReportsValues) {
         histogram,
         base::BindLambdaForTesting(
             [&](const char* histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+                base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
     run_loop.Run();
   }
 }

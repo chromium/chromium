@@ -43,8 +43,8 @@ class CredentialEditBridge {
 
   // Called by Java to save the changes to the edited credential.
   void SaveChanges(JNIEnv* env,
-                   const base::android::JavaParamRef<jstring>& username,
-                   const base::android::JavaParamRef<jstring>& password);
+                   std::u16string& username,
+                   std::u16string& password);
 
   // Called by Java to remove the credential from the store.
   void DeleteCredential(JNIEnv* env);

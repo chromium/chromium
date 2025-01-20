@@ -8,21 +8,22 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class BrowserView;
-class AboutThisSiteSidePanelView;
+class WebViewSidePanelView;
 class SidePanelEntryScope;
 class SidePanelUI;
 
 namespace views {
 class View;
-} // namespace views
+}  // namespace views
 
 // AboutThisSideSidePanelCoordinator handles the creation and registration of
-// the AboutThisSidePanelView.
+// the WebViewSidePanelView.
 class AboutThisSideSidePanelCoordinator
     : public content::WebContentsUserData<AboutThisSideSidePanelCoordinator>,
       public content::WebContentsObserver {
@@ -83,7 +84,7 @@ class AboutThisSideSidePanelCoordinator
   // from PageInfo from panels opened directly through the SidePanel dropdown.
   bool registered_but_not_shown_ = false;
 
-  base::WeakPtr<AboutThisSiteSidePanelView> about_this_site_side_panel_view_;
+  base::WeakPtr<WebViewSidePanelView> about_this_site_side_panel_view_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

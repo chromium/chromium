@@ -96,6 +96,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
       std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs,
       std::vector<chrome_pdf::AccessibilityCharInfo> chars,
       chrome_pdf::AccessibilityPageObjects page_objects) override;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnHasSearchifyText() override;
+#endif
 
   void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
   std::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
@@ -268,6 +271,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   uint32_t selection_end_page_index_ = 0;
   uint32_t selection_end_char_index_ = 0;
   uint32_t page_count_ = 0;
+  bool is_tagged_ = false;
   std::unique_ptr<ui::AXNodeData> doc_node_;
   // The banner node will have an appropriate ARIA landmark for easy navigation
   // for screen reader users. It will contain the status node below.
@@ -292,7 +296,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // outdated calls of SetAccessibilityPageInfo().
   uint32_t next_page_index_ = 0;
 
-  bool did_get_a_text_run_ = false;
+  // Indicates that the PDF had accessible text (at least on some pages) without
+  // applying searchify.
+  bool had_accessible_text_ = false;
   bool did_have_an_image_ = false;
   bool sent_metrics_once_ = false;
   // Initialize `currently_in_foreground_` to be true as an associated render

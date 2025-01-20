@@ -108,6 +108,12 @@
 // Returns the matcher for an enabled cancel button in a navigation bar.
 + (id<GREYMatcher>)navigationBarCancelButton;
 
+// Returns matcher for a save button.
++ (id<GREYMatcher>)saveButton;
+
+// Returns the matcher for an enabled save button in a navigation bar.
++ (id<GREYMatcher>)navigationBarSaveButton;
+
 // Returns matcher for close tab context menu button.
 + (id<GREYMatcher>)closeTabMenuButton;
 
@@ -291,6 +297,16 @@
 
 // Returns matcher for the cancel button in the fake add account flow.
 + (id<GREYMatcher>)fakeFakeAddAccountScreenCancelButton;
+
+// Returns matcher for the primary button (typically labeled somethings like
+// "Yes") in various promo screens, including sign-in, history sync, default
+// browser choice, and more.
++ (id<GREYMatcher>)promoScreenPrimaryButtonMatcher;
+
+// Returns matcher for the secondary button (typically labeled somethings like
+// "No Thanks") in various promo screens, including sign-in, history sync,
+// default browser choice, and more.
++ (id<GREYMatcher>)promoScreenSecondaryButtonMatcher;
 
 // Returns matcher for the button for the currently signed in account in the
 // settings menu.

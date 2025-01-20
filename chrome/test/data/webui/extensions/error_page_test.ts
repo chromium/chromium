@@ -263,7 +263,9 @@ suite('ExtensionErrorPageTest', function() {
         'Unknown',
         crCollapses[0]!.querySelector<HTMLElement>(
                            '.context-url')!.textContent!.trim());
-    assertEquals(1, errorPage.getSelectedError().id);
+    const error = errorPage.getSelectedError();
+    assertTrue(!!error);
+    assertEquals(1, error.id);
   });
 
   // Test that the reload button is only shown for unpacked extensions in dev

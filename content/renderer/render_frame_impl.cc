@@ -36,6 +36,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
@@ -44,7 +45,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -54,7 +57,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_navigation_policy.h"
@@ -94,6 +96,7 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
+#include "content/renderer/local_resource_url_loader_factory.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
@@ -136,6 +139,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -1433,7 +1437,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
 
   // blink::WebNavigationBodyLoader::Client overrides:
   void BodyDataReceived(base::span<const char> data) override {
-    data_.Append(data.data(), data.size());
+    data_.Append(base::as_bytes(data));
   }
 
   void BodyLoadingFinished(base::TimeTicks completion_time,
@@ -2225,7 +2229,8 @@ void RenderFrameImpl::Unload(
     blink::mojom::FrameReplicationStatePtr replicated_frame_state,
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "frame_token",
                frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
@@ -2246,10 +2251,10 @@ void RenderFrameImpl::Unload(
       GetTaskRunner(blink::TaskType::kInternalPostMessageForwarding);
 
   // Important: |this| is deleted after this call!
-  if (!SwapOutAndDeleteThis(is_loading, std::move(replicated_frame_state),
-                            proxy_frame_token,
-                            std::move(remote_frame_interfaces),
-                            std::move(remote_main_frame_interfaces))) {
+  if (!SwapOutAndDeleteThis(
+          is_loading, std::move(replicated_frame_state), proxy_frame_token,
+          std::move(remote_frame_interfaces),
+          std::move(remote_main_frame_interfaces), devtools_frame_token)) {
     // The swap is cancelled because running the unload handlers ended up
     // detaching this frame.
     return;
@@ -2348,7 +2353,8 @@ void RenderFrameImpl::UndoCommitNavigation(
   // `DidCommitNavigation()`).
   SwapOutAndDeleteThis(is_loading, std::move(replicated_frame_state),
                        proxy_frame_token, std::move(remote_frame_interfaces),
-                       std::move(remote_main_frame_interfaces));
+                       std::move(remote_main_frame_interfaces),
+                       /*devtools_frame_token=*/std::nullopt);
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
@@ -2481,7 +2487,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
       return new PepperWebPluginImpl(pepper_module.get(), params, this);
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Pepper module/plugin creation failed.";
 #endif
 #endif  // BUILDFLAG(ENABLE_PPAPI)
@@ -2864,9 +2870,8 @@ void RenderFrameImpl::CommitNavigation(
     // without creating url loader.
     std::string mime_type, charset, data;
     if (!net::DataURL::Parse(common_params->url, &mime_type, &charset, &data)) {
-      CHECK(false) << "Invalid URL passed: "
+      NOTREACHED() << "Invalid URL passed: "
                    << common_params->url.possibly_invalid_spec();
-      return;
     }
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             WebString::FromUTF8(mime_type),
@@ -4413,7 +4418,8 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     blink::mojom::FrameReplicationStatePtr replicated_frame_state,
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::SwapOutAndDeleteThis",
                "frame_token", frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
@@ -4437,7 +4443,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   bool success =
       frame_->Swap(remote_frame, std::move(remote_frame_interfaces->frame_host),
                    std::move(remote_frame_interfaces->frame_receiver),
-                   std::move(replicated_frame_state));
+                   std::move(replicated_frame_state), devtools_frame_token);
 
   // WARNING: Do not access 'this' past this point!
 
@@ -4703,12 +4709,11 @@ void RenderFrameImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_queued_main_thread,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    blink::UserInteractionType interaction_type,
     uint64_t interaction_offset) {
   for (auto& observer : observers_) {
     observer.DidObserveUserInteraction(
         max_event_start, max_event_queued_main_thread, max_event_commit_finish,
-        max_event_end, interaction_type, interaction_offset);
+        max_event_end, interaction_offset);
   }
 }
 
@@ -5150,7 +5155,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
                                    params->url.possibly_invalid_spec());
         SCOPED_CRASH_KEY_STRING256("MakeDCPLParams", "mismatched_origin",
                                    params->origin.GetDebugString());
-        CHECK(false) << " url:" << params->url << " origin:" << params->origin;
+        NOTREACHED() << " url:" << params->url << " origin:" << params->origin;
       } else {
         requires_universal_access = true;
       }
@@ -5627,9 +5632,7 @@ void RenderFrameImpl::BeginNavigation(
       (base::FeatureList::IsEnabled(
            blink::features::kHttpDiskCachePrewarming) ||
        base::FeatureList::IsEnabled(
-           blink::features::kSpeculativeServiceWorkerWarmUp) ||
-       base::FeatureList::IsEnabled(
-           features::kSpeculativeServiceWorkerStartup))) {
+           blink::features::kSpeculativeServiceWorkerWarmUp))) {
     frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 
@@ -6019,6 +6022,10 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
   // loads are expected - e.g. in test frames created via RenderViewTest).  See
   // also the DCHECK in URLLoaderFactoryBundle::GetFactory.
 
+  // If resource metadata is present, construct an in-process resource loader
+  // and have it intercept requests it may be able to service.
+  info = MaybeSetUpLocalResourceLoader(std::move(info));
+
   auto loader_factories =
       base::MakeRefCounted<blink::HostChildURLLoaderFactoryBundle>(
           GetTaskRunner(blink::TaskType::kInternalLoading));
@@ -6313,6 +6320,8 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  request_destination);
 
   bool is_duplicate_navigation = false;
+  base::TimeDelta nav_start_diff;
+
   if (navigation_client_impl_ &&
       navigation_client_impl_->HasBeginNavigationParams()) {
     // We ignore navigations that are identical to the ongoing navigation. This
@@ -6320,9 +6329,7 @@ void RenderFrameImpl::BeginNavigationInternal(
     // the same link multiple times, etc).
     auto& prev_begin_params = navigation_client_impl_->begin_params();
     auto& prev_common_params = navigation_client_impl_->common_params();
-    if (common_params->navigation_start - prev_common_params.navigation_start <=
-            features::kDuplicateNavThreshold.Get() &&
-        begin_params->was_initiated_by_link_click ==
+    if (begin_params->was_initiated_by_link_click ==
             prev_begin_params.was_initiated_by_link_click &&
         common_params->url == prev_common_params.url &&
         common_params->method == "GET" && prev_common_params.method == "GET" &&
@@ -6337,13 +6344,29 @@ void RenderFrameImpl::BeginNavigationInternal(
         begin_params->headers == prev_begin_params.headers &&
         begin_params->has_rel_opener == prev_begin_params.has_rel_opener) {
       is_duplicate_navigation = true;
+      nav_start_diff = (common_params->navigation_start -
+                        prev_common_params.navigation_start);
     }
   }
-  base::UmaHistogramBoolean("Navigation.RendererInitiated.IsDuplicate",
-                            is_duplicate_navigation);
-  if (is_duplicate_navigation &&
-      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
-    return;
+  base::UmaHistogramBoolean(
+      "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck",
+      is_duplicate_navigation);
+  if (is_duplicate_navigation) {
+    // The navigation is similar to a previous navigation. Check if it's started
+    // close enough to the start of the previous navigation, in which case we
+    // can just ignore the new navigation and keep the previous navigation.
+    bool start_diff_under_threshold =
+        (nav_start_diff <= features::kDuplicateNavThreshold.Get());
+    base::UmaHistogramBoolean(
+        "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold",
+        start_diff_under_threshold);
+    base::UmaHistogramTimes(
+        "Navigation.RendererInitiated.DuplicateNavStartTimeDiff",
+        nav_start_diff);
+    if (start_diff_under_threshold &&
+        base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+      return;
+    }
   }
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
@@ -6406,7 +6429,7 @@ void RenderFrameImpl::DecodeDataURL(
                     ? common_params.url
                     : common_params.base_url_for_data_url;
   } else {
-    CHECK(false) << "Invalid URL passed: "
+    NOTREACHED() << "Invalid URL passed: "
                  << common_params.url.possibly_invalid_spec();
   }
 }
@@ -6419,6 +6442,45 @@ void RenderFrameImpl::SendUpdateState() {
     return;
 
   GetFrameHost()->UpdateState(GetWebFrame()->CurrentHistoryItemToPageState());
+}
+
+std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+RenderFrameImpl::MaybeSetUpLocalResourceLoader(
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> factory_bundle) {
+  if (!factory_bundle->local_resource_loader_config()) {
+    return factory_bundle;
+  }
+
+  // The pipe to the browser-side WebUIURLLoaderFactory could be in one of two
+  // places:
+  //
+  // 1. factory_bundle->pending_default_factory()
+  // 2. factory_bundle->scheme_specific_factories
+  //
+  // (This may change in the future, see https://crbug.com/40091019)
+  //
+  // The browser process only sends the config in the first case (see call to
+  // PendingURLLoaderFactoryBundle::set_local_resource_loader_config in
+  // RenderFrameHostImpl::CommitNavigation), so if we're constructing a new
+  // in-process resource loader we always take that as the fallback.
+
+  // Take the existing PendingRemote and make it the fallback for a new
+  // in-process resource loader.
+  local_resource_loader_.emplace(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      factory_bundle->local_resource_loader_config().Clone(),
+      std::move(factory_bundle->pending_default_factory()));
+  // Create a pipe and pass the receiving end to the new in-process loader.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+  local_resource_loader_
+      .AsyncCall(&content::LocalResourceURLLoaderFactory::Clone)
+      .WithArgs(pending_remote.InitWithNewPipeAndPassReceiver());
+  // Swap in the new PendingRemote.
+  factory_bundle->pending_default_factory() = std::move(pending_remote);
+
+  return factory_bundle;
 }
 
 blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {
@@ -6518,10 +6580,8 @@ RenderFrameImpl::GetURLLoaderFactory() {
         return ancestor_frame->url_loader_factory_override_for_test_;
       }
     }
-    // At this point we can't create anything. We use CHECK(false) instead of
-    // NOTREACHED() here to catch errors on clusterfuzz and production.
-    CHECK(false);
-    return nullptr;
+    // At this point we can't create anything.
+    NOTREACHED();
   }
   return GetLoaderFactoryBundle();
 }

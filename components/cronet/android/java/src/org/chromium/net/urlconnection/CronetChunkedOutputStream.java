@@ -4,6 +4,7 @@
 
 package org.chromium.net.urlconnection;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
 
@@ -100,20 +101,24 @@ final class CronetChunkedOutputStream extends CronetOutputStream {
 
         @Override
         public void read(final UploadDataSink uploadDataSink, final ByteBuffer byteBuffer) {
-            if (byteBuffer.remaining() >= mBuffer.remaining()) {
-                byteBuffer.put(mBuffer);
-                mBuffer.clear();
-                uploadDataSink.onReadSucceeded(mLastChunk);
-                if (!mLastChunk) {
-                    // Quit message loop so embedder can write more data.
-                    mMessageLoop.quit();
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetChunkedOutputStream.UploadDataProviderImpl#read")) {
+                if (byteBuffer.remaining() >= mBuffer.remaining()) {
+                    byteBuffer.put(mBuffer);
+                    mBuffer.clear();
+                    uploadDataSink.onReadSucceeded(mLastChunk);
+                    if (!mLastChunk) {
+                        // Quit message loop so embedder can write more data.
+                        mMessageLoop.quit();
+                    }
+                } else {
+                    int oldLimit = mBuffer.limit();
+                    mBuffer.limit(mBuffer.position() + byteBuffer.remaining());
+                    byteBuffer.put(mBuffer);
+                    mBuffer.limit(oldLimit);
+                    uploadDataSink.onReadSucceeded(false);
                 }
-            } else {
-                int oldLimit = mBuffer.limit();
-                mBuffer.limit(mBuffer.position() + byteBuffer.remaining());
-                byteBuffer.put(mBuffer);
-                mBuffer.limit(oldLimit);
-                uploadDataSink.onReadSucceeded(false);
             }
         }
 
@@ -135,14 +140,16 @@ final class CronetChunkedOutputStream extends CronetOutputStream {
     }
 
     /**
-     * Helper function to upload {@code mBuffer} to the native stack. This
-     * function blocks until {@code mBuffer} is consumed and there is space to
-     * write more data.
+     * Helper function to upload {@code mBuffer} to the native stack. This function blocks until
+     * {@code mBuffer} is consumed and there is space to write more data.
      */
     private void uploadBufferInternal() throws IOException {
-        checkNotClosed();
-        mBuffer.flip();
-        mMessageLoop.loop();
-        checkNoException();
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetChunkedOutputStream#uploadBufferInternal")) {
+            checkNotClosed();
+            mBuffer.flip();
+            mMessageLoop.loop();
+            checkNoException();
+        }
     }
 }

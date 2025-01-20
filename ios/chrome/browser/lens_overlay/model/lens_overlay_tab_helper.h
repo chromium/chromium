@@ -11,6 +11,7 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller_delegate.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -49,6 +50,14 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   bool IsUpdatingTabSwitcherSnapshot() {
     return is_updating_tab_switcher_snapshot_;
   }
+
+  // Returns true if the most recent back navigation item has lens overlay
+  // invoked.
+  bool IsLensOverlayInvokedOnMostRecentBackItem();
+
+  // Returns true if the current navigation item has lens overlay
+  // invoked.
+  bool IsLensOverlayInvokedOnCurrentNavigationItem();
 
   // Get the recorded bottom sheet detent state associate with this tab helper.
   SheetDimensionState GetRecordedSheetDimensionState() {

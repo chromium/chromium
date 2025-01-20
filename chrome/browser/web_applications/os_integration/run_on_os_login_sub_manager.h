@@ -20,6 +20,7 @@ class Profile;
 namespace web_app {
 
 class WebAppProvider;
+struct ShortcutInfo;
 
 class RunOnOsLoginSubManager : public OsIntegrationSubManager {
  public:

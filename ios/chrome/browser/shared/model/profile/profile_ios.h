@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -115,7 +116,7 @@ class ProfileIOS : public web::BrowserState {
   virtual void DestroyOffTheRecordProfile() = 0;
 
   // Retrieves a pointer to the ProfilePolicyConnector that manages policy
-  // for this BrowserState. May return nullptr if policy is disabled.
+  // for this ProfileIOS. May return nullptr if policy is disabled.
   virtual ProfilePolicyConnector* GetPolicyConnector() = 0;
 
   // Returns a pointer to the UserCloudPolicyManager that is a facade for the
@@ -142,7 +143,7 @@ class ProfileIOS : public web::BrowserState {
   // Works asynchronously, however if the `completion` callback is non-null, it
   // will be posted on the UI thread once the removal process completes.
   // Be aware that theoretically it is possible that `completion` will be
-  // invoked after the BrowserState instance has been destroyed.
+  // invoked after the ProfileIOS instance has been destroyed.
   virtual void ClearNetworkingHistorySince(base::Time time,
                                            base::OnceClosure completion) = 0;
 
@@ -161,8 +162,8 @@ class ProfileIOS : public web::BrowserState {
   // Returns a weak pointer to the current instance.
   virtual base::WeakPtr<ProfileIOS> AsWeakPtr() = 0;
 
-  // Returns the path where the off-the-record BrowserState data is stored.
-  // If the BrowserState is off-the-record, this is equal to GetStatePath().
+  // Returns the path where the off-the-record ProfileIOS data is stored.
+  // If the ProfileIOS is off-the-record, this is equal to GetStatePath().
   base::FilePath GetOffTheRecordStatePath() const;
 
   // web::BrowserState
@@ -175,6 +176,9 @@ class ProfileIOS : public web::BrowserState {
   explicit ProfileIOS(const base::FilePath& state_path,
                       std::string_view profile_name,
                       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
+  // ProfileIOS is sequence-affine.
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   base::FilePath const state_path_;

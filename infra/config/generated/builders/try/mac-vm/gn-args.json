@@ -1,0 +1,11 @@
+{
+  "gn_args": {
+    "is_component_build": true,
+    "is_debug": true,
+    "symbol_level": 1,
+    "target_cpu": "arm64",
+    "target_os": "mac",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

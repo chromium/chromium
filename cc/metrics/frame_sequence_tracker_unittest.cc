@@ -20,6 +20,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/frame_sorter.h"
+#include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,13 +42,23 @@ const char* ParseNumber(const char* str, uint64_t* retvalue) {
 
 }  // namespace
 
+// Mock DroppedFrameCounter class in order to test the number of times that
+// frames get backfilled. This is necessary since `WillBeginImplFrame` creates
+// `CompositorFrameReporter`s for backfilled frames which submit to the DFC
+// without a good interim spot to analyze the frame info contents.
+class DroppedFrameCounterMock : public DroppedFrameCounter {
+ public:
+  MOCK_METHOD2(OnEndFrame, void(const viz::BeginFrameArgs&, const FrameInfo&));
+};
+
 class FrameSequenceTrackerTest : public testing::Test {
  public:
   const uint32_t kImplDamage = 0x1;
   const uint32_t kMainDamage = 0x2;
 
   FrameSequenceTrackerTest()
-      : compositor_frame_reporting_controller_(
+      : dfc_mock_(DroppedFrameCounterMock()),
+        compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
@@ -138,6 +149,7 @@ class FrameSequenceTrackerTest : public testing::Test {
         case 'P':
         case 'n':
         case 's':
+        case 'r':
           ASSERT_EQ(*str, '(') << command;
           str = ParseNumber(++str, &sequence);
           ASSERT_EQ(*str, ')');
@@ -180,6 +192,8 @@ class FrameSequenceTrackerTest : public testing::Test {
           FrameInfo frame_info;
           frame_info.final_state = FrameInfo::FrameFinalState::kDropped;
           frame_info.final_state_raster_property =
+              FrameInfo::FrameFinalState::kDropped;
+          frame_info.final_state_raster_scroll =
               FrameInfo::FrameFinalState::kDropped;
           frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
           frame_info.smooth_thread_raster_property =
@@ -256,7 +270,19 @@ class FrameSequenceTrackerTest : public testing::Test {
           collection_.AddSortedFrame(args, frame_info);
           break;
         }
-
+        case 'r': {
+          // Raster scrolls should be accounted for separately from other
+          // scroll types.
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kNoUpdateDesired;
+          frame_info.scroll_thread =
+              FrameInfo::SmoothEffectDrivingThread::kRaster;
+          frame_info.final_state_raster_scroll =
+              FrameInfo::FrameFinalState::kDropped;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
         default:
           NOTREACHED();
       }
@@ -316,6 +342,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   }
 
  protected:
+  DroppedFrameCounterMock dfc_mock_;
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
@@ -427,6 +454,17 @@ TEST_F(FrameSequenceTrackerTest, CompositorDroppedFramesV3vsV4Metrics) {
   EXPECT_EQ(frames_expected(), 9u);
   EXPECT_EQ(frames_produced(), 6u);     // 9 expected - 3 dropped = 6
   EXPECT_EQ(frames_produced_v4(), 2u);  // 9 expected - 7 dropped = 2
+}
+
+TEST_F(FrameSequenceTrackerTest, RasterScrollDroppedFramesIsSeparate) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kRaster);
+  // Begin, present frame 1, drop it once.
+  // Present frame 2, and trigger a raster scroll that
+  // drops 2 frames. Total dropped frames should be 3.
+  const char sequence[] = "b(1)p(1)d(2)p(3)r(4)r(5)";
+  GenerateSequence(sequence);
+  EXPECT_EQ(frames_expected(), 5u);
+  EXPECT_EQ(frames_produced_v4(), 2u);  // 5 expected - 3 dropped = 2
 }
 
 TEST_F(FrameSequenceTrackerTest, SimpleSequenceOneFrame) {
@@ -849,6 +887,54 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   // There is one report for tracker id 1 and 2 expected frames (frame 0 and 1).
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(2u, results[1].frames_expected_v3);
+}
+
+TEST_F(FrameSequenceTrackerTest,
+       FrameTrackerSkippedFramesPreservesSmoothThread) {
+  const uint64_t source = 1;
+  uint64_t sequence = 0;
+  const uint64_t kNumFramesSkipped = 5;
+
+  // Expect that kNumFramesSkipped are backfilled with the appropriate smooth
+  // thread set.
+  EXPECT_CALL(dfc_mock_, OnEndFrame(testing::_, testing::_))
+      .Times(kNumFramesSkipped)
+      .WillRepeatedly([=](const viz::BeginFrameArgs& args,
+                          const FrameInfo& frame_info) {
+        EXPECT_EQ(frame_info.final_state, FrameInfo::FrameFinalState::kDropped);
+        EXPECT_EQ(frame_info.scroll_thread,
+                  FrameInfo::SmoothEffectDrivingThread::kCompositor);
+      });
+
+  compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc_mock_);
+  compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
+      &collection_);
+  auto frame0_args = CreateBeginFrameArgs(source, ++sequence);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(frame0_args);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      frame0_args.frame_id);
+
+  // Starting frame 5 will trigger the callback expectation.
+  auto frame5_args =
+      CreateBeginFrameArgs(source, sequence + kNumFramesSkipped,
+                           base::TimeTicks::Now() /*+ base::Seconds(5)*/);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(frame5_args);
+  // Clear the expectation before simulating finishing the frame.
+  testing::Mock::VerifyAndClearExpectations(&dfc_mock_);
+  compositor_frame_reporting_controller_->WillBeginMainFrame(frame5_args);
+  compositor_frame_reporting_controller_->NotifyReadyToCommit(nullptr);
+  compositor_frame_reporting_controller_->WillCommit();
+  compositor_frame_reporting_controller_->DidCommit();
+  compositor_frame_reporting_controller_->WillActivate();
+  compositor_frame_reporting_controller_->DidActivate();
+  SubmitInfo submit_info;
+  compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
+      submit_info, frame5_args.frame_id, frame5_args.frame_id);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      frame5_args.frame_id);
+  viz::FrameTimingDetails ftd;
+  compositor_frame_reporting_controller_->DidPresentCompositorFrame(
+      submit_info.frame_token, ftd);
 }
 
 }  // namespace cc

@@ -57,6 +57,14 @@ constexpr std::string_view kAadWebauthnCredentialSpecificsEncrypted =
 // `WebAuthnCredentialSpecifics.private_key` (empty).
 constexpr std::string_view kAadWebauthnCredentialSpecificsPrivateKey = "";
 
+// Signature counter, as defined in the w3c spec here:
+// https://www.w3.org/TR/webauthn-2/#signature-counter
+constexpr uint8_t kSignatureCounter[4] = {0};
+
+constexpr size_t kEncryptionSecretSize = 32;
+
+constexpr size_t kHmacSecretSize = 32;
+
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {
@@ -84,15 +92,14 @@ bool EncryptAes256Gcm(base::span<const uint8_t> key,
   return aead.Seal(plaintext, nonce, aad, ciphertext);
 }
 
-std::vector<uint8_t> DerivePasskeyEncryptionSecret(
+std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
     base::span<const uint8_t> trusted_vault_key) {
   constexpr std::string_view kHkdfInfo =
       "KeychainApplicationKey:gmscore_module:com.google.android.gms.fido";
-  constexpr size_t kEncryptionSecretSize = 32u;
-  return crypto::HkdfSha256(trusted_vault_key,
-                            /*salt=*/base::span<const uint8_t>(),
-                            base::as_bytes(base::span(kHkdfInfo)),
-                            kEncryptionSecretSize);
+  return crypto::HkdfSha256<kEncryptionSecretSize>(
+      trusted_vault_key,
+      /*salt=*/base::span<const uint8_t>(),
+      base::as_bytes(base::span(kHkdfInfo)));
 }
 
 }  // namespace
@@ -123,11 +130,23 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
       std::make_move_iterator(grouped.end()));
 }
 
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  // The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
+  static constexpr size_t kUserIdMaxLength = 64u;
+
+  return passkey.sync_id().size() == kSyncIdLength &&
+         passkey.credential_id().size() == kCredentialIdLength &&
+         !passkey.rp_id().empty() &&
+         passkey.user_id().length() <= kUserIdMaxLength &&
+         (passkey.has_private_key() || passkey.has_encrypted());
+}
+
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
 GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  const PasskeyModel::UserEntity& user_entity,
                                  base::span<const uint8_t> trusted_vault_key,
-                                 int32_t trusted_vault_key_version) {
+                                 int32_t trusted_vault_key_version,
+                                 bool generate_hmac_secret) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
   specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
@@ -143,6 +162,9 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   CHECK(ec_key->ExportPrivateKey(&private_key_pkcs8));
   encrypted.set_private_key(
       {private_key_pkcs8.begin(), private_key_pkcs8.end()});
+  if (generate_hmac_secret) {
+    encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
+  }
   CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
                                                &specifics));
   CHECK(specifics.has_encrypted());
@@ -239,12 +261,13 @@ bool EncryptWebauthnCredentialSpecificsData(
 
 std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
   using Flag = device::AuthenticatorData::Flag;
+  uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
+                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
+                  base::strict_cast<uint8_t>(Flag::kBackupEligible) |
+                  base::strict_cast<uint8_t>(Flag::kBackupState);
   return device::AuthenticatorData(
-             crypto::SHA256Hash(base::as_byte_span(rp_id)),
-             {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
-              Flag::kBackupEligible, Flag::kBackupState},
-             /*sign_counter=*/0u,
-             /*attested_credential_data=*/std::nullopt,
+             crypto::SHA256Hash(base::as_byte_span(rp_id)), flags,
+             kSignatureCounter, /*data=*/std::nullopt,
              /*extensions=*/std::nullopt)
       .SerializeToByteArray();
 }
@@ -264,12 +287,14 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
+  uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
+                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
+                  base::strict_cast<uint8_t>(Flag::kBackupEligible) |
+                  base::strict_cast<uint8_t>(Flag::kBackupState) |
+                  base::strict_cast<uint8_t>(Flag::kAttestation);
   device::AuthenticatorData authenticator_data(
-      crypto::SHA256Hash(base::as_byte_span(rp_id)),
-      {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
-       Flag::kBackupEligible, Flag::kBackupState, Flag::kAttestation},
-      /*sign_counter=*/0u, std::move(attested_credential_data),
-      /*extensions=*/std::nullopt);
+      crypto::SHA256Hash(base::as_byte_span(rp_id)), flags, kSignatureCounter,
+      std::move(attested_credential_data), /*extensions=*/std::nullopt);
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());

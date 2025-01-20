@@ -159,8 +159,9 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
 
   // If tooltip is out of bounds on the y axis, we flip it to appear above the
   // mouse cursor instead of below.
-  if (tooltip_rect.bottom() > display_bounds.bottom())
+  if (tooltip_rect.bottom() > display_bounds.bottom()) {
     tooltip_rect.set_y(anchor_point.y() - tooltip_size.height());
+  }
 
   tooltip_rect.AdjustToFit(display_bounds);
   return tooltip_rect;
@@ -181,8 +182,9 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.accept_events = false;
   params.bounds = bounds;
-  if (CanUseTranslucentTooltipWidget())
+  if (CanUseTranslucentTooltipWidget()) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  }
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   // Use software compositing to avoid using unnecessary hardware resources
   // which just amount to overkill for this UI.

@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -42,8 +45,10 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -53,9 +58,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -163,7 +168,33 @@ bool IsShortcutCreated(WebAppRegistrar& registrar,
   return os_state->has_shortcut();
 }
 
+static bool& ShouldBypassVisibilityChecks() {
+  static bool g_bypass_visibility_checking = false;
+  return g_bypass_visibility_checking;
+}
+
+int ComputeIdealScreenshotSize(
+    const blink::mojom::ManifestScreenshotPtr& screenshot) {
+  return screenshot->image.sizes.empty()
+             ? webapps::kMinimumScreenshotSizeInPx
+             : std::max(screenshot->image.sizes[0].width(),
+                        screenshot->image.sizes[0].height());
+}
+
+bool IsValidScreenshotForDownload(
+    const blink::mojom::ManifestScreenshotPtr& screenshot) {
+  return screenshot->form_factor ==
+         blink::mojom::ManifestScreenshot::FormFactor::kWide;
+}
+
 }  // namespace
+
+// static
+base::AutoReset<bool>
+FetchManifestAndInstallCommand::BypassVisibilityCheckForTesting() {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(&ShouldBypassVisibilityChecks(), true);
+}
 
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     webapps::WebappInstallSource install_surface,
@@ -214,6 +245,30 @@ content::WebContents* FetchManifestAndInstallCommand::GetInstallingWebContents(
   return web_contents_.get();
 }
 
+void FetchManifestAndInstallCommand::GetScreenshot(
+    int index,
+    base::OnceCallback<void(SkBitmap, std::optional<std::u16string>)>
+        callback) {
+  // If the screenshot for a specific index has been downloaded, run the
+  // callback instantly.
+  if (base::Contains(screenshots_downloaded_, index)) {
+    auto screenshot_info = screenshots_downloaded_.at(index);
+    std::move(callback).Run(
+        std::get<SkBitmap>(screenshot_info),
+        std::get<std::optional<std::u16string>>(screenshot_info));
+    return;
+  }
+
+  // Store pending callbacks to be run later on once the screenshot finishes
+  // downloading.
+  pending_screenshot_callbacks_.insert_or_assign(index, std::move(callback));
+}
+
+const std::vector<gfx::Size>&
+FetchManifestAndInstallCommand::GetScreenshotSizes() {
+  return screenshot_sizes_;
+}
+
 void FetchManifestAndInstallCommand::StartWithLock(
     std::unique_ptr<NoopLock> lock) {
   noop_lock_ = std::move(lock);
@@ -222,7 +277,8 @@ void FetchManifestAndInstallCommand::StartWithLock(
     return;
   }
 
-  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE &&
+      !ShouldBypassVisibilityChecks()) {
     Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
     return;
   }
@@ -238,8 +294,11 @@ void FetchManifestAndInstallCommand::StartWithLock(
     webapps::InstallableMetrics::TrackInstallEvent(install_surface_);
   }
 
-  DCHECK(AreWebAppsUserInstallable(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
+  if (!AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
+    Abort(webapps::InstallResultCode::kWebAppDisabled);
+    return;
+  }
 
   data_retriever_ = noop_lock_->web_contents_manager().CreateDataRetriever();
 
@@ -250,7 +309,7 @@ void FetchManifestAndInstallCommand::StartWithLock(
     case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
     case FallbackBehavior::kAllowFallbackDataAlways:
       data_retriever_->GetWebAppInstallInfo(
-          web_contents_.get(),
+          web_contents(),
           base::BindOnce(
               &FetchManifestAndInstallCommand::OnGetWebAppInstallInfo,
               weak_ptr_factory_.GetWeakPtr()));
@@ -281,6 +340,9 @@ void FetchManifestAndInstallCommand::DidFinishNavigation(
 
 void FetchManifestAndInstallCommand::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (ShouldBypassVisibilityChecks()) {
+    return;
+  }
   if (visibility == content::Visibility::VISIBLE) {
     return;
   }
@@ -443,6 +505,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   }
 
   opt_manifest_ = std::move(opt_manifest);
+  StartPreloadingScreenshots();
 
   switch (fallback_behavior_) {
     case FallbackBehavior::kCraftedManifestOnly:
@@ -628,7 +691,9 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
     OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info_));
   } else {
     std::move(dialog_callback_)
-        .Run(web_contents_.get(), std::move(web_app_info_),
+        .Run((!screenshot_sizes_.empty() ? weak_ptr_factory_.GetWeakPtr()
+                                         : nullptr),
+             web_contents_.get(), std::move(web_app_info_),
              base::BindOnce(&FetchManifestAndInstallCommand::OnDialogCompleted,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -683,23 +748,24 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   Observe(nullptr);
 
   RecordWebAppInstallationTimestamp(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+      Profile::FromBrowserContext(web_contents_.get()->GetBrowserContext())
           ->GetPrefs(),
       app_id, install_surface_);
 
   bool is_shortcut_created = IsShortcutCreated(app_lock_->registrar(), app_id);
-  DCHECK(app_lock_);
+  CHECK(app_lock_);
+
   const bool can_reparent_tab =
-      app_lock_->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                        is_shortcut_created);
+      app_lock_->ui_manager().CanReparentAppTabToWindow(
+          app_id, is_shortcut_created, web_contents_.get());
 
   SCOPED_CRASH_KEY_NUMBER("PWA", "install_surface",
                           static_cast<int>(install_surface_));
   SCOPED_CRASH_KEY_STRING256(
       "PWA", "install_url",
-      web_contents_->GetLastCommittedURL().possibly_invalid_spec());
+      web_contents_.get()->GetLastCommittedURL().possibly_invalid_spec());
   SCOPED_CRASH_KEY_STRING64("PWA", "install_app_id", app_id);
-  WebAppTabHelper* tab_helper =
+  const WebAppTabHelper* tab_helper =
       WebAppTabHelper::FromWebContents(web_contents_.get());
   if (tab_helper) {
     SCOPED_CRASH_KEY_STRING64("PWA", "source_window_app_id",
@@ -738,8 +804,14 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
 void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistogram(
     webapps::InstallResultCode code) {
   if (!web_app_info_) {
+    RecordInstallMetrics(InstallCommand::kFetchManifestAndInstall,
+                         WebAppType::kUnknown, code, install_surface_);
     return;
   }
+  RecordInstallMetrics(
+      InstallCommand::kFetchManifestAndInstall,
+      web_app_info_->is_diy_app ? WebAppType::kDiyApp : WebAppType::kCraftedApp,
+      code, install_surface_);
 
   bool is_new_success_install = webapps::IsNewInstall(code);
   if (web_app_info_->is_diy_app) {
@@ -748,6 +820,70 @@ void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistogram(
   } else {
     base::UmaHistogramBoolean("WebApp.NewCraftedAppInstalled.ByUser",
                               is_new_success_install);
+  }
+}
+
+void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
+  CHECK(opt_manifest_);
+  int count_screenshots = 0;
+  for (const auto& screenshot : opt_manifest_->screenshots) {
+    if (!IsValidScreenshotForDownload(screenshot)) {
+      continue;
+    }
+
+    // Filter out too large screenshots earlier, so that the number of "spots"
+    // to be used in the detailed install dialog is accurately identified.
+    bool should_skip_large_screenshot = false;
+    for (const gfx::Size& size : screenshot->image.sizes) {
+      if (size.width() > webapps::kMaximumScreenshotSizeInPx ||
+          size.height() > webapps::kMaximumScreenshotSizeInPx) {
+        should_skip_large_screenshot = true;
+        break;
+      }
+    }
+    if (should_skip_large_screenshot) {
+      continue;
+    }
+
+    if (++count_screenshots > webapps::kMaximumNumOfScreenshots) {
+      break;
+    }
+
+    // Since narrow screenshots are filtered out, this is guaranteed to return
+    // either the minimum screen shot size, or the width.
+    int ideal_size = ComputeIdealScreenshotSize(screenshot);
+    gfx::Size size_to_use = (ideal_size == webapps::kMinimumScreenshotSizeInPx)
+                                ? gfx::Size(ideal_size, ideal_size)
+                                : screenshot->image.sizes[0];
+    screenshot_sizes_.push_back(size_to_use);
+
+    // Do not pass in a maximum icon size so that screenshots larger than
+    // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
+    // `ManifestIconDownloader::Download`. Screenshots with size larger than
+    // kMaximumScreenshotSizeInPx are already filtered out at this point.
+    content::ManifestIconDownloader::Download(
+        web_contents(), screenshot->image.src, ideal_size,
+        webapps::kMinimumScreenshotSizeInPx,
+        /*maximum_icon_size_in_px=*/0,
+        base::BindOnce(&FetchManifestAndInstallCommand::OnScreenshotFetched,
+                       weak_ptr_factory_.GetWeakPtr(), count_screenshots - 1,
+                       screenshot->label),
+        /*square_only=*/false);
+  }
+}
+
+void FetchManifestAndInstallCommand::OnScreenshotFetched(
+    int index,
+    std::optional<std::u16string> label,
+    const SkBitmap& bitmap) {
+  if (bitmap.drawsNothing()) {
+    return;
+  }
+
+  screenshots_downloaded_[index] = std::tie(bitmap, label);
+  auto pending_callback_it = pending_screenshot_callbacks_.find(index);
+  if (pending_callback_it != pending_screenshot_callbacks_.end()) {
+    std::move(pending_callback_it->second).Run(bitmap, label);
   }
 }
 

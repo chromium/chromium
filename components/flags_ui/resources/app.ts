@@ -118,6 +118,10 @@ export class FlagsAppElement extends CrLitElement {
         reflect: true,
       },
 
+      needsRestart: {
+        type: Boolean,
+      },
+
       tabNames_: {type: Array},
       selectedTabIndex_: {type: Number},
     };
@@ -139,17 +143,15 @@ export class FlagsAppElement extends CrLitElement {
     needsRestart: false,
     showBetaChannelPromotion: false,
     showDevChannelPromotion: false,
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     showOwnerWarning: false,
-    // </if>
-    // <if expr="chromeos_ash">
-    showSystemFlagsLink: false,
     // </if>
   };
 
   protected defaultFeatures: Feature[] = [];
   protected nonDefaultFeatures: Feature[] = [];
   protected searching: boolean = false;
+  protected needsRestart: boolean = false;
 
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
@@ -190,6 +192,10 @@ export class FlagsAppElement extends CrLitElement {
 
       this.defaultFeatures = defaultFeatures;
       this.nonDefaultFeatures = nonDefaultFeatures;
+
+      // Maintain 'true' state if it was previously set, as
+      // `this.data.needsRestart` only matters on page load.
+      this.needsRestart = this.needsRestart || this.data.needsRestart;
     }
   }
 
@@ -203,7 +209,6 @@ export class FlagsAppElement extends CrLitElement {
   override async updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    this.showRestartToast(this.data.needsRestart);
     if (this.defaultFeatures.length === 0 &&
         // <if expr="not is_ios">
         this.data.unsupportedFeatures.length === 0 &&
@@ -457,7 +462,7 @@ export class FlagsAppElement extends CrLitElement {
     this.lastChanged = e.target as HTMLElement;
     FlagsBrowserProxyImpl.getInstance().resetAllFlags();
     this.announceStatus(loadTimeData.getString('reset-acknowledged'));
-    this.showRestartToast(true);
+    this.needsRestart = true;
 
     await this.requestExperimentalFeaturesData();
     await this.updateComplete;
@@ -477,7 +482,7 @@ export class FlagsAppElement extends CrLitElement {
   protected onSelectChange_(e: Event) {
     const select = e.composedPath()[0];
     assert(select instanceof HTMLSelectElement);
-    this.showRestartToast(true);
+    this.needsRestart = true;
 
     if (this.lastChanged === select) {
       return;
@@ -507,11 +512,11 @@ export class FlagsAppElement extends CrLitElement {
   }
 
   protected onTextareaChange_() {
-    this.showRestartToast(true);
+    this.needsRestart = true;
   }
 
   protected onInputChange_() {
-    this.showRestartToast(true);
+    this.needsRestart = true;
   }
 
   // <if expr="not is_ios">
@@ -520,25 +525,8 @@ export class FlagsAppElement extends CrLitElement {
   }
   // </if>
 
-  // <if expr="is_chromeos">
-  protected onOsLinkHrefClick_() {
-    FlagsBrowserProxyImpl.getInstance().crosUrlFlagsRedirect();
-  }
-  // </if>
-
-  /**
-   * Show the restart toast.
-   * @param show Setting to toggle showing / hiding the toast.
-   */
-  private showRestartToast(show: boolean) {
-    this.getRequiredElement('#needs-restart').classList.toggle('show', show);
-    // There is no restart button on iOS.
-    // <if expr="not is_ios">
-    this.getRestartButton().disabled = !show;
-    // </if>
-    if (show) {
-      this.getRequiredElement('#needs-restart').setAttribute('role', 'alert');
-    }
+  protected getNeedsRestartRole_(): string {
+    return this.needsRestart ? 'alert' : 'none';
   }
 
   protected shouldShowPromos_(): boolean {

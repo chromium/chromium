@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "gpu/command_buffer/service/common_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "gpu/command_buffer/client/client_test_helper.h"
-#include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -230,7 +232,7 @@ TEST_F(CommonDecoderTest, SetBucketData) {
 
 TEST_F(CommonDecoderTest, SetBucketDataImmediate) {
   cmd::SetBucketSize size_cmd;
-  int8_t buffer[1024];
+  std::array<int8_t, 1024> buffer;
   cmd::SetBucketDataImmediate& cmd =
       *reinterpret_cast<cmd::SetBucketDataImmediate*>(&buffer);
 

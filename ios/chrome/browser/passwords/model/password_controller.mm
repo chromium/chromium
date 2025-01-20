@@ -23,7 +23,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
@@ -193,7 +193,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     PasswordFormHelper* formHelper =
         [[PasswordFormHelper alloc] initWithWebState:webState];
     PasswordSuggestionHelper* suggestionHelper =
-        [[PasswordSuggestionHelper alloc] initWithWebState:_webState];
+        [[PasswordSuggestionHelper alloc]
+            initWithWebState:_webState
+             passwordManager:_passwordManager.get()];
     PasswordControllerDriverHelper* driverHelper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
     _sharedPasswordController = [[SharedPasswordController alloc]

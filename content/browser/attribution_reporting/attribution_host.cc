@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -42,6 +43,9 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/url_request/url_request.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -97,6 +101,15 @@ class InsecureTaintTracker
 };
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InsecureTaintTracker);
 
+void ClientBounceHistogram(std::string_view user_interaction_type,
+                           std::string_view timeout,
+                           int value) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"Conversions.NumDataHostsRegisteredOnClientBounce.",
+                    user_interaction_type, ".", timeout}),
+      value);
+}
+
 }  // namespace
 
 AttributionHost::AttributionHost(WebContents* web_contents)
@@ -148,40 +161,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  if (primary_main_frame_data_.has_value()) {
-    // Note that `NavigationHandle::HasUserGesture()` does not capture
-    // browser-initiated navigations. The negation of
-    // `NavigationHandle::IsRendererInitiated()` tells us whether the navigation
-    // is browser-initiated.
-    bool has_user_gesture = navigation_handle->HasUserGesture() ||
-                            !navigation_handle->IsRendererInitiated();
-
-    // A user gesture indicates no client-redirect. And, we don't consider a
-    // client-redirect to be a bounce if there was user interaction on the page
-    // or if we timed out on the client bounce detection timers.
-    if (!has_user_gesture && !primary_main_frame_data_->has_user_interaction &&
-        primary_main_frame_data_->num_data_hosts_registered > 0) {
-      CHECK(last_navigation_time_.has_value());
-      base::TimeDelta time_since_last_navigation =
-          base::Time::Now() - *last_navigation_time_;
-
-      if (time_since_last_navigation < base::Seconds(1)) {
-        base::UmaHistogramCounts100(
-            "Conversions.NumDataHostsRegisteredOnClientBounce.1s",
-            primary_main_frame_data_->num_data_hosts_registered);
-      }
-      if (time_since_last_navigation < base::Seconds(5)) {
-        base::UmaHistogramCounts100(
-            "Conversions.NumDataHostsRegisteredOnClientBounce.5s",
-            primary_main_frame_data_->num_data_hosts_registered);
-      }
-      if (time_since_last_navigation < base::Seconds(10)) {
-        base::UmaHistogramCounts100(
-            "Conversions.NumDataHostsRegisteredOnClientBounce.10s",
-            primary_main_frame_data_->num_data_hosts_registered);
-      }
-    }
-  }
+  MaybeLogClientBounce(navigation_handle);
 
   const auto& impression = navigation_handle->GetImpression();
 
@@ -273,7 +253,17 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 void AttributionHost::FrameReceivedUserActivation(
     RenderFrameHost* render_frame_host) {
-  // We consider user activation from all frames in the page.
+  // We consider user activation from all frames in the page. This event tracks
+  // clicks, taps, types, but not scrolls.
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->has_user_activation = true;
+  }
+}
+
+void AttributionHost::DidGetUserInteraction(const blink::WebInputEvent& event) {
+  // This event tracks clicks, taps, types, and scrolls, see
+  // `IsUserInteractionInputType()`.
   if (primary_main_frame_data_.has_value()) {
     primary_main_frame_data_->has_user_interaction = true;
   }
@@ -396,6 +386,88 @@ void AttributionHost::RegisterNavigationDataHost(
         "AttributionSrcToken.");
     return;
   }
+}
+
+void AttributionHost::MaybeLogClientBounce(
+    NavigationHandle* navigation_handle) const {
+  if (!primary_main_frame_data_.has_value()) {
+    return;
+  }
+
+  // Note that `NavigationHandle::HasUserGesture()` does not capture
+  // browser-initiated navigations. The negation of
+  // `NavigationHandle::IsRendererInitiated()` tells us whether the navigation
+  // is browser-initiated.
+  //
+  // A user gesture indicates no client-redirect.
+  if (navigation_handle->HasUserGesture() ||
+      !navigation_handle->IsRendererInitiated()) {
+    return;
+  }
+
+  int num_data_hosts_registered =
+      primary_main_frame_data_->num_data_hosts_registered;
+  if (num_data_hosts_registered == 0) {
+    return;
+  }
+
+  static constexpr std::string_view kUserActivationStr = "UserActivation";
+  static constexpr std::string_view kUserInteractionStr = "UserInteraction";
+
+  static constexpr std::string_view k1sStr = "1s";
+  static constexpr std::string_view k5sStr = "5s";
+  static constexpr std::string_view k10sStr = "10s";
+
+  // We don't consider a client-redirect to be a bounce if there was user
+  // activation/interaction on the page or if we timed out on the client bounce
+  // detection timers.
+  CHECK(last_navigation_time_.has_value());
+  base::TimeDelta time_since_last_navigation =
+      base::Time::Now() - *last_navigation_time_;
+
+  int64_t num_data_hosts_registered_bucket =
+      ukm::GetExponentialBucketMinForCounts1000(num_data_hosts_registered);
+
+  ukm::builders::Conversions_ClientBounce ukm_builder(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  if (!primary_main_frame_data_->has_user_activation) {
+    if (time_since_last_navigation < base::Seconds(1)) {
+      ClientBounceHistogram(kUserActivationStr, k1sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_1s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(5)) {
+      ClientBounceHistogram(kUserActivationStr, k5sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_5s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(10)) {
+      ClientBounceHistogram(kUserActivationStr, k10sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_10s(num_data_hosts_registered_bucket);
+    }
+  }
+
+  if (!primary_main_frame_data_->has_user_interaction) {
+    if (time_since_last_navigation < base::Seconds(1)) {
+      ClientBounceHistogram(kUserInteractionStr, k1sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_1s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(5)) {
+      ClientBounceHistogram(kUserInteractionStr, k5sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_5s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(10)) {
+      ClientBounceHistogram(kUserInteractionStr, k10sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_10s(num_data_hosts_registered_bucket);
+    }
+  }
+
+  ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 // static

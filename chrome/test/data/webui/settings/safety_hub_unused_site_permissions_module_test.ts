@@ -268,7 +268,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel');
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel');
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -282,7 +282,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain(4);
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 4);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 4);
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -459,7 +459,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Check header string for plural case.
     let entries = getSiteList();
     assertEquals(5, entries.length);
-    await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 5);
+    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 5);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
@@ -469,7 +469,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
     entries = getSiteList();
     assertEquals(1, entries.length);
-    await assertPluralString('safetyCheckUnusedSitePermissionsPrimaryLabel', 1);
+    await assertPluralString('safetyHubUnusedSitePermissionsPrimaryLabel', 1);
 
     // Check the header string for a completion case after Got It action
     // (single entry in review).
@@ -478,7 +478,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
     testElement.$.gotItButton.click();
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', 1, 2);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', 1, 2);
 
     // Check the header string for a completion case after Got It action
     // (multiple entries in review).
@@ -487,7 +487,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await flushTasks();
     testElement.$.gotItButton.click();
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsToastBulkLabel', 5, 2);
+        'safetyHubUnusedSitePermissionsToastBulkLabel', 5, 2);
 
     // Check the header string for a completion case after Allow Again action.
     webUIListenerCallback(
@@ -497,7 +497,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     const expectedHeaderString = testElement.i18n(
-        'safetyCheckUnusedSitePermissionsToastLabel', mockData[0]!.origin);
+        'safetyHubUnusedSitePermissionsToastLabel', mockData[0]!.origin);
     assertEquals(expectedHeaderString, testElement.$.module.header);
   });
 
@@ -543,12 +543,12 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Click Allow Again for the first item in review to trigger an undo toast
     // to appear.
     getSiteList()[0]!.querySelector('cr-icon-button')!.click();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 0);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 0);
 
     // Click Allow Again for the second item. This hides the existing toast and
     // shows a new one.
     getSiteList()[1]!.querySelector('cr-icon-button')!.click();
-    assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel', 1);
+    assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', 1);
 
     // Click Got It which hides the existing toast and does not show a new one.
     testElement.$.gotItButton.click();
@@ -666,7 +666,7 @@ suite('SafetyHubAbusiveNotificationRevocationDisabled', function() {
     let entries = getSiteList();
     assertEquals(4, entries.length);
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsSecondaryLabel', 4, 1);
+        'safetyHubUnusedSitePermissionsSecondaryLabel', 4, 1);
 
     // Check header string for singular case.
     const oneElementMockData = mockData.slice(0, 1);
@@ -677,7 +677,7 @@ suite('SafetyHubAbusiveNotificationRevocationDisabled', function() {
     entries = getSiteList();
     assertEquals(1, entries.length);
     await assertPluralString(
-        'safetyCheckUnusedSitePermissionsSecondaryLabel', 1, 1);
+        'safetyHubUnusedSitePermissionsSecondaryLabel', 1, 1);
   });
 
   test('Unused Site Permission strings', function() {

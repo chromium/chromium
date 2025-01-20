@@ -25,6 +25,10 @@ static_library("boca_ui") {
     "provider/tab_info_collector.cc",
     "provider/tab_info_collector.h",
     "url_constants.h",
+    "webview_auth_delegate.cc",
+    "webview_auth_delegate.h",
+    "webview_auth_handler.cc",
+    "webview_auth_handler.h",
   ]
 
   deps = [
@@ -38,16 +42,18 @@ static_library("boca_ui") {
     "//ash/webui/system_apps/public:system_web_app_config",
     "//base",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ui/frame",
     "//chromeos/ui/wm",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
-    "//content/public/browser",
     "//content/public/browser",
     "//google_apis",
     "//google_apis/classroom",
@@ -73,6 +79,7 @@ source_set("unit_tests") {
     "boca_app_page_handler_unittest.cc",
     "provider/classroom_page_handler_impl_unittest.cc",
     "provider/network_info_provider_unittest.cc",
+    "webview_auth_handler_unittest.cc",
   ]
 
   deps = [
@@ -83,8 +90,11 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/signin/public/identity_manager",

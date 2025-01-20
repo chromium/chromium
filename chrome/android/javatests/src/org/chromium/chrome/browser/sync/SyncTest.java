@@ -16,7 +16,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
@@ -53,22 +52,6 @@ public class SyncTest {
                 },
                 SyncTestUtil.TIMEOUT_MS,
                 SyncTestUtil.INTERVAL_MS);
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/1197554")
-    public void testSignInAndOut() {
-        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-
-        // Signing out should disable sync.
-        mSyncTestRule.signOut();
-        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
-
-        // Signing back in should re-enable sync.
-        mSyncTestRule.signinAndEnableSync(accountInfo);
-        Assert.assertTrue("Sync should be re-enabled.", SyncTestUtil.isSyncFeatureActive());
     }
 
     @Test

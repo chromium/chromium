@@ -15,6 +15,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -71,9 +73,9 @@ const struct trim_case_ascii {
 bool Truncated(const std::string& input,
                const size_t byte_size,
                std::string* output) {
-    size_t prev = input.length();
-    TruncateUTF8ToByteSize(input, byte_size, output);
-    return prev != output->length();
+  size_t prev = input.length();
+  TruncateUTF8ToByteSize(input, byte_size, output);
+  return prev != output->length();
 }
 
 using TestFunction = bool (*)(std::string_view str);
@@ -246,14 +248,23 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
   EXPECT_EQ(output.compare("\xe1\x80\xbf"), 0);
   EXPECT_FALSE(Truncated("\xf1\x80\xa0\xbf", 4, &output));
   EXPECT_EQ(output.compare("\xf1\x80\xa0\xbf"), 0);
-  EXPECT_FALSE(Truncated("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf",
-              10, &output));
+  EXPECT_FALSE(Truncated("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf", 10, &output));
   EXPECT_EQ(output.compare("a\xc2\x81\xe1\x80\xbf\xf1\x80\xa0\xbf"), 0);
-  EXPECT_TRUE(Truncated("a\xc2\x81\xe1\x80\xbf\xf1""a""\x80\xa0",
-              10, &output));
-  EXPECT_EQ(output.compare("a\xc2\x81\xe1\x80\xbf\xf1""a"), 0);
-  EXPECT_FALSE(Truncated("\xef\xbb\xbf" "abc", 6, &output));
-  EXPECT_EQ(output.compare("\xef\xbb\xbf" "abc"), 0);
+  EXPECT_TRUE(
+      Truncated("a\xc2\x81\xe1\x80\xbf\xf1"
+                "a"
+                "\x80\xa0",
+                10, &output));
+  EXPECT_EQ(output.compare("a\xc2\x81\xe1\x80\xbf\xf1"
+                           "a"),
+            0);
+  EXPECT_FALSE(
+      Truncated("\xef\xbb\xbf"
+                "abc",
+                6, &output));
+  EXPECT_EQ(output.compare("\xef\xbb\xbf"
+                           "abc"),
+            0);
 
   // Overlong sequences
   EXPECT_TRUE(Truncated("\xc0\x80", 2, &output));
@@ -334,8 +345,7 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
   EXPECT_EQ(output.compare(""), 0);
   EXPECT_FALSE(Truncated("\xa7\x41\xa6\x6e", 4, &output));
   EXPECT_EQ(output.compare("\xa7\x41\xa6\x6e"), 0);
-  EXPECT_TRUE(Truncated("\xa7\x41\xa6\x6e\xd9\xee\xe4\xee", 7,
-              &output));
+  EXPECT_TRUE(Truncated("\xa7\x41\xa6\x6e\xd9\xee\xe4\xee", 7, &output));
   EXPECT_EQ(output.compare("\xa7\x41\xa6\x6e"), 0);
 
   // Testing using the same string as input and output.
@@ -345,8 +355,13 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
   EXPECT_EQ(output.compare("\xa7\x41"), 0);
 
   // "abc" with U+201[CD] in windows-125[0-8]
-  EXPECT_TRUE(Truncated("\x93" "abc\x94", 5, &output));
-  EXPECT_EQ(output.compare("\x93" "abc"), 0);
+  EXPECT_TRUE(
+      Truncated("\x93"
+                "abc\x94",
+                5, &output));
+  EXPECT_EQ(output.compare("\x93"
+                           "abc"),
+            0);
 
   // U+0639 U+064E U+0644 U+064E in ISO-8859-6
   EXPECT_TRUE(Truncated("\xd9\xee\xe4\xee", 4, &output));
@@ -415,9 +430,8 @@ TEST(StringUtilTest, as_u16cstr) {
 TEST(StringUtilTest, TrimWhitespace) {
   std::u16string output;  // Allow contents to carry over to next testcase
   for (const auto& value : trim_cases) {
-    EXPECT_EQ(value.return_value,
-              TrimWhitespace(WideToUTF16(value.input), value.positions,
-                             &output));
+    EXPECT_EQ(value.return_value, TrimWhitespace(WideToUTF16(value.input),
+                                                 value.positions, &output));
     EXPECT_EQ(WideToUTF16(value.output), output);
   }
 
@@ -444,25 +458,25 @@ static const struct collapse_case {
   const bool trim;
   const wchar_t* output;
 } collapse_cases[] = {
-  {L" Google Video ", false, L"Google Video"},
-  {L"Google Video", false, L"Google Video"},
-  {L"", false, L""},
-  {L"  ", false, L""},
-  {L"\t\rTest String\n", false, L"Test String"},
-  {L"\x2002Test String\x00A0\x3000", false, L"Test String"},
-  {L"    Test     \n  \t String    ", false, L"Test String"},
-  {L"\x2002Test\x1680 \x2028 \tString\x00A0\x3000", false, L"Test String"},
-  {L"   Test String", false, L"Test String"},
-  {L"Test String    ", false, L"Test String"},
-  {L"Test String", false, L"Test String"},
-  {L"", true, L""},
-  {L"\n", true, L""},
-  {L"  \r  ", true, L""},
-  {L"\nFoo", true, L"Foo"},
-  {L"\r  Foo  ", true, L"Foo"},
-  {L" Foo bar ", true, L"Foo bar"},
-  {L"  \tFoo  bar  \n", true, L"Foo bar"},
-  {L" a \r b\n c \r\n d \t\re \t f \n ", true, L"abcde f"},
+    {L" Google Video ", false, L"Google Video"},
+    {L"Google Video", false, L"Google Video"},
+    {L"", false, L""},
+    {L"  ", false, L""},
+    {L"\t\rTest String\n", false, L"Test String"},
+    {L"\x2002Test String\x00A0\x3000", false, L"Test String"},
+    {L"    Test     \n  \t String    ", false, L"Test String"},
+    {L"\x2002Test\x1680 \x2028 \tString\x00A0\x3000", false, L"Test String"},
+    {L"   Test String", false, L"Test String"},
+    {L"Test String    ", false, L"Test String"},
+    {L"Test String", false, L"Test String"},
+    {L"", true, L""},
+    {L"\n", true, L""},
+    {L"  \r  ", true, L""},
+    {L"\nFoo", true, L"Foo"},
+    {L"\r  Foo  ", true, L"Foo"},
+    {L" Foo bar ", true, L"Foo bar"},
+    {L"  \tFoo  bar  \n", true, L"Foo bar"},
+    {L" a \r b\n c \r\n d \t\re \t f \n ", true, L"abcde f"},
 };
 
 TEST(StringUtilTest, CollapseWhitespace) {
@@ -522,8 +536,7 @@ TEST(StringUtilTest, IsStringUTF8) {
 }
 
 TEST(StringUtilTest, IsStringASCII) {
-  static char char_ascii[] =
-      "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+  static char char_ascii[] = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
   static char16_t char16_ascii[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
                                     '9', '0', 'A', 'B', 'C', 'D', 'E', 'F', '0',
                                     '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -595,17 +608,11 @@ TEST(StringUtilTest, IsStringASCII) {
 }
 
 TEST(StringUtilTest, ConvertASCII) {
-  static const char* const char_cases[] = {
-    "Google Video",
-    "Hello, world\n",
-    "0123ABCDwxyz \a\b\t\r\n!+,.~"
-  };
+  static const char* const char_cases[] = {"Google Video", "Hello, world\n",
+                                           "0123ABCDwxyz \a\b\t\r\n!+,.~"};
 
   static const wchar_t* const wchar_cases[] = {
-    L"Google Video",
-    L"Hello, world\n",
-    L"0123ABCDwxyz \a\b\t\r\n!+,.~"
-  };
+      L"Google Video", L"Hello, world\n", L"0123ABCDwxyz \a\b\t\r\n!+,.~"};
 
   for (size_t i = 0; i < std::size(char_cases); ++i) {
     EXPECT_TRUE(IsStringASCII(char_cases[i]));
@@ -783,17 +790,17 @@ TEST(StringUtilTest, ReplaceFirstSubstringAfterOffset) {
     const char* replace_with;
     const char* expected;
   } cases[] = {
-    {"aaa", 0, "a", "b", "baa"},
-    {"abb", 0, "ab", "a", "ab"},
-    {"Removing some substrings inging", 0, "ing", "",
-      "Remov some substrings inging"},
-    {"Not found", 0, "x", "0", "Not found"},
-    {"Not found again", 5, "x", "0", "Not found again"},
-    {" Making it much longer ", 0, " ", "Four score and seven years ago",
-     "Four score and seven years agoMaking it much longer "},
-    {"Invalid offset", 9999, "t", "foobar", "Invalid offset"},
-    {"Replace me only me once", 4, "me ", "", "Replace only me once"},
-    {"abababab", 2, "ab", "c", "abcabab"},
+      {"aaa", 0, "a", "b", "baa"},
+      {"abb", 0, "ab", "a", "ab"},
+      {"Removing some substrings inging", 0, "ing", "",
+       "Remov some substrings inging"},
+      {"Not found", 0, "x", "0", "Not found"},
+      {"Not found again", 5, "x", "0", "Not found again"},
+      {" Making it much longer ", 0, " ", "Four score and seven years ago",
+       "Four score and seven years agoMaking it much longer "},
+      {"Invalid offset", 9999, "t", "foobar", "Invalid offset"},
+      {"Replace me only me once", 4, "me ", "", "Replace only me once"},
+      {"abababab", 2, "ab", "c", "abcabab"},
   };
 
   for (const auto& i : cases) {
@@ -837,7 +844,7 @@ TEST(StringUtilTest, JoinString) {
   std::vector<std::string> parts;
   EXPECT_EQ(std::string(), JoinString(parts, separator));
 
-  parts.push_back(std::string());
+  parts.emplace_back();
   EXPECT_EQ(std::string(), JoinString(parts, separator));
   parts.clear();
 
@@ -848,7 +855,7 @@ TEST(StringUtilTest, JoinString) {
   parts.push_back("c");
   EXPECT_EQ("a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::string());
+  parts.emplace_back();
   EXPECT_EQ("a, b, c, ", JoinString(parts, separator));
   parts.push_back(" ");
   EXPECT_EQ("a|b|c|| ", JoinString(parts, "|"));
@@ -859,7 +866,7 @@ TEST(StringUtilTest, JoinString16) {
   std::vector<std::u16string> parts;
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
-  parts.push_back(std::u16string());
+  parts.emplace_back();
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
@@ -882,7 +889,7 @@ TEST(StringUtilTest, JoinStringPiece) {
   EXPECT_EQ(std::string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(std::string_view());
+  parts.emplace_back();
   EXPECT_EQ(std::string(), JoinString(parts, separator));
   parts.clear();
 
@@ -893,7 +900,7 @@ TEST(StringUtilTest, JoinStringPiece) {
   parts.push_back("c");
   EXPECT_EQ("a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::string_view());
+  parts.emplace_back();
   EXPECT_EQ("a, b, c, ", JoinString(parts, separator));
   parts.push_back(" ");
   EXPECT_EQ("a|b|c|| ", JoinString(parts, "|"));
@@ -905,7 +912,7 @@ TEST(StringUtilTest, JoinStringPiece16) {
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(std::u16string_view());
+  parts.emplace_back();
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
@@ -919,7 +926,7 @@ TEST(StringUtilTest, JoinStringPiece16) {
   parts.push_back(kC);
   EXPECT_EQ(u"a, b, c", JoinString(parts, separator));
 
-  parts.push_back(std::u16string_view());
+  parts.emplace_back();
   EXPECT_EQ(u"a, b, c, ", JoinString(parts, separator));
   const std::u16string kSpace = u" ";
   parts.push_back(kSpace);
@@ -980,23 +987,23 @@ TEST(StringUtilTest, JoinStringInitializerList16) {
 }
 
 TEST(StringUtilTest, StartsWith) {
-  EXPECT_TRUE(StartsWith("javascript:url", "javascript",
-                         base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(StartsWith("JavaScript:url", "javascript",
-                          base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      StartsWith("javascript:url", "javascript", base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(
+      StartsWith("JavaScript:url", "javascript", base::CompareCase::SENSITIVE));
   EXPECT_TRUE(StartsWith("javascript:url", "javascript",
                          base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_TRUE(StartsWith("JavaScript:url", "javascript",
                          base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_FALSE(StartsWith("java", "javascript", base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(StartsWith("java", "javascript",
-                          base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_FALSE(
+      StartsWith("java", "javascript", base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_FALSE(StartsWith(std::string(), "javascript",
                           base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(StartsWith(std::string(), "javascript",
-                          base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(StartsWith("java", std::string(),
-                         base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_FALSE(
+      StartsWith(std::string(), "javascript", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      StartsWith("java", std::string(), base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_TRUE(StartsWith("java", std::string(), base::CompareCase::SENSITIVE));
 
   EXPECT_TRUE(StartsWith(u"javascript:url", u"javascript",
@@ -1169,6 +1176,95 @@ TEST(StringUtilTest, ReplaceStringPlaceholdersInvalidPlaceholder) {
   EXPECT_EQ(u"+++1a+", formatted);
 }
 
+TEST(StringUtilTest, ReplaceStringPlaceholdersArray) {
+  const auto subst = std::to_array<std::u16string>({u"world", u"hello"});
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"$2, $1!", subst, nullptr);
+  EXPECT_EQ(u"hello, world!", formatted);
+}
+
+std::u16string ReturnU16String() {
+  return u"U16String";
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersCastToSpan) {
+  std::u16string formatted = ReplaceStringPlaceholders(
+      u"$1", base::span<const std::u16string>({ReturnU16String()}), nullptr);
+  EXPECT_EQ(u"U16String", formatted);
+}
+
+// Return a string of type T long enough to defeat the short string
+// optimization.
+template <typename T>
+constexpr T LongString() {
+  constexpr char kLongString[] =
+      "This string is long enough to prevent the short string optimization";
+  // std::u16string can't be constructed from a char string, but it can be
+  // constructed from a char iterator pair.
+  return T(std::ranges::begin(kLongString), std::ranges::end(kLongString));
+}
+
+// Checks that a string implementation leaves the string empty when a
+// sufficiently long string is moved from. The "MovesFromString" tests will not
+// work correctly for implementations where this is not the case.
+template <typename T>
+constexpr bool MovedFromStringIsEmpty() {
+  T original = LongString<T>();
+  T destination = std::move(original);
+  // We are verifying behavior of the string implementation that is not required
+  // by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  return original.empty();
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersMovesFromString) {
+  ASSERT_TRUE(MovedFromStringIsEmpty<std::u16string>());
+  std::u16string long_string = LongString<std::u16string>();
+  std::vector<size_t> offsets;
+  // `offsets` is passed just to force the base::span overload.
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"=$1", {std::move(long_string)}, &offsets);
+  EXPECT_EQ(u"=" + LongString<std::u16string>(), formatted);
+  // This test relies on behavior that is not required by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(long_string.empty());
+}
+
+// The single-argument form of ReplaceStringPlaceholders() should not require
+// `$1` to be present in the string unless `offset` is set.
+TEST(StringUtilTest, ReplaceStringPlaceholdersNoPlaceholder) {
+  const std::u16string replacement = u"unused";
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"no dollar", replacement, nullptr);
+  EXPECT_EQ(u"no dollar", formatted);
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersSingleOffset) {
+  size_t offset = 0;
+
+  std::u16string formatted =
+      ReplaceStringPlaceholders(u"a $1", u"car", &offset);
+
+  EXPECT_EQ(u"a car", formatted);
+  EXPECT_EQ(2u, offset);
+}
+
+TEST(StringUtilTest, ReplaceStringPlaceholdersInitializerList) {
+  // Combine lots of different types to make sure they all work.
+  const std::u16string be = u"be";
+  constexpr std::u16string_view kNot = u"not";
+  char16_t mutable_be[] = u"be";
+  constexpr const char16_t* const kIs = u"is";
+  std::u16string question = u"question";
+
+  std::u16string formatted = ReplaceStringPlaceholders(
+      u"to $1 or $2 to $3 that $4 the $5",
+      {be, std::u16string(kNot), mutable_be, kIs, question}, nullptr);
+  EXPECT_EQ(u"to be or not to be that is the question", formatted);
+}
+
 TEST(StringUtilTest, StdStringReplaceStringPlaceholders) {
   std::vector<std::string> subst;
   subst.push_back("9a");
@@ -1181,9 +1277,8 @@ TEST(StringUtilTest, StdStringReplaceStringPlaceholders) {
   subst.push_back("2h");
   subst.push_back("1i");
 
-  std::string formatted =
-      ReplaceStringPlaceholders(
-          "$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i", subst, nullptr);
+  std::string formatted = ReplaceStringPlaceholders(
+      "$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i", subst, nullptr);
 
   EXPECT_EQ("9aa,8bb,7cc,6dd,5ee,4ff,3gg,2hh,1ii", formatted);
 }
@@ -1202,6 +1297,40 @@ TEST(StringUtilTest, StdStringReplaceStringPlaceholdersMultipleMatches) {
   EXPECT_EQ(expected, ReplaceStringPlaceholders(original, subst, &offsets));
   std::vector<size_t> expected_offsets = {0, 4, 9};
   EXPECT_EQ(expected_offsets, offsets);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersArray) {
+  const auto subst = std::to_array<std::string>({"world", "hello"});
+
+  std::string formatted = ReplaceStringPlaceholders("$2, $1!", subst, nullptr);
+  EXPECT_EQ("hello, world!", formatted);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersInitializerList) {
+  // Combine lots of different types to make sure they all work.
+  const std::string be = "be";
+  constexpr std::string_view kNot = "not";
+  char mutable_be[] = "be";
+  constexpr const char* const kIs = "is";
+  std::string question = "question";
+
+  std::string formatted = ReplaceStringPlaceholders(
+      "to $1 or $2 to $3 that $4 the $5",
+      {be, std::string(kNot), mutable_be, kIs, question}, nullptr);
+  EXPECT_EQ("to be or not to be that is the question", formatted);
+}
+
+TEST(StringUtilTest, StdStringReplaceStringPlaceholdersMovesFromString) {
+  ASSERT_TRUE(MovedFromStringIsEmpty<std::string>());
+  std::string long_string = LongString<std::string>();
+  std::vector<size_t> offsets;
+  // `offsets` is passed just to force the base::span overload.
+  std::string formatted =
+      ReplaceStringPlaceholders("=$1", {std::move(long_string)}, &offsets);
+  EXPECT_EQ("=" + LongString<std::string>(), formatted);
+  // This test relies  on behavior that is not required by the C++ standard.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(long_string.empty());
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholdersConsecutiveDollarSigns) {
@@ -1329,31 +1458,30 @@ TEST(StringUtilTest, WprintfFormatPortabilityTest) {
   static const struct {
     const wchar_t* input;
     bool portable;
-  } cases[] = {
-    { L"%ls", true },
-    { L"%s", false },
-    { L"%S", false },
-    { L"%lS", false },
-    { L"Hello, %s", false },
-    { L"%lc", true },
-    { L"%c", false },
-    { L"%C", false },
-    { L"%lC", false },
-    { L"%ls %s", false },
-    { L"%s %ls", false },
-    { L"%s %ls %s", false },
-    { L"%f", true },
-    { L"%f %F", false },
-    { L"%d %D", false },
-    { L"%o %O", false },
-    { L"%u %U", false },
-    { L"%f %d %o %u", true },
-    { L"%-8d (%02.1f%)", true },
-    { L"% 10s", false },
-    { L"% 10ls", true }
-  };
-  for (const auto& i : cases)
+  } cases[] = {{L"%ls", true},
+               {L"%s", false},
+               {L"%S", false},
+               {L"%lS", false},
+               {L"Hello, %s", false},
+               {L"%lc", true},
+               {L"%c", false},
+               {L"%C", false},
+               {L"%lC", false},
+               {L"%ls %s", false},
+               {L"%s %ls", false},
+               {L"%s %ls %s", false},
+               {L"%f", true},
+               {L"%f %F", false},
+               {L"%d %D", false},
+               {L"%o %O", false},
+               {L"%u %U", false},
+               {L"%f %d %o %u", true},
+               {L"%-8d (%02.1f%)", true},
+               {L"% 10s", false},
+               {L"% 10ls", true}};
+  for (const auto& i : cases) {
     EXPECT_EQ(i.portable, IsWprintfFormatPortable(i.input));
+  }
 }
 
 TEST(StringUtilTest, MakeBasicStringPieceTest) {

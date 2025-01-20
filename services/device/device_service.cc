@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
@@ -49,41 +48,6 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "services/device/hid/input_service_linux.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr bool IsLaCrOS() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
-  return false;
-#endif
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-void BindLaCrOSHidManager(
-    mojo::PendingReceiver<device::mojom::HidManager> receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LaCrOS does not have direct access to the permission_broker service over
-  // D-Bus. Use the HidManager interface from ash-chrome instead.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
-  // If the Hid manager is not available, then the pending receiver is deleted.
-  if (lacros_service->IsAvailable<device::mojom::HidManager>()) {
-    lacros_service->GetRemote<device::mojom::HidManager>()->AddReceiver(
-        std::move(receiver));
-  }
-#endif
-}
-#endif
-
-}  // namespace
 
 namespace device {
 
@@ -146,7 +110,7 @@ DeviceService::DeviceService(
 }
 
 DeviceService::~DeviceService() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // NOTE: We don't call this on Chrome OS due to https://crbug.com/856771, as
   // Shutdown() implicitly depends on DBusThreadManager, which may already be
   // destroyed by the time DeviceService is destroyed. Fortunately on Chrome OS
@@ -240,17 +204,14 @@ void DeviceService::BindVibrationManager(
 #if !BUILDFLAG(IS_ANDROID)
 void DeviceService::BindHidManager(
     mojo::PendingReceiver<mojom::HidManager> receiver) {
-  if (IsLaCrOS() && !HidManagerImpl::IsHidServiceTesting()) {
-    BindLaCrOSHidManager(std::move(receiver));
-  } else {
-    if (!hid_manager_)
-      hid_manager_ = std::make_unique<HidManagerImpl>();
-    hid_manager_->AddReceiver(std::move(receiver));
+  if (!hid_manager_) {
+    hid_manager_ = std::make_unique<HidManagerImpl>();
   }
+  hid_manager_->AddReceiver(std::move(receiver));
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DeviceService::BindMtpManager(
     mojo::PendingReceiver<mojom::MtpManager> receiver) {
   if (!mtp_device_manager_)

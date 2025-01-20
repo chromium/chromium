@@ -8,10 +8,13 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+
+namespace manta::proto {
+class ScannerAction;
+}
 
 namespace ash {
 
@@ -21,9 +24,11 @@ class ScannerCommandDelegate;
 // boolean is provided to signify whether the command succeeded or not.
 using ScannerCommandCallback = base::OnceCallback<void(bool success)>;
 
-// Converts a `ScannerAction` to a `ScannerCommand` for use in
+// Converts a `manta::proto::ScannerAction` to a `ScannerCommand` for use in
 // `HandleScannerCommand`.
-ASH_EXPORT ScannerCommand ScannerActionToCommand(ScannerAction action);
+// `action.action_case()` must not be `ACTION_NOT_SET`.
+ASH_EXPORT ScannerCommand
+ScannerActionToCommand(manta::proto::ScannerAction action);
 
 // Given a ScannerCommand this method will apply the contained command to the
 // system. The callback passed will be invoked after the action has completed,

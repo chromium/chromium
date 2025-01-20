@@ -109,8 +109,9 @@ void CastActivityTestBase::RunUntilIdle() {
   testing::Mock::VerifyAndClearExpectations(&socket_service_);
   testing::Mock::VerifyAndClearExpectations(&message_handler_);
   testing::Mock::VerifyAndClearExpectations(&manager_);
-  for (const auto* client : MockCastSessionClient::instances())
+  for (const auto* client : MockCastSessionClient::instances()) {
     testing::Mock::VerifyAndClearExpectations(&client);
+  }
 }
 
 std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(

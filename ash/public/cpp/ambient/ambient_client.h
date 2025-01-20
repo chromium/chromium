@@ -14,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
+class GaiaId;
+
 namespace base {
 class Time;
 }  // namespace base
@@ -29,7 +31,7 @@ namespace ash {
 class ASH_PUBLIC_EXPORT AmbientClient {
  public:
   using GetAccessTokenCallback =
-      base::OnceCallback<void(const std::string& gaia_id,
+      base::OnceCallback<void(const GaiaId& gaia_id,
                               const std::string& access_token,
                               const base::Time& expiration_time)>;
 

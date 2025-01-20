@@ -15,14 +15,16 @@
   just a placeholder.
   <div slot="title">Clear personalization data</div>
   <div id="dialogBody" slot="body" scrollable>
-    <cr-checkbox class="list-item no-outline is-width-of-dialog">
+    <cr-checkbox class="list-item no-outline is-width-of-dialog"
+      checked="{{clearConversionHistory_}}">
       Conversion History
     </cr-checkbox>
-    <cr-checkbox class="list-item no-outline is-width-of-dialog">
+    <cr-checkbox class="list-item no-outline is-width-of-dialog"
+      checked="{{clearSuggestionHistory_}}">
       Suggestion History
     </cr-checkbox>
     <div slot="button-container">
-      <cr-button class="action-button" >
+      <cr-button class="action-button" on-click="onClearButtonClick_">
         Clear Personalized data
       </cr-button>
       <cr-button class="cancel-button" on-click="onCancelButtonClick_">

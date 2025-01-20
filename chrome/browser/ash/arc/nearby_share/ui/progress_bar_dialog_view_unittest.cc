@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/experiences/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

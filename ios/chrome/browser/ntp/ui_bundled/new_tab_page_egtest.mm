@@ -83,8 +83,8 @@ BOOL WaitForHistoryToDisappear() {
     return;
   }
   self.histogramTesterSet = YES;
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)releaseHistogramTester {
@@ -92,8 +92,8 @@ BOOL WaitForHistoryToDisappear() {
     return;
   }
   self.histogramTesterSet = NO;
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
 }
 
 #pragma mark - Helpers
@@ -135,15 +135,15 @@ BOOL WaitForHistoryToDisappear() {
   NSError* error =
       [MetricsAppInterface expectTotalCount:0
                                forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an incognito NTP and close it.
@@ -151,22 +151,22 @@ BOOL WaitForHistoryToDisappear() {
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an NTP and navigate to another URL.
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
@@ -175,8 +175,8 @@ BOOL WaitForHistoryToDisappear() {
                                    forHistogram:@"NewTabPage.TimeSpent"];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open an NTP and switch tab.
@@ -188,26 +188,26 @@ BOOL WaitForHistoryToDisappear() {
   [self setupHistogramTester];
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:0];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:1];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey selectTabAtIndex:0];
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [self releaseHistogramTester];
 
   // Open two NTPs and close them.
@@ -216,22 +216,22 @@ BOOL WaitForHistoryToDisappear() {
 
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:0
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewTab];
   error = [MetricsAppInterface expectTotalCount:1
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"IOS.NTP.Impression"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   [ChromeEarlGrey closeAllTabs];
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"NewTabPage.TimeSpent"];
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
   error = [MetricsAppInterface expectTotalCount:2
                                    forHistogram:@"IOS.NTP.Impression"];
   [self releaseHistogramTester];

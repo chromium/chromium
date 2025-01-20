@@ -9,6 +9,7 @@
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -96,7 +97,8 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings*/ nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 
@@ -107,6 +109,7 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     // Clean up the coordinator before the browser is destroyed to avoid
     // dangling pointers.
     coordinator_ = nullptr;
+    controller_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 
@@ -157,7 +160,8 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     ON_CALL(*mock_bubble_view(), GetContentView())
         .WillByDefault(testing::Return(mock_content_view()));
@@ -259,16 +263,7 @@ TEST_F(CookieControlsBubbleViewControllerTest, WidgetClosesOnTpcdEnforcement) {
   OnStatusChanged();
 }
 
-class CookieControlsBubbleViewController3pcdBubbleTitleTest
-    : public CookieControlsBubbleViewControllerTest {
- public:
-  CookieControlsBubbleViewController3pcdBubbleTitleTest() {
-    feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kTrackingProtection3pcdUx);
-  }
-};
-
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesBlockedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -277,7 +272,7 @@ TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
   OnStatusChanged();
 }
 
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesLimitedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -286,7 +281,7 @@ TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
   OnStatusChanged();
 }
 
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesAllowedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -568,7 +563,8 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
     coordinator_->ShowBubble(web_contents, controller_.get());
@@ -583,6 +579,7 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     EXPECT_EQ(coordinator_->GetBubble(), nullptr);
 
     coordinator_ = nullptr;
+    controller_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 

@@ -281,6 +281,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 
+  void DidUpdateMaxSafeAreaInsets(
+      const gfx::InsetsF& max_safe_area_insets) const override;
+
   gfx::Vector2dF ElasticOverscroll() const override;
 
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override;
@@ -290,7 +293,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   viz::FrameSinkId GetFrameSinkId(LocalFrame*) override;
 
   void RequestDecode(LocalFrame*,
-                     const cc::PaintImage&,
+                     const cc::DrawImage&,
                      base::OnceCallback<void(bool)>) override;
 
   void NotifyPresentationTime(LocalFrame& frame,

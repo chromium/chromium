@@ -6,6 +6,7 @@
 #include "base/memory/singleton.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class AccountId;
 
@@ -40,7 +41,7 @@ class FixedAccountManager {
 
   const AccountId stub_account_id_ =
       AccountId::FromUserEmailGaiaId(user_manager::kStubUserEmail,
-                                     user_manager::kStubUserId);
+                                     GaiaId(user_manager::kStubUserId));
   const AccountId signin_account_id_ = AccountId::FromUserEmail(kSignInUser);
   const AccountId guest_account_id_ =
       AccountId::FromUserEmail(user_manager::kGuestUserName);

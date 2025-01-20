@@ -17,22 +17,13 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 constexpr char kTokenBindingAssertionSentinel[] = "DBSC_CHALLENGE_IF_REQUIRED";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(EncryptionError)
-enum class EncryptionError {
-  kResponseUnexpectedlyEncrypted = 0,
-  kDecryptionFailed = 1,
-  kMaxValue = kDecryptionFailed
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundOAuth2TokenFetchEncryptionError)
-
-void RecordEncryptionError(EncryptionError error) {
+void RecordEncryptionError(TokenBindingResponseEncryptionError error) {
   base::UmaHistogramEnumeration(
       "Signin.OAuth2MintToken.BoundFetchEncryptionError", error);
 }
@@ -47,7 +38,7 @@ void RecordFetchAuthError(const GoogleServiceAuthError& error) {
 OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& user_gaia_id,
+    const GaiaId& user_gaia_id,
     const std::string& refresh_token,
     const std::string& device_id,
     const std::string& client_version,
@@ -116,7 +107,8 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
   std::string decrypted_token;
   if (result.is_token_encrypted) {
     if (token_decryptor_.is_null()) {
-      RecordEncryptionError(EncryptionError::kResponseUnexpectedlyEncrypted);
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Unexpectedly received an encrypted token"));
@@ -124,14 +116,20 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     }
     std::string decryption_result = token_decryptor_.Run(result.access_token);
     if (decryption_result.empty()) {
-      RecordEncryptionError(EncryptionError::kDecryptionFailed);
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kDecryptionFailed);
       RecordMetricsAndFireError(
           GoogleServiceAuthError::FromUnexpectedServiceResponse(
               "Failed to decrypt token"));
       return;
+    } else {
+      RecordEncryptionError(
+          TokenBindingResponseEncryptionError::kSuccessfullyDecrypted);
     }
     decrypted_token = std::move(decryption_result);
   } else {
+    RecordEncryptionError(
+        TokenBindingResponseEncryptionError::kSuccessNoEncryption);
     decrypted_token = std::move(result.access_token);
   }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to

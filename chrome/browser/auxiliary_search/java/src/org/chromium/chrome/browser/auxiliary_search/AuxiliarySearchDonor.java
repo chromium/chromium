@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.CONTENT_TTL_HOURS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appsearch.app.AppSearchBatchResult;
 import androidx.appsearch.app.AppSearchSession;
+import androidx.appsearch.app.GenericDocument;
+import androidx.appsearch.app.GlobalSearchSession;
 import androidx.appsearch.app.PackageIdentifier;
 import androidx.appsearch.app.PutDocumentsRequest;
 import androidx.appsearch.app.SearchResult;
@@ -23,6 +25,7 @@ import androidx.appsearch.app.SearchResults;
 import androidx.appsearch.app.SearchSpec;
 import androidx.appsearch.app.SetSchemaRequest;
 import androidx.appsearch.app.SetSchemaResponse;
+import androidx.appsearch.builtintypes.GlobalSearchApplicationInfo;
 import androidx.appsearch.builtintypes.ImageObject;
 import androidx.appsearch.builtintypes.WebPage;
 import androidx.appsearch.exceptions.AppSearchException;
@@ -33,11 +36,16 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -55,36 +63,74 @@ public class AuxiliarySearchDonor {
         void setDocumentClassVisibility(String packageName, String sha256Certificate);
     }
 
+    @VisibleForTesting static final String SCHEMA = "builtin:GlobalSearchApplicationInfo";
+
     private static final String TAG = "AuxiliarySearchDonor";
     private static final String TAB_PREFIX = "Tab-";
-
     private static final Executor UI_THREAD_EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+    private static boolean sSkipInitializationForTesting;
 
     private final Context mContext;
     private final String mNamespace;
+    private final boolean mSkipSchemaCheck;
+
     private ListenableFuture<AppSearchSession> mAppSearchSession;
+    private ListenableFuture<GlobalSearchSession> mGlobalSearchSession;
     private Long mTtlMillis;
     private boolean mIsSchemaSet;
     private List<WebPage> mPendingDocuments;
     private Callback<Boolean> mPendingCallback;
+    private boolean mSharedTabsWithOsState;
+    private Boolean mIsDeviceCompatible;
+    private boolean mIsCreatedSessionAndInitForTesting;
 
-    /**
-     * @param context The application context.
-     */
-    public AuxiliarySearchDonor(@NonNull Context context) {
-        mContext = context;
+    /** Static class that implements the initialization-on-demand holder idiom. */
+    private static class LazyHolder {
+        static AuxiliarySearchDonor sInstance = new AuxiliarySearchDonor();
+    }
+
+    /** Returns the singleton instance of AuxiliarySearchDonor. */
+    public static AuxiliarySearchDonor getInstance() {
+        return AuxiliarySearchDonor.LazyHolder.sInstance;
+    }
+
+    private AuxiliarySearchDonor() {
+        mContext = ContextUtils.getApplicationContext();
         mNamespace = mContext.getPackageName();
+        mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
+
+        mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
+        boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
+        if (shouldInit) {
+            mIsCreatedSessionAndInitForTesting = true;
+            createSessionAndInit();
+        }
     }
 
     /** Creates a session and initializes the schema type. */
-    void createSessionAndInit() {
+    boolean createSessionAndInit() {
         if (mAppSearchSession != null) {
-            return;
+            return false;
         }
 
+        if (sSkipInitializationForTesting) return true;
+
+        // There are 3 steps for initialization:
+        // 1) Set up a new app search session for tab donation and a global search session for
+        //    checking device compatibility.
+        // 2) Checks if the system has stored the consumer schema. This schema indicates the device
+        //    is capable to use the Tabs from donation.
+        // 3) Checks if the WebPage schema has been set for Tab donations.
+        // If 2) failed, closes the app search session.
         mAppSearchSession = createAppSearchSession();
-        setSchema();
+        mGlobalSearchSession = createGlobalSearchSession();
+        if (mSkipSchemaCheck) {
+            onConsumerSchemaSearched(/* success= */ true);
+        } else {
+            searchConsumerSchema(this::onConsumerSchemaSearched);
+        }
+        return true;
     }
 
     /** Creates a session asynchronously. */
@@ -95,9 +141,62 @@ public class AuxiliarySearchDonor {
                         .build());
     }
 
-    /** Sets the document schema for the current session. */
+    /** Creates a session asynchronously. */
+    @SuppressLint("NewApi")
+    private ListenableFuture<GlobalSearchSession> createGlobalSearchSession() {
+        return PlatformStorage.createGlobalSearchSessionAsync(
+                new PlatformStorage.GlobalSearchContext.Builder(mContext).build());
+    }
+
+    /**
+     * Sets the document schema for the current session.
+     *
+     * @return false if the schema has been set before.
+     */
+    @SuppressWarnings("CheckResult")
+    boolean onConsumerSchemaSearched(boolean success) {
+        boolean ret = onConsumerSchemaSearchedImpl(success);
+
+        // Closes the mGlobalSearchSession after querying the schema.
+        Futures.transform(
+                mGlobalSearchSession,
+                session -> {
+                    session.close();
+                    mGlobalSearchSession = null;
+                    return null;
+                },
+                AsyncTask.THREAD_POOL_EXECUTOR);
+
+        return ret;
+    }
+
     @SuppressLint({"CheckResult", "NewApi"})
-    private void setSchema() {
+    @VisibleForTesting
+    boolean onConsumerSchemaSearchedImpl(boolean success) {
+        mIsDeviceCompatible = success;
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, success);
+
+        mIsSchemaSet =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+
+        if (!mIsDeviceCompatible) {
+            if (mIsSchemaSet) {
+                // If WebPage schema has been set before while the device isn't capable for Tab
+                // donations, clean up now.
+                deleteAllTabs(null);
+                closeSession();
+            }
+            return false;
+        }
+
+        if (mIsSchemaSet) {
+            // The WebPage schema only needs to be set once. Early exits if it has been set before.
+            handlePendingDonations();
+            return false;
+        }
+
         Futures.transformAsync(
                 mAppSearchSession,
                 session -> {
@@ -116,6 +215,7 @@ public class AuxiliarySearchDonor {
                     return responseFutureCallback;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
+        return true;
     }
 
     @NonNull
@@ -125,22 +225,25 @@ public class AuxiliarySearchDonor {
                     new SetSchemaRequest.Builder()
                             .setForceOverride(true)
                             .addDocumentClasses(WebPage.class);
-            AuxiliarySearchControllerFactory.setSchemaTypeVisibilityForPackage(
-                    (packageName, sha256Certificate) -> {
-                        try {
-                            requestBuilder.setDocumentClassVisibilityForPackage(
-                                    WebPage.class,
-                                    /* visible= */ true,
-                                    new PackageIdentifier(
-                                            packageName,
-                                            new Signature(sha256Certificate).toByteArray()));
-                        } catch (AppSearchException e) {
-                            Log.i(
-                                    TAG,
-                                    "Failed to set document class visibility for package %s.",
-                                    packageName);
-                        }
-                    });
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setSchemaTypeVisibilityForPackage(
+                            (packageName, sha256Certificate) -> {
+                                try {
+                                    requestBuilder.setDocumentClassVisibilityForPackage(
+                                            WebPage.class,
+                                            /* visible= */ true,
+                                            new PackageIdentifier(
+                                                    packageName,
+                                                    new Signature(sha256Certificate)
+                                                            .toByteArray()));
+                                } catch (AppSearchException e) {
+                                    Log.i(
+                                            TAG,
+                                            "Failed to set document class visibility for package"
+                                                    + " %s.",
+                                            packageName);
+                                }
+                            });
             return requestBuilder.build();
         } catch (AppSearchException e) {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
@@ -153,14 +256,20 @@ public class AuxiliarySearchDonor {
         if (response == null || !response.getMigrationFailures().isEmpty()) return;
 
         mIsSchemaSet = true;
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+
+        handlePendingDonations();
+    }
+
+    private void handlePendingDonations() {
+        if (mPendingDocuments == null) return;
 
         // If there is any pending donation, donates the documents now.
-        if (mPendingDocuments != null) {
-            donateTabsImpl(mPendingDocuments, mPendingCallback);
-            mPendingDocuments.clear();
-            mPendingDocuments = null;
-            mPendingCallback = null;
-        }
+        donateTabsImpl(mPendingDocuments, mPendingCallback);
+        mPendingDocuments.clear();
+        mPendingDocuments = null;
+        mPendingCallback = null;
     }
 
     /**
@@ -268,17 +377,25 @@ public class AuxiliarySearchDonor {
         return builder.build();
     }
 
+    /**
+     * Implement Tab donations. If donation should be disabled, the donation list will be abandoned.
+     * If the session hasn't been initialized, the list will be cached and executed after the
+     * initialization is completed. The initialization process will clean up if donation should be
+     * disabled.
+     *
+     * @param docs The documents to donate.
+     * @param callback The callback to be called after donation is completed.
+     */
     @SuppressLint("CheckResult")
     private void donateTabsImpl(@NonNull List<WebPage> docs, @Nullable Callback<Boolean> callback) {
-        if (!mIsSchemaSet) {
-            // If the schema hasn't been set yet, cache the donation list.
-            mPendingDocuments = docs;
-            mPendingCallback = callback;
+        if (mAppSearchSession == null) {
             return;
         }
 
-        // This is only true for tests.
-        if (mAppSearchSession == null) {
+        if (!initialized()) {
+            // If the initialization hasn't been completed yet, cache the donation list.
+            mPendingDocuments = docs;
+            mPendingCallback = callback;
             return;
         }
 
@@ -323,10 +440,17 @@ public class AuxiliarySearchDonor {
         }
     }
 
-    /** Removes all tabs for auxiliary search based on namespace. */
+    /**
+     * Removes all tabs for auxiliary search based on namespace.
+     *
+     * @param onDeleteCompleteCallback The callback to be called when the deletion is completed.
+     * @return whether it is possible to delete donated Tabs.
+     */
     @SuppressLint("CheckResult")
     @VisibleForTesting
-    public void deleteAllTabs(@NonNull Callback<Boolean> onDeleteCompleteCallback) {
+    public boolean deleteAllTabs(@Nullable Callback<Boolean> onDeleteCompleteCallback) {
+        if (mAppSearchSession == null) return false;
+
         SearchSpec spec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
 
         Futures.transformAsync(
@@ -338,26 +462,43 @@ public class AuxiliarySearchDonor {
                             new FutureCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
-                                    onDeleteCompleteCallback.onResult(true);
+                                    Callback.runNullSafe(onDeleteCompleteCallback, true);
                                 }
 
                                 @Override
                                 public void onFailure(Throwable t) {
-                                    onDeleteCompleteCallback.onResult(false);
+                                    Callback.runNullSafe(onDeleteCompleteCallback, false);
                                 }
                             },
                             AsyncTask.THREAD_POOL_EXECUTOR);
                     return result;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
+        return true;
     }
 
-    /** Closes the session. */
-    @SuppressLint("CheckResult")
+    /** Called when config in Tabs settings is changed. */
     @VisibleForTesting
-    public void destroy() {
+    void onConfigChanged(boolean enabled, @Nullable Callback<Boolean> onDeleteCompleteCallback) {
+        if (mSharedTabsWithOsState == enabled) return;
+
+        mSharedTabsWithOsState = enabled;
+        AuxiliarySearchUtils.setSharedTabsWithOs(enabled);
+        if (enabled) {
+            // Initializes the session now.
+            createSessionAndInit();
+        } else {
+            // When disabled, remove all shared Tabs and closes the session.
+            deleteAllTabs(onDeleteCompleteCallback);
+            closeSession();
+        }
+    }
+
+    /** Closes the session. This is called when Tab donations is disabled. */
+    @SuppressLint("CheckResult")
+    private void closeSession() {
         if (mAppSearchSession != null) {
-            Futures.transformAsync(
+            Futures.transform(
                     mAppSearchSession,
                     session -> {
                         session.close();
@@ -386,7 +527,8 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public long getDocumentTtlMs() {
         if (mTtlMillis == null) {
-            mTtlMillis = TimeUnit.HOURS.toMillis(CONTENT_TTL_HOURS.getValue());
+            mTtlMillis =
+                    TimeUnit.HOURS.toMillis(sAndroidAppIntegrationV2ContentTtlHours.getValue());
         }
 
         return mTtlMillis;
@@ -412,8 +554,101 @@ public class AuxiliarySearchDonor {
                 executor);
     }
 
+    /**
+     * Returns whether the donor is able to donate Tabs. Returns true if 1) the settings is enabled,
+     * 2) the session isn't closed and 3) the device is compatible or the compatibility check is in
+     * progress.
+     */
+    boolean canDonate() {
+        if (!mSharedTabsWithOsState || mAppSearchSession == null) return false;
+
+        // If mIsDeviceCompatible is null, it means the checking of device compatibility is still
+        // working in progress. In this case, it is safe to let the caller to send a donation list,
+        // and this donor will either close the session or continue to donate the pending list when
+        // the check of mIsDeviceCompatible is done. The follow tasks are handled in {@link
+        // AuxiliarySearchDonor#onConsumerSchemaSearchedImpl(boolean)}.
+        if (Boolean.FALSE.equals(mIsDeviceCompatible)) return false;
+
+        return true;
+    }
+
+    /** Returns whether the donor is fully initialized. */
+    boolean initialized() {
+        return mIsSchemaSet && mIsDeviceCompatible != null;
+    }
+
+    /**
+     * Searches whether the device supports Tab donation feature.
+     *
+     * @param callback The callback to be called after the query is completed.
+     */
+    private void searchConsumerSchema(@NonNull Callback<Boolean> callback) {
+        String supportedPackageName =
+                AuxiliarySearchControllerFactory.getInstance().getSupportedPackageName();
+        if (supportedPackageName == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        SearchSpec searchSpec =
+                new SearchSpec.Builder()
+                        .addFilterSchemas(SCHEMA)
+                        .addFilterPackageNames(supportedPackageName)
+                        .build();
+        ListenableFuture<SearchResults> searchFutureCallback =
+                Futures.transform(
+                        mGlobalSearchSession,
+                        session -> session.search("", searchSpec),
+                        UI_THREAD_EXECUTOR);
+
+        addRequestCallback(
+                searchFutureCallback,
+                (searchResults) -> {
+                    // Returns whether document is found for the given schema.
+                    iterateSearchResults(searchResults, callback);
+                },
+                AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @SuppressWarnings({"CheckResult"})
+    private void iterateSearchResults(
+            @NonNull SearchResults searchResults, @NonNull Callback<Boolean> callback) {
+        Futures.transform(
+                searchResults.getNextPageAsync(),
+                page -> {
+                    onGetNextPage(page, callback);
+                    return null;
+                },
+                AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @VisibleForTesting
+    @SuppressWarnings({"UnsafeOptInUsageError", "RequiresFeature"})
+    void onGetNextPage(@Nullable List<SearchResult> page, @NonNull Callback<Boolean> callback) {
+        if (page == null || page.isEmpty()) {
+            callback.onResult(false);
+            return;
+        }
+
+        for (int i = 0; i < page.size(); i++) {
+            GenericDocument genericDocument = page.get(i).getGenericDocument();
+            try {
+                GlobalSearchApplicationInfo info =
+                        genericDocument.toDocumentClass(GlobalSearchApplicationInfo.class);
+                if (info.getApplicationType()
+                        == GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER) {
+                    callback.onResult(true);
+                    return;
+                }
+            } catch (AppSearchException e) {
+                Log.i(TAG, "Failed to convert GenericDocument to" + " GlobalSearchApplicationInfo");
+            }
+        }
+        callback.onResult(false);
+    }
+
     @SuppressLint("CheckResult")
-    public void searchDonationResultsForTesting(Callback<List<SearchResult>> callback) {
+    public void searchDonationResultsForTesting(@NonNull Callback<List<SearchResult>> callback) {
         SearchSpec searchSpec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
 
         ListenableFuture<SearchResults> searchFutureCallback =
@@ -440,6 +675,12 @@ public class AuxiliarySearchDonor {
                 UI_THREAD_EXECUTOR);
     }
 
+    @VisibleForTesting
+    boolean isShareTabsWithOsEnabledKeyExist() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.contains(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
+    }
+
     public boolean getIsSchemaSetForTesting() {
         return mIsSchemaSet;
     }
@@ -450,5 +691,45 @@ public class AuxiliarySearchDonor {
 
     public void setPendingDocumentsForTesting(List<WebPage> docs) {
         mPendingDocuments = docs;
+    }
+
+    public void setPendingCallbackForTesting(Callback<Boolean> pendingCallbackForTesting) {
+        Callback<Boolean> oldPendingCallback = mPendingCallback;
+        mPendingCallback = pendingCallbackForTesting;
+        ResettersForTesting.register(() -> mPendingCallback = oldPendingCallback);
+    }
+
+    public static void setSkipInitializationForTesting(boolean skipInitializationForTesting) {
+        sSkipInitializationForTesting = skipInitializationForTesting;
+        ResettersForTesting.register(() -> sSkipInitializationForTesting = false);
+    }
+
+    public void resetSchemaSetForTesting() {
+        mIsSchemaSet = false;
+    }
+
+    public boolean getSharedTabsWithOsStateForTesting() {
+        return mSharedTabsWithOsState;
+    }
+
+    public void setSharedTabsWithOsStateForTesting(boolean sharedTabsWithOsState) {
+        boolean oldValue = mSharedTabsWithOsState;
+        mSharedTabsWithOsState = sharedTabsWithOsState;
+        ResettersForTesting.register(() -> mSharedTabsWithOsState = oldValue);
+    }
+
+    public void setAppSearchSessionForTesting(
+            ListenableFuture<AppSearchSession> sessionForTesting) {
+        ListenableFuture<AppSearchSession> oldSession = mAppSearchSession;
+        mAppSearchSession = sessionForTesting;
+        ResettersForTesting.register(() -> mAppSearchSession = oldSession);
+    }
+
+    public static AuxiliarySearchDonor createDonorForTesting() {
+        return new AuxiliarySearchDonor();
+    }
+
+    public boolean getIsCreatedSessionAndInitForTesting() {
+        return mIsCreatedSessionAndInitForTesting;
     }
 }

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
@@ -61,11 +60,7 @@ class VIEWS_EXPORT Label : public View,
     // TODO(tapted): Change this to a size delta and font weight since that's
     // typically all the callers really care about, and would allow Label to
     // guarantee caching of the FontList in ResourceBundle.
-    //
-    // Exclude from `raw_ref` rewriter because there are usages (e.g.
-    // `indexed_suggestion_candidate_button.cc` that attempt to bind
-    // temporaries (`T&&`) to `font_list`, which `raw_ref` forbids.
-    RAW_PTR_EXCLUSION const gfx::FontList& font_list;
+    const gfx::FontList font_list;
   };
 
   // Create Labels with style::CONTEXT_CONTROL_LABEL and style::STYLE_PRIMARY.
@@ -246,12 +241,21 @@ class VIEWS_EXPORT Label : public View,
   gfx::ElideBehavior GetElideBehavior() const;
   void SetElideBehavior(gfx::ElideBehavior elide_behavior);
 
-  // Gets/Sets the tooltip text.  Default behavior for a label (single-line) is
-  // to show the full text if it is wider than its bounds.  Calling this
-  // overrides the default behavior and lets you set a custom tooltip.  To
-  // revert to default behavior, call this with an empty string.
+  // Gets/Sets the custom local tooltip text.  Default behavior for a label
+  // (single-line) is to show the full text if it is wider than its bounds.
+  // Calling this overrides the default behavior and lets you set a custom
+  // tooltip.  To revert to default behavior, call this with an empty string.
   std::u16string GetTooltipText() const;
   void SetTooltipText(const std::u16string& tooltip_text);
+
+  // Updates the tooltip text cached on the View.
+  void UpdateTooltipText();
+
+  // This function returns the computed tooltip for the label, irrespective of
+  // the `handles_tooltips_` value. If `handles_tooltips_` is false, the tooltip
+  // will be suppressed and not shown to the user, but the unsuppressed value
+  // will still be locally cached if available.
+  std::u16string GetComputedTooltip();
 
   // Get or set whether this label can act as a tooltip handler; the default is
   // true.  Set to false whenever an ancestor view should handle tooltips
@@ -345,6 +349,12 @@ class VIEWS_EXPORT Label : public View,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  void AddDisplayTextTruncationCallback(
+      base::RepeatingCallback<void(Label*)> callback);
+
+  void AddLabelTooltipTextChangedCallback(
+      base::RepeatingCallback<void()> callback);
 
  protected:
   // Create a single RenderText instance to actually be painted.
@@ -480,6 +490,8 @@ class VIEWS_EXPORT Label : public View,
   // Updates the elide behavior used by |full_text_|.
   void UpdateFullTextElideBehavior();
 
+  void OnDisplayTextTruncation();
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   void MaybeRefreshAccessibleTextOffsets() const;
 
@@ -531,7 +543,7 @@ class VIEWS_EXPORT Label : public View,
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
   size_t max_lines_ = 0;
-  std::u16string tooltip_text_;
+  std::u16string custom_tooltip_text_;
   bool handles_tooltips_ = true;
   // Whether to collapse the label when it's not visible.
   bool collapse_when_hidden_ = false;
@@ -547,7 +559,11 @@ class VIEWS_EXPORT Label : public View,
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
-  base::CallbackListSubscription full_text_changed_subscription_;
+  std::u16string suppressed_tooltip_text_;
+
+  base::RepeatingCallback<void(Label*)>
+      on_display_text_truncation_changed_callback_;
+  base::RepeatingCallback<void()> label_tooltip_text_changed_callback_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_tcp.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -196,7 +192,7 @@ TEST_F(P2PSocketTcpTest, ReceiveStun) {
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet3), _));
 
   size_t pos = 0;
-  size_t step_sizes[] = {3, 2, 1};
+  auto step_sizes = std::to_array<size_t>({3, 2, 1});
   size_t step = 0;
   while (pos < received_data.size()) {
     size_t step_size = std::min(step_sizes[step], received_data.size() - pos);
@@ -424,7 +420,7 @@ TEST_F(P2PSocketStunTcpTest, ReceiveStun) {
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet3), _));
 
   size_t pos = 0;
-  size_t step_sizes[] = {3, 2, 1};
+  auto step_sizes = std::to_array<size_t>({3, 2, 1});
   size_t step = 0;
   while (pos < received_data.size()) {
     size_t step_size = std::min(step_sizes[step], received_data.size() - pos);

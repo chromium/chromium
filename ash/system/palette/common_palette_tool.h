@@ -13,7 +13,7 @@
 
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace ash {
 
@@ -39,8 +39,6 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   // Returns the icon used in the palette tray on the left-most edge of the
   // tool. The icon will be the same as that used in the status area i.e.
   // PaletteTool::GetActiveTrayIcon().
-  // TODO(michelefan): Consider using the same function to return
-  // icon for palette menu and palette tray at the status area.
   virtual const gfx::VectorIcon& GetPaletteIcon() const = 0;
 
   // Creates a default view implementation to be returned by CreateView.

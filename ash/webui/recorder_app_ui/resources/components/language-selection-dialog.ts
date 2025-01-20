@@ -6,16 +6,21 @@ import './cra/cra-button.js';
 import './language-dropdown.js';
 import './cra/cra-feature-tour-dialog.js';
 
-import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
+import {
+  createRef,
+  css,
+  html,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {setTranscriptionLanguage} from '../core/state/transcription.js';
-import {assertExists} from '../core/utils/assert.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
-import {LanguageDropdown} from './language-dropdown.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 
 /**
@@ -53,7 +58,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
-  private readonly dropdown = createRef<LanguageDropdown>();
+  private readonly selectedLanguage = signal<LanguageCode|null>(null);
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
@@ -73,7 +78,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
   }
 
   private downloadLanguage() {
-    const languageCode = assertExists(this.dropdown.value).value;
+    const languageCode = this.selectedLanguage.value;
     if (languageCode === null) {
       return;
     }
@@ -85,6 +90,10 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
+    const onDropdownChange = (ev: CustomEvent<LanguageCode|null>) => {
+      this.selectedLanguage.value = ev.detail;
+    };
+
     // TODO(hsuanling): The dialogs (like speaker-label-consent-dialog) are
     // currently initialized at multiple places when it needs to be used,
     // consider making it "global" so it'll only be rendered once?
@@ -97,7 +106,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
             .languageList=${this.platformHandler.getLangPackList()}
-            ${ref(this.dropdown)}
+            @dropdown-changed=${onDropdownChange}
           >
           </language-dropdown>
         </div>
@@ -108,6 +117,7 @@ export class LanguageSelectionDialog extends ReactiveLitElement {
           ></cra-button>
           <cra-button
             label=${i18n.onboardingDialogLanguageSelectionDownloadButton}
+            .disabled=${this.selectedLanguage.value === null}
             @click=${this.downloadLanguage}
           ></cra-button>
         </div>

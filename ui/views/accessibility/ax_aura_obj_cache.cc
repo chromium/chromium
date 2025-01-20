@@ -31,8 +31,9 @@ namespace views {
 namespace {
 
 aura::client::FocusClient* GetFocusClient(aura::Window* root_window) {
-  if (!root_window)
+  if (!root_window) {
     return nullptr;
+  }
   return aura::client::GetFocusClient(root_window);
 }
 
@@ -52,8 +53,9 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
   void Observe() {
     observer_.Reset();
     aura::Window* a11y_override_window = cache_->a11y_override_window_;
-    if (a11y_override_window)
+    if (a11y_override_window) {
       observer_.Observe(a11y_override_window);
+    }
   }
 
  private:
@@ -74,8 +76,9 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
   // Avoid problems with transient focus events. https://crbug.com/729449
-  if (!view->GetWidget())
+  if (!view->GetWidget()) {
     return nullptr;
+  }
 
   DCHECK(view_to_id_map_.find(view) != view_to_id_map_.end() ||
          // This is either a new view or we're erroneously here during ~View.
@@ -86,8 +89,9 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(AXVirtualView* virtual_view) {
   if (!virtual_view->GetOwnerView() ||
-      !virtual_view->GetOwnerView()->GetWidget())
+      !virtual_view->GetOwnerView()->GetWidget()) {
     return nullptr;
+  }
   return CreateInternal<AXVirtualViewWrapper>(virtual_view,
                                               &virtual_view_to_id_map_);
 }
@@ -130,8 +134,9 @@ void AXAuraObjCache::Remove(AXVirtualView* virtual_view) {
 
 void AXAuraObjCache::RemoveViewSubtree(View* view) {
   Remove(view);
-  for (View* child : view->children())
+  for (View* child : view->children()) {
     RemoveViewSubtree(child);
+  }
 }
 
 void AXAuraObjCache::Remove(Widget* widget) {
@@ -140,19 +145,22 @@ void AXAuraObjCache::Remove(Widget* widget) {
   // When an entire widget is deleted, it doesn't always send a notification
   // on each of its views, so we need to explore them recursively.
   auto* view = widget->GetRootView();
-  if (view)
+  if (view) {
     RemoveViewSubtree(view);
+  }
 }
 
 void AXAuraObjCache::Remove(aura::Window* window, aura::Window* parent) {
   int id = GetIDInternal(parent, window_to_id_map_);
   AXAuraObjWrapper* parent_window_obj = Get(id);
   RemoveInternal(window, &window_to_id_map_);
-  if (parent && delegate_)
+  if (parent && delegate_) {
     delegate_->OnChildWindowRemoved(parent_window_obj);
+  }
 
-  if (focused_window_ == window)
+  if (focused_window_ == window) {
     focused_window_ = nullptr;
+  }
 }
 
 AXAuraObjWrapper* AXAuraObjCache::Get(int32_t id) {
@@ -162,8 +170,9 @@ AXAuraObjWrapper* AXAuraObjCache::Get(int32_t id) {
 
 void AXAuraObjCache::GetTopLevelWindows(
     std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* children) {
-  for (aura::Window* root : root_windows_)
+  for (aura::Window* root : root_windows_) {
     children->push_back(GetOrCreate(root));
+  }
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
@@ -174,8 +183,9 @@ AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
     focused_view = focused_view->parent();
   }
 
-  if (!focused_view)
+  if (!focused_view) {
     return nullptr;
+  }
 
   if (focused_view->GetViewAccessibility().FocusedVirtualChild()) {
     return focused_view->GetViewAccessibility()
@@ -188,14 +198,16 @@ AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
 
 void AXAuraObjCache::OnFocusedViewChanged() {
   View* view = GetFocusedView();
-  if (view)
+  if (view) {
     view->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  }
 }
 
 void AXAuraObjCache::FireEvent(AXAuraObjWrapper* aura_obj,
                                ax::mojom::Event event_type) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnEvent(aura_obj, event_type);
+  }
 }
 
 AXAuraObjCache::AXAuraObjCache()
@@ -206,13 +218,15 @@ AXAuraObjCache::~AXAuraObjCache() {
   // Remove all focus observers from |root_windows_|.
   for (aura::Window* window : root_windows_) {
     aura::client::FocusClient* focus_client = GetFocusClient(window);
-    if (focus_client)
+    if (focus_client) {
       focus_client->RemoveObserver(this);
+    }
   }
   root_windows_.clear();
 
-  for (auto& entry : virtual_view_to_id_map_)
+  for (auto& entry : virtual_view_to_id_map_) {
     entry.first->set_cache(nullptr);
+  }
 }
 
 View* AXAuraObjCache::GetFocusedView() {
@@ -236,29 +250,34 @@ View* AXAuraObjCache::GetFocusedView() {
       }
     }
 
-    if (!focused_window)
+    if (!focused_window) {
       return nullptr;
+    }
 
     focused_widget = Widget::GetWidgetForNativeView(focused_window);
     while (!focused_widget) {
       focused_window = focused_window->parent();
-      if (!focused_window)
+      if (!focused_window) {
         break;
+      }
 
       focused_widget = Widget::GetWidgetForNativeView(focused_window);
     }
   }
 
-  if (!focused_widget)
+  if (!focused_widget) {
     return nullptr;
+  }
 
   FocusManager* focus_manager = focused_widget->GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager) {
     return nullptr;
+  }
 
   View* focused_view = focus_manager->GetFocusedView();
-  if (focused_view)
+  if (focused_view) {
     return focused_view;
+  }
 
   // No view has focus, but a child tree might have focus.
   if (focused_window) {
@@ -289,8 +308,9 @@ void AXAuraObjCache::OnWindowFocused(aura::Window* gained_focus,
 }
 
 void AXAuraObjCache::OnRootWindowObjCreated(aura::Window* window) {
-  if (root_windows_.empty() && GetFocusClient(window))
+  if (root_windows_.empty() && GetFocusClient(window)) {
     GetFocusClient(window)->AddObserver(this);
+  }
 
   // Do not allow duplicate entries.
   if (!base::Contains(root_windows_, window)) {
@@ -302,11 +322,13 @@ void AXAuraObjCache::OnRootWindowObjDestroyed(aura::Window* window) {
   std::erase_if(root_windows_, [window](aura::Window* current_window) {
     return current_window == window;
   });
-  if (root_windows_.empty() && GetFocusClient(window))
+  if (root_windows_.empty() && GetFocusClient(window)) {
     GetFocusClient(window)->RemoveObserver(this);
+  }
 
-  if (focused_window_ == window)
+  if (focused_window_ == window) {
     focused_window_ = nullptr;
+  }
 }
 
 void AXAuraObjCache::SetA11yOverrideWindow(aura::Window* a11y_override_window) {
@@ -318,13 +340,15 @@ template <typename AuraViewWrapper, typename AuraView>
 AXAuraObjWrapper* AXAuraObjCache::CreateInternal(
     AuraView* aura_view,
     std::map<AuraView*, int32_t>* aura_view_to_id_map) {
-  if (!aura_view)
+  if (!aura_view) {
     return nullptr;
+  }
 
   auto it = aura_view_to_id_map->find(aura_view);
 
-  if (it != aura_view_to_id_map->end())
+  if (it != aura_view_to_id_map->end()) {
     return Get(it->second);
+  }
 
   auto wrapper = std::make_unique<AuraViewWrapper>(this, aura_view);
   ui::AXNodeID id = wrapper->GetUniqueId();
@@ -343,8 +367,9 @@ template <typename AuraView>
 int32_t AXAuraObjCache::GetIDInternal(
     AuraView* aura_view,
     const std::map<AuraView*, int32_t>& aura_view_to_id_map) const {
-  if (!aura_view)
+  if (!aura_view) {
     return ui::kInvalidAXNodeID;
+  }
 
   auto it = aura_view_to_id_map.find(aura_view);
   return it != aura_view_to_id_map.end() ? it->second : ui::kInvalidAXNodeID;
@@ -355,8 +380,9 @@ void AXAuraObjCache::RemoveInternal(
     AuraView* aura_view,
     std::map<AuraView*, int32_t>* aura_view_to_id_map) {
   int32_t id = GetID(aura_view);
-  if (id == ui::kInvalidAXNodeID)
+  if (id == ui::kInvalidAXNodeID) {
     return;
+  }
   aura_view_to_id_map->erase(aura_view);
   cache_.erase(id);
 }

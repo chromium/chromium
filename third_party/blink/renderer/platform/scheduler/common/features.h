@@ -81,6 +81,9 @@ GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
 // returns TimeDelta::Max().
 PLATFORM_EXPORT base::TimeDelta GetThreadedScrollRenderingStarvationThreshold();
 
+// Kill switch for throttling timed-out requestIdleCallback tasks.
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kThrottleTimedOutIdleTasks);
+
 }  // namespace scheduler
 }  // namespace blink
 

@@ -43,7 +43,8 @@ enum class GenAiLensOverlaySettingsPolicyValue {
 
 // An integer setting indicating whether the Lens Overlay feature is enabled or
 // disabled by the 'GenAiLensOverlaySettings' enterprise policy. This policy
-// deprecated the old kLensOverlaySettings policy above.
+// will deprecate the old kLensOverlaySettings policy above in the lens overlay
+// is classified as GenAI.
 inline constexpr char kGenAiLensOverlaySettings[] =
     "lens.policy.gen_ai_lens_overlay_settings";
 

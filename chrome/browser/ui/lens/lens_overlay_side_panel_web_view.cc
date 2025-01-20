@@ -22,9 +22,7 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensSidePanelUntrustedUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
     content::BrowserContext* browser_context,

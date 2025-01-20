@@ -43,7 +43,7 @@ class FilledCardInformationBubbleControllerImpl
   AutofillBubbleBase* GetBubble() const override;
   std::u16string GetBubbleTitleText() const override;
   const FilledCardInformationBubbleOptions& GetBubbleOptions() const override;
-  std::u16string GetVirtualCardIndicatorLabel() const override;
+  std::u16string GetCardIndicatorLabel() const override;
   std::u16string GetLearnMoreLinkText() const override;
   std::u16string GetEducationalBodyLabel() const override;
   std::u16string GetCardNumberFieldLabel() const override;

@@ -60,6 +60,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -245,8 +246,8 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_FORM_SUBMIT);
 
   std::string post_data("test=body");
-  params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size());
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data));
 
   NavigateToURL(&params);
 }
@@ -264,18 +265,12 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     int number_of_navigations,
     WindowOpenDisposition disposition,
     int browser_test_flags) {
-  TRACE_EVENT1("test",
-               "ui_test_utils::"
-               "NavigateToURLWithDispositionBlockUntilNavigationsComplete",
-               "params", [&](perfetto::TracedValue context) {
-                 // TODO(crbug.com/40751990): Replace this with passing more
-                 // parameters to TRACE_EVENT directly when available.
-                 auto dict = std::move(context).WriteDictionary();
-                 dict.Add("url", url);
-                 dict.Add("number_of_navigations", number_of_navigations);
-                 dict.Add("disposition", disposition);
-                 dict.Add("browser_test_flags", browser_test_flags);
-               });
+  TRACE_EVENT("test",
+              "ui_test_utils::"
+              "NavigateToURLWithDispositionBlockUntilNavigationsComplete",
+              "url", url, "number_of_navigations", number_of_navigations,
+              "disposition", disposition, "browser_test_flags",
+              browser_test_flags);
   TabStripModel* tab_strip = browser->tab_strip_model();
   if (disposition == WindowOpenDisposition::CURRENT_TAB &&
       tab_strip->GetActiveWebContents())
@@ -870,7 +865,7 @@ HistoryEnumerator::HistoryEnumerator(Profile* profile) {
   run_loop.Run();
 }
 
-HistoryEnumerator::~HistoryEnumerator() {}
+HistoryEnumerator::~HistoryEnumerator() = default;
 
 // Wait for HistoryService to load.
 class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
@@ -891,8 +886,7 @@ WaitHistoryLoadedObserver::WaitHistoryLoadedObserver(
     : runner_(runner) {
 }
 
-WaitHistoryLoadedObserver::~WaitHistoryLoadedObserver() {
-}
+WaitHistoryLoadedObserver::~WaitHistoryLoadedObserver() = default;
 
 void WaitHistoryLoadedObserver::OnHistoryServiceLoaded(
     history::HistoryService* service) {
@@ -1073,6 +1067,43 @@ void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
   if (!observed_view_->bounds().IsEmpty()) {
     run_loop_.Quit();
   }
+}
+
+namespace {
+
+class WebModalShowWaiter
+    : public web_modal::WebContentsModalDialogManager::Observer {
+ public:
+  explicit WebModalShowWaiter(content::WebContents* web_contents) {
+    web_modal::WebContentsModalDialogManager::CreateForWebContents(
+        web_contents);
+    manager_ =
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+    observation_.Observe(manager_);
+  }
+
+  void Wait() {
+    if (manager_->IsDialogActive()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  // WebContentsModalDialogManager::Observer:
+  void OnWillShow() override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+  raw_ptr<web_modal::WebContentsModalDialogManager> manager_;
+  base::ScopedObservation<web_modal::WebContentsModalDialogManager,
+                          web_modal::WebContentsModalDialogManager::Observer>
+      observation_{this};
+};
+
+}  // namespace
+
+void WaitForWebModalDialog(content::WebContents* web_contents) {
+  WebModalShowWaiter(web_contents).Wait();
 }
 
 }  // namespace ui_test_utils

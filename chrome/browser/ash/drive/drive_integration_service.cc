@@ -31,8 +31,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -56,9 +54,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom-forward.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom.h"
-#include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
@@ -78,7 +74,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -497,23 +492,6 @@ class DriveIntegrationService::DriveFsHolder
 
   drivefs::DriveFsHost* drivefs_host() { return &drivefs_host_; }
 
-  void RegisterDriveFsNativeMessageHostBridge(
-      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
-          bridge) {
-    if (native_message_host_bridge_) {
-      // We only accept one registered bridge at a time as it doesn't make sense
-      // for DriveFS to talk to multiple extensions at the same time.
-      return;
-    }
-    native_message_host_bridge_.Bind(std::move(bridge));
-    native_message_host_bridge_.reset_on_disconnect();
-
-    if (pending_connect_to_extension_request_) {
-      std::move(pending_connect_to_extension_request_).Run();
-    }
-    native_message_keep_alive_.reset();
-  }
-
  private:
   // drivefs::DriveFsHost::Delegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -598,37 +576,8 @@ class DriveIntegrationService::DriveFsHolder
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host,
       drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback callback)
       override {
-    if (crosapi::browser_util::IsLacrosEnabled()) {
-      if (!native_message_host_bridge_) {
-        auto* browser_manager = crosapi::BrowserManager::Get();
-        if (!native_message_keep_alive_ && browser_manager) {
-          native_message_keep_alive_ = browser_manager->KeepAlive(
-              crosapi::BrowserManager::Feature::kDriveFsNativeMessaging);
-        }
-
-        // DriveFS only sends one ConnectToExtension request at a time, so if
-        // there is already an existing request, it means that DriveFS has
-        // restarted and we can just drop the previous request.
-        //
-        // Unretained is fine here because this callback is owned and only
-        // called by `this`.
-        pending_connect_to_extension_request_ = base::BindOnce(
-            &DriveFsHolder::ConnectToExtension, base::Unretained(this),
-            std::move(params), std::move(port), std::move(host),
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                std::move(callback),
-                drivefs::mojom::ExtensionConnectionStatus::kUnknownError));
-        return;
-      }
-      native_message_host_bridge_->ConnectToExtension(
-          std::move(params), std::move(port), std::move(host),
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              std::move(callback),
-              drivefs::mojom::ExtensionConnectionStatus::kUnknownError));
-    } else {
-      std::move(callback).Run(ConnectToDriveFsNativeMessageExtension(
-          profile_, params->extension_id, std::move(port), std::move(host)));
-    }
+    std::move(callback).Run(ConnectToDriveFsNativeMessageExtension(
+        profile_, params->extension_id, std::move(port), std::move(host)));
   }
 
   const std::string GetMachineRootID() override {
@@ -685,11 +634,6 @@ class DriveIntegrationService::DriveFsHolder
 
   std::string profile_salt_;
 
-  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive>
-      native_message_keep_alive_;
-  mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
-      native_message_host_bridge_;
-  base::OnceClosure pending_connect_to_extension_request_;
   // Notifications/Errors received from DriveFS which requires persistence.
   std::unordered_map<PersistedMessage::Type, std::vector<PersistedMessage>>
       persisted_messages_;
@@ -1759,12 +1703,6 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
 PinningManager* DriveIntegrationService::GetPinningManager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return pinning_manager_.get();
-}
-
-void DriveIntegrationService::RegisterDriveFsNativeMessageHostBridge(
-    mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
-        bridge) {
-  drivefs_holder_->RegisterDriveFsNativeMessageHostBridge(std::move(bridge));
 }
 
 void DriveIntegrationService::GetDocsOfflineStats(

@@ -18,7 +18,7 @@ namespace bookmarks {
 // static
 const ui::ClipboardFormatType& BookmarkNodeData::GetBookmarkFormatType() {
   static const base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::GetType(
+      ui::ClipboardFormatType::CustomPlatformType(
           base::SysNSStringToUTF8(kUTTypeChromiumBookmarkDictionaryList)));
 
   return *format;

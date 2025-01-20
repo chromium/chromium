@@ -33,8 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 namespace {
 const int kNumTasks = 1000000;
 
@@ -152,10 +151,7 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
       MessagePumpType type,
       bool randomised_sampling_enabled = false)
       : name_(name) {
-    auto settings =
-        SequenceManager::Settings::Builder()
-            .SetRandomisedSamplingEnabled(randomised_sampling_enabled)
-            .Build();
+    auto settings = SequenceManager::Settings::Builder().Build();
     SetSequenceManager(SequenceManagerForTest::Create(
         std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(
             MessagePump::Create(type), settings),
@@ -508,8 +504,9 @@ class TwoThreadTestCase : public TestCase {
   };
 
   void SignalDone() {
-    if (++done_count_ == 2)
+    if (++done_count_ == 2) {
       delegate_->SignalDone();
+    }
   }
 
  private:
@@ -723,5 +720,4 @@ TEST_P(SequenceManagerPerfTest,
 // TODO(alexclarke): Add additional tests with different mixes of non-delayed vs
 // delayed tasks.
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

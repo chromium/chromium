@@ -11,6 +11,7 @@ import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto
 import "chrome/browser/web_applications/proto/web_app_install_state.proto";
 import "chrome/browser/web_applications/proto/web_app_isolation_data.proto";
 import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
+import "chrome/browser/web_applications/proto/web_app_related_applications.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
 
@@ -51,14 +52,12 @@ message WebAppProtocolHandler {
   optional string url = 2;       // Required.
 }
 
-message WebAppUrlHandlerProto {
-  optional string origin = 1;             // Required.
-  optional bool has_origin_wildcard = 2;  // Required.
-}
-
+// Represents a parsed and validated scope extension defined in the web app's
+// manifest. The `scope` field is a full URL, not only the path.
 message WebAppScopeExtensionProto {
   optional string origin = 1;             // Required.
   optional bool has_origin_wildcard = 2;  // Required.
+  optional string scope = 3;              // Required.
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
@@ -186,7 +185,7 @@ message GeneratedIconFix {
 message WebAppProto {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state";
+      "run_on_os_login_os_integration_state", "url_handlers";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -290,7 +289,7 @@ message WebAppProto {
 
   optional string launch_query_params = 26;
 
-  repeated WebAppUrlHandlerProto url_handlers = 27;
+  reserved 27;
 
   optional ClientDataProto client_data = 28;
 
@@ -444,4 +443,11 @@ message WebAppProto {
   // user (3-dot menu, Install page as App...). DIY apps aren't promotable or
   // installable, and the user can customize its name.
   optional bool is_diy_app = 68;
+
+  // Set to true if the app was installed via the shortcut app install path by
+  // the user and was migrated to being a DIY app.
+  optional bool was_shortcut_app = 69;
+
+  // The related applications field of the manifest for installed web apps.
+  repeated proto.RelatedApplications related_applications = 70;
 }

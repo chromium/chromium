@@ -50,8 +50,9 @@ class WTF_EXPORT StringUTF8Adaptor final {
  public:
   using iterator = base::CheckedContiguousIterator<const char>;
 
-  explicit StringUTF8Adaptor(StringView string,
-                             UTF8ConversionMode mode = kLenientUTF8Conversion);
+  explicit StringUTF8Adaptor(
+      StringView string,
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient);
   ~StringUTF8Adaptor();
 
   const char* data() const { return data_; }

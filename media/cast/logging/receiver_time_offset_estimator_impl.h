@@ -19,7 +19,6 @@
 namespace media {
 namespace cast {
 
-
 // This should be large enough so that we can collect all 3 events before
 // the entry gets removed from the map.
 const size_t kMaxEventTimesMapSize = 500;
@@ -27,7 +26,6 @@ const size_t kMaxEventTimesMapSize = 500;
 // The lower, this is, the faster we adjust to clock drift.
 // (But with more jitter.)
 const size_t kClockDriftSpeed = 500;
-
 
 // This implementation listens to two pair of events
 // 1. FRAME_ACK_SENT / FRAME_ACK_RECEIVED  (receiver->sender)

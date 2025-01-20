@@ -49,7 +49,7 @@ LockedSessionWindowTrackerFactory::BuildServiceInstanceForBrowserContext(
   auto on_task_blocklist =
       std::make_unique<OnTaskBlocklist>(std::move(url_blocklist_manager));
   return std::make_unique<LockedSessionWindowTracker>(
-      std::move(on_task_blocklist));
+      std::move(on_task_blocklist), context);
 }
 
 content::BrowserContext*

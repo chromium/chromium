@@ -155,8 +155,9 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationProgress(
     const std::vector<std::string>& status_lines) {
   // Pass if this isn't for the current dialog.
   LOG(ERROR) << "Progress: " << status_lines.back();
-  if (container_id != container_id_)
+  if (container_id != container_id_) {
     return;
+  }
   progress_label_->SetText(base::UTF8ToUTF16(status_lines.back()));
   OnStateChanged();
 }
@@ -165,15 +166,17 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
     const guest_os::GuestId& container_id,
     bool success) {
   // Pass if this isn't for the current dialog.
-  if (container_id != container_id_)
+  if (container_id != container_id_) {
     return;
+  }
 
   DCHECK_EQ(state_, State::CONFIGURING);
   if (!success) {
-    if (content::GetNetworkConnectionTracker()->IsOffline())
+    if (content::GetNetworkConnectionTracker()->IsOffline()) {
       state_ = State::ERROR_OFFLINE;
-    else
+    } else {
       state_ = State::ERROR;
+    }
 
     OnStateChanged();
     return;
@@ -201,8 +204,9 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_APP_CANCEL));
   DialogModelChanged();
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+  }
 }
 
 BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView)

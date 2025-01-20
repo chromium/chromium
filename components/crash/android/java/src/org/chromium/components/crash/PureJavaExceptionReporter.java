@@ -16,6 +16,10 @@ import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.File;
@@ -30,8 +34,10 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Creates a crash report and uploads it to crash server if there is a Java exception.
  *
- * This class is written in pure Java, so it can handle exception happens before native is loaded.
+ * <p>This class is written in pure Java, so it can handle exception happens before native is
+ * loaded.
  */
+@NullMarked
 public abstract class PureJavaExceptionReporter
         implements PureJavaExceptionHandler.JavaExceptionReporter {
     // report fields, please keep the name sync with MIME blocks in breakpad_linux.cc
@@ -65,9 +71,9 @@ public abstract class PureJavaExceptionReporter
     private static final String FORM_DATA_MESSAGE = "Content-Disposition: form-data; name=\"";
 
     private boolean mUpload;
-    protected Map<String, String> mReportContent;
-    protected File mMinidumpFile;
-    private FileOutputStream mMinidumpFileStream;
+    protected @Nullable Map<String, String> mReportContent;
+    protected @Nullable File mMinidumpFile;
+    private @Nullable FileOutputStream mMinidumpFileStream;
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     private final String mBoundary = "------------" + UUID.randomUUID() + RN;
 
@@ -87,12 +93,14 @@ public abstract class PureJavaExceptionReporter
         }
     }
 
+    @RequiresNonNull("mMinidumpFileStream")
     private void addPairedString(String messageType, String messageData) {
         addString(mBoundary);
         addString(FORM_DATA_MESSAGE + messageType + "\"");
         addString(RN + RN + messageData + RN);
     }
 
+    @RequiresNonNull("mMinidumpFileStream")
     private void addString(String s) {
         try {
             mMinidumpFileStream.write(ApiCompatibilityUtils.getBytesUtf8(s));
@@ -102,6 +110,7 @@ public abstract class PureJavaExceptionReporter
     }
 
     @SuppressLint("WrongConstant")
+    @EnsuresNonNull("mReportContent")
     private void createReportContent(Throwable javaException) {
         String processName = ContextUtils.getProcessName();
         if (processName == null || !processName.contains(":")) {
@@ -147,6 +156,7 @@ public abstract class PureJavaExceptionReporter
         }
     }
 
+    @RequiresNonNull("mReportContent")
     protected void createReportFile() {
         try {
             String minidumpFileName = getMinidumpPrefix() + mLocalId + FILE_SUFFIX;

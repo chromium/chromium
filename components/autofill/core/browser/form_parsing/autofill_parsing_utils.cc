@@ -30,6 +30,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillUseNLAddressModel;
     case RegexFeature::kAutofillSupportPhoneticNameForJP:
       return &features::kAutofillSupportPhoneticNameForJP;
+    case RegexFeature::kAutofillSupportLastNamePrefix:
+      return &features::kAutofillSupportLastNamePrefix;
   }
   NOTREACHED();
 }

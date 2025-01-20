@@ -29,6 +29,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ash::kiosk::CryptohomeMountState;
@@ -62,7 +63,7 @@ std::unique_ptr<CancellableJob> NewCancellableJob() {
 // Account ID used in tests. Could be any `AccountId`.
 AccountId TestAccountId() {
   return AccountId::FromUserEmailGaiaId(/*user_email=*/std::string(kKioskEmail),
-                                        /*gaia_id=*/"a fake gaia id");
+                                        GaiaId("a fake gaia id"));
 }
 
 // User context used in tests. Could be any `UserContext` .

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -418,18 +419,14 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
 
   MultiStep LaunchBrowserForWebAppInTab(const webapps::AppId& app_id,
                                         ui::ElementIdentifier section_id) {
-    const auto desc =
-        base::StringPrintf("LaunchBrowserForWebAppInTab( %s )", app_id.c_str());
-
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     const GURL target_app_url(
         provider->registrar_unsafe().GetAppLaunchUrl(app_id));
 
-    return Steps(
+    auto steps = Steps(
         std::move(
             StepBuilder()
-                .SetDescription(
-                    base::StrCat({desc, ": LaunchBrowserForWebAppInTab"}))
+                .SetDescription("LaunchBrowserForWebAppInTab")
                 .SetElementID(kWebContentsElementId)
                 .SetContext(ui::InteractionSequence::ContextMode::kAny)
                 .SetStartCallback(base::BindOnce(
@@ -439,8 +436,10 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                           profile, app_id, WindowOpenDisposition::CURRENT_TAB);
                     },
                     browser()->profile(), app_id))),
-        std::move(WaitForWebContentsNavigation(section_id, target_app_url)
-                      .FormatDescription(base::StrCat({desc, ": %s"}))));
+        WaitForWebContentsNavigation(section_id, target_app_url));
+    AddDescriptionPrefix(
+        steps, base::StrCat({"LaunchBrowserForWebAppInTab( ", app_id, " )"}));
+    return steps;
   }
 
   MultiStep LaunchBrowserForWebAppInTabAndOpenDialog(
@@ -615,20 +614,20 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   // Installs and launches an IWA, then opens the PageSpecificSiteData dialog.
   MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
                                   ui::ElementIdentifier section_id) {
-    return Steps(InstrumentTab(kWebContentsElementId,
-                               /*tab_index=*/std::nullopt, iwa_browser),
-                 PressButton(kToolbarAppMenuButtonElementId),
-                 WithView(kToolbarAppMenuButtonElementId,
-                          base::BindOnce([](AppMenuButton* button) {
-                            CHECK(button->IsMenuShowing());
-                            button->app_menu()->ExecuteCommand(
-                                IDC_WEB_APP_MENU_APP_INFO, 0);
-                          })),
-                 PressButton(PageInfoMainView::kCookieButtonElementId),
-                 PressButton(PageInfoCookiesContentView::kCookieDialogButton),
-                 InAnyContext(AfterShow(
-                     section_id,
-                     ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
+    return Steps(
+        InstrumentTab(kWebContentsElementId,
+                      /*tab_index=*/std::nullopt, iwa_browser),
+        PressButton(kToolbarAppMenuButtonElementId),
+        WithView(kToolbarAppMenuButtonElementId,
+                 base::BindOnce([](AppMenuButton* button) {
+                   CHECK(button->IsMenuShowing());
+                   button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO,
+                                                      0);
+                 })),
+        PressButton(PageInfoMainView::kCookieButtonElementId),
+        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+        InAnyContext(AfterShow(
+            section_id, ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
   }
 
   // Returns a test step that verifies that the hostname for `row` is equal to

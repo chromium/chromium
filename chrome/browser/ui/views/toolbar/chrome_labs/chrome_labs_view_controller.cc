@@ -82,8 +82,9 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
   };
 
   const auto get_enum = [](const std::string& internal_name) {
-    if (internal_name == flag_descriptions::kScrollableTabStripFlagId)
+    if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
       return ChromeLabsSelectedLab::kTabScrollingSelected;
+    }
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
     if (internal_name == flag_descriptions::kWebUITabStripFlagId)
@@ -94,8 +95,9 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
   };
 
   const std::string histogram_name = get_histogram_name(selected_lab_state);
-  if (!histogram_name.empty())
+  if (!histogram_name.empty()) {
     base::UmaHistogramEnumeration(histogram_name, get_enum(internal_name));
+  }
 }
 
 // Returns the number of days since epoch (1970-01-01) in the local timezone.
@@ -129,8 +131,9 @@ int ChromeLabsViewController::GetIndexOfEnabledLabState(
   flags_state->GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
   for (int i = 0; i < entry->NumOptions(); i++) {
     const std::string name = entry->NameForOption(i);
-    if (base::Contains(enabled_entries, name))
+    if (base::Contains(enabled_entries, name)) {
       return i;
+    }
   }
   return 0;
 }

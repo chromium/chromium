@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Closeable;
 
 /** Definition of a run loop. */
+@NullMarked
 public interface RunLoop extends Closeable {
     /** Start the run loop. It will continue until quit() is called. */
     public void run();

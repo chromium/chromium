@@ -14,7 +14,6 @@ class AnchorEvaluator;
 class ComputedStyle;
 class CSSPropertyValueSet;
 class Element;
-class HTMLSlotElement;
 class StyleScopeFrame;
 
 // StyleRecalcContext is an object that is passed on the stack during
@@ -42,19 +41,6 @@ class CORE_EXPORT StyleRecalcContext {
   // if the Element is in display:none, the ComputedStyle must be ensured
   // before calling this function.
   static StyleRecalcContext FromInclusiveAncestors(Element&);
-
-  // When traversing into slotted children, the container is in the shadow-
-  // including inclusive ancestry of the slotted element's host. Return a
-  // context with the container adjusted as necessary.
-  StyleRecalcContext ForSlotChildren(const HTMLSlotElement& slot) const;
-
-  // Called to update the context when matching ::slotted rules for shadow host
-  // children. ::slotted rules may query containers inside the slot's shadow
-  // tree as well.
-  StyleRecalcContext ForSlottedRules(HTMLSlotElement& slot) const;
-
-  // Called to update the context when matching ::part rules for shadow hosts.
-  StyleRecalcContext ForPartRules(Element& host) const;
 
   // Set to the nearest container (for size container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.

@@ -33,7 +33,7 @@ void IconDecoderImpl::DecoderDelegate::Decode(
     data_decoder::DecodeImageCallback callback) {
   const std::string& encoded_icon = *request.input_data;
   data_decoder::DecodeImage(
-      &data_decoder_, base::as_bytes(base::make_span(encoded_icon)),
+      &data_decoder_, base::as_byte_span(encoded_icon),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(), std::move(callback));

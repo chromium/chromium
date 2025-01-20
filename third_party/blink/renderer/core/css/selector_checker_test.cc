@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -319,7 +318,7 @@ TEST_P(MatchFlagsTest, All) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   SelectorChecker::SelectorCheckingContext context{
@@ -370,7 +369,7 @@ class ImpactTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector);
     DCHECK(selector_list);
-    DCHECK(selector_list->HasOneSelector());
+    DCHECK(selector_list->IsSingleComplexSelector());
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);
     SelectorChecker::SelectorCheckingContext context{
@@ -688,13 +687,14 @@ TEST_P(MatchFlagsShadowTest, Host) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   SelectorChecker::SelectorCheckingContext context{
       ElementResolveContext(*host)};
   context.selector = selector_list->First();
   context.scope = host->GetShadowRoot();
+  context.tree_scope = host->GetShadowRoot();
 
   SelectorChecker::MatchResult result;
   checker.Match(context, result);

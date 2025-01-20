@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -18,6 +18,7 @@ namespace blink {
 
 class Document;
 class Element;
+class LayoutObject;
 class Node;
 class PaintLayer;
 
@@ -36,9 +37,9 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   protocol::Response GetSnapshot(
       Document* document,
       std::unique_ptr<protocol::Array<String>> style_filter,
-      protocol::Maybe<bool> include_event_listeners,
-      protocol::Maybe<bool> include_paint_order,
-      protocol::Maybe<bool> include_user_agent_shadow_tree,
+      std::optional<bool> include_event_listeners,
+      std::optional<bool> include_paint_order,
+      std::optional<bool> include_user_agent_shadow_tree,
       std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>*
           dom_nodes,
       std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*

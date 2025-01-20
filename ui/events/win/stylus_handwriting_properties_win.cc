@@ -8,7 +8,6 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 
 namespace ui {
@@ -40,6 +39,16 @@ const char* GetPropertyHandwritingPointerIdKeyForTesting() {
 
 const char* GetPropertyHandwritingStrokeIdKeyForTesting() {
   return kPropertyHandwritingStrokeId;
+}
+
+Event::Properties CreateEventPropertiesForTesting(  // IN-TEST
+    const StylusHandwritingPropertiesWin& properties) {
+  Event::Properties event_properties;
+  event_properties[kPropertyHandwritingPointerId] =
+      ConvertToEventPropertyValue(properties.handwriting_pointer_id);
+  event_properties[kPropertyHandwritingStrokeId] =
+      ConvertToEventPropertyValue(properties.handwriting_stroke_id);
+  return event_properties;
 }
 
 void SetStylusHandwritingProperties(

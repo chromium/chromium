@@ -48,6 +48,9 @@ class PDFDocumentHelper
       content::RenderFrameHost* rfh,
       std::unique_ptr<PDFDocumentHelperClient> client);
 
+  static PDFDocumentHelper* MaybeGetForWebContents(
+      content::WebContents* contents);
+
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
@@ -93,6 +96,11 @@ class PDFDocumentHelper
 
   void GetPdfBytes(uint32_t size_limit,
                    pdf::mojom::PdfListener::GetPdfBytesCallback callback);
+
+  void GetPageText(int32_t page_index,
+                   pdf::mojom::PdfListener::GetPageTextCallback callback);
+  void GetMostVisiblePageIndex(
+      pdf::mojom::PdfListener::GetMostVisiblePageIndexCallback callback);
 
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;

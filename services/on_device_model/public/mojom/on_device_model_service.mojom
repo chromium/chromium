@@ -36,6 +36,12 @@ enum ModelBackendType {
   kApu,
 };
 
+// Options for specifying the performance characteristics of the model to load.
+enum ModelPerformanceHint {
+  kHighestQuality,
+  kFastestInference,
+};
+
 // Params to describe the model to load.
 struct LoadModelParams {
   // Backend type of the model.
@@ -50,6 +56,10 @@ struct LoadModelParams {
 
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
+
+  // Chooses the performance characteristics of the model loaded. If only a
+  // single model is available, this field will do nothing.
+  ModelPerformanceHint performance_hint = kHighestQuality;
 };
 
 struct TextSafetyModelAssets {
@@ -136,16 +146,14 @@ interface OnDeviceModelPlatformService {
   LoadPlatformModel@0(
       mojo_base.mojom.Uuid uuid,
       pending_receiver<OnDeviceModel> model,
-      [MinVersion=1] pending_remote<PlatformModelProgressObserver>?
+      pending_remote<PlatformModelProgressObserver>?
           progress_observer) => (LoadModelResult result);
 
   // Gets the platform model state given platform model `uuid`.
-  [MinVersion=1]
   GetPlatformModelState@1(mojo_base.mojom.Uuid uuid)
       => (PlatformModelState result);
 
   // Returns the performance class based on benchmarks run on the device.
-  [MinVersion=2]
   GetEstimatedPerformanceClass@2() => (PerformanceClass performance_class);
 
   // Formats the input fields with the model uuid and feature combination.
@@ -157,7 +165,6 @@ interface OnDeviceModelPlatformService {
   // For example, a feature may need "name" & "something" & "action" to complete
   // the following string: "I'm {name}, I have {something}, please {action} for
   // me.". And different feature may require different sets of key value pairs.
-  [MinVersion=3]
   FormatInput@3(mojo_base.mojom.Uuid uuid,
                 FormatFeature feature,
                 map<string, string> fields) => (string? result);
@@ -165,7 +172,6 @@ interface OnDeviceModelPlatformService {
   // Validates the `text` is safe or not with the given `safety_feature` and
   // `safety_info`. The `safety_info` should be the result returned by
   // `ClassifyTextSafety()`. Returns true if the `text` is safe.
-  [MinVersion=4]
   ValidateSafetyResult@4(
       SafetyFeature safety_feature, string text, SafetyInfo safety_info)
       => (bool result);

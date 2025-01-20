@@ -23,7 +23,6 @@
 #include "base/uuid.h"
 #include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_save_handler.h"
-#include "components/app_restore/lacros_save_handler.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -117,18 +116,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // profile path.
   void SaveRemovingDeskGuid(const base::Uuid& removing_desk_guid);
 
-  // Invoked when an Chrome app Lacros window is created. `app_id` is the
-  // AppService id, and `window_id` is the wayland app_id property for the
-  // window.
-  void OnLacrosChromeAppWindowAdded(const std::string& app_id,
-                                    const std::string& window_id);
-
-  // Invoked when an Chrome app Lacros window is removed. `app_id` is the
-  // AppService id, and `window_id` is the wayland app_id property for the
-  // window.
-  void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
-                                      const std::string& window_id);
-
   // Flushes the full restore file in |profile_path| with the current restore
   // data.
   void Flush(const base::FilePath& profile_path);
@@ -193,10 +180,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // Returns the full restore app id for |window| that can be used to look up
   // the window's associated AppRestoreData.
   std::string GetAppId(aura::Window* window);
-
-  // Returns the window id of a chrome app hosted in lacros. Returns -1 if
-  // `window` is not in the lacros save handler.
-  int GetLacrosChromeAppWindowId(aura::Window* window) const;
 
   // Fetches the app launch information from `app_id_to_app_launch_infos_` for
   // the given `profile_path` and `app_id`. `app_id` should be a Chrome app id.
@@ -302,8 +285,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   std::set<base::FilePath> save_running_;
 
   std::unique_ptr<ArcSaveHandler> arc_save_handler_;
-
-  std::unique_ptr<LacrosSaveHandler> lacros_save_handler_;
 
   bool is_shut_down_ = false;
 

@@ -22,13 +22,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -91,7 +87,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -106,6 +101,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -129,6 +125,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -138,6 +135,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -156,6 +154,10 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -259,15 +261,17 @@ int GetPrimaryDisplayId() {
 }
 
 bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
-  if (kSizeInDip != image.width() || kSizeInDip != image.height())
+  if (kSizeInDip != image.width() || kSizeInDip != image.height()) {
     return false;
+  }
 
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
   for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
-    if (!image.HasRepresentation(scale))
+    if (!image.HasRepresentation(scale)) {
       return false;
+    }
 
     const gfx::ImageSkiaRep& representation = image.GetRepresentation(scale);
     if (representation.is_null() ||
@@ -408,8 +412,9 @@ class TestShelfControllerHelper : public ShelfControllerHelper {
   bool IsValidIDForCurrentUser(const std::string& id) const override {
     for (TabToStringMap::const_iterator i = tab_id_map_.begin();
          i != tab_id_map_.end(); ++i) {
-      if (i->second == id)
+      if (i->second == id) {
         return true;
+      }
     }
     return false;
   }
@@ -471,18 +476,21 @@ void UpdateAppRegistryCache(Profile* profile,
       std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
   app->app_id = app_id;
 
-  if (block)
+  if (block) {
     app->readiness = apps::Readiness::kDisabledByPolicy;
-  else
+  } else {
     app->readiness = apps::Readiness::kReady;
+  }
 
-  if (pause)
+  if (pause) {
     app->paused = true;
-  else
+  } else {
     app->paused = false;
+  }
 
-  if (show_in_shelf.has_value())
+  if (show_in_shelf.has_value()) {
     app->show_in_shelf = show_in_shelf;
+  }
 
   apps.push_back(std::move(app));
 
@@ -513,6 +521,19 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
     BrowserWithTestWindowTest::SetUp();
+    // WallpaperControllerClientImpl should be created before Profile
+    // instantiation happening in BrowserWithTestWindowTest::SetUp().
+    // However, it should run after more global object set up, such as
+    // local_state's creation, which is also done together in
+    // BrowserWithTestWindowTest::SetUp(). Unfortunately, there's no
+    // clean way to handle such a case, and at this moment, this reordering
+    // fortunately, does not seem to impact to the real testing behavior
+    // we workaround it by instantiating WallpaperControllerClientImpl
+    // after profile creation.
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+    wallpaper_controller_client_->Init();
 
     model_ = std::make_unique<ash::ShelfModel>();
 
@@ -561,8 +582,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         &(apps::AppServiceProxyFactory::GetForProfile(profile())
               ->AppRegistryCache()));
 
-    if (auto_start_arc_test_)
+    if (auto_start_arc_test_) {
       arc_test_.SetUp(profile());
+    }
 
     // Wait until |extension_system| is signaled as started.
     base::RunLoop run_loop;
@@ -603,8 +625,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
     extension_service_->AddExtension(extension_chrome_.get());
 
-    if (StartWebAppProviderForMainProfile())
+    if (StartWebAppProviderForMainProfile()) {
       StartWebAppProvider(profile());
+    }
   }
 
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
@@ -699,6 +722,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_registry_cache_observer_.Reset();
     arc_test_.TearDown();
     shelf_controller_ = nullptr;
+    wallpaper_controller_client_.reset();
     BrowserWithTestWindowTest::TearDown();
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
@@ -739,9 +763,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   // Destroy the controller instance and clear the local pointer.
-  void ResetShelfController() {
-    shelf_controller_.reset();
-  }
+  void ResetShelfController() { shelf_controller_.reset(); }
 
   // Destroy and recreate the controller; clear and reinitialize the ShelfModel.
   // Returns a pointer to the uninitialized controller, owned by shell delegate.
@@ -856,8 +878,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   syncer::StringOrdinal GeneratePinPosition(int position) {
     syncer::StringOrdinal ordinal_position =
         syncer::StringOrdinal::CreateInitialOrdinal();
-    for (int i = 0; i < position; ++i)
+    for (int i = 0; i < position; ++i) {
       ordinal_position = ordinal_position.CreateAfter();
+    }
     return ordinal_position;
   }
 
@@ -960,8 +983,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                        std::vector<std::string>* app_ids) {
     app_ids->clear();
     for (const auto& item : model_->items()) {
-      if (item.type == ash::TYPE_PINNED_APP)
+      if (item.type == ash::TYPE_PINNED_APP) {
         app_ids->push_back(item.id.app_id);
+      }
     }
   }
 
@@ -972,8 +996,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::string GetPinnedAppStatus() {
     std::string result;
     for (int i = 0; i < model_->item_count(); i++) {
-      if (!result.empty())
+      if (!result.empty()) {
         result.append(", ");
+      }
       switch (model_->items()[i].type) {
         case ash::TYPE_APP: {
           if (IsPlatformApp(model_->items()[i].id)) {
@@ -1075,8 +1100,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   // IDs matches the order of associated shelf items in the shelf model.
   std::vector<std::string> GetAppsShownInShelf() const {
     std::vector<std::string> app_ids;
-    for (auto& item : model_->items())
+    for (auto& item : model_->items()) {
       app_ids.push_back(item.id.app_id);
+    }
     return app_ids;
   }
 
@@ -1253,18 +1279,20 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     apps::AppReadinessWaiter(profile(), web_app_id).Await();
   }
 
-  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
-    web_app::AddDummyIsolatedAppToRegistry(
-        profile(), url, "IWA",
-        web_app::IsolationData::Builder(
-            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0"))
-            .Build(),
-        webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        web_app::IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value());
-    apps::AppReadinessWaiter(profile(), url_info->app_id()).Await();
-    return *url_info;
+  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    app_bundle->FakeInstallPageState(profile());
+    app_bundle->TrustSigningKey();
+    const web_app::IsolatedWebAppUrlInfo url_info =
+        app_bundle
+            ->InstallWithSource(
+                profile(),
+                &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+    apps::AppReadinessWaiter(profile(), url_info.app_id()).Await();
+    return url_info;
   }
 
   webapps::AppId InstallExternalWebApp(
@@ -1424,6 +1452,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return std::make_unique<TestBrowserWindowAura>(std::move(window));
   }
 
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   apps::AppServiceTest app_service_test_;
 };
 
@@ -1443,6 +1472,10 @@ class ChromeShelfControllerWithArcTest : public ChromeShelfControllerTestBase {
 
     ChromeShelfControllerTestBase::SetUp();
   }
+
+ private:
+  // isolated web app builder uses json parser from the decoder
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
@@ -1558,7 +1591,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     ChromeShelfControllerTestBase::SetUp();
 
     // Ensure there are multiple profiles. User 0 is created during setup.
-    CreateMultiUserProfile("user1@example.com");
+    CreateMultiUserProfile("user1@example.com", GaiaId("fakegaia1"));
     ASSERT_TRUE(SessionControllerClientImpl::IsMultiProfileAvailable());
   }
 
@@ -1577,9 +1610,10 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
 
   // Creates a user and profile for a given `email`. Note that this class will
   // keep the ownership of the created object.
-  TestingProfile* CreateMultiUserProfile(const std::string& email) {
-    LogIn(email);
-    return CreateProfile(email);
+  TestingProfile* CreateMultiUserProfile(std::string_view email,
+                                         const GaiaId& gaia_id) {
+    LogIn(email, gaia_id);
+    return CreateProfile(std::string(email));
   }
 
   // Switch to another user by AccountId.
@@ -1620,13 +1654,16 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
   // Override BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return "user0@example.com"; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "user0@example.com";
+  }
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // TODO(crbug.com/40286020): Merge into BrowserWithTestWindowTest.
-    const AccountId account_id = AccountId::FromUserEmail(email);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     // Add a user to the fake user manager.
-    auto* user = user_manager()->AddUser(account_id);
+    auto* user = user_manager()->AddGaiaUser(account_id,
+                                             user_manager::UserType::kRegular);
     ash_test_helper()->test_session_controller_client()->AddUserSession(
         user->GetDisplayEmail());
     user_manager()->UserLoggedIn(
@@ -2616,8 +2653,9 @@ TEST_F(ChromeShelfControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
   // user is active.
   // Gmail created when secondary user is active.
 
-  const std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3119,8 +3157,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(2, model_->item_count());
 
     // After switching to a second user the item should be gone.
-    std::string user2 = "user2@example.com";
-    TestingProfile* profile2 = CreateMultiUserProfile(user2);
+    const char kUser2[] = "user2@example.com";
+    const char kFakeGaia2[] = "fakegaia2";
+    TestingProfile* profile2 =
+        CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
     const AccountId account_id2(
         multi_user_util::GetAccountIdFromProfile(profile2));
     const AccountId account_id(
@@ -3143,8 +3183,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   const AccountId account_id(
@@ -3179,8 +3220,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First create an app when the user is active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3215,8 +3257,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   InitShelfController();
 
   // First test: Create an app when the user is not active.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3258,7 +3301,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // BrowserWithTestWindowTest::SetUp(). No need to add the profiles to the
   // MultiUserWindowManagerHelper here. CreateMultiUserProfile() already does
   // that.
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId current_user =
       multi_user_util::GetAccountIdFromProfile(profile());
 
@@ -3291,8 +3335,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Create a browser item in the controller.
   InitShelfController();
 
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -3883,8 +3928,9 @@ void CheckAppMenu(ChromeShelfController* controller,
                   std::u16string expected_item_titles[]) {
   auto items = controller->GetAppMenuItemsForTesting(item);
   ASSERT_EQ(expected_item_count, items.size());
-  for (size_t i = 0; i < expected_item_count; i++)
+  for (size_t i = 0; i < expected_item_count; i++) {
     EXPECT_EQ(expected_item_titles[i], items[i].title);
+  }
 }
 
 // Check that browsers get reflected correctly in the shelf menu.
@@ -3949,8 +3995,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Create a browser for another user and check that it is not included in the
   // users running browser list.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   std::unique_ptr<Browser> browser2(
@@ -4067,8 +4114,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   CheckAppMenu(shelf_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create a second profile and switch to that user.
-  std::string user2 = "user2@example.com";
-  TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  TestingProfile* profile2 = CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   SwitchActiveUserByAccountId(account_id2);
@@ -4101,7 +4149,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(2, model_->item_count());
 
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4121,7 +4170,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHandlingTwoUsersEdgeCases) {
   InitShelfController();
   // Create a profile for our second user (will be destroyed by the framework).
-  TestingProfile* profile2 = CreateMultiUserProfile("user2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
@@ -4222,9 +4272,12 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       MultiUserWindowManagerHelper::GetWindowManager();
 
   // Create and add three users / profiles, and go to #1's desktop.
-  TestingProfile* profile1 = CreateMultiUserProfile("user-1@example.com");
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
-  TestingProfile* profile3 = CreateMultiUserProfile("user-3@example.com");
+  TestingProfile* profile1 =
+      CreateMultiUserProfile("user-1@example.com", GaiaId("fakegaia1"));
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user-2@example.com", GaiaId("fakegaia2"));
+  TestingProfile* profile3 =
+      CreateMultiUserProfile("user-3@example.com", GaiaId("fakegaia3"));
   const AccountId account_id1(
       multi_user_util::GetAccountIdFromProfile(profile1));
   const AccountId account_id2(
@@ -4301,7 +4354,8 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
        V2AppHiddenWindows) {
   InitShelfController();
 
-  TestingProfile* profile2 = CreateMultiUserProfile("user-2@example.com");
+  TestingProfile* profile2 =
+      CreateMultiUserProfile("user-2@example.com", GaiaId("fakegaia2"));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
   // If switch to account_id2 is not run, the following switch to account_id
@@ -4381,8 +4435,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2@example.com";
-  const TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  const TestingProfile* profile2 =
+      CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4422,8 +4478,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  const std::string user2 = "user2@example.com";
-  const TestingProfile* profile2 = CreateMultiUserProfile(user2);
+  constexpr char kUser2[] = "user2@example.com";
+  constexpr char kFakeGaia2[] = "fakegaia2";
+  const TestingProfile* profile2 =
+      CreateMultiUserProfile(kUser2, GaiaId(kFakeGaia2));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
 
@@ -4759,16 +4817,12 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
 
 TEST_F(ChromeShelfControllerWithArcTest, IwaPinPolicy) {
   InitShelfControllerWithBrowser();
+  const web_app::IsolatedWebAppUrlInfo url_info = AddIsolatedWebApp();
 
-  constexpr char kExampleIwaBundleId[] =
-      "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac";
-
-  const auto url_info = AddIsolatedWebApp(
-      GURL{base::StrCat({"isolated-app://", kExampleIwaBundleId})});
-  SetPinnedLauncherAppsPolicy(kExampleIwaBundleId);
+  SetPinnedLauncherAppsPolicy(url_info.web_bundle_id().id());
   EXPECT_TRUE(shelf_controller_->IsAppPinned(url_info.app_id()));
-  EXPECT_TRUE(AppListControllerDelegate::PIN_FIXED ==
-              GetPinnableForAppID(url_info.app_id(), profile()));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(url_info.app_id(), profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
@@ -4952,8 +5006,9 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 
  protected:
   void SetUp() override {
-    if (GetParam())
+    if (GetParam()) {
       arc::SetArcAlwaysStartWithoutPlayStoreForTesting();
+    }
     // To prevent crash on test exit and pending decode request.
     ArcAppIcon::DisableSafeDecodingForTesting();
     ArcDefaultAppList::UseTestAppsDirectory();
@@ -5575,7 +5630,7 @@ TEST_F(ChromeShelfControllerWithArcTest, PinAtIndex) {
 
 class ChromeShelfControllerWebAppTest : public ChromeShelfControllerTestBase {
  protected:
-  ChromeShelfControllerWebAppTest() {}
+  ChromeShelfControllerWebAppTest() = default;
 
   ~ChromeShelfControllerWebAppTest() override = default;
 };

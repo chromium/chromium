@@ -17,18 +17,17 @@ import UIKit
     self.delegate = nil
   }
 
-  // Generates a new snapshot and runs a callback with the new snapshot image. It uses UIKit-based
-  // snapshot APIs if the web state is showing anything other than a web view (e.g., native
-  // content). Otherwise, it uses WebKit-based snapshot APIs.
+  // Generates a new snapshot and runs a callback with the new snapshot image.
   func generateSnapshot(completion: ((UIImage?) -> Void)?) {
-    guard let lastCommitedUrl = webStateInfo.lastCommittedURL() else {
+    guard let lastCommittedUrl = webStateInfo.lastCommittedURL(),
+      let lastCommittedNSUrl = lastCommittedUrl.nsurl,
+      let newTabPageUrl = URL.init(string: "chrome://newtab/")
+    else {
+      completion?(nil)
       return
     }
-    var scheme = ""
-    if lastCommitedUrl.nsurl != nil {
-      scheme = lastCommitedUrl.nsurl.scheme ?? ""
-    }
-    if scheme != "chrome" && webStateInfo.canTakeSnapshot() {
+    let isNTP = lastCommittedNSUrl == newTabPageUrl
+    if !isNTP && webStateInfo.canTakeSnapshot() {
       // Take the snapshot using the optimized WKWebView snapshotting API for pages loaded in the
       // web view when the WebState snapshot API is available.
       generateWKWebViewSnapshot(completion: completion)

@@ -125,8 +125,6 @@ void AwWebContentsDelegate::RunFileChooser(
   }
 
   // Only allow Open, OpenMultiple and UploadFolder for pre-FSA code.
-  // TODO(b/364980165): Add check for
-  // base::android::BuildInfo::GetInstance()->target_sdk_version()
   if (!base::FeatureList::IsEnabled(features::kWebViewFileSystemAccess) &&
       params.mode != FileChooserParams::Mode::kOpen &&
       params.mode != FileChooserParams::Mode::kOpenMultiple &&
@@ -138,8 +136,8 @@ void AwWebContentsDelegate::RunFileChooser(
       << "Multiple concurrent FileChooser requests are not supported.";
   file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
-      env, java_delegate, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(), params.mode,
+      env, java_delegate, render_frame_host->GetProcess()->GetDeprecatedID(),
+      render_frame_host->GetRoutingID(), params.mode, params.open_writable,
       ConvertUTF16ToJavaString(env,
                                base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr
@@ -352,7 +350,13 @@ bool AwWebContentsDelegate::IsBackForwardCacheSupported(
 }
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    content::PreloadingTriggerType trigger_type) {
+  // Allow when prerendering is triggered by the WebView Prerender API.
+  if (trigger_type == content::PreloadingTriggerType::kEmbedder) {
+    return content::PreloadingEligibility::kEligible;
+  }
+
   AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
   if (aw_settings->IsPrerender2Allowed()) {
     return content::PreloadingEligibility::kEligible;

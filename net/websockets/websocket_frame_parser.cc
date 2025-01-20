@@ -156,7 +156,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
 
   WebSocketMaskingKey masking_key = {};
   const bool masked = (second_byte & kMaskBit) != 0;
-  static constexpr int kMaskingKeyLength =
+  static constexpr size_t kMaskingKeyLength =
       WebSocketFrameHeader::kMaskingKeyLength;
   if (masked) {
     if (data.size() < current + kMaskingKeyLength)
@@ -194,8 +194,7 @@ std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
   frame_chunk->final_chunk = false;
   if (chunk_data_size) {
     const auto split_point = base::checked_cast<size_t>(chunk_data_size);
-    frame_chunk->payload =
-        base::as_writable_chars(data->subspan(0, split_point));
+    frame_chunk->payload = base::as_writable_chars(data->first(split_point));
     *data = data->subspan(split_point);
     frame_offset_ += chunk_data_size;
   }

@@ -8,12 +8,15 @@ import android.content.Context;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.TracingControllerAndroidImpl;
 
 /**
  * Controller for Chrome's tracing feature. The embedder may use this class to implement a UI for
  * recording and sharing Chrome performance traces.
  */
+@NullMarked
 public interface TracingControllerAndroid {
     /**
      * Creates a new TracingControllerAndroid instance.
@@ -33,7 +36,7 @@ public interface TracingControllerAndroid {
     /**
      * @return the path of the current output file. Null if isTracing() false.
      */
-    String getOutputPath();
+    @Nullable String getOutputPath();
 
     /**
      * Start recording a trace to the specified file (if not null) or to a new file in the Downloads

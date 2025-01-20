@@ -10,6 +10,7 @@
 #include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_client.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace gpu {
@@ -57,6 +58,8 @@ class CONTENT_EXPORT ContentGpuClient {
   virtual gpu::SharedImageManager* GetSharedImageManager();
   virtual gpu::Scheduler* GetScheduler();
   virtual viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner();
+  virtual const gpu::SharedContextState::GrContextOptionsProvider*
+  GetGrContextOptionsProvider();
 #endif
 };
 

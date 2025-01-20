@@ -155,10 +155,6 @@ class CORE_EXPORT ImageResourceContent final
   void EmulateLoadStartedForInspector(ResourceFetcher*,
                                       const AtomicString& initiator_name);
 
-  void SetNotRefetchableDataFromDiskCache() {
-    is_refetchable_data_from_disk_cache_ = false;
-  }
-
   // The following public methods should be called from ImageResource only.
 
   // UpdateImage() is the single control point of image content modification
@@ -197,20 +193,28 @@ class CORE_EXPORT ImageResourceContent final
 
   void SetImageResourceInfo(ImageResourceInfo*);
 
+  void UpdateResourceInfoFromObservers();
+  gfx::Size MaxSize() const { return cached_info_.max_size_; }
+  InterpolationQuality MaxInterpolationQuality() const {
+    return cached_info_.max_interpolation_quality_;
+  }
+
   // Returns priority information to be used for setting the Resource's
   // priority. This is NOT the current Resource's priority.
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
-  // Returns the current Resource's priroity used by MediaTiming.
+  // Returns the current Resource's priority used by MediaTiming.
   std::optional<WebURLRequest::Priority> RequestPriority() const override;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {
     return !observers_.empty() || !finished_observers_.empty();
   }
-  bool IsRefetchableDataFromDiskCache() const {
-    return is_refetchable_data_from_disk_cache_;
+  bool CanBeSpeculativelyDecoded() const;
+  bool HasNonDegenerateSizeForDecode() const {
+    // If an observer has 0x0 size, we will not consider it for speculative
+    // decode.
+    return !cached_info_.max_size_.IsZero();
   }
-
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
 
   // Returns the number of bytes of image data which should be used for entropy
@@ -265,13 +269,18 @@ class CORE_EXPORT ImageResourceContent final
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
 
+  // This is updated during ResourceFetcher::UpdateResourceInfoFromObservers
+  // when layout is clean and cached for use when layout may not be clean.
+  struct {
+    ResourcePriority priority_;
+    ResourcePriority priority_excluding_image_loader_;
+    gfx::Size max_size_;
+    InterpolationQuality max_interpolation_quality_ = kInterpolationNone;
+  } cached_info_;
+
   // Keep one-byte members together to avoid wasting space on padding.
 
   ResourceStatus content_status_ = ResourceStatus::kNotStarted;
-
-  // Indicates if this resource's encoded image data can be purged and refetched
-  // from disk cache to save memory usage. See crbug/664437.
-  bool is_refetchable_data_from_disk_cache_ = true;
 
   mutable bool is_add_remove_observer_prohibited_ = false;
 

@@ -3,7 +3,7 @@ Short Name: cardboard
 URL: https://github.com/googlevr/cardboard
 Version: 1.25.0
 Revision: 596352df971aacede278a50f55ff1fecc4e81afc
-License: Apache 2.0
+License: LicenseRef-Unity-Companion-License-1.3, Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

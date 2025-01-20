@@ -114,18 +114,23 @@ public class ToggleTabStackButtonCoordinator {
      * @param tabCountSupplier Supplier for current tab count to show in view.
      * @param archivedTabCountSupplier Supplies the current archived tab count, used for displaying
      *     the associated IPH.
+     * @param tabModelNotificationDotSupplier Supplies whether to show the notification dot on the
+     *     tab switcher button.
      * @param archivedTabsIphShownCallback Callback for when the archived tabs iph is shown.
+     * @param archivedTabsIphDismissedCallback Callback for when the archived tabs iph is dismissed.
      */
     public void initializeWithNative(
             OnClickListener onClickListener,
             OnLongClickListener onLongClickListener,
             ObservableSupplier<Integer> tabCountSupplier,
             @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            ObservableSupplier<Boolean> tabModelNotificationDotSupplier,
             @NonNull Runnable archivedTabsIphShownCallback,
             @NonNull Runnable archivedTabsIphDismissedCallback) {
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
-        mToggleTabStackButton.setTabCountSupplier(tabCountSupplier, mIsIncognitoSupplier);
+        mToggleTabStackButton.setSuppliers(
+                tabCountSupplier, tabModelNotificationDotSupplier, mIsIncognitoSupplier);
 
         mArchivedTabCountSupplier = archivedTabCountSupplier;
         if (mArchivedTabCountSupplier != null) {
@@ -263,7 +268,10 @@ public class ToggleTabStackButtonCoordinator {
                                 R.string.iph_tab_switcher_switch_into_incognito_text,
                                 R.string.iph_tab_switcher_switch_into_incognito_accessibility_text);
             }
-        } else if (!mIsIncognitoSupplier.get()
+        }
+
+        if (builder == null
+                && !mIsIncognitoSupplier.get()
                 && mPromoShownOneshotSupplier.hasValue()
                 && !mPromoShownOneshotSupplier.get()) {
             builder =

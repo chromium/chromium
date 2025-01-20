@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/hash/hash.h"
+#include "base/location.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -29,22 +32,33 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
-#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/views/border.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
@@ -98,9 +112,9 @@ uint32_t GetHash(const ui::ImageModel& image) {
   if (!bitmap) {
     return 0;
   }
-
-  return base::FastHash(base::make_span(
-      static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
+  SkPixmap map;
+  bitmap->peekPixels(&map);
+  return base::FastHash(gfx::SkPixmapToSpan(map));
 }
 
 WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
@@ -112,16 +126,18 @@ WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
 
 url::Origin GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
   auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (!rfh)
+  if (!rfh) {
     return {};
+  }
 
   return rfh->GetLastCommittedOrigin();
 }
 
 bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
   WebContents* capturer = WebContentsFromId(capturer_id);
-  if (!capturer)
+  if (!capturer) {
     return false;
+  }
   return capture_policy::GetAllowedCaptureLevel(
              GetOriginFromId(capturer_id).GetURL(), capturer) ==
          AllowedScreenCaptureLevel::kSameOrigin;
@@ -250,8 +266,9 @@ void TabSharingUIViews::OnRegionCaptureRectChanged(
 
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (source_callback_.is_null())
+  if (source_callback_.is_null()) {
     return;
+  }
 
   WebContents* shared_tab =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
@@ -261,18 +278,19 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
   source_callback_.Run(
-      content::DesktopMediaID(
-          content::DesktopMediaID::TYPE_WEB_CONTENTS,
-          content::DesktopMediaID::kNullId,
-          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                             main_frame->GetRoutingID())),
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              content::WebContentsMediaCaptureId(
+                                  main_frame->GetProcess()->GetDeprecatedID(),
+                                  main_frame->GetRoutingID())),
       captured_surface_control_active_);
 }
 
 void TabSharingUIViews::StopSharing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!stop_callback_.is_null())
+  if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run();
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   policy::DlpContentManager::Get()->RemoveObserver(
       this, policy::DlpContentRestriction::kScreenShare);
@@ -295,8 +313,9 @@ void TabSharingUIViews::OnBrowserAdded(Browser* browser) {
 
 void TabSharingUIViews::OnBrowserRemoved(Browser* browser) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  if (browser_list->empty())
+  if (browser_list->empty()) {
     browser_list->RemoveObserver(this);
+  }
   browser->tab_strip_model()->RemoveObserver(this);
 }
 
@@ -306,8 +325,9 @@ void TabSharingUIViews::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& contents : change.GetInsert()->contents) {
-      if (infobars_.find(contents.contents) == infobars_.end())
+      if (infobars_.find(contents.contents) == infobars_.end()) {
         CreateInfobarForWebContents(contents.contents);
+      }
     }
   }
 
@@ -330,8 +350,9 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
                                      TabChangeType change_type) {
   // Sad tab cannot be shared so don't create an infobar for it.
   auto* sad_tab_helper = SadTabHelper::FromWebContents(contents);
-  if (sad_tab_helper && sad_tab_helper->sad_tab())
+  if (sad_tab_helper && sad_tab_helper->sad_tab()) {
     return;
+  }
 
   if (infobars_.find(contents) == infobars_.end()) {
     CreateInfobarForWebContents(contents);
@@ -342,24 +363,28 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                          bool animate) {
   auto infobars_entry =
       base::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
-  if (infobars_entry == infobars_.end())
+  if (infobars_entry == infobars_.end()) {
     return;
+  }
 
   infobar->owner()->RemoveObserver(this);
   infobars_.erase(infobars_entry);
   if (infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar) ==
-      shared_tab_)
+      shared_tab_) {
     StopSharing();
+  }
 }
 
 void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
-  if (!shared_tab_)
+  if (!shared_tab_) {
     return;
+  }
   shared_tab_name_ = GetTabName(shared_tab_);
   for (const auto& infobars_entry : infobars_) {
     // Recreate infobars to reflect the new shared tab's hostname.
-    if (infobars_entry.first != shared_tab_)
+    if (infobars_entry.first != shared_tab_) {
       CreateInfobarForWebContents(infobars_entry.first);
+    }
   }
 }
 
@@ -501,9 +526,9 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
       !is_share_instead_button_possible
           ? TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN
-          : is_sharing_allowed_by_policy
-                ? TabSharingInfoBarDelegate::ButtonState::ENABLED
-                : TabSharingInfoBarDelegate::ButtonState::DISABLED;
+      : is_sharing_allowed_by_policy
+          ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+          : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, old_infobar, shared_tab_name_, capturer_name_, contents,
@@ -530,8 +555,9 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
   const blink::MediaStreamDevice device(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       shared_tab_media_id_.ToString(), std::string());
-  if (!shared_tab_)
+  if (!shared_tab_) {
     return;
+  }
 
   blink::mojom::StreamDevices devices;
   devices.video_device = device;
@@ -539,7 +565,7 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(shared_tab_, devices);
   tab_capture_indicator_ui_->OnStarted(
-      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
+      /*stop=*/base::DoNothing(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

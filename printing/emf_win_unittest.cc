@@ -71,8 +71,8 @@ TEST(EmfTest, DC) {
 
   // Playback the data.
   Emf emf;
-  // TODO(thestig): Make `data` uint8_t and avoid the base::as_bytes() call.
-  EXPECT_TRUE(emf.InitFromData(base::as_bytes(base::make_span(data))));
+  // TODO(thestig): Make `data` uint8_t and avoid the base::as_byte_span() call.
+  EXPECT_TRUE(emf.InitFromData(base::as_byte_span(data)));
   HDC hdc = CreateCompatibleDC(nullptr);
   EXPECT_TRUE(hdc);
   RECT output_rect = {0, 0, 10, 10};
@@ -110,7 +110,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
   ASSERT_TRUE(emf_data.size());
 
   Emf emf;
-  EXPECT_TRUE(emf.InitFromData(base::as_bytes(base::make_span(emf_data))));
+  EXPECT_TRUE(emf.InitFromData(base::as_byte_span(emf_data)));
 
   // This will print to file. The reason is that when running inside a
   // unit_test, PrintingContext automatically dumps its files to the
@@ -165,8 +165,8 @@ TEST_F(EmfPrintingTest, PageBreak) {
   di.lpszDocName = L"Test Job";
   int job_id = ::StartDoc(dc.Get(), &di);
   Emf emf;
-  // TODO(thestig): Make `data` uint8_t and avoid the base::as_bytes() call.
-  EXPECT_TRUE(emf.InitFromData(base::as_bytes(base::make_span(data))));
+  // TODO(thestig): Make `data` uint8_t and avoid the base::as_byte_span() call.
+  EXPECT_TRUE(emf.InitFromData(base::as_byte_span(data)));
   EXPECT_TRUE(emf.SafePlayback(dc.Get()));
   ::EndDoc(dc.Get());
   // Since presumably the printer is not real, let us just delete the job from

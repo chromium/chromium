@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
@@ -199,6 +200,23 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
   }
 }
 
+uint32_t GetFakeBackgroundBlurTogglePeriodMillis() {
+  static std::optional<uint32_t> toggle_period;
+  if (toggle_period) {
+    return *toggle_period;
+  }
+  toggle_period.emplace(0);
+
+  auto toggle_period_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          switches::kFakeBackgroundBlurTogglePeriod);
+
+  if (!toggle_period_string.empty()) {
+    base::StringToUint(toggle_period_string, &toggle_period.value());
+  }
+  return *toggle_period;
+}
+
 }  // anonymous namespace
 
 namespace media {
@@ -212,6 +230,28 @@ BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
 #endif
 
 namespace {
+
+mojom::VideoFrameInfoPtr CreateNewVideoFrameInfo(
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const VideoCaptureFormat& format,
+    const std::optional<VideoFrameMetadata>& current_metadata,
+    const gfx::Rect& visible_rect,
+    bool is_premapped,
+    const gfx::ColorSpace& color_space) {
+  VideoFrameMetadata metadata = current_metadata.value_or(VideoFrameMetadata{});
+  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
+  // have not verified whether the buffer pool returns frames that are
+  // WebGPU-compatible across all platforms.
+  metadata.frame_rate = format.frame_rate;
+  metadata.reference_time = reference_time;
+  metadata.capture_begin_time = capture_begin_timestamp;
+
+  return mojom::VideoFrameInfo::New(
+      timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,
+      is_premapped, color_space, mojom::PlaneStridesPtr{});
+}
 
 class ScopedAccessPermissionEndWithCallback
     : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
@@ -336,6 +376,46 @@ void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+std::optional<VideoCaptureDevice::Client::Buffer>
+VideoCaptureDeviceClient::ReserveEffectsOutputBuffer(
+    const VideoCaptureFormat& format,
+    const int frame_feedback_id) {
+  CHECK(base::FeatureList::IsEnabled(media::kCameraMicEffects));
+  // We need to allocate the output buffer since the post-processor cannot
+  // operate in-place. This new `out_buffer`, along with original `buffer`,
+  // will be considered as held for producer until the post-processor has
+  // finished processing their contents, after which the `buffer` should be
+  // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
+  // will be marked as held for consumer.
+  // Note that this means we're allocating 2x as many buffers as we'd have
+  // allocated without the video effects. It may be possible to hold on to
+  // the input buffer for less time than what is needed to post-process it
+  // - it could be released once the processor has imported it into the
+  // graphical API it uses to run the post-processing logic.
+  // TODO(https://crbug.com/339141106): Consider having an additional pool
+  // for post-processing output buffers, separate from the pool used to
+  // allocate the original buffers.
+  Buffer out_buffer;
+  const VideoCaptureDevice::Client::ReserveResult reserve_result =
+      ReserveOutputBuffer(format.frame_size, format.pixel_format,
+                          frame_feedback_id, &out_buffer,
+                          /*require_new_buffer_id=*/nullptr,
+                          /*retire_old_buffer_id=*/nullptr);
+
+  if (reserve_result == VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+    return std::move(out_buffer);
+  } else {
+    // We weren't able to reserve the buffer for the post-processor's
+    // result. We could either drop the frame or deliver the unprocessed
+    // buffer to the consumer, but since post-processing can apply
+    // privacy-preserving effects, we should not deliver unprocessed frames
+    // without user intervention, hence we report failure.
+    receiver_->OnFrameDropped(
+        ConvertReservationFailureToFrameDropReason(reserve_result));
+    return std::nullopt;
+  }
+}
+
 void VideoCaptureDeviceClient::OnPostProcessDone(
     base::expected<PostProcessDoneInfo, video_effects::mojom::PostProcessError>
         post_process_info_or_error) {
@@ -441,20 +521,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
       effects_processor_) {
-    auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
+    auto data_span = base::span(data, base::checked_cast<size_t>(length));
 
-    // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-    // have not verified whether the buffer pool returns frames that are
-    // WebGPU-compatible across all platforms.
-    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-    mutable_metadata.frame_rate = format.frame_rate;
-    mutable_metadata.reference_time = reference_time;
-    mutable_metadata.capture_begin_time = capture_begin_timestamp;
-
-    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, mutable_metadata, format.pixel_format, format.frame_size,
-        gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space,
-        mojom::PlaneStridesPtr{});
+    mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+        reference_time, timestamp, capture_begin_timestamp, format, metadata,
+        gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space);
 
     // Must happen here since we move out of `buffer` in the call below:
     const VideoCaptureBufferType buffer_type =
@@ -548,8 +619,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       capture_begin_timestamp, gfx::Rect(dimensions), metadata);
 }
 
-void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
-    gfx::GpuMemoryBuffer* buffer,
+void VideoCaptureDeviceClient::OnIncomingCapturedImage(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const VideoCaptureFormat& frame_format,
     int clockwise_rotation,
     base::TimeTicks reference_time,
@@ -573,8 +644,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
     return;
   }
 
-  int destination_width = buffer->GetSize().width();
-  int destination_height = buffer->GetSize().height();
+  int destination_width = shared_image->size().width();
+  int destination_height = shared_image->size().height();
   if (clockwise_rotation == 90 || clockwise_rotation == 270)
     std::swap(destination_width, destination_height);
 
@@ -600,23 +671,25 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   GetI420BufferAccess(output_buffer, dimensions, &y_plane_data, &u_plane_data,
                       &v_plane_data, &y_plane_stride, &uv_plane_stride);
 
-  if (!buffer->Map()) {
-    LOG(ERROR) << "Failed to map GPU memory buffer";
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "Failed to map shared image.";
     receiver_->OnFrameDropped(
         VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
     return;
   }
-  absl::Cleanup scoped_unmap = [buffer] { buffer->Unmap(); };
 
   int ret = -EINVAL;
   switch (frame_format.pixel_format) {
     case PIXEL_FORMAT_NV12:
       ret = libyuv::NV12ToI420Rotate(
-          reinterpret_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
-          reinterpret_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1),
-          y_plane_data, y_plane_stride, u_plane_data, uv_plane_stride,
-          v_plane_data, uv_plane_stride, buffer->GetSize().width(),
-          buffer->GetSize().height(), rotation_mode);
+          scoped_mapping->GetMemoryForPlane(0).data(),
+          scoped_mapping->Stride(0),
+          scoped_mapping->GetMemoryForPlane(1).data(),
+          scoped_mapping->Stride(1), y_plane_data, y_plane_stride, u_plane_data,
+          uv_plane_stride, v_plane_data, uv_plane_stride,
+          scoped_mapping->Size().width(), scoped_mapping->Size().height(),
+          rotation_mode);
       break;
 
     default:
@@ -659,72 +732,41 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     // TODO(https://crbug.com/377532863): Skip effects service overhead when
     // having no-op effects config.
 
-    // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-    // have not verified whether the buffer pool returns frames that are
-    // WebGPU-compatible across all platforms.
-    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-    mutable_metadata.frame_rate = buffer.format.frame_rate;
-    mutable_metadata.reference_time = reference_time;
-    mutable_metadata.capture_begin_time = capture_begin_timestamp;
-    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, mutable_metadata, buffer.format.pixel_format,
-        buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
-        buffer.color_space, mojom::PlaneStridesPtr{});
+    mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+        reference_time, timestamp, capture_begin_timestamp, buffer.format,
+        metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
 
-    // We need to allocate the output buffer since the post-processor cannot
-    // operate in-place. This new `out_buffer`, along with original `buffer`,
-    // will be considered as held for producer until the post-processor has
-    // finished processing their contents, after which the `buffer` should be
-    // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
-    // will be marked as held for consumer.
-    // Note that this means we're allocating 2x as many buffers as we'd have
-    // allocated without the video effects. It may be possible to hold on to
-    // the input buffer for less time than what is needed to post-process it
-    // - it could be released once the processor has imported it into the
-    // graphical API it uses to run the post-processing logic.
-    // TODO(https://crbug.com/339141106): Consider having an additional pool
-    // for post-processing output buffers, separate from the pool used to
-    // allocate the original buffers.
-    Buffer out_buffer;
-    const VideoCaptureDevice::Client::ReserveResult reserve_result =
-        ReserveOutputBuffer(
-            buffer.format.frame_size, buffer.format.pixel_format,
-            /*frame_feedback_id=*/0, &out_buffer, nullptr, nullptr);
+    const auto format = buffer.format;
+    auto out_buffer_optional =
+        ReserveEffectsOutputBuffer(format, /*frame_feedback_id=*/0);
+    if (!out_buffer_optional) {
+      return;
+    }
+    Buffer out_buffer = std::move(out_buffer_optional).value();
 
-    if (reserve_result ==
-        VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
-      // Must happen here since we move out of `out_buffer` in the call to
-      // post-processor:
-      const VideoCaptureBufferType out_buffer_type =
-          buffer_pool_->GetBufferType(out_buffer.id);
-      const auto format = buffer.format;
+    // Must happen here since we move out of `out_buffer` in the call to
+    // post-processor:
+    const VideoCaptureBufferType out_buffer_type =
+        buffer_pool_->GetBufferType(out_buffer.id);
 
-      // The buffers were reserved but has not yet been reported as ready to the
-      // `receiver_`. Once the post-processor has completed, we will call
-      // `OnPostProcessDone()` & thus notify the receiver from there.
-      // TODO(https://crbug.com/345688428): drop the frame if we're already
-      // waiting for processing to finish for too many. Maybe if pool
-      // utilization is approaching 70%?
-      auto post_process_data = base::BindOnce(
-          &VideoCaptureEffectsProcessor::PostProcessExternalBuffer,
-          effects_processor_->GetWeakPtr(), std::move(buffer), std::move(info),
-          std::move(out_buffer), format, out_buffer_type,
-          base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
-                         weak_ptr_factory_.GetWeakPtr()));
-      if (!effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
-        effects_processor_task_runner_->PostTask(FROM_HERE,
-                                                 std::move(post_process_data));
-        return;
-      }
+    // The buffers were reserved but has not yet been reported as ready to the
+    // `receiver_`. Once the post-processor has completed, we will call
+    // `OnPostProcessDone()` & thus notify the receiver from there.
+
+    // TODO(https://crbug.com/345688428): drop the frame if we're already
+    // waiting for processing to finish for too many. Maybe if pool
+    // utilization is approaching 70%?
+    auto post_process_data = base::BindOnce(
+        &VideoCaptureEffectsProcessor::PostProcessExternalBuffer,
+        effects_processor_->GetWeakPtr(), std::move(buffer), std::move(info),
+        std::move(out_buffer), format, out_buffer_type,
+        base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+    if (effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
       std::move(post_process_data).Run();
     } else {
-      // We weren't able to reserve the buffer for the post-processor's
-      // result. We could either drop the frame or deliver the unprocessed
-      // buffer to the consumer, but since post-processing can apply
-      // privacy-preserving effects, we should not deliver unprocessed frames
-      // without user intervention, hence we report failure.
-      receiver_->OnFrameDropped(
-          ConvertReservationFailureToFrameDropReason(reserve_result));
+      effects_processor_task_runner_->PostTask(FROM_HERE,
+                                               std::move(post_process_data));
     }
     return;
   }
@@ -798,18 +840,9 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
 
   // Construct the ready frame, to be passed on to the |receiver_| by the caller
   // of this method.
-  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-  // have not verified whether the external buffer is WebGPU-compatible on all
-  // platforms.
-  auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
-  mutable_metadata.frame_rate = buffer.format.frame_rate;
-  mutable_metadata.reference_time = reference_time;
-  mutable_metadata.capture_begin_time = capture_begin_timestamp;
-
-  mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, mutable_metadata, buffer.format.pixel_format,
-      buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
-      buffer.color_space, mojom::PlaneStridesPtr{});
+  mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+      reference_time, timestamp, capture_begin_timestamp, buffer.format,
+      metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -923,77 +956,47 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
 
   auto metadata = additional_metadata.value_or(VideoFrameMetadata{});
-  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-  // have not verified whether the buffer pool returns frames that are
-  // WebGPU-compatible across all platforms.
-  metadata.frame_rate = format.frame_rate;
-  metadata.reference_time = reference_time;
-  metadata.capture_begin_time = capture_begin_timestamp;
+  if (auto fake_toggle_period = GetFakeBackgroundBlurTogglePeriodMillis()) {
+    metadata.background_blur = media::EffectInfo{
+        .enabled = timestamp.InMilliseconds() % fake_toggle_period >=
+                   fake_toggle_period / 2};
+  }
 
-  mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,
-      buffer.is_premapped, color_space, mojom::PlaneStridesPtr{});
+  mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
+      reference_time, timestamp, capture_begin_timestamp, format, metadata,
+      visible_rect, buffer.is_premapped, color_space);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
       effects_processor_) {
-    // We need to allocate the output buffer since the post-processor cannot
-    // operate in-place. This new `out_buffer`, along with original `buffer`,
-    // will be considered as held for producer until the post-processor has
-    // finished processing their contents, after which the `buffer` should be
-    // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
-    // will be marked as held for consumer.
-    // Note that this means we're allocating 2x as many buffers as we'd have
-    // allocated without the video effects. It may be possible to hold on to
-    // the input buffer for less time than what is needed to post-process it
-    // - it could be released once the processor has imported it into the
-    // graphical API it uses to run the post-processing logic.
-    // TODO(https://crbug.com/339141106): Consider having an additional pool
-    // for post-processing output buffers, separate from the pool used to
-    // allocate the original buffers.
-
-    Buffer out_buffer;
-    const VideoCaptureDevice::Client::ReserveResult reserve_result =
-        ReserveOutputBuffer(format.frame_size, format.pixel_format,
-                            buffer.frame_feedback_id, &out_buffer, nullptr,
-                            nullptr);
-
-    const bool reserve_succeeded =
-        reserve_result == VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-
-    if (reserve_succeeded) {
-      // Must happen here since we move out of `buffer` & `out_buffer` in the
-      // call to post-processor:
-      const VideoCaptureBufferType in_buffer_type =
-          buffer_pool_->GetBufferType(buffer.id);
-
-      const VideoCaptureBufferType out_buffer_type =
-          buffer_pool_->GetBufferType(out_buffer.id);
-
-      // The buffers were reserved but has not yet been reported as ready to the
-      // `receiver_`. Once the post-processor has completed, we will call
-      // `OnPostProcessDone()` & thus notify the receiver from there.
-
-      // TODO(https://crbug.com/345688428): drop the frame if we're already
-      // waiting for processing to finish for too many. Maybe if pool
-      // utilization is approaching 70%?
-      effects_processor_->PostProcessBuffer(
-          std::move(buffer), std::move(info), in_buffer_type,
-          std::move(out_buffer), format, out_buffer_type,
-          base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    } else {
-      // We weren't able to reserve the buffer for the post-processor's
-      // result. We could either drop the frame or deliver the unprocessed
-      // buffer to the consumer, but since post-processing can apply
-      // privacy-preserving effects, we should not deliver unprocessed frames
-      // without user intervention, hence we report failure.
-
-      receiver_->OnFrameDropped(
-          ConvertReservationFailureToFrameDropReason(reserve_result));
+    auto out_buffer_optional =
+        ReserveEffectsOutputBuffer(format, /*frame_feedback_id=*/0);
+    if (!out_buffer_optional) {
       return;
     }
+    Buffer out_buffer = std::move(out_buffer_optional).value();
+
+    // Must happen here since we move out of `buffer` & `out_buffer` in the
+    // call to post-processor:
+    const VideoCaptureBufferType in_buffer_type =
+        buffer_pool_->GetBufferType(buffer.id);
+
+    const VideoCaptureBufferType out_buffer_type =
+        buffer_pool_->GetBufferType(out_buffer.id);
+
+    // The buffers were reserved but has not yet been reported as ready to the
+    // `receiver_`. Once the post-processor has completed, we will call
+    // `OnPostProcessDone()` & thus notify the receiver from there.
+
+    // TODO(https://crbug.com/345688428): drop the frame if we're already
+    // waiting for processing to finish for too many. Maybe if pool
+    // utilization is approaching 70%?
+    effects_processor_->PostProcessBuffer(
+        std::move(buffer), std::move(info), in_buffer_type,
+        std::move(out_buffer), format, out_buffer_type,
+        base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 #endif
 

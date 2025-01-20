@@ -52,6 +52,9 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   IndexHelper& operator=(const IndexHelper&) = delete;
 
   // Starts indexing rulesets. Must be called on the extension file task runner.
+  // TODO(crbug.com/380434972): Kick off content verification job to guard
+  // against the possibility that the extension's ruleset JSON files were
+  // corrupted.
   void Start(uint8_t parse_flags) {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
@@ -102,11 +105,17 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
     bool indexing_success = result.status == IndexStatus::kSuccess;
     bool is_reindexing = ruleset->expected_checksum().has_value();
     if (indexing_success) {
-      // If this is the first time that the ruleset is being indexed, or if the
-      // ruleset's version has updated, then take note of the new checksum.
-      bool update_checksum =
-          !is_reindexing || ruleset->load_ruleset_result() ==
-                                LoadRulesetResult::kErrorVersionMismatch;
+      // Update the checksum if either:
+      // - this is the first time that the ruleset is being indexed and there's
+      //   no expected checksum.
+      // - there is a checksum mismatch between indexing and what's in prefs.
+      //   Use the checksum that was just derived from reindexing.
+      // - the ruleset's version has updated, so the old checksum is invalid
+      bool update_checksum = !is_reindexing ||
+                             ruleset->load_ruleset_result() ==
+                                 LoadRulesetResult::kErrorChecksumMismatch ||
+                             ruleset->load_ruleset_result() ==
+                                 LoadRulesetResult::kErrorVersionMismatch;
       if (update_checksum) {
         ruleset->set_new_checksum(result.ruleset_checksum);
 

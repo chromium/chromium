@@ -56,7 +56,7 @@ class MockDedicatedWorker
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, /*creator=*/render_frame_host_id,
             render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
-            net::IsolationInfo::CreateTransient(),
+            net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
             network::mojom::ClientSecurityState::New(),
             coep_reporter->GetWeakPtr(), coep_reporter->GetWeakPtr()),
         factory_.BindNewPipeAndPassReceiver());
@@ -246,7 +246,8 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
 
   // Create the dedicated worker.
   const DedicatedWorkerCreator creator(render_frame_host->GetGlobalId());
-  const int render_process_host_id = render_frame_host->GetProcess()->GetID();
+  const int render_process_host_id =
+      render_frame_host->GetProcess()->GetDeprecatedID();
   const auto origin = url::Origin::Create(kUrl);
   auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
       render_process_host_id, render_frame_host->GetGlobalId(), origin);

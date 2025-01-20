@@ -58,32 +58,36 @@ RenderViewContextMenuMac::RenderViewContextMenuMac(
   set_toolkit_delegate(std::move(delegate));
 }
 
-RenderViewContextMenuMac::~RenderViewContextMenuMac() {
-}
+RenderViewContextMenuMac::~RenderViewContextMenuMac() = default;
 
 void RenderViewContextMenuMac::ExecuteCommand(int command_id, int event_flags) {
-  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP)
+  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP) {
     LookUpInDictionary();
-  else
+  } else {
     RenderViewContextMenu::ExecuteCommand(command_id, event_flags);
+  }
 }
 
 bool RenderViewContextMenuMac::IsCommandIdChecked(int command_id) const {
-  if (text_services_context_menu_.SupportsCommand(command_id))
+  if (text_services_context_menu_.SupportsCommand(command_id)) {
     return text_services_context_menu_.IsCommandIdChecked(command_id);
+  }
 
-  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP)
+  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP) {
     return false;
+  }
 
   return RenderViewContextMenu::IsCommandIdChecked(command_id);
 }
 
 bool RenderViewContextMenuMac::IsCommandIdEnabled(int command_id) const {
-  if (text_services_context_menu_.SupportsCommand(command_id))
+  if (text_services_context_menu_.SupportsCommand(command_id)) {
     return text_services_context_menu_.IsCommandIdEnabled(command_id);
+  }
 
-  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP)
+  if (command_id == IDC_CONTENT_CONTEXT_LOOK_UP) {
     return true;
+  }
 
   return RenderViewContextMenu::IsCommandIdEnabled(command_id);
 }
@@ -109,8 +113,9 @@ void RenderViewContextMenuMac::UpdateTextDirection(
   DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
 
   int command_id = IDC_WRITING_DIRECTION_LTR;
-  if (direction == base::i18n::RIGHT_TO_LEFT)
+  if (direction == base::i18n::RIGHT_TO_LEFT) {
     command_id = IDC_WRITING_DIRECTION_RTL;
+  }
 
   // Note: we get the local render frame host so that the writing mode settings
   // changes apply to the correct frame. See crbug.com/1129073 for a
@@ -160,15 +165,17 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
     menu_model_.InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
   }
 
-  if (!params_.selection_text.empty())
+  if (!params_.selection_text.empty()) {
     text_services_context_menu_.AppendToContextMenu(&menu_model_);
+  }
 }
 
 void RenderViewContextMenuMac::LookUpInDictionary() {
   content::RenderWidgetHostView* view =
       GetRenderFrameHost()->GetRenderWidgetHost()->GetView();
-  if (view)
+  if (view) {
     view->ShowDefinitionForSelection();
+  }
 }
 
 int RenderViewContextMenuMac::ParamsForTextDirection(

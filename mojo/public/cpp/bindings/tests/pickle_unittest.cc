@@ -15,8 +15,8 @@
 #include "mojo/public/cpp/bindings/tests/pickled_types_blink.h"
 #include "mojo/public/cpp/bindings/tests/pickled_types_chromium.h"
 #include "mojo/public/cpp/bindings/tests/variant_test_util.h"
-#include "mojo/public/interfaces/bindings/tests/test_native_types.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_native_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

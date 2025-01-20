@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+// Factory method for creating a new WebUI page handler for lens ghost loader.
+interface LensGhostLoaderPageHandlerFactory {
+  // The ghost loader WebUI calls this method when the page is first
+  // initialized.
+  CreateGhostLoaderPage(pending_remote<LensGhostLoaderPage> page);
+};
+
+// WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensGhostLoaderPage {
+  // Notify the ghost loader to show error state. This can happen when the
+  // autocomplete stop timer triggers or when empty results are returned.
+  ShowErrorState();
+};

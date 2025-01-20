@@ -19,7 +19,6 @@ import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -359,8 +358,7 @@ public class WebApkIntentDataProviderFactory {
 
         // Check the OS version because the same WebAPK is vended by the WebAPK server for all OS
         // versions.
-        boolean isPrimaryIconMaskable =
-                primaryMaskableIconId != 0 && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        boolean isPrimaryIconMaskable = primaryMaskableIconId != 0;
 
         int splashIconId = IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.SPLASH_ID, 0);
 

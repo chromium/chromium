@@ -14,27 +14,28 @@
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, SkRegion*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                        ash::ArcGameControlsFlag)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                        ash::ArcResizeLockType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::ResizeShadowType)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, uint64_t)
 
 namespace ash {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIDKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIDKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ArcGameControlsFlag,
                              kArcGameControlsFlagsKey,
                              static_cast<ArcGameControlsFlag>(0))
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kArcPackageNameKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kArcPackageNameKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ArcResizeLockType,
                              kArcResizeLockTypeKey,
                              ArcResizeLockType::NONE)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowBackdrop, kWindowBackdropKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowBackdrop, kWindowBackdropKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanConsumeSystemKeysKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeInMruKey, false)
@@ -46,32 +47,24 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(uint64_t, kLacrosProfileId, 0)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size,
-                                   kUnresizableSnappedSizeKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kUnresizableSnappedSizeKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRenderTitleAreaProperty, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kRestoreBoundsOverrideKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsOverrideKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
                              kRestoreWindowStateTypeOverrideKey,
                              chromeos::WindowStateType::kDefault)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSearchKeyAcceleratorReservedKey, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfIDKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfIDKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kShelfItemTypeKey, TYPE_UNDEFINED)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SkRegion,
-                                   kSystemGestureExclusionKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SkRegion, kSystemGestureExclusionKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShowCursorOnKeypress, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kWindowPipResizeHandleBoundsKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kWindowPipResizeHandleBoundsKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ResizeShadowType,
                              kResizeShadowTypeKey,
                              ResizeShadowType::kUnlock)

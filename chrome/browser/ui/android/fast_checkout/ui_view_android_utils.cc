@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "url/android/gurl_android.h"
 

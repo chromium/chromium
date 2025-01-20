@@ -35,6 +35,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   };
 
   struct ButtonStatus {
+    SelectedTextState summary_of_selection_eligibility =
+        SelectedTextState::kUnknown;
     SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
   };
 
@@ -59,6 +61,9 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
   class MenuTextfieldController;
@@ -86,6 +91,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // Where the mahi menu widget is shown, currently it could be the browser (web
   // pages) or the media app (pdf files).
   const Surface surface_;
+
+  bool announcement_alerted_ = false;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };

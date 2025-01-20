@@ -23,8 +23,8 @@ class Node : public LinkNode<Node> {
 
 class MultipleInheritanceNodeBase {
  public:
-  MultipleInheritanceNodeBase() : field_taking_up_space_(0) {}
-  int field_taking_up_space_;
+  MultipleInheritanceNodeBase() = default;
+  int field_taking_up_space_ = 0;
 };
 
 class MultipleInheritanceNode : public MultipleInheritanceNodeBase,
@@ -52,8 +52,7 @@ void ExpectListContentsForDirection(const LinkedList<Node>& list,
                                     bool forward) {
   size_t i = 0;
   for (const LinkNode<Node>* node = (forward ? list.head() : list.tail());
-       node != list.end();
-       node = (forward ? node->next() : node->previous())) {
+       node != list.end(); node = (forward ? node->next() : node->previous())) {
     ASSERT_LT(i, node_ids.size());
     EXPECT_EQ(node_ids[forward ? i : node_ids.size() - i - 1],
               node->value()->id());
@@ -336,8 +335,8 @@ TEST(LinkedList, NodeMoveConstructor) {
 
   MovableNode n2_new(std::move(n2));
 
-  EXPECT_EQ(nullptr, n2.next());
-  EXPECT_EQ(nullptr, n2.previous());
+  EXPECT_EQ(nullptr, n2.next());      // NOLINT(bugprone-use-after-move)
+  EXPECT_EQ(nullptr, n2.previous());  // NOLINT(bugprone-use-after-move)
 
   EXPECT_EQ(&n1, n2_new.previous());
   EXPECT_EQ(&n2_new, n1.next());

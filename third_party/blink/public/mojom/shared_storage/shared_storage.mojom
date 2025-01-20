@@ -27,6 +27,11 @@ enum SharedStorageGetStatus {
   kError,
 };
 
+enum SharedStorageWorkletCreationMethod {
+  kAddModule,
+  kCreateWorklet,
+};
+
 // Bundles information passed to the worklet via the `privateAggregationConfig`
 // parameter on `sharedStorage.run()` or `sharedStorage.selectURL()`.
 struct PrivateAggregationConfig {
@@ -107,6 +112,7 @@ interface SharedStorageDocumentService {
   CreateWorklet(url.mojom.Url script_source_url,
                 url.mojom.Origin data_origin,
                 network.mojom.CredentialsMode credentials_mode,
+                SharedStorageWorkletCreationMethod creation_method,
                 array<OriginTrialFeature> origin_trial_features,
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)
       => (bool success,
@@ -120,8 +126,19 @@ interface SharedStorageDocumentService {
       => (SharedStorageGetStatus status, string error_message,
           mojo_base.mojom.String16 value);
 
-  // Handle the modifier method `method`. Return an empty `error_message` on
-  // success, and return an non-empty `error_message` on failure.
-  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
+  // Handle the modifier method `method_with_options`. Return an empty
+  // `error_message` on success, and return an non-empty `error_message` on
+  // failure.
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethodWithOptions method_with_options)
+      => (string error_message);
+
+  // Handle each modifier method within `methods_with_options`. If `with_lock`
+  // is provided, the methods within the batch will be executed with a lock
+  // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
+  // with '-'. Return an empty `error_message` on success, and return an
+  // non-empty `error_message` on failure.
+  SharedStorageBatchUpdate(
+    array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
+    network.mojom.LockName? with_lock)
       => (string error_message);
 };

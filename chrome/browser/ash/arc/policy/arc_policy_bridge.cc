@@ -12,7 +12,6 @@
 #include "arc_policy_util.h"
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_map.h"
@@ -528,7 +528,7 @@ class ArcPolicyBridgeFactory
  private:
   friend base::DefaultSingletonTraits<ArcPolicyBridgeFactory>;
 
-  ArcPolicyBridgeFactory() {}
+  ArcPolicyBridgeFactory() = default;
   ~ArcPolicyBridgeFactory() override = default;
 };
 

@@ -416,6 +416,7 @@ Status LaunchRemoteChromeSession(
     const Capabilities& capabilities,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
+    base::RepeatingClosure on_socket_message,
     std::unique_ptr<Chrome>& chrome) {
   Status status(kOk);
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
@@ -435,6 +436,7 @@ Status LaunchRemoteChromeSession(
 
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
+  socket->SetNotificationCallback(std::move(on_socket_message));
   BrowserInfo browser_info = *devtools_http_client->browser_info();
   if (browser_info.web_socket_url.empty()) {
     browser_info.web_socket_url =
@@ -451,7 +453,7 @@ Status LaunchRemoteChromeSession(
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
-      !capabilities.web_socket_url);
+      !capabilities.web_socket_url, capabilities.enable_extension_targets);
   return Status(kOk);
 }
 
@@ -460,6 +462,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                            const Capabilities& capabilities,
                            std::vector<std::unique_ptr<DevToolsEventListener>>
                                devtools_event_listeners,
+                           base::RepeatingClosure on_socket_message,
                            bool w3c_compliant,
                            std::unique_ptr<Chrome>& chrome) {
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
@@ -656,6 +659,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     }
     if (ready_to_connect) {
       socket = socket_factory.Run();
+      socket->SetNotificationCallback(std::move(on_socket_message));
       browser_info = *(devtools_http_client->browser_info());
       if (browser_info.web_socket_url.empty()) {
         browser_info.web_socket_url =
@@ -677,6 +681,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     if (status.IsOk()) {
       socket = pipe_builder.TakeSocket();
       DCHECK(socket);
+      socket->SetNotificationCallback(std::move(on_socket_message));
       status = CreateBrowserwideDevToolsClientAndConnect(
           std::move(socket), devtools_event_listeners,
           browser_info.web_socket_url, !capabilities.web_socket_url,
@@ -690,7 +695,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       status = CheckVersion(browser_info, capabilities, ChromeType::Desktop);
     }
     if (status.IsOk()) {
-      status = target_utils::WaitForPage(*devtools_websocket_client, timeout);
+      status = target_utils::WaitForTab(*devtools_websocket_client, timeout);
     }
     Status close_child_enpoints_status = pipe_builder.CloseChildEndpoints();
     if (status.IsOk()) {
@@ -766,13 +771,15 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
-  if (!capabilities.extension_load_timeout.is_zero()) {
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url,
+          capabilities.enable_extension_targets);
+  if (capabilities.enable_extension_targets &&
+      !capabilities.extension_load_timeout.is_zero()) {
     for (const std::string& url : extension_bg_pages) {
       VLOG(0) << "Waiting for extension bg page load: " << url;
       std::unique_ptr<WebView> web_view;
-      status = chrome_desktop->WaitForPageToLoad(
-          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
+      status = chrome_desktop->WaitForExtensionPageToLoad(
+          url, capabilities.extension_load_timeout, w3c_compliant);
       if (status.IsError()) {
         return Status(
             kSessionNotCreated,
@@ -791,6 +798,7 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                            std::vector<std::unique_ptr<DevToolsEventListener>>
                                devtools_event_listeners,
                            DeviceManager& device_manager,
+                           base::RepeatingClosure on_socket_message,
                            std::unique_ptr<Chrome>& chrome) {
   Status status(kOk);
   std::unique_ptr<Device> device;
@@ -838,6 +846,7 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
 
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
+  socket->SetNotificationCallback(std::move(on_socket_message));
   BrowserInfo browser_info = *devtools_http_client->browser_info();
   if (browser_info.web_socket_url.empty()) {
     browser_info.web_socket_url =
@@ -852,7 +861,8 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
       browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
-      std::move(device), !capabilities.web_socket_url);
+      std::move(device), !capabilities.web_socket_url,
+      capabilities.enable_extension_targets);
   return Status(kOk);
 }
 
@@ -860,6 +870,7 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
                           const Capabilities& capabilities,
                           std::vector<std::unique_ptr<DevToolsEventListener>>
                               devtools_event_listeners,
+                          base::RepeatingClosure on_socket_message,
                           bool w3c_compliant,
                           std::unique_ptr<Chrome>& chrome) {
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
@@ -895,6 +906,7 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
   base::FilePath log_path(log_path_str);
   std::unique_ptr<SyncWebSocket> socket =
       std::make_unique<LogReplaySocket>(log_path);
+  socket->SetNotificationCallback(std::move(on_socket_message));
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   BrowserInfo browser_info = *devtools_http_client->browser_info();
   if (browser_info.web_socket_url.empty()) {
@@ -912,14 +924,15 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(dummy_process), command,
           &user_data_dir_temp_dir, &extension_dir,
-          capabilities.network_emulation_enabled, !capabilities.web_socket_url);
+          capabilities.network_emulation_enabled, !capabilities.web_socket_url,
+          capabilities.enable_extension_targets);
 
-  if (!capabilities.extension_load_timeout.is_zero()) {
+  if (capabilities.enable_extension_targets &&
+      !capabilities.extension_load_timeout.is_zero()) {
     for (const std::string& url : extension_bg_pages) {
       VLOG(0) << "Waiting for extension bg page load: " << url;
-      std::unique_ptr<WebView> web_view;
-      status = chrome_impl->WaitForPageToLoad(
-          url, capabilities.extension_load_timeout, &web_view, w3c_compliant);
+      status = chrome_impl->WaitForExtensionPageToLoad(
+          url, capabilities.extension_load_timeout, w3c_compliant);
       if (status.IsError()) {
         return Status(
             kSessionNotCreated,
@@ -956,6 +969,7 @@ Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
                     const Capabilities& capabilities,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
+                    base::RepeatingClosure on_socket_message,
                     bool w3c_compliant,
                     std::unique_ptr<Chrome>& chrome) {
   if (capabilities.IsRemoteBrowser()) {
@@ -963,21 +977,23 @@ Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
     // by connecting to an already-running Chrome at a given debuggerAddress.
     return LaunchRemoteChromeSession(factory, socket_factory, capabilities,
                                      std::move(devtools_event_listeners),
-                                     chrome);
+                                     std::move(on_socket_message), chrome);
   }
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (capabilities.IsAndroid()) {
     return LaunchAndroidChrome(factory, socket_factory, capabilities,
                                std::move(devtools_event_listeners),
-                               device_manager, chrome);
+                               device_manager, std::move(on_socket_message),
+                               chrome);
   } else if (cmd_line->HasSwitch("devtools-replay")) {
-    return LaunchReplayChrome(factory, capabilities,
-                              std::move(devtools_event_listeners),
-                              w3c_compliant, chrome);
+    return LaunchReplayChrome(
+        factory, capabilities, std::move(devtools_event_listeners),
+        std::move(on_socket_message), w3c_compliant, chrome);
   } else {
     return LaunchDesktopChrome(factory, socket_factory, capabilities,
                                std::move(devtools_event_listeners),
-                               w3c_compliant, chrome);
+                               std::move(on_socket_message), w3c_compliant,
+                               chrome);
   }
 }
 

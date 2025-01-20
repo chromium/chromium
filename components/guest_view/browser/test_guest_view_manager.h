@@ -50,6 +50,7 @@ class TestGuestViewManager : public GuestViewManager {
   content::RenderFrameHost* GetLastGuestRenderFrameHostCreated();
 
   void WaitUntilAttached(GuestViewBase* guest_view);
+  [[nodiscard]] bool WaitUntilAttachedAndLoaded(GuestViewBase* guest_view);
 
   // Returns the number of guests currently still alive at the time of calling
   // this method.
@@ -93,9 +94,14 @@ class TestGuestViewManager : public GuestViewManager {
 
   // guest_view::GuestViewManager:
   void AddGuest(GuestViewBase* guest) override;
-  void EmbedderProcessDestroyed(int embedder_process_id) override;
-  void ViewGarbageCollected(int embedder_process_id,
+  void EmbedderProcessDestroyed(
+      content::ChildProcessId embedder_process_id) override;
+  void ViewGarbageCollected(content::ChildProcessId embedder_process_id,
                             int view_instance_id) override;
+  void AttachGuest(content::ChildProcessId embedder_process_id,
+                   int element_instance_id,
+                   int guest_instance_id,
+                   const base::Value::Dict& attach_params) override;
   void AttachGuest(int embedder_process_id,
                    int element_instance_id,
                    int guest_instance_id,

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -20,23 +21,27 @@ namespace media {
 // These chromium classes are the corresponding classes in webrtc project.
 // See third_party/webrtc/api/video_codecs/video_encoder.h for the detail.
 
-struct MEDIA_EXPORT ResolutionBitrateLimit {
-  ResolutionBitrateLimit();
-  ResolutionBitrateLimit(const ResolutionBitrateLimit&);
-  ResolutionBitrateLimit(const gfx::Size& frame_size,
-                         int min_start_bitrate_bps,
-                         int min_bitrate_bps,
-                         int max_bitrate_bps);
-  ~ResolutionBitrateLimit();
+struct MEDIA_EXPORT ResolutionRateLimit {
+  ResolutionRateLimit();
+  ResolutionRateLimit(const ResolutionRateLimit&);
+  ResolutionRateLimit(const gfx::Size& frame_size,
+                      int min_start_bitrate_bps,
+                      int min_bitrate_bps,
+                      int max_bitrate_bps,
+                      uint32_t max_framerate_numerator,
+                      uint32_t max_framerate_denominator);
+  ~ResolutionRateLimit();
 
   gfx::Size frame_size;
   int min_start_bitrate_bps = 0;
   int min_bitrate_bps = 0;
   int max_bitrate_bps = 0;
+  uint32_t max_framerate_numerator = 0;
+  uint32_t max_framerate_denominator = 0;
 };
 
-MEDIA_EXPORT bool operator==(const ResolutionBitrateLimit& lhs,
-                             const ResolutionBitrateLimit& rhs);
+MEDIA_EXPORT bool operator==(const ResolutionRateLimit& lhs,
+                             const ResolutionRateLimit& rhs);
 
 struct MEDIA_EXPORT VideoEncoderInfo {
   static constexpr size_t kMaxSpatialLayers = 5;
@@ -44,6 +49,8 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   VideoEncoderInfo();
   VideoEncoderInfo(const VideoEncoderInfo&);
   ~VideoEncoderInfo();
+
+  bool DoesSupportGpuSharedImages(VideoPixelFormat format);
 
   std::string implementation_name;
 
@@ -79,7 +86,15 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   size_t number_of_manual_reference_buffers = 0;
 
   std::array<std::vector<uint8_t>, kMaxSpatialLayers> fps_allocation;
-  std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;
+
+  std::vector<ResolutionRateLimit> resolution_rate_limits;
+
+  // Set of pixel formats that this encoder can handle on the gpu
+  // withhout readback.
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
+
+  // If true, the encoder can handle shared image video frames
+  bool supports_gpu_shared_images = false;
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncoderInfo& lhs,

@@ -98,7 +98,7 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
   base::StrAppend(
       &k_anon_key,
       {"\n", std::string_view("\x01", 1),
-       base::as_string_view(base::as_chars(base::make_span(size_in_bytes))),
+       base::as_string_view(base::as_chars(base::span(size_in_bytes))),
        *reporting_id});
 }
 
@@ -158,7 +158,7 @@ InterestGroup::Ad::Ad(base::PassKey<content::InterestGroupStorage>,
                       const std::string& render_url)
     : render_url_(render_url) {}
 InterestGroup::Ad::Ad(
-    GURL render_gurl,
+    const GURL& render_url,
     std::optional<std::string> metadata,
     std::optional<std::string> size_group,
     std::optional<std::string> buyer_reporting_id,
@@ -166,7 +166,8 @@ InterestGroup::Ad::Ad(
     std::optional<std::vector<std::string>>
         selectable_buyer_and_seller_reporting_ids,
     std::optional<std::string> ad_render_id,
-    std::optional<std::vector<url::Origin>> allowed_reporting_origins)
+    std::optional<std::vector<url::Origin>> allowed_reporting_origins,
+    std::optional<std::string> creative_scanning_metadata)
     : size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),
@@ -174,9 +175,10 @@ InterestGroup::Ad::Ad(
       selectable_buyer_and_seller_reporting_ids(
           std::move(selectable_buyer_and_seller_reporting_ids)),
       ad_render_id(std::move(ad_render_id)),
-      allowed_reporting_origins(std::move(allowed_reporting_origins)) {
-  if (render_gurl.is_valid()) {
-    render_url_ = render_gurl.spec();
+      allowed_reporting_origins(std::move(allowed_reporting_origins)),
+      creative_scanning_metadata(std::move(creative_scanning_metadata)) {
+  if (render_url.is_valid()) {
+    render_url_ = render_url.spec();
   }
 }
 
@@ -210,19 +212,13 @@ size_t InterestGroup::Ad::EstimateSize() const {
       size += origin.Serialize().size();
     }
   }
+  if (creative_scanning_metadata) {
+    size += creative_scanning_metadata->size();
+  }
   return size;
 }
 
-bool InterestGroup::Ad::operator==(const Ad& other) const {
-  return std::tie(render_url_, size_group, metadata, buyer_reporting_id,
-                  buyer_and_seller_reporting_id,
-                  selectable_buyer_and_seller_reporting_ids, ad_render_id,
-                  allowed_reporting_origins) ==
-         std::tie(other.render_url_, other.size_group, other.metadata,
-                  other.buyer_reporting_id, other.buyer_and_seller_reporting_id,
-                  other.selectable_buyer_and_seller_reporting_ids,
-                  other.ad_render_id, other.allowed_reporting_origins);
-}
+bool InterestGroup::Ad::operator==(const Ad& other) const = default;
 
 InterestGroup::InterestGroup() = default;
 InterestGroup::~InterestGroup() = default;
@@ -321,6 +317,15 @@ bool InterestGroup::IsValid() const {
   }
 
   if (ads) {
+    std::optional<size_t> selectable_buyer_and_seller_reporting_ids_hard_limit;
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeLimitSelectableBuyerAndSellerReportingIds) &&
+        features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get() >=
+            0) {
+      selectable_buyer_and_seller_reporting_ids_hard_limit =
+          features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get();
+    }
+
     for (const auto& ad : ads.value()) {
       if (!IsUrlAllowedForRenderUrls(GURL(ad.render_url()))) {
         return false;
@@ -335,6 +340,12 @@ bool InterestGroup::IsValid() const {
         if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
           return false;
         }
+      }
+      if (selectable_buyer_and_seller_reporting_ids_hard_limit &&
+          ad.selectable_buyer_and_seller_reporting_ids &&
+          ad.selectable_buyer_and_seller_reporting_ids->size() >
+              *selectable_buyer_and_seller_reporting_ids_hard_limit) {
+        return false;
       }
       if (ad.allowed_reporting_origins) {
         if (ad.allowed_reporting_origins->size() >
@@ -423,6 +434,32 @@ bool InterestGroup::IsValid() const {
   return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
 }
 
+// The logic in this method must be kept in sync with
+// PerformAdditionalJoinAndUpdateTimeValidations in
+// blink/renderer/modules/ad_auction/. The tests for this logic are also
+// there, so they can be compared against each other.
+bool InterestGroup::IsValidForJoinAndUpdate() const {
+  if (!ads ||
+      !base::FeatureList::IsEnabled(
+          features::kFledgeLimitSelectableBuyerAndSellerReportingIds) ||
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get() <
+          0) {
+    return true;
+  }
+
+  size_t selectable_buyer_and_seller_reporting_ids_soft_limit =
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get();
+  for (const auto& ad : ads.value()) {
+    if (ad.selectable_buyer_and_seller_reporting_ids &&
+        ad.selectable_buyer_and_seller_reporting_ids->size() >
+            selectable_buyer_and_seller_reporting_ids_soft_limit) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// If this is changed, also change blink::EstimateBlinkInterestGroupSize().
 size_t InterestGroup::EstimateSize() const {
   size_t size = 0u;
   size += owner.Serialize().size();

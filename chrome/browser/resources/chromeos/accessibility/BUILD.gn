@@ -32,7 +32,7 @@ group("build") {
       "accessibility_common:build",
       "enhanced_network_tts:build",
       "select_to_speak:build",
-      "switch_access:build",
+      "switch_access/mv2:build",
     ]
   }
 }
@@ -91,25 +91,12 @@ group("browser_tests") {
   if (is_chromeos_ash) {
     deps = [
       "accessibility_common:browser_tests",
+      "braille_ime:browser_tests",
       "chromevox:browser_tests",
       "common:browser_tests",
       "enhanced_network_tts:browser_tests",
       "select_to_speak:browser_tests",
-      "switch_access:browser_tests",
+      "switch_access/mv2:browser_tests",
     ]
   }
-}
-
-group("unit_tests_js") {
-  testonly = true
-  if (is_chromeos_ash) {
-    deps = [ ":misc_unit_tests_js" ]
-  }
-}
-
-js2gtest("misc_unit_tests_js") {
-  test_type = "unit"
-  sources = [ "braille_ime/braille_ime_unittest.js" ]
-  gen_include_files = [ "common/testing/accessibility_test_base.js" ]
-  extra_js_files = [ "braille_ime/braille_ime.js" ]
 }

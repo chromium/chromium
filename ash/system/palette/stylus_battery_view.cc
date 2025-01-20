@@ -24,7 +24,8 @@ StylusBatteryView::StylusBatteryView() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
   if (stylus_battery_delegate_.IsBatteryStatusStale()) {
-    icon_->SetImage(stylus_battery_delegate_.GetBatteryStatusUnknownImage());
+    icon_->SetImage(ui::ImageModel::FromImageSkia(
+        stylus_battery_delegate_.GetBatteryStatusUnknownImage()));
     icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP));
   }
@@ -52,8 +53,8 @@ void StylusBatteryView::OnBatteryLevelUpdated() {
     SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
   }
 
-  icon_->SetImage(
-      stylus_battery_delegate_.GetBatteryImage(icon_->GetColorProvider()));
+  icon_->SetImage(ui::ImageModel::FromImageSkia(
+      stylus_battery_delegate_.GetBatteryImage(icon_->GetColorProvider())));
   label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
                      stylus_battery_delegate_.IsBatteryStatusEligible() &&
                      !stylus_battery_delegate_.IsBatteryStatusStale() &&

@@ -1053,10 +1053,10 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
 
   std::vector<struct v4l2_ctrl_av1_tile_group_entry> tile_group_entry_vectors;
 
-  FillTileGroupParams(
-      &tile_group_entry_vectors,
-      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
-      current_frame_header.tile_info, obu_parser_->tile_buffers());
+  FillTileGroupParams(&tile_group_entry_vectors,
+                      base::span(ivf_frame_data_, ivf_frame_header_.frame_size),
+                      current_frame_header.tile_info,
+                      obu_parser_->tile_buffers());
 
   ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY,
                               .size = base::checked_cast<__u32>(

@@ -512,7 +512,7 @@ class FileSystemURLLoaderFactoryTest
     const std::string storage_domain = url.DeprecatedGetOriginAsURL().host();
     mojo::Remote<network::mojom::URLLoaderFactory> factory(
         CreateFileSystemURLLoaderFactory(
-            render_frame_host()->GetProcess()->GetID(),
+            render_frame_host()->GetProcess()->GetDeprecatedID(),
             render_frame_host()->GetFrameTreeNodeId(), file_system_context,
             storage_domain,
             blink::StorageKey::CreateFirstParty(url::Origin::Create(url))));

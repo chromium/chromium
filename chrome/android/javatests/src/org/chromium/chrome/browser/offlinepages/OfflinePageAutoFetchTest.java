@@ -51,7 +51,6 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for auto-fetch-on-net-error-page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -461,12 +460,6 @@ public class OfflinePageAutoFetchTest {
                                         .launchUrl(url, TabLaunchType.FROM_LINK));
         ChromeTabUtils.waitForInteractable(tab);
         return tab;
-    }
-
-    private boolean isErrorPage(final Tab tab) {
-        final AtomicReference<Boolean> result = new AtomicReference<Boolean>(false);
-        ThreadUtils.runOnUiThreadBlocking(() -> result.set(tab.isShowingErrorPage()));
-        return result.get();
     }
 
     private void closeTab(Tab tab) {

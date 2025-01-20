@@ -164,7 +164,7 @@ Response CastHandler::StopCasting(const std::string& in_sink_name) {
   return Response::Success();
 }
 
-Response CastHandler::Enable(protocol::Maybe<std::string> in_presentation_url) {
+Response CastHandler::Enable(std::optional<std::string> in_presentation_url) {
   Response init_response = EnsureInitialized();
   if (!init_response.IsSuccess())
     return init_response;
@@ -251,7 +251,7 @@ MediaRoute::Id CastHandler::GetRouteIdForSink(
 }
 
 void CastHandler::StartObservingForSinks(
-    protocol::Maybe<std::string> presentation_url) {
+    std::optional<std::string> presentation_url) {
   media_router::MediaSource mirroring_source(media_router::MediaSource::ForTab(
       sessions::SessionTabHelper::IdForTab(web_contents_).id()));
   url::Origin origin = url::Origin();

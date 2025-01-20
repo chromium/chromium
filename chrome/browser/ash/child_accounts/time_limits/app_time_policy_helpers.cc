@@ -44,18 +44,10 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
     return apps::AppType::kExtension;
   if (app_type == "BRUSCHETTA")
     return apps::AppType::kBruschetta;
-  if (app_type == "BUILT-IN")
-    return apps::AppType::kBuiltIn;
   if (app_type == "CROSTINI")
     return apps::AppType::kCrostini;
   if (app_type == "EXTENSION")
     return apps::AppType::kChromeApp;
-  if (app_type == "LACROS-BROWSER")
-    return apps::AppType::kStandaloneBrowser;
-  if (app_type == "LACROS-CHROME-APP")
-    return apps::AppType::kStandaloneBrowserChromeApp;
-  if (app_type == "LACROS-EXTENSION")
-    return apps::AppType::kStandaloneBrowserExtension;
   if (app_type == "PLUGIN-VM")
     return apps::AppType::kPluginVm;
   if (app_type == "REMOTE")
@@ -64,8 +56,15 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
     return apps::AppType::kSystemWeb;
   if (app_type == "WEB")
     return apps::AppType::kWeb;
-  if (app_type == "UNKNOWN")
+  // TODO(crbug.com/373972275): remove LACROS-BROWSER, BUILT-IN,
+  // LACROS-CHROME-APP and LACROS-EXTENSION once it's guaranteed that old
+  // LACROS-CHROME-APP and LACROS-EXTENSION entries got purged as it looks like
+  // they come from disk (PerfService).
+  if (app_type == "UNKNOWN" || app_type == "BUILT-IN" ||
+      app_type == "LACROS-EXTENSION" || app_type == "LACROS-CHROME-APP" ||
+      app_type == "LACROS-BROWSER") {
     return apps::AppType::kUnknown;
+  }
 
   NOTREACHED();
 }
@@ -80,18 +79,10 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
       return "BROWSER-EXTENSION";
     case apps::AppType::kBruschetta:
       return "BRUSCHETTA";
-    case apps::AppType::kBuiltIn:
-      return "BUILT-IN";
     case apps::AppType::kCrostini:
       return "CROSTINI";
     case apps::AppType::kChromeApp:
       return "EXTENSION";
-    case apps::AppType::kStandaloneBrowser:
-      return "LACROS-BROWSER";
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return "LACROS-CHROME-APP";
-    case apps::AppType::kStandaloneBrowserExtension:
-      return "LACROS-EXTENSION";
     case apps::AppType::kPluginVm:
       return "PLUGIN-VM";
     case apps::AppType::kRemote:

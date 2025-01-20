@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 
+#include <jni.h>
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/global_routing_id.h"

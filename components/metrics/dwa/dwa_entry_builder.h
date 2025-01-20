@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "base/component_export.h"
 #include "components/metrics/dwa/dwa_entry_builder_base.h"
 
 namespace dwa {
@@ -27,8 +26,7 @@ namespace dwa {
 // builder.SetMetric("FirstPaint", first_paint_time);
 // builder.AddToStudiesOfInterest("Study1");
 // builder.Record(dwa_recorder);
-class COMPONENT_EXPORT(DWA) DwaEntryBuilder final
-    : public dwa::internal::DwaEntryBuilderBase {
+class DwaEntryBuilder final : public dwa::internal::DwaEntryBuilderBase {
  public:
   explicit DwaEntryBuilder(std::string_view event_name);
 

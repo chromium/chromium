@@ -91,7 +91,7 @@ std::u16string ConvertSidToString(SID* sid) {
 bool GetRawMachineId(std::u16string* sid_string, int* volume_id) {
   // Calculate the Windows SID.
 
-  wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
+  wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {};
   DWORD size = std::size(computer_name);
 
   if (GetComputerNameW(computer_name, &size)) {

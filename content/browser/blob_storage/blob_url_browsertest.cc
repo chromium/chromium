@@ -2,27 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
+ public:
+  MockContentBrowserClient() = default;
+  ~MockContentBrowserClient() override = default;
+
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (content::RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
+};
+}  // namespace
 
 // Tests of the blob: URL scheme.
 class BlobUrlBrowserTest : public ContentBrowserTest {
@@ -36,7 +55,15 @@ class BlobUrlBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    client_ = std::make_unique<MockContentBrowserClient>();
   }
+
+  MockContentBrowserClient& GetMockClient() { return *client_; }
+
+  void TearDownOnMainThread() override { client_.reset(); }
+
+ private:
+  std::unique_ptr<MockContentBrowserClient> client_;
 };
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
@@ -173,6 +200,42 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   std::string window_location =
       EvalJs(new_contents, "window.location.href;").ExtractString();
   EXPECT_FALSE(base::MatchPattern(window_location, "*spoof*"));
+}
+
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
+                       TestUseCounterForCrossPartitionBlobURLFetch) {
+  GURL main_url = embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(b(c))");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* rfh_c = shell()->web_contents()->GetPrimaryMainFrame();
+
+  std::string blob_url_string =
+      EvalJs(
+          rfh_c,
+          "const blob_url = URL.createObjectURL(new "
+          "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+          "blob_url;")
+          .ExtractString();
+  GURL blob_url(blob_url_string);
+
+  RenderFrameHost* rfh_b = ChildFrameAt(rfh_c, 0);
+  RenderFrameHost* rfh_c_2 = ChildFrameAt(rfh_b, 0);
+
+  EXPECT_CALL(
+      GetMockClient(),
+      LogWebFeatureForCurrentPage(
+          testing::_, blink::mojom::WebFeature::kCrossPartitionBlobURLFetch))
+      .Times(1);
+
+  EXPECT_TRUE(ExecJs(
+      rfh_c_2,
+      JsReplace(
+          "async function test() {"
+          "const blob = await fetch($1).then(response => response.blob());"
+          "await blob.text();}"
+          "test();",
+          blob_url)));
 }
 
 class BlobURLBrowserTestP : public base::test::WithFeatureOverride,

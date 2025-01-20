@@ -11,6 +11,7 @@
 
 static void* kObservingContext = &kObservingContext;
 
+#pragma mark - BETextPosition
 @interface BETextPosition : UITextPosition {
   CGRect rect_;
 }
@@ -28,6 +29,7 @@ static void* kObservingContext = &kObservingContext;
 }
 @end
 
+#pragma mark - BETextRange
 @interface BETextRange : UITextRange {
   CGRect start_;
   CGRect end_;
@@ -51,7 +53,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (BOOL)isEmpty {
-  return NO;
+  return CGRectEqualToRect(start_, end_);
 }
 
 - (UITextPosition*)start {
@@ -62,6 +64,7 @@ static void* kObservingContext = &kObservingContext;
 }
 @end
 
+#pragma mark - BETextSelectionHandles
 @interface BETextSelectionHandles : UITextSelectionRect
 - (instancetype)initWithCGRect:(CGRect)rect atStart:(BOOL)start;
 @end
@@ -123,7 +126,7 @@ static void* kObservingContext = &kObservingContext;
 @end
 
 @implementation RenderWidgetUIView
-@synthesize textInput = _textInput;
+@synthesize tokenizer;
 
 - (instancetype)initWithWidget:
     (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
@@ -135,8 +138,6 @@ static void* kObservingContext = &kObservingContext;
     self.multipleTouchEnabled = YES;
     self.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _textInput = [[RenderWidgetUIViewTextInput alloc] initWithWidget:view];
-    [self addSubview:_textInput];
   }
   return self;
 }
@@ -178,11 +179,6 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   CHECK(_view);
-  if (!_view->HasFocus()) {
-    if ([self becomeFirstResponder]) {
-      _view->OnFirstResponderChanged();
-    }
-  }
   for (UITouch* touch in touches) {
     blink::WebTouchEvent webTouchEvent = input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchStart, touch, event, self,
@@ -267,9 +263,16 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (BOOL)isEditable {
-  // Reflects the ability to modify text, but since Blink handles editing
-  // it's unclear what this does. For now, always set this to NO.
-  return NO;
+  return _isEditable;
+}
+
+- (BOOL)setIsEditable:(BOOL)isEditable {
+  if (isEditable == _isEditable) {
+    return NO;
+  }
+
+  _isEditable = isEditable;
+  return YES;
 }
 
 - (BOOL)automaticallyPresentEditMenu {
@@ -344,11 +347,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (NSString*)selectedText {
-  if (!_view || !_view->GetTextInputManager()) {
-    return nil;
-  }
-  const content::TextInputManager::TextSelection* selection =
-      _view->GetTextInputManager()->GetTextSelection(_view.get());
+  auto* selection = [self textSelection];
   if (!selection || !selection->selected_text().length()) {
     return nil;
   }
@@ -360,18 +359,13 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (CGRect)selectionClipRect {
-  if (!_view || !_view->GetTextInputManager()) {
+  auto rect = [self textControlBounds];
+  if (!rect) {
     return CGRectNull;
   }
-  const content::TextInputManager::SelectionRegion* region =
-      _view->GetTextInputManager()->GetSelectionRegion(_view.get());
-  if (!region || !region->focus.HasHandle()) {
-    return CGRectNull;
-  }
-
   // Need to get a more realistic rect here. If this clip is too small,
   // selection handles won't draw correctly.
-  return CGRectMake(-1000, -1000, 10000, 10000);
+  return CGRectMake(rect->x(), rect->y(), rect->width(), rect->height());
 }
 
 - (id<BEExtendedTextInputTraits>)extendedTextInputTraits {
@@ -399,6 +393,30 @@ static void* kObservingContext = &kObservingContext;
 - (void)handleKeyEntry:(BEKeyEntry*)entry
     withCompletionHandler:
         (void (^)(BEKeyEntry* theEvent, BOOL wasHandled))completionHandler {
+  // Temporary implementation: To ensure the basic input functionality works
+  // properly it appears necessary to call
+  // shouldDeferEventHandlingToSystemForTextInput twice as shown below.
+
+  BEKeyEntryContext* context =
+      [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
+  [context setDocumentEditable:YES];
+  [context setShouldEvaluateForInputSystemHandling:YES];
+  [[self asyncInputDelegate]
+      shouldDeferEventHandlingToSystemForTextInput:self
+                                           context:context];
+
+  if (entry.state == BEKeyPressState::BEKeyPressStateDown) {
+    BEKeyEntryContext* contextForKeyDown =
+        [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
+    [contextForKeyDown setDocumentEditable:YES];
+    [contextForKeyDown setShouldInsertCharacter:YES];
+    [[self asyncInputDelegate]
+        shouldDeferEventHandlingToSystemForTextInput:self
+                                             context:contextForKeyDown];
+    completionHandler(entry, YES);
+  } else {
+    completionHandler(entry, NO);
+  }
 }
 
 - (void)shiftKeyStateChangedFromState:(BEKeyModifierFlags)oldState
@@ -407,6 +425,9 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)deleteInDirection:(UITextStorageDirection)direction
             toGranularity:(UITextGranularity)granularity {
+  CHECK(_view);
+  // TODO: bug 388320178 - support multi-emoji & direction
+  _view->DeleteSurroundingText(1, 0);
 }
 
 - (void)transposeCharactersAroundSelection {
@@ -417,6 +438,27 @@ static void* kObservingContext = &kObservingContext;
               options:(BETextReplacementOptions)options
     completionHandler:
         (void (^)(NSArray<UITextSelectionRect*>* rects))completionHandler {
+  auto* state = [self editState];
+  if (!state) {
+    _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
+                         gfx::Range::InvalidRange(), 0);
+  } else {
+    auto len = originalText.length;
+    if (state->selection.length() == 0) {
+      auto pos = state->selection.start();
+      auto start = pos > len ? pos - len : 0;
+      auto end = start + len;
+      gfx::Range replacementRange(start, end);
+      _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
+                           replacementRange, 0);
+    } else {
+      _view->ImeCommitText(base::SysNSStringToUTF16(replacementText),
+                           state->selection, 0);
+    }
+    gfx::Range replacementRange(0, originalText.length);
+  }
+  // TODO: bug 388320178 - still don't know what to do with this.
+  completionHandler(@[]);
 }
 
 - (void)requestTextContextForAutocorrectionWithCompletionHandler:
@@ -428,6 +470,11 @@ static void* kObservingContext = &kObservingContext;
             withCompletionHandler:
                 (void (^)(NSArray<UITextSelectionRect*>* rects))
                     completionHandler {
+  // TODO: bug 388320178 - need to implement this.
+  // During the input process, there are instances where the text system will
+  // continuously wait for the completionHandler to be called; if not, the
+  // on-screen keyboard will become unresponsive.
+  completionHandler(@[]);
 }
 
 - (void)requestPreferredArrowDirectionForEditMenuWithCompletionHandler:
@@ -476,11 +523,7 @@ static void* kObservingContext = &kObservingContext;
                             touchPhase:(BESelectionTouchPhase)touch
                            baseIsStart:(BOOL)boundaryIsStart
                                  flags:(BESelectionFlags)flags {
-  if (!_view || !_view->GetTextInputManager()) {
-    return;
-  }
-  const content::TextInputManager::SelectionRegion* region =
-      _view->GetTextInputManager()->GetSelectionRegion(_view.get());
+  auto* region = [self selectionRegion];
   if (!region || !region->focus.HasHandle()) {
     return;
   }
@@ -542,6 +585,7 @@ static void* kObservingContext = &kObservingContext;
                      completionHandler:(void (^)(BOOL selectionEndIsMoving))
                                            completionHandler {
   if (!_view) {
+    completionHandler(false);
     return;
   }
   _view->host()->delegate()->MoveRangeSelectionExtent(
@@ -678,24 +722,34 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (BOOL)hasText {
-  return YES;
+  const ui::mojom::TextInputState* state = [self editState];
+  if (state && state->value.has_value()) {
+    return state->value->size() > 0;
+  } else {
+    return NO;
+  }
 }
 
 - (void)insertText:(NSString*)text {
+  CHECK(_view);
+  if (text.length == 0) {
+    return;
+  }
+  _view->ImeCommitText(base::SysNSStringToUTF16(text),
+                       gfx::Range::InvalidRange(), 0);
 }
 
 - (void)deleteBackward {
+  CHECK(_view);
+  // TODO: bug 388320178 - support multi-emoji
+  _view->DeleteSurroundingText(1, 0);
 }
 
 - (void)setSelectedTextRange:(UITextRange*)range {
 }
 
 - (UITextRange*)selectedTextRange {
-  if (!_view || !_view->GetTextInputManager()) {
-    return nil;
-  }
-  const content::TextInputManager::SelectionRegion* region =
-      _view->GetTextInputManager()->GetSelectionRegion(_view.get());
+  auto* region = [self selectionRegion];
   if (region) {
     return [[BETextRange alloc] initWithRegion:region];
   }
@@ -771,13 +825,9 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
-  if (!_view || !_view->GetTextInputManager()) {
-    return @[];
-  }
+  auto* region = [self selectionRegion];
   // The following should instead use |range| rather than assuming
   // GetSelectionRegion. Consider this proof-of-concept only.
-  const content::TextInputManager::SelectionRegion* region =
-      _view->GetTextInputManager()->GetSelectionRegion(_view.get());
   if (!region || !region->focus.HasHandle() ||
       region->focus.type() == gfx::SelectionBound::CENTER) {
     return @[];
@@ -823,8 +873,91 @@ static void* kObservingContext = &kObservingContext;
   return nil;
 }
 
+- (const std::optional<gfx::Rect>)textControlBounds {
+  if (!_view || !_view->GetTextInputManager()) {
+    return std::nullopt;
+  }
+  return _view->GetTextInputManager()->GetTextControlBounds();
+}
+
+- (const content::TextInputManager::SelectionRegion*)selectionRegion {
+  if (!_view || !_view->GetTextInputManager()) {
+    return nil;
+  }
+  return _view->GetTextInputManager()->GetSelectionRegion(_view.get());
+}
+
+- (const content::TextInputManager::TextSelection*)textSelection {
+  if (!_view || !_view->GetTextInputManager()) {
+    return nil;
+  }
+  return _view->GetTextInputManager()->GetTextSelection(_view.get());
+}
+
+- (const ui::mojom::TextInputState*)editState {
+  if (!_view || !_view->GetTextInputManager()) {
+    return nil;
+  }
+  return _view->GetTextInputManager()->GetTextInputState();
+}
+
+- (NSString*)editText {
+  const ui::mojom::TextInputState* state = [self editState];
+  if (state && state->value.has_value()) {
+    const unichar* pchars = (const unichar*)state->value->c_str();
+    NSString* result = [NSString stringWithCharacters:pchars
+                                               length:state->value->size()];
+    return result;
+  } else {
+    return @"";
+  }
+}
+
 - (BOOL)isAccessibilityElement {
   return NO;
+}
+
+- (CGRect)firstRectForRange:(UITextRange*)range {
+  return CGRectZero;
+}
+
+- (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
+                    withBounds:(CGRect)bounds {
+  // Check for the visibility request and policy if VK APIs are enabled.
+  if (state.vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL) {
+    // policy is manual.
+    if (state.last_vk_visibility_request ==
+        ui::mojom::VirtualKeyboardVisibilityRequest::SHOW) {
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
+    } else if (state.last_vk_visibility_request ==
+               ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
+      [self hideKeyboard];
+    }
+  } else {
+    bool hide = state.always_hide_ime ||
+                state.mode == ui::TextInputMode::TEXT_INPUT_MODE_NONE ||
+                state.type == ui::TextInputType::TEXT_INPUT_TYPE_NONE;
+    if (hide) {
+      [self hideKeyboard];
+    } else if (state.show_ime_if_needed) {
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
+    }
+  }
+}
+
+- (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds {
+  self.frame = bounds;
+  BOOL result = [self becomeFirstResponder];
+  [self reloadInputViews];
+  [self setIsEditable:result];
+}
+
+- (void)hideKeyboard {
+  [self resignFirstResponder];
+  [self reloadInputViews];
+  [self setIsEditable:NO];
 }
 
 @end

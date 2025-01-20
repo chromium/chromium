@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared iron-flex">
+    <style include="cr-shared-style settings-shared">
       :host {
         display: block;
       }
@@ -144,8 +144,10 @@
             <div id="appIcon"
                 style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
             </div>
-            <div class="middle protocol-host">
-              <span class="url-directionality">[[item.host]]</span>
+            <div class="middle protocol-app-name">
+              <span class$="[[getNameCssClass_(item)]]">
+                [[getNameText_(item)]]
+              </span>
             </div>
             <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
                 on-click="onRemoveAppAllowedHandlerButtonClick_"
@@ -171,8 +173,10 @@
             <div id="appIcon"
                 style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
             </div>
-            <div class="middle protocol-host">
-              <span class="url-directionality">[[item.host]]</span>
+            <div class="middle protocol-app-name">
+              <span class$="[[getNameCssClass_(item)]]">
+                [[getNameText_(item)]]
+              </span>
             </div>
             <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
                 on-click="onRemoveAppDisallowedHandlerButtonClick_"

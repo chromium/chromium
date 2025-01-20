@@ -6,12 +6,16 @@ package org.chromium.ui.widget;
 
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -27,15 +31,18 @@ import java.util.PriorityQueue;
  * </ul>
  */
 @JNINamespace("ui")
+@NullMarked
 public class ToastManager {
     private static final int DURATION_SHORT_MS = 2000;
     private static final int DURATION_LONG_MS = 3500;
-
-    private static ToastManager sInstance;
+    private static final long DURATION_BETWEEN_TOASTS_MS = 500;
+    private static @Nullable ToastManager sInstance;
 
     // A queue for toasts waiting to be shown.
     private final PriorityQueue<Toast> mToastQueue =
             new PriorityQueue<>((toast1, toast2) -> toast1.getPriority() - toast2.getPriority());
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     // Handles toast events per SDK version.
     private interface ToastEvent {
@@ -47,7 +54,7 @@ public class ToastManager {
     private final ToastEvent mToastEvent;
 
     // Toast currently showing. {@code null} if none is showing.
-    private Toast mToast;
+    private @Nullable Toast mToast;
 
     static ToastManager getInstance() {
         if (sInstance == null) sInstance = new ToastManager();
@@ -56,9 +63,9 @@ public class ToastManager {
 
     private ToastManager() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mToastEvent = new ToastEventPreR(this::showNextToast);
+            mToastEvent = new ToastEventPreR(this::toastHidden);
         } else {
-            mToastEvent = new ToastEventR(this::showNextToast);
+            mToastEvent = new ToastEventR(this::toastHidden);
         }
     }
 
@@ -96,6 +103,7 @@ public class ToastManager {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     Toast getCurrentToast() {
         return mToast;
     }
@@ -118,6 +126,10 @@ public class ToastManager {
         return false;
     }
 
+    private void toastHidden() {
+        mHandler.postDelayed(() -> showNextToast(), DURATION_BETWEEN_TOASTS_MS);
+    }
+
     private void showNextToast() {
         mToast = mToastQueue.poll(); // Retrieves and removes head of the queue.
         if (mToast != null) {
@@ -133,7 +145,7 @@ public class ToastManager {
         mToastEvent.onCancel();
     }
 
-    private class ToastEventPreR implements ToastEvent {
+    private static class ToastEventPreR implements ToastEvent {
         private final Handler mHandler = new Handler();
         private final Runnable mPostToastRunnable;
 
@@ -144,7 +156,7 @@ public class ToastManager {
         @Override
         public void onShow(Toast toast) {
             int durationMs =
-                    (mToast.getDuration() == Toast.LENGTH_SHORT)
+                    (toast.getDuration() == Toast.LENGTH_SHORT)
                             ? DURATION_SHORT_MS
                             : DURATION_LONG_MS;
             mHandler.postDelayed(mPostToastRunnable, durationMs);

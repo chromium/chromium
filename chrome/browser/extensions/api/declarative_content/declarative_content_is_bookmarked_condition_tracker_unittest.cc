@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -77,7 +78,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -139,16 +140,16 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
     testing::AssertionResult result = testing::AssertionFailure();
     if (!is_bookmarked_predicate_success) {
       result << "IsBookmarkedPredicate(true): expected "
-             << (page_is_bookmarked ? "true" : "false") << " got "
-             << (page_is_bookmarked ? "false" : "true");
+             << base::ToString(page_is_bookmarked) << " got "
+             << base::ToString(!page_is_bookmarked);
     }
 
     if (!is_not_bookmarked_predicate_success) {
       if (!is_bookmarked_predicate_success)
         result << "; ";
       result << "IsBookmarkedPredicate(false): expected "
-             << (page_is_bookmarked ? "false" : "true") << " got "
-             << (page_is_bookmarked ? "true" : "false");
+             << base::ToString(!page_is_bookmarked) << " got "
+             << base::ToString(page_is_bookmarked);
     }
 
     return result;

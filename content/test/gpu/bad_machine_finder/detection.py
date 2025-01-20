@@ -322,6 +322,13 @@ def _ChanceOfExactlyNIndependentEvents(event_probability: decimal.Decimal,
     A decimal.Decimal object containing the chance that the event happened
     exactly |n| times.
   """
+  # Special case this to avoid 0**0, which results in an error when using
+  # decimal.Decimal.
+  if event_probability == 0:
+    if n == 0:
+      return decimal.Decimal(1)
+    return decimal.Decimal(0)
+
   # We use decimal.Decimal instead of float since math.comb() can produce
   # numbers that are too large to store in a float.
   combinations = decimal.Decimal(math.comb(total_events, n))

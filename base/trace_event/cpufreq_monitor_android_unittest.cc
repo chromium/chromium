@@ -4,9 +4,9 @@
 
 #include "base/trace_event/cpufreq_monitor_android.h"
 
-#include <list>
-
 #include <fcntl.h>
+
+#include <list>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -39,8 +39,9 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   // Returns the delay in ms for this task if there was a task to be run,
   // and -1 if there are no tasks in the queue.
   int64_t RunNextTask() {
-    if (delayed_tasks_.size() == 0)
+    if (delayed_tasks_.size() == 0) {
       return -1;
+    }
     auto time_delta = delayed_tasks_.front().first;
     std::move(delayed_tasks_.front().second).Run();
     delayed_tasks_.pop_front();
@@ -166,7 +167,10 @@ class CPUFreqMonitorTest : public testing::Test {
 
   void InitBasicCPUInfo() {
     std::vector<std::pair<unsigned int, unsigned int>> frequencies = {
-        {0, 500}, {2, 1000}, {4, 800}, {6, 750},
+        {0, 500},
+        {2, 1000},
+        {4, 800},
+        {6, 750},
     };
     std::vector<unsigned int> cpu_ids;
     for (auto& pair : frequencies) {

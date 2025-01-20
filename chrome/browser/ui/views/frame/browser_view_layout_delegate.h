@@ -18,7 +18,7 @@ class Rect;
 // for testing.
 class BrowserViewLayoutDelegate {
  public:
-  virtual ~BrowserViewLayoutDelegate() {}
+  virtual ~BrowserViewLayoutDelegate() = default;
 
   virtual bool ShouldDrawTabStrip() const = 0;
   virtual bool GetBorderlessModeEnabled() const = 0;

@@ -24,7 +24,7 @@ const CROS_SETTING_PREF_NAME = 'cros.device.peripheral_data_access_enabled';
 const LOCAL_STATE_PREF_NAME =
     'settings.local_state_device_pci_data_access_enabled';
 
-suite('with isRevampWayfindingEnabled set to true', () => {
+suite('Deep linking in old sync page', () => {
   let privacyPage: OsSettingsPrivacyPageElement;
   let browserProxy: TestPeripheralDataAccessBrowserProxy;
   let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
@@ -38,9 +38,6 @@ suite('with isRevampWayfindingEnabled set to true', () => {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({
-      isRevampWayfindingEnabled: true,
-    });
     const testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
 
@@ -62,7 +59,7 @@ suite('with isRevampWayfindingEnabled set to true', () => {
     await waitAfterNextRender(privacyPage);
 
     // Load the sync page.
-    Router.getInstance().navigateTo(routes.SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP);
     await flushTasks();
 
     // Make the sync page configurable.
@@ -137,7 +134,7 @@ suite('with isRevampWayfindingEnabled set to true', () => {
     const syncEncryptionOptionsSettingId =
         settingMojom.Setting.kNonSplitSyncEncryptionOptions.toString();
     params.append('settingId', syncEncryptionOptionsSettingId);
-    Router.getInstance().navigateTo(routes.SYNC, params);
+    Router.getInstance().navigateTo(routes.OS_SYNC_SETUP, params);
 
     // Flush to make sure the dropdown expands.
     flush();

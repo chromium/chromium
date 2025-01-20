@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
@@ -21,8 +22,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -242,7 +243,8 @@ TEST_F(OmniboxProviderTest, BadUrls) {
   to_produce.emplace_back(
       NewAnswerResult("badscheme", omnibox::AnswerType::ANSWER_TYPE_WEATHER));
   to_produce.emplace_back(NewOpenTabResult("http://?k=v"));
-  result.AppendMatches(to_produce);
+  // `destination_url` should be DCHECKed for validity when adding matches.
+  EXPECT_DCHECK_DEATH_WITH(result.AppendMatches(to_produce), "");
   ProduceResults(std::move(result));
 
   // None of the results should be accepted.

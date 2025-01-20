@@ -123,6 +123,8 @@ bool PrefetchBrowserInitiatedTriggersEnabled();
 // `PrefetchService::GetPrefetchToServe()`.
 CONTENT_EXPORT bool UseNewWaitLoop();
 
+size_t GetPrefetchDataPipeTeeBodySizeLimit();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

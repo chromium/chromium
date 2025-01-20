@@ -21,13 +21,17 @@ inline char* strdup(const char* str) {
   return ::strdup(str);
 }
 
-inline int vsnprintf(char* buffer, size_t size,
-                     const char* format, va_list arguments) {
+inline int vsnprintf(char* buffer,
+                     size_t size,
+                     const char* format,
+                     va_list arguments) {
   return ::vsnprintf(buffer, size, format, arguments);
 }
 
-inline int vswprintf(wchar_t* buffer, size_t size,
-                     const wchar_t* format, va_list arguments) {
+inline int vswprintf(wchar_t* buffer,
+                     size_t size,
+                     const wchar_t* format,
+                     va_list arguments) {
   DCHECK(IsWprintfFormatPortable(format));
   return ::vswprintf(buffer, size, format, arguments);
 }

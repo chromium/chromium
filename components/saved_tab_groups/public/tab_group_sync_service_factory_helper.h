@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/version_info/channel.h"
+#include "components/saved_tab_groups/public/synthetic_field_trial_helper.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 class PrefService;
@@ -35,7 +36,8 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
     syncer::DeviceInfoTracker* device_info_tracker,
     optimization_guide::OptimizationGuideDecider* optimization_guide,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<CollaborationFinder> collaboration_finder);
+    std::unique_ptr<CollaborationFinder> collaboration_finder,
+    SyntheticFieldTrialHelper* synthetic_field_trial_helper);
 
 }  // namespace tab_groups
 

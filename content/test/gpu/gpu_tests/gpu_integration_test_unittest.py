@@ -6,11 +6,12 @@
 # pylint: disable=protected-access
 
 
+import copy
 import json
 import os
 import tempfile
 import typing
-from typing import Dict, List, Optional, Set, Tuple, Type
+from typing import Any, Dict, List, Optional, Set, Tuple, Type
 import unittest
 import unittest.mock as mock
 
@@ -33,6 +34,7 @@ import gpu_path_util
 
 from py_utils import tempfile_ext
 
+from telemetry.internal.browser import browser_options as bo
 from telemetry.internal.util import binary_manager
 from telemetry.internal.platform import system_info
 from telemetry.testing import browser_test_runner
@@ -577,6 +579,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
 
     gpu_integration_test.GpuIntegrationTest.browser = None
     gpu_integration_test.GpuIntegrationTest.platform = None
+    gpu_integration_test.GpuIntegrationTest._finder_options = mock.MagicMock()
     with mock.patch.object(
         gpu_integration_test.serially_executed_browser_test_case.\
             SeriallyExecutedBrowserTestCase,
@@ -636,8 +639,255 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       self.assertEqual(set(actual_skips), set(test_args.skips))
 
 
-def _ExtractTestResults(test_result: Dict[str, Dict]
-                        ) -> Tuple[List[str], List[str], List[str]]:
+def RunFakeBrowserStartWithArgsAndGpuInfo(additional_args: List[str],
+                                          gpu_info: Any) -> None:
+  cls = gpu_integration_test.GpuIntegrationTest
+
+  def FakeStartBrowser():
+    cls.browser = mock.Mock()
+    cls.browser.tabs = [mock.Mock()]
+    mock_system_info = mock.Mock()
+    mock_system_info.gpu = gpu_info
+    cls.browser.GetSystemInfo = mock.Mock(return_value=mock_system_info)
+
+  with mock.patch(
+      'telemetry.testing.serially_executed_browser_test_case.'
+      'SeriallyExecutedBrowserTestCase.StartBrowser',
+      side_effect=FakeStartBrowser):
+    options = fakes.CreateBrowserFinderOptions()
+    cls._finder_options = options
+    cls._original_finder_options = options
+    cls.platform = None
+    cls.CustomizeBrowserArgs(additional_args)
+    cls.StartBrowser()
+
+
+def CreateGpuInfo(aux_attributes: Optional[dict] = None,
+                  feature_statuses: Optional[dict] = None) -> mock.Mock:
+  aux_attributes = aux_attributes or {}
+  feature_statuses = feature_statuses or {}
+
+  gpu_info = mock.Mock()
+  gpu_info.aux_attributes = aux_attributes
+  gpu_info.feature_status = feature_statuses
+  device = mock.Mock()
+  device.device_string = 'device_string'
+  gpu_info.devices = [device]
+  return gpu_info
+
+
+# TODO(crbug.com/372740546): Find a way to properly unittest the cases
+# where --gpu-disabled is passed in as well. Currently, we run into
+# problems due to cls.platform being None, which causes problems with
+# GPU code in _GenerateAndSanitizeBrowserArgs. Setting cls.platform to
+# non-None values causes Telemetry code to fail due to the platform
+# changing when it expects it to stay constant throughout the entire
+# suite.
+class FeatureVerificationUnittest(unittest.TestCase):
+
+  # pylint: disable=no-self-use
+  def testVerifyGLBackendSuccessUnspecified(self):
+    """Tests GL backend verification that passes w/o a backend specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo([], gpu_info)
+
+  def testVerifyGLBackendSuccessSpecified(self):
+    """Tests GL backend verification that passes w/ a backend specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--use-gl=angle'], gpu_info)
+
+  def testVerifyGLBackendFailure(self):
+    """Tests GL backend verification that fails."""
+    gpu_info = CreateGpuInfo(aux_attributes={})
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested GL backend \\(angle\\) had no effect on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--use-gl=angle'], gpu_info)
+
+  def testVerifyANGLEBackendSuccessUnspecified(self):
+    """Tests ANGLE backend verification that passes w/o a backend specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo([], gpu_info)
+
+  def testVerifyANGLEBackendSuccessSpecified(self):
+    """Tests ANGLE backend verification that passes w/ a backend specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE OpenGL',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--use-angle=gl'], gpu_info)
+
+  def testVerifyANGLEBackendFailureUnknownBackend(self):
+    """Tests ANGLE backend verification failure due to an unknown backend."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE foo',
+    })
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested ANGLE backend \\(foo\\) had no effect on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--use-angle=foo'], gpu_info)
+
+  def testVerifyANGLEBackendFailureMismatchedBackend(self):
+    """Tests ANGLE backend verification failure due to mismatched backends."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'ANGLE Vulkan',
+    })
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested ANGLE backend \\(gl\\) had no effect on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--use-angle=gl'], gpu_info)
+
+  def testVerifyCommandDecoderSuccessUnspecified(self):
+    """Tests cmd decoder verification that passes w/o a decoder specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'passthrough_cmd_decoder': True,
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo([], gpu_info)
+
+  def testVerifyCommandDecoderSuccessSpecified(self):
+    """Tests cmd decoder verification that passes w/ a decoder specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'passthrough_cmd_decoder': True,
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--use-cmd-decoder=passthrough'],
+                                          gpu_info)
+
+  def testVerifyCommandDecoderFailureUnknownDecoder(self):
+    """Tests cmd decoder verification that fails due to an unknown decoder."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'passthrough_cmd_decoder': True,
+    })
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested command decoder \\(foo\\) had no effect on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--use-cmd-decoder=foo'], gpu_info)
+
+  def testVerifyCommandDecoderFailureMismatchedDecoder(self):
+    """Tests cmd decoder verification that fails due to a mismatched decoder."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'passthrough_cmd_decoder': False,
+    })
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested command decoder \\(passthrough\\) had no effect on the '
+        'browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--use-cmd-decoder=passthrough'],
+                                            gpu_info)
+
+  def testVerifySkiaGraphiteSuccessUnspecified(self):
+    """Tests Skia Graphite verification that passes w/o specification."""
+    gpu_info = CreateGpuInfo(feature_statuses={
+        'skia_graphite': 'enabled_on',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo([], gpu_info)
+
+  def testVerifySkiaGraphiteSuccessSpecified(self):
+    """Tests Skia Graphite verification that passes w/ specification."""
+    gpu_info = CreateGpuInfo(feature_statuses={
+        'skia_graphite': 'enabled_on',
+    })
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-features=SkiaGraphite'],
+                                          gpu_info)
+
+    gpu_info = CreateGpuInfo(feature_statuses={})
+    RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-features=SkiaGraphite'],
+                                          gpu_info)
+
+  def testVerifySkiaGraphiteFailureMismatchedStatus(self):
+    """Tests Skia Graphite verification that fails due to mismatched status."""
+    gpu_info = CreateGpuInfo(feature_statuses={})
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested Skia Graphite status \\(graphite-enabled\\) had no effect '
+        'on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--enable-features=SkiaGraphite'],
+                                            gpu_info)
+
+    gpu_info = CreateGpuInfo(feature_statuses={
+        'skia_graphite': 'enabled_on',
+    })
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Requested Skia Graphite status \\(graphite-disabled\\) had no effect '
+        'on the browser:.*'):
+      RunFakeBrowserStartWithArgsAndGpuInfo(['--disable-features=SkiaGraphite'],
+                                            gpu_info)
+
+  # pylint: enable=no-self-use
+
+
+class PreemptArgsUnittest(unittest.TestCase):
+
+  def testNoConflictIsNoOp(self):
+    """Tests that no conflict arguments results in a no-op."""
+    options = bo.BrowserOptions()
+    options.AppendExtraBrowserArgs(['--use-angle=gl', '--another-arg'])
+    expected_browser_args = copy.deepcopy(options.extra_browser_args)
+    gpu_integration_test._PreemptArguments(options,
+                                           ['--use-webgpu-adapter=swiftshader'])
+    self.assertEqual(options.extra_browser_args, expected_browser_args)
+
+  def testConflictingArgsRemoved(self):
+    for arg in gpu_integration_test._ARGS_TO_PREEMPT:
+      options = bo.BrowserOptions()
+      options.AppendExtraBrowserArgs([f'{arg}=a', '--another-arg'])
+      gpu_integration_test._PreemptArguments(options,
+                                             [f'{arg}=b', '--yet-another-arg'])
+      self.assertEqual(options.extra_browser_args, set(['--another-arg']))
+
+
+class GetGPUInfoErrorStringUnittest(unittest.TestCase):
+
+  def testMinimalInformation(self):
+    """Tests error string generation w/ the minimum possible information."""
+    gpu_info = CreateGpuInfo()
+    expected_error = 'primary gpu=device_string'
+    self.assertEqual(gpu_integration_test._GetGPUInfoErrorString(gpu_info),
+                     expected_error)
+
+  def testGLRenderer(self):
+    """Tests error string generation w/ the GL renderer specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'foo',
+    })
+    expected_error = 'primary gpu=device_string, gl_renderer=foo'
+    self.assertEqual(gpu_integration_test._GetGPUInfoErrorString(gpu_info),
+                     expected_error)
+
+  def testFeatureStatuses(self):
+    """Tests error string generation w/ feature statuses specified."""
+    gpu_info = CreateGpuInfo(feature_statuses={
+        'featureA': 'on',
+        'featureB': 'off',
+    })
+    expected_error = ('primary gpu=device_string, '
+                      'feature_statuses=featureA=on,featureB=off')
+    self.assertEqual(gpu_integration_test._GetGPUInfoErrorString(gpu_info),
+                     expected_error)
+
+  def testGLRendererAndFeatureStatuses(self):
+    """Tests error string generation w/ GL renderer/feature status specified."""
+    gpu_info = CreateGpuInfo(aux_attributes={
+        'gl_renderer': 'foo',
+    },
+                             feature_statuses={
+                                 'featureA': 'on',
+                                 'featureB': 'off'
+                             })
+    expected_error = ('primary gpu=device_string, '
+                      'gl_renderer=foo, '
+                      'feature_statuses=featureA=on,featureB=off')
+    self.assertEqual(gpu_integration_test._GetGPUInfoErrorString(gpu_info),
+                     expected_error)
+
+
+def _ExtractTestResults(
+    test_result: Dict[str, Dict]) -> Tuple[List[str], List[str], List[str]]:
   delimiter = test_result['path_delimiter']
   failures = []
   successes = []

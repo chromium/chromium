@@ -54,7 +54,11 @@ bool BackgroundLoaderContents::IsNeverComposited(
 
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {
   // Do nothing. Other pages should not be able to close a background page.
-  NOTREACHED(base::NotFatalUntil::M132);
+  //
+  // TODO(crbug.com/374382473): This used to be NOTREACHED() but is reachable as
+  // of 2024-11-20. It should either be made not reachable (and the NOTREACHED()
+  // added back) or document why this should be reachable (as opposed to the
+  // "should not be able to close" in the comment above).
 }
 
 bool BackgroundLoaderContents::ShouldSuppressDialogs(

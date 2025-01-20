@@ -322,7 +322,7 @@ public class WarmupManager {
      * @param type TabLaunchType of the requested tab.
      * @return the spare Tab.
      */
-    public Tab takeSpareTab(Profile profile, @TabLaunchType int type) {
+    public Tab takeSpareTab(Profile profile, boolean initiallyHidden, @TabLaunchType int type) {
         ThreadUtils.assertOnUiThread();
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareTab")) {
             if (mSpareTab.getProfile() != profile) {
@@ -334,6 +334,10 @@ public class WarmupManager {
 
             spareTab.setTabLaunchType(type);
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_USED;
+
+            if (!initiallyHidden) {
+                spareTab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
+            }
 
             // Record the SpareTabFinalStatus once its used.
             recordSpareTabFinalStatusHistogram(mSpareTabFinalStatus);

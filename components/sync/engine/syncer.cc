@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -51,13 +53,13 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case CLIENT_DATA_OBSOLETE:
       return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
     case ENCRYPTION_OBSOLETE:
-      return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
+      return SyncerErrorValueForUma::kServerReturnEncryptionObsolete;
     case UNKNOWN_ERROR:
       return SyncerErrorValueForUma::kServerReturnUnknownError;
     case CONFLICT:
       return SyncerErrorValueForUma::kServerReturnConflict;
     case INVALID_MESSAGE:
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      return SyncerErrorValueForUma::kServerReturnInvalidMessage;
   }
   NOTREACHED();
 }
@@ -70,13 +72,13 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
       return SyncerErrorValueForUma::kNetworkConnectionUnavailable;
     case SyncerError::Type::kHttpError:
       if (error.GetHttpErrorOrDie() == net::HTTP_UNAUTHORIZED) {
-        return SyncerErrorValueForUma::kSyncAuthError;
+        return SyncerErrorValueForUma::kHttpAuthError;
       }
-      return SyncerErrorValueForUma::kSyncServerError;
+      return SyncerErrorValueForUma::kHttpError;
     case SyncerError::Type::kProtocolError:
       return GetSyncerErrorValueForUma(error.GetProtocolErrorOrDie());
     case SyncerError::Type::kProtocolViolationError:
-      return SyncerErrorValueForUma::kServerResponseValidationFailed;
+      return SyncerErrorValueForUma::kProtocolViolationError;
   }
   NOTREACHED();
 }
@@ -99,6 +101,33 @@ void HandleCycleBegin(SyncCycle* cycle) {
   cycle->mutable_status_controller()->UpdateStartTime();
   cycle->mutable_status_controller()->clear_updated_types();
   cycle->SendEventNotification(SyncCycleEvent::SYNC_CYCLE_BEGIN);
+}
+
+void LogCommitResult(const SyncerError& error,
+                     const DataTypeSet& request_types,
+                     base::TimeTicks start_time) {
+  constexpr char kCommitLatencyPrefix[] = "Sync.CommitLatency";
+  constexpr char kCommitResponsePrefix[] = "Sync.CommitResponse";
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+
+  base::UmaHistogramEnumeration(kCommitResponsePrefix,
+                                GetSyncerErrorValueForUma(error));
+  for (DataType type : request_types) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kCommitResponsePrefix, ".", DataTypeToHistogramSuffix(type)}),
+        GetSyncerErrorValueForUma(error));
+  }
+
+  if (error.type() == SyncerError::Type::kSuccess) {
+    base::UmaHistogramMediumTimes(kCommitLatencyPrefix, latency);
+    for (DataType type : request_types) {
+      base::UmaHistogramMediumTimes(
+          base::StrCat(
+              {kCommitLatencyPrefix, ".", DataTypeToHistogramSuffix(type)}),
+          latency);
+    }
+  }
 }
 
 }  // namespace
@@ -229,16 +258,12 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
       break;
     }
 
+    base::TimeTicks commit_start_time = base::TimeTicks::Now();
     SyncerError error = commit->PostAndProcessResponse(
         nudge_tracker, cycle, cycle->mutable_status_controller(),
         cycle->context()->extensions_activity());
-    base::UmaHistogramEnumeration("Sync.CommitResponse",
-                                  GetSyncerErrorValueForUma(error));
-    for (DataType type : commit->GetContributingDataTypes()) {
-      const std::string kPrefix = "Sync.CommitResponse.";
-      base::UmaHistogramEnumeration(kPrefix + DataTypeToHistogramSuffix(type),
-                                    GetSyncerErrorValueForUma(error));
-    }
+    LogCommitResult(error, commit->GetContributingDataTypes(),
+                    commit_start_time);
     if (error.type() != SyncerError::Type::kSuccess) {
       return error;
     }

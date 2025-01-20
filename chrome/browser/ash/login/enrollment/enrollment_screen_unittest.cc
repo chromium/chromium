@@ -44,6 +44,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -288,7 +289,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, Show()).WillOnce([this, license_type]() {
       login::OnlineSigninArtifacts signin_artifacts;
       signin_artifacts.email = kTestUserEmail;
-      signin_artifacts.gaia_id = kTestUserGaiaId;
+      signin_artifacts.gaia_id = GaiaId(kTestUserGaiaId);
       signin_artifacts.password = kTestUserPassword;
       signin_artifacts.using_saml = false;
 
@@ -584,7 +585,7 @@ class EnrollmentAddUserTest : public EnrollmentScreenBaseTest {
     EXPECT_TRUE(user_context_holder->HasUserContext());
     EXPECT_EQ(user_context_holder->GetAccountId().GetUserEmail(),
               kTestUserEmail);
-    EXPECT_EQ(user_context_holder->GetGaiaID(), kTestUserGaiaId);
+    EXPECT_EQ(user_context_holder->GetGaiaID(), GaiaId(kTestUserGaiaId));
     EXPECT_TRUE(user_context_holder->GetPassword());
     EXPECT_EQ(user_context_holder->GetPassword().value(),
               PasswordInput(kTestUserPassword));

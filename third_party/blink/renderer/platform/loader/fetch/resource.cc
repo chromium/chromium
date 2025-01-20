@@ -45,17 +45,21 @@
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client_walker.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -144,15 +148,7 @@ Resource::Resource(const ResourceRequestHead& request,
                    ResourceType type,
                    const ResourceLoaderOptions& options)
     : type_(type),
-      status_(ResourceStatus::kNotStarted),
-      encoded_size_(0),
-      decoded_size_(0),
       cache_identifier_(MemoryCache::DefaultCacheIdentifier()),
-      link_preload_(false),
-      is_alive_(false),
-      is_add_remove_client_prohibited_(false),
-      revalidation_status_(RevalidationStatus::kNoRevalidatingOrFailed),
-      integrity_disposition_(ResourceIntegrityDisposition::kNotChecked),
       options_(options),
       response_timestamp_(Now()),
       resource_request_(request),
@@ -198,28 +194,63 @@ void Resource::CheckResourceIntegrity() {
   }
 
   // Loading error occurred? Then result is uncheckable.
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   if (ErrorOccurred()) {
     CHECK(!Data());
     integrity_disposition_ = ResourceIntegrityDisposition::kNetworkError;
     return;
   }
 
-  // No integrity attributes to check? Then we're passing.
-  if (IntegrityMetadata().empty()) {
-    integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
+  // Check `Identity-Digest` headers. If the digest doesn't match, fail.
+  // Otherwise, fall through to validating SRI.
+  auto identity_digest = GetResponse().IdentityDigest();
+  if (identity_digest.has_value() && !identity_digest->DoesMatch(Data())) {
+    DCHECK(RuntimeEnabledFeatures::IdentityDigestEnabled());
+    integrity_disposition_ =
+        ResourceIntegrityDisposition::kFailedIdentityDigest;
     return;
   }
 
-  if (SubresourceIntegrity::CheckSubresourceIntegrity(
-          IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
+  HashMap<HashAlgorithm, String> integrity_hashes;
+  bool is_cors_same_origin = response_.IsCorsSameOrigin();
+  HashSet<HashAlgorithm> csp_hash_reports_needed;
+  if ((type_ == ResourceType::kScript) && loader_) {
+    csp_hash_reports_needed = loader_->Fetcher()->Context().CSPHashesToReport();
+  }
+  if (IntegrityMetadata().empty()) {
+    // No integrity attributes to check? Then we're passing.
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
-    integrity_disposition_ =
-        ResourceIntegrityDisposition::kFailedIntegrityMetadata;
+    if (SubresourceIntegrity::CheckSubresourceIntegrity(
+            IntegrityMetadata(), Data(), Url(), *this, integrity_report_,
+            &integrity_hashes)) {
+      integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
+    } else {
+      integrity_disposition_ =
+          ResourceIntegrityDisposition::kFailedIntegrityMetadata;
+      // The resource was blocked so there's nothing to report.
+      csp_hash_reports_needed = HashSet<HashAlgorithm>();
+    }
   }
 
-  DCHECK_NE(integrity_disposition_, ResourceIntegrityDisposition::kNotChecked);
+  if (csp_hash_reports_needed.size()) {
+    if (is_cors_same_origin) {
+      for (HashAlgorithm algorithm : csp_hash_reports_needed) {
+        if (integrity_hashes.Contains(algorithm)) {
+          continue;
+        }
+        if (auto calculated_integrity_hash =
+                SubresourceIntegrity::GetSubresourceIntegrityHash(Data(),
+                                                                  algorithm)) {
+          integrity_hashes.insert(algorithm, calculated_integrity_hash.value());
+        }
+      }
+    }
+    loader_->Fetcher()->Context().AddCSPHashReport(Url().GetString(),
+                                                   integrity_hashes);
+  }
+
+  CHECK_NE(integrity_disposition_, ResourceIntegrityDisposition::kNotChecked);
 }
 
 void Resource::NotifyFinished() {
@@ -359,8 +390,8 @@ void Resource::FinishAsError(const ResourceError& error,
   }
   DCHECK(ErrorOccurred());
   ClearData();
-  loader_ = nullptr;
   CheckResourceIntegrity();
+  loader_ = nullptr;
   TriggerNotificationForFinishObservers(task_runner);
 
   // Most resource types don't expect to succeed or fail inside
@@ -384,8 +415,8 @@ void Resource::Finish(base::TimeTicks load_response_end,
   load_response_end_ = load_response_end;
   if (!ErrorOccurred())
     status_ = ResourceStatus::kCached;
-  loader_ = nullptr;
   CheckResourceIntegrity();
+  loader_ = nullptr;
   TriggerNotificationForFinishObservers(task_runner);
   NotifyFinished();
 }
@@ -394,13 +425,16 @@ AtomicString Resource::HttpContentType() const {
   return GetResponse().HttpContentType();
 }
 
+bool Resource::ForceIntegrityChecks() const {
+  return IsLinkPreload() || GetResponse().IdentityDigest().has_value();
+}
+
 bool Resource::MustRefetchDueToIntegrityMetadata(
     const FetchParameters& params) const {
   if (params.IntegrityMetadata().empty())
     return false;
 
-  return !IntegrityMetadata::SetsEqual(IntegrityMetadata(),
-                                       params.IntegrityMetadata());
+  return IntegrityMetadata() != params.IntegrityMetadata();
 }
 
 const scoped_refptr<const SecurityOrigin>& Resource::GetOrigin() const {
@@ -977,7 +1011,7 @@ void Resource::RevalidationFailed() {
   SECURITY_CHECK(redirect_chain_.empty());
   ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   DestroyDecodedDataForFailedRevalidation();
   revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
 }

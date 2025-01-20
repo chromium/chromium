@@ -8,18 +8,22 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/base/features.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
-#import "ios/chrome/browser/tabs/model/tab_parenting_global_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace {
 
@@ -32,33 +36,126 @@ sync_sessions::SyncedTabDelegate* GetSyncedTabDelegateFromWebState(
 
 }  // namespace
 
-IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
-    BrowserList* browser_list,
-    sync_sessions::SyncSessionsClient* sessions_client,
-    const syncer::SyncableService::StartSyncFlare& flare)
-    : registrar_(std::make_unique<AllWebStateListObservationRegistrar>(
-          browser_list,
-          std::make_unique<Observer>(this),
-          AllWebStateListObservationRegistrar::Mode::REGULAR)),
-      sessions_client_(sessions_client),
-      flare_(flare),
-      tab_parented_subscription_(
-          TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-              base::BindRepeating(
-                  &IOSChromeLocalSessionEventRouter::OnTabParented,
-                  base::Unretained(this)))) {
-  DCHECK(sessions_client_);
-}
+#pragma mark - IOSChromeLocalSessionEventRouter::Observer
 
-IOSChromeLocalSessionEventRouter::~IOSChromeLocalSessionEventRouter() {}
+class IOSChromeLocalSessionEventRouter::Observer
+    : public BrowserListObserver,
+      public WebStateListObserver,
+      public web::WebStateObserver {
+ public:
+  explicit Observer(IOSChromeLocalSessionEventRouter* session_router);
+  ~Observer() override = default;
+
+  void Start(BrowserList* browser_list);
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserAdded(const BrowserList* browser_list,
+                      Browser* browser) override;
+  void OnBrowserRemoved(const BrowserList* browser_list,
+                        Browser* browser) override;
+  void OnBrowserListShutdown(BrowserList* browser_list) override;
+
+  // WebStateListObserver:
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
+  void WillBeginBatchOperation(WebStateList* web_state_list) override;
+  void BatchOperationEnded(WebStateList* web_state_list) override;
+
+  // web::WebStateObserver:
+  void TitleWasSet(web::WebState* web_state) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
+  void WasShown(web::WebState* web_state) override;
+  void DidChangeBackForwardState(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
+  raw_ptr<IOSChromeLocalSessionEventRouter> router_;
+
+  // Scoped observations.
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
+  base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
+      web_state_list_observations_{this};
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
+};
 
 IOSChromeLocalSessionEventRouter::Observer::Observer(
     IOSChromeLocalSessionEventRouter* session_router)
     : router_(session_router) {}
 
-IOSChromeLocalSessionEventRouter::Observer::~Observer() {}
+void IOSChromeLocalSessionEventRouter::Observer::Start(
+    BrowserList* browser_list) {
+  browser_list_observation_.Observe(browser_list);
 
-#pragma mark - WebStateListObserver
+  // The WebStateList may not be empty when the Observer is created, so
+  // start observing any pre-existing Browsers.
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    OnBrowserAdded(browser_list, browser);
+  }
+}
+
+#pragma mark - IOSChromeLocalSessionEventRouter::Observer (BrowserListObserver)
+
+void IOSChromeLocalSessionEventRouter::Observer::OnBrowserAdded(
+    const BrowserList* browser_list,
+    Browser* browser) {
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+
+  WebStateList* web_state_list = browser->GetWebStateList();
+  web_state_list_observations_.AddObservation(web_state_list);
+
+  // In the unlikely event that the WebStateList is not empty, observe
+  // all existing WebStates (pretend this is a batch operation).
+  if (const int count = web_state_list->count(); count != 0) {
+    router_->OnSessionEventStarting();
+    for (int index = 0; index < count; ++index) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      web_state_observations_.AddObservation(web_state);
+    }
+    router_->OnSessionEventEnded();
+  }
+}
+
+void IOSChromeLocalSessionEventRouter::Observer::OnBrowserRemoved(
+    const BrowserList* browser_list,
+    Browser* browser) {
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
+  }
+
+  WebStateList* web_state_list = browser->GetWebStateList();
+  web_state_list_observations_.RemoveObservation(web_state_list);
+
+  // The Browser are closed before the WebStateList itself, so it is
+  // possible for the list to be non-empty. Ensure that we stop the
+  // observation of the WebState if this is the case.
+  if (const int count = web_state_list->count(); count != 0) {
+    router_->OnSessionEventStarting();
+    for (int index = 0; index < count; ++index) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      web_state_observations_.RemoveObservation(web_state);
+    }
+    router_->OnSessionEventEnded();
+  }
+}
+
+void IOSChromeLocalSessionEventRouter::Observer::OnBrowserListShutdown(
+    BrowserList* browser_list) {
+  browser_list_observation_.Reset();
+  web_state_list_observations_.RemoveAllObservations();
+  web_state_observations_.RemoveAllObservations();
+}
+
+#pragma mark - IOSChromeLocalSessionEventRouter::Observer (WebStateListObserver)
 
 void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
     WebStateList* web_state_list,
@@ -72,12 +169,12 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
       web::WebState* detached_web_state = detach_change.detached_web_state();
+      web_state_observations_.RemoveObservation(detached_web_state);
       if (detach_change.is_closing()) {
         router_->OnWebStateClosed();
       } else {
         router_->OnWebStateChange(detached_web_state);
       }
-      detached_web_state->RemoveObserver(this);
       break;
     }
     case WebStateListChange::Type::kMove:
@@ -87,15 +184,20 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
       web::WebState* replaced_web_state = replace_change.replaced_web_state();
+      web_state_observations_.RemoveObservation(replaced_web_state);
       router_->OnWebStateChange(replaced_web_state);
-      replaced_web_state->RemoveObserver(this);
-      replace_change.inserted_web_state()->AddObserver(this);
+
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      web_state_observations_.AddObservation(inserted_web_state);
+      router_->OnWebStateChange(inserted_web_state);
       break;
     }
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      insert_change.inserted_web_state()->AddObserver(this);
+      web::WebState* inserted_web_state = insert_change.inserted_web_state();
+      web_state_observations_.AddObservation(inserted_web_state);
+      router_->OnWebStateChange(inserted_web_state);
       break;
     }
     case WebStateListChange::Type::kGroupCreate:
@@ -114,7 +216,7 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
   }
 }
 
-#pragma mark - WebStateObserver
+#pragma mark - IOSChromeLocalSessionEventRouter::Observer (WebStateObserver)
 
 void IOSChromeLocalSessionEventRouter::Observer::TitleWasSet(
     web::WebState* web_state) {
@@ -145,12 +247,7 @@ void IOSChromeLocalSessionEventRouter::Observer::DidChangeBackForwardState(
 
 void IOSChromeLocalSessionEventRouter::Observer::WebStateDestroyed(
     web::WebState* web_state) {
-  router_->OnWebStateClosed();
-  web_state->RemoveObserver(this);
-}
-
-void IOSChromeLocalSessionEventRouter::OnTabParented(web::WebState* web_state) {
-  OnWebStateChange(web_state);
+  NOTREACHED();
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::WillBeginBatchOperation(
@@ -162,6 +259,23 @@ void IOSChromeLocalSessionEventRouter::Observer::BatchOperationEnded(
     WebStateList* web_state_list) {
   router_->OnSessionEventEnded();
 }
+
+#pragma mark - IOSChromeLocalSessionEventRouter
+
+IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
+    BrowserList* browser_list,
+    sync_sessions::SyncSessionsClient* sessions_client,
+    const syncer::SyncableService::StartSyncFlare& flare)
+    : observer_(std::make_unique<Observer>(this)),
+      sessions_client_(sessions_client),
+      flare_(flare) {
+  DCHECK(sessions_client_);
+  // Start the observer now that the object is fully initialized. This may
+  // call methods on the current instance if the BrowserList is not empty.
+  observer_->Start(browser_list);
+}
+
+IOSChromeLocalSessionEventRouter::~IOSChromeLocalSessionEventRouter() = default;
 
 void IOSChromeLocalSessionEventRouter::OnSessionEventStarting() {
   batch_in_progress_++;

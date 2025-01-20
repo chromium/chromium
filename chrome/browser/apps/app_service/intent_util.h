@@ -11,22 +11,18 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 class ArcIntentHelperBridge;
 class IntentFilter;
 }  // namespace arc
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Profile;
 
@@ -48,12 +44,12 @@ apps::IntentFilterPtr CreateFileFilter(
     const std::string& activity_name = "",
     bool include_directories = false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Create intent filters from `package_name` and `intent_helper_bridge`.
 apps::IntentFilters CreateIntentFiltersFromArcBridge(
     const std::string& package_name,
     arc::ArcIntentHelperBridge* intent_helper_bridge);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Create intent filters for a Chrome app (extension-based) e.g. for
 // file_handlers.
@@ -71,7 +67,7 @@ apps::IntentFilterPtr CreateNoteTakingFilter();
 // Create an intent filter for an app capable of running on the lock screen.
 apps::IntentFilterPtr CreateLockScreenFilter();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Create an intent struct with filesystem:// type URLs from the file paths and
 // mime types of a list of files. This util has to live under chrome/ because it
 // uses fileapis and cannot be included in components/.
@@ -120,9 +116,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
 // nullptr if the intent filter from ARC is not valid.
 apps::IntentFilterPtr CreateIntentFilterForArc(
     const arc::IntentFilter& arc_intent_filter);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Convert App Service Intent to Crosapi Intent.
 // |profile| is only needed when the intent contains files, can be filled with
 // null otherwise.
@@ -152,7 +146,7 @@ apps::IntentPtr CreateAppServiceIntentFromCrosapi(
 
 crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
     std::vector<base::FilePath> file_paths);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace apps_util
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_INTENT_UTIL_H_

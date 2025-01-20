@@ -11,7 +11,7 @@ all other OS specific variables will be false.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/ios_open_extension_branded_strings.h" type="rc_header">
       <emit emit_type="prepend"></emit>
@@ -190,14 +190,14 @@ all other OS specific variables will be false.
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <message name="IDS_IOS_OPEN_IN_CHROME_OPEN_EXTENSION" desc="Open extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
-        Open in Chrome
-      </message>
       <message name="IDS_IOS_ERROR_MESSAGE_OPEN_IN_EXTENSION" desc="Open in Chrome extension message to tell the user the URL cannot be processed.">
        Chrome cannot handle this link.
       </message>
       <message name="IDS_IOS_OK_BUTTON_OPEN_IN_EXTENSION" desc="Label for the OK button in the Open in Chrome extension.">
         OK
+      </message>
+      <message name="IDS_IOS_OPEN_IN_CHROME_OPEN_EXTENSION" desc="Open extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
+        Open in Chrome
       </message>
     </messages>
   </release>

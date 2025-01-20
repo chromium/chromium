@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="module">
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
+
+    console.log("This test logs exposed APIs from ShadowRealmGlobalScope");
+    // TODO(crbug.com/41480387): This should be imported using importValue() once it is supported.
+    const response = await fetch("/js-test-resources/global-interface-listing.js");
+    const code = await response.text();
+    const shadowRealm = new ShadowRealm();
+    // TODO(crbug.com/41480387): This should use ShadowRealm's console once it is supported.
+    shadowRealm.evaluate(`
+    (function(log) {
+        ${code}
+        var propertyNamesInGlobal = Object.getOwnPropertyNames(globalThis);
+        globalInterfaceListing(globalThis, propertyNamesInGlobal, false, log);
+    });
+    `)(console.log);
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+</script>
+</body>
+</html>

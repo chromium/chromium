@@ -1,0 +1,2 @@
+Tests request fullscreen on a secondary screen.
+Page2 size: 600x800, screen: 2nd screen 600x800

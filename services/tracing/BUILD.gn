@@ -89,7 +89,6 @@ source_set("tests") {
 
   sources = [
     "perfetto/consumer_host_unittest.cc",
-    "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/perfetto_config_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
@@ -105,7 +104,6 @@ source_set("tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",
@@ -147,11 +145,6 @@ source_set("tests") {
   }
 
   if (is_posix) {
-    # TODO(crbug.com/40171530): System perfetto tests are flaky on Mac.
-    if (!is_apple) {
-      sources += [ "perfetto/system_perfetto_unittest.cc" ]
-    }
-
     if (!is_android && !is_ios) {
       # TODO(crbug.com/40270670): Failed on iOS by '(errno: 63, File name too long)'.
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]

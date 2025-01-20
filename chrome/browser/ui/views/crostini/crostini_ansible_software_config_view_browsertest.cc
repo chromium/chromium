@@ -37,10 +37,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   CrostiniAnsibleSoftwareConfigViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/),
         network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCrostiniAnsibleInfrastructure);
-  }
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
 
   // CrostiniDialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -262,7 +259,6 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
       network_connection_tracker_;
   std::unique_ptr<crostini::AnsibleManagementTestHelper> test_helper_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -398,10 +394,11 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) {
-        if (done_once)
+        if (done_once) {
           run_loop()->Quit();
-        else
+        } else {
           done_once = true;
+        }
       }));
 
   ansible_management_service()->ConfigureContainer(
@@ -409,10 +406,11 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) {
-        if (done_once)
+        if (done_once) {
           run_loop()->Quit();
-        else
+        } else {
           done_once = true;
+        }
       }));
   run_loop()->Run();
   EXPECT_TRUE(HasNoView(container1));

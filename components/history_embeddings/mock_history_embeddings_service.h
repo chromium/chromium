@@ -13,6 +13,10 @@
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace history_embeddings {
 
 class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
@@ -23,9 +27,11 @@ class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
                std::string query,
                std::optional<base::Time> time_range_start,
                size_t count,
+               bool skip_answering,
                SearchResultCallback callback),
               (override));
   explicit MockHistoryEmbeddingsService(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
       history::HistoryService* history_service);
   ~MockHistoryEmbeddingsService() override;
 };

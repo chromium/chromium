@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
@@ -30,16 +31,17 @@ struct TestCaseItem {
   const char16_t* title;
 };
 
-const TestCaseItem kTestCase1[] = {{"http://foo1.com/", u"Foo1"}};
-const TestCaseItem kTestCase2[] = {
+const auto kTestCase1 =
+    std::to_array<TestCaseItem>({{"http://foo1.com/", u"Foo1"}});
+const auto kTestCase2 = std::to_array<TestCaseItem>({
     {"http://foo1.com/", u"Foo1"},
     {"http://foo2.com/", u"Foo2"},
-};
-const TestCaseItem kTestCase3[] = {
+});
+const auto kTestCase3 = std::to_array<TestCaseItem>({
     {"http://foo1.com/", u"Foo1"},
     {"http://foo2.com/", u"Foo2"},
     {"http://foo3.com/", u"Foo3"},
-};
+});
 const TestCaseItem kTestCaseMax[] = {
     {"http://foo1.com/", u"Foo1"}, {"http://foo2.com/", u"Foo2"},
     {"http://foo3.com/", u"Foo3"}, {"http://foo4.com/", u"Foo4"},

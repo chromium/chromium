@@ -25,11 +25,11 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -44,8 +44,14 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -72,6 +78,7 @@ class PopupNavigationDelegate;
 
 namespace content {
 class BrowserContext;
+class BtmService;
 class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -122,6 +129,7 @@ class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 class HttpAuthCoordinator;
 class MainThreadStackSamplingProfiler;
+class WindowsSystemTracingClient;
 struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
@@ -219,8 +227,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::vector<std::string>* additional_schemes) override;
   network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
       const GURL& url) override;
-  bool LogWebUICreated(const GURL& web_ui_url) override;
-  bool LogWebUIShown(const GURL& web_ui_url) override;
+  void LogWebUIUsage(
+      std::variant<content::WebUI*, GURL> webui_variant) override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   bool IsHandledURL(const GURL& url) override;
   bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
@@ -415,9 +423,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                        const net::SchemefulSite& accessing_site,
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
-#endif
   bool CanSendSCTAuditingReport(
       content::BrowserContext* browser_context) override;
   void OnNewSCTAuditingReportSent(
@@ -475,16 +480,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                        bool* no_javascript_access) override;
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif
   void MaybeOverrideManifest(content::RenderFrameHost* render_frame_host,
                              blink::mojom::ManifestPtr& manifest) override;
   content::TtsPlatform* GetTtsPlatform() override;
-  void OverrideWebkitPrefs(content::WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override;
+  void OverrideWebPreferences(content::WebContents* web_contents,
+                              content::SiteInstance& main_frame_site,
+                              blink::web_pref::WebPreferences* prefs) override;
   bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
       blink::web_pref::WebPreferences* prefs) override;
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   base::FilePath GetDefaultDownloadDirectory() override;
@@ -544,11 +551,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void GetAdditionalMappedFilesForZygote(
-      base::CommandLine* command_line,
-      content::PosixFileDescriptorInfo* mappings) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetConfig* config,
                      sandbox::mojom::Sandbox sandbox_type,
@@ -562,7 +564,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsRendererCodeIntegrityEnabled() override;
   void SessionEnding(std::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
-  bool ShouldUseSkiaFontManager(const GURL& site_url) override;
+  bool ShouldUseFontDataManager(const GURL& site_url) override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,
@@ -779,6 +781,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
+      content::GuestPageHolder* guest,
       LoginAuthRequiredCallback auth_required_callback) override;
   bool HandleExternalProtocol(
       const GURL& url,
@@ -903,7 +906,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
 
-  void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
   bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url) override;
   bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
@@ -919,6 +921,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AreV8OptimizationsDisabledForSite(
       content::BrowserContext* browser_context,
       const GURL& site_url) override;
+  bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;
 
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
@@ -1006,6 +1009,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin) override;
 
+  bool IsUnpartitionedStorageAccessAllowedByUserPreference(
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin) override;
+
   bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
       content::BrowserContext* browser_context,
       const GURL& destination_url,
@@ -1034,11 +1043,14 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context) override;
 
+  bool IsBlobUrlPartitioningEnabled(
+      content::BrowserContext* browser_context) override;
+
   void SetIsMinimalMode(bool minimal) override;
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   void BindVideoEffectsManager(
       const std::string& device_id,
       content::BrowserContext* browser_context,
@@ -1050,7 +1062,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   void PreferenceRankAudioDeviceInfos(
       content::BrowserContext* browser_context,
@@ -1071,7 +1083,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       MultiCaptureChanged state) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
+  bool ShouldEnableDips(content::BrowserContext* browser_context) override;
+  void OnDipsServiceCreated(content::BrowserContext* browser_context,
+                            content::BtmService* dips_service) override;
+  uint64_t GetDipsRemoveMask() override;
+  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
@@ -1079,6 +1095,27 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver) override;
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  void BindTranslationManager(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::TranslationManager> receiver)
+      override;
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+  // Binds to a new instance of
+  // `language_detection::ContentLanguageDetectionDriver` which receives the
+  // model from Optimization Guide. The instance becomes owned
+  // `context_user_data` to ensure it does not outlive the execution context for
+  // which it was created.
+  void BindLanguageDetectionDriver(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      mojo::PendingReceiver<
+          language_detection::mojom::ContentLanguageDetectionDriver> receiver)
+      override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void QueryInstalledWebAppsByManifestId(
@@ -1099,6 +1136,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldDispatchPagehideDuringCommit(
       content::BrowserContext* browser_context,
       const GURL& destination_url) override;
+
+#if BUILDFLAG(IS_WIN)
+  void OnTracingServiceStarted() override;
+  void OnTracingServiceStopped() override;
+#endif
+
+  std::unique_ptr<content::WebUIController> OverrideForInternalWebUI(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
@@ -1318,25 +1364,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
 #if BUILDFLAG(IS_WIN)
   bool handled_uia_provider_request_ = false;
+
+  std::unique_ptr<WindowsSystemTracingClient> windows_system_tracing_client_;
 #endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
 
-// DO NOT USE. Functions in this namespace are only for the migration of DIPS to
-// the content/ folder. They will be deleted soon.
-//
-// TODO: crbug.com/369813097 - Remove this after DIPS migrates to //content.
-namespace dips_move {
-void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                     const net::SchemefulSite& top_frame_site,
-                                     const net::SchemefulSite& accessing_site,
-                                     base::TimeDelta ttl,
-                                     bool ignore_schemes);
-bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               const blink::StorageKey& storage_key);
-}  // namespace dips_move
+// The implementation of ChromeContentBrowserClient::ShouldEnableDips(), for use
+// within //chrome.
+bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context);
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

@@ -145,6 +145,10 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->has_non_animated_image_update_rect_ =
       has_non_animated_image_update_rect_;
 
+  // This hs to be cached before calling LayerImpl::PushPropertiesTo because it
+  // reset the flag.
+  bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
+
   LayerImpl::PushPropertiesTo(base_layer);
 
   // Twin relationships should never change once established.
@@ -157,33 +161,36 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   twin_layer_ = layer_impl;
   layer_impl->twin_layer_ = this;
 
-  layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
+  if (changed_other_props) {
+    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
-  // Solid color layers have no tilings.
-  DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
-  // The pending tree should only have a high res (and possibly low res) tiling.
-  DCHECK_LE(tilings_->num_tilings(),
-            layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
+    // Solid color layers have no tilings.
+    DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
+    // The pending tree should only have a high res (and possibly low res)
+    // tiling.
+    DCHECK_LE(tilings_->num_tilings(),
+              layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
 
-  layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
-  layer_impl->UpdateRasterSourceInternal(
-      raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
-      discardable_image_map_.get());
-  DCHECK(invalidation_.IsEmpty());
+    layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
+    layer_impl->UpdateRasterSourceInternal(
+        raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
+        discardable_image_map_.get());
+    DCHECK(invalidation_.IsEmpty());
 
-  // After syncing a solid color layer, the active layer has no tilings.
-  DCHECK(!raster_source_->IsSolidColor() ||
-         layer_impl->tilings_->num_tilings() == 0);
+    // After syncing a solid color layer, the active layer has no tilings.
+    DCHECK(!raster_source_->IsSolidColor() ||
+           layer_impl->tilings_->num_tilings() == 0);
 
-  layer_impl->raster_page_scale_ = raster_page_scale_;
-  layer_impl->raster_device_scale_ = raster_device_scale_;
-  layer_impl->raster_source_scale_ = raster_source_scale_;
-  layer_impl->raster_contents_scale_ = raster_contents_scale_;
-  layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
-  // Simply push the value to the active tree without any extra invalidations,
-  // since the pending tree tiles would have this handled. This is here to
-  // ensure the state is consistent for future raster.
-  layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+    layer_impl->raster_page_scale_ = raster_page_scale_;
+    layer_impl->raster_device_scale_ = raster_device_scale_;
+    layer_impl->raster_source_scale_ = raster_source_scale_;
+    layer_impl->raster_contents_scale_ = raster_contents_scale_;
+    layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
+    // Simply push the value to the active tree without any extra invalidations,
+    // since the pending tree tiles would have this handled. This is here to
+    // ensure the state is consistent for future raster.
+    layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+  }
 
   if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
     // Move tile updates over to the active layer so they get pushed to the
@@ -191,7 +198,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // updates, so replacement is safe.
     layer_impl->updated_tiles_ = std::move(updated_tiles_);
     updated_tiles_.clear();
-    layer_impl->SetNeedsPushProperties();
   }
 
   layer_impl->SanityCheckTilingState();
@@ -758,6 +764,9 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       << " layer bounds " << bounds().ToString() << " raster_source size "
       << raster_source->size().ToString();
 
+  // TODO(vmiura): Only call SetNeedsPushProperties there is an actual change.
+  SetNeedsPushProperties();
+
   if (!raster_source_ || raster_source_->size() != raster_source->size()) {
     raster_source_size_changed_ = true;
   }
@@ -794,7 +803,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   // The |raster_source_| is initially null, so have to check for that for the
   // first frame.
   bool could_have_tilings = CanHaveTilings();
-  raster_source_.swap(raster_source);
+  raster_source_ = std::move(raster_source);
 
   raster_source_->set_debug_name(DebugName());
 
@@ -811,7 +820,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       RegisterAnimatedImages();
     }
   } else if (recording_updated) {
-    needs_regenerate_discardable_image_map_ = true;
+    layer_tree_impl()->AddLayerNeedingUpdateDiscardableImageMap(this);
   }
 
   // The |new_invalidation| must be cleared before updating tilings since they
@@ -851,22 +860,25 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   }
 }
 
-void PictureLayerImpl::RegenerateDiscardableImageMapIfNeeded() {
-  CHECK(layer_tree_impl()->IsSyncTree());
-  if (!needs_regenerate_discardable_image_map_) {
-    return;
-  }
-  needs_regenerate_discardable_image_map_ = false;
+void PictureLayerImpl::SetRasterSourceForTesting(
+    scoped_refptr<RasterSource> raster_source,
+    const Region& invalidation) {
+  LayerTreeImpl::DiscardableImageMapUpdater updater(layer_tree_impl());
+  Region invalidation_temp = invalidation;
+  UpdateRasterSource(std::move(raster_source), &invalidation_temp);
+}
 
+void PictureLayerImpl::RegenerateDiscardableImageMap() {
+  CHECK(layer_tree_impl()->IsSyncTree());
   UnregisterAnimatedImages();
   if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
-    scoped_refptr<DiscardableImageMap> image_map =
-        display_list->GenerateDiscardableImageMap(
-            GetRasterInducingScrollOffsets());
-    SetPaintWorkletInputs(image_map->paint_worklet_inputs());
-    layer_tree_impl()->UpdateImageDecodingHints(
-        image_map->TakeDecodingModeMap());
-    discardable_image_map_ = std::move(image_map);
+    DiscardableImageMap::DecodingModeMap decoding_mode_map;
+    DiscardableImageMap::PaintWorkletInputs paint_worklet_inputs;
+    discardable_image_map_ = display_list->GenerateDiscardableImageMap(
+        GetRasterInducingScrollOffsets(), &decoding_mode_map,
+        &paint_worklet_inputs);
+    SetPaintWorkletInputs(paint_worklet_inputs);
+    layer_tree_impl()->UpdateImageDecodingHints(decoding_mode_map);
   } else {
     SetPaintWorkletInputs({});
     discardable_image_map_ = nullptr;
@@ -2145,22 +2157,25 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
   const DisplayItemList::RasterInducingScrollMap& raster_inducing_scrolls =
       raster_source_->GetDisplayItemList()->raster_inducing_scrolls();
   Region invalidation;
+  bool needs_update_discardable_image_map = false;
   for (ElementId element_id : scrolls_to_invalidate) {
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
       UnionUpdateRect(it->second.visual_rect);
       has_non_animated_image_update_rect_ = true;
       invalidation.Union(it->second.visual_rect);
-      needs_regenerate_discardable_image_map_ |=
-          it->second.has_discardable_images;
+      needs_update_discardable_image_map |= it->second.has_discardable_images;
     }
   }
 
-  // Raster-inducing scroll may affect the discardable image map due to changed
-  // scroll offsets.
-  RegenerateDiscardableImageMapIfNeeded();
-
   if (!invalidation.IsEmpty()) {
+    if (needs_update_discardable_image_map) {
+      // The new map should only have changed image rects, so we don't need to
+      // re-register animated images and update paint worklets.
+      discardable_image_map_ =
+          raster_source_->GetDisplayItemList()->GenerateDiscardableImageMap(
+              GetRasterInducingScrollOffsets());
+    }
     invalidation_.Union(invalidation);
     tilings_->Invalidate(invalidation);
   }
@@ -2199,8 +2214,7 @@ void PictureLayerImpl::UnregisterAnimatedImages() {
 }
 
 void PictureLayerImpl::SetPaintWorkletInputs(
-    const std::vector<DiscardableImageMap::PaintWorkletInputWithImageId>&
-        inputs) {
+    const DiscardableImageMap::PaintWorkletInputs& inputs) {
   // PaintWorklets are not supported when committing directly to the active
   // tree, so in that case the |inputs| should always be empty.
   DCHECK(layer_tree_impl()->IsPendingTree() || inputs.empty());

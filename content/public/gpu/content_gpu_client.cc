@@ -23,6 +23,11 @@ viz::VizCompositorThreadRunner*
 ContentGpuClient::GetVizCompositorThreadRunner() {
   return nullptr;
 }
+
+const gpu::SharedContextState::GrContextOptionsProvider*
+ContentGpuClient::GetGrContextOptionsProvider() {
+  return nullptr;
+}
 #endif
 
 }  // namespace content

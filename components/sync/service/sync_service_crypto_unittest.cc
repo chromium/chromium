@@ -18,6 +18,7 @@
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/test/mock_sync_engine.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +51,7 @@ sync_pb::EncryptedData MakeEncryptedData(
   return encrypted;
 }
 
-CoreAccountInfo MakeAccountInfoWithGaia(const std::string& gaia) {
+CoreAccountInfo MakeAccountInfoWithGaia(const GaiaId& gaia) {
   CoreAccountInfo result;
   result.gaia = gaia;
   return result;
@@ -134,7 +135,7 @@ class SyncServiceCryptoTest : public testing::Test {
  protected:
   // Account used in most tests.
   const CoreAccountInfo kSyncingAccount =
-      MakeAccountInfoWithGaia("syncingaccount");
+      MakeAccountInfoWithGaia(GaiaId("syncingaccount"));
 
   // Initial trusted vault keys stored on the server for `kSyncingAccount`.
   const std::vector<std::vector<uint8_t>> kInitialTrustedVaultKeys = {

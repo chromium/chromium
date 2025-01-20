@@ -21,6 +21,10 @@ namespace drive {
 class DriveService;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace web {
 class WebState;
 }
@@ -59,6 +63,7 @@ class ChromeAccountManagerService;
           sortingCriteria:(DriveItemsSortingType)sortingCriteria
          sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
+          identityManager:(signin::IdentityManager*)identityManager
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher

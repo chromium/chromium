@@ -22,7 +22,6 @@ inline constexpr char kDisableRateLimitingCommandLine[] =
 BASE_DECLARE_FEATURE(kUserEducationExperienceVersion2);
 BASE_DECLARE_FEATURE(kUserEducationExperienceVersion2Point5);
 BASE_DECLARE_FEATURE(kNewBadgeTestFeature);
-BASE_DECLARE_FEATURE(kWhatsNewVersion2);
 
 // Returns whether User Education Version 2 policies are enabled.
 extern bool IsUserEducationV2();
@@ -30,9 +29,6 @@ extern bool IsUserEducationV2();
 // Returns whether User Education Version 2.5 policies are enabled.
 // This requires User Education Version 2.
 extern bool IsUserEducationV25();
-
-// Returns whether What's New Version 2 is enabled.
-extern bool IsWhatsNewV2();
 
 // Returns the minimum amount of time a session must last. If this is less than
 // `GetIdleTimeBetweenSessions()` then it will have no effect.
@@ -83,6 +79,19 @@ extern int GetNewBadgeFeatureUsedCount();
 // Badge becomes active that the badge can be displayed to the user. Badges stop
 // being displayed after this period.
 extern base::TimeDelta GetNewBadgeDisplayWindow();
+
+// Returns timeouts for high, medium, and low-priority promos in the queue for
+// User Education 2.5.
+extern base::TimeDelta GetHighPriorityTimeout();
+extern base::TimeDelta GetMediumPriorityTimeout();
+extern base::TimeDelta GetLowPriorityTimeout();
+
+// Returns how long the user must stop sending input before a heavyweight promo
+// can be shown.
+extern base::TimeDelta GetIdleTimeBeforeHeavyweightPromo();
+
+// Returns the polling interval for the promo controller for User Education 2.5.
+extern base::TimeDelta GetPromoControllerPollingInterval();
 
 }  // namespace user_education::features
 

@@ -210,29 +210,18 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   PasswordGenerationPopupViewViews* popup_view =
       static_cast<PasswordGenerationPopupViewViews*>(controller->view());
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationSoftNudge)) {
-    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
-    controller->SelectAcceptButtonForTesting();
-    const views::ViewAccessibility& accept_button =
-        popup_view->GetAcceptButtonViewAccessibilityForTest();
-    const views::ViewAccessibility& cancel_button =
-        popup_view->GetCancelButtonViewAccessibilityForTest();
-    CheckViewAccessibilitySelected(accept_button, /*selected=*/true);
-    CheckViewAccessibilitySelected(cancel_button, /*selected=*/false);
+  controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+  controller->SelectAcceptButtonForTesting();
+  const views::ViewAccessibility& accept_button =
+      popup_view->GetAcceptButtonViewAccessibilityForTest();
+  const views::ViewAccessibility& cancel_button =
+      popup_view->GetCancelButtonViewAccessibilityForTest();
+  CheckViewAccessibilitySelected(accept_button, /*selected=*/true);
+  CheckViewAccessibilitySelected(cancel_button, /*selected=*/false);
 
-    controller->SelectCancelButtonForTesting();
-    CheckViewAccessibilitySelected(accept_button, /*selected=*/false);
-    CheckViewAccessibilitySelected(cancel_button, /*selected=*/true);
-  } else {
-    SetPasswordSelected(controller);
-    const views::ViewAccessibility& password_view =
-        GetPasswordViewAccessibility(popup_view);
-    CheckViewAccessibilitySelected(password_view, /*selected=*/true);
-
-    ClearSelection(controller);
-    CheckViewAccessibilitySelected(password_view, /*selected=*/false);
-  }
+  controller->SelectCancelButtonForTesting();
+  CheckViewAccessibilitySelected(accept_button, /*selected=*/false);
+  CheckViewAccessibilitySelected(cancel_button, /*selected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
@@ -303,15 +292,10 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
 #endif
   ASSERT_TRUE(client->generation_popup_controller());
 
-  bool soft_nudge_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordGenerationSoftNudge);
   ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
   ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
   const ui::AXPlatformNodeDelegate* node_delegate =
-      FindNode(root_node_delegate,
-               soft_nudge_enabled
-                   ? "MdTextButton"
-                   : "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
+      FindNode(root_node_delegate, "MdTextButton");
 
   ASSERT_THAT(node_delegate, NotNull());
   EXPECT_FALSE(
@@ -320,14 +304,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
   // Set the screen reader focus by calling a method on the controller directly,
   // it normally is triggered by UI events when the screen reader is on,
   // screen reader presence is hard/expensive to emulate.
-  if (soft_nudge_enabled) {
-    client->generation_popup_controller()->SelectCancelButtonForTesting();
-  } else {
-    static_cast<PasswordGenerationPopupController*>(
-        client->generation_popup_controller().get())
-        ->SetSelected();
-  }
-
+  client->generation_popup_controller()->SelectCancelButtonForTesting();
   EXPECT_TRUE(
       node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }

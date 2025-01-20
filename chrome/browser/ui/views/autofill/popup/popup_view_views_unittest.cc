@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/autofill_prediction_improvements_loading_state_view.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -37,9 +37,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -101,10 +101,6 @@ const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kDatalistEntry,
     SuggestionType::kScanCreditCard,
     SuggestionType::kAllSavedPasswordsEntry,
-    SuggestionType::kPasswordAccountStorageOptIn,
-    SuggestionType::kPasswordAccountStorageReSignin,
-    SuggestionType::kPasswordAccountStorageOptInAndGenerate,
-    SuggestionType::kPasswordAccountStorageEmpty,
     SuggestionType::kVirtualCreditCardEntry,
 };
 
@@ -576,7 +572,7 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   Suggestion opt_int_suggestion("dummy_main_text", "",
                                 Suggestion::Icon::kNoIcon,
-                                SuggestionType::kPasswordAccountStorageOptIn);
+                                SuggestionType::kWebauthnCredential);
   opt_int_suggestion.is_loading = Suggestion::IsLoading(true);
   controller().set_suggestions({opt_int_suggestion});
   CreateAndShowView();
@@ -1245,8 +1241,9 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
   // Set up the popup with suggestions.
   std::u16string address_line = u"Address line #1";
   Suggestion suggestion(address_line, SuggestionType::kAddressEntry);
-  suggestion.children = {Suggestion(SuggestionType::kFillFullAddress),
-                         Suggestion(SuggestionType::kFillFullName)};
+  suggestion.children = {
+      Suggestion(SuggestionType::kAddressFieldByFieldFilling),
+      Suggestion(SuggestionType::kAddressFieldByFieldFilling)};
   controller().set_suggestions({suggestion});
   CreateAndShowView();
 
@@ -1993,39 +1990,36 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest,
-       PredictionImprovementsLoadingOnSuggestionsChangedA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kFillPredictionImprovements});
-  UpdateSuggestions({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kFillAutofillAi});
+  UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<autofill_prediction_improvements::
-                       PredictionImprovementsLoadingStateView*>(
+      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
           &test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
+TEST_F(PopupViewViewsTest, AutofillAiSuggestionsLoadedAnnounced) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  CreateAndShowView({SuggestionType::kPredictionImprovementsLoadingState});
+  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
   MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;
   test_api(view()).SetA11yAnnouncer(
       base::BindLambdaForTesting(a11y_announcer.AsStdFunction()));
@@ -2037,8 +2031,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SUGGESTIONS_LOADED_A11Y_HINT),
           /*polite=*/true));
 
-  Suggestion feedback_suggestion(
-      SuggestionType::kPredictionImprovementsFeedback);
+  Suggestion feedback_suggestion(SuggestionType::kAutofillAiFeedback);
   feedback_suggestion.voice_over = u"Required a11y message";
   controller().set_suggestions({std::move(feedback_suggestion)});
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(

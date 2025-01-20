@@ -259,11 +259,6 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   // legacy fragmentainer group machinery needs the count.
   if (!IsBreakInside(GetBreakToken())) {
     node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
-
-    StyleEngine& style_engine = Node().GetDocument().GetStyleEngine();
-    style_engine.SetInScrollMarkersAttachment(true);
-    To<Element>(Node().EnclosingDOMNode())->ClearColumnPseudoElements();
-    style_engine.SetInScrollMarkersAttachment(false);
   }
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
@@ -909,7 +904,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       for (wtf_size_t i = 0; i < new_columns.size(); i++) {
         auto& new_column = new_columns[i];
         columns.push_back(
-            LogicalFragmentLink{&new_column.Fragment(), new_column.offset});
+            LogicalFragmentLink(new_column.Fragment(), new_column.offset));
 
         // Because the current set of columns haven't been added to the builder
         // yet, any OOF descendants won't have been propagated up yet. Instead,
@@ -1073,7 +1068,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         GetConstraintSpace().GetWritingDirection(),
         LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
     ColumnPseudoElement* column_pseudo =
-        element->CreateColumnPseudoElementIfNeeded(
+        element->GetOrCreateColumnPseudoElementIfNeeded(
             num_columns, converter.ToPhysical(column_logical_rect));
     num_columns += column_pseudo != nullptr;
     if (column_pseudo &&
@@ -1082,6 +1077,11 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
   }
+
+  // If there were superfluous ::column pseudo-elements from the previous pass,
+  // remove the superfluous ones. This happens when the number of columns
+  // decreases.
+  element->ClearColumnPseudoElements(num_columns);
 
   if (min_break_appeal)
     container_builder_.ClampBreakAppeal(*min_break_appeal);
@@ -1486,7 +1486,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
 
   const Length& block_length = style.LogicalHeight();
   const Length& auto_length = space.IsBlockAutoBehaviorStretch()
-                                  ? Length::Stretch()
+                                  ? Length::FillAvailable()
                                   : Length::FitContent();
 
   extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,

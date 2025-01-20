@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
@@ -20,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -27,10 +27,8 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWebuiGalleryHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::span(kWebuiGalleryResources),
-      IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
+  webui::SetupWebUIDataSource(source, base::span(kWebuiGalleryResources),
+                              IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");

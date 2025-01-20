@@ -9,6 +9,7 @@
 
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
+#include "base/files/file_util.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -21,6 +22,42 @@ namespace ash::diagnostics {
 
 InputDeviceInformation::InputDeviceInformation() = default;
 InputDeviceInformation::~InputDeviceInformation() = default;
+
+const std::map<std::string, mojom::BottomLeftLayout> kBottomLeftLayoutMapping =
+    {
+        {"keyboard_bottom_left_3_keys",
+         mojom::BottomLeftLayout::kBottomLeft3Keys},
+        {"keyboard_bottom_left_4_keys",
+         mojom::BottomLeftLayout::kBottomLeft4Keys},
+};
+
+const std::map<std::string, mojom::BottomRightLayout>
+    kBottomRightLayoutMapping = {
+        {"keyboard_bottom_right_2_keys",
+         mojom::BottomRightLayout::kBottomRight2Keys},
+        {"keyboard_bottom_right_3_keys",
+         mojom::BottomRightLayout::kBottomRight3Keys},
+        {"keyboard_bottom_right_4_keys",
+         mojom::BottomRightLayout::kBottomRight4Keys},
+};
+
+const std::map<std::string, mojom::NumpadLayout> kNumpadLayoutMapping = {
+    {"numeric_pad_3_column", mojom::NumpadLayout::kNumpad3Column},
+    {"numeric_pad_4_column", mojom::NumpadLayout::kNumpad4Column},
+};
+
+template <typename T>
+T GetLayoutFromFile(const base::FilePath& file_path,
+                    const std::map<std::string, T>& layout_mapping) {
+  std::string layout_string;
+  if (base::ReadFileToString(file_path, &layout_string)) {
+    auto it = layout_mapping.find(layout_string);
+    if (it != layout_mapping.end()) {
+      return it->second;
+    }
+  }
+  return T::kUnknown;  // Default to kUnknown if file read or mapping fails
+}
 
 // All blockings calls for identifying hardware need to go here: both
 // EventDeviceInfo::Initialize and ui::GetInputPathInSys can block in
@@ -77,6 +114,24 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
         keyboard_capability->GetTopRowScanCodes(keyboard);
     info->keyboard_scan_codes =
         keyboard_scan_codes ? *keyboard_scan_codes : std::vector<uint32_t>();
+
+    // Determine bottom left layout.
+    constexpr char kBottomLeftLayoutFileName[] =
+        "/run/chromeos-config/v1/keyboard/bottom-left-layout";
+    info->bottom_left_layout = GetLayoutFromFile(
+        base::FilePath(kBottomLeftLayoutFileName), kBottomLeftLayoutMapping);
+
+    // Determine bottom right layout.
+    constexpr char kBottomRightLayoutFileName[] =
+        "/run/chromeos-config/v1/keyboard/bottom-right-layout";
+    info->bottom_right_layout = GetLayoutFromFile(
+        base::FilePath(kBottomRightLayoutFileName), kBottomRightLayoutMapping);
+
+    // Determine numpad layout.
+    constexpr char kNumpadLayoutFileName[] =
+        "/run/chromeos-config/v1/keyboard/numpad-layout";
+    info->numpad_layout = GetLayoutFromFile(
+        base::FilePath(kNumpadLayoutFileName), kNumpadLayoutMapping);
   }
 
   return info;

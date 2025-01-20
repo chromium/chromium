@@ -164,8 +164,11 @@ interface Renderer {
   // |origin_trials_settings| sets the settings used to build a
   // blink::OriginTrialPolicy for the renderer. It can be null if the embedder
   // does not support origin trials.
+  //
+  // |trace_id| allows us to trace this IPC from the browser to the renderer.
   InitializeRenderer(string user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     blink.mojom.OriginTrialsSettings? origin_trials_settings);
+                     blink.mojom.OriginTrialsSettings? origin_trials_settings,
+                     uint64 trace_id);
 };

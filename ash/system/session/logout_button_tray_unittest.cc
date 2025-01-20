@@ -8,15 +8,18 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/user/login_status.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -40,6 +43,12 @@ class LogoutButtonTrayTest : public NoSessionAshTestBase {
     SimulateUserLogin(kUserEmail);
   }
 
+  LogoutButtonTray* tray() {
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->logout_button_tray_for_testing();
+  }
+
   PrefService* pref_service() {
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         AccountId::FromUserEmail(kUserEmail));
@@ -48,9 +57,7 @@ class LogoutButtonTrayTest : public NoSessionAshTestBase {
 
 TEST_F(LogoutButtonTrayTest, Visibility) {
   // Button is not visible before login.
-  LogoutButtonTray* button = Shell::GetPrimaryRootWindowController()
-                                 ->GetStatusAreaWidget()
-                                 ->logout_button_tray_for_testing();
+  LogoutButtonTray* button = tray();
   ASSERT_TRUE(button);
   EXPECT_FALSE(button->GetVisible());
 
@@ -78,11 +85,8 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
 TEST_F(LogoutButtonTrayTest, DISABLED_ButtonPressed) {
   constexpr char kUserAction[] = "DemoMode.ExitFromShelf";
 
-  LogoutButtonTray* const tray = Shell::GetPrimaryRootWindowController()
-                                     ->GetStatusAreaWidget()
-                                     ->logout_button_tray_for_testing();
-  ASSERT_TRUE(tray);
-  views::MdTextButton* const button = tray->button_for_test();
+  ASSERT_TRUE(tray());
+  views::MdTextButton* const button = tray()->button_for_test();
   TestSessionControllerClient* const session_client =
       GetSessionControllerClient();
   base::UserActionTester user_action_tester;
@@ -132,6 +136,38 @@ TEST_F(LogoutButtonTrayTest, DISABLED_ButtonPressed) {
   EXPECT_EQ(1, Shell::Get()
                    ->logout_confirmation_controller()
                    ->confirm_logout_count_for_test());
+}
+
+TEST_F(LogoutButtonTrayTest, AccessibleName) {
+  {
+    ui::AXNodeData node_data;
+    tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              tray()->button_for_test()->GetText());
+  }
+
+  tray()->button_for_test()->SetText(u"Testing button text change");
+
+  {
+    ui::AXNodeData node_data;
+    tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              u"Testing button text change");
+  }
+
+  // When the aligntment is kLeft, UpdateLayout will update the button's text to
+  // empty string but the accessible name should be updated to a non-empty
+  // string, which in turn should update the tray's accessible name.
+  tray()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  tray()->UpdateLayout();
+
+  {
+    EXPECT_EQ(tray()->button_for_test()->GetText(), std::u16string());
+    ui::AXNodeData node_data;
+    tray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              tray()->GetLoginStatusString());
+  }
 }
 
 }  // namespace

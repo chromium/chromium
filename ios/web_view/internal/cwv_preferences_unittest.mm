@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_preferences_internal.h"
-
 #import <Foundation/Foundation.h>
+
 #import <memory>
 
 #import "base/base_paths.h"
@@ -23,6 +22,8 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/cwv_preferences_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -52,6 +53,9 @@ class CWVPreferencesTest : public PlatformTest {
 
     pref_registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
     pref_registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+
+    pref_registry->RegisterBooleanPref(
+        ios_web_view::kCWVAutofillAddressSyncEnabled, false);
 
     base::FilePath temp_dir_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir_path));
@@ -120,6 +124,16 @@ TEST_F(CWVPreferencesTest, PasswordLeakCheckEnabled) {
   EXPECT_TRUE(preferences.passwordLeakCheckEnabled);
   preferences.passwordLeakCheckEnabled = NO;
   EXPECT_FALSE(preferences.passwordLeakCheckEnabled);
+}
+
+// Tests CWVPreferences |autofillAddressSyncEnabled|.
+TEST_F(CWVPreferencesTest, AutofillAddressSyncEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.autofillAddressSyncEnabled);
+  preferences.autofillAddressSyncEnabled = YES;
+  EXPECT_TRUE(preferences.autofillAddressSyncEnabled);
 }
 
 // Tests safe browsing setting.

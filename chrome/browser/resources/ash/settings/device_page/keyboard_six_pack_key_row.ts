@@ -9,7 +9,6 @@
  * six pack key action.
  */
 
-import '/shared/settings/prefs/prefs.js';
 import './input_device_settings_shared.css.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';

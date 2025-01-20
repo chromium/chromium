@@ -38,7 +38,7 @@ namespace {
 
 void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
                    std::string* hash) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   *hash =
       base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -182,7 +182,7 @@ const SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::Add(
     int64_t server_version,
     base::Time creation_time,
     const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   DCHECK(bookmark_node);
   DCHECK(specifics.has_bookmark());
   DCHECK(bookmark_node->is_permanent_node() ||
@@ -225,7 +225,7 @@ void SyncedBookmarkTracker::Update(const SyncedBookmarkTrackerEntity* entity,
                                    int64_t server_version,
                                    base::Time modification_time,
                                    const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   DCHECK(entity);
   DCHECK(specifics.has_bookmark());
   DCHECK(specifics.bookmark().has_unique_position());

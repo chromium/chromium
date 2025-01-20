@@ -58,18 +58,21 @@ class SharedImageInterfaceProxy {
     SharedImageRefData& operator=(const SharedImageRefData&) = delete;
 
     int ref_count = 0;
-    gpu::SharedImageUsageSet usage;
     std::vector<SyncToken> destruction_sync_tokens;
   };
 
-  Mailbox CreateSharedImage(const SharedImageInfo& si_info);
+  Mailbox CreateSharedImage(const SharedImageInfo& si_info,
+                            std::optional<SharedImagePoolId> pool_id);
   Mailbox CreateSharedImage(SharedImageInfo& si_info,
                             gfx::BufferUsage buffer_usage,
+                            std::optional<SharedImagePoolId> pool_id,
                             gfx::GpuMemoryBufferHandle* handle_to_populate);
   Mailbox CreateSharedImage(const SharedImageInfo& si_info,
                             base::span<const uint8_t> pixel_data);
-  Mailbox CreateSharedImage(const SharedImageInfo& si_info,
-                            gfx::GpuMemoryBufferHandle handle);
+  Mailbox CreateSharedImage(
+      const SharedImageInfo& si_info,
+      gfx::GpuMemoryBufferHandle handle,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);
@@ -99,8 +102,7 @@ class SharedImageInterfaceProxy {
 
   void DestroySharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
   void AddReferenceToSharedImage(const SyncToken& sync_token,
-                                 const Mailbox& mailbox,
-                                 gpu::SharedImageUsageSet usage);
+                                 const Mailbox& mailbox);
 
   SyncToken GenVerifiedSyncToken();
   SyncToken GenUnverifiedSyncToken();
@@ -126,7 +128,6 @@ class SharedImageInterfaceProxy {
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
-  gpu::SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox);
   void NotifyMailboxAdded(const Mailbox& mailbox,
                           gpu::SharedImageUsageSet usage);
 
@@ -134,17 +135,20 @@ class SharedImageInterfaceProxy {
     return capabilities_;
   }
 
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id);
+
  private:
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,
                           size_t* shm_offset,
                           bool* done_with_shm) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void AddMailbox(const Mailbox& mailbox, SharedImageUsageSet usage)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void AddMailbox(const Mailbox& mailbox) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns true if it's first time mailbox was added.
-  [[nodiscard]] bool AddMailboxOrAddReference(const Mailbox& mailbox,
-                                              SharedImageUsageSet usage)
+  [[nodiscard]] bool AddMailboxOrAddReference(const Mailbox& mailbox)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const raw_ptr<GpuChannelHost> host_;

@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_COMMANDS_GLOBAL_REGISTRY_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_COMMANDS_GLOBAL_REGISTRY_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace content {
 class BrowserContext;
@@ -31,11 +30,11 @@ class Extension;
 class ExtensionCommandsGlobalRegistry
     : public BrowserContextKeyedAPI,
       public ExtensionKeybindingRegistry,
-      public GlobalShortcutListener::Observer {
+      public ui::GlobalAcceleratorListener::Observer {
  public:
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<ExtensionCommandsGlobalRegistry>*
-      GetFactoryInstance();
+  GetFactoryInstance();
 
   // Convenience method to get the ExtensionCommandsGlobalRegistry for a
   // profile.
@@ -83,6 +82,8 @@ class ExtensionCommandsGlobalRegistry
   // Called by the GlobalShortcutListener object when a shortcut this class has
   // registered for has been pressed.
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
+  void ExecuteCommand(const ExtensionId& extension_id,
+                      const std::string& command_id) override;
 
   // Weak pointer to our browser context. Not owned by us.
   raw_ptr<content::BrowserContext> browser_context_;

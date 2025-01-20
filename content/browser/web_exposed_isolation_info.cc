@@ -109,6 +109,15 @@ bool WebExposedIsolationInfo::operator<(
   return false;
 }
 
+void WebExposedIsolationInfo::WriteIntoTrace(
+    perfetto::TracedProto<TraceProto> proto) const {
+  proto->set_is_isolated(is_isolated());
+  if (is_isolated()) {
+    proto->set_origin(origin_->GetDebugString());
+  }
+  proto->set_is_isolated_application(is_isolated_application());
+}
+
 std::ostream& operator<<(std::ostream& out,
                          const WebExposedIsolationInfo& info) {
   out << "{";

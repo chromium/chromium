@@ -21,9 +21,9 @@ void InstallationErrorInfoBarDelegate::Create(
 
 InstallationErrorInfoBarDelegate::InstallationErrorInfoBarDelegate(
     const extensions::CrxInstallError& error)
-    : ConfirmInfoBarDelegate(), error_(error) {}
+    : error_(error) {}
 
-InstallationErrorInfoBarDelegate::~InstallationErrorInfoBarDelegate() {}
+InstallationErrorInfoBarDelegate::~InstallationErrorInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 InstallationErrorInfoBarDelegate::GetIdentifier() const {

@@ -11,19 +11,14 @@
 
 #include <set>
 
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
-#include "ui/resources/grit/webui_resources_map.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources_map.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources_map.h"
-#include "chromeos/ash/grit/ash_resources.h"
-#include "chromeos/ash/grit/ash_resources_map.h"
-#include "chromeos/grit/chromeos_resources.h"
-#include "chromeos/grit/chromeos_resources_map.h"
 #include "content/grit/content_resources.h"
 #include "content/grit/content_resources_map.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
@@ -34,25 +29,11 @@ namespace content {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const std::set<int> GetContentResourceIds() {
   return std::set<int>{
       IDR_UNGUESSABLE_TOKEN_MOJO_JS,
       IDR_URL_MOJO_JS,
-  };
-}
-
-const std::set<int> GetChromeosMojoResourceIds() {
-  return std::set<int>{
-      IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS,
-  };
-}
-
-const std::set<int> GetAshMojoResourceIds() {
-  return std::set<int>{
-      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
   };
 }
 
@@ -71,7 +52,7 @@ void AddResources(const std::set<int>& resource_ids,
     source->AddResourcePath(resource.path, resource.id);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -83,21 +64,14 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   // included in the either the ts_library() target for the UI using them (if
   // they are only used by one UI) or in //ui/webui/resources/mojo:build_ts
   // (if used by multiple UIs).
-  source->AddResourcePaths(
-      base::make_span(kWebuiResources, kWebuiResourcesSize));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddResourcePaths(
-      base::make_span(kAshWebuiCommonResources, kAshWebuiCommonResourcesSize));
+  source->AddResourcePaths(kWebuiResources);
+#if BUILDFLAG(IS_CHROMEOS)
+  source->AddResourcePaths(kAshWebuiCommonResources);
   // Deprecated -lite style mojo bindings.
-  source->AddResourcePaths(
-      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
+  source->AddResourcePaths(kMojoBindingsResources);
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
-  AddResources(GetChromeosMojoResourceIds(), kChromeosResources,
-               kChromeosResourcesSize, source);
-  AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,
-               source);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace content

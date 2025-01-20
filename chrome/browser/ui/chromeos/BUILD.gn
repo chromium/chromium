@@ -1,35 +1,9 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos)
-
-static_library("test_support") {
+group("browser_tests") {
   testonly = true
 
-  sources = [
-    "test_util.cc",
-    "test_util.h",
-  ]
-
-  deps = [
-    "//ash",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//chrome/browser/ash/crosapi:test_support",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/exclusive_access",
-    "//chrome/browser/ui/exclusive_access:test_support",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//chromeos/ui/base",
-    "//content/public/browser",
-    "//ui/aura",
-    "//ui/display",
-    "//ui/views:test_support",
-  ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
+  deps = [ "screen_orientation:browser_tests" ]
 }

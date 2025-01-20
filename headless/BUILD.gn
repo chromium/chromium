@@ -83,7 +83,6 @@ repack("resource_pack_data") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
 
   deps = [
@@ -102,6 +101,7 @@ repack("resource_pack_strings") {
   sources = [
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
     "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
@@ -114,6 +114,7 @@ repack("resource_pack_strings") {
   deps = [
     "//components/strings",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:permission_element_generated_strings",
     "//third_party/blink/public/strings:permission_element_strings",
     "//ui/strings",
   ]
@@ -263,10 +264,13 @@ component("headless_non_renderer") {
     "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_screen.cc",
     "lib/browser/headless_screen.h",
+    "lib/browser/headless_screen_info.cc",
+    "lib/browser/headless_screen_info.h",
     "lib/browser/headless_screen_orientation_delegate.cc",
     "lib/browser/headless_screen_orientation_delegate.h",
     "lib/browser/headless_web_contents_impl.cc",
     "lib/browser/headless_web_contents_impl.h",
+    "lib/browser/headless_window_state.cc",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -293,6 +297,7 @@ component("headless_non_renderer") {
     "public/headless_browser_context.h",
     "public/headless_export.h",
     "public/headless_web_contents.h",
+    "public/headless_window_state.h",
     "public/internal/message_dispatcher.h",
     "public/internal/value_conversions.h",
     "public/switches.h",
@@ -381,9 +386,11 @@ component("headless_non_renderer") {
     "//services/device/public/cpp/geolocation",
     "//services/service_manager/public/cpp",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/re2",
     "//ui/base",
     "//ui/compositor",
     "//ui/display",
+    "//ui/display/util",
     "//ui/events/devices",
     "//ui/gfx",
     "//url",
@@ -490,7 +497,7 @@ component("headless_non_renderer") {
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
   # use external v8 startup data too.
-  if ((!is_win || is_component_build) && v8_use_external_startup_data) {
+  if (v8_use_external_startup_data) {
     public_deps += [ "//v8" ]
     if (use_v8_context_snapshot) {
       data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
@@ -551,6 +558,7 @@ test("headless_unittests") {
   sources = [
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
+    "lib/browser/headless_screen_info_unittest.cc",
     "lib/renderer/allowlist_unittest.cc",
   ]
 

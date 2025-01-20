@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
+#include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -277,7 +278,8 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
-    if (list->First().IsBasicShapeValue() || list->First().IsPathValue()) {
+    if (list->First().IsBasicShapeValue() || list->First().IsPathValue() ||
+        list->First().IsShapeValue()) {
       const CSSValue& shape_value = list->First();
       const CSSIdentifierValue* geometry_box_value = nullptr;
       if (list->length() == 2) {
@@ -579,7 +581,8 @@ StyleBuilderConverter::ConvertFontFeatureSettings(StyleResolverState& state,
   int len = list.length();
   for (int i = 0; i < len; ++i) {
     const auto& feature = To<cssvalue::CSSFontFeatureValue>(list.Item(i));
-    settings->Append(FontFeature(feature.Tag(), feature.Value()));
+    settings->Append(FontFeature(
+        feature.Tag(), feature.Value(state.CssToLengthConversionData())));
   }
   return settings;
 }
@@ -1574,7 +1577,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
             DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value->Get())) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
       wtf_size_t auto_repeat_index = 0;
-      wtf_size_t line_name_indices_count = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
       DCHECK(auto_repeat_id == CSSValueID::kAutoFill ||
              auto_repeat_id == CSSValueID::kAutoFit);
@@ -1583,7 +1585,6 @@ void StyleBuilderConverter::ConvertGridTrackList(
                                                     : AutoRepeatType::kAutoFit;
       for (const CSSValue* auto_repeat_value : To<CSSValueList>(**curr_value)) {
         if (auto_repeat_value->IsGridLineNamesValue()) {
-          ++line_name_indices_count;
           ConvertGridLineNamesList(
               *auto_repeat_value, auto_repeat_index,
               computed_grid_track_list.auto_repeat_named_grid_lines,
@@ -1597,12 +1598,11 @@ void StyleBuilderConverter::ConvertGridTrackList(
         repeated_track_sizes.push_back(
             ConvertGridTrackSize(state, *auto_repeat_value));
       }
+      // `repeat_count` is always 1 for auto-repeaters.
       track_list.AddRepeater(repeated_track_sizes,
                              static_cast<NGGridTrackRepeater::RepeatType>(
                                  computed_grid_track_list.auto_repeat_type),
-                             /* repeat_count */ 1,
-                             /* repeat_number_of_lines */ auto_repeat_index,
-                             line_name_indices_count);
+                             /*repeat_count=*/1u, auto_repeat_index);
       computed_grid_track_list.auto_repeat_insertion_point =
           current_named_grid_line++;
       continue;
@@ -1610,13 +1610,15 @@ void StyleBuilderConverter::ConvertGridTrackList(
 
     if (auto* grid_integer_repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value->Get())) {
-      const wtf_size_t repetitions = grid_integer_repeat_value->Repetitions();
+      const wtf_size_t repetitions =
+          grid_integer_repeat_value->ComputeRepetitions(
+              state.CssToLengthConversionData());
       wtf_size_t line_name_indices_count = 0;
 
       for (wtf_size_t i = 0; i < repetitions; ++i) {
         const bool is_first_repeat = i == 0;
         for (auto integer_repeat_value : *grid_integer_repeat_value) {
-          wtf_size_t current_line_name_indices_count =
+          const wtf_size_t current_line_name_indices_count =
               ConvertLineNameOrTrackSize(*integer_repeat_value,
                                          /* is_inside_repeat */ true,
                                          is_first_repeat);
@@ -1628,8 +1630,11 @@ void StyleBuilderConverter::ConvertGridTrackList(
         }
       }
 
+      // For standalone grids, consume track sizes that will be repeated.
+      // Subgrids will instead use the count of line name indices to determine
+      // the number of tracks to repeat.
       Vector<GridTrackSize, 1> repeater_track_sizes;
-      if (computed_grid_track_list.axis_type == GridAxisType::kStandaloneAxis) {
+      if (!is_subgrid) {
         for (auto integer_repeat_value : *grid_integer_repeat_value) {
           if (!integer_repeat_value->IsGridLineNamesValue()) {
             repeater_track_sizes.push_back(
@@ -1637,23 +1642,24 @@ void StyleBuilderConverter::ConvertGridTrackList(
           }
         }
       }
+      // For subgrids, we can use the count of line name indices to represent
+      // the number of lines being repeated. For non-subgrids, this value will
+      // always be 1, since the track sizes are used to determine the number of
+      // lines being repeated.
+      const wtf_size_t repeat_number_of_lines =
+          is_subgrid ? line_name_indices_count : 1u;
       track_list.AddRepeater(repeater_track_sizes,
                              NGGridTrackRepeater::RepeatType::kInteger,
-                             repetitions, /* repeat_number_of_lines */ 1u,
-                             line_name_indices_count);
+                             repetitions, repeat_number_of_lines);
       continue;
     }
 
-    wtf_size_t line_name_indices_count =
-        ConvertLineNameOrTrackSize(**curr_value);
+    // Handle non-repeaters.
+    ConvertLineNameOrTrackSize(**curr_value);
     if (!curr_value->Get()->IsGridLineNamesValue()) {
       track_list.AddRepeater({ConvertGridTrackSize(state, **curr_value)});
     } else if (is_subgrid) {
-      track_list.AddRepeater(/* repeater_track_sizes */ {},
-                             NGGridTrackRepeater::RepeatType::kNoRepeat,
-                             /* repeat_count */ 1,
-                             /* repeat_number_of_lines */ 1u,
-                             line_name_indices_count);
+      track_list.AddRepeater(/*repeater_track_sizes=*/{});
     }
   }
 
@@ -1740,12 +1746,6 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
 
   // Clamp the result to a reasonable range for layout.
   return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
-}
-
-uint16_t StyleBuilderConverter::ConvertColumnRuleWidth(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return ClampTo<uint16_t>(ConvertBorderWidth(state, value));
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(
@@ -1844,8 +1844,9 @@ Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
     case CSSValueID::kWebkitMaxContent:
       return Length::MaxContent();
     case CSSValueID::kStretch:
-    case CSSValueID::kWebkitFillAvailable:
       return Length::Stretch();
+    case CSSValueID::kWebkitFillAvailable:
+      return Length::FillAvailable();
     case CSSValueID::kWebkitFitContent:
     case CSSValueID::kFitContent:
       return Length::FitContent();
@@ -2136,8 +2137,9 @@ StyleOffsetRotation StyleBuilderConverter::ConvertOffsetRotate(
   return result;
 }
 
-LengthPoint StyleBuilderConverter::ConvertPosition(StyleResolverState& state,
-                                                   const CSSValue& value) {
+LengthPoint StyleBuilderConverter::ConvertPosition(
+    const StyleResolverState& state,
+    const CSSValue& value) {
   const auto& pair = To<CSSValuePair>(value);
   return LengthPoint(
       ConvertPositionLength<CSSValueID::kLeft, CSSValueID::kRight>(
@@ -2235,7 +2237,7 @@ scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(
   return nullptr;
 }
 
-LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
+LengthSize StyleBuilderConverter::ConvertRadius(const StyleResolverState& state,
                                                 const CSSValue& value) {
   const auto& pair = To<CSSValuePair>(value);
   Length radius_width = To<CSSPrimitiveValue>(pair.First())
@@ -2247,44 +2249,54 @@ LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
 }
 
 template <typename T>
-T ConvertGapDecorationPropertyValue(
-    StyleResolverState& state,
-    const CSSValue& value,
-    const CSSGapDecorationPropertyType property_type,
-    bool for_visited_link = false);
+T ConvertGapDecorationPropertyValue(StyleResolverState& state,
+                                    const CSSValue& value,
+                                    bool for_visited_link = false);
 
 template <>
 StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
     StyleResolverState& state,
     const CSSValue& value,
-    const CSSGapDecorationPropertyType property_type,
     bool for_visited_link) {
-  CHECK_EQ(property_type, CSSGapDecorationPropertyType::kColor);
   return StyleBuilderConverter::ConvertStyleColor(state, value,
                                                   for_visited_link);
 }
 
-template <typename T>
-GapDataList<T> ConvertGapDecorationDataList(
+template <>
+int ConvertGapDecorationPropertyValue<int>(StyleResolverState& state,
+                                           const CSSValue& value,
+                                           bool for_visited_link) {
+  return ClampTo<uint16_t>(
+      StyleBuilderConverter::ConvertBorderWidth(state, value));
+}
+
+template <>
+EBorderStyle ConvertGapDecorationPropertyValue<EBorderStyle>(
     StyleResolverState& state,
     const CSSValue& value,
-    bool for_visited_link,
-    const CSSGapDecorationPropertyType property_type) {
+    bool for_visited_link) {
+  return To<CSSIdentifierValue>(value).ConvertTo<blink::EBorderStyle>();
+}
+
+template <typename T>
+GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
+                                            const CSSValue& value,
+                                            bool for_visited_link = false) {
   // The `value` will not be a list in two scenarios:
   // 1. When using the legacy 'column-rule-*' properties.
   // 2. When the fast parse path is taken (see
   // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
   // GapDataList with a single Value.
   if (!DynamicTo<CSSValueList>(value)) {
-    return GapDataList<T>(ConvertGapDecorationPropertyValue<T>(
-        state, value, property_type, for_visited_link));
+    return GapDataList<T>(
+        ConvertGapDecorationPropertyValue<T>(state, value, for_visited_link));
   }
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
   // The CSS Gap Decorations API accepts a space separated list of values.
   // These values can be an auto repeater, an integer repeater, or a single
   // value.
-  // See: https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
+  // See: https://drafts.csswg.org/css-gaps-1/#lists-repeat
   const auto& values = To<CSSValueList>(value);
   typename GapDataList<T>::GapDataVector gap_data_list;
   gap_data_list.ReserveInitialCapacity(values.length());
@@ -2297,7 +2309,7 @@ GapDataList<T> ConvertGapDecorationDataList(
       gap_values.ReserveInitialCapacity(gap_repeat_value->Values().length());
       for (const auto& repeat_value : gap_repeat_value->Values()) {
         gap_values.push_back(ConvertGapDecorationPropertyValue<T>(
-            state, *repeat_value, property_type, for_visited_link));
+            state, *repeat_value, for_visited_link));
       }
 
       std::optional<int> repeat_count = std::nullopt;
@@ -2311,7 +2323,7 @@ GapDataList<T> ConvertGapDecorationDataList(
       gap_data = GapData<T>(value_repeater);
     } else {
       gap_data = GapData<T>(ConvertGapDecorationPropertyValue<T>(
-          state, *curr_value.Get(), property_type, for_visited_link));
+          state, *curr_value.Get(), for_visited_link));
     }
 
     gap_data_list.push_back(gap_data);
@@ -2325,8 +2337,21 @@ StyleBuilderConverter::ConvertGapDecorationColorDataList(
     StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
-  return ConvertGapDecorationDataList<blink::StyleColor>(
-      state, value, for_visited_link, CSSGapDecorationPropertyType::kColor);
+  return ConvertGapDecorationDataList<blink::StyleColor>(state, value,
+                                                         for_visited_link);
+}
+
+GapDataList<int> StyleBuilderConverter::ConvertGapDecorationWidthDataList(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertGapDecorationDataList<int>(state, value);
+}
+
+GapDataList<EBorderStyle>
+StyleBuilderConverter::ConvertGapDecorationStyleDataList(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertGapDecorationDataList<EBorderStyle>(state, value);
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(
@@ -2498,6 +2523,9 @@ StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
       case CSSValueID::kAuto:
         // TODO: tree scope for auto
         return StyleViewTransitionName::Auto(&state.GetDocument());
+      case CSSValueID::kMatchElement:
+        // TODO: tree scope for match-element
+        return StyleViewTransitionName::MatchElement(&state.GetDocument());
       default:
         NOTREACHED();
     }
@@ -2601,6 +2629,11 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     } else {
       return StyleColor(unresolved_relative_color);
     }
+  }
+
+  if (auto* unresolved_color_value =
+          DynamicTo<cssvalue::CSSUnresolvedColorValue>(value)) {
+    return StyleColor(unresolved_color_value->Resolve(context.length_resolver));
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
@@ -3238,7 +3271,7 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
       container_sizes, anchor_data,
-      /* zoom */ 1.0f, ignored_flags);
+      /* zoom */ 1.0f, ignored_flags, /*element=*/nullptr);
 
   const CSSParserContext* parser_context =
       document.ElementSheet().Contents()->ParserContext();
@@ -3266,9 +3299,11 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyValue(
 // https://drafts.css-houdini.org/css-properties-values-api-1/#substitution
 CSSVariableData* StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
     const CSSValue& value,
-    bool is_animation_tainted) {
+    bool is_animation_tainted,
+    bool is_attr_tainted) {
   // TODO(andruud): Produce tokens directly from CSSValue.
   return CSSVariableData::Create(value.CssText(), is_animation_tainted,
+                                 is_attr_tainted,
                                  /* needs_variable_resolution */ false);
 }
 

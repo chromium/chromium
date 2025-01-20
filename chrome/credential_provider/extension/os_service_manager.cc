@@ -28,7 +28,7 @@ OSServiceManager* OSServiceManager::Get() {
   return *GetInstanceStorage();
 }
 
-OSServiceManager::~OSServiceManager() {}
+OSServiceManager::~OSServiceManager() = default;
 
 DWORD OSServiceManager::InstallService(
     const base::FilePath& service_binary_path,

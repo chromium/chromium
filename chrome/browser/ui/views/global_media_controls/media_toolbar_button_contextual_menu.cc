@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 
+#include <memory>
+
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -26,15 +27,6 @@ global_media_controls::MediaItemManager* GetItemManagerFromBrowser(
       ->media_item_manager();
 }
 }  // namespace
-
-std::unique_ptr<MediaToolbarButtonContextualMenu>
-MediaToolbarButtonContextualMenu::Create(Browser* browser) {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser->profile())) {
-    return std::make_unique<MediaToolbarButtonContextualMenu>(browser);
-  }
-  return nullptr;
-}
 
 MediaToolbarButtonContextualMenu::MediaToolbarButtonContextualMenu(
     Browser* browser)

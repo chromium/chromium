@@ -45,7 +45,7 @@ void IOSTrustedVaultClient::FetchKeys(
 }
 
 void IOSTrustedVaultClient::StoreKeys(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   // Not used on iOS.
@@ -71,7 +71,7 @@ void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
 }
 
 void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {

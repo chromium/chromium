@@ -318,8 +318,13 @@ void SystemLiveCaptionService::OnTranslationCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const ::captions::TranslateEvent& event) {
+  // TODO(384019306) Maybe record dispatcher error metric?
+  if (!event.has_value()) {
+    return;
+  }
+
+  std::string formatted_result = event.value();
   // Don't cache the translation if the source language is an ideographic
   // language but the target language is not. This avoids translate
   // sentence by sentence because the Cloud Translation API does not properly
@@ -329,7 +334,7 @@ void SystemLiveCaptionService::OnTranslationCallback(
     if (is_final) {
       translation_cache_.Clear();
     } else {
-      translation_cache_.InsertIntoCache(original_transcription, result,
+      translation_cache_.InsertIntoCache(original_transcription, event.value(),
                                          source_language, target_language);
     }
   } else {
@@ -345,7 +350,11 @@ void SystemLiveCaptionService::OnTranslationCallback(
   }
 
   auto text = base::StrCat({cached_translation, formatted_result});
+  AttemptDispatch(text, is_final);
+}
 
+void SystemLiveCaptionService::AttemptDispatch(const std::string& text,
+                                               bool is_final) {
   if (!controller_->DispatchTranscription(
           &context_, media::SpeechRecognitionResult(text, is_final))) {
     StopRecognizing();

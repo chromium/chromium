@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/drive_internals/drive_internals_ui.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -32,6 +28,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -79,8 +76,7 @@ constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
 constexpr char kClass[] = "class";
 
-constexpr const char* const kLogLevelName[] = {"verbose", "info", "warning",
-                                               "error"};
+constexpr std::array kLogLevelName = {"verbose", "info", "warning", "error"};
 
 size_t SeverityToLogLevelNameIndex(logging::LogSeverity severity) {
   if (severity <= logging::LOGGING_VERBOSE) {
@@ -710,8 +706,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     Value::List preferences;
     for (const char* key : kDriveRelatedPreferences) {
       // As of now, all preferences are boolean.
-      AppendKeyValue(preferences, key,
-                     prefs->GetBoolean(key) ? "true" : "false");
+      AppendKeyValue(preferences, key, base::ToString(prefs->GetBoolean(key)));
     }
 
     MaybeCallJavascript("updateDriveRelatedPreferences",

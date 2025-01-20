@@ -328,7 +328,7 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
  private:
   void RequestSpellCheckHost(
       mojo::Remote<spellcheck::mojom::SpellCheckHost>* interface) {
-    SpellCheckHostChromeImpl::Create(GetRenderer()->GetID(),
+    SpellCheckHostChromeImpl::Create(GetRenderer()->GetDeprecatedID(),
                                      interface->BindNewPipeAndPassReceiver());
   }
 
@@ -336,7 +336,8 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
       mojo::Remote<spellcheck::mojom::SpellCheckInitializationHost>*
           interface) {
     SpellCheckInitializationHostImpl::Create(
-        GetRenderer()->GetID(), interface->BindNewPipeAndPassReceiver());
+        GetRenderer()->GetDeprecatedID(),
+        interface->BindNewPipeAndPassReceiver());
   }
 
   void SpellingServiceDone(bool success,
@@ -559,8 +560,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    bool success = base::WriteFile(
-        bdict_path, base::as_bytes(base::make_span(kCorruptedBDICT)));
+    bool success =
+        base::WriteFile(bdict_path, base::as_byte_span(kCorruptedBDICT));
     EXPECT_TRUE(success);
   }
 

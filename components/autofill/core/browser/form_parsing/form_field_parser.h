@@ -20,7 +20,6 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -109,9 +108,11 @@ struct ParsingContext {
   // 19% in release builds.
   // Note that adding features here may push users into the respective
   // experiment/control groups earlier than you may want.
-  const bool autofill_enable_support_for_parsing_with_shared_labels{
+  const bool enable_support_for_parsing_with_shared_labels{
       base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForParsingWithSharedLabels)};
+  const bool better_placeholder_support{base::FeatureList::IsEnabled(
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport)};
 
   std::optional<RegexMatchesCache> matches_cache;
   raw_ref<AutofillRegexCache> regex_cache;
@@ -125,7 +126,19 @@ struct ParsingContext {
 class FormFieldParser {
  public:
   struct MatchInfo {
-    MatchAttribute matched_attribute = internal::IsRequired();
+    // This is different from `autofill::MatchAttribute`, since it further
+    // distinguishes between high and low quality labels. Low quality label
+    // matches are deprioritized during scoring (`AddClassification()`), so a
+    // different parser can overwrite the label match with e.g. a name match.
+    // High quality labels are labels for which we have high confidence that the
+    // label value is visible to the user and associated with the form control.
+    // Low quality labels are heuristically determined labels which may be
+    // incorrectly attributed to the form control.
+    enum class MatchAttribute {
+      kName = 0,
+      kHighQualityLabel = 1,
+      kLowQualityLabel = 2
+    } matched_attribute = internal::IsRequired();
     // TODO(crbug.com/320965828): Add other details such as the regex that
     // matched or how well the regex matched to improve match prioritisation.
   };
@@ -179,39 +192,14 @@ class FormFieldParser {
   // Returns a MatchInfo if `field` matches one of the the passed `patterns`.
   static std::optional<MatchInfo> FieldMatchesMatchPatternRef(
       ParsingContext& context,
-      base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
-      const char* regex_name = "",
+      std::string_view regex_name,
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
 
-#if defined(UNIT_TEST)
-  static bool MatchForTesting(ParsingContext& context,
-                              const AutofillField* field,
-                              std::u16string_view pattern,
-                              DenseSet<MatchAttribute> match_attributes,
-                              const char* regex_name = "") {
-    return FormFieldParser::Match(context, field, pattern, match_attributes,
-                                  regex_name)
-        .has_value();
-  }
-
-  static bool ParseInAnyOrderForTesting(
-      AutofillScanner* scanner,
-      std::vector<
-          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
-          fields_and_parsers) {
-    return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
-  }
-
-  // Assign types to the fields for the testing purposes.
-  void AddClassificationsForTesting(
-      FieldCandidatesMap& field_candidates_for_testing) const {
-    AddClassifications(field_candidates_for_testing);
-  }
-#endif
-
  protected:
+  friend class FormFieldParserTestApi;
+
   // Initial values assigned to FieldCandidates by their corresponding parsers.
   // There's an implicit precedence determined by the values assigned here.
   // Email is currently the most important followed by Phone, Travel, Address,
@@ -240,16 +228,15 @@ class FormFieldParser {
       std::u16string_view pattern,
       std::vector<std::u16string>* groups = nullptr);
 
-  // Attempts to parse a form field with the given pattern.  Returns true on
-  // success and populates `match`.
+  // Looks up the patterns using `regex_name` and attempts to parse a form field
+  // with them.  Returns true on success and populates `match`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s.
   static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      std::optional<FieldAndMatchInfo>* match,
-      const char* regex_name = "",
+      std::string_view regex_name,
+      std::optional<FieldAndMatchInfo>* match = nullptr,
       MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
   // Attempts to parse a field with an empty label. Returns true
@@ -320,14 +307,28 @@ class FormFieldParser {
   RemoveCheckableFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
 
-  // Matches the regular expression |pattern| against the components of
-  // |field| as specified in |match_type|.
+  // Matches the regular expression `pattern` against the specified
+  // `match_attributes` of the `field`.
   static std::optional<MatchInfo> Match(
       ParsingContext& context,
-      const AutofillField* field,
+      const AutofillField& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
-      const char* regex_name = "");
+      std::string_view regex_name,
+      bool is_negative_pattern = false);
+
+  // Like `Match()`, but only for the label or name of the field.
+  static std::optional<MatchInfo> MatchInLabel(
+      ParsingContext& context,
+      const AutofillField& field,
+      std::u16string_view pattern,
+      std::string_view regex_name,
+      bool is_negative_pattern = false);
+  static std::optional<MatchInfo> MatchInName(ParsingContext& context,
+                                              const AutofillField& field,
+                                              std::u16string_view pattern,
+                                              std::string_view regex_name,
+                                              bool is_negative_pattern = false);
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
   // |parse| method to match content to a given field type.

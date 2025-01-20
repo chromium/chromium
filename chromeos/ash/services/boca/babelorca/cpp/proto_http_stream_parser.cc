@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/boca/babelorca/proto/stream_body.pb.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-shared.h"
@@ -94,8 +95,8 @@ void ProtoHttpStreamParser::Parse() {
     read_buffer_.reset();
     return;
   }
-  auto unconsumed_data =
-      read_buffer_->span_before_offset().subspan(bytes_consumed);
+  auto unconsumed_data = read_buffer_->span_before_offset().subspan(
+      base::checked_cast<size_t>(bytes_consumed));
   if (unconsumed_data.size() > max_pending_size_) {
     current_state_ = mojom::ParsingState::kError;
     read_buffer_.reset();

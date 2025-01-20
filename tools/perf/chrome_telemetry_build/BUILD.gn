@@ -9,6 +9,9 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
+if (is_android || is_fuchsia) {
+  import("//build/symlink.gni")
+}
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
@@ -21,23 +24,36 @@ if (is_chromeos_device) {
       deploy_lacros = true
       skip_generating_board_args = true
     }
-    if (!is_chromeos_ash) {
-      data = [
-        # A script needed to launch Lacros in testing environment.
-        "//build/lacros/mojo_connection_lacros_launcher.py",
-      ]
-    }
+  }
+}
+
+if (is_android || is_fuchsia) {
+  # Create a symlink from root_build_dir -> clang_x64/trace_processor_shell so
+  # the stripped binary is actually included in the isolate.
+  binary_symlink("host_trace_processor_shell") {
+    binary_label = "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)"
+    output_name = "host_trace_processor_shell"
   }
 }
 
 group("telemetry_chrome_test") {
   testonly = true
 
-  data_deps = [
-    ":telemetry_chrome_test_without_chrome",
-    "//third_party/perfetto/src/trace_processor:trace_processor_shell",
-  ]
+  data_deps = [ ":telemetry_chrome_test_without_chrome" ]
   data = []
+
+  # Compile the host's version of trace_processor_shell for remote platforms.
+  if (is_android || is_fuchsia || is_chromeos) {
+    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)" ]
+
+    # Android and Fuchsia require a symlink for the host version to be included
+    # in the isolate.
+    if (is_android || is_fuchsia) {
+      data_deps += [ ":host_trace_processor_shell" ]
+    }
+  } else {
+    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($default_toolchain)" ]
+  }
 
   if (!is_fuchsia && !is_android && !is_castos && !is_ios) {
     data_deps += [ "//chrome" ]
@@ -136,6 +152,15 @@ if (is_android) {
       "//android_webview:system_webview${_webview_bitness_if_needed}_apk",
       "//android_webview/test:webview_instrumentation_apk",
       "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    ]
+  }
+
+  group("telemetry_chrome_test_android_trichrome_chrome_bundle") {
+    testonly = true
+
+    data_deps = [
+      ":telemetry_chrome_test",
+      "//chrome/android:trichrome_chrome_bundle",
     ]
   }
 

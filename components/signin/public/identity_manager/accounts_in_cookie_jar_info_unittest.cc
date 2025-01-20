@@ -5,6 +5,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,17 +14,19 @@ using ::testing::ElementsAre;
 class AccountsInCookieJarInfoTest : public testing::Test {
  public:
   AccountsInCookieJarInfoTest() {
-    valid_account1_ = CreateListedAccount("a@example.com", "gaia_a");
-    valid_account1_ = CreateListedAccount("b@example.com", "gaia_b");
+    valid_account1_ = CreateListedAccount("a@example.com", GaiaId("gaia_a"));
+    valid_account1_ = CreateListedAccount("b@example.com", GaiaId("gaia_b"));
 
-    invalid_account1_ = CreateListedAccount("c@example.com", "gaia_c");
+    invalid_account1_ = CreateListedAccount("c@example.com", GaiaId("gaia_c"));
     invalid_account1_.valid = false;
-    invalid_account2_ = CreateListedAccount("d@example.com", "gaia_d");
+    invalid_account2_ = CreateListedAccount("d@example.com", GaiaId("gaia_d"));
     invalid_account2_.valid = false;
 
-    signed_out_account1_ = CreateListedAccount("e@example.com", "gaia_e");
+    signed_out_account1_ =
+        CreateListedAccount("e@example.com", GaiaId("gaia_e"));
     signed_out_account1_.signed_out = true;
-    signed_out_account2_ = CreateListedAccount("f@example.com", "gaia_f");
+    signed_out_account2_ =
+        CreateListedAccount("f@example.com", GaiaId("gaia_f"));
     signed_out_account2_.signed_out = true;
   }
 
@@ -37,7 +40,7 @@ class AccountsInCookieJarInfoTest : public testing::Test {
 
  private:
   static gaia::ListedAccount CreateListedAccount(const std::string& email,
-                                                 const std::string& gaia_id) {
+                                                 const GaiaId& gaia_id) {
     gaia::ListedAccount result;
     result.id = CoreAccountId::FromGaiaId(gaia_id);
     result.email = email;

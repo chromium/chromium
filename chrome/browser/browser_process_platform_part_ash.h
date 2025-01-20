@@ -50,6 +50,7 @@ class DeviceRestrictionScheduleControllerDelegateImpl;
 }  // namespace policy
 
 namespace user_manager {
+class MultiUserSignInPolicyController;
 class UserManager;
 }  // namespace user_manager
 
@@ -122,6 +123,11 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   user_manager::UserManager* user_manager() { return user_manager_.get(); }
 
+  user_manager::MultiUserSignInPolicyController*
+  multi_user_sign_in_policy_controller() {
+    return multi_user_sign_in_policy_controller_.get();
+  }
+
   ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
   }
@@ -158,7 +164,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   // Overridden from BrowserProcessPlatformPartBase:
   void StartTearDown() override;
-  void AttemptExit(bool try_to_quit_application) override;
 
   ash::system::SystemClock* GetSystemClock();
   void DestroySystemClock();
@@ -197,6 +202,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
       policy_user_manager_controller_;
 
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
+
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
 
   std::unique_ptr<policy::DeviceRestrictionScheduleControllerDelegateImpl>
       device_restriction_schedule_controller_delegate_impl_;

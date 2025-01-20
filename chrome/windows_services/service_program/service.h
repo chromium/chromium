@@ -10,12 +10,16 @@
 #include <wrl/implements.h>
 
 #include "base/containers/heap_array.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace base {
 
 class CommandLine;
+class WaitableEvent;
 
 }  // namespace base
 
@@ -32,17 +36,20 @@ class Service {
   // This function parses the command line and selects the action routine.
   bool InitWithCommandLine(const base::CommandLine* command_line);
 
-  // Start() is the entry point called by WinMain.
+  // Runs the service, returning the exit code reported to the service control
+  // manager.
   int Start();
 
   // The following methods are public for the sake of testing.
 
   // Registers the Service COM class factory object(s) so other applications can
   // connect to it/them. Returns the registration status.
-  HRESULT RegisterClassObjects();
+  static HRESULT RegisterClassObjects(ServiceDelegate& delegate,
+                                      base::OnceClosure on_module_released,
+                                      base::HeapArray<DWORD>& cookies);
 
   // Unregisters the Service COM class factory object(s).
-  void UnregisterClassObjects();
+  static void UnregisterClassObjects(base::HeapArray<DWORD>& cookies);
 
  private:
   static Service& GetInstance();
@@ -50,6 +57,9 @@ class Service {
   // This function handshakes with the service control manager and starts
   // the service.
   int RunAsService();
+
+  // Tells the service control manager that the service has stopped.
+  void StopService() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Runs the service on the service thread. `command_line` may be different
   // from the command line with which the program was originally invoked.
@@ -62,6 +72,9 @@ class Service {
   // HRESULT, not a Win32 error code.
   int RunInteractive();
 
+  // Stops the service when running for testing purposes.
+  void StopInteractive() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // The control handler of the service.
   static void WINAPI ServiceControlHandler(DWORD control);
 
@@ -69,38 +82,58 @@ class Service {
   static void WINAPI ServiceMainEntry(DWORD argc, wchar_t* argv[]);
 
   // Calls ::SetServiceStatus().
-  void SetServiceStatus(DWORD state);
+  void SetServiceStatus(DWORD state) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Handles object registration, message loop, and unregistration. Returns
-  // when all registered objects are released.
-  HRESULT Run(const base::CommandLine& command_line);
+  // Handles object registration. Returns a success result if the service is
+  // operational.
+  HRESULT Run(const base::CommandLine& command_line)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Calls ::CoInitializeSecurity to allow all users to create COM objects
   // within the server.
   static HRESULT InitializeComSecurity();
 
-  // Called when the last object is released or if the service is asked to exit.
-  void SignalExit();
+  // Revokes the service's class objects and stops the service. Called when the
+  // last object is released.
+  void OnModuleReleased();
 
-  // Registers `factory` as the factory for the service identified by `id`.
-  void RegisterClassFactory(const std::u16string& id, IClassFactory* factory);
+  // Revokes the service's class objects and stops the service. Called when the
+  // service control manager asks the service to stop.
+  void OnStopRequested();
 
   const raw_ref<ServiceDelegate> delegate_;
 
   // The action routine to be executed.
   int (Service::*run_routine_)() = &Service::RunAsService;
 
-  SERVICE_STATUS_HANDLE service_status_handle_ = nullptr;
-  SERVICE_STATUS service_status_{.dwServiceType = SERVICE_WIN32_OWN_PROCESS,
-                                 .dwCurrentState = SERVICE_STOPPED,
-                                 .dwControlsAccepted = SERVICE_ACCEPT_STOP};
+  // The exit routine to be executed.
+  void (Service::*exit_routine_)() = &Service::StopService;
 
-  // Identifier of registered class objects used for unregistration.
-  base::HeapArray<DWORD> cookies_;
+  // An event waited on by `RunInteractive()` and signaled by
+  // `StopInteractive()`.
+  raw_ptr<base::WaitableEvent> interactive_stop_event_ = nullptr;
 
-  // A closure that is run when the last COM instance is released, or if the
-  // service control manager asks the service to exit.
-  base::RepeatingClosure quit_closure_;
+  // True if the delegate provides its own `Run()`.
+  bool delegate_implements_run_ = false;
+
+  // Serialize access to the members that are modified during shutdown, since
+  // `OnModuleReleased()` will be called on an RPC thread handling module
+  // release following a COM call.
+  base::Lock lock_;
+
+  // The service's status handle. Valid once the service control handler is
+  // installed until the status is changed to SERVICE_STOPPED.
+  SERVICE_STATUS_HANDLE service_status_handle_ GUARDED_BY(lock_) = nullptr;
+
+  // The service's status reported to the service control manager via
+  // SetServiceStatus.
+  SERVICE_STATUS service_status_ GUARDED_BY(lock_){
+      .dwServiceType = SERVICE_WIN32_OWN_PROCESS,
+      .dwCurrentState = SERVICE_STOPPED,
+      .dwControlsAccepted = SERVICE_ACCEPT_STOP};
+
+  // Identifier of registered class objects used for revocation.
+  base::HeapArray<DWORD> cookies_ GUARDED_BY(lock_);
 };
 
 #endif  // CHROME_WINDOWS_SERVICES_SERVICE_PROGRAM_SERVICE_H_

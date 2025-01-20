@@ -19,7 +19,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/threading/thread_restrictions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -33,6 +33,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/fake_server_http_post_provider.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "components/variations/service/variations_service.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -53,7 +54,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -270,6 +273,20 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (void)primesTakeMemorySnapshot:(NSString*)eventName {
   ios::provider::PrimesTakeMemorySnapshot(eventName);
+}
+
+#pragma mark - Profile Utilities (EG2)
+
++ (NSString*)currentProfileName {
+  return base::SysUTF8ToNSString(
+      chrome_test_util::GetOriginalProfile()->GetProfileName());
+}
+
++ (NSString*)personalProfileName {
+  return base::SysUTF8ToNSString(GetApplicationContext()
+                                     ->GetProfileManager()
+                                     ->GetProfileAttributesStorage()
+                                     ->GetPersonalProfileName());
 }
 
 #pragma mark - Tab Utilities (EG2)
@@ -1552,6 +1569,8 @@ int watchRunNumber = 0;
   return HasFirstRunSentinel();
 }
 
+#pragma mark - Notification Utilities
+
 + (void)requestTipsNotification:(TipsNotificationType)type {
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
@@ -1562,6 +1581,15 @@ int watchRunNumber = 0;
                     trigger:nil];
 
   [center addNotificationRequest:request withCompletionHandler:nil];
+}
+
+#pragma mark - Variations Utilities
+
++ (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
+  std::string UTF8Country = base::SysNSStringToUTF8(country);
+  variations::VariationsService* variationsService =
+      GetApplicationContext()->GetVariationsService();
+  variationsService->OverrideStoredPermanentCountry(UTF8Country);
 }
 
 @end

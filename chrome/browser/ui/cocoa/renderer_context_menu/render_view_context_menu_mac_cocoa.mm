@@ -36,15 +36,17 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
                             int command_id) {
   for (size_t i = 0; i < model->GetItemCount(); ++i) {
     NSMenuItem* item = [menu itemAtIndex:i];
-    if (model->GetCommandIdAt(i) == command_id)
+    if (model->GetCommandIdAt(i) == command_id) {
       return item;
+    }
 
     ui::MenuModel* submenu = model->GetSubmenuModelAt(i);
     if (submenu && [item hasSubmenu]) {
       NSMenuItem* subitem =
           GetMenuItemByID(submenu, [item submenu], command_id);
-      if (subitem)
+      if (subitem) {
         return subitem;
+      }
     }
   }
   return nil;
@@ -59,12 +61,12 @@ RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
     const content::ContextMenuParams& params,
     NSView* parent_view)
     : RenderViewContextMenuMac(render_frame_host, params),
-      parent_view_(parent_view) {
-}
+      parent_view_(parent_view) {}
 
 RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
-  if (menu_controller_)
+  if (menu_controller_) {
     [menu_controller_ cancel];
+  }
 }
 
 void RenderViewContextMenuMacCocoa::Show() {
@@ -104,8 +106,9 @@ void RenderViewContextMenuMacCocoa::UpdateToolkitMenuItem(
     const std::u16string& title) {
   NSMenuItem* item =
       GetMenuItemByID(&menu_model_, [menu_controller_ menu], command_id);
-  if (!item)
+  if (!item) {
     return;
+  }
 
   // Update the returned NSMenuItem directly so we can update it immediately.
   item.enabled = enabled;

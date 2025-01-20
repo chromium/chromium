@@ -219,6 +219,67 @@ interface IUpdater : IUnknown {
 };
 END_INTERFACE
 
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-0AB4AFBE-AEA1-4F22-9D45-E867423B8E01",
+      "system":"PLACEHOLDER-GUID-EEDAB506-FC1A-42B5-9264-BC6A053DDDF0"
+    },
+    "tokensToSuffix": ["IUpdater", "IUpdater2", "IUpdaterCallback",
+                       "IUpdaterObserver"],
+    "addToLibrary": ["user", "system"]
+  }
+)
+[
+  object,
+  oleautomation,
+  uuid(PLACEHOLDER-GUID-295F15EF-23C8-4BC6-91EB-1E9DA4145250),
+  helpstring("IUpdater2 Interface"),
+  pointer_default(unique)
+]
+interface IUpdater2 : IUpdater {
+  HRESULT RegisterApp2([in, string] const WCHAR* app_id,
+                       [in, string] const WCHAR* brand_code,
+                       [in, string] const WCHAR* brand_path,
+                       [in, string] const WCHAR* tag,
+                       [in, string] const WCHAR* version,
+                       [in, string] const WCHAR* existence_checker_path,
+                       [in, string] const WCHAR* install_id,
+                       [in] IUpdaterCallback* callback);
+  HRESULT CheckForUpdate2([in, string] const WCHAR* app_id,
+                          [in] LONG priority,
+                          [in] BOOL same_version_update_allowed,
+                          [in, string] const WCHAR* language,
+                          [in] IUpdaterObserver* observer);
+  HRESULT Update2([in, string] const WCHAR* app_id,
+                  [in, string] const WCHAR* install_data_index,
+                  [in] LONG priority,
+                  [in] BOOL same_version_update_allowed,
+                  [in, string] const WCHAR* language,
+                  [in] IUpdaterObserver* observer);
+  HRESULT Install2([in, string] const WCHAR* app_id,
+                   [in, string] const WCHAR* brand_code,
+                   [in, string] const WCHAR* brand_path,
+                   [in, string] const WCHAR* tag,
+                   [in, string] const WCHAR* version,
+                   [in, string] const WCHAR* existence_checker_path,
+                   [in, string] const WCHAR* client_install_data,
+                   [in, string] const WCHAR* install_data_index,
+                   [in, string] const WCHAR* install_id,
+                   [in] LONG priority,
+                   [in, string] const WCHAR* language,
+                   [in] IUpdaterObserver* observer);
+  HRESULT RunInstaller2(
+      [in, string] const WCHAR* app_id,
+      [in, string] const WCHAR* installer_path,
+      [in, string] const WCHAR* install_args,
+      [in, string] const WCHAR* install_data,
+      [in, string] const WCHAR* install_settings,
+      [in, string] const WCHAR* language,
+      [in] IUpdaterObserver* observer);
+};
+END_INTERFACE
+
 [
   uuid(PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC),
   version(1.0),

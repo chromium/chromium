@@ -25,7 +25,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import type {LanguageToastElement} from './language_toast.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isGoogle, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
@@ -221,6 +221,12 @@ export class AppElement extends AppElementBase {
   // disabled state based on the message.onStart callback to avoid flickering.
   private firstUtteranceSpoken_ = false;
 
+  // When a new TTS Engine extension is loaded into reading mode, we want to try
+  // to install new natural voices from it. However, the new engine isn't ready
+  // until it calls onvoiceschanged, so set this and wait for that call to
+  // request the install.
+  private waitingForNewEngine_ = false;
+
   synth = window.speechSynthesis;
 
   protected selectedVoice_: SpeechSynthesisVoice|undefined;
@@ -228,6 +234,16 @@ export class AppElement extends AppElementBase {
   // includes user-enabled languages and auto-downloaded languages. The former
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
+
+  // These are languages that don't exist when restoreEnabledLanguagesFromPref()
+  // is first called when the engine is getting set up. We need to disable
+  // unavailable languages, but since it's possible that these languages may
+  // become available once the TTS engine finishes setting up after
+  // onTtsEngineInstalled() is called, we want to save them so they can be
+  // used as soon as they are available.
+  // This can happen when a natural voice is installed (e.g. Danish) when
+  // there isn't an equivalent system voice.
+  possiblyDisabledLangs: string[] = [];
 
   // All possible available voices for the current speech engine.
   protected availableVoices_: SpeechSynthesisVoice[] = [];
@@ -286,17 +302,6 @@ export class AppElement extends AppElementBase {
   firstTextNodeSetForReadAloud: number|null = null;
 
   speechSynthesisLanguage: string;
-
-  // If we weren't able to restore language preferences successfully and we
-  // should attempt to restore settings if voices refresh.
-  // Sometimes, the speech synthesis engine hasn't refreshed available
-  // voices by the time we restore settings, which means we end up
-  // ignoring previous settings if we get an onvoiceschanged callback
-  // a few seconds later. By keeping track of whether or not preferences
-  // were successfully restored, we can re-attempt to restore voice and
-  // language preferences from settings in onVoicesChanged.
-  shouldAttemptLanguageSettingsRestore: boolean = true;
-
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -391,8 +396,20 @@ export class AppElement extends AppElementBase {
         return;
       }
 
-      chrome.readingMode.onSelectionChange(
-          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      // Only send this selection to the main panel if it is different than the
+      // current main panel selection.
+      const mainPanelAnchor =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.startNodeId);
+      const mainPanelFocus =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.endNodeId);
+      if (!mainPanelAnchor || !mainPanelAnchor.contains(selection.anchorNode) ||
+          !mainPanelFocus || !mainPanelFocus.contains(selection.focusNode) ||
+          selection.anchorOffset !== chrome.readingMode.startOffset ||
+          selection.focusOffset !== chrome.readingMode.endOffset) {
+        chrome.readingMode.onSelectionChange(
+            anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      }
+
       // If there's been a selection, clear the current
       // Read Aloud highlight.
       const elements =
@@ -471,6 +488,10 @@ export class AppElement extends AppElementBase {
 
     chrome.readingMode.onLockScreen = () => {
       this.onLockScreen();
+    };
+
+    chrome.readingMode.onTtsEngineInstalled = () => {
+      this.onTtsEngineInstalled();
     };
   }
 
@@ -615,7 +636,7 @@ export class AppElement extends AppElementBase {
   }
 
   showEmpty() {
-    if (chrome.readingMode.isGoogleDocs) {
+    if (!chrome.readingMode.isGoogleDocs) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {
       this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
@@ -844,6 +865,7 @@ export class AppElement extends AppElementBase {
     if (shouldRehighlightCurrentNodes && originallyHadHighlights) {
       this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
+    this.loadImages_();
   }
 
   protected updateImages_() {
@@ -880,12 +902,15 @@ export class AppElement extends AppElementBase {
     this.updateApplicationState(lang, newVoicePackStatus);
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
-      // Disable the associated language if there are no other Google voices for
-      // it.
+      // On ChromeOS, disable the associated language if there are no other
+      // Google voices for it. Otherwise, only disable it if there are no
+      // voices at all for this language.
       const availableVoicesForLang = this.getVoices_().filter(
           v => getVoicePackConvertedLangIfExists(v.lang) === lang);
-      if (availableVoicesForLang.length === 0 ||
-          availableVoicesForLang.some(v => isEspeak(v))) {
+      if (!availableVoicesForLang.length ||
+          (chrome.readingMode.isChromeOsAsh &&
+           !availableVoicesForLang.some(voice => isGoogle(voice)))) {
+        chrome.readingMode.onLanguagePrefChange(lang, false);
         this.enabledLangs = this.enabledLangs.filter(
             enabledLang =>
                 getVoicePackConvertedLangIfExists(enabledLang) !== lang);
@@ -987,13 +1012,43 @@ export class AppElement extends AppElementBase {
   }
 
   onVoicesChanged() {
+    if (this.waitingForNewEngine_) {
+      this.enabledLangs.forEach(lang => {
+        this.installVoicePackIfPossible(
+            lang,
+            /* onlyInstallExactGoogleLocaleMatch=*/ true,
+            /* retryIfPreviousInstallFailed= */ true);
+      });
+      this.waitingForNewEngine_ = false;
+      return;
+    }
+
     const previousSize = this.availableVoices_.length;
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
     this.getVoices_(/*refresh =*/ true);
 
-    if (this.shouldAttemptLanguageSettingsRestore && previousSize === 0 &&
-        this.availableVoices_.length > 0) {
+    // TODO(crbug.com/390435037): Simplify logic around loading voices and
+    // language availability, especially around the new TTS engine.
+
+    // If we disabled a language during startup because it wasn't yet available,
+    // we should re-enable it once it's available. This can happen if we enable
+    // a language with natural voices but no system voices. This only needs to
+    // happen on non-ChromeOS, since we're only installing the new engine
+    // outside of ChromeOS.
+    this.possiblyDisabledLangs.filter(disabledLang => {
+      const isNowAvailable = this.availableLangs_.some(
+          lang =>
+              lang.toLocaleLowerCase() === disabledLang.toLocaleLowerCase());
+      if (isNowAvailable && !chrome.readingMode.isChromeOsAsh) {
+        this.enabledLangs.push(disabledLang);
+        chrome.readingMode.onLanguagePrefChange(disabledLang, true);
+      }
+
+      return !isNowAvailable;
+    });
+
+    if (!previousSize && this.availableVoices_.length) {
       // If we go from having no available voices to having voices available,
       // restore voice settings from preferences.
       this.restoreEnabledLanguagesFromPref();
@@ -2151,6 +2206,7 @@ export class AppElement extends AppElementBase {
       const langCodeForVoicePackManager =
           convertLangOrLocaleForVoicePackManager(toggledLanguage);
       if (langCodeForVoicePackManager) {
+        this.notificationManager_.onCancelDownload(langCodeForVoicePackManager);
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
         // Uninstall the Natural voice when a language is deselected.
         chrome.readingMode.sendUninstallVoiceRequest(
@@ -2256,13 +2312,6 @@ export class AppElement extends AppElementBase {
     // refresh the list of voices and available langs
     this.getVoices_();
 
-    // If there are no available languages or voices yet, we might not be
-    // able to restore voice settings yet, so signal that we should attempt
-    // to restore settings the next time onVoicesChanged is called with
-    // available voices.
-    this.shouldAttemptLanguageSettingsRestore =
-        !(this.availableLangs_ && this.availableLangs_.length > 0);
-
     const storedLanguagesPref: string[] =
         chrome.readingMode.getLanguagesEnabledInPref();
     const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
@@ -2272,11 +2321,44 @@ export class AppElement extends AppElementBase {
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs_,
         this.defaultVoice()?.lang);
 
+    // Only update the unavailable languages in prefs if there are any available
+    // languages. Otherwise, we should wait until the available languages are
+    // updated to do this.
+    if (this.availableLangs_ && this.availableLangs_.length) {
+      this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
+    }
+
     for (const lang of this.enabledLangs) {
       this.installVoicePackIfPossible(
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ false);
     }
+  }
+
+  private alignPreferencesWithEnabledLangs_(languagesInPref: string[]) {
+    // If a stored language doesn't have a match in the enabled languages
+    // list, disable the original preference. If a particular locale becomes
+    // unavailable between reading mode sessions, we may enable a different
+    // locale instead, and the now unavailable locale can never be removed
+    // by the user, so remove it here and save the newly enabled locale. For
+    // example if the user previously enabled 'pt-pt' and now it is unavailable,
+    // createInitialListOfEnabledLanguages above will enable 'pt-br' instead if
+    // it is available. Thus we should remove 'pt-pt' from preferences here and
+    // add 'pt-br' below.
+    languagesInPref.forEach(storedLanguage => {
+      if (!this.enabledLangs.includes(storedLanguage)) {
+        chrome.readingMode.onLanguagePrefChange(storedLanguage, false);
+
+        // Keep track of these languages in case they become available
+        // after the TTS engine extension is installed.
+        if (!chrome.readingMode.isChromeOsAsh) {
+          this.possiblyDisabledLangs.push(storedLanguage);
+        }
+      }
+    });
+    this.enabledLangs.forEach(
+        enabledLanguage =>
+            chrome.readingMode.onLanguagePrefChange(enabledLanguage, true));
   }
 
   private currentVoiceIsUserChosen_(): boolean {
@@ -2373,6 +2455,10 @@ export class AppElement extends AppElementBase {
     }
   }
 
+  onTtsEngineInstalled() {
+    this.waitingForNewEngine_ = true;
+  }
+
   languageChanged() {
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.$.toolbar.updateFonts();
@@ -2389,10 +2475,6 @@ export class AppElement extends AppElementBase {
   }
 
   private autoSwitchVoice_(lang: string) {
-    if (!chrome.readingMode.isAutoVoiceSwitchingEnabled) {
-      return;
-    }
-
     // Only enable this language if it has available voices and is the current
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang =

@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -52,7 +51,7 @@ public class DragAndDropLauncherActivityUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
     }
 
     @Test
@@ -179,24 +178,5 @@ public class DragAndDropLauncherActivityUnitTest {
         assertFalse(
                 "The intent creation timestamp is missing.",
                 DragAndDropLauncherActivity.isIntentValid(intent));
-    }
-
-    @Test
-    public void testGetDragDropTypeFromIntent() {
-        testGetDragDropTypeFromIntent(UrlIntentSource.LINK, DragDropType.LINK_TO_NEW_INSTANCE);
-        testGetDragDropTypeFromIntent(
-                UrlIntentSource.TAB_IN_STRIP, DragDropType.TAB_STRIP_TO_NEW_INSTANCE);
-        testGetDragDropTypeFromIntent(
-                UrlIntentSource.UNKNOWN, DragDropType.UNKNOWN_TO_NEW_INSTANCE);
-    }
-
-    private void testGetDragDropTypeFromIntent(
-            @UrlIntentSource int intentSrc, @DragDropType int dragDropType) {
-        Intent intent = new Intent();
-        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, intentSrc);
-        assertEquals(
-                "The DragDropType should match.",
-                dragDropType,
-                DragAndDropLauncherActivity.getDragDropTypeFromIntent(intent));
     }
 }

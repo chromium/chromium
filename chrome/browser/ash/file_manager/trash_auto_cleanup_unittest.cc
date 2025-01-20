@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/trash_auto_cleanup.h"
 
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
@@ -39,8 +41,7 @@ class TrashAutoCleanupTest : public file_manager::io_task::TrashBaseTest {
 
   void TearDown() override {
     trash_auto_cleanup_.reset();
-    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-    profile_.reset();
+    file_manager::io_task::TrashBaseTest::TearDown();
   }
 
   void SetupFileTrashedFromDownloads(const std::string& file_name) {
@@ -98,6 +99,8 @@ class TrashAutoCleanupTest : public file_manager::io_task::TrashBaseTest {
   }
 
   void StartCleanup() { trash_auto_cleanup_->StartCleanup(); }
+
+  void InitAutoCleanup() { trash_auto_cleanup_->Init(); }
 
   std::string GenerateTrashInfoContents(const base::Time& deletion_time) {
     return base::StrCat(
@@ -170,6 +173,115 @@ TEST_F(TrashAutoCleanupTest, CleanupIteration) {
   ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
   CheckFileExistsInTrash(first_file_name, /*should_exist=*/false);
   CheckFileExistsInTrash(second_file_name, /*should_exist=*/false);
+}
+
+TEST_F(TrashAutoCleanupTest, PeriodicCleanup) {
+  // Setup files in trash directory.
+  const std::string first_file_name = "first_file.txt";
+  const std::string second_file_name = "second_file.txt";
+
+  // Setup trashed files. The first file is trashed at T = 0, the second file is
+  // trashed a bit later at T = 10 minutes.
+  SetupFileTrashedFromDownloads(first_file_name);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  SetupFileTrashedFromDownloads(second_file_name);
+
+  // Init the autocleanup process at T = 30 days (minus kCleanupCheckInterval,
+  // the delay before the initial cleanup iteration). Only the first file should
+  // be removed.
+  task_environment_.FastForwardBy(base::Minutes(50) + base::Hours(23) +
+                                  base::Days(29) - kCleanupCheckInterval);
+  // Init periodic cleanup.
+  base::test::TestFuture<AutoCleanupResult> future;
+  SetCleanupDoneCallbackForTest(future.GetCallback<AutoCleanupResult>());
+  InitAutoCleanup();
+  ASSERT_TRUE(future.Wait());
+  // Check that the first file has been removed.
+  ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
+  CheckFileExistsInTrash(first_file_name, /*should_exist=*/false);
+  CheckFileExistsInTrash(second_file_name, /*should_exist=*/true);
+
+  // The second file should persist while we are within `kCleanupInterval` of
+  // the last cleanup iteration.
+  // Note: the mocked time stays constant until `future.Wait()` is called, so
+  // `last_cleanup_iteration` is accurate.
+  const base::Time last_cleanup_iteration = base::Time::Now();
+  task_environment_.FastForwardBy(kCleanupInterval - kCleanupCheckInterval);
+  CheckFileExistsInTrash(second_file_name, /*should_exist=*/true);
+  // The next cleanup check should happen `kCleanupInterval` after the last
+  // iteration. Check that the second file has now been removed.
+  SetCleanupDoneCallbackForTest(future.GetCallback<AutoCleanupResult>());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(base::Time::Now() - last_cleanup_iteration, kCleanupInterval);
+  ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
+  CheckFileExistsInTrash(second_file_name, /*should_exist=*/false);
+}
+
+TEST_F(TrashAutoCleanupTest, MultipleBatchesCleanup) {
+  // Setup a number of files in trash directory that equals more than twice the
+  // batch size.
+  std::vector<std::string> file_names;
+  const int n_files = 2.5 * kMaxBatchSize;
+  for (int i = 0; i < n_files; ++i) {
+    const std::string file_name = "file" + base::NumberToString(i);
+    file_names.emplace_back(file_name);
+    SetupFileTrashedFromDownloads(file_name);
+  }
+
+  task_environment_.FastForwardBy(base::Days(30));
+  base::test::TestFuture<AutoCleanupResult> future;
+  SetCleanupDoneCallbackForTest(future.GetCallback<AutoCleanupResult>());
+  InitAutoCleanup();
+  ASSERT_TRUE(future.Wait());
+  base::Time last_cleanup_iteration = base::Time::Now();
+  // Check that the first batch of files has been removed.
+  ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
+  // Check that `kMaxBatchSize` files have been removed.
+  int n_remaining_files = 0;
+  for (int i = 0; i < n_files; ++i) {
+    const std::string file_name = "file" + base::NumberToString(i);
+    if (!base::PathExists(GetTrashedFilePath(file_name))) {
+      ASSERT_FALSE(base::PathExists(GetInfoFilePath(file_name)));
+    } else {
+      ASSERT_TRUE(base::PathExists(GetInfoFilePath(file_name)));
+      ++n_remaining_files;
+    }
+  }
+  ASSERT_EQ(n_remaining_files, n_files - kMaxBatchSize);
+
+  // After this iteration, the next batch of files should be processed.
+  SetCleanupDoneCallbackForTest(future.GetCallback<AutoCleanupResult>());
+  ASSERT_TRUE(future.Wait());
+  // This iteration should happen `kCleanupCheckInterval` after the preview one,
+  // instead of the next day, since not all the batches have been processed
+  // yet.
+  ASSERT_EQ(base::Time::Now() - last_cleanup_iteration, kCleanupCheckInterval);
+  last_cleanup_iteration = base::Time::Now();
+  // Check that the second batch of files has been removed.
+  ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
+  // Check that `2 * kMaxBatchSize` files have been removed.
+  n_remaining_files = 0;
+  for (int i = 0; i < n_files; ++i) {
+    const std::string file_name = "file" + base::NumberToString(i);
+    if (!base::PathExists(GetTrashedFilePath(file_name))) {
+      ASSERT_FALSE(base::PathExists(GetInfoFilePath(file_name)));
+    } else {
+      ASSERT_TRUE(base::PathExists(GetInfoFilePath(file_name)));
+      ++n_remaining_files;
+    }
+  }
+  ASSERT_EQ(n_remaining_files, n_files - 2 * kMaxBatchSize);
+
+  // After the last iteration, no file should be remaining.
+  SetCleanupDoneCallbackForTest(future.GetCallback<AutoCleanupResult>());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(base::Time::Now() - last_cleanup_iteration, kCleanupCheckInterval);
+  // Check that all files have been removed.
+  ASSERT_EQ(future.Take(), AutoCleanupResult::kCleanupSuccessful);
+  for (int i = 0; i < n_files; ++i) {
+    const std::string file_name = "file" + base::NumberToString(i);
+    CheckFileExistsInTrash(file_name, /*should_exist=*/false);
+  }
 }
 
 }  // namespace file_manager::trash

@@ -46,6 +46,9 @@ class UkmUtilsForTest;
 
 COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
+// Field trial parameter name for web feature downsampling.
+const char kWebFeatureSamplingKeyword[] = "_webdx_features_sampling";
+
 // Convention for console debugging messages.
 // Example usage:
 // $ ./out/Default/chrome --force-enable-metrics-reporting
@@ -304,6 +307,11 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // This is separated from the above to ease testing.
   void LoadExperimentSamplingParams(
       const std::map<std::string, std::string>& params);
+
+  // Stores the downsampling rate applied to web features in the report. At
+  // query time, this can be used as a multiplier to deduce the count of an
+  // event type, as if it were not downsampled.
+  void StoreWebDXFeaturesDownsamplingParameter(Report* report);
 
   // Called to notify interested observers about a newly added UKM entry.
   void NotifyObserversWithNewEntry(const mojom::UkmEntry& entry);

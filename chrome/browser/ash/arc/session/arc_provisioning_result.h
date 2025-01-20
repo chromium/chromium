@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "ash/components/arc/mojom/auth.mojom.h"
-#include "ash/components/arc/session/arc_stop_reason.h"
+#include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 enum class ProvisioningStatus;

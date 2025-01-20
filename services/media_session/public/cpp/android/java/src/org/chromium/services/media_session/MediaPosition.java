@@ -9,11 +9,14 @@ import android.os.SystemClock;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * The MediaPosition class carries the position information.
  * It is the counterpart of media_session::MediaImage.
  */
 @JNINamespace("media_session")
+@NullMarked
 public final class MediaPosition {
     private Long mDuration;
 

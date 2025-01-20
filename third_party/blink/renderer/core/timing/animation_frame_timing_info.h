@@ -106,6 +106,7 @@ class AnimationFrameTimingInfo
   }
 
   void SetRenderEndTime(base::TimeTicks time) { render_end_time = time; }
+  void SetPresentationTime(base::TimeTicks time) { presentation_time = time; }
   void SetFirstUIEventTime(base::TimeTicks time) { first_ui_event_time = time; }
 
   base::TimeTicks FrameStartTime() const { return frame_start_time; }
@@ -114,6 +115,7 @@ class AnimationFrameTimingInfo
     return style_and_layout_start_time;
   }
   base::TimeTicks RenderEndTime() const { return render_end_time; }
+  base::TimeTicks PresentationTime() const { return presentation_time; }
   base::TimeTicks FirstUIEventTime() const { return first_ui_event_time; }
   base::TimeDelta Duration() const {
     return RenderEndTime() - FrameStartTime();
@@ -134,6 +136,11 @@ class AnimationFrameTimingInfo
   void SetTotalBlockingDuration(base::TimeDelta duration) {
     total_blocking_duration_ = duration;
   }
+
+  void SetBeginFrameId(viz::BeginFrameId begin_frame_id) {
+    begin_frame_id_ = begin_frame_id;
+  }
+  viz::BeginFrameId BeginFrameId() const { return begin_frame_id_; }
 
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
@@ -157,6 +164,9 @@ class AnimationFrameTimingInfo
   // a main frame update
   base::TimeTicks render_end_time;
 
+  // Measured when the frame is presented to the user.
+  base::TimeTicks presentation_time;
+
   // The event timestamp of the first UI event that coincided with the frame.
   base::TimeTicks first_ui_event_time;
 
@@ -164,6 +174,9 @@ class AnimationFrameTimingInfo
   base::TimeDelta total_blocking_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
+
+  // Id for the BeginFrame, which triggered this animation frame.
+  viz::BeginFrameId begin_frame_id_;
 
   // Whether the LoAF included sync XHR or alerts (pause).
   bool did_pause_ = false;

@@ -66,7 +66,7 @@ class CRYPTO_EXPORT HMAC {
   // Initializes this instance using |key|. Call Init only once. It returns
   // false on the second or later calls.
   [[nodiscard]] bool Init(std::string_view key) {
-    return Init(base::as_bytes(base::make_span(key)));
+    return Init(base::as_byte_span(key));
   }
 
   // Initializes this instance using |key|. Call Init only once. It returns

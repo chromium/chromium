@@ -6,6 +6,12 @@
 
 'use strict';
 
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-shared-storage',
+    '/.well-known/private-aggregation/debug/report-shared-storage',
+    /*fullTimeoutMs=*/ 2000,
+);
+
 private_aggregation_promise_test(async () => {
   await addModuleOnce('resources/shared-storage-module.js');
 
@@ -16,12 +22,10 @@ private_aggregation_promise_test(async () => {
     privateAggregationConfig: {contextId: 'example-context-id'}
   });
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 6000)
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 1);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
@@ -30,11 +34,7 @@ private_aggregation_promise_test(async () => {
           ONE_CONTRIBUTION_EXAMPLE, NUM_CONTRIBUTIONS_SHARED_STORAGE),
       /*expected_context_id=*/ 'example-context-id');
 
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage')
-  assert_equals(debug_reports.length, 1);
-
-  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+  verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'run() that calls Private Aggregation with context ID');
 
 private_aggregation_promise_test(async () => {
@@ -50,23 +50,14 @@ private_aggregation_promise_test(async () => {
     privateAggregationConfig: {contextId: 'example-context-id'}
   });
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 6000)
-  assert_equals(reports.length, 1);
+  const {reports: [report]} = await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined,
       /*expected_context_id=*/ 'example-context-id');
-
-  // We use a short timeout as the previous poll should've waited long enough.
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation with context ID and no debug mode');
 
 private_aggregation_promise_test(async () => {
@@ -79,21 +70,13 @@ private_aggregation_promise_test(async () => {
     privateAggregationConfig: {contextId: 'example-context-id'}
   });
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 6000)
-  assert_equals(reports.length, 1);
+  const {reports: [report], debug_reports: [debug_report]} =
+      await reportPoller.pollReportsAndAssert(
+          /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
 
-  const report = JSON.parse(reports[0]);
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
       /*expected_payload=*/ undefined,
       /*expected_context_id=*/ 'example-context-id');
-
-  // We use a short timeout as the previous poll should've waited long enough.
-  const debug_reports = await pollReports(
-      '/.well-known/private-aggregation/debug/report-shared-storage',
-      /*wait_for=*/ 1, /*timeout=*/ 50)
-  assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation with context ID and no contributions');

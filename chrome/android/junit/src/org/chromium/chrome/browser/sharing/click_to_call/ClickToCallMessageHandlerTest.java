@@ -29,9 +29,11 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.net.ConnectionType;
 
 /**
@@ -39,6 +41,7 @@ import org.chromium.net.ConnectionType;
  * display a notification or directly open the dialer.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowDeviceConditions.class})

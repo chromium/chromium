@@ -40,7 +40,6 @@ import {
   SodaSession,
   TimeDelta,
 } from '../../core/soda/types.js';
-import {settings} from '../../core/state/settings.js';
 import {
   assert,
   assertEnumVariant,
@@ -116,15 +115,17 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
     return this.model;
   }
 
-  override async loadAndExecute(content: string, language: LanguageCode):
-    Promise<ModelResponse<T>> {
+  override async loadAndExecute(
+    content: string,
+    language: LanguageCode,
+  ): Promise<ModelResponse<T>> {
     // TODO: b/357526521 - Create and use `UNSUPPORTED_LANGUAGE` error.
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
       return {kind: 'error', error: ModelResponseError.GENERAL};
     }
     const model = await this.load();
     try {
-      return await model.execute(content);
+      return await model.execute(content, language);
     } finally {
       model.close();
     }
@@ -370,6 +371,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.canCaptureSystemAudioWithLoopback,
   );
 
+  private readonly forceLanguageSelection = computed(
+    () => devSettings.value.forceLanguageSelection,
+  );
+
   override async init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -385,6 +390,8 @@ export class PlatformHandler extends PlatformHandlerBase {
       isGenAiSupported: true,
       isSpeakerLabelSupported: true,
     });
+
+    this.initPerfEventWatchers();
   }
 
   override getLangPackList(): readonly LangPackInfo[] {
@@ -396,6 +403,10 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override isMultipleLanguageAvailable(): boolean {
+    if (this.forceLanguageSelection.value) {
+      return true;
+    }
+
     let count = 0;
     for (const state of this.sodaStates.values()) {
       if (state.value.kind !== 'unavailable') {
@@ -451,12 +462,6 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.sodaStates.get(language));
   }
 
-  override getSelectedLanguageState(): Signal<ModelState>|null {
-    const selectedLanguage = settings.value.transcriptionLanguage;
-    return selectedLanguage === null ? null :
-                                       this.getSodaState(selectedLanguage);
-  }
-
   override async newSodaSession(_language: LanguageCode): Promise<SodaSession> {
     return new SodaSessionDev();
   }
@@ -486,6 +491,12 @@ export class PlatformHandler extends PlatformHandlerBase {
       const target = assertInstanceof(ev.target, CrosSwitch);
       devSettings.mutate((s) => {
         s.canCaptureSystemAudioWithLoopback = target.selected;
+      });
+    }
+    function handleForceLanguageSelectionChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceLanguageSelection = target.selected;
       });
     }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
@@ -541,6 +552,20 @@ export class PlatformHandler extends PlatformHandlerBase {
           >
           </cros-switch>
           Toggle can capture system audio via getDisplayMedia
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleForceLanguageSelectionChange}
+            .selected=${this.forceLanguageSelection.value}
+          >
+          </cros-switch>
+          Toggle can force language selection display
         </label>
       </div>
     `;

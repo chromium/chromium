@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -75,6 +76,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Runnable mAppendMessageRunnable;
     @Mock private TabListCoordinator mTabListCoordinator;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserver;
 
     private Activity mActivity;
@@ -82,6 +84,8 @@ public class ArchivedTabsMessageServiceUnitTest {
     private ArchivedTabsMessageService mArchivedTabsMessageService;
     private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     @Before
@@ -110,7 +114,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mTracker,
                         mAppendMessageRunnable,
                         mTabListCoordinatorSupplier,
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        mEdgeToEdgeSupplier);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);

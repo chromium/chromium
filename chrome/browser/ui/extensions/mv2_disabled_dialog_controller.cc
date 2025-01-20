@@ -204,16 +204,16 @@ void Mv2DisabledDialogController::MaybeShowDisabledDialog() {
   ManagementPolicy* policy =
       ExtensionSystem::Get(browser_->profile())->management_policy();
   affected_extensions_info_.erase(
-      std::remove_if(
-          affected_extensions_info_.begin(), affected_extensions_info_.end(),
-          [&](const ExtensionInfo& extension_info) {
-            const Extension* extension =
-                extension_registry->disabled_extensions().GetByID(
-                    extension_info.id);
-            return !extension ||
-                   !IsExtensionAffected(*extension, extension_prefs, policy,
-                                        dialog_ack_pref);
-          }),
+      std::remove_if(affected_extensions_info_.begin(),
+                     affected_extensions_info_.end(),
+                     [&](const ExtensionInfo& extension_info) {
+                       const Extension* extension =
+                           extension_registry->disabled_extensions().GetByID(
+                               extension_info.id);
+                       return !extension ||
+                              !IsExtensionAffected(*extension, extension_prefs,
+                                                   policy, dialog_ack_pref);
+                     }),
       affected_extensions_info_.end());
 
   // No extensions to show, do nothing.

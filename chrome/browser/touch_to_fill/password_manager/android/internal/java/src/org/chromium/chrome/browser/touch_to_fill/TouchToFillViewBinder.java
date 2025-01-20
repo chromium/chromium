@@ -27,7 +27,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
+import android.content.Context;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
@@ -68,7 +71,10 @@ class TouchToFillViewBinder {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
             boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
-            if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
+            if (!visibilityChangeSuccessful
+                    && model.get(VISIBLE)
+                    && !ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PASSWORD_FORM_GROUPED_AFFILIATIONS)) {
                 assert (model.get(DISMISS_HANDLER) != null);
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
             }
@@ -182,28 +188,42 @@ class TouchToFillViewBinder {
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
 
-            String label =
-                    view.getContext()
-                            .getString(
-                                    R.string
-                                            .touch_to_fill_password_credential_accessibility_description,
-                                    credential.getFormattedUsername());
-            FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
-            String contentDescription =
-                    collectionInfo == null
-                            ? label
-                            : view.getContext()
-                                    .getString(
-                                            R.string.touch_to_fill_a11y_item_collection_info,
-                                            label,
-                                            collectionInfo.getPosition(),
-                                            collectionInfo.getTotal());
-            view.setContentDescription(contentDescription);
+            view.setContentDescription(
+                    createContentDescription(
+                            credential, model.get(ITEM_COLLECTION_INFO), view.getContext()));
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    private static String createContentDescription(
+            Credential credential, FillableItemCollectionInfo collectionInfo, Context context) {
+        String label;
+        if (TextUtils.isEmpty(credential.getDisplayName())) {
+            label =
+                    context.getString(
+                            R.string.touch_to_fill_password_credential_accessibility_description,
+                            credential.getFormattedUsername());
+        } else {
+            label =
+                    context.getString(
+                            R.string
+                                    .touch_to_fill_password_credential_accessibility_description_with_url,
+                            credential.getFormattedUsername(),
+                            credential.getDisplayName());
+        }
+
+        String contentDescription =
+                collectionInfo == null
+                        ? label
+                        : context.getString(
+                                R.string.touch_to_fill_a11y_item_collection_info,
+                                label,
+                                collectionInfo.getPosition(),
+                                collectionInfo.getTotal());
+        return contentDescription;
     }
 
     /**

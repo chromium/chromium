@@ -174,11 +174,10 @@ void ToastManagerImpl::Cancel(std::string_view id) {
     queue_.erase(cancelled_toast);
 }
 
-bool ToastManagerImpl::RequestFocusOnActiveToastDismissButton(
-    std::string_view id) {
+bool ToastManagerImpl::RequestFocusOnActiveToastButton(std::string_view id) {
   CHECK(IsToastShown(id));
   for (auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->RequestFocusOnActiveToastDismissButton()) {
+    if (overlay && overlay->RequestFocusOnActiveToastButton()) {
       return true;
     }
   }
@@ -190,13 +189,13 @@ bool ToastManagerImpl::IsToastShown(std::string_view id) const {
          current_toast_data_->id == id;
 }
 
-bool ToastManagerImpl::IsToastDismissButtonFocused(std::string_view id) const {
+bool ToastManagerImpl::IsToastButtonFocused(std::string_view id) const {
   if (!IsToastShown(id)) {
     return false;
   }
 
   for (const auto& [_, overlay] : root_window_to_overlay_) {
-    if (overlay && overlay->IsDismissButtonFocused()) {
+    if (overlay && overlay->IsButtonFocused()) {
       return true;
     }
   }

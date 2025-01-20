@@ -24,6 +24,6 @@ NSSTempCertsCacheChromeOS::NSSTempCertsCacheChromeOS(
   }
 }
 
-NSSTempCertsCacheChromeOS::~NSSTempCertsCacheChromeOS() {}
+NSSTempCertsCacheChromeOS::~NSSTempCertsCacheChromeOS() = default;
 
 }  // namespace network

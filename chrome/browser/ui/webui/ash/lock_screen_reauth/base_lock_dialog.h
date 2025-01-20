@@ -23,8 +23,6 @@ class BaseLockDialog : public SystemWebDialogDelegate {
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
   ui::mojom::ModalType GetDialogModalType() const override;
 
-  static constexpr gfx::Size kBaseLockDialogSize = gfx::Size(768, 640);
-
  private:
   gfx::Size desired_size_;
 };

@@ -97,6 +97,7 @@
 #include "content/web_test/common/web_test_switches.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/cookies/cookie_util.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -750,7 +751,8 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   composite_all_frames_node_storage_.clear();
   next_pointer_lock_action_ = NextPointerLockAction::kWillSucceed;
 
-  BlockThirdPartyCookies(false);
+  BlockThirdPartyCookies(
+      net::cookie_util::IsForceThirdPartyCookieBlockingEnabled());
   SetBluetoothManualChooser(false);
   SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
@@ -829,7 +831,7 @@ void WebTestControlHost::SetTempPath(const base::FilePath& temp_path) {
   temp_path_ = temp_path;
 }
 
-void WebTestControlHost::OverrideWebkitPrefs(
+void WebTestControlHost::OverrideWebPreferences(
     blink::web_pref::WebPreferences* prefs) {
   if (should_override_prefs_) {
     *prefs = prefs_;
@@ -2188,7 +2190,7 @@ void WebTestControlHost::BindNonAssociatedWebTestControlHost(
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
-  GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
+  GlobalRenderFrameHostId key(frame->GetProcess()->GetDeprecatedID(),
                               frame->GetRoutingID());
   if (!base::Contains(web_test_render_frame_map_, key)) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
@@ -2209,7 +2211,8 @@ void WebTestControlHost::HandleWebTestRenderFrameRemoteError(
 
 WebTestControlHost::Node::Node(RenderFrameHost* host)
     : render_frame_host(host),
-      render_frame_host_id(host->GetProcess()->GetID(), host->GetRoutingID()) {}
+      render_frame_host_id(host->GetProcess()->GetDeprecatedID(),
+                           host->GetRoutingID()) {}
 
 WebTestControlHost::Node::Node(Node&& other) = default;
 WebTestControlHost::Node& WebTestControlHost::Node::operator=(Node&& other) =

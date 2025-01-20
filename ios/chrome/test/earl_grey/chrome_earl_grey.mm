@@ -87,6 +87,14 @@ UIWindow* GetAnyKeyWindow() {
 
   return [ChromeEarlGreyAppInterface keyWindow];
 }
+
+void GREYAssertErrorNil(NSError* error) {
+  GREYAssertNil(error, error.description);
+}
+
+void GREYAssertErrorNil(NSError* error, NSString* message) {
+  GREYAssertNil(error, @"%@\n%@", message, error.description);
+}
 }  // namespace chrome_test_util
 
 id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
@@ -178,6 +186,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isEnhancedSafeBrowsingInfobarEnabled {
   return [ChromeEarlGreyAppInterface isEnhancedSafeBrowsingInfobarEnabled];
+}
+
+#pragma mark - Profile Utilities (EG2)
+
+- (NSString*)currentProfileName {
+  return [ChromeEarlGreyAppInterface currentProfileName];
+}
+
+- (NSString*)personalProfileName {
+  return [ChromeEarlGreyAppInterface personalProfileName];
 }
 
 #pragma mark - History Utilities (EG2)
@@ -1884,8 +1902,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface hasFirstRunSentinel];
 }
 
+#pragma mark - Notification Utilities
+
 - (void)requestTipsNotification:(TipsNotificationType)type {
   return [ChromeEarlGreyAppInterface requestTipsNotification:type];
+}
+
+#pragma mark - Variations Utilities
+
+- (void)overrideVariationsServiceStoredPermanentCountry:(NSString*)country {
+  return [ChromeEarlGreyAppInterface
+      overrideVariationsServiceStoredPermanentCountry:country];
 }
 
 @end

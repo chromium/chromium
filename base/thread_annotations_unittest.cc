@@ -17,7 +17,7 @@ class LOCKABLE Lock {
 
 class SCOPED_LOCKABLE AutoLock {
  public:
-  AutoLock(Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
+  explicit AutoLock(Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
     lock.Acquire();
   }
   ~AutoLock() UNLOCK_FUNCTION() { lock_->Release(); }

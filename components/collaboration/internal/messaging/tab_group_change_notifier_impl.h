@@ -5,14 +5,19 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_TAB_GROUP_CHANGE_NOTIFIER_IMPL_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_TAB_GROUP_CHANGE_NOTIFIER_IMPL_H_
 
+#include <unordered_map>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace collaboration::messaging {
 
@@ -34,23 +39,55 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
  private:
   // TabGroupSyncService::Observer.
   void OnInitialized() override;
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                       tab_groups::TriggerSource source) override;
+  void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
+                         tab_groups::TriggerSource source) override;
+  void OnTabGroupRemoved(const base::Uuid& sync_id,
+                         tab_groups::TriggerSource source) override;
+  void OnTabSelected(const std::optional<base::Uuid>& sync_tab_group_id,
+                     const std::optional<base::Uuid>& sync_tab_id) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
 
-  // Internal methods that synchronously informs observers of changes. These
-  // are all invoked through callbacks to ensure all observers are invoked
-  // asynchronously.
-  void NotifyTabGroupChangeNotifierInitialized() const;
+  // Fetches the current state of the tab group model, and compares it to what
+  // was previously known, publishing any changes that are found.
+  void ProcessChangesSinceStartup();
+
+  void NotifyTabGroupChangeNotifierInitializedAndProcessChanges();
+
+  // Processes updates to group metadata and tabs within a group.
+  void ProcessTabGroupUpdates(const tab_groups::SavedTabGroup& before,
+                              const tab_groups::SavedTabGroup& after,
+                              tab_groups::TriggerSource source);
+
+  // Looks for the selected tab within our last known shared tab groups and
+  // returns it if found, else returns std::nullopt.
+  std::optional<tab_groups::SavedTabGroupTab> GetSelectedSharedTabForPublishing(
+      const std::optional<base::Uuid>& sync_tab_group_id,
+      const std::optional<base::Uuid>& sync_tab_id);
+
+  std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
+  ConvertToMapOfSharedTabGroup(
+      const std::vector<tab_groups::SavedTabGroup>& groups);
+
+  // The last known SavedTabGroup dataset.
+  std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
+      last_known_tab_groups_;
 
   // Whether the service has already been initialized.
   bool is_initialized_ = false;
-
-  // Whether we currently have an observer added to the TabGroupSyncService.
-  bool has_tab_group_sync_service_observer_ = false;
 
   // The list of observers observing this particular class.
   base::ObserverList<TabGroupChangeNotifier::Observer> observers_;
 
   // The TabGroupSyncService that is the source of the updates.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+
+  base::ScopedObservation<tab_groups::TabGroupSyncService,
+                          tab_groups::TabGroupSyncService::Observer>
+      tab_group_sync_observer_{this};
 
   base::WeakPtrFactory<TabGroupChangeNotifierImpl> weak_ptr_factory_{this};
 };

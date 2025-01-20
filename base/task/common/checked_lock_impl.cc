@@ -19,8 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -71,8 +70,9 @@ class SafeAcquisitionTracker {
     const LockVector* acquired_locks = GetAcquiredLocksOnCurrentThread();
 
     // If the thread currently holds no locks, this is inherently safe.
-    if (acquired_locks->empty())
+    if (acquired_locks->empty()) {
       return;
+    }
 
     // A universal predecessor may not be acquired after any other lock.
     DCHECK(!lock->is_universal_predecessor());
@@ -80,8 +80,9 @@ class SafeAcquisitionTracker {
     // Otherwise, make sure that the previous lock acquired is either an
     // allowed predecessor for this lock or a universal predecessor.
     const CheckedLockImpl* previous_lock = acquired_locks->back();
-    if (previous_lock->is_universal_predecessor())
+    if (previous_lock->is_universal_predecessor()) {
       return;
+    }
 
     AutoLock auto_lock(allowed_predecessor_map_lock_);
     // Using at() is exception-safe here as |lock| was registered already.
@@ -117,8 +118,9 @@ class SafeAcquisitionTracker {
   }
 
   LockVector* GetAcquiredLocksOnCurrentThread() {
-    if (!tls_acquired_locks_.Get())
+    if (!tls_acquired_locks_.Get()) {
       tls_acquired_locks_.Set(std::make_unique<LockVector>());
+    }
 
     return tls_acquired_locks_.Get();
   }
@@ -191,5 +193,4 @@ void CheckedLockImpl::CreateConditionVariableAndEmplace(
   opt.emplace(&lock_);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

@@ -13,9 +13,9 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
+    "//third_party/re2",
   ]
 }

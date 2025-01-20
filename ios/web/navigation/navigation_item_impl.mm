@@ -77,18 +77,17 @@ NavigationItemImpl::NavigationItemImpl(
   // also update the virtual URL reported by this object.
   url_ = original_request_url_ = GURL(storage.url());
 
-  // In the cases where the URL to be restored is not an HTTP URL, it is
-  // very likely that we can't restore the page (e.g. for files, it could
-  // be an external PDF that has been deleted), don't restore it to avoid
-  // issues.
+  // Restore the `virtual_url`. In case the `url` is invalid, it should be set
+  // to the the value saved for `virtual_url` (we never store `virtual_url` if
+  // equal to `url`, so restore to `url` only in that case).
   const GURL virtual_url(storage.virtual_url());
-  if (url_.SchemeIsHTTPOrHTTPS()) {
-    if (virtual_url.is_valid() && virtual_url != url_) {
-      virtual_url_ = virtual_url;
-    }
-  } else {
-    if (virtual_url.is_valid()) {
+  if (virtual_url.is_valid()) {
+    if (!url_.is_valid()) {
       url_ = virtual_url;
+    } else {
+      if (virtual_url != url_) {
+        virtual_url_ = virtual_url;
+      }
     }
   }
 }

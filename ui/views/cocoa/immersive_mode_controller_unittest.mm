@@ -42,6 +42,18 @@ void SetupWindow(NativeWidgetMacNSWindow* window,
   [window.contentView setFrame:NSMakeRect(0, 0, width, height)];
 }
 
+BrowserNativeWidgetWindow* CreateBrowserWindow(CGFloat width, CGFloat height) {
+  BrowserNativeWidgetWindow* browser_window = [[BrowserNativeWidgetWindow alloc]
+      initWithContentRect:ui::kWindowSizeDeterminedLater
+                styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable |
+                          NSWindowStyleMaskResizable
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+  SetupWindow(browser_window, width, height);
+  return browser_window;
+}
+
 NativeWidgetMacNSWindow* CreateNativeWidgetMacNSWindow(
     CGFloat width,
     CGFloat height,
@@ -86,10 +98,7 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     ui::CocoaTest::SetUp();
 
     // Create a blank browser window.
-    browser_ = CreateNativeWidgetMacNSWindow(
-        kBrowserWidth, kBrowserHeight,
-        NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
-            NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable);
+    browser_ = CreateBrowserWindow(kBrowserWidth, kBrowserHeight);
     [browser_ orderBack:nil];
 
     // Create a blank overlay window.
@@ -118,12 +127,12 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     ui::CocoaTest::TearDown();
   }
 
-  NativeWidgetMacNSWindow* browser() { return browser_; }
+  BrowserNativeWidgetWindow* browser() { return browser_; }
   NativeWidgetMacOverlayNSWindow* overlay() { return overlay_; }
   NativeWidgetMacOverlayNSWindow* tab_overlay() { return tab_overlay_; }
 
  private:
-  NativeWidgetMacNSWindow* __strong browser_;
+  BrowserNativeWidgetWindow* __strong browser_;
   NativeWidgetMacOverlayNSWindow* __strong overlay_;
   NativeWidgetMacOverlayNSWindow* __strong tab_overlay_;
 };
@@ -364,7 +373,7 @@ class MockImmersiveModeTabbedControllerCocoa
     : public ImmersiveModeTabbedControllerCocoa {
  public:
   MockImmersiveModeTabbedControllerCocoa(
-      NativeWidgetMacNSWindow* browser_window,
+      BrowserNativeWidgetWindow* browser_window,
       NativeWidgetMacOverlayNSWindow* overlay_window,
       NativeWidgetMacOverlayNSWindow* tab_window)
       : ImmersiveModeTabbedControllerCocoa(browser_window,

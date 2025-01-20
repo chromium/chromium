@@ -18,7 +18,6 @@ class NonAccessibleImageView : public views::ImageView {
   NonAccessibleImageView(const NonAccessibleImageView&) = delete;
   NonAccessibleImageView& operator=(const NonAccessibleImageView&) = delete;
   ~NonAccessibleImageView() override;
-
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_NON_ACCESSIBLE_IMAGE_VIEW_H_

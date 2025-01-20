@@ -15,6 +15,7 @@
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "components/metrics/file_metrics_provider.h"
@@ -25,8 +26,11 @@
 #import "components/ukm/observers/history_delete_observer.h"
 #import "components/ukm/observers/ukm_consent_state_observer.h"
 #import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
-#import "ios/web/public/deprecated/global_web_state_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
@@ -46,13 +50,19 @@ namespace ukm {
 class UkmService;
 }
 
+namespace metrics::dwa {
+class DwaService;
+}
+
 // IOSChromeMetricsServiceClient provides an implementation of
 // MetricsServiceClient that depends on //ios/chrome/.
 class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
-                                      public web::GlobalWebStateObserver,
-                                      public ProfileManagerObserverIOS {
+                                      public ProfileManagerObserverIOS,
+                                      public BrowserListObserver,
+                                      public WebStateListObserver,
+                                      public web::WebStateObserver {
  public:
   IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
   IOSChromeMetricsServiceClient& operator=(
@@ -72,6 +82,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::dwa::DwaService* GetDwaService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -90,6 +101,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       override;
   base::TimeDelta GetStandardUploadInterval() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsDwaAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
 
@@ -99,16 +111,35 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // ukm::UkmConsentStateObserver:
   void OnUkmAllowedStateChanged(bool must_purge, ukm::UkmConsentState) override;
 
-  // web::GlobalWebStateObserver:
-  void WebStateDidStartLoading(web::WebState* web_state) override;
-  void WebStateDidStopLoading(web::WebState* web_state) override;
-
   // ProfileManagerObserverIOS:
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileCreated(ProfileManagerIOS* manager,
                         ProfileIOS* profile) override;
   void OnProfileLoaded(ProfileManagerIOS* manager,
                        ProfileIOS* profile) override;
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) override;
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) override;
+
+  // BrowserListObserver:
+  void OnBrowserAdded(const BrowserList* browser_list,
+                      Browser* browser) override;
+  void OnBrowserRemoved(const BrowserList* browser_list,
+                        Browser* browser) override;
+
+  // WebStateListObserver:
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
+
+  // web::WebStateObserver:
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
+  void DidStartLoading(web::WebState* web_state) override;
+  void DidStopLoading(web::WebState* web_state) override;
+  void RenderProcessGone(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -152,6 +183,18 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
+  // Starts/stops observation of `browser_list`.
+  void StartObservingBrowserList(BrowserList* browser_list);
+  void StopObservingBrowserList(BrowserList* browser_list);
+
+  // Starts/stops observation of `browser`.
+  void StartObservingBrowser(Browser* browser);
+  void StopObservingBrowser(Browser* browser);
+
+  // Starts/stops observation of `web_state`.
+  void StartObservingWebState(web::WebState* web_state);
+  void StopObservingWebState(web::WebState* web_state);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointer to the MetricsStateManager.
@@ -172,9 +215,24 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
+  // The DwaService that `this` is a client of.
+  std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
+
   // Observation of the ProfileManagerIOS.
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       profile_manager_observation_{this};
+
+  // Observation of the BrowserLists.
+  base::ScopedMultiSourceObservation<BrowserList, BrowserListObserver>
+      browser_list_observations_{this};
+
+  // Observation of the WebStateLists.
+  base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
+      web_state_list_observations_{this};
+
+  // Observation of the WebStates.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_ = true;
@@ -185,9 +243,6 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Saved callback received from CollectFinalMetricsForLog().
   base::OnceClosure collect_final_metrics_done_callback_;
-
-  // Subscription for receiving callbacks that a tab was parented.
-  base::CallbackListSubscription tab_parented_subscription_;
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.

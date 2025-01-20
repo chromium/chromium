@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/test_support/graph/mock_system_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "content/public/common/process_type.h"
@@ -61,20 +62,6 @@ void LenientTestProcessMetricsDecorator::RequestProcessesMemoryMetrics(
                           memory_instrumentation::GlobalMemoryDump::MoveFrom(
                               std::move(global_dump)));
 }
-
-class LenientMockSystemNodeObserver
-    : public SystemNodeImpl::ObserverDefaultImpl {
- public:
-  LenientMockSystemNodeObserver() = default;
-  ~LenientMockSystemNodeObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnProcessMemoryMetricsAvailable,
-              (const SystemNode*),
-              (override));
-};
-using MockSystemNodeObserver =
-    ::testing::StrictMock<LenientMockSystemNodeObserver>;
 
 struct MemoryDumpProcInfo {
   base::ProcessId pid;

@@ -6,7 +6,6 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -16,6 +15,8 @@
 #import "ios/chrome/common/channel_info.h"
 
 using send_tab_to_self::SendTabToSelfSyncService;
+
+namespace {
 
 std::unique_ptr<KeyedService> BuildSendTabToSelfService(
     web::BrowserState* context) {
@@ -37,6 +38,8 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(
       profile->GetPrefs(), device_info_tracker);
 }
 
+}  // anonymous namespace
+
 // static
 SendTabToSelfSyncServiceFactory*
 SendTabToSelfSyncServiceFactory::GetInstance() {
@@ -47,8 +50,8 @@ SendTabToSelfSyncServiceFactory::GetInstance() {
 // static
 SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SendTabToSelfSyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SendTabToSelfSyncService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -58,9 +61,7 @@ SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
 }
 
 SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SendTabToSelfSyncService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SendTabToSelfSyncService") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());

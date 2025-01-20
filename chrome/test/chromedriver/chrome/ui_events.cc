@@ -32,7 +32,7 @@ MouseEvent::MouseEvent(MouseEventType type,
 
 MouseEvent::MouseEvent(const MouseEvent& other) = default;
 
-MouseEvent::~MouseEvent() {}
+MouseEvent::~MouseEvent() = default;
 
 TouchEvent::TouchEvent() : TouchEvent(kPause, 0, 0) {}
 
@@ -53,7 +53,7 @@ TouchEvent::TouchEvent(TouchEventType type, int x, int y)
 
 TouchEvent::TouchEvent(const TouchEvent& other) = default;
 
-TouchEvent::~TouchEvent() {}
+TouchEvent::~TouchEvent() = default;
 
 KeyEvent::KeyEvent()
     : type(kInvalidEventType),
@@ -77,11 +77,11 @@ KeyEvent::KeyEvent(const KeyEvent& that)
       code(that.code),
       is_from_action(that.is_from_action) {}
 
-KeyEvent::~KeyEvent() {}
+KeyEvent::~KeyEvent() = default;
 
-KeyEventBuilder::KeyEventBuilder() {}
+KeyEventBuilder::KeyEventBuilder() = default;
 
-KeyEventBuilder::~KeyEventBuilder() {}
+KeyEventBuilder::~KeyEventBuilder() = default;
 
 KeyEventBuilder* KeyEventBuilder::SetType(KeyEventType type) {
   key_event_.type = type;

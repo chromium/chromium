@@ -16,6 +16,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom-webui.ts",
     "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model_service.mojom-webui.ts",
   ]
 
   static_files = [ "on_device_internals.html" ]
@@ -28,11 +29,14 @@ build_webui("build") {
     "browser_proxy.ts",
     "event_log.html.ts",
     "event_log.ts",
+    "model_status.html.ts",
+    "model_status.ts",
   ]
 
   css_files = [
     "app.css",
     "event_log.css",
+    "model_status.css",
   ]
 
   ts_deps = [

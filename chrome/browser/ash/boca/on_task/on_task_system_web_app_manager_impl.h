@@ -46,7 +46,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   void RemoveTabsWithTabIds(
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) override;
-  void PrepareSystemWebAppWindowForOnTask(SessionID window_id) override;
+  void PrepareSystemWebAppWindowForOnTask(SessionID window_id,
+                                          bool close_bundle_content) override;
   SessionID GetActiveTabID() override;
   void SwitchToTab(SessionID tab_id) override;
 

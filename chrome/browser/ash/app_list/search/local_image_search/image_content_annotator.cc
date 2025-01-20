@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 
 namespace app_list {
@@ -121,8 +122,10 @@ void ImageContentAnnotator::AnnotateEncodedImage(
     base::OnceCallback<void(ImageAnnotationResultPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Making a MemoryMappedFile.";
+  LogIcaUma(IcaStatus::kAnnotateStart);
   base::MemoryMappedFile data;
   if (!data.Initialize(image_path)) {
+    LogIcaUma(IcaStatus::kDataInitFailed);
     LOG(ERROR) << "Could not create a memory mapped file for an "
                   "image file to generate annotations";
   }
@@ -133,11 +136,14 @@ void ImageContentAnnotator::AnnotateEncodedImage(
   // `timeout_timer_` and it will continue the process when the timer gets
   // timeout.
   if (!mapped_region.IsValid()) {
+    LogIcaUma(IcaStatus::kMappedRegionInvalid);
+    LOG(ERROR) << "Mapped region is not valid";
     return;
   }
   base::span(mapped_region.mapping).copy_from(data.bytes());
 
   EnsureAnnotatorIsConnected();
+  LogIcaUma(IcaStatus::kRequestSent);
   image_content_annotator_->AnnotateEncodedImage(
       std::move(mapped_region.region), std::move(callback));
 }

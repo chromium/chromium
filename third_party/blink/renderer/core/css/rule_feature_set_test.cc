@@ -94,8 +94,7 @@ class RuleFeatureSetTest : public testing::Test {
     HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext),
-        nesting_type, parent_rule_for_nesting, false /* is_within_scope */,
-        nullptr, selector_text, arena);
+        nesting_type, parent_rule_for_nesting, nullptr, selector_text, arena);
     return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
   }
 
@@ -2854,8 +2853,7 @@ TEST_F(RuleFeatureSetTest, NestedSelector) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
       CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false, nullptr,
-      ".a, .b", arena);
+      /*parent_rule_for_nesting=*/nullptr, nullptr, ".a, .b", arena);
   auto* parent_rule = StyleRule::Create(
       selector_vector,
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));
@@ -2961,6 +2959,49 @@ TEST_F(RuleFeatureSetTest, NestingSelectorPointingToScopeInsideHas) {
     EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
   }
+}
+
+TEST_F(RuleFeatureSetTest, NestingSelectorInsideHasPointingToPart) {
+  Document* document =
+      Document::CreateForTest(execution_context_.GetExecutionContext());
+  auto* parent_rule = DynamicTo<StyleRule>(
+      css_test_helpers::ParseRule(*document, "::part(foo) {}"));
+  ASSERT_TRUE(parent_rule);
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(&)", CSSNestingType::kNesting,
+                            /*parent_rule_for_nesting=*/parent_rule));
+}
+
+TEST_F(RuleFeatureSetTest, PseudoElementInParentPseudoPreMatch) {
+  Document* document =
+      Document::CreateForTest(execution_context_.GetExecutionContext());
+
+  auto collect_nested_features = [&](String outer_rule) {
+    auto* parent_rule_for_nesting = DynamicTo<StyleRule>(
+        css_test_helpers::ParseRule(*document, outer_rule));
+    CHECK(parent_rule_for_nesting);
+    return CollectFeatures("&", CSSNestingType::kNesting,
+                           parent_rule_for_nesting);
+  };
+
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::placeholder {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::placeholder {}"));
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            collect_nested_features("::before, .a {}"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            collect_nested_features(".a, ::before {}"));
 }
 
 }  // namespace blink

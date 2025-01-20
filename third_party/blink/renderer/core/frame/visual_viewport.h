@@ -192,7 +192,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish) override;
+                       ScrollCallback on_finish,
+                       bool targeted_scroll = false) override;
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,
                        mojom::blink::ScrollBehavior =

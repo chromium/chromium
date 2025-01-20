@@ -91,6 +91,9 @@ class TextureStorageTest : public testing::Test {
     const GLubyte* extensions = glGetString(GL_EXTENSIONS);
     ext_texture_storage_available_ = strstr(
         reinterpret_cast<const char*>(extensions), "GL_EXT_texture_storage");
+    oes_required_internal_format_available_ =
+        strstr(reinterpret_cast<const char*>(extensions),
+               "GL_OES_required_internalformat");
   }
 
   void TearDown() override { gl_.Destroy(); }
@@ -99,6 +102,7 @@ class TextureStorageTest : public testing::Test {
   GLuint tex_ = 0;
   GLuint fbo_ = 0;
   bool ext_texture_storage_available_ = false;
+  bool oes_required_internal_format_available_ = false;
 };
 
 TEST_F(TextureStorageTest, CorrectPixels) {
@@ -139,7 +143,7 @@ TEST_F(TextureStorageTest, OneLevel) {
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 4, 4);
 
-  uint8_t source_pixels[64] = {0};
+  uint8_t source_pixels[64] = {};
 
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 4, 4,
@@ -156,7 +160,7 @@ TEST_F(TextureStorageTest, MultipleLevels) {
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 2, GL_RGBA8_OES, 2, 2);
 
-  uint8_t source_pixels[16] = {0};
+  uint8_t source_pixels[16] = {};
 
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2,
@@ -206,14 +210,17 @@ TEST_F(TextureStorageTest, CannotRedefine) {
 }
 
 TEST_F(TextureStorageTest, InternalFormatBleedingToTexImage) {
-  if (!ext_texture_storage_available_)
-    return;
-
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   // The context is ES2 context.
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8_OES, 4, 4, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, nullptr);
-  EXPECT_NE(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  if (oes_required_internal_format_available_) {
+    // GL_OES_required_internalformat allows sized texture formats to be passed
+    // to glTexImage2D even in ES2.
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  } else {
+    EXPECT_NE(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  }
 }
 
 TEST_F(TextureStorageTest, LuminanceEmulation) {

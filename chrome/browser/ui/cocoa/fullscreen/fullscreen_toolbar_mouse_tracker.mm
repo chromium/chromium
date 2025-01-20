@@ -66,8 +66,9 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 
   if (_trackingArea) {
     // If |trackingArea_|'s rect matches |trackingAreaFrame_|, quit early.
-    if (NSEqualRects(_trackingAreaFrame, [_trackingArea rect]))
+    if (NSEqualRects(_trackingAreaFrame, [_trackingArea rect])) {
       return;
+    }
 
     [self removeTrackingArea];
   }
@@ -94,8 +95,9 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
 }
 
 - (void)removeTrackingArea {
-  if (!_trackingArea)
+  if (!_trackingArea) {
     return;
+  }
 
   // TODO(https://crbug.com/1063417, https://crbug.com/1064911): This DCHECK
   // is hit when closing a fullscreen window using the traffic lights. This is

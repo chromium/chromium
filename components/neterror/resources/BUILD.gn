@@ -3,17 +3,17 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 
 js_files = [
   "constants.js",
-  "neterror.js",
+  "neterror.ts",
   "dino_game/background_el.js",
   "dino_game/cloud.js",
-  "dino_game/constants.js",
+  "dino_game/constants.ts",
   "dino_game/distance_meter.js",
-  "dino_game/generated_sound_fx.js",
+  "dino_game/generated_sound_fx.ts",
   "dino_game/game_over_panel.js",
   "dino_game/horizon_line.js",
   "dino_game/horizon.js",
@@ -33,11 +33,14 @@ preprocess_if_expr("preprocess") {
   }
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = "${target_gen_dir}/preprocessed"
   out_dir = "$target_gen_dir/tsc"
   in_files = js_files
-  deps = [ "//ui/webui/resources/js:build_ts" ]
+  deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
   extra_deps = [ ":preprocess" ]
 }
 
@@ -57,16 +60,10 @@ bundle_js("bundle_js") {
       rebase_path("${root_gen_dir}/components/security_interstitials/core/",
                   root_build_dir)
 
-  jstemplate_compiled_path =
-      rebase_path("//third_party/jstemplate/jstemplate_compiled.js",
-                  root_build_dir)
-
-  external_paths = [
-    "chrome://interstitials/|$shared_interstitials_path",
-    "chrome://resources/js/jstemplate_compiled.js|$jstemplate_compiled_path",
-  ]
+  external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
   deps = [
     ":build_ts",
     "../../security_interstitials/core/common/resources:preprocess",
+    "//third_party/lit/v3_0:build_min_js",
   ]
 }

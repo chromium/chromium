@@ -19,6 +19,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "extensions/browser/extension_prefs.h"          // nogncheck
 #include "extensions/browser/extension_prefs_factory.h"  // nogncheck
 #include "extensions/browser/extension_registry.h"       // nogncheck
@@ -52,6 +53,7 @@ SafetyHubMenuNotificationServiceFactory::
   DependsOn(NotificationPermissionsReviewServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordStatusCheckServiceFactory::GetInstance());
+  DependsOn(SafetyHubHatsServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 #endif  // BUIDFLAG(IS_ANDROID)
 }
@@ -74,8 +76,11 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
 #else
   PasswordStatusCheckService* password_check_service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile);
+  SafetyHubHatsService* safety_hub_hats_service =
+      SafetyHubHatsServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
       profile->GetPrefs(), unused_site_permissions_service,
-      notification_permission_review_service, password_check_service, profile);
+      notification_permission_review_service, password_check_service,
+      safety_hub_hats_service, profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

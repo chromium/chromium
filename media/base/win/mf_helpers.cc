@@ -22,6 +22,7 @@
 #include <wrl.h>
 
 #include "base/check_op.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_codecs.h"
@@ -31,7 +32,9 @@
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #include "media/formats/mp4/ac4.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
+#include "media/gpu/command_buffer_helper.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -272,7 +275,8 @@ MediaBufferScopedPointer::MediaBufferScopedPointer(IMFMediaBuffer* media_buffer)
       buffer_(nullptr),
       max_length_(0),
       current_length_(0) {
-  HRESULT hr = media_buffer_->Lock(&buffer_, &max_length_, &current_length_);
+  HRESULT hr = media_buffer_->Lock(&buffer_.AsEphemeralRawAddr(), &max_length_,
+                                   &current_length_);
   CHECK(SUCCEEDED(hr));
 }
 
@@ -571,6 +575,15 @@ GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
   }
 }
 
+// MFVideoFormat_ABGR32 has been defined since Win10 RS5, but its definition
+// has never made it to a public header.  The only component
+// that supports this type is the video processor; if it is
+// needed for other components it should be converted to AGRB32
+// or a YUV type.
+#ifndef MFVideoFormat_ABGR32
+DEFINE_MEDIATYPE_GUID(MFVideoFormat_ABGR32, 32 /*D3DFMT_A8B8G8R8*/)
+#endif
+
 GUID VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format) {
   switch (video_pixel_format) {
     case VideoPixelFormat::PIXEL_FORMAT_I420:
@@ -587,6 +600,25 @@ GUID VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format) {
       return MFVideoFormat_ARGB32;
     case VideoPixelFormat::PIXEL_FORMAT_XRGB:
       return MFVideoFormat_RGB32;
+    case VideoPixelFormat::PIXEL_FORMAT_ABGR:
+      if (base::win::GetVersion() < base::win::Version::WIN10_RS5) {
+        // For a long time, there was no MFVideoFormat specific to BGR
+        // in Media Foundaiton.  BGR formats were only handled as
+        // textures, and both the DirectX Video Processor and pixel
+        // shaders handled these fine because they operate off of the
+        // texture format and not the MF media type. Use of the
+        // MFVideoFormat_ABGR32 type only becomes important if the
+        // video processor should output a BGR texture.
+        return MFVideoFormat_ARGB32;
+      } else {
+        return MFVideoFormat_ABGR32;
+      }
+    case VideoPixelFormat::PIXEL_FORMAT_XBGR:
+      if (base::win::GetVersion() < base::win::Version::WIN10_RS5) {
+        return MFVideoFormat_RGB32;
+      } else {
+        return MFVideoFormat_ABGR32;
+      }
     case VideoPixelFormat::PIXEL_FORMAT_RGB24:
       return MFVideoFormat_RGB24;
     default:
@@ -771,6 +803,32 @@ HRESULT CreateDecryptConfigFromSample(
   return S_OK;
 }
 
+constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
+
+HRESULT InitializeSampleFromTexture(const VideoFrame* frame,
+                                    ID3D11Texture2D* input_texture,
+                                    IMFSample* sample) {
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> mf_buffer;
+  HRESULT hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                         input_texture, 0, FALSE, &mf_buffer);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
+
+  DWORD buffer_length = 0;
+  hr = mf_buffer->GetMaxLength(&buffer_length);
+  RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+  hr = mf_buffer->SetCurrentLength(buffer_length);
+  RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+
+  RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
+  hr = sample->AddBuffer(mf_buffer.Get());
+  RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
+  hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
+                             kOneMicrosecondInMFSampleTimeUnits);
+  RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
+
+  return S_OK;
+}
+
 HRESULT GenerateSampleFromVideoFrame(
     const VideoFrame* frame,
     DXGIDeviceManager* dxgi_device_manager,
@@ -778,7 +836,9 @@ HRESULT GenerateSampleFromVideoFrame(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
     DWORD buffer_alignment,
     IMFSample** sample_out) {
-  constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
+  // A shared image sample cannot be created synchronously.  Use
+  // GenerateSampleFromSharedImageVideoFrame
+  CHECK(!frame->HasSharedImage());
 
   HRESULT hr;
   Microsoft::WRL::ComPtr<IMFSample> sample;
@@ -813,23 +873,9 @@ HRESULT GenerateSampleFromVideoFrame(
     RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
 
     if (use_dxgi_buffer) {
-      Microsoft::WRL::ComPtr<IMFMediaBuffer> mf_buffer;
-      hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
-                                     input_texture.Get(), 0, FALSE, &mf_buffer);
-      RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
-
-      DWORD buffer_length = 0;
-      hr = mf_buffer->GetMaxLength(&buffer_length);
-      RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
-      hr = mf_buffer->SetCurrentLength(buffer_length);
-      RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
-
-      RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
-      hr = sample->AddBuffer(mf_buffer.Get());
-      RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
-      hr = sample->SetSampleTime(frame->timestamp().InMicroseconds() *
-                                 kOneMicrosecondInMFSampleTimeUnits);
-      RETURN_ON_HR_FAILURE(hr, "Failed to set sample timestamp", hr);
+      hr =
+          InitializeSampleFromTexture(frame, input_texture.Get(), sample.Get());
+      RETURN_ON_HR_FAILURE(hr, "Failed to initialize sample from texture", hr);
     } else {
       Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
       size_t allocation_size =
@@ -857,10 +903,6 @@ HRESULT GenerateSampleFromVideoFrame(
       hr = sample->AddBuffer(input_buffer.Get());
       RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
     }
-  } else if (frame->HasSharedImage()) {
-    // TODO(crbug.com/40162806): Handle non-GMB textures. This needs access to
-    // SharedImageManager.
-    return E_UNEXPECTED;
   } else {
     size_t allocation_size = VideoFrame::AllocationSize(
         frame->format(), frame->visible_rect().size());
@@ -905,6 +947,78 @@ HRESULT GenerateSampleFromVideoFrame(
   *sample_out = sample.Detach();
 
   return S_OK;
+}
+
+void GenerateSampleOnSyncTokenReleased(
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
+    scoped_refptr<CommandBufferHelper> command_buffer_helper,
+    SampleAvailableCB sample_available_cb) {
+  gpu::SharedImageManager* shared_image_manager =
+      command_buffer_helper->GetSharedImageManager();
+  std::unique_ptr<gpu::VideoImageRepresentation> image_representation =
+      shared_image_manager->ProduceVideo(
+          d3d_device, frame->shared_image()->mailbox(),
+          command_buffer_helper->GetMemoryTypeTracker());
+  auto scoped_read_access = image_representation->BeginScopedReadAccess();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
+      scoped_read_access->GetD3D11Texture();
+
+  if (frame->format() == PIXEL_FORMAT_NV12) {
+    // If this texture is going to be fed directly to the encoder (NV12), create
+    // a copy of it.  Hardware encoders are not guaranteed to be done with
+    // the texture when ProcessInput is finished.
+    D3D11_TEXTURE2D_DESC texture_desc;
+    input_texture->GetDesc(&texture_desc);
+    texture_desc.Usage = D3D11_USAGE_DEFAULT;
+    texture_desc.BindFlags =
+        D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+    texture_desc.ArraySize = 1;
+    texture_desc.CPUAccessFlags = 0;
+    texture_desc.MiscFlags = 0;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> copied_texture;
+    HRESULT hr =
+        d3d_device->CreateTexture2D(&texture_desc, nullptr, &copied_texture);
+    if (FAILED(hr)) {
+      std::move(sample_available_cb).Run(std::move(frame), nullptr, hr);
+      return;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+    d3d_device->GetImmediateContext(&device_context);
+    D3D11_BOX src_box = {static_cast<UINT>(frame->visible_rect().x()),
+                         static_cast<UINT>(frame->visible_rect().y()),
+                         0,
+                         static_cast<UINT>(frame->visible_rect().right()),
+                         static_cast<UINT>(frame->visible_rect().bottom()),
+                         1};
+    device_context->CopySubresourceRegion(copied_texture.Get(), 0, 0, 0, 0,
+                                          input_texture.Get(), 0, &src_box);
+    input_texture = copied_texture;
+  }
+
+  ComPtr<IMFSample> mf_sample;
+  HRESULT hr = MFCreateSample(&mf_sample);
+  if (SUCCEEDED(hr)) {
+    hr = InitializeSampleFromTexture(frame.get(), input_texture.Get(),
+                                     mf_sample.Get());
+  }
+
+  std::move(sample_available_cb)
+      .Run(std::move(frame), std::move(mf_sample), hr);
+}
+
+void GenerateSampleFromSharedImageVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d_device,
+    scoped_refptr<CommandBufferHelper> command_buffer_helper,
+    SampleAvailableCB sample_available_cb) {
+  gpu::SyncToken acquire_sync_token = frame->acquire_sync_token();
+  command_buffer_helper->WaitForSyncToken(
+      acquire_sync_token,
+      base::BindOnce(&GenerateSampleOnSyncTokenReleased, std::move(frame),
+                     std::move(d3d_device), std::move(command_buffer_helper),
+                     std::move(sample_available_cb)));
 }
 
 }  // namespace media

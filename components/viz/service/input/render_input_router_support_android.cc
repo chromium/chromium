@@ -27,9 +27,29 @@ RenderInputRouterSupportAndroid::RenderInputRouterSupportAndroid(
 }
 
 bool RenderInputRouterSupportAndroid::OnTouchEvent(
-    const ui::MotionEventAndroid& event) {
-  // TODO(366000885): Make touch selection controller input event observer.
-  NOTREACHED();
+    const ui::MotionEventAndroid& event,
+    bool emit_histograms) {
+  if (emit_histograms) {
+    input_helper_->RecordToolTypeForActionDown(event);
+    input_helper_->ComputeEventLatencyOSTouchHistograms(event);
+  }
+
+  ui::FilteredGestureProvider::TouchHandlingResult result =
+      gesture_provider_.OnTouchEvent(event);
+  if (!result.succeeded) {
+    return false;
+  }
+
+  blink::WebTouchEvent web_event = ui::CreateWebTouchEventFromMotionEvent(
+      event, result.moved_beyond_slop_region /* may_cause_scrolling */,
+      false /* hovering */);
+  if (web_event.GetType() == blink::WebInputEvent::Type::kUndefined) {
+    return false;
+  }
+
+  input_helper_->RouteOrForwardTouchEvent(web_event);
+
+  return true;
 }
 
 bool RenderInputRouterSupportAndroid::ShouldRouteEvents() const {
@@ -49,7 +69,11 @@ void RenderInputRouterSupportAndroid::SendGestureEvent(
     const blink::WebGestureEvent& event) {
   // TODO(365985685): Refactor OverscrollController to work with input on Viz.
   // TODO(366000885): Make touch selection controller input event observer.
-  NOTREACHED();
+
+  if (event.GetType() == blink::WebInputEvent::Type::kUndefined) {
+    return;
+  }
+  input_helper_->RouteOrForwardGestureEvent(event);
 }
 
 ui::FilteredGestureProvider&
@@ -90,9 +114,15 @@ bool RenderInputRouterSupportAndroid::TransformPointToCoordSpaceForView(
 
 void RenderInputRouterSupportAndroid::TransformPointToRootSurface(
     gfx::PointF* point) {
-  // TODO(365995153): Add BrowserControl's top control height to
-  // CompositorFrameMetaData.
-  NOTREACHED();
+  auto* metadata = delegate()->GetLastActivatedFrameMetadata(GetFrameSinkId());
+  // Adjust the point's y-coordinate to account for the height of the top
+  // controls bar. In general, Viz should have the updated top controls height
+  // when transform is called and if it isn't updated, the toolbar isn't visible
+  // and thus the |point| is already "transformed".
+  if (metadata) {
+    *point +=
+        gfx::Vector2d(0, metadata->top_controls_visible_height.value_or(0.f));
+  }
 }
 
 blink::mojom::InputEventResultState
@@ -107,7 +137,15 @@ void RenderInputRouterSupportAndroid::GestureEventAck(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   // TODO(365985685): Refactor OverscrollController to work with input on Viz.
-  NOTREACHED();
+
+  // Stop flinging if a GSU event with momentum phase is sent to the renderer
+  // but not consumed.
+  StopFlingingIfNecessary(event, ack_result);
+}
+
+base::WeakPtr<RenderInputRouterSupportAndroid>
+RenderInputRouterSupportAndroid::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace viz

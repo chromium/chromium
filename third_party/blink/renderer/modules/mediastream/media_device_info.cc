@@ -73,13 +73,13 @@ mojom::blink::MediaDeviceType MediaDeviceInfo::DeviceType() const {
   return device_type_;
 }
 
-ScriptValue MediaDeviceInfo::toJSONForBinding(ScriptState* script_state) {
+ScriptObject MediaDeviceInfo::toJSONForBinding(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddString("deviceId", deviceId());
   result.AddString("kind", kind().AsString());
   result.AddString("label", label());
   result.AddString("groupId", groupId());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

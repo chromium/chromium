@@ -38,7 +38,8 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
   // Constructor initializes the WebSocket connection with a given socket and
   // prepares for the WebSocket handshake by setting up necessary headers.
   explicit WebSocketConnection(std::unique_ptr<StreamSocket> socket,
-                               std::string_view sec_websocket_key);
+                               std::string_view sec_websocket_key,
+                               EmbeddedTestServer* server);
 
   // Adds or replaces the response header with name `name`. Should only be
   // called from WebSocketHandler::OnHandshake().
@@ -158,6 +159,9 @@ class WebSocketConnection final : public base::RefCounted<WebSocketConnection> {
 
   // Handles assembling fragmented WebSocket frame chunks.
   WebSocketChunkAssembler chunk_assembler_;
+
+  // Subscription to the shutdown closure in EmbeddedTestServer.
+  base::CallbackListSubscription shutdown_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

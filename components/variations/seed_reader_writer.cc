@@ -15,7 +15,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/version_info/channel.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 
 namespace variations {
@@ -24,13 +26,6 @@ namespace {
 // Histogram suffix used by ImportantFileWriter for recording seed file write
 // information.
 constexpr char kSeedWriterHistogramSuffix[] = "VariationsSeedsV1";
-
-// Returns true if a seed file should be used.
-bool ShouldUseSeedFile() {
-  // Use the plain FieldTrialList API here because the trial is registered
-  // client-side in VariationsSeedStore SetUpSeedFileTrial().
-  return base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
-}
 
 // Serializes and returns seed data used during write to disk. Will be run
 // asynchronously on a background thread.
@@ -48,6 +43,40 @@ base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
                                : seed_file_dir.Append(filename);
 }
 
+// Returns true if the client is eligible to participate in the seed file trial.
+bool IsEligibleForSeedFileTrial(version_info::Channel channel,
+                                const base::FilePath& seed_file_dir,
+                                const EntropyProviders* entropy_providers) {
+  // Note platforms that should not participate in the experiment will
+  // deliberately pass an empty |seed_file_dir| and null |entropy_provider|.
+  if (seed_file_dir.empty() || entropy_providers == nullptr) {
+    return false;
+  }
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
+}
+
+// Sets up the seed file experiment which only some clients are eligible for
+// (see IsEligibleForSeedFileTrial()).
+void SetUpSeedFileTrial(
+    const base::FieldTrial::EntropyProvider& entropy_provider) {
+  // Verify that the field trial has not already been set up. This may be the
+  // case if a SeedReaderWriter associated with a safe seed calls this function
+  // before one associated with a latest seed or vice versa.
+  if (base::FieldTrialList::TrialExists(kSeedFileTrial)) {
+    return;
+  }
+
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
+          entropy_provider));
+
+  trial->AppendGroup(kControlGroup, /*group_probability=*/50);
+  trial->AppendGroup(kSeedFilesGroup, /*group_probability=*/50);
+}
+
 }  // namespace
 
 SeedReaderWriter::SeedReaderWriter(
@@ -55,6 +84,8 @@ SeedReaderWriter::SeedReaderWriter(
     const base::FilePath& seed_file_dir,
     base::FilePath::StringPieceType seed_filename,
     std::string_view seed_pref,
+    version_info::Channel channel,
+    const EntropyProviders* entropy_providers,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
       seed_pref_(seed_pref),
@@ -64,6 +95,9 @@ SeedReaderWriter::SeedReaderWriter(
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
         GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
         kSeedWriterHistogramSuffix);
+  }
+  if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
+    SetUpSeedFileTrial(entropy_providers->default_entropy());
     if (ShouldUseSeedFile()) {
       ReadSeedFile();
     }
@@ -80,28 +114,27 @@ SeedReaderWriter::~SeedReaderWriter() {
 void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
                                           std::string_view base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetString(seed_pref_, base64_seed_data);
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(compressed_seed_data);
+  } else {
+    local_state_->SetString(seed_pref_, base64_seed_data);
   }
 }
 
 void SeedReaderWriter::ClearSeed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->ClearPref(seed_pref_);
   // TODO(crbug.com/372009105): Remove if-statements when experiment has ended.
-  if (!seed_writer_) {
-    return;
-  }
-
-  // Although only clients in the treatment group write seeds to dedicated seed
-  // files, attempt to clear the seed file for all groups here. If a client
-  // switches experiment groups or channels, their device could have a seed file
-  // with stale seed data.
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(std::string());
-  } else if (base::PathExists(seed_writer_->path())) {
-    DeleteSeedFile();
+  } else {
+    local_state_->ClearPref(seed_pref_);
+    // Although only clients in the treatment group write seeds to dedicated
+    // seed files, attempt to delete the seed file for clients with
+    // Local-State-based seeds. If a client switches experiment groups or
+    // channels, their device could have a seed file with stale seed data.
+    if (seed_writer_ && base::PathExists(seed_writer_->path())) {
+      DeleteSeedFile();
+    }
   }
 }
 
@@ -139,34 +172,34 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
 
 void SeedReaderWriter::ScheduleSeedFileWrite(std::string_view seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (seed_writer_) {
-    // Set `seed_data_`, this will be used later by the background serialization
-    // and can be changed multiple times before a scheduled write completes, in
-    // which case the background serializer will use the `seed_data_` set at the
-    // last call of this function.
-    seed_data_ = seed_data;
-    // `seed_writer_` will eventually call
-    // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
-    // a callback that will be run asynchronously. This callback will be used to
-    // call the DoSerialize() function which will return the seed data to write
-    // to the file. This write will also be asynchronous and on a different
-    // thread. Note that it is okay to call this while a write is already
-    // occurring in a background thread and that this will result in a new write
-    // being scheduled.
-    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  }
+  // Set `seed_data_`, this will be used later by the background serialization
+  // and can be changed multiple times before a scheduled write completes, in
+  // which case the background serializer will use the `seed_data_` set at the
+  // last call of this function.
+  seed_data_ = seed_data;
+  // `seed_writer_` will eventually call
+  // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
+  // a callback that will be run asynchronously. This callback will be used to
+  // call the DoSerialize() function which will return the seed data to write
+  // to the file. This write will also be asynchronous and on a different
+  // thread. Note that it is okay to call this while a write is already
+  // occurring in a background thread and that this will result in a new write
+  // being scheduled.
+  seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
 }
 
 void SeedReaderWriter::DeleteSeedFile() {
-  if (seed_writer_) {
-    file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                  seed_writer_->path()));
-  }
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                seed_writer_->path()));
 }
 
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string histogram_suffix =
+      base::Contains(seed_writer_->path().BaseName().MaybeAsASCII(), "Safe")
+          ? "Safe"
+          : "Latest";
   std::string seed_file_data;
   const bool success =
       base::ReadFileToString(seed_writer_->path(), &seed_file_data);
@@ -175,10 +208,10 @@ void SeedReaderWriter::ReadSeedFile() {
     seed_data_ = std::move(seed_file_data);
   } else {
     // Export seed data from Local State to a seed file in the following cases.
-    // 1. Seed file does not exists because this is the first run for Windows
-    // OS. In this case, the first run seed may be stored in Local State, see
+    // 1. Seed file does not exist because this is the first run. For Windows,
+    // the first run seed may be stored in Local State, see
     // https://crsrc.org/s?q=file:chrome_feature_list_creator.cc+symbol:SetupInitialPrefs.
-    // 2. Seed file does not exists because this is the first time a client is
+    // 2. Seed file does not exist because this is the first time a client is
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
     std::string decoded_data;
@@ -186,16 +219,38 @@ void SeedReaderWriter::ReadSeedFile() {
                            &decoded_data)) {
       // Write will only occur if ShouldUseSeedFile() is true.
       ScheduleSeedFileWrite(decoded_data);
+
+      // Record whether empty data is written to the seed file. This can happen
+      // in the following cases.
+      // 1. It is the first time a client is in the seed file experiment's
+      // treatment group. The seed file does not exist and the local state seed
+      // is empty.
+      // 2. It is not the first time a client is in the treatment group. A
+      // seed file exists, but cannot be read, and since local state is no
+      // longer maintained and has been cleared in previous runs, the local
+      // state seed written is cleared/ empty.
+      // 3. It is not the first time a client is in the treatment group. The
+      // seed file was deleted.
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"Variations.SeedFileWriteEmptySeed.", histogram_suffix}),
+          decoded_data.empty());
     }
   }
 
   base::UmaHistogramBoolean(
-      base::StrCat({"Variations.SeedFileRead.",
-                    base::Contains(
-                        seed_writer_->path().BaseName().MaybeAsASCII(), "Safe")
-                        ? "Safe"
-                        : "Latest"}),
-      success);
+      base::StrCat({"Variations.SeedFileRead.", histogram_suffix}), success);
+
+  // Clients using a seed file should clear seed from local state as it will no
+  // longer be used.
+  local_state_->ClearPref(seed_pref_);
+}
+
+bool SeedReaderWriter::ShouldUseSeedFile() const {
+  // Use the plain FieldTrialList API here because the trial is registered
+  // client-side in VariationsSeedStore SetUpSeedFileTrial().
+  return seed_writer_ &&
+         base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
 }
 
 }  // namespace variations

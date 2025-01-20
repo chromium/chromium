@@ -43,6 +43,11 @@ struct StreamingResponse {
 
   // True if streaming has finished.
   bool is_complete = false;
+
+  // The number of tokens in this response's input.
+  size_t input_token_count = 0;
+  // The number of tokens in this response.
+  size_t output_token_count = 0;
 };
 
 struct OptimizationGuideModelStreamingExecutionResult {
@@ -114,13 +119,6 @@ struct SessionConfigParams {
   // How the execution of this feature should be configured.
   ExecutionMode execution_mode = ExecutionMode::kDefault;
 
-  // The amount of time to wait before the initial response is received from the
-  // on device model. If unset, a default value will be used.
-  //
-  // If `execution_mode` allows, model execution will fall back to the server
-  // instead of failing entirely when this timeout is reached.
-  std::optional<base::TimeDelta> on_device_execution_timeout;
-
   enum class LoggingMode {
     // Enable logging if it's enabled for ModelBasedCapability.
     kDefault,
@@ -140,8 +138,10 @@ enum class OnDeviceModelEligibilityReason {
   kSuccess = 1,
   // The feature flag gating on-device model execution was disabled.
   kFeatureNotEnabled = 2,
+  // DEPRECATED: split into kModelNotEligible, kInsufficientDiskSpace and
+  // kNoOnDeviceFeatureUsed.
   // There was no on-device model available.
-  kModelNotAvailable = 3,
+  kDeprecatedModelNotAvailable = 3,
   // The on-device model was available but there was not an execution config
   // available for the feature.
   kConfigNotAvailableForFeature = 4,
@@ -169,13 +169,24 @@ enum class OnDeviceModelEligibilityReason {
   // There was no on-device model available, but it may be downloaded and
   // installed later.
   kModelToBeInstalled = 15,
+  // The device is not eligible for running the on-device model.
+  kModelNotEligible = 16,
+  // The device does not have enough space to download and install the
+  // on-device model.
+  kInsufficientDiskSpace = 17,
+  // There was no on-device feature usage so the model has not been
+  // downloaded yet.
+  kNoOnDeviceFeatureUsed = 18,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kModelToBeInstalled,
+  kMaxValue = kNoOnDeviceFeatureUsed,
 };
+
+std::ostream& operator<<(std::ostream& out,
+                         const OnDeviceModelEligibilityReason& val);
 
 // Observer that is notified when the on-device model availability changes for
 // the on-device eligible features.
@@ -205,6 +216,13 @@ struct TokenLimits {
   uint32_t max_execute_tokens = 0;
   // The maximum number of tokens that can be generated as output.
   uint32_t max_output_tokens = 0;
+};
+
+// The configuration that specifies the default sampling params.
+// TODO(crbug.com/367771112): support `max_top_k` and `max_temperature`.
+struct SamplingParamsConfig {
+  std::optional<uint32_t> default_top_k;
+  std::optional<float> default_temperature;
 };
 
 // Interface for model execution.
@@ -270,13 +288,6 @@ class OptimizationGuideModelExecutor {
     // OnDeviceModelExecutionFeatureConfig.
     virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
   };
-
-  // Whether an on-device session can be created for `feature`. An optional
-  // `on_device_model_eligibility_reason` parameter can be provided for more
-  // detailed reasons for why an on-device session could not be created.
-  virtual bool CanCreateOnDeviceSession(
-      ModelBasedCapabilityKey feature,
-      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) = 0;
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

@@ -44,7 +44,7 @@ HeadlessDevToolsManagerDelegate::CreateNewTarget(
   HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
       context->CreateWebContentsBuilder()
           .SetInitialURL(url)
-          .SetWindowSize(browser_->options()->window_size)
+          .SetWindowBounds(gfx::Rect(browser_->options()->window_size))
           .Build());
   return target_type == content::DevToolsManagerDelegate::kTab
              ? content::DevToolsAgentHost::GetOrCreateForTab(

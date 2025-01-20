@@ -10,7 +10,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Browser;
-class ShoppingInsightsSidePanelUI;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -23,8 +22,7 @@ namespace commerce {
 
 class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
  public:
-  ShoppingUiHandlerDelegate(ShoppingInsightsSidePanelUI* insights_side_panel_ui,
-                            Profile* profile);
+  explicit ShoppingUiHandlerDelegate(Profile* profile);
   ShoppingUiHandlerDelegate(const ShoppingUiHandlerDelegate&) = delete;
   ShoppingUiHandlerDelegate& operator=(const ShoppingUiHandlerDelegate&) =
       delete;
@@ -32,17 +30,11 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   std::optional<GURL> GetCurrentTabUrl() override;
 
-  void ShowInsightsSidePanelUI() override;
-
   const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() override;
 
   void SwitchToOrOpenTab(const GURL& url) override;
 
   void OpenUrlInNewTab(const GURL& url) override;
-
-  void ShowBookmarkEditorForCurrentUrl() override;
-
-  void ShowFeedbackForPriceInsights() override;
 
   void ShowFeedbackForProductSpecifications(const std::string& log_id) override;
 
@@ -52,9 +44,6 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
  private:
   void NavigateToUrl(Browser* browser, const GURL& url);
 
-  // This delegate is owned by |insights_side_panel_ui_| so we expect
-  // |insights_side_panel_ui_| to remain valid for the lifetime of |this|.
-  raw_ptr<ShoppingInsightsSidePanelUI> insights_side_panel_ui_;
   raw_ptr<Profile> profile_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };

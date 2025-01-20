@@ -11,9 +11,10 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -122,8 +123,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
     case PasswordFormClassification::Type::kResetPasswordForm:
       return false;
     case PasswordFormClassification::Type::kSingleUsernameForm:
-      return base::FeatureList::IsEnabled(
-          features::kPlusAddressOfferCreationOnSingleUsernameForms);
+      return true;
   }
   NOTREACHED();
 }
@@ -180,16 +180,23 @@ PlusAddressSuggestionGenerator::GetSuggestions(
     const std::vector<std::string>& affiliated_plus_addresses,
     bool is_creation_enabled,
     const autofill::FormData& focused_form,
+    const autofill::FormFieldData& focused_field,
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
-    const autofill::FieldGlobalId& focused_field_id,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
-  const autofill::FormFieldData& focused_field =
-      CHECK_DEREF(focused_form.FindFieldByGlobalId(focused_field_id));
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
+
+  // Generally, plus address suggestions are only available on empty fields. In
+  // cases where the field was previously autofilled, plus address suggestions
+  // should be among the single field suggestions offered and no prefix matching
+  // should be applied.
+  const bool is_field_empty_or_autofilled =
+      normalized_field_value.empty() ||
+      (focused_field.is_autofilled() &&
+       autofill::IsAddressFieldSwappingEnabled());
 
   if (affiliated_plus_addresses.empty()) {
     // Do not offer creation if disabled.
@@ -200,7 +207,7 @@ PlusAddressSuggestionGenerator::GetSuggestions(
     // Do not offer creation on non-empty fields and certain form types (e.g.
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
-        (!normalized_field_value.empty() ||
+        (!is_field_empty_or_autofilled ||
          !ShouldOfferPlusAddressCreationOnForm(
              focused_form, form_field_type_groups, focused_form_classification,
              focused_field.global_id()))) {
@@ -212,12 +219,13 @@ PlusAddressSuggestionGenerator::GetSuggestions(
 
   std::vector<Suggestion> suggestions;
   suggestions.reserve(affiliated_plus_addresses.size());
-  for (const std::string& affiliated_plus_addresse :
-       affiliated_plus_addresses) {
-    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_addresse);
+  for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
+    std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_address);
     // Only suggest filling a plus address whose prefix matches the field's
     // value.
     if (trigger_source == kManualFallbackPlusAddresses ||
+        is_field_empty_or_autofilled ||
+        // Apply prefix matching if the field is not empty and not autofilled.
         plus_address.starts_with(normalized_field_value)) {
       suggestions.push_back(
           CreateFillPlusAddressSuggestion(std::move(plus_address)));
@@ -229,7 +237,8 @@ PlusAddressSuggestionGenerator::GetSuggestions(
 void PlusAddressSuggestionGenerator::RefreshPlusAddressForSuggestion(
     Suggestion& suggestion) {
   CHECK(IsInlineGenerationEnabled());
-  suggestion = CreateNewPlusAddressInlineSuggestion();
+  suggestion =
+      CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/true);
 }
 
 // static
@@ -297,7 +306,7 @@ void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
 autofill::Suggestion
 PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   if (IsInlineGenerationEnabled()) {
-    return CreateNewPlusAddressInlineSuggestion();
+    return CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/false);
   }
 
   Suggestion suggestion(
@@ -333,14 +342,18 @@ bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
 }
 
 autofill::Suggestion
-PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
+PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion(
+    bool refreshed_suggestion) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddressInline);
 
+  PlusAddressAllocator::AllocationMode mode =
+      refreshed_suggestion
+          ? PlusAddressAllocator::AllocationMode::kNewPlusAddress
+          : PlusAddressAllocator::AllocationMode::kAny;
   if (std::optional<PlusProfile> profile =
-          allocator_->AllocatePlusAddressSynchronously(
-              origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
+          allocator_->AllocatePlusAddressSynchronously(origin_, mode)) {
     SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
     // Set IPH and new badge information only if allocation is synchronous.
     // Otherwise, they will be showing only during the loading stage and then be

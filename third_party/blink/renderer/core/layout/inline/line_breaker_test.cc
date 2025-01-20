@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
+#include <array>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
@@ -1011,9 +1013,12 @@ TEST_F(LineBreakerTest, BreakAt) {
     </div>
   )HTML");
   InlineNode target = GetInlineNodeByElementId("target");
-  LineBreakPoint break_points[]{LineBreakPoint{{0, 2}}, LineBreakPoint{{1, 6}},
-                                LineBreakPoint{{2, 7}}};
-  LineInfo line_info_list[4];
+  auto break_points = std::to_array<LineBreakPoint>({
+      LineBreakPoint{{0, 2}},
+      LineBreakPoint{{1, 6}},
+      LineBreakPoint{{2, 7}},
+  });
+  std::array<LineInfo, 4> line_info_list;
   const wtf_size_t num_lines =
       BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
   EXPECT_EQ(num_lines, 4u);
@@ -1050,8 +1055,9 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpaces) {
     </div>
   )HTML");
   InlineNode target = GetInlineNodeByElementId("target");
-  LineBreakPoint break_points[]{LineBreakPoint{{7, 5}, {3, 4}}};
-  LineInfo line_info_list[2];
+  auto break_points =
+      std::to_array<LineBreakPoint>({LineBreakPoint{{7, 5}, {3, 4}}});
+  std::array<LineInfo, 2> line_info_list;
   const wtf_size_t num_lines =
       BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
   EXPECT_EQ(num_lines, 2u);
@@ -1085,8 +1091,9 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
     </div>
   )HTML");
   InlineNode target = GetInlineNodeByElementId("target");
-  LineBreakPoint break_points[]{LineBreakPoint{{4, 2}, {2, 1}}};
-  LineInfo line_info_list[2];
+  auto break_points =
+      std::to_array<LineBreakPoint>({LineBreakPoint{{4, 2}, {2, 1}}});
+  std::array<LineInfo, 2> line_info_list;
   const wtf_size_t num_lines =
       BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
   EXPECT_EQ(num_lines, 2u);
@@ -1193,7 +1200,7 @@ C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 // crbug.com/342027571 A crash with an overflowing continuation ruby column.
 TEST_F(LineBreakerTest, OverflowingContinuationRuby2) {
   InlineNode node = CreateInlineNode(R"HTML(
-<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word;">
+<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word; font-size: 12px;">
 <ruby>)S
 <rb dir="rtl" style="margin-bottom:-6em;"><svg></svg></rb>
 <rt>x AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -1273,7 +1280,7 @@ TEST_P(CanBreakInsideTest, Data) {
   )HTML",
                                   data.target_css, data.style, data.html));
   InlineNode target = GetInlineNodeByElementId("target");
-  LineInfo line_info_list[1];
+  std::array<LineInfo, 1> line_info_list;
   const LayoutUnit available_width = LayoutUnit(800);
   const wtf_size_t num_lines =
       BreakLines(target, available_width, line_info_list);

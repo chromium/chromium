@@ -102,5 +102,15 @@ TEST_F(FieldDataManagerTest, FindMatchedValue) {
   EXPECT_FALSE(field_data_manager->FindMatchedValue(u"second_element"));
 }
 
+TEST_F(FieldDataManagerTest, ChangePasswordFormFillingIsUserTrigger) {
+  const scoped_refptr<FieldDataManager> field_data_manager =
+      base::MakeRefCounted<FieldDataManager>();
+  field_data_manager->UpdateFieldDataMap(
+      control_elements_[0].renderer_id(), control_elements_[0].value(),
+      FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad);
+  EXPECT_TRUE(field_data_manager->WasAutofilledOnUserTrigger(
+      control_elements_[0].renderer_id()));
+}
+
 }  // namespace
 }  // namespace autofill

@@ -305,12 +305,11 @@ component("cpp") {
     "saved_desk_delegate.h",
     "scale_utility.cc",
     "scale_utility.h",
-    "scanner/scanner_action.h",
     "scanner/scanner_delegate.h",
     "scanner/scanner_enums.h",
+    "scanner/scanner_feedback_info.cc",
+    "scanner/scanner_feedback_info.h",
     "scanner/scanner_profile_scoped_delegate.h",
-    "scanner/scanner_system_state.cc",
-    "scanner/scanner_system_state.h",
     "schedule_enums.cc",
     "schedule_enums.h",
     "scoped_clipboard_history_pause.h",
@@ -429,7 +428,7 @@ component("cpp") {
   assert_no_deps = [
     "//ash/components/arc",
     "//ash/public/cpp/external_arc",
-    "//components/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
     "//components/exo",
     "//components/soda",
   ]
@@ -447,6 +446,7 @@ component("cpp") {
     "//chromeos/ash/components/auth_panel/public",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/ash/services/cellular_setup:in_process_esim_manager",
@@ -544,7 +544,6 @@ source_set("unit_tests") {
     "holding_space/holding_space_controller_unittest.cc",
     "holding_space/holding_space_image_unittest.cc",
     "holding_space/holding_space_item_unittest.cc",
-    "holding_space/holding_space_metrics_unittest.cc",
     "holding_space/holding_space_model_unittest.cc",
     "holding_space/holding_space_progress_unittest.cc",
     "holding_space/holding_space_section_unittest.cc",
@@ -560,7 +559,6 @@ source_set("unit_tests") {
     "tab_cluster/correlation_clusterer_unittest.cc",
     "tab_cluster/undirected_graph_unittest.cc",
     "wallpaper/wallpaper_info_unittest.cc",
-    "wallpaper/wallpaper_types_unittest.cc",
   ]
 
   deps = [

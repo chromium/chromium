@@ -20,10 +20,10 @@ namespace extensions {
 
 class GcmApiFunction : public ExtensionFunction {
  public:
-  GcmApiFunction() {}
+  GcmApiFunction() = default;
 
  protected:
-  ~GcmApiFunction() override {}
+  ~GcmApiFunction() override = default;
 
   // ExtensionFunction:
   bool PreRunValidation(std::string* error) final;

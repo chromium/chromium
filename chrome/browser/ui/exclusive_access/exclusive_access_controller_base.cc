@@ -14,8 +14,7 @@ ExclusiveAccessControllerBase::ExclusiveAccessControllerBase(
     ExclusiveAccessManager* manager)
     : manager_(manager) {}
 
-ExclusiveAccessControllerBase::~ExclusiveAccessControllerBase() {
-}
+ExclusiveAccessControllerBase::~ExclusiveAccessControllerBase() = default;
 
 GURL ExclusiveAccessControllerBase::GetExclusiveAccessBubbleURL() const {
   return manager_->GetExclusiveAccessBubbleURL();

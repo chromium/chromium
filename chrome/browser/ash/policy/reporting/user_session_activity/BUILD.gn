@@ -59,3 +59,44 @@ source_set("unit_tests") {
     "//testing/gmock:gmock",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "user_session_activity_reporter_browsertest.cc" ]
+
+  deps = [
+    ":user_session_activity",
+    "//ash:ash",
+    "//ash/public/cpp:cpp",
+    "//base:base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login:login",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/reporting:test_support",
+    "//chrome/browser/ash/profiles:profiles",
+    "//chrome/browser/ash/settings:settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager:session_manager",
+    "//chromeos/ash/components/login/auth:auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/user_manager:user_manager",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+    "//ui/base:base",
+  ]
+}

@@ -49,9 +49,18 @@ blink_modules_sources("ai") {
     "on_device_translation/ai_language_detector_factory.h",
     "on_device_translation/ai_translator.cc",
     "on_device_translation/ai_translator.h",
+    "on_device_translation/ai_translator_capabilities.cc",
+    "on_device_translation/ai_translator_capabilities.h",
     "on_device_translation/ai_translator_factory.cc",
     "on_device_translation/ai_translator_factory.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+
+  deps = [
+    "//components/language_detection/content/common",
+    "//components/language_detection/content/common:common_blink",
+    "//components/language_detection/content/renderer",
+    "//components/language_detection/core",
+  ]
 }

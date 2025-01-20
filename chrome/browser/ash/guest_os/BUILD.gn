@@ -214,9 +214,6 @@ mojom("guest_os_diagnostics_mojom") {
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
-
-  # For Closure Compiler targets in chrome/browser/resources/ash/vm
-  generate_webui_js_bindings = true
 }
 
 source_set("browser_tests") {

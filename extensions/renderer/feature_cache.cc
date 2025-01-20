@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
@@ -178,10 +179,8 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
                      base::ranges::less{}, &Feature::name);
   base::ranges::sort(features.available_features, base::ranges::less{},
                      &Feature::name);
-  DCHECK(base::ranges::unique(features.dev_mode_restricted_features) ==
-         features.dev_mode_restricted_features.end());
-  DCHECK(base::ranges::unique(features.available_features) ==
-         features.available_features.end());
+  DCHECK(std::ranges::unique(features.dev_mode_restricted_features).empty());
+  DCHECK(std::ranges::unique(features.available_features).empty());
 
   return features;
 }

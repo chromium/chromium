@@ -21,6 +21,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
@@ -207,7 +208,7 @@ bool FrameResources::Initialize() {
   const gfx::Size buffer_size_in_pixels =
       GetBufferSizeInPixelsForVideoPixelFormat(format_, coded_size_);
 
-  constexpr gpu::SharedImageUsageSet kSharedImageUsage =
+  gpu::SharedImageUsageSet usage =
 #if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
@@ -222,7 +223,23 @@ bool FrameResources::Initialize() {
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto si_caps = context->GetCapabilities();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, overlays are in general not supported. However, in some
+  // cases they are supported for the software video frame use case in
+  // particular. This cap details whether that support is present.
+  const bool add_scanout_usage =
+      si_caps.supports_scanout_shared_images_for_software_video_frames;
+#else
+  // On all other platforms, whether scanout for SharedImages is supported
+  // for this particular use case is no different than the general case.
+  const bool add_scanout_usage = si_caps.supports_scanout_shared_images;
+#endif
+  if (add_scanout_usage) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   CHECK(format_ == PIXEL_FORMAT_NV12 || format_ == PIXEL_FORMAT_ABGR ||
         format_ == PIXEL_FORMAT_ARGB)
@@ -230,10 +247,9 @@ bool FrameResources::Initialize() {
   const viz::SharedImageFormat si_format =
       viz::GetSharedImageFormat(buffer_format);
 
-  shared_image_ = context->CreateSharedImage(
-      buffer_size_in_pixels, kBufferUsage, si_format, color_space_,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-      sync_token_);
+  shared_image_ =
+      context->CreateSharedImage(buffer_size_in_pixels, kBufferUsage, si_format,
+                                 color_space_, usage, sync_token_);
   if (!shared_image_) {
     DLOG(ERROR) << "Failed to allocate shared image for frame: coded_size="
                 << coded_size_.ToString()
@@ -263,10 +279,8 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
   }
 
   video_frame->set_color_space(color_space_);
-
-  // TODO(crbug.com/40174702): This should depend on the platform and
-  // format.
-  video_frame->metadata().allow_overlay = true;
+  video_frame->metadata().allow_overlay =
+      shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
   // Only native (non shared memory) GMBs require waiting on GPU fences.
   const bool has_native_gmb = video_frame->HasNativeGpuMemoryBuffer();

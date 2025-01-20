@@ -8,15 +8,18 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
 /** Java bridge to feed::SurfaceRenderer, provides shallow JNI bindings. */
 @JNINamespace("feed::android")
 public class FeedSurfaceRendererBridge {
+    private final Profile mProfile;
     private int mSurfaceId;
     private long mNativeSurfaceRenderer;
     private Renderer mRenderer;
@@ -36,33 +39,41 @@ public class FeedSurfaceRendererBridge {
     /** Factory for FeedSurfaceRendererBridge. */
     public interface Factory {
         default FeedSurfaceRendererBridge create(
+                Profile profile,
                 Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
                 @StreamKind int streamKind,
                 SingleWebFeedParameters webFeedParameters) {
             return new FeedSurfaceRendererBridge(
-                    renderer, reliabilityLoggingBridge, streamKind, webFeedParameters);
+                    profile, renderer, reliabilityLoggingBridge, streamKind, webFeedParameters);
         }
     }
 
     public FeedSurfaceRendererBridge(
+            Profile profile,
             Renderer renderer,
             FeedReliabilityLoggingBridge reliabilityLoggingBridge,
             @StreamKind int streamKind,
             SingleWebFeedParameters webFeedParameters) {
+        mProfile = profile;
         mRenderer = renderer;
         if (streamKind == StreamKind.SINGLE_WEB_FEED) {
             mNativeSurfaceRenderer =
                     FeedSurfaceRendererBridgeJni.get()
                             .initWebFeed(
                                     this,
+                                    profile,
                                     webFeedParameters.getWebFeedId(),
                                     reliabilityLoggingBridge.getNativePtr(),
                                     webFeedParameters.getEntryPoint());
         } else {
             mNativeSurfaceRenderer =
                     FeedSurfaceRendererBridgeJni.get()
-                            .init(this, streamKind, reliabilityLoggingBridge.getNativePtr());
+                            .init(
+                                    this,
+                                    profile,
+                                    streamKind,
+                                    reliabilityLoggingBridge.getNativePtr());
         }
         mSurfaceId = FeedSurfaceRendererBridgeJni.get().getSurfaceId(mNativeSurfaceRenderer);
     }
@@ -144,94 +155,99 @@ public class FeedSurfaceRendererBridge {
     //
 
     void reportFeedViewed() {
-        FeedSurfaceRendererBridgeJni.get().reportFeedViewed(mSurfaceId);
+        FeedSurfaceRendererBridgeJni.get().reportFeedViewed(mProfile, mSurfaceId);
     }
 
     void reportSliceViewed(String sliceId) {
-        FeedSurfaceRendererBridgeJni.get().reportSliceViewed(mSurfaceId, sliceId);
+        FeedSurfaceRendererBridgeJni.get().reportSliceViewed(mProfile, mSurfaceId, sliceId);
     }
 
     void reportPageLoaded(boolean inNewTab) {
-        FeedSurfaceRendererBridgeJni.get().reportPageLoaded(mSurfaceId, inNewTab);
+        FeedSurfaceRendererBridgeJni.get().reportPageLoaded(mProfile, mSurfaceId, inNewTab);
     }
 
     void reportOpenAction(GURL url, String sliceId, @OpenActionType int openActionType) {
         FeedSurfaceRendererBridgeJni.get()
-                .reportOpenAction(mSurfaceId, url, sliceId, openActionType);
+                .reportOpenAction(mProfile, mSurfaceId, url, sliceId, openActionType);
     }
 
     void reportOpenVisitComplete(long visitTimeMs) {
-        FeedSurfaceRendererBridgeJni.get().reportOpenVisitComplete(mSurfaceId, visitTimeMs);
+        FeedSurfaceRendererBridgeJni.get()
+                .reportOpenVisitComplete(mProfile, mSurfaceId, visitTimeMs);
     }
 
     void reportOtherUserAction(@FeedUserActionType int userAction) {
-        FeedSurfaceRendererBridgeJni.get().reportOtherUserAction(mSurfaceId, userAction);
+        FeedSurfaceRendererBridgeJni.get().reportOtherUserAction(mProfile, mSurfaceId, userAction);
     }
 
     void reportStreamScrolled(int distanceDp) {
-        FeedSurfaceRendererBridgeJni.get().reportStreamScrolled(mSurfaceId, distanceDp);
+        FeedSurfaceRendererBridgeJni.get().reportStreamScrolled(mProfile, mSurfaceId, distanceDp);
     }
 
     void reportStreamScrollStart() {
-        FeedSurfaceRendererBridgeJni.get().reportStreamScrollStart(mSurfaceId);
+        FeedSurfaceRendererBridgeJni.get().reportStreamScrollStart(mProfile, mSurfaceId);
     }
 
     void updateUserProfileOnLinkClick(GURL url, long[] mids) {
-        FeedSurfaceRendererBridgeJni.get().updateUserProfileOnLinkClick(url, mids);
+        FeedSurfaceRendererBridgeJni.get().updateUserProfileOnLinkClick(mProfile, url, mids);
     }
 
     void processThereAndBackAgain(byte[] data, byte[] loggingParameters) {
-        FeedSurfaceRendererBridgeJni.get().processThereAndBackAgain(data, loggingParameters);
+        FeedSurfaceRendererBridgeJni.get()
+                .processThereAndBackAgain(mProfile, data, loggingParameters);
     }
 
     int executeEphemeralChange(byte[] data) {
-        return FeedSurfaceRendererBridgeJni.get().executeEphemeralChange(mSurfaceId, data);
+        return FeedSurfaceRendererBridgeJni.get()
+                .executeEphemeralChange(mProfile, mSurfaceId, data);
     }
 
     void commitEphemeralChange(int changeId) {
-        FeedSurfaceRendererBridgeJni.get().commitEphemeralChange(mSurfaceId, changeId);
+        FeedSurfaceRendererBridgeJni.get().commitEphemeralChange(mProfile, mSurfaceId, changeId);
     }
 
     void discardEphemeralChange(int changeId) {
-        FeedSurfaceRendererBridgeJni.get().discardEphemeralChange(mSurfaceId, changeId);
+        FeedSurfaceRendererBridgeJni.get().discardEphemeralChange(mProfile, mSurfaceId, changeId);
     }
 
     long getLastFetchTimeMs() {
-        return FeedSurfaceRendererBridgeJni.get().getLastFetchTimeMs(mSurfaceId);
+        return FeedSurfaceRendererBridgeJni.get().getLastFetchTimeMs(mProfile, mSurfaceId);
     }
 
     void reportInfoCardTrackViewStarted(int type) {
-        FeedSurfaceRendererBridgeJni.get().reportInfoCardTrackViewStarted(mSurfaceId, type);
+        FeedSurfaceRendererBridgeJni.get()
+                .reportInfoCardTrackViewStarted(mProfile, mSurfaceId, type);
     }
 
     void reportInfoCardViewed(int type, int minimumViewIntervalSeconds) {
         FeedSurfaceRendererBridgeJni.get()
-                .reportInfoCardViewed(mSurfaceId, type, minimumViewIntervalSeconds);
+                .reportInfoCardViewed(mProfile, mSurfaceId, type, minimumViewIntervalSeconds);
     }
 
     void reportInfoCardClicked(int type) {
-        FeedSurfaceRendererBridgeJni.get().reportInfoCardClicked(mSurfaceId, type);
+        FeedSurfaceRendererBridgeJni.get().reportInfoCardClicked(mProfile, mSurfaceId, type);
     }
 
     void reportInfoCardDismissedExplicitly(int type) {
-        FeedSurfaceRendererBridgeJni.get().reportInfoCardDismissedExplicitly(mSurfaceId, type);
+        FeedSurfaceRendererBridgeJni.get()
+                .reportInfoCardDismissedExplicitly(mProfile, mSurfaceId, type);
     }
 
     void resetInfoCardStates(int type) {
-        FeedSurfaceRendererBridgeJni.get().resetInfoCardStates(mSurfaceId, type);
+        FeedSurfaceRendererBridgeJni.get().resetInfoCardStates(mProfile, mSurfaceId, type);
     }
 
     void invalidateContentCacheFor(@StreamKind int feedToInvalidate) {
-        FeedSurfaceRendererBridgeJni.get().invalidateContentCacheFor(feedToInvalidate);
+        FeedSurfaceRendererBridgeJni.get().invalidateContentCacheFor(mProfile, feedToInvalidate);
     }
 
     void reportContentSliceVisibleTimeForGoodVisits(long elapsedMs) {
         FeedSurfaceRendererBridgeJni.get()
-                .reportContentSliceVisibleTimeForGoodVisits(mSurfaceId, elapsedMs);
+                .reportContentSliceVisibleTimeForGoodVisits(mProfile, mSurfaceId, elapsedMs);
     }
 
     void contentViewed(long docid) {
-        FeedSurfaceRendererBridgeJni.get().contentViewed(mSurfaceId, docid);
+        FeedSurfaceRendererBridgeJni.get().contentViewed(mProfile, mSurfaceId, docid);
     }
 
     @NativeMethods
@@ -240,11 +256,13 @@ public class FeedSurfaceRendererBridge {
         // Constructors.
         long init(
                 FeedSurfaceRendererBridge caller,
+                @JniType("Profile*") Profile profile,
                 @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);
 
         long initWebFeed(
                 FeedSurfaceRendererBridge caller,
+                @JniType("Profile*") Profile profile,
                 byte[] webFeedId,
                 long nativeFeedReliabilityLoggingBridge,
                 int entryPoint);
@@ -263,49 +281,75 @@ public class FeedSurfaceRendererBridge {
         void surfaceClosed(long nativeFeedSurfaceRendererBridge);
 
         // Static functions, can be called after creation, and destroy().
-        void reportFeedViewed(int surfaceId);
+        void reportFeedViewed(@JniType("Profile*") Profile profile, int surfaceId);
 
-        void reportSliceViewed(int surfaceId, String sliceId);
+        void reportSliceViewed(
+                @JniType("Profile*") Profile profile,
+                int surfaceId,
+                @JniType("std::string") String sliceId);
 
-        void reportPageLoaded(int surfaceId, boolean inNewTab);
+        void reportPageLoaded(
+                @JniType("Profile*") Profile profile, int surfaceId, boolean inNewTab);
 
         void reportOpenAction(
-                int surfaceId, GURL url, String sliceId, @OpenActionType int openActionType);
+                @JniType("Profile*") Profile profile,
+                int surfaceId,
+                GURL url,
+                @JniType("std::string") String sliceId,
+                @OpenActionType int openActionType);
 
-        void reportOpenVisitComplete(int surfaceId, long visitTimeMs);
+        void reportOpenVisitComplete(
+                @JniType("Profile*") Profile profile, int surfaceId, long visitTimeMs);
 
-        void reportOtherUserAction(int surfaceId, @FeedUserActionType int userAction);
+        void reportOtherUserAction(
+                @JniType("Profile*") Profile profile,
+                int surfaceId,
+                @FeedUserActionType int userAction);
 
-        void reportStreamScrolled(int surfaceId, int distanceDp);
+        void reportStreamScrolled(
+                @JniType("Profile*") Profile profile, int surfaceId, int distanceDp);
 
-        void reportStreamScrollStart(int surfaceId);
+        void reportStreamScrollStart(@JniType("Profile*") Profile profile, int surfaceId);
 
-        void updateUserProfileOnLinkClick(GURL url, long[] mids);
+        void updateUserProfileOnLinkClick(
+                @JniType("Profile*") Profile profile, GURL url, long[] mids);
 
-        void processThereAndBackAgain(byte[] data, byte[] loggingParameters);
+        void processThereAndBackAgain(
+                @JniType("Profile*") Profile profile, byte[] data, byte[] loggingParameters);
 
-        int executeEphemeralChange(int surfaceId, byte[] data);
+        int executeEphemeralChange(
+                @JniType("Profile*") Profile profile, int surfaceId, byte[] data);
 
-        void commitEphemeralChange(int surfaceId, int changeId);
+        void commitEphemeralChange(
+                @JniType("Profile*") Profile profile, int surfaceId, int changeId);
 
-        void discardEphemeralChange(int surfaceId, int changeId);
+        void discardEphemeralChange(
+                @JniType("Profile*") Profile profile, int surfaceId, int changeId);
 
-        long getLastFetchTimeMs(int surfaceId);
+        long getLastFetchTimeMs(@JniType("Profile*") Profile profile, int surfaceId);
 
-        void reportInfoCardTrackViewStarted(int surfaceId, int type);
+        void reportInfoCardTrackViewStarted(
+                @JniType("Profile*") Profile profile, int surfaceId, int type);
 
-        void reportInfoCardViewed(int surfaceId, int type, int minimumViewIntervalSeconds);
+        void reportInfoCardViewed(
+                @JniType("Profile*") Profile profile,
+                int surfaceId,
+                int type,
+                int minimumViewIntervalSeconds);
 
-        void reportInfoCardClicked(int surfaceId, int type);
+        void reportInfoCardClicked(@JniType("Profile*") Profile profile, int surfaceId, int type);
 
-        void reportInfoCardDismissedExplicitly(int surfaceId, int type);
+        void reportInfoCardDismissedExplicitly(
+                @JniType("Profile*") Profile profile, int surfaceId, int type);
 
-        void resetInfoCardStates(int surfaceId, int type);
+        void resetInfoCardStates(@JniType("Profile*") Profile profile, int surfaceId, int type);
 
-        void invalidateContentCacheFor(@StreamKind int feedToInvalidate);
+        void invalidateContentCacheFor(
+                @JniType("Profile*") Profile profile, @StreamKind int feedToInvalidate);
 
-        void reportContentSliceVisibleTimeForGoodVisits(int surfaceId, long elapsedMs);
+        void reportContentSliceVisibleTimeForGoodVisits(
+                @JniType("Profile*") Profile profile, int surfaceId, long elapsedMs);
 
-        void contentViewed(int surfaceId, long docid);
+        void contentViewed(@JniType("Profile*") Profile profile, int surfaceId, long docid);
     }
 }

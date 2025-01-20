@@ -6,7 +6,6 @@ package org.chromium.content.browser.webid;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.IntentSender.SendIntentException;
 import android.os.Build;
@@ -24,13 +23,21 @@ import com.google.android.gms.identitycredentials.IntentHelper;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
+@NullMarked
 public class IdentityCredentialsDelegate {
     private static final String TAG = "IdentityCredentials";
 
-    public Promise<String> get(String origin, String request) {
+    // Arbitrary request code that is used when invoking the GMSCore API.
+    private static final int REQUEST_CODE_DIGITAL_CREDENTIALS = 777;
+
+    public @Nullable Promise<String> get(String origin, String request) {
         // TODO(crbug.com/40257092): implement this.
         return null;
     }
@@ -50,7 +57,7 @@ public class IdentityCredentialsDelegate {
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     // android.credentials.GetCredentialException requires API level 34
-                    @SuppressLint("NewApi")
+                    @SuppressWarnings("NewApi")
                     @Override
                     protected void onReceiveResult(int code, Bundle data) {
                         Log.d(TAG, "Received a response");
@@ -60,7 +67,7 @@ public class IdentityCredentialsDelegate {
                                     response.getCredential()
                                             .getData()
                                             .getByteArray("identityToken");
-                            result.fulfill(token);
+                            result.fulfill(Objects.requireNonNull(token));
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
 
@@ -99,7 +106,7 @@ public class IdentityCredentialsDelegate {
                                 startIntentSenderForResult(
                                         /* activity= */ window,
                                         /* intent= */ response.getPendingIntent().getIntentSender(),
-                                        /* requestCode= */ 777,
+                                        REQUEST_CODE_DIGITAL_CREDENTIALS,
                                         /* fillInIntent= */ null,
                                         /* flagsMask= */ 0,
                                         /* flagsValues= */ 0,
@@ -112,5 +119,14 @@ public class IdentityCredentialsDelegate {
                         });
 
         return result;
+    }
+
+    public Promise<String> create(Activity window, String origin, String request) {
+        DigitalCredentialsCreationDelegate delegateImpl =
+                ServiceLoaderUtil.maybeCreate(DigitalCredentialsCreationDelegate.class);
+        if (delegateImpl != null) {
+            return delegateImpl.create(window, origin, request);
+        }
+        return Promise.rejected();
     }
 }

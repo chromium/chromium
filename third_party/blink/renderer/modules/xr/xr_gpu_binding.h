@@ -52,12 +52,15 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
   GPUDevice* device() const { return device_.Get(); }
 
-  gfx::Rect GetViewportForView(XRProjectionLayer* layer, XRViewData* view);
+  gfx::Rect GetViewportForView(XRProjectionLayer* layer,
+                               XRViewData* view) override;
 
   void Trace(Visitor*) const override;
 
  private:
   bool CanCreateLayer(ExceptionState& exception_state);
+  bool ValidateFormats(const XRGPUProjectionLayerInit* init,
+                       ExceptionState& exception_state);
 
   Member<GPUDevice> device_;
 };

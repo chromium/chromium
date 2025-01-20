@@ -21,9 +21,8 @@ ColorTransform::ColorTransform(Callback callback)
 ColorTransform::ColorTransform(SkColor color) : invariant_(true) {
   const auto generator = [](SkColor color, SkColor input_color,
                             const ColorMixer& mixer) {
-    DVLOG(2) << "ColorTransform From Color:"
-             << " Input Color:" << SkColorName(input_color)
-             << " Color: " << SkColorName(color)
+    DVLOG(2) << "ColorTransform From Color:" << " Input Color:"
+             << SkColorName(input_color) << " Color: " << SkColorName(color)
              << " Result Color: " << SkColorName(color);
     return color;
   };
@@ -34,9 +33,8 @@ ColorTransform::ColorTransform(ColorId id) : invariant_(true) {
   const auto generator = [](ColorId id, SkColor input_color,
                             const ColorMixer& mixer) {
     SkColor result_color = mixer.GetResultColor(id);
-    DVLOG(2) << "ColorTransform FromMixer:"
-             << " Input Color:" << SkColorName(input_color)
-             << " Color Id: " << ColorIdName(id)
+    DVLOG(2) << "ColorTransform FromMixer:" << " Input Color:"
+             << SkColorName(input_color) << " Color Id: " << ColorIdName(id)
              << " Result Color: " << SkColorName(result_color);
     return result_color;
   };
@@ -66,8 +64,8 @@ ColorTransform AlphaBlend(ColorTransform foreground_transform,
         background_transform.Run(input_color, mixer);
     const SkColor result_color =
         color_utils::AlphaBlend(foreground_color, background_color, alpha);
-    DVLOG(2) << "ColorTransform AlphaBlend:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform AlphaBlend:" << " Input Color: "
+             << SkColorName(input_color)
              << " FG Transform: " << SkColorName(foreground_color)
              << " BG Transform: " << SkColorName(background_color)
              << " Alpha: " << base::NumberToString(alpha)
@@ -132,8 +130,8 @@ ColorTransform BlendTowardMaxContrast(ColorTransform transform, SkAlpha alpha) {
     const SkColor transform_color = transform.Run(input_color, mixer);
     const SkColor result_color =
         color_utils::BlendTowardMaxContrast(transform_color, alpha);
-    DVLOG(2) << "ColorTransform BlendTowardMaxContrast:"
-             << " Input Color:" << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform BlendTowardMaxContrast:" << " Input Color:"
+             << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " Alpha: " << base::NumberToString(alpha)
              << " Result Color: " << SkColorName(result_color);
@@ -156,8 +154,8 @@ ColorTransform ContrastInvert(ColorTransform transform) {
         color_utils::BlendForMinContrast(foreground, near_endpoint,
                                          std::nullopt, contrast_ratio)
             .color;
-    DVLOG(2) << "ColorTransform ContrastInvert:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform ContrastInvert:" << " Input Color: "
+             << SkColorName(input_color)
              << " Foreground: " << SkColorName(foreground)
              << " Far End: " << SkColorName(far_endpoint)
              << " Near End: " << SkColorName(near_endpoint)
@@ -174,8 +172,8 @@ ColorTransform DeriveDefaultIconColor(ColorTransform transform) {
     const SkColor transform_color = transform.Run(input_color, mixer);
     const SkColor result_color =
         color_utils::DeriveDefaultIconColor(transform_color);
-    DVLOG(2) << "ColorTransform DeriveDefaultIconColor:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform DeriveDefaultIconColor:" << " Input Color: "
+             << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " Result Color: " << SkColorName(result_color);
     return result_color;
@@ -185,8 +183,8 @@ ColorTransform DeriveDefaultIconColor(ColorTransform transform) {
 
 ColorTransform FromTransformInput() {
   const auto generator = [](SkColor input_color, const ColorMixer& mixer) {
-    DVLOG(2) << "ColorTransform FromTransformInput: "
-             << " Input/Result Color: " << SkColorName(input_color);
+    DVLOG(2) << "ColorTransform FromTransformInput: " << " Input/Result Color: "
+             << SkColorName(input_color);
     return input_color;
   };
   return base::BindRepeating(generator);
@@ -198,8 +196,8 @@ ColorTransform GetColorWithMaxContrast(ColorTransform transform) {
     const SkColor transform_color = transform.Run(input_color, mixer);
     const SkColor result_color =
         color_utils::GetColorWithMaxContrast(transform_color);
-    DVLOG(2) << "ColorTransform GetColorWithMaxContrast:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform GetColorWithMaxContrast:" << " Input Color: "
+             << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " Result Color: " << SkColorName(result_color);
     return result_color;
@@ -233,8 +231,8 @@ ColorTransform GetResultingPaintColor(ColorTransform foreground_transform,
         background_transform.Run(input_color, mixer);
     const SkColor result_color =
         color_utils::GetResultingPaintColor(foreground_color, background_color);
-    DVLOG(2) << "ColorTransform GetResultingPaintColor:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform GetResultingPaintColor:" << " Input Color: "
+             << SkColorName(input_color)
              << " FG Transform Color: " << SkColorName(foreground_color)
              << " BG Transform Color: " << SkColorName(background_color)
              << " Result Color: " << SkColorName(result_color);
@@ -257,8 +255,8 @@ ColorTransform SelectBasedOnDarkInput(
                                        ? output_transform_for_dark_input
                                        : output_transform_for_light_input;
     const SkColor result_color = output_transform.Run(input_color, mixer);
-    DVLOG(2) << "ColorTransform SelectBasedOnDarkInput:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform SelectBasedOnDarkInput:" << " Input Color: "
+             << SkColorName(input_color)
              << " Input Transform: " << SkColorName(color)
              << " IsDark: " << (color_utils::IsDark(color) ? "true" : "false")
              << " Result Color: " << SkColorName(result_color);
@@ -274,8 +272,8 @@ ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha) {
                             SkColor input_color, const ColorMixer& mixer) {
     const SkColor transform_color = transform.Run(input_color, mixer);
     const SkColor result_color = SkColorSetA(transform_color, alpha);
-    DVLOG(2) << "ColorTransform SetAlpha:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform SetAlpha:" << " Input Color: "
+             << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " Alpha: " << base::NumberToString(alpha)
              << " Result Color: " << SkColorName(result_color);
@@ -288,25 +286,25 @@ ColorTransform PickGoogleColor(ColorTransform foreground_transform,
                                ColorTransform background_transform,
                                float min_contrast,
                                float max_contrast) {
-  const auto generator =
-      [](ColorTransform foreground_transform,
-         ColorTransform background_transform, float min_contrast,
-         float max_contrast, SkColor input_color, const ColorMixer& mixer) {
-        const SkColor foreground_color =
-            foreground_transform.Run(input_color, mixer);
-        const SkColor background_color =
-            background_transform.Run(input_color, mixer);
-        const SkColor result_color = color_utils::PickGoogleColor(
-            foreground_color, background_color, min_contrast, max_contrast);
-        DVLOG(2) << "ColorTransform PickGoogleColor:"
-                 << " Input Color: " << SkColorName(input_color)
-                 << " Foreground Color: " << SkColorName(foreground_color)
-                 << " Background Color: " << SkColorName(background_color)
-                 << " Min Contrast: " << base::NumberToString(min_contrast)
-                 << " Max Contrast: " << base::NumberToString(max_contrast)
-                 << " Result Color: " << SkColorName(result_color);
-        return result_color;
-      };
+  const auto generator = [](ColorTransform foreground_transform,
+                            ColorTransform background_transform,
+                            float min_contrast, float max_contrast,
+                            SkColor input_color, const ColorMixer& mixer) {
+    const SkColor foreground_color =
+        foreground_transform.Run(input_color, mixer);
+    const SkColor background_color =
+        background_transform.Run(input_color, mixer);
+    const SkColor result_color = color_utils::PickGoogleColor(
+        foreground_color, background_color, min_contrast, max_contrast);
+    DVLOG(2) << "ColorTransform PickGoogleColor:" << " Input Color: "
+             << SkColorName(input_color)
+             << " Foreground Color: " << SkColorName(foreground_color)
+             << " Background Color: " << SkColorName(background_color)
+             << " Min Contrast: " << base::NumberToString(min_contrast)
+             << " Max Contrast: " << base::NumberToString(max_contrast)
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
+  };
   return base::BindRepeating(generator, std::move(foreground_transform),
                              std::move(background_transform), min_contrast,
                              max_contrast);
@@ -333,8 +331,8 @@ ColorTransform PickGoogleColorTwoBackgrounds(
     const SkColor result_color = color_utils::PickGoogleColorTwoBackgrounds(
         foreground_color, background_a_color, background_b_color, min_contrast,
         max_contrast_against_nearer);
-    DVLOG(2) << "ColorTransform PickGoogleColor:"
-             << " Foreground Color: " << ui::SkColorName(foreground_color)
+    DVLOG(2) << "ColorTransform PickGoogleColor:" << " Foreground Color: "
+             << ui::SkColorName(foreground_color)
              << " Background Color A: " << ui::SkColorName(background_a_color)
              << " Background Color B: " << ui::SkColorName(background_b_color)
              << " Min Contrast: " << base::NumberToString(min_contrast)
@@ -354,8 +352,8 @@ ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl) {
                             SkColor input_color, const ColorMixer& mixer) {
     const SkColor transform_color = transform.Run(input_color, mixer);
     const SkColor result_color = color_utils::HSLShift(transform_color, hsl);
-    DVLOG(2) << "ColorTransform HSLShift:"
-             << " Input Color: " << SkColorName(input_color)
+    DVLOG(2) << "ColorTransform HSLShift:" << " Input Color: "
+             << SkColorName(input_color)
              << " Transform Color: " << SkColorName(transform_color)
              << " HSL: {" << base::NumberToString(hsl.h) << ", "
              << base::NumberToString(hsl.s) << ", "

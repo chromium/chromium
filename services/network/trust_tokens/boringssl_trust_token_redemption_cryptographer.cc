@@ -54,9 +54,8 @@ BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
 
   ScopedBoringsslBytes raw_redemption_request;
 
-  bssl::UniquePtr<TRUST_TOKEN> boringssl_token(
-      TRUST_TOKEN_new(base::as_bytes(base::make_span(token.body())).data(),
-                      token.body().size()));
+  bssl::UniquePtr<TRUST_TOKEN> boringssl_token(TRUST_TOKEN_new(
+      base::as_byte_span(token.body()).data(), token.body().size()));
   if (!boringssl_token) {
     return std::nullopt;
   }

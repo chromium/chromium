@@ -238,6 +238,9 @@ class SpotlightBookmarkModelBridge;
   if (self.isShuttingDown) {
     return;
   }
+  if (!title) {
+    title = @"";
+  }
 
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       nodesMatchingURL = [self nodesByURL:URL];
@@ -253,7 +256,7 @@ class SpotlightBookmarkModelBridge;
   // lists of tags into one, that will be used to search for the spotlight item.
   for (const bookmarks::BookmarkNode* node : nodesMatchingURL) {
     NSString* nodeTitle = base::SysUTF16ToNSString(node->GetTitle());
-    if ([nodeTitle isEqualToString:title] == NO) {
+    if (!nodeTitle || ![nodeTitle isEqualToString:title]) {
       continue;
     }
     // there still a bookmark node that matches the  given URL and title, so we
@@ -433,7 +436,7 @@ class SpotlightBookmarkModelBridge;
 
 - (std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>)
     nodesByURL:(const GURL&)url {
-  if (!_bookmarkModel) {
+  if (self.isShuttingDown || !_bookmarkModel) {
     return {};
   }
 

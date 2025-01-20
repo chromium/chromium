@@ -42,6 +42,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/submit_info.h"
 #include "cc/metrics/total_frame_counter.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/scheduler/begin_frame_tracker.h"
@@ -129,8 +130,7 @@ class LayerTreeHostImplClient {
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   virtual void SetNeedsRedrawOnImplThread() = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
-  virtual void SetNeedsUpdateDisplayTreeOnImplThread() = 0;
-  virtual void SetNeedsCommitOnImplThread() = 0;
+  virtual void SetNeedsCommitOnImplThread(bool urgent = false) = 0;
   virtual void SetNeedsPrepareTilesOnImplThread() = 0;
   virtual void SetVideoNeedsBeginFrames(bool needs_begin_frames) = 0;
   virtual void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) = 0;
@@ -172,7 +172,8 @@ class LayerTreeHostImplClient {
   virtual void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) = 0;
 
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) = 0;
 
   virtual void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -354,7 +355,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::BeginFrameArgs& commit_args,
       bool scroll_and_viewport_changes_synced,
       const BeginMainFrameMetrics* begin_main_frame_metrics,
-      bool commit_timeout = false);
+      bool commit_timeout);
   virtual void BeginCommit(int source_frame_number,
                            BeginMainFrameTraceId trace_id);
   virtual void FinishCommit(CommitState& commit_state,
@@ -720,8 +721,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool visible() const { return visible_; }
 
   void SetNeedsOneBeginImplFrame();
-  void SetNeedsRedraw();
-  void SetNeedsUpdateDisplayTree();
+  void SetNeedsRedraw(bool animation_only = false);
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
 
@@ -851,7 +851,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return paint_worklet_painter_.get();
   }
 
-  void QueueImageDecode(int request_id, const PaintImage& image);
+  void QueueImageDecode(int request_id, const DrawImage& image);
   std::vector<std::pair<int, bool>> TakeCompletedImageDecodeRequests();
   // Returns mutator events to be handled by BeginMainFrame.
   std::unique_ptr<MutatorEvents> TakeMutatorEvents();
@@ -1069,7 +1069,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                            const viz::FrameTimingDetails& details);
 
   // Notifies client about the custom tracker results.
-  void NotifyThroughputTrackerResults(const CustomTrackerResults& results);
+  void NotifyCompositorMetricsTrackerResults(
+      const CustomTrackerResults& results);
 
   // Wrapper for checking and updating |contains_srgb_cache_|.
   bool CheckColorSpaceContainsSrgb(const gfx::ColorSpace& color_space) const;
@@ -1084,10 +1085,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns whether the LayerTreeHostImpl is running on a renderer process.
   bool RunningOnRendererProcess() const;
 
-  // Flags the tree as needing either a redraw or a display tree updating,
-  // depending on whether or not it has a display tree.
-  void SetNeedsRedrawOrUpdateDisplayTree();
-
   // Returns the most up to date display color spaces.
   gfx::DisplayColorSpaces GetDisplayColorSpaces() const;
 
@@ -1097,6 +1094,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   const LayerTreeSettings settings_;
   const bool use_layer_context_for_display_;
+  const bool use_layer_context_for_animations_;
 
   // This is set to true only if:
   //  . The compositor is running single-threaded (i.e. there is no separate
@@ -1205,6 +1203,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool resourceless_software_draw_ = false;
 
   gfx::Rect viewport_damage_rect_;
+  std::optional<base::CheckedNumeric<uint32_t>> total_invalidated_area_ = 0;
 
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;
@@ -1251,6 +1250,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<Viewport> viewport_;
 
   gfx::Size visual_device_viewport_size_;
+
   // Set to true if viewport is mobile optimized by using meta tag
   // <meta name="viewport" content="width=device-width">
   // or

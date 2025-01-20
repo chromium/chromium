@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1066101356081285416">Chrome ще открива проследяващите номера на сайтовете, които посещавате, и ще ви показва актуална информация за съответните пратки в нов раздел. Номерът за проследяване на пратката и името на уебсайта ще бъдат изпратени до Google с цел предоставяне на тази функция и подобряване на функциите на Google Пазаруване за всички. Можете да актуализирате това по всяко време от <ph name="BEGIN_LINK" />настройките за проследяване на пратки<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome автоматично отваря в режим „инкогнито“ връзките в режим „инкогнито“ към YouTube.</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1143896152279775643">Паролата ви ще бъде запазена в мениджъра на паролите в Google за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отваряне на нов раздел в Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Използвайте Chrome всеки път, когато докоснете връзки в съобщения и други приложения.</translation>
 <translation id="1229222343402087523">Търсене на ${searchPhrase} в Chrome</translation>
 <translation id="1237769345474105984">От Chrome</translation>
-<translation id="1240190568154816272">Съвети за Chrome</translation>
 <translation id="124228879633599436">Chrome не е актуален. Актуализирайте браузъра с цел безопасност.</translation>
 <translation id="1333745675627230582">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="1352919863522755794">Google Мениджър на пароли не успя да провери паролите ви. Проверете връзката си с интернет.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Отваря настройката за задаване на Chrome като браузър по подразбиране.</translation>
 <translation id="1670609221633730681">Съвет за Chrome: Изберете позицията на адресната лента</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Запазване на паролите ви в Chrome</translation>
 <translation id="1790080846677398234">Добавя въведените URL адреси към отметките ви в Chrome.</translation>
 <translation id="1799920918471566157">Съвети за Chrome</translation>
 <translation id="1830634592642484976">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Това означава, че всеки път Chrome ще заявява мобилната версия на сайта.</translation>
 <translation id="3740397331642243698">Въведените URL адреси се отварят в режим „инкогнито“ в Google Chrome.</translation>
 <translation id="3741995255368156336">Отваря списъка за четене в Chrome.</translation>
+<translation id="3808570423967020928">Осъществявайте по-бърз достъп до Chrome от лентата Dock на началния екран.</translation>
 <translation id="3827545470516145620">Разполагате със стандартно ниво на защита на това устройство</translation>
 <translation id="384394811301901750">В момента Google Chrome не може да използва камерата ви</translation>
 <translation id="3863841106411295595">Добавя въведените URL адреси към списъка ви за четене в Chrome.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">Влезте в профила си в този сайт и в Chrome.</translation>
 <translation id="4646014602299206846">Chrome ще открива номерата за проследяване в сайтовете, които посещавате, и ще ви показва актуална информация за съответните пратки в нов раздел. Данните ви ще се споделят с Google с цел предоставяне на тази функция и подобряване на Пазаруване за всички.</translation>
 <translation id="4647910807533196601">Отваряне на последния ми раздел в Chrome.</translation>
+<translation id="4693084815234024320">Вие сте в режим „инкогнито“ в Chrome</translation>
 <translation id="4724297637870447613">Използвайте Chrome навсякъде</translation>
 <translation id="4738647308035481133">Страница на Google Chrome</translation>
 <translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
@@ -219,9 +222,12 @@
 
 За още настройки, които използват данни с цел подобряване на практическата ви работа с Chrome, отворете <ph name="BEGIN_LINK" />услугите на Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Изтриване на данните за сърфирането в Chrome.</translation>
+<translation id="6924922227983877439">Отваряне на връзките в Chrome по подразбиране</translation>
+<translation id="6931601805528922498">Влизането в профила ви го добавя към Chrome за сърфиране за работни цели.</translation>
 <translation id="6975725306479268850">Избиране на Chrome с цел автоматично попълване</translation>
 <translation id="7056826488869329999">Отваря и стартира проверка на безопасността в Chrome.</translation>
 <translation id="7061455974939528301">Натиснете и задръжте иконата на Chrome и кликнете върху „Редактиране на началния екран“</translation>
+<translation id="7065813315247345131">Преместване на Chrome в лентата Dock</translation>
 <translation id="7124339256045485976">Поддържане на браузъра Chrome актуален</translation>
 <translation id="7161390184744336561">Google Chrome не е актуален</translation>
 <translation id="7165736900384873061">Използване на скенера за QR кодове в Google Chrome</translation>

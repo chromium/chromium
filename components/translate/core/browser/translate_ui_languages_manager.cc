@@ -12,14 +12,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/url_util.h"
@@ -77,7 +76,7 @@ TranslateUILanguagesManager::TranslateUILanguagesManager(
         return lhs.first < rhs.first;
       });
 
-  languages_.emplace_back(kUnknownLanguageCode,
+  languages_.emplace_back(language_detection::kUnknownLanguageCode,
                           GetUnknownLanguageDisplayName());
   std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
 
@@ -114,13 +113,13 @@ size_t TranslateUILanguagesManager::GetNumberOfLanguages() const {
 
 std::string TranslateUILanguagesManager::GetSourceLanguageCode() const {
   return (GetSourceLanguageIndex() == kNoIndex)
-             ? translate::kUnknownLanguageCode
+             ? language_detection::kUnknownLanguageCode
              : GetLanguageCodeAt(GetSourceLanguageIndex());
 }
 
 std::string TranslateUILanguagesManager::GetTargetLanguageCode() const {
   return (GetTargetLanguageIndex() == kNoIndex)
-             ? translate::kUnknownLanguageCode
+             ? language_detection::kUnknownLanguageCode
              : GetLanguageCodeAt(GetTargetLanguageIndex());
 }
 

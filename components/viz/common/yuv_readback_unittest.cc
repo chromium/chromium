@@ -8,6 +8,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -34,7 +35,7 @@
 namespace viz {
 
 namespace {
-int kYUVReadbackSizes[] = {2, 4, 14};
+auto kYUVReadbackSizes = std::to_array<int>({2, 4, 14});
 }
 
 class YUVReadbackTest : public testing::Test {
@@ -58,8 +59,7 @@ class YUVReadbackTest : public testing::Test {
   void StartTracing(const std::string& filter) {
     base::trace_event::TraceLog::GetInstance()->SetEnabled(
         base::trace_event::TraceConfig(filter,
-                                       base::trace_event::RECORD_UNTIL_FULL),
-        base::trace_event::TraceLog::RECORDING_MODE);
+                                       base::trace_event::RECORD_UNTIL_FULL));
   }
 
   static void TraceDataCB(
@@ -399,9 +399,12 @@ class YUVReadbackTest : public testing::Test {
     memset(U, 0x80, u_stride * output_ysize / 2);
     memset(V, 0x80, v_stride * output_ysize / 2);
 
-    const float kRGBtoYColorWeights[] = {0.257f, 0.504f, 0.098f, 0.0625f};
-    const float kRGBtoUColorWeights[] = {-0.148f, -0.291f, 0.439f, 0.5f};
-    const float kRGBtoVColorWeights[] = {0.439f, -0.368f, -0.071f, 0.5f};
+    const auto kRGBtoYColorWeights =
+        std::to_array<float>({0.257f, 0.504f, 0.098f, 0.0625f});
+    const auto kRGBtoUColorWeights =
+        std::to_array<float>({-0.148f, -0.291f, 0.439f, 0.5f});
+    const auto kRGBtoVColorWeights =
+        std::to_array<float>({0.439f, -0.368f, -0.071f, 0.5f});
 
     for (int y = 0; y < ysize; y++) {
       for (int x = 0; x < xsize; x++) {
@@ -456,7 +459,14 @@ class YUVReadbackTest : public testing::Test {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };
 
-TEST_F(YUVReadbackTest, YUVReadbackOptTest) {
+// TODO(crbug.com/388544212): Failing on linux and chromeOS MSAN.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(MEMORY_SANITIZER)
+#define MAYBE_YUVReadbackOptTest DISABLED_YUVReadbackOptTest
+#else
+#define MAYBE_YUVReadbackOptTest YUVReadbackOptTest
+#endif
+
+TEST_F(YUVReadbackTest, MAYBE_YUVReadbackOptTest) {
   for (int use_mrt = 0; use_mrt <= 1; ++use_mrt) {
     // This test uses the gpu.service/gpu.decoder tracing events to detect how
     // many scaling passes are actually performed by the YUV readback pipeline.

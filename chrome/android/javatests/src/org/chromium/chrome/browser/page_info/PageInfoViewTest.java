@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -143,13 +144,12 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/344672095): Failing when batched, batch this again.
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in
 // these tests.
-@DisableFeatures({
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX
-})
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
+
+    private static final int DAYS_UNTIL_EXPIRATION = 33;
 
     private static String[] sCookieDataTypes = {
         "Cookie", "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem"
@@ -273,24 +273,41 @@ public class PageInfoViewTest {
         return view;
     }
 
-    private void enableTrackingProtectionFixedExpiration() {
+    private void enableTrackingProtectionFixedExpiration(
+            boolean isModeBUiInCookiesController, int days) {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ACT_USER_BYPASS_UX)
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.FINGERPRINTING_PROTECTION_UX))) {
             var tpController = controller.getTrackingProtectionLaunchControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
         } else {
-            var tpController = controller.getTrackingProtectionControllerForTesting();
+            var tpController = controller.getCookiesControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
+            tpController.setDaysUntilExpirationForTesting(days);
         }
+    }
+
+    private void enableModeBUiInCookiesController() {
+        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        assertNotNull(controller);
+        var tpController = controller.getCookiesControllerForTesting();
+        tpController.setIsModeBUiForTesting(true);
+    }
+
+    private void enableIsIncognitoInCookiesController() {
+        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        assertNotNull(controller);
+        var tpController = controller.getCookiesControllerForTesting();
+        tpController.setIsIncognitoForTesting(true);
     }
 
     private void enableTpcdGrantEnforcement() {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        var tpController = controller.getTrackingProtectionControllerForTesting();
+        var tpController = controller.getCookiesControllerForTesting();
         tpController.setEnforcementForTesting(CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT);
     }
 
@@ -600,15 +617,17 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_History");
     }
 
-    /** Tests PageInfo on an allowlisted website. */
+    /** Tests PageInfo on an allowlisted website */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testShowTrackingProtectionStatusSubtitleOnAllowlistedSite() throws IOException {
+    public void testShowTrackingProtectionStatusSubtitleOnAllowlistedSiteModeB()
+            throws IOException {
         enableTrackingProtection();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTpcdGrantEnforcement();
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_AllowlistedSite");
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_CookiesSubpageSubtitle_AllowlistedSite");
     }
 
     /** Tests the connection info page of the PageInfo UI - insecure website. */
@@ -752,7 +771,7 @@ public class PageInfoViewTest {
         setBlockAll3pc(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        enableTrackingProtectionFixedExpiration();
+        enableTrackingProtectionFixedExpiration(false, 33);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(
                 allOf(
@@ -772,10 +791,375 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
     }
 
+    /**
+     * Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled and 3pcs
+     * not blocked.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCookiesSubpageTitleDescriptionWhenModeBEnabledInCookiesController()
+            throws IOException {
+        setBlockAll3pc(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("Chrome limits most sites from using")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpageTitleDescription_ModeBEnabled_3pcLimited");
+    }
+
+    /**
+     * Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled and 3pcs
+     * are blocked.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCookiesSubpageTitleDescriptionWhenModeBEnabledInCookiesControllerAnd3pcBlocked()
+            throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString("You blocked sites from using third-party cookies")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpageTitleDescription_ModeBEnabled_3pcBlocked");
+    }
+
+    /**
+     * Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled and is in
+     * incognito.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void
+            testCookiesSubpageTitleDescriptionWhenModeBEnabledInCookiesControllerAndIsIncognito()
+                    throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableIsIncognitoInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Chrome blocks sites from using third-party cookies")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpageTitleDescription_ModeBEnabled_Incognito");
+    }
+
+    /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCookiesSubpageTitleDescriptionWhenModeDisabledInCookiesController()
+            throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Cookies and other site data are used to remember you")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_CookiesSubpageTitleDescription_ModeBDisabled");
+    }
+
+    /**
+     * Tests the cookies top level page subtitle of the PageInfo UI with the Tracking Protection UI
+     * enabled and cookies blocked.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageSubtitleLimitedInModeB() throws IOException {
+        enableTrackingProtection();
+        setBlockAll3pc(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(false, 33);
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        onView(withText(containsString("Third-party cookies limited")))
+                .check(matches(isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Subtitle_Limited_ModeB");
+    }
+
+    /**
+     * Tests the cookies top level page subtitle of the PageInfo UI with the Tracking Protection UI
+     * enabled and cookies blocked.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageSubtitleBlockedInModeBCookiesController() throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
+        onView(withText(containsString("Third-party cookies blocked")))
+                .check(matches(isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Subtitle_Blocked_ModeB");
+    }
+
+    /**
+     * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI
+     * enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageWillLimitDescriptionInModeB() throws IOException {
+        setBlockAll3pc(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 33);
+        enableModeBUiInCookiesController();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onView(withText(containsString("Limited"))).check(matches(isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageLimitedDescription_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("days until Chrome limits cookies again")),
+                        isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageLimitedDescription_Toggle_On");
+    }
+
+    /**
+     * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI
+     * enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageWillLimitTomorrowDescriptionInModeB() throws IOException {
+        setBlockAll3pc(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 1);
+        enableModeBUiInCookiesController();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("Chrome will limit cookies again tomorrow")),
+                        isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageLimitedTomorrowDescription_Toggle_On");
+    }
+
+    /**
+     * Tests the cookies top level page subtitle description of the PageInfo UI with the Tracking
+     * Protection UI disabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubtitleDescriptionModeBDisabled() throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 33);
+        // Check that the cookie toggle is displayed and try clicking it.
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Help us improve Chrome by telling us why you allowed")),
+                        isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpage_SubtitleDescription_ModeBDisabled_ToggleOn");
+    }
+
+    /**
+     * Tests the cookies top level page subtitle description of the PageInfo UI with the Tracking
+     * Protection UI enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubtitleDescriptionModeBEnabled() throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "You temporarily allowed this site to use third-party")),
+                        isDisplayed()));
+        onView(withText(containsString("Allowed"))).check(matches(isDisplayed()));
+
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpage_SubtitleDescription_ModeBEnabled_ToggleOn");
+    }
+
+    /**
+     * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI enabled
+     * and cookies blocked in PageInfoCookiesController.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageWillBlockDescriptionInModeBCookiesController()
+            throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableModeBUiInCookiesController();
+        enableTrackingProtectionFixedExpiration(true, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onView(withText(containsString("Blocked"))).check(matches(isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageBlockedDescriptionCookiesController_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("days until cookies are blocked again")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageBlockedDescriptionCookiesController_Toggle_On");
+    }
+
+    /**
+     * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI enabled
+     * and cookies blocked for 1 day in PageInfoCookiesController.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageWillBlockTomorrowDescriptionInModeBCookiesController()
+            throws IOException {
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(true, 1);
+        enableModeBUiInCookiesController();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("Chrome will block cookies again tomorrow")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageBlockedTomorrowDescriptionCookiesController_Toggle_On");
+    }
+
+    /**
+     * Tests the cookies page description of the PageInfo UI with the Tracking Protection UI enabled
+     * and cookies blocked.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageWillBlockDescriptionInModeB() throws IOException {
+        enableTrackingProtection();
+        setBlockAll3pc(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTrackingProtectionFixedExpiration(false, 33);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageBlockedDescription_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("Third-party cookies")), isDisplayed()));
+        onView(withText(containsString("Third-party cookies"))).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(containsString("days until cookies are blocked again")),
+                        isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_TrackingProtectionSubpageBlockedDescription_Toggle_On");
+    }
+
+    /** Tests PageInfo on an allowlisted website */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void cookiesSubpageShowsGrantDescriptionForAllowlistedSiteInModeB() throws IOException {
+        enableTrackingProtection();
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTpcdGrantEnforcement();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Chrome limits most sites from using third-party cookies")),
+                        isDisplayed()));
+        onView(withText(containsString("manage access to third-party cookies")))
+                .perform(clickOnClickableSpan(0));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpageTrackingProtectionGrantDescription_AllowlistedSite");
+    }
+
     private void launchAndCheckTrackingProtectionLaunchUi() {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        enableTrackingProtectionFixedExpiration();
+        enableTrackingProtectionFixedExpiration(false, 33);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(
                 allOf(
@@ -794,7 +1178,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
         ChromeFeatureList.IP_PROTECTION_V1
     })
     @Feature({"RenderTest"})
@@ -819,7 +1203,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
@@ -844,9 +1229,9 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
         ChromeFeatureList.IP_PROTECTION_V1,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
@@ -878,7 +1263,7 @@ public class PageInfoViewTest {
         setBlockAll3pc(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        enableTrackingProtectionFixedExpiration();
+        enableTrackingProtectionFixedExpiration(false, 33);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(
                 allOf(withText(containsString("You blocked sites from using")), isDisplayed()));
@@ -998,6 +1383,70 @@ public class PageInfoViewTest {
         // Wait until the UI navigates back and check cookies are deleted.
         onViewWaiting(allOf(withId(R.id.page_info_cookies_row), isDisplayed()));
         expectHasCookies(false);
+    }
+
+    static Matcher<View> hasAccessibilityLiveRegion(int liveRegionState) {
+        return new TypeSafeMatcher<>() {
+            @Override
+            protected boolean matchesSafely(View view) {
+                return view.getAccessibilityLiveRegion() == liveRegionState;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("View has live region state " + liveRegionState);
+            }
+        };
+    }
+
+    /** Tests that the User Bypass has an accessibility live region set up correctly. */
+    @Test
+    @MediumTest
+    public void testA11yLiveRegionInUserBypass() throws Exception {
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        // Create cookies.
+        expectHasCookies(false);
+        createCookies();
+        expectHasCookies(true);
+        // Go to cookies subpage.
+        openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        enableTrackingProtectionFixedExpiration(
+                /* isModeBUiInCookiesController= */ false, /* days= */ DAYS_UNTIL_EXPIRATION);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        // Check that cookies usage is displayed.
+        onViewWaiting(allOf(withText(containsString("stored data")), isDisplayed()));
+        // Check that the cookie toggle is displayed.
+        onViewWaiting(
+                allOf(
+                        withText(R.string.page_info_tracking_protection_toggle_blocked),
+                        isDisplayed()));
+        // Verify the a11y live region.
+        onView(withText(R.string.page_info_cookies_site_not_working_title))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        onView(
+                        withText(
+                                R.string
+                                        .page_info_cookies_site_not_working_description_tracking_protection))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        // Click on the toggle for the content to change.
+        onView(withText(R.string.page_info_tracking_protection_toggle_blocked)).perform(click());
+        // Verify the a11y live region.
+        Context context = ApplicationProvider.getApplicationContext();
+        String title =
+                context.getResources()
+                        .getQuantityString(
+                                R.plurals
+                                        .page_info_cookies_blocking_restart_tracking_protection_title,
+                                DAYS_UNTIL_EXPIRATION,
+                                DAYS_UNTIL_EXPIRATION);
+        onView(withText(title))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
+        String description =
+                context.getString(R.string.page_info_cookies_send_feedback_description)
+                        .replaceAll("<link>|</link>", "");
+        onView(withText(description))
+                .check(matches(hasAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE)));
     }
 
     /** Tests resetting permissions on the permissions page of the PageInfo UI. */
@@ -1399,7 +1848,9 @@ public class PageInfoViewTest {
                                     ControlsPosition.BOTTOM,
                                     0,
                                     0,
+                                    0,
                                     browserControlsManager.getTopControlsHeight(),
+                                    0,
                                     0);
                             return activity.getResources()
                                     .getDimension(R.dimen.page_info_popup_corners_radius);
@@ -1488,7 +1939,9 @@ public class PageInfoViewTest {
                                     ControlsPosition.BOTTOM,
                                     0,
                                     0,
+                                    0,
                                     browserControlsManager.getTopControlsHeight(),
+                                    0,
                                     0);
                             return activity.getModalDialogManagerSupplier();
                         });

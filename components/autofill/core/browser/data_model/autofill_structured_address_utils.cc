@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 #include <algorithm>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -22,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
-#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -121,13 +122,15 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name) {
 bool HasHispanicLatinxNameCharacteristics(const std::string& name) {
   // Check if the name contains one of the most common Hispanic/Latinx
   // last names.
-  if (IsPartialMatch(name, RegEx::kMatchHispanicCommonNameCharacteristics))
+  if (IsPartialMatch(name, RegEx::kMatchHispanicCommonNameCharacteristics)) {
     return true;
+  }
 
   // Check if it contains a last name conjunction.
   if (IsPartialMatch(name,
-                     RegEx::kMatchHispanicLastNameConjuctionCharacteristics))
+                     RegEx::kMatchHispanicLastNameConjuctionCharacteristics)) {
     return true;
+  }
 
   // If none of the above, there is not sufficient reason to assume this is a
   // Hispanic/Latinx name.
@@ -143,8 +146,9 @@ ParseValueByRegularExpression(const std::string& value,
 
 std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
-  if (!regex || !regex->ok())
+  if (!regex || !regex->ok()) {
     return std::nullopt;
+  }
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -164,8 +168,9 @@ ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
 
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
-                       number_of_capturing_groups - 1))
+                       number_of_capturing_groups - 1)) {
     return std::nullopt;
+  }
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario
@@ -193,8 +198,9 @@ bool IsPartialMatch(const std::string& value, const RE2* expression) {
 std::vector<std::string> GetAllPartialMatches(const std::string& value,
                                               const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
-  if (!regex || !regex->ok())
+  if (!regex || !regex->ok()) {
     return {};
+  }
   std::string_view input(value);
   std::string match;
   std::vector<std::string> matches;
@@ -224,8 +230,7 @@ std::string CaptureTypeWithPattern(
     std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options) {
   return CaptureTypeWithPattern(
-      type, base::StrCat(base::make_span(pattern_span_initializer_list)),
-      options);
+      type, base::StrCat(base::span(pattern_span_initializer_list)), options);
 }
 
 std::string NoCapturePattern(const std::string& pattern,
@@ -348,12 +353,14 @@ SortedTokenComparisonResult CompareSortedTokens(
                                  first.end(), cmp_normalized);
 
   // If first is both a superset and a subset it is the same.
-  if (is_supserset && is_subset)
+  if (is_supserset && is_subset) {
     return SortedTokenComparisonResult(SortedTokenComparisonStatus::kMatch);
+  }
 
   // If it is neither, both are distinct.
-  if (!is_supserset && !is_subset)
+  if (!is_supserset && !is_subset) {
     return SortedTokenComparisonResult(SortedTokenComparisonStatus::kDistinct);
+  }
 
   std::vector<AddressToken> additional_tokens;
 

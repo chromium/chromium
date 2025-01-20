@@ -12,7 +12,6 @@
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/threading_features.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -289,22 +288,9 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   options.delegate = std::move(browser_io_thread_delegate);
-// TODO(crbug.com/40226692): Align Win ThreadType with other platforms. The
-// platform discrepancy stems from organic evolution of the thread priorities on
-// each platform and while it might make sense not to bump the priority of the
-// IO thread per Windows' priority boosts capabilities on MessagePumpForIO, this
-// should at least be aligned with what platform_thread_win.cc does for
-// ThreadType::kDisplayCritical (IO pumps in other processes) and it currently
-// does not.
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(base::kAboveNormalCompositingBrowserWin)) {
-    options.thread_type = base::ThreadType::kDisplayCritical;
-  }
-#else
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
   options.thread_type = base::ThreadType::kDisplayCritical;
-#endif
   if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;

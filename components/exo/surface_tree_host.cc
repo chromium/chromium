@@ -380,9 +380,6 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
           : std::make_optional(GetScaleFactor()),
       &frame);
 
-  // Update after resource is updated.
-  UpdateHostLayerOpacity();
-
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid
   // the considerable overhead of flush verification in
@@ -493,17 +490,8 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     root_surface_->window()->SetBounds(updated_bounds);
   }
 
-  UpdateHostWindowOpaqueRegion();
-}
-
-void SurfaceTreeHost::UpdateHostLayerOpacity() {
-  ui::Layer* commit_target_layer = GetCommitTargetLayer();
-
   if (commit_target_layer == host_window_->layer()) {
     UpdateHostWindowOpaqueRegion();
-  } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(
-        ContentsFillsHostWindowOpaquely());
   }
 }
 

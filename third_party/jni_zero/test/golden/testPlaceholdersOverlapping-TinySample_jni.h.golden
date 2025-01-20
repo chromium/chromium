@@ -10,32 +10,24 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
+
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
-static jboolean JNI_TinySample_Bar(
-    JNIEnv* env,
-    jint a,
-    const jni_zero::JavaParamRef<jobject>& b);
+static jboolean JNI_TinySample_Bar(JNIEnv* env, jint a, const jni_zero::JavaParamRef<jobject>& b);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(
     JNIEnv* env,
     jclass jcaller,
     jint a,
     jobject b) {
-  auto _ret = JNI_TinySample_Bar(
-      env,
-      a,
-      jni_zero::JavaParamRef<jobject>(env, b));
+  auto _ret = JNI_TinySample_Bar(env, a, jni_zero::JavaParamRef<jobject>(env, b));
   return _ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static void JNI_TinySample_Foo(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& a,
-    jint b);
+static void JNI_TinySample_Foo(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& a, jint b);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(
     JNIEnv* env,
     jclass jcaller,
     jobject a,

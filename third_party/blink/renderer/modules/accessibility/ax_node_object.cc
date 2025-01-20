@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -508,6 +507,23 @@ const LayoutObject* GetListMarker(const LayoutObject& layout_object,
   return nullptr;
 }
 
+bool ElementHasAnyAriaRelation(Element& element) {
+  return element.GetDocument().HasExplicitlySetAttrElements(&element) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaActionsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaActivedescendantAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaControlsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaDescribedbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaDetailsAttr) ||
+         AXObject::HasAriaAttribute(element,
+                                    html_names::kAriaErrormessageAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaFlowtoAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaLabelledbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaLabeledbyAttr) ||
+         AXObject::HasAriaAttribute(element, html_names::kAriaOwnsAttr);
+}
+
 }  // namespace
 
 using html_names::kAltAttr;
@@ -669,6 +685,76 @@ bool IsExemptFromInlineBlockCheck(ax::mojom::blink::Role role) {
          role == ax::mojom::blink::Role::kEmbeddedObject;
 }
 
+bool AXNodeObject::HasCustomElementTreeProcessing() const {
+  if (!RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    return false;
+  }
+  if (!GetElement()) {
+    return false;
+  }
+  if (!GetElement()->IsCustomElement()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool AXNodeObject::ShouldIncludeCustomElement() const {
+  Element* element = GetElement();
+  DCHECK(element);
+  DCHECK(element->IsCustomElement()) << element;
+
+  // Check whether author has forced it to be ignored via role="none".
+  if (RoleValue() == ax::mojom::blink::Role::kNone) {
+    return false;
+  }
+
+  // Custom elements are ignored in the tree by default, with some exceptions:
+
+  // * Has implicit or explicit (role attribute) role.
+  if (RoleValue() != ax::mojom::blink::Role::kGenericContainer) {
+    return true;
+  }
+
+  //* No shadow root attached.
+  if (!element->GetShadowRoot()) {
+    return true;
+  }
+
+  // * Has aria-live. This is a legitimate use case for ARIA semantics on
+  // a custom element.
+  if (HasAriaAttribute(html_names::kAriaLiveAttr)) {
+    return true;
+  }
+
+  // * Uses element internals with an accessibility attribute set.
+  // As element internals are not a convenient way to declare semantics, this
+  // indicates that it is more about hiding an implementation of semantics on
+  // the custom element, they are not likely to be used for semantics that
+  // are to be passed down into the shadow subtree by copying.
+  if (element->GetElementInternals() &&
+      element->GetElementInternals()->HasAnyAttribute()) {
+    return true;
+  }
+
+  // * Focusable.
+  if (element->IsKeyboardFocusableSlow(
+          Element::UpdateBehavior::kNoneForAccessibility)) {
+    return true;
+  }
+
+  // * <webview> (special deprecated element used in ChromeOS WebUI apps, and
+  //   kept in tree to pass AutomationApiTest.LocationInWebView).
+  //   Custom elements in actual web content always have a hyphenated name,
+  //   and therefore <webview> in real web content cannot be a custom element.
+  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag, ("webview"));
+  if (element->HasLocalName(web_view_tag)) {
+    return true;
+  }
+
+  return false;
+}
+
 AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
   DCHECK(GetDocument());
@@ -819,6 +905,11 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (IsEditableRoot())
     return kIncludeObject;
 
+  // Custom elements are generally ignored in the tree, with some exceptions.
+  if (HasCustomElementTreeProcessing()) {
+    return ShouldIncludeCustomElement() ? kIncludeObject : kIgnoreObject;
+  }
+
   // Don't ignored legends, because JAWS uses them to determine redundant text.
   if (IsA<HTMLLegendElement>(node)) {
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
@@ -932,12 +1023,17 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
-  // Using the title or accessibility description (so we
-  // check if there's some kind of accessible name for the element)
-  // to decide an element's visibility is not as definitive as
-  // previous checks, so this should remain as one of the last.
-  if (HasAriaAttribute() ||
-      !GetElement()->FastGetAttribute(kTitleAttr).empty()) {
+  // Interesting ARIA properties are enough to cause objects to be included,
+  // unless the computed role is none. Note that global ARIA properties usually
+  // undo role=none (exception has been made for custom roles).
+  // See https://w3c.github.io/aria/#conflict_resolution_presentation_none
+  // for more details.
+  if (ElementHasAnyAriaAttribute()) {
+    return kIncludeObject;
+  }
+
+  // Using a title for a name or description causes an object to be included.
+  if (!GetElement()->FastGetAttribute(kTitleAttr).empty()) {
     return kIncludeObject;
   }
 
@@ -1046,7 +1142,6 @@ bool AXNodeObject::ComputeIsIgnored(
   }
 
   // Handle content that is either visible or in a canvas subtree.
-
   AXObjectInclusion include = ShouldIncludeBasedOnSemantics(ignored_reasons);
   if (include == kIncludeObject) {
     return false;
@@ -1977,6 +2072,14 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
     }
   }
 
+  // Custom elements have additional minimum role rules.
+  if (HasCustomElementTreeProcessing()) {
+    if (ElementHasAnyAriaRelation(*GetElement()) ||
+        GetElement()->tabIndex() >= 0) {
+      return ax::mojom::blink::Role::kGroup;
+    }
+  }
+
   if (IsA<HTMLPermissionElement>(node)) {
     return ax::mojom::blink::Role::kButton;
   }
@@ -1996,21 +2099,30 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetElement())) {
-    const ComputedStyle* style = GetElement()->GetComputedStyle();
-    ContentData* content_data = style->GetContentData();
-    // We just check the first item of the content list to determine the
-    // appropriate role, should only ever be image or text.
-    // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
-    // with strong semantics? If so, why are we overriding the role here?
-    // We only need to ensure the accessible name gets the CSS alt text.
-    // Note: by doing this, we are often hiding child pseudo element content
-    // because IsRelevantPseudoElementDescendant() returns false when an
-    // ancestor has CSS alt text.
-    if (content_data->IsImage())
-      return ax::mojom::blink::Role::kImage;
+  if (GetNode()->IsPseudoElement()) {
+    // This is for carousel scroll buttons (left/right/up/down) which are meant
+    // to look and act like buttons, but are generated as ::scroll-button(...)
+    // pseudos.
+    if (GetNode()->IsScrollButtonPseudoElement()) {
+      return ax::mojom::blink::Role::kButton;
+    }
 
-    return ax::mojom::blink::Role::kStaticText;
+    if (GetCSSAltText(GetElement())) {
+      const ComputedStyle* style = GetElement()->GetComputedStyle();
+      ContentData* content_data = style->GetContentData();
+      // We just check the first item of the content list to determine the
+      // appropriate role, should only ever be image or text.
+      // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
+      // with strong semantics? If so, why are we overriding the role here?
+      // We only need to ensure the accessible name gets the CSS alt text.
+      // Note: by doing this, we are often hiding child pseudo element content
+      // because IsRelevantPseudoElementDescendant() returns false when an
+      // ancestor has CSS alt text.
+      if (content_data->IsImage()) {
+        return ax::mojom::blink::Role::kImage;
+      }
+      return ax::mojom::blink::Role::kStaticText;
+    }
   }
 
   if (GetNode()->IsTextNode())
@@ -2130,6 +2242,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
+    // Only the UA popover element should get the MenuListPopup role.
+    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
+          HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
     return ax::mojom::blink::Role::kMenuListPopup;
   }
 
@@ -2457,7 +2572,7 @@ void AXNodeObject::Init(AXObject* parent) {
 }
 
 void AXNodeObject::Detach() {
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_adding_children_)
       << "Cannot detach |this| during AddChildren(): " << GetNode();
 #endif
@@ -4905,11 +5020,13 @@ String AXNodeObject::TextFromDescendants(
   AXObject* previous = nullptr;
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kNone;
+  AXObjectVector action_objects =
+      RelationVectorFromAria(html_names::kAriaActionsAttr);
 
   CHECK(!NeedsToUpdateCachedValues());
 
   const AXObjectVector& children = ChildrenIncludingIgnored();
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
   wtf_size_t num_children = children.size();
@@ -4926,6 +5043,11 @@ String AXNodeObject::TextFromDescendants(
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
+
+    // Exclude nodes referenced by aria-actions.
+    if (action_objects.Contains(child)) {
+      continue;
+    }
 
     if (child->IsHiddenForTextAlternativeCalculation(
             aria_label_or_description_root)) {
@@ -5431,62 +5553,61 @@ void AXNodeObject::AddInlineTextBoxChildren() {
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
     if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-      DCHECK(it.Next());
+      DCHECK(it.Next()) << "Failed to advance the BlockFlow Iterator while "
+                           "processing AxInlineTextBox children of "
+                        << this << " which has layout " << GetLayoutObject()
+                        << "\n and the AITB produced " << box->GetText();
+
       WTF::String fragment_text = it.GetText();
       WTF::String abstract_inline_text = box->GetText();
 
-      if (!layout_text->GetFirstLetterPart()) {
-        // Explicitly skip the check if the layout text has a first letter
-        // pseudo-element part. Currently, this is prefixed to the text, but
-        // this is problematic since:
-        //   * not accounted for in the glyph vector
-        //   * can have a different style including flow direction
-        //   * can be multiple characters due to punctuation
+      if (!ShouldSkipAxBlockFlowIteratorComparison()) {
         DCHECK_EQ(fragment_text, abstract_inline_text)
             << "Mismatch in extracted text fragment: " << abstract_inline_text
             << " vs " << fragment_text;
-      }
-      AbstractInlineTextBox* next_on_line_box = box->NextOnLine();
-      AbstractInlineTextBox* previous_on_line_box = box->PreviousOnLine();
 
-      std::optional<AXBlockFlowIterator::MapKey> next_fragment_key =
-          it.NextOnLine();
-      std::optional<AXBlockFlowIterator::MapKey> previous_fragment_key =
-          it.PreviousOnLine();
+        AbstractInlineTextBox* next_on_line_box = box->NextOnLine();
+        AbstractInlineTextBox* previous_on_line_box = box->PreviousOnLine();
 
-      if (next_on_line_box) {
-        DCHECK(next_fragment_key) << "Failed to find next on line fragment";
-        InlineCursor cursor = next_on_line_box->GetCursor();
-        DCHECK_EQ(&cursor.Items(), next_fragment_key->first);
-        wtf_size_t item_index = static_cast<wtf_size_t>(
-            cursor.CurrentItem() - &cursor.Items().front());
-        DCHECK_EQ(item_index, next_fragment_key->second)
-            << "Mismatched fragment indices";
-      } else {
-        // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
-        // box fragments. Currently, we fall back to the parent when
-        // AbstractInlineTextBox::NextOnLine is null. This fallback should no
-        // longer be necessary.
-        DCHECK(!next_fragment_key)
-            << "Expected not to find a next on line fragment";
-      }
+        std::optional<AXBlockFlowIterator::MapKey> next_fragment_key =
+            it.NextOnLine();
+        std::optional<AXBlockFlowIterator::MapKey> previous_fragment_key =
+            it.PreviousOnLine();
 
-      if (previous_on_line_box) {
-        DCHECK(previous_fragment_key)
-            << "Failed to find previous on line fragment";
-        InlineCursor cursor = previous_on_line_box->GetCursor();
-        DCHECK_EQ(&cursor.Items(), previous_fragment_key->first);
-        wtf_size_t item_index = static_cast<wtf_size_t>(
-            cursor.CurrentItem() - &cursor.Items().front());
-        DCHECK_EQ(item_index, previous_fragment_key->second)
-            << "Mismatched fragment indices";
-      } else {
-        // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
-        // box fragments. Currently, we fall back to the parent when
-        // AbstractInlineTextBox::NextOnLine is null. This fallback should no
-        // longer be necessary.
-        DCHECK(!previous_fragment_key)
-            << "Expected not to find a previous on line fragment";
+        if (next_on_line_box) {
+          DCHECK(next_fragment_key) << "Failed to find next on line fragment";
+          InlineCursor cursor = next_on_line_box->GetCursor();
+          DCHECK_EQ(&cursor.Items(), next_fragment_key->first);
+          wtf_size_t item_index = static_cast<wtf_size_t>(
+              cursor.CurrentItem() - &cursor.Items().front());
+          DCHECK_EQ(item_index, next_fragment_key->second)
+              << "Mismatched fragment indices";
+        } else {
+          // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
+          // box fragments. Currently, we fall back to the parent when
+          // AbstractInlineTextBox::NextOnLine is null. This fallback should no
+          // longer be necessary.
+          DCHECK(!next_fragment_key)
+              << "Expected not to find a next on line fragment";
+        }
+
+        if (previous_on_line_box) {
+          DCHECK(previous_fragment_key)
+              << "Failed to find previous on line fragment";
+          InlineCursor cursor = previous_on_line_box->GetCursor();
+          DCHECK_EQ(&cursor.Items(), previous_fragment_key->first);
+          wtf_size_t item_index = static_cast<wtf_size_t>(
+              cursor.CurrentItem() - &cursor.Items().front());
+          DCHECK_EQ(item_index, previous_fragment_key->second)
+              << "Mismatched fragment indices";
+        } else {
+          // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
+          // box fragments. Currently, we fall back to the parent when
+          // AbstractInlineTextBox::NextOnLine is null. This fallback should no
+          // longer be necessary.
+          DCHECK(!previous_fragment_key)
+              << "Expected not to find a previous on line fragment";
+        }
       }
     }
 #endif
@@ -5604,8 +5725,8 @@ void AXNodeObject::AddNodeChildren() {
       closest_layout_parent->IsReadingFlowContainer()) {
     HeapHashSet<Member<Node>> ax_children_added;
     // Add all reading flow items first, in the reading flow order.
-    for (Element* reading_flow_item :
-         closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
+    for (Node* reading_flow_item :
+         closest_layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
       // reading_flow_item or its parent (for example, display: contents) might
       // be a child of element. Loop the parents and only add the node if its
       // LayoutTreeBuilderTraversal::Parent is this element.
@@ -5651,9 +5772,10 @@ void AXNodeObject::AddNodeChildren() {
 void AXNodeObject::AddMenuListChildren() {
   auto* select = To<HTMLSelectElement>(GetNode());
 
-  if (select->IsAppearanceBasePicker()) {
-    // In appearance: base-select (customizable select), the children of the
-    // combobox is the displayed data list.
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    CHECK(select->UsesMenuList());
+    // When CustomizableSelect is enabled, there will always be one
+    // MenuListPopup child which is the UA popover element.
     AddNodeChild(select->PopoverForAppearanceBase());
     return;
   }
@@ -5664,9 +5786,8 @@ void AXNodeObject::AddMenuListChildren() {
 void AXNodeObject::AddMenuListPopupChildren() {
   auto* select = To<HTMLSelectElement>(ParentObject()->GetNode());
 
-  if (select->IsAppearanceBasePicker()) {
-    // In appearance: base-select (customizable select), the children of the
-    // popup are all of the natural dom children of the <select>.
+  // With CustomizableSelect, MenuListPopups can have more interesting children.
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     for (Node* child = NodeTraversal::FirstChild(*select); child;
          child = NodeTraversal::NextSibling(*child)) {
       if (child == select->SlottedButton()) {
@@ -5680,8 +5801,6 @@ void AXNodeObject::AddMenuListPopupChildren() {
     return;
   }
 
-  // In appearance: auto/none, the children of the popup are the flat tree
-  // children of the slot associated with the popup.
   AddNodeChildren();
 }
 
@@ -5730,9 +5849,18 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
+      select->UsesMenuList() && !select->IsMultiple()) {
+    // When CustomizableSelect is enabled, then we need to enforce our custom AX
+    // tree structure for select elements even if the author changed the select
+    // element's role by setting the role attribute.
     AddMenuListChildren();
   } else if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      // Only the UA popover element should have the MenuListPopup mapping.
+      CHECK(HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
+    }
     AddMenuListPopupChildren();
   } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
@@ -5762,7 +5890,7 @@ void AXNodeObject::AddChildren() {
                             << this << "\nFirst child is " << children_[0];
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   SANITIZER_CHECK(!is_computing_text_from_descendants_)
       << "Should not attempt to simultaneously compute text from descendants "
          "and add children on: "
@@ -5846,6 +5974,47 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
 }
 #endif
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+bool AXNodeObject::ShouldSkipAxBlockFlowIteratorComparison() const {
+  if (auto* layout_text = To<LayoutText>(GetLayoutObject());
+      layout_text->GetFirstLetterPart()) {
+    // Explicitly skip the check if the layout text has a first letter
+    // pseudo-element part. Currently, this is prefixed to the text, but this is
+    // problematic since:
+    //   * not accounted for in the glyph vector
+    //   * can have a different style including flow direction
+    //   * can be multiple characters due to punctuation
+    return true;
+  }
+
+  // Skips the processing of <ruby> and <tr> tags, including all their children
+  // (text). This is not implemented yet, so the comparison does not make sense.
+  using ax::mojom::blink::Role;  // Using declaration for the scope of the
+                                 // function
+  const Role& role = RoleValue();
+  if (role == Role::kRubyAnnotation || role == Role::kRuby) {
+    return true;
+  }
+
+  if (role == Role::kStaticText) {
+    auto check_ancestor = [this](int ancestor_level) {
+      const AXObject* ancestor = this;
+      for (int i = 0; i < ancestor_level && ancestor; ++i) {
+        ancestor = ancestor->ParentObjectIncludedInTree();
+      }
+      return ancestor && (ancestor->RoleValue() == Role::kRubyAnnotation ||
+                          ancestor->RoleValue() == Role::kRuby);
+    };
+
+    if (check_ancestor(1) || check_ancestor(2)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif
+
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   if (!child)
     return;
@@ -5908,12 +6077,9 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       if (children[i]->IsDetached()) {
-        // TODO(accessibility) Restore to CHECK().
-#if defined(AX_FAIL_FAST_BUILD)
-        SANITIZER_NOTREACHED()
+        NOTREACHED(base::NotFatalUntil::M140)
             << "Cannot add a detached child: " << "\n* Child: " << children[i]
             << "\n* Parent: " << child << "\n* Grandparent: " << this;
-#endif
         continue;
       }
       // If the child was owned, it will be added elsewhere as a direct
@@ -5944,8 +6110,14 @@ bool AXNodeObject::CanHaveChildren() const {
   // and improving stability in Blink.
   bool result = !GetElement() || AXObject::CanHaveChildren(*GetElement());
   switch (native_role_) {
-    case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kListBoxOption:
+      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+        // When CustomizableSelect is enabled, then options are allowed to have
+        // children as per the new content model.
+        break;
+      }
+      [[fallthrough]];
+    case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:

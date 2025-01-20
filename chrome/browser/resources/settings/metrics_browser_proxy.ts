@@ -65,36 +65,6 @@ export enum SafetyHubCardState {
 }
 
 /**
- * Contains all safety check interactions.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SafetyCheckInteractions enum in
- * histograms/enums.xml
- */
-export enum SafetyCheckInteractions {
-  RUN_SAFETY_CHECK = 0,
-  UPDATES_RELAUNCH = 1,
-  PASSWORDS_MANAGE_COMPROMISED_PASSWORDS = 2,
-  SAFE_BROWSING_MANAGE = 3,
-  EXTENSIONS_REVIEW = 4,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_REBOOT = 5,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_REVIEW_INFECTED_STATE = 6,
-  PASSWORDS_CARET_NAVIGATION = 7,
-  SAFE_BROWSING_CARET_NAVIGATION = 8,
-  EXTENSIONS_CARET_NAVIGATION = 9,
-  // Deprecated in https://crbug.com/1407233.
-  CHROME_CLEANER_CARET_NAVIGATION = 10,
-  PASSWORDS_MANAGE_WEAK_PASSWORDS = 11,
-  UNUSED_SITE_PERMISSIONS_REVIEW = 12,
-  // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 13,
-}
-
-/**
  * Contains all safety check notifications module interactions.
  *
  * These values are persisted to logs. Entries should not be renumbered and
@@ -224,8 +194,9 @@ export enum PrivacyGuideInteractions {
   SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
   TRACKING_PROTECTION_COMPLETION_LINK = 11,
   AD_TOPICS_NEXT_BUTTON = 12,
+  AI_SETTINGS_COMPLETION_LINK = 13,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 13,
+  MAX_VALUE = 14,
 }
 
 /**
@@ -364,7 +335,8 @@ export enum AiPageInteractions {
   COMPOSE_CLICK = 2,
   TAB_ORGANIZATION_CLICK = 3,
   WALLPAPER_SEARCH_CLICK = 4,
-  MAX_VALUE = 5,
+  AUTOFILL_AI_CLICK = 5,
+  MAX_VALUE = 6,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
 
@@ -449,53 +421,6 @@ export interface MetricsBrowserProxy {
    * Helper function that calls recordBooleanHistogram with the histogramName.
    */
   recordBooleanHistogram(histogramName: string, visible: boolean): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.Interactions histogram
-   */
-  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions):
-      void;
-
-  /**
-   * Helper function that calls recordHistogram for
-   * Settings.SafetyCheck.NotificationsListCount histogram.
-   */
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.NotificationsModuleInteractions histogram
-   */
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions): void;
-
-  /**
-   * Helper function that calls recordBooleanHistogram for the
-   * Settings.SafetyCheck.NotificationsModuleEntryPointShown histogram
-   */
-  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean): void;
-
-  /**
-   * Helper function that calls recordHistogram for
-   * Settings.SafetyCheck.UnusedSitePermissionsListCount histogram.
-   */
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions: number):
-      void;
-
-  /**
-   * Helper function that calls recordHistogram for the
-   * Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions histogram
-   */
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
-
-  /**
-   * Helper function that calls recordBooleanHistogram for the
-   * Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown histogram
-   */
-  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible: boolean):
-      void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -681,64 +606,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordBooleanHistogram(histogramName: string, visible: boolean): void {
     chrome.send('metricsHandler:recordBooleanHistogram', [
       histogramName,
-      visible,
-    ]);
-  }
-
-  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.Interactions',
-      interaction,
-      SafetyCheckInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsListCountHistogram(suggestions: number) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.NotificationsListCount',
-      suggestions,
-      99 /*max value for Notification suggestions*/,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.NotificationsModuleInteractions',
-      interaction,
-      SafetyCheckNotificationsModuleInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
-    chrome.send('metricsHandler:recordBooleanHistogram', [
-      'Settings.SafetyCheck.NotificationsModuleEntryPointShown',
-      visible,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
-                                                               number) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsListCount',
-      suggestions,
-      99 /*max value for length of revoked permissions list*/,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions',
-      interaction,
-      SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:
-                                                                  boolean) {
-    chrome.send('metricsHandler:recordBooleanHistogram', [
-      'Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown',
       visible,
     ]);
   }

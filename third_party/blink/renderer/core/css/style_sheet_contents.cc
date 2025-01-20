@@ -796,8 +796,16 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
     if (rule_set_diff_) {
       rule_set_diff_->NewRuleSetCreated(rule_set_);
     }
+    rule_set_->CompactRulesIfNeeded();
   }
   return *rule_set_.Get();
+}
+
+RuleSet* StyleSheetContents::CreateUnconnectedRuleSet(
+    const MediaQueryEvaluator& medium) const {
+  auto* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddRulesFromSheet(this, medium);
+  return rule_set;
 }
 
 static void SetNeedsActiveStyleUpdateForClients(

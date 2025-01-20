@@ -387,7 +387,7 @@ TEST_F(KeystoreServiceAshTest, UsingRsassaPkcs1V15NoneSignSuccess) {
 TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
   EXPECT_CALL(platform_keys_service_, SignEcdsa)
       .WillOnce(RunOnceCallback<4>(std::vector<uint8_t>(),
-                                   Status::kErrorKeyNotAllowedForSigning));
+                                   Status::kErrorKeyNotAllowedForOperation));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.Sign(
@@ -397,7 +397,7 @@ TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertErrorEq(observer.result.value(),
-                mojom::KeystoreError::kKeyNotAllowedForSigning);
+                mojom::KeystoreError::kKeyNotAllowedForOperation);
 }
 
 TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
@@ -554,6 +554,48 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
 
   ASSERT_TRUE(observer.result.has_value());
   EXPECT_EQ(observer.result, false);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(KeystoreServiceAshTest, SetAttributeForKeySuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              SetAttributeForKey(
+                  TokenId::kUser, GetPublicKeyBin(),
+                  chromeos::platform_keys::KeyAttributeType::kPlatformKeysTag,
+                  GetDataBin(),
+                  /*callback=*/_))
+      .WillOnce(RunOnceCallback<4>(Status::kSuccess));
+
+  StatusCallbackObserver observer;
+  keystore_service_.SetAttributeForKey(
+      mojom::KeystoreType::kUser, GetPublicKeyBin(),
+      mojom::KeystoreKeyAttributeType::kPlatformKeysTag, GetDataBin(),
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.has_value());
+  EXPECT_EQ(observer.result_is_error, false);
+}
+
+TEST_F(KeystoreServiceAshTest, SetAttributeForKeyFail) {
+  EXPECT_CALL(platform_keys_service_,
+              SetAttributeForKey(
+                  TokenId::kUser, GetPublicKeyBin(),
+                  chromeos::platform_keys::KeyAttributeType::kPlatformKeysTag,
+                  GetDataBin(),
+                  /*callback=*/_))
+      .WillOnce(RunOnceCallback<4>(Status::kErrorKeyAttributeSettingFailed));
+
+  StatusCallbackObserver observer;
+  keystore_service_.SetAttributeForKey(
+      mojom::KeystoreType::kUser, GetPublicKeyBin(),
+      mojom::KeystoreKeyAttributeType::kPlatformKeysTag, GetDataBin(),
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.has_value());
+  EXPECT_EQ(observer.result_is_error, true);
+  EXPECT_EQ(observer.result_error,
+            mojom::KeystoreError::kKeyAttributeSettingFailed);
 }
 
 //------------------------------------------------------------------------------

@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
@@ -137,12 +136,17 @@ public final class PolicyCacheTest {
     @Test
     public void testCachePolicies() {
         cachePolicies(
-                CollectionUtil.newHashMap(
-                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
-                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
-                        Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
-                        Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
-                        Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
+                Map.of(
+                        POLICY_NAME,
+                        Pair.create(PolicyCache.Type.Integer, 1),
+                        POLICY_NAME_2,
+                        Pair.create(PolicyCache.Type.Boolean, true),
+                        POLICY_NAME_3,
+                        Pair.create(PolicyCache.Type.String, "2"),
+                        POLICY_NAME_4,
+                        Pair.create(PolicyCache.Type.List, "[1]"),
+                        POLICY_NAME_5,
+                        Pair.create(PolicyCache.Type.Dict, "{1:2}")));
 
         Assert.assertEquals(1, mSharedPreferences.getInt(POLICY_NAME, 0));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -153,12 +157,8 @@ public final class PolicyCacheTest {
 
     @Test
     public void testCacheUpdated() {
-        cachePolicies(
-                CollectionUtil.newHashMap(
-                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1))));
-        cachePolicies(
-                CollectionUtil.newHashMap(
-                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true))));
+        cachePolicies(Map.of(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)));
+        cachePolicies(Map.of(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -203,12 +203,12 @@ public final class PolicyCacheTest {
         Assert.assertTrue(mPolicyCache.isReadable());
 
         cachePolicies(
-                CollectionUtil.newHashMap(
-                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
-                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
-                        Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
-                        Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
-                        Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
+                Map.of(
+                        POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1),
+                        POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true),
+                        POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2"),
+                        POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]"),
+                        POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}")));
 
         Assert.assertFalse(mPolicyCache.isReadable());
         if (BuildConfig.ENABLE_ASSERTS) {

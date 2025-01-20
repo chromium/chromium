@@ -25,8 +25,7 @@ class TestViewsHostable : public ui::ViewsHostableView {
 
  private:
   // ui::ViewsHostableView:
-  void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {
-  }
+  void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {}
   void ViewsHostableDetach() override { parent_accessibility_element_ = nil; }
   void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override {}
   void ViewsHostableSetVisible(bool visible) override {}
@@ -45,7 +44,7 @@ class TestViewsHostable : public ui::ViewsHostableView {
   id parent_accessibility_element_ = nil;
 };
 
-@interface TestViewsHostableView : NSView<ViewsHostable>
+@interface TestViewsHostableView : NSView <ViewsHostable>
 @property(nonatomic, assign) ui::ViewsHostableView* viewsHostableView;
 @end
 @implementation TestViewsHostableView

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/dom_distiller/content/browser/test/test_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,7 +26,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 
@@ -86,23 +86,6 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
   base::Value result_;
 
  private:
-  void AddComponentsResources() {
-    base::FilePath pak_file;
-    base::FilePath pak_dir;
-#if BUILDFLAG(IS_ANDROID)
-    CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
-    pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#elif BUILDFLAG(IS_MAC)
-    base::PathService::Get(base::DIR_MODULE, &pak_dir);
-#else
-    base::PathService::Get(base::DIR_ASSETS, &pak_dir);
-#endif  // BUILDFLAG(IS_ANDROID)
-    pak_file =
-        pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_file, ui::kScaleFactorNone);
-  }
-
   void SetUpTestServer() {
     base::FilePath path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
@@ -112,9 +95,10 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
   }
 };
 
-// Disabled on MSan as well as Android and Linux CFI bots.
+// Disabled on MSan, TSAN as well as Android and Linux CFI bots.
 // https://crbug.com/845180
 // https://crbug.com/1434395
+// https://crbug.com/387892105
 // Then disabled more generally on Android: https://crbug.com/979685
 // TODO(jaebaek):  HTMLImageElement::LayoutBoxWidth() returns a value that has
 // a small error from the real one (i.e., the real is 38, but it returns 37)
@@ -122,7 +106,7 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
 // EmbedExtractorTest.testImageExtractorWithAttributesCSSHeightCM (See
 // crrev.com/c/916021). We must solve this precision issue.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_FUCHSIA) ||                                                   \
+    BUILDFLAG(IS_FUCHSIA) || defined(THREAD_SANITIZER) ||                      \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                        \
      (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||               \
       BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) ||                                 \

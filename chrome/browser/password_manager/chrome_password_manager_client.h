@@ -17,7 +17,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
@@ -48,15 +48,17 @@
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
-#include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
 
 class PasswordAccessoryController;
 class TouchToFillController;
+#else
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -65,16 +67,13 @@ class TouchToFillController;
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
 class Profile;
 
 namespace autofill {
 class LogManager;
+class LogRouter;
 class RoutingLogManager;
 
 namespace password_generation {
@@ -112,6 +111,15 @@ class ChromePasswordManagerClient
       public autofill::mojom::PasswordGenerationDriver,
       public autofill::AutofillManager::Observer {
  public:
+  using CrossDomainConfirmationPopupFactory =
+#if BUILDFLAG(IS_ANDROID)
+      base::RepeatingCallback<
+          std::unique_ptr<AcknowledgeGroupedCredentialSheetController>()>;
+#else
+      base::RepeatingCallback<std::unique_ptr<
+          PasswordCrossDomainConfirmationPopupControllerImpl>()>;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   static void CreateForWebContents(content::WebContents* contents);
   static void BindPasswordGenerationDriver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
@@ -177,9 +185,9 @@ class ChromePasswordManagerClient
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;
   void NotifyStorePasswordCalled() override;
-#if BUILDFLAG(IS_ANDROID)
   void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) override;
+#if BUILDFLAG(IS_ANDROID)
   void StartSubmissionTrackingAfterTouchToFill(
       const std::u16string& filled_username) override;
   void ResetSubmissionTrackingAfterTouchToFill() override;
@@ -203,10 +211,6 @@ class ChromePasswordManagerClient
   void NotifyUserCredentialsWereLeaked(
       password_manager::LeakedPasswordDetails details) override;
   void NotifyKeychainError() override;
-  void TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(ReauthSucceeded)> reauth_callback) override;
-  void TriggerSignIn(signin_metrics::AccessPoint access_point) override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
@@ -225,7 +229,8 @@ class ChromePasswordManagerClient
   void PromptUserToEnableAutosignin() override;
   bool IsOffTheRecord() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
-  const password_manager::PasswordManager* GetPasswordManager() const override;
+  const password_manager::PasswordManagerInterface* GetPasswordManager()
+      const override;
   using password_manager::PasswordManagerClient::GetPasswordFeatureManager;
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
@@ -237,7 +242,7 @@ class ChromePasswordManagerClient
   url::Origin GetLastCommittedOrigin() const override;
   const password_manager::CredentialsFilter* GetStoreResultFilter()
       const override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   void AnnotateNavigationEntry(bool has_password_field) override;
   autofill::LanguageCode GetPageLanguage() const override;
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
@@ -301,15 +306,16 @@ class ChromePasswordManagerClient
 #if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(
       const gfx::RectF& element_bounds,
       base::i18n::TextDirection text_direction,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
+      bool show_warning_text,
       base::OnceClosure confirmation_callback) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
   void ShowCredentialsInAmbientBubble(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       int credential_type_flags,
@@ -357,14 +363,10 @@ class ChromePasswordManagerClient
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   void set_cross_domain_confirmation_popup_factory_for_testing(
-      base::RepeatingCallback<std::unique_ptr<
-          password_manager::PasswordCrossDomainConfirmationPopupController>()>
-          factory) {
+      CrossDomainConfirmationPopupFactory factory) {
     cross_domain_confirmation_popup_factory_for_testing_ = std::move(factory);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   PasswordAccessoryController* GetOrCreatePasswordAccessory();
@@ -454,6 +456,8 @@ class ChromePasswordManagerClient
   GetOrCreateKeyboardReplacingSurfaceVisibilityController();
 #endif
 
+  autofill::LogManager* GetOrCreateLogManager() const;
+
   const raw_ptr<Profile> profile_;
 
   password_manager::PasswordManager password_manager_;
@@ -509,11 +513,8 @@ class ChromePasswordManagerClient
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  AccountStorageAuthHelper account_storage_auth_helper_;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  std::unique_ptr<autofill::RoutingLogManager> log_manager_;
+  const raw_ptr<autofill::LogRouter> log_router_;
+  mutable std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation
   // of the WebContents owning this ChromePasswordManagerClient. May be unset at
@@ -534,11 +535,6 @@ class ChromePasswordManagerClient
   // metrics. TODO(crbug.com/40215916): Remove after the launch.
   std::optional<std::pair<std::u16string, base::Time>>
       username_filled_by_touch_to_fill_ = std::nullopt;
-
-  // Launcher used to trigger the password migration warning once passwords
-  // have been fetched. Only invoked once on startup.
-  std::unique_ptr<PasswordMigrationWarningStartupLauncher>
-      password_migration_warning_startup_launcher_;
 
   // Launcher used to trigger the password access loss warning once passwords
   // have been fetched. Only invoked once on startup.
@@ -562,13 +558,10 @@ class ChromePasswordManagerClient
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};
 
-#if !BUILDFLAG(IS_ANDROID)
   // The cross domain confirmation popup view factory, used for testing to mock
   // some views specific initializations.
-  base::RepeatingCallback<std::unique_ptr<
-      password_manager::PasswordCrossDomainConfirmationPopupController>()>
+  CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

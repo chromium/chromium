@@ -111,7 +111,7 @@ TEST(TextResourceDecoderTest, UTF8DecodePieces) {
           TextResourceDecoderOptions::CreateUTF8Decode());
 
   const uint8_t kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  String decoded = DecodeByteByByte(*decoder, base::make_span(kFooUTF8WithBOM));
+  String decoded = DecodeByteByByte(*decoder, base::span(kFooUTF8WithBOM));
   EXPECT_EQ(UTF8Encoding(), decoder->Encoding());
   EXPECT_EQ("foo", decoded);
 }
@@ -124,14 +124,14 @@ TEST(TextResourceDecoderTest, UTF16Pieces) {
 
   {
     const uint8_t kFooLE[] = {0xff, 0xfe, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00};
-    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooLE));
+    String decoded = DecodeByteByByte(*decoder, base::span(kFooLE));
     EXPECT_EQ(UTF16LittleEndianEncoding(), decoder->Encoding());
     EXPECT_EQ("foo", decoded);
   }
 
   {
     const uint8_t kFooBE[] = {0xfe, 0xff, 0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f};
-    String decoded = DecodeByteByByte(*decoder, base::make_span(kFooBE));
+    String decoded = DecodeByteByByte(*decoder, base::span(kFooBE));
     EXPECT_EQ(UTF16BigEndianEncoding(), decoder->Encoding());
     EXPECT_EQ("foo", decoded);
   }

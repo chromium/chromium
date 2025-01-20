@@ -54,10 +54,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 #if defined(USE_ALSA)
 #include "media/audio/alsa/audio_manager_alsa.h"
 #elif BUILDFLAG(IS_ANDROID)
@@ -471,11 +467,6 @@ class MediaStreamManagerTest : public ::testing::Test {
                     _, _, _, _,
                     blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
                     MEDIA_REQUEST_STATE_OPENING));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_CALL(*browser_content_client_,
-                NotifyMultiCaptureStateChanged(
-                    _, _, ContentBrowserClient::MultiCaptureChanged::kStarted));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     stream_provider_listener_ =
         std::make_unique<MediaStreamProviderListenerMock>();
     media_stream_manager_->video_capture_manager_->RegisterListener(
@@ -1304,11 +1295,6 @@ TEST_F(MediaStreamManagerTest, MultiCaptureIntermediateErrorOnOpening) {
           _, _, _, _, blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
           MEDIA_REQUEST_STATE_DONE))
       .Times(0);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(*browser_content_client_,
-              NotifyMultiCaptureStateChanged(
-                  _, _, ContentBrowserClient::MultiCaptureChanged::kStopped));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 TEST_F(MediaStreamManagerTest, RegisterUnregisterHosts) {

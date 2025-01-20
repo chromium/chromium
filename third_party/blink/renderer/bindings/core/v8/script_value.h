@@ -171,6 +171,64 @@ class CORE_EXPORT ScriptValue final {
   WorldSafeV8Reference<v8::Value> value_;
 };
 
+// ScriptObject is used when an idl specifies the type as 'object'
+class CORE_EXPORT ScriptObject final {
+  DISALLOW_NEW();
+
+ public:
+  // ScriptObject::From() is restricted to certain types that are unambiguous in
+  // how they are exposed to V8 and that are known to be objects.
+  template <typename T>
+    requires std::derived_from<T, bindings::DictionaryBase> ||
+             std::derived_from<T, ScriptWrappable>
+  static ScriptObject From(ScriptState* script_state, T* value) {
+    return ScriptObject(script_state->GetIsolate(), value->ToV8(script_state));
+  }
+
+  ScriptObject() = default;
+  ScriptObject(v8::Isolate* isolate, v8::Local<v8::Value> value)
+      : object_(isolate, value) {
+    CHECK(!value.IsEmpty());
+    CHECK(value->IsObject() || value->IsNull());
+  }
+
+  static ScriptObject CreateNull(v8::Isolate* isolate) {
+    return ScriptObject(isolate, v8::Null(isolate));
+  }
+
+  v8::Local<v8::Object> V8Object() const {
+    CHECK(object_.IsObject());
+    return object_.V8Value().As<v8::Object>();
+  }
+
+  v8::Local<v8::Object> V8ObjectFor(ScriptState* script_state) const {
+    CHECK(object_.IsObject());
+    return object_.V8ValueFor(script_state).As<v8::Object>();
+  }
+
+  bool IsNull() const { return object_.IsNull(); }
+
+  void Clear() { object_.Clear(); }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator const ScriptValue&() const { return object_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator ScriptValue&() { return object_; }
+
+  bool operator==(const ScriptObject& object) const {
+    return object_ == object.object_;
+  }
+
+  bool operator!=(const ScriptObject& object) const {
+    return !operator==(object);
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(object_); }
+
+ private:
+  ScriptValue object_;
+};
+
 }  // namespace blink
 
 namespace WTF {
@@ -179,6 +237,10 @@ namespace WTF {
 // WorldSafeV8Reference<v8::Value>.
 template <>
 struct VectorTraits<blink::ScriptValue>
+    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
+
+template <>
+struct VectorTraits<blink::ScriptObject>
     : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
 
 }  // namespace WTF

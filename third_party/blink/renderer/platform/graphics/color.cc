@@ -60,7 +60,8 @@ const RGBA32 kDarkenedWhite = 0xFFABABAB;
 // For lch/oklch colors, the value of chroma underneath which the color is
 // considered to be "achromatic", relevant for color conversions.
 // https://www.w3.org/TR/css-color-4/#lab-to-lch
-const float kAchromaticChromaThreshold = 1e-6;
+// This is set to be slightly higher than white's chroma value of 0.0188.
+const float kAchromaticChromaThreshold = 0.02;
 
 const int kCStartAlpha = 153;     // 60%
 const int kCEndAlpha = 204;       // 80%;
@@ -871,21 +872,12 @@ void Color::UnpremultiplyColor() {
   }
 }
 
-// This converts -0.0 to 0.0, so that they have the same hash value. This
-// ensures that equal FontDescription have the same hash value.
-float NormalizeSign(float number) {
-  if (number == 0.0) [[unlikely]] {
-    return 0.0;
-  }
-  return number;
-}
-
 unsigned Color::GetHash() const {
   unsigned result = WTF::HashInt(static_cast<uint8_t>(color_space_));
-  WTF::AddFloatToHash(result, NormalizeSign(param0_));
-  WTF::AddFloatToHash(result, NormalizeSign(param1_));
-  WTF::AddFloatToHash(result, NormalizeSign(param2_));
-  WTF::AddFloatToHash(result, NormalizeSign(alpha_));
+  WTF::AddFloatToHash(result, param0_);
+  WTF::AddFloatToHash(result, param1_);
+  WTF::AddFloatToHash(result, param2_);
+  WTF::AddFloatToHash(result, alpha_);
   WTF::AddIntToHash(result, param0_is_none_);
   WTF::AddIntToHash(result, param1_is_none_);
   WTF::AddIntToHash(result, param2_is_none_);
@@ -935,7 +927,7 @@ bool Color::SetFromString(const String& name) {
   if (name[0] != '#')
     return SetNamedColor(name);
   return VisitCharacters(name, [this](auto chars) {
-    return ParseHexColorInternal(chars.subspan(1), *this);
+    return ParseHexColorInternal(chars.template subspan<1>(), *this);
   });
 }
 
@@ -1175,21 +1167,13 @@ Color Color::Blend(const Color& source) const {
     return *this;
   }
 
-  int source_alpha = source.AlphaAsInteger();
-  int alpha = AlphaAsInteger();
-
-  int d = 255 * (alpha + source_alpha) - alpha * source_alpha;
-  int a = d / 255;
-  int r = (Red() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Red()) /
-          d;
-  int g = (Green() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Green()) /
-          d;
-  int b = (Blue() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Blue()) /
-          d;
-  return Color(r, g, b, a);
+  const SkRGBA4f<kPremul_SkAlphaType> pm_src = source.toSkColor4f().premul();
+  auto pm_result = this->toSkColor4f().premul() * (1.0f - pm_src.fA);
+  pm_result.fA += pm_src.fA;
+  pm_result.fR += pm_src.fR;
+  pm_result.fG += pm_src.fG;
+  pm_result.fB += pm_src.fB;
+  return Color(pm_result.unpremul());
 }
 
 Color Color::BlendWithWhite() const {

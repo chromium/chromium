@@ -4,22 +4,20 @@
 
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 
+#include <cstddef>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
-#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 constexpr size_t kIconSize = 20;
 
@@ -39,11 +37,13 @@ AccountHoverListModel::AccountHoverListModel(
   for (const device::DiscoverableCredentialMetadata& cred :
        dialog_model->creds) {
     items_.emplace_back(
-        NameTokenForDisplay(cred.user.name.value_or("")), u"",
+        NameTokenForDisplay(cred.user.name.value_or("")),
+        AuthenticatorRequestDialogModel::GetMechanismDescription(
+            cred.source, dialog_model->priority_phone_name),
         ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
                                        dialog_model->ui_disabled_
-                                           ? kColorWebAuthnIconColorDisabled
-                                           : kColorWebAuthnIconColor,
+                                           ? ui::kColorIconDisabled
+                                           : ui::kColorIcon,
                                        kIconSize),
         !dialog_model->ui_disabled_);
   }

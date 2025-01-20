@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,25 +42,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappSplashScreenTest {
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
-
-    private int getHistogramTotalCountFor(String histogram, int buckets) {
-        int count = 0;
-
-        for (int i = 0; i < buckets; ++i) {
-            count += RecordHistogram.getHistogramValueCountForTesting(histogram, i);
-        }
-
-        return count;
-    }
-
-    private boolean hasHistogramEntry(String histogram, int maxValue) {
-        for (int i = 0; i < maxValue; ++i) {
-            if (RecordHistogram.getHistogramValueCountForTesting(histogram, i) > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Test
     @SmallTest

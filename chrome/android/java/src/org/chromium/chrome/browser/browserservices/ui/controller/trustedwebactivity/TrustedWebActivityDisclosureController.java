@@ -9,9 +9,7 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-
-import javax.inject.Inject;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
  * Controls when Trusted Web Activity disclosure should be shown and hidden, reacts to interaction
@@ -20,17 +18,13 @@ import javax.inject.Inject;
 public class TrustedWebActivityDisclosureController extends DisclosureController {
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
-    @Inject
-    TrustedWebActivityDisclosureController(
+    public TrustedWebActivityDisclosureController(
             TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
-            BaseCustomTabActivity activity) {
-        super(
-                model,
-                activity.getLifecycleDispatcher(),
-                currentPageVerifier,
-                activity.getClientPackageNameProvider().get());
-        mClientPackageNameProvider = activity.getClientPackageNameProvider();
+            ClientPackageNameProvider clientPackageNameProvider) {
+        super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
+        mClientPackageNameProvider = clientPackageNameProvider;
     }
 
     @Override

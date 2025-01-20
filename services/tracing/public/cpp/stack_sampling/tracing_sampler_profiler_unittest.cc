@@ -20,16 +20,22 @@
 #include "base/profiler/unwinder.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/buildflags.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "services/tracing/public/cpp/traced_process_impl.h"
+#include "services/tracing/public/mojom/traced_process.mojom.h"
+#include "services/tracing/tracing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
@@ -38,6 +44,10 @@
 #include "base/test/trace_event_analyzer.h"
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/profiler/core_unwinders.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -53,7 +63,8 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Return;
-using PacketVector = TestProducerClient::PacketVector;
+using PacketVector =
+    std::vector<std::unique_ptr<perfetto::protos::TracePacket>>;
 
 std::unique_ptr<perfetto::TracingSession> g_tracing_session;
 
@@ -111,7 +122,7 @@ class TracingSampleProfilerTest : public testing::Test {
 
     events_stack_received_count_ = 0u;
 
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingSamplerProfiler::ResetDataSourceForTesting();
   }
@@ -234,7 +245,11 @@ class MockUnwinder : public base::Unwinder {
 base::StackSamplingProfiler::UnwindersFactory
 MakeMockUnwinderFactoryWithExpectations() {
   if (!TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
+#if !BUILDFLAG(IS_ANDROID)
+    return base::CreateCoreUnwindersFactory();
+#else
     return base::StackSamplingProfiler::UnwindersFactory();
+#endif
   }
   return base::BindOnce([] {
     auto mock_unwinder = std::make_unique<MockUnwinder>();
@@ -495,43 +510,17 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
 
 #endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
-class TracingProfileBuilderTest : public TracingUnitTest {
- public:
-  void SetUp() override {
-    TracingUnitTest::SetUp();
-
-    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-    producer_client_ = std::make_unique<TestProducerClient>(
-        std::move(perfetto_wrapper), /*log_only_main_thread=*/false);
-  }
-
-  void TearDown() override {
-    producer_client_.reset();
-    TracingUnitTest::TearDown();
-  }
-
-  TestProducerClient* producer() { return producer_client_.get(); }
-
- private:
-  std::unique_ptr<TestProducerClient> producer_client_;
-};
-
-TEST_F(TracingProfileBuilderTest, ValidModule) {
+TEST(TracingProfileBuilderTest, ValidModule) {
   base::TestModule module;
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(),
-      std::make_unique<TestTraceWriter>(producer()),
-      false);
+      base::PlatformThreadId(), std::make_unique<DummyTraceWriter>(), false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
                                     base::TimeTicks());
 }
 
-TEST_F(TracingProfileBuilderTest, InvalidModule) {
+TEST(TracingProfileBuilderTest, InvalidModule) {
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(),
-      std::make_unique<TestTraceWriter>(producer()),
-      false);
+      base::PlatformThreadId(), std::make_unique<DummyTraceWriter>(), false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)},
                                     base::TimeTicks());
 }

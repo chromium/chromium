@@ -56,6 +56,10 @@ struct SearchResultItem {
   // When present, this contains information about how to mark this
   // SearchResultItem as the query answer. Most items will not have it.
   AnswerData? answer_data;
+
+  // Set to true for results that have at least 1 visit known to sync. This is
+  // used to determine if the UI can request images for the URL.
+  bool is_url_known_to_sync;
 };
 
 // Represents a search query for the history embeddings database.

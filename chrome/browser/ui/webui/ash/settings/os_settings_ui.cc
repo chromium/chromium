@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -54,7 +51,6 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
@@ -76,6 +72,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/settings_shared_resources.h"
@@ -98,6 +95,60 @@ class AppManagementDelegate : public AppManagementPageHandlerBase::Delegate {
   }
 };
 
+// Expects a path in the form of "jp-export-dictionary/123" where "123" is the
+// dictionary id.
+std::optional<uint64_t> ExtractJapaneseDictionaryExportIdParam(
+    const std::string& path) {
+  static constexpr std::string_view kJapaneseExportDictionaryPrefix =
+      "jp-export-dictionary/";
+
+  if (!path.starts_with(kJapaneseExportDictionaryPrefix)) {
+    return std::nullopt;
+  }
+
+  std::string_view dict_id_str = path;
+  dict_id_str.remove_prefix(kJapaneseExportDictionaryPrefix.size());
+
+  uint64_t dict_id;
+  if (!base::StringToUint64(dict_id_str, &dict_id)) {
+    return std::nullopt;
+  }
+  return dict_id;
+}
+
+// This function must be a non-member function because WebUIDataSource's
+// lifetime is independent of OSSettingsUI's lifetime. In some cases the
+// WebUIDataSource outlives OSSettingsUI and, in other cases, OSSettingsUI
+// outlives the WebUIDataSource.
+void OnHandleRequest(const std::string& path,
+                     content::WebUIDataSource::GotDataCallback callback) {
+  std::optional<uint64_t> dict_id =
+      ExtractJapaneseDictionaryExportIdParam(path);
+  // Should not expect this to be called if the export request was not valid.
+  // Requests should have been filtered before.
+  CHECK(dict_id.has_value());
+
+  mojo::Remote<ash::ime::mojom::InputMethodUserDataService>
+      ime_user_data_service;
+  auto* ime_user_data_service_ptr = &ime_user_data_service;
+
+  ash::input_method::InputMethodManager::Get()->BindInputMethodUserDataService(
+      ime_user_data_service.BindNewPipeAndPassReceiver());
+
+  // Pass ime_user_data_service to the callback so that the Mojo connection does
+  // not get closed when the OnHandleRequest finishes.
+  ime_user_data_service_ptr->get()->ExportJapaneseDictionary(
+      *dict_id,
+      base::BindOnce(
+          [](mojo::Remote<ash::ime::mojom::InputMethodUserDataService> service,
+             content::WebUIDataSource::GotDataCallback callback,
+             const std::string& result) {
+            std::move(callback).Run(
+                base::MakeRefCounted<base::RefCountedString>(result));
+          },
+          std::move(ime_user_data_service), std::move(callback)));
+}
+
 }  // namespace
 
 namespace ash::settings {
@@ -118,6 +169,12 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUIOSSettingsHost);
+  html_source->SetRequestFilter(
+      base::BindRepeating([](const std::string& path) {
+        return ExtractJapaneseDictionaryExportIdParam(path).has_value();
+      }),
+      base::BindRepeating(OnHandleRequest));
+
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
   OsSettingsManager* manager = OsSettingsManagerFactory::GetForProfile(profile);
@@ -129,15 +186,12 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<StorageHandler>(profile, html_source));
 
-  webui::SetupWebUIDataSource(
-      html_source,
-      base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
-      IDR_OS_SETTINGS_OS_SETTINGS_HTML);
+  webui::SetupWebUIDataSource(html_source, kOsSettingsResources,
+                              IDR_OS_SETTINGS_OS_SETTINGS_HTML);
   ash::EnableTrustedTypesCSP(html_source);
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  html_source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   // Flag for using updated icons in search results and pages.
@@ -353,7 +407,6 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::AcceleratorFetcher> receiver) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->accelerator_fetcher()
       ->BindInterface(std::move(receiver));
@@ -442,7 +495,6 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
         receiver) {
-  DCHECK(features::IsBluetoothDisconnectWarningEnabled());
   GetHidPreservingBluetoothStateControllerService(std::move(receiver));
 }
 

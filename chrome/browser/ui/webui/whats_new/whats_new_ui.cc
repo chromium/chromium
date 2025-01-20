@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
@@ -24,7 +23,6 @@
 #include "chrome/grit/whats_new_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +31,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -48,7 +47,6 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
       {"title", IDS_WHATS_NEW_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
   source->AddBoolean("isStaging", enable_staging);
 
   // Allow embedding of iframe from chrome.com
@@ -124,8 +122,9 @@ void WhatsNewUI::DidStartNavigation(
 void WhatsNewUI::BindInterface(
     mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
         pending_receiver) {
-  if (browser_command_factory_receiver_.is_bound())
+  if (browser_command_factory_receiver_.is_bound()) {
     browser_command_factory_receiver_.reset();
+  }
   browser_command_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -134,21 +133,9 @@ void WhatsNewUI::CreateBrowserCommandHandler(
         pending_handler) {
   std::vector<browser_command::mojom::Command> supported_commands = {};
 
-  if (user_education::features::IsWhatsNewV2()) {
-    auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
-    CHECK(registry);
-    supported_commands = registry->GetActiveCommands();
-  } else {
-    // TODO(crbug.com/342172972): Remove legacy browser command format.
-    // Modules launching during the V2 experiment need to also be
-    // enabled in this list for V1.
-    supported_commands.insert(
-        supported_commands.end(),
-        {
-            browser_command::mojom::Command::kOpenPaymentsSettings,
-            browser_command::mojom::Command::KOpenHistorySearchSettings,
-        });
-  }
+  auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
+  CHECK(registry);
+  supported_commands = registry->GetActiveCommands();
 
   // Legacy list. Do not add browser commands here. Browser commands
   // should instead be added through the WhatsNewRegistry.

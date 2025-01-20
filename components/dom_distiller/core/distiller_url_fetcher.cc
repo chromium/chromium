@@ -78,6 +78,7 @@ std::unique_ptr<network::SimpleURLLoader> DistillerURLFetcher::CreateURLFetcher(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);
   resource_request->method = "GET";
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(GURL(url));
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

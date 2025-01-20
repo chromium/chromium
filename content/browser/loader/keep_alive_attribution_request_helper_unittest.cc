@@ -623,5 +623,68 @@ TEST_F(KeepAliveAttributionRequestHelperTest, AttributionSrcRequestStatus) {
   }
 }
 
+TEST_F(KeepAliveAttributionRequestHelperTest, CreateIfNeeded_MetricRecorded) {
+  const struct {
+    const char* desc;
+    GURL context_url;
+    network::mojom::AttributionReportingEligibility eligibility;
+    std::optional<attribution_reporting::AttributionSrcRequestStatus> expected;
+  } kTestCases[] = {
+      {
+          "insecure-navigation",
+          GURL("http://insecure-source.com"),
+          network::mojom::AttributionReportingEligibility::kNavigationSource,
+          attribution_reporting::AttributionSrcRequestStatus::kDropped,
+      },
+      {
+          "secure-navigation",
+          GURL("https://secure-source.com"),
+          network::mojom::AttributionReportingEligibility::kNavigationSource,
+          attribution_reporting::AttributionSrcRequestStatus::kRequested,
+      },
+      {
+          "insecure-non-navigation",
+          GURL("http://insecure-source.com"),
+          network::mojom::AttributionReportingEligibility::
+              kEventSourceOrTrigger,
+          std::nullopt,
+      },
+      {
+          "secure-non-navigation",
+          GURL("https://secure-source.com"),
+          network::mojom::AttributionReportingEligibility::
+              kEventSourceOrTrigger,
+          std::nullopt,
+      },
+  };
+
+  constexpr char kAttributionSrcNavigationRequestStatusMetric[] =
+      "Conversions.AttributionSrcRequestStatus.Navigation.Browser";
+
+  const GURL reporting_url("https://report.test");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    test_web_contents()->NavigateAndCommit(test_case.context_url);
+    auto context = AttributionSuitableContext::Create(
+        test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+
+    base::HistogramTester histograms;
+
+    KeepAliveAttributionRequestHelper::CreateIfNeeded(
+        test_case.eligibility, reporting_url,
+        /*attribution_src_token=*/std::nullopt, "devtools-request-id", context);
+
+    if (test_case.expected.has_value()) {
+      histograms.ExpectUniqueSample(
+          kAttributionSrcNavigationRequestStatusMetric, *test_case.expected, 1);
+    } else {
+      histograms.ExpectTotalCount(kAttributionSrcNavigationRequestStatusMetric,
+                                  0);
+    }
+  }
+}
+
 }  // namespace
 }  // namespace content

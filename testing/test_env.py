@@ -38,9 +38,14 @@ def fix_python_path(cmd):
   return out
 
 
-def is_cog():
+# TODO: crbug.com/362595425 - Remove once Cog supports sandboxing. This is a
+# workaround to handle a crash caused by sandbox when running
+# content_browsertests in Cider.
+def is_sandboxed_on_cog(cmd):
   """Checks the environment is cog."""
-  return os.getcwd().startswith('/google/cog/cloud')
+  return cmd.endswith('content_browsertests') and os.getcwd().startswith(
+      '/google/cog/cloud')
+
 
 
 def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
@@ -384,10 +389,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   if asan or lsan or msan or tsan or cfi_diag:
     extra_env.update(get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag))
 
-  # TODO(b/362595425): This is a workaround to handle a crash caused by sandbox
-  # when running content_browsertests in Cider. If the test environment is cog,
-  # sandbox is turned off by default.
-  if lsan or tsan or is_cog():
+  if lsan or tsan or is_sandboxed_on_cog(cmd[0]):
     # LSan and TSan are not sandbox-friendly.
     cmd.append('--no-sandbox')
 
@@ -397,6 +399,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
 
   # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
+    # //testing imports.
     sys.path.insert(
         0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
     from scripts import common  # pylint: disable=cyclic-import

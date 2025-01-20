@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/common/base_requests.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace boca {
 class Session;
@@ -26,11 +27,15 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
 
   GetSessionRequest(google_apis::RequestSender* sender,
                     bool is_producer,
-                    std::string gaia_id,
+                    GaiaId gaia_id,
                     Callback callback);
   GetSessionRequest(const GetSessionRequest&) = delete;
   GetSessionRequest& operator=(const GetSessionRequest&) = delete;
   ~GetSessionRequest() override;
+
+  void set_device_id(std::string device_id) {
+    device_id_ = std::move(device_id);
+  }
 
   // For testing.
   void OverrideURLForTesting(std::string url);
@@ -52,8 +57,9 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
  private:
   void OnDataParsed(std::unique_ptr<::boca::Session> session);
   bool is_producer_;
-  std::string gaia_id_;
+  GaiaId gaia_id_;
   std::string url_base_;
+  std::string device_id_;
   Callback callback_;
 
   base::WeakPtrFactory<GetSessionRequest> weak_ptr_factory_{this};

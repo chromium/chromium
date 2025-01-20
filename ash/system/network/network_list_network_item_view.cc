@@ -324,8 +324,8 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 void NetworkListNetworkItemView::NetworkIconChanged() {
   DCHECK(views::IsViewClass<views::ImageView>(left_view()));
   static_cast<views::ImageView*>(left_view())
-      ->SetImage(
-          GetNetworkImageForNetwork(GetColorProvider(), network_properties_));
+      ->SetImage(ui::ImageModel::FromImageSkia(
+          GetNetworkImageForNetwork(GetColorProvider(), network_properties_)));
 }
 
 void NetworkListNetworkItemView::OnThemeChanged() {
@@ -411,7 +411,7 @@ void NetworkListNetworkItemView::AddPolicyView() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   controlled_icon->SetImage(
-      gfx::CreateVectorIcon(kSystemMenuBusinessIcon, icon_color));
+      ui::ImageModel::FromVectorIcon(kSystemMenuBusinessIcon, icon_color));
   AddRightView(controlled_icon.release());
 }
 

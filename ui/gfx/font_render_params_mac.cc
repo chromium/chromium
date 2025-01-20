@@ -19,14 +19,8 @@ FontRenderParams LoadDefaults() {
   params.autohinter = false;
   params.use_bitmaps = true;
   params.subpixel_positioning = true;
-
-  if (!base::FeatureList::IsEnabled(features::kCr2023MacFontSmoothing)) {
-    params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
-    params.hinting = FontRenderParams::HINTING_NONE;
-  } else {
-    params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
-    params.hinting = FontRenderParams::HINTING_MEDIUM;
-  }
+  params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_RGB;
+  params.hinting = FontRenderParams::HINTING_MEDIUM;
 
   return params;
 }

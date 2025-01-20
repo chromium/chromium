@@ -43,8 +43,7 @@ std::string GetFileContent(const FilePath& path) {
 
 class DataSerializer : public ImportantFileWriter::DataSerializer {
  public:
-  explicit DataSerializer(const std::string& data) : data_(data) {
-  }
+  explicit DataSerializer(const std::string& data) : data_(data) {}
 
   std::optional<std::string> SerializeData() override {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());

@@ -23,6 +23,7 @@ export interface SeaPenState {
   pendingSelected: SeaPenImageId|SeaPenThumbnail|null;
   thumbnailResponseStatusCode: MantaStatusCode|null;
   shouldShowSeaPenIntroductionDialog: boolean;
+  shouldShowSeaPenFreeformIntroductionDialog: boolean;
   error: string|null;
   textQueryHistory: TextQueryHistoryEntry[]|null;
 }
@@ -44,6 +45,7 @@ export function emptyState(): SeaPenState {
     currentSelected: null,
     pendingSelected: null,
     shouldShowSeaPenIntroductionDialog: false,
+    shouldShowSeaPenFreeformIntroductionDialog: false,
     error: null,
     textQueryHistory: null,
   };

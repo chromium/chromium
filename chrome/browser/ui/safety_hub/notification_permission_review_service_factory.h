@@ -42,9 +42,7 @@ class NotificationPermissionsReviewServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
-#if BUILDFLAG(IS_ANDROID)
   bool ServiceIsCreatedWithBrowserContext() const override;
-#endif  // BUILDFLAG(ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_

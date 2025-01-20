@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -266,7 +267,7 @@ class MockMediaStreamAudioRenderer : public MediaStreamAudioRenderer {
   void Stop() override {}
   void Play() override {}
   void Pause() override {}
-  void SetVolume(float volume) override {}
+  MOCK_METHOD(void, SetVolume, (float volume));
 
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override {}
@@ -324,8 +325,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
           gfx::Size(standard_size_.width() * 2, standard_size_.height() * 2);
     }
     if (token < static_cast<int>(FrameType::MIN_TYPE)) {
-      CHECK(false) << "Unrecognized frame type: " << token;
-      return;
+      NOTREACHED() << "Unrecognized frame type: " << token;
     }
 
     if (token < 0) {
@@ -1760,6 +1760,37 @@ TEST_P(WebMediaPlayerMSTest, OnContextLost) {
   // frame with gpu resource should be reset if context is lost
   compositor_->OnContextLost();
   EXPECT_NE(gpu_frame, compositor_->GetCurrentFrame());
+}
+
+TEST_P(WebMediaPlayerMSTest, VolumeMultiplierAdjustsOutputVolume) {
+  InitializeWebMediaPlayerMS();
+  is_audio_element_ = true;
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
+  render_factory_->set_audio_renderer(audio_renderer);
+
+  player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+
+  message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
+
+  // Setting the volume multiplier should adjust the volume sent to the audio
+  // renderer.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.2));
+  player_->SetVolumeMultiplier(0.2);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // Setting the volume after the multiplier should still take the multiplier
+  // into account.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.1));
+  player_->SetVolume(0.5);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // Resetting the multiplier should take the previously set volume into
+  // account.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.5));
+  player_->SetVolumeMultiplier(1.0);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

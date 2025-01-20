@@ -43,7 +43,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
-#include "components/segmentation_platform/public/result.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -64,7 +63,7 @@
 #include "ui/views/window/client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #endif
 
 // NOTE: For more information about the objects and files in this directory,
@@ -93,6 +92,10 @@ class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
+namespace gfx {
+class AnimationRunner;
+}  // namespace gfx
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -113,6 +116,14 @@ struct WebAppBannerData;
 
 namespace enterprise_watermark {
 class WatermarkView;
+}
+
+namespace glic {
+class BorderView;
+}  // namespace glic
+
+namespace segmentation_platform {
+struct ClassificationResult;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,7 +178,7 @@ class BrowserView : public BrowserWindow,
   // (and hide immediately).
   static void SetDisableRevealerDelayForTesting(bool disable);
 
-  bool IsLoadingAnimationRunningForTesting() const;
+  bool IsLoadingAnimationRunning() const;
 
   // Returns a Browser instance of this view.
   Browser* browser() { return browser_.get(); }
@@ -200,9 +211,20 @@ class BrowserView : public BrowserWindow,
 
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
+  const views::Widget* overlay_widget() const { return overlay_widget_.get(); }
+
   views::View* overlay_view() { return overlay_view_.get(); }
+  const views::View* overlay_view() const { return overlay_view_.get(); }
+
   views::Widget* tab_overlay_widget() { return tab_overlay_widget_.get(); }
+  const views::Widget* tab_overlay_widget() const {
+    return tab_overlay_widget_.get();
+  }
+
   views::View* tab_overlay_view() { return tab_overlay_view_.get(); }
+  const views::View* tab_overlay_view() const {
+    return tab_overlay_view_.get();
+  }
 
   // Returns if this browser view will use immersive fullscreen mode, based
   // on the state of the two relevant base::Features, as well as the type of
@@ -269,6 +291,10 @@ class BrowserView : public BrowserWindow,
   // Accessor for the contents and devtools WebViews.
   ContentsWebView* contents_web_view() { return contents_web_view_; }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::BorderView* glic_border() const { return glic_border_; }
+#endif
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -401,6 +427,9 @@ class BrowserView : public BrowserWindow,
   // Returns true when an app's effective display mode is
   // window-controls-overlay.
   bool AppUsesWindowControlsOverlay() const;
+
+  // Returns true when an app's effective display mode is tabbed.
+  bool AppUsesTabbed() const;
 
   // Returns true when an app's effective display mode is borderless.
   bool AppUsesBorderlessMode() const;
@@ -800,12 +829,10 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
+  using BrowserWindow::CreateTabSearchBubble;
   void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kNone,
-      tab_search::mojom::TabOrganizationFeature organization_feature =
-          tab_search::mojom::TabOrganizationFeature::kNone) override;
-  // Closes the tab search bubble if open for the given browser instance.
+      tab_search::mojom::TabSearchSection section,
+      tab_search::mojom::TabOrganizationFeature organization_feature) override;
   void CloseTabSearchBubble() override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -887,11 +914,6 @@ class BrowserView : public BrowserWindow,
   // Shared implementation by cut, copy and paste.
   void CutCopyPaste(int command_id);
 
-  // Toggles the look and feel of the browser. If we are in the standard view
-  // and this function is called we will swap the layout to the compact version.
-  // Vice versa if we start in compact mode.
-  void ToggleCompactModeUI();
-
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
   // tab navigations and need to give users a visual clue as to what tabs are
@@ -902,7 +924,8 @@ class BrowserView : public BrowserWindow,
   void MaybeInitializeWebUITabStrip();
 
   // Callback for the loading animation(s) associated with this view.
-  void LoadingAnimationCallback();
+  void LoadingAnimationTimerCallback();
+  void LoadingAnimationCallback(base::TimeTicks timestamp);
 
 #if BUILDFLAG(IS_WIN)
   // Creates the JumpList.
@@ -977,8 +1000,7 @@ class BrowserView : public BrowserWindow,
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, |display_id| is the display's id;
   // otherwise, display::kInvalidDisplayId indicates no display is specified.
-  void ProcessFullscreen(bool fullscreen,
-                         int64_t display_id);
+  void ProcessFullscreen(bool fullscreen, int64_t display_id);
 
   // Request the underlying platform to make the window fullscreen.
   void RequestFullscreen(bool fullscreen, int64_t display_id);
@@ -1055,11 +1077,6 @@ class BrowserView : public BrowserWindow,
   void MaybeShowExperimentalAIIPH();
 
   void UpdateWindowControlsOverlayEnabled();
-
-  // `window.setResizable(bool)` API (part of Additional Windowing Controls)
-  // can block the use of APIs resizing the window, such as `resizeTo` and
-  // `resizeBy`. window.moveTo | window.moveBy should not be blocked.
-  bool CanSetBounds(const gfx::Rect& new_bounds);
 
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
@@ -1202,6 +1219,11 @@ class BrowserView : public BrowserWindow,
   // The view that contains the selected WebContents.
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
 
+  // It draws a border around the web contents area, on top of the
+  // `contents_web_view_`. Null if the feature isn't enabled, or the platform
+  // isn't supported.
+  raw_ptr<glic::BorderView> glic_border_ = nullptr;
+
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
 
@@ -1260,13 +1282,16 @@ class BrowserView : public BrowserWindow,
   // Kiosk session.
   bool force_fullscreen_ = false;
 
+  // The runner used for displaying tab-loading animations.
+  std::unique_ptr<gfx::AnimationRunner> loading_animation_;
+
   // The timer used to update frames for tab-loading animations.
   base::RepeatingTimer loading_animation_timer_;
 
   // Closure invoked when the state of the loading animation changes.
   base::OnceClosure loading_animation_state_change_closure_;
 
-  // Start timestamp for all throbbers. Set when |loading_animation_timer_|
+  // Start timestamp for all throbbers. Set when the loading animation
   // starts and used for all consecutive tabs (while any are loading) to keep
   // throbbers in sync.
   base::TimeTicks loading_animation_start_;

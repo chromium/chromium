@@ -13,10 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/test_payment_app.h"
@@ -229,11 +229,7 @@ TEST_F(PaymentResponseHelperTest,
                                test_address(), GetWeakPtr());
 
   // Check that the phone was formatted.
-  EXPECT_EQ(base::FeatureList::IsEnabled(
-                autofill::features::kAutofillInferCountryCallingCode)
-                ? "+15151231234"
-                : "5151231234",
-            response()->payer->phone.value());
+  EXPECT_EQ("+15151231234", response()->payer->phone.value());
 }
 
 }  // namespace payments

@@ -17,7 +17,8 @@ enum class IOSDockingPromoAction : int {
   kGotIt = 1,
   kRemindMeLater = 2,
   kDismissViaSwipe = 3,
-  kMaxValue = kDismissViaSwipe,
+  kDismissViaNoThanks = 4,
+  kMaxValue = kDismissViaNoThanks,
 };
 
 // Record Docking Promo `action` metric in the histogram

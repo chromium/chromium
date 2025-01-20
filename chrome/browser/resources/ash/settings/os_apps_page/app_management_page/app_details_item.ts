@@ -113,11 +113,9 @@ export class AppManagementAppDetailsItem extends
       case AppType.kArc:
         return this.i18n('appManagementAppDetailsTypeAndroid' + suffix);
       case AppType.kChromeApp:
-      case AppType.kStandaloneBrowserChromeApp:
         return this.i18n('appManagementAppDetailsTypeChrome' + suffix);
       case AppType.kWeb:
       case AppType.kExtension:
-      case AppType.kStandaloneBrowserExtension:
         return this.i18n('appManagementAppDetailsTypeWeb' + suffix);
       default:
         console.error('App type not handled by app management.');

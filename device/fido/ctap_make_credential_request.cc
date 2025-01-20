@@ -58,9 +58,9 @@ std::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           kClientDataHashLength) {
     return std::nullopt;
   }
-  base::span<const uint8_t, kClientDataHashLength> client_data_hash(
-      client_data_hash_it->second.GetBytestring().data(),
-      kClientDataHashLength);
+  auto client_data_hash =
+      base::span(client_data_hash_it->second.GetBytestring())
+          .first<kClientDataHashLength>();
 
   const auto rp_entity_it = request_map.find(cbor::Value(2));
   if (rp_entity_it == request_map.end() || !rp_entity_it->second.is_map())

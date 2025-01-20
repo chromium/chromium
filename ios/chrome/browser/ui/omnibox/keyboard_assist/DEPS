@@ -1,9 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/lens",
-]
-
-specific_include_rules = {
-  "^omnibox_keyboard_accessory_view.mm": [
-    "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
-  ],
-}

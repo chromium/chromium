@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+[Extensible]
+enum WallpaperLayout {
+  [Default] kNone = 0,
+  kStretch = 1,
+  kCenter = 2,
+  kCenterCropped = 3,
+};
+
+// SetWallpaperResult is used internally by ash-chrome.
+union SetWallpaperResult {
+  // On success, the thumbnail data of the wallpaper image is returned.
+  array<uint8> thumbnail_data;
+  // On failure, an error message is returned.
+  string error_message;
+};
+
+// WallpaperSettings is used internally by ash-chrome.
+[Uuid="a2940756-55ef-4fc7-af10-f74a5bba6716"]
+struct WallpaperSettings {
+ array<uint8> data@0;      // The jpeg or png encoded wallpaper image.
+ WallpaperLayout layout@1; // Layout of the wallpaper on the desktop.
+ string filename@2;        // The file name of the saved wallpaper.
+};

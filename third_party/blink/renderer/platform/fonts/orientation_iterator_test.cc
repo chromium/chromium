@@ -55,11 +55,8 @@ class OrientationIteratorTest : public testing::Test {
   }
 };
 
-// TODO(esprehn): WTF::Vector should allow initialization from a literal.
-#define CHECK_ORIENTATION(...)                                       \
-  static const OrientationTestRun kRunsArray[] = __VA_ARGS__;        \
-  Vector<OrientationTestRun> runs;                                   \
-  runs.Append(kRunsArray, sizeof(kRunsArray) / sizeof(*kRunsArray)); \
+#define CHECK_ORIENTATION(...)                   \
+  Vector<OrientationTestRun> runs = __VA_ARGS__; \
   CheckRuns(runs);
 
 TEST_F(OrientationIteratorTest, Empty) {

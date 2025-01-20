@@ -66,6 +66,7 @@ interface Animation : EventTarget
     getter oncancel
     getter onfinish
     getter onremove
+    getter overallProgress
     getter pending
     getter playState
     getter playbackRate
@@ -117,6 +118,16 @@ interface AnimationTimeline
     getter currentTime
     getter duration
     method constructor
+interface AsyncDisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.asyncDispose)
+    method adopt
+    method constructor
+    method defer
+    method disposeAsync
+    method move
+    method use
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -451,6 +462,21 @@ interface ByteLengthQueuingStrategy
 interface CDATASection : Text
     attribute @@toStringTag
     method constructor
+interface CSPViolationReportBody : ReportBody
+    attribute @@toStringTag
+    getter blockedURL
+    getter columnNumber
+    getter disposition
+    getter documentURL
+    getter effectiveDirective
+    getter lineNumber
+    getter originalPolicy
+    getter referrer
+    getter sample
+    getter sourceFile
+    getter statusCode
+    method constructor
+    method toJSON
 interface CSSAnimation : Animation
     attribute @@toStringTag
     getter animationName
@@ -493,6 +519,17 @@ interface CSSFontFaceRule : CSSRule
     attribute @@toStringTag
     getter style
     method constructor
+interface CSSFontFeatureValuesRule : CSSRule
+    attribute @@toStringTag
+    getter annotation
+    getter characterVariant
+    getter fontFamily
+    getter ornaments
+    getter styleset
+    getter stylistic
+    getter swash
+    method constructor
+    setter fontFamily
 interface CSSFontPaletteValuesRule : CSSRule
     attribute @@toStringTag
     getter basePalette
@@ -1622,6 +1659,16 @@ interface DevicePosture : EventTarget
     getter type
     method constructor
     setter onchange
+interface DisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.dispose)
+    method adopt
+    method constructor
+    method defer
+    method dispose
+    method move
+    method use
 interface Document : Node
     static method parseHTMLUnsafe
     attribute @@toStringTag
@@ -1857,6 +1904,7 @@ interface Document : Node
     method hasStorageAccess
     method hasUnpartitionedCookieAccess
     method importNode
+    method moveBefore
     method open
     method prepend
     method queryCommandEnabled
@@ -2021,6 +2069,7 @@ interface DocumentFragment : Node
     method append
     method constructor
     method getElementById
+    method moveBefore
     method prepend
     method querySelector
     method querySelectorAll
@@ -2201,6 +2250,7 @@ interface Element : Node
     method insertAdjacentHTML
     method insertAdjacentText
     method matches
+    method moveBefore
     method prepend
     method querySelector
     method querySelectorAll
@@ -2573,6 +2623,11 @@ interface FileSystemHandle
     method queryPermission
     method remove
     method requestPermission
+interface FileSystemObserver
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
     getter mode
@@ -3140,6 +3195,7 @@ interface HTMLAnchorElement : HTMLElement
 interface HTMLAreaElement : HTMLElement
     attribute @@toStringTag
     getter alt
+    getter attributionSrc
     getter coords
     getter download
     getter hash
@@ -3163,6 +3219,7 @@ interface HTMLAreaElement : HTMLElement
     method constructor
     method toString
     setter alt
+    setter attributionSrc
     setter coords
     setter download
     setter hash
@@ -3874,6 +3931,7 @@ interface HTMLImageElement : HTMLElement
     getter alt
     getter attributionSrc
     getter border
+    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -3904,6 +3962,7 @@ interface HTMLImageElement : HTMLElement
     setter alt
     setter attributionSrc
     setter border
+    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority
@@ -4983,6 +5042,7 @@ interface Image
     getter alt
     getter attributionSrc
     getter border
+    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -5013,6 +5073,7 @@ interface Image
     setter alt
     setter attributionSrc
     setter border
+    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority
@@ -6604,6 +6665,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter domainLookupStart
     getter encodedBodySize
     getter fetchStart
+    getter finalResponseHeadersStart
     getter firstInterimResponseStart
     getter initiatorType
     getter nextHopProtocol
@@ -6838,6 +6900,7 @@ interface ProtectedAudience
     method constructor
     method queryFeatureSupport
 interface PublicKeyCredential : Credential
+    static method getClientCapabilities
     static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable
     static method parseCreationOptionsFromJSON
@@ -7256,6 +7319,10 @@ interface RemotePlayback : EventTarget
     setter onconnect
     setter onconnecting
     setter ondisconnect
+interface ReportBody
+    attribute @@toStringTag
+    method constructor
+    method toJSON
 interface ReportingObserver
     attribute @@toStringTag
     method constructor
@@ -8946,6 +9013,10 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
+interface SuppressedError : Error
+    attribute message
+    attribute name
+    method constructor
 interface SyncManager
     attribute @@toStringTag
     method constructor

@@ -8,8 +8,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
 // static
-PinnedTabService* PinnedTabServiceFactory::GetForProfile(
-    Profile* profile) {
+PinnedTabService* PinnedTabServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PinnedTabService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

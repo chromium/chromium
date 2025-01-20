@@ -11,8 +11,8 @@ static_library("browser") {
     "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",
     "facilitated_payments_driver.h",
-    "facilitated_payments_manager.cc",
-    "facilitated_payments_manager.h",
+    "model/secure_payload.cc",
+    "model/secure_payload.h",
     "network_api/facilitated_payments_initiate_payment_request.cc",
     "network_api/facilitated_payments_initiate_payment_request.h",
     "network_api/facilitated_payments_initiate_payment_request_details.cc",
@@ -21,6 +21,8 @@ static_library("browser") {
     "network_api/facilitated_payments_initiate_payment_response_details.h",
     "network_api/facilitated_payments_network_interface.cc",
     "network_api/facilitated_payments_network_interface.h",
+    "pix_manager.cc",
+    "pix_manager.h",
   ]
 
   public_deps = [
@@ -28,9 +30,8 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/metrics",
-    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
-    "//components/facilitated_payments/core/ui_utils",
-    "//components/facilitated_payments/core/util",
+    "//components/facilitated_payments/core/utils",
+    "//components/facilitated_payments/core/validation",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//services/data_decoder/public/cpp",
@@ -44,10 +45,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ewallet_manager_unittest.cc",
-    "facilitated_payments_manager_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
+    "pix_manager_unittest.cc",
   ]
 
   deps = [
@@ -55,7 +56,7 @@ source_set("unit_tests") {
     ":test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
-    "//components/facilitated_payments/core/ui_utils",
+    "//components/facilitated_payments/core/utils",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/signin/public/identity_manager",
@@ -81,6 +82,7 @@ static_library("test_support") {
 
   deps = [
     ":browser",
+    "//components/facilitated_payments/core/utils",
     "//testing/gmock:gmock",
   ]
 }

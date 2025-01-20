@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_chip_loader_view.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
+#include "ash/wm/overview/birch/coral_chip_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
@@ -302,11 +303,7 @@ void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
   Clear();
 
   for (auto item : items) {
-    chips_.emplace_back(
-        primary_row_->AddChildView(views::Builder<BirchChipButton>()
-                                       .Init(item)
-                                       .SetPreferredSize(chip_size_)
-                                       .Build()));
+    chips_.emplace_back(primary_row_->AddChildView(CreateChipForItem(item)));
   }
 
   RelayoutReason reason = RelayoutReason::kAddRemoveChip;
@@ -339,11 +336,7 @@ void BirchBarView::AddChip(BirchItem* item) {
     NOTREACHED() << "The number of birch chips reaches the limit of 4";
   }
 
-  auto chip = views::Builder<BirchChipButton>()
-                  .Init(item)
-                  .SetPreferredSize(chip_size_)
-                  .Build();
-  AttachChip(std::move(chip));
+  AttachChip(CreateChipForItem(item));
 }
 
 void BirchBarView::RemoveChip(BirchItem* removed_item,
@@ -355,11 +348,6 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
 
   if (iter == chips_.end()) {
     return;
-  }
-
-  // The privacy nudge is attached to the first chip. Hide the nudge if exists.
-  if (std::distance(chips_.begin(), iter) == 0) {
-    Shell::Get()->birch_privacy_nudge_controller()->MaybeHideNudge();
   }
 
   BirchChipButtonBase* removing_chip = *iter;
@@ -374,10 +362,7 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
 
   // Create a new chip for the attached item.
   if (attached_item) {
-    chips_to_attach_.push_back(views::Builder<BirchChipButton>()
-                                   .Init(attached_item)
-                                   .SetPreferredSize(chip_size_)
-                                   .Build());
+    chips_to_attach_.push_back(CreateChipForItem(attached_item));
   }
 
   // Apply fading-out animation to the chip being removed.
@@ -403,17 +388,6 @@ void BirchBarView::UpdateChip(BirchItem* item) {
   (*iter)->Init(item);
 }
 
-void BirchBarView::UpdateChipTitle(BirchItem* item) {
-  auto iter = std::find_if(
-      chips_.begin(), chips_.end(),
-      [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
-  if (iter == chips_.end()) {
-    return;
-  }
-
-  views::AsViewClass<BirchChipButton>(*iter)->UpdateTitle();
-}
-
 int BirchBarView::GetMaximumHeight() const {
   return GetExpectedLayoutType(kMaxChipsNum) == LayoutType::kOneByFour
              ? kChipHeight
@@ -433,6 +407,21 @@ bool BirchBarView::IsAnimating() {
   }
 
   return false;
+}
+
+std::unique_ptr<BirchChipButtonBase> BirchBarView::CreateChipForItem(
+    BirchItem* item) {
+  CHECK(!!item);
+  std::unique_ptr<BirchChipButtonBase> chip =
+      item->GetType() == BirchItemType::kCoral
+          ? std::make_unique<CoralChipButton>()
+          : std::make_unique<BirchChipButton>();
+
+  // Setting preferred size ahead since the preferred size may be needed during
+  // initialization.
+  chip->SetPreferredSize(chip_size_);
+  chip->Init(item);
+  return chip;
 }
 
 void BirchBarView::AttachChip(std::unique_ptr<BirchChipButtonBase> chip) {

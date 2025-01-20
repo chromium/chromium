@@ -56,8 +56,9 @@ bool IsKnownEnumValue(FlowType flow_type) {
 std::u16string GetGivenNameIfIsChild() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  if (!user || !user->IsChild())
+  if (!user || !user->IsChild()) {
     return std::u16string();
+  }
   return user->GetGivenName();
 }
 
@@ -67,10 +68,12 @@ AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler(bool is_oobe)
     : BaseScreenHandler(kScreenId), is_oobe_(is_oobe) {}
 
 AssistantOptInFlowScreenHandler::~AssistantOptInFlowScreenHandler() {
-  if (assistant::AssistantSettings::Get() && voice_match_enrollment_started_)
+  if (assistant::AssistantSettings::Get() && voice_match_enrollment_started_) {
     StopSpeakerIdEnrollment();
-  if (AssistantState::Get())
+  }
+  if (AssistantState::Get()) {
     AssistantState::Get()->RemoveObserver(this);
+  }
 }
 
 void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
@@ -311,8 +314,9 @@ void AssistantOptInFlowScreenHandler::OnDialogClosed() {
 
 void AssistantOptInFlowScreenHandler::OnAssistantSettingsEnabled(bool enabled) {
   // Close the opt-in screen is the Assistant is disabled.
-  if (!enabled)
+  if (!enabled) {
     HandleFlowFinished();
+  }
 }
 
 void AssistantOptInFlowScreenHandler::OnAssistantStatusChanged(
@@ -324,8 +328,9 @@ void AssistantOptInFlowScreenHandler::OnAssistantStatusChanged(
 }
 
 void AssistantOptInFlowScreenHandler::SendGetSettingsRequest() {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   if (AssistantState::Get()->assistant_status() ==
       assistant::AssistantStatus::NOT_READY) {
@@ -497,8 +502,9 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.
-  if (skip_activity_control)
+  if (skip_activity_control) {
     ShowNextScreen();
+  }
 }
 
 void AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse(
@@ -588,8 +594,9 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
         !voice_match_enrollment_error_) {
       prefs->SetBoolean(assistant::prefs::kAssistantHotwordEnabled, false);
     }
-    if (voice_match_enrollment_started_)
+    if (voice_match_enrollment_started_) {
       StopSpeakerIdEnrollment();
+    }
     ShowNextScreen();
   } else if (action == kRecordPressed) {
     if (!prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled)) {
@@ -602,8 +609,9 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
     assistant::AssistantSettings::Get()->StartSpeakerIdEnrollment(
         flow_type_ == FlowType::kSpeakerIdRetrain, weak_factory_.GetWeakPtr());
   } else if (action == kReloadRequested) {
-    if (voice_match_enrollment_started_)
+    if (voice_match_enrollment_started_) {
       StopSpeakerIdEnrollment();
+    }
   }
 }
 
@@ -648,8 +656,9 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
   // Allow JavaScript. This is necessary for the in-session WebUI and is is not
   // triggered in the OOBE flow, where `screen` objects are associated with
   // handlers. TODO(crbug.com/1309022) - Separate in-session and OOBE handlers.
-  if (!is_oobe_)
+  if (!is_oobe_) {
     AllowJavascript();
+  }
 
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   // Do not skip the flow if the OOBE debug overlay is present. Otherwise it is
@@ -668,18 +677,21 @@ void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
   DCHECK(IsKnownEnumValue(static_cast<FlowType>(flow_type)));
   flow_type_ = static_cast<FlowType>(flow_type);
 
-  if (flow_type_ == FlowType::kConsentFlow)
+  if (flow_type_ == FlowType::kConsentFlow) {
     SendGetSettingsRequest();
+  }
 }
 
 bool AssistantOptInFlowScreenHandler::DeviceHasBattery() {
   // Assume that the device has a battery if we can't determine otherwise.
-  if (!chromeos::PowerManagerClient::Get())
+  if (!chromeos::PowerManagerClient::Get()) {
     return true;
+  }
 
   auto status = chromeos::PowerManagerClient::Get()->GetLastStatus();
-  if (!status.has_value() || !status->has_battery_state())
+  if (!status.has_value() || !status->has_battery_state()) {
     return true;
+  }
 
   return status->battery_state() !=
          power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;

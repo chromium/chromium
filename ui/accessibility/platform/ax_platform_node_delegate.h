@@ -200,8 +200,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // field.
   virtual std::u16string GetValueForControl() const;
 
-  // See `AXNode::GetUnignoredSelection`.
+  // Gets the unignored selection from the accessibility tree, meaning the
+  // selection whose endpoints are on unignored nodes. (An "ignored" node is a
+  // node that is not exposed to platform APIs: See `IsIgnored`.)
   virtual const AXSelection GetUnignoredSelection() const;
+  // Gets an unignored selection but the endpoints are adjusted so that they
+  // never fall on text objects, but are moved to the text nodes' parents
+  // instead, for compatibility with Text/Hypertext interfaces uses for IA2/ATK.
+  virtual const AXSelection GetHypertextSelection() const;
 
   // Creates a text position rooted at this object if it's a leaf node, or a
   // tree position otherwise.
@@ -387,10 +393,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // clipping behavior is set to clipped, clipping is applied. If an offscreen
   // result address is provided, it will be populated depending on whether the
   // returned bounding box is onscreen or offscreen.
-  virtual gfx::Rect GetBoundsRect(
-      const AXCoordinateSystem coordinate_system,
-      const AXClippingBehavior clipping_behavior,
-      AXOffscreenResult* offscreen_result = nullptr) const;
+  virtual gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                                  const AXClippingBehavior clipping_behavior,
+                                  AXOffscreenResult* offscreen_result) const;
+  gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                          const AXClippingBehavior clipping_behavior) const {
+    return GetBoundsRect(coordinate_system, clipping_behavior, nullptr);
+  }
 
   // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
   gfx::Rect GetClippedScreenBoundsRect(
@@ -562,6 +571,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const;
+  virtual std::vector<int32_t> GetRowNodeIds() const;
+  virtual std::vector<AXNodeID> GetTableUniqueCellIds() const;
   virtual AXPlatformNode* GetTableCaption() const;
 
   //

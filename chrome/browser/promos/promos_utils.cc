@@ -173,10 +173,9 @@ bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
 
 // Checks whether promos in general can currently be shown.
 bool CanShowPromos() {
-  // Don't show the promo if the local state exists and `kPromotionsEnabled` is
-  // false (likely overridden by policy).
-  // TODO(crbug.com/372209715): Evaluate whether this needs to be behind an
-  // ifdef.
+// Don't show the promo if the local state exists and `kPromotionsEnabled` is
+// false (likely overridden by policy). `kPromotionsEnabled` does not exist on
+// Android.
 #if !BUILDFLAG(IS_ANDROID)
   PrefService* local_state = g_browser_process->local_state();
   if (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled)) {
@@ -237,10 +236,9 @@ IOSPromoPrefsConfig::~IOSPromoPrefsConfig() = default;
 IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
   switch (promo_type) {
     case IOSPromoType::kPassword:
-      // This feature isn't defined without the following buildflags.
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
       promo_impressions_counter_pref_name =
           promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter;
       promo_opt_out_pref_name = promos_prefs::kDesktopToiOSPasswordPromoOptOut;
@@ -248,10 +246,9 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
           promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp;
       break;
     case IOSPromoType::kAddress:
-      // This feature isn't defined without the following buildflags.
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSAddressPromoDesktopFeature;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
       promo_impressions_counter_pref_name =
           promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter;
       promo_opt_out_pref_name = promos_prefs::kDesktopToiOSAddressPromoOptOut;
@@ -259,10 +256,9 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp;
       break;
     case IOSPromoType::kPayment:
-      // This feature isn't defined without the following buildflags.
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSPaymentPromoDesktopFeature;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
       promo_impressions_counter_pref_name =
           promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter;
       promo_opt_out_pref_name = promos_prefs::kDesktopToiOSPaymentPromoOptOut;

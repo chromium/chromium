@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
@@ -611,6 +612,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
         NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
+  }
+
+  if (state &&
+      state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                   storage_partition) &&
+      !MustDisableSiteEngagementHeuristic(profile)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kHttpsEnforcedOnHostname);
   }
 
   // If the request URL is in the set of URLs that HttpsUpgradesInterceptor has

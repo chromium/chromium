@@ -38,6 +38,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace growth {
@@ -948,10 +949,10 @@ bool CampaignsMatcher::MatchMinorUser(
       CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
       return false;
     }
-    std::string gaia_id = user_manager::UserManager::Get()
-                              ->GetActiveUser()
-                              ->GetAccountId()
-                              .GetGaiaId();
+    GaiaId gaia_id = user_manager::UserManager::Get()
+                         ->GetActiveUser()
+                         ->GetAccountId()
+                         .GetGaiaId();
     const AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
     // TODO: b/333896450 - find a better signal for minor mode.

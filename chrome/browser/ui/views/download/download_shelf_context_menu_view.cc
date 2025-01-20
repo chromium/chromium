@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+
+#include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_shelf_context_menu.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
-#include "components/download/public/common/download_item.h"
-#include "content/public/browser/page_navigator.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_types.h"
 
 DownloadShelfContextMenuView::DownloadShelfContextMenuView(
     DownloadItemView* download_item_view)
@@ -59,10 +60,11 @@ void DownloadShelfContextMenuView::Run(
 
   // The menu's alignment is determined based on the UI layout.
   Position position;
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     position = Position::kTopRight;
-  else
+  } else {
     position = Position::kTopLeft;
+  }
 
   menu_runner_->RunMenuAt(parent_widget, nullptr, rect, position, source_type);
 }
@@ -77,15 +79,17 @@ void DownloadShelfContextMenuView::OnMenuClosed(
   close_time_ = base::TimeTicks::Now();
 
   // This must be run before clearing |menu_runner_| who owns the reference.
-  if (!on_menu_closed_callback.is_null())
+  if (!on_menu_closed_callback.is_null()) {
     on_menu_closed_callback.Run();
+  }
 
   menu_runner_.reset();
 }
 
 void DownloadShelfContextMenuView::OnMenuWillShow(ui::SimpleMenuModel* source) {
-  if (on_menu_will_show_callback_)
+  if (on_menu_will_show_callback_) {
     std::move(on_menu_will_show_callback_).Run();
+  }
 }
 
 void DownloadShelfContextMenuView::ExecuteCommand(int command_id,

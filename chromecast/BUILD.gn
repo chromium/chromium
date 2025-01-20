@@ -543,7 +543,7 @@ if (!is_fuchsia) {
     sources = [
       "$root_gen_dir/chromecast/app/shell_resources.pak",
       "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
-      "$root_gen_dir/components/metrics/metrics_url_constants.pak",
+      "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/gpu_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -552,10 +552,10 @@ if (!is_fuchsia) {
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
       "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-      "$root_gen_dir/ui/resources/webui_resources.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
       "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
       "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+      "$root_gen_dir/ui/webui/resources/webui_resources.pak",
     ]
 
     output = "$root_out_dir/assets/cast_shell.pak"
@@ -563,7 +563,7 @@ if (!is_fuchsia) {
     deps = [
       "//chromecast/app:resources",
       "//components/cast/named_message_port_connector:resources",
-      "//components/metrics:url_constants",
+      "//components/metrics:server_urls_grd",
       "//content:content_resources",
       "//content/browser/resources/gpu:resources",
       "//mojo/public/js:resources",
@@ -573,6 +573,7 @@ if (!is_fuchsia) {
       "//third_party/blink/public/strings",
       "//ui/resources",
       "//ui/strings",
+      "//ui/webui/resources",
     ]
   }
 

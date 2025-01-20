@@ -107,8 +107,7 @@ std::vector<sk_sp<SkSurface>> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
       const auto& promise_texture = promise_textures_[plane];
       DCHECK(promise_texture);
       // External sampler is not supported with WriteAccess.
-      SkColorType sk_color_type = viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, format(), plane);
+      SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
       auto surface = SkSurfaces::WrapBackendTexture(
           gr_context, promise_texture->backendTexture(), surface_origin(),
           final_msaa_count, sk_color_type, color_space().ToSkColorSpace(),

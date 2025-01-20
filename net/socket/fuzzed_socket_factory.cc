@@ -71,7 +71,9 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   bool WasEverUsed() const override { return false; }
 
-  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
+  NextProto GetNegotiatedProtocol() const override {
+    return NextProto::kProtoUnknown;
+  }
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
@@ -84,10 +86,8 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   // SSLSocket implementation:
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override {
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override {
     NOTREACHED();
   }
 

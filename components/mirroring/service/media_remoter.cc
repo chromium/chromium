@@ -80,8 +80,9 @@ void MediaRemoter::StartRpcMessagingInternal(
 }
 
 void MediaRemoter::OnMirroringResumed(bool is_tab_switching) {
-  if (state_ == REMOTING_DISABLED)
+  if (state_ == REMOTING_DISABLED) {
     return;
+  }
   DCHECK(state_ == STOPPING_REMOTING ||
          (state_ == MIRRORING && is_tab_switching));
 
@@ -158,8 +159,9 @@ void MediaRemoter::StartDataStreams(
         audio_sender_receiver,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
         video_sender_receiver) {
-  if (state_ != REMOTING_STARTED)
+  if (state_ != REMOTING_STARTED) {
     return;  // Stop() was called before.
+  }
 
   DCHECK(cast_environment_);
   DCHECK(openscreen_audio_sender_ || openscreen_video_sender_);
@@ -186,8 +188,9 @@ void MediaRemoter::StartDataStreams(
 }
 
 void MediaRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
-  if (state_ != REMOTING_STARTED)
+  if (state_ != REMOTING_STARTED) {
     return;
+  }
   rpc_dispatcher_->SendOutboundMessage(message);
 }
 
@@ -198,8 +201,9 @@ void MediaRemoter::EstimateTransmissionCapacity(
 }
 
 void MediaRemoter::OnRemotingDataStreamError() {
-  if (state_ != REMOTING_STARTED)
+  if (state_ != REMOTING_STARTED) {
     return;
+  }
   Stop(media::mojom::RemotingStopReason::DATA_SEND_FAILED);
   state_ = REMOTING_DISABLED;
 }

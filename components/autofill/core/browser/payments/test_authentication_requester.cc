@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 
 namespace autofill {
 
@@ -76,18 +77,14 @@ void TestAuthenticationRequester::OnOtpAuthenticationComplete(
 void TestAuthenticationRequester::OnRiskBasedAuthenticationResponseReceived(
     const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
         response) {
-  risk_based_authentication_response_ = response;
-}
-
-void TestAuthenticationRequester::
-    OnVirtualCardRiskBasedAuthenticationResponseReceived(
-        payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        const payments::UnmaskResponseDetails& response_details) {
   did_succeed_ =
-      (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
-  if (*did_succeed_) {
-    response_details_ = response_details;
-  }
+      (response.result ==
+       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+           Result::kNoAuthenticationRequired) ||
+      (response.result ==
+       CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+           Result::kAuthenticationRequired);
+  risk_based_authentication_response_ = response;
 }
 
 }  // namespace autofill

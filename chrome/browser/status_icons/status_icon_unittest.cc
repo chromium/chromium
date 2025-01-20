@@ -18,7 +18,7 @@ class MockStatusIconObserver : public StatusIconObserver {
 // Define pure virtual functions so we can test base class functionality.
 class TestStatusIcon : public StatusIcon {
  public:
-  TestStatusIcon() {}
+  TestStatusIcon() = default;
   void SetImage(const gfx::ImageSkia& image) override {}
   void SetToolTip(const std::u16string& tool_tip) override {}
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {}

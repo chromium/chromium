@@ -35,7 +35,7 @@ const std::string kHashPageAHash = kHashPageA + "#asdf";
 const std::string kHashPageB =
     "/extensions/api_test/page_action/hash_change/test_page_B.html";
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class PageActionBrowserTest : public ExtensionBrowserTest,
                               public testing::WithParamInterface<ContextType> {

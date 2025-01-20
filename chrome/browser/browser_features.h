@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
 
 #if BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kDbusSecretPortal);
+BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProvider);
 #endif
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
@@ -90,10 +91,6 @@ extern base::FeatureParam<bool>
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kReadAnythingPermanentAccessibility);
 #endif
@@ -108,6 +105,7 @@ BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
 
 #if BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
+BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
@@ -116,10 +114,6 @@ BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kWebUIJSErrorReportingExtended);
 #endif
 
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);

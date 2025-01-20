@@ -192,7 +192,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   const Mailbox& mailbox() const { return backing()->mailbox(); }
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) {
     backing()->Update(std::move(in_fence));
-    backing()->OnWriteSucceeded();
   }
   void SetPurgeable(bool purgeable) { backing()->SetPurgeable(purgeable); }
   bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
@@ -212,6 +211,9 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   void RegisterImageFactory(SharedImageFactory* factory) {
     DCHECK(is_primary_);
     backing()->RegisterImageFactory(factory);
+  }
+  void SetSharedImagePoolId(SharedImagePoolId pool_id) {
+    backing()->SetSharedImagePoolId(std::move(pool_id));
   }
 
  private:

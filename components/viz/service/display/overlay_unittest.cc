@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -617,7 +613,6 @@ TextureDrawQuad* CreateCandidateQuadAt(
     SurfaceId test_surface_id = SurfaceId()) {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
-  bool flipped = false;
   bool nearest_neighbor = false;
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
@@ -627,9 +622,8 @@ TextureDrawQuad* CreateCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, flipped,
-                       nearest_neighbor, /*secure_output_only=*/false,
-                       protected_video_type);
+                       kUVBottomRight, SkColors::kTransparent, nearest_neighbor,
+                       /*secure_output_only=*/false, protected_video_type);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
   return overlay_quad;
@@ -703,7 +697,6 @@ TextureDrawQuad* CreateTransparentCandidateQuadAt(
     const gfx::Rect& rect) {
   bool needs_blending = true;
   bool premultiplied_alpha = false;
-  bool flipped = false;
   bool nearest_neighbor = false;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
@@ -714,8 +707,8 @@ TextureDrawQuad* CreateTransparentCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, flipped,
-                       nearest_neighbor, /*secure_output_only=*/false,
+                       kUVBottomRight, SkColors::kTransparent, nearest_neighbor,
+                       /*secure_output_only=*/false,
                        gfx::ProtectedVideoType::kClear);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
@@ -744,7 +737,6 @@ TextureDrawQuad* CreateQuadWithRoundedDisplayMasksAt(
     const RoundedDisplayMasksInfo& rounded_display_masks_info) {
   bool needs_blending = true;
   bool premultiplied_alpha = true;
-  bool flipped = false;
   bool nearest_neighbor = false;
   gfx::Size resource_size_in_pixels = rect.size();
   ResourceId resource_id = CreateResource(
@@ -752,11 +744,11 @@ TextureDrawQuad* CreateQuadWithRoundedDisplayMasksAt(
       resource_size_in_pixels, is_overlay_candidate);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  overlay_quad->SetNew(
-      shared_quad_state, rect, rect, needs_blending, resource_id,
-      premultiplied_alpha, kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
-      flipped, nearest_neighbor,
-      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
+                       resource_id, premultiplied_alpha, kUVTopLeft,
+                       kUVBottomRight, SkColors::kTransparent, nearest_neighbor,
+                       /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
   overlay_quad->rounded_display_masks_info = rounded_display_masks_info;
 
   return overlay_quad;
@@ -1052,7 +1044,7 @@ TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1318,7 +1310,7 @@ TEST_F(SingleOverlayOnTopTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1699,7 +1691,7 @@ TEST_F(MultiSingleOnTopOverlayTest,
   EXPECT_EQ(1U, main_pass->quad_list.size());
 
   for (const auto& candidate : candidate_list) {
-    EXPECT_NE(candidate.resource_id, not_promoted_candidate->resource_id());
+    EXPECT_NE(candidate.resource_id, not_promoted_candidate->resource_id);
   }
 }
 
@@ -1721,7 +1713,7 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
       kBigCandidateRect);
   AddExpectedRectToOverlayProcessor(gfx::RectF(kBigCandidateRect));
 
-  ResourceId resource_big = quad_big->resource_id();
+  ResourceId resource_big = quad_big->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1765,7 +1757,7 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kCandidateRect);
   AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRect));
-  ResourceId resource_a = quad_a->resource_id();
+  ResourceId resource_a = quad_a->resource_id;
 
   TextureDrawQuad* quad_b = CreateCandidateQuadAt(
       resource_provider_.get(), child_resource_provider_.get(),
@@ -1883,12 +1875,12 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     shared_quad_state_a->overlay_damage_index = 0;
     TextureDrawQuad* quad_small =
         pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-    quad_small->SetNew(
-        shared_quad_state_a, kCandidateRectA, kCandidateRectA,
-        false /*needs_blending*/, resource_id_a, false /*premultiplied_alpha*/,
-        kUVTopLeft, kUVBottomRight, SkColors::kTransparent, false /*flipped*/,
-        false /*nearest_neighbor*/, false /*secure_output_only*/,
-        gfx::ProtectedVideoType::kClear);
+    quad_small->SetNew(shared_quad_state_a, kCandidateRectA, kCandidateRectA,
+                       false /*needs_blending*/, resource_id_a,
+                       false /*premultiplied_alpha*/, kUVTopLeft,
+                       kUVBottomRight, SkColors::kTransparent,
+                       false /*nearest_neighbor*/, false /*secure_output_only*/,
+                       gfx::ProtectedVideoType::kClear);
     quad_small->set_resource_size_in_pixels(kCandidateRectA.size());
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
 
@@ -1901,8 +1893,8 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
                      false /*needs_blending*/, resource_id_b,
                      false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                     SkColors::kTransparent, false /*flipped*/,
-                     false /*nearest_neighbor*/, false /*secure_output_only*/,
+                     SkColors::kTransparent, false /*nearest_neighbor*/,
+                     false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
     quad_big->set_resource_size_in_pixels(kCandidateRectB.size());
 
@@ -1957,14 +1949,17 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
   constexpr int kCandidateSmall = 64;
   const gfx::Rect kOverlayDisplayRect = {10, 10, kCandidateSmall,
                                          kCandidateSmall};
-  const gfx::Rect kDamageRect[] = {
+  const auto kDamageRect = std::to_array<gfx::Rect>({
       gfx::Rect(10, 10, kCandidateSmall, kCandidateSmall),
       gfx::Rect(0, 10, kCandidateSmall, kCandidateSmall),
-      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall),
+  });
 
-  const gfx::Rect kExpectedDamage[] = {
-      gfx::Rect(), gfx::Rect(0, 10, 10, kCandidateSmall),
-      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
+      gfx::Rect(),
+      gfx::Rect(0, 10, 10, kCandidateSmall),
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall),
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kDamageRect); ++i) {
@@ -2016,11 +2011,11 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayFirstFrameDamage) {
   constexpr int kCandidateSmall = 64;
   const gfx::Rect kOverlayDisplayRect(10, 10, kCandidateSmall, kCandidateSmall);
 
-  const gfx::Rect kExpectedDamage[] = {
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
       kOverlayDisplayRect,
       gfx::Rect(),
       gfx::Rect(),
-  };
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
@@ -2068,12 +2063,14 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
   const gfx::Rect kInFrontDamage = {0, 0, 16, 16};
   const gfx::Rect kBehindOverlayDamage = {10, 10, 32, 32};
 
-  const gfx::Rect kExpectedDamage[] = {
-      kInFrontDamage, kInFrontDamage,
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
+      kInFrontDamage,
+      kInFrontDamage,
       // As the overlay transitions to transparent it must contribute damage.
       gfx::UnionRects(kInFrontDamage, kOverlayDisplayRect),
       // After the transition, the overlay itself doesn't contribute damage.
-      gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage)};
+      gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage),
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
@@ -3216,7 +3213,7 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
         pass->shared_quad_state_list.back(), pass->output_rect,
         pass->output_rect, false /*needs_blending*/, resource_id,
         false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-        SkColors::kTransparent, false /*flipped*/, false /*nearest_neighbor*/,
+        SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
     original_quad->set_resource_size_in_pixels(pass->output_rect.size());
 
@@ -3746,7 +3743,8 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonIdenticalConsecutiveUnderlays) {
 
 // Underlay damage can only be excluded if the previous frame's underlay exists.
 TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
-  bool has_fullscreen_candidate[] = {true, false, true, true, true, false};
+  auto has_fullscreen_candidate =
+      std::to_array<bool>({true, false, true, true, true, false});
 
   for (int i = 0; i < 3; ++i) {
     SCOPED_TRACE(i);
@@ -3799,8 +3797,18 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
 TEST_F(
     UnderlayTest,
     DamageNotExcludedForConsecutiveUnderlaysIfOneHasMaskFilterAndOtherDoesNot) {
-  constexpr bool kHasMaskFilter[] = {true, false, true,  false, true,
-                                     true, true,  false, false, false};
+  constexpr const auto kHasMaskFilter = std::to_array<bool>({
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+  });
 
   for (int i = 0; i < 10; ++i) {
     SCOPED_TRACE(i);
@@ -4051,7 +4059,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                                  std::log((config.max_num_frames_avg - 1.0f) /
                                           config.max_num_frames_avg)));
 
-  OverlayCandidateTemporalTracker tracker;
+  OverlayCandidateTemporalTracker tracker(config);
   int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
@@ -4061,37 +4069,37 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
-    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter));
     auto opaque_power_gain_60_full = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 1.0f, kDamageEpsilon);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(), 1.0f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_60_full, 0);
 
     // Test our hysteresis categorization of power by ensuring a single frame
     // drop does not change the end power categorization.
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_60_stutter = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     // A single frame drop even at 60fps should not change our power
     // categorization.
     EXPECT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
 
     wait_inactive_frames();
-    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter));
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_60_inactive = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_60_inactive, 0);
@@ -4101,27 +4109,27 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     // Insert single stutter frame here to avoid hysteresis boundary.
     wait_1_frame();
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_30_full = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 0.5f, kDamageEpsilon);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(), 0.5f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_30_full, 0);
     EXPECT_GT(opaque_power_gain_60_full, opaque_power_gain_30_full);
 
@@ -4130,22 +4138,22 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     wait_1_frame();
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
-    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
+    EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter));
     auto opaque_power_gain_30_stutter = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     EXPECT_EQ(opaque_power_gain_30_stutter, opaque_power_gain_30_full);
 
     wait_inactive_frames();
-    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
+    EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter));
+    tracker.AddRecord(frame_counter, kFullDamage,
+                      id_generator.GenerateNextId());
 
     auto opaque_power_gain_30_inactive = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
@@ -4155,11 +4163,11 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kAboveHighDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_high_damage = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
 
     EXPECT_GT(opaque_power_gain_high_damage, 0);
     EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
@@ -4167,11 +4175,11 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kBelowLowDamage,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     auto opaque_power_gain_low_damage = tracker.GetModeledPowerGain(
-        frame_counter, config, fake_display_area, kIsFullscreen);
+        frame_counter, fake_display_area, kIsFullscreen);
     EXPECT_LT(opaque_power_gain_low_damage, 0);
 
     // Test our mean damage ratio computations for our tracker.
@@ -4183,12 +4191,12 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
       float dynamic_damage_ratio = static_cast<float>(i) / avg_range_tracker;
       expected_mean += dynamic_damage_ratio;
       tracker.AddRecord(frame_counter, dynamic_damage_ratio,
-                        id_generator.GenerateNextId(), config);
+                        id_generator.GenerateNextId());
     }
 
     expected_mean = expected_mean / avg_range_tracker;
 
-    EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate(config));
+    EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate());
   }
 
   EXPECT_FALSE(tracker.IsAbsent());
@@ -4197,7 +4205,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   EXPECT_TRUE(tracker.IsAbsent());
 
   wait_1_frame();
-  tracker.AddRecord(frame_counter, 0.0f, id_generator.GenerateNextId(), config);
+  tracker.AddRecord(frame_counter, 0.0f, id_generator.GenerateNextId());
   EXPECT_FALSE(tracker.IsAbsent());
 
   // Tracker forced updates were added to support quads that change content but
@@ -4210,18 +4218,17 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
-                      config, true);
+                      true);
   }
-  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate());
 
   // Now test the false case for the force update param.
   for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
-    tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, config,
-                      false);
+    tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, false);
   }
   // The damage should remain unchanged.
-  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
+  EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate());
 }
 
 TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
@@ -4232,13 +4239,18 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
   // the third pass there is no overlay promotion, but the damage should be the
   // union of the damage_rect with CreateRenderPass's output_rect which is {0,
   // 0, 256, 256}. This is due to the demotion of the current overlay.
-  bool has_fullscreen_candidate[] = {true, true, false};
-  gfx::Rect damages[] = {gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 32, 32),
-                         gfx::Rect(0, 0, 312, 16)};
-  gfx::Rect expected_damages[] = {gfx::Rect(0, 0, 256, 256),
-                                  gfx::Rect(0, 0, 0, 0),
-                                  gfx::Rect(0, 0, 312, 256)};
-  size_t expected_candidate_size[] = {1, 1, 0};
+  auto has_fullscreen_candidate = std::to_array<bool>({true, true, false});
+  auto damages = std::to_array<gfx::Rect>({
+      gfx::Rect(0, 0, 32, 32),
+      gfx::Rect(0, 0, 32, 32),
+      gfx::Rect(0, 0, 312, 16),
+  });
+  auto expected_damages = std::to_array<gfx::Rect>({
+      gfx::Rect(0, 0, 256, 256),
+      gfx::Rect(0, 0, 0, 0),
+      gfx::Rect(0, 0, 312, 256),
+  });
+  auto expected_candidate_size = std::to_array<size_t>({1, 1, 0});
 
   for (size_t i = 0; i < std::size(expected_damages); ++i) {
     SCOPED_TRACE(i);
@@ -4998,19 +5010,23 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
   const int kCandidateSmall = 50;
   const int kCandidateLarge = 100;
-  const gfx::Rect kCandidateRects[] = {
+  const auto kCandidateRects = std::to_array<gfx::Rect>({
       gfx::Rect(0, 0, kCandidateSmall, kCandidateSmall),
       gfx::Rect(100, 100, kCandidateSmall, kCandidateSmall),
-      gfx::Rect(100, 100, kCandidateLarge, kCandidateLarge), kOverlayRect};
+      gfx::Rect(100, 100, kCandidateLarge, kCandidateLarge),
+      kOverlayRect,
+  });
 
-  const bool kCandidateUseSurfaceIndex[] = {true, true, true, false};
+  const auto kCandidateUseSurfaceIndex =
+      std::to_array<bool>({true, true, true, false});
 
-  const int kExpectedDamages[] = {
+  const auto kExpectedDamages = std::to_array<int>({
       kCandidateSmall * kCandidateSmall,
       kCandidateSmall * kCandidateSmall - kOccluderWidth * kOccluderWidth,
       kCandidateLarge * kCandidateLarge - kOccluderWidth * kOccluderWidth * 2,
       kOverlayRect.width() * kOverlayRect.height() -
-          kOccluderWidth * kOccluderWidth * 2};
+          kOccluderWidth * kOccluderWidth * 2,
+  });
 
   static_assert(
       std::size(kCandidateRects) == std::size(kCandidateUseSurfaceIndex),
@@ -6345,9 +6361,14 @@ TEST_F(MultiOverlayTest, RequiredOverlayOnly) {
 }
 
 TEST_F(MultiOverlayTest, CappedAtMaxOverlays) {
-  constexpr gfx::Rect kCandRects[]{{0, 0, 64, 64},   {64, 0, 64, 64},
-                                   {0, 64, 64, 64},  {64, 64, 64, 64},
-                                   {0, 128, 64, 64}, {64, 128, 64, 64}};
+  constexpr const auto kCandRects = std::to_array<gfx::Rect>({
+      {0, 0, 64, 64},
+      {64, 0, 64, 64},
+      {0, 64, 64, 64},
+      {64, 64, 64, 64},
+      {0, 128, 64, 64},
+      {64, 128, 64, 64},
+  });
   constexpr gfx::Rect kBottomTwo(0, 128, 128, 64);
 
   damage_rect_ = gfx::Rect(0, 0, 128, 192);

@@ -2,7 +2,7 @@ include_rules = [
   "+components/account_id",
   "+ios/chrome/browser/enterprise/model/idle",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/ui/scoped_ui_blocker",
-  "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
-  "+ios/chrome/browser/ui/authentication/authentication_ui_util.h",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
+  "+ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h",
 ]

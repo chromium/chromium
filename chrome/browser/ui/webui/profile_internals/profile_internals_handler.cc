@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_handler.h"
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -15,17 +17,39 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "components/country_codes/country_codes.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "skia/ext/skia_utils_base.h"
 
 namespace {
 
-base::Value::Dict CreateProfileEntry(
-    const ProfileAttributesEntry* entry,
-    const base::flat_set<base::FilePath>& loaded_profile_paths,
-    const base::flat_set<base::FilePath>& has_off_the_record_profile) {
+std::string CountryIdToDebugString(std::optional<int> country_id) {
+  if (!country_id.has_value()) {
+    return "not available";
+  }
+  if (country_id.value() == country_codes::kCountryIDUnknown) {
+    return "unknown";
+  }
+
+  return country_codes::CountryIDToCountryString(country_id.value());
+}
+
+}  // namespace
+
+// static
+base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
+    const ProfileAttributesEntry* entry) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* loaded_profile = profile_manager->GetProfileByPath(entry->GetPath());
+
   base::Value::Dict profile_entry;
   profile_entry.Set("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.Set("localProfileName", entry->GetLocalProfileName());
@@ -46,7 +70,7 @@ base::Value::Dict CreateProfileEntry(
   // GAIA full name/user name can be empty, if the profile is not signed in to
   // chrome.
   profile_entry.Set("gaiaName", entry->GetGAIAName());
-  profile_entry.Set("gaiaId", entry->GetGAIAId());
+  profile_entry.Set("gaiaId", entry->GetGAIAId().ToString());
   profile_entry.Set("userName", entry->GetUserName());
   profile_entry.Set("hostedDomain", entry->GetHostedDomain());
   profile_entry.Set("isSupervised", entry->IsSupervised());
@@ -65,8 +89,7 @@ base::Value::Dict CreateProfileEntry(
 
   base::Value::List keep_alives;
   std::map<ProfileKeepAliveOrigin, int> keep_alives_map =
-      g_browser_process->profile_manager()->GetKeepAlivesByPath(
-          entry->GetPath());
+      profile_manager->GetKeepAlivesByPath(entry->GetPath());
   for (const auto& pair : keep_alives_map) {
     if (pair.second != 0) {
       std::stringstream ss;
@@ -84,14 +107,42 @@ base::Value::Dict CreateProfileEntry(
     signedAccounts.Append(gaiaId);
   }
   profile_entry.Set("signedAccounts", std::move(signedAccounts));
-  profile_entry.Set("isLoaded",
-                    loaded_profile_paths.contains(entry->GetPath()));
-  profile_entry.Set("hasOffTheRecord",
-                    has_off_the_record_profile.contains(entry->GetPath()));
+  profile_entry.Set("isLoaded", loaded_profile != nullptr);
+  profile_entry.Set(
+      "hasOffTheRecord",
+      loaded_profile &&
+          loaded_profile->GetAllOffTheRecordProfiles().size() > 0);
+
+  std::optional<int> profile_country;
+  std::optional<int> initial_keywords_db_country;
+  std::optional<int> updated_keywords_db_country;
+  if (loaded_profile) {
+    profile_country =
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            loaded_profile)
+            ->GetCountryId();
+
+    auto* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(loaded_profile);
+    initial_keywords_db_country =
+        template_url_service->initial_keywords_database_country();
+    updated_keywords_db_country =
+        template_url_service->updated_keywords_database_country();
+  }
+  profile_entry.Set("profileCountry", CountryIdToDebugString(profile_country));
+  profile_entry.Set("initialKeywordsDbCountry",
+                    CountryIdToDebugString(initial_keywords_db_country));
+  profile_entry.Set("updatedKeywordsDbCountry",
+                    CountryIdToDebugString(updated_keywords_db_country));
+  profile_entry.Set(
+      "variationsCountry",
+      g_browser_process->variations_service()
+          ? g_browser_process->variations_service()->GetLatestCountry()
+          : "not available");
+  profile_entry.Set("localeCountry", country_codes::GetCurrentCountryCode());
+
   return profile_entry;
 }
-
-}  // namespace
 
 ProfileInternalsHandler::ProfileInternalsHandler() = default;
 
@@ -122,20 +173,8 @@ base::Value::List ProfileInternalsHandler::GetProfilesList() {
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
-  std::vector<Profile*> loaded_profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
-  base::flat_set<base::FilePath> loaded_profile_paths =
-      base::MakeFlatSet<base::FilePath>(
-          loaded_profiles, {}, [](const auto& it) { return it->GetPath(); });
-  base::flat_set<base::FilePath> has_off_the_record_profile;
-  for (Profile* profile : loaded_profiles) {
-    if (profile->GetAllOffTheRecordProfiles().size() > 0) {
-      has_off_the_record_profile.insert(profile->GetPath());
-    }
-  }
   for (const ProfileAttributesEntry* entry : entries) {
-    profiles_list.Append(CreateProfileEntry(entry, loaded_profile_paths,
-                                            has_off_the_record_profile));
+    profiles_list.Append(CreateProfileEntry(entry));
   }
   return profiles_list;
 }

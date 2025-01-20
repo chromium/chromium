@@ -83,12 +83,12 @@ source_set("impl") {
       "//chrome/browser/resources/whats_new:resources",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/hats",
-      "//chrome/browser/ui/webui:webui_util",
       "//chrome/common:version_header",
       "//components/bookmarks/common",
       "//components/history_embeddings",
       "//components/user_education/common",
       "//components/variations/service",
+      "//ui/webui",
     ]
   }
 }
@@ -100,7 +100,6 @@ if (is_linux || is_mac || is_win) {
       "whats_new_handler_unittest.cc",
       "whats_new_registrar_unittest.cc",
       "whats_new_storage_service_impl_unittest.cc",
-      "whats_new_util_unittest.cc",
     ]
     deps = [
       ":mojo_bindings",
@@ -118,6 +117,7 @@ if (is_linux || is_mac || is_win) {
       "//components/feature_engagement/public",
       "//components/user_education/common",
       "//components/user_education/webui",
+      "//components/user_education/webui:test_support",
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",
       "//testing/gmock",

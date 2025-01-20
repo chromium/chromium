@@ -36,8 +36,9 @@ void WidgetAXTreeIDMap::RemoveWidget(Widget* widget) {
 
 ui::AXTreeID WidgetAXTreeIDMap::GetWidgetTreeID(Widget* widget) {
   DCHECK(widget);
-  if (!base::Contains(widget_map_, widget))
+  if (!base::Contains(widget_map_, widget)) {
     return ui::AXTreeIDUnknown();
+  }
 
   return widget_map_.at(widget);
 }
@@ -46,8 +47,9 @@ const std::vector<Widget*> WidgetAXTreeIDMap::GetWidgets() const {
   std::vector<Widget*> widgets;
   widgets.reserve(widget_map_.size());
 
-  for (auto iter : widget_map_)
+  for (auto iter : widget_map_) {
     widgets.push_back(iter.first);
+  }
 
   return widgets;
 }

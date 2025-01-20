@@ -7,9 +7,8 @@
 
 #include <optional>
 
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -21,11 +20,10 @@ struct PhysicalScrollRange {
   std::optional<LayoutUnit> y_min;
   std::optional<LayoutUnit> y_max;
 
-  bool Contains(const gfx::Vector2dF offset) const {
-    LayoutUnit x = LayoutUnit::FromFloatFloor(offset.x());
-    LayoutUnit y = LayoutUnit::FromFloatFloor(offset.y());
-    return (!x_min || x >= *x_min) && (!x_max || x <= *x_max) &&
-           (!y_min || y >= *y_min) && (!y_max || y <= *y_max);
+  bool Contains(const PhysicalOffset& offset) const {
+    return (!x_min || offset.left >= *x_min) &&
+           (!x_max || offset.left <= *x_max) &&
+           (!y_min || offset.top >= *y_min) && (!y_max || offset.top <= *y_max);
   }
 
   bool operator==(const PhysicalScrollRange& other) const {

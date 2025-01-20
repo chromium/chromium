@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For Ash only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 class Profile;
 

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/bluetooth_device.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -83,17 +80,17 @@ using ManufacturerDataMap = BluetoothDevice::ManufacturerDataMap;
 TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_AcceptsAllValidFormats) {
   // There are three valid separators (':', '-', and none).
   // Case shouldn't matter.
-  const char* const kValidFormats[] = {
-    "1A:2B:3C:4D:5E:6F",
-    "1a:2B:3c:4D:5e:6F",
-    "1a:2b:3c:4d:5e:6f",
-    "1A-2B-3C-4D-5E-6F",
-    "1a-2B-3c-4D-5e-6F",
-    "1a-2b-3c-4d-5e-6f",
-    "1A2B3C4D5E6F",
-    "1a2B3c4D5e6F",
-    "1a2b3c4d5e6f",
-  };
+  const auto kValidFormats = std::to_array<const char*>({
+      "1A:2B:3C:4D:5E:6F",
+      "1a:2B:3c:4D:5e:6F",
+      "1a:2b:3c:4d:5e:6f",
+      "1A-2B-3C-4D-5E-6F",
+      "1a-2B-3c-4D-5e-6F",
+      "1a-2b-3c-4d-5e-6f",
+      "1A2B3C4D5E6F",
+      "1a2B3c4D5e6F",
+      "1a2b3c4d5e6f",
+  });
 
   for (size_t i = 0; i < std::size(kValidFormats); ++i) {
     SCOPED_TRACE(std::string("Input format: '") + kValidFormats[i] + "'");
@@ -115,7 +112,7 @@ TEST(BluetoothDeviceTest,
 }
 
 TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
-  const char* const kInvalidFormats[] = {
+  const auto kInvalidFormats = std::to_array<const char*>({
       // Empty string.
       "",
       // Too short.
@@ -132,7 +129,7 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
       "1:A2:B3:C4:D5:E6F",
       // Wrong separator
       "1A|2B|3C|4D|5E|6F",
-  };
+  });
 
   for (size_t i = 0; i < std::size(kInvalidFormats); ++i) {
     SCOPED_TRACE(std::string("Input format: '") + kInvalidFormats[i] + "'");

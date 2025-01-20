@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Offer to send H265, answer to receive level-id=30 results in level-id=30
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setCodecPreferences' on 'RTCRtpTransceiver': Invalid codec preferences: Missing codec from recv codec capabilities."
+[FAIL] Offer to receive level-id=30 and set codec from getParameters
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setParameters' on 'RTCRtpSender': Attempted to use an unsupported codec for layer 0"
+Harness: the test ran to completion.
+

@@ -15,14 +15,16 @@ import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.SortedSet;
 
 /** Data class representing an item in the text selection menu. */
+@NullMarked
 public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     private final @AttrRes int mIconAttr;
     private final @Nullable Drawable mIcon;
@@ -33,7 +35,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public final int orderInCategory;
     public final int showAsActionFlags;
     public final @Nullable CharSequence contentDescription;
-    public final @Nullable View.OnClickListener clickListener;
+    public final View.@Nullable OnClickListener clickListener;
     public final @Nullable Intent intent;
     public final boolean isEnabled;
     public final boolean isIconTintable;
@@ -48,7 +50,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             int orderInCategory,
             int showAsActionFlags,
             @Nullable CharSequence contentDescription,
-            @Nullable View.OnClickListener clickListener,
+            View.@Nullable OnClickListener clickListener,
             @Nullable Intent intent,
             boolean isEnabled,
             boolean isIconTintable) {
@@ -68,8 +70,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     }
 
     /** Convenience method to return the title. */
-    @Nullable
-    public CharSequence getTitle(Context context) {
+    public @Nullable CharSequence getTitle(Context context) {
         if (mTitleRes != 0) {
             return context.getString(mTitleRes);
         }
@@ -77,8 +78,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     }
 
     /** Convenience method to return the icon, if any. */
-    @Nullable
-    public Drawable getIcon(Context context) {
+    public @Nullable Drawable getIcon(Context context) {
         if (mIconAttr != 0) {
             try {
                 TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
@@ -111,13 +111,13 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         private int mOrderInCategory;
         private int mShowAsActionFlags;
         private @Nullable CharSequence mContentDescription;
-        private @Nullable View.OnClickListener mClickListener;
+        private View.@Nullable OnClickListener mClickListener;
         private @Nullable Intent mIntent;
         private boolean mIsEnabled;
         private boolean mIsIconTintable;
 
         /** Pass in a non-null title. */
-        public Builder(@NonNull CharSequence title) {
+        public Builder(@Nullable CharSequence title) {
             mTitle = title;
             mTitleRes = 0;
             initDefaults();
@@ -199,7 +199,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         }
 
         /** Click listener for when the menu item is clicked. */
-        public Builder setClickListener(@Nullable View.OnClickListener clickListener) {
+        public Builder setClickListener(View.@Nullable OnClickListener clickListener) {
             mClickListener = clickListener;
             return this;
         }

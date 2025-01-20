@@ -14,8 +14,7 @@
 DownloadsCounter::DownloadsCounter(Profile* profile)
     : profile_(profile) {}
 
-DownloadsCounter::~DownloadsCounter() {
-}
+DownloadsCounter::~DownloadsCounter() = default;
 
 const char* DownloadsCounter::GetPrefName() const {
   return browsing_data::prefs::kDeleteDownloadHistory;

@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -23,9 +24,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 namespace web_app {
 
 // static
@@ -88,10 +86,7 @@ void WebAppProviderFactory::RegisterProfilePrefs(
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefGuardrails::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
-
-#if BUILDFLAG(IS_CHROMEOS)
   IsolatedWebAppPolicyManager::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
                                 false);

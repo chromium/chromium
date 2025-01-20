@@ -251,7 +251,7 @@ bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   // * iv (16 bytes)
   // * ciphertext (multiple of 16 bytes)
   // * hash (32 bytes)
-  const auto input = base::make_span(*input_buf);
+  const auto input = base::span(*input_buf);
   const auto iv = input.first<kIvSize>();
   const base::span<const uint8_t> ciphertext =
       input.subspan(kIvSize, input.size() - (kIvSize + kHashSize));

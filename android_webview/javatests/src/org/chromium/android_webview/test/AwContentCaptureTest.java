@@ -171,10 +171,6 @@ public class AwContentCaptureTest extends AwParameterizedTest {
             mCallbacks.clear();
         }
 
-        public void waitForCallback(int currentCallCount) throws Exception {
-            waitForCallback(currentCallCount, 1);
-        }
-
         public void waitForCallback(int currentCallCount, int numberOfCallsToWaitFor)
                 throws Exception {
             mCallbackHelper.waitForCallback(

@@ -46,12 +46,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
                     std::optional<AttestedCredentialData> data,
                     std::optional<cbor::Value> extensions = std::nullopt);
 
-  AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
-                    std::initializer_list<Flag> flags,
-                    uint32_t sign_counter,
-                    std::optional<AttestedCredentialData> data,
-                    std::optional<cbor::Value> extensions = std::nullopt);
-
   // Creates an AuthenticatorData with flags and signature counter encoded
   // according to the supplied arguments.
   AuthenticatorData(

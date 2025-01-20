@@ -402,9 +402,9 @@ class ChunkDemuxerTest : public ::testing::Test {
 
   bool AppendCluster(const std::string& source_id,
                      std::unique_ptr<Cluster> cluster) {
-    return AppendData(
-        source_id, base::make_span(cluster->data(),
-                                   static_cast<size_t>(cluster->bytes_used())));
+    return AppendData(source_id,
+                      base::span(cluster->data(),
+                                 static_cast<size_t>(cluster->bytes_used())));
   }
 
   bool AppendCluster(std::unique_ptr<Cluster> cluster) {
@@ -872,7 +872,7 @@ class ChunkDemuxerTest : public ::testing::Test {
     // Expect duration adjustment since actual duration differs slightly from
     // duration in the init segment
     EXPECT_CALL(host_, SetDuration(base::Milliseconds(2768)));
-    EXPECT_TRUE(AppendData(base::make_span(bear1->data(), bear1->size())));
+    EXPECT_TRUE(AppendData(base::span(*bear1)));
     // Last audio frame has timestamp 2721 and duration 24 (estimated from max
     // seen so far for audio track).
     // Last video frame has timestamp 2703 and duration 33 (from TrackEntry
@@ -886,21 +886,21 @@ class ChunkDemuxerTest : public ::testing::Test {
     // generated from media/test/data/bear-640x360.webm and
     // media/test/data/bear-320x240.webm respectively.
     EXPECT_CALL(*this, InitSegmentReceivedMock(_));
-    EXPECT_TRUE(AppendData(base::make_span(bear2->data(), 4340u)));
+    EXPECT_TRUE(AppendData(base::span(bear2->data(), 4340u)));
 
     // Append a media segment that goes from [0.527000, 1.014000).
     EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(24));
     EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(527000, 524000, 20000));
-    EXPECT_TRUE(AppendData(base::make_span(bear2->data() + 55290, 18785u)));
+    EXPECT_TRUE(AppendData(base::span(bear2->data() + 55290, 18785u)));
     CheckExpectedRanges("{ [0,2736) }");
 
     // Append initialization segment for bear1 and buffer [779-1197)
     // segment.
     EXPECT_CALL(*this, InitSegmentReceivedMock(_));
-    EXPECT_TRUE(AppendData(base::make_span(bear1->data(), 4370u)));
+    EXPECT_TRUE(AppendData(base::span(bear1->data(), 4370u)));
     EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(24));
     EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(779000, 759000, 3000));
-    EXPECT_TRUE(AppendData(base::make_span(bear1->data() + 72737, 28183u)));
+    EXPECT_TRUE(AppendData(base::span(bear1->data() + 72737, 28183u)));
     CheckExpectedRanges("{ [0,2736) }");
 
     MarkEndOfStream(PIPELINE_OK);
@@ -1235,8 +1235,7 @@ class ChunkDemuxerTest : public ::testing::Test {
     scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(filename);
     EXPECT_CALL(*this, InitSegmentReceivedMock(_));
 
-    EXPECT_TRUE(AppendDataInPieces(
-        base::make_span(buffer->data(), buffer->size()), 512));
+    EXPECT_TRUE(AppendDataInPieces(base::span(*buffer), 512));
 
     // Verify that the timestamps on the first few packets match what we
     // expect.
@@ -1570,12 +1569,12 @@ TEST_F(ChunkDemuxerTest, SeekWhileParsingCluster) {
   std::unique_ptr<Cluster> cluster_a(GenerateCluster(0, 6));
 
   // Split the cluster into two appends at an arbitrary point near the end.
-  size_t first_append_size = cluster_a->bytes_used() - 11;
-  size_t second_append_size = cluster_a->bytes_used() - first_append_size;
+  const auto cluster_size = static_cast<size_t>(cluster_a->bytes_used());
+  const auto [first, second] =
+      base::span(cluster_a->data(), cluster_size).split_at(cluster_size - 11);
 
   // Append the first part of the cluster.
-  ASSERT_TRUE(
-      AppendData(base::make_span(cluster_a->data(), first_append_size)));
+  ASSERT_TRUE(AppendData(first));
 
   ExpectRead(DemuxerStream::AUDIO, 0);
   ExpectRead(DemuxerStream::VIDEO, 0);
@@ -1584,8 +1583,7 @@ TEST_F(ChunkDemuxerTest, SeekWhileParsingCluster) {
   Seek(base::Seconds(5));
 
   // Append the rest of the cluster.
-  ASSERT_TRUE(AppendData(base::make_span(cluster_a->data() + first_append_size,
-                                         second_append_size)));
+  ASSERT_TRUE(AppendData(second));
 
   // Append the new cluster and verify that only the blocks
   // in the new cluster are returned.
@@ -1718,7 +1716,7 @@ TEST_F(ChunkDemuxerTest, OutOfOrderClusters) {
   // Verify that AppendData() can still accept more data.
   std::unique_ptr<Cluster> cluster_c(GenerateCluster(45, 2));
   EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(45000, 28000, 6000));
-  ASSERT_TRUE(AppendData(base::make_span(
+  ASSERT_TRUE(AppendData(base::span(
       cluster_c->data(), static_cast<size_t>(cluster_c->bytes_used()))));
   Seek(base::Milliseconds(45));
   CheckExpectedBuffers(audio_stream, "45K");
@@ -1747,7 +1745,7 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButAboveClusterTimecode) {
 
   // Verify that AppendData() ignores data after the error.
   std::unique_ptr<Cluster> cluster_b(GenerateCluster(20, 2));
-  ASSERT_FALSE(AppendData(base::make_span(
+  ASSERT_FALSE(AppendData(base::span(
       cluster_b->data(), static_cast<size_t>(cluster_b->bytes_used()))));
 }
 
@@ -1798,7 +1796,7 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButBeforeClusterTimecode) {
 
   // Verify that AppendData() ignores data after the error.
   std::unique_ptr<Cluster> cluster_b(GenerateCluster(6, 2));
-  ASSERT_FALSE(AppendData(base::make_span(
+  ASSERT_FALSE(AppendData(base::span(
       cluster_b->data(), static_cast<size_t>(cluster_b->bytes_used()))));
 }
 
@@ -2217,7 +2215,7 @@ TEST_F(ChunkDemuxerTest, IncrementalClusterParsing) {
   int i = 0;
   for (; i < cluster->bytes_used() && !(audio_read_done || video_read_done);
        ++i) {
-    ASSERT_TRUE(AppendData(base::make_span(cluster->data() + i, 1u)));
+    ASSERT_TRUE(AppendData(base::span_from_ref(cluster->data()[i])));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -2238,8 +2236,10 @@ TEST_F(ChunkDemuxerTest, IncrementalClusterParsing) {
 
   // Append the remaining data.
   ASSERT_LT(i, cluster->bytes_used());
-  ASSERT_TRUE(AppendData(base::make_span(
-      cluster->data() + i, static_cast<size_t>(cluster->bytes_used()) - i)));
+  ASSERT_TRUE(AppendData(
+      base::span(cluster->data(), static_cast<size_t>(cluster->bytes_used()))
+          .split_at(static_cast<size_t>(i))
+          .second));
 
   base::RunLoop().RunUntilIdle();
 
@@ -3273,8 +3273,8 @@ TEST_F(ChunkDemuxerTest, IsParsingMediaSegmentMidMediaSegment) {
 
   std::unique_ptr<Cluster> cluster = GenerateCluster(0, 2);
   // Append only part of the cluster data.
-  ASSERT_TRUE(AppendData(
-      base::make_span(cluster->data(), cluster->bytes_used() - 13u)));
+  ASSERT_TRUE(
+      AppendData(base::span(cluster->data(), cluster->bytes_used() - 13u)));
 
   // Confirm we're in the middle of parsing a media segment.
   ASSERT_TRUE(demuxer_->IsParsingMediaSegment(kSourceId));
@@ -3337,7 +3337,7 @@ TEST_F(ChunkDemuxerTest, EmitBuffersDuringAbort) {
         std::min(chunk_size, buffer->size() - appended_bytes);
     ASSERT_TRUE(AppendData(
         kSourceId,
-        base::make_span(buffer->data() + appended_bytes, cur_chunk_size)));
+        base::span(buffer->data() + appended_bytes, cur_chunk_size)));
     appended_bytes += cur_chunk_size;
   }
 
@@ -3402,7 +3402,7 @@ TEST_F(ChunkDemuxerTest, SeekCompleteDuringAbort) {
         std::min(chunk_size, buffer->size() - appended_bytes);
     ASSERT_TRUE(AppendData(
         kSourceId,
-        base::make_span(buffer->data() + appended_bytes, cur_chunk_size)));
+        base::span(buffer->data() + appended_bytes, cur_chunk_size)));
     appended_bytes += cur_chunk_size;
   }
 
@@ -3496,7 +3496,7 @@ TEST_F(ChunkDemuxerTest, WebMIsParsingMediaSegmentDetection) {
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(23)).Times(2);
   for (size_t i = 0; i < sizeof(kBuffer); i++) {
     DVLOG(3) << "Appending and testing index " << i;
-    ASSERT_TRUE(AppendData(base::make_span(kBuffer + i, 1u)));
+    ASSERT_TRUE(AppendData(base::span_from_ref(kBuffer[i])));
     bool expected_return_value = kExpectedReturnValues[i];
     EXPECT_EQ(expected_return_value,
               demuxer_->IsParsingMediaSegment(kSourceId));
@@ -3557,8 +3557,7 @@ TEST_F(ChunkDemuxerTest, EndOfStreamTruncateDuration) {
 
 TEST_F(ChunkDemuxerTest, ZeroLengthAppend) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
-  base::span<uint8_t> data;
-  ASSERT_TRUE(AppendData(data.subspan(0)));
+  ASSERT_TRUE(AppendData({}));
 }
 
 TEST_F(ChunkDemuxerTest, AppendAfterEndOfStream) {
@@ -4048,8 +4047,7 @@ TEST_F(ChunkDemuxerTest, AppendWindow_WebMFile_AudioOnly) {
   ExpectInitMediaLogs(HAS_AUDIO);
   EXPECT_CALL(*this, InitSegmentReceivedMock(_));
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(2));
-  ASSERT_TRUE(
-      AppendDataInPieces(base::make_span(buffer->data(), buffer->size()), 128));
+  ASSERT_TRUE(AppendDataInPieces(base::span(*buffer), 128));
 
   DemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
   CheckExpectedBuffers(stream, "50KP 50K 62K 86K 109K 122K 125K 128K");
@@ -4080,8 +4078,7 @@ TEST_F(ChunkDemuxerTest, AppendWindow_AudioConfigUpdateRemovesPreroll) {
   ExpectInitMediaLogs(HAS_AUDIO);
   EXPECT_CALL(*this, InitSegmentReceivedMock(_));
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(2));
-  ASSERT_TRUE(
-      AppendDataInPieces(base::make_span(buffer->data(), buffer->size()), 512));
+  ASSERT_TRUE(AppendDataInPieces(base::span(*buffer), 512));
   CheckExpectedRanges("{ }");
 
   DemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
@@ -4094,8 +4091,7 @@ TEST_F(ChunkDemuxerTest, AppendWindow_AudioConfigUpdateRemovesPreroll) {
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(22));
   EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
   ASSERT_TRUE(SetTimestampOffset(kSourceId, duration_1));
-  ASSERT_TRUE(AppendDataInPieces(
-      base::make_span(buffer2->data(), buffer2->size()), 512));
+  ASSERT_TRUE(AppendDataInPieces(base::span(*buffer2), 512));
   CheckExpectedRanges("{ [2768,5542) }");
 
   Seek(duration_1);
@@ -4233,7 +4229,7 @@ TEST_F(ChunkDemuxerTest, CuesBetweenClustersWithUnknownSize) {
   cluster = GenerateCluster(46, 66, 5, true);
   data.insert(data.end(), cluster->data(),
               cluster->data() + cluster->bytes_used());
-  ASSERT_TRUE(AppendData(base::make_span(&*data.begin(), data.size())));
+  ASSERT_TRUE(AppendData(base::span(data)));
 
   CheckExpectedRanges("{ [0,115) }");
 }
@@ -4242,7 +4238,7 @@ TEST_F(ChunkDemuxerTest, CuesBetweenClusters) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
 
   ASSERT_TRUE(AppendCluster(GenerateCluster(0, 0, 4)));
-  ASSERT_TRUE(AppendData(base::make_span(kCuesHeader, sizeof(kCuesHeader))));
+  ASSERT_TRUE(AppendData(base::span(kCuesHeader)));
   ASSERT_TRUE(AppendCluster(GenerateCluster(46, 66, 5)));
   CheckExpectedRanges("{ [0,115) }");
 }
@@ -4515,19 +4511,17 @@ TEST_F(ChunkDemuxerTest,
   ASSERT_GT(video_start, 0);
   ASSERT_LT(video_start, cluster->bytes_used() - 3);
 
-  ASSERT_TRUE(AppendData(
-      kSourceId,
-      base::make_span(cluster->data(), static_cast<size_t>(video_start))));
+  const auto [audio, video] =
+      base::span(cluster->data(), static_cast<size_t>(cluster->bytes_used()))
+          .split_at(static_cast<size_t>(video_start));
+  ASSERT_TRUE(AppendData(kSourceId, audio));
   CheckExpectedRanges(DemuxerStream::AUDIO, "{ [0,30) }");
   CheckExpectedRanges(DemuxerStream::VIDEO, "{ }");
 
   demuxer_->Remove(kSourceId, base::TimeDelta(), base::Milliseconds(30));
 
   // Append the remainder of the cluster
-  ASSERT_TRUE(AppendData(
-      kSourceId, base::make_span(cluster->data() + video_start,
-                                 static_cast<size_t>(cluster->bytes_used()) -
-                                     video_start)));
+  ASSERT_TRUE(AppendData(kSourceId, video));
 
   CheckExpectedRanges(DemuxerStream::AUDIO, "{ [30,90) }");
   CheckExpectedRanges(DemuxerStream::VIDEO, "{ [0,91) }");
@@ -4624,8 +4618,8 @@ TEST_F(ChunkDemuxerTest, MultipleIds) {
   EXPECT_CALL(*this, InitSegmentReceivedMock(_)).Times(2);
   EXPECT_MEDIA_LOG(SegmentMissingFrames("1")).Times(1);
 
-  EXPECT_TRUE(AppendData(kId1, base::make_span(data1->data(), data1->size())));
-  EXPECT_TRUE(AppendData(kId2, base::make_span(data2->data(), data2->size())));
+  EXPECT_TRUE(AppendData(kId1, base::span(*data1)));
+  EXPECT_TRUE(AppendData(kId2, base::span(*data2)));
   CheckExpectedRanges(kId1, "{ [0,12007) }");
   CheckExpectedRanges(kId2, "{ [0,10007) }");
 }
@@ -4946,8 +4940,7 @@ TEST_F(ChunkDemuxerTest, AddAutoDetectIDFindsCodecs) {
   EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(2116888, 6));
   EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(2441966, 6));
 
-  EXPECT_TRUE(
-      AppendData(kPrimary, base::make_span(data->data(), data->size())));
+  EXPECT_TRUE(AppendData(kPrimary, base::span(*data)));
 
   CheckExpectedRanges(kPrimary, "{ [1466,2267) }");
 }

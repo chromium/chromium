@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.price_tracking;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -115,7 +113,6 @@ public interface PriceDropNotificationManager {
     boolean areAppNotificationsEnabled();
 
     /** Create the notification channel for price drop notifications. */
-    @RequiresApi(Build.VERSION_CODES.O)
     void createNotificationChannel();
 
     /** Send users to notification settings so they can manage price drop notifications. */
@@ -131,12 +128,9 @@ public interface PriceDropNotificationManager {
      * @return The price drop notification channel.
      */
     @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.O)
     NotificationChannel getNotificationChannel();
 
     /** Delete price drop notification channel for testing. */
-    @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.O)
     void deleteChannelForTesting();
 
     /** Record how many notifications are shown in the given window per management type. */

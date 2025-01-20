@@ -285,7 +285,9 @@ class FakeSocket : public StreamSocket {
 
   bool WasEverUsed() const override { return true; }
 
-  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
+  NextProto GetNegotiatedProtocol() const override {
+    return NextProto::kProtoUnknown;
+  }
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
@@ -1169,24 +1171,23 @@ TEST_F(SSLServerSocketTest, ExportKeyingMaterial) {
 
   const int kKeyingMaterialSize = 32;
   const char kKeyingLabel[] = "EXPERIMENTAL-server-socket-test";
-  const char kKeyingContext[] = "";
-  unsigned char server_out[kKeyingMaterialSize];
-  int rv = server_socket_->ExportKeyingMaterial(
-      kKeyingLabel, false, kKeyingContext, server_out, sizeof(server_out));
+  std::array<uint8_t, kKeyingMaterialSize> server_out;
+  int rv = server_socket_->ExportKeyingMaterial(kKeyingLabel, std::nullopt,
+                                                server_out);
   ASSERT_THAT(rv, IsOk());
 
-  unsigned char client_out[kKeyingMaterialSize];
-  rv = client_socket_->ExportKeyingMaterial(kKeyingLabel, false, kKeyingContext,
-                                            client_out, sizeof(client_out));
+  std::array<uint8_t, kKeyingMaterialSize> client_out;
+  rv = client_socket_->ExportKeyingMaterial(kKeyingLabel, std::nullopt,
+                                            client_out);
   ASSERT_THAT(rv, IsOk());
-  EXPECT_EQ(0, memcmp(server_out, client_out, sizeof(server_out)));
+  EXPECT_EQ(server_out, client_out);
 
   const char kKeyingLabelBad[] = "EXPERIMENTAL-server-socket-test-bad";
-  unsigned char client_bad[kKeyingMaterialSize];
-  rv = client_socket_->ExportKeyingMaterial(
-      kKeyingLabelBad, false, kKeyingContext, client_bad, sizeof(client_bad));
+  std::array<uint8_t, kKeyingMaterialSize> client_bad;
+  rv = client_socket_->ExportKeyingMaterial(kKeyingLabelBad, std::nullopt,
+                                            client_bad);
   ASSERT_EQ(rv, OK);
-  EXPECT_NE(0, memcmp(server_out, client_bad, sizeof(server_out)));
+  EXPECT_NE(server_out, client_bad);
 }
 
 // Verifies that SSLConfig::require_ecdhe flags works properly.
@@ -1367,15 +1368,15 @@ TEST_P(SSLServerSocketAlpsTest, Alps) {
   const std::string server_data = "server sends some test data";
   const std::string client_data = "client also sends some data";
 
-  server_ssl_config_.alpn_protos = {kProtoHTTP2};
+  server_ssl_config_.alpn_protos = {NextProto::kProtoHTTP2};
   if (server_alps_enabled_) {
-    server_ssl_config_.application_settings[kProtoHTTP2] =
+    server_ssl_config_.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(server_data.begin(), server_data.end());
   }
 
-  client_ssl_config_.alpn_protos = {kProtoHTTP2};
+  client_ssl_config_.alpn_protos = {NextProto::kProtoHTTP2};
   if (client_alps_enabled_) {
-    client_ssl_config_.application_settings[kProtoHTTP2] =
+    client_ssl_config_.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(client_data.begin(), client_data.end());
   }
 

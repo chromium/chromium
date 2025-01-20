@@ -385,6 +385,109 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   EXPECT_TRUE(window_state->IsSnapped());
 }
 
+// Tests that non-resizable windows do not allow for maximizing
+TEST_F(WorkspaceEventHandlerTest,
+       DoubleClickCaptionDoesntToggleMaximizeNonResizableWindow) {
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
+  // Set window as non-resizable and non-maximizable
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorNone);
+
+  WindowState* window_state = WindowState::Get(window.get());
+  gfx::Rect initial_bounds = window->bounds();
+
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // 1) Double clicking the caption should not maximize
+  delegate.set_window_component(HTCAPTION);
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root, window.get());
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(initial_bounds, window->bounds());
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // 2) Double clicking on edge should not maximize horizontally/vertically
+  delegate.set_window_component(HTLEFT);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  delegate.set_window_component(HTRIGHT);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  delegate.set_window_component(HTTOP);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  delegate.set_window_component(HTBOTTOM);
+  generator.DoubleClickLeftButton();
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  // 3) Double click on the maximized window should not restore
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->IsMaximized());
+  delegate.set_window_component(HTCAPTION);
+  generator.DoubleClickLeftButton();
+  EXPECT_TRUE(window_state->IsMaximized());
+}
+
+// Tests that non-resizable windows blocks maximize/fullscreen events
+TEST_F(WorkspaceEventHandlerTest, ResizingEventsBlockedInNonResizableWindows) {
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
+  // Set window to be non-resizable
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorNone);
+
+  WindowState* window_state = WindowState::Get(window.get());
+  gfx::Rect initial_bounds = window->bounds();
+
+  const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+  const WMEvent toggle_maximize_event(WM_EVENT_TOGGLE_MAXIMIZE);
+  const WMEvent toggle_maximize_caption_event(WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);
+  const WMEvent toggle_horizontal_maximize_event(
+      WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE);
+  const WMEvent toogle_vertical_maximize_event(
+      WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE);
+
+  window_state->OnWMEvent(&toggle_fullscreen_event);
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  window_state->OnWMEvent(&toggle_maximize_event);
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  window_state->OnWMEvent(&toggle_maximize_caption_event);
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  window_state->OnWMEvent(&toggle_horizontal_maximize_event);
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  window_state->OnWMEvent(&toogle_vertical_maximize_event);
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  // Check if restoring from maximized state is banned too
+  wm::SetWindowFullscreen(window.get(), false);
+  window_state->Maximize();
+  EXPECT_FALSE(window_state->IsFullscreen());
+  EXPECT_TRUE(window_state->IsMaximized());
+  initial_bounds = window->bounds();
+
+  window_state->OnWMEvent(&toggle_maximize_event);
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  window_state->OnWMEvent(&toggle_maximize_caption_event);
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  window_state->OnWMEvent(&toggle_horizontal_maximize_event);
+  EXPECT_EQ(initial_bounds, window->bounds());
+
+  window_state->OnWMEvent(&toogle_vertical_maximize_event);
+  EXPECT_EQ(initial_bounds, window->bounds());
+}
+
 // Test that double clicking on window side edge horizontally and vertically
 // will maximize the window, double click vertically and horizontally will
 // return to previous state.

@@ -13,6 +13,7 @@ import os
 import re
 import pathlib
 import difflib
+from typing import Set, List
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -20,6 +21,8 @@ REPOSITORY_ROOT = os.path.abspath(
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
+ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
+AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false', 'use_allocator_shim=false')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
@@ -109,7 +112,7 @@ def build(out_dir, build_target, extra_options=None):
   Returns:
     Exit code of running `ninja ..` command with the argument provided.
   """
-  cmd = [_NINJA_PATH, '-C', out_dir, build_target]
+  cmd = [NINJA_PATH, '-C', out_dir, build_target]
   if extra_options:
     cmd += extra_options
   return run(cmd)
@@ -130,6 +133,35 @@ def build_all(out_dir, build_targets, extra_options=None):
   if extra_options:
     cmd += extra_options
   return run(cmd)
+
+
+def get_transitive_deps_build_files(repo_path: str, out_dir: str,
+                                    gn_targets: List[str]) -> Set[str]:
+  """Executes gn desc |out_dir| |gn_target| deps --all --as=buildfile for each gn target"""
+  all_deps = set()
+  for gn_target in gn_targets:
+    all_deps.update(
+        subprocess.check_output([
+            GN_PATH, "desc", out_dir, gn_target, "deps", "--all",
+            "--as=buildfile"
+        ]).decode("utf-8").split("\n"))
+    # gn desc deps does not return the build file that includes the target
+    # which we want to find its transitive dependencies, in order to
+    # account for this corner case, the BUILD file for the current target
+    # is added manually.
+    all_deps.add(
+        f"{os.path.join(repo_path, gn_target[2:gn_target.find(':')])}/BUILD.gn")
+  # It seems that we always get an empty string as part of the output. This
+  # could happen if we get an empty line in the output which can happen so
+  # let's remove that so downstream consumers don't have to check for it.
+  all_deps.remove('')
+  return all_deps
+
+
+def get_gn_args_for_aosp(arch: str) -> List[str]:
+  default_args = get_android_gn_args(True, arch)
+  default_args.extend(AOSP_EXTRA_ARGS)
+  return filter_gn_args(default_args, ["use_remoteexec"])
 
 
 def android_gn_gen(is_release, target_cpu, out_dir):

@@ -35,12 +35,12 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKey
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Provides functions that map {@link EditorProperties} changes in a {@link PropertyModel} to
- * the suitable method in {@link EditorDialogView}.
+ * Provides functions that map {@link EditorProperties} changes in a {@link PropertyModel} to the
+ * suitable method in {@link EditorDialogView}.
  */
 public class EditorDialogViewBinder {
     /**
@@ -125,10 +125,10 @@ public class EditorDialogViewBinder {
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
         } else if (key == DROPDOWN_KEY_VALUE_LIST || key == DROPDOWN_HINT) {
-            List<String> values =
-                    model.get(DROPDOWN_KEY_VALUE_LIST).stream()
-                            .map(DropdownKeyValue::getValue)
-                            .collect(Collectors.toList());
+            List<String> values = new ArrayList<>();
+            for (DropdownKeyValue keyValue : model.get(DROPDOWN_KEY_VALUE_LIST)) {
+                values.add(keyValue.getValue());
+            }
             view.setDropdownValues(values, model.get(DROPDOWN_HINT));
             view.setValue(model.get(VALUE));
             view.setErrorMessage(model.get(ERROR_MESSAGE));

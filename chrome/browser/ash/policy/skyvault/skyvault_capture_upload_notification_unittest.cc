@@ -27,7 +27,7 @@ constexpr char kUploadNotificationId[] = "skyvault_capture_upload_notification";
 
 class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
  public:
-  SkyvaultCaptureUploadNotificationTest() {}
+  SkyvaultCaptureUploadNotificationTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

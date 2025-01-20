@@ -14,8 +14,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -45,6 +49,7 @@ namespace {
 using ::content::WebContents;
 using ::privacy_sandbox::TrackingProtectionSettings;
 using ::subresource_filter::VerifiedRulesetDealer;
+using ::subresource_filter::mojom::ActivationLevel;
 using ::testing::_;
 using ::testing::Return;
 
@@ -192,6 +197,7 @@ TEST_P(CreateForWebContentsHelperTest, CreateForWebContents) {
 
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/test_case.is_incognito_profile);
@@ -230,6 +236,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -242,7 +249,8 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   test_web_contents_helper->AddObserver(&observer);
 
   EXPECT_CALL(observer, OnSubresourceBlocked());
-  test_web_contents_helper->NotifyOnBlockedSubresource();
+  test_web_contents_helper->NotifyOnBlockedSubresource(
+      ActivationLevel::kEnabled);
 }
 
 TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
@@ -251,6 +259,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -267,12 +276,14 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   EXPECT_CALL(observer, OnSubresourceBlocked()).Times(0);
 }
 
-TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
-       SubresourceBlockedDirtyBit_SetOnBlockAndResetOnNavigation) {
+TEST_F(
+    FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+    SubresourceBlockedDirtyBit_SetOnBlockAndResetOnNavigation_ActivationEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -284,8 +295,43 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   // Initially, dirty bit is false.
   EXPECT_FALSE(
       test_web_contents_helper->subresource_blocked_in_current_primary_page());
-  // Simulate blocked subresource.
-  test_web_contents_helper->NotifyOnBlockedSubresource();
+  // Simulate blocked subresource with activation enabled.
+  test_web_contents_helper->NotifyOnBlockedSubresource(
+      ActivationLevel::kEnabled);
+  // Dirty bit should be true.
+  EXPECT_TRUE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Navigate somewhere else.
+  WebContents* web_contents = RenderViewHostTestHarness::web_contents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("http://google.test"));
+  // Now dirty bit should be false again.
+  EXPECT_FALSE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+}
+
+TEST_F(
+    FingerprintingProtectionNotifyOnBlockedSubresourceTest,
+    SubresourceBlockedDirtyBit_SetOnBlockAndResetOnNavigation_ActivationDryRun) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableFingerprintingProtectionFilter);
+  FingerprintingProtectionWebContentsHelper::CreateForWebContents(
+      RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
+      test_support_.tracking_protection_settings(),
+      /*dealer=*/nullptr,
+      /*is_incognito=*/false);
+
+  auto* test_web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          RenderViewHostTestHarness::web_contents());
+
+  // Initially, dirty bit is false.
+  EXPECT_FALSE(
+      test_web_contents_helper->subresource_blocked_in_current_primary_page());
+  // Simulate blocked subresource in dry run.
+  test_web_contents_helper->NotifyOnBlockedSubresource(
+      ActivationLevel::kDryRun);
   // Dirty bit should be true.
   EXPECT_TRUE(
       test_web_contents_helper->subresource_blocked_in_current_primary_page());
@@ -304,6 +350,7 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
       features::kEnableFingerprintingProtectionFilter);
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+      test_support_.content_settings(),
       test_support_.tracking_protection_settings(),
       /*dealer=*/nullptr,
       /*is_incognito=*/false);
@@ -316,7 +363,8 @@ TEST_F(FingerprintingProtectionNotifyOnBlockedSubresourceTest,
   EXPECT_FALSE(
       test_web_contents_helper->subresource_blocked_in_current_primary_page());
   // Simulate blocked subresource.
-  test_web_contents_helper->NotifyOnBlockedSubresource();
+  test_web_contents_helper->NotifyOnBlockedSubresource(
+      ActivationLevel::kEnabled);
   // Dirty bit should be true.
   EXPECT_TRUE(
       test_web_contents_helper->subresource_blocked_in_current_primary_page());
@@ -359,12 +407,13 @@ class FakeRefreshMetricsManager : public RefreshMetricsManager {
 // Inherits everything from FingerprintingProtectionWebContentsHelper, except
 // for using a MockRefreshMetricsManager and implementing the factory functions
 // as necessary.
-class MockWCHForRefreshCountMetricsTest
+class MockWCHForRefreshCountTests
     : public FingerprintingProtectionWebContentsHelper {
  public:
   static void CreateForWebContents(
       WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito) {
@@ -374,26 +423,28 @@ class MockWCHForRefreshCountMetricsTest
       return;
     }
 
-    content::WebContentsUserData<MockWCHForRefreshCountMetricsTest>::
-        CreateForWebContents(web_contents, pref_service,
+    content::WebContentsUserData<MockWCHForRefreshCountTests>::
+        CreateForWebContents(web_contents, pref_service, content_settings,
                              tracking_protection_settings, dealer_handle,
                              is_incognito);
   }
 
-  static MockWCHForRefreshCountMetricsTest* FromWebContents(
+  static MockWCHForRefreshCountTests* FromWebContents(
       WebContents* web_contents) {
-    return WebContentsUserData<
-        MockWCHForRefreshCountMetricsTest>::FromWebContents(web_contents);
+    return WebContentsUserData<MockWCHForRefreshCountTests>::FromWebContents(
+        web_contents);
   }
 
-  explicit MockWCHForRefreshCountMetricsTest(
+  explicit MockWCHForRefreshCountTests(
       WebContents* web_contents,
       PrefService* pref_service,
+      HostContentSettingsMap* content_settings,
       TrackingProtectionSettings* tracking_protection_settings,
       VerifiedRulesetDealer::Handle* dealer_handle,
       bool is_incognito)
       : FingerprintingProtectionWebContentsHelper(web_contents,
                                                   pref_service,
+                                                  content_settings,
                                                   tracking_protection_settings,
                                                   dealer_handle,
                                                   is_incognito) {}
@@ -406,7 +457,7 @@ class MockWCHForRefreshCountMetricsTest
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MockWCHForRefreshCountMetricsTest);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MockWCHForRefreshCountTests);
 
 class FingerprintingProtectionRefreshCountMetricsTest
     : public content::RenderViewHostTestHarness {
@@ -418,23 +469,33 @@ class FingerprintingProtectionRefreshCountMetricsTest
     // Enable feature flag - necessary for creating FPWebContentsHelper.
     scoped_feature_list_.InitAndEnableFeature(
         features::kEnableFingerprintingProtectionFilter);
+  }
 
-    // Create WebContentsHelper.
-    MockWCHForRefreshCountMetricsTest::CreateForWebContents(
+  void InitializeWebContentsHelper(bool is_incognito) {
+    MockWCHForRefreshCountTests::CreateForWebContents(
         RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+        test_support_.content_settings(),
         test_support_.tracking_protection_settings(),
-        /*dealer_handle=*/nullptr,
-        /*is_incognito=*/false);
+        /*dealer_handle=*/nullptr, is_incognito);
   }
 
   void TearDown() override { RenderViewHostTestHarness::TearDown(); }
 
-  // Navigate to the given URL and then reload n times.
-  void NavigateAndReloadNTimes(std::string_view url, int n) {
+  // Navigate to the given URL, then simulate subresource blocked and reload n
+  // times.
+  void NavigateBlockSubresourceAndReloadNTimes(std::string_view url,
+                                               int n,
+                                               bool block_subresource = true) {
     WebContents* web_contents = RenderViewHostTestHarness::web_contents();
+    MockWCHForRefreshCountTests* web_contents_helper =
+        MockWCHForRefreshCountTests::FromWebContents(web_contents);
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
                                                                GURL(url));
     for (int i = 0; i < n; i++) {
+      if (block_subresource) {
+        web_contents_helper->NotifyOnBlockedSubresource(
+            ActivationLevel::kEnabled);
+      }
       content::NavigationSimulator::Reload(web_contents);
     }
   }
@@ -462,11 +523,12 @@ class FingerprintingProtectionRefreshCountMetricsTest
 };
 
 TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       OneRefreshOnOneSite_LogsRefreshMetrics) {
+       OneRefreshOnOneSite_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Do navigation and reload once.
-  NavigateAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -479,12 +541,32 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
   ExpectRefreshCountUkmsAre({{kGoogleUkmId, 1}});
 }
 
-TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       MultipleRefreshesOnOneSite_LogsRefreshMetrics) {
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    OneRefreshOnOneSite_NoBlockedSubresource_NoLoggedRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Do navigation and reload three times.
-  NavigateAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1, false);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 0);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       MultipleRefreshesOnOneSite_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -498,15 +580,14 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
 }
 
 TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       MultipleNonContiguousRefreshesOnOneSite_LogsRefreshMetrics) {
+       MultipleNonContiguousRefreshesOnOneSite_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Do navigation and reload once.
-  NavigateAndReloadNTimes(kGoogleUrl, 1);
-  // Navigate elsewhere.
-  NavigateAndReloadNTimes(kYoutubeUrl, 0);
-  // Navigate back and reload twice.
-  NavigateAndReloadNTimes(kGoogleUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -519,14 +600,37 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
   ExpectRefreshCountUkmsAre({{kGoogleUkmId, 3}});
 }
 
-TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       OneRefreshEachOnMultipleSites_LogsRefreshMetrics) {
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    MultipleNonContiguousRefreshesOnOneSite_NotAlwaysBlocked_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Navigate and reload once each.
-  NavigateAndReloadNTimes(kGoogleUrl, 1);
-  NavigateAndReloadNTimes(kYoutubeUrl, 1);
-  NavigateAndReloadNTimes(kAppspotUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  // Don't block subresource on the last 2 -> only 1 effective refresh.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2, false);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({{kGoogleUkmId, 1}});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       OneRefreshEachOnMultipleSites_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -541,13 +645,14 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
 }
 
 TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       MultipleRefreshesEachOnMultipleSites_LogsRefreshMetrics) {
+       MultipleRefreshesEachOnMultipleSites_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Navigate and reload multiple times each.
-  NavigateAndReloadNTimes(kGoogleUrl, 3);
-  NavigateAndReloadNTimes(kYoutubeUrl, 2);
-  NavigateAndReloadNTimes(kAppspotUrl, 4);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 4);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -562,19 +667,21 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
       {{kGoogleUkmId, 3}, {kYoutubeUkmId, 2}, {kAppspotUkmId, 4}});
 }
 
-TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
-       MultipleNonContiguousRefreshesOnMultipleSites_LogsRefreshMetrics) {
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    MultipleNonContiguousRefreshesOnMultipleSites_LogsRefreshMetrics_Incognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
   base::HistogramTester histograms;
 
-  // Navigate between different sites and reload multiple times each.
-  NavigateAndReloadNTimes(kGoogleUrl, 1);
-  NavigateAndReloadNTimes(kYoutubeUrl, 1);
-  NavigateAndReloadNTimes(kAppspotUrl, 2);
-  NavigateAndReloadNTimes(kNonReloadedSiteUrl, 0);
-  NavigateAndReloadNTimes(kYoutubeUrl, 3);
-  NavigateAndReloadNTimes(kGoogleUrl, 1);
-  NavigateAndReloadNTimes(kNonReloadedSiteUrl, 0);
-  NavigateAndReloadNTimes(kAppspotUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 2);
 
   // Close WebContents, triggering log.
   RenderViewHostTestHarness::DeleteContents();
@@ -586,6 +693,542 @@ TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
   // Expected UKMs
   ExpectRefreshCountUkmsAre(
       {{kGoogleUkmId, 2}, {kYoutubeUkmId, 4}, {kAppspotUkmId, 4}});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       OneRefreshOnOneSite_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 1, 1);
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({{kGoogleUkmId, 1}});
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    OneRefreshOnOneSite_NoBlockedSubresource_NoLoggedRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1, false);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 0);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       MultipleRefreshesOnOneSite_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 3, 1);
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({{kGoogleUkmId, 3}});
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    MultipleNonContiguousRefreshesOnOneSite_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 3, 1);
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({{kGoogleUkmId, 3}});
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    MultipleNonContiguousRefreshesOnOneSite_NotAlwaysBlocked_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  // Don't block subresource on the last 2 -> only 1 effective refresh.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2, false);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre({{kGoogleUkmId, 1}});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       OneRefreshEachOnMultipleSites_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 1, 3);
+  histograms.ExpectTotalCount(RefreshCountHistogramName, 3);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre(
+      {{kGoogleUkmId, 1}, {kYoutubeUkmId, 1}, {kAppspotUkmId, 1}});
+}
+
+TEST_F(FingerprintingProtectionRefreshCountMetricsTest,
+       MultipleRefreshesEachOnMultipleSites_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 4);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 3, 1);
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 2, 1);
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 4, 1);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre(
+      {{kGoogleUkmId, 3}, {kYoutubeUkmId, 2}, {kAppspotUkmId, 4}});
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountMetricsTest,
+    MultipleNonContiguousRefreshesOnMultipleSites_LogsRefreshMetrics_NonIncognito) {
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  base::HistogramTester histograms;
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 2);
+
+  // Close WebContents, triggering log.
+  RenderViewHostTestHarness::DeleteContents();
+
+  // Expected UMAs
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 2, 1);
+  histograms.ExpectBucketCount(RefreshCountHistogramName, 4, 2);
+
+  // Expected UKMs
+  ExpectRefreshCountUkmsAre(
+      {{kGoogleUkmId, 2}, {kYoutubeUkmId, 4}, {kAppspotUkmId, 4}});
+}
+
+// Note: In these tests, when testing the latency UMA, we just check whether it
+// is logged at all, as the measurement is done by a subresource filter library
+// macro (UMA_HISTOGRAM_CUSTOM_MICRO_TIMES).
+class FingerprintingProtectionRefreshCountExceptionTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  FingerprintingProtectionRefreshCountExceptionTest() = default;
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    // Enable feature param for adding exception in both regular and incognito.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kEnableFingerprintingProtectionFilter,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "3"},
+           {"performance_measurement_rate", "1.0"}}},
+         {features::kEnableFingerprintingProtectionFilterInIncognito,
+          {{features::kRefreshHeuristicExceptionThresholdParam, "3"},
+           {"performance_measurement_rate", "1.0"}}}},
+        {});
+  }
+
+  void InitializeWebContentsHelper(bool is_incognito) {
+    MockWCHForRefreshCountTests::CreateForWebContents(
+        RenderViewHostTestHarness::web_contents(), test_support_.prefs(),
+        test_support_.content_settings(),
+        test_support_.tracking_protection_settings(),
+        /*dealer_handle=*/nullptr, is_incognito);
+  }
+
+  void TearDown() override { RenderViewHostTestHarness::TearDown(); }
+
+  // Navigate to the given URL, then simulate subresource blocked and reload n
+  // times.
+  void NavigateBlockSubresourceAndReloadNTimes(std::string_view url,
+                                               int n,
+                                               bool block_subresource = true) {
+    WebContents* web_contents = RenderViewHostTestHarness::web_contents();
+    MockWCHForRefreshCountTests* web_contents_helper =
+        MockWCHForRefreshCountTests::FromWebContents(web_contents);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
+                                                               GURL(url));
+    for (int i = 0; i < n; i++) {
+      if (block_subresource) {
+        web_contents_helper->NotifyOnBlockedSubresource(
+            ActivationLevel::kEnabled);
+      }
+      content::NavigationSimulator::Reload(web_contents);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TestSupport test_support_;
+};
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NotEnoughRefreshesOnOneSite_NoException_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 0);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshesOnOneSite_HasException_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NonContiguousRefreshesOnOneSite_HasException_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  // No exception for the non-refreshed site.
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  // UMAs for one exception added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NotEnoughRefreshesOnMultipleSites_NoExceptions_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
+
+  // Not enough refreshes to add exception for any site.
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshesOnMultipleSites_AllHaveExceptions_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  // UMAs for 3 exceptions added
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 3);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 3);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              3);
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountExceptionTest,
+    NonContiguousRefreshesOfDifferentAmountsOnMultipleSites_SomeHaveExceptions_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  // Navigate between different sites and reload multiple times each, but only
+  // Google and Appspot are refreshed enough to have an exception.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 0);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  EXPECT_FALSE(
+      HasBreakageException(GURL(kNonReloadedSiteUrl), *test_support_.prefs()));
+  // UMAs for 2 exceptions added
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 2);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 2);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              2);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshHeuristicParamDisabled_NoException_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  // Disable feature param for exception.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilterInIncognito,
+      {{features::kRefreshHeuristicExceptionThresholdParam, "0"}});
+
+  // Navigate and reload multiple times each.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NoBlockedSubresource_NoException_Incognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/true);
+
+  // Navigate and reload multiple times each, but no blocked subresources.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3, false);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4, false);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5, false);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NotEnoughRefreshesOnOneSite_NoException_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 0);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshesOnOneSite_HasException_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NonContiguousRefreshesOnOneSite_HasException_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  // No exception for the non-refreshed site.
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  // UMAs for one exception added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 1);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 1);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              1);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NotEnoughRefreshesOnMultipleSites_NoExceptions_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
+
+  // Not enough refreshes to add exception for any site.
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshesOnMultipleSites_AllHaveExceptions_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  // UMAs for three exceptions added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 3);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 3);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              3);
+}
+
+TEST_F(
+    FingerprintingProtectionRefreshCountExceptionTest,
+    NonContiguousRefreshesOfDifferentAmountsOnMultipleSites_SomeHaveExceptions_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  // Navigate between different sites and reload multiple times each, but only
+  // Google and Appspot are refreshed enough to have an exception.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 1);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 2);
+  NavigateBlockSubresourceAndReloadNTimes(kNonReloadedSiteUrl, 0);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 0);
+
+  EXPECT_TRUE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_TRUE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  EXPECT_FALSE(
+      HasBreakageException(GURL(kNonReloadedSiteUrl), *test_support_.prefs()));
+  // UMAs for two exceptions added.
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 2);
+  histograms.ExpectUniqueSample(AddRefreshCountExceptionHistogramName, 1, 2);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              2);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       RefreshHeuristicParamDisabled_NoException_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  // Disable feature param for exception.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kEnableFingerprintingProtectionFilter,
+      {{features::kRefreshHeuristicExceptionThresholdParam, "0"}});
+
+  // Navigate and reload multiple times each.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
+}
+
+TEST_F(FingerprintingProtectionRefreshCountExceptionTest,
+       NoBlockedSubresource_NoException_NonIncognito) {
+  base::HistogramTester histograms;
+  InitializeWebContentsHelper(/*is_incognito=*/false);
+
+  // Navigate and reload multiple times each, but no blocked subresources.
+  NavigateBlockSubresourceAndReloadNTimes(kGoogleUrl, 3, false);
+  NavigateBlockSubresourceAndReloadNTimes(kYoutubeUrl, 4, false);
+  NavigateBlockSubresourceAndReloadNTimes(kAppspotUrl, 5, false);
+
+  EXPECT_FALSE(HasBreakageException(GURL(kGoogleUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kYoutubeUrl), *test_support_.prefs()));
+  EXPECT_FALSE(HasBreakageException(GURL(kAppspotUrl), *test_support_.prefs()));
+  histograms.ExpectTotalCount(AddRefreshCountExceptionHistogramName, 0);
+  histograms.ExpectTotalCount(AddRefreshCountExceptionWallDurationHistogramName,
+                              0);
 }
 
 }  // namespace

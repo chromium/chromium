@@ -67,7 +67,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
   static const base::span<const int32_t> vibration_pattern(
       const blink::PlatformNotificationData& data) {
     // TODO(https://crbug.com/798466): Store as int32s to avoid this cast.
-    return base::make_span(
+    return base::span(
         reinterpret_cast<const int32_t*>(data.vibration_pattern.data()),
         data.vibration_pattern.size());
   }

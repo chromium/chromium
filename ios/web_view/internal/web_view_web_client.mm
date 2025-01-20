@@ -195,4 +195,7 @@ bool WebViewWebClient::IsInsecureFormWarningEnabled(
       security_interstitials::features::kInsecureFormSubmissionInterstitial);
 }
 
+void WebViewWebClient::BuildEditMenu(web::WebState* web_state,
+                                     id<UIMenuBuilder>) const {}
+
 }  // namespace ios_web_view

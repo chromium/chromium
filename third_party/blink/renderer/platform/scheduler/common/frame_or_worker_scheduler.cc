@@ -16,17 +16,6 @@
 
 namespace blink {
 
-namespace {
-
-// Returns whether features::kRegisterJSSourceLocationBlockingBFCache is
-// enabled.
-bool IsRegisterJSSourceLocationBlockingBFCache() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kRegisterJSSourceLocationBlockingBFCache);
-}
-
-}  // namespace
-
 FrameOrWorkerScheduler::LifecycleObserverHandle::LifecycleObserverHandle(
     FrameOrWorkerScheduler* scheduler)
     : scheduler_(scheduler->GetWeakPtr()) {}
@@ -55,6 +44,7 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&& other)
     : feature_(other.feature_),
+      policy_(std::move(other.policy_)),
       feature_and_js_location_(other.feature_and_js_location_),
       scheduler_(std::move(other.scheduler_)) {
   other.scheduler_ = nullptr;
@@ -97,15 +87,13 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
 FrameOrWorkerScheduler::RegisterFeature(SchedulingPolicy::Feature feature,
                                         SchedulingPolicy policy) {
   DCHECK(!scheduler::IsFeatureSticky(feature));
-  if (IsRegisterJSSourceLocationBlockingBFCache()) {
-    // Check if V8 is currently running an isolate.
-    // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
-    // is running.
-    if (v8::Isolate::TryGetCurrent()) {
-      return SchedulingAffectingFeatureHandle(
-          feature, policy, CaptureSourceLocation(),
-          GetFrameOrWorkerSchedulerWeakPtr());
-    }
+  // Check if V8 is currently running an isolate.
+  // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
+  // is running.
+  if (v8::Isolate::TryGetCurrent()) {
+    return SchedulingAffectingFeatureHandle(feature, policy,
+                                            CaptureSourceLocation(),
+                                            GetFrameOrWorkerSchedulerWeakPtr());
   }
   return SchedulingAffectingFeatureHandle(feature, policy, nullptr,
                                           GetFrameOrWorkerSchedulerWeakPtr());
@@ -115,8 +103,7 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
-  if (IsRegisterJSSourceLocationBlockingBFCache() &&
-      v8::Isolate::TryGetCurrent()) {
+  if (v8::Isolate::TryGetCurrent()) {
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
     OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());

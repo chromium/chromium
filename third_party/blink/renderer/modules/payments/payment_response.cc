@@ -24,11 +24,10 @@
 namespace blink {
 namespace {
 
-v8::Local<v8::Value> BuildDetails(
-    ScriptState* script_state,
-    const String& json,
-    mojom::blink::GetAssertionAuthenticatorResponsePtr
-        get_assertion_authentication_response) {
+ScriptObject BuildDetails(ScriptState* script_state,
+                          const String& json,
+                          mojom::blink::GetAssertionAuthenticatorResponsePtr
+                              get_assertion_authentication_response) {
   if (get_assertion_authentication_response) {
     const auto& info = get_assertion_authentication_response->info;
     auto* authenticator_response =
@@ -44,20 +43,21 @@ v8::Local<v8::Value> BuildDetails(
         get_assertion_authentication_response->authenticator_attachment,
         ConvertTo<AuthenticationExtensionsClientOutputs*>(
             get_assertion_authentication_response->extensions));
-    return result->ToV8(script_state);
+    return ScriptObject(script_state->GetIsolate(), result->ToV8(script_state));
   }
 
   if (json.empty()) {
-    return V8ObjectBuilder(script_state).V8Value();
+    return V8ObjectBuilder(script_state).ToScriptObject();
   }
 
   v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Value> parsed_value = FromJSONString(script_state, json);
   if (try_catch.HasCaught()) {
-    return V8ObjectBuilder(script_state).V8Value();
+    return V8ObjectBuilder(script_state).ToScriptObject();
   }
 
-  return parsed_value;
+  CHECK(parsed_value->IsObject());
+  return ScriptObject(script_state->GetIsolate(), parsed_value);
 }
 
 }  // namespace
@@ -80,10 +80,9 @@ PaymentResponse::PaymentResponse(
       payment_state_resolver_(payment_state_resolver) {
   DCHECK(payment_state_resolver_);
   ScriptState::Scope scope(script_state);
-  details_.Set(
-      script_state->GetIsolate(),
+  details_ =
       BuildDetails(script_state, response->stringified_details,
-                   std::move(response->get_assertion_authenticator_response)));
+                   std::move(response->get_assertion_authenticator_response));
 }
 
 PaymentResponse::~PaymentResponse() = default;
@@ -101,10 +100,9 @@ void PaymentResponse::Update(
   payer_email_ = response->payer->email;
   payer_phone_ = response->payer->phone;
   ScriptState::Scope scope(script_state);
-  details_.Set(
-      script_state->GetIsolate(),
+  details_ =
       BuildDetails(script_state, response->stringified_details,
-                   std::move(response->get_assertion_authenticator_response)));
+                   std::move(response->get_assertion_authenticator_response));
 }
 
 void PaymentResponse::UpdatePayerDetail(
@@ -115,16 +113,17 @@ void PaymentResponse::UpdatePayerDetail(
   payer_phone_ = detail->phone;
 }
 
-ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject PaymentResponse::toJSONForBinding(
+    ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("requestId", requestId());
   result.AddString("methodName", methodName());
-  result.AddV8Value("details", details(script_state).V8Value());
+  result.AddV8Value("details", details().V8Object());
 
   if (shippingAddress()) {
     result.AddV8Value(
         "shippingAddress",
-        shippingAddress()->toJSONForBinding(script_state).V8Value());
+        shippingAddress()->toJSONForBinding(script_state).V8Object());
   } else {
     result.AddNull("shippingAddress");
   }
@@ -134,12 +133,7 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
       .AddStringOrNull("payerEmail", payerEmail())
       .AddStringOrNull("payerPhone", payerPhone());
 
-  return result.GetScriptValue();
-}
-
-ScriptValue PaymentResponse::details(ScriptState* script_state) const {
-  return ScriptValue(script_state->GetIsolate(),
-                     details_.GetAcrossWorld(script_state));
+  return result.ToScriptObject();
 }
 
 ScriptPromise<IDLUndefined> PaymentResponse::complete(

@@ -56,8 +56,9 @@ std::optional<std::u16string> MapAppIdToShortName(
                                   name = base::UTF8ToUTF16(update.ShortName());
                                 }
                               });
-    if (name.has_value())
+    if (name.has_value()) {
       return name;
+    }
   }
 
   return std::nullopt;
@@ -132,8 +133,9 @@ std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
   for (const auto& app_id : *app_id_list) {
     std::optional<std::u16string> app_name = MapAppIdToShortName(
         app_id, cap_cache, reg_cache, apps_accessing_sensor);
-    if (app_name.has_value())
+    if (app_name.has_value()) {
       app_names.push_back(app_name.value());
+    }
   }
   return app_names;
 }
@@ -245,8 +247,9 @@ std::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
     std::string app_id) {
   std::optional<std::u16string> name;
   auto* registry_cache = GetActiveUserAppRegistryCache();
-  if (!registry_cache)
+  if (!registry_cache) {
     return name;
+  }
 
   registry_cache->ForEachApp([&app_id, &name](const apps::AppUpdate& update) {
     if (update.AppId() == app_id) {
@@ -291,16 +294,18 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
 AccountId AppAccessNotifier::GetActiveUserAccountId() {
   auto* manager = user_manager::UserManager::Get();
   const user_manager::User* active_user = manager->GetActiveUser();
-  if (!active_user)
+  if (!active_user) {
     return EmptyAccountId();
+  }
 
   return active_user->GetAccountId();
 }
 
 void AppAccessNotifier::CheckActiveUserChanged() {
   AccountId id = GetActiveUserAccountId();
-  if (id == EmptyAccountId() || id == active_user_account_id_)
+  if (id == EmptyAccountId() || id == active_user_account_id_) {
     return;
+  }
 
   if (active_user_account_id_ != EmptyAccountId()) {
     app_capability_access_cache_observation_.Reset();

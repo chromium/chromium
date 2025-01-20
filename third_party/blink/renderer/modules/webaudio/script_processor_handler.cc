@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/script_processor_node.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -48,7 +49,9 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       internal_input_bus_(AudioBus::Create(
           number_of_input_channels,
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-          false)) {
+          false)),
+      allow_denormal_in_processing_(base::FeatureList::IsEnabled(
+          features::kWebAudioAllowDenormalInProcessing)) {
   DCHECK_GE(buffer_size_,
             node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
@@ -109,7 +112,7 @@ void ScriptProcessorHandler::Initialize() {
   AudioHandler::Initialize();
 }
 
-void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
+void ScriptProcessorHandler::ProcessInternal(uint32_t frames_to_process) {
   TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                      "ScriptProcessorHandler::Process");
 
@@ -236,6 +239,15 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 
   TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                    "ScriptProcessorHandler::Process");
+}
+
+void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
+  if (allow_denormal_in_processing_) {
+    DenormalEnabler denormal_enabler;
+    ProcessInternal(frames_to_process);
+  } else {
+    ProcessInternal(frames_to_process);
+  }
 }
 
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {

@@ -22,6 +22,8 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -46,7 +49,7 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
@@ -57,7 +60,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
+public class ProfileDataCacheRenderTest {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
     public static final String ACCOUNT_EMAIL = "test@gmail.com";
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -67,6 +70,12 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
             Arrays.asList(
                     new ParameterSet().value(64).name("ImageSize64"),
                     new ParameterSet().value(128).name("ImageSize128"));
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private final @Px int mImageSize;
 
@@ -94,6 +103,11 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     private IdentityManager mIdentityManager;
     private ProfileDataCache mProfileDataCache;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() {
         IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
@@ -105,15 +119,14 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
                                     NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
 
                     AccountInfoServiceProvider.init(mIdentityManager);
-                    Activity activity = getActivity();
-                    mContentView = new FrameLayout(activity);
-                    mImageView = new ChromeImageView(activity);
+                    mContentView = new FrameLayout(sActivity);
+                    mImageView = new ChromeImageView(sActivity);
                     mContentView.addView(
                             mImageView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    activity.setContentView(mContentView);
+                    sActivity.setContentView(mContentView);
 
                     mProfileDataCache =
-                            new ProfileDataCache(activity, mImageSize, /* badgeConfig= */ null);
+                            new ProfileDataCache(sActivity, mImageSize, /* badgeConfig= */ null);
                 });
     }
 
@@ -146,8 +159,7 @@ public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
-                            new ProfileDataCache(
-                                    getActivity(), mImageSize, /* badgeConfig= */ null);
+                            new ProfileDataCache(sActivity, mImageSize, /* badgeConfig= */ null);
                 });
 
         CriteriaHelper.pollUiThread(

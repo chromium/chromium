@@ -48,4 +48,7 @@ cargo_crate("lib") {
     "simd",
     "zerocopy-derive",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

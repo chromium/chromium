@@ -64,6 +64,7 @@ public class IdentityServicesProvider {
 
     @NativeMethods
     public interface Natives {
+        @JniType("signin::IdentityManager*")
         IdentityManager getIdentityManager(@JniType("Profile*") Profile profile);
 
         SigninManager getSigninManager(@JniType("Profile*") Profile profile);

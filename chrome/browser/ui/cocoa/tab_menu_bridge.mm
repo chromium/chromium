@@ -94,8 +94,9 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
 }
 
 TabMenuBridge::~TabMenuBridge() {
-  if (model_)
+  if (model_) {
     model_->RemoveObserver(this);
+  }
   RemoveMenuItems(DynamicMenuItems());
 }
 
@@ -151,8 +152,9 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
 }
 
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
-  if (!model_)
+  if (!model_) {
     return;
+  }
 
   DCHECK_EQ(item.target, menu_listener_);
   int index = [menu_item_.submenu indexOfItem:item] - dynamic_items_start_;
@@ -174,7 +176,7 @@ void TabMenuBridge::OnTabStripModelChanged(
     const TabStripModelChange::Replace* replace = change.GetReplace();
     int menu_index = replace->index + dynamic_items_start_;
     UpdateItemForWebContents([menu_item_.submenu itemAtIndex:menu_index],
-                             replace->new_contents);
+                             replace -> new_contents);
     return;
   }
 
@@ -188,8 +190,9 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
 
   // Ignore loading state changes - they happen very often during page load and
   // are used to drive the load spinner, which is not interesting to this menu.
-  if (change_type == TabChangeType::kLoadingOnly)
+  if (change_type == TabChangeType::kLoadingOnly) {
     return;
+  }
 
   int menu_index = index + dynamic_items_start_;
 
@@ -205,8 +208,9 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
   // As such, this code early-outs instead of DCHECKing. The newly-added
   // WebContents will be picked up later anyway when this object does get
   // notified of the addition.
-  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems)
+  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems) {
     return;
+  }
 
   NSMenuItem* item = [menu_item_.submenu itemAtIndex:menu_index];
   UpdateItemForWebContents(item, contents);

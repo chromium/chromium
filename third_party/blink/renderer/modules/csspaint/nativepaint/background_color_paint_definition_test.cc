@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -41,6 +40,8 @@ class FakeBackgroundColorPaintImageGenerator
 
   scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
                              const Node* node) override {
+    LayoutObject* layout_object = node->GetLayoutObject();
+    layout_object->GetMutableForPainting().FirstFragment().EnsureId();
     return BitmapImage::Create();
   }
 
@@ -218,6 +219,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
   element_animations = element->GetElementAnimations();
   EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 
   // Reset.
   inline_style->setProperty(
@@ -236,6 +238,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
   element_animations = element->GetElementAnimations();
   EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Add blur to grandparent.
   Element* grandparent = GetElementById("grandparent");
@@ -250,6 +253,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
   element_animations = element->GetElementAnimations();
   EXPECT_EQ(element_animations->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
 // Test the case when there is no animation attached to the element.
@@ -1007,6 +1011,44 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
   RunPaintForTest(animated_colors, offsets, property_values);
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest, OffscreenToOnScreen) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        from { background-color: red }
+        to { background-color: green; }
+      }
+      #target {
+        animation: colorize 1s forwards;
+        height: 100px;
+        width: 100px;
+      }
+      #spacer {
+        height: 5000px;
+      }
+    }
+    </style>
+    <div id = "spacer"></div>
+    <div id ="target" style="width: 100px; height: 100px"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+  Animation* animation =
+      element->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  GetElementById("spacer")->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 }
 
 }  // namespace blink

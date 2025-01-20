@@ -13,7 +13,6 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -54,10 +53,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A Mediator responsible for converting an OfflineContentProvider to a list of items in downloads
- * home.  This includes support for filtering, deleting, etc..
+ * home. This includes support for filtering, deleting, etc..
  */
 class DateOrderedListMediator implements BackPressHandler {
     /** Helper interface for handling share requests by the UI. */
@@ -245,6 +245,7 @@ class DateOrderedListMediator implements BackPressHandler {
     /** Tears down this mediator. */
     public void destroy() {
         mSource.destroy();
+        mFaviconProvider.destroy();
         mThumbnailProvider.destroy();
     }
 
@@ -355,7 +356,7 @@ class DateOrderedListMediator implements BackPressHandler {
     }
 
     private void onShareItem(OfflineItem item) {
-        shareItemsInternal(CollectionUtil.newHashSet(item));
+        shareItemsInternal(Set.of(item));
     }
 
     private void onRenameItem(OfflineItem item) {

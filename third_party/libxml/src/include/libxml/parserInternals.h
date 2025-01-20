@@ -258,8 +258,8 @@ XMLPUBVAR const unsigned int xmlParserMaxDepth;
  * Macro to check [a-zA-Z]
  *
  */
-#define IS_ASCII_LETTER(c)	(((0x41 <= (c)) && ((c) <= 0x5a)) || \
-				 ((0x61 <= (c)) && ((c) <= 0x7a)))
+#define IS_ASCII_LETTER(c)	((0x61 <= ((c) | 0x20)) && \
+                                 (((c) | 0x20) <= 0x7a))
 
 /**
  * IS_ASCII_DIGIT:
@@ -294,6 +294,7 @@ XMLPUBVAR const unsigned int xmlParserMaxDepth;
  */
 XMLPUBVAR const xmlChar xmlStringText[];
 XMLPUBVAR const xmlChar xmlStringTextNoenc[];
+XML_DEPRECATED
 XMLPUBVAR const xmlChar xmlStringComment[];
 
 XML_DEPRECATED
@@ -310,6 +311,7 @@ XMLPUBFUN xmlParserCtxtPtr
 XMLPUBFUN xmlParserCtxtPtr
 			xmlCreateMemoryParserCtxt(const char *buffer,
 						 int size);
+XML_DEPRECATED
 XMLPUBFUN xmlParserCtxtPtr
 			xmlCreateEntityParserCtxt(const xmlChar *URL,
 						 const xmlChar *ID,
@@ -342,8 +344,15 @@ XMLPUBFUN xmlParserInputPtr
 			xmlNewEntityInputStream	(xmlParserCtxtPtr ctxt,
 						 xmlEntityPtr entity);
 XMLPUBFUN int
+			xmlCtxtPushInput	(xmlParserCtxtPtr ctxt,
+						 xmlParserInputPtr input);
+XMLPUBFUN xmlParserInputPtr
+			xmlCtxtPopInput		(xmlParserCtxtPtr ctxt);
+XML_DEPRECATED
+XMLPUBFUN int
 			xmlPushInput		(xmlParserCtxtPtr ctxt,
 						 xmlParserInputPtr input);
+XML_DEPRECATED
 XMLPUBFUN xmlChar
 			xmlPopInput		(xmlParserCtxtPtr ctxt);
 XMLPUBFUN void
@@ -509,6 +518,7 @@ XMLPUBFUN void
 XML_DEPRECATED
 XMLPUBFUN void
 			xmlParseMisc		(xmlParserCtxtPtr ctxt);
+XML_DEPRECATED
 XMLPUBFUN void
 			xmlParseExternalSubset	(xmlParserCtxtPtr ctxt,
 						 const xmlChar *ExternalID,
@@ -593,6 +603,7 @@ XMLPUBFUN int			xmlCheckLanguageID	(const xmlChar *lang);
 XML_DEPRECATED
 XMLPUBFUN int			xmlCurrentChar		(xmlParserCtxtPtr ctxt,
 						 int *len);
+XML_DEPRECATED
 XMLPUBFUN int		xmlCopyCharMultiByte	(xmlChar *out,
 						 int val);
 XML_DEPRECATED

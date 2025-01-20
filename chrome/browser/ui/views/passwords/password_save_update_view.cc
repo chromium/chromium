@@ -32,7 +32,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,22 +48,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Initiates a `MovePasswordToAccountStoreHelper`, which takes care of moving
-// the `form` from profile to account store.
-void MovePasswordToAccount(
-    const password_manager::PasswordForm& form,
-    password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
-    content::WebContents* web_contents) {
-  PasswordsModelDelegateFromWebContents(web_contents)
-      ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-}  // namespace
 
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
@@ -201,18 +184,6 @@ const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
   return &controller_;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool PasswordSaveUpdateView::OnCloseRequested(
-    views::Widget::ClosedReason close_reason) {
-  if (is_signin_promo_bubble_ &&
-      (close_reason == views::Widget::ClosedReason::kCloseButtonClicked ||
-       close_reason == views::Widget::ClosedReason::kEscKeyPressed)) {
-    AutofillBubbleSignInPromoView::RecordSignInPromoDismissed(web_contents());
-  }
-  return true;
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Close the bubble if the sign in promo should not be shown.
@@ -237,37 +208,16 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   accessibility_view->SetVisible(false);
   accessibility_alert_ = AddChildView(std::move(accessibility_view));
 
-  auto move_callback =
-      base::BindOnce(&MovePasswordToAccount, controller_.pending_password(),
-                     password_manager::metrics_util::MoveToAccountStoreTrigger::
-                         kUserOptedInAfterSavingLocally);
-
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
       controller_.GetWebContents(),
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-      std::move(move_callback));
+      PasswordFormUniqueKey(controller_.pending_password()));
   AddChildView(std::move(sign_in_promo));
-
-  // Record that the sign in promo was shown.
-  Profile* profile = controller_.GetProfile();
-  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(profile));
-
-  if (account.gaia.empty()) {
-    int show_count = profile->GetPrefs()->GetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile);
-    profile->GetPrefs()->SetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile, show_count + 1);
-  } else {
-    SigninPrefs(*profile->GetPrefs())
-        .IncrementPasswordSigninPromoImpressionCount(account.gaia);
-  }
 
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();
 
-  is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kPasswordBubble);
 
@@ -328,15 +278,9 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
 void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  std::u16string ok_button_text;
-  if (controller_.IsAccountStorageOptInRequiredBeforeSave()) {
-    ok_button_text = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON);
-  } else {
-    ok_button_text = l10n_util::GetStringUTF16(
-        controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
-                                           : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
-  }
+  std::u16string ok_button_text = l10n_util::GetStringUTF16(
+      controller_.IsCurrentStateUpdate() ? IDS_PASSWORD_MANAGER_UPDATE_BUTTON
+                                         : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
   SetButtonLabel(ui::mojom::DialogButton::kOk, ok_button_text);
   SetButtonLabel(
       ui::mojom::DialogButton::kCancel,

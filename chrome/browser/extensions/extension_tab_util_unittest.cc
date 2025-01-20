@@ -186,6 +186,13 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
         kFileURL, /*extension=*/nullptr, browser_context());
     EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURL)));
   }
+  // Regression test for crbug.com/348405962.
+  {
+    const std::string kTestPath("mailto:8080?cc=&bcc=&subject=&body=");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kTestPath, extension.get(), browser_context());
+    EXPECT_THAT(url, base::test::ValueIs(GURL(kTestPath)));
+  }
 }
 
 TEST_F(ChromeExtensionNavigationTest,

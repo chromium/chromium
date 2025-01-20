@@ -24,6 +24,7 @@ class OptionalVotingChannel {
   using VotingChannel = voting::VotingChannel<VoteImpl>;
   using VoteType = VoteImpl::VoteType;
 
+  OptionalVotingChannel();
   explicit OptionalVotingChannel(VotingChannel upstream_voting_channel);
   ~OptionalVotingChannel();
 
@@ -49,6 +50,12 @@ class OptionalVotingChannel {
   // valid.
   void InvalidateVote(const ContextType* context);
 
+  // Returns true if this VotingChannel is valid.
+  bool IsValid() const;
+
+  // Resets this voting channel.
+  void Reset();
+
   VoterId voter_id() const { return upstream_voting_channel_.voter_id(); }
 
  private:
@@ -56,6 +63,9 @@ class OptionalVotingChannel {
 
   std::map<const ContextType*, std::optional<VoteImpl>> votes_;
 };
+
+template <class VoteImpl>
+OptionalVotingChannel<VoteImpl>::OptionalVotingChannel() = default;
 
 template <class VoteImpl>
 OptionalVotingChannel<VoteImpl>::OptionalVotingChannel(
@@ -127,6 +137,16 @@ void OptionalVotingChannel<VoteImpl>::InvalidateVote(
   if (had_value) {
     upstream_voting_channel_.InvalidateVote(context);
   }
+}
+
+template <class VoteImpl>
+bool OptionalVotingChannel<VoteImpl>::IsValid() const {
+  return upstream_voting_channel_.IsValid();
+}
+
+template <class VoteImpl>
+void OptionalVotingChannel<VoteImpl>::Reset() {
+  upstream_voting_channel_.Reset();
 }
 
 }  // namespace performance_manager::voting

@@ -62,32 +62,16 @@ void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {
       static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
-void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_primary_account_id) {
-  DeviceAccountsSynchronizer* device_accounts_synchronizer =
-      identity_mutator_->GetDeviceAccountsSynchronizer();
-  DCHECK(device_accounts_synchronizer);
-  std::optional<CoreAccountId> primary_account_id;
-  if (j_primary_account_id) {
-    primary_account_id =
-        ConvertFromJavaCoreAccountId(env, j_primary_account_id);
-  }
-  device_accounts_synchronizer->ReloadAllAccountsFromSystemWithPrimaryAccount(
-      primary_account_id);
-}
-
 void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
+    const base::android::JavaParamRef<jobjectArray>& j_account_infos,
     const base::android::JavaParamRef<jobject>& j_primary_account_id) {
-  std::vector<CoreAccountInfo> core_account_infos;
+  std::vector<AccountInfo> accounts;
   for (size_t i = 0;
-       i < base::android::SafeGetArrayLength(env, j_core_account_infos); i++) {
-    base::android::ScopedJavaLocalRef<jobject> core_account_info_java(
-        env, env->GetObjectArrayElement(j_core_account_infos.obj(), i));
-    core_account_infos.push_back(
-        ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
+       i < base::android::SafeGetArrayLength(env, j_account_infos); i++) {
+    base::android::ScopedJavaLocalRef<jobject> account_info_java(
+        env, env->GetObjectArrayElement(j_account_infos.obj(), i));
+    accounts.push_back(ConvertFromJavaAccountInfo(env, account_info_java));
   }
 
   std::optional<CoreAccountId> primary_account_id;
@@ -102,7 +86,7 @@ void JniIdentityMutator::SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       identity_mutator_->GetDeviceAccountsSynchronizer();
   CHECK(device_accounts_synchronizer);
   device_accounts_synchronizer
-      ->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(core_account_infos,
+      ->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(accounts,
                                                             primary_account_id);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -130,9 +114,10 @@ IdentityMutator::IdentityMutator(
 
 IdentityMutator::~IdentityMutator() {
 #if BUILDFLAG(IS_ANDROID)
-  if (java_identity_mutator_)
+  if (java_identity_mutator_) {
     Java_IdentityMutator_destroy(base::android::AttachCurrentThread(),
                                  java_identity_mutator_);
+  }
 #endif
 }
 

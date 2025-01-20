@@ -428,7 +428,7 @@ class ChildThreadImpl::IOThreadState
     content::SetPseudonymizationSalt(salt);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ReinitializeLogging(mojom::LoggingSettingsPtr settings) override {
     logging::LoggingSettings logging_settings;
     logging_settings.logging_dest = settings->logging_dest;
@@ -454,13 +454,14 @@ class ChildThreadImpl::IOThreadState
 #endif
 
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override {
-    if (base::FeatureList::IsEnabled(features::kBatterySaverModeAlignWakeUps)) {
-      if (battery_saver_mode_enabled) {
+    if (battery_saver_mode_enabled) {
+      if (base::FeatureList::IsEnabled(
+              features::kBatterySaverModeAlignWakeUps)) {
         base::MessagePump::OverrideAlignWakeUpsState(true,
                                                      base::Milliseconds(32));
-      } else {
-        base::MessagePump::ResetAlignWakeUpsState();
       }
+    } else {
+      base::MessagePump::ResetAlignWakeUpsState();
     }
     main_thread_task_runner_->PostTask(
         FROM_HERE,

@@ -51,11 +51,9 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   return app_contents;
 }
 
-PermissionBubbleKioskBrowserTest::PermissionBubbleKioskBrowserTest() {
-}
+PermissionBubbleKioskBrowserTest::PermissionBubbleKioskBrowserTest() = default;
 
-PermissionBubbleKioskBrowserTest::~PermissionBubbleKioskBrowserTest() {
-}
+PermissionBubbleKioskBrowserTest::~PermissionBubbleKioskBrowserTest() = default;
 
 void PermissionBubbleKioskBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {

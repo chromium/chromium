@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace content {
@@ -99,11 +99,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
-
-  // Informs the controller that the suggestions may not be hidden by stale data
-  // or interactions with native Chrome UI. This state remains active until the
-  // view is destroyed.
-  virtual void PinView() = 0;
 
  protected:
   ~AutofillSuggestionController() override = default;

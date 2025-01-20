@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
@@ -23,6 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -523,7 +523,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     if (surface_manager) {
       ash::ArcNotificationSurface* surface =
           surface_manager->GetArcSurface(event_data->notification_key.value());
-      if (surface) {
+      if (surface && surface->IsAttached()) {
         surface->GetAttachedHost()->NotifyAccessibilityEvent(
             ax::mojom::Event::kTextSelectionChanged, true);
       }

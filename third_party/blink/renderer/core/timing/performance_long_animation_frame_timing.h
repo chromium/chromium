@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_LONG_ANIMATION_FRAME_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_LONG_ANIMATION_FRAME_TIMING_H_
 
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
@@ -19,32 +21,44 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
  public:
   // This constructor uses int for |duration| to coarsen it in advance.
   // LongAnimationFrameTiming is always at 1-ms granularity.
-  PerformanceLongAnimationFrameTiming(AnimationFrameTimingInfo* info,
+
+  static PerformanceLongAnimationFrameTiming* Create(
+      AnimationFrameTimingInfo* info,
+      base::TimeTicks time_origin,
+      bool cross_origin_isolated_capability,
+      DOMWindow*,
+      const std::optional<DOMPaintTimingInfo>&);
+  ~PerformanceLongAnimationFrameTiming() override;
+
+  PerformanceLongAnimationFrameTiming(double duration,
+                                      DOMHighResTimeStamp startTime,
+                                      AnimationFrameTimingInfo* info,
                                       base::TimeTicks time_origin,
                                       bool cross_origin_isolated_capability,
-                                      DOMWindow* source);
-  ~PerformanceLongAnimationFrameTiming() override;
+                                      DOMWindow*);
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
-  DOMHighResTimeStamp renderStart() const;
-  DOMHighResTimeStamp desiredRenderStart() const;
-  DOMHighResTimeStamp styleAndLayoutStart() const;
-  DOMHighResTimeStamp firstUIEventTimestamp() const;
-  DOMHighResTimeStamp blockingDuration() const;
+  DOMHighResTimeStamp renderStart() const { return render_start_; }
+  DOMHighResTimeStamp styleAndLayoutStart() const {
+    return style_and_layout_start_;
+  }
+  DOMHighResTimeStamp firstUIEventTimestamp() const {
+    return first_ui_event_timestamp_;
+  }
+  DOMHighResTimeStamp blockingDuration() const { return blocking_duration_; }
 
-  const PerformanceScriptVector& scripts() const;
+  const PerformanceScriptVector& scripts() const { return scripts_; }
 
   void Trace(Visitor*) const override;
-
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
-  DOMHighResTimeStamp ToMonotonicTime(base::TimeTicks) const;
-  base::TimeTicks time_origin_;
-  bool cross_origin_isolated_capability_;
-  Member<AnimationFrameTimingInfo> info_;
-  mutable PerformanceScriptVector scripts_;
+  DOMHighResTimeStamp render_start_;
+  DOMHighResTimeStamp style_and_layout_start_;
+  DOMHighResTimeStamp first_ui_event_timestamp_;
+  double blocking_duration_;
+  PerformanceScriptVector scripts_;
 };
 
 }  // namespace blink

@@ -274,6 +274,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
+<translation id="1920390473494685033">Mga Contact</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1925320505152357008">wala pang 1 min</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
@@ -281,6 +282,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1948405482892809935">Lumipat sa susunod na user</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Tapos na ang pag-record ng screen</translation>
+<translation id="1956087014741188812">I-pause ang mga mouse key</translation>
 <translation id="1957958912175573503">Itakda ang iyong wika</translation>
 <translation id="1961239773406905488">Naka-hide ang preview ng camera</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -349,6 +351,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="225680501294068881">Nag-i-scan para sa mga device...</translation>
 <translation id="2257486738914982088">Nagkaproblema habang dina-download ang <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Mga iminumungkahing file</translation>
+<translation id="2266607665880926261">Naka-pause ang mga mouse key</translation>
 <translation id="2268130516524549846">Hindi pinagana ang Bluetooth</translation>
 <translation id="2268731132310444948">Hakbang <ph name="STEP" /> sa <ph name="TOTAL_STEPS" /> ng tour. Kapag na-activate na ang Launcher, magkakaroon ka ng pinahusay na search bar. Puwede kang magsimulang mag-type para hanapin ang iyong mga file, app, at higit pa. Puwede ka ring makakuha ng mga sagot sa mga tanong mo tungkol sa iyong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">I-sign out ang lahat</translation>
@@ -361,6 +364,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2295777434187870477">Naka-on ang mikropono, mamu-mute ang input kapag nag-toggle.</translation>
 <translation id="2302092602801625023">Pinapamahalaan ng Family Link ang account na ito</translation>
 <translation id="2303600792989757991">I-toggle ang window ng pangkalahatang-ideya</translation>
+<translation id="2304702218354340897">Sigurado ka bang gusto mong i-off ang pagkontrol gamit ang mukha?</translation>
 <translation id="2305738328104302723">Listahan ng mga gawain sa Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: mga kamakailang screen capture, download, at naka-pin na file</translation>
 <translation id="2318576281648121272">Ngayon <ph name="TODAY_DATE" /></translation>
@@ -387,6 +391,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2370971919968699910">Posibleng gumastos sa data.
 <ph name="DEVICECOUNT" /> (na) device ang nakakonekta.</translation>
 <translation id="2386292613071805067">I-highlight ang lahat sa page</translation>
+<translation id="2389423187722941333">I-toggle ang Gemini</translation>
 <translation id="2392659840443812875">Walang available na hotspot. Tiyaking nasa malapit ang iyong device at naka-on ang Bluetooth.</translation>
 <translation id="2397416548179033562">Ipakita ang menu ng Chrome</translation>
 <translation id="240006516586367791">Mga kontrol ng media</translation>
@@ -394,6 +399,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2402411679569069051">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo o i-unlock ang iyong telepono</translation>
 <translation id="240545663114741956">Pindutin ang <ph name="ACCELERATOR" /> nang dalawang beses para mag-sign out.</translation>
 <translation id="2405664212338326887">Hindi nakakonekta</translation>
+<translation id="2406710117564540804">I-on/i-off ang huwag istorbohin</translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
 <translation id="2416438829169535743">Lumabas sa view?</translation>
@@ -527,6 +533,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2847759467426165163">I-cast sa</translation>
 <translation id="2848120746144143659">Pindutin ang enter para mag-capture screenshot ng full screen</translation>
 <translation id="2849936225196189499">Kritikal</translation>
+<translation id="2850207700020959936">Maa-access ng mga app ang camera</translation>
 <translation id="2860184359326882502">Pinakatumutugma</translation>
 <translation id="2865888419503095837">Impormasyon ng network</translation>
 <translation id="2869095047958348710">Nitong nakalipas na <ph name="DAY_OF_WEEK" /></translation>
@@ -535,6 +542,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2876338922445400217">Mag-zoom in sa screen</translation>
 <translation id="2878884018241093801">Walang kamakailang item</translation>
 <translation id="2880541185262491188">Masyadong maraming pagsubok sa PIN. Maghintay nang <ph name="TIME_LEFT" /> at subukan ulit</translation>
+<translation id="2883271196820422439">Ituloy ang mga mouse key</translation>
 <translation id="2885950158625301909">Matuto pa</translation>
 <translation id="2891209721153296020">"I-unselect"</translation>
 <translation id="2894949423239620203">Posibleng naaapektuhan ng cable ang performance</translation>
@@ -581,6 +589,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="304417730895741346">Nasa shelf ang iyong mga naka-pin at nakabukas na app. Para mag-pin ng app sa shelf, mag-right click sa isang app o i-tap ang iyong touchpad gamit ang dalawang daliri.</translation>
 <translation id="3045488863354895414">Magandang hapon,</translation>
 <translation id="3047761520276763270">Subukang sabihin ang:</translation>
+<translation id="3053407068093039599">I-on/i-off ang access sa camera</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
 <translation id="3062298103034426069">Hindi sinusuportahan</translation>
 <translation id="3068622547379332530">Bersyon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -721,6 +730,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan at media ng iyong telepono</translation>
 <translation id="3542066395059568317">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang mag-right-click para alisin ang mga rekomendasyon.</translation>
+<translation id="3545224667633138205">Ipinagpatuloy ang mga mouse key</translation>
 <translation id="3552189655002856821">Naka-off ang Wi-Fi</translation>
 <translation id="3554215588514239132">Ipakita o i-hide ang panel ng Mga Tool ng Developer</translation>
 <translation id="3554637740840164787">Na-pin ang <ph name="ITEM_TITLE" /></translation>
@@ -795,6 +805,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3727231512028252576">Hindi ma-load ang mga item. Subukan ulit kapag online.</translation>
 <translation id="3735740477244556633">Pagbukud-bukurin ayon sa</translation>
 <translation id="3738664582935948253">Puwede ka na nayong magpakita ng mga pag-click at keyboard shortcut sa mga recording ng screen</translation>
+<translation id="3741482431277446954">Kanang button ng mouse</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
 <translation id="3743775386021959186">Naka-on ang Pag-focus, may <ph name="REMAINING_TIME" /> pa</translation>
 <translation id="3750403286520637847">I-hide ang suhestyon sa lagay ng panahon</translation>
@@ -852,7 +863,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3958714870339660776">Buong Araw</translation>
 <translation id="3962859241508114581">Nakaraang Track</translation>
 <translation id="3963124517343721543">Madaling magpatuloy kung saan ka huminto sa pamamagitan ng pagbukas sa iyong mga dating window at tab. Makakakita ka rin ng mga naka-personalize na suhestyon para sa mga susunod na puwedeng gawin.</translation>
-<translation id="396506362088290977">Subukan ang tunog ng iyong mikropono</translation>
 <translation id="3969043077941541451">I-off</translation>
 <translation id="3970324493235864154">Tingnan ang mga notification ng iyong telepono</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
@@ -867,7 +877,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="40062176907008878">Sulat-kamay</translation>
 <translation id="4011112806063830608">Naka-on ang Huwag Istorbohin.</translation>
-<translation id="4015144849380506405">I-pause/ituloy ang mga mouse key kapag naka-on ang mga ito</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
 <translation id="401993194061514265">Hindi available ang marker. Buksan ulit ang Screencast.</translation>
 <translation id="4021716437419160885">Mag-scroll pababa</translation>
@@ -881,6 +890,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
 <translation id="404437169852192935">Natapos na ang mga update</translation>
 <translation id="4049230407053723315">Mga Mabilisang Setting</translation>
+<translation id="4054070260844648638">Makikita ng lahat ng tao</translation>
 <translation id="4057003836560082631">Tab ng browser na <ph name="INDEX" /> sa <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Para makakita ng mga naka-personalize na suhestyon para sa mga susunod na puwedeng gawin, pindutin ang Overview key</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off sa isa app}one{Off sa # app}other{Off sa # na app}}</translation>
@@ -899,6 +909,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4119928251231465047">Masyadong maraming pagsubok sa PIN</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">Para i-unlock ang iyong Chromebook, tiyaking naka-on ang Bluetooth ng iyong telepono</translation>
+<translation id="4123868835475902435">Iyon ang mga pangunahing kaalaman! Magpatuloy sa Explore, ang aming built-in na app para sa mga tip at tulong. Makakakita ka ng mga tip para sa pagsisimula, mga espesyal na alok, at mga pinakabagong feature ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Hindi maka-stream ng mga app sa tablet mode. Subukan ulit sa laptop mode.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C - Kasalukuyang bilis: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">Naka-on hanggang pagsikat ng araw</translation>
@@ -1019,8 +1030,8 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4481530544597605423">Mga hindi nakapares na device</translation>
 <translation id="4485506555414638855">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan, media, notification, at app ng iyong telepono</translation>
 <translation id="4491109536499578614">Larawan</translation>
-<translation id="4493452241184130939">Iyon ang mga pangunahing kaalaman! Magpatuloy sa Explore, ang aming built-in na app para sa mga tip at tulong. Makakakita ka ng mga tip para sa pagsisimula, mga inirerekomendang app, mga espesyal na alok, at mga pinakabagong feature ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Dev Channel</translation>
+<translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">Para i-unlock ang iyong Chromebook, i-unlock muna ang telepono mo</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
@@ -1072,6 +1083,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4672539464599646374">Na-on ang Pantipid ng Baterya</translation>
 <translation id="4673427585974421255">I-on lang</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
+<translation id="468019262817532242">Walang makakapag-share sa iyo</translation>
 <translation id="468293128311738995">Mga app mula sa iyong telepono</translation>
 <translation id="4690510401873698237">Nasa ibaba ang shelf</translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
@@ -1082,7 +1094,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4708065238214351979">Gawing mas maliwanag ang keyboard</translation>
 <translation id="4708185346211948049">Sa <ph name="DAY_OF_WEEK" /> sa susunod na linggo</translation>
 <translation id="4717575069099566988">Hindi sinusuportahan ng iyong USB-C cable ang USB4. Posibleng maging limitado ang performance ng device.</translation>
-<translation id="4724328513667182700">6 na tip para makapagsimula sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">MADALAS GAMITIN</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kaliwa)</translation>
@@ -1104,6 +1115,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Hindi available ang Google Assistant sa demo session.</translation>
+<translation id="4785412405516449976">Mga contact mo lang na may Google Account</translation>
 <translation id="4789348252524569426">Hindi ma-install ang mga file ng speech. Kailangang i-update ang iyong device. I-restart ang iyong device at subukan ulit.</translation>
 <translation id="478959186716341421">Nagka-cast</translation>
 <translation id="4798403412327076414">Makikita mo ang mga dating binuksang window at app sa susunod na mag-sign in ka</translation>
@@ -1145,7 +1157,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4902797682482387055">Iminumungkahing gawain na pagtutuunan ng pansin</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
-<translation id="4911191962826748981">Isa itong pang-eksperimentong feature ng AI at hindi ito palaging tama.</translation>
 <translation id="491504982845934899">I-activate ang <ph name="NETWORK_NAME" /> pagkatapos ng pag-set up ng device</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
@@ -1233,6 +1244,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
 <translation id="5187627942836026988">Ipakita ang mga detalye ng hotspot. Na-block ng iyong administrator ang hotspot.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5198039720391525849">Mga itinatampok na GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> (na) event</translation>
 <translation id="5198715732953550718">Ipinagsama ang <ph name="MOVED_APP_NAME" /> at <ph name="IN_PLACE_APP" /> para gumawa ng bagong folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1291,7 +1303,6 @@ Walang nakakonektang device.</translation>
 <translation id="536019650977002321">Hindi pinapayagan ng iyong administrator ang pag-capture ng audio. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5361524080961918551">Bahagyang na-download ang mga file ng <ph name="LANGUAGE" /> na speech</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pumunta sa tab na ito</translation>
-<translation id="5363835273551457276">Puwede mong subukan ang tunog ng iyong mikropono. Isara ang panel para huminto.</translation>
 <translation id="5364693579536176785">storage space</translation>
 <translation id="5369573834963677938">Magiging available ang pagkontrol gamit ang mukha sa iba pang user sa device</translation>
 <translation id="5369717264580061086">I-preview ang file sa Files app</translation>
@@ -1309,7 +1320,6 @@ Walang nakakonektang device.</translation>
 <translation id="5409208741270395213">Markahan ang gawain bilang nakumpleto na</translation>
 <translation id="5413656666631274079">Page na Mga Setting</translation>
 <translation id="5414198321558177633">Nire-refresh ang listahan ng profile. Puwede itong tumagal nang ilang minuto.</translation>
-<translation id="5417965108047245734">Mag-quick tour para malaman kung paano i-explore ang iyong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Isinara ang menu ng Mga Setting</translation>
 <translation id="5428899915242071344">Simulang pumili</translation>
 <translation id="5429993543155113935">Kasalukuyang hindi sinusuportahan ang mga Incognito window</translation>
@@ -1406,7 +1416,6 @@ Walang nakakonektang device.</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="5733630091161562207">Notification ng pagbati</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
-<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5744083938413354016">Pag-tap upang mag-drag</translation>
 <translation id="5745612484876805746">Awtomatikong nag-o-on ang Night Light sa paglubog ng araw</translation>
@@ -1483,6 +1492,7 @@ Walang nakakonektang device.</translation>
 <translation id="5990992855591814753">Tuloy lang sa ginagawa mo gamit ang mga naka-personalize na playlist para sa pag-focus. Kunin ang YouTube Music at YouTube, na walang ad, at may 3 buwang YouTube Premium na libre. May mga nalalapat na tuntunin.</translation>
 <translation id="5998374579424866922">I-off ang mga kontrol ng laro</translation>
 <translation id="6000279412553873020">Mga key, button, at higit pa</translation>
+<translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> ng <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">I-highlight ang susunod na item sa shelf</translation>
 <translation id="6015573907265691211">Markahang nakumpleto na</translation>
@@ -1529,7 +1539,7 @@ Walang nakakonektang device.</translation>
 <translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
 <translation id="6127395413317891856">Offline ka. Suriin ang iyong koneksyon at subukan ulit.</translation>
-<translation id="6129953537138746214">Puwang</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Sa anong gawain mo gustong mag-focus?</translation>
 <translation id="6141988275892716286">Kumpirmahin ang pag-download</translation>
@@ -1555,6 +1565,7 @@ Walang nakakonektang device.</translation>
 <translation id="6199775032047436064">I-reload ang iyong kasalukuyang pahina</translation>
 <translation id="6200515304866777730">Hindi sinusuportahan ng app</translation>
 <translation id="6210042900243040400">Ikonekta ang <ph name="NAME" /> na dating na-save sa <ph name="EMAIL" /></translation>
+<translation id="6212580734499190393">Sa loob ng 10 min</translation>
 <translation id="6213808132343683860">Kumuha ng hindi buong screenshot o recording ng screen</translation>
 <translation id="621606890568890214">Palawakin ang Google Classroom</translation>
 <translation id="6216759484154215561">Binuksan sa browser ang link na matuto pa</translation>
@@ -1647,6 +1658,7 @@ Walang nakakonektang device.</translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Mga emoji, GIF, at higit pa</translation>
+<translation id="6543942526104794893">Sigurado ka bang gusto mong i-off ang mga galaw ng mukha?</translation>
 <translation id="6545382064335350438">Hindi pa rin ma-verify ang iyong PIN. Subukan ulit.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -1667,7 +1679,6 @@ Kaka-install lang</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Nag-snap ang camera sa kaliwang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
 <translation id="6605415194043280389">Naka-on ang Pag-focus</translation>
-<translation id="660846213831377756">Mga mouse key</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="6612802754306526077">Pinili ang screen recording mode</translation>
 <translation id="6612889377159412215">subtask</translation>
@@ -1798,6 +1809,7 @@ Kaka-install lang</translation>
 <translation id="7034025838182392395">Gustong gamitin ng <ph name="APP_NAME" /> ang <ph name="DEVICE_NAME" />. I-on ang pisikal na switch ng <ph name="DEVICE_NAME" /> ng iyong device.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">I-collapse ang lugar ng status</translation>
+<translation id="7042593542151411225">Hindi maa-access ng mga app ang camera</translation>
 <translation id="7045033600005038336">Palitan ang template?</translation>
 <translation id="7051244143160304048">Nadiskonekta ang <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">Hindi nagamit ang stylus sa loob ng mahigit isang linggo</translation>
@@ -1820,6 +1832,7 @@ Kaka-install lang</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7118597077555700347">Buksan ang <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Piliin ang susunod na salita o titik</translation>
+<translation id="7124556000457919678">Kapag naka-on, i-pause at ituloy ang mga mouse key</translation>
 <translation id="7126996685418858413">Binuksan sa nakalipas na linggo</translation>
 <translation id="7130207228079676353">PINAKAMALAMANG</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
@@ -1840,6 +1853,7 @@ Kaka-install lang</translation>
 <translation id="7198435252016571249">Nag-snap ang camera sa kanang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
 <translation id="7219573373513695352">Walang nakakonektang device</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> na memory | <ph name="TOTAL_MEMORY" /> sa kabuuan</translation>
+<translation id="7239814253344511868">Parehong button ng mouse</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% na lang ang baterya. Isaksak ang iyong device.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kailangang i-restart ang Chromebook na ito para mailapat ang isang update. Puwede itong umabot nang hanggang 1 minuto</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -1945,6 +1959,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7599378375976398913">Inilalagay ang piniling resulta</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
 <translation id="7601417191446344542">I-on ang nudge kapag na-mute?</translation>
+<translation id="7602187221150705972">Maghanap ng mga emoji, GIF, at higit pa</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7609951632080598826">View ng kalendaryo, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
@@ -2008,7 +2023,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7807067443225230855">Paghahanap at Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Sa pag-thumbs up, magsusumite ng feedback na gusto mo ang suhestyong ito</translation>
 <translation id="7825412704590278437">Mula sa paparating na event sa kalendaryo</translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7830453190047749513">Puwede mong i-personalize ang mga pagkilos ng button, bilis ng cursor, at higit pa para sa iyong <ph name="PERIPHERAL_NAME" /></translation>
@@ -2041,6 +2055,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Naka-mute ang mga notification hanggang <ph name="TIME" /> habang nagfo-focus</translation>
+<translation id="7901010467630324625">Mga device lang na naka-sign in sa <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Ipagpalit ang mga window</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Pindutin ang fingerprint sensor</translation>
@@ -2099,6 +2114,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8051716679295756675">May template nang may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>
+<translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8079538659226626406">Pag-share ng Screen</translation>
 <translation id="8083540854303889870">Naka-save para sa ibang pagkakataon</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2123,6 +2139,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8142699993796781067">Pribadong network</translation>
 <translation id="8144760705599030999">I-save ang iyong <ph name="NAME" /> sa <ph name="EMAIL" /> para sa mas mabilis na pagpapares sa iba mo pang device</translation>
 <translation id="8144914663975476336">Pumili ng format ng recording</translation>
+<translation id="8145272500474066209">Puwedeng magkamali ang Generative AI, kabilang ang tungkol sa mga tao, kaya i-double check ito. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">Ipakita ang mga setting ng Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pindutin ang Ctrl + W para isara ito.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Autocomplete</translation>
@@ -2138,6 +2155,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8203224998425013577">Magpakita ng higit pang emoji at GIF</translation>
 <translation id="8203795194971602413">Mag-right click</translation>
 <translation id="8205469348819768313">Sinusubukang gamitin ang Page Down? Gamitin ang</translation>
+<translation id="8213376797713070611">Kaliwang button ng mouse</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Kailangang manatiling naka-on at nakasaksak ang iyong Chromebook sa panahong ito. Tiyaking nakasaksak nang maayos ang charger o mga adapter cable, sa iyong Chromebook at sa saksakan. Huwag i-off ang iyong Chromebook.</translation>
 <translation id="8220076512072059941">Magdagdag ng <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2148,7 +2166,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8238817965863339552">Mag-quick tour para malaman kung paano i-explore ang iyong <ph name="PRODUCT_NAME" />. Makapagsimula sa 5 hakbang.</translation>
 <translation id="8239034820133090126">I-activate ang desk sa kanan</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, App</translation>
 <translation id="825129991941217170">Ipakita ang lahat ng content ng Google Drive</translation>
 <translation id="8257510091797044096">I-set up ang iyong device</translation>
 <translation id="8261506727792406068">I-delete</translation>
@@ -2163,7 +2180,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Naka-on ang Caps Lock</translation>
 <translation id="8315514906653279104">Ino-on...</translation>
-<translation id="8319634750346253957">Sa pag-thumbs down, magsusumite ng feedback na hindi mo gusto ang suhestyong ito</translation>
 <translation id="8331351032546853669">Nakabinbin ang pag-download</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2217,7 +2233,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="851660987304951246">Gamitin ang Tulungan akong magbasa para mabilis na magbuod ng content o magtanong</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Kinokontrol ng <ph name="APP_NAME" /> ang input ng mic}one{Kinokontrol ng # app ang input ng mic}other{Kinokontrol ng # na app ang input ng mic}}</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
 <translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">Walang naka-save na desk o template</translation>
@@ -2311,6 +2326,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>
 <translation id="8860366331836346216">Magdagdag ng eSIM</translation>
+<translation id="8869149849311827122">Sigurado ka bang gusto mong i-off ang kontrol ng cursor ng mouse?</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8873203135446552888">Kumpirmahing gusto mong i-disable ang naka-built in na touchpad</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
@@ -2362,6 +2378,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Hindi available ang Bluetooth</translation>
+<translation id="9050999376345823055">Pindutin ang "." para bitawan</translation>
 <translation id="906458777597946297">I-maximize ang window</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9070640332319875144">Mga Setting ng Assistant</translation>
@@ -2370,6 +2387,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9074432941673450836">Gumamit ng mga app para gawin ang lahat ng kailangan mong gawin sa iyong <ph name="PRODUCT_NAME" />. Makikita mo ang iyong mga app sa Launcher. Puwede mo ring pindutin ang Launcher key (sa itaas ng kaliwang Shift key) sa keyboard.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Mga kontrol ng media, nagpe-play ngayon ng <ph name="MEDIA_TITLE" /></translation>
+<translation id="9079012373317704997">Hindi ma-on ang access sa camera nang malayuan</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Nag-snap ang camera sa kaliwang sulok sa itaas</translation>
 <translation id="9080132581049224423">Mag-swipe pataas para pumunta sa home</translation>

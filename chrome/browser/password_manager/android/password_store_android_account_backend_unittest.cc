@@ -460,24 +460,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForLoginsForAccount) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  std::string account = "mytestemail@gmail.com";
-  backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
-
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
-  RunUntilIdle();
-}
-
 TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForRemoveLogin) {
   EnableSyncForTestAccount();
   backend().InitBackend(
@@ -501,61 +483,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForRemoveLogin) {
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest,
-       CallsBridgeForRemoveLoginsByURLAndTime) {
-  base::HistogramTester histogram_tester;
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  base::MockCallback<PasswordChangesOrErrorReply> mock_deletion_reply;
-  base::RepeatingCallback<bool(const GURL&)> url_filter = base::BindRepeating(
-      [](const GURL& url) { return url == GURL(kTestUrl); });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-  const std::string kDurationMetric =
-      DurationMetricName("RemoveLoginsByURLAndTimeAsync");
-  const std::string kSuccessMetric =
-      SuccessMetricName("RemoveLoginsByURLAndTimeAsync");
-
-  // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
-  // first.
-  const JobId kGetLoginsJobId{13387};
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
-  backend().RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, url_filter, delete_begin, delete_end,
-      base::OnceCallback<void(bool)>(), mock_deletion_reply.Get());
-
-  // Imitate login retrieval and check that it triggers the removal of matching
-  // forms.
-  const JobId kRemoveLoginJobId{13388};
-  EXPECT_CALL(*bridge_helper(), RemoveLogin)
-      .WillOnce(Return(kRemoveLoginJobId));
-  PasswordForm form_to_delete = CreateTestLogin(
-      kTestUsername, kTestPassword, kTestUrl, base::Time::FromTimeT(1500));
-  PasswordForm form_to_keep =
-      CreateTestLogin(kTestUsername, kTestPassword, "https://differentsite.com",
-                      base::Time::FromTimeT(1500));
-  consumer().OnCompleteWithLogins(kGetLoginsJobId,
-                                  {form_to_delete, form_to_keep});
-  RunUntilIdle();
-  task_environment_.FastForwardBy(kTestLatencyDelta);
-
-  // Verify that the callback is called.
-  PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
-  EXPECT_CALL(mock_deletion_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
-  consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
-  RunUntilIdle();
-
-  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kTestLatencyDelta, 1);
-  histogram_tester.ExpectUniqueSample(kSuccessMetric, 1, 1);
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
@@ -1860,33 +1787,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
-       RemoveLoginsByURLAndTimeReturnsEmptyResultWhenSyncOff) {
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::RepeatingClosure(), base::DoNothing());
-  DisableSyncFeature();
-  backend().OnSyncServiceInitialized(sync_service());
-
-  base::RepeatingCallback<bool(const GURL&)> url_filter =
-      base::BindRepeating([](const GURL& url) { return true; });
-  base::Time delete_begin = base::Time::FromTimeT(1000);
-  base::Time delete_end = base::Time::FromTimeT(2000);
-
-  EXPECT_CALL(*bridge_helper(), RemoveLogin).Times(0);
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  backend().RemoveLoginsByURLAndTimeAsync(FROM_HERE, url_filter, delete_begin,
-                                          delete_end, base::DoNothing(),
-                                          mock_reply.Get());
-
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest,
        RemoveLoginsCreatedBetweenReturnsEmptyResultWhenSyncOff) {
   backend().InitBackend(
       /*affiliated_match_helper=*/nullptr,
@@ -2263,7 +2163,13 @@ INSTANTIATE_TEST_SUITE_P(
          std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
                         PasswordStoreBackendErrorType::kAuthErrorUnresolvable),
          std::make_pair(AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
-                        PasswordStoreBackendErrorType::kKeyRetrievalRequired)}),
+                        PasswordStoreBackendErrorType::kKeyRetrievalRequired),
+         std::make_pair(AndroidBackendAPIErrorCode::kEmptySecurityDomain,
+                        PasswordStoreBackendErrorType::kEmptySecurityDomain),
+         std::make_pair(
+             AndroidBackendAPIErrorCode::kIrretrievableSecurityDomain,
+             PasswordStoreBackendErrorType::kIrretrievableSecurityDomain)}),
+
     [](const ::testing::TestParamInfo<
         std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>>&
            info) {

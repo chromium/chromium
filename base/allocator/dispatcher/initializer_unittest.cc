@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/initializer.h"
-#include "base/allocator/dispatcher/testing/observer_mock.h"
-#include "base/allocator/dispatcher/testing/tools.h"
 
 #include <functional>
 #include <map>
 #include <tuple>
+
+#include "base/allocator/dispatcher/configuration.h"
+#include "base/allocator/dispatcher/testing/observer_mock.h"
+#include "base/allocator/dispatcher/testing/tools.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::allocator::dispatcher {
 namespace testing {

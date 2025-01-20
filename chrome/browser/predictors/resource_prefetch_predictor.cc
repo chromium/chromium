@@ -27,6 +27,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -86,15 +87,12 @@ PreconnectRequest::PreconnectRequest(
 
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination)
     : url(url),
-      network_anonymization_key(network_anonymization_key),
       destination(destination) {
   CHECK(
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
       base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
-  DCHECK(!network_anonymization_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
@@ -260,7 +258,7 @@ ResourcePrefetchPredictor::ResourcePrefetchPredictor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-ResourcePrefetchPredictor::~ResourcePrefetchPredictor() {}
+ResourcePrefetchPredictor::~ResourcePrefetchPredictor() = default;
 
 void ResourcePrefetchPredictor::StartInitialization() {
   TRACE_EVENT0("browser", "ResourcePrefetchPredictor::StartInitialization");

@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './fingerprint_icons.html.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import './cr_lottie.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
-import type {CrLottieElement} from '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {CrLottieElement} from './cr_lottie.js';
 import {getTemplate} from './fingerprint_progress_arc.html.js';
 
 /**
@@ -152,15 +152,6 @@ export class FingerprintProgressArcElement extends PolymerElement {
        * Whether fingerprint enrollment is complete.
        */
       isComplete_: Boolean,
-
-      /**
-       * Whether the fingerprint progress page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-        observer: 'onDarkModeChanged_',
-      },
     };
   }
 
@@ -168,7 +159,8 @@ export class FingerprintProgressArcElement extends PolymerElement {
   autoplay: boolean;
   private scale_: number;
   private isComplete_: boolean;
-  private isDarkModeActive_: boolean;
+  private isDarkModeActive_: boolean = false;
+  private eventTracker_: EventTracker = new EventTracker();
 
   // Animation ID for the fingerprint progress circle.
   private progressAnimationIntervalId_: number|undefined = undefined;
@@ -182,7 +174,10 @@ export class FingerprintProgressArcElement extends PolymerElement {
   /**
    * Updates the current state to account for whether dark mode is enabled.
    */
-  private onDarkModeChanged_() {
+  private onDarkModeChanged_(e: MediaQueryListEvent) {
+    // Update media query states.
+    this.isDarkModeActive_ = e.matches;
+
     this.clearCanvas_();
     this.drawProgressCircle_(this.progressPercentDrawn_);
     this.updateAnimationAsset_();
@@ -192,9 +187,21 @@ export class FingerprintProgressArcElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    // Set media query initial states.
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    this.isDarkModeActive_ = darkModeQuery.matches;
+    this.eventTracker_.add(
+        darkModeQuery, 'change',
+        (e: MediaQueryListEvent) => this.onDarkModeChanged_(e));
+
     this.scale_ = this.circleRadius / DEFAULT_PROGRESS_CIRCLE_RADIUS;
     this.updateIconAsset_();
     this.updateImages_();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
   }
 
   /**

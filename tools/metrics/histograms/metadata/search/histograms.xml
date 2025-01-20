@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DeleteTime{AuxiliarySearchDataType}"
-    units="ms" expires_after="M140">
+    units="ms" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for deleting contents from the auxiliary search.</summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DeletionRequestStatus{AuxiliarySearchDataType}"
-    enum="AuxiliarySearchRequestStatus" expires_after="M140">
+    enum="AuxiliarySearchRequestStatus" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonateTime" units="ms"
-    expires_after="2025-05-04">
+    expires_after="2025-07-06">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for donating contents to the auxiliary search.</summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Search.AuxiliarySearch.DonationFailure{AuxiliarySearchDataType}"
-    units="count" expires_after="M140">
+    units="count" expires_after="2026-02-10">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonationSent{AuxiliarySearchDataType}"
-    units="count" expires_after="2025-05-04">
+    units="count" expires_after="2025-07-06">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -133,6 +133,18 @@ chromium-metrics-reviews@google.com.
     Records the total count of the available favicons for the first donation.
     The histogram is logged when Chrome is paused and a small set of favicon
     fetching is completed for the auxiliary search. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.Module.ClickInfo" enum="ClickInfo"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type of the button that the user clicked on the auxiliary search
+    module which is shown on the magic stack. The histogram is logged when the
+    user clicks a button on the module. Android-only.
   </summary>
 </histogram>
 
@@ -212,8 +224,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.ShareTabsWithOs" enum="Boolean"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the whether the sharing Tabs with OS config is enabled. The
+    histogram is logged when the user changes the config on Tabs settings.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
-    enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScrollState" expires_after="2025-06-22">
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -239,8 +263,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
+    enum="UnknownCountryIdStored" expires_after="2025-11-18">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records if the pref storing the current country ID of the device is invalid.
+    Through some code paths it's possible that a placeholder value could be
+    persisted in the prefs. Earlier there were less checks in place for valid
+    country IDs which makes it possible that old profiles still have the invalid
+    values stored in prefs. As the prefs take precedence over other mechanisms
+    when determining the country for the device an invalid value can lead to the
+    actual country not being assigned correctly. This histogram is emitted when
+    trying to read the pref for the profile and iff the pref exists.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceReprompt{Category}"
-    enum="SearchEngineChoiceReprompt" expires_after="2025-04-06">
+    enum="SearchEngineChoiceReprompt" expires_after="2025-06-08">
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -256,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-13">
+    enum="OmniboxSearchEngineType" expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -282,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2025-06-22">
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -295,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenNavigationConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -309,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenProfileInitConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2025-04-13">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -322,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenSelectedEngineIndex" units="index"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -333,7 +374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenShowedEngineAt.CountryMismatch"
-    enum="BooleanSkipped" expires_after="2025-05-04">
+    enum="BooleanSkipped" expires_after="2025-07-06">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -345,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -376,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceWipeReason" enum="SearchEngineChoiceWipeReason"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -602,18 +643,6 @@ chromium-metrics-reviews@google.com.
     Records whether the user opened the panel when it was shown in response to a
     tap gesture, for all users. Recorded when the UX is hidden. Implemented for
     Android. (Expired in M77. Revived in M120.)
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen"
-    enum="Boolean" expires_after="2025-11-01">
-  <owner>gangwu@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records whether the user opened the panel when it was shown for sync-enabled
-    users only (this is an approximation for the population that logs to UKM).
-    Recorded for all gestures for users with sync enabled when the UX is hidden.
-    Implemented for Android. (Expired in M76. Revived in M120.)
   </summary>
 </histogram>
 
@@ -865,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-03-30">
+    enum="OmniboxSearchEngineType" expires_after="2025-06-08">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>
@@ -888,13 +917,20 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Population">
     <variant name="" summary="Reported for all users."/>
+    <variant name=".Fallback"
+        summary="Reported for users with pre-populated DSP
+                 (country/distribution channel) ."/>
     <variant name=".SetByEnterprisePolicy"
         summary="Reported for users with DSP set by Enterprise policy."/>
+    <variant name=".SetByExtension"
+        summary="Reported for users with DSP set by a browser extension."/>
+    <variant name=".SetByUser"
+        summary="Reported for users who selected their DSP."/>
   </token>
 </histogram>
 
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -928,6 +964,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.KeywordTable.HashValidationStatus"
+    enum="KeywordTableHashValidationStatus" expires_after="2025-09-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the hash validation status for a row in the keywords table in the
+    Web Data sqlite database. This metric is recorded for each row read from the
+    keywords table for a v137 table and above, when the keywords table is
+    loaded, which happens at profile load. If the validation is not successful
+    for any reason, then the row will be dropped from the database.
+  </summary>
+</histogram>
+
+<histogram name="Search.KeywordTable.MigrationSuccess.V137"
+    enum="BooleanSuccess" expires_after="2025-09-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether or not the migration of the keywords table in the Web Data
+    sqlite database successfully completed without dropping any rows. This
+    metric is recorded when a Web Data database before v137 is loaded, which
+    happens at profile load. A failure here means one or more rows have been
+    dropped, but the table was migrated to v137 anyway.
+  </summary>
+</histogram>
+
 <histogram name="Search.Lens.ViewportDimensionsSent.Success" enum="Boolean"
     expires_after="2024-08-04">
   <owner>mercerd@google.com</owner>
@@ -942,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -962,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DelayFromObservationToFirstStatus"
-    units="ms" expires_after="2025-05-11">
+    units="ms" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -979,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogShownAttempt" units="attempts"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -999,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusChange"
-    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1017,7 +1081,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusOnAppOpen"
-    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1028,7 +1092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.DialogSuppressionStatus"
-    enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-05-11">
+    enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-07-13">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1047,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.LaunchChoiceScreenTapHandlingStatus"
-    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-03-01">
+    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-06-22">
   <owner>dgn@google.com</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1249,7 +1313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RegionSearch.Lens.Result"
-    enum="LensRegionSearchCaptureResult" expires_after="2025-05-11">
+    enum="LensRegionSearchCaptureResult" expires_after="2025-07-13">
   <owner>juanmojica@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -1390,7 +1454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SaveGuestModeSelection" enum="BooleanYesNo"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1401,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-07-06">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1420,7 +1484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Fetch{Result}Time"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2025-07-06">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1440,7 +1504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.ServiceBindStatus"
-    enum="BooleanStartedCompleted" expires_after="2025-05-04">
+    enum="BooleanStartedCompleted" expires_after="2025-07-06">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1455,7 +1519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineListedInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-06-22">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
 
   <owner>yusufo@chromium.org</owner>
@@ -1471,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineSelectionInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="2025-04-20">
+    enum="OmniboxSearchEngineType" expires_after="2025-06-22">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoDeviceType" -->
 
   <owner>yusufo@chromium.org</owner>
@@ -1486,8 +1550,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"
+    enum="Boolean" expires_after="2026-01-02">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records whether at least one search engine created by SiteSearchSettings
+    policy and {ConflictType} has the same keyword as an existing search engine
+    the user manually edited, counted once per user regardless of the number of
+    conflicting search engines the policy creates.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Use &quot;Search.SearchPolicyConflict.NumberOfSearchEngines&quot; for the
+    number of search engines created by policy that conflict with search engines
+    manually edited by the user.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+  <token key="ConflictType">
+    <variant name="Featured" summary="marked as 'featured'"/>
+    <variant name="NonFeatured" summary="not marked as 'featured'"/>
+  </token>
+</histogram>
+
+<histogram name="Search.SearchPolicyConflict.NumberOfSearchEngines"
+    enum="SearchPolicyConflictType" expires_after="2025-05-22">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records the number of search engines created by SiteSearchSettings policy
+    with the same keyword as an existing search engine the user manually edited.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Each count corresponds to one search engine, so the total count per user
+    equals the number of search engines created by the policy.
+
+    Use &quot;Search.SearchPolicyConflict.HasConflictWith.*&quot; for the number
+    of users that have at least one conflict with featured or non-featured
+    search engines created by policy.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
-    enum="SearchProviderOverrideStatus" expires_after="2025-04-13">
+    enum="SearchProviderOverrideStatus" expires_after="2025-06-22">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1506,60 +1623,6 @@ chromium-metrics-reviews@google.com.
     The current state for search widget use and whether the device is a
     partnership device related with the Android Search Widget. Collected on
     every cold start.
-  </summary>
-</histogram>
-
-<histogram
-    name="Search.SiteSearchPolicyConflict.HasConflictWith.{ConflictType}"
-    enum="Boolean" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records whether at least one search engine created by SiteSearchSettings
-    policy and {ConflictType} has the same keyword as an existing search engine
-    the user manually edited, counted once per user regardless of the number of
-    conflicting search engines the policy creates.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Use &quot;Search.SiteSearchPolicyConflict.NumberOfSearchEngines&quot; for
-    the number of search engines created by policy that conflict with search
-    engines manually edited by the user.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
-  </summary>
-  <token key="ConflictType">
-    <variant name="Featured" summary="marked as 'featured'"/>
-    <variant name="NonFeatured" summary="not marked as 'featured'"/>
-  </token>
-</histogram>
-
-<histogram name="Search.SiteSearchPolicyConflict.NumberOfSearchEngines"
-    enum="SiteSearchPolicyConflictType" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records the number of search engines created by SiteSearchSettings policy
-    with the same keyword as an existing search engine the user manually edited.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Each count corresponds to one search engine, so the total count per user
-    equals the number of search engines created by the policy.
-
-    Use &quot;Search.SiteSearchPolicyConflict.HasConflictWith.*&quot; for the
-    number of users that have at least one conflict with featured or
-    non-featured search engines created by policy.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
   </summary>
 </histogram>
 

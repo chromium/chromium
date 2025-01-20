@@ -11,13 +11,13 @@ source_set("parcel_tracking") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners",
     "//ui/base",
   ]
 }

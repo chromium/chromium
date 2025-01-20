@@ -38,6 +38,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,7 +92,7 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   DiceTestSigninClient(const DiceTestSigninClient&) = delete;
   DiceTestSigninClient& operator=(const DiceTestSigninClient&) = delete;
 
-  ~DiceTestSigninClient() override {}
+  ~DiceTestSigninClient() override = default;
 
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
@@ -410,24 +411,7 @@ void DiceResponseHandlerTest::RunSignoutTest(
   }
 }
 
-class SigninDiceResponseHandlerTestPreconnect
-    : public DiceResponseHandlerTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SigninDiceResponseHandlerTestPreconnect() {
-    feature_list_.InitWithFeatureState(
-        switches::kPreconnectAccountCapabilitiesPostSignin,
-        PreconnectEnabled());
-  }
-
-  bool PreconnectEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Checks that a SIGNIN action triggers a token exchange request.
-TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
+TEST_F(DiceResponseHandlerTest, Signin) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -463,7 +447,7 @@ TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
             signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   EXPECT_EQ(
       identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
-      PreconnectEnabled() ? 1 : 0);
+      1);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   histogram_tester_.ExpectUniqueSample(
       kTokenBindingOutcomeHistogram,
@@ -471,10 +455,6 @@ TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
       /*expected_bucket_count=*/1);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
-
-INSTANTIATE_TEST_SUITE_P(PreconnectEnabled,
-                         SigninDiceResponseHandlerTestPreconnect,
-                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Checks that a SIGNIN action triggers a token exchange request.
@@ -1065,7 +1045,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
   const auto& account_info_1 = dice_params_1.signin_info->account_info;
   DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   dice_params_2.signin_info->account_info.email = "other_email";
-  dice_params_2.signin_info->account_info.gaia_id = "other_gaia_id";
+  dice_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
   const auto& account_info_2 = dice_params_2.signin_info->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(
       account_info_1.gaia_id, account_info_1.email);
@@ -1372,7 +1352,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
   DiceResponseParams signin_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   DiceResponseParams signin_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   signin_params_2.signin_info->account_info.email = "other_email";
-  signin_params_2.signin_info->account_info.gaia_id = "other_gaia_id";
+  signin_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
   const auto& signin_account_info_1 = signin_params_1.signin_info->account_info;
   const auto& signin_account_info_2 = signin_params_2.signin_info->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(

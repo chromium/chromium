@@ -55,16 +55,16 @@ std::unique_ptr<views::Widget> CreateAnchorWidget(gfx::NativeWindow context) {
   return widget;
 }
 
-ash::HoldingSpaceImage CreateUnresolvedAsyncImage() {
-  return ash::HoldingSpaceImage(QuickInsertPreviewBubbleView::kPreviewImageSize,
-                                base::FilePath(), base::DoNothing());
+HoldingSpaceImage CreateUnresolvedAsyncImage() {
+  return HoldingSpaceImage(QuickInsertPreviewBubbleView::kPreviewImageSize,
+                           base::FilePath(), base::DoNothing());
 }
 
 TEST_F(QuickInsertPreviewBubbleControllerTest, ShowsBubbleAfterDelay) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleAfterDelay(&async_preview_image, base::FilePath(),
                                   anchor_widget->GetContentsView());
   task_environment()->FastForwardBy(base::Milliseconds(600));
@@ -81,7 +81,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleAfterDelay(&async_preview_image, base::FilePath(),
                                   anchor_widget->GetContentsView());
   controller.CloseBubble();
@@ -95,7 +95,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleAfterDelay(&async_preview_image, base::FilePath(),
                                   anchor_widget->GetContentsView());
   task_environment()->FastForwardBy(base::Milliseconds(300));
@@ -109,7 +109,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
@@ -127,7 +127,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   QuickInsertPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
@@ -145,7 +145,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   QuickInsertPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
 
@@ -159,7 +159,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
   views::View* bubble_view = controller.bubble_view_for_testing();
@@ -186,7 +186,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
 
@@ -208,7 +208,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
 
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
   QuickInsertPreviewBubbleView* bubble_view =
@@ -225,7 +225,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
       CreateAnchorWidget(GetContext());
   base::RunLoop run_loop;
   SkBitmap bitmap = gfx::test::CreateBitmap(100, SK_ColorBLUE);
-  ash::HoldingSpaceImage async_preview_image(
+  HoldingSpaceImage async_preview_image(
       QuickInsertPreviewBubbleView::kPreviewImageSize, base::FilePath(),
       base::BindLambdaForTesting(
           [&](const base::FilePath& file_path, const gfx::Size& size,
@@ -250,7 +250,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
 
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
@@ -266,7 +266,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
 
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());
@@ -283,7 +283,7 @@ TEST_F(QuickInsertPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   QuickInsertPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
 
   controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
                                              anchor_widget->GetContentsView());

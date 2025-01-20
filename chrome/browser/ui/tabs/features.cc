@@ -6,8 +6,14 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/common/chrome_features.h"
 
 namespace tabs {
+
+// Kill switch for disconnecting file select dialog when tab is deactivated.
+BASE_FEATURE(kDisconnectFileChooserOnTabDeactivateKillSwitch,
+             "DisconnectFileChooserOnTabDeactivateKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Splits pinned and unpinned tabs into separate TabStrips.
 // https://crbug.com/1346019
@@ -43,9 +49,14 @@ BASE_FEATURE(kTabSearchPositionSetting,
 // vector in the tabstrip model. b/323937237
 BASE_FEATURE(kTabStripCollectionStorage,
              "TabStripCollectionStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool CanShowTabSearchPositionSetting() {
+  // The combo button, which includes tab search, is always on the right side
+  // and cannot be repositioned.
+  if (features::IsTabstripComboButtonEnabled()) {
+    return false;
+  }
 // Mac and other platforms will always have the tab search position in the
 // correct location, cros/linux/win git the user the option to change.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

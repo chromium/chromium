@@ -11,7 +11,6 @@
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -117,15 +116,13 @@ class ResolvedFrameDataTest : public testing::Test {
     return surface;
   }
 
-  ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
 
-  DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_};
-  FrameSinkManagerImpl frame_sink_manager_{
-      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
+  DisplayResourceProviderSoftware resource_provider_{&shared_image_manager_,
+                                                     &gpu_scheduler_};
+  FrameSinkManagerImpl frame_sink_manager_{FrameSinkManagerImpl::InitParams()};
 
   TestSurfaceIdAllocator surface_id_{FrameSinkId(1, 1)};
   std::unique_ptr<CompositorFrameSinkSupport> support_;

@@ -139,7 +139,6 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
-  policy::LicenseType license_type_;
 
   enum {
     OAUTH_NOT_STARTED,
@@ -561,6 +560,9 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
           break;
         case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
           UMA(policy::kMetricEnrollmentInvalidPackagedDeviceForKIOSK);
+          break;
+        case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+          UMA(policy::kMetricEnrollmentOrgUnitEnrollmentLimitExceeded);
           break;
       }
       break;

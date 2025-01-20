@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:height="45dp"
     android:width="70dp"
     android:viewportHeight="450"
-    android:viewportWidth="700"
-    tools:targetApi="21">
+    android:viewportWidth="700">
     <group android:name="selected_card_background">
         <path android:fillColor="#E2E1E1"
             android:pathData="

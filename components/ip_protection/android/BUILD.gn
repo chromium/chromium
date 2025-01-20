@@ -39,7 +39,11 @@ source_set("ip_protection_token_ipc_fetcher") {
     ":blind_sign_message_android_impl",
     "//base",
     "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    "//components/ip_protection/common:ip_protection_data_types",
+    "//components/ip_protection/common:ip_protection_telemetry",
     "//components/ip_protection/common:ip_protection_token_fetcher",
+    "//components/ip_protection/common:ip_protection_token_fetcher_helper",
+    "//content/public/browser:browser",
     "//net/third_party/quiche:blind_sign_auth",
   ]
 }

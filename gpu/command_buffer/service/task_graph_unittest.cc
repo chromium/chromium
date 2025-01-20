@@ -11,6 +11,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -248,6 +249,10 @@ TEST_F(TaskGraphTest, ValidationWaitWithoutRelease) {
 
 TEST_F(TaskGraphTest, ManuallyCallValidationWaitWithoutRelease) {
   // Two tasks on the same sequence wait for unreleased fences.
+  // Also test histogram emission.
+
+  base::HistogramTester histogram_tester;
+
   CreateSequence(0, /*manual_validation=*/true);
   CreateSequence(1);
   CreateSequence(2);
@@ -291,6 +296,9 @@ TEST_F(TaskGraphTest, ManuallyCallValidationWaitWithoutRelease) {
 
   expected_task_order = {0, 1};
   EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+
+  histogram_tester.ExpectTotalCount("GPU.GraphValidation.NeedsForceRelease", 2);
+  histogram_tester.ExpectTotalCount("GPU.GraphValidation.Duration", 2);
 }
 
 TEST_F(TaskGraphTest, ValidationWaitWithoutRelease2) {

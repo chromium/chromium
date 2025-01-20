@@ -52,7 +52,7 @@ TEST(VectorIconTest, RelativeMoveToAfterClose) {
       MOVE_TO, 4, 5, LINE_TO, 10, 11, CLOSE,
       // This move should use (4, 5) as the start point rather than (10, 11).
       R_MOVE_TO, 20, 21, R_LINE_TO, 50, 51};
-  const VectorIconRep rep_list[] = {{elements, std::size(elements)}};
+  const VectorIconRep rep_list[] = {{elements}};
   const VectorIcon icon(rep_list, 1u, nullptr);
 
   PaintVectorIcon(&canvas, icon, 100, SK_ColorMAGENTA);
@@ -89,7 +89,7 @@ TEST(VectorIconTest, FillRuleNonZero) {
       NEW_PATH, FILL_RULE_NONZERO, MOVE_TO, 110, 0, R_H_LINE_TO, 90,
       R_V_LINE_TO, 90, R_H_LINE_TO, -90, CLOSE, MOVE_TO, 130, 20, R_H_LINE_TO,
       50, R_V_LINE_TO, 50, R_H_LINE_TO, -50, CLOSE};
-  const VectorIconRep rep_list[] = {{elements, std::size(elements)}};
+  const VectorIconRep rep_list[] = {{elements}};
   const VectorIcon icon(rep_list, 1u, nullptr);
 
   PaintVectorIcon(&canvas, icon, 100, SK_ColorBLACK);
@@ -126,7 +126,7 @@ TEST(VectorIconTest, FlipsInRtl) {
                                   R_H_LINE_TO,
                                   -20,
                                   CLOSE};
-  const VectorIconRep rep_list[] = {{elements, std::size(elements)}};
+  const VectorIconRep rep_list[] = {{elements}};
   const VectorIcon icon(rep_list, 1u, nullptr);
   PaintVectorIcon(&canvas, icon, canvas_size, color);
 
@@ -254,11 +254,8 @@ TEST(VectorIconTest, CorrectSizePainted) {
                                     0,
                                     CLOSE};
   // VectorIconReps are always sorted in descending order of size.
-  const VectorIconRep rep_list[] = {{elements48, std::size(elements48)},
-                                    {elements32, std::size(elements32)},
-                                    {elements24, std::size(elements24)},
-                                    {elements20, std::size(elements20)},
-                                    {elements16, std::size(elements16)}};
+  const VectorIconRep rep_list[] = {
+      {elements48}, {elements32}, {elements24}, {elements20}, {elements16}};
   const VectorIcon icon(rep_list, 5u, nullptr);
 
   // Test exact sizes paint the correctly sized icon, including the largest and

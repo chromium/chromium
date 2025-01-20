@@ -7,7 +7,7 @@ package org.chromium.bytecode;
 import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
 import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
 import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM9;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
 import static org.objectweb.asm.Opcodes.IRETURN;
@@ -26,7 +26,7 @@ class EmptyOverrideGeneratorClassAdapter extends ClassVisitor {
 
     public EmptyOverrideGeneratorClassAdapter(
             ClassVisitor cv, ArrayList<MethodDescription> methodsToGenerate) {
-        super(ASM7, cv);
+        super(ASM9, cv);
         mMethodsToGenerate = methodsToGenerate;
     }
 

@@ -53,7 +53,6 @@ namespace resource_attribution::internal {
 namespace {
 
 using performance_manager::features::kResourceAttributionIncludeOrigins;
-using performance_manager::features::kRunOnMainThreadSync;
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::ElementsAre;
@@ -90,19 +89,12 @@ void ExpectQueryResult(
 }  // namespace
 
 class ResourceAttrQuerySchedulerTest
-    : public performance_manager::GraphTestHarness,
-      public WithParamInterface<bool> {
+    : public performance_manager::GraphTestHarness {
  protected:
   using Super = performance_manager::GraphTestHarness;
 
-  ResourceAttrQuerySchedulerTest() {
-    std::vector<base::test::FeatureRef> enabled_features{
-        kResourceAttributionIncludeOrigins};
-    if (GetParam()) {
-      enabled_features.push_back(kRunOnMainThreadSync);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  ResourceAttrQuerySchedulerTest()
+      : scoped_feature_list_(kResourceAttributionIncludeOrigins) {}
 
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
@@ -121,22 +113,10 @@ class ResourceAttrQuerySchedulerTest
   FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ResourceAttrQuerySchedulerTest, Bool());
+using ResourceAttrQuerySchedulerPMTest =
+    performance_manager::PerformanceManagerTestHarness;
 
-class ResourceAttrQuerySchedulerPMTest
-    : public performance_manager::PerformanceManagerTestHarness,
-      public WithParamInterface<bool> {
- protected:
-  ResourceAttrQuerySchedulerPMTest() {
-    scoped_feature_list_.InitWithFeatureState(kRunOnMainThreadSync, GetParam());
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ResourceAttrQuerySchedulerPMTest, Bool());
-
-TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
+TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   performance_manager::MockMultiplePagesWithMultipleProcessesGraph mock_graph(
       graph());
 
@@ -235,7 +215,7 @@ TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
+TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
 
@@ -532,7 +512,7 @@ TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_P(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
+TEST_F(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
   // Tests that CallWithScheduler works from PerformanceManagerTestHarness,
   // where the scheduler runs on the PM sequence as in production.
   EXPECT_TRUE(PerformanceManager::IsAvailable());
@@ -557,7 +537,7 @@ TEST_P(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
   run_loop.Run();
 }
 
-TEST_P(ResourceAttrQuerySchedulerTest, CallWithScheduler) {
+TEST_F(ResourceAttrQuerySchedulerTest, CallWithScheduler) {
   // Tests that CallWithScheduler works from GraphTestHarness which doesn't set
   // up the PerformanceManager sequence. It's convenient to use GraphTestHarness
   // with mock graphs to test resource attribution queries.

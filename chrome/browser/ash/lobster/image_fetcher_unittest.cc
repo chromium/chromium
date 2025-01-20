@@ -24,7 +24,7 @@ constexpr int kFakeBaseGenerationSeed = 10;
 
 class ImageFetcherTest : public testing::Test {
  public:
-  ImageFetcherTest() {}
+  ImageFetcherTest() = default;
   ImageFetcherTest(const ImageFetcherTest&) = delete;
   ImageFetcherTest& operator=(const ImageFetcherTest&) = delete;
 

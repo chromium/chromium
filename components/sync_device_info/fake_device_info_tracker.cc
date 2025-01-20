@@ -99,9 +99,9 @@ void FakeDeviceInfoTracker::Add(std::unique_ptr<DeviceInfo> device) {
 }
 
 void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
-  const auto remove_it = base::ranges::remove(devices_, device);
-  CHECK(remove_it != devices_.end());
-  devices_.erase(remove_it);
+  const auto to_remove = std::ranges::remove(devices_, device);
+  CHECK(!to_remove.empty());
+  devices_.erase(to_remove.begin(), to_remove.end());
 }
 
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,

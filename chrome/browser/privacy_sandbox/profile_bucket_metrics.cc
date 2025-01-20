@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-constexpr int kMaxProfileBucket = 20;
+constexpr int kMaxProfileBucket = 10;
 
 namespace privacy_sandbox {
 
@@ -37,7 +37,7 @@ std::string GetProfileBucketName(Profile* profile) {
   }
   int profile_num = entry->GetMetricsBucketIndex();
   if (profile_num > kMaxProfileBucket) {
-    return "Profile_21+";
+    return "Profile_11+";
   }
   return base::StrCat({"Profile_", base::ToString(profile_num)});
 }

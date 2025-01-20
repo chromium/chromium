@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace viz {

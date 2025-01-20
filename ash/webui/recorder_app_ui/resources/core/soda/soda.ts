@@ -135,24 +135,34 @@ export class SodaEventTransformer {
   // sentence will include/drop the speaker label.
   constructor(public speakerLabelEnabled: boolean) {}
 
-  getTranscription(language: LanguageCode, shouldFinalizeTranscription = false):
-    Transcription {
+  // Finalizes partial results and updates the tokens when current SODA session
+  // is stopped.
+  finalizeTokens(): void {
+    if (this.partialResultTokens !== null) {
+      if (this.tokens.length > 0) {
+        this.tokens.push(textSeparator);
+      }
+      for (const token of this.partialResultTokens) {
+        if (token.kind !== 'textPart') {
+          this.tokens.push(token);
+          continue;
+        }
+        // Finalizes the token by excluding `partial` field.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {partial, ...finalToken} = token;
+        this.tokens.push(finalToken);
+      }
+      this.partialResultTokens = null;
+    }
+  }
+
+  getTranscription(language: LanguageCode): Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {
         tokens.push(textSeparator);
       }
-      if (shouldFinalizeTranscription) {
-        const partialResultTokens = structuredClone(this.partialResultTokens);
-        for (const token of partialResultTokens) {
-          if (token.kind === 'textPart') {
-            delete token.partial;
-          }
-        }
-        tokens.push(...partialResultTokens);
-      } else {
-        tokens.push(...this.partialResultTokens);
-      }
+      tokens.push(...this.partialResultTokens);
     }
     return new Transcription(tokens, language);
   }

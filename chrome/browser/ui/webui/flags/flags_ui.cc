@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 
 #include <memory>
@@ -19,12 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -43,9 +36,10 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
@@ -73,7 +67,7 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   source->AddString(flags_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!user_manager::UserManager::Get()->IsCurrentUserOwner() &&
       base::SysInfo::IsRunningOnChromeOS()) {
     // Set the string to show which user can actually change the flags.
@@ -87,9 +81,8 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   }
 #endif
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kFlagsUiResources, kFlagsUiResourcesSize),
-      IDR_FLAGS_UI_FLAGS_HTML);
+  webui::SetupWebUIDataSource(source, kFlagsUiResources,
+                              IDR_FLAGS_UI_FLAGS_HTML);
 
   // Make it possible to test chrome://flags/deprecated
   source->AddResourcePath("deprecated/test_loader.js",
@@ -112,14 +105,15 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
                           std::unique_ptr<flags_ui::FlagsStorage> storage,
                           flags_ui::FlagAccess access) {
   // If the flags_ui has gone away, there's nothing to do.
-  if (!flags_ui)
+  if (!flags_ui) {
     return;
+  }
 
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.
   dom_handler->Init(std::move(storage), access);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Show a warning info bar when kSafeMode switch is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode)) {
@@ -168,11 +162,6 @@ void FlagsUI::AddStrings(content::WebUIDataSource* source) {
       {"reset-acknowledged", IDS_FLAGS_UI_RESET_ACKNOWLEDGED},
       {"search-label", IDS_FLAGS_UI_SEARCH_LABEL},
       {"search-placeholder", IDS_FLAGS_UI_SEARCH_PLACEHOLDER},
-#if BUILDFLAG(IS_CHROMEOS)
-      {"os-flags-link", IDS_FLAGS_UI_OS_FLAGS_LINK},
-      {"os-flags-text1", IDS_FLAGS_UI_OS_FLAGS_TEXT1},
-      {"os-flags-text2", IDS_FLAGS_UI_OS_FLAGS_TEXT2},
-#endif
       {"title", IDS_FLAGS_UI_TITLE},
       {"unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE},
       {"searchResultsSingular", IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR},
@@ -213,7 +202,7 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
   AddStrings(source);
 }
 
-FlagsUI::~FlagsUI() {}
+FlagsUI::~FlagsUI() = default;
 
 // static
 base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(

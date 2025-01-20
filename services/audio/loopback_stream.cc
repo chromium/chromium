@@ -73,7 +73,7 @@ LoopbackStream::LoopbackStream(
           [](const std::string& message) { VLOG(1) << message; }),
       shared_memory_count, params, &foreign_socket);
   if (writer) {
-    base::ReadOnlySharedMemoryRegion shared_memory_region =
+    base::UnsafeSharedMemoryRegion shared_memory_region =
         writer->TakeSharedMemoryRegion();
     mojo::PlatformHandle socket_handle;
     if (shared_memory_region.IsValid()) {

@@ -76,8 +76,8 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="427987768447457592">Bagong grupo ng tab</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Binago ang <ph name="ONE_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}one{Binago ang <ph name="MANY_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}other{Binago ang <ph name="MANY_CHANGED" /> na tab, isinara ang<ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Hindi Aktibo</translation>
+<translation id="4431937619879060901">Mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="GROUP_NAME" />," at ide-delete ito sa lahat ng device mo</translation>
 <translation id="4460014764210899310">I-ungroup</translation>
-<translation id="4590027107044272416">Puwede ka na ngayong magbukas ng bagong tab dito</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Isara ang 1 hindi aktibong tab?}one{Isara ang <ph name="TAB_COUNT_MANY" /> hindi aktibong tab?}other{Isara ang <ph name="TAB_COUNT_MANY" /> na hindi aktibong tab?}}</translation>
 <translation id="4686942373615810936">Kakagawa lang</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Isara pagkalipas ng 1 araw}one{Isara pagkalipas ng <ph name="DAY_COUNT_MANY" /> araw}other{Isara pagkalipas ng <ph name="DAY_COUNT_MANY" /> na araw}}</translation>
@@ -98,16 +98,16 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab}one{Idinagdag ang <ph name="MANY_ADDED" /> tab}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab}}</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
+<translation id="5380159289133845234">Mag-archive ng mga duplicate na tab</translation>
 <translation id="5400836586163650660">Grey</translation>
+<translation id="5446043142172831860">Alisin ang tab at umalis sa grupo</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
-<translation id="5615302411300498438">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis.
-
-Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE_OF_GROUP" />."</translation>
 <translation id="5627941783489838464">Walang update sa tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{I-restore ang tab}one{I-restore ang mga tab}other{I-restore ang mga tab}}</translation>
+<translation id="5647702255748985085">Umalis sa grupo?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link mula sa Chrome}one{<ph name="TABS_COUNT_MANY" /> link mula sa Chrome}other{<ph name="TABS_COUNT_MANY" /> na link mula sa Chrome}}</translation>
 <translation id="58326064309361797">I-drag ang mga tab para pagpangkatin ang mga ito</translation>
 <translation id="5901630391730855834">Dilaw</translation>
@@ -116,7 +116,7 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6051432659151380973">Awtomatikong mase-save ang mga grupo ng tab mo</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
-<translation id="6082313992897617440">Mawawalan ka kaagad ng access sa grupo ng tab na <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>
@@ -143,9 +143,10 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="731648547091221002">Pinili ang <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Tingnan ang patakaran sa pagbabalik at higit pa</translation>
 <translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>
-<translation id="7421293530411019405">Umalis sa grupo ng tab?</translation>
+<translation id="742664698522525515">Panatilihin ang grupo?</translation>
 <translation id="7452985128687107478">Awtomatikong nase-save at naa-update ang mga grupo ng tab sa lahat ng iyong device</translation>
 <translation id="747459581954555080">Ipanumbalik lahat</translation>
+<translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review mula sa Google}one{<ph name="REVIEWS_COUNT_MANY" /> review mula sa Google}other{<ph name="REVIEWS_COUNT_MANY" /> na review mula sa Google}}</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>
@@ -175,9 +176,7 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab, isinara ang <ph name="ANY_CLOSED" />}one{Idinagdag ang <ph name="MANY_ADDED" /> tab, isinara ang <ph name="ANY_CLOSED" />}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab, isinara ang <ph name="ANY_CLOSED" />}}</translation>
-<translation id="8631711675211020168">Mawawalan kaagad ang lahat ng access sa grupo ng tab na <ph name="GROUP_NAME" />, at ide-delete ito sa lahat ng device</translation>
 <translation id="8633025649649592204">Kamakailang aktibidad</translation>
-<translation id="8635399646025169806">Panatilihin ang grupo ng tab?</translation>
 <translation id="870736955561925754">Isara ang tab at i-delete ang grupo?</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8730621377337864115">Tapos na</translation>
@@ -188,10 +187,11 @@ Kung aalis ka, mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="TITLE
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
-<translation id="9111228330448174435">Ipakita ang dialog sa paggawa ng bagong grupo ng tab</translation>
 <translation id="9114502155681725011">Buksan ang menu ng aksyon ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Mawawalan kaagad ng access ang lahat sa grupo ng tab na "<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="9216898458513705996">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{I-expand ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">I-delete ang grupo?</translation>
 <translation id="992256792861109788">Pink</translation>
 </translationbundle>

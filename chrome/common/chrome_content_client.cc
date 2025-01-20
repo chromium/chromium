@@ -42,7 +42,6 @@
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/heap_profiling/in_process/child_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
-#include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/strings/grit/components_strings.h"
@@ -402,9 +401,7 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
   // Sets up the simplified in-process heap profiler, if it's enabled.
   const auto* heap_profiler_controller =
       heap_profiling::HeapProfilerController::GetInstance();
-  if (heap_profiler_controller && heap_profiler_controller->IsEnabled() &&
-      base::FeatureList::IsEnabled(
-          heap_profiling::kHeapProfilerCentralControl)) {
+  if (heap_profiler_controller && heap_profiler_controller->IsEnabled()) {
     binders->Add<heap_profiling::mojom::SnapshotController>(
         base::BindRepeating(&heap_profiling::ChildProcessSnapshotController::
                                 CreateSelfOwnedReceiver),

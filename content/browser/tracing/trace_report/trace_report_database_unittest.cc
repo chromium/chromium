@@ -198,6 +198,34 @@ TEST_F(TraceReportDatabaseTest, DeleteTraceReportsOlderThan) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 5u);
 }
 
+TEST_F(TraceReportDatabaseTest, DeleteUploadedTraceContentOlderThan) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  const base::Time today = base::Time::Now();
+
+  // Create multiple NewTraceReport and add to the local_traces table.
+  for (int i = 0; i < 3; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+    trace_report_.UploadComplete(new_report.uuid, today);
+  }
+  for (int i = 0; i < 3; i++) {
+    NewTraceReport new_report = MakeNewTraceReport(today - base::Days(20));
+    ASSERT_TRUE(trace_report_.AddTrace(new_report));
+    trace_report_.UploadComplete(new_report.uuid, today - base::Days(10));
+  }
+
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 6u);
+
+  ASSERT_TRUE(trace_report_.DeleteUploadedTraceContentOlderThan(base::Days(5)));
+  auto received_reports = trace_report_.GetAllReports();
+  EXPECT_EQ(received_reports.size(), 6u);
+  for (const auto& report : received_reports) {
+    EXPECT_EQ(report.has_trace_content,
+              report.upload_time >= (today - base::Days(5)));
+  }
+}
+
 TEST_F(TraceReportDatabaseTest, DeleteOldTraceContent) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
@@ -301,7 +329,8 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
   EXPECT_EQ(all_traces[0].upload_state, ReportUploadState::kUploaded);
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);
 
-  EXPECT_FALSE(trace_report_.GetTraceContent(report_uuid));
+  // Trace content is kept alive for a few days after being uploaded.
+  EXPECT_TRUE(trace_report_.GetTraceContent(report_uuid));
 }
 
 TEST_F(TraceReportDatabaseTest, UploadSkipped) {

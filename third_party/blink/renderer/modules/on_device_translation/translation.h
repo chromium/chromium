@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-class LanguageDetector;
 class LanguageTranslator;
 class V8TranslationAvailability;
 
@@ -42,12 +41,6 @@ class Translation final : public ScriptWrappable,
   ScriptPromise<LanguageTranslator> createTranslator(
       ScriptState* script_state,
       TranslationLanguageOptions* options,
-      ExceptionState& exception_state);
-  ScriptPromise<V8TranslationAvailability> canDetect(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
-  ScriptPromise<LanguageDetector> createDetector(
-      ScriptState* script_state,
       ExceptionState& exception_state);
 
  private:

@@ -194,7 +194,6 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownTargetArea) {
   DismissMenu(GetMultitaskMenu());
 
   // Start swipe down from the bottom of the target area.
-  // TODO(sophiewen): Replace this with `kHitRegionSize.height()`.
   GenerateScroll(window->bounds().CenterPoint().x(), 15, kMenuDragPoint);
   ASSERT_TRUE(GetMultitaskMenu());
   DismissMenu(GetMultitaskMenu());

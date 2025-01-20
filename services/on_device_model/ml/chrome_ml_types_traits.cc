@@ -49,8 +49,15 @@ UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::GetTag(
     const ml::InputPiece& input_piece) {
   if (std::holds_alternative<ml::Token>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kToken;
-  } else if (std::holds_alternative<std::string>(input_piece)) {
+  }
+  if (std::holds_alternative<std::string>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kText;
+  }
+  if (std::holds_alternative<SkBitmap>(input_piece)) {
+    return on_device_model::mojom::InputPieceDataView::Tag::kBitmap;
+  }
+  if (std::holds_alternative<bool>(input_piece)) {
+    return on_device_model::mojom::InputPieceDataView::Tag::kUnknownType;
   }
   NOTREACHED();
 }
@@ -59,19 +66,91 @@ UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::GetTag(
 bool UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::
     Read(on_device_model::mojom::InputPieceDataView in, ml::InputPiece* out) {
   switch (in.tag()) {
-    case on_device_model::mojom::InputPieceDataView::Tag::kToken:
+    case on_device_model::mojom::InputPieceDataView::Tag::kToken: {
       ml::Token token;
       if (!in.ReadToken(&token)) {
         return false;
       }
       *out = token;
       return true;
-    case on_device_model::mojom::InputPieceDataView::Tag::kText:
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kText: {
       std::string text;
       if (!in.ReadText(&text)) {
         return false;
       }
       *out = std::move(text);
+      return true;
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kBitmap: {
+      SkBitmap bitmap;
+      if (!in.ReadBitmap(&bitmap)) {
+        return false;
+      }
+      *out = std::move(bitmap);
+      return true;
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kUnknownType: {
+      *out = in.unknown_type();
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+on_device_model::mojom::ModelBackendType
+EnumTraits<on_device_model::mojom::ModelBackendType,
+           ml::ModelBackendType>::ToMojom(ml::ModelBackendType input) {
+  switch (input) {
+    case ml::ModelBackendType::kGpuBackend:
+      return on_device_model::mojom::ModelBackendType::kGpu;
+    case ml::ModelBackendType::kApuBackend:
+      return on_device_model::mojom::ModelBackendType::kApu;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<on_device_model::mojom::ModelBackendType,
+                ml::ModelBackendType>::
+    FromMojom(on_device_model::mojom::ModelBackendType input,
+              ml::ModelBackendType* output) {
+  switch (input) {
+    case on_device_model::mojom::ModelBackendType::kGpu:
+      *output = ml::ModelBackendType::kGpuBackend;
+      return true;
+    case on_device_model::mojom::ModelBackendType::kApu:
+      *output = ml::ModelBackendType::kApuBackend;
+      return true;
+  }
+  return false;
+}
+
+// static
+on_device_model::mojom::ModelPerformanceHint
+EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+           ml::ModelPerformanceHint>::ToMojom(ml::ModelPerformanceHint input) {
+  switch (input) {
+    case ml::ModelPerformanceHint::kHighestQuality:
+      return on_device_model::mojom::ModelPerformanceHint::kHighestQuality;
+    case ml::ModelPerformanceHint::kFastestInference:
+      return on_device_model::mojom::ModelPerformanceHint::kFastestInference;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+                ml::ModelPerformanceHint>::
+    FromMojom(on_device_model::mojom::ModelPerformanceHint input,
+              ml::ModelPerformanceHint* output) {
+  switch (input) {
+    case on_device_model::mojom::ModelPerformanceHint::kHighestQuality:
+      *output = ml::ModelPerformanceHint::kHighestQuality;
+      return true;
+    case on_device_model::mojom::ModelPerformanceHint::kFastestInference:
+      *output = ml::ModelPerformanceHint::kFastestInference;
       return true;
   }
   return false;

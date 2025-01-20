@@ -52,7 +52,7 @@ TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
 
 void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id) {
   CHECK(ContainsTabGroup(id));
-  group_ids_.erase(base::ranges::remove(group_ids_, id));
+  std::erase(group_ids_, id);
   groups_.erase(id);
 }
 

@@ -8,8 +8,10 @@
 #include <deque>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -22,6 +24,14 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 
+namespace features {
+
+BASE_DECLARE_FEATURE(kAILanguageModelForceStreamingFullResponse);
+
+}  // namespace features
+
+class AIManager;
+
 // The implementation of `blink::mojom::AILanguageModel`, which exposes the APIs
 // for model execution.
 class AILanguageModel : public AIContextBoundObject,
@@ -30,8 +40,13 @@ class AILanguageModel : public AIContextBoundObject,
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
   using CreateLanguageModelCallback = base::OnceCallback<void(
-      mojo::PendingRemote<blink::mojom::AILanguageModel>,
+      base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
+                     blink::mojom::AIManagerCreateLanguageModelError>,
       blink::mojom::AILanguageModelInfoPtr)>;
+
+  // The minimum version of the model execution config for prompt API that
+  // starts using proto instead of string value for the request.
+  static constexpr uint32_t kMinVersionUsingProto = 2;
 
   // The Context class manages the history of prompt input and output, which are
   // used to build the context when performing the next execution. Context is
@@ -56,11 +71,26 @@ class AILanguageModel : public AIContextBoundObject,
     Context(const Context&);
     ~Context();
 
+    // The status of the result returned from `ReserveSpace()`.
+    enum class SpaceReservationResult {
+      // There remaining space is enough for the required tokens.
+      kSufficientSpace = 0,
+      // There remaining space is not enough for the required tokens, but after
+      // evicting some of the oldest `ContextItem`s, it has enough space now.
+      kSpaceMadeAvailable,
+      // Even after evicting all the `ContextItem`s, it's not possible to make
+      // enough space. In this case, no eviction will happen.
+      kInsufficientSpace
+    };
+
+    // Make sure the context has at least `number_of_tokens` available, if there
+    // is no enough space, the oldest `ContextItem`s will be evicted.
+    SpaceReservationResult ReserveSpace(uint32_t num_tokens);
+
     // Insert a new context item, this may evict some oldest items to ensure the
-    // total number of tokens in the context is below the limit.
-    // It returns whether the context overflows and some existing item gets
-    // evicted.
-    bool AddContextItem(ContextItem context_item);
+    // total number of tokens in the context is below the limit. It returns the
+    // result from the space reservation.
+    SpaceReservationResult AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
     // The type of request produced is either PromptApiRequest or StringValue,
@@ -96,6 +126,7 @@ class AILanguageModel : public AIContextBoundObject,
       base::WeakPtr<content::BrowserContext> browser_context,
       mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
       AIContextBoundObjectSet& session_set,
+      AIManager& ai_manager,
       const std::optional<const Context>& context = std::nullopt);
   AILanguageModel(const AILanguageModel&) = delete;
   AILanguageModel& operator=(const AILanguageModel&) = delete;
@@ -126,6 +157,9 @@ class AILanguageModel : public AIContextBoundObject,
   mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();
 
  private:
+  void PromptGetInputSizeCompletion(mojo::RemoteSetElementId responder_id,
+                                    PromptApiRequest request,
+                                    uint32_t number_of_tokens);
   void ModelExecutionCallback(
       const PromptApiRequest& input,
       mojo::RemoteSetElementId responder_id,
@@ -137,18 +171,6 @@ class AILanguageModel : public AIContextBoundObject,
       CreateLanguageModelCallback callback,
       uint32_t size);
 
-  // This function is passed as a completion callback to the
-  // `GetSizeInTokens()`. It will
-  // - Add the item into context, and remove the oldest items to reduce the
-  // context size if the number of tokens in the current context exceeds the
-  // limit.
-  // - Signal the completion of model execution through the `responder` with the
-  // new size of the context.
-  void AddPromptHistoryAndSendCompletion(
-      const PromptApiRequest& history_item,
-      blink::mojom::ModelStreamingResponder* responder,
-      uint32_t size);
-
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
@@ -158,9 +180,15 @@ class AILanguageModel : public AIContextBoundObject,
   base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
-  // It's safe to store a `raw_ref` here since `this` is owned by
-  // `context_bound_object_set_`.
+  // It's safe to store `raw_ref` here since both `this` and `ai_manager_` are
+  // owned by `context_bound_object_set_`, and they will be destroyed together.
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
+  base::raw_ref<AIManager> ai_manager_;
+
+  bool is_on_device_session_streaming_chunk_by_chunk_;
+  // The accumulated current response to simulate the old streaming behavior
+  // that always returns all the response generated so far.
+  std::string current_response_;
 
   mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_;

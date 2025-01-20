@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TREES_LAYER_TREE_IMPL_H_
 #define CC_TREES_LAYER_TREE_IMPL_H_
 
@@ -31,7 +26,6 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/paint/discardable_image_map.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_host.h"
@@ -109,9 +103,6 @@ class LayerTreeLifecycle {
 
 class CC_EXPORT LayerTreeImpl {
  public:
-  // This is the number of times a fixed point has to be hit continuously by a
-  // layer to consider it as jittering.
-  enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
       LayerTreeHostImpl& host_impl,
       viz::BeginFrameArgs begin_frame_args,
@@ -296,15 +287,6 @@ class CC_EXPORT LayerTreeImpl {
   BeginMainFrameTraceId trace_id() const { return trace_id_; }
   void set_trace_id(BeginMainFrameTraceId val) { trace_id_ = val; }
 
-  bool is_first_frame_after_commit() const {
-    return source_frame_number_ != is_first_frame_after_commit_tracker_;
-  }
-
-  void set_is_first_frame_after_commit(bool is_first_frame_after_commit) {
-    is_first_frame_after_commit_tracker_ =
-        is_first_frame_after_commit ? -1 : source_frame_number_;
-  }
-
   const HeadsUpDisplayLayerImpl* hud_layer() const { return hud_layer_; }
   HeadsUpDisplayLayerImpl* hud_layer() { return hud_layer_; }
   void set_hud_layer(HeadsUpDisplayLayerImpl* layer_impl) {
@@ -365,7 +347,6 @@ class CC_EXPORT LayerTreeImpl {
 
   ScrollNode* CurrentlyScrollingNode();
   const ScrollNode* CurrentlyScrollingNode() const;
-  int LastScrolledScrollNodeIndex() const;
   void SetCurrentlyScrollingNode(const ScrollNode* node);
   void ClearCurrentlyScrollingNode();
 
@@ -692,6 +673,11 @@ class CC_EXPORT LayerTreeImpl {
   }
   void PushBrowserControlsFromMainThread(float top_controls_shown_ratio,
                                          float bottom_controls_shown_ratio);
+
+  void SetMaxSafeAreaInsetBottom(float max_safe_area_inset_bottom);
+  float max_safe_area_inset_bottom() const {
+    return max_safe_area_inset_bottom_;
+  }
   float bottom_controls_height() const {
     return browser_controls_params_.bottom_controls_height;
   }
@@ -727,6 +713,9 @@ class CC_EXPORT LayerTreeImpl {
   }
   void set_have_scroll_event_handlers(bool have_event_handlers) {
     have_scroll_event_handlers_ = have_event_handlers;
+  }
+  bool did_raster_inducing_scroll() const {
+    return did_raster_inducing_scroll_;
   }
 
   // See LayerTreeHost.
@@ -821,6 +810,24 @@ class CC_EXPORT LayerTreeImpl {
   void SetViewTransitionContentRect(const viz::ViewTransitionElementResourceId&,
                                     const gfx::RectF&);
 
+  void AddLayerNeedingUpdateDiscardableImageMap(PictureLayerImpl* layer);
+
+  class CC_EXPORT DiscardableImageMapUpdater {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DiscardableImageMapUpdater(LayerTreeImpl* layer_tree_impl);
+    ~DiscardableImageMapUpdater();
+
+    void AddLayerNeedingUpdate(PictureLayerImpl* layer) {
+      layers_needing_update_.push_back(layer);
+    }
+
+   private:
+    LayerTreeImpl* const layer_tree_impl_;
+    std::vector<PictureLayerImpl*> layers_needing_update_;
+  };
+
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,
@@ -855,12 +862,9 @@ class CC_EXPORT LayerTreeImpl {
   viz::BeginFrameArgs created_begin_frame_args_;
   int source_frame_number_ = 0;
   BeginMainFrameTraceId trace_id_{0};
-  int is_first_frame_after_commit_tracker_;
   raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
-
-  int last_scrolled_scroll_node_index_;
 
   ViewportPropertyIds viewport_property_ids_;
 
@@ -897,6 +901,8 @@ class CC_EXPORT LayerTreeImpl {
 
   bool have_scroll_event_handlers_ : 1 = false;
 
+  bool did_raster_inducing_scroll_ : 1 = false;
+
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
   bool device_viewport_rect_changed_ : 1 = false;
@@ -908,6 +914,12 @@ class CC_EXPORT LayerTreeImpl {
   bool always_push_properties_on_picture_layers_ : 1 = false;
 
   gfx::Rect device_viewport_rect_;
+
+  // Used for supporting dynamic safe area insets in the Clank Edge-to-Edge
+  // bottom bar feature(go/cc-dynamic-sai) This is originally passed down from
+  // browser for the display cutout. It has been scaled to the size of physical
+  // pixels.
+  float max_safe_area_inset_bottom_ = 0;
 
   scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;
 
@@ -960,8 +972,8 @@ class CC_EXPORT LayerTreeImpl {
 
   UIResourceRequestQueue ui_resource_request_queue_;
 
-  EventListenerProperties event_listener_properties_
-      [static_cast<size_t>(EventListenerClass::kLast) + 1];
+  std::array<EventListenerProperties, kEventListenerClassCount>
+      event_listener_properties_;
 
   BrowserControlsParams browser_controls_params_;
 
@@ -999,6 +1011,10 @@ class CC_EXPORT LayerTreeImpl {
   // See `CommitState::primary_main_frame_item_sequence_number`.
   int64_t primary_main_frame_item_sequence_number_ =
       RenderFrameMetadata::kInvalidItemSequenceNumber;
+
+  // Used during PullPropertiesFrom().
+  STACK_ALLOCATED_IGNORE("Correctness ensured by DiscardableImageMapUpdater")
+  raw_ptr<DiscardableImageMapUpdater> discardable_image_map_updater_;
 };
 
 }  // namespace cc

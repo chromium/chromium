@@ -30,8 +30,6 @@ source_set("model") {
     "//components/dom_distiller/core",
     "//components/history/core/browser",
     "//components/invalidation/impl",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/network_time",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
@@ -81,9 +79,9 @@ source_set("model") {
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
@@ -118,8 +116,6 @@ source_set("device_info_sync_service_factory") {
     ":data_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/signin/public/base",
     "//components/sync/invalidations",
@@ -130,6 +126,7 @@ source_set("device_info_sync_service_factory") {
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
   ]
@@ -144,11 +141,11 @@ source_set("sync_invalidations_service_factory") {
     "//base",
     "//components/gcm_driver",
     "//components/gcm_driver/instance_id",
-    "//components/keyed_service/ios",
     "//components/sync/invalidations",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -159,10 +156,9 @@ source_set("data_type_store_service_factory") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//components/sync",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -175,6 +171,8 @@ source_set("sync_error_browser_agent") {
   ]
   deps = [
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -184,8 +182,6 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ui/base",
   ]
   public_deps = [ "//ios/web/public" ]
@@ -202,8 +198,6 @@ source_set("test_support") {
     ":model",
     "//base",
     "//components/consent_auditor:test_support",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/sync",
     "//components/sync:test_support",
     "//ios/chrome/common",

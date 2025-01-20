@@ -39,6 +39,11 @@
 // Only resets the translation, and leaves scale intact.
 - (void)resetTransforms;
 
+// Adds, fades, and clears the fakebox buttons snapshot.
+- (void)addFakeboxButtonsSnapshot;
+- (void)setFakeboxButtonsSnapshotFaded:(BOOL)faded;
+- (void)clearFakeboxButtonsSnapshot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_LOCATION_BAR_ANIMATEE_H_

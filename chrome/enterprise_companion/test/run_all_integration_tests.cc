@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
                        /*enable_tickcount=*/false);
 
   if (!IsUserElevated()) {
-    LOG(ERROR) << "Integration tests must be run as root/Admin.";
+    VLOG(1) << "Integration tests must be run as root/Admin.";
     return 1;
   }
 
@@ -69,11 +69,11 @@ int main(int argc, char* argv[]) {
   // can break the updater on the system.
   if (!std::getenv("ISOLATED_OUTDIR") &&
       std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumEnterpriseCompanion")) {
-    LOG(ERROR) << "Running branded enterprise companion tests can break the "
-                  "updater for the branded browser. If you don't care about "
-                  "broken updaters and want to run the branded enterprise "
-                  "companion tests locally, define an environment variable "
-                  "ISOLATED_OUTDIR and set it to a local directory.";
+    VLOG(1) << "Running branded enterprise companion tests can break the "
+               "updater for the branded browser. If you don't care about "
+               "broken updaters and want to run the branded enterprise "
+               "companion tests locally, define an environment variable "
+               "ISOLATED_OUTDIR and set it to a local directory.";
     return 1;
   }
 

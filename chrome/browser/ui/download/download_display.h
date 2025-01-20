@@ -106,12 +106,6 @@ class DownloadDisplay {
   virtual void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) = 0;
 
-  // Opens the primary dialog to the item and scrolls to the item, and opens
-  // the security dialog if the item has a security warning. Returns whether
-  // bubble was opened to the requested item.
-  virtual bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) = 0;
-
   // Gets the current icon state.
   virtual IconState GetIconState() const = 0;
 

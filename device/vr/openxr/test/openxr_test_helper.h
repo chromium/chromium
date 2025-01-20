@@ -12,7 +12,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -98,18 +97,20 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult BindActionAndPath(XrPath interaction_profile_path,
                              XrActionSuggestedBinding binding);
 
-  void SetD3DDevice(ID3D11Device* d3d_device);
   XrResult AttachActionSets(const XrSessionActionSetsAttachInfo& attach_info);
   uint32_t AttachedActionSetsSize() const;
   XrResult SyncActionData(XrActionSet action_set);
-  const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>&
-  GetSwapchainTextures() const;
   void LocateSpace(XrSpace space, XrPosef* pose);
   std::string PathToString(XrPath path) const;
   bool UpdateData();
   bool UpdateViews(XrViewConfigurationType view_config_type,
                    XrView views[],
                    uint32_t size);
+#if BUILDFLAG(IS_WIN)
+  void SetD3DDevice(ID3D11Device* d3d_device);
+  const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>&
+  GetSwapchainTextures() const;
+#endif
 
   uint32_t NextSwapchainImageIndex();
   XrTime NextPredictedDisplayTime();
@@ -148,8 +149,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   // Properties of the mock OpenXR runtime that do not change are created
   static constexpr const char* const kExtensions[] = {
-      XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
       XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
       XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
       XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
@@ -158,6 +157,13 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
       XR_EXT_HAND_TRACKING_EXTENSION_NAME,
+#if BUILDFLAG(IS_WIN)
+      XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+#elif BUILDFLAG(IS_ANDROID)
+      XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME,
+      XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
+#endif
   };
 
   static constexpr uint32_t kPrimaryViewDimension = 128;
@@ -234,12 +240,17 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   uint32_t frame_count_ = 0;
   XrSessionState session_state_;
   bool frame_begin_;
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
-  std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
   uint32_t acquired_swapchain_texture_;
   uint32_t next_handle_;
   XrTime next_predicted_display_time_;
   std::string interaction_profile_;
+
+  // TODO(https://crbug.com/381076468): Consider abstractions for platform
+  // specific code.
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
+  std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
+#endif
 
   // paths_ is used to keep tracked of strings that already has a corresponding
   // path.
@@ -281,9 +292,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   std::queue<XrEventDataBuffer> event_queue_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION device::VRTestHook* test_hook_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<device::VRTestHook> test_hook_ GUARDED_BY(lock_) = nullptr;
   base::Lock lock_;
 };
 

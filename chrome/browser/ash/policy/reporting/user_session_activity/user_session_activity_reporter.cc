@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -116,18 +117,38 @@ void UserSessionActivityReporter::OnLocked() {
   OnSessionEnd(SessionEndEvent_Reason_LOCK, active_user);
 }
 
+void UserSessionActivityReporter::OnUnlocked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+
+  OnSessionStart(SessionStartEvent_Reason_UNLOCK, active_user);
+}
+
 void UserSessionActivityReporter::ActiveUserChanged(
     user_manager::User* active_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // This user change could be a login, or an unlock.
+  // Handle logins. Otherwise, if the session is inactive and the device is
+  // locked, it means we are unlocking the device in a multi-user session and we
+  // should just return and let OnUnlocked() start the session.
   if (!IsSessionActive()) {
-    if (is_device_locked_) {
-      OnSessionStart(SessionStartEvent_Reason_UNLOCK, active_user);
-    } else {
+    if (!is_device_locked_) {
       OnSessionStart(SessionStartEvent_Reason_LOGIN, active_user);
     }
+    return;
+  }
+
+  // If user A locks device in a multi-user session and user B unlocks the
+  // device, both OnUnlocked() and ActiveUserChanged() are called but we only
+  // want OnUnlocked() to handle it. If ActiveUserChanged() is called first, the
+  // above if-statement will return since the session is not active. If
+  // OnUnlocked() is called first, the session will start and `session_user_`
+  // will be set to the current active user. Then when ActiveUserChanged() is
+  // called, the below if-statement will return.
+  if (active_user == session_user_) {
     return;
   }
 

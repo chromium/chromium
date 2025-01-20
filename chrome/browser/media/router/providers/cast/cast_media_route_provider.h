@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
-#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
+#include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -80,7 +80,6 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void StopObservingMediaSinks(const std::string& media_source) override;
   void StartObservingMediaRoutes() override;
   void DetachRoute(const std::string& route_id) override;
-  void EnableMdnsDiscovery() override;
   void DiscoverSinksNow() override;
   void BindMediaController(
       const std::string& route_id,

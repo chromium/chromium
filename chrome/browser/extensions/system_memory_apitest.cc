@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_memory/memory_info_provider.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
 
@@ -27,7 +32,10 @@ class MockMemoryInfoProviderImpl : public MemoryInfoProvider {
   ~MockMemoryInfoProviderImpl() override = default;
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
+// Desktop android only supports manifest v3 and later, don't need to run
+// tests for MV2 extensions.
+#if !BUILDFLAG(IS_ANDROID)
+using ContextType = extensions::browser_test_util::ContextType;
 
 class SystemMemoryApiTest : public ExtensionApiTest,
                             public testing::WithParamInterface<ContextType> {
@@ -50,6 +58,28 @@ IN_PROC_BROWSER_TEST_P(SystemMemoryApiTest, Memory) {
   // The provider is owned by the single MemoryInfoProvider instance.
   MemoryInfoProvider::InitializeForTesting(provider);
   ASSERT_TRUE(RunExtensionTest("system_memory")) << message_;
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+class SystemMemoryApiMV3Test : public ExtensionApiTestBase {
+ public:
+  SystemMemoryApiMV3Test() = default;
+  ~SystemMemoryApiMV3Test() override = default;
+  SystemMemoryApiMV3Test(const SystemMemoryApiMV3Test&) = delete;
+  SystemMemoryApiMV3Test& operator=(const SystemMemoryApiMV3Test&) = delete;
+};
+
+// Test memory api for MV3 extension.
+IN_PROC_BROWSER_TEST_F(SystemMemoryApiMV3Test, Memory) {
+  scoped_refptr<MemoryInfoProvider> provider = new MockMemoryInfoProviderImpl;
+  // The provider is owned by the single MemoryInfoProvider instance.
+  MemoryInfoProvider::InitializeForTesting(provider);
+  ASSERT_TRUE(RunExtensionTest("system_memory/mv3")) << message_;
 }
 
 }  // namespace extensions

@@ -284,9 +284,6 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
 void ContentCaptureTask::Schedule(ScheduleReason reason) {
   DCHECK(local_frame_root_);
   has_content_change_ = true;
-  if (histogram_reporter_) {
-    histogram_reporter_->OnContentChanged();
-  }
   ScheduleInternal(reason);
 }
 

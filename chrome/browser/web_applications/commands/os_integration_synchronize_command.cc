@@ -72,10 +72,10 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
   // command line uninstalling an app from the operating system integration. In
   // that case, `Synchronize` still needs to be called below to attempt cleanup.
 
-  bool in_registrar = !app_lock_->registrar().IsNotInRegistrar(app_id_);
+  bool in_registrar = app_lock_->registrar().IsInRegistrar(app_id_);
   bool was_installed_with_os_integration =
-      app_lock_->registrar().IsInstallState(
-          app_id_, {proto::INSTALLED_WITH_OS_INTEGRATION});
+      app_lock_->registrar().GetInstallState(app_id_) ==
+      proto::INSTALLED_WITH_OS_INTEGRATION;
   GetMutableDebugValue().Set("in_registrar", in_registrar);
   GetMutableDebugValue().Set("was_fully_installed",
                              was_installed_with_os_integration);

@@ -25,11 +25,9 @@ WindowControllerList* WindowControllerList::GetInstance() {
   return base::Singleton<WindowControllerList>::get();
 }
 
-WindowControllerList::WindowControllerList() {
-}
+WindowControllerList::WindowControllerList() = default;
 
-WindowControllerList::~WindowControllerList() {
-}
+WindowControllerList::~WindowControllerList() = default;
 
 void WindowControllerList::AddExtensionWindow(WindowController* window) {
   windows_.push_back(window);
@@ -76,6 +74,9 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371432155): Support on Android, specifically when
+// windows_util::CalledFromChildWindow() is available on Android.
 WindowController* WindowControllerList::CurrentWindowForFunction(
     ExtensionFunction* function) const {
   return CurrentWindowForFunctionWithFilter(function,
@@ -113,5 +114,6 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
 
   return parent_window ? parent_window : last_window;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

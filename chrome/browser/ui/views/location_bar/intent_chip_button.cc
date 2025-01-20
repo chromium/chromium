@@ -32,11 +32,12 @@ IntentChipButton::IntentChipButton(Browser* browser,
       browser_(browser),
       delegate_(delegate) {
   DCHECK(browser);
+  SetIcon(kOpenInNewChromeRefreshIcon);
   SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
-    label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
 }
 
 IntentChipButton::~IntentChipButton() = default;
@@ -77,8 +78,9 @@ ui::ImageModel IntentChipButton::GetAppIconForTesting() const {
 }
 
 bool IntentChipButton::GetShowChip() const {
-  if (delegate_->ShouldHidePageActionIcons())
+  if (delegate_->ShouldHidePageActionIcons()) {
     return false;
+  }
 
   auto* tab_helper = GetTabHelper();
   return tab_helper && tab_helper->should_show_icon();
@@ -104,13 +106,15 @@ void IntentChipButton::HandlePressed() {
 }
 
 IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {
-  if (browser_->profile()->IsOffTheRecord())
+  if (browser_->profile()->IsOffTheRecord()) {
     return nullptr;
+  }
 
   content::WebContents* web_contents =
       delegate_->GetWebContentsForPageActionIconView();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return IntentPickerTabHelper::FromWebContents(web_contents);
 }
@@ -121,10 +125,6 @@ ui::ImageModel IntentChipButton::GetIconImageModel() const {
     return OmniboxChipButton::GetIconImageModel();
   }
   return icon;
-}
-
-const gfx::VectorIcon& IntentChipButton::GetIcon() const {
-    return kOpenInNewChromeRefreshIcon;
 }
 
 ui::ColorId IntentChipButton::GetBackgroundColorId() const {

@@ -43,8 +43,12 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
   SVGLayoutInfo child_layout_info = layout_info;
 
   const auto* svg = To<SVGSVGElement>(GetElement());
-  child_layout_info.viewport_changed =
-      SelfNeedsFullLayout() && svg->HasRelativeLengths();
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    child_layout_info.viewport_changed = SelfNeedsFullLayout();
+  } else {
+    child_layout_info.viewport_changed =
+        SelfNeedsFullLayout() && svg->HasRelativeLengths();
+  }
 
   if (SelfNeedsFullLayout()) {
     SVGLengthContext length_context(svg);

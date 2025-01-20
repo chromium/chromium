@@ -59,10 +59,11 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   AddChildView(std::move(image_view));
 
   // Set bubble regarding to the type.
-  if (type == kHistoryDisclaimerBubble)
+  if (type == kHistoryDisclaimerBubble) {
     SetDialogForHistoryDisclaimerBubbleType();
-  else
+  } else {
     SetDialogForDefaultBubbleType();
+  }
 }
 
 void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/cors/preflight_cache.h"
+
+#include <array>
 
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -35,14 +32,15 @@ struct CacheTestEntry {
   const char* url;
 };
 
-constexpr CacheTestEntry kCacheEntries[] = {
+constexpr const auto kCacheEntries = std::to_array<CacheTestEntry>({
     {"http://www.origin1.com:8080", "http://www.test.com/A"},
     {"http://www.origin2.com:80", "http://www.test.com/B"},
     {"http://www.origin3.com:80", "http://www.test.com/C"},
     {"http://www.origin4.com:80", "http://www.test.com/D"},
     {"http://A.origin.com:80", "http://www.test.com/A"},
     {"http://A.origin.com:8080", "http://www.test.com/A"},
-    {"http://B.origin.com:80", "http://www.test.com/B"}};
+    {"http://B.origin.com:80", "http://www.test.com/B"},
+});
 
 class PreflightCacheTest : public testing::Test {
  public:

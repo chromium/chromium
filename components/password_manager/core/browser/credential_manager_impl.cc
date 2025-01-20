@@ -40,7 +40,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
                                   StoreCallback callback) {
   const url::Origin origin = GetOrigin();
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogStoreCredential(origin, credential.type);
   }
 
@@ -82,7 +82,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
 void CredentialManagerImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogPreventSilentAccess(GetOrigin());
   }
   // Send acknowledge response back.
@@ -108,7 +108,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
 
   PasswordStoreInterface* store = GetProfilePasswordStore();
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogRequestCredential(GetOrigin(), mediation, federations);
   }
   if (pending_request_ || !store) {
@@ -175,7 +175,7 @@ url::Origin CredentialManagerImpl::GetOrigin() const {
 void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
                                            const CredentialInfo& info) {
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogSendCredential(GetOrigin(), info.type);
   }
   std::move(send_callback).Run(info);
@@ -234,20 +234,6 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
 
-  if (form.match_type.has_value()) {
-    // Having PSL or affiliated web match implies there is no credential with an
-    // exactly matching origin and username. In order to avoid showing a save
-    // bubble to the user Save() is called directly. Save prompt is still
-    // offered for grouped credentials.
-    // TODO: crbug.com/372635361 - Handle grouped credentials.
-    GetLoginMatchType match_type = GetMatchType(form);
-    if (match_type == GetLoginMatchType::kPSL ||
-        (match_type == GetLoginMatchType::kAffiliated &&
-         !affiliations::IsValidAndroidFacetURI(form.signon_realm))) {
-      form_manager_->Save();
-      return;
-    }
-  }
   if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
@@ -260,12 +246,14 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
         return;
       }
     }
-  } else if (!form_manager_->IsNewLogin()) {
+  } else if (form.match_type) {
     // Otherwise, if this is not a new password credential, update the existing
     // credential prompting confirmation helium bubble to the user. This will
     // also update the 'skip_zero_click' state, as we've gotten an explicit
     // signal that the page understands the credential management API and so can
     // be trusted to notify us when they sign the user out.
+    // In case the existing match is non-exact, save credential for the current
+    // website automatically.
     bool is_update_confirmation = form_manager_->IsPasswordUpdate();
     form_manager_->Save();
     if (is_update_confirmation) {
@@ -275,7 +263,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     return;
   }
 
-  // Otherwise, this is a new form, so as the user if they'd like to save.
+  // Otherwise, this is a new form, so ask the user if they'd like to save.
   client_->PromptUserToSaveOrUpdatePassword(std::move(form_manager_), false);
 }
 

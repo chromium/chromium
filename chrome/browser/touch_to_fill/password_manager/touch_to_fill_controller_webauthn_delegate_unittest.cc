@@ -107,7 +107,8 @@ class TouchToFillControllerWebAuthnTest
     visibility_controller_ = std::make_unique<
         password_manager::MockKeyboardReplacingSurfaceVisibilityController>();
     touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
-        profile(), visibility_controller_->AsWeakPtr());
+        profile(), visibility_controller_->AsWeakPtr(),
+        /*grouped_credential_sheet_controller=*/nullptr);
     auto mock_view = std::make_unique<MockTouchToFillView>();
     mock_view_ = mock_view.get();
     touch_to_fill_controller().set_view(std::move(mock_view));
@@ -128,6 +129,16 @@ class TouchToFillControllerWebAuthnTest
 
     request_delegate_ = std::make_unique<MockWebAuthnRequestDelegateAndroid>(
         web_contents_.get());
+  }
+
+  bool Show(base::span<const UiCredential> credentials,
+            std::vector<PasskeyCredential> passkeys,
+            std::unique_ptr<TouchToFillControllerWebAuthnDelegate>
+                touch_to_fill_delegate) {
+    touch_to_fill_controller_->InitData(credentials, std::move(passkeys),
+                                        /*frame_driver=*/nullptr);
+    return touch_to_fill_controller_->Show(std::move(touch_to_fill_delegate),
+                                           /*cred_man_delegate=*/nullptr);
   }
 
   void TearDown() override {
@@ -177,11 +188,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                    ElementsAreArray(std::vector<UiCredential>()),
                    ElementsAreArray(credentials), TouchToFillView::kNone));
-  touch_to_fill_controller().Show(
-      {}, credentials,
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, credentials,
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false));
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId1));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
@@ -195,11 +203,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                    ElementsAreArray(std::vector<UiCredential>()),
                    ElementsAreArray(credentials), TouchToFillView::kNone));
-  touch_to_fill_controller().Show(
-      {}, credentials,
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, credentials,
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false));
 
   EXPECT_CALL(request_delegate(), OnWebAuthnAccountSelected(kCredentialId2));
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[1]);
@@ -212,11 +217,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                    ElementsAreArray(std::vector<UiCredential>()),
                    ElementsAreArray(credentials), TouchToFillView::kNone));
-  touch_to_fill_controller().Show(
-      {}, credentials,
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, credentials,
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false));
 
   EXPECT_CALL(request_delegate(),
               OnWebAuthnAccountSelected(std::vector<uint8_t>()));
@@ -230,11 +232,8 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectHybrid) {
                            ElementsAreArray(std::vector<UiCredential>()),
                            ElementsAreArray(credentials),
                            TouchToFillView::kShouldShowHybridOption));
-  touch_to_fill_controller().Show(
-      {}, credentials,
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/true),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, credentials,
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/true));
   EXPECT_CALL(request_delegate(), ShowHybridSignIn());
   touch_to_fill_controller().OnHybridSignInSelected();
 }
@@ -246,11 +245,8 @@ TEST_F(TouchToFillControllerWebAuthnTest,
 
   EXPECT_CALL(view(), Show).Times(0);
   EXPECT_CALL(jni_delegate(), Show).Times(1);
-  touch_to_fill_controller().Show(
-      {}, {},
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, {},
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false));
 }
 
 TEST_F(TouchToFillControllerWebAuthnTest, ShowNothingIfGpmInCredMan) {
@@ -259,9 +255,6 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowNothingIfGpmInCredMan) {
 
   EXPECT_CALL(view(), Show).Times(0);
   EXPECT_CALL(jni_delegate(), Show).Times(0);
-  touch_to_fill_controller().Show(
-      {}, {},
-      MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false),
-      /*cred_man_delegate=*/nullptr,
-      /*frame_driver=*/nullptr);
+  Show({}, {},
+       MakeTouchToFillControllerDelegate(/*should_show_hybrid_option=*/false));
 }

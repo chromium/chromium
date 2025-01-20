@@ -49,7 +49,7 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
   DomainReliabilityBrowserTest& operator=(const DomainReliabilityBrowserTest&) =
       delete;
 
-  ~DomainReliabilityBrowserTest() override {}
+  ~DomainReliabilityBrowserTest() override = default;
 
   // Note: In an ideal world, instead of appending the command-line switch and
   // manually setting discard_uploads to false, Domain Reliability would
@@ -93,9 +93,9 @@ class DomainReliabilityDisabledBrowserTest
       const DomainReliabilityDisabledBrowserTest&) = delete;
 
  protected:
-  DomainReliabilityDisabledBrowserTest() {}
+  DomainReliabilityDisabledBrowserTest() = default;
 
-  ~DomainReliabilityDisabledBrowserTest() override {}
+  ~DomainReliabilityDisabledBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableDomainReliability);

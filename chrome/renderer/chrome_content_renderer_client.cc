@@ -39,8 +39,8 @@
 #include "chrome/common/pepper_permission_util.h"
 #include "chrome/common/ppapi_utils.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -185,8 +185,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #include "chrome/renderer/wallet/boarding_pass_extractor.h"
-#include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
-#include "components/facilitated_payments/core/features/features.h"
 #include "components/feed/content/renderer/rss_link_reader.h"
 #include "components/feed/feed_feature_list.h"
 #else
@@ -401,7 +399,7 @@ ChromeContentRendererClient::ChromeContentRendererClient()
 #endif
 }
 
-ChromeContentRendererClient::~ChromeContentRendererClient() {}
+ChromeContentRendererClient::~ChromeContentRendererClient() = default;
 
 void ChromeContentRendererClient::RenderThreadStarted() {
   RenderThread* thread = RenderThread::Get();
@@ -706,23 +704,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
         render_frame, associated_interfaces);
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
         render_frame, password_autofill_agent.get(), associated_interfaces);
-    new AutofillAgent(
-        render_frame,
-        {ExtractAllDatalists(false), FocusRequiresScroll(true),
-         QueryPasswordSuggestions(false), SecureContextRequired(false),
-         UserGestureRequired(true),
-         UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID))},
-        std::move(password_autofill_agent),
-        std::move(password_generation_agent), associated_interfaces);
-
-#if BUILDFLAG(IS_ANDROID)
-    if (render_frame->IsMainFrame() &&
-        base::FeatureList::IsEnabled(
-            payments::facilitated::kEnablePixDetection)) {
-      new payments::facilitated::FacilitatedPaymentsAgent(
-          render_frame, associated_interfaces);
-    }
-#endif
+    new AutofillAgent(render_frame, std::move(password_autofill_agent),
+                      std::move(password_generation_agent),
+                      associated_interfaces);
   }
 
   if (content_capture::features::IsContentCaptureEnabled()) {
@@ -1720,10 +1704,7 @@ void ChromeContentRendererClient::
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // WebHID and WebUSB on service workers is only available in extensions.
   if (IsStandaloneContentExtensionProcess()) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWebUsbOnExtensionServiceWorker)) {
-      blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
-    }
+    blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
 #if !BUILDFLAG(IS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -264,6 +264,11 @@ class NET_EXPORT HostCache {
     // set to |port| if the current port is 0. Preserves any non-zero ports.
     HostCache::Entry CopyWithDefaultPort(uint16_t port) const;
 
+    // Converts `this` to a vector of ServiceEndpoints. Converted IP endpoint's
+    // ports set to `port` if the current port is 0. Preserves any non-zero
+    // ports.
+    std::vector<ServiceEndpoint> ConvertToServiceEndpoints(uint16_t port) const;
+
     static std::optional<base::TimeDelta> TtlFromInternalResults(
         const std::set<std::unique_ptr<HostResolverInternalResult>>& results,
         base::Time now,
@@ -480,8 +485,35 @@ class NET_EXPORT HostCache {
   FRIEND_TEST_ALL_PREFIXES(HostCacheTest, NoCache);
 
   enum SetOutcome : int;
-  enum LookupOutcome : int;
-  enum EraseReason : int;
+
+  // The result of cache lookup.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LookupOutcome)
+  enum class LookupOutcome {
+    kLookupMissAbsent = 0,
+    kLookupMissStale = 1,
+    kLookupHitValid = 2,
+    kLookupHitStale = 3,
+    kMaxValue = kLookupHitStale
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:LookupOutcome)
+
+  // The reason why an entry was erased.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(EraseReason)
+  enum class EraseReason {
+    kEraseEvict = 0,
+    kEraseClear = 1,
+    kEraseDestruct = 2,
+    kMaxValue = kEraseDestruct
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:EraseReason)
 
   // Returns the result that is least stale, based on the number of network
   // changes since the result was cached. If the results are equally stale,
@@ -503,6 +535,21 @@ class NET_EXPORT HostCache {
   // Returns matching key and entry from cache and nullptr if no match. An exact
   // match for |key| is required.
   std::pair<const Key, Entry>* LookupInternal(const Key& key);
+
+  // Record cache lookup metrics for the `entry`.
+  void RecordLookup(LookupOutcome outcome,
+                    base::TimeTicks now,
+                    const Key& key,
+                    const Entry* entry);
+
+  // Record cache erase metrics for the `entry`.
+  void RecordErase(EraseReason reason,
+                   base::TimeTicks now,
+                   const Key& key,
+                   const Entry& entry);
+
+  // Record cache erase metrics for all entries.
+  void RecordEraseAll(EraseReason reason, base::TimeTicks now);
 
   // Returns true if this HostCache can contain no entries.
   bool caching_is_disabled() const { return max_entries_ == 0; }

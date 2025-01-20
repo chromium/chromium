@@ -9,8 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/facilitated_payments/core/util/pix_code_validator.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -21,9 +20,9 @@
 #include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/xml_parser.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/data_decoder/ble_scan_parser_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_IOS)
 #include "services/data_decoder/image_decoder_impl.h"
@@ -100,12 +99,12 @@ void DataDecoderService::BindPixCodeValidator(
       std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DataDecoderService::BindBleScanParser(
     mojo::PendingReceiver<mojom::BleScanParser> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<BleScanParserImpl>(),
                               std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace data_decoder

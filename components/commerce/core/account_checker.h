@@ -37,11 +37,6 @@ class AccountChecker {
 
   virtual bool IsSignedIn();
 
-  // Returns whether bookmarks is currently syncing. This will return true in
-  // cases where sync is still initializing, but the sync feature itself is
-  // enabled.
-  virtual bool IsSyncingBookmarks();
-
   // Check whether a specific sync entity is enabled by the user. This means
   // the user has chosen to sync the provided model type and does not
   // necessarily mean sync is active.

@@ -27,8 +27,7 @@ Font CreateTestFont(const AtomicString& family_name,
 
 // Reads a font from raw font data, for use in fuzzing test only.
 Font CreateTestFont(const AtomicString& family_name,
-                    const uint8_t* data,
-                    size_t data_size,
+                    base::span<const uint8_t> data,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
 

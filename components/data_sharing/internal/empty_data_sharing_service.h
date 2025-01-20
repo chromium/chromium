@@ -33,13 +33,16 @@ class EmptyDataSharingService : public DataSharingService {
   std::set<GroupData> ReadAllGroups() override;
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
-      const std::string& member_gaia_id) override;
-  void ReadAllGroups(
-      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
+      const GaiaId& member_gaia_id) override;
+  std::optional<GroupData> GetPossiblyRemovedGroup(
+      const GroupId& group_id) override;
+  void ReadGroupDeprecated(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
       override;
-  void ReadGroup(const GroupId& group_id,
-                 base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
-                     callback) override;
+  void ReadNewGroup(const GroupToken& token,
+                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
+                        callback) override;
   void CreateGroup(const std::string& group_name,
                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                        callback) override;
@@ -76,11 +79,20 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
+  void GetAvatarImageForURL(
+      const GURL& avatar_url,
+      int size,
+      base::OnceCallback<void(const gfx::Image&)> callback,
+      image_fetcher::ImageFetcher* image_fetcher) override;
   void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
+  void AddGroupDataForTesting(GroupData group_data) override;
+  void SetPreviewServerProxyForTesting(
+      std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
+  PreviewServerProxy* GetPreviewServerProxyForTesting() override;
 };
 
 }  // namespace data_sharing

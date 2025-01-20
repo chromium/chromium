@@ -197,6 +197,10 @@ dictionary MLResample2dOptions : MLOperatorOptions {
   sequence<[EnforceRange] unsigned long> axes;
 };
 
+dictionary MLReverseOptions : MLOperatorOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+};
+
 dictionary MLScatterOptions : MLOperatorOptions {
   [EnforceRange] unsigned long axis = 0;
 };
@@ -235,7 +239,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [
     CallWith=ScriptState,
     RaisesException
-  ] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
+  ] MLOperand constant(MLOperandDescriptor desc, AllowSharedBufferSource buffer);
 
   [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
@@ -264,6 +268,7 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand lesser(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand notEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand logicalAnd(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand logicalOr(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand logicalXor(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
@@ -361,6 +366,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand relu(MLOperand input, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape, optional MLOperatorOptions options = {});
+
+  [RaisesException] MLOperand reverse(MLOperand input, optional MLReverseOptions options = {});
 
   [
     CallWith=ScriptState,

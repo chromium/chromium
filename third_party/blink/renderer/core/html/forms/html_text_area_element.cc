@@ -192,7 +192,7 @@ bool HTMLTextAreaElement::IsPresentationAttribute(
 void HTMLTextAreaElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWrapAttr) {
     if (ShouldWrapText()) {
       // Longhands of `white-space: pre-wrap`.
@@ -281,7 +281,11 @@ void HTMLTextAreaElement::ParseAttribute(
   }
 }
 
-LayoutObject* HTMLTextAreaElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
+    const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   return MakeGarbageCollected<LayoutTextControlMultiLine>(this);
 }
 
@@ -311,7 +315,7 @@ bool HTMLTextAreaElement::HasCustomFocusLogic() const {
   return true;
 }
 
-bool HTMLTextAreaElement::IsKeyboardFocusable(
+bool HTMLTextAreaElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   // If a given text area can be focused at all, then it will always be keyboard
   // focusable, unless it has a negative tabindex set.
@@ -374,8 +378,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
   SetAutofillState(WebAutofillState::kNotFilled);
   UpdatePlaceholderVisibility();
 
-  if (HasDirectionAuto() ||
-      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+  if (HasDirectionAuto()) {
     // When typing in a textarea, childrenChanged is not called, so we need to
     // force the directionality check.
     CalculateAndAdjustAutoDirectionality();

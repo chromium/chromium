@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-
 #include <utility>
 
 #include "base/command_line.h"
@@ -16,6 +14,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -42,8 +41,9 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   }
   int NonClientHitTest(const gfx::Point& point) override {
     // Fake bottom for non client event test.
-    if (point == gfx::Point(500, 500))
+    if (point == gfx::Point(500, 500)) {
       return HTBOTTOM;
+    }
     return HTNOWHERE;
   }
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {

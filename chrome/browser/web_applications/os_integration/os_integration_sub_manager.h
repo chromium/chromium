@@ -8,11 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
+namespace proto {
+class WebAppOsIntegrationState;
+}  // namespace proto
 
 struct SynchronizeOsOptions {
   // This option will always unregister all os integration, despite what may be

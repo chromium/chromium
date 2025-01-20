@@ -8,6 +8,7 @@
 #include <text-input-extension-unstable-v1-server-protocol.h>
 
 #include <optional>
+#include <utility>
 
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"

@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "components/language_detection/core/language_detection_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
@@ -28,6 +29,22 @@
 using on_device_model::mojom::LoadModelResult;
 
 namespace ml {
+
+namespace {
+
+language_detection::Prediction PredictLanguage(
+    language_detection::LanguageDetectionModel& tflite_model,
+    std::string_view text) {
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kTextSafetyScanLanguageDetection)) {
+    return language_detection::TopPrediction(
+        tflite_model.PredictWithScan(base::UTF8ToUTF16(text)));
+  } else {
+    return tflite_model.PredictTopLanguageWithSamples(base::UTF8ToUTF16(text));
+  }
+}
+
+}  // namespace
 
 class TsModel final : public on_device_model::mojom::TextSafetyModel {
  public:
@@ -156,8 +173,8 @@ on_device_model::mojom::LanguageDetectionResultPtr TsModel::DetectLanguage(
   if (!language_detector_) {
     return nullptr;
   }
-  const auto prediction =
-      language_detector_->DetectLanguage(base::UTF8ToUTF16(text));
+  language_detection::Prediction prediction =
+      PredictLanguage(language_detector_->tflite_model(), text);
   return on_device_model::mojom::LanguageDetectionResult::New(
       prediction.language, prediction.score);
 }

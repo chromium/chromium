@@ -1,11 +1,35 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++splitter horizontal name='Outside custom element'
-++++++genericContainer
-++++++++staticText name='a'
-++++++++++inlineTextBox name='a'
-++++++splitter horizontal name='Inside custom element'
-++++++genericContainer ignored
-++++++++staticText name='a'
-++++++++++inlineTextBox name='a'
+++++++splitter horizontal name='-- Ignored --'
+++++++genericContainer ignored invisible
+++++++genericContainer ignored invisible
+++++++genericContainer ignored invisible
+++++++splitter horizontal name='-- Main --'
+++++++main className='has-role-main role-main' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++splitter horizontal name='-- Group --'
+++++++group className='focusable role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer multiline className='editable role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++group className='owner role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++group className='controls-upper role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++group className='group-role-precedence role-group' htmlTag='test-element' name='cats'
+++++++++genericContainer ignored invisible
+++++++group className='element-attribute role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++splitter horizontal name='-- Generic --'
+++++++genericContainer className='live role-generic' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='clickable role-generic' htmlTag='test-element'
+++++++++genericContainer ignored invisible
+++++++genericContainer className='element-internals role-generic' htmlTag='test-internals' busy=true
+++++++++genericContainer ignored invisible
+++++++splitter horizontal name='-- Manual role=none --'
+++++++genericContainer ignored invisible
+++++++genericContainer ignored invisible
+++++++group className='manual-role-none-tabbable role-group' htmlTag='test-element'
+++++++++genericContainer ignored invisible

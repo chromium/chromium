@@ -2,9 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/toolchain/siso.gni")
-
 # Defines the configuration of Remote Build Execution (RBE).
+
+use_remoteexec_default =
+    exec_script(rebase_path("//build/toolchain/use_remoteexec_value.py"),
+                [],
+                "value",
+                [])
 
 declare_args() {
   # Deprecated: Please use reclient_bin_dir instead.
@@ -23,13 +27,22 @@ declare_args() {
   rbe_exec_root = rebase_path("//")
 
   # Set to true to enable remote executions.
-  use_remoteexec = false
+  use_remoteexec = use_remoteexec_default
+}
+
+use_reclient_default = false
+if (use_remoteexec && current_toolchain == default_toolchain) {
+  use_reclient_default =
+      exec_script(rebase_path("//build/toolchain/use_reclient_value.py"),
+                  [],
+                  "value",
+                  [])
 }
 
 declare_args() {
-  # Use Reclient as the RBE client by default.
+  # Set to true to use re-client.
   # Set to false to use Siso's builtin RBE client.
-  use_reclient = use_remoteexec
+  use_reclient = use_reclient_default
 
   # The directory where the re-client tooling binaries are.
   if (rbe_bin_dir != "") {
@@ -58,20 +71,32 @@ declare_args() {
 if (use_reclient) {
   assert(use_remoteexec, "Can't enable Reclient when use_remoteexec is false")
 }
+
 if (use_remoteexec) {
-  assert(
-      use_reclient || use_siso,
-      "Either use_reclient or use_siso needs to be true to enable remote executions")
+  rbe_logs = [ "use_remoteexec=true" ]
+} else {
+  rbe_logs = [ "use_remoteexec=false" ]
 }
+
+if (use_reclient) {
+  rbe_logs += [ "use_reclient=true" ]
+} else {
+  rbe_logs += [ "use_reclient=false" ]
+}
+
+# Siso native also uses rewrapper cfg file
+# to get remote platform property.
+use_reclient_cfgs =
+    use_reclient || (use_remoteexec && (host_os == "win" || host_os == "mac"))
 
 declare_args() {
   # Set to the path of the RBE reclient configuration files.
   # Configuration file selection based on operating system.
-  if (!use_reclient) {
+  if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
     reclient_py_large_cfg_file = ""
-  } else if (host_os == "linux") {
+  } else if (use_reclient && host_os == "linux") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_linux.cfg"
     reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
@@ -116,7 +141,7 @@ declare_args() {
   }
 }
 
-if (use_reclient && current_toolchain == default_toolchain) {
+if (use_reclient_cfgs && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
   exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),

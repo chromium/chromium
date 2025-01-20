@@ -57,7 +57,6 @@ source_set("lib") {
     ":ime_shared_library",
     "//ash/constants",
     "//base",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
     "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
     "//chromeos/ash/services/ime/public/mojom",

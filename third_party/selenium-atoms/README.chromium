@@ -5,7 +5,7 @@ Version: N/A
 Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
 Security Critical: no
 Shipped: yes
-License: Apache 2
+License: Apache-2.0
 License File: LICENSE
 
 Description:
@@ -54,7 +54,7 @@ The following dependency list is obtained from //third_party/js of selenium repo
 Name: Sizzle
 URL: https://sizzlejs.com/
 Version: N/A
-Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
+Revision: 423f35af8bf43f3f07bb17284e21608f08372c22
 Security Critical: no
 Shipped: yes
 License: MIT
@@ -66,7 +66,7 @@ Name: Wicked Good XPath
 Short Name: wgxpath
 URL: https://github.com/google/wicked-good-xpath
 Version: N/A
-Revision: bd5cbe5b3a3e60b5970d8168474dd69a996c392c
+Revision: 829cd0d85e51b7e23d6c4ef596cc83374ac1a430
 Security Critical: no
 Shipped: yes
 License: MIT

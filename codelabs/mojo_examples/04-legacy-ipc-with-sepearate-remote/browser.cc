@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -101,13 +102,12 @@ class BrowserIPCListener : public IPC::Listener {
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& msg) override {
-    CHECK(false) << "The browser should not receive messages";
-    return false;
+    NOTREACHED() << "The browser should not receive messages";
   }
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override {
-    CHECK(false)
+    NOTREACHED()
         << "The browser should not receive associated interface requests";
   }
 

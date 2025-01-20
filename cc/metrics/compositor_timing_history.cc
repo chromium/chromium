@@ -181,6 +181,7 @@ CompositorTimingHistory::CompositorTimingHistory(
       commit_to_ready_to_activate_duration_history_(kDurationHistorySize),
       activate_duration_history_(kDurationHistorySize),
       draw_duration_history_(kDurationHistorySize),
+      pending_tree_is_impl_side_(false),
       uma_category_(uma_category),
       rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
 

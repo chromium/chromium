@@ -6,20 +6,17 @@
 #define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class FollowService;
 class ProfileIOS;
 
 // Singleton that owns all FollowServices and associates them with
 // ProfileIOS.
-class FollowServiceFactory : public BrowserStateKeyedServiceFactory {
+class FollowServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static FollowService* GetForProfile(ProfileIOS* profile);
   static FollowServiceFactory* GetInstance();
-
-  FollowServiceFactory(const FollowServiceFactory&) = delete;
-  FollowServiceFactory& operator=(const FollowServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<FollowServiceFactory>;

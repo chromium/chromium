@@ -110,13 +110,12 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   }
 }
 
-int GetFrameCornerRadius(const aura::Window* native_window) {
-  if (!ShouldWindowHaveRoundedCorners(native_window)) {
+int GetWindowCornerRadius(const aura::Window* window) {
+  if (!ShouldWindowHaveRoundedCorners(window)) {
     return 0;
   }
 
-  const WindowStateType window_state =
-      native_window->GetProperty(kWindowStateTypeKey);
+  const WindowStateType window_state = window->GetProperty(kWindowStateTypeKey);
 
   if (window_state == WindowStateType::kPip) {
     return kPipRoundedCornerRadius;
@@ -126,7 +125,7 @@ int GetFrameCornerRadius(const aura::Window* native_window) {
                                              : kTopCornerRadiusWhenRestored;
 }
 
-bool CanPropertyEffectFrameRadius(const void* class_property_key) {
+bool CanPropertyEffectWindowRadius(const void* class_property_key) {
   return class_property_key == kIsShowingInOverviewKey ||
          class_property_key == kWindowStateTypeKey;
 }
@@ -136,9 +135,8 @@ bool ShouldWindowStateHaveRoundedCorners(WindowStateType type) {
          type == WindowStateType::kPip;
 }
 
-bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window) {
-  const WindowStateType window_state =
-      native_window->GetProperty(kWindowStateTypeKey);
+bool ShouldWindowHaveRoundedCorners(const aura::Window* window) {
+  const WindowStateType window_state = window->GetProperty(kWindowStateTypeKey);
 
   // In overview mode, the native window is displayed in `ash::WindowMiniView`
   // with its own `ash::WindowMiniViewHeaderView`. This mini view has its own
@@ -148,7 +146,7 @@ bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window) {
   // still show the header since the tab strip is rendered over the header. In
   // overview mode, the header becomes a part of contents of WindowMiniView and
   // rounding the header ends up rounding the top corners of the contents.
-  const bool in_overview = native_window->GetProperty(kIsShowingInOverviewKey);
+  const bool in_overview = window->GetProperty(kIsShowingInOverviewKey);
   return ShouldWindowStateHaveRoundedCorners(window_state) && !in_overview;
 }
 

@@ -66,16 +66,19 @@ std::optional<SafeSeed> GetSafeSeedData(FILE* stream);
 
 // Return a CrOSVariationsFieldTrialCreator for either the safe seed or the
 // local-state-based seed, depending on whether |safe_seed_details| has a safe
-// seed specified.
+// seed specified. |entropy_provider| is used to provide entropy when setting up
+// the seed file field trial.
 std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     PrefService* local_state,
     CrosVariationsServiceClient* client,
-    const std::optional<featured::SeedDetails>& safe_seed_details);
+    const std::optional<featured::SeedDetails>& safe_seed_details,
+    const variations::EntropyProviders* entropy_providers);
 
 typedef base::OnceCallback<std::unique_ptr<CrOSVariationsFieldTrialCreator>(
     PrefService* local_state,
     CrosVariationsServiceClient* client,
-    const std::optional<featured::SeedDetails>& safe_seed_details)>
+    const std::optional<featured::SeedDetails>& safe_seed_details,
+    const variations::EntropyProviders* entropy_providers)>
     GetCrOSVariationsFieldTrialCreator;
 
 // Evaluate the seed state, writing serialized computed output to stdout.

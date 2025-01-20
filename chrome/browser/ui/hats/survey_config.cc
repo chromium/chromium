@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"
@@ -17,6 +19,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/variations/service/google_groups_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
@@ -36,6 +39,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
+    "autofill-address-users-perception";
+constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[] =
     "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
     "autofill-credit-card-users-perception";
@@ -117,6 +122,8 @@ constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
 constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
     "safety_hub_android_survey";
+constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
+    "safety_hub_android_organic_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -205,7 +212,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{"Topics enabled", "Protected audience enabled",
                                "Measurement enabled", "Signed in"},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
       /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/true);
 
@@ -243,10 +251,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/
       features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
       std::vector<std::string>{},
-      std::vector<std::string>{
-          "Security Page User Action", "Safe Browsing Setting Before Trigger",
-          "Safe Browsing Setting After Trigger", "Client Channel",
-          "Time On Page", "Friendlier Safe Browsing Settings"});
+      std::vector<std::string>{"Security Page User Action",
+                               "Safe Browsing Setting Before Trigger",
+                               "Safe Browsing Setting After Trigger",
+                               "Client Channel", "Time On Page"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
@@ -262,7 +270,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerHistoryEmbeddings,
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"non empty results",
-                               "best matches result clicked", "result_clicked",
+                               "best matches result clicked", "result clicked",
                                "answer shown", "answer citation clicked"},
       std::vector<std::string>{"query word count"});
 
@@ -373,7 +381,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAddressUserPerceptionSurvey,
       kHatsSurveyTriggerAutofillAddressUserPerception, std::nullopt,
-      std::vector<std::string>{"granular filling available"},
+      std::vector<std::string>{},
       std::vector<std::string>{
           "Accepted fields", "Corrected to same type",
           "Corrected to a different type", "Corrected to an unknown type",
@@ -382,6 +390,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Manually filled to an unknown type", "Total corrected",
           "Total filled", "Total unfilled", "Total manually filled",
           "Total number of fields"});
+
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillAddressUserDeclinedSuggestionSurvey,
+      kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion, std::nullopt);
 
   survey_configs.emplace_back(
       &::autofill::features::kAutofillCreditCardUserPerceptionSurvey,
@@ -472,58 +484,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &performance_manager::features::
           kPerformanceControlsBatterySaverOptOutSurvey,
       kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
-  survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
-      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
-      kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::
-          kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
-      kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::
-          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
-      kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressUserDidChoosePlusAddressOverEmail,
-      kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressUserDidChooseEmailOverPlusAddress,
-      kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
-  survey_configs.emplace_back(
-      &plus_addresses::features::
-          kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
-      kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{
-          plus_addresses::hats::kFirstPlusAddressCreationTime,
-          plus_addresses::hats::kLastPlusAddressFillingTime});
 
   // Red Warning surveys.
   survey_configs.emplace_back(
@@ -617,14 +577,134 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerQuickDelete,
       chrome::android::kQuickDeleteAndroidSurveyTriggerId.Get());
 
+  std::vector<std::string> product_specific_bits_data_fields =
+      std::vector<std::string>{"Tapped card", "Has visited"};
+  std::vector<std::string> product_specific_string_data =
+      std::vector<std::string>{"Notification module type", "Global state"};
   survey_configs.emplace_back(
       &features::kSafetyHubAndroidSurvey, kHatsSurveyTriggerSafetyHubAndroid,
       features::kSafetyHubAndroidTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{"Tapped card"},
-      /*product_specific_string_data=*/
-      std::vector<std::string>{"Notification module type", "Global state"});
+      product_specific_bits_data_fields, product_specific_string_data);
+  survey_configs.emplace_back(&features::kSafetyHubAndroidOrganicSurvey,
+                              kHatsSurveyOrganicTriggerSafetyHubAndroid,
+                              features::kSafetyHubAndroidOrganicTriggerId.Get(),
+                              product_specific_bits_data_fields,
+                              product_specific_string_data);
+
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxCctAdsNoticeSurvey,
+      "privacy-sandbox-cct-ads-notice-eea-control",
+      privacy_sandbox::kPrivacySandboxCctAdsNoticeSurveyControlEeaTriggerId
+          .Get());
+
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxCctAdsNoticeSurvey,
+      "privacy-sandbox-cct-ads-notice-eea-accepted",
+      privacy_sandbox::kPrivacySandboxCctAdsNoticeSurveyAcceptedEeaTriggerId
+          .Get());
+
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxCctAdsNoticeSurvey,
+      "privacy-sandbox-cct-ads-notice-eea-declined",
+      privacy_sandbox::kPrivacySandboxCctAdsNoticeSurveyDeclinedEeaTriggerId
+          .Get());
+
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxCctAdsNoticeSurvey,
+      "privacy-sandbox-cct-ads-notice-row-control",
+      privacy_sandbox::kPrivacySandboxCctAdsNoticeSurveyControlRowTriggerId
+          .Get());
+
+  survey_configs.emplace_back(
+      &privacy_sandbox::kPrivacySandboxCctAdsNoticeSurvey,
+      "privacy-sandbox-cct-ads-notice-row-acknowledged",
+      privacy_sandbox::kPrivacySandboxCctAdsNoticeSurveyAcknowledgedRowTriggerId
+          .Get());
+
 #endif  // #if !BUILDFLAG(IS_ANDROID)
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+      kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
+      kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressDeclinedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+      kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserCreatedMultiplePlusAddressesSurveyCooldownOverrideDays
+              .Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::
+          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
+      kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurveyCooldownOverrideDays
+              .Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
+      kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserDidChoosePlusAddressOverEmailSurveyCooldownOverrideDays
+              .Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
+      kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserDidChooseEmailOverPlusAddressSurveyCooldownOverrideDays
+              .Get()));
+
+  survey_configs.emplace_back(
+      &autofill::features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+      kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressFilledPlusAddressViaManualFallbackSurveyCooldownOverrideDays
+              .Get()));
 
   return survey_configs;
 }
@@ -647,7 +727,8 @@ SurveyConfig::SurveyConfig(
     bool log_responses_to_ukm)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
-      product_specific_string_data_fields(product_specific_string_data_fields) {
+      product_specific_string_data_fields(product_specific_string_data_fields),
+      survey_feature(feature) {
   enabled = base::FeatureList::IsEnabled(*feature);
   if (!enabled) {
     return;
@@ -700,6 +781,38 @@ std::optional<uint64_t> SurveyConfig::ValidateHatsSurveyUkmId(
   return hats_survey_ukm_id.has_value() && hats_survey_ukm_id.value() > 0
              ? hats_survey_ukm_id
              : std::nullopt;
+}
+
+void SurveyConfig::SetCooldownPeriodOverride(
+    const base::TimeDelta& cooldown_period_override) {
+  if (!cooldown_period_override.is_zero()) {
+    cooldown_period_override_ = cooldown_period_override;
+  }
+}
+
+std::optional<base::TimeDelta> SurveyConfig::GetCooldownPeriodOverride(
+    Profile* profile) const {
+  if (!cooldown_period_override_) {
+    return std::nullopt;
+  }
+
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile);
+
+  if (!groups_manager) {
+    return std::nullopt;
+  }
+
+  if (!groups_manager->IsFeatureEnabledForProfile(*survey_feature) ||
+      !groups_manager->IsFeatureGroupControlled(*survey_feature)) {
+    return std::nullopt;
+  }
+
+  return cooldown_period_override_;
+}
+
+bool SurveyConfig::IsCooldownOverrideEnabled(Profile* profile) const {
+  return GetCooldownPeriodOverride(profile).has_value();
 }
 
 void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {

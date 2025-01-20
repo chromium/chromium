@@ -64,13 +64,10 @@ declare_args() {
   # example, don't omit the frame pointer and leave in symbols.
   enable_profiling = false
 
-  # use_debug_fission: whether to use split DWARF debug info
-  # files. This can reduce link time significantly, but is incompatible
-  # with some utilities such as icecc and ccache. Requires gold and
-  # gcc >= 4.8 or clang.
-  # http://gcc.gnu.org/wiki/DebugFission
-  use_debug_fission = !is_android && !is_fuchsia && !is_apple && !is_win &&
-                      use_lld && cc_wrapper == ""
+  # use_debug_fission: whether to use split DWARF debug info files. This can
+  # reduce link time significantly.
+  use_debug_fission =
+      !is_android && !is_fuchsia && !is_apple && !is_win && use_lld
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html

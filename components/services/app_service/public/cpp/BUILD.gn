@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 # Component for the core data structures and types used by App Service. Large
 # parts of the codebase are dependent on this target (via
 # //chromeos/crosapi/mojom), so this must have minimal deps to avoid circular
@@ -65,7 +63,7 @@ component("app_types") {
 
 # This target is separate from //components/services/app_service because not all
 # clients of App Service are allowed to have a dependency on //content.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("instance_update") {
     sources = [
       "instance.cc",
@@ -107,7 +105,7 @@ source_set("test_support") {
 
   public_deps = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_instance_waiter.cc",
       "app_instance_waiter.h",
@@ -214,17 +212,6 @@ component("app_update") {
     ":macros",
     "//ui/gfx",
   ]
-
-  visibility = [ "//components/services/app_service/*" ]
-}
-
-source_set("app_url_handling") {
-  sources = [
-    "url_handler_info.cc",
-    "url_handler_info.h",
-  ]
-
-  deps = [ "//url" ]
 
   visibility = [ "//components/services/app_service/*" ]
 }
@@ -353,7 +340,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_storage/app_storage_file_handler_unittest.cc",
       "app_storage/app_storage_unittest.cc",
@@ -368,11 +355,7 @@ source_set("unit_tests") {
     deps += [
       ":instance_update",
       "//chrome/test:test_support",
+      "//components/services/app_service/public/cpp/shortcut:unit_tests",
     ]
-  }
-
-  if (is_chromeos) {
-    deps +=
-        [ "//components/services/app_service/public/cpp/shortcut:unit_tests" ]
   }
 }

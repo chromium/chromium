@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -37,8 +38,7 @@ class UkmMetricsTableTest : public testing::Test {
   ~UkmMetricsTableTest() override = default;
 
   void SetUp() override {
-    sql::DatabaseOptions options;
-    db_ = std::make_unique<sql::Database>(options);
+    db_ = std::make_unique<sql::Database>(sql::test::kTestTag);
     bool opened = db_->OpenInMemory();
     ASSERT_TRUE(opened);
     metrics_table_ = std::make_unique<UkmMetricsTable>(db_.get());

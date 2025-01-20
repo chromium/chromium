@@ -190,6 +190,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     using pointer = value_type*;
     using reference = value_type&;
 
+    AncestorsIterator() = default;
     ~AncestorsIterator() = default;
 
     AncestorsIterator(const AncestorsIterator& other)
@@ -239,8 +240,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     }
 
    private:
-    AncestorsIterator() = default;
-
     explicit AncestorsIterator(AXObject& current) : current_(&current) {}
 
     friend class AXObject;
@@ -263,7 +262,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String detached_object_debug_info_;
 #endif
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   bool is_adding_children_ = false;
   mutable bool is_computing_text_from_descendants_ = false;
 #endif
@@ -881,7 +880,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AtomicString& GetRoleStringForSerialization(ui::AXNodeData* node_data) const;
 
   // ARIA attributes.
-  bool HasAriaAttribute(bool does_undo_role_presentation = false) const;
+  bool ElementHasAnyAriaAttribute(
+      bool does_undo_role_presentation = false) const;
   virtual AXObject* ActiveDescendant() const { return nullptr; }
   virtual String AutoComplete() const { return String(); }
   virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
@@ -1245,16 +1245,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Is this the root of this object hierarchy.
   bool IsRoot() const;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   // Get/Prints the entire AX subtree to the screen for debugging, with |this|
   // highlighted via a "*" notation.
   std::string GetAXTreeForThis() const;
   void ShowAXTreeForThis() const;
-
-  // Starting from |this|, make sure there is an included parent path
-  // to the root, and that it's also possible to reach the included object
-  // by traversing downwards through included children.
-  void CheckIncludedObjectConnectedToRoot() const;
 #endif
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -1344,9 +1339,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // are also retrieved from elementInternals on custom elements.
   // For non-ARIA attributes, it's ok to just use Element methods.
   bool HasAriaAttribute(const QualifiedName&) const;
-  static bool HasAriaAttribute(Element& element, const QualifiedName&);
+  static bool HasAriaAttribute(const Element& element, const QualifiedName&);
   const AtomicString& AriaAttribute(const QualifiedName&) const;
-  static const AtomicString& AriaAttribute(Element& element,
+  static const AtomicString& AriaAttribute(const Element& element,
                                            const QualifiedName&);
 
   // The following HasAriaFooAttribute() methods return true if the attribute
@@ -1368,7 +1363,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Additional boolean ARIA convenience methods.
   bool IsAriaAttributeTrue(const QualifiedName&) const;
-  static bool IsAriaAttributeTrue(Element& element, const QualifiedName&);
+  static bool IsAriaAttributeTrue(const Element& element, const QualifiedName&);
 
   // Scrollable containers.
   bool IsScrollableContainer() const;
@@ -1549,6 +1544,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeChildTreeID(ui::AXNodeData* node_data) const;
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const;
   void SerializeColorAttributes(ui::AXNodeData* node_data) const;
+  void SerializeImplicitActions(ui::AXNodeData* node_data) const;
   void SerializeElementAttributes(ui::AXNodeData* node_data) const;
   void SerializeHTMLNonStandardAttributesForJAWS(
       ui::AXNodeData* node_data) const;
@@ -1594,7 +1590,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
   void OnInheritedCachedValuesChanged();
-  static const AtomicString& GetInternalsAttribute(Element&,
+  static const AtomicString& GetInternalsAttribute(const Element&,
                                                    const QualifiedName&);
 
   // Returns true if this node should use the aria role combobox menu button.

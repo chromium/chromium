@@ -10,19 +10,19 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "components/tracing/common/etw_export_win.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
-#include "services/tracing/public/cpp/perfetto/system_producer.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/tracing/common/etw_export_win.h"
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/mach_port_rendezvous.h"
@@ -51,10 +51,9 @@ bool IsTracingInitialized() {
 
 void EnableStartupTracingIfNeeded() {
   RegisterTracedValueProtoWriter();
-  TraceEventDataSource::GetInstance()->RegisterStartupHooks();
 
   // Create the PerfettoTracedProcess.
-  PerfettoTracedProcess::Get();
+  PerfettoTracedProcess::MaybeCreateInstance();
 
   // Initialize the client library's TrackRegistry to support trace points
   // during startup tracing. We don't setup the client library completely here
@@ -70,9 +69,6 @@ void EnableStartupTracingIfNeeded() {
   auto& startup_config = TraceStartupConfig::GetInstance();
 
   if (startup_config.IsEnabled()) {
-    // Ensure that data sources are created and registered.
-    TraceEventAgent::GetInstance();
-
     auto perfetto_config = startup_config.GetPerfettoConfig();
 
     perfetto::Tracing::SetupStartupTracingOpts opts;
@@ -83,7 +79,7 @@ void EnableStartupTracingIfNeeded() {
     // TODO(khokhlov): After client library is moved onto a separate thread
     // and it's possible to start startup tracing early, replace this call with
     // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
-    PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
+    PerfettoTracedProcess::Get().RequestStartupTracing(perfetto_config, opts);
   }
 }
 
@@ -95,7 +91,7 @@ bool EnableStartupTracingForProcess(
   // TODO(khokhlov): After client library is moved onto a separate thread
   // and it's possible to start startup tracing early, replace this call with
   // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
-  PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
+  PerfettoTracedProcess::Get().RequestStartupTracing(perfetto_config, opts);
   return true;
 }
 
@@ -106,7 +102,9 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
   DCHECK(base::ThreadPoolInstance::Get());
   DCHECK(base::FeatureList::GetInstance());
 
-  PerfettoTracedProcess::Get()->OnThreadPoolAvailable(enable_consumer);
+  // Create the PerfettoTracedProcess.
+  PerfettoTracedProcess::MaybeCreateInstance();
+  PerfettoTracedProcess::Get().OnThreadPoolAvailable(enable_consumer);
 #if BUILDFLAG(IS_WIN)
   tracing::EnableETWExport();
 #endif  // BUILDFLAG(IS_WIN)

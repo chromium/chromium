@@ -236,13 +236,6 @@ source_set("config_sources") {
     sources += [ "gpu_info_collector_win.cc" ]
     deps += [ "//third_party/microsoft_dxheaders:dxguids" ]
     libs = [ "dxgi.lib" ]
-
-    if (is_chrome_branded && is_official_build) {
-      sources += [
-        "//third_party/amd/AmdCfxPxExt.h",
-        "//third_party/amd/amd_videocard_info_win.cc",
-      ]
-    }
   }
   if (is_mac) {
     sources += [ "gpu_info_collector_mac.mm" ]

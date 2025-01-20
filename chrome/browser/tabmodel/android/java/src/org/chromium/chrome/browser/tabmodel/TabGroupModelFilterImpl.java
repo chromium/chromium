@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link TabGroupModelFilterInternal} that puts {@link Tab}s into a group
@@ -82,7 +81,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             new ObserverList<>();
     private final Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private final Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
-    private final TabModel mTabModel;
+    private final TabModelInternal mTabModel;
     private final TabUngrouper mTabUngrouper;
 
     /**
@@ -101,8 +100,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     /**
      * @param tabModel The tab model to filter.
+     * @param tabUngrouper To manage ungrouping tabs.
      */
-    TabGroupModelFilterImpl(@NonNull TabModel tabModel, @NonNull TabUngrouper tabUngrouper) {
+    TabGroupModelFilterImpl(
+            @NonNull TabModelInternal tabModel, @NonNull TabUngrouper tabUngrouper) {
         mTabModel = tabModel;
         mTabUngrouper = tabUngrouper;
         mTabModel.addObserver(this);
@@ -246,8 +247,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         tab.setTabGroupId(tabGroupId);
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
-        if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch())) {
+        if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
             notify = false;
         }
 
@@ -256,7 +256,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didMergeTabToGroup(tab, tab.getId());
+            observer.didMergeTabToGroup(tab);
         }
 
         if (notify) {
@@ -351,12 +351,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
             resetFilterState();
 
-            Tab lastMergedTab = tabsToMerge.get(tabsToMerge.size() - 1);
-            TabGroup group = mRootIdToGroupMap.get(lastMergedTab.getRootId());
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                    observer.didMergeTabToGroup(tab);
                 }
             }
 
@@ -368,9 +366,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
-                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                            TabGroupFeatureUtils
-                                    .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
                         continue;
                     }
                 }
@@ -509,9 +505,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             // snackbar.
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
-                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                                    TabGroupFeatureUtils
-                                            .shouldShowGroupCreationDialogViaSettingsSwitch());
+                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog();
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -677,6 +671,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // so long as the tab is actually becoming part of a tab group.
         mIsUndoing = isChangingGroups;
 
+        // Notify that the tab will be removed from its current group.
+        if (isTabInTabGroup(tab)) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.willMoveTabOutOfGroup(tab, originalRootId);
+            }
+        }
+
         setBothGroupIds(tab, originalRootId, originalTabGroupId);
         if (isChangingIndex) {
             if (currentIndex < originalIndex) originalIndex++;
@@ -690,12 +691,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
-        // TODO(b/b/339480464): Emit a matching willMergeTabToGroup somewhere upstream.
         if (isChangingGroups && isTabInTabGroup(tab)) {
-            TabGroup group = mRootIdToGroupMap.get(originalRootId);
             // Last shown tab IDs are not preserved across an undo.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                observer.didMergeTabToGroup(tab);
             }
         }
     }
@@ -1264,9 +1263,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         } else if (isMergeTabToGroup) {
             resetFilterState();
 
-            TabGroup group = mRootIdToGroupMap.get(tab.getRootId());
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                observer.didMergeTabToGroup(tab);
             }
         } else {
             reorder();
@@ -1549,7 +1547,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
-        TabModel tabModel = getTabModel();
+        TabModelInternal tabModel = mTabModel;
         if (tabClosureParams.hideTabGroups && canHideTabGroups()) {
             if (tabClosureParams.isAllTabs) {
                 for (Token token : getAllTabGroupIds()) {
@@ -1557,7 +1555,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 }
             } else {
                 Set<Integer> closingTabIds =
-                        tabClosureParams.tabs.stream().map(Tab::getId).collect(Collectors.toSet());
+                        new HashSet<>(TabModelUtils.getTabIds(tabClosureParams.tabs));
                 for (int rootId : getAllTabGroupRootIds()) {
                     TabGroup group = mRootIdToGroupMap.get(rootId);
                     if (group == null) continue;

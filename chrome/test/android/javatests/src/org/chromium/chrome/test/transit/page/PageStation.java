@@ -27,6 +27,7 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -408,8 +409,37 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         return travelToSync(destination, options, () -> ThreadUtils.runOnUiThread(r));
     }
 
+    /** Loads a |url| leading to a web page in the same tab and waits to transition. */
+    public WebPageStation loadWebPageProgrammatically(String url) {
+        return loadPageProgrammatically(url, WebPageStation.newBuilder());
+    }
+
     public WebPageStation loadAboutBlank() {
-        return loadPageProgrammatically("about:blank", WebPageStation.newBuilder());
+        return loadWebPageProgrammatically("about:blank");
+    }
+
+    /** Loads a |url| in another tab as if a link was clicked and waits to transition. */
+    public <T extends PageStation> T openFakeLink(String url, Builder<T> builder) {
+        return travelToSync(
+                builder.withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .withIncognito(mIncognito)
+                        .withExpectedUrlSubstring(url)
+                        .build(),
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () ->
+                                        getActivity()
+                                                .getTabCreator(mIncognito)
+                                                .launchUrl(url, TabLaunchType.FROM_LINK)));
+    }
+
+    /**
+     * Loads a |url| in another tab leading to a webpage as if a link was clicked and waits to
+     * transition.
+     */
+    public WebPageStation openFakeLinkToWebPage(String url) {
+        return openFakeLink(url, WebPageStation.newBuilder());
     }
 
     public Tab getLoadedTab() {

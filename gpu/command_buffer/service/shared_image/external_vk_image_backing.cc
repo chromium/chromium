@@ -1274,6 +1274,60 @@ bool ExternalVkImageBacking::UploadToVkImage(
   return success;
 }
 
+bool ExternalVkImageBacking::ReadbackToMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), vk_textures_.size());
+
+  std::vector<ExternalSemaphore> external_semaphores;
+  if (!BeginAccess(/*readonly=*/true, &external_semaphores, /*is_gl=*/false)) {
+    DLOG(ERROR) << "BeginAccess() failed.";
+    return false;
+  }
+  auto* gr_context = context_state_->gr_context();
+  WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
+
+  bool success = true;
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    if (!vk_textures_[plane].Readback(gr_context, pixmaps[plane])) {
+      success = false;
+    }
+  }
+
+  if (!need_synchronization()) {
+    DCHECK(external_semaphores.empty());
+    EndAccess(/*readonly=*/true, ExternalSemaphore(), /*is_gl=*/false);
+    return success;
+  }
+
+  for (auto& vk_texture : vk_textures_) {
+    gr_context->setBackendTextureState(
+        vk_texture.backend_texture,
+        skgpu::MutableTextureStates::MakeVulkan(VK_IMAGE_LAYOUT_UNDEFINED,
+                                                VK_QUEUE_FAMILY_EXTERNAL));
+  }
+
+  auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
+  VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
+  GrBackendSemaphore end_access_backend_semaphore =
+      GrBackendSemaphores::MakeVk(vk_end_access_semaphore);
+  GrFlushInfo flush_info = {
+      .fNumSemaphores = 1,
+      .fSignalSemaphores = &end_access_backend_semaphore,
+  };
+  gr_context->flush(flush_info);
+
+  // Submit so the |end_access_semaphore| is ready for waiting.
+  gr_context->submit();
+
+  EndAccess(/*readonly=*/true, std::move(end_access_semaphore),
+            /*is_gl=*/false);
+
+  // |external_semaphores| have been waited on and can be reused when submitted
+  // GPU work is done.
+  ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
+  return success;
+}
+
 bool ExternalVkImageBacking::UploadToGLTexture(
     const std::vector<SkPixmap>& pixmaps) {
   DCHECK(use_separate_gl_texture());

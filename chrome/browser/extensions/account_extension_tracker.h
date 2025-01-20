@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_ACCOUNT_EXTENSION_TRACKER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/common/extension.h"
@@ -26,6 +28,13 @@ namespace extensions {
 class AccountExtensionTracker : public KeyedService,
                                 public signin::IdentityManager::Observer {
  public:
+  // Maximum delay between initiating a sign in from the extension installed
+  // bubble and completing the sign in for the associated extension to still be
+  // promoted to an account extension. Beyond this delay, it is assumed that the
+  // user did not intend to sign in after installing the extension.
+  static constexpr base::TimeDelta kMaxSigninFromExtensionBubbleDelay =
+      base::Minutes(50);
+
   enum AccountExtensionType {
     // The extension is only associated with the current device. This is used
     // for:
@@ -41,6 +50,18 @@ class AccountExtensionTracker : public KeyedService,
     // installed on this device after the user has signed in.
     kAccountInstalledSignedIn = 2,
     kLast = 2,
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when an extension's eligibility to be uploaded to the user's
+    // account may have changed.
+    virtual void OnExtensionUploadabilityChanged(const ExtensionId& id) = 0;
+
+    // Called when whether extensions can be uploaded to the user's account may
+    // be changed. Usually emitted when the initial sync download completes or
+    // when the user is no longer syncing extensions in transport mode.
+    virtual void OnExtensionsUploadabilityChanged() = 0;
   };
 
   explicit AccountExtensionTracker(Profile* profile);
@@ -66,11 +87,34 @@ class AccountExtensionTracker : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // Called when sync data is applied for the given `extension_id`.
-  void OnExtensionSyncDataApplied(const ExtensionId& extension_id);
+  // Called when sync data is received for the given `extension_id`.
+  void OnExtensionSyncDataReceived(const ExtensionId& extension_id);
+
+  // Called just after the initial set of extension sync data is received.
+  // i.e. during browser startup (if extensions sync is already enabled), or
+  // once the initial download completes after extensions sync gets enabled.
+  void OnInitialExtensionsSyncDataReceived();
 
   AccountExtensionType GetAccountExtensionType(
       const ExtensionId& extension_id) const;
+
+  // Called when the user initiates a signin from a promo that appears after an
+  // extension with the given `extension_id` is installed.
+  void OnSignInInitiatedFromExtensionPromo(const ExtensionId& extension_id);
+
+  // Whether the given `extension` can be uploaded to/associated with the
+  // current signed in user.
+  bool CanUploadAsAccountExtension(const Extension& extension) const;
+
+  // Called when the user initiates an upload for the given `extension_id` to
+  // their account.
+  void OnAccountUploadInitiatedForExtension(const ExtensionId& extension_id);
+
+  void SetAccountExtensionTypeForTesting(const ExtensionId& extension_id,
+                                         AccountExtensionType type);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   // Sets the extension's AccountExtensionType. Called when the extension is
@@ -79,12 +123,32 @@ class AccountExtensionTracker : public KeyedService,
   void SetAccountExtensionType(const ExtensionId& extension_id,
                                AccountExtensionType type);
 
+  // Removes `extension_id` in `extensions_installed_with_signin_promo_`.
+  void RemoveExpiredExtension(const ExtensionId& extension_id);
+
+  // Promotes `extension_id` from a local to an account extension.
+  void PromoteLocalToAccountExtension(const ExtensionId& extension_id);
+
+  // Notifies observers that the eligibility of multiple extensions to be
+  // uploaded to the user's account may have changed.
+  void NotifyOnExtensionsUploadabilityChanged();
+
   const raw_ptr<Profile> profile_;
+
+  // Keeps track of extensions for which a signin promo was shown after
+  // installation.
+  std::vector<ExtensionId> extensions_installed_with_signin_promo_;
+
+  base::ObserverList<Observer> observers_;
 
   // IdentityManager observer.
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // Must be the last member variable. See WeakPtrFactory documentation for
+  // details.
+  base::WeakPtrFactory<AccountExtensionTracker> weak_factory_{this};
 };
 
 }  // namespace extensions

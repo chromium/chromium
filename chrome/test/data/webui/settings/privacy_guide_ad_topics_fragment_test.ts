@@ -48,8 +48,7 @@ suite('AdTopicsFragment', function() {
     const descriptionHeaders =
         fragment.shadowRoot!.querySelectorAll<HTMLElement>(
             '.description-header');
-    const descriptionItems =
-        fragment.shadowRoot!.querySelectorAll('privacy-guide-description-item');
+    const descriptionItems = fragment.shadowRoot!.querySelectorAll('li');
     assertTrue(isVisible(adTopicsToggle));
     assertEquals(
         loadTimeData.getString('privacyGuideAdTopicsToggleLabel'),
@@ -73,16 +72,16 @@ suite('AdTopicsFragment', function() {
     });
     assertEquals(
         loadTimeData.getString('privacyGuideAdTopicsWhenOnBullet1'),
-        descriptionItems![0]!.label);
+        descriptionItems![0]!.innerText);
     assertEquals(
         loadTimeData.getString('privacyGuideAdTopicsWhenOnBullet2'),
-        descriptionItems![1]!.label);
+        descriptionItems![1]!.innerText);
     assertEquals(
         loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet1'),
-        descriptionItems![2]!.label);
+        descriptionItems![2]!.innerText);
     assertEquals(
         loadTimeData.getString('privacyGuideAdTopicsThingsToConsiderBullet2'),
-        descriptionItems![3]!.label);
+        descriptionItems![3]!.innerText);
   });
 
   test('TestAdTopicsPageToggle', function() {

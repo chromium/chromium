@@ -114,10 +114,11 @@ void SetDragImage(const GURL& url,
   button->SetBoundsRect(gfx::Rect(size));
 
   gfx::Vector2d press_point;
-  if (press_pt)
+  if (press_pt) {
     press_point = press_pt->OffsetFromOrigin();
-  else
+  } else {
     press_point = gfx::Vector2d(size.width() / 2, size.height() / 2);
+  }
 
   SkBitmap bitmap;
   float raster_scale = ScaleFactorForDragFromWidget(drag_widget.get());

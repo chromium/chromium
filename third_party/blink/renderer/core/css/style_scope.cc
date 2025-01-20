@@ -30,6 +30,23 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   return copy;
 }
 
+const StyleScope* StyleScope::Renest(StyleRule* new_parent) const {
+  StyleRule* reparented_from =
+      from_ ? To<StyleRule>(from_->Renest(new_parent)) : nullptr;
+  if (from_ == reparented_from) {
+    return this;
+  }
+  // Note that for the "to" selector, any '&' selectors must point
+  // to the "from" selector.
+  CSSSelectorList* reparented_to = to_ ? to_->Renest(reparented_from) : nullptr;
+  // For implicit scopes, we should have exited early due to from_==nullptr.
+  CHECK(!contents_);
+  // The `parent_` member should only be populated via calls to CopyWithParent
+  // (RuleSet-time), and this StyleScope should not be one such copy.
+  CHECK(!parent_);
+  return MakeGarbageCollected<StyleScope>(reparented_from, reparented_to);
+}
+
 const CSSSelector* StyleScope::From() const {
   if (from_) {
     return from_->FirstSelector();
@@ -48,7 +65,6 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
                               const CSSParserContext* context,
                               CSSNestingType nesting_type,
                               StyleRule* parent_rule_for_nesting,
-                              bool is_within_scope,
                               StyleSheetContents* style_sheet) {
   HeapVector<CSSSelector> arena;
 
@@ -61,9 +77,9 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
   if (stream.Peek().GetType() == kLeftParenthesisToken) {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    from = CSSSelectorParser::ParseScopeBoundary(
-        stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
-        style_sheet, arena);
+    from = CSSSelectorParser::ParseScopeBoundary(stream, context, nesting_type,
+                                                 parent_rule_for_nesting,
+                                                 style_sheet, arena);
     if (from.empty()) {
       return nullptr;
     }
@@ -85,16 +101,15 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
 
     // Note that <scope-start> should act as the enclosing style rule for
     // the purposes of matching the parent pseudo-class (&) within <scope-end>,
-    // hence we're not passing any of `nesting_type`, `parent_rule_for_nesting`,
-    // or `is_within_scope` to `ParseScopeBoundary` here.
+    // hence we're not passing `nesting_type` or `parent_rule_for_nesting`
+    // to `ParseScopeBoundary` here.
     //
     // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
     to = CSSSelectorParser::ParseScopeBoundary(
         stream, context, CSSNestingType::kScope,
-        /* parent_rule_for_nesting */ from_rule,
-        /* is_within_scope */ true, style_sheet, arena);
+        /* parent_rule_for_nesting */ from_rule, style_sheet, arena);
     if (to.empty()) {
       return nullptr;
     }

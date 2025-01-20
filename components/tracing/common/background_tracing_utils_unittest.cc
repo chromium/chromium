@@ -21,6 +21,7 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/snappy/src/snappy.h"
 
 using tracing::BackgroundTracingSetupMode;
 
@@ -90,7 +91,10 @@ TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrial) {
 
   std::string serialized_config =
       GetFieldTracingConfigFromText(kValidProtoTracingConfig);
-  std::string encoded_config = base::Base64Encode(serialized_config);
+  std::string compressed_config;
+  ASSERT_TRUE(snappy::Compress(serialized_config.data(),
+                               serialized_config.size(), &compressed_config));
+  std::string encoded_config = base::Base64Encode(compressed_config);
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
                                                  {{"config", encoded_config}});
@@ -109,7 +113,10 @@ TEST(BackgroundTracingUtilsTest, SetupSystemTracingFromFieldTrial) {
 
   std::string serialized_config =
       GetTracingRulesConfigFromText(kValidProtoRuleConfig);
-  std::string encoded_config = base::Base64Encode(serialized_config);
+  std::string compressed_config;
+  ASSERT_TRUE(snappy::Compress(serialized_config.data(),
+                               serialized_config.size(), &compressed_config));
+  std::string encoded_config = base::Base64Encode(compressed_config);
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kTracingTriggers,
                                                  {{"config", encoded_config}});
@@ -157,7 +164,10 @@ TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrialOutputPath) {
 
   std::string serialized_config =
       GetFieldTracingConfigFromText(kValidProtoTracingConfig);
-  std::string encoded_config = base::Base64Encode(serialized_config);
+  std::string compressed_config;
+  ASSERT_TRUE(snappy::Compress(serialized_config.data(),
+                               serialized_config.size(), &compressed_config));
+  std::string encoded_config = base::Base64Encode(compressed_config);
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(tracing::kFieldTracing,
                                                  {{"config", encoded_config}});

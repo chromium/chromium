@@ -15,6 +15,8 @@ source_set("public") {
     "saved_tab_group.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
+    "synthetic_field_trial_helper.cc",
+    "synthetic_field_trial_helper.h",
     "tab_group_sync_metrics_logger.h",
     "tab_group_sync_service.cc",
     "tab_group_sync_service.h",
@@ -30,6 +32,7 @@ source_set("public") {
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
+    "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/gfx",
     "//url",
@@ -121,6 +124,7 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_unittest.cc",
     "string_utils_unittest.cc",
+    "synthetic_field_trial_helper_unittest.cc",
   ]
   deps = [
     ":public",
@@ -150,6 +154,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncController.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
     ]

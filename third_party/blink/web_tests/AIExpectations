@@ -1,0 +1,13 @@
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# Some of AI related API tests can pass only on Optimization Guide Bots. So they
+# are skipped or marked as flaky by the defaut TestExpectations.
+# When Optimization Guide Bots run AI related API tests, the default
+# TestExpectations file is ignored and this file is referred.
+
+# Temporary marking Writer/Rewriter API tests as flaky because it will be broken
+# until we get a new prompt.
+crbug.com/372099809 wpt_internal/ai/rewriter-api-slow.https.any.html [ Failure Pass Timeout ]
+crbug.com/372099809 wpt_internal/ai/rewriter-api-slow.https.any.worker.html [ Failure Pass Timeout ]
+crbug.com/372099809 wpt_internal/ai/writer-api-slow.https.any.html [ Failure Pass Timeout ]
+crbug.com/372099809 wpt_internal/ai/writer-api-slow.https.any.worker.html [ Failure Pass Timeout ]

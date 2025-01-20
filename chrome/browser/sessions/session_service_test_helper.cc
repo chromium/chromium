@@ -28,7 +28,7 @@ SessionServiceTestHelper::SessionServiceTestHelper(Profile* profile)
 SessionServiceTestHelper::SessionServiceTestHelper(SessionService* service)
     : service_(service) {}
 
-SessionServiceTestHelper::~SessionServiceTestHelper() {}
+SessionServiceTestHelper::~SessionServiceTestHelper() = default;
 
 void SessionServiceTestHelper::SaveNow() {
   return service_->GetCommandStorageManagerForTest()->Save();

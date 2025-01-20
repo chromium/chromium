@@ -73,8 +73,10 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kDefaultBrowserFirstShownTime,
                              base::Time());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  registry->RegisterStringPref(prefs::kEnterpriseCustomLabel, std::string());
-  registry->RegisterStringPref(prefs::kEnterpriseLogoUrl, std::string());
+  registry->RegisterStringPref(prefs::kEnterpriseCustomLabelForBrowser,
+                               std::string());
+  registry->RegisterStringPref(prefs::kEnterpriseLogoUrlForBrowser,
+                               std::string());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
@@ -108,6 +110,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif
   registry->RegisterStringPref(prefs::kWebRTCIPHandlingPolicy,
                                blink::kWebRTCIPHandlingDefault);
+  registry->RegisterListPref(prefs::kWebRTCIPHandlingUrl, base::Value::List());
   registry->RegisterStringPref(prefs::kWebRTCUDPPortRange, std::string());
   registry->RegisterBooleanPref(prefs::kWebRtcEventLogCollectionAllowed, false);
   registry->RegisterListPref(prefs::kWebRtcLocalIpsAllowedUrls);
@@ -183,8 +186,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kHttpsUpgradeNavigations);
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeAutoEnabled, false);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  registry->RegisterStringPref(prefs::kEnterpriseLogoUrl, std::string());
-  registry->RegisterStringPref(prefs::kEnterpriseCustomLabel, std::string());
   registry->RegisterStringPref(prefs::kEnterpriseLogoUrlForProfile,
                                std::string());
   registry->RegisterStringPref(prefs::kEnterpriseCustomLabelForProfile,

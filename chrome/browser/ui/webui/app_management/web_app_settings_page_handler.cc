@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -292,6 +293,10 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
             mac_notifications::mojom::PermissionStatus::kNotDetermined;
   }
 #endif
+
+  // On non-ChromeOS platforms, navigation capturing is allowed even if PWAs
+  // open in a new browser tab.
+  app->disable_user_choice_navigation_capturing = false;
 
   return app;
 }

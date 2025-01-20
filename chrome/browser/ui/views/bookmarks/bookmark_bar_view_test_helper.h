@@ -18,12 +18,12 @@ class BookmarkBarViewTestHelper {
   BookmarkBarViewTestHelper& operator=(const BookmarkBarViewTestHelper&) =
       delete;
 
-  ~BookmarkBarViewTestHelper() {}
+  ~BookmarkBarViewTestHelper() = default;
 
   size_t GetBookmarkButtonCount() { return bbv_->bookmark_buttons_.size(); }
 
   views::LabelButton* GetBookmarkButton(size_t index) {
-    return bbv_->bookmark_buttons_[index];
+    return bbv_->bookmark_buttons_[index].first;
   }
 
   views::LabelButton* apps_page_shortcut() { return bbv_->apps_page_shortcut_; }

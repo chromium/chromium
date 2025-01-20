@@ -167,7 +167,8 @@ public class StaticLayoutUnitTest {
                         mTabContentManager,
                         mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider,
-                        mStaticTabSceneLayer);
+                        mStaticTabSceneLayer,
+                        false);
         mModel = mStaticLayout.getModelForTesting();
         doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 
@@ -241,7 +242,7 @@ public class StaticLayoutUnitTest {
         doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(offset, offset, 0, 0, true, false);
+                .onControlsOffsetChanged(offset, offset, false, 0, 0, false, true, false);
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 

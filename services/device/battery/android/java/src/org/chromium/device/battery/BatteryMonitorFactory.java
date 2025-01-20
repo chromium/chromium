@@ -5,6 +5,8 @@
 package org.chromium.device.battery;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.battery.BatteryStatusManager.BatteryStatusCallback;
 import org.chromium.device.mojom.BatteryMonitor;
 import org.chromium.device.mojom.BatteryStatus;
@@ -18,6 +20,7 @@ import java.util.List;
  * Factory that creates instances of BatteryMonitor implementations and notifies them about battery
  * status changes.
  */
+@NullMarked
 public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
     private static final String TAG = "BattMonitorFactory";
 
@@ -28,7 +31,7 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
             new HashSet<BatteryMonitorImpl>();
     // Tracks the latest battery status update for newly added observers.
     private boolean mHasStatusUpdate;
-    private BatteryStatus mBatteryStatus;
+    private @Nullable BatteryStatus mBatteryStatus;
 
     private final BatteryStatusCallback mCallback =
             new BatteryStatusCallback() {

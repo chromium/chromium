@@ -570,7 +570,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   statement.BindTime(9, dictionary_info.GetExpirationTime());
   statement.BindTime(10, dictionary_info.last_used_time());
   statement.BindInt64(11, dictionary_info.size());
-  statement.BindBlob(12, base::make_span(dictionary_info.hash().data));
+  statement.BindBlob(12, base::span(dictionary_info.hash().data));
   // There is no `sql::Statement::BindUint64()` method. So we cast to int64_t.
   int64_t token_high = static_cast<int64_t>(
       dictionary_info.disk_cache_key_token().GetHighForSerialization());

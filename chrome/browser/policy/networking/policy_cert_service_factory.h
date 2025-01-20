@@ -22,19 +22,11 @@ class PolicyCertService;
 // Factory to create PolicyCertServices.
 class PolicyCertServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns an existing PolicyCertService for |profile|. See
-  // CreateForProfile.
-  static PolicyCertService* GetForProfile(Profile* profile);
-
-  // Creates (if it's not already created) a PolicyCertService and gets it to
-  // start listening for trust anchors for the profile. Returns false if this
-  // service isn't allowed for |profile|, i.e. if NetworkConfigurationUpdater
-  // doesn't exist. This service is created separately for the original profile
-  // and the incognito profile.
+  // Returns a PolicyCertService for `profile`. This service is created
+  // separately for the original profile and the incognito profile.
   // Note: NetworkConfigurationUpdater is currently only created for the primary
   // user's profile.
-  // This should only be called if the network service is enabled.
-  static bool CreateAndStartObservingForProfile(Profile* profile);
+  static PolicyCertService* GetForProfile(Profile* profile);
 
   static PolicyCertServiceFactory* GetInstance();
 

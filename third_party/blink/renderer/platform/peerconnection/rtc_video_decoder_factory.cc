@@ -231,8 +231,17 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
 RTCVideoDecoderFactory::RTCVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const gfx::ColorSpace& render_color_space)
+    : RTCVideoDecoderFactory(gpu_factories,
+                             render_color_space,
+                             /*override_disabled_profiles=*/false) {}
+
+RTCVideoDecoderFactory::RTCVideoDecoderFactory(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space,
+    bool override_disabled_profiles)
     : gpu_factories_(gpu_factories),
-      render_color_space_(render_color_space) {
+      render_color_space_(render_color_space),
+      override_disabled_profiles_(override_disabled_profiles) {
   if (gpu_factories_) {
     gpu_codec_support_waiter_ =
         std::make_unique<GpuCodecSupportWaiter>(gpu_factories_);
@@ -301,7 +310,8 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
       &supported_formats);
 
 #if BUILDFLAG(RTC_USE_H265)
-  if (base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive)) {
+  if (base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive) ||
+      override_disabled_profiles_) {
     // Check HEVC profiles/resolutions by querying |gpu_factories_| directly
     // for all it supports, but limiting to Main and Main10 profiles, as we
     // don't yet have plan to support HEVC range extensions for RTC.
@@ -375,7 +385,8 @@ RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
 
   // If WebRtcAllowH265Receive is not enabled, report H.265 as unsupported.
   if (codec == media::VideoCodec::kHEVC &&
-      !base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive)) {
+      !base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive) &&
+      !override_disabled_profiles_) {
     return {false, false};
   }
 

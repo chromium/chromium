@@ -32,21 +32,24 @@ void FileTracing::SetProvider(FileTracing::Provider* provider) {
 
 FileTracing::ScopedEnabler::ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
-  if (provider)
+  if (provider) {
     provider->FileTracingEnable(this);
+  }
 }
 
 FileTracing::ScopedEnabler::~ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
-  if (provider)
+  if (provider) {
     provider->FileTracingDisable(this);
+  }
 }
 
 FileTracing::ScopedTrace::~ScopedTrace() {
   if (id_) {
     FileTracing::Provider* provider = GetProvider();
-    if (provider)
+    if (provider) {
       provider->FileTracingEventEnd(name_, id_);
+    }
   }
 }
 

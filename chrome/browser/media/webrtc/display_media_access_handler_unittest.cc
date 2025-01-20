@@ -9,6 +9,7 @@
 
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -62,7 +63,8 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::WebContentsMediaCaptureId GetWebContentsMediaCaptureId() {
     return content::WebContentsMediaCaptureId(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(), 1);
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        1);
   }
 
   FakeDesktopMediaPickerFactory::TestFlags MakePickerTestFlags(
@@ -80,7 +82,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::MediaStreamRequest MakeRequest(bool request_audio) {
     return content::MediaStreamRequest(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
         url::Origin::Create(GURL("http://origin/")), false,
         blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},
@@ -401,7 +403,7 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpWebContentsDestroyed) {
 
 TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -441,7 +443,7 @@ TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -478,7 +480,7 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -534,7 +536,7 @@ TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
                                             url_info.origin().GetURL());
 
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -570,7 +572,7 @@ TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {
                  false /* expect_audio */, content::DesktopMediaID(),
                  true /* cancelled */}});
   content::MediaStreamRequest request(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
       url::Origin::Create(GURL("http://origin/")), false,
       blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},
@@ -609,10 +611,10 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
 
   blink::mojom::MediaStreamRequestResult result;
   blink::MediaStreamDevices devices;
-  base::RunLoop wait_loop[kTestFlagCount];
+  std::array<base::RunLoop, kTestFlagCount> wait_loop;
   for (size_t i = 0; i < kTestFlagCount; ++i) {
     content::MediaStreamRequest request(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
         url::Origin::Create(GURL("http://origin/")), false,
         blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},
@@ -740,9 +742,9 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceWithPendingPickerRequest) {
   SetTestFlags({MakePickerTestFlags(false /*request_audio*/),
                 MakePickerTestFlags(false /*request_audio*/)});
 
-  blink::mojom::MediaStreamRequestResult results[2];
-  blink::mojom::StreamDevices devices[2];
-  base::RunLoop wait_loop[2];
+  std::array<blink::mojom::MediaStreamRequestResult, 2> results;
+  std::array<blink::mojom::StreamDevices, 2> devices;
+  std::array<base::RunLoop, 2> wait_loop;
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
                 &results[0], devices[0]);
@@ -771,9 +773,9 @@ TEST_F(DisplayMediaAccessHandlerTest,
   SetTestFlags({MakePickerTestFlags(false /*request_audio*/),
                 MakePickerTestFlags(false /*request_audio*/)});
 
-  blink::mojom::MediaStreamRequestResult results[2];
-  blink::mojom::StreamDevices devices[2];
-  base::RunLoop wait_loop[2];
+  std::array<blink::mojom::MediaStreamRequestResult, 2> results;
+  std::array<blink::mojom::StreamDevices, 2> devices;
+  std::array<base::RunLoop, 2> wait_loop;
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
                 &results[0], devices[0]);
@@ -805,9 +807,9 @@ TEST_F(DisplayMediaAccessHandlerTest,
        MalformedChangeSourceBetweenPickerRequests) {
   SetTestFlags({{MakePickerTestFlags(false /*request_audio*/)}});
 
-  blink::mojom::MediaStreamRequestResult results[3];
-  blink::mojom::StreamDevices devices[3];
-  base::RunLoop wait_loop[3];
+  std::array<blink::mojom::MediaStreamRequestResult, 3> results;
+  std::array<blink::mojom::StreamDevices, 3> devices;
+  std::array<base::RunLoop, 3> wait_loop;
 
   HandleRequest(MakeRequest(false /* request_audio */), &wait_loop[0],
                 &results[0], devices[0]);

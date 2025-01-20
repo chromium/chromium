@@ -33,7 +33,7 @@ class BrowserHandler : public DevToolsDomainHandler,
   ~BrowserHandler() override;
 
   static Response FindBrowserContext(
-      const Maybe<std::string>& browser_context_id,
+      const std::optional<std::string>& browser_context_id,
       BrowserContext** browser_context);
 
   static std::vector<BrowserHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -50,13 +50,13 @@ class BrowserHandler : public DevToolsDomainHandler,
                       std::string* js_version) override;
 
   Response GetHistograms(
-      Maybe<std::string> in_query,
-      Maybe<bool> in_delta,
+      std::optional<std::string> in_query,
+      std::optional<bool> in_delta,
       std::unique_ptr<Array<Browser::Histogram>>* histograms) override;
 
   Response GetHistogram(
       const std::string& in_name,
-      Maybe<bool> in_delta,
+      std::optional<bool> in_delta,
       std::unique_ptr<Browser::Histogram>* out_histogram) override;
 
   Response GetBrowserCommandLine(
@@ -65,27 +65,29 @@ class BrowserHandler : public DevToolsDomainHandler,
   Response SetPermission(
       std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
       const protocol::Browser::PermissionSetting& setting,
-      Maybe<std::string> origin,
-      Maybe<std::string> browser_context_id) override;
+      std::optional<std::string> origin,
+      std::optional<std::string> browser_context_id) override;
 
   Response GrantPermissions(
       std::unique_ptr<protocol::Array<protocol::Browser::PermissionType>>
           permissions,
-      Maybe<std::string> origin,
-      Maybe<std::string> browser_context_id) override;
+      std::optional<std::string> origin,
+      std::optional<std::string> browser_context_id) override;
 
-  Response ResetPermissions(Maybe<std::string> browser_context_id) override;
+  Response ResetPermissions(
+      std::optional<std::string> browser_context_id) override;
 
   Response SetDownloadBehavior(const std::string& behavior,
-                               Maybe<std::string> browser_context_id,
-                               Maybe<std::string> download_path,
-                               Maybe<bool> events_enabled) override;
+                               std::optional<std::string> browser_context_id,
+                               std::optional<std::string> download_path,
+                               std::optional<bool> events_enabled) override;
   Response DoSetDownloadBehavior(const std::string& behavior,
                                  BrowserContext* browser_context,
-                                 Maybe<std::string> download_path);
+                                 std::optional<std::string> download_path);
 
-  Response CancelDownload(const std::string& guid,
-                          Maybe<std::string> browser_context_id) override;
+  Response CancelDownload(
+      const std::string& guid,
+      std::optional<std::string> browser_context_id) override;
 
   Response Crash() override;
   Response CrashGpuProcess() override;

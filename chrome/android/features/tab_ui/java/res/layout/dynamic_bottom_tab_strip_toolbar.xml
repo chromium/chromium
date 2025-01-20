@@ -100,11 +100,13 @@ found in the LICENSE file.
             android:id="@+id/toolbar_image_tiles_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:paddingEnd="12dp"
             android:minWidth="@dimen/min_touch_target_size"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/accessibility_bottom_tab_strip_expand_tab_sheet" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView>

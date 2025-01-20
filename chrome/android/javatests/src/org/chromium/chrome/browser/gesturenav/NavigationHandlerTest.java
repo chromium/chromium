@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 
+import androidx.activity.BackEventCompat;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -23,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -64,7 +64,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.UiAndroidFeatures;
 
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /** Tests {@link NavigationHandler} navigating back/forward using overscroll history navigation. */
@@ -77,6 +76,14 @@ import java.util.concurrent.TimeoutException;
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
+    private static final String INCORRECT_EDGE_SWIPE_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe";
+    private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe.CountChained";
+    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing";
+    private static final int FORWARD_NAV = 0;
+    private static final int DIFFERENT_TAB = 2;
+
     private static final boolean LEFT_EDGE = true;
     private static final boolean RIGHT_EDGE = false;
 
@@ -186,7 +193,7 @@ public class NavigationHandlerTest {
                 "Smooth transition should be enabled");
         CriteriaHelper.pollInstrumentationThread(
                 () ->
-                        !((BasicSmoothTransitionDelegate)
+                        !((NewTabPage.NtpSmoothTransitionDelegate)
                                         ((NewTabPage) tab.getNativePage())
                                                 .getSmoothTransitionDelegateForTesting())
                                 .getAnimatorForTesting()
@@ -390,6 +397,120 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testBackfalsingHappyPath() {
+        // URL A -> URL B -> URL A -> URL B should emit two metrics.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    public void testBackfalsingAllSameUrls() {
+        // URL A -> URL A -> URL A should not emit any metrics.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(BACK_FALSING_HISTOGRAM).build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    public void testBackfalsingOpenNewTabs() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        // url A -> url B -> open new tab to url A -> url B in that new tab
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, DIFFERENT_TAB)
+                        .expectIntRecord(BACK_FALSING_HISTOGRAM, FORWARD_NAV)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        TabCreator tabCreator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getTabCreator(false));
+
+        Tab newTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabCreator.createNewTab(
+                                        new LoadUrlParams(
+                                                UrlConstants.NTP_URL, PageTransition.LINK),
+                                        TabLaunchType.FROM_LINK,
+                                        currentTab()));
+
+        ChromeTabUtils.waitForTabPageLoaded(newTab, UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.GOOGLE_URL);
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    public void testIncorrectEdgeSwipes() {
+        // Swipe incorrectly 3 times and correctly once.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                INCORRECT_EDGE_SWIPE_HISTOGRAM, BackEventCompat.EDGE_RIGHT, 3)
+                        .expectIntRecord(INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM, 3)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(RIGHT_EDGE);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Device(DeviceFormFactor.TABLET)
+    public void testNoIncorrectEdgeSwipes() {
+        // Perform only correct swipes, should not see any incorrect edge swipe histograms.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(INCORRECT_EDGE_SWIPE_HISTOGRAM)
+                        .expectNoRecords(INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM)
+                        .build();
+
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
+        ChromeTabUtils.waitForTabPageLoaded(currentTab(), UrlConstants.RECENT_TABS_URL);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+        mNavUtils.swipeFromEdge(LEFT_EDGE);
+
+        histogramWatcher.assertExpected("Wrong histogram recording");
+    }
+
+    @Test
+    @SmallTest
     @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
     @CommandLineFlags.Add({
         "disable-features=BackForwardTransitions"
@@ -444,16 +565,16 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, false));
         testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
     @DisabledTest(message = "crbug.com/1426201")
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink_withBackForwardTransition() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
         testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
     }
 

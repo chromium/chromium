@@ -381,9 +381,8 @@ class FakeServer {
              << "Failed to decode the public key: " << *encoded_pubkey;
     }
 
-    return signin::VerifyJwtSignature(
-        jwt, *algorithm,
-        base::as_bytes(base::make_span(pubkey.begin(), pubkey.end())));
+    return signin::VerifyJwtSignature(jwt, *algorithm,
+                                      base::as_byte_span(pubkey));
   }
 
   const Params server_params_;

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -978,12 +974,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
   const GURL kFirstPartyURL("https://google.com");
   const GURL kCrossSiteURL("https://example.com");
 
-  const struct {
+  struct TestCases {
     const url::Origin origin;
     const std::optional<net::CookiePartitionKey> cookie_partition_key;
     const std::optional<blink::StorageKey> storage_key;
     bool expects_keep_optin_pref;
-  } test_cases[] = {
+  };
+  const auto test_cases = std::to_array<TestCases>({
       {
           url::Origin::Create(kFirstPartyURL),
           std::nullopt,
@@ -1024,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
               blink::mojom::AncestorChainBit::kCrossSite),
           true,
       },
-  };
+  });
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
     const auto& test_case = test_cases[i];

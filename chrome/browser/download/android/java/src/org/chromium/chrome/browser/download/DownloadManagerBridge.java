@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -117,11 +118,13 @@ public class DownloadManagerBridge {
 
     /**
      * Removes a download from Android DownloadManager.
+     *
      * @param downloadGuid The GUID of the download.
      * @param externallyRemoved If download is externally removed in other application.
      */
     @CalledByNative
-    public static void removeCompletedDownload(String downloadGuid, boolean externallyRemoved) {
+    public static void removeCompletedDownload(
+            @JniType("std::string") String downloadGuid, boolean externallyRemoved) {
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> {
@@ -291,14 +294,14 @@ public class DownloadManagerBridge {
      */
     @CalledByNative
     private static void addCompletedDownload(
-            String fileName,
-            String description,
-            String originalMimeType,
-            String filePath,
+            @JniType("std::string") String fileName,
+            @JniType("std::string") String description,
+            @JniType("std::string") String originalMimeType,
+            @JniType("std::string") String filePath,
             long fileSizeBytes,
             GURL originalUrl,
             GURL referrer,
-            String downloadGuid,
+            @JniType("std::string") String downloadGuid,
             long callbackId) {
         final String mimeType =
                 MimeUtils.remapGenericMimeType(originalMimeType, originalUrl.getSpec(), fileName);

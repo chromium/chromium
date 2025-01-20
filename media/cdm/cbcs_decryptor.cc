@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -36,15 +35,16 @@ constexpr size_t kAesBlockSizeInBytes = 16;
 // |pattern|. |pattern| only applies to full blocks. Any partial block at
 // the end is considered unencrypted. |output_data| must have enough room to
 // hold |input_data|.size() bytes.
-bool DecryptWithPattern(const crypto::SymmetricKey& key,
+bool DecryptWithPattern(base::span<const uint8_t> key,
                         base::span<const uint8_t> iv,
                         const EncryptionPattern& pattern,
                         base::span<const uint8_t> input_data,
                         uint8_t* output_data) {
   // The AES_CBC decryption is reset for each subsample.
   AesCbcCrypto aes_cbc_crypto;
-  if (!aes_cbc_crypto.Initialize(key, iv))
+  if (!aes_cbc_crypto.Initialize(key, iv)) {
     return false;
+  }
 
   // |total_blocks| is the number of blocks in the buffer, ignoring any
   // partial block at the end. |remaining_bytes| is the number of bytes
@@ -100,8 +100,7 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
     // remain where the pattern is terminated by the byte length of the range
     // BytesOfProtectedData, is left unencrypted."
     if (is_encrypted_blocks) {
-      if (!aes_cbc_crypto.Decrypt(base::make_span(src, bytes_to_process),
-                                  dest)) {
+      if (!aes_cbc_crypto.Decrypt(base::span(src, bytes_to_process), dest)) {
         return false;
       }
     } else {
@@ -123,9 +122,8 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
 
 }  // namespace
 
-scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key) {
+scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   const size_t sample_size = input.size();
   DCHECK(sample_size) << "No data to decrypt.";
 
@@ -143,7 +141,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
   buffer->set_timestamp(input.timestamp());
   buffer->set_duration(input.duration());
   buffer->set_is_key_frame(input.is_key_frame());
-  if (input.has_side_data()) {
+  if (input.side_data()) {
     buffer->set_side_data(input.side_data()->Clone());
   }
 
@@ -181,9 +179,9 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
       auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
       src = src_rem;
       dest = dest_rem;
-      if (!DecryptWithPattern(
-              key, base::as_bytes(base::make_span(decrypt_config->iv())),
-              pattern, src_cypher, dest_cypher.data())) {
+      if (!DecryptWithPattern(key,
+                              base::as_bytes(base::span(decrypt_config->iv())),
+                              pattern, src_cypher, dest_cypher.data())) {
         return nullptr;
       }
     }

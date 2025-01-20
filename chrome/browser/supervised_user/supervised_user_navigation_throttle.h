@@ -62,15 +62,12 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   // Wraps up common procedure for throttling new requests or redirects.
   ThrottleCheckResult ProcessRequest();
 
-  void ShowInterstitial(const GURL& url,
-                        supervised_user::FilteringBehaviorReason reason);
+  void ShowInterstitial(
+      supervised_user::SupervisedUserURLFilter::Result result);
 
   void ShowInterstitialAsync(supervised_user::FilteringBehaviorReason reason);
 
-  void OnCheckDone(const GURL& url,
-                   supervised_user::FilteringBehavior behavior,
-                   supervised_user::FilteringBehaviorReason reason,
-                   bool uncertain);
+  void OnCheckDone(supervised_user::SupervisedUserURLFilter::Result result);
 
   void OnInterstitialResult(CallbackActions continue_request,
                             bool already_requested_permission,

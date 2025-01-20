@@ -27,6 +27,8 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // stack as a close request. If the Widget closes due to OS native-widget
   // destruction this is never called. Replace existing uses with
   // OnWidgetDestroying() or by using ViewTrackers to track View lifetimes.
+  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous() for
+  // details.
   virtual void OnWidgetClosing(Widget* widget) {}
 
   // Invoked after notification is received from the event loop that the native
@@ -36,6 +38,8 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // The destroying event occurs immediately before the widget is destroyed.
   // This typically occurs asynchronously with respect the the close request, as
   // a result of a later invocation from the event loop.
+  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous() for
+  // details.
   virtual void OnWidgetDestroying(Widget* widget) {}
 
   // Invoked after notification is received from the event loop that the native

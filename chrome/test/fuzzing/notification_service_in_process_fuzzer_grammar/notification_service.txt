@@ -1,0 +1,118 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+<root root=true> = <lines count=10>
+
+<Boolean> = true
+<Boolean> = false
+
+# basic-type arrays
+<Uint8Array> = [<Uint8ArrayElements>]
+<Uint8ArrayElements> = 
+<Uint8ArrayElements> = <uint8>, <Uint8ArrayElements>
+
+<Uint16Array> = [<Uint16ArrayElements>]
+<Uint16ArrayElements> = 
+<Uint16ArrayElements> = <uint16>, <Uint16ArrayElements>
+
+<Int32Array> = [<Int32ArrayElements>]
+<Int32ArrayElements> = 
+<Int32ArrayElements> = <int32>, <Int32ArrayElements>
+
+
+<OptionalInt32Array> = null
+<OptionalInt32Array> = <Int32Array>
+
+<OptionalUint8Array> = null
+<OptionalUint8Array> = <Uint8Array>
+
+<OptionalMojomString16> = null
+<OptionalMojomString16> = <MojomString16>
+<MojomString16> = {data: <Uint16Array>}
+
+<NotificationDirection> = 0  # LEFT_TO_RIGHT
+<NotificationDirection> = 1  # RIGHT_TO_LEFT
+<NotificationDirection> = 2 # auto
+
+<OptionalString> = null
+<OptionalString> = "<string>"
+
+<MojomUrl> = {url: "<string>"}
+
+<OptionalNotificationActionArray> = null
+<OptionalNotificationActionArray> = <NotificationActionArray>
+
+<NotificationActionArray> = [<NotificationActionArrayElements>]
+<NotificationActionArrayElements> = 
+<NotificationActionArrayElements> = <NotificationAction>, <NotificationActionArrayElements>
+
+<OptionalMojomTime> = null
+<OptionalMojomTime> = <MojomTime>
+<MojomTime> = {internal_value: <int64>}
+
+<NotificationScenario> = 0
+<NotificationScenario> = 1
+
+<NotificationActionType> = 0
+<NotificationActionType> = 1
+
+<OptionalBitmapN32> = null
+<OptionalBitmapN32> = <BitmapN32>
+
+<OptionalBitmapN32Array> = null
+<OptionalBitmapN32Array> = <BitmapN32Array>
+<BitmapN32Array> = [<BitmapN32ArrayElements>]
+<BitmapN32ArrayElements> =
+<BitmapN32ArrayElements> = <BitmapN32>, <BitmapN32ArrayElements>
+
+<AlphaType> = 0
+<AlphaType> = 1
+<AlphaType> = 2
+<AlphaType> = 3
+
+<OptionalFloat7Array> = null
+<OptionalFloat7Array> = [<float>,<float>,<float>,<float>,<float>,<float>,<float>]
+
+<OptionalFloat9Array> = null
+<OptionalFloat9Array> = [<float>,<float>,<float>,<float>,<float>,<float>,<float>,<float>,<float>]
+
+
+<BitmapN32ImageInfo> = {alphaType: <AlphaType>, width: <uint32>, height: <uint32>, colorTransferFunction: <OptionalFloat7Array>, colorToXyzMatrix: <OptionalFloat9Array>}
+
+!begin helperlines
+
+<new NotificationAction> = {type: <NotificationActionType>, action: "<string>", title: <MojomString16>, icon: <MojomUrl>, placeholder: <OptionalMojomString16>};
+
+<new NotificationData> = {title: <MojomString16>, direction: <NotificationDirection>, lang: <OptionalString>, body: <MojomString16>, tag: "<string>", image: <MojomUrl>, icon: <MojomUrl>, badge: <MojomUrl>, vibrationPattern: <OptionalInt32Array>, timestamp: <float>, renotify: <Boolean>, silent: <Boolean>, requireInteraction: <Boolean>, data: <OptionalUint8Array>, actions: <OptionalNotificationActionArray>,  showTriggerTimestamp: <OptionalMojomTime>, scenario: <NotificationScenario>};
+
+<new BitmapN32> = {imageInfo: <BitmapN32ImageInfo>, pixelData: <MojomBigBuffer>};
+
+<new MojomBigBuffer> = {bytes: <Uint8Array>};
+<new MojomBigBuffer> = {invalidBuffer: <Boolean>};
+#<MojomBigBuffer> = {sharedMemory: <BigBufferSharedMemoryRegion>}
+
+<new NotificationResources> = {image: <OptionalBitmapN32>, icon: <OptionalBitmapN32>,badge: <OptionalBitmapN32>,  actionIcons:<OptionalBitmapN32Array>};
+
+#This is a root interface: can and should be bound to the browser
+<new UnboundNotificationServiceRemote> = new blink.mojom.NotificationServiceRemote();
+
+<new NotificationServiceRemote> = bindRootInterface(<UnboundNotificationServiceRemote>);
+
+<new NonPersistentNotificationListenerReceiver> = new blink.mojom.NonPersistentNotificationListenerReceiver(new NonPersistentNotificationListenerStub());
+
+<new NotificationToken> = "<string>";
+
+!end helperlines
+
+!varformat fuzzvar%05d
+!begin lines
+
+<NotificationServiceRemote>.displayNonPersistentNotification(<NotificationToken>, <NotificationData>, <NotificationResources>, <NonPersistentNotificationListenerReceiver>.$.bindNewPipeAndPassRemote());
+
+<NotificationServiceRemote>.closeNonPersistentNotification(<NotificationToken>);
+
+<NotificationServiceRemote>.displayPersistentNotification(<int64>, <NotificationData>, <NotificationResources>);
+
+cleanup();
+!end lines

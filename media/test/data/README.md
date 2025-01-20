@@ -958,11 +958,9 @@ Additional containers created by Dolby:
 ### test-25fps
 
 #### test-25fps.h264
-Using ffmpeg SVN-r0.5.9-4:0.5.9-0ubuntu0.10.04.1 @ WebKit r122718, generated
-with:
 ```
-ffmpeg -i third_party/WebKit/LayoutTests/media/content/test-25fps.mp4 \
-      -vcodec copy -vbsf h264_mp4toannexb -an test-25fps.h264
+MP4Box -raw 2:output=test-25fps.h264 \
+       third_party/webkit/web_tests/media/content/test-25fps.mp4
 ```
 
 #### test-25fps.h264.json:
@@ -1382,6 +1380,11 @@ This image has Huffman table.
 #### blank-1x1.jpg
 1x1 small picture to test special cases.
 
+### PNG Test Files
+
+#### quick-brown-fox.png
+A picture with a resolution of `1280x720` has the words "The quick brown fox jumps over the lazy dog" in colorful text repeated many times on the left side, and on the right side, colorful vertical stripes are repeated many times. The image was created using Photoshop.
+
 ### MP4 files with non-square pixels.
 
 #### bear-640x360-non_square_pixel-with_pasp.mp4
@@ -1501,66 +1504,6 @@ HEVC video stream with 10-bit main10 profile, generated with
 ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
 ```
 
-#### bear-1280x720-hevc-8bit-422.mp4
-HEVC video stream with 8-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv422p bear-1280x720-hevc-8bit-422.mp4
-```
-
-#### bear-1280x720-hevc-8bit-422-no-audio.mp4
-HEVC video stream with 8-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-8bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-8bit-422-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-8bit-444-no-audio.mp4
-HEVC video stream with 8-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec hevc -an -pix_fmt yuv444p bear-1280x720-hevc-8bit-444-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-10bit-422.mp4
-HEVC video stream with 10-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p10le bear-1280x720-hevc-10bit-422.mp4
-```
-
-#### bear-1280x720-hevc-10bit-422-no-audio.mp4
-HEVC video stream with 10-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-10bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-422-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-10bit-444.mp4
-HEVC video stream with 10-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p10le bear-1280x720-hevc-10bit-444.mp4
-```
-
-#### bear-1280x720-hevc-10bit-444-no-audio.mp4
-HEVC video stream with 10-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720-hevc-10bit-444.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-444-no-audio.mp4
-```
-
-#### bear-1280x720-hevc-12bit-420.mp4
-HEVC video stream with 12-bit 420 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv420p12le bear-1280x720-hevc-12bit-420.mp4
-```
-
-#### bear-1280x720-hevc-12bit-422.mp4
-HEVC video stream with 12-bit 422 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p12le bear-1280x720-hevc-12bit-422.mp4
-```
-
-#### bear-1280x720-hevc-12bit-444.mp4
-HEVC video stream with 12-bit 444 range extension profile, generated with
-```
-ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p12le bear-1280x720-hevc-12bit-444.mp4
-```
-
 #### bear-1280x720-hevc-10bit-hdr10.mp4
 HEVC video stream with HDR10 metadata included, generated with
 ````
@@ -1571,6 +1514,78 @@ ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -x265-params colorprim=bt2020:transf
 HEVC video stream with 8-bit main profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vf "scale=3840:2160,setpts=4*PTS" -c:v libx265 -crf 28 -c:a copy bear-3840x2160-hevc.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-400-no-audio.mp4
+HEVC video stream with 8-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-420-no-audio.mp4
+HEVC video stream with 8-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p -profile:v main-intra -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-422-no-audio.mp4
+HEVC video stream with 8-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-8bit-444-no-audio.mp4
+HEVC video stream with 8-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-8bit-444-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-400-no-audio.mp4
+HEVC video stream with 10-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray10le -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-420-no-audio.mp4
+HEVC video stream with 10-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p10le -profile:v main10-intra -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-422-no-audio.mp4
+HEVC video stream with 10-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p10le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-10bit-444-no-audio.mp4
+HEVC video stream with 10-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p10le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-10bit-444-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-400-no-audio.mp4
+HEVC video stream with 12-bit 400 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt gray12le -vcodec libx265 -x265-params range=full:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-400-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-420-no-audio.mp4
+HEVC video stream with 12-bit 420 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv420p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-420-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-422-no-audio.mp4
+HEVC video stream with 12-bit 422 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv422p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-422-no-audio.mp4
+```
+
+#### quick-brown-fox-1280x720-hevc-rext-12bit-444-no-audio.mp4
+HEVC video stream with 12-bit 444 range extension profile generated from `quick-brown-fox.png`, generated with
+```
+ffmpeg -i quick-brown-fox.png -pix_fmt yuv444p12le -vcodec libx265 -x265-params range=limited:colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709 -r 1 -t 1 -vtag hvc1 quick-brown-fox-1280x720-hevc-rext-12bit-444-no-audio.mp4
 ```
 
 ### MP4 file with Dolby Vision
@@ -1591,16 +1606,17 @@ mp4mux --track h265:glass-blowing2-dolby-vision-profile-8-1.hevc#dv_profile=8,dv
 mp4fragment glass-blowing2-dolby-vision-profile-8-1.mp4 glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 ```
 
-#### color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4
-Original sample from `https://crbug.com/363270181#comment6`. Dolby Vision
-profile 5 video stream encrypted using [Shaka Packager] with the following
-commands:
+#### color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc.mp4
+Original sample from
+`https://ott.dolby.com/OnDelKits/DolbyVision_OSS_Media_Kit/clear/color_pattern_24_dvhe_05_1920x1080.mp4`
+. Dolby Vision profile 5 video stream encrypted using [Shaka Packager] with the
+following commands:
 ```
-ffmpeg -ss 0:00:11 -i color_pattern_24_dvhe05_1920x1080__dvh1_st.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe05_1920x1080__dvh1_st.hevc
-mp4mux --track h265:color_pattern_24_dvhe05_1920x1080__dvh1_st.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec.mp4
-mp4fragment color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec.mp4 color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4
+ffmpeg -ss 0:00:00 -i color_pattern_24_dvhe_05_1920x1080.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe_05_1920x1080.hevc
+mp4mux --track h265:color_pattern_24_dvhe_05_1920x1080.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe_05_1920x1080-3sec.mp4
+mp4fragment color_pattern_24_dvhe_05_1920x1080-3sec.mp4 color_pattern_24_dvhe_05_1920x1080-3sec-frag.mp4
 
-packager in=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4 \
+packager in=color_pattern_24_dvhe_05_1920x1080-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc.mp4 \
          --enable_raw_key_encryption \
          --protection_scheme cenc \
          --segment_duration 0.5 \
@@ -1609,29 +1625,30 @@ packager in=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4,stream=vide
          --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
 ```
 
-#### color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+#### color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4
 Dolby Vision profile 5 video stream with clear lead generated using
 [Shaka Packager] with the following commands:
 ```
-packager in=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4 \
+packager in=color_pattern_24_dvhe_05_1920x1080-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4 \
          --enable_raw_key_encryption \
          --protection_scheme cenc \
          --segment_duration 0.5 \
          --clear_lead 2 \
          --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c \
-         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B00000001303132333435363738393031323334350000000
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
 ```
 
-#### color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4
-Original sample from `https://crbug.com/363270181#comment6`. Dolby Vision
-profile 8.1 video stream encrypted using [Shaka Packager] with the following
-commands:
+#### color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc.mp4
+Original sample from
+`https://ott.dolby.com/OnDelKits/DolbyVision_OSS_Media_Kit/clear/color_pattern_24_dvhe_081_1920x1080.mp4`
+. Dolby Vision profile 8.1 video stream encrypted using [Shaka Packager] with
+the following commands:
 ```
-ffmpeg -ss 0:00:11 -i color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.hevc
-mp4mux --track h265:color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec.mp4
-mp4fragment color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec.mp4 color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4
+ffmpeg -ss 0:00:00 -i color_pattern_24_dvhe_081_1920x1080.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe_081_1920x1080.hevc
+mp4mux --track h265:color_pattern_24_dvhe_081_1920x1080.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe_081_1920x1080-3sec.mp4
+mp4fragment color_pattern_24_dvhe_081_1920x1080-3sec.mp4 color_pattern_24_dvhe_081_1920x1080-3sec-frag.mp4
 
-packager in=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4 \
+packager in=color_pattern_24_dvhe_081_1920x1080-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc.mp4 \
          --enable_raw_key_encryption \
          --protection_scheme cenc \
          --segment_duration 0.5 \
@@ -1640,11 +1657,11 @@ packager in=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag
          --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
 ```
 
-#### color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+#### color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4
 Dolby Vision profile 8.1 video stream with clear lead generated using
 [Shaka Packager] with the following commands:
 ```
-packager in=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4 \
+packager in=color_pattern_24_dvhe_081_1920x1080-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4 \
          --enable_raw_key_encryption \
          --protection_scheme cenc \
          --segment_duration 0.5 \

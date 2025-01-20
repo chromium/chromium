@@ -42,10 +42,16 @@ class ChromeAccountManagerService : public KeyedService,
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
 
-    // Handles identity list changed events.
+    // Handles change events for per-profile identity list.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
+    // TODO(crbug.com/368409110): Rename to OnIdentitiesPerProfileChanged.
     virtual void OnIdentityListChanged() {}
+
+    // Handles change events for on-device identity list.
+    // Notifications with no account list update are possible, this has to be
+    // handled by the observer.
+    virtual void OnIdentitiesOnDeviceChanged() {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -90,10 +96,8 @@ class ChromeAccountManagerService : public KeyedService,
   bool IsEmailRestricted(std::string_view email) const;
 
   // Returns the SystemIdentity with gaia ID equals to `gaia_id` or nil if
-  // no matching identity is found. There are two overloads to reduce the
-  // need to convert between NSString* and std::string.
-  id<SystemIdentity> GetIdentityWithGaiaID(NSString* gaia_id) const;
-  id<SystemIdentity> GetIdentityWithGaiaID(std::string_view gaia_id) const;
+  // no matching identity is found.
+  id<SystemIdentity> GetIdentityWithGaiaID(const GaiaId& gaia_id) const;
 
   // Returns all SystemIdentity objects, sorted by the ordering used in the
   // SystemIdentityManager, which is typically based on the keychain ordering of
@@ -123,8 +127,7 @@ class ChromeAccountManagerService : public KeyedService,
   // identity exists on the device. Similar to GetIdentityWithGaiaID(), but as
   // opposed to that (and most other methods in this service), this also handles
   // accounts that are assigned to other profiles.
-  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(
-      std::string_view gaia_id) const;
+  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(const GaiaId& gaia_id) const;
   id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(NSString* gaia_id) const;
   // Converts a vector of AccountInfos, as returned by
   // IdentityManager::GetAccountsOnDevice(), to `SystemIdentities (by looking
@@ -144,6 +147,7 @@ class ChromeAccountManagerService : public KeyedService,
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() override;
+  void OnIdentitiesOnDeviceChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
   void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(

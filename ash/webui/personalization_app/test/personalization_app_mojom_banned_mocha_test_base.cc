@@ -161,6 +161,14 @@ class MockSeaPenProvider
               (override));
   MOCK_METHOD(void, HandleSeaPenIntroductionDialogClosed, (), (override));
   MOCK_METHOD(void,
+              ShouldShowSeaPenFreeformIntroductionDialog,
+              (ShouldShowSeaPenFreeformIntroductionDialogCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              HandleSeaPenFreeformIntroductionDialogClosed,
+              (),
+              (override));
+  MOCK_METHOD(void,
               IsInTabletMode,
               (IsInTabletModeCallback callback),
               (override));

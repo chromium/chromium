@@ -44,22 +44,26 @@ void CheckRateControlConfig(const H264RateControlConfigRTC& config) {
 std::string CreateRateControlConfigLogMessage(
     const H264RateControlConfigRTC& config) {
   std::stringstream log_message;
-  log_message
-      << "width: " << config.frame_size.width()
-      << ", height: " << config.frame_size.height() << ", gop_max_duration: "
-      << (config.gop_max_duration != base::TimeDelta::Max()
-              ? base::NumberToString(config.gop_max_duration.InMilliseconds())
-              : "infinite")
-      << ", frame_rate_max: " << config.frame_rate_max
-      << ", num_temporal_layers: " << config.num_temporal_layers
-      << ", content_type: "
-      << (config.content_type ==
-                  VideoEncodeAccelerator::Config::ContentType::kCamera
-              ? "camera"
-              : "display")
-      << ", fixed_delta_qp: " << (config.fixed_delta_qp ? "true" : "false")
-      << ", ease_hrd_reduction: "
-      << (config.ease_hrd_reduction ? "true" : "false");
+  log_message << "width: " << config.frame_size.width()
+              << ", height: " << config.frame_size.height()
+              << ", gop_max_duration: "
+              << (config.gop_max_duration != base::TimeDelta::Max()
+                      ? base::NumberToString(
+                            config.gop_max_duration.InMilliseconds())
+                      : "infinite")
+              << ", frame_rate_max: " << config.frame_rate_max
+              << ", num_temporal_layers: " << config.num_temporal_layers
+              << ", content_type: "
+              << (config.content_type ==
+                          VideoEncodeAccelerator::Config::ContentType::kCamera
+                      ? "camera"
+                      : "display")
+              << ", fixed_delta_qp: "
+              << (config.fixed_delta_qp
+                      ? base::NumberToString(config.fixed_delta_qp.value())
+                      : "not set")
+              << ", ease_hrd_reduction: "
+              << (config.ease_hrd_reduction ? "true" : "false");
   for (size_t tl = 0; tl < config.num_temporal_layers; tl++) {
     log_message << ", [ temporal_layer_id: " << tl
                 << ", avg_bitrate: " << config.layer_settings[tl].avg_bitrate

@@ -15,12 +15,17 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #endif
 
 ProfileNetworkContextService*
@@ -56,11 +61,16 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   // requested.
   DependsOn(NssServiceFactory::GetInstance());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(policy::PolicyCertServiceFactory::GetInstance());
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   DependsOn(net::ServerCertificateDatabaseServiceFactory::GetInstance());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  DependsOn(client_certificates::CertificateProvisioningServiceFactory::
+                GetInstance());
 #endif
 }
 

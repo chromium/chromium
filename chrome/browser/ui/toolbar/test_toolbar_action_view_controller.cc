@@ -17,8 +17,7 @@ TestToolbarActionViewController::TestToolbarActionViewController(
   SetAccessibleName(u"Default name");
 }
 
-TestToolbarActionViewController::~TestToolbarActionViewController() {
-}
+TestToolbarActionViewController::~TestToolbarActionViewController() = default;
 
 std::string TestToolbarActionViewController::GetId() const {
   return id_;
@@ -142,6 +141,7 @@ void TestToolbarActionViewController::SetEnabled(bool is_enabled) {
 }
 
 void TestToolbarActionViewController::UpdateDelegate() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->UpdateState();
+  }
 }

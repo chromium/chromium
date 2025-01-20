@@ -76,7 +76,4 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration {
   [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=positionAnchor] attribute CSSOMString position-anchor;
   [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString positionArea;
   [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=positionArea] attribute CSSOMString position-area;
-  // TODO(crbug.com/352360007): these can be removed when inset-area is removed.
-  [RuntimeEnabled=CSSInsetAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetArea;
-  [RuntimeEnabled=CSSInsetAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetArea] attribute CSSOMString inset-area;
 };

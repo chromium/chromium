@@ -16,7 +16,7 @@
 namespace gfx {
 class RenderText;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 class ColorProvider;

@@ -30,8 +30,8 @@
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -252,13 +252,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnHybridLinking},
-        /*disabled_features=*/{
-            // Disable this feature explicitly, as it can cause unexpected email
-            // fields to be parsed in these tests.
-            // TODO(crbug.com/1493145): Remove when/if launched.
-            autofill::features::kAutofillEnableEmailHeuristicOnlyAddressForms});
+    scoped_feature_list_.InitWithFeatures({device::kWebAuthnHybridLinking},
+                                          /*disabled_features=*/{});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     create_services_subscription_ =
@@ -638,94 +633,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, ExpectedPasskeyLabel());
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
-
-  // Click the credential.
-  test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
-               *suggestion_controller))
-      .DisableThreshold(true);
-  suggestion_controller->AcceptSuggestion(suggestion_index);
-  std::string result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&result));
-  EXPECT_EQ(result, "\"webauthn: OK\"");
-
-  // Tapping a GPM passkey will not automatically hide the popup
-  // because the enclave might still be loading. Manually hide the
-  // popup so that the autofill client can be destroyed, avoiding
-  // a DCHECK on test tear down.
-  autofill_client->HideAutofillSuggestions(
-      autofill::SuggestionHidingReason::kTabGone);
-  // The tracker outlives the test. Clean up the device_info to avoid flakiness.
-  tracker->Remove(&device_info);
-}
-
-// Tests that downloading passkeys from sync during a conditional UI also
-// updates the autofill popup with the newly downloaded credentials.
-// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       GPMPasskeys_UpdatePasskeys) {
-  // Have the virtual device masquerade as a phone.
-  virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
-
-  // Make sure input events cannot close the autofill popup.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->SetKeepPopupOpenForTesting(true);
-
-  // Execute the Conditional UI request.
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
-
-  delegate_observer_->WaitForUI();
-
-  // Interact with the username field until the popup shows up. This has the
-  // effect of waiting for the browser to send the renderer the password
-  // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
-  while (!suggestion_controller) {
-    content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    suggestion_controller =
-        autofill_client->suggestion_controller_for_testing();
-  }
-
-  // There should be no webauthn suggestions.
-  auto suggestions = suggestion_controller->GetSuggestions();
-  for (const auto& suggestion : suggestions) {
-    ASSERT_NE(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
-  }
-
-  // Simulate the user opting in to sync by injecting a phone and a passkey.
-  syncer::DeviceInfo device_info = CreateDeviceInfo();
-  auto* tracker = static_cast<syncer::FakeDeviceInfoTracker*>(
-      DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile())
-          ->GetDeviceInfoTracker());
-  tracker->Add(&device_info);
-
-  // Inject a GPM passkey.
-  PasskeyModelFactory::GetForProfile(browser()->profile())
-      ->AddNewPasskeyForTesting(CreatePasskey());
-
-  // The newly added passkey should be added to the popup. The request needs
-  // time to restart, poll the popup until the new entry shows up.
-  std::optional<autofill::Suggestion> webauthn_entry;
-  size_t suggestion_index;
-  while (!webauthn_entry) {
-    content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    suggestion_controller =
-        autofill_client->suggestion_controller_for_testing();
-    suggestions = suggestion_controller->GetSuggestions();
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].type ==
-          autofill::SuggestionType::kWebauthnCredential) {
-        webauthn_entry = suggestions[i];
-        suggestion_index = i;
-      }
-    }
-  }
-  EXPECT_EQ(webauthn_entry->main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry->labels.at(0).at(0).value, ExpectedPasskeyLabel());
-  EXPECT_EQ(webauthn_entry->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   test_api(static_cast<autofill::AutofillPopupControllerImpl&>(

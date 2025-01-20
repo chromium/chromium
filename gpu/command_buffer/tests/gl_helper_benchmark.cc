@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 // This file looks like a unit test, but it contains benchmarks and test
 // utilities intended for manual evaluation of the scalers in
@@ -46,17 +43,17 @@ namespace gpu {
 
 namespace {
 
-GLHelper::ScalerQuality kQualities[] = {
+auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,
-};
+});
 
-const char* const kQualityNames[] = {
+const auto kQualityNames = std::to_array<const char*>({
     "best",
     "good",
     "fast",
-};
+});
 
 }  // namespace
 
@@ -95,10 +92,28 @@ class GLHelperBenchmark : public testing::Test {
 };
 
 TEST_F(GLHelperBenchmark, ScaleBenchmark) {
-  int output_sizes[] = {1920, 1080, 1249, 720,  // Output size on pixel
-                        256,  144};
-  int input_sizes[] = {3200, 2040, 2560, 1476,  // Pixel tab size
-                       1920, 1080, 1280, 720,  800, 480, 256, 144};
+  auto output_sizes = std::to_array<int>({
+      1920,
+      1080,
+      1249,
+      720,  // Output size on pixel
+      256,
+      144,
+  });
+  auto input_sizes = std::to_array<int>({
+      3200,
+      2040,
+      2560,
+      1476,  // Pixel tab size
+      1920,
+      1080,
+      1280,
+      720,
+      800,
+      480,
+      256,
+      144,
+  });
 
   for (size_t q = 0; q < std::size(kQualities); q++) {
     for (size_t outsize = 0; outsize < std::size(output_sizes); outsize += 2) {

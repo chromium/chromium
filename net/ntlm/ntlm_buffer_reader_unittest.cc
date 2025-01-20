@@ -127,7 +127,7 @@ TEST(NtlmBufferReaderTest, ReadBytes) {
   ASSERT_TRUE(reader.ReadBytes(actual));
   ASSERT_EQ(0, memcmp(actual, expected, std::size(actual)));
   ASSERT_TRUE(reader.IsEndOfBuffer());
-  ASSERT_FALSE(reader.ReadBytes(base::make_span(actual, 1u)));
+  ASSERT_FALSE(reader.ReadBytes(base::span(actual, 1u)));
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
@@ -146,7 +146,7 @@ TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBufferPastEob) {
-  const uint8_t buf[7] = {0};
+  const uint8_t buf[7] = {};
   NtlmBufferReader reader(buf);
 
   SecurityBuffer sec_buf;
@@ -181,7 +181,7 @@ TEST(NtlmBufferReaderTest, ReadPayloadAsBufferReader) {
 }
 
 TEST(NtlmBufferReaderTest, ReadPayloadBadOffset) {
-  const uint8_t buf[4] = {0};
+  const uint8_t buf[4] = {};
   NtlmBufferReader reader(buf);
 
   NtlmBufferReader sub_reader;
@@ -190,7 +190,7 @@ TEST(NtlmBufferReaderTest, ReadPayloadBadOffset) {
 }
 
 TEST(NtlmBufferReaderTest, ReadPayloadBadLength) {
-  const uint8_t buf[4] = {0};
+  const uint8_t buf[4] = {};
   NtlmBufferReader reader(buf);
 
   NtlmBufferReader sub_reader;
@@ -199,7 +199,7 @@ TEST(NtlmBufferReaderTest, ReadPayloadBadLength) {
 }
 
 TEST(NtlmBufferReaderTest, SkipSecurityBuffer) {
-  const uint8_t buf[kSecurityBufferLen] = {0};
+  const uint8_t buf[kSecurityBufferLen] = {};
 
   NtlmBufferReader reader(buf);
   ASSERT_TRUE(reader.SkipSecurityBuffer());
@@ -209,7 +209,7 @@ TEST(NtlmBufferReaderTest, SkipSecurityBuffer) {
 
 TEST(NtlmBufferReaderTest, SkipSecurityBufferPastEob) {
   // The buffer is one byte shorter than security buffer.
-  const uint8_t buf[kSecurityBufferLen - 1] = {0};
+  const uint8_t buf[kSecurityBufferLen - 1] = {};
 
   NtlmBufferReader reader(buf);
   ASSERT_FALSE(reader.SkipSecurityBuffer());
@@ -268,7 +268,7 @@ TEST(NtlmBufferReaderTest,
 }
 
 TEST(NtlmBufferReaderTest, SkipBytes) {
-  const uint8_t buf[8] = {0};
+  const uint8_t buf[8] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -278,7 +278,7 @@ TEST(NtlmBufferReaderTest, SkipBytes) {
 }
 
 TEST(NtlmBufferReaderTest, SkipBytesPastEob) {
-  const uint8_t buf[8] = {0};
+  const uint8_t buf[8] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -286,7 +286,7 @@ TEST(NtlmBufferReaderTest, SkipBytesPastEob) {
 }
 
 TEST(NtlmBufferReaderTest, MatchSignatureTooShort) {
-  const uint8_t buf[7] = {0};
+  const uint8_t buf[7] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -402,7 +402,7 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoFlagsAndEolOnly) {
 
 TEST(NtlmBufferReaderTest, ReadTargetInfoTooSmall) {
   // Target info must least contain enough space for a terminator pair.
-  const uint8_t buf[3] = {0};
+  const uint8_t buf[3] = {};
 
   NtlmBufferReader reader(buf);
 

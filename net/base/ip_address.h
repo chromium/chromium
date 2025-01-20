@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_BASE_IP_ADDRESS_H_
 #define NET_BASE_IP_ADDRESS_H_
 
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
@@ -32,13 +28,19 @@ namespace net {
 // IPAddressBytes uses a fixed size array.
 class NET_EXPORT IPAddressBytes {
  public:
-  IPAddressBytes();
-  explicit IPAddressBytes(base::span<const uint8_t> data);
-  IPAddressBytes(const IPAddressBytes& other);
+  constexpr IPAddressBytes() : size_(0) {}
+  constexpr explicit IPAddressBytes(base::span<const uint8_t> data) {
+    Assign(data);
+  }
+  constexpr IPAddressBytes(const IPAddressBytes& other) = default;
   ~IPAddressBytes();
 
   // Copies elements from |data| into this object.
-  void Assign(base::span<const uint8_t> data);
+  constexpr void Assign(base::span<const uint8_t> data) {
+    CHECK_GE(16u, data.size());
+    size_ = static_cast<uint8_t>(data.size());
+    base::span(*this).copy_from(data);
+  }
 
   // Returns the number of elements in the underlying array.
   size_t size() const { return size_; }
@@ -62,8 +64,8 @@ class NET_EXPORT IPAddressBytes {
   uint8_t* begin() { return data(); }
 
   // Returns a pointer past the last element.
-  const uint8_t* end() const { return data() + size_; }
-  uint8_t* end() { return data() + size_; }
+  const uint8_t* end() const { return UNSAFE_TODO(data() + size_); }
+  uint8_t* end() { return UNSAFE_TODO(data() + size_); }
 
   // Returns a reference to the last element.
   uint8_t& back() {
@@ -121,39 +123,47 @@ class NET_EXPORT IPAddress {
   static std::optional<IPAddress> FromIPLiteral(std::string_view ip_literal);
 
   // Creates a zero-sized, invalid address.
-  IPAddress();
+  constexpr IPAddress() = default;
 
-  IPAddress(const IPAddress& other);
+  constexpr IPAddress(const IPAddress& other) = default;
 
   // Copies the input address to |ip_address_|.
-  explicit IPAddress(const IPAddressBytes& address);
+  constexpr explicit IPAddress(const IPAddressBytes& address)
+      : ip_address_(address) {}
 
   // Copies the input address to |ip_address_|. The input is expected to be in
   // network byte order.
-  explicit IPAddress(base::span<const uint8_t> address);
+  constexpr explicit IPAddress(base::span<const uint8_t> address)
+      : ip_address_(address) {}
 
   // Initializes |ip_address_| from the 4 bX bytes to form an IPv4 address.
   // The bytes are expected to be in network byte order.
-  IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3);
+  constexpr IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
+    ip_address_.Assign({b0, b1, b2, b3});
+  }
 
   // Initializes |ip_address_| from the 16 bX bytes to form an IPv6 address.
   // The bytes are expected to be in network byte order.
-  IPAddress(uint8_t b0,
-            uint8_t b1,
-            uint8_t b2,
-            uint8_t b3,
-            uint8_t b4,
-            uint8_t b5,
-            uint8_t b6,
-            uint8_t b7,
-            uint8_t b8,
-            uint8_t b9,
-            uint8_t b10,
-            uint8_t b11,
-            uint8_t b12,
-            uint8_t b13,
-            uint8_t b14,
-            uint8_t b15);
+  constexpr IPAddress(uint8_t b0,
+                      uint8_t b1,
+                      uint8_t b2,
+                      uint8_t b3,
+                      uint8_t b4,
+                      uint8_t b5,
+                      uint8_t b6,
+                      uint8_t b7,
+                      uint8_t b8,
+                      uint8_t b9,
+                      uint8_t b10,
+                      uint8_t b11,
+                      uint8_t b12,
+                      uint8_t b13,
+                      uint8_t b14,
+                      uint8_t b15) {
+    const uint8_t bytes[] = {b0, b1, b2,  b3,  b4,  b5,  b6,  b7,
+                             b8, b9, b10, b11, b12, b13, b14, b15};
+    ip_address_.Assign(bytes);
+  }
 
   ~IPAddress();
 
@@ -324,7 +334,9 @@ template <size_t N>
 bool IPAddressStartsWith(const IPAddress& address, const uint8_t (&prefix)[N]) {
   if (address.size() < N)
     return false;
-  return std::equal(prefix, prefix + N, address.bytes().begin());
+  // SAFETY: N is size of `prefix` as inferred by the compiler.
+  return std::equal(prefix, UNSAFE_BUFFERS(prefix + N),
+                    address.bytes().begin());
 }
 
 // According to RFC6052 Section 2.2 IPv4-Embedded IPv6 Address Format.

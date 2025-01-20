@@ -232,8 +232,7 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
         cert_verifier_creation_params) {
   context_params->user_agent = user_agent_;
   context_params->accept_language = accept_language_;
-  context_params->enable_zstd =
-      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
+  context_params->enable_zstd = true;
 
   // TODO(crbug.com/40405715): Allow
   // context_params->http_auth_static_network_context_params->allow_default_credentials

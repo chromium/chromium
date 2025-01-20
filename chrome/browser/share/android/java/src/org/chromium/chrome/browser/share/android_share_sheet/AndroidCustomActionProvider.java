@@ -59,11 +59,17 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     private static final String USER_ACTION_REMOVE_PAGE_INFO_SELECTED =
             "SharingHubAndroid.RemovePageInfoSelected";
+
+    private static final String USER_ACTION_SHARE_AS_TAB_GROUP =
+            "SharingHubAndroid.ShareAsTabGroup";
+
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
     @Nullable private final LinkToTextCoordinator mLinkToTextCoordinator;
     private final PageInfoSharingController mPageInfoSharingController;
+
+    private final TabGroupSharingController mTabGroupSharingController;
 
     private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
     private final long mShareStartTime;
@@ -77,6 +83,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param shareParams The {@link ShareParams} for the current share.
      * @param printTab A {@link Callback} that will print a given Tab.
+     * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param isIncognito Whether incognito mode is enabled.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
      *     Chrome-provided sharing options.
@@ -96,6 +103,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             BottomSheetController bottomSheetController,
             ShareParams shareParams,
             Callback<Tab> printTab,
+            TabGroupSharingController tabGroupSharingController,
             boolean isIncognito,
             ChromeOptionShareCallback chromeOptionShareCallback,
             Tracker featureEngagementTracker,
@@ -123,6 +131,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         mLinkToTextCoordinator = linkToTextCoordinator;
         mPageInfoSharingController = PageInfoSharingControllerImpl.getInstance();
         mShareStartTime = shareStartTime;
+        mTabGroupSharingController = tabGroupSharingController;
 
         initializeFirstPartyOptionsInOrder();
         initCustomActions(shareParams, chromeShareExtras, isMultiWindow);
@@ -256,6 +265,25 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                                 Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
                                         .show();
                             }
+                        })
+                .build();
+    }
+
+    @Override
+    protected FirstPartyOption createCollaborateFirstPartyOption() {
+        if (!mTabProvider.hasValue()
+                || !mTabGroupSharingController.isAvailableForTab(mTabProvider.get())) {
+            return null;
+        }
+        // TODO(386833405): Update the text based on UX reviews and icon resolution.
+        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
+                .setIcon(R.drawable.ic_person_add_40dp, R.string.sharing_tab_group)
+                .setShareActionType(ShareCustomAction.SHARE_AS_TAB_GROUP)
+                .setFeatureNameForMetrics(USER_ACTION_SHARE_AS_TAB_GROUP)
+                .setOnClickCallback(
+                        (view) -> {
+                            mTabGroupSharingController.shareAsTabGroup(
+                                    mActivity, mChromeOptionShareCallback, mTabProvider.get());
                         })
                 .build();
     }

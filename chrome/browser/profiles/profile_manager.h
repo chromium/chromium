@@ -104,10 +104,30 @@ class ProfileManager : public Profile::Delegate {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Get the profile for the user which created the current session.
   // Note that in case of a guest account this will return a 'suitable' profile.
+  //
+  // DEPRECATED on ChromeOS because of known issues that it may return non User
+  // Profile instance. Please use:
+  //   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+  //       user_manager::UserManager::Get()->GetPrimaryUser())
+  // or even simpler code if you need only limited parts of Profile.
+  // E.g., if you need only PrefService of the Profile, you can take it from
+  // user_manager::User::GetProfilePrefs(), e.g.:
+  //   user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs().
+  // TODO(crbug.com/40227502): Remove this.
   static Profile* GetPrimaryUserProfile();
 
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
+  //
+  // DEPRECATED on ChromeOS because of known issues that it may return non User
+  // Profile instance. Please use:
+  //   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+  //       user_manager::UserManager::Get()->GetActiveUser())
+  // or simpler code if you need only limited parts of Profile.
+  // E.g., if you need only PrefService of the Profile, you can take it from
+  // user_manager::User::GetProfilePrefs(), e.g.:
+  //   user_manager::UserManager::Get()->GetActiveUser()->GetProfilePrefs().
+  // TODO(crbug.com/40227502): Remove this.
   static Profile* GetActiveUserProfile();
 #endif
 
@@ -357,7 +377,7 @@ class ProfileManager : public Profile::Delegate {
   friend class TestingProfileManager;
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, DeleteAllProfiles);
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, SwitchToProfile);
-  FRIEND_TEST_ALL_PREFIXES(ProfileManagerTest, ScopedProfileKeepAlive);
+  FRIEND_TEST_ALL_PREFIXES(ProfileManagerTestWithParam, ScopedProfileKeepAlive);
 
   // For AddKeepAlive() and RemoveKeepAlive().
   friend class ScopedProfileKeepAlive;

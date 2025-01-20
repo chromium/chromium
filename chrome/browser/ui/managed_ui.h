@@ -18,8 +18,6 @@ namespace gfx {
 struct VectorIcon;
 }
 
-namespace chrome {
-
 class ScopedDeviceManagerForTesting {
  public:
   explicit ScopedDeviceManagerForTesting(const char* manager);
@@ -127,7 +125,5 @@ std::optional<std::string> GetSessionManagerIdentity();
 // TODO(crbug.com/40130449): Refactor localization hints for all strings that
 // depend on this function.
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_MANAGED_UI_H_

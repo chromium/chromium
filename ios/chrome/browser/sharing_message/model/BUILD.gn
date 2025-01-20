@@ -16,7 +16,6 @@ source_set("model") {
     "//base",
     "//components/favicon/core",
     "//components/gcm_driver/instance_id",
-    "//components/keyed_service/ios",
     "//components/optimization_guide/core:features",
     "//components/send_tab_to_self",
     "//components/sharing_message",
@@ -32,8 +31,10 @@ source_set("model") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/common",
     "//ios/web/public/thread",
   ]
@@ -46,12 +47,12 @@ source_set("sharing_message_bridge_factory") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/sharing_message",
     "//components/sync/base",
     "//components/sync/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common",
   ]
 }

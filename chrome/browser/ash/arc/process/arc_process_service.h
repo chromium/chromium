@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/process.mojom-forward.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -22,6 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

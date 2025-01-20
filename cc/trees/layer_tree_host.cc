@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/layer_tree_host.h"
 
 #include <stddef.h>
@@ -351,8 +346,10 @@ void LayerTreeHost::QueueSwapPromise(
 void LayerTreeHost::WillBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = true;
-  devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
-                                                     SourceFrameNumber());
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
+                                                       SourceFrameNumber());
+  }
   client_->WillBeginMainFrame();
 }
 
@@ -454,21 +451,8 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
-    base::ElapsedTimer timer;
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
-    if (for_protected_sequence) {
-      waited_for_protected_sequence_ = true;
-      auto elapsed = timer.Elapsed();
-      base::UmaHistogramMicrosecondsTimes(
-          "Compositing.MainThreadBlockedDuringCommitTime", elapsed);
-      if (in_apply_compositor_changes_) {
-        base::UmaHistogramMicrosecondsTimes(
-            "Compositing.MainThreadBlockedDuringCommitTime."
-            "ApplyCompositorChanges",
-            elapsed);
-      }
-    }
   }
 }
 
@@ -510,11 +494,6 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
     client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
   }
-  if (compositor_mode_ == CompositorMode::THREADED) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.DidMainThreadBlockDuringCommit",
-                          waited_for_protected_sequence_);
-  }
-  waited_for_protected_sequence_ = false;
 }
 
 void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
@@ -559,6 +538,24 @@ std::unique_ptr<LayerTreeFrameSink> LayerTreeHost::ReleaseLayerTreeFrameSink() {
   DidLoseLayerTreeFrameSink();
   proxy_->ReleaseLayerTreeFrameSink();
   return std::move(current_layer_tree_frame_sink_);
+}
+
+ScopedKeepSurfaceAlive::ScopedKeepSurfaceAlive(LayerTreeHost* host,
+                                               const viz::SurfaceId& surface_id)
+    : host_(host->weak_ptr_factory_.GetWeakPtr()),
+      range_(surface_id, surface_id) {
+  host_->AddSurfaceRange(range_);
+}
+
+ScopedKeepSurfaceAlive::~ScopedKeepSurfaceAlive() {
+  if (host_) {
+    host_->RemoveSurfaceRange(range_);
+  }
+}
+
+std::unique_ptr<ScopedKeepSurfaceAlive>
+LayerTreeHost::CreateScopedKeepSurfaceAlive(const viz::SurfaceId& surface_id) {
+  return std::make_unique<ScopedKeepSurfaceAlive>(this, surface_id);
 }
 
 void LayerTreeHost::RequestNewLayerTreeFrameSink() {
@@ -1146,9 +1143,6 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(commit_data);
   TRACE_EVENT0("cc", "LayerTreeHost::ApplyCompositorChanges");
 
-  DCHECK(!in_apply_compositor_changes_);
-  base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
-
   using perfetto::protos::pbzero::TrackEvent;
 
   for (auto& swap_promise : commit_data->swap_promises) {
@@ -1204,10 +1198,10 @@ void LayerTreeHost::RecordEndOfFrameMetrics(
   client_->RecordEndOfFrameMetrics(frame_begin_time, trackers);
 }
 
-void LayerTreeHost::NotifyThroughputTrackerResults(
+void LayerTreeHost::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(IsMainThread());
-  client_->NotifyThroughputTrackerResults(std::move(results));
+  client_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 const base::WeakPtr<CompositorDelegateForInput>&
@@ -1475,6 +1469,17 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetMaxSafeAreaInsets(
+    const gfx::InsetsF& max_safe_area_insets) {
+  if (pending_commit_state()->max_safe_area_insets == max_safe_area_insets) {
+    return;
+  }
+
+  pending_commit_state()->max_safe_area_insets = max_safe_area_insets;
+
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::SetBrowserControlsParams(
     const BrowserControlsParams& params) {
   if (pending_commit_state()->browser_controls_params == params)
@@ -1557,11 +1562,19 @@ void LayerTreeHost::SetDisplayColorSpaces(
       pending_commit_state()->display_color_spaces, display_color_spaces);
   pending_commit_state()->display_color_spaces = display_color_spaces;
 
+  // Some layers needs to re-display when HDR headroom changes (e.g, any layer
+  // containing an HDR image needs to re-raster, and layers with HDR video will
+  // require re-tone-mapping).
+  bool did_set_needs_display = false;
   for (auto* layer : *this) {
     if (!only_hdr_changed ||
         layer->RequiresSetNeedsDisplayOnHdrHeadroomChange()) {
       layer->SetNeedsDisplay();
+      did_set_needs_display = true;
     }
+  }
+  if (did_set_needs_display) {
+    SetNeedsCommit();
   }
 }
 
@@ -1995,7 +2008,7 @@ bool LayerTreeHost::RunsOnCurrentThread() const {
   return !task_runner_provider_ || task_runner_provider_->IsMainThread();
 }
 
-void LayerTreeHost::QueueImageDecode(const PaintImage& image,
+void LayerTreeHost::QueueImageDecode(const DrawImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
@@ -2004,7 +2017,7 @@ void LayerTreeHost::QueueImageDecode(const PaintImage& image,
     proxy()->QueueImageDecode(next_id, image);
   } else {
     pending_commit_state()->queued_image_decodes.emplace_back(
-        next_id, std::make_unique<PaintImage>(image));
+        next_id, std::make_unique<DrawImage>(image));
   }
   pending_image_decodes_.emplace(next_id, std::move(callback));
   SetNeedsCommit();
@@ -2121,6 +2134,12 @@ void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
   pending_commit_state()->scrollers_clobbering_active_value.insert(
       scroll_element);
   SetNeedsCommit();
+}
+
+void LayerTreeHost::CrashGpuProcessForTesting() {
+  if (current_layer_tree_frame_sink_) {
+    current_layer_tree_frame_sink_->CrashGpuProcessForTesting();  // IN-TEST
+  }
 }
 
 }  // namespace cc

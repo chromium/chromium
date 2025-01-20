@@ -50,7 +50,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
         .andReturn(
             base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().host()));
     OCMStub([security_origin port])
-        .andReturn(web_frame->GetSecurityOrigin().EffectiveIntPort());
+        .andReturn(web_frame->GetSecurityOrigin().port());
     OCMStub([security_origin protocol])
         .andReturn(
             base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));
@@ -85,7 +85,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
         .andReturn(
             base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().host()));
     OCMStub([security_origin port])
-        .andReturn(web_frame->GetSecurityOrigin().EffectiveIntPort());
+        .andReturn(web_frame->GetSecurityOrigin().port());
     OCMStub([security_origin protocol])
         .andReturn(
             base::SysUTF8ToNSString(web_frame->GetSecurityOrigin().scheme()));

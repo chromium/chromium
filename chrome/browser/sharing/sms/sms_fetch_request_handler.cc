@@ -99,21 +99,17 @@ void SmsFetchRequestHandler::AskUserPermission(
   DCHECK(origin_list.size() == 1 || origin_list.size() == 2);
 
   base::android::ScopedJavaLocalRef<jstring> embedded_origin;
-  base::android::ScopedJavaLocalRef<jstring> top_origin;
+  std::u16string top_origin;
   if (origin_list.size() == 2) {
     embedded_origin = base::android::ConvertUTF16ToJavaString(
         env,
         url_formatter::FormatOriginForSecurityDisplay(
             origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-    top_origin = base::android::ConvertUTF16ToJavaString(
-        env,
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin_list[1], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+    top_origin = url_formatter::FormatOriginForSecurityDisplay(
+        origin_list[1], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   } else {
-    top_origin = base::android::ConvertUTF16ToJavaString(
-        env,
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+    top_origin = url_formatter::FormatOriginForSecurityDisplay(
+        origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   }
 
   // If there is a notification from a previous request on screen this will
@@ -128,7 +124,7 @@ void SmsFetchRequestHandler::AskUserPermission(
 }
 
 void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
-                                       jstring j_top_origin,
+                                       std::u16string top_origin,
                                        jstring j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
@@ -136,8 +132,6 @@ void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
         base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
     origins.push_back(embedded_origin);
   }
-  std::u16string top_origin =
-      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
@@ -145,7 +139,7 @@ void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
 }
 
 void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
-                                       jstring j_top_origin,
+                                       std::u16string top_origin,
                                        jstring j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
@@ -153,8 +147,6 @@ void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
         base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
     origins.push_back(embedded_origin);
   }
-  std::u16string top_origin =
-      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);

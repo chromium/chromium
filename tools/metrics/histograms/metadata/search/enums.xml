@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
              Overlay, entered via keyboard (Image)"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/ui/lens/lens_entrypoint.h:IOSLensEntrypoint) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h:IOSLensEntrypoint) -->
 
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>
@@ -124,6 +124,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success (Gallery Image)"/>
   <int value="2" label="Success (QR/Bar Code)"/>
   <int value="3" label="Dismissed"/>
+</enum>
+
+<enum name="ClickInfo">
+  <summary>
+    The type of the button that users clicked on the auxiliary search module
+    card.
+  </summary>
+  <int value="0" label="Got it"/>
+  <int value="1" label="No thanks"/>
+  <int value="2" label="Go to settings"/>
+  <int value="3" label="Turn on"/>
 </enum>
 
 <enum name="ContextualSearchCardTag">
@@ -197,6 +208,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No favicons available"/>
   <int value="1" label="Failed"/>
   <int value="2" label="Succeed"/>
+</enum>
+
+<enum name="KeywordTableHashValidationStatus">
+  <int value="0" label="Hash was validated successfully"/>
+  <int value="1" label="Decryption failed"/>
+  <int value="2" label="Hash format was invalid"/>
+  <int value="3" label="Hash did not match expected value"/>
+  <int value="4"
+      label="Hash was not verified as decryption services were not available"/>
+  <int value="5"
+      label="Hash was not verified as hash verification is disabled"/>
 </enum>
 
 <!-- LINT.IfChange(LaunchOsChoiceScreenTapHandlingStatus) -->
@@ -384,6 +406,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="From omnibox"/>
 </enum>
 
+<enum name="SearchPolicyConflictType">
+  <int value="0" label="No conflict"/>
+  <int value="1" label="Conflict with featured search engine"/>
+  <int value="2" label="Conflict with non-featured search engine"/>
+</enum>
+
 <enum name="SearchProviderOverrideStatus">
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
@@ -411,17 +439,21 @@ chromium-metrics-reviews@google.com.
              start)"/>
 </enum>
 
-<enum name="SiteSearchPolicyConflictType">
-  <int value="0" label="No conflict"/>
-  <int value="1" label="Conflict with featured search engine"/>
-  <int value="2" label="Conflict with non-featured search engine"/>
-</enum>
-
 <enum name="TrendingTileEvent">
   <int value="0" label="Tile was shown"/>
   <int value="1" label="Tile was removed"/>
   <int value="2" label="Tile was clicked"/>
 </enum>
+
+<!-- LINT.IfChange(UnknownCountryIdStored) -->
+
+<enum name="UnknownCountryIdStored">
+  <int value="0" label="Valid country stored"/>
+  <int value="1" label="Clearing feature disabled"/>
+  <int value="2" label="Cleared pref due to invalid country ID"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
 
 </enums>
 

@@ -568,8 +568,8 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
         intercept_response_received_args, arg_ready_closure);
 
     auto done = base::BindOnce(
-        &InterceptedRequest::InterceptWithCookieHeader, base::Unretained(this),
-        xrw_enabled,
+        &InterceptedRequest::InterceptWithCookieHeader,
+        weak_factory_.GetWeakPtr(), xrw_enabled,
         base::BindOnce(&OnShouldInterceptRequestAsyncResult,
                        base::Unretained(intercept_response_received_args),
                        arg_ready_closure));
@@ -1171,9 +1171,18 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   bool third_party_cookie_policy =
       global_cookie_policy && io_thread_client->ShouldAcceptThirdPartyCookies();
 
+  // WebView treats cookie access on a per request basis and so we have to
+  // essentially let the rest of the network stack know if we want to allow
+  // unpartitioned cookie access or not.
+  // We can handle this by allowing 3PCs in the case where we have given access
+  // to storage access.
+  bool hasStorageAccess = request.storage_access_api_status ==
+                          net::StorageAccessApiStatus::kAccessViaAPI;
+
   if (!global_cookie_policy) {
     options |= network::mojom::kURLLoadOptionBlockAllCookies;
-  } else if (!third_party_cookie_policy && !request.url.SchemeIsFile()) {
+  } else if (!third_party_cookie_policy && !request.url.SchemeIsFile() &&
+             !hasStorageAccess) {
     // Special case: if the application has asked that we allow file:// scheme
     // URLs to set cookies, we need to avoid setting a cookie policy (as file://
     // scheme URLs are third-party to everything).
@@ -1198,8 +1207,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   // manager. In this case, it will not be bound so we move on.
   OptionalGetCookie get_cookie_header = std::nullopt;
   OptionalSetCookie set_cookie_header = std::nullopt;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewInterceptedCookieHeader) &&
+  if (base::FeatureList::IsEnabled(features::kWebViewInterceptedCookieHeader) &&
       cookie_manager_.is_bound()) {
     get_cookie_header = base::BindRepeating(
         &AwProxyingURLLoaderFactory::GetCookieHeader, base::Unretained(this));
@@ -1260,10 +1268,6 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
-  net::SchemefulSite site_to_partition =
-      isolation_info.network_isolation_key().GetTopFrameSite().value_or(
-          net::SchemefulSite());
-
   PrivacySetting privacy_setting = cookie_access_policy_->CanAccessCookies(
       request.url, isolation_info.site_for_cookies(), is_3pc_allowed,
       request.storage_access_api_status);
@@ -1292,8 +1296,13 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
               }
             }
 
-            std::move(callback).Run(
-                net::CanonicalCookie::BuildCookieLine(cookies));
+            // TODO(crbug.com/384986095): Provide real cookie values
+            std::string cookie_line = "";
+            if (base::FeatureList::IsEnabled(
+                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
+              cookie_line = net::CanonicalCookie::BuildCookieLine(cookies);
+            }
+            std::move(callback).Run(cookie_line);
           },
           std::move(privacy_setting), std::move(callback)));
 }
@@ -1312,9 +1321,13 @@ void AwProxyingURLLoaderFactory::SetCookieHeader(
       GetPartitionKey(isolation_info, request), net::CookieSourceType::kHTTP,
       &returned_status);
 
-  cookie_manager_->SetCanonicalCookie(*cookie, request.url,
-                                      net::CookieOptions::MakeAllInclusive(),
-                                      base::DoNothing());
+  // TODO(crbug.com/384986095): Provide real cookie values
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewInterceptedCookieHeaderReadWrite)) {
+    cookie_manager_->SetCanonicalCookie(*cookie, request.url,
+                                        net::CookieOptions::MakeAllInclusive(),
+                                        base::DoNothing());
+  }
 }
 
 net::IsolationInfo AwProxyingURLLoaderFactory::GetIsolationInfo(

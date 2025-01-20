@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -123,9 +122,18 @@ class StyleEngineTest : public PageTestBase {
     return GetDocument().IsUseCounted(feature);
   }
 
+  bool IsWebDXFeatureCounted(mojom::blink::WebDXFeature feature) {
+    return GetDocument().IsWebDXFeatureCounted(feature);
+  }
+
   void ClearUseCounter(mojom::WebFeature feature) {
     GetDocument().ClearUseCounterForTesting(feature);
     DCHECK(!IsUseCounted(feature));
+  }
+
+  void ClearWebDXFeatureCounter(mojom::blink::WebDXFeature feature) {
+    GetDocument().ClearWebDXFeatureCounterForTesting(feature);
+    DCHECK(!IsWebDXFeatureCounted(feature));
   }
 
   String GetListMarkerText(LayoutObject* list_item) {
@@ -172,6 +180,17 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
   GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
       tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
       rule_sets, /*changed_rule_flags=*/0);
+}
+
+TEST_F(StyleEngineTest, ClearWebDXFeatureCounter) {
+  // Chosen arbitrarily.
+  WebDXFeature feature = WebDXFeature::kViewportUnitVariants;
+
+  EXPECT_FALSE(IsWebDXFeatureCounted(feature));
+  GetDocument().CountWebDXFeature(feature);
+  EXPECT_TRUE(IsWebDXFeatureCounted(feature));
+  ClearWebDXFeatureCounter(feature);
+  EXPECT_FALSE(IsWebDXFeatureCounted(feature));
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
@@ -3980,6 +3999,37 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
   }
 }
 
+TEST_F(StyleEngineTest, ViewportUnitVariantsUseCounter) {
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vh; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vi; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10vmax; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10svh; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10lvi; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
+
+  GetDocument().body()->setInnerHTML("<style> body { top: 10dvmax; } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
+  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
+}
+
 TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
   ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
   GetDocument().body()->setInnerHTML(R"HTML(
@@ -6766,44 +6816,6 @@ TEST_F(StyleEngineTest, BorderWidthsAreRecalculatedWhenZoomChanges) {
   checkBorderWidth(1.0f);
 }
 
-TEST_F(StyleEngineTest, AnimationShorthandFlags) {
-  String css = "animation: foo 1s";
-  {
-    ScopedScrollTimelineForTest scroll_timeline_enabled(false);
-    ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
-    const CSSPropertyValueSet* set =
-        css_test_helpers::ParseDeclarationBlock(css);
-    ASSERT_TRUE(set);
-    EXPECT_EQ(8u, set->PropertyCount());
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDuration));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimingFunction));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDelay));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationIterationCount));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDirection));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationFillMode));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationPlayState));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationName));
-  }
-  {
-    ScopedScrollTimelineForTest scroll_timeline_enabled(true);
-    const CSSPropertyValueSet* set =
-        css_test_helpers::ParseDeclarationBlock(css);
-    ASSERT_TRUE(set);
-    EXPECT_EQ(11u, set->PropertyCount());
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDuration));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimingFunction));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDelay));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationIterationCount));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationDirection));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationFillMode));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationPlayState));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationName));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationTimeline));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeStart));
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kAnimationRangeEnd));
-  }
-}
-
 TEST_F(StyleEngineTest, InitialStyle_Recalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -7035,6 +7047,160 @@ TEST_F(StyleEngineTest, UseCountMediaQueryRangeSyntax) {
   ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
   SetBodyInnerHTML("<style>@media (1px < width < 2px){}</style>");
   EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+}
+
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  ASSERT_TRUE(sheet);
+  EXPECT_TRUE(sheet->Contents()->HasRuleSet());
+
+  sheet->Contents()->ClearRuleSet();
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+
+  RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
+
+  // As the above RuleSet is unconnected, it should not have affected
+  // the RuleSet held by StyleSheetContents.
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+}
+
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style media=print>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  EXPECT_FALSE(GetStyleEngine().CreateUnconnectedRuleSet(*sheet));
+}
+
+TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
+  ScopedUpdateComplexSafaAreaConstraintsForTest
+      update_complex_safe_area_constraints(true);
+
+  // (a) Any styles that are not 'bottom' anchored, should not have complex
+  // safe area constraints.
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="padding-bottom: 30px" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="padding-bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // (b) Any styles that are 'bottom' anchored, may have complex safe area
+  // constraints depending on the following usages.
+
+  // When no style properties use env(safe-area-inset-bottom), there are no
+  // complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px; padding-bottom: 30px" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
+  // there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px; padding-bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When the 'bottom' style property uses env(safe-area-inset-bottom)
+  // as defined under 'IsBottomRelativeToSafeAreaInset' in
+  // computed_style_extra_fields.json5, this is considered a "fast-path"
+  // and there are no complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses calc() with
+  // env(safe-area-inset-bottom), there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px; height: calc(env(safe-area-inset-bottom) + 30px)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+}
+
+TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
+  ScopedUpdateComplexSafaAreaConstraintsForTest
+      update_complex_safe_area_constraints(true);
+
+  // Any styles that are nested in a 'bottom' anchored element, may have
+  // complex safe area constraints depending on the following usages.
+
+  // When no style properties use env(safe-area-inset-bottom), there are no
+  // complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="padding-bottom: 30px" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
+  // there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="padding-bottom: env(safe-area-inset-bottom)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When the 'bottom' style property uses env(safe-area-inset-bottom)
+  // as defined under 'IsBottomRelativeToSafeAreaInset' in
+  // computed_style_extra_fields.json5, this is considered a "fast-path"
+  // and there are no complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="env(safe-area-inset-bottom)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses calc() with
+  // env(safe-area-inset-bottom), there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px">
+      <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
 }
 
 }  // namespace blink

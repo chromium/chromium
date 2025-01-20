@@ -188,8 +188,9 @@ void EditableComboboxTest::InitEditableCombobox(const int item_count,
                                                 const bool filter_on_edit,
                                                 const bool show_on_empty) {
   std::vector<ui::SimpleComboboxModel::Item> items;
-  for (int i = 0; i < item_count; ++i)
+  for (int i = 0; i < item_count; ++i) {
     items.emplace_back(ASCIIToUTF16(base::StringPrintf("item[%i]", i)));
+  }
   InitEditableCombobox(items, filter_on_edit, show_on_empty);
 }
 
@@ -198,8 +199,9 @@ void EditableComboboxTest::InitEditableCombobox(
     bool filter_on_edit,
     bool show_on_empty) {
   std::vector<ui::SimpleComboboxModel::Item> items;
-  for (const auto& item_str : strings)
+  for (const auto& item_str : strings) {
     items.emplace_back(item_str);
+  }
   InitEditableCombobox(items, filter_on_edit, show_on_empty);
 }
 
@@ -685,10 +687,10 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
 #if BUILDFLAG(IS_LINUX)
 // Flaky on Linux. https://crbug.com/1204584
 #define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
-    DISABLED_RefocusingReopensMenuBasedOnLatestContent
+  DISABLED_RefocusingReopensMenuBasedOnLatestContent
 #else
 #define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
-    RefocusingReopensMenuBasedOnLatestContent
+  RefocusingReopensMenuBasedOnLatestContent
 #endif
 TEST_F(EditableComboboxTest, MAYBE_RefocusingReopensMenuBasedOnLatestContent) {
   std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad", u"bac2"};
@@ -961,15 +963,17 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
  public:
   explicit ConfigurableComboboxModel(bool* destroyed = nullptr)
       : destroyed_(destroyed) {
-    if (destroyed_)
+    if (destroyed_) {
       *destroyed_ = false;
+    }
   }
   ConfigurableComboboxModel(ConfigurableComboboxModel&) = delete;
   ConfigurableComboboxModel& operator=(const ConfigurableComboboxModel&) =
       delete;
   ~ConfigurableComboboxModel() override {
-    if (destroyed_)
+    if (destroyed_) {
       *destroyed_ = true;
+    }
   }
 
   // ui::ComboboxModel:

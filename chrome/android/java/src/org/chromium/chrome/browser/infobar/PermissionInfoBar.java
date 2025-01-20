@@ -21,7 +21,7 @@ import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /** An infobar used for prompting the user to grant a web API permission. */
 public class PermissionInfoBar extends ConfirmInfoBar
@@ -147,7 +147,7 @@ public class PermissionInfoBar extends ConfirmInfoBar
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
             link.setSpan(
-                    new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    new ChromeClickableSpan(layout.getContext(), view -> onLinkClicked()),
                     0,
                     link.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

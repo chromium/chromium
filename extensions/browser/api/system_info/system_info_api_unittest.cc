@@ -19,6 +19,7 @@
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/mock_extension_system.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/api/system_storage.h"
@@ -174,6 +175,7 @@ class SystemInfoAPITest : public testing::Test {
     client_.SetMainContext(&context1_);
     client_.SetSecondContext(&context2_);
     ExtensionsBrowserClient::Set(&client_);
+    client_.set_extension_system_factory(&factory_);
 
     BrowserContextDependencyManager::GetInstance()
         ->CreateBrowserContextServicesForTest(&context1_);
@@ -306,6 +308,7 @@ class SystemInfoAPITest : public testing::Test {
   content::TestBrowserContext context1_;
   content::TestBrowserContext context2_;
   FakeExtensionsBrowserClient client_;
+  MockExtensionSystemFactory<MockExtensionSystem> factory_;
   raw_ptr<EventRouter> router1_ = nullptr;
   raw_ptr<EventRouter> router2_ = nullptr;
   FakeDisplayInfoProvider display_info_provider_;

@@ -40,11 +40,6 @@ def _find_all_host_cargo_flags_files(out_dir: str) -> Set[str]:
       glob.glob(f"{out_dir}/clang_*/gen/**/cargo_flags.rs", recursive=True))
 
 
-def _get_args_for_arch(arch: str) -> List[str]:
-  default_args = cronet_utils.get_android_gn_args(True, arch)
-  return ' '.join(cronet_utils.filter_gn_args(default_args, ["use_remoteexec"]))
-
-
 def _build_rust_build_script_actions(out_path: str):
   """Builds build script actions, first GN is used to query
     all actions that are available to build, then the actions are
@@ -109,9 +104,8 @@ def _get_target_name_from_file(file_name: str) -> str:
   return f"//{build_gn_path}:{target_name}"
 
 
-def _generate_build_script_outputs_for_host(
-        targets: List[str]) -> Dict[str, List[str]]:
-  return _generate_build_script_outputs_for_arch("x64", targets)
+def _generate_build_script_outputs_for_host() -> Dict[str, List[str]]:
+  return _generate_build_script_outputs_for_arch("x64", True)
 
 
 def _generate_build_script_outputs_for_arch(arch: str,
@@ -127,7 +121,7 @@ def _generate_build_script_outputs_for_arch(arch: str,
   # deal with this small differences.
   target_name_to_build_script_output = {}
   with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-    cronet_utils.gn(gn_out_dir, _get_args_for_arch(arch))
+    cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
     _build_rust_build_script_actions(gn_out_dir)
     build_script_output_files = _find_all_host_cargo_flags_files(
         gn_out_dir) if host_variant else _find_all_cargo_flags_files(gn_out_dir)
@@ -154,7 +148,7 @@ def _generate_build_scripts_outputs(
       build_scripts_output_per_arch[target_name][arch] = output
 
   # Generate host-specific build script outputs
-  build_script_output = _generate_build_script_outputs_for_host(targets)
+  build_script_output = _generate_build_script_outputs_for_host()
   for (target_name, output) in build_script_output.items():
     if targets and target_name not in targets:
       continue

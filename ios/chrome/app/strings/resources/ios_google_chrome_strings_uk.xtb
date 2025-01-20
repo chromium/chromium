@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1066101356081285416">Chrome виявлятиме номери відстеження на сайтах, які ви відвідуєте, і показуватиме оновлення щодо відправлень на сторінці нової вкладки. Номер відстеження замовлення й назва веб-сайту надсилатимуться в Google, щоб забезпечити роботу цієї функції і зробити покупки в Google зручнішими для всіх користувачів. Ви можете будь-коли змінити це в <ph name="BEGIN_LINK" />налаштуваннях відстеження замовлень<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome автоматично відкриває посилання YouTube, надіслані із сеансу в анонімному режимі, у тому самому режимі.</translation>
 <translation id="1086486568852410168">Шукати через Об’єктив</translation>
 <translation id="1143896152279775643">Ваш пароль буде збережено в Менеджері паролів Google для електронної адреси <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Відкрити нову вкладку в Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Відкривайте посилання з повідомлень і інших додатків за допомогою Chrome.</translation>
 <translation id="1229222343402087523">Шукати фразу ${searchPhrase} у Chrome</translation>
 <translation id="1237769345474105984">З Chrome</translation>
-<translation id="1240190568154816272">Поради щодо Chrome</translation>
 <translation id="124228879633599436">Ви використовуєте застарілу версію Chrome. Оновіть її, щоб захистити свої дані.</translation>
 <translation id="1333745675627230582">Грати в гру Chrome Dino</translation>
 <translation id="1352919863522755794">Google Менеджеру паролів не вдалося перевірити ваші паролі. Перевірте інтернет-з’єднання.</translation>
@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Відкриває налаштування, де можна зробити Chrome вебпереглядачем за умовчанням.</translation>
 <translation id="1670609221633730681">Порада щодо Chrome: виберіть розташування адресного рядка</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Зберігайте паролі в Chrome</translation>
 <translation id="1790080846677398234">Додає введені URL-адреси до закладок у Chrome.</translation>
 <translation id="1799920918471566157">Поради щодо Chrome</translation>
 <translation id="1830634592642484976">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>
@@ -109,6 +110,7 @@
 <translation id="3655656110921623717">Це означає, що Chrome щоразу буде запитувати мобільний сайт.</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3741995255368156336">Відкриває список читання в Chrome.</translation>
+<translation id="3808570423967020928">Відкривайте Chrome швидше з панелі Dock головного екрана.</translation>
 <translation id="3827545470516145620">Ви ввімкнули стандартний режим безпеки на цьому пристрої</translation>
 <translation id="384394811301901750">Зараз Google Chrome не може використовувати камеру</translation>
 <translation id="3863841106411295595">Додає введені URL-адреси до списку читання в Chrome.</translation>
@@ -125,6 +127,7 @@
 <translation id="4636900170638246267">Увійдіть в облікові записи цього сайту та Chrome.</translation>
 <translation id="4646014602299206846">Chrome виявлятиме номери відстеження замовлень на сайтах, які ви відвідуєте, і показуватиме оновлення щодо відправлень на сторінці нової вкладки. Ваші дані буде надіслано в Google, щоб забезпечити роботу цієї функції і покращити Покупки для всіх користувачів.</translation>
 <translation id="4647910807533196601">Відкриває останню вкладку в Chrome.</translation>
+<translation id="4693084815234024320">Ви в анонімному режимі Chrome</translation>
 <translation id="4724297637870447613">Використовуйте Chrome на всіх пристроях</translation>
 <translation id="4738647308035481133">Сторінка Google Chrome</translation>
 <translation id="4742795653798179840">Дані Chrome видалено</translation>
@@ -219,9 +222,12 @@
 
 Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chrome, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Ви можете видалити дані вебперегляду в Chrome.</translation>
+<translation id="6924922227983877439">Відкривайте посилання в Chrome за умовчанням</translation>
+<translation id="6931601805528922498">Якщо ви ввійдете за допомогою свого облікового запису, його буде додано в Chrome для перегляду вебсторінок, пов’язаних із роботою.</translation>
 <translation id="6975725306479268850">Виберіть значення Chrome для параметра "Автозаповнення"</translation>
 <translation id="7056826488869329999">Відкриває і запускає перевірку безпеки в Chrome.</translation>
 <translation id="7061455974939528301">Утримуйте значок Chrome і натисніть "Редагувати головний екран"</translation>
+<translation id="7065813315247345131">Перемістіть Chrome на панель Dock</translation>
 <translation id="7124339256045485976">Користуйтеся найновішою версією Chrome</translation>
 <translation id="7161390184744336561">Версія Google Chrome застаріла</translation>
 <translation id="7165736900384873061">Використовувати сканер QR-кодів у Google Chrome</translation>

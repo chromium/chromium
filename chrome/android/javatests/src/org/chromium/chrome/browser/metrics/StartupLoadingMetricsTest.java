@@ -27,11 +27,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -166,7 +168,8 @@ public class StartupLoadingMetricsTest {
         Assert.assertTrue(coldStartFirstCommit4Samples < 2);
 
         int coldStartFirstContentfulPaintSamples =
-                RecordHistogram.getHistogramTotalCountForTesting(FIRST_CONTENTFUL_PAINT_HISTOGRAM3);
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FIRST_CONTENTFUL_PAINT_HISTOGRAM3 + histogramSuffix);
         Assert.assertTrue(coldStartFirstContentfulPaintSamples < 2);
 
         int firstCommitSamples =
@@ -299,6 +302,7 @@ public class StartupLoadingMetricsTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "Flaky. See crbug.com/380204044")
     public void testStartWithURLRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(getTestPage()));
@@ -330,6 +334,7 @@ public class StartupLoadingMetricsTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "Flaky. See crbug.com/380204044")
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () ->
@@ -514,8 +519,9 @@ public class StartupLoadingMetricsTest {
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
         mConnectionToCleanup = connection;
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         connection.newSession(token);
-        connection.setCanUseHiddenTabForSession(token, false);
+        connection.setCanUseHiddenTabForSession(sessionHolder, false);
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, getTestPage());
 

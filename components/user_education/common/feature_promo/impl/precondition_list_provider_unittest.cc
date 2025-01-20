@@ -11,12 +11,14 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace user_education {
 
@@ -29,14 +31,10 @@ DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond1);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond2);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond3);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond4);
-constexpr FeaturePromoResult::Failure kFailure1 =
-    FeaturePromoResult::kBlockedByPromo;
 constexpr FeaturePromoResult::Failure kFailure2 =
     FeaturePromoResult::kBlockedByConfig;
 constexpr FeaturePromoResult::Failure kFailure3 =
     FeaturePromoResult::kBlockedByCooldown;
-constexpr FeaturePromoResult::Failure kFailure4 =
-    FeaturePromoResult::kBlockedByGracePeriod;
 constexpr char kPrecond1Name[] = "Precond1";
 constexpr char kPrecond2Name[] = "Precond2";
 constexpr char kPrecond3Name[] = "Precond3";
@@ -49,11 +47,12 @@ TEST(PreconditionListProviderTest,
   // Dummy promo specification (details aren't important).
   const auto spec = FeaturePromoSpecification::CreateForTesting(
       kTestFeature1, kAnchorId, IDS_OK);
+  const FeaturePromoParams params(kTestFeature1);
 
   // Create an inner provider with two preconditions, one of which fails.
   test::TestPreconditionListProvider inner;
-  inner.Add(kPrecond1, kFailure1, kPrecond1Name, true);
-  inner.Add(kPrecond2, kFailure2, kPrecond2Name, false);
+  inner.Add(kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
+  inner.Add(kPrecond2, kPrecond2Name, kFailure2);
 
   // Wrap the inner provider in a composing provider.
   ComposingPreconditionListProvider provider;
@@ -62,14 +61,14 @@ TEST(PreconditionListProviderTest,
   // Check that the composing provider calls the inner provider and returns the
   // correct result.
   inner.SetExpectedPromoForNextQuery(spec);
-  auto result = provider.GetPreconditions(spec).CheckPreconditions();
+  auto result = provider.GetPreconditions(spec, params).CheckPreconditions();
   EXPECT_EQ(kFailure2, result.result());
   EXPECT_EQ(kPrecond2, result.failed_precondition());
 
   // Modify the inner provider so all its preconditions pass and try again.
-  inner.SetDefault(kPrecond2, true);
+  inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec).CheckPreconditions();
+  result = provider.GetPreconditions(spec, params).CheckPreconditions();
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }
 
@@ -78,16 +77,17 @@ TEST(PreconditionListProviderTest,
   // Dummy promo specification (details aren't important).
   const auto spec = FeaturePromoSpecification::CreateForTesting(
       kTestFeature1, kAnchorId, IDS_OK);
+  const FeaturePromoParams params(kTestFeature1);
 
   // Create an inner provider with two preconditions, one of which fails.
   test::TestPreconditionListProvider inner;
-  inner.Add(kPrecond1, kFailure1, kPrecond1Name, true);
-  inner.Add(kPrecond2, kFailure2, kPrecond2Name, false);
+  inner.Add(kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
+  inner.Add(kPrecond2, kPrecond2Name, kFailure2);
 
   // Create a second inner provider, also with a failing condition.
   test::TestPreconditionListProvider inner2;
-  inner2.Add(kPrecond3, kFailure3, kPrecond3Name, false);
-  inner2.Add(kPrecond4, kFailure4, kPrecond4Name, true);
+  inner2.Add(kPrecond3, kPrecond3Name, kFailure3);
+  inner2.Add(kPrecond4, kPrecond4Name, FeaturePromoResult::Success());
 
   // Wrap the inner provider in a composing provider.
   ComposingPreconditionListProvider provider;
@@ -98,24 +98,24 @@ TEST(PreconditionListProviderTest,
   // correct results.
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  auto result = provider.GetPreconditions(spec).CheckPreconditions();
+  auto result = provider.GetPreconditions(spec, params).CheckPreconditions();
   EXPECT_EQ(kFailure2, result.failure());
   EXPECT_EQ(kPrecond2, result.failed_precondition());
 
   // Modify the first inner provider so all its preconditions pass and try
   // again.
-  inner.SetDefault(kPrecond2, true);
+  inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec).CheckPreconditions();
+  result = provider.GetPreconditions(spec, params).CheckPreconditions();
   EXPECT_EQ(kFailure3, result.failure());
   EXPECT_EQ(kPrecond3, result.failed_precondition());
 
   // Modify the second inner provider so that all preconditions pass.
-  inner2.SetDefault(kPrecond3, true);
+  inner2.SetDefault(kPrecond3, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec);
   inner2.SetExpectedPromoForNextQuery(spec);
-  result = provider.GetPreconditions(spec).CheckPreconditions();
+  result = provider.GetPreconditions(spec, params).CheckPreconditions();
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
 }
 
@@ -126,6 +126,8 @@ TEST(PreconditionListProviderTest,
       kTestFeature1, kAnchorId, IDS_OK);
   const auto spec2 = FeaturePromoSpecification::CreateForTesting(
       kTestFeature2, kAnchorId, IDS_OK);
+  const FeaturePromoParams params(kTestFeature1);
+  const FeaturePromoParams params2(kTestFeature2);
 
   // Create an inner provider and a composing provider that delegates to it.
   test::TestPreconditionListProvider inner;
@@ -135,9 +137,28 @@ TEST(PreconditionListProviderTest,
   // Ensure that the provider passes the correct specifications.
   // Do not need to look at the result, as we've already tested this.
   inner.SetExpectedPromoForNextQuery(spec);
-  provider.GetPreconditions(spec);
+  provider.GetPreconditions(spec, params);
   inner.SetExpectedPromoForNextQuery(spec2);
-  provider.GetPreconditions(spec2);
+  provider.GetPreconditions(spec2, params2);
+}
+
+TEST(PreconditionListProviderTest, ComposingPreconditionAddsCallback) {
+  // Dummy promo specifications (details aren't important).
+  const auto spec = FeaturePromoSpecification::CreateForTesting(
+      kTestFeature1, kAnchorId, IDS_OK);
+  const auto spec2 = FeaturePromoSpecification::CreateForTesting(
+      kTestFeature2, kAnchorId, IDS_OK);
+  const FeaturePromoParams params(kTestFeature1);
+  const FeaturePromoParams params2(kTestFeature2);
+
+  UNCALLED_MOCK_CALLBACK(PreconditionListProviderCallback, callback);
+  ComposingPreconditionListProvider provider;
+  provider.AddProvider(callback.Get());
+  EXPECT_CALL_IN_SCOPE(callback, Run(testing::Ref(spec), testing::Ref(params)),
+                       provider.GetPreconditions(spec, params));
+  EXPECT_CALL_IN_SCOPE(callback,
+                       Run(testing::Ref(spec2), testing::Ref(params2)),
+                       provider.GetPreconditions(spec2, params2));
 }
 
 }  // namespace user_education

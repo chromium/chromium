@@ -13,20 +13,10 @@ assert(!is_android && !is_ios)
 js_files = [
   "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
   "iron-a11y-keys/iron-a11y-keys.js",
-  "iron-flex-layout/iron-flex-layout-classes.js",
   "iron-list/iron-list.js",
-  "iron-media-query/iron-media-query.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
   "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
-  "paper-behaviors/paper-ripple-mixin.js",
-  "paper-ripple/paper-ripple.js",
 ]
-
-# Also needed on LaCros for Print Preview. Remove once CrOS Print Preview
-# launches.
-if (is_chromeos) {
-  js_files += [ "iron-fit-behavior/iron-fit-behavior.js" ]
-}
 
 if (is_chromeos_ash) {
   js_files += [
@@ -35,10 +25,13 @@ if (is_chromeos_ash) {
     "iron-collapse/iron-collapse.js",
     "iron-dropdown/iron-dropdown.js",
     "iron-dropdown/iron-dropdown-scroll-manager.js",
+    "iron-flex-layout/iron-flex-layout-classes.js",
+    "iron-fit-behavior/iron-fit-behavior.js",
     "iron-icon/iron-icon.js",
     "iron-iconset-svg/iron-iconset-svg.js",
     "iron-location/iron-location.js",
     "iron-location/iron-query-params.js",
+    "iron-media-query/iron-media-query.js",
     "iron-meta/iron-meta.js",
     "iron-overlay-behavior/iron-focusables-helper.js",
     "iron-overlay-behavior/iron-overlay-backdrop.js",
@@ -60,7 +53,9 @@ if (is_chromeos_ash) {
     "neon-animation/neon-animated-pages.js",
     "neon-animation/neon-animation-behavior.js",
     "neon-animation/neon-animation-runner-behavior.js",
+    "paper-behaviors/paper-ripple-mixin.js",
     "paper-progress/paper-progress.js",
+    "paper-ripple/paper-ripple.js",
     "paper-spinner/paper-spinner-behavior.js",
     "paper-spinner/paper-spinner-lite.js",
     "paper-spinner/paper-spinner-styles.js",
@@ -173,9 +168,6 @@ ts_library("library") {
       "//ash/webui/*",
       "//chrome/browser/resources/ash/*",
       "//chrome/browser/resources/chromeos/*",
-      "//chrome/browser/resources/nearby_internals:build_ts",
-      "//chrome/browser/resources/nearby_share:build_ts",
-      "//chrome/browser/resources/nearby_share/shared:build_ts",
       "//chrome/test/data/webui/chromeos/*",
       "//chrome/test/data/webui/cr_components/chromeos:build_ts",
       "//chromeos/ash/components/*",
@@ -188,13 +180,9 @@ ts_library("library") {
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
     "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
-    "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
     "components-chromium/iron-list/iron-list.d.ts",
-    "components-chromium/iron-media-query/iron-media-query.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
     "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
-    "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
-    "components-chromium/paper-ripple/paper-ripple.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
     "components-chromium/polymer/lib/elements/array-selector.d.ts",
     "components-chromium/polymer/lib/elements/custom-style.d.ts",
@@ -259,10 +247,12 @@ ts_library("library") {
       "components-chromium/iron-collapse/iron-collapse.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown.d.ts",
       "components-chromium/iron-dropdown/iron-dropdown-scroll-manager.d.ts",
+      "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
       "components-chromium/iron-icon/iron-icon.d.ts",
       "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
       "components-chromium/iron-location/iron-location.d.ts",
       "components-chromium/iron-location/iron-query-params.d.ts",
+      "components-chromium/iron-media-query/iron-media-query.d.ts",
       "components-chromium/iron-meta/iron-meta.d.ts",
       "components-chromium/iron-overlay-behavior/iron-focusables-helper.d.ts",
       "components-chromium/iron-overlay-behavior/iron-overlay-backdrop.d.ts",
@@ -284,7 +274,9 @@ ts_library("library") {
       "components-chromium/neon-animation/neon-animated-pages.d.ts",
       "components-chromium/neon-animation/neon-animation-behavior.d.ts",
       "components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
+      "components-chromium/paper-behaviors/paper-ripple-mixin.d.ts",
       "components-chromium/paper-progress/paper-progress.d.ts",
+      "components-chromium/paper-ripple/paper-ripple.d.ts",
       "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",
       "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
       "components-chromium/paper-spinner/paper-spinner-styles.d.ts",

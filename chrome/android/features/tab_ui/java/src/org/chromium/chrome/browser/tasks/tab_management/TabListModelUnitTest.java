@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,5 +46,32 @@ public class TabListModelUnitTest {
         assertEquals(1, tabListModel.indexOfTabCardsOrInvalid(3));
         assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(4));
         assertEquals(TabModel.INVALID_TAB_INDEX, tabListModel.indexOfTabCardsOrInvalid(5));
+    }
+
+    @Test
+    public void testGetFirstTabPropertyModel() {
+        TabListModel tabListModel = new TabListModel();
+        assertNull(tabListModel.getFirstTabPropertyModel());
+
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertNull(tabListModel.getFirstTabPropertyModel());
+
+        ListItem firstTabItem = listItemWithType(ModelType.TAB);
+        assertNotNull(firstTabItem.model);
+        tabListModel.add(firstTabItem);
+        assertEquals(firstTabItem.model, tabListModel.getFirstTabPropertyModel());
+
+        tabListModel.add(listItemWithType(ModelType.TAB));
+        assertEquals(firstTabItem.model, tabListModel.getFirstTabPropertyModel());
+
+        tabListModel.clear();
+        assertNull(tabListModel.getFirstTabPropertyModel());
+        ListItem newFirstTabItem = listItemWithType(ModelType.TAB);
+        assertNotNull(newFirstTabItem.model);
+        tabListModel.add(newFirstTabItem);
+        assertEquals(newFirstTabItem.model, tabListModel.getFirstTabPropertyModel());
+
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertEquals(newFirstTabItem.model, tabListModel.getFirstTabPropertyModel());
     }
 }

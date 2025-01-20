@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -57,9 +58,9 @@ class EligibilityServiceBrowserTestBase : public InProcessBrowserTest {
         features::kCookieDeprecationFacilitatedTesting,
         {{"label", "label_test"},
          {"force_eligible", "true"},
-         {kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
+         {kDisable3PCookiesName, base::ToString(disable_3p_cookies)},
          {kEnableSilentOnboardingName,
-          enable_silent_onboarding ? "true" : "false"}});
+          base::ToString(enable_silent_onboarding)}});
   }
 
   void SetUpOnMainThread() override {

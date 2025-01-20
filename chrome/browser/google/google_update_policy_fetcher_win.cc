@@ -59,8 +59,9 @@ void AddPolicy(const char* policy_name,
                    PolicyValueOverrideFunction()) {
   auto policy_entry =
       ConvertPolicyStatusValueToPolicyEntry(policy, value_override_function);
-  if (policy_entry)
+  if (policy_entry) {
     policies.Set(policy_name, std::move(*policy_entry));
+  }
 }
 
 base::Time DateToTime(DATE date) {
@@ -88,13 +89,15 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
 
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_lastCheckPeriodMinutes(&policy)))
+    if (SUCCEEDED(policy_status->get_lastCheckPeriodMinutes(&policy))) {
       AddPolicy(kAutoUpdateCheckPeriodMinutes, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_downloadPreferenceGroupPolicy(&policy)))
+    if (SUCCEEDED(policy_status->get_downloadPreferenceGroupPolicy(&policy))) {
       AddPolicy(kDownloadPreference, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatus4> policy_status4;
@@ -209,8 +212,9 @@ std::unique_ptr<GoogleUpdateState> GetGoogleUpdateState(
 
   DATE last_checked_time;
   last_com_res = policy_status->get_lastCheckedTime(&last_checked_time);
-  if (SUCCEEDED(last_com_res))
+  if (SUCCEEDED(last_com_res)) {
     state->last_checked_time = DateToTime(last_checked_time);
+  }
 
   return state;
 }
@@ -223,8 +227,9 @@ GoogleUpdatePoliciesAndState::~GoogleUpdatePoliciesAndState() = default;
 
 base::Value GetGoogleUpdatePolicyNames() {
   base::Value::List names;
-  for (const auto& key_value : GetGoogleUpdatePolicySchemas())
+  for (const auto& key_value : GetGoogleUpdatePolicySchemas()) {
     names.Append(base::Value(key_value.first));
+  }
   return base::Value(std::move(names));
 }
 

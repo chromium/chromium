@@ -13,12 +13,12 @@ FakeNearbyShareCertificateManager::Factory::~Factory() = default;
 
 std::unique_ptr<NearbyShareCertificateManager>
 FakeNearbyShareCertificateManager::Factory::CreateInstance(
+    std::string user_email,
+    const base::FilePath& profile_path,
+    PrefService* pref_service,
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
     NearbyShareContactManager* contact_manager,
-    NearbyShareProfileInfoProvider* profile_info_provider,
-    PrefService* pref_service,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-    const base::FilePath& profile_path,
     NearbyShareClientFactory* client_factory,
     const base::Clock* clock) {
   auto instance = std::make_unique<FakeNearbyShareCertificateManager>();
@@ -77,7 +77,7 @@ std::optional<NearbySharePrivateCertificate>
 FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
   auto cert = GetNearbyShareTestPrivateCertificate(visibility);
-  cert.next_salts_for_testing() = base::queue<std::vector<uint8_t>>();
+  cert.next_salts_for_testing() = {};
   cert.next_salts_for_testing().push(next_salt_);
   return cert;
 }

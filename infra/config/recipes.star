@@ -120,7 +120,7 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:build_size_trybot",
+    name = "recipe:compile_size_trybot",
 )
 
 build_recipe(

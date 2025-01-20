@@ -864,15 +864,7 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
     return;
   }
 
-  if (!password_manager::features_util::AreAccountStorageOptInPromosAllowed()) {
-    // No need to show a reauth dialog in this case, just enable directly.
-    client->GetPasswordFeatureManager()->OptInToAccountStorage();
-    return;
-  }
-
-  // The enabled pref is automatically set upon successful reauth.
-  client->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSettings, base::DoNothing());
+  client->GetPasswordFeatureManager()->OptInToAccountStorage();
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>

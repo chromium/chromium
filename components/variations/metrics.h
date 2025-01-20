@@ -38,7 +38,8 @@ enum class LoadSeedResult {
   kLoadTimedOut = 7,
   kLoadInterrupted = 8,
   kLoadOtherFailure = 9,
-  kMaxValue = kLoadOtherFailure,
+  kExceedsUncompressedSizeLimit = 10,
+  kMaxValue = kExceedsUncompressedSizeLimit,
 };
 
 // The result of attempting to store a variations seed received from the server.

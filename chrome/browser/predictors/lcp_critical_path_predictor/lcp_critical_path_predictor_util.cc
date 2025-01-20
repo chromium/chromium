@@ -10,10 +10,12 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -31,6 +33,8 @@ const char kCreateProtoTableStatementTemplate[] =
     "key TEXT, "
     "proto BLOB, "
     "PRIMARY KEY(key))";
+const char kPrefetchSubresourceDBBroken[] =
+    "Blink.LCPP.PrefetchSubresource.DBBroken";
 
 // Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
 // The result is sorted with frequency (from high to low).
@@ -970,6 +974,28 @@ bool IsURLValidForLcpp(const GURL& url) {
          url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
+// TODO(crbug.com/380105415): Remove this kill switch after we confirmed that
+// this works fine.
+BASE_FEATURE(kMultipleLcppKeyInitiatorOriginFix,
+             "MultipleLcppKeyInitiatorOriginFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
+  static const bool kMultipleLcppKeyInitiatorOriginFixEnabled =
+      base::FeatureList::IsEnabled(kMultipleLcppKeyInitiatorOriginFix);
+  if (kMultipleLcppKeyInitiatorOriginFixEnabled) {
+    GURL url = initiator_origin.GetURL();
+    return !initiator_origin.opaque() && url.is_valid() &&
+           !initiator_origin.host().empty() && !net::IsLocalhost(url) &&
+           url.SchemeIsHTTPOrHTTPS() &&
+           initiator_origin.host().size() <=
+               ResourcePrefetchPredictorTables::kMaxStringLength;
+  } else {
+    return initiator_origin.host().size() <=
+           ResourcePrefetchPredictorTables::kMaxStringLength;
+  }
+}
+
 std::string GetFirstLevelPath(const GURL& url) {
   CHECK(IsURLValidForLcpp(url));
 
@@ -1089,6 +1115,7 @@ void LcppDataMap::InitializeAfterDBInitialization() {
 bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
                             const GURL& url,
                             const LcppDataInputs& inputs) {
+  TRACE_EVENT("navigation", "LcppDataMap::LearnLcpp");
   CHECK(initialized_);
   if (!IsURLValidForLcpp(url)) {
     return false;
@@ -1099,8 +1126,7 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
   LcppOrigin lcpp_origin;
   const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
   if (use_origin_map) {
-    if (initiator_origin->host().size() >
-        ResourcePrefetchPredictorTables::kMaxStringLength) {
+    if (!IsValidInitiatorOrigin(*initiator_origin)) {
       return false;
     }
     origin_map_->TryGetData(key, &lcpp_origin);
@@ -1167,6 +1193,7 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
 std::optional<LcppStat> LcppDataMap::GetLcppStat(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& url) const {
+  TRACE_EVENT("navigation", "LcppDataMap::GetLcppStat");
   CHECK(initialized_);
   if (!IsURLValidForLcpp(url)) {
     return std::nullopt;
@@ -1178,8 +1205,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
   LcppOrigin lcpp_origin;
   const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
   if (use_origin_map) {
-    if (initiator_origin->host().size() >
-        ResourcePrefetchPredictorTables::kMaxStringLength) {
+    if (!IsValidInitiatorOrigin(*initiator_origin)) {
       return std::nullopt;
     }
     if (!origin_map_->TryGetData(key, &lcpp_origin)) {
@@ -1345,14 +1371,10 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll;
   if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
-    auto network_anonymization_key =
-        net::NetworkAnonymizationKey::CreateSameSite(
-            net::SchemefulSite(url::Origin::Create(url)));
     size_t count = 0;
     for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
       prediction.prefetch_requests.emplace_back(
-          font_url, network_anonymization_key,
-          network::mojom::RequestDestination::kFont);
+          font_url, network::mojom::RequestDestination::kFont);
       ++count;
     }
     base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
@@ -1368,14 +1390,13 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
 
       size_t subresource_urls_same_site = 0;
       size_t subresource_urls_cross_site = 0;
+      bool is_database_broken = false;
       for (const GURL& subresource_url : subresource_urls) {
         const auto destination_it =
             lcpp_stat->fetched_subresource_url_destination().find(
                 subresource_url.spec());
-        // Database is broken.
-        // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
-        // database.
-        const bool is_database_broken =
+        // Check if the database is broken.
+        is_database_broken |=
             (destination_it ==
              lcpp_stat->fetched_subresource_url_destination().end()) ||
             destination_it->second < 0 ||
@@ -1384,9 +1405,8 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
                     network::mojom::RequestDestination::kMaxValue);
         if (is_database_broken) {
           LOG(ERROR) << "fetched_subresource_url_destination is broken.";
-          base::debug::DumpWithoutCrashing();
           DeleteAllData();
-          return;
+          break;
         }
         const network::mojom::RequestDestination destination =
             static_cast<network::mojom::RequestDestination>(
@@ -1407,8 +1427,12 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
           // Once we support cross-site cases, remove the following continue;
           continue;
         }
-        prediction.prefetch_requests.emplace_back(
-            subresource_url, network_anonymization_key, destination);
+        prediction.prefetch_requests.emplace_back(subresource_url, destination);
+      }
+      base::UmaHistogramBoolean(kPrefetchSubresourceDBBroken,
+                                is_database_broken);
+      if (is_database_broken) {
+        return;
       }
       base::UmaHistogramCounts10000(
           "Blink.LCPP.PrefetchSubresource.Count.SameSite",

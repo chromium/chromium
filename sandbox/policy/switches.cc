@@ -6,76 +6,12 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/command_line.h"
-#endif
-
-namespace sandbox {
-namespace policy {
-namespace switches {
+namespace sandbox::policy::switches {
 
 // Type of sandbox to apply to the process running the service, one of the
 // values in the next block.
 const char kServiceSandboxType[] = "service-sandbox-type";
-
-// Must be in sync with "sandbox_type" values as used in service manager's
-// manifest.json catalog files.
-const char kNoneSandbox[] = "none";
-const char kNoneSandboxAndElevatedPrivileges[] = "none_and_elevated";
-const char kNetworkSandbox[] = "network";
-const char kOnDeviceModelExecutionSandbox[] = "on_device_model_execution";
-const char kPpapiSandbox[] = "ppapi";
-const char kUtilitySandbox[] = "utility";
-const char kCdmSandbox[] = "cdm";
-#if BUILDFLAG(ENABLE_PRINTING)
-const char kPrintBackendSandbox[] = "print_backend";
-#endif
-const char kPrintCompositorSandbox[] = "print_compositor";
-const char kAudioSandbox[] = "audio";
-const char kServiceSandbox[] = "service";
-const char kServiceSandboxWithJit[] = "service_with_jit";
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-const char kScreenAISandbox[] = "screen_ai";
-#endif
-const char kVideoEffectsSandbox[] = "video_effects";
-const char kSpeechRecognitionSandbox[] = "speech_recognition";
-const char kVideoCaptureSandbox[] = "video_capture";
-
-#if BUILDFLAG(IS_WIN)
-const char kPdfConversionSandbox[] = "pdf_conversion";
-const char kXrCompositingSandbox[] = "xr_compositing";
-const char kIconReaderSandbox[] = "icon_reader";
-const char kMediaFoundationCdmSandbox[] = "mf_cdm";
-const char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-const char kMirroringSandbox[] = "mirroring";
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-const char kHardwareVideoDecodingSandbox[] = "hardware_video_decoding";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kImeSandbox[] = "ime";
-const char kTtsSandbox[] = "tts";
-const char kNearbySandbox[] = "nearby";
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-const char kLibassistantSandbox[] = "libassistant";
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-const char kOnDeviceTranslationSandbox[] = "on_device_translation";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
-// Flags owned by the service manager sandbox.
 
 // Allows debugging of sandboxed processes (see zygote_main_linux.cc).
 const char kAllowSandboxDebugging[] = "allow-sandbox-debugging";
@@ -113,9 +49,6 @@ const char kNoZygoteSandbox[] = "no-zygote-sandbox";
 // mitigation policy on Win10+. Also has other effects in ELF.
 const char kAllowThirdPartyModules[] = "allow-third-party-modules";
 
-// Add additional capabilities to the AppContainer sandbox on the GPU process.
-const char kAddGpuAppContainerCaps[] = "add-gpu-appcontainer-caps";
-
 // Add additional capabilities to the AppContainer sandbox used for XR
 // compositing.
 const char kAddXrAppContainerCaps[] = "add-xr-appcontainer-caps";
@@ -141,6 +74,4 @@ const char kZygoteProcessType[] = "zygote";
 const char kRelauncherProcessType[] = "relauncher";
 const char kCodeSignCloneCleanupProcessType[] = "code-sign-clone-cleanup";
 
-}  // namespace switches
-}  // namespace policy
-}  // namespace sandbox
+}  // namespace sandbox::policy::switches

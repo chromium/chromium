@@ -7,15 +7,17 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,9 +111,10 @@ class AudioInputDeviceTest
     const uint32_t memory_size =
         ComputeAudioInputBufferSize(params, kMemorySegmentCount);
 
-    shared_memory_ = base::ReadOnlySharedMemoryRegion::Create(memory_size);
+    shared_memory_ = base::UnsafeSharedMemoryRegion::Create(memory_size);
+    shared_memory_mapping_ = shared_memory_.Map();
     ASSERT_TRUE(shared_memory_.IsValid());
-    memset(shared_memory_.mapping.memory(), 0xff, memory_size);
+    memset(shared_memory_mapping_.memory(), 0xff, memory_size);
 
     ASSERT_TRUE(
         CancelableSyncSocket::CreatePair(&browser_socket_, &renderer_socket_));
@@ -127,8 +130,7 @@ class AudioInputDeviceTest
 
     EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
         .WillOnce(InvokeWithoutArgs([&]() {
-          auto duplicated_shared_memory_region =
-              shared_memory_.region.Duplicate();
+          auto duplicated_shared_memory_region = shared_memory_.Duplicate();
           CHECK(duplicated_shared_memory_region.IsValid());
           static_cast<AudioInputIPCDelegate*>(device_.get())
               ->OnStreamCreated(std::move(duplicated_shared_memory_region),
@@ -138,16 +140,17 @@ class AudioInputDeviceTest
     EXPECT_CALL(*capture_callback_, OnCaptureStarted());
     EXPECT_CALL(*input_ipc, CloseStream());
 
-    uint8_t* ptr = static_cast<uint8_t*>(shared_memory_.mapping.memory());
-    AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
-    buffer->params.id = 0;
-    buffer->params.capture_time_us =
+    uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
+    buffer_ = reinterpret_cast<AudioInputBuffer*>(ptr);
+    buffer_->params.id = 0;
+    buffer_->params.capture_time_us =
         (capture_time_ - base::TimeTicks()).InMicroseconds();
-    buffer->params.glitch_duration_us = glitch_info_.duration.InMicroseconds();
-    buffer->params.glitch_count = glitch_info_.count;
+    buffer_->params.glitch_duration_us = glitch_info_.duration.InMicroseconds();
+    buffer_->params.glitch_count = glitch_info_.count;
   }
 
-  base::MappedReadOnlyRegion shared_memory_;
+  base::UnsafeSharedMemoryRegion shared_memory_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   CancelableSyncSocket browser_socket_;
   CancelableSyncSocket renderer_socket_;
   std::optional<AssertingCaptureCallback> capture_callback_;
@@ -156,6 +159,8 @@ class AudioInputDeviceTest
       base::TimeTicks() + base::Microseconds(123);
   const AudioGlitchInfo glitch_info_{.duration = base::Microseconds(20000),
                                      .count = 2};
+  raw_ptr<AudioInputBuffer> buffer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Regular construction.
@@ -216,6 +221,55 @@ TEST_P(AudioInputDeviceTest, CaptureCallback) {
 
   // The capture occurs on another thread, wait for it.
   capture_callback_->WaitForCapture();
+
+  // We expect to get 1 as the confirmation that the AudioInputDevice has read
+  // the buffer.
+  uint32_t confirmation_signal;
+  size_t bytes_read =
+      browser_socket_.Receive(base::byte_span_from_ref(confirmation_signal));
+  EXPECT_EQ(bytes_read, sizeof(confirmation_signal));
+  EXPECT_EQ(confirmation_signal, 1u);
+
+  device_->Stop();
+}
+
+TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
+  base::test::TaskEnvironment ste;
+
+  scoped_feature_list_.InitWithFeatures(
+      {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)}, {});
+
+  CreateInputDevice();
+
+  // Set the confirmation flag to 1. The AudioInputDevice should reset this to 0
+  // after delivering audio.
+  base::subtle::Release_Store(&(buffer_->params.has_unread_data), 1);
+  uint32_t buffer_index = 0;
+  browser_socket_.Send(base::byte_span_from_ref(buffer_index));
+
+  EXPECT_CALL(*capture_callback_, OnCaptureError(_, _)).Times(0);
+  EXPECT_CALL(*capture_callback_, VerifyCapture(capture_time_, glitch_info_));
+
+  device_->Start();
+  ste.RunUntilIdle();
+
+  // The capture occurs on another thread, wait for it.
+  capture_callback_->WaitForCapture();
+
+  // Wait 10 seconds for the confirmation signal to be written to shared memory.
+  // The loop is expected to finish immediately, but we wait 10 seconds to
+  // ensure that the test does not become flaky.
+  base::TimeTicks started_wait = base::TimeTicks::Now();
+  bool got_confirmation_signal = false;
+  while (!got_confirmation_signal &&
+         base::TimeTicks::Now() - started_wait < base::Seconds(10)) {
+    got_confirmation_signal =
+        base::subtle::NoBarrier_Load(&(buffer_->params.has_unread_data)) == 0;
+  }
+  EXPECT_TRUE(got_confirmation_signal);
+
+  // When the optimization is enabled, we don't send confirmation signals.
+  EXPECT_EQ(browser_socket_.Peek(), 0u);
 
   device_->Stop();
 }

@@ -141,7 +141,8 @@ class MidiHostTest : public testing::Test {
         std::make_unique<FakeMidiManagerFactory>();
     factory_ = factory->GetWeakPtr();
     service_ = std::make_unique<midi::MidiService>(std::move(factory));
-    host_ = std::make_unique<MidiHostForTesting>(rph_->GetID(), service_.get());
+    host_ = std::make_unique<MidiHostForTesting>(rph_->GetDeprecatedID(),
+                                                 service_.get());
     mojo::PendingRemote<midi::mojom::MidiSessionClient> client_remote;
     mojo::MakeSelfOwnedReceiver(std::make_unique<MidiSessionClientForTesting>(),
                                 client_remote.InitWithNewPipeAndPassReceiver());

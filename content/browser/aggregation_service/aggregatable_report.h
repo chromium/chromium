@@ -47,9 +47,8 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   // The default aggregation coordinator origin will be used if
   // `aggregation_coordinator_origin` is `std::nullopt`.
   // `max_contributions_allowed` specifies the maximum number of contributions
-  // per report for use in padding. `filtering_id_bit_size` specifies how many
-  // bits should be used for the filtering ID encoding; if `std::nullopt`, the
-  // filtering ID must be omitted from the payload.
+  // per report for use in padding. `filtering_id_max_bytes` specifies how many
+  // bytes should be used for the filtering ID encoding.
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
@@ -57,7 +56,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
       base::StrictNumeric<size_t> max_contributions_allowed,
-      std::optional<size_t> filtering_id_max_bytes);
+      size_t filtering_id_max_bytes);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -74,7 +73,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
   size_t max_contributions_allowed;
-  std::optional<size_t> filtering_id_max_bytes;
+  size_t filtering_id_max_bytes;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -275,7 +274,7 @@ class CONTENT_EXPORT AggregatableReport {
 
   static std::optional<size_t> ComputeTeeBasedPayloadLengthInBytesForTesting(
       size_t num_contributions,
-      std::optional<size_t> filtering_id_max_bytes);
+      size_t filtering_id_max_bytes);
 
  private:
   // This vector should have an entry for each processing URL specified in
@@ -336,8 +335,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
   //   * Any contribution in `payload_contents` has a negative value.
   //
   //   * Any contribution's filtering ID does not fit in the given
-  //     `payload_contents.filtering_id_max_bytes`. (If the given max bytes is
-  //     null, only null filtering IDs are considered to 'fit'.)
+  //     `payload_contents.filtering_id_max_bytes`.
   //
   //   * `payload_contents.filtering_id_max_bytes` contains a value that is
   //     either non-positive or greater than `kMaximumFilteringIdMaxBytes`.

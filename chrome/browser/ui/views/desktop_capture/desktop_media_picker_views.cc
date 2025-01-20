@@ -103,10 +103,6 @@ DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
 }
 #endif
 
-BASE_FEATURE(kWarnUserOfSystemWideLocalAudioSuppression,
-             "WarnUserOfSystemWideLocalAudioSuppression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GDMResult {
@@ -371,7 +367,7 @@ DesktopMediaPickerDialogView::DisplaySurfaceCategory::
 
 DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
-    DesktopMediaPickerViews* parent,
+    DesktopMediaPickerImpl* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
     : web_contents_(params.web_contents),
       request_source_(params.request_source),
@@ -405,8 +401,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
-        if (dialog->parent_)
+        if (dialog->parent_) {
           dialog->parent_->NotifyDialogResult(DesktopMediaID());
+        }
       },
       this));
 
@@ -592,7 +589,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         break;
       }
     }
-    tabbed_pane->set_listener(this);
+    tabbed_pane->SetListener(this);
     tabbed_pane->SetFocusBehavior(views::View::FocusBehavior::NEVER);
     tabbed_pane_ = AddChildView(std::move(tabbed_pane));
   } else {
@@ -679,8 +676,9 @@ void DesktopMediaPickerDialogView::RecordUmaDismissal() const {
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
-  if (previously_selected_category_ == index)
+  if (previously_selected_category_ == index) {
     return;
+  }
   ConfigureUIForNewPane(index);
   categories_[previously_selected_category_].controller->HideView();
   categories_[index].controller->FocusView();
@@ -772,9 +770,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
 
   switch (category.type) {
     case DesktopMediaList::Type::kScreen: {
-      bool show_warning = suppress_local_audio_playback_ &&
-                          base::FeatureList::IsEnabled(
-                              kWarnUserOfSystemWideLocalAudioSuppression);
+      bool show_warning = suppress_local_audio_playback_;
       if (request_source_ == RequestSource::kGetDisplayMedia &&
           !base::FeatureList::IsEnabled(
               ::kSuppressLocalAudioPlaybackForSystemAudio)) {
@@ -990,8 +986,9 @@ bool DesktopMediaPickerDialogView::Accept() {
   RecordSourceCountsUma();
   RecordTabDiscardedStatusUma(source);
 
-  if (parent_)
+  if (parent_) {
     parent_->NotifyDialogResult(source);
+  }
 
   // Return true to close the window.
   return true;
@@ -1036,22 +1033,6 @@ void DesktopMediaPickerDialogView::Reject() {
 
 void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   PreferredSizeChanged();
-  // TODO(pbos): Ideally this would use shared logic similar to
-  // BubbleDialogDelegateView::SizeToContents() instead of implementing sizing
-  // logic in-place.
-  const gfx::Size new_size = GetWidget()->GetRootView()->GetPreferredSize();
-  if (GetModalType() == ui::mojom::ModalType::kChild) {
-    // For the web-modal dialog resize the dialog in place.
-    // TODO(pbos): This should ideally use UpdateWebContentsModalDialogPosition
-    // to keep the widget centered horizontally. As this dialog is fixed-width
-    // we're effectively only changing the height, so reusing the current
-    // widget origin should be equivalent.
-    GetWidget()->SetSize(new_size);
-    return;
-  }
-
-  // When not using the web-modal dialog, center the dialog with its new size.
-  GetWidget()->CenterWindow(new_size);
 }
 
 void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
@@ -1093,8 +1074,9 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
   // working it's way back to us after we've switched controllers. If that's the
   // case, then the state will be updated the next time that controller is
   // active, but we shouldn't update it just now.
-  if (controller != GetSelectedController() || !reselect_button_)
+  if (controller != GetSelectedController() || !reselect_button_) {
     return;
+  }
 
   reselect_button_->SetEnabled(controller->can_reselect());
 }
@@ -1144,9 +1126,9 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
 BEGIN_METADATA(DesktopMediaPickerDialogView)
 END_METADATA
 
-DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
+DesktopMediaPickerImpl::DesktopMediaPickerImpl() : dialog_(nullptr) {}
 
-DesktopMediaPickerViews::~DesktopMediaPickerViews() {
+DesktopMediaPickerImpl::~DesktopMediaPickerImpl() {
   if (dialog_) {
     if (request_source_ == RequestSource::kGetDisplayMedia) {
       dialog_->RecordUmaDismissal();
@@ -1156,7 +1138,7 @@ DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   }
 }
 
-void DesktopMediaPickerViews::Show(
+void DesktopMediaPickerImpl::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
@@ -1168,15 +1150,16 @@ void DesktopMediaPickerViews::Show(
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
 }
 
-void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
+void DesktopMediaPickerImpl::NotifyDialogResult(const DesktopMediaID& source) {
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();
   dialog_ = nullptr;
 
   DesktopMediaPickerManager::Get()->OnHideDialog();
 
-  if (callback_.is_null())
+  if (callback_.is_null()) {
     return;
+  }
 
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.
@@ -1190,8 +1173,8 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
   if (request &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    return std::make_unique<ShareThisTabDialogViews>();
+    return std::make_unique<ShareThisTabMediaPicker>();
   } else {
-    return std::make_unique<DesktopMediaPickerViews>();
+    return std::make_unique<DesktopMediaPickerImpl>();
   }
 }

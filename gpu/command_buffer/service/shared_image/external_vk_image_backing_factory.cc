@@ -38,16 +38,8 @@ BASE_FEATURE(kRestrictExternalVkImageBackingScanoutSupportToFuchsia,
 // TODO(crbug.com/330865436): Eliminate once killswitches checked within this
 // function roll out safely.
 bool RestrictScanoutSupportToFuchsia() {
-  // Restricting SCANOUT support here requires that SW VideoFrames are
-  // guarding their addition of SCANOUT usage by SCANOUT support being present
-  // in SharedImageCapabilities.
-  if (!base::FeatureList::IsEnabled(
-          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_OZONE)
-  // On Ozone, It also requires that we are computing SCANOUT support in
+  // On Ozone, this requires that we are computing SCANOUT support in
   // SharedImageCapabilities by overlays being supported rather than the
   // too-generous native pixmaps being supported.
   if (!base::FeatureList::IsEnabled(
@@ -188,7 +180,7 @@ SharedImageUsageSet SupportedUsage() {
       SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_VIDEO_DECODE |
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-      SHARED_IMAGE_USAGE_CPU_WRITE;
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 
   if (RestrictScanoutSupportToFuchsia()) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -328,7 +320,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE)) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
       // Only CPU writable when the client provides a NativePixmap.
       return false;
     }

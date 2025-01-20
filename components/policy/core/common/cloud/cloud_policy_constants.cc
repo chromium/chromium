@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_switches.h"
 
 namespace policy {
@@ -38,6 +37,7 @@ const char kOAuthTokenHeaderPrefix[] = "OAuth";
 const char kOidcAuthHeaderPrefix[] = "GoogleDM3PAuth";
 const char kOidcAuthTokenHeaderPrefix[] = " oauth_token=";
 const char kOidcIdTokenHeaderPrefix[] = " id_token=";
+const char kOidcEncryptedUserInfoPrefix[] = " encrypted_user_information=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
@@ -83,7 +83,7 @@ const char kValueRequestFmRegistrationTokenUpload[] =
     "fm_registration_token_upload";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
 #elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";

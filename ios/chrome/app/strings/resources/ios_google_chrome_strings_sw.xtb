@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1066101356081285416">Chrome itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Namba ya ufuatiliaji wa kifurushi na jina la tovuti zitatumwa kwenye Google ili kutoa kipengele hiki na kuboresha vipengele vya ununuzi vya Google kwa kila mtu. Unaweza kusasisha mchakato huu wakati wowote katika <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome hufungua kiotomatiki viungo vya Faraghani vya YouTube katika hali ya Faraghani.</translation>
 <translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
 <translation id="1143896152279775643">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Fungua kichupo kipya kwenye Chrome</translation>
@@ -11,7 +12,6 @@
 <translation id="1200396280085622191">Tumia Chrome wakati wowote unapogusa viungo kwenye ujumbe na programu zingine.</translation>
 <translation id="1229222343402087523">Tafuta ${searchPhrase} kwenye Chrome</translation>
 <translation id="1237769345474105984">Kutoka Chrome</translation>
-<translation id="1240190568154816272">Vidokezo vya Chrome</translation>
 <translation id="124228879633599436">Toleo lako la Chrome limepitwa na wakati. Lisasishe ili uimarishe usalama.</translation>
 <translation id="1333745675627230582">Cheza Mchezo wa Dinosau wa Chrome</translation>
 <translation id="1352919863522755794">Kidhibiti cha Manenosiri cha Google hakikuweza kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
@@ -38,6 +38,7 @@ Mambo ya kuzingatia:
 <translation id="1646463005043273333">Hufungua Mipangilio ya Chrome ili uifanye Chrome iwe kivinjari chaguomsingi.</translation>
 <translation id="1670609221633730681">Kidokezo cha Chrome: Chagua nafasi ya sehemu ya anwani yako</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Hifadhi Manenosiri Yako katika Chrome</translation>
 <translation id="1790080846677398234">Huweka URL zinazowekwa kwenye alamisho zako katika Chrome.</translation>
 <translation id="1799920918471566157">Vidokezo vya Chrome</translation>
 <translation id="1830634592642484976">Anwani hii kwa sasa imehifadhiwa kwenye Chrome. Ili uitumie kwenye bidhaa za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
@@ -109,6 +110,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="3655656110921623717">Hii inamaanisha kwamba Chrome itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
 <translation id="3740397331642243698">Hufungua URL zilizowekwa kwenye Google Chrome katika Hali Fiche.</translation>
 <translation id="3741995255368156336">Hufungua Orodha ya Kusoma ya Chrome.</translation>
+<translation id="3808570423967020928">Kufikia Chrome kwa haraka zaidi katika sehemu ya Kupachika kwenye Skrini ya Kwanza.</translation>
 <translation id="3827545470516145620">Unapata ulinzi wa kawaida kwenye kifaa hiki</translation>
 <translation id="384394811301901750">Google Chrome haiwezi kutumia kamera hivi sasa</translation>
 <translation id="3863841106411295595">Huweka URL zilizowekwa kwenye orodha yako ya kusoma katika Chrome.</translation>
@@ -125,6 +127,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="4636900170638246267">Ingia katika akaunti kwenye tovuti hii na kwenye Chrome.</translation>
 <translation id="4646014602299206846">Chrome itatambua namba za ufuatiliaji wa kifurushi zilizo kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa kichupo kipya. Data yako itatumwa kwenda Google ili kutoa kipengele hiki na kuboresha hali ya Ununuzi kwa kila mtu.</translation>
 <translation id="4647910807533196601">Fungua Kichupo changu kipya zaidi kwenye Chrome.</translation>
+<translation id="4693084815234024320">Unatumia Chrome katika hali ya Faraghani</translation>
 <translation id="4724297637870447613">Tumia Chrome kila mahali</translation>
 <translation id="4738647308035481133">Ukurasa wa Google Chrome</translation>
 <translation id="4742795653798179840">Umefuta data ya Chrome</translation>
@@ -219,9 +222,12 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 
 Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, nenda kwenye <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Futa data ya kuvinjari kwenye Chrome.</translation>
+<translation id="6924922227983877439">Fungua viungo katika Chrome kwa Chaguomsingi</translation>
+<translation id="6931601805528922498">Kuingia kwenye akaunti huweka akaunti yako kwenye Chrome ili uvinjari mambo yanayohusiana na kazi.</translation>
 <translation id="6975725306479268850">Chagua Chrome ili Ujaze Kiotomatiki</translation>
 <translation id="7056826488869329999">Hufungua na Kufanya Ukaguzi wa Usalama kwenye Chrome.</translation>
 <translation id="7061455974939528301">Bonyeza na ushikilie aikoni ya Chrome kisha ubofye "Badilisha skrini ya kwanza"</translation>
+<translation id="7065813315247345131">Hamishia Chrome kwenye Sehemu ya kupachika</translation>
 <translation id="7124339256045485976">Hakikisha Chrome imesasishwa kila wakati</translation>
 <translation id="7161390184744336561">Toleo la Google Chrome limepitwa na wakati</translation>
 <translation id="7165736900384873061">Anza kutumia kichanganuzi cha QR cha Google Chrome</translation>

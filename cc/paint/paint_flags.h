@@ -99,7 +99,9 @@ class CC_PAINT_EXPORT CorePaintFlags {
   // Represents a weighted arithmetic mean of "standard", "constrained-high" and
   // "high" in log-luminance space (which is equivalent to a geometric mean in
   // linear luminance).
-  struct DynamicRangeLimitMixture {
+  struct CC_PAINT_EXPORT DynamicRangeLimitMixture {
+    // The default constructor is equivalent to DynamicRangeLimit::kHigh.
+    DynamicRangeLimitMixture() = default;
     explicit DynamicRangeLimitMixture(DynamicRangeLimit limit) {
       switch (limit) {
         case DynamicRangeLimit::kStandard:
@@ -117,6 +119,7 @@ class CC_PAINT_EXPORT CorePaintFlags {
           constrained_high_mix(constrained_high_mix) {}
     friend bool operator==(const DynamicRangeLimitMixture&,
                            const DynamicRangeLimitMixture&) = default;
+    float ComputeHdrHeadroom(float target_hdr_headroom) const;
     float standard_mix = 0.f;
     float constrained_high_mix = 0.f;
     // The weight for "high" is implicit and calculated as "one minus the

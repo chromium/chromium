@@ -32,7 +32,7 @@ for the previous order (main_preferences_legacy). -->
         android:order="4"
         android:layout="@layout/account_management_account_row"
         android:title="@string/prefs_google_services"
-        android:icon="@drawable/ic_google_services_48dp"
+        android:icon="@drawable/ic_google_services_48dp_with_bg"
         android:fragment="org.chromium.chrome.browser.sync.settings.GoogleServicesSettings"/>
 
     <PreferenceCategory
@@ -130,7 +130,7 @@ for the previous order (main_preferences_legacy). -->
         android:order="23"
         android:title="@string/theme_settings" />
     <Preference
-        android:fragment="org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings"
+        android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
         android:order="24"
         android:title="@string/prefs_accessibility"/>

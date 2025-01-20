@@ -17,7 +17,6 @@ items:
 - caption: Only prompt the user when no certificate matches the auto-selection.
   value: false
 owners:
-- emaxx@chromium.org
 - miersh@google.com
 schema:
   type: boolean

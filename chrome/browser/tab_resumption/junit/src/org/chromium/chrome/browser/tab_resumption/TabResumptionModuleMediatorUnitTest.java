@@ -692,7 +692,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
     }
 
     private void testMaxTilesNumberImpl(int maxTilesNumber) {
-        TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.setForTesting(maxTilesNumber);
+        ChromeFeatureList.sTabResumptionModuleAndroidMaxTilesNumber.setForTesting(maxTilesNumber);
         List<SuggestionEntry> suggestions =
                 Arrays.asList(makeSyncDerivedSuggestion(1), makeSyncDerivedSuggestion(0));
 

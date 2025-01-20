@@ -3,7 +3,7 @@ Short Name: swift-toolchain
 URL: https://www.swift.org/download/
 Version: 5.10.1
 Date: 2024-06-05
-License: Apache 2.0
+License: Apache-with-Runtime-Exception
 License File: LICENSE
 Security Critical: no
 Shipped: no

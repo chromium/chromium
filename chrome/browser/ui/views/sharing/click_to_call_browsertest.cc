@@ -520,10 +520,11 @@ IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {
 
   std::optional<std::string> extracted =
       ExtractPhoneNumberForClickToCall(browser()->profile(), kPhoneNumber);
-  if (expected_enabled)
+  if (expected_enabled) {
     EXPECT_EQ(kPhoneNumber, extracted.value());
-  else
+  } else {
     EXPECT_FALSE(extracted.has_value());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

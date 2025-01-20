@@ -156,10 +156,8 @@ void FederatedServiceControllerImpl::OnLoginStatusChanged(
     federated::ServiceConnection::GetInstance()->BindReceiver(
         federated_service_.BindNewPipeAndPassReceiver());
 
-    if (features::IsFederatedServiceScheduleTasksEnabled()) {
-      federated_service_->StartSchedulingWithConfig(
-          PrepareClientScheduleConfigs());
-    }
+    federated_service_->StartSchedulingWithConfig(
+        PrepareClientScheduleConfigs());
 
     // On session first login, reports one example for "timezone_code_phh", a
     // trivial F.A. task for prove-out purpose.

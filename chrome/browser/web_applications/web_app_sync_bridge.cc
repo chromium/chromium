@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -125,6 +126,11 @@ ValidateManifestIdFromParsableSyncEntity(
 BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
              "DeleteBadWebAppSyncEntitites",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable the migration from shortcut apps to diy apps.
+BASE_FEATURE(kMigrateShortcutsToDiy,
+             "MigrateShortcutsToDiy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
@@ -361,7 +367,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInRegistrar(app_id)) {
     return;
   }
   if (web_app) {
@@ -380,7 +386,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
   // called before the app is installed in the web apps system. Until apps are
   // no longer double-installed on both systems, ignore this case.
   // https://crbug.com/1101781
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInRegistrar(app_id)) {
     return;
   }
   WebApp* web_app = update->UpdateApp(app_id);
@@ -396,7 +402,10 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
 void WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen(
     const webapps::AppId& app_id,
     bool show) {
-  if (!registrar_->IsInstalled(app_id)) {
+  if (!registrar_->IsInstallState(
+          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return;
   }
   {
@@ -491,11 +500,6 @@ void WebAppSyncBridge::UpdateRegistrar(
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     webapps::AppId app_id = web_app->app_id();
     DCHECK(!registrar_->GetAppById(app_id));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // We do not install non-system web apps in Ash when Lacros web apps are
-    // enabled.
-    DCHECK(web_app->IsSystemApp() || !IsWebAppsCrosapiEnabled());
-#endif
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
@@ -577,6 +581,9 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   // Do database migrations to ensure apps are valid before notifying anything
   // else that the sync bridge is ready.
+  if (base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
+    EnsureShortcutAppToDiyAppMigration();
+  }
   EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   EnsurePartiallyInstalledAppsHaveCorrectStatus();
 
@@ -606,6 +613,33 @@ void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
           ->SetUserDisplayMode(ToMojomUserDisplayMode(udm));
     }
   }
+}
+
+void WebAppSyncBridge::EnsureShortcutAppToDiyAppMigration() {
+  web_app::ScopedRegistryUpdate update = BeginUpdate();
+  int shortcut_to_diy_apps = 0;
+  for (const webapps::AppId& app_id : registrar().GetAppIds()) {
+    WebApp* app_to_update = update->UpdateApp(app_id);
+    bool is_shortcut = app_to_update->scope().is_empty() ||
+                       (app_to_update->latest_install_source().has_value() &&
+                        app_to_update->latest_install_source() ==
+                            webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+    if (is_shortcut) {
+      app_to_update->SetIsDiyApp(true);
+      // Shortcut apps are separated from other web apps based on the fact that
+      // they have an empty scope. DIY apps do not have that distinction, so
+      // populate the scope from the start_url of the web app.
+      if (!app_to_update->scope().is_valid()) {
+        CHECK(app_to_update->start_url().is_valid());
+        GURL scope(app_to_update->start_url().GetWithoutFilename());
+        app_to_update->SetScope(scope);
+      }
+      app_to_update->SetWasShortcutApp(true);
+      shortcut_to_diy_apps++;
+    }
+  }
+  base::UmaHistogramCounts1000("WebApp.Migrations.ShortcutAppsToDiy",
+                               shortcut_to_diy_apps);
 }
 
 void WebAppSyncBridge::EnsurePartiallyInstalledAppsHaveCorrectStatus() {

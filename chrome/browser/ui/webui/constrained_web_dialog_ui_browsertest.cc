@@ -35,7 +35,8 @@ using web_modal::WebContentsModalDialogManager;
 
 namespace {
 
-static const char kTestDataURL[] = "data:text/html,<!doctype html>"
+static const char kTestDataURL[] =
+    "data:text/html,<!doctype html>"
     "<body></body>"
     "<style>"
     "body { height: 150px; width: 150px; }"
@@ -47,8 +48,10 @@ bool IsEqualSizes(gfx::Size expected,
 }
 
 std::string GetChangeDimensionsScript(int dimension) {
-  return base::StringPrintf("window.document.body.style.width = %d + 'px';"
-      "window.document.body.style.height = %d + 'px';", dimension, dimension);
+  return base::StringPrintf(
+      "window.document.body.style.width = %d + 'px';"
+      "window.document.body.style.height = %d + 'px';",
+      dimension, dimension);
 }
 
 class AutoResizingTestWebDialogDelegate
@@ -56,7 +59,7 @@ class AutoResizingTestWebDialogDelegate
  public:
   explicit AutoResizingTestWebDialogDelegate(const GURL& url)
       : TestWebDialogDelegate(url) {}
-  ~AutoResizingTestWebDialogDelegate() override {}
+  ~AutoResizingTestWebDialogDelegate() override = default;
 
   // Dialog delegates for auto-resizing dialogs are expected not to set |size|.
   void GetDialogSize(gfx::Size* size) const override {}
@@ -66,7 +69,7 @@ class AutoResizingTestWebDialogDelegate
 
 class ConstrainedWebDialogBrowserTest : public InProcessBrowserTest {
  public:
-  ConstrainedWebDialogBrowserTest() {}
+  ConstrainedWebDialogBrowserTest() = default;
 
   // Runs the current MessageLoop until |condition| is true or timeout.
   bool RunLoopUntil(base::RepeatingCallback<bool()> condition) {

@@ -50,8 +50,7 @@ void JNI_DomDistillerTabUtils_DistillAndView(
   ::DistillAndView(source_web_contents, destination_web_contents);
 }
 
-ScopedJavaLocalRef<jstring>
-JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
+std::u16string JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -63,10 +62,9 @@ JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
   // Note that we can't unescape spaces here, because if the user copies this
   // and pastes it into another program, that program may think the URL ends at
   // the space.
-  return base::android::ConvertUTF16ToJavaString(
-      env, url_formatter::FormatUrl(url, url_formatter::kFormatUrlOmitDefaults,
-                                    base::UnescapeRule::NORMAL, nullptr,
-                                    nullptr, nullptr));
+  return url_formatter::FormatUrl(url, url_formatter::kFormatUrlOmitDefaults,
+                                  base::UnescapeRule::NORMAL, nullptr, nullptr,
+                                  nullptr);
 }
 
 jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {

@@ -8,12 +8,10 @@ import contextlib
 import functools
 import json
 import logging
-import os
 import optparse
 import signal
 import subprocess
 import sys
-import textwrap
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -24,12 +22,12 @@ from blinkpy.common.host import Host
 from blinkpy.common.system import command_line
 from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
-from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests import product
 from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
+from blinkpy.wpt_tests.wpt_results_processor import WPTResultsProcessor
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
@@ -60,16 +58,10 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         return f'virtual/{subsuite}{test_name}' if subsuite else test_name[1:]
 
     def log(self, data):
-        offset = datetime.now() - self._start
-        minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
-        hours, minutes = divmod(minutes, 60)
-        milliseconds, _ = divmod(offset.microseconds, 1000)
-        # A relative timestamp is more useful for comparing event timings than
-        # an absolute one.
-        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}.{int(milliseconds):03}'
+        timestamp = datetime.now().isoformat(sep=' ', timespec='milliseconds')
         # Place mandatory fields first so that logs are vertically aligned as
         # much as possible.
-        message = f'{timestamp} {data["level"]}: {data["message"]}'
+        message = f'{timestamp} {data["level"]} {data["message"]}'
         if 'stack' in data:
             message = f'{message}\n{data["stack"]}'
         return self.generate_output(text=message + '\n')
@@ -121,7 +113,9 @@ class StructuredLogAdapter(logging.Handler):
         self._logger = logger
         self._fallback_handler = logging.StreamHandler()
         self._fallback_handler.setFormatter(
-            logging.Formatter('%(name)s %(levelname)s %(message)s'))
+            logging.Formatter(
+                fmt='%(asctime)s.%(msecs)03d %(levelname)s %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'))
 
     def emit(self, record):
         log = getattr(self._logger, record.levelname.lower(),
@@ -148,7 +142,7 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
-        self._processor = WPTResultsProcessor(
+        self.processor = WPTResultsProcessor(
             self.fs,
             self.port,
             artifacts_dir=self.port.artifacts_directory(),
@@ -505,10 +499,10 @@ class WPTAdapter:
                 'run_info': {
                     'virtual_suite': subsuite_name,
                 },
-                'include': tests,
+                'include': sorted(tests),
             }
             subsuite_json[subsuite_name] = subsuite
-        return include_tests, subsuite_json
+        return sorted(include_tests), subsuite_json
 
     def _set_up_runner_tests(self, runner_options, tmp_dir):
         if not self.using_upstream_wpt:
@@ -525,9 +519,9 @@ class WPTAdapter:
             runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
-            self._processor.failure_threshold = self.port.max_allowed_failures(
+            self.processor.failure_threshold = self.port.max_allowed_failures(
                 len(include_tests))
-            self._processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
+            self.processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
                 len(include_tests))
 
             # sharding is done inside wrapper
@@ -567,7 +561,8 @@ class WPTAdapter:
                 name, value = string_variable.split('=', 1)
                 logger.info('Setting environment variable %s to %s', name,
                             value)
-                os.environ[name] = value
+                self.host.environ[name] = value
+            self.host.environ['FONTCONFIG_SYSROOT'] = self.port.build_path()
 
             if self.using_upstream_wpt:
                 tests_root = self.tools_root
@@ -609,6 +604,7 @@ class WPTAdapter:
 
     def run_tests(self) -> int:
         exit_code = 0
+        show_results = self.port.get_option('show_results')
         try:
             with self.test_env() as runner_options:
                 run = _load_entry_point()
@@ -616,11 +612,15 @@ class WPTAdapter:
         except KeyboardInterrupt:
             logger.critical('Harness exited after signal interrupt')
             exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
+            show_results = False
         # Write the partial results for an interrupted run. This also ensures
         # the results directory is rotated next time.
-        self._processor.copy_results_viewer()
-        results_json = self._processor.process_results_json(
+        self.processor.copy_results_viewer()
+        results_json = self.processor.process_results_json(
             self.port.get_option('json_test_results'))
+        if show_results and self.processor.num_initial_failures > 0:
+            self.port.show_results_html_file(
+                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         return exit_code or int(results_json['num_regressions'] > 0)
 
     def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
@@ -650,39 +650,17 @@ class WPTAdapter:
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
 
-        # Chromium embeds the `//third_party/fontconfig/` library to load fonts.
-        # Add a config [0] to discover test fonts copied from
-        # `//third_party/test_fonts/`.
-        #
-        # [0]: https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
-        test_fonts_dir = self.port.build_path('test_fonts')
-        font_config = textwrap.dedent(f"""\
-            <?xml version="1.0"?>
-            <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-            <fontconfig>
-              <dir>{test_fonts_dir}</dir>
-            </fontconfig>
-            """)
-        font_config_path = self.fs.join(tmp_dir, 'fontconfig', 'fonts.conf')
-        self.fs.maybe_make_directory(self.fs.dirname(font_config_path))
-        self.fs.write_text_file(font_config_path, font_config)
-        self.host.environ['XDG_CONFIG_HOME'] = tmp_dir
-
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
         if self.using_upstream_wpt:
             yield
         else:
-            with self._processor.stream_results() as events:
+            with self.processor.stream_results() as events:
                 runner_options.log.add_handler(events.put)
                 yield
         if runner_options.log_wptreport:
-            self._processor.process_wpt_report(
+            self.processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)
-        if (self.port.get_option('show_results')
-                and self._processor.num_initial_failures > 0):
-            self.port.show_results_html_file(
-                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         if self.options.reset_results:
             self._optimize(runner_options)
 
@@ -812,8 +790,9 @@ def main(argv) -> int:
         sys.stdout.reconfigure(encoding='utf-8')
         sys.stderr.reconfigure(encoding='utf-8')
 
+    host = Host()
     # Also apply utf-8 mode to python subprocesses.
-    os.environ['PYTHONUTF8'] = '1'
+    host.environ['PYTHONUTF8'] = '1'
 
     # Convert SIGTERM to be handled as KeyboardInterrupt to handle early termination
     # Same handle is declared later on in wptrunner
@@ -821,7 +800,6 @@ def main(argv) -> int:
     # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
     handle_interrupt_signals()
 
-    host = Host()
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)

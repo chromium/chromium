@@ -48,6 +48,8 @@ const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {
       return "Allocating a buffer failed.";
     case EncoderStatus::Codes::kEncoderAccelerationSupportMissing:
       return "No hardware encoder is available.";
+    case EncoderStatus::Codes::kOutOfPlatformEncoders:
+      return "The system ran out of platform encoders.";
     case EncoderStatus::Codes::kOk:
       NOTREACHED();
   }

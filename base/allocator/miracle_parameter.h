@@ -166,7 +166,7 @@ Enum GetMiracleParameterAsEnum(
                                    default_value, type, options)            \
   type function_name() {                                                    \
     static const type value = miracle_parameter::GetMiracleParameterAsEnum( \
-        feature, param_name, default_value, base::make_span(options));      \
+        feature, param_name, default_value, base::span(options));           \
     return value;                                                           \
   }
 

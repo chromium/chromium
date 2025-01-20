@@ -109,21 +109,21 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
   SearchParams search_params;
   search_params.word_match_required_term_ratio = 0.0f;
 
-  UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
-  url_data.url_passages.passages.add_passages("some deterministic passage");
-  url_data.url_passages.passages.add_passages("more text in another passage");
-  url_data.url_passages.passages.add_passages(
+  UrlData url_data(1, 1, base::Time::Now());
+  url_data.passages.add_passages("some deterministic passage");
+  url_data.passages.add_passages("more text in another passage");
+  url_data.passages.add_passages(
       "some deterministic passage with non-ASCII ∅ character");
-  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
-  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(1));
-  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(2));
+  url_data.embeddings.push_back(DeterministicEmbedding(0));
+  url_data.embeddings.push_back(DeterministicEmbedding(1));
+  url_data.embeddings.push_back(DeterministicEmbedding(2));
 
   Embedding query_embedding = DeterministicEmbedding(0);
-  float score = url_data.url_embeddings.BestScoreWith(
-      search_info, search_params, query_embedding,
-      url_data.url_passages.passages, 0);
+  UrlScore url_score =
+      url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
   EXPECT_EQ(search_info.skipped_nonascii_passage_count, 1u);
-  EXPECT_FLOAT_EQ(score, 1.0f);
+  EXPECT_FLOAT_EQ(url_score.score, 1.0f);
+  EXPECT_FLOAT_EQ(url_score.word_match_score, 0.0f);
 
   // This test checks basic properties of score boosting, for example that
   // query terms can be spread across multiple separate passages.
@@ -133,27 +133,27 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
       "passage",
       "absent",
   };
-  float boosted_score = url_data.url_embeddings.BestScoreWith(
-      search_info, search_params, query_embedding,
-      url_data.url_passages.passages, 0);
-  EXPECT_LT(score, boosted_score);
+  UrlScore boosted_score =
+      url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
+  EXPECT_LT(url_score.score, boosted_score.score);
+  EXPECT_FLOAT_EQ(url_score.score,
+                  boosted_score.score - boosted_score.word_match_score);
 
   search_params.word_match_max_term_count = 5;
   search_params.query_terms = {
       "some", "passage", "more", "another", "absent",
   };
-  float across_score = url_data.url_embeddings.BestScoreWith(
-      search_info, search_params, query_embedding,
-      url_data.url_passages.passages, 0);
-  EXPECT_LT(boosted_score, across_score);
+  UrlScore across_score =
+      url_data.BestScoreWith(search_info, search_params, query_embedding, 0);
+  EXPECT_LT(boosted_score.score, across_score.score);
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearest) {
   VectorDatabaseInMemory database;
   for (size_t i = 0; i < 10; i++) {
-    UrlPassagesEmbeddings url_data(i + 1, i + 1, base::Time::Now());
-    url_data.url_passages.passages.add_passages("some deterministic passage");
-    url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(i));
+    UrlData url_data(i + 1, i + 1, base::Time::Now());
+    url_data.passages.add_passages("some deterministic passage");
+    url_data.embeddings.push_back(DeterministicEmbedding(i));
     database.AddUrlData(url_data);
   }
   SearchParams search_params;
@@ -186,22 +186,21 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   auto no = base::BindRepeating([]() { return false; });
   VectorDatabaseInMemory database;
 
-  UrlPassagesEmbeddings url_data1(1, 1, base::Time::Now());
-  url_data1.url_passages.passages.add_passages("some deterministic passage");
-  url_data1.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+  UrlData url_data1(1, 1, base::Time::Now());
+  url_data1.passages.add_passages("some deterministic passage");
+  url_data1.embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data1);
 
-  UrlPassagesEmbeddings url_data2(2, 2, base::Time::Now());
-  url_data2.url_passages.passages.add_passages(
-      "hello hello world world world world world");
-  url_data2.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+  UrlData url_data2(2, 2, base::Time::Now());
+  url_data2.passages.add_passages("hello hello world world world world world");
+  url_data2.embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data2);
 
   // Including a non-ASCII passage to demonstrate safe internal CHECKs.
-  UrlPassagesEmbeddings url_data3(3, 3, base::Time::Now());
-  url_data3.url_passages.passages.add_passages(
+  UrlData url_data3(3, 3, base::Time::Now());
+  url_data3.passages.add_passages(
       "this is some deterministic non-ASCII passage, scores ∅, gets skipped");
-  url_data3.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+  url_data3.embeddings.push_back(DeterministicEmbedding(0));
   database.AddUrlData(url_data3);
 
   SearchParams search_params;
@@ -210,6 +209,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   search_params.word_match_score_boost_factor = 0.1;
   search_params.word_match_max_term_count = 8;
   search_params.word_match_required_term_ratio = 0.0f;
+  search_params.query_terms = {"gets", "skipped"};
 
   // Basic embedding search with no query terms produces flat embedding score.
   Embedding query_embedding = DeterministicEmbedding(0);
@@ -220,6 +220,18 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
   EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
   EXPECT_FLOAT_EQ(scored_urls[2].score, 0.0f);
+  EXPECT_FLOAT_EQ(scored_urls[2].word_match_score, 0.0f);
+
+  // Even with zero embedding similarity score, word match text search can
+  // still be applied when enabled.
+  search_params.word_match_search_non_ascii_passages = true;
+  scored_urls = database.FindNearest({}, 3, search_params, query_embedding, no)
+                    .scored_urls;
+  EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
+  EXPECT_FLOAT_EQ(scored_urls[1].score, 1.0f);
+  EXPECT_GT(scored_urls[2].score, 0.0f);
+  EXPECT_GT(scored_urls[2].word_match_score, 0.0f);
+  search_params.word_match_search_non_ascii_passages = false;
 
   // Set up some query terms to boost score with word matches against passage.
   // Additional unmatched terms provide no boost. N occurrences of a matching
@@ -272,10 +284,10 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearestWordMatchBoosting) {
 TEST(HistoryEmbeddingsVectorDatabaseTest, SearchCanBeHaltedEarly) {
   VectorDatabaseInMemory database;
   for (size_t i = 0; i < 3; i++) {
-    UrlPassagesEmbeddings url_data(i + 1, i + 1, base::Time::Now());
+    UrlData url_data(i + 1, i + 1, base::Time::Now());
     for (size_t j = 0; j < 3; j++) {
-      url_data.url_passages.passages.add_passages("a random passage");
-      url_data.url_embeddings.embeddings.push_back(RandomEmbedding());
+      url_data.passages.add_passages("a random passage");
+      url_data.embeddings.push_back(RandomEmbedding());
     }
     database.AddUrlData(url_data);
   }
@@ -314,10 +326,10 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, TimeRangeNarrowsSearchResult) {
   const base::Time now = base::Time::Now();
   VectorDatabaseInMemory database;
   for (size_t i = 0; i < 3; i++) {
-    UrlPassagesEmbeddings url_data(i + 1, i + 1, now + base::Minutes(i));
+    UrlData url_data(i + 1, i + 1, now + base::Minutes(i));
     for (size_t j = 0; j < 3; j++) {
-      url_data.url_passages.passages.add_passages("some random passage");
-      url_data.url_embeddings.embeddings.push_back(RandomEmbedding());
+      url_data.passages.add_passages("some random passage");
+      url_data.embeddings.push_back(RandomEmbedding());
     }
     database.AddUrlData(url_data);
   }
@@ -383,11 +395,11 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
   size_t count = 0;
   // Estimate for expected URL count...
   for (size_t i = 0; i < 15000; i++) {
-    UrlPassagesEmbeddings url_data(i + 1, i + 1, base::Time::Now());
+    UrlData url_data(i + 1, i + 1, base::Time::Now());
     // Times 3 embeddings each, on average.
     for (size_t j = 0; j < 3; j++) {
-      url_data.url_passages.passages.add_passages("one of many passages");
-      url_data.url_embeddings.embeddings.push_back(RandomEmbedding());
+      url_data.passages.add_passages("one of many passages");
+      url_data.embeddings.push_back(RandomEmbedding());
       count++;
     }
     database.AddUrlData(url_data);
@@ -473,10 +485,10 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, WordMatchBoostProtoDataTest) {
         test_case.params().max_term_count();
     search_params.word_match_required_term_ratio =
         test_case.params().required_term_ratio();
-    UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
+    UrlData url_data(1, 1, base::Time::Now());
     for (const std::string& passage : test_case.passages().passages()) {
-      url_data.url_passages.passages.add_passages(passage);
-      url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+      url_data.passages.add_passages(passage);
+      url_data.embeddings.push_back(DeterministicEmbedding(0));
     }
     database.AddUrlData(url_data);
 

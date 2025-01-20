@@ -205,7 +205,7 @@ void FeaturePodLabelButton::OnEnabledChanged() {
 
   const SkColor icon_color =
       color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
-  detailed_view_arrow_->SetImage(gfx::CreateVectorIcon(
+  detailed_view_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuMoreIcon,
       GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
 }

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
+
 #include <string_view>
 
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "base/strings/string_util.h"
 
 namespace parent_access {

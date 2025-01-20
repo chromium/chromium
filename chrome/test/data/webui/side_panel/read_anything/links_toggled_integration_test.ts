@@ -126,6 +126,7 @@ suite('LinksToggledIntegration', () => {
           emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
           await microtasksFinished();
         }
+        return microtasksFinished();
       });
 
       test('container has links again', () => {
@@ -135,8 +136,9 @@ suite('LinksToggledIntegration', () => {
   });
 
   suite('after speech pauses', () => {
-    setup(() => {
+    setup(async () => {
       app.playSpeech();
+      await microtasksFinished();
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       return microtasksFinished();
     });
@@ -184,9 +186,11 @@ suite('LinksToggledIntegration', () => {
     });
 
     suite('after speech pauses', () => {
-      setup(() => {
+      setup(async () => {
         app.playSpeech();
+        await microtasksFinished();
         app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+        return microtasksFinished();
       });
 
       test('container does not have links', () => {

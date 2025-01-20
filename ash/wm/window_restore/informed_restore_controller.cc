@@ -71,8 +71,6 @@ bool ShouldShowInformedRestoreImage(const gfx::ImageSkia& image) {
   const gfx::Size image_size = image.size();
   const bool is_image_landscape = image_size.width() > image_size.height();
 
-  // TODO(minch|sammiequon): The informed restore dialog will only be shown
-  // inside the primary display for now. Change the logic here if it changes.
   const display::Display display_with_dialog =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   const bool is_display_landscape = chromeos::IsLandscapeOrientation(

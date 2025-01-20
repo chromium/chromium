@@ -38,9 +38,8 @@ void ServiceWorkerScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
     CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
-    const uint8_t* data,
-    size_t size) {
-  cached_metadata_ = CachedMetadata::Create(data_type_id, data, size);
+    base::span<const uint8_t> data) {
+  cached_metadata_ = CachedMetadata::Create(data_type_id, data);
   base::span<const uint8_t> serialized_data =
       cached_metadata_->SerializedData();
   global_scope_->GetServiceWorkerHost()->SetCachedMetadata(script_url_,

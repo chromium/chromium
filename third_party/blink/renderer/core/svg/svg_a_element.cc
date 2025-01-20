@@ -179,17 +179,6 @@ Element* SVGAElement::interestTargetElement() {
       svg_names::kInteresttargetAttr);
 }
 
-AtomicString SVGAElement::interestAction() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(svg_names::kInterestactionAttr);
-  if (attribute_value && !attribute_value.IsNull() &&
-      !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
-}
-
 bool SVGAElement::HasActivationBehavior() const {
   return true;
 }
@@ -223,11 +212,12 @@ bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {
          SVGGraphicsElement::IsURLAttribute(attribute);
 }
 
-bool SVGAElement::IsKeyboardFocusable(UpdateBehavior update_behavior) const {
+bool SVGAElement::IsKeyboardFocusableSlow(
+    UpdateBehavior update_behavior) const {
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks()) {
     return false;
   }
-  return SVGElement::IsKeyboardFocusable(update_behavior);
+  return SVGElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
 bool SVGAElement::CanStartSelection() const {

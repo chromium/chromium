@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/preloading_trigger_type.h"
 
@@ -77,6 +78,7 @@ class PrerenderPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
+  enum PaintingTimeType : uint8_t;
   void RecordSessionEndHistograms(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
   // Records Cumulative Layout Shift Score (CLS) to UMA and UKM.
@@ -87,6 +89,12 @@ class PrerenderPageLoadMetricsObserver
 
   // Records loading status for an activated and loaded page.
   void MaybeRecordMainResourceLoadStatus();
+
+  void MaybeRecordDocumentLoadMetrics(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+
+  void EmitPaintingMetricsTraceEvent(PaintingTimeType type,
+                                     base::TimeDelta paint_timing) const;
 
   // Helper function to concatenate the histogram name, the trigger type and the
   // embedder histogram suffix when the trigger type is kEmbedder.
@@ -100,6 +108,9 @@ class PrerenderPageLoadMetricsObserver
 
   // Set when the main resource of the main frame finishes loading.
   std::optional<net::Error> main_resource_load_status_;
+
+  // Updated upon activation.
+  std::optional<base::TimeDelta> navigation_to_activation_time_;
 
   // The type to trigger prerendering.
   std::optional<content::PreloadingTriggerType> trigger_type_;

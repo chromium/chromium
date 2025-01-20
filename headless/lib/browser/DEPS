@@ -19,6 +19,7 @@ include_rules = [
   "+third_party/blink/public/common/renderer_preferences/renderer_preferences.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+ui/aura",
   "+ui/compositor",
@@ -69,5 +70,8 @@ specific_include_rules = {
     "+components/prefs",
     "+components/metrics",
     "+components/variations",
+  ],
+  "headless_screen_info.cc": [
+    "+third_party/re2/src/re2/re2.h",
   ]
 }

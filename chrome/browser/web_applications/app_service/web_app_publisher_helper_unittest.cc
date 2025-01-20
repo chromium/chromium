@@ -97,11 +97,6 @@ class WebAppPublisherHelperTest : public testing::Test {
 
   Profile* profile() { return profile_.get(); }
 
-  webapps::AppId CreateShortcut(const GURL& shortcut_url,
-                                const std::string& shortcut_name) {
-    return test::InstallShortcut(profile(), shortcut_name, shortcut_url);
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;
@@ -160,7 +155,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_ScopeExtension) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
   info->validated_scope_extensions = {
-      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url)}};
+      ScopeExtensionInfo::CreateForScope(extended_scope_url)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
@@ -186,8 +181,8 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_WildcardScopeExtension) {
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = base::UTF8ToUTF16(name);
   info->validated_scope_extensions = {
-      ScopeExtensionInfo{.origin = url::Origin::Create(extended_scope_url),
-                         .has_origin_wildcard = true}};
+      ScopeExtensionInfo::CreateForScope(extended_scope_url,
+                                         /*has_origin_wildcard*/ true)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);

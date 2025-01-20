@@ -321,8 +321,7 @@ TEST(CommandsTest, ExecuteSessionCommand) {
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
-      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
-      false, params, id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSimpleCommand, &run_loop, id, &expected_value));
   run_loop.Run();
 }
@@ -358,8 +357,7 @@ TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;
   SessionConnectionMap session_connection_map;
   base::Value::Dict params;
-  ExecuteSessionCommand(&map, &session_connection_map, "cmd",
-                        base::BindRepeating(&ShouldNotBeCalled),
+  ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, false, params, "session",
                         base::BindRepeating(&OnNoSuchSession));
 }
@@ -368,8 +366,7 @@ TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSessionWhenItExpectsOk) {
   SessionThreadMap map;
   SessionConnectionMap session_connection_map;
   base::Value::Dict params;
-  ExecuteSessionCommand(&map, &session_connection_map, "cmd",
-                        base::BindRepeating(&ShouldNotBeCalled),
+  ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, true, params, "session",
                         base::BindRepeating(&OnNoSuchSessionIsOk));
 }
@@ -400,9 +397,8 @@ TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   base::Value::Dict params;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
-      &map, &session_connection_map, "cmd",
-      base::BindRepeating(&ShouldNotBeCalled), true /*w3c_standard_command*/,
-      false, params, "session",
+      &map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
+      true /*w3c_standard_command*/, false, params, "session",
       base::BindRepeating(&OnNoSuchSessionAndQuit, &run_loop));
   run_loop.Run();
 }
@@ -868,7 +864,7 @@ namespace {
 class MockCommandListener : public CommandListener {
  public:
   MockCommandListener() : called_(false) {}
-  ~MockCommandListener() override {}
+  ~MockCommandListener() override = default;
 
   Status BeforeCommand(const std::string& command_name) override {
     called_ = true;
@@ -939,8 +935,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // Here, the command adds |listener| to the session, so |listener|
   // should not be notified since it will not have been added yet.
   ExecuteSessionCommand(
-      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
-      false, params, id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_addlistener));
   run_loop_addlistener.Run();
 
@@ -952,8 +947,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // |listener| was added to |session| by ExecuteAddListenerToSessionCommand
   // and should be notified before the next command, ExecuteQuitSessionCommand.
   ExecuteSessionCommand(
-      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
-      false, params, id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_testlistener));
   run_loop_testlistener.Run();
 
@@ -964,8 +958,8 @@ namespace {
 
 class FailingCommandListener : public CommandListener {
  public:
-  FailingCommandListener() {}
-  ~FailingCommandListener() override {}
+  FailingCommandListener() = default;
+  ~FailingCommandListener() override = default;
 
   Status BeforeCommand(const std::string& command_name) override {
     return Status(kUnknownError);
@@ -1023,8 +1017,7 @@ TEST(CommandsTest, ErrorNotifyingCommandListeners) {
   base::RunLoop run_loop;
 
   ExecuteSessionCommand(
-      &map, &session_connection_map, "cmd", cmd, true /*w3c_standard_command*/,
-      false, params, id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnFailBecauseErrorNotifyingListeners, &run_loop));
   run_loop.Run();
 

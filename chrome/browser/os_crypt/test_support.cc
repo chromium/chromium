@@ -77,7 +77,8 @@ FakeInstallDetails::FakeInstallDetails()
 }
 
 std::optional<base::ScopedClosureRunner> InstallService(
-    const ScopedLogGrabber& log_grabber) {
+    const ScopedLogGrabber& log_grabber,
+    bool fake_reencrypt) {
   base::FilePath exe_dir;
   base::PathService::Get(base::DIR_EXE, &exe_dir);
   base::CommandLine service_cmd(
@@ -85,6 +86,10 @@ std::optional<base::ScopedClosureRunner> InstallService(
   service_cmd.AppendSwitch(
       elevation_service::switches::kElevatorClsIdForTestingSwitch);
   log_grabber.AddLoggingSwitches(service_cmd);
+  if (fake_reencrypt) {
+    service_cmd.AppendSwitch(
+        elevation_service::switches::kFakeReencryptForTestingSwitch);
+  }
   installer::InstallServiceWorkItem install_service_work_item(
       install_static::GetElevationServiceName(),
       install_static::GetElevationServiceDisplayName(), /*description=*/{},

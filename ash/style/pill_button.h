@@ -183,7 +183,8 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
   views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
+  void SetText(const std::u16string& text) override;
+  void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
@@ -223,6 +224,8 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // smaller to make the spacing on two sides visually look the same.
   int GetHorizontalSpacingWithIcon() const;
 
+  void UpdateTooltipText();
+
   Type type_;
   const raw_ptr<const gfx::VectorIcon> icon_;
 
@@ -243,6 +246,10 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
   // Indicates if we are going to use the label contents for tooltip as default.
   bool use_label_as_default_tooltip_ = true;
+
+  // When the tooltip becomes equal to Label's Text, this variable holds the
+  // original value of the tooltip text if the Label's Text was not used.
+  std::u16string original_tooltip_text_;
 
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;

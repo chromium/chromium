@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -115,8 +116,9 @@ bool RunTest(const DeviceCertTest& test_case) {
   uint64_t crl_verify_time = test_case.crl_verification_time_seconds();
   base::Time crl_verification_time =
       testing::ConvertUnixTimestampSeconds(crl_verify_time);
-  if (crl_verify_time == 0)
+  if (crl_verify_time == 0) {
     crl_verification_time = cert_verification_time;
+  }
 
   std::string crl_bundle = test_case.crl_bundle();
   switch (test_case.expected_result()) {

@@ -31,7 +31,6 @@ class PrefService;
 namespace autofill {
 
 class AutofillClient;
-class LogManager;
 
 inline constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
@@ -56,8 +55,7 @@ class AutofillCrowdsourcingManager {
   // `channel` determines the value for the the Google-API-key HTTP header and
   // whether raw metadata uploading is enabled.
   AutofillCrowdsourcingManager(AutofillClient* client,
-                          version_info::Channel channel,
-                          LogManager* log_manager);
+                               version_info::Channel channel);
 
   virtual ~AutofillCrowdsourcingManager();
 
@@ -106,9 +104,7 @@ class AutofillCrowdsourcingManager {
   static int GetMaxServerAttempts();
 
  protected:
-  AutofillCrowdsourcingManager(AutofillClient* client,
-                               const std::string& api_key,
-                               LogManager* log_manager);
+  AutofillCrowdsourcingManager(AutofillClient* client, std::string api_key);
 
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
@@ -161,9 +157,6 @@ class AutofillCrowdsourcingManager {
 
   // Callback function to retrieve API key.
   const std::string api_key_;
-
-  // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager> log_manager_;
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.

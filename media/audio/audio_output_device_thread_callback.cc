@@ -98,7 +98,7 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   stats_reporter_.ReportCallback(delay, glitch_info);
 
   if (audio_parameters_.IsBitstreamFormat()) {
-    buffer->params.bitstream_data_size = output_bus_->GetBitstreamDataSize();
+    buffer->params.bitstream_data_size = output_bus_->bitstream_data().size();
     buffer->params.bitstream_frames = output_bus_->GetBitstreamFrames();
   }
 

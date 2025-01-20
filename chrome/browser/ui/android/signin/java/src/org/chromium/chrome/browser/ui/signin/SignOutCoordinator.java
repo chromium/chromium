@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -220,8 +219,7 @@ public class SignOutCoordinator {
 
     private static @UiState int getUiState(
             IdentityManager identityManager, boolean hasUnsavedData, boolean showConfirmDialog) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                || identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             return UiState.LEGACY_DIALOG;
         }
         if (hasUnsavedData) {

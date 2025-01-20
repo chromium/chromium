@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -43,6 +45,7 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     @Override
     public void initWebContents(WebContents webContents) {
         GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
+        assumeNonNull(manager);
         mGestureListener =
                 new GestureStateListener() {
                     @Override
@@ -86,7 +89,7 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
                     }
 
                     private void onScrollingStateChanged() {
-                        boolean scrolling = manager != null ? manager.isScrollInProgress() : false;
+                        boolean scrolling = manager.isScrollInProgress();
                         RewindableIterator<TabObserver> observers =
                                 ((TabImpl) mTab).getTabObservers();
                         while (observers.hasNext()) {

@@ -54,9 +54,7 @@ void MoveWindowToEnsureCaretNotInRect(aura::Window* window,
 
 }  // namespace
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kVirtualKeyboardRestoreBoundsKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kVirtualKeyboardRestoreBoundsKey)
 
 void RestoreWindowBoundsOnClientFocusLost(aura::Window* window) {
   // Get restore bounds of the window

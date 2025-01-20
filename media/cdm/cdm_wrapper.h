@@ -302,10 +302,18 @@ class CdmWrapperImpl : public CdmWrapper {
   std::unique_ptr<CdmInterface, CdmDeleter> cdm_;
 };
 
-// Specialization for cdm::ContentDecryptionModule_10 methods.
+// Specialization for cdm::ContentDecryptionModule_10 methods and
+// cdm::ContentDecryptionModule_11 methods.
 
 template <>
 cdm::Status CdmWrapperImpl<10>::InitializeVideoDecoder(
+    const cdm::VideoDecoderConfig_3& video_decoder_config) {
+  return cdm_->InitializeVideoDecoder(
+      ToVideoDecoderConfig_2(video_decoder_config));
+}
+
+template <>
+cdm::Status CdmWrapperImpl<11>::InitializeVideoDecoder(
     const cdm::VideoDecoderConfig_3& video_decoder_config) {
   return cdm_->InitializeVideoDecoder(
       ToVideoDecoderConfig_2(video_decoder_config));
@@ -317,7 +325,7 @@ CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
                                uint32_t key_system_size,
                                GetCdmHostFunc get_cdm_host_func,
                                void* user_data) {
-  static_assert(CheckSupportedCdmInterfaceVersions(10, 11),
+  static_assert(CheckSupportedCdmInterfaceVersions(10, 12),
                 "Mismatch between CdmWrapper::Create() and "
                 "IsSupportedCdmInterfaceVersion()");
 
@@ -330,7 +338,14 @@ CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
   // Try to use the latest supported and enabled CDM interface first. If it's
   // not supported by the CDM, try to create the CDM using older supported
   // versions.
-  if (IsSupportedAndEnabledCdmInterfaceVersion(11)) {
+
+  if (IsSupportedAndEnabledCdmInterfaceVersion(12)) {
+    cdm_wrapper =
+        CdmWrapperImpl<12>::Create(create_cdm_func, key_system, key_system_size,
+                                   get_cdm_host_func, user_data);
+  }
+
+  if (!cdm_wrapper && IsSupportedAndEnabledCdmInterfaceVersion(11)) {
     cdm_wrapper =
         CdmWrapperImpl<11>::Create(create_cdm_func, key_system, key_system_size,
                                    get_cdm_host_func, user_data);

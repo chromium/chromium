@@ -27,6 +27,8 @@
 
 namespace {
 
+using UserPresentAndVerifiedBits = device::enclave::UserPresentAndVerifiedBits;
+
 void MaybeRecordUserActionForWinUv(device::FidoRequestType request_type,
                                    EnclaveUserVerificationMethod uv_method) {
 #if BUILDFLAG(IS_WIN)
@@ -119,16 +121,17 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
   bool use_unwrapped_secret = false;
 
   switch (uv_method_) {
-    case EnclaveUserVerificationMethod::kNone:
+    case EnclaveUserVerificationMethod::kUserPresenceOnly:
       request->signing_callback =
           enclave_manager_->IdentityKeySigningCallback();
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kPresentOnly;
       break;
 
     case EnclaveUserVerificationMethod::kImplicit:
       request->signing_callback =
           enclave_manager_->IdentityKeySigningCallback();
       use_unwrapped_secret = true;
-      request->user_verified = true;
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kPresentAndVerified;
       break;
 
     case EnclaveUserVerificationMethod::kPIN:
@@ -139,7 +142,7 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       request->pin_result_callback =
           base::BindOnce(&GPMEnclaveTransaction::HandlePINValidationResult,
                          weak_ptr_factory_.GetWeakPtr());
-      request->user_verified = true;
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kPresentAndVerified;
       break;
 
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
@@ -149,7 +152,7 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       request->signing_callback =
           enclave_manager_->UserVerifyingKeySigningCallback(
               std::move(uv_options));
-      request->user_verified = true;
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kPresentAndVerified;
       MaybeRecordUserActionForWinUv(request_type_, uv_method_);
       break;
     }
@@ -159,11 +162,18 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       // the system will verify the user for that operation.
       request->signing_callback =
           enclave_manager_->IdentityKeySigningCallback();
-      request->user_verified = true;
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kPresentAndVerified;
       request->uv_key_creation_callback =
           enclave_manager_->UserVerifyingKeyCreationCallback();
       MaybeRecordUserActionForWinUv(request_type_, uv_method_);
       break;
+
+    case EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence:
+      request->signing_callback =
+          enclave_manager_->IdentityKeySigningCallback();
+      request->up_and_uv_bits = UserPresentAndVerifiedBits::kNeither;
+      break;
+
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED();
   }
@@ -202,9 +212,8 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       std::vector<sync_pb::WebauthnCredentialSpecifics> credentials =
           passkey_model_->GetPasskeysForRelyingPartyId(rp_id_);
       for (auto& cred : credentials) {
-        if (base::ranges::equal(
-                base::as_bytes(base::make_span(cred.credential_id())),
-                base::make_span(*selected_credential_id_))) {
+        if (base::ranges::equal(base::as_byte_span(cred.credential_id()),
+                                base::span(*selected_credential_id_))) {
           selected_credential =
               std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
                   std::move(cred));

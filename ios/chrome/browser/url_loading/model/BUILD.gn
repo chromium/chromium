@@ -23,7 +23,6 @@ source_set("model") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//components/keyed_service/ios",
     "//components/search_engines",
     "//components/sessions",
     "//ios/chrome/app:mode",

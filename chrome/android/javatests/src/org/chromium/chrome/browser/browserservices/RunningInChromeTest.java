@@ -23,6 +23,7 @@ import android.content.Intent;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -89,10 +91,15 @@ public class RunningInChromeTest {
         mEmbeddedTestServerRule.setServerUsesHttps(true); // TWAs only work with HTTPS.
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
 
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
 
         BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(PACKAGE_NAME);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     @Test
@@ -110,7 +117,7 @@ public class RunningInChromeTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void showsNotification() throws TimeoutException {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
 
         launch(createTrustedWebActivityIntent(mTestPage));
 
@@ -122,7 +129,7 @@ public class RunningInChromeTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void showsNoNotificationOnAutomotive() throws TimeoutException {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
 
         launch(createTrustedWebActivityIntent(mTestPage));
 
@@ -134,7 +141,7 @@ public class RunningInChromeTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void dismissesNotification_onNavigation() throws TimeoutException {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
 
         launch(createTrustedWebActivityIntent(mTestPage));
 
@@ -150,7 +157,7 @@ public class RunningInChromeTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void dismissesNotification_onActivityClose() throws TimeoutException {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
 
         launch(createTrustedWebActivityIntent(mTestPage));
 

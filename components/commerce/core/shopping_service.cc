@@ -182,6 +182,7 @@ ShoppingService::ShoppingService(
     ProductSpecificationsService* product_specifications_service,
     SessionProtoStorage<discounts_db::DiscountsContentProto>*
         discounts_proto_db,
+    SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
@@ -204,6 +205,12 @@ ShoppingService::ShoppingService(
       web_extractor_(std::move(web_extractor)),
       tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
+  if (identity_manager) {
+    account_checker_ = base::WrapUnique(new AccountChecker(
+        country_on_startup_, locale_on_startup_, pref_service, identity_manager,
+        sync_service, url_loader_factory));
+  }
+
   // Register for the types of information we're allowed to receive from
   // optimization guide.
   if (opt_guide_) {
@@ -216,7 +223,7 @@ ShoppingService::ShoppingService(
       types.push_back(optimization_guide::proto::OptimizationType::
                           MERCHANT_TRUST_SIGNALS_V2);
     }
-    if (IsPriceInsightsInfoApiEnabled()) {
+    if (IsPriceInsightsApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
     }
@@ -231,12 +238,6 @@ ShoppingService::ShoppingService(
     }
 
     opt_guide_->RegisterOptimizationTypes(types);
-  }
-
-  if (identity_manager) {
-    account_checker_ = base::WrapUnique(new AccountChecker(
-        country_on_startup_, locale_on_startup_, pref_service, identity_manager,
-        sync_service, url_loader_factory));
   }
 
   if (identity_manager && account_checker_) {
@@ -300,8 +301,8 @@ ShoppingService::ShoppingService(
         CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
-          std::make_unique<ClusterServerProxy>(identity_manager,
-                                               url_loader_factory),
+          std::make_unique<ClusterServerProxy>(
+              identity_manager, url_loader_factory, account_checker_.get()),
           base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
@@ -316,6 +317,12 @@ ShoppingService::ShoppingService(
   if (product_specifications_service_) {
     product_specifications_observation_.Observe(
         product_specifications_service_);
+  }
+
+  // TODO(crbug.com/373426638): This is added in 11/2024 to deprecate
+  // ChromeCart. This part should be removed in 11/2025.
+  if (cart_proto_db) {
+    cart_proto_db->DeleteAllContent(base::DoNothing());
   }
 }
 
@@ -728,7 +735,7 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 void ShoppingService::GetPriceInsightsInfoForUrl(
     const GURL& url,
     PriceInsightsInfoCallback callback) {
-  if (!opt_guide_ || !IsPriceInsightsInfoApiEnabled()) {
+  if (!opt_guide_ || !IsPriceInsightsApiEnabled(account_checker_.get())) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), url, std::nullopt));
     return;
@@ -764,8 +771,8 @@ void ShoppingService::GetProductSpecificationsForUrls(
                 }
 
                 UMA_HISTOGRAM_PERCENTAGE(
-                    "Commerce.Compare.Table.PercentageValidProducts",
-                    (float)cluster_ids.size() / (float)data.size());
+                    "Commerce.Compare.Table.PercentageValidProducts2",
+                    ((float)cluster_ids.size() / (float)data.size()) * 100.0f);
 
                 if (!service || cluster_ids.empty()) {
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
@@ -831,25 +838,6 @@ bool ShoppingService::IsRegionLockedFeatureEnabled(
 bool ShoppingService::IsMerchantViewerEnabled() {
   return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
                                       kCommerceMerchantViewerRegionLaunched);
-}
-
-bool ShoppingService::IsCommercePriceTrackingEnabled() {
-  return IsRegionLockedFeatureEnabled(kCommercePriceTracking,
-                                      kCommercePriceTrackingRegionLaunched);
-}
-
-bool ShoppingService::IsPriceInsightsEligible() {
-  if (!IsRegionLockedFeatureEnabled(kPriceInsights,
-                                    kPriceInsightsRegionLaunched)) {
-    return false;
-  }
-  return account_checker_ &&
-         account_checker_->IsAnonymizedUrlDataCollectionEnabled();
-}
-
-bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(kPriceInsights,
-                                      kPriceInsightsRegionLaunched);
 }
 
 bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
@@ -1056,11 +1044,7 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
   if (buyable_product.has_image_url()) {
     info->server_image_available = true;
-
-    // Only keep the server-provided image if we're allowed to.
-    if (base::FeatureList::IsEnabled(commerce::kCommerceAllowServerImages)) {
-      info->image_url = GURL(buyable_product.image_url());
-    }
+    info->image_url = GURL(buyable_product.image_url());
   } else {
     info->server_image_available = false;
   }
@@ -1172,8 +1156,12 @@ void ShoppingService::HandleOnDemandProductInfoResponse(
   optimization_guide::OptimizationGuideDecisionWithMetadata decision =
       iter->second;
 
-  if (decision.decision !=
-      optimization_guide::OptimizationGuideDecision::kTrue) {
+  bool successful_request =
+      decision.decision == optimization_guide::OptimizationGuideDecision::kTrue;
+  base::UmaHistogramBoolean("Commerce.ProductInfo.OnDemandRequest.Success",
+                            successful_request);
+
+  if (!successful_request) {
     std::move(callback).Run(url, std::nullopt);
     return;
   }
@@ -1441,7 +1429,7 @@ ShoppingService::OptGuideResultToPriceInsightsInfo(
 
 void ShoppingService::HandleDidNavigatePrimaryMainFrameForPriceInsightsInfo(
     WebWrapper* web) {
-  if (!opt_guide_ || !IsPriceInsightsInfoApiEnabled() ||
+  if (!opt_guide_ || !IsPriceInsightsApiEnabled(account_checker_.get()) ||
       !kPriceInsightsUseCache.Get()) {
     return;
   }

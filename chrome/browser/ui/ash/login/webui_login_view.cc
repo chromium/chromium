@@ -12,7 +12,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/focus/arrow_key_traversal_controller.h"
+#include "ash/focus/scoped_arrow_key_traversal_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/functional/bind.h"

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/clang_profiling.h"
+
 #include "base/android/jni_android.h"
 #include "base/base_jni/ClangProfiler_jni.h"
-#include "base/test/clang_profiling.h"
 
 // Used in java tests when clang profiling is enabled.
 namespace base {

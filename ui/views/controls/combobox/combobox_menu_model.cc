@@ -24,8 +24,12 @@ size_t ComboboxMenuModel::GetItemCount() const {
 }
 
 ui::MenuModel::ItemType ComboboxMenuModel::GetTypeAt(size_t index) const {
-  if (model_->IsItemSeparatorAt(index))
+  if (model_->IsItemSeparatorAt(index)) {
     return TYPE_SEPARATOR;
+  }
+  if (model_->IsItemTitleAt(index)) {
+    return TYPE_TITLE;
+  }
   return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
 }
 

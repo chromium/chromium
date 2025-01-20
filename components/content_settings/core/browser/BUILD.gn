@@ -52,7 +52,6 @@ static_library("browser") {
   public_deps = [ "//base" ]
   deps = [
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
@@ -104,7 +103,6 @@ source_set("cookie_settings") {
   deps = [
     ":browser",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -140,7 +138,6 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
     "//components/pref_registry:pref_registry",

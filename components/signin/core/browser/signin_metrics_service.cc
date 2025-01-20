@@ -24,6 +24,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kExplicitSigninMigrationHistogramName[] =
@@ -112,6 +113,9 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
       access_point_string = "PasswordSigninPromo";
       break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      access_point_string = "AddressSigninPromo";
+      break;
     // All other access point should not record this metric.
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
@@ -185,12 +189,10 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return;
   }
 
@@ -396,14 +398,12 @@ void SigninMetricsService::HandleSigninErrors(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
         base::UmaHistogramEnumeration(
             "Signin.SigninPending.ResolutionSourceStarted",
-            account_info.access_point,
-            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+            account_info.access_point);
       }
 
       base::UmaHistogramEnumeration(
           "Signin.SigninPending.ResolutionSourceCompleted",
-          account_info.access_point,
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+          account_info.access_point);
     }
   }
 }
@@ -472,9 +472,8 @@ void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
     if (start_time.has_value()) {
       MaybeRecordWebSigninToChromeSigninTimes(start_time.value(), access_point);
 
-      base::UmaHistogramEnumeration(
-          "Signin.WebSignin.SourceToChromeSignin", access_point,
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      base::UmaHistogramEnumeration("Signin.WebSignin.SourceToChromeSignin",
+                                    access_point);
     }
     // Clear all related web signin information on the first Chrome signin
     // event.
@@ -483,7 +482,7 @@ void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
 }
 
 void SigninMetricsService::RecordSigninInterceptionMetrics(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     signin_metrics::AccessPoint access_point) {
   ChromeSigninUserChoice signin_choice =
       SigninPrefs(pref_service_.get())
@@ -492,8 +491,8 @@ void SigninMetricsService::RecordSigninInterceptionMetrics(
                                 signin_choice);
   if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {
     base::UmaHistogramEnumeration(
-        "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin",
+        access_point);
   }
 }
 

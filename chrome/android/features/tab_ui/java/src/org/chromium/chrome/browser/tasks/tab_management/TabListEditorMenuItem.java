@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -218,17 +217,5 @@ public class TabListEditorMenuItem {
     /** Updates the {@link TabListEditorAction} with the currently selected tabs. */
     public void onSelectionStateChange(List<Integer> tabIds) {
         mOnSelectionStateChange.onResult(tabIds);
-    }
-
-    private static int getShowAsAction(@ShowMode int showMode) {
-        switch (showMode) {
-            case ShowMode.MENU_ONLY:
-                return MenuItem.SHOW_AS_ACTION_NEVER;
-            case ShowMode.IF_ROOM:
-                return MenuItem.SHOW_AS_ACTION_IF_ROOM;
-            default:
-                assert false;
-                return MenuItem.SHOW_AS_ACTION_NEVER;
-        }
     }
 }

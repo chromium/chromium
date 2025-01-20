@@ -11,10 +11,10 @@ namespace chromeos {
 
 class CertificateProvider {
  public:
-  CertificateProvider() {}
+  CertificateProvider() = default;
   CertificateProvider(const CertificateProvider&) = delete;
   CertificateProvider& operator=(const CertificateProvider&) = delete;
-  virtual ~CertificateProvider() {}
+  virtual ~CertificateProvider() = default;
 
   virtual void GetCertificates(
       base::OnceCallback<void(net::ClientCertIdentityList)> callback) = 0;

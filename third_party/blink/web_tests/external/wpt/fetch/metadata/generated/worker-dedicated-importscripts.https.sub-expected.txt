@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] sec-fetch-storage-access - Cross-site
+  assert_array_equals: expected property 0 to be "none" but got "active" (expected array ["none"] got ["active"])
+Harness: the test ran to completion.
+

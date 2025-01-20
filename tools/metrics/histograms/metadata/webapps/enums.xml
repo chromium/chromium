@@ -224,6 +224,24 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Update apply failed"/>
 </enum>
 
+<enum name="IwaComponentUpdateError">
+  <int value="0" label="Stale version"/>
+  <int value="1" label="Component file not found"/>
+  <int value="2" label="Malformed protobuf"/>
+  <int value="3" label="Malformed base64 key"/>
+</enum>
+
+<enum name="IwaComponentUpdateSource">
+  <int value="0" label="Preloaded component"/>
+  <int value="1" label="Downloaded component"/>
+</enum>
+
+<enum name="KeyRotationInfoSource">
+  <int value="0" label="No component"/>
+  <int value="1" label="Preloaded component"/>
+  <int value="2" label="Downloaded component"/>
+</enum>
+
 <enum name="LaunchedAppType">
   <int value="0" label="DIY app launched"/>
   <int value="1" label="Crafted app launched"/>

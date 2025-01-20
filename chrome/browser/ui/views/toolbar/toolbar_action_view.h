@@ -66,9 +66,7 @@ class ToolbarActionView : public views::MenuButton,
   content::WebContents* GetCurrentWebContents() const override;
   void UpdateState() override;
 
-  ToolbarActionViewController* view_controller() {
-    return view_controller_;
-  }
+  ToolbarActionViewController* view_controller() { return view_controller_; }
 
   // Returns button icon so it can be accessed during tests.
   gfx::ImageSkia GetIconForTest();

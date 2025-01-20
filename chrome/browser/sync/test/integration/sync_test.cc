@@ -92,13 +92,13 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -298,7 +298,6 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
   cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
-  cl->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
   arc::SetArcAvailableCommandLineForTesting(cl);
 #endif
 }
@@ -1099,6 +1098,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
                                        syncer::AUTOFILL_WALLET_DATA,
                                        syncer::AUTOFILL_WALLET_USAGE,
+                                       syncer::CONTACT_INFO,
                                        syncer::DEVICE_INFO,
                                        syncer::SECURITY_EVENTS,
                                        syncer::SEND_TAB_TO_SELF,
@@ -1106,15 +1106,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode)) {
-    allowed_types.Put(syncer::CONTACT_INFO);
-  }
-
   allowed_types.Put(syncer::PLUS_ADDRESS);
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
-  }
+  allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
 
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {

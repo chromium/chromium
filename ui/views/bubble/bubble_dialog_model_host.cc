@@ -1006,16 +1006,18 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   // TODO(pbos): Try to prevent uses of GetInitiallyFocusedView() after Close()
   // and turn this in to a DCHECK for |model_| existence. This should fix
   // https://crbug.com/1130181 for now.
-  if (!model_)
+  if (!model_) {
     return BubbleDialogDelegate::GetInitiallyFocusedView();
+  }
 
   // TODO(pbos): Reconsider the uniqueness requirement, maybe this should select
   // the first one? If so add corresponding GetFirst query to DialogModel.
   ui::ElementIdentifier unique_id =
       model_->initially_focused_field(DialogModelHost::GetPassKey());
 
-  if (!unique_id)
+  if (!unique_id) {
     return BubbleDialogDelegate::GetInitiallyFocusedView();
+  }
 
   if (ui::DialogModel::Button* const ok_button =
           model_->ok_button(DialogModelHost::GetPassKey());
@@ -1216,8 +1218,9 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
 void BubbleDialogModelHost::OnWindowClosing() {
   // If the model has been removed we have already notified it of closing on the
   // ::Close() stack.
-  if (!model_)
+  if (!model_) {
     return;
+  }
   model_->OnDialogDestroying(DialogModelHost::GetPassKey());
   // TODO(pbos): Do we need to reset `model_` and destroy contents? See Close().
 }

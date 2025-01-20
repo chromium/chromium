@@ -16,10 +16,10 @@ source_set("ui") {
     "//base",
     "//components/version_info",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
@@ -39,11 +39,11 @@ source_set("coordinator") {
   deps = [
     ":ui",
     "//base",
+    "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/scanner",
   ]
 }
 
@@ -55,8 +55,8 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/scanner:camera_state",
-    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
+    "//ios/chrome/browser/scanner/ui_bundled:camera_state",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net",
@@ -84,11 +84,11 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/scanner/ui_bundled",
+    "//ios/chrome/browser/scanner/ui_bundled:camera_state",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/ui/symbols:icons",
-    "//ios/chrome/browser/ui/scanner",
-    "//ios/chrome/browser/ui/scanner:camera_state",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
@@ -107,7 +107,7 @@ source_set("eg_test_support+eg2") {
     "qr_scanner_app_interface_stub.mm",
   ]
   deps = [
-    "//ios/chrome/browser/ui/scanner:camera_state",
+    "//ios/chrome/browser/scanner/ui_bundled:camera_state",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }

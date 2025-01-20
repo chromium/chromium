@@ -45,7 +45,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     //  ChromeTabbedActivity.
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private TabCreatorManager mTabCreatorManager;
 
     /**
      * Constructor.
@@ -62,6 +61,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mTabMergingEnabled = tabMergingEnabled;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mCipherFactory = cipherFactory;
+    }
+
+    @Override
+    public void destroy() {
+        if (mArchivedTabModelOrchestrator != null) {
+            mArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
+        }
+        super.destroy();
     }
 
     /**
@@ -86,7 +93,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
-        mTabCreatorManager = tabCreatorManager;
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -210,20 +216,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
         assert profile != null;
 
-        TabCreator regularTabCreator = mTabCreatorManager.getTabCreator(/* incognito= */ false);
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
         mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(
-                tabContentManager, regularTabCreator, mCipherFactory);
+                tabContentManager, mCipherFactory);
         mArchivedTabModelOrchestrator.initializeHistoricalTabModelObserver(
                 () -> getTabModelSelector().getModel(/* incognito= */ false));
-
-        // If the feature flag is enabled, then start the declutter process. Otherwise, rescue
-        // tabs that may have been archived previously.
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
-            mArchivedTabModelOrchestrator.maybeBeginDeclutter();
-        } else {
-            mArchivedTabModelOrchestrator.maybeRescueArchivedTabs();
-        }
+        // Registering will automatically do an archive pass, and schedule recrurring passes for
+        // long-running instances of Chrome.
+        mArchivedTabModelOrchestrator.registerTabModelOrchestrator(this);
     }
 
     public TabPersistentStore getTabPersistentStoreForTesting() {

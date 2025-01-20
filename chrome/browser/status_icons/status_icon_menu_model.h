@@ -32,7 +32,7 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
     virtual void ExecuteCommand(int command_id, int event_flags) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   class Observer {
@@ -41,7 +41,7 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
     virtual void OnMenuStateChanged() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // The Delegate can be NULL.
@@ -103,7 +103,7 @@ class StatusIconMenuModel : public ui::SimpleMenuModel,
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_MENU_MODEL_H_

@@ -87,8 +87,8 @@ class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
   }
 
  protected:
-  SelectToSpeakTest() {}
-  ~SelectToSpeakTest() override {}
+  SelectToSpeakTest() = default;
+  ~SelectToSpeakTest() override = default;
 
   // Note that we do not enable Select to Speak in the SetUp method because
   // tests are less flaky if we load the page URL before loading up the

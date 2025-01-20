@@ -63,7 +63,7 @@ void ContextualSearchSceneLayer::CreateContextualSearchLayer(
   layer()->AddChild(contextual_search_layer_->layer());
 }
 
-ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {}
+ContextualSearchSceneLayer::~ContextualSearchSceneLayer() = default;
 
 void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     JNIEnv* env,

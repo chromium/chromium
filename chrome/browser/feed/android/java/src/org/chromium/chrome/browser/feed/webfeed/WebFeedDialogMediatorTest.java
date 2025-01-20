@@ -44,7 +44,9 @@ public final class WebFeedDialogMediatorTest {
     private static class Presenter extends ModalDialogManager.Presenter {
         @Override
         protected void addDialogView(
-                PropertyModel model, @Nullable Callback<ComponentDialog> onDialogShownCallback) {}
+                PropertyModel model,
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
+                @Nullable Callback<View> onDialogShownCallback) {}
 
         @Override
         protected void removeDialogView(PropertyModel model) {}

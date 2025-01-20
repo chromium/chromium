@@ -16,7 +16,7 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
@@ -92,6 +92,30 @@ enum class PlusAddressRequestErrorType {
   kInvalidOrigin = 6,
   // The client aborted the network request because it took too long.
   kClientTimeout = 7
+};
+
+// Possible error types during the plus address creation flow.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.plus_addresses
+enum class PlusAddressCreationBottomSheetErrorType {
+  kNoError = 0,
+  // A network request timed out during an attempt to reserve a plus address.
+  kReserveTimeout = 1,
+  // The user hit the plus address reserve quota limit.
+  kReserveQuota = 2,
+  // Some network error occurred during an attempt to reserve a plus address.
+  kReserveGeneric = 3,
+  // A network request to confirm a plus address timed out when the user
+  // attempted to create a plus address.
+  kCreateTimeout = 4,
+  // The user hit the plus address creation quota limit when they attempted to
+  // create a plus address.
+  kCreateQuota = 5,
+  // The user tried to create a new plus address for the domain, but some plus
+  // address already exists for an affiliated
+  kCreateAffiliation = 6,
+  // Some network error occurred during an attempt to create a plus address.
+  kCreateGeneric = 7,
 };
 
 class PlusAddressRequestError {

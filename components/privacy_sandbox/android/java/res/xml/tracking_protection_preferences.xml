@@ -62,13 +62,6 @@ found in the LICENSE file.
             app:allowDividerBelow="false"
             app:isPreferenceVisible="false" />
 
-        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-            android:key="dnt_toggle"
-            android:title="@string/tracking_protection_dnt_toggle_title"
-            android:summary="@string/tracking_protection_dnt_toggle_summary"
-            app:allowDividerBelow="false"
-            app:isPreferenceVisible="false" />
-
     </PreferenceCategory>
 
     <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup

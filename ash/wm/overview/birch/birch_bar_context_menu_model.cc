@@ -40,7 +40,7 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
 
     if (features::IsCoralFeatureEnabled()) {
       AddItem(base::to_underlying(CommandId::kCoralSuggestions),
-              u"Suggested group");
+              l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
     }
 
     bool enabled = IsWeatherAllowedByGeolocation();

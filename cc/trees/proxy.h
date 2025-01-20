@@ -47,7 +47,7 @@ class CC_EXPORT Proxy {
   virtual void SetVisible(bool visible) = 0;
   virtual void SetShouldWarmUp() = 0;
 
-  virtual void SetNeedsAnimate() = 0;
+  virtual void SetNeedsAnimate(bool urgent = false) = 0;
   virtual void SetNeedsUpdateLayers() = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;
@@ -92,7 +92,7 @@ class CC_EXPORT Proxy {
   // Must be called before deleting the proxy.
   virtual void Stop() = 0;
 
-  virtual void QueueImageDecode(int request_id, const PaintImage& image) = 0;
+  virtual void QueueImageDecode(int request_id, const DrawImage& image) = 0;
   virtual void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
   virtual void SetPaintWorkletLayerPainter(

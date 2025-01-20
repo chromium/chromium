@@ -12,8 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -69,7 +69,7 @@ BaseBlockingPage::BaseBlockingPage(
           base::Time::NowFromSystemTime(),
           controller(),
           /* created_prior_to_navigation */
-          IsMainPageLoadPending(unsafe_resources))) {}
+          IsMainPageResourceLoadPending(unsafe_resources))) {}
 
 BaseBlockingPage::~BaseBlockingPage() = default;
 
@@ -78,7 +78,7 @@ const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
 BaseBlockingPage::CreateDefaultDisplayOptions(
     const UnsafeResourceList& unsafe_resources) {
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      IsMainPageLoadPending(unsafe_resources),
+      IsMainPageResourceLoadPending(unsafe_resources),
       false,                 // kSafeBrowsingExtendedReportingOptInAllowed
       false,                 // is_off_the_record
       false,                 // is_extended_reporting
@@ -93,12 +93,12 @@ BaseBlockingPage::CreateDefaultDisplayOptions(
 }
 
 // static
-bool BaseBlockingPage::IsMainPageLoadPending(
+bool BaseBlockingPage::IsMainPageResourceLoadPending(
     const UnsafeResourceList& unsafe_resources) {
   // If there is more than one unsafe resource, the main page load must not be
   // pending. Otherwise, check if the one resource is.
   return unsafe_resources.size() == 1 &&
-         AsyncCheckTracker::IsMainPageLoadPending(unsafe_resources[0]);
+         AsyncCheckTracker::IsMainPageResourceLoadPending(unsafe_resources[0]);
 }
 
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {

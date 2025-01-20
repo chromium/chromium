@@ -16,7 +16,6 @@ Cors issue: {
                 url : 
             }
             request : {
-                requestId : <string>
                 url : file://doesnt.matter/
             }
         }
@@ -41,7 +40,6 @@ Cors issue: {
                 url : 
             }
             request : {
-                requestId : <string>
                 url : https://devtools-b.oopif.test:8443/index.html
             }
         }
@@ -66,7 +64,6 @@ Cors issue: {
                 url : 
             }
             request : {
-                requestId : <string>
                 url : https://devtools-b.oopif.test:8443/index.html
             }
         }

@@ -130,7 +130,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
             base::ToLowerASCII(kQualificationAppId), "",
             UpdateService::Priority::kBackground,
             UpdateService::PolicySameVersionUpdate::kNotAllowed,
-            base::DoNothing()))
+            /*language=*/"", base::DoNothing()))
         ->Run(base::BindOnce(
             &UpdateServiceInternalQualifyingImpl::UpdateCheckDone, this,
             std::move(callback)));

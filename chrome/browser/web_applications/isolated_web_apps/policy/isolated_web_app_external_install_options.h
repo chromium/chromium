@@ -34,6 +34,9 @@ class IsolatedWebAppExternalInstallOptions final {
   static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
   FromPolicyPrefValue(const base::Value& entry);
 
+  static base::expected<IsolatedWebAppExternalInstallOptions, std::string>
+  FromPolicyPrefValue(const base::Value::Dict& entry);
+
   ~IsolatedWebAppExternalInstallOptions();
 
   IsolatedWebAppExternalInstallOptions(
@@ -53,12 +56,14 @@ class IsolatedWebAppExternalInstallOptions final {
   [[nodiscard]] const std::optional<base::Version>& pinned_version() const {
     return pinned_version_;
   }
+  [[nodiscard]] bool allow_downgrades() const { return allow_downgrades_; }
 
  private:
   IsolatedWebAppExternalInstallOptions(
       GURL update_manifest_url,
       web_package::SignedWebBundleId web_bundle_id,
       UpdateChannel update_channel,
+      bool allow_downgrades,
       std::optional<base::Version> pinned_version = std::nullopt);
 
   // Update manifest contains the info about available versions of the IWA and
@@ -69,6 +74,9 @@ class IsolatedWebAppExternalInstallOptions final {
   // Update Channel ID to specify the desired release channel. If not specified
   // in policy, it is set to "default".
   UpdateChannel update_channel_;
+  // Toggles the possibility to downgrade IWA. If this field is not specified in
+  // policy, it is assumed to be false.
+  bool allow_downgrades_;
   // The desired version of the IWA to pin it to.
   // If specified, the system will attempt to update the app to this version
   // and then disable all further app updates. If the chosen pinned version is

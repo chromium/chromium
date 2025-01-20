@@ -72,11 +72,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(b/202294946): Remove when enabled by default after a few milestones.
-BASE_FEATURE(kGlobalMediaControlsCastStartStop,
-             "GlobalMediaControlsCastStartStop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
              "CastSilentlyRemoveVcOnNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -117,8 +112,9 @@ void ClearMediaRouterStoredPrefsForTesting() {
 
 bool MediaRouterEnabled(content::BrowserContext* context) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kMediaRouter))
+  if (!base::FeatureList::IsEnabled(kMediaRouter)) {
     return false;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1380828): Make the Media Router feature configurable via a
@@ -134,8 +130,9 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   base::flat_map<content::BrowserContext*, bool>& pref_values =
       GetStoredPrefValues();
   auto const it = pref_values.find(context);
-  if (it != pref_values.end())
+  if (it != pref_values.end()) {
     return it->second;
+  }
 
   // Check the enterprise policy.
   const PrefService::Preference* pref = GetMediaRouterPref(context);
@@ -196,11 +193,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
 
 bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
-}
-
-bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
-         MediaRouterEnabled(context);
 }
 
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {

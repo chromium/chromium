@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kHoldback"/>
   <int value="1" label="kV1"/>
   <int value="2" label="kV2"/>
+  <int value="3" label="kV3"/>
 </enum>
 
 <enum name="WelcomeTourInteraction">
@@ -75,6 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kUserNotNewCrossDevice"/>
   <int value="7" label="kUserTypeNotRegular"/>
   <int value="8" label="kUserNotNewLocally"/>
+  <int value="9" label="kHoldbackExperimentArm"/>
 </enum>
 
 <enum name="WelcomeTourResult">

@@ -9,9 +9,11 @@
 #include <limits>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -45,6 +47,26 @@ const char* XcursorLibraryPath(void);
 namespace ui {
 
 namespace {
+
+using ThemeAndCursorName = std::pair<std::string, std::string>;
+
+// Track the addition of an object to a set, removing it automatically when
+// the ScopedSetInsertion goes out of scope.
+class ScopedSetInsertion {
+ public:
+  ScopedSetInsertion(base::flat_set<ThemeAndCursorName>* org_set,
+                     const ThemeAndCursorName& elem)
+      : set_(org_set), elem_(elem) {
+    set_->insert(elem);
+  }
+  ScopedSetInsertion(const ScopedSetInsertion&) = delete;
+  ScopedSetInsertion& operator=(const ScopedSetInsertion&) = delete;
+  ~ScopedSetInsertion() { set_->erase(elem_); }
+
+ private:
+  const raw_ptr<base::flat_set<ThemeAndCursorName>> set_;
+  const ThemeAndCursorName elem_;
+};
 
 std::string GetEnv(const std::string& var) {
   auto env = base::Environment::Create();
@@ -131,15 +153,21 @@ base::FilePath CanonicalizePath(base::FilePath path) {
   return path;
 }
 
-// Reads the cursor called |name| for the theme named |theme|. Searches  all
-// paths in the XCursor path and parent themes.
-scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
+scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(
     const std::string& theme,
-    const std::string& name) {
+    const std::string& cursor_name,
+    base::flat_set<ThemeAndCursorName>* parent_theme_and_cursor_names) {
   constexpr const char kCursorDir[] = "cursors";
   constexpr const char kThemeInfo[] = "index.theme";
-  std::vector<std::string> base_themes;
 
+  auto theme_and_cursor_name = std::make_pair(theme, cursor_name);
+  if (parent_theme_and_cursor_names->contains(theme_and_cursor_name)) {
+    return nullptr;
+  }
+  ScopedSetInsertion scoped_set_insertion(parent_theme_and_cursor_names,
+                                          theme_and_cursor_name);
+
+  std::vector<std::string> base_themes;
   auto paths = base::SplitString(CursorPath(), ":", base::TRIM_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY);
   for (const auto& path : paths) {
@@ -150,23 +178,35 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
     base::FilePath cursor_dir = theme_dir.Append(kCursorDir);
 
     std::string contents;
-    if (base::ReadFileToString(cursor_dir.Append(name), &contents))
+    if (base::ReadFileToString(cursor_dir.Append(cursor_name), &contents)) {
       return base::MakeRefCounted<base::RefCountedString>(std::move(contents));
+    }
 
     if (base_themes.empty())
       base_themes = GetBaseThemes(theme_dir.Append(kThemeInfo));
   }
 
   for (const auto& path : base_themes) {
-    if (auto contents = ReadCursorFromTheme(path, name))
+    if (auto contents = ReadCursorFromThemeImpl(
+            path, cursor_name, parent_theme_and_cursor_names)) {
       return contents;
+    }
   }
 
   return nullptr;
 }
 
+// Reads the cursor called `name` for the theme named `theme`. Searches all
+// paths in the XCursor path and parent themes.
+scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
+    const std::string& theme,
+    const std::string& cursor_name) {
+  base::flat_set<ThemeAndCursorName> parent_theme_names;
+  return ReadCursorFromThemeImpl(theme, cursor_name, &parent_theme_names);
+}
+
 scoped_refptr<base::RefCountedMemory> ReadCursorFile(
-    const std::string& name,
+    const std::string& cursor_name,
     const std::string& rm_xcursor_theme) {
   constexpr const char kDefaultTheme[] = "default";
   std::string themes[] = {
@@ -186,21 +226,22 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFile(
   for (const std::string& theme : themes) {
     if (theme.empty())
       continue;
-    if (auto file = ReadCursorFromTheme(theme, name))
+    if (auto file = ReadCursorFromTheme(theme, cursor_name)) {
       return file;
+    }
   }
   return nullptr;
 }
 
 std::vector<XCursorLoader::Image> ReadCursorImages(
-    const std::vector<std::string>& names,
+    const std::vector<std::string>& cursor_names,
     const std::string& rm_xcursor_theme,
     uint32_t preferred_size) {
   // Fallback on a left pointer if possible.
-  auto names_copy = names;
-  names_copy.push_back("left_ptr");
-  for (const auto& name : names_copy) {
-    if (auto contents = ReadCursorFile(name, rm_xcursor_theme)) {
+  auto cursor_names_copy = cursor_names;
+  cursor_names_copy.push_back("left_ptr");
+  for (const auto& cursor_name : cursor_names_copy) {
+    if (auto contents = ReadCursorFile(cursor_name, rm_xcursor_theme)) {
       auto images = ParseCursorFile(contents, preferred_size);
       if (!images.empty())
         return images;
@@ -237,19 +278,19 @@ XCursorLoader::~XCursorLoader() {
 }
 
 scoped_refptr<X11Cursor> XCursorLoader::LoadCursor(
-    const std::vector<std::string>& names) {
+    const std::vector<std::string>& cursor_names) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cursor = base::MakeRefCounted<X11Cursor>();
   if (SupportsCreateCursor()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(ReadCursorImages, names, rm_xcursor_theme_,
+        base::BindOnce(ReadCursorImages, cursor_names, rm_xcursor_theme_,
                        GetPreferredCursorSize()),
         base::BindOnce(&XCursorLoader::LoadCursorImpl,
-                       weak_factory_.GetWeakPtr(), cursor, names));
+                       weak_factory_.GetWeakPtr(), cursor, cursor_names));
   } else {
-    LoadCursorImpl(cursor, names, {});
+    LoadCursorImpl(cursor, cursor_names, {});
   }
   return cursor;
 }
@@ -324,7 +365,7 @@ scoped_refptr<X11Cursor> XCursorLoader::CreateCursor(
 
 void XCursorLoader::LoadCursorImpl(
     scoped_refptr<X11Cursor> cursor,
-    const std::vector<std::string>& names,
+    const std::vector<std::string>& cursor_names,
     const std::vector<XCursorLoader::Image>& images) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto xcursor = connection_->GenerateId<x11::Cursor>();
@@ -332,7 +373,7 @@ void XCursorLoader::LoadCursorImpl(
     xcursor = CreateCursor(images)->ReleaseCursor();
   } else {
     // Fallback to using a font cursor.
-    auto core_char = CursorNamesToChar(names);
+    auto core_char = CursorNamesToChar(cursor_names);
     constexpr uint16_t kFontCursorFgColor = 0;
     constexpr uint16_t kFontCursorBgColor = 65535;
     connection_->CreateGlyphCursor({xcursor, cursor_font_, cursor_font_,
@@ -401,7 +442,7 @@ void XCursorLoader::ParseXResources(std::string_view resources) {
 }
 
 uint16_t XCursorLoader::CursorNamesToChar(
-    const std::vector<std::string>& names) const {
+    const std::vector<std::string>& cursor_names) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // These cursor names are indexed by their ID in a cursor font.
@@ -485,8 +526,8 @@ uint16_t XCursorLoader::CursorNamesToChar(
       {"xterm", 76u},
   });
 
-  for (const auto& name : names) {
-    auto it = kMap.find(name);
+  for (const auto& cursor_name : cursor_names) {
+    auto it = kMap.find(cursor_name);
     if (it != kMap.end()) {
       return it->second;
     }

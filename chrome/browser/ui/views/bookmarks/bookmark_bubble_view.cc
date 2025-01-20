@@ -217,9 +217,10 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
         BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
-    if (node)
+    if (node) {
       model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
                     FROM_HERE);
+    }
 
     return true;
   }
@@ -229,8 +230,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
   void OnWindowClosing() {
-    if (should_apply_edits_)
+    if (should_apply_edits_) {
       ApplyEdits();
+    }
     bookmark_bubble_ = nullptr;
 
     if (close_callback_) {
@@ -286,8 +288,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
         BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
-    if (!node)
+    if (!node) {
       return;
+    }
     const std::u16string new_title =
         dialog_model()->GetTextfieldByUniqueId(kBookmarkNameFieldId)->text();
     if (new_title != node->GetTitle()) {
@@ -334,8 +337,9 @@ void BookmarkBubbleView::ShowBubble(
     Browser* browser,
     const GURL& url,
     bool already_bookmarked) {
-  if (bookmark_bubble_)
+  if (bookmark_bubble_) {
     return;
+  }
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   BubbleSignInPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -446,8 +450,9 @@ void BookmarkBubbleView::ShowBubble(
       dialog_model_builder.Build(), anchor_view,
       views::BubbleBorder::TOP_RIGHT);
   bookmark_bubble_ = bubble.get();
-  if (highlighted_button)
+  if (highlighted_button) {
     bubble->SetHighlightedButton(highlighted_button);
+  }
 
   if (ShouldShowShoppingCollectionFootnote(profile, bookmark_model,
                                            bookmark_node)) {
@@ -475,8 +480,9 @@ void BookmarkBubbleView::ShowBubble(
 
 // static
 void BookmarkBubbleView::Hide() {
-  if (bookmark_bubble_)
+  if (bookmark_bubble_) {
     bookmark_bubble_->GetWidget()->Close();
+  }
 }
 
 // static

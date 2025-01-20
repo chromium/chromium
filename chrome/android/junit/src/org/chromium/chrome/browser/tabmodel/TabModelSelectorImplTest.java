@@ -349,13 +349,12 @@ public class TabModelSelectorImplTest {
      * A test method to verify that {@link
      * IncognitoReauthDialogDelegate#OnBeforeIncognitoTabModelSelected} gets called before any other
      * {@link TabModelSelectorObserver} listening to {@link
-     * TabModelSelectorObserver#onTabModelSelected}.
+     * TabModelSelectorObserver#getCurrentTabModelSupplier}.
      */
     @Test
     public void
             testIncognitoReauthDialogDelegate_OnBeforeIncognitoTabModelSelected_called_Before() {
         doNothing().when(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
-        doNothing().when(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
         doNothing().when(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
@@ -372,7 +371,6 @@ public class TabModelSelectorImplTest {
 
         order.verify(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
         order.verify(mTabModelSupplierObserverMock).onResult(any());
-        order.verify(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
 
         mTabModelSelector
                 .getCurrentTabModelSupplier()
@@ -402,12 +400,11 @@ public class TabModelSelectorImplTest {
         verify(mTabModelSupplierObserverMock).onResult(any());
 
         doNothing().when(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
-        doNothing().when(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
         doNothing().when(mTabModelSelectorObserverMock).onChange();
 
         InOrder order = inOrder(mTabModelSelectorObserverMock, mIncognitoReauthDialogDelegateMock);
+        verify(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.selectModel(/* incognito= */ false);
-        verify(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
         verify(mTabModelSupplierObserverMock, times(2)).onResult(any());
 
         // The onChange method below is posted as a task to the main looper, and therefore we need

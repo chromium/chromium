@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
@@ -64,7 +66,10 @@ WebauthnDialog* WebauthnDialog::CreateAndShow(
   auto* dialog_delegate = new WebauthnDialogView(controller, dialog_state);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(controller->GetWebContents());
-  tab_interface->CreateAndShowTabScopedWidget(dialog_delegate).release();
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateShowDialogAndBlockTabInteraction(dialog_delegate)
+      .release();
   return dialog_delegate;
 }
 

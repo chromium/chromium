@@ -89,12 +89,6 @@ void RecordIppQueryResult(const PrinterQueryResult& result) {
   bool reachable = result != PrinterQueryResult::kHostnameResolution &&
                    result != PrinterQueryResult::kUnreachable;
   UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.IppDeviceReachable", reachable);
-
-  if (reachable) {
-    // Only record whether the query was successful if we reach the printer.
-    bool query_success = (result == PrinterQueryResult::kSuccess);
-    UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.IppAttributesSuccess", query_success);
-  }
 }
 
 // Query an IPP printer to check for autoconf support where the printer is

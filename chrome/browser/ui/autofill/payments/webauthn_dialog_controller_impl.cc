@@ -24,8 +24,9 @@ WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
   // WebauthnDialogView::dtor() being called, but the reference to
   // controller is not reset. Need to reset via WebauthnDialogView::Hide()
   // to avoid crash.
-  if (dialog_model_)
+  if (dialog_model_) {
     dialog_model_->SetDialogState(WebauthnDialogState::kInactive);
+  }
 }
 
 void WebauthnDialogControllerImpl::ShowOfferDialog(
@@ -50,8 +51,9 @@ void WebauthnDialogControllerImpl::ShowVerifyPendingDialog(
 }
 
 bool WebauthnDialogControllerImpl::CloseDialog() {
-  if (!dialog_model_)
+  if (!dialog_model_) {
     return false;
+  }
 
   dialog_model_->SetDialogState(WebauthnDialogState::kInactive);
   return true;

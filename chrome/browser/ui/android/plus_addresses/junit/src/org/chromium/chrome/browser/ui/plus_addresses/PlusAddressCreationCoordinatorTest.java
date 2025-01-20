@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)

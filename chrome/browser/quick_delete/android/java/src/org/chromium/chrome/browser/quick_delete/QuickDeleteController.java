@@ -65,9 +65,8 @@ public class QuickDeleteController {
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
-     *     history disambiguation notice.
-     * @param archivedTabModel The {@link TabModel} for archived tabs.
+     * @param tabModelSelector {@link TabModelSelector} for regular tabs.
+     * @param archivedTabModelSelector The {@link TabModelSelector} for archived tabs.
      */
     public QuickDeleteController(
             @NonNull Context context,
@@ -144,41 +143,10 @@ public class QuickDeleteController {
     }
 
     /**
-     * @return True, if quick delete feature flag is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteEnabled() {
-        return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
-    }
-
-    /** returns True, if quick delete follow up is enabled, false otherwise */
-    public static boolean isQuickDeleteFollowupEnabled() {
-        return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
-    }
-
-    /** returns True, if quick delete follow up open a new tab on empty tab switch arm is enabled */
-    public static boolean isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState() {
-        return isQuickDeleteFollowupEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP,
-                        "open_tab_on_empty_state",
-                        true);
-    }
-
-    /** returns True, if the quick delete follow up tab deletion arm is enabled */
-    public static boolean isQuickDeleteFollowupEnabledWithTabClosure() {
-        return isQuickDeleteFollowupEnabled()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP,
-                        "enable_tab_closure",
-                        true);
-    }
-
-    /**
      * @return True, if quick delete survey is enabled, false otherwise
      */
     public static boolean isQuickDeleteSurveyEnabled() {
-        return isQuickDeleteFollowupEnabled()
-                && ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
+        return ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
     }
 
     /** A method called when the user confirms or cancels the dialog. */
@@ -235,9 +203,10 @@ public class QuickDeleteController {
             mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         }
         boolean isTabModelEmpty = mTabModel.getCount() == 0;
-
-        if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
-            List<Tab> tabs = mDeleteRegularTabsFilter.getListOfTabsFilteredToBeClosed();
+        if (!isTabModelEmpty) {
+            List<Tab> tabs =
+                    mDeleteRegularTabsFilter
+                            .getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups();
             mDelegate.showQuickDeleteAnimation(
                     () -> closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock), tabs);
         } else {

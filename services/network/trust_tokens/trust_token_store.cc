@@ -63,7 +63,6 @@ std::unique_ptr<TrustTokenStore> TrustTokenStore::CreateForTesting(
 }
 
 void TrustTokenStore::RecordIssuance(const SuitableTrustTokenOrigin& issuer) {
-  SuitableTrustTokenOrigin issuer_origin = issuer;
   std::unique_ptr<TrustTokenIssuerConfig> config =
       persister_->GetIssuerConfig(issuer);
   if (!config)

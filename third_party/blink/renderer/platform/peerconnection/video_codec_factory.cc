@@ -263,4 +263,38 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
                                           stats_callback);
 }
 
+std::unique_ptr<webrtc::VideoEncoderFactory>
+CreateWebrtcVideoEncoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  if (gpu_factories && gpu_factories->IsGpuVideoEncodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWEncodingEnabled()) {
+    return std::make_unique<RTCVideoEncoderFactory>(
+        gpu_factories, /*encoder_metrics_provider_factory=*/nullptr,
+        /*override_disabled_profiles=*/true);
+  }
+
+  // EncoderAdapter without HW encoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<EncoderAdapter>(nullptr, base::DoNothing());
+}
+
+std::unique_ptr<webrtc::VideoDecoderFactory>
+CreateWebrtcVideoDecoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space) {
+  const bool use_hw_decoding =
+      gpu_factories != nullptr &&
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWDecodingEnabled();
+
+  if (use_hw_decoding) {
+    return std::make_unique<RTCVideoDecoderFactory>(
+        gpu_factories, render_color_space, /*override_disabled_profiles=*/true);
+  }
+
+  // DecoderAdapter without HW decoder will always return powerEfficient=false
+  // when QueryCodecSupport() is called.
+  return std::make_unique<DecoderAdapter>(nullptr, base::DoNothing());
+}
+
 }  // namespace blink

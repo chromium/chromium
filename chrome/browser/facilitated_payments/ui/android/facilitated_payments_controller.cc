@@ -12,7 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
-#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
@@ -95,7 +95,9 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
     case payments::facilitated::UiEvent::kNewScreenShown:
       break;
   }
-  ui_event_listener_.Run(ui_event);
+  if (ui_event_listener_) {
+    ui_event_listener_.Run(ui_event);
+  }
 }
 
 // TODO: crbug.com/375089558 - Deprecate once Java side is able to call

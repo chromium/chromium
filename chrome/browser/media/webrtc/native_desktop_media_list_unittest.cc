@@ -133,12 +133,12 @@ class MockObserver : public DesktopMediaListObserver {
 
 class FakeScreenCapturer : public ThumbnailCapturer {
  public:
-  FakeScreenCapturer() {}
+  FakeScreenCapturer() = default;
 
   FakeScreenCapturer(const FakeScreenCapturer&) = delete;
   FakeScreenCapturer& operator=(const FakeScreenCapturer&) = delete;
 
-  ~FakeScreenCapturer() override {}
+  ~FakeScreenCapturer() override = default;
 
   // ThumbnailCapturer implementation.
   void Start(Consumer* consumer) override { consumer_ = consumer; }
@@ -178,7 +178,7 @@ class FakeWindowCapturer : public ThumbnailCapturer {
   FakeWindowCapturer(const FakeWindowCapturer&) = delete;
   FakeWindowCapturer& operator=(const FakeWindowCapturer&) = delete;
 
-  ~FakeWindowCapturer() override {}
+  ~FakeWindowCapturer() override = default;
 
   void SetWindowList(const SourceList& list) {
     base::AutoLock lock(window_list_lock_);

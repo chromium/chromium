@@ -27,12 +27,18 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
+#include "url/gurl.h"
 
 namespace tabs {
 
 namespace {
-// Minimum number of tabs in the tabstrip to show the nudge.
-constexpr int kMinTabCountForNudge = 15;
+// Minimum number of duplicate tabs in the tabstrip that can be decluttered to
+// show the nudge.
+constexpr int kMinDeclutterableDuplicateTabCountForNudge = 3;
+// Minimum number of inactive tabs in the tabstrip that can be decluttered to
+// show the nudge.
+constexpr int kMinTabCountForInactiveTabNudge = 15;
 // Minimum percentage of stale tabs in the tabstrip to show the nudge.
 constexpr double kStaleTabPercentageThreshold = 0.10;
 }  // namespace
@@ -69,7 +75,7 @@ TabDeclutterController::TabDeclutterController(
   StartDeclutterTimer();
 }
 
-TabDeclutterController::~TabDeclutterController() {}
+TabDeclutterController::~TabDeclutterController() = default;
 
 void TabDeclutterController::StartDeclutterTimer() {
   declutter_timer_->Start(
@@ -79,42 +85,32 @@ void TabDeclutterController::StartDeclutterTimer() {
 }
 
 void TabDeclutterController::ProcessTabs() {
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
+
   if (features::IsTabstripDedupeEnabled()) {
-    ProcessDuplicateTabs();
-  }
-  ProcessStaleTabs();
-}
-
-void TabDeclutterController::ProcessDuplicateTabs() {
-  CHECK(features::IsTabstripDedupeEnabled());
-  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs =
-      GetDuplicateTabs();
-  for (auto& observer : observers_) {
-    observer.OnDuplicateTabsProcessed(duplicate_tabs);
+    duplicate_tabs = GetDuplicateTabs();
   }
 
-  // TODO(shibalik): Add observer call for nudge behavior.
-}
-
-void TabDeclutterController::ProcessStaleTabs() {
-  CHECK(features::IsTabstripDeclutterEnabled());
-
-  std::vector<tabs::TabInterface*> tabs = GetStaleTabs();
+  std::vector<tabs::TabInterface*> stale_tabs = GetStaleTabs();
 
   for (auto& observer : observers_) {
-    observer.OnStaleTabsProcessed(tabs);
+    observer.OnUnusedTabsProcessed(stale_tabs, duplicate_tabs);
   }
 
-  if (DeclutterNudgeCriteriaMet(tabs)) {
+  if (DeclutterNudgeCriteriaMet(stale_tabs, duplicate_tabs)) {
     next_nudge_valid_time_ticks_ =
         usage_tick_clock_->NowTicks() + nudge_timer_interval_;
 
     for (auto& observer : observers_) {
-      observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
+      observer.OnTriggerDeclutterUIVisibility();
     }
 
-    stale_tabs_previous_nudge_.clear();
-    stale_tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
+    tabs_previous_nudge_.clear();
+    tabs_previous_nudge_.insert(stale_tabs.begin(), stale_tabs.end());
+
+    for (const auto& [url, tabs] : duplicate_tabs) {
+      tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
+    }
   }
 }
 
@@ -127,13 +123,17 @@ TabDeclutterController::GetDuplicateTabs() {
        tab_index++) {
     tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
 
+    if (IsTabExcluded(tab)) {
+      continue;
+    }
+
     if (tab->IsPinned() || tab->GetGroup().has_value()) {
       continue;
     }
 
     GURL url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
 
-    if (url.is_empty()) {
+    if (!url.is_valid()) {
       continue;
     }
 
@@ -164,8 +164,7 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
        tab_index++) {
     tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
 
-    if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) !=
-        excluded_tabs_.end()) {
+    if (IsTabExcluded(tab)) {
       continue;
     }
 
@@ -191,7 +190,8 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
 }
 
 void TabDeclutterController::DeclutterTabs(
-    std::vector<tabs::TabInterface*> tabs) {
+    std::vector<tabs::TabInterface*> tabs,
+    const std::vector<GURL>& urls) {
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.DeclutterTabCount",
                             tabs.size());
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.TotalTabCount",
@@ -219,7 +219,51 @@ void TabDeclutterController::DeclutterTabs(
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 
+  for (GURL url : urls) {
+    // Sort the tabs with `url` based on the last committed navigation time and
+    // close all the tabs except the oldest tab.
+    std::vector<std::pair<tabs::TabInterface*, base::Time>> url_matching_tabs;
+
+    for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
+         ++tab_index) {
+      tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+
+      if (tab->GetContents()->GetLastCommittedURL().GetWithoutRef() != url) {
+        continue;
+      }
+
+      // It is possible that the timestamp is not present. Prefer to delete this
+      // as a duplicate in that case. This can be due to
+      //   - The navigation was restored and for some reason the
+      //     timestamp wasn't available;
+      //   - or the navigation was copied from a foreign session.
+      auto* last_entry =
+          tab->GetContents()->GetController().GetLastCommittedEntry();
+      base::Time last_committed_time = last_entry->GetTimestamp().is_null()
+                                           ? base::Time::Max()
+                                           : last_entry->GetTimestamp();
+
+      url_matching_tabs.emplace_back(tab, last_committed_time);
+    }
+
+    std::sort(url_matching_tabs.begin(), url_matching_tabs.end(),
+              [](const std::pair<tabs::TabInterface*, base::Time>& a,
+                 const std::pair<tabs::TabInterface*, base::Time>& b) {
+                return a.second < b.second;
+              });
+
+    // Close all the tabs except the first tab which will be the oldest
+    // duplicate tab.
+    for (size_t i = 1; i < url_matching_tabs.size(); ++i) {
+      tabs::TabInterface* tab = url_matching_tabs[i].first;
+      tab_strip_model_->CloseWebContentsAt(
+          tab_strip_model_->GetIndexOfWebContents(tab->GetContents()),
+          TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+    }
+  }
+
   excluded_tabs_.clear();
+  excluded_urls_.clear();
 }
 
 void TabDeclutterController::DidBecomeActive(BrowserWindowInterface* browser) {
@@ -236,29 +280,80 @@ void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabInterface* tab) {
     return;
   }
 
-  if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) ==
-      excluded_tabs_.end()) {
-    excluded_tabs_.push_back(tab);
+  excluded_tabs_.insert(tab);
+}
+
+void TabDeclutterController::ExcludeFromDuplicateTabs(GURL url) {
+  if (!url.is_valid()) {
+    return;
   }
+
+  excluded_urls_.insert(url.GetWithoutRef());
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
+    base::span<tabs::TabInterface*> stale_tabs,
+    std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {
+  if (!is_active_ ||
+      (usage_tick_clock_->NowTicks() < next_nudge_valid_time_ticks_)) {
+    return false;
+  }
+
+  return HasNewUnusedTabsForNudge(stale_tabs, duplicate_tabs) &&
+         (DeclutterStaleTabsNudgeCriteriaMet(stale_tabs) ||
+          DeclutterDuplicateTabsNudgeCriteriaMet(duplicate_tabs));
+}
+
+bool TabDeclutterController::IsTabExcluded(tabs::TabInterface* tab) const {
+  if (excluded_tabs_.find(tab) != excluded_tabs_.end()) {
+    return true;
+  }
+
+  GURL url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
+  if (excluded_urls_.find(url) != excluded_urls_.end()) {
+    return true;
+  }
+
+  return false;
+}
+
+bool TabDeclutterController::HasNewUnusedTabsForNudge(
+    base::span<tabs::TabInterface*> stale_tabs,
+    std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) const {
+  // Check for new unused stale tabs.
+  if (IsNewTabDetectedForNudge(stale_tabs)) {
+    return true;
+  }
+
+  // Check for new unused duplicate tabs.
+  for (auto& [url, tabs] : duplicate_tabs) {
+    if (IsNewTabDetectedForNudge(base::span(tabs))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool TabDeclutterController::IsNewTabDetectedForNudge(
+    base::span<tabs::TabInterface*> tabs) const {
+  for (tabs::TabInterface* tab : tabs) {
+    if (tabs_previous_nudge_.count(tab) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool TabDeclutterController::DeclutterStaleTabsNudgeCriteriaMet(
     base::span<tabs::TabInterface*> stale_tabs) {
-  if (!is_active_) {
-    return false;
-  }
-
-  if (usage_tick_clock_->NowTicks() < next_nudge_valid_time_ticks_) {
-    return false;
-  }
-
   if (stale_tabs.empty()) {
     return false;
   }
 
   const int total_tab_count = tab_strip_model_->GetTabCount();
 
-  if (total_tab_count < kMinTabCountForNudge) {
+  if (total_tab_count < kMinTabCountForInactiveTabNudge) {
     return false;
   }
 
@@ -269,21 +364,34 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
     return false;
   }
 
-  // If there is a new stale tab found in this computation, return true.
-  for (tabs::TabInterface* tab : stale_tabs) {
-    if (stale_tabs_previous_nudge_.count(tab) == 0) {
-      return true;
-    }
-  }
-
-  return false;
+  return true;
 }
 
-void TabDeclutterController::OnActionUIDismissed(
-    base::PassKey<TabSearchContainer>) {
+bool TabDeclutterController::DeclutterDuplicateTabsNudgeCriteriaMet(
+    std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) {
+  int declutterable_duplicate_tabs = 0;
+  for (const auto& [url, tabs] : duplicate_tabs) {
+    // The original duplicate tab is not declutterable.
+    declutterable_duplicate_tabs += tabs.size() - 1;
+  }
+
+  return declutterable_duplicate_tabs >=
+         kMinDeclutterableDuplicateTabCountForNudge;
+}
+
+void TabDeclutterController::ResetAndDoubleNudgeTimer() {
   nudge_timer_interval_ = nudge_timer_interval_ * 2;
   next_nudge_valid_time_ticks_ =
       usage_tick_clock_->NowTicks() + nudge_timer_interval_;
+}
+void TabDeclutterController::OnActionUIDismissed(
+    base::PassKey<TabSearchContainer>) {
+  ResetAndDoubleNudgeTimer();
+}
+
+void TabDeclutterController::OnActionUIDismissed(
+    base::PassKey<TabStripActionContainer>) {
+  ResetAndDoubleNudgeTimer();
 }
 
 void TabDeclutterController::SetTimerForTesting(

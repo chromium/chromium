@@ -327,10 +327,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   AnchorEvaluatorImpl CreateAnchorEvaluator(
       const ContainingBlockInfo& container_info,
       const BlockNode& candidate,
-      const LogicalAnchorQueryMap* anchor_queries) const;
+      const StitchedAnchorQueries* anchor_queries) const;
 
   ContainingBlockInfo ApplyPositionAreaOffsets(
       const PositionAreaOffsets& offsets,
+      PhysicalOffset default_anchor_scroll_shift,
       const ContainingBlockInfo& container_info) const;
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);
@@ -344,7 +345,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // changing this to a more accurate name.
   OffsetInfo CalculateOffset(
       const NodeInfo& node_info,
-      const LogicalAnchorQueryMap* anchor_queries = nullptr);
+      const StitchedAnchorQueries* anchor_queries = nullptr);
   // Calculates offsets with the given ComputedStyle. Returns nullopt if
   // |try_fit_available_space| is true and the layout result does not fit the
   // available space.
@@ -443,9 +444,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   const BlockBreakToken* PreviousFragmentainerBreakToken(wtf_size_t) const;
 
   BoxFragmentBuilder* container_builder_;
-  // The builder for the outer block fragmentation context when this is an inner
-  // layout of nested block fragmentation.
-  BoxFragmentBuilder* outer_container_builder_ = nullptr;
+  // The OutOfFlowLayoutPart for the outer block fragmentation context when this
+  // is an inner layout of nested block fragmentation.
+  OutOfFlowLayoutPart* outer_oof_layout_part_ = nullptr;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>

@@ -43,6 +43,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
@@ -68,6 +69,7 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
@@ -92,6 +94,7 @@ void ManagePasswordsIconViews::UpdateUiForState() {
 
   // Hides the page action icon if the associated toolbar icon is pinned.
   if (state_ == password_manager::ui::INACTIVE_STATE ||
+      state_ == password_manager::ui::PASSWORD_CHANGE_STATE ||
       delegate()->ShouldHidePageActionIcon(this)) {
     SetVisible(false);
     return;
@@ -143,11 +146,15 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::MANAGE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:
+    // TODO(crbug.com/375564659): Add tooltip reflecting password change flow
+    // state.
+    case password_manager::ui::PASSWORD_CHANGE_STATE:
     // TODO(b/345242100): Add correct tooltip for passkey saved.
     case password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE:
     case password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE:
     case password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE:
     case password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE:
+    case password_manager::ui::PASSKEY_UPGRADE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
     case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
     case password_manager::ui::PENDING_PASSWORD_STATE:

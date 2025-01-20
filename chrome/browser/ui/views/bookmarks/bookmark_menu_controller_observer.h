@@ -14,7 +14,7 @@ class BookmarkMenuControllerObserver {
       BookmarkMenuController* controller) = 0;
 
  protected:
-  virtual ~BookmarkMenuControllerObserver() {}
+  virtual ~BookmarkMenuControllerObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_CONTROLLER_OBSERVER_H_

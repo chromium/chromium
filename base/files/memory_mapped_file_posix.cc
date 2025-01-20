@@ -38,8 +38,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       DPLOG(ERROR) << "fstat " << file_.GetPlatformFile();
       return false;
     }
-    if (!IsValueInRangeForNumericType<size_t>(file_len))
+    if (!IsValueInRangeForNumericType<size_t>(file_len)) {
       return false;
+    }
     map_size = base::checked_cast<size_t>(file_len);
     byte_size = map_size;
   } else {
@@ -49,11 +50,8 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     // |region| and then add up the |data_offset| displacement.
     int64_t aligned_start = 0;
     size_t aligned_size = 0u;
-    CalculateVMAlignedBoundaries(region.offset,
-                                 region.size,
-                                 &aligned_start,
-                                 &aligned_size,
-                                 &data_offset);
+    CalculateVMAlignedBoundaries(region.offset, region.size, &aligned_start,
+                                 &aligned_size, &data_offset);
 
     // Ensure that the casts in the mmap call below are sane.
     if (aligned_start < 0 ||
@@ -92,8 +90,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     case READ_WRITE_EXTEND:
       prot |= PROT_READ | PROT_WRITE;
 
-      if (!AllocateFileRegion(&file_, region.offset, region.size))
+      if (!AllocateFileRegion(&file_, region.offset, region.size)) {
         return false;
+      }
 
       break;
   }

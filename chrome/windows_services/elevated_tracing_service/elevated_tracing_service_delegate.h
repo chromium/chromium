@@ -5,8 +5,13 @@
 #ifndef CHROME_WINDOWS_SERVICES_ELEVATED_TRACING_SERVICE_ELEVATED_TRACING_SERVICE_DELEGATE_H_
 #define CHROME_WINDOWS_SERVICES_ELEVATED_TRACING_SERVICE_ELEVATED_TRACING_SERVICE_DELEGATE_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/threading/thread.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
+#include "mojo/core/embedder/scoped_ipc_support.h"
 
 namespace elevated_tracing_service {
 
@@ -25,6 +30,8 @@ class Delegate : public ServiceDelegate {
   void PostRun() override;
 
  private:
+  base::Thread ipc_thread_{"IPC"};
+  std::optional<mojo::core::ScopedIPCSupport> ipc_support_;
   scoped_refptr<SessionRegistry> session_registry_;
 };
 

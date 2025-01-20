@@ -88,6 +88,12 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
                           const std::string& description_template,
                           const std::string& category_tag) override;
+  bool SendSpecializedFeatureFeedback(
+      const AccountId& account_id,
+      int product_id,
+      std::string description,
+      std::optional<std::string> image,
+      std::optional<std::string> image_mime_type) override;
   void OpenProfileManager() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();

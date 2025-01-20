@@ -44,8 +44,9 @@ WebUIBubbleManager::~WebUIBubbleManager() {
 bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
                                     views::BubbleBorder::Arrow arrow,
                                     ui::ElementIdentifier identifier) {
-  if (bubble_view_)
+  if (bubble_view_) {
     return false;
+  }
 
   cache_timer_->Stop();
 
@@ -73,8 +74,9 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
         BrowserList::GetInstance()->GetLastActive()->tab_strip_model());
   }
 
-  if (identifier)
+  if (identifier) {
     bubble_view_->SetProperty(views::kElementIdentifierKey, identifier);
+  }
 
   if (GetContentsWrapper()->is_ready_to_show()) {
     GetContentsWrapper()->ShowUI();
@@ -84,8 +86,9 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 }
 
 void WebUIBubbleManager::CloseBubble() {
-  if (!bubble_view_)
+  if (!bubble_view_) {
     return;
+  }
   DCHECK(bubble_view_->GetWidget());
   bubble_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
@@ -126,11 +129,13 @@ WebUIContentsWrapper* WebUIBubbleManager::GetContentsWrapperForTesting() {
 }
 
 void WebUIBubbleManager::ResetContentsWrapper() {
-  if (!cached_contents_wrapper_)
+  if (!cached_contents_wrapper_) {
     return;
+  }
 
-  if (bubble_view_)
+  if (bubble_view_) {
     CloseBubble();
+  }
   DCHECK(!cached_contents_wrapper_->GetHost());
   cached_contents_wrapper_.reset();
 }

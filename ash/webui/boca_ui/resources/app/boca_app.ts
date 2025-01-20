@@ -148,6 +148,7 @@ export declare interface StudentActivity {
   // TODO(b/365191878): Remove this after refactoring existing schema to support
   // multi-group.
   joinMethod: JoinMethod;
+  viewScreenSessionCode?: string;
 }
 
 /**
@@ -172,6 +173,11 @@ export declare interface NetworkInfo {
  * The delegate which exposes privileged function to App
  */
 export declare interface ClientApiDelegate {
+  /**
+   * Request authentication for the webview.
+   */
+  authenticateWebview(): Promise<boolean>;
+
   /**
    * Get a list of Window tabs opened on device.
    */
@@ -223,6 +229,11 @@ export declare interface ClientApiDelegate {
    * Submit an access code for student to join the session.
    */
   submitAccessCode(accessCode: string): Promise<SubmitAccessCodeResult>;
+
+  /**
+   * Request to view the screen of the student with the given id.
+   */
+  viewStudentScreen(id: string): Promise<boolean>;
 }
 
 /**

@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,7 +20,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
-
 #if BUILDFLAG(ENABLE_FREETYPE)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #else
@@ -49,7 +50,6 @@ mojom::TypefaceSlant ConvertToMojomFontStyle(SkFontStyle::Slant slant) {
   }
   NOTREACHED();
 }
-
 }  // namespace
 
 FontDataManager::FontDataManager()
@@ -109,64 +109,89 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
 
   mojom::MatchFamilyNameResultPtr match_result;
   {
-    TRACE_EVENT1("fonts", "FontDataManager::onMakeFromStreamArgs - Remote Call",
-                 "family_name", cpp_requested_family_name);
+    TRACE_EVENT1("fonts", "FontDataManager::onMatchFamilyStyle", "family_name",
+                 cpp_requested_family_name);
     GetRemoteFontDataService().MatchFamilyName(cpp_requested_family_name,
                                                std::move(style), &match_result);
   }
 
-  // Create the resulting typeface from the bytes received from the font
+  // Create the resulting typeface from the data received from the font
   // service.
+  std::unique_ptr<base::MemoryMappedFile> mapped_font_file;
   sk_sp<SkTypeface> typeface;
-  if (match_result) {
-    base::ReadOnlySharedMemoryRegion font_data_memory_region =
-        std::move(match_result->region);
-    const void* mapped_memory = nullptr;
-    size_t mapped_size = 0;
-    // Map the memory (if needed) and keep it alive for the lifetime of this
-    // process. A cache is used to avoid mapping the same memory space multiple
-    // time.
-    {
-      base::AutoLock locked(lock_);
-      const auto iter =
-          mapped_regions_.lower_bound(font_data_memory_region.GetGUID());
-      if (iter != mapped_regions_.end() &&
-          iter->first == font_data_memory_region.GetGUID()) {
-        mapped_memory = iter->second.memory();
-        mapped_size = iter->second.size();
-      } else {
-        base::ReadOnlySharedMemoryMapping mapping =
-            font_data_memory_region.Map();
-        if (mapping.IsValid()) {
-          mapped_memory = mapping.memory();
-          mapped_size = mapping.size();
-          mapped_regions_.insert_or_assign(
-              iter, font_data_memory_region.GetGUID(), std::move(mapping));
-        }
+  if (match_result && match_result->typeface_data) {
+    // Attempt to create the SkFontArguments args.
+    base::HeapArray<SkFontArguments::VariationPosition::Coordinate>
+        typeface_axis;
+    SkFontArguments args;
+    args.setCollectionIndex(match_result->ttc_index);
+    if (match_result->variation_position &&
+        match_result->variation_position->coordinateCount > 0) {
+      typeface_axis =
+          base::HeapArray<SkFontArguments::VariationPosition::Coordinate>::
+              Uninit(match_result->variation_position->coordinates.size());
+      for (size_t i = 0;
+           i < match_result->variation_position->coordinates.size(); i++) {
+        const auto& coordinate =
+            match_result->variation_position->coordinates[i];
+        typeface_axis[i] = {.axis = coordinate->axis,
+                            .value = coordinate->value};
       }
+      args.setVariationDesignPosition(
+          {.coordinates = typeface_axis.data(),
+           .coordinateCount = base::checked_cast<int>(typeface_axis.size())});
     }
 
-    // Create the memory stream from the mapped memory.
-    if (mapped_memory && mapped_size > 0) {
-      SkFontArguments args;
-      args.setCollectionIndex(match_result->ttc_index);
-      // Convert the variation position from mojom to an SkFontArguments struct.
-      std::vector<SkFontArguments::VariationPosition::Coordinate> typeface_axis;
-      if (match_result->variation_position &&
-          match_result->variation_position->coordinateCount > 0) {
-        typeface_axis.reserve(
-            match_result->variation_position->coordinates.size());
-        for (const auto& coordinate :
-             match_result->variation_position->coordinates) {
-          typeface_axis.push_back(
-              {.axis = coordinate->axis, .value = coordinate->value});
+    // Attempt to create the typeface data based on the match result.
+    if (match_result->typeface_data->is_font_file()) {
+      TRACE_EVENT("fonts", "FontDataManager - using mapped file");
+      if (auto file_mapping = std::make_unique<base::MemoryMappedFile>();
+          file_mapping->Initialize(
+              std::move(match_result->typeface_data->get_font_file()))) {
+        typeface = onMakeFromStreamArgs(
+            SkMemoryStream::MakeDirect(file_mapping->data(),
+                                       file_mapping->length()),
+            args);
+        if (typeface) {
+          // The typeface was found, so keep the mapping alive.
+          mapped_font_file = std::move(file_mapping);
         }
-        args.setVariationDesignPosition(
-            {.coordinates = typeface_axis.data(),
-             .coordinateCount = base::checked_cast<int>(typeface_axis.size())});
       }
-      typeface = onMakeFromStreamArgs(
-          SkMemoryStream::MakeDirect(mapped_memory, mapped_size), args);
+    } else if (match_result->typeface_data->is_region() &&
+               match_result->typeface_data->get_region().IsValid()) {
+      TRACE_EVENT("fonts", "FontDataManager - using shared memory");
+      base::ReadOnlySharedMemoryRegion font_data_memory_region =
+          std::move(match_result->typeface_data->get_region());
+      const void* mapped_memory = nullptr;
+      size_t mapped_size = 0;
+      // Map the memory (if needed) and keep it alive for the lifetime of this
+      // process. A cache is used to avoid mapping the same memory space
+      // multiple time.
+      {
+        base::AutoLock locked(lock_);
+        const auto iter =
+            mapped_regions_.lower_bound(font_data_memory_region.GetGUID());
+        if (iter != mapped_regions_.end() &&
+            iter->first == font_data_memory_region.GetGUID()) {
+          mapped_memory = iter->second.memory();
+          mapped_size = iter->second.size();
+        } else {
+          base::ReadOnlySharedMemoryMapping mapping =
+              font_data_memory_region.Map();
+          if (mapping.IsValid()) {
+            mapped_memory = mapping.memory();
+            mapped_size = mapping.size();
+            mapped_regions_.insert_or_assign(
+                iter, font_data_memory_region.GetGUID(), std::move(mapping));
+          }
+        }
+      }
+
+      // Create the memory stream from the mapped memory.
+      if (mapped_memory && mapped_size > 0) {
+        typeface = onMakeFromStreamArgs(
+            SkMemoryStream::MakeDirect(mapped_memory, mapped_size), args);
+      }
     }
   }
 
@@ -175,6 +200,9 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
   // fallback stack.
   {
     base::AutoLock locked(lock_);
+    if (mapped_font_file) {
+      mapped_files_.push_back(std::move(mapped_font_file));
+    }
     typeface_cache_.Put(std::move(match_request), typeface);
   }
 
@@ -212,8 +240,8 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
   // Experiment will test the performance of different SkTypefaces.
   // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
 
-  return features::kSkiaFontServiceTypefaceType.Get() ==
-                 features::SkiaFontServiceTypefaceType::kFreetype
+  return features::kFontDataServiceTypefaceType.Get() ==
+                 features::FontDataServiceTypefaceType::kInternal
              ?
 #if BUILDFLAG(ENABLE_FREETYPE)
              custom_fnt_mgr_->makeFromStream(std::move(stream), args)

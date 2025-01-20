@@ -154,9 +154,6 @@ class RecordHandlerImpl::ReportUploader
   ConfigFileAttachedCallback config_file_attached_cb_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Set to |true| if force_confirm flag is present. |false| by default.
-  bool force_confirm_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

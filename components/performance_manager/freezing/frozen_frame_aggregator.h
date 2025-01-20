@@ -19,11 +19,11 @@ class FrameNodeImpl;
 // and aggregating this property to the page and process nodes. As a GraphOwned
 // object it takes care of registering itself as an observer when added to the
 // graph.
-class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
+class FrozenFrameAggregator : public FrameNodeObserver,
                               public GraphOwnedDefaultImpl,
                               public NodeDataDescriberDefaultImpl,
-                              public PageNode::ObserverDefaultImpl,
-                              public ProcessNode::ObserverDefaultImpl {
+                              public PageNodeObserver,
+                              public ProcessNodeObserver {
  public:
   // TODO(chrisha): Check that the graph is empty when this observer is added!
   // https://www.crbug.com/952891

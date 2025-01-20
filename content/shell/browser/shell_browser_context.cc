@@ -22,7 +22,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -199,9 +198,6 @@ ShellBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
 
 OriginTrialsControllerDelegate*
 ShellBrowserContext::GetOriginTrialsControllerDelegate() {
-  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
-    return nullptr;
-
   if (!origin_trials_controller_delegate_) {
     origin_trials_controller_delegate_ =
         std::make_unique<origin_trials::OriginTrials>(

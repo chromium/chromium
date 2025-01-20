@@ -58,32 +58,31 @@ void HistoryCounter::Count() {
   cancelable_task_tracker_.TryCancelAll();
   web_history_request_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  web_history_timeout_.Stop();
 
   has_synced_visits_ = false;
 
-  // Count the locally stored items.
-  local_counting_finished_ = false;
+  history::WebHistoryService* web_history = GetWebHistoryService();
 
+  local_counting_finished_ = false;
+  web_counting_finished_ = !web_history;
+
+  // Count the locally stored items.
   history_service_->GetHistoryCount(
       GetPeriodStart(), GetPeriodEnd(),
       base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
 
-  // If the history sync is enabled, test if there is at least one synced item.
-  history::WebHistoryService* web_history = GetWebHistoryService();
-
   if (!web_history) {
-    web_counting_finished_ = true;
     return;
   }
-
-  web_counting_finished_ = false;
 
   web_history_timeout_.Start(FROM_HERE,
                              base::Seconds(kWebHistoryTimeoutSeconds), this,
                              &HistoryCounter::OnWebHistoryTimeout);
 
+  // If the history sync is enabled, test if there is at least one synced item.
   history::QueryOptions options;
   options.max_count = 1;
   options.begin_time = GetPeriodStart();

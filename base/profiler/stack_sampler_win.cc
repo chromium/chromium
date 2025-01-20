@@ -4,10 +4,7 @@
 
 #include "base/profiler/stack_sampler.h"
 
-#include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/profiler/native_unwinder_win.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate_win.h"
 #include "build/build_config.h"
@@ -21,17 +18,11 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
-  DCHECK(!core_unwinders_factory);
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-  const auto create_unwinders = [] {
-    std::vector<std::unique_ptr<Unwinder>> unwinders;
-    unwinders.push_back(std::make_unique<NativeUnwinderWin>());
-    return unwinders;
-  };
   return base::WrapUnique(new StackSampler(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateWin>(thread_token)),
-      std::move(stack_unwind_data), BindOnce(create_unwinders),
+      std::move(stack_unwind_data), std::move(core_unwinders_factory),
       std::move(record_sample_callback), test_delegate));
 #else
   return nullptr;

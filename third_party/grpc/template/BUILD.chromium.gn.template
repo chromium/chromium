@@ -28,6 +28,9 @@
     import("//build/config/android/rules.gni")
   }
 
+  # WARNING: This config is public and applies to many targets that are first
+  # party code. Keep this config to a minimum and do not disable any compiler
+  # warnings here.
   config("grpc_config") {
     include_dirs = [
       "src/include",
@@ -578,8 +581,9 @@
   ${indent}  ]
   ${indent}  configs += [
   ${indent}    "//third_party/protobuf:protobuf_config",
+  ${indent}    ":grpc_config_private",
+  ${indent}    ":grpc_config",
   ${indent}  ]
-  ${indent}  public_configs = [ ":grpc_config" ]
   ${indent}}
   </%def><%!
   %>\
@@ -635,4 +639,3 @@
       ]
     }
   }
-

@@ -162,7 +162,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
       content::BrowserContext* browser_context) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  ReferringAppInfo GetReferringAppInfo(
+  internal::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
 

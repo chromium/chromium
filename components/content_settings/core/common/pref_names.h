@@ -77,6 +77,10 @@ inline constexpr char kManagedDefaultDirectSocketsSetting[] =
 inline constexpr char
     kManagedDefaultDirectSocketsPrivateNetworkAccessSetting[] =
         "profile.managed_default_content_settings.direct_sockets_pna";
+inline constexpr char kManagedDefaultLegacyCookieScope[] =
+    "profile.managed_default_content_settings.legacy_cookie_scope";
+inline constexpr char kManagedDefaultControlledFrameSetting[] =
+    "profile.managed_default_content_settings.controlled_frame";
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
@@ -182,6 +186,18 @@ inline constexpr char
 inline constexpr char
     kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls[] =
         "profile.managed_direct_sockets_pna_blocked_for_urls";
+inline constexpr char kManagedLegacyCookieScopeForDomains[] =
+    "profile.managed_legacy_cookie_scope_for_domains";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kManagedSmartCardConnectAllowedForUrls[] =
+    "profile.managed_smart_card_connect_allowed_for_urls";
+inline constexpr char kManagedSmartCardConnectBlockedForUrls[] =
+    "profile.managed_smart_card_connect_blocked_for_urls";
+#endif
+inline constexpr char kManagedControlledFrameAllowedForUrls[] =
+    "profile.managed_controlled_frame_allowed_for_urls";
+inline constexpr char kManagedControlledFrameBlockedForUrls[] =
+    "profile.managed_controlled_frame_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true
@@ -212,13 +228,6 @@ inline constexpr char kEnableNotificationCPSS[] =
 // time.
 inline constexpr char kEnableGeolocationCPSS[] =
     "profile.content_settings.enable_cpss.geolocation";
-
-// Enum indicating by which method the quiet UI has been enabled for
-// notification permission requests. This is stored as of M88 and will be
-// backfilled if the quiet UI is enabled but this preference has no value.
-inline constexpr char kQuietNotificationPermissionUiEnablingMethod[] =
-    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
-    "notifications";
 
 // Time value indicating when the quiet notification UI was last disabled by the
 // user. Only permission action history after this point is taken into account

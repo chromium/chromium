@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_matcher/url_matcher.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -186,7 +182,7 @@ TEST(URLMatcherConditionTest, Comparison) {
   MatcherStringPattern p1("foobar.com", 1);
   MatcherStringPattern p2("foobar.com", 2);
   // The first component of each test is expected to be < than the second.
-  URLMatcherCondition test_smaller[][2] = {
+  auto test_smaller = std::to_array<std::array<URLMatcherCondition, 2>>({
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &p1)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
@@ -195,19 +191,19 @@ TEST(URLMatcherConditionTest, Comparison) {
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p2)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, nullptr)},
-  };
+  });
   for (size_t i = 0; i < std::size(test_smaller); ++i) {
     EXPECT_TRUE(test_smaller[i][0] < test_smaller[i][1])
         << "Test " << i << " of test_smaller failed";
     EXPECT_FALSE(test_smaller[i][1] < test_smaller[i][0])
         << "Test " << i << " of test_smaller failed";
   }
-  URLMatcherCondition test_equal[][2] = {
+  auto test_equal = std::to_array<std::array<URLMatcherCondition, 2>>({
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, nullptr),
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, nullptr)},
-  };
+  });
   for (size_t i = 0; i < std::size(test_equal); ++i) {
     EXPECT_FALSE(test_equal[i][0] < test_equal[i][1])
         << "Test " << i << " of test_equal failed";

@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/boca/babelorca/transcript_receiver.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace media {
 struct SpeechRecognitionResult;
@@ -44,7 +45,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
   static std::unique_ptr<BabelOrcaController> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      std::string gaia_id,
+      GaiaId gaia_id,
       std::unique_ptr<CaptionController> caption_controller,
       std::unique_ptr<BabelOrcaCaptionTranslator> translator,
       PrefService* pref_service,
@@ -54,7 +55,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
   BabelOrcaConsumer(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       std::unique_ptr<CaptionController> caption_controller,
       TokenManager* tachyon_oauth_token_manager,
       TachyonRequestDataProvider* tachyon_request_data_provider,
@@ -72,14 +73,9 @@ class BabelOrcaConsumer : public BabelOrcaController {
   void OnLocalCaptionConfigUpdated(bool local_captions_enabled) override;
 
  private:
-  void OnTranslationPrefChanged();
   void OnTranslationCallback(
       const std::optional<media::SpeechRecognitionResult>& result);
   void DispatchTranscription(const media::SpeechRecognitionResult& result);
-
-  void HandleLanguageAndDispatch(
-      const media::SpeechRecognitionResult& transcript,
-      const std::string& language);
 
   void StartReceiving();
 
@@ -100,7 +96,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  const std::string gaia_id_;
+  const GaiaId gaia_id_;
   const std::unique_ptr<CaptionController> caption_controller_;
   const raw_ptr<TokenManager> tachyon_oauth_token_manager_;
   const raw_ptr<TachyonRequestDataProvider> tachyon_request_data_provider_;
@@ -120,8 +116,6 @@ class BabelOrcaConsumer : public BabelOrcaController {
   bool local_captions_enabled_ = false;
   bool session_captions_enabled_ = false;
   bool in_session_ = false;
-
-  std::string current_language_;
 
   base::WeakPtrFactory<BabelOrcaConsumer> weak_ptr_factory_{this};
 };

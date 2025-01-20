@@ -11,6 +11,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,39 +35,49 @@ public class ProfileStore {
 
     @NonNull
     public Profile getOrCreateProfile(@NonNull String name) {
-        ThreadUtils.checkUiThread();
-        return mProfiles.computeIfAbsent(
-                name,
-                profileName ->
-                        new Profile(AwBrowserContextStore.getNamedContext(profileName, true)));
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.ProfileStore.ApiCall.GET_OR_CREATE_PROFILE")) {
+            ThreadUtils.checkUiThread();
+            return mProfiles.computeIfAbsent(
+                    name,
+                    profileName ->
+                            new Profile(AwBrowserContextStore.getNamedContext(profileName, true)));
+        }
     }
 
     @Nullable
     public Profile getProfile(@NonNull String name) {
-        ThreadUtils.checkUiThread();
-        return mProfiles.computeIfAbsent(
-                name,
-                profileName -> {
-                    AwBrowserContext browserContext =
-                            AwBrowserContextStore.getNamedContext(profileName, false);
-                    return browserContext != null ? new Profile(browserContext) : null;
-                });
+        try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.ApiCall.GET_PROFILE")) {
+            ThreadUtils.checkUiThread();
+            return mProfiles.computeIfAbsent(
+                    name,
+                    profileName -> {
+                        AwBrowserContext browserContext =
+                                AwBrowserContextStore.getNamedContext(profileName, false);
+                        return browserContext != null ? new Profile(browserContext) : null;
+                    });
+        }
     }
 
     @NonNull
     public List<String> getAllProfileNames() {
-        ThreadUtils.checkUiThread();
-        return AwBrowserContextStore.listAllContexts();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.ProfileStore.ApiCall.GET_ALL_PROFILE_NAMES")) {
+            ThreadUtils.checkUiThread();
+            return AwBrowserContextStore.listAllContexts();
+        }
     }
 
     public boolean deleteProfile(@NonNull String name) {
-        ThreadUtils.checkUiThread();
-        boolean deletionResult = AwBrowserContextStore.deleteNamedContext(name);
-        if (deletionResult) {
-            mProfiles.remove(name);
-        } else {
-            assert !mProfiles.containsKey(name);
+        try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.ApiCall.DELETE_PROFILE")) {
+            ThreadUtils.checkUiThread();
+            boolean deletionResult = AwBrowserContextStore.deleteNamedContext(name);
+            if (deletionResult) {
+                mProfiles.remove(name);
+            } else {
+                assert !mProfiles.containsKey(name);
+            }
+            return deletionResult;
         }
-        return deletionResult;
     }
 }

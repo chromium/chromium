@@ -8,7 +8,6 @@
 #include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/ui_base_features.h"
@@ -340,8 +339,7 @@ void JankMonitorImpl::ThreadExecutionState::DidRunTaskOrEvent(
     // in context menus, among others). Simply ignore the mismatches for now.
     // See https://crbug.com/929813 for the details of why the mismatch
     // happens.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
     task_execution_metadata_.clear();
 #endif
     return;

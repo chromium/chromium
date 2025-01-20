@@ -11,17 +11,21 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#endif
 
 using download::DownloadItem;
 using TailoredWarningType = DownloadUIModel::TailoredWarningType;
@@ -175,11 +179,14 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG);
       return;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
-      if (!enterprise_connectors::ShouldPromptReviewForDownload(
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+      if (enterprise_connectors::ShouldPromptReviewForDownload(
               model.profile(), model.GetDownloadItem())) {
-        warning_summary_ = l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK);
+        return;
       }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+      warning_summary_ = l10n_util::GetStringUTF16(
+          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK);
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
@@ -289,6 +296,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       break;
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   if (enterprise_connectors::ShouldPromptReviewForDownload(
           model.profile(), model.GetDownloadItem())) {
     switch (model.GetDangerType()) {
@@ -300,6 +308,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
         break;
     }
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (TailoredWarningType type = model.GetTailoredWarningType();
       type != TailoredWarningType::kNoTailoredWarning) {

@@ -5,6 +5,7 @@
 #include "base/json/values_util.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_utils.h"
@@ -707,8 +708,8 @@ class TabDiscardExceptionsSettingsInteractiveTest
     toggle_selection_change.event = kButtonWasClicked;
     toggle_selection_change.where = element;
     toggle_selection_change.type = StateChange::Type::kExistsAndConditionTrue;
-    toggle_selection_change.test_function = base::StrCat(
-        {"(el) => el.disabled === ", is_disabled ? "true" : "false"});
+    toggle_selection_change.test_function =
+        base::StrCat({"(el) => el.disabled === ", base::ToString(is_disabled)});
     return WaitForStateChange(contents_id, toggle_selection_change);
   }
 };

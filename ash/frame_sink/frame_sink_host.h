@@ -37,6 +37,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
  public:
   using PresentationCallback =
       base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
+  using FrameSinkFactory =
+      base::RepeatingCallback<std::unique_ptr<cc::LayerTreeFrameSink>()>;
 
   FrameSinkHost();
 
@@ -53,9 +55,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // Initializes the FrameSinkHost on the host_window.
   virtual void Init(aura::Window* host_window);
 
-  virtual void InitForTesting(
-      aura::Window* host_window,
-      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
+  virtual void InitForTesting(aura::Window* host_window,
+                              FrameSinkFactory frame_sink_factory);
 
   // Updates the surface by submitting a compositor frame. With
   // synchronous_draw as true, we send a compositor frame as soon as we call the
@@ -76,6 +77,10 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
 
   // Overridden from aura::WindowObserver
   void OnWindowDestroying(aura::Window* window) override;
+
+  FrameSinkHolder* frame_sink_holder_for_testing() {
+    return frame_sink_holder_.get();
+  }
 
  protected:
   // Creates a compositor frame that can be sent to the display compositor.
@@ -120,9 +125,11 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
 
   void SetHostWindow(aura::Window* host_window);
 
-  void InitInternal(
-      aura::Window* host_window,
-      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
+  std::unique_ptr<cc::LayerTreeFrameSink> CreateLayerTreeFrameSink();
+
+  // Callback invoked when the connection to `LayerTreeFrameSink` is lost. (i.e
+  // gpu crashed, host_window closes etc)
+  void OnFrameSinkLost();
 
   // Observation to track the lifetime of `host_window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
@@ -136,6 +143,8 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
 
   // The damage rect in host window coordinates.
   gfx::Rect total_damage_rect_;
+
+  FrameSinkFactory frame_sink_factory_;
 
   // Holds the LayerTreeFrameSink. For proper deletion of in flight
   // resources, lifetime of the FrameSinkHolder is extended to either the root

@@ -618,6 +618,52 @@ void UpdateVideoProcessorAutoHDRSupport() {
 
 }  // namespace
 
+// Pointers to DirectComposition functions, dcomp.dll loaded at runtime in
+// InitializeDirectComposition when compositor clock vsync interval is enabled.
+// DcompositionWaitForCompositorClock function pointer
+using PFN_DCOMPOSITION_WAIT = HRESULT(WINAPI*)(UINT count,
+                                               const HANDLE* handles,
+                                               DWORD timeoutInMs);
+PFN_DCOMPOSITION_WAIT g_wait_for_compositor_clock_function = nullptr;
+
+// DCompositionGetFrameId function pointer
+using PFN_DCOMPOSITION_GET_FRAME_ID =
+    HRESULT(WINAPI*)(COMPOSITION_FRAME_ID_TYPE frameIdType,
+                     COMPOSITION_FRAME_ID* frameId);
+PFN_DCOMPOSITION_GET_FRAME_ID g_get_frame_id_function = nullptr;
+
+// DCompositionGetStatistics function pointer
+using PFN_DCOMPOSITION_GET_STATISTICS =
+    HRESULT(WINAPI*)(COMPOSITION_FRAME_ID frameId,
+                     COMPOSITION_FRAME_STATS* frameStats,
+                     UINT targetIdCount,
+                     COMPOSITION_TARGET_ID* targetIds,
+                     UINT* actualTargetIdCount);
+PFN_DCOMPOSITION_GET_STATISTICS g_get_statistics_function = nullptr;
+
+HRESULT DCompositionWaitForCompositorClock(UINT count,
+                                           const HANDLE* handles,
+                                           DWORD timeoutInMs) {
+  DCHECK(g_wait_for_compositor_clock_function);
+  return g_wait_for_compositor_clock_function(count, handles, timeoutInMs);
+}
+
+HRESULT DCompositionGetFrameId(COMPOSITION_FRAME_ID_TYPE frameIdType,
+                               COMPOSITION_FRAME_ID* frameId) {
+  DCHECK(g_get_frame_id_function);
+  return g_get_frame_id_function(frameIdType, frameId);
+}
+
+HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
+                                  COMPOSITION_FRAME_STATS* frameStats,
+                                  UINT targetIdCount,
+                                  COMPOSITION_TARGET_ID* targetIds,
+                                  UINT* actualTargetIdCount) {
+  DCHECK(g_get_statistics_function);
+  return g_get_statistics_function(frameId, frameStats, targetIdCount,
+                                   targetIds, actualTargetIdCount);
+}
+
 void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   DCHECK(!g_dcomp_device);
@@ -674,6 +720,22 @@ void InitializeDirectComposition(
   DCHECK(g_dcomp_device);
 
   g_d3d11_device = d3d11_device.Detach();
+
+  if (features::UseCompositorClockVSyncInterval()) {
+    g_get_frame_id_function = reinterpret_cast<PFN_DCOMPOSITION_GET_FRAME_ID>(
+        ::GetProcAddress(dcomp_module, "DCompositionGetFrameId"));
+    CHECK(g_get_frame_id_function);
+
+    g_get_statistics_function =
+        reinterpret_cast<PFN_DCOMPOSITION_GET_STATISTICS>(
+            ::GetProcAddress(dcomp_module, "DCompositionGetStatistics"));
+    CHECK(g_get_statistics_function);
+
+    g_wait_for_compositor_clock_function =
+        reinterpret_cast<PFN_DCOMPOSITION_WAIT>(::GetProcAddress(
+            dcomp_module, "DCompositionWaitForCompositorClock"));
+    CHECK(g_wait_for_compositor_clock_function);
+  }
 
   UpdateVideoProcessorAutoHDRSupport();
 }

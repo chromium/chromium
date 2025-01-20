@@ -22,8 +22,6 @@ source_set("factory") {
   ]
   deps = [
     ":tips_manager",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:public",
     "//ios/chrome/browser/shared/model/application_context",

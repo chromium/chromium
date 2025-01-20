@@ -39,7 +39,6 @@ static_library("multidevice") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/session",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/nearby_share",
@@ -53,6 +52,7 @@ static_library("multidevice") {
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
   ]
 
   if (is_chrome_branded) {
@@ -89,7 +89,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/components/phonehub:debug",
     "//chromeos/ash/components/phonehub:test_support",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
     "//components/account_id",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/test/capture_tracking_view.h"
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace views::test {

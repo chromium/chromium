@@ -23,8 +23,7 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
 
 JavaScriptBrowserTest::JavaScriptBrowserTest() = default;
 
-JavaScriptBrowserTest::~JavaScriptBrowserTest() {
-}
+JavaScriptBrowserTest::~JavaScriptBrowserTest() = default;
 
 void JavaScriptBrowserTest::SetUpOnMainThread() {
   JsTestApiConfig config;

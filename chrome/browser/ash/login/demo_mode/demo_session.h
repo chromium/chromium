@@ -16,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -239,6 +240,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Keep track of which app has been installed in demo mode.
   std::set<std::string> installed_app_;
+
+  // Handle device idle action for demo mode. Affect both MGS and demo account
+  // sessions. Constructed while demo app is available.
+  std::unique_ptr<DemoModeIdleHandler> idle_handler_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

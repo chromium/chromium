@@ -11,6 +11,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace enterprise_watermark {
 
@@ -51,17 +52,23 @@ class WatermarkTest : public testing::Test,
 TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
   const int kWidth = 200;
   const int kHeight = 200;
-  const int kBlockWidth = 350;
-  const float kTextSize = 24.0f;
+  constexpr SkColor kFillColor = SkColorSetARGB(0xb, 0x00, 0x00, 0x00);
+  constexpr SkColor kOutlineColor = SkColorSetARGB(0x11, 0xff, 0xff, 0xff);
+
   const std::string kWatermarkText = "Private! Confidential";
+
+  WatermarkBlock watermark_block =
+      DrawWatermarkToPaintRecord(kWatermarkText, kFillColor, kOutlineColor);
+  sk_sp<SkPicture> picture = watermark_block.record.ToSkPicture(
+      SkRect::MakeWH(watermark_block.width, watermark_block.height));
 
   // Create bitmap-backed SkCanvas
   SkBitmap bitmap;
   bitmap.allocN32Pixels(kWidth, kHeight);
   SkCanvas canvas(bitmap);
   canvas.clear(GetParam().color);
-  SkSize size(kWidth, kHeight);
-  DrawWatermark(&canvas, size, kWatermarkText, kBlockWidth, kTextSize);
+  DrawWatermark(&canvas, picture.get(), watermark_block.width,
+                watermark_block.height, SkSize::Make(kWidth, kHeight));
 
   base::FilePath path =
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
@@ -70,6 +77,14 @@ TEST_P(WatermarkTest, MAYBE_PageRenderedWithWatermark) {
              .AppendASCII("data")
              .AppendASCII("enterprise")
              .AppendASCII(GetParam().file_name);
+
+  ASSERT_TRUE(cc::MatchesPNGFile(bitmap, path, cc::ExactPixelComparator()));
+
+  // Test the cc::PaintRecord overload produces the same result
+  canvas.clear(GetParam().color);
+  cc::SkiaPaintCanvas skia_canvas(&canvas);
+  DrawWatermark(&skia_canvas, &watermark_block.record, watermark_block.width,
+                watermark_block.height, SkSize::Make(kWidth, kHeight));
   ASSERT_TRUE(cc::MatchesPNGFile(bitmap, path, cc::ExactPixelComparator()));
 }
 

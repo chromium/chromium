@@ -5,15 +5,14 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.GestureDetector;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -27,7 +26,7 @@ public class ScrimProperties {
      * An invalid color that can be specified for {@link #BACKGROUND_COLOR}. This will trigger the
      * use of the default color set when the {@link ScrimCoordinator} was constructed.
      */
-    @ColorInt public static final int INVALID_COLOR = Color.TRANSPARENT;
+    public static final @ColorInt int INVALID_COLOR = Color.TRANSPARENT;
 
     /**
      * The top margin of the scrim. This can be used to shrink the scrim to show items at the top of
@@ -55,27 +54,15 @@ public class ScrimProperties {
     public static final ReadableObjectPropertyKey<Runnable> CLICK_DELEGATE =
             new ReadableObjectPropertyKey<>();
 
-    /** The transparency of the scrim. This is an internal property that only the scrim knows about. */
-    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    /**
+     * The transparency of the scrim. This is an internal property that only the scrim knows about.
+     */
+    /* package */ static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     /**
-     * The background color for the scrim. If null, a default color will be set as the background,
-     * unless {@link #BACKGROUND_DRAWABLE} is set.
+     * The background color for the scrim. If not set a default color will be set as the background.
      */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
-
-    /**
-     * Background of the scrim.
-     *
-     * <p>When this is set, no default background color applies and {@link #BACKGROUND_COLOR} is
-     * ignored.
-     *
-     * <p>The drawable is responsible for filling in the background with the appropriate color.
-     * When the scrim should cover the status bar, the background color drawn by this drawable
-     * must be consistent with the status bar's color.
-     */
-    public static final WritableObjectPropertyKey<Drawable> BACKGROUND_DRAWABLE =
-            new WritableObjectPropertyKey<>();
 
     /**
      * A filter for touch event that happen on this view.
@@ -90,8 +77,12 @@ public class ScrimProperties {
     public static final WritableBooleanPropertyKey AFFECTS_NAVIGATION_BAR =
             new WritableBooleanPropertyKey();
 
-    /** A subset of {@link #ALL_KEYS} that are required to use the scrim. */
-    public static final PropertyKey[] REQUIRED_KEYS =
+    /** Used to decide if touch events should be handled or not. */
+    /* package */ static final WritableObjectPropertyKey<TouchEventDelegate> TOUCH_EVENT_DELEGATE =
+            new WritableObjectPropertyKey<>();
+
+    /** Property keys used to control the behavior of the scrim. */
+    public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TOP_MARGIN,
                 AFFECTS_STATUS_BAR,
@@ -99,17 +90,10 @@ public class ScrimProperties {
                 SHOW_IN_FRONT_OF_ANCHOR_VIEW,
                 VISIBILITY_CALLBACK,
                 CLICK_DELEGATE,
-                ALPHA
+                ALPHA,
+                TOUCH_EVENT_DELEGATE,
+                BACKGROUND_COLOR,
+                GESTURE_DETECTOR,
+                AFFECTS_NAVIGATION_BAR,
             };
-
-    /** All keys used for the scrim, including optional ones (see {@link #REQUIRED_KEYS}). */
-    public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(
-                    REQUIRED_KEYS,
-                    new PropertyKey[] {
-                        BACKGROUND_COLOR,
-                        BACKGROUND_DRAWABLE,
-                        GESTURE_DETECTOR,
-                        AFFECTS_NAVIGATION_BAR
-                    });
 }

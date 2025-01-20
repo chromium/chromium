@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/controls/hover_button.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -43,18 +40,21 @@ struct TitleSubtitlePair {
   bool tooltip;
 };
 
-const TitleSubtitlePair kTitleSubtitlePairs[] = {
+const std::array<TitleSubtitlePair, 4> kTitleSubtitlePairs{
     // Two short strings that will fit in the space given.
-    {u"Clap!", u"Clap!", false},
-    // First string fits, second string doesn't.
-    {u"If you're happy and you know it, clap your hands!", u"Clap clap!", true},
-    // Second string fits, first string doesn't.
-    {u"Clap clap!",
-     u"If you're happy and you know it, and you really want to show it,", true},
-    // Both strings don't fit.
-    {u"If you're happy and you know it, and you really want to show it,",
-     u"If you're happy and you know it, clap your hands!", true},
-};
+    {
+        {u"Clap!", u"Clap!", false},
+        // First string fits, second string doesn't.
+        {u"If you're happy and you know it, clap your hands!", u"Clap clap!",
+         true},
+        // Second string fits, first string doesn't.
+        {u"Clap clap!",
+         u"If you're happy and you know it, and you really want to show it,",
+         true},
+        // Both strings don't fit.
+        {u"If you're happy and you know it, and you really want to show it,",
+         u"If you're happy and you know it, clap your hands!", true},
+    }};
 
 // Returns the accessible name of `button`.
 std::u16string GetAccessibleName(HoverButton& button) {
@@ -67,7 +67,7 @@ std::u16string GetAccessibleName(HoverButton& button) {
 
 class HoverButtonTest : public ChromeViewsTestBase {
  public:
-  HoverButtonTest() {}
+  HoverButtonTest() = default;
 
   HoverButtonTest(const HoverButtonTest&) = delete;
   HoverButtonTest& operator=(const HoverButtonTest&) = delete;
@@ -116,7 +116,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
   for (size_t i = 0; i < std::size(kTitleSubtitlePairs); ++i) {
     TitleSubtitlePair pair = kTitleSubtitlePairs[i];
     SCOPED_TRACE(testing::Message() << "Index: " << i << ", expected_tooltip="
-                                    << (pair.tooltip ? "true" : "false"));
+                                    << base::ToString(pair.tooltip));
     auto button =
         std::make_unique<HoverButton>(views::Button::PressedCallback(),
                                       CreateIcon(), pair.title, pair.subtitle);

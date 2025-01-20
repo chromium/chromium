@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_ui.h"
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dlp_internals_resources.h"
 #include "chrome/grit/dlp_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 namespace policy {
 
@@ -34,10 +29,8 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
       "isReportingEnabled",
       rules_manager ? rules_manager->IsReportingEnabled() : false);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kDlpInternalsResources, kDlpInternalsResourcesSize),
-      IDR_DLP_INTERNALS_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kDlpInternalsResources,
+                              IDR_DLP_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
       "require-trusted-types-for 'script';");

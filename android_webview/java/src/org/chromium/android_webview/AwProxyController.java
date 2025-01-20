@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNativeUnchecked;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -82,6 +83,7 @@ public class AwProxyController {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String setProxyOverride(
                 AwProxyController caller,
                 String[] urlSchemes,

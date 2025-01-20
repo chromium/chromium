@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 99 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] xn--a (using URL)
   assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 [FAIL] xn--a (using URL.host)
@@ -198,5 +198,58 @@ Found 99 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "xn--hdh" but got "x"
 [FAIL] >­̸ (using <area>.hostname)
   assert_equals: expected "xn--hdh" but got "x"
+[FAIL] www .lookout.net (using URL)
+  assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
+[FAIL] www .lookout.net (using URL.host)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using URL.hostname)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <a>)
+  assert_equals: expected "" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <a>.host)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <a>.hostname)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <area>)
+  assert_equals: expected "" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <area>.host)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] www .lookout.net (using <area>.hostname)
+  assert_equals: expected "x" but got "www%20.lookout.net"
+[FAIL] 㛼.com (using URL)
+  Failed to construct 'URL': Invalid URL
+[FAIL] 㛼.com (using URL.host)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] 㛼.com (using URL.hostname)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] 㛼.com (using <a>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] 㛼.com (using <a>.host)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] 㛼.com (using <a>.hostname)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] 㛼.com (using <area>)
+  Failed to construct 'URL': Invalid URL
+[FAIL] 㛼.com (using <area>.host)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] 㛼.com (using <area>.hostname)
+  assert_equals: expected "xn--snl.com" but got "x"
+[FAIL] xn--0.com (using URL)
+  assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
+[FAIL] xn--0.com (using URL.host)
+  assert_equals: expected "x" but got "xn--0.com"
+[FAIL] xn--0.com (using URL.hostname)
+  assert_equals: expected "x" but got "xn--0.com"
+[FAIL] xn--0.com (using <a>)
+  assert_equals: expected "" but got "xn--0.com"
+[FAIL] xn--0.com (using <a>.host)
+  assert_equals: expected "x" but got "xn--0.com"
+[FAIL] xn--0.com (using <a>.hostname)
+  assert_equals: expected "x" but got "xn--0.com"
+[FAIL] xn--0.com (using <area>)
+  assert_equals: expected "" but got "xn--0.com"
+[FAIL] xn--0.com (using <area>.host)
+  assert_equals: expected "x" but got "xn--0.com"
+[FAIL] xn--0.com (using <area>.hostname)
+  assert_equals: expected "x" but got "xn--0.com"
 Harness: the test ran to completion.
-

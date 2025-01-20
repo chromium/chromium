@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 #include <unicode/utf16.h>
@@ -15,9 +10,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -31,9 +28,9 @@ class StackStringViewAllocator {
   using ResultStringType = StringView;
 
   template <typename CharType>
-  StringView Alloc(wtf_size_t length, CharType*& buffer) {
+  StringView Alloc(wtf_size_t length, base::span<CharType>& buffer) {
     buffer = backing_store_.Realloc<CharType>(length);
-    return StringView(buffer, length);
+    return StringView(buffer);
   }
 
   StringView CoerceOriginal(StringView string) { return string; }
@@ -44,7 +41,10 @@ class StackStringViewAllocator {
 }  // namespace
 
 StringView::StringView(const UChar* chars)
-    : StringView(chars, chars ? LengthOfNullTerminatedString(chars) : 0) {}
+    // SAFETY: It's safe if `chars` points to a NUL-terminated string.
+    : StringView(UNSAFE_BUFFERS(
+          base::span(chars, chars ? LengthOfNullTerminatedString(chars) : 0))) {
+}
 
 #if DCHECK_IS_ON()
 StringView::~StringView() {
@@ -64,7 +64,7 @@ static inline void PutUTF8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
   buffer[2] = (ch & 0x3F) | 0x80;
 }
 
-std::string StringView::Utf8(UTF8ConversionMode mode) const {
+std::string StringView::Utf8(Utf8ConversionMode mode) const {
   unsigned length = this->length();
 
   if (!length)
@@ -95,7 +95,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
     base::span<const UChar> characters = Span16();
     base::span<uint8_t> buffer(base::as_writable_byte_span(buffer_vector));
 
-    if (mode == kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD) {
+    if (mode == Utf8ConversionMode::kStrictReplacingErrors) {
       while (!characters.empty()) {
         // Use strict conversion to detect unpaired surrogates.
         unicode::ConversionResult result =
@@ -119,7 +119,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
       }
       buffer_written = buffer_vector.size() - buffer.size();
     } else {
-      const bool strict = mode == kStrictUTF8Conversion;
+      const bool strict = mode == Utf8ConversionMode::kStrict;
 
       unicode::ConversionResult result =
           unicode::ConvertUTF16ToUTF8(characters, buffer, strict);
@@ -170,25 +170,15 @@ bool StringView::ContainsOnlyASCIIOrEmpty() const {
 
 bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
                                                         unsigned to) const {
-  SECURITY_DCHECK(from <= length());
-  SECURITY_DCHECK(to <= length());
-  DCHECK(from <= to);
-
-  if (Is8Bit()) {
-    for (wtf_size_t i = from; i < to; ++i) {
-      if (!IsASCIISpace(Characters8()[i]))
+  DCHECK_LE(from, to);
+  return VisitCharacters(StringView(*this, from, to - from), [](auto chars) {
+    for (size_t i = 0; i < chars.size(); ++i) {
+      if (!IsASCIISpace(chars[i])) {
         return false;
+      }
     }
-
     return true;
-  }
-
-  for (wtf_size_t i = from; i < to; ++i) {
-    if (!IsASCIISpace(Characters16()[i]))
-      return false;
-  }
-
-  return true;
+  });
 }
 
 String StringView::ToString() const {
@@ -262,34 +252,19 @@ bool EqualStringView(const StringView& a, const StringView& b) {
     return false;
   if (a.Bytes() == b.Bytes() && a.Is8Bit() == b.Is8Bit())
     return true;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit())
-      return Equal(a.Characters8(), b.Characters8(), a.length());
-    return Equal(a.Characters8(), b.Characters16(), a.length());
-  }
-  if (b.Is8Bit())
-    return Equal(a.Characters16(), b.Characters8(), a.length());
-  return Equal(a.Characters16(), b.Characters16(), a.length());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? chars == b.Span8() : chars == b.Span16();
+  });
 }
 
 bool DeprecatedEqualIgnoringCaseAndNullity(const StringView& a,
                                            const StringView& b) {
   if (a.length() != b.length())
     return false;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit()) {
-      return DeprecatedEqualIgnoringCase(a.Characters8(), b.Characters8(),
-                                         a.length());
-    }
-    return DeprecatedEqualIgnoringCase(a.Characters8(), b.Characters16(),
-                                       a.length());
-  }
-  if (b.Is8Bit()) {
-    return DeprecatedEqualIgnoringCase(a.Characters16(), b.Characters8(),
-                                       a.length());
-  }
-  return DeprecatedEqualIgnoringCase(a.Characters16(), b.Characters16(),
-                                     a.length());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? DeprecatedEqualIgnoringCase(chars, b.Span8())
+                      : DeprecatedEqualIgnoringCase(chars, b.Span16());
+  });
 }
 
 bool DeprecatedEqualIgnoringCase(const StringView& a, const StringView& b) {
@@ -305,17 +280,10 @@ bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
     return false;
   if (a.Bytes() == b.Bytes() && a.Is8Bit() == b.Is8Bit())
     return true;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit())
-      return EqualIgnoringASCIICase(a.Characters8(), b.Characters8(),
-                                    a.length());
-    return EqualIgnoringASCIICase(a.Characters8(), b.Characters16(),
-                                  a.length());
-  }
-  if (b.Is8Bit())
-    return EqualIgnoringASCIICase(a.Characters16(), b.Characters8(),
-                                  a.length());
-  return EqualIgnoringASCIICase(a.Characters16(), b.Characters16(), a.length());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? EqualIgnoringASCIICase(chars, b.Span8())
+                      : EqualIgnoringASCIICase(chars, b.Span16());
+  });
 }
 
 StringView StringView::LowerASCIIMaybeUsingBuffer(
@@ -328,20 +296,19 @@ UChar32 StringView::CodepointAt(unsigned i) const {
   SECURITY_DCHECK(i < length());
   if (Is8Bit())
     return (*this)[i];
-  UChar32 codepoint;
-  U16_GET(Characters16(), 0, i, length(), codepoint);
-  return codepoint;
+  return CodePointAt(Span16(), i);
 }
 
 unsigned StringView::NextCodePointOffset(unsigned i) const {
   DCHECK_LT(i, length());
+  unsigned next = i + 1;
   if (Is8Bit())
-    return i + 1;
-  const UChar* str = Characters16() + i;
-  ++i;
-  if (i < length() && U16_IS_LEAD(*str++) && U16_IS_TRAIL(*str))
-    ++i;
-  return i;
+    return next;
+  auto str = Span16();
+  if (U16_IS_LEAD(str[i]) && next < str.size() && U16_IS_TRAIL(str[next])) {
+    ++next;
+  }
+  return next;
 }
 
 CodePointIterator StringView::begin() const {

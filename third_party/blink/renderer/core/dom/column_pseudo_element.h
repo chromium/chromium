@@ -14,18 +14,18 @@ namespace blink {
 // will create one of these, during layout.
 class ColumnPseudoElement : public PseudoElement {
  public:
-  ColumnPseudoElement(Element* originating_element,
-                      wtf_size_t index,
-                      PhysicalRect column_rect)
-      : PseudoElement(originating_element, kPseudoIdColumn),
-        index_(index),
-        column_rect_(column_rect) {}
+  ColumnPseudoElement(Element* originating_element, wtf_size_t index)
+      : PseudoElement(originating_element, kPseudoIdColumn), index_(index) {}
 
   bool IsColumnPseudoElement() const final { return true; }
   wtf_size_t Index() const { return index_; }
 
   // The column rectangle, relatively to the multicol container.
   const PhysicalRect& ColumnRect() const { return column_rect_; }
+  void SetColumnRect(PhysicalRect column_rect) { column_rect_ = column_rect; }
+
+  void AttachLayoutTree(AttachContext&) final;
+  void DetachLayoutTree(bool performing_reattach) final;
 
  private:
   // Used for linear time tree traversals.

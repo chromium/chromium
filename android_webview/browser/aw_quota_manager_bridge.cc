@@ -4,21 +4,30 @@
 
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 
+#include <memory>
 #include <set>
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -39,6 +48,17 @@ using storage::QuotaManager;
 namespace android_webview {
 
 namespace {
+
+// Data removal mask for complete data removal.
+constexpr content::BrowsingDataRemover::DataType kDataRemovalMask =
+    content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION |
+    content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES;
+
+// Origin type mask for complete data removal.
+constexpr content::BrowsingDataRemover::OriginType
+    kDataRemovalOriginProtectionTypes =
+        content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB |
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
 
 // This object lives on UI and IO threads. Care need to be taken to make sure
 // there are no concurrent accesses to instance variables. Also this object
@@ -150,6 +170,49 @@ void GetStorageKeysTask::DoneOnUIThread() {
   std::move(ui_callback_).Run(origin_, usage_, quota_);
 }
 
+// This object manages its own lifetime. It deletes itself once the callback has
+// been invoked.
+class DeleteDataObserver : public content::BrowsingDataRemover::Observer {
+ public:
+  explicit DeleteDataObserver(
+      content::BrowsingDataRemover* data_remover,
+      const base::android::JavaParamRef<jobject>& callback)
+      : observation_(this), callback_(callback) {
+    observation_.Observe(data_remover);
+  }
+  ~DeleteDataObserver() override = default;
+
+  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
+    bool success = failed_data_types == 0;
+    // Post handling of callback to UI thread to avoid any long-running tasks
+    // from blocking or modifications of the data_remover_ observer list from
+    // interfering with iteration through observers.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteDataObserver::OnRemovalDone,
+                                  base::Unretained(this), success));
+  }
+
+  // Callback to be executed on the UI thread after removal is done.
+  // Will call the Java callback and delete itself.
+  void OnRemovalDone(bool success) {
+    base::android::RunBooleanCallbackAndroid(callback_, success);
+    delete this;
+  }
+
+ private:
+  base::ScopedObservation<content::BrowsingDataRemover,
+                          content::BrowsingDataRemover::Observer>
+      observation_;
+  base::android::ScopedJavaGlobalRef<jobject> callback_;
+};
+
+std::string GetRegisterableDomain(const std::string& host) {
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // The method above returns empty string for IP addresses and "localhost".
+  return domain.empty() ? host : domain;
+}
+
 }  // namespace
 
 // static
@@ -161,7 +224,7 @@ scoped_refptr<AwQuotaManagerBridge> AwQuotaManagerBridge::Create(
 AwQuotaManagerBridge::AwQuotaManagerBridge(AwBrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-AwQuotaManagerBridge::~AwQuotaManagerBridge() {}
+AwQuotaManagerBridge::~AwQuotaManagerBridge() = default;
 
 void AwQuotaManagerBridge::Init(JNIEnv* env,
                                 const JavaParamRef<jobject>& object) {
@@ -186,32 +249,73 @@ QuotaManager* AwQuotaManagerBridge::GetQuotaManager() const {
   return quota_manager;
 }
 
-void AwQuotaManagerBridge::DeleteAllData(JNIEnv* env,
-                                         const JavaParamRef<jobject>& object) {
+void AwQuotaManagerBridge::DeleteBrowsingData(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  content::BrowsingDataRemover* data_remover =
+      browser_context_->GetBrowsingDataRemover();
+  // DeleteDataObserver manages its own lifetime.
+  DeleteDataObserver* observer =
+      new DeleteDataObserver(data_remover, jcallback);
+  data_remover->RemoveAndReply(base::Time(), base::Time::Max(),
+                               kDataRemovalMask,
+                               kDataRemovalOriginProtectionTypes, observer);
+}
+
+std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
+    JNIEnv* env,
+    std::string& domain,
+    const base::android::JavaParamRef<jobject>& jcallback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete,
+          content::BrowsingDataFilterBuilder::OriginMatchingMode::
+              kOriginAndThirdParty);
+  std::string site = GetRegisterableDomain(domain);
+  filter_builder->AddRegisterableDomain(site);
+
+  content::BrowsingDataRemover* data_remover =
+      browser_context_->GetBrowsingDataRemover();
+  // DeleteDataObserver manages its own lifetime.
+  DeleteDataObserver* observer =
+      new DeleteDataObserver(data_remover, jcallback);
+  data_remover->RemoveWithFilterAndReply(
+      base::Time(), base::Time::Max(), kDataRemovalMask,
+      kDataRemovalOriginProtectionTypes, std::move(filter_builder), observer);
+
+  return site;
+}
+
+void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // (Legacy) Clear all web storage data except cookies.
+  uint32_t remove_mask = StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
+                         StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
+                         StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE |
+                         StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   GetStoragePartition()->ClearData(
-      // Clear all web storage data except cookies.
-      StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
-          StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-          StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE |
-          StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
+      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
       blink::StorageKey(), base::Time(), base::Time::Max(), base::DoNothing());
 }
 
-void AwQuotaManagerBridge::DeleteOrigin(JNIEnv* env,
-                                        const JavaParamRef<jobject>& object,
-                                        const JavaParamRef<jstring>& origin) {
+void AwQuotaManagerBridge::DeleteOriginFramework(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::u16string origin_string(
       base::android::ConvertJavaStringToUTF16(env, origin));
   StoragePartition* storage_partition = GetStoragePartition();
+  // All (temporary) QuotaClient types.
+  uint32_t remove_mask = StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
+                         StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
+                         StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   storage_partition->ClearDataForOrigin(
-      // All (temporary) QuotaClient types.
-      StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
-          StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-          StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
+      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
       GURL(origin_string), base::DoNothing());
 }
 

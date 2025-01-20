@@ -284,6 +284,9 @@ function getLogSource(logSource: number) {
   if (logSource === 7) {
     return 'NTP_MODULE';
   }
+  if (logSource === 8) {
+    return 'BUILT_IN_AI';
+  }
   return logSource.toString();
 }
 

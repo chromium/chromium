@@ -26,14 +26,7 @@ const base::FilePath::CharType kPlusAddressBlocklistBinaryPbFileName[] =
 }  // namespace
 
 class PlusAddressBlocklistInstallerPolicyTest : public PlatformTest {
- public:
-  PlusAddressBlocklistInstallerPolicyTest() = default;
-  PlusAddressBlocklistInstallerPolicyTest(
-      const PlusAddressBlocklistInstallerPolicyTest&) = delete;
-  PlusAddressBlocklistInstallerPolicyTest& operator=(
-      const PlusAddressBlocklistInstallerPolicyTest&) = delete;
-  ~PlusAddressBlocklistInstallerPolicyTest() override = default;
-
+ protected:
   void SetUp() override {
     PlatformTest::SetUp();
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
@@ -60,7 +53,6 @@ class PlusAddressBlocklistInstallerPolicyTest : public PlatformTest {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir component_install_dir_;
   MockComponentUpdateService cus_;

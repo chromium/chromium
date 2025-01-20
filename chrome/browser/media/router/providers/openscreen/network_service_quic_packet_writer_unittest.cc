@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/providers/openscreen/network_service_quic_packet_writer.h"
-#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
 #include <utility>
 
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 

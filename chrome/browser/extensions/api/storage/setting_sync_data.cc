@@ -37,7 +37,7 @@ SettingSyncData::SettingSyncData(syncer::SyncChange::SyncChangeType change_type,
       key_(key),
       value_(std::move(value)) {}
 
-SettingSyncData::~SettingSyncData() {}
+SettingSyncData::~SettingSyncData() = default;
 
 base::Value SettingSyncData::ExtractValue() {
   DCHECK(value_) << "value has already been Extract()ed";

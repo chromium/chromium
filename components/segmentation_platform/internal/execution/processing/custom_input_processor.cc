@@ -247,11 +247,8 @@ bool CustomInputProcessor::AddFromInputContext(
   }
   scoped_refptr<InputContext> input_context =
       feature_processor_state.input_context();
-  std::string input_name = custom_input.name();
-  auto custom_input_iter = custom_input.additional_args().find("name");
-  if (custom_input_iter != custom_input.additional_args().end()) {
-    input_name = custom_input_iter->second;
-  }
+  std::string input_name =
+      metadata_utils::GetInputKeyForInputContextCustomInput(custom_input);
 
   std::optional<processing::ProcessedValue> input_context_value;
   if (input_context) {

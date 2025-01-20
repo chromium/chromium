@@ -18,12 +18,7 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../settings_shared.css.js';
-import '../guest_os/guest_os_shared_usb_devices.js';
-import '../guest_os/guest_os_shared_paths.js';
-import './android_apps_subpage.js';
-import './app_notifications_page/app_notifications_subpage.js';
-import './app_management_page/app_management_page.js';
-import './app_management_page/app_detail_view.js';
+import './app_management_page/app_management_cros_shared_vars.css.js';
 import './app_management_page/uninstall_button.js';
 import './app_parental_controls/app_setup_pin_dialog.js';
 import './app_parental_controls/app_verify_pin_dialog.js';
@@ -40,7 +35,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {App as AppWithNotifications, AppNotificationsHandlerInterface} from '../mojom-webui/app_notification_handler.mojom-webui.js';
@@ -179,17 +174,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         readOnly: true,
       },
 
-      /**
-       * Show On startup settings and sub-page.
-       */
-      shouldShowStartup_: {
-        type: Boolean,
-        value: () => {
-          return shouldShowStartup();
-        },
-        readOnly: true,
-      },
-
       app_: Object,
 
       appsWithNotifications_: {
@@ -230,43 +214,8 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         value: () => new Set<Setting>([
           Setting.kManageAndroidPreferences,
           Setting.kTurnOnPlayStore,
-          Setting.kRestoreAppsAndPages,
           Setting.kAppParentalControls,
         ]),
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              manageApps: 'os-settings:apps',
-              notifications: 'os-settings:apps-notifications',
-              googlePlayPreferences: 'os-settings:google-play-revamp',
-              androidSettings: 'os-settings:apps-android-settings',
-              manageIsolatedWebApps:
-                  'os-settings:apps-manage-isolated-web-apps',
-              parentalControls: 'os-settings:apps-parental-controls',
-            };
-          }
-
-          return {
-            manageApps: '',
-            notifications: '',
-            googlePlayPreferences: '',
-            androidSettings: '',
-            manageIsolatedWebApps: '',
-            parentalControls: '',
-          };
-        },
       },
     };
   }
@@ -281,11 +230,9 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isPinVerified_: boolean;
   private readonly isPlayStoreAvailable_: boolean;
   private isPluginVmAvailable_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private parentalControlsHandler_: AppParentalControlsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
-  private rowIcons_: Record<string, string>;
   private section_: Section;
   private readonly showAndroidApps_: boolean;
   private showManageIsolatedWebAppsRow_: boolean;
@@ -293,7 +240,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private showParentalControlsSetupPinDialog_: boolean;
   private showParentalControlsVerifyPinDialog_: boolean;
   private isParentalControlsSetupCompleted_: boolean;
-  private readonly shouldShowStartup_: boolean;
 
   constructor() {
     super();
@@ -503,18 +449,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   /** Override ash.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled: boolean): void {
     this.isDndEnabled_ = enabled;
-  }
-
-  private getAppNotificationsRowSublabel_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('appNotificationsRowSublabel');
-    }
-
-    return this.isDndEnabled_ ?
-        this.i18n('appNotificationsDoNotDisturbEnabledDescription') :
-        this.i18n(
-            'appNotificationsCountDescription',
-            this.appsWithNotifications_.length);
   }
 
   private navigateToParentalControls_(): void {

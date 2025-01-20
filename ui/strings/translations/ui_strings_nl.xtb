@@ -145,7 +145,7 @@
 <translation id="6007284015834422026">Extensie vastgezet</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6117103120090651229">Middelste knop</translation>
-<translation id="6129953537138746214">Spatie</translation>
+<translation id="6129953537138746214">Spatiebalk</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> is geselecteerd.</translation>
@@ -218,7 +218,7 @@
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8867568208303837180">Verzenden...</translation>
 <translation id="8876215549894133151">Indeling:</translation>
-<translation id="8901569739625249689"><ph name="QUANTITY" />  KB</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8927924178504495502">{HOURS,plural, =1{1 uur geleden}other{# uur geleden}}</translation>
 <translation id="8996630695507351249">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sec.}other{# sec.}}</translation>

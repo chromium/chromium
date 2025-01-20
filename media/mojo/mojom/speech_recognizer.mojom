@@ -8,6 +8,7 @@ import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
 import "media/mojo/mojom/speech_recognition_error.mojom";
 import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
+import "media/mojo/mojom/speech_recognition_recognition_context.mojom";
 
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
@@ -25,6 +26,9 @@ struct StartSpeechRecognitionRequestParams {
 
   // Speech grammars to use.
   array<SpeechRecognitionGrammar> grammars;
+
+  // The optional recognition context for speech recognition biasing.
+  SpeechRecognitionRecognitionContext? recognition_context;
 
   // Maximum number of hypotheses allowed for each results.
   uint32 max_hypotheses;

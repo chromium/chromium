@@ -25,11 +25,13 @@ std::unique_ptr<content::NavigationThrottle>
 WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
   // Check the current url scheme is chrome://
-  if (!handle->GetURL().SchemeIs(content::kChromeUIScheme))
+  if (!handle->GetURL().SchemeIs(content::kChromeUIScheme)) {
     return nullptr;
+  }
   // Check the current url is chrome://app-settings
-  if (handle->GetURL().host_piece() != chrome::kChromeUIWebAppSettingsHost)
+  if (handle->GetURL().host_piece() != chrome::kChromeUIWebAppSettingsHost) {
     return nullptr;
+  }
 
   return std::make_unique<WebAppSettingsNavigationThrottle>(handle);
 }

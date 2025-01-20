@@ -355,7 +355,7 @@ mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
 
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
 # usable on linux through `VideoCaptureDeviceFactoryV4L2`.
-if (is_linux || is_chromeos_lacros) {
+if (is_linux) {
   mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
     sources = [ "video_capture_host_mojolpm_fuzzer.cc" ]
 
@@ -506,5 +506,22 @@ if (enable_mojom_fuzzer) {
 
     import_dirs = [ root_gen_dir ]
     testonly = true
+  }
+}
+
+if (use_fuzzing_engine) {
+  test("cookie_readiness_list_parser_fuzzer") {
+    sources = [ "../../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_fuzztest.cc" ]
+
+    fuzztests = [ "CookieReadinessListParserFuzzTest.ParseReadinessListSuccessfullyParsesAnyString" ]
+
+    testonly = true
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//content/browser",
+      "//content/public/browser:browser_sources",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
   }
 }

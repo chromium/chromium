@@ -20,6 +20,8 @@ component("crypto") {
     "aead.h",
     "aes_cbc.cc",
     "aes_cbc.h",
+    "aes_ctr.cc",
+    "aes_ctr.h",
     "crypto_export.h",
     "ec_private_key.cc",
     "ec_private_key.h",
@@ -181,6 +183,7 @@ test("crypto_unittests") {
   sources = [
     "aead_unittest.cc",
     "aes_cbc_unittest.cc",
+    "aes_ctr_unittest.cc",
     "ec_private_key_unittest.cc",
     "ec_signature_creator_unittest.cc",
     "encryptor_unittest.cc",

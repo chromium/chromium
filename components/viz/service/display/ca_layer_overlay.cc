@@ -144,10 +144,13 @@ gfx::CALayerResult FromTextureQuad(
     const DisplayResourceProvider* resource_provider,
     const TextureDrawQuad* quad,
     OverlayCandidate* ca_layer_overlay) {
-  ResourceId resource_id = quad->resource_id();
-  if (!resource_provider->IsOverlayCandidate(resource_id))
+  ResourceId resource_id = quad->resource_id;
+  if (!resource_provider->IsOverlayCandidate(resource_id)) {
     return gfx::kCALayerFailedTextureNotCandidate;
-  if (quad->y_flipped) {
+  }
+  const bool y_flipped =
+      resource_provider->GetOrigin(resource_id) == kBottomLeft_GrSurfaceOrigin;
+  if (y_flipped) {
     auto transform = absl::get<gfx::Transform>(ca_layer_overlay->transform);
     // The anchor point is at the bottom-left corner of the CALayer. The
     // transformation that flips the contents of the layer without changing its
@@ -173,7 +176,7 @@ gfx::CALayerResult FromTileQuad(
     const DisplayResourceProvider* resource_provider,
     const TileDrawQuad* quad,
     OverlayCandidate* ca_layer_overlay) {
-  ResourceId resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id;
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return gfx::kCALayerFailedTileNotCandidate;
   ca_layer_overlay->resource_id = resource_id;
@@ -382,7 +385,7 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
 
       // Put HDR videos into an underlay.
       if (enable_hdr_underlays_) {
-        if (resource_provider->GetColorSpace(texture_quad->resource_id())
+        if (resource_provider->GetColorSpace(texture_quad->resource_id)
                 .IsHDR()) {
           force_quad_to_overlay = true;
         }

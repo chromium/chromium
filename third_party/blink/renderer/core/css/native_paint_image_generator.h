@@ -12,11 +12,15 @@
 
 namespace blink {
 
+// See README.md in modules/csspaint/nativepaint for more detail in how this
+// fits in the overall design. This class is used as a proxy for native
+// paint definitions, with its subclasses *PaintImageGenerator.
 class CORE_EXPORT NativePaintImageGenerator
     : public GarbageCollected<NativePaintImageGenerator> {
  public:
   virtual ~NativePaintImageGenerator() = default;
 
+  // See comment in NativeCssPaintDefinition::GetAnimationForProperty
   virtual Animation* GetAnimationIfCompositable(const Element* element) = 0;
 
   virtual void Shutdown() = 0;

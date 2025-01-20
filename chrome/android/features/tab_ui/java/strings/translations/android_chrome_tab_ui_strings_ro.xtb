@@ -76,8 +76,8 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="427987768447457592">Grup de file nou</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> filă modificată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_CHANGED" /> file modificate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_CHANGED" /> de file modificate, <ph name="ANY_CLOSED" /> închise}}</translation>
 <translation id="4371591986692297148">Inactiv</translation>
+<translation id="4431937619879060901">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele tale</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
-<translation id="4590027107044272416">Poți deschide o filă nouă aici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Închizi o filă inactivă?}few{Închizi <ph name="TAB_COUNT_MANY" /> file inactive?}other{Închizi <ph name="TAB_COUNT_MANY" /> de file inactive?}}</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Închide după 1 zi}few{Închide după <ph name="DAY_COUNT_MANY" /> zile}other{Închide după <ph name="DAY_COUNT_MANY" /> de zile}}</translation>
@@ -98,16 +98,16 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată}few{<ph name="MANY_ADDED" /> file adăugate}other{<ph name="MANY_ADDED" /> de file adăugate}}</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5339733443032484186">Ultima filă</translation>
+<translation id="5380159289133845234">Arhivează filele dublură</translation>
 <translation id="5400836586163650660">Gri</translation>
+<translation id="5446043142172831860">Elimină fila și părăsește grupul</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Închide grupul de file cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Vezi informații despre magazin, opțiune disponibilă în partea de sus a ecranului</translation>
-<translation id="5615302411300498438">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l.
-
-Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="5627941783489838464">Fără actualizări ale filelor</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restabilește fila}few{Restabilește filele}other{Restabilește filele}}</translation>
+<translation id="5647702255748985085">Ieși din grup?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link din Chrome}few{<ph name="TABS_COUNT_MANY" /> linkuri din Chrome}other{<ph name="TABS_COUNT_MANY" /> de linkuri din Chrome}}</translation>
 <translation id="58326064309361797">Trage filele pentru a le grupa</translation>
 <translation id="5901630391730855834">Galben</translation>
@@ -116,7 +116,7 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
-<translation id="6082313992897617440">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>
@@ -143,9 +143,10 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="731648547091221002">S-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Vezi politica privind returnarea și altele</translation>
 <translation id="7352298686197644113">Vezi care dintre articolele din filele deschise are un preț mai mic</translation>
-<translation id="7421293530411019405">Ieși din grupul de file?</translation>
+<translation id="742664698522525515">Păstrezi grupul?</translation>
 <translation id="7452985128687107478">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="747459581954555080">Restabilește-le pe toate</translation>
+<translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>
 <translation id="753732157349120914">Comutator de file</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzie de pe Google}few{<ph name="REVIEWS_COUNT_MANY" /> recenzii de pe Google}other{<ph name="REVIEWS_COUNT_MANY" /> de recenzii de pe Google}}</translation>
 <translation id="7559245342362162951">Arată filele grupului în grilă pe ecran complet</translation>
@@ -175,9 +176,7 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="8398929769197326728">Dosar nou – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> filă adăugată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_ADDED" /> file adăugate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_ADDED" /> de file adăugate, <ph name="ANY_CLOSED" /> închise}}</translation>
-<translation id="8631711675211020168">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele</translation>
 <translation id="8633025649649592204">Activitate recentă</translation>
-<translation id="8635399646025169806">Păstrezi grupul de file?</translation>
 <translation id="870736955561925754">Închizi fila și ștergi grupul?</translation>
 <translation id="8714939927607906138">Preț mai mic</translation>
 <translation id="8730621377337864115">Terminat</translation>
@@ -188,10 +187,11 @@ Dacă îl părăsești, vei pierde imediat accesul la grupul de file <ph name="T
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>
 <translation id="8915916167043355778">Închide-le pe toate</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
-<translation id="9111228330448174435">Afișează caseta de dialog la crearea unui nou grup de file</translation>
 <translation id="9114502155681725011">Deschide meniul de acțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" />, de culoare <ph name="COLOR_NAME" />.</translation>
+<translation id="9169141410816678175">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
 <translation id="9216898458513705996">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">Ștergi grupul?</translation>
 <translation id="992256792861109788">Roz</translation>
 </translationbundle>

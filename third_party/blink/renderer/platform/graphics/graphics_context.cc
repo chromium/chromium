@@ -555,15 +555,13 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
-void GraphicsContext::DrawBidiText(
-    const Font& font,
-    const TextRunPaintInfo& run_info,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode,
-    Font::CustomFontNotReadyAction custom_font_not_ready_action) {
+void GraphicsContext::DrawBidiText(const Font& font,
+                                   const TextRunPaintInfo& run_info,
+                                   const gfx::PointF& point,
+                                   const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
     if (font.DrawBidiText(canvas_, run_info, point,
-                          custom_font_not_ready_action,
+                          Font::kDoNotPaintIfFontNotReady,
                           DarkModeFlags(this, auto_dark_mode, flags),
                           printing_ ? Font::DrawType::kGlyphsAndClusters
                                     : Font::DrawType::kGlyphsOnly)) {

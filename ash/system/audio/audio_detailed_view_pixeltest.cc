@@ -25,12 +25,15 @@ namespace ash {
 constexpr uint64_t kInternalMicId = 10003;
 
 // Pixel tests for the quick settings audio detailed view.
-class AudioDetailedViewPixelTest : public AshTestBase {
+class AudioDetailedViewPixelTest : public AshTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
   AudioDetailedViewPixelTest() {
-    scoped_features_.InitWithFeatures({features::kOnDeviceSpeechRecognition},
-                                      {});
+    scoped_features_.InitWithFeatureState(features::kOnDeviceSpeechRecognition,
+                                          IsCaptionEnabled());
   }
+
+  bool IsCaptionEnabled() { return GetParam(); }
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -42,7 +45,11 @@ class AudioDetailedViewPixelTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_F(AudioDetailedViewPixelTest, Basics) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AudioDetailedViewPixelTest,
+                         /*IsCaptionEnabled()=*/testing::Bool());
+
+TEST_P(AudioDetailedViewPixelTest, Basics) {
   // Pin input and output devices to ensure consistent behavior.
   auto* audio_handler = CrasAudioHandler::Get();
   AudioDevice output_device(FakeCrasAudioClient::Get()->node_list()[1]);
@@ -68,10 +75,10 @@ TEST_F(AudioDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/15, detailed_view));
+      /*revision_number=*/16, detailed_view));
 }
 
-TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
+TEST_P(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
   // Setup for showing noise cancellation button.
   auto* client = FakeCrasAudioClient::Get();
   auto* audio_handler = CrasAudioHandler::Get();
@@ -111,7 +118,7 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/7, detailed_view));
+      /*revision_number=*/8, detailed_view));
 }
 
 }  // namespace ash

@@ -122,8 +122,9 @@ class BASE_EXPORT ProcessIterator {
 #elif BUILDFLAG(IS_POSIX)
   struct DIRClose {
     inline void operator()(DIR* x) const {
-      if (x)
+      if (x) {
         closedir(x);
+      }
     }
   };
   std::unique_ptr<DIR, DIRClose> procfs_dir_;

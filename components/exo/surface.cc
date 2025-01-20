@@ -14,11 +14,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -124,9 +126,18 @@ bool FormatHasAlpha(gfx::BufferFormat format) {
 // TODO(crbug.com/369003507): Remove this check once we found the root
 // cause of crash on specific hatch platform.
 bool ShouldDisableOverlay(gfx::BufferFormat format) {
-  static bool is_enabled =
-      base::FeatureList::IsEnabled(kDisableNonYUVOverlaysFromExo);
-  if (!is_enabled) {
+  static bool is_blocked_device = false;
+  static bool is_initialized = false;
+  if (!is_initialized) {
+    is_initialized = true;
+    std::string device_model = base::SysInfo::HardwareModelName();
+    if (device_model == "DRALLION" || device_model == "HATCH") {
+      // We only disable overlays for affected devices reported in this bug.
+      is_blocked_device = true;
+    }
+  }
+
+  if (!is_blocked_device) {
     return false;
   }
   switch (format) {
@@ -224,7 +235,9 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
-  gfx::Size GetMaximumSize() const override { return gfx::Size(); }
+  std::optional<gfx::Size> GetMaximumSize() const override {
+    return gfx::Size();
+  }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
@@ -329,7 +342,7 @@ void ImmediateExplicitRelease(
 
 }  // namespace
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey)
 
 // A property key to store the window session Id set by client or full_restore
 // component.
@@ -1689,6 +1702,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                                     bool needs_full_damage,
                                     std::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
+  UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.AppendContentsToFrame", true);
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
   gfx::PointF parent_to_root_dp = gfx::ScalePoint(
@@ -1815,6 +1829,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     if (current_resource_.id) {
       frame->resource_list.push_back(current_resource_);
     }
+    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.Occluded", true);
     return;
   }
 
@@ -1859,6 +1874,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // Draw quad is only needed if buffer is not fully transparent.
 
       if (requires_texture_draw_quad) {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TextureDrawQuad", true);
         viz::TextureDrawQuad* texture_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
         texture_quad->SetNew(quad_state, quad_rect, quad_rect,
@@ -1866,7 +1882,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              current_resource_.id,
                              /* premultiplied*/ true, uv_crop.origin(),
                              uv_crop.bottom_right(), background_color,
-                             /* flipped=*/false, /* nearest*/ false,
+                             /* nearest*/ false,
                              state_.basic_state.only_visible_on_secure_output,
                              gfx::ProtectedVideoType::kClear);
         if (current_resource_.is_overlay_candidate)
@@ -1911,6 +1927,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
           damage_rect_px = gfx::RectF();
         }
       } else {
+        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TileDrawQuad", true);
         viz::TileDrawQuad* tile_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
         // TODO(crbug.com/40229946): Support AA quads coming from exo.
@@ -1927,6 +1944,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
     frame->resource_list.push_back(current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {
+    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.SolidColorDrawQuad", true);
     const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
         viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
         render_pass, quad_to_target_transform, quad_rect, msk, quad_clip_rect,

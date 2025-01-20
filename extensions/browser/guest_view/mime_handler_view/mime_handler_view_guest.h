@@ -96,6 +96,8 @@ class MimeHandlerViewGuest
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
 
   content::RenderFrameHost* GetEmbedderFrame();
 
@@ -136,6 +138,7 @@ class MimeHandlerViewGuest
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
@@ -144,6 +147,7 @@ class MimeHandlerViewGuest
       content::RenderFrameHost* outer_contents_frame) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
+  void GuestViewDocumentOnLoadCompleted() final;
 
   // BrowserPluginGuestDelegate implementation.
   content::RenderFrameHost* GetProspectiveOuterDocument() final;
@@ -151,6 +155,7 @@ class MimeHandlerViewGuest
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
 
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(
@@ -198,7 +203,6 @@ class MimeHandlerViewGuest
   bool SetFullscreenState(bool is_fullscreen);
 
   // content::WebContentsObserver implementation.
-  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;

@@ -78,7 +78,6 @@ void OfferNotificationBubbleViews::Init() {
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       InitWithGPayPromoCodeOfferContent();
       return;
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }

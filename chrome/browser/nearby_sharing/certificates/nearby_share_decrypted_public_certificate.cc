@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
+#include <array>
 #include <utility>
 
 #include "chrome/browser/nearby_sharing/certificates/common.h"
@@ -11,7 +12,7 @@
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
-#include "crypto/encryptor.h"
+#include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
 #include "crypto/signature_verifier.h"
 
@@ -37,22 +38,12 @@ bool IsDataValid(base::Time not_before,
 std::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     const crypto::SymmetricKey* secret_key) {
-  std::unique_ptr<crypto::Encryptor> encryptor =
-      CreateNearbyShareCtrEncryptor(secret_key, encrypted_metadata_key.salt());
-  if (!encryptor) {
-    CD_LOG(ERROR, Feature::NS)
-        << "Cannot decrypt metadata key: Could not create CTR encryptor.";
-    return std::nullopt;
-  }
+  auto key = base::as_byte_span(secret_key->key());
+  auto counter = DeriveNearbyShareKey<crypto::aes_ctr::kCounterSize>(
+      encrypted_metadata_key.salt());
 
-  std::vector<uint8_t> decrypted_metadata_key;
-  if (!encryptor->Decrypt(base::as_bytes(base::make_span(
-                              encrypted_metadata_key.encrypted_key())),
-                          &decrypted_metadata_key)) {
-    return std::nullopt;
-  }
-
-  return decrypted_metadata_key;
+  return crypto::aes_ctr::Decrypt(
+      key, counter, base::as_byte_span(encrypted_metadata_key.encrypted_key()));
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,
@@ -64,18 +55,17 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     const crypto::SymmetricKey* secret_key) {
   // Init() keeps a reference to the input key, so that reference must outlive
   // the lifetime of |aead|.
-  std::vector<uint8_t> derived_key = DeriveNearbyShareKey(
-      metadata_encryption_key, kNearbyShareNumBytesAesGcmKey);
+  auto derived_key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
+      metadata_encryption_key);
 
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
 
-  return aead.Open(
-      encrypted_metadata,
-      /*nonce=*/
-      DeriveNearbyShareKey(base::as_bytes(base::make_span(secret_key->key())),
-                           kNearbyShareNumBytesAesGcmIv),
-      /*additional_data=*/base::span<const uint8_t>());
+  return aead.Open(encrypted_metadata,
+                   /*nonce=*/
+                   DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(
+                       base::as_byte_span(secret_key->key())),
+                   /*additional_data=*/base::span<const uint8_t>());
 }
 
 // Returns true if the HMAC of |decrypted_metadata_key| is
@@ -231,10 +221,9 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
   return verifier.VerifyFinal();
 }
 
-std::vector<uint8_t>
+std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
 NearbyShareDecryptedPublicCertificate::HashAuthenticationToken(
     base::span<const uint8_t> authentication_token) const {
-  return ComputeAuthenticationTokenHash(
-      authentication_token,
-      base::as_bytes(base::make_span(secret_key_->key())));
+  return ComputeAuthenticationTokenHash(authentication_token,
+                                        base::as_byte_span(secret_key_->key()));
 }

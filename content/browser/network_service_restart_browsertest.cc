@@ -1136,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 
   network::ResourceRequest request;
   request.url = GetTestURL();
@@ -1164,8 +1164,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   new_params->process_id = network::mojom::kBrowserProcessId;
   new_params->is_orb_enabled = false;
-  new_params->isolation_info =
-      net::IsolationInfo::CreateTransientWithNonce(nonce);
+  new_params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 
   std::unique_ptr<network::TestURLLoaderClient> new_client =
       FetchRequest(request, new_network_context, std::move(new_params));

@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
@@ -202,15 +203,8 @@ bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
   // Shortcut apps may immediately trigger the identity updating if the user
   // has overridden the title of the app, see: https://crbug.com/1366600
   // Don't show the update prompt for shortcut apps and always revert.
-  // Also, ideally we should just use IsShortcutApp here instead of checking the
-  // install source, but as per https://crbug.com/1368592 there is a bug with
-  // that where it returns the wrong thing for Shortcut apps that specify
-  // `scope`.
-  bool is_shortcut_app =
-      registrar.IsShortcutApp(web_app.app_id()) ||
-      registrar.GetLatestAppInstallSource(web_app.app_id()) ==
-          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
-  if (is_shortcut_app) {
+  if (registrar.GetLatestAppInstallSource(web_app.app_id()) ==
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
     return false;
   }
 
@@ -278,9 +272,6 @@ ManifestDataChanges GetManifestDataChanges(
         new_install_info.protocol_handlers) {
       return true;
     }
-    if (existing_web_app.url_handlers() != new_install_info.url_handlers) {
-      return true;
-    }
     if (base::FeatureList::IsEnabled(
             blink::features::kWebAppManifestLockScreen) &&
         existing_web_app.lock_screen_start_url() !=
@@ -334,6 +325,10 @@ ManifestDataChanges GetManifestDataChanges(
       return true;
     }
     if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
+      return true;
+    }
+    if (existing_web_app.related_applications() !=
+        new_install_info.related_applications) {
       return true;
     }
     // TODO(crbug.com/40611449): Check more manifest fields.

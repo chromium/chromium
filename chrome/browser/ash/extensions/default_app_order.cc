@@ -7,7 +7,6 @@
 #include <array>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/package_id.h"

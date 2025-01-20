@@ -68,9 +68,8 @@ public interface TabGroupModelFilterObserver {
      *
      * @param movedTab The {@link Tab} which has been moved. If a group is merged to a tab or
      *     another group, this is the last tab of the merged group.
-     * @param selectedTabIdInGroup The id of the selected {@link Tab} in group.
      */
-    default void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {}
+    default void didMergeTabToGroup(Tab movedTab) {}
 
     /**
      * This method is called after a group is moved.

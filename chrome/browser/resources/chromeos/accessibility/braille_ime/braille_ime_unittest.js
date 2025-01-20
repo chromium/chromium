@@ -6,6 +6,8 @@
  * @fileoverview Unit test for the Braille IME.
  */
 
+GEN_INCLUDE(['../common/testing/e2e_test_base.js']);
+
 /**
  * Mock Chrome event supporting one listener.
  */
@@ -63,22 +65,34 @@ class MockPort {
  * Engine ID as specified in manifest.
  * @const {string}
  */
-ENGINE_ID = 'braille';
+const ENGINE_ID = 'braille';
 
-var localStorage;
-
-/**
- * Test fixture for the braille IME unit test.
- */
-BrailleImeUnitTest = class extends testing.Test {
+/** Test fixture for the braille IME unit test. */
+BrailleImeUnitTest = class extends E2ETestBase {
   /** @override */
-  setUp() {
-    super.setUp();
+  testGenPreamble() {
+    super.testGenPreamble();
+    // Use the accessibility common extension to house this test suite.
+    GEN(`
+  base::OnceClosure load_cb =
+      base::BindOnce(&ash::AccessibilityManager::EnableAutoclick,
+          base::Unretained(ash::AccessibilityManager::Get()),
+          true);
+    `);
+    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('BrailleIme', '/braille_ime/braille_ime.js');
+    assertNotNullNorUndefined(BrailleIme);
+
     chrome = chrome || {};
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};
     chrome.runtime = chrome.runtime || {};
-    localStorage = {};
+    localStorage.clear();
     this.lastSentKeyRequestId_ = 0;
     this.lastHandledKeyRequestId_ = undefined;
     this.lastHandledKeyResult_ = undefined;
@@ -142,11 +156,8 @@ BrailleImeUnitTest = class extends testing.Test {
   }
 };
 
-/** @Override */
-BrailleImeUnitTest.prototype.extraLibraries = ['braille_ime.js'];
 
-
-TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
+AX_TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   this.activateIme();
   assertFalse(this.sendKeyDown('KeyF'));
   assertFalse(this.sendKeyDown('KeyD'));
@@ -155,7 +166,7 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   assertEquals(0, this.port.messages.length);
 });
 
-TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
+AX_TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   this.activateIme();
   assertFalse(this.menuItems[0].checked);
   this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
@@ -209,7 +220,7 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   ]);
 });
 
-TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
+AX_TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   this.activateIme();
   // Enable standard keyboard feature.
   assertFalse(this.menuItems[0].checked);
@@ -229,18 +240,19 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   assertTrue(this.lastHandledKeyResult_);
 });
 
-TEST_F('BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved', function() {
-  this.activateIme();
-  assertFalse(this.menuItems[0].checked);
-  this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
-  assertTrue(this.menuItems[0].checked);
-  // Create a new instance and make sure the setting is still turned on.
-  this.createIme();
-  this.activateIme();
-  assertTrue(this.menuItems[0].checked);
-});
+AX_TEST_F(
+    'BrailleImeUnitTest', 'UseStandardKeyboardSettingPreserved', function() {
+      this.activateIme();
+      assertFalse(this.menuItems[0].checked);
+      this.onMenuItemActivated.dispatch(ENGINE_ID, this.menuItems[0].id);
+      assertTrue(this.menuItems[0].checked);
+      // Create a new instance and make sure the setting is still turned on.
+      this.createIme();
+      this.activateIme();
+      assertTrue(this.menuItems[0].checked);
+    });
 
-TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
+AX_TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
   var CONTEXT_ID = 1;
   var hasSelection = false;
   var text = 'Hi, ';
@@ -273,7 +285,7 @@ TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
   assertEquals('Hi, good bye!', text);
 });
 
-TEST_F('BrailleImeUnitTest', 'Uncommitted', function() {
+AX_TEST_F('BrailleImeUnitTest', 'Uncommitted', function() {
   var CONTEXT_ID = 1;
   var text = '';
   chrome.input.ime.commitText = function(params) {

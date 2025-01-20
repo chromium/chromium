@@ -15,11 +15,18 @@ source_set("dns") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
-    "//extensions/common",
-    "//extensions/common/api",
+  public_deps = [
+    "//extensions/browser:browser_sources",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/common/api",
+    "//url",
+  ]
 }

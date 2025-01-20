@@ -31,10 +31,9 @@
   gap: 4px;
 }
 
-.blue-pill-button{
+.blue-pill-button {
   background-color: var(--promotion-pill-button-color);
   width: 202px;
-  height: 20px;
   padding: 8px 0px 8px 0px;
   text-align: center;
   line-height: 20px;
@@ -48,9 +47,11 @@
 }
 
 .blue-pill-button:hover {
-  background: color-mix(in srgb,
+  background: color-mix(
+    in srgb,
     var(--promotion-pill-button-color-hover),
-    var(--promotion-pill-button-color));
+    var(--promotion-pill-button-color)
+  );
 }
 
 .banner-title {
@@ -58,12 +59,14 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+  display: contents;
 }
 
 .banner-description {
   color: var(--promotion-banner-description-color);
   font-size: 14px;
   font-weight: 400;
+  line-height: 20px;
 }
 
 .promotion-icon-container {
@@ -76,14 +79,20 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 20px;
-  background-color: #5F6368;
+  background-color: #5f6368;
   height: 20px;
   width: 20px;
 }
 
 @media (prefers-color-scheme: dark) {
   #close-icon-container {
-    background-color: #F1F3F4;
+    background-color: #f1f3f4;
+  }
+}
+
+@media (forced-colors: active) {
+  #close-icon-container {
+    filter: invert(100%);
   }
 }
 
@@ -97,7 +106,7 @@
   padding-block: 0;
 }
 
- /* Remove the icon with smaller width devices for promotion banner */
+/* Remove the icon with smaller width devices for promotion banner */
 @media only screen and (max-width: 530px) {
   .promotion-icon-container {
     display: none;
@@ -111,24 +120,22 @@
     <div id="promotion-icon" class="promotion-icon-container" aria-hidden="true">
       <picture>
         <source srcset="chrome://resources/images/dark/promotion_banner_dark.svg"
-            media="(prefers-color-scheme: dark)">
+          media="(prefers-color-scheme: dark)">
         <img src="chrome://resources/images/promotion_banner_light.svg">
       </picture>
     </div>
     <div id="banner-actions" class="banner-actions-container">
       <div id="promotion-main-text" class="promotion-main-text-container">
         <div id="promotion-text" class="promotion-text-container">
-          <div id="promotion-banner-title" class="banner-title">
-            $i18n{promotionBannerTitle}
-          </div>
+          <h2 id="promotion-banner-title" class="banner-title">$i18n{promotionBannerTitle}</h2>
           <div id="promotion-banner-description" class="banner-description">
             $i18n{promotionBannerDesc}
           </div>
         </div>
-          <a id="promotion-redirect-button" class="blue-pill-button" target="_blank"
-              href="https://admin.google.com?utm_source=chrome_policy_promotion">
-            $i18n{promotionBannerBtn}
-          </a>
+        <!-- TODO(crbug.com/380495561): Replace with redirect logic once rpc service is ready -->
+        <button id="promotion-redirect-button" class="blue-pill-button">
+          $i18n{promotionBannerBtn}
+        </button>
       </div>
       <button id="promotion-dismiss-button" class="dismiss-button" tabindex="0">
         <div id="close-icon-container"></div>

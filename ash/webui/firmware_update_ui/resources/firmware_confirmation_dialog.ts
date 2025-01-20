@@ -17,7 +17,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './firmware_confirmation_dialog.html.js';
 import {FirmwareUpdate} from './firmware_update.mojom-webui.js';
 import {OpenConfirmationDialogEventDetail, OpenUpdateDialogEventDetail} from './firmware_update_types.js';
-import {isTrustedReportsFirmwareEnabled} from './firmware_update_utils.js';
 
 /**
  * @fileoverview
@@ -48,17 +47,11 @@ export class FirmwareConfirmationDialogElement extends
         type: Boolean,
         value: false,
       },
-
-      shouldShowDisclaimer: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   update: FirmwareUpdate;
   open: boolean = false;
-  private shouldShowDisclaimer: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -66,8 +59,6 @@ export class FirmwareConfirmationDialogElement extends
         'open-confirmation-dialog',
         (e) => this.onOpenConfirmationDialog(
             e as CustomEvent<OpenConfirmationDialogEventDetail>));
-
-    this.shouldShowDisclaimer = isTrustedReportsFirmwareEnabled();
   }
 
   protected openUpdateDialog(): void {

@@ -14,28 +14,28 @@
     },
     {
       "name": "LayoutBlockFlow DIV id='scroller'",
-      "bounds": [278, 278],
+      "bounds": [277, 277],
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [0, 278],
-      "bounds": [278, 22],
+      "position": [0, 277],
+      "bounds": [277, 23],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "VerticalScrollbar",
-      "position": [278, 0],
-      "bounds": [22, 278],
+      "position": [277, 0],
+      "bounds": [23, 277],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "Scroll corner of LayoutBlockFlow DIV id='scroller'",
-      "position": [278, 278],
-      "bounds": [22, 22],
+      "position": [277, 277],
+      "bounds": [23, 23],
       "contentsOpaque": true,
       "transform": 1
     },

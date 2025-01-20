@@ -123,7 +123,7 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
 // the integrated Google Drive support.
 class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
  public:
-  FileSystemApiTestForDrive() {}
+  FileSystemApiTestForDrive() = default;
 
   bool SetUpUserDataDirectory() override {
     return drive::SetUpUserDataDirectoryForDriveFsTest();

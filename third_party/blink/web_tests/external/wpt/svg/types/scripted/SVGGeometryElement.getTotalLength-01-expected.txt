@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] SVGGeometryElement.prototype.getTotalLength(), getTotalLength - rect
+  Failed to execute 'getTotalLength' on 'SVGGeometryElement': This element is non-rendered element.
+[FAIL] SVGGeometryElement.prototype.getTotalLength(), getTotalLength - path modified with setPathData
+  path.getPathData is not a function
+Harness: the test ran to completion.
+

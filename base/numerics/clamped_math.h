@@ -30,7 +30,7 @@ class ClampedNumeric {
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to ClampedNumerics to make them easier to use.
   template <typename Src>
-    requires(UnderlyingType<Src>::is_numeric)
+    requires(IsNumeric<Src>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr ClampedNumeric(Src value) : value_(saturated_cast<T>(value)) {}
 
@@ -44,7 +44,7 @@ class ClampedNumeric {
   // Returns a ClampedNumeric of the specified type, cast from the current
   // ClampedNumeric, and saturated to the destination type.
   template <typename Dst>
-  constexpr ClampedNumeric<typename UnderlyingType<Dst>::type> Cast() const {
+  constexpr ClampedNumeric<UnderlyingType<Dst>> Cast() const {
     return *this;
   }
 
@@ -172,9 +172,7 @@ class ClampedNumeric {
   // ClampedNumeric and POD arithmetic types.
   template <typename Src>
   struct Wrapper {
-    static constexpr typename UnderlyingType<Src>::type value(Src value) {
-      return value;
-    }
+    static constexpr UnderlyingType<Src> value(Src value) { return value; }
   };
 };
 
@@ -184,8 +182,7 @@ ClampedNumeric(T) -> ClampedNumeric<T>;
 // Convenience wrapper to return a new ClampedNumeric from the provided
 // arithmetic or ClampedNumericType.
 template <typename T>
-constexpr ClampedNumeric<typename UnderlyingType<T>::type> MakeClampedNum(
-    T value) {
+constexpr ClampedNumeric<UnderlyingType<T>> MakeClampedNum(T value) {
   return value;
 }
 

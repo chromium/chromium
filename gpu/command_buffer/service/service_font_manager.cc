@@ -106,8 +106,6 @@ class ServiceFontManager::SkiaDiscardableManager
 
   void notifyCacheMiss(SkStrikeClient::CacheMissType type,
                        int fontSize) override {
-    UMA_HISTOGRAM_ENUMERATION("GPU.OopRaster.GlyphCacheMiss", type,
-                              SkStrikeClient::CacheMissType::kLast + 1);
     // In general, Skia analysis of glyphs should find all cases.
     // If this is not happening, please file a bug with a repro so
     // it can be fixed.

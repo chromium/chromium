@@ -46,12 +46,14 @@ content::NavigationThrottle::ThrottleCheckResult
 NewTabPageNavigationThrottle::WillProcessResponse() {
   const net::HttpResponseHeaders* headers =
       navigation_handle()->GetResponseHeaders();
-  if (!headers)
+  if (!headers) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   int response_code = headers->response_code();
-  if (response_code < 400 && response_code != net::HTTP_NO_CONTENT)
+  if (response_code < 400 && response_code != net::HTTP_NO_CONTENT) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   return OpenLocalNewTabPage();
 }

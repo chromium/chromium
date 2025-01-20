@@ -12,6 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -23,6 +25,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/enterprise/field_validation_test_utils.h"
+#include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +47,19 @@ struct TestProvider {
   const char* url;
   bool featured_by_policy = false;
   const char* favicon;
+};
+
+// Represents field values for EnterpriseSearchAggregatorSettings policy, used
+// for generating policy value entries. Fields set as nullptr will not be added
+// to the entry dictionary.
+struct TestSearchAggregator {
+  const char* name;
+  const char* shortcut;
+  const char* search_url;
+  const char* suggest_url;
+  const char* icon_url;
+  // If not-zero, the ID of the error message expected in the policy error map.
+  const int expected_error_msg_id;
 };
 
 // Used for tests that require a list of valid providers.
@@ -216,6 +232,36 @@ TestProvider kTestProvidersWithFeaturedEntries[] = {
      .favicon = "https://docs.com/favicon.ico"},
 };
 
+constexpr char kSiteSearchKeyword[] = "ss_keyword";
+
+TestSearchAggregator kSearchAggregatorShortcutSameAsSiteSearch = {
+    .name = "work name",
+    .shortcut = kSiteSearchKeyword,
+    .search_url = "https://work.com/q={searchTerms}&x",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico"};
+
+TestProvider kSiteSearchShortcutSameAsSearchAggregator = {
+    .name = "same as keyword",
+    .shortcut = kSiteSearchKeyword,
+    .url = "https://work.com/q={searchTerms}&x",
+    .favicon = "https://work.com/favicon.ico"};
+
+bool kMismatchedSearchAggregatorSettingsType = true;
+
+TestSearchAggregator kSearchAggregatorWithoutShortcut = {
+    .name = "work name",
+    .search_url = "https://work.com/q={searchTerms}&x",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico"};
+
+TestSearchAggregator kSearchAggregatorSettingWithShortcut = {
+    .name = "work name",
+    .shortcut = "search_aggregator_shortcut",
+    .search_url = "https://work.com/q={searchTerms}&x",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico"};
+
 // Creates a simple list item for the site search policy.
 base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
                                                 const std::string& shortcut,
@@ -244,6 +290,30 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
   return entry;
 }
 
+void SetFieldIfNotEmpty(const std::string& field,
+                        const char* value,
+                        base::Value::Dict* dict) {
+  if (value) {
+    dict->Set(field, value);
+  }
+}
+
+base::Value::Dict GenerateSearchAggregatorPolicyEntry(
+    TestSearchAggregator test_case) {
+  base::Value::Dict entry;
+  SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kIconUrl,
+                     test_case.icon_url, &entry);
+  SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kName, test_case.name,
+                     &entry);
+  SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kSearchUrl,
+                     test_case.search_url, &entry);
+  SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kShortcut,
+                     test_case.shortcut, &entry);
+  SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kSuggestUrl,
+                     test_case.suggest_url, &entry);
+  return entry;
+}
+
 // Returns a matcher that accepts entries for the pref corresponding to the
 // site search policy. Field values are obtained from |test_case|.
 testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case,
@@ -257,8 +327,8 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case,
       HasStringField(DefaultSearchManager::kURL, std::string(test_case.url)),
       HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
       HasIntegerField(
-          DefaultSearchManager::kCreatedByPolicy,
-          static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch)),
+          DefaultSearchManager::kPolicyOrigin,
+          static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
       HasIntegerField(DefaultSearchManager::kIsActive,
                       static_cast<int>(TemplateURLData::ActiveStatus::kTrue)),
@@ -516,11 +586,11 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY)));
+                           IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY)));
 }
 
 TEST(SiteSearchPolicyHandlerTest, UnknownField) {
@@ -582,7 +652,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
        it != std::end(kShortcutWithSpacesTestProviders); ++it) {
     EXPECT_THAT(&errors,
                 HasValidationError(l10n_util::GetStringFUTF16(
-                    IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
+                    IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE,
                     base::UTF8ToUTF16(it->shortcut))));
   }
 }
@@ -609,7 +679,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
   EXPECT_THAT(
       &errors,
       HasValidationError(l10n_util::GetStringFUTF16(
-          IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
+          IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT,
           base::UTF8ToUTF16(kShortcutStartsWithAtTestProviders[0].shortcut))));
 
   handler.ApplyPolicySettings(policies, &prefs);
@@ -647,7 +717,7 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
     EXPECT_THAT(
         &errors,
         HasValidationError(l10n_util::GetStringFUTF16(
-            IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
+            IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT,
             base::UTF8ToUTF16(it->url))));
   }
 }
@@ -756,7 +826,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
+                  IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
                   base::UTF8ToUTF16(
                       kShortcutSameAsDSPKeywordTestProviders[0].shortcut))));
 
@@ -790,7 +860,7 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors,
               HasValidationError(l10n_util::GetStringFUTF16(
-                  IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                  IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS,
                   base::UTF8ToUTF16(kNonHttpsUrlTestProviders[0].url))));
 
   handler.ApplyPolicySettings(policies, &prefs);
@@ -818,7 +888,7 @@ TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
-                           IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER)));
+                           IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER)));
 }
 
 TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
@@ -856,6 +926,145 @@ TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
           IsNonFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[1]),
           IsNonFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[2]),
           IsFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[2])));
+}
+
+TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsSearchAggregatorKeyword) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(
+      GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(GenerateSearchAggregatorPolicyEntry(
+                   kSearchAggregatorShortcutSameAsSiteSearch)),
+               nullptr);
+
+  SearchAggregatorPolicyHandler sap_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  sap_handler.ApplyPolicySettings(policies, &prefs);
+  ASSERT_TRUE(sap_handler.CheckPolicySettings(policies, &errors));
+
+  SiteSearchPolicyHandler ssp_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  ASSERT_FALSE(ssp_handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(
+      &errors,
+      HasValidationError(l10n_util::GetStringFUTF16(
+          IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_SEARCH_AGGREGATOR_KEYWORD,
+          base::UTF8ToUTF16(
+              kSiteSearchShortcutSameAsSearchAggregator.shortcut))));
+}
+
+TEST(SiteSearchPolicyHandlerTest,
+     ShortcutDifferentThanSearchAggregatorKeyword) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
+  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(GenerateSearchAggregatorPolicyEntry(
+                   kSearchAggregatorSettingWithShortcut)),
+               nullptr);
+
+  SearchAggregatorPolicyHandler sap_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  sap_handler.ApplyPolicySettings(policies, &prefs);
+  ASSERT_TRUE(sap_handler.CheckPolicySettings(policies, &errors));
+
+  SiteSearchPolicyHandler ssp_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  ssp_handler.ApplyPolicySettings(policies, &prefs);
+  ASSERT_TRUE(ssp_handler.CheckPolicySettings(policies, &errors));
+}
+
+TEST(SiteSearchPolicyHandlerTest, SearchAggregatorPolicyTypeMismatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(
+      GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(kMismatchedSearchAggregatorSettingsType), nullptr);
+
+  SearchAggregatorPolicyHandler sap_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  sap_handler.ApplyPolicySettings(policies, &prefs);
+  ASSERT_FALSE(sap_handler.CheckPolicySettings(policies, &errors));
+
+  SiteSearchPolicyHandler ssp_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  ASSERT_TRUE(ssp_handler.CheckPolicySettings(policies, &errors));
+}
+
+TEST(SiteSearchPolicyHandlerTest, SearchAggregatorPolicyMissingShortcut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(
+      GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(GenerateSearchAggregatorPolicyEntry(
+                   kSearchAggregatorWithoutShortcut)),
+               nullptr);
+
+  SearchAggregatorPolicyHandler sap_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  ASSERT_FALSE(sap_handler.CheckPolicySettings(policies, &errors));
+
+  SiteSearchPolicyHandler ssp_handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+  ASSERT_TRUE(ssp_handler.CheckPolicySettings(policies, &errors));
 }
 
 }  // namespace policy

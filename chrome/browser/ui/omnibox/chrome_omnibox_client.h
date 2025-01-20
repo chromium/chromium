@@ -67,10 +67,10 @@ class ChromeOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  bool ProcessExtensionKeyword(const std::u16string& text,
-                               const TemplateURL* template_url,
-                               const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(const std::u16string& text,
+                             const TemplateURL* template_url,
+                             const AutocompleteMatch& match,
+                             WindowOpenDisposition disposition) override;
   void OnInputStateChanged() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
@@ -113,8 +113,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
       bool destination_url_entered_with_http_scheme,
       const std::u16string& text,
       const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+      const AutocompleteMatch& alternative_nav_match) override;
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
   void OpenIphLink(GURL gurl) override;
@@ -132,10 +131,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
 
   // Performs preconnection for |match|.
   void DoPreconnect(const AutocompleteMatch& match);
-
-  void OnBitmapFetched(const BitmapFetchedCallback& callback,
-                       int result_index,
-                       const SkBitmap& bitmap);
 
   // Implemented by `LocationBarView` which owns `OmniboxView` which owns this.
   const raw_ptr<LocationBar> location_bar_;

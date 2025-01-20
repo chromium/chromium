@@ -27,8 +27,6 @@ import {
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
-import {settings} from '../../core/state/settings.js';
-import {resetTranscriptionLanguage} from '../../core/state/transcription.js';
 import {
   assertExists,
   assertInstanceof,
@@ -152,15 +150,6 @@ export class PlatformHandler extends PlatformHandlerBase {
       update(state);
     }
 
-    // Reset unavailable transcript language.
-    const selectedState = this.getSelectedLanguageState();
-    if (selectedState !== null && selectedState.value.kind === 'unavailable') {
-      // Set to default if there's no other language option.
-      resetTranscriptionLanguage(
-        /* resetToDefault= */ !this.isMultipleLanguageAvailable(),
-      );
-    }
-
     const quietModeMonitor = new QuietModeMonitorReceiver({
       update: (inQuietMode: boolean) => {
         this.quietModeInternal.value = inQuietMode;
@@ -173,6 +162,8 @@ export class PlatformHandler extends PlatformHandlerBase {
 
     await this.summaryModelLoader.init();
     await this.titleSuggestionModelLoader.init();
+
+    this.initPerfEventWatchers();
   }
 
   override getLangPackList = lazyInit((): readonly LangPackInfo[] => {
@@ -215,15 +206,7 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.sodaStates.get(language));
   }
 
-  override getSelectedLanguageState(): Signal<ModelState>|null {
-    const selectedLanguage = settings.value.transcriptionLanguage;
-    return selectedLanguage === null ? null :
-                                       this.getSodaState(selectedLanguage);
-  }
-
-  override async newSodaSession(
-    language: LanguageCode,
-  ): Promise<SodaSession> {
+  override async newSodaSession(language: LanguageCode): Promise<SodaSession> {
     const recognizer = new SodaRecognizerRemote();
     const session = new MojoSodaSession(recognizer);
     const client = new SodaClientReceiver(session);

@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
@@ -311,7 +312,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
     }
 
     private String getReasonToShowTab(String reasonToShowTab, long recencyMs) {
-        if (TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.getValue()
+        if (ChromeFeatureList.sTabResumptionModuleAndroidShowDefaultReason.getValue()
                 && TextUtils.isEmpty(reasonToShowTab)) {
             String recencyString =
                     TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);

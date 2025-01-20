@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,8 +42,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -204,45 +203,6 @@ apps::IntentPtr ConvertLaunchIntent(
   return intent;
 }
 
-// Finds the best matching web app that can handle the |url|.
-std::optional<std::string> FindWebAppForURL(Profile* profile, const GURL& url) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (!proxy) {
-    return std::nullopt;
-  }
-
-  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(
-      url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/true);
-
-  std::string best_match;
-  size_t best_match_length = 0;
-  for (const std::string& app_id : app_ids) {
-    // Among all the matched apps, select a web app with the longest matching
-    // scope.
-    size_t match_length = 0;
-    proxy->AppRegistryCache().ForOneApp(
-        app_id, [&url, &match_length](const apps::AppUpdate& update) {
-          if (update.AppType() != apps::AppType::kWeb) {
-            return;
-          }
-          for (const auto& filter : update.IntentFilters()) {
-            match_length =
-                std::max(match_length,
-                         apps_util::IntentFilterUrlMatchLength(filter, url));
-          }
-        });
-    if (match_length > best_match_length) {
-      best_match_length = match_length;
-      best_match = app_id;
-    }
-  }
-  if (best_match.empty()) {
-    return std::nullopt;
-  }
-  return best_match;
-}
-
 }  // namespace
 
 ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl() {
@@ -262,27 +222,11 @@ ArcOpenUrlDelegateImpl* ArcOpenUrlDelegateImpl::GetForTesting() {
 }
 
 void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
-
-  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  // If Lacros is enabled, convert externalfile:// url into file:// url
-  // managed by the FuseBox moniker system because Lacros cannot handle
-  // externalfile:// urls.
-  // TODO(crbug.com/1374575): Check if other externalfile:// urls can use the
-  // same logic. If so, move this code into CrosapiNewWindowDelegate::OpenUrl()
-  // which is only for Lacros.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      url_to_open.SchemeIs(content::kExternalFileScheme)) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
-    // `profile` may be null if sign-in has happened but the profile isn't
-    // loaded yet.
-    if (!profile)
-      return;
-    url_to_open = ConvertToMonikerFileUrl(profile, url);
   }
 
+  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -296,20 +240,20 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   // opened through here to be installed in the profile associated with ARC.
   // |user| may be null if sign-in hasn't happened yet
   const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  if (!user) {
     return;
+  }
 
   // `profile` may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   std::optional<webapps::AppId> app_id =
-      web_app::IsWebAppsCrosapiEnabled()
-          ? FindWebAppForURL(profile, url)
-          : web_app::FindInstalledAppWithUrlInScope(profile, url,
-                                                    /*window_only=*/true);
+      web_app::FindInstalledAppWithUrlInScope(profile, url,
+                                              /*window_only=*/true);
 
   if (!app_id) {
     OpenUrlFromArc(url);
@@ -341,27 +285,32 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
-  if (!package_name.has_value())
+  if (!package_name.has_value()) {
     return;
+  }
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
-  if (!chrome_shelf_controller)
+  if (!chrome_shelf_controller) {
     return;
+  }
 
   auto* arc_tracker =
       chrome_shelf_controller->app_service_app_window_controller()
           ->app_service_arc_tracker();
-  if (!arc_tracker)
+  if (!arc_tracker) {
     return;
+  }
 
-  for (const auto& id : prefs->GetAppsForPackage(package_name.value()))
+  for (const auto& id : prefs->GetAppsForPackage(package_name.value())) {
     arc_tracker->CloseWindows(id);
+  }
 }
 
 void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
@@ -437,8 +386,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   webapps::AppId app_id =
       web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
@@ -451,8 +401,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
       });
 
   if (!app_installed) {
-    if (arc_intent->data)
+    if (arc_intent->data) {
       OpenUrlFromArc(*arc_intent->data);
+    }
     return;
   }
 

@@ -7,6 +7,7 @@
 #include "base/barrier_callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -16,8 +17,15 @@ namespace file_manager::trash {
 
 namespace {
 
+constexpr char kCleanupFileCountMetricName[] =
+    "FileBrowser.TrashAutoCleanup.FileCount";
+constexpr char kCleanupErrorsMetricName[] =
+    "FileBrowser.TrashAutoCleanup.Errors";
+constexpr char kCleanupTimeMetricName[] = "FileBrowser.TrashAutoCleanup.Time";
+
 // Enumerates Trash info files (supported .Trash/info/ locations) and returns
 // the list of trashinfo files corresponding to the trash entries to delete.
+// A maximum of `kMaxBatchSize` trashinfo files is returned.
 std::vector<base::FilePath> GetTrashInfoFilesToDeleteOnBlockingThread(
     const std::vector<base::FilePath>& trash_info_directories) {
   std::vector<base::FilePath> trash_info_paths_to_delete;
@@ -34,16 +42,27 @@ std::vector<base::FilePath> GetTrashInfoFilesToDeleteOnBlockingThread(
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
       if (!file.IsValid()) {
         ++invalid_file_counter;
+        base::UmaHistogramEnumeration(kCleanupErrorsMetricName,
+                                      AutoCleanupError::kInvalidTrashInfoFile);
         continue;
       }
       base::File::Info info;
       if (!file.GetInfo(&info)) {
         ++file_get_info_failed_counter;
+        base::UmaHistogramEnumeration(
+            kCleanupErrorsMetricName,
+            AutoCleanupError::kFailedToGetTrashInfoFileModifiedTime);
         continue;
       }
       if (now - info.last_modified >= kMaxTrashAge) {
         trash_info_paths_to_delete.push_back(trash_info_path);
+        if (trash_info_paths_to_delete.size() >= kMaxBatchSize) {
+          break;
+        }
       }
+    }
+    if (trash_info_paths_to_delete.size() >= kMaxBatchSize) {
+      break;
     }
   }
   if (invalid_file_counter) {
@@ -53,6 +72,8 @@ std::vector<base::FilePath> GetTrashInfoFilesToDeleteOnBlockingThread(
     LOG(ERROR) << "Could not get info from " << file_get_info_failed_counter
                << " trashinfo files";
   }
+  base::UmaHistogramCounts1000(kCleanupFileCountMetricName,
+                               trash_info_paths_to_delete.size());
   return trash_info_paths_to_delete;
 }
 
@@ -62,7 +83,12 @@ bool DeleteOldTrashFilesOnBlockingThread(
   for (const ParsedTrashInfoData& trash_info_data : to_delete) {
     if (!base::DeleteFile(trash_info_data.trashed_file_path) ||
         !base::DeleteFile(trash_info_data.trash_info_path)) {
+      base::UmaHistogramEnumeration(kCleanupErrorsMetricName,
+                                    AutoCleanupError::kFailedToDeleteTrashFile);
       success = false;
+    } else {
+      base::UmaHistogramEnumeration(kCleanupErrorsMetricName,
+                                    AutoCleanupError::kSuccessfullyDeleted);
     }
   }
   return success;
@@ -95,7 +121,10 @@ std::unique_ptr<TrashAutoCleanup> TrashAutoCleanup::Create(Profile* profile) {
 }
 
 void TrashAutoCleanup::Init() {
-  // TODO: Start the cleanup process.
+  cleanup_repeating_timer_.Start(
+      FROM_HERE, kCleanupCheckInterval,
+      base::BindRepeating(&TrashAutoCleanup::StartCleanup,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrashAutoCleanup::StartCleanup() {
@@ -103,6 +132,19 @@ void TrashAutoCleanup::StartCleanup() {
   if (!file_manager::trash::IsTrashEnabledForProfile(profile_)) {
     return;
   }
+
+  if (!last_cleanup_time_.is_null() &&
+      base::Time::Now() - last_cleanup_time_ < kCleanupInterval) {
+    // Skip cleanup iteration if it last happened less than a day earlier.
+    if (cleanup_done_closure_for_test_) {
+      std::move(cleanup_done_closure_for_test_)
+          .Run(AutoCleanupResult::kWaitingForNextCleanupIteration);
+    }
+    return;
+  }
+  last_cleanup_time_ = base::Time::Now();
+  cleanup_start_time_ = base::TimeTicks::Now();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
@@ -121,6 +163,12 @@ void TrashAutoCleanup::OnTrashInfoFilesToDeleteEnumerated(
           .Run(AutoCleanupResult::kNoOldFilesToCleanup);
     }
     return;
+  }
+  if (trash_info_paths_to_delete.size() == kMaxBatchSize) {
+    // The maximum batch size has been reached: there is more likely going to be
+    // more files to cleanup. Unset the last cleanup time to force the next
+    // iteration.
+    last_cleanup_time_ = base::Time();
   }
   validator_ =
       std::make_unique<file_manager::trash::TrashInfoValidator>(profile_);
@@ -142,10 +190,9 @@ void TrashAutoCleanup::OnTrashInfoFilesParsed(
   for (auto& trash_info_data_or_error : parsed_data_or_error) {
     if (!trash_info_data_or_error.has_value()) {
       ++parse_error_counter;
-      if (cleanup_done_closure_for_test_) {
-        std::move(cleanup_done_closure_for_test_)
-            .Run(AutoCleanupResult::kTrashInfoParsingError);
-      }
+      base::UmaHistogramEnumeration(
+          kCleanupErrorsMetricName,
+          AutoCleanupError::kFailedToParseTrashInfoFile);
       continue;
     }
     to_delete.push_back(std::move(trash_info_data_or_error.value()));
@@ -153,6 +200,10 @@ void TrashAutoCleanup::OnTrashInfoFilesParsed(
   if (parse_error_counter) {
     LOG(ERROR) << "Failed to parse " << parse_error_counter
                << " trash info files";
+    if (cleanup_done_closure_for_test_) {
+      std::move(cleanup_done_closure_for_test_)
+          .Run(AutoCleanupResult::kTrashInfoParsingError);
+    }
   }
   if (to_delete.empty()) {
     return;
@@ -174,6 +225,8 @@ void TrashAutoCleanup::OnCleanupDone(bool success) {
                                          : AutoCleanupResult::kDeletionError;
     std::move(cleanup_done_closure_for_test_).Run(result);
   }
+  base::UmaHistogramTimes(kCleanupTimeMetricName,
+                          base::TimeTicks::Now() - cleanup_start_time_);
 }
 
 void TrashAutoCleanup::SetCleanupDoneCallbackForTest(

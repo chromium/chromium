@@ -28,7 +28,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -240,15 +239,6 @@ class CdmRegistryImplTest : public testing::Test {
   }
 
   void SelectHardwareSecureDecryption(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (enabled) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kLacrosUseChromeosProtectedMedia);
-    } else {
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          switches::kLacrosUseChromeosProtectedMedia);
-    }
-#else
     const std::vector<base::test::FeatureRef> kHardwareSecureFeatures = {
         media::kHardwareSecureDecryption,
         media::kHardwareSecureDecryptionExperiment};
@@ -257,7 +247,6 @@ class CdmRegistryImplTest : public testing::Test {
     auto enabled_features = enabled ? kHardwareSecureFeatures : kNoFeatures;
     auto disabled_features = enabled ? kNoFeatures : kHardwareSecureFeatures;
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-#endif
   }
 
 #if BUILDFLAG(IS_ANDROID)

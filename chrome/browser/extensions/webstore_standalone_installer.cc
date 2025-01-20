@@ -81,8 +81,7 @@ void WebstoreStandaloneInstaller::BeginInstall() {
 // Private interface implementation.
 //
 
-WebstoreStandaloneInstaller::~WebstoreStandaloneInstaller() {
-}
+WebstoreStandaloneInstaller::~WebstoreStandaloneInstaller() = default;
 
 void WebstoreStandaloneInstaller::RunCallback(bool success,
                                               const std::string& error,

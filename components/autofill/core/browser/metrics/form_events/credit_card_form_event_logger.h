@@ -8,16 +8,16 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -25,8 +25,6 @@ namespace autofill {
 enum class UnmaskAuthFlowType;
 
 namespace autofill_metrics {
-
-class FormInteractionsUkmLogger;
 
 class CreditCardFormEventLogger : public FormEventLoggerBase {
  public:
@@ -40,10 +38,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     kMaxValue = kFormSubmitted,
   };
 
-  CreditCardFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      PersonalDataManager* personal_data_manager,
-      AutofillClient* client);
+  explicit CreditCardFormEventLogger(BrowserAutofillManager* owner);
 
   ~CreditCardFormEventLogger() override;
 
@@ -60,6 +55,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // suggestion in the list.
   // `with_cvc` indicates whether CVC is saved in any of the suggestion in
   // the list.
+  // `with_card_info_retrieval_enrolled` indicates whether at least one of the
+  // suggestions contains card info retrieval enrolled card.
   // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
   // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
@@ -68,26 +65,17 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const std::vector<Suggestion>& suggestions,
       bool with_offer,
       bool with_cvc,
+      bool with_card_info_retrieval_enrolled,
       bool is_virtual_card_standalone_cvc_field,
-      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
+      CardMetadataLoggingContext metadata_logging_context);
 
   // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
-  // values can be retrieved from 'form' or 'client_'.
+  // values can be retrieved from `form` or `owner_`.
   void OnDidShowSuggestions(const FormStructure& form,
                             const AutofillField& field,
                             base::TimeTicks form_parsed_timestamp,
                             bool off_the_record) override;
-
-  // Logs the original "Masked server card suggestion selected" form event
-  // metrics. These metrics were replaced in M123 due to crbug/1513307, but this
-  // call exists in order to compare the new and old metrics, providing
-  // information on the fix's impact. Once this information is gathered, this
-  // call and its associated logging can be removed.
-  void LogDeprecatedCreditCardSelectedMetric(
-      const CreditCard& credit_card,
-      const FormStructure& form,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
   void OnDidSelectCardSuggestion(
       const CreditCard& credit_card,
@@ -117,6 +105,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const AutofillTriggerSource trigger_source);
 
   void OnDidUndoAutofill();
+
+  virtual void OnMetadataLoggingContextReceived(
+      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
 
   void Log(FormEvent event, const FormStructure& form) override;
 
@@ -176,7 +167,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;
-  bool has_logged_legacy_masked_server_card_suggestion_selected_ = false;
   bool has_logged_local_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_filled_ = false;
@@ -184,6 +174,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_filled_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_shown_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_selected_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_filled_ = false;
   bool has_logged_suggestion_for_card_with_cvc_shown_ = false;
   bool has_logged_suggestion_for_card_with_cvc_selected_ = false;
   bool has_logged_suggestion_for_card_with_cvc_filled_ = false;
@@ -193,6 +186,11 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the most recent card to be selected as an Autofill suggestion was
   // a virtual card. False for all other card types.
   bool latest_selected_card_was_virtual_card_ = false;
+  // If true, the most recent card that was filled as an Autofill suggestion was
+  // a card enrolled in runtime retrieval, i.e. a card that had information such
+  // as CVC or card number retrieved from the server. (False for all other card
+  // types.)
+  bool latest_filled_card_was_card_info_retrieval_enrolled_ = false;
   // If true, the most recent card that was filled as an Autofill suggestion
   // was a masked server card. False for all other card types.
   bool latest_filled_card_was_masked_server_card_ = false;
@@ -207,8 +205,11 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool is_virtual_card_standalone_cvc_field_ = false;
   // If true, one of the cards in the suggestions fetched has cvc info saved.
   bool suggestion_contains_card_with_cvc_ = false;
+  // If true, one of the cards in the suggestions fetched card info retrieval
+  // enrolled.
+  bool suggestion_contains_card_info_retrieval_enrolled_card_ = false;
 
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
+  CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.
   base::TimeTicks suggestion_shown_timestamp_;
@@ -218,7 +219,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Weak references.
   raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<AutofillClient> client_;
 };
 
 }  // namespace autofill_metrics

@@ -318,7 +318,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
     MultiStep steps) {
   for (auto& step : steps) {
     step.SetContext(InteractionSequence::ContextMode::kAny)
-        .FormatDescription("InAnyContext( %s )");
+        .AddDescriptionPrefix("InAnyContext()");
   }
   return steps;
 }
@@ -328,7 +328,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InSameContext(
     MultiStep steps) {
   for (auto& step : steps) {
     step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-        .FormatDescription("InSameContext( %s )");
+        .AddDescriptionPrefix("InSameContext()");
   }
   return steps;
 }
@@ -339,10 +339,10 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
     MultiStep steps) {
   // This context may not yet exist, but we want the pivot element to exist.
   private_test_impl_->MaybeAddPivotElement(context);
-  const auto fmt = base::StringPrintf("InContext( %p, %%s )",
-                                      static_cast<const void*>(context));
+  const std::string caller =
+      base::StringPrintf("InContext( %p, )", static_cast<const void*>(context));
   for (auto& step : steps) {
-    step.SetContext(context).FormatDescription(fmt);
+    step.SetContext(context).AddDescriptionPrefix(caller);
   }
 
   return steps;
@@ -365,7 +365,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
     MultiStep steps) {
   for (auto& step : steps) {
     step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
-        .FormatDescription("WithoutDelay( %s )");
+        .AddDescriptionPrefix("WithoutDelay()");
   }
   return steps;
 }
@@ -525,10 +525,10 @@ void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
 }
 
 // static
-void InteractiveTestApi::AddDescription(MultiStep& steps,
-                                        std::string_view format) {
+void InteractiveTestApi::AddDescriptionPrefix(MultiStep& steps,
+                                              std::string_view prefix) {
   for (auto& step : steps) {
-    step.FormatDescription(format);
+    step.AddDescriptionPrefix(prefix);
   }
 }
 

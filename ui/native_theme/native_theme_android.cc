@@ -14,7 +14,7 @@ namespace {
 // These are the default dimensions of radio buttons and checkboxes on Android.
 const int kCheckboxAndRadioWidth = 16;
 const int kCheckboxAndRadioHeight = 16;
-}
+}  // namespace
 
 #if !defined(USE_AURA)
 // static
@@ -36,8 +36,9 @@ NativeThemeAndroid* NativeThemeAndroid::instance() {
 gfx::Size NativeThemeAndroid::GetPartSize(Part part,
                                           State state,
                                           const ExtraParams& extra) const {
-  if (part == kCheckbox || part == kRadio)
+  if (part == kCheckbox || part == kRadio) {
     return gfx::Size(kCheckboxAndRadioWidth, kCheckboxAndRadioHeight);
+  }
   return NativeThemeBase::GetPartSize(part, state, extra);
 }
 
@@ -139,10 +140,8 @@ SkColor NativeThemeAndroid::ButtonFillColorForState(
   return GetControlColor(color_id, color_scheme, color_provider);
 }
 
-NativeThemeAndroid::NativeThemeAndroid() {
-}
+NativeThemeAndroid::NativeThemeAndroid() {}
 
-NativeThemeAndroid::~NativeThemeAndroid() {
-}
+NativeThemeAndroid::~NativeThemeAndroid() {}
 
 }  // namespace ui

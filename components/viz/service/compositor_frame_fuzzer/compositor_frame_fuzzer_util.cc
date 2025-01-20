@@ -14,6 +14,8 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 
@@ -103,7 +105,7 @@ void ExpandToMinSize(gfx::Rect* rect, int min_size) {
 
 class FuzzedCompositorFrameBuilder {
  public:
-  FuzzedCompositorFrameBuilder() = default;
+  FuzzedCompositorFrameBuilder();
 
   FuzzedCompositorFrameBuilder(const FuzzedCompositorFrameBuilder&) = delete;
   FuzzedCompositorFrameBuilder& operator=(const FuzzedCompositorFrameBuilder&) =
@@ -151,6 +153,8 @@ class FuzzedCompositorFrameBuilder {
   // in memory (see TryReserveBitmapBytes).
   FuzzedBitmap* AllocateFuzzedBitmap(const gfx::Size& size, SkColor4f color);
 
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
+
   // Number of bytes that have already been reserved for the allocation of
   // specific bitmaps/textures.
   uint64_t reserved_bytes_ = 0;
@@ -160,6 +164,10 @@ class FuzzedCompositorFrameBuilder {
   // Frame and data being built.
   FuzzedData data_;
 };
+
+FuzzedCompositorFrameBuilder::FuzzedCompositorFrameBuilder()
+    : shared_image_interface_(
+          base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
 FuzzedData FuzzedCompositorFrameBuilder::Build(
     const proto::CompositorRenderPass& render_pass_spec) {
@@ -273,9 +281,10 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   FuzzedBitmap* fuzzed_bitmap = AllocateFuzzedBitmap(
       tile_size, GetColorFromProtobuf(quad_spec.tile_quad().texture_color()));
   TransferableResource transferable_resource =
-      TransferableResource::MakeSoftwareSharedBitmap(
-          fuzzed_bitmap->id, gpu::SyncToken(), fuzzed_bitmap->size,
-          SinglePlaneFormat::kRGBA_8888);
+      TransferableResource::MakeSoftwareSharedImage(
+          fuzzed_bitmap->shared_image, fuzzed_bitmap->sync_token,
+          fuzzed_bitmap->size, SinglePlaneFormat::kBGRA_8888,
+          TransferableResource::ResourceSource::kTileRasterTask);
 
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
@@ -284,7 +293,7 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   quad->rect = rect;
   quad->visible_rect = visible_rect;
   quad->needs_blending = quad_spec.tile_quad().needs_blending();
-  quad->resources.ids[0] = transferable_resource.id;
+  quad->resource_id = transferable_resource.id;
   quad->tex_coord_rect =
       gfx::RectF(GetRectFromProtobuf(quad_spec.tile_quad().tex_coord_rect()));
   quad->texture_size = tile_size;
@@ -391,7 +400,7 @@ bool FuzzedCompositorFrameBuilder::TryReserveBitmapBytes(
     const gfx::Size& size) {
   uint64_t bitmap_bytes;
   if (!ResourceSizes::MaybeSizeInBytes<uint64_t>(
-          size, SinglePlaneFormat::kRGBA_8888, &bitmap_bytes) ||
+          size, SinglePlaneFormat::kBGRA_8888, &bitmap_bytes) ||
       bitmap_bytes > kMaxTextureMemory - reserved_bytes_) {
     return false;
   }
@@ -403,27 +412,35 @@ bool FuzzedCompositorFrameBuilder::TryReserveBitmapBytes(
 FuzzedBitmap* FuzzedCompositorFrameBuilder::AllocateFuzzedBitmap(
     const gfx::Size& size,
     SkColor4f color) {
-  SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
-  base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
-      size, SinglePlaneFormat::kRGBA_8888);
+  auto shared_image =
+      shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+          {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "FuzzedCompositorFrameBuilder"});
+
+  gpu::SyncToken sync_token = shared_image_interface_->GenVerifiedSyncToken();
 
   SkBitmap bitmap;
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-  bitmap.installPixels(info, shm.mapping.memory(), info.minRowBytes());
+  auto mapping = shared_image->Map();
+  bitmap.installPixels(info, mapping->GetMemoryForPlane(0).data(),
+                       info.minRowBytes());
   bitmap.eraseColor(color);
 
   data_.allocated_bitmaps.push_back(
-      {shared_bitmap_id, size, std::move(shm.region)});
+      {size, std::move(shared_image), sync_token});
 
   return &data_.allocated_bitmaps.back();
 }
 
 }  // namespace
 
-FuzzedBitmap::FuzzedBitmap(const SharedBitmapId& id,
-                           const gfx::Size& size,
-                           base::ReadOnlySharedMemoryRegion shared_region)
-    : id(id), size(size), shared_region(std::move(shared_region)) {}
+FuzzedBitmap::FuzzedBitmap(const gfx::Size& size,
+                           scoped_refptr<gpu::ClientSharedImage> shared_image,
+                           gpu::SyncToken sync_token)
+    : size(size),
+      shared_image(std::move(shared_image)),
+      sync_token(std::move(sync_token)) {}
 FuzzedBitmap::~FuzzedBitmap() = default;
 FuzzedBitmap::FuzzedBitmap(FuzzedBitmap&& other) noexcept = default;
 

@@ -313,7 +313,8 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
                          *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
                          /*initiator_url=*/std::nullopt,
-                         /*initiator_devtools_request_id=*/"", timestamp);
+                         /*initiator_devtools_request_id=*/"",
+                         /*frame_token=*/std::nullopt, timestamp);
   }
 }
 
@@ -333,7 +334,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
   for (auto* network : protocol::NetworkHandler::ForAgentHost(it->second.get()))
     network->ResponseReceived(request_id, std::string(), url,
                               protocol::Network::ResourceTypeEnum::Other,
-                              *head_info, protocol::Maybe<std::string>());
+                              *head_info, std::nullopt);
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(

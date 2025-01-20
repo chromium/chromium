@@ -91,7 +91,7 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
     // TODO(crbug.com/40227557): Record that this PPS has been provided and
     // avoid sending it again. (Copy implementation from H265Accelerator.)
     if (!pic->idr && sps_data == active_sps_data_) {
-      slice_nalu_data_.push_back(base::make_span(pps_data));
+      slice_nalu_data_.push_back(base::span(pps_data));
       return Status::kOk;
     }
 
@@ -130,7 +130,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  slice_nalu_data_.push_back(base::make_span(data, size));
+  slice_nalu_data_.push_back(base::span(data, size));
   return Status::kOk;
 }
 

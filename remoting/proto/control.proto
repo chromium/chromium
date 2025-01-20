@@ -143,6 +143,9 @@ message VideoTrackLayout {
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
 
+  // Display name. This is displayed in the client UI and is informational only.
+  optional string display_name = 9;
+
   // TODO(yuweih): Add bpp to the message.
 }
 

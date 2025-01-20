@@ -53,8 +53,8 @@ class ScreenshotDataCollectorBrowserTest : public InProcessBrowserTest {
     return content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(host->GetProcess()->GetID(),
-                                           host->GetRoutingID()));
+        content::WebContentsMediaCaptureId(
+            host->GetProcess()->GetDeprecatedID(), host->GetRoutingID()));
   }
 
   // Ensure that TestFlags outlive FakeDesktopMediaPickerFactory.

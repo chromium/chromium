@@ -209,7 +209,7 @@ void OfflinePageTabHelper::DidFinishNavigation(
   if (reading_list::IsOfflineReloadURL(navigation_context->GetUrl())) {
     if (dont_reload_online_on_next_navigation_) {
       dont_reload_online_on_next_navigation_ = false;
-    } else if (reloading_from_offline_) {
+    } else {
       ReplaceLocationUrlAndReload(
           reading_list::ReloadURLForOfflineURL(navigation_context->GetUrl()));
       return;
@@ -221,7 +221,14 @@ void OfflinePageTabHelper::DidFinishNavigation(
 }
 
 void OfflinePageTabHelper::ReplaceLocationUrlAndReload(const GURL& url) {
-  DCHECK(presenting_offline_page_);
+  if (!reading_list::IsOfflineURL(web_state_->GetNavigationManager()
+                                      ->GetLastCommittedItem()
+                                      ->GetVirtualURL())) {
+    // This should not be possible as thisfunction is nomminally only called
+    // when reloading from and offline page. But in case the user directly loads
+    // a chrome://offline URL, do not execute the javascript in a random page.
+    return;
+  }
   web_state_->GetNavigationManager()->GetLastCommittedItem()->SetVirtualURL(
       url);
   reloading_from_offline_ = true;

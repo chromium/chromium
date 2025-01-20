@@ -157,7 +157,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
   decoder_ = nullptr;
   if (vaapi_wrapper_) {
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -197,7 +197,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DCHECK(vaapi_wrapper_);
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -449,7 +449,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
           // destroyed.
           CHECK(!!vaapi_wrapper_);
           CHECK(!vaapi_wrapper_->HasContext());
-          allocated_va_surfaces_.Clear();
+          allocated_va_surfaces_.clear();
           const gfx::Size decoder_pic_size = decoder_->GetPicSize();
           if (decoder_pic_size.IsEmpty()) {
             SetErrorState("|decoder_| returned an empty picture size");
@@ -501,11 +501,10 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
     return nullptr;
   }
 
-  DCHECK(frame->GetSharedMemoryId().is_valid());
-  const auto frame_id = frame->GetSharedMemoryId().id;
-  const auto* surface = allocated_va_surfaces_.Lookup(frame_id);
+  const auto tracking_token = frame->tracking_token();
 
-  if (!surface) {
+  auto iter = allocated_va_surfaces_.find(tracking_token);
+  if (iter == allocated_va_surfaces_.end()) {
     std::unique_ptr<ScopedVASurface> va_surface =
         vaapi_wrapper_->CreateVASurfaceForFrameResource(
             *frame, cdm_context_ref_ || transcryption_);
@@ -513,16 +512,20 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
       SetErrorState("failed to create VASurface from FrameResource");
       return nullptr;
     }
-    allocated_va_surfaces_.AddWithID(std::move(va_surface), frame_id);
+    const auto result = allocated_va_surfaces_.insert_or_assign(
+        tracking_token, std::move(va_surface));
+    CHECK(result.second);
+    iter = result.first;
   } else {
-    DCHECK_EQ(frame->coded_size(), surface->size());
+    DCHECK_EQ(frame->coded_size(), iter->second->size());
   }
 
   // Store the mapping between surface and video frame, so we know which video
   // frame to output when the surface is ready. It's also important to keep a
   // reference to the video frame during decoding, as the frame will be
   // automatically returned to the pool when the last reference is dropped.
-  const ScopedVASurface* va_surface = allocated_va_surfaces_.Lookup(frame_id);
+  CHECK(iter != allocated_va_surfaces_.end());
+  const ScopedVASurface* va_surface = iter->second.get();
   const VASurfaceID surface_id = va_surface->id();
   DCHECK_EQ(output_frames_.count(surface_id), 0u);
   output_frames_[surface_id] = frame;
@@ -562,10 +565,9 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   DCHECK_EQ(output_frames_.count(va_surface_id), 1u);
   scoped_refptr<FrameResource> frame = output_frames_[va_surface_id];
 
-  CHECK(
-      gfx::Rect(
-          allocated_va_surfaces_.Lookup(frame->GetSharedMemoryId().id)->size())
-          .Contains(visible_rect));
+  const auto iter = allocated_va_surfaces_.find(frame->tracking_token());
+  CHECK(iter != allocated_va_surfaces_.end());
+  CHECK(gfx::Rect(iter->second->size()).Contains(visible_rect));
 
   // Set the timestamp at which the decode operation started on the
   // |frame|. If the frame has been outputted before (e.g. because of VP9
@@ -674,7 +676,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // resolution change, so we can safely DestroyContext() here; that, in turn,
   // allows for clearing the |allocated_va_surfaces_|.
   vaapi_wrapper_->DestroyContext();
-  allocated_va_surfaces_.Clear();
+  allocated_va_surfaces_.clear();
 
   const gfx::Rect decoder_visible_rect = decoder_->GetVisibleRect();
   const gfx::Size decoder_pic_size = decoder_->GetPicSize();
@@ -923,8 +925,8 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  allocated_va_surfaces_.AddWithID(std::move(surface),
-                                   frame->GetSharedMemoryId().id);
+  allocated_va_surfaces_.insert_or_assign(frame->tracking_token(),
+                                          std::move(surface));
 
   return frame;
 }

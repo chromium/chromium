@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -46,7 +47,9 @@ using WebAppInstallationAcceptanceCallback =
 
 // Callback to show the WebApp installation confirmation bubble in UI.
 // |web_app_info| is the WebAppInstallInfo to be installed.
+// If `screenshot_fetcher` exists, then the detailed install dialog is shown.
 using WebAppInstallDialogCallback = base::OnceCallback<void(
+    base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;

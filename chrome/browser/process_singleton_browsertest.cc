@@ -127,7 +127,7 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
  private:
   friend class base::RefCountedThreadSafe<ChromeStarter>;
 
-  ~ChromeStarter() {}
+  ~ChromeStarter() = default;
 
   base::TimeDelta timeout_;
   base::FilePath user_data_dir_;

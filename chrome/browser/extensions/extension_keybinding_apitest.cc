@@ -117,8 +117,7 @@ DomMessageListener::DomMessageListener(content::WebContents* web_contents)
     : observer_(web_contents, this) {
 }
 
-DomMessageListener::~DomMessageListener() {
-}
+DomMessageListener::~DomMessageListener() = default;
 
 void DomMessageListener::Wait() {
   observer_.Run();
@@ -233,8 +232,8 @@ const char* GetCommandKeyForActionType(ActionInfo::Type action_type) {
 
 class CommandsApiTest : public ExtensionApiTest {
  public:
-  CommandsApiTest() {}
-  ~CommandsApiTest() override {}
+  CommandsApiTest() = default;
+  ~CommandsApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();

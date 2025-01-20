@@ -76,8 +76,8 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_CHANGED" /> tab dəyişib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
 <translation id="4371591986692297148">Fəaliyyətsiz</translation>
+<translation id="4431937619879060901">"<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcəksiniz və o, bütün cihazlarınızdan silinəcək</translation>
 <translation id="4460014764210899310">Qruplaşdırma olmasın</translation>
-<translation id="4590027107044272416">Burada yeni tab aça bilərsiniz</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 deaktiv tab bağlansın?}other{<ph name="TAB_COUNT_MANY" /> deaktiv tab bağlansın?}}</translation>
 <translation id="4686942373615810936">İndicə yaradıldı</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra bağlayın}other{<ph name="DAY_COUNT_MANY" /> gün sonra bağlayın}}</translation>
@@ -98,16 +98,16 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib}other{<ph name="MANY_ADDED" /> tab əlavə edilib}}</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="5339733443032484186">Son tab</translation>
+<translation id="5380159289133845234">Dublikat tabları arxivləyin</translation>
 <translation id="5400836586163650660">Boz</translation>
+<translation id="5446043142172831860">Tabı silin və qrupu tərk edin</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
-<translation id="5615302411300498438">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya çıxın.
-
-Çıxsanız, "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcəksiniz.</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tabı bərpa edin}other{Tabları bərpa edin}}</translation>
+<translation id="5647702255748985085">Qrupdan çıxırsınız?</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
 <translation id="5901630391730855834">Sarı</translation>
@@ -116,7 +116,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6051432659151380973">Tab qruplarınız avtomatik olaraq yadda saxlanılır</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
-<translation id="6082313992897617440"><ph name="GROUP_NAME" /> tab qrupuna girişi dərhal itirəcəksiniz</translation>
+<translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="6271513594716432922">Bütün deaktiv tabları bağlayın</translation>
@@ -143,9 +143,10 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Seçilib</translation>
 <translation id="7326879924029668159">Qaytarma siyasətinə və digər məlumatlara baxın</translation>
 <translation id="7352298686197644113">Açıq tablarda hansı əşyanın qiymətinin daha aşağı olduğuna baxın</translation>
-<translation id="7421293530411019405">Tab qrupundan çıxırsınız?</translation>
+<translation id="742664698522525515">Qrup saxlanılsın?</translation>
 <translation id="7452985128687107478">Tab qrupları bütün cihazlarınızda avtomatik olaraq yaddaşda saxlanılır və güncəllənir</translation>
 <translation id="747459581954555080">Hamısını bərpa edin</translation>
+<translation id="750886945254958667">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya artıq ona daxil olmaq istəmirsinizsə, çıxın</translation>
 <translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> rəy}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>
 <translation id="7559245342362162951">Qrup tabını tam ekran cədvəlində göstərin</translation>
@@ -175,9 +176,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8398929769197326728">Yeni Qovluq - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CLOSED" /> tab bağlanıb}}</translation>
-<translation id="8631711675211020168">Hər kəs <ph name="GROUP_NAME" /> tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="8633025649649592204">Son fəaliyyət</translation>
-<translation id="8635399646025169806">Tab qrupu saxlanılsın?</translation>
 <translation id="870736955561925754">Tab bağlansın və tab qrupu silinsin?</translation>
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
@@ -188,10 +187,11 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>
 <translation id="8915916167043355778">Hamısını bağlayın</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
-<translation id="9111228330448174435">Yeni tab qrupunun yaradılması dialoqunu göstərin</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
+<translation id="9169141410816678175">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="9216898458513705996">Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="USER_EMAIL" /> hesabına giriş edilmiş bütün cihazlardan silinəcək</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
+<translation id="94870150074703282">Qrup silinsin?</translation>
 <translation id="992256792861109788">Çəhrayı</translation>
 </translationbundle>

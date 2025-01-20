@@ -10,6 +10,7 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -27,7 +28,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class PasswordCheckupLauncher {
     @CalledByNative
     private static void launchCheckupOnlineWithWindowAndroid(
-            String checkupUrl, WindowAndroid windowAndroid) {
+            @JniType("std::string") String checkupUrl, WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
         launchCheckupOnlineWithActivity(checkupUrl, windowAndroid.getActivity().get());
     }
@@ -62,7 +63,8 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
-    private static void launchCheckupOnlineWithActivity(String checkupUrl, Activity activity) {
+    private static void launchCheckupOnlineWithActivity(
+            @JniType("std::string") String checkupUrl, Activity activity) {
         if (tryLaunchingNativePasswordCheckup(activity)) return;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(checkupUrl));
         intent.setPackage(activity.getPackageName());

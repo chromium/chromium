@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,6 +54,20 @@ ParseUrlForVcn3ds(const GURL& url,
                               kAuthenticationNotCompleted);
 }
 
+PaymentsWindowManager::BnplPopupStatus ParseUrlForBnpl(
+    const GURL& url,
+    const PaymentsWindowManager::BnplContext& bnpl_context) {
+  if (url == bnpl_context.success_url) {
+    return PaymentsWindowManager::BnplPopupStatus::kSuccess;
+  }
+
+  if (url == bnpl_context.failure_url) {
+    return PaymentsWindowManager::BnplPopupStatus::kFailure;
+  }
+
+  return PaymentsWindowManager::BnplPopupStatus::kNotFinished;
+}
+
 UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
@@ -62,7 +76,7 @@ UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
   UnmaskRequestDetails request_details;
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
-      &client.GetPersonalDataManager()->payments_data_manager());
+      client.GetPersonalDataManager().payments_data_manager());
   request_details.risk_data = context.risk_data;
   request_details.context_token = context.context_token;
 

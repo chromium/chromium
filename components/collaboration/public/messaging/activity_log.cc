@@ -14,9 +14,9 @@ constexpr int kDefaultMaxRowsActivityLog = 5;
 
 }  // namespace
 
-// TODO(crbug.com/345856704): Update this to UNDEFINED.
 ActivityLogItem::ActivityLogItem()
-    : collaboration_event(CollaborationEvent::TAB_ADDED) {}
+    : collaboration_event(CollaborationEvent::UNDEFINED),
+      action(RecentActivityAction::kNone) {}
 
 ActivityLogItem::ActivityLogItem(const ActivityLogItem& other) = default;
 

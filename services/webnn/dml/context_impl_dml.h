@@ -25,7 +25,8 @@ class TensorImplDml;
 // creating `GraphImplDml` and `TensorImplDml` of DirectML backend for Windows
 // platform. The `Adapter` instance is shared by all `GraphImplDml` and
 // `TensorImplDml` created by this context.
-class ContextImplDml final : public WebNNContextImpl {
+class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
+    : public WebNNContextImpl {
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -57,6 +58,26 @@ class ContextImplDml final : public WebNNContextImpl {
   // TODO(crbug.com/349640008): For the `context lost` errors, we should
   // gracefully terminate the GPU process.
   void HandleContextLostOrCrash(std::string_view message_for_log, HRESULT hr);
+
+  void RemoveDeviceForTesting();
+
+  // The test cases can override the graph/tensor creating behavior by
+  // implementing this class and setting its instance by SetBackendForTesting().
+  class BackendForTesting {
+   public:
+    virtual void CreateGraphImpl(
+        ContextImplDml* context_impl,
+        WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+        CreateGraphImplCallback callback) = 0;
+
+    virtual void CreateTensorImpl(
+        ContextImplDml* context,
+        mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+        mojom::TensorInfoPtr tensor_info,
+        CreateTensorImplCallback callback) = 0;
+  };
+
+  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
   void CreateGraphImpl(

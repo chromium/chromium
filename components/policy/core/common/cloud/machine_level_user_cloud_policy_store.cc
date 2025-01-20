@@ -108,11 +108,11 @@ void MachineLevelUserCloudPolicyStore::LoadImmediately() {
     // PolicyService initialization doesn't need to wait on cloud policies by
     // sending out an empty policy set.
     //
-    // The call to |OnPolicyLoaded| is exactly the same that would happen if
-    // this disk access optimization was not implemented.
+    // The call to |PolicyLoaded| is exactly the same that would happen if this
+    // disk access optimization was not implemented.
     PolicyLoadResult result;
     result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
-    OnPolicyLoaded(result);
+    PolicyLoaded(/*validate_in_background=*/false, result);
 #endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
@@ -232,6 +232,7 @@ void MachineLevelUserCloudPolicyStore::InitWithoutToken() {
 void MachineLevelUserCloudPolicyStore::Validate(
     std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
     std::unique_ptr<enterprise_management::PolicySigningKey> key,
+    bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
@@ -241,8 +242,13 @@ void MachineLevelUserCloudPolicyStore::Validate(
   if (key)
     ValidateKeyAndSignature(validator.get(), key.get(), std::string());
 
-  validator->RunValidation();
-  std::move(callback).Run(validator.get());
+  if (validate_in_background) {
+    UserCloudPolicyValidator::StartValidation(std::move(validator),
+                                              std::move(callback));
+  } else {
+    validator->RunValidation();
+    std::move(callback).Run(validator.get());
+  }
 }
 
 }  // namespace policy

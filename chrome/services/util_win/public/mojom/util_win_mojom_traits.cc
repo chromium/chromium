@@ -224,8 +224,7 @@ bool StructTraits<
 // static
 base::span<const uint8_t> StructTraits<chrome::mojom::ClsIdDataView,
                                        ::CLSID>::bytes(const ::CLSID& input) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(&input),
-                         sizeof(input));
+  return base::span(reinterpret_cast<const uint8_t*>(&input), sizeof(input));
 }
 
 // static

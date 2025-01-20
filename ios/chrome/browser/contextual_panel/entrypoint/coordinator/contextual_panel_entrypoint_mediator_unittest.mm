@@ -42,15 +42,14 @@
 
 @property(nonatomic, assign) BOOL entrypointIsColored;
 
-@property(nonatomic, assign) base::WeakPtr<ContextualPanelItemConfiguration>
-    currentConfiguration;
+@property(nonatomic, assign)
+    ContextualPanelItemConfiguration* currentConfiguration;
 
 @end
 
 @implementation FakeEntrypointConsumer
 
-- (void)setEntrypointConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   self.currentConfiguration = config;
 }
 
@@ -329,7 +328,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
   ASSERT_TRUE(entrypoint_consumer_.currentConfiguration);
-  EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration.get());
+  EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration);
 
   [mocked_entrypoint_help_handler_ verify];
 
@@ -431,12 +430,11 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   configuration->iph_title = "test_title";
   configuration->iph_image_name = "test_image";
 
-  auto weak_config = configuration->weak_ptr_factory.GetWeakPtr();
-
-  OCMStub([mocked_entrypoint_help_handler_
-              maybeShowContextualPanelEntrypointIPHWithConfig:weak_config
-                                                  anchorPoint:CGPointMake(0, 0)
-                                              isBottomOmnibox:NO])
+  OCMStub(
+      [mocked_entrypoint_help_handler_
+          maybeShowContextualPanelEntrypointIPHWithConfig:configuration.get()
+                                              anchorPoint:CGPointMake(0, 0)
+                                          isBottomOmnibox:NO])
       .andReturn(YES);
 
   [[mocked_entrypoint_help_handler_ expect]

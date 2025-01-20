@@ -35,10 +35,11 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   //   installation has the user display mode as kBrowser. (this allows us to
   //   upgrade to a standalone experience through a reinstall).
   // - The controlling app is a DIY app.
-  bool DoesNewWebAppConflictWithExistingInstallation(
-      content::BrowserContext* browsing_context,
+  void DoesNewWebAppConflictWithExistingInstallation(
+      content::BrowserContext* browser_context,
       const GURL& start_url,
-      const ManifestId& manifest_id) const override;
+      const ManifestId& manifest_id,
+      WebAppInstallationConflictCallback callback) const override;
   bool IsInAppBrowsingContext(
       content::WebContents* web_contents) const override;
   bool IsAppPartiallyInstalledForSiteUrl(

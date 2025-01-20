@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/pseudonymization_salt.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -49,13 +50,6 @@
 #include "base/apple/foundation_util.h"
 #include "content/browser/mac_helpers.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-namespace {
-
-// Global atomic to generate child process unique IDs.
-base::AtomicSequenceNumber g_unique_id;
-
-}  // namespace
 
 namespace content {
 
@@ -179,7 +173,7 @@ void ChildProcessHostImpl::BindReceiver(mojo::GenericPendingReceiver receiver) {
   child_process_->BindReceiver(std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChildProcessHostImpl::ReinitializeLogging(
     uint32_t logging_dest,
     base::ScopedFD log_file_descriptor) {
@@ -189,7 +183,7 @@ void ChildProcessHostImpl::ReinitializeLogging(
       mojo::PlatformHandle(std::move(log_file_descriptor));
   child_process()->ReinitializeLogging(std::move(logging_settings));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::Process& ChildProcessHostImpl::GetPeerProcess() {
   if (!peer_process_.IsValid()) {
@@ -295,22 +289,17 @@ bool ChildProcessHostImpl::Send(IPC::Message* message) {
 }
 
 // static
-int ChildProcessHost::GenerateChildProcessUniqueId() {
-  // This function must be threadsafe.
-  //
+ChildProcessId ChildProcessHost::GenerateChildProcessUniqueId() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   // Historically, this function returned ids started with 1, so in several
   // places in the code a value of 0 (rather than kInvalidUniqueID) was used as
   // an invalid value. So we retain those semantics.
-  int id = g_unique_id.GetNext() + 1;
-
-  CHECK_NE(0, id);
-  CHECK_NE(kInvalidUniqueID, id);
-
-  return id;
+  static ChildProcessId::Generator child_process_id_generator;
+  return child_process_id_generator.GenerateNextId();
 }
 
-uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
-    int child_process_id) {
+uint64_t ChildProcessHostImpl::ChildProcessIdToTracingProcessId(
+    ChildProcessId child_process_id) {
   // In single process mode, all the children are hosted in the same process,
   // therefore the generated memory dump guids should not be conditioned by the
   // child process id. The clients need not be aware of SPM and the conversion
@@ -326,6 +315,11 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
   return static_cast<uint64_t>(
              base::PersistentHash(base::byte_span_from_ref(child_process_id))) +
          1;
+}
+
+uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
+    int child_process_id) {
+  return ChildProcessIdToTracingProcessId(ChildProcessId(child_process_id));
 }
 
 void ChildProcessHostImpl::Ping(PingCallback callback) {

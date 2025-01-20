@@ -480,7 +480,7 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
   original_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(original_text);
 
-  return CSSVariableData::Create(original_text, is_animation_tainted,
+  return CSSVariableData::Create(original_text, is_animation_tainted, false,
                                  /*needs_variable_resolution=*/has_references,
                                  has_font_units, has_root_font_units,
                                  has_line_height_units);

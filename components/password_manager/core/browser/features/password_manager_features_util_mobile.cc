@@ -11,18 +11,6 @@
 
 namespace password_manager::features_util {
 
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service) {
-  return false;
-}
-
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
-                                      const GURL& current_page_url) {
-  // On Android and iOS, there is no re-signin promo.
-  return false;
-}
-
 PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service) {

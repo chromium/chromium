@@ -26,7 +26,7 @@ const int kResizeAreaCornerSize = 16;
 AppWindowFrameViewWin::AppWindowFrameViewWin(views::Widget* widget)
     : widget_(widget) {}
 
-AppWindowFrameViewWin::~AppWindowFrameViewWin() {}
+AppWindowFrameViewWin::~AppWindowFrameViewWin() = default;
 
 gfx::Insets AppWindowFrameViewWin::GetFrameInsets() const {
   int caption_height =

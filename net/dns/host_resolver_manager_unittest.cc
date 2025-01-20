@@ -8983,8 +8983,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   const std::vector<std::string>* results =
       response.request()->GetTextResults();
-  EXPECT_NE(results->end(), base::ranges::search(*results, foo_records));
-  EXPECT_NE(results->end(), base::ranges::search(*results, bar_records));
+  EXPECT_NE(results->end(), std::ranges::search(*results, foo_records).begin());
+  EXPECT_NE(results->end(), std::ranges::search(*results, bar_records).begin());
 
   // Expect result to be cached.
   EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
@@ -8997,8 +8997,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
               testing::Pointee(testing::UnorderedElementsAre(
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   results = cached_response.request()->GetTextResults();
-  EXPECT_NE(results->end(), base::ranges::search(*results, foo_records));
-  EXPECT_NE(results->end(), base::ranges::search(*results, bar_records));
+  EXPECT_NE(results->end(), std::ranges::search(*results, foo_records).begin());
+  EXPECT_NE(results->end(), std::ranges::search(*results, bar_records).begin());
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQueryRejectsIpLiteral) {
@@ -9451,8 +9451,8 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   const std::vector<std::string>* results =
       response.request()->GetTextResults();
-  EXPECT_NE(results->end(), base::ranges::search(*results, foo_records));
-  EXPECT_NE(results->end(), base::ranges::search(*results, bar_records));
+  EXPECT_NE(results->end(), std::ranges::search(*results, foo_records).begin());
+  EXPECT_NE(results->end(), std::ranges::search(*results, bar_records).begin());
 
   // Expect result to be cached.
   EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
@@ -9465,8 +9465,8 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
               testing::Pointee(testing::UnorderedElementsAre(
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   results = cached_response.request()->GetTextResults();
-  EXPECT_NE(results->end(), base::ranges::search(*results, foo_records));
-  EXPECT_NE(results->end(), base::ranges::search(*results, bar_records));
+  EXPECT_NE(results->end(), std::ranges::search(*results, foo_records).begin());
+  EXPECT_NE(results->end(), std::ranges::search(*results, bar_records).begin());
 }
 
 TEST_F(HostResolverManagerDnsTest, PtrQuery) {

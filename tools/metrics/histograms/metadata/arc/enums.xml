@@ -631,6 +631,9 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Under /data/user_de/0 (src)"/>
   <int value="23" label="Under /data/user_de/0 (dest)"/>
   <int value="24" label="Under /data/user_de/0 (src or dest)"/>
+  <int value="25" label="Under /data/fonts (src)"/>
+  <int value="26" label="Under /data/fonts (dest)"/>
+  <int value="27" label="Under /data/fonts (src or dest)"/>
 </enum>
 
 <enum name="ArcVmDataMigrationFinishReason">

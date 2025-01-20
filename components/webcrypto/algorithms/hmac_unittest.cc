@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -73,7 +74,7 @@ struct HmacKnownAnswer {
   const char* hmac;
 };
 
-const HmacKnownAnswer kHmacKnownAnswers[] = {
+const auto kHmacKnownAnswers = std::to_array<HmacKnownAnswer>({
     // A single byte key with an empty message, generated with:
     //   openssl dgst -sha{1,256} -hmac "" < /dev/null
     {blink::kWebCryptoAlgorithmIdSha1, "00", "",
@@ -139,7 +140,8 @@ const HmacKnownAnswer kHmacKnownAnswers[] = {
      "b191d5cf3fc3e8da95a0f9f4a2a7964289c3129b512bd890de8700a9205420f28a8965b6c"
      "67be28ba7fe278e5fcd16f0f22cf2b2eacbb9",
      "4459066109cb11e6870fa9c6bfd251adfa304c0a2928ca915049704972edc560cc7c0bc38"
-     "249e9101aae2f7d4da62eaff83fb07134efc277de72b9e4ab360425"}};
+     "249e9101aae2f7d4da62eaff83fb07134efc277de72b9e4ab360425"},
+});
 
 blink::WebCryptoKey HmacKeyFromHexBytes(blink::WebCryptoAlgorithmId hash,
                                         const char* key) {

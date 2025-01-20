@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -28,44 +27,24 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-shared.h"
 
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
-
-struct TestParams {
-  bool enable_disconnect_message_port_on_bfcache;
-  ContextType context_type;
-};
+using testing::Values;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionBackForwardCacheBrowserTest
     : public ExtensionBrowserTest,
-      public ::testing::WithParamInterface<TestParams> {
+      public ::testing::WithParamInterface<ContextType> {
  public:
-  ExtensionBackForwardCacheBrowserTest()
-      : ExtensionBrowserTest(GetParam().context_type) {
-    auto enabled_features =
+  ExtensionBackForwardCacheBrowserTest() : ExtensionBrowserTest(GetParam()) {
+    feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{features::kBackForwardCache, {}}});
-    auto disabled_features =
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-    if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-      enabled_features.push_back(
-          {features::kDisconnectExtensionMessagePortWhenPageEntersBFCache, {}});
-    } else {
-      disabled_features.push_back(
-          features::kDisconnectExtensionMessagePortWhenPageEntersBFCache);
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
-  bool IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled() {
-    return GetParam().enable_disconnect_message_port_on_bfcache;
+            {{features::kBackForwardCache, {}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   void SetUpOnMainThread() override {
@@ -94,12 +73,6 @@ class ExtensionBackForwardCacheBrowserTest
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-    const int kMessagingBucket =
-        (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
-         << 16) +
-        static_cast<int>(back_forward_cache::DisabledReasonId::
-                             kExtensionSentMessageToCachedFrame);
-
     std::string action = base::StringPrintf(
         R"HTML(
         var p = chrome.runtime.connect('%s');
@@ -114,10 +87,6 @@ class ExtensionBackForwardCacheBrowserTest
     // Expect that a channel is open.
     EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 
-    EXPECT_EQ(0, histogram_tester_.GetBucketCount(
-                     "BackForwardCache.HistoryNavigationOutcome."
-                     "DisabledForRenderFrameHostReason2",
-                     kMessagingBucket));
     // 3) Navigate to B.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
@@ -125,40 +94,14 @@ class ExtensionBackForwardCacheBrowserTest
     EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    // The channel should remain open if
-    // DisconnectExtensionMessagePortWhenPageEntersBFCache is disabled.
-    if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-      EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-    } else {
-      EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-      // Send a message to the port.
-      ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
-          extension->id(), "port.postMessage('bye');"));
-
-      // `render_frame_host_a` should be destroyed now, and the channel should
-      // be closed.
-      ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-      EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-    }
+    // The channel should close.
+    EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
     // 4) Go back to A.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     web_contents->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents));
-
-    int expected_count = 0;
-    if (!IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-      // If `DisconnectExtensionMessagePortWhenPageEntersBFCache` is
-      // disabled, validate that the not restored reason is
-      // `kExtensionSentMessageToCachedFrame` due to a message being sent to an
-      // inactive frame.
-      expected_count = 1;
-    }
-    EXPECT_EQ(expected_count, histogram_tester_.GetBucketCount(
-                                  "BackForwardCache.HistoryNavigationOutcome."
-                                  "DisabledForRenderFrameHostReason2",
-                                  kMessagingBucket));
   }
 
   void ExpectTitleChangeSuccess(const Extension& extension, const char* title) {
@@ -211,26 +154,12 @@ class ExtensionBackForwardCacheBrowserTest
 
 // These tests use chrome.tabs.executeScript, so the SW versions of the tests
 // must still be run with MV2. See crbug.com/332328868.
-INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
+INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionBackForwardCacheBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
+                         Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionBackForwardCacheBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kServiceWorkerMV2}));
-INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
-                         ExtensionBackForwardCacheBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
-                         ExtensionBackForwardCacheBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kServiceWorkerMV2}));
+                         Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
@@ -439,15 +368,9 @@ IN_PROC_BROWSER_TEST_P(
   // Expect that a channel is open.
   EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 
-  // 3) Navigate to B, and the channel is still open if
-  // `DisconnectExtensionMessagePortWhenPageEntersBFCache` is not enabled.
+  // 3) Navigate to B, and the channel is closed.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-  } else {
-    EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-  }
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 4) Expect that A is in the back forward cache.
   EXPECT_FALSE(primary_render_frame_host.IsDestroyed());
@@ -506,13 +429,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(primary_render_frame_host->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-  } else {
-    // When `DisconnectExtensionMessagePortWhenPageEntersBFCache` is not
-    // enabled, the channel should still be active.
-    EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-  }
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 // Test if the chrome.runtime.sendMessage API is called, the page is allowed
@@ -666,22 +583,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   // 3) Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
-  // Expect that `render_frame_host_a` is cached, and the channel is still open
-  // only if `DisconnectExtensionMessagePortWhenPageEntersBFCache` is disabled.
+  // Expect that `render_frame_host_a` is cached, and the channel is closed.
   EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-  } else {
-    EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
-    // Send a message to the port.
-    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
-        extension->id(), "port.postMessage('bye');"));
-    // Expect that `render_frame_host_a` is destroyed, since the message should
-    // cause it to be evicted, and that the channel is closed.
-    EXPECT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-    EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
-  }
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 // Test that after caching and restoring a page, long-lived ports still work.
@@ -724,12 +629,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
 
   // 3) Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 0u);
-  } else {
-    EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 1u);
-  }
+  EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 0u);
 
   // Expect that `render_frame_host_a` is cached.
   EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
@@ -744,19 +644,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   // Verify that `render_frame_host_a` is the active frame again.
   EXPECT_TRUE(render_frame_host_a->GetLifecycleState() ==
               content::RenderFrameHost::LifecycleState::kActive);
-
-  // 5) Post a message to the frame. Note that we shouldn't do this when
-  // `DisconnectExtensionMessagePortWhenPageEntersBFCache` is enabled, because
-  // the port has already been closed.
-  if (!IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
-        extension->id(), "port.postMessage('restored');"));
-
-    // Verify that the message was received properly.
-    content::TitleWatcher title_watcher_restored(
-        browser()->tab_strip_model()->GetActiveWebContents(), u"restored");
-    EXPECT_EQ(u"restored", title_watcher_restored.WaitAndGetTitle());
-  }
 }
 
 // Test if the chrome.tabs.connect is called then disconnected, the page is
@@ -809,8 +696,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
 }
 
 // Test that the extension background receives `disconnect` event if the
-// channel is closed after the page enters BFCache when
-// `DisconnectExtensionMessagePortWhenPageEntersBFCache` is enabled.
+// channel is closed after the page enters BFCache.
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
                        ExtensionBackgroundOnDisconnectEvent) {
   const Extension* extension = LoadExtension(
@@ -842,28 +728,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   // Expect that a channel is open.
   EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 
-  // 3) Navigate to B, and the channel is still open when the
-  // `DisconnectExtensionMessagePortWhenPageEntersBFCache` is disabled, and
-  // closed when it's enabled.
+  // 3) Navigate to B, and the channel is closed.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_EQ(
-      IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled() ? 0u : 1u,
-      MessageService::Get(profile())->GetChannelCountForTest());
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 4) Expect that A is in the back forward cache.
   ASSERT_FALSE(rfh.IsDestroyed());
   EXPECT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  // 5) Expect that the `disconnect` event is dispatched to the
-  // background if
-  // `IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled` is enabled.
+  // 5) Expect that the `disconnect` event is dispatched to the background.
   constexpr char kCheckDisconnectCountScript[] =
       R"JS(chrome.test.sendScriptResult(disconnectCount))JS";
-  EXPECT_EQ(
-      IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled() ? 1 : 0,
-      ExecuteScriptInBackgroundPage(extension->id(),
-                                    kCheckDisconnectCountScript));
+  EXPECT_EQ(1, ExecuteScriptInBackgroundPage(extension->id(),
+                                             kCheckDisconnectCountScript));
 }
 
 // Tests sending a message to all frames does not send it to back-forward
@@ -1184,210 +1062,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   ExpectTitleChangeFail(*extension);
 }
 
-// This subclass adds some necessary setup for testing the BFCache metrics
-// reported by the extensions.
-class ExtensionBackForwardCacheMetricsBrowserTest
-    : public ExtensionBackForwardCacheBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    ExtensionBackForwardCacheBrowserTest::SetUpOnMainThread();
-
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    // Enable extension sync, otherwise the new source url entry will be
-    // dropped.
-    test_ukm_recorder_->SetIsWebstoreExtensionCallback(
-        base::BindRepeating([](std::string_view) { return true; }));
-  }
-
- protected:
-  ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
-
- private:
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-};
-
-INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
-                         ExtensionBackForwardCacheMetricsBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
-                         ExtensionBackForwardCacheMetricsBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kServiceWorker}));
-INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
-                         ExtensionBackForwardCacheMetricsBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
-                         ExtensionBackForwardCacheMetricsBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kServiceWorker}));
-
-namespace {
-
-// Convert the given source and reason into metric value that is used for metric
-// testing. This follows the implementation of
-// `content::BackForwardCacheMetrics::MetricValue`.
-// See the comments from `content::BackForwardCache::DisabledSource` also.
-constexpr int ToBackForwardCacheDisabledReasonMetricValue(
-    content::BackForwardCache::DisabledSource source,
-    back_forward_cache::DisabledReasonId reason) {
-  return (static_cast<int>(source) << 16) + static_cast<int>(reason);
-}
-
-}  // namespace
-
-// Test when `DisconnectExtensionMessagePortWhenPageEntersBFCache` is disabled,
-// if the extension sends message to a cached document, the document is not
-// allowed to enter the back/forward cache, and the
-// `BackForwardCacheDisabledForRenderFrameHostReason` metric will be recorded
-// for the document URL and the extension URL.
-// It also tests the case when the same extension triggers the disabling twice
-// in different navigations, the metrics should be recorded under different
-// source ids.
-IN_PROC_BROWSER_TEST_P(
-    ExtensionBackForwardCacheMetricsBrowserTest,
-    BFCacheMetricsRecordedIfExtensionSendsMessageToCachedFrame) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
-                        .AppendASCII("content_script_message_on_pagehide"));
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper render_frame_host_a(
-      current_main_frame_host());
-
-  // 2) Wait for the extension to be successfully loaded.
-  const char16_t kTitleModified[] = u"modified";
-  ASSERT_EQ(
-      kTitleModified,
-      content::TitleWatcher(web_contents(), kTitleModified).WaitAndGetTitle());
-
-  // 3) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // 4) If `kDisconnectExtensionMessagePortWhenPageEntersBFCache` is not
-  // enabled, wait for A to be deleted since back/forward cache will be disabled
-  // because the loaded extension is attempting to send messages to the cached
-  // page A.
-  if (!IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    ASSERT_TRUE(render_frame_host_a.WaitUntilRenderFrameDeleted());
-  }
-
-  // 5) Go back to A.
-  web_contents()->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Expect that metrics are recorded properly in `test_ukm_recorder()`.
-  constexpr int kExtensionSentMessageToCachedFrame =
-      ToBackForwardCacheDisabledReasonMetricValue(
-          content::BackForwardCache::DisabledSource::kEmbedder,
-          back_forward_cache::DisabledReasonId::
-              kExtensionSentMessageToCachedFrame);
-
-  auto entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
-          kEntryName);
-
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    // If `DisconnectExtensionMessagePortWhenPageEntersBFCache` is enabled, the
-    // page will be restored from BFCache.
-    ASSERT_EQ(0u, entries.size());
-  } else {
-    // There should be two entries, one for the document URL and one for the
-    // extension URL.
-    ASSERT_EQ(2u, entries.size());
-
-    std::vector<GURL> entry_urls;
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
-      auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
-      EXPECT_TRUE(src)
-          << "The recorded UKM source id should have a source URL registered.";
-
-      entry_urls.push_back(src->url());
-      test_ukm_recorder()->ExpectEntryMetric(
-          entry,
-          ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
-              kReason2Name,
-          kExtensionSentMessageToCachedFrame);
-    }
-
-    EXPECT_THAT(entry_urls,
-                testing::UnorderedElementsAre(url_a, extension->url()))
-        << "UKM metrics should be recorded under the document URL and the "
-           "extension URL.";
-  }
-
-  // 6) Now we are in A, wait for the extension to be successfully loaded.
-  content::RenderFrameHostWrapper render_frame_host_a2(
-      current_main_frame_host());
-  ASSERT_EQ(
-      kTitleModified,
-      content::TitleWatcher(web_contents(), kTitleModified).WaitAndGetTitle());
-
-  // 7) Navigate to B.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-
-  // 8) If `DisconnectExtensionMessagePortWhenPageEntersBFCache` is not
-  // enabled, wait for A to be deleted since back/forward cache will be disabled
-  // because the loaded extension is attempting to send messages to the cached
-  // page A.
-  if (!IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    ASSERT_TRUE(render_frame_host_a2.WaitUntilRenderFrameDeleted());
-  }
-
-  // 9) Go back to A.
-  web_contents()->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Expect that metrics are recorded properly in `test_ukm_recorder()`, and
-  // with a different source id compared to the first time.
-  entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
-          kEntryName);
-  if (IsDisconnectExtensionMessagePortWhenPageEntersBFCacheEnabled()) {
-    // If `DisconnectExtensionMessagePortWhenPageEntersBFCache` is enabled, the
-    // page will be restored from BFCache.
-    ASSERT_EQ(0u, entries.size());
-  } else {
-    // There should be two more new entries, one for the document URL and one
-    // for the extension URL.
-    EXPECT_EQ(2u + 2u, entries.size())
-        << "Another 2 UKM metrics with different source ID should be recorded "
-           "from the second navigation";
-
-    std::vector<GURL> entry_urls;
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
-      auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
-      ASSERT_TRUE(src)
-          << "The recorded UKM source id should have a source URL registered.";
-
-      entry_urls.push_back(src->url());
-      test_ukm_recorder()->ExpectEntryMetric(
-          entry,
-          ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason::
-              kReason2Name,
-          kExtensionSentMessageToCachedFrame);
-    }
-
-    EXPECT_THAT(entry_urls,
-                testing::UnorderedElementsAre(url_a, url_a, extension->url(),
-                                              extension->url()))
-        << "UKM metrics should be recorded under the document URL and the "
-           "extension URL, and they are recorded twice each with different UKM "
-           "source id.";
-  }
-}
-
 class ExtensionBackForwardCacheWithPrerenderBrowserTest
     : public ExtensionBackForwardCacheBrowserTest {
  public:
@@ -1409,26 +1083,12 @@ class ExtensionBackForwardCacheWithPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
+INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
+                         Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kServiceWorker}));
-INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
-                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kEventPage}));
-INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
-                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                         ::testing::Values(TestParams{
-                             .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kServiceWorker}));
+                         Values(ContextType::kServiceWorker));
 
 // Test the extension message port created during prerendering won't be closed
 // after the prerendered page is activated.

@@ -13,6 +13,7 @@
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/resource_task.h"
 
@@ -62,19 +63,8 @@ TensorImplCoreml::Create(
         mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
   }
 
-  // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
-  //
-  // TODO(crbug.com/356670455): Consider relaxing this restriction, especially
-  // if partial reads and writes of an MLTensor are supported.
-  //
-  // TODO(crbug.com/356670455): Consider moving this check to the renderer and
-  // throwing a TypeError.
-  if (!base::IsValueInRangeForNumericType<int>(
-          tensor_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Tensor is too large to create."));
-  }
+  CHECK(base::IsValueInRangeForNumericType<int>(
+      tensor_info->descriptor.PackedByteLength()));
 
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
   if (tensor_info->descriptor.shape().empty()) {
@@ -138,27 +128,31 @@ void TensorImplCoreml::ReadTensorImpl(
     mojom::WebNNTensor::ReadTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  ScopedTrace scoped_trace("TensorImplCoreml::ReadTensorImpl");
+
   // Lock the buffer contents as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources = {
       buffer_state_};
 
+  scoped_trace.AddStep("Wait for tensor");
   auto task = base::MakeRefCounted<ResourceTask>(
       std::move(shared_resources),
       /*exclusive_resources=*/
       std::vector<scoped_refptr<QueueableResourceStateBase>>(),
       base::BindOnce(
-          [](size_t bytes_to_read,
-             scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+          [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
              ReadTensorCallback read_tensor_result_callback,
-             base::OnceClosure completion_closure) {
-            mojo_base::BigBuffer output_buffer(bytes_to_read);
+             ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
+            scoped_trace.AddStep("Begin read");
 
             // Read from the underlying buffer contents, which are kept alive
             // until `completion_closure` is run.
             buffer_state->GetSharedLockedResource().Read(base::BindOnce(
                 [](base::OnceClosure completion_closure,
                    ReadTensorCallback read_tensor_result_callback,
+                   ScopedTrace scoped_trace,
                    mojo_base::BigBuffer output_buffer) {
+                  scoped_trace.AddStep("End read");
                   // Unlock the buffer contents.
                   std::move(completion_closure).Run();
 
@@ -167,34 +161,45 @@ void TensorImplCoreml::ReadTensorImpl(
                           std::move(output_buffer)));
                 },
                 std::move(completion_closure),
-                std::move(read_tensor_result_callback)));
+                std::move(read_tensor_result_callback),
+                std::move(scoped_trace)));
           },
-          /*bytes_to_read=*/PackedByteLength(), buffer_state_,
-          std::move(callback)));
+          buffer_state_, std::move(callback), std::move(scoped_trace)));
   task->Enqueue();
 }
 
 void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  ScopedTrace scoped_trace("TensorImplCoreml::WriteTensorImpl");
+
   // Take an exclusive lock to the buffer contents while writing.
   std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
       buffer_state_};
 
+  scoped_trace.AddStep("Wait for tensor");
   auto task = base::MakeRefCounted<ResourceTask>(
       /*shared_resources=*/
       std::vector<scoped_refptr<QueueableResourceStateBase>>(),
       std::move(exclusive_resources),
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             mojo_base::BigBuffer src_buffer,
+             mojo_base::BigBuffer src_buffer, ScopedTrace scoped_trace,
              base::OnceClosure completion_closure) {
+            scoped_trace.AddStep("Begin write");
             // Write to the underlying buffer contents, which are kept alive
             // until `completion_closure` is run.
             buffer_state->GetExclusivelyLockedResource()->Write(
-                src_buffer, std::move(completion_closure));
+                src_buffer,
+                base::BindOnce(
+                    [](base::OnceClosure completion_closure,
+                       ScopedTrace scoped_trace) {
+                      scoped_trace.AddStep("End write");
+                      std::move(completion_closure).Run();
+                    },
+                    std::move(completion_closure), std::move(scoped_trace)));
           },
-          buffer_state_, std::move(src_buffer)));
+          buffer_state_, std::move(src_buffer), std::move(scoped_trace)));
   task->Enqueue();
 }
 

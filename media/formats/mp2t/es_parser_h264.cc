@@ -218,7 +218,7 @@ void EsParserH264::Flush() {
   // TODO(crbug.com/40204179): Consider plumbing parse failure for this push
   // failure case, instead of what used to OOM but now instead would fail this
   // CHECK.
-  CHECK(es_queue_->Push(base::make_span(aud, sizeof(aud))));
+  CHECK(es_queue_->Push(base::span(aud)));
 
   ParseFromEsQueue();
   es_adapter_.Flush();

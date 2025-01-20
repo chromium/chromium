@@ -14,8 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -28,6 +26,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
 
 namespace {
@@ -107,10 +106,6 @@ class DefaultSearchManagerTest : public testing::Test {
     return std::make_unique<DefaultSearchManager>(
         pref_service(), search_engine_choice_service(),
         DefaultSearchManager::ObserverCallback()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
   }
 
@@ -388,12 +383,6 @@ TEST_F(DefaultSearchManagerTest,
   manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
   auto* result = manager->GetDefaultSearchEngine(nullptr);
   ExpectSimilar(builtin_engine, result);
-
-  // Play definitions must not be reconciled using prepopulated_id.
-  supplied_engine->created_from_play_api = true;
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
 }
 
 TEST_F(DefaultSearchManagerTest,

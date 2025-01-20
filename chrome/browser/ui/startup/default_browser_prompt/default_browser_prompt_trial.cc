@@ -12,9 +12,9 @@
 
 // static
 void DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort() {
-  PrefService *local_state = g_browser_process->local_state();
+  PrefService* local_state = g_browser_process->local_state();
   if (!local_state) {
-    return; // Can be null in unit tests;
+    return;  // Can be null in unit tests;
   }
 
   std::string active_study_group =
@@ -31,9 +31,9 @@ void DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort() {
 
 // static
 void DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort() {
-  PrefService *local_state = g_browser_process->local_state();
+  PrefService* local_state = g_browser_process->local_state();
   if (!local_state) {
-    return; // Can be null in unit tests;
+    return;  // Can be null in unit tests;
   }
 
   auto enrolled_study_group =
@@ -48,7 +48,7 @@ void DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort() {
 
 // static
 void DefaultBrowserPromptTrial::RegisterSyntheticFieldTrial(
-    const std::string &group_name) {
+    const std::string& group_name) {
   CHECK(!group_name.empty());
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(

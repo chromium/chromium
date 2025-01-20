@@ -12,18 +12,24 @@
 #include "components/grit/history_clusters_internals_resources.h"
 #include "components/grit/history_clusters_internals_resources_map.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_page_handler_impl.h"
+#include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 HistoryClustersInternalsUI::HistoryClustersInternalsUI(
     content::WebUI* web_ui,
     history_clusters::HistoryClustersService* history_clusters_service,
-    history::HistoryService* history_service,
-    SetupWebUIDataSourceCallback set_up_data_source_callback)
+    history::HistoryService* history_service)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       history_clusters_service_(history_clusters_service),
       history_service_(history_service) {
-  std::move(set_up_data_source_callback)
-      .Run(base::make_span(kHistoryClustersInternalsResources),
-           IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      history_clusters_internals::kChromeUIHistoryClustersInternalsHost);
+  webui::SetupWebUIDataSource(
+      source, kHistoryClustersInternalsResources,
+      IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
 }
 
 HistoryClustersInternalsUI::~HistoryClustersInternalsUI() = default;

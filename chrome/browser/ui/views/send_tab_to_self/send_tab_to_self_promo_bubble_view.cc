@@ -81,8 +81,9 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
 }
 
 SendTabToSelfPromoBubbleView::~SendTabToSelfPromoBubbleView() {
-  if (controller_)
+  if (controller_) {
     controller_->OnBubbleClosed();
+  }
 }
 
 void SendTabToSelfPromoBubbleView::Hide() {
@@ -90,8 +91,9 @@ void SendTabToSelfPromoBubbleView::Hide() {
 }
 
 void SendTabToSelfPromoBubbleView::AddedToWidget() {
-  if (!controller_->show_back_button())
+  if (!controller_->show_back_button()) {
     return;
+  }
 
   // Adding a title view will replace the default title.
   GetBubbleFrameView()->SetTitleView(
@@ -115,8 +117,9 @@ void SendTabToSelfPromoBubbleView::OnSignInButtonClicked() {
 }
 
 void SendTabToSelfPromoBubbleView::OnBackButtonClicked() {
-  if (controller_)
+  if (controller_) {
     controller_->OnBackButtonPressed();
+  }
   CloseBubble();
 }
 

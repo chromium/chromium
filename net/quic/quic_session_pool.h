@@ -578,6 +578,17 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                      int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
+
+  // Returns whether we have an existing session to the same server id as
+  // `session_key`. This is used to determine whether we have an existing
+  // session to the host but with different `QuicSessionKey`.
+  bool HasActiveSessionToServerId(const QuicSessionKey& session_key) const;
+
+  // Returns whether we have an active job to the same server id as
+  // `session_key`. This is used to determine whether we have an in-flight
+  // attempt to the host but with different `QuicSessionKey`
+  bool HasActiveJobToServerId(const QuicSessionKey& session_key) const;
+
   int CreateSessionSync(QuicSessionAliasKey key,
                         quic::ParsedQuicVersion quic_version,
                         int cert_verify_flags,

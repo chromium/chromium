@@ -178,7 +178,7 @@ class DropdownFieldView implements FieldView {
             if (view != null && view instanceof TextView) {
                 ((TextView) view).setError(null);
             }
-            mUnderline.setBackgroundColor(mContext.getColor(R.color.modern_grey_600));
+            mUnderline.setBackgroundColor(mContext.getColor(R.color.baseline_neutral_40));
             mErrorLabel.setText(null);
             mErrorLabel.setVisibility(View.GONE);
             return;

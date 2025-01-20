@@ -25,6 +25,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace user_manager {
 namespace {
@@ -385,7 +386,8 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
       }
 
       // gaia_id is associated with cryptohome.
-      return AccountId::FromUserEmailGaiaId(sanitized_email, *stored_gaia_id);
+      return AccountId::FromUserEmailGaiaId(sanitized_email,
+                                            GaiaId(*stored_gaia_id));
     }
 
     if (const std::string* stored_obj_guid =
@@ -404,7 +406,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
 
   switch (account_type) {
     case AccountType::GOOGLE:
-      return AccountId::FromUserEmailGaiaId(sanitized_email, id);
+      return AccountId::FromUserEmailGaiaId(sanitized_email, GaiaId(id));
     case AccountType::ACTIVE_DIRECTORY:
       return AccountId::AdFromUserEmailObjGuid(sanitized_email, id);
     case AccountType::UNKNOWN:
@@ -440,7 +442,7 @@ AccountId KnownUser::GetAccountIdByCryptohomeId(
       result.has_value()) {
     return result.value();
   }
-  return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), std::string(),
+  return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), GaiaId(),
                                           AccountType::UNKNOWN);
 }
 
@@ -481,7 +483,7 @@ void KnownUser::SetIsEphemeralUser(const AccountId& account_id,
 void KnownUser::UpdateId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE:
-      SetStringPref(account_id, kGAIAIdKey, account_id.GetGaiaId());
+      SetStringPref(account_id, kGAIAIdKey, account_id.GetGaiaId().ToString());
       break;
     case AccountType::ACTIVE_DIRECTORY:
       SetStringPref(account_id, kObjGuidKey, account_id.GetObjGuid());

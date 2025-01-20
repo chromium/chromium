@@ -6,8 +6,11 @@
 
 #include <optional>
 
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -16,16 +19,22 @@ namespace content::indexed_db {
 
 namespace {
 
-// This class owns itself and deletes itself after `completion_callback_` is
-// run.
 // TODO(estade): rename this class and this file.
 class FileStreamReaderToDataPipe {
  public:
+  FileStreamReaderToDataPipe(
+      const base::FilePath& file_path,
+      uint64_t expected_file_size,
+      uint64_t offset,
+      uint64_t read_length,
+      mojo::ScopedDataPipeProducerHandle dest,
+      mojo::PendingRemote<blink::mojom::BlobReaderClient> client);
   FileStreamReaderToDataPipe(const base::FilePath& file_path,
                              uint64_t offset,
                              uint64_t read_length,
                              mojo::ScopedDataPipeProducerHandle dest,
                              base::OnceCallback<void(int)> completion_callback);
+
   ~FileStreamReaderToDataPipe();
 
   void Start();
@@ -39,15 +48,32 @@ class FileStreamReaderToDataPipe {
 
   base::File file_;
   mojo::ScopedDataPipeProducerHandle dest_;
+
+  // Exactly one of these two members will be non-null.
+  mojo::Remote<blink::mojom::BlobReaderClient> client_;
   base::OnceCallback<void(int)> completion_callback_;
+
   uint64_t transferred_bytes_ = 0;
   uint64_t offset_;
-  uint64_t read_length_;
+  uint64_t read_length_ = 0;
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   // Optional so that its construction can be deferred.
   std::optional<mojo::SimpleWatcher> writable_handle_watcher_;
 };
+
+FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
+    const base::FilePath& file_path,
+    uint64_t expected_file_size,
+    uint64_t offset,
+    uint64_t read_length,
+    mojo::ScopedDataPipeProducerHandle dest,
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> client)
+    : dest_(std::move(dest)), client_(std::move(client)), offset_(offset) {
+  read_length_ = std::min(expected_file_size, read_length);
+  client_->OnCalculatedSize(expected_file_size, read_length_);
+  file_.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
 
 FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
     const base::FilePath& file_path,
@@ -59,7 +85,22 @@ FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
       completion_callback_(std::move(completion_callback)),
       offset_(offset),
       read_length_(read_length) {
-  DCHECK(!writable_handle_watcher_.has_value());
+  file_.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
+FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() = default;
+
+void FileStreamReaderToDataPipe::Start() {
+  if (read_length_ == 0) {
+    OnComplete(net::OK);
+    return;
+  }
+
+  if (!file_.IsValid()) {
+    OnComplete(net::FileErrorToNetError(file_.error_details()));
+    return;
+  }
+
   writable_handle_watcher_.emplace(FROM_HERE,
                                    mojo::SimpleWatcher::ArmingPolicy::MANUAL);
   writable_handle_watcher_->Watch(
@@ -67,17 +108,7 @@ FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
       base::BindRepeating(&FileStreamReaderToDataPipe::OnDataPipeWritable,
                           base::Unretained(this)));
 
-  file_.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-}
-
-FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() = default;
-
-void FileStreamReaderToDataPipe::Start() {
-  if (file_.IsValid()) {
-    ReadMore();
-  } else {
-    OnComplete(net::FileErrorToNetError(file_.error_details()));
-  }
+  ReadMore();
 }
 
 void FileStreamReaderToDataPipe::ReadMore() {
@@ -109,13 +140,12 @@ void FileStreamReaderToDataPipe::ReadMore() {
         std::min(static_cast<uint64_t>(pending_write_->size()),
                  read_length_ - transferred_bytes_));
     base::span<uint8_t> buffer =
-        base::as_writable_bytes(base::make_span(*pending_write_))
-            .first(read_bytes);
+        base::as_writable_byte_span(*pending_write_).first(read_bytes);
     std::optional<size_t> result =
         file_.Read(offset_ + transferred_bytes_, buffer);
 
-    if (!result || !*result) {
-      // Error or EOF.
+    if (!result) {
+      // Read error.
       dest_ = pending_write_->Complete(0);
       OnComplete(net::ERR_FAILED);
       return;
@@ -124,7 +154,13 @@ void FileStreamReaderToDataPipe::ReadMore() {
     dest_ = pending_write_->Complete(*result);
     transferred_bytes_ += *result;
 
-    if (transferred_bytes_ >= read_length_) {
+    // The file read may receive less than `read_length_` in some environments,
+    // causing `ReadMore()` to reach the end of the file.  When this happens,
+    // report success with `transferred_bytes_` in the data pipe.  See
+    // crbug.com/383157185 for more details.
+    const bool end_of_file = (*result == 0);
+
+    if (transferred_bytes_ >= read_length_ || end_of_file) {
       OnComplete(net::OK);
       return;
     }
@@ -146,15 +182,34 @@ void FileStreamReaderToDataPipe::OnDataPipeWritable(MojoResult result) {
 void FileStreamReaderToDataPipe::OnComplete(int result) {
   // Resets the watchers, pipes and the exchange handler, so that
   // we will never be called back.
-  writable_handle_watcher_->Cancel();
+  if (writable_handle_watcher_) {
+    writable_handle_watcher_->Cancel();
+  }
   pending_write_ = nullptr;
   dest_.reset();
 
-  std::move(completion_callback_).Run(result);
+  if (client_) {
+    client_->OnComplete(result, transferred_bytes_);
+  } else {
+    std::move(completion_callback_).Run(result);
+  }
   delete this;
 }
 
 }  // namespace
+
+void OpenFileAndReadIntoPipe(
+    const base::FilePath& file_path,
+    uint64_t expected_file_size,
+    uint64_t offset,
+    uint64_t read_length,
+    mojo::ScopedDataPipeProducerHandle dest,
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> client) {
+  (new FileStreamReaderToDataPipe(file_path, expected_file_size, offset,
+                                  read_length, std::move(dest),
+                                  std::move(client)))
+      ->Start();
+}
 
 void OpenFileAndReadIntoPipe(
     const base::FilePath& file_path,

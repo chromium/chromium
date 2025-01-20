@@ -56,8 +56,8 @@ void ReportAboutFlagsHistogramFeatures(const std::string& uma_histogram_name,
 
 }  // namespace
 
-base::HistogramBase::Sample GetSwitchUMAId(const std::string& switch_name) {
-  return static_cast<base::HistogramBase::Sample>(
+base::HistogramBase::Sample32 GetSwitchUMAId(const std::string& switch_name) {
+  return static_cast<base::HistogramBase::Sample32>(
       base::HashMetricName(switch_name));
 }
 
@@ -70,7 +70,7 @@ void ReportAboutFlagsHistogram(const std::string& uma_histogram_name,
 
 namespace testing {
 
-const base::HistogramBase::Sample kBadSwitchFormatHistogramId = 0;
+const base::HistogramBase::Sample32 kBadSwitchFormatHistogramId = 0;
 
 }  // namespace testing
 

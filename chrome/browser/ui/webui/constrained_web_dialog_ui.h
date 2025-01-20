@@ -18,7 +18,7 @@ class Size;
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class WebDialogDelegate;
@@ -66,7 +66,7 @@ class ConstrainedWebDialogDelegate {
   virtual gfx::Size GetConstrainedWebDialogPreferredSize() const = 0;
 
  protected:
-  virtual ~ConstrainedWebDialogDelegate() {}
+  virtual ~ConstrainedWebDialogDelegate() = default;
 };
 
 // ConstrainedWebDialogUI is a facility to show HTML WebUI content

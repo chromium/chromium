@@ -7,12 +7,12 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "predictors"
   static_files = [
-    "predictors.html",
     "predictors.css",
+    "predictors.html",
   ]
   non_web_component_files = [
-    "predictors.ts",
     "autocomplete_action_predictor.ts",
+    "predictors.ts",
     "resource_prefetch_predictor.ts",
   ]
 

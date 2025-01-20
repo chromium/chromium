@@ -71,12 +71,12 @@ class MODULES_EXPORT RespondWithObserver
   RespondWithObserver(ExecutionContext*, int event_id, WaitUntilObserver*);
 
   class RespondWithReject final
-      : public ThenCallable<IDLAny, RespondWithReject, IDLAny> {
+      : public ThenCallable<IDLAny, RespondWithReject, IDLPromise<IDLAny>> {
    public:
     explicit RespondWithReject(RespondWithObserver* observer)
         : observer_(observer) {}
     void Trace(Visitor* visitor) const final;
-    ScriptValue React(ScriptState*, ScriptValue);
+    ScriptPromise<IDLAny> React(ScriptState*, ScriptValue);
 
    private:
     Member<RespondWithObserver> observer_;

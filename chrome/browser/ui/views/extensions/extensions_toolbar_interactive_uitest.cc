@@ -167,8 +167,9 @@ ExtensionsToolbarUITest::GetToolbarActionViewsForBrowser(
   std::vector<ToolbarActionView*> views;
   for (views::View* view :
        GetExtensionsToolbarContainerForBrowser(browser)->children()) {
-    if (views::IsViewClass<ToolbarActionView>(view))
+    if (views::IsViewClass<ToolbarActionView>(view)) {
       views.push_back(static_cast<ToolbarActionView*>(view));
+    }
   }
   return views;
 }
@@ -203,11 +204,11 @@ void ExtensionsToolbarUITest::NavigateTo(const GURL& url) {
   EXPECT_TRUE(observer.last_navigation_succeeded());
 }
 
-void ExtensionsToolbarUITest::AddSiteAccessRequest(
+void ExtensionsToolbarUITest::AddHostAccessRequest(
     const extensions::Extension& extension,
     content::WebContents* web_contents) {
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  extensions::PermissionsManager::Get(profile())->AddSiteAccessRequest(
+  extensions::PermissionsManager::Get(profile())->AddHostAccessRequest(
       web_contents, tab_id, extension);
 }
 

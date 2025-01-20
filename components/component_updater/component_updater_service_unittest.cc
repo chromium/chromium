@@ -107,9 +107,6 @@ class MockUpdateClient : public UpdateClient {
 
 class MockServiceObserver : public ServiceObserver {
  public:
-  MockServiceObserver() = default;
-  ~MockServiceObserver() override = default;
-
   MOCK_METHOD1(OnEvent, void(const update_client::CrxUpdateItem&));
 };
 

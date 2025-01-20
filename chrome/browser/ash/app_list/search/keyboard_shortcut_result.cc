@@ -140,8 +140,10 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
     case ash::SearchResultTextItem::kKeyboardShortcutAccessibility:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY;
-    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardRightAlt:
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardQuickInsert:
       return IDS_KEYBOARD_QUICK_INSERT_LABEL;
+    case ash::SearchResultTextItem::kKeyboardShortcutDoNotDisturb:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB;
   }
 }
 
@@ -274,9 +276,11 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutMicrophone;
     case (KeyboardCode::VKEY_ACCESSIBILITY):
       return IconCode::kKeyboardShortcutAccessibility;
+    case KeyboardCode::VKEY_DO_NOT_DISTURB:
+      return IconCode::kKeyboardShortcutDoNotDisturb;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case (KeyboardCode::VKEY_RIGHT_ALT):
-      return IconCode::kKeyboardShortcutKeyboardRightAlt;
+    case (KeyboardCode::VKEY_QUICK_INSERT):
+      return IconCode::kKeyboardShortcutKeyboardQuickInsert;
 #endif
     default:
       return std::nullopt;
@@ -304,6 +308,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"BrowserHome", IconCode::kKeyboardShortcutBrowserHome},
        {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
        {u"BrowserSearch", IconCode::kKeyboardShortcutBrowserSearch},
+       {u"DoNotDisturb", IconCode::kKeyboardShortcutDoNotDisturb},
        {u"EmojiPicker", IconCode::kKeyboardShortcutEmojiPicker},
        {u"EnableOrToggleDictation", IconCode::kKeyboardShortcutDictationToggle},
        {u"KeyboardBacklightToggle",
@@ -328,7 +333,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"Power", IconCode::kKeyboardShortcutPower},
        {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot},
        {u"PrivacyScreenToggle", IconCode::kKeyboardShortcutPrivacyScreenToggle},
-       {u"RightAlt", IconCode::kKeyboardShortcutKeyboardRightAlt},
+       {u"QuickInsert", IconCode::kKeyboardShortcutKeyboardQuickInsert},
        {u"Settings", IconCode::kKeyboardShortcutSettings},
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});

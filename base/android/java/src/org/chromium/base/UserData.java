@@ -4,10 +4,13 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface to be implemented by the classes make themselves attacheable to
  * a host class that holds {@link UserDataHost}.
  */
+@NullMarked
 public interface UserData {
     /**
      * Called when {@link UserData} object needs to be destroyed.

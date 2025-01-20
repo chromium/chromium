@@ -94,7 +94,7 @@ const uint64_t {name}::kEntryNameHash;
     self.assertIn(
         """
 {name}& {name}::SetContent(std::string_view content) {{
-  SetContentInternal(base::HashMetricName(content));
+  SetContentInternal(base::HashMetricName(SanitizeContent(content)));
   return *this;
 }}
 """.format(name=self.event_info.name, rawName=self.event_info.raw_name),
@@ -252,7 +252,7 @@ DwaTestMetric& DwaTestMetric::operator=(DwaTestMetric&&) = default;
 DwaTestMetric::~DwaTestMetric() = default;
 
 DwaTestMetric& DwaTestMetric::SetContent(std::string_view content) {
-  SetContentInternal(base::HashMetricName(content));
+  SetContentInternal(base::HashMetricName(SanitizeContent(content)));
   return *this;
 }
 

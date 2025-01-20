@@ -66,6 +66,8 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
+    ON_CALL(mock_shared_processor_, IsTrackingMetadata)
+        .WillByDefault(Return(true));
     InitializeModelAndMediator();
   }
 
@@ -86,7 +88,7 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
       // Use the same metadata for all the tabs and the group itself.
       sync_pb::EntityMetadata metadata;
       metadata.mutable_collaboration()->set_collaboration_id(
-          group->collaboration_id().value());
+          group->collaboration_id()->value());
       metadata_change_list->UpdateMetadata(group_storage_key, metadata);
       for (const SavedTabGroupTab& tab : group->saved_tabs()) {
         const std::string tab_storage_key =
@@ -234,7 +236,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
   SavedTabGroup shared_group_1(u"shared group 1",
                                tab_groups::TabGroupColorId::kBlue, /*urls=*/{},
                                /*position=*/std::nullopt);
-  shared_group_1.SetCollaborationId(kCollaborationId);
+  shared_group_1.SetCollaborationId(CollaborationId(kCollaborationId));
   SavedTabGroupTab shared_tab_1(GURL("http://google.com/1"), u"shared tab 1",
                                 shared_group_1.saved_guid(),
                                 /*position=*/std::nullopt);
@@ -247,7 +249,7 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
   SavedTabGroup shared_group_2(u"shared group 2",
                                tab_groups::TabGroupColorId::kBlue, /*urls=*/{},
                                /*position=*/std::nullopt);
-  shared_group_2.SetCollaborationId(kCollaborationId);
+  shared_group_2.SetCollaborationId(CollaborationId(kCollaborationId));
   SavedTabGroupTab shared_tab_3(GURL("http://google.com/3"), u"shared tab 3",
                                 shared_group_2.saved_guid(),
                                 /*position=*/std::nullopt);

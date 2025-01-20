@@ -66,6 +66,12 @@ struct FileChooserParams {
   // If true, the data should be obtained using the device's camera/mic/etc.
   bool use_media_capture = false;
 
+  // Whether files are required to be open for writing. This should be set to
+  // true if the caller needs to write to files. e.g. File System Access APIs
+  // such as showOpenFilePicker(), but should be false for read-only controls
+  // such as `<input type=file>`.
+  bool open_writable = false;
+
   // If non-empty, represents the URL of the requestor if the request was
   // initiated by a document. Note that this value should be considered
   // untrustworthy since it is specified by the sandbox and not validated.

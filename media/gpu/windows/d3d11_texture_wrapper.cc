@@ -251,8 +251,6 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
       size,
       color_space,
-      kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
       usage,
       "VideoTexture"};
   scoped_refptr<gpu::GpuChannelSharedImageInterface>

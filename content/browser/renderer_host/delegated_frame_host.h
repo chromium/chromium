@@ -96,6 +96,8 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   // ui::CompositorObserver implementation.
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+  void OnFirstSurfaceActivation(ui::Compositor* compositor,
+                                const viz::SurfaceInfo& surface_info) override;
 
   void ClearFallbackSurfaceForCommitPending();
   void ResetFallbackToFirstNavigationSurface();
@@ -242,6 +244,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurfaceInternal(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
+      const viz::SurfaceId& surface_id,
       viz::CopyOutputRequest::ResultFormat format,
       viz::CopyOutputRequest::ResultDestination destination,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);

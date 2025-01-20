@@ -184,12 +184,16 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
             text_autosizer_page_info_.Clone());
       };
 
-  main_document_->frame_tree()
-      ->root()
-      ->render_manager()
-      ->ExecuteRemoteFramesBroadcastMethod(
-          std::move(remote_frames_broadcast_callback),
-          main_document_->GetSiteInstance()->group());
+  {
+    TRACE_EVENT("navigation",
+                "PageImpl::OnTextAutosizerPageInfoChanged broadcast");
+    main_document_->frame_tree()
+        ->root()
+        ->render_manager()
+        ->ExecuteRemoteFramesBroadcastMethod(
+            std::move(remote_frames_broadcast_callback),
+            main_document_->GetSiteInstance()->group());
+  }
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
@@ -253,7 +257,7 @@ void PageImpl::Activate(
   }
 
   // Prepare each RenderFrameHostImpl in this Page for activation.
-  main_document_->ForEachRenderFrameHostIncludingSpeculative(
+  main_document_->ForEachRenderFrameHostImplIncludingSpeculative(
       [](RenderFrameHostImpl* rfh) {
         rfh->RendererWillActivateForPrerenderingOrPreview();
       });
@@ -276,7 +280,7 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
     main_document_->MainDocumentElementAvailable(uses_temporary_zoom_level());
   }
 
-  main_document_->ForEachRenderFrameHost(
+  main_document_->ForEachRenderFrameHostImpl(
       &RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation);
 
   if (is_on_load_completed_in_main_document()) {
@@ -287,7 +291,7 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
     main_document_->OnFirstContentfulPaint();
   }
 
-  main_document_->ForEachRenderFrameHost(
+  main_document_->ForEachRenderFrameHostImpl(
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }
 
@@ -297,7 +301,7 @@ void PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview(
                "PageImpl::DidActivateAllRenderViewsForPrerendering");
 
   // Tell each RenderFrameHostImpl in this Page that activation finished.
-  main_document_->ForEachRenderFrameHostIncludingSpeculative(
+  main_document_->ForEachRenderFrameHostImplIncludingSpeculative(
       [this](RenderFrameHostImpl* rfh) {
         if (&rfh->GetPage() != this) {
           return;

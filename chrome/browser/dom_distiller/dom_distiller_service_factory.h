@@ -34,7 +34,7 @@ class DomDistillerContextKeyedService : public KeyedService,
   DomDistillerContextKeyedService& operator=(
       const DomDistillerContextKeyedService&) = delete;
 
-  ~DomDistillerContextKeyedService() override {}
+  ~DomDistillerContextKeyedService() override = default;
 };
 
 class DomDistillerServiceFactory : public ProfileKeyedServiceFactory {

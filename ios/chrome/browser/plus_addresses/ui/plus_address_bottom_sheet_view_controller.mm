@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
@@ -34,6 +35,8 @@ namespace {
 
 using PlusAddressModalCompletionStatus =
     plus_addresses::metrics::PlusAddressModalCompletionStatus;
+using PlusAddressCreationBottomSheetErrorType =
+    plus_addresses::PlusAddressCreationBottomSheetErrorType;
 
 // Generates the notice to be displayed in the bottomsheet, which includes an
 // attributed string.
@@ -136,7 +139,11 @@ UIImageView* BrandingImageView() {
   // Record of the time the bottom sheet is shown.
   base::Time _bottomSheetShownTime;
   // Error that occurred while bottom sheet is showing.
-  std::optional<PlusAddressModalCompletionStatus> _bottomSheetErrorStatus;
+  std::optional<PlusAddressModalCompletionStatus>
+      _bottomSheetModalCompletionErrorStatus;
+  // Stores the error state info for failed creation requests.
+  std::optional<PlusAddressCreationBottomSheetErrorType>
+      _bottomSheetCreationErrorType;
   // Keeps track of the number of times the refresh button was hit.
   NSInteger _refreshCount;
   // The notice message if it will be shown.
@@ -201,12 +208,16 @@ UIImageView* BrandingImageView() {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
   [self willConfirmPlusAddress];
 }
 
 - (void)confirmationAlertSecondaryAction {
   // The cancel button was tapped, which dismisses the bottom sheet.
   // Call out to the command handler to hide the view and stop the coordinator.
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.OfferedPlusAddressDeclined"));
   [self dismiss];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -222,6 +233,8 @@ UIImageView* BrandingImageView() {
           [_delegate shouldShowNotice]);
     }
   _reservedPlusAddress = plusAddress;
+  _bottomSheetModalCompletionErrorStatus.reset();
+  _bottomSheetCreationErrorType.reset();
   [_reservedPlusAddressTableView reloadData];
 }
 
@@ -230,13 +243,16 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-
+  _bottomSheetModalCompletionErrorStatus.reset();
+  _bottomSheetCreationErrorType.reset();
   self.isLoading = NO;
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
-- (void)notifyError:(PlusAddressModalCompletionStatus)status {
-  _bottomSheetErrorStatus = status;
+- (void)notifyError:(PlusAddressModalCompletionStatus)completionStatus
+    withCreateErrorType:(PlusAddressCreationBottomSheetErrorType)errorType {
+  _bottomSheetModalCompletionErrorStatus = completionStatus;
+  _bottomSheetCreationErrorType = errorType;
   self.isLoading = NO;
 }
 
@@ -250,6 +266,7 @@ UIImageView* BrandingImageView() {
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 // Handle click on URLs on the bottomsheet.
 // TODO(crbug.com/40276862) Add primaryActionForTextItem: when this method is
 // deprecated after ios 17 (detail on UITextItem.h).
@@ -266,6 +283,24 @@ UIImageView* BrandingImageView() {
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  CHECK(textView == _description);
+  PlusAddressURLType type;
+  if (textView == _noticeMessage) {
+    type = PlusAddressURLType::kLearnMore;
+  } else {
+    type = PlusAddressURLType::kManagement;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf onURLTapForType:type];
+  }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -341,7 +376,7 @@ UIImageView* BrandingImageView() {
   _reservedPlusAddress = l10n_util::GetNSString(
       IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS);
   [_reservedPlusAddressTableView reloadData];
-
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   [_delegate didTapRefreshButton];
 }
 
@@ -436,10 +471,32 @@ UIImageView* BrandingImageView() {
       plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
       was_notice_shown);
   plus_addresses::metrics::RecordModalShownOutcome(
-      _bottomSheetErrorStatus.value_or(
+      _bottomSheetModalCompletionErrorStatus.value_or(
           PlusAddressModalCompletionStatus::kModalCanceled),
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, was_notice_shown);
+  if (_bottomSheetModalCompletionErrorStatus) {
+    if (_bottomSheetCreationErrorType &&
+        _bottomSheetCreationErrorType.value() ==
+            PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.AffiliationErrorCanceled"));
+    } else if (_bottomSheetCreationErrorType &&
+               _bottomSheetCreationErrorType.value() ==
+                   PlusAddressCreationBottomSheetErrorType::kCreateQuota) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.QuotaErrorAccepted"));
+    } else if (*_bottomSheetModalCompletionErrorStatus ==
+               PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+    } else if (*_bottomSheetModalCompletionErrorStatus ==
+               PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+    }
+  }
+
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -500,6 +557,11 @@ UIImageView* BrandingImageView() {
 - (void)enablePrimaryActionButton:(BOOL)enabled {
   self.primaryActionButton.enabled = enabled;
   UpdateButtonColorOnEnableDisable(self.primaryActionButton);
+}
+
+- (void)onURLTapForType:(PlusAddressURLType)type {
+  [_delegate openNewTab:type];
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
 @end

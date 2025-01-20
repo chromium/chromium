@@ -1,5 +1,5 @@
 <style include="settings-shared">
-  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  settings-toggle-button {
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
@@ -24,7 +24,7 @@
   <template is="dom-if" if="[[isQuickAnswersSupported_]]">
     <cr-link-row
         id="searchRow"
-        start-icon="[[rowIcons_.searchEngine]]"
+        start-icon="os-settings:explore"
         label="$i18n{searchSubpageTitle}"
         on-click="onSearchClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
@@ -35,7 +35,7 @@
   <template is="dom-if" if="[[isAssistantAllowed_]]">
     <cr-link-row
         id="assistantRow"
-        start-icon="[[rowIcons_.assistant]]"
+        start-icon="os-settings:assistant"
         class="hr"
         label="$i18n{searchGoogleAssistant}"
         sub-label="[[getAssistantEnabledDisabledLabel_(
@@ -44,22 +44,20 @@
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
   </template>
-  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-    <settings-toggle-button id="contentRecommendationsToggle"
-        class="hr"
-        icon="[[rowIcons_.contentRecommendations]]"
-        pref="{{prefs.settings.suggested_content_enabled}}"
-        label="$i18n{enableSuggestedContent}"
-        sub-label="$i18n{enableSuggestedContentDesc}"
-        learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button id="contentRecommendationsToggle"
+      class="hr"
+      icon="os-settings:content-recommend"
+      pref="{{prefs.settings.suggested_content_enabled}}"
+      label="$i18n{enableSuggestedContent}"
+      sub-label="$i18n{enableSuggestedContentDesc}"
+      learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+  </settings-toggle-button>
 
   <!--TODO(b:337868408) learn more link for magicboost-->
   <template is="dom-if" if="[[isMagicBoostFeatureEnabled_]]">
     <settings-toggle-button id="magicBoostToggle"
         class="hr"
-        icon="[[rowIcons_.magicBoost]]"
+        icon="os-settings:magic-boost"
         pref="{{prefs.settings.magic_boost_enabled}}"
         label="$i18n{enableMagicBoost}"
         sub-label="$i18n{enableMagicBoostDesc}"
@@ -79,7 +77,7 @@
       <div class="sub-item">
         <settings-toggle-button id="helpMeReadToggle"
             class="hr"
-            icon="[[rowIcons_.helpMeRead]]"
+            icon="os-settings:help-me-read"
             pref="{{prefs.settings.mahi_enabled}}"
             label="$i18n{enableHelpMeRead}"
             sub-label="$i18n{enableHelpMeReadDesc}"
@@ -90,7 +88,7 @@
       <div class="sub-item">
         <settings-toggle-button id="helpMeWriteToggle"
             class="hr"
-            icon="[[rowIcons_.helpMeWrite]]"
+            icon="os-settings:help-me-write"
             pref="{{prefs.assistive_input.orca_enabled}}"
             label="$i18n{enableHelpMeWrite}"
             sub-label="$i18n{enableHelpMeWriteDesc}"
@@ -104,7 +102,7 @@
         <template is="dom-if" if="[[isLobsterSettingsToggleVisible_]]">
           <settings-toggle-button id="lobsterToggle"
               class="hr"
-              icon="[[rowIcons_.lobster]]"
+              icon="ash-internal:lobster"
               pref="{{prefs.settings.lobster_enabled}}"
               label="$i18n{enableLobster}"
               sub-label="$i18n{enableLobsterDesc}"

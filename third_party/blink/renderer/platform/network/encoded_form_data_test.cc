@@ -17,7 +17,6 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 
 namespace blink {
 
@@ -52,7 +51,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
                                               std::move(remote)));
 
   Vector<char> boundary_vector;
-  boundary_vector.Append("----boundaryForTest", 19);
+  boundary_vector.AppendSpan(base::span_from_cstring("----boundaryForTest"));
   original->SetIdentifier(45678);
   original->SetBoundary(boundary_vector);
   original->SetContainsPasswordData(true);
@@ -63,7 +62,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   ASSERT_EQ(3ul, copy_elements.size());
 
   Vector<char> foo_vector;
-  foo_vector.Append("Foo", 3);
+  foo_vector.AppendSpan(base::span_from_cstring("Foo"));
 
   EXPECT_EQ(FormDataElement::kData, copy_elements[0].type_);
   EXPECT_EQ(foo_vector, copy_elements[0].data_);
@@ -91,36 +90,6 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
   // ThreadSafeRefCounted.
   // filename_ is now thread safe, so it doesn't need a deep copy.
-}
-
-TEST_F(EncodedFormDataTest, GetType) {
-  scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendData(base::span_from_cstring("Foo"));
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendFile("Bar.txt", base::Time());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob,
-            form_data->GetType());
-
-  form_data->AppendDataPipe(nullptr);
-  EXPECT_EQ(EncodedFormData::FormDataType::kInvalid, form_data->GetType());
-}
-
-TEST_F(EncodedFormDataTest, GetType2) {
-  scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendData(base::span_from_cstring("Foo"));
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendDataPipe(nullptr);
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataAndDataPipe,
-            form_data->GetType());
-
-  form_data->AppendFile("Bar.txt", base::Time());
-  EXPECT_EQ(EncodedFormData::FormDataType::kInvalid, form_data->GetType());
 }
 
 }  // namespace

@@ -458,7 +458,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     private void keepSettingsOnlyForAccountManagerAccounts(List<CoreAccountInfo> accounts) {
-        String[] gaiaIds = accounts.stream().map(CoreAccountInfo::getGaiaId).toArray(String[]::new);
+        int size = accounts.size();
+        String[] gaiaIds = new String[size];
+        for (int i = 0; i < size; ++i) {
+            gaiaIds[i] = accounts.get(i).getGaiaId().toString();
+        }
         SyncServiceImplJni.get()
                 .keepAccountSettingsPrefsOnlyForUsers(mSyncServiceAndroidBridge, gaiaIds);
     }

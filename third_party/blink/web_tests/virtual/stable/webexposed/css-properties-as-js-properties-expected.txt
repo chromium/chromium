@@ -160,6 +160,7 @@ descentOverride
 direction
 display
 dominantBaseline
+dynamicRangeLimit
 emptyCells
 fallback
 fieldSizing
@@ -374,6 +375,7 @@ rx
 ry
 scale
 scrollBehavior
+scrollInitialTarget
 scrollMargin
 scrollMarginBlock
 scrollMarginBlockEnd
@@ -434,6 +436,9 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textBox
+textBoxEdge
+textBoxTrim
 textCombineUpright
 textDecoration
 textDecorationColor

@@ -833,8 +833,8 @@ class DnsTransactionTestBase : public testing::Test {
         }
       } else if (!server.use_post() && request->method() == "GET") {
         std::string prefix = url_base + "?dns=";
-        auto mispair = base::ranges::mismatch(prefix, request->url().spec());
-        if (mispair.first == prefix.end()) {
+        auto mispair = std::ranges::mismatch(prefix, request->url().spec());
+        if (mispair.in1 == prefix.end()) {
           server_found = true;
           socket_factory_->remote_endpoints_.emplace_back(server);
         }

@@ -121,7 +121,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kWebAppInstallation:
       // TODO(crbug.com/333795265): provide a dedicated icon.
-      return vector_icons::kTouchpadMouseIcon;
+      return vector_icons::kInstallDesktopIcon;
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
     case RequestType::kWebPrinting:
       return vector_icons::kPrinterIcon;
@@ -174,7 +174,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kPointerLockOffIcon;
     case RequestType::kWebAppInstallation:
       // TODO(crbug.com/333795265): provide a dedicated icon.
-      return gfx::kNoneIcon;
+      return vector_icons::kInstallDesktopOffIcon;
     default:
       NOTREACHED();
   }
@@ -258,6 +258,10 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kIdentityProvider;
     default:
       return std::nullopt;
+#if !BUILDFLAG(IS_ANDROID)
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      return RequestType::kWebAppInstallation;
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -336,6 +340,10 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif
     case RequestType::kTopLevelStorageAccess:
       return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kWebAppInstallation:
+      return ContentSettingsType::WEB_APP_INSTALLATION;
+#endif  // !BUILDFLAG(IS_ANDROID)
     default:
       // Not associated with a ContentSettingsType.
       return std::nullopt;

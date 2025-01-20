@@ -179,8 +179,10 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
                     ->GetLastCommittedOrigin()
                     .GetURL());
     }
-    int render_process_id =
-        GetWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int render_process_id = GetWebContents()
+                                ->GetPrimaryMainFrame()
+                                ->GetProcess()
+                                ->GetDeprecatedID();
     int render_frame_id =
         GetWebContents()->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
@@ -956,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::MediaStreamRequest request =
       CreateRequest(example_audio_id(), example_video_id(), false);
   // Make the child frame the source of the request.
-  request.render_process_id = child_frame->GetProcess()->GetID();
+  request.render_process_id = child_frame->GetProcess()->GetDeprecatedID();
   request.render_frame_id = child_frame->GetRoutingID();
   request.security_origin = child_frame->GetLastCommittedOrigin().GetURL();
 
@@ -987,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::MediaStreamRequest request =
       CreateRequest(std::string(), example_video_id(), false);
   // Make the child frame the source of the request.
-  request.render_process_id = child_frame->GetProcess()->GetID();
+  request.render_process_id = child_frame->GetProcess()->GetDeprecatedID();
   request.render_frame_id = child_frame->GetRoutingID();
   request.security_origin = child_frame->GetLastCommittedOrigin().GetURL();
 

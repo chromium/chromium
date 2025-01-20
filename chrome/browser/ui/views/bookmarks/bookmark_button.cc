@@ -117,20 +117,36 @@ BookmarkButton::BookmarkButton(PressedCallback callback,
 
 BookmarkButton::~BookmarkButton() = default;
 
-std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
+void BookmarkButton::AddedToWidget() {
+  BookmarkButtonBase::AddedToWidget();
+
+  widget_observation_.Observe(GetWidget());
+
+  UpdateMaxTooltipWidth();
+}
+
+void BookmarkButton::RemovedFromWidget() {
+  BookmarkButtonBase::RemovedFromWidget();
+
+  widget_observation_.Reset();
+}
+
+void BookmarkButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  BookmarkButtonBase::OnBoundsChanged(previous_bounds);
+  UpdateMaxTooltipWidth();
+}
+
+void BookmarkButton::UpdateTooltipText() {
+  if (!GetWidget()) {
+    return;
+  }
+
   const views::TooltipManager* tooltip_manager =
       GetWidget()->GetTooltipManager();
-  gfx::Point location(p);
-  ConvertPointToScreen(this, &location);
-  // Also update when the maximum width for tooltip has changed because the
-  // it may be elided differently.
-  int max_tooltip_width = tooltip_manager->GetMaxWidth(location);
-  if (tooltip_text_.empty() || max_tooltip_width != max_tooltip_width_) {
-    max_tooltip_width_ = max_tooltip_width;
-    tooltip_text_ = BookmarkBarView::CreateToolTipForURLAndTitle(
-        max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText());
+  if (tooltip_manager) {
+    SetCachedTooltipText(BookmarkBarView::CreateToolTipForURLAndTitle(
+        max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText()));
   }
-  return tooltip_text_;
 }
 
 void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
@@ -147,7 +163,7 @@ void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
 
 void BookmarkButton::SetText(const std::u16string& text) {
   BookmarkButtonBase::SetText(text);
-  tooltip_text_.clear();
+  UpdateTooltipText();
 }
 
 void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
@@ -215,6 +231,11 @@ void BookmarkButton::OnMouseMoved(const ui::MouseEvent& event) {
   return BookmarkButtonBase::OnMouseMoved(event);
 }
 
+void BookmarkButton::OnWidgetBoundsChanged(views::Widget* widget,
+                                           const gfx::Rect& new_bounds) {
+  UpdateMaxTooltipWidth();
+}
+
 void BookmarkButton::StartPreconnecting(GURL url) {
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
   if (prerender_handle_) {
@@ -261,6 +282,22 @@ void BookmarkButton::StartPrerendering(GURL url) {
   auto* prerender_manager =
       PrerenderManager::FromWebContents(prerender_web_contents_.get());
   prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
+}
+
+void BookmarkButton::UpdateMaxTooltipWidth() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  const views::TooltipManager* tooltip_manager =
+      GetWidget()->GetTooltipManager();
+  gfx::Point p;
+  ConvertPointToScreen(this, &p);
+  int max_tooltip_width = tooltip_manager->GetMaxWidth(p);
+  if (max_tooltip_width != max_tooltip_width_) {
+    max_tooltip_width_ = max_tooltip_width;
+    UpdateTooltipText();
+  }
 }
 
 BEGIN_METADATA(BookmarkButton)

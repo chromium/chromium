@@ -56,7 +56,7 @@ void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
 
 void FastCheckoutViewImpl::Show(
     const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-    const std::vector<autofill::CreditCard*>& credit_cards) {
+    const std::vector<const autofill::CreditCard*>& credit_cards) {
   if (!RecreateJavaObjectIfNecessary()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a waiting

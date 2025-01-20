@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/template_url_service.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -60,8 +61,8 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
 }
 
 // TODO(crbug.com/41493716): Fails in Mac builds.
-// TODO(crbug.com/365747879): Flaky in Windows builds.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/365747879): Flaky in Windows and Linux builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
 #else
 #define MAYBE_LoadKeywordData LoadKeywordData

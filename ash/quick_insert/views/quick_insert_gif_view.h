@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
@@ -29,12 +30,15 @@ class ASH_EXPORT QuickInsertGifView : public views::ImageView {
  public:
   using FramesFetchedCallback =
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
-  using FramesFetcher = base::OnceCallback<void(FramesFetchedCallback)>;
+  using FramesFetcher =
+      base::OnceCallback<std::unique_ptr<network::SimpleURLLoader>(
+          FramesFetchedCallback)>;
 
   using PreviewImageFetchedCallback =
       base::OnceCallback<void(const gfx::ImageSkia&)>;
   using PreviewImageFetcher =
-      base::OnceCallback<void(PreviewImageFetchedCallback)>;
+      base::OnceCallback<std::unique_ptr<network::SimpleURLLoader>(
+          PreviewImageFetchedCallback)>;
 
   QuickInsertGifView(FramesFetcher frames_fetcher,
                      PreviewImageFetcher preview_image_fetcher,
@@ -44,8 +48,6 @@ class ASH_EXPORT QuickInsertGifView : public views::ImageView {
   ~QuickInsertGifView() override;
 
   // views::ImageViewBase:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
@@ -59,6 +61,9 @@ class ASH_EXPORT QuickInsertGifView : public views::ImageView {
   // Original dimensions of the gif, used to preserve aspect ratio when
   // resizing.
   gfx::Size original_dimensions_;
+
+  std::unique_ptr<network::SimpleURLLoader> preview_request_;
+  std::unique_ptr<network::SimpleURLLoader> frames_request_;
 
   // The decoded gif frames.
   std::vector<image_util::AnimationFrame> frames_;

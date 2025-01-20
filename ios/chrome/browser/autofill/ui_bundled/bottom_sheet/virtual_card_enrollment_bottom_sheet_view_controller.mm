@@ -347,6 +347,7 @@ CGFloat const kCreditCardCellHeight = 64;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -367,6 +368,7 @@ CGFloat const kCreditCardCellHeight = 64;
     return NO;
   }
 }
+#endif
 
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem

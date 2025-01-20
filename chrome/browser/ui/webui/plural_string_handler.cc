@@ -12,9 +12,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-PluralStringHandler::PluralStringHandler() {}
+PluralStringHandler::PluralStringHandler() = default;
 
-PluralStringHandler::~PluralStringHandler() {}
+PluralStringHandler::~PluralStringHandler() = default;
 
 void PluralStringHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

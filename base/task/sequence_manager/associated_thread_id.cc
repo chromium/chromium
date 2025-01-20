@@ -7,9 +7,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 AssociatedThreadId::AssociatedThreadId() = default;
 AssociatedThreadId::~AssociatedThreadId() = default;
@@ -84,6 +82,4 @@ void AssociatedThreadId::StopInSequenceWithCurrentThread() {
   CHECK(succeeded);
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

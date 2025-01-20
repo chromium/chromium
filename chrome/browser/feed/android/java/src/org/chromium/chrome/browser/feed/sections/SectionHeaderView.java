@@ -40,7 +40,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -580,8 +580,8 @@ public class SectionHeaderView extends LinearLayout {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mMenuView.getContext(), listItems, listMenuDelegate);
 
-        ListMenuButtonDelegate delegate =
-                new ListMenuButtonDelegate() {
+        ListMenuDelegate delegate =
+                new ListMenuDelegate() {
                     @Override
                     public ListMenu getListMenu() {
                         return listMenu;

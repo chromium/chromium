@@ -17,9 +17,12 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "content/public/test/browser_test.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 class IOSPromosUtilsTest : public SyncTest {
  public:
@@ -79,26 +82,20 @@ class IOSPromosUtilsTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_passwords) {
   ASSERT_TRUE(sync_harness()->SetupSync());
 
-  ios_promos_utils::VerifyIOSPromoEligibility(
-      IOSPromoType::kPassword, browser()->profile(),
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider());
+  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
+                                              browser());
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_addresses) {
   ASSERT_TRUE(sync_harness()->SetupSync());
 
-  ios_promos_utils::VerifyIOSPromoEligibility(
-      IOSPromoType::kAddress, browser()->profile(),
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider());
+  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress,
+                                              browser());
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_payments) {
   ASSERT_TRUE(sync_harness()->SetupSync());
 
-  ios_promos_utils::VerifyIOSPromoEligibility(
-      IOSPromoType::kPayment, browser()->profile(),
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider());
+  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPayment,
+                                              browser());
 }

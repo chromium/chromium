@@ -164,8 +164,8 @@ CreditCard CreateServerCreditCardWithDetails(
     int64_t use_date,
     const std::string& billing_address_id = "") {
   CreditCard card = CreateServerCreditCard(server_id);
-  card.set_use_count(use_count);
-  card.set_use_date(UseDateFromProtoValue(use_date));
+  card.usage_history().set_use_count(use_count);
+  card.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   card.set_billing_address_id(billing_address_id);
   return card;
 }
@@ -175,8 +175,8 @@ Iban CreateServerIbanWithDetails(
     size_t use_count = 1,
     int64_t use_date = UseDateToProtoValue(kDefaultTime)) {
   Iban iban = CreateServerIban(instrument_id);
-  iban.set_use_count(use_count);
-  iban.set_use_date(UseDateFromProtoValue(use_date));
+  iban.usage_history().set_use_count(use_count);
+  iban.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   return iban;
 }
 
@@ -184,8 +184,8 @@ CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
                                             int64_t use_date) {
   CreditCard card;
   DCHECK_EQ(card.record_type(), CreditCard::RecordType::kLocalCard);
-  card.set_use_count(use_count);
-  card.set_use_date(UseDateFromProtoValue(use_date));
+  card.usage_history().set_use_count(use_count);
+  card.usage_history().set_use_date(UseDateFromProtoValue(use_date));
   return card;
 }
 
@@ -569,8 +569,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
        GetData_ShouldReturnCompleteData_Cards) {
   CreditCard card = CreateServerCreditCard(kCard1ServerId);
-  card.set_use_count(6);
-  card.set_use_date(UseDateFromProtoValue(3));
+  card.usage_history().set_use_count(6);
+  card.usage_history().set_use_date(UseDateFromProtoValue(3));
   card.set_billing_address_id(kAddr1ServerId);
   table()->SetServerCreditCards({card});
   ResetBridge();
@@ -991,8 +991,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
       .Times(0);
 
-  existing_card.set_use_count(31);
-  existing_card.set_use_date(UseDateFromProtoValue(41));
+  existing_card.usage_history().set_use_count(31);
+  existing_card.usage_history().set_use_date(UseDateFromProtoValue(41));
   bridge()->CreditCardChanged(CreditCardChange(
       CreditCardChange::UPDATE, existing_card.guid(), existing_card));
 

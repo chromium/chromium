@@ -163,6 +163,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param isDeletable Whether the item can be deleted by the user.
      * @param featureForIph The In-Product-Help feature used for displaying the bubble for the
      *     suggestion.
+     * @param iphDescriptionText If set, it will be used as the help text for the IPH bubble.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
      *     suggestion chip.
      * @return an AutofillSuggestion containing the above information.

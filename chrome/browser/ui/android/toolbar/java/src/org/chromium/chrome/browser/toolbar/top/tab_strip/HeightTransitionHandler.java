@@ -381,9 +381,11 @@ class HeightTransitionHandler {
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         updateTabStripHeightImpl();
                     }
@@ -425,8 +427,6 @@ class HeightTransitionHandler {
         // since it is only used for phones.
         // TODO (crbug.com/1517059): Let FindToolbar itself decide how to set the top margin.
         updateViewStubTopMargin(R.id.find_toolbar_tablet_stub, R.id.find_toolbar, topControlHeight);
-        updateViewStubTopMargin(
-                R.id.target_view_stub, R.id.toolbar_drag_drop_target_view, mTabStripHeight);
 
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "TabStripTransitionDelegate should be available.";
@@ -446,9 +446,11 @@ class HeightTransitionHandler {
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         if (isTopControlAtSteadyState()) {
                             notifyTransitionFinished(true);

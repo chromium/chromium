@@ -46,7 +46,6 @@ class ChromeMojoProxyResolverFactory
       override;
 
  private:
-  std::unique_ptr<service_manager::Connector> service_manager_connector_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

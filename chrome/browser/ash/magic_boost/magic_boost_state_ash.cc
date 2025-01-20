@@ -15,7 +15,8 @@
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -82,13 +83,13 @@ void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
     base::OnceCallback<void(bool)> callback) {
   GetEditorPanelManager()->GetEditorPanelContext(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,
-         crosapi::mojom::EditorPanelContextPtr panel_context) {
+         const chromeos::editor_menu::EditorContext& editor_context) {
         // If the mode is not `kHardBlocked` and consent status is not set, it
         // means that we should include Orca in this opt-in flow.
         bool should_include_orca =
-            panel_context->editor_panel_mode !=
-                crosapi::mojom::EditorPanelMode::kHardBlocked &&
-            !panel_context->consent_status_settled;
+            editor_context.mode !=
+                chromeos::editor_menu::EditorMode::kHardBlocked &&
+            !editor_context.consent_status_settled;
         std::move(callback).Run(should_include_orca);
       },
       std::move(callback)));
@@ -161,9 +162,12 @@ void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
 
   UpdateMagicBoostEnabled(enabled);
 
-  // Update both HMR and Orca accordingly when `kMagicBoostEnabled` is changed.
+  // Update both HMR, Orca and Lobster accordingly when `kMagicBoostEnabled` is
+  // changed.
   AsyncWriteHMREnabled(enabled);
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kOrcaEnabled,
+                                              enabled);
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kLobsterEnabled,
                                               enabled);
 }
 

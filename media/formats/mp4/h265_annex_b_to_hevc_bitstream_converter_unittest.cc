@@ -7,10 +7,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/path_service.h"
+#include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
+#include "media/parsers/h265_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -40,55 +43,109 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, Success) {
                           "chunk3-non-idr.bin",    "chunk4-non-idr.bin",
                           "chunk5-non-idr.bin",    "chunk6-config-idr.bin",
                           "chunk7-non-idr.bin"};
-  H265AnnexBToHevcBitstreamConverter converter;
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    H265AnnexBToHevcBitstreamConverter converter(
+        add_parameter_sets_in_bitstream);
+    for (std::string& name : chunks) {
+      SCOPED_TRACE(name);
+      auto input = ReadTestFile(name);
+      SCOPED_TRACE(input.size());
+      std::vector<uint8_t> output;
+      size_t desired_size = 0;
+      bool config_changed = false;
 
-  for (std::string& name : chunks) {
-    SCOPED_TRACE(name);
-    auto input = ReadTestFile(name);
-    SCOPED_TRACE(input.size());
-    std::vector<uint8_t> output;
-    size_t desired_size = 0;
-    bool config_changed = false;
+      auto status =
+          converter.ConvertChunk(input, output, &config_changed, &desired_size);
+      ASSERT_EQ(status.code(), MP4Status::Codes::kBufferTooSmall);
+      output.resize(desired_size);
 
-    auto status =
-        converter.ConvertChunk(input, output, &config_changed, &desired_size);
-    ASSERT_EQ(status.code(), MP4Status::Codes::kBufferTooSmall);
-    output.resize(desired_size);
+      status = converter.ConvertChunk(input, output, &config_changed, nullptr);
+      EXPECT_TRUE(status.is_ok()) << status.message();
 
-    status = converter.ConvertChunk(input, output, &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+      // Convert HEVC bitstream back to Annex-B bitstream, and validate if
+      // parameter set are write to the output or not.
+      EXPECT_TRUE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
+      H265Parser parser;
+      parser.SetStream(output.data(), output.size());
+      std::vector<H265NALU> parameter_sets;
+      while (true) {
+        H265NALU nalu;
+        H265Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+        if (res == H265Parser::kEOStream) {
+          break;
+        }
+        EXPECT_EQ(res, H265Parser::kOk);
+        switch (nalu.nal_unit_type) {
+          case H265NALU::VPS_NUT:
+            int vps_id;
+            EXPECT_EQ(parser.ParseVPS(&vps_id), H265Parser::kOk);
+            EXPECT_TRUE(!!parser.GetVPS(vps_id));
+            parameter_sets.push_back(nalu);
+            break;
+          case H265NALU::SPS_NUT:
+            int sps_id;
+            EXPECT_EQ(parser.ParseSPS(&sps_id), H265Parser::kOk);
+            EXPECT_TRUE(!!parser.GetSPS(sps_id));
+            parameter_sets.push_back(nalu);
+            break;
+          case H265NALU::PPS_NUT:
+            int pps_id;
+            EXPECT_EQ(parser.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+            EXPECT_TRUE(!!parser.GetPPS(pps_id));
+            parameter_sets.push_back(nalu);
+            break;
+          default:
+            break;
+        }
+      }
 
-    auto& config = converter.GetCurrentConfig();
-    if (name.find("config") != std::string::npos) {
-      // Chunks with configuration
-      EXPECT_TRUE(config_changed);
+      if (add_parameter_sets_in_bitstream && config_changed) {
+        // Parameter sets should write to the output stream in the order of VPS,
+        // SPS, and PPS.
+        EXPECT_EQ(parameter_sets.size(), 3u);
+        EXPECT_EQ(parameter_sets.at(0).nal_unit_type, H265NALU::VPS_NUT);
+        EXPECT_EQ(parameter_sets.at(1).nal_unit_type, H265NALU::SPS_NUT);
+        EXPECT_EQ(parameter_sets.at(2).nal_unit_type, H265NALU::PPS_NUT);
+      } else {
+        // Parameter sets should not write to the output stream.
+        EXPECT_EQ(parameter_sets.size(), 0u);
+      }
 
-      EXPECT_EQ(config.configurationVersion, 1);
-      EXPECT_EQ(config.general_profile_space, 0);
-      EXPECT_EQ(config.general_tier_flag, 0);
-      EXPECT_EQ(config.general_profile_idc, 1);
-      EXPECT_EQ(config.general_profile_compatibility_flags, 0x60000000ul);
-      EXPECT_EQ(config.general_constraint_indicator_flags, 0x800000000000ull);
-      EXPECT_EQ(config.general_level_idc, 60);
-      EXPECT_EQ(config.min_spatial_segmentation_idc, 0);
-      EXPECT_EQ(config.parallelismType, 0);
-      EXPECT_EQ(config.chromaFormat, 1);
-      EXPECT_EQ(config.bitDepthLumaMinus8, 0);
-      EXPECT_EQ(config.bitDepthChromaMinus8, 0);
-      EXPECT_EQ(config.avgFrameRate, 0);
-      EXPECT_EQ(config.numOfArrays, 3);
-      EXPECT_EQ((config.arrays[0].first_byte & 0x3f), 32);
-      EXPECT_EQ(config.arrays[0].units.size(), 1ul);
-      EXPECT_EQ((config.arrays[1].first_byte & 0x3f), 33);
-      EXPECT_EQ(config.arrays[1].units.size(), 1ul);
-      EXPECT_EQ((config.arrays[2].first_byte & 0x3f), 34);
-      EXPECT_EQ(config.arrays[2].units.size(), 1ul);
-    } else {
-      EXPECT_FALSE(config_changed);
+      auto& config = converter.GetCurrentConfig();
+      if (name.find("config") != std::string::npos) {
+        // Chunks with configuration
+        EXPECT_TRUE(config_changed);
+
+        EXPECT_EQ(config.configurationVersion, 1);
+        EXPECT_EQ(config.general_profile_space, 0);
+        EXPECT_EQ(config.general_tier_flag, 0);
+        EXPECT_EQ(config.general_profile_idc, 1);
+        EXPECT_EQ(config.general_profile_compatibility_flags, 0x60000000ul);
+        EXPECT_EQ(config.general_constraint_indicator_flags, 0x800000000000ull);
+        EXPECT_EQ(config.general_level_idc, 60);
+        EXPECT_EQ(config.min_spatial_segmentation_idc, 0);
+        EXPECT_EQ(config.parallelismType, 0);
+        EXPECT_EQ(config.chromaFormat, 1);
+        EXPECT_EQ(config.bitDepthLumaMinus8, 0);
+        EXPECT_EQ(config.bitDepthChromaMinus8, 0);
+        EXPECT_EQ(config.avgFrameRate, 0);
+        EXPECT_EQ(config.numOfArrays, 3);
+        EXPECT_EQ(config.arrays[0].first_byte,
+                  add_parameter_sets_in_bitstream ? 32 : 160);
+        EXPECT_EQ(config.arrays[0].units.size(), 1ul);
+        EXPECT_EQ(config.arrays[1].first_byte,
+                  add_parameter_sets_in_bitstream ? 33 : 161);
+        EXPECT_EQ(config.arrays[1].units.size(), 1ul);
+        EXPECT_EQ(config.arrays[2].first_byte,
+                  add_parameter_sets_in_bitstream ? 34 : 162);
+        EXPECT_EQ(config.arrays[2].units.size(), 1ul);
+      } else {
+        EXPECT_FALSE(config_changed);
+      }
+
+      std::vector<uint8_t> config_bin;
+      EXPECT_TRUE(config.Serialize(config_bin)) << " file: " << name;
     }
-
-    std::vector<uint8_t> config_bin;
-    EXPECT_TRUE(config.Serialize(config_bin)) << " file: " << name;
   }
 }
 
@@ -154,39 +211,98 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
       // Encoded data omitted here, it's not important for NALU parsing
   };
 
-  H265AnnexBToHevcBitstreamConverter converter;
-  std::vector<uint8_t> output(10000);
-  bool config_changed = false;
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    H265AnnexBToHevcBitstreamConverter converter(
+        add_parameter_sets_in_bitstream);
+    std::vector<uint8_t> output(10000);
+    bool config_changed = false;
 
-  auto status =
-      converter.ConvertChunk(first_chunk, output, &config_changed, nullptr);
-  EXPECT_TRUE(status.is_ok()) << status.message();
-  EXPECT_TRUE(config_changed);
+    auto status =
+        converter.ConvertChunk(first_chunk, output, &config_changed, nullptr);
+    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(config_changed);
 
-  auto& config = converter.GetCurrentConfig();
-  EXPECT_EQ(config.numOfArrays, 3);
-  EXPECT_EQ((config.arrays[0].first_byte & 0x3f), 32);
-  EXPECT_EQ(config.arrays[0].units.size(), 1ul);
-  EXPECT_EQ((config.arrays[1].first_byte & 0x3f), 33);
-  EXPECT_EQ(config.arrays[1].units.size(), 1ul);
-  EXPECT_EQ((config.arrays[2].first_byte & 0x3f), 34);
-  EXPECT_EQ(config.arrays[2].units.size(), 2ul);
-  status = converter.ConvertChunk(second_non_idr_chunk, output, &config_changed,
-                                  nullptr);
-  EXPECT_TRUE(status.is_ok()) << status.message();
-  EXPECT_FALSE(config_changed);
+    // Convert HEVC bitstream back to Annex-B bitstream, and validate if
+    // parameter set are write to the output.
+    EXPECT_FALSE(mp4::AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(&output));
+    H265Parser parser;
+    parser.SetStream(output.data(), output.size());
+    std::vector<H265NALU> parameter_sets;
+    while (true) {
+      H265NALU nalu;
+      H265Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+      if (res == H265Parser::kEOStream) {
+        break;
+      }
+      EXPECT_EQ(res, H265Parser::kOk);
+      switch (nalu.nal_unit_type) {
+        case H265NALU::VPS_NUT:
+          int vps_id;
+          EXPECT_EQ(parser.ParseVPS(&vps_id), H265Parser::kOk);
+          EXPECT_TRUE(!!parser.GetVPS(vps_id));
+          parameter_sets.push_back(nalu);
+          break;
+        case H265NALU::SPS_NUT:
+          int sps_id;
+          EXPECT_EQ(parser.ParseSPS(&sps_id), H265Parser::kOk);
+          EXPECT_TRUE(!!parser.GetSPS(sps_id));
+          parameter_sets.push_back(nalu);
+          break;
+        case H265NALU::PPS_NUT:
+          int pps_id;
+          EXPECT_EQ(parser.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+          EXPECT_TRUE(!!parser.GetPPS(pps_id));
+          parameter_sets.push_back(nalu);
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (add_parameter_sets_in_bitstream) {
+      // Parameter sets should write to the output stream in the order of VPS,
+      // SPS, PPS1, and PPS2.
+      EXPECT_EQ(parameter_sets.size(), 4u);
+      EXPECT_EQ(parameter_sets.at(0).nal_unit_type, H265NALU::VPS_NUT);
+      EXPECT_EQ(parameter_sets.at(1).nal_unit_type, H265NALU::SPS_NUT);
+      EXPECT_EQ(parameter_sets.at(2).nal_unit_type, H265NALU::PPS_NUT);
+      EXPECT_EQ(parameter_sets.at(3).nal_unit_type, H265NALU::PPS_NUT);
+    } else {
+      // Parameter sets should not write to the output stream.
+      EXPECT_EQ(parameter_sets.size(), 0u);
+    }
+
+    auto& config = converter.GetCurrentConfig();
+    EXPECT_EQ(config.numOfArrays, 3);
+    EXPECT_EQ(config.arrays[0].first_byte,
+              add_parameter_sets_in_bitstream ? 32 : 160);
+    EXPECT_EQ(config.arrays[0].units.size(), 1ul);
+    EXPECT_EQ(config.arrays[1].first_byte,
+              add_parameter_sets_in_bitstream ? 33 : 161);
+    EXPECT_EQ(config.arrays[1].units.size(), 1ul);
+    EXPECT_EQ(config.arrays[2].first_byte,
+              add_parameter_sets_in_bitstream ? 34 : 162);
+    EXPECT_EQ(config.arrays[2].units.size(), 2ul);
+    status = converter.ConvertChunk(second_non_idr_chunk, output,
+                                    &config_changed, nullptr);
+    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_FALSE(config_changed);
+  }
 }
 
 TEST(H265AnnexBToHevcBitstreamConverterTest, Failure) {
-  H265AnnexBToHevcBitstreamConverter converter;
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    H265AnnexBToHevcBitstreamConverter converter(
+        add_parameter_sets_in_bitstream);
 
-  std::vector<uint8_t> input{0x0,  0x0, 0x0, 0x1, 0x40, 0x01,
-                             0x0c, 0x0, 0x0, 0x1, 0x67, 0x42};
-  std::vector<uint8_t> output(input.size());
+    std::vector<uint8_t> input{0x0,  0x0, 0x0, 0x1, 0x40, 0x01,
+                               0x0c, 0x0, 0x0, 0x1, 0x67, 0x42};
+    std::vector<uint8_t> output(input.size());
 
-  auto status = converter.ConvertChunk(input, output, nullptr, nullptr);
+    auto status = converter.ConvertChunk(input, output, nullptr, nullptr);
 
-  ASSERT_EQ(status.code(), MP4Status::Codes::kInvalidVPS);
+    ASSERT_EQ(status.code(), MP4Status::Codes::kInvalidVPS);
+  }
 }
 
 }  // namespace media

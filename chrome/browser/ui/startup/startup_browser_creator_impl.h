@@ -26,7 +26,7 @@ struct SessionStartupPref;
 namespace base {
 class CommandLine;
 class FilePath;
-}
+}  // namespace base
 
 namespace internals {
 GURL GetTriggeredResetSettingsURL();

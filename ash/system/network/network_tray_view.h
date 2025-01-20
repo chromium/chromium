@@ -37,7 +37,6 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
 
   // views::View:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // TrayItemView:
   void HandleLocaleChange() override;
@@ -72,10 +71,6 @@ class ASH_EXPORT NetworkTrayView : public TrayItemView,
   // The description provided by GetAccessibleNodeData. For wifi networks this
   // is the signal strength of the network. Otherwise it is empty.
   std::u16string accessible_description_;
-
-  // The tooltip for the icon. Includes the network name and signal strength
-  // (for wireless networks).
-  std::u16string tooltip_;
 };
 
 }  // namespace ash

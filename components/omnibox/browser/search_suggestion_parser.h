@@ -306,6 +306,7 @@ class SearchSuggestionParser {
   typedef std::vector<NavigationResult> NavigationResults;
   typedef std::vector<omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2>
       ExperimentStatsV2s;
+  typedef std::vector<int64_t> GwsEventIdHashes;
 
   // A simple structure bundling most of the information (including
   // both SuggestResults and NavigationResults) returned by a call to
@@ -347,6 +348,9 @@ class SearchSuggestionParser {
 
     // If the active suggest field trial (if any) has triggered.
     bool field_trial_triggered;
+
+    // GWS event ID hashes, if any. To be logged to SearchboxStats.
+    GwsEventIdHashes gws_event_id_hashes;
 
     // The ExperimentStatsV2 containing GWS experiment details, if any. To be
     // logged to SearchboxStats.

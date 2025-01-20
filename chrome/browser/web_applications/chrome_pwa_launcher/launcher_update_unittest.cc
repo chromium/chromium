@@ -26,7 +26,7 @@ void CreateFileAndWriteData(const base::FilePath& file_path,
 
 class WebAppLauncherUpdateTest : public testing::Test {
  protected:
-  WebAppLauncherUpdateTest() {}
+  WebAppLauncherUpdateTest() = default;
 
   void SetUp() override {
     // Create mock chrome_pwa_launcher.exe in <current dir>/<current version>/,

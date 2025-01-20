@@ -70,7 +70,9 @@ class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
       public UnifiedSystemTrayController::Observer,
-      public display::DisplayObserver {
+      public display::DisplayObserver,
+      public PowerStatus::Observer,
+      public TrayItemView::Observer {
   METADATA_HEADER(UnifiedSystemTray, TrayBackgroundView)
 
  public:
@@ -167,7 +169,6 @@ class ASH_EXPORT UnifiedSystemTray
   void ShowBubble() override;
   void CloseBubbleInternal() override;
   std::u16string GetAccessibleNameForBubble() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -183,12 +184,19 @@ class ASH_EXPORT UnifiedSystemTray
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
+  // PowerStatus::Observer:
+  void OnPowerStatusChanged() override;
+
   // UnifiedSystemTrayController::Observer:
   void OnOpeningCalendarView() override;
   void OnTransitioningFromCalendarToMainView() override;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
+
+  // TrayItem::Observer:
+  void OnTrayItemVisibilityAboutToChange(bool target_visibility) override {}
+  void OnTrayItemChildViewChanged() override;
 
   // Gets called when an action is performed on the `DateTray`.
   void OnDateTrayActionPerformed(const ui::Event& event);
@@ -200,6 +208,8 @@ class ASH_EXPORT UnifiedSystemTray
   bool ShouldChannelIndicatorBeShown() const;
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
+
+  void UpdateAccessibleName();
 
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
@@ -220,6 +230,8 @@ class ASH_EXPORT UnifiedSystemTray
   friend class UnifiedSystemTrayTest;
   friend class PowerTrayViewTest;
   friend class StatusAreaBatteryPixelTest;
+  friend class UnifiedSystemTrayAccessibilityTest;
+  friend class PrivacyScreenToastControllerTest;
 
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
@@ -233,6 +245,34 @@ class ASH_EXPORT UnifiedSystemTray
   // Destroys the `bubble_`, also handles
   // removing bubble related observers.
   void DestroyBubble();
+
+  // Calculate the accessible name for the tray that will be set in the
+  // ViewAccessibility cache.
+  std::u16string CalculateAccessibleName();
+
+  // Callback called when there are changes to the accessible name of child
+  // Views that impact the UnifiedSystemTray's accessible name.
+  void OnChildViewNameChanged(ax::mojom::StringAttribute attribute,
+                              const std::optional<std::string>& name);
+
+  // Registers callbacks for child View properties that impact the tray's
+  // accessible properties.
+  void SubscribeCallbacksForAccessibility();
+
+  // The `channel_indicator_view_` can have either an image_view() or a label(),
+  // but not both at the same time. The existence of either impacts the
+  // UnifiedSystemTray's accessible name. As the lifecycle of these objects
+  // change, we will need to update our callbacks.
+  void SubscribeChannelIndicatorImageOrLabelCallbacks();
+
+  // Returns the time from `clock_for_testing_` if it is not nullptr, or time
+  // from base::Time::Now() otherwise.
+  void OverrideClockForTesting(base::Clock* test_clock);
+
+  const base::Time GetTimeNow();
+
+  // A clock that can be overridden by tests.
+  raw_ptr<base::Clock> clock_for_testing_ = nullptr;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
 
@@ -253,7 +293,7 @@ class ASH_EXPORT UnifiedSystemTray
   raw_ptr<ManagedDeviceTrayItemView> managed_device_view_ = nullptr;
   raw_ptr<CameraMicTrayItemView> camera_view_ = nullptr;
   raw_ptr<CameraMicTrayItemView> mic_view_ = nullptr;
-  raw_ptr<TimeTrayItemView> time_view_ = nullptr;
+  raw_ptr<TimeTrayItemView> time_tray_item_view_ = nullptr;
   raw_ptr<HotspotTrayView> hotspot_tray_view_ = nullptr;
   raw_ptr<NetworkTrayView> network_tray_view_ = nullptr;
   raw_ptr<ChannelIndicatorView> channel_indicator_view_ = nullptr;
@@ -270,6 +310,27 @@ class ASH_EXPORT UnifiedSystemTray
 
   // Records time the QS bubble was shown. Used for metrics.
   base::TimeTicks time_opened_;
+
+  base::CallbackListSubscription time_view_text_changed_subscription_;
+  base::CallbackListSubscription
+      channel_indicator_visible_changed_subscription_;
+  base::CallbackListSubscription
+      channel_indicator_image_name_changed_subscription_;
+  base::CallbackListSubscription channel_indicator_label_changed_subscription_;
+  base::CallbackListSubscription newtwork_tray_visible_changed_subscription_;
+  base::CallbackListSubscription
+      network_tray_tooltip_text_changed_subscription_;
+  base::CallbackListSubscription hotspot_tray_visible_changed_subscription_;
+  base::CallbackListSubscription
+      hotspot_tray_tooltip_text_changed_subscription_;
+  base::CallbackListSubscription managed_device_visible_changed_subscription_;
+  base::CallbackListSubscription
+      managed_device_image_tooltip_text_changed_subscription_;
+  base::CallbackListSubscription ime_mode_visible_changed_subscription_;
+  base::CallbackListSubscription ime_mode_label_name_changed_subscription_;
+  base::CallbackListSubscription current_locale_visible_changed_subscription_;
+  base::CallbackListSubscription
+      current_locale_label_name_changed_subscription_;
 
   base::WeakPtrFactory<UnifiedSystemTray> weak_factory_{this};
 };

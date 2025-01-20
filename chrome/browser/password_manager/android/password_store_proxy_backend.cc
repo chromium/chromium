@@ -139,12 +139,6 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
   main_backend()->GetAutofillableLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -181,27 +175,6 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
   main_backend()->RemoveLoginAsync(location, form, std::move(callback));
   if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginAsync(location, form, base::DoNothing());
-  }
-}
-
-void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  // The `sync_completion` callback is only relevant for account passwords
-  // which don't exist on Android, so it is not passed in and can be ignored
-  // later.
-  CHECK(!sync_completion);
-  main_backend()->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end, base::NullCallback(),
-      std::move(callback));
-  if (UsesAndroidBackendAsMainBackend()) {
-    shadow_backend()->RemoveLoginsByURLAndTimeAsync(
-        location, url_filter, std::move(delete_begin), std::move(delete_end),
-        base::NullCallback(), base::DoNothing());
   }
 }
 

@@ -107,6 +107,9 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
   inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
   openUrl(_url: string) {}
+  uploadItemToAccount(_id: string) {
+    return Promise.resolve();
+  }
 
 
   reloadItem(_id: string) {

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -160,12 +161,6 @@ bool operator==(const ShortcutLocations& location1,
 bool operator!=(const ShortcutLocations& location1,
                 const ShortcutLocations& location2);
 
-// This encodes the cause of shortcut creation as the correct behavior in each
-// case is implementation specific.
-enum ShortcutCreationReason {
-  SHORTCUT_CREATION_BY_USER,
-  SHORTCUT_CREATION_AUTOMATED,
-};
 
 // Compute a deterministic name based on data in the shortcut_info.
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info);

@@ -44,8 +44,9 @@ struct CTLogInfo {
   // The current operator of the log.
   const char* const current_operator;
   // Previous operators (if any) of the log, ordered in chronological order.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // This field is not a raw_ptr<> because it only ever points at statically-
+  // allocated memory (in log_list-inc.cc) which is never freed, and hence
+  // the pointer can never dangle.
   RAW_PTR_EXCLUSION const PreviousOperatorEntry* previous_operators;
   const size_t previous_operators_length;
 };

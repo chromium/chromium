@@ -104,15 +104,6 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_state_, web_state);
 
-  if (!base::FeatureList::IsEnabled(web::features::kEnableViewportIntents)) {
-    // Check if this page requested "nointentdetection".
-    std::optional<bool> has_no_intent_detection =
-        metadata.FindBool("hasNoIntentDetection");
-    if (!has_no_intent_detection || has_no_intent_detection.value()) {
-      return;
-    }
-  }
-
   // TODO: 367770207 - Move the checks before the text is extracted.
   if (!IsEntitySelectionAllowedForURL(web_state)) {
     return;
@@ -212,8 +203,7 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
   auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
   DCHECK(manager);
 
-  if (!deferred &&
-      base::FeatureList::IsEnabled(web::features::kEnableViewportIntents)) {
+  if (!deferred) {
     base::Value::List decorations_list;
     base::Value decorations(std::move(decorations_list));
     manager->DecorateAnnotations(web_state_, decorations, seq_id);

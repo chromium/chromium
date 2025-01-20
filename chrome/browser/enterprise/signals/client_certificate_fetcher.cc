@@ -11,7 +11,6 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "net/cert/cert_database.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -109,11 +108,9 @@ void ClientCertificateFetcher::OnGetClientCertsComplete(
 
   // Make sure the network stack's cached client certificate matches with the
   // one that is about to be returned (or not).
-  if (features::IsClearClientCertsOnExtensionReportEnabled()) {
-    profile_network_context_service_wrapper_->FlushCachedClientCertIfNeeded(
-        net::HostPortPair::FromURL(url),
-        selected_cert ? selected_cert->certificate() : nullptr);
-  }
+  profile_network_context_service_wrapper_->FlushCachedClientCertIfNeeded(
+      net::HostPortPair::FromURL(url),
+      selected_cert ? selected_cert->certificate() : nullptr);
 
   std::move(fetch_callback_).Run(std::move(selected_cert));
 }

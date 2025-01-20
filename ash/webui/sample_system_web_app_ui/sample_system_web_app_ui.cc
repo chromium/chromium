@@ -36,8 +36,7 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(browser_context,
                                              kChromeUISampleSystemWebAppHost);
   trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePaths(base::make_span(
-      kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
+  trusted_source->AddResourcePaths(kAshSampleSystemWebAppResources);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)

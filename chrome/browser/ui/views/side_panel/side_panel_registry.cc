@@ -56,14 +56,16 @@ void SidePanelRegistry::ResetLastActiveEntry() {
 
 void SidePanelRegistry::ClearCachedEntryViews() {
   for (auto const& entry : entries_) {
-    if (!active_entry_.has_value() || entry.get() != active_entry_.value())
+    if (!active_entry_.has_value() || entry.get() != active_entry_.value()) {
       entry.get()->ClearCachedView();
+    }
   }
 }
 
 bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
-  if (GetEntryForKey(entry->key()))
+  if (GetEntryForKey(entry->key())) {
     return false;
+  }
   // It's important to add `this` as an observer to `entry` before notifying
   // SidePanelRegistryObservers of the entry's registration because some
   // registry observers can call SidePanelEntryObserver methods for `entry`.
@@ -109,9 +111,10 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
           std::get_if<tabs::TabInterface*>(&owner_);
       tabs::TabInterface* tab = tab_ptr ? *tab_ptr : nullptr;
       // And it's for the active tab/window registry.
-      bool is_for_window_coordinator = !unique_key->tab_handle && !tab;
-      bool is_for_active_tab = unique_key->tab_handle && tab &&
-                               tab->GetTabHandle() == *unique_key->tab_handle;
+      const bool is_for_window_coordinator = !unique_key->tab_handle && !tab;
+      const bool is_for_active_tab =
+          unique_key->tab_handle && tab &&
+          tab->GetHandle() == *unique_key->tab_handle;
       // Synchronously close.
       if (is_for_window_coordinator || is_for_active_tab) {
         coordinator->Close(/*suppress_animations=*/true);

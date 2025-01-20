@@ -66,6 +66,7 @@ public class PoliciesTest {
     }
 
     @Policies.Add(@Policies.Item(key = "Ni"))
+    @SuppressWarnings("UnusedMethod")
     private static class SomeClass {
         @SuppressWarnings("unused")
         void someMethodWithoutWord() {}

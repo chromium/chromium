@@ -74,6 +74,11 @@ class VcBackgroundUISeaPenProviderImpl
 
   void HandleSeaPenIntroductionDialogClosedInternal() override;
 
+  void ShouldShowSeaPenFreeformIntroductionDialogInternal(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
+
+  void HandleSeaPenFreeformIntroductionDialogClosedInternal() override;
+
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,

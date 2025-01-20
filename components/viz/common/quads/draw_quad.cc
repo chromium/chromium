@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/draw_quad.h"
 
 #include <stddef.h>
@@ -79,11 +74,6 @@ void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("needs_blending", needs_blending);
   value->SetBoolean("should_draw_with_blending", ShouldDrawWithBlending());
   ExtendValue(value);
-}
-
-DrawQuad::Resources::Resources() : count(0) {
-  for (size_t i = 0; i < kMaxResourceIdCount; ++i)
-    ids[i] = kInvalidResourceId;
 }
 
 }  // namespace viz

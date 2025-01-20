@@ -9,24 +9,20 @@
 
 namespace desks_storage::saved_desk_test_util {
 
-void AddBrowserWindow(bool is_lacros,
-                      int window_id,
+void AddBrowserWindow(int window_id,
                       std::vector<GURL> urls,
                       app_restore::RestoreData* out_restore_data) {
   auto browser_info = std::make_unique<app_restore::AppLaunchInfo>(
-      is_lacros ? app_constants::kLacrosAppId : app_constants::kChromeAppId,
-      window_id);
+      app_constants::kChromeAppId, window_id);
   browser_info->browser_extra_info.urls = urls;
   out_restore_data->AddAppLaunchInfo(std::move(browser_info));
 }
 
-void AddPwaWindow(bool is_lacros,
-                  int window_id,
+void AddPwaWindow(int window_id,
                   std::string url,
                   app_restore::RestoreData* out_restore_data) {
   auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-      is_lacros ? app_constants::kLacrosAppId : app_constants::kChromeAppId,
-      window_id);
+      app_constants::kChromeAppId, window_id);
 
   app_launch_info->browser_extra_info.urls = {GURL(url)};
   app_launch_info->browser_extra_info.app_type_browser = true;

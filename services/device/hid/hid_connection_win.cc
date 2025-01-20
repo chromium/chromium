@@ -296,7 +296,7 @@ void HidConnectionWin::OnReadFeatureComplete(
     // zero byte as the first byte. The zero byte is not counted in
     // `bytes_transferred`. Remove the zero byte before returning the buffer.
     buffer = base::MakeRefCounted<base::RefCountedBytes>(
-        base::span(*buffer).subspan(/*offset=*/1));
+        base::span(*buffer).subspan<1>());
   }
 
   DCHECK_LE(bytes_transferred, buffer->size());

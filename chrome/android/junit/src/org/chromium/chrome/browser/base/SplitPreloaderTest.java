@@ -16,17 +16,16 @@ import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,7 @@ public class SplitPreloaderTest {
         }
     }
 
-    private static class OnCompleteTracker implements SplitPreloader.OnComplete {
+    private static class PreloadHooksTracker implements SplitPreloader.PreloadHooks {
         private SplitContext mBackgroundContext;
         private SplitContext mUiContext;
 
@@ -103,6 +102,11 @@ public class SplitPreloaderTest {
         public void runInUiThread(Context context) {
             assertNull(mUiContext);
             mUiContext = (SplitContext) context;
+        }
+
+        @Override
+        public Context createIsolatedSplitContext(String name) {
+            return BundleUtils.createIsolatedSplitContext(name);
         }
 
         public SplitContext getBackgroundContext() {
@@ -119,15 +123,7 @@ public class SplitPreloaderTest {
 
     @Before
     public void setUp() {
-        BuildConfig.IS_BUNDLE = true;
-        mContext = new MainContext(ContextUtils.getApplicationContext());
-        ContextUtils.initApplicationContextForTests(mContext);
-        mPreloader = new SplitPreloader(mContext);
-    }
-
-    @After
-    public void tearDown() {
-        BuildConfig.IS_BUNDLE = false;
+        BundleUtils.setIsBundleForTesting(true);
         mContext = new MainContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
         mPreloader = new SplitPreloader(mContext);
@@ -153,7 +149,7 @@ public class SplitPreloaderTest {
     public void testPreload_withOnComplete_splitInstalled() {
         initSplits(SPLIT_A);
 
-        OnCompleteTracker tracker = new OnCompleteTracker();
+        PreloadHooksTracker tracker = new PreloadHooksTracker();
         mPreloader.preload(SPLIT_A, tracker);
         mPreloader.wait(SPLIT_A);
 
@@ -169,7 +165,7 @@ public class SplitPreloaderTest {
     public void testPreload_multipleWaitCalls() {
         initSplits(SPLIT_A);
 
-        OnCompleteTracker tracker = new OnCompleteTracker();
+        PreloadHooksTracker tracker = new PreloadHooksTracker();
         mPreloader.preload(SPLIT_A, tracker);
         mPreloader.wait(SPLIT_A);
         mPreloader.wait(SPLIT_A);
@@ -185,10 +181,10 @@ public class SplitPreloaderTest {
     public void testPreload_withOnComplete_multipleSplitsInstalled() {
         initSplits(SPLIT_A, SPLIT_B);
 
-        OnCompleteTracker trackerA = new OnCompleteTracker();
+        PreloadHooksTracker trackerA = new PreloadHooksTracker();
         mPreloader.preload(SPLIT_A, trackerA);
 
-        OnCompleteTracker trackerB = new OnCompleteTracker();
+        PreloadHooksTracker trackerB = new PreloadHooksTracker();
         mPreloader.preload(SPLIT_B, trackerB);
         mPreloader.wait(SPLIT_A);
         mPreloader.wait(SPLIT_B);
@@ -218,7 +214,7 @@ public class SplitPreloaderTest {
         CallbackHelper helper = new CallbackHelper();
         mPreloader.preload(
                 SPLIT_A,
-                new SplitPreloader.OnComplete() {
+                new SplitPreloader.PreloadHooks() {
                     @Override
                     public void runImmediatelyInBackgroundThread(Context context) {
                         backgroundContextHolder[0] = context;
@@ -228,6 +224,11 @@ public class SplitPreloaderTest {
                     @Override
                     public void runInUiThread(Context context) {
                         uiContextHolder[0] = context;
+                    }
+
+                    @Override
+                    public Context createIsolatedSplitContext(String name) {
+                        return BundleUtils.createIsolatedSplitContext(name);
                     }
                 });
         helper.waitForOnly();

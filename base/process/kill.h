@@ -120,8 +120,8 @@ BASE_EXPORT TerminationStatus GetTerminationStatus(ProcessHandle handle,
 // GetTerminationStatus as the child will be reaped when WaitForExitCode
 // returns, and this information will be lost.
 //
-BASE_EXPORT TerminationStatus GetKnownDeadTerminationStatus(
-    ProcessHandle handle, int* exit_code);
+BASE_EXPORT TerminationStatus
+GetKnownDeadTerminationStatus(ProcessHandle handle, int* exit_code);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Spawns a thread to wait asynchronously for the child |process| to exit

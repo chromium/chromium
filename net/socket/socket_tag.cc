@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/check.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -55,7 +55,7 @@ void SocketTag::Apply(SocketDescriptor socket) const {
 #if BUILDFLAG(IS_ANDROID)
   net::android::TagSocket(socket, uid_, traffic_stats_tag_);
 #else
-  CHECK(false);
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

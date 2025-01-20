@@ -14,8 +14,8 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/util/wk_security_origin_util.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "ios/web/web_view/wk_security_origin_util.h"
 
 namespace web {
 
@@ -177,8 +177,8 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
     }
   }
 
-  GURL message_frame_origin =
-      web::GURLOriginWithWKSecurityOrigin(message.frameInfo.securityOrigin);
+  url::Origin message_frame_origin =
+      web::OriginWithWKSecurityOrigin(message.frameInfo.securityOrigin);
 
   auto new_frame = std::make_unique<web::WebFrameImpl>(
       message.frameInfo, frame_id, message.frameInfo.mainFrame,

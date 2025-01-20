@@ -41,17 +41,20 @@
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/permissions/permission_indicators_tab_data.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using content_settings::PageSpecificContentSettings;
 
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators)) {
     media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
                                    ->GetMediaStreamCaptureIndicator()
                                    .get());
-  }
 }
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
@@ -65,11 +68,34 @@ PageSpecificContentSettingsDelegate::FromWebContents(
       PageSpecificContentSettings::GetDelegateForWebContents(web_contents));
 }
 
+// Helper function for recording indicator usage data.
+void IndicatorUsageHistogramHelper(content::WebContents* web_contents,
+                                   permissions::RequestTypeForUma request_type,
+                                   bool is_capturing) {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* tab_model =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab_model) {
+    return;
+  }
+  permissions::PermissionIndicatorsTabData* permission_indicators_tab_data =
+      tab_model->GetTabFeatures()->permission_indicators_tab_data();
+  if (permission_indicators_tab_data) {
+    permission_indicators_tab_data->OnMediaCaptureChanged(request_type,
+                                                          is_capturing);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void PageSpecificContentSettingsDelegate::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
   OnCapturingStateChanged(web_contents, ContentSettingsType::MEDIASTREAM_CAMERA,
                           is_capturing_video);
+  IndicatorUsageHistogramHelper(
+      web_contents,
+      permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
+      is_capturing_video);
 }
 
 void PageSpecificContentSettingsDelegate::OnIsCapturingAudioChanged(
@@ -77,6 +103,9 @@ void PageSpecificContentSettingsDelegate::OnIsCapturingAudioChanged(
     bool is_capturing_audio) {
   OnCapturingStateChanged(web_contents, ContentSettingsType::MEDIASTREAM_MIC,
                           is_capturing_audio);
+  IndicatorUsageHistogramHelper(
+      web_contents, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
+      is_capturing_audio);
 }
 
 void PageSpecificContentSettingsDelegate::OnCapturingStateChanged(

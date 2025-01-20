@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -118,15 +119,19 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value,
                                 ValueMode value_mode) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  DCHECK(!value.IsCSSWideKeyword());
+
   // Highlight Pseudos do not allow custom property definitions.
   // Properties are copied from the originating element when the
   // style is created.
   if (state.UsesHighlightPseudoInheritance()) {
+    if (builder.StyleType() == kPseudoIdSelection) {
+      UseCounter::Count(state.GetDocument(),
+                        WebFeature::kSelectionCustomProperty);
+    }
     return;
   }
-
-  ComputedStyleBuilder& builder = state.StyleBuilder();
-  DCHECK(!value.IsCSSWideKeyword());
 
   builder.SetHasVariableDeclaration();
 
@@ -210,22 +215,17 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   // The substitution value is used for substituting var() references to
   // the custom property, and the computed value is generally used in other
   // cases (e.g. serialization).
-  //
-  // Note also that `registered_value` may be attr-tainted at this point.
-  // This is what we want when producing the substitution value,
-  // since any tainting must survive the substitution. However, the computed
-  // value should serialize without taint-tokens, hence we store an
-  // UntaintedCopy of `registered_value`.
-  //
-  // See also css_attr_tainting.h.
+
+  bool is_attr_tainted = declaration && declaration->VariableDataValue() &&
+                         declaration->VariableDataValue()->IsAttrTainted();
+
   registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
       state, *registered_value, context);
   CSSVariableData* data =
       StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-          *registered_value, is_animation_tainted);
+          *registered_value, is_animation_tainted, is_attr_tainted);
   builder.SetVariableData(name_, data, is_inherited_property);
-  builder.SetVariableValue(name_, registered_value->UntaintedCopy(),
-                           is_inherited_property);
+  builder.SetVariableValue(name_, registered_value, is_inherited_property);
 }
 
 const CSSValue* CustomProperty::ParseSingleValue(

@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.share;
 
 import android.content.ComponentName;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -52,6 +53,12 @@ public class ShareParams {
      */
     private final Uri mSingleImageUri;
 
+    /**
+     * The Bitmap of the preview image (e.g. a favicon) of the text being shared. Ignored if the
+     * {@link mPreviewImageUri} is set.
+     */
+    private final Bitmap mPreviewImageBitmap;
+
     /** The Uri of the preview image (e.g. a favicon) of the text being shared. */
     private Uri mPreviewImageUri;
 
@@ -81,6 +88,7 @@ public class ShareParams {
             @Nullable String imageAltText,
             @Nullable Uri offlineUri,
             @Nullable Uri singleImageUri,
+            @Nullable Bitmap previewImageBitmap,
             @Nullable Uri previewImageUri,
             @Nullable TargetChosenCallback callback,
             @Nullable Boolean linkToTextSuccessful,
@@ -96,6 +104,7 @@ public class ShareParams {
         mImageAltText = imageAltText;
         mOfflineUri = offlineUri;
         mSingleImageUri = singleImageUri;
+        mPreviewImageBitmap = previewImageBitmap;
         mPreviewImageUri = previewImageUri;
         mCallback = callback;
         mLinkToTextSuccessful = linkToTextSuccessful;
@@ -178,7 +187,17 @@ public class ShareParams {
         return mSingleImageUri;
     }
 
-    /** @return The Uri of the preview image (e.g. a favicon) of the text being shared. */
+    /**
+     * @return The Bitmap of the preview image (e.g. a favicon) of the text being shared.
+     */
+    @Nullable
+    public Bitmap getPreviewImageBitmap() {
+        return mPreviewImageBitmap;
+    }
+
+    /**
+     * @return The Uri of the preview image (e.g. a favicon) of the text being shared.
+     */
     @Nullable
     public Uri getPreviewImageUri() {
         return mPreviewImageUri;
@@ -246,6 +265,7 @@ public class ShareParams {
         private String mImageAltText;
         private Uri mOfflineUri;
         private Uri mSingleImageUri;
+        private Bitmap mPreviewImageBitmap;
         private Uri mPreviewImageUri;
         private TargetChosenCallback mCallback;
         private Boolean mLinkToTextSuccessful;
@@ -312,6 +332,12 @@ public class ShareParams {
             return this;
         }
 
+        /** Sets the Bitmap of the preview image of the text being shared. */
+        public Builder setPreviewImageBitmap(@Nullable Bitmap previewImageBitmap) {
+            mPreviewImageBitmap = previewImageBitmap;
+            return this;
+        }
+
         /** Sets the Uri of the preview image of the text being shared. */
         public Builder setPreviewImageUri(@Nullable Uri previewImageUri) {
             mPreviewImageUri = previewImageUri;
@@ -353,6 +379,7 @@ public class ShareParams {
                     mImageAltText,
                     mOfflineUri,
                     mSingleImageUri,
+                    mPreviewImageBitmap,
                     mPreviewImageUri,
                     mCallback,
                     mLinkToTextSuccessful,

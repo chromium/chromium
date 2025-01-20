@@ -1,7 +1,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Presubmit script for ios.
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
@@ -9,6 +8,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import os
+import xml.etree.ElementTree as ElementTree
 
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
@@ -72,31 +72,31 @@ def _CheckBugInToDo(input_api, output_api):
 
     output = []
     if errors:
-      singular_article = 'a ' if len(errors) == 1 else ''
-      plural_suffix = '' if len(errors) == 1 else 's'
-      error_message = '\n'.join([
-          'Found TO'
-          'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
-          'is \"TO'
-          'DO(crbug.com/######)\"):' % {
-              'plural': plural_suffix,
-              'a' : singular_article
-          }
-      ] + errors) + '\n'
-      output.append(output_api.PresubmitError(error_message))
+        singular_article = 'a ' if len(errors) == 1 else ''
+        plural_suffix = '' if len(errors) == 1 else 's'
+        error_message = '\n'.join([
+            'Found TO'
+            'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
+            'is \"TO'
+            'DO(crbug.com/######)\"):' % {
+                'plural': plural_suffix,
+                'a' : singular_article
+            }
+        ] + errors) + '\n'
+        output.append(output_api.PresubmitError(error_message))
 
     if warnings:
-      singular_article = 'a ' if len(warnings) == 1 else ''
-      plural_suffix = '' if len(warnings) == 1 else 's'
-      warning_message = '\n'.join([
-          'Found TO'
-          'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
-          '"b/#####\", expected format is \"crbug.com/######"):' % {
-              'plural': plural_suffix,
-              'a' : singular_article
-          }
-      ] + warnings) + '\n'
-      output.append(output_api.PresubmitPromptWarning(warning_message))
+        singular_article = 'a ' if len(warnings) == 1 else ''
+        plural_suffix = '' if len(warnings) == 1 else 's'
+        warning_message = '\n'.join([
+            'Found TO'
+            'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
+            '"b/#####\", expected format is \"crbug.com/######"):' % {
+                'plural': plural_suffix,
+                'a' : singular_article
+            }
+        ] + warnings) + '\n'
+        output.append(output_api.PresubmitPromptWarning(warning_message))
 
     return output
 
@@ -165,19 +165,19 @@ def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
     wrong_patterns = ["isEqualToString:", "isEqualToData:", "isEqualToArray:"]
     for f in input_api.AffectedFiles():
         if not '_unittest.' in f.LocalPath():
-          continue
+            continue
         for line_num, line in f.ChangedContents():
             if line.startswith(("EXPECT_TRUE", "EXPECT_FALSE")):
-              # Condition is in one line.
-              if any(x in line for x in wrong_patterns):
-                errors.append('%s:%s' % (f.LocalPath(), line_num))
-              # Condition is split on multiple lines.
-              elif not line.endswith(";"):
-                # Check this is not the last line.
-                if line_num < len(f.NewContents()):
-                  next_line = f.NewContents()[line_num]
-                  if any(x in next_line for x in wrong_patterns):
+                # Condition is in one line.
+                if any(x in line for x in wrong_patterns):
                     errors.append('%s:%s' % (f.LocalPath(), line_num))
+                # Condition is split on multiple lines.
+                elif not line.endswith(";"):
+                    # Check this is not the last line.
+                    if line_num < len(f.NewContents()):
+                        next_line = f.NewContents()[line_num]
+                        if any(x in next_line for x in wrong_patterns):
+                            errors.append('%s:%s' % (f.LocalPath(), line_num))
 
     if not errors:
         return []
@@ -253,7 +253,7 @@ def _CheckNoTearDownEGTest(input_api, output_api):
     errors = []
     for f in input_api.AffectedFiles():
         if not '_egtest.' in f.LocalPath():
-          continue
+            continue
         for line_num, line in f.ChangedContents():
             if line.startswith("- (void)tearDown {"):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
@@ -268,6 +268,46 @@ def _CheckNoTearDownEGTest(input_api, output_api):
 
     return [output_api.PresubmitError(warning_message)]
 
+
+def _IsAlphabeticallySortedXML(file):
+    """Check that the `file` is alphabetically sorted"""
+    parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
+        insert_comments=True))
+    with open(file, 'r') as xml_file:
+        tree = ElementTree.parse(xml_file, parser)
+    root = tree.getroot()
+
+    original_tree_string = ElementTree.tostring(root, encoding='utf8')
+
+    messages_element = tree.findall('.//messages')[0]
+    messages = messages_element.findall('message')
+    messages.sort(key=lambda message: message.attrib["name"])
+    for message in messages:
+        messages_element.remove(message)
+    for message in messages:
+        messages_element.append(message)
+    ordered_tree_string = ElementTree.tostring(root, encoding='utf8')
+    return ordered_tree_string == original_tree_string
+
+
+def _CheckOrderedStringFile(input_api, output_api):
+    """ Checks that the string files are alphabetically ordered"""
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not f.LocalPath().endswith("_strings.grd"):
+            continue
+        if not _IsAlphabeticallySortedXML(f.AbsoluteLocalPath()):
+            errors.append('  python3 ios/tools/order_string_file.py ' +
+                          f.LocalPath())
+
+    if not errors:
+        return []
+    warning_message = '\n'.join(
+        ['Files not alphabetically sorted, try running:'] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
+
+
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -277,4 +317,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
     results.extend(_CheckNoTearDownEGTest(input_api, output_api))
     results.extend(_CheckCanImproveTestUsingExpectNSEQ(input_api, output_api))
+    results.extend(_CheckOrderedStringFile(input_api, output_api))
     return results

@@ -5,17 +5,23 @@
 package org.chromium.chrome.browser.price_insights;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,7 +68,9 @@ public class PriceInsightsBottomSheetCoordinator {
 
     private PriceInsightsBottomSheetContent mBottomSheetContent;
     private PriceInsightsBottomSheetMediator mBottomSheetMediator;
+    private BottomSheetObserver mBottomSheetObserver;
     private View mPriceInsightsView;
+    private Long mSheetOpenTimeMs;
 
     /**
      * @param context The {@link Context} associated with this coordinator.
@@ -93,19 +101,39 @@ public class PriceInsightsBottomSheetCoordinator {
                         shoppingService,
                         priceInsightsDelegate,
                         propertyModel);
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+
+                    @Override
+                    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                        if (mSheetOpenTimeMs != null) {
+                            Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
+                            RecordHistogram.recordTimesHistogram(
+                                    "Commerce.PriceInsights.BottomSheetBrowsingTime", durationMs);
+                            mSheetOpenTimeMs = null;
+                        }
+                        if (newContent != mBottomSheetContent) {
+                            mBottomSheetController.removeObserver(mBottomSheetObserver);
+                        }
+                    }
+                };
     }
 
     /** Request to show the price insights bottom sheet. */
     public void requestShowContent() {
         ScrollView scrollView = (ScrollView) mPriceInsightsView.findViewById(R.id.scroll_view);
         mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView, scrollView);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
         mBottomSheetMediator.requestShowContent();
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
+            mSheetOpenTimeMs = SystemClock.elapsedRealtime();
+        }
     }
 
     /** Close the price insights bottom sheet. */
     public void closeContent() {
         mBottomSheetMediator.closeContent();
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 }

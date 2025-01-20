@@ -51,7 +51,7 @@ class OffscreenTab final : public ProfileObserver,
   // can be deleted.
   class Owner {
    public:
-    virtual ~Owner() {}
+    virtual ~Owner() = default;
 
     // |tab| is no longer valid after this call.
     virtual void DestroyTab(OffscreenTab* tab) = 0;

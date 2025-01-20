@@ -69,8 +69,9 @@ void InitializeCpuReductionExperiment() {
 }
 
 bool ShouldLogHistogramForCpuReductionExperiment() {
-  if (!IsRunningCpuReductionExperiment())
+  if (!IsRunningCpuReductionExperiment()) {
     return true;
+  }
   return g_subsampler->ShouldLogHistograms();
 }
 

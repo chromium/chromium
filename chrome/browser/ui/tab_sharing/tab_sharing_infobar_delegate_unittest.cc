@@ -39,7 +39,7 @@ const std::u16string kCapturingUrl = u"https://capturing.chromium.org/";
 
 class MockTabSharingUIViews : public TabSharingUI {
  public:
-  MockTabSharingUIViews() {}
+  MockTabSharingUIViews() = default;
   MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
   MOCK_METHOD(void, StopSharing, ());
 
@@ -187,10 +187,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
-                kAppName));
 
   const int expected_buttons =
       TabSharingInfoBarDelegate::kStop | TabSharingInfoBarDelegate::kQuickNav |
@@ -239,9 +235,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop |
                                         TabSharingInfoBarDelegate::kQuickNav);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
@@ -264,10 +257,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
                       .can_share_instead = true});
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
-                kSharedTabName, kAppName));
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -334,9 +323,6 @@ TEST_P(TabSharingInfoBarDelegateTest,
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
 
   // Correct number of buttons.
   EXPECT_EQ(delegate->GetButtons(),
@@ -410,10 +396,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
-                kSharedTabName, kSinkName));
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::kStop |
                 TabSharingInfoBarDelegate::kShareThisTabInstead);
@@ -423,15 +405,6 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
       delegate->GetButtonLabel(TabSharingInfoBarDelegate::kShareThisTabInstead),
       l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_CAST_BUTTON));
   EXPECT_FALSE(delegate->IsCloseable());
-
-  // Without sink name.
-  preferences.capturer_name = std::u16string();
-  TabSharingInfoBarDelegate* const delegate2 = CreateDelegate(preferences);
-  EXPECT_EQ(
-      delegate2->GetMessageText(),
-      l10n_util::GetStringFUTF16(
-          IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL,
-          kSharedTabName));
 }
 
 // Test that the infobar on the tab being cast has the correct layout:
@@ -447,21 +420,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCastTab) {
   TabSharingInfoBarDelegate* const delegate = CreateDelegate(preferences);
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
-  EXPECT_EQ(delegate->GetMessageText(),
-            l10n_util::GetStringFUTF16(
-                IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, kSinkName));
   EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
   EXPECT_FALSE(delegate->IsCloseable());
-
-  // Without sink name.
-  preferences.capturer_name = std::u16string();
-  TabSharingInfoBarDelegate* const delegate2 = CreateDelegate(preferences);
-  EXPECT_EQ(
-      delegate2->GetMessageText(),
-      l10n_util::GetStringUTF16(
-          IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL));
 }
 
 // TODO(crbug.com/324468211): Add unit tests for CSC. (After completing the

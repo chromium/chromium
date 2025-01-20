@@ -47,14 +47,13 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
-      std::make_unique<babelorca::CaptionBubbleContextBoca>(
-          base::DoNothing(), /*translation_enabled=*/is_consumer);
+      std::make_unique<babelorca::CaptionBubbleContextBoca>(base::DoNothing());
+  auto babel_orca_translator =
+      std::make_unique<babelorca::BabelOrcaCaptionTranslator>(
+          std::make_unique<BabelOrcaTranslationDispatcherImpl>(
+              std::make_unique<::captions::TranslationDispatcher>(
+                  google_apis::GetBocaAPIKey(), profile)));
   if (is_consumer) {
-    auto babel_orca_translator =
-        std::make_unique<babelorca::BabelOrcaCaptionTranslator>(
-            std::make_unique<BabelOrcaTranslationDispatcherImpl>(
-                std::make_unique<::captions::TranslationDispatcher>(
-                    google_apis::GetBocaAPIKey(), profile)));
     const AccountId& account_id = ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId();
@@ -78,7 +77,8 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(),
       ::captions::LiveCaptionControllerFactory::GetForProfile(profile),
-      std::move(caption_bubble_context), std::move(speech_recognizer));
+      std::move(caption_bubble_context), std::move(speech_recognizer),
+      std::move(babel_orca_translator), profile->GetPrefs());
 }
 
 }  // namespace

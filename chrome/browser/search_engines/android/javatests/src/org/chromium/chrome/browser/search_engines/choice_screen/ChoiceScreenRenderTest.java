@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -44,14 +45,13 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.search_engines.FakeSearchEngineCountryDelegate;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
 import java.util.List;
-import java.util.Map;
 
 /** Render tests for {@link ChoiceDialogCoordinator} */
 @RunWith(ParameterizedRunner.class)
@@ -85,11 +85,12 @@ public class ChoiceScreenRenderTest {
     @Before
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
-        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
-                Map.of(
-                        "dialog_timeout_millis", "0",
-                        // For the "pending" dialog mode to be enabled, this needs to be non-0.
-                        "silent_pending_duration_millis", "1"));
+        FeatureOverrides.newBuilder()
+                .enable(SearchEnginesFeatures.CLAY_BLOCKING)
+                .param("dialog_timeout_millis", 0)
+                // For the "pending" dialog mode to be enabled, this needs to be non-0.
+                .param("silent_pending_duration_millis", 1)
+                .apply();
 
         mActivityTestRule.launchActivity(null);
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();

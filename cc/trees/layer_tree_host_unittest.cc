@@ -4193,6 +4193,7 @@ class OnDrawLayerTreeFrameSink : public TestLayerTreeFrameSink {
       base::RepeatingClosure invalidate_callback)
       : TestLayerTreeFrameSink(std::move(compositor_context_provider),
                                std::move(worker_context_provider),
+                               /*shared_image_interface=*/nullptr,
                                gpu_memory_buffer_manager,
                                renderer_settings,
                                debug_settings,
@@ -4861,6 +4862,7 @@ class LayerTreeHostTestPropertyChangesDuringUpdateArePushed
     scrollbar->set_has_thumb(false);
     scrollbar_layer_ =
         base::MakeRefCounted<FakePaintedScrollbarLayer>(root_->element_id());
+    scrollbar_layer_->SetBounds(gfx::Size(23, 100));
 
     root_->AddChild(scrollbar_layer_);
 
@@ -7050,9 +7052,9 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
         !layer_tree_host()->GetSettings().single_thread_proxy_scheduler;
     return std::make_unique<TestLayerTreeFrameSink>(
         compositor_context_provider, std::move(worker_context_provider),
-        gpu_memory_buffer_manager(), renderer_settings, &debug_settings_,
-        task_runner_provider(), synchronous_composite, disable_display_vsync,
-        refresh_rate);
+        /*shared_image_interface=*/nullptr, gpu_memory_buffer_manager(),
+        renderer_settings, &debug_settings_, task_runner_provider(),
+        synchronous_composite, disable_display_vsync, refresh_rate);
   }
 
   void BeginTest() override {
@@ -8295,8 +8297,8 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));
     // Schedule the decode twice for the same image.
-    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
-    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
+    layer_tree_host()->QueueImageDecode(image_, callback);
+    layer_tree_host()->QueueImageDecode(image_, callback);
   }
 
   void ReadyToCommitOnThread(LayerTreeHostImpl* impl) override {
@@ -8349,7 +8351,12 @@ class LayerTreeHostTestQueueImageDecodeNonLazy : public LayerTreeHostTest {
     auto callback = base::BindOnce(
         &LayerTreeHostTestQueueImageDecodeNonLazy::ImageDecodeFinished,
         base::Unretained(this));
-    layer_tree_host()->QueueImageDecode(image, std::move(callback));
+    layer_tree_host()->QueueImageDecode(
+        DrawImage(image,
+                  /*use_dark_mode=*/false,
+                  SkIRect::MakeWH(image.width(), image.height()),
+                  PaintFlags::FilterQuality::kNone, SkM44()),
+        std::move(callback));
   }
 
   void ImageDecodeFinished(bool decode_succeeded) {
@@ -8969,10 +8976,10 @@ class LayerTreeHostTopControlsDeltaTriggersViewportUpdate
 MULTI_THREAD_TEST_F(LayerTreeHostTopControlsDeltaTriggersViewportUpdate);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Tests that custom sequence throughput tracking result is reported to
+// Tests that custom sequence metrics tracking result is reported to
 // LayerTreeHostClient.
 constexpr MutatorHost::TrackedAnimationSequenceId kSequenceId = 1u;
-class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
+class LayerTreeHostCustomMetricsTrackerTest : public LayerTreeHostTest {
  public:
   // Custom sequences are only supported for ChromeOS UI, which is
   // Single-Threaded.
@@ -8987,10 +8994,10 @@ class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
     //   e(2,2)b(3)B(0,3)E(3)s(3)S(3)e(3,3)P(3)b(4)B(3,4)E(4)s(4)S(4)e(4,4)P(4)
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
-        animation_host()->StartThroughputTracking(kSequenceId);
+        animation_host()->StartCompositorMetricsTracking(kSequenceId);
         break;
       case 3:
-        animation_host()->StopThroughputTracking(kSequenceId);
+        animation_host()->StopCompositorMetricsTracking(kSequenceId);
         break;
       default:
         break;
@@ -9000,7 +9007,8 @@ class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
       PostSetNeedsCommitWithForcedRedrawToMainThread();
   }
 
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override {
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override {
     // Check that data for kSequenceId is captured. Ideally, we should get
     // 2 frame_expected and 2 frame_produced. But on slow bots, it is difficult
     // to infer the correct numbers. Both frame_expected and frame_produced
@@ -9019,7 +9027,7 @@ class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
   }
 };
 
-SINGLE_THREAD_TEST_F(LayerTreeHostCustomThroughputTrackerTest);
+SINGLE_THREAD_TEST_F(LayerTreeHostCustomMetricsTrackerTest);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class LayerTreeHostTestDelegatedInkMetadataBase
@@ -9710,7 +9718,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
                                   bool has_damage) override {
     last_args_ = args;
     if (!fcp_sent_) {
-      host_impl->dropped_frame_counter()->OnFcpReceived();
+      host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
       fcp_sent_ = true;
     }
   }
@@ -9763,7 +9771,7 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
                                   bool has_damage) override {
     last_args_ = args;
     if (!fcp_sent_) {
-      host_impl->dropped_frame_counter()->OnFcpReceived();
+      host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
       fcp_sent_ = true;
     }
     host_impl->SetNeedsCommit();
@@ -10631,7 +10639,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
     layer_id_ = layer_on_main_->id();
   }
 
-  void WillCommit(const CommitState&) override {
+  void OnCommitRequested() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
         // First frame enables LCD text by marking the layer opaque.
@@ -10677,6 +10685,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
                   LCDTextDisallowedReason::kContentsNotOpaque);
         EXPECT_FALSE(layer_impl->HighResTiling()->can_use_lcd_text());
         host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1));
+        PostSetNeedsCommitToMainThread();
         break;
       case 2:
         ASSERT_FALSE(host_impl->IsPinchGestureActive());
@@ -10914,8 +10923,8 @@ class LayerTreeHostTestBlockOnCommitAfterInputEvent : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
   void WillBeginMainFrame() override { ++main_frame_num_; }
   void DidBeginMainFrame() override {
-    EXPECT_EQ(main_frame_num_ % 2 == 0,
-              layer_tree_host()->WaitedForCommitForTesting());
+    EXPECT_EQ(main_frame_num_ % 2 != 0,
+              layer_tree_host()->MustWaitForCommitForTesting());
   }
   void DidCommit() override {
     if (main_frame_num_ < 5) {
@@ -11034,6 +11043,32 @@ class LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver
   bool did_shutdown_render_frame_observer_ = false;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver);
+
+class LayerTreeHostTestSetMaxSafeAreaInsets : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestSetMaxSafeAreaInsets() : LayerTreeHostTest() {}
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void SetupTree() override {
+    LayerTreeHostTest::SetupTree();
+
+    gfx::InsetsF insets(10);
+    insets.set_bottom(20);
+    layer_tree_host()->SetMaxSafeAreaInsets(insets);
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_EQ(20, host_impl->pending_tree()->max_safe_area_inset_bottom());
+
+    host_impl->pending_tree()->PushPropertiesTo(host_impl->active_tree());
+    EXPECT_EQ(20, host_impl->active_tree()->max_safe_area_inset_bottom());
+
+    EndTest();
+  }
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestSetMaxSafeAreaInsets);
 
 }  // namespace
 }  // namespace cc

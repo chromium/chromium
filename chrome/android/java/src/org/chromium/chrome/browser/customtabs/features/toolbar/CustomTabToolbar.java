@@ -441,9 +441,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /** Remove maximize button from side sheet CCT toolbar. */
     public void removeSideSheetMaximizeButton() {
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
+        mMaximizeButtonEnabled = false;
+        if (maximizeButton == null) return; // Toolbar could be already destroyed.
+
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
-        mMaximizeButtonEnabled = false;
     }
 
     @VisibleForTesting
@@ -1245,6 +1247,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mUrlBar = container.findViewById(R.id.url_bar);
             mUrlBar.setHint("");
             mUrlBar.setEnabled(false);
+            mUrlBar.setPaddingRelative(0, 0, 0, 0);
+
             mTitleBar = container.findViewById(R.id.title_bar);
             mLocationBarFrameLayout = container.findViewById(R.id.location_bar_frame_layout);
             mTitleUrlContainer = container.findViewById(R.id.title_url_container);
@@ -1300,6 +1304,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             new NoOpkeyboardVisibilityDelegate(),
                             isIncognitoBranded(),
                             /* onLongClickListener= */ null);
+            mUrlCoordinator.setIsInCct(true);
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();
@@ -1552,7 +1557,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
             int securityIconResource = 0;
-            if (!shouldNestSecurityIcon() || !isSecureLevel()) {
+            if (!shouldNestSecurityIcon() || !isSecureOrNeutralLevel()) {
                 securityIconResource =
                         mLocationBarDataProvider.getSecurityIconResource(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
@@ -1574,10 +1579,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         /** Returns whether the current security level is considered secure. */
-        private boolean isSecureLevel() {
+        private boolean isSecureOrNeutralLevel() {
             @ConnectionSecurityLevel
             int securityLevel = mLocationBarDataProvider.getSecurityLevel();
-            return securityLevel == ConnectionSecurityLevel.SECURE
+            return securityLevel == ConnectionSecurityLevel.NONE
+                    || securityLevel == ConnectionSecurityLevel.SECURE
                     || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
         }
 
@@ -1719,10 +1725,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 ? Profile.fromWebContents(webContents).getOriginalProfile()
                                 : null;
                 if (mCookieControlsBridge != null) {
-                    mCookieControlsBridge.updateWebContents(webContents, originalBrowserContext);
+                    mCookieControlsBridge.updateWebContents(
+                            webContents,
+                            originalBrowserContext,
+                            Profile.fromWebContents(webContents).isIncognitoBranded());
                 } else {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(this, webContents, originalBrowserContext);
+                            new CookieControlsBridge(
+                                    this,
+                                    webContents,
+                                    originalBrowserContext,
+                                    Profile.fromWebContents(webContents).isIncognitoBranded());
                 }
             }
         }

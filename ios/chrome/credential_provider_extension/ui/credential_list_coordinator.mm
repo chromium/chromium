@@ -10,6 +10,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
@@ -45,9 +46,7 @@
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
 // Information about a passkey credential request.
-@property(nonatomic, strong)
-    ASPasskeyCredentialRequestParameters* requestParameters API_AVAILABLE(
-        ios(17.0));
+@property(nonatomic, strong) PasskeyRequestDetails* passkeyRequestDetails;
 
 // Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
@@ -134,14 +133,8 @@
       // Skip reauthentication if the credential is a passkey as it will be
       // performed later on if needed.
       [self.credentialResponseHandler
-               userSelectedPasskey:credential
-                    clientDataHash:self.requestParameters.clientDataHash
-                allowedCredentials:self.allowedCredentials
-          userVerificationRequired:
-              ShouldPerformUserVerificationForPreference(
-                  self.requestParameters.userVerificationPreference,
-                  [self.reauthenticationHandler
-                          canAttemptReauthWithBiometrics])];
+            userSelectedPasskey:credential
+          passkeyRequestDetails:self.passkeyRequestDetails];
       return;
     }
   }
@@ -180,19 +173,11 @@
 }
 
 - (NSArray<NSData*>*)allowedCredentials {
-  if (@available(iOS 17.0, *)) {
-    return self.requestParameters.allowedCredentials;
-  } else {
-    return nil;
-  }
+  return self.passkeyRequestDetails.allowedCredentials;
 }
 
-- (BOOL)isRequestingPasskey {
-  if (@available(iOS 17.0, *)) {
-    return self.requestParameters != nil;
-  } else {
-    return NO;
-  }
+- (NSString*)relyingPartyIdentifier {
+  return self.passkeyRequestDetails.relyingPartyIdentifier;
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

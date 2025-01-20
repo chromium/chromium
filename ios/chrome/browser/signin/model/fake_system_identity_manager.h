@@ -125,13 +125,16 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                        HostedDomainCallback callback) final;
   NSString* GetCachedHostedDomainForIdentity(id<SystemIdentity> identity) final;
   void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::set<std::string>& names,
+                         const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final;
 
  private:
   // Returns a weak pointer to the current instance.
@@ -155,7 +158,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Helper used to implement the asynchronous part of `GetHostedDomain`.
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,
-                              const std::set<std::string>& names,
+                              const std::vector<std::string>& names,
                               FetchCapabilitiesCallback callback);
 
   // Posts `closure` to be executed asynchronously on the current sequence

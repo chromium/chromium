@@ -67,6 +67,11 @@ const GURL& FakeDownloadTask::GetOriginalUrl() const {
   return original_url_;
 }
 
+NSString* FakeDownloadTask::GetOriginatingHost() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return originating_host_;
+}
+
 NSString* FakeDownloadTask::GetHttpMethod() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return @"GET";

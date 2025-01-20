@@ -61,7 +61,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
   void SetPauseRendering(bool pause_rendering);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
-  void SetNeedsCommitOnImpl();
+  void SetNeedsCommitOnImpl(bool urgent);
   void SetTargetLocalSurfaceIdOnImpl(
       const viz::LocalSurfaceId& target_local_surface_id);
   void BeginMainFrameAbortedOnImpl(
@@ -81,8 +81,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  bool scroll_and_viewport_changes_synced,
                                  CommitTimestamps* commit_timestamps,
                                  bool commit_timeout = false);
-  void QueueImageDecodeOnImpl(int request_id,
-                              std::unique_ptr<PaintImage> image);
+  void QueueImageDecodeOnImpl(int request_id, std::unique_ptr<DrawImage> image);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
@@ -115,9 +114,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
-  void SetNeedsCommitOnImplThread() override;
+  void SetNeedsCommitOnImplThread(bool urgent) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
   bool IsInsideDraw() override;
@@ -145,7 +143,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       ElementListType element_list_type) override;
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override;
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,
       base::TimeDelta first_scroll_delay,
@@ -167,7 +166,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
-  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;

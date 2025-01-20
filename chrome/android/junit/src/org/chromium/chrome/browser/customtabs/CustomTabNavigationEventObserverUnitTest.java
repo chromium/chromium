@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +23,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.net.NetError;
 
@@ -34,7 +34,7 @@ import java.util.Optional;
 @Batch(Batch.UNIT_TESTS)
 public class CustomTabNavigationEventObserverUnitTest {
     @Mock private CustomTabsConnection mConnection;
-    @Mock private CustomTabsSessionToken mToken;
+    @Mock private SessionHolder<?> mSessionHolder;
 
     @Before
     public void setup() {
@@ -46,7 +46,7 @@ public class CustomTabNavigationEventObserverUnitTest {
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
     public void histogramAndfilteredErrorCodes() {
         CustomTabNavigationEventObserver observer =
-                new CustomTabNavigationEventObserver(mToken, /* forPrerender= */ false);
+                new CustomTabNavigationEventObserver(mSessionHolder, /* forPrerender= */ false);
         // Only these 3 error codes are passed to callback.
         int err = NetError.ERR_INTERNET_DISCONNECTED;
         var histogramWatcher = buildHistogramWatcher(err);
@@ -80,7 +80,7 @@ public class CustomTabNavigationEventObserverUnitTest {
     @DisableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
     public void navigationEventsSentWhenUsed() {
         CustomTabNavigationEventObserver observer =
-                new CustomTabNavigationEventObserver(mToken, /* forPrerender= */ true);
+                new CustomTabNavigationEventObserver(mSessionHolder, /* forPrerender= */ true);
         observer.onPageLoadStarted(null, null);
         verify(mConnection, never())
                 .notifyNavigationEvent(any(), eq(CustomTabsCallback.NAVIGATION_STARTED));

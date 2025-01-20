@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -79,20 +80,63 @@ void CopyToClipboard(
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
 
-// Pastes from the clipboard. The new nodes are added to `parent`, unless
-// `parent` is null in which case this does nothing. The nodes are inserted
-// at `index`.
-void PasteFromClipboard(BookmarkModel* model,
-                        const BookmarkNode* parent,
-                        size_t index);
-
-// Returns true if the user can copy from the pasteboard.
-bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node);
-
-// Returns a vector containing up to `max_count` of the most recently modified
-// user folders. This never returns an empty vector.
+// Returns a vector containing of the most recently modified user folders. This
+// never returns an empty vector.
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
-    BookmarkModel* model, size_t max_count);
+    BookmarkModel* model);
+
+// If this should be used on mobile we need to reevaluate if this implementation
+// makes sense. See tests in bookmark_utils_unittest.cc which currently fail
+// outside of desktop. Enable and update those if this is to be used on mobile.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Bookmark nodes, split by account/local bookmarks.
+struct BookmarkNodesSplitByAccountAndLocal final {
+  BookmarkNodesSplitByAccountAndLocal();
+  BookmarkNodesSplitByAccountAndLocal(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  BookmarkNodesSplitByAccountAndLocal& operator=(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  ~BookmarkNodesSplitByAccountAndLocal();
+
+  std::vector<const BookmarkNode*> account_nodes;
+  std::vector<const BookmarkNode*> local_nodes;
+};
+
+// Get recently-used-folders, including permanent nodes for display split up by
+// "account" and "local" nodes. If there are no "account" bookmarks all entries
+// are returned as local nodes even if sync'd, to be displayed as a single list
+// without any headers/labels.
+//
+// In case of a mixed account and local bookmarks in the MRU nodes, this would
+// display:
+//   - Account Bookmark Heading
+//     - Most recently used custom account bookmarks
+//     - Account permanent folders if visible
+//   - Local Bookmark Heading
+//     - Most recently used custom local bookmarks
+//     - Local permanent folder if it is the most recently used folder
+//
+// If MRU nodes are only local or account, this would display:
+//   - Most recently used custom
+//   - Account/Local and syncable permanent nodes
+//
+// Note: The parent of `display_node` is pushed on top of its corresponding list
+// if it is a non-permanent folder or at the end if it is a permanent folder
+// that is not already included.
+BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
+    BookmarkModel* model,
+    const BookmarkNode* displayed_node);
+
+// Returns permanent nodes for display. Either account or local+syncable types
+// are always available, sometimes both (non-empty visible local permanent
+// nodes).
+BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
+    const BookmarkModel* model);
+
+// Returns true if any local permanent nodes contain bookmarks.
+bool HasLocalOrSyncableBookmarks(const BookmarkModel* model);
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns the most recently added bookmarks. This does not return folders,
 // only nodes of type url.
@@ -134,16 +178,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Register managed bookmarks preferences.
 void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry);
-
-// Returns the parent for newly created folders/bookmarks. If `selection` has
-// one element and it is a folder, `selection[0]` is returned, otherwise
-// `parent` is returned. If `index` is non-null it is set to the index newly
-// added nodes should be added at.
-const BookmarkNode* GetParentForNewNodes(
-    const BookmarkNode* parent,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection,
-    size_t* index);
 
 // Deletes the bookmark folders for the given list of `ids`.
 void DeleteBookmarkFolders(BookmarkModel* model,
@@ -209,6 +243,10 @@ bool HasDescendantsOf(
 // opportunity to suggest contextually relevant folders.
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url = GURL());
+
+// This pruning keeps visible, non-managed folder nodes.
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node);
 
 }  // namespace bookmarks
 

@@ -15,9 +15,9 @@ namespace policy::local_user_files {
 
 constexpr char kCleanupCountHistogram[] = "SkyVault.LocalUserFilesCleanupCount";
 
-LocalFilesCleanup::LocalFilesCleanup() {}
+LocalFilesCleanup::LocalFilesCleanup() = default;
 
-LocalFilesCleanup::~LocalFilesCleanup() {}
+LocalFilesCleanup::~LocalFilesCleanup() = default;
 
 void LocalFilesCleanup::OnLocalUserFilesPolicyChanged() {
   if (!LocalUserFilesAllowed() && !in_progress_) {

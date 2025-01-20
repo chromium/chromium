@@ -13,6 +13,7 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 class IsolationInfo;
@@ -46,10 +47,13 @@ class NET_EXPORT SessionService {
   // Isolation info to be used for registration request, this should be the
   // same as was used for the response with the Sec-Session-Registration
   // header.
+  // `net_log` is the log corresponding to the request receiving the
+  // Sec-Session-Registration header.
   virtual void RegisterBoundSession(
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
-      const IsolationInfo& isolation_info) = 0;
+      const IsolationInfo& isolation_info,
+      const NetLogWithSource& net_log) = 0;
 
   // Check if a request should be deferred due to the session cookie being
   // missing. This should only be called once the request has the correct
@@ -88,6 +92,14 @@ class NET_EXPORT SessionService {
   // Delete the session matching `key`.
   virtual void DeleteSession(const SchemefulSite& site,
                              const Session::Id& id) = 0;
+
+  // Delete all sessions that match the filtering arguments. See
+  // `device_bound_sessions.mojom` for details on the filtering logic.
+  virtual void DeleteAllSessions(
+      std::optional<base::Time> created_after_time,
+      std::optional<base::Time> created_before_time,
+      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+      base::OnceClosure completion_callback) = 0;
 
  protected:
   SessionService() = default;

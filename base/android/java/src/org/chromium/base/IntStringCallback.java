@@ -5,6 +5,9 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A simple 2-argument callback with an int and a String as arguments.
@@ -17,6 +20,7 @@ import org.jni_zero.CalledByNative;
  * 2-argument callback also adds a few code lines but it is clear and the compiler does the type
  * checking.
  */
+@NullMarked
 public interface IntStringCallback {
     /**
      * Invoked with the result of a computation.
@@ -25,5 +29,5 @@ public interface IntStringCallback {
      * @param string String part of the result.
      */
     @CalledByNative
-    void onResult(int number, String string);
+    void onResult(int number, @JniType("std::string") String string);
 }

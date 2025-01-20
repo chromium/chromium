@@ -7,11 +7,13 @@
 #include <optional>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -119,6 +121,59 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
 }
 
 }  // namespace
+
+ParentAccessCallbackParsedResult::ParentAccessCallbackParsedResult(
+    ParentAccessWidgetError error)
+    : result_(error) {}
+ParentAccessCallbackParsedResult::ParentAccessCallbackParsedResult(
+    kids::platform::parentaccess::client::proto::ParentAccessCallback callback)
+    : result_(callback) {}
+ParentAccessCallbackParsedResult::~ParentAccessCallbackParsedResult() = default;
+
+std::optional<ParentAccessWidgetError>
+ParentAccessCallbackParsedResult::GetError() const {
+  if (absl::holds_alternative<ParentAccessWidgetError>(result_)) {
+    return absl::get<ParentAccessWidgetError>(result_);
+  }
+  return std::nullopt;
+}
+
+std::optional<kids::platform::parentaccess::client::proto::ParentAccessCallback>
+ParentAccessCallbackParsedResult::GetCallback() const {
+  if (absl::holds_alternative<
+          kids::platform::parentaccess::client::proto::ParentAccessCallback>(
+          result_)) {
+    return absl::get<
+        kids::platform::parentaccess::client::proto::ParentAccessCallback>(
+        result_);
+  }
+  return std::nullopt;
+}
+
+// static
+ParentAccessCallbackParsedResult
+ParentAccessCallbackParsedResult::ParseParentAccessCallbackResult(
+    const std::string& encoded_parent_access_callback_proto) {
+  std::string decoded_parent_access_callback;
+  if (!base::Base64Decode(encoded_parent_access_callback_proto,
+                          &decoded_parent_access_callback)) {
+    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
+                  "parent_access_result from base64";
+    return ParentAccessCallbackParsedResult(
+        ParentAccessWidgetError::kDecodingError);
+  }
+
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback;
+  if (!parent_access_callback.ParseFromString(decoded_parent_access_callback)) {
+    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
+                  "decoded_parent_access_result to proto";
+    return ParentAccessCallbackParsedResult(
+        ParentAccessWidgetError::kParsingError);
+  }
+
+  return ParentAccessCallbackParsedResult(parent_access_callback);
+}
 
 std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {
   switch (role) {

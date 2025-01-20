@@ -143,7 +143,7 @@ PhoneFieldParser::GetPhoneGrammars() {
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
        {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: <cc>:3 - <phone>
+      // Phone: <cc>:3 <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <ac> - <phone>
       {{REGEX_PHONE, FIELD_AREA_CODE}, {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
@@ -201,7 +201,9 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 
   // Assign the `match` and advance the cursor.
   if (match) {
-    *match = {field, {.matched_attribute = MatchAttribute::kLabel}};
+    *match = {
+        field,
+        {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
   }
   scanner->Advance();
   return true;
@@ -376,16 +378,12 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
                                        std::optional<FieldAndMatchInfo>* match,
                                        const bool is_country_code_field,
                                        const std::string& json_field_type) {
-  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      json_field_type, context.page_language, context.pattern_file);
-
   // Phone country code fields can be discovered via the generic "PHONE" regex
   // (see e.g. the "Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4" grammar rule).
   // However, for phone country code fields, <select> elements should also be
   // considered.
   if (is_country_code_field) {
-    return ParseField(context, scanner, patterns, match,
-                      /*regex_name=*/json_field_type.c_str(),
+    return ParseField(context, scanner, json_field_type.c_str(), match,
                       [](const MatchParams& p) {
                         return MatchParams(p.attributes,
                 kDefaultMatchParamsWith<
@@ -393,9 +391,7 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
         FormControlType::kSelectOne>.field_types);
                       });
   }
-
-  return ParseField(context, scanner, patterns, match,
-                    /*regex_name=*/json_field_type.c_str());
+  return ParseField(context, scanner, json_field_type.c_str(), match);
 }
 
 }  // namespace autofill

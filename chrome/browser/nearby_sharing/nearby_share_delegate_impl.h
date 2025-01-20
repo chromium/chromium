@@ -56,6 +56,7 @@ class NearbyShareDelegateImpl
 
   // ash::NearbyShareDelegate
   bool IsEnabled() override;
+  void SetEnabled(bool enabled) override;
   bool IsPodButtonVisible() override;
   bool IsHighVisibilityOn() override;
   bool IsEnableHighVisibilityRequestActive() const override;
@@ -70,7 +71,7 @@ class NearbyShareDelegateImpl
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
-  void OnFirstSessionStarted() override;
+  void OnFirstSessionReady() override;
 
   // NearbyShareService::Observer
   void OnHighVisibilityChangeRequested() override;

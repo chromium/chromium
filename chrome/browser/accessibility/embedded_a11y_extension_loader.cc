@@ -73,7 +73,7 @@ extensions::ComponentLoader* GetComponentLoader(Profile* profile) {
 
 EmbeddedA11yExtensionLoader::ExtensionInfo::ExtensionInfo(
     const std::string& extension_id,
-    const std::string& extension_path,
+    const base::FilePath& extension_path,
     const base::FilePath::CharType* extension_manifest_file,
     bool should_localize)
     : extension_id(extension_id),
@@ -119,7 +119,42 @@ void EmbeddedA11yExtensionLoader::Init() {
 
 void EmbeddedA11yExtensionLoader::InstallExtensionWithId(
     const std::string& extension_id,
-    const std::string& extension_path,
+    const std::string& extension_resource_directory,
+    const base::FilePath::CharType* manifest_name,
+    bool should_localize) {
+  if (extension_map_.contains(extension_id)) {
+    return;
+  }
+
+  base::FilePath resources_path;
+#if BUILDFLAG(IS_MAC)
+  base::FilePath root_path;
+  CHECK(base::PathService::Get(base::DIR_MODULE, &root_path));
+  resources_path = root_path.Append("resources");
+#else
+  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
+    NOTREACHED();
+  }
+#endif
+
+  base::FilePath::StringType common_extension_directory;
+#if BUILDFLAG(IS_WIN)
+  common_extension_directory = base::UTF8ToWide(extension_resource_directory);
+#else
+  common_extension_directory = extension_resource_directory;
+#endif
+
+  auto path = resources_path.Append(common_extension_directory);
+
+  ExtensionInfo new_extension = {extension_id, path, manifest_name,
+                                 should_localize};
+  extension_map_.insert({extension_id, new_extension});
+  UpdateAllProfiles(extension_id);
+}
+
+void EmbeddedA11yExtensionLoader::InstallExtensionWithIdAndPath(
+    const std::string& extension_id,
+    const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_name,
     bool should_localize) {
   if (extension_map_.contains(extension_id)) {
@@ -214,7 +249,7 @@ void EmbeddedA11yExtensionLoader::MaybeRemoveExtension(
 void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
     Profile* profile,
     const std::string& extension_id,
-    const std::string& extension_path,
+    const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_name,
     bool should_localize) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -223,33 +258,13 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
     return;
   }
 
-  base::FilePath resources_path;
-#if BUILDFLAG(IS_MAC)
-  base::FilePath root_path;
-  CHECK(base::PathService::Get(base::DIR_MODULE, &root_path));
-  resources_path = root_path.Append("resources");
-#else
-  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-    NOTREACHED();
-  }
-#endif
-
-  base::FilePath::StringType common_path;
-#if BUILDFLAG(IS_WIN)
-  common_path = base::UTF8ToWide(extension_path);
-#else
-  common_path = extension_path;
-#endif
-
-  auto path = resources_path.Append(common_path);
-
   extensions::GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&LoadManifestOnFileThread, path, manifest_name,
+      base::BindOnce(&LoadManifestOnFileThread, extension_path, manifest_name,
                      /*localize=*/should_localize),
       base::BindOnce(&EmbeddedA11yExtensionLoader::InstallExtension,
-                     weak_ptr_factory_.GetWeakPtr(), component_loader, path,
-                     extension_id));
+                     weak_ptr_factory_.GetWeakPtr(), component_loader,
+                     extension_path, extension_id));
 }
 
 void EmbeddedA11yExtensionLoader::InstallExtension(

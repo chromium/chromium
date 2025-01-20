@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -145,24 +144,40 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback) {
+  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
+
+  ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
+
+  if (compositor_) {
+    keep_surface_alive =
+        compositor_->TakeScopedKeepSurfaceAliveCallback(surface_id);
+  }
+
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      src_subrect, output_size, surface_id,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
+             ui::Compositor::ScopedKeepSurfaceAliveCallback keep_alive,
              std::unique_ptr<viz::CopyOutputResult> result) {
+            if (keep_alive) {
+              std::move(keep_alive).RunAndReset();
+            }
             auto scoped_bitmap = result->ScopedAccessSkBitmap();
             std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
           },
-          std::move(callback)));
+          std::move(callback), std::move(keep_surface_alive)));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
+  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      src_subrect, output_size, surface_id,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kNativeTextures,
       std::move(callback));
 }
@@ -170,6 +185,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    const viz::SurfaceId& surface_id,
     viz::CopyOutputRequest::ResultFormat format,
     viz::CopyOutputRequest::ResultDestination destination,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
@@ -213,8 +229,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   CHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->RequestCopyOfOutput(
-      viz::SurfaceId(frame_sink_id_, local_surface_id_), std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
 }
 
 void DelegatedFrameHost::SetFrameEvictionStateAndNotifyObservers(
@@ -318,7 +333,7 @@ void DelegatedFrameHost::EmbedSurface(
 
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     // On Windows and Linux, we would like to produce new content as soon as
     // possible or the OS will create an additional black gutter. Until we can
     // block resize on surface synchronization on these platforms, we will not
@@ -465,7 +480,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
 // CHECK on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
 #endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
@@ -485,7 +500,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK(!stale_content_layer_->has_external_content());
 #endif
   stale_content_layer_->SetVisible(true);
@@ -530,6 +545,10 @@ void DelegatedFrameHost::OnCompositingShuttingDown(ui::Compositor* compositor) {
   DetachFromCompositor();
   CHECK(!compositor_);
 }
+
+void DelegatedFrameHost::OnFirstSurfaceActivation(
+    ui::Compositor* compositor,
+    const viz::SurfaceInfo& surface_info) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // DelegatedFrameHost, private:
@@ -672,7 +691,7 @@ void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
 
 // static
 bool DelegatedFrameHost::ShouldIncludeUiCompositorForEviction() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor)) {
     return false;

@@ -190,6 +190,13 @@ GetDataOwner::GetOwningOriginOrHost<webid::FederatedIdentityDataModel::DataKey>(
   return GetOwnerBasedOnScheme(data_key.relying_party_embedder());
 }
 
+template <>
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<net::device_bound_sessions::SessionKey>(
+    const net::device_bound_sessions::SessionKey& data_key) const {
+  return GetOwnerBasedOnScheme(url::Origin::Create(data_key.site.GetURL()));
+}
+
 // Helper which allows the lifetime management of a deletion action to occur
 // separately from the BrowsingDataModel itself.
 struct StorageRemoverHelper {
@@ -383,6 +390,15 @@ void StorageRemoverHelper::Visitor::operator()<
   // ChromeBrowsingDataModelDelegate.
 }
 
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    net::device_bound_sessions::SessionKey>(
+    const net::device_bound_sessions::SessionKey& data_key) {
+  CHECK(types.Has(BrowsingDataModel::StorageType::kDeviceBoundSession));
+  helper->storage_partition_->GetDeviceBoundSessionManager()->DeleteSession(
+      data_key);
+}
+
 void StorageRemoverHelper::RemoveDataKeyEntries(
     const BrowsingDataModel::DataKeyEntries& data_key_entries,
     base::OnceClosure completed) {
@@ -567,6 +583,18 @@ void OnCdmStorageLoaded(BrowsingDataModel* model,
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+void OnDeviceBoundSessionsLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    const std::vector<net::device_bound_sessions::SessionKey>& sessions) {
+  for (const auto& session_key : sessions) {
+    model->AddBrowsingData(session_key,
+                           BrowsingDataModel::StorageType::kDeviceBoundSession,
+                           kSmallAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
 // If `data_key` represents a non-1P partition, returns the site on which it
 // is partitioned, std::nullopt otherwise.
 std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
@@ -611,7 +639,7 @@ std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
                   net::SchemefulSite(data_key.relying_party_embedder());
             }
           },
-      },
+          [&](const net::device_bound_sessions::SessionKey& session_key) {}},
       data_key);
 
   return top_level_site;
@@ -679,7 +707,9 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
           [](const webid::FederatedIdentityDataModel::DataKey& data_key) {
             return data_key.relying_party_embedder();
           },
-      },
+          [](const net::device_bound_sessions::SessionKey& session_key) {
+            return url::Origin::Create(session_key.site.GetURL());
+          }},
       data_key);
 }
 
@@ -941,6 +971,7 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
     case BrowsingDataModel::StorageType::kSharedWorker:
     case BrowsingDataModel::StorageType::kCookie:
     case BrowsingDataModel::StorageType::kCdmStorage:
+    case BrowsingDataModel::StorageType::kDeviceBoundSession:
       return true;
     case BrowsingDataModel::StorageType::kExtendedDelegateRange:
       NOTREACHED();
@@ -1040,6 +1071,14 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::BindOnce(&OnCdmStorageLoaded, this, completion), base::Time::Min(),
       base::Time::Max());
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // Device Bound Sessions
+  if (network::mojom::DeviceBoundSessionManager* device_bound_session_manager =
+          storage_partition_->GetDeviceBoundSessionManager();
+      device_bound_session_manager) {
+    device_bound_session_manager->GetAllSessions(
+        base::BindOnce(&OnDeviceBoundSessionsLoaded, this, completion));
+  }
 
   // Data loaded from non-components storage types via the delegate.
   if (delegate_) {

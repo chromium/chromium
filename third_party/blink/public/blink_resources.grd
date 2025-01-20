@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/blink_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -18,12 +18,11 @@
       <if expr="is_macosx">
         <include name="IDR_UASTYLE_THEME_MAC_CSS" file="../renderer/core/html/resources/mac.css" type="BINDATA" compress="brotli"/>
       </if>
+      <include name="IDR_UASTYLE_SCROLL_BUTTON_CSS" file="../renderer/core/css/scroll_button.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_PERMISSION_ELEMENT_CSS" file="../renderer/core/html/resources/permission.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_CSS" file="../renderer/core/html/resources/customizable_select.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS" file="../renderer/core/html/resources/customizable_select_linux.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_FORCED_COLORS_CSS" file="../renderer/core/html/resources/customizable_select_forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MARKER_CSS" file="../renderer/core/css/marker.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MATHML_CSS" file="../renderer/core/css/mathml.css" type="BINDATA" compress="brotli"/>

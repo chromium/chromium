@@ -6,10 +6,13 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
+#include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/enterprise/watermarking/content/watermark_text_container.h"
+#include "components/enterprise/watermarking/watermark.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -46,7 +49,7 @@ DataProtectionNavigationController::DataProtectionNavigationController(
     return;
   }
   Observe(tab_interface->GetContents());
-  tab_subscriptions_.push_back(tab_interface_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_interface_->RegisterDidActivate(
       base::BindRepeating(&DataProtectionNavigationController::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(
@@ -56,7 +59,7 @@ DataProtectionNavigationController::DataProtectionNavigationController(
 
   // Fetch the protection settings for the current page.
   enterprise_data_protection::DataProtectionNavigationObserver::
-      GetDataProtectionSettings(
+      ApplyDataProtectionSettings(
           Profile::FromBrowserContext(
               tab_interface_->GetContents()->GetBrowserContext()),
           tab_interface_->GetContents(),
@@ -80,7 +83,7 @@ void DataProtectionNavigationController::TabForegrounded(
   content::WebContents* contents = tab->GetContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   enterprise_data_protection::DataProtectionNavigationObserver::
-      GetDataProtectionSettings(
+      ApplyDataProtectionSettings(
           profile, contents,
           base::BindOnce(
               &DataProtectionNavigationController::ApplyDataProtectionSettings,
@@ -113,7 +116,7 @@ void DataProtectionNavigationController::
   }
 
   // If the tab is in the background, do nothing.
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 
@@ -135,6 +138,21 @@ void DataProtectionNavigationController::
     clear_screenshot_protection_on_page_load_ = true;
   }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
+  // Regardless of whether watermark text is empty, attach it as web contents
+  // user data so that other browser process code can draw watermarks outside
+  // of the context of a navigation (ex. when printing).
+  enterprise_watermark::WatermarkBlock block =
+      enterprise_watermark::DrawWatermarkToPaintRecord(
+          settings.watermark_text, enterprise_watermark::GetFillColor(),
+          enterprise_watermark::GetOutlineColor());
+  enterprise_watermark::WatermarkTextContainer::CreateForWebContents(
+      expected_web_contents.get());
+  enterprise_watermark::WatermarkTextContainer::FromWebContents(
+      expected_web_contents.get())
+      ->SetWatermarkText(
+          block.record.ToSkPicture(SkRect::MakeWH(block.width, block.height)),
+          block.width, block.height);
 
   if (!settings.watermark_text.empty()) {
     browser_view->ApplyWatermarkSettings(settings.watermark_text);
@@ -161,7 +179,7 @@ void DataProtectionNavigationController::ApplyDataProtectionSettings(
   }
 
   // If the tab is in the background, do nothing.
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 
@@ -208,7 +226,7 @@ void DataProtectionNavigationController::
   // Note that steps #5 and #6 are racy but the final outcome is correct
   // regardless of the order in which they execute.
 
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 

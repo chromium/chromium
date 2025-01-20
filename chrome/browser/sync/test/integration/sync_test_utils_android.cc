@@ -87,8 +87,7 @@ void SetUpLiveAccountAndSignInForTesting(const std::string& username,
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         JNIEnv* env = base::android::AttachCurrentThread();
         Java_SyncTestSigninUtils_setUpLiveAccountAndSignInForTesting(
-            env, base::android::ConvertUTF8ToJavaString(env, username),
-            base::android::ConvertUTF8ToJavaString(env, password));
+            env, username, password);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -102,8 +101,7 @@ void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         JNIEnv* env = base::android::AttachCurrentThread();
         Java_SyncTestSigninUtils_setUpLiveAccountAndSignInAndEnableSyncForTesting(
-            env, base::android::ConvertUTF8ToJavaString(env, username),
-            base::android::ConvertUTF8ToJavaString(env, password));
+            env, username, password);
         run_loop.Quit();
       }));
   run_loop.Run();

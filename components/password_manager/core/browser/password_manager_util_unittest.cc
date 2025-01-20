@@ -19,14 +19,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -74,12 +74,6 @@ class MockPasswordManagerClient
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(void,
-              TriggerReauthForPrimaryAccount,
-              (signin_metrics::ReauthAccessPoint,
-               base::OnceCallback<void(
-                   password_manager::PasswordManagerClient::ReauthSucceeded)>),
-              (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
@@ -606,63 +600,10 @@ TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {
   EXPECT_EQ(GURL(kTestProxyOrigin), blocklisted_credential.url);
 }
 
-TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
+TEST(PasswordManagerUtil, ManualGeneration) {
   MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(false));
 
-  EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
   EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldGeneratePasswordIfReauthSucessful) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(true));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
-
-  UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
-}
-
-TEST(PasswordManagerUtil,
-     ManualGenerationShouldNotGeneratePasswordIfReauthFailed) {
-  MockPasswordManagerClient mock_client;
-  ON_CALL(*(mock_client.GetPasswordFeatureManager()),
-          ShouldShowAccountStorageOptIn)
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(
-      mock_client,
-      TriggerReauthForPrimaryAccount(
-          signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu, _))
-      .WillOnce(
-          [](signin_metrics::ReauthAccessPoint,
-             base::OnceCallback<void(
-                 password_manager::PasswordManagerClient::ReauthSucceeded)>
-                 callback) {
-            std::move(callback).Run(
-                password_manager::PasswordManagerClient::ReauthSucceeded(
-                    false));
-          });
-  EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client, nullptr);
 }
@@ -676,17 +617,17 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
   test_autofill_client.ShowAutofillFieldIphForFeature(
       autofill::FormFieldData(),
-      autofill::AutofillClient::IphFeature::kManualFallback);
+      autofill::AutofillClient::IphFeature::kAutofillAi);
 
   ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
-  ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());
+  ASSERT_TRUE(test_autofill_client.IsShowingAutofillAiIph());
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
   EXPECT_EQ(test_autofill_client.popup_hiding_reason(),
             autofill::SuggestionHidingReason::
                 kOverlappingWithPasswordGenerationPopup);
-  EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
+  EXPECT_FALSE(test_autofill_client.IsShowingAutofillAiIph());
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {

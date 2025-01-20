@@ -42,9 +42,9 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       BrowserContext* context) const override {
-    return new AppFirewallHoleManager(context);
+    return std::make_unique<AppFirewallHoleManager>(context);
   }
 
   BrowserContext* GetBrowserContextToUse(

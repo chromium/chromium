@@ -7,7 +7,6 @@
 #import <utility>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/core/browser/signin_metrics_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -18,8 +17,8 @@
 // static
 SigninMetricsService* SigninMetricsServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SigninMetricsService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SigninMetricsService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -29,9 +28,8 @@ SigninMetricsServiceFactory* SigninMetricsServiceFactory::GetInstance() {
 }
 
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SigninMetricsService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SigninMetricsService",
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -44,10 +42,6 @@ SigninMetricsServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
-}
-
-bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
 }
 
 void SigninMetricsServiceFactory::RegisterBrowserStatePrefs(

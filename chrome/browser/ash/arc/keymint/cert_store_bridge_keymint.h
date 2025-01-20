@@ -29,7 +29,7 @@ class CertStoreBridgeKeyMint {
   explicit CertStoreBridgeKeyMint(content::BrowserContext* context);
   CertStoreBridgeKeyMint(const CertStoreBridgeKeyMint&) = delete;
   CertStoreBridgeKeyMint& operator=(const CertStoreBridgeKeyMint&) = delete;
-  ~CertStoreBridgeKeyMint();
+  virtual ~CertStoreBridgeKeyMint();
 
   // Attaches a new message pipe to the invitation and binds it to the cert
   // store instance proxy.
@@ -41,6 +41,10 @@ class CertStoreBridgeKeyMint {
   void UpdatePlaceholderKeysInKeyMint(
       std::vector<mojom::ChromeOsKeyPtr> keys,
       mojom::CertStoreInstance::UpdatePlaceholderKeysCallback callback);
+
+  // Sets the ARCVM Serial number from Chrome to arc-keymintd.
+  // If the proxy is not bound, an error would be logged on the ChromeOS side.
+  virtual void SetSerialNumber(const std::string& serial_number);
 
  private:
   // Points to a proxy bound to the implementation in arc-keymintd.

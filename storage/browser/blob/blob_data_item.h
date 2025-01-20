@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
 
   base::span<const uint8_t> bytes() const {
     DCHECK_EQ(type_, Type::kBytes);
-    return base::make_span(bytes_);
+    return base::span(bytes_);
   }
 
   const base::FilePath& path() const {
@@ -175,7 +175,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
 
   base::span<uint8_t> mutable_bytes() {
     DCHECK_EQ(type_, Type::kBytes);
-    return base::make_span(bytes_);
+    return base::span(bytes_);
   }
 
   void AllocateBytes();

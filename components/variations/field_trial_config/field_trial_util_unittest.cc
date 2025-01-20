@@ -874,7 +874,7 @@ TEST_F(FieldTrialUtilTest, TestEscapeValue) {
   EXPECT_EQ(str, base::UnescapeValue(escaped_str));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST_F(FieldTrialUtilTest,
        AssociateParamsFromFieldTrialConfigWithHardwareClassMatch) {
   std::string hardware_class = ClientFilterableState::GetHardwareClass();
@@ -1004,6 +1004,6 @@ TEST_F(FieldTrialUtilTest,
 
   EXPECT_EQ("TestGroup", base::FieldTrialList::FindFullName("TestTrial"));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 }  // namespace variations

@@ -61,9 +61,15 @@ BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
 // fail to validate with network time will fall back to the system time.
 // This has no effect if the network_time::kNetworkTimeServiceQuerying flag is
 // disabled, or the BrowserNetworkTimeQueriesEnabled policy is set to false.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kCertVerificationNetworkTime,
+             "CertVerificationNetworkTime",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kCertVerificationNetworkTime,
              "CertVerificationNetworkTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
 // Enables usage of os_crypt_async::SecretPortalKeyProvider.  Once
@@ -72,6 +78,12 @@ BASE_FEATURE(kCertVerificationNetworkTime,
 BASE_FEATURE(kDbusSecretPortal,
              "DbusSecretPortal",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables usage of os_crypt_async::FreedesktopSecretKeyProvider, which is
+// compatible with the synchronous backend.
+BASE_FEATURE(kUseFreedesktopSecretKeyProvider,
+             "UseFreedesktopSecretKeyProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Destroy profiles when their last browser window is closed, instead of when
@@ -171,14 +183,6 @@ BASE_FEATURE(kPromoBrowserCommands,
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables reading and writing PWA notification permissions from quick settings
-// menu.
-BASE_FEATURE(kQuickSettingsPWANotifications,
-             "QuickSettingsPWA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Keeps accessibility enabled for WebContents as ReadAnything observes changes
 // to the active WebContents. This is a holdback study to evaluate the impact of
@@ -194,7 +198,7 @@ BASE_FEATURE(kReadAnythingPermanentAccessibility,
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_FEATURE(kRegisterOsUpdateHandlerWin,
              "RegisterOsUpdateHandlerWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // When this feature is enabled, the network service will restart unsandboxed if
@@ -236,6 +240,12 @@ BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
 BASE_FEATURE(kSecretPortalKeyProviderUseForEncryption,
              "SecretPortalKeyProviderUseForEncryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, encrypt new data with the key provided by
+// FreedesktopSecretKeyProvider. Otherwise, it will only decrypt existing data.
+BASE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption,
+             "UseFreedesktopSecretKeyProviderForEncryption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // This flag controls whether to trigger prerendering when the default search
@@ -275,16 +285,6 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
 BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              "TabCaptureBlueBorderCrOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// Reports WebUI Javascript errors to the crash server on all desktop platforms.
-// Previously, this was only supported on ChromeOS and Linux.
-// Intentionally enabled by default and will be used as a kill switch in case
-// of regressions.
-BASE_FEATURE(kWebUIJSErrorReportingExtended,
-            "WebUIJSErrorReportingExtended",
-            base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page

@@ -49,6 +49,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
         if (mPromoUtils.shouldShowNonRoleManagerPromo(context)
                 && tracker.shouldTriggerHelpUi(
                         FeatureConstants.DEFAULT_BROWSER_PROMO_SETTING_CARD)) {
+            mPromoUtils.notifyDefaultBrowserPromoVisible();
             mState = State.PROMO_SHOWING;
         }
     }

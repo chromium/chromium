@@ -32,7 +32,7 @@ export class InkApi {
     return this.canvas_.getPDF();
   }
 
-  async getPdfDestructive(): Promise<Uint8Array> {
+  async getPdfDestructive(): Promise<Uint8Array<ArrayBuffer>> {
     return this.canvas_.getPDFDestructive();
   }
 

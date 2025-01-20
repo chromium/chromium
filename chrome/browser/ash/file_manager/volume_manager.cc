@@ -118,10 +118,13 @@ void RevokeAndroidFilesMountPoint() {
 }
 
 bool RegisterShareCacheMountPoint(Profile* profile) {
+  const std::string mount_point_name =
+      file_manager::util::GetShareCacheMountPointName(profile);
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RevokeFileSystem(mount_point_name);
   return mount_points->RegisterFileSystem(
-      util::kShareCacheMountPointName, storage::kFileSystemTypeLocal,
+      mount_point_name, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), util::GetShareCacheFilePath(profile));
 }
 
@@ -1431,7 +1434,14 @@ void VolumeManager::RemoveSmbFsVolume(const base::FilePath& mount_point) {
 }
 
 void VolumeManager::OnMigrationSucceededForTesting() {
-  OnMigrationSucceeded();
+  read_only_local_folders_ = false;
+  // Don't call OnLocalUserFilesPolicyChanged() because it's no-op if there's no
+  // change, and we want to force mount/unmount.
+  if (local_user_files_allowed_) {
+    OnLocalUserFilesEnabled();
+  } else {
+    OnLocalUserFilesDisabled();
+  }
 }
 
 void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
@@ -1771,7 +1781,6 @@ void VolumeManager::OnLocalUserFilesDisabled() {
   UnmountDownloadsVolume();
   if (IsSkyVaultV2Enabled() && read_only_local_folders_) {
     // Keep the volume in GA version. It will be removed after migration.
-    // TODO(aidazolic): Do not mount if the local files migration succeeded.
     MountDownloadsVolume(/*read_only=*/true);
   }
 }

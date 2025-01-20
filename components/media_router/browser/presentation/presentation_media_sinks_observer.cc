@@ -30,8 +30,9 @@ void PresentationMediaSinksObserver::OnSinksReceived(
       result.empty() ? blink::mojom::ScreenAvailability::UNAVAILABLE
                      : blink::mojom::ScreenAvailability::AVAILABLE;
   // Don't send if new result is same as previous.
-  if (previous_availability_ == current_availability)
+  if (previous_availability_ == current_availability) {
     return;
+  }
 
   listener_->OnScreenAvailabilityChanged(current_availability);
   previous_availability_ = current_availability;

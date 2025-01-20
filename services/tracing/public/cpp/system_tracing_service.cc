@@ -68,6 +68,10 @@ class ProducerSocketConnector
     if (socket_fd_.get() == -1) {
       return base::unexpected(errno);
     }
+    if (producer_sock_name.size() > sizeof(sockaddr_un::sun_path) - 1) {
+      DVLOG(3) << "Oversized producer socket name " << producer_sock_name;
+      return base::unexpected(EINVAL);
+    }
 
     struct sockaddr_un saddr;
     memset(&saddr, 0, sizeof(saddr));

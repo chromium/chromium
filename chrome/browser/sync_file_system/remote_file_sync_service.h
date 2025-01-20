@@ -78,12 +78,12 @@ class RemoteFileSyncService {
  public:
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // This is called when RemoteFileSyncService updates its internal queue
     // of pending remote changes.
@@ -119,12 +119,12 @@ class RemoteFileSyncService {
   static void AppendDependsOnFactories(
       std::set<BrowserContextKeyedServiceFactory*>* factories);
 
-  RemoteFileSyncService() {}
+  RemoteFileSyncService() = default;
 
   RemoteFileSyncService(const RemoteFileSyncService&) = delete;
   RemoteFileSyncService& operator=(const RemoteFileSyncService&) = delete;
 
-  virtual ~RemoteFileSyncService() {}
+  virtual ~RemoteFileSyncService() = default;
 
   // Adds and removes observers.
   virtual void AddServiceObserver(Observer* observer) = 0;

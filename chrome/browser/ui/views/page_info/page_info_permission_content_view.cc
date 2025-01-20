@@ -51,6 +51,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   web_contents_ = web_contents->GetWeakPtr();
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   // Use the same insets as buttons and permission rows in the main page for
   // consistency.
@@ -175,15 +180,13 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       PageInfoViewFactory::GetSiteSettingsIcon(),
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(),
-      l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   subpage_manage_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
-  subpage_manage_button->title()->SetTextStyle(
-      views::style::STYLE_BODY_3_MEDIUM);
-  subpage_manage_button->title()->SetEnabledColorId(kColorPageInfoForeground);
+  subpage_manage_button->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP));
+  subpage_manage_button->SetTitleTextStyleAndColor(
+      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 

@@ -29,7 +29,7 @@ const int kInstallDirPermissionsMask = base::FILE_PERMISSION_USER_MASK |
 bool Uninstall() {
   std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
   return base::DeletePathRecursively(*install_directory);

@@ -44,6 +44,8 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   virtual std::u16string GetProfileEmail() const;
   virtual std::u16string GetProfilePhone() const;
   virtual std::u16string GetOkButtonLabel() const;
+  const AutofillProfile& GetAutofillProfile() const { return address_profile_; }
+
   // The value returned by the cancel button callback depends on whether
   // the address is to be saved into user's account. Different values are needed
   // to have different logic for the popup reappearence eligibility.

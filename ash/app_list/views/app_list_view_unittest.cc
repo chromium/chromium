@@ -821,6 +821,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     return view_->GetWidget()->GetFocusManager()->GetFocusedView();
   }
 
+  SearchModel* search_model() { return delegate_->GetTestSearchModel(); }
+
  protected:
   bool is_rtl_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1279,6 +1281,132 @@ TEST_F(AppListViewFocusTest, SelectionGoesIntoFolderIfSelected) {
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   EXPECT_TRUE(apps_grid_view()->IsSelectedView(folder_item_view()));
   EXPECT_EQ(folder_item_view(), focused_view());
+}
+
+// Exercises ButtonFocusSkipper with only the Assistant button.
+TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsAssistantButton) {
+  search_model()->search_box()->SetShowSunfishButton(false);
+  search_model()->search_box()->SetShowAssistantButton(true);
+
+  Show();
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view()->view_model();
+  AppListItemView* first_item_view = view_model->view_at(0);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view()->assistant_button());
+  ASSERT_TRUE(search_box_view()->assistant_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  SimulateKeyPress(ui::VKEY_DOWN, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+  EXPECT_TRUE(first_item_view->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_UP, /*shift_down=*/false);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+  EXPECT_FALSE(first_item_view->HasFocus());
+
+  // Tab key moves focus to assistant button.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view()->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/true);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+}
+
+// Exercises ButtonFocusSkipper with only the Sunfish button.
+TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsSunfishButton) {
+  search_model()->search_box()->SetShowSunfishButton(true);
+  search_model()->search_box()->SetShowAssistantButton(false);
+
+  Show();
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view()->view_model();
+  AppListItemView* first_item_view = view_model->view_at(0);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view()->sunfish_button());
+  ASSERT_TRUE(search_box_view()->sunfish_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  SimulateKeyPress(ui::VKEY_DOWN, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_TRUE(first_item_view->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_UP, /*shift_down=*/false);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(first_item_view->HasFocus());
+
+  // Tab key moves focus to Sunfish button.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view()->sunfish_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/true);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+}
+
+// Exercises ButtonFocusSkipper with both Sunfish and Assistant buttons.
+TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsSunfishAndAssistantButtons) {
+  search_model()->search_box()->SetShowSunfishButton(true);
+  search_model()->search_box()->SetShowAssistantButton(true);
+
+  Show();
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view()->view_model();
+  AppListItemView* first_item_view = view_model->view_at(0);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view()->sunfish_button());
+  ASSERT_TRUE(search_box_view()->sunfish_button()->GetVisible());
+  ASSERT_TRUE(search_box_view()->assistant_button());
+  ASSERT_TRUE(search_box_view()->assistant_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  SimulateKeyPress(ui::VKEY_DOWN, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+  EXPECT_TRUE(first_item_view->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_UP, /*shift_down=*/false);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+  EXPECT_FALSE(first_item_view->HasFocus());
+
+  // Tab key moves focus to Sunfish button.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+
+  // Tab key moves focus to assistant button.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/false);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_TRUE(search_box_view()->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to Sunfish button.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/true);
+  EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  SimulateKeyPress(ui::VKEY_TAB, /*shift_down=*/true);
+  EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view()->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view()->assistant_button()->HasFocus());
 }
 
 // Tests that in tablet mode, the app list opens in fullscreen by default.

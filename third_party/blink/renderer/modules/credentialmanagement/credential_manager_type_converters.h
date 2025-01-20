@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_unknown_credential_options.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -22,18 +23,20 @@ namespace blink {
 class AllAcceptedCredentialsOptions;
 class AuthenticationExtensionsClientInputs;
 class AuthenticationExtensionsClientOutputs;
-class AuthenticationExtensionsSupplementalPubKeysInputs;
-class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
+class AuthenticationExtensionsPaymentOutputs;
+class AuthenticationExtensionsSupplementalPubKeysInputs;
+class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
 class CurrentUserDetailsOptions;
-class DigitalCredentialProvider;
 class IdentityCredentialDisconnectOptions;
+class IdentityProviderAccount;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
+class LoginStatusOptions;
 class IdentityUserInfo;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
@@ -43,6 +46,7 @@ class PublicKeyCredentialRpEntity;
 class PublicKeyCredentialUserEntity;
 class RemoteDesktopClientOverride;
 class UserVerificationRequirement;
+class LoginStatusOptions;
 class V8IdentityCredentialRequestOptionsContext;
 class V8IdentityCredentialRequestOptionsMode;
 class V8UnionArrayBufferOrArrayBufferView;
@@ -83,6 +87,14 @@ struct TypeConverter<blink::AuthenticationExtensionsSupplementalPubKeysOutputs*,
       const blink::mojom::blink::SupplementalPubKeysResponsePtr&);
 };
 
+template <>
+struct TypeConverter<
+    blink::AuthenticationExtensionsPaymentOutputs*,
+    blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr> {
+  static blink::AuthenticationExtensionsPaymentOutputs* Convert(
+      const blink::mojom::blink::AuthenticationExtensionsPaymentResponsePtr&);
+};
+
 // blink::mojom::blink::Authenticator ---------------------------------------
 template <>
 struct TypeConverter<Vector<uint8_t>,
@@ -97,6 +109,16 @@ struct TypeConverter<
     String> {
   static std::optional<blink::mojom::blink::PublicKeyCredentialType> Convert(
       const String&);
+};
+
+template <>
+struct TypeConverter<
+    WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>,
+    blink::HeapVector<blink::Member<blink::PublicKeyCredentialParameters>>> {
+  static WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>
+  Convert(const blink::HeapVector<
+          blink::Member<blink::PublicKeyCredentialParameters>>&
+              input_pub_key_cred_params);
 };
 
 template <>
@@ -237,13 +259,6 @@ struct MODULES_EXPORT
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::DigitalCredentialProviderPtr,
-                     blink::DigitalCredentialProvider> {
-  static blink::mojom::blink::DigitalCredentialProviderPtr Convert(
-      const blink::DigitalCredentialProvider&);
-};
-
-template <>
 struct MODULES_EXPORT
     TypeConverter<blink::mojom::blink::RpContext,
                   blink::V8IdentityCredentialRequestOptionsContext> {
@@ -323,6 +338,20 @@ struct MODULES_EXPORT
                   blink::CurrentUserDetailsOptions> {
   static blink::mojom::blink::PublicKeyCredentialReportOptionsPtr Convert(
       const blink::CurrentUserDetailsOptions&);
+};
+
+template <>
+struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusAccountPtr,
+                                    blink::IdentityProviderAccount> {
+  static blink::mojom::blink::LoginStatusAccountPtr Convert(
+      const blink::IdentityProviderAccount&);
+};
+
+template <>
+struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusOptionsPtr,
+                                    blink::LoginStatusOptions> {
+  static blink::mojom::blink::LoginStatusOptionsPtr Convert(
+      const blink::LoginStatusOptions&);
 };
 
 }  // namespace mojo

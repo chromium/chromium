@@ -24,6 +24,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -273,6 +274,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
                            FilterCookiesWithOptionsExcludeShadowingDomains);
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            FilterCookiesWithOptionsWarnShadowingDomains);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           FilterCookiesWithOptionsExcludeAlising);
 
   // For StoreLoadedCookies behavior with origin-bound cookies.
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
@@ -327,7 +330,11 @@ class NET_EXPORT CookieMonster : public CookieStore {
     // collection.
     DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN = 13,
 
-    DELETE_COOKIE_LAST_ENTRY = 14,
+    // When legacy scope behavior is active any cookies which alias an expired
+    // "most recently created" cookie must also be deleted.
+    DELETE_ALIASED_COOKIE_EXPIRED = 14,
+
+    DELETE_COOKIE_LAST_ENTRY = 15,
   };
 
   // Used to populate a histogram containing information about the
@@ -672,6 +679,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
   CookieAccessSemantics GetAccessSemanticsForCookie(
       const CanonicalCookie& cookie) const;
 
+  // Get the cookie's scope semantics (LEGACY or NONLEGACY), by checking for a
+  // value from the cookie access delegate, if it is non-null. Otherwise returns
+  // UNKNOWN.
+  CookieScopeSemantics GetScopeSemanticsForCookie(
+      const CanonicalCookie& cookie) const;
+
   // Statistics support
 
   // This function should be called repeatedly, and will record
@@ -799,6 +812,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::Time last_statistic_record_time_;
 
   bool persist_session_cookies_ = false;
+
+  base::MetricsSubSampler metrics_subsampler_;
 
   THREAD_CHECKER(thread_checker_);
 

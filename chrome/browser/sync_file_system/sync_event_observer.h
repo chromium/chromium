@@ -20,12 +20,12 @@ namespace sync_file_system {
 
 class SyncEventObserver {
  public:
-  SyncEventObserver() {}
+  SyncEventObserver() = default;
 
   SyncEventObserver(const SyncEventObserver&) = delete;
   SyncEventObserver& operator=(const SyncEventObserver&) = delete;
 
-  virtual ~SyncEventObserver() {}
+  virtual ~SyncEventObserver() = default;
 
   // Reports there was a state change in the sync file system backend.
   // If |app_origin| is empty, then broadcast to all registered apps.

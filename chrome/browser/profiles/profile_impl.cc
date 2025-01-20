@@ -201,7 +201,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/locale/locale_change_guard.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -213,8 +212,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -242,14 +239,17 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_pref_store.h"
+#include "extensions/browser/extension_pref_value_map.h"
+#include "extensions/browser/extension_pref_value_map_factory.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "components/guest_view/browser/guest_view_manager.h"
-#include "extensions/browser/extension_pref_store.h"
-#include "extensions/browser/extension_pref_value_map.h"
-#include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #endif
@@ -653,20 +653,6 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
       async_prefs);
   key_->SetPrefs(prefs_.get());
-#if BUILDFLAG(IS_CHROMEOS)
-  // When Chrome crash or gets restarted for other reasons, it loads the policy
-  // immediately. We need to cache the LacrosLaunchSwitch now, as the value is
-  // needed later, while the profile is not fully initialized.
-  if (force_immediate_policy_load &&
-      ash::ProfileHelper::IsPrimaryProfile(this)) {
-    auto& map = profile_policy_connector_->policy_service()->GetPolicies(
-        policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-        map, IsNewProfile(), IsRegularProfile());
-    crosapi::browser_util::CacheLacrosAvailability(map);
-    ash::standalone_browser::CacheLacrosSelection(map);
-  }
-#endif
 }
 
 void ProfileImpl::DoFinalInit(CreateMode create_mode) {
@@ -924,7 +910,7 @@ ProfileImpl::~ProfileImpl() {
 
   // Destroy all OTR profiles and their profile services first.
   std::vector<Profile*> raw_otr_profiles;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bool primary_otr_available = false;
 #endif
 
@@ -932,7 +918,7 @@ ProfileImpl::~ProfileImpl() {
   // be modified after the call to |DestroyProfileNow|.
   for (auto& otr_profile : otr_profiles_) {
     raw_otr_profiles.push_back(otr_profile.second.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     primary_otr_available |= (otr_profile.first == OTRProfileID::PrimaryID());
 #endif
   }
@@ -940,7 +926,7 @@ ProfileImpl::~ProfileImpl() {
   for (Profile* otr_profile : raw_otr_profiles)
     ProfileDestroyer::DestroyOTRProfileImmediately(otr_profile);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!primary_otr_available &&
       !extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(this)) {
@@ -1055,7 +1041,7 @@ void ProfileImpl::DestroyOffTheRecordProfile(Profile* otr_profile) {
   OTRProfileID profile_id = otr_profile->GetOTRProfileID();
   DCHECK(HasOffTheRecordProfile(profile_id));
   otr_profiles_.erase(profile_id);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions are only supported on primary OTR profile.
   if (profile_id == OTRProfileID::PrimaryID() &&
       !extensions::ChromeContentBrowserClientExtensionsPart::
@@ -1203,16 +1189,6 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
       OnLocaleReady(create_mode);
       break;
     case CreateMode::kAsynchronous:
-      if (ash::ProfileHelper::IsPrimaryProfile(this)) {
-        auto& map = profile_policy_connector_->policy_service()->GetPolicies(
-            policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                    std::string()));
-        ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-            map, IsNewProfile(), IsRegularProfile());
-        crosapi::browser_util::CacheLacrosAvailability(map);
-        ash::standalone_browser::CacheLacrosSelection(map);
-      }
-
       ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(
           this, base::BindOnce(&ProfileImpl::OnLocaleReady,
                                base::Unretained(this), create_mode));

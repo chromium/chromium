@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/clipboard/clipboard_history_url_title_fetcher_impl.h"
 #include "chrome/browser/ui/ash/clipboard/clipboard_image_model_factory_impl.h"
 #include "content/public/browser/render_frame_host.h"

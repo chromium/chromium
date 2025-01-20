@@ -9,9 +9,17 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
+import com.google.common.collect.ImmutableList;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,11 +32,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -57,19 +67,38 @@ public class CustomTabActivityNavigationControllerTest {
             new CustomTabActivityContentTestEnvironment();
 
     private CustomTabActivityNavigationController mNavigationController;
+    private TestContext mTestContext;
 
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
+    @Mock private PackageManager mPackageManager;
+    @Mock private ResolveInfo mResolveInfo;
+
+    class TestContext extends ContextWrapper {
+        public TestContext(Context base) {
+            super(base);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(mPackageManager);
+        }
+    }
 
     @Before
     public void setUp() {
         ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {});
         MockitoAnnotations.initMocks(this);
+        mTestContext = new TestContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(mTestContext);
         mNavigationController = env.createNavigationController(mTabController);
         mNavigationController.setFinishHandler(mFinishHandler);
         Tab tab = env.prepareTab();
         when(tab.getUrl()).thenReturn(new GURL("")); // avoid DomDistillerUrlUtils going to native.
         env.tabProvider.setInitialTab(tab, TabCreationMode.DEFAULT);
+        doReturn(ImmutableList.of(mResolveInfo))
+                .when(mPackageManager)
+                .queryIntentActivities(any(), anyInt());
     }
 
     @Test

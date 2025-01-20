@@ -180,8 +180,9 @@ FilePath FileEnumerator::Next() {
 
   // While we've exhausted the entries in the current directory, do the next
   while (current_directory_entry_ >= directory_entries_.size()) {
-    if (pending_paths_.empty())
+    if (pending_paths_.empty()) {
       return FilePath();
+    }
 
     root_path_ = pending_paths_.top();
     root_path_ = root_path_.StripTrailingSeparators();
@@ -212,8 +213,9 @@ FilePath FileEnumerator::Next() {
 
     DIR* dir = opendir(root_path_.value().c_str());
     if (!dir) {
-      if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS)
+      if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS) {
         continue;
+      }
       error_ = File::OSErrorToFileError(errno);
       return FilePath();
     }
@@ -245,23 +247,26 @@ FilePath FileEnumerator::Next() {
       FileInfo info;
       info.filename_ = FilePath(dent->d_name);
 
-      if (ShouldSkip(info.filename_))
+      if (ShouldSkip(info.filename_)) {
         continue;
+      }
 
       const bool is_pattern_matched = IsPatternMatched(info.filename_);
 
       // MATCH_ONLY policy enumerates files and directories which matching
       // pattern only. So we can early skip further checks.
       if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY &&
-          !is_pattern_matched)
+          !is_pattern_matched) {
         continue;
+      }
 
       // Do not call OS stat/lstat if there is no sense to do it. If pattern is
       // not matched (file will not appear in results) and search is not
       // recursive (possible directory will not be added to pending paths) -
       // there is no sense to obtain item below.
-      if (!recursive_ && !is_pattern_matched)
+      if (!recursive_ && !is_pattern_matched) {
         continue;
+      }
 
       // If the caller only wants the names of files and directories, then
       // continue without populating `info` further.
@@ -285,8 +290,9 @@ FilePath FileEnumerator::Next() {
         pending_paths_.push(std::move(full_path));
       }
 
-      if (is_pattern_matched && IsTypeMatched(is_dir))
+      if (is_pattern_matched && IsTypeMatched(is_dir)) {
         directory_entries_.push_back(std::move(info));
+      }
     }
     int readdir_errno = errno;
     closedir(dir);
@@ -297,8 +303,9 @@ FilePath FileEnumerator::Next() {
 
     // MATCH_ONLY policy enumerates files in matched subfolders by "*" pattern.
     // ALL policy enumerates files in all subfolders by origin pattern.
-    if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY)
+    if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY) {
       pattern_.clear();
+    }
   }
 
 #if BUILDFLAG(IS_ANDROID)

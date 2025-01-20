@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -26,7 +27,7 @@ constexpr char kExpectedDataUri[] =
     "ABzDhkxyVHpUmRRoAmpABJ+eiyP8AAAAASUVORK5CYII=";
 
 const AccountId account_1 =
-    AccountId::FromUserEmailGaiaId("user@example.com", "123");
+    AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("123"));
 
 }  // namespace
 

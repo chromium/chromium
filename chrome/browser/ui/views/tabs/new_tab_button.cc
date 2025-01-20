@@ -118,10 +118,9 @@ void NewTabButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 }
 
 SkColor NewTabButton::GetForegroundColor() const {
-    return GetColorProvider()->GetColor(
-        GetWidget()->ShouldPaintAsActive()
-            ? foreground_frame_active_color_id_
-            : foreground_frame_inactive_color_id_);
+  return GetColorProvider()->GetColor(
+      GetWidget()->ShouldPaintAsActive() ? foreground_frame_active_color_id_
+                                         : foreground_frame_inactive_color_id_);
 }
 
 int NewTabButton::GetCornerRadius() const {

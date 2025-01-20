@@ -72,6 +72,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     overlay_processor_ = std::make_unique<OverlayProcessorStub>();
     occlusion_culler_ = std::make_unique<OcclusionCuller>(
         overlay_processor_.get(), RendererSettings::OcclusionCullerSettings());
+    occlusion_culler_->UpdateDeviceScaleFactor(kDeviceScaleFactor);
   }
 
   // Create an arbitrary SharedQuadState for the given |render_pass|.
@@ -102,7 +103,6 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     gfx::PointF uv_top_left(0, 0);
     gfx::PointF uv_bottom_right(1, 1);
     SkColor4f background_color = SkColors::kRed;
-    bool y_flipped = false;
     bool nearest_neighbor = true;
 
     int x_left = shared_quad_state->visible_quad_layer_rect.x();
@@ -118,7 +118,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
         gfx::Rect rect(i, j, quad_width, quad_height);
         quad->SetNew(shared_quad_state, rect, rect, needs_blending, resource_id,
                      premultiplied_alpha, uv_top_left, uv_bottom_right,
-                     background_color, y_flipped, nearest_neighbor,
+                     background_color, nearest_neighbor,
                      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
         j += quad_height;
       }
@@ -139,7 +139,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
 
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -178,7 +178,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     CreateIsolatedSharedQuadStates(shared_quad_state_count, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -226,7 +226,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                                            percentage_overlap, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -271,7 +271,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     CreateAdjacentSharedQuadStates(shared_quad_state_count, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 

@@ -16,6 +16,7 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
       'getIncognitoAvailability',
       'getCanEditBookmarks',
       'recordInHistogram',
+      'showBookmarkEditorForCurrentUrl',
     ]);
   }
 
@@ -31,5 +32,9 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
     this.methodCalled('recordInHistogram', [histogram, bucket, maxBucket]);
+  }
+
+  showBookmarkEditorForCurrentUrl() {
+    this.methodCalled('showBookmarkEditorForCurrentUrl');
   }
 }

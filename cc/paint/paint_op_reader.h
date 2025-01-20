@@ -74,9 +74,11 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void Read(SkScalar* data);
   void Read(uint8_t* data);
+  void Read(uint16_t* data);
   void Read(uint32_t* data);
   void Read(uint64_t* data);
   void Read(int32_t* data);
+  void Read(SkPoint* point);
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
@@ -105,8 +107,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkHighContrastConfig* config);
   void Read(gfx::HDRMetadata* hdr_metadata);
   void Read(SkGradientShader::Interpolation* interpolation);
-
   void Read(scoped_refptr<SkottieWrapper>* skottie);
+  void Read(SkString* sk_string);
+  void Read(std::vector<PaintShader::FloatUniform>* uniforms);
+  void Read(std::vector<PaintShader::Float2Uniform>* uniforms);
+  void Read(std::vector<PaintShader::Float4Uniform>* uniforms);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -156,13 +161,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   template <typename T>
-  void Read(std::vector<T>* vec) {
+  void Read(std::vector<T>& vec) {
     size_t size = 0;
     ReadSize(&size);
-    if (!CanReadVector(size, *vec)) [[unlikely]] {
-      return;
+    if (CanReadVector(size, vec)) [[likely]] {
+      ReadVectorContent(size, vec);
     }
-    ReadVectorContent(size, vec);
   }
 
   // Returns a pointer to the next block of memory of size |bytes|, and treats
@@ -181,6 +185,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
  private:
+  template <typename ValueType>
+  friend void ReadSimpleValueUniformsHelper(
+      PaintOpReader&,
+      std::vector<PaintShader::Uniform<ValueType>>*);
+
   enum class DeserializationError {
     // Enum values must remain synchronized with PaintOpDeserializationError
     // in tools/metrics/histograms/metadata/gpu/enums.xml.
@@ -349,18 +358,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   void DidRead(size_t bytes_read);
 
   template <typename T>
-    requires(std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    ReadData(base::as_writable_byte_span(*vec));
-  }
-
-  template <typename T>
-    requires(!std::is_trivially_copyable_v<T>)
-  void ReadVectorContent(size_t size, std::vector<T>* vec) {
-    vec->resize(size);
-    for (size_t i = 0; i < size; ++i) {
-      Read(&(*vec)[i]);
+  void ReadVectorContent(size_t size, std::vector<T>& vec) {
+    vec.resize(size);
+    for (base::span span(vec); !span.empty();
+         span = span.template subspan<1>()) {
+      Read(&span.front());
     }
   }
 

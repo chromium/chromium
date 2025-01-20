@@ -17,7 +17,7 @@ class ExtensionViewHost;
 
 class ExtensionActionPlatformDelegate {
  public:
-  virtual ~ExtensionActionPlatformDelegate() {}
+  virtual ~ExtensionActionPlatformDelegate() = default;
 
   // Returns a created ExtensionActionPlatformDelegate. This is defined in the
   // platform-specific implementation for the class.

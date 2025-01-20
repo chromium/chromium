@@ -95,6 +95,7 @@ enum NtpWallpaperSearchButtonHideCondition {
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
 const OGB_IFRAME_ORIGIN = 'chrome-untrusted://new-tab-page';
+const MSAL_IFRAME_ORIGIN = 'chrome-untrusted://ntp-microsoft-auth';
 
 export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
     'NewTabPageUI::kCustomizeChromeButtonElementId';
@@ -195,23 +196,10 @@ export class AppElement extends AppElementBase {
         notify: true,
       },
 
-      realboxIsTall_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       realboxShown_: {type: Boolean},
-
-      /* Searchbox width behavior. */
-      searchboxWidthBehavior_: {
-        type: String,
-        reflect: true,
-      },
-
       logoEnabled_: {type: Boolean},
       oneGoogleBarEnabled_: {type: Boolean},
       shortcutsEnabled_: {type: Boolean},
-      singleRowShortcutsEnabled_: {type: Boolean},
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
       middleSlotPromoLoaded_: {type: Boolean},
@@ -221,6 +209,9 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         reflect: true,
       },
+
+      microsoftAuthEnabled_: {type: Boolean},
+      microsoftAuthIframePath_: {type: String},
 
       /**
        * In order to avoid flicker, the promo and modules are hidden until both
@@ -274,18 +265,13 @@ export class AppElement extends AppElementBase {
   protected singleColoredLogo_: boolean;
   realboxCanShowSecondarySide: boolean;
   realboxHadSecondarySide: boolean;
-  protected realboxIsTall_ = loadTimeData.getBoolean('realboxIsTall');
   protected realboxShown_: boolean;
-  protected searchboxWidthBehavior_: string =
-      loadTimeData.getString('searchboxWidthBehavior');
   protected showLensUploadDialog_: boolean = false;
   protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
   protected oneGoogleBarEnabled_: boolean =
       loadTimeData.getBoolean('oneGoogleBarEnabled');
   protected shortcutsEnabled_: boolean =
       loadTimeData.getBoolean('shortcutsEnabled');
-  protected singleRowShortcutsEnabled_: boolean =
-      loadTimeData.getBoolean('singleRowShortcutsEnabled');
   private modulesFreShown: boolean;
   protected middleSlotPromoEnabled_: boolean =
       loadTimeData.getBoolean('middleSlotPromoEnabled');
@@ -294,6 +280,9 @@ export class AppElement extends AppElementBase {
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;
+  protected microsoftAuthEnabled_: boolean =
+      loadTimeData.getBoolean('microsoftAuthEnabled');
+  protected microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
   protected promoAndModulesLoaded_: boolean = false;
   protected lazyRender_: boolean;
   protected scrolledToTop_: boolean = document.documentElement.scrollTop <= 0;

@@ -30,12 +30,12 @@ class SyncableFileOperationRunner final : public LocalFileSyncStatus::Observer {
   // Represents an operation task (which usually wraps one FileSystemOperation).
   class Task {
    public:
-    Task() {}
+    Task() = default;
 
     Task(const Task&) = delete;
     Task& operator=(const Task&) = delete;
 
-    virtual ~Task() {}
+    virtual ~Task() = default;
 
     // Only one of Run() or Cancel() is called.
     virtual void Run() = 0;

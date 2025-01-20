@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -113,8 +111,8 @@ void MediaToolbarButtonView::Enable() {
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
   if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
   }
 
   observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
@@ -129,18 +127,14 @@ void MediaToolbarButtonView::Disable() {
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->should_show_cast_local_media_iph()) {
+  if (service_->should_show_cast_local_media_iph()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCLocalMediaCastingFeature);
   }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->HasLocalCastNotifications()) {
+  if (service_->HasLocalCastNotifications()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_chrome.h"
 #include "chrome/test/chromedriver/chrome/stub_web_view.h"
@@ -35,8 +36,10 @@ void SaveTo(std::string* dest, std::string value) {
 
 class MockChrome : public StubChrome {
  public:
-  MockChrome() : web_view_("1") {}
-  ~MockChrome() override {}
+  MockChrome() : web_view_("1") {
+    web_view_.SetupChildView(std::make_unique<StubWebView>("child"));
+  }
+  ~MockChrome() override = default;
 
   Status GetWebViewById(const std::string& id, WebView** web_view) override {
     if (id == web_view_.GetId()) {
@@ -333,61 +336,4 @@ TEST(Session, OnBidiResponseFormat) {
       "{\"channel\":\"abc\",\"float_field\":1.234,\"integer_field\":1,\"string_"
       "field\":\"some_String\"}",
       received);
-}
-
-TEST(Session, OnBlockingChannelResponseWhileAwaiting) {
-  std::string good_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix +
-          Session::kBlockingChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix +
-          Session::kBlockingChannelSuffix,
-  };
-  for (std::string channel : good_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = true;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-    EXPECT_FALSE(session.awaiting_bidi_response);
-  }
-}
-
-TEST(Session, OnNonBlockingChannelResponseWhileAwaiting) {
-  std::string good_non_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix};
-  for (std::string channel : good_non_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = true;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
-    EXPECT_TRUE(session.awaiting_bidi_response);
-  }
-}
-
-TEST(Session, OnBlockingChannelResponseWhileNotAwaiting) {
-  std::string good_blocking_channels[] = {
-      std::string("x/7") + Session::kChannelSuffix +
-          Session::kBlockingChannelSuffix,
-      std::string("/7") + Session::kNoChannelSuffix +
-          Session::kBlockingChannelSuffix,
-  };
-  for (std::string channel : good_blocking_channels) {
-    std::unique_ptr<Chrome> chrome(new MockChrome());
-    Session session("1", std::move(chrome));
-    session.awaiting_bidi_response = false;
-    session.AddBidiConnection(7, base::BindRepeating([](std::string) {}),
-                              base::BindRepeating([] {}));
-    base::Value::Dict payload;
-    payload.Set("channel", channel);
-    EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
-    EXPECT_FALSE(session.awaiting_bidi_response);
-  }
 }

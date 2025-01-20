@@ -27,6 +27,7 @@ source_set("browser_tests") {
     "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
+    "chrome_urls/chrome_urls_browsertest.cc",
     "commerce/product_specifications/product_specifications_browsertest.cc",
     "commerce_internals/commerce_internals_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
@@ -41,11 +42,11 @@ source_set("browser_tests") {
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",
     "history_clusters_internals/history_clusters_internals_browsertest.cc",
-    "identity_internals/identity_internals_browsertest.cc",
     "inspect/inspect_ui_browsertest.cc",
     "js/js_browsertest.cc",
     "key_value_pair_viewer/key_value_pair_viewer_browsertest.cc",
-    "lens/lens_webui_browsertest.cc",
+    "lens/lens_overlay_webui_browsertest.cc",
+    "lens/lens_side_panel_webui_browsertest.cc",
     "location_internals/location_internals_browsertest.cc",
     "media/media_engagement_browsertest.cc",
     "media_internals/media_internals_browsertest.cc",
@@ -80,7 +81,6 @@ source_set("browser_tests") {
     sources += [
       "intro/intro_browsertest.cc",
       "signin/batch_upload_view_browsertest.cc",
-      "welcome/welcome_browsertest.cc",
     ]
   }
 
@@ -94,11 +94,6 @@ source_set("browser_tests") {
 
   if (enable_print_preview) {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
-  }
-
-  if (enable_webui_certificate_viewer) {
-    sources +=
-        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -241,13 +236,18 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/ash/extended_updates",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings:settings",
-      "//chromeos/ash/components/standalone_browser",
       "//components/manta",
     ]
   }
   if (enable_compose) {
     sources += [ "compose/compose_browsertest.cc" ]
     deps += [ "//components/compose/core/browser:features" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    sources +=
+        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
+    deps += [ "//chrome/browser/net:server_certificate_database_test_support" ]
   }
 }
 
@@ -297,6 +297,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     "//chrome/test:test_support",
+    "//components/history_clusters/core",
     "//components/password_manager/content/common",
     "//components/power_bookmarks/core:features",
     "//components/search",
@@ -423,9 +424,11 @@ generate_grd("build_grd") {
     "about_sys:build_grdp",
     "access_code_cast:build_grdp",
     "bookmarks:build_grdp",
+    "chrome_urls:build_grdp",
     "commerce/product_specifications:build_grdp",
     "commerce_internals:build_grdp",
     "cr_components:build_grdp",
+    "cr_components/cr_shortcut_input:build_grdp",
     "cr_components/help_bubble:build_grdp",
     "cr_components/history_clusters:build_grdp",
     "cr_components/history_embeddings:build_grdp",
@@ -442,7 +445,6 @@ generate_grd("build_grd") {
     "histograms:build_grdp",
     "history:build_grdp",
     "history_clusters_internals:build_grdp",
-    "identity_internals:build_grdp",
     "inspect:build_grdp",
     "js:build_grdp",
     "key_value_pair_viewer:build_grdp",
@@ -477,9 +479,11 @@ generate_grd("build_grd") {
     "$target_gen_dir/access_code_cast/resources.grdp",
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
+    "$target_gen_dir/chrome_urls/resources.grdp",
     "$target_gen_dir/commerce/product_specifications/resources.grdp",
     "$target_gen_dir/commerce_internals/resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
+    "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
     "$target_gen_dir/cr_components/help_bubble/resources.grdp",
     "$target_gen_dir/cr_components/history_clusters/resources.grdp",
     "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
@@ -496,7 +500,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/histograms/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/history_clusters_internals/resources.grdp",
-    "$target_gen_dir/identity_internals/resources.grdp",
     "$target_gen_dir/inspect/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/key_value_pair_viewer/resources.grdp",
@@ -593,7 +596,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     deps += [
       "chromeos:build_grdp",
-      "chromeos:build_web_ui_test_mojo_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/ash_common/cr_elements:build_grdp",
@@ -661,7 +663,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/os_feedback_ui/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
-      "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
@@ -670,13 +671,11 @@ generate_grd("build_grd") {
       "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
-      "welcome:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
-      "$target_gen_dir/welcome/resources.grdp",
     ]
   }
 

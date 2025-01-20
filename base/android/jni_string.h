@@ -66,7 +66,7 @@ inline ScopedJavaLocalRef<jobject> ToJniType<std::string>(
 
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<const char>(JNIEnv* env,
-                                                   const char* input) {
+                                                         const char* input) {
   return base::android::ConvertUTF8ToJavaString(env, input);
 }
 

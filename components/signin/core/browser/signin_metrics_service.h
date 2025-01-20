@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_METRICS_SERVICE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_METRICS_SERVICE_H_
 
-#include <string>
-
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -86,7 +84,7 @@ class SigninMetricsService : public KeyedService,
       const CoreAccountId& account_id,
       signin_metrics::AccessPoint access_point);
   void RecordSigninInterceptionMetrics(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       signin_metrics::AccessPoint access_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

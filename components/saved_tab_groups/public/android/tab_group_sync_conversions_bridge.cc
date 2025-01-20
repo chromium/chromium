@@ -35,9 +35,9 @@ int kInvalidTabPosition = -1;
 // not present, null is returned.
 ScopedJavaLocalRef<jstring> ToJavaCollaborationId(
     JNIEnv* env,
-    const std::optional<std::string>& collaboration_id) {
+    const std::optional<CollaborationId>& collaboration_id) {
   return collaboration_id.has_value()
-             ? ConvertUTF8ToJavaString(env, collaboration_id.value())
+             ? ConvertUTF8ToJavaString(env, collaboration_id->value())
              : ScopedJavaLocalRef<jstring>();
 }
 
@@ -93,27 +93,19 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
 // Java-to-native conversion helper methods.
 
 // static
-jlong JNI_TabGroupSyncConversionsBridge_CreateGroup(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_group_id) {
-  LocalTabGroupID group_id =
-      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
-
-  // Create an empty SavedTabGroup. Only set field is the local tab group ID.
-  std::unique_ptr<SavedTabGroup> group = std::make_unique<SavedTabGroup>(
-      std::u16string(), tab_groups::TabGroupColorId::kGrey,
-      std::vector<SavedTabGroupTab>(), std::nullopt, std::nullopt, group_id);
-  return reinterpret_cast<jlong>(group.release());
-}
-
-// static
 void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
     JNIEnv* env,
     jlong j_group_ptr,
+    const JavaParamRef<jobject>& j_group_id,
     const JavaParamRef<jstring>& j_title,
     jint j_color) {
   // Set visuals on the given SavedTabGroup.
   SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
+  if (j_group_id) {
+    group->SetLocalGroupId(
+        TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id));
+  }
+
   if (j_title) {
     group->SetTitle(ConvertJavaStringToUTF16(env, j_title));
   }
@@ -173,6 +165,15 @@ ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::ToJavaTabGroupId(
              ? Java_TabGroupSyncConversionsBridge_createJavaTabGroupId(
                    env, TokenAndroid::Create(env, group_id.value()))
              : ScopedJavaLocalRef<jobject>();
+}
+
+// static
+void TabGroupSyncConversionsBridge::FillNativeSavedTabGroup(
+    JNIEnv* env,
+    const jlong native_saved_tab_group_ptr,
+    const JavaParamRef<jobject>& j_saved_tab_group) {
+  Java_TabGroupSyncConversionsBridge_toNativeSavedTabGroup(
+      env, native_saved_tab_group_ptr, j_saved_tab_group);
 }
 
 }  // namespace tab_groups

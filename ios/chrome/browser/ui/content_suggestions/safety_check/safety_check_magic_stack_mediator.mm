@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
+#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 
 namespace {
 
@@ -507,7 +507,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 
   BOOL isOptedIn = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
   if (isOptedIn) {
     return NO;

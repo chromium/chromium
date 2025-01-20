@@ -4,6 +4,8 @@
 
 #include "ui/events/gestures/motion_event_aura.h"
 
+#include <array>
+
 #include "base/numerics/angle_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -59,7 +61,7 @@ namespace ui {
 TEST(MotionEventAuraTest, PointerCountAndIds) {
   // Test that |PointerCount()| returns the correct number of pointers, and ids
   // are assigned correctly.
-  int ids[] = {4, 6, 1};
+  auto ids = std::to_array<int>({4, 6, 1});
 
   MotionEventAura event;
   EXPECT_EQ(0U, event.GetPointerCount());
@@ -118,7 +120,7 @@ TEST(MotionEventAuraTest, PointerCountAndIds) {
 TEST(MotionEventAuraTest, GetActionIndexAfterRemoval) {
   // Test that |GetActionIndex()| returns the correct index when points have
   // been removed.
-  int ids[] = {4, 6, 9};
+  auto ids = std::to_array<int>({4, 6, 9});
 
   MotionEventAura event;
   EXPECT_EQ(0U, event.GetPointerCount());
@@ -158,7 +160,7 @@ TEST(MotionEventAuraTest, PointerLocations) {
   const float kRawOffsetX = 11.1f;
   const float kRawOffsetY = 13.3f;
 
-  int ids[] = {15, 13};
+  auto ids = std::to_array<int>({15, 13});
   float x;
   float y;
   float raw_x;
@@ -233,7 +235,7 @@ TEST(MotionEventAuraTest, TapParams) {
   // Test that touch params are stored correctly.
   MotionEventAura event;
 
-  int ids[] = {15, 13, 25, 23};
+  auto ids = std::to_array<int>({15, 13, 25, 23});
 
   float radius_x;
   float radius_y;
@@ -343,8 +345,8 @@ TEST(MotionEventAuraTest, TapParams) {
 TEST(MotionEventAuraTest, Timestamps) {
   // Test that timestamp information is stored and converted correctly.
   MotionEventAura event;
-  int ids[] = {7, 13};
-  int times_in_ms[] = {59436, 60263, 82175};
+  auto ids = std::to_array<int>({7, 13});
+  auto times_in_ms = std::to_array<int>({59436, 60263, 82175});
 
   TouchEvent press0 =
       TouchWithTime(ui::EventType::kTouchPressed, ids[0], times_in_ms[0]);
@@ -369,7 +371,7 @@ TEST(MotionEventAuraTest, Timestamps) {
 
 TEST(MotionEventAuraTest, CachedAction) {
   // Test that the cached action and cached action index are correct.
-  int ids[] = {4, 6};
+  auto ids = std::to_array<int>({4, 6});
   MotionEventAura event;
 
   TouchEvent press0 = TouchWithType(EventType::kTouchPressed, ids[0]);
@@ -410,7 +412,7 @@ TEST(MotionEventAuraTest, CachedAction) {
 }
 
 TEST(MotionEventAuraTest, Cancel) {
-  int ids[] = {4, 6};
+  auto ids = std::to_array<int>({4, 6});
   MotionEventAura event;
 
   TouchEvent press0 = TouchWithType(EventType::kTouchPressed, ids[0]);
@@ -448,7 +450,7 @@ TEST(MotionEventAuraTest, ToolType) {
 }
 
 TEST(MotionEventAuraTest, Flags) {
-  int ids[] = {7, 11};
+  auto ids = std::to_array<int>({7, 11});
   MotionEventAura event;
 
   TouchEvent press0 = TouchWithType(EventType::kTouchPressed, ids[0]);

@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -185,7 +186,7 @@ public class ClickToCallMessageHandler {
      */
     @CalledByNative
     @VisibleForTesting
-    static void handleMessage(String phoneNumber) {
+    static void handleMessage(@JniType("std::string") String phoneNumber) {
         if (shouldOpenDialer()) {
             openDialer(phoneNumber);
         }

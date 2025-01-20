@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -602,12 +598,13 @@ class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
 TEST_F(SubresourceFilterComputeActivationStateTest,
        ActivationBitsCorrectlyPropagateToChildDocument) {
   // TODO(pkalinnikov): Find a short way to express all these tests.
-  const struct {
+  struct TestCases {
     const char* document_url;
     const char* parent_document_origin;
     mojom::ActivationState parent_activation;
     mojom::ActivationState expected_activation_state;
-  } kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {"http://example.com", "http://example.com", MakeState(false, false),
        MakeState(false, false)},
       {"http://example.com", "http://example.com", MakeState(false, true),
@@ -645,7 +642,7 @@ TEST_F(SubresourceFilterComputeActivationStateTest,
        MakeState(true)},
       {"http://child3.com", "http://parent1.com", MakeState(true, true),
        MakeState(true, true)},
-  };
+  });
 
   for (size_t i = 0, size = std::size(kTestCases); i != size; ++i) {
     SCOPED_TRACE(::testing::Message() << "Test number: " << i);

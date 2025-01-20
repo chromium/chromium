@@ -540,14 +540,6 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 
   auto status = iter->second->current_status();
 
-  if (status == SearchPrefetchStatus::kInFlight) {
-    recorder.reason_ = SearchPrefetchServingReason::kRequestInFlightNotReady;
-    // Set the failure reason when prefetch is not served.
-    iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
-        SearchPrefetchServingReason::kRequestInFlightNotReady));
-    return {};
-  }
-
   bool is_servable =
       status == SearchPrefetchStatus::kComplete ||
       status == SearchPrefetchStatus::kCanBeServed;

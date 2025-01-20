@@ -34,13 +34,19 @@ public class MessageUtils {
         return message == null ? null : extractTabGroupId(message.attribution);
     }
 
-    /** Returns the given name or the empty string. */
-    public static String extractGivenName(@Nullable InstantMessage message) {
+    /** Returns the sync id of the group, or null. */
+    public static @Nullable String extractSyncTabGroupId(@Nullable InstantMessage message) {
         return message == null
                         || message.attribution == null
-                        || message.attribution.triggeringUser == null
-                ? ""
-                : message.attribution.triggeringUser.givenName;
+                        || message.attribution.tabGroupMetadata == null
+                ? null
+                : message.attribution.tabGroupMetadata.syncTabGroupId;
+    }
+
+    /** Returns the given name or the empty string. */
+    public static String extractGivenName(@Nullable InstantMessage message) {
+        GroupMember member = extractMember(message);
+        return member == null ? "" : member.givenName;
     }
 
     /** Returns the tab title or the empty string. */

@@ -35,8 +35,9 @@ enum class SearchPrefetchStatus {
   // fetcher (as of now).
   kNotStarted = 0,
 
-  // The request is on the network and may move to any other state.
-  kInFlight = 1,
+  // The request is on the network and may move to any other state. Removed
+  // after https://crbug.com/40217275 is implemented.
+  // kInFlight = 1,
 
   // The request can be served to the navigation stack, but may still encounter
   // errors and move to |kRequestFailed| or it may complete and move to
@@ -94,10 +95,9 @@ class SearchPrefetchRequest {
   // The NTA for any search prefetch request.
   static net::NetworkTrafficAnnotationTag NetworkAnnotationForPrefetch();
 
-  // Starts the network request to prefetch |prefetch_url_|. Sets various fields
-  // on a resource request and calls |StartPrefetchRequestInternal()|. Returns
-  // |false| if the request is not started (i.e., it would be deferred by
-  // throttles).
+  // Starts the network request to prefetch `prefetch_url_`. Sets various fields
+  // on a resource request. Returns `false` if the request is not started (i.e.,
+  // it would be deferred by throttles).
   bool StartPrefetchRequest(Profile* profile);
 
   // Called when SearchPrefetchService receives the hint that this prefetch
@@ -111,9 +111,6 @@ class SearchPrefetchRequest {
 
   // Called on the URL loader receives servable response.
   void OnServableResponseCodeReceived();
-
-  // Update the status when the request is serveable.
-  void MarkPrefetchAsServable();
 
   // Update the status when the request is complete.
   void MarkPrefetchAsComplete();
@@ -159,12 +156,6 @@ class SearchPrefetchRequest {
       base::OnceClosure streaming_url_loader_destruction_callback);
 
  private:
-  // Starts and begins processing |resource_request|.
-  void StartPrefetchRequestInternal(
-      Profile* profile,
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      base::OnceCallback<void(bool)> report_error_callback);
-
   // Stops the on-going prefetch and should mark |current_status_|
   // appropriately.
   void StopPrefetch();

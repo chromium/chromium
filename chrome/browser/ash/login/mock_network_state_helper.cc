@@ -7,8 +7,8 @@
 namespace ash {
 namespace login {
 
-MockNetworkStateHelper::MockNetworkStateHelper() {}
-MockNetworkStateHelper::~MockNetworkStateHelper() {}
+MockNetworkStateHelper::MockNetworkStateHelper() = default;
+MockNetworkStateHelper::~MockNetworkStateHelper() = default;
 
 }  // namespace login
 }  // namespace ash

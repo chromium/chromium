@@ -8,17 +8,17 @@ ender@google.com
 mthiesse@chromium.org
 andzaytsev@google.com
 ckitagawa@chromium.org
-sinansahin@google.com
 mvanouwerkerk@chromium.org
+sinansahin@google.com
 jinsukkim@chromium.org
+altimin@chromium.org
 wenyufu@chromium.org
+peter@chromium.org
 # apps
 nancylingwang@chromium.org
 tby@chromium.org
-yulunwu@chromium.org
 mek@chromium.org
 # arc
-mhasank@chromium.org
 batoon@google.com
 youkichihosoi@chromium.org
 lingyufeng@chromium.org
@@ -30,7 +30,6 @@ dmblack@google.com
 # ash
 tby@chromium.org
 jimmyxgong@chromium.org
-yulunwu@chromium.org
 michelefan@chromium.org
 junis@google.com
 # ash_growth
@@ -59,6 +58,7 @@ mlippautz@chromium.org
 toyoshim@chromium.org
 yigu@chromium.org
 npm@chromium.org
+gjc@google.com
 # bluetooth
 chadduffin@chromium.org
 crisrael@google.com
@@ -74,6 +74,7 @@ emshack@chromium.org
 # browser
 ckitagawa@chromium.org
 joenotcharles@google.com
+gjc@google.com
 # browsing_topics
 # chromeos_hps
 azeemarshad@chromium.org
@@ -139,7 +140,6 @@ bhartmire@google.com
 davidmunro@google.com
 philpearson@google.com
 # cryptohome
-emaxx@chromium.org
 jorgelo@chromium.org
 hcyang@google.com
 # custom_tabs
@@ -155,6 +155,7 @@ gavinwill@chromium.org
 # direct
 schenney@chromium.org
 # download
+chlily@chromium.org
 qinmin@chromium.org
 shaktisahu@chromium.org
 # enterprise
@@ -163,7 +164,6 @@ zmin@chromium.org
 seblalancette@chromium.org
 igorruvinov@chromium.org
 vsavu@google.com
-emaxx@chromium.org
 hendrich@chromium.org
 # event
 jonross@chromium.org
@@ -215,6 +215,7 @@ ajuma@chromium.org
 guiperez@google.com
 olivierrobin@chromium.org
 sebsg@chromium.org
+rkgibson@google.com
 # language
 perrier@chromium.org
 curranmax@chromium.org
@@ -251,6 +252,7 @@ cthomp@chromium.org
 tbansal@chromium.org
 toyoshim@chromium.org
 wanderview@chromium.org
+gjc@google.com
 # nearby
 crisrael@google.com
 dclasson@google.com
@@ -327,8 +329,10 @@ awscreen@chromium.org
 # performance_controls
 agale@chromium.org
 # performance_manager
-chrisha@chromium.org
+anthonyvd@chromium.org
 fdoray@chromium.org
+olivierli@chromium.org
+joenotcharles@google.com
 # permissions
 andypaicu@chromium.org
 ravjit@chromium.org
@@ -450,6 +454,7 @@ csharrison@chromium.org
 johnidel@chromium.org
 tbansal@chromium.org
 # sync
+mmoskvitin@google.com
 rushans@google.com
 # tab
 ckitagawa@chromium.org

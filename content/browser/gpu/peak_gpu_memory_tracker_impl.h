@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/input/peak_gpu_memory_tracker.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 
 namespace content {
 
@@ -20,11 +20,11 @@ namespace content {
 // be no report to UMA Histograms. The same for if there is never a successful
 // GPU connection.
 //
-// This is instaniated via `PeakGpuMemoryTrackerFactory::Create`.
-class PeakGpuMemoryTrackerImpl : public input::PeakGpuMemoryTracker {
+// This is instantiated via `PeakGpuMemoryTrackerFactory::Create`.
+class PeakGpuMemoryTrackerImpl : public viz::PeakGpuMemoryTracker {
  public:
   // Requests the GPU service to begin peak memory tracking.
-  PeakGpuMemoryTrackerImpl(input::PeakGpuMemoryTracker::Usage usage);
+  PeakGpuMemoryTrackerImpl(viz::PeakGpuMemoryTracker::Usage usage);
   // Requests the GPU service provides the peak memory, the result is presented
   // to UMA Histograms.
   ~PeakGpuMemoryTrackerImpl() override;
@@ -41,12 +41,9 @@ class PeakGpuMemoryTrackerImpl : public input::PeakGpuMemoryTracker {
   // GpuService. For use by tests to synchronize work done on the UI thread.
   base::OnceClosure post_gpu_service_callback_for_testing_ = base::DoNothing();
 
-  // Provides the unique identifier for each PeakGpuMemoryTrackerImpl.
-  static uint32_t next_sequence_number_;
-
   bool canceled_ = false;
-  input::PeakGpuMemoryTracker::Usage usage_;
-  uint32_t sequence_num_ = next_sequence_number_++;
+  viz::PeakGpuMemoryTracker::Usage usage_;
+  uint32_t sequence_num_;
 };
 
 }  // namespace content

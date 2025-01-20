@@ -113,7 +113,7 @@ class StructuredSharedMemory {
       SharedMemoryMapper* mapper = nullptr);
 
   // Returns a pointer to the object stored in the mapped region.
-  T* WritablePtr() const {
+  T* WritablePtr() {
     CHECK(writable_mapping_.IsValid());
     return writable_mapping_.GetMemoryAs<T>();
   }
@@ -123,7 +123,7 @@ class StructuredSharedMemory {
   }
 
   // Returns a reference to the object stored in the mapped region.
-  T& WritableRef() const LIFETIME_BOUND {
+  T& WritableRef() LIFETIME_BOUND {
     T* ptr = WritablePtr();
     CHECK(ptr);
     return *ptr;

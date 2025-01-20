@@ -120,7 +120,7 @@ class ClipboardMacTest : public PlatformTest {
       std::unique_ptr<DataTransferEndpoint> data_src,
       NSPasteboard* pasteboard) {
     clipboard_mac->WritePortableAndPlatformRepresentationsInternal(
-        ClipboardBuffer::kCopyPaste, /*objects=*/{},
+        ClipboardBuffer::kCopyPaste, /*objects=*/{}, /*raw_objects=*/{},
         /*platform_representations=*/{}, std::move(data_src), pasteboard,
         /*privacy_types=*/0);
   }

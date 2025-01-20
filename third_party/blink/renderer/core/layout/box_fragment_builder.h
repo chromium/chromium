@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
@@ -150,6 +151,20 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
+  }
+
+  LogicalSize SizeForAnchorQueries() const {
+    // TODO(layout-dev): This isn't great. But sometimes anchor queries are
+    // evaluated in the middle of layout of an OOF container. This happens when
+    // the OOF container is a multicol container, and column layout gets
+    // interrupted by a column spanner. We should probably provide the multicol
+    // block size we have at the point of being interrupted by the spanner,
+    // rather than using 0.
+    LogicalSize logical_size(InlineSize(), LayoutUnit());
+    if (HasBlockSize()) {
+      logical_size.block_size = FragmentBlockSize();
+    }
+    return logical_size;
   }
 
   void SetIntrinsicBlockSize(LayoutUnit intrinsic_block_size) {
@@ -574,6 +589,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     use_last_baseline_for_inline_baseline_ = true;
   }
 
+  void SetGapGeometry(GapFragmentData::GapGeometry* gap_geometry) {
+    gap_geometry_ = gap_geometry;
+  }
+
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;
   }
@@ -620,8 +639,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void TransferFrameSetLayoutData(std::unique_ptr<FrameSetLayoutData> data) {
     frame_set_layout_data_ = std::move(data);
   }
-  void SetReadingFlowElements(HeapVector<Member<Element>>&& elements) {
-    reading_flow_elements_ = std::move(elements);
+  void SetReadingFlowNodes(HeapVector<Member<blink::Node>>&& nodes) {
+    reading_flow_nodes_ = std::move(nodes);
   }
 
   const GridLayoutData& GetGridLayoutData() const {
@@ -750,6 +769,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
 
+  GapFragmentData::GapGeometry* gap_geometry_ = nullptr;
+
   // Table specific types.
   std::optional<LogicalRect> table_grid_rect_;
   TableFragmentData::ColumnGeometries table_column_geometries_;
@@ -771,7 +792,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;
 
-  HeapVector<Member<Element>> reading_flow_elements_;
+  HeapVector<Member<blink::Node>> reading_flow_nodes_;
 
   LogicalBoxSides sides_to_include_;
 

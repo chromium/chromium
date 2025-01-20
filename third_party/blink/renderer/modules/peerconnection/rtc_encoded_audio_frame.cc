@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -56,11 +57,14 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
        current_metadata->sequenceNumber() != new_metadata->sequenceNumber())) {
     return SetMetadataValidationOutcome{false, "Bad sequenceNumber"};
   }
-  if (new_metadata->hasAbsCaptureTime() !=
-          current_metadata->hasAbsCaptureTime() ||
-      (new_metadata->hasAbsCaptureTime() &&
-       current_metadata->absCaptureTime() != new_metadata->absCaptureTime())) {
-    return SetMetadataValidationOutcome{false, "Bad absoluteCaptureTime"};
+  if (RuntimeEnabledFeatures::RTCEncodedAudioFrameAbsCaptureTimeEnabled()) {
+    if (new_metadata->hasAbsCaptureTime() !=
+            current_metadata->hasAbsCaptureTime() ||
+        (new_metadata->hasAbsCaptureTime() &&
+         current_metadata->absCaptureTime() !=
+             new_metadata->absCaptureTime())) {
+      return SetMetadataValidationOutcome{false, "Bad absoluteCaptureTime"};
+    }
   }
   if (!new_metadata->hasRtpTimestamp()) {
     return SetMetadataValidationOutcome{false, "Bad rtpTimestamp"};
@@ -152,8 +156,10 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   if (delegate_->SequenceNumber()) {
     metadata->setSequenceNumber(*delegate_->SequenceNumber());
   }
-  if (delegate_->AbsCaptureTime()) {
-    metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
+  if (RuntimeEnabledFeatures::RTCEncodedAudioFrameAbsCaptureTimeEnabled()) {
+    if (delegate_->AbsCaptureTime()) {
+      metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
+    }
   }
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
   if (delegate_->MimeType()) {

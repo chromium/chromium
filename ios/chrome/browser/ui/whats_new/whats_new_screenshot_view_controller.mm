@@ -41,7 +41,13 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 @property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
-@implementation WhatsNewScreenshotViewController
+@implementation WhatsNewScreenshotViewController {
+  // Top constraint for the alert screen in regular height environments.
+  NSLayoutConstraint* _alertScreenTopConstraintRegularHeight;
+
+  // Top constraint for the alert screen in compact height environments.
+  NSLayoutConstraint* _alertScreenTopConstraintCompactHeight;
+}
 
 - (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item
                      whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler {
@@ -76,10 +82,15 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
   [self createConfirmationAlertScreen:self.item.title
                        subtitleString:self.item.subtitle
-                  primaryActionString:self.item.primaryActionTitle
+                  primaryActionString:
+                      self.item.primaryActionTitle
+                          ?: l10n_util::GetNSString(
+                                 IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)
                 secondaryActionString:
-                    l10n_util::GetNSString(
-                        IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)];
+                    self.item.primaryActionTitle
+                        ? l10n_util::GetNSString(
+                              IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE)
+                        : nil];
 
   [self configureAnimationView];
   [self configureAlertScreen];
@@ -94,6 +105,10 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
         TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(toggleDarkModeOnTraitChange)];
+
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                       withAction:@selector
+                       (toggleConstraintsOnVerticalSizeClassChange)];
   }
 }
 
@@ -109,6 +124,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   }
 
   [self toggleDarkModeOnTraitChange];
+  [self toggleConstraintsOnVerticalSizeClassChange];
 }
 #endif
 
@@ -182,6 +198,10 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 // Sets the layout of the alertScreen view.
 - (void)layoutAlertScreen {
   self.alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
+  _alertScreenTopConstraintRegularHeight = [self.alertScreen.view.topAnchor
+      constraintEqualToAnchor:self.view.centerYAnchor];
+  _alertScreenTopConstraintCompactHeight = [self.alertScreen.view.topAnchor
+      constraintEqualToAnchor:self.view.topAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [self.alertScreen.view.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
@@ -189,9 +209,9 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.alertScreen.view.widthAnchor
         constraintEqualToAnchor:self.view.widthAnchor],
-    [self.alertScreen.view.topAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor],
   ]];
+
+  [self toggleConstraintsOnVerticalSizeClassChange];
 }
 
 // Configures the animation view and its constraints.
@@ -249,6 +269,22 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 
   self.screenshotViewWrapper.animationView.hidden = darkModeEnabled;
   self.screenshotViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+}
+
+// Toggle necessary constraints when UITraitVerticalSizeClass changes.
+- (void)toggleConstraintsOnVerticalSizeClassChange {
+  BOOL isCompactHeight =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  _alertScreenTopConstraintCompactHeight.active = isCompactHeight;
+  _alertScreenTopConstraintRegularHeight.active = !isCompactHeight;
+
+  // Hide the animations, just in case they still play in the background.
+  if (isCompactHeight) {
+    self.screenshotViewWrapper.animationView.hidden = YES;
+    self.screenshotViewWrapperDarkMode.animationView.hidden = YES;
+  } else {
+    [self toggleDarkModeOnTraitChange];
+  }
 }
 
 @end

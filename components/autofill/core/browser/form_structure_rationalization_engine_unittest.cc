@@ -620,5 +620,87 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
                   /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
 }
 
+// Test that a house number field not followed by an apartment is treated
+// as a ADDRESS_HOME_HOUSE_NUMBER_AND_APT in the Netherlands.
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseNLAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+      {u"Zipcode", u"zipcode", ADDRESS_HOME_ZIP},
+      {u"Plaats", u"plaats", ADDRESS_HOME_CITY},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(kNL, LanguageCode("nl"), GetPatternFile());
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Test that the actions are not applied since there is apartment related field
+// after ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseNLAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+      {u"Toevoeging", u"toevoeging", ADDRESS_HOME_APT_NUM},
+      {u"Zipcode", u"zipcode", ADDRESS_HOME_ZIP},
+      {u"Plaats", u"plaats", ADDRESS_HOME_CITY},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(kNL, LanguageCode("nl"), GetPatternFile());
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                          ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
+                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Test that the actions are applied if there is no next field after
+// ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptWithNoNext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseNLAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(kNL, LanguageCode("nl"), GetPatternFile());
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+}
+
 }  // namespace
 }  // namespace autofill::rationalization

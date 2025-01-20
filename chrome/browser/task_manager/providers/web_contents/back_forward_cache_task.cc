@@ -59,7 +59,7 @@ BackForwardCacheTask::BackForwardCacheTask(
       parent_task_(std::move(parent_task)),
       task_provider_(task_provider) {}
 
-BackForwardCacheTask::~BackForwardCacheTask() {}
+BackForwardCacheTask::~BackForwardCacheTask() = default;
 
 // For the top level BackForwardCacheTask |parent_task_| is nullptr.
 base::WeakPtr<Task> BackForwardCacheTask::GetParentTask() const {

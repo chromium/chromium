@@ -6,7 +6,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_labels.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {PowerBookmarksLabelsElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_labels.js';
-import type {BookmarkProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo} from 'chrome://resources/cr_components/commerce/shared.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

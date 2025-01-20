@@ -7,6 +7,7 @@
 
 #include <string>
 
+class GaiaId;
 class Profile;
 class SigninUIError;
 
@@ -19,11 +20,11 @@ class SigninUIError;
 // TODO(alexilin): consider renaming this function to CanOfferSyncOrReauth() or
 // similar to make it clear that this function is about signin into Sync.
 SigninUIError CanOfferSignin(Profile* profile,
-                             const std::string& gaia_id,
+                             const GaiaId& gaia_id,
                              const std::string& email);
 
 // Return true if an account other than `gaia_id` was previously signed into
 // `profile`.
-bool IsCrossAccountError(Profile* profile, const std::string& gaia_id);
+bool IsCrossAccountError(Profile* profile, const GaiaId& gaia_id);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UTILS_DESKTOP_H_

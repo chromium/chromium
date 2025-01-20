@@ -60,7 +60,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
   // dependencies.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Checks if the user is logged in as any kiosk app or this is an
     // auto-launch kiosk device.

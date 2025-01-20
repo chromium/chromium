@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -29,9 +29,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
  public:
   ~AutofillProvider() override;
 
-  static bool is_crowdsourcing_manager_disabled_for_testing();
-  static void set_is_crowdsourcing_manager_disabled_for_testing();
-
   // These events come from AutofillDriver.
   // See autofill_driver.mojom for documentation.
   virtual void OnAskForValuesToFill(
@@ -39,16 +36,16 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) = 0;
-  virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
-                                    const FormData& form,
-                                    const FormFieldData& field,
-                                    const base::TimeTicks timestamp) = 0;
+  virtual void OnTextFieldValueChanged(AndroidAutofillManager* manager,
+                                       const FormData& form,
+                                       const FormFieldData& field,
+                                       const base::TimeTicks timestamp) = 0;
   virtual void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field) = 0;
-  virtual void OnSelectControlDidChange(AndroidAutofillManager* manager,
-                                        const FormData& form,
-                                        const FormFieldData& field) = 0;
+  virtual void OnSelectControlSelectionChanged(AndroidAutofillManager* manager,
+                                               const FormData& form,
+                                               const FormFieldData& field) = 0;
   virtual void OnFormSubmitted(AndroidAutofillManager* manager,
                                const FormData& form,
                                mojom::SubmissionSource source) = 0;

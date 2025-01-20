@@ -118,7 +118,7 @@ public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTe
         DefaultVideoPosterRequestHandler handler =
                 new DefaultVideoPosterRequestHandler(contentsClient);
         WebResourceResponseInfo requestData =
-                handler.shouldInterceptRequest(handler.getDefaultVideoPosterURL());
+                handler.shouldInterceptRequest(handler.getDefaultVideoPosterUrl());
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         Bitmap bitmap = BitmapFactory.decodeStream(requestData.getData());
         Bitmap poster = contentsClient.getPoster();
@@ -140,7 +140,7 @@ public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTe
         DefaultVideoPosterRequestHandler handler =
                 new DefaultVideoPosterRequestHandler(contentsClient);
         WebResourceResponseInfo requestData =
-                handler.shouldInterceptRequest(handler.getDefaultVideoPosterURL());
+                handler.shouldInterceptRequest(handler.getDefaultVideoPosterUrl());
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         InputStream in = requestData.getData();
         Assert.assertEquals("Should get -1", in.read(), -1);

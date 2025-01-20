@@ -43,7 +43,8 @@ class ConstrainedWebDialogDelegateUserData
     : public base::SupportsUserData::Data {
  public:
   explicit ConstrainedWebDialogDelegateUserData(
-      ConstrainedWebDialogDelegate* delegate) : delegate_(delegate) {}
+      ConstrainedWebDialogDelegate* delegate)
+      : delegate_(delegate) {}
   ~ConstrainedWebDialogDelegateUserData() override = default;
   ConstrainedWebDialogDelegateUserData(
       const ConstrainedWebDialogDelegateUserData&) = delete;
@@ -76,8 +77,9 @@ void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
                           base::Unretained(this)));
 
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
 
   ui::WebDialogDelegate* dialog_delegate = delegate->GetWebDialogDelegate();
   std::vector<WebUIMessageHandler*> handlers;
@@ -94,8 +96,9 @@ void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
 void ConstrainedWebDialogUI::OnDialogCloseMessage(
     const base::Value::List& args) {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
 
   std::string json_retval;
   if (!args.empty()) {
@@ -129,8 +132,8 @@ void ConstrainedWebDialogUI::ClearConstrainedDelegate(
 ConstrainedWebDialogDelegate* ConstrainedWebDialogUI::GetConstrainedDelegate() {
   ConstrainedWebDialogDelegateUserData* user_data =
       static_cast<ConstrainedWebDialogDelegateUserData*>(
-          web_ui()->GetWebContents()->
-              GetUserData(&kConstrainedWebDialogDelegateUserDataKey));
+          web_ui()->GetWebContents()->GetUserData(
+              &kConstrainedWebDialogDelegateUserDataKey));
 
   return user_data ? user_data->delegate() : nullptr;
 }

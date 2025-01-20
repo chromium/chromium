@@ -15,9 +15,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -84,7 +84,8 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 unsafe_resources[0], url_loader_factory,
                 /*history_service*/ nullptr,
                 /*referrer_chain_provider*/ nullptr,
-                sb_error_ui()->get_error_display_options());
+                safe_browsing::TriggerManager::DataCollectionPermissions(
+                    sb_error_ui()->get_error_display_options()));
   }
   warning_shown_ts_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
 }
@@ -107,7 +108,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-          IsMainPageLoadPending(unsafe_resources),
+          IsMainPageResourceLoadPending(unsafe_resources),
           safe_browsing::IsExtendedReportingOptInAllowed(*pref_service),
           browser_context->IsOffTheRecord(),
           safe_browsing::IsExtendedReportingEnabledBypassDeprecationFlag(
@@ -175,7 +176,9 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
               safe_browsing::TriggerType::SECURITY_INTERSTITIAL,
               safe_browsing::GetWebContentsKey(web_contents()), delay,
               did_proceed, num_visits,
-              sb_error_ui()->get_error_display_options(), warning_shown_ts_);
+              safe_browsing::TriggerManager::DataCollectionPermissions(
+                  sb_error_ui()->get_error_display_options()),
+              warning_shown_ts_);
   bool report_sent = result.IsReportSent();
 
   if (report_sent) {

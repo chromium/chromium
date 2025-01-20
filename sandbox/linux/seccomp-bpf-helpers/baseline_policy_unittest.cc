@@ -88,7 +88,7 @@ void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   transfered =
       HANDLE_EINTR(write(write_end.get(), kTestString, kTestTransferSize));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
-  char read_buf[kTestTransferSize + 1] = {0};
+  char read_buf[kTestTransferSize + 1] = {};
   transfered = HANDLE_EINTR(read(read_end.get(), read_buf, sizeof(read_buf)));
   BPF_ASSERT_EQ(kTestTransferSize, transfered);
   BPF_ASSERT_EQ(0, memcmp(kTestString, read_buf, kTestTransferSize));

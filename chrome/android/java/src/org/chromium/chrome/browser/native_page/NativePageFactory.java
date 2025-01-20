@@ -216,7 +216,6 @@ public class NativePageFactory {
                     mActivity,
                     mBrowserControlsManager,
                     mCurrentTabSupplier,
-                    mWindowAndroid.getModalDialogManager(),
                     mSnackbarManagerSupplier.get(),
                     mLifecycleDispatcher,
                     mTabModelSelector,
@@ -280,7 +279,11 @@ public class NativePageFactory {
                                             tab,
                                             mTabModelSelector.isIncognitoSelected()));
             return new RecentTabsPage(
-                    mActivity, recentTabsManager, mBrowserControlsManager, mTabStripHeightSupplier);
+                    mActivity,
+                    recentTabsManager,
+                    mBrowserControlsManager,
+                    mTabStripHeightSupplier,
+                    mEdgeToEdgeControllerSupplier);
         }
 
         protected NativePage buildManagementPage(Tab tab) {

@@ -29,10 +29,9 @@ namespace {
 
 static const uint8_t kPrfInputData[] = {1, 2, 3, 4, 5, 6};
 
-WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
-                                  const unsigned length) {
+WTF::Vector<uint8_t> CreateVector(base::span<const uint8_t> buffer) {
   WTF::Vector<uint8_t> vector;
-  vector.Append(buffer, length);
+  vector.AppendSpan(buffer);
   return vector;
 }
 
@@ -75,11 +74,9 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
 
   ASSERT_EQ(parsed_request->credential_ids.size(), 1u);
   EXPECT_EQ(parsed_request->credential_ids[0],
-            CreateVector(kSecurePaymentConfirmationCredentialId,
-                         std::size(kSecurePaymentConfirmationCredentialId)));
+            CreateVector(kSecurePaymentConfirmationCredentialId));
   EXPECT_EQ(parsed_request->challenge,
-            CreateVector(kSecurePaymentConfirmationChallenge,
-                         std::size(kSecurePaymentConfirmationChallenge)));
+            CreateVector(kSecurePaymentConfirmationChallenge));
   EXPECT_EQ(parsed_request->instrument->display_name, "My Card");
   EXPECT_EQ(parsed_request->instrument->icon.GetString(),
             "https://bank.example/icon.png");
@@ -428,8 +425,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
           scope.GetExceptionState());
 
   ASSERT_FALSE(parsed_request->extensions.is_null());
-  WTF::Vector<uint8_t> prf_expected =
-      CreateVector(kPrfInputData, sizeof(kPrfInputData));
+  WTF::Vector<uint8_t> prf_expected = CreateVector(kPrfInputData);
   ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
 }
 

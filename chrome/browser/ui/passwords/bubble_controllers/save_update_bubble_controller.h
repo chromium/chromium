@@ -51,10 +51,6 @@ class SaveUpdateBubbleController
   // Returns true iff the password account store is used.
   bool IsUsingAccountStore();
 
-  // Returns true if the user must opt-in to the account-scoped password storage
-  // before the save bubble action can be concluded.
-  bool IsAccountStorageOptInRequiredBeforeSave();
-
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;
 

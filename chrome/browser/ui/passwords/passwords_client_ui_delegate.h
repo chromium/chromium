@@ -140,6 +140,10 @@ class PasswordsClientUIDelegate {
   // an all accepted credentials report.
   virtual void OnPasskeyNotAccepted(std::string passkey_rp_id) = 0;
 
+  // Called when a passkey has been created automatically by "upgrading" a
+  // password for the same website and username.
+  virtual void OnPasskeyUpgrade(std::string passkey_rp_id) = 0;
+
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -83,21 +82,21 @@ PseudoId ResolvePseudoIdAlias(PseudoId pseudo_id) {
 PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {
-  if (pseudo_id == kPseudoIdCheck) {
+  if (pseudo_id == kPseudoIdCheckMark) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
 
     if (!IsA<HTMLOptionElement>(parent)) {
-      // The `::check` pseudo element should only be created for option
+      // The `::checkmark` pseudo element should only be created for option
       // elements.
       return nullptr;
     }
   }
 
-  if (pseudo_id == kPseudoIdSelectArrow) {
+  if (pseudo_id == kPseudoIdPickerIcon) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
 
     if (!IsA<HTMLSelectElement>(parent)) {
-      // The `::select-arrow` pseudo element should only be created for select
+      // The `::picker-icon` pseudo element should only be created for select
       // elements.
       return nullptr;
     }
@@ -116,12 +115,14 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                                                 pseudo_id);
   } else if (pseudo_id == kPseudoIdScrollMarker) {
     return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
-  } else if (pseudo_id == kPseudoIdScrollNextButton ||
-             pseudo_id == kPseudoIdScrollPrevButton) {
+  } else if (pseudo_id == kPseudoIdScrollButtonBlockStart ||
+             pseudo_id == kPseudoIdScrollButtonInlineStart ||
+             pseudo_id == kPseudoIdScrollButtonBlockEnd ||
+             pseudo_id == kPseudoIdScrollButtonInlineEnd) {
     return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdSelectArrow ||
+         pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdPickerIcon ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
          pseudo_id == kPseudoIdColumn);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
@@ -138,14 +139,14 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, before, (AtomicString("::before")));
       return before;
     }
-    case kPseudoIdCheck: {
-      DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::check")));
+    case kPseudoIdCheckMark: {
+      DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::checkmark")));
       return check;
     }
-    case kPseudoIdSelectArrow: {
-      DEFINE_STATIC_LOCAL(QualifiedName, select_arrow,
-                          (AtomicString("::select-arrow")));
-      return select_arrow;
+    case kPseudoIdPickerIcon: {
+      DEFINE_STATIC_LOCAL(QualifiedName, picker_icon,
+                          (AtomicString("::picker-icon")));
+      return picker_icon;
     }
     case kPseudoIdBackdrop: {
       DEFINE_STATIC_LOCAL(QualifiedName, backdrop,
@@ -171,15 +172,25 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::scroll-marker-group")));
       return scroll_marker_group;
     }
-    case kPseudoIdScrollNextButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_next_button,
-                          (AtomicString("::scroll-next-button")));
-      return scroll_next_button;
+    case kPseudoIdScrollButtonBlockStart: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_start,
+                          (AtomicString("::scroll-button(block-start)")));
+      return scroll_button_block_start;
     }
-    case kPseudoIdScrollPrevButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_prev_button,
-                          (AtomicString("::scroll-prev-button")));
-      return scroll_prev_button;
+    case kPseudoIdScrollButtonInlineStart: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_inline_start,
+                          (AtomicString("::scroll-button(inline-start)")));
+      return scroll_button_inline_start;
+    }
+    case kPseudoIdScrollButtonBlockEnd: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_end,
+                          (AtomicString("::scroll-button(block-end)")));
+      return scroll_button_block_end;
+    }
+    case kPseudoIdScrollButtonInlineEnd: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_inline_end,
+                          (AtomicString("::scroll-button(inline-end)")));
+      return scroll_button_inline_end;
     }
     case kPseudoIdScrollMarker: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
@@ -223,6 +234,7 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
 AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
   DCHECK(element);
   auto pseudo_id = element->GetPseudoIdForStyling();
+
   switch (pseudo_id) {
     case kPseudoIdNone:
       return g_null_atom;
@@ -235,7 +247,11 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
       StringBuilder builder;
       builder.Append(PseudoElementTagName(pseudo_id).LocalName());
       builder.Append("(");
-      builder.Append(pseudo->view_transition_name());
+      if (pseudo->is_generated_name_) {
+        builder.Append("match-element");
+      } else {
+        builder.Append(pseudo->view_transition_name());
+      }
       builder.Append(")");
       return AtomicString(builder.ReleaseString());
     }
@@ -406,7 +422,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   context.counters_context.EnterObject(*layout_object);
 
   // This is to ensure that bypassing the CanHaveGeneratedChildren() check in
-  // LayoutTreeBuilderForElement::ShouldCreateLayoutObject() does not result in
+  // LayoutTreeBuilderForElement::CreateLayoutObject() does not result in
   // the backdrop pseudo element's layout object becoming the child of a layout
   // object that doesn't allow children.
   DCHECK(layout_object->Parent());
@@ -423,23 +439,21 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       }
       break;
     }
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollButtonInlineEnd:
       if (style.ContentBehavesAsNormal()) {
         context.counters_context.LeaveObject(*layout_object);
         return;
       }
       break;
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
+    case kPseudoIdScrollMarker:
       break;
-    case kPseudoIdScrollMarker: {
-      To<ScrollMarkerGroupPseudoElement>(context.parent->GetNode())
-          ->AddToFocusGroup(*To<ScrollMarkerPseudoElement>(this));
-      break;
-    }
     default: {
       context.counters_context.LeaveObject(*layout_object);
       return;
@@ -484,14 +498,16 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
 bool PseudoElement::CanGenerateContent() const {
   switch (GetPseudoIdForStyling()) {
     case kPseudoIdMarker:
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroup:
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollButtonInlineEnd:
       return true;
     default:
       return false;
@@ -503,12 +519,23 @@ bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
                                            parentElement());
 }
 
-bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+// Keep in sync with CanGeneratePseudoElement.
+bool PseudoElement::CanHaveNestedPseudoElement() const {
   switch (GetPseudoId()) {
-    case kPseudoIdCheck:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdColumn:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Keep in sync with CanHaveNestedPseudoElement.
+bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+  switch (GetPseudoId()) {
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
       if (pseudo_id != kPseudoIdMarker)
         return false;
       break;
@@ -576,14 +603,16 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionOld:
     case kPseudoIdColumn:
       return true;
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdSelectArrow:
+    case kPseudoIdPickerIcon:
       return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdScrollMarker:
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollButtonInlineEnd:
       return !pseudo_style.ContentBehavesAsNormal();
     case kPseudoIdMarker: {
       if (!pseudo_style.ContentBehavesAsNormal()) {

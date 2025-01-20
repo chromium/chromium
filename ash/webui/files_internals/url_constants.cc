@@ -6,5 +6,4 @@
 
 namespace ash {
 const char kChromeUIFilesInternalsHost[] = "files-internals";
-const char kChromeUIFilesInternalsURL[] = "chrome://files-internals";
 }  // namespace ash

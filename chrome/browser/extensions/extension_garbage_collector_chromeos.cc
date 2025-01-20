@@ -23,7 +23,8 @@ ExtensionGarbageCollectorChromeOS::ExtensionGarbageCollectorChromeOS(
       disable_garbage_collection_(false) {
 }
 
-ExtensionGarbageCollectorChromeOS::~ExtensionGarbageCollectorChromeOS() {}
+ExtensionGarbageCollectorChromeOS::~ExtensionGarbageCollectorChromeOS() =
+    default;
 
 // static
 ExtensionGarbageCollectorChromeOS* ExtensionGarbageCollectorChromeOS::Get(

@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
+namespace glic {
+
 class GlicKeyedServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static GlicKeyedServiceFactory* GetInstance();
@@ -31,5 +33,7 @@ class GlicKeyedServiceFactory : public ProfileKeyedServiceFactory {
   GlicKeyedServiceFactory();
   ~GlicKeyedServiceFactory() override;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_FACTORY_H_

@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,12 +80,12 @@ TEST_F(QueryParserTest, SpecialChars) {
 }
 
 TEST_F(QueryParserTest, NumWords) {
-  TestData data[] = {
-    { "blah",                  1 },
-    { "foo \"bar baz\"",       3 },
-    { "foo \"baz\"",           2 },
-    { "foo \"bar baz\"  blah", 4 },
-  };
+  auto data = std::to_array<TestData>({
+      {"blah", 1},
+      {"foo \"bar baz\"", 3},
+      {"foo \"baz\"", 2},
+      {"foo \"bar baz\"  blah", 4},
+  });
 
   for (size_t i = 0; i < std::size(data); ++i) {
     std::u16string query_string;
@@ -103,24 +105,25 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatch) {
     const size_t m1_end;
     const size_t m2_start;
     const size_t m2_end;
-  } data[] = {
-    { "foo",           "fooey foo",        true,  0, 3, 6, 9 },
-    { "foo foo",       "foo",              true,  0, 3, 0, 0 },
-    { "foo fooey",     "fooey",            true,  0, 5, 0, 0 },
-    { "fooey foo",     "fooey",            true,  0, 5, 0, 0 },
-    { "foo fooey bar", "bar fooey",        true,  0, 3, 4, 9 },
-    { "blah",          "blah",             true,  0, 4, 0, 0 },
-    { "blah",          "foo",              false, 0, 0, 0, 0 },
-    { "blah",          "blahblah",         true,  0, 4, 0, 0 },
-    { "blah",          "foo blah",         true,  4, 8, 0, 0 },
-    { "foo blah",      "blah",             false, 0, 0, 0, 0 },
-    { "foo blah",      "blahx foobar",     true,  0, 4, 6, 9 },
-    { "\"foo blah\"",  "foo blah",         true,  0, 8, 0, 0 },
-    { "\"foo blah\"",  "foox blahx",       false, 0, 0, 0, 0 },
-    { "\"foo blah\"",  "foo blah",         true,  0, 8, 0, 0 },
-    { "\"foo blah\"",  "\"foo blah\"",     true,  1, 9, 0, 0 },
-    { "foo blah",      "\"foo bar blah\"", true,  1, 4, 9, 13 },
   };
+  auto data = std::to_array<TestData2>({
+      {"foo", "fooey foo", true, 0, 3, 6, 9},
+      {"foo foo", "foo", true, 0, 3, 0, 0},
+      {"foo fooey", "fooey", true, 0, 5, 0, 0},
+      {"fooey foo", "fooey", true, 0, 5, 0, 0},
+      {"foo fooey bar", "bar fooey", true, 0, 3, 4, 9},
+      {"blah", "blah", true, 0, 4, 0, 0},
+      {"blah", "foo", false, 0, 0, 0, 0},
+      {"blah", "blahblah", true, 0, 4, 0, 0},
+      {"blah", "foo blah", true, 4, 8, 0, 0},
+      {"foo blah", "blah", false, 0, 0, 0, 0},
+      {"foo blah", "blahx foobar", true, 0, 4, 6, 9},
+      {"\"foo blah\"", "foo blah", true, 0, 8, 0, 0},
+      {"\"foo blah\"", "foox blahx", false, 0, 0, 0, 0},
+      {"\"foo blah\"", "foo blah", true, 0, 8, 0, 0},
+      {"\"foo blah\"", "\"foo blah\"", true, 1, 9, 0, 0},
+      {"foo blah", "\"foo bar blah\"", true, 1, 4, 9, 13},
+  });
   for (size_t i = 0; i < std::size(data); ++i) {
     query_parser::QueryNodeVector query_nodes;
     QueryParser::ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
@@ -151,12 +154,13 @@ TEST_F(QueryParserTest, ParseQueryWords) {
     const std::string w2;
     const std::string w3;
     const size_t word_count;
-  } data[] = {
-    { "foo",           "foo", "",    "",  1 },
-    { "foo bar",       "foo", "bar", "",  2 },
-    { "\"foo bar\"",   "foo", "bar", "",  2 },
-    { "\"foo bar\" a", "foo", "bar", "a", 3 },
   };
+  auto data = std::to_array<TestData2>({
+      {"foo", "foo", "", "", 1},
+      {"foo bar", "foo", "bar", "", 2},
+      {"\"foo bar\"", "foo", "bar", "", 2},
+      {"\"foo bar\" a", "foo", "bar", "a", 3},
+  });
   for (size_t i = 0; i < std::size(data); ++i) {
     std::vector<std::u16string> results;
     QueryParser::ParseQueryWords(base::UTF8ToUTF16(data[i].text),
@@ -175,7 +179,8 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatchExact) {
     const std::string query;
     const std::string find_in_text;
     const bool matches;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData2>({
       // Trivial cases.
       {"blah", "blah", true},
       {"blah", "foo", false},
@@ -198,7 +203,7 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatchExact) {
       {"\"foo blah\"", "foox blahx", false},
       {"\"foo blah\"", "\"foo blah\"", true},
       {"foo blah", "\"foo bar blah\"", true},
-  };
+  });
   for (size_t i = 0; i < std::size(data); ++i) {
     SCOPED_TRACE(::testing::Message()
                  << " Testing case i=" << i << " query=" << data[i].query

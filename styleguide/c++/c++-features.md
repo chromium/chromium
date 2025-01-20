@@ -33,7 +33,7 @@ The current status of existing standards and Abseil features is:
 *   **C++17:** _Default allowed; see banned features below_
 *   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
     features below_
-*   **C++23:** _Not yet officially standardized_
+*   **C++23:** _Not yet supported_
 *   **Abseil:** _Default allowed; see banned/TBD features below. The following
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
@@ -255,6 +255,25 @@ due to concerns that this is tied to a more template-heavy interface style.
 *** promo
 Overlaps with many regular expression libraries in Chromium. When in doubt, use
 `third_party/re2`.
+***
+
+### std::aligned_{storage,union} <sup>[banned]</sup>
+
+```c++
+std::aligned_storage<sizeof(T), alignof<T>>::type buf;
+```
+
+**Description:** Creates aligned, uninitialized storage to later hold one or
+more objects.
+
+**Documentation:**
+[`std::aligned_storage`](https://en.cppreference.com/w/cpp/types/aligned_storage)
+
+**Notes:**
+*** promo
+Deprecated in C++23. Generally, use `alignas(T) char buf[sizeof(T)];`. Aligned
+unions can be handled similarly, using the max alignment and size of the union
+members, either passed via a pack or computed inline.
 ***
 
 ### std::bind <sup>[banned]</sup>
@@ -1607,6 +1626,22 @@ primarily allow authors to create similar functionality.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***
 
+### &lt;span&gt; <sup>[banned]</sup>
+
+```c++
+#include <span>
+```
+
+**Description:** Utilities for non-owning views over a sequence of objects.
+
+**Documentation:**
+[](https://en.cppreference.com/w/cpp/header/span)
+
+**Notes:**
+*** promo
+Superseded by `base::span`, which has a richer functionality set.
+***
+
 ### std::to_address <sup>[banned]</sup>
 
 ```c++
@@ -1750,24 +1785,6 @@ filenames, function names, and line numbers.
 **Notes:**
 *** promo
 Seems to regress code size vs. `base::Location`.
-***
-
-### &lt;span&gt; <sup>[tbd]</sup>
-
-```c++
-#include <span>
-```
-
-**Description:** Utilities for non-owning views over a sequence of objects.
-
-**Documentation:**
-[](https://en.cppreference.com/w/cpp/header/span)
-
-**Notes:**
-*** promo
-Use `base::span` for now.
-
-[Migration bug](https://crbug.com/1414652)
 ***
 
 ### std::u8string <sup>[tbd]</sup>

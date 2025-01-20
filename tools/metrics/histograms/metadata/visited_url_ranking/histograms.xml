@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.ScoredURLAction" enum="ScoredURLUserAction"
-    expires_after="2025-03-22">
+    expires_after="2025-05-25">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.InOutPercentage"
-    units="%" expires_after="2025-03-22">
+    units="%" expires_after="2025-06-08">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Success"
-    enum="BooleanSuccess" expires_after="2025-03-22">
+    enum="BooleanSuccess" expires_after="2025-06-08">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

@@ -459,15 +459,14 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
 
       attrs_digestor.Finish(digest_result);
       DCHECK(!attrs_digestor.has_failed());
-      digest->attrs_sha1_ =
-          Base64Encode(base::make_span(digest_result).first<10>());
+      digest->attrs_sha1_ = Base64Encode(base::span(digest_result).first<10>());
       digestor.UpdateUtf8(digest->attrs_sha1_);
     }
   }
 
   digestor.Finish(digest_result);
   DCHECK(!digestor.has_failed());
-  digest->sha1_ = Base64Encode(base::make_span(digest_result).first<10>());
+  digest->sha1_ = Base64Encode(base::span(digest_result).first<10>());
 
   if (unused_nodes_map)
     unused_nodes_map->insert(digest->sha1_, digest);

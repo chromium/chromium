@@ -30,11 +30,15 @@ public class DataSharingJoinUiConfig {
         // DEPRECATED: use the version with callback, to close the loading UI.
         default void onGroupJoined(GroupData groupData) {}
 
-        // Called when group is joined, the `onJoinFinished` should be called when any processing is
-        // done.
+        // Called when group is joined, the `onSessionFinished` should be called
+        // when any processing is done.
         default void onGroupJoinedWithWait(GroupData groupData, Callback<Boolean> onJoinFinished) {}
 
         default void onPreviewTabGroupDetailsClicked(String groupId) {}
+
+        // This will always be called when user joins the group, ui closes, or
+        // session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingJoinUiConfig(Builder builder) {

@@ -21,11 +21,13 @@ namespace views {
 Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
     const View* view) {
   const FocusManager* focus_manager = view->GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager) {
     return nullptr;
+  }
   const View* focused_view = view->GetFocusManager()->GetFocusedView();
-  if (!focused_view)
+  if (!focused_view) {
     return nullptr;
+  }
 
   std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
   Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),

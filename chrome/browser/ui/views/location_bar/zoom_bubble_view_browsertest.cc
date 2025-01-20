@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleReuseTest, UserThenExtension) {
 
 class ZoomBubbleDialogTest : public DialogBrowserTest {
  public:
-  ZoomBubbleDialogTest() {}
+  ZoomBubbleDialogTest() = default;
 
   ZoomBubbleDialogTest(const ZoomBubbleDialogTest&) = delete;
   ZoomBubbleDialogTest& operator=(const ZoomBubbleDialogTest&) = delete;

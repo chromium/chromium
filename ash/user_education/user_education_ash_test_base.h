@@ -6,13 +6,11 @@
 #define ASH_USER_EDUCATION_USER_EDUCATION_ASH_TEST_BASE_H_
 
 #include "ash/test/ash_test_base.h"
+#include "ash/user_education/mock_user_education_delegate.h"
 #include "base/memory/raw_ptr.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
-
-class MockUserEducationDelegate;
 
 // Base class for tests of user education in Ash. Note that this class:
 // * Installs a `MockUserEducationDelegate` during `SetUp()`.

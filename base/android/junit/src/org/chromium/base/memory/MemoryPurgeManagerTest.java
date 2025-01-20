@@ -54,10 +54,21 @@ public class MemoryPurgeManagerTest {
         }
 
         @Override
+        protected void notifySelfFreeze() {
+            mSelfFreezeNotifiedCount += 1;
+        }
+
+        @Override
         protected int getApplicationState() {
             return mApplicationState;
         }
 
+        @Override
+        protected boolean shouldSelfFreeze() {
+            return true;
+        }
+
+        public int mSelfFreezeNotifiedCount;
         public int mMemoryPressureNotifiedCount;
         public int mApplicationState = ApplicationState.UNKNOWN;
     }
@@ -192,6 +203,67 @@ public class MemoryPurgeManagerTest {
         // No new notification.
         runUiThreadFor(MemoryPurgeManager.PURGE_DELAY_MS * 2);
         Assert.assertEquals(1, manager.mMemoryPressureNotifiedCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testSimpleSelfFreeze() throws Exception {
+        int count = mGetCount.call();
+        var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        manager.start();
+
+        // No notification when initial state has activities.
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS);
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+        Assert.assertEquals(count, (int) mGetCount.call());
+
+        // Notify after a delay.
+        manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount); // Should be delayed.
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS);
+        Assert.assertEquals(1, manager.mSelfFreezeNotifiedCount);
+
+        // Only one notification.
+        manager.onApplicationStateChange(ApplicationState.HAS_DESTROYED_ACTIVITIES);
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS);
+        Assert.assertEquals(1, manager.mSelfFreezeNotifiedCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testNoEnoughTimeInBackgroundForSelfFreeze() {
+        var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        manager.start();
+
+        // No notification initially.
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+
+        // Background, then foregound inside the delay period.
+        manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS / 2);
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+        manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS);
+        // Went back to foreground, do nothing.
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+
+        // Starts the new task
+        manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        // After some time, foregroung/background cycle.
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS / 2);
+        manager.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        manager.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS / 2);
+        // Not enough time in background.
+        Assert.assertEquals(0, manager.mSelfFreezeNotifiedCount);
+        // But the task got rescheduled.
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS / 2);
+        Assert.assertEquals(1, manager.mSelfFreezeNotifiedCount);
+
+        // No new notification.
+        runUiThreadFor(MemoryPurgeManager.SELF_FREEZE_DELAY_MS * 2);
+        Assert.assertEquals(1, manager.mSelfFreezeNotifiedCount);
     }
 
     private void runUiThreadFor(long delayMs) {

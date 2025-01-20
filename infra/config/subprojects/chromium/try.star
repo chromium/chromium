@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu")
+load("//lib/builders.star", "builders", "cpu")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "ACTIVE_MILESTONES", "settings")
@@ -12,6 +12,7 @@ load("./fallback-cq.star", "fallback_cq")
 try_.defaults.set(
     bucket = "try",
     cpu = cpu.X86_64,
+    free_space = builders.free_space.standard,
     build_numbers = True,
     cq_group = "cq",
     # Max. pending time for builds. CQ considers builds pending >2h as timed

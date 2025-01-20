@@ -11,6 +11,7 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -75,7 +76,10 @@ public class DigitalIdentityProvider {
      * @param request The request.
      */
     @CalledByNative
-    void request(WindowAndroid window, String origin, String request) {
+    void request(
+            WindowAndroid window,
+            @JniType("std::string") String origin,
+            @JniType("std::string") String request) {
         sCredentials
                 .get(window.getActivity().get(), origin, request)
                 .then(
@@ -85,6 +89,42 @@ public class DigitalIdentityProvider {
                                         .onReceive(
                                                 mDigitalIdentityProvider,
                                                 new String(data),
+                                                DigitalIdentityRequestStatusForMetrics.SUCCESS);
+                            }
+                        },
+                        e -> {
+                            if (mDigitalIdentityProvider != 0) {
+                                DigitalIdentityProviderJni.get()
+                                        .onReceive(
+                                                mDigitalIdentityProvider,
+                                                "",
+                                                DigitalIdentityProvider
+                                                        .computeStatusForMetricsFromException(e));
+                            }
+                        });
+    }
+
+    /**
+     * Triggers a create request to the Identity Credentials Manager in GMS.
+     *
+     * @param window The window associated with the request.
+     * @param origin The origin of the requester.
+     * @param request The request.
+     */
+    @CalledByNative
+    void create(
+            WindowAndroid window,
+            @JniType("std::string") String origin,
+            @JniType("std::string") String request) {
+        sCredentials
+                .create(window.getActivity().get(), origin, request)
+                .then(
+                        data -> {
+                            if (mDigitalIdentityProvider != 0) {
+                                DigitalIdentityProviderJni.get()
+                                        .onReceive(
+                                                mDigitalIdentityProvider,
+                                                data,
                                                 DigitalIdentityRequestStatusForMetrics.SUCCESS);
                             }
                         },

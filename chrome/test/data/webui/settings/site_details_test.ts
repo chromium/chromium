@@ -56,6 +56,9 @@ suite('SiteDetails', function() {
   setup(function() {
     loadTimeData.overrideValues({
       enableWebPrintingContentSetting: true,
+      // <if expr="is_chromeos">
+      enableSmartCardReadersContentSetting: true,
+      // </if>
     });
     prefs = createSiteSettingsPrefs(
         [],
@@ -125,6 +128,13 @@ suite('SiteDetails', function() {
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PAYMENT_HANDLER,
               [createRawSiteException('https://foo.com:443')]),
+          // <if expr="is_chromeos">
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.SMART_CARD_READERS,
+              [createRawSiteException('https://foo.com:443', {
+                setting: ContentSetting.BLOCK,
+              })]),
+          // </if>
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SERIAL_PORTS,
               [createRawSiteException('https://foo.com:443')]),
@@ -326,13 +336,17 @@ suite('SiteDetails', function() {
 
       // For all the categories with non-user-set 'Allow' preferences,
       // update expected values.
-      if (siteDetailsPermission.category ===
-              ContentSettingsTypes.NOTIFICATIONS ||
-          siteDetailsPermission.category === ContentSettingsTypes.JAVASCRIPT ||
-          siteDetailsPermission.category === ContentSettingsTypes.IMAGES ||
-          siteDetailsPermission.category === ContentSettingsTypes.POPUPS ||
-          siteDetailsPermission.category ===
-              ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+      const categoriesWithNonUserSetAllow = [
+        ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.JAVASCRIPT,
+        ContentSettingsTypes.IMAGES, ContentSettingsTypes.POPUPS,
+        ContentSettingsTypes.FILE_SYSTEM_WRITE,
+        // <if expr="is_chromeos">
+        ContentSettingsTypes.SMART_CARD_READERS,
+        // </if>
+      ];
+
+      if (categoriesWithNonUserSetAllow.includes(
+              siteDetailsPermission.category)) {
         expectedSetting =
             prefs.exceptions[siteDetailsPermission.category][0]!.setting;
         expectedSource =

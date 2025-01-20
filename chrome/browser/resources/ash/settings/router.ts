@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
-import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import type {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
 import type {OsSettingsRoutes} from './os_settings_routes.js';
 import {createRoutes, PATH_REDIRECTS, Route} from './os_settings_routes.js';
@@ -169,10 +168,8 @@ export class Router {
     // Remove any trailing slash.
     let canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
 
-    // Handle redirects for obsolete paths.
-    if (isRevampWayfindingEnabled()) {
-      canonicalPath = PATH_REDIRECTS[canonicalPath] || canonicalPath;
-    }
+    // Handle redirects for paths (e.g. deprecated paths).
+    canonicalPath = PATH_REDIRECTS[canonicalPath] || canonicalPath;
 
     const matchingRoute = Object.values(this.routes_).find(route => {
       return route.path === canonicalPath && isNavigableRoute(route);
@@ -325,16 +322,6 @@ window.addEventListener('popstate', () => {
 });
 
 /**
- * @returns true if this route exists under the Advanced section.
- */
-export function isAdvancedRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ADVANCED.contains(route);
-}
-
-/**
  * @returns true if this route exists under the Basic section (not advanced
  * section).
  */
@@ -343,16 +330,6 @@ export function isBasicRoute(route: Route|null): boolean {
     return false;
   }
   return routes.BASIC.contains(route);
-}
-
-/**
- * @returns true if this route exists under the About page
- */
-export function isAboutRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ABOUT.contains(route);
 }
 
 /**

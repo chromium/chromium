@@ -162,6 +162,7 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   // to here.
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       CSSVariableData::Create(original_text, false /* is_animation_tainted */,
+                              false /* is_attr_tainted */,
                               false /* needs_variable_resolution */));
 }
 

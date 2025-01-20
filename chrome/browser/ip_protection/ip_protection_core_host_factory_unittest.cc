@@ -40,6 +40,7 @@ class ScopedInitCommandLine {
  private:
   base::test::ScopedCommandLine command_line_;
 };
+
 }  // namespace
 
 class IpProtectionCoreHostFactoryTest : public testing::Test {

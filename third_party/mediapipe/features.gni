@@ -10,3 +10,11 @@ declare_args() {
   # Intel chips.
   build_with_mediapipe_lib = false
 }
+
+declare_args() {
+  mediapipe_build_with_gpu_support = false
+  if (build_with_mediapipe_lib && (is_win || is_linux || is_mac)) {
+    # To be set to true after integration with VideoEffectsService.
+    mediapipe_build_with_gpu_support = false
+  }
+}

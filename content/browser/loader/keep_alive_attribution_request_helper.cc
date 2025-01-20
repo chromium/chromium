@@ -40,6 +40,17 @@ namespace {
 using ::attribution_reporting::AttributionSrcRequestStatus;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 
+void RecordAttributionSrcRequestStatusInternal(
+    bool is_navigation_tied,
+    AttributionSrcRequestStatus status) {
+  if (!is_navigation_tied) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Conversions.AttributionSrcRequestStatus.Navigation.Browser", status);
+}
+
 }  // namespace
 
 // static
@@ -49,20 +60,34 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
     const GURL& request_url,
     const std::optional<base::UnguessableToken>& attribution_src_token,
     const std::optional<std::string>& devtools_request_id,
-    const AttributionSuitableContext& context) {
+    const std::optional<AttributionSuitableContext>& context) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAttributionReportingInBrowserMigration)) {
+    return nullptr;
+  }
+
+  const bool is_navigation_tied =
+      eligibility ==
+      network::mojom::AttributionReportingEligibility::kNavigationSource;
+
+  if (!context.has_value()) {
+    RecordAttributionSrcRequestStatusInternal(
+        is_navigation_tied, AttributionSrcRequestStatus::kDropped);
     return nullptr;
   }
 
   std::optional<RegistrationEligibility> registration_eligibility =
       attribution_reporting::GetRegistrationEligibility(eligibility);
   if (!registration_eligibility.has_value()) {
+    RecordAttributionSrcRequestStatusInternal(
+        is_navigation_tied, AttributionSrcRequestStatus::kDropped);
     return nullptr;
   }
 
-  AttributionDataHostManager* data_host_manager = context.data_host_manager();
+  AttributionDataHostManager* data_host_manager = context->data_host_manager();
   if (!data_host_manager) {
+    RecordAttributionSrcRequestStatusInternal(
+        is_navigation_tied, AttributionSrcRequestStatus::kDropped);
     return nullptr;
   }
 
@@ -75,14 +100,12 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
   BackgroundRegistrationsId id(unique_id_counter.GetNext());
 
   data_host_manager->NotifyBackgroundRegistrationStarted(
-      id, context, *registration_eligibility, std::move(token),
+      id, *context, *registration_eligibility, std::move(token),
       devtools_request_id);
 
   return base::WrapUnique(new KeepAliveAttributionRequestHelper(
       id, data_host_manager,
-      /*reporting_url=*/request_url,
-      /*is_navigation_tied=*/eligibility ==
-          network::mojom::AttributionReportingEligibility::kNavigationSource));
+      /*reporting_url=*/request_url, is_navigation_tied));
 }
 
 KeepAliveAttributionRequestHelper::KeepAliveAttributionRequestHelper(
@@ -150,12 +173,7 @@ void KeepAliveAttributionRequestHelper::OnComplete() {
 
 void KeepAliveAttributionRequestHelper::RecordAttributionSrcRequestStatus(
     AttributionSrcRequestStatus status) {
-  if (!is_navigation_tied_) {
-    return;
-  }
-
-  base::UmaHistogramEnumeration(
-      "Conversions.AttributionSrcRequestStatus.Navigation.Browser", status);
+  RecordAttributionSrcRequestStatusInternal(is_navigation_tied_, status);
 }
 
 KeepAliveAttributionRequestHelper::~KeepAliveAttributionRequestHelper() {

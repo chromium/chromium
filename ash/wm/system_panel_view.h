@@ -36,6 +36,7 @@ class ASH_EXPORT SystemPanelView : public views::View {
                              ui::LocatedEvent* event);
 
    private:
+    friend class SystemPanelView;
     // Whether a drag is currently in progress.
     bool is_dragging_ = false;
 
@@ -52,6 +53,8 @@ class ASH_EXPORT SystemPanelView : public views::View {
   SystemPanelView(const SystemPanelView&) = delete;
   SystemPanelView& operator=(const SystemPanelView&) = delete;
   ~SystemPanelView() override;
+
+  bool IsDragging() const;
 
   // views::View:
   void OnMouseEvent(ui::MouseEvent* event) override;

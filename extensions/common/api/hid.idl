@@ -19,7 +19,7 @@ namespace hid {
     long[] reportIds;
   };
 
-  [noinline_doc] dictionary HidDeviceInfo {
+  dictionary HidDeviceInfo {
     // Opaque device ID.
     long deviceId;
     // Vendor ID.
@@ -47,7 +47,7 @@ namespace hid {
     long connectionId;
   };
 
-  [noinline_doc] dictionary DeviceFilter {
+  dictionary DeviceFilter {
     // Device vendor ID.
     long? vendorId;
     // Device product ID, only checked only if the vendor ID matches.

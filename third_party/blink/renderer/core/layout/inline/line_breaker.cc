@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
 #include "base/containers/adapters.h"
@@ -282,11 +277,7 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
     const HeapVector<InlineItem>& items,
     wtf_size_t item_index) {
   LayoutUnit inline_end_size;
-  for (const InlineItem *cur = items.data() + item_index,
-                        *end = items.data() + items.size();
-       cur != end; ++cur) {
-    const InlineItem& item = *cur;
-
+  for (const auto& item : base::span(items).subspan(item_index)) {
     if (item.Type() == InlineItem::kCloseTag) {
       inline_end_size += ComputeInlineEndSize(space, item.Style());
       continue;
@@ -421,9 +412,19 @@ inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
 void LineBreaker::UpdateAvailableWidth() {
   LayoutUnit available_width;
   if (override_available_width_) [[unlikely]] {
-    available_width = override_available_width_;
+    // If we have an overridden width (e.g. because of text-wrap), the
+    // line-clamp ellipsis should only cut into it when the overridden available
+    // width plus the ellipsis width overflow the available inline size.
+    if (line_clamp_ellipsis_width_) {
+      available_width = std::min(
+          line_opportunity_.AvailableInlineSize() - line_clamp_ellipsis_width_,
+          override_available_width_);
+    } else {
+      available_width = override_available_width_;
+    }
   } else {
-    available_width = line_opportunity_.AvailableInlineSize();
+    available_width =
+        line_opportunity_.AvailableInlineSize() - line_clamp_ellipsis_width_;
   }
   // Make sure it's at least the initial size, which is usually 0 but not so
   // when `box-decoration-break: clone`.
@@ -1074,8 +1075,9 @@ void LineBreaker::ComputeLineLocation(LineInfo* line_info) const {
   // Negative margins can make the position negative, but the inline size is
   // always positive or 0.
   LayoutUnit available_width = AvailableWidth();
-  line_info->SetWidth(available_width,
-                      position_ + cloned_box_decorations_end_size_);
+  line_info->SetWidth(available_width + line_clamp_ellipsis_width_,
+                      position_ + cloned_box_decorations_end_size_ +
+                          line_clamp_ellipsis_width_);
   line_info->SetBfcOffset(
       {line_opportunity_.line_left_offset, line_opportunity_.bfc_block_offset});
   if (mode_ == LineBreakerMode::kContent) {
@@ -1222,21 +1224,20 @@ const InlineItem* LineBreaker::TryGetAtomicInlineItemAfter(
 }
 
 unsigned LineBreaker::IgnorableBidiControlLength(const InlineItem& item) const {
-  const InlineItem* items = Items().data();
-  for (wtf_size_t i =
-           base::checked_cast<wtf_size_t>(std::distance(items, &item)) + 1;
-       i < end_item_index_; ++i) {
-    if (items[i].Length() == 0u) {
+  size_t start_item_index = std::distance(Items().data(), &item) + 1;
+  for (const auto& item_i : base::span(Items()).subspan(
+           start_item_index, end_item_index_ - start_item_index)) {
+    if (item_i.Length() == 0u) {
       continue;
     }
-    if (items[i].Type() != InlineItem::kOpenRubyColumn &&
-        items[i].Type() != InlineItem::kCloseRubyColumn) {
-      return items[i].StartOffset() - item.EndOffset();
+    if (item_i.Type() != InlineItem::kOpenRubyColumn &&
+        item_i.Type() != InlineItem::kCloseRubyColumn) {
+      return item_i.StartOffset() - item.EndOffset();
     }
   }
   return (end_item_index_ >= Items().size()
               ? Text().length()
-              : items[end_item_index_].StartOffset()) -
+              : Items()[end_item_index_].StartOffset()) -
          item.EndOffset();
 }
 
@@ -1803,9 +1804,9 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
 #if EXPENSIVE_DCHECKS_ARE_ON()
     // Whether the start offset is at middle of a word or not can also be
     // determined by `line_info->Results()`. Check if they match.
-    auto results = base::make_span(line_info->Results());
+    auto results = base::span(line_info->Results());
     DCHECK_EQ(item_result, &results.back());
-    results = results.subspan(0, results.size() - 1);
+    results = results.first(results.size() - 1);
     bool is_at_mid_word = false;
     for (const InlineItemResult& result : base::Reversed(results)) {
       DCHECK(!result.can_break_after);
@@ -2235,11 +2236,10 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
 
 bool LineBreaker::CanBreakInside(const LineInfo& line_info) {
   const InlineItemResults& item_results = line_info.Results();
-  for (const InlineItemResult& item_result :
-       base::make_span(item_results.begin(), item_results.size() - 1)) {
-    if (item_result.can_break_after) {
-      return true;
-    }
+  if (std::ranges::any_of(
+          base::span(item_results).first(item_results.size() - 1),
+          std::identity(), &InlineItemResult::can_break_after)) {
+    return true;
   }
   for (const InlineItemResult& item_result : item_results) {
     DCHECK(item_result.item);
@@ -3727,7 +3727,7 @@ void LineBreaker::RewindFloats(unsigned new_end,
                                LineInfo& line_info,
                                InlineItemResults& item_results) {
   for (const InlineItemResult& item_result :
-       base::make_span(item_results).subspan(new_end)) {
+       base::span(item_results).subspan(new_end)) {
     if (item_result.positioned_float) {
       const unsigned item_index = item_result.item_index;
       line_info.RemoveParallelFlowBreakToken(item_index);

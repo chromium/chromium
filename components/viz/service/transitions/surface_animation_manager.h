@@ -16,7 +16,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
@@ -50,7 +49,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
       SaveDirectiveCompleteCallback sequence_id_finished_callback);
@@ -91,7 +89,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   SurfaceAnimationManager(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
       SaveDirectiveCompleteCallback sequence_id_finished_callback);

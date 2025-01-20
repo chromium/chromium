@@ -48,13 +48,16 @@ void ViewTransitionContentLayer::SetMaxExtentsRectInOriginatingLayerSpace(
   SetNeedsCommit();
 }
 
-void ViewTransitionContentLayer::PushPropertiesTo(
+void ViewTransitionContentLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  static_cast<ViewTransitionContentLayerImpl*>(layer)->SetMaxExtentsRect(
-      max_extents_rect_.Read(*this));
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
+  if (dirty_flag & kChangedGeneralProperty) {
+    static_cast<ViewTransitionContentLayerImpl*>(layer)->SetMaxExtentsRect(
+        max_extents_rect_.Read(*this));
+  }
 }
 
 }  // namespace cc

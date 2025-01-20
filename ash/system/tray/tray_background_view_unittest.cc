@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -46,9 +47,6 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   void UpdateTrayItemColor(bool is_active) override {}
-  std::u16string GetAccessibleNameForTray() override {
-    return u"TestTrayBackgroundView";
-  }
 
   void HandleLocaleChange() override {}
 
@@ -758,6 +756,16 @@ TEST_F(TrayBackgroundViewTest, TrayBubbleViewAccessibleProperties) {
   data = ui::AXNodeData();
   bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
+}
+
+TEST_F(TrayBackgroundViewTest, TrayBackgroundViewAccessibleProperties) {
+  EXPECT_EQ(test_tray_background_view()
+                ->GetViewAccessibility()
+                .GetPreviousWindowFocus(),
+            GetPrimaryShelf()->shelf_widget()->hotseat_widget());
+  EXPECT_EQ(
+      test_tray_background_view()->GetViewAccessibility().GetNextWindowFocus(),
+      GetPrimaryShelf()->shelf_widget()->navigation_widget());
 }
 
 }  // namespace ash

@@ -59,15 +59,14 @@ void WebEngineBrowserTest::PostRunTestOnMainThread() {
 
 sys::ServiceDirectory& WebEngineBrowserTest::published_services() {
   if (!published_services_) {
-    fidl::InterfaceRequest<fuchsia::io::Directory> svc_request;
+    zx::channel svc_request;
     published_services_ =
         sys::ServiceDirectory::CreateWithRequest(&svc_request);
     base::ComponentContextForProcess()
         ->outgoing()
         ->GetOrCreateDirectory("svc")
-        ->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                    fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                svc_request.TakeChannel());
+        ->Serve(fuchsia_io::wire::kPermReadable,
+                fidl::ServerEnd<fuchsia_io::Directory>(std::move(svc_request)));
   }
   return *published_services_;
 }

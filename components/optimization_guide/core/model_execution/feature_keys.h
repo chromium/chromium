@@ -36,9 +36,56 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT,
   kBlingPrototyping =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING,
+  kPasswordChangeSubmission = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION,
+  kScamDetection =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+  kPermissionsAi =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI,
+  kWritingAssistanceApi = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 12>
+inline std::ostream& operator<<(std::ostream& out,
+                                const ModelBasedCapabilityKey& val) {
+  switch (val) {
+    case ModelBasedCapabilityKey::kCompose:
+      return out << "Compose";
+    case ModelBasedCapabilityKey::kTabOrganization:
+      return out << "TabOrganization";
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+      return out << "WallpaperSearch";
+    case ModelBasedCapabilityKey::kTest:
+      return out << "Test";
+    case ModelBasedCapabilityKey::kTextSafety:
+      return out << "TextSafety";
+    case ModelBasedCapabilityKey::kPromptApi:
+      return out << "PromptApi";
+    case ModelBasedCapabilityKey::kHistorySearch:
+      return out << "HistorySearch";
+    case ModelBasedCapabilityKey::kSummarize:
+      return out << "Summarize";
+    case ModelBasedCapabilityKey::kFormsPredictions:
+      return out << "FormsPredictions";
+    case ModelBasedCapabilityKey::kFormsAnnotations:
+      return out << "FormsAnnotations";
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
+      return out << "HistoryQueryIntent";
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+      return out << "BlingPrototyping";
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return out << "PasswordChangeSubmission";
+    case ModelBasedCapabilityKey::kScamDetection:
+      return out << "ScamDetection";
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return out << "PermissionsAi";
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return out << "WritingAssistanceApi";
+  }
+  return out;
+}
+
+inline constexpr std::array<ModelBasedCapabilityKey, 16>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -52,6 +99,10 @@ inline constexpr std::array<ModelBasedCapabilityKey, 12>
         ModelBasedCapabilityKey::kFormsAnnotations,
         ModelBasedCapabilityKey::kHistoryQueryIntent,
         ModelBasedCapabilityKey::kBlingPrototyping,
+        ModelBasedCapabilityKey::kPasswordChangeSubmission,
+        ModelBasedCapabilityKey::kScamDetection,
+        ModelBasedCapabilityKey::kPermissionsAi,
+        ModelBasedCapabilityKey::kWritingAssistanceApi,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -118,6 +169,16 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
       return ModelBasedCapabilityKey::kBlingPrototyping;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION:
+      return ModelBasedCapabilityKey::kPasswordChangeSubmission;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
+      return ModelBasedCapabilityKey::kScamDetection;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
+      return ModelBasedCapabilityKey::kPermissionsAi;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
+      return ModelBasedCapabilityKey::kWritingAssistanceApi;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -157,6 +218,18 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kBlingPrototyping:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING;
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION;
+    case ModelBasedCapabilityKey::kScamDetection:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
   }
 }
 

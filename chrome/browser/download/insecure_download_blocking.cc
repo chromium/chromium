@@ -225,6 +225,14 @@ struct InsecureDownloadData {
     // Extract extension.
 #if BUILDFLAG(IS_WIN)
     extension_ = base::WideToUTF8(path.FinalExtension());
+#elif BUILDFLAG(IS_ANDROID)
+    // If the file path is a content URI, extension should come from the file
+    // name.
+    if (path.IsContentUri()) {
+      extension_ = item->GetFileNameToReportUser().FinalExtension();
+    } else {
+      extension_ = path.FinalExtension();
+    }
 #else
     extension_ = path.FinalExtension();
 #endif
@@ -301,9 +309,10 @@ struct InsecureDownloadData {
       auto security_status =
           GetDownloadBlockingEnum(initiator_, download_delivered_securely,
                                   initiator_inferred, insecure_nonunique);
-      base::UmaHistogramEnumeration(
-          GetDownloadBlockingExtensionMetricName(security_status),
-          GetExtensionEnumFromString(extension_));
+      std::string metric_name =
+          GetDownloadBlockingExtensionMetricName(security_status);
+      base::UmaHistogramEnumeration(metric_name,
+                                    GetExtensionEnumFromString(extension_));
       base::UmaHistogramEnumeration(kInsecureDownloadHistogramName,
                                     security_status);
       download::RecordDownloadValidationMetrics(

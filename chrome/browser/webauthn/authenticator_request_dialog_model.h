@@ -41,6 +41,7 @@ struct VectorIcon;
 }
 
 struct AccountInfo;
+class AuthenticatorRequestDialogViewController;
 class Profile;
 
 enum class EnclaveEnabledStatus {
@@ -200,6 +201,10 @@ struct AuthenticatorRequestDialogModel
     // dialog is shown, instead credentials are offered to the user on the
     // password autofill prompt.
     kPasskeyAutofill,
+    // During passkey upgrade (i.e. WebAuthn create() with conditional
+    // mediation), the WebAuthn tab-modal dialog is not used. A separate dialog
+    // controller implements its own UI.
+    kPasskeyUpgrade,
     kMechanismSelection,
     // The request errored out before completing. Error will only be sent
     // after user interaction.
@@ -255,10 +260,7 @@ struct AuthenticatorRequestDialogModel
     // a single available credential and choosing one from a list of multiple
     // options.
     kSelectAccount,
-    kSelectSingleAccount,
     kPreSelectAccount,
-    // TODO(crbug.com/40284700): Merge with kSelectPriorityMechanism.
-    kPreSelectSingleAccount,
     // kSelectPriorityMechanism lets the user confirm a single "priority"
     // mechanism.
     kSelectPriorityMechanism,
@@ -285,7 +287,9 @@ struct AuthenticatorRequestDialogModel
     // Changing GPM PIN.
     kGPMReauthForPinReset,
     kGPMLockedPin,
-    kMaxValue = kGPMLockedPin,
+    // ChallengeUrl failure.
+    kErrorFetchingChallenge,
+    kMaxValue = kErrorFetchingChallenge,
   };
 
   // Views and controllers implement this interface to receive events, which
@@ -370,6 +374,12 @@ struct AuthenticatorRequestDialogModel
     CABLE_V2_2ND_FACTOR,
   };
 
+  // Returns a user-friendly description for a |type|. If |type| is kPhone, a
+  // |phone_name| must be passed.
+  static std::u16string GetMechanismDescription(
+      device::AuthenticatorType type,
+      const std::optional<std::string>& phone_name);
+
   explicit AuthenticatorRequestDialogModel(
       content::RenderFrameHost* render_frame_host);
   AuthenticatorRequestDialogModel(AuthenticatorRequestDialogModel&) = delete;
@@ -446,6 +456,12 @@ struct AuthenticatorRequestDialogModel
   bool show_security_key_on_qr_sheet = false;
   bool is_off_the_record = false;
 
+  // Tracks whether the model is in the GPM onboarding state.
+  // This value is set/reset only in GPMEnclaveController::OnGPMSelected and
+  // read only to record metrics (WebAuthentication.OnboardingEvents) during the
+  // onboarding flow.
+  bool in_onboarding_flow = false;
+
   std::optional<int> max_bio_samples;
   std::optional<int> bio_samples_remaining;
   uint32_t min_pin_length = device::kMinPinLength;
@@ -502,6 +518,7 @@ struct AuthenticatorRequestDialogModel
 
   Step step_ = Step::kNotStarted;
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
+  std::unique_ptr<AuthenticatorRequestDialogViewController> view_controller_;
 };
 
 std::ostream& operator<<(std::ostream& os,

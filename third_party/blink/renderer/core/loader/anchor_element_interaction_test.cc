@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -568,7 +569,9 @@ class AnchorElementInteractionViewportHeuristicsTest
   AnchorElementInteractionViewportHeuristicsTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kNavigationPredictor,
-          {{"random_anchor_sampling_period", "1"}}},
+          {{"random_anchor_sampling_period", "1"},
+           {"intersection_observation_after_fcp_only", "true"},
+           {"post_fcp_observation_delay", "10ms"}}},
          {features::kNavigationPredictorNewViewportFeatures, {}},
          {features::kPreloadingViewportHeuristics,
           {{"delay", "100ms"},
@@ -634,12 +637,15 @@ class AnchorElementInteractionViewportHeuristicsTest
     main_resource.Complete(params.main_resource_body);
 
     Compositor().BeginFrame();
+    // The 10ms matches the "post_fcp_observation_delay" param set for
+    // kNavigationPredictor.
+    platform_->RunForPeriod(base::Milliseconds(10));
     DispatchPointerDownAndVerticalScroll(params.pointer_down_location,
                                          params.scroll_delta);
     ProcessPositionUpdates();
 
     // The 100ms matches the delay param set for kPreloadingViewportHeuristic.
-    platform_->RunForPeriodSeconds(0.1);
+    platform_->RunForPeriod(base::Milliseconds(100));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -808,10 +814,13 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
   )HTML");
 
   Compositor().BeginFrame();
+  // The 10ms matches the "post_fcp_observation_delay" param set for
+  // kNavigationPredictor.
+  platform_->RunForPeriod(base::Milliseconds(10));
   DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 200), -100);
   ProcessPositionUpdates();
 
-  platform_->RunForPeriodSeconds(0.01);
+  platform_->RunForPeriod(base::Milliseconds(10));
   // Second pointerdown happens 10ms after the scroll end, which is within the
   // configured delay period of 100ms.
   DispatchPointerDown(gfx::PointF(200, 375));

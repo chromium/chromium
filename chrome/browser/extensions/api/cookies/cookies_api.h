@@ -223,7 +223,7 @@ class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
                              COOKIES_GETALLCOOKIESTORES)
 
  protected:
-  ~CookiesGetAllCookieStoresFunction() override {}
+  ~CookiesGetAllCookieStoresFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

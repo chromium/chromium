@@ -56,6 +56,7 @@ void BluetoothRemoteGATTServer::CleanupDisconnectedDeviceAndFireEvent() {
   connected_ = false;
   active_algorithms_.clear();
   device_->ClearAttributeInstanceMapAndFireEvent();
+  feature_handle_for_scheduler_.reset();
 }
 
 void BluetoothRemoteGATTServer::DispatchDisconnected() {
@@ -81,6 +82,10 @@ void BluetoothRemoteGATTServer::ConnectCallback(
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
     connected_ = true;
+    feature_handle_for_scheduler_ =
+        resolver->GetExecutionContext()->GetScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kWebBluetooth,
+            SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling()});
     resolver->Resolve(this);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));

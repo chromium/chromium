@@ -122,7 +122,7 @@ class BookmarksGetFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.get", BOOKMARKS_GET)
 
  protected:
-  ~BookmarksGetFunction() override {}
+  ~BookmarksGetFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -133,7 +133,7 @@ class BookmarksGetChildrenFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getChildren", BOOKMARKS_GETCHILDREN)
 
  protected:
-  ~BookmarksGetChildrenFunction() override {}
+  ~BookmarksGetChildrenFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -144,7 +144,7 @@ class BookmarksGetRecentFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getRecent", BOOKMARKS_GETRECENT)
 
  protected:
-  ~BookmarksGetRecentFunction() override {}
+  ~BookmarksGetRecentFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -155,7 +155,7 @@ class BookmarksGetTreeFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getTree", BOOKMARKS_GETTREE)
 
  protected:
-  ~BookmarksGetTreeFunction() override {}
+  ~BookmarksGetTreeFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -166,7 +166,7 @@ class BookmarksGetSubTreeFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.getSubTree", BOOKMARKS_GETSUBTREE)
 
  protected:
-  ~BookmarksGetSubTreeFunction() override {}
+  ~BookmarksGetSubTreeFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -177,7 +177,7 @@ class BookmarksSearchFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.search", BOOKMARKS_SEARCH)
 
  protected:
-  ~BookmarksSearchFunction() override {}
+  ~BookmarksSearchFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -185,7 +185,7 @@ class BookmarksSearchFunction : public BookmarksFunction {
 
 class BookmarksRemoveFunctionBase : public BookmarksFunction {
  protected:
-  ~BookmarksRemoveFunctionBase() override {}
+  ~BookmarksRemoveFunctionBase() override = default;
 
   virtual bool is_recursive() const = 0;
 
@@ -198,7 +198,7 @@ class BookmarksRemoveFunction : public BookmarksRemoveFunctionBase {
   DECLARE_EXTENSION_FUNCTION("bookmarks.remove", BOOKMARKS_REMOVE)
 
  protected:
-  ~BookmarksRemoveFunction() override {}
+  ~BookmarksRemoveFunction() override = default;
 
   // BookmarksRemoveFunctionBase:
   bool is_recursive() const override;
@@ -209,7 +209,7 @@ class BookmarksRemoveTreeFunction : public BookmarksRemoveFunctionBase {
   DECLARE_EXTENSION_FUNCTION("bookmarks.removeTree", BOOKMARKS_REMOVETREE)
 
  protected:
-  ~BookmarksRemoveTreeFunction() override {}
+  ~BookmarksRemoveTreeFunction() override = default;
 
   // BookmarksRemoveFunctionBase:
   bool is_recursive() const override;
@@ -220,7 +220,7 @@ class BookmarksCreateFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.create", BOOKMARKS_CREATE)
 
  protected:
-  ~BookmarksCreateFunction() override {}
+  ~BookmarksCreateFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -240,7 +240,7 @@ class BookmarksMoveFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.move", BOOKMARKS_MOVE)
 
  protected:
-  ~BookmarksMoveFunction() override {}
+  ~BookmarksMoveFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -251,7 +251,7 @@ class BookmarksUpdateFunction : public BookmarksFunction {
   DECLARE_EXTENSION_FUNCTION("bookmarks.update", BOOKMARKS_UPDATE)
 
  protected:
-  ~BookmarksUpdateFunction() override {}
+  ~BookmarksUpdateFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;

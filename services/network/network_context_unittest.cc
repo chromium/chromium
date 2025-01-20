@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/network_context.h"
 
 #include <algorithm>
+#include <array>
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -56,7 +52,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -98,6 +93,11 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
@@ -192,9 +192,9 @@
 #include "net/reporting/reporting_test_util.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_P2P_ENABLED)
 #include "services/network/public/mojom/p2p.mojom.h"
@@ -1128,10 +1128,19 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsEnableWithStore) {
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  EXPECT_TRUE(
-      network_context->url_request_context()->device_bound_session_service());
+  net::device_bound_sessions::SessionService* service =
+      network_context->url_request_context()->device_bound_session_service();
+  EXPECT_TRUE(service);
   EXPECT_TRUE(
       network_context->url_request_context()->device_bound_session_store());
+
+  // Wait for the service to finish initial session load from the session store
+  // file.
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      future;
+  service->GetAllSessionsAsync(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
@@ -1473,12 +1482,17 @@ TEST_F(DiskCacheSizeTest, DiskCacheSize) {
 
   int64_t max_file_size_scaled = VerifyDiskCacheSize(200);
 
-  // After scaling to 200%, the size will in most cases be twice of
-  // |max_file_size| but it is dependent on the available size, and since we
-  // cannot guarantee available size to be the same between the 2 runs to
-  // VerifyDiskCacheSize(), only checking for the scaled size to be >=
-  // max_file_size.
+#if BUILDFLAG(IS_WIN)
+  // In most cases, the scaled size will be 2x the non-scaled size. However,
+  // this is dependent on available disk space and we cannot guarantee that it
+  // will remain constant between 2 calls to VerifyDiskCacheSize(), so we only
+  // check that the scaled size is larger than the non-scaled size.
   EXPECT_GE(max_file_size_scaled, max_file_size);
+#else
+  // On non-Windows, a 400% scaling factor is applied by default. Therefore,
+  // applying a 200% scaling factor results in a smaller size than the default.
+  EXPECT_LE(max_file_size_scaled, max_file_size);
+#endif
 }
 
 // This makes sure that network_session_configurator::ChooseCacheType is
@@ -2255,14 +2269,15 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
     const char* origin;
     const char* url;
   };
-  constexpr CacheTestEntry kCacheEntries[] = {
+  constexpr const auto kCacheEntries = std::to_array<CacheTestEntry>({
       {"http://www.origin1.com:80", "http://www.test.com/A"},
       {"http://www.origin2.com:80", "http://www.test.com/B"},
       {"http://www.origin3.com:80", "http://www.test.com/C"},
       {"http://www.origin4.com:80", "http://www.test.com/D"},
       {"http://A.origin.com:80", "http://www.test.com/A"},
       {"http://A.origin.com:8080", "http://www.test.com/A"},
-      {"http://B.origin.com:80", "http://www.test.com/B"}};
+      {"http://B.origin.com:80", "http://www.test.com/B"},
+  });
   // Each bit corresponds to one of the cache entries above.
   enum Entries {
     NO_ENTRY = 0x0,
@@ -2383,12 +2398,12 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
 
 TEST_F(NetworkContextTest, ClearHostCache) {
   // List of domains added to the host cache before running each test case.
-  const char* kDomains[] = {
+  auto kDomains = std::to_array<const char*>({
       "domain0",
       "domain1",
       "domain2",
       "domain3",
-  };
+  });
 
   // Each bit corresponds to one of the 4 domains above.
   enum Domains {
@@ -2706,7 +2721,7 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   EXPECT_FALSE(result.has_value());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<net::AuthCredentials> GetProxyAuthCredentials(
     NetworkContext* network_context,
     const net::ProxyServer& proxy_server,
@@ -3248,7 +3263,8 @@ TEST_F(NetworkContextTest, ProxyConfig) {
     net::ProxyConfig proxy_config;
     net::ProxyInfo http_proxy_info;
     net::ProxyInfo ftp_proxy_info;
-  } proxy_config_sets[3];
+  };
+  std::array<ProxyConfigSet, 3> proxy_config_sets;
 
   proxy_config_sets[0].proxy_config.proxy_rules().ParseFromString(
       "http=foopy:80");
@@ -3508,11 +3524,11 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
   context_params->proxy_config_client_receiver =
       config_client.BindNewPipeAndPassReceiver();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -3609,11 +3625,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
   // default to false.
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   std::unique_ptr<NetworkContext> network_context =
@@ -3627,11 +3643,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
 
   // Explicitly enable.
   context_params = CreateNetworkContextParamsForTesting();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   context_params->pac_quick_check_enabled = true;
@@ -3645,11 +3661,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
 
   // Explicitly disable.
   context_params = CreateNetworkContextParamsForTesting();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   context_params->pac_quick_check_enabled = false;
@@ -6245,11 +6261,11 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotifiedOfPacError) {
       CreateNetworkContextParamsForTesting();
   context_params->proxy_error_client = proxy_error_client.CreateRemote();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The PAC URL doesn't matter, since the test is configured to use a
   // mock ProxyResolverFactory which doesn't actually evaluate it. It just
@@ -6322,7 +6338,8 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
     net::ProxyConfig proxy_config;
     GURL url;
     net::ProxyChain expected_proxy_chain;
-  } proxy_config_set[2];
+  };
+  std::array<ProxyConfigSet, 2> proxy_config_set;
 
   proxy_config_set[0].proxy_config.proxy_rules().ParseFromString(
       "http=" + test_server.host_port_pair().ToString());
@@ -7175,8 +7192,6 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info =
-      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -7185,10 +7200,16 @@ TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
   request.url =
       test_server.GetURL("/server-redirect?" + base::EscapeAllExceptUnreserved(
                                                    hsts_redirect_url.spec()));
-  request.site_for_cookies =
-      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  // Have this request simulate a main frame request. This is necessary when
+  // kHstsTopLevelNavigationsOnly is enabled.
+  url::Origin origin = url::Origin::Create(request.url);
+  request.site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+  request.update_first_party_url_on_redirect = true;
   request.trusted_params.emplace();
   request.trusted_params->include_request_cookies_with_response = true;
+  request.trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
 
   TestURLLoaderClient client;
   mojo::Remote<mojom::URLLoader> loader;
@@ -8119,9 +8140,6 @@ TEST_P(NetworkContextSplitCacheTest, AutomaticallyAssignIsolationInfo) {
 }
 
 TEST_F(NetworkContextTest, EnableTrustTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8222,10 +8240,6 @@ TEST_P(NetworkContextSplitCacheTest,
 }
 
 TEST_F(NetworkContextTest, EnableTrustTokensForFledge) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kFledgePst},
-                                       {features::kPrivateStateTokens});
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8243,9 +8257,6 @@ TEST_F(NetworkContextTest, EnableTrustTokensForFledge) {
 }
 
 TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
   base::FilePath database_name(FILE_PATH_LITERAL("my_token_store"));
@@ -8308,20 +8319,6 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(NetworkContextTest, DisableTrustTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kPrivateStateTokens, features::kFledgePst});
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  // Allow the store time to initialize asynchronously.
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(network_context->trust_token_store());
-}
-
 class NetworkContextExpectBadMessageTest : public NetworkContextTest {
  public:
   NetworkContextExpectBadMessageTest() {
@@ -8342,36 +8339,7 @@ class NetworkContextExpectBadMessageTest : public NetworkContextTest {
 };
 
 TEST_F(NetworkContextExpectBadMessageTest,
-       FailsTrustTokenBearingRequestWhenTrustTokensIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kPrivateStateTokens, features::kFledgePst});
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  // Allow the store time to initialize asynchronously.
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(network_context->trust_token_store());
-
-  ResourceRequest my_request;
-  my_request.request_initiator =
-      url::Origin::Create(GURL("https://initiator.com"));
-  my_request.trust_token_params =
-      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-
-  std::unique_ptr<TestURLLoaderClient> client =
-      FetchRequest(my_request, network_context.get());
-
-  AssertBadMessage();
-}
-
-TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenRedemptionWhenForbidden) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8399,9 +8367,6 @@ TEST_F(NetworkContextExpectBadMessageTest,
 
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenSigningWhenForbidden) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8429,9 +8394,6 @@ TEST_F(NetworkContextExpectBadMessageTest,
 
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenIssuanceWhenForbidden) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8459,9 +8421,6 @@ TEST_F(NetworkContextExpectBadMessageTest,
 
 TEST_F(NetworkContextTest,
        AttemptsTrustTokenBearingRequestWhenTrustTokensIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8485,9 +8444,6 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest,
        RejectsTrustTokenBearingRequestWhenTrustTokensAreBlocked) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8515,9 +8471,6 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest,
        RejectsTrustTokenBearingRequestWhenStorageIsBlocked) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8544,27 +8497,7 @@ TEST_F(NetworkContextTest,
             mojom::TrustTokenOperationStatus::kUnauthorized);
 }
 
-TEST_F(NetworkContextTest,
-       NoAvailableRedemptionRecordsWhenTrustTokensAreDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kPrivateStateTokens, features::kFledgePst});
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  base::test::TestFuture<base::flat_map<
-      url::Origin, std::vector<network::mojom::ToplevelRedemptionRecordPtr>>>
-      future;
-  network_context->GetPrivateStateTokenRedemptionRecords(future.GetCallback());
-  EXPECT_THAT(future.Get(), testing::IsEmpty());
-}
-
 TEST_F(NetworkContextTestWithMockTime, GetPrivateStateTokenRedemptionRecords) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   base::RunLoop run_loop;
@@ -8663,33 +8596,7 @@ TEST_F(NetworkContextTestWithMockTime, GetPrivateStateTokenRedemptionRecords) {
             last_redemption_b);
 }
 
-TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kPrivateStateTokens, features::kFledgePst});
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  // Allow the store time to initialize asynchronously.
-  base::RunLoop run_loop;
-  std::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>> trust_tokens;
-  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
-      [&trust_tokens,
-       &run_loop](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
-        trust_tokens = std::move(tokens);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(trust_tokens.has_value());
-  EXPECT_TRUE(trust_tokens->empty());
-}
-
 TEST_F(NetworkContextTest, GetStoredTrustTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8735,9 +8642,6 @@ TEST_F(NetworkContextTest, GetStoredTrustTokens) {
 }
 
 TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8778,36 +8682,7 @@ TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
 }
 
 TEST_F(NetworkContextTest,
-       DeleteStoredTrustTokensReportsErrorWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kPrivateStateTokens, features::kFledgePst});
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-
-  // Allow the store time to initialize asynchronously.
-  base::RunLoop run_loop;
-  std::optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
-  network_context->DeleteStoredTrustTokens(
-      url::Origin::Create(GURL("https://example.com")),
-      base::BindLambdaForTesting(
-          [&](mojom::DeleteStoredTrustTokensStatus status) {
-            actual_status = status;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
-  EXPECT_THAT(
-      actual_status,
-      Optional(mojom::DeleteStoredTrustTokensStatus::kFailureFeatureDisabled));
-}
-
-TEST_F(NetworkContextTest,
        DeleteStoredTrustTokensReportsErrorWithInvalidOrigin) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8829,9 +8704,6 @@ TEST_F(NetworkContextTest,
 }
 
 TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8884,9 +8756,6 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
 }
 
 TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
-
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -8950,9 +8819,6 @@ TEST_F(NetworkContextTest,
   // See net/data/ssl/scripts/ee.cnf
   test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(test_server.Start());
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -9029,9 +8895,6 @@ TEST_F(NetworkContextTest,
   // See net/data/ssl/scripts/ee.cnf
   test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(test_server.Start());
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -9252,8 +9115,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   // A nonced network request should initially succeed.
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9273,8 +9135,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   // NETWORK_ACCESS_REVOKED.
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9294,8 +9155,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   {
     auto params = mojom::URLLoaderFactoryParams::New();
     params->is_trusted = true;
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9313,8 +9173,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   }
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce2);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce2);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9350,7 +9209,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9403,7 +9262,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9462,7 +9321,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9513,7 +9372,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(

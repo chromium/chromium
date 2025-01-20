@@ -25,10 +25,15 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
+#include <winternl.h>
 
+#include <netioapi.h>
+#include <ntstatus.h>
 #include <ws2bth.h>
 
 #include "net/base/winsock_util.h"  // For kBluetoothAddressSize
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include <net/if.h>
 #endif
 
 namespace net {
@@ -38,8 +43,63 @@ namespace {
 // Value dictionary keys
 constexpr std::string_view kValueAddressKey = "address";
 constexpr std::string_view kValuePortKey = "port";
+constexpr std::string_view kInterfaceName = "interface_name";
 
 }  // namespace
+
+IPEndPoint::IndexToNameFunc IPEndPoint::index_to_name_func_for_testing_ =
+    nullptr;
+IPEndPoint::NameToIndexFunc IPEndPoint::name_to_index_func_for_testing_ =
+    nullptr;
+
+// static
+void IPEndPoint::SetNameToIndexFuncForTesting(NameToIndexFunc func) {
+  name_to_index_func_for_testing_ = func;
+}
+
+void IPEndPoint::SetIndexToNameFuncForTesting(IndexToNameFunc func) {
+  index_to_name_func_for_testing_ = func;
+}
+
+// static
+std::optional<uint32_t> IPEndPoint::ScopeIdFromDict(
+    const base::Value::Dict& dict) {
+  const std::string* name = dict.FindString(kInterfaceName);
+  if (!name) {
+    return std::nullopt;
+  }
+
+  unsigned int index = 0;
+  if (name_to_index_func_for_testing_) {
+    index = name_to_index_func_for_testing_(name->c_str());
+  } else {
+    index = if_nametoindex(name->c_str());
+  }
+
+  return index;
+}
+
+// static
+base::Value IPEndPoint::ScopeIdToValue(std::optional<uint32_t> scope_id) {
+  if (!scope_id.has_value()) {
+    return base::Value();
+  }
+
+  char* name = nullptr;
+  char buf[IF_NAMESIZE + 1];
+  memset(buf, 0, sizeof(buf));
+  if (index_to_name_func_for_testing_) {
+    name = index_to_name_func_for_testing_(scope_id.value(), buf);
+  } else {
+    name = if_indextoname(scope_id.value(), buf);
+  }
+
+  if (!name) {
+    return base::Value();
+  }
+
+  return base::Value(name);
+}
 
 // static
 std::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
@@ -62,16 +122,29 @@ std::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
     return std::nullopt;
   }
 
-  return IPEndPoint(address.value(),
-                    base::checked_cast<uint16_t>(port.value()));
+  IPEndPoint endpoint(address.value(),
+                      base::checked_cast<uint16_t>(port.value()));
+
+  std::optional<uint32_t> scope_id = ScopeIdFromDict(*dict);
+  if (scope_id.has_value()) {
+    if (scope_id.value() == 0 || !endpoint.IsIPv6LinkLocal() ||
+        !base::IsValueInRangeForNumericType<uint32_t>(scope_id.value())) {
+      return std::nullopt;
+    }
+    endpoint.scope_id_ = scope_id.value();
+  }
+
+  return endpoint;
 }
 
 IPEndPoint::IPEndPoint() = default;
 
 IPEndPoint::~IPEndPoint() = default;
 
-IPEndPoint::IPEndPoint(const IPAddress& address, uint16_t port)
-    : address_(address), port_(port) {}
+IPEndPoint::IPEndPoint(const IPAddress& address,
+                       uint16_t port,
+                       std::optional<uint32_t> scope_id)
+    : address_(address), port_(port), scope_id_(scope_id) {}
 
 IPEndPoint::IPEndPoint(const IPEndPoint& endpoint) = default;
 
@@ -138,6 +211,9 @@ bool IPEndPoint::ToSockAddr(struct sockaddr* address,
       addr6->sin6_port = base::HostToNet16(port_);
       memcpy(&addr6->sin6_addr, address_.bytes().data(),
              IPAddress::kIPv6AddressSize);
+      if (IsIPv6LinkLocal() && scope_id_) {
+        addr6->sin6_scope_id = *scope_id_;
+      }
       break;
     }
     default:
@@ -168,6 +244,9 @@ bool IPEndPoint::FromSockAddr(const struct sockaddr* sock_addr,
           reinterpret_cast<const struct sockaddr_in6*>(sock_addr);
       *this = IPEndPoint(IPAddress(addr->sin6_addr.s6_addr),
                          base::NetToHost16(addr->sin6_port));
+      if (IsIPv6LinkLocal() && addr->sin6_scope_id != 0) {
+        scope_id_ = addr->sin6_scope_id;
+      }
       return true;
     }
 #if BUILDFLAG(IS_WIN)
@@ -209,11 +288,13 @@ bool IPEndPoint::operator<(const IPEndPoint& other) const {
   if (address_.size() != other.address_.size()) {
     return address_.size() < other.address_.size();
   }
-  return std::tie(address_, port_) < std::tie(other.address_, other.port_);
+  return std::tie(address_, port_, scope_id_) <
+         std::tie(other.address_, other.port_, other.scope_id_);
 }
 
 bool IPEndPoint::operator==(const IPEndPoint& other) const {
-  return address_ == other.address_ && port_ == other.port_;
+  return address_ == other.address_ && port_ == other.port_ &&
+         scope_id_ == other.scope_id_;
 }
 
 bool IPEndPoint::operator!=(const IPEndPoint& that) const {
@@ -227,7 +308,18 @@ base::Value IPEndPoint::ToValue() const {
   dict.Set(kValueAddressKey, address_.ToValue());
   dict.Set(kValuePortKey, port_);
 
+  base::Value interface_name = ScopeIdToValue(scope_id_);
+  if (!interface_name.is_none()) {
+    DCHECK(IsIPv6LinkLocal());
+    dict.Set(kInterfaceName, std::move(interface_name));
+  }
+
   return base::Value(std::move(dict));
+}
+
+bool IPEndPoint::IsIPv6LinkLocal() const {
+  return address_.IsValid() && address_.IsIPv6() &&
+         !address_.IsIPv4MappedIPv6() && address_.IsLinkLocal();
 }
 
 std::ostream& operator<<(std::ostream& os, const IPEndPoint& ip_endpoint) {

@@ -596,7 +596,7 @@ class DeviceCloudPolicyManagerAshObserverTest
     : public DeviceCloudPolicyManagerAshTest,
       public DeviceCloudPolicyManagerAsh::Observer {
  protected:
-  DeviceCloudPolicyManagerAshObserverTest() {}
+  DeviceCloudPolicyManagerAshObserverTest() = default;
 
   void SetUp() override {
     DeviceCloudPolicyManagerAshTest::SetUp();

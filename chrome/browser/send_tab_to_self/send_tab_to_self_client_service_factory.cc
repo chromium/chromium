@@ -71,12 +71,14 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // Ensure that the profile is a user profile.
-  if (!user)
+  if (!user) {
     return nullptr;
+  }
   // Ensure that the user is a Gaia user, since other types of user should not
   // have access to the service.
-  if (!user->HasGaiaAccount())
+  if (!user->HasGaiaAccount()) {
     return nullptr;
+  }
 #endif
 
   // TODO(crbug.com/40632832) refactor profile out of STTSClient constructor.

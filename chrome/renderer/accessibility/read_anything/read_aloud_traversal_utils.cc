@@ -77,7 +77,7 @@ ReadAloudCurrentGranularity::GetSegmentsForRange(int start_index,
   return ret;
 }
 
-void ReadAloudCurrentGranularity::CalculatePhrases() {
+void ReadAloudCurrentGranularity::CalculatePlaceholderPhrases() {
   if (text.size() == 0) {
     phrase_boundaries.clear();
     return;

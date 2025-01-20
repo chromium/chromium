@@ -49,8 +49,7 @@ TabsWindowsAPI::TabsWindowsAPI(content::BrowserContext* context)
                                  api::windows::OnBoundsChanged::kEventName);
 }
 
-TabsWindowsAPI::~TabsWindowsAPI() {
-}
+TabsWindowsAPI::~TabsWindowsAPI() = default;
 
 // static
 TabsWindowsAPI* TabsWindowsAPI::Get(content::BrowserContext* context) {

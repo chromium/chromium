@@ -8,7 +8,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::ProtectedNativePixmapQueryDelegate*)
 
 namespace exo {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kApplicationIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kApplicationIdKey)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRestoreOrMaximizeExitsFullscreen, false)
 

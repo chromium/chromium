@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccidentalClickType) -->
+
+<enum name="AccidentalClickType">
+  <int value="0" label="Click"/>
+  <int value="1" label="Accidental Click"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_strip_combo_button.cc:AccidentalClickType) -->
+
 <enum name="BooleanFocusedTab">
   <int value="0" label="Not Focused"/>
   <int value="1" label="Focused"/>
@@ -63,6 +72,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h:DeviceType) -->
 
+<!-- LINT.IfChange(DiscardPageOnUIThreadOutcome) -->
+
+<enum name="DiscardPageOnUIThreadOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoContents"/>
+  <int value="2" label="DiscardTabFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->
+
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
   <int value="1" label="Open"/>
@@ -98,6 +117,7 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="Group closed when the last tab in the strip was closed"/>
   <int value="9" label="Converted to shared group from UI"/>
+  <int value="10" label="Converted to saved group from UI"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:ClosingSource) -->
@@ -116,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="Invoked from session restore after autosave of a V1 group"/>
   <int value="8" label="Group shared from UI"/>
+  <int value="9" label="Group un-shared from UI"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:OpeningSource) -->
@@ -200,6 +221,28 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.h:SharedTabGroupDataLoadFromDiskResult) -->
+
+<!-- LINT.IfChange(SharedTabGroupManageTypeDesktop) -->
+
+<enum name="SharedTabGroupManageTypeDesktop">
+  <int value="0" label="Share group pressed"/>
+  <int value="1" label="Manage group pressed"/>
+  <int value="2" label="Delete group pressed"/>
+  <int value="3" label="Recent Activity viewed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupManageTypeDesktop) -->
+
+<!-- LINT.IfChange(SharedTabGroupRecallTypeDesktop) -->
+
+<enum name="SharedTabGroupRecallTypeDesktop">
+  <int value="0" label="Opened from the bookmarks bar."/>
+  <int value="1" label="Opened from the everything menu."/>
+  <int value="2" label="Opened from the tab groups sub menu."/>
+  <int value="3" label="Closed from the tab group editor bubble."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->
 
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>

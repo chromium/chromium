@@ -17,6 +17,7 @@
 #include "extensions/common/command.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/accelerators/command.h"
 
 class Profile;
 
@@ -84,7 +85,7 @@ class CommandService : public BrowserContextKeyedAPI,
     virtual void OnCommandServiceDestroying() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // Register prefs for keybinding.
@@ -123,7 +124,7 @@ class CommandService : public BrowserContextKeyedAPI,
   bool GetNamedCommands(const ExtensionId& extension_id,
                         QueryType type,
                         CommandScope scope,
-                        CommandMap* command_map) const;
+                        ui::CommandMap* command_map) const;
 
   // Records a keybinding |accelerator| as active for an extension with id
   // |extension_id| and command with the name |command_name|. If
@@ -217,8 +218,7 @@ class CommandService : public BrowserContextKeyedAPI,
 
   // Checks if |extension| is permitted to automatically assign the
   // |accelerator| key.
-  bool CanAutoAssign(const Command &command,
-                     const Extension* extension);
+  bool CanAutoAssign(const ui::Command& command, const Extension* extension);
 
   // Updates the record of |extension|'s most recent suggested command shortcut
   // keys in the preferences.

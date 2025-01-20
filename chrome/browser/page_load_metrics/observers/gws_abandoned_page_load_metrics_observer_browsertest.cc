@@ -1007,8 +1007,14 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Similar to SearchTabHidden, but the navigation starts out with a non-SRP
 // URL, that later redirects to SRP.
+// TODO(crbug.com/372878281): Re-enable on Mac builds.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NonSRPRedirectToSRP_Hidden DISABLED_NonSRPRedirectToSRP_Hidden
+#else
+#define MAYBE_NonSRPRedirectToSRP_Hidden NonSRPRedirectToSRP_Hidden
+#endif
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       NonSRPRedirectToSRP_Hidden) {
+                       MAYBE_NonSRPRedirectToSRP_Hidden) {
   for (NavigationMilestone milestone : all_throttleable_milestones()) {
     // Make sure the WebContents is currently shown, before hiding it later.
     web_contents()->WasShown();
@@ -1093,8 +1099,14 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
 // Test that if a navigation was abandoned by hiding multiple times, only the
 // first hiding will be logged.
+// TODO(crbug.com/372878281): flaky on Mac builds
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchTabHiddenMultipleTimes DISABLED_SearchTabHiddenMultipleTimes
+#else
+#define MAYBE_SearchTabHiddenMultipleTimes SearchTabHiddenMultipleTimes
+#endif
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       SearchTabHiddenMultipleTimes) {
+                       MAYBE_SearchTabHiddenMultipleTimes) {
   // Make sure the WebContents is currently shown, before hiding it later.
   web_contents()->WasShown();
 

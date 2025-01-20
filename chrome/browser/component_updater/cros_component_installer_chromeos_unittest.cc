@@ -83,8 +83,6 @@ class TestUpdater : public OnDemandUpdater {
   TestUpdater(const TestUpdater&) = delete;
   TestUpdater& operator=(const TestUpdater&) = delete;
 
-  ~TestUpdater() override = default;
-
   // Whether has a pending update request (either foreground or background).
   bool HasPendingUpdate(const std::string& name) {
     return base::Contains(background_updates_, name) ||
@@ -443,92 +441,6 @@ TEST_F(CrOSComponentInstallerTest, IsCompatibleOrNot) {
   EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1.c", "1.c"));
   EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1", "1.1"));
   EXPECT_TRUE(EnvVersionInstallerPolicy::IsCompatible("1.1.1", "1.1"));
-}
-
-TEST_F(CrOSComponentInstallerTest, LacrosMinVersion) {
-  // Use a fixed version, so the test doesn't need to change as chrome
-  // versions advance.
-  LacrosInstallerPolicy::SetAshVersionForTest("10.0.0.0");
-
-  // Create policy object under test.
-  auto update_service = std::make_unique<MockComponentUpdateService>();
-  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
-      nullptr, update_service.get());
-  ComponentConfig config{"lacros-fishfood",
-                         ComponentConfig::PolicyType::kLacros, "", ""};
-  LacrosInstallerPolicy policy(config, installer.get());
-
-  // Simulate finding an incompatible existing install.
-  policy.ComponentReady(base::Version("8.0.0.0"),
-                        base::FilePath("/lacros/8.0.0.0"),
-                        /*manifest=*/base::Value::Dict());
-  EXPECT_TRUE(installer->GetCompatiblePath("lacros-fishfood").empty());
-
-  policy.ComponentReady(base::Version("9.0.0.0"),
-                        base::FilePath("/lacros/9.0.0.0"),
-                        /*manifest=*/base::Value::Dict());
-  EXPECT_TRUE(installer->GetCompatiblePath("lacros-fishfood").empty());
-
-  // Simulate finding a compatible existing install.
-  policy.ComponentReady(base::Version("10.0.0.0"),
-                        base::FilePath("/lacros/10.0.0.0"),
-                        /*manifest=*/base::Value::Dict());
-  EXPECT_EQ("/lacros/10.0.0.0",
-            installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
-
-  policy.ComponentReady(base::Version("11.0.0.0"),
-                        base::FilePath("/lacros/11.0.0.0"),
-                        /*manifest=*/base::Value::Dict());
-  EXPECT_EQ("/lacros/11.0.0.0",
-            installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
-
-  policy.ComponentReady(base::Version("12.0.0.0"),
-                        base::FilePath("/lacros/12.0.0.0"),
-                        /*manifest=*/base::Value::Dict());
-  EXPECT_EQ("/lacros/12.0.0.0",
-            installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
-
-  LacrosInstallerPolicy::SetAshVersionForTest(nullptr);
-}
-
-TEST_F(CrOSComponentInstallerTest, LacrosUpdatesIgnoreCompoenentUpdaterPolicy) {
-  auto update_service = std::make_unique<MockComponentUpdateService>();
-  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
-      nullptr, update_service.get());
-  ComponentConfig config{"lacros-fishfood",
-                         ComponentConfig::PolicyType::kLacros, "", ""};
-  LacrosInstallerPolicy policy(config, installer.get());
-
-  ASSERT_FALSE(policy.SupportsGroupPolicyEnabledComponentUpdates());
-}
-
-TEST_F(CrOSComponentInstallerTest, LacrosDefaultAllowUpdates) {
-  ash::ScopedTestingCrosSettings cros_settings;
-
-  auto update_service = std::make_unique<MockComponentUpdateService>();
-  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
-      nullptr, update_service.get());
-  ComponentConfig config{"lacros-fishfood",
-                         ComponentConfig::PolicyType::kLacros, "", ""};
-  LacrosInstallerPolicy policy(config, installer.get());
-
-  EXPECT_TRUE(policy.AllowUpdates());
-}
-
-TEST_F(CrOSComponentInstallerTest, DisabledOSUpdatesDisableLacrosUpdates) {
-  // Disable updates.
-  ash::ScopedTestingCrosSettings cros_settings;
-  cros_settings.device_settings()->SetBoolean(ash::kUpdateDisabled, true);
-
-  auto update_service = std::make_unique<MockComponentUpdateService>();
-  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
-      nullptr, update_service.get());
-  ComponentConfig config{"lacros-fishfood",
-                         ComponentConfig::PolicyType::kLacros, "", ""};
-  LacrosInstallerPolicy policy(config, installer.get());
-
-  // Expect updates to be disabled.
-  EXPECT_FALSE(policy.AllowUpdates());
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterComponent) {

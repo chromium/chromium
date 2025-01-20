@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -52,16 +53,34 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
     response.append(
         "<style>table, th, td {border: 1px solid black; "
         "border-collapse: collapse;}th {text-align: left;}</style>");
-    response.append("<h1>List of user defaults:</h1>\n\n");
 
-    NSDictionary<NSString*, id>* defaultsDict =
-        [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
-    NSArray* sortedKeys = [[defaultsDict allKeys]
+    response.append("<h1>List of user defaults:</h1>\n\n");
+    response.append(TableWithDefaults([NSUserDefaults standardUserDefaults]));
+
+    response.append("<h1>List of application group user defaults:</h1>\n\n");
+    response.append(TableWithDefaults(app_group::GetGroupUserDefaults()));
+
+    FinishDataRequest(std::move(response), std::move(callback));
+  }
+
+  void FinishDataRequest(std::string html,
+                         web::URLDataSourceIOS::GotDataCallback callback) {
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(html)));
+  }
+
+  // Returns a table containing info about keys stored in `user_defaults`.
+  std::string TableWithDefaults(NSUserDefaults* user_defaults) {
+    std::string table;
+    NSDictionary<NSString*, id>* defaults_dict =
+        [user_defaults dictionaryRepresentation];
+
+    NSArray* sortedKeys = [[defaults_dict allKeys]
         sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 
-    response.append("<table>\n");
+    table.append("<table>\n");
     for (NSString* key in sortedKeys) {
-      id value = defaultsDict[key];
+      id value = defaults_dict[key];
       NSString* valueString;
       if ([value isKindOfClass:[NSArray class]]) {
         valueString = [value description];
@@ -77,20 +96,13 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
       } else if ([value isKindOfClass:[NSDate class]]) {
         valueString = [value description];
       }
-      response.append("<tr>\n");
-      response.append("<th>" + base::SysNSStringToUTF8(key) + "</th>\n");
-      response.append("<td>" + base::SysNSStringToUTF8(valueString) +
-                      "</td>\n");
-      response.append("</tr>\n");
+      table.append("<tr>\n");
+      table.append("<th>" + base::SysNSStringToUTF8(key) + "</th>\n");
+      table.append("<td>" + base::SysNSStringToUTF8(valueString) + "</td>\n");
+      table.append("</tr>\n");
     }
-    response.append("</table>\n<html>");
-    FinishDataRequest(std::move(response), std::move(callback));
-  }
-
-  void FinishDataRequest(std::string html,
-                         web::URLDataSourceIOS::GotDataCallback callback) {
-    std::move(callback).Run(
-        base::MakeRefCounted<base::RefCountedString>(std::move(html)));
+    table.append("</table>\n<html>");
+    return table;
   }
 
  private:

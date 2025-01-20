@@ -35,7 +35,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -79,11 +79,16 @@ void DateTimeChooserImpl::Trace(Visitor* visitor) const {
 void DateTimeChooserImpl::EndChooser() {
   if (!popup_)
     return;
-  frame_->View()->GetChromeClient()->ClosePagePopup(popup_);
+  if (auto* frame_view = frame_->View())
+    frame_view->GetChromeClient()->ClosePagePopup(popup_);
 }
 
 AXObject* DateTimeChooserImpl::RootAXObject(Element* popup_owner) {
   return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
+}
+
+bool DateTimeChooserImpl::IsPickerVisible() const {
+  return popup_;
 }
 
 static String ValueToDateTimeString(double value, InputType::Type type) {

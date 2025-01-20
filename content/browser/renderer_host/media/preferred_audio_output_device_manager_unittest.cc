@@ -32,14 +32,14 @@ class MockAudioOutputDeviceSwitcher : public AudioOutputDeviceSwitcher {
   MockAudioOutputDeviceSwitcher(
       int render_process_id,
       int render_frame_id,
-      GlobalRenderFrameHostId main_frame_id,
+      const GlobalRenderFrameHostToken& main_frame_token,
       PreferredAudioOutputDeviceManagerImpl* preferred_device_manager)
       : render_process_id_(render_process_id),
         render_frame_id_(render_frame_id),
-        main_frame_id_(main_frame_id),
+        main_frame_token_(main_frame_token),
         preferred_device_manager_(preferred_device_manager) {}
   ~MockAudioOutputDeviceSwitcher() override {
-    preferred_device_manager_->RemoveSwitcher(main_frame_id_, this);
+    preferred_device_manager_->RemoveSwitcher(main_frame_token_, this);
   }
 
   MOCK_METHOD(void,
@@ -54,7 +54,7 @@ class MockAudioOutputDeviceSwitcher : public AudioOutputDeviceSwitcher {
  private:
   int render_process_id_;
   int render_frame_id_;
-  GlobalRenderFrameHostId main_frame_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
   raw_ptr<PreferredAudioOutputDeviceManagerImpl> preferred_device_manager_;
   base::WeakPtrFactory<MockAudioOutputDeviceSwitcher> weak_ptr_factory_{this};
 };
@@ -83,8 +83,8 @@ class PreferredAudioOutputDeviceManagerImplTest
 
     return std::make_unique<StrictMock<MockAudioOutputDeviceSwitcher>>(
         main_rfh()->GetGlobalId().child_id,
-        main_rfh()->GetGlobalId().frame_routing_id, main_rfh()->GetGlobalId(),
-        &preferred_device_manager);
+        main_rfh()->GetGlobalId().frame_routing_id,
+        main_rfh()->GetGlobalFrameToken(), &preferred_device_manager);
   }
 
   std::unique_ptr<MockAudioOutputDeviceSwitcher> CreateMockSwitcherForSubframe(
@@ -101,21 +101,21 @@ class PreferredAudioOutputDeviceManagerImplTest
 
     return std::make_unique<StrictMock<MockAudioOutputDeviceSwitcher>>(
         subframe->GetGlobalId().child_id,
-        subframe->GetGlobalId().frame_routing_id, main_rfh()->GetGlobalId(),
-        &preferred_device_manager);
+        subframe->GetGlobalId().frame_routing_id,
+        main_rfh()->GetGlobalFrameToken(), &preferred_device_manager);
   }
 
   void AddSwitcher(
       PreferredAudioOutputDeviceManagerImpl& preferred_device_manager,
       MockAudioOutputDeviceSwitcher* frame_switcher) {
-    preferred_device_manager.AddSwitcher(main_rfh()->GetGlobalId(),
+    preferred_device_manager.AddSwitcher(main_rfh()->GetGlobalFrameToken(),
                                          frame_switcher);
   }
 
   void RemoveSwitcher(
       PreferredAudioOutputDeviceManagerImpl& preferred_device_manager,
       MockAudioOutputDeviceSwitcher* frame_switcher) {
-    preferred_device_manager.RemoveSwitcher(main_rfh()->GetGlobalId(),
+    preferred_device_manager.RemoveSwitcher(main_rfh()->GetGlobalFrameToken(),
                                             frame_switcher);
   }
 
@@ -124,7 +124,7 @@ class PreferredAudioOutputDeviceManagerImplTest
       const std::string& raw_device_id,
       media::OutputDeviceStatus expected_status) {
     preferred_device_manager.SetPreferredSinkId(
-        main_rfh()->GetGlobalId(), raw_device_id,
+        main_rfh()->GetGlobalFrameToken(), raw_device_id,
         base::BindLambdaForTesting(
             [expected_status](media::OutputDeviceStatus status) {
               EXPECT_EQ(status, expected_status);
@@ -509,6 +509,31 @@ TEST_F(PreferredAudioOutputDeviceManagerImplTest, AddAfterRemovalAfterSetId) {
               SwitchAudioOutputDeviceId(kRawDeviceId))
       .Times(1);
   AddSwitcher(preferred_device_manager, sub_frame_switcher.get());
+}
+
+TEST_F(PreferredAudioOutputDeviceManagerImplTest,
+       RemoveSwitcherAfterUnregisterMainFrameDoNotCrash) {
+  // RemoveSwitcher call after unregistering main frame should not crash.
+  PreferredAudioOutputDeviceManagerImpl preferred_device_manager;
+
+  std::unique_ptr<MockAudioOutputDeviceSwitcher> main_frame_switcher =
+      CreateMockSwitcherForMainframe(preferred_device_manager);
+
+  EXPECT_CALL(*main_frame_switcher.get(),
+              SwitchAudioOutputDeviceId(
+                  media::AudioDeviceDescription::kDefaultDeviceId))
+      .Times(1);
+  EXPECT_CALL(*main_frame_switcher.get(),
+              SwitchAudioOutputDeviceId(kRawDeviceId))
+      .Times(0);
+
+  AddSwitcher(preferred_device_manager, main_frame_switcher.get());
+
+  preferred_device_manager.UnregisterMainFrameOnUIThread(main_rfh());
+  base::RunLoop().RunUntilIdle();
+
+  // It does nothing(no crash) as main frame is unregistered.
+  RemoveSwitcher(preferred_device_manager, main_frame_switcher.get());
 }
 
 }  // namespace content

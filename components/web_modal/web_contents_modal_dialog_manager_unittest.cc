@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -24,12 +20,13 @@
 namespace web_modal {
 
 class MockCloseOnNavigationObserver
-    : public WebContentsModalDialogManager::CloseOnNavigationObserver {
+    : public WebContentsModalDialogManager::Observer {
  public:
   MockCloseOnNavigationObserver() = default;
   ~MockCloseOnNavigationObserver() override = default;
 
-  MOCK_METHOD(void, OnWillClose, (), (override));
+  MOCK_METHOD(void, OnWillCloseOnNavigation, (), (override));
+  MOCK_METHOD(void, OnWillShow, (), (override));
 };
 
 // Tracks persistent state changes of the native WC-modal dialog manager.
@@ -382,8 +379,9 @@ TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
 // Test that CloseAllDialogs does what it says.
 TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
   const int kWindowCount = 4;
-  NativeManagerTracker trackers[kWindowCount];
-  TestNativeWebContentsModalDialogManager* native_managers[kWindowCount];
+  std::array<NativeManagerTracker, kWindowCount> trackers;
+  std::array<TestNativeWebContentsModalDialogManager*, kWindowCount>
+      native_managers;
   for (int i = 0; i < kWindowCount; i++) {
     const gfx::NativeWindow dialog = MakeFakeDialog();
     native_managers[i] =
@@ -407,7 +405,7 @@ TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
 // Test that dialogs are closed on WebContents navigation.
 TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
   MockCloseOnNavigationObserver observer;
-  EXPECT_CALL(observer, OnWillClose());
+  EXPECT_CALL(observer, OnWillCloseOnNavigation());
 
   const gfx::NativeWindow dialog = MakeFakeDialog();
   NativeManagerTracker tracker;
@@ -415,7 +413,7 @@ TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
       new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
   manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
 
-  manager->AddCloseOnNavigationObserver(&observer);
+  manager->AddObserver(&observer);
 
   NavigateAndCommit(GURL("https://example.com/"));
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
@@ -426,7 +424,7 @@ TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
 TEST_F(WebContentsModalDialogManagerTest,
        ObserverNotNotifiedOfNonNavigationClose) {
   MockCloseOnNavigationObserver observer;
-  EXPECT_CALL(observer, OnWillClose()).Times(0);
+  EXPECT_CALL(observer, OnWillCloseOnNavigation()).Times(0);
 
   const gfx::NativeWindow dialog = MakeFakeDialog();
   NativeManagerTracker tracker;
@@ -434,7 +432,7 @@ TEST_F(WebContentsModalDialogManagerTest,
       new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
   manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
 
-  manager->AddCloseOnNavigationObserver(&observer);
+  manager->AddObserver(&observer);
 
   native_manager->Close();
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);

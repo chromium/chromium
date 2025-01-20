@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -53,12 +54,16 @@ struct CreateRandomWebAppParams {
 };
 std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params);
 
+void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app);
+
 void TestAcceptDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback);
 
 void TestDeclineDialogCallback(
+    base::WeakPtr<WebAppScreenshotFetcher>,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback);

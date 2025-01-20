@@ -65,7 +65,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -943,14 +942,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
                         ->GetLastCommittedURL());
 }
 
-class AppControllerShortcutsNotAppsBrowserTest : public InProcessBrowserTest {
- protected:
-  AppControllerShortcutsNotAppsBrowserTest() {
-    features_.InitAndEnableFeature(features::kShortcutsNotApps);
-  }
-
-  base::test::ScopedFeatureList features_;
-};
+using AppControllerShortcutsNotAppsBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
                        OpenChromeWeblocFile) {

@@ -19,6 +19,11 @@ namespace signin {
 
 bool SettingsAllowSigninCookies(
     const content_settings::CookieSettings* cookie_settings) {
+#if BUILDFLAG(IS_IOS)
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will always be allowed.
+  return true;
+#else
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
   return cookie_settings &&
@@ -28,10 +33,16 @@ bool SettingsAllowSigninCookies(
          cookie_settings->IsFullCookieAccessAllowed(
              google_url, net::SiteForCookies::FromUrl(google_url),
              url::Origin::Create(google_url), net::CookieSettingOverrides());
+#endif
 }
 
 bool SettingsDeleteSigninCookiesOnExit(
     const content_settings::CookieSettings* cookie_settings) {
+#if BUILDFLAG(IS_IOS)
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will not be deleted.
+  return false;
+#else
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
   ContentSettingsForOneType settings = cookie_settings->GetCookieSettings();
@@ -43,6 +54,7 @@ bool SettingsDeleteSigninCookiesOnExit(
          cookie_settings->ShouldDeleteCookieOnExit(
              settings, "." + google_url.host(),
              net::CookieSourceScheme::kSecure);
+#endif
 }
 
 }  // namespace signin

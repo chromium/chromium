@@ -240,12 +240,22 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     ON_CALL(download_item1_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item1_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item1_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item1_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item1_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
 
     ON_CALL(download_item2_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item2_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item2_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item2_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item2_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
   }

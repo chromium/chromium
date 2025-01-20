@@ -323,8 +323,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
                                                uint32_t fetch_count) {
   switch (event) {
     case EventType::ACTIVATE:
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ActivateEvent.Time",
-                                            time);
+      base::UmaHistogramMediumTimes("ServiceWorker.ActivateEvent.Time2", time);
       break;
     case EventType::INSTALL:
       base::UmaHistogramMediumTimes("ServiceWorker.InstallEvent.All.Time",

@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace privacy_budget_internal {
@@ -113,5 +114,5 @@ std::string EncodeIdentifiabilityType(
 }  // namespace privacy_budget_internal
 
 std::string EncodeIdentifiabilityFieldTrialParam(bool source) {
-  return source ? "true" : "false";
+  return base::ToString(source);
 }

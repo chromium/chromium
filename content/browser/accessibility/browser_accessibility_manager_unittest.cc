@@ -157,7 +157,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
   ui::AXUpdatesAndEvents events;
   events.updates = {update};
 
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   // Update errors are fatal in AX_FAIL_FAST_BUILD builds.
   EXPECT_DEATH_IF_SUPPORTED(manager->OnAccessibilityEvents(events),
                             "Node 4 has duplicate child id 5");
@@ -1536,7 +1536,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
   // DCHECK in AX_FAIL_FAST_BUILD builds, otherwise it should not crash.
   ui::AXNode child3(manager->ax_tree(), /* parent */ nullptr, /* id */ 4,
                     /* index_in_parent */ 0u);
-#if defined(AX_FAIL_FAST_BUILD)
+#if AX_FAIL_FAST_BUILD()
   EXPECT_DEATH_IF_SUPPORTED(
       manager->OnNodeReparented(manager->ax_tree(), &child3),
       "Missing BrowserAccessibility");

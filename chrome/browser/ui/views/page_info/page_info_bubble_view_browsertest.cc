@@ -66,6 +66,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -263,22 +264,22 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     presenter->ui_for_testing()->SetIdentityInfo(identity_info);
   }
 
-  std::u16string GetCertificateButtonTitle() const {
+  std::u16string_view GetCertificateButtonTitle() const {
     // Only PageInfoBubbleViewBrowserTest can access certificate_button_ in
     // PageInfoBubbleView, or title() in HoverButton.
     auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->GetTitleViewForTesting()->GetText();
+    return certificate_button->GetTitleText();
   }
 
-  std::u16string GetCertificateButtonSubtitle() const {
+  std::u16string_view GetCertificateButtonSubtitle() const {
     auto* certificate_button = static_cast<RichHoverButton*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER));
-    return certificate_button->GetSubTitleViewForTesting()->GetText();
+    return certificate_button->GetSubtitleText();
   }
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
@@ -295,14 +296,12 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     return static_cast<views::StyledLabel*>(label)->GetText();
   }
 
-  const std::u16string GetSecurityInformationButtonText() {
+  std::u16string_view GetSecurityInformationButtonText() {
     auto* button =
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    return static_cast<RichHoverButton*>(button)
-        ->GetTitleViewForTesting()
-        ->GetText();
+    return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
   void SetupSentimentServiceExpectations(bool interacted) {
@@ -1356,7 +1355,6 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
-      disabled_features.push_back(privacy_sandbox::kTrackingProtection3pcdUx);
     } else {
       disabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
@@ -1583,12 +1581,13 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features =
-            {privacy_sandbox::kFingerprintingProtectionUserBypass},
+            {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
+             privacy_sandbox::kActUserBypassUx,
+             privacy_sandbox::kFingerprintingProtectionUx},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
-      disabled_features.push_back(privacy_sandbox::kTrackingProtection3pcdUx);
     } else {
       disabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
@@ -1603,10 +1602,15 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
     ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kIncognito);
+
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
   SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kFingerprintingProtectionEnabled, true);
 
   OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
 
@@ -1628,6 +1632,10 @@ IN_PROC_BROWSER_TEST_P(
       host_content_settings_map()->GetContentSetting(
           GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_BLOCK);
+
+  // Reset browser profile before teardown to avoid profile_destroyer errors.
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kRegular);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

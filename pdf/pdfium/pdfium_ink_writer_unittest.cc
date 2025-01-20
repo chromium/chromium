@@ -23,7 +23,7 @@
 #include "pdf/test/test_helpers.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -124,8 +124,9 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
   ASSERT_TRUE(saved_page);
 
   // Complete the round trip and read the written PDF data back into memory as
-  // an ink::ModeledShape. ReadV2InkPathsFromPageAsModeledShapes() is known to
-  // be good because its unit tests reads from a real, known to be good Ink PDF.
+  // an ink::PartitionedMesh. ReadV2InkPathsFromPageAsModeledShapes() is known
+  // to be good because its unit tests reads from a real, known to be good Ink
+  // PDF.
   std::vector<ReadV2InkPathResult> saved_results =
       ReadV2InkPathsFromPageAsModeledShapes(saved_page);
   ASSERT_EQ(saved_results.size(), 1u);

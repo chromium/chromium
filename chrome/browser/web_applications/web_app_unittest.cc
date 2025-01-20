@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -90,7 +91,7 @@ void SetContentsOrDie(const base::FilePath& filepath,
 std::string SerializeValueToJsonOrDie(const base::Value& value) {
   std::string contents;
   CHECK(base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT, &contents));
+      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &contents));
   return contents;
 }
 

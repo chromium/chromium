@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Windows.h>
+
 #include <intrin.h>
 
 #include "base/compiler_specific.h"
@@ -16,8 +17,9 @@ namespace {
 
 bool IsHardwareEnforcedShadowStacksEnabled() {
   // Only supported post Win 10 2004.
-  if (base::win::GetVersion() < base::win::Version::WIN10_20H1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_20H1) {
     return false;
+  }
 
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
   if (!::GetProcessMitigationPolicy(GetCurrentProcess(),
@@ -26,10 +28,11 @@ bool IsHardwareEnforcedShadowStacksEnabled() {
     return false;
   }
 
-  if (uss_policy.EnableUserShadowStack)
+  if (uss_policy.EnableUserShadowStack) {
     return true;
-  else
+  } else {
     return false;
+  }
 }
 
 void* return_address;
@@ -42,10 +45,11 @@ void* return_address;
 // stack.
 NOINLINE void Bug() {
   void* pvAddressOfReturnAddress = _AddressOfReturnAddress();
-  if (!return_address)
+  if (!return_address) {
     return_address = *reinterpret_cast<void**>(pvAddressOfReturnAddress);
-  else
+  } else {
     *reinterpret_cast<void**>(pvAddressOfReturnAddress) = return_address;
+  }
 }
 
 NOINLINE void A() {

@@ -67,8 +67,9 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
   if (tab_menu_model_delegate_) {
     for (Browser* browser :
          tab_menu_model_delegate_->GetOtherBrowserWindows(/*is_app=*/false)) {
-      if (browser->tab_strip_model() == model)
+      if (browser->tab_strip_model() == model) {
         continue;
+      }
       const std::vector<MenuItemInfo> retrieved_menu_item_infos =
           GetMenuItemsFromModel(browser->tab_strip_model());
       menu_item_infos.insert(menu_item_infos.end(),
@@ -93,8 +94,9 @@ ExistingTabGroupSubMenuModel::~ExistingTabGroupSubMenuModel() = default;
 const std::vector<tab_groups::TabGroupId>
 ExistingTabGroupSubMenuModel::GetGroupsFromModel(TabStripModel* current_model) {
   // No model, no group model, no service.
-  if (!current_model || !current_model->group_model())
+  if (!current_model || !current_model->group_model()) {
     return {};
+  }
 
   // Add tab groups to `groups` if they differ from our indexes current group.
   std::vector<tab_groups::TabGroupId> groups;
@@ -146,8 +148,9 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
     int context_index,
     TabMenuModelDelegate* tab_menu_model_delegate) {
   TabGroupModel* group_model = model->group_model();
-  if (!group_model)
+  if (!group_model) {
     return false;
+  }
 
   // Look at tab groups in current window
   for (tab_groups::TabGroupId group : group_model->ListTabGroups()) {
@@ -162,12 +165,14 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
          tab_menu_model_delegate->GetOtherBrowserWindows(/*is_app=*/false)) {
       TabGroupModel* browser_group_model =
           browser->tab_strip_model()->group_model();
-      if (!browser_group_model)
+      if (!browser_group_model) {
         continue;
+      }
       for (tab_groups::TabGroupId group :
            browser_group_model->ListTabGroups()) {
-        if (ShouldShowGroup(model, context_index, group))
+        if (ShouldShowGroup(model, context_index, group)) {
           return true;
+        }
       }
     }
   }
@@ -184,8 +189,9 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
 
   DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
   TabGroupModel* group_model = model()->group_model();
-  if (!group_model)
+  if (!group_model) {
     return;
+  }
 
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
@@ -212,8 +218,9 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   }
 
   // Do nothing if the browser does not exist.
-  if (!browser_index.has_value())
+  if (!browser_index.has_value()) {
     return;
+  }
 
   std::vector<int> selected_indices;
   if (!model()->IsTabSelected(GetContextIndex())) {
@@ -258,8 +265,9 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
     int context_index,
     tab_groups::TabGroupId group) {
   if (!model->IsTabSelected(context_index)) {
-    if (group != model->GetTabGroupForTab(context_index))
+    if (group != model->GetTabGroupForTab(context_index)) {
       return true;
+    }
   } else {
     for (int index : model->selection_model().selected_indices()) {
       if (group != model->GetTabGroupForTab(index)) {

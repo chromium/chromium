@@ -10,12 +10,15 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.GaiaId;
 import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /** Information about a member of a group. */
 @JNINamespace("data_sharing")
 public class GroupMember {
-    public final String gaiaId;
+    public final GaiaId gaiaId;
     public final String displayName;
     public final String email;
     public final @MemberRole int role;
@@ -24,7 +27,7 @@ public class GroupMember {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public GroupMember(
-            String gaiaId,
+            GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int role,
@@ -40,12 +43,38 @@ public class GroupMember {
 
     @CalledByNative
     private static GroupMember createGroupMember(
-            String gaiaId,
+            GaiaId gaiaId,
             String displayName,
             String email,
             @MemberRole int role,
             GURL avatarUrl,
             String givenName) {
         return new GroupMember(gaiaId, displayName, email, role, avatarUrl, givenName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o instanceof GroupMember other) {
+            return Objects.equals(this.gaiaId, other.gaiaId)
+                    && Objects.equals(this.displayName, other.displayName)
+                    && Objects.equals(this.email, other.email)
+                    && this.role == other.role
+                    && Objects.equals(this.avatarUrl, other.avatarUrl)
+                    && Objects.equals(this.givenName, other.givenName);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                this.gaiaId,
+                this.displayName,
+                this.email,
+                this.role,
+                this.avatarUrl,
+                this.givenName);
     }
 }

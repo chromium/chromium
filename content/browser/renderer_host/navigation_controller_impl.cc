@@ -3170,7 +3170,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
   if (initiator_rfh) {
     initiator_frame_token = initiator_rfh->GetFrameToken();
-    initiator_process_id = initiator_rfh->GetProcess()->GetID();
+    initiator_process_id = initiator_rfh->GetProcess()->GetDeprecatedID();
     DCHECK(initiator_frame_token);
   }
 

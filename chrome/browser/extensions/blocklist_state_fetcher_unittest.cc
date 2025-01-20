@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
@@ -53,7 +55,7 @@ TEST_F(BlocklistStateFetcherTest, RequestMultipleBlocklistStates) {
   tester.SetBlocklistVerdict(
       "e", ClientCRXListInfoResponse_Verdict_POTENTIALLY_UNWANTED);
 
-  BlocklistState result[9];
+  std::array<BlocklistState, 9> result;
   fetcher.Request("a", base::BindOnce(&Assign, &result[0]));
   fetcher.Request("a", base::BindOnce(&Assign, &result[1]));
   fetcher.Request("b", base::BindOnce(&Assign, &result[2]));

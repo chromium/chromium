@@ -374,7 +374,7 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetRenderFrameHostFromId(
 ScopedJavaLocalRef<jobjectArray> WebContentsAndroid::GetAllRenderFrameHosts(
     JNIEnv* env) const {
   std::vector<RenderFrameHost*> frames;
-  web_contents_->ForEachRenderFrameHost(
+  web_contents_->ForEachRenderFrameHostImpl(
       [&frames](RenderFrameHostImpl* rfh) { frames.push_back(rfh); });
   ScopedJavaLocalRef<jobjectArray> jframes =
       Java_WebContentsImpl_createRenderFrameHostArray(env, frames.size());
@@ -826,11 +826,11 @@ void WebContentsAndroid::SetSize(JNIEnv* env, jint width, jint height) {
 }
 
 int WebContentsAndroid::GetWidth(JNIEnv* env) {
-  return web_contents_->GetNativeView()->GetSize().width();
+  return web_contents_->GetNativeView()->GetSizeDIPs().width();
 }
 
 int WebContentsAndroid::GetHeight(JNIEnv* env) {
-  return web_contents_->GetNativeView()->GetSize().height();
+  return web_contents_->GetNativeView()->GetSizeDIPs().height();
 }
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetOrCreateEventForwarder(
@@ -954,6 +954,10 @@ void WebContentsAndroid::NotifyControlsConstraintsChanged(
     Init();
   }
   offset_tag_mediator_->SetOffsetTagsInfo(tags_info);
+}
+
+void WebContentsAndroid::DisconnectFileSelectListenerIfAny(JNIEnv* env) {
+  web_contents_->DisconnectFileSelectListenerIfAny();
 }
 
 WebContentsAndroid::BrowserControlsOffsetTagMediator::

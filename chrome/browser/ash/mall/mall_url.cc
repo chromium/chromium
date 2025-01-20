@@ -24,29 +24,32 @@ BASE_FEATURE_PARAM(int,
                    0);
 
 GURL GetMallLaunchUrl(const apps::DeviceInfo& info, std::string_view path) {
+  GURL::Replacements replacements;
+  replacements.SetPathStr(path);
+
+  GURL url = GetMallBaseUrl().ReplaceComponents(replacements);
+  if (!url.is_valid()) {
+    url = GetMallBaseUrl();
+  }
+
+  // Append the parent frame origin for the server to allow iframing for this
+  // origin.
+  constexpr std::string_view kOriginParameter = "origin";
+  url = net::AppendOrReplaceQueryParameter(url, kOriginParameter,
+                                           kChromeUIMallUrl);
+
+  // Append context for localization of app recommendations.
+  constexpr std::string_view kContextParameter = "context";
   apps::proto::ClientContext context;
   *context.mutable_device_context() = info.ToDeviceContext();
   *context.mutable_user_context() = info.ToUserContext();
-
   // Mall experiments may define an Almanac feature flag which we attach as part
   // of the client context, so that it is included in requests to Almanac.
   if (kMallAlmanacFeatureFlag.Get() != 0) {
     context.mutable_user_context()->add_flag_ids(kMallAlmanacFeatureFlag.Get());
   }
-
   std::string encoded_context = base::Base64Encode(context.SerializeAsString());
-
-  constexpr std::string_view kContextParameter = "context";
-
-  GURL::Replacements replacements;
-  replacements.SetPathStr(path);
-
-  GURL url_with_path = GetMallBaseUrl().ReplaceComponents(replacements);
-  if (!url_with_path.is_valid()) {
-    url_with_path = GetMallBaseUrl();
-  }
-
-  return net::AppendOrReplaceQueryParameter(url_with_path, kContextParameter,
+  return net::AppendOrReplaceQueryParameter(url, kContextParameter,
                                             encoded_context);
 }
 

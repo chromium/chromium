@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/ui_resources.h" type="rc_header" context="default_100_percent">
       <emit emit_type='prepend'></emit>
@@ -130,11 +130,6 @@
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_2_BAR" file="common/signal_2_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_3_BAR" file="common/signal_3_bar.png" />
         <structure type="chrome_scaled_image" name="IDR_SIGNAL_4_BAR" file="common/signal_4_bar.png" />
-      </if>
-      <if expr="use_aura">
-        <structure type="chrome_scaled_image" name="IDR_TEXT_SELECTION_HANDLE_CENTER" file="common/text_selection_handle_center.png" />
-        <structure type="chrome_scaled_image" name="IDR_TEXT_SELECTION_HANDLE_LEFT" file="common/text_selection_handle_left.png" />
-        <structure type="chrome_scaled_image" name="IDR_TEXT_SELECTION_HANDLE_RIGHT" file="common/text_selection_handle_right.png" />
       </if>
       <if expr="toolkit_views">
         <structure type="chrome_scaled_image" name="IDR_TOUCH_DRAG_TIP_COPY" file="common/drag_tip_copy.png" />

@@ -35,6 +35,7 @@
 #include "chromeos/assistant/internal/proto/backdrop/backdrop.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -481,7 +482,8 @@ void AmbientBackendControllerImpl::FetchWeather(
   DCHECK(user->HasGaiaAccount());
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchWeatherInfoRequest(
-          user->GetAccountId().GetGaiaId(), GetClientId(), weather_client_id);
+          user->GetAccountId().GetGaiaId().ToString(), GetClientId(),
+          weather_client_id);
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
@@ -516,7 +518,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     bool show_pair_personal_portraits,
     const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     LOG(ERROR) << "Failed to fetch access token for ScreenUpdate";
@@ -526,7 +528,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
 
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchScreenUpdateRequest({
-          {/*gaia_id*/ gaia_id,
+          {/*gaia_id*/ gaia_id.ToString(),
            /*token*/ access_token,
            /*client_id*/ GetClientId()},
           /*num_topics*/ num_topics,
@@ -571,7 +573,7 @@ void AmbientBackendControllerImpl::OnScreenUpdateInfoFetched(
 
 void AmbientBackendControllerImpl::StartToGetSettings(
     GetSettingsCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     std::move(callback).Run(/*topic_source=*/std::nullopt);
@@ -580,8 +582,8 @@ void AmbientBackendControllerImpl::StartToGetSettings(
 
   std::string client_id = GetClientId();
   BackdropClientConfig::Request request =
-      backdrop_client_config_.CreateGetSettingsRequest(gaia_id, access_token,
-                                                       client_id);
+      backdrop_client_config_.CreateGetSettingsRequest(gaia_id.ToString(),
+                                                       access_token, client_id);
   auto resource_request = CreateResourceRequest(request);
 
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
@@ -616,7 +618,7 @@ void AmbientBackendControllerImpl::OnGetSettings(
 void AmbientBackendControllerImpl::StartToUpdateSettings(
     const AmbientSettings& settings,
     UpdateSettingsCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     std::move(callback).Run(/*success=*/false, settings);
@@ -625,8 +627,8 @@ void AmbientBackendControllerImpl::StartToUpdateSettings(
 
   std::string client_id = GetClientId();
   BackdropClientConfig::Request request =
-      backdrop_client_config_.CreateUpdateSettingsRequest(gaia_id, access_token,
-                                                          client_id, settings);
+      backdrop_client_config_.CreateUpdateSettingsRequest(
+          gaia_id.ToString(), access_token, client_id, settings);
   auto resource_request = CreateResourceRequest(request);
 
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
@@ -666,7 +668,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
     int num_albums,
     const std::string& resume_token,
     OnPersonalAlbumsFetchedCallback callback,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     DVLOG(2) << "Failed to fetch access token";
@@ -677,8 +679,8 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
 
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchPersonalAlbumsRequest(
-          banner_width, banner_height, num_albums, resume_token, gaia_id,
-          access_token);
+          banner_width, banner_height, num_albums, resume_token,
+          gaia_id.ToString(), access_token);
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();

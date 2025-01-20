@@ -9,20 +9,77 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** This is the Factory for the auxiliary search. */
 public class AuxiliarySearchControllerFactory {
-    public static @Nullable AuxiliarySearchController createAuxiliarySearchController(
+    @Nullable private final AuxiliarySearchHooks mHooks;
+
+    @Nullable private AuxiliarySearchHooks mHooksForTesting;
+
+    /** It tracks whether the current device is a tablet. */
+    @Nullable private Boolean mIsTablet;
+
+    /** Static class that implements the initialization-on-demand holder idiom. */
+    private static class LazyHolder {
+        static AuxiliarySearchControllerFactory sInstance = new AuxiliarySearchControllerFactory();
+    }
+
+    /** Returns the singleton instance of AuxiliarySearchControllerFactory. */
+    public static AuxiliarySearchControllerFactory getInstance() {
+        return LazyHolder.sInstance;
+    }
+
+    private AuxiliarySearchControllerFactory() {
+        mHooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
+    }
+
+    /** Returns whether the hook is enabled on device. */
+    public boolean isEnabled() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.isEnabled();
+        }
+
+        return mHooks != null && mHooks.isEnabled();
+    }
+
+    /**
+     * Returns whether Tab Sharing is enabled and the device is ready to use it. This check is used
+     * to control the visibility of UI like the toggle in Tabs Settings and opt in card on the magic
+     * stack. This function should NOT be used to determine whether to create a Tab Sharing
+     * controller.
+     */
+    public boolean isEnabledAndDeviceCompatible() {
+        boolean consumerSchemaFound =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+
+        return consumerSchemaFound && isEnabled();
+    }
+
+    /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
+    public boolean isSettingDefaultEnabledByOs() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.isSettingDefaultEnabledByOs();
+        }
+
+        return mHooks != null && mHooks.isSettingDefaultEnabledByOs();
+    }
+
+    /** Creates a {@link AuxiliarySearchController} instance if enabled. */
+    public @Nullable AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,
             @NonNull Profile profile,
             @Nullable TabModelSelector tabModelSelector) {
-        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        if (hooks == null || !hooks.isEnabled()) {
+        if (!isEnabled()) {
             return null;
         }
 
@@ -31,16 +88,62 @@ public class AuxiliarySearchControllerFactory {
             return new AuxiliarySearchControllerImpl(context, profile, tabModelSelector);
         }
 
-        return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
+        return createAuxiliarySearchControllerImp(
+                context,
+                profile,
+                tabModelSelector,
+                mHooksForTesting == null ? mHooks : mHooksForTesting);
     }
 
-    public static void setSchemaTypeVisibilityForPackage(
+    public void setSchemaTypeVisibilityForPackage(
             @NonNull SetDocumentClassVisibilityForPackageCallback callback) {
-        AuxiliarySearchHooks hooks = ServiceLoaderUtil.maybeCreate(AuxiliarySearchHooks.class);
-        if (hooks == null || !hooks.isEnabled()) {
+        if (!isEnabled()) {
             return;
         }
 
-        hooks.setSchemaTypeVisibilityForPackage(callback);
+        mHooks.setSchemaTypeVisibilityForPackage(callback);
+    }
+
+    /**
+     * Sets whether the device is a tablet. Note: this must be called before checking isEnabled().
+     */
+    public void setIsTablet(boolean isTablet) {
+        mIsTablet = isTablet || (mIsTablet != null && mIsTablet);
+    }
+
+    /** Gets whether the device is a tablet. */
+    public boolean isTablet() {
+        assert mIsTablet != null;
+        return mIsTablet;
+    }
+
+    @Nullable
+    public String getSupportedPackageName() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.getSupportedPackageName();
+        }
+
+        if (mHooks != null) {
+            return mHooks.getSupportedPackageName();
+        }
+
+        return null;
+    }
+
+    private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @Nullable TabModelSelector tabModelSelector,
+            @NonNull AuxiliarySearchHooks hooks) {
+        return hooks.createAuxiliarySearchController(context, profile, tabModelSelector);
+    }
+
+    public void setHooksForTesting(AuxiliarySearchHooks instanceForTesting) {
+        mHooksForTesting = instanceForTesting;
+        ResettersForTesting.register(() -> mHooksForTesting = null);
+    }
+
+    public void resetIsTabletForTesting() {
+        mIsTablet = null;
     }
 }

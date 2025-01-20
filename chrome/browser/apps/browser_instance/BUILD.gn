@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 source_set("browser_instance") {
@@ -13,6 +11,8 @@ source_set("browser_instance") {
     "browser_app_instance_map.h",
     "browser_app_instance_observer.cc",
     "browser_app_instance_observer.h",
+    "browser_app_instance_registry.cc",
+    "browser_app_instance_registry.h",
     "browser_app_instance_tracker.cc",
     "browser_app_instance_tracker.h",
     "web_contents_instance_id_utils.cc",
@@ -26,9 +26,11 @@ source_set("browser_instance") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
     "//components/app_constants",
+    "//components/exo",
     "//components/webapps/common",
     "//extensions/browser",
     "//extensions/common",
@@ -36,28 +38,8 @@ source_set("browser_instance") {
     "//ui/wm",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "browser_app_instance_registry.cc",
-      "browser_app_instance_registry.h",
-    ]
-
-    # TODO(crbug.com/1402145): Remove circular dependencies.
-    allow_circular_includes_from = [ "//chrome/browser/ui/ash/shelf" ]
-
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chrome/browser/ui/ash/shelf",
-      "//components/exo",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "browser_app_instance_forwarder.cc",
-      "browser_app_instance_forwarder.h",
-    ]
-  }
+  # TODO(crbug.com/1402145): Remove circular dependencies.
+  allow_circular_includes_from = [ "//chrome/browser/ui/ash/shelf" ]
 }
 
 source_set("browser_tests") {
@@ -65,25 +47,23 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  if (is_chromeos_ash) {
-    sources = [ "browser_app_instance_tracker_browsertest.cc" ]
+  sources = [ "browser_app_instance_tracker_browsertest.cc" ]
 
-    deps = [
-      "//base",
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/ash/system_web_apps/apps",
-      "//chrome/browser/devtools:test_support",
-      "//chrome/browser/profiles",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/tabs:tab_enums",
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/test:test_support",
-      "//components/webapps/common",
-      "//content/public/common",
-      "//extensions/common",
-    ]
-  }
+  deps = [
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/browser_instance",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/devtools:test_support",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//components/webapps/common",
+    "//content/public/common",
+    "//extensions/common",
+  ]
 }

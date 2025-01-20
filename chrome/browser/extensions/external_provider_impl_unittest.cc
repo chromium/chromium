@@ -93,12 +93,12 @@ const wchar_t kExternalAppRegistryKey[] =
 
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
  public:
-  ExternalProviderImplTest() {}
+  ExternalProviderImplTest() = default;
 
   ExternalProviderImplTest(const ExternalProviderImplTest&) = delete;
   ExternalProviderImplTest& operator=(const ExternalProviderImplTest&) = delete;
 
-  ~ExternalProviderImplTest() override {}
+  ~ExternalProviderImplTest() override = default;
 
   void InitService() {
 #if BUILDFLAG(IS_CHROMEOS)

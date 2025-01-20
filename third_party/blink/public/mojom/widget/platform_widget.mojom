@@ -140,6 +140,11 @@ interface RenderInputRouterClient {
       pending_receiver<blink.mojom.WidgetInputHandler> request,
       pending_remote<blink.mojom.WidgetInputHandlerHost> host);
 
+  // Similar to `GetWidgetInputHandler` above, but doesn't require a host. This is
+  // used only from Viz when `InputOnViz` flag is enabled.
+  GetWidgetInputHandlerForInputOnViz(
+      pending_receiver<blink.mojom.WidgetInputHandler> request);
+
   // Sent to inform the renderer to invoke a context menu.
   // The parameter specifies the location in the render widget's coordinates.
   ShowContextMenu(

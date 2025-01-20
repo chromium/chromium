@@ -29,7 +29,6 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
     const std::string& reason,
     int net_error_code);
 
-#if !BUILDFLAG(IS_ANDROID)
 // If user is not in incognito mode, triggers
 // "safeBrowsingPrivate.onUrlFilteringInterstitial" extension event.
 void MaybeTriggerUrlFilteringInterstitialEvent(
@@ -37,6 +36,5 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
     const GURL& page_url,
     const std::string& threat_type,
     safe_browsing::RTLookupResponse rt_lookup_response);
-#endif
 
 #endif  // CHROME_BROWSER_INTERSTITIALS_ENTERPRISE_UTIL_H_

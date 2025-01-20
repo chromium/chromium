@@ -60,13 +60,15 @@ class ProcessNodeImpl
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
       public mojom::ChildProcessCoordinationUnit,
-      public SupportsNodeInlineData<ProcessPriorityAggregatorData,
-                                    FrozenData,
-                                    PerformanceScenarioMemoryData,
-                                    resource_attribution::CPUMeasurementData,
-                                    LoadingScenarioCounts,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public SupportsNodeInlineData<
+          ProcessPriorityAggregatorData,
+          FrozenData,
+          PerformanceScenarioMemoryData,
+          resource_attribution::CPUMeasurementData,
+          resource_attribution::SharedCPUTimeResultData,
+          LoadingScenarioCounts,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
@@ -208,9 +210,9 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
-  void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  void OnInitializingProperties() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Receiver for renderer-only messages.
   mojo::Receiver<mojom::ProcessCoordinationUnit> render_process_receiver_

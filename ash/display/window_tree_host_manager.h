@@ -129,6 +129,8 @@ class ASH_EXPORT WindowTreeHostManager
 
   // aura::WindowTreeHostObserver overrides:
   void OnHostResized(aura::WindowTreeHost* host) override;
+  void OnLocalSurfaceIdChanged(aura::WindowTreeHost* host,
+                               const viz::LocalSurfaceId& id) override;
 
   // display::ContentProtectionManager::Observer overrides:
   void OnDisplaySecurityMaybeChanged(int64_t display_id, bool secure) override;

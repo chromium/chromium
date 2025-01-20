@@ -10,7 +10,6 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 #include "chrome/browser/apps/app_service/app_install/test_app_install_server.h"
@@ -225,34 +224,6 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
   EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::StringPrintf("window.open('cros-apps:install-app?package_id=%s');",
-                         package_id.ToString().c_str())));
-
-  // This should trigger the sequence:
-  // - AppInstallNavigationThrottle
-  // - AppInstallServiceAsh
-  // - NavigateAndTriggerInstallDialogCommand
-
-  // Await install to complete.
-  web_app::WebAppTestInstallObserver(browser()->profile())
-      .BeginListeningAndWait({app_id});
-}
-
-IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
-  base::HistogramTester histograms;
-
-  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
-
-  auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
-  ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
-
-  // Make install prompts auto accept.
-  AutoAcceptInstallDialogScope auto_accept_scope;
-
-  // Open install-app URI.
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::StringPrintf("window.open('almanac://install-app?package_id=%s');",
                          package_id.ToString().c_str())));
 
   // This should trigger the sequence:

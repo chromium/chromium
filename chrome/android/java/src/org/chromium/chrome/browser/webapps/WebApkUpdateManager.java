@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -37,10 +38,9 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -49,7 +49,6 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.webapps.WebApkInstallResult;
 import org.chromium.components.webapps.WebApkUpdateReason;
-import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -58,13 +57,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * WebApkUpdateManager manages when to check for updates to the WebAPK's Web Manifest, and sends an
  * update request to the WebAPK Server when an update is needed.
  */
-@ActivityScope
 public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, DestroyObserver {
     private static final String TAG = "WebApkUpdateManager";
 
@@ -131,12 +127,13 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         public void onResultFromNative(@WebApkInstallResult int result, boolean relaxUpdates);
     }
 
-    @Inject
     public WebApkUpdateManager(
-            AsyncInitializationActivity activity, ActivityTabProvider tabProvider) {
+            Activity activity,
+            ActivityTabProvider tabProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mContext = activity;
         mTabProvider = tabProvider;
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     /**
@@ -788,9 +785,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         if (!WebApkShareTarget.equals(oldInfo.shareTarget(), fetchedInfo.shareTarget())) {
             updateReasons.add(WebApkUpdateReason.WEB_SHARE_TARGET_DIFFERS);
         }
-        if (oldInfo.isIconAdaptive() != fetchedInfo.isIconAdaptive()
-                && (!fetchedInfo.isIconAdaptive()
-                        || WebappsIconUtils.doesAndroidSupportMaskableIcons())) {
+        if (oldInfo.isIconAdaptive() != fetchedInfo.isIconAdaptive()) {
             updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
         }
         if (shortcutsDiffer(oldInfo.shortcutItems(), fetchedInfo.shortcutItems())) {
@@ -993,7 +988,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 int[] updateReasons,
                 Callback<Boolean> callback);
 
-        public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
+        public void updateWebApkFromFile(
+                @JniType("std::string") String updateRequestPath, WebApkUpdateCallback callback);
 
         public int getWebApkTargetShellVersion();
     }

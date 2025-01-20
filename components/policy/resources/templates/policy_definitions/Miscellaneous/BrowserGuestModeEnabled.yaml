@@ -1,14 +1,12 @@
 caption: Enable guest mode in browser
 desc: |-
-  If this policy is set to true or not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and <ph name="LACROS_NAME">Lacros</ph> will enable guest logins. Guest logins are <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles where all windows are in incognito mode.
+  If this policy is set to Enabled or not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will enable guest logins. Guest logins are <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles where all windows are in incognito mode.
 
-        If this policy is set to false, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and <ph name="LACROS_NAME">Lacros</ph> will not allow guest profiles to be started.
+  If this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not allow guest profiles to be started.
 example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Allow guest browser logins
   value: true
@@ -21,6 +19,5 @@ schema:
   type: boolean
 supported_on:
 - chrome.*:38-
-- chrome_os:100-
 tags: []
 type: main

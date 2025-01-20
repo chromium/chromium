@@ -128,6 +128,10 @@ void Task::OnNetworkBytesSent(int64_t bytes_sent) {
   cumulative_bytes_sent_ += bytes_sent;
 }
 
+Task::SubType Task::GetSubType() const {
+  return Task::SubType::kNoSubType;
+}
+
 void Task::GetTerminationStatus(base::TerminationStatus* out_status,
                                 int* out_error_code) const {
   DCHECK(out_status);

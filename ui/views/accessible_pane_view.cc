@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -61,15 +62,18 @@ AccessiblePaneView::~AccessiblePaneView() {
 }
 
 bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
-  if (!GetVisible())
+  if (!GetVisible()) {
     return false;
+  }
 
-  if (!focus_manager_)
+  if (!focus_manager_) {
     focus_manager_ = GetFocusManager();
+  }
 
   View* focused_view = focus_manager_->GetFocusedView();
-  if (focused_view && !ContainsForFocusSearch(this, focused_view))
+  if (focused_view && !ContainsForFocusSearch(this, focused_view)) {
     last_focused_view_tracker_->SetView(focused_view);
+  }
 
   // Use the provided initial focus if it's visible and enabled, otherwise
   // use the first focusable child.
@@ -79,8 +83,9 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
   }
 
   // Return false if there are no focusable children.
-  if (!initial_focus)
+  if (!initial_focus) {
     return false;
+  }
 
   focus_manager_->SetFocusedView(initial_focus);
 
@@ -94,8 +99,9 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
   focus_manager_->AdvanceFocusIfNecessary();
 
   // If we already have pane focus, we're done.
-  if (pane_has_focus_)
+  if (pane_has_focus_) {
     return true;
+  }
 
   // Otherwise, set accelerators and start listening for focus change events.
   pane_has_focus_ = true;
@@ -164,17 +170,22 @@ views::View* AccessiblePaneView::GetLastFocusableChild() {
 // View overrides:
 
 views::FocusTraversable* AccessiblePaneView::GetPaneFocusTraversable() {
-  if (pane_has_focus_)
+  if (pane_has_focus_) {
     return this;
-  else
+  } else {
     return nullptr;
+  }
 }
 
 bool AccessiblePaneView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   views::View* focused_view = focus_manager_->GetFocusedView();
-  if (!ContainsForFocusSearch(this, focused_view))
+  if (!ContainsForFocusSearch(this, focused_view)) {
     return false;
+  }
+
+  // "Previous" and "Next" directions depend on UI direction.
+  bool rtl = base::i18n::IsRTL();
 
   using FocusChangeReason = views::FocusManager::FocusChangeReason;
   switch (accelerator.key_code()) {
@@ -182,8 +193,9 @@ bool AccessiblePaneView::AcceleratorPressed(
       RemovePaneFocus();
       View* last_focused_view = last_focused_view_tracker_->view();
       // Ignore |last_focused_view| if it's no longer in the same widget.
-      if (last_focused_view && GetWidget() != last_focused_view->GetWidget())
+      if (last_focused_view && GetWidget() != last_focused_view->GetWidget()) {
         last_focused_view = nullptr;
+      }
       if (last_focused_view) {
         focus_manager_->SetFocusedViewWithReason(
             last_focused_view, FocusChangeReason::kFocusRestore);
@@ -193,10 +205,10 @@ bool AccessiblePaneView::AcceleratorPressed(
       return true;
     }
     case ui::VKEY_LEFT:
-      focus_manager_->AdvanceFocus(true);
+      focus_manager_->AdvanceFocus(!rtl);
       return true;
     case ui::VKEY_RIGHT:
-      focus_manager_->AdvanceFocus(false);
+      focus_manager_->AdvanceFocus(rtl);
       return true;
     case ui::VKEY_HOME:
       focus_manager_->SetFocusedViewWithReason(
@@ -233,8 +245,9 @@ void AccessiblePaneView::OnWillChangeFocus(views::View* focused_before,
 
 void AccessiblePaneView::OnDidChangeFocus(views::View* focused_before,
                                           views::View* focused_now) {
-  if (!focused_now)
+  if (!focused_now) {
     return;
+  }
 
   views::FocusManager::FocusChangeReason reason =
       focus_manager_->focus_change_reason();

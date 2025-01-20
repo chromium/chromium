@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -20,7 +15,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace {
 
@@ -39,10 +34,9 @@ bool SanitizeDialogUIConfig::IsWebUIEnabled(
   bool is_managed_user = session_controller->IsActiveAccountManaged();
   bool is_child_user = session_controller->IsUserChild();
   bool is_guest_mode_active = session_controller->IsUserGuest();
-  bool is_managed_device =
-      !ash::InstallAttributes::Get()->IsEnterpriseManaged();
+  bool is_managed_device = ash::InstallAttributes::Get()->IsEnterpriseManaged();
   return ChromeOSWebUIConfig::IsWebUIEnabled(browser_context) &&
-         is_managed_device && !is_managed_user && !is_guest_mode_active &&
+         !is_managed_device && !is_managed_user && !is_guest_mode_active &&
          !is_child_user &&
          base::FeatureList::IsEnabled(ash::features::kSanitize);
 }
@@ -93,9 +87,7 @@ SanitizeDialogUI::SanitizeDialogUI(
   html_source->UseStringsJs();
   html_source->EnableReplaceI18nInJS();
 
-  const auto resources =
-      base::make_span(kAshSanitizeAppResources, kAshSanitizeAppResourcesSize);
-  html_source->AddResourcePaths(resources);
+  html_source->AddResourcePaths(kAshSanitizeAppResources);
   html_source->AddResourcePath("", IDR_ASH_SANITIZE_APP_INDEX_HTML);
   html_source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);

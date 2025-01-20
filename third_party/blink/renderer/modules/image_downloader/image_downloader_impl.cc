@@ -38,7 +38,7 @@ WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
                                       const std::string& mime_type,
                                       const gfx::Size& preferred_size) {
   // Decode the image using Blink's image decoder.
-  blink::WebData buffer(data.data(), data.size());
+  blink::WebData buffer(base::as_byte_span(data));
   WTF::Vector<SkBitmap> bitmaps;
   if (mime_type == "image/svg+xml") {
     SkBitmap bitmap = blink::WebImage::DecodeSVG(buffer, preferred_size);

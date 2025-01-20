@@ -1,11 +1,4 @@
-    <style
-    <if expr="not chromeos_ash">
-      include="cr-shared-style md-select"
-    </if>
-    <if expr="chromeos_ash">
-      include="cr-shared-style md-select cros-color-overrides"
-    </if>
-    >
+    <style include="cr-shared-style md-select">
       /* TODO(crbug.com/349860796): Replace border override by instead removing
          the "hr" class from the Secure DNS element once the new "Secure
          connections" settings section ships by default. */
@@ -35,16 +28,8 @@
       #secureDnsInputContainer {
         margin-top: calc(var(--cr-section-padding) / 2);
       }
-
-      <if expr="chromeos_ash">
-        :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
-          --cr-icon-button-margin-end: 16px;
-          --iron-icon-fill-color: var(--cros-sys-primary);
-        }
-      </if>
     </style>
 
-<if expr="not chromeos_ash">
     <settings-toggle-button
         id="secureDnsToggle"
         class="hr"
@@ -53,32 +38,6 @@
         sub-label="[[secureDnsDescription_]]"
         on-change="onToggleChanged_">
     </settings-toggle-button>
-</if>
-<if expr="chromeos_ash">
-    <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-      <settings-toggle-button
-          id="secureDnsToggle"
-          class="hr"
-          pref="{{secureDnsToggle_}}"
-          label="$i18n{secureDnsOsSettingsTitle}"
-          sub-label="[[secureDnsDescription_]]"
-          on-change="onToggleChanged_">
-      </settings-toggle-button>
-    </template>
-
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-      <settings-toggle-button
-          id="secureDnsToggle"
-          class="hr"
-          icon="privacy20:privacy-secure-dns"
-          pref="[[secureDnsToggle_]]"
-          label="$i18n{secureDnsOsSettingsTitle}"
-          sub-label="[[secureDnsDescription_]]"
-          on-settings-boolean-control-change="onDnsToggleClick_"
-          no-set-pref>
-      </settings-toggle-button>
-    </template>
-</if>
 
     <div id="resolverOptions" hidden="[[!showSecureDnsOptions_]]">
       <div class="cr-row continuation">
@@ -117,11 +76,3 @@
         </secure-dns-input>
       </div>
     </div>
-
-<if expr="chromeos_ash">
-    <template is="dom-if" if="[[showDisableDnsDialog_]]" restamp>
-      <settings-secure-dns-dialog id="warningDialog"
-          on-close="onDisableDnsDialogClosed_" prefs="{{prefs}}">
-      </settings-secure-dns-dialog>
-    </template>
-</if>

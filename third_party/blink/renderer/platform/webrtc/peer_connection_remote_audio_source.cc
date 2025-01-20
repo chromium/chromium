@@ -61,14 +61,12 @@ void PeerConnectionRemoteAudioTrack::SetEnabled(bool enabled) {
       "PCRAT::SetEnabled([id=%s] {enabled=%s})", track_interface_->id().c_str(),
       (enabled ? "true" : "false")));
 
-  // This affects the shared state of the source for whether or not it's a part
-  // of the mixed audio that's rendered for remote tracks from WebRTC.
-  // All tracks from the same source will share this state and thus can step
-  // on each other's toes.
-  // This is also why we can't check the enabled state for equality with
-  // |enabled| before setting the mixing enabled state. This track's enabled
-  // state and the shared state might not be the same.
-  track_interface_->set_enabled(enabled);
+  // TODO(crbug.com/40849402): AudioTrackInterface::set_enabled() is not called
+  // because doing so would set the volume to 0 for the source level in the
+  // receiving audio in the WebRTC side.
+  // For now, we skip calling AudioTrackInterface::set_enabled() to avoid these
+  // issues. We need to monitor this approach to ensure that skipping
+  // set_enabled() does not introduce regressions.
 
   MediaStreamAudioTrack::SetEnabled(enabled);
 }
@@ -136,8 +134,7 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   // legitimate for libjingle to use a different thread to invoke this method
   // whenever the audio format changes.
 #ifndef NDEBUG
-  const bool is_only_thread_here = single_audio_thread_guard_.Try();
-  DCHECK(is_only_thread_here);
+  CHECK(single_audio_thread_guard_.Try());
 #endif
 
   TRACE_EVENT2("audio", "PeerConnectionRemoteAudioSource::OnData",
@@ -174,8 +171,7 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_, playout_time, {});
 
 #ifndef NDEBUG
-  if (is_only_thread_here)
-    single_audio_thread_guard_.Release();
+  single_audio_thread_guard_.Release();
 #endif
 }
 

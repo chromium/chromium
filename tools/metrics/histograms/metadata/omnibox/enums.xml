@@ -70,6 +70,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Not allowed because the input is a focus or is empty"/>
   <int value="11" label="Not allowed because the input length is too short"/>
   <int value="12" label="Not allowed because the input looks like a URL"/>
+  <int value="13"
+      label="Not allowed because the user is not enterprise eligible"/>
 </enum>
 
 <enum name="DocumentSuggestRequestEvent">
@@ -220,7 +222,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchPrefetchStatus">
   <int value="0" label="Not started"/>
-  <int value="1" label="In flight"/>
+  <int value="1" label="In flight (Obsolete)"/>
   <int value="2" label="Headers received (for streaming responses)"/>
   <int value="3"
       label="Headers received and user navigated to search terms (for

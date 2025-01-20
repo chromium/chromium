@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 
 // PersonalDataManagerObserver is used by PersonalDataManager to informs its
 // client implemented in Objective-C when it has finished loading personal data

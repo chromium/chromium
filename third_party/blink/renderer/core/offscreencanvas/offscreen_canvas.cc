@@ -104,10 +104,9 @@ void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
 
   base::TimeTicks commit_start_time = base::TimeTicks::Now();
   current_frame_damage_rect_.join(damage_rect);
-  const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
   GetOrCreateResourceDispatcher()->DispatchFrameSync(
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
-      needs_vertical_flip, IsOpaque());
+      IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
 }
 
@@ -554,13 +553,13 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  const SkImageInfo resource_info = SkImageInfo::Make(
-      SkISize::Make(surface_size.width(), surface_size.height()),
-      GetRenderingContextSkColorInfo());
-  const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
+  const SkAlphaType alpha_type = GetRenderingContextAlphaType();
+  const SkColorType sk_color_type = GetRenderingContextSkColorType();
+  const sk_sp<SkColorSpace> sk_color_space = GetRenderingContextSkColorSpace();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, filter_quality,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
@@ -570,9 +569,9 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, filter_quality,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        std::move(dispatcher_weakptr),
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
 
@@ -584,7 +583,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, filter_quality,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 
@@ -620,19 +620,6 @@ bool OffscreenCanvas::BeginFrame() {
   return PushFrameIfNeeded();
 }
 
-void OffscreenCanvas::SetFilterQualityInResource(
-    cc::PaintFlags::FilterQuality filter_quality) {
-  if (FilterQuality() == filter_quality)
-    return;
-
-  SetFilterQuality(filter_quality);
-  if (ResourceProvider())
-    ResourceProvider()->SetFilterQuality(filter_quality);
-  if (context_ && (IsWebGL() || IsWebGPU())) {
-    context_->SetFilterQuality(filter_quality);
-  }
-}
-
 bool OffscreenCanvas::PushFrameIfNeeded() {
   if (needs_push_frame_ && context_) {
     return context_->PushFrame();
@@ -649,10 +636,9 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
   const base::TimeTicks commit_start_time = base::TimeTicks::Now();
-  const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
   GetOrCreateResourceDispatcher()->DispatchFrame(
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
-      needs_vertical_flip, IsOpaque());
+      IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
   return true;
 }
@@ -715,7 +701,8 @@ FontSelector* OffscreenCanvas::GetFontSelector() {
 }
 
 void OffscreenCanvas::UpdateMemoryUsage() {
-  int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
+  int bytes_per_pixel =
+      SkColorTypeBytesPerPixel(GetRenderingContextSkColorType());
 
   base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
   memory_usage_checked *= Size().width();

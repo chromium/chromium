@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -112,23 +113,27 @@ void FullscreenKeyboardBrowserTestBase::FocusOnLastActiveBrowser() {
 }
 
 void FullscreenKeyboardBrowserTestBase::WaitForBrowserCount(size_t expected) {
-  while (GetBrowserCount() != expected)
+  while (GetBrowserCount() != expected) {
     base::RunLoop().RunUntilIdle();
+  }
 }
 
 void FullscreenKeyboardBrowserTestBase::WaitForTabCount(int expected) {
-  while (GetTabCount() != expected)
+  while (GetTabCount() != expected) {
     base::RunLoop().RunUntilIdle();
+  }
 }
 
 void FullscreenKeyboardBrowserTestBase::WaitForActiveTabIndex(int expected) {
-  while (GetActiveTabIndex() != expected)
+  while (GetActiveTabIndex() != expected) {
     base::RunLoop().RunUntilIdle();
+  }
 }
 
 void FullscreenKeyboardBrowserTestBase::WaitForInactiveTabIndex(int expected) {
-  while (GetActiveTabIndex() == expected)
+  while (GetActiveTabIndex() == expected) {
     base::RunLoop().RunUntilIdle();
+  }
 }
 
 void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
@@ -142,8 +147,9 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
   ASSERT_EQ(2, GetTabCount());
   ASSERT_EQ(1U, GetBrowserCount());
 
-  if (!GetEmbeddedTestServer()->Started())
+  if (!GetEmbeddedTestServer()->Started()) {
     ASSERT_TRUE(GetEmbeddedTestServer()->Start());
+  }
   ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(),
       GetEmbeddedTestServer()->GetURL(kFullscreenKeyboardLockHTML),
@@ -167,12 +173,12 @@ void FullscreenKeyboardBrowserTestBase::SendShortcut(ui::KeyboardCode key,
   expected_result_ += ui::KeycodeConverter::DomCodeToCodeString(
       ui::UsLayoutKeyboardCodeToDomCode(key));
   expected_result_ += " ctrl:";
-  expected_result_ += control_modifier ? "true" : "false";
+  expected_result_ += base::ToString(control_modifier);
   expected_result_ += " shift:";
-  expected_result_ += shift ? "true" : "false";
+  expected_result_ += base::ToString(shift);
   expected_result_ += " alt:false";
   expected_result_ += " meta:";
-  expected_result_ += command_modifier ? "true" : "false";
+  expected_result_ += base::ToString(command_modifier);
   expected_result_ += '\n';
 }
 

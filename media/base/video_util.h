@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
@@ -20,7 +18,7 @@
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
 
 namespace gpu {
 struct Capabilities;
@@ -31,7 +29,11 @@ class RasterInterface;
 
 namespace libyuv {
 struct YuvConstants;
-}
+}  // namespace libyuv
+
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
 
 namespace media {
 
@@ -231,9 +233,9 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     base::TimeDelta timestamp,
     bool force_opaque = false);
 
-// Utility to convert a media pixel format to SkYUVAInfo.
-MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
-VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
+// Utility to convert a SharedImageFormat to SkYUVAInfo.
+SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format);
+SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format);
 
 // Returns the libyuv RGB conversion matrix for a given skia YUV color space.
 // If `output_argb_matrix` is true a ARGB matrix will be provided, if false a

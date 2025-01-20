@@ -6,16 +6,12 @@
 
 #include <windows.h>
 
-#include <lm.h>  // Needed for PNTSTATUS
+#include <atlcomcli.h>
+#include <lm.h>
 #include <ntstatus.h>
-#include <winternl.h>
+#include <sddl.h>
 
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
-
-#include <atlcomcli.h>  // For CComBSTR
-#include <sddl.h>       // For ConvertSidToStringSid()
-
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -40,7 +36,7 @@ HRESULT GetCurrentGaiaSid(const int& size, wchar_t* current_sid) {
     return hr;
   }
 
-  wchar_t gaia_username[kWindowsUsernameBufferLength] = {0};
+  wchar_t gaia_username[kWindowsUsernameBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
                                    std::size(gaia_username));
   if (FAILED(hr)) {
@@ -89,7 +85,7 @@ HRESULT IsGaiaUserSidDifferent(bool* is_sid_different) {
     return hr;
   }
 
-  wchar_t stored_sid[kWindowsSidBufferLength] = {0};
+  wchar_t stored_sid[kWindowsSidBufferLength] = {};
   hr = policy->RetrievePrivateData(kLsaKeyGaiaSid, stored_sid,
                                    std::size(stored_sid));
 
@@ -147,7 +143,7 @@ HRESULT StoreCurrentGaiaSid() {
 
 }  // namespace
 
-OSGaiaUserManager::~OSGaiaUserManager() {}
+OSGaiaUserManager::~OSGaiaUserManager() = default;
 
 // static
 OSGaiaUserManager** OSGaiaUserManager::GetInstanceStorage() {
@@ -174,7 +170,7 @@ HRESULT OSGaiaUserManager::CreateGaiaUser(PSID* sid) {
   }
 
   // Generate a random password for the new gaia account.
-  wchar_t password[kWindowsPasswordBufferLength] = {0};
+  wchar_t password[kWindowsPasswordBufferLength] = {};
   hr = manager->GenerateRandomPassword(password, std::size(password));
   if (FAILED(hr)) {
     SecurelyClearBuffer(password, std::size(password));
@@ -258,7 +254,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
 
   if (is_sid_different) {
     // Change gaia user password and update sid to the current one.
-    wchar_t gaia_username[kWindowsUsernameBufferLength] = {0};
+    wchar_t gaia_username[kWindowsUsernameBufferLength] = {};
     hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
                                      std::size(gaia_username));
     if (FAILED(hr)) {
@@ -266,7 +262,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
       return hr;
     }
 
-    wchar_t new_password[kWindowsPasswordBufferLength] = {0};
+    wchar_t new_password[kWindowsPasswordBufferLength] = {};
     hr = manager->GenerateRandomPassword(new_password, std::size(new_password));
     if (FAILED(hr)) {
       SecurelyClearBuffer(new_password, std::size(new_password));
@@ -274,7 +270,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
       return hr;
     }
 
-    wchar_t current_password[kWindowsPasswordBufferLength] = {0};
+    wchar_t current_password[kWindowsPasswordBufferLength] = {};
     hr = policy->RetrievePrivateData(kLsaKeyGaiaPassword, current_password,
                                      std::size(current_password));
     if (FAILED(hr)) {

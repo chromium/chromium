@@ -86,8 +86,9 @@ class ViewHierarchyChangedTestHost : public NativeViewHost {
     NativeViewHost::ViewHierarchyChanged(details);
     gfx::NativeView parent_after =
         native_view() ? GetNativeParent(native_view()) : nullptr;
-    if (parent_before != parent_after)
+    if (parent_before != parent_after) {
       ++num_parent_changes_;
+    }
   }
 
  private:

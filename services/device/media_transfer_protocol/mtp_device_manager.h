@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,7 +23,7 @@
 #include "services/device/media_transfer_protocol/media_transfer_protocol_daemon_client.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #error "Only used on ChromeOS"
 #endif
 

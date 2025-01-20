@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
@@ -10,6 +9,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,7 +144,7 @@ void DataRemovalConfirmationDialog::OnAppImageUpdated(
   DCHECK_EQ(image.width(), kArcAppIconSize);
   DCHECK_EQ(image.height(), kArcAppIconSize);
   icon_view_->SetImageSize(image.size());
-  icon_view_->SetImage(image);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {

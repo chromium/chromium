@@ -29,7 +29,7 @@ import org.chromium.components.messages.SecondaryMenuMaxSize;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.Toast;
@@ -245,7 +245,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     }
 
     private final class SecondaryMenuButtonDelegate extends DataSetObserver
-            implements ListMenuButtonDelegate {
+            implements ListMenuDelegate {
         /**
          * Keeps track of the RectProvider supplied to anchor the AnchoredPopupWindow to the
          * ListMenuButton. It's kept as a WeakReference so that this doesn't inadvertently extend
@@ -254,10 +254,10 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
          */
         private WeakReference<RectProvider> mRectProvider;
 
-        // ListMenuButtonDelegate implementation:
+        // ListMenuDelegate implementation:
         @Override
         public RectProvider getRectProvider(View listMenuButton) {
-            RectProvider provider = ListMenuButtonDelegate.super.getRectProvider(listMenuButton);
+            RectProvider provider = ListMenuDelegate.super.getRectProvider(listMenuButton);
             mRectProvider = new WeakReference<RectProvider>(provider);
             return provider;
         }

@@ -6,20 +6,16 @@
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_PROFILE_INFO_UPDATER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
 class SigninProfileInfoUpdater;
 
-class SigninProfileInfoUpdaterFactory : public BrowserStateKeyedServiceFactory {
+// Owns all SigninProfileInfoUpdater instances and associates them with
+// profiles.
+class SigninProfileInfoUpdaterFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static SigninProfileInfoUpdater* GetForProfile(ProfileIOS* profile);
   static SigninProfileInfoUpdaterFactory* GetInstance();
-
-  SigninProfileInfoUpdaterFactory(const SigninProfileInfoUpdaterFactory&) =
-      delete;
-  SigninProfileInfoUpdaterFactory& operator=(
-      const SigninProfileInfoUpdaterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SigninProfileInfoUpdaterFactory>;
@@ -30,8 +26,6 @@ class SigninProfileInfoUpdaterFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* state) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_PROFILE_INFO_UPDATER_FACTORY_H_

@@ -690,6 +690,10 @@ mojom("mojom") {
           mojom = "media.mojom.RendererType"
           cpp = "::media::RendererType"
         },
+        {
+          mojom = "media.mojom.DemuxerType"
+          cpp = "::media::DemuxerType"
+        },
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
@@ -842,11 +846,43 @@ mojom("speech_recognition") {
   public_deps = [
     ":audio_data",
     ":speech_recognition_audio_forwarder",
+    ":speech_recognition_recognition_context",
     ":web_speech_recognition",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//ui/gfx/geometry/mojom",
   ]
+}
+
+mojom("speech_recognition_recognition_context") {
+  generate_java = true
+  sources = [ "speech_recognition_recognition_context.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.SpeechRecognitionPhrase"
+          cpp = "::media::SpeechRecognitionPhrase"
+        },
+        {
+          mojom = "media.mojom.SpeechRecognitionRecognitionContext"
+          cpp = "::media::SpeechRecognitionRecognitionContext"
+        },
+      ]
+      traits_headers = [
+        "speech_recognition_recognition_context.h",
+        "speech_recognition_recognition_context_mojom_traits.h",
+      ]
+      traits_sources = [
+        "speech_recognition_recognition_context.cc",
+        "speech_recognition_recognition_context_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
 source_set("shared_mojom_traits") {
@@ -882,7 +918,7 @@ mojom("remoting") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
   public_deps = [ ":mojom" ]
 }
 
@@ -893,6 +929,7 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "speech_recognition_recognition_context_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
     "video_frame_metadata_mojom_traits_unittest.cc",
@@ -905,6 +942,7 @@ source_set("unit_tests") {
 
   deps = [
     ":speech_recognition",
+    ":speech_recognition_recognition_context",
     "//base",
     "//base/test:test_support",
     "//media:test_support",
@@ -929,6 +967,7 @@ mojom("web_speech_recognition") {
 
   deps = [
     ":speech_recognition_audio_forwarder",
+    ":speech_recognition_recognition_context",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

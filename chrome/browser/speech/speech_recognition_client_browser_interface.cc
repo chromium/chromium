@@ -8,12 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/unguessable_token.h"
-#include "build/build_config.h"
-#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/live_caption/live_caption_controller.h"
-#include "components/live_caption/live_caption_ui_remote_driver.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -29,7 +24,6 @@ SpeechRecognitionClientBrowserInterface::
     SpeechRecognitionClientBrowserInterface(content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   profile_prefs_ = profile->GetPrefs();
-  controller_ = captions::LiveCaptionControllerFactory::GetForProfile(profile);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
@@ -50,7 +44,7 @@ SpeechRecognitionClientBrowserInterface::
       base::BindRepeating(&SpeechRecognitionClientBrowserInterface::
                               OnSpeechRecognitionMaskOffensiveWordsChanged,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_->Add(
       prefs::kUserMicrophoneCaptionLanguageCode,
       base::BindRepeating(
@@ -79,7 +73,11 @@ void SpeechRecognitionClientBrowserInterface::
   OnLiveCaptionAvailabilityChanged();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+void SpeechRecognitionClientBrowserInterface::REMOVED_1() {
+  NOTIMPLEMENTED();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 void SpeechRecognitionClientBrowserInterface::
     BindBabelOrcaSpeechRecognitionBrowserObserver(
         mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
@@ -95,22 +93,6 @@ void SpeechRecognitionClientBrowserInterface::
 }
 #endif
 
-void SpeechRecognitionClientBrowserInterface::BindRecognizerToRemoteClient(
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-        client_receiver,
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionSurfaceClient>
-        surface_client_receiver,
-    mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> surface_remote,
-    media::mojom::SpeechRecognitionSurfaceMetadataPtr metadata) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui_drivers_.Add(
-      std::make_unique<captions::LiveCaptionUiRemoteDriver>(
-          controller_, std::move(surface_client_receiver),
-          std::move(surface_remote), metadata->session_id.ToString()),
-      std::move(client_receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
     speech::LanguageCode language_code) {
   if (waiting_on_live_caption_ &&
@@ -120,13 +102,13 @@ void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
         profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (waiting_on_babel_orca_ && prefs::IsLanguageCodeForMicrophoneCaption(
                                     language_code, profile_prefs_)) {
     waiting_on_babel_orca_ = false;
     NotifyBabelOrcaCaptionObservers(babel_orca_enabled_);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void SpeechRecognitionClientBrowserInterface::
@@ -178,7 +160,7 @@ void SpeechRecognitionClientBrowserInterface::NotifyLiveCaptionObservers(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SpeechRecognitionClientBrowserInterface::OnBabelOrcaAvailabilityChanged(
     bool enabled) {
   if (babel_orca_availability_observers_.empty()) {
@@ -217,5 +199,5 @@ void SpeechRecognitionClientBrowserInterface::NotifyBabelOrcaCaptionObservers(
     observer->SpeechRecognitionAvailabilityChanged(enabled);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace speech

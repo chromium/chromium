@@ -15,7 +15,7 @@ BASE_FEATURE(kDeferredSyncStartupCustomDelay,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kEnableBatchUploadFromSettings,
              "EnableBatchUploadFromSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnoPhase2FollowUp,
              "UnoPhase2FollowUp",
@@ -38,10 +38,6 @@ BASE_FEATURE(kSyncAutofillWalletCredentialData,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSyncPlusAddressSetting,
-             "SyncPlusAddressSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
              "SyncChromeOSAppsToggleSharing",
@@ -50,17 +46,7 @@ BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
 
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode,
-             "SyncEnableContactInfoDataTypeInTransportMode",
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
              "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
@@ -92,10 +78,6 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
-             "SyncIgnoreGetUpdatesRetryDelay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsSaveNudgeDelay,
              "TabGroupsSaveNudgeDelay",
@@ -165,13 +147,15 @@ BASE_FEATURE(kSyncEnableWalletOfferInTransportMode,
 #endif
 );
 
-BASE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion,
-             "SyncEntityMetadataRecordDeletedByVersionOnLocalDeletion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions,
              "SyncPasswordCleanUpAccidentalBatchDeletions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMigrateAccountPrefs,
+             "MigrateAccountPrefs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSeparateLocalAndAccountThemes,
              "SeparateLocalAndAccountThemes",

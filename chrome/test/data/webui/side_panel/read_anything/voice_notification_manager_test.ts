@@ -72,4 +72,24 @@ suite('VoiceNotificationManager', () => {
     assertEquals(NotificationType.GENERIC_ERROR, notifications['hi']);
     assertEquals(NotificationType.NO_SPACE, notifications['bn']);
   });
+
+  test('listener notified of canceled download', () => {
+    const lang = 'tr';
+    manager.addListener(listener);
+
+    manager.onVoiceStatusChange(
+        lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+    manager.onCancelDownload(lang);
+
+    assertEquals(NotificationType.NONE, notifications[lang]);
+  });
+
+  test('listener not notified if canceled language is not downloading', () => {
+    const lang = 'tr';
+    manager.addListener(listener);
+
+    manager.onCancelDownload(lang);
+
+    assertFalse(!!notifications[lang]);
+  });
 });

@@ -120,7 +120,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // Updates the drag image. An empty |image| may be used to hide a previously
   // set non-empty drag image, and a non-empty |image| shows the drag image
-  // again if it was previously hidden.
+  // again if it was previously hidden. It is also explicitly allowed to use
+  // this to set a drag image after starting the drag session without one.
   //
   // This must be called during an active drag session.
   void UpdateDragImage(const gfx::ImageSkia& image,

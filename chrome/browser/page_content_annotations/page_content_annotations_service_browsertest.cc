@@ -24,6 +24,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -37,6 +38,7 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -173,7 +175,8 @@ class PageContentAnnotationsServiceEphemeralProfileBrowserTest
                                           /*disabled_features=*/{});
   }
 
-  ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override {}
+  ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override =
+      default;
 
   PageContentAnnotationsServiceEphemeralProfileBrowserTest(
       const PageContentAnnotationsServiceEphemeralProfileBrowserTest&) = delete;
@@ -1129,6 +1132,47 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   // (because some other code added some annotations), the model-related fields
   // should be empty/unset.
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
+}
+
+class PageContentAnnotationsServiceContentExtractionTest
+    : public InProcessBrowserTest {
+ public:
+  PageContentAnnotationsServiceContentExtractionTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAnnotatedPageContentExtraction,
+        {{"capture_delay", "0s"}, {"include_inner_text", "true"}});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/optimization_guide");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       Basic) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AnnotatedPageContent.TotalSize", 1);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.InnerText.TotalLatency", 1);
+  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize", 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

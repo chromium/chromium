@@ -114,7 +114,7 @@ class DirectReceiverKey {
 //
 //   - It cannot be unbound and moved once bound
 //   - It's always bound on the current default task runner
-//   - It must be bound on a thread which uses an IO MessagePump
+//   - It must be bound on a thread whose MessagePump exposes an IOWatcher
 //
 // As long as any DirectReceiver exists on a thread, there is a thread-local
 // ThreadLocalNode instance which lives on that thread to receive IPC directly

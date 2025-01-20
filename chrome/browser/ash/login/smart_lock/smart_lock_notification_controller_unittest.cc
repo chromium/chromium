@@ -31,7 +31,7 @@ class TestableNotificationController : public SmartLockNotificationController {
   TestableNotificationController& operator=(
       const TestableNotificationController&) = delete;
 
-  ~TestableNotificationController() override {}
+  ~TestableNotificationController() override = default;
 
   // SmartLockNotificationController:
   MOCK_METHOD0(LaunchMultiDeviceSettings, void());
@@ -40,14 +40,14 @@ class TestableNotificationController : public SmartLockNotificationController {
 
 class SmartLockNotificationControllerTest : public BrowserWithTestWindowTest {
  protected:
-  SmartLockNotificationControllerTest() {}
+  SmartLockNotificationControllerTest() = default;
 
   SmartLockNotificationControllerTest(
       const SmartLockNotificationControllerTest&) = delete;
   SmartLockNotificationControllerTest& operator=(
       const SmartLockNotificationControllerTest&) = delete;
 
-  ~SmartLockNotificationControllerTest() override {}
+  ~SmartLockNotificationControllerTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();

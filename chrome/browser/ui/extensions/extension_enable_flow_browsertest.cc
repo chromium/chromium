@@ -30,7 +30,7 @@ class TestManagementProvider : public extensions::ManagementPolicy::Provider {
   TestManagementProvider(const TestManagementProvider&) = delete;
   TestManagementProvider& operator=(const TestManagementProvider&) = delete;
 
-  ~TestManagementProvider() override {}
+  ~TestManagementProvider() override = default;
 
   // MananagementPolicy::Provider:
   std::string GetDebugPolicyProviderName() const override { return "test"; }

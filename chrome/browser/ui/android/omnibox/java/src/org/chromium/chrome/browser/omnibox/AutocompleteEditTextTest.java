@@ -464,18 +464,15 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/1")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_CommitText() {
-        // User types "h".
-        assertTrue(mInputConnection.commitText("h", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
+        // User types "hel".
+        assertTrue(mInputConnection.commitText("hel", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(3, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hel", "", -1, 0, -1, 0, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "hel", "", 3, 3, 3, -1, -1);
         mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
         assertVerifierCallCounts(2, 2);
 
@@ -483,56 +480,56 @@ public class AutocompleteEditTextTest {
         assertTrue(mAutocomplete.shouldAutocomplete());
 
         // The controller kicks in.
-        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
+        mAutocomplete.setAutocompleteText("hel", "lo world", Optional.of("www.foo.com"));
         assertFalse(mAutocomplete.isCursorVisible());
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
                 "hello world - www.foo.com",
-                "h",
+                "hel",
                 -1,
-                1,
+                3,
                 -1,
                 0,
-                10);
+                8);
         assertVerifierCallCounts(0, 1);
         mInOrder.verifyNoMoreInteractions();
         assertTrue(mAutocomplete.shouldAutocomplete());
 
-        // User types "he".
-        assertTrue(mInputConnection.commitText("e", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(2, 2);
+        // User types "hell".
+        assertTrue(mInputConnection.commitText("l", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(4, 4);
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
                 "hello world - www.foo.com",
                 "",
                 25,
-                2,
-                2,
+                4,
+                4,
                 -1,
                 -1);
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
                 "hello world - www.foo.com",
-                "he",
+                "hell",
                 -1,
-                2,
+                4,
                 -1,
                 0,
-                9);
+                7);
         mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
         assertVerifierCallCounts(2, 2);
         mInOrder.verifyNoMoreInteractions();
         assertTrue(mAutocomplete.shouldAutocomplete());
         // The controller kicks in.
-        mAutocomplete.setAutocompleteText("he", "llo world", Optional.of("www.bar.com"));
+        mAutocomplete.setAutocompleteText("hell", "o world", Optional.of("www.bar.com"));
         assertFalse(mAutocomplete.isCursorVisible());
 
         mInOrder.verifyNoMoreInteractions();
-        assertTexts("he", "llo world", "www.bar.com");
+        assertTexts("hell", "o world", "www.bar.com");
         assertTrue(mAutocomplete.shouldAutocomplete());
 
         // User types "hello".
-        assertTrue(mInputConnection.commitText("llo", 1));
+        assertTrue(mInputConnection.commitText("o", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(5, 5);
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
@@ -610,18 +607,15 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/1")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAdditionalTextColor() {
-        // User types "h".
-        assertTrue(mInputConnection.commitText("h", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
+        // User types "hel".
+        assertTrue(mInputConnection.commitText("hel", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(3, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hel", "", -1, 0, -1, 0, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "hel", "", 3, 3, 3, -1, -1);
         mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
         assertVerifierCallCounts(2, 2);
 
@@ -629,17 +623,17 @@ public class AutocompleteEditTextTest {
         assertTrue(mAutocomplete.shouldAutocomplete());
 
         // The controller kicks in.
-        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
+        mAutocomplete.setAutocompleteText("hel", "lo world", Optional.of("www.foo.com"));
         assertFalse(mAutocomplete.isCursorVisible());
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
                 "hello world - www.foo.com",
-                "h",
+                "hel",
                 -1,
-                1,
+                3,
                 -1,
                 0,
-                10);
+                8);
         assertVerifierCallCounts(0, 1);
         mInOrder.verifyNoMoreInteractions();
         assertTrue(mAutocomplete.shouldAutocomplete());
@@ -654,40 +648,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/false"
-                    + "/rich_autocomplete_minimum_characters/1")
-    public void testAppendWithAdditionalText_noFullUrl() {
-        // User types "h".
-        assertTrue(mInputConnection.commitText("h", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
-        mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
-        assertVerifierCallCounts(2, 2);
-
-        mInOrder.verifyNoMoreInteractions();
-        assertTrue(mAutocomplete.shouldAutocomplete());
-
-        // The controller kicks in.
-        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
-        assertFalse(mAutocomplete.isCursorVisible());
-        // "www.foo.com" is not shown since the show full URL parameter set to false.
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hello world", "h", -1, 1, -1, 0, 10);
-        assertVerifierCallCounts(0, 1);
-        mInOrder.verifyNoMoreInteractions();
-        assertTrue(mAutocomplete.shouldAutocomplete());
-    }
-
-    @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/4")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_minimumCharacters() {
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
@@ -775,18 +736,15 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/1")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_onSelectionChanged() {
-        // User types "h".
-        assertTrue(mInputConnection.commitText("h", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
+        // User types "hel".
+        assertTrue(mInputConnection.commitText("hel", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(3, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hel", "", -1, 0, -1, 0, 3);
         verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "hel", "", 3, 3, 3, -1, -1);
         mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
         assertVerifierCallCounts(2, 2);
 
@@ -794,17 +752,17 @@ public class AutocompleteEditTextTest {
         assertTrue(mAutocomplete.shouldAutocomplete());
 
         // The controller kicks in.
-        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
+        mAutocomplete.setAutocompleteText("hel", "lo world", Optional.of("www.foo.com"));
         assertFalse(mAutocomplete.isCursorVisible());
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
                 "hello world - www.foo.com",
-                "h",
+                "hel",
                 -1,
-                1,
+                3,
                 -1,
                 0,
-                10);
+                8);
         assertVerifierCallCounts(0, 1);
         mInOrder.verifyNoMoreInteractions();
         assertTrue(mAutocomplete.shouldAutocomplete());
@@ -837,10 +795,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/1")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_removeAutocompleteAndAddtionalText() {
         // User types "hello".
         assertTrue(mInputConnection.commitText("hello", 1));
@@ -1441,10 +1396,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(
-            OmniboxFeatureList.RICH_AUTOCOMPLETION
-                    + ":rich_autocomplete_full_url/true"
-                    + "/rich_autocomplete_minimum_characters/3")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testPerformEditorAction_withAdditionText() {
         // User types "goo".
         assertTrue(mInputConnection.setComposingText("goo", 1));

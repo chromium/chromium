@@ -63,9 +63,6 @@ async function cleanUpState() {
 chrome.test.runTests([
   async function UserScriptWorld_worldIdValidation() {
     await chrome.test.assertPromiseRejects(
-        chrome.userScripts.configureWorld({csp: '', worldId: ''}),
-        'Error: If specified, `worldId` must be non-empty.');
-    await chrome.test.assertPromiseRejects(
         chrome.userScripts.configureWorld({csp: '', worldId: '_foobar'}),
         `Error: World IDs beginning with '_' are reserved.`);
     await chrome.test.assertPromiseRejects(
@@ -141,6 +138,40 @@ chrome.test.runTests([
     chrome.userScripts.register(userScripts);
 
     await navigateToRequestedUrl();
+  },
+
+  // Tests that calling configureWorld() will only change the properties present
+  // in the `configureWorld` parameters.
+  async function callingConfigureWorldOnlyChangesPresentProperties() {
+    await cleanUpState();
+
+    const customCsp = 'some csp';
+    const customMessaging = true;
+
+    // Configure a world with a custom messaging and CSP state, and verify its
+    // values.
+    await chrome.userScripts.configureWorld(
+        {csp: customCsp, messaging: customMessaging});
+    let worldConfig = (await chrome.userScripts.getWorldConfigurations())[0];
+    chrome.test.assertEq(customCsp, worldConfig.csp);
+    chrome.test.assertEq(customMessaging, worldConfig.messaging);
+
+    // Update the world, but don't pass any changes. The world configuration
+    // should be unchanged.
+    await chrome.userScripts.configureWorld({});
+    worldConfig = (await chrome.userScripts.getWorldConfigurations())[0];
+    chrome.test.assertEq(customCsp, worldConfig.csp);
+    chrome.test.assertEq(customMessaging, worldConfig.messaging);
+
+    // Update the world with only a new CSP. The CSP should be updated, but the
+    // messaging state should stay the same (at its custom value).
+    const secondCustomCsp = 'some other csp';
+    await chrome.userScripts.configureWorld({csp: secondCustomCsp});
+    worldConfig = (await chrome.userScripts.getWorldConfigurations())[0];
+    chrome.test.assertEq(secondCustomCsp, worldConfig.csp);
+    chrome.test.assertEq(customMessaging, worldConfig.messaging);
+
+    chrome.test.succeed();
   },
 
   // Tests that a registered user script in the MAIN world cannot send or
@@ -229,9 +260,8 @@ chrome.test.runTests([
     // User script uses the customized csp.
     chrome.test.assertEq('eval allowed', tab.title);
 
-    // Reset the csp. Currently this is only achievable by calling
-    // userScripts.configureWorld with no csp value (crbug.com/1497059).
-    await chrome.userScripts.configureWorld({});
+    // Reset the csp.
+    await chrome.userScripts.resetWorldConfiguration();
     tab = await navigateToRequestedUrl()
 
     // User script eses the extension's csp.

@@ -67,6 +67,7 @@ class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
 class CanvasResourceProvider;
+class Element;
 class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
@@ -134,9 +135,10 @@ class CORE_EXPORT HTMLCanvasElement final
                                  ExceptionState&);
 
   bool IsPresentationAttribute(const QualifiedName&) const final;
-  void CollectStyleForPresentationAttribute(const QualifiedName&,
-                                            const AtomicString&,
-                                            MutableCSSPropertyValueSet*) final;
+  void CollectStyleForPresentationAttribute(
+      const QualifiedName&,
+      const AtomicString&,
+      HeapVector<CSSPropertyValue, 8>&) final;
 
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);
@@ -181,6 +183,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DoDeferredPaintInvalidation();
 
+  void InitializeLayerWithCSSProperties(cc::Layer* layer) override;
   void PreFinalizeFrame() override;
   void PostFinalizeFrame(FlushReason) override;
 
@@ -224,7 +227,6 @@ class CORE_EXPORT HTMLCanvasElement final
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
   bool IsPrinting() const override;
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   bool TransferToGPUTextureWasInvoked() override;
@@ -288,9 +290,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void UpdateSuspendOffscreenCanvasAnimation();
 
-  void SetHasPlacedElements();
-
-  bool HasPlacedElements() const { return has_placed_elements_; }
+  bool HasPlacedElements() const final;
+  void PaintPlacedElements() const;
+  void MarkPlacedElementDirty(Element* placedElement);
 
   // Gets the settings of this Html Canvas Element. If there is a frame, it will
   // return the settings from the frame. If it is a frameless element it will
@@ -323,6 +325,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsCanvasClear() { return canvas_is_clear_; }
 
   bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
+
+  bool CanStartSelection() const override;
 
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
@@ -412,7 +416,11 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
-  void ReplaceExisting2dLayerBridge(
+
+  // If the ResourceProvider currently exists, replaces it with a
+  // CanvasResourceProvider that was newly created for usage with a 2D context
+  // (or with `new_provider_for_testing` if non-null).
+  void ReplaceExistingResourceProviderFor2DContext(
       std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
           nullptr);
 
@@ -433,9 +441,11 @@ class CORE_EXPORT HTMLCanvasElement final
 
   scoped_refptr<StaticBitmapImage> transparent_image_;
 
-  // When the underlying context uses placeElement() layout needs to be run on
-  // the fallback content.
-  bool has_placed_elements_ = false;
+  // Paint flags set based on CSS properties, which must be propagated to the
+  // cc::Layer.
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
+  cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

@@ -6,7 +6,8 @@
 
 import sys
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 import exe_util
 

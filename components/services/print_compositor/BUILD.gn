@@ -30,10 +30,6 @@ static_library("print_compositor") {
     ]
   }
 
-  if (enterprise_watermark) {
-    deps += [ "//components/enterprise/watermarking" ]
-  }
-
   public_deps = [
     "//components/enterprise/buildflags",
     "//components/services/print_compositor/public/cpp",
@@ -41,6 +37,12 @@ static_library("print_compositor") {
     "//printing/buildflags",
     "//skia",
   ]
+
+  if (enterprise_watermark) {
+    deps += [ "//components/enterprise/watermarking" ]
+
+    public_deps += [ "//components/enterprise/watermarking/mojom" ]
+  }
 }
 
 if (enable_printing) {
@@ -64,6 +66,7 @@ if (enable_printing) {
       deps += [
         "//cc:test_support",
         "//components/enterprise/watermarking",
+        "//components/enterprise/watermarking:watermark_test_utils",
       ]
     }
   }

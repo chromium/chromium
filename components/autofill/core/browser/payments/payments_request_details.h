@@ -392,6 +392,100 @@ struct UploadCardResponseDetails {
       get_details_for_enrollment_response_details;
 };
 
+// A collection of information required to fetch details for creating a payment
+// instrument request to link a BNPL partner.
+struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+      const GetDetailsForCreateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails& operator=(
+      const GetDetailsForCreateBnplPaymentInstrumentRequestDetails& other);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+      GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&);
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails& operator=(
+      GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&);
+  ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string_view app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The ID of the BNPL partner to be linked. i.e. Affirm
+  std::string_view issuer_id;
+};
+
+// A collection of information required to create a payment instrument request
+// to link a BNPL partner.
+struct CreateBnplPaymentInstrumentRequestDetails {
+  CreateBnplPaymentInstrumentRequestDetails();
+  CreateBnplPaymentInstrumentRequestDetails(
+      const CreateBnplPaymentInstrumentRequestDetails& other);
+  CreateBnplPaymentInstrumentRequestDetails& operator=(
+      const CreateBnplPaymentInstrumentRequestDetails& other);
+  CreateBnplPaymentInstrumentRequestDetails(
+      CreateBnplPaymentInstrumentRequestDetails&&);
+  CreateBnplPaymentInstrumentRequestDetails& operator=(
+      CreateBnplPaymentInstrumentRequestDetails&&);
+  ~CreateBnplPaymentInstrumentRequestDetails();
+
+  // `app_locale` is the Chrome locale.
+  std::string_view app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number;
+  // The ID of the BNPL partner to be linked. i.e. Affirm
+  std::string_view issuer_id;
+  // An opaque token used to chain consecutive payments requests together.
+  std::u16string context_token;
+  // Client encoded risk data.
+  std::string risk_data;
+};
+
+// A collection of information required to fetch the BNPL VCN details.
+struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+      const GetBnplPaymentInstrumentForFetchingVcnRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails& operator=(
+      const GetBnplPaymentInstrumentForFetchingVcnRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+      GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails& operator=(
+      GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&);
+  ~GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
+
+  // The number for the Google Payments account this request is sent to.
+  int64_t billing_customer_number;
+  // The fingerprint data for the user and the device.
+  std::string_view risk_data;
+  // The instrument ID is used by the server to identify a specific BNPL issuer.
+  std::string_view instrument_id;
+  // An opaque token used to chain consecutive payments requests together.
+  // Client should not update or modify this token.
+  std::string_view context_token;
+  // The URL the partner redirected the user to after finishing the BNPL flow on
+  // the partner website.
+  GURL redirect_url;
+};
+
+// Information retrieved from a BNPL FetchVcnRequest.
+struct BnplFetchVcnResponseDetails {
+  BnplFetchVcnResponseDetails();
+  BnplFetchVcnResponseDetails(const BnplFetchVcnResponseDetails& other);
+  BnplFetchVcnResponseDetails(BnplFetchVcnResponseDetails&&);
+  BnplFetchVcnResponseDetails& operator=(
+      const BnplFetchVcnResponseDetails& other);
+  BnplFetchVcnResponseDetails& operator=(BnplFetchVcnResponseDetails&&);
+  ~BnplFetchVcnResponseDetails();
+
+  std::string pan;
+  std::string cvv;
+  // The expiration month of the card. It falls in between 1 - 12.
+  std::string expiration_month;
+  // The four-digit expiration year of the card.
+  std::string expiration_year;
+  std::string cardholder_name;
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

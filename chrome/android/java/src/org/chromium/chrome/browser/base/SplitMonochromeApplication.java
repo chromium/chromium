@@ -39,6 +39,9 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
 
     @Override
     public void attachBaseContext(Context context) {
+        // Preloader has to happen first since we may load the native library in the super's
+        // attachBaseContext.
+        WebViewApkApplication.maybeSetPreloader();
         super.attachBaseContext(context);
         initializeMonochromeProcessCommon(getPackageName());
     }

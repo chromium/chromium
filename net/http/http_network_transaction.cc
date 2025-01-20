@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/address_family.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -166,16 +167,15 @@ void RecordWebSocketFallbackResult(int result,
 }
 
 const std::string_view NegotiatedProtocolToHistogramSuffix(
-    const HttpResponseInfo& response) {
-  NextProto next_proto = NextProtoFromString(response.alpn_negotiated_protocol);
+    NextProto next_proto) {
   switch (next_proto) {
-    case kProtoHTTP11:
+    case NextProto::kProtoHTTP11:
       return "H1";
-    case kProtoHTTP2:
+    case NextProto::kProtoHTTP2:
       return "H2";
-    case kProtoQUIC:
+    case NextProto::kProtoQUIC:
       return "H3";
-    case kProtoUnknown:
+    case NextProto::kProtoUnknown:
       return "Unknown";
   }
 }
@@ -230,6 +230,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   request_ = request_info;
   url_ = request_->url;
   network_anonymization_key_ = request_->network_anonymization_key;
+  start_timeticks_ = base::TimeTicks::Now();
 #if BUILDFLAG(ENABLE_REPORTING)
   // Store values for later use in NEL report generation.
   request_method_ = request_->method;
@@ -244,7 +245,6 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
     request_user_agent_.swap(header.value());
   }
   request_reporting_upload_depth_ = request_->reporting_upload_depth;
-  start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   if (request_->idempotency == IDEMPOTENT ||
@@ -663,17 +663,18 @@ void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
   stream_ = std::move(stream);
   stream_->SetRequestHeadersCallback(request_headers_callback_);
   proxy_info_ = used_proxy_info;
+  negotiated_protocol_ = stream_request_->negotiated_protocol();
   // TODO(crbug.com/40473589): Remove `was_alpn_negotiated` when we remove
   // chrome.loadTimes API.
   response_.was_alpn_negotiated =
-      stream_request_->negotiated_protocol() != kProtoUnknown;
+      stream_request_->negotiated_protocol() != NextProto::kProtoUnknown;
   response_.alpn_negotiated_protocol =
       NextProtoToString(stream_request_->negotiated_protocol());
   response_.alternate_protocol_usage =
       stream_request_->alternate_protocol_usage();
   // TODO(crbug.com/40815866): Stop using `was_fetched_via_spdy`.
   response_.was_fetched_via_spdy =
-      stream_request_->negotiated_protocol() == kProtoHTTP2;
+      stream_request_->negotiated_protocol() == NextProto::kProtoHTTP2;
   response_.dns_aliases = stream_->GetDnsAliases();
 
   dns_resolution_start_time_override_ =
@@ -774,13 +775,13 @@ void HttpNetworkTransaction::OnQuicBroken() {
 }
 
 void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
-    HttpStreamPoolSwitchingInfo switching_info) {
+    HttpStreamPoolRequestInfo request_info) {
   CHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   CHECK(stream_request_);
   stream_request_.reset();
 
   stream_request_ = session_->http_stream_pool()->RequestStream(
-      this, std::move(switching_info), priority_,
+      this, std::move(request_info), priority_,
       /*allowed_bad_certs=*/observed_bad_certs_, enable_ip_based_pooling_,
       enable_alternative_services_, net_log_);
   CHECK(!stream_request_->completed());
@@ -966,6 +967,7 @@ int HttpNetworkTransaction::DoCreateStream() {
 }
 
 int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
+  RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
     next_state_ = STATE_CONNECTED_CALLBACK;
@@ -977,8 +979,14 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
              (ForWebSocketHandshake() ? "WebSocketStreamTime."
                                       : "HttpStreamTime."),
              (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
-             NegotiatedProtocolToHistogramSuffix(response_)}),
+             NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() - create_stream_start_time_);
+    if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
+      base::UmaHistogramTimes(
+          "Net.NetworkTransaction.ResetConnectionAndResendRequestTime",
+          base::TimeTicks::Now() -
+              reset_connection_and_request_for_resend_start_time_);
+    }
   } else if (result == ERR_HTTP_1_1_REQUIRED ||
              result == ERR_PROXY_HTTP_1_1_REQUIRED) {
     return HandleHttp11Required(result);
@@ -1010,7 +1018,7 @@ int HttpNetworkTransaction::DoInitStream() {
   base::UmaHistogramBoolean(
       base::StrCat({"Net.NetworkTransaction.InitializeStreamBlocked",
                     IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(response_)}),
+                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1020,9 +1028,10 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
   // completes.
   if (!blocked_initialize_stream_start_time_.is_null()) {
     base::UmaHistogramTimes(
-        base::StrCat({"Net.NetworkTransaction.InitializeStreamBlockTime",
-                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::StrCat(
+            {"Net.NetworkTransaction.InitializeStreamBlockTime",
+             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() - blocked_initialize_stream_start_time_);
   }
 
@@ -1124,7 +1133,7 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
   base::UmaHistogramBoolean(
       base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlocked",
                     IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(response_)}),
+                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1135,9 +1144,10 @@ int HttpNetworkTransaction::DoGenerateProxyAuthTokenComplete(int rv) {
   // completes.
   if (!blocked_generate_proxy_auth_token_start_time_.is_null()) {
     base::UmaHistogramTimes(
-        base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime",
-                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::StrCat(
+            {"Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime",
+             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() - blocked_generate_proxy_auth_token_start_time_);
   }
   if (rv == OK)
@@ -1169,7 +1179,7 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
   base::UmaHistogramBoolean(
       base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlocked",
                     IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(response_)}),
+                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1180,9 +1190,10 @@ int HttpNetworkTransaction::DoGenerateServerAuthTokenComplete(int rv) {
   // completes.
   if (!blocked_generate_server_auth_token_start_time_.is_null()) {
     base::UmaHistogramTimes(
-        base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlockTime",
-                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                      NegotiatedProtocolToHistogramSuffix(response_)}),
+        base::StrCat(
+            {"Net.NetworkTransaction.GenerateServerAuthTokenBlockTime",
+             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() -
             blocked_generate_server_auth_token_start_time_);
   }
@@ -1568,7 +1579,7 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
     // This transaction was successful. If it had been retried because of an
     // error with an alternative service, mark that alternative service broken.
     if (!enable_alternative_services_ &&
-        retried_alternative_service_.protocol != kProtoUnknown) {
+        retried_alternative_service_.protocol != NextProto::kProtoUnknown) {
       HistogramBrokenAlternateProtocolLocation(
           BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_NETWORK_TRANSACTION);
       session_->http_server_properties()->MarkAlternativeServiceBroken(
@@ -2039,6 +2050,8 @@ bool HttpNetworkTransaction::CheckMaxRestarts() {
 
 void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
     RetryReason retry_reason) {
+  reset_connection_and_request_for_resend_start_time_ = base::TimeTicks::Now();
+
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.
   CHECK(request_);
   base::UmaHistogramEnumeration(
@@ -2197,6 +2210,40 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
   }
 
   return result;
+}
+
+void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
+  // Do not record the elapsed time when this restarted. Restarting usually
+  // involves user interaction and we can't predict how long the interaction
+  // took time.
+  if (num_restarts_ == 0) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_timeticks_;
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.NetworkTransaction.StreamRequestCompleteTime.",
+                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
+                      result == OK ? "Success" : "Failure"}),
+        elapsed);
+  }
+
+  if (result == OK) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({
+            "Net.NetworkTransaction.NegotiatedProtocol.",
+            IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
+        }),
+        negotiated_protocol_);
+
+    IPEndPoint endpoint;
+    int get_endpoint_result = stream_->GetRemoteEndpoint(&endpoint);
+    if (get_endpoint_result == OK) {
+      base::UmaHistogramEnumeration(
+          "NetNetworkTransaction.StreamAddressFamily", endpoint.GetFamily(),
+          static_cast<AddressFamily>(ADDRESS_FAMILY_LAST + 1));
+    }
+  } else {
+    base::UmaHistogramSparse("Net.NetworkTransaction.StreamRequestErrorCode",
+                             -result);
+  }
 }
 
 // static

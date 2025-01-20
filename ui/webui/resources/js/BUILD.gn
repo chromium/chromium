@@ -23,8 +23,8 @@ build_webui("build") {
     "focus_row.ts",
     "icon.ts",
     "keyboard_shortcut_list.ts",
-    "load_time_data_deprecated.js",
     "load_time_data.ts",
+    "load_time_data_deprecated.js",
     "metrics_reporter/browser_proxy.ts",
     "metrics_reporter/metrics_reporter.ts",
     "mojo_type_util.ts",
@@ -41,10 +41,6 @@ build_webui("build") {
     "util.ts",
   ]
 
-  if (is_chromeos) {
-    non_web_component_files += [ "os_about.ts" ]
-  }
-
   if (is_ios) {
     non_web_component_files += [
       "ios/mojo_api.js",
@@ -59,8 +55,8 @@ build_webui("build") {
 
   if (include_polymer) {
     non_web_component_files += [
-      "focus_without_ink.ts",
       "browser_command/browser_command_proxy.ts",
+      "focus_without_ink.ts",
     ]
   }
 

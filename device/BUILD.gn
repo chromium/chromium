@@ -92,6 +92,8 @@ test("device_unittests") {
   if (is_android) {
     sources += [
       "bluetooth/bluetooth_adapter_android_unittest.cc",
+      "bluetooth/test/bluetooth_scanner_callback.cc",
+      "bluetooth/test/bluetooth_scanner_callback.h",
       "bluetooth/test/bluetooth_test_android.cc",
       "bluetooth/test/bluetooth_test_android.h",
     ]
@@ -184,12 +186,8 @@ test("device_unittests") {
       "fido/credential_management_handler_unittest.cc",
       "fido/ctap_request_unittest.cc",
       "fido/ctap_response_unittest.cc",
+      "fido/enclave/attestation_unittest.cc",
       "fido/enclave/enclave_protocol_utils_unittest.cc",
-      "fido/enclave/verify/amd_unittest.cc",
-      "fido/enclave/verify/claim_unittest.cc",
-      "fido/enclave/verify/endorsement_unittest.cc",
-      "fido/enclave/verify/rekor_unittest.cc",
-      "fido/enclave/verify/utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
       "fido/fido_device_discovery_unittest.cc",
@@ -217,8 +215,6 @@ test("device_unittests") {
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]
-
-    data = [ "fido/enclave/verify/testdata/" ]
 
     if (is_chromeos_lacros) {
       deps += [ "//chromeos/startup" ]
@@ -500,8 +496,9 @@ test("device_unittests") {
 
 if (is_android) {
   bluetooth_java_sources_needing_jni = [
-    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/Fakes.java",
+    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/ChromeBluetoothLeScannerTestUtil.java",
     "bluetooth/test/android/java/src/org/chromium/device/bluetooth/ChromeBluetoothScanFilter.java",
+    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/Fakes.java",
   ]
 
   generate_jni("bluetooth_test_jni_headers") {

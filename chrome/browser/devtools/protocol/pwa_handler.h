@@ -38,14 +38,14 @@ class PWAHandler final : public protocol::PWA::Backend {
                      std::unique_ptr<GetOsAppStateCallback> callback) override;
 
   void Install(const std::string& in_manifest_id,
-               protocol::Maybe<std::string> in_install_url_or_bundle_url,
+               std::optional<std::string> in_install_url_or_bundle_url,
                std::unique_ptr<InstallCallback> callback) override;
 
   void Uninstall(const std::string& in_manifest_id,
                  std::unique_ptr<UninstallCallback> callback) override;
 
   void Launch(const std::string& in_manifest_id,
-              protocol::Maybe<std::string> in_url,
+              std::optional<std::string> in_url,
               std::unique_ptr<LaunchCallback> callback) override;
 
   void LaunchFilesInApp(
@@ -58,8 +58,8 @@ class PWAHandler final : public protocol::PWA::Backend {
 
   void ChangeAppUserSettings(
       const std::string& in_manifest_id,
-      protocol::Maybe<bool> in_link_capturing,
-      protocol::Maybe<protocol::PWA::DisplayMode> in_display_mode,
+      std::optional<bool> in_link_capturing,
+      std::optional<protocol::PWA::DisplayMode> in_display_mode,
       std::unique_ptr<ChangeAppUserSettingsCallback> callback) override;
 
   /// Implementation details ///

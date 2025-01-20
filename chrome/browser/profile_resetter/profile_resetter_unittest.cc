@@ -180,8 +180,7 @@ ProfileResetterTest::ProfileResetterTest()
 #endif
 {}
 
-ProfileResetterTest::~ProfileResetterTest() {
-}
+ProfileResetterTest::~ProfileResetterTest() = default;
 
 void ProfileResetterTest::SetUp() {
   extensions::ExtensionServiceTestBase::SetUp();
@@ -277,7 +276,7 @@ class ConfigParserTest : public testing::Test {
 ConfigParserTest::ConfigParserTest()
     : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-ConfigParserTest::~ConfigParserTest() {}
+ConfigParserTest::~ConfigParserTest() = default;
 
 std::unique_ptr<BrandcodeConfigFetcher> ConfigParserTest::WaitForRequest(
     const GURL& url) {
@@ -323,8 +322,7 @@ class ShortcutHandler {
 };
 
 #if BUILDFLAG(IS_WIN)
-ShortcutHandler::ShortcutHandler() {
-}
+ShortcutHandler::ShortcutHandler() = default;
 
 ShortcutHandler::~ShortcutHandler() {
   if (!shortcut_path_.empty())
@@ -385,9 +383,9 @@ bool ShortcutHandler::IsFileHidden() const {
 }
 
 #else
-ShortcutHandler::ShortcutHandler() {}
+ShortcutHandler::ShortcutHandler() = default;
 
-ShortcutHandler::~ShortcutHandler() {}
+ShortcutHandler::~ShortcutHandler() = default;
 
 // static
 bool ShortcutHandler::IsSupported() {

@@ -64,6 +64,9 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingJoinUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingManageUiConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingPreviewDataConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingPreviewDetailsConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingRuntimeDataConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingStringConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
@@ -72,6 +75,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//components/data_sharing/public/protocol:proto_java",
+      "//components/signin/public/android:java",
       "//components/sync/protocol:protocol_java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",

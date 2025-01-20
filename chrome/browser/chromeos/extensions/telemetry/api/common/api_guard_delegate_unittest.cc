@@ -116,6 +116,16 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         "https://dlcdnccls.asus.com/app/myasus_for_chromebook/ ",
         /*matches_origin=*/"https://dlcdnccls.asus.com/*",
         /*manufacturer=*/"ASUS"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"aoefhlbfcighemjpchndkhonjfjoehnm",
+        /*app_ui_url=*/"https://acerpartners.com/acerbooster",
+        /*matches_origin=*/"https://acerpartners.com/*",
+        /*manufacturer=*/"Acer"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
+        /*app_ui_url=*/"https://chromebookdiags.lenovo.com",
+        /*matches_origin=*/"https://chromebookdiags.lenovo.com/*",
+        /*manufacturer=*/"Lenovo"),
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -162,7 +172,9 @@ class ApiGuardDelegateTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string GetDefaultProfileName() override { return kUserEmail; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kUserEmail;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
@@ -407,15 +419,10 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LogIn(const std::string& email) override {
-    // Make sure the current user is affiliated.
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
+    BrowserWithTestWindowTest::LogIn(email, gaia_id);
+    user_manager()->SetUserAffiliated(
+        AccountId::FromUserEmailGaiaId(email, gaia_id), true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
@@ -617,12 +624,12 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   }
 
   // BrowserWithTestWindowTest overrides.
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return ash::kShimlessRmaAppBrowserContextBaseName;
   }
 
   // Do nothing for special profile for shimless RMA App.
-  void LogIn(const std::string& email) override {}
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {}
   void SwitchActiveUser(const std::string& email) override {}
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}

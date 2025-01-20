@@ -245,6 +245,7 @@ if (!is_android && !is_mac) {
           "//chrome/chrome_proxy",
           "//chrome/elevation_service",
           "//chrome/notification_helper",
+          "//chrome/windows_services/elevated_tracing_service",
         ]
 
         if (enable_platform_experience) {
@@ -372,6 +373,7 @@ if (!is_android && !is_mac) {
 
       data_deps += [
         "//chrome/browser/resources/media/mei_preload:component",
+        "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
         "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
         "//third_party/widevine/cdm",
       ]
@@ -1214,6 +1216,7 @@ if (is_win) {
       ":swiftshader_binaries",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component_bundle",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
     ]
 
@@ -1614,10 +1617,6 @@ group("strings") {
 }
 
 if (is_android) {
-  java_cpp_enum("partner_bookmarks_javagen") {
-    sources = [ "browser/android/bookmarks/partner_bookmarks_reader.h" ]
-  }
-
   java_cpp_enum("offline_pages_enum_javagen") {
     sources = [ "browser/offline_pages/offline_page_utils.h" ]
   }
@@ -1653,6 +1652,7 @@ if (is_android) {
 
     deps = [
       ":dependencies",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
@@ -1660,28 +1660,23 @@ if (is_android) {
       "//chrome/common/profiler",
       "//chrome/gpu",
       "//chrome/renderer",
+      "//components/crash/android:crash_android",
       "//components/minidump_uploader",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_mobile",
       "//components/stylus_handwriting/android",
+      "//components/variations:variations_associated_data",
       "//content/public/app",
     ]
 
     # Explicit dependency required for JNI registration to be able to
     # find the native side functions.
-    if (is_android && is_component_build) {
+    if (is_component_build) {
       deps += [
         "//components/viz/service",
         "//device/gamepad",
         "//ui/events/devices",
-      ]
-    }
-
-    if (is_android) {
-      deps += [
-        "//chrome/browser/flags:flags_android",
-        "//components/crash/android:crash_android",
       ]
     }
 

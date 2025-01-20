@@ -101,9 +101,9 @@ bool ChromeCrashReporterClient::GetCollectStatsConsentFromAshDir() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-ChromeCrashReporterClient::ChromeCrashReporterClient() {}
+ChromeCrashReporterClient::ChromeCrashReporterClient() = default;
 
-ChromeCrashReporterClient::~ChromeCrashReporterClient() {}
+ChromeCrashReporterClient::~ChromeCrashReporterClient() = default;
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 void ChromeCrashReporterClient::SetCrashReporterClientIdFromGUID(

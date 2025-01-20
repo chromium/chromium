@@ -13,9 +13,11 @@
 
 namespace extensions {
 
-NonNativeFileSystemDelegateChromeOS::NonNativeFileSystemDelegateChromeOS() {}
+NonNativeFileSystemDelegateChromeOS::NonNativeFileSystemDelegateChromeOS() =
+    default;
 
-NonNativeFileSystemDelegateChromeOS::~NonNativeFileSystemDelegateChromeOS() {}
+NonNativeFileSystemDelegateChromeOS::~NonNativeFileSystemDelegateChromeOS() =
+    default;
 
 bool NonNativeFileSystemDelegateChromeOS::IsUnderNonNativeLocalPath(
     content::BrowserContext* context,

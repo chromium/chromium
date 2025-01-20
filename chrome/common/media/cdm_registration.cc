@@ -38,18 +38,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #include "media/cdm/cdm_paths.h"  // nogncheck
-// Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION. This file is in
-// SHARED_INTERMEDIATE_DIR.
-#include "widevine_cdm_version.h"  // nogncheck
-// The following must be after widevine_cdm_version.h.
-#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-#include <gnu/libc-version.h>
-#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/metrics/histogram_functions.h"
-#include "content/public/common/content_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -61,29 +50,6 @@ namespace {
 using Robustness = content::CdmInfo::Robustness;
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class LacrosBundledWidevine {
-  kNone = 0,
-  kLacros = 1,
-  kAsh = 2,
-  kMaxValue = kAsh,
-};
-
-// Record which Widevine CDM was loaded for Lacros.
-void ReportLacrosUMA(LacrosBundledWidevine value) {
-  // Only recorded by the browser process. If recorded by the pre-zygote
-  // process, then all processes will end up with this value reported.
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
-  if (process_type.empty()) {
-    base::UmaHistogramEnumeration("Media.EME.Widevine.LacrosBundledCdm", value);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if (BUILDFLAG(BUNDLE_WIDEVINE_CDM) ||            \
      BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
@@ -154,48 +120,13 @@ std::unique_ptr<content::CdmInfo> GetBundledWidevine() {
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) &&
         // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// ChromeOS Lacros should use the Widevine CDM bundled with ChromeOS Ash.
-// This is determined by using command line arguments passed when Ash
-// launches Lacros.
-std::unique_ptr<content::CdmInfo> GetAshBundledWidevine() {
-  if (base::FeatureList::IsEnabled(media::kLacrosUseAshWidevine)) {
-    const auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kCrosWidevineBundledDir)) {
-      ReportLacrosUMA(LacrosBundledWidevine::kAsh);
-      base::FilePath install_dir =
-          command_line->GetSwitchValuePath(switches::kCrosWidevineBundledDir);
-      return CreateCdmInfoFromWidevineDirectory(install_dir);
-    }
-  }
-
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-  // As there will be a transition period where Lacros runs on older versions of
-  // Ash that do not set the command line argument, use the Widevine CDM bundled
-  // with Lacros if available.
-  // TODO(b/332962687): Remove Lacros bundled Widevine CDM once all versions of
-  // Ash updated to set the command line argument.
-  ReportLacrosUMA(LacrosBundledWidevine::kLacros);
-  return GetBundledWidevine();
-#else
-  ReportLacrosUMA(LacrosBundledWidevine::kNone);
-  return nullptr;
-#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if (BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) &&             \
-     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if (BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) && \
+     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)))
 // This code checks to see if Component Updater picked a version of the Widevine
 // CDM to be used last time it ran. (Component Updater may choose the bundled
 // CDM if there is not a new version available for download.) If there is one
 // and it looks valid, return the CdmInfo for that CDM. Otherwise return
 // nullptr.
-//
-// On ChromeOS Lacros, Component Update for the Widevine CDM is disabled.
-// However, as Lacros uses the Widevine CDM available to ChromeOS Ash, this code
-// is needed to check to see if the Ash Widevine CDM has been updated.
 std::unique_ptr<content::CdmInfo> GetHintedWidevine() {
   // Ideally this would cache the result, as Component Update may run and
   // download a new version once Chrome has been running for a while. However,
@@ -218,7 +149,7 @@ std::unique_ptr<content::CdmInfo> GetHintedWidevine() {
   return CreateCdmInfoFromWidevineDirectory(install_dir);
 }
 #endif  // (BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) && (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH))) || BUILDFLAG(IS_CHROMEOS_LACROS)
+        // BUILDFLAG(IS_CHROMEOS)))
 
 void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   DVLOG(1) << __func__;
@@ -233,15 +164,6 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
       kWidevineCdmType, base::Version(), base::FilePath());
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-  base::Version glibc_version(gnu_get_libc_version());
-  DCHECK(glibc_version.IsValid());
-  if (glibc_version < base::Version(WIDEVINE_CDM_MIN_GLIBC_VERSION)) {
-    LOG(WARNING) << "Widevine not registered because glibc version is too low";
-    return;
-  }
-#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-
   // The Widevine CDM on Linux/ChromeOS needs to be registered (and loaded)
   // before the zygote is locked down. The CDM can be found from the version
   // bundled with Chrome (if BUNDLE_WIDEVINE_CDM = true) and/or the version
@@ -268,9 +190,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // We should still use the version selected by Component Update (except for
   // case #3 above).
   std::unique_ptr<content::CdmInfo> bundled_widevine = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bundled_widevine = GetAshBundledWidevine();
-#elif BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
   bundled_widevine = GetBundledWidevine();
 #endif
 
@@ -278,7 +198,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // the bundled CDM if it matches the version Component Update determines that
   // should be used.
   std::unique_ptr<content::CdmInfo> hinted_widevine;
-#if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   hinted_widevine = GetHintedWidevine();
 #endif
 
@@ -299,21 +219,12 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
     DVLOG(1) << __func__ << " bundled: " << bundled_version;
     DVLOG(1) << __func__ << " hinted: " << hinted_version;
 
-    bool choose_bundled;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Downgrading doesn't work on Lacros, so choose the highest version CDM,
-    // preferring the bundled CDM over the hinted CDM if the versions are the
-    // same. See bug for details.
-    // TODO(b/329869597): Get this working on Lacros.
-    choose_bundled = bundled_version >= hinted_version;
-#else
-    // On all other platforms (Linux and ChromeOS Ash) we want to pick the
-    // hinted version, except in the case the bundled CDM is newer than the
-    // hinted CDM and is different than the previously bundled CDM.
-    choose_bundled =
+    // On all platforms we want to pick the hinted version, except in the case
+    // the bundled CDM is newer than the hinted CDM and is different than the
+    // previously bundled CDM.
+    bool choose_bundled =
         bundled_version > hinted_version &&
         bundled_version != GetBundledVersionDuringLastComponentUpdate();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (choose_bundled) {
       VLOG(1) << "Choosing bundled Widevine " << bundled_version << " from "
@@ -341,12 +252,6 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
       kWidevineCdmType, base::Version(), base::FilePath());
 
 #elif BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosUseChromeosProtectedMedia)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   media::CdmCapability capability;
 
   // The following audio formats are supported for decrypt-only.
@@ -361,26 +266,16 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosEnablePlatformHevc)) {
-    capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
-  }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
     capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
   }
 #else
   capability.video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
   capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosUseChromeosProtectedAv1)) {
-    capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
-  }
 #endif
 
   // Both encryption schemes are supported on ChromeOS.
@@ -493,11 +388,11 @@ void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
 }
 
 #if BUILDFLAG(ENABLE_WIDEVINE) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 std::vector<content::CdmInfo> GetSoftwareSecureWidevine() {
   std::vector<content::CdmInfo> cdms;
   AddSoftwareSecureWidevine(&cdms);
   return cdms;
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE) && (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH))
+        // BUILDFLAG(IS_CHROMEOS))

@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -15,14 +16,22 @@
   GURL _externalURL;
   GURL _completeURL;
   std::vector<GURL> _URLs;
+  ApplicationModeRequestStatus _applicationModeRequestStatus;
+  NSString* _sourceAppID;
+
+  // The mode in which the tab must be opened. Defaults to UNDETERMINED.
+  ApplicationModeForTabOpening _applicationMode;
+
+  // Whether the application mode is forced or not (for example incognito mode
+  // or regular mode were forced based on the profile prefs).
+  BOOL _forceApplicationMode;
+
+  // An array of blocks to execute once the `applicationMode` is available.
+  NSMutableArray<AppModeRequestBlock>* _pendingBlocks;
 }
 
-@synthesize externalURLParams = _externalURLParams;
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
-@synthesize applicationMode = _applicationMode;
-// TODO(crbug.com/40106317): Remove this stub.
-@synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
 
 - (const GURL&)externalURL {
@@ -35,26 +44,53 @@
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
-                    applicationMode:(ApplicationModeForTabOpening)mode {
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode {
   self = [super init];
   if (self) {
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
+    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+    _forceApplicationMode = forceApplicationMode;
+  }
+  return self;
+}
+
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode {
+  self = [super init];
+  if (self) {
+    _externalURL = externalURL;
+    _completeURL = completeURL;
+    _sourceAppID = [sourceAppID copy];
+    _applicationMode = mode;
+    _applicationModeRequestStatus =
+        (forceApplicationMode &&
+         mode == ApplicationModeForTabOpening::INCOGNITO)
+            ? ApplicationModeRequestStatus::kAvailable
+            : ApplicationModeRequestStatus::kUnavailable;
+    _forceApplicationMode = forceApplicationMode;
   }
   return self;
 }
 
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
-             applicationMode:(ApplicationModeForTabOpening)mode {
+             applicationMode:(ApplicationModeForTabOpening)mode
+        forceApplicationMode:(BOOL)forceApplicationMode {
   if (URLs.empty()) {
     self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
                          completeURL:GURL(kChromeUINewTabURL)
-                     applicationMode:mode];
+                     applicationMode:mode
+                forceApplicationMode:forceApplicationMode];
   } else {
     self = [self initWithExternalURL:URLs.front()
                          completeURL:URLs.front()
-                     applicationMode:mode];
+                     applicationMode:mode
+                forceApplicationMode:forceApplicationMode];
   }
 
   if (self) {
@@ -67,7 +103,7 @@
   NSMutableString* description =
       [NSMutableString stringWithFormat:@"AppStartupParameters: %s",
                                         _externalURL.spec().c_str()];
-  if (self.applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
+  if (_applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
     [description appendString:@", should launch in incognito"];
   }
 
@@ -133,10 +169,6 @@
       break;
   }
 
-  if (self.completePaymentRequest) {
-    [description appendString:@", should complete payment request"];
-  }
-
   return description;
 }
 
@@ -172,6 +204,67 @@
     default:
       return _externalURL == GURL(kChromeUINewTabURL);
   }
+}
+
+- (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block {
+  switch (_applicationModeRequestStatus) {
+    case ApplicationModeRequestStatus::kAvailable:
+      CHECK(!_pendingBlocks);
+      block(_applicationMode);
+      break;
+    case ApplicationModeRequestStatus::kRequested:
+      CHECK(_pendingBlocks);
+      [_pendingBlocks addObject:block];
+      break;
+    case ApplicationModeRequestStatus::kUnavailable: {
+      CHECK(!_pendingBlocks);
+      _pendingBlocks = [[NSMutableArray alloc] init];
+      [_pendingBlocks addObject:block];
+      _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
+      __weak __typeof(self) weakSelf = self;
+      auto callback = base::BindOnce(
+          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito) {
+            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito];
+          },
+          weakSelf);
+      ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
+                                          std::move(callback));
+      break;
+    }
+  }
+}
+
+- (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
+      forceApplicationMode:(BOOL)forceApplicationMode {
+  if (forceApplicationMode) {
+    if (applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
+      self.unexpectedMode =
+          _applicationMode == ApplicationModeForTabOpening::NORMAL;
+
+    } else if (applicationMode == ApplicationModeForTabOpening::NORMAL) {
+      self.unexpectedMode =
+          _applicationMode == ApplicationModeForTabOpening::INCOGNITO;
+    }
+  }
+  _applicationMode = applicationMode;
+  _forceApplicationMode = forceApplicationMode;
+}
+
+- (ApplicationModeForTabOpening)applicationMode {
+  CHECK(!base::FeatureList::IsEnabled(kChromeStartupParametersAsync));
+  return _applicationMode;
+}
+
+- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito {
+  _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+  if (isAppSwitcherIncognito) {
+    _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
+  }
+
+  for (AppModeRequestBlock block in _pendingBlocks) {
+    block(_applicationMode);
+  }
+  _pendingBlocks = nil;
 }
 
 @end

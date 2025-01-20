@@ -103,6 +103,15 @@ struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // because it provides Serialize method and the format
   // is hard to be correct.
   AVCDecoderConfigurationRecord avc_config_record;
+
+  // Indicates whether the parameter sets can be copied to the output bitstream
+  // or not. When set to false, parameter sets are only stored in the
+  // `AVCDecoderConfigurationRecord`, which complies with the requirements of
+  // `avc1` as defined in ISO/IEC 14496-15:2019 - 5.3.2. When set to true,
+  // parameter sets are stored both in the output bitstream and in the
+  // `AVCDecoderConfigurationRecord`, which complies with the requirements of
+  // `avc3` as defined in ISO/IEC 14496-15:2019 - 5.3.2.
+  bool add_parameter_sets_in_bitstream;
 };
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
@@ -113,6 +122,15 @@ struct MEDIA_EXPORT HEVCDecoderConfiguration : Box {
   // because it provides Serialize method and the format
   // is hard to be correct.
   HEVCDecoderConfigurationRecord hevc_config_record;
+
+  // Indicates whether the parameter sets can be copied to the output bitstream
+  // or not. When set to false, parameter sets are only stored in the
+  // `HEVCDecoderConfigurationRecord`, which complies with the requirements of
+  // `hvc1` as defined in ISO/IEC 14496-15:2019 - 8.3.2. When set to true,
+  // parameter sets are stored both in the output bitstream and in the
+  // `HEVCDecoderConfigurationRecord`, which complies with the requirements of
+  // `hev1` as defined in ISO/IEC 14496-15:2019 - 8.3.2.
+  bool add_parameter_sets_in_bitstream;
 };
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
@@ -134,6 +152,15 @@ struct MEDIA_EXPORT AV1CodecConfiguration : FullBox {
   AV1CodecConfiguration(const AV1CodecConfiguration&);
   AV1CodecConfiguration& operator=(const AV1CodecConfiguration&);
   std::vector<uint8_t> av1_decoder_configuration_data;
+};
+
+struct MEDIA_EXPORT ColorInformation : Box {
+  explicit ColorInformation(VideoColorSpace video_color_space);
+  ~ColorInformation();
+  ColorInformation(const ColorInformation&);
+  ColorInformation& operator=(const ColorInformation&);
+
+  VideoColorSpace video_color_space;
 };
 
 // VisualSampleEntry (`avc1`, `hvc1`, `vp09`, `av01`) box.
@@ -165,6 +192,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 
   PixelAspectRatioBox pixel_aspect_ratio;
   BitRate bit_rate;
+  std::optional<ColorInformation> color_information;
 };
 
 // Opus media data (`dOps`) box.

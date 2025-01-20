@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/keyed_service/ios",
   "+components/signin/public/identity_manager",
   "+components/trusted_vault",
   "+ios/chrome/browser/shared/model/profile",

@@ -35,9 +35,9 @@ build_webui("build") {
     "check_mark_wrapper.ts",
     "color_utils.ts",
     "theme_color.html.ts",
+    "theme_color.ts",
     "theme_color_picker.html.ts",
     "theme_color_picker.ts",
-    "theme_color.ts",
     "theme_hue_slider_dialog.html.ts",
     "theme_hue_slider_dialog.ts",
   ]

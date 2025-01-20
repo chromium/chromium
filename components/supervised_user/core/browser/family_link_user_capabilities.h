@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_USER_CAPABILITIES_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_USER_CAPABILITIES_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -59,7 +61,7 @@ class FamilyLinkUserCapabilitiesObserver
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
-  void NotifyCapabilityChange(const std::string& name,
+  void NotifyCapabilityChange(std::string_view name,
                               CapabilityUpdateState capability_update_state);
 
   base::ScopedObservation<signin::IdentityManager,

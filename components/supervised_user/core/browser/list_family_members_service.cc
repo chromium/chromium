@@ -12,14 +12,16 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace supervised_user {
@@ -35,25 +37,6 @@ base::TimeDelta NextUpdate(const ProtoFetcherStatus& status) {
     return kDefaultUpdateInterval;
   }
   return kOnErrorUpdateInterval;
-}
-
-FamilyLinkUserState FamilyRoleToState(kidsmanagement::FamilyRole role) {
-  // Omitting the default case is safe since kidsmanagement::FamilyRole is a
-  // proto2 enum.
-  switch (role) {
-    case kidsmanagement::CHILD:
-      return FamilyLinkUserState::kChild;
-    case kidsmanagement::MEMBER:
-      return FamilyLinkUserState::kMember;
-    case kidsmanagement::PARENT:
-      return FamilyLinkUserState::kParent;
-    case kidsmanagement::HEAD_OF_HOUSEHOLD:
-      return FamilyLinkUserState::kHeadOfHousehold;
-    case kidsmanagement::UNCONFIRMED_MEMBER:
-      return FamilyLinkUserState::kUnconfirmedMember;
-    case kidsmanagement::UNKNOWN_FAMILY_ROLE:
-      return FamilyLinkUserState::kNotFamilyLink;
-  }
 }
 
 }  // namespace
@@ -101,17 +84,13 @@ void ListFamilyMembersService::StartRepeatedFetch() {
 
 void ListFamilyMembersService::StopFetch() {
   std::string empty_family_member_role;
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kFetchListFamilyMembersWithCapability)) {
+  if (FetchListFamilyMembersWithCapability()) {
     // Record that the user is not in a family member role when using the
     // `can_fetch_family_member_info` capability.
-    empty_family_member_role = supervised_user::kDefaultEmptyFamilyMemberRole;
+    empty_family_member_role = kDefaultEmptyFamilyMemberRole;
   }
   user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
                          empty_family_member_role);
-  user_prefs_->SetInteger(
-      prefs::kFamilyLinkUserState,
-      static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
 
   if (!fetcher_) {
     return;
@@ -129,8 +108,7 @@ void ListFamilyMembersService::OnExtendedAccountInfoUpdated(
   }
 
   signin::Tribool can_start_fetch = signin::Tribool::kUnknown;
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kFetchListFamilyMembersWithCapability)) {
+  if (FetchListFamilyMembersWithCapability()) {
     can_start_fetch = info.capabilities.can_fetch_family_member_info();
   } else {
     // The default fetcher only retrieves Family account info from accounts
@@ -218,31 +196,21 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
   // If the user has signed out since the fetch started do not record the family
   // member role.
   if (account_info.IsEmpty()) {
-    user_prefs_->SetInteger(
-        prefs::kFamilyLinkUserState,
-        static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
     return;
   }
 
   for (const kidsmanagement::FamilyMember& member :
        list_members_response.members()) {
-    if (member.user_id() == account_info.gaia) {
-      user_prefs_->SetString(
-          prefs::kFamilyLinkUserMemberRole,
-          supervised_user::FamilyRoleToString(member.role()));
-      user_prefs_->SetInteger(
-          prefs::kFamilyLinkUserState,
-          static_cast<int>(FamilyRoleToState(member.role())));
+    if (member.user_id() == account_info.gaia.ToString()) {
+      user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
+                             FamilyRoleToString(member.role()));
       return;
     }
   }
 
   // If there is no associated family member, set to default.
   user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
-                         supervised_user::kDefaultEmptyFamilyMemberRole);
-  user_prefs_->SetInteger(
-      prefs::kFamilyLinkUserState,
-      static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
+                         kDefaultEmptyFamilyMemberRole);
 }
 
 }  // namespace supervised_user

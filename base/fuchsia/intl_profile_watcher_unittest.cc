@@ -6,6 +6,7 @@
 
 #include <fuchsia/intl/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
 #include <vector>

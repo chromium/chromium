@@ -42,7 +42,7 @@ namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Events) {
   ASSERT_TRUE(RunExtensionTest("events")) << message_;
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
 
 class EventsApiTest : public ExtensionApiTest {
  public:
-  EventsApiTest() {}
+  EventsApiTest() = default;
 
   EventsApiTest(const EventsApiTest&) = delete;
   EventsApiTest& operator=(const EventsApiTest&) = delete;
@@ -935,11 +935,19 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
 
 using ServiceWorkerEventAckBrowserTest = EventDispatchingApiTest;
 
+// TODO(crbug.com/383086263): Flaky on Mac and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_RendererProcessGoesAway_ClearsUnackedEventData \
+  DISABLED_RendererProcessGoesAway_ClearsUnackedEventData
+#else
+#define MAYBE_RendererProcessGoesAway_ClearsUnackedEventData \
+  RendererProcessGoesAway_ClearsUnackedEventData
+#endif
 // Tests that when a renderer process is no longer available that we clear any
 // unacked events from EventAckData for that render process. Otherwise we would
 // leak these unacked events and never remove them.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
-                       RendererProcessGoesAway_ClearsUnackedEventData) {
+                       MAYBE_RendererProcessGoesAway_ClearsUnackedEventData) {
   // TODO(crbug.com/331358155): This currently tests
   // EventRouter::RenderProcessExited(), but it does not test the case of
   // EventRouter::RenderProcessHostDestroyed(). It can be simulated with a
@@ -976,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
       content::RenderProcessHost::FromID(unacked_event_info->render_process_id);
   ASSERT_TRUE(worker_render_process_host);
   ASSERT_EQ(unacked_event_info->render_process_id,
-            worker_render_process_host->GetID());
+            worker_render_process_host->GetDeprecatedID());
 
   // Terminate worker's RenderProcessHost which triggers the cleanup logic.
   content::RenderProcessHostWatcher process_exit_observer(

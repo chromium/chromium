@@ -90,7 +90,6 @@ using ScopedScHandle =
 class ProcessFilterName : public base::ProcessFilter {
  public:
   explicit ProcessFilterName(const std::wstring& process_name);
-  ~ProcessFilterName() override = default;
 
   // Overrides for base::ProcessFilter.
   bool Includes(const base::ProcessEntry& entry) const override;
@@ -104,10 +103,10 @@ class ProcessFilterName : public base::ProcessFilter {
 
 namespace internal {
 
-template <typename T>
+template <typename... T>
 using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-    T>;
+    T...>;
 
 }  // namespace internal
 
@@ -120,26 +119,53 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 template <typename Interface, REFIID iid_user, REFIID iid_system>
 class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
-  DynamicIIDsImpl() {
+  explicit DynamicIIDsImpl(UpdaterScope scope) : scope_(scope) {
     VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << StringFromGuid(iid_user)
             << ": iid_system: " << StringFromGuid(iid_system)
-            << ": IsSystemInstall(): " << IsSystemInstall();
+            << ": scope: " << scope;
   }
 
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return internal::WrlRuntimeClass<Interface>::QueryInterface(
-        riid == (IsSystemInstall() ? iid_system : iid_user)
+        riid == (IsSystemInstall(scope_) ? iid_system : iid_user)
             ? __uuidof(Interface)
             : riid,
         object);
   }
+
+ protected:
+  UpdaterScope scope() const { return scope_; }
+
+ private:
+  const UpdaterScope scope_;
 };
 
 // Macro that makes it easier to derive from `DynamicIIDsImpl`.
 #define DYNAMICIIDSIMPL(interface)                      \
   DynamicIIDsImpl<interface, __uuidof(interface##User), \
                   __uuidof(interface##System)>
+
+// Implements `DynamicIIDs` for multiple interfaces `Interface`, taking
+// `iid_user` and `iid_system` as maps.
+template <typename... Interface>
+class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
+ public:
+  DynamicIIDsMultImpl(
+      UpdaterScope scope,
+      const base::flat_map<IID, IID, IidComparator>& user_iid_map,
+      const base::flat_map<IID, IID, IidComparator>& system_iid_map)
+      : iid_map_(IsSystemInstall(scope) ? system_iid_map : user_iid_map) {}
+
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    const auto find_iid = iid_map_.find(riid);
+    return internal::WrlRuntimeClass<Interface...>::QueryInterface(
+        find_iid != iid_map_.end() ? find_iid->second : riid, object);
+  }
+
+ private:
+  const base::flat_map<IID, IID, IidComparator> iid_map_;
+};
 
 // Macros that makes it easier to call the `IDispatchImpl` constructor.
 #define IID_MAP_ENTRY_USER(interface) \

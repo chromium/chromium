@@ -337,7 +337,6 @@ void RoundedDisplayFrameFactory::AppendQuad(
       /*premultiplied=*/true, /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background=*/SkColors::kTransparent,
-      /*flipped=*/false,
       /*nearest=*/false,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>CSS Values Test: attr(...type(&lt;url&gt;)) is not valid</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#attr-notations">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5079">
+<link rel="help" href="https://issues.chromium.org/issues/384959111">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<div id="target"></div>
+<script>
+// Support for attr(...type(<url>)) is disabled, pending the final outcome
+// of https://github.com/w3c/csswg-drafts/issues/5079.
+
+test_valid_value('width', 'attr(myattr type(<length>))'); // Sanity check.
+
+test_invalid_value('width', 'attr(myattr type(<url>))');
+test_invalid_value('width', 'attr(myattr type(<url>+))');
+test_invalid_value('width', 'attr(myattr type(<url>#))');
+test_invalid_value('width', 'attr(myattr type(<url> | <length>))');
+test_invalid_value('width', 'attr(myattr type(<length> | <url>))');
+</script>

@@ -99,6 +99,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // VirtualKeyboardModel::Observer:
   void OnVirtualKeyboardVisibilityChanged() override;
 
+  // Updates PreviousFocus and NextFocus accessibility properties for the
+  // TrayBackgroundView.
+  void UpdateAccessibleNavFocus(Shelf* shelf);
+
   // Returns the associated tray bubble view, if one exists. Otherwise returns
   // nullptr.
   virtual TrayBubbleView* GetBubbleView();
@@ -141,9 +145,6 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // Called when the anchor (tray or bubble) may have moved or changed.
   virtual void AnchorUpdated() {}
 
-  // Called from GetAccessibleNodeData, must return a valid accessible name.
-  virtual std::u16string GetAccessibleNameForTray() = 0;
-
   // Called when a locale change is detected. It should reload any strings the
   // view may be using. Note that the locale is not expected to change after the
   // user logs in.
@@ -163,8 +164,8 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // Updates the background layer.
   virtual void UpdateBackground();
 
-  // For Jelly: updates the color of either the icon or the label of this view
-  // based on the active state specified by `is_active`.
+  // Updates the color of either the icon or the label of this view based on the
+  // active state specified by `is_active`.
   virtual void UpdateTrayItemColor(bool is_active) = 0;
 
   // Calls `CloseBubbleInternal` which is implemented by each child tray view.
@@ -305,7 +306,6 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   // In some cases, we expect the layer's visibility to be set to false right
   // away when the layer is replaced. See

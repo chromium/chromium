@@ -15,7 +15,6 @@ static_library("eye_dropper") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/color:color_headers",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",

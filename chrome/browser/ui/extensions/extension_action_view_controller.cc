@@ -109,17 +109,19 @@ ExtensionActionViewController::HoverCardState::AdminPolicy
 GetHoverCardPolicyState(Browser* browser,
                         const extensions::ExtensionId& extension_id) {
   auto* const model = ToolbarActionsModel::Get(browser->profile());
-  if (model->IsActionForcePinned(extension_id))
+  if (model->IsActionForcePinned(extension_id)) {
     return ExtensionActionViewController::HoverCardState::AdminPolicy::
         kPinnedByAdmin;
+  }
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionRegistry::Get(browser->profile())
           ->enabled_extensions()
           .GetByID(extension_id);
-  if (extensions::Manifest::IsPolicyLocation(extension->location()))
+  if (extensions::Manifest::IsPolicyLocation(extension->location())) {
     return ExtensionActionViewController::HoverCardState::AdminPolicy::
         kInstalledByAdmin;
+  }
 
   return ExtensionActionViewController::HoverCardState::AdminPolicy::kNone;
 }
@@ -202,16 +204,18 @@ void ExtensionActionViewController::SetDelegate(
 ui::ImageModel ExtensionActionViewController::GetIcon(
     content::WebContents* web_contents,
     const gfx::Size& size) {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return ui::ImageModel();
+  }
 
   return ui::ImageModel::FromImageSkia(
       gfx::ImageSkia(GetIconImageSource(web_contents, size), size));
 }
 
 std::u16string ExtensionActionViewController::GetActionName() const {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return std::u16string();
+  }
 
   return base::UTF8ToUTF16(extension_->name());
 }
@@ -229,13 +233,15 @@ std::u16string ExtensionActionViewController::GetActionTitle(
 
 std::u16string ExtensionActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return std::u16string();
+  }
 
   // GetAccessibleName() can (surprisingly) be called during browser
   // teardown. Handle this gracefully.
-  if (!web_contents)
+  if (!web_contents) {
     return base::UTF8ToUTF16(extension()->name());
+  }
 
   std::u16string action_title = GetActionTitle(web_contents);
   std::u16string accessible_name =
@@ -347,14 +353,16 @@ void ExtensionActionViewController::HidePopup() {
   if (IsShowingPopup()) {
     // Only call Close() on the popup if it's been shown; otherwise, the popup
     // will be cleaned up in ShowPopup().
-    if (has_opened_popup_)
+    if (has_opened_popup_) {
       popup_host_->Close();
+    }
     // We need to do these actions synchronously (instead of closing and then
     // performing the rest of the cleanup in OnExtensionHostDestroyed()) because
     // the extension host may close asynchronously, and we need to keep the view
     // delegate up to date.
-    if (popup_host_)
+    if (popup_host_) {
       OnPopupClosed();
+    }
   }
 }
 
@@ -365,8 +373,9 @@ gfx::NativeView ExtensionActionViewController::GetPopupNativeView() {
 ui::MenuModel* ExtensionActionViewController::GetContextMenu(
     extensions::ExtensionContextMenuModel::ContextMenuSource
         context_menu_source) {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return nullptr;
+  }
 
   bool is_pinned =
       ToolbarActionsModel::Get(browser_->profile())->IsActionPinned(GetId());
@@ -396,8 +405,9 @@ void ExtensionActionViewController::OnContextMenuClosed(
 }
 
 void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return;
+  }
 
   if (!IsEnabled(view_delegate_->GetCurrentWebContents())) {
     GetPreferredPopupViewController()
@@ -409,8 +419,9 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
       view_delegate_->GetCurrentWebContents();
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner)
+  if (!action_runner) {
     return;
+  }
 
   RecordInvocationSource(source);
 
@@ -443,8 +454,9 @@ void ExtensionActionViewController::TriggerPopupForAPI(
 }
 
 void ExtensionActionViewController::UpdateState() {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return;
+  }
 
   view_delegate_->UpdateState();
 }
@@ -452,15 +464,17 @@ void ExtensionActionViewController::UpdateState() {
 void ExtensionActionViewController::UpdateHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return;
+  }
 
   extensions_container_->UpdateToolbarActionHoverCard(action_view, update_type);
 }
 
 void ExtensionActionViewController::RegisterCommand() {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return;
+  }
 
   platform_delegate_->RegisterCommand();
 }
@@ -479,8 +493,9 @@ void ExtensionActionViewController::InspectPopup() {
 void ExtensionActionViewController::OnIconUpdated() {
   // We update the view first, so that if the observer relies on its UI it can
   // be ready.
-  if (view_delegate_)
+  if (view_delegate_) {
     view_delegate_->UpdateState();
+  }
 }
 
 void ExtensionActionViewController::OnExtensionHostDestroyed(
@@ -502,8 +517,9 @@ bool ExtensionActionViewController::ExtensionIsValid() const {
 bool ExtensionActionViewController::GetExtensionCommand(
     extensions::Command* command) const {
   DCHECK(command);
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return false;
+  }
 
   CommandService* command_service = CommandService::Get(browser_->profile());
   return command_service->GetExtensionActionCommand(
@@ -533,8 +549,9 @@ ExtensionActionViewController::GetHoverCardState(
 }
 
 bool ExtensionActionViewController::CanHandleAccelerators() const {
-  if (!ExtensionIsValid())
+  if (!ExtensionIsValid()) {
     return false;
+  }
 
 #if DCHECK_IS_ON()
   {
@@ -614,8 +631,9 @@ void ExtensionActionViewController::ShowPopup(
   // It's possible that the popup should be closed before it finishes opening
   // (since it can open asynchronously). Check before proceeding.
   if (!popup_host_) {
-    if (callback)
+    if (callback) {
       std::move(callback).Run(nullptr);
+    }
     return;
   }
   // NOTE: Today, ShowPopup() always synchronously creates the platform-specific

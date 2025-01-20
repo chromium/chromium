@@ -222,7 +222,7 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
   // Make a copy of the data.
   auto ref_counted = base::MakeRefCounted<base::RefCountedBytes>(data);
   // Get a view of the same data copied above.
-  auto as_span = base::make_span(ref_counted->front(), ref_counted->size());
+  auto as_span = base::span(*ref_counted);
 
   camera_image_decoder_->DecodeCameraImage(
       as_span,
@@ -300,8 +300,7 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
         auto image_bytes = desired_user->image_bytes();
         UpdateUserImageObserver(
             ash::personalization_app::mojom::UserImage::NewExternalImage(
-                mojo_base::BigBuffer(base::make_span(image_bytes->front(),
-                                                     image_bytes->size()))));
+                mojo_base::BigBuffer(base::span(*image_bytes))));
       } else {
         // Defer saving |last_external_user_image| until it has been encoded to
         // png bytes.

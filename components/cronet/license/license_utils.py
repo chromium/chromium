@@ -34,34 +34,16 @@ PATTERN_DEPENDENCY_DIVIDER = re.compile(r"^-{20} DEPENDENCY DIVIDER -{20}$")
 # The delimiter used to separate multiple values for one metadata field.
 VALUE_DELIMITER = ","
 
-_RAW_LICENSE_TO_FORMATTED_DETAILS = {
-    "BSD": ("BSD", LicenseType.NOTICE, "SPDX-license-identifier-BSD"),
-    "BSD 3-Clause": (
-        "BSD_3_CLAUSE", LicenseType.NOTICE,
-        "SPDX-license-identifier-BSD-3-Clause"),
-    "Apache 2.0": (
-        "APACHE_2_0", LicenseType.NOTICE, "SPDX-license-identifier-Apache-2.0"),
-    "MIT": ("MIT", LicenseType.NOTICE, "SPDX-license-identifier-MIT"),
-    "Unicode": (
-        "UNICODE", LicenseType.NOTICE,
-        "SPDX-license-identifier-Unicode-DFS-2016"),
-    "MPL 1.1":
-      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
-    "unencumbered":
-      ("UNENCUMBERED", LicenseType.UNENCUMBERED,
-       "SPDX-license-identifier-Unlicense"),
-}
-
 
 def get_license_type(license: str) -> LicenseType:
   """Return the equivalent license type for the provided string license."""
-  if license in _RAW_LICENSE_TO_FORMATTED_DETAILS:
-    return _RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
+  if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
   raise None
 
 
 def get_license_bp_name(license: str) -> str:
-  return _RAW_LICENSE_TO_FORMATTED_DETAILS[license][2]
+  return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][2]
 
 
 def is_ignored_readme_chromium(path: str) -> bool:
@@ -72,17 +54,17 @@ def get_most_restrictive_type(licenses: List[str]) -> LicenseType:
   """Returns the most restrictive license according to the values of LicenseType."""
   most_restrictive = LicenseType.UNKNOWN
   for license in licenses:
-    if _RAW_LICENSE_TO_FORMATTED_DETAILS[license][
+    if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][
       1].value > most_restrictive.value:
-      most_restrictive = _RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
+      most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
   return most_restrictive
 
 
 def get_license_file_format(license: str):
   """Return a different representation of the license that is better suited
   for file names."""
-  if license in _RAW_LICENSE_TO_FORMATTED_DETAILS:
-    return _RAW_LICENSE_TO_FORMATTED_DETAILS[license][0]
+  if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][0]
   raise None
 
 
@@ -157,14 +139,12 @@ def parse_chromium_readme_file(readme_path: str,
                                                                         _metadata: _metadata)
     metadata = Metadata(post_process_operation(dependencies[0]))
   except MapperException:
-    raise Exception(f"Failed to post-process f{readme_path}")
+    raise Exception(f"Failed to post-process {readme_path}")
 
   for license in metadata.get_licenses():
-    if not license in _RAW_LICENSE_TO_FORMATTED_DETAILS:
+    if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
       raise InvalidMetadata(
           f"\"{readme_path}\" contains unidentified license \"{license}\"")
-  if not metadata.get_license_file_path():
-    raise InvalidMetadata(f"License file path not declared in {readme_path}")
   return metadata
 
 

@@ -90,8 +90,9 @@ class SupportToolUiUtilsTest : public ::testing::Test {
       ASSERT_TRUE(data_collector_enum);
       if (base::Contains(included_data_collectors,
                          static_cast<support_tool::DataCollectorType>(
-                             data_collector_enum.value())))
+                             data_collector_enum.value()))) {
         data_collector_item.Set(support_tool_ui::kDataCollectorIncluded, true);
+      }
     }
   }
 

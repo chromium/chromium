@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -139,17 +140,13 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
 
 void AuditsIssue::ReportCorsIssue(
     ExecutionContext* execution_context,
-    int64_t identifier,
     RendererCorsIssueCode code,
     String url,
     String initiator_origin,
     String failedParameter,
     std::optional<base::UnguessableToken> issue_id) {
-  String devtools_request_id =
-      IdentifiersFactory::SubresourceRequestId(identifier);
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::create()
-          .setRequestId(devtools_request_id)
           .setUrl(url)
           .build();
   auto protocol_cors_error_status =
@@ -256,12 +253,12 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
 
 }  // namespace
 
-void AuditsIssue::ReportAttributionIssue(
-    ExecutionContext* execution_context,
-    AttributionReportingIssueType type,
-    Element* element,
-    const String& request_id,
-    const String& invalid_parameter) {
+void AuditsIssue::ReportAttributionIssue(ExecutionContext* execution_context,
+                                         AttributionReportingIssueType type,
+                                         Element* element,
+                                         const String& request_url,
+                                         const String& request_id,
+                                         const String& invalid_parameter) {
   auto details = protocol::Audits::AttributionReportingIssueDetails::create()
                      .setViolationType(BuildAttributionReportingIssueType(type))
                      .build();
@@ -269,10 +266,13 @@ void AuditsIssue::ReportAttributionIssue(
   if (element) {
     details->setViolatingNodeId(element->GetDomNodeId());
   }
-  if (!request_id.IsNull()) {
-    details->setRequest(protocol::Audits::AffectedRequest::create()
-                            .setRequestId(request_id)
-                            .build());
+  if (!request_url.IsNull()) {
+    auto request =
+        protocol::Audits::AffectedRequest::create().setUrl(request_url).build();
+    if (!request_id.IsNull()) {
+      request->setRequestId(request_id);
+    }
+    details->setRequest(std::move(request));
   }
   if (!invalid_parameter.IsNull()) {
     details->setInvalidParameter(invalid_parameter);
@@ -329,6 +329,9 @@ protocol::Audits::BlockedByResponseReason BlockedByResponseReasonToProtocol(
           CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
       return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
+    case network::mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          SRIMessageSignatureMismatch;
   }
 }
 
@@ -783,6 +786,67 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
                           .setStylesheetLoadingIssueDetails(std::move(details))
                           .build())
           .build();
+
+  document->GetExecutionContext()->AddInspectorIssue(
+      AuditsIssue(std::move(issue)));
+}
+
+namespace {
+
+protocol::Audits::SelectElementAccessibilityIssueReason
+SelectElementAccessibilityIssueReasonToProtocol(
+    SelectElementAccessibilityIssueReason reason) {
+  switch (reason) {
+    case SelectElementAccessibilityIssueReason::kDisallowedSelectChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          DisallowedSelectChild;
+    case SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          DisallowedOptGroupChild;
+    case SelectElementAccessibilityIssueReason::kNonPhrasingContentOptionChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          NonPhrasingContentOptionChild;
+    case SelectElementAccessibilityIssueReason::kInteractiveContentOptionChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          InteractiveContentOptionChild;
+    case SelectElementAccessibilityIssueReason::kInteractiveContentLegendChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          InteractiveContentLegendChild;
+    case SelectElementAccessibilityIssueReason::kValidChild:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+// static
+void AuditsIssue::ReportSelectElementAccessibilityIssue(
+    Document* document,
+    DOMNodeId node_id,
+    SelectElementAccessibilityIssueReason issue_reason,
+    bool has_disallowed_attributes) {
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::
+            CustomizableSelectElementAccessibilityIssuesEnabled());
+
+  auto select_accessibility_issue_details =
+      protocol::Audits::SelectElementAccessibilityIssueDetails::create()
+          .setNodeId(node_id)
+          .setSelectElementAccessibilityIssueReason(
+              SelectElementAccessibilityIssueReasonToProtocol(issue_reason))
+          .setHasDisallowedAttributes(has_disallowed_attributes)
+          .build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setSelectElementAccessibilityIssueDetails(
+                         std::move(select_accessibility_issue_details))
+                     .build();
+
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                SelectElementAccessibilityIssue)
+                   .setDetails(std::move(details))
+                   .build();
 
   document->GetExecutionContext()->AddInspectorIssue(
       AuditsIssue(std::move(issue)));

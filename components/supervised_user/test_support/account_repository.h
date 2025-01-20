@@ -25,6 +25,10 @@ enum class Feature : int {
   DMA_ELIGIBLE_WITHOUT_CONSENT,
   DMA_INELIGIBLE,
 };
+
+// Converts a string literal to `Feature` value.
+std::optional<Feature> ParseFeature(std::string_view feature_name);
+
 struct FamilyMember {
   static void RegisterJSONConverter(
       base::JSONValueConverter<FamilyMember>* converter);
@@ -80,9 +84,8 @@ std::optional<test_accounts::FamilyMember> GetFirstFamilyMemberByRole(
 // File-based repository of test accounts. Balances access to the accounts.
 class TestAccountRepository {
  public:
-  // Crashes if the backing file repository is ill-formatted. See the unit-tests
-  // for examples of valid spec.
-  TestAccountRepository();
+  // Creates the repository from the path. If the path is relative, it will be
+  // based on DIR_SRC_TEST_DATA_ROOT.
   explicit TestAccountRepository(const base::FilePath& path);
   ~TestAccountRepository();
   TestAccountRepository(const TestAccountRepository&) = delete;

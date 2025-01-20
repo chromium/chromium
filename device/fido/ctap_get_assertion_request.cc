@@ -93,9 +93,9 @@ std::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           kClientDataHashLength) {
     return std::nullopt;
   }
-  base::span<const uint8_t, kClientDataHashLength> client_data_hash(
-      client_data_hash_it->second.GetBytestring().data(),
-      kClientDataHashLength);
+  auto client_data_hash =
+      base::span(client_data_hash_it->second.GetBytestring())
+          .first<kClientDataHashLength>();
 
   CtapGetAssertionRequest request(rp_id_it->second.GetString(),
                                   /*client_data_json=*/std::string());
@@ -344,6 +344,12 @@ CtapGetAssertionRequest& CtapGetAssertionRequest::operator=(
     CtapGetAssertionRequest&& other) = default;
 
 CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
+
+void CtapGetAssertionRequest::SetClientDataJson(
+    std::string in_client_data_json) {
+  client_data_hash = fido_parsing_utils::CreateSHA256Hash(in_client_data_json);
+  client_data_json = std::move(in_client_data_json);
+}
 
 std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {

@@ -28,9 +28,9 @@
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/client_report_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/threat_details_cache.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
@@ -551,7 +551,7 @@ void ThreatDetails::StartCollection() {
     AddUrl(referrer_url, GURL(), std::string(), nullptr);
   }
 
-  if (!AsyncCheckTracker::IsMainPageLoadPending(resource_)) {
+  if (!AsyncCheckTracker::IsMainPageResourceLoadPending(resource_)) {
     // Get URLs of frames, scripts etc from the DOM.
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
@@ -599,7 +599,7 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
   }
 
   // Lookup the FrameTreeNode ID of any child frames in the list of DOM nodes.
-  const int sender_process_id = sender_rfh->GetProcess()->GetID();
+  const int sender_process_id = sender_rfh->GetProcess()->GetDeprecatedID();
   const content::FrameTreeNodeId sender_frame_tree_node_id =
       sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;

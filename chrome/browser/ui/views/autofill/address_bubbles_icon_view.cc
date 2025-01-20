@@ -30,12 +30,12 @@ AddressBubblesIconView::AddressBubblesIconView(
                          "SaveAutofillAddress",
                          kActionShowAddressesBubbleOrPage) {
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 AddressBubblesIconView::~AddressBubblesIconView() = default;
 
-views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble()
-    const {
+views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble() const {
   AddressBubblesIconController* controller = GetController();
   if (!controller) {
     return nullptr;
@@ -52,19 +52,17 @@ void AddressBubblesIconView::UpdateImpl() {
   bool should_show =
       command_enabled && !delegate()->ShouldHidePageActionIcon(this);
 
-  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Show the icon if the Desktop to iOS address promo is currently being shown.
   should_show =
       should_show || IOSPromoBubble::IsPromoTypeVisible(IOSPromoType::kAddress);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
-std::u16string
-AddressBubblesIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string AddressBubblesIconView::GetTextForTooltipAndAccessibleName()
+    const {
   AddressBubblesIconController* controller = GetController();
   if (!controller) {
     // If the controller is nullptr, the tab has been closed already, and the
@@ -83,8 +81,7 @@ const gfx::VectorIcon& AddressBubblesIconView::GetVectorIcon() const {
   return vector_icons::kLocationOnChromeRefreshIcon;
 }
 
-AddressBubblesIconController*
-AddressBubblesIconView::GetController() const {
+AddressBubblesIconController* AddressBubblesIconView::GetController() const {
   return AddressBubblesIconController::Get(GetWebContents());
 }
 

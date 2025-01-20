@@ -150,13 +150,6 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
           std::move(callback)));
 }
 
-void WebApps::LaunchShortcut(const std::string& app_id,
-                             const std::string& shortcut_id,
-                             int64_t display_id) {
-  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
-                                               base::DoNothing());
-}
-
 void WebApps::SetPermission(const std::string& app_id,
                             apps::PermissionPtr permission) {
   publisher_helper().SetPermission(app_id, std::move(permission));
@@ -285,7 +278,7 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -348,11 +341,11 @@ void WebApps::InitWebApps() {
   TRACE_EVENT0("ui", "WebApps::InitWebApps");
   is_ready_ = true;
 
-  RegisterPublisher(app_type());
+  RegisterPublisher(apps::AppType::kWeb);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
 
-  apps::AppPublisher::Publish(std::move(apps), app_type(),
+  apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/true);
 }
 

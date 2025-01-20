@@ -1,0 +1,15 @@
+Fixes a constexpr NAN issue that only occurs on Windows. Uses std::numeric_limits instead.
+Authored by btriebw@google.com
+diff --git a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/porting.h b/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/porting.h
+index cb42496fd52bf..14639c45b3a75 100644
+--- a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/porting.h
++++ b/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/porting.h
+@@ -43,7 +43,7 @@ template<typename T> struct MathLimits {
+
+
+ template <> struct MathLimits<float> {
+-  static constexpr float kNaN = NAN;
++  static constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
+   static constexpr float kPosInf = HUGE_VALF;
+   static constexpr float kNegInf = -HUGE_VALF;
+ };

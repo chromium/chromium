@@ -11,12 +11,15 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/autofill_private.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/device_reauth/device_authenticator.h"
 
-namespace extensions {
+namespace autofill {
+class AddressDataManager;
+class CreditCard;
+class PaymentsDataManager;
+}  // namespace autofill
 
-namespace autofill_util {
+namespace extensions::autofill_util {
 
 using AddressEntryList = std::vector<api::autofill_private::AddressEntry>;
 using CountryEntryList = std::vector<api::autofill_private::CountryEntry>;
@@ -24,40 +27,35 @@ using CreditCardEntryList = std::vector<api::autofill_private::CreditCardEntry>;
 using IbanEntryList = std::vector<api::autofill_private::IbanEntry>;
 using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 
-// Uses |personal_data| to generate a list of up-to-date AddressEntry objects.
-AddressEntryList GenerateAddressList(
-    const autofill::PersonalDataManager& personal_data);
+// Uses `adm` to generate a list of up-to-date AddressEntry objects.
+AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm);
 
-// Uses `personal_data` to generate a list of up-to-date CountryEntry objects.
+// Uses `adm` to generate a list of up-to-date CountryEntry objects.
 // Depending on the `for_account_address_profile` and
 // `AutofillEnableAccountStorageForIneligibleCountries`, unsupported countries
 // are filtered from the resulting list.
-CountryEntryList GenerateCountryList(
-    const autofill::PersonalDataManager& personal_data,
-    bool for_account_address_profile);
+CountryEntryList GenerateCountryList(const autofill::AddressDataManager& adm,
+                                     bool for_account_address_profile);
 
-// Uses |personal_data| to generate a list of up-to-date CreditCardEntry
+// Uses `paydm` to generate a list of up-to-date CreditCardEntry
 // objects.
 CreditCardEntryList GenerateCreditCardList(
-    const autofill::PersonalDataManager& personal_data);
+    const autofill::PaymentsDataManager& paydm);
 
-// Uses |personal_data| to generate a list of up-to-date IbanEntry
+// Uses `paydm` to generate a list of up-to-date IbanEntry
 // objects.
-IbanEntryList GenerateIbanList(
-    const autofill::PersonalDataManager& personal_data);
+IbanEntryList GenerateIbanList(const autofill::PaymentsDataManager& paydm);
 
-// Uses |personal_data| to get primary account info.
+// Uses `adm` to get primary account info.
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
-    const autofill::PersonalDataManager& personal_data);
+    const autofill::AddressDataManager& adm);
 
 // Returns a `CreditCardEntry` object which is UI compatible.
 api::autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
     const autofill::CreditCard& credit_card,
-    const autofill::PersonalDataManager& personal_data,
+    const autofill::PaymentsDataManager& paydm,
     bool mask_local_cards);
 
-}  // namespace autofill_util
-
-}  // namespace extensions
+}  // namespace extensions::autofill_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_UTIL_H_

@@ -16,10 +16,10 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -59,7 +59,8 @@ void SetupThroughputTrackerForAnimationSmoothness(
   if (tracker || !widget)
     return;
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
 }
@@ -119,12 +120,18 @@ void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
   AddChildView(label_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::CreateImageView() {
   image_view_ = new views::ImageView;
   AddChildView(image_view_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyLabel() {
@@ -133,6 +140,10 @@ void TrayItemView::DestroyLabel() {
 
   RemoveChildViewT(label_.get());
   label_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyImageView() {
@@ -141,6 +152,10 @@ void TrayItemView::DestroyImageView() {
 
   RemoveChildViewT(image_view_.get());
   image_view_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::UpdateLabelOrImageViewColor(bool active) {

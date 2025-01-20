@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
 #include <optional>
@@ -57,8 +52,9 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
 
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override {
-    if (retry_counter_ <= 0)
+    if (retry_counter_ <= 0) {
       return;
+    }
     retry_counter_--;
     TestingOAuth2AccessTokenManagerConsumer::OnGetTokenFailure(request, error);
     request_ = oauth2_service_->StartRequest(
@@ -98,8 +94,9 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
     : public FakeProfileOAuth2TokenServiceDelegate {
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override {
-    if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone())
+    if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone()) {
       return GetRefreshToken(account_id);
+    }
     return std::string();
   }
 
@@ -134,7 +131,7 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
 
     oauth2_service_ = std::make_unique<ProfileOAuth2TokenService>(
         &prefs_, std::move(delegate));
-    account_id_ = CoreAccountId::FromGaiaId("test_user");
+    account_id_ = CoreAccountId::FromGaiaId(GaiaId("test_user"));
   }
 
   void SimulateOAuthTokenResponse(const std::string& token,
@@ -535,7 +532,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
 
   token_service.GetDelegate()->UpdateCredentials(account_id_, "refreshToken");
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   token_service.GetDelegate()->UpdateCredentials(account_id_2, "refreshToken");
   token_service.GetDelegate()->UpdateAuthError(
       account_id_2,
@@ -577,7 +575,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
                            signin::OAuthMultiloginTokenRequest::Result>
         future;
     signin::OAuthMultiloginTokenRequest request(
-        CoreAccountId::FromGaiaId("unknown_account"), future.GetCallback());
+        CoreAccountId::FromGaiaId(GaiaId("unknown_account")),
+        future.GetCallback());
     token_service.StartRequestForMultilogin(request);
     EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
@@ -623,7 +622,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
         future;
     signin::OAuthMultiloginTokenRequest request(account_id_,
                                                 future.GetCallback());
-    token_service.StartRequestForMultilogin(request, "challenge");
+    token_service.StartRequestForMultilogin(request, "challenge",
+                                            "ephemeral_pubkey");
     EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_TRUE(future.Get<1>().has_value());
@@ -654,7 +654,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       future;
   signin::OAuthMultiloginTokenRequest request(account_id_,
                                               future.GetCallback());
-  token_service.StartRequestForMultilogin(request, "challenge");
+  token_service.StartRequestForMultilogin(request, "challenge",
+                                          "ephemeral_pubkey");
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_FALSE(future.Get<1>().has_value());
@@ -668,8 +669,9 @@ class FakeProfileOAuth2TokenServiceDelegateDesktopFailsBindingAssertion
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override {
-    std::move(callback).Run(std::string(), std::nullopt);
+    std::move(callback).Run(std::string());
   }
 };
 
@@ -691,7 +693,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       future;
   signin::OAuthMultiloginTokenRequest request(account_id_,
                                               future.GetCallback());
-  token_service.StartRequestForMultilogin(request, "challenge");
+  token_service.StartRequestForMultilogin(request, "challenge",
+                                          "ephemeral_pubkey");
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_TRUE(future.Get<1>().has_value());
@@ -776,7 +779,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
       account_id_, "refreshToken",
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   token_service.GetDelegate()->UpdateCredentials(
       account_id_2, "refreshToken2",
       signin_metrics::SourceForRefreshTokenOperation::
@@ -801,7 +805,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
 
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
                                                     "refreshToken");
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_2,
                                                     "refreshToken2");
   ;
@@ -903,9 +908,9 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
   OAuth2AccessTokenManager::ScopeSet set_1;
   set_1.insert("1");
 
-  const CoreAccountId account_id0 = CoreAccountId::FromGaiaId("0");
-  const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("1");
-  OAuth2AccessTokenManager::RequestParameters params[] = {
+  const CoreAccountId account_id0 = CoreAccountId::FromGaiaId(GaiaId("0"));
+  const CoreAccountId account_id1 = CoreAccountId::FromGaiaId(GaiaId("1"));
+  auto params = std::to_array<OAuth2AccessTokenManager::RequestParameters>({
       OAuth2AccessTokenManager::RequestParameters("0", account_id0, set_0),
       OAuth2AccessTokenManager::RequestParameters("0", account_id0, set_1),
       OAuth2AccessTokenManager::RequestParameters("0", account_id1, set_0),
@@ -914,7 +919,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
       OAuth2AccessTokenManager::RequestParameters("1", account_id0, set_1),
       OAuth2AccessTokenManager::RequestParameters("1", account_id1, set_0),
       OAuth2AccessTokenManager::RequestParameters("1", account_id1, set_1),
-  };
+  });
 
   for (size_t i = 0; i < std::size(params); i++) {
     for (size_t j = 0; j < std::size(params); j++) {

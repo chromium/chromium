@@ -70,8 +70,9 @@ void RemoveActionCallback(const ActionCallback& callback) {
   DCHECK(g_task_runner.Get()->BelongsToCurrentThread());
   std::vector<ActionCallback>* callbacks = g_callbacks.Pointer();
   const auto i = ranges::find(*callbacks, callback);
-  if (i != callbacks->end())
+  if (i != callbacks->end()) {
     callbacks->erase(i);
+  }
 }
 
 void SetRecordActionTaskRunner(
@@ -82,8 +83,9 @@ void SetRecordActionTaskRunner(
 }
 
 scoped_refptr<SingleThreadTaskRunner> GetRecordActionTaskRunner() {
-  if (g_task_runner.IsCreated())
+  if (g_task_runner.IsCreated()) {
     return g_task_runner.Get();
+  }
   return nullptr;
 }
 

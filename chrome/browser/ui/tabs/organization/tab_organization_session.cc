@@ -222,6 +222,12 @@ void TabOrganizationSession::StartRequest() {
   NotifyObserversOfUpdate();
 }
 
+void TabOrganizationSession::SetUserInstruction(
+    const std::string& user_instruction) {
+  CHECK(request_);
+  request_->SetUserInstruction(user_instruction);
+}
+
 void TabOrganizationSession::NotifyObserversOfUpdate() {
   for (auto& observer : observers_) {
     observer.OnTabOrganizationSessionUpdated(this);

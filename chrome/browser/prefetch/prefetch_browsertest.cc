@@ -34,8 +34,6 @@ const char kPrefetchPage[] = "/prerender/simple_prefetch.html";
 const char kRedirectPrefetchPage[] = "/redirect_prefetch.html";
 const char kRedirectPrefetchUrl[] = "/redirect";
 const char kRedirectedPrefetchUrl[] = "/redirected";
-const char kPrefetchCachingPeriodPage[] = "/prefetch_caching_period.html";
-const char kPrefetchCachingPeriodUrl[] = "/prefetch_caching_period";
 
 bool HasVariationsHeader(
     const net::test_server::HttpRequest::HeaderMap& headers) {
@@ -58,7 +56,7 @@ class MockNetworkChangeNotifier4G : public NetworkChangeNotifier {
 
 class PrefetchBrowserTest : public InProcessBrowserTest {
  public:
-  PrefetchBrowserTest() {}
+  PrefetchBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -201,104 +199,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
   // The redirected prefetch request to non-Google host must not have
   // X-Client-Data header.
   EXPECT_FALSE(HasVariationsHeader(requests[2].headers));
-}
-
-// Test that non-cacheable prefetched resources are not being re-requested.
-IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriod) {
-  std::vector<net::test_server::HttpRequest> requests;
-  // Cannot test HTTPS because caching is disabled when cert errors are present
-  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
-  http_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&requests](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-        if (request.relative_url == std::string(kPrefetchCachingPeriodPage)) {
-          requests.push_back(request);
-          response->set_content_type("text/html");
-          std::string onload = base::StringPrintf(
-              "const script = document.createElement('script'); "
-              "script.onload=done; script.src='%s'; "
-              "document.body.appendChild(script);",
-              kPrefetchCachingPeriodUrl);
-
-          response->set_content(
-              base::StringPrintf("<script>const done = () => { "
-                                 "document.title='done'; };</script>\n"
-                                 "<body><link rel=\"prefetch\" href=\"%s\" "
-                                 "onload=\"%s\">",
-                                 kPrefetchCachingPeriodUrl, onload.c_str()));
-          return response;
-        } else if (request.relative_url ==
-                   std::string(kPrefetchCachingPeriodUrl)) {
-          requests.push_back(request);
-          response->set_content_type("text/javascript");
-          response->AddCustomHeader("Cache-Control", "no-cache");
-          response->set_content("console.log('script ran');");
-          return response;
-        }
-        return nullptr;
-      }));
-
-  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(http_server.Start());
-
-  GURL url = http_server.GetURL("localhost", kPrefetchCachingPeriodPage);
-  const std::u16string expected_title = u"done";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  ASSERT_EQ(2U, requests.size());
-}
-
-// Test that non-cacheable prefetched resources are not being re-requested,
-// even if they already spent time in an intermediary cache along the way.
-IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriodWithAge) {
-  std::vector<net::test_server::HttpRequest> requests;
-  // Cannot test HTTPS because caching is disabled when cert errors are present
-  net::EmbeddedTestServer http_server(net::EmbeddedTestServer::TYPE_HTTP);
-  http_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [&requests](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-        if (request.relative_url == std::string(kPrefetchCachingPeriodPage)) {
-          requests.push_back(request);
-          response->set_content_type("text/html");
-          std::string onload = base::StringPrintf(
-              "const script = document.createElement('script'); "
-              "script.onload=done; script.src='%s'; "
-              "document.body.appendChild(script);",
-              kPrefetchCachingPeriodUrl);
-
-          response->set_content(
-              base::StringPrintf("<script>const done = () => { "
-                                 "document.title='done'; };</script>\n"
-                                 "<body><link rel=\"prefetch\" href=\"%s\" "
-                                 "onload=\"%s\">",
-                                 kPrefetchCachingPeriodUrl, onload.c_str()));
-          return response;
-        } else if (request.relative_url ==
-                   std::string(kPrefetchCachingPeriodUrl)) {
-          requests.push_back(request);
-          response->set_content_type("text/javascript");
-          response->AddCustomHeader("Cache-Control", "no-cache");
-          response->AddCustomHeader("Age", "600");
-          response->set_content("console.log('script ran');");
-          return response;
-        }
-        return nullptr;
-      }));
-
-  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(http_server.Start());
-
-  GURL url = http_server.GetURL("localhost", kPrefetchCachingPeriodPage);
-  const std::u16string expected_title = u"done";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  ASSERT_EQ(2U, requests.size());
 }
 
 }  // namespace

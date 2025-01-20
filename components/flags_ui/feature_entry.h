@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "build/chromeos_buildflags.h"
 
 namespace flags_ui {
 
@@ -84,7 +83,7 @@ struct FeatureEntry {
     // string. Default state is disabled like SINGLE_VALUE.
     STRING_VALUE,
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // The below two types are for *platform* features -- that is, those defined
     // and queried via platform2/featured/feature_library.h. Such features
     // should be defined outside of the browser (e.g., in platform2 or
@@ -108,7 +107,7 @@ struct FeatureEntry {
     // they must instead be defined and queried outside of the browser, using
     // platform2/featured/feature_library.h.
     PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
 
   // Describes state of a feature.
@@ -149,7 +148,9 @@ struct FeatureEntry {
     // get translated. The other parts here use ids for historical reasons and
     // can realistically also be moved to direct description_texts.
     const char* description_text;
-    // RAW_PTR_EXCLUSION: #global-scope
+    // This is not a raw_ptr because every instance of FeatureParam is
+    // statically-allocated at namespace scope, so pointers to them can never
+    // dangle.
     RAW_PTR_EXCLUSION const FeatureParam* params;
     int num_params;
     // A variation id number in the format of

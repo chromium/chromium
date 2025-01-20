@@ -6,14 +6,12 @@
 
 #include <ostream>
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_local_storage.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 std::atomic<AllocationContextTracker::CaptureMode>
     AllocationContextTracker::capture_mode_{
@@ -44,8 +42,9 @@ AllocationContextTracker*
 AllocationContextTracker::GetInstanceForCurrentThread() {
   AllocationContextTracker* tracker = static_cast<AllocationContextTracker*>(
       AllocationContextTrackerTLS().Get());
-  if (tracker == kInitializingSentinel)
+  if (tracker == kInitializingSentinel) {
     return nullptr;  // Re-entrancy case.
+  }
 
   if (!tracker) {
     AllocationContextTrackerTLS().Set(kInitializingSentinel);
@@ -78,23 +77,24 @@ void AllocationContextTracker::SetCaptureMode(CaptureMode mode) {
 
 void AllocationContextTracker::PushCurrentTaskContext(const char* context) {
   DCHECK(context);
-  if (task_contexts_.size() < kMaxTaskDepth)
+  if (task_contexts_.size() < kMaxTaskDepth) {
     task_contexts_.push_back(context);
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 void AllocationContextTracker::PopCurrentTaskContext(const char* context) {
   // Guard for stack underflow. If tracing was started with a TRACE_EVENT in
   // scope, the context was never pushed, so it is possible that pop is called
   // on an empty stack. Note that the context always contains "UntrackedTask".
-  if (task_contexts_.size() == 1)
+  if (task_contexts_.size() == 1) {
     return;
+  }
 
   DCHECK_EQ(context, task_contexts_.back())
       << "Encountered an unmatched context end";
   task_contexts_.pop_back();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

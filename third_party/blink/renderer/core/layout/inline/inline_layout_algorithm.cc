@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 
 #include <memory>
@@ -346,14 +341,17 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
   LineClampData line_clamp_data = space.GetLineClampData();
   if (line_clamp_data.IsLineClampContext()) {
     if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
-      return LineClampState::kEllipsize;
+      if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
+        return LineClampState::kLineClampEllipsis;
+      }
+      return LineClampState::kTextOverflowEllipsis;
     }
     if (line_clamp_data.ShouldHideForPaint()) {
       return LineClampState::kHide;
     }
   } else if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
              node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {
-    return LineClampState::kEllipsize;
+    return LineClampState::kTextOverflowEllipsis;
   }
 
   return LineClampState::kShow;
@@ -421,7 +419,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   //  - If we've reached the line-clamp limit.
   const LineClampState line_clamp_state =
       GetLineClampState(line_info, line_box_metrics.LineHeight());
-  if (line_clamp_state == LineClampState::kEllipsize) [[unlikely]] {
+  if (line_clamp_state == LineClampState::kTextOverflowEllipsis) [[unlikely]] {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(*line_info);
     auto* input =
@@ -555,9 +553,10 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       space.ShouldTextBoxTrimFragmentainerStart() ||
       space.ShouldTextBoxTrimFragmentainerEnd() ||
       space.ShouldTextBoxTrimInsideWhenLineClamp()) [[unlikely]] {
-    bool is_truncated = line_clamp_state == LineClampState::kEllipsize ||
-                        space.GetLineClampData().state ==
-                            LineClampData::kMeasureLinesUntilBfcOffset;
+    LineClampData line_clamp_data = space.GetLineClampData();
+    bool is_truncated =
+        line_clamp_data.IsAtClampPoint() ||
+        line_clamp_data.state == LineClampData::kMeasureLinesUntilBfcOffset;
     ApplyTextBoxTrim(*line_info, is_truncated);
   }
 
@@ -628,7 +627,7 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
   const FontHeight line_box_metrics = container_builder_.Metrics();
   FontHeight intrinsic_metrics = line_box_metrics;
   InlineBoxState::AdjustEdges(
-      space.EffectiveTextBoxEdge(), line_style.GetFont(), baseline_type_,
+      line_style, line_style.GetFont(), baseline_type_,
       should_apply_over, should_apply_under, intrinsic_metrics);
 
   if (should_apply_start) {
@@ -1017,6 +1016,26 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
   return true;
 }
 
+LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
+  DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+  const Font& font = node_.Style().GetFont();
+  const SimpleFontData* font_data = font.PrimaryFont();
+  DCHECK(font_data);
+  String ellipsis_text =
+      font_data && font_data->GlyphForCharacter(kHorizontalEllipsisCharacter)
+          ? String(base::span_from_ref(kHorizontalEllipsisCharacter))
+          : String(u"...");
+  HarfBuzzShaper shaper(ellipsis_text);
+  const ShapeResult* shape_result = shaper.Shape(&font, Node().BaseDirection());
+  DCHECK(shape_result);
+
+  FontHeight text_metrics = font_data->GetFontMetrics().GetFontHeight(
+      Node().Style().GetFontBaseline());
+
+  line_clamp_ellipsis_.emplace(ellipsis_text, shape_result, text_metrics);
+  return shape_result->SnappedWidth();
+}
+
 const LayoutResult* InlineLayoutAlgorithm::Layout() {
   const auto& constraint_space = GetConstraintSpace();
   ExclusionSpace initial_exclusion_space(constraint_space.GetExclusionSpace());
@@ -1116,7 +1135,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
 #if DCHECK_IS_ON()
     // Make sure the last opportunity has the correct properties.
-    if (opportunities_it + 1 == opportunities.end()) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    if (UNSAFE_TODO(opportunities_it + 1) == opportunities.end()) {
       // We shouldn't have any shapes affecting the last opportunity.
       DCHECK(!opportunity.HasShapeExclusions());
       DCHECK_EQ(line_block_size, LayoutUnit());
@@ -1141,9 +1161,10 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
         opportunity.ComputeLineLayoutOpportunity(constraint_space,
                                                  line_block_size, block_delta);
     if (line_break_strategy.NeedsToPrepare()) [[unlikely]] {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       line_break_strategy.Prepare(
           context_, Node(), constraint_space,
-          base::make_span(opportunities_it, opportunities.end()),
+          UNSAFE_TODO(base::span(opportunities_it, opportunities.end())),
           line_opportunity, leading_floats, break_token, &GetExclusionSpace());
     }
     bool is_line_info_cached = false;
@@ -1160,7 +1181,22 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
                                leading_floats, break_token,
                                column_spanner_path_, &GetExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
+      if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
+          constraint_space.GetLineClampData().IsAtClampPoint()) {
+        LayoutUnit ellipsis_width = SetupLineClampEllipsis();
+        line_breaker.SetLineClampEllipsisWidth(ellipsis_width);
+      }
+
       line_breaker.NextLine(&line_info);
+
+      // The line-clamp ellipsis is not created as an InlineItemResult by the
+      // line breaker, but is instead appended afterwards in the
+      // LogicalLineBuilder. Therefore, we need to make sure to not add it in
+      // empty lines or in block-in-inlines.
+      if (line_clamp_ellipsis_.has_value() &&
+          (line_info.IsEmptyLine() || line_info.IsBlockInInline())) {
+        line_clamp_ellipsis_.reset();
+      }
     }
 
     if (Node().IsInitialLetterBox()) [[unlikely]] {
@@ -1232,10 +1268,12 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       }
       // We've either don't have any shapes, or run out of block-delta space
       // to test, proceed to the next layout opportunity.
-      if (opportunities_it + 1 != opportunities.end()) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      if (UNSAFE_TODO(opportunities_it + 1) != opportunities.end()) {
         block_delta = LayoutUnit();
         line_block_size = LayoutUnit();
-        ++opportunities_it;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++opportunities_it);
         continue;
       }
       // Normally the last opportunity should fit the line, but arithmetic
@@ -1315,7 +1353,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (total_block_size + block_delta > opportunity.rect.BlockSize()) {
       block_delta = LayoutUnit();
       line_block_size = LayoutUnit();
-      ++opportunities_it;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(++opportunities_it);
       continue;
     }
 

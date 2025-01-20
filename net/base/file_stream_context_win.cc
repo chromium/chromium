@@ -72,7 +72,7 @@ int FileStream::Context::Read(IOBuffer* buf,
       FROM_HERE,
       base::BindOnce(&FileStream::Context::ReadAsync, base::Unretained(this),
                      file_.GetPlatformFile(), base::WrapRefCounted(buf),
-                     buf_len, &io_context_.overlapped,
+                     buf_len, io_context_.GetOverlapped(),
                      base::SingleThreadTaskRunner::GetCurrentDefault()));
   return ERR_IO_PENDING;
 }
@@ -85,8 +85,8 @@ int FileStream::Context::Write(IOBuffer* buf,
   result_ = 0;
 
   DWORD bytes_written = 0;
-  if (!WriteFile(file_.GetPlatformFile(), buf->data(), buf_len,
-                 &bytes_written, &io_context_.overlapped)) {
+  if (!WriteFile(file_.GetPlatformFile(), buf->data(), buf_len, &bytes_written,
+                 io_context_.GetOverlapped())) {
     IOResult error = IOResult::FromOSError(GetLastError());
     if (error.os_error == ERROR_IO_PENDING) {
       IOCompletionIsPending(std::move(callback), buf);
@@ -105,7 +105,7 @@ int FileStream::Context::ConnectNamedPipe(CompletionOnceCallback callback) {
 
   result_ = 0;
   // Always returns zero when making an asynchronous call.
-  ::ConnectNamedPipe(file_.GetPlatformFile(), &io_context_.overlapped);
+  ::ConnectNamedPipe(file_.GetPlatformFile(), io_context_.GetOverlapped());
   const auto error = ::GetLastError();
   if (error == ERROR_PIPE_CONNECTED) {
     return OK;  // The client has already connected; operation complete.
@@ -124,7 +124,7 @@ FileStream::Context::IOResult FileStream::Context::SeekFileImpl(
     int64_t offset) {
   LARGE_INTEGER result;
   result.QuadPart = offset;
-  SetOffset(&io_context_.overlapped, result);
+  SetOffset(io_context_.GetOverlapped(), result);
   return IOResult(result.QuadPart, 0);
 }
 
@@ -173,7 +173,7 @@ void FileStream::Context::OnIOCompleted(
     if (result_)
       DCHECK_EQ(result_, static_cast<int>(bytes_read));
     result_ = bytes_read;
-    IncrementOffset(&io_context_.overlapped, bytes_read);
+    IncrementOffset(io_context_.GetOverlapped(), bytes_read);
   }
 
   if (async_read_initiated_)

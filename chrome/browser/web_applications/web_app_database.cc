@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_related_applications.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -732,16 +734,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->add_disallowed_launch_protocols(disallowed_launch_protocols);
   }
 
-  for (const auto& url_handler : web_app.url_handlers()) {
-    WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
-    url_handler_proto->set_origin(url_handler.origin.Serialize());
-    url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
-  }
-
   for (const auto& scope_extension : web_app.scope_extensions()) {
     WebAppScopeExtensionProto* scope_extension_proto =
         local_data->add_scope_extensions();
     scope_extension_proto->set_origin(scope_extension.origin.Serialize());
+    scope_extension_proto->set_scope(scope_extension.scope.spec());
     scope_extension_proto->set_has_origin_wildcard(
         scope_extension.has_origin_wildcard);
   }
@@ -750,6 +747,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     WebAppScopeExtensionProto* scope_extension_proto =
         local_data->add_scope_extensions_validated();
     scope_extension_proto->set_origin(valid_extension.origin.Serialize());
+    CHECK(valid_extension.scope.is_valid());
+    scope_extension_proto->set_scope(valid_extension.scope.spec());
     scope_extension_proto->set_has_origin_wildcard(
         valid_extension.has_origin_wildcard);
   }
@@ -934,6 +933,24 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.supported_links_offer_dismiss_count());
 
   local_data->set_is_diy_app(web_app.is_diy_app());
+
+  local_data->set_was_shortcut_app(web_app.was_shortcut_app());
+
+  for (const auto& related_application : web_app.related_applications()) {
+    proto::RelatedApplications* related_application_proto =
+        local_data->add_related_applications();
+    if (related_application.platform) {
+      related_application_proto->set_platform(
+          base::UTF16ToUTF8(related_application.platform.value()));
+    }
+    CHECK(related_application.url.is_empty() ||
+          related_application.url.is_valid());
+    related_application_proto->set_url(related_application.url.spec());
+    if (related_application.id) {
+      related_application_proto->set_id(
+          base::UTF16ToUTF8(related_application.id.value()));
+    }
+  }
 
   return local_data;
 }
@@ -1447,27 +1464,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetDisallowedLaunchProtocols(std::move(disallowed_launch_protocols));
 
-  std::vector<apps::UrlHandlerInfo> url_handlers;
-  for (const auto& url_handler_proto : local_data.url_handlers()) {
-    if (!url_handler_proto.has_origin() ||
-        !url_handler_proto.has_has_origin_wildcard()) {
-      DLOG(ERROR) << "WebApp Url Handler proto parse error";
-      return nullptr;
-    }
-    apps::UrlHandlerInfo url_handler;
-
-    url::Origin origin = url::Origin::Create(GURL(url_handler_proto.origin()));
-    if (origin.opaque()) {
-      DLOG(ERROR) << "WebApp UrlHandler proto url parse error: "
-                  << origin.GetDebugString();
-      return nullptr;
-    }
-    url_handler.origin = std::move(origin);
-    url_handler.has_origin_wildcard = url_handler_proto.has_origin_wildcard();
-    url_handlers.push_back(std::move(url_handler));
-  }
-  web_app->SetUrlHandlers(std::move(url_handlers));
-
   base::flat_set<ScopeExtensionInfo> scope_extensions;
   for (const auto& scope_extension_proto : local_data.scope_extensions()) {
     if (!scope_extension_proto.has_origin() ||
@@ -1475,18 +1471,25 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       DLOG(ERROR) << "WebApp Scope Extension Info proto parse error";
       return nullptr;
     }
-    ScopeExtensionInfo scope_extension;
-
     url::Origin origin =
         url::Origin::Create(GURL(scope_extension_proto.origin()));
     if (origin.opaque()) {
-      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
-                  << origin.GetDebugString();
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is opaque: "
+                  << scope_extension_proto.origin();
       return nullptr;
     }
-    scope_extension.origin = std::move(origin);
-    scope_extension.has_origin_wildcard =
-        scope_extension_proto.has_origin_wildcard();
+    if (origin == url::Origin()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is empty";
+      return nullptr;
+    }
+    if (!GURL(scope_extension_proto.scope()).is_valid()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `scope` url is invalid: "
+                  << scope_extension_proto.scope();
+      return nullptr;
+    }
+
+    auto scope_extension =
+        ScopeExtensionInfo::CreateForProto(scope_extension_proto);
 
     scope_extensions.insert(std::move(scope_extension));
   }
@@ -1495,18 +1498,29 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   base::flat_set<ScopeExtensionInfo> valid_scope_extensions;
   for (const auto& scope_extension_proto :
        local_data.scope_extensions_validated()) {
-    ScopeExtensionInfo scope_extension;
-
     url::Origin origin =
         url::Origin::Create(GURL(scope_extension_proto.origin()));
     if (origin.opaque()) {
-      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
-                  << origin.GetDebugString();
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is opaque: "
+                  << scope_extension_proto.origin();
       return nullptr;
     }
-    scope_extension.origin = std::move(origin);
-    scope_extension.has_origin_wildcard =
-        scope_extension_proto.has_origin_wildcard();
+    if (origin == url::Origin()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `origin` is empty";
+      return nullptr;
+    }
+    if (!GURL(scope_extension_proto.scope()).is_valid()) {
+      DLOG(ERROR) << "WebAppScopeExtensionProto's `scope` url is invalid: "
+                  << scope_extension_proto.scope();
+      return nullptr;
+    }
+
+    auto scope_extension =
+        ScopeExtensionInfo::CreateForProto(scope_extension_proto);
+
+    if (!scope_extension.origin.IsSameOriginWith(scope_extension.scope)) {
+      return nullptr;
+    }
 
     valid_scope_extensions.insert(std::move(scope_extension));
   }
@@ -1792,6 +1806,25 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   web_app->SetIsDiyApp(local_data.is_diy_app());
+
+  web_app->SetWasShortcutApp(local_data.was_shortcut_app());
+
+  std::vector<blink::Manifest::RelatedApplication> related_applications;
+  for (const auto& related_application_proto :
+       local_data.related_applications()) {
+    blink::Manifest::RelatedApplication related_application;
+    if (related_application_proto.has_platform()) {
+      related_application.platform = std::make_optional(
+          base::UTF8ToUTF16(related_application_proto.platform()));
+    }
+    related_application.url = GURL(related_application_proto.url());
+    if (related_application_proto.has_id()) {
+      related_application.id =
+          std::make_optional(base::UTF8ToUTF16(related_application_proto.id()));
+    }
+    related_applications.push_back(std::move(related_application));
+  }
+  web_app->SetRelatedApplications(std::move(related_applications));
 
   return web_app;
 }

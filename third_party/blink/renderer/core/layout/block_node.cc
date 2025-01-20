@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/mathml/math_token_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_under_over_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/replaced_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -169,7 +169,6 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
 template <typename Callback>
 NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
                                        const Callback& callback) {
-  const ComputedStyle& style = params.node.Style();
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsFlexibleBox()) {
     CreateAlgorithmAndRun<FlexLayoutAlgorithm>(params, callback);
@@ -198,7 +197,7 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
   // we would have done block fragmentation with the legacy engine.
   // Otherwise writing data back into the legacy tree will fail. Look for
   // the flow thread.
-  else if (GetFlowThread(box) && style.SpecifiesColumns()) {
+  else if (GetFlowThread(box) && params.node.Style().SpecifiesColumns()) {
     CreateAlgorithmAndRun<ColumnLayoutAlgorithm>(params, callback);
   } else if (!box.Parent() && params.node.IsPaginatedRoot()) [[unlikely]] {
     CreateAlgorithmAndRun<PaginatedRootLayoutAlgorithm>(params, callback);
@@ -772,17 +771,9 @@ void BlockNode::FinishRepeatableRoot() const {
 
   box_->FinalizeLayoutResults();
 
-  wtf_size_t fragment_count = box_->PhysicalFragmentCount();
-  DCHECK_GE(fragment_count, 1u);
   box_->ClearNeedsLayout();
-  for (wtf_size_t i = 1; i < fragment_count; i++) {
-    const PhysicalBoxFragment& physical_fragment =
-        *box_->GetPhysicalFragment(i);
-    bool is_first = i == 1;
-    bool is_last = i + 1 == fragment_count;
-    FragmentRepeater repeater(is_first, is_last);
-    repeater.CloneChildFragments(physical_fragment);
-  }
+
+  FragmentRepeater::DeepCloneRepeatableRoot(*box_);
 }
 
 void BlockNode::PrepareForLayout() const {
@@ -791,6 +782,22 @@ void BlockNode::PrepareForLayout() const {
     DCHECK(block->GetScrollableArea());
     if (block->GetScrollableArea()->ShouldPerformScrollAnchoring())
       block->GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
+  }
+
+  // Scroll markers are found and attached when the scrollable container has
+  // finished layout. However, it's still possible for a scroll marker group to
+  // be re-attached without re-laying out the scrollable container (e.g. if the
+  // display type of the scroll marker group changes). If the scroll marker
+  // group object has never had layout, we may need to populate it now. In case
+  // of an after-scroll-marker-group, though, the scrollable container will
+  // populate it before we get to its first layout. So also check that it's
+  // childless, as an attempt to avoid populating it twice.
+  if (box_->IsScrollMarkerGroup() && !box_->EverHadLayout() &&
+      !box_->SlowFirstChild()) {
+    LayoutBlock* scroller_box = box_->ScrollerFromScrollMarkerGroup();
+    if (scroller_box) {
+      PopulateScrollMarkerGroup(BlockNode(scroller_box));
+    }
   }
 
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
@@ -1351,15 +1358,6 @@ void BlockNode::PlaceChildrenInFlowThread(
     PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token,
                              /* needs_invalidation_check */ true);
 
-    // If the multicol container has inline children, there may still be floats
-    // there, but they aren't stored as child fragments of |column| in that case
-    // (but rather inside fragment items). Make sure that they get positioned,
-    // too.
-    if (const FragmentItems* items = child_fragment.Items()) {
-      CopyFragmentItemsToLayoutBox(child_fragment, *items,
-                                   previous_column_break_token);
-    }
-
     previous_column_break_token = child_fragment.GetBreakToken();
   }
 
@@ -1529,13 +1527,11 @@ LogicalSize BlockNode::GetAspectRatio() const {
   }
 
   if (!ShouldApplySizeContainment()) {
-    IntrinsicSizingInfo legacy_sizing_info;
-    To<LayoutReplaced>(box_.Get())
-        ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
+    const PhysicalNaturalSizingInfo legacy_sizing_info =
+        To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      return StyleAspectRatio::LayoutRatioFromSizeF(
-                 legacy_sizing_info.aspect_ratio)
-          .ConvertToLogical(Style().GetWritingMode());
+      return legacy_sizing_info.aspect_ratio.ConvertToLogical(
+          Style().GetWritingMode());
     }
   }
 
@@ -1588,52 +1584,43 @@ bool BlockNode::IsCustomLayoutLoaded() const {
   return To<LayoutCustom>(box_.Get())->IsLoaded();
 }
 
+void BlockNode::PopulateScrollMarkerGroup(const BlockNode& scroller) const {
+  DCHECK(box_->IsScrollMarkerGroup());
+  LayoutBox* scroller_box = scroller.GetLayoutBox();
+
+  StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
+
+  // Detach all markers.
+  while (LayoutObject* child = GetLayoutBox()->SlowFirstChild()) {
+    // Anonymous wrappers may have been inserted. Search for the marker.
+    for (LayoutObject* walker = child; walker;
+         walker = walker->NextInPreOrder(child)) {
+      if (walker->GetNode() &&
+          walker->GetNode()->IsScrollMarkerPseudoElement()) {
+        walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
+        break;
+      }
+    }
+  }
+  DCHECK(!GetLayoutBox()->SlowFirstChild());
+
+  Node::AttachContext context;
+  context.parent = GetLayoutBox();
+  DCHECK(context.parent);
+
+  auto* scroll_marker_group =
+      To<ScrollMarkerGroupPseudoElement>(GetLayoutBox()->GetNode());
+  scroll_marker_group->ClearFocusGroup();
+  AttachScrollMarkers(*scroller_box, context);
+}
+
 void BlockNode::HandleScrollMarkerGroup() const {
   BlockNode group_node = GetScrollMarkerGroup();
   if (!group_node) {
     return;
   }
 
-  {
-    StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
-
-    // Detach all markers.
-    while (LayoutObject* child = group_node.GetLayoutBox()->SlowFirstChild()) {
-      // Anonymous wrappers may have been inserted. Search for the marker.
-      for (LayoutObject* walker = child; walker;
-           walker = walker->NextInPreOrder(child)) {
-        if (walker->GetNode() &&
-            walker->GetNode()->IsScrollMarkerPseudoElement()) {
-          walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
-          break;
-        }
-      }
-    }
-    DCHECK(!group_node.GetLayoutBox()->SlowFirstChild());
-
-    Node::AttachContext context;
-    context.parent = group_node.GetLayoutBox();
-    DCHECK(context.parent);
-
-    auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-        group_node.GetLayoutBox()->GetNode());
-    scroll_marker_group->ClearFocusGroup();
-    if (PseudoElement* scroll_next_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollNextButton)) {
-      To<ScrollButtonPseudoElement>(scroll_next_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
-    if (PseudoElement* scroll_prev_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollPrevButton)) {
-      To<ScrollButtonPseudoElement>(scroll_prev_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
-    AttachScrollMarkers(*box_, context);
-
-    DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
-  }
+  group_node.PopulateScrollMarkerGroup(*this);
 
   // The ::scroll-marker-group has now been populated with markers. If the group
   // comes after the principal box, we can return, and let the parent layout

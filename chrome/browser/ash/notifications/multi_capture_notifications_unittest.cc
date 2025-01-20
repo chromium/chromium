@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
@@ -39,6 +40,7 @@
 namespace {
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
 constexpr char kUserMail[] = "testingprofile@chromium.org";
+constexpr char kFakeGaia[] = "fakegaia";
 
 class MockMultiCaptureService : public crosapi::mojom::MultiCaptureService {
  public:
@@ -95,7 +97,7 @@ class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     UserDataAuthClient::InitializeFake();
 
-    LogIn(kUserMail);
+    LogIn(kUserMail, GaiaId(kFakeGaia));
     auto* user_profile = CreateProfile(kUserMail);
     ASSERT_TRUE(user_profile);
 

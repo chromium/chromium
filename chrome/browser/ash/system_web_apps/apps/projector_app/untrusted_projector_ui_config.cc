@@ -34,11 +34,11 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
                      ash::features::IsProjectorMutingEnabled());
   source->AddBoolean("isPwaRedirectEnabled",
                      ash::features::IsProjectorRedirectToPwaEnabled());
-  source->AddBoolean("isTranscriptChapterTitleEnabled",
-                     ash::features::IsProjectorTranscriptChapterTitleEnabled());
   source->AddBoolean("isDynamicColorsEnabled",
                      ash::features::IsProjectorDynamicColorsEnabled());
   source->AddBoolean("isGm3Enabled", ash::features::IsProjectorGm3Enabled());
+  source->AddBoolean("useDvsPlaybackEndpoint",
+                     ash::features::IsProjectorUseDVSPlaybackEndpointEnabled());
 
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",

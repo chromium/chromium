@@ -19,14 +19,15 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
@@ -60,16 +61,13 @@ class MandatoryReauthSettingsPageMetricsTest
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    autofill_client()->GetPersonalDataManager()->SetPrefService(
-        autofill_client()->GetPrefs());
-    autofill_client()
-        ->GetPersonalDataManager()
-        ->payments_data_manager()
+    personal_data_manager().SetPrefService(autofill_client()->GetPrefs());
+    personal_data_manager()
+        .payments_data_manager()
         .SetPaymentMethodsMandatoryReauthEnabled(IsFeatureTurnedOn());
     extensions::AutofillPrivateEventRouterFactory::GetForProfile(
         browser_context())
-        ->RebindPersonalDataManagerForTesting(
-            autofill_client()->GetPersonalDataManager());
+        ->RebindPersonalDataManagerForTesting(&personal_data_manager());
   }
 
   void TearDownOnMainThread() override {
@@ -87,8 +85,6 @@ class MandatoryReauthSettingsPageMetricsTest
 
  protected:
   bool RunAutofillSubtest(const std::string& subtest) {
-    autofill::WaitForPersonalDataManagerToBeLoaded(profile());
-
     const std::string extension_url = "main.html?" + subtest;
     return RunExtensionTest("autofill_private",
                             {.extension_url = extension_url.c_str()},
@@ -98,6 +94,9 @@ class MandatoryReauthSettingsPageMetricsTest
   autofill::TestContentAutofillClient* autofill_client() {
     return test_autofill_client_injector_
         [browser()->tab_strip_model()->GetActiveWebContents()];
+  }
+  autofill::TestPersonalDataManager& personal_data_manager() {
+    return autofill_client()->GetPersonalDataManager();
   }
 
  private:
@@ -195,11 +194,7 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
   ~AutofillPrivateApiUnitTest() override = default;
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    autofill_client()
-        ->GetPersonalDataManager()
-        ->payments_data_manager()
-        .SetSyncingForTest(
-            /*is_syncing_for_test=*/true);
+    payments_data_manager().SetSyncingForTest(/*is_syncing_for_test=*/true);
     UserAnnotationsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindLambdaForTesting([](content::BrowserContext* context)
@@ -213,9 +208,18 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  autofill::TestAddressDataManager& address_data_manager() {
+    return personal_data_manager().test_address_data_manager();
+  }
   autofill::TestContentAutofillClient* autofill_client() {
     return test_autofill_client_injector_
         [browser()->tab_strip_model()->GetActiveWebContents()];
+  }
+  autofill::TestPaymentsDataManager& payments_data_manager() {
+    return personal_data_manager().test_payments_data_manager();
+  }
+  autofill::TestPersonalDataManager& personal_data_manager() {
+    return autofill_client()->GetPersonalDataManager();
   }
 
   user_annotations::TestUserAnnotationsService* user_annotations_service() {
@@ -232,8 +236,6 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
 
  protected:
   bool RunAutofillSubtest(const std::string& subtest) {
-    autofill::WaitForPersonalDataManagerToBeLoaded(profile());
-
     const std::string extension_url = "main.html?" + subtest;
     return RunExtensionTest("autofill_private",
                             {.extension_url = extension_url.c_str()},
@@ -254,16 +256,14 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
       autofill::test::WithCvc(autofill::test::GetCreditCard(), u"789");
   autofill::CreditCard server_card =
       autofill::test::WithCvc(autofill::test::GetMaskedServerCard(), u"098");
-  autofill::TestPersonalDataManager* personal_data =
-      autofill_client()->GetPersonalDataManager();
-  personal_data->payments_data_manager().AddCreditCard(local_card);
-  personal_data->test_payments_data_manager().AddServerCreditCard(server_card);
+  payments_data_manager().AddCreditCard(local_card);
+  payments_data_manager().AddServerCreditCard(server_card);
 
   // Verify that cards are same as above and the CVCs are present for both of
   // them.
-  ASSERT_EQ(personal_data->payments_data_manager().GetCreditCards().size(), 2u);
+  ASSERT_EQ(payments_data_manager().GetCreditCards().size(), 2u);
   for (const autofill::CreditCard* card :
-       personal_data->payments_data_manager().GetCreditCards()) {
+       payments_data_manager().GetCreditCards()) {
     EXPECT_FALSE(card->cvc().empty());
     if (card->record_type() ==
         autofill::CreditCard::RecordType::kMaskedServerCard) {
@@ -279,9 +279,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
 
   // Verify that cards are same as above and the CVCs are deleted for both of
   // them.
-  ASSERT_EQ(personal_data->payments_data_manager().GetCreditCards().size(), 2u);
+  ASSERT_EQ(payments_data_manager().GetCreditCards().size(), 2u);
   for (const autofill::CreditCard* card :
-       personal_data->payments_data_manager().GetCreditCards()) {
+       payments_data_manager().GetCreditCards()) {
     EXPECT_TRUE(card->cvc().empty());
     if (card->record_type() ==
         autofill::CreditCard::RecordType::kMaskedServerCard) {
@@ -337,9 +337,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
       base::BindRepeating(&NotifyIphMockCallback::Call,
                           base::Unretained(&mock_callback)));
 
-  EXPECT_CALL(
-      mock_callback,
-      Call(autofill::AutofillClient::IphFeature::kPredictionImprovements));
+  EXPECT_CALL(mock_callback,
+              Call(autofill::AutofillClient::IphFeature::kAutofillAi));
 
   RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
@@ -354,27 +353,27 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
-  autofill::TestPersonalDataManager* personal_data_manager =
-      autofill_client()->GetPersonalDataManager();
+  using autofill::payments::TestPaymentsNetworkInterface;
   autofill_client()
       ->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+      ->set_payments_network_interface(
+          std::make_unique<TestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
-              autofill_client()->GetIdentityManager(), personal_data_manager));
+              autofill_client()->GetIdentityManager(),
+              &personal_data_manager()));
   // Required for adding the server card.
-  personal_data_manager->payments_data_manager().SetSyncingForTest(
+  payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);
   autofill::CreditCard virtual_card = autofill::test::GetVirtualCard();
   virtual_card.set_server_id("a123");
   virtual_card.set_instrument_id(123);
-  personal_data_manager->test_payments_data_manager().AddServerCreditCard(
-      virtual_card);
+  payments_data_manager().AddServerCreditCard(virtual_card);
   EXPECT_TRUE(RunAutofillSubtest("removeVirtualCard"));
   EXPECT_THAT(
-      autofill_client()
-          ->GetPaymentsAutofillClient()
-          ->GetPaymentsNetworkInterface()
+      static_cast<TestPaymentsNetworkInterface*>(
+          autofill_client()
+              ->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface())
           ->update_virtual_card_enrollment_request_details(),
       ::testing::AllOf(
           ::testing::Field(
@@ -389,11 +388,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
                        SetAutofillSyncToggleEnabled) {
-  autofill::TestPersonalDataManager* personal_data_manager =
-      autofill_client()->GetPersonalDataManager();
   syncer::TestSyncService test_sync_service;
-  personal_data_manager->test_address_data_manager().SetSyncServiceForTest(
-      &test_sync_service);
+  address_data_manager().SetSyncServiceForTest(&test_sync_service);
   test_sync_service.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kAutofill, false);
   EXPECT_FALSE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(

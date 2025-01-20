@@ -7,10 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/metrics/persistent_histogram_allocator.h"
+
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 
 struct Environment {

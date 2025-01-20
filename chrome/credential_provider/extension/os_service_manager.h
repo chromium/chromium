@@ -81,7 +81,7 @@ class OSServiceManager {
                                  SERVICE_STATUS service);
 
  protected:
-  OSServiceManager() {}
+  OSServiceManager() = default;
 
   // Returns the storage used for the instance pointer.
   static OSServiceManager** GetInstanceStorage();

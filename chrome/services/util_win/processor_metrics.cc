@@ -7,8 +7,6 @@
 #include <objbase.h>
 
 #include <sysinfoapi.h>
-#include <wbemidl.h>
-#include <winbase.h>
 #include <wrl/client.h>
 
 #include <string_view>
@@ -21,6 +19,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/wbemidl_shim.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"

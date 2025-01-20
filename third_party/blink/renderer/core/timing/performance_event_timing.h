@@ -44,17 +44,21 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     base::TimeTicks processing_end_time;
 
     // This is the timestamp when the commit has finished on compositor thread.
-    // Only set for event timings that have a next paint.
-    std::optional<base::TimeTicks> commit_finish_time;
+    // Only not null for event timings that have a next paint.
+    base::TimeTicks commit_finish_time;
 
     // Other than reporting to UKM, this is also used by eventTiming trace
     // events to report accurate ending time.
-    // Only set for event timing that have a next paint.
-    std::optional<base::TimeTicks> presentation_time;
+    // Only not null for event timing that have a next paint.
+    base::TimeTicks presentation_time;
 
     // The fallback timestamp used to calculate event duration. It is set only
     // when fallback time is used.  Some events might still have a next paint.
-    std::optional<base::TimeTicks> fallback_time = std::nullopt;
+    base::TimeTicks fallback_time;
+
+    // The render start time.
+    // Only not null for event timings that have a next paint.
+    base::TimeTicks render_start_time;
 
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
@@ -65,6 +69,12 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     std::optional<PointerId> pointer_id = std::nullopt;
 
     bool prevent_counting_as_interaction = false;
+
+    // Set to true when the event's processing time is fully nested under
+    // another event's processing time, e.g. some synthetic events are
+    // dispatched with the input events, beforeinput event's processing time is
+    // nested under keypress event.
+    bool is_processing_fully_nested_in_another_event = false;
   };
 
   static PerformanceEventTiming* Create(const AtomicString& event_type,
@@ -95,6 +105,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   Node* target() const;
 
+  void SetTarget(Node* target);
+
   uint32_t interactionId() const;
 
   void SetInteractionId(uint32_t interaction_id);
@@ -103,7 +115,11 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   bool HasKnownEndTime() const;
 
+  bool IsReadyForReporting() const;
+
   base::TimeTicks GetEndTime() const;
+
+  void UpdateFallbackTime(base::TimeTicks fallback_time);
 
   uint32_t interactionOffset() const;
 
@@ -128,10 +144,12 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     return &reporting_info_;
   }
 
+  bool NeedsNextPaintMeasurement() const;
+
  private:
   AtomicString entry_type_;
-  DOMHighResTimeStamp processing_start_;
-  DOMHighResTimeStamp processing_end_;
+  mutable DOMHighResTimeStamp processing_start_ = 0;
+  mutable DOMHighResTimeStamp processing_end_ = 0;
   bool cancelable_;
   WeakMember<Node> target_;
   std::optional<uint32_t> interaction_id_ = std::nullopt;

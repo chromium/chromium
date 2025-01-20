@@ -26,6 +26,7 @@ class OpenXrGraphicsBinding;
 struct OpenXrCreateInfo {
   int render_process_id;
   int render_frame_id;
+  bool needs_separate_activity = true;
 };
 
 // This class exists to help provide an interface for working with OpenXR

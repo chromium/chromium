@@ -7,12 +7,15 @@ package org.chromium.content.browser.picker;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /** Sets the current, min, and max values on the given DatePicker. */
+@NullMarked
 public class DateDialogNormalizer {
 
     /**

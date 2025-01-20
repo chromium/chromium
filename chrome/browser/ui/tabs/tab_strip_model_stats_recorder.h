@@ -28,21 +28,21 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   // chrome/android/java/src/org/chromium/chrome/browser/tab/TabUma.java
   enum class TabState {
     // Initial tab state.
-    INITIAL = 0,
+    kInitial = 0,
 
     // For active tabs visible in one of the browser windows.
-    ACTIVE = 1,
+    kActive = 1,
 
     // For inactive tabs which are present in the tab strip, but their contents
     // are not visible.
-    INACTIVE = 2,
+    kInactive = 2,
 
     // Skip 3 to match Chrome for Android implementation.
 
     // For tabs that are about to be closed.
-    CLOSED = 4,
+    kClosed = 4,
 
-    MAX,
+    kMaxValue = kClosed,
   };
 
   TabStripModelStatsRecorder();

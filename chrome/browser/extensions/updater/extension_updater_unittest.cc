@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/updater/extension_updater.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -2070,7 +2066,12 @@ class ExtensionUpdaterTest : public testing::Test {
 
     // We want to test a variety of combinations of expected ping conditions for
     // rollcall and active pings.
-    int ping_cases[] = { ManifestFetchData::kNeverPinged, 0, 1, 5 };
+    auto ping_cases = std::to_array<int>({
+        ManifestFetchData::kNeverPinged,
+        0,
+        1,
+        5,
+    });
 
     for (size_t i = 0; i < std::size(ping_cases); i++) {
       for (size_t j = 0; j < std::size(ping_cases); j++) {

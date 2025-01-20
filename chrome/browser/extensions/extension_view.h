@@ -25,7 +25,7 @@ namespace extensions {
 // Base class for platform-specific views used by extensions in the Chrome UI.
 class ExtensionView {
  public:
-  virtual ~ExtensionView() {}
+  virtual ~ExtensionView() = default;
 
   // Returns the extension's native view.
   virtual gfx::NativeView GetNativeView() = 0;

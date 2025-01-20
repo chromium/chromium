@@ -2,7 +2,7 @@ Name: Devtools-Frontend
 URL: https://chromium.googlesource.com/devtools/devtools-frontend
 Version: N/A
 Revision: DEPS
-License: BSD
+License: BSD-3-Clause
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes

@@ -7,6 +7,9 @@ include_rules = [
 
     # Dependencies.
     "+components/language_detection/core",
+    "+components/language_detection/content/common",
+    "+components/language_detection/content/renderer",
+    "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/wtf",
 ]

@@ -81,10 +81,10 @@ class MODULES_EXPORT HIDDevice
                                      ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> sendReport(ScriptState*,
                                          uint8_t report_id,
-                                         const DOMArrayPiece& data);
+                                         base::span<const uint8_t> data);
   ScriptPromise<IDLUndefined> sendFeatureReport(ScriptState*,
                                                 uint8_t report_id,
-                                                const DOMArrayPiece& data);
+                                                base::span<const uint8_t> data);
   ScriptPromise<NotShared<DOMDataView>> receiveFeatureReport(ScriptState*,
                                                              uint8_t report_id);
 

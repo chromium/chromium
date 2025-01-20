@@ -112,8 +112,6 @@ class MockFrameDelegate : public FrameScheduler::Delegate {
               GetAgentClusterId,
               (),
               (const, override));
-  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, ());
-  MOCK_METHOD(ukm::SourceId, GetUkmSourceId, ());
   MOCK_METHOD(void, UpdateTaskTime, (base::TimeDelta));
   MOCK_METHOD(void, UpdateActiveSchedulerTrackedFeatures, (uint64_t));
 
@@ -389,7 +387,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
             base::sequence_manager::SequenceManager::Settings::Builder()
-                .SetRandomisedSamplingEnabled(true)
                 .SetPrioritySettings(CreatePrioritySettings())
                 .Build())));
 
@@ -3114,7 +3111,6 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
                 nullptr, test_task_runner_,
                 test_task_runner_->GetMockTickClock(),
                 base::sequence_manager::SequenceManager::Settings::Builder()
-                    .SetRandomisedSamplingEnabled(true)
                     .SetPrioritySettings(CreatePrioritySettings())
                     .Build()));
     main_thread_scheduler->EnableVirtualTime(
@@ -3584,7 +3580,7 @@ TEST_F(MainThreadSchedulerImplTest, RenderBlockingStarvationPrevention) {
 }
 
 TEST_F(MainThreadSchedulerImplTest,
-       RenderBlockingStarvationPreventionDoesNotAffectCompositorGestures) {
+       RenderBlockingStarvationPreventionAffectsCompositorGestures) {
   SimulateEnteringCompositorGestureUseCase();
   SimulateRenderBlockingTask(
       MainThreadSchedulerImpl::kRenderBlockingStarvationThreshold);
@@ -3597,7 +3593,7 @@ TEST_F(MainThreadSchedulerImplTest,
   PostTestTasks(&run_order, "D1 R1 CM1 R2 R3");
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
-  EXPECT_THAT(run_order, testing::ElementsAre("R1", "R2", "R3", "D1", "CM1"));
+  EXPECT_THAT(run_order, testing::ElementsAre("R1", "CM1", "R2", "R3", "D1"));
 }
 
 TEST_F(MainThreadSchedulerImplTest, DetachRunningTaskQueue) {

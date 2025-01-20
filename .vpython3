@@ -501,7 +501,7 @@ wheel: <
 #   //third_party/blink/tools/blinkpy/web_tests/port/server_process.py
 wheel: <
   name: "infra/python/wheels/pywin32/${vpython_platform}"
-  version: "version:300"
+  version: "version:306"
   match_tag: <
     platform: "win32"
   >
@@ -560,7 +560,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/perfetto-py3"
-  version: "version:0.10.0"
+  version: "version:0.11.0"
 >
 
 # Used by:

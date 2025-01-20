@@ -16,13 +16,11 @@ import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 
 import androidx.annotation.GravityInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 
 import org.jni_zero.CalledByNative;
@@ -136,9 +134,6 @@ public class PageInfoController
 
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
-
-    // The controller for the tracking protection section of the page info. Replaces cookies.
-    private PageInfoTrackingProtectionController mTrackingProtectionController;
 
     // The controller for the tracking protection section for the 100% 3PCD launch UI.
     private PageInfoTrackingProtectionLaunchController mTrackingProtectionLaunchController;
@@ -285,11 +280,6 @@ public class PageInfoController
                     new PageInfoTrackingProtectionLaunchController(
                             this, mView.getCookiesRowView(), mDelegate);
             mSubpageControllers.add(mTrackingProtectionLaunchController);
-        } else if (mDelegate.showTrackingProtectionUi()) {
-            mTrackingProtectionController =
-                    new PageInfoTrackingProtectionController(
-                            this, mView.getCookiesRowView(), mDelegate);
-            mSubpageControllers.add(mTrackingProtectionController);
         } else {
             mCookiesController =
                     new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
@@ -334,10 +324,7 @@ public class PageInfoController
                     }
 
                     @Override
-                    public void destroy() {
-                        super.destroy();
-                        // Force the dialog to close immediately in case the destroy was from Chrome
-                        // quitting.
+                    public void webContentsDestroyed() {
                         PageInfoController.this.destroy();
                     }
 
@@ -362,6 +349,11 @@ public class PageInfoController
     }
 
     private void destroy() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(null);
+            mWebContentsObserver = null;
+        }
+
         if (mDialog != null) {
             mDialog.destroy();
             mDialog = null;
@@ -370,10 +362,6 @@ public class PageInfoController
             mCookiesController.destroy();
             mCookiesController = null;
         }
-        if (mTrackingProtectionController != null) {
-            mTrackingProtectionController.destroy();
-            mTrackingProtectionController = null;
-        }
         if (mTrackingProtectionLaunchController != null) {
             mTrackingProtectionLaunchController.destroy();
             mTrackingProtectionLaunchController = null;
@@ -381,37 +369,6 @@ public class PageInfoController
         if (mForgetSiteDialog != null) {
             mForgetSiteDialog.dismiss();
             mForgetSiteDialog = null;
-        }
-    }
-
-    private void setupForgetSiteButton(Button button) {
-        button.setOnClickListener(
-                (View v) -> {
-                    recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
-                    mForgetSiteDialog =
-                            new AlertDialog.Builder(
-                                            mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                                    .setTitle(R.string.page_info_forget_site_title)
-                                    .setMessage(R.string.page_info_forget_site_message)
-                                    .setPositiveButton(
-                                            R.string.page_info_forget_site_confirmation_button,
-                                            (dialog, which) -> {
-                                                clearData();
-                                            })
-                                    .setNegativeButton(
-                                            R.string.cancel,
-                                            (dialog, which) -> {
-                                                mForgetSiteDialog = null;
-                                            })
-                                    .show();
-                });
-        button.setVisibility(View.VISIBLE);
-    }
-
-    private void clearData() {
-        recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
-        for (PageInfoSubpageController controller : mSubpageControllers) {
-            controller.clearData();
         }
     }
 
@@ -503,8 +460,9 @@ public class PageInfoController
             mCurrentSubpageController.onSubpageRemoved();
             mCurrentSubpageController = null;
         }
-        mWebContentsObserver.destroy();
-        mWebContentsObserver = null;
+
+        destroy();
+
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
         mNativePageInfoController = 0;
         mContext = null;
@@ -546,8 +504,8 @@ public class PageInfoController
         return mContainer;
     }
 
-    public PageInfoTrackingProtectionController getTrackingProtectionControllerForTesting() {
-        return mTrackingProtectionController;
+    public PageInfoCookiesController getCookiesControllerForTesting() {
+        return mCookiesController;
     }
 
     public PageInfoTrackingProtectionLaunchController

@@ -46,8 +46,9 @@ PrimaryAccountChangeEvent::~PrimaryAccountChangeEvent() = default;
 
 PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
     ConsentLevel consent_level) const {
-  if (previous_state_ == current_state_)
+  if (previous_state_ == current_state_) {
     return Type::kNone;
+  }
 
   // Cannot change the Sync account without clearing the primary account first.
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is

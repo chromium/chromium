@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/set_time/set_time_ui.h"
 
 #include <stdint.h>
@@ -25,7 +20,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/set_time_dialog_resources.h"
@@ -41,9 +35,9 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -152,8 +146,9 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
   void OnParentAccessValidation(bool success) {
-    if (success)
+    if (success) {
       FireWebUIListener("validation-complete");
+    }
   }
 
   base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
@@ -197,10 +192,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 
   source->AddLocalizedStrings(values);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSetTimeDialogResources, kSetTimeDialogResourcesSize),
-      IDR_SET_TIME_DIALOG_SET_TIME_HTML);
+  webui::SetupWebUIDataSource(source, kSetTimeDialogResources,
+                              IDR_SET_TIME_DIALOG_SET_TIME_HTML);
 }
 
 SetTimeUI::~SetTimeUI() = default;

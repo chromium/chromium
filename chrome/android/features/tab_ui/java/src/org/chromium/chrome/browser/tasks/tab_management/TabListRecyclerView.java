@@ -20,12 +20,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.RunOnNextLayout;
-import org.chromium.chrome.browser.hub.RunOnNextLayoutDelegate;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.animation.RunOnNextLayout;
+import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -98,14 +98,18 @@ class TabListRecyclerView extends RecyclerView
     }
 
     void setupCustomItemAnimator() {
-        // Kill switch is defaulted to enabled and can be shut off to false via config if issues are
-        // discovered.
-        if (ChromeFeatureList.sGtsCloseTabAnimationKillSwitch.isEnabled()) {
-            if (mTabListItemAnimator == null) {
-                mTabListItemAnimator = new TabListItemAnimator();
-                setItemAnimator(mTabListItemAnimator);
-            }
+        if (mTabListItemAnimator == null) {
+            mTabListItemAnimator = new TabListItemAnimator();
+            setItemAnimator(mTabListItemAnimator);
         }
+    }
+
+    /**
+     * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
+     */
+    @NonNull
+    ObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
+        return mTabListItemAnimator.getIsAnimatorRunningSupplier();
     }
 
     /**

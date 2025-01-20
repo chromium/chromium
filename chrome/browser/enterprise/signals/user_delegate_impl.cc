@@ -16,9 +16,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_signals {
 
@@ -50,11 +50,11 @@ UserDelegateImpl::UserDelegateImpl(
 
 UserDelegateImpl::~UserDelegateImpl() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool UserDelegateImpl::IsSigninContext() const {
   return ash::ProfileHelper::IsSigninProfile(profile_);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool UserDelegateImpl::IsAffiliated() const {
   return enterprise_util::IsProfileAffiliated(profile_);
@@ -70,7 +70,7 @@ bool UserDelegateImpl::IsManagedUser() const {
   return profile_policy_connector->IsManaged();
 }
 
-bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
+bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
   return identity_manager_ &&
          identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==

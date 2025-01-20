@@ -25,7 +25,7 @@
     UIImage* image = DefaultSymbolTemplateWithPointSize(
         kSliderHorizontalSymbol, kMagicStackEditButtonIconPointSize);
     [editButton setImage:image forState:UIControlStateNormal];
-    editButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
+    editButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
     editButton.backgroundColor =
         [UIColor colorNamed:@"magic_stack_edit_button_background_color"];
     editButton.layer.cornerRadius = kMagicStackEditButtonWidth / 2;

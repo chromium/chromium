@@ -89,14 +89,17 @@ void AccessibilityNotificationWaiter::ListenToAllFrames(
     frame_count_++;
     ListenToFrame(node->current_frame_host());
   }
-  BrowserPluginGuestManager* guest_manager =
-      web_contents_impl->GetBrowserContext()->GetGuestManager();
-  if (guest_manager) {
-    guest_manager->ForEachGuest(web_contents_impl,
-                                [&](WebContents* web_contents) {
-                                  ListenToAllFrames(web_contents);
-                                  return true;
-                                });
+
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    BrowserPluginGuestManager* guest_manager =
+        web_contents_impl->GetBrowserContext()->GetGuestManager();
+    if (guest_manager) {
+      guest_manager->ForEachGuest(web_contents_impl,
+                                  [&](WebContents* web_contents) {
+                                    ListenToAllFrames(web_contents);
+                                    return true;
+                                  });
+    }
   }
 }
 

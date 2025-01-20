@@ -27,8 +27,9 @@ WordBoundaries::~WordBoundaries() = default;
 
 aura::Window* GetWindowParentIncludingTransient(aura::Window* window) {
   aura::Window* transient_parent = wm::GetTransientParent(window);
-  if (transient_parent)
+  if (transient_parent) {
     return transient_parent;
+  }
 
   return window->parent();
 }

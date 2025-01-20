@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_callbacks.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -22,21 +23,29 @@
 #include "base/trace_event/base_tracing.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/compose/buildflags.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "pdf/buildflags.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -44,7 +53,46 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+// GN doesn't understand buildflags, erroring on Android builds
+#include "components/pdf/browser/pdf_document_helper.h"  // nogncheck
+#include "components/pdf/common/constants.h"             // nogncheck
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace {
+
+#if BUILDFLAG(ENABLE_PDF)
+constexpr size_t kBytesPerMegabyte = 1'000'000;
+constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+void OnGotAIPageContentForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
+  TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
+
+  AiDataKeyedService::BrowserData data;
+  if (proto) {
+    *data.mutable_page_context()->mutable_annotated_page_content() =
+        std::move(*proto);
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+
+  std::move(continue_callback).Run(std::nullopt);
+}
+
+void GetAIPageContentForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT("browser", "GetAIPageContentForModelPrototyping");
+
+  optimization_guide::OnAIPageContentDone callback = base::BindOnce(
+      &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
+  optimization_guide::GetAIPageContent(
+      web_contents, optimization_guide::DefaultAIPageContentOptions(),
+      std::move(callback));
+}
 
 // Fills an AiData proto with information from GetInnerText. If no result,
 // returns an empty AiDAta.
@@ -120,6 +168,61 @@ void RequestAxTreeSnapshotForModelPrototyping(
       /*timeout=*/{},
       content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// Returns the PDFHelper associated with the given web contents. Returns nullptr
+// if one does not exist.
+pdf::PDFDocumentHelper* MaybeGetFullPagePdfHelper(
+    content::WebContents* contents) {
+  // MIME type associated with `contents` must be `application/pdf` for a
+  // full-page PDF.
+  if (contents->GetContentsMimeType() != pdf::kPDFMimeType) {
+    return nullptr;
+  }
+
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+}
+
+void OnRequestPdfBytesForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
+    const std::vector<uint8_t>& bytes,
+    uint32_t page_count) {
+  TRACE_EVENT0("browser", "OnRequestPdfBytesForModelPrototyping");
+
+  auto data = std::make_optional<AiDataKeyedService::BrowserData>();
+  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess ||
+      bytes.empty()) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+
+  data->mutable_page_context()->set_pdf_data(base::Base64Encode(bytes));
+  std::move(continue_callback).Run(std::move(data));
+}
+
+void RequestPdfBytesForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "RequestPdfBytesForModelPrototyping");
+  DCHECK(web_contents);
+
+  pdf::PDFDocumentHelper* pdf_helper = MaybeGetFullPagePdfHelper(web_contents);
+  if (!pdf_helper) {
+    std::move(continue_callback)
+        .Run(std::make_optional<AiDataKeyedService::BrowserData>());
+    return;
+  }
+
+  pdf_helper->GetPdfBytes(
+      kPdfUploadLimitBytes,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnRequestPdfBytesForModelPrototyping,
+                         std::move(continue_callback)),
+          pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+          std::vector<uint8_t>(), 0));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Once all callbacks are run, merges the AiDatas and returns the filled AiData.
 // If any did not complete, returns an empty AiData.
@@ -231,6 +334,36 @@ void GetTabDataForModelPrototyping(
   }
   concurrent.CreateCallback().Run(std::move(data));
 }
+
+void GetFormsPredictionsDataForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  AiDataKeyedService::AiData data =
+      std::make_optional<AiDataKeyedService::BrowserData>();
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+      web_contents->GetOutermostWebContents());
+  if (!tab) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  ChromeAutofillAiClient* client =
+      tab->GetTabFeatures()->chrome_autofill_ai_client();
+  if (!client) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  if (std::optional<optimization_guide::proto::FormsPredictionsRequest>
+          request = client->GetModelExecutor()->GetLatestRequest();
+      request) {
+    *data->mutable_forms_predictions_request() = *request;
+  }
+  if (std::optional<optimization_guide::proto::FormsPredictionsResponse>
+          response = client->GetModelExecutor()->GetLatestResponse();
+      response) {
+    *data->mutable_forms_predictions_response() = *response;
+  }
+  std::move(continue_callback).Run(std::move(data));
+}
 #endif
 
 std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
@@ -310,12 +443,23 @@ void GetSiteEngagementScoresForModelPrototyping(
   return std::move(continue_callback).Run(std::move(data));
 }
 
+std::unique_ptr<optimization_guide::proto::PageContextSpecifier>
+CreateDefaultPageContextSpecifier(int dom_node_id) {
+  auto page_context_specifier =
+      std::make_unique<optimization_guide::proto::PageContextSpecifier>();
+  page_context_specifier->set_inner_text(true);
+  page_context_specifier->set_inner_text_dom_node_id(dom_node_id);
+  page_context_specifier->set_tab_screenshot(true);
+  page_context_specifier->set_ax_tree(true);
+  page_context_specifier->set_pdf_data(true);
+  page_context_specifier->set_forms_data(true);
+  return page_context_specifier;
+}
+
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
-void GetModelPrototypingAiData(int tabs_for_inner_text,
-                               int dom_node_id,
+void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
                                content::WebContents* web_contents,
-                               std::string user_input,
                                AiDataKeyedService::AiDataCallback callback) {
   TRACE_EVENT0("browser", "GetModelPrototypingAiData");
   DCHECK(web_contents);
@@ -328,17 +472,61 @@ void GetModelPrototypingAiData(int tabs_for_inner_text,
       base::UTF16ToUTF8(web_contents->GetTitle()));
 
   base::ConcurrentCallbacks<AiDataKeyedService::AiData> concurrent;
-  RequestAxTreeSnapshotForModelPrototyping(web_contents,
-                                           concurrent.CreateCallback());
-  GetInnerTextForModelPrototyping(dom_node_id, web_contents,
-                                  concurrent.CreateCallback());
-  GetTabScreenshotForModelPrototyping(web_contents,
+  auto page_context_specifier = specifiers.browser_data_collection_specifier()
+                                    .foreground_tab_page_context_specifier();
+  if (page_context_specifier.default_data()) {
+    auto default_specifier = CreateDefaultPageContextSpecifier(
+        page_context_specifier.inner_text_dom_node_id());
+    page_context_specifier.CopyFrom(*default_specifier);
+  }
+  // TODO(https://crbug.com/385777825) check this specifier. For now always
+  // collect it.
+  GetAIPageContentForModelPrototyping(web_contents,
                                       concurrent.CreateCallback());
-#if !BUILDFLAG(IS_ANDROID)
-  GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents, concurrent);
-#endif
-  GetSiteEngagementScoresForModelPrototyping(web_contents->GetBrowserContext(),
+  if (page_context_specifier.ax_tree()) {
+    RequestAxTreeSnapshotForModelPrototyping(web_contents,
                                              concurrent.CreateCallback());
+  }
+  if (page_context_specifier.inner_text()) {
+    GetInnerTextForModelPrototyping(
+        page_context_specifier.inner_text_dom_node_id(), web_contents,
+        concurrent.CreateCallback());
+  }
+  if (page_context_specifier.tab_screenshot()) {
+    GetTabScreenshotForModelPrototyping(web_contents,
+                                        concurrent.CreateCallback());
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/385777825): generalize this logic and support other
+  // page contexts for tabs.
+  auto tab_specifier =
+      specifiers.browser_data_collection_specifier().tabs_context_specifier();
+  if (tab_specifier.has_general_tab_specifier()) {
+    // All tabs metadata is collected, but the tab limit is only used to
+    // determine if inner text should be collected.
+    auto general_tab_specifier = tab_specifier.general_tab_specifier();
+    int tabs_for_inner_text =
+        general_tab_specifier.page_context_specifier().inner_text()
+            ? general_tab_specifier.tab_limit()
+            : 0;
+    GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents,
+                                  concurrent);
+  }
+  if (page_context_specifier.forms_data()) {
+    GetFormsPredictionsDataForModelPrototyping(web_contents,
+                                               concurrent.CreateCallback());
+  }
+#endif
+#if BUILDFLAG(ENABLE_PDF)
+  if (page_context_specifier.pdf_data()) {
+    RequestPdfBytesForModelPrototyping(web_contents,
+                                       concurrent.CreateCallback());
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+  if (specifiers.browser_data_collection_specifier().site_engagement()) {
+    GetSiteEngagementScoresForModelPrototyping(
+        web_contents->GetBrowserContext(), concurrent.CreateCallback());
+  }
   std::move(concurrent)
       .Done(base::BindOnce(&OnDataCollectionsComplete, std::move(callback),
                            std::move(data)));
@@ -372,21 +560,38 @@ AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting() {
 void AiDataKeyedService::GetAiData(int dom_node_id,
                                    content::WebContents* web_contents,
                                    std::string user_input,
-                                   AiDataCallback callback) {
+                                   AiDataCallback callback,
+                                   int tabs_for_inner_text) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
-  GetAiDataWithSpecifiers(10, dom_node_id, web_contents, user_input,
-                            std::move(callback));
+  // Configure a default set of specifier.
+  AiDataSpecifier specifier;
+  auto* browser_data_collection_specifier =
+      specifier.mutable_browser_data_collection_specifier();
+  browser_data_collection_specifier
+      ->set_allocated_foreground_tab_page_context_specifier(
+          CreateDefaultPageContextSpecifier(dom_node_id).release());
+
+  auto* general_tabs_context_specifier =
+      browser_data_collection_specifier->mutable_tabs_context_specifier()
+          ->mutable_general_tab_specifier();
+  general_tabs_context_specifier->mutable_page_context_specifier()
+      ->set_inner_text(true);
+  general_tabs_context_specifier->set_tab_limit(tabs_for_inner_text);
+
+  browser_data_collection_specifier->set_site_engagement(true);
+  browser_data_collection_specifier->set_tab_groups(true);
+
+  GetAiDataWithSpecifier(web_contents, std::move(specifier),
+                         std::move(callback));
 }
 
-void AiDataKeyedService::GetAiDataWithSpecifiers(
-    int tabs_for_inner_text,
-    int dom_node_id,
+void AiDataKeyedService::GetAiDataWithSpecifier(
     content::WebContents* web_contents,
-    std::string user_input,
+    AiDataSpecifier specifier,
     AiDataCallback callback) {
-  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiDataWithSpecifiers");
-  GetModelPrototypingAiData(tabs_for_inner_text, dom_node_id, web_contents,
-                            user_input, std::move(callback));
+  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiDataWithSpecifier");
+  GetModelPrototypingAiData(std::move(specifier), web_contents,
+                            std::move(callback));
 }
 
 std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
@@ -396,8 +601,10 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
   static const std::vector<std::string> kHardcodedAllowlistedExtensions = {
       // https://issues.chromium.org/373645534
       "hpkopmikdojpadgmioifjjodbmnjjjca",
-      // https://issues.chromium.org/373462321
-      "nfdaijodggdcjengofmbibbkcnopmikg"};
+      // https://issues.chromium.org/377129777
+      "bgbpcgpcobgjpnpiginpidndjpggappi",
+      // https://issues.chromium.org/376699519
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
   allowlisted_extensions.insert(allowlisted_extensions.end(),
                                 kHardcodedAllowlistedExtensions.begin(),
                                 kHardcodedAllowlistedExtensions.end());

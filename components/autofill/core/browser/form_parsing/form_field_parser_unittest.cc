@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -126,15 +127,15 @@ TEST_P(MatchTest, Match) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(context, &field, pattern,
-                                                 {MatchAttribute::kLabel}));
+    EXPECT_TRUE(FormFieldParserTestApi::Match(context, field, pattern,
+                                              {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(context, &field, pattern,
-                                                  {MatchAttribute::kLabel}));
+    EXPECT_FALSE(FormFieldParserTestApi::Match(context, field, pattern,
+                                               {MatchAttribute::kLabel}));
   }
 }
 
@@ -173,8 +174,8 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+    EXPECT_TRUE(FormFieldParserTestApi::Match(
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -182,8 +183,8 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+    EXPECT_FALSE(FormFieldParserTestApi::Match(
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
 }
 
@@ -303,7 +304,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   }
 
   EXPECT_EQ(
-      FormFieldParser::ParseInAnyOrderForTesting(&scanner, fields_and_parsers),
+      FormFieldParserTestApi::ParseInAnyOrder(&scanner, fields_and_parsers),
       expect_success);
 
   if (expect_success) {
@@ -377,6 +378,55 @@ TEST_F(FormFieldParserTest, ParseStandaloneEmailSimilarToAddressName) {
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
   EXPECT_EQ(4, ParseFormFields(GeoIpCountryCode("BR"), LanguageCode("es")));
+  TestClassificationExpectations();
+}
+
+// Tests that:
+// - High quality label matches are prioritized over low quality label matches.
+// - Names matches are considered equally important as high quality label
+//   matches and ties are broken by parser level scores.
+TEST_F(FormFieldParserTest, LabelPrioritization) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  //   => High quality name-type wins.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, NAME_FULL);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  //   => Placeholder wins.
+  // (The expected type is address line 2, as the address parser qualifies the
+  //  first field as address line 1 internally, but this is overruled by the
+  //  higher priority name type. In practice rationalisation would fix the type)
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, ADDRESS_HOME_LINE2);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseNameParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseAddressParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  EXPECT_EQ(4, ParseFormFields());
   TestClassificationExpectations();
 }
 

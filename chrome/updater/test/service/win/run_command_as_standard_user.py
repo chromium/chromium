@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:300"
-# >
-# [VPYTHON:END]
 """Run the given command as the standard user.
 
 All arguments provided to this program will be used to reconstruct the command

@@ -58,8 +58,9 @@ BrowserCommandHandler::BrowserCommandHandler(
       supported_commands_(supported_commands),
       command_updater_(std::make_unique<CommandUpdaterImpl>(this)),
       page_handler_(this, std::move(pending_page_handler)) {
-  if (supported_commands_.empty())
+  if (supported_commands_.empty()) {
     return;
+  }
 
   EnableSupportedCommands();
 }
@@ -111,8 +112,7 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
-      can_execute = TutorialServiceExists() &&
-                    DefaultSearchProviderIsGoogle();
+      can_execute = TutorialServiceExists() && DefaultSearchProviderIsGoogle();
       break;
     case Command::kStartPasswordManagerTutorial:
       can_execute = TutorialServiceExists();
@@ -260,12 +260,12 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
 
 bool BrowserCommandHandler::ActiveTabSupportsCustomizeChrome() {
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  tabs::TabModel* tab = browser->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->tab_features()) {
+  tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures()) {
     return false;
   }
   customize_chrome::SidePanelController* side_panel_controller =
-      tab->tab_features()->customize_chrome_side_panel_controller();
+      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
   return side_panel_controller &&
          side_panel_controller->IsCustomizeChromeEntryAvailable();
 }

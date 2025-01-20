@@ -51,7 +51,7 @@ std::optional<base::BatteryLevelProvider::BatteryState> MakeBatteryState(
 
 struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
-  base::Histogram::Sample sample;
+  base::Histogram::Sample32 sample;
 };
 
 // For each histogram named after the combination of prefixes from

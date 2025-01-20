@@ -62,7 +62,7 @@ void WriteFileDescriptor(base::ScopedFD fd,
 ui::ClipboardFormatType GetClipboardFormatType() {
   static const char kFormatString[] = "chromium/x-file-system-files";
   static base::NoDestructor<ui::ClipboardFormatType> format_type(
-      ui::ClipboardFormatType::GetType(kFormatString));
+      ui::ClipboardFormatType::CustomPlatformType(kFormatString));
   return *format_type;
 }
 

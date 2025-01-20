@@ -138,14 +138,8 @@
     Save card to Google Account?
   </message>
   <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
       Save card securely?
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE" desc="Title text for the credit card upload save prompt on Desktop, using convenience-focused messaging.">
-      Save card?
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION" desc="Title text for the credit card upload save prompt on Desktop, using education-focused messaging.">
-      Autofill card next time?
     </message>
   </if>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
@@ -183,9 +177,6 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
     To pay faster next time, save your card and billing address in your Google Account
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
-    To pay faster next time, save your card, name, and billing address in your Google Account
-  </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
@@ -193,14 +184,8 @@
     To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
   </message>
   <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
       Pay faster when your card is saved. Card details are encrypted in your Google Account.
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE" desc="Explanation of the benefit of credit card upload save on Desktop, using convenience-focused messaging.">
-      Save this card to use online with Google Pay for purchases across your devices
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION" desc="Explanation of the benefit of credit card upload save on Desktop, using education-focused messaging.">
-      Autofill your card for future purchases when you save it to use with Google Pay
     </message>
   </if>
   <if expr="is_android">
@@ -351,6 +336,18 @@
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error">
     This card is not eligible for virtual card number.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval temporary error.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval permanent error.">
+    Card not available
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval temporary error.">
+    This card is not available right now. Please try again later.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval permanent error.">
+    This card is not available. Please contact your card provider.
   </message>
   <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
     Close
@@ -758,9 +755,32 @@
     </message>
   </if>
 
+  <!-- card info retrieval enrolled card related strings - start -->
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_TITLE" desc="The title shown in the Autofill filled card information bubble on Desktop. This bubble shows the complete information for the regular card selected to fill the form.">
+      Card details
+    </message>
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The label shown in body of the Autofill filled card information bubble on Desktop. The label serves as a educational message to explain to users how to use the bubble to fill card information to the form. This bubble shows the complete information for the regular card selected to fill the form.">
+      Click card details below to copy and paste if the card wasn't filled. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL">$1<ex>Learn more</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about card info retrieval enrolled card. Added to the end of the explanatory message of the filled card information bubble in IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL">
+      Learn more
+    </message>
+    <message name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL" desc="Text shown next to the regular card number in the filled card information bubble on Desktop. This bubble shows the complete information for the regular card selected to fill the form.">
+      Card number:
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during card info retrieval enrolled card unmasking flows. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Verifying...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_BAR_MESSAGE" desc="Message displayed after tapping a card info retrieval enrolled card, and before any other verification steps.">
+    Connecting to your card provider...
+  </message>
+  <!-- card info retrieval enrolled card related strings - end -->
+
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios">
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX" desc="Notifies users that the type of card they are enrolling in is a virtual card.">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX" desc="Notifies users that the type of card they are enrolling in is a virtual card." formatter_data="android_java">
       Virtual card
     </message>
   </if>
@@ -844,7 +864,7 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
     Virtual card
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber.">
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber." formatter_data="android_java">
     Turning on virtual card
   </message>
   <if expr="is_ios">
@@ -853,8 +873,8 @@
     </message>
   </if>
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION" desc="The accessibility description for a UI element that contains the credit card icon, the card name and last four digits (in placeholder), and the text 'Virtual card'. This UI element is in the dialog that lets users enroll their credit card into the virtual card number feature.">
-      <ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS">$1<ex>Visa **** 1234</ex></ph>, virtual card
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION" desc="The accessibility description for a UI element that contains the credit card icon, the card name and last four digits (in placeholder), and the text 'Virtual card'. This UI element is in the dialog that lets users enroll their credit card into the virtual card number feature." formatter_data="android_java">
+      <ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS">%1$s<ex>Visa **** 1234</ex></ph>, virtual card
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONTENT_DESCRIPTION" desc="The description of the virtual card enrollment dialog for the accessbility screen reader." formatter_data="android_java">
       Virtual card enrollment
@@ -873,6 +893,9 @@
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLED_TEXT" desc="Text to be displayed in the Settings page as label for cards that are enrolled into virtual card number." formatter_data="android_java">
       Virtual card turned on
+    </message>
+    <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a runtime retrieval card is autofilled.">
+      Card number not filled in?
     </message>
   </if>
   <if expr="is_ios">
@@ -903,6 +926,15 @@
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option.">
       Merchant doesn't accept this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Desktop and Android. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
+      You can autofill this card because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Desktop. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
+      Now you can autofill your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> cards because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
+      You can autofill this card because your account is linked to Google Pay.
   </message>
   <message name="IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble for disabled and grayed out virtual card suggestions on Chrome Desktop.">
       Cards not accepted by this merchant are disabled
@@ -982,6 +1014,14 @@
   </message>
   <message name="IDS_AUTOFILL_REGULAR_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS" desc="Text shown above the card number in the manual fallback bubble on IOS. This bubble shows the card number for the card being shown to fill the form. Clicking this button will populate the available card-related fields of the form.">
       Card number:
+  </message>
+
+  <!-- Buy now pay later related strings -->
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT" desc="Main text for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
+    Pay over time options
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL" desc="One line label shows the minimum qualifying amount for the Buy Now Pay Later option in the autofill credit card popup. If the option is selected, a pop up will be shown to allow users choose a Buy Now Pay Later issuer.">
+    Available for purchases over <ph name="RANGE_MINIMUM">$1<ex>$35</ex></ph>
   </message>
 
   <!-- Credit card benefits-related strings -->

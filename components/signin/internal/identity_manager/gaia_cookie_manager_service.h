@@ -27,6 +27,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/backoff_entry.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -61,7 +62,7 @@ class GaiaCookieManagerService
       public signin::AccountsCookieMutator::PartitionDelegate,
       public network::mojom::CookieChangeListener {
  public:
-  using AccountIdGaiaIdPair = std::pair<CoreAccountId, std::string>;
+  using AccountIdGaiaIdPair = std::pair<CoreAccountId, GaiaId>;
 
   enum GaiaCookieRequestType { LOG_OUT, LIST_ACCOUNTS, SET_ACCOUNTS };
 
@@ -246,7 +247,7 @@ class GaiaCookieManagerService
   // Indicates that an account previously listed via ListAccounts should now
   // be removed. Does not trigger a ListAccounts request and does not change the
   // staleness of the account information.
-  void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id);
+  void RemoveLoggedOutAccountByGaiaId(const GaiaId& gaia_id);
 
   // Call observers when setting accounts in cookie completes.
   void SignalSetAccountsComplete(signin::SetAccountsInCookieResult result);

@@ -36,7 +36,7 @@ ManagePasswordsListView::ManagePasswordsListView(
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
-    std::optional<ui::ImageModel> store_icon = std::nullopt;
+    ui::ImageModel store_icon;
     if (is_account_storage_available && !password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
           vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
@@ -62,8 +62,6 @@ ManagePasswordsListView::ManagePasswordsListView(
                 on_row_clicked_callback, *password_form),
             /*main_image_icon=*/favicon,
             /*title_text=*/GetDisplayUsername(*password_form),
-            /*secondary_text=*/std::u16string(),
-            /*tooltip_text=*/std::u16string(),
             /*subtitle_text=*/std::u16string(),
             /*action_image_icon=*/
             ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
@@ -95,18 +93,15 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*title_text=*/
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
-          /*secondary_text=*/std::u16string(),
-          /*tooltip_text=*/
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
               vector_icons::kLaunchIcon, ui::kColorIconSecondary,
-              GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
-          /*state_icon=*/std::nullopt));
+              GetLayoutConstant(PAGE_INFO_ICON_SIZE))));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
+  manage_passwords_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
 
   SetProperty(views::kElementIdentifierKey, kTopView);
 }

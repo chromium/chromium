@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -44,8 +43,8 @@ std::unique_ptr<KeyedService> BuildOhttpKeyService(web::BrowserState* context) {
 // static
 safe_browsing::OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<safe_browsing::OhttpKeyService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<safe_browsing::OhttpKeyService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -60,21 +59,13 @@ OhttpKeyServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOhttpKeyService);
 }
 
+// The service is created early to start async key fetch.
 OhttpKeyServiceFactory::OhttpKeyServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "OhttpKeyService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("OhttpKeyService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildOhttpKeyService(context);
-}
-
-bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  // The service is created early to start async key fetch.
-  return true;
-}
-
-bool OhttpKeyServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

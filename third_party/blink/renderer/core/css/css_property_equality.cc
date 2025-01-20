@@ -468,7 +468,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInitialLetter:
       return a.InitialLetter() == b.InitialLetter();
     case CSSPropertyID::kPositionArea:
-    case CSSPropertyID::kInsetArea:
       return a.GetPositionArea() == b.GetPositionArea();
     case CSSPropertyID::kInteractivity:
       return a.Interactivity() == b.Interactivity();
@@ -518,6 +517,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerStartResource() == b.MarkerStartResource();
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
+    case CSSPropertyID::kMasonryAutoTracks:
+      return a.MasonryAutoTracks() == b.MasonryAutoTracks();
+    case CSSPropertyID::kMasonryDirection:
+      return a.MasonryDirection() == b.MasonryDirection();
+    case CSSPropertyID::kMasonryFill:
+      return a.MasonryFill() == b.MasonryFill();
     case CSSPropertyID::kMasonrySlack:
       return a.MasonrySlack() == b.MasonrySlack();
     case CSSPropertyID::kMasonryTemplateTracks:
@@ -627,6 +632,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollbarWidth() == b.ScrollbarWidth();
     case CSSPropertyID::kScrollBehavior:
       return a.GetScrollBehavior() == b.GetScrollBehavior();
+    case CSSPropertyID::kScrollInitialTarget:
+      return a.ScrollInitialTarget() == b.ScrollInitialTarget();
     case CSSPropertyID::kScrollMarginBottom:
       return a.ScrollMarginBottom() == b.ScrollMarginBottom();
     case CSSPropertyID::kScrollMarginLeft:
@@ -649,8 +656,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollSnapStop() == b.ScrollSnapStop();
     case CSSPropertyID::kScrollSnapType:
       return a.GetScrollSnapType() == b.GetScrollSnapType();
-    case CSSPropertyID::kScrollStartTarget:
-      return a.ScrollStartTarget() == b.ScrollStartTarget();
     case CSSPropertyID::kScrollStartX:
       return a.ScrollStartX() == b.ScrollStartX();
     case CSSPropertyID::kScrollStartY:
@@ -953,7 +958,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlignContent:
     case CSSPropertyID::kAliasWebkitAlignItems:
     case CSSPropertyID::kAliasWebkitAlignSelf:
-    case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAliasWebkitAnimation:
     case CSSPropertyID::kAliasWebkitAnimationDelay:
     case CSSPropertyID::kAliasWebkitAnimationDirection:
@@ -1232,6 +1236,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMargin:
     case CSSPropertyID::kMarker:
     case CSSPropertyID::kMask:
+    case CSSPropertyID::kMasonryFlow:
     case CSSPropertyID::kMasonryTrack:
     case CSSPropertyID::kOffset:
     case CSSPropertyID::kOutline:
@@ -1266,7 +1271,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
 
     // Non-animateable properties
-    case CSSPropertyID::kAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAnimation:
     case CSSPropertyID::kAnimationComposition:
     case CSSPropertyID::kAnimationDelay:
@@ -1316,6 +1320,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPad:
     case CSSPropertyID::kPrefix:
     case CSSPropertyID::kRange:
+    case CSSPropertyID::kResult:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
     case CSSPropertyID::kSuffix:

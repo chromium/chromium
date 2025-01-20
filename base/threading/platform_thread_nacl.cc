@@ -13,7 +13,7 @@ bool CanSetThreadTypeToRealtimeAudio() {
 }
 
 bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                MessagePumpType pump_type_hint) {
+                                     MessagePumpType pump_type_hint) {
   return false;
 }
 

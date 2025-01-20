@@ -52,7 +52,7 @@ class TestStateProvider : public WindowSizer::StateProvider {
   TestStateProvider(const TestStateProvider&) = delete;
   TestStateProvider& operator=(const TestStateProvider&) = delete;
 
-  ~TestStateProvider() override {}
+  ~TestStateProvider() override = default;
 
   void SetPersistentState(const gfx::Rect& bounds,
                           const gfx::Rect& work_area,

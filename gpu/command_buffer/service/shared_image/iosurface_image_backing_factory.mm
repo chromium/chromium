@@ -38,10 +38,10 @@ namespace gpu {
 namespace {
 bool UsageWillResultInGLWrite(gpu::SharedImageUsageSet usage,
                               GrContextType gr_context_type) {
-  return (usage & SHARED_IMAGE_USAGE_GLES2_WRITE) ||
+  return usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE) ||
          ((gr_context_type == GrContextType::kGL) &&
-          (usage & (SHARED_IMAGE_USAGE_RASTER_WRITE |
-                    SHARED_IMAGE_USAGE_DISPLAY_WRITE)));
+          usage.HasAny(SHARED_IMAGE_USAGE_RASTER_WRITE |
+                       SHARED_IMAGE_USAGE_DISPLAY_WRITE));
 }
 
 bool IsFormatSupported(viz::SharedImageFormat format) {
@@ -117,8 +117,8 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING |
-    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_WRITE |
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
+    SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
 
 }  // anonymous namespace
@@ -281,7 +281,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage & SHARED_IMAGE_USAGE_CPU_WRITE &&
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) &&
       gmb_type != gfx::IO_SURFACE_BUFFER) {
     // Only CPU writable when the client provides a IOSurface.
     return false;
@@ -301,7 +301,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
   // IOSurfaceImageBacking::GLTextureImageRepresentationEndAccess().
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
       return false;
     }
   }

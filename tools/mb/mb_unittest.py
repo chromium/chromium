@@ -20,10 +20,9 @@ sys.path.insert(
 
 from mb import mb
 
+
 # Call has argument input to match subprocess.run
 # pylint: disable=redefined-builtin
-
-
 class FakeMBW(mb.MetaBuildWrapper):
   def __init__(self, win32=False):
     super().__init__()
@@ -285,7 +284,6 @@ TEST_BAD_CONFIG = """\
 """
 
 
-
 TEST_ARGS_FILE_TWICE_CONFIG = """\
 {
   'builder_groups': {
@@ -351,6 +349,7 @@ def is_win():
 
 
 class UnitTest(unittest.TestCase):
+  """Unit tests for mb.py."""
   maxDiff = None
 
   def fake_mbw(self, files=None, win32=False):
@@ -379,9 +378,8 @@ class UnitTest(unittest.TestCase):
             env=None):
     if not mbw:
       mbw = self.fake_mbw(files)
-
+    prev_env = os.environ.copy()
     try:
-      prev_env = os.environ.copy()
       if env:
         os.environ.clear()
         os.environ.update(env)
@@ -391,7 +389,7 @@ class UnitTest(unittest.TestCase):
       os.environ.update(prev_env)
     self.assertEqual(
         actual_ret, ret,
-        "ret: %s, out: %s, err: %s" % (actual_ret, mbw.out, mbw.err))
+        'ret: %s, out: %s, err: %s' % (actual_ret, mbw.out, mbw.err))
     if out is not None:
       self.assertEqual(mbw.out, out)
     if err is not None:
@@ -545,7 +543,7 @@ class UnitTest(unittest.TestCase):
     self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_bot',
                 '//out/Debug'],
                mbw=mbw, ret=0)
-    # TODO(crbug.com/40134852): This assert is inappropriately failing.
+    # TODO: crbug.com/40134852 - This assert is inappropriately failing.
     # self.assertEqual(
     #     mbw.files['/fake_src/out/Debug/args.gn'],
     #     'import("//build/args/bots/fake_builder_group/fake_args_bot.gn")\n')
@@ -682,7 +680,6 @@ class UnitTest(unittest.TestCase):
     self.assertIn('/fake_src/out/Default/cc_perftests.isolated.gen.json',
                   mbw.files)
 
-
   def test_duplicate_isolate_maps(self):
     files = {
         '/tmp/swarming_targets':
@@ -698,7 +695,7 @@ class UnitTest(unittest.TestCase):
          "  'type': 'console_test_launcher',"
          "}}\n"),
         'c:\\fake_src\out\Default\cc_perftests.exe.runtime_deps':
-        ("cc_perftests\n"),
+        ('cc_perftests\n'),
     }
     mbw = self.fake_mbw(files=files, win32=True)
     # Check that passing duplicate targets into mb fails.
@@ -711,18 +708,17 @@ class UnitTest(unittest.TestCase):
                mbw=mbw,
                ret=1)
 
-
   def test_isolate(self):
     files = {
         '/fake_src/out/Default/toolchain.ninja':
-        "",
+        '',
         '/fake_src/testing/buildbot/gn_isolate_map.pyl':
         ("{'base_unittests': {"
          "  'label': '//base:base_unittests',"
          "  'type': 'console_test_launcher',"
          "}}\n"),
         '/fake_src/out/Default/base_unittests.runtime_deps':
-        ("base_unittests\n"),
+        ('base_unittests\n'),
     }
     self.check([
         'isolate', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
@@ -814,8 +810,6 @@ class UnitTest(unittest.TestCase):
     ],
                mbw=mbw,
                ret=1)
-    files = mbw.files.get('/fake_src/out/Default/base_unittests.isolate')
-
     expected_err = ('error: gn `data` items may not list generated directories;'
                     ' list files in directory instead for:\n'
                     '//out/Default/test_data/\n')
@@ -824,7 +818,7 @@ class UnitTest(unittest.TestCase):
   def test_isolate_dir(self):
     files = {
         '/fake_src/out/Default/toolchain.ninja':
-        "",
+        '',
         '/fake_src/testing/buildbot/gn_isolate_map.pyl':
         ("{'base_unittests': {"
          "  'label': '//base:base_unittests',"
@@ -847,7 +841,7 @@ class UnitTest(unittest.TestCase):
   def test_isolate_generated_dir(self):
     files = {
         '/fake_src/out/Default/toolchain.ninja':
-        "",
+        '',
         '/fake_src/testing/buildbot/gn_isolate_map.pyl':
         ("{'base_unittests': {"
          "  'label': '//base:base_unittests',"
@@ -870,7 +864,6 @@ class UnitTest(unittest.TestCase):
                ret=1)
     self.assertEqual(mbw.out[-len(expected_err):], expected_err)
 
-
   def test_run(self):
     files = {
         '/fake_src/testing/buildbot/gn_isolate_map.pyl':
@@ -879,7 +872,7 @@ class UnitTest(unittest.TestCase):
          "  'type': 'console_test_launcher',"
          "}}\n"),
         '/fake_src/out/Default/base_unittests.runtime_deps':
-        ("base_unittests\n"),
+        ('base_unittests\n'),
     }
     mbw = self.check(
         ['run', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'],
@@ -899,12 +892,12 @@ class UnitTest(unittest.TestCase):
          "  'type': 'console_test_launcher',"
          "}}\n"),
         '/fake_src/out/Default/base_unittests.runtime_deps':
-        ("base_unittests\n"),
+        ('base_unittests\n'),
         '/fake_src/out/Default/base_unittests.archive.json':
-        ("{\"base_unittests\":\"fake_hash\"}"),
+        ('{\"base_unittests\":\"fake_hash\"}'),
         '/fake_src/third_party/depot_tools/cipd_manifest.txt':
-        ("# vpython\n"
-         "/some/vpython/pkg  git_revision:deadbeef\n"),
+        ('# vpython\n'
+         '/some/vpython/pkg  git_revision:deadbeef\n'),
     }
 
     task_json = json.dumps({'tasks': [{'task_id': '00000'}]})
@@ -960,12 +953,12 @@ class UnitTest(unittest.TestCase):
          "  'type': 'console_test_launcher',"
          "}}\n"),
         '/fake_src/out/Default/base_unittests.runtime_deps':
-        ("base_unittests\n"),
+        ('base_unittests\n'),
         '/fake_src/out/Default/base_unittests.archive.json':
-        ("{\"base_unittests\":\"fake_hash\"}"),
+        ('{\"base_unittests\":\"fake_hash\"}'),
         '/fake_src/third_party/depot_tools/cipd_manifest.txt':
-        ("# vpython\n"
-         "/some/vpython/pkg  git_revision:deadbeef\n"),
+        ('# vpython\n'
+         '/some/vpython/pkg  git_revision:deadbeef\n'),
     }
 
     task_json = json.dumps({'tasks': [{'task_id': '00000'}]})

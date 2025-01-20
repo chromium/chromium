@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.content;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
@@ -29,6 +30,7 @@ public class ContentUtils {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getBrowserUserAgent();
 
         void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs);

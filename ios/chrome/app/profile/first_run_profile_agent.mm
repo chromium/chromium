@@ -10,18 +10,18 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     SceneStateObserver>
@@ -38,6 +38,9 @@
 
   // Coordinator of the First Run UI.
   FirstRunCoordinator* _firstRunCoordinator;
+
+  // Used to force the device orientation in portrait mode on iPhone.
+  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
 
 #pragma mark - SceneStateObserver
@@ -55,6 +58,19 @@
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
+    willTransitionToInitStage:(ProfileInitStage)nextInitStage
+                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage != ProfileInitStage::kFirstRun) {
+    return;
+  }
+
+  AppState* appState = profileState.appState;
+  if (appState.startupInformation.isFirstRun) {
+    _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+  }
+}
+
+- (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   if (nextInitStage == ProfileInitStage::kFirstRun) {
@@ -63,7 +79,8 @@
   }
 
   if (fromInitStage == ProfileInitStage::kFirstRun) {
-    [self.profileState removeAgent:self];
+    _scopedForceOrientation.reset();
+    [profileState removeAgent:self];
     return;
   }
 }
@@ -122,9 +139,7 @@
 
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
   // loaded in iSL.
-  RunSystemCapabilitiesPrefetch(
-      ChromeAccountManagerServiceFactory::GetForProfile(profile)
-          ->GetAllIdentities());
+  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   FirstRunScreenProvider* provider =
       [[FirstRunScreenProvider alloc] initForProfile:profile];

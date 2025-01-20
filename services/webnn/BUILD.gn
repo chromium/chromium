@@ -16,38 +16,9 @@ buildflag_header("buildflags") {
   ]
 }
 
-if (is_posix) {
-  source_set("coreml_graph_builder") {
-    sources = [
-      "coreml/graph_builder_coreml.cc",
-      "coreml/graph_builder_coreml.h",
-    ]
-    deps = [
-      ":webnn_utils",
-      "//base",
-      "//services/webnn/public/mojom",
-      "//third_party/coremltools:modelformat_proto",
-      "//third_party/fp16",
-    ]
-  }
-}
-
-source_set("tflite_graph_builder") {
-  sources = [
-    "tflite/graph_builder_tflite.cc",
-    "tflite/graph_builder_tflite.h",
-  ]
-  public_deps = [
-    ":webnn_utils",
-    "//base",
-    "//services/webnn/public/mojom",
-    "//third_party/flatbuffers",
-    "//third_party/tflite:tflite_public_headers",
-  ]
-}
-
 source_set("webnn_switches") {
   sources = [ "webnn_switches.h" ]
+  deps = [ ":buildflags" ]
 }
 
 component("webnn_service") {
@@ -61,7 +32,6 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_object_impl.h",
     "webnn_tensor_impl.cc",
     "webnn_tensor_impl.h",
   ]
@@ -117,6 +87,8 @@ component("webnn_service") {
       "coreml/buffer_content.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
+      "coreml/graph_builder_coreml.cc",
+      "coreml/graph_builder_coreml.h",
       "coreml/graph_impl_coreml.h",
       "coreml/graph_impl_coreml.mm",
       "coreml/tensor_impl_coreml.h",
@@ -129,7 +101,10 @@ component("webnn_service") {
       "CoreML.framework",
       "Foundation.framework",
     ]
-    deps += [ ":coreml_graph_builder" ]
+    deps += [
+      "//third_party/coremltools:modelformat_proto",
+      "//third_party/fp16",
+    ]
   }
 
   if (webnn_use_tflite) {
@@ -138,6 +113,8 @@ component("webnn_service") {
       "tflite/buffer_content.h",
       "tflite/context_impl_tflite.cc",
       "tflite/context_impl_tflite.h",
+      "tflite/graph_builder_tflite.cc",
+      "tflite/graph_builder_tflite.h",
       "tflite/graph_impl_tflite.cc",
       "tflite/graph_impl_tflite.h",
       "tflite/op_resolver.cc",
@@ -147,10 +124,11 @@ component("webnn_service") {
     ]
 
     deps += [
-      ":tflite_graph_builder",
+      "//third_party/flatbuffers",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_builtin_op_resolver",
+      "//third_party/tflite:tflite_public_headers",
     ]
 
     if (build_tflite_with_xnnpack) {
@@ -175,6 +153,9 @@ component("webnn_utils") {
   sources = [
     "webnn_constant_operand.cc",
     "webnn_constant_operand.h",
+    "webnn_object_impl.h",
+    "webnn_pending_constant_operand.cc",
+    "webnn_pending_constant_operand.h",
     "webnn_utils.cc",
     "webnn_utils.h",
   ]
@@ -246,9 +227,10 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_source = "webnn_graph_mojolpm_fuzzer.proto"
 
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
-
+  testcase_proto_kind = "services.fuzzing.webnn_graph.proto.Testcase"
+  seed_corpus_sources =
+      [ "webnn_graph_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
   deps = [
-    ":tflite_graph_builder",
     ":webnn_service",
     "//base",
     "//base/test:test_support",
@@ -256,8 +238,4 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
     "//services/webnn/public/mojom",
     "//third_party/libprotobuf-mutator",
   ]
-
-  if (is_posix) {
-    deps += [ ":coreml_graph_builder" ]
-  }
 }

@@ -4,6 +4,7 @@
 
 #include "gpu/config/webgpu_blocklist_impl.h"
 
+#include <array>
 #include <sstream>
 #include <string_view>
 
@@ -57,12 +58,14 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
 
   constexpr uint32_t kARMVendorID = 0x13B5;
   constexpr uint32_t kQualcommVendorID = 0x5143;
+  constexpr uint32_t kIntelVendorID = 0x8086;
   const auto* build_info = base::android::BuildInfo::GetInstance();
   // Only Android 12 with an ARM or Qualcomm GPU is enabled for initially.
   // Other OS versions and GPU vendors may be fine, but have not had
   // sufficient testing yet.
   if (build_info->sdk_int() < base::android::SDK_VERSION_S ||
-      (info.vendorID != kARMVendorID && info.vendorID != kQualcommVendorID)) {
+      (info.vendorID != kARMVendorID && info.vendorID != kQualcommVendorID &&
+       info.vendorID != kIntelVendorID)) {
     reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
   }
 

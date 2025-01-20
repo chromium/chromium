@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -86,8 +82,7 @@ ExtensionControlledPrefsTest::ExtensionControlledPrefsTest()
   content_settings_->OnExtensionPrefsAvailable(prefs_.prefs());
 }
 
-ExtensionControlledPrefsTest::~ExtensionControlledPrefsTest() {
-}
+ExtensionControlledPrefsTest::~ExtensionControlledPrefsTest() = default;
 
 void ExtensionControlledPrefsTest::RegisterPreferences(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -138,8 +133,13 @@ void ExtensionControlledPrefsTest::UninstallExtension(
 void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
     Extension* extension) {
   // Install extension the first time a preference is set for it.
-  Extension* extensions[] = {extension1(), extension2(), extension3(),
-                             extension4(), internal_extension()};
+  auto extensions = std::to_array<Extension*>({
+      extension1(),
+      extension2(),
+      extension3(),
+      extension4(),
+      internal_extension(),
+  });
   for (size_t i = 0; i < kNumInstalledExtensions; ++i) {
     if (extension == extensions[i] && !installed_[i]) {
       prefs()->OnExtensionInstalled(extension,
@@ -155,8 +155,13 @@ void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
 
 void ExtensionControlledPrefsTest::EnsureExtensionUninstalled(
     const ExtensionId& extension_id) {
-  Extension* extensions[] = {extension1(), extension2(), extension3(),
-                             extension4(), internal_extension()};
+  auto extensions = std::to_array<Extension*>({
+      extension1(),
+      extension2(),
+      extension3(),
+      extension4(),
+      internal_extension(),
+  });
   for (size_t i = 0; i < kNumInstalledExtensions; ++i) {
     if (extensions[i]->id() == extension_id) {
       installed_[i] = false;
@@ -400,7 +405,7 @@ class ControlledPrefsDisableExtensions : public ExtensionControlledPrefsTest {
  public:
   ControlledPrefsDisableExtensions()
       : iteration_(0) {}
-  ~ControlledPrefsDisableExtensions() override {}
+  ~ControlledPrefsDisableExtensions() override = default;
   void Initialize() override {
     InstallExtensionControlledPref(internal_extension(), kPref1,
                                    base::Value("internal extension value"));

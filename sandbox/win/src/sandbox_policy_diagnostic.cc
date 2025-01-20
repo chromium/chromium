@@ -135,7 +135,7 @@ std::string GetMitigationsAsHex(MitigationFlags mitigations) {
 }
 
 std::string GetPlatformMitigationsAsHex(MitigationFlags mitigations) {
-  DWORD64 platform_flags[2] = {0};
+  DWORD64 platform_flags[2] = {};
   size_t flags_size = 0;
   sandbox::ConvertProcessMitigationsToPolicy(mitigations, &(platform_flags[0]),
                                              &flags_size);

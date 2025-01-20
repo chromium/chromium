@@ -40,6 +40,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -203,8 +204,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
     base::test::TaskEnvironment::TimeSource time_source)
     : task_environment_{time_source} {
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
-                            kExtensionTelemetryFileDataForCommandLineExtensions,
+      /*enabled_features=*/{kExtensionTelemetryFileDataForCommandLineExtensions,
                             kExtensionTelemetryForEnterprise},
       /*disabled_features=*/{});
 
@@ -389,7 +389,7 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
   EXPECT_EQ(info->name(), kExtensionName[0]);
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
-            extension_prefs_->GetLastUpdateTime(kExtensionId[0])
+            GetLastUpdateTime(extension_prefs_, kExtensionId[0])
                 .InMillisecondsSinceUnixEpoch());
 }
 
@@ -410,7 +410,7 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
   EXPECT_EQ(info->name(), kExtensionName[0]);
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
-            extension_prefs_->GetLastUpdateTime(kExtensionId[0])
+            GetLastUpdateTime(extension_prefs_, kExtensionId[0])
                 .InMillisecondsSinceUnixEpoch());
 }
 
@@ -508,7 +508,7 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetLastUpdateTime(kExtensionId[i])
+        GetLastUpdateTime(extension_prefs_, kExtensionId[i])
             .InMillisecondsSinceUnixEpoch());
     // Verify that there is no signal data associated with the extension.
     EXPECT_EQ(telemetry_report_pb->reports(i).signals().size(), 0);
@@ -548,7 +548,7 @@ TEST_F(ExtensionTelemetryServiceTest,
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetLastUpdateTime(kExtensionId[i])
+        GetLastUpdateTime(extension_prefs_, kExtensionId[i])
             .InMillisecondsSinceUnixEpoch());
   }
 
@@ -594,7 +594,7 @@ TEST_F(ExtensionTelemetryServiceTest,
             kExtensionVersion);
   EXPECT_EQ(
       telemetry_report_pb->reports(0).extension().install_timestamp_msec(),
-      extension_prefs_->GetLastUpdateTime(kExtensionId[0])
+      GetLastUpdateTime(extension_prefs_, kExtensionId[0])
           .InMillisecondsSinceUnixEpoch());
 
   // Verify that first extension's report has signal data.
@@ -1304,7 +1304,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   // same as the timestamp set in extension prefs from a previous install.
   EXPECT_EQ(cmdline_extension.install_timestamp_msec(), 0);
   EXPECT_NE(cmdline_extension.install_timestamp_msec(),
-            extension_prefs_->GetLastUpdateTime(cmdline_extension.id())
+            GetLastUpdateTime(extension_prefs_, cmdline_extension.id())
                 .InMillisecondsSinceUnixEpoch());
   // Verify that cmdline extension file data stored in prefs matches that in the
   // telemetry report.

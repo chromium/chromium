@@ -143,14 +143,14 @@ void SwitchToNormalMode() {
 
 - (void)setUp {
   [super setUp];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGrey removeBrowsingCache];
 }
 
 - (void)tearDownHelper {
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
   [super tearDownHelper];
 }
 
@@ -784,10 +784,10 @@ void SwitchToNormalMode() {
     const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
     NewMainTabWithURL(url1, kURL1FirstWord);
 
-    GREYAssertEqual([ChromeEarlGrey mainTabCount], 3,
+    GREYAssertEqual([ChromeEarlGrey mainTabCount], 3UL,
                     @"Check number of normal tabs");
     // The cold start tab which was not active will still be evicted.
-    GREYAssertEqual([ChromeEarlGrey evictedMainTabCount], 1,
+    GREYAssertEqual([ChromeEarlGrey evictedMainTabCount], 1UL,
                     @"Check number of evicted tabs");
 
     // Close two of the three open tabs without selecting them first.
@@ -795,10 +795,10 @@ void SwitchToNormalMode() {
     // tracked by the tab usage recorder in its `evicted_tabs_` map.
     CloseTabAtIndexAndSync(1);
 
-    GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+    GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                     @"Check number of normal tabs");
     CloseTabAtIndexAndSync(0);
-    GREYAssertEqual([ChromeEarlGrey mainTabCount], 1,
+    GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL,
                     @"Check number of normal tabs");
     [ChromeEarlGreyUI waitForAppToIdle];
   }

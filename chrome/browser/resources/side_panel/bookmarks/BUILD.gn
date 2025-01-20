@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "side_panel_bookmarks"
 
   static_files = [
-    "images/bookmarks_empty_dark.svg",
     "images/bookmarks_empty.svg",
+    "images/bookmarks_empty_dark.svg",
     "power_bookmarks.html",
   ]
 
@@ -26,11 +26,12 @@ build_webui("build") {
 
   non_web_component_files = [
     "bookmarks_api_proxy.ts",
-    "power_bookmarks_drag_manager.ts",
     "power_bookmark_row.html.ts",
     "power_bookmark_row.ts",
-    "power_bookmarks_utils.ts",
+    "power_bookmarks_drag_manager.ts",
     "power_bookmarks_service.ts",
+    "power_bookmarks_utils.ts",
+    "keyboard_arrow_navigation_service.ts",
   ]
 
   css_files = [ "power_bookmark_row.css" ]
@@ -45,9 +46,9 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
   ]

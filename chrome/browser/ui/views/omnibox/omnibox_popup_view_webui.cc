@@ -72,7 +72,7 @@ void OmniboxPopupViewWebUI::OnSelectionChanged(
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   // Measure time since construction just once.
   if (!construction_time_.is_null()) {
-    base::TimeDelta delta = base::TimeTicks::Now() - construction_time_;
+    const base::TimeDelta delta = base::TimeTicks::Now() - construction_time_;
     construction_time_ = base::TimeTicks();
     base::UmaHistogramTimes("Omnibox.WebUI.FirstUpdate", delta);
   }
@@ -100,9 +100,9 @@ void OmniboxPopupViewWebUI::OnMatchIconUpdated(size_t match_index) {
 void OmniboxPopupViewWebUI::OnDragCanceled() {}
 
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
-    ui::AXNodeData* node_data) {}
+    ui::AXNodeData* node_data) const {}
 
 std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
-    size_t line) {
+    size_t line) const {
   return u"";
 }

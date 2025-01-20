@@ -11,12 +11,13 @@ WebAppInfoImageSource::WebAppInfoImageSource(
     std::map<web_app::SquareSizePx, SkBitmap> icons)
     : dip_size_(dip_size), icons_(std::move(icons)) {}
 
-WebAppInfoImageSource::~WebAppInfoImageSource() {}
+WebAppInfoImageSource::~WebAppInfoImageSource() = default;
 
 gfx::ImageSkiaRep WebAppInfoImageSource::GetImageForScale(float scale) {
   int size = base::saturated_cast<int>(dip_size_ * scale);
   auto icon = icons_.find(size);
-  if (icon != icons_.end())
+  if (icon != icons_.end()) {
     return gfx::ImageSkiaRep(icon->second, scale);
+  }
   return gfx::ImageSkiaRep();
 }

@@ -9,12 +9,12 @@ NSString* const kMagicStackSectionIdentifier = @"MagicStackSectionIdentifier";
 NSString* const kMagicStackEditSectionIdentifier =
     @"MagicStackEditSectionIdentifier";
 
-const int kModuleMaxHeight = 150;
+const int kMaxTextSizeForStyleFootnote = 24;
 
 const CGFloat kMagicStackSpacing = 12.0f;
 
-const CGFloat kMagicStackPeekInset = kMagicStackSpacing;
-const CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 18;
+const CGFloat kMagicStackPeekInset = kMagicStackSpacing + 10;
+const CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 28;
 
 const float kBottomMagicStackPadding = 14.0f;
 

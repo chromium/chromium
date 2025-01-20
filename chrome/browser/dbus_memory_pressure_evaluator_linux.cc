@@ -18,18 +18,6 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 
-namespace {
-
-scoped_refptr<dbus::Bus> CreateBusOfType(dbus::Bus::BusType type) {
-  dbus::Bus::Options options;
-  options.bus_type = type;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
-}  // namespace
-
 const char DbusMemoryPressureEvaluatorLinux::kLmmService[] =
     "org.freedesktop.LowMemoryMonitor";
 const char DbusMemoryPressureEvaluatorLinux::kLmmObject[] =
@@ -89,8 +77,9 @@ DbusMemoryPressureEvaluatorLinux::~DbusMemoryPressureEvaluatorLinux() {
 void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!system_bus_)
-    system_bus_ = CreateBusOfType(dbus::Bus::SYSTEM);
+  if (!system_bus_) {
+    system_bus_ = dbus_thread_linux::GetSharedSystemBus();
+  }
 
   dbus_utils::CheckForServiceAndStart(
       system_bus_, kLmmService,
@@ -118,7 +107,7 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse(
   } else {
     VLOG(1) << "LMM is not available, checking for portal";
 
-    ResetBus(system_bus_);
+    system_bus_.reset();
     CheckIfPortalIsAvailable();
   }
 }
@@ -126,8 +115,9 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse(
 void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!session_bus_)
-    session_bus_ = CreateBusOfType(dbus::Bus::SESSION);
+  if (!session_bus_) {
+    session_bus_ = dbus_thread_linux::GetSharedSessionBus();
+  }
 
   dbus_utils::CheckForServiceAndStart(
       session_bus_, kXdgPortalService,
@@ -156,17 +146,8 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse(
   } else {
     VLOG(1) << "No memory monitor found";
 
-    ResetBus(session_bus_);
+    session_bus_.reset();
   }
-}
-
-void DbusMemoryPressureEvaluatorLinux::ResetBus(scoped_refptr<dbus::Bus>& bus) {
-  if (!bus)
-    return;
-
-  bus->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus));
-  bus.reset();
 }
 
 void DbusMemoryPressureEvaluatorLinux::OnSignalConnected(
@@ -178,8 +159,8 @@ void DbusMemoryPressureEvaluatorLinux::OnSignalConnected(
   if (!connected) {
     LOG(WARNING) << "Failed to connect to " << interface << '.' << signal;
 
-    ResetBus(system_bus_);
-    ResetBus(session_bus_);
+    system_bus_.reset();
+    session_bus_.reset();
   }
 }
 
@@ -209,10 +190,12 @@ void DbusMemoryPressureEvaluatorLinux::OnLowMemoryWarning(
 
 base::MemoryPressureListener::MemoryPressureLevel
 DbusMemoryPressureEvaluatorLinux::LmmToBasePressureLevel(uint8_t lmm_level) {
-  if (lmm_level >= critical_level_)
+  if (lmm_level >= critical_level_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  if (lmm_level >= moderate_level_)
+  }
+  if (lmm_level >= moderate_level_) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+  }
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 

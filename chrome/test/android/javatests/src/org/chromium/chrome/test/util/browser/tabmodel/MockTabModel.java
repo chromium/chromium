@@ -19,12 +19,14 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Almost empty implementation to mock a TabModel. It only handles tab creation and queries. */
 public class MockTabModel extends EmptyTabModel {
@@ -42,6 +44,30 @@ public class MockTabModel extends EmptyTabModel {
         public MockTab createTab(int id, boolean incognito);
     }
 
+    /**
+     * Used to simulate the comprehensive tab model that contains tabs pending closure. By default
+     * exactly mirrors {@code mTabs} as tabs are added. It does not handle removal automatically as
+     * this is either irrelevant to the test or requires customization for different states.
+     */
+    public static class ComprehensiveTabList extends EmptyTabModel {
+        private List<Tab> mAllTabs = new ArrayList<>();
+
+        /** Returns the list of tabs backing the comprehensive model. */
+        public List<Tab> getTabList() {
+            return mAllTabs;
+        }
+
+        @Override
+        public int getCount() {
+            return mAllTabs.size();
+        }
+
+        @Override
+        public Tab getTabAt(int index) {
+            return mAllTabs.get(index);
+        }
+    }
+
     private int mIndex = TabModel.INVALID_TAB_INDEX;
 
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
@@ -49,6 +75,7 @@ public class MockTabModel extends EmptyTabModel {
             new ObservableSupplierImpl<>();
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
+    private final ComprehensiveTabList mComprehensiveModel = new ComprehensiveTabList();
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
     private boolean mIsActiveModel;
@@ -103,8 +130,10 @@ public class MockTabModel extends EmptyTabModel {
 
         if (index == TabModel.INVALID_TAB_INDEX) {
             mTabs.add(tab);
+            mComprehensiveModel.getTabList().add(tab);
         } else {
             mTabs.add(index, tab);
+            mComprehensiveModel.getTabList().add(index, tab);
             if (index <= mIndex) {
                 mIndex++;
             }
@@ -151,6 +180,9 @@ public class MockTabModel extends EmptyTabModel {
 
     @Override
     public Tab getTabAt(int position) {
+        // Mimic the index safety of TabModelImpl.
+        if (position < 0 || position > mTabs.size()) return null;
+
         return mTabs.get(position);
     }
 
@@ -216,6 +248,15 @@ public class MockTabModel extends EmptyTabModel {
     @Override
     public boolean isActiveModel() {
         return mIsActiveModel;
+    }
+
+    @Override
+    public TabList getComprehensiveModel() {
+        return mComprehensiveModel;
+    }
+
+    public ComprehensiveTabList getComprehensiveTabList() {
+        return mComprehensiveModel;
     }
 
     public void setTabCreatorForTesting(TabCreator tabCreator) {

@@ -27,6 +27,8 @@ source_set("common") {
     "crash_reporter/crash_keys.cc",
     "crash_reporter/crash_keys.h",
     "devtools_instrumentation.h",
+    "gfx/aw_gr_context_options_provider.cc",
+    "gfx/aw_gr_context_options_provider.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -44,6 +46,7 @@ source_set("common") {
     "//components/version_info:generate_version_info",
     "//components/version_info/android:channel_getter",
     "//content/public/common",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//ipc",
     "//mojo/public/cpp/bindings",

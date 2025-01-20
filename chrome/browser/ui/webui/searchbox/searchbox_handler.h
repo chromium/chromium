@@ -17,6 +17,7 @@
 class MetricsReporter;
 class OmniboxController;
 class Profile;
+class OmniboxEditModel;
 
 namespace content {
 class WebContents;
@@ -37,13 +38,36 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   static std::string ActionVectorIconToResourceName(
       const gfx::VectorIcon& icon);
 
+  // Returns true if the page remote is bound and ready to receive calls.
+  bool IsRemoteBound() const;
+
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
+  // searchbox::mojom::PageHandler:
+  void SetPage(
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page) override;
+  void OnFocusChanged(bool focused) override;
+  void QueryAutocomplete(const std::u16string& input,
+                         bool prevent_inline_autocomplete) override;
+  void StopAutocomplete(bool clear_result) override;
+  void OpenAutocompleteMatch(uint8_t line,
+                             const GURL& url,
+                             bool are_matches_showing,
+                             uint8_t mouse_button,
+                             bool alt_key,
+                             bool ctrl_key,
+                             bool meta_key,
+                             bool shift_key) override;
+  void OnNavigationLikely(
+      uint8_t line,
+      const GURL& url,
+      omnibox::mojom::NavigationPredictor navigation_predictor) override;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
-  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest,
+  FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
                            Lens_AutocompleteController_Start);
 
   SearchboxHandler(
@@ -57,6 +81,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   OmniboxController* omnibox_controller() const;
   AutocompleteController* autocomplete_controller() const;
+  OmniboxEditModel* edit_model() const;
+
+  const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

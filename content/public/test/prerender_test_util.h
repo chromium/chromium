@@ -206,6 +206,14 @@ class PrerenderTestHelper {
   // Starts prerendering and returns a PrerenderHandle that should be kept alive
   // until prerender activation. Note that it returns before the completion of
   // the prerendering navigation.
+  static std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
+      WebContents& web_contents,
+      const GURL& prerendering_url,
+      PreloadingTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
+      ui::PageTransition page_transition);
+  // This is the same as the previous one, but uses WebContents owned by this
+  // test helper.
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
@@ -303,7 +311,8 @@ class ScopedPrerenderWebContentsDelegate : public WebContentsDelegate {
 
   // WebContentsDelegate override.
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override;
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override;
 
  private:
   base::WeakPtr<WebContents> web_contents_;

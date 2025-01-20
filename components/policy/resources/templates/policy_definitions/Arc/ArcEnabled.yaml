@@ -4,6 +4,8 @@ default_for_enterprise_users: false
 desc: Unless Ephemeral mode or multiple sign-in is on during the user's session, setting
   ArcEnabled to True turns ARC on for the user. Setting the policy to False or leaving
   it unset means enterprise users can't use ARC.
+
+  This policy only controls <ph name="ARC_VM">ArcVM</ph> on <ph name="PRODUCT_NAME">$2<ex>Google ChromeOS</ex></ph>. For <ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph>, please see the <ph name="DEVICE_FLEX_ARC_PRELOAD_ENABLED_POLICY_NAME">DeviceFlexArcPreloadEnabled</ph> policy for more details.
 example_value: false
 features:
   dynamic_refresh: true

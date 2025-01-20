@@ -78,6 +78,12 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     return experiment_stats_v2s_;
   }
 
+  // Returns the list of GWS event ID hashes corresponding to `matches_`. Will
+  // be logged to SearchboxStats as needed.
+  const SearchSuggestionParser::GwsEventIdHashes& gws_event_id_hashes() const {
+    return gws_event_id_hashes_;
+  }
+
   ResultType GetResultTypeRunningForTesting() const {
     return result_type_running_;
   }
@@ -154,6 +160,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;
+
+  // The list of GWS event ID hashes corresponding to `matches_`.
+  SearchSuggestionParser::GwsEventIdHashes gws_event_id_hashes_;
 
   // For callbacks that may be run after destruction.
   base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_{this};

@@ -105,7 +105,7 @@ class CheckedNumeric {
   // CheckedNumeric. If the current state is invalid or the destination cannot
   // represent the result then the returned CheckedNumeric will be invalid.
   template <typename Dst>
-  constexpr CheckedNumeric<typename UnderlyingType<Dst>::type> Cast() const {
+  constexpr CheckedNumeric<UnderlyingType<Dst>> Cast() const {
     return *this;
   }
 
@@ -295,8 +295,7 @@ constexpr StrictNumeric<Dst> ValueOrDefaultForType(CheckedNumeric<Src> value,
 // Convenience wrapper to return a new CheckedNumeric from the provided
 // arithmetic or CheckedNumericType.
 template <typename T>
-constexpr CheckedNumeric<typename UnderlyingType<T>::type> MakeCheckedNum(
-    T value) {
+constexpr CheckedNumeric<UnderlyingType<T>> MakeCheckedNum(T value) {
   return value;
 }
 

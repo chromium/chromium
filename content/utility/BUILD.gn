@@ -42,7 +42,6 @@ source_set("utility") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/optimization_guide/core:features",
     "//components/services/on_device_translation/buildflags",
     "//components/services/storage",
@@ -99,34 +98,39 @@ source_set("utility") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
     ]
     if (use_vaapi || use_v4l2_codec) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 
   if (is_linux || is_chromeos) {
     deps += [
+      "//content/utility/speech:speech_recognition_sandbox_hook",
       "//gpu/config",
       "//media/gpu/sandbox",
       "//media/mojo/services",
+      "//services/network:network_sandbox_hook",
       "//third_party/angle:angle_gpu_info_util",
     ]
+    if (enable_oop_printing) {
+      deps += [ "//printing:printing_sandbox_hook" ]
+    }
   }
 
-  if (is_chromeos_ash && is_chrome_branded) {
+  if (is_chromeos && is_chrome_branded) {
     deps += [
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
     ]
   }
 
-  if (is_chromeos_ash && enable_cros_libassistant) {
+  if (is_chromeos && enable_cros_libassistant) {
     deps += [
       "//chromeos/ash/services/libassistant:sandbox_hook",
       "//chromeos/assistant/internal:libassistant",
@@ -136,16 +140,6 @@ source_set("utility") {
   # PAC execution is done in process on Android.
   if (!is_android) {
     deps += [ "//services/proxy_resolver:lib" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    deps += [
-      "//content/utility/speech:speech_recognition_sandbox_hook",
-      "//services/network:network_sandbox_hook",
-    ]
-    if (enable_oop_printing) {
-      deps += [ "//printing:printing_sandbox_hook" ]
-    }
   }
 
   if (enable_screen_ai_service && (is_linux || is_chromeos)) {

@@ -17,6 +17,7 @@
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace user_manager {
@@ -65,13 +66,14 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
-  raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
-  raw_ptr<const user_manager::User, DanglingUntriaged> secondary_user_;
+  raw_ptr<const user_manager::User> primary_user_;
+  raw_ptr<const user_manager::User> secondary_user_;
 
   TestingPrefServiceSimple local_state_;
 };

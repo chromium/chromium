@@ -11,7 +11,7 @@ ImportedBookmarkEntry::ImportedBookmarkEntry()
 ImportedBookmarkEntry::ImportedBookmarkEntry(
     const ImportedBookmarkEntry& other) = default;
 
-ImportedBookmarkEntry::~ImportedBookmarkEntry() {}
+ImportedBookmarkEntry::~ImportedBookmarkEntry() = default;
 
 bool ImportedBookmarkEntry::operator==(
     const ImportedBookmarkEntry& other) const {

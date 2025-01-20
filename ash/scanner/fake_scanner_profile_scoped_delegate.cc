@@ -5,13 +5,13 @@
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 
 #include "ash/public/cpp/scanner/scanner_enums.h"
-#include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -29,9 +29,8 @@ using ::testing::Return;
 }  // namespace
 
 FakeScannerProfileScopedDelegate::FakeScannerProfileScopedDelegate() {
-  ON_CALL(*this, GetSystemState)
-      .WillByDefault(Return(
-          ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{})));
+  ON_CALL(*this, CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 }
 
 FakeScannerProfileScopedDelegate::~FakeScannerProfileScopedDelegate() = default;
@@ -77,10 +76,6 @@ FakeScannerProfileScopedDelegate::HandleRequest(
   CHECK(!request_callback_.is_null());
 
   return request_callback_.Run(request);
-}
-
-bool FakeScannerProfileScopedDelegate::IsGoogler() {
-  return false;
 }
 
 }  // namespace ash

@@ -39,6 +39,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -155,13 +156,11 @@ void ResetForceSigninForTesting() {
 }
 
 bool IsProfileDeletionAllowed(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return !profile->IsMainProfile();
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -268,7 +267,7 @@ void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
 PrimaryAccountError SetPrimaryAccountWithInvalidToken(
     Profile* profile,
     const std::string& user_email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool is_under_advanced_protection,
     signin_metrics::AccessPoint access_point,
     signin_metrics::SourceForRefreshTokenOperation source) {
@@ -314,6 +313,10 @@ bool IsSigninPending(signin::IdentityManager* identity_manager) {
 
 SignedInState GetSignedInState(
     const signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return SignedInState::kSignedOut;
+  }
+
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             identity_manager->GetPrimaryAccountId(

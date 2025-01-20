@@ -96,8 +96,8 @@ public class BrowsingDataTest {
                             new BrowsingDataCounterBridge(
                                     ProfileManager.getLastUsedRegularProfile(),
                                     callback,
-                                    BrowsingDataType.SITE_DATA,
-                                    ClearBrowsingDataTab.ADVANCED);
+                                    TimePeriod.LAST_HOUR,
+                                    BrowsingDataType.SITE_DATA);
                 });
         helper.waitForCallback(0);
         // The counter returns a result like "3 sites" or "None".

@@ -163,7 +163,7 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
     // Attempt to create root throttles.
     throttles->push_back(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
-            navigation_handle,
+            navigation_handle, web_contents_helper_->content_settings(),
             web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
@@ -291,7 +291,8 @@ void ThrottleManager::DidBecomePrimaryPage() {
   // notification if a page transitioned from primary to non-primary and back
   // (BFCache).
   if (current_committed_load_has_notified_disallowed_load_) {
-    web_contents_helper_->NotifyOnBlockedSubresource();
+    web_contents_helper_->NotifyOnBlockedSubresource(
+        page_activation_state_.activation_level);
   }
 }
 
@@ -399,19 +400,14 @@ void ThrottleManager::MaybeNotifyOnBlockedResource(
     return;
   }
 
-  if (!filter_handle ||
-      filter_handle->filter()->activation_state().activation_level ==
-          subresource_filter::mojom::ActivationLevel::kDryRun) {
-    return;
-  }
-
   current_committed_load_has_notified_disallowed_load_ = true;
 
   // Non-primary pages shouldn't affect UI. When the page becomes primary we'll
   // check |current_committed_load_has_notified_disallowed_load_| and try
   // again.
   if (page_->IsPrimary()) {
-    web_contents_helper_->NotifyOnBlockedSubresource();
+    web_contents_helper_->NotifyOnBlockedSubresource(
+        filter_handle->filter()->activation_state().activation_level);
 
 #if defined(NDEBUG)
     if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {

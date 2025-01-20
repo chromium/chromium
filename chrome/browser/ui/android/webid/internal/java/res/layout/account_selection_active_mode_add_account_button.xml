@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_account"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

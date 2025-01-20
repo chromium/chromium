@@ -6,17 +6,12 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "content/browser/media/capture/desktop_capturer_lacros.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/media/capture/aura_window_to_mojo_device_adapter.h"
 #include "content/browser/media/capture/desktop_capturer_ash.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -76,20 +71,14 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   }
 #endif
 #if defined(WEBRTC_USE_PIPEWIRE)
-  if (base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer)) {
-    options.set_allow_pipewire(true);
-  }
+  options.set_allow_pipewire(true);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
   return options;
 }
 
 std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
     bool allow_wgc_screen_capturer) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<DesktopCapturerLacros>(
-      DesktopCapturerLacros::CaptureType::kScreen,
-      webrtc::DesktopCaptureOptions());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<DesktopCapturerAsh>();
 #else
   auto options = desktop_capture::CreateDesktopCaptureOptions();
@@ -103,20 +92,14 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer(
 }
 
 std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<DesktopCapturerLacros>(
-      DesktopCapturerLacros::CaptureType::kWindow,
-      webrtc::DesktopCaptureOptions());
-#else
   auto options = desktop_capture::CreateDesktopCaptureOptions();
 #if defined(RTC_ENABLE_WIN_WGC)
   options.set_allow_wgc_capturer_fallback(true);
 #endif
   return webrtc::DesktopCapturer::CreateWindowCapturer(options);
-#endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void BindAuraWindowCapturer(
     mojo::PendingReceiver<video_capture::mojom::Device> receiver,
     const content::DesktopMediaID& id) {
@@ -133,8 +116,7 @@ bool CanUsePipeWire() {
     session_type = base::nix::GetSessionType(*env);
   }
 
-  return session_type == base::nix::SessionType::kWayland &&
-         base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
+  return session_type == base::nix::SessionType::kWayland;
 #else
   return false;
 #endif

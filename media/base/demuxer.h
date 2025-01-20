@@ -26,14 +26,18 @@ namespace media {
 
 class MediaTracks;
 
+// WARNING: These values are reported to metrics. Entries should not be
+// renumbered and numeric values should not be reused. When adding new entries,
+// also update media::mojom::RendererType & tools/metrics/histograms/enums.xml.
 enum class DemuxerType {
-  kMockDemuxer,
-  kFFmpegDemuxer,
-  kChunkDemuxer,
-  kMediaUrlDemuxer,
-  kFrameInjectingDemuxer,
-  kStreamProviderDemuxer,
-  kManifestDemuxer,
+  kUnknownDemuxer = 0,
+  kMockDemuxer = 1,
+  kFFmpegDemuxer = 2,
+  kChunkDemuxer = 3,
+  kMediaUrlDemuxer = 4,
+  kFrameInjectingDemuxer = 5,
+  kStreamProviderDemuxer = 6,
+  kManifestDemuxer = 7,
 };
 
 class MEDIA_EXPORT DemuxerHost {

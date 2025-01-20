@@ -50,7 +50,7 @@ class FakeSpeechRecognitionPrivateDelegate
 class SpeechRecognitionPrivateRecognizerTest
     : public SpeechRecognitionPrivateBaseTest {
  protected:
-  SpeechRecognitionPrivateRecognizerTest() {}
+  SpeechRecognitionPrivateRecognizerTest() = default;
   ~SpeechRecognitionPrivateRecognizerTest() override = default;
   SpeechRecognitionPrivateRecognizerTest(
       const SpeechRecognitionPrivateRecognizerTest&) = delete;

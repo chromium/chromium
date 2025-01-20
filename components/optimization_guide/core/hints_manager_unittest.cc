@@ -311,8 +311,6 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
              GetOptimizationHintsDefaultFeatureParams()},
             {features::kRemoteOptimizationGuideFetching,
              {{"batch_update_hints_for_top_hosts", "true"}}},
-            {features::kOptimizationHintsComponent,
-             {{"check_failed_component_version_pref", "true"}}},
         },
         /*disabled_features=*/{});
 
@@ -782,19 +780,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithExistingPref) {
   pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "2.0.0");
   CreateHintsManager(/*top_host_provider=*/nullptr);
 
-  // Verify config not processed for same version (2.0.0) and pref not cleared.
-  {
-    base::HistogramTester histogram_tester;
-    InitializeWithDefaultConfig("2.0.0");
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ProcessHintsResult",
-        ProcessHintsComponentResult::kFailedFinishProcessing, 1);
-    EXPECT_FALSE(pref_service()
-                     ->GetString(prefs::kPendingHintsProcessingVersion)
-                     .empty());
-  }
-
-  // Now verify config is processed for different version and pref cleared.
+  // Verify config is processed for different version and pref cleared.
   {
     base::HistogramTester histogram_tester;
     InitializeWithDefaultConfig("3.0.0");
@@ -805,29 +791,6 @@ TEST_F(HintsManagerTest, ProcessHintsWithExistingPref) {
                                         ProcessHintsComponentResult::kSuccess,
                                         1);
   }
-}
-
-TEST_F(HintsManagerTest,
-       ProcessHintsWithExistingPrefDoesNotClearOrCountAsMidProcessing) {
-  // Write hints processing pref for version 2.0.0.
-  pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "2.0.0");
-  CreateHintsManager(/*top_host_provider=*/nullptr);
-
-  // Verify component for same version counts as "failed".
-  base::HistogramTester histogram_tester;
-  InitializeWithDefaultConfig("2.0.0", /*should_wait=*/false);
-  hints_manager()->Shutdown();
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ProcessHintsResult",
-      ProcessHintsComponentResult::kFailedFinishProcessing, 1);
-
-  // Verify that pref still not cleared at shutdown and was not counted as
-  // mid-processing.
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ProcessingComponentAtShutdown", false, 1);
-  EXPECT_FALSE(
-      pref_service()->GetString(prefs::kPendingHintsProcessingVersion).empty());
 }
 
 TEST_F(HintsManagerTest, ProcessHintsWithInvalidPref) {
@@ -3602,17 +3565,7 @@ TEST_F(HintsManagerFetchingNoBatchUpdateTest,
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
-class HintsManagerComponentSkipProcessingTest : public HintsManagerTest {
- public:
-  HintsManagerComponentSkipProcessingTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOptimizationHintsComponent,
-        {{"check_failed_component_version_pref", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using HintsManagerComponentSkipProcessingTest = HintsManagerTest;
 
 TEST_F(HintsManagerComponentSkipProcessingTest, ProcessHintsWithExistingPref) {
   // Write hints processing pref for version 2.0.0.

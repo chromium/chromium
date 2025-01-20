@@ -49,6 +49,8 @@
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
+    // tests can easily inject their AutofillClient.
     autofill::ChromeAutofillClientIOS* client =
         AutofillTabHelper::FromWebState(
             browser->GetWebStateList()->GetActiveWebState())

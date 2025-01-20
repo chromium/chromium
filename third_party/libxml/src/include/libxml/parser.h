@@ -1082,31 +1082,42 @@ XMLPUBFUN xmlDocPtr
 		xmlParseMemory		(const char *buffer,
 					 int size);
 #endif /* LIBXML_SAX1_ENABLED */
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
 		xmlSubstituteEntitiesDefault(int val);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefSubstituteEntitiesDefaultValue(int v);
 XMLPUBFUN int
 		xmlKeepBlanksDefault	(int val);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
 		xmlThrDefKeepBlanksDefaultValue(int v);
 XMLPUBFUN void
 		xmlStopParser		(xmlParserCtxtPtr ctxt);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
 		xmlPedanticParserDefault(int val);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefPedanticParserDefaultValue(int v);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
 		xmlLineNumbersDefault	(int val);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefLineNumbersDefaultValue(int v);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefDoValidityCheckingDefaultValue(int v);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefGetWarningsDefaultValue(int v);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefLoadExtDtdDefaultValue(int v);
-XML_DEPRECATED XMLPUBFUN int
+XML_DEPRECATED
+XMLPUBFUN int
                 xmlThrDefParserDebugEntities(int v);
 
 #ifdef LIBXML_SAX1_ENABLED
@@ -1130,6 +1141,7 @@ XMLPUBFUN xmlDocPtr
  */
 XMLPUBFUN int
 		xmlParseDocument	(xmlParserCtxtPtr ctxt);
+XML_DEPRECATED
 XMLPUBFUN int
 		xmlParseExtParsedEnt	(xmlParserCtxtPtr ctxt);
 #ifdef LIBXML_SAX1_ENABLED
@@ -1185,6 +1197,18 @@ XMLPUBFUN xmlDocPtr
 #endif /* LIBXML_SAX1_ENABLED */
 
 #ifdef LIBXML_VALID_ENABLED
+XMLPUBFUN xmlDtdPtr
+		xmlCtxtParseDtd		(xmlParserCtxtPtr ctxt,
+					 xmlParserInputPtr input,
+					 const xmlChar *ExternalID,
+					 const xmlChar *SystemID);
+XMLPUBFUN int
+		xmlCtxtValidateDocument	(xmlParserCtxtPtr ctxt,
+					 xmlDocPtr doc);
+XMLPUBFUN int
+		xmlCtxtValidateDtd	(xmlParserCtxtPtr ctxt,
+					 xmlDocPtr doc,
+					 xmlDtdPtr dtd);
 XML_DEPRECATED
 XMLPUBFUN xmlDtdPtr
 		xmlSAXParseDTD		(xmlSAXHandlerPtr sax,
@@ -1321,16 +1345,21 @@ XMLPUBFUN xmlParserInputPtr
 /*
  * Node infos.
  */
+XML_DEPRECATED
 XMLPUBFUN const xmlParserNodeInfo*
 		xmlParserFindNodeInfo	(xmlParserCtxtPtr ctxt,
 				         xmlNodePtr node);
+XML_DEPRECATED
 XMLPUBFUN void
 		xmlInitNodeInfoSeq	(xmlParserNodeInfoSeqPtr seq);
+XML_DEPRECATED
 XMLPUBFUN void
 		xmlClearNodeInfoSeq	(xmlParserNodeInfoSeqPtr seq);
+XML_DEPRECATED
 XMLPUBFUN unsigned long
 		xmlParserFindNodeInfoIndex(xmlParserNodeInfoSeqPtr seq,
                                          xmlNodePtr node);
+XML_DEPRECATED
 XMLPUBFUN void
 		xmlParserAddNodeInfo	(xmlParserCtxtPtr ctxt,
 					 xmlParserNodeInfoPtr info);

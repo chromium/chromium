@@ -35,7 +35,7 @@ class SingleArcAppInstallEventLogTest : public testing::Test {
       const SingleArcAppInstallEventLogTest&) = delete;
 
  protected:
-  SingleArcAppInstallEventLogTest() {}
+  SingleArcAppInstallEventLogTest() = default;
 
   // testing::Test:
   void SetUp() override {

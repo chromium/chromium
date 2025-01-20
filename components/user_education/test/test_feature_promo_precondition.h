@@ -10,10 +10,12 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
 
@@ -38,27 +40,24 @@ class TestPreconditionListProvider : public PreconditionListProvider {
   // Adds a precondition with the specified parameters and default allowed
   // state.
   void Add(FeaturePromoPrecondition::Identifier identifier,
-           FeaturePromoResult::Failure failure,
            std::string description,
-           bool default_is_allowed);
+           FeaturePromoResult initial_result);
 
-  // Sets the default `is_allowed` value for a particular `id` which has already
-  // been added.
-  void SetDefault(FeaturePromoPrecondition::Identifier id, bool is_allowed);
+  // Sets the default `result` for a particular `id` which has already been
+  // added.
+  void SetDefault(FeaturePromoPrecondition::Identifier id,
+                  FeaturePromoResult result);
 
-  // Sets the specific `is_allowed` value for a particular `id` for
-  // `iph_feature` only. This overrides the default value.
+  // Sets the specific `result` for a particular `id` for `iph_feature` only.
+  // This overrides the default value.
   void SetForFeature(const base::Feature& iph_feature,
                      FeaturePromoPrecondition::Identifier id,
-                     bool is_allowed);
-
-  // Sets the failure associated with `id` to `failure`.
-  void SetFailure(FeaturePromoPrecondition::Identifier id,
-                  FeaturePromoResult::Failure failure);
+                     FeaturePromoResult result);
 
   // PreconditionListProvider:
   FeaturePromoPreconditionList GetPreconditions(
-      const FeaturePromoSpecification& spec) const override;
+      const FeaturePromoSpecification& spec,
+      const FeaturePromoParams& params) const override;
 
  private:
   // Cache of preconditions that simulate values.
@@ -69,6 +68,17 @@ class TestPreconditionListProvider : public PreconditionListProvider {
   // Mutable so that it can be cleared out during calls to `GetPreconditions()`.
   mutable std::optional<raw_ptr<const FeaturePromoSpecification>>
       next_query_spec_;
+};
+
+class MockPreconditionListProvider : public PreconditionListProvider {
+ public:
+  MockPreconditionListProvider();
+  ~MockPreconditionListProvider() override;
+
+  MOCK_METHOD(FeaturePromoPreconditionList,
+              GetPreconditions,
+              (const FeaturePromoSpecification&, const FeaturePromoParams&),
+              (const, override));
 };
 
 }  // namespace user_education::test

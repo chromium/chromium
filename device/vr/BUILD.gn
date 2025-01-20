@@ -365,14 +365,30 @@ if (enable_openxr) {
   # json file instead of the registry key. This json file copied to the output
   # folder points to our mock OpenXR runtime.
   copy("json_mock") {
-    sources = [ "openxr/test/openxr.json" ]
+    sources = []
+    if (is_win) {
+      sources += [ "openxr/test/openxr_win.json" ]
+    } else if (is_android) {
+      sources += [ "openxr/test/openxr_android.json" ]
+    }
+
     outputs = [ "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json" ]
   }
 
-  if (is_win) {
+  if (is_win || is_android) {
     shared_library("openxr_mock") {
       testonly = true
-      output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+
+      # Not everything seems to respect `output_dir`. It appears that while on
+      # windows the last name appropriately gets renamed as needed, it does not
+      # on android, so this actually ends up written to `libmock_vr_clients`,
+      # and due to Android's expectations we have to name the runtime
+      # accordingly as well.
+      if (is_win) {
+        output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+      } else if (is_android) {
+        output_name = "mock_vr_clients/bin/openxr/libopenxrruntime"
+      }
 
       defines = [ "XR_EXTENSION_PROTOTYPES" ]
 
@@ -386,16 +402,25 @@ if (enable_openxr) {
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
         "openxr/test/fake_openxr_impl_api.cc",
-        "openxr/test/openxr.def",
         "openxr/test/openxr_negotiate.h",
         "openxr/test/openxr_test_helper.cc",
         "openxr/test/openxr_test_helper.h",
       ]
 
-      libs = [
-        "d3d11.lib",
-        "DXGI.lib",
-      ]
+      if (is_win) {
+        sources += [ "openxr/test/openxr.def" ]
+        libs = [
+          "d3d11.lib",
+          "DXGI.lib",
+        ]
+      } else if (is_android) {
+        configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+        configs += [ "//build/config/gcc:symbol_visibility_default" ]
+        ldflags = [ "-Wl,--version-script=" +
+                    rebase_path("//device/vr/openxr/test/openxr.lst",
+                                root_build_dir) ]
+        inputs = [ "//device/vr/openxr/test/openxr.lst" ]
+      }
 
       deps = [
         ":vr_test_hook",

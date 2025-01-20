@@ -11,8 +11,14 @@ group("buildflags") {
   public_deps = [ "src/partition_alloc:buildflags" ]
 }
 
-if (is_clang_or_gcc) {
+if (use_partition_alloc && is_clang_or_gcc) {
   group("partition_alloc") {
     public_deps = [ "src/partition_alloc:partition_alloc" ]
+  }
+}
+
+if (use_allocator_shim) {
+  group("allocator_shim") {
+    public_deps = [ "src/partition_alloc:allocator_shim" ]
   }
 }

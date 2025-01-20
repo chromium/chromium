@@ -16,6 +16,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -25,7 +26,7 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
       TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment;
   const AccountId kAccountId =
-      AccountId::FromUserEmailGaiaId("test@example.com", "1234567890");
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("1234567890"));
 
   ash::ScopedCrosSettingsTestHelper settings_helper_;
   settings_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -42,8 +43,10 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
   ash::UserImageManagerRegistry user_image_manager_registry(
       fake_user_manager.Get());
 
-  fake_user_manager->AddUser(AccountId::FromUserEmail("owner@example/com"));
-  fake_user_manager->AddUser(kAccountId);
+  fake_user_manager->AddGaiaUser(
+      AccountId::FromUserEmailGaiaId("owner@example/com", GaiaId("ownergaia")),
+      user_manager::UserType::kRegular);
+  fake_user_manager->AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
 
   browser_policy_connector.OnUserManagerCreated(fake_user_manager.Get());
 

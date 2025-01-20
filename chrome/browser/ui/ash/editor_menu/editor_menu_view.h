@@ -10,7 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
@@ -27,18 +28,6 @@ namespace chromeos::editor_menu {
 
 class EditorMenuTextfieldView;
 class EditorMenuViewDelegate;
-
-enum class EditorMenuMode { kWrite = 0, kRewrite, kBlocked };
-enum class LobsterMenuMode { kEnabled = 0, kBlocked };
-
-enum class TextAndImageMode {
-  kBlocked,
-  kEditorWriteOnly,
-  kEditorRewriteOnly,
-  kLobsterOnly,
-  kEditorWriteAndLobster,
-  kEditorRewriteAndLobster,
-};
 
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public PreTargetHandlerView,

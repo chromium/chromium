@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -1016,7 +1017,7 @@ std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
     wgpu::BackendType backend_type) {
-  DCHECK(usage() & SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
+  DCHECK(usage().Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
   DCHECK(d3d12_resource_.Get() != nullptr);
 
   if (backend_type != wgpu::BackendType::D3D12) {
@@ -1163,7 +1164,9 @@ void D3DImageBacking::BeginAccessCommon(bool write_access) {
 
 void D3DImageBacking::EndAccessCommon(
     const D3DSharedFenceSet& signaled_fences) {
-  DCHECK(base::ranges::all_of(signaled_fences, std::identity()));
+  DCHECK(base::ranges::all_of(
+      signaled_fences,
+      [](const scoped_refptr<gfx::D3DSharedFence>& fence) { return !!fence; }));
   if (in_write_access_) {
     DCHECK(write_fences_.empty());
     DCHECK(read_fences_.empty());

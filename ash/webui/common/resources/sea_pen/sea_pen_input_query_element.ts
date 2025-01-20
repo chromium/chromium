@@ -246,11 +246,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     if (!isSelectionEvent(event)) {
       return;
     }
-    this.searchInputQuery_();
     // Stop the event propagation, otherwise, the event will be passed to parent
     // element, this.onClick_ will be triggered improperly.
     event.preventDefault();
     event.stopPropagation();
+    if (!this.textValue_.trim()) {
+      this.onClickInspire_();
+      return;
+    }
+    this.searchInputQuery_();
   }
 
   private searchInputQuery_() {

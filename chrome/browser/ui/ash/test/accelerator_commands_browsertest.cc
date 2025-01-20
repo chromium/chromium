@@ -52,7 +52,7 @@ class AcceleratorCommandsFullscreenBrowserTest
   AcceleratorCommandsFullscreenBrowserTest& operator=(
       const AcceleratorCommandsFullscreenBrowserTest&) = delete;
 
-  virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
+  virtual ~AcceleratorCommandsFullscreenBrowserTest() = default;
 
   // Sets |widget|'s show state to |initial_show_state_|.
   void SetToInitialShowState(views::Widget* widget) {
@@ -192,7 +192,7 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
   AcceleratorCommandsPlatformAppFullscreenBrowserTest& operator=(
       const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
 
-  virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() {}
+  virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() = default;
 
   // Sets |app_window|'s show state to |initial_show_state_|.
   void SetToInitialShowState(extensions::AppWindow* app_window) {

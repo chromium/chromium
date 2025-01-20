@@ -127,6 +127,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
+// UpdateAdaptiveChargingConfigsFromFinch retrieves the configuration parameters
+// for Adaptive Charging from Finch experiments and populating a PrefValues
+// structure with those values.
 void UpdateAdaptiveChargingConfigsFromFinch(
     chromeos::PowerPolicyController::PrefValues* values) {
   // Default values of the settings.
@@ -188,15 +191,17 @@ PowerPrefs::PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
   DCHECK(tick_clock_);
 
   // Only construct lock_on_leave_controller_ if quick dim is enabled.
-  if (features::IsQuickDimEnabled())
+  if (features::IsQuickDimEnabled()) {
     lock_on_leave_controller_ = std::make_unique<LockOnLeaveController>();
+  }
 
   power_manager_client_observation_.Observe(power_manager_client);
   Shell::Get()->session_controller()->AddObserver(this);
 
   // |local_state_| could be null in tests.
-  if (local_state_)
+  if (local_state_) {
     ObserveLocalStatePrefs(local_state_);
+  }
 }
 
 PowerPrefs::~PowerPrefs() {
@@ -220,6 +225,7 @@ void PowerPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kBatteryChargeCustomStopCharging, -1);
 
   registry->RegisterBooleanPref(prefs::kUsbPowerShareEnabled, true);
+  registry->RegisterBooleanPref(prefs::kPowerChargeLimitEnabled, false);
 }
 
 // static
@@ -249,27 +255,31 @@ void PowerPrefs::RegisterUserProfilePrefs(PrefRegistrySimple* registry) {
 void PowerPrefs::ScreenIdleStateChanged(
     const power_manager::ScreenIdleState& proto) {
   const bool already_off = !screen_idle_off_time_.is_null();
-  if (proto.off() == already_off)
+  if (proto.off() == already_off) {
     return;
+  }
 
   screen_idle_off_time_ =
       proto.off() ? tick_clock_->NowTicks() : base::TimeTicks();
 
   // If the screen is locked and we're no longer idle, we may need to switch to
   // the lock-based delays.
-  if (!screen_lock_time_.is_null() && !proto.off())
+  if (!screen_lock_time_.is_null() && !proto.off()) {
     UpdatePowerPolicyFromPrefs();
+  }
 }
 
 void PowerPrefs::OnLockStateChanged(bool locked) {
   const bool already_locked = !screen_lock_time_.is_null();
-  if (locked == already_locked)
+  if (locked == already_locked) {
     return;
+  }
 
   screen_lock_time_ = locked ? tick_clock_->NowTicks() : base::TimeTicks();
   // OnLockStateChanged could be called before ash connects user prefs in tests.
-  if (GetPrefService())
+  if (GetPrefService()) {
     UpdatePowerPolicyFromPrefs();
+  }
 }
 
 void PowerPrefs::OnSigninScreenPrefServiceInitialized(PrefService* prefs) {
@@ -282,8 +292,9 @@ void PowerPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
 void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
   PrefService* prefs = GetPrefService();
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   bool new_quick_dim_pref_enabled =
       prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
@@ -298,8 +309,9 @@ void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
 
 void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   PrefService* prefs = GetPrefService();
-  if (!prefs || !local_state_)
+  if (!prefs || !local_state_) {
     return;
+  }
 
   // It's possible to end up in a situation where a shortened lock-screen idle
   // delay would cause the system to suspend immediately as soon as the screen
@@ -466,9 +478,25 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       Shell::Get()
           ->adaptive_charging_controller()
           ->IsAdaptiveChargingSupported()) {
-    values.adaptive_charging_enabled =
+    std::optional<bool> adaptive_charging_enabled =
         prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled);
-    if (values.adaptive_charging_enabled) {
+    std::optional<bool> charge_limit_enabled =
+        local_state_->GetBoolean(prefs::kPowerChargeLimitEnabled);
+
+    if (adaptive_charging_enabled.value_or(false) &&
+        charge_limit_enabled.value_or(false)) {
+      LOG(WARNING) << "Pref set to enable both Adaptive Charging and Charge "
+                   << "Limit, which are mutually exclusive features. "
+                   << "Disabling charge limit.";
+
+      // Update the local optional variable to maintain consistency
+      charge_limit_enabled = false;
+    }
+
+    values.adaptive_charging_enabled = adaptive_charging_enabled;
+    values.charge_limit_enabled = charge_limit_enabled;
+
+    if (values.adaptive_charging_enabled.value_or(false)) {
       UpdateAdaptiveChargingConfigsFromFinch(&values);
     }
   }
@@ -562,6 +590,8 @@ void PowerPrefs::ObserveLocalStatePrefs(PrefService* prefs) {
   local_state_registrar_->Add(prefs::kBootOnAcEnabled, update_callback);
 
   local_state_registrar_->Add(prefs::kUsbPowerShareEnabled, update_callback);
+
+  local_state_registrar_->Add(prefs::kPowerChargeLimitEnabled, update_callback);
 
   UpdatePowerPolicyFromPrefs();
 }

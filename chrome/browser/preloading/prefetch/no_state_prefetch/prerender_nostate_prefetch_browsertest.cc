@@ -208,11 +208,13 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
   // content::WebContentsObserver implementation:
   void DidStartLoading() override { did_start_loading_ = true; }
   void DidStopLoading() override {
-    if (!did_start_loading_)
+    if (!did_start_loading_) {
       return;
+    }
     number_of_loads_--;
-    if (number_of_loads_ == 0)
+    if (number_of_loads_ == 0) {
       loop_.Quit();
+    }
   }
 
   // TabStripModelObserver implementation:
@@ -220,12 +222,14 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kReplaced)
+    if (change.type() != TabStripModelChange::kReplaced) {
       return;
+    }
 
     auto* replace = change.GetReplace();
-    if (replace->old_contents != web_contents())
+    if (replace->old_contents != web_contents()) {
       return;
+    }
 
     // Switch to observing the new WebContents.
     Observe(replace->new_contents);
@@ -260,8 +264,9 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
  public:
   NewTabNavigationOrSwapObserver() {
     BrowserList::AddObserver(this);
-    for (const Browser* browser : *BrowserList::GetInstance())
+    for (const Browser* browser : *BrowserList::GetInstance()) {
       browser->tab_strip_model()->AddObserver(this);
+    }
   }
 
   NewTabNavigationOrSwapObserver(const NewTabNavigationOrSwapObserver&) =
@@ -283,8 +288,9 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted || swap_observer_)
+    if (change.type() != TabStripModelChange::kInserted || swap_observer_) {
       return;
+    }
 
     content::WebContents* new_tab = change.GetInsert()->contents[0].contents;
     swap_observer_ =
@@ -330,7 +336,6 @@ class NoStatePrefetchBrowserTest
     link_rel_attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             content::preloading_predictor::kLinkRel);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -483,12 +488,12 @@ class NoStatePrefetchBrowserTest
   base::SimpleTestTickClock clock_;
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       link_rel_attempt_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -608,9 +613,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchBigger) {
 
   WaitForRequestCount(src_server()->GetURL(kPrefetchPageBigger), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
-  // The |kPrefetchPng| is requested twice because the |kPrefetchPngRedirect|
-  // redirects to it.
-  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 2);
+  // The |kPrefetchPng| is requested only once, even though
+  // |kPrefetchPngRedirect| redirects to it, because it is cacheable.
+  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPngRedirect), 1);
 }
@@ -979,7 +984,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
                        PrefetchCookieCrossDomainSameSiteStrict) {
   UseHttpsSrcServer();
   GURL cross_domain_url =
-      src_server()->GetURL(test_utils::kSecondaryDomain, "/echoall");
+      src_server()->GetURL(test_utils::kSecondaryDomain, "/echoall/cache");
 
   EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
@@ -1029,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
 IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserTestHttpCacheDefaultAndDoubleKeyed,
                        PrefetchCookieSameDomainSameSiteStrict) {
   UseHttpsSrcServer();
-  GURL same_domain_url = src_server()->GetURL("/echoall");
+  GURL same_domain_url = src_server()->GetURL("/echoall/cache");
 
   EXPECT_TRUE(SetCookie(current_browser()->profile(), same_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
@@ -1618,8 +1623,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
            content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
     // Don't count spare RenderProcessHosts.
-    if (!iter.GetCurrentValue()->HostHasNotBeenUsed())
+    if (!iter.GetCurrentValue()->HostHasNotBeenUsed()) {
       ++host_count;
+    }
 
     content::RenderProcessHostWatcher process_exit_observer(
         iter.GetCurrentValue(),
@@ -1881,9 +1887,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrerenderNoSSLReferrer) {
 class SpeculationNoStatePrefetchBrowserTest
     : public NoStatePrefetchBrowserTest {
  public:
-  void SetUp() override {
-    NoStatePrefetchBrowserTest::SetUp();
-  }
+  void SetUp() override { NoStatePrefetchBrowserTest::SetUp(); }
 
   void InsertSpeculation(const GURL& prefetch_url,
                          FinalStatus expected_final_status,

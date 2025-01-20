@@ -16,7 +16,6 @@
 #include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "content/public/browser/visibility.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace resource_coordinator {
 
@@ -158,10 +157,6 @@ class LifecycleUnit {
   // Adds/removes an observer to this LifecycleUnit.
   virtual void AddObserver(LifecycleUnitObserver* observer) = 0;
   virtual void RemoveObserver(LifecycleUnitObserver* observer) = 0;
-
-  // Returns the UKM source ID associated with this LifecycleUnit, if it has
-  // one.
-  virtual ukm::SourceId GetUkmSourceId() const = 0;
 };
 
 using LifecycleUnitSet =

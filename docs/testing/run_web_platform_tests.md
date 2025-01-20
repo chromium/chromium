@@ -23,12 +23,12 @@ implemented entirely in Blink.
 
 ### Running Tests Locally
 
-First, you will need to build one of the following targets to get all needed
-binaries:
+First, you will need to build the `blink_tests` target as you were running web tests
+before. This will build `headless_shell`, `chrome`, `chromedriver`, `content_shell`
+and all other needed binaries to run web tests and WPTs.
 
 ```bash
-autoninja -C out/Default chrome_wpt_tests     # For testing with `chrome`
-autoninja -C out/Default headless_shell_wpt   # For testing with `headless_shell`
+autoninja -C out/Default blink_tests
 ```
 
 Once the build is done, running tests is very similar to how you would run
@@ -62,24 +62,24 @@ between suites that target different `//content` embedders:
 
 Suite Name | Browser Under Test | Harness | Tests Run
 --- | --- | --- | ---
-`blink_wpt_tests` | `content_shell --run-web-tests` | `run_web_tests.py` | Tests that depend on web test-specific features (e.g., [internal WPTs] that depend on [nonstandard `window.internals` or `window.testRunner` APIs][3]).
+`headless_shell_wpt_tests` | `headless_shell` | `run_wpt_tests.py` | The default test suite for WPTs if not specified otherwise.
 `chrome_wpt_tests` | `chrome --headless=new` | `run_wpt_tests.py` | Tests that depend on the `//chrome` layer. Can be slow, so prefer `headless_shell` testing if possible.
-`headless_shell_wpt_tests` | `headless_shell` | `run_wpt_tests.py` | All other tests. Most WPTs should eventually run here.
+`blink_wpt_tests` | `content_shell --run-web-tests` | `run_web_tests.py` | Tests under [internal WPTs] plus any public WPTs not migrated yet.
 
 To avoid redundant coverage, each WPT should run in exactly one suite listed
 above.
 The [`chrome.filter`][1] file lists tests that `chrome_wpt_tests` should run,
 and that `headless_shell_wpt_tests` and `blink_wpt_tests` should skip.
-[`headless_shell.filter`][2] works similarly.
-Tests not listed in either file run in `blink_wpt_tests` by default.
+[`content_shell.filter`][2] file lists tests that currently run in `blink_wpt_tests`,
+and will be removed once it only contains tests under `wpt_internal`. Tests
+not listed in either file run in `headless_shell_wpt_tests` by default.
 
 *** note
 Running tests in `blink_wpt_tests` is discouraged because `run_web_tests.py`
 doesn't drive tests through standard WebDriver endpoints.
 This can cause `blink_wpt_tests` results to diverge from the Chrome results
-published to [wpt.fyi].
-You can help unblock the eventual deprecation of `blink_wpt_tests` by adding
-tests that you own to either filter file.
+published to [wpt.fyi]. We should generally not add new tests to
+content_shell.filter.
 ***
 
 [internal WPTs]: /third_party/blink/web_tests/wpt_internal
@@ -147,5 +147,5 @@ For runner bugs and feature requests, please file [an issue against
 [wpt.fyi]: https://wpt.fyi/results/?label=experimental&label=master&aligned
 
 [1]: /third_party/blink/web_tests/TestLists/chrome.filter
-[2]: /third_party/blink/web_tests/TestLists/headless_shell.filter
+[2]: /third_party/blink/web_tests/TestLists/content_shell.filter
 [3]: writing_web_tests.md#Relying-on-Blink_Specific-Testing-APIs

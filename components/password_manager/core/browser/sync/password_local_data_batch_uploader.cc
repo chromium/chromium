@@ -146,7 +146,7 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
   TriggerLocalDataMigrationInternal(std::nullopt);
 }
 
-void PasswordLocalDataBatchUploader::TriggerLocalDataMigration(
+void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
   TriggerLocalDataMigrationInternal(std::move(items));
 }
@@ -164,7 +164,7 @@ void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
       item.id = PasswordFormKey(PasswordFormUniqueKey(*result.get()));
       item.title = result->url.host();
       item.subtitle = base::UTF16ToUTF8(result->username_value);
-      item.icon_url = result->url.GetWithEmptyPath();
+      item.icon = syncer::LocalDataItemModel::PageUrlIcon(result->url);
       local_data_models.push_back(std::move(item));
     }
     urls.push_back(result->url);

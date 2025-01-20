@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_DATABASE_H_
 #define CHROME_BROWSER_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_DATABASE_H_
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +69,7 @@ class ActivityDatabase {
 
     // A Delegate is never directly deleted; it should instead delete itself
     // after any final cleanup when OnDatabaseClose() is invoked.
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Initializes the database schema; this gives a policy a chance to create
     // or update database tables as needed.  Should return true on success.
@@ -132,11 +133,11 @@ class ActivityDatabase {
   // database. The field_types should specify the types of the corresponding
   // columns (e.g., INTEGER or LONGVARCHAR). There should be the same number of
   // field_types as content_fields, since the two arrays should correspond.
-  static bool InitializeTable(sql::Database* db,
-                              base::cstring_view table_name,
-                              const char* const content_fields[],
-                              const char* const field_types[],
-                              const int num_content_fields);
+  static bool InitializeTable(
+      sql::Database* db,
+      base::cstring_view table_name,
+      base::span<const base::cstring_view> content_fields,
+      base::span<const base::cstring_view> field_types);
 
  private:
   // This should never be invoked by another class. Use Close() to order a

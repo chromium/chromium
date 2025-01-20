@@ -48,7 +48,7 @@ class StringTraceEndpoint
   }
 
  private:
-  ~StringTraceEndpoint() override {}
+  ~StringTraceEndpoint() override = default;
 
   raw_ptr<std::string> result_;
   base::RepeatingClosure completion_callback_;

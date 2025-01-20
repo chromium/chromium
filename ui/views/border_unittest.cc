@@ -33,8 +33,8 @@ class MockCanvas : public SkCanvas {
     DrawRectCall(const SkRect& rect, const SkPaint& paint)
         : rect(rect), paint(paint) {}
 
-    bool operator<(const DrawRectCall& other) const {
-      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <
+    auto operator<=>(const DrawRectCall& other) const {
+      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <=>
              std::tie(other.rect.fLeft, other.rect.fTop, other.rect.fRight,
                       other.rect.fBottom);
     }
@@ -47,10 +47,10 @@ class MockCanvas : public SkCanvas {
     DrawRRectCall(const SkRRect& rrect, const SkPaint& paint)
         : rrect(rrect), paint(paint) {}
 
-    bool operator<(const DrawRRectCall& other) const {
+    auto operator<=>(const DrawRRectCall& other) const {
       SkRect rect = rrect.rect();
       SkRect other_rect = other.rrect.rect();
-      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <
+      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <=>
              std::tie(other_rect.fLeft, other_rect.fTop, other_rect.fRight,
                       other_rect.fBottom);
     }

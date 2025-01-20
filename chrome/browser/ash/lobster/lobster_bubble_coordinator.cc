@@ -26,7 +26,8 @@ LobsterBubbleCoordinator::~LobsterBubbleCoordinator() {
 
 void LobsterBubbleCoordinator::LoadUI(Profile* profile,
                                       std::optional<std::string_view> query,
-                                      LobsterMode mode) {
+                                      LobsterMode mode,
+                                      const gfx::Rect& caret_bounds) {
   if (IsShowingUI()) {
     contents_wrapper_->CloseUI();
   }
@@ -53,7 +54,7 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
       /*esc_closes_ui=*/false);
 
   std::unique_ptr<LobsterView> lobster_view =
-      std::make_unique<LobsterView>(contents_wrapper_.get(), gfx::Rect());
+      std::make_unique<LobsterView>(contents_wrapper_.get(), caret_bounds);
   auto bubble = lobster_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(lobster_view));
 

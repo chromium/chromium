@@ -7,8 +7,35 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
+
+// The result of local web approval flow.
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(LocalApprovalResult)
+enum class LocalApprovalResult {
+  kApproved = 0,
+  kDeclined = 1,
+  kCanceled = 2,
+  kError = 3,
+  kMaxValue = kError
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserLocalWebApprovalResult)
+
+// Used for metrics. These values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ParentAccessWidgetError)
+enum class ParentAccessWidgetError {
+  kOAuthError = 0,
+  kDelegateNotAvailable = 1,
+  kDecodingError = 2,
+  kParsingError = 3,
+  kUnknownCallback = 4,
+  kMaxValue = kUnknownCallback
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserParentAccessWidgetError)
 
 // This enum describes the filter types of Chrome, which is
 // set by Family Link App or at families.google.com/families. These values
@@ -37,24 +64,6 @@ enum class WebFilterType {
 // string included in the user feedback log.
 std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type);
 
-// LINT.IfChange(family_link_user_state)
-enum class FamilyLinkUserState {
-  // There may be situations in which we are still waiting for information
-  // around the Family Link status, either capabilities are not loaded or
-  // FamilyRole not downloaded.
-  kUnknown = 0,
-  // The user is signed in to a Family Link account.
-  kHeadOfHousehold = 1,
-  kParent = 2,
-  kMember = 3,
-  kChild = 4,
-  kUnconfirmedMember = 5,
-  // The user does not have a Family Link account. The identity state may be
-  // signed-in or signed-out.
-  kNotFamilyLink = 6,
-};
-// LINT.ThenChange(//components/supervised_user/core/browser/proto/families_common.proto:family_role)
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -81,10 +90,26 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
 };
 
-// These enum values describe the result of filtering and are logged to UMA.
-// Please keep in sync with "SupervisedUserFilterTopLevelResult" in
-// tools/metrics/histograms/enums.xml.
-enum class SupervisedUserFilterTopLevelResult {
+// Indicates why the filtering was issued.
+// LINT.IfChange(top_level_filtering_context)
+enum class FilteringContext : int {
+  // Default setting used if filtering context is not explicitly specified
+  // (eg. for tools in chrome:// internal pages).
+  kDefault = 0,
+  // Use for filtering triggered by content::NavigationThrottle events.
+  kNavigationThrottle = 1,
+  // Use for filtering triggered by content::WebContentsObserver events.
+  kNavigationObserver = 2,
+  // Use for filtering triggered by changes to Family Link.
+  kFamilyLinkSettingsUpdated = 3
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
+
+// LINT.IfChange(top_level_filtering_result)
+// This enum, together with `::FilteringContext`, constitutes value for the
+// `ManagedUser.TopLevelFilteringResult` histogram: value = context * spacing +
+// result (spacing is 100).
+enum class SupervisedUserFilterTopLevelResult : int {
   // A parent has explicitly allowed the domain on the allowlist or all sites
   // are allowed through parental controls.
   kAllow = 0,
@@ -96,6 +121,7 @@ enum class SupervisedUserFilterTopLevelResult {
   // enabled for the supervised user. Sites on the allowlist are not blocked.
   kBlockNotInAllowlist = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:top_level_filtering_result)
 
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
 extern const int kHistogramFilteringBehaviorSpacing;
@@ -151,11 +177,19 @@ extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 // transition.
 extern const char kSupervisedUserURLFilteringResultHistogramName[];
 
-// Histogram name to log top level URL filtering results with reason for filter.
+// Histogram name to log top level URL filtering results with reason for filter
 extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
+
+// Histogram name to log top level URL filtering results with reason for filter,
+// for use in the navigation throttle context.
+extern const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[];
 
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
+
+// The url that displays a user's Family info.
+// The navigations in the via PACP widget redirect to this url.
+extern const char kFamilyManagementUrl[];
 
 // The string used to denote an account that does not have a family member role.
 extern const char kDefaultEmptyFamilyMemberRole[];
@@ -163,10 +197,21 @@ extern const char kDefaultEmptyFamilyMemberRole[];
 // Feedback source name for family member role in Family Link.
 extern const char kFamilyMemberRoleFeedbackTag[];
 
-// Histogram name for the ::ClassifyUrlLoaderThrottle
+// Histogram name to track throttle's headroom before its decision was required.
 extern const char kClassifiedEarlierThanContentResponseHistogramName[];
+
+// Histogram name to track how much throttle delayed the navigation.
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
+
+// Histogram name to track intermediate throttle states.
 extern const char kClassifyUrlThrottleStatusHistogramName[];
+
+// Histogram name to track the final throttle verdict.
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
+
+// Returns the URL of the PACP widget for the iOS local web approval flow.
+GURL GetParentAccessURLForIOS();
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

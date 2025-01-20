@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:ignore="UnusedResources"
+  android:height="56dp"
+  android:width="56dp"
+  android:viewportHeight="80"
+  android:viewportWidth="80" >
+  <group
+    android:pivotX="40"
+    android:pivotY="40"
+    android:scaleX="1.42857"
+    android:scaleY="1.42857">
+    <clip-path android:pathData="M80,39.598l-39.598,39.598l-39.598,-39.598l39.598,-39.598z"/>
+    <path android:fillColor="?attr/colorPrimaryContainer" android:pathData="M58.126,52.471C58.86,55.401 56.205,58.056 53.275,57.322L49.98,56.496C48.271,56.068 46.484,56.808 45.578,58.319L43.832,61.233C42.279,63.824 38.525,63.824 36.972,61.233L35.226,58.319C34.32,56.808 32.533,56.068 30.824,56.496L27.529,57.322C24.599,58.056 21.944,55.401 22.678,52.471L23.504,49.176C23.932,47.467 23.191,45.679 21.68,44.774L18.766,43.028C16.175,41.475 16.175,37.72 18.766,36.168L21.68,34.422C23.191,33.516 23.932,31.728 23.504,30.02L22.678,26.724C21.944,23.794 24.599,21.139 27.529,21.874L30.824,22.699C32.533,23.128 34.32,22.387 35.226,20.876L36.972,17.962C38.525,15.371 42.279,15.371 43.832,17.962L45.578,20.876C46.484,22.387 48.271,23.128 49.98,22.699L53.275,21.874C56.205,21.139 58.86,23.794 58.126,26.724L57.3,30.02C56.872,31.728 57.613,33.516 59.124,34.422L62.038,36.168C64.629,37.72 64.629,41.475 62.038,43.028L59.124,44.774C57.613,45.679 56.872,47.467 57.3,49.176L58.126,52.471Z"/>
+  </group>
+</vector>

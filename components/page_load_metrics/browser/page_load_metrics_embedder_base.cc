@@ -46,7 +46,8 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
 
   tracker->AddObserver(
       std::make_unique<BackForwardCachePageLoadMetricsObserver>());
-  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>(
+      IsIncognito(tracker->GetWebContents())));
   tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
@@ -67,6 +68,10 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
 
 std::unique_ptr<base::OneShotTimer> PageLoadMetricsEmbedderBase::CreateTimer() {
   return std::make_unique<base::OneShotTimer>();
+}
+
+bool PageLoadMetricsEmbedderBase::ShouldObserveScheme(std::string_view scheme) {
+  return false;
 }
 
 }  // namespace page_load_metrics

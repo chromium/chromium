@@ -229,16 +229,6 @@ ClientResourceProvider::~ClientResourceProvider() {
 }
 
 gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
-    gpu::gles2::GLES2Interface* gl) {
-  DCHECK(gl);
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  DCHECK(sync_token.HasData() ||
-         gl->GetGraphicsResetStatusKHR() != GL_NO_ERROR);
-  return sync_token;
-}
-
-gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
     gpu::raster::RasterInterface* ri) {
   DCHECK(ri);
   gpu::SyncToken sync_token;

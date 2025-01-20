@@ -43,12 +43,10 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
-#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
-#include "components/ip_protection/common/ip_protection_control_mojo.h"
-#include "components/ip_protection/common/ip_protection_core_impl.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
+#include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 #include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -136,6 +134,7 @@
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/resolve_host_request.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/restricted_cookie_manager.h"
@@ -168,10 +167,6 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/network/cert_verifier_with_trust_anchors.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 #include "services/network/websocket_factory.h"
@@ -663,7 +658,8 @@ NetworkContext::NetworkContext(
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
       prefetch_enabled_(
-          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch) &&
+          (params_->bound_network == net::handles::kInvalidNetworkHandle)),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
@@ -844,7 +840,9 @@ NetworkContext::NetworkContext(
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
       prefetch_enabled_(
-          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch) &&
+          (url_request_context_->bound_network() ==
+           net::handles::kInvalidNetworkHandle)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
                                         : nullptr) {
   // May be nullptr in tests.
@@ -856,10 +854,6 @@ NetworkContext::NetworkContext(
   for (const auto& key : cors_exempt_header_list) {
     cors_exempt_header_list_.insert(key);
   }
-
-  acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
-      network::features::
-          kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
   if (prefetch_enabled_) {
     InitializePrefetchURLLoaderFactory();
@@ -1363,11 +1357,12 @@ void NetworkContext::ClearHttpAuthCache(base::Time start_time,
       url_request_context_->http_transaction_factory()->GetSession();
   DCHECK(http_session);
 
-  http_session->http_auth_cache()->ClearEntriesAddedBetween(
-      start_time, end_time, BuildUrlFilter(std::move(filter)));
-  // TODO(mmenke): Use another error code for this, as ERR_ABORTED has somewhat
-  // magical handling with respect to navigations.
-  http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
+  if (http_session->http_auth_cache()->ClearEntriesAddedBetween(
+          start_time, end_time, BuildUrlFilter(std::move(filter)))) {
+    // TODO(mmenke): Use another error code for this, as ERR_ABORTED has
+    // somewhat magical handling with respect to navigations.
+    http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
+  }
 
   std::move(callback).Run();
 }
@@ -1720,7 +1715,7 @@ int NetworkContext::CheckCTRequirementsForSignedExchange(
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
-          host_port_pair, cert_verify_result.is_issued_by_known_root,
+          host_port_pair.host(), cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes, verified_cert,
           cert_verify_result.policy_compliance);
 
@@ -1932,6 +1927,14 @@ void NetworkContext::CreateWebTransport(
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client) {
+  if (!IsNetworkForNonceAndUrlAllowed(
+          key.GetNonce().value_or(base::UnguessableToken::Null()), url)) {
+    mojo::Remote<mojom::WebTransportHandshakeClient> remote_handshake_client(
+        std::move(pending_handshake_client));
+    remote_handshake_client->OnHandshakeFailed(
+        net::WebTransportError(net::ERR_NETWORK_ACCESS_REVOKED));
+    return;
+  }
   web_transports_.insert(
       std::make_unique<WebTransport>(url, origin, key, fingerprints, this,
                                      std::move(pending_handshake_client)));
@@ -2414,7 +2417,7 @@ void NetworkContext::LookupServerBasicAuthCredentials(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void NetworkContext::LookupProxyAuthCredentials(
     const net::ProxyServer& proxy_server,
     const std::string& auth_scheme,
@@ -2452,7 +2455,7 @@ void NetworkContext::LookupProxyAuthCredentials(
     std::move(callback).Run(std::nullopt);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
@@ -2510,9 +2513,9 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
   }
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(url_matcher_.get(),
-                                     http_auth_dynamic_network_service_params
-                                         ->patterns_allowed_to_use_all_schemes);
+  url_matcher::util::AddAllowFiltersWithLimit(
+      url_matcher_.get(), http_auth_dynamic_network_service_params
+                              ->patterns_allowed_to_use_all_schemes);
   http_auth_merged_preferences_.set_http_auth_scheme_filter(
       base::BindRepeating(&NetworkContext::IsAllowedToUseAllHttpAuthSchemes,
                           base::Unretained(this)));
@@ -2558,18 +2561,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     cert_verifier = std::make_unique<net::CachingCertVerifier>(
         std::make_unique<net::CoalescingCertVerifier>(
             std::move(cert_verifier)));
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40928765): The TrustAnchorUsed callback should
-    // work on all platforms. (Also consider whether this wrapper is the best
-    // way to handle this or if it should be refactored.)
-    auto cert_verifier_with_trust_anchors =
-        std::make_unique<CertVerifierWithTrustAnchors>(base::BindRepeating(
-            &NetworkContext::TrustAnchorUsed, base::Unretained(this)));
-    cert_verifier_with_trust_anchors->InitializeOnIOThread(
-        std::move(cert_verifier));
-    cert_verifier = std::move(cert_verifier_with_trust_anchors);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   builder.SetCertVerifier(IgnoreErrorsCertVerifier::MaybeWrapCertVerifier(
@@ -2592,8 +2583,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // case for any given NetworkContext: either PrefetchProxy, handling its
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   auto* mdl_manager = network_service_->masked_domain_list_manager();
-  std::unique_ptr<ip_protection::IpProtectionControlMojo>
-      ip_protection_control_mojo;
   bool requires_ipp_proxy_delegate =
       mdl_manager->IsEnabled() &&
       (params_->ip_protection_core_host ||
@@ -2601,15 +2590,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (requires_ipp_proxy_delegate) {
     CHECK(!params_->initial_custom_proxy_config);
     CHECK(!params_->custom_proxy_config_client_receiver);
+    scoped_refptr<ip_protection::IpProtectionCoreHostRemote> core_host_remote =
+        params_->ip_protection_core_host
+            ? base::MakeRefCounted<ip_protection::IpProtectionCoreHostRemote>(
+                  std::move(params_->ip_protection_core_host))
+            : nullptr;
     auto ip_protection_core_impl =
-        std::make_unique<ip_protection::IpProtectionCoreImpl>(
-            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-                std::move(params_->ip_protection_core_host)),
+        std::make_unique<ip_protection::IpProtectionCoreImplMojo>(
+            std::move(params_->ip_protection_control), core_host_remote,
             mdl_manager, params_->enable_ip_protection);
-    ip_protection_control_mojo =
-        std::make_unique<ip_protection::IpProtectionControlMojo>(
-            std::move(params_->ip_protection_control),
-            ip_protection_core_impl.get());
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(
             ip_protection_core_impl.get()));
@@ -2652,28 +2641,25 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.SetCookieStore(std::move(cookie_store));
   }
 
-  if (base::FeatureList::IsEnabled(features::kPrivateStateTokens) ||
-      base::FeatureList::IsEnabled(features::kFledgePst)) {
-    trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
+  trust_token_store_ = std::make_unique<PendingTrustTokenStore>();
 
-    base::FilePath trust_token_path;
-    if (GetFullDataFilePath(
-            params_->file_paths,
-            &network::mojom::NetworkContextFilePaths::trust_token_database_name,
-            trust_token_path)) {
-      SQLiteTrustTokenPersister::CreateForFilePath(
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), kTrustTokenDatabaseTaskPriority,
-               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          trust_token_path, kTrustTokenWriteBufferingWindow,
-          base::BindOnce(&NetworkContext::FinishConstructingTrustTokenStore,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      trust_token_store_->OnStoreReady(std::make_unique<TrustTokenStore>(
-          std::make_unique<InMemoryTrustTokenPersister>(),
-          std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
-              network_service()->trust_token_key_commitments())));
-    }
+  base::FilePath trust_token_path;
+  if (GetFullDataFilePath(
+          params_->file_paths,
+          &network::mojom::NetworkContextFilePaths::trust_token_database_name,
+          trust_token_path)) {
+    SQLiteTrustTokenPersister::CreateForFilePath(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), kTrustTokenDatabaseTaskPriority,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        trust_token_path, kTrustTokenWriteBufferingWindow,
+        base::BindOnce(&NetworkContext::FinishConstructingTrustTokenStore,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    trust_token_store_->OnStoreReady(std::make_unique<TrustTokenStore>(
+        std::make_unique<InMemoryTrustTokenPersister>(),
+        std::make_unique<ExpiryInspectingRecordExpiryDelegate>(
+            network_service()->trust_token_key_commitments())));
   }
 
   std::unique_ptr<net::StaticHttpUserAgentSettings> user_agent_settings =
@@ -2698,11 +2684,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (params_->dhcp_wpad_url_client) {
     builder.SetDhcpWpadUrlClient(std::move(params_->dhcp_wpad_url_client));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!params_->http_cache_enabled) {
     builder.DisableHttpCache();
@@ -2941,8 +2927,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);
   }
-  auto result = URLRequestContextOwner(std::move(pref_service), builder.Build(),
-                                       std::move(ip_protection_control_mojo));
+  auto result =
+      URLRequestContextOwner(std::move(pref_service), builder.Build());
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the
@@ -3133,7 +3119,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
-            net::HostPortPair::FromURL(pending_cert_verify->url),
+            pending_cert_verify->url.host(),
             pending_cert_verify->result->is_issued_by_known_root,
             pending_cert_verify->result->public_key_hashes);
     switch (pin_validity) {
@@ -3161,12 +3147,6 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
       .Run(result, *pending_cert_verify->result.get(), pkp_bypassed);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void NetworkContext::TrustAnchorUsed() {
-  client_->OnTrustAnchorUsed();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 void NetworkContext::EnsureMounted(network::TransferableDirectory* directory) {
   if (directory->NeedsMount()) {
@@ -3186,11 +3166,7 @@ void NetworkContext::InitializeCorsParams() {
     cors_exempt_header_list_.insert(key);
   }
 
-  acam_preflight_spec_conformant_ =
-      base::FeatureList::IsEnabled(
-          network::features::
-              kAccessControlAllowMethodsInCORSPreflightSpecConformant) &&
-      params_->acam_preflight_spec_conformant;
+  acam_preflight_spec_conformant_ = params_->acam_preflight_spec_conformant;
 }
 
 void NetworkContext::FinishConstructingTrustTokenStore(
@@ -3347,6 +3323,9 @@ void NetworkContext::RevokeNetworkForNonces(
       websocket_factory_->RemoveIfNonceMatches(nonce);
     }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+    for (const auto& transport : web_transports_) {
+      transport->CloseIfNonceMatches(nonce);
+    }
   }
 
   if (callback) {

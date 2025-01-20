@@ -40,8 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace blink {
 
@@ -505,7 +505,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
         .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
-             blink::IdentifiabilityDigestOfBytes(base::make_span(
+             blink::IdentifiabilityDigestOfBytes(base::span(
                  data_buffer->Pixels(), data_buffer->ComputeByteSize())))
         .Record(context_->UkmRecorder());
   }

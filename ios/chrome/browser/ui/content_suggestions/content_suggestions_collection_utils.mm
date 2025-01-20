@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -42,11 +42,9 @@ const CGFloat kDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
-const CGFloat kLargeFakeboxExtraDoodleTopMargin = 10;
 
 // Top margin for the search field
 const CGFloat kSearchFieldTopMargin = 22;
-const CGFloat kLargeFakeboxSearchFieldTopMargin = 40;
 
 // Bottom margin for the search field.
 const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
@@ -61,7 +59,6 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 // Height for the shrunk logo frame.
 // TODO(crbug.com/40744549): clean up post-launch.
 const CGFloat kGoogleSearchLogoHeight = 36;
-const CGFloat kLargeFakeboxGoogleSearchLogoHeight = 50;
 
 // The size of the symbol image.
 const CGFloat kSymbolContentSuggestionsPointSize = 18;
@@ -73,31 +70,10 @@ const CGFloat kButtonShadowRadius = 1.0;
 const CGFloat kButtonShadowVerticalOffset = 1.0;
 const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
 
-// The height of the Fakebox.
-const CGFloat kFakeboxHeight = 65;
-const CGFloat kFakeboxHeightNonDynamic = 45;
-
-// The height of the Fakebox when it is pinned to the top.
-const CGFloat kPinnedFakeboxHeight = 48;
-const CGFloat kPinnedFakeboxHeightNonDynamic = 18;
-
 // Height and width of the new feature badge.
 const CGFloat kNewFeatureBadgeSize = 20;
 // Font size of the new feature badge label.
 const CGFloat kNewFeatureFontSize = 10;
-
-// Returns the amount of vertical margin to include in the Fake Toolbar.
-CGFloat FakeToolbarVerticalMargin() {
-  UIContentSizeCategory category =
-      [UIApplication sharedApplication].preferredContentSizeCategory;
-  CGFloat vertical_margin =
-      2 * kAdaptiveLocationBarVerticalMargin - kTopToolbarUnsplitMargin;
-  CGFloat dynamic_type_vertical_adjustment =
-      (ToolbarClampedFontSizeMultiplier(category) - 1) *
-      (kLocationBarVerticalMarginDynamicType +
-       kAdaptiveLocationBarVerticalMargin);
-  return vertical_margin + dynamic_type_vertical_adjustment;
-}
 
 // Returns the color to use for the Lens and Voice icons in the Fakebox.
 UIColor* FakeboxIconColor() {
@@ -153,8 +129,6 @@ CGFloat DoodleHeight(BOOL logo_is_showing,
     if (doodle_is_showing ||
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return kGoogleSearchDoodleShrunkHeight;
-    } else if (IsIOSLargeFakeboxEnabled()) {
-      return kLargeFakeboxGoogleSearchLogoHeight;
     } else {
       return kGoogleSearchLogoHeight;
     }
@@ -173,9 +147,6 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
                         ui_util::SystemSuggestedFontSizeMultiplier());
   // If Magic Stack is not enabled, this value is zero (e.g. no-op).
   top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
-  if (IsIOSLargeFakeboxEnabled()) {
-    top_margin += kLargeFakeboxExtraDoodleTopMargin;
-  }
   top_margin += kDoodleTopMarginOther;
   return top_margin;
 }
@@ -185,8 +156,7 @@ CGFloat HeaderSeparatorHeight() {
 }
 
 CGFloat SearchFieldTopMargin() {
-  return IsIOSLargeFakeboxEnabled() ? kLargeFakeboxSearchFieldTopMargin
-                                    : kSearchFieldTopMargin;
+  return kSearchFieldTopMargin;
 }
 
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
@@ -200,31 +170,16 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
 }
 
 CGFloat FakeOmniboxHeight() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
-    return AlignValueToPixel((kFakeboxHeight - kFakeboxHeightNonDynamic) *
-                                 multiplier +
-                             kFakeboxHeightNonDynamic);
-  }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
 CGFloat PinnedFakeOmniboxHeight() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    CGFloat multiplier = ui_util::SystemSuggestedFontSizeMultiplier();
-    return AlignValueToPixel(
-        (kPinnedFakeboxHeight - kPinnedFakeboxHeightNonDynamic) * multiplier +
-        kPinnedFakeboxHeightNonDynamic);
-  }
   return LocationBarHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
 CGFloat FakeToolbarHeight() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return PinnedFakeOmniboxHeight() + FakeToolbarVerticalMargin();
-  }
   return ToolbarExpandedHeight(
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }

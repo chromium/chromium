@@ -17,8 +17,8 @@
 
 namespace ash {
 
-GeminiIntroScreenHandler::GeminiIntroScreenHandler() :
-    BaseScreenHandler(kScreenId) {}
+GeminiIntroScreenHandler::GeminiIntroScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 GeminiIntroScreenHandler::~GeminiIntroScreenHandler() = default;
 
@@ -27,7 +27,7 @@ void GeminiIntroScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(
-      features::kFeatureManagementOobeGeminiIntro)) {
+          features::kFeatureManagementOobeGeminiIntro)) {
     auto product_name =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);

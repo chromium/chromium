@@ -133,6 +133,8 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   set_drag_controller(this);
+
+  UpdateCachedTooltipText();
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;
@@ -149,10 +151,7 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
 
   UpdateButtonLayout();
   UpdateAccessibleName();
-}
-
-std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
-  return GetAccessibleNameForButton();
+  UpdateCachedTooltipText();
 }
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
@@ -216,6 +215,10 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
   return saved_group_acessible_name;
 }
 
+void SavedTabGroupButton::UpdateCachedTooltipText() {
+  SetCachedTooltipText(GetAccessibleNameForButton());
+}
+
 void SavedTabGroupButton::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibleNameForButton());
 }
@@ -223,6 +226,7 @@ void SavedTabGroupButton::UpdateAccessibleName() {
 void SavedTabGroupButton::SetText(const std::u16string& text) {
   LabelButton::SetText(text);
   UpdateAccessibleName();
+  UpdateCachedTooltipText();
 }
 
 void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {

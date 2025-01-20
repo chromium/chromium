@@ -13,13 +13,14 @@ export function getHtml(this: InkBrushSelectorElement) {
   // clang-format off
   return html`
     <div role="listbox">
-      <!-- TODO(crbug.com/351868764): Set production icon and aria. -->
       ${BRUSH_TYPES.map(brush =>  html`
         <cr-icon-button id="${brush}" role="option"
             iron-icon="${this.getIcon_(brush)}"
             data-brush="${brush}"
             data-selected="${this.isCurrentType_(brush)}"
             aria-selected="${this.isCurrentType_(brush)}"
+            aria-label="${this.getLabel_(brush)}"
+            title="${this.getLabel_(brush)}"
             @click="${this.onBrushClick_}">
         </cr-icon-button>`)}
     </div>

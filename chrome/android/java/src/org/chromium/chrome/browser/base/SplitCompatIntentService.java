@@ -8,8 +8,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.base.BundleUtils;
-
 /**
  * IntentService base class which will call through to the given {@link Impl}. This class must be
  * present in the base module, while the Impl can be in the chrome module.
@@ -24,11 +22,13 @@ public class SplitCompatIntentService extends IntentService {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(baseContext);
     }
 
     @Override

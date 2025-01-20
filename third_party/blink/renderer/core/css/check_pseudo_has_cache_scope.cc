@@ -44,11 +44,14 @@ CheckPseudoHasCacheScope::~CheckPseudoHasCacheScope() {
 // static
 ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
     const Document* document,
-    const CSSSelector* selector) {
+    const CSSSelector* selector,
+    const ContainerNode* scope) {
+  uintptr_t scope_id = reinterpret_cast<uintptr_t>(scope);
   // To increase the cache hit ratio, we need to have a same cache key
   // for multiple selector instances those are actually has a same selector.
   // TODO(blee@igalia.com) Find a way to get hash key without serialization.
-  String selector_text = selector->SelectorTextExpandingPseudoParent();
+  String selector_text =
+      selector->SelectorTextExpandingPseudoReferences(scope_id);
 
   DCHECK(document);
   DCHECK(document->GetCheckPseudoHasCacheScope());
@@ -93,7 +96,7 @@ CheckPseudoHasCacheScope::Context::Context(
     case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
       cache_allowed_ = true;
       result_map_ = &CheckPseudoHasCacheScope::GetResultMap(
-          document, argument_context.HasArgument());
+          document, argument_context.HasArgument(), argument_context.Scope());
       fast_reject_filter_map_ =
           &CheckPseudoHasCacheScope::GetFastRejectFilterMap(
               document, argument_context.TraversalType());

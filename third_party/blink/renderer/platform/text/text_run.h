@@ -44,6 +44,7 @@
 
 namespace blink {
 
+// TextRun instances are immutable.
 class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
@@ -51,34 +52,39 @@ class PLATFORM_EXPORT TextRun final {
   TextRun(const LChar* c,
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(len),
         is_8bit_(true),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     data_.characters8 = c;
   }
 
   TextRun(const UChar* c,
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(len),
         is_8bit_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     data_.characters16 = c;
   }
 
+  TextRun(const StringView& string)
+      : TextRun(string, TextDirection::kLtr, false, false) {}
   TextRun(const StringView& string,
-          TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          TextDirection direction,
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(string.length()),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     if (!len_) {
       is_8bit_ = true;
       data_.characters8 = nullptr;
@@ -91,16 +97,32 @@ class PLATFORM_EXPORT TextRun final {
     }
   }
 
-  TextRun SubRun(unsigned start_offset, unsigned length) const {
+  // TextRun supports move construction, but supports neither copy construction,
+  // copy assignment, nor move assignment.
+
+  TextRun(const TextRun&) = delete;
+  TextRun& operator=(const TextRun&) = delete;
+  TextRun(TextRun&&) = default;
+  TextRun& operator=(TextRun&&) = delete;
+
+  // direction - An optional TextDirection of the new TextRun. If this is not
+  //             specified, the new TextRun inherits the TextDirection of
+  //             `this`.
+  TextRun SubRun(unsigned start_offset,
+                 unsigned length,
+                 std::optional<TextDirection> direction = std::nullopt) const {
     DCHECK_LT(start_offset, len_);
 
-    TextRun result = *this;
-
+    TextDirection new_direction = direction.value_or(Direction());
     if (Is8Bit()) {
-      result.SetText(Data8(start_offset), length);
+      TextRun result =
+          TextRun(data_.characters8 + start_offset, length, new_direction,
+                  directional_override_, normalize_space_);
       return result;
     }
-    result.SetText(Data16(start_offset), length);
+    TextRun result =
+        TextRun(data_.characters16 + start_offset, length, new_direction,
+                directional_override_, normalize_space_);
     return result;
   }
 
@@ -111,16 +133,6 @@ class PLATFORM_EXPORT TextRun final {
   UChar operator[](unsigned i) const {
     SECURITY_DCHECK(i < len_);
     return Is8Bit() ? data_.characters8[i] : data_.characters16[i];
-  }
-  const LChar* Data8(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    DCHECK(Is8Bit());
-    return &data_.characters8[i];
-  }
-  const UChar* Data16(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    DCHECK(!Is8Bit());
-    return &data_.characters16[i];
   }
 
   // Prefer Span8() and Span16() to Characters8() and Characters16().
@@ -133,26 +145,8 @@ class PLATFORM_EXPORT TextRun final {
     return {data_.characters16, len_};
   }
 
-  const LChar* Characters8() const {
-    DCHECK(Is8Bit());
-    return data_.characters8;
-  }
-  const UChar* Characters16() const {
-    DCHECK(!Is8Bit());
-    return data_.characters16;
-  }
-
   StringView ToStringView() const {
     return Is8Bit() ? StringView(Span8()) : StringView(Span16());
-  }
-
-  UChar32 CodepointAt(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    if (Is8Bit())
-      return (*this)[i];
-    UChar32 codepoint;
-    U16_GET(Characters16(), 0, i, len_, codepoint);
-    return codepoint;
   }
 
   UChar32 CodepointAtAndNext(unsigned& i) const {
@@ -160,31 +154,14 @@ class PLATFORM_EXPORT TextRun final {
     if (Is8Bit())
       return (*this)[i++];
     UChar32 codepoint;
-    U16_NEXT(Characters16(), i, len_, codepoint);
+    U16_NEXT(data_.characters16, i, len_, codepoint);
     return codepoint;
   }
-
-  const void* Bytes() const { return data_.bytes_; }
 
   bool Is8Bit() const { return is_8bit_; }
   unsigned length() const { return len_; }
 
   bool NormalizeSpace() const { return normalize_space_; }
-  void SetNormalizeSpace(bool normalize_space) {
-    normalize_space_ = normalize_space;
-  }
-
-  void SetText(const LChar* c, unsigned len) {
-    data_.characters8 = c;
-    len_ = len;
-    is_8bit_ = true;
-  }
-  void SetText(const UChar* c, unsigned len) {
-    data_.characters16 = c;
-    len_ = len;
-    is_8bit_ = false;
-  }
-  void SetText(const String&);
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -192,13 +169,6 @@ class PLATFORM_EXPORT TextRun final {
   bool Rtl() const { return Direction() == TextDirection::kRtl; }
   bool Ltr() const { return Direction() == TextDirection::kLtr; }
   bool DirectionalOverride() const { return directional_override_; }
-  void SetDirection(TextDirection direction) {
-    direction_ = static_cast<unsigned>(direction);
-  }
-  void SetDirectionFromText();
-  void SetDirectionalOverride(bool override) {
-    directional_override_ = override;
-  }
 
   // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control
   // characters as per the CSS Text Module Level 3 specification.
@@ -212,13 +182,13 @@ class PLATFORM_EXPORT TextRun final {
     RAW_PTR_EXCLUSION const UChar* characters16;
     RAW_PTR_EXCLUSION const void* bytes_;
   } data_;
-  unsigned len_;
+  const unsigned len_;
 
   unsigned is_8bit_ : 1;
-  unsigned direction_ : 1;
+  const unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
-  unsigned normalize_space_ : 1;
+  const unsigned normalize_space_ : 1;
 };
 
 }  // namespace blink

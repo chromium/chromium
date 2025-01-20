@@ -69,6 +69,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
 
+  // TODO(crbug.com/381408483): Review usage of ExternalInstallOptions in tests.
   ExternalInstallOptions install_options(
       kWebAppUrl,
       /*user_display_mode=*/std::nullopt,
@@ -84,9 +85,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
@@ -96,6 +96,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
 
+  // TODO(crbug.com/381408483): Review usage of ExternalInstallOptions in tests.
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
@@ -109,9 +110,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(
       mojom::UserDisplayMode::kStandalone,
       provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value());
@@ -124,6 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
 
+  // TODO(crbug.com/381408483): Review usage of ExternalInstallOptions in tests.
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kBrowser,
       ExternalInstallSource::kInternalDefault);
@@ -138,9 +139,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(
       mojom::UserDisplayMode::kBrowser,
       provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value());
@@ -166,9 +166,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(app_id));
   EXPECT_TRUE(
       provider().registrar_unsafe().GetAppById(app_id)->IsPolicyInstalledApp());
 }
@@ -197,9 +196,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -211,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult>
       future_first_install;
+  // TODO(crbug.com/381408483): Review usage of ExternalInstallOptions in tests.
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kBrowser,
       ExternalInstallSource::kInternalDefault);
@@ -225,9 +223,8 @@ IN_PROC_BROWSER_TEST_F(
   const webapps::AppId& first_app_id = *first_result.app_id;
   webapps::InstallResultCode first_install_code = first_result.code;
   EXPECT_EQ(first_install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      first_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(first_app_id));
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             provider()
                 .registrar_unsafe()
@@ -260,9 +257,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(first_app_id, second_app_id);
   EXPECT_EQ(second_install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      second_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                      proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(second_app_id));
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             provider()
                 .registrar_unsafe()
@@ -310,9 +306,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   const webapps::AppId& first_app_id = future_first_install.Get<0>();
   webapps::InstallResultCode first_install_code = future_first_install.Get<1>();
   EXPECT_EQ(first_install_code, webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      first_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(first_app_id));
 
   // Mock installation of the same web_app but with a different install URL
   // and updated manifest values.
@@ -340,9 +335,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   EXPECT_EQ(first_app_id, second_app_id);
   EXPECT_EQ(second_install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-      second_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                      proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(second_app_id));
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             provider()
                 .registrar_unsafe()

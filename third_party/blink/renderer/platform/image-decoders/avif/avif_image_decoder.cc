@@ -492,7 +492,9 @@ bool AVIFImageDecoder::MatchesAVIFSignature(
 }
 
 gfx::ColorSpace AVIFImageDecoder::GetColorSpaceForTesting() const {
-  return GetColorSpace(GetDecoderImage());
+  const auto* image = GetDecoderImage();
+  CHECK(image);
+  return GetColorSpace(image);
 }
 
 void AVIFImageDecoder::ParseMetadata() {
@@ -787,6 +789,9 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   // This variable is named |container| to emphasize the fact that the current
   // contents of decoder_->image come from the container, not any frame.
   const auto* container = GetDecoderImage();
+  if (!container) {
+    return false;
+  }
 
   // The container width and container height are read from either the tkhd
   // (track header) box of a track or the ispe (image spatial extents) property
@@ -911,23 +916,24 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   //
   // In the kAxisAngleToOrientation array, the first dimension is axis (with an
   // offset of 1). The second dimension is angle.
-  constexpr ImageOrientationEnum kAxisAngleToOrientation[3][4] = {
-      // No mirroring.
-      {ImageOrientationEnum::kOriginTopLeft,
-       ImageOrientationEnum::kOriginLeftBottom,
-       ImageOrientationEnum::kOriginBottomRight,
-       ImageOrientationEnum::kOriginRightTop},
-      // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
-      {ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop,
-       ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom},
-      // Left-to-right mirroring. Change Left<->Right in the first row.
-      {ImageOrientationEnum::kOriginTopRight,
-       ImageOrientationEnum::kOriginRightBottom,
-       ImageOrientationEnum::kOriginBottomLeft,
-       ImageOrientationEnum::kOriginLeftTop},
-  };
+  constexpr std::array<std::array<ImageOrientationEnum, 4>, 3>
+      kAxisAngleToOrientation = {{
+          // No mirroring.
+          {ImageOrientationEnum::kOriginTopLeft,
+           ImageOrientationEnum::kOriginLeftBottom,
+           ImageOrientationEnum::kOriginBottomRight,
+           ImageOrientationEnum::kOriginRightTop},
+          // Top-to-bottom mirroring. Change Top<->Bottom in the first row.
+          {ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop,
+           ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom},
+          // Left-to-right mirroring. Change Left<->Right in the first row.
+          {ImageOrientationEnum::kOriginTopRight,
+           ImageOrientationEnum::kOriginRightBottom,
+           ImageOrientationEnum::kOriginBottomLeft,
+           ImageOrientationEnum::kOriginLeftTop},
+      }};
   orientation_ = kAxisAngleToOrientation[axis + 1][angle];
 
   // Determine whether the image can be decoded to YUV.
@@ -999,6 +1005,7 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   }
 
   const auto* image = GetDecoderImage();
+  CHECK(image);
   // Frame size must be equal to container size.
   if (image->width != container_width_ || image->height != container_height_) {
     DVLOG(1) << "Frame size " << image->width << "x" << image->height
@@ -1268,11 +1275,14 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
 }
 
 avifImage* AVIFImageDecoder::GetDecoderImage() const {
-  CHECK(aux_image_ != cc::AuxImage::kGainmap ||
-        (decoder_->image->gainMap != nullptr &&
-         decoder_->image->gainMap->image != nullptr));
-  return aux_image_ == cc::AuxImage::kGainmap ? decoder_->image->gainMap->image
-                                              : decoder_->image;
+  if (aux_image_ == cc::AuxImage::kGainmap) {
+    if (!decoder_->image->gainMap) {
+      DVLOG(1) << "Attempted to access gain map image, but gainMap is nullptr";
+      return nullptr;
+    }
+    return decoder_->image->gainMap->image;
+  }
+  return decoder_->image;
 }
 
 AVIFImageDecoder::AvifIOData::AvifIOData() = default;

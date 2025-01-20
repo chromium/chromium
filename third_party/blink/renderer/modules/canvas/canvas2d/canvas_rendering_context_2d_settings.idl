@@ -7,7 +7,7 @@ dictionary CanvasRenderingContext2DSettings {
     boolean alpha = true;
     boolean desynchronized = false;
     PredefinedColorSpace colorSpace = "srgb";
-    [RuntimeEnabled=CanvasFloatingPoint] CanvasPixelFormat pixelFormat = "uint8";
-    CanvasWillReadFrequently willReadFrequently = "undefined";
+    [RuntimeEnabled=CanvasFloatingPoint] CanvasPixelFormat colorType = "unorm8";
+    boolean willReadFrequently = false;
 };
 

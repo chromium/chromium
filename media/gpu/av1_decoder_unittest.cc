@@ -11,6 +11,7 @@
 
 #include <string.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -551,10 +552,12 @@ TEST_F(AV1DecoderTest, DecodeFilmGrain) {
 TEST_F(AV1DecoderTest, ConfigChange) {
   constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
   constexpr auto kMediaProfile = VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
-  const std::string kSimpleStreams[] = {"bear-av1.webm",
-                                        "bear-av1-480x360.webm"};
-  constexpr gfx::Size kFrameSizes[] = {{320, 240}, {480, 360}};
-  constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
+  const auto kSimpleStreams =
+      std::to_array<std::string>({"bear-av1.webm", "bear-av1-480x360.webm"});
+  constexpr auto kFrameSizes =
+      std::to_array<gfx::Size>({{320, 240}, {480, 360}});
+  constexpr auto kRenderSizes =
+      std::to_array<gfx::Size>({{320, 240}, {480, 360}});
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;
   for (size_t i = 0; i < std::size(kSimpleStreams); ++i) {
@@ -648,10 +651,12 @@ TEST_F(AV1DecoderTest, Reset) {
 TEST_F(AV1DecoderTest, ResetAndConfigChange) {
   constexpr auto kProfile = libgav1::BitstreamProfile::kProfile0;
   constexpr auto kMediaProfile = VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
-  const std::string kSimpleStreams[] = {"bear-av1.webm",
-                                        "bear-av1-480x360.webm"};
-  constexpr gfx::Size kFrameSizes[] = {{320, 240}, {480, 360}};
-  constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
+  const auto kSimpleStreams =
+      std::to_array<std::string>({"bear-av1.webm", "bear-av1-480x360.webm"});
+  constexpr auto kFrameSizes =
+      std::to_array<gfx::Size>({{320, 240}, {480, 360}});
+  constexpr auto kRenderSizes =
+      std::to_array<gfx::Size>({{320, 240}, {480, 360}});
   constexpr uint8_t kBitDepth = 8u;
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;

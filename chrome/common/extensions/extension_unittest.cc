@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/extension.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -192,61 +189,61 @@ TEST(ExtensionTest, GetResourceURLAndPath) {
 }
 
 TEST(ExtensionTest, GetResource) {
-  const FilePath valid_path_test_cases[] = {
-    FilePath(FILE_PATH_LITERAL("manifest.json")),
-    FilePath(FILE_PATH_LITERAL("a/b/c/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("com/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("lpt/manifest.json")),
-  };
-  const FilePath invalid_path_test_cases[] = {
-    // Directory name
-    FilePath(FILE_PATH_LITERAL("src/")),
-    // Contains a drive letter specification.
-    FilePath(FILE_PATH_LITERAL("C:\\manifest.json")),
-    // Use backslash '\\' as separator.
-    FilePath(FILE_PATH_LITERAL("a\\b\\c\\manifest.json")),
-    // Reserved Characters with extension
-    FilePath(FILE_PATH_LITERAL("mani>fest.json")),
-    FilePath(FILE_PATH_LITERAL("mani<fest.json")),
-    FilePath(FILE_PATH_LITERAL("mani*fest.json")),
-    FilePath(FILE_PATH_LITERAL("mani:fest.json")),
-    FilePath(FILE_PATH_LITERAL("mani?fest.json")),
-    FilePath(FILE_PATH_LITERAL("mani|fest.json")),
-    // Reserved Characters without extension
-    FilePath(FILE_PATH_LITERAL("mani>fest")),
-    FilePath(FILE_PATH_LITERAL("mani<fest")),
-    FilePath(FILE_PATH_LITERAL("mani*fest")),
-    FilePath(FILE_PATH_LITERAL("mani:fest")),
-    FilePath(FILE_PATH_LITERAL("mani?fest")),
-    FilePath(FILE_PATH_LITERAL("mani|fest")),
-    // Reserved Names with extension.
-    FilePath(FILE_PATH_LITERAL("com1.json")),
-    FilePath(FILE_PATH_LITERAL("com9.json")),
-    FilePath(FILE_PATH_LITERAL("LPT1.json")),
-    FilePath(FILE_PATH_LITERAL("LPT9.json")),
-    FilePath(FILE_PATH_LITERAL("CON.json")),
-    FilePath(FILE_PATH_LITERAL("PRN.json")),
-    FilePath(FILE_PATH_LITERAL("AUX.json")),
-    FilePath(FILE_PATH_LITERAL("NUL.json")),
-    // Reserved Names without extension.
-    FilePath(FILE_PATH_LITERAL("com1")),
-    FilePath(FILE_PATH_LITERAL("com9")),
-    FilePath(FILE_PATH_LITERAL("LPT1")),
-    FilePath(FILE_PATH_LITERAL("LPT9")),
-    FilePath(FILE_PATH_LITERAL("CON")),
-    FilePath(FILE_PATH_LITERAL("PRN")),
-    FilePath(FILE_PATH_LITERAL("AUX")),
-    FilePath(FILE_PATH_LITERAL("NUL")),
-    // Reserved Names as directory.
-    FilePath(FILE_PATH_LITERAL("com1/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("com9/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("LPT1/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("LPT9/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("CON/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("PRN/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("AUX/manifest.json")),
-    FilePath(FILE_PATH_LITERAL("NUL/manifest.json")),
-  };
+  const auto valid_path_test_cases = std::to_array<FilePath>({
+      FilePath(FILE_PATH_LITERAL("manifest.json")),
+      FilePath(FILE_PATH_LITERAL("a/b/c/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("com/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("lpt/manifest.json")),
+  });
+  const auto invalid_path_test_cases = std::to_array<FilePath>({
+      // Directory name
+      FilePath(FILE_PATH_LITERAL("src/")),
+      // Contains a drive letter specification.
+      FilePath(FILE_PATH_LITERAL("C:\\manifest.json")),
+      // Use backslash '\\' as separator.
+      FilePath(FILE_PATH_LITERAL("a\\b\\c\\manifest.json")),
+      // Reserved Characters with extension
+      FilePath(FILE_PATH_LITERAL("mani>fest.json")),
+      FilePath(FILE_PATH_LITERAL("mani<fest.json")),
+      FilePath(FILE_PATH_LITERAL("mani*fest.json")),
+      FilePath(FILE_PATH_LITERAL("mani:fest.json")),
+      FilePath(FILE_PATH_LITERAL("mani?fest.json")),
+      FilePath(FILE_PATH_LITERAL("mani|fest.json")),
+      // Reserved Characters without extension
+      FilePath(FILE_PATH_LITERAL("mani>fest")),
+      FilePath(FILE_PATH_LITERAL("mani<fest")),
+      FilePath(FILE_PATH_LITERAL("mani*fest")),
+      FilePath(FILE_PATH_LITERAL("mani:fest")),
+      FilePath(FILE_PATH_LITERAL("mani?fest")),
+      FilePath(FILE_PATH_LITERAL("mani|fest")),
+      // Reserved Names with extension.
+      FilePath(FILE_PATH_LITERAL("com1.json")),
+      FilePath(FILE_PATH_LITERAL("com9.json")),
+      FilePath(FILE_PATH_LITERAL("LPT1.json")),
+      FilePath(FILE_PATH_LITERAL("LPT9.json")),
+      FilePath(FILE_PATH_LITERAL("CON.json")),
+      FilePath(FILE_PATH_LITERAL("PRN.json")),
+      FilePath(FILE_PATH_LITERAL("AUX.json")),
+      FilePath(FILE_PATH_LITERAL("NUL.json")),
+      // Reserved Names without extension.
+      FilePath(FILE_PATH_LITERAL("com1")),
+      FilePath(FILE_PATH_LITERAL("com9")),
+      FilePath(FILE_PATH_LITERAL("LPT1")),
+      FilePath(FILE_PATH_LITERAL("LPT9")),
+      FilePath(FILE_PATH_LITERAL("CON")),
+      FilePath(FILE_PATH_LITERAL("PRN")),
+      FilePath(FILE_PATH_LITERAL("AUX")),
+      FilePath(FILE_PATH_LITERAL("NUL")),
+      // Reserved Names as directory.
+      FilePath(FILE_PATH_LITERAL("com1/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("com9/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("LPT1/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("LPT9/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("CON/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("PRN/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("AUX/manifest.json")),
+      FilePath(FILE_PATH_LITERAL("NUL/manifest.json")),
+  });
 
   scoped_refptr<Extension> extension = LoadManifestStrict("empty_manifest",
       "empty.json");

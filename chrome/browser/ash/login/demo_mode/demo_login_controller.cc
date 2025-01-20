@@ -15,15 +15,21 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -53,10 +59,11 @@ constexpr base::TimeDelta kDemoAccountRequestTimeout = base::Seconds(30);
 
 // Demo account Json key in set up demo account request:
 const char kDeviceIdentifier[] = "device_identifier";
-// Attestation based device identifier.
-const char kDeviceADID[] = "cros_adid";
+const char kDeviceMachineId[] = "serial_number";
 const char kLoginScopeDeviceId[] = "login_scope_device_id";
 const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
+const char kDMToken[] = "dm_token";
+const char kClientID[] = "client_id";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -147,14 +154,21 @@ GURL GetDemoAccountUrl(const std::string& endpoint) {
 // TODO(crbug.com/372928818): Should use the same function in
 // c/b/signin/chrome_device_id_helper.h for consistent. However there is
 // circular deps issue with /c/b:browser. Temporary use this one before
-// completion of modularization (crbug.com/364667553) of c/b/signin.
+// completion of modularization (crbug.com/364667553) of c/b/signin. Remove the
+// prefix if device is not in ephemeral mode configured by policy.
 std::string GenerateSigninScopedDeviceId() {
   return kEphemeralUserDeviceIDPrefix +
          base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
+// ChromeOS does not allow empty password for non-ephemeral account. Generate a
+// random string for cryptohome.
+std::string GenerateFakePassword() {
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
+}
+
 void LoginDemoAccount(const std::string& email,
-                      const std::string& gaia_id,
+                      const GaiaId& gaia_id,
                       const std::string& auth_code,
                       const std::string& sign_in_scoped_device_id) {
   // TODO(crbug.com/364195755): Allow list this user in CrosSetting when the
@@ -169,7 +183,7 @@ void LoginDemoAccount(const std::string& email,
           /*account_id=*/account_id,
           /*using_saml=*/false,
           /*using_saml_api=*/false,
-          /*password=*/"",
+          /*password=*/GenerateFakePassword(),
           /*password_attributes=*/SamlPasswordAttributes(),
           /*sync_trusted_vault_keys=*/std::nullopt,
           /*challenge_response_key=*/std::nullopt);
@@ -246,17 +260,30 @@ void OnCleanUpDemoAccountError(
              << static_cast<int>(result_code);
 }
 
-std::string GetDeviceADID() {
-  // TODO(crbug.com/372762477): Get device adid form enterprise. Temporary set
-  // as "0000" right now.
-  return "0000";
+std::string_view GetMachineID() {
+  return (system::StatisticsProvider::GetInstance()->GetMachineID())
+      .value_or(std::string_view());
 }
 
-base::Value::Dict GetDeviceIdentifier(
-    const std::string& login_scope_device_id) {
-  return base::Value::Dict()
-      .Set(kDeviceADID, GetDeviceADID())
-      .Set(kLoginScopeDeviceId, login_scope_device_id);
+void RemoveGaiaUsersOnDevice() {
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return;
+  }
+  // Make a copy of the list since we'll be removing users and the list would
+  // change underneath.
+  const user_manager::UserList user_list = user_manager->GetUsers();
+  for (const user_manager::User* user : user_list) {
+    // Skip if it is ephemeral user since the user will be removed by policy.
+    // Should not remove device local account.
+    if (user_manager->IsEphemeralUser(user) || user->IsDeviceLocalAccount() ||
+        !user->HasGaiaAccount()) {
+      continue;
+    }
+    user_manager->RemoveUser(
+        user->GetAccountId(),
+        user_manager::UserRemovalReason::DEMO_ACCOUNT_CLEAN_UP);
+  }
 }
 
 }  // namespace
@@ -272,16 +299,19 @@ DemoLoginController::~DemoLoginController() = default;
 void DemoLoginController::OnLoginScreenShown() {
   // Stop observe login screen since it may get invoked in session. Demo account
   // should be setup only once for each session. Follow up response will
-  // instruct retry or fallback to public account.
+  // instruct retry or fall back to public account.
   scoped_observation_.Reset();
 
   if (!demo_mode::IsDeviceInDemoMode()) {
     return;
   }
+  // Try demo account login first by disable auto-login to managed guest
+  // session.
+  demo_mode::SetShouldFallBackMGS(false);
+  // TODO(crbug.com/387572263): figure out whether should ignore the power idle
+  // policy when fallback to MGS when sign in is enable.
+  demo_mode::SetDoNothingWhenPowerIdle();
 
-  // TODO(crbug.com/370806573): Skip auto login public account in
-  // `ExistingUserController::StartAutoLoginTimer` if this feature enable
-  // Maybe add a policy.
   MaybeCleanupPreviousDemoAccount();
 }
 
@@ -295,14 +325,26 @@ void DemoLoginController::SetCleanUpFailedCallbackForTest(
   clean_up_failed_callback_for_testing_ = std::move(callback);
 }
 
+void DemoLoginController::SetDeviceCloudPolicyManagerForTesting(
+    policy::CloudPolicyManager* policy_manager) {
+  policy_manager_for_testing_ = policy_manager;
+}
+
 void DemoLoginController::SendSetupDemoAccountRequest() {
   CHECK(!url_loader_);
 
   // TODO(crbug.com/372333479): Demo server use auth the request with device
   // integrity check. Attach credential to the request once it is ready.
   const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
+  std::optional<base::Value::Dict> device_identifier =
+      GetDeviceIdentifier(sign_in_scoped_device_id);
+  if (!device_identifier) {
+    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    return;
+  }
+
   auto post_data = base::Value::Dict().Set(
-      kDeviceIdentifier, GetDeviceIdentifier(sign_in_scoped_device_id));
+      kDeviceIdentifier, std::move(device_identifier.value()));
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kSetupDemoAccountEndpoint),
                                  kSetupAccountTrafficAnnotation);
@@ -322,8 +364,6 @@ void DemoLoginController::OnSetupDemoAccountComplete(
     HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
                                   std::move(response_body));
   } else {
-    // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
-    // connection error) and fallback to MGS.
     OnSetupDemoAccountError(result);
   }
 }
@@ -348,39 +388,60 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
 
   auto* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
-
-  LoginDemoAccount(*email, *gaia_id, *auth_code, sign_in_scoped_device_id);
+  local_state->SetString(prefs::kDemoModeSessionIdentifier,
+                         sign_in_scoped_device_id);
+  // TODO(crbug.com/383198613): Wait device local account policy loaded since we
+  // applied that policy to demo account.
+  LoginDemoAccount(*email, GaiaId(*gaia_id), *auth_code,
+                   sign_in_scoped_device_id);
 }
 
 void DemoLoginController::OnSetupDemoAccountError(
     const DemoLoginController::ResultCode result_code) {
   // TODO(crbug.com/372333479): Instruct how to do retry on failed according to
   // the error code.
-  LOG(ERROR) << "Failed to set up demo account. Result code: "
-             << static_cast<int>(result_code);
   if (setup_failed_callback_for_testing_) {
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
+
+  // Login public account session when set up failed.
+  demo_mode::SetShouldFallBackMGS(true);
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
+  existing_user_controller->ConfigureAutoLogin();
 }
 
 void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   CHECK(!url_loader_);
 
-  const std::string gaia_id_to_clean_up =
-      g_browser_process->local_state()->GetString(prefs::kDemoAccountGaiaId);
-  // For the first session of demo account, `gaia_id_to_clean_up` could be
-  // empty.
-  if (gaia_id_to_clean_up.empty()) {
+  // Remove gaia users on device. Usually there is only 1 gaia user from last
+  // session. No-ops if device is in ephemeral mode.
+  RemoveGaiaUsersOnDevice();
+
+  // Clean up last gaia user on server side.
+  auto* local_state = g_browser_process->local_state();
+  const GaiaId gaia_id_to_clean_up =
+      GaiaId(local_state->GetString(prefs::kDemoAccountGaiaId));
+  const std::string login_scope_device_id =
+      local_state->GetString(prefs::kDemoModeSessionIdentifier);
+  // For the first session of demo account, `gaia_id_to_clean_up and session
+  // identifier`could be empty.
+  if (gaia_id_to_clean_up.empty() || login_scope_device_id.empty()) {
     SendSetupDemoAccountRequest();
     return;
   }
 
   auto post_data = base::Value::Dict();
-  // TODO(crbug.com/370808139): Get last login scope device id in locale state
-  // use "0000" for now.
-  post_data.Set(kDeviceIdentifier,
-                GetDeviceIdentifier(/*login_scope_device_id=*/"0000"));
-  post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up);
+
+  std::optional<base::Value::Dict> device_identifier =
+      GetDeviceIdentifier(login_scope_device_id);
+  if (!device_identifier) {
+    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    return;
+  }
+
+  post_data.Set(kDeviceIdentifier, std::move(device_identifier.value()));
+  post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up.ToString());
 
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kCleanUpDemoAccountEndpoint),
@@ -406,6 +467,49 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
   url_loader_.reset();
   // Try request for new demo account regardless clean up result.
   SendSetupDemoAccountRequest();
+}
+
+std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
+    const std::string& login_scope_device_id) {
+  auto* platform_part = g_browser_process->platform_part();
+  if (!platform_part) {
+    LOG(ERROR) << "platform_part is null.";
+    return std::nullopt;
+  }
+  auto* policy_connector_ash = platform_part->browser_policy_connector_ash();
+  if (!policy_connector_ash) {
+    LOG(ERROR) << "browser_policy_connector_ash is null.";
+    return std::nullopt;
+  }
+  // The class member `policy_manager_for_testing_` is set during testing.
+  // If it's not set, it means we're not in the testing environment, so we
+  // can get the real policy manager from `policy_connector_ash`.
+  policy::CloudPolicyManager* policy_manager =
+      policy_manager_for_testing_
+          ? policy_manager_for_testing_
+          : policy_connector_ash->GetDeviceCloudPolicyManager();
+  if (!policy_manager) {
+    LOG(ERROR)
+        << "device_cloud_policy_manager is null, or it's not set for testing.";
+    return std::nullopt;
+  }
+  auto* core = policy_manager->core();
+  if (!core) {
+    LOG(ERROR) << "Cloud_policy_core is null.";
+    return std::nullopt;
+  }
+  policy::CloudPolicyClient* client = core->client();
+  if (!client) {
+    LOG(ERROR) << "cloud_policy_client is null.";
+    return std::nullopt;
+  }
+  std::string dm_token = client->dm_token();
+  std::string client_id = client->client_id();
+  return base::Value::Dict()
+      .Set(kDMToken, dm_token)
+      .Set(kClientID, client_id)
+      .Set(kDeviceMachineId, GetMachineID())
+      .Set(kLoginScopeDeviceId, login_scope_device_id);
 }
 
 }  // namespace ash

@@ -40,7 +40,7 @@ struct AfterStartupTask {
                    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                    base::OnceClosure task)
       : from_here(from_here), task_runner(task_runner), task(std::move(task)) {}
-  ~AfterStartupTask() {}
+  ~AfterStartupTask() = default;
 
   const base::Location from_here;
   const scoped_refptr<base::SequencedTaskRunner> task_runner;
@@ -139,9 +139,8 @@ void SetBrowserStartupIsComplete() {
 // Observes the first visible page load and sets the startup complete
 // flag accordingly. Ownership is passed to the Performance Manager
 // after creation.
-class StartupObserver
-    : public performance_manager::GraphOwned,
-      public performance_manager::PageNode::ObserverDefaultImpl {
+class StartupObserver : public performance_manager::GraphOwned,
+                        public performance_manager::PageNodeObserver {
  public:
   StartupObserver(const StartupObserver&) = delete;
   StartupObserver& operator=(const StartupObserver&) = delete;

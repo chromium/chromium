@@ -10,7 +10,6 @@ assert(is_chromeos_ash, "Proximity Auth is ash-chrome only")
 js_type_check("closure_compile") {
   deps = [
     ":logs",
-    ":proximity_auth",
     ":webui",
   ]
 }
@@ -21,12 +20,4 @@ js_library("webui") {
 
 js_library("logs") {
   deps = [ ":webui" ]
-}
-
-js_library("proximity_auth") {
-  deps = [
-    ":logs",
-    ":webui",
-    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
-  ]
 }

@@ -129,13 +129,11 @@ struct App {
 [Extensible]
 enum AppType {
   [Default] kUnknown = 0,
-  kArc,           // Android app.
-  kWeb,           // Web app.
-  kSystemWeb,     // System web app.
-  [MinVersion=1]
-  kStandaloneBrowserChromeApp,     // Chrome app.
-  [MinVersion=17]
-  kStandaloneBrowserExtension,     // Chrome extension.
+  kArc = 1,           // Android app.
+  kWeb = 2,           // Web app.
+  kSystemWeb = 3,     // System web app.
+  // kStandaloneBrowserChromeApp = 4,  // Removed. No longer used.
+  // kStandaloneBrowserExtension = 5,  // Removed. No longer used.
 };
 
 // Whether an app is ready to launch, i.e. installed.

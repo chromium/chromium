@@ -278,6 +278,17 @@ bool PropertyTreeManager::UsesCompositedScrolling(
   return cc_scroll && cc_scroll->is_composited;
 }
 
+bool PropertyTreeManager::UsesRasterInducingScroll(
+    const cc::LayerTreeHost& host,
+    const ScrollPaintPropertyNode& scroll) {
+  const auto* property_trees = host.property_trees();
+  const auto* cc_scroll = property_trees->scroll_tree().Node(
+      scroll.CcNodeId(property_trees->sequence_number()));
+  return cc_scroll &&
+         property_trees->scroll_tree().CanRealizeScrollsOnPendingTree(
+             *cc_scroll);
+}
+
 void PropertyTreeManager::SetupRootTransformNode() {
   // cc is hardcoded to use transform node index 1 for device scale and
   // transform.
@@ -463,6 +474,14 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   if (transform_node.IsAffectedByOuterViewportBoundsDelta()) {
     compositor_node.moved_by_outer_viewport_bounds_delta_y = true;
     transform_tree_.AddNodeAffectedByOuterViewportBoundsDelta(id);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDynamicSafeAreaInsetsSupportedByCC)) {
+    if (transform_node.IsAffectedBySafeAreaBottom()) {
+      compositor_node.moved_by_safe_area_bottom = true;
+      transform_tree_.AddNodeAffectedBySafeAreaInsetBottom(id);
+    }
   }
 
   compositor_node.in_subtree_of_page_scale_layer =

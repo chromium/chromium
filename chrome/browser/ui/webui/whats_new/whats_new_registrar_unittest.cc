@@ -5,12 +5,13 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/action_suffix_reader.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "components/user_education/webui/whats_new_registry.h"
-#include "components/user_education/webui/whats_new_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,31 +39,6 @@ void RegisterWhatsNewEditionsForTests(whats_new::WhatsNewRegistry* registry) {
       whats_new::WhatsNewEdition(kTestEdition, "mickeyburks@chromium.org"));
 }
 
-class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
- public:
-  MockWhatsNewStorageService() = default;
-  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
-  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
-  MOCK_METHOD(int,
-              GetModuleQueuePosition,
-              (const std::string_view),
-              (const, override));
-  MOCK_METHOD(std::optional<int>,
-              GetUsedVersion,
-              (std::string_view edition_name),
-              (const override));
-  MOCK_METHOD(std::optional<std::string_view>,
-              FindEditionForCurrentVersion,
-              (),
-              (const, override));
-  MOCK_METHOD(bool, IsUsedEdition, (const std::string_view), (const, override));
-  MOCK_METHOD(void, SetModuleEnabled, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearModule, (const std::string_view), (override));
-  MOCK_METHOD(void, SetEditionUsed, (const std::string_view), (override));
-  MOCK_METHOD(void, ClearEdition, (const std::string_view), (override));
-  MOCK_METHOD(void, Reset, (), (override));
-};
-
 }  // namespace
 
 TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
@@ -80,8 +56,8 @@ TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
   RegisterWhatsNewModules(&registry);
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
-  for (const auto& module : modules) {
-    const auto metric_name = module.metric_name();
+  for (const auto& [key, module] : modules) {
+    const auto metric_name = module.unique_name();
     if (!base::Contains(*variants, metric_name)) {
       missing_modules.emplace_back(metric_name);
     }
@@ -110,8 +86,8 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
   RegisterWhatsNewModules(&registry);
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
-  for (const auto& module : modules) {
-    const auto metric_name = module.metric_name();
+  for (const auto& [key, module] : modules) {
+    const auto metric_name = module.unique_name();
     if (!base::Contains(suffixes[0], metric_name)) {
       missing_modules.emplace_back(metric_name);
     }
@@ -138,9 +114,8 @@ TEST(WhatsNewRegistrarTest, CheckEditionActions) {
       std::make_unique<MockWhatsNewStorageService>());
   RegisterWhatsNewEditions(&registry);
   RegisterWhatsNewEditionsForTests(&registry);
-  const auto& editions = registry.editions();
-  for (const auto& edition : editions) {
-    const auto metric_name = edition.metric_name();
+  for (const auto& [key, edition] : registry.editions()) {
+    const auto metric_name = edition.unique_name();
     if (!base::Contains(suffixes[0], metric_name)) {
       missing_editions.emplace_back(metric_name);
     }

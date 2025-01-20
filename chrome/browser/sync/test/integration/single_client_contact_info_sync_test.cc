@@ -13,9 +13,9 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -146,6 +146,10 @@ class SingleClientContactInfoSyncTest : public SyncTest {
   autofill::PersonalDataManager* GetPersonalDataManager() const {
     return contact_info_helper::GetPersonalDataManager(GetProfile(0));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
@@ -267,26 +271,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
                   .Wait());
 }
 
-// Specialized fixture that enables AutofillAccountProfilesOnSignIn.
-class SingleClientContactInfoTransportSyncTest
-    : public SingleClientContactInfoSyncTest {
- public:
-  SingleClientContactInfoTransportSyncTest() {
-    transport_feature_.InitWithFeatures(
-        /*enabled_features=*/{syncer::
-                                  kSyncEnableContactInfoDataTypeInTransportMode,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList transport_feature_;
-};
-
-// When SyncEnableContactInfoDataTypeInTransportMode is enabled, the
-// CONTACT_INFO type should run in transport mode and the availability of
+// CONTACT_INFO should be able to run in transport mode and the availability of
 // account profiles should depend on the signed-in state.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        TransportMode) {
   AutofillProfile profile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
@@ -309,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        DeleteAccountDataInErrorState) {
   // Add a profile to account storage.
   AutofillProfile profile = BuildTestAccountProfile();
@@ -358,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 // Account storage is not enabled when the user is in auth error.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        AuthErrorState) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());
@@ -404,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 // Regression test for https://crbug.com/340194452
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());

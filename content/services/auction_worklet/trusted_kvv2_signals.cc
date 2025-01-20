@@ -158,6 +158,7 @@ void TrustedKVv2Signals::StartKVv2Download(
       AuctionDownloader::MimeType::kAdAuctionTrustedSignals,
       std::move(post_body),
       /*content_type=*/kTrustedSignalsKVv2EncryptionRequestMediaType,
+      /*is_trusted_bidding_signals_kvv1_download=*/false,
       AuctionDownloader::ResponseStartedCallback(),
       base::BindOnce(&TrustedKVv2Signals::OnKVv2DownloadComplete,
                      base::Unretained(this)),

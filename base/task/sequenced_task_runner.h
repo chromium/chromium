@@ -24,7 +24,7 @@ class ScriptedIdleTaskController;
 class TimerBase;
 class TimerBasedTickProvider;
 class WebRtcTaskQueue;
-}
+}  // namespace blink
 namespace IPC {
 class ChannelAssociatedGroupController;
 }  // namespace IPC
@@ -48,7 +48,7 @@ class PreFreezeBackgroundMemoryTrimmer;
 namespace internal {
 class DelayTimerBase;
 class DelayedTaskManager;
-}
+}  // namespace internal
 class DeadlineTimer;
 class MetronomeTimer;
 class SingleThreadTaskRunner;
@@ -297,8 +297,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // task_runner->ReleaseSoon(std::move(foo_scoped_refptr));
   template <class T>
   void ReleaseSoon(const Location& from_here, scoped_refptr<T>&& object) {
-    if (!object)
+    if (!object) {
       return;
+    }
 
     DeleteOrReleaseSoonInternal(from_here, &ReleaseHelper<T>::DoRelease,
                                 object.release());
@@ -403,8 +404,9 @@ struct BASE_EXPORT OnTaskRunnerDeleter {
   // For compatibility with std:: deleters.
   template <typename T>
   void operator()(const T* ptr) {
-    if (ptr)
+    if (ptr) {
       task_runner_->DeleteSoon(FROM_HERE, ptr);
+    }
   }
 
   scoped_refptr<SequencedTaskRunner> task_runner_;

@@ -55,9 +55,6 @@ PageNode::~PageNode() = default;
 PageNodeObserver::PageNodeObserver() = default;
 PageNodeObserver::~PageNodeObserver() = default;
 
-PageNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-PageNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
 std::ostream& operator<<(
     std::ostream& os,
     performance_manager::PageNode::EmbeddingType embedding_type) {

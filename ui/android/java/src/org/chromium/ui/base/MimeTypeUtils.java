@@ -8,15 +8,17 @@ import android.os.Build;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility methods for determining and working with mime types. */
+@NullMarked
 public class MimeTypeUtils {
     /** The MIME type for a plain text objects dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TEXT = "chrome/text";
@@ -26,12 +28,6 @@ public class MimeTypeUtils {
 
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
-
-    /** The MIME type for text. */
-    public static final String TEXT_MIME_TYPE = "text/plain";
-
-    /** The MIME type for an image. */
-    public static final String IMAGE_MIME_TYPE = "image/*";
 
     /** The MIME type for pdf. */
     public static final String PDF_MIME_TYPE = "application/pdf";

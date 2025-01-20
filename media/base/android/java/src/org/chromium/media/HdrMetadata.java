@@ -12,10 +12,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @JNINamespace("media")
+@NullMarked
 class HdrMetadata {
     private static final int MAX_CHROMATICITY = 50000; // Defined in CTA-861.3.
 

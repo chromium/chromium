@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
@@ -24,6 +25,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -265,9 +267,9 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // We cannot add an element identifier to the dialog when it's built using
       // DialogModel::Builder. Thus, we check for its existence by checking the
       // visibility of one of its elements.
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId),
-      PressButton(kExtensionsMv2DisabledDialogRemoveButtonElementId),
-      WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      WaitForShow(kMv2DisabledDialogRemoveButtonElementId),
+      PressButton(kMv2DisabledDialogRemoveButtonElementId),
+      WaitForHide(kMv2DisabledDialogRemoveButtonElementId),
 
       // Clicking the remove button uninstalls the extension.
       CheckResult(
@@ -281,8 +283,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 3: Dialog is not shown again, since user acknowledged it.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        OnRemoveSelected) {
-  RunTestSequence(
-      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+  RunTestSequence(EnsureNotPresent(kMv2DisabledDialogRemoveButtonElementId));
 }
 
 // Tests that the extensions page is opened when the manage button is selected,
@@ -314,9 +315,9 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // We cannot add an element identifier to the dialog when it's built using
       // DialogModel::Builder. Thus, we check for its existence by checking the
       // visibility of one of its elements.
-      WaitForShow(kExtensionsMv2DisabledDialogManageButtonElementId),
-      PressButton(kExtensionsMv2DisabledDialogManageButtonElementId),
-      WaitForHide(kExtensionsMv2DisabledDialogManageButtonElementId),
+      WaitForShow(kMv2DisabledDialogManageButtonElementId),
+      PressButton(kMv2DisabledDialogManageButtonElementId),
+      WaitForHide(kMv2DisabledDialogManageButtonElementId),
       // Clicking on the manage button should open the extensions page.
       WaitForWebContentsReady(kTabId, GURL("chrome://extensions")),
       // Extension remains disabled.
@@ -330,8 +331,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
 // Stage 3: Dialog is not shown again, since user acknowledged it.
 IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        OnManageSelected) {
-  RunTestSequence(
-      EnsureNotPresent(kExtensionsMv2DisabledDialogManageButtonElementId));
+  RunTestSequence(EnsureNotPresent(kMv2DisabledDialogManageButtonElementId));
 }
 
 // Tests the dialog is shown again on new sessions if the user didn't take an
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // We cannot add an element identifier to the dialog when it's built using
       // DialogModel::Builder. Thus, we check for its existence by checking the
       // visibility of one of its elements.
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId)
+      WaitForShow(kMv2DisabledDialogRemoveButtonElementId)
       // End the test without taking a user action on the dialog.
   );
 }
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
           },
           true),
       // Dialog is shown again.
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+      WaitForShow(kMv2DisabledDialogRemoveButtonElementId));
 }
 
 // Tests that only MV2 disabled extensions that can be uninstalled are included
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // We cannot add an element identifier to the dialog when it's built using
       // DialogModel::Builder. Thus, we check for its existence by checking the
       // visibility of one of its elements.
-      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      EnsureNotPresent(kMv2DisabledDialogRemoveButtonElementId),
       // Disable extensions affected by the MV2 deprecation.
       Do([&]() {
         enable_mv2.reset();
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
         views::Widget* dialog_widget = dialog_show_waiter.WaitIfNeededAndGet();
         ASSERT_TRUE(dialog_widget);
       }),
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      WaitForShow(kMv2DisabledDialogRemoveButtonElementId),
       // Verify only internal extension is on the dialog.
       // Note: ideally we would verify the extension name in the title dialog.
       // However, there is no way to add an element identifier to the dialog
@@ -457,14 +457,13 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // This is complemented by next steps which verify which extension was
       // uninstalled.
       CheckViewProperty(
-          kExtensionsMv2DisabledDialogParagraphElementId,
-          &views::Label::GetText,
+          kMv2DisabledDialogParagraphElementId, &views::Label::GetText,
           l10n_util::GetPluralStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
               /*number=*/1)),
       // Select remove option.
-      PressButton(kExtensionsMv2DisabledDialogRemoveButtonElementId),
-      WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      PressButton(kMv2DisabledDialogRemoveButtonElementId),
+      WaitForHide(kMv2DisabledDialogRemoveButtonElementId),
 
       // Internal extension is uninstalled but policy extension remains
       // installed.
@@ -532,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // built using DialogModel::Builder. Thus, we check for its
       // existence by checking the visibility of one of its
       // elements.
-      WaitForShow(kExtensionsMv2DisabledDialogParagraphElementId),
+      WaitForShow(kMv2DisabledDialogParagraphElementId),
       // Verify the three extensions are on the dialog.
       // Note: ideally we would verify the extension entries in the
       // dialog. However, we cannot assign a different element id to
@@ -541,8 +540,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // string and that the correct extension info was provided to
       // the dialog.
       CheckViewProperty(
-          kExtensionsMv2DisabledDialogParagraphElementId,
-          &views::Label::GetText,
+          kMv2DisabledDialogParagraphElementId, &views::Label::GetText,
           l10n_util::GetPluralStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
               /*number=*/3)));
@@ -572,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
       // Note: We cannot add an element identifier to the dialog when
       // it's built using DialogModel::Builder. Thus, we check for its existence
       // by checking the visibility of one of its elements.
-      WaitForShow(kExtensionsMv2DisabledDialogParagraphElementId));
+      WaitForShow(kMv2DisabledDialogParagraphElementId));
 
   EXPECT_TRUE(HasExtensionByName("Extension A",
                                  extension_registry()->disabled_extensions()));
@@ -614,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
                 extension->id());
           },
           true),
-      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+      EnsureNotPresent(kMv2DisabledDialogRemoveButtonElementId));
 }
 // Stage 2: Dialog is visible and user acknowledges it during 'disabled with
 // re-enabled' experiment stage.
@@ -633,9 +631,9 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       // We cannot add an element identifier to the dialog when it's built using
       // DialogModel::Builder. Thus, we check for its existence by checking the
       // visibility of one of its elements.
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      WaitForShow(kMv2DisabledDialogRemoveButtonElementId),
       PressButton(views::BubbleFrameView::kCloseButtonElementId),
-      WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+      WaitForHide(kMv2DisabledDialogRemoveButtonElementId));
 }
 // Stage 3: Dialog is not shown again during 'disabled with re-enabled'
 // experiment stage.
@@ -644,16 +642,14 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
   EXPECT_EQ(GetActiveExperimentStage(),
             MV2ExperimentStage::kDisableWithReEnable);
 
-  RunTestSequence(
-      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+  RunTestSequence(EnsureNotPresent(kMv2DisabledDialogRemoveButtonElementId));
 }
 // Stage 4: Dialog is shown again for 'unsupported' experiment stage.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
                        AcknowledgementResetBetweenExperiments) {
   EXPECT_EQ(GetActiveExperimentStage(), MV2ExperimentStage::kUnsupported);
 
-  RunTestSequence(
-      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+  RunTestSequence(WaitForShow(kMv2DisabledDialogRemoveButtonElementId));
 }
 
 }  // namespace extensions

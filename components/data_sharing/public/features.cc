@@ -5,8 +5,12 @@
 #include "components/data_sharing/public/features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace data_sharing::features {
+namespace {
+const char kDataSharingDefaultUrl[] = "https://www.google.com/chrome/tabshare/";
+}
 
 BASE_FEATURE(kDataSharingFeature,
              "DataSharing",
@@ -16,13 +20,15 @@ BASE_FEATURE(kDataSharingJoinOnly,
              "DataSharingJoinOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataSharingAndroidV2,
-             "DataSharingAndroidV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
-    /*default_value=*/"https://www.chromium.org/data_sharing/");
+    kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kDataSharingGroupDataPeriodicPollingInterval(
+        &kDataSharingFeature,
+        "data_sharing_group_data_periodic_polling_interval",
+        base::Days(1));
 
 }  // namespace data_sharing::features

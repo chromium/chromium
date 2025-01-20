@@ -49,9 +49,10 @@ class DesktopMediaPaneView : public views::View {
 #if BUILDFLAG(IS_MAC)
   bool PermissionRequired() const;
   void MakePermissionPaneView();
-#endif
 
   const DesktopMediaList::Type type_;
+#endif
+
   raw_ptr<views::BoxLayout> layout_ = nullptr;
   raw_ptr<DesktopMediaContentPaneView> content_pane_view_ = nullptr;
   raw_ptr<DesktopMediaPermissionPaneViewMac> permission_pane_view_ = nullptr;

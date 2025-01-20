@@ -5,14 +5,23 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_WINDOW_CLOSER_H_
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_WINDOW_CLOSER_H_
 
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "content/public/browser/browser_thread.h"
+#include "ui/views/widget/widget_observer.h"
 
-// Used to close the GMSCore dialog window which disrupts the attract
-// loop during demo mode sessions.
-class DemoModeWindowCloser : public apps::InstanceRegistry::Observer {
+// Used to close apps for demo mode when device is idle or to close the GMSCore
+// dialog window immediately which disrupts the attract loop during demo mode
+// sessions.
+class DemoModeWindowCloser : public apps::InstanceRegistry::Observer,
+                             public BrowserListObserver {
  public:
-  DemoModeWindowCloser();
+  using LaunchDemoAppCallback = base::RepeatingCallback<void()>;
+
+  explicit DemoModeWindowCloser(LaunchDemoAppCallback launch_demo_app_callback);
   DemoModeWindowCloser(const DemoModeWindowCloser&) = delete;
   DemoModeWindowCloser& operator=(const DemoModeWindowCloser&) = delete;
   ~DemoModeWindowCloser() override;
@@ -22,11 +31,34 @@ class DemoModeWindowCloser : public apps::InstanceRegistry::Observer {
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override;
+
+  // Trigger closing apps async.
+  void StartClosingApps();
+
  private:
+  // Return true if the GMS core window presented and processed it successfully.
+  bool CloseGMSCoreWindowIfPresent(const apps::InstanceUpdate& update);
+
+  void StartClosingWidgets();
+
+  // `True` when start closing browser triggered by `StartClosingApps` and flip
+  // to `false` when all browsers closed.
+  bool is_reseting_browser_ = false;
+
+  // Triggered when all browser are closed and `is_closing_apps_` is true.
+  LaunchDemoAppCallback launch_demo_app_callback_;
   std::string gms_core_app_id_;
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       scoped_observation_{this};
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_observation_{this};
+
+  // Keep track list of open apps with widget:
+  std::set<base::UnguessableToken> opened_apps_with_widget_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_WINDOW_CLOSER_H_

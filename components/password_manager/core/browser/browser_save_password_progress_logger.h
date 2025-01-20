@@ -40,12 +40,19 @@ class BrowserSavePasswordProgressLogger
       const BrowserSavePasswordProgressLogger&) = delete;
   ~BrowserSavePasswordProgressLogger() override;
 
-  // Sanitizes `form` input and passes it to `SendLog` for display.
+  // Sanitizes `form` input and passes it to `SendLog` to display with matching
+  // server `predictions`.
   void LogFormDataWithServerPredictions(
-      StringID label,
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
+          predictions);
+
+  // Sanitizes `form` input and passes it to `SendLog` to display with matching
+  // model `predictions`.
+  void LogFormDataWithModelPredictions(
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldRendererId, autofill::FieldType>&
           predictions);
 
   // Browser-specific addition to the base class' Log* methods. The input is
@@ -106,6 +113,9 @@ class BrowserSavePasswordProgressLogger
   // Returns the string representation of a binary password attribute.
   static std::string BinaryPasswordAttributeLogString(StringID string_id,
                                                       bool attribute_value);
+
+  // Returns the string representation of FormData attributes.
+  std::string GetFormDataLog(const autofill::FormData& form);
 };
 
 }  // namespace password_manager

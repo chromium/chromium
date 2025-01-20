@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/default_session_controller.h"
@@ -302,7 +301,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // invoked exactly one time.
   virtual void AddOnInitializedCallback(OnInitializedCallback callback) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the config of a specific feature after initialization. The new
   // config will replace the existing cofig.
   // Calling this method requires the Tracker to already have been initialized.

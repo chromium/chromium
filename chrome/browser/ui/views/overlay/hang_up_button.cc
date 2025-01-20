@@ -21,8 +21,9 @@ HangUpButton::HangUpButton(PressedCallback callback)
 }
 
 void HangUpButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImage();
 }

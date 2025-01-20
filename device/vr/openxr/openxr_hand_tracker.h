@@ -95,7 +95,8 @@ class OpenXrHandTracker {
   const bool mesh_scale_enabled_;
   const AnonymizationStrategy anonymization_strategy_;
 
-  XrHandJointLocationEXT joint_locations_buffer_[XR_HAND_JOINT_COUNT_EXT];
+  std::array<XrHandJointLocationEXT, XR_HAND_JOINT_COUNT_EXT>
+      joint_locations_buffer_;
   XrHandJointLocationsEXT locations_{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
   XrHandTrackingScaleFB mesh_scale_{XR_TYPE_HAND_TRACKING_SCALE_FB};
 };

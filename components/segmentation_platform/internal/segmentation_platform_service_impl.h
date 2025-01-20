@@ -116,6 +116,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
       AnnotatedNumericResultCallback callback) override;
+  void GetInputKeysForModel(const std::string& segmentation_key,
+                            InputContextKeysCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
   void CollectTrainingData(SegmentId segment_id,

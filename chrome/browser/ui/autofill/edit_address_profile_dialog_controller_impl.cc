@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+
 #include <string>
 
-#include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,23 +96,22 @@ void EditAddressProfileDialogControllerImpl::OnDialogClosed(
     AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile_with_edits) {
   std::move(on_user_decision_callback_).Run(decision, profile_with_edits);
-  dialog_view_ = nullptr;
+  dialog_view_.reset();
 }
 
 void EditAddressProfileDialogControllerImpl::WebContentsDestroyed() {
   HideDialog();
 }
 
-void EditAddressProfileDialogControllerImpl::HideDialog() {
-  if (dialog_view_) {
-    dialog_view_->Hide();
-    dialog_view_ = nullptr;
-  }
-}
-
 void EditAddressProfileDialogControllerImpl::SetViewFactoryForTest(
     EditAddressProfileViewTestingFactory factory) {
   view_factory_for_test_ = std::move(factory);
+}
+
+void EditAddressProfileDialogControllerImpl::HideDialog() {
+  if (dialog_view_) {
+    dialog_view_->Hide();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(EditAddressProfileDialogControllerImpl);

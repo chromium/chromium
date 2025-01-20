@@ -53,6 +53,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -127,7 +128,7 @@ class FullRestoreTestHelper {
  public:
   FullRestoreTestHelper(
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       FakeChromeUserManager* fake_user_manager,
       TestingProfileManager* profile_manager,
       sync_preferences::TestingPrefServiceSyncable* pref_service) {
@@ -232,7 +233,7 @@ class FullRestoreServiceTest : public testing::Test {
     CHECK(profile_manager_->SetUp());
     RegisterUserProfilePrefs(testing_pref_service_->registry());
     test_helper_ = std::make_unique<FullRestoreTestHelper>(
-        "usertest@gmail.com", "1234567890", fake_user_manager_.Get(),
+        "usertest@gmail.com", GaiaId("1234567890"), fake_user_manager_.Get(),
         profile_manager_.get(), testing_pref_service_.get());
     scoped_feature_list_.InitAndDisableFeature(features::kForestFeature);
   }
@@ -802,7 +803,7 @@ class FullRestoreServiceMultipleUsersTest
  protected:
   FullRestoreServiceMultipleUsersTest() {
     test_helper2_ = std::make_unique<FullRestoreTestHelper>(
-        "user2@gmail.com", "111111", fake_user_manager(),
+        "user2@gmail.com", GaiaId("111111"), fake_user_manager(),
         profile_manager_.get(), testing_pref_service_.get());
     CreateRestoreData(profile2());
   }
@@ -1245,6 +1246,22 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
   EXPECT_TRUE(allow_save());
 }
 
+// Test that the informed restore dialog is not shown if the previous session
+// was crashed, there was full restore data and the restore option is always.
+// Regression test for crbug.com/388309832.
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
+       NoInformedRestoreSessionIfCrash) {
+  SetRestoreOption(RestoreOption::kAlways);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+}
+
 TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
        AskEveryTimeAndRestore) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
@@ -1266,7 +1283,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
   EXPECT_TRUE(allow_save());
 }
 
-// Test tha for an existing user, if re-image, do not show the informed restore
+// Test that for an existing user, if re-image, do not show the informed restore
 // dialog for the first run.
 TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
   // Set the restore pref setting to simulate sync for the first time.

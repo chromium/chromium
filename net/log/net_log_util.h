@@ -15,10 +15,19 @@ namespace net {
 
 class URLRequestContext;
 
+// Request mode for GetNetConstants.
+enum class NetConstantsRequestMode {
+  // Requests all constants including field trials. This is the default mode.
+  kDefault,
+  // Requests only minimum constants. Used for tracing metadata.
+  kTracing,
+};
+
 // Utility methods for creating NetLog dumps.
 
 // Creates a dictionary containing a legend for net/ constants.
-NET_EXPORT base::Value::Dict GetNetConstants();
+NET_EXPORT base::Value::Dict GetNetConstants(
+    NetConstantsRequestMode request_mode = NetConstantsRequestMode::kDefault);
 
 // Retrieves a dictionary containing information about the current state of
 // |context|.

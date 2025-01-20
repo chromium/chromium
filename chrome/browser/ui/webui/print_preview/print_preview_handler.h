@@ -263,8 +263,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |callback_id|: The javascript callback to run.
   // |error|: The returned print job error. Useful for reporting a specific
   //     error. None type implies no error.
-  void OnPrintResult(const std::string& callback_id,
-                     const base::Value& error);
+  void OnPrintResult(const std::string& callback_id, const base::Value& error);
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Called when enterprise policy returns a verdict.

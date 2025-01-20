@@ -34,7 +34,7 @@
 
 namespace ash {
 
-using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class AccessibilityPrivateApiTest
     : public extensions::ExtensionApiTest,

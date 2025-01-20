@@ -35,8 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/permissions/permission_manager.h"
@@ -413,10 +412,9 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
         DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN);
   }
 
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetForWebContents(web_contents());
-  if (web_app_provider &&
-      web_app_provider->ui_manager().IsInAppWindow(web_contents())) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents());
+  if (tab_helper && tab_helper->is_in_app_window()) {
     // Do not discard Desktop PWA windows. Preserve native-app experience.
     decision_details->AddReason(DecisionFailureReason::LIVE_WEB_APP);
   }
@@ -432,15 +430,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
     DCHECK(decision_details->IsPositive());
   }
   return decision_details->IsPositive();
-}
-
-ukm::SourceId TabLifecycleUnitSource::TabLifecycleUnit::GetUkmSourceId() const {
-  resource_coordinator::ResourceCoordinatorTabHelper* observer =
-      resource_coordinator::ResourceCoordinatorTabHelper::FromWebContents(
-          web_contents());
-  if (!observer)
-    return ukm::kInvalidSourceId;
-  return observer->ukm_source_id();
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::IsAutoDiscardable() const {
@@ -590,15 +579,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because a transition from " << GetState()
                       << "to discarded is not allowed.";
-    return false;
-  }
-
-  // Can't discard a tab displayed in a picture-in-picture window. We check this
-  // here instead of in `CanDiscard` as not all calls to `Discard` check
-  // `CanDiscard` and discarding a picture-in-picture WebContents leaves the
-  // window in a bad state.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && browser->is_type_picture_in_picture()) {
     return false;
   }
 

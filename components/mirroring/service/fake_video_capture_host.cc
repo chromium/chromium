@@ -39,8 +39,9 @@ void FakeVideoCaptureHost::Start(
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
       media::mojom::VideoCaptureState::ENDED));
@@ -60,8 +61,9 @@ void FakeVideoCaptureHost::Resume(const base::UnguessableToken& device_id,
 
 void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
                                         base::TimeTicks capture_time) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   auto shmem = base::ReadOnlySharedMemoryRegion::Create(5000);
   if (!shmem.IsValid()) {

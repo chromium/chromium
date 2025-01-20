@@ -87,8 +87,9 @@ void TestComponentContextForProcess::AddService(std::string_view service) {
 
 void TestComponentContextForProcess::AddServices(
     base::span<const std::string_view> services) {
-  for (auto service : services)
+  for (auto service : services) {
     AddService(service);
+  }
 }
 
 fidl::UnownedClientEnd<fuchsia_io::Directory>

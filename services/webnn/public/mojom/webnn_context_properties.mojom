@@ -36,6 +36,16 @@ struct SupportedDataTypes {
   bool uint4;
 };
 
+struct SupportedRanks {
+  uint32 min;
+  uint32 max;
+};
+
+struct SupportedTensors {
+  SupportedDataTypes data_types;
+  SupportedRanks ranks;
+};
+
 // Represents the data type limits exposed through
 // `MLContext::opSupportLimits()`.
 // Keep the order as the same as build methods of `MLGraphBuilder`, for
@@ -61,23 +71,24 @@ struct DataTypeLimits {
   SupportedDataTypes dequantize_linear_scale;
 
   // Element-wise binary ops.
-  SupportedDataTypes add_input;
-  SupportedDataTypes sub_input;
-  SupportedDataTypes mul_input;
-  SupportedDataTypes div_input;
-  SupportedDataTypes max_input;
-  SupportedDataTypes min_input;
-  SupportedDataTypes pow_input;
+  SupportedTensors add_input;
+  SupportedTensors sub_input;
+  SupportedTensors mul_input;
+  SupportedTensors div_input;
+  SupportedTensors max_input;
+  SupportedTensors min_input;
+  SupportedTensors pow_input;
 
   // Element-wise logical ops.
-  SupportedDataTypes equal_input;
-  SupportedDataTypes greater_input;
-  SupportedDataTypes greater_or_equal_input;
-  SupportedDataTypes lesser_input;
-  SupportedDataTypes lesser_or_equal_input;
-  SupportedDataTypes logical_and_input;
-  SupportedDataTypes logical_or_input;
-  SupportedDataTypes logical_xor_input;
+  SupportedTensors equal_input;
+  SupportedTensors greater_input;
+  SupportedTensors greater_or_equal_input;
+  SupportedTensors lesser_input;
+  SupportedTensors lesser_or_equal_input;
+  SupportedTensors not_equal_input;
+  SupportedTensors logical_and_input;
+  SupportedTensors logical_or_input;
+  SupportedTensors logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
 
@@ -124,7 +135,7 @@ struct DataTypeLimits {
   SupportedDataTypes linear_input;
   SupportedDataTypes lstm_input;
   SupportedDataTypes lstm_cell_input;
-  SupportedDataTypes matmul_input;
+  SupportedTensors matmul_input;
   SupportedDataTypes pad_input;
 
   // Pool2d.
@@ -153,6 +164,7 @@ struct DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+  SupportedDataTypes reverse_input;
 
   // ScatterElements.
   SupportedDataTypes scatter_elements_input;
@@ -183,5 +195,7 @@ struct DataTypeLimits {
 struct ContextProperties {
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  // All tensors in graph will not exceed the byte length limit.
+  uint64 tensor_byte_length_limit;
   DataTypeLimits data_type_limits;
 };

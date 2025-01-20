@@ -50,7 +50,7 @@ TestSessionControllerClient::TestSessionControllerClient(
     SessionControllerImpl* controller,
     TestPrefServiceProvider* prefs_provider)
     : controller_(controller), prefs_provider_(prefs_provider) {
-  DCHECK(controller_);
+  CHECK(controller_);
   Reset();
 }
 
@@ -117,29 +117,10 @@ void TestSessionControllerClient::SetIsDemoSession() {
   controller_->SetSessionInfo(session_info_);
 }
 
-void TestSessionControllerClient::CreatePredefinedUserSessions(int count) {
-  DCHECK_GT(count, 0);
-
-  // Resets the controller's state.
-  Reset();
-
-  // Adds user sessions with numbered emails if more are needed.
-  for (int numbered_user_index = 0; numbered_user_index < count;
-       ++numbered_user_index) {
-    AddUserSession(base::StringPrintf("user%d@tray", numbered_user_index));
-  }
-
-  // Sets the first user as active.
-  SwitchActiveUser(controller_->GetUserSession(0)->user_info.account_id);
-
-  // Updates session state after adding user sessions.
-  SetSessionState(session_manager::SessionState::ACTIVE);
-}
-
 void TestSessionControllerClient::AddUserSession(
     const std::string& display_email,
     user_manager::UserType user_type,
-    bool provide_pref_service,
+    std::optional<bool> provide_pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
@@ -154,7 +135,7 @@ void TestSessionControllerClient::AddUserSession(
     const AccountId& account_id,
     const std::string& display_email,
     user_manager::UserType user_type,
-    bool provide_pref_service,
+    std::optional<bool> provide_pref_service,
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
@@ -178,8 +159,8 @@ void TestSessionControllerClient::AddUserSession(
   session.user_info.is_managed = is_account_managed;
   controller_->UpdateUserSession(std::move(session));
 
-  if (provide_pref_service && prefs_provider_ &&
-      !controller_->GetUserPrefServiceForUser(account_id)) {
+  if (provide_pref_service.value_or(default_provide_pref_service_) &&
+      prefs_provider_ && !controller_->GetUserPrefServiceForUser(account_id)) {
     ProvidePrefServiceForUser(account_id);
   }
 
@@ -188,10 +169,10 @@ void TestSessionControllerClient::AddUserSession(
 
 void TestSessionControllerClient::ProvidePrefServiceForUser(
     const AccountId& account_id) {
-  DCHECK(!controller_->GetUserPrefServiceForUser(account_id));
+  CHECK(!controller_->GetUserPrefServiceForUser(account_id));
+
   prefs_provider_->CreateUserPrefs(account_id);
-  controller_->OnProfilePrefServiceInitialized(
-      account_id, prefs_provider_->GetUserPrefs(account_id));
+  MaybeNotifyUserPrefServiceInitialized(account_id);
 }
 
 void TestSessionControllerClient::LockScreen() {
@@ -217,12 +198,20 @@ void TestSessionControllerClient::SetSigninScreenPrefService(
 void TestSessionControllerClient::SetUserPrefService(
     const AccountId& account_id,
     std::unique_ptr<PrefService> pref_service) {
-  DCHECK(!controller_->GetUserPrefServiceForUser(account_id));
+  CHECK(!controller_->GetUserPrefServiceForUser(account_id));
+
   prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
-  if (controller_->IsActiveUserSessionStarted()) {
-    controller_->OnProfilePrefServiceInitialized(
-        account_id, prefs_provider_->GetUserPrefs(account_id));
-  }
+  MaybeNotifyUserPrefServiceInitialized(account_id);
+}
+
+void TestSessionControllerClient::SetUnownedUserPrefService(
+    const AccountId& account_id,
+    raw_ptr<PrefService> unowned_pref_service) {
+  CHECK(!controller_->GetUserPrefServiceForUser(account_id));
+
+  prefs_provider_->SetUnownedUserPrefs(account_id,
+                                       std::move(unowned_pref_service));
+  MaybeNotifyUserPrefServiceInitialized(account_id);
 }
 
 void TestSessionControllerClient::RequestLockScreen() {
@@ -341,6 +330,12 @@ std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
 }
 
+int TestSessionControllerClient::NumberOfLoggedInUsers() const {
+  // This should be migrated to GetExistingUserCount when
+  // TestSessionControllerImpl is removed.
+  return controller_->NumberOfLoggedInUsers();
+}
+
 void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,
                                                bool switch_user) {
   if (!switch_user)
@@ -366,6 +361,14 @@ void TestSessionControllerClient::MaybeNotifyFirstSessionReady() {
       session_info_.state == session_manager::SessionState::ACTIVE) {
     first_session_ready_fired_ = true;
     controller_->NotifyFirstSessionReady();
+  }
+}
+
+void TestSessionControllerClient::MaybeNotifyUserPrefServiceInitialized(
+    const AccountId& account_id) {
+  if (controller_->IsActiveUserSessionStarted()) {
+    controller_->OnProfilePrefServiceInitialized(
+        account_id, prefs_provider_->GetUserPrefs(account_id));
   }
 }
 

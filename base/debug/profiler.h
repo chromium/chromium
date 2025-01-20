@@ -63,7 +63,6 @@ typedef void (*AddDynamicSymbol)(const void* address,
                                  size_t name_len);
 typedef void (*MoveDynamicSymbol)(const void* address, const void* new_address);
 
-
 // If this binary is instrumented and the instrumentation supplies a function
 // for each of those purposes, find and return the function in question.
 // Otherwise returns NULL.

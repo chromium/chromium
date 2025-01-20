@@ -25,7 +25,6 @@ component("os_crypt") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs",
     "//crypto",
   ]
@@ -37,10 +36,6 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
-    sources += [ "os_crypt_posix.cc" ]
-  }
-
   if (is_apple) {
     sources += [
       "keychain_password_mac.h",
@@ -48,15 +43,11 @@ component("os_crypt") {
       "os_crypt_mac.mm",
     ]
     deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_win) {
+  } else if (is_win) {
     sources += [ "os_crypt_win.cc" ]
     deps += [ "//components/version_info" ]
     libs = [ "crypt32.lib" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_config_linux.cc",
       "key_storage_config_linux.h",
@@ -88,6 +79,8 @@ component("os_crypt") {
       deps += [ "//dbus" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix.cc" ]
   }
 }
 
@@ -126,7 +119,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",
@@ -135,11 +127,12 @@ source_set("unit_tests") {
   ]
 
   if (is_apple) {
-    sources += [ "keychain_password_mac_unittest.mm" ]
+    sources += [
+      "keychain_password_mac_unittest.mm",
+      "os_crypt_mac_unittest.cc",
+    ]
     deps += [ "//crypto:mock_apple_keychain" ]
-  }
-
-  if (is_linux && !is_castos) {
+  } else if (is_linux && !is_castos) {
     sources += [
       "key_storage_linux_unittest.cc",
       "key_storage_util_linux_unittest.cc",
@@ -160,5 +153,7 @@ source_set("unit_tests") {
       deps += [ "//dbus:test_support" ]
       defines += [ "USE_KWALLET" ]
     }
+  } else if (is_posix || is_fuchsia) {
+    sources += [ "os_crypt_posix_unittest.cc" ]
   }
 }

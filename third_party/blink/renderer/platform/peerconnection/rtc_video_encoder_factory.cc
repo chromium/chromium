@@ -58,6 +58,12 @@ BASE_FEATURE(kMediaFoundationVP9Encoding,
 void FillScalabilityModes(
     webrtc::SdpVideoFormat& format,
     const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+  bool disable_h265_l1t2 =
+      !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T2);
+  bool disable_h265_l1t3 =
+      disable_h265_l1t2 ||
+      !base::FeatureList::IsEnabled(::features::kWebRtcH265L1T3);
+
   for (const media::SVCScalabilityMode& mode : profile.scalability_modes) {
     std::optional<webrtc::ScalabilityMode> scalability_mode =
         webrtc::ScalabilityModeFromString(media::GetScalabilityModeName(mode));
@@ -66,6 +72,17 @@ void FillScalabilityModes(
                    << media::GetScalabilityModeName(mode);
       continue;
     }
+
+    if (profile.profile >= media::HEVCPROFILE_MIN &&
+        profile.profile <= media::HEVCPROFILE_MAX) {
+      if ((scalability_mode == webrtc::ScalabilityMode::kL1T2 &&
+           disable_h265_l1t2) ||
+          (scalability_mode == webrtc::ScalabilityMode::kL1T3 &&
+           disable_h265_l1t3)) {
+        continue;
+      }
+    }
+
     format.scalability_modes.push_back(scalability_mode.value());
   }
 }
@@ -365,6 +382,18 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
 }
 
 }  // anonymous namespace
+
+RTCVideoEncoderFactory::RTCVideoEncoderFactory(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
+    bool override_disabled_profiles)
+    : RTCVideoEncoderFactory(gpu_factories,
+                             std::move(encoder_metrics_provider_factory)) {
+  if (override_disabled_profiles) {
+    disabled_profiles_.clear();
+  }
+}
 
 RTCVideoEncoderFactory::RTCVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,

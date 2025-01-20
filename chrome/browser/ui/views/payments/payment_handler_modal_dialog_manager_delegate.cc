@@ -33,14 +33,16 @@ void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
 
 web_modal::WebContentsModalDialogHost*
 PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
-  if (!host_web_contents_)
+  if (!host_web_contents_) {
     return nullptr;
+  }
 
   auto* dialog_manager =
       static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
           chrome::FindBrowserWithTab(host_web_contents_.get()));
-  if (!dialog_manager)
+  if (!dialog_manager) {
     return nullptr;
+  }
 
   // Borrow the browser's WebContentModalDialogHost to display modal dialogs
   // triggered by the payment handler's web view (e.g. WebAuthn and Secure

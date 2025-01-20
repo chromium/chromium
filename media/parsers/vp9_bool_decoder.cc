@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/vp9_bool_decoder.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/logging.h"
@@ -26,7 +22,7 @@ namespace {
 // This table indicates how many iterations to run for a given BoolRange. So
 // the loop could be reduced to
 //     read (kCountToShiftTo128[BoolRange]) bits
-const int kCountToShiftTo128[256] = {
+const std::array<int, 256> kCountToShiftTo128 = {
     0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1,

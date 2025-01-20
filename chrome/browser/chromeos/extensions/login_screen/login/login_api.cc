@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/login.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -267,7 +268,7 @@ ExtensionFunction::ResponseAction LoginLaunchSamlUserSessionFunction::Run() {
       base::BindOnce(&LoginLaunchSamlUserSessionFunction::OnResult, this);
 
   GetLoginApiAsh()->LaunchSamlUserSession(
-      parameters->properties.email, parameters->properties.gaia_id,
+      parameters->properties.email, GaiaId(parameters->properties.gaia_id),
       parameters->properties.password, parameters->properties.oauth_code,
       std::move(callback));
   return RespondLater();

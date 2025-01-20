@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <string>
 
@@ -47,13 +48,15 @@ TEST_F(DirectoryImplTest, Read) {
   base::File::Error error;
 
   // Make some files.
-  const struct {
+  struct FilesToCreate {
     const char* name;
     uint32_t open_flags;
-  } files_to_create[] = {
+  };
+  const auto files_to_create = std::to_array<FilesToCreate>({
       {"my_file1", mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate},
       {"my_file2", mojom::kFlagWrite | mojom::kFlagCreate},
-      {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate}};
+      {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate},
+  });
   for (size_t i = 0; i < std::size(files_to_create); i++) {
     error = base::File::Error::FILE_ERROR_FAILED;
     base::File tmp_base_file;

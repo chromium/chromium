@@ -14,6 +14,18 @@
 namespace data_sharing {
 namespace {
 
+data_sharing_pb::ReadGroupsParams CreateReadGroupsParams(
+    const std::vector<GroupId>& group_ids) {
+  data_sharing_pb::ReadGroupsParams read_groups_params;
+  for (const GroupId& group_id : group_ids) {
+    read_groups_params.add_group_ids(group_id.value());
+    data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+        read_groups_params.add_group_params();
+    group_params->set_group_id(group_id.value());
+  }
+  return read_groups_params;
+}
+
 class PartialFailureSDKDelegateWrapperTest : public testing::Test {
  public:
   PartialFailureSDKDelegateWrapperTest()
@@ -57,11 +69,9 @@ TEST_F(PartialFailureSDKDelegateWrapperTest, ShouldReadSingleGroup) {
   const GroupId group_id =
       actual_sdk_delegate().AddGroupAndReturnId(display_name);
 
-  data_sharing_pb::ReadGroupsParams params;
-  params.add_group_ids(group_id.value());
-
   base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>
-      read_groups_result = ReadGroupsViaWrapper(params);
+      read_groups_result =
+          ReadGroupsViaWrapper(CreateReadGroupsParams({group_id}));
 
   ASSERT_TRUE(read_groups_result.has_value());
   ASSERT_EQ(read_groups_result->group_data_size(), 1);
@@ -76,12 +86,9 @@ TEST_F(PartialFailureSDKDelegateWrapperTest, ShouldReadMultipleGroups) {
   const GroupId group_id2 =
       actual_sdk_delegate().AddGroupAndReturnId(display_name2);
 
-  data_sharing_pb::ReadGroupsParams params;
-  params.add_group_ids(group_id1.value());
-  params.add_group_ids(group_id2.value());
-
   base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>
-      read_groups_result = ReadGroupsViaWrapper(params);
+      read_groups_result =
+          ReadGroupsViaWrapper(CreateReadGroupsParams({group_id1, group_id2}));
 
   ASSERT_TRUE(read_groups_result.has_value());
   ASSERT_EQ(read_groups_result->group_data_size(), 2);
@@ -95,12 +102,9 @@ TEST_F(PartialFailureSDKDelegateWrapperTest, ShouldHandlePartialFailure) {
       actual_sdk_delegate().AddGroupAndReturnId(display_name1);
   const GroupId group_id2 = GroupId("non_existent_group_id");
 
-  data_sharing_pb::ReadGroupsParams params;
-  params.add_group_ids(group_id1.value());
-  params.add_group_ids(group_id2.value());
-
   base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>
-      read_groups_result = ReadGroupsViaWrapper(params);
+      read_groups_result =
+          ReadGroupsViaWrapper(CreateReadGroupsParams({group_id1, group_id2}));
 
   ASSERT_TRUE(read_groups_result.has_value());
   ASSERT_EQ(read_groups_result->group_data_size(), 1);

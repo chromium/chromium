@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -80,6 +79,7 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
 
 bool TransformHelper::UpdateReferenceBoxDependency(
     LayoutObject& layout_object) {
+  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
   const bool transform_uses_reference_box =
       DependsOnReferenceBox(layout_object.StyleRef());
   UpdateReferenceBoxDependency(layout_object, transform_uses_reference_box);
@@ -89,6 +89,7 @@ bool TransformHelper::UpdateReferenceBoxDependency(
 void TransformHelper::UpdateReferenceBoxDependency(
     LayoutObject& layout_object,
     bool transform_uses_reference_box) {
+  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
   if (transform_uses_reference_box &&
       layout_object.StyleRef().TransformBox() == ETransformBox::kViewBox) {
     layout_object.SetSVGSelfOrDescendantHasViewportDependency();

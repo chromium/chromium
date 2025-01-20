@@ -24,6 +24,7 @@ class OffscreenDocumentHost : public ExtensionHost {
  public:
   OffscreenDocumentHost(const Extension& extension,
                         content::SiteInstance* site_instance,
+                        content::BrowserContext* browser_context,
                         const GURL& url);
 
   OffscreenDocumentHost(const OffscreenDocumentHost&) = delete;

@@ -44,6 +44,8 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
+      {"iconLabelDoNotDisturb",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB},
       {"iconLabelEnableOrToggleDictation",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION},
       {"iconLabelEmojiPicker",
@@ -96,11 +98,12 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
   };
 
   if (features::IsModifierSplitEnabled()) {
-    html_source->AddLocalizedString("iconLabelRightAlt",
+    html_source->AddLocalizedString("iconLabelQuickInsert",
                                     IDS_KEYBOARD_QUICK_INSERT_LABEL);
   } else {
     html_source->AddLocalizedString(
-        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
+        "iconLabelQuickInsert",
+        IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

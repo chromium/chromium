@@ -119,7 +119,7 @@ sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
       dest_color_space, nullptr);
 }
 
-bool TryCopySubTextureINTERNALMemory(
+bool CopyPixelsToTexture(
     GLint xoffset,
     GLint yoffset,
     GLint x,
@@ -293,12 +293,12 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
          new_cleared_rect.Contains(old_cleared_rect));
 
   // Attempt to upload directly from CPU shared memory to destination texture.
-  if (TryCopySubTextureINTERNALMemory(
-          xoffset, yoffset, x, y, width, height, new_cleared_rect,
-          source_mailbox, dest_shared_image.get(), dest_scoped_access.get(),
-          representation_factory_, shared_context_state_, begin_semaphores,
-          end_semaphores)) {
-    // Cancel cleanup as TryCopySubTextureINTERNALMemory already handles it.
+  if (CopyPixelsToTexture(xoffset, yoffset, x, y, width, height,
+                          new_cleared_rect, source_mailbox,
+                          dest_shared_image.get(), dest_scoped_access.get(),
+                          representation_factory_, shared_context_state_,
+                          begin_semaphores, end_semaphores)) {
+    // Cancel cleanup as CopyPixelsToTexture already handles it.
     std::move(cleanup).Cancel();
     return base::ok();
   }

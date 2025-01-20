@@ -36,7 +36,7 @@ class SimpleConsole {
     GREEN,
   };
 
-  virtual ~SimpleConsole() {}
+  virtual ~SimpleConsole() = default;
 
   // Init must be called before using any other method. If it returns
   // false there will be no console output.

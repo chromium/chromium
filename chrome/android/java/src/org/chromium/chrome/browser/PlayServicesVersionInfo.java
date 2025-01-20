@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.PackageUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -18,11 +19,11 @@ public class PlayServicesVersionInfo {
     /**
      * Returns info about the Google Play services setup for Chrome and the device.
      *
-     * Contains the version number of the SDK Chrome was built with and the one for the installed
+     * <p>Contains the version number of the SDK Chrome was built with and the one for the installed
      * Play Services app. It also contains whether First Party APIs are available.
      */
     @CalledByNative
-    public static String getGmsInfo() {
+    public static @JniType("std::string") String getGmsInfo() {
         final long sdkVersion = GoogleApiAvailability.GOOGLE_PLAY_SERVICES_VERSION_CODE;
         final long installedGmsVersion = getApkVersionNumber();
 

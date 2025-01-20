@@ -65,10 +65,10 @@ public interface DataSharingService {
         public final SharedDataPreview sharedDataPreview;
 
         /** Result of the action, UNKNOWN if the action was successful. */
-        public final @PeopleGroupActionFailure int actionFailure;
+        public final @DataPreviewActionFailure int actionFailure;
 
         public SharedDataPreviewOrFailureOutcome(
-                SharedDataPreview sharedDataPreview, @PeopleGroupActionFailure int actionFailure) {
+                SharedDataPreview sharedDataPreview, @DataPreviewActionFailure int actionFailure) {
             this.sharedDataPreview = sharedDataPreview;
             this.actionFailure = actionFailure;
         }
@@ -121,15 +121,6 @@ public interface DataSharingService {
     void removeObserver(Observer observer);
 
     /**
-     * Refresh and read all the group data the user is part of.
-     *
-     * <p>Refresh data if necessary. The result is ordered by group ID.
-     *
-     * @param callback On success passes to the `callback` a set of all groups known to the client.
-     */
-    void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback);
-
-    /**
      * Refresh and read the requested group data.
      *
      * <p>Refresh data if necessary.
@@ -146,6 +137,14 @@ public interface DataSharingService {
      * @param callback Return a created group data on success.
      */
     void createGroup(String groupName, Callback<GroupDataOrFailureOutcome> callback);
+
+    /**
+     * Attempt to leave a group.
+     *
+     * @param groupId The group ID to leave.
+     * @param callback The leave result as PeopleGroupActionOutcome.
+     */
+    void leaveGroup(String groupId, Callback</* PeopleGroupActionOutcome= */ Integer> callback);
 
     /**
      * Attempt to delete a group.

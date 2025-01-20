@@ -22,7 +22,6 @@
 #include "third_party/icu/source/common/unicode/schriter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 #include "url/url_features.h"
 
@@ -46,32 +45,37 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
 
     bool is_same_skeleton;
 
-    if (!reader->Next(&is_same_skeleton))
+    if (!reader->Next(&is_same_skeleton)) {
       return false;
+    }
 
     TopDomainEntry top_domain;
     if (!reader->Next(&top_domain.is_top_bucket)) {
       return false;
     }
     uint32_t skeletontype_value;
-    if (!reader->Read(kSkeletonTypeBitLength, &skeletontype_value))
+    if (!reader->Read(kSkeletonTypeBitLength, &skeletontype_value)) {
       return false;
+    }
     top_domain.skeleton_type =
         static_cast<url_formatter::SkeletonType>(skeletontype_value);
     if (is_same_skeleton) {
       top_domain.domain = search;
     } else {
       bool has_com_suffix = false;
-      if (!reader->Next(&has_com_suffix))
+      if (!reader->Next(&has_com_suffix)) {
         return false;
+      }
 
       for (char c;; top_domain.domain += c) {
         huffman_decoder().Decode(reader, &c);
-        if (c == net::extras::PreloadDecoder::kEndOfTable)
+        if (c == net::extras::PreloadDecoder::kEndOfTable) {
           break;
+        }
       }
-      if (has_com_suffix)
+      if (has_com_suffix) {
         top_domain.domain += ".com";
+      }
     }
     if (current_search_offset == 0) {
       *out_found = true;
@@ -423,8 +427,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   //  - Japanese: Han, Hiragana, Katakana, Common
   //  - Korean: Hangul, Han, Common
   result &= USPOOF_RESTRICTION_LEVEL_MASK;
-  if (result == USPOOF_ASCII)
+  if (result == USPOOF_ASCII) {
     return Result::kSafe;
+  }
 
   if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE &&
       kana_letters_exceptions_.containsNone(label_string) &&
@@ -439,8 +444,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
     }
     // Disallow domains that contain only numbers and number-spoofs.
     // This check is reached if domain characters come from single script.
-    if (IsDigitLookalike(label_string))
+    if (IsDigitLookalike(label_string)) {
       return Result::kDigitLookalikes;
+    }
 
     return Result::kSafe;
   }
@@ -450,8 +456,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // This is generally rare. An example case when it would return true is when
   // the domain contains Latin + Japanese characters that are also digit
   // lookalikes.
-  if (IsDigitLookalike(label_string))
+  if (IsDigitLookalike(label_string)) {
     return Result::kDigitLookalikes;
+  }
 
   // Additional checks for |label| with multiple scripts, one of which is Latin.
   // Disallow non-ASCII Latin letters to mix with a non-Latin script.
@@ -621,11 +628,13 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
     bool match = false;
     bool decoded = preload_decoder.Decode(partial_skeleton, &match);
     DCHECK(decoded);
-    if (!decoded)
+    if (!decoded) {
       return TopDomainEntry();
+    }
 
-    if (match)
+    if (match) {
       return preload_decoder.matching_top_domain();
+    }
 
     labels.erase(labels.begin());
   }
@@ -657,8 +666,9 @@ IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
 }
 
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
-  if (U_FAILURE(*status))
+  if (U_FAILURE(*status)) {
     return;
+  }
 
   // The recommended set is a set of characters for identifiers in a
   // security-sensitive environment taken from UTR 39

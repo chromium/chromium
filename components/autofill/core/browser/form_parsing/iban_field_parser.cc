@@ -16,9 +16,7 @@ std::unique_ptr<FormFieldParser> IbanFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   std::optional<FieldAndMatchInfo> match;
-  base::span<const MatchPatternRef> iban_patterns =
-      GetMatchPatterns(IBAN_VALUE, context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, iban_patterns, &match, "IBAN_VALUE")) {
+  if (ParseField(context, scanner, "IBAN_VALUE", &match)) {
     return std::make_unique<IbanFieldParser>(std::move(*match));
   }
   return nullptr;

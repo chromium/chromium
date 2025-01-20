@@ -4,6 +4,7 @@
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/containers/contains.h"
@@ -29,6 +30,12 @@ signin::IdentityManager* GetIdentityManager() {
 }
 
 OAuth2AccessTokenManager::ScopeSet GetScopeSet() {
+  if (ash::features::IsProjectorUseDVSPlaybackEndpointEnabled()) {
+    return OAuth2AccessTokenManager::ScopeSet{
+        GaiaConstants::kDriveOAuth2Scope,
+        GaiaConstants::kDriveReadOnlyOAuth2Scope};
+  }
+
   return OAuth2AccessTokenManager::ScopeSet{GaiaConstants::kDriveOAuth2Scope};
 }
 

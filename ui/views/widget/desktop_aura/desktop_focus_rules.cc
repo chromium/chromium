@@ -20,16 +20,18 @@ DesktopFocusRules::~DesktopFocusRules() = default;
 bool DesktopFocusRules::CanActivateWindow(const aura::Window* window) const {
   // The RootWindow is not activatable, only |content_window_| and children of
   // the RootWindow are considered activatable.
-  if (window && window->IsRootWindow())
+  if (window && window->IsRootWindow()) {
     return false;
+  }
   if (window && IsToplevelWindow(window) &&
       content_window_->GetRootWindow()->Contains(window) &&
       wm::WindowStateIs(window->GetRootWindow(),
                         ui::mojom::WindowShowState::kMinimized)) {
     return true;
   }
-  if (!BaseFocusRules::CanActivateWindow(window))
+  if (!BaseFocusRules::CanActivateWindow(window)) {
     return false;
+  }
   // Never activate a window that is not a child of the root window. Transients
   // spanning different DesktopNativeWidgetAuras may trigger this.
   return !window || content_window_->GetRootWindow()->Contains(window);
@@ -63,8 +65,9 @@ const aura::Window* DesktopFocusRules::GetToplevelWindow(
       wm::BaseFocusRules::GetToplevelWindow(window);
   // In Desktop-Aura, only the content_window or children of the RootWindow are
   // considered as top level windows.
-  if (top_level_window == content_window_->parent())
+  if (top_level_window == content_window_->parent()) {
     return content_window_;
+  }
   return top_level_window;
 }
 
@@ -76,8 +79,9 @@ aura::Window* DesktopFocusRules::GetNextActivatableWindow(
   // should never be activated. We should return the content_window_ if it
   // can be activated in this case.
   if (next_activatable_window == content_window_->parent() &&
-      CanActivateWindow(content_window_))
+      CanActivateWindow(content_window_)) {
     return content_window_;
+  }
   return next_activatable_window;
 }
 

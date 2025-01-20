@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MDNS_CAST_MEDIA_SINK_SERVICE_TEST_HELPERS_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MDNS_CAST_MEDIA_SINK_SERVICE_TEST_HELPERS_H_
 
-#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
-
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/timer/mock_timer.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
@@ -39,7 +38,7 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
       const OnSinksDiscoveredCallback& callback,
       cast_channel::CastSocketService* cast_socket_service,
       DiscoveryNetworkMonitor* network_monitor,
-      MediaSinkServiceBase* dial_media_sink_service);
+      DialMediaSinkServiceImpl* dial_media_sink_service);
   ~MockCastMediaSinkServiceImpl() override;
 
   void Start() override { DoStart(); }
@@ -79,7 +78,7 @@ class TestCastMediaSinkService : public CastMediaSinkService {
 
   std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
   CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-             MediaSinkServiceBase* dial_media_sink_service) override;
+             DialMediaSinkServiceImpl* dial_media_sink_service) override;
   MOCK_METHOD(void, StartMdnsDiscovery, ());
 
   MockCastMediaSinkServiceImpl* mock_impl() { return mock_impl_; }

@@ -156,6 +156,15 @@
       default_value: "false",
       custom_compare: true,
     },
+    // True when at least one env(safe-area-inset-bottom) was resolved
+    // when producing this ComputedStyle.
+    {
+      name: "HasEnvSafeAreaInsetBottom",
+      field_group: "*",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // Set on parent style when a child explicitly inherits a
     // non-inherited property
     {
@@ -240,7 +249,7 @@
     {
       name: "PseudoElementStyles",
       field_template: "primitive",
-      field_size: 21,
+      field_size: 23,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,
@@ -468,7 +477,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 8,
+      field_size: 9,
       default_value: "TouchAction::kAuto",
       field_group: "*",
     },
@@ -477,8 +486,8 @@
       field_group: "*",
       field_size: 5,
       field_template: "primitive",
-      default_value: "kNoControlPart",
-      type_name: "ControlPart",
+      default_value: "AppearanceValue::kNone",
+      type_name: "AppearanceValue",
     },
     {
       name: "TextEmphasisCustomMark",
@@ -1281,6 +1290,13 @@
       default_value: "false",
     },
     {
+      name: "HasSiblingFunctions",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+      custom_compare: true,
+    },
+    {
       name: "PositionAreaOffsets",
       field_template: "external",
       field_group: "*",
@@ -1323,5 +1339,27 @@
       field_group: "*",
       default_value: "false",
     },
+    // Returns true if 'bottom' is set to env(safe-area-inset-bottom). This is
+    // used by the compositor thread to render dynamic updates to position:fixed
+    // bottom insets during a scroll gesture on Android (go/cc-dynamic-sai).
+    //
+    // Also returns true if 'bottom' is calculated by adding or subtracting an
+    // offset to env(safe-area-inset-bottom), for example:
+    //
+    //   bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    //
+    // If the value is a calc() expression, env(safe-area-inset-bottom) must be
+    // the first parameter. This does not capture all possible ways of making
+    // bottom depend on safe-area-inset-bottom. If the compositor is unable to
+    // apply a dynamic SAI update, the main thread will apply it eventually.
+    {
+      name: "IsBottomRelativeToSafeAreaInset",
+      inherited: false,
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      invalidate: ["layout"]
+    }
   ],
 }

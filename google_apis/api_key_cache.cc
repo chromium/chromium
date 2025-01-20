@@ -34,32 +34,17 @@ namespace google_apis {
 
 namespace {
 
-const base::FeatureParam<std::string> kOverrideAPIKeyFeatureParam{
-    &kOverrideAPIKeyFeature, /*name=*/"api_key", /*default_value=*/""};
-
-std::string GetAPIKeyOverrideViaFeature() {
-  if (base::FeatureList::IsEnabled(kOverrideAPIKeyFeature)) {
-    std::string override_api_key = kOverrideAPIKeyFeatureParam.Get();
-    if (!override_api_key.empty()) {
-      return override_api_key;
-    }
-  }
-  return std::string();
-}
-
 // Gets a value for a key.  In priority order, this will be the value
 // provided via:
 // 1. Command-line switch
 // 2. Config file
 // 3. Environment variable
-// 4. Value passed via a feature flag.
-// 5. On macOS and iOS, the value passed in Info.plist
-// 6. Baked into the build.
+// 4. On macOS and iOS, the value passed in Info.plist
+// 5. Baked into the build.
 // |command_line_switch| may be NULL. Official Google Chrome builds will not
 // use the value provided by an environment variable.
 static std::string CalculateKeyValue(const char* baked_in_value,
                                      const char* environment_variable_name,
-                                     const std::string& feature_value,
                                      const char* command_line_switch,
                                      const std::string& default_if_unset,
                                      base::Environment* environment,
@@ -79,12 +64,6 @@ static std::string CalculateKeyValue(const char* baked_in_value,
             << " with value from Info.plist.";
   }
 #endif
-  if (!feature_value.empty()) {
-    key_value = feature_value;
-    // `feature_value` should not be logged.
-    VLOG(1) << "Overriding API key " << environment_variable_name
-            << " with value passed via feature.";
-  }
 
   if (allow_override_via_environment) {
     // Don't allow using the environment to override API keys for official
@@ -129,31 +108,23 @@ static std::string CalculateKeyValue(const char* baked_in_value,
 }
 }  // namespace
 
-BASE_FEATURE(kOverrideAPIKeyFeature,
-             "OverrideAPIKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   GaiaConfig* gaia_config = GaiaConfig::GetInstance();
 
-  std::string api_key_from_feature = GetAPIKeyOverrideViaFeature();
-  api_key_ = CalculateKeyValue(default_api_keys.google_api_key,
-                               STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY),
-                               api_key_from_feature, nullptr, std::string(),
-                               environment.get(), command_line, gaia_config,
-                               default_api_keys.allow_override_via_environment,
-                               default_api_keys.allow_unset_values);
-  base::UmaHistogramBoolean("Signin.APIKeyMatchesFeatureOnStartup",
-                            api_key_from_feature == api_key_);
+  api_key_ = CalculateKeyValue(
+      default_api_keys.google_api_key, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY),
+      nullptr, std::string(), environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
+      default_api_keys.allow_unset_values);
 
 // A special non-stable key is at the moment defined only for Android Chrome.
 #if BUILDFLAG(IS_ANDROID)
   api_key_non_stable_ = CalculateKeyValue(
       default_api_keys.google_api_key_android_non_stable,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_ANDROID_NON_STABLE), std::string(),
-      nullptr, std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_ANDROID_NON_STABLE), nullptr,
+      std::string(), environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 #else
@@ -162,22 +133,22 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
 
   api_key_remoting_ = CalculateKeyValue(
       default_api_keys.google_api_key_remoting,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   api_key_soda_ = CalculateKeyValue(
       default_api_keys.google_api_key_soda,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 #if !BUILDFLAG(IS_ANDROID)
   api_key_hats_ = CalculateKeyValue(
       default_api_keys.google_api_key_hats,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_HATS), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_HATS), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 #endif
@@ -185,50 +156,50 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   api_key_sharing_ = CalculateKeyValue(
       default_api_keys.google_api_key_sharing,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   api_key_read_aloud_ = CalculateKeyValue(
       default_api_keys.google_api_key_read_aloud,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   api_key_fresnel_ = CalculateKeyValue(
       default_api_keys.google_api_key_fresnel,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_FRESNEL), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_FRESNEL), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   api_key_boca_ = CalculateKeyValue(
       default_api_keys.google_api_key_boca,
-      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_BOCA), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_BOCA), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 #endif
 
   metrics_key_ = CalculateKeyValue(
       default_api_keys.google_metrics_signing_key,
-      STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY), std::string(),
-      nullptr, std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY), nullptr,
+      std::string(), environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   std::string default_client_id = CalculateKeyValue(
       default_api_keys.google_default_client_id,
-      STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), std::string(), nullptr,
-      std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), nullptr, std::string(),
+      environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
   std::string default_client_secret = CalculateKeyValue(
       default_api_keys.google_default_client_secret,
-      STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET), std::string(),
-      nullptr, std::string(), environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET), nullptr,
+      std::string(), environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
@@ -238,45 +209,45 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
   // staging servers, and since that was what was possible and
   // likely practiced by the QA team before this implementation was
   // written.
-  client_ids_[CLIENT_MAIN] = CalculateKeyValue(
-      default_api_keys.google_client_id_main,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_MAIN), std::string(),
-      ::switches::kOAuth2ClientID, default_client_id, environment.get(),
-      command_line, gaia_config,
-      default_api_keys.allow_override_via_environment,
-      default_api_keys.allow_unset_values);
-  client_secrets_[CLIENT_MAIN] = CalculateKeyValue(
-      default_api_keys.google_client_secret_main,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN), std::string(),
-      ::switches::kOAuth2ClientSecret, default_client_secret, environment.get(),
-      command_line, gaia_config,
-      default_api_keys.allow_override_via_environment,
-      default_api_keys.allow_unset_values);
+  client_ids_[CLIENT_MAIN] =
+      CalculateKeyValue(default_api_keys.google_client_id_main,
+                        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_MAIN),
+                        ::switches::kOAuth2ClientID, default_client_id,
+                        environment.get(), command_line, gaia_config,
+                        default_api_keys.allow_override_via_environment,
+                        default_api_keys.allow_unset_values);
+  client_secrets_[CLIENT_MAIN] =
+      CalculateKeyValue(default_api_keys.google_client_secret_main,
+                        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN),
+                        ::switches::kOAuth2ClientSecret, default_client_secret,
+                        environment.get(), command_line, gaia_config,
+                        default_api_keys.allow_override_via_environment,
+                        default_api_keys.allow_unset_values);
 
   client_ids_[CLIENT_REMOTING] = CalculateKeyValue(
       default_api_keys.google_client_id_remoting,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING), std::string(), nullptr,
+      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING), nullptr,
       default_client_id, environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
   client_secrets_[CLIENT_REMOTING] = CalculateKeyValue(
       default_api_keys.google_client_secret_remoting,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING), std::string(),
-      nullptr, default_client_secret, environment.get(), command_line,
-      gaia_config, default_api_keys.allow_override_via_environment,
+      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING), nullptr,
+      default_client_secret, environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 
   client_ids_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
       default_api_keys.google_client_id_remoting_host,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST), std::string(),
-      nullptr, default_client_id, environment.get(), command_line, gaia_config,
+      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST), nullptr,
+      default_client_id, environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
   client_secrets_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
       default_api_keys.google_client_secret_remoting_host,
-      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST), std::string(),
-      nullptr, default_client_secret, environment.get(), command_line,
-      gaia_config, default_api_keys.allow_override_via_environment,
+      STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST), nullptr,
+      default_client_secret, environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
 }
 

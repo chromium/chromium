@@ -28,8 +28,9 @@ void ExpectClose(Widget::Widgets* expected,
                  std::vector<Widget*> widgets,
                  const char* message) {
   SCOPED_TRACE(message);
-  for (Widget* widget : widgets)
+  for (Widget* widget : widgets) {
     EXPECT_EQ(1u, expected->erase(widget));
+  }
   widgets[0]->CloseNow();
   EXPECT_TRUE(base::ranges::equal(*expected, WidgetTest::GetAllWidgets()));
 }

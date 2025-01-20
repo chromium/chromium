@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
   EvalJsResult result =
       EvalJs(inner_fenced_frame_rfh, kSearchingForDiagnosisScript);
   ASSERT_TRUE(result.error.empty());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS has its own diagnostics extension, which doesn't rely on a
   // browser-initiated dialog.
   EXPECT_EQ("FOUND", result.ExtractString());

@@ -10,6 +10,18 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.AFFECTS_NAVIGATION_BAR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.AFFECTS_STATUS_BAR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ALL_KEYS;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ANCHOR_VIEW;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BACKGROUND_COLOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.CLICK_DELEGATE;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.GESTURE_DETECTOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.TOP_MARGIN;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.VISIBILITY_CALLBACK;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -41,10 +54,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.Observer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the scrim component. */
@@ -55,7 +68,10 @@ public class ScrimTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @SuppressLint("StaticFieldLeak")
     private static Activity sActivity;
+
+    @SuppressLint("StaticFieldLeak")
     private static FrameLayout sParent;
 
     private ScrimCoordinator mScrimCoordinator;
@@ -68,7 +84,7 @@ public class ScrimTest {
     private final ScrimCoordinator.SystemUiScrimDelegate mScrimDelegate =
             new ScrimCoordinator.SystemUiScrimDelegate() {
                 @Override
-                public void setScrimColor(int scrimColor) {
+                public void setScrimColor(@ColorInt int scrimColor) {
                     mScrimColorCallbackHelper.notifyCalled(scrimColor);
                 }
 
@@ -85,7 +101,7 @@ public class ScrimTest {
 
     private final CallbackHelper mScrimClickCallbackHelper = new CallbackHelper();
     private final CallbackHelper mVisibilityChangeCallbackHelper = new CallbackHelper();
-    private final Runnable mClickDelegate = () -> mScrimClickCallbackHelper.notifyCalled();
+    private final Runnable mClickDelegate = mScrimClickCallbackHelper::notifyCalled;
     private final Callback<Boolean> mVisibilityChangeCallback =
             (v) -> mVisibilityChangeCallbackHelper.notifyCalled();
 
@@ -112,15 +128,14 @@ public class ScrimTest {
                     mAnchorView = new View(sActivity);
                     sParent.addView(mAnchorView);
 
-                    mScrimCoordinator =
-                            new ScrimCoordinator(sActivity, mScrimDelegate, sParent, Color.RED);
+                    mScrimCoordinator = new ScrimCoordinator(sActivity, mScrimDelegate, sParent);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =
                             new GestureDetector(
                                     new GestureDetector.SimpleOnGestureListener() {
                                         @Override
-                                        public boolean onDown(MotionEvent e) {
+                                        public boolean onDown(@NonNull MotionEvent e) {
                                             mDelegatedEventHelper.notifyCalled();
                                             return true;
                                         }
@@ -137,7 +152,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testVisibility() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), false);
 
         assertEquals(
                 "Scrim should be completely visible.",
@@ -155,7 +170,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testVisibilityWithForceToFinish() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), true);
+        showScrim(buildModel(false, true, Color.RED), true);
 
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals(
@@ -183,7 +198,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testColor_default() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), false);
 
         assertScrimColor(Color.RED);
     }
@@ -192,7 +207,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testColor_custom() throws TimeoutException {
-        showScrim(buildModel(false, false, true, Color.GREEN), false);
+        showScrim(buildModel(false, true, Color.GREEN), false);
 
         assertScrimColor(Color.GREEN);
 
@@ -211,14 +226,13 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testColor_mutated() throws TimeoutException {
-        PropertyModel model = buildModel(false, false, true, Color.GREEN);
+        PropertyModel model = buildModel(false, true, Color.GREEN);
 
         showScrim(model, false);
         assertScrimColor(Color.GREEN);
         assertEquals(Color.GREEN, mScrimColorCallbackHelper.getOnlyPayloadBlocking().intValue());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> model.set(ScrimProperties.BACKGROUND_COLOR, Color.RED));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setScrimColor(Color.RED, model));
         assertScrimColor(Color.RED);
         assertEquals(Color.RED, mScrimColorCallbackHelper.getPayloadByIndexBlocking(1).intValue());
     }
@@ -227,7 +241,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testHierarchy_behindAnchor() throws TimeoutException {
-        showScrim(buildModel(true, false, false, Color.RED), false);
+        showScrim(buildModel(false, false, Color.RED), false);
 
         View scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
@@ -240,7 +254,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testHierarchy_inFrontOfAnchor() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), false);
 
         View scrimView = mScrimCoordinator.getViewForTesting();
         assertEquals("The parent view of the scrim is incorrect.", sParent, scrimView.getParent());
@@ -252,37 +266,31 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testObserver_clickEvent() throws ExecutionException, TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), false);
+    public void testObserver_clickEvent() throws TimeoutException {
+        showScrim(buildModel(false, true, Color.RED), false);
 
         int callCount = mScrimClickCallbackHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
-        ThreadUtils.runOnUiThreadBlocking(() -> scrimView.callOnClick());
+        ThreadUtils.runOnUiThreadBlocking(scrimView::callOnClick);
         mScrimClickCallbackHelper.waitForCallback(callCount, 1);
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testGestureDetector() throws ExecutionException, TimeoutException {
-        ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
+    public void testGestureDetector() throws TimeoutException {
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, 0)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
-                                    .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
-                                    .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
-                                    .with(ScrimProperties.GESTURE_DETECTOR, mCustomGestureDetector)
+                            return new PropertyModel.Builder(ALL_KEYS)
+                                    .with(ANCHOR_VIEW, mAnchorView)
+                                    .with(CLICK_DELEGATE, mClickDelegate)
+                                    .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                                    .with(BACKGROUND_COLOR, Color.RED)
+                                    .with(GESTURE_DETECTOR, mCustomGestureDetector)
                                     .build();
                         });
+
         showScrim(model, false);
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
@@ -299,18 +307,20 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAnimation_running() throws TimeoutException {
         // The showScrim method includes checks for animation state.
-        showScrim(buildModel(true, false, true, Color.RED), true);
+        showScrim(buildModel(false, true, Color.RED), true);
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
     public void testAnimation_canceled() throws TimeoutException {
-        showScrim(buildModel(true, false, true, Color.RED), true);
+        showScrim(buildModel(false, true, Color.RED), true);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
 
-        assertFalse("Animations should not be running.", mScrimCoordinator.areAnimationsRunning());
+        assertFalse(
+                "Animations should not be running.",
+                mScrimCoordinator.areAnimationsRunningForTesting());
     }
 
     @Test
@@ -318,7 +328,7 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsStatusBar_enabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
-        showScrim(buildModel(true, true, true, Color.RED), false);
+        showScrim(buildModel(true, true, Color.RED), false);
         mStatusBarCallbackHelper.waitForCallback(callCount, 1);
     }
 
@@ -327,7 +337,7 @@ public class ScrimTest {
     @Feature({"Scrim"})
     public void testAffectsStatusBar_disabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
-        showScrim(buildModel(true, false, true, Color.RED), false);
+        showScrim(buildModel(false, true, Color.RED), false);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
 
@@ -351,16 +361,11 @@ public class ScrimTest {
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, 0)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
-                                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
+                            return new PropertyModel.Builder(ALL_KEYS)
+                                    .with(ANCHOR_VIEW, mAnchorView)
+                                    .with(CLICK_DELEGATE, mClickDelegate)
+                                    .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                                    .with(AFFECTS_NAVIGATION_BAR, true)
                                     .build();
                         });
         showScrim(model, false);
@@ -376,16 +381,10 @@ public class ScrimTest {
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, 0)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
-                                    .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
+                            return new PropertyModel.Builder(ALL_KEYS)
+                                    .with(ANCHOR_VIEW, mAnchorView)
+                                    .with(CLICK_DELEGATE, mClickDelegate)
+                                    .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .build();
                         });
         showScrim(model, false);
@@ -399,61 +398,16 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testCustomDrawable() throws TimeoutException {
-        ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
-        PropertyModel model =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, 0)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
-                                    .with(ScrimProperties.BACKGROUND_COLOR, Color.RED)
-                                    .with(ScrimProperties.BACKGROUND_DRAWABLE, customDrawable)
-                                    .with(ScrimProperties.GESTURE_DETECTOR, null)
-                                    .build();
-                        });
-
-        showScrim(model, false);
-
-        assertEquals(
-                "Scrim should be using a custom background.",
-                customDrawable,
-                mScrimCoordinator.getViewForTesting().getBackground());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Scrim should be null after being hidden.",
-                            mScrimCoordinator.getViewForTesting(),
-                            Matchers.nullValue());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Scrim"})
     public void testTopMargin() throws TimeoutException {
         int topMargin = 100;
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, topMargin)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
+                            return new PropertyModel.Builder(ALL_KEYS)
+                                    .with(TOP_MARGIN, topMargin)
+                                    .with(ANCHOR_VIEW, mAnchorView)
+                                    .with(CLICK_DELEGATE, mClickDelegate)
+                                    .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .build();
                         });
 
@@ -470,14 +424,14 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testOldScrimHidden() throws TimeoutException {
-        PropertyModel firstModel = buildModel(false, false, true, Color.RED);
+        PropertyModel firstModel = buildModel(false, true, Color.RED);
         showScrim(firstModel, false);
 
         assertScrimVisibility(true);
 
         View oldScrim = mScrimCoordinator.getViewForTesting();
 
-        showScrim(buildModel(false, false, true, Color.BLUE), false);
+        showScrim(buildModel(false, true, Color.BLUE), false);
         assertScrimColor(Color.BLUE);
 
         View newScrim = mScrimCoordinator.getViewForTesting();
@@ -485,19 +439,56 @@ public class ScrimTest {
         assertNotEquals("The view should have changed.", oldScrim, newScrim);
         assertEquals("The old scrim should be gone.", View.GONE, oldScrim.getVisibility());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.MAGENTA));
+        ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.MAGENTA));
         assertScrimColor(Color.BLUE);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.GREEN));
+        ThreadUtils.runOnUiThreadBlocking(() -> firstModel.set(BACKGROUND_COLOR, Color.GREEN));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testScrimVisibilityObserver() throws TimeoutException {
+        class TestScrimVisibilityObserver implements Observer {
+            public boolean mVisible;
+
+            @Override
+            public void scrimVisibilityChanged(boolean scrimVisible) {
+                mVisible = scrimVisible;
+            }
+        }
+        TestScrimVisibilityObserver o1 = new TestScrimVisibilityObserver();
+        TestScrimVisibilityObserver o2 = new TestScrimVisibilityObserver();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o1));
+        PropertyModel firstModel = buildModel(false, true, Color.RED);
+        showScrim(firstModel, false);
+
+        assertTrue(o1.mVisible);
+        assertFalse(o2.mVisible);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o2));
+
+        showScrim(buildModel(false, true, Color.BLUE), false);
+
+        assertTrue(o1.mVisible);
+        // No update for o2 yet since the visibility hasn't changed.
+        assertFalse(o2.mVisible);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        assertFalse(o1.mVisible);
+        assertFalse(o2.mVisible);
+
+        showScrim(buildModel(false, true, Color.BLUE), false);
+
+        assertTrue(o1.mVisible);
+        assertTrue(o2.mVisible);
     }
 
     /**
      * Build a model to show the scrim with.
      *
-     * @param requiredKeysOnly Whether the model should be built with only the required keys.
      * @param affectsStatusBar Whether the status bar should be affected by the scrim.
      * @param showInFrontOfAnchor Whether the scrim shows in front of the anchor view.
      * @param color The color to use for the overlay. If only using required keys, this value is
@@ -505,36 +496,17 @@ public class ScrimTest {
      * @return A model to pass to the scrim coordinator.
      */
     private PropertyModel buildModel(
-            boolean requiredKeysOnly,
-            boolean affectsStatusBar,
-            boolean showInFrontOfAnchor,
-            @ColorInt int color) {
+            boolean affectsStatusBar, boolean showInFrontOfAnchor, @ColorInt int color) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyModel model =
-                            new PropertyModel.Builder(
-                                            requiredKeysOnly
-                                                    ? ScrimProperties.REQUIRED_KEYS
-                                                    : ScrimProperties.ALL_KEYS)
-                                    .with(ScrimProperties.TOP_MARGIN, 0)
-                                    .with(ScrimProperties.AFFECTS_STATUS_BAR, affectsStatusBar)
-                                    .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
-                                    .with(
-                                            ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW,
-                                            showInFrontOfAnchor)
-                                    .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
-                                    .with(
-                                            ScrimProperties.VISIBILITY_CALLBACK,
-                                            mVisibilityChangeCallback)
-                                    .build();
-
-                    if (!requiredKeysOnly) {
-                        model.set(ScrimProperties.BACKGROUND_COLOR, color);
-                        model.set(ScrimProperties.BACKGROUND_DRAWABLE, null);
-                        model.set(ScrimProperties.GESTURE_DETECTOR, null);
-                    }
-
-                    return model;
+                    return new PropertyModel.Builder(ALL_KEYS)
+                            .with(AFFECTS_STATUS_BAR, affectsStatusBar)
+                            .with(ANCHOR_VIEW, mAnchorView)
+                            .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, showInFrontOfAnchor)
+                            .with(CLICK_DELEGATE, mClickDelegate)
+                            .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
+                            .with(BACKGROUND_COLOR, color)
+                            .build();
                 });
     }
 
@@ -555,11 +527,11 @@ public class ScrimTest {
                     if (animate) {
                         assertTrue(
                                 "Animations should be running.",
-                                mScrimCoordinator.areAnimationsRunning());
+                                mScrimCoordinator.areAnimationsRunningForTesting());
                     }
 
                     mScrimCoordinator.forceAnimationToFinish();
-                    assertFalse(mScrimCoordinator.areAnimationsRunning());
+                    assertFalse(mScrimCoordinator.areAnimationsRunningForTesting());
                     assertEquals(
                             "Scrim should be completely visible.",
                             1.0f,

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -40,38 +41,6 @@ class DownloadDisplayController;
 class DownloadBubbleContentsView;
 class DownloadBubbleRowView;
 class DownloadBubbleUIController;
-
-class DownloadBubbleNavigationHandler {
- public:
-  using CloseOnDeactivatePin =
-      views::BubbleDialogDelegate::CloseOnDeactivatePin;
-
-  // Primary dialog is either main or partial view.
-  virtual void OpenPrimaryDialog() = 0;
-
-  // Opens the security dialog. If the bubble is not currently open, it creates
-  // a new bubble to do so.
-  virtual void OpenSecurityDialog(
-      const offline_items_collection::ContentId& content_id) = 0;
-
-  virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
-
-  // Callback invoked when the dialog has been interacted with by hovering over
-  // or by focusing (on the partial view).
-  virtual void OnDialogInteracted() = 0;
-
-  virtual void OnSecurityDialogButtonPress(
-      const DownloadUIModel& model,
-      DownloadCommands::Command command) = 0;
-
-  // Returns a CloseOnDeactivatePin for the download bubble. For the lifetime of
-  // the returned pin (if non-null), the download bubble will not close on
-  // deactivate. Returns nullptr if the bubble is not open.
-  virtual std::unique_ptr<CloseOnDeactivatePin>
-  PreventDialogCloseOnDeactivate() = 0;
-
-  virtual base::WeakPtr<DownloadBubbleNavigationHandler> GetWeakPtr() = 0;
-};
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
 // to that of its parent ToolbarView. The icon is made visible when downloads
@@ -110,8 +79,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) override;
   IconState GetIconState() const override;
 
   // ToolbarButton:

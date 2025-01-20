@@ -96,35 +96,55 @@ FilledCardInformationBubbleControllerImpl::GetBubbleOptions() const {
 }
 
 std::u16string
-FilledCardInformationBubbleControllerImpl::GetVirtualCardIndicatorLabel()
-    const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_VIRTUAL_CARD_LABEL);
+FilledCardInformationBubbleControllerImpl::GetCardIndicatorLabel() const {
+  return options_.filled_card.record_type() ==
+                 CreditCard::RecordType::kVirtualCard
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_VIRTUAL_CARD_LABEL)
+             : options_.filled_card.AbbreviatedExpirationDateForDisplay(
+                   /*with_prefix=*/false);
 }
 
 std::u16string FilledCardInformationBubbleControllerImpl::GetBubbleTitleText()
     const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_TITLE_VIRTUAL_CARD);
+  return options_.filled_card.record_type() ==
+                 CreditCard::RecordType::kVirtualCard
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_TITLE_VIRTUAL_CARD)
+             : l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_TITLE);
 }
 
 std::u16string FilledCardInformationBubbleControllerImpl::GetLearnMoreLinkText()
     const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD);
+  return options_.filled_card.record_type() ==
+                 CreditCard::RecordType::kVirtualCard
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD)
+             : l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL);
 }
 
 std::u16string
 FilledCardInformationBubbleControllerImpl::GetEducationalBodyLabel() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL_VIRTUAL_CARD,
-      GetLearnMoreLinkText());
+  return options_.filled_card.record_type() ==
+                 CreditCard::RecordType::kVirtualCard
+             ? l10n_util::GetStringFUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL_VIRTUAL_CARD,
+                   GetLearnMoreLinkText())
+             : l10n_util::GetStringFUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL,
+                   GetLearnMoreLinkText());
 }
 
 std::u16string
 FilledCardInformationBubbleControllerImpl::GetCardNumberFieldLabel() const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD);
+  return options_.filled_card.record_type() ==
+                 CreditCard::RecordType::kVirtualCard
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL_VIRTUAL_CARD)
+             : l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_CARD_NUMBER_LABEL);
 }
 
 std::u16string

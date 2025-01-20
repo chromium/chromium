@@ -43,16 +43,6 @@ bool IsValidPrivateAggregationContextId(std::string_view context_id) {
 
 bool IsValidPrivateAggregationFilteringIdMaxBytes(
     size_t filtering_id_max_bytes) {
-  if (filtering_id_max_bytes ==
-      kPrivateAggregationApiDefaultFilteringIdMaxBytes) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
-    return false;
-  }
-
   return filtering_id_max_bytes > 0 &&
          filtering_id_max_bytes <= kPrivateAggregationApiMaxFilteringIdMaxBytes;
 }

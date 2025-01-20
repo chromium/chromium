@@ -71,6 +71,13 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     TestWithBrowserView::SetUp();
     profile()->GetPrefs()->SetBoolean(
         chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
+
+    if (features::IsToolbarPinningEnabled()) {
+      browser_view()
+          ->toolbar()
+          ->pinned_toolbar_actions_container()
+          ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+    }
   }
 
  private:
@@ -126,6 +133,12 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
 }
 
 TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
+  // TODO(crbug.com/354207075): enable this test when the dot indicator is added
+  // back.
+  if (features::IsToolbarPinningEnabled()) {
+    GTEST_SKIP()
+        << "The dot indicator doesn't exist when toolbar pinning is enabled";
+  }
   ChromeLabsButton* chrome_labs_button =
       browser_view()->toolbar()->chrome_labs_button();
   EXPECT_TRUE(chrome_labs_button->GetDotIndicatorVisibilityForTesting());
@@ -162,11 +175,11 @@ class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
  public:
   ChromeLabsButtonTestSecondaryUser() : ChromeLabsButtonTest() {}
 
-  void LogIn(const std::string& email) override {
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     // Fake primary user log-in, so that the created profile will be interpreted
     // as secondary user's profile.
-    ChromeLabsButtonTest::LogIn("primary-user@domain.com");
-    ChromeLabsButtonTest::LogIn(email);
+    ChromeLabsButtonTest::LogIn("primary-user@domain.com", GaiaId("fakegaia1"));
+    ChromeLabsButtonTest::LogIn(email, gaia_id);
   }
 };
 

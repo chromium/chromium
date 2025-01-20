@@ -14,7 +14,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -95,9 +94,7 @@ class SystemUIComponentsStyleViewerView::ComponentButton
       : views::LabelButton(std::move(pressed_callback), name) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
-        0, chromeos::features::IsJellyrollEnabled()
-               ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-               : views::HighlightBorder::Type::kHighlightBorder1));
+        0, views::HighlightBorder::Type::kHighlightBorderNoShadow));
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));

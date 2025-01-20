@@ -12,6 +12,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -53,16 +54,23 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
   }
   GURL modified_url = GURL(url_to_modify);
   bool send_request_and_session_ids = false;
+  bool send_vit = false;
 
   if (search_terms_args.page_classification ==
       metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
     send_request_and_session_ids =
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
+    send_vit = true;
+    modified_url =
+        net::AppendOrReplaceQueryParameter(modified_url, "gs_ps", "1");
   } else if (search_terms_args.page_classification ==
              metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
-    send_request_and_session_ids =
-        lens_overlay_suggest_inputs->send_gsession_vsrid_for_lens_suggest();
+    if (lens_overlay_suggest_inputs
+            ->send_gsession_vsrid_vit_for_lens_suggest()) {
+      send_request_and_session_ids = true;
+      send_vit = true;
+    }
     if (lens_overlay_suggest_inputs->has_encoded_image_signals()) {
       modified_url = net::AppendOrReplaceQueryParameter(
           modified_url, "iil",
@@ -76,6 +84,13 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
           lens_overlay_suggest_inputs
               ->encoded_visual_search_interaction_log_data());
     }
+  }
+
+  if (send_vit &&
+      lens_overlay_suggest_inputs->has_contextual_visual_input_type()) {
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "vit",
+        lens_overlay_suggest_inputs->contextual_visual_input_type());
   }
 
   if (send_request_and_session_ids) {
@@ -101,8 +116,12 @@ RemoteSuggestionsService::Delegate::~Delegate() = default;
 
 RemoteSuggestionsService::RemoteSuggestionsService(
     DocumentSuggestionsService* document_suggestions_service,
+    EnterpriseSearchAggregatorSuggestionsService*
+        enterprise_search_aggregator_suggestions_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : document_suggestions_service_(document_suggestions_service),
+      enterprise_search_aggregator_suggestions_service_(
+          enterprise_search_aggregator_suggestions_service),
       url_loader_factory_(url_loader_factory) {
   DCHECK(url_loader_factory);
 }
@@ -325,6 +344,33 @@ void RemoteSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
   if (document_suggestions_service_) {
     document_suggestions_service_->StopCreatingDocumentSuggestionsRequest();
   }
+}
+
+void RemoteSuggestionsService::
+    CreateEnterpriseSearchAggregatorSuggestionsRequest(
+        const GURL& suggest_url,
+        const std::string& request_body,
+        StartCallback start_callback,
+        CompletionCallback completion_callback) {
+  if (!enterprise_search_aggregator_suggestions_service_) {
+    return;
+  }
+
+  // Create a unique identifier for the request.
+  const base::UnguessableToken request_id = base::UnguessableToken::Create();
+
+  enterprise_search_aggregator_suggestions_service_
+      ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
+          suggest_url, request_body,
+          base::BindOnce(&RemoteSuggestionsService::OnRequestCreated,
+                         weak_ptr_factory_.GetWeakPtr(), request_id),
+          base::BindOnce(&RemoteSuggestionsService::OnRequestStartedAsync,
+                         weak_ptr_factory_.GetWeakPtr(), request_id,
+                         RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
+                         std::move(start_callback)),
+          base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), request_id,
+                         std::move(completion_callback)));
 }
 
 std::unique_ptr<network::SimpleURLLoader>

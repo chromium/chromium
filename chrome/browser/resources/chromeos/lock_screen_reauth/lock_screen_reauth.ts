@@ -435,10 +435,6 @@ class LockReauthElement extends LockReauthElementBase {
     this.resetState();
     chrome.send('startOnlineAuth', /*force_reauth_gaia_page=*/[true]);
   }
-
-  private policyProvidedTrustedAnchorsUsed() {
-    return loadTimeData.getBoolean('policyProvidedCaCertsPresent');
-  }
 }
 
 declare global {

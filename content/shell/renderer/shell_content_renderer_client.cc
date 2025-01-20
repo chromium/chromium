@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -104,9 +105,9 @@ class TestRendererServiceImpl : public mojom::TestService {
 
   void DoCrashImmediately(DoCrashImmediatelyCallback callback) override {
     // This intentionally crashes the process and needs to be fatal regardless
-    // of DCHECK level. It's intended to get called. This is unlike the other
-    // NOTREACHED()s which are not expected to get called at all.
-    CHECK(false);
+    // of DCHECK level. This is unlike the other NOTREACHED()s which are not
+    // expected to get called at all.
+    base::ImmediateCrash();
   }
 
   void CreateFolder(CreateFolderCallback callback) override { NOTREACHED(); }

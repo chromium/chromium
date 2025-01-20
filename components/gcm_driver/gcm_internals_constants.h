@@ -7,11 +7,6 @@
 
 namespace gcm_driver {
 
-// Resource paths.
-// Must match the resource file names.
-extern const char kGcmInternalsCSS[];
-extern const char kGcmInternalsJS[];
-
 // Message handlers.
 // Must match the constants used in the resource files.
 extern const char kGetGcmInternalsInfo[];

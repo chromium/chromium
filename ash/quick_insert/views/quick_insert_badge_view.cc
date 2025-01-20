@@ -50,9 +50,8 @@ QuickInsertBadgeView::QuickInsertBadgeView() {
               .CopyAddressTo(&label_)
               .SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(0, 0, 0, kLabelRightPadding))
-              .SetFontList(
-                  ash::TypographyProvider::Get()->ResolveTypographyToken(
-                      ash::TypographyToken::kCrosLabel1)),
+              .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+                  TypographyToken::kCrosLabel1)),
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromVectorIcon(
                   kQuickInsertReturnIcon, cros_tokens::kCrosSysOnSurface))

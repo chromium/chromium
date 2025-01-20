@@ -34,8 +34,6 @@ source_set("model") {
     "//components/favicon/ios",
     "//components/google/core/common",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/search",
@@ -44,9 +42,10 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
@@ -102,7 +101,6 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:web_internal",
@@ -124,8 +122,8 @@ source_set("template_url_service_factory") {
   sources = [ "template_url_service_factory.h" ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 

@@ -22,9 +22,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_impl.h"
-#include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
-#include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -211,8 +209,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Virtual for testing purposes.
   virtual void OnThermalStateChange(
       mojom::blink::DeviceThermalState thermal_state);
-  // Invoked when a new CPU speed limit is received from the OS.
-  virtual void OnSpeedLimitChange(int32_t speed_limit);
 
   // Start recording an event log.
   void StartEventLog(int output_period_ms);
@@ -283,10 +279,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                            int error_code,
                            const String& error_text);
   void OnInterestingUsage(int usage_pattern);
-
-  // Protected for testing.
-  ThermalUmaListener* thermal_uma_listener() const;
-  SpeedLimitUmaListener* speed_limit_uma_listener() const;
 
  private:
   // Record info about the first SessionDescription from the local and
@@ -427,15 +419,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // The Thermal Resource is lazily instantiated on platforms where thermal
   // signals are supported.
   scoped_refptr<ThermalResource> thermal_resource_;
-  // ThermalUmaListener is only tracked on peer connection that add a track.
-  std::unique_ptr<ThermalUmaListener> thermal_uma_listener_;
-  mojom::blink::DeviceThermalState last_thermal_state_ =
-      mojom::blink::DeviceThermalState::kUnknown;
-  // Last received OS speed limit.
-  int32_t last_speed_limit_ = mojom::blink::kSpeedLimitMax;
-  // SpeedLimitUmaListener is only tracked on peer connection that add an audio
-  // or video track.
-  std::unique_ptr<SpeedLimitUmaListener> speed_limit_uma_listener_;
 
   // Record info about the first SessionDescription from the local and
   // remote side to record UMA stats once both are set.  We only check

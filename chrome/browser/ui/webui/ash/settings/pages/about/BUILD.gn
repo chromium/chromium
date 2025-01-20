@@ -34,7 +34,6 @@ static_library("about") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:channel_info",
@@ -48,6 +47,7 @@ static_library("about") {
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
   ]
 }
 

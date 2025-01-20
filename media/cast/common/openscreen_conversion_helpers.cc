@@ -70,8 +70,13 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
   // here, since it needs to be owned outside of `encoded_frame.`
   CHECK(encoded_frame.data.data());
   return openscreen::cast::EncodedFrame(
-      encoded_frame.dependency, encoded_frame.frame_id,
-      encoded_frame.referenced_frame_id, encoded_frame.rtp_timestamp,
+      encoded_frame.is_key_frame
+          ? openscreen::cast::EncodedFrame::Dependency::kKeyFrame
+          : openscreen::cast::EncodedFrame::Dependency::kDependent
+
+      ,
+      encoded_frame.frame_id, encoded_frame.referenced_frame_id,
+      encoded_frame.rtp_timestamp,
       ToOpenscreenTimePoint(encoded_frame.reference_time),
       std::chrono::milliseconds(encoded_frame.new_playout_delay_ms),
       ToOpenscreenTimePoint(encoded_frame.capture_begin_time),

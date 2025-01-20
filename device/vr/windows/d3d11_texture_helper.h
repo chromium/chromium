@@ -33,6 +33,9 @@ class D3D11TextureHelper {
   void CleanupNoSubmit();
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
+  bool CopyToBackBuffer(
+      const scoped_refptr<viz::ContextProvider>& context_provider,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> source);
   bool CompositeToBackBuffer(
       const scoped_refptr<viz::ContextProvider>& context_provider);
 

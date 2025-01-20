@@ -16,7 +16,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -34,7 +33,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -109,8 +108,9 @@ void AccountFetcherService::Initialize(
   // Tokens may have already been loaded and we will not receive a
   // notification-on-registration for |token_service_->AddObserver(this)| few
   // lines above.
-  if (token_service_->AreAllCredentialsLoaded())
+  if (token_service_->AreAllCredentialsLoaded()) {
     OnRefreshTokensLoaded();
+  }
 }
 
 bool AccountFetcherService::IsAllUserInfoFetched() const {
@@ -132,11 +132,13 @@ void AccountFetcherService::OnNetworkInitialized() {
 }
 
 void AccountFetcherService::EnableNetworkFetchesForTest() {
-  if (!network_initialized_)
+  if (!network_initialized_) {
     OnNetworkInitialized();
+  }
 
-  if (!refresh_tokens_loaded_)
+  if (!refresh_tokens_loaded_) {
     OnRefreshTokensLoaded();
+  }
 }
 
 void AccountFetcherService::EnableAccountRemovalForTest() {
@@ -168,6 +170,12 @@ void AccountFetcherService::RefreshAccountInfoIfStale(
 
 void AccountFetcherService::UpdateChildInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do not override child account information derived from capabilities if the
+  // experiment is enabled.
+  if (base::FeatureList::IsEnabled(
+          switches::kForceSupervisedSigninWithCapabilities)) {
+    return;
+  }
   std::vector<CoreAccountId> accounts = token_service_->GetAccounts();
   if (accounts.size() >= 1) {
     // If a child account is present then there can be only one child account,
@@ -175,10 +183,12 @@ void AccountFetcherService::UpdateChildInfo() {
     //
     // TODO(crbug.com/40803816): consider removing this assumption.
     const CoreAccountId& candidate = accounts[0];
-    if (candidate == child_request_account_id_)
+    if (candidate == child_request_account_id_) {
       return;
-    if (!child_request_account_id_.empty())
+    }
+    if (!child_request_account_id_.empty()) {
       ResetChildInfo();
+    }
     child_request_account_id_ = candidate;
     StartFetchingChildInfo(candidate);
   } else {
@@ -189,8 +199,9 @@ void AccountFetcherService::UpdateChildInfo() {
 
 void AccountFetcherService::MaybeEnableNetworkFetches() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!network_initialized_ || !refresh_tokens_loaded_)
+  if (!network_initialized_ || !refresh_tokens_loaded_) {
     return;
+  }
   if (!network_fetches_enabled_) {
     network_fetches_enabled_ = true;
     repeating_timer_->Start();
@@ -235,8 +246,9 @@ void AccountFetcherService::ResetChildInfo() {
         account_tracker_service_->GetAccountInfo(child_request_account_id_);
     // TODO(crbug.com/40776452): Reset the status to kUnknown, rather
     // than kFalse.
-    if (account_info.is_child_account != signin::Tribool::kUnknown)
+    if (account_info.is_child_account != signin::Tribool::kUnknown) {
       SetIsChildAccount(child_request_account_id_, false);
+    }
   }
   child_request_account_id_ = CoreAccountId();
   child_info_request_.reset();
@@ -244,8 +256,9 @@ void AccountFetcherService::ResetChildInfo() {
 
 void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
                                               bool is_child_account) {
-  if (child_request_account_id_ == account_id)
+  if (child_request_account_id_ == account_id) {
     account_tracker_service_->SetIsChildAccount(account_id, is_child_account);
+  }
 }
 #endif
 
@@ -429,8 +442,9 @@ void AccountFetcherService::OnRefreshTokenAvailable(
   // changes) once everything is initialized and the refresh token is present.
   signin_client_->DoFinalInit();
 
-  if (!network_fetches_enabled_)
+  if (!network_fetches_enabled_) {
     return;
+  }
   RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
 #if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();

@@ -17,6 +17,10 @@ dictionary IdentityProviderConfig {
   [RuntimeEnabled=FedCmIdPRegistration] DOMString type;
 };
 
+enum IdentityProviderRequestOptionsFormat {
+  "vc+sd-jwt",
+};
+
 dictionary IdentityProviderField {
   required USVString name;
 };
@@ -27,4 +31,5 @@ dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<(USVString or IdentityProviderField)> fields;
   [RuntimeEnabled=FedCmAuthz] any params;
+  [RuntimeEnabled=FedCmDelegation] IdentityProviderRequestOptionsFormat format;
 };

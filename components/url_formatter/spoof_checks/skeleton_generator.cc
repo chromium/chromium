@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 
 namespace {
@@ -58,12 +57,9 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   // "ł > l; ø > o; đ > d" that are not handled by "NFD; Nonspacing mark
   // removal; NFC".
   // TODO(jshin): Revisit "ł > l; ø > o" mapping.
-  UParseError parse_error;
-  diacritic_remover_ = base::WrapUnique(icu::Transliterator::createFromRules(
-      UNICODE_STRING_SIMPLE("DropAcc"),
-      icu::UnicodeString::fromUTF8("::NFD; ::[:Nonspacing Mark:] Remove; ::NFC;"
-                                   " ł > l; ø > o; đ > d;"),
-      UTRANS_FORWARD, parse_error, status));
+  diacritic_remover_ = base::i18n::CreateTransliteratorFromRules(
+      "DropAcc",
+      "::NFD; ::[:Nonspacing Mark:] Remove; ::NFC; ł > l; ø > o; đ > d;");
 
   // This set is used to determine whether or not to apply a slow
   // transliteration to remove diacritics to a given hostname before the
@@ -124,31 +120,27 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //   Map a few dashes that ICU doesn't map. These are already blocked by ICU,
   //   but mapping them allows us to detect same skeletons.
   //   - {U+2014 (—), U+4E00 (一), U+2015 (―), U+23EA (⸺), U+2E3B (⸻)} => -,
-  extra_confusable_mapper_ =
-      base::WrapUnique(icu::Transliterator::createFromRules(
-          UNICODE_STRING_SIMPLE("ExtraConf"),
-          icu::UnicodeString::fromUTF8(
-              "[æӕ] > ae; [ϼҏ] > p; [ħнћңҥӈӊԋԧԩ] > h;"
-              "[ĸκкқҝҟҡӄԟ] > k; [ŋпԥกח] > n;"
-              "[ŧтҭԏ七丅丆丁] > t; [ƅьҍвß] > b;  [ωшщพฟພຟ] > w;"
-              "[мӎ] > m; [єҽҿၔ] > e; ґ > r; [ғӻ] > f;"
-              "[ҫင] > c; [ұ丫] > y; [χҳӽӿ乂] > x;"
-              "[ԃძ]  > d; [ԍဌ] > g; [ടรຣຮ] > s; ၂ > j;"
-              "[०০੦૦ଠ୦೦စ] > o;"
-              "[৭੧૧] > q;"
-              "[บບ] > u;"
-              "[θ] > 0;"
-              "[२২੨੨૨೩೭շ] > 2;"
-              "[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;"
-              "[੫丩ㄐ] > 4;"
-              "[ճ] > 6;"
-              "[৪੪୫] > 8;"
-              "[૭୨౨] > 9;"
-              "[—一―⸺⸻] > \\-;"),
-          UTRANS_FORWARD, parse_error, status));
-  DCHECK(U_SUCCESS(status))
-      << "Skeleton generator initialization failed due to an error: "
-      << u_errorName(status);
+  extra_confusable_mapper_ = base::i18n::CreateTransliteratorFromRules(
+      "ExtraConf",
+      "[æӕ] > ae; [ϼҏ] > p; [ħнћңҥӈӊԋԧԩ] > h;"
+      "[ĸκкқҝҟҡӄԟ] > k; [ŋпԥกח] > n;"
+      "[ŧтҭԏ七丅丆丁] > t; [ƅьҍвß] > b;  [ωшщพฟພຟ] > w;"
+      "[мӎ] > m; [єҽҿၔ] > e; ґ > r; [ғӻ] > f;"
+      "[ҫင] > c; [ұ丫] > y; [χҳӽӿ乂] > x;"
+      "[ԃძ]  > d; [ԍဌ] > g; [ടรຣຮ] > s; ၂ > j;"
+      "[०০੦૦ଠ୦೦စ] > o;"
+      "[৭੧૧] > q;"
+      "[บບ] > u;"
+      "[θ] > 0;"
+      "[२২੨੨૨೩೭շ] > 2;"
+      "[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;"
+      "[੫丩ㄐ] > 4;"
+      "[ճ] > 6;"
+      "[৪੪୫] > 8;"
+      "[૭୨౨] > 9;"
+      "[—一―⸺⸻] > \\-;");
+  DCHECK(extra_confusable_mapper_ != nullptr)
+      << "Skeleton generator initialization failed due to an error: ";
 
   // Characters that look like multiple characters.
   character_map_[u'þ'] = {"b", "p"};
@@ -169,20 +161,18 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
 
 SkeletonGenerator::~SkeletonGenerator() = default;
 
-void SkeletonGenerator::MaybeRemoveDiacritics(icu::UnicodeString& hostname) {
-  // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
-  // there is no point in getting rid of diacritics because combining marks
-  // attached to non-LGC characters are already blocked.
-  if (ShouldRemoveDiacriticsFromLabel(hostname))
-    diacritic_remover_->transliterate(hostname);
-}
-
 std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
     std::u16string_view hostname) {
   size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
-  icu::UnicodeString host(false, hostname.data(), hostname_length);
-  MaybeRemoveDiacritics(host);
-  return base::i18n::UnicodeStringToString16(host);
+  std::u16string_view host(hostname.data(), hostname_length);
+  // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
+  // there is no point in getting rid of diacritics because combining marks
+  // attached to non-LGC characters are already blocked.
+  if (ShouldRemoveDiacriticsFromLabel(
+          icu::UnicodeString(host.data(), host.length()))) {
+    return diacritic_remover_->Transliterate(host);
+  }
+  return std::u16string(host.data(), host.length());
 }
 
 bool SkeletonGenerator::ShouldComputeSupplementalHostnamesWithDiacritics(
@@ -222,9 +212,10 @@ Skeletons SkeletonGenerator::GetSkeletons(std::u16string_view input_hostname) {
   for (const std::u16string& hostname : all_variants) {
     size_t hostname_length =
         hostname.length() - (hostname.back() == '.' ? 1 : 0);
-    icu::UnicodeString hostname_unicode(false, hostname.data(),
-                                        hostname_length);
-    extra_confusable_mapper_->transliterate(hostname_unicode);
+    std::u16string transliterated = extra_confusable_mapper_->Transliterate(
+        std::u16string_view(hostname.data(), hostname_length));
+    icu::UnicodeString hostname_unicode(transliterated.data(),
+                                        transliterated.length());
 
     UErrorCode status = U_ZERO_ERROR;
     icu::UnicodeString ustr_skeleton;
@@ -262,8 +253,9 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
   size_t length = host_alt.length();
   char16_t* buffer = host_alt.getBuffer(-1);
   for (char16_t* uc = buffer + src_pos; uc < buffer + length; ++uc) {
-    if (*uc == src_char)
+    if (*uc == src_char) {
       *uc = mapped_char;
+    }
   }
   host_alt.releaseBuffer(length);
   UErrorCode status = U_ZERO_ERROR;
@@ -314,7 +306,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
   // Thus, the number of skeleton strings in the queue item will always
   // correspond to the index of the input string processed so far.
   std::queue<QueueItem> q;
-  q.push(QueueItem());
+  q.emplace();
 
   while (!q.empty()) {
     QueueItem current = q.front();
@@ -333,7 +325,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
     // First, add the original character from input.
     char16_t c = input_buffer[current.size()];
     QueueItem new_item1 = current;
-    new_item1.push_back(std::u16string(1, c));
+    new_item1.emplace_back(1, c);
     q.push(new_item1);
 
     // Then, find all alternative characters for the current input character and

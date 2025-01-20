@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_IMPORTANT_FRAME_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_IMPORTANT_FRAME_DECORATOR_H_
 
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -15,7 +14,7 @@ namespace performance_manager {
 
 // Responsible for maintaining the IsImportant() property of frame nodes.
 class ImportantFrameDecorator : public GraphOwnedDefaultImpl,
-                                public InitializingFrameNodeObserver {
+                                public FrameNodeObserver {
  public:
   ImportantFrameDecorator();
   ~ImportantFrameDecorator() override;
@@ -27,8 +26,13 @@ class ImportantFrameDecorator : public GraphOwnedDefaultImpl,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // InitializingFrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnHadUserActivationChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
 };

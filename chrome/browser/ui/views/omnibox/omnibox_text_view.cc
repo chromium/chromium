@@ -95,7 +95,9 @@ bool AnswerHasDefinedMaxLines(omnibox::AnswerType answer_type) {
 }  // namespace
 
 OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
-    : result_view_(result_view) {}
+    : result_view_(result_view) {
+  SetCanProcessEventsWithinSubtree(false);
+}
 
 OmniboxTextView::~OmniboxTextView() = default;
 
@@ -110,7 +112,7 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
     return render_text_->GetStringSize();
   }
 
-  int width = available_size.width().value();
+  const int width = available_size.width().value();
   if (!wrap_text_lines_) {
     return gfx::Size(width, GetLineHeight());
   }
@@ -126,22 +128,20 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
   return cached_calculate_preferred_size_;
 }
 
-bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
-  return false;
-}
-
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
 
-  if (!render_text_)
+  if (!render_text_) {
     return;
+  }
   render_text_->SetDisplayRect(GetContentsBounds());
   render_text_->Draw(canvas);
 }
 
 void OmniboxTextView::ApplyTextColor(ui::ColorId id) {
-  if (GetText().empty())
+  if (GetText().empty()) {
     return;
+  }
   render_text_->SetColor(GetColorProvider()->GetColor(id));
   SchedulePaint();
 }
@@ -168,8 +168,9 @@ void OmniboxTextView::SetTextWithStyling(
     const std::u16string& new_text,
     const ACMatchClassifications& classifications) {
   if (GetText() == new_text && cached_classifications_ &&
-      classifications == *cached_classifications_)
+      classifications == *cached_classifications_) {
     return;
+  }
 
   cached_classifications_ =
       std::make_unique<ACMatchClassifications>(classifications);
@@ -185,8 +186,9 @@ void OmniboxTextView::AppendTextWithStyling(
     const omnibox::AnswerType& answer_type) {
   cached_classifications_.reset();
   wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
-  for (size_t i = fragment_index;
-       i < static_cast<size_t>(formatted_string.fragments_size()); i++) {
+  const auto fragments_size =
+      static_cast<size_t>(formatted_string.fragments_size());
+  for (size_t i = fragment_index; i < fragments_size; ++i) {
     const std::u16string space_separator = i == 0u ? u"" : u" ";
     const std::u16string append_text =
         space_separator +
@@ -239,14 +241,16 @@ int OmniboxTextView::GetLineHeight() const {
 
 void OmniboxTextView::ReapplyStyling() {
   // No work required if there are no preexisting styles.
-  if (!cached_classifications_)
+  if (!cached_classifications_) {
     return;
+  }
 
   const size_t text_length = GetText().length();
   for (size_t i = 0; i < cached_classifications_->size(); ++i) {
     const size_t text_start = (*cached_classifications_)[i].offset;
-    if (text_start >= text_length)
+    if (text_start >= text_length) {
       break;
+    }
 
     const size_t text_end =
         (i < (cached_classifications_->size() - 1))
@@ -255,8 +259,9 @@ void OmniboxTextView::ReapplyStyling() {
     const gfx::Range current_range(text_start, text_end);
 
     // Calculate style-related data.
-    if ((*cached_classifications_)[i].style & ACMatchClassification::MATCH)
+    if ((*cached_classifications_)[i].style & ACMatchClassification::MATCH) {
       render_text_->ApplyWeight(gfx::Font::Weight::BOLD, current_range);
+    }
 
     const bool selected =
         result_view_->GetThemeState() == OmniboxPartState::SELECTED;

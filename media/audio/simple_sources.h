@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -69,8 +70,8 @@ class MEDIA_EXPORT SineWaveAudioSource
   base::RepeatingClosure on_more_data_callback_;
 
   base::Lock lock_;
-  int pos_samples_ GUARDED_BY(lock_) = 0;
-  int cap_ GUARDED_BY(lock_) = 0;
+  size_t pos_samples_ GUARDED_BY(lock_) = 0;
+  size_t cap_ GUARDED_BY(lock_) = 0;
   int callbacks_ GUARDED_BY(lock_) = 0;
   int errors_ = 0;
 };
@@ -97,7 +98,7 @@ class MEDIA_EXPORT FileSource : public AudioOutputStream::AudioSourceCallback,
   // The WAV data at |path_to_wav_file_| is read into memory and kept here.
   // This memory needs to survive for the lifetime of |wav_audio_handler_|,
   // so declare it first. Do not access this member directly.
-  std::unique_ptr<char[]> raw_wav_data_;
+  base::HeapArray<uint8_t> raw_wav_data_;
 
   std::unique_ptr<WavAudioHandler> wav_audio_handler_;
   std::unique_ptr<AudioConverter> file_audio_converter_;
@@ -131,8 +132,7 @@ class BeepingSource : public AudioOutputStream::AudioSourceCallback {
   static void BeepOnce();
 
  private:
-  int buffer_size_;
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
   AudioParameters params_;
   base::TimeTicks last_callback_time_;
   base::TimeDelta interval_from_last_beep_;

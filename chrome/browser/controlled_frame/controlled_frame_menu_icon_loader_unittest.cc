@@ -113,7 +113,7 @@ TEST_F(ControlledFrameMenuIconLoaderTest, LoadGetAndRemoveIcon) {
   ControlledFrameMenuIconLoader menu_icon_loader;
 
   extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"", main_rfh()->GetProcess()->GetID(),
+      /*extension_id=*/"", main_rfh()->GetProcess()->GetDeprecatedID(),
       main_rfh()->GetRoutingID(), kTestWebViewInstanceId);
 
   base::test::TestFuture<void> future;
@@ -144,7 +144,7 @@ TEST_F(ControlledFrameMenuIconLoaderTest, MenuManager) {
   // is able to be accessed through GetIcon. Also check that the icon is removed
   // when the context item is removed.
   std::unique_ptr<extensions::MenuItem> item = CreateTestItem(
-      main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
+      main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
       /*webview_instance_id=*/kTestWebViewInstanceId, /*string_id=*/"test",
       /*visible=*/true);
   const extensions::MenuItem::Id& item_id = item->id();
@@ -176,7 +176,7 @@ TEST_F(ControlledFrameMenuIconLoaderTest, ContextMenuMatcher) {
   extensions::MenuManager* menu_manager = CreateMenuManager();
 
   std::unique_ptr<extensions::MenuItem> item = CreateTestItem(
-      main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
+      main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
       /*webview_instance_id=*/kTestWebViewInstanceId, /*string_id=*/"test",
       /*visible=*/true);
   const extensions::MenuItem::Id& item_id = item->id();

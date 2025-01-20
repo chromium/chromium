@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -72,20 +72,22 @@ public class LocalTabGroupMutationHelperUnitTest {
     private static final GURL TAB_URL_1 = new GURL("https://url1.com");
     private static final GURL TAB_URL_2 = new GURL("https://url2.com");
     private static final GURL UNSYNCABLE_URL_1 = new GURL("chrome://flags");
+    private static final String COLLABORATION_ID = "collab_id";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
-    private MockTabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncUtilsJni mTabGroupSyncUtilsJni;
+
+    @Captor private ArgumentCaptor<EventDetails> mEventDetailsCaptor;
+
+    private MockTabModel mTabModel;
     private LocalTabGroupMutationHelper mLocalMutationHelper;
     private TestTabCreationDelegate mTabCreationDelegate;
-
     private Tab mTab1;
     private Tab mTab2;
-    private @Captor ArgumentCaptor<EventDetails> mEventDetailsCaptor;
 
     @Before
     public void setUp() {
@@ -196,7 +198,11 @@ public class LocalTabGroupMutationHelperUnitTest {
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {null, null});
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
+        verify(mTabRemover)
+                .forceCloseTabs(
+                        argThat(
+                                params ->
+                                        params.tabs.size() == 1 && params.saveToTabRestoreService));
     }
 
     @Test
@@ -293,7 +299,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupModelFilter, never())
                 .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
-        verify(mTabModel, never()).closeTabs(any());
+        verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
         verify(mTabCreationDelegate, never())
                 .navigateToUrl(any(), any(), anyString(), anyBoolean());
     }
@@ -355,7 +361,21 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testCloseTabGroup() {
         mTabModel.addTab(TAB_ID_1);
         mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
-        verify(mTabRemover).forceCloseTabs(any());
+        verify(mTabRemover).forceCloseTabs(argThat(params -> params.saveToTabRestoreService));
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_1), eq(ClosingSource.CLOSED_BY_USER));
+    }
+
+    @Test
+    public void testCloseTabGroup_Collaboration() {
+        mTabModel.addTab(TAB_ID_1);
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        savedTabGroup.collaborationId = COLLABORATION_ID;
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
+        mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
+        verify(mTabRemover).forceCloseTabs(argThat(params -> !params.saveToTabRestoreService));
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
                         eq(LOCAL_TAB_GROUP_ID_1), eq(ClosingSource.CLOSED_BY_USER));

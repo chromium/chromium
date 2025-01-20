@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -870,6 +871,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     jboolean allow) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
+  base::UmaHistogramEnumeration("Permissions.SiteSettingsChanged", type);
 
   if (type == ContentSettingsType::SOUND) {
     if (allow) {

@@ -32,19 +32,28 @@ interface ML {
   Promise<MLContext> createContext(GPUDevice gpuDevice);
 };
 
-typedef record<USVString, ArrayBufferView> MLNamedArrayBufferViews;
+typedef record<USVString, MLTensor> MLNamedTensors;
 
-dictionary MLComputeResult {
-  MLNamedArrayBufferViews inputs;
-  MLNamedArrayBufferViews outputs;
+dictionary MLContextLostInfo {
+  DOMString message;
 };
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
 interface MLContext {
-  Promise<MLComputeResult> compute(
-      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
+  undefined dispatch(MLGraph graph, MLNamedTensors inputs, MLNamedTensors outputs);
+
+  Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
+
+  Promise<ArrayBuffer> readTensor(MLTensor tensor);
+  Promise<undefined> readTensor(MLTensor tensor, AllowSharedBufferSource outputData);
+
+  undefined writeTensor(MLTensor tensor, AllowSharedBufferSource inputData);
 
   MLOpSupportLimits opSupportLimits();
+
+  undefined destroy();
+
+  readonly attribute Promise<MLContextLostInfo> lost;
 };
 
 dictionary MLOpSupportLimits {
@@ -70,7 +79,9 @@ dictionary MLSingleInputSupportLimits {
 };
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
-interface MLGraph {};
+interface MLGraph {
+  undefined destroy();
+};
 
 enum MLInputOperandLayout {
   "nchw",
@@ -105,6 +116,21 @@ dictionary MLOperatorOptions {
 
 typedef (bigint or unrestricted double) MLNumber;
 
+dictionary MLTensorDescriptor : MLOperandDescriptor {
+  boolean readable = false;
+  boolean writable = false;
+};
+
+[SecureContext, Exposed=(Window, DedicatedWorker)]
+interface MLTensor {
+  readonly attribute MLOperandDataType dataType;
+  readonly attribute FrozenArray<unsigned long> shape;
+  readonly attribute boolean readable;
+  readonly attribute boolean writable;
+
+  undefined destroy();
+};
+
 typedef record<USVString, MLOperand> MLNamedOperands;
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
@@ -116,7 +142,8 @@ interface MLGraphBuilder {
   MLOperand input(USVString name, MLOperandDescriptor descriptor);
 
   // Create an operand for a graph constant.
-  MLOperand constant(MLOperandDescriptor descriptor, ArrayBufferView bufferView);
+  MLOperand constant(MLOperandDescriptor descriptor,
+                     AllowSharedBufferSource buffer);
 
   // Create a scalar operand from the specified number of the specified type.
   MLOperand constant(MLOperandDataType type, MLNumber value);

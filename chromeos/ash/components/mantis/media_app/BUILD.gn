@@ -9,16 +9,20 @@ assert(is_chromeos_ash)
 component("media_app") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP_IMPL" ]
   sources = [
-    "mantis_media_app_untrusted_processor.cc",
-    "mantis_media_app_untrusted_processor.h",
-    "mantis_media_app_untrusted_service.cc",
-    "mantis_media_app_untrusted_service.h",
+    "mantis_untrusted_service.cc",
+    "mantis_untrusted_service.h",
+    "mantis_untrusted_service_manager.cc",
+    "mantis_untrusted_service_manager.h",
   ]
   deps = [
+    "//ash/constants",
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//chromeos/ash/components/mantis/mojom",
     "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/specialized_features",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -26,15 +30,22 @@ component("media_app") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "mantis_media_app_untrusted_processor_unittest.cc",
-    "mantis_media_app_untrusted_service_unittest.cc",
+    "mantis_untrusted_service_manager_unittest.cc",
+    "mantis_untrusted_service_unittest.cc",
   ]
   deps = [
     ":media_app",
+    "//ash/constants",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/specialized_features",
+    "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
   ]

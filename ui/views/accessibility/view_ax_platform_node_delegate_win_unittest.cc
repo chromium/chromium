@@ -54,11 +54,13 @@ namespace {
 // Whether |left| represents the same COM object as |right|.
 template <typename T, typename U>
 bool IsSameObject(T* left, U* right) {
-  if (!left && !right)
+  if (!left && !right) {
     return true;
+  }
 
-  if (!left || !right)
+  if (!left || !right) {
     return false;
+  }
 
   ComPtr<IUnknown> left_unknown;
   left->QueryInterface(IID_PPV_ARGS(&left_unknown));
@@ -661,8 +663,9 @@ class ViewAXPlatformNodeDelegateWinTableTest
   }
 
   void TearDown() override {
-    if (!widget_->IsClosed())
+    if (!widget_->IsClosed()) {
       widget_->Close();
+    }
     ViewAXPlatformNodeDelegateWinTest::TearDown();
   }
 

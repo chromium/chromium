@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "build/build_config.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -359,10 +360,6 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
         kGpuFeatureStatusBlocklisted;
   }
-  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_CANVAS_OOP_RASTERIZATION)) {
-    gpu_feature_info->status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-        kGpuFeatureStatusBlocklisted;
-  }
   // If disable_webnn_for_gpu workaround is enabled for the GPU device, we need
   // to check to see if there is a NPU device available before setting the WebNN
   // gpu feature status. If there is a NPU device, check the
@@ -531,6 +528,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      const GpuPreferences& gpu_preferences,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
+  GPU_STARTUP_TRACE_EVENT("gpu_util::ComputeGpuFeatureInfo");
   bool use_swift_shader = false;
   bool blocklist_needs_more_info = false;
 
@@ -569,6 +567,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
           command_line->GetSwitchValueASCII(switches::kGpuBlocklistTestGroup);
       if (!base::StringToUint(test_group_string, &target_test_group))
         target_test_group = 0u;
+    } else if (base::FeatureList::IsEnabled(
+                   ::features::kGPUBlockListTestGroup)) {
+      target_test_group = ::features::kGPUBlockListTestGroupId.Get();
     }
     blocklisted_features = list->MakeDecision(
         GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
@@ -647,6 +648,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
           switches::kGpuDriverBugListTestGroup);
       if (!base::StringToUint(test_group_string, &target_test_group))
         target_test_group = 0u;
+    } else if (base::FeatureList::IsEnabled(
+                   ::features::kGPUDriverBugListTestGroup)) {
+      target_test_group = ::features::kGPUDriverBugListTestGroupId.Get();
     }
     enabled_driver_bug_workarounds = list->MakeDecision(
         GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
@@ -915,6 +919,8 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
         return IntelGpuSeriesType::kLunarlake;
       case 0xE200:
         return IntelGpuSeriesType::kBattlemage;
+      case 0xB000:
+        return IntelGpuSeriesType::kPantherlake;
       default:
         break;
     }
@@ -967,6 +973,8 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kLunarlake:
       case IntelGpuSeriesType::kBattlemage:
         return "13";
+      case IntelGpuSeriesType::kPantherlake:
+        return "14";
       default:
         break;
     }

@@ -196,7 +196,8 @@ class CC_EXPORT LayerTreeHostClient {
   // committed to the compositor, which is before the call to
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() = 0;
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) = 0;
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  PaintBenchmarkResult& result) {}

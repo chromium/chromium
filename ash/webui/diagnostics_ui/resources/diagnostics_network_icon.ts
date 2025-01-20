@@ -84,7 +84,6 @@ function convertNetworkStateToCrosNetworkState(state: NetworkState):
     case NetworkState.kDisabled:
       return ConnectionStateType.kNotConnected;
   }
-  assertNotReached();
 }
 
 function convertNetworkTypeToCrosNetworkType(type: NetworkType):
@@ -197,7 +196,6 @@ function convertSecurityTypeToCrosSecurityType(type: SecurityType):
     case SecurityType.kWpaPsk:
       return CrosSecurityType.kWpaPsk;
   }
-  assertNotReached();
 }
 
 /**
